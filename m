@@ -2,123 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C54502F2156
-	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 22:02:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 457282F2177
+	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 22:05:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732793AbhAKVCL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jan 2021 16:02:11 -0500
-Received: from www62.your-server.de ([213.133.104.62]:41410 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732725AbhAKVCE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 16:02:04 -0500
-Received: from sslproxy06.your-server.de ([78.46.172.3])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1kz4JT-0002MR-Hb; Mon, 11 Jan 2021 22:01:19 +0100
-Received: from [85.7.101.30] (helo=pc-9.home)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1kz4JT-0002bd-Ci; Mon, 11 Jan 2021 22:01:19 +0100
-Subject: Re: [PATCH bpf-next 2/2] bpf: extend bind v4/v6 selftests for
- mark/prio/bindtoifindex
-To:     Yonghong Song <yhs@fb.com>, ast@kernel.org
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org
-References: <9dbbf51e7f6868b3e9c8610a8d49b4493fb1b50f.1610381606.git.daniel@iogearbox.net>
- <299c73acafd2c20d52624debb8a1e0019d85e6dd.1610381606.git.daniel@iogearbox.net>
- <1cf3b794-6b84-e6a4-bed3-6b72c480eafa@fb.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <1ba684dd-1fd8-7e71-4798-6abcfbb44eda@iogearbox.net>
-Date:   Mon, 11 Jan 2021 22:01:18 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S2388847AbhAKVEq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jan 2021 16:04:46 -0500
+Received: from mail-40131.protonmail.ch ([185.70.40.131]:24282 "EHLO
+        mail-40131.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730563AbhAKVEp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 16:04:45 -0500
+Date:   Mon, 11 Jan 2021 21:03:57 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
+        t=1610399042; bh=vcu//doyECUTnhIiITA/X39kwSyLf2KhHEjPp8bJwpg=;
+        h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
+        b=gcPLtnWEa+t+9+1BPvXLHnZlcc4wAQhhVrcczGB8ewUh7b1aY3/V7wUxE27cFJx6+
+         tpUbFzh4YzvhUuy/o5nWOONHEyWTm3u1NIjg2jlmPFFGgZd9sh7Dz/BtxH8fLsfusG
+         RKVecP9Q+HCSgyIVWxgKzf5s6IcqlB3n5TddCjrqaLM80fWhfAylg6GLv/nXrQXj4V
+         0tvgBykcaCN3iG+ZSKfN/XlDdm0GMSY2Q7ADqSy6sk+KbxuZQnx3u0+1641f/Wicxb
+         4q1NcbtMKcFdWy4t/83Qhag0OBgT63NVo+i6YgHgrMA4oTjoRa4dQzWuiHOWw0oiCl
+         4idWrzklmWJKg==
+To:     Jonathan Lemon <jonathan.lemon@gmail.com>
+From:   Alexander Lobakin <alobakin@pm.me>
+Cc:     Alexander Lobakin <alobakin@pm.me>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Edward Cree <ecree@solarflare.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Guillaume Nault <gnault@redhat.com>,
+        Yadu Kishore <kyk.segfault@gmail.com>,
+        Al Viro <viro@zeniv.linux.org.uk>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Reply-To: Alexander Lobakin <alobakin@pm.me>
+Subject: Re: [PATCH net-next 1/5] skbuff: rename fields of struct napi_alloc_cache to be more intuitive
+Message-ID: <20210111210329.18881-1-alobakin@pm.me>
+In-Reply-To: <20210111184945.e7y35uym73ujfif2@bsd-mbp>
+References: <20210111182655.12159-1-alobakin@pm.me> <20210111182801.12609-1-alobakin@pm.me> <20210111184945.e7y35uym73ujfif2@bsd-mbp>
 MIME-Version: 1.0
-In-Reply-To: <1cf3b794-6b84-e6a4-bed3-6b72c480eafa@fb.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.4/26046/Mon Jan 11 13:34:14 2021)
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.2 required=10.0 tests=ALL_TRUSTED,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF shortcircuit=no
+        autolearn=disabled version=3.4.4
+X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on
+        mailout.protonmail.ch
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/11/21 9:15 PM, Yonghong Song wrote:
-> On 1/11/21 8:17 AM, Daniel Borkmann wrote:
->> Extend existing cgroup bind4/bind6 tests to add coverage for setting and
->> retrieving SO_MARK, SO_PRIORITY and SO_BINDTOIFINDEX at the bind hook.
->>
->> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
-> 
-> Ack with a minor comments below.
-> 
-> Acked-by: Yonghong Song <yhs@fb.com>
-> 
->> ---
->>   .../testing/selftests/bpf/progs/bind4_prog.c  | 41 +++++++++++++++++--
->>   .../testing/selftests/bpf/progs/bind6_prog.c  | 41 +++++++++++++++++--
->>   2 files changed, 74 insertions(+), 8 deletions(-)
->>
->> diff --git a/tools/testing/selftests/bpf/progs/bind4_prog.c b/tools/testing/selftests/bpf/progs/bind4_prog.c
->> index c6520f21f5f5..4479ac27b1d3 100644
->> --- a/tools/testing/selftests/bpf/progs/bind4_prog.c
->> +++ b/tools/testing/selftests/bpf/progs/bind4_prog.c
->> @@ -29,18 +29,47 @@ static __inline int bind_to_device(struct bpf_sock_addr *ctx)
->>       char veth2[IFNAMSIZ] = "test_sock_addr2";
->>       char missing[IFNAMSIZ] = "nonexistent_dev";
->>       char del_bind[IFNAMSIZ] = "";
->> +    int veth1_idx, veth2_idx;
->>       if (bpf_setsockopt(ctx, SOL_SOCKET, SO_BINDTODEVICE,
->> -                &veth1, sizeof(veth1)))
->> +               &veth1, sizeof(veth1)))
->> +        return 1;
->> +    if (bpf_getsockopt(ctx, SOL_SOCKET, SO_BINDTOIFINDEX,
->> +               &veth1_idx, sizeof(veth1_idx)) || !veth1_idx)
->>           return 1;
->>       if (bpf_setsockopt(ctx, SOL_SOCKET, SO_BINDTODEVICE,
->> -                &veth2, sizeof(veth2)))
->> +               &veth2, sizeof(veth2)))
->> +        return 1;
->> +    if (bpf_getsockopt(ctx, SOL_SOCKET, SO_BINDTOIFINDEX,
->> +               &veth2_idx, sizeof(veth2_idx)) || !veth2_idx ||
->> +        veth1_idx == veth2_idx)
->>           return 1;
->>       if (bpf_setsockopt(ctx, SOL_SOCKET, SO_BINDTODEVICE,
->> -                &missing, sizeof(missing)) != -ENODEV)
->> +               &missing, sizeof(missing)) != -ENODEV)
->> +        return 1;
->> +    if (bpf_setsockopt(ctx, SOL_SOCKET, SO_BINDTOIFINDEX,
->> +               &veth1_idx, sizeof(veth1_idx)))
->>           return 1;
->>       if (bpf_setsockopt(ctx, SOL_SOCKET, SO_BINDTODEVICE,
->> -                &del_bind, sizeof(del_bind)))
->> +               &del_bind, sizeof(del_bind)))
->> +        return 1;
->> +
->> +    return 0;
->> +}
->> +
->> +static __inline int misc_opts(struct bpf_sock_addr *ctx, int opt)
->> +{
->> +    int old, tmp, new = 0xeb9f;
->> +
->> +    if (bpf_getsockopt(ctx, SOL_SOCKET, opt, &old, sizeof(old)) ||
->> +        old == new)
->> +        return 1;
-> 
-> Here, we assume old never equals to new. it would be good to add
-> a comment to explicitly state this is true. Maybe in the future
-> somebody will try to add more misc_opts which might have conflict
-> here.
+From: Jonathan Lemon <jonathan.lemon@gmail.com>
+Date: Mon, 11 Jan 2021 10:49:45 -0800
 
-I thought it's obvious, but yes I can add a comment.
+> On Mon, Jan 11, 2021 at 06:28:21PM +0000, Alexander Lobakin wrote:
+>> skb_cache and skb_count fields are used to store skbuff_heads queued
+>> for freeing to flush them by bulks, and aren't related to allocation
+>> path. Give them more obvious names to improve code understanding and
+>> allow to expand this struct with more allocation-related elements.
+>
+> I don't think prefixing these with flush_ is the correct approach;
+> flush is just an operation on the structure, not a property of the
+> structure itself.  It especially becomes confusing in the later
+> patches when the cache is used on the allocation path.
 
-> Alternatively, you could pass in "new" values
-> from user space with global variables for each option,
-> but that may be an overkill.
+Agree, but didn't come up with anything more fitting. Any suggestions
+maybe?
 
-Agree, that's overkill.
+> --
+> Jonathan
 
 Thanks,
-Daniel
+Al
+
