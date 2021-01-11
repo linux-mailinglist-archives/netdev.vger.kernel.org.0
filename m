@@ -2,130 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 26D612F0CFD
-	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 07:46:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BA2982F0D93
+	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 09:03:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727387AbhAKGpM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jan 2021 01:45:12 -0500
-Received: from mx12.kaspersky-labs.com ([91.103.66.155]:52710 "EHLO
-        mx12.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725536AbhAKGpM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 01:45:12 -0500
-Received: from relay12.kaspersky-labs.com (unknown [127.0.0.10])
-        by relay12.kaspersky-labs.com (Postfix) with ESMTP id 4683575FF8;
-        Mon, 11 Jan 2021 09:44:26 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kaspersky.com;
-        s=mail; t=1610347466;
-        bh=aApp4LN/QtkPAOSm6mJdV5wecd76/VDE+Frwf2Hzg/U=;
-        h=Subject:To:From:Message-ID:Date:MIME-Version:Content-Type;
-        b=P4h/crwpaYLkch4uHMleAiBG2IJv3G8TGD2wMJ4YIMNA8y6dCrCxHV0+JeUGrklvO
-         8+l7vSoCkCyEvfx2B8GNaaAlSDQptsffUkgstb8vzPXxiX+jZiYL19KFkI+21E3y66
-         +u7NVvjdcHIBn19C+2LYidS/T3NLeeizf5r8QGH8=
-Received: from mail-hq2.kaspersky.com (unknown [91.103.66.206])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
-        (Client CN "mail-hq2.kaspersky.com", Issuer "Kaspersky MailRelays CA G3" (verified OK))
-        by mailhub12.kaspersky-labs.com (Postfix) with ESMTPS id 4FA9875FFB;
-        Mon, 11 Jan 2021 09:44:25 +0300 (MSK)
-Received: from [10.16.171.77] (10.64.68.129) by hqmailmbx3.avp.ru
- (10.64.67.243) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2044.4; Mon, 11
- Jan 2021 09:44:24 +0300
-Subject: Re: [PATCH 3/5] af_vsock: send/receive loops for SOCK_SEQPACKET.
-To:     stsp <stsp2@yandex.ru>, Stefan Hajnoczi <stefanha@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jorgen Hansen <jhansen@vmware.com>,
-        Colin Ian King <colin.king@canonical.com>,
-        Arseniy Krasnov <oxffffaa@gmail.com>,
-        Andra Paraschiv <andraprs@amazon.com>,
-        Jeff Vander Stoep <jeffv@google.com>
-CC:     "kvm@vger.kernel.org" <kvm@vger.kernel.org>,
-        "virtualization@lists.linux-foundation.org" 
-        <virtualization@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <20210103195454.1954169-1-arseny.krasnov@kaspersky.com>
- <20210103200347.1956354-1-arseny.krasnov@kaspersky.com>
- <8ffb1753-c95b-c8f3-6ed9-112bf35623be@yandex.ru>
-From:   Arseny Krasnov <arseny.krasnov@kaspersky.com>
-Message-ID: <61ee202f-58bc-0bd2-5aa7-3a84993d055e@kaspersky.com>
-Date:   Mon, 11 Jan 2021 09:44:24 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1727686AbhAKIDD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jan 2021 03:03:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39230 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725536AbhAKIDD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 03:03:03 -0500
+Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C88B3C061786
+        for <netdev@vger.kernel.org>; Mon, 11 Jan 2021 00:02:22 -0800 (PST)
+Received: by mail-pf1-x435.google.com with SMTP id c79so10470551pfc.2
+        for <netdev@vger.kernel.org>; Mon, 11 Jan 2021 00:02:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=alDRsu6NlO2Ir90sx/ABNukkaVAVh5t/9lrif/E0YC8=;
+        b=XcP/GfduYXDO7NVqqE20nG/KKUHbPiYUnVwXcT7n/ZmCCDMqnFyaQ0e6SHtWUI1VzQ
+         /FV9Erxl/IfhHoiLEgrbw4aWbLOQEjrRZlSMvo0qkqsNbeOLLYhfNlbYBk4QzTzfZMBW
+         pr3fG++1XrC9Q7Du7o5bxPvQC1xB38+lnHuBZwIcC02zM7YvomvSoVGRqArM2eFyvl35
+         yFP2+5R7teAvHWhx+10sHeVIbKCdpUN2f49mXmYr9Sk4CSbLKuNOcVPply8Xe/o5oBxU
+         0b8Ng6xbkfjE+RZt08ZkOKzXylXiQEs+tihx5Ev5g7flklVxo2vKRR6oFEA4LJiAcnEw
+         XYWg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=alDRsu6NlO2Ir90sx/ABNukkaVAVh5t/9lrif/E0YC8=;
+        b=RI6sL/Wd7sWxFPKBwzpeabl52dQi6vL1AbVqdq+hltqjZ/AYTdjQHdurzVes0is6UQ
+         24NEcqkP9tlF9a5KdwUI1xzc5Iek1fiS2NhoW2/maaEtd8qoMdVc0qe1Fw2ypkQ4Oa5k
+         sPUYSZSz0AEETT0dsYh8DANieNFYUnO6C2J5X3VMCGMV5b/uaMeTiMMtbColcaGJpHBU
+         e/kUgbpA/1PVg8lr/BXjum8O5015naWeBWvohXWMaC3jO592LZkEGPGa/6j4nRubkzbp
+         jX+UzqQPebq3lqpTS2Ke8GQyzUtqP6u5ET6WFsv7u+2u1M0oF1LtD29lGD8RMqLJBh9n
+         lazQ==
+X-Gm-Message-State: AOAM532SxD2A3yN0VAxDiwgInVRDEjMH4p+XeQRRfngZH28rQ6laiLMD
+        2DwR5oymFfQEWxXqRGdDDf0GyoUJqfl97loBLGg=
+X-Google-Smtp-Source: ABdhPJw8vlvb+zMKJfQKIQwPE+nnhTUCKMlEg6ga+N/znaVYe+tDYZX/3RDGbtRu/65jBSKjNHAaYADP9LgZc2Pl2Rg=
+X-Received: by 2002:a62:2e86:0:b029:1a6:5f94:2cb with SMTP id
+ u128-20020a622e860000b02901a65f9402cbmr18532955pfu.19.1610352142332; Mon, 11
+ Jan 2021 00:02:22 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <8ffb1753-c95b-c8f3-6ed9-112bf35623be@yandex.ru>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Originating-IP: [10.64.68.129]
-X-ClientProxiedBy: hqmailmbx2.avp.ru (10.64.67.242) To hqmailmbx3.avp.ru
- (10.64.67.243)
-X-KSE-ServerInfo: hqmailmbx3.avp.ru, 9
-X-KSE-AntiSpam-Interceptor-Info: scan successful
-X-KSE-AntiSpam-Version: 5.9.16, Database issued on: 01/11/2021 06:22:17
-X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
-X-KSE-AntiSpam-Method: none
-X-KSE-AntiSpam-Rate: 0
-X-KSE-AntiSpam-Info: Lua profiles 161021 [Jan 11 2021]
-X-KSE-AntiSpam-Info: LuaCore: 419 419 70b0c720f8ddd656e5f4eb4a4449cf8ce400df94
-X-KSE-AntiSpam-Info: Version: 5.9.16.0
-X-KSE-AntiSpam-Info: Envelope from: arseny.krasnov@kaspersky.com
-X-KSE-AntiSpam-Info: {Tracking_content_type, plain}
-X-KSE-AntiSpam-Info: {Tracking_date, moscow}
-X-KSE-AntiSpam-Info: {Tracking_c_tr_enc, eight_bit}
-X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
-X-KSE-AntiSpam-Info: kaspersky.com:7.1.1;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;127.0.0.199:7.1.2
-X-KSE-AntiSpam-Info: Rate: 0
-X-KSE-AntiSpam-Info: Status: not_detected
-X-KSE-AntiSpam-Info: Method: none
-X-KSE-Antiphishing-Info: Clean
-X-KSE-Antiphishing-ScanningType: Deterministic
-X-KSE-Antiphishing-Method: None
-X-KSE-Antiphishing-Bases: 01/11/2021 06:25:00
-X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
- rules found
-X-KSE-Antivirus-Interceptor-Info: scan successful
-X-KSE-Antivirus-Info: Clean, bases: 11.01.2021 5:48:00
-X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
-X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
- rules found
-X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
-X-KLMS-Rule-ID: 52
-X-KLMS-Message-Action: clean
-X-KLMS-AntiSpam-Status: not scanned, disabled by settings
-X-KLMS-AntiSpam-Interceptor-Info: not scanned
-X-KLMS-AntiPhishing: Clean, bases: 2021/01/11 04:28:00
-X-KLMS-AntiVirus: Kaspersky Security for Linux Mail Server, version 8.0.3.30, bases: 2021/01/11 04:10:00 #16053498
-X-KLMS-AntiVirus-Status: Clean, skipped
+References: <1609757998.875103-1-xuanzhuo@linux.alibaba.com> <741209d2a42d46ebdb8249caaef7531f5ad8fa76.camel@kernel.org>
+In-Reply-To: <741209d2a42d46ebdb8249caaef7531f5ad8fa76.camel@kernel.org>
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+Date:   Mon, 11 Jan 2021 09:02:11 +0100
+Message-ID: <CAJ8uoz0xkGUd6V9-+x6pfMoqz0UjhkSBWz-dBChi=eNGM2cS4w@mail.gmail.com>
+Subject: Re: mlx5 error when the skb linear space is empty
+To:     Saeed Mahameed <saeed@kernel.org>
+Cc:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Network Development <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Hmm, are you sure you need to convert
-> "err" to the pointer, just to return true/false
-> as the return value?
-> How about still returning "err" itself?
+On Tue, Jan 5, 2021 at 9:51 PM Saeed Mahameed <saeed@kernel.org> wrote:
+>
+> On Mon, 2021-01-04 at 18:59 +0800, Xuan Zhuo wrote:
+> > hi
+> >
+> > In the process of developing xdp socket, we tried to directly use
+> > page to
+> > construct skb directly, to avoid data copy. And the MAC information
+> > is also in
+> > the page, which caused the linear space of skb to be empty. In this
+> > case, I
+> > encountered a problem :
+> >
+> > mlx5_core 0000:3b:00.1 eth1: Error cqe on cqn 0x817, ci 0x8, qn
+> > 0x1dbb, opcode 0xd, syndrome 0x1, vendor syndrome 0x68
+> > 00000000: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+> > 00000010: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+> > 00000020: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+> > 00000030: 00 00 00 00 60 10 68 01 0a 00 1d bb 00 0f 9f d2
+> > WQE DUMP: WQ size 1024 WQ cur size 0, WQE index 0xf, len: 64
+> > 00000000: 00 00 0f 0a 00 1d bb 03 00 00 00 08 00 00 00 00
+> > 00000010: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+> > 00000020: 00 00 00 2b 00 08 00 00 00 00 00 05 9e e3 08 00
+> > 00000030: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+> > mlx5_core 0000:3b:00.1 eth1: ERR CQE on SQ: 0x1dbb
+> >
+> >
+> > And when I try to copy only the mac address into the linear space of
+> > skb, the
+> > other parts are still placed in the page. When constructing skb in
+> > this way, I
+> > found that although the data can be sent successfully, the sending
+> > performance
+> > is relatively poor!!
+> >
+>
+> Hi,
+>
+> This is an expected behavior of ConnectX4-LX, ConnectX4-LX requires the
+> driver to copy at least the L2 headers into the linear part, in some
+> DCB/DSCP configuration it will require L3 headers.
 
-In this case i need to reserve some value for
-"err" as success, because both 0 and negative
-values are passed to caller when this function
-returns false(check failed). May be i will
-inline this function.
+Do I understand this correctly if I say whatever is calling
+ndo_start_xmit has to make sure at least the L2 headers is in the
+linear part of the skb? If Xuan does not do this, the ConnectX4 driver
+crashes, but if he does, it works. So from an ndo_start_xmit interface
+perspective, what is the requirement of an skb that is passed to it?
+Do all users of ndo_start_xmit make sure the L2 header is in the
+linear part, or are there users that do not make sure this is the
+case? Judging from the ConnectX5 code it seems that the latter is
+possible (since it has code to deal with this), but from the
+ConnectX4, it seems like the former is true (since it does not copy
+the L2 headers into the linear part as far as I can see). Sorry for my
+confusion, but I think it is important to get some clarity here as it
+will decide if Xuan's patch is a good idea or not in its current form.
 
-> Its not very clear (only for me perhaps) how
-> dequeue_total and len correlate. Are they
-> equal here? Would you need to check that
-> dequeued_total >= record_len?
-> I mean, its just a bit strange that you check
-> dequeued_total>0 and no longer use that var
-> inside the block.
+Thank you.
 
-When "dequeued_total > 0" record copy is succeed.
-"len" is length of user  buffer. I think i can
-replace "dequeued_total" to some flag, like "error",
-because in SOCK_SEQPACKET mode record could be
-copied whole or error returned.
+> to check what the current configuration, you can check from the driver
+> code:
+> mlx5e_calc_min_inline() // Calculates the minimum required headers to
+> copy to linear part per packet
+>
+> and sq->min_inline_mode; stores the minimum required by the FW.
+>
+> This "must copy" requirement doesn't exist for ConnectX5 and above ..
 
+What is the
+
+> > I would like to ask, is there any way to solve this problem?
+> >
+> > dev info:
+> >     driver: mlx5_core
+> >     version: 5.10.0+
+> >     firmware-version: 14.21.2328 (MT_2470112034)
+> >     expansion-rom-version:
+> >     bus-info: 0000:3b:00.0
+> >     supports-statistics: yes
+> >     supports-test: yes
+> >     supports-eeprom-access: no
+> >     supports-register-dump: no
+> >     supports-priv-flags: yes
+> >
+> >
+> >
+> >
+>
