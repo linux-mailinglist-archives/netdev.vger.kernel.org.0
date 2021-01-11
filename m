@@ -2,91 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8EF3E2F1F9D
-	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 20:38:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 806C82F1FAF
+	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 20:44:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390709AbhAKThr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jan 2021 14:37:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47642 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387466AbhAKThq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 14:37:46 -0500
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FB73C061786;
-        Mon, 11 Jan 2021 11:37:06 -0800 (PST)
-Received: by mail-ed1-x52e.google.com with SMTP id y24so948119edt.10;
-        Mon, 11 Jan 2021 11:37:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=2HOWXgoEdikJriAL9PJcBltl1AQUOwNy5rbe7pndkH8=;
-        b=Q5eSMlbNa+wgWyhaAOSM+TjNCL4FLFltTFIXFMcDciLP/52wOXO3jb03ESyw/ugtAJ
-         BA0Qoqw0igut2ZVBi1FAKRb0mOefOm17cDJ8AecUJABADhgh23udf6sMmED+5G/Ux4KK
-         CtEm74NPoMf7Gkgc7n+TS0HBA6saW+jnlhNBsl+n9s77qbVN5L9l2Md7FNFUFnj9tYAn
-         Wjzf7w5En1kPRp3HtHrm0d0vDe9+2Q+EfZyVflDRVAVL0qNPZeZnofv5++NhPk1Qxh+Q
-         YPimCrRR/GPTppwGDqeXLyHkZd6yPMfdP06CiPIQ819/XEjNOnMCGDKK5ghjcRlwtHzQ
-         +YRA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=2HOWXgoEdikJriAL9PJcBltl1AQUOwNy5rbe7pndkH8=;
-        b=gnszo/2kHzSLcwS3LnfvBdo7Ey+BcBtKHy5qJdSn/Xi5klyzBynLVKtDtwxM4wGF+P
-         LQiW1QqWvFjmX0LP9LEnfP+jerGIhGn+nWL9P5sjOZqRrcMgCrLZgj2gvJmCouKwCkXd
-         GiIzfF4jZLHX+ujoS2N8JnLjqHNI+C8Fywarvf++lcfW4owpMnnTtGDYDljT9UxgYjKQ
-         GaCwnNsxpyAQhelS3mH52avcGi9bApPf39i/ilFlC17igUCtG2RGJoYrHfjPplJwZcy3
-         sQI858XHeiIp5faPAFNjJrNyrtpUJOxBxf2zWRpMU2GdZh2YSGoZWtV14R1FMUDdmEAp
-         3qhA==
-X-Gm-Message-State: AOAM531PaBuAoNOfXWewXRbBk4PFry+HbVsmGA7ZHCzSAWtLW2Jni61y
-        3VSiUWpYxirv1jA7H3FwK/ryYltesBxbHsCM5X8=
-X-Google-Smtp-Source: ABdhPJy0YE8JscLziE8TUurcaUVQVpDiHv251GYMEQ1Xjzare/H0WiJdI2obIjUcMUVoUhjd1EDuyYQg4ZPIhQoCsAY=
-X-Received: by 2002:a50:fc8b:: with SMTP id f11mr686884edq.11.1610393825143;
- Mon, 11 Jan 2021 11:37:05 -0800 (PST)
+        id S2391038AbhAKTnv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jan 2021 14:43:51 -0500
+Received: from mail.kernel.org ([198.145.29.99]:54142 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2387724AbhAKTnv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 11 Jan 2021 14:43:51 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id B16B922BEF;
+        Mon, 11 Jan 2021 19:43:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1610394190;
+        bh=Rj7BwqRZu/wHEnmTfmVtzliqvn/aFd/pt1XBAvp9Mw8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=WVPCclPqMhZPlOdJqjnq33xOSRIjw/XgyQERFRodqcDxrOvPq9RzknDYApsjhoNxT
+         J/hK6M+NeGhNALPhu3LHOCSWFFygQgC6jhuc3ZsrptJm1UAnRLHuu9OkvBLkP0yRCO
+         fzrkOnYK5SChmJF8Gw+7iC9Kd9M5ViFqbqgrzLRirQPhd+7VyBwC+qEOI3hdHuwixO
+         wwzA+b9NozRCD0rbSg+tCIhq639SywdrAw0F3UPxM2GP+JIVFiBW6AByDVBY6e7kPB
+         BlC8x+nm/NXvnUNsbJNLVVYD5FstrYuIVoMORhmfQ3454YMvokXC/9Oz3W+rjX32Wc
+         dmey21Od1ZzfQ==
+Date:   Mon, 11 Jan 2021 11:43:09 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+Cc:     netdev@vger.kernel.org, Dany Madden <drt@linux.ibm.com>,
+        Lijun Pan <ljp@linux.ibm.com>
+Subject: Re: [PATCH 5/7] ibmvnic: use a lock to serialize remove/reset
+Message-ID: <20210111114309.6de6a281@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210111035225.GB165065@us.ibm.com>
+References: <20210108071236.123769-1-sukadev@linux.ibm.com>
+        <20210108071236.123769-6-sukadev@linux.ibm.com>
+        <20210109194146.7c8ac5ce@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20210111035225.GB165065@us.ibm.com>
 MIME-Version: 1.0
-References: <20210111130657.10703-1-bjarni.jonasson@microchip.com> <20210111130657.10703-2-bjarni.jonasson@microchip.com>
-In-Reply-To: <20210111130657.10703-2-bjarni.jonasson@microchip.com>
-From:   =?UTF-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirqus@gmail.com>
-Date:   Mon, 11 Jan 2021 20:37:01 +0100
-Message-ID: <CAHXqBFJSgebLn9GxgdYGdVR6_+i76uX5YyjHw5niOet9BuYj6A@mail.gmail.com>
-Subject: Re: [PATCH v1 1/2] net: phy: Add 100 base-x mode
-To:     Bjarni Jonasson <bjarni.jonasson@microchip.com>
-Cc:     Russell King <linux@armlinux.org.uk>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Linux Kernel <linux-kernel@vger.kernel.org>,
-        UNGLinuxDriver <UNGLinuxDriver@microchip.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-pon., 11 sty 2021 o 14:54 Bjarni Jonasson
-<bjarni.jonasson@microchip.com> napisa=C5=82(a):
-> Sparx-5 supports this mode and it is missing in the PHY core.
->
-> Signed-off-by: Bjarni Jonasson <bjarni.jonasson@microchip.com>
-> ---
->  include/linux/phy.h | 4 ++++
->  1 file changed, 4 insertions(+)
->
-> diff --git a/include/linux/phy.h b/include/linux/phy.h
-> index 56563e5e0dc7..dce867222d58 100644
-> --- a/include/linux/phy.h
-> +++ b/include/linux/phy.h
-> @@ -111,6 +111,7 @@ extern const int phy_10gbit_features_array[1];
->   * @PHY_INTERFACE_MODE_10GBASER: 10G BaseR
->   * @PHY_INTERFACE_MODE_USXGMII:  Universal Serial 10GE MII
->   * @PHY_INTERFACE_MODE_10GKR: 10GBASE-KR - with Clause 73 AN
-> + * @PHY_INTERFACE_MODE_100BASEX: 100 BaseX
->   * @PHY_INTERFACE_MODE_MAX: Book keeping
-[...]
+On Sun, 10 Jan 2021 19:52:25 -0800 Sukadev Bhattiprolu wrote:
+> Jakub Kicinski [kuba@kernel.org] wrote:
+> > On Thu,  7 Jan 2021 23:12:34 -0800 Sukadev Bhattiprolu wrote:  
+> > > Use a separate lock to serialze ibmvnic_reset() and ibmvnic_remove()
+> > > functions. ibmvnic_reset() schedules work for the worker thread and
+> > > ibmvnic_remove() flushes the work before removing the adapter. We
+> > > don't want any work to be scheduled once we start removing the
+> > > adapter (i.e after we have already flushed the work).  
+> > 
+> > Locking based on functions, not on data being accessed is questionable
+> > IMO. If you don't want work to be scheduled isn't it enough to have a
+> > bit / flag that you set to let other flows know not to schedule reset?  
+> 
+> Maybe I could improve the description, but the "data" being protected
+> is the work queue. Basically don't add to the work queue while/after
+> it is (being) flushed.
+> 
+> Existing code is checking for the VNIC_REMOVING state before scheduling
+> the work but without a lock. If state goes to REMOVING after we check,
+> we could schedule work after the flush?
 
-This is kernel-internal interface, so maybe the new mode can be
-inserted before 1000baseX for easier lookup?
-
-Best Regards
-Micha=C5=82 Miros=C5=82aw
+I see, and you can't just use the state_lock because it has to be a
+spin_lock? If that's the case please just update the commit message 
+and comments to describe the data protected.
