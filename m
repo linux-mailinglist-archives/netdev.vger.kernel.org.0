@@ -2,92 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0ACCD2F0C88
-	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 06:30:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D73CC2F0C8A
+	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 06:31:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727325AbhAKFaG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jan 2021 00:30:06 -0500
-Received: from mail.kernel.org ([198.145.29.99]:59926 "EHLO mail.kernel.org"
+        id S1727329AbhAKFbY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jan 2021 00:31:24 -0500
+Received: from mail.kernel.org ([198.145.29.99]:60130 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727318AbhAKFaG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 11 Jan 2021 00:30:06 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 792FE205CA;
-        Mon, 11 Jan 2021 05:29:25 +0000 (UTC)
+        id S1726721AbhAKFbX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 11 Jan 2021 00:31:23 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 5E200205CA;
+        Mon, 11 Jan 2021 05:30:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610342965;
-        bh=lT0mE6zUP2JCRzk7Tbif9MVc+fQ7Vwc8qCFUsdeDwIE=;
-        h=From:To:Cc:Subject:Date:From;
-        b=aI0+1G16rCp+Qr92kf+fTguGKwzCnAZfNF2p4pHcxeDLhNXMS2Euvq9sVeSI3rPlQ
-         sMlh5Up95udcFntI6EZFi0KjqnBTryvzjatEU0O4tBYF+5kRhGEsWuHldvtrzpt34K
-         txZ4cnnrHZIV5ecDWzZuQ6fxqn31iPhPitYrwGIQxbDrxLWRuF1AJHoEu74F2WsUcM
-         cCvC5KTi8zX4yAxaUr3dK/A3ZHWoE/i2QDiLosIujMbP5aRb8xw0d/3jqAPDJpfuIy
-         m9VMZpUg6hgE8ik5+VN3zkbePdw/uy7W4vR3T3s7CBStv/cTJqJaUtg5IhIuRxuQYv
-         7oGsjVb8R2eZw==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        Cong Wang <xiyou.wangcong@gmail.com>
-Subject: [PATCH net-next] net: bareudp: simplify error paths calling dellink
-Date:   Sun, 10 Jan 2021 21:29:22 -0800
-Message-Id: <20210111052922.2145003-1-kuba@kernel.org>
-X-Mailer: git-send-email 2.26.2
+        s=k20201202; t=1610343043;
+        bh=Id1285G737J0aoqxJGvM/ZIcD3X+Z6IwGoKmmJf8hiU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=FHxk1cJMhOftPT+9WAknjY0ya6u3uxOhe/rmd4D3f1enlZqlHuAW13kVaCKrCWKoD
+         ZU6EkwLGRm2MXCNBLEi7zxRf6Nsw1KgO02jBD15DRuoBFn/gNMxINYLRdTOum8nsaD
+         kVC2RynQ5phzpdufd/xLtfr7xNlPTV4VA9XWVZFBx/rBBBY5Pkc1EwES6ZJVsqYRmJ
+         Lixsv/Kn7XlkIjoxKshGA3qt++ckT6tHhu7VlToPoK35pNBZEv9UdmhvL3rzBU9YSv
+         EcC7ZyYIjXNozGBFvbKLNxea6u3/bzYxxJMvuTExeFax6OlfJ0zH5iwLmkN8VVQF7e
+         fKH7zop8+gL4w==
+Date:   Mon, 11 Jan 2021 07:30:38 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Patrisious Haddad <phaddad@nvidia.com>,
+        Doug Ledford <dledford@redhat.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        linux-netdev <netdev@vger.kernel.org>,
+        RDMA mailing list <linux-rdma@vger.kernel.org>
+Subject: Re: [PATCH iproute2-next v2] rdma: Add support for the netlink extack
+Message-ID: <20210111053038.GJ31158@unreal>
+References: <20210103061706.18313-1-leon@kernel.org>
+ <f2ad7596-b976-aef7-56b7-edfba3a77ba0@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <f2ad7596-b976-aef7-56b7-edfba3a77ba0@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-bareudp_dellink() only needs the device list to hand it to
-unregister_netdevice_queue(). We can pass NULL in, and
-unregister_netdevice_queue() will do the unregistering.
-There is no chance for batching on the error path, anyway.
+On Sun, Jan 10, 2021 at 10:23:06AM -0700, David Ahern wrote:
+> On 1/2/21 11:17 PM, Leon Romanovsky wrote:
+> > From: Patrisious Haddad <phaddad@nvidia.com>
+> >
+> > Add support in rdma for extack errors to be received
+> > in userspace when sent from kernel, so now netlink extack
+> > error messages sent from kernel would be printed for the
+> > user.
+> >
+> > Signed-off-by: Patrisious Haddad <phaddad@nvidia.com>
+> > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> > ---
+> > David,
+> >
+> > Just as a note, rdmatool is heavily influenced by the devlink and
+> > general code should probably be applicable for both tools. Most likely
+> > that any core refactoring/fix in the devlink is needed for rdmatool too.
+> >
+>
+> understood and it was not the best model to start with but here we are.
+>
+> Petr did a good job of refactoring when he added dcb, but rdma was
+> slightly different so the refactoring did not update it.
 
-Suggested-by: Cong Wang <xiyou.wangcong@gmail.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
- drivers/net/bareudp.c | 8 ++------
- 1 file changed, 2 insertions(+), 6 deletions(-)
+I can work to reduce the gaps, just need to know them.
 
-diff --git a/drivers/net/bareudp.c b/drivers/net/bareudp.c
-index 85de5f96c02b..0965d136def3 100644
---- a/drivers/net/bareudp.c
-+++ b/drivers/net/bareudp.c
-@@ -658,7 +658,6 @@ static int bareudp_newlink(struct net *net, struct net_device *dev,
- 			   struct netlink_ext_ack *extack)
- {
- 	struct bareudp_conf conf;
--	LIST_HEAD(list_kill);
- 	int err;
- 
- 	err = bareudp2info(data, &conf, extack);
-@@ -676,8 +675,7 @@ static int bareudp_newlink(struct net *net, struct net_device *dev,
- 	return 0;
- 
- err_unconfig:
--	bareudp_dellink(dev, &list_kill);
--	unregister_netdevice_many(&list_kill);
-+	bareudp_dellink(dev, NULL);
- 	return err;
- }
- 
-@@ -729,7 +727,6 @@ struct net_device *bareudp_dev_create(struct net *net, const char *name,
- {
- 	struct nlattr *tb[IFLA_MAX + 1];
- 	struct net_device *dev;
--	LIST_HEAD(list_kill);
- 	int err;
- 
- 	memset(tb, 0, sizeof(tb));
-@@ -753,8 +750,7 @@ struct net_device *bareudp_dev_create(struct net *net, const char *name,
- 
- 	return dev;
- err:
--	bareudp_dellink(dev, &list_kill);
--	unregister_netdevice_many(&list_kill);
-+	bareudp_dellink(dev, NULL);
- 	return ERR_PTR(err);
- }
- EXPORT_SYMBOL_GPL(bareudp_dev_create);
--- 
-2.26.2
-
+Thanks
