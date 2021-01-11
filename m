@@ -2,73 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F06A12F0C32
-	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 06:17:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A817C2F0C80
+	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 06:29:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727286AbhAKFQs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jan 2021 00:16:48 -0500
-Received: from mail-io1-f72.google.com ([209.85.166.72]:45679 "EHLO
-        mail-io1-f72.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727236AbhAKFQr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 00:16:47 -0500
-Received: by mail-io1-f72.google.com with SMTP id x7so11714291ion.12
-        for <netdev@vger.kernel.org>; Sun, 10 Jan 2021 21:16:31 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=TwLtYgNM/VxZnJX9RYzFOAmbDbu3TS829VUYdlrQ6tU=;
-        b=gCfeghTDpWZjKDfW+9bTbe7SUXFjxj1sY/vZHjudgY4dIRDLmTlYlgD0aLz+xfo+Vj
-         oW0f09c5PhWJCZVsfOWPHQKLE3JiSorby0lNbqVUUbYgWbkmdoF0VzRQMvXZvVHcCiEH
-         hOehub8T/FQVycysq7lNQ+tp9E/wdMw/A3z+UHBzOEEDuEzFxDK1U1zZ5941WD+IPAQE
-         /ddpRtizJtCZSODJVWNyoRzatuBUvMVdwKEqfQEva/ybfyKJEt8TEW4JLovkmjiss9Vt
-         ewzYLahZWnX9ehs6ndP1u/Tv8IF7ULO/bSCmjNfn05KgfzJsdGxHF2WRhvjHYMQKFZCD
-         5b3w==
-X-Gm-Message-State: AOAM530W9f0QcFZ6ePTpLvbLNHKG+4MEG8AoMP4FnAIjbpBJB6pFtJD5
-        vJB6BouFFWqCRI5OMSZ4w0Vy05LaoahbM9PWCgLsishrbnpA
-X-Google-Smtp-Source: ABdhPJw34d6R73XmCxuksM9133DcvPyLfBOZgm6heuu0BEb6aKdNf+Jt1XOKWGljxWX0oVlLoshF5G4fzBYFc5U+6aYPAdyyumLW
+        id S1726347AbhAKF2o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jan 2021 00:28:44 -0500
+Received: from mail.kernel.org ([198.145.29.99]:59604 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725536AbhAKF2n (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 11 Jan 2021 00:28:43 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id CFD7A224B0;
+        Mon, 11 Jan 2021 05:28:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1610342883;
+        bh=ooDEkw0UM2LGjmds2qRU5wbLusgsXo1lss9k8agumxI=;
+        h=From:To:Cc:Subject:Date:From;
+        b=iLIJzyxUlU4vquL9o1PwFWXTDWRILwqbdBoliM1MdlIR4X3umoBqmsYXpyC+C0FdN
+         Tb63oJF/ZnL7kDSdelyT3oqnWiPBBTJAOh86o64jH4rEoak5qDsFFxvRfrJyLTJxQa
+         e8aZZASl/rLoZArIf0wsYq3YhG36kziozMI3yKgoJeoLI+hoLCiHHJAmhfmNAsoong
+         Nlx6cD2lJGyAZRTT/QCDUS6zponXMqw7hNZr0Mm4yTmW8NnVf2NleS1HC8Dc1FteeB
+         d/9SV06jgMR9P7Z1Fl4axM/gqBOKlpZaALLo6bttRB35xQCwTvCw8d7VSCUSrUaiCr
+         p7x2thZGJcDyQ==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, corbet@lwn.net,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net 0/9] MAINTAINERS: remove inactive folks from networking 
+Date:   Sun, 10 Jan 2021 21:27:50 -0800
+Message-Id: <20210111052759.2144758-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:f86:: with SMTP id v6mr14014231ilo.56.1610342166413;
- Sun, 10 Jan 2021 21:16:06 -0800 (PST)
-Date:   Sun, 10 Jan 2021 21:16:06 -0800
-In-Reply-To: <000000000000f5964705b7d47d8c@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000cbca0705b89900b3@google.com>
-Subject: Re: INFO: trying to register non-static key in l2cap_sock_teardown_cb
-From:   syzbot <syzbot+a41dfef1d2e04910eb2e@syzkaller.appspotmail.com>
-To:     a@unstable.cc, b.a.t.m.a.n@lists.open-mesh.org,
-        davem@davemloft.net, hdanton@sina.com, johan.hedberg@gmail.com,
-        kuba@kernel.org, linux-bluetooth@vger.kernel.org,
-        linux-fsdevel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        luiz.dentz@gmail.com, marcel@holtmann.org,
-        mareklindner@neomailbox.ch, miklos@szeredi.hu, mszeredi@redhat.com,
-        netdev@vger.kernel.org, sw@simonwunderlich.de,
-        syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot has bisected this issue to:
+Hi!
 
-commit 4680a7ee5db27772af40d83393fa0fb955b745b7
-Author: Miklos Szeredi <mszeredi@redhat.com>
-Date:   Sat Oct 1 05:32:33 2016 +0000
+This series intends to remove some most evidently inactive maintainers.
 
-    fuse: remove duplicate cs->offset assignment
+To make maintainers' lives easier we're trying to nudge people
+towards CCing all the relevant folks on patches, in an attempt
+to improve review rate. We have a check in patchwork which validates
+the CC list against get_maintainers.pl. It's a little awkward, however,
+to force people to CC maintainers who we haven't seen on the mailing
+list for years. This series removes from maintainers folks who didn't
+provide any tag (incl. authoring a patch) in the last 5 years.
+To ensure reasonable signal to noise ratio we only considered
+MAINTAINERS entries which had more than 100 patches fall under
+them in that time period.
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=11fc80e7500000
-start commit:   73b7a604 net: dsa: bcm_sf2: support BCM4908's integrated s..
-git tree:       net-next
-final oops:     https://syzkaller.appspot.com/x/report.txt?x=13fc80e7500000
-console output: https://syzkaller.appspot.com/x/log.txt?x=15fc80e7500000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=9ce34124da4c882b
-dashboard link: https://syzkaller.appspot.com/bug?extid=a41dfef1d2e04910eb2e
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=166ee4cf500000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=1337172f500000
+All this is purely a process-greasing exercise, I hope nobody
+sees this series as an affront. Most folks are moved to CREDITS,
+a couple entries are simply removed. 
 
-Reported-by: syzbot+a41dfef1d2e04910eb2e@syzkaller.appspotmail.com
-Fixes: 4680a7ee5db2 ("fuse: remove duplicate cs->offset assignment")
+The following inactive maintainers are kept, because they indicated
+the intention to come back in the near future:
 
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+ - Veaceslav Falico (bonding)
+ - Christian Benvenuti (Cisco drivers)
+
+Patches in this series contain report from a script which did
+the analysis. Big thanks to Jonathan Corbet for help and writing
+the script (although I feel like I used it differently than Jon
+may have intended ;)). The output format is thus:
+
+ Subsystem $name
+  Changes $reviewed / $total ($percent%)           // how many changes to the subsystem had at least one ack/review
+  Last activity: $date_of_most_recent_patch
+  $maintainer/reviewer1:
+    Author $last_commit_authored_by_the_person $how_many_in_5yrs
+    Committer $last_committed $how_many
+    Tags $last_tag_like_review_signoff_etc $how_many
+  $maintainer/reviewer2:
+    Author $last_commit_authored_by_the_person $how_many_in_5yrs
+    Committer $last_committed $how_many
+    Tags $last_tag_like_review_signoff_etc $how_many
+  Top reviewers: // Top 3 reviewers (who are not listed in MAINTAINERS)
+    [$count_of_reviews_and_acks]: $email
+  INACTIVE MAINTAINER $name   // maintainer / reviewer who has done nothing in last 5yrs
+
+Jakub Kicinski (9):
+  MAINTAINERS: altx: move Jay Cliburn to CREDITS
+  MAINTAINERS: net: move Alexey Kuznetsov to CREDITS
+  MAINTAINERS: vrf: move Shrijeet to CREDITS
+  MAINTAINERS: ena: remove Zorik Machulsky from reviewers
+  MAINTAINERS: tls: move Aviad to CREDITS
+  MAINTAINERS: mtk-eth: remove Felix
+  MAINTAINERS: ipvs: move Wensong Zhang to CREDITS
+  MAINTAINERS: dccp: move Gerrit Renker to CREDITS
+  MAINTAINERS: skge/sky2: move Mirko Lindner to CREDITS
+
+ CREDITS     | 28 ++++++++++++++++++++++++++++
+ MAINTAINERS | 11 +----------
+ 2 files changed, 29 insertions(+), 10 deletions(-)
+
+-- 
+2.26.2
+
