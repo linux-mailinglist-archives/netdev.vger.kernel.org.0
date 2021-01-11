@@ -2,82 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E0DCE2F1DC5
-	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 19:17:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5AA5C2F1DC6
+	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 19:17:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390024AbhAKSPp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jan 2021 13:15:45 -0500
-Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:15466 "EHLO
-        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726668AbhAKSPp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 13:15:45 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B5ffc95a80000>; Mon, 11 Jan 2021 10:15:04 -0800
-Received: from [172.27.13.253] (172.20.145.6) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 11 Jan
- 2021 18:15:01 +0000
-Subject: Re: [PATCH net-next v2 0/2] Dissect PTP L2 packet header
-To:     Andrew Lunn <andrew@lunn.ch>
-CC:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Jiri Pirko <jiri@nvidia.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Guillaume Nault <gnault@redhat.com>
-References: <1610358412-25248-1-git-send-email-eranbe@nvidia.com>
- <X/xzgP/eJ1Edm79j@lunn.ch>
-From:   Eran Ben Elisha <eranbe@nvidia.com>
-Message-ID: <275b5a1d-7f6a-7f35-0447-3c92dee85a53@nvidia.com>
-Date:   Mon, 11 Jan 2021 20:14:55 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+        id S2390165AbhAKSPr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jan 2021 13:15:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58174 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726668AbhAKSPr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 13:15:47 -0500
+Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7F3DC061786
+        for <netdev@vger.kernel.org>; Mon, 11 Jan 2021 10:15:06 -0800 (PST)
+Received: by mail-io1-xd2c.google.com with SMTP id p187so562879iod.4
+        for <netdev@vger.kernel.org>; Mon, 11 Jan 2021 10:15:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:reply-to:from:date:message-id
+         :subject:to:cc;
+        bh=34kB1Ns88SnXmJ4h4la9faIDJSSZWsUcWdihCyi4k/s=;
+        b=L1BUyCb4m3lYieeyY2nJMNID0K0qbw20xDeriQPIqNZ7gqTmANyAN6Yey48jCZEmj6
+         TwZDBZLyHmw5T6rDgQuYrx2gBquxJ9I3RJhU5rzqVi+APt2Yh+XaT1xgjgJMut4gc9L5
+         nJElL0lrV5FVC0Ivj9tFsONDeCtV+NChtfFAu6uLs25IkfjLStp/aWPKuy/CFCXyEuM0
+         ksyNFbx++FWX1Iaz+nN1ycjuGLxIznNFZAk8Dn/ym0CIhG4iLc8mXQ8EAEQsxbVT6FTE
+         GgT5woeG0x1VkDd0E6r5w9jWkmr1FIvA9N811tsq0PtC6zcj5hJLv90Suat/xyofk9ES
+         T4lQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:reply-to
+         :from:date:message-id:subject:to:cc;
+        bh=34kB1Ns88SnXmJ4h4la9faIDJSSZWsUcWdihCyi4k/s=;
+        b=JIK5bu8m0z+E8ffBfuj0RW0wXmKlxDUIBPTXORti8uO1ZM6A2kog50f5ceFttU8zEw
+         JrnOLTGVW2qK56DO3IPTe1ZT951CGth25Mb4GX50JrZK9MFcX9suvs2nLh9yehMJxMzT
+         g+5hIvP65tYM/hDftWXxqUJ9X97AF8lvhwtpCt1sMfLVwQOlbQsxeRQoX11KSZCU0e19
+         /KaxV2NIZnNYbb5pMVBum0jl+CjciOi6PKvA+Lb2s+4Yo5u/eNKWDtZPF7pxD7R0DVp7
+         ebbXJqWS2hDoO9trHtFE7xYDIqGwcQQjmTN9TkeUxk6E4OJppWhDMWT5pgRX0mL/FWTX
+         +HhA==
+X-Gm-Message-State: AOAM53251bg2l2j8jeyZVNZINeOOLhP9XVpE4q3A4OE4lSgWHtQSfTjX
+        0zc+xxSnCrH/AHV2K9uahFD6k1h74T9oixsAeMI=
+X-Google-Smtp-Source: ABdhPJz/pEBZgfUvTT6coxrYArCRq0ONH6BGEPyXeMeLDjJBAq5N38Nih5dic+xCcpm+8dlfn4D7xdi6t1RzD2yE6P8=
+X-Received: by 2002:a5e:dd0d:: with SMTP id t13mr423871iop.132.1610388906271;
+ Mon, 11 Jan 2021 10:15:06 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <X/xzgP/eJ1Edm79j@lunn.ch>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [172.20.145.6]
-X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
- HQMAIL107.nvidia.com (172.20.187.13)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1610388904; bh=d+EVRLcNyGg2KanTYCKKvPxiGirrPhe+BUAx1L2jmMk=;
-        h=Subject:To:CC:References:From:Message-ID:Date:User-Agent:
-         MIME-Version:In-Reply-To:Content-Type:Content-Language:
-         Content-Transfer-Encoding:X-Originating-IP:X-ClientProxiedBy;
-        b=pfZHSxe5S1A3/jQCHYh3e/wxMO3hwXoEuZ2dTK+OHnIVPFoH6LyymaEoMXxlAy6/j
-         P1O2UbPCMLvukookqlfE/OE07fB0mpVCfmZDvDQ0ymzqR7y/SIaPD+6TGS79pXI6ja
-         AMUWf66RdDdfFdZJ0XZhKzvHvFyfFbW5Z2VErKghpO+w6wknO5TL3OeCFLwVOBxFku
-         3gBVMdV9BPHti6CTmp5/lJHuuTVC1URAZDON1muTmxw977jMFJwIgY8UTbIq8FsB3R
-         oZw6shT6vljWPHEn5KA7EL9oBBO1bGeQGpiv+ed+iQO7ZZXAOf0U15shGoXsgMrHAa
-         PfK+Sd5DFzXKA==
+References: <000000000000e13e2905b6e830bb@google.com> <CAHmME9qwbB7kbD=1sg_81=82vO07XMV7GyqBcCoC=zwM-v47HQ@mail.gmail.com>
+ <CACT4Y+ac8oFk1Sink0a6VLUiCENTOXgzqmkuHgQLcS2HhJeq=g@mail.gmail.com>
+ <CAHmME9q0HMz+nERjoT-TQ8_6bcAFUNVHDEeXQAennUrrifKESw@mail.gmail.com>
+ <CACT4Y+bKvf5paRS4X1QrcKZWfvtUi6ShP4i3y5NukRpQj0p1+Q@mail.gmail.com>
+ <CAHmME9oOeMLARNsxzW0dvNT7Qz-EieeBSJP6Me5BWvjheEVysw@mail.gmail.com>
+ <CACT4Y+Y9H4xB_4sS9Hu6e+u=tmYXcw6PFB0LY4FRuGQ6HCywrA@mail.gmail.com>
+ <CAGXu5j+jzmkiU_AWoTVF6e263iYSSJYUHB=Kdqh-MCfEO-aNSg@mail.gmail.com>
+ <CACT4Y+b1nmsQBx=dD=Q9_y_GZx1PpqTbzR6j=u5UecQ0JLyMFg@mail.gmail.com>
+ <CACT4Y+YYU6P1joGcNe9+E97-VACqs=5rcmOQerh2ju90R5Nfkg@mail.gmail.com>
+ <CAH8yC8ncN7YZT804Ram3aCzoRGjCGKXEEUKFaNsq1MxtW0Uw3g@mail.gmail.com> <CACT4Y+abV4iDXf9y-_HyH5jQhmn5+=md+C4n+-77q=+cbN-OZA@mail.gmail.com>
+In-Reply-To: <CACT4Y+abV4iDXf9y-_HyH5jQhmn5+=md+C4n+-77q=+cbN-OZA@mail.gmail.com>
+Reply-To: noloader@gmail.com
+From:   Jeffrey Walton <noloader@gmail.com>
+Date:   Mon, 11 Jan 2021 13:14:55 -0500
+Message-ID: <CAH8yC8m_H_VLWaomSku62k4BhwjFCZTB0Td4s17Wtb7tAH5Lqw@mail.gmail.com>
+Subject: Re: UBSAN: object-size-mismatch in wg_xmit
+To:     Dmitry Vyukov <dvyukov@google.com>
+Cc:     Netdev <netdev@vger.kernel.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        WireGuard mailing list <wireguard@lists.zx2c4.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Jan 11, 2021 at 12:58 PM Dmitry Vyukov <dvyukov@google.com> wrote:
+>
+> On Mon, Jan 11, 2021 at 6:35 PM Jeffrey Walton <noloader@gmail.com> wrote:
+> >
+> > On Mon, Jan 11, 2021 at 12:20 PM Dmitry Vyukov <dvyukov@google.com> wrote:
+> > > ...
+> > > FTR, I've disabled the following UBSAN configs:
+> > > UBSAN_MISC
+> > > UBSAN_DIV_ZERO
+> > > UBSAN_BOOL
+> > > UBSAN_OBJECT_SIZE
+> > > UBSAN_SIGNED_OVERFLOW
+> > > UBSAN_UNSIGNED_OVERFLOW
+> > > UBSAN_ENUM
+> > > UBSAN_ALIGNMENT
+> > > UBSAN_UNREACHABLE
+> > >
+> > > Only these are enabled now:
+> > > UBSAN_BOUNDS
+> > > UBSAN_SHIFT
+> > >
+> > > This is commit:
+> > > https://github.com/google/syzkaller/commit/2c1f2513486f21d26b1942ce77ffc782677fbf4e
+> >
+> > I think the commit cut too deep.
+> >
+> > The overflows are important if folks are building with compilers other than GCC.
+> >
+> > The aligned data accesses are important on platforms like MIPS64 and Sparc64.
+> >
+> > Object size is important because it catches destination buffer overflows.
+> >
+> > I don't know what's in miscellaneous. There may be something useful in there.
+>
+> Hi Jeff,
+>
+> See the commit for reasons why each of these is disabled.
+> E.g. object size, somebody first needs to fix bugs like this one.
+> While things like skbuff have these UBs on trivial workloads, there is
+> no point in involving fuzzing and making it crash on this trivial bug
+> all the time and stopping doing any other kernel testing as the
+> result.
 
+Going off-topic a bit, what would you suggest for UBSAN_OBJECT_SIZE?
 
-On 1/11/2021 5:49 PM, Andrew Lunn wrote:
-> On Mon, Jan 11, 2021 at 11:46:50AM +0200, Eran Ben Elisha wrote:
->> Hi Jakub, Dave,
->>
->> This series adds support for dissecting PTP L2 packet
->> header (EtherType 0x88F7).
->>
->> For packet header dissecting, skb->protocol is needed. Add protocol
->> parsing operation to vlan ops, to guarantee skb->protocol is set,
->> as EtherType 0x88F7 occasionally follows a vlan header.
->>
->> Changelog:
->> v2:
->> - Add more people to CC list.
-> 
-> Hi Eran
-> 
-> How about adding the PTP maintainer to the CC: list?
-> 
->      Andrew
-> 
-No problem, will repost again soon.
+It seems to me object size checking is being conflated with object
+type. It seems to me they need to be split: UBSAN_OBJECT_SIZE for
+actual object sizes, and UBSAN_OBJECT_TYPE for the casts.
+
+I still have a bitter taste in my mouth from
+https://www.cvedetails.com/bugtraq-bid/57602/libupnp-Multiple-Buffer-Overflow-Vulnerabilities.html.
+I hate to see buffer checks go away. (And I realize the kernel folks
+are more skilled than the guy who wrote libupnp).
+
+Jeff
