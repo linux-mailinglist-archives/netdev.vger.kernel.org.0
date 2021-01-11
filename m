@@ -2,78 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F42172F19AD
-	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 16:31:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EF0F92F19BB
+	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 16:33:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730937AbhAKPbR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jan 2021 10:31:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50830 "EHLO
+        id S1732182AbhAKPcJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jan 2021 10:32:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726459AbhAKPbQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 10:31:16 -0500
-Received: from mail-ot1-x335.google.com (mail-ot1-x335.google.com [IPv6:2607:f8b0:4864:20::335])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71692C061786
-        for <netdev@vger.kernel.org>; Mon, 11 Jan 2021 07:30:36 -0800 (PST)
-Received: by mail-ot1-x335.google.com with SMTP id b24so58151otj.0
-        for <netdev@vger.kernel.org>; Mon, 11 Jan 2021 07:30:36 -0800 (PST)
+        with ESMTP id S1726375AbhAKPcI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 10:32:08 -0500
+Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51715C0617A2;
+        Mon, 11 Jan 2021 07:31:28 -0800 (PST)
+Received: by mail-wm1-x333.google.com with SMTP id 190so210849wmz.0;
+        Mon, 11 Jan 2021 07:31:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=izEoVrhhzUTfmhTNdUhJygiRJ4pa739lPJhKs99QBqc=;
-        b=NmZ0/azz5AcX4cSdyLHwp4hV1zApSiTA/26RxFK9hN2zRTJMVl41yCFzZflGhgCbO3
-         JHG6z4PKS7V8n2U+Fad5HKJGGD54GLcsrU5r3+rgX4E2at9h3XFGGYiU6t383BPd50fD
-         0C6yCzdbmQjjoueVF1u88n2Rr1aatfKE3wXM7VQFuBx7xHxDjNZmrlz7FiNnVpr775nZ
-         RPCx1U3n7HR2v8Z4Q1yqG92+aeAm8IvxYCqsmjphCpmiJZ1cfbtG/Jopc6akGSDN2mon
-         FkQozN2Y91bo3q+dvw3onoS19GoFDc+nw47C4cMWn29kWWnR+yy52szH7v3LG0vd3RJT
-         d1gA==
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
+        bh=ainL+gf/mI7XGV06pxoex50mFeblVQiOmvn0PY1hDZ8=;
+        b=agB7ehSa0PIlEPE4KyHhmZZmMUqzg1u04v0in/yEL5tuvYA93oKwunMSeJ8phX0p35
+         OuHS3qwle3aaF8WRyDmkZYNpnhfkVGxmwBvUxQxN1jX/suBeB82Lq5L5Wp15sIoB5KrZ
+         cNCWLY2Mejz4LeREQ2gGltGcA5CD+65tbreoSuGSK3q+Toq17pA1d4Nx1UhOS+CNbMjS
+         CnDbxXCFzge0PJupCVdV1IlmYEz1aR1NzXdwAzHi2rYQ1Vm770GkWis8iMkNubDIYKmk
+         qdQxytEMGz/0IDiRUDHWLI0vKtqJXQg0IoOhVr9ehDyQjaLAW5BV62MIGY2xpxvW/xsZ
+         +TOQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=izEoVrhhzUTfmhTNdUhJygiRJ4pa739lPJhKs99QBqc=;
-        b=rFwlbZ8dbFuI2CwD0VDXUOIiXWqyHFidL3y9p8iZ9EpNiiGYZGRymGfEp/CP6i80PS
-         IPM43mnwfJFYAXhRKvsxGOjiohUNybJH8q/rYNW3Oe2hnDL1BTnGmZetteOSsPzTkhNT
-         K+agi7IPYL14KrNxX+7JgiOWbcsWJL6Vl+kuEbWzE7zRd3/F2icbv3BC2spq34lUAmeR
-         3jIHi/j8OcoL1FfcDo1YRgaaVcHzgq8rgH2oN7XWgseJJhpZm58ArjvAxM8gB6cAjq/G
-         t6nb3IcKQ0Fq+snEEr2ZLcQGO9T/dWJu1uZQavoFjXFLz68eSsqu0DrdiiUpjBzxGrYw
-         nN/Q==
-X-Gm-Message-State: AOAM532CoiVH0hXXfUkAZiM34pLxuqz9WtBgh+g4rQFPmVBAutEnID1H
-        Fsx2eg+byYB09WWAbCCZwBh4v0P+3yU=
-X-Google-Smtp-Source: ABdhPJxUKq5TyYisvTDGLfazT3/EFJQ3mRhCyLzlcWlhrbvFzw8YqRUcY2yjhn3MmVs3QUP9EmktCw==
-X-Received: by 2002:a9d:7846:: with SMTP id c6mr11307030otm.169.1610379035620;
-        Mon, 11 Jan 2021 07:30:35 -0800 (PST)
-Received: from Davids-MacBook-Pro.local ([8.48.134.51])
-        by smtp.googlemail.com with ESMTPSA id 31sm17497otd.24.2021.01.11.07.30.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 11 Jan 2021 07:30:34 -0800 (PST)
-Subject: Re: [PATCH iproute2] tc: flower: fix json output with mpls lse
-To:     Guillaume Nault <gnault@redhat.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        netdev@vger.kernel.org
-References: <1ef12e7d378d5b1dad4f056a2225d5ae9d5326cb.1608330201.git.gnault@redhat.com>
- <20210107164856.GC17363@linux.home>
- <20210107091352.610abd6f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <31cfb1dc-1e93-e3ed-12f4-f8c44adfd535@gmail.com>
- <20210111105744.GA13412@linux.home>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <68d32b59-4678-d862-c9c5-1d1620ad730a@gmail.com>
-Date:   Mon, 11 Jan 2021 08:30:32 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
- Gecko/20100101 Thunderbird/78.6.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=ainL+gf/mI7XGV06pxoex50mFeblVQiOmvn0PY1hDZ8=;
+        b=lFSJNW6FglPyLPWV95UAgqbXePAR1q0Ic+G2wNwu7Y0qtKlzCVV/0RsGxcOCByiGaa
+         4PKTFmIT/oCdacjBmb+QjCT9iHvIKIQOjc9ki+Td5pm+W0Ujpem8tMf0HPwKcLjvL+Re
+         0oCB6QAPCsz3C2ZpeiqmKPRCUQtylrDQN+M+R6dUmYz1zDEeAjLGXY3fEdZvK79ZYSqy
+         S5H2Y7DgbmyR63ktr0eUfcQtXNWDCj43Zky21UYQ8kS+uM7A252ILTixBoYMD+mC6oqG
+         TyDiWY/SEy3QC21zBNph5M5eCR7qxIyp4pEP8W67cuXDhXyRhKVAv+1uTlVl2yyjdSRD
+         0gWg==
+X-Gm-Message-State: AOAM530pIPH1MAV2EDJ0SgMUjyJHhY3YEHIG411TELLNXbm/yLF6S6CR
+        pOVxSs0Pew7pr5nU3Jr2b2y1hDu7egfjAkiL
+X-Google-Smtp-Source: ABdhPJyqoE4ADfB0vSxGuNGJ/iRaxXz+w3WROj3M2s1CkONuqGu97pJymdlM13p6hVyD+Tb5gcppZQ==
+X-Received: by 2002:a05:600c:258:: with SMTP id 24mr272127wmj.16.1610379086816;
+        Mon, 11 Jan 2021 07:31:26 -0800 (PST)
+Received: from ubuntu (bzq-233-168-31-62.red.bezeqint.net. [31.168.233.62])
+        by smtp.gmail.com with ESMTPSA id b10sm184835wmj.5.2021.01.11.07.31.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Jan 2021 07:31:26 -0800 (PST)
+Date:   Mon, 11 Jan 2021 17:31:23 +0200
+From:   giladreti <gilad.reti@gmail.com>
+To:     bpf@vger.kernel.org, Yonghong Song <yhs@fb.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] Signed-off-by: giladreti <gilad.reti@gmail.com>
+Message-ID: <20210111153123.GA423936@ubuntu>
 MIME-Version: 1.0
-In-Reply-To: <20210111105744.GA13412@linux.home>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/11/21 3:57 AM, Guillaume Nault wrote:
-> Okay, but, in the end, should I repost this patch?
+Added support for pointer to mem register spilling, to allow the verifier
+to track pointer to valid memory addresses. Such pointers are returned
+for example by a successful call of the bpf_ringbuf_reserve helper.
 
-I think your patches are covered, but you should check the repo to make
-sure.
+This patch was suggested as a solution by Yonghong Song.
+---
+ kernel/bpf/verifier.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+index 17270b8404f1..36af69fac591 100644
+--- a/kernel/bpf/verifier.c
++++ b/kernel/bpf/verifier.c
+@@ -2217,6 +2217,8 @@ static bool is_spillable_regtype(enum bpf_reg_type type)
+ 	case PTR_TO_RDWR_BUF:
+ 	case PTR_TO_RDWR_BUF_OR_NULL:
+ 	case PTR_TO_PERCPU_BTF_ID:
++	case PTR_TO_MEM:
++	case PTR_TO_MEM_OR_NULL:
+ 		return true;
+ 	default:
+ 		return false;
+-- 
+2.27.0
+
