@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 53E922F1CD5
-	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 18:45:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D8BC2F1CD7
+	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 18:45:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389739AbhAKRoW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jan 2021 12:44:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51308 "EHLO
+        id S2389854AbhAKRo1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jan 2021 12:44:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732509AbhAKRoV (ORCPT
+        with ESMTP id S2389724AbhAKRoV (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 12:44:21 -0500
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A53E9C0617A3
-        for <netdev@vger.kernel.org>; Mon, 11 Jan 2021 09:43:37 -0800 (PST)
-Received: by mail-ed1-x531.google.com with SMTP id h16so616086edt.7
-        for <netdev@vger.kernel.org>; Mon, 11 Jan 2021 09:43:37 -0800 (PST)
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEA66C0617A4
+        for <netdev@vger.kernel.org>; Mon, 11 Jan 2021 09:43:38 -0800 (PST)
+Received: by mail-ej1-x62b.google.com with SMTP id 6so839874ejz.5
+        for <netdev@vger.kernel.org>; Mon, 11 Jan 2021 09:43:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=QQ4j+Zy6RodVxuMydNGbnVz/0XTN3g0MfSCFybqg2Lg=;
-        b=vAyjEhoAFxc3D16EMndcJOQFQaS6ScyJQriDHCQBP3z0A2Mj4s0j14LMGXhFJ7U12e
-         UqNiPWb48/FoYrIGMEDYMTPPQvlJi+qJPbKx45aRjY38YO3s3tRI4orP5K4bnOJ/LiR7
-         iEWqg+hA/MWmCS/1cEVvhxYKl9oIaIXPffHVM0H1YAvpPo9O32kFfV9C3JXEzlM+v4Hd
-         4j4RxEv8Q2r0o8FQL2EyBBmC0DjoenHuS34+NPdBBiVTFhy7Pg3T1hRsSFjDJ0t2U7WO
-         y1ygbuXCLA74zPMDazeqeV3zJ818Mh8hHHRhGI6NeXJmX/SaSGRUkSPKICpMPTikMz0/
-         kpVg==
+        bh=4aWyxvzlFdDiguqtgzua44Y34g4NesrY17Od0FDJYHE=;
+        b=rcoI91gkk0QvSIAOjhrr+NoZjVhHfnloKiMtgIkzy1Ho+QokQ7Q8ePG1iIUNCNYLhl
+         9Kx4Aq2qgTQCTHqBXW2ZAAoeBkLM/F2w+PO8nf1iDhr/dYerSXJF0emJneZzlTBuf/hk
+         YV1WOa7WFWfK6g49b6u/OQ/IJiO+VzlXJDbEkBk04sUT+HHfuGtwr/h2NO9wc7Iswsn4
+         FOIlYsYn4IHEwgSJl2Zn49yzhzMfGOAmBRhs5WlYCcBj9rdnHjwZhSXLeG0dRvK8l1vC
+         OZ4/PT/DHjOcRlCIFvZpg3gjXhfd+o0QfzX1NF6OOihjS4q+1sz/7fVg/BTPYSVVQNUe
+         f9vQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=QQ4j+Zy6RodVxuMydNGbnVz/0XTN3g0MfSCFybqg2Lg=;
-        b=VgRASq+EMKwmH3aPCEc7sRU+vYtI1FLBLA5+fUjK9Isscu5DT0dMVkcmi+Au3LJZAY
-         nLYZdO/jB0VRBzqxn/fGNV5aBxkypL3/S6kiwFeIlDBUx3nRr7JjRFuWkE7KH9X+cbal
-         BQ35epyM+By8MMY/vDINvGN32on5vRqaJaunCbvq1U4fkzmLF8v/IDEiqArqB8BYm7fk
-         OWbZEtfrQirdvrK/xZZMEy+Qb8Iq6wHw9e2WAnrfOOajqe/wYYxyLkPrs8KPVAwNENXu
-         nk2jqKYJB2MbWsitNFH2/Qj0L0X/tQV0/OV5C0890d4/IqPpp9kvcKy71lE7Dd9yBD27
-         AlBg==
-X-Gm-Message-State: AOAM532N5i/vGmPqN/b6wor1mhiRQPRyOGdVLqBVU7JDhy6xpTPQu1r0
-        wxfcE06PemPT2wylXDOPHKg=
-X-Google-Smtp-Source: ABdhPJzipH7H0KIf8V+DsJ+xiCdAcKJk+nABbIe9qPEVHWUUeJua2//MkOdrBEN7o+5zY13uexC7jw==
-X-Received: by 2002:aa7:d5d6:: with SMTP id d22mr385166eds.160.1610387016381;
-        Mon, 11 Jan 2021 09:43:36 -0800 (PST)
+        bh=4aWyxvzlFdDiguqtgzua44Y34g4NesrY17Od0FDJYHE=;
+        b=DQFPSjjeRaZnmzJ/ePvBDy55AFXBg8xHN9nMYu4RTTkJkZ/8o85YJsc0sbEOIq/Oo2
+         ZhICbHW++8BvoWd4aFljLjPFJgDRmyKOS6JG/eyx92Cjl4Z+YoK62ZCoi2HCgJUpxv6r
+         7dkiTB8WK+uHHpOa3rtY2zBHXLJa7rmOLTmVF0tRBjXwjDg5KI6g61H3U+qTPIVUb5s8
+         PxBmgaa932uvfI0K1E6kjLL9BYBVyP/NT1GJFVtDrpVC2XaLk0+2tojDuw85SDKG6nOm
+         sRAffX8vAOh6sD3bnqVkFkmx0Pt9mV3VpgJs9vN/H3dVdQFGmTSBoC0PoUbjT+syOVZ/
+         Al5Q==
+X-Gm-Message-State: AOAM532yDk48LCvcPKieRE+gOfSnZkkbYbAPgU9sOp2mMRl9nTnabUOq
+        bqBWoJGUzW12RtLsNVoxtsY=
+X-Google-Smtp-Source: ABdhPJxhHP+WhxAGNxgWQI0OdPZM6jIpMTq4SMajthAk2WkQ1T+5eIYjK0fHIAZagHuupb566RKhWQ==
+X-Received: by 2002:a17:906:3999:: with SMTP id h25mr439193eje.146.1610387017631;
+        Mon, 11 Jan 2021 09:43:37 -0800 (PST)
 Received: from localhost.localdomain (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id j22sm111132ejy.106.2021.01.11.09.43.35
+        by smtp.gmail.com with ESMTPSA id j22sm111132ejy.106.2021.01.11.09.43.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Jan 2021 09:43:35 -0800 (PST)
+        Mon, 11 Jan 2021 09:43:37 -0800 (PST)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
@@ -55,9 +55,9 @@ Cc:     alexandre.belloni@bootlin.com, andrew@lunn.ch,
         alexandru.marginean@nxp.com, claudiu.manoil@nxp.com,
         xiaoliang.yang_1@nxp.com, hongbo.wang@nxp.com, jiri@resnulli.us,
         idosch@idosch.org, UNGLinuxDriver@microchip.com
-Subject: [PATCH v4 net-next 03/10] net: dsa: add ops for devlink-sb
-Date:   Mon, 11 Jan 2021 19:43:09 +0200
-Message-Id: <20210111174316.3515736-4-olteanv@gmail.com>
+Subject: [PATCH v4 net-next 04/10] net: dsa: felix: reindent struct dsa_switch_ops
+Date:   Mon, 11 Jan 2021 19:43:10 +0200
+Message-Id: <20210111174316.3515736-5-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210111174316.3515736-1-olteanv@gmail.com>
 References: <20210111174316.3515736-1-olteanv@gmail.com>
@@ -69,253 +69,113 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Switches that care about QoS might have hardware support for reserving
-buffer pools for individual ports or traffic classes, and configuring
-their sizes and thresholds. Through devlink-sb (shared buffers), this is
-all configurable, as well as their occupancy being viewable.
-
-Add the plumbing in DSA for these operations.
-
-Individual drivers still need to call devlink_sb_register() with the
-shared buffers they want to expose. A helper was not created in DSA for
-this purpose (unlike, say, dsa_devlink_params_register), since in my
-opinion it does not bring any benefit over plainly calling
-devlink_sb_register() directly.
+The devlink function pointer names are super long, and they would break
+the alignment. So reindent the existing ops now by adding one tab.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
 Changes in v4:
 None.
 
 Changes in v3:
-Use the helpers added by Andrew to convert from devlink and devlink_port
-to DSA structures rather than open-coding them.
+None.
 
 Changes in v2:
 None.
 
- include/net/dsa.h |  34 ++++++++++
- net/dsa/dsa2.c    | 159 +++++++++++++++++++++++++++++++++++++++++++++-
- 2 files changed, 192 insertions(+), 1 deletion(-)
+ drivers/net/dsa/ocelot/felix.c | 78 +++++++++++++++++-----------------
+ 1 file changed, 39 insertions(+), 39 deletions(-)
 
-diff --git a/include/net/dsa.h b/include/net/dsa.h
-index 9a0cab5fb7c4..b64fd53d7fce 100644
---- a/include/net/dsa.h
-+++ b/include/net/dsa.h
-@@ -650,6 +650,40 @@ struct dsa_switch_ops {
- 	int	(*devlink_info_get)(struct dsa_switch *ds,
- 				    struct devlink_info_req *req,
- 				    struct netlink_ext_ack *extack);
-+	int	(*devlink_sb_pool_get)(struct dsa_switch *ds,
-+				       unsigned int sb_index, u16 pool_index,
-+				       struct devlink_sb_pool_info *pool_info);
-+	int	(*devlink_sb_pool_set)(struct dsa_switch *ds, unsigned int sb_index,
-+				       u16 pool_index, u32 size,
-+				       enum devlink_sb_threshold_type threshold_type,
-+				       struct netlink_ext_ack *extack);
-+	int	(*devlink_sb_port_pool_get)(struct dsa_switch *ds, int port,
-+					    unsigned int sb_index, u16 pool_index,
-+					    u32 *p_threshold);
-+	int	(*devlink_sb_port_pool_set)(struct dsa_switch *ds, int port,
-+					    unsigned int sb_index, u16 pool_index,
-+					    u32 threshold,
-+					    struct netlink_ext_ack *extack);
-+	int	(*devlink_sb_tc_pool_bind_get)(struct dsa_switch *ds, int port,
-+					       unsigned int sb_index, u16 tc_index,
-+					       enum devlink_sb_pool_type pool_type,
-+					       u16 *p_pool_index, u32 *p_threshold);
-+	int	(*devlink_sb_tc_pool_bind_set)(struct dsa_switch *ds, int port,
-+					       unsigned int sb_index, u16 tc_index,
-+					       enum devlink_sb_pool_type pool_type,
-+					       u16 pool_index, u32 threshold,
-+					       struct netlink_ext_ack *extack);
-+	int	(*devlink_sb_occ_snapshot)(struct dsa_switch *ds,
-+					   unsigned int sb_index);
-+	int	(*devlink_sb_occ_max_clear)(struct dsa_switch *ds,
-+					    unsigned int sb_index);
-+	int	(*devlink_sb_occ_port_pool_get)(struct dsa_switch *ds, int port,
-+						unsigned int sb_index, u16 pool_index,
-+						u32 *p_cur, u32 *p_max);
-+	int	(*devlink_sb_occ_tc_port_bind_get)(struct dsa_switch *ds, int port,
-+						   unsigned int sb_index, u16 tc_index,
-+						   enum devlink_sb_pool_type pool_type,
-+						   u32 *p_cur, u32 *p_max);
- 
- 	/*
- 	 * MTU change functionality. Switches can also adjust their MRU through
-diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
-index 01f21b0b379a..c05b1b54c4f7 100644
---- a/net/dsa/dsa2.c
-+++ b/net/dsa/dsa2.c
-@@ -400,8 +400,165 @@ static int dsa_devlink_info_get(struct devlink *dl,
- 	return -EOPNOTSUPP;
+diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
+index a2e06a0d1509..79d0508e5910 100644
+--- a/drivers/net/dsa/ocelot/felix.c
++++ b/drivers/net/dsa/ocelot/felix.c
+@@ -781,45 +781,45 @@ static int felix_port_setup_tc(struct dsa_switch *ds, int port,
  }
  
-+static int dsa_devlink_sb_pool_get(struct devlink *dl,
-+				   unsigned int sb_index, u16 pool_index,
-+				   struct devlink_sb_pool_info *pool_info)
-+{
-+	struct dsa_switch *ds = dsa_devlink_to_ds(dl);
-+
-+	if (!ds->ops->devlink_sb_pool_get)
-+		return -EOPNOTSUPP;
-+
-+	return ds->ops->devlink_sb_pool_get(ds, sb_index, pool_index,
-+					    pool_info);
-+}
-+
-+static int dsa_devlink_sb_pool_set(struct devlink *dl, unsigned int sb_index,
-+				   u16 pool_index, u32 size,
-+				   enum devlink_sb_threshold_type threshold_type,
-+				   struct netlink_ext_ack *extack)
-+{
-+	struct dsa_switch *ds = dsa_devlink_to_ds(dl);
-+
-+	if (!ds->ops->devlink_sb_pool_set)
-+		return -EOPNOTSUPP;
-+
-+	return ds->ops->devlink_sb_pool_set(ds, sb_index, pool_index, size,
-+					    threshold_type, extack);
-+}
-+
-+static int dsa_devlink_sb_port_pool_get(struct devlink_port *dlp,
-+					unsigned int sb_index, u16 pool_index,
-+					u32 *p_threshold)
-+{
-+	struct dsa_switch *ds = dsa_devlink_port_to_ds(dlp);
-+	int port = dsa_devlink_port_to_port(dlp);
-+
-+	if (!ds->ops->devlink_sb_port_pool_get)
-+		return -EOPNOTSUPP;
-+
-+	return ds->ops->devlink_sb_port_pool_get(ds, port, sb_index,
-+						 pool_index, p_threshold);
-+}
-+
-+static int dsa_devlink_sb_port_pool_set(struct devlink_port *dlp,
-+					unsigned int sb_index, u16 pool_index,
-+					u32 threshold,
-+					struct netlink_ext_ack *extack)
-+{
-+	struct dsa_switch *ds = dsa_devlink_port_to_ds(dlp);
-+	int port = dsa_devlink_port_to_port(dlp);
-+
-+	if (!ds->ops->devlink_sb_port_pool_set)
-+		return -EOPNOTSUPP;
-+
-+	return ds->ops->devlink_sb_port_pool_set(ds, port, sb_index,
-+						 pool_index, threshold, extack);
-+}
-+
-+static int
-+dsa_devlink_sb_tc_pool_bind_get(struct devlink_port *dlp,
-+				unsigned int sb_index, u16 tc_index,
-+				enum devlink_sb_pool_type pool_type,
-+				u16 *p_pool_index, u32 *p_threshold)
-+{
-+	struct dsa_switch *ds = dsa_devlink_port_to_ds(dlp);
-+	int port = dsa_devlink_port_to_port(dlp);
-+
-+	if (!ds->ops->devlink_sb_tc_pool_bind_get)
-+		return -EOPNOTSUPP;
-+
-+	return ds->ops->devlink_sb_tc_pool_bind_get(ds, port, sb_index,
-+						    tc_index, pool_type,
-+						    p_pool_index, p_threshold);
-+}
-+
-+static int
-+dsa_devlink_sb_tc_pool_bind_set(struct devlink_port *dlp,
-+				unsigned int sb_index, u16 tc_index,
-+				enum devlink_sb_pool_type pool_type,
-+				u16 pool_index, u32 threshold,
-+				struct netlink_ext_ack *extack)
-+{
-+	struct dsa_switch *ds = dsa_devlink_port_to_ds(dlp);
-+	int port = dsa_devlink_port_to_port(dlp);
-+
-+	if (!ds->ops->devlink_sb_tc_pool_bind_set)
-+		return -EOPNOTSUPP;
-+
-+	return ds->ops->devlink_sb_tc_pool_bind_set(ds, port, sb_index,
-+						    tc_index, pool_type,
-+						    pool_index, threshold,
-+						    extack);
-+}
-+
-+static int dsa_devlink_sb_occ_snapshot(struct devlink *dl,
-+				       unsigned int sb_index)
-+{
-+	struct dsa_switch *ds = dsa_devlink_to_ds(dl);
-+
-+	if (!ds->ops->devlink_sb_occ_snapshot)
-+		return -EOPNOTSUPP;
-+
-+	return ds->ops->devlink_sb_occ_snapshot(ds, sb_index);
-+}
-+
-+static int dsa_devlink_sb_occ_max_clear(struct devlink *dl,
-+					unsigned int sb_index)
-+{
-+	struct dsa_switch *ds = dsa_devlink_to_ds(dl);
-+
-+	if (!ds->ops->devlink_sb_occ_max_clear)
-+		return -EOPNOTSUPP;
-+
-+	return ds->ops->devlink_sb_occ_max_clear(ds, sb_index);
-+}
-+
-+static int dsa_devlink_sb_occ_port_pool_get(struct devlink_port *dlp,
-+					    unsigned int sb_index,
-+					    u16 pool_index, u32 *p_cur,
-+					    u32 *p_max)
-+{
-+	struct dsa_switch *ds = dsa_devlink_port_to_ds(dlp);
-+	int port = dsa_devlink_port_to_port(dlp);
-+
-+	if (!ds->ops->devlink_sb_occ_port_pool_get)
-+		return -EOPNOTSUPP;
-+
-+	return ds->ops->devlink_sb_occ_port_pool_get(ds, port, sb_index,
-+						     pool_index, p_cur, p_max);
-+}
-+
-+static int
-+dsa_devlink_sb_occ_tc_port_bind_get(struct devlink_port *dlp,
-+				    unsigned int sb_index, u16 tc_index,
-+				    enum devlink_sb_pool_type pool_type,
-+				    u32 *p_cur, u32 *p_max)
-+{
-+	struct dsa_switch *ds = dsa_devlink_port_to_ds(dlp);
-+	int port = dsa_devlink_port_to_port(dlp);
-+
-+	if (!ds->ops->devlink_sb_occ_tc_port_bind_get)
-+		return -EOPNOTSUPP;
-+
-+	return ds->ops->devlink_sb_occ_tc_port_bind_get(ds, port,
-+							sb_index, tc_index,
-+							pool_type, p_cur,
-+							p_max);
-+}
-+
- static const struct devlink_ops dsa_devlink_ops = {
--	.info_get = dsa_devlink_info_get,
-+	.info_get			= dsa_devlink_info_get,
-+	.sb_pool_get			= dsa_devlink_sb_pool_get,
-+	.sb_pool_set			= dsa_devlink_sb_pool_set,
-+	.sb_port_pool_get		= dsa_devlink_sb_port_pool_get,
-+	.sb_port_pool_set		= dsa_devlink_sb_port_pool_set,
-+	.sb_tc_pool_bind_get		= dsa_devlink_sb_tc_pool_bind_get,
-+	.sb_tc_pool_bind_set		= dsa_devlink_sb_tc_pool_bind_set,
-+	.sb_occ_snapshot		= dsa_devlink_sb_occ_snapshot,
-+	.sb_occ_max_clear		= dsa_devlink_sb_occ_max_clear,
-+	.sb_occ_port_pool_get		= dsa_devlink_sb_occ_port_pool_get,
-+	.sb_occ_tc_port_bind_get	= dsa_devlink_sb_occ_tc_port_bind_get,
+ const struct dsa_switch_ops felix_switch_ops = {
+-	.get_tag_protocol	= felix_get_tag_protocol,
+-	.setup			= felix_setup,
+-	.teardown		= felix_teardown,
+-	.set_ageing_time	= felix_set_ageing_time,
+-	.get_strings		= felix_get_strings,
+-	.get_ethtool_stats	= felix_get_ethtool_stats,
+-	.get_sset_count		= felix_get_sset_count,
+-	.get_ts_info		= felix_get_ts_info,
+-	.phylink_validate	= felix_phylink_validate,
+-	.phylink_mac_config	= felix_phylink_mac_config,
+-	.phylink_mac_link_down	= felix_phylink_mac_link_down,
+-	.phylink_mac_link_up	= felix_phylink_mac_link_up,
+-	.port_enable		= felix_port_enable,
+-	.port_disable		= felix_port_disable,
+-	.port_fdb_dump		= felix_fdb_dump,
+-	.port_fdb_add		= felix_fdb_add,
+-	.port_fdb_del		= felix_fdb_del,
+-	.port_mdb_prepare	= felix_mdb_prepare,
+-	.port_mdb_add		= felix_mdb_add,
+-	.port_mdb_del		= felix_mdb_del,
+-	.port_bridge_join	= felix_bridge_join,
+-	.port_bridge_leave	= felix_bridge_leave,
+-	.port_stp_state_set	= felix_bridge_stp_state_set,
+-	.port_vlan_prepare	= felix_vlan_prepare,
+-	.port_vlan_filtering	= felix_vlan_filtering,
+-	.port_vlan_add		= felix_vlan_add,
+-	.port_vlan_del		= felix_vlan_del,
+-	.port_hwtstamp_get	= felix_hwtstamp_get,
+-	.port_hwtstamp_set	= felix_hwtstamp_set,
+-	.port_rxtstamp		= felix_rxtstamp,
+-	.port_txtstamp		= felix_txtstamp,
+-	.port_change_mtu	= felix_change_mtu,
+-	.port_max_mtu		= felix_get_max_mtu,
+-	.port_policer_add	= felix_port_policer_add,
+-	.port_policer_del	= felix_port_policer_del,
+-	.cls_flower_add		= felix_cls_flower_add,
+-	.cls_flower_del		= felix_cls_flower_del,
+-	.cls_flower_stats	= felix_cls_flower_stats,
+-	.port_setup_tc		= felix_port_setup_tc,
++	.get_tag_protocol		= felix_get_tag_protocol,
++	.setup				= felix_setup,
++	.teardown			= felix_teardown,
++	.set_ageing_time		= felix_set_ageing_time,
++	.get_strings			= felix_get_strings,
++	.get_ethtool_stats		= felix_get_ethtool_stats,
++	.get_sset_count			= felix_get_sset_count,
++	.get_ts_info			= felix_get_ts_info,
++	.phylink_validate		= felix_phylink_validate,
++	.phylink_mac_config		= felix_phylink_mac_config,
++	.phylink_mac_link_down		= felix_phylink_mac_link_down,
++	.phylink_mac_link_up		= felix_phylink_mac_link_up,
++	.port_enable			= felix_port_enable,
++	.port_disable			= felix_port_disable,
++	.port_fdb_dump			= felix_fdb_dump,
++	.port_fdb_add			= felix_fdb_add,
++	.port_fdb_del			= felix_fdb_del,
++	.port_mdb_prepare		= felix_mdb_prepare,
++	.port_mdb_add			= felix_mdb_add,
++	.port_mdb_del			= felix_mdb_del,
++	.port_bridge_join		= felix_bridge_join,
++	.port_bridge_leave		= felix_bridge_leave,
++	.port_stp_state_set		= felix_bridge_stp_state_set,
++	.port_vlan_prepare		= felix_vlan_prepare,
++	.port_vlan_filtering		= felix_vlan_filtering,
++	.port_vlan_add			= felix_vlan_add,
++	.port_vlan_del			= felix_vlan_del,
++	.port_hwtstamp_get		= felix_hwtstamp_get,
++	.port_hwtstamp_set		= felix_hwtstamp_set,
++	.port_rxtstamp			= felix_rxtstamp,
++	.port_txtstamp			= felix_txtstamp,
++	.port_change_mtu		= felix_change_mtu,
++	.port_max_mtu			= felix_get_max_mtu,
++	.port_policer_add		= felix_port_policer_add,
++	.port_policer_del		= felix_port_policer_del,
++	.cls_flower_add			= felix_cls_flower_add,
++	.cls_flower_del			= felix_cls_flower_del,
++	.cls_flower_stats		= felix_cls_flower_stats,
++	.port_setup_tc			= felix_port_setup_tc,
  };
  
- static int dsa_switch_setup(struct dsa_switch *ds)
+ struct net_device *felix_port_to_netdev(struct ocelot *ocelot, int port)
 -- 
 2.25.1
 
