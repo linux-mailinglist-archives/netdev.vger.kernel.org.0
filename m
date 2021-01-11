@@ -2,86 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3745B2F0C10
-	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 06:07:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A508B2F0C07
+	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 06:02:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725977AbhAKFFt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jan 2021 00:05:49 -0500
-Received: from fallback24.m.smailru.net ([94.100.187.223]:55450 "EHLO
-        fallback24.mail.ru" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1725871AbhAKFFt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 00:05:49 -0500
-X-Greylist: delayed 1566 seconds by postgrey-1.27 at vger.kernel.org; Mon, 11 Jan 2021 00:05:47 EST
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=inbox.ru; s=mail;
-        h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:Cc:To:From; bh=In2wv/p6a/1VVwiCznM4zbujVCuMut6Th0d++MEkXfM=;
-        b=eZ+cukA3HtHiG6c6Z5tWxvUYWYg72kvD3oSd5ArNvHBXaHJEkjugkaPYJeZ/YnuZPH7rKsKvJIozEram67Fj3TEpx1Mu9L0IJTvhCHHysP0qY7nrC08gYEU+n44KoYK40pGkj8DD2q5JA7iHIJBpC2GHdXuzoPlUIKSV5O8vkT8=;
-Received: from [10.161.64.53] (port=42330 helo=smtp45.i.mail.ru)
-        by fallback24.m.smailru.net with esmtp (envelope-from <fido_max@inbox.ru>)
-        id 1kyoyf-0006MT-Ib; Mon, 11 Jan 2021 07:38:49 +0300
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=inbox.ru; s=mail3;
-        h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:Cc:To:From:From:Subject:Content-Type:Content-Transfer-Encoding:To:Cc; bh=In2wv/p6a/1VVwiCznM4zbujVCuMut6Th0d++MEkXfM=;
-        b=jYKU2nuYumCKoj2AhthmcSoFBbi4f0NZlHCCxQVus6Lim+K8+I45j9KB9km5jlbDiWYpZ0mMA7MvxdalVuvEJCinGEnrKIAql/XhAeYDkqaDlsc5GKluSyn2kNohqefYn5f8tiYksJtwl4rL2HrG9IGn3T+mGad2YkBdfVLnHQE=;
-Received: by smtp45.i.mail.ru with esmtpa (envelope-from <fido_max@inbox.ru>)
-        id 1kyoxu-0008QW-13; Mon, 11 Jan 2021 07:38:02 +0300
-From:   Maxim Kochetkov <fido_max@inbox.ru>
-Cc:     madalin.bucur@nxp.com, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, Maxim Kochetkov <fido_max@inbox.ru>
-Subject: [PATCH net-next] fsl/fman: Add MII mode support.
-Date:   Mon, 11 Jan 2021 07:39:03 +0300
-Message-Id: <20210111043903.8044-1-fido_max@inbox.ru>
-X-Mailer: git-send-email 2.29.2
+        id S1725833AbhAKFBe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jan 2021 00:01:34 -0500
+Received: from mail.kernel.org ([198.145.29.99]:52164 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725379AbhAKFBd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 11 Jan 2021 00:01:33 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 7EFCA224D2;
+        Mon, 11 Jan 2021 05:00:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1610341252;
+        bh=tWfxmGVxPkbPfCDlqIJfsSLcejDD0RKbfpiQLiLFgJk=;
+        h=From:To:Cc:Subject:Date:From;
+        b=VEmdbjZ4q9PtOo2rpt+Nl5+bzlmfqwGSMFBd1BETPS8aSL6vnlQaLI6MWkgUVA42d
+         39cduq8IwVJTSyepwMabg1BU8geM8Obss0Tp6yGUbtODARO/a+v0eWOTENMwv2f1aM
+         z4MLZi0pcYSL2QZSbbc6SFLrWqQzZVqSegOAIFYPd7zFRsZf/2ACaNdR6N4vL4B7Ee
+         YuB2nknt0eHhahGXAfYv/kOZojuLfF3Auha1CNukfKiMw6plxrgBCXxBxkZ0VG0umR
+         /pW71yomzlc8XQA2PGCo2KglLr8uys1IFBTyGubkQ1NDXsmSh3JVN98oQQAMS2Zaab
+         z+quIxIq+6haw==
+From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
+To:     netdev@vger.kernel.org
+Cc:     Russell King <rmk+kernel@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>,
+        davem@davemloft.net, pali@kernel.org,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
+Subject: [PATCH net-next v4 0/4] Support for RollBall 10G copper SFP modules
+Date:   Mon, 11 Jan 2021 06:00:40 +0100
+Message-Id: <20210111050044.22002-1-kabel@kernel.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-7564579A: 646B95376F6C166E
-X-77F55803: 4F1203BC0FB41BD9D0E79FBC973162CD9B382B274FF537389656BC690FF7BBE200894C459B0CD1B94452034DF163596FB47B2064DADED92D1EB9079B03EE8F4D7AD2C9CDF6B3E5BD
-X-7FA49CB5: FF5795518A3D127A4AD6D5ED66289B5278DA827A17800CE7D950999244A4B2E6EA1F7E6F0F101C67BD4B6F7A4D31EC0BCC500DACC3FED6E28638F802B75D45FF8AA50765F790063768D6DD405B71470F8638F802B75D45FF5571747095F342E8C7A0BC55FA0FE5FC498C9B83B45F9506BB8031DB57836D591DABFF12944AE5EF389733CBF5DBD5E913377AFFFEAFD2691661749BA6B9773586DB53B01D1D7C7B8941B15DA834481FCF19DD082D7633A0EF3E4896CB9E6436389733CBF5DBD5E9D5E8D9A59859A8B6E954A0C70C50C109CC7F00164DA146DA6F5DAA56C3B73B237318B6A418E8EAB8D32BA5DBAC0009BE9E8FC8737B5C22491554A6620921A7F476E601842F6C81A12EF20D2F80756B5F7E9C4E3C761E06A776E601842F6C81A127C277FBC8AE2E8B466D3D576E50FFFBD81D268191BDAD3D698AB9A7B718F8C442539A7722CA490C13377AFFFEAFD26923F8577A6DFFEA7C64E4DC1543031AB74AD6D5ED66289B524E70A05D1297E1BB35872C767BF85DA227C277FBC8AE2E8BBB46F953B4600AAB75ECD9A6C639B01B4E70A05D1297E1BBC6867C52282FAC85D9B7C4F32B44FF57285124B2A10EEC6C00306258E7E6ABB4E4A6367B16DE6309
-X-C1DE0DAB: C20DE7B7AB408E4181F030C43753B8186998911F362727C414F749A5E30D975CFA107D2111241699D2D99C7EC59182C30FD6F8F85B8AD8F89C2B6934AE262D3EE7EAB7254005DCED556CBE7F905700A49510FB958DCE06DB6ED91DBE5ABE359A3485EE9140A7D39D7D06A436E56C8DB493EDB24507CE13387DFF0A840B692CF8
-X-C8649E89: 4E36BF7865823D7055A7F0CF078B5EC49A30900B95165D34D8C933888226C8418E5D637576A0128E0B425341AEB840D8FC115A2989262256ECCC6D8FF0BBED841D7E09C32AA3244C9A5C32B004745A7B5B66FE8092C43AF76C2483212766842283B48618A63566E0
-X-D57D3AED: 3ZO7eAau8CL7WIMRKs4sN3D3tLDjz0dLbV79QFUyzQ2Ujvy7cMT6pYYqY16iZVKkSc3dCLJ7zSJH7+u4VD18S7Vl4ZUrpaVfd2+vE6kuoey4m4VkSEu530nj6fImhcD4MUrOEAnl0W826KZ9Q+tr5ycPtXkTV4k65bRjmOUUP8cvGozZ33TWg5HZplvhhXbhDGzqmQDTd6OAevLeAnq3Ra9uf7zvY2zzsIhlcp/Y7m53TZgf2aB4JOg4gkr2biojmz2Dv49v36iHNcyo1yzlhA==
-X-Mailru-Sender: 11C2EC085EDE56FA9C10FA2967F5AB2454983B901D9880D4E354834829DAFE705A5E3B305626C841EE9242D420CFEBFD3DDE9B364B0DF2891A624F84B2C74EDA4239CF2AF0A6D4F80DA7A0AF5A3A8387
-X-Mras: Ok
-X-7564579A: B8F34718100C35BD
-X-77F55803: 6242723A09DB00B40E5D90E44ABF6C6604BA033ECC7B62DE3D1ACDDC4D7315E2049FFFDB7839CE9E8C4BD7E8152C928BC83CC2AAECE5233442FE30F277AFF6ED2E8E0ABF17D84214
-X-7FA49CB5: 0D63561A33F958A5629A8AE9E7E79C0818E25EA71A045D456449D03926DC3F1E8941B15DA834481FA18204E546F3947C151DCBF0643CA2B4F6B57BC7E64490618DEB871D839B7333395957E7521B51C2DFABB839C843B9C08941B15DA834481F8AA50765F7900637178027617757BE7C389733CBF5DBD5E9B5C8C57E37DE458BD9DD9810294C998ED8FC6C240DEA76428AA50765F7900637EEFB9C4726E9C49AD81D268191BDAD3DBD4B6F7A4D31EC0BEA7A3FFF5B025636A7F4EDE966BC389F9E8FC8737B5C22499E984C673F3CBADA089D37D7C0E48F6CCF19DD082D7633A0E7DDDDC251EA7DABAAAE862A0553A39223F8577A6DFFEA7C56BCE7F9FF91C5B943847C11F186F3C5E7DDDDC251EA7DABCC89B49CDF41148FA8EF81845B15A4842623479134186CDE6BA297DBC24807EABDAD6C7F3747799A
-X-C1DE0DAB: C20DE7B7AB408E4181F030C43753B8186998911F362727C414F749A5E30D975CFA107D211124169947A2B3C2269980A37383275DAE3A7C3A9C2B6934AE262D3EE7EAB7254005DCED556CBE7F905700A4DC48ACC2A39D04F89CDFB48F4795C241BDAD6C7F3747799A
-X-D57D3AED: 3ZO7eAau8CL7WIMRKs4sN3D3tLDjz0dLbV79QFUyzQ2Ujvy7cMT6pYYqY16iZVKkSc3dCLJ7zSJH7+u4VD18S7Vl4ZUrpaVfd2+vE6kuoey4m4VkSEu530nj6fImhcD4MUrOEAnl0W826KZ9Q+tr5ycPtXkTV4k65bRjmOUUP8cvGozZ33TWg5HZplvhhXbhDGzqmQDTd6OAevLeAnq3Ra9uf7zvY2zzsIhlcp/Y7m53TZgf2aB4JOg4gkr2biojmz2Dv49v36gAFtqcxic4KA==
-X-Mailru-MI: 800
-X-Mailru-Sender: A5480F10D64C900521F65ACE11A97E3DD977334E25A6A46BBB324CD5F2292D89F37D3E488DDBD968C099ADC76E806A99D50E20E2BC48EF5A30D242760C51EA9CEAB4BC95F72C04283CDA0F3B3F5B9367
-X-Mras: Ok
-To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Set proper value to IF_MODE register for MII mode.
+Hello,
 
-Signed-off-by: Maxim Kochetkov <fido_max@inbox.ru>
----
- drivers/net/ethernet/freescale/fman/fman_memac.c | 4 ++++
- 1 file changed, 4 insertions(+)
+this is v4 of series adding support for RollBall/Hilink SFP modules.
 
-diff --git a/drivers/net/ethernet/freescale/fman/fman_memac.c b/drivers/net/ethernet/freescale/fman/fman_memac.c
-index bb9887f98841..62f42921933d 100644
---- a/drivers/net/ethernet/freescale/fman/fman_memac.c
-+++ b/drivers/net/ethernet/freescale/fman/fman_memac.c
-@@ -111,6 +111,7 @@ do {									\
- 
- #define IF_MODE_MASK		0x00000003 /* 30-31 Mask on i/f mode bits */
- #define IF_MODE_10G		0x00000000 /* 30-31 10G interface */
-+#define IF_MODE_MII		0x00000001 /* 30-31 MII interface */
- #define IF_MODE_GMII		0x00000002 /* 30-31 GMII (1G) interface */
- #define IF_MODE_RGMII		0x00000004
- #define IF_MODE_RGMII_AUTO	0x00008000
-@@ -442,6 +443,9 @@ static int init(struct memac_regs __iomem *regs, struct memac_cfg *cfg,
- 	case PHY_INTERFACE_MODE_XGMII:
- 		tmp |= IF_MODE_10G;
- 		break;
-+	case PHY_INTERFACE_MODE_MII:
-+		tmp |= IF_MODE_MII;
-+		break;
- 	default:
- 		tmp |= IF_MODE_GMII;
- 		if (phy_if == PHY_INTERFACE_MODE_RGMII ||
+Checked with:
+  checkpatch.pl --max-line-length=80
+
+Changes from v3:
+- RollBall mdio-i2c driver now sets/restores SFP_PAGE for every MDIO
+  access.
+  I first wanted to achieve this operation (setting
+  SFP_PAGE/doing MDIO/restoring SFP_PAGE) via one call do i2c_transfer,
+  by constructing msgs array in such a way, but it turned out that this
+  doesn't work on RollBall SFPs, because changed SFP_PAGE takes into
+  account only after i2c_transfer ends.
+  So instead I use i2c_lock_bus/serveral __i2c_transfers/i2c_unlock_bus.
+- I have removed the patch which changes MACTYPE in the marvell10g
+  driver, since Russell has in his net-queue a better solution. I still
+  think that my patch would have sufficed temporarily (and would not
+  cause regressions), but nobody wanted to review it. If you think that
+  I should sent this series again with that patch, please let me know.
+
+Changes from v2:
+- added comment into the patch adding support for RollBall I2C MDIO
+  protocol, saying that we expect the SFP_PAGE not to be changed by
+  the SFP code, as requested by Russell. If, in the future, SFP code
+  starts modifying SFP_PAGE, we will have to handle it in mdio-i2c
+  somehow
+- destruction of I2C MDIO bus in patch 3/5 now depends on whether the
+  MDIO bus is not NULL, instead of whether PHY exists, as suggested by
+  Russell
+- changed waiting time for RollBall module to initialize from 30 seconds
+  to 25 seconds. Testing shows that it is never longer than 21-22
+  seconds, so waiting 25 seconds instead of 30 is IMO safe enough
+- added Russell's Reviewed-by tags where relevant
+
+Changes from v1:
+- wrapped to 80 columns as per Russell's request
+- initialization of RollBall MDIO I2C protocol moved from sfp.c to
+  mdio-i2c.c as per Russell's request
+- second patch removes the 802.3z check also from phylink_sfp_config
+  as suggested by Russell
+- creation/destruction of mdiobus for SFP now occurs before probing
+  for PHY/after releasing PHY (as suggested by Russell)
+- the last patch became a little simpler after the above was done
+
+Cc: Andrew Lunn <andrew@lunn.ch>
+Cc: Russell King <rmk+kernel@armlinux.org.uk>
+
+Marek Behún (4):
+  net: phy: mdio-i2c: support I2C MDIO protocol for RollBall SFP modules
+  net: phylink: allow attaching phy for SFP modules on 802.3z mode
+  net: sfp: create/destroy I2C mdiobus before PHY probe/after PHY
+    release
+  net: sfp: add support for multigig RollBall transceivers
+
+ drivers/net/mdio/mdio-i2c.c   | 319 +++++++++++++++++++++++++++++++++-
+ drivers/net/phy/phylink.c     |   5 +-
+ drivers/net/phy/sfp.c         |  66 +++++--
+ include/linux/mdio/mdio-i2c.h |   8 +-
+ 4 files changed, 378 insertions(+), 20 deletions(-)
+
+
+base-commit: 73b7a6047971aa6ce4a70fc4901964d14f077171
 -- 
-2.29.2
+2.26.2
 
