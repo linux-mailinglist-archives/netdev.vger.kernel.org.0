@@ -2,86 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 483A52F11E1
-	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 12:49:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 107D72F121E
+	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 13:09:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730259AbhAKLsq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jan 2021 06:48:46 -0500
-Received: from m43-15.mailgun.net ([69.72.43.15]:13065 "EHLO
-        m43-15.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729815AbhAKLsq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 06:48:46 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1610365700; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=e2RKIfh/3Dgq5OF2y0vpSR1viIDQKn/3YAJh2Hfy6ZE=; b=xiPM3FWlEZHn3CmKafRYMnK4lSnH3TdS4zsl+n0onjnT+TFB+zMCtQGG53ckJ/zdROHB1JI9
- mTEAth0NJkV9DOgifaEWWQRM+PYLth0J3m/LghXWlLaSIO0RGzexKrMR0kt/rRQYHWFbUAEK
- xFsBETLohwW8BUOYe/FNnT883Yw=
-X-Mailgun-Sending-Ip: 69.72.43.15
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n08.prod.us-east-1.postgun.com with SMTP id
- 5ffc3ac346a6c7cde7a811b6 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 11 Jan 2021 11:47:15
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id CB814C433CA; Mon, 11 Jan 2021 11:47:14 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL,
-        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 78830C433C6;
-        Mon, 11 Jan 2021 11:47:11 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 78830C433C6
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     Maya Erez <merez@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        "John W. Linville" <linville@tuxdriver.com>,
-        Vladimir Kondratiev <qca_vkondrat@qca.qualcomm.com>,
-        linux-wireless@vger.kernel.org, wil6210@qti.qualcomm.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 4/7] wil6210: select CONFIG_CRC32
-References: <20210103213645.1994783-1-arnd@kernel.org>
-        <20210103213645.1994783-4-arnd@kernel.org>
-Date:   Mon, 11 Jan 2021 13:47:09 +0200
-In-Reply-To: <20210103213645.1994783-4-arnd@kernel.org> (Arnd Bergmann's
-        message of "Sun, 3 Jan 2021 22:36:20 +0100")
-Message-ID: <874kjnk85e.fsf@codeaurora.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        id S1726796AbhAKMIR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jan 2021 07:08:17 -0500
+Received: from mx2.suse.de ([195.135.220.15]:56176 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726419AbhAKMIR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 11 Jan 2021 07:08:17 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1610366851; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=XHB0RyrJUB7eAhIarQq70P2hSjCGemOpdgbSlmvs+3M=;
+        b=negvonpaJqBS45q5/RwtDuuc/jMsErRmsQymYSLjKi4JQ3qGyW0UqSRiFunJPXtZwBeUwa
+        ikpkZNbBYAers0ICjdMFMPC3cxb65x/NBvN97BBYPYRnN+bolmSGih1N4VioySH8cJm9+J
+        kM9zOP5jpF1Bobn9PR+k11DM0+O7WmA=
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id 29C7AAB92;
+        Mon, 11 Jan 2021 12:07:31 +0000 (UTC)
+Message-ID: <3ad450f9af5ff391df1d182c0efda90a28f54ff9.camel@suse.com>
+Subject: Re: [PATCH 2/3] usbnet: add method for reporting speed without MDIO
+From:   Oliver Neukum <oneukum@suse.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, roland@kernel.org
+Date:   Mon, 11 Jan 2021 13:07:28 +0100
+In-Reply-To: <X/dgphCCXr9KHY7h@lunn.ch>
+References: <20210107113518.21322-1-oneukum@suse.com>
+         <20210107113518.21322-3-oneukum@suse.com> <X/dgphCCXr9KHY7h@lunn.ch>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.34.4 
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Arnd Bergmann <arnd@kernel.org> writes:
+Am Donnerstag, den 07.01.2021, 20:27 +0100 schrieb Andrew Lunn:
+> On Thu, Jan 07, 2021 at 12:35:17PM +0100, Oliver Neukum wrote:
+> 
+> Hi Oliver
+> 
+> > +++ b/include/linux/usb/usbnet.h
+> > @@ -53,6 +53,8 @@ struct usbnet {
+> >  	u32			hard_mtu;	/* count any extra framing */
+> >  	size_t			rx_urb_size;	/* size for rx urbs */
+> >  	struct mii_if_info	mii;
+> > +	long			rxspeed;	/* if MII is not used */
+> > +	long			txspeed;	/* if MII is not used */
+> 
+> How generic is this really? I don't know USB networking, so i cannot
+> say for myself.
+> 
+> I'm wondering if these should be added to cdc_ncm_ctx, and
+> usbnet_get_link_ksettings_ncm function should be added?
+> 
+> Having said that, USB_CDC_NOTIFY_SPEED_CHANGE seems like it could also
+> use this. Should the patch set also handle that notification and set
+> usbnet->rxspeed and usbnet->txspeed? These would then be used in
+> multiple places and that would justify it being in struct usbnet.
 
-> From: Arnd Bergmann <arnd@arndb.de>
->
-> Without crc32, the driver fails to link:
->
-> arm-linux-gnueabi-ld: drivers/net/wireless/ath/wil6210/fw.o: in function `wil_fw_verify':
-> fw.c:(.text+0x74c): undefined reference to `crc32_le'
-> arm-linux-gnueabi-ld: drivers/net/wireless/ath/wil6210/fw.o:fw.c:(.text+0x758): more undefined references to `crc32_le' follow
->
-> Fixes: 151a9706503f ("wil6210: firmware download")
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Hi,
 
-I'll queue this to v5.11.
+yes, everything that gets notification in CDC style should use this
+mechanism.
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/list/
+	Regards
+		Oliver
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+
