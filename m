@@ -2,94 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BF51C2F214E
-	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 22:01:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C54502F2156
+	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 22:02:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731098AbhAKVAM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jan 2021 16:00:12 -0500
-Received: from atlmailgw1.ami.com ([63.147.10.40]:57487 "EHLO
-        atlmailgw1.ami.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728885AbhAKVAL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 16:00:11 -0500
-X-AuditID: ac1060b2-a93ff700000017ec-75-5ffcbc32772a
-Received: from atlms1.us.megatrends.com (atlms1.us.megatrends.com [172.16.96.144])
-        (using TLS with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (Client did not present a certificate)
-        by atlmailgw1.ami.com (Symantec Messaging Gateway) with SMTP id DB.85.06124.23CBCFF5; Mon, 11 Jan 2021 15:59:30 -0500 (EST)
-Received: from ami-us-wk.us.megatrends.com (172.16.98.207) by
- atlms1.us.megatrends.com (172.16.96.144) with Microsoft SMTP Server (TLS) id
- 14.3.468.0; Mon, 11 Jan 2021 15:59:29 -0500
-From:   Hongwei Zhang <hongweiz@ami.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Dylan Hung <dylan_hung@aspeedtech.com>,
-        Joel Stanley <joel@jms.id.au>, <linux-aspeed@lists.ozlabs.org>,
-        <linux-kernel@vger.kernel.org>, <openbmc@lists.ozlabs.org>,
-        David S Miller <davem@davemloft.net>
-CC:     Hongwei Zhang <hongweiz@ami.com>, netdev <netdev@vger.kernel.org>,
-        Andrew Jeffery <andrew@aj.id.au>
-Subject: [Aspeed,ncsi-rx, v2 1/1] net: ftgmac100: Fix AST2600EVB NCSI RX issue
-Date:   Mon, 11 Jan 2021 15:59:00 -0500
-Message-ID: <20210111205900.22589-2-hongweiz@ami.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20201215192323.24359-1-hongweiz@ami.com>
-References: <20201215192323.24359-1-hongweiz@ami.com>
+        id S1732793AbhAKVCL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jan 2021 16:02:11 -0500
+Received: from www62.your-server.de ([213.133.104.62]:41410 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732725AbhAKVCE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 16:02:04 -0500
+Received: from sslproxy06.your-server.de ([78.46.172.3])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kz4JT-0002MR-Hb; Mon, 11 Jan 2021 22:01:19 +0100
+Received: from [85.7.101.30] (helo=pc-9.home)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kz4JT-0002bd-Ci; Mon, 11 Jan 2021 22:01:19 +0100
+Subject: Re: [PATCH bpf-next 2/2] bpf: extend bind v4/v6 selftests for
+ mark/prio/bindtoifindex
+To:     Yonghong Song <yhs@fb.com>, ast@kernel.org
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org
+References: <9dbbf51e7f6868b3e9c8610a8d49b4493fb1b50f.1610381606.git.daniel@iogearbox.net>
+ <299c73acafd2c20d52624debb8a1e0019d85e6dd.1610381606.git.daniel@iogearbox.net>
+ <1cf3b794-6b84-e6a4-bed3-6b72c480eafa@fb.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <1ba684dd-1fd8-7e71-4798-6abcfbb44eda@iogearbox.net>
+Date:   Mon, 11 Jan 2021 22:01:18 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [172.16.98.207]
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFjrHLMWRmVeSWpSXmKPExsWyRiBhgq7Rnj/xBtevq1nsusxhMed8C4vF
-        12sbWS1+n//LbHFhWx+rRfPqc8wWl3fNYbM4tkDM4lTLCxYHTo+r7bvYPbru3mf32LLyJpPH
-        xY/HmD02repk8zg/YyGjx+dNcgHsUVw2Kak5mWWpRfp2CVwZ27aIFvRzV9xu3sbSwHiHo4uR
-        k0NCwERi5f12JhBbSGAXk8TrPokuRi4Qm1Gic8tkZpAEm4CaxN7Nc8CKRAS+MEoc/CoAYjML
-        ZEpMPd7JDmILC/hJfHv/jBXEZhFQlTj9/wuYzStgKvHi20M2iGXyEqs3HACaycHBKWAmseeU
-        HMReU4nWfe+YIMoFJU7OfMICMV5C4uCLF8wQNbIStw49ZoIYoyjx4Nd31gmMArOQtMxC0rKA
-        kWkVo1BiSU5uYmZOermhXmJupl5yfu4mRkiYb9rB2HLR/BAjEwfjIUYJDmYlEV6vDX/ihXhT
-        EiurUovy44tKc1KLDzFKc7AoifOucj8aLySQnliSmp2aWpBaBJNl4uCUamC0dFj7NCfP7eHk
-        jZ9MxOrrn1W11k1NfnT+wX0Pm8AC45iPidlb+iu1bRgn67tI5srlalSZOJ8rXn5g3/O+B/bi
-        lfdWZIl++9ojNTNXr1fZXV7pcl/Dkaxkcf1rH4833Aw5PiO/NUpnHh/jyintfjvlF36ynr9a
-        6/LUxe5rJhprfZSeLF1eMFGJpTgj0VCLuag4EQBqeW7RYQIAAA==
+In-Reply-To: <1cf3b794-6b84-e6a4-bed3-6b72c480eafa@fb.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/26046/Mon Jan 11 13:34:14 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On 1/11/21 9:15 PM, Yonghong Song wrote:
+> On 1/11/21 8:17 AM, Daniel Borkmann wrote:
+>> Extend existing cgroup bind4/bind6 tests to add coverage for setting and
+>> retrieving SO_MARK, SO_PRIORITY and SO_BINDTOIFINDEX at the bind hook.
+>>
+>> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
 > 
-> From:	Jakub Kicinski <kuba@kernel.org>
-> Sent:	Monday, December 21, 2020 5:10 PM
-> To:	Hongwei Zhang
+> Ack with a minor comments below.
 > 
-> On Mon, 21 Dec 2020 14:40:26 -0500 Hongwei Zhang wrote:
-> > When FTGMAC100 driver is used on other NCSI Ethernet controllers, few
+> Acked-by: Yonghong Song <yhs@fb.com>
 > 
-> When you say NCSI Ethernet controller here you mean the main system NIC, right? The MAC on the NCSI 
-> side is FTGMAC100, correct?
+>> ---
+>>   .../testing/selftests/bpf/progs/bind4_prog.c  | 41 +++++++++++++++++--
+>>   .../testing/selftests/bpf/progs/bind6_prog.c  | 41 +++++++++++++++++--
+>>   2 files changed, 74 insertions(+), 8 deletions(-)
+>>
+>> diff --git a/tools/testing/selftests/bpf/progs/bind4_prog.c b/tools/testing/selftests/bpf/progs/bind4_prog.c
+>> index c6520f21f5f5..4479ac27b1d3 100644
+>> --- a/tools/testing/selftests/bpf/progs/bind4_prog.c
+>> +++ b/tools/testing/selftests/bpf/progs/bind4_prog.c
+>> @@ -29,18 +29,47 @@ static __inline int bind_to_device(struct bpf_sock_addr *ctx)
+>>       char veth2[IFNAMSIZ] = "test_sock_addr2";
+>>       char missing[IFNAMSIZ] = "nonexistent_dev";
+>>       char del_bind[IFNAMSIZ] = "";
+>> +    int veth1_idx, veth2_idx;
+>>       if (bpf_setsockopt(ctx, SOL_SOCKET, SO_BINDTODEVICE,
+>> -                &veth1, sizeof(veth1)))
+>> +               &veth1, sizeof(veth1)))
+>> +        return 1;
+>> +    if (bpf_getsockopt(ctx, SOL_SOCKET, SO_BINDTOIFINDEX,
+>> +               &veth1_idx, sizeof(veth1_idx)) || !veth1_idx)
+>>           return 1;
+>>       if (bpf_setsockopt(ctx, SOL_SOCKET, SO_BINDTODEVICE,
+>> -                &veth2, sizeof(veth2)))
+>> +               &veth2, sizeof(veth2)))
+>> +        return 1;
+>> +    if (bpf_getsockopt(ctx, SOL_SOCKET, SO_BINDTOIFINDEX,
+>> +               &veth2_idx, sizeof(veth2_idx)) || !veth2_idx ||
+>> +        veth1_idx == veth2_idx)
+>>           return 1;
+>>       if (bpf_setsockopt(ctx, SOL_SOCKET, SO_BINDTODEVICE,
+>> -                &missing, sizeof(missing)) != -ENODEV)
+>> +               &missing, sizeof(missing)) != -ENODEV)
+>> +        return 1;
+>> +    if (bpf_setsockopt(ctx, SOL_SOCKET, SO_BINDTOIFINDEX,
+>> +               &veth1_idx, sizeof(veth1_idx)))
+>>           return 1;
+>>       if (bpf_setsockopt(ctx, SOL_SOCKET, SO_BINDTODEVICE,
+>> -                &del_bind, sizeof(del_bind)))
+>> +               &del_bind, sizeof(del_bind)))
+>> +        return 1;
+>> +
+>> +    return 0;
+>> +}
+>> +
+>> +static __inline int misc_opts(struct bpf_sock_addr *ctx, int opt)
+>> +{
+>> +    int old, tmp, new = 0xeb9f;
+>> +
+>> +    if (bpf_getsockopt(ctx, SOL_SOCKET, opt, &old, sizeof(old)) ||
+>> +        old == new)
+>> +        return 1;
 > 
+> Here, we assume old never equals to new. it would be good to add
+> a comment to explicitly state this is true. Maybe in the future
+> somebody will try to add more misc_opts which might have conflict
+> here.
 
-Hi Jakub,
+I thought it's obvious, but yes I can add a comment.
 
-The use case for us is the MAC is configured as NCSI, so it provides network
- access for both BMC and Host, the Ethernet controller driver is from BMC kernel
-side.
+> Alternatively, you could pass in "new" values
+> from user space with global variables for each option,
+> but that may be an overkill.
 
-please see my response to Dylan in another thread, <20201215192323.24359-1-hongweiz@ami.com>,
-he points out the root cause of the issue.
+Agree, that's overkill.
 
-> In that case I'm not sure how user is supposed to control this setting at build time. The system NIC is 
-> often pluggable on the PCIe bus, and can be changed at will.
-> 
-> > controllers have compatible issue, removing FTGMAC100_RXDES0_RX_ERR 
-> > bit from RXDES0_ANY_ERROR can fix the issue.
-> > 
-> > Fixes: 7ee2d5b4d4340353 ("ARM: dts: nuvoton: Add Fii Kudo system")
-> 
-> Please fix the commit hash, this hash does not exist upstream:
-> 
-
-will do.
-
-Thanks
---Hongwei
-
-> Commit: 8711d4ef64fa ("net: ftgmac100: Fix AST2600 EVB NCSI RX issue")
-> 	Fixes tag: Fixes: 7ee2d5b4d4340353 ("ARM: dts: nuvoton: Add Fii Kudo system")
-> 	Has these problem(s):
-> 		- Target SHA1 does not exist
-> 
+Thanks,
+Daniel
