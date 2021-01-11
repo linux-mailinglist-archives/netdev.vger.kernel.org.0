@@ -2,95 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D167D2F24E6
-	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 02:17:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 89E182F24EE
+	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 02:18:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391693AbhALAZZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jan 2021 19:25:25 -0500
-Received: from mail.kernel.org ([198.145.29.99]:59450 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2390836AbhAKWzd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 11 Jan 2021 17:55:33 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 666B722C7E;
-        Mon, 11 Jan 2021 22:54:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610405692;
-        bh=nKAh5cvaRwnCxtiMJvjNsnoKNha835ZMi43ut6R+Sls=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=VsM8MW1kmBpFkWzjz9U8mj1xqLGdO4/80nKbfj7LOC9H3scMwVMcbxakI2smHimwN
-         FjYZu2anS8rohNC7GoziLVrEiIzZGTZ5MRVHyoPqrD79r0G9Z0ns298Sqf/xoJnsoK
-         5NHiBfgBfdWZHKIz6bmGtCvQvFIQ6hkJMbDxv/0H+0lyhDYMqkgbxSiKe8OXfwnGAm
-         D6Mm6XYzGA5MvWjLnhLbvpSHRDszdoo5O9UwaFFPqio9otlheB6BZuRrWMDii16T8+
-         U2K5Xh9M8tJo/Pnm7BaJAeQk4uZhy1R7N6NWYi0+QqcM2ZeO6TcEeJ/ZF7WDmIv8to
-         nNZhw0sm+ObYQ==
-Message-ID: <b517b9a54761a0ee650d6d64712844606cf8a631.camel@kernel.org>
-Subject: Re: [PATCH v6 net-next 11/15] net: catch errors from dev_get_stats
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Eric Dumazet <edumazet@google.com>,
-        George McCollister <george.mccollister@gmail.com>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        Arnd Bergmann <arnd@arndb.de>, Taehee Yoo <ap420073@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>, Florian Westphal <fw@strlen.de>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Pravin B Shelar <pshelar@ovn.org>,
-        Sridhar Samudrala <sridhar.samudrala@intel.com>
-Date:   Mon, 11 Jan 2021 14:54:50 -0800
-In-Reply-To: <20210109172624.2028156-12-olteanv@gmail.com>
-References: <20210109172624.2028156-1-olteanv@gmail.com>
-         <20210109172624.2028156-12-olteanv@gmail.com>
+        id S2405363AbhALAZ1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jan 2021 19:25:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36200 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2403783AbhAKXGi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 18:06:38 -0500
+Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DBA7C061786
+        for <netdev@vger.kernel.org>; Mon, 11 Jan 2021 15:05:57 -0800 (PST)
+Received: by mail-yb1-xb4a.google.com with SMTP id e74so471200ybh.19
+        for <netdev@vger.kernel.org>; Mon, 11 Jan 2021 15:05:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=sender:date:message-id:mime-version:subject:from:to:cc;
+        bh=Qk10GgT+/yrIhTuRdpP09hyN5nT3qPv7TAoLnV3vR/E=;
+        b=MHgCPyrsCgnJwBdjxnoqaQng3URa3gAxCNTizIcDMo8Hw0obCscvRzwIz+REbuL3F+
+         yszsECWu60MN0wr0V9whz0uAODiOeNiVDuYax7VvcmilggjdquAYk18S8zLzeKZE1tRm
+         pB75GcByXSK9MsJBrstTn3AyWsyYrU4Cww9gxvftkzc0xJkz6xcvt/LPCb+9WYg2wTbP
+         6440mYQsO+uj8ok1leqym2PJZEtttbR029o4c7Hv0Xk5csQR4HOcGB1oRq4q1aR+ED23
+         aPSRB/CKXWKua1V8uugpLtUBRaIEF9mlCenUfCtFzR/48j1gUUBLIHXL/BRmDP4aQ4E7
+         Sdbg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:sender:date:message-id:mime-version:subject:from
+         :to:cc;
+        bh=Qk10GgT+/yrIhTuRdpP09hyN5nT3qPv7TAoLnV3vR/E=;
+        b=APSUiOTa6UhjkFIrFolGxBcfMgCIjIsJtMFkg2kydZ+LAv2qT1qPtzVawtnwPFOFly
+         u33ofW0C3IHNOUUuiz/ars8xy9n11dchLqhiavSeP/HGpLFhNVZjaqy6+NYVaKvtlKqQ
+         HR+RkJDYLCNiBiOszbV5i32V/3FBQfSrXzoSGE8p0O+dDSMbmlkMD/eNbqOsfCDC3RFt
+         65mJpf3dDg2h6BMoOzoL0mQCy6QMAXfSdjJEm6iEUPKUBDW9f+RGN2UGF9OctyZg+We6
+         zwe7SpRkE34pe/oefgmGcsGbvufPJ09fI0vITktrrVjw9XhzXdraGp5XLcLU9vhdPpZM
+         3bXQ==
+X-Gm-Message-State: AOAM531O0TEvVcce4F3qnIQs/y/i45zLVy6z/G5agQZ1WakKdfQQJIRI
+        U6/1mKkzSuHeenZKYPWdqvJa+PHLMS4=
+X-Google-Smtp-Source: ABdhPJz1ALVk+8vBGrRIP6zz/vCDhhojamPygMkIT03ABgAEFsoKjwBeb03hOsuAAya78BwgKSVCrrKySE8=
+Sender: "ycheng via sendgmr" <ycheng@ycheng.svl.corp.google.com>
+X-Received: from ycheng.svl.corp.google.com ([2620:15c:2c4:201:f693:9fff:fef4:fc76])
+ (user=ycheng job=sendgmr) by 2002:a25:d38e:: with SMTP id e136mr2917048ybf.281.1610406356681;
+ Mon, 11 Jan 2021 15:05:56 -0800 (PST)
+Date:   Mon, 11 Jan 2021 15:05:52 -0800
+Message-Id: <20210111230552.2704579-1-ycheng@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.30.0.284.gd98b1dd5eaa7-goog
+Subject: [PATCH net-next] tcp: assign skb hash after tcp_event_data_sent
+From:   Yuchung Cheng <ycheng@google.com>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, edumazet@google.com, ncardwell@google.com,
+        Yuchung Cheng <ycheng@google.com>
 Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 2021-01-09 at 19:26 +0200, Vladimir Oltean wrote:
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> 
-> dev_get_stats can now return error codes. Convert all remaining call
-> sites to look at that error code and stop processing.
-> 
-> The effects of simulating a kernel error (returning -ENOMEM) upon
-> existing programs or kernel interfaces:
-> 
-> - ifconfig and "cat /proc/net/dev" print up until the interface that
->   failed, and there they return:
-> cat: read error: Cannot allocate memory
-> 
-> - ifstat and "ip -s -s link show":
-> RTNETLINK answers: Cannot allocate memory
-> Dump terminated
-> 
-> Some call sites are coming from a context that returns void (ethtool
-> stats, workqueue context). So since we can't report to the upper
-> layer,
-> do the next best thing: print an error to the console.
-> 
+Move skb_set_hash_from_sk s.t. it's called after instead of before
+tcp_event_data_sent is called. This enables congestion control
+modules to change the socket hash right before restarting from
+idle (via the TX_START congestion event).
 
-another concern, one buggy netdev driver in a system will cause
-unnecessary global failures when reading stats via netlink/procfs for
-all the netdev in a netns, when other drivers will be happy to report.
+Signed-off-by: Yuchung Cheng <ycheng@google.com>
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Signed-off-by: Neal Cardwell <ncardwell@google.com>
+---
+ net/ipv4/tcp_output.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-can't we just show a message in that driver's stats line about the
-occurred err ? and show the normal stats line of all others ?
-
-> This patch wraps up the conversion of existing dev_get_stats callers,
-> so
-> we can add the __must_check attribute now to ensure that future
-> callers
-> keep doing this too.
-> 
-> 
+diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
+index f322e798a351..899d053cb10e 100644
+--- a/net/ipv4/tcp_output.c
++++ b/net/ipv4/tcp_output.c
+@@ -1319,7 +1319,6 @@ static int __tcp_transmit_skb(struct sock *sk, struct sk_buff *skb,
+ 	skb_orphan(skb);
+ 	skb->sk = sk;
+ 	skb->destructor = skb_is_tcp_pure_ack(skb) ? __sock_wfree : tcp_wfree;
+-	skb_set_hash_from_sk(skb, sk);
+ 	refcount_add(skb->truesize, &sk->sk_wmem_alloc);
+ 
+ 	skb_set_dst_pending_confirm(skb, sk->sk_dst_pending_confirm);
+@@ -1390,6 +1389,7 @@ static int __tcp_transmit_skb(struct sock *sk, struct sk_buff *skb,
+ 			      tcp_skb_pcount(skb));
+ 
+ 	tp->segs_out += tcp_skb_pcount(skb);
++	skb_set_hash_from_sk(skb, sk);
+ 	/* OK, its time to fill skb_shinfo(skb)->gso_{segs|size} */
+ 	skb_shinfo(skb)->gso_segs = tcp_skb_pcount(skb);
+ 	skb_shinfo(skb)->gso_size = tcp_skb_mss(skb);
+-- 
+2.30.0.284.gd98b1dd5eaa7-goog
 
