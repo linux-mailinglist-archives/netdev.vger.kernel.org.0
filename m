@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0FB5E2F0EFE
-	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 10:25:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 176CF2F0F10
+	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 10:27:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728392AbhAKJZT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jan 2021 04:25:19 -0500
-Received: from out30-133.freemail.mail.aliyun.com ([115.124.30.133]:36328 "EHLO
-        out30-133.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728204AbhAKJZS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 04:25:18 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R121e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04357;MF=abaci-bugfix@linux.alibaba.com;NM=1;PH=DS;RN=5;SR=0;TI=SMTPD_---0ULMSkuR_1610357064;
-Received: from j63c13417.sqa.eu95.tbsite.net(mailfrom:abaci-bugfix@linux.alibaba.com fp:SMTPD_---0ULMSkuR_1610357064)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Mon, 11 Jan 2021 17:24:30 +0800
-From:   YANG LI <abaci-bugfix@linux.alibaba.com>
+        id S1728409AbhAKJ1d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jan 2021 04:27:33 -0500
+Received: from saphodev.broadcom.com ([192.19.232.172]:43048 "EHLO
+        relay.smtp-ext.broadcom.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727819AbhAKJ1c (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 04:27:32 -0500
+Received: from localhost.swdvt.lab.broadcom.net (dhcp-10-13-253-90.swdvt.lab.broadcom.net [10.13.253.90])
+        by relay.smtp-ext.broadcom.com (Postfix) with ESMTP id B35FD4E1AA;
+        Mon, 11 Jan 2021 01:26:40 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.11.0 relay.smtp-ext.broadcom.com B35FD4E1AA
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=broadcom.com;
+        s=dkimrelay; t=1610357201;
+        bh=ZZ2dSNRKfDM6bGVhZZZVZw+kkteR44eGttMPSVkjkmQ=;
+        h=From:To:Cc:Subject:Date:From;
+        b=R5NYT/famhX1eAAu4alxQ0nPhk27KpKpxXpqTyHrXdq6WFjYh9o4Yf8I43DoztxoK
+         QNM8Nv/BJvk18B/10bH+Nh7OvBK3WbkIGiSv/wuHOh+Dxt9EplQ6ZjTiYgK0v9Pmk8
+         Ivt+6NuQEfwojAmradzszQDOq4PnJwKxr+U/Q/2w=
+From:   Michael Chan <michael.chan@broadcom.com>
 To:     davem@davemloft.net
-Cc:     kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        YANG LI <abaci-bugfix@linux.alibaba.com>
-Subject: [PATCH] hci: llc_shdlc: style: Simplify bool comparison
-Date:   Mon, 11 Jan 2021 17:24:23 +0800
-Message-Id: <1610357063-57705-1-git-send-email-abaci-bugfix@linux.alibaba.com>
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com
+Subject: [PATCH net 0/2] bnxt_en: Bug fixes.
+Date:   Mon, 11 Jan 2021 04:26:38 -0500
+Message-Id: <1610357200-30755-1-git-send-email-michael.chan@broadcom.com>
 X-Mailer: git-send-email 1.8.3.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix the following coccicheck warning:
-./net/nfc/hci/llc_shdlc.c:239:5-21: WARNING: Comparison to bool
+This series has 2 fixes.  The first one fixes a resource accounting error
+with the RDMA driver loaded and the second one fixes the firmware
+flashing sequence after defragmentation.
 
-Signed-off-by: YANG LI <abaci-bugfix@linux.alibaba.com>
-Reported-by: Abaci Robot<abaci@linux.alibaba.com>
----
- net/nfc/hci/llc_shdlc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Please queue the 1st one for -stable.  Thanks.
 
-diff --git a/net/nfc/hci/llc_shdlc.c b/net/nfc/hci/llc_shdlc.c
-index 0eb4ddc..c0c8fea 100644
---- a/net/nfc/hci/llc_shdlc.c
-+++ b/net/nfc/hci/llc_shdlc.c
-@@ -236,7 +236,7 @@ static void llc_shdlc_rcv_i_frame(struct llc_shdlc *shdlc,
- 		goto exit;
- 	}
- 
--	if (shdlc->t1_active == false) {
-+	if (!shdlc->t1_active) {
- 		shdlc->t1_active = true;
- 		mod_timer(&shdlc->t1_timer, jiffies +
- 			  msecs_to_jiffies(SHDLC_T1_VALUE_MS(shdlc->w)));
+Michael Chan (1):
+  bnxt_en: Improve stats context resource accounting with RDMA driver
+    loaded.
+
+Pavan Chebbi (1):
+  bnxt_en: Clear DEFRAG flag in firmware message when retry flashing.
+
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c | 3 ++-
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c     | 8 ++++++--
+ 2 files changed, 8 insertions(+), 3 deletions(-)
+
 -- 
-1.8.3.1
+2.18.1
 
