@@ -2,101 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A817C2F0C80
-	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 06:29:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CB4A82F0C7C
+	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 06:29:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726347AbhAKF2o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1726672AbhAKF2o (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Mon, 11 Jan 2021 00:28:44 -0500
-Received: from mail.kernel.org ([198.145.29.99]:59604 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:59612 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725536AbhAKF2n (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1725747AbhAKF2n (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 11 Jan 2021 00:28:43 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id CFD7A224B0;
-        Mon, 11 Jan 2021 05:28:02 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 2ABA1225AB;
+        Mon, 11 Jan 2021 05:28:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1610342883;
-        bh=ooDEkw0UM2LGjmds2qRU5wbLusgsXo1lss9k8agumxI=;
-        h=From:To:Cc:Subject:Date:From;
-        b=iLIJzyxUlU4vquL9o1PwFWXTDWRILwqbdBoliM1MdlIR4X3umoBqmsYXpyC+C0FdN
-         Tb63oJF/ZnL7kDSdelyT3oqnWiPBBTJAOh86o64jH4rEoak5qDsFFxvRfrJyLTJxQa
-         e8aZZASl/rLoZArIf0wsYq3YhG36kziozMI3yKgoJeoLI+hoLCiHHJAmhfmNAsoong
-         Nlx6cD2lJGyAZRTT/QCDUS6zponXMqw7hNZr0Mm4yTmW8NnVf2NleS1HC8Dc1FteeB
-         d/9SV06jgMR9P7Z1Fl4axM/gqBOKlpZaALLo6bttRB35xQCwTvCw8d7VSCUSrUaiCr
-         p7x2thZGJcDyQ==
+        bh=6sNBeFdrVXPxgS59xVd078bOMwdGAYHFCWY6SjY4Aqg=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=V+fCS1INZ7aiEiRb+wzlbgMplBnlHHuVqqWGnBoVxO7ON+FT4Ggx3eGKb8away2kZ
+         gUAon/9uMuWUDkupEeYtWPhCN3UjKgF+E9EYH/nyhf9ckkUgDje9epC2XVRD9ujf89
+         2TR1RG8KL8Lou3f4olyKkZy9N7O70G8+LL2acqWty0sT1q4DZ7yGFw5IDjN9JhT+Mx
+         VninL6jQ1RQ8RgS7H3faZ+m+gygwJuV+nXV5SNriZqUgLb2fWQtle9A0QisxvA5Du/
+         Gi5cBjGPx3gbXe7YgP4zLAmQVr11Kvy0GOKNymFx/oFEEKkKUEGvZsSoT6HbUSn5Nj
+         mbryHODkYdrVw==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, corbet@lwn.net,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net 0/9] MAINTAINERS: remove inactive folks from networking 
-Date:   Sun, 10 Jan 2021 21:27:50 -0800
-Message-Id: <20210111052759.2144758-1-kuba@kernel.org>
+        Jakub Kicinski <kuba@kernel.org>,
+        Jay Cliburn <jcliburn@gmail.com>,
+        Chris Snook <chris.snook@gmail.com>
+Subject: [PATCH net 1/9] MAINTAINERS: altx: move Jay Cliburn to CREDITS
+Date:   Sun, 10 Jan 2021 21:27:51 -0800
+Message-Id: <20210111052759.2144758-2-kuba@kernel.org>
 X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20210111052759.2144758-1-kuba@kernel.org>
+References: <20210111052759.2144758-1-kuba@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi!
+Jay was not active in recent years and does not have plans
+to return to work on ATLX drivers.
 
-This series intends to remove some most evidently inactive maintainers.
+Subsystem ATLX ETHERNET DRIVERS
+  Changes 20 / 116 (17%)
+  Last activity: 2020-02-24
+  Jay Cliburn <jcliburn@gmail.com>:
+  Chris Snook <chris.snook@gmail.com>:
+    Tags ea973742140b 2020-02-24 00:00:00 1
+  Top reviewers:
+    [4]: andrew@lunn.ch
+    [2]: kuba@kernel.org
+    [2]: o.rempel@pengutronix.de
+  INACTIVE MAINTAINER Jay Cliburn <jcliburn@gmail.com>
 
-To make maintainers' lives easier we're trying to nudge people
-towards CCing all the relevant folks on patches, in an attempt
-to improve review rate. We have a check in patchwork which validates
-the CC list against get_maintainers.pl. It's a little awkward, however,
-to force people to CC maintainers who we haven't seen on the mailing
-list for years. This series removes from maintainers folks who didn't
-provide any tag (incl. authoring a patch) in the last 5 years.
-To ensure reasonable signal to noise ratio we only considered
-MAINTAINERS entries which had more than 100 patches fall under
-them in that time period.
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+---
+CC: Jay Cliburn <jcliburn@gmail.com>
+CC: Chris Snook <chris.snook@gmail.com>
+---
+ CREDITS     | 4 ++++
+ MAINTAINERS | 1 -
+ 2 files changed, 4 insertions(+), 1 deletion(-)
 
-All this is purely a process-greasing exercise, I hope nobody
-sees this series as an affront. Most folks are moved to CREDITS,
-a couple entries are simply removed. 
-
-The following inactive maintainers are kept, because they indicated
-the intention to come back in the near future:
-
- - Veaceslav Falico (bonding)
- - Christian Benvenuti (Cisco drivers)
-
-Patches in this series contain report from a script which did
-the analysis. Big thanks to Jonathan Corbet for help and writing
-the script (although I feel like I used it differently than Jon
-may have intended ;)). The output format is thus:
-
- Subsystem $name
-  Changes $reviewed / $total ($percent%)           // how many changes to the subsystem had at least one ack/review
-  Last activity: $date_of_most_recent_patch
-  $maintainer/reviewer1:
-    Author $last_commit_authored_by_the_person $how_many_in_5yrs
-    Committer $last_committed $how_many
-    Tags $last_tag_like_review_signoff_etc $how_many
-  $maintainer/reviewer2:
-    Author $last_commit_authored_by_the_person $how_many_in_5yrs
-    Committer $last_committed $how_many
-    Tags $last_tag_like_review_signoff_etc $how_many
-  Top reviewers: // Top 3 reviewers (who are not listed in MAINTAINERS)
-    [$count_of_reviews_and_acks]: $email
-  INACTIVE MAINTAINER $name   // maintainer / reviewer who has done nothing in last 5yrs
-
-Jakub Kicinski (9):
-  MAINTAINERS: altx: move Jay Cliburn to CREDITS
-  MAINTAINERS: net: move Alexey Kuznetsov to CREDITS
-  MAINTAINERS: vrf: move Shrijeet to CREDITS
-  MAINTAINERS: ena: remove Zorik Machulsky from reviewers
-  MAINTAINERS: tls: move Aviad to CREDITS
-  MAINTAINERS: mtk-eth: remove Felix
-  MAINTAINERS: ipvs: move Wensong Zhang to CREDITS
-  MAINTAINERS: dccp: move Gerrit Renker to CREDITS
-  MAINTAINERS: skge/sky2: move Mirko Lindner to CREDITS
-
- CREDITS     | 28 ++++++++++++++++++++++++++++
- MAINTAINERS | 11 +----------
- 2 files changed, 29 insertions(+), 10 deletions(-)
-
+diff --git a/CREDITS b/CREDITS
+index 090ed4b004a5..59a704a45170 100644
+--- a/CREDITS
++++ b/CREDITS
+@@ -710,6 +710,10 @@ S: Las Cuevas 2385 - Bo Guemes
+ S: Las Heras, Mendoza CP 5539
+ S: Argentina
+ 
++N: Jay Cliburn
++E: jcliburn@gmail.com
++D: ATLX Ethernet drivers
++
+ N: Steven P. Cole
+ E: scole@lanl.gov
+ E: elenstev@mesatop.com
+diff --git a/MAINTAINERS b/MAINTAINERS
+index b15514a770e3..57e17762d411 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -2942,7 +2942,6 @@ S:	Maintained
+ F:	drivers/hwmon/asus_atk0110.c
+ 
+ ATLX ETHERNET DRIVERS
+-M:	Jay Cliburn <jcliburn@gmail.com>
+ M:	Chris Snook <chris.snook@gmail.com>
+ L:	netdev@vger.kernel.org
+ S:	Maintained
 -- 
 2.26.2
 
