@@ -2,108 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BCA262F10B4
-	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 12:00:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 811E92F10C0
+	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 12:04:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729604AbhAKK7R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jan 2021 05:59:17 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:27281 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725971AbhAKK7Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 05:59:16 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1610362669;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=z7rOeB+I4wgDC7MUie6XCpYrBBPFo0T1dc7r5uqQ/dE=;
-        b=RAoPyI1OFogvIU30Kgnv1D+tptZmJleSv/LgvEKodZmtL+6aiYq036XOTXh/juLllf2vtp
-        +3VR6qtAppmIzFubSdmsmUwo8SfM+mJNe4z4wG+/0onJjamwAwNPFqGILW58rUdae42CJz
-        4tYE+uIaJJKcCk2+JeCTzw5ACqECsk8=
-Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
- [209.85.128.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-105-ZHu-VktxMcyu41XQHjWwmQ-1; Mon, 11 Jan 2021 05:57:47 -0500
-X-MC-Unique: ZHu-VktxMcyu41XQHjWwmQ-1
-Received: by mail-wm1-f69.google.com with SMTP id l5so1989999wmi.4
-        for <netdev@vger.kernel.org>; Mon, 11 Jan 2021 02:57:47 -0800 (PST)
+        id S1728350AbhAKLER (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jan 2021 06:04:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49888 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725868AbhAKLER (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 06:04:17 -0500
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4669C061786
+        for <netdev@vger.kernel.org>; Mon, 11 Jan 2021 03:03:36 -0800 (PST)
+Received: by mail-ed1-x534.google.com with SMTP id j16so18403072edr.0
+        for <netdev@vger.kernel.org>; Mon, 11 Jan 2021 03:03:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=1tg3lBgYu/JP3tg8NqJc/YjHjKsbmhHnUe6N58yjhP8=;
+        b=I4dq83lT0GdUtXxm0jPLeGke0XfUZEAfdUUIfHRHCIr2LuM+K3fhDf/CR7bO9oZbFy
+         H+XOdT9GgiFomj9aoPr/mHaqLJTWgaMn5JkmtarVd03k5QPOuvNAIwAPLjcXtHUeHLCN
+         STQCtLSz03A7ON+Qs7sPVmw5JAFBfC63CInwBHM/KB0ydaRJDJRp2rL+k+fGl2cr8v/G
+         wUS71QVrYGqG4Hpj/JcoEigi7oSmJlHKePI6Rp/cgtvTzLCRbFmt9M5HXNnyb5MgV7FN
+         o5RTVOhY41Q7TvgMTRGZ8gqE7lrxxyRjbk4iNylEvu6ikBjle+2c95Q7dQ//IrTPd/yE
+         AvLw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=z7rOeB+I4wgDC7MUie6XCpYrBBPFo0T1dc7r5uqQ/dE=;
-        b=NrOPTkIFF4yb56hoAj1r4Fek3bqVI3xNIKpzgrv61FaRyIo0tmeo3Naobus4UXN90b
-         +8hQ1ALphtRZCzGwFUfBdZE6AJ7V7qVO/amNh4AyaG0AtUAXaaVTUioTSTkYpLcXPY08
-         l1Gl2laF9t5alFBiZzr0LhjMmnsYVz3prZtHy0XMnxVL6ImUGWFt0tjd6w5uAYCiDBXD
-         zN1GhdEotO2EP/5JH8lrjP3wopKv8devW5lIDmN+6lUAyFZ9redufUR0dyvtRS+idN9A
-         KCOyvgKHBevFtDRc0+teOIAxH8rfKODXN+HItocf80A4Ca4r/VLqGKu2bEBFzzrWVX5I
-         PpNA==
-X-Gm-Message-State: AOAM530utPw6v48ZZZzqN2rWFf+GFhTkSwVm3YhW16mmlglDoXpfwWVX
-        WKS3w+VS4RTiicjx+8mNgRNccbNAfsbMh63IXJQ2wUMPBJ/O9NN3I4uc0Y1ViU661uutXVSU1O8
-        OXuV4jXr69b+eigqP
-X-Received: by 2002:adf:e710:: with SMTP id c16mr15848050wrm.295.1610362666689;
-        Mon, 11 Jan 2021 02:57:46 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJybMfzpjwFHcAW2AKhCDUcRL19WEBuHsiFCND2EjHaV2iQPfZ0szACximcvMtO/eSOrNWSqbg==
-X-Received: by 2002:adf:e710:: with SMTP id c16mr15848040wrm.295.1610362666519;
-        Mon, 11 Jan 2021 02:57:46 -0800 (PST)
-Received: from linux.home (2a01cb058918ce00dd1a5a4f9908f2d5.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:dd1a:5a4f:9908:f2d5])
-        by smtp.gmail.com with ESMTPSA id n16sm23766290wrj.26.2021.01.11.02.57.45
+        bh=1tg3lBgYu/JP3tg8NqJc/YjHjKsbmhHnUe6N58yjhP8=;
+        b=Dw9/lmcSgqvjNfMKCChHtT2GW+5mKSrNe0WlHyjmXkderfulw2482z8WJmP5dL0tXp
+         AyBOJDc5BMSr8nw8GjMgMMiGObbX+nVo6Td4eeRlnJkZQ3fNJcOkHFtoF2593A0Zpsoa
+         f9g3uIpfXpm9ciUqY1r00C3IV81FSex+3XmQC0c2NYVC1VBFqo5TIfqApM2y0T12JPtP
+         iyl1Lfn6xJrGzDLY8778+5GVDsahliXgAJuuSZ1IykrJoUspWeIzcukQxAr/8f0UMRtg
+         3IxUICjMimKjitFCQTEvyImQqL8zACHgECSN7A2Z9VvhfyJRziN707I794w8xFo5nguo
+         7Crw==
+X-Gm-Message-State: AOAM531lW/pdIpB2Vy/yRhCRmMPwXZGNI3rAyfcW8cBkFUMj69mHSrT1
+        UChIgYi+tWk+N0qXf+vHOrevgLil8OQ=
+X-Google-Smtp-Source: ABdhPJwYlmLyARHwkSmABs8uecV228kZ9bazPy7ZBgj5MyG1xeFz14yB2J7/RON/xFzhAetnrh7iiA==
+X-Received: by 2002:aa7:d6d8:: with SMTP id x24mr14133316edr.105.1610363015372;
+        Mon, 11 Jan 2021 03:03:35 -0800 (PST)
+Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
+        by smtp.gmail.com with ESMTPSA id p22sm6867499ejx.59.2021.01.11.03.03.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Jan 2021 02:57:45 -0800 (PST)
-Date:   Mon, 11 Jan 2021 11:57:44 +0100
-From:   Guillaume Nault <gnault@redhat.com>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Mon, 11 Jan 2021 03:03:34 -0800 (PST)
+Date:   Mon, 11 Jan 2021 13:03:33 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     kbuild@lists.01.org, "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, lkp@intel.com,
+        kbuild-all@lists.01.org, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
         Stephen Hemminger <stephen@networkplumber.org>,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH iproute2] tc: flower: fix json output with mpls lse
-Message-ID: <20210111105744.GA13412@linux.home>
-References: <1ef12e7d378d5b1dad4f056a2225d5ae9d5326cb.1608330201.git.gnault@redhat.com>
- <20210107164856.GC17363@linux.home>
- <20210107091352.610abd6f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <31cfb1dc-1e93-e3ed-12f4-f8c44adfd535@gmail.com>
+        Eric Dumazet <edumazet@google.com>,
+        George McCollister <george.mccollister@gmail.com>,
+        Oleksij Rempel <o.rempel@pengutronix.de>
+Subject: Re: [PATCH v5 net-next 11/16] net: propagate errors from
+ dev_get_stats
+Message-ID: <20210111110333.zr6tpqpc7ckzy3gx@skbuf>
+References: <20210108163159.358043-12-olteanv@gmail.com>
+ <20210111105515.GE5083@kadam>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <31cfb1dc-1e93-e3ed-12f4-f8c44adfd535@gmail.com>
+In-Reply-To: <20210111105515.GE5083@kadam>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 07, 2021 at 10:39:03AM -0700, David Ahern wrote:
-> On 1/7/21 10:13 AM, Jakub Kicinski wrote:
-> > On Thu, 7 Jan 2021 17:48:56 +0100 Guillaume Nault wrote:
-> >> On Fri, Dec 18, 2020 at 11:25:32PM +0100, Guillaume Nault wrote:
-> >>> The json output of the TCA_FLOWER_KEY_MPLS_OPTS attribute was invalid.
-> >>>
-> >>> Example:
-> >>>
-> >>>   $ tc filter add dev eth0 ingress protocol mpls_uc flower mpls \
-> >>>       lse depth 1 label 100                                     \
-> >>>       lse depth 2 label 200
-> >>>
-> >>>   $ tc -json filter show dev eth0 ingress
-> >>>     ...{"eth_type":"8847",
-> >>>         "  mpls":["    lse":["depth":1,"label":100],
-> >>>                   "    lse":["depth":2,"label":200]]}...  
-> >>
-> >> Is there any problem with this patch?
-> >> It's archived in patchwork, but still in state "new". Therefore I guess
-> >> it was dropped before being considered for review.
-> > 
-> > Erm, that's weird. I think Alexei mentioned that auto-archiving is
-> > turned on in the new netdevbpf patchwork instance. My guess is it got
-> > auto archived :S
-> > 
-> > Here is the list of all patches that are Archived as New:
-> > 
-> > https://patchwork.kernel.org/project/netdevbpf/list/?state=1&archive=true
-> > 
-> > Should any of these have been reviewed?
-> > 
-> 
-> 
-> Interesting. I thought some patches had magically disappeared - and some
-> of those are in that list.
+Hi Dan,
 
-Okay, but, in the end, should I repost this patch?
+On Mon, Jan 11, 2021 at 01:55:16PM +0300, Dan Carpenter wrote:
+> Hi Vladimir,
+>
+> New smatch warnings:
+> net/core/rtnetlink.c:1821 rtnl_fill_ifinfo() warn: missing error code 'err'
+>
+> vim +/err +1821 net/core/rtnetlink.c
+>
+> static int rtnl_fill_ifinfo(struct sk_buff *skb,
+> 			    struct net_device *dev, struct net *src_net,
+> 			    int type, u32 pid, u32 seq, u32 change,
+> 			    unsigned int flags, u32 ext_filter_mask,
+> 			    u32 event, int *new_nsid, int new_ifindex,
+> 			    int tgt_netnsid, gfp_t gfp)
+> {
+> 	struct ifinfomsg *ifm;
+> 	struct nlmsghdr *nlh;
+> 	int err = -EMSGSIZE;
+>
+...
+>
+> 	err = rtnl_fill_stats(skb, dev);
+> 	if (err)
+> 		goto nla_put_failure;
+>
+> 	if (rtnl_fill_vf(skb, dev, ext_filter_mask))
+> 		goto nla_put_failure;
+>
+> No error codes any more on the rest of the gotos in this function.
+>
+>
+> 	if (rtnl_port_fill(skb, dev, ext_filter_mask))
+> 		goto nla_put_failure;
+>
+> 	if (rtnl_xdp_fill(skb, dev))
+> 		goto nla_put_failure;
+>
+...
+>
+> 	nlmsg_end(skb, nlh);
+> 	return 0;
+>
+> nla_put_failure_rcu:
+> 	rcu_read_unlock();
+> nla_put_failure:
+> 	nlmsg_cancel(skb, nlh);
+> 	return err;
+> }
 
+Thank you for this report. It is a valid issue. It has also been fixed
+in v6:
+https://patchwork.kernel.org/project/netdevbpf/patch/20210109172624.2028156-12-olteanv@gmail.com/
+From the changelog:
+
+Changes in v6:
+- Fixed rtnetlink incorrectly returning 0 in rtnl_fill_ifinfo on
+  nla_put_failure and causing "ip a" to not show any interfaces.
