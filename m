@@ -2,61 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B8BA2F157B
-	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 14:41:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 14FB42F15C5
+	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 14:45:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387518AbhAKNko (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jan 2021 08:40:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55194 "EHLO
+        id S2387634AbhAKNoh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jan 2021 08:44:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731984AbhAKNkl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 08:40:41 -0500
-Received: from mail-io1-xd31.google.com (mail-io1-xd31.google.com [IPv6:2607:f8b0:4864:20::d31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A6FCC061786;
-        Mon, 11 Jan 2021 05:40:01 -0800 (PST)
-Received: by mail-io1-xd31.google.com with SMTP id 81so17761534ioc.13;
-        Mon, 11 Jan 2021 05:40:01 -0800 (PST)
+        with ESMTP id S1731796AbhAKNoe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 08:44:34 -0500
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73FC3C061786;
+        Mon, 11 Jan 2021 05:43:53 -0800 (PST)
+Received: by mail-ej1-x636.google.com with SMTP id jx16so24741983ejb.10;
+        Mon, 11 Jan 2021 05:43:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=VPX+TWLUVWMLDjFiSnhOZGL+SWYosAkfqkHnqdSxUAM=;
-        b=oYpWOHIwy6XftMFufPxgO9fchZbGj2sitlgT6yrncOYW3o+rDnEaoDdEBgXbnIkNeX
-         BRgMVzfxXtPehTLtxH6/A+/pCGEJ3rhhXAiCTmRByGxtCcl8HuLLDc4BXZpAV55H3biZ
-         0yDuJ/sOHEfW0HPXS5Fkcy+xtw+eO8Vz+ABu8n7XEudo17TUNCRfI2C5ZA6PpHF0HWLe
-         Lx7Pjc40cr4XA321nE1pFq1IE4Pg7cHaco2k4hd0nh2MkbN3i8tPv7ypcjFqWMR7xBRv
-         c3Bd9zDm7FaaHKwWj0GVydeK7Us4jjDSjh2RO7254w2P/sPOk9WCkIF5XTrXgUCTwGu8
-         z98g==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=TqQMMmVG//s097FZcK6S1d+MUdnJBT3N8IWJdlGCSdY=;
+        b=vQ7xg/NMs8B/jW9COLAiIpNiEJ+21BdjvoLnazkLt9/lR13If2ikF5RZJksFN0Dkoo
+         C0zqtI4JCm9GWfi/CnjsDhI23DQE22A6bgR9PF4vRW7MkpPcJj/AfIk/3yfLeBcsdnrl
+         Yxa9K6+wwF493HZ7SArizr69FpCLfQl6lpgliMFGI+kKl21Gl8bYrR6g9FSUpBY5PsE3
+         tGUj1wkuFyjj1ZdM3ORq7/uzV+J+9E46Sk41CqgvwrUGYV7JHTTfAzR2DYg1oKwxXg5l
+         95cO6WK6GrEoNp+J3zEoxppuEPX80yVLWxK08AgEQL/vFBuUgkRl+BMTYNyireUNYVig
+         F/YA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=VPX+TWLUVWMLDjFiSnhOZGL+SWYosAkfqkHnqdSxUAM=;
-        b=ExQYTm2mjN9pDwKXVoFR7DGfblCYkkdZkc4f9UaQ7+fkxpHeXRVhVMvENp7hSN/Y8S
-         YqUc8vgAPYotsIiKOg9iFsSYqxpYIKm2wiIjaRdiwANVdVXqHXXTN59t82ZfYmaieIEj
-         K4mmHeSN2h65tGQV/b5UFf1KXRowRtJBN0ctomcpdecmkzITic1BnaSv4lxEmltu+ybB
-         RK0PngNCKnciaKKu1mHbyZpj4TojRH7Tbz9BpHHvpp3AOvFvquPT/SUoS0rVEMfmFmhE
-         oyExkAKPDRtAfPagJWpA/d6ZicvTE9R4tl9Wr9+oy/yr7c3onK+sHs4vTWTST+gnkJQ5
-         T2RA==
-X-Gm-Message-State: AOAM532w/nemwmpkAXu4NksVBYPXr34KoLkKWZcFfvLtKUYx0u7WCE9r
-        pLCxSViWjNhEen45aRq3XBPuJTLt7bj0QUMNKwU=
-X-Google-Smtp-Source: ABdhPJxdIHd1jmADjrtYp3Zsp0l/yfn12bjpz+qSZpWV+XVteUVCntZjcfHonB6Q9MK8aoe7wB6LwfSgeU+sRkaghGs=
-X-Received: by 2002:a02:c8c7:: with SMTP id q7mr14527159jao.7.1610372400687;
- Mon, 11 Jan 2021 05:40:00 -0800 (PST)
-MIME-Version: 1.0
-References: <20210111054428.3273-1-dqfext@gmail.com> <20210111054428.3273-3-dqfext@gmail.com>
- <20210111110407.GR1551@shell.armlinux.org.uk>
-In-Reply-To: <20210111110407.GR1551@shell.armlinux.org.uk>
-From:   DENG Qingfang <dqfext@gmail.com>
-Date:   Mon, 11 Jan 2021 21:40:00 +0800
-Message-ID: <CALW65jaqciOiRxJxzPiEADgpmKa7-q2QfQnBdaVMcOa5YDHjRA@mail.gmail.com>
-Subject: Re: [PATCH net-next 2/2] drivers: net: dsa: mt7530: MT7530 optional
- GPIO support
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=TqQMMmVG//s097FZcK6S1d+MUdnJBT3N8IWJdlGCSdY=;
+        b=dA886S/8gKGJScICiiMhsQDVcDs7yXMRws7AodAdW6A34rnzYKHqBAPeMc1OnbSxIN
+         /y8w0V5f23i2OV/eqi96ipfpildcKQjqrx3Cq44UmCADUdkDoqKE0NtUorPL1apoYAvm
+         vPqeaSevdY1ZuV6hTcYqDB+7vgyxrf8Q05zOTo/lbaA1c0WkBODsuWRpwfBuLiGe/wQT
+         s7ddCkFscOyvLccnb+6zvpKNR8kRrZrpw/aO0nB1Hl5j8hH+b3jyYHe+MfWtZ1FLcJQF
+         04mBDeZ/vqP5H8ocYZezmzTmHxM01ihtQECiG9YxqpR4RXBs3WSCOCNiGz8LRQJ53aSK
+         eamg==
+X-Gm-Message-State: AOAM532/2G4h2sMoeaAjxhcE9Rq5fZ+Z0TQEVqv09bvUporakHisUWXT
+        6rn/hdi8c5GxqC4ExXReOV0=
+X-Google-Smtp-Source: ABdhPJxqhexf4kPL914wqbd3XhrF0WLk2Dmhk3wPJ0oFcVMccX9vwvzyZgV6p+0xwhhjVShAmlSr8g==
+X-Received: by 2002:a17:906:7689:: with SMTP id o9mr5102315ejm.324.1610372632156;
+        Mon, 11 Jan 2021 05:43:52 -0800 (PST)
+Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
+        by smtp.gmail.com with ESMTPSA id t26sm7120228eji.22.2021.01.11.05.43.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Jan 2021 05:43:51 -0800 (PST)
+Date:   Mon, 11 Jan 2021 15:43:49 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     DENG Qingfang <dqfext@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        linux-gpio@vger.kernel.org, Pavel Machek <pavel@ucw.cz>,
+        Dan Murphy <dmurphy@ti.com>, linux-leds@vger.kernel.org
 Cc:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
@@ -64,30 +64,37 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Sean Wang <sean.wang@mediatek.com>,
         Landen Chao <Landen.Chao@mediatek.com>,
         Philipp Zabel <p.zabel@pengutronix.de>,
-        netdev <netdev@vger.kernel.org>, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>, linux-kernel@vger.kernel.org,
-        =?UTF-8?Q?Ren=C3=A9_van_Dorst?= <opensource@vdorst.com>,
-        Frank Wunderlich <frank-w@public-files.de>
-Content-Type: text/plain; charset="UTF-8"
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Frank Wunderlich <frank-w@public-files.de>,
+        =?utf-8?B?UmVuw6k=?= van Dorst <opensource@vdorst.com>
+Subject: Re: [PATCH net-next 0/2] dsa: add MT7530 GPIO support
+Message-ID: <20210111134349.vdhyebdllbaakukk@skbuf>
+References: <20210111054428.3273-1-dqfext@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210111054428.3273-1-dqfext@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 11, 2021 at 7:04 PM Russell King - ARM Linux admin
-<linux@armlinux.org.uk> wrote:
->
-> FYI, Documentation/driver-api/gpio/consumer.rst says:
->
->   For output GPIOs, the value provided becomes the initial output value.
->   This helps avoid signal glitching during system startup.
->
-> Setting the pin to be an output, and then setting its initial value
-> does not avoid the glitch. You may wish to investigate whether you
-> can set the value before setting the pin as an output to avoid this
-> issue.
->
+On Mon, Jan 11, 2021 at 01:44:26PM +0800, DENG Qingfang wrote:
+> MT7530's LED controller can be used as GPIO controller. Add support for
+> it.
+> 
+> DENG Qingfang (2):
+>   dt-bindings: net: dsa: add MT7530 GPIO controller binding
+>   drivers: net: dsa: mt7530: MT7530 optional GPIO support
+> 
+>  .../devicetree/bindings/net/dsa/mt7530.txt    |  6 ++
+>  drivers/net/dsa/mt7530.c                      | 96 +++++++++++++++++++
+>  drivers/net/dsa/mt7530.h                      | 20 ++++
+>  3 files changed, 122 insertions(+)
+> 
+> -- 
+> 2.25.1
 
-So, setting the Output Enable bit _after_ setting the direction and
-initial value should avoid this issue. Right?
+Adding GPIO and LED maintainers to also have a look.
+https://patchwork.kernel.org/project/netdevbpf/cover/20210111054428.3273-1-dqfext@gmail.com/
