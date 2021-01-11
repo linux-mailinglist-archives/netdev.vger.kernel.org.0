@@ -2,198 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B0B8E2F21BA
-	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 22:25:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6ADD62F21C5
+	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 22:27:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730682AbhAKVYy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jan 2021 16:24:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42516 "EHLO
+        id S1730511AbhAKV1M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jan 2021 16:27:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43008 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725917AbhAKVYy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 16:24:54 -0500
-Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B66A1C061786;
-        Mon, 11 Jan 2021 13:24:13 -0800 (PST)
-Received: by mail-yb1-xb34.google.com with SMTP id d37so180733ybi.4;
-        Mon, 11 Jan 2021 13:24:13 -0800 (PST)
+        with ESMTP id S1728040AbhAKV1L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 16:27:11 -0500
+Received: from mail-yb1-xb2f.google.com (mail-yb1-xb2f.google.com [IPv6:2607:f8b0:4864:20::b2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05396C061786;
+        Mon, 11 Jan 2021 13:26:31 -0800 (PST)
+Received: by mail-yb1-xb2f.google.com with SMTP id o144so206686ybc.0;
+        Mon, 11 Jan 2021 13:26:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=oBdVyCE2HN+vpEpmvaUmM7gpHjvI8cKVGXfiI8pp0I0=;
-        b=ioQM036GEhCVStlE/8p5hnAz1ltPE4XAT6DY5EUZy2JTLfLmA4IP+38eDcFGPvpJga
-         eoNApfGlnWCwdRXWHAQM2rt3O1Le5fTS8gCeGB61elcD7c7rezo8daukKHWvsWZaPPak
-         umAR/33jmk+OiBJW3ow5jPb+AUsdD71YSuwH9vyGQD6xatFTDNqwvKvBSEwGRkFiwGwP
-         TObRpMakHd/oUI6ZF1kKRJldcooK5V7QIar3cGJpfOHa5CxM2i7rw+RRn6Gqprl1Rzv3
-         iMg94DZDdirpCqw1KBx4T0K9JPn9d4hlv+KO2OBdIk8+g1F+mC1Bf6vjTc3v/tvrl+Ff
-         nFVw==
+        bh=tjllqEyKM88EH7GnAr5mHS1NBvuQVypXlf2lHBHW2h8=;
+        b=dTDw8E7JdjS+tNo4j2oC6bEIh2G5rrYBdS1ekzOUdZK3b/GE62532oXezpqMeG5VU9
+         Ilb6c+l4v1YWVoWUiZgPkXTMb3zGz5eDP8blGlSbut7tAYUjHHkPQoBy3IhOuUUFOmDd
+         7R2aAO5iopWXm4imIj0iQXI+monbEoxIhXZtLVM6+KlHbD24UHLr1cZSXH6I+Fbdl2+9
+         9gIn5o5SVcbIpYctTu0W0QLHBm2XkWTICD4LT8rAAzL6adPTeVEd4zG5Ii8myvfMSwsz
+         gOuhlv/XQb1zl180V48ZnyQGSsPmSed9tWrVtxjEwBHxfiFF6TVXF2pjakeaZODuYxFk
+         M5Xw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=oBdVyCE2HN+vpEpmvaUmM7gpHjvI8cKVGXfiI8pp0I0=;
-        b=ucTHb6Z1dH7xb/891DTL07h1FuC2BVygzngnS/8/1Ey83YwtIDUR/VszN3fOSMXK5d
-         YnSs0X+po3MaCpXwwIm21wcl2rz09t189yjMsq2+WbXdax05UcFuPhhnHp5d5knDzEg4
-         3VoIzWhYxyymUJptyQIBnHW0RmeSnJP3Vn682DX9r9gNcmmA/BDnnr9MipGwtE+Tuz4U
-         31GY0w7U8UvuHfB68CWM/VQrXq2Cs+gzmEGEbqVaqh19p76FJsDaAm7lvllkxfMtkDtn
-         kwhSwijvnREZ1KLlMEpNtXH0aoT+cKfpTOnvPVaMyyRCC6mpBWMYvZMQuH+6TkMRsI+A
-         4AZQ==
-X-Gm-Message-State: AOAM532WGRF7UYqXtAhXhqBrg5HjsS1UABVRv4UXUcmVUVDM6UzoiD0O
-        8edBuABT5SKAbBpXwqruUEwwsM4c+NugbD/3fAI=
-X-Google-Smtp-Source: ABdhPJyKV/u5WB8kkd1V58UPEfiVgu7oFJJaT6fi9MI8b6GouYgos/rSiWyAs2pJtMGuE7UNvCq1wwLJNWBfsDXvi4M=
-X-Received: by 2002:a25:4107:: with SMTP id o7mr2430493yba.459.1610400253047;
- Mon, 11 Jan 2021 13:24:13 -0800 (PST)
+        bh=tjllqEyKM88EH7GnAr5mHS1NBvuQVypXlf2lHBHW2h8=;
+        b=axzfobyHqrJlpvtOsob8nCYzyUl7PHgA6NT4QNzXiYGG9Obz6Jg+BB2w+jJBDhuIDG
+         APlqMWnue4dEGBrldULWQ8aTSAq/dAWQheKDXw2FNuGFW9RoEYqXiWtikwlJbSSM2NDr
+         DUk4kET4f9dzaI6efBsIdkdtrB0A6bfj4aYVjiIZJ2+S2a3Ewnjq1ugsKUxGn+HzFWnL
+         z4CDiORnWBspqJxFwXjfuzOEgk5kg6PVK5pOD0WTbqpJAfqXvCVAhwEuORMYr0ovmUXc
+         azJgzZJsg3wQLDC9yRpc4GbJnITjfkdVkpirzjaLHwzhqmh+568Pa+3RG3KhlLQ8sPgO
+         Fo1Q==
+X-Gm-Message-State: AOAM531eTpdifPZ2srPh6dcACT1bvJ81OZBq5Ue3Kb8XcwKM2O6FZ4JW
+        T1Tad0UisZ2mb0DNPVN/JRtY3NzWYYGmMhSoGt0=
+X-Google-Smtp-Source: ABdhPJz+xANnQaP7THd52RhWQ9GEsmGwPpUfj1NnncTYb1nLMlFGblwy/nRcrYkCsafb8MXvWtSigNf4L/gKbZqlICM=
+X-Received: by 2002:a25:c7c6:: with SMTP id w189mr2329905ybe.403.1610400390228;
+ Mon, 11 Jan 2021 13:26:30 -0800 (PST)
 MIME-Version: 1.0
-References: <20210111180609.713998-1-natechancellor@gmail.com>
- <CAK7LNAQ=38BUi-EG5v2UiuAF-BOsVe5BTd-=jVYHHHPD7ikS5A@mail.gmail.com>
- <20210111193400.GA1343746@ubuntu-m3-large-x86> <CAK7LNASZuWp=aPOCKo6QkdHwM5KG6MUv8305v3x-2yR7cKEX-w@mail.gmail.com>
- <20210111200010.GA3635011@ubuntu-m3-large-x86>
-In-Reply-To: <20210111200010.GA3635011@ubuntu-m3-large-x86>
+References: <20210111191650.1241578-1-jolsa@kernel.org> <CAEf4BzboXkJ96z45+CNJ0QNf74sR9=Ew7Nr94eXiBUk_5w-mDA@mail.gmail.com>
+ <20210111211719.GD1210240@krava>
+In-Reply-To: <20210111211719.GD1210240@krava>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 11 Jan 2021 13:24:02 -0800
-Message-ID: <CAEf4BzaL18a2+j3EYaD7jcnbJzqwG2MuBxXR2iRZ3KV9Jwrj6w@mail.gmail.com>
-Subject: Re: [PATCH] bpf: Hoise pahole version checks into Kconfig
-To:     Nathan Chancellor <natechancellor@gmail.com>
-Cc:     Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Alexei Starovoitov <ast@kernel.org>,
+Date:   Mon, 11 Jan 2021 13:26:19 -0800
+Message-ID: <CAEf4BzaYGguAfGNW8A31h_TW_UVJd8tjQT+Z9475Bwz1qZ87jw@mail.gmail.com>
+Subject: Re: [PATCH] bpf: Prevent double bpf_prog_put call from bpf_tracing_prog_attach
+To:     Jiri Olsa <jolsa@redhat.com>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Sedat Dilek <sedat.dilek@gmail.com>
+        KP Singh <kpsingh@chromium.org>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 11, 2021 at 12:00 PM Nathan Chancellor
-<natechancellor@gmail.com> wrote:
+On Mon, Jan 11, 2021 at 1:17 PM Jiri Olsa <jolsa@redhat.com> wrote:
 >
-> On Tue, Jan 12, 2021 at 04:50:50AM +0900, Masahiro Yamada wrote:
-> > On Tue, Jan 12, 2021 at 4:34 AM Nathan Chancellor
-> > <natechancellor@gmail.com> wrote:
+> On Mon, Jan 11, 2021 at 12:34:48PM -0800, Andrii Nakryiko wrote:
+> > On Mon, Jan 11, 2021 at 11:18 AM Jiri Olsa <jolsa@kernel.org> wrote:
 > > >
-> > > On Tue, Jan 12, 2021 at 04:19:01AM +0900, Masahiro Yamada wrote:
-> > > > On Tue, Jan 12, 2021 at 3:06 AM Nathan Chancellor
-> > > > <natechancellor@gmail.com> wrote:
-> > > > >
-> > > > > After commit da5fb18225b4 ("bpf: Support pre-2.25-binutils objcopy for
-> > > > > vmlinux BTF"), having CONFIG_DEBUG_INFO_BTF enabled but lacking a valid
-> > > > > copy of pahole results in a kernel that will fully compile but fail to
-> > > > > link. The user then has to either install pahole or disable
-> > > > > CONFIG_DEBUG_INFO_BTF and rebuild the kernel but only after their build
-> > > > > has failed, which could have been a significant amount of time depending
-> > > > > on the hardware.
-> > > > >
-> > > > > Avoid a poor user experience and require pahole to be installed with an
-> > > > > appropriate version to select and use CONFIG_DEBUG_INFO_BTF, which is
-> > > > > standard for options that require a specific tools version.
-> > > > >
-> > > > > Suggested-by: Sedat Dilek <sedat.dilek@gmail.com>
-> > > > > Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
-> > > >
-> > > >
-> > > >
-> > > > I am not sure if this is the right direction.
-> > > >
-> > > >
-> > > > I used to believe moving any tool test to the Kconfig
-> > > > was the right thing to do.
-> > > >
-> > > > For example, I tried to move the libelf test to Kconfig,
-> > > > and make STACK_VALIDATION depend on it.
-> > > >
-> > > > https://patchwork.kernel.org/project/linux-kbuild/patch/1531186516-15764-1-git-send-email-yamada.masahiro@socionext.com/
-> > > >
-> > > > It was rejected.
-> > > >
-> > > >
-> > > > In my understanding, it is good to test target toolchains
-> > > > in Kconfig (e.g. cc-option, ld-option, etc).
-> > > >
-> > > > As for host tools, in contrast, it is better to _intentionally_
-> > > > break the build in order to let users know that something needed is missing.
-> > > > Then, they will install necessary tools or libraries.
-> > > > It is just a one-time setup, in most cases,
-> > > > just running 'apt install' or 'dnf install'.
-> > > >
-> > > >
-> > > >
-> > > > Recently, a similar thing happened to GCC_PLUGINS
-> > > > https://patchwork.kernel.org/project/linux-kbuild/patch/20201203125700.161354-1-masahiroy@kernel.org/#23855673
-> > > >
-> > > >
-> > > >
-> > > >
-> > > > Following this pattern, if a new pahole is not installed,
-> > > > it might be better to break the build instead of hiding
-> > > > the CONFIG option.
-> > > >
-> > > > In my case, it is just a matter of 'apt install pahole'.
-> > > > On some distributions, the bundled pahole is not new enough,
-> > > > and people may end up with building pahole from the source code.
+> > > The bpf_tracing_prog_attach error path calls bpf_prog_put
+> > > on prog, which causes refcount underflow when it's called
+> > > from link_create function.
 > > >
-> > > This is fair enough. However, I think that parts of this patch could
-> > > still be salvaged into something that fits this by making it so that if
-> > > pahole is not installed (CONFIG_PAHOLE_VERSION=0) or too old, the build
-> > > errors at the beginning, rather at the end. I am not sure where the best
-> > > place to put that check would be though.
+> > >   link_create
+> > >     prog = bpf_prog_get              <-- get
+> > >     ...
+> > >     tracing_bpf_link_attach(prog..
+> > >       bpf_tracing_prog_attach(prog..
+> > >         out_put_prog:
+> > >           bpf_prog_put(prog);        <-- put
+> > >
+> > >     if (ret < 0)
+> > >       bpf_prog_put(prog);            <-- put
+> > >
+> > > Removing bpf_prog_put call from bpf_tracing_prog_attach
+> > > and making sure its callers call it instead.
+> > >
+> > > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> > > ---
 > >
-> > Me neither.
-> >
-> >
-> > Collecting tool checks to the beginning would be user-friendly.
-> > However, scattering the related code to multiple places is not
-> > nice from the developer point of view.
-> >
-> > How big is it a problem if the build fails
-> > at the very last stage?
-> >
-> > You can install pahole, then resume "make".
-> >
-> > Kbuild skips unneeded building, then you will
-> > be able to come back to the last build stage shortly.
+> > I also double-checked all other attach functions called from
+> > link_create, they all seem to be fine and don't put prog on failure,
+> > so this should be the only needed fix. Also, missing:
 >
-> There will often be times where I am testing multiple configurations in
-> a row serially and the longer that a build takes to fail, the longer it
-> takes for me to get a "real" result. That is my motivation behind this
-> change. If people are happy with the current state of things, I will
-> just stick with universally disabling CONFIG_DEBUG_INFO_BTF in my test
-> framework.
+> it'd be easier to spot this if we use refcount_t instead of the atomic64_t,
+> I replaced it for this refcount and got nice console warning for this bug
 >
+> then I saw:
+>   85192dbf4de0 bpf: Convert bpf_prog refcnt to atomic64_t
+>
+> so I guess we need something like refcount64_t first
 
-I see where Masahiro is coming from. Not seeing CONFIG_DEBUG_INFO_BTF
-option because pahole is not installed (or is not new enough) is, I
-believe, for the majority of users, a much bigger confusion. Currently
-they will get a specific and helpful message at the link time, which
-is much more actionable, IMO. Once you fix pahole dependency, running
-make again would skip all the already compiled code and would start
-linking almost immediately, so if you are doing build locally there is
-a very little downside.
+Having a non-failing refcount simplifies code quite a lot. I was
+having a problem having to deal with potential refcount failure during
+mmap()'ing, where it's impossible to communicate failure back to the
+kernel. So if atomic64_t would never fail, but would generate a
+warning on underflow, then yeah, it would be an improvement.
 
-I understand your situation is a bit different in that you are
-building from scratch every single time (probably some sort of CI
-setup, right?). But it's a rarer and more power-user use case. And
-fixing pahole dependency is a one-time fix, so it's frustrating, but
-fixable on your side.
-
-As for disabling CONFIG_DEBUG_INFO_BTF. It's up to you and depends on
-what you are after, but major distros now enable it by default, so if
-you want to resemble common kernel configs, it's probably better to
-stick with it.
-
-Ideally, I'd love for Kconfig to have a way to express tool
-dependencies in such a way that it's still possible to choose desired
-options and if the build environment is lacking dependencies then it
-would be communicated early on. I have no idea if that's doable and
-how much effort it'd take, though.
-
-
-> Cheers,
-> Nathan
+>
+> jirka
+>
+> >
+> > Fixes: 4a1e7c0c63e0 ("bpf: Support attaching freplace programs to
+> > multiple attach points")
+> >
+> > Acked-by: Andrii Nakryiko <andrii@kernel.org>
+> >
+> > >  kernel/bpf/syscall.c | 6 ++++--
+> > >  1 file changed, 4 insertions(+), 2 deletions(-)
+> > >
+> > > diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+> > > index c3bb03c8371f..e5999d86c76e 100644
+> > > --- a/kernel/bpf/syscall.c
+> > > +++ b/kernel/bpf/syscall.c
+> > > @@ -2712,7 +2712,6 @@ static int bpf_tracing_prog_attach(struct bpf_prog *prog,
+> > >  out_put_prog:
+> > >         if (tgt_prog_fd && tgt_prog)
+> > >                 bpf_prog_put(tgt_prog);
+> > > -       bpf_prog_put(prog);
+> > >         return err;
+> > >  }
+> > >
+> > > @@ -2825,7 +2824,10 @@ static int bpf_raw_tracepoint_open(const union bpf_attr *attr)
+> > >                         tp_name = prog->aux->attach_func_name;
+> > >                         break;
+> > >                 }
+> > > -               return bpf_tracing_prog_attach(prog, 0, 0);
+> > > +               err = bpf_tracing_prog_attach(prog, 0, 0);
+> > > +               if (err >= 0)
+> > > +                       return err;
+> > > +               goto out_put_prog;
+> > >         case BPF_PROG_TYPE_RAW_TRACEPOINT:
+> > >         case BPF_PROG_TYPE_RAW_TRACEPOINT_WRITABLE:
+> > >                 if (strncpy_from_user(buf,
+> > > --
+> > > 2.26.2
+> > >
+> >
+>
