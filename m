@@ -2,87 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EF0F92F19BB
-	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 16:33:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AF0132F19BF
+	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 16:34:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732182AbhAKPcJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jan 2021 10:32:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51022 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726375AbhAKPcI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 10:32:08 -0500
-Received: from mail-wm1-x333.google.com (mail-wm1-x333.google.com [IPv6:2a00:1450:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51715C0617A2;
-        Mon, 11 Jan 2021 07:31:28 -0800 (PST)
-Received: by mail-wm1-x333.google.com with SMTP id 190so210849wmz.0;
-        Mon, 11 Jan 2021 07:31:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
-        bh=ainL+gf/mI7XGV06pxoex50mFeblVQiOmvn0PY1hDZ8=;
-        b=agB7ehSa0PIlEPE4KyHhmZZmMUqzg1u04v0in/yEL5tuvYA93oKwunMSeJ8phX0p35
-         OuHS3qwle3aaF8WRyDmkZYNpnhfkVGxmwBvUxQxN1jX/suBeB82Lq5L5Wp15sIoB5KrZ
-         cNCWLY2Mejz4LeREQ2gGltGcA5CD+65tbreoSuGSK3q+Toq17pA1d4Nx1UhOS+CNbMjS
-         CnDbxXCFzge0PJupCVdV1IlmYEz1aR1NzXdwAzHi2rYQ1Vm770GkWis8iMkNubDIYKmk
-         qdQxytEMGz/0IDiRUDHWLI0vKtqJXQg0IoOhVr9ehDyQjaLAW5BV62MIGY2xpxvW/xsZ
-         +TOQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=ainL+gf/mI7XGV06pxoex50mFeblVQiOmvn0PY1hDZ8=;
-        b=lFSJNW6FglPyLPWV95UAgqbXePAR1q0Ic+G2wNwu7Y0qtKlzCVV/0RsGxcOCByiGaa
-         4PKTFmIT/oCdacjBmb+QjCT9iHvIKIQOjc9ki+Td5pm+W0Ujpem8tMf0HPwKcLjvL+Re
-         0oCB6QAPCsz3C2ZpeiqmKPRCUQtylrDQN+M+R6dUmYz1zDEeAjLGXY3fEdZvK79ZYSqy
-         S5H2Y7DgbmyR63ktr0eUfcQtXNWDCj43Zky21UYQ8kS+uM7A252ILTixBoYMD+mC6oqG
-         TyDiWY/SEy3QC21zBNph5M5eCR7qxIyp4pEP8W67cuXDhXyRhKVAv+1uTlVl2yyjdSRD
-         0gWg==
-X-Gm-Message-State: AOAM530pIPH1MAV2EDJ0SgMUjyJHhY3YEHIG411TELLNXbm/yLF6S6CR
-        pOVxSs0Pew7pr5nU3Jr2b2y1hDu7egfjAkiL
-X-Google-Smtp-Source: ABdhPJyqoE4ADfB0vSxGuNGJ/iRaxXz+w3WROj3M2s1CkONuqGu97pJymdlM13p6hVyD+Tb5gcppZQ==
-X-Received: by 2002:a05:600c:258:: with SMTP id 24mr272127wmj.16.1610379086816;
-        Mon, 11 Jan 2021 07:31:26 -0800 (PST)
-Received: from ubuntu (bzq-233-168-31-62.red.bezeqint.net. [31.168.233.62])
-        by smtp.gmail.com with ESMTPSA id b10sm184835wmj.5.2021.01.11.07.31.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Jan 2021 07:31:26 -0800 (PST)
-Date:   Mon, 11 Jan 2021 17:31:23 +0200
-From:   giladreti <gilad.reti@gmail.com>
-To:     bpf@vger.kernel.org, Yonghong Song <yhs@fb.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>, netdev@vger.kernel.org,
+        id S1732625AbhAKPdT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jan 2021 10:33:19 -0500
+Received: from mail.kernel.org ([198.145.29.99]:56748 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729871AbhAKPdS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 11 Jan 2021 10:33:18 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 6F3C922795;
+        Mon, 11 Jan 2021 15:32:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1610379157;
+        bh=5b00I49SQeSeQ1irJIjVV/jPcdzaMd0WfUJdXSf4GUs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=SZmlS63uOGmQQ9tlzQKnSi55tx1tu6dsWsXqWEpwIldadW5HQRLfhV7w515pTxp3f
+         uydJHj5/ncyzqxdXQ7k+8HVPL9aZcCFQgwgfDKlexfnAtLFppMIwLl/1NzQ5h0EZu5
+         6H6uhsPzZtTWtld+WdyRrBFRuhJX/8E8tvQqNz7R7kun8PTHmGzceozy82SmH88tnU
+         L8QDNOX+EodvcrI7S4x2RJm2e3jssCOBT1uLHR/6jL2wBjRGViGAG0iKKRmElg+AfK
+         XaTlG/5rdBAqfn/X1k23TowT4f8xKTYojc4kIobVXI9DeL/YJnrqOBEb+C2r+9j2Wj
+         3oeTePzdkL8Hg==
+Date:   Mon, 11 Jan 2021 16:32:32 +0100
+From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
+To:     Pali =?UTF-8?B?Um9ow6Fy?= <pali@kernel.org>
+Cc:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Thomas Schreiber <tschreibe@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH] Signed-off-by: giladreti <gilad.reti@gmail.com>
-Message-ID: <20210111153123.GA423936@ubuntu>
+Subject: Re: [PATCH v3 2/2] net: sfp: add mode quirk for GPON module
+ Ubiquiti U-Fiber Instant
+Message-ID: <20210111163232.18e7edcb@kernel.org>
+In-Reply-To: <20210111113909.31702-3-pali@kernel.org>
+References: <20201230154755.14746-1-pali@kernel.org>
+        <20210111113909.31702-1-pali@kernel.org>
+        <20210111113909.31702-3-pali@kernel.org>
+X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Added support for pointer to mem register spilling, to allow the verifier
-to track pointer to valid memory addresses. Such pointers are returned
-for example by a successful call of the bpf_ringbuf_reserve helper.
+On Mon, 11 Jan 2021 12:39:09 +0100
+Pali Roh=C3=A1r <pali@kernel.org> wrote:
 
-This patch was suggested as a solution by Yonghong Song.
----
- kernel/bpf/verifier.c | 2 ++
- 1 file changed, 2 insertions(+)
+> SFP GPON module Ubiquiti U-Fiber Instant has in its EEPROM stored nonsense
+> information. It claims that support all transceiver types including 10G
+> Ethernet which is not truth. So clear all claimed modes and set only one
+> mode which module supports: 1000baseX_Full.
 
-diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index 17270b8404f1..36af69fac591 100644
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -2217,6 +2217,8 @@ static bool is_spillable_regtype(enum bpf_reg_type type)
- 	case PTR_TO_RDWR_BUF:
- 	case PTR_TO_RDWR_BUF_OR_NULL:
- 	case PTR_TO_PERCPU_BTF_ID:
-+	case PTR_TO_MEM:
-+	case PTR_TO_MEM_OR_NULL:
- 		return true;
- 	default:
- 		return false;
--- 
-2.27.0
+The Ubiquiti U-Fiber Instant SFP GPON module has nonsensical
+information stored in int EEPROM. It claims to support all transceiver
+types including 10G Ethernet. Clear all claimed modes and set only
+1000baseX_Full, which is the only one supported.
 
+> Also this module have set SFF phys_id in its EEPROM. Kernel SFP subsustem
+> currently does not allow to use SFP modules detected as SFF. Therefore add
+> and exception for this module so it can be detected as supported.
+
+This module has also phys_id set to SFF, and the SFP subsystem
+currently does not allow to use SFP modules detected as SFFs. Add
+exception for this module so it can be detected as supported.
+
+> This change finally allows to detect and use SFP GPON module Ubiquiti
+> U-Fiber Instant on Linux system.
+>
+> Original EEPROM content is as follows (where XX is serial number):
+>=20
+> 00: 02 04 0b ff ff ff ff ff ff ff ff 03 0c 00 14 c8    ???........??.??
+> 10: 00 00 00 00 55 42 4e 54 20 20 20 20 20 20 20 20    ....UBNT
+> 20: 20 20 20 20 00 18 e8 29 55 46 2d 49 4e 53 54 41        .??)UF-INSTA
+> 30: 4e 54 20 20 20 20 20 20 34 20 20 20 05 1e 00 36    NT      4   ??.6
+> 40: 00 06 00 00 55 42 4e 54 XX XX XX XX XX XX XX XX    .?..UBNTXXXXXXXX
+> 50: 20 20 20 20 31 34 30 31 32 33 20 20 60 80 02 41        140123  `??A
