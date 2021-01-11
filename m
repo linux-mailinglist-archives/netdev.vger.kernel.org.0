@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 15C602F0C84
+	by mail.lfdr.de (Postfix) with ESMTP id 8D6EB2F0C85
 	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 06:30:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727274AbhAKF3Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1727242AbhAKF3Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Mon, 11 Jan 2021 00:29:25 -0500
-Received: from mail.kernel.org ([198.145.29.99]:59788 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:59786 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725871AbhAKF3Y (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1725831AbhAKF3Y (ORCPT <rfc822;netdev@vger.kernel.org>);
         Mon, 11 Jan 2021 00:29:24 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 3EA9522A83;
+Received: by mail.kernel.org (Postfix) with ESMTPSA id A9FF4225AC;
         Mon, 11 Jan 2021 05:28:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1610342885;
-        bh=+PgYJSdZLWU1lW6H1U/Yz+sOq9dLLOXqLYWdB9rBy7g=;
+        bh=SyB95GF/b1BdS3Toh2nKj6JApUe2Ipjjc0ztpUVfpjQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=b+XunlfzG6chT31SqfjgMdHpaf9MfeSnjiOTFqMWJj2j5UqUp7AZOi3AMIWbHXbeq
-         RcQTWfvZxJXPZyAfIkoMPPBKqMHE1n0HwIlx/DVdFwarPF5M3yWykneaSOJvxTJe/5
-         WI3aoN655LW9Z/xrTYMhn6JfxBbMjZ8IHeAoTwGjXIcR8awxZ/ABt+DZQbOU/AkDks
-         mH5gpV66TmeglnGFnGR9Pj2YAcssaK7LOTU8ivm0RhScldPDqqudwWrLInfcSZX54M
-         qXhxEQ+jS0G4mhWQGYF2sIz05o/mIAHW9On5BiWNd6pWel0s9g+PYW/o7y+HyIspbR
-         pb7XYDYKKssIQ==
+        b=Ihjf6RW42E4SC8/eD5ac7865n6iHngTvEWgAit2wxupWZ+OStpi5M1KRGvMlN/c87
+         d85diDMUB+GTHDU2FPuY9ouN+TptG9WRHFQ0AYMLQDjAvQoYU9ne51ovkcc5kGrbBr
+         VEmc0RrtUt5SJE0ARJb+Bx/X6WGhq83qf+4ODH2hYq7GTh2eAo5XAyF1fAoK2LJhEv
+         109Fl9Z96AnqzIpmVUzEVkNrseQ7hrY9HF3r8OGUeq7rwlC3GlZkCnjBLGMR5LVqI2
+         78XmXN2bMCDy3n1fagpXw+siI5xFZK7+O0k+MBM3lNsA8dpny8bjDx1eqmUSwpb5k8
+         Y/bqZsukR1aSA==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, corbet@lwn.net,
-        Jakub Kicinski <kuba@kernel.org>, Felix Fietkau <nbd@nbd.name>,
-        John Crispin <john@phrozen.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Mark Lee <Mark-MC.Lee@mediatek.com>
-Subject: [PATCH net 6/9] MAINTAINERS: mtk-eth: remove Felix
-Date:   Sun, 10 Jan 2021 21:27:56 -0800
-Message-Id: <20210111052759.2144758-7-kuba@kernel.org>
+        Jakub Kicinski <kuba@kernel.org>,
+        Wensong Zhang <wensong@linux-vs.org>,
+        Simon Horman <horms@verge.net.au>, Julian Anastasov <ja@ssi.bg>
+Subject: [PATCH net 7/9] MAINTAINERS: ipvs: move Wensong Zhang to CREDITS
+Date:   Sun, 10 Jan 2021 21:27:57 -0800
+Message-Id: <20210111052759.2144758-8-kuba@kernel.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20210111052759.2144758-1-kuba@kernel.org>
 References: <20210111052759.2144758-1-kuba@kernel.org>
@@ -42,54 +41,60 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Drop Felix from Mediatek Ethernet driver maintainers.
-We haven't seen any tags since the initial submission.
+Move Wensong Zhang to credits, we haven't heard from
+him in years.
 
-Not adding a CREDITS entry because summarizing Felix's
-contributions as "initial Mediatek MT7623 driver" is
-really selling it short. And Felix is not gone, so he
-can write his own description :P
-
-Subsystem MEDIATEK ETHERNET DRIVER
-  Changes 39 / 196 (19%)
-  Last activity: 2020-04-07
-  Felix Fietkau <nbd@nbd.name>:
-  John Crispin <john@phrozen.org>:
-    Author 6427dc1da51d 2017-08-09 00:00:00 28
-    Tags 6427dc1da51d 2017-08-09 00:00:00 38
-  Sean Wang <sean.wang@mediatek.com>:
-    Author 880c2d4b2fdf 2019-06-03 00:00:00 50
-    Tags a5d75538295b 2020-04-07 00:00:00 55
-  Mark Lee <Mark-MC.Lee@mediatek.com>:
-    Author 8d66a8183d0c 2019-11-14 00:00:00 4
-    Tags 8d66a8183d0c 2019-11-14 00:00:00 4
+Subsystem IPVS
+  Changes 83 / 226 (36%)
+  Last activity: 2020-11-27
+  Wensong Zhang <wensong@linux-vs.org>:
+  Simon Horman <horms@verge.net.au>:
+    Committer c24b75e0f923 2019-10-24 00:00:00 33
+    Tags 7980d2eabde8 2020-10-12 00:00:00 76
+  Julian Anastasov <ja@ssi.bg>:
+    Author 7980d2eabde8 2020-10-12 00:00:00 26
+    Tags 4bc3c8dc9f5f 2020-11-27 00:00:00 78
   Top reviewers:
-    [8]: andrew@lunn.ch
-    [7]: f.fainelli@gmail.com
-  INACTIVE MAINTAINER Felix Fietkau <nbd@nbd.name>
+    [6]: horms+renesas@verge.net.au
+  INACTIVE MAINTAINER Wensong Zhang <wensong@linux-vs.org>
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
-CC: Felix Fietkau <nbd@nbd.name>
-CC: John Crispin <john@phrozen.org>
-CC: Sean Wang <sean.wang@mediatek.com>
-CC: Mark Lee <Mark-MC.Lee@mediatek.com>
+CC: Wensong Zhang <wensong@linux-vs.org>
+CC: Simon Horman <horms@verge.net.au>
+CC: Julian Anastasov <ja@ssi.bg>
 ---
+ CREDITS     | 4 ++++
  MAINTAINERS | 1 -
- 1 file changed, 1 deletion(-)
+ 2 files changed, 4 insertions(+), 1 deletion(-)
 
+diff --git a/CREDITS b/CREDITS
+index 90384691876c..ce8eae8c5aa4 100644
+--- a/CREDITS
++++ b/CREDITS
+@@ -4183,6 +4183,10 @@ S: 1507 145th Place SE #B5
+ S: Bellevue, Washington 98007
+ S: USA
+ 
++N: Wensong Zhang
++E: wensong@linux-vs.org
++D: IP virtual server (IPVS).
++
+ N: Haojian Zhuang
+ E: haojian.zhuang@gmail.com
+ D: MMP support
 diff --git a/MAINTAINERS b/MAINTAINERS
-index 92fdc134ca14..b3e88594808a 100644
+index b3e88594808a..a5d69857f85a 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
-@@ -11165,7 +11165,6 @@ F:	Documentation/devicetree/bindings/dma/mtk-*
- F:	drivers/dma/mediatek/
+@@ -9325,7 +9325,6 @@ W:	http://www.adaptec.com/
+ F:	drivers/scsi/ips*
  
- MEDIATEK ETHERNET DRIVER
--M:	Felix Fietkau <nbd@nbd.name>
- M:	John Crispin <john@phrozen.org>
- M:	Sean Wang <sean.wang@mediatek.com>
- M:	Mark Lee <Mark-MC.Lee@mediatek.com>
+ IPVS
+-M:	Wensong Zhang <wensong@linux-vs.org>
+ M:	Simon Horman <horms@verge.net.au>
+ M:	Julian Anastasov <ja@ssi.bg>
+ L:	netdev@vger.kernel.org
 -- 
 2.26.2
 
