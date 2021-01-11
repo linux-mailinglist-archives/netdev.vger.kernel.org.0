@@ -2,94 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 89E182F24EE
+	by mail.lfdr.de (Postfix) with ESMTP id 1D8572F24ED
 	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 02:18:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405363AbhALAZ1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S2405371AbhALAZ1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Mon, 11 Jan 2021 19:25:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36200 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2403783AbhAKXGi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 18:06:38 -0500
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DBA7C061786
-        for <netdev@vger.kernel.org>; Mon, 11 Jan 2021 15:05:57 -0800 (PST)
-Received: by mail-yb1-xb4a.google.com with SMTP id e74so471200ybh.19
-        for <netdev@vger.kernel.org>; Mon, 11 Jan 2021 15:05:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=sender:date:message-id:mime-version:subject:from:to:cc;
-        bh=Qk10GgT+/yrIhTuRdpP09hyN5nT3qPv7TAoLnV3vR/E=;
-        b=MHgCPyrsCgnJwBdjxnoqaQng3URa3gAxCNTizIcDMo8Hw0obCscvRzwIz+REbuL3F+
-         yszsECWu60MN0wr0V9whz0uAODiOeNiVDuYax7VvcmilggjdquAYk18S8zLzeKZE1tRm
-         pB75GcByXSK9MsJBrstTn3AyWsyYrU4Cww9gxvftkzc0xJkz6xcvt/LPCb+9WYg2wTbP
-         6440mYQsO+uj8ok1leqym2PJZEtttbR029o4c7Hv0Xk5csQR4HOcGB1oRq4q1aR+ED23
-         aPSRB/CKXWKua1V8uugpLtUBRaIEF9mlCenUfCtFzR/48j1gUUBLIHXL/BRmDP4aQ4E7
-         Sdbg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:message-id:mime-version:subject:from
-         :to:cc;
-        bh=Qk10GgT+/yrIhTuRdpP09hyN5nT3qPv7TAoLnV3vR/E=;
-        b=APSUiOTa6UhjkFIrFolGxBcfMgCIjIsJtMFkg2kydZ+LAv2qT1qPtzVawtnwPFOFly
-         u33ofW0C3IHNOUUuiz/ars8xy9n11dchLqhiavSeP/HGpLFhNVZjaqy6+NYVaKvtlKqQ
-         HR+RkJDYLCNiBiOszbV5i32V/3FBQfSrXzoSGE8p0O+dDSMbmlkMD/eNbqOsfCDC3RFt
-         65mJpf3dDg2h6BMoOzoL0mQCy6QMAXfSdjJEm6iEUPKUBDW9f+RGN2UGF9OctyZg+We6
-         zwe7SpRkE34pe/oefgmGcsGbvufPJ09fI0vITktrrVjw9XhzXdraGp5XLcLU9vhdPpZM
-         3bXQ==
-X-Gm-Message-State: AOAM531O0TEvVcce4F3qnIQs/y/i45zLVy6z/G5agQZ1WakKdfQQJIRI
-        U6/1mKkzSuHeenZKYPWdqvJa+PHLMS4=
-X-Google-Smtp-Source: ABdhPJz1ALVk+8vBGrRIP6zz/vCDhhojamPygMkIT03ABgAEFsoKjwBeb03hOsuAAya78BwgKSVCrrKySE8=
-Sender: "ycheng via sendgmr" <ycheng@ycheng.svl.corp.google.com>
-X-Received: from ycheng.svl.corp.google.com ([2620:15c:2c4:201:f693:9fff:fef4:fc76])
- (user=ycheng job=sendgmr) by 2002:a25:d38e:: with SMTP id e136mr2917048ybf.281.1610406356681;
- Mon, 11 Jan 2021 15:05:56 -0800 (PST)
-Date:   Mon, 11 Jan 2021 15:05:52 -0800
-Message-Id: <20210111230552.2704579-1-ycheng@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.30.0.284.gd98b1dd5eaa7-goog
-Subject: [PATCH net-next] tcp: assign skb hash after tcp_event_data_sent
-From:   Yuchung Cheng <ycheng@google.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, edumazet@google.com, ncardwell@google.com,
-        Yuchung Cheng <ycheng@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Received: from www62.your-server.de ([213.133.104.62]:41986 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2403812AbhAKXK0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 18:10:26 -0500
+Received: from 30.101.7.85.dynamic.wline.res.cust.swisscom.ch ([85.7.101.30] helo=localhost)
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1kz6Jk-000Dkf-Sm; Tue, 12 Jan 2021 00:09:44 +0100
+From:   Daniel Borkmann <daniel@iogearbox.net>
+To:     ast@kernel.org
+Cc:     yhs@fb.com, bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Daniel Borkmann <daniel@iogearbox.net>
+Subject: [PATCH bpf-next v2 1/2] bpf: allow to retrieve sol_socket opts from sock_addr progs
+Date:   Tue, 12 Jan 2021 00:09:39 +0100
+Message-Id: <cba44439b801e5ddc1170e5be787f4dc93a2d7f9.1610406333.git.daniel@iogearbox.net>
+X-Mailer: git-send-email 2.21.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/26046/Mon Jan 11 13:34:14 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Move skb_set_hash_from_sk s.t. it's called after instead of before
-tcp_event_data_sent is called. This enables congestion control
-modules to change the socket hash right before restarting from
-idle (via the TX_START congestion event).
+The _bpf_setsockopt() is able to set some of the SOL_SOCKET level options,
+however, _bpf_getsockopt() has little support to actually retrieve them.
+This small patch adds few misc options such as SO_MARK, SO_PRIORITY and
+SO_BINDTOIFINDEX. For the latter getter and setter are added. The mark and
+priority in particular allow to retrieve the options from BPF cgroup hooks
+to then implement custom behavior / settings on the syscall hooks compared
+to other sockets that stick to the defaults, for example.
 
-Signed-off-by: Yuchung Cheng <ycheng@google.com>
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Signed-off-by: Neal Cardwell <ncardwell@google.com>
+Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
+Acked-by: Yonghong Song <yhs@fb.com>
 ---
- net/ipv4/tcp_output.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/core/filter.c | 25 +++++++++++++++++++++++--
+ 1 file changed, 23 insertions(+), 2 deletions(-)
 
-diff --git a/net/ipv4/tcp_output.c b/net/ipv4/tcp_output.c
-index f322e798a351..899d053cb10e 100644
---- a/net/ipv4/tcp_output.c
-+++ b/net/ipv4/tcp_output.c
-@@ -1319,7 +1319,6 @@ static int __tcp_transmit_skb(struct sock *sk, struct sk_buff *skb,
- 	skb_orphan(skb);
- 	skb->sk = sk;
- 	skb->destructor = skb_is_tcp_pure_ack(skb) ? __sock_wfree : tcp_wfree;
--	skb_set_hash_from_sk(skb, sk);
- 	refcount_add(skb->truesize, &sk->sk_wmem_alloc);
+diff --git a/net/core/filter.c b/net/core/filter.c
+index 255aeee72402..9ab94e90d660 100644
+--- a/net/core/filter.c
++++ b/net/core/filter.c
+@@ -4770,6 +4770,10 @@ static int _bpf_setsockopt(struct sock *sk, int level, int optname,
+ 				ifindex = dev->ifindex;
+ 				dev_put(dev);
+ 			}
++			fallthrough;
++		case SO_BINDTOIFINDEX:
++			if (optname == SO_BINDTOIFINDEX)
++				ifindex = val;
+ 			ret = sock_bindtoindex(sk, ifindex, false);
+ 			break;
+ 		case SO_KEEPALIVE:
+@@ -4932,8 +4936,25 @@ static int _bpf_getsockopt(struct sock *sk, int level, int optname,
  
- 	skb_set_dst_pending_confirm(skb, sk->sk_dst_pending_confirm);
-@@ -1390,6 +1389,7 @@ static int __tcp_transmit_skb(struct sock *sk, struct sk_buff *skb,
- 			      tcp_skb_pcount(skb));
+ 	sock_owned_by_me(sk);
  
- 	tp->segs_out += tcp_skb_pcount(skb);
-+	skb_set_hash_from_sk(skb, sk);
- 	/* OK, its time to fill skb_shinfo(skb)->gso_{segs|size} */
- 	skb_shinfo(skb)->gso_segs = tcp_skb_pcount(skb);
- 	skb_shinfo(skb)->gso_size = tcp_skb_mss(skb);
++	if (level == SOL_SOCKET) {
++		if (optlen != sizeof(int))
++			goto err_clear;
++
++		switch (optname) {
++		case SO_MARK:
++			*((int *)optval) = sk->sk_mark;
++			break;
++		case SO_PRIORITY:
++			*((int *)optval) = sk->sk_priority;
++			break;
++		case SO_BINDTOIFINDEX:
++			*((int *)optval) = sk->sk_bound_dev_if;
++			break;
++		default:
++			goto err_clear;
++		}
+ #ifdef CONFIG_INET
+-	if (level == SOL_TCP && sk->sk_prot->getsockopt == tcp_getsockopt) {
++	} else if (level == SOL_TCP && sk->sk_prot->getsockopt == tcp_getsockopt) {
+ 		struct inet_connection_sock *icsk;
+ 		struct tcp_sock *tp;
+ 
+@@ -4986,12 +5007,12 @@ static int _bpf_getsockopt(struct sock *sk, int level, int optname,
+ 		default:
+ 			goto err_clear;
+ 		}
++#endif
+ #endif
+ 	} else {
+ 		goto err_clear;
+ 	}
+ 	return 0;
+-#endif
+ err_clear:
+ 	memset(optval, 0, optlen);
+ 	return -EINVAL;
 -- 
-2.30.0.284.gd98b1dd5eaa7-goog
+2.21.0
 
