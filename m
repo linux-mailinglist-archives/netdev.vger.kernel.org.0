@@ -2,109 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 49E852F2084
-	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 21:16:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 28B8D2F2088
+	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 21:18:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391336AbhAKUQV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jan 2021 15:16:21 -0500
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:19112 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2390481AbhAKUQV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 15:16:21 -0500
-Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 10BK2bZ5080532;
-        Mon, 11 Jan 2021 15:15:39 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : references : mime-version : content-type :
- in-reply-to; s=pp1; bh=g9b2r2ULiJX+NO4AAw0QW9M2S8qCs3YANR/7x5Y5uq4=;
- b=HZr+IRyqYL39FTEuBtr9g+Ki9xtWRJD0Yer9j/ZGS4+jLI1F5CfOYEO43DaZmBdoXxkC
- +louV9vquVSMYBZVESGizp1cgeUFKx493XaTN2oUhr13XgzbU/3YVXZELnP5eT2CixKe
- Flf5WASciA8gSKf2B9vX6v7ZD6EdmmbzEfjiYFw7Ax8AlOLqdWFBeKChmAwwJM/rwGsI
- cf+iNXbEvCI/wWlpoq/mzhSXSzZTYZyV2KgPJmKak6FEYISdr2J6Nb1LJkE18Ka0UmT2
- h993r2YVxNdN6lmUUZwkJ571NjzvLe4RYWXfEYz5dJFwdRJv4tGGKxtvjKcJP8QK1IQ8 tQ== 
-Received: from ppma01dal.us.ibm.com (83.d6.3fa9.ip4.static.sl-reverse.com [169.63.214.131])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 360t0gf51x-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 11 Jan 2021 15:15:39 -0500
-Received: from pps.filterd (ppma01dal.us.ibm.com [127.0.0.1])
-        by ppma01dal.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 10BK7u4Z024088;
-        Mon, 11 Jan 2021 20:15:38 GMT
-Received: from b01cxnp22033.gho.pok.ibm.com (b01cxnp22033.gho.pok.ibm.com [9.57.198.23])
-        by ppma01dal.us.ibm.com with ESMTP id 35y448wcbh-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 11 Jan 2021 20:15:38 +0000
-Received: from b01ledav004.gho.pok.ibm.com (b01ledav004.gho.pok.ibm.com [9.57.199.109])
-        by b01cxnp22033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 10BKFb4122282664
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 11 Jan 2021 20:15:37 GMT
-Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id BEFEC112065;
-        Mon, 11 Jan 2021 20:15:37 +0000 (GMT)
-Received: from b01ledav004.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 97952112062;
-        Mon, 11 Jan 2021 20:15:37 +0000 (GMT)
-Received: from suka-w540.localdomain (unknown [9.85.154.19])
-        by b01ledav004.gho.pok.ibm.com (Postfix) with ESMTP;
-        Mon, 11 Jan 2021 20:15:37 +0000 (GMT)
-Received: by suka-w540.localdomain (Postfix, from userid 1000)
-        id 855C32E2874; Mon, 11 Jan 2021 12:15:34 -0800 (PST)
-Date:   Mon, 11 Jan 2021 12:15:34 -0800
-From:   Sukadev Bhattiprolu <sukadev@linux.ibm.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Dany Madden <drt@linux.ibm.com>,
-        Lijun Pan <ljp@linux.ibm.com>
-Subject: Re: [PATCH 5/7] ibmvnic: use a lock to serialize remove/reset
-Message-ID: <20210111201534.GB178503@us.ibm.com>
-References: <20210108071236.123769-1-sukadev@linux.ibm.com>
- <20210108071236.123769-6-sukadev@linux.ibm.com>
- <20210109194146.7c8ac5ce@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20210111035225.GB165065@us.ibm.com>
- <20210111114309.6de6a281@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S2391433AbhAKURA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jan 2021 15:17:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56118 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390782AbhAKUQ7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 15:16:59 -0500
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBC8AC061786;
+        Mon, 11 Jan 2021 12:16:18 -0800 (PST)
+Received: by mail-pl1-x62c.google.com with SMTP id g3so106387plp.2;
+        Mon, 11 Jan 2021 12:16:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3CsBtxxzWzgpFpPnqOKH7lub5SUyOmIjPcsVKOpfVmY=;
+        b=k76VoE3x4rEvPoKMeUoYlDF6iAymtEZZPAZ8EMDPDFtxpc7NKfL8UpD93eGEfRrSj9
+         NAxUpDzS17LKEW0zk7ZUsCVWlWTebwrsbkHmxV6O2zRI12se/wL6q53zmoNIzm9IfG/N
+         11QVSWPm8OKWXMoUX3tXdaE/QePCNtEiyCqBcKjJ6rCHYuNl6Z/F3iws+uq0f22bO6vY
+         DPEeixfMhLXBLWjl3NdyuBeqFnjcBmmmmBO8NxjF1Q9OpwVYVWHhZLxQGIoRZsfVG7Bt
+         1MGsQQB9qgv39+HiZW5CfpFNYAGEUxw8BX552zG+0r3JjGrK6usNZbfRUPLuEAFTfYNs
+         Y4sQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3CsBtxxzWzgpFpPnqOKH7lub5SUyOmIjPcsVKOpfVmY=;
+        b=FHClOmakRhOuoav2h96Er+Bucl2S6ZmVcNV+D6ZDKNuXP/LaA/jM1V6wCSHRO0aqIy
+         1LjRWRmcBOMFUSZjVa1D27MXb4ArlRZ/j5W4u+IAaqeosL0rtJYrWQzlgDm2D8JGkDHW
+         4hKTAbF0iJ048w29tD99UaV6qMaRMyD/kdUW+sYl0L0UACJkKBMtAaC/BLO8HMG+j5Hc
+         b/vhd3tqTHQSO8Gkp1UFAEhFbWxaLW/LGLdPkmITcPyhZTjQZuJVTywcHjqScQmXcLJ6
+         NJsdYLYbSN77hz4bu1CRtAPDMlP/fE18y/RvVyJ34OLmrZmCDRHOLbELW0fqG2aqYdOX
+         +WPA==
+X-Gm-Message-State: AOAM533y/3Jo8rib7P/bt/JXlvJu9QRWsymFqJCzBaLA0q+55sN0USmW
+        wH2GUhfRSBthjwcKk8ZH8Q==
+X-Google-Smtp-Source: ABdhPJwhfeQmeN7haLvQ0Nzb/IYlJMSPxKyhLLF4VG2SyzMkA0e12NfsZUX3gf5OKxjTS1qTuJVfcg==
+X-Received: by 2002:a17:902:d3c7:b029:de:18c6:d330 with SMTP id w7-20020a170902d3c7b02900de18c6d330mr27044plb.48.1610396178307;
+        Mon, 11 Jan 2021 12:16:18 -0800 (PST)
+Received: from localhost.localdomain ([216.52.21.4])
+        by smtp.gmail.com with ESMTPSA id t25sm591278pgv.30.2021.01.11.12.16.17
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 11 Jan 2021 12:16:17 -0800 (PST)
+From:   Praveen Chaudhary <praveen5582@gmail.com>
+X-Google-Original-From: Praveen Chaudhary <pchaudhary@linkedin.com>
+To:     davem@davemloft.net, kuba@kernel.org, corbet@lwn.net,
+        kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
+        netdev@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v0 net-next 0/1] Allow user to set metric on default route learned via Router Advertisement.
+Date:   Mon, 11 Jan 2021 12:16:09 -0800
+Message-Id: <20210111201610.2425-1-pchaudhary@linkedin.com>
+X-Mailer: git-send-email 2.29.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210111114309.6de6a281@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-X-Operating-System: Linux 2.0.32 on an i486
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
- definitions=2021-01-11_30:2021-01-11,2021-01-11 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 mlxscore=0
- spamscore=0 priorityscore=1501 lowpriorityscore=0 mlxlogscore=999
- clxscore=1015 phishscore=0 impostorscore=0 malwarescore=0 adultscore=0
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2101110109
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub Kicinski [kuba@kernel.org] wrote:
-> On Sun, 10 Jan 2021 19:52:25 -0800 Sukadev Bhattiprolu wrote:
-> > Jakub Kicinski [kuba@kernel.org] wrote:
-> > > On Thu,  7 Jan 2021 23:12:34 -0800 Sukadev Bhattiprolu wrote:  
-> > > > Use a separate lock to serialze ibmvnic_reset() and ibmvnic_remove()
-> > > > functions. ibmvnic_reset() schedules work for the worker thread and
-> > > > ibmvnic_remove() flushes the work before removing the adapter. We
-> > > > don't want any work to be scheduled once we start removing the
-> > > > adapter (i.e after we have already flushed the work).  
-> > > 
-> > > Locking based on functions, not on data being accessed is questionable
-> > > IMO. If you don't want work to be scheduled isn't it enough to have a
-> > > bit / flag that you set to let other flows know not to schedule reset?  
-> > 
-> > Maybe I could improve the description, but the "data" being protected
-> > is the work queue. Basically don't add to the work queue while/after
-> > it is (being) flushed.
-> > 
-> > Existing code is checking for the VNIC_REMOVING state before scheduling
-> > the work but without a lock. If state goes to REMOVING after we check,
-> > we could schedule work after the flush?
-> 
-> I see, and you can't just use the state_lock because it has to be a
-> spin_lock? If that's the case please just update the commit message 
-> and comments to describe the data protected.
+Allow user to set metric on default route learned via Router Advertisement.
 
-Yes, has to be spin lock. Will update description.
+Note: RFC 4191 does not say anything for metric for IPv6 default route.
 
-Thanks,
+Fix:
+For IPv4, default route is learned via DHCPv4 and user is allowed to change
+metric using config in etc/network/interfaces. But for IPv6, default route can
+be learned via RA, for which, currently a fixed metric value 1024 is used.
 
-Sukadev
+Ideally, user should be able to configure metric on default route for IPv6
+similar to IPv4. This fix adds sysctl for the same.
+
+Logs:
+----------------------------------------------------------------
+For IPv4:
+----------------------------------------------------------------
+
+Config in etc/network/interfaces
+----------------------------------------------------------------
+```
+auto eth0
+iface eth0 inet dhcp
+    metric 4261413864
+```
+
+IPv4 Kernel Route Table:
+----------------------------------------------------------------
+```
+$ sudo route -n
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+0.0.0.0         172.11.44.1     0.0.0.0         UG    -33553432 0        0 eth0
+```
+
+FRR Table, if a static route is configured. [In real scenario, it is useful to prefer BGP learned default route over DHCPv4 default route.]
+----------------------------------------------------------------
+```
+Codes: K - kernel route, C - connected, S - static, R - RIP,
+       O - OSPF, I - IS-IS, B - BGP, P - PIM, E - EIGRP, N - NHRP,
+       T - Table, v - VNC, V - VNC-Direct, A - Babel, D - SHARP,
+       > - selected route, * - FIB route
+
+S>* 0.0.0.0/0 [20/0] is directly connected, eth0, 00:00:03
+K   0.0.0.0/0 [254/1000] via 172.21.47.1, eth0, 6d08h51m
+```
+
+----------------------------------------------------------------
+i.e. User can prefer Default Router learned via Routing Protocol,
+Similar behavior is not possible for IPv6, without this fix.
+
+
+----------------------------------------------------------------
+After fix [for IPv6]:
+----------------------------------------------------------------
+```
+sudo sysctl -w net.ipv6.conf.eth0.net.ipv6.conf.eth0.accept_ra_defrtr_metric=0x770003e9
+```
+
+IP monitor:
+----------------------------------------------------------------
+```
+default via fe80::xx16:xxxx:feb3:ce8e dev eth0 proto ra metric 1996489705  pref high
+```
+
+Kernel IPv6 routing table
+----------------------------------------------------------------
+```
+Destination                    Next Hop                   Flag Met Ref Use If
+::/0                           fe80::xx16:xxxx:feb3:ce8e  UGDAe 1996489705 0
+ 0 eth0
+```
+
+FRR Table, if a static route is configured. [In real scenario, it is useful to prefer BGP learned default route over IPv6 RA default route.]
+```
+----------------------------------------------------------------
+Codes: K - kernel route, C - connected, S - static, R - RIPng,
+       O - OSPFv3, I - IS-IS, B - BGP, N - NHRP, T - Table,
+       v - VNC, V - VNC-Direct, A - Babel, D - SHARP,
+       > - selected route, * - FIB route
+
+S>* ::/0 [20/0] is directly connected, eth0, 00:00:06
+K   ::/0 [119/1001] via fe80::xx16:xxxx:feb3:ce8e, eth0, 6d07h43m
+----------------------------------------------------------------
+```
+
+If the metric is changed later, the effect will be seen only when IPv6 RA is received, because the default route must be fully controlled by RA msg.
+```
+admin@lnos-x1-a-asw03:~$ sudo sysctl -w net.ipv6.conf.eth0.accept_ra_defrtr_metric=0x770003e8
+net.ipv6.conf.eth0.accept_ra_defrtr_metric = 0x770003e8
+
+```
+
+IP monitor: when metric is changed after learning Default Route from previous IPv6 RA msg:
+```
+Deleted default via fe80::xx16:xxxx:feb3:ce8e dev eth0 proto ra metric 1996489705  expires 3sec hoplimit 64 pref high
+default via fe80::xx16:xxxx:feb3:ce8e dev eth0 proto ra metric 1996489704  pref high
+```
+
+Praveen Chaudhary (1):
+  Allow user to set metric on default route learned via Router
+    Advertisement.
+
+ Documentation/networking/ip-sysctl.rst |  8 ++++++++
+ include/linux/ipv6.h                   |  1 +
+ include/net/ip6_route.h                |  3 ++-
+ include/uapi/linux/ipv6.h              |  1 +
+ include/uapi/linux/sysctl.h            |  1 +
+ net/ipv6/addrconf.c                    | 10 ++++++++++
+ net/ipv6/ndisc.c                       | 15 +++++++++++----
+ net/ipv6/route.c                       |  8 +++++---
+ 8 files changed, 39 insertions(+), 8 deletions(-)
+
+
+base-commit: 139711f033f636cc78b6aaf7363252241b9698ef
+-- 
+2.29.0
+
