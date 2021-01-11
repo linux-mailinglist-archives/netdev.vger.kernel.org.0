@@ -2,128 +2,129 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E7D52F20E5
-	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 21:36:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 926D42F20FB
+	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 21:40:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730955AbhAKUfl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jan 2021 15:35:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60168 "EHLO
+        id S2390553AbhAKUj5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jan 2021 15:39:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726405AbhAKUfk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 15:35:40 -0500
-Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2FF4BC061794;
-        Mon, 11 Jan 2021 12:35:00 -0800 (PST)
-Received: by mail-yb1-xb36.google.com with SMTP id k78so15175ybf.12;
-        Mon, 11 Jan 2021 12:35:00 -0800 (PST)
+        with ESMTP id S2387533AbhAKUj5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 15:39:57 -0500
+Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90551C061794;
+        Mon, 11 Jan 2021 12:39:16 -0800 (PST)
+Received: by mail-yb1-xb33.google.com with SMTP id b64so52705ybg.7;
+        Mon, 11 Jan 2021 12:39:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=7O8B4R5Qek1xJORx61h+Dz6UaUuSEDkYvNpSy2uExkU=;
-        b=KFc+OzpWruxJVR2aaNQXu6vP2si5BALGrY1+Ib0mEx3yUTKI43EUPiyMzuxeI9q58I
-         YRhzJx3CpSjQUXFJ//A/lF4u8vJNTPnFzdudat4OIU69OwV9wc+SFTwusKCgOYfkwnkf
-         hEBupgJowEbOp6/c45q9czb1ic+AO6NeVr5peir6NAneHopCFySRMuJsiunm2dCl8Dkq
-         C/kmpJmKoEruMqH8KF1P56SZ661fYspSJ9MS7jmoyjpziECqqpXPElwe9168k/p0JkFR
-         onQvr6XlaxvRaKqhtfqvQCUPYe5NkNQpSSxd7KWx7UqtnLHshn5ot2WvXJVkvd/okaLt
-         BzPA==
+        bh=R4z8VuhNyMDL7g096sbikTkm1i+21r0leC/d47KG000=;
+        b=ZJeLWXP4rm29LpTASshdqb2QPKHYF7FZlN1CyQCn7y3N5TZAG81UbOkHMEOrTHs/Yp
+         Id1Kj+czxOJ3iBhERZDdaVf3lt2WnVkKmaOzb/kUfB4vtjJkB9zzjWpGAG149FOdON8i
+         3d8IwdN8Vo8X5ckoqon9dFdRFXgRo2ruGw6acRHduw3klS0YSQQ2dbVvI1LebpvnCQqt
+         bMBrWbx0MnvaWTqDseoJOc8dLzXCTcDgU2SSrHfdqSjNA7e4G0VpNXlgBdtXgyUePqKz
+         GyHmyZ19FVO8XDuwaflslYk2FoSdh7D1CZE0W0nNYuL2+maaih7gR0RHr+k9g0Zu1c1l
+         HI9g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=7O8B4R5Qek1xJORx61h+Dz6UaUuSEDkYvNpSy2uExkU=;
-        b=JHmPhZDZlldU/6G9IbP4XQ57nqj0sHpT9tDrJSuA95SV4EwRgNqOmP2WYxnEhipWUK
-         Nv9nxO+p5EoqNaMNkyh98tlzwUIs5pO7754cda8Ag0tM7GieofcQo457+yiSh4DcohoG
-         ilecgFQGI2YNWdVkZRbon/Q6c+wPioB8IilojRHDpzy4dO4R3WrmWj7ObrfgYtBOSubo
-         aLYAO3tBR7sO7PaGPdNTeFWHxCZVtI3mqjWNLAqorJYqT7g25ZsBqh/+waiXCGAmrO0i
-         GjyKOUq805AAYAeVet2pXcMd6FyXA9CVlIMPovZcj4WJ8bhxxrxxEPGJiNp57SIVDVoL
-         d7Jg==
-X-Gm-Message-State: AOAM530hwNWxZU7O0VBZ2/VSujo6DoChE2+ykoP9qUYLpskKA4MUORW8
-        IF0uz4uDsfybjy76DfwpCiQElex6q4mxE9xzeNk=
-X-Google-Smtp-Source: ABdhPJwzxQ783wEdWfLNe5exUYNCXcDpV+AUsRxIASb04826xT3sklKVkH88+IznAymMmqgNODghHlrNDxOz8ErBGxI=
-X-Received: by 2002:a25:854a:: with SMTP id f10mr2169126ybn.510.1610397299522;
- Mon, 11 Jan 2021 12:34:59 -0800 (PST)
+        bh=R4z8VuhNyMDL7g096sbikTkm1i+21r0leC/d47KG000=;
+        b=PWUZZqbi504IpmfSJOxME2+frmkIdVCIffV4sMnyCdoQjkmhvMmFzMybtZwtnAR/kE
+         ASMpIo5q06Nvne9z5POvRivDa9gE3miqIVusYzcKkE0ALIrfjJWQGNcJV/9RURXIZA53
+         zMbS9vcb0D4xGINkkaNHxD+cqzXJpXLhWMQlV+FpyzTgWGElSU0ggD6NjImUxTNzav3h
+         Rw6JzX4iPTXrHXm4UC8gmEpIuuDR0augxVcxnsUdGeyP1MhDRBtNg8sOmkWV53fJp9FF
+         k/7C9IAry4m/Tb4KmhJ9F1SnKG83VqWQpthYA94aPaQZvFNpgCXjBYDPjTngPSfwfYzi
+         +V8w==
+X-Gm-Message-State: AOAM530654uW0aPt922cjc3WXVyaXanGxryAbs5n0VZP6RlRrZVPFWDR
+        1ziXWABfSYJbF7vFKydAADuWepnxssM8HqQxIF0=
+X-Google-Smtp-Source: ABdhPJzy85RUE/nM7uiN77b46n1I1uFND5gf1iCHGJMDBBwXvVmPHE3iNagHqaCJEW2rzJ5Wqkg75zo5lrC4A/x0228=
+X-Received: by 2002:a25:d6d0:: with SMTP id n199mr2172909ybg.27.1610397555867;
+ Mon, 11 Jan 2021 12:39:15 -0800 (PST)
 MIME-Version: 1.0
-References: <20210111191650.1241578-1-jolsa@kernel.org>
-In-Reply-To: <20210111191650.1241578-1-jolsa@kernel.org>
+References: <20210111153123.GA423936@ubuntu> <17629073-4fab-a922-ecc3-25b019960f44@iogearbox.net>
+ <CANaYP3FiB-+Zs3C27VgPW+4Ltg8b9dErYAoX7Gu2WqkczcC8vw@mail.gmail.com>
+In-Reply-To: <CANaYP3FiB-+Zs3C27VgPW+4Ltg8b9dErYAoX7Gu2WqkczcC8vw@mail.gmail.com>
 From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 11 Jan 2021 12:34:48 -0800
-Message-ID: <CAEf4BzboXkJ96z45+CNJ0QNf74sR9=Ew7Nr94eXiBUk_5w-mDA@mail.gmail.com>
-Subject: Re: [PATCH] bpf: Prevent double bpf_prog_put call from bpf_tracing_prog_attach
-To:     Jiri Olsa <jolsa@kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>
+Date:   Mon, 11 Jan 2021 12:39:05 -0800
+Message-ID: <CAEf4BzaG2q-4qFZ0WDhbfPJL70T7z84CE=MoKkT2peOXrx28cw@mail.gmail.com>
+Subject: Re: [PATCH] Signed-off-by: giladreti <gilad.reti@gmail.com>
+To:     Gilad Reti <gilad.reti@gmail.com>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>, bpf <bpf@vger.kernel.org>,
+        Yonghong Song <yhs@fb.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 11, 2021 at 11:18 AM Jiri Olsa <jolsa@kernel.org> wrote:
+On Mon, Jan 11, 2021 at 8:06 AM Gilad Reti <gilad.reti@gmail.com> wrote:
 >
-> The bpf_tracing_prog_attach error path calls bpf_prog_put
-> on prog, which causes refcount underflow when it's called
-> from link_create function.
+> On Mon, Jan 11, 2021, 17:55 Daniel Borkmann <daniel@iogearbox.net> wrote:
+> >
+> > Hello Gilad,
+> >
+> > On 1/11/21 4:31 PM, giladreti wrote:
+> > > Added support for pointer to mem register spilling, to allow the verifier
+> > > to track pointer to valid memory addresses. Such pointers are returned
+> > > for example by a successful call of the bpf_ringbuf_reserve helper.
+> > >
+> > > This patch was suggested as a solution by Yonghong Song.
+> >
+> > The SoB should not be in subject line but as part of the commit message instead
+> > and with proper name, e.g.
+> >
+> > Signed-off-by: Gilad Reti <gilad.reti@gmail.com>
+> >
+> > For subject line, please use a short summary that fits the patch prefixed with
+> > the subsystem "bpf: [...]", see also [0] as an example. Thanks.
+> >
+> > It would be good if you could also add a BPF selftest for this [1].
+> >
+> >    [0] https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git/commit/?id=e22d7f05e445165e58feddb4e40cc9c0f94453bc
+> >    [1] https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git/tree/tools/testing/selftests/bpf/
+> >        https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git/tree/tools/testing/selftests/bpf/verifier/spill_fill.c
+> >
 >
->   link_create
->     prog = bpf_prog_get              <-- get
->     ...
->     tracing_bpf_link_attach(prog..
->       bpf_tracing_prog_attach(prog..
->         out_put_prog:
->           bpf_prog_put(prog);        <-- put
->
->     if (ret < 0)
->       bpf_prog_put(prog);            <-- put
->
-> Removing bpf_prog_put call from bpf_tracing_prog_attach
-> and making sure its callers call it instead.
->
-> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> ---
+> Sure. Thanks for your guidance. As you can probably tell, I am new to
+> kernel code contribution (in fact this is a first time for me).
+> Should I try to submit this patch again?
 
-I also double-checked all other attach functions called from
-link_create, they all seem to be fine and don't put prog on failure,
-so this should be the only needed fix. Also, missing:
+In addition to all already mentioned things, also make sure you have
+[PATCH bpf] prefix in the subject, to identify that this is a bug fix
+for the bpf tree.
 
-Fixes: 4a1e7c0c63e0 ("bpf: Support attaching freplace programs to
-multiple attach points")
+Also you missed adding Fixes tag, please add this:
 
-Acked-by: Andrii Nakryiko <andrii@kernel.org>
+Fixes: 457f44363a88 ("bpf: Implement BPF ring buffer and verifier
+support for it")
 
->  kernel/bpf/syscall.c | 6 ++++--
->  1 file changed, 4 insertions(+), 2 deletions(-)
+And yes, please re-submit with all the feedback incorporated
+(including the selftest).
+
 >
-> diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-> index c3bb03c8371f..e5999d86c76e 100644
-> --- a/kernel/bpf/syscall.c
-> +++ b/kernel/bpf/syscall.c
-> @@ -2712,7 +2712,6 @@ static int bpf_tracing_prog_attach(struct bpf_prog *prog,
->  out_put_prog:
->         if (tgt_prog_fd && tgt_prog)
->                 bpf_prog_put(tgt_prog);
-> -       bpf_prog_put(prog);
->         return err;
->  }
+> Sorry in advance for all the overhead I may be causing to you...
 >
-> @@ -2825,7 +2824,10 @@ static int bpf_raw_tracepoint_open(const union bpf_attr *attr)
->                         tp_name = prog->aux->attach_func_name;
->                         break;
->                 }
-> -               return bpf_tracing_prog_attach(prog, 0, 0);
-> +               err = bpf_tracing_prog_attach(prog, 0, 0);
-> +               if (err >= 0)
-> +                       return err;
-> +               goto out_put_prog;
->         case BPF_PROG_TYPE_RAW_TRACEPOINT:
->         case BPF_PROG_TYPE_RAW_TRACEPOINT_WRITABLE:
->                 if (strncpy_from_user(buf,
-> --
-> 2.26.2
->
+> > > ---
+> > >   kernel/bpf/verifier.c | 2 ++
+> > >   1 file changed, 2 insertions(+)
+> > >
+> > > diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+> > > index 17270b8404f1..36af69fac591 100644
+> > > --- a/kernel/bpf/verifier.c
+> > > +++ b/kernel/bpf/verifier.c
+> > > @@ -2217,6 +2217,8 @@ static bool is_spillable_regtype(enum bpf_reg_type type)
+> > >       case PTR_TO_RDWR_BUF:
+> > >       case PTR_TO_RDWR_BUF_OR_NULL:
+> > >       case PTR_TO_PERCPU_BTF_ID:
+> > > +     case PTR_TO_MEM:
+> > > +     case PTR_TO_MEM_OR_NULL:
+> > >               return true;
+> > >       default:
+> > >               return false;
+> > >
+> >
