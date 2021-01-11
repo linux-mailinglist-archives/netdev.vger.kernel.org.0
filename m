@@ -2,117 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 828A52F1906
-	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 16:00:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D94A92F19A3
+	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 16:29:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732256AbhAKO7c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jan 2021 09:59:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44006 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729688AbhAKO7b (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 09:59:31 -0500
-Received: from mail-ua1-x931.google.com (mail-ua1-x931.google.com [IPv6:2607:f8b0:4864:20::931])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F102C061794
-        for <netdev@vger.kernel.org>; Mon, 11 Jan 2021 06:58:51 -0800 (PST)
-Received: by mail-ua1-x931.google.com with SMTP id s23so6002749uaq.10
-        for <netdev@vger.kernel.org>; Mon, 11 Jan 2021 06:58:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=HCNTiunazZYLzBElVvBsIq1txvjnJLCjiClRs9NWjxM=;
-        b=YTVMNzf3e2QLEPvy1z+h+zOAWVuLqvcH9ukx2eVAT0DG39fwZQckZcdCQ6osLjvyqB
-         W1Eok+rzydNg3x/ySgAS9J8GmnZj3T5ZFiXIpjlMQkfJ4QxtakPIIHeDDo5RhL3X4hYD
-         BuruiWbOHSMJR1i99IwafVXZr28lq7wJOBDqF0LVqYIdF6HJKbk4UZYHshu1RYbpqUdN
-         vx2u01UDuDZ0d7MOzQ8H+s+j9ooK/Xs8HQthOVRyvVWDnf61LUyOUaOuvI4JQhGHdqUj
-         CFVWKljg59zWuINxFaakP2l3XJSxanVnzr1WyM4xwPQBd4gBJ2IcYI8uDYIDCGbIVI6j
-         0q6w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=HCNTiunazZYLzBElVvBsIq1txvjnJLCjiClRs9NWjxM=;
-        b=CnW7YBp+YX81M8RwCId7fOxLWWZBw9xxN8uzFnVqdf3/Lbk7/5SfUPEQL8Z1iAMk9R
-         G7Gw+7/XV4MHEmFq8NakPc0Pd1PK8Dc2VmGYqdxRniEdY6thmztDqefdL6vacGy5ibsZ
-         X6mdtA2GbtyAyI12EU4EHTFQW0E0PBko+blMjS1tPNSFrJzHlzBpcDvFI0pWwX+9+2+k
-         QoP5WbLOINWMJnRqYgZyV/G21/S7SCR80QA6Ox2L7VSh/CtQkBVKaLOIdYsH+0N1YFbZ
-         0EG/zSv65t/67viOAuO3NpI9EcC7p2P5F5kdejvvU2yDoIZRhIb1OZycgiBexHlrAvbq
-         hX7A==
-X-Gm-Message-State: AOAM533eCalTe+AI86z7i0USaWLb+EeQECkvI81RbSydzOYwTp7bBNg0
-        7HveDZtvZtam+7fF4d7UMsAtqgxn1sNrVi2QA5erEg==
-X-Google-Smtp-Source: ABdhPJwJv5F6kb/IyvwHdQiLOnyG9BpA/BeaFV9eQQPU+tZlda6yHltHXnoTG1+5XGfPdzPrUrieOdTfXn72+CojqXw=
-X-Received: by 2002:ab0:634c:: with SMTP id f12mr13032319uap.63.1610377130152;
- Mon, 11 Jan 2021 06:58:50 -0800 (PST)
-MIME-Version: 1.0
-References: <20210109043808.GA3694@localhost.localdomain>
-In-Reply-To: <20210109043808.GA3694@localhost.localdomain>
-From:   Neal Cardwell <ncardwell@google.com>
-Date:   Mon, 11 Jan 2021 09:58:33 -0500
-Message-ID: <CADVnQymUn1aKoA4nW8dhEi-fUXNCbr2--vDEmmMtHHXGp2AFNQ@mail.gmail.com>
-Subject: Re: [PATCH] Revert "tcp: simplify window probe aborting on USER_TIMEOUT"
-To:     Enke Chen <enkechen2020@gmail.com>
-Cc:     Eric Dumazet <edumazet@google.com>,
+        id S1731434AbhAKP2w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jan 2021 10:28:52 -0500
+Received: from mail.kernel.org ([198.145.29.99]:55918 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727917AbhAKP2w (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 11 Jan 2021 10:28:52 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 66E40225AC;
+        Mon, 11 Jan 2021 15:28:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1610378891;
+        bh=2TwVSubr1Utb54puJyi85tzxRDvhFI6tBd3O/Tah+Bc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=s2JjqMdzP0q3o6qkUOgaehXBBuFWIbiYZV/Zw5TY5x6KKOEluYZwlEpEkdZiRVGlI
+         pFE5DxiPMySbcmlDOEQ/9mvUPxGJtPkIEG2DmRAhSIG32y35n92gg/qOWqR59T0OYS
+         4H5xtEZOc4XpIs4ul+z5xrlMbYfoVBUvO3aWEUXEpNnjlf1FrJnwCIijFhnmL/xAsF
+         B0tsqNyya0ykUkaqHOh1VPtnpVMvPuav3jqk1AlXOdkPxVhb33H0B45NFV4EbaKkUg
+         P1Sv2wye4uwvzZLjDNARpoAMp8kzGLY4ZuNdpCB/CIe4uR7gReEyDgBFCi3kNHK6Ev
+         Ezn+5hpLFVLdQ==
+Date:   Mon, 11 Jan 2021 16:28:05 +0100
+From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
+To:     Pali =?UTF-8?B?Um9ow6Fy?= <pali@kernel.org>
+Cc:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
         "David S. Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
         Jakub Kicinski <kuba@kernel.org>,
-        Soheil Hassas Yeganeh <soheil@google.com>,
-        Yuchung Cheng <ycheng@google.com>,
-        Netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Jonathan Maxwell <jmaxwell37@gmail.com>,
-        William McCall <william.mccall@gmail.com>, enchen2020@gmail.com
-Content-Type: text/plain; charset="UTF-8"
+        Thomas Schreiber <tschreibe@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 1/2] net: sfp: add workaround for Realtek RTL8672 and
+ RTL9601C chips
+Message-ID: <20210111162805.77cf82b2@kernel.org>
+In-Reply-To: <20210111113909.31702-2-pali@kernel.org>
+References: <20201230154755.14746-1-pali@kernel.org>
+        <20210111113909.31702-1-pali@kernel.org>
+        <20210111113909.31702-2-pali@kernel.org>
+X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 8, 2021 at 11:38 PM Enke Chen <enkechen2020@gmail.com> wrote:
->
-> From: Enke Chen <enchen@paloaltonetworks.com>
->
-> This reverts commit 9721e709fa68ef9b860c322b474cfbd1f8285b0f.
->
-> With the commit 9721e709fa68 ("tcp: simplify window probe aborting
-> on USER_TIMEOUT"), the TCP session does not terminate with
-> TCP_USER_TIMEOUT when data remain untransmitted due to zero window.
->
-> The number of unanswered zero-window probes (tcp_probes_out) is
-> reset to zero with incoming acks irrespective of the window size,
-> as described in tcp_probe_timer():
->
->     RFC 1122 4.2.2.17 requires the sender to stay open indefinitely
->     as long as the receiver continues to respond probes. We support
->     this by default and reset icsk_probes_out with incoming ACKs.
->
-> This counter, however, is the wrong one to be used in calculating the
-> duration that the window remains closed and data remain untransmitted.
-> Thanks to Jonathan Maxwell <jmaxwell37@gmail.com> for diagnosing the
-> actual issue.
->
-> Cc: stable@vger.kernel.org
-> Fixes: 9721e709fa68 ("tcp: simplify window probe aborting on USER_TIMEOUT")
-> Reported-by: William McCall <william.mccall@gmail.com>
-> Signed-off-by: Enke Chen <enchen@paloaltonetworks.com>
-> ---
+Hi Pali,
+I have rewritten the commit message a little:
 
-I ran this revert commit through our packetdrill TCP tests, and it's
-causing failures in a ZWP/USER_TIMEOUT test due to interactions with
-this Jan 2019 patch:
+The workaround for VSOL V2801F brand based GPON SFP modules added in
+commit 0d035bed2a4a ("net: sfp: VSOL V2801F / CarlitoxxPro CPGOS03-0490
+v2.0 workaround") works only for IDs added explicitly to the list.
+Since there are rebranded modules where OEM vendors put different
+strings into the vendor name field, we cannot base workaround on IDs
+only.
 
-    7f12422c4873e9b274bc151ea59cb0cdf9415cf1
-    tcp: always timestamp on every skb transmission
+Moreover the issue which the above mentioned commit tried to work
+around is generic not only to VSOL based modules, but rather to all
+GPON modules based on Realtek RTL8672 and RTL9601C chips.
+ 
+These include at least the following GPON modules:
+* V-SOL V2801F
+* C-Data FD511GX-RM0
+* OPTON GP801R
+* BAUDCOM BD-1234-SFM
+* CPGOS03-0490 v2.0
+* Ubiquiti U-Fiber Instant
+* EXOT EGS1
 
-The issue seems to be that after 7f12422c4873 the skb->skb_mstamp_ns
-is set on every transmit attempt. That means that even skbs that are
-not successfully transmitted have a non-zero skb_mstamp_ns. That means
-that if ZWPs are repeatedly failing to be sent due to severe local
-qdisc congestion, then at this point in the code the start_ts is
-always only 500ms in the past (from TCP_RESOURCE_PROBE_INTERVAL =
-500ms). That means that if there is severe local qdisc congestion a
-USER_TIMEOUT above 500ms is a NOP, and the socket can live far past
-the USER_TIMEOUT.
+These Realtek chips have broken EEPROM emulator which for N-byte read
+operation returns just the first byte of EEPROM data, followed by N-1 zeros.
 
-It seems we need a slightly different approach than the revert in this commit.
+Introduce a new function, sfp_id_needs_byte_io(), which detects SFP
+modules with broken EEPROM emulator based on N-1 zeros and switch to 1
+byte EEPROM reading operation.
 
-neal
+Function sfp_i2c_read() now always uses single byte reading when it is
+required and when function sfp_hwmon_probe() detects single byte access,
+it disables registration of hwmon device, because in this case we
+cannot reliably and atomically read 2 bytes as is required byt the
+standard for retrieving values from diagnostic area.
+
+(These Realtek chips are broken in a way that violates SFP standards for
+ diagnostic interface. Kernel in this case simply cannot do anything
+ less of skipping registration of the hwmon interface.)
+
+This patch fixes reading of EEPROM content from SFP modules based on
+Realtek RTL8672 and RTL9601C chips. Diagnostic interface of EEPROM stays
+broken and cannot be fixed.
