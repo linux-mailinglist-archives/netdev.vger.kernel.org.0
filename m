@@ -2,190 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B27232F1E40
-	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 19:51:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E70682F1E4C
+	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 19:53:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390347AbhAKSvL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jan 2021 13:51:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37570 "EHLO
+        id S2390542AbhAKSxD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jan 2021 13:53:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37976 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728757AbhAKSvL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 13:51:11 -0500
-Received: from mail-qt1-x82e.google.com (mail-qt1-x82e.google.com [IPv6:2607:f8b0:4864:20::82e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D28BC061795
-        for <netdev@vger.kernel.org>; Mon, 11 Jan 2021 10:50:30 -0800 (PST)
-Received: by mail-qt1-x82e.google.com with SMTP id j26so12347qtq.8
-        for <netdev@vger.kernel.org>; Mon, 11 Jan 2021 10:50:30 -0800 (PST)
+        with ESMTP id S1727242AbhAKSxB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 13:53:01 -0500
+Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com [IPv6:2607:f8b0:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5379DC0617A4
+        for <netdev@vger.kernel.org>; Mon, 11 Jan 2021 10:52:13 -0800 (PST)
+Received: by mail-oi1-x22e.google.com with SMTP id s2so426905oij.2
+        for <netdev@vger.kernel.org>; Mon, 11 Jan 2021 10:52:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
+        d=chromium.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=zwBrmctowFwiEyjxMQ5en9W3eVqQ+W60jjN6AkIIUmw=;
-        b=avPyA/XnotrQETqxaNNB1a0TyaxAxWDBnHlAT3Un+twWQbq5S+BCRENJzBbqTtie4W
-         qJxFYNazvvrYmw6P/3XAKbqzKoiBJJS10HARA6K7S5oaY24ZeR6gzA7omqv+lHFm28pZ
-         8DPp1yvDpwoXrCbJCXiyfbzOFAQ/T7VgdWoEw1z5WXCc7S8N7h1U/UAfQqO0XbUBRQbN
-         SweKX83yOpvUloTT1XFuWZuX6CV8mqD6VVFoQGaNWhpKTnqKObE7iRRZprweqjLVNGx4
-         97l0zUqVqIXgGqISs8KlFgtdZPhddiwsiZwYdy4icDF/lce6VEpnPNhvsrQs+HUJICTJ
-         LXuA==
+        bh=Rvew6cqVQniXIqwsUnCnTwK4rV3/PNHAJceO8utJLLk=;
+        b=Ue034u5m1alXCz0yam8z4ML3f8BUq3NE+BNDAj5vPgNhkLiQj5PMokmGL0HUVkQS89
+         5hYptgGnoHI6paU47QAPGm/H46VmW6+d3bRYuA8Cm/0eCTdfEsoieI5HKuldyk2F4ZLF
+         YETtpLHMvzqbpu0SNYoUWN1qpBj4L7DhRVwJo=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=zwBrmctowFwiEyjxMQ5en9W3eVqQ+W60jjN6AkIIUmw=;
-        b=BIqSNbizP5XhdfknqXNG79QKtpz9P3GDvmEcjFN7zc8eO6oGceMpGjrO0NfOUgVzHs
-         idIJBFhbm4xkne/XtvvUnOFtJBqP7D93CqpAPZPpATAqK7UH6BsthGr44UAR1RvsNRi/
-         J4fByynp11cXk/7qb+TqLIkD5bckS+Qqf1pBfefupK8fLSsv8Doa/QBDlqEG7YfCVk/C
-         r5z0+Myjgy+fkWJT2LQsUEgDJ/ewwpYwAnWW/4KTyb9sta0MAnNFEum0kU7KF8IylhgV
-         n/bZRVDRaCQwm8dxpkTM61A2NtwQgrWm9JcELG1Pn9OmBdZNqa0ZpWXaUu4kcbptwUD/
-         3UOQ==
-X-Gm-Message-State: AOAM531LDoYkamuGGD1lPNV7g80K7f9xjK/2gDtftJI98YY5K/7eSoV+
-        vXk0OJ7RSWhxBGZzNueMmIahhnuPtGOdqEZnKD3Sag==
-X-Google-Smtp-Source: ABdhPJyPix0wWFob0Ek0sQpOfACl7hyPHSViz+V43+UMZE28k52/SgdyBOesiyWKkCt27lUthOPeSopdzwLs0bM73Uc=
-X-Received: by 2002:ac8:7a82:: with SMTP id x2mr1048945qtr.20.1610391029606;
- Mon, 11 Jan 2021 10:50:29 -0800 (PST)
+        bh=Rvew6cqVQniXIqwsUnCnTwK4rV3/PNHAJceO8utJLLk=;
+        b=Zmay5Kt1uB7/7OK0mBMrn9yo3Z7oaxguSogjxVqri11+bycUQQSePNXLMJ9Llx2Btl
+         CmyXx2djRs614onEfXWo+4z2UE3e//IpaFiWFx5lseZWXTYkB0nBQpZXnpvCmmBi3hp8
+         KY3/kL5kygJ9tt7yVJng5u1SeZmH977giyJIFNPHG+vTtu94fqIqtV5OmpDm/NQf3r0K
+         y7OsU1A7nPQGxTJCg6mVKxnSYIrKG3mf5ZioDqFdlWEuLiPZzItwOayZJ1u7wwa+AlMB
+         oGiH38qPrWN8x9Q1Cz4bv0r8e4O8mQH9UY2ozfnDfapLjhXAbOYVfzNPU3/j3fXz1ENf
+         Z6xQ==
+X-Gm-Message-State: AOAM532FPHPNdW/qXD3Dt3H/mixFIFBHYl598QA9xbVTNe00ySUgSmXf
+        0ArC1mq0cm5NViOYzMFVRn25uYPY4L8I/A==
+X-Google-Smtp-Source: ABdhPJx0vvckpDid+C8b8t8qWfl+B/uTWTyZvG1uZr2JacXNL635ZqY1wVjDMY4YKeHKu7YYTveFlQ==
+X-Received: by 2002:a05:6808:a0c:: with SMTP id n12mr159900oij.70.1610391131573;
+        Mon, 11 Jan 2021 10:52:11 -0800 (PST)
+Received: from mail-oi1-f181.google.com (mail-oi1-f181.google.com. [209.85.167.181])
+        by smtp.gmail.com with ESMTPSA id t12sm70489oot.21.2021.01.11.10.52.09
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 11 Jan 2021 10:52:09 -0800 (PST)
+Received: by mail-oi1-f181.google.com with SMTP id q25so361662oij.10
+        for <netdev@vger.kernel.org>; Mon, 11 Jan 2021 10:52:09 -0800 (PST)
+X-Received: by 2002:aca:af4d:: with SMTP id y74mr130054oie.105.1610391128693;
+ Mon, 11 Jan 2021 10:52:08 -0800 (PST)
 MIME-Version: 1.0
-References: <20210108210223.972802-1-sdf@google.com> <20210108210223.972802-3-sdf@google.com>
- <20210109015556.6sajviuria5qknf7@kafai-mbp.dhcp.thefacebook.com>
-In-Reply-To: <20210109015556.6sajviuria5qknf7@kafai-mbp.dhcp.thefacebook.com>
-From:   Stanislav Fomichev <sdf@google.com>
-Date:   Mon, 11 Jan 2021 10:50:18 -0800
-Message-ID: <CAKH8qBuCH_mh=SnhX1NbDsNkGR9w_HCQLFTHnVWi=oKDHQWmZA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v6 2/3] bpf: try to avoid kzalloc in cgroup/{s,g}etsockopt
-To:     Martin KaFai Lau <kafai@fb.com>
-Cc:     Netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Song Liu <songliubraving@fb.com>
+References: <20201208124523.8169-1-ruc_zhangxiaohui@163.com> <20210109160844.4ca73bf1@gmx.net>
+In-Reply-To: <20210109160844.4ca73bf1@gmx.net>
+From:   Brian Norris <briannorris@chromium.org>
+Date:   Mon, 11 Jan 2021 10:51:57 -0800
+X-Gmail-Original-Message-ID: <CA+ASDXPkLg2GGFJTt25YO7wae==YAHftf8JXu520pL_vZaT3ug@mail.gmail.com>
+Message-ID: <CA+ASDXPkLg2GGFJTt25YO7wae==YAHftf8JXu520pL_vZaT3ug@mail.gmail.com>
+Subject: Re: [PATCH 1/1] mwifiex: Fix possible buffer overflows in mwifiex_config_scan
+To:     Peter Seiderer <ps.report@gmx.net>
+Cc:     Xiaohui Zhang <ruc_zhangxiaohui@163.com>,
+        Amitkumar Karwar <amitkarwar@gmail.com>,
+        Ganapathi Bhat <ganapathi.bhat@nxp.com>,
+        Xinming Hu <huxinming820@gmail.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        "<netdev@vger.kernel.org>" <netdev@vger.kernel.org>,
+        Linux Kernel <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 8, 2021 at 5:56 PM Martin KaFai Lau <kafai@fb.com> wrote:
->
-> On Fri, Jan 08, 2021 at 01:02:22PM -0800, Stanislav Fomichev wrote:
-> > When we attach a bpf program to cgroup/getsockopt any other getsockopt()
-> > syscall starts incurring kzalloc/kfree cost.
+(Note: this is version 1; there's a later version posted, which does
+not have a v2 tag...)
+
+https://lore.kernel.org/linux-wireless/20201208150951.35866-1-ruc_zhangxiaohui@163.com/
+
+On Sat, Jan 9, 2021 at 7:11 AM Peter Seiderer <ps.report@gmx.net> wrote:
+> On Tue,  8 Dec 2020 20:45:23 +0800, Xiaohui Zhang <ruc_zhangxiaohui@163.com> wrote:
+> > From: Zhang Xiaohui <ruc_zhangxiaohui@163.com>
+> > mwifiex_config_scan() calls memcpy() without checking
+> > the destination size may trigger a buffer overflower,
+> > which a local user could use to cause denial of service
+> > or the execution of arbitrary code.
+> > Fix it by putting the length check before calling memcpy().
 > >
-> > Let add a small buffer on the stack and use it for small (majority)
-> > {s,g}etsockopt values. The buffer is small enough to fit into
-> > the cache line and cover the majority of simple options (most
-> > of them are 4 byte ints).
-> >
-> > It seems natural to do the same for setsockopt, but it's a bit more
-> > involved when the BPF program modifies the data (where we have to
-> > kmalloc). The assumption is that for the majority of setsockopt
-> > calls (which are doing pure BPF options or apply policy) this
-> > will bring some benefit as well.
-> >
-> > Without this patch (we remove about 1% __kmalloc):
-> >      3.38%     0.07%  tcp_mmap  [kernel.kallsyms]  [k] __cgroup_bpf_run_filter_getsockopt
-> >             |
-> >              --3.30%--__cgroup_bpf_run_filter_getsockopt
-> >                        |
-> >                         --0.81%--__kmalloc
-> >
-> > Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> > Cc: Martin KaFai Lau <kafai@fb.com>
-> > Cc: Song Liu <songliubraving@fb.com>
+> > Signed-off-by: Zhang Xiaohui <ruc_zhangxiaohui@163.com>
 > > ---
-> >  include/linux/filter.h |  5 ++++
-> >  kernel/bpf/cgroup.c    | 52 ++++++++++++++++++++++++++++++++++++------
-> >  2 files changed, 50 insertions(+), 7 deletions(-)
+> >  drivers/net/wireless/marvell/mwifiex/scan.c | 2 ++
+> >  1 file changed, 2 insertions(+)
 > >
-> > diff --git a/include/linux/filter.h b/include/linux/filter.h
-> > index 29c27656165b..8739f1d4cac4 100644
-> > --- a/include/linux/filter.h
-> > +++ b/include/linux/filter.h
-> > @@ -1281,6 +1281,11 @@ struct bpf_sysctl_kern {
-> >       u64 tmp_reg;
-> >  };
+> > diff --git a/drivers/net/wireless/marvell/mwifiex/scan.c b/drivers/net/wireless/marvell/mwifiex/scan.c
+> > index c2a685f63..b1d90678f 100644
+> > --- a/drivers/net/wireless/marvell/mwifiex/scan.c
+> > +++ b/drivers/net/wireless/marvell/mwifiex/scan.c
+> > @@ -930,6 +930,8 @@ mwifiex_config_scan(struct mwifiex_private *priv,
+> >                                   "DIRECT-", 7))
+> >                               wildcard_ssid_tlv->max_ssid_length = 0xfe;
 > >
-> > +#define BPF_SOCKOPT_KERN_BUF_SIZE    32
-> > +struct bpf_sockopt_buf {
-> > +     u8              data[BPF_SOCKOPT_KERN_BUF_SIZE];
-> > +};
-> > +
-> >  struct bpf_sockopt_kern {
-> >       struct sock     *sk;
-> >       u8              *optval;
-> > diff --git a/kernel/bpf/cgroup.c b/kernel/bpf/cgroup.c
-> > index c41bb2f34013..a9aad9c419e1 100644
-> > --- a/kernel/bpf/cgroup.c
-> > +++ b/kernel/bpf/cgroup.c
-> > @@ -1298,7 +1298,8 @@ static bool __cgroup_bpf_prog_array_is_empty(struct cgroup *cgrp,
-> >       return empty;
-> >  }
-> >
-> > -static int sockopt_alloc_buf(struct bpf_sockopt_kern *ctx, int max_optlen)
-> > +static int sockopt_alloc_buf(struct bpf_sockopt_kern *ctx, int max_optlen,
-> > +                          struct bpf_sockopt_buf *buf)
-> >  {
-> >       if (unlikely(max_optlen < 0))
-> >               return -EINVAL;
-> > @@ -1310,6 +1311,15 @@ static int sockopt_alloc_buf(struct bpf_sockopt_kern *ctx, int max_optlen)
-> >               max_optlen = PAGE_SIZE;
-> >       }
-> >
-> > +     if (max_optlen <= sizeof(buf->data)) {
-> > +             /* When the optval fits into BPF_SOCKOPT_KERN_BUF_SIZE
-> > +              * bytes avoid the cost of kzalloc.
-> > +              */
-> > +             ctx->optval = buf->data;
-> > +             ctx->optval_end = ctx->optval + max_optlen;
-> > +             return max_optlen;
-> > +     }
-> > +
-> >       ctx->optval = kzalloc(max_optlen, GFP_USER);
-> >       if (!ctx->optval)
-> >               return -ENOMEM;
-> > @@ -1319,16 +1329,26 @@ static int sockopt_alloc_buf(struct bpf_sockopt_kern *ctx, int max_optlen)
-> >       return max_optlen;
-> >  }
-> >
-> > -static void sockopt_free_buf(struct bpf_sockopt_kern *ctx)
-> > +static void sockopt_free_buf(struct bpf_sockopt_kern *ctx,
-> > +                          struct bpf_sockopt_buf *buf)
-> >  {
-> > +     if (ctx->optval == buf->data)
-> > +             return;
-> >       kfree(ctx->optval);
-> >  }
-> >
-> > +static bool sockopt_buf_allocated(struct bpf_sockopt_kern *ctx,
-> > +                               struct bpf_sockopt_buf *buf)
-> > +{
-> > +     return ctx->optval != buf->data;
-> > +}
-> > +
-> >  int __cgroup_bpf_run_filter_setsockopt(struct sock *sk, int *level,
-> >                                      int *optname, char __user *optval,
-> >                                      int *optlen, char **kernel_optval)
-> >  {
-> >       struct cgroup *cgrp = sock_cgroup_ptr(&sk->sk_cgrp_data);
-> > +     struct bpf_sockopt_buf buf = {};
-> >       struct bpf_sockopt_kern ctx = {
-> >               .sk = sk,
-> >               .level = *level,
-> > @@ -1350,7 +1370,7 @@ int __cgroup_bpf_run_filter_setsockopt(struct sock *sk, int *level,
-> >        */
-> >       max_optlen = max_t(int, 16, *optlen);
-> >
-> > -     max_optlen = sockopt_alloc_buf(&ctx, max_optlen);
-> > +     max_optlen = sockopt_alloc_buf(&ctx, max_optlen, &buf);
-> >       if (max_optlen < 0)
-> >               return max_optlen;
-> >
-> > @@ -1390,13 +1410,30 @@ int __cgroup_bpf_run_filter_setsockopt(struct sock *sk, int *level,
-> >                */
-> >               if (ctx.optlen != 0) {
-> When ctx.optlen == 0, is sockopt_free_buf() called?
-> Did I miss something?
-Ouch, good catch, it looks like we do leak the buf here with optlen == 0.
+> > +                     if (ssid_len > 1)
+> > +                             ssid_len = 1;
+>
+> Why do your believe the available size is only '1'? A SSID is expected
+> to be of size IEEE80211_MAX_SSID_LE/32 and the wildcard_ssid_tlv pointer
+> is casted from tlv_pos (some lines above) which is a pointer/index into
+> scan_cfg_out->tlv_buf...
 
-We should probably change the following below to:
-out:
-      if (!*kernel_optval)
-           sockopt_free_buf(...);
+I pointed out this discrepancy already, taking a slightly different approach:
 
-I'll send a bpf patch with a Fixes tag, thanks!
+https://lore.kernel.org/linux-wireless/CA+ASDXPVu5S0Vm0aOcyqLN090u3BwA_nV358YwkpXuU223Ug9g@mail.gmail.com/
+
+> And the define (line 44) indicates there should be enough space for a SSID:
+>
+>   42 /* Memory needed to store a max number/size WildCard SSID TLV for a firmware
+>   43         scan */
+>   44 #define WILDCARD_SSID_TLV_MAX_SIZE  \
+>   45         (MWIFIEX_MAX_SSID_LIST_LENGTH *                                 \
+>   46                 (sizeof(struct mwifiex_ie_types_wildcard_ssid_params)   \
+>   47                         + IEEE80211_MAX_SSID_LEN))
+
+Ah, good catch. So this may not be a true overflow issue at all, even
+if it's confusing and bad code. The "problem" is that this piece of
+the struct is variable-length, and unless we're going to dynamically
+resize/reallocate the whole buffer, we have to assume the initial
+allocation was large enough (and per your note, it is).
+
+> For sure something to improve here instead of using a confusing 'u8 ssid[1]'
+> in struct mwifiex_ie_types_wildcard_ssid_params...
+
+Yep.
+
+Brian
