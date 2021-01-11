@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2076A2F11A3
-	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 12:40:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D6C72F11A2
+	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 12:40:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729918AbhAKLkR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jan 2021 06:40:17 -0500
-Received: from mail.kernel.org ([198.145.29.99]:34668 "EHLO mail.kernel.org"
+        id S1729959AbhAKLkS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jan 2021 06:40:18 -0500
+Received: from mail.kernel.org ([198.145.29.99]:34702 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725868AbhAKLkQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 11 Jan 2021 06:40:16 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id ECCB120735;
-        Mon, 11 Jan 2021 11:39:34 +0000 (UTC)
+        id S1729913AbhAKLkS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 11 Jan 2021 06:40:18 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id A9896224DE;
+        Mon, 11 Jan 2021 11:39:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610365175;
-        bh=18/JDOlhy8G84oStR5NtpT4u15ElUbUHaRnv03S+KOI=;
+        s=k20201202; t=1610365177;
+        bh=n4K0isKGyma5HkBNe3WZ37isRJ1mda3rOYQ3xy3/jOQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oYBhM3yFg4f7Mn8j4/mgXHJaBuqRWarzSpcuArWRUy78WKAFzreCO3PXofni2Kbvi
-         r1Z0hKNavhyEV4qRYpmuWCTJfh7zeGa/VL++m4ZMqMBky82F01l69GnxQVTN+jCZtc
-         7V/W5VewioUAfsVWO/vhn7Thp7cdG5wmvoHK/5UoLU71GG1sX6snycA+dZ4h71JmBh
-         9VdQbb2KGxhkMu2i5uaBKEOX++GxoxdEQuziX2w1uRg5pKKCqGPjPwd7nHzd6rnlHe
-         ESsv/TVVxbLNE1wsjR89gpxMjYsK5wVdMYfaa/qCmzXKTqt5SzcWb0BzSOX2u7niar
-         GHb9v9Bp6x8Aw==
+        b=a7Dbbe2Ya5WypgQH7czTaVaakckj2/XDpo73bWSGgFHOTMYo2SUKqFTvYHXQ8BFkj
+         38p5oGZpaEh3AacvfMvRrSS2z94+Vg/vqU5WigLA/MezC4wOZyjC7Glrsy5h/2iWxH
+         IaKJLIbOhRfr8MU8M4xClwjEnNyKHObaT85F1UThjZ7cxfWlSSqnzkE6hFCAcVIICz
+         qPcGglY3g1ACuWG3W7YKJSSV00mtCuiWn/rjZD8gX7b2dK1DatHm5tOLdzj+zynxVH
+         IOwdF6qcVsPYTTdMY2zss6Vlj4DgfAH4ivWYedwvVxlXLBmUsut03xuo/MOR8xf58U
+         j73mCZ1jx9rhQ==
 Received: by pali.im (Postfix)
-        id 26EBA87B; Mon, 11 Jan 2021 12:39:33 +0100 (CET)
+        id DE70D87B; Mon, 11 Jan 2021 12:39:35 +0100 (CET)
 From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
 To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
         Andrew Lunn <andrew@lunn.ch>,
@@ -34,9 +34,9 @@ Cc:     Thomas Schreiber <tschreibe@gmail.com>,
         Heiner Kallweit <hkallweit1@gmail.com>,
         =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 1/2] net: sfp: add workaround for Realtek RTL8672 and RTL9601C chips
-Date:   Mon, 11 Jan 2021 12:39:08 +0100
-Message-Id: <20210111113909.31702-2-pali@kernel.org>
+Subject: [PATCH v3 2/2] net: sfp: add mode quirk for GPON module Ubiquiti U-Fiber Instant
+Date:   Mon, 11 Jan 2021 12:39:09 +0100
+Message-Id: <20210111113909.31702-3-pali@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20210111113909.31702-1-pali@kernel.org>
 References: <20201230154755.14746-1-pali@kernel.org>
@@ -48,219 +48,101 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Workaround for GPON SFP modules based on VSOL V2801F brand was added in
-commit 0d035bed2a4a ("net: sfp: VSOL V2801F / CarlitoxxPro CPGOS03-0490
-v2.0 workaround"). But it works only for ids explicitly added to the list.
-As there are more rebraded VSOL V2801F modules and OEM vendors are putting
-into vendor name random strings we cannot build workaround based on ids.
+SFP GPON module Ubiquiti U-Fiber Instant has in its EEPROM stored nonsense
+information. It claims that support all transceiver types including 10G
+Ethernet which is not truth. So clear all claimed modes and set only one
+mode which module supports: 1000baseX_Full.
 
-Moreover issue which that commit tried to workaround is generic not only to
-VSOL based modules, but rather to all GPON modules based on Realtek RTL8672
-and RTL9601C chips.
+Also this module have set SFF phys_id in its EEPROM. Kernel SFP subsustem
+currently does not allow to use SFP modules detected as SFF. Therefore add
+and exception for this module so it can be detected as supported.
 
-They can be found for example in following GPON modules:
-* V-SOL V2801F
-* C-Data FD511GX-RM0
-* OPTON GP801R
-* BAUDCOM BD-1234-SFM
-* CPGOS03-0490 v2.0
-* Ubiquiti U-Fiber Instant
-* EXOT EGS1
+This change finally allows to detect and use SFP GPON module Ubiquiti
+U-Fiber Instant on Linux system.
 
-Those Realtek chips have broken EEPROM emulator which for N-byte read
-operation returns just one byte of EEPROM data followed by N-1 zeros.
+EEPROM content of this SFP module is (where XX is serial number):
 
-So introduce a new function sfp_id_needs_byte_io() which detects SFP
-modules with these Realtek chips which have broken EEPROM emulator based on
-N-1 zeros and switch to 1 byte EEPROM reading operation which workaround
-this issue.
+00: 02 04 0b ff ff ff ff ff ff ff ff 03 0c 00 14 c8    ???........??.??
+10: 00 00 00 00 55 42 4e 54 20 20 20 20 20 20 20 20    ....UBNT
+20: 20 20 20 20 00 18 e8 29 55 46 2d 49 4e 53 54 41        .??)UF-INSTA
+30: 4e 54 20 20 20 20 20 20 34 20 20 20 05 1e 00 36    NT      4   ??.6
+40: 00 06 00 00 55 42 4e 54 XX XX XX XX XX XX XX XX    .?..UBNTXXXXXXXX
+50: 20 20 20 20 31 34 30 31 32 33 20 20 60 80 02 41        140123  `??A
 
-Function sfp_i2c_read() now always use single byte reading when it is
-required and when function sfp_hwmon_probe() detects single byte access
-then it disable registration of hwmon device. As in this case we cannot
-reliable and atomically read 2 bytes as it is required for retrieving some
-values from diagnostic area.
-
-These Realtek chips are broken in a way that violate SFP standards for
-diagnostic interface. Kernel in this case cannot do anything, only skipping
-registration of hwmon interface.
-
-This patch fixes reading of EEPROM content from SFP modules based on
-Realtek RTL8672 and RTL9601C chips. Diagnostic interface of EEPROM stay
-broken and cannot be fixed.
-
-Fixes: 0d035bed2a4a ("net: sfp: VSOL V2801F / CarlitoxxPro CPGOS03-0490 v2.0 workaround")
-Co-developed-by: Russell King <rmk+kernel@armlinux.org.uk>
-Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
 Signed-off-by: Pali Rohár <pali@kernel.org>
 
 ---
 Changes in v2:
-* Add explanation why also for second address is used one byte read op
-* Skip hwmon registration when eeprom does not support atomic 16bit read op
+* add this module also into sfp_module_supported() function
 
 Changes in v3:
-* Do not break longer info messages
-* Do not read memory after the end of buffer in sfp_id_needs_byte_io()
-* Add comments for default i2c_block_size and Nokia 3FE46541AA module
+* no change
 ---
- drivers/net/phy/sfp.c | 100 ++++++++++++++++++++++++++++--------------
- 1 file changed, 67 insertions(+), 33 deletions(-)
+ drivers/net/phy/sfp-bus.c | 15 +++++++++++++++
+ drivers/net/phy/sfp.c     | 17 +++++++++++++++--
+ 2 files changed, 30 insertions(+), 2 deletions(-)
 
+diff --git a/drivers/net/phy/sfp-bus.c b/drivers/net/phy/sfp-bus.c
+index 20b91f5dfc6e..4cf874fb5c5b 100644
+--- a/drivers/net/phy/sfp-bus.c
++++ b/drivers/net/phy/sfp-bus.c
+@@ -44,6 +44,17 @@ static void sfp_quirk_2500basex(const struct sfp_eeprom_id *id,
+ 	phylink_set(modes, 2500baseX_Full);
+ }
+ 
++static void sfp_quirk_ubnt_uf_instant(const struct sfp_eeprom_id *id,
++				      unsigned long *modes)
++{
++	/* Ubiquiti U-Fiber Instant module claims that support all transceiver
++	 * types including 10G Ethernet which is not truth. So clear all claimed
++	 * modes and set only one mode which module supports: 1000baseX_Full.
++	 */
++	phylink_zero(modes);
++	phylink_set(modes, 1000baseX_Full);
++}
++
+ static const struct sfp_quirk sfp_quirks[] = {
+ 	{
+ 		// Alcatel Lucent G-010S-P can operate at 2500base-X, but
+@@ -63,6 +74,10 @@ static const struct sfp_quirk sfp_quirks[] = {
+ 		.vendor = "HUAWEI",
+ 		.part = "MA5671A",
+ 		.modes = sfp_quirk_2500basex,
++	}, {
++		.vendor = "UBNT",
++		.part = "UF-INSTANT",
++		.modes = sfp_quirk_ubnt_uf_instant,
+ 	},
+ };
+ 
 diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
-index 91d74c1a920a..f2b5e467a800 100644
+index f2b5e467a800..7a680b5177f5 100644
 --- a/drivers/net/phy/sfp.c
 +++ b/drivers/net/phy/sfp.c
-@@ -336,19 +336,11 @@ static int sfp_i2c_read(struct sfp *sfp, bool a2, u8 dev_addr, void *buf,
- 			size_t len)
+@@ -273,8 +273,21 @@ static const struct sff_data sff_data = {
+ 
+ static bool sfp_module_supported(const struct sfp_eeprom_id *id)
  {
- 	struct i2c_msg msgs[2];
--	size_t block_size;
-+	u8 bus_addr = a2 ? 0x51 : 0x50;
-+	size_t block_size = sfp->i2c_block_size;
- 	size_t this_len;
--	u8 bus_addr;
- 	int ret;
- 
--	if (a2) {
--		block_size = 16;
--		bus_addr = 0x51;
--	} else {
--		block_size = sfp->i2c_block_size;
--		bus_addr = 0x50;
--	}
--
- 	msgs[0].addr = bus_addr;
- 	msgs[0].flags = 0;
- 	msgs[0].len = 1;
-@@ -1282,6 +1274,20 @@ static void sfp_hwmon_probe(struct work_struct *work)
- 	struct sfp *sfp = container_of(work, struct sfp, hwmon_probe.work);
- 	int err, i;
- 
-+	/* hwmon interface needs to access 16bit registers in atomic way to
-+	 * guarantee coherency of the diagnostic monitoring data. If it is not
-+	 * possible to guarantee coherency because EEPROM is broken in such way
-+	 * that does not support atomic 16bit read operation then we have to
-+	 * skip registration of hwmon device.
-+	 */
-+	if (sfp->i2c_block_size < 2) {
-+		dev_info(sfp->dev,
-+			 "skipping hwmon device registration due to broken EEPROM\n");
-+		dev_info(sfp->dev,
-+			 "diagnostic EEPROM area cannot be read atomically to guarantee data coherency\n");
-+		return;
-+	}
+-	return id->base.phys_id == SFF8024_ID_SFP &&
+-	       id->base.phys_ext_id == SFP_PHYS_EXT_ID_SFP;
++	if (id->base.phys_id == SFF8024_ID_SFP &&
++	    id->base.phys_ext_id == SFP_PHYS_EXT_ID_SFP)
++		return true;
 +
- 	err = sfp_read(sfp, true, 0, &sfp->diag, sizeof(sfp->diag));
- 	if (err < 0) {
- 		if (sfp->hwmon_tries--) {
-@@ -1642,26 +1648,30 @@ static int sfp_sm_mod_hpower(struct sfp *sfp, bool enable)
- 	return 0;
++	/* SFP GPON module Ubiquiti U-Fiber Instant has in its EEPROM stored
++	 * phys id SFF instead of SFP. Therefore mark this module explicitly
++	 * as supported based on vendor name and pn match.
++	 */
++	if (id->base.phys_id == SFF8024_ID_SFF_8472 &&
++	    id->base.phys_ext_id == SFP_PHYS_EXT_ID_SFP &&
++	    !memcmp(id->base.vendor_name, "UBNT            ", 16) &&
++	    !memcmp(id->base.vendor_pn, "UF-INSTANT      ", 16))
++		return true;
++
++	return false;
  }
  
--/* Some modules (Nokia 3FE46541AA) lock up if byte 0x51 is read as a
-- * single read. Switch back to reading 16 byte blocks unless we have
-- * a CarlitoxxPro module (rebranded VSOL V2801F). Even more annoyingly,
-- * some VSOL V2801F have the vendor name changed to OEM.
-+/* GPON modules based on Realtek RTL8672 and RTL9601C chips (e.g. V-SOL
-+ * V2801F, CarlitoxxPro CPGOS03-0490, Ubiquiti U-Fiber Instant, ...) do
-+ * not support multibyte reads from the EEPROM. Each multi-byte read
-+ * operation returns just one byte of EEPROM followed by zeros. There is
-+ * no way to identify which modules are using Realtek RTL8672 and RTL9601C
-+ * chips. Moreover every OEM of V-SOL V2801F module puts its own vendor
-+ * name and vendor id into EEPROM, so there is even no way to detect if
-+ * module is V-SOL V2801F. Therefore check for those zeros in the read
-+ * data and then based on check switch to reading EEPROM to one byte
-+ * at a time.
-  */
--static int sfp_quirk_i2c_block_size(const struct sfp_eeprom_base *base)
-+static bool sfp_id_needs_byte_io(struct sfp *sfp, void *buf, size_t len)
- {
--	if (!memcmp(base->vendor_name, "VSOL            ", 16))
--		return 1;
--	if (!memcmp(base->vendor_name, "OEM             ", 16) &&
--	    !memcmp(base->vendor_pn,   "V2801F          ", 16))
--		return 1;
-+	size_t i, block_size = sfp->i2c_block_size;
- 
--	/* Some modules can't cope with long reads */
--	return 16;
--}
-+	/* Already using byte IO */
-+	if (block_size == 1)
-+		return false;
- 
--static void sfp_quirks_base(struct sfp *sfp, const struct sfp_eeprom_base *base)
--{
--	sfp->i2c_block_size = sfp_quirk_i2c_block_size(base);
-+	for (i = 1; i < len; i += block_size) {
-+		if (memchr_inv(buf + i, '\0', min(block_size - 1, len - i)))
-+			return false;
-+	}
-+	return true;
- }
- 
- static int sfp_cotsworks_fixup_check(struct sfp *sfp, struct sfp_eeprom_id *id)
-@@ -1705,11 +1715,11 @@ static int sfp_sm_mod_probe(struct sfp *sfp, bool report)
- 	u8 check;
- 	int ret;
- 
--	/* Some modules (CarlitoxxPro CPGOS03-0490) do not support multibyte
--	 * reads from the EEPROM, so start by reading the base identifying
--	 * information one byte at a time.
-+	/* Some SFP modules and also some Linux I2C drivers do not like reads
-+	 * longer than 16 bytes, so read the EEPROM in chunks of 16 bytes at
-+	 * a time.
- 	 */
--	sfp->i2c_block_size = 1;
-+	sfp->i2c_block_size = 16;
- 
- 	ret = sfp_read(sfp, false, 0, &id.base, sizeof(id.base));
- 	if (ret < 0) {
-@@ -1723,6 +1733,33 @@ static int sfp_sm_mod_probe(struct sfp *sfp, bool report)
- 		return -EAGAIN;
- 	}
- 
-+	/* Some SFP modules (e.g. Nokia 3FE46541AA) lock up if read from
-+	 * address 0x51 is just one byte at a time. Also SFF-8472 requires
-+	 * that EEPROM supports atomic 16bit read operation for diagnostic
-+	 * fields, so do not switch to one byte reading at a time unless it
-+	 * is really required and we have no other option.
-+	 */
-+	if (sfp_id_needs_byte_io(sfp, &id.base, sizeof(id.base))) {
-+		dev_info(sfp->dev,
-+			 "Detected broken RTL8672/RTL9601C emulated EEPROM\n");
-+		dev_info(sfp->dev,
-+			 "Switching to reading EEPROM to one byte at a time\n");
-+		sfp->i2c_block_size = 1;
-+
-+		ret = sfp_read(sfp, false, 0, &id.base, sizeof(id.base));
-+		if (ret < 0) {
-+			if (report)
-+				dev_err(sfp->dev, "failed to read EEPROM: %d\n",
-+					ret);
-+			return -EAGAIN;
-+		}
-+
-+		if (ret != sizeof(id.base)) {
-+			dev_err(sfp->dev, "EEPROM short read: %d\n", ret);
-+			return -EAGAIN;
-+		}
-+	}
-+
- 	/* Cotsworks do not seem to update the checksums when they
- 	 * do the final programming with the final module part number,
- 	 * serial number and date code.
-@@ -1757,9 +1794,6 @@ static int sfp_sm_mod_probe(struct sfp *sfp, bool report)
- 		}
- 	}
- 
--	/* Apply any early module-specific quirks */
--	sfp_quirks_base(sfp, &id.base);
--
- 	ret = sfp_read(sfp, false, SFP_CC_BASE + 1, &id.ext, sizeof(id.ext));
- 	if (ret < 0) {
- 		if (report)
+ static const struct sff_data sfp_data = {
 -- 
 2.20.1
 
