@@ -2,105 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3679E2F0E6C
-	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 09:44:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 15CF72F0E94
+	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 09:56:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728046AbhAKIoH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jan 2021 03:44:07 -0500
-Received: from a.mx.secunet.com ([62.96.220.36]:59116 "EHLO a.mx.secunet.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725843AbhAKIoH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 11 Jan 2021 03:44:07 -0500
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id 4F277200A0;
-        Mon, 11 Jan 2021 09:43:25 +0100 (CET)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id vxaVLGGRqSMG; Mon, 11 Jan 2021 09:43:24 +0100 (CET)
-Received: from cas-essen-01.secunet.de (unknown [10.53.40.201])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id D2975201CC;
-        Mon, 11 Jan 2021 09:43:24 +0100 (CET)
-Received: from mbx-dresden-01.secunet.de (10.53.40.199) by
- cas-essen-01.secunet.de (10.53.40.201) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Mon, 11 Jan 2021 09:43:24 +0100
-Received: from gauss2.secunet.de (10.182.7.193) by mbx-dresden-01.secunet.de
- (10.53.40.199) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2044.4; Mon, 11 Jan
- 2021 09:43:23 +0100
-Received: by gauss2.secunet.de (Postfix, from userid 1000)
-        id DA198318028B; Mon, 11 Jan 2021 09:43:22 +0100 (CET)
-Date:   Mon, 11 Jan 2021 09:43:22 +0100
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     Dongseok Yi <dseok.yi@samsung.com>
-CC:     "'David S. Miller'" <davem@davemloft.net>,
-        <namkyu78.kim@samsung.com>,
-        'Alexey Kuznetsov' <kuznet@ms2.inr.ac.ru>,
-        'Hideaki YOSHIFUJI' <yoshfuji@linux-ipv6.org>,
-        'Jakub Kicinski' <kuba@kernel.org>,
-        "'Willem de Bruijn'" <willemb@google.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [RFC PATCH net] udp: check sk for UDP GRO fraglist
-Message-ID: <20210111084322.GD3576117@gauss3.secunet.de>
-References: <CGME20210108130414epcas2p3217d7b6ac8a8094c5b3b6c5e52480134@epcas2p3.samsung.com>
- <1610110348-119768-1-git-send-email-dseok.yi@samsung.com>
- <20210108133502.GZ3576117@gauss3.secunet.de>
- <003701d6e7bd$d90ea860$8b2bf920$@samsung.com>
+        id S1728195AbhAKIz6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jan 2021 03:55:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50646 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728061AbhAKIz5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 03:55:57 -0500
+Received: from mail-ot1-x32a.google.com (mail-ot1-x32a.google.com [IPv6:2607:f8b0:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AEE8C061786
+        for <netdev@vger.kernel.org>; Mon, 11 Jan 2021 00:55:17 -0800 (PST)
+Received: by mail-ot1-x32a.google.com with SMTP id x13so16192769oto.8
+        for <netdev@vger.kernel.org>; Mon, 11 Jan 2021 00:55:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=r3+4ea1T0PKlqhS8IXaS+xftv/9SxAE/Ihj1vdkKG7s=;
+        b=WjrwdmAd//D3+94x+1f9EiUZBrwnvoUx2Lk3gv1yhtYpbEeINDjFnLMZiipBHx1m4a
+         IVkxER6FXoaKwfya3FMQgq0SQdU3RK6zpPLb1fEX9N+l3QwgET5VTEvakuqimeSPmK75
+         GZUkbdiB1nQGNZMMWC5nrgd8at/8tZ+i8IZV1fTw4Y8xPAqZZSKgbhVk592UbFpiRXHj
+         pBQHi0T5TECBotIiirnB4Uw2kE3YI97BV7GirRltkQXS1+Q+oK6SmUpHP8HiEA//mTR2
+         NN4Bz/KNzGieoxVN6obo6T9j1OW0rV/OQOTmW5V5QnbnLKhc8vlL8zZpHz2fR0zy+/dp
+         LiFw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=r3+4ea1T0PKlqhS8IXaS+xftv/9SxAE/Ihj1vdkKG7s=;
+        b=JbSMFGldSD3qJ7lss+yO0xRbCuwt+CYo4luBMaSEu4RcCy/qg9Ii0ow7tG2CRFb9kD
+         Uvd79aWD/02cZECiJvqHyWeK9gaGD9LX1csl435C4ISYSzpJ9uThVOKGMToYm5wj218Q
+         cCRpnKCYcmPeE0DXaNvzIfPjko/s7X5wdSYM8X7urHllWsrC0JbjU0eJXkipO39FjUcs
+         FXKXkAE3ssCN0RZeAImlBwIE/gtORaV5gJs/b5+OYBm/YNgiJ6TkzV7jEtr9Y04ZPWEj
+         bQgAZkW8n5dbgoiPYLWO2O9hvAKgVyoNbIGkn5GFCnF+dIHfn0+R++yGk2N2/arU6qr3
+         5QIA==
+X-Gm-Message-State: AOAM5300H11KZ0BeIDbCkKNagdvli0LtvpGAbJTr4QYEoGtNSW8PyJeL
+        YSTtlBrCVu/EYyqVMzAk16/ldYGB3KD1T4QMgvkURD+U+Gk=
+X-Google-Smtp-Source: ABdhPJxt2l0jP8I6AgfnjzZs+XrSWx+j2uy1bveCVUjwKVabRfjJCrCU3G+Oe0YRl8DGvQ+MR+4bDVGPX5JdtPlIXhg=
+X-Received: by 2002:a05:6830:19ca:: with SMTP id p10mr10393840otp.233.1610355316686;
+ Mon, 11 Jan 2021 00:55:16 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <003701d6e7bd$d90ea860$8b2bf920$@samsung.com>
-X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
- mbx-dresden-01.secunet.de (10.53.40.199)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+References: <000000000000b4862805b54ef573@google.com> <X8kLG5D+j4rT6L7A@elver.google.com>
+ <CANn89iJWD5oXPLgtY47umTgo3gCGBaoy+XJfXnw1ecES_EXkCw@mail.gmail.com>
+ <CANpmjNOaWbGJQ5Y=qC3cA31-R-Jy4Fbe+p=OBG5O2Amz8dLtLA@mail.gmail.com>
+ <CANn89iKWf1EVZUuAHup+5ndhxvOqGopq53=vZ9yeok=DnRjggg@mail.gmail.com>
+ <X8kjPIrLJUd8uQIX@elver.google.com> <af884a0e-5d4d-f71b-4821-b430ac196240@gmail.com>
+ <CANpmjNNDKm_ObRnO_b3gH6wDYjb6_ex-KhZA5q5BRzEMgo+0xg@mail.gmail.com>
+ <X9DHa2OG6lewtfPQ@elver.google.com> <X9JR/J6dMMOy1obu@elver.google.com>
+ <CANn89i+2mAu_srdvefKLDY23HvrbOG1aMfj5uwvk6tYZ9uBtMA@mail.gmail.com>
+ <CANpmjNMdgX1H=ztDH5cpmmZJ3duL4M8Vn9Ty-XzNpsrhx0h4sA@mail.gmail.com>
+ <CANpmjNPdK3rRF5eJM5uZ-8wJDp_8TF1P3jOvAo8kqu4YDDJtGQ@mail.gmail.com> <CANn89iJeS+WBB7=OvrRE1pbdYtxx4Oe7MYN3vCefZj3gO8AoYg@mail.gmail.com>
+In-Reply-To: <CANn89iJeS+WBB7=OvrRE1pbdYtxx4Oe7MYN3vCefZj3gO8AoYg@mail.gmail.com>
+From:   Marco Elver <elver@google.com>
+Date:   Mon, 11 Jan 2021 09:55:05 +0100
+Message-ID: <CANpmjNOA5Rhmpi0tONk3gWp-S1cm8HErCxjQL-+wH88V=DpRRg@mail.gmail.com>
+Subject: Re: WARNING in sk_stream_kill_queues (5)
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        David Miller <davem@davemloft.net>,
+        Dmitry Vyukov <dvyukov@google.com>,
+        Alexander Potapenko <glider@google.com>,
+        Jann Horn <jannh@google.com>, Jakub Kicinski <kuba@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Stephen Rothwell <sfr@canb.auug.org.au>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        Willem de Bruijn <willemb@google.com>,
+        syzbot <syzbot+7b99aafdcc2eedea6178@syzkaller.appspotmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 11, 2021 at 11:02:42AM +0900, Dongseok Yi wrote:
-> On 2021-01-08 22:35, Steffen Klassert wrote:
-> > On Fri, Jan 08, 2021 at 09:52:28PM +0900, Dongseok Yi wrote:
-> > > It is a workaround patch.
+On Mon, 14 Dec 2020 at 11:47, Eric Dumazet <edumazet@google.com> wrote:
+> On Mon, Dec 14, 2020 at 11:09 AM Marco Elver <elver@google.com> wrote:
+> > On Thu, 10 Dec 2020 at 20:01, Marco Elver <elver@google.com> wrote:
+> > > On Thu, 10 Dec 2020 at 18:14, Eric Dumazet <edumazet@google.com> wrote:
+> > > > On Thu, Dec 10, 2020 at 5:51 PM Marco Elver <elver@google.com> wrote:
+[...]
+> > > Either option is fine, as long as it avoids this problem in future.
+> > > Hopefully it can be fixed for 5.11.
 > > >
-> > > UDP/IP header of UDP GROed frag_skbs are not updated even after NAT
-> > > forwarding. Only the header of head_skb from ip_finish_output_gso ->
-> > > skb_gso_segment is updated but following frag_skbs are not updated.
+> > > > (All TCP skbs in output path have the same allocation size for skb->head)
+> > > >
+> > > > diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+> > > > index e578544b2cc7110ec2f6bcf4c29d93e4b4b1ad14..798b51eeeaa4fbed65d41d9eab207dbbf438dab3
+> > > > 100644
+> > > > --- a/net/core/skbuff.c
+> > > > +++ b/net/core/skbuff.c
+> > > > @@ -3270,7 +3270,14 @@ EXPORT_SYMBOL(skb_split);
+> > > >   */
+> > > >  static int skb_prepare_for_shift(struct sk_buff *skb)
+> > > >  {
+> > > > -       return skb_cloned(skb) && pskb_expand_head(skb, 0, 0, GFP_ATOMIC);
+> > > > +       unsigned int ret = 0, save;
+> > > > +
+> > > > +       if (skb_cloned(skb)) {
+> > > > +               save = skb->truesize;
+> > > > +               ret = pskb_expand_head(skb, 0, 0, GFP_ATOMIC);
+> > > > +               skb->truesize = save;
+> > > > +       }
+> > > > +       return ret;
+> > > >  }
 > > >
-> > > A call path skb_mac_gso_segment -> inet_gso_segment ->
-> > > udp4_ufo_fragment -> __udp_gso_segment -> __udp_gso_segment_list
-> > > does not try to update any UDP/IP header of the segment list.
+> > > FWIW,
 > > >
-> > > It might make sense because each skb of frag_skbs is converted to a
-> > > list of regular packets. Header update with checksum calculation may
-> > > be not needed for UDP GROed frag_skbs.
-> > >
-> > > But UDP GRO frag_list is started from udp_gro_receive, we don't know
-> > > whether the skb will be NAT forwarded at that time. For workaround,
-> > > try to get sock always when call udp4_gro_receive -> udp_gro_receive
-> > > to check if the skb is for local.
-> > >
-> > > I'm still not sure if UDP GRO frag_list is really designed for local
-> > > session only. Can kernel support NAT forward for UDP GRO frag_list?
-> > > What am I missing?
-> > 
-> > The initial idea when I implemented this was to have a fast
-> > forwarding path for UDP. So forwarding is a usecase, but NAT
-> > is a problem, indeed. A quick fix could be to segment the
-> > skb before it gets NAT forwarded. Alternatively we could
-> > check for a header change in __udp_gso_segment_list and
-> > update the header of the frag_skbs accordingly in that case.
-> 
-> Thank you for explaining.
-> Can I think of it as a known issue?
+> > >     Tested-by: Marco Elver <elver@google.com>
+> >
+> > Has this patch, or similar, already been sent?
+>
+>
+> Not yet, we have few weeks left before 5.11 is released ;)
 
-No, it was not known before you reported it.
+Ping. Though KFENCE has been dropped from 5.11, just a reminder so we
+get this fixed for 5.12.
 
-> I think we should have a fix
-> because NAT can be triggered by user. Can I check the current status?
-> Already planning a patch or a new patch should be written?
-
-We have to do a new patch to fix that issue. If you want do
-do so, go ahead.
+Thanks,
+-- Marco
