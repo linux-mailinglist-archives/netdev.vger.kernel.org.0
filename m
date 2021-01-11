@@ -2,225 +2,197 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9AE872F1C06
-	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 18:15:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EF0EB2F1C16
+	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 18:19:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389256AbhAKRO3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jan 2021 12:14:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44850 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389213AbhAKRO2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 12:14:28 -0500
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33027C061786
-        for <netdev@vger.kernel.org>; Mon, 11 Jan 2021 09:13:48 -0800 (PST)
-Received: by mail-ed1-x530.google.com with SMTP id g24so497333edw.9
-        for <netdev@vger.kernel.org>; Mon, 11 Jan 2021 09:13:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=eCr6Q3C2LFwWqF1Dvzjhe7LbSvf7Xj64Wzj8qap1D1c=;
-        b=QcN7Afs/UeyTfd/40uAs3KzCMDeJ+IpAJ74C80I9IfMYCrVAM6f2JnX6cVQkXzAInV
-         dU0PSpILP2esvHdqtD/38oSg3vbQDeOPFl9n7/LLCOy/D7dzLhxFJgQKQuQziO6850Kw
-         uO9bWQ5SeaOS0DMPO/tre7roD/m5tV/h2GCfYzsQRxKVu0LbaKD6VPLBaVdH33lumYCS
-         5MgDrEUnOtsIdKZpWQw75PUqUNZugswphIYsifMuVxBOPtfJ9J4mmyp6jlX3B7cCP53l
-         HZzQz+6CZDDQt7ZeyJGpSI7VTIaEnltLal92TUjbz0sqy4RYBoswXTAW1xHrs57U/fJC
-         hLEQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=eCr6Q3C2LFwWqF1Dvzjhe7LbSvf7Xj64Wzj8qap1D1c=;
-        b=GHMCoGzH5f83d/wADwAehc2O/Da39ocRfBMfrGXRqZwrgNDPHI6Y4y6+mcasuCWMWt
-         h9DLpdI4B3TS3UgWgLtCA01FVT7quTwxU0XpY6TnmioJ0DzJsv2lGYmHNtolgPl/YWd+
-         gzC8on+UgEH5tWMqXM5TEs2DVgdENHSacoS47D7/4EQPTHRiHntwoAA7NNGithM7b46C
-         XsW8xf+ABtP1AWGtH5o9mINIu3xKa7GQ6eFzIzv9jc242TxYj3r6B8bgBClEJxgqNCIb
-         HVreTSVNb18iwpf18zkRjOqV8Dmlru7IBhEaAHKtsAU5Lbo0bUJZYYqpQGfp7JBtnOl6
-         j6iw==
-X-Gm-Message-State: AOAM5319fVmIxbc7uy84vPcPL7hZGTNs3iwm5rkwHShNg92VhPmXSEEQ
-        /UrV2nAvznBGb2FAQ+aUIU8=
-X-Google-Smtp-Source: ABdhPJzSwXocJNyWbPNJHohRJlAHhHrtnHc+5WzAukjhg4lvkhEIRqHJv511kFB+ZBuSL7XUX5k6eQ==
-X-Received: by 2002:a50:b944:: with SMTP id m62mr295191ede.182.1610385226884;
-        Mon, 11 Jan 2021 09:13:46 -0800 (PST)
-Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id v18sm101540ejw.18.2021.01.11.09.13.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Jan 2021 09:13:46 -0800 (PST)
-Date:   Mon, 11 Jan 2021 19:13:44 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, alexandre.belloni@bootlin.com,
-        andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
-        alexandru.marginean@nxp.com, claudiu.manoil@nxp.com,
-        xiaoliang.yang_1@nxp.com, hongbo.wang@nxp.com, jiri@resnulli.us,
-        idosch@idosch.org, UNGLinuxDriver@microchip.com
-Subject: Re: [PATCH v3 net-next 08/10] net: mscc: ocelot: register devlink
- ports
-Message-ID: <20210111171344.j6chsp5djr5t5ykk@skbuf>
-References: <20210108175950.484854-1-olteanv@gmail.com>
- <20210108175950.484854-9-olteanv@gmail.com>
- <20210109174439.404713f6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S2389333AbhAKRRq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jan 2021 12:17:46 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:62071 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2389214AbhAKRRp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 12:17:45 -0500
+Received: from pps.filterd (m0148460.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 10BHEQVJ022997;
+        Mon, 11 Jan 2021 09:16:43 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
+ references : from : message-id : date : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=facebook;
+ bh=JSuDuJfdt1fYKfD+NJwOJKD4A0fd/ZaKtv4kdQ3JMk4=;
+ b=MekuRAzB9RjLKS7a13dopfXZL1x8CjX/L1hx6GWqF5TIUakd0TUW8stYY5j7XIdGlAcB
+ R4o7MuzhGIqaYA66Gtqcj7OAWJI/fTgvOm9fLUJQaZr4QYW3vl6mA8bVWf3L5Q5LZFac
+ +k0r1c2QlcfiLZ8aQzOxXByHkWP2XLCE3Sg= 
+Received: from mail.thefacebook.com ([163.114.132.120])
+        by mx0a-00082601.pphosted.com with ESMTP id 35yavt0ee3-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Mon, 11 Jan 2021 09:16:43 -0800
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (100.104.98.9) by
+ o365-in.thefacebook.com (100.104.94.199) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Mon, 11 Jan 2021 09:16:42 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Op9jkAfEGYCsLGlraNLhwUwDKhnfwRfiEsB6e8j9MPhGtqJQUaPnRPVy9XGscUYu6c8ks2vEEjl4FQuKxqCYt5owam4CinMcu8DfJoXt3ZUQs/CB/mvtSC3Xrb+QavT4CEqO5newwiSZ7taOOmPKazeJaZaFGMHGYSwYeqp2acBVfzgmNGEUAp4YdIgtadAj+AsEQNNC7pA2AHw7GV5YVH9utKlgXzuue+AJUPqhcxO5JRQN/14GZD1tkMfObF2MMYQnL3F0QZ8DvkL/G9SjdIDUiV635iq4piXZiGG1KdSU8Qba3hEZtpvUPavPzFGDFUlGOgkUtltn/P/JB8R9Fg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=JSuDuJfdt1fYKfD+NJwOJKD4A0fd/ZaKtv4kdQ3JMk4=;
+ b=agAbyWxklpiZ63NL+7quWQ1t1Q7PSbVz/Bnmh5ccF9gJSLSoCKXl6noNV/NsIefna5h0dZsYA65ISXYikvGBkUhZuLLWzaf5Z4X2T29dKpn8xr2kXdQOEi5jhBxVMQrxRpX6IIpK956db4KwVwQ/22mGHREJGdb9KyevkB2aWbrLaSn2vD7zzkfN4ybKwJxVZ7OqESTHYhaxd7wglTcGI02BIaqEixItat5ZzqTJWnmF54sqz/ATTWLDF+BW2lU+Th4LuNqU0IeC9nlOluAxkJtJaaGySN5e7aK17un4Hg08YXhMqf+R9F6pP6vgdvjeB1s92v5uLjbt+tDClZo+1Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=JSuDuJfdt1fYKfD+NJwOJKD4A0fd/ZaKtv4kdQ3JMk4=;
+ b=S27sKy0ANNwW3+gW+pDlI3ec4C6E7BLXOXDA+Y3TQ/wgATY+AQhxZbxuNqFfiel+urvSEGVhxiOPhhbkLkI2ePURyRvrLkXbmqzGD8AIyBxHXDiLylpRU3xPYveAzPS1ruanE6ySDxZcWPSVUydI1ZEwTkqBDdmX1c5ieQNp8x4=
+Authentication-Results: intel.com; dkim=none (message not signed)
+ header.d=none;intel.com; dmarc=none action=none header.from=fb.com;
+Received: from BYAPR15MB4088.namprd15.prod.outlook.com (2603:10b6:a02:c3::18)
+ by BYAPR15MB3208.namprd15.prod.outlook.com (2603:10b6:a03:10c::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3742.6; Mon, 11 Jan
+ 2021 17:16:36 +0000
+Received: from BYAPR15MB4088.namprd15.prod.outlook.com
+ ([fe80::9ae:1628:daf9:4b03]) by BYAPR15MB4088.namprd15.prod.outlook.com
+ ([fe80::9ae:1628:daf9:4b03%7]) with mapi id 15.20.3742.012; Mon, 11 Jan 2021
+ 17:16:36 +0000
+Subject: Re: [PATCH bpf-next 1/4] bpf: enable task local storage for tracing
+ programs
+To:     Song Liu <songliubraving@fb.com>, <bpf@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <mingo@redhat.com>, <peterz@infradead.org>, <ast@kernel.org>,
+        <daniel@iogearbox.net>, <andrii@kernel.org>,
+        <john.fastabend@gmail.com>, <kpsingh@chromium.org>,
+        <kernel-team@fb.com>, <haoluo@google.com>,
+        kernel test robot <lkp@intel.com>
+References: <20210108231950.3844417-1-songliubraving@fb.com>
+ <20210108231950.3844417-2-songliubraving@fb.com>
+From:   Yonghong Song <yhs@fb.com>
+Message-ID: <a3421aeb-b293-e49a-cfe1-7163cc75bd84@fb.com>
+Date:   Mon, 11 Jan 2021 09:16:33 -0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.6.0
+In-Reply-To: <20210108231950.3844417-2-songliubraving@fb.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [2620:10d:c090:400::5:6450]
+X-ClientProxiedBy: BY3PR04CA0004.namprd04.prod.outlook.com
+ (2603:10b6:a03:217::9) To BYAPR15MB4088.namprd15.prod.outlook.com
+ (2603:10b6:a02:c3::18)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210109174439.404713f6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [IPv6:2620:10d:c085:21c1::1158] (2620:10d:c090:400::5:6450) by BY3PR04CA0004.namprd04.prod.outlook.com (2603:10b6:a03:217::9) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3742.6 via Frontend Transport; Mon, 11 Jan 2021 17:16:35 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 8d9546e4-093d-476b-19c7-08d8b654a6bf
+X-MS-TrafficTypeDiagnostic: BYAPR15MB3208:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <BYAPR15MB320819B029520AEBF07DAA40D3AB0@BYAPR15MB3208.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: W9edEDyMXSK15eN3i2UsMQSBccuQL/8HsPk+V343HGlWVq2cA6i+v9D54J19iMDzaDCIaiaMoyZRLA/jYsCIRxAfjSLyUkHWFYBp48cFXQcYjE7X8f00JfuODanC29uf5OD1nevPbn1D9pgGpvVd1wy27FgeW2iaat5Qp8kfsWzeEAowvTrx9aSXz7HsPZGkNo/IWY+QZmRW+A0Wq8kZ3MBaGT/3FU5KulqD0emlnMrJ0xKU9q/CG/7qOd4JwwRsMdYAG9sfjAxDU7tLCUQagyiFjs1ERP+n9sHu0aoSYhW+J0ZW3moiWfRypkAAHkdiXwggPKD4qYMHfDgby4s0twS9Sk2d2YHUdGFMix+Xg2nke8BDZdWkee+aCK4QLVgDKFZhHn2zwzWJMcuOFfGM72iAL5ZAkh3lRAdxsdVcj7ocnqXoKQwgDSipAuY3JQv/fau2eQVlDMRi4SefoU4RAnG8EnaB/pV7H6r9wqZuQN8=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB4088.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(39860400002)(366004)(376002)(346002)(396003)(136003)(2616005)(31686004)(7416002)(5660300002)(52116002)(31696002)(86362001)(478600001)(66476007)(66556008)(16526019)(186003)(4326008)(8936002)(2906002)(316002)(36756003)(6486002)(66946007)(8676002)(53546011)(83380400001)(45980500001)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?cjUxZzBSNWZHOFB2RjEwWXZnbGZ5VC9TUTdud0txb0tqRGRzUzBPQUtkNWxq?=
+ =?utf-8?B?bWMzZVV2c1hmQlFGVE5QUmFnRzkvQlZKL21YVzVyWFUxVlFmRmI4bzdqcmNM?=
+ =?utf-8?B?TjZmZVRDV243dkd1NHZCYlhSaHhvRFhVL0RHREg2T08rZEhSQzM5OW92NFgy?=
+ =?utf-8?B?Nm1abzFhSjV2am5PVHBZalZGeE1Dd29NbHlSSEVhS3d6bVlBQ2J3NnNTNEp1?=
+ =?utf-8?B?OTc4N3A1VWlidkZjN00wWlpnOE83bTNvU2lyOXF1R0hDcklOYWI1Z1BZc3lQ?=
+ =?utf-8?B?c2dWckVkUzJJYXpkOWhkQWJ2Y2dHSVJwMGx4dkdoTmRLY3ppRWROcnFQQTdN?=
+ =?utf-8?B?em54Z3VmZHlYc1h3eWtiQWN1T0g0TzV0cjlNMExvNldGY0R5VW1JSWI0aXRY?=
+ =?utf-8?B?enp4UVRRYUwxM3J2VkQxaTZDL0xQOU51eXpINjdlQ1lBWDlURTdKSDhBMXFt?=
+ =?utf-8?B?VkcrN0lFZUtjR2s1SzVzanUraDNreng0Q3ZRTUVxSkxEVGFycmlRUmpFUlBM?=
+ =?utf-8?B?SEhwcXJCOGpmNkE1UngrK3RwRWJKdEIvVmVQTmt1RmFnRnZ0bjNHNmE0Uk5h?=
+ =?utf-8?B?MUZSRWtnRVJPeTgraFRRNVIyWVNydmxHN1RmY1JPV3owNUwyZDVoNDhGOHhF?=
+ =?utf-8?B?a1JTU2ZTbVdmOCsvdCtLUjZUUklaS2k1VXQvcm81RGNqVGFhSXRMTnlQNXlH?=
+ =?utf-8?B?dWJBOUFBVjA3VW5wZW5iTGlTRHIyMDA3UlRiN25JZzFwWEZqWlk4RUdYeWNL?=
+ =?utf-8?B?YlFOQXVYM1pPT3FrZTJRalYzVVB1a3dlU0o4RVM1LzIwNmhKUUJWemd1T0VZ?=
+ =?utf-8?B?TENVeStXNEZHQWdXRVBEcG1BVDRsWGl4elpULzYzbzZ3ME13cHgxQThmVlFi?=
+ =?utf-8?B?c2s0Z1oyMXQyMDdmRm80NEVYWW1pQ0Q3dU9yYUhuY28vMFlweDdzR3VBajNo?=
+ =?utf-8?B?QWJwWklUaDArVTdaN1JaWEc3bWxDVWNtMEpKNGJ4ZXFZMEVnaVQ5SnpqRzdN?=
+ =?utf-8?B?MzIrbWVES0s4RUQ5UXpla2ZuT1JmdUx0dm9SWGNYVDMwZ2gxM21NM095WFcx?=
+ =?utf-8?B?V084NDhHM09kc0RJU0U4dEthZVh2V3E3ekpITk1jRTZwWlFGdnd3V0d0YzJh?=
+ =?utf-8?B?bzFVNWgrVW1Sc3JuMjB3RnpqLy9vUXNaZEFxS3ZBcEQ4Z1B6WkR3dURrRVZO?=
+ =?utf-8?B?dUVGT2p3TFFvRWswUnJjdzFYVDBNS2xlTGx3cmNiZ1drT2ZPZUU5U0NQREQz?=
+ =?utf-8?B?Vi9pdXM1WEZpRGR1dnhJd2NHaHoxRkFHSjhZYSswRndIQzlOazJCNEwwZUR0?=
+ =?utf-8?B?UndPdW12SW1kNkN2d3M5Um50WDhzUzVNZkgvTm1zU21KbzhCOThmK3Raa215?=
+ =?utf-8?B?ZGo5UGp2NlVrbnc9PQ==?=
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR15MB4088.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Jan 2021 17:16:36.2865
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8d9546e4-093d-476b-19c7-08d8b654a6bf
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Ji3nuWwEkwg0iIDg/mXc54iU5JiwZ5DwGAefOaJlg5G/MXY/5BZJelawf1Kj2gtP
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB3208
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
+ definitions=2021-01-11_29:2021-01-11,2021-01-11 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0 suspectscore=0
+ clxscore=1015 priorityscore=1501 mlxlogscore=999 lowpriorityscore=0
+ impostorscore=0 adultscore=0 bulkscore=0 spamscore=0 phishscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2101110099
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jan 09, 2021 at 05:44:39PM -0800, Jakub Kicinski wrote:
-> On Fri,  8 Jan 2021 19:59:48 +0200 Vladimir Oltean wrote:
-> > From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> > 
-> > Add devlink integration into the mscc_ocelot switchdev driver. Only the
-> > probed interfaces are registered with devlink, because for convenience,
-> > struct devlink_port was included into struct ocelot_port_private, which
-> > is only initialized for the ports that are used.
-> > 
-> > Since we use devlink_port_type_eth_set to link the devlink port to the
-> > net_device, we can as well remove the .ndo_get_phys_port_name and
-> > .ndo_get_port_parent_id implementations, since devlink takes care of
-> > retrieving the port name and number automatically, once
-> > .ndo_get_devlink_port is implemented.
-> > 
-> > Note that the felix DSA driver is already integrated with devlink by
-> > default, since that is a thing that the DSA core takes care of. This is
-> > the reason why these devlink stubs were put in ocelot_net.c and not in
-> > the common library.
-> > 
-> > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> 
-> > diff --git a/drivers/net/ethernet/mscc/ocelot_net.c b/drivers/net/ethernet/mscc/ocelot_net.c
-> > index 2bd2840d88bd..d0d98c6adea8 100644
-> > --- a/drivers/net/ethernet/mscc/ocelot_net.c
-> > +++ b/drivers/net/ethernet/mscc/ocelot_net.c
-> > @@ -8,6 +8,116 @@
-> >  #include "ocelot.h"
-> >  #include "ocelot_vcap.h"
-> >  
-> > +struct ocelot_devlink_private {
-> > +	struct ocelot *ocelot;
-> > +};
-> 
-> Why not make struct ocelot part of devlink_priv?
 
-I am not sure what you mean.
 
-> > +static const struct devlink_ops ocelot_devlink_ops = {
-> > +};
-> > +
-> > +static int ocelot_port_devlink_init(struct ocelot *ocelot, int port)
-> > +{
-> > +	struct ocelot_port *ocelot_port = ocelot->ports[port];
-> > +	int id_len = sizeof(ocelot->base_mac);
-> > +	struct devlink *dl = ocelot->devlink;
-> > +	struct devlink_port_attrs attrs = {};
-> > +	struct ocelot_port_private *priv;
-> > +	struct devlink_port *dlp;
-> > +	int err;
-> > +
-> > +	if (!ocelot_port)
-> > +		return 0;
-> > +
-> > +	priv = container_of(ocelot_port, struct ocelot_port_private, port);
-> > +	dlp = &priv->devlink_port;
-> > +
-> > +	memcpy(attrs.switch_id.id, &ocelot->base_mac, id_len);
-> > +	attrs.switch_id.id_len = id_len;
-> > +	attrs.phys.port_number = port;
-> > +
-> > +	if (priv->dev)
-> > +		attrs.flavour = DEVLINK_PORT_FLAVOUR_PHYSICAL;
-> > +	else
-> > +		attrs.flavour = DEVLINK_PORT_FLAVOUR_UNUSED;
-> > +
-> > +	devlink_port_attrs_set(dlp, &attrs);
-> > +
-> > +	err = devlink_port_register(dl, dlp, port);
-> > +	if (err)
-> > +		return err;
-> > +
-> > +	if (priv->dev)
-> > +		devlink_port_type_eth_set(dlp, priv->dev);
+On 1/8/21 3:19 PM, Song Liu wrote:
+> To access per-task data, BPF program typically creates a hash table with
+> pid as the key. This is not ideal because:
+>   1. The use need to estimate requires size of the hash table, with may be
+>      inaccurate;
+>   2. Big hash tables are slow;
+>   3. To clean up the data properly during task terminations, the user need
+>      to write code.
 > 
-> devlink_port_attrs_set() should be called before netdev is registered,
-> and devlink_port_type_eth_set() after. So this sequence makes me a tad
-> suspicious.
+> Task local storage overcomes these issues and becomes a better option for
+> these per-task data. Task local storage is only available to BPF_LSM. Now
+> enable it for tracing programs.
 > 
-> In particular IIRC devlink's .ndo_get_phys_port_name depends on it,
-> because udev event needs to carry the right info for interface renaming
-> to work reliably. No?
-> 
+> Reported-by: kernel test robot <lkp@intel.com>
 
-If I change the driver's Kconfig from tristate to bool, all is fine,
-isn't it?
+The whole patch is not reported by kernel test robot. I think we should
+drop this.
 
-> > +	return 0;
-> > +}
-> > +
-> > +static void ocelot_port_devlink_teardown(struct ocelot *ocelot, int port)
-> > +{
-> > +	struct ocelot_port *ocelot_port = ocelot->ports[port];
-> > +	struct ocelot_port_private *priv;
-> > +	struct devlink_port *dlp;
-> > +
-> > +	if (!ocelot_port)
-> > +		return;
-> > +
-> > +	priv = container_of(ocelot_port, struct ocelot_port_private, port);
-> > +	dlp = &priv->devlink_port;
-> > +
-> > +	devlink_port_unregister(dlp);
-> > +}
-> > +
-> > +int ocelot_devlink_init(struct ocelot *ocelot)
-> > +{
-> > +	struct ocelot_devlink_private *dl_priv;
-> > +	int port, err;
-> > +
-> > +	ocelot->devlink = devlink_alloc(&ocelot_devlink_ops, sizeof(*dl_priv));
-> > +	if (!ocelot->devlink)
-> > +		return -ENOMEM;
-> > +	dl_priv = devlink_priv(ocelot->devlink);
-> > +	dl_priv->ocelot = ocelot;
-> > +
-> > +	err = devlink_register(ocelot->devlink, ocelot->dev);
-> > +	if (err)
-> > +		goto free_devlink;
-> > +
-> > +	for (port = 0; port < ocelot->num_phys_ports; port++) {
-> > +		err = ocelot_port_devlink_init(ocelot, port);
-> > +		if (err) {
-> > +			while (port-- > 0)
-> > +				ocelot_port_devlink_teardown(ocelot, port);
-> > +			goto unregister_devlink;
+> Signed-off-by: Song Liu <songliubraving@fb.com>
+> ---
+>   include/linux/bpf.h            |  7 +++++++
+>   include/linux/bpf_lsm.h        | 22 ----------------------
+>   include/linux/bpf_types.h      |  2 +-
+>   include/linux/sched.h          |  5 +++++
+>   kernel/bpf/Makefile            |  3 +--
+>   kernel/bpf/bpf_local_storage.c | 28 +++++++++++++++++-----------
+>   kernel/bpf/bpf_lsm.c           |  4 ----
+>   kernel/bpf/bpf_task_storage.c  | 26 ++++++--------------------
+>   kernel/fork.c                  |  5 +++++
+>   kernel/trace/bpf_trace.c       |  4 ++++
+>   10 files changed, 46 insertions(+), 60 deletions(-)
 > 
-> nit: should this also be on the error path below?
-> 
-> > +		}
-> > +	}
-> > +
-> > +	return 0;
-> > +
-> > +unregister_devlink:
-> > +	devlink_unregister(ocelot->devlink);
-> > +free_devlink:
-> > +	devlink_free(ocelot->devlink);
-> > +	return err;
-> > +}
-> 
-> > --- a/drivers/net/ethernet/mscc/ocelot_vsc7514.c
-> > +++ b/drivers/net/ethernet/mscc/ocelot_vsc7514.c
-> > @@ -1293,6 +1293,12 @@ static int mscc_ocelot_probe(struct platform_device *pdev)
-> >  		}
-> >  	}
-> >  
-> > +	err = ocelot_devlink_init(ocelot);
-> > +	if (err) {
-> > +		mscc_ocelot_release_ports(ocelot);
-> > +		goto out_ocelot_deinit;
-> 
-> No need to add ocelot_deinit_timestamp(ocelot); to the error path?
-
-Yes, the error handling could be better.
+> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+> index 07cb5d15e7439..cf16548f28f7b 100644
+> --- a/include/linux/bpf.h
+> +++ b/include/linux/bpf.h
+> @@ -1480,6 +1480,7 @@ struct bpf_prog *bpf_prog_by_id(u32 id);
+>   struct bpf_link *bpf_link_by_id(u32 id);
+>   
+>   const struct bpf_func_proto *bpf_base_func_proto(enum bpf_func_id func_id);
+> +void bpf_task_storage_free(struct task_struct *task);
+>   #else /* !CONFIG_BPF_SYSCALL */
+>   static inline struct bpf_prog *bpf_prog_get(u32 ufd)
+>   {
+> @@ -1665,6 +1666,10 @@ bpf_base_func_proto(enum bpf_func_id func_id)
+>   {
+>   	return NULL;
+>   }
+> +
+> +static inline void bpf_task_storage_free(struct task_struct *task)
+> +{
+> +}
+>   #endif /* CONFIG_BPF_SYSCALL */
+[...]
