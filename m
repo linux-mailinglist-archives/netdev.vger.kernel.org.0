@@ -2,24 +2,24 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D2AED2F158F
-	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 14:43:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B0FD2F165E
+	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 14:52:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731487AbhAKNMJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jan 2021 08:12:09 -0500
-Received: from mail.kernel.org ([198.145.29.99]:58982 "EHLO mail.kernel.org"
+        id S2387795AbhAKNv1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jan 2021 08:51:27 -0500
+Received: from mail.kernel.org ([198.145.29.99]:56240 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730874AbhAKNMG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 11 Jan 2021 08:12:06 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 569A021973;
-        Mon, 11 Jan 2021 13:11:50 +0000 (UTC)
+        id S1730682AbhAKNJM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 11 Jan 2021 08:09:12 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 74D132225E;
+        Mon, 11 Jan 2021 13:08:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1610370711;
-        bh=aD6pLRQOK8lniwzz8GZA8iQBUahsITsODE8kaK/A9vo=;
+        s=korg; t=1610370537;
+        bh=vWJ89WgJ64urz1PsjPcMt6Y5ukGj9sNADlTrhhycSCc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SQBj0OSsSpLLteJKrwXaFeaySFFwFA4ocEolX3n9VXzRqR9Kh1kCVJa9PcCivxEJL
-         8sD69SvFHAl+TuKV5yV3yKtrC+zoyYNXprSdAmhOXqvsMaV+/rt9yqcrICZI/UPnGp
-         V7zIgeDGzRuj+M2dIorcKG1IhHDzycYiwbusj5jk=
+        b=nkgVnuQB0ZSMDEUR7mYq4qJ4GY8GqIm9minBbHXq93OIbD4R9UOE+HcdQ5tIIjEHI
+         ldpCJA0RKPgyNoIWnlODoZS31W+CQkHdF30zbLpaYS5jKJt2lNA8Tcp7t+deDU9G5+
+         d7A2qg7qZl3uA0BqfwgFa6qk6Sy85yK9bZfoynQg=
 From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
@@ -31,12 +31,12 @@ Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH 5.4 34/92] net: sched: prevent invalid Scell_log shift count
-Date:   Mon, 11 Jan 2021 14:01:38 +0100
-Message-Id: <20210111130040.791158191@linuxfoundation.org>
+Subject: [PATCH 4.19 35/77] net: sched: prevent invalid Scell_log shift count
+Date:   Mon, 11 Jan 2021 14:01:44 +0100
+Message-Id: <20210111130038.089248250@linuxfoundation.org>
 X-Mailer: git-send-email 2.30.0
-In-Reply-To: <20210111130039.165470698@linuxfoundation.org>
-References: <20210111130039.165470698@linuxfoundation.org>
+In-Reply-To: <20210111130036.414620026@linuxfoundation.org>
+References: <20210111130036.414620026@linuxfoundation.org>
 User-Agent: quilt/0.66
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -96,7 +96,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
  	return true;
 --- a/net/sched/sch_choke.c
 +++ b/net/sched/sch_choke.c
-@@ -368,7 +368,7 @@ static int choke_change(struct Qdisc *sc
+@@ -371,7 +371,7 @@ static int choke_change(struct Qdisc *sc
  
  	ctl = nla_data(tb[TCA_CHOKE_PARMS]);
  
@@ -107,18 +107,18 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
  	if (ctl->limit > CHOKE_MAX_QUEUE)
 --- a/net/sched/sch_gred.c
 +++ b/net/sched/sch_gred.c
-@@ -480,7 +480,7 @@ static inline int gred_change_vq(struct
+@@ -357,7 +357,7 @@ static inline int gred_change_vq(struct
  	struct gred_sched *table = qdisc_priv(sch);
  	struct gred_sched_data *q = table->tab[dp];
  
--	if (!red_check_params(ctl->qth_min, ctl->qth_max, ctl->Wlog)) {
-+	if (!red_check_params(ctl->qth_min, ctl->qth_max, ctl->Wlog, ctl->Scell_log)) {
- 		NL_SET_ERR_MSG_MOD(extack, "invalid RED parameters");
+-	if (!red_check_params(ctl->qth_min, ctl->qth_max, ctl->Wlog))
++	if (!red_check_params(ctl->qth_min, ctl->qth_max, ctl->Wlog, ctl->Scell_log))
  		return -EINVAL;
- 	}
+ 
+ 	if (!q) {
 --- a/net/sched/sch_red.c
 +++ b/net/sched/sch_red.c
-@@ -213,7 +213,7 @@ static int red_change(struct Qdisc *sch,
+@@ -214,7 +214,7 @@ static int red_change(struct Qdisc *sch,
  	max_P = tb[TCA_RED_MAX_P] ? nla_get_u32(tb[TCA_RED_MAX_P]) : 0;
  
  	ctl = nla_data(tb[TCA_RED_PARMS]);
@@ -129,7 +129,7 @@ Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
  	if (ctl->limit > 0) {
 --- a/net/sched/sch_sfq.c
 +++ b/net/sched/sch_sfq.c
-@@ -647,7 +647,7 @@ static int sfq_change(struct Qdisc *sch,
+@@ -651,7 +651,7 @@ static int sfq_change(struct Qdisc *sch,
  	}
  
  	if (ctl_v1 && !red_check_params(ctl_v1->qth_min, ctl_v1->qth_max,
