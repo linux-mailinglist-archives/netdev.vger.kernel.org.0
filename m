@@ -2,264 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 119702F2250
-	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 22:59:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 00CB92F226E
+	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 23:09:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389096AbhAKV7V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jan 2021 16:59:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50058 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725917AbhAKV7U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 16:59:20 -0500
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FAE2C061794;
-        Mon, 11 Jan 2021 13:58:40 -0800 (PST)
-Received: by mail-pj1-x102b.google.com with SMTP id b5so383480pjl.0;
-        Mon, 11 Jan 2021 13:58:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=aBXnKLnbF5QBJWOxzxvZrwLpPgIU33au5TIuZ8DUciQ=;
-        b=hXw9N8PpOiOjWAjoV07v/RUpwNy0/XJkbGzeSzpQAbJPwdAi2dDUp+0Qy/IcTF5GBY
-         K/14xQzFM0saAW/lY/n3dFwfqy3nmV5zeexDIEfYov0FWX2+pJGwcvCF4SJ4+625Su/4
-         bFbGa1yGRWvpx/JYjMTM7fhYzeInWgAyOaw78MLWwOEAmByb5s/Q2fHUjO7TFAtJpgEO
-         anZDYlbIAT+aqWBe7JvVoAI3ci85MmKpLxnAnGG3iNSlro7huY8YbpAG2Tf4PrUU01x9
-         YrjxwyMBIvWl/qttZ4ruaMlwolyCmG3CyPh1EfY3XVCst+oK5pX2PfRC/afZmn4jzf2l
-         EUvw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=aBXnKLnbF5QBJWOxzxvZrwLpPgIU33au5TIuZ8DUciQ=;
-        b=nXzqkMZWJkeQABB9Ritnn1xGnczcyZ28i8Z+efDFYbLzs1JHJCFSkqVUERHE+wMJL1
-         Xk0ALeUKbBbjZxPEF9f5edWv91rxJ04rPyJuEJFJtnQuA272aRExccB17u+APqWptrmS
-         7cP1Ze5r90JyAL2RSHad+kPJ2kf391J4CNl8ApxptYm8D8yoOzBF6/M0gPuEstkVtxUs
-         CXsPdrTxWP9ex7RZ1TuaLcayT1f/kdkMJwdMo4JWoFaQuVnc44xFpX2A0PhSvKH01iXC
-         8u0pxnl3zvO2a0gR71kr3OcqibAP5cG0DpMGyBPYTB1wtsNMmejYY9M7rlPW+wlKb3bo
-         cGzQ==
-X-Gm-Message-State: AOAM531p31SUks7UMyeTPgEHjDs8DZt1fY7RiYl7E1O9m1hhw1q9NRYX
-        vhNwQkgw4VGdt4+hUaJohw==
-X-Google-Smtp-Source: ABdhPJzNvJaV0cppcJBUw6uYQ8HHuD4/i1AtZmQuYWaq6Px2L13/5EFZpta2iEX3baeuKfj6UztUFA==
-X-Received: by 2002:a17:90a:7842:: with SMTP id y2mr991134pjl.36.1610402319904;
-        Mon, 11 Jan 2021 13:58:39 -0800 (PST)
-Received: from localhost.localdomain ([216.52.21.4])
-        by smtp.gmail.com with ESMTPSA id z13sm403883pjz.42.2021.01.11.13.58.38
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 11 Jan 2021 13:58:39 -0800 (PST)
-From:   Praveen Chaudhary <praveen5582@gmail.com>
-X-Google-Original-From: Praveen Chaudhary <pchaudhary@linkedin.com>
-To:     davem@davemloft.net, kuba@kernel.org, corbet@lwn.net,
-        kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
-        netdev@vger.kernel.org, linux-doc@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Zhenggen Xu <zxu@linkedin.com>
-Subject: [PATCH v0 net-next 1/1] Allow user to set metric on default route learned via Router Advertisement.
-Date:   Mon, 11 Jan 2021 13:58:29 -0800
-Message-Id: <20210111215829.3774-2-pchaudhary@linkedin.com>
-X-Mailer: git-send-email 2.29.0
-In-Reply-To: <20210111215829.3774-1-pchaudhary@linkedin.com>
-References: <20210111215829.3774-1-pchaudhary@linkedin.com>
+        id S2389295AbhAKWJN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jan 2021 17:09:13 -0500
+Received: from mail.kernel.org ([198.145.29.99]:52768 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730835AbhAKWJM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 11 Jan 2021 17:09:12 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 5EAC422CBE;
+        Mon, 11 Jan 2021 22:08:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1610402912;
+        bh=4p3GlMa5uuzaUQpucb08pxfSVG1/RhEJjBvTXywbceg=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=MAFzJWUGNc7vfusWtiOs2a9vtCpqjlILFwU3lxeRNkV0I7EeqoE1zR8F4zAhmerGZ
+         BpUL9jvs6WMrmq2rOCCnJOkPA9XjlsjtMztuf5h5e1dOcqws0gwtx3wTLG8QXAIkg/
+         pTLRqW7okfTbpwvN2o6F0ywd0YIn1MGiR3d4dUUXDhMZv62RoGDpuePfP9fZ5EWTk2
+         71OvW46TZFsimqes/Rr+scDabd4BHkIDlnuep/tie8d27ArIqgXP9hjXaWsrgs58WR
+         sOJp/PabduZWc7V2TvA0Me0rudQdRE9gdPaZ/3bFt2A9getq2cXE/0yaACUvRE9E7v
+         qlv0jZ7AyR9Vw==
+Message-ID: <ae7cdf19f9ffcf5b6cc0a7cf44d068c94ec56f3f.camel@kernel.org>
+Subject: Re: [PATCH v6 net-next 07/15] net: remove return value from
+ dev_get_stats
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Eric Dumazet <edumazet@google.com>,
+        George McCollister <george.mccollister@gmail.com>,
+        Oleksij Rempel <o.rempel@pengutronix.de>,
+        Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        Arnd Bergmann <arnd@arndb.de>, Taehee Yoo <ap420073@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>, Florian Westphal <fw@strlen.de>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Pravin B Shelar <pshelar@ovn.org>,
+        Sridhar Samudrala <sridhar.samudrala@intel.com>
+Date:   Mon, 11 Jan 2021 14:08:29 -0800
+In-Reply-To: <20210109172624.2028156-8-olteanv@gmail.com>
+References: <20210109172624.2028156-1-olteanv@gmail.com>
+         <20210109172624.2028156-8-olteanv@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For IPv4, default route is learned via DHCPv4 and user is allowed to change
-metric using config etc/network/interfaces. But for IPv6, default route can
-be learned via RA, for which, currently a fixed metric value 1024 is used.
+On Sat, 2021-01-09 at 19:26 +0200, Vladimir Oltean wrote:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> 
+> After commit 28172739f0a2 ("net: fix 64 bit counters on 32 bit
+> arches"),
+> dev_get_stats got an additional argument for storage of statistics.
+> At
+> this point, dev_get_stats could return either the passed "storage"
+> argument, or the output of .ndo_get_stats64.
+> 
+> Then commit caf586e5f23c ("net: add a core netdev->rx_dropped
+> counter")
+> came, and the output of .ndo_get_stats64 (still returning a pointer
+> to
+> struct rtnl_link_stats64) started being ignored.
+> 
+> Then came commit bc1f44709cf2 ("net: make ndo_get_stats64 a void
+> function") which made .ndo_get_stats64 stop returning anything.
+> 
+> So now, dev_get_stats always reports the "storage" pointer received
+> as
+> argument. This is useless. Some drivers are dealing with unnecessary
+> complexity due to this, using another pointer to poke around the
+> returned statistics, when they can do that directly through the
+> stack-allocated struct rtnl_link_stats64.
+> 
+> Refactor these callers to ignore the return value completely and just
+> access the values from their struct rtnl_link_stats64 local variable.
+> 
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> 
 
-Ideally, user should be able to configure metric on default route for IPv6
-similar to IPv4. This fix adds sysctl for the same.
+Reviewed-by: Saeed Mahameed <saeedm@nvidia.com>
 
-Signed-off-by: Praveen Chaudhary<pchaudhary@linkedin.com>
-Signed-off-by: Zhenggen Xu<zxu@linkedin.com>
----
- Documentation/networking/ip-sysctl.rst | 18 ++++++++++++++++++
- include/linux/ipv6.h                   |  1 +
- include/net/ip6_route.h                |  3 ++-
- include/uapi/linux/ipv6.h              |  1 +
- include/uapi/linux/sysctl.h            |  1 +
- net/ipv6/addrconf.c                    | 10 ++++++++++
- net/ipv6/ndisc.c                       | 12 +++++++++---
- net/ipv6/route.c                       |  5 +++--
- 8 files changed, 45 insertions(+), 6 deletions(-)
-
-diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
-index dd2b12a32b73..384159081d91 100644
---- a/Documentation/networking/ip-sysctl.rst
-+++ b/Documentation/networking/ip-sysctl.rst
-@@ -1871,6 +1871,24 @@ accept_ra_defrtr - BOOLEAN
- 		- enabled if accept_ra is enabled.
- 		- disabled if accept_ra is disabled.
- 
-+accept_ra_defrtr_metric - INTEGER
-+	Route metric for default route learned in Router Advertisement. This
-+	value will be assigned as metric for the route learned via IPv6 Router
-+	Advertisement.
-+
-+	Possible values are:
-+		0:
-+			Use default value i.e. IP6_RT_PRIO_USER	1024.
-+		0xFFFFFFFF to -1:
-+			-ve values represent high route metric, value will be treated as
-+			unsigned value. This behaviour is inline with current IPv4 metric
-+			shown with commands such as "route -n" or "ip route list".
-+		1 to 0x7FFFFFF:
-+			+ve values will be used as is for route metric.
-+
-+	Functional default: enabled if accept_ra_defrtr is enabled.
-+				disabled if accept_ra_defrtr is disabled.
-+
- accept_ra_from_local - BOOLEAN
- 	Accept RA with source-address that is found on local machine
- 	if the RA is otherwise proper and able to be accepted.
-diff --git a/include/linux/ipv6.h b/include/linux/ipv6.h
-index dda61d150a13..19af90c77200 100644
---- a/include/linux/ipv6.h
-+++ b/include/linux/ipv6.h
-@@ -31,6 +31,7 @@ struct ipv6_devconf {
- 	__s32		max_desync_factor;
- 	__s32		max_addresses;
- 	__s32		accept_ra_defrtr;
-+	__s32		accept_ra_defrtr_metric;
- 	__s32		accept_ra_min_hop_limit;
- 	__s32		accept_ra_pinfo;
- 	__s32		ignore_routes_with_linkdown;
-diff --git a/include/net/ip6_route.h b/include/net/ip6_route.h
-index 2a5277758379..a470bdab2420 100644
---- a/include/net/ip6_route.h
-+++ b/include/net/ip6_route.h
-@@ -174,7 +174,8 @@ struct fib6_info *rt6_get_dflt_router(struct net *net,
- 				     struct net_device *dev);
- struct fib6_info *rt6_add_dflt_router(struct net *net,
- 				     const struct in6_addr *gwaddr,
--				     struct net_device *dev, unsigned int pref);
-+				     struct net_device *dev, unsigned int pref,
-+				     unsigned int defrtr_usr_metric);
- 
- void rt6_purge_dflt_routers(struct net *net);
- 
-diff --git a/include/uapi/linux/ipv6.h b/include/uapi/linux/ipv6.h
-index 13e8751bf24a..945de5de5144 100644
---- a/include/uapi/linux/ipv6.h
-+++ b/include/uapi/linux/ipv6.h
-@@ -189,6 +189,7 @@ enum {
- 	DEVCONF_ACCEPT_RA_RT_INFO_MIN_PLEN,
- 	DEVCONF_NDISC_TCLASS,
- 	DEVCONF_RPL_SEG_ENABLED,
-+	DEVCONF_ACCEPT_RA_DEFRTR_METRIC,
- 	DEVCONF_MAX
- };
- 
-diff --git a/include/uapi/linux/sysctl.h b/include/uapi/linux/sysctl.h
-index 458179df9b27..5e79c196e33c 100644
---- a/include/uapi/linux/sysctl.h
-+++ b/include/uapi/linux/sysctl.h
-@@ -571,6 +571,7 @@ enum {
- 	NET_IPV6_ACCEPT_SOURCE_ROUTE=25,
- 	NET_IPV6_ACCEPT_RA_FROM_LOCAL=26,
- 	NET_IPV6_ACCEPT_RA_RT_INFO_MIN_PLEN=27,
-+	NET_IPV6_ACCEPT_RA_DEFRTR_METRIC=28,
- 	__NET_IPV6_MAX
- };
- 
-diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-index eff2cacd5209..702ec4a33936 100644
---- a/net/ipv6/addrconf.c
-+++ b/net/ipv6/addrconf.c
-@@ -205,6 +205,7 @@ static struct ipv6_devconf ipv6_devconf __read_mostly = {
- 	.max_desync_factor	= MAX_DESYNC_FACTOR,
- 	.max_addresses		= IPV6_MAX_ADDRESSES,
- 	.accept_ra_defrtr	= 1,
-+	.accept_ra_defrtr_metric = 0,
- 	.accept_ra_from_local	= 0,
- 	.accept_ra_min_hop_limit= 1,
- 	.accept_ra_pinfo	= 1,
-@@ -260,6 +261,7 @@ static struct ipv6_devconf ipv6_devconf_dflt __read_mostly = {
- 	.max_desync_factor	= MAX_DESYNC_FACTOR,
- 	.max_addresses		= IPV6_MAX_ADDRESSES,
- 	.accept_ra_defrtr	= 1,
-+	.accept_ra_defrtr_metric = 0,
- 	.accept_ra_from_local	= 0,
- 	.accept_ra_min_hop_limit= 1,
- 	.accept_ra_pinfo	= 1,
-@@ -5475,6 +5477,7 @@ static inline void ipv6_store_devconf(struct ipv6_devconf *cnf,
- 	array[DEVCONF_MAX_DESYNC_FACTOR] = cnf->max_desync_factor;
- 	array[DEVCONF_MAX_ADDRESSES] = cnf->max_addresses;
- 	array[DEVCONF_ACCEPT_RA_DEFRTR] = cnf->accept_ra_defrtr;
-+	array[DEVCONF_ACCEPT_RA_DEFRTR_METRIC] = cnf->accept_ra_defrtr_metric;
- 	array[DEVCONF_ACCEPT_RA_MIN_HOP_LIMIT] = cnf->accept_ra_min_hop_limit;
- 	array[DEVCONF_ACCEPT_RA_PINFO] = cnf->accept_ra_pinfo;
- #ifdef CONFIG_IPV6_ROUTER_PREF
-@@ -6667,6 +6670,13 @@ static const struct ctl_table addrconf_sysctl[] = {
- 		.mode		= 0644,
- 		.proc_handler	= proc_dointvec,
- 	},
-+	{
-+		.procname	= "accept_ra_defrtr_metric",
-+		.data		= &ipv6_devconf.accept_ra_defrtr_metric,
-+		.maxlen		= sizeof(int),
-+		.mode		= 0644,
-+		.proc_handler	= proc_dointvec,
-+	},
- 	{
- 		.procname	= "accept_ra_min_hop_limit",
- 		.data		= &ipv6_devconf.accept_ra_min_hop_limit,
-diff --git a/net/ipv6/ndisc.c b/net/ipv6/ndisc.c
-index 76717478f173..955dde8aad22 100644
---- a/net/ipv6/ndisc.c
-+++ b/net/ipv6/ndisc.c
-@@ -1180,6 +1180,7 @@ static void ndisc_router_discovery(struct sk_buff *skb)
- 	unsigned int pref = 0;
- 	__u32 old_if_flags;
- 	bool send_ifinfo_notify = false;
-+	unsigned int defrtr_usr_metric = 0;
- 
- 	__u8 *opt = (__u8 *)(ra_msg + 1);
- 
-@@ -1303,13 +1304,18 @@ static void ndisc_router_discovery(struct sk_buff *skb)
- 			return;
- 		}
- 	}
--	if (rt && lifetime == 0) {
-+	/* Set default route metric if specified by user */
-+	defrtr_usr_metric = in6_dev->cnf.accept_ra_defrtr_metric;
-+	if (defrtr_usr_metric == 0)
-+		defrtr_usr_metric = IP6_RT_PRIO_USER;
-+	/* delete the route if lifetime is 0 or if metric needs change */
-+	if (rt && ((lifetime == 0) || (rt->fib6_metric != defrtr_usr_metric)))  {
- 		ip6_del_rt(net, rt, false);
- 		rt = NULL;
- 	}
- 
--	ND_PRINTK(3, info, "RA: rt: %p  lifetime: %d, for dev: %s\n",
--		  rt, lifetime, skb->dev->name);
-+	ND_PRINTK(3, info, "RA: rt: %p  lifetime: %d, metric: %d, for dev: %s\n",
-+		  rt, lifetime, defrtr_usr_metric, skb->dev->name);
- 	if (!rt && lifetime) {
- 		ND_PRINTK(3, info, "RA: adding default router\n");
- 
-diff --git a/net/ipv6/route.c b/net/ipv6/route.c
-index 188e114b29b4..5f177ae97e42 100644
---- a/net/ipv6/route.c
-+++ b/net/ipv6/route.c
-@@ -4252,11 +4252,12 @@ struct fib6_info *rt6_get_dflt_router(struct net *net,
- struct fib6_info *rt6_add_dflt_router(struct net *net,
- 				     const struct in6_addr *gwaddr,
- 				     struct net_device *dev,
--				     unsigned int pref)
-+				     unsigned int pref,
-+				     unsigned int defrtr_usr_metric)
- {
- 	struct fib6_config cfg = {
- 		.fc_table	= l3mdev_fib_table(dev) ? : RT6_TABLE_DFLT,
--		.fc_metric	= IP6_RT_PRIO_USER,
-+		.fc_metric	= defrtr_usr_metric ? defrtr_usr_metric : IP6_RT_PRIO_USER,
- 		.fc_ifindex	= dev->ifindex,
- 		.fc_flags	= RTF_GATEWAY | RTF_ADDRCONF | RTF_DEFAULT |
- 				  RTF_UP | RTF_EXPIRES | RTF_PREF(pref),
--- 
-2.29.0
 
