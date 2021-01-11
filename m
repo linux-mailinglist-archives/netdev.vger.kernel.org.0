@@ -2,95 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 538022F1286
-	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 13:46:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B7872F1294
+	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 13:51:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727191AbhAKMqV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jan 2021 07:46:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43540 "EHLO
+        id S1727302AbhAKMve (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jan 2021 07:51:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727113AbhAKMqU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 07:46:20 -0500
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47C3EC061795;
-        Mon, 11 Jan 2021 04:45:40 -0800 (PST)
-Received: by mail-pl1-x634.google.com with SMTP id j1so9466506pld.3;
-        Mon, 11 Jan 2021 04:45:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :in-reply-to:references;
-        bh=6y2PAyUtL03Nbrmo9xCdhafDQCYKT4PC/qS4knYVGiM=;
-        b=SaBbLSbGW8fO/ng0tqWOzQ/i6ZcO94hAHvzLzOapfxzlSJwlNeFl+34uiqEtESjC6Y
-         EPqn5eXO9AWR7JyLHMNwvW6QGYeI4BcLOrHhDijJmfTc8dOr7C5JhR9kdw/BXB9uR1zM
-         p8aCqc43jDZ4w9yNSXF/tQCbLoOZQ9FO/bHZl1kmuHxrtvXlvvuVBnMIZ9L5Ef1nPlU6
-         9PqDhzTbf7B18xEaaRPnigNO4FMbtn8BqjV3Zd+LZe9T9kGzH9S9NuSXj8tuKcF6bOMn
-         xVPwp11QrhZZNBKhPPKThWZ4xh8zMPP7HZ5HeE4W16hLP18P9+fIRw0aAL82gNg83ui3
-         VrKA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:in-reply-to:references;
-        bh=6y2PAyUtL03Nbrmo9xCdhafDQCYKT4PC/qS4knYVGiM=;
-        b=DCBmHae/xxmXRFDImxO86S3IUfBDeOKCJO+ssZ78B8IVsDviXe8STDadQNub6ALkGg
-         GtTf+3mwfBjRQaOM41iHeASqhEjq6oLGj69BAMCSt8kzCjplumbjL0ZE36NDeS1VP3Cj
-         lCFpoFlfqfN7KEQlgRuzMIh77JYu8/DjunsQCP2yX6pvynPXGi4nB+M1a6z2oxBOunYv
-         e9fcpiuaYT92+VDKXDpU5grQYBwx1gQ5GzlSm8wi8L5SsxVjWrDsuRNxIbEEziuy2d+S
-         NPyxCzO1bX7hzPJKXS96Epae5vBpfEy4V2Uo4vDnpZVjiWmlZ2YJx52No7qkqCXdqTL8
-         Uriw==
-X-Gm-Message-State: AOAM531Ceknlh6KVCn4pYDGrMqqsxnSM3sX9sQa0DyxCfzpsytC2IScG
-        QTiiaJk5JueHEbnSFCQBm2bg9sYL+K5NLQ==
-X-Google-Smtp-Source: ABdhPJyYj1jFb3xl7ksgoIqUaL1y+e3+P7qDNWrdpWE2a69OWDd8cmg+bKsKdC+3R9BUaZS2ctXoYQ==
-X-Received: by 2002:a17:902:830a:b029:da:df3b:459a with SMTP id bd10-20020a170902830ab02900dadf3b459amr19621583plb.75.1610369139638;
-        Mon, 11 Jan 2021 04:45:39 -0800 (PST)
-Received: from localhost ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id 22sm18883235pfn.190.2021.01.11.04.45.38
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 11 Jan 2021 04:45:39 -0800 (PST)
-From:   Xin Long <lucien.xin@gmail.com>
-To:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org
-Cc:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>, davem@davemloft.net,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexander Duyck <alexander.duyck@gmail.com>
-Subject: [PATCH net-next 2/2] sctp: remove the NETIF_F_SG flag before calling skb_segment
-Date:   Mon, 11 Jan 2021 20:45:14 +0800
-Message-Id: <813eca10a6e21151b5d18a9fe7087ab906b689c7.1610368919.git.lucien.xin@gmail.com>
-X-Mailer: git-send-email 2.1.0
-In-Reply-To: <a34a8dcde6a158c64b0478c7098da757a6690f0b.1610368918.git.lucien.xin@gmail.com>
-References: <cover.1610368918.git.lucien.xin@gmail.com>
- <a34a8dcde6a158c64b0478c7098da757a6690f0b.1610368918.git.lucien.xin@gmail.com>
-In-Reply-To: <cover.1610368918.git.lucien.xin@gmail.com>
-References: <cover.1610368918.git.lucien.xin@gmail.com>
+        with ESMTP id S1726686AbhAKMve (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 07:51:34 -0500
+Received: from mail-out.m-online.net (mail-out.m-online.net [IPv6:2001:a60:0:28:0:1:25:1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA21EC061786
+        for <netdev@vger.kernel.org>; Mon, 11 Jan 2021 04:50:53 -0800 (PST)
+Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
+        by mail-out.m-online.net (Postfix) with ESMTP id 4DDtqJ0N83z1rx85;
+        Mon, 11 Jan 2021 13:50:52 +0100 (CET)
+Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
+        by mail.m-online.net (Postfix) with ESMTP id 4DDtqJ02STz1qql6;
+        Mon, 11 Jan 2021 13:50:51 +0100 (CET)
+X-Virus-Scanned: amavisd-new at mnet-online.de
+Received: from mail.mnet-online.de ([192.168.8.182])
+        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
+        with ESMTP id gOBt3tICngUe; Mon, 11 Jan 2021 13:50:51 +0100 (CET)
+X-Auth-Info: CEW7mSu/r6I4tczv+scVYoARhnnGW4hde0zloOFo1xk=
+Received: from tr.lan (ip-89-176-112-137.net.upcbroadband.cz [89.176.112.137])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.mnet-online.de (Postfix) with ESMTPSA;
+        Mon, 11 Jan 2021 13:50:51 +0100 (CET)
+From:   Marek Vasut <marex@denx.de>
+To:     netdev@vger.kernel.org
+Cc:     Marek Vasut <marex@denx.de>, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Lukas Wunner <lukas@wunner.de>
+Subject: [PATCH net-next] net: ks8851: Select PHYLIB and MICREL_PHY in Kconfig
+Date:   Mon, 11 Jan 2021 13:50:46 +0100
+Message-Id: <20210111125046.36326-1-marex@denx.de>
+X-Mailer: git-send-email 2.29.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It makes more sense to clear NETIF_F_SG instead of set it when
-calling skb_segment() in sctp_gso_segment(), since SCTP GSO is
-using head_skb's fraglist, of which all frags are linear skbs.
+The PHYLIB must be selected to provide mdiobus_*() functions, and the
+MICREL_PHY is necessary too, as that is the only possible PHY attached
+to the KS8851 (it is the internal PHY).
 
-This will make SCTP GSO code more understandable.
-
-Suggested-by: Alexander Duyck <alexander.duyck@gmail.com>
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
+Fixes: ef3631220d2b ("net: ks8851: Register MDIO bus and the internal PHY")
+Signed-off-by: Marek Vasut <marex@denx.de>
+Cc: Andrew Lunn <andrew@lunn.ch>
+Cc: Heiner Kallweit <hkallweit1@gmail.com>
+Cc: Lukas Wunner <lukas@wunner.de>
 ---
- net/sctp/offload.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/micrel/Kconfig | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/net/sctp/offload.c b/net/sctp/offload.c
-index ce281a9..eb874e3 100644
---- a/net/sctp/offload.c
-+++ b/net/sctp/offload.c
-@@ -68,7 +68,7 @@ static struct sk_buff *sctp_gso_segment(struct sk_buff *skb,
- 		goto out;
- 	}
+diff --git a/drivers/net/ethernet/micrel/Kconfig b/drivers/net/ethernet/micrel/Kconfig
+index 42bc014136fe..93df3049cdc0 100644
+--- a/drivers/net/ethernet/micrel/Kconfig
++++ b/drivers/net/ethernet/micrel/Kconfig
+@@ -31,6 +31,8 @@ config KS8851
+ 	select MII
+ 	select CRC32
+ 	select EEPROM_93CX6
++	select PHYLIB
++	select MICREL_PHY
+ 	help
+ 	  SPI driver for Micrel KS8851 SPI attached network chip.
  
--	segs = skb_segment(skb, features | NETIF_F_HW_CSUM | NETIF_F_SG);
-+	segs = skb_segment(skb, (features | NETIF_F_HW_CSUM) & ~NETIF_F_SG);
- 	if (IS_ERR(segs))
- 		goto out;
- 
+@@ -40,6 +42,8 @@ config KS8851_MLL
+ 	select MII
+ 	select CRC32
+ 	select EEPROM_93CX6
++	select PHYLIB
++	select MICREL_PHY
+ 	help
+ 	  This platform driver is for Micrel KS8851 Address/data bus
+ 	  multiplexed network chip.
 -- 
-2.1.0
+2.29.2
 
