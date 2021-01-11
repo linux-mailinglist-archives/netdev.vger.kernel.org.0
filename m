@@ -2,93 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B167A2F2025
-	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 20:58:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3EABA2F202D
+	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 20:59:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391150AbhAKT5B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jan 2021 14:57:01 -0500
-Received: from esa5.hgst.iphmx.com ([216.71.153.144]:5473 "EHLO
-        esa5.hgst.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726211AbhAKT5B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 14:57:01 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=wdc.com; i=@wdc.com; q=dns/txt; s=dkim.wdc.com;
-  t=1610395020; x=1641931020;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=p05V/E1mKMuBnzRUNmZbB0MsjjBf8xCWFxvPj/ti/0E=;
-  b=r1sH5zRrbF9A2Barc8Yu+nPZ+c+kdMzFIusTnocr3+BI/suyML1tXjWr
-   rDAiPcNb47GnfPJpNFUT2SfYIy+xVjGM5IKY+gibzCxOSkT51XGLp4EjY
-   OSFz4nlHEFoV9ipEMfpNz0IHrqCXNNR0LOZmRGlZrM4TLpmQVXCtQKdo0
-   UQm+79mBwWMeXww6UY1fezj70lA83QDYnOICVmMLKqf38AOrmwAlhyUFc
-   nOi5jOdLyVCmAKj3ZeRF1DmBR0c2zSm2bKjFgPk2O/NmvmKOP7PhB9+rK
-   egQEu8qfwyUg0TxfFhf3e67rFHuV2NR8tSnYr8j8eIpG/VmyFDn0ocZpe
-   g==;
-IronPort-SDR: 2QqRHRBdH5tEDr533xZGxLsnTYLHBjCnO8+I6X9hcEZ35PdAhNdQJrDt1QrMvw1+Y3jiLINNjM
- UcjNdDJlGtanGWH12yIJh4CiYxRTY92F5RJ9AvPHuAiZ4bwuzQnIf1/mb2tRJLYPOmObXDfDAc
- iaEbSXZU/y75FuOx4D21Uv6D84YKvO+JZpCUf0/HAiB8dI0T3cUURFN2DercYuZvFjQHJZYzqB
- D5Fo3J/lM+ZYNsT2Qbh49xqYzwCLrusf+05dr6+AtorUAmzvbSCwoXoPJ+qsJpn5cVVPvj3/dB
- Mb0=
-X-IronPort-AV: E=Sophos;i="5.79,339,1602518400"; 
-   d="scan'208";a="157172898"
-Received: from h199-255-45-14.hgst.com (HELO uls-op-cesaep01.wdc.com) ([199.255.45.14])
-  by ob1.hgst.iphmx.com with ESMTP; 12 Jan 2021 03:55:55 +0800
-IronPort-SDR: X144SXCw4hORJaaV0NJJ5nk94kCs8jqFNmzMEzmgItO88XERF0ksO21Ssy6E1E6aohvvIPopvl
- kH3pm3ytewumNk+e5085PRvnHqWZp2XNhVwdmEPOT84KUw52MKbwNpOV5MVBmDRHSrnnNk+8fd
- ISwz1VUu7GKmg1/r4n6uAlgYzS9Z7dvlkiI6zw0sFCe0dhsGjpjtDYUKHGs85Rphurw/B/a7Zk
- P+iMfZkw4q/QWS36WGhuIQNg7sL+YQ6GerToeZ0v+kgI9ajBp84CXYjKHQWD2ds9s2p1aD5cWf
- lbifOfWkohztge4h403S0gdH
-Received: from uls-op-cesaip02.wdc.com ([10.248.3.37])
-  by uls-op-cesaep01.wdc.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Jan 2021 11:40:41 -0800
-IronPort-SDR: u8Y3MPRf3PuXZtxTc9KzFVeYfN3hqOrpKfdOHg48v3/4UKxbaT0CZLHfrbiXR1J/Gh3r3Z6oEW
- 2MOpeQxKBuygErewu7IoazSCaq5XGW40SZzf0sbszvLo8PiiUPl2Z67CDpohwAH5Vy58CFjcHC
- ijJPeb356bFJr3OO8OkK2rdb4EqrnSs+HWb8QNrxbpFbPA6xEVPcfGxUjm9lPY6PyWIolEtWmx
- jHHH8Cbx5Qff8MkqFyightXx5nSNw0/SHUlUQ8pkEK5WYhyQSsMdQ8JleR46sBTWIWJF9QmW8k
- IEk=
-WDCIronportException: Internal
-Received: from usa002483.ad.shared (HELO jedi-01.hgst.com) ([10.86.62.194])
-  by uls-op-cesaip02.wdc.com with ESMTP; 11 Jan 2021 11:55:55 -0800
-From:   Atish Patra <atish.patra@wdc.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Atish Patra <atish.patra@wdc.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Nicolas Ferre <nicolas.ferre@microchip.com>
-Subject: [PATCH] net: macb: Add default usrio config to default gem config
-Date:   Mon, 11 Jan 2021 11:55:53 -0800
-Message-Id: <20210111195553.3745008-1-atish.patra@wdc.com>
-X-Mailer: git-send-email 2.25.1
+        id S2391400AbhAKT6r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jan 2021 14:58:47 -0500
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:9426 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2390010AbhAKT6r (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 14:58:47 -0500
+Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 10BJX1cb133026;
+        Mon, 11 Jan 2021 14:58:05 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=pp1; bh=LWLftqYWvzHEhE6UjiOT4oECQtLOfv0Vua3tNLMLsUc=;
+ b=Qiga//a3yYX/+vuTymFrzrIm3kxI0tE5wpNn4gmVuTchIhRy4OeykBjt/IlJuO3HzwC6
+ n8REWYOL7CV1d0b7r+C/A42rk9OVeZbhy4o+JvfQv+fV2pnaNfE6P4WKs7MtCmnzv5cv
+ OA2O+n4j4b5AnRwEMKysfXbFbCbNCdRaGnrzaypm98gQaGCg+rPjfxmZez6Hiwmm1iCP
+ OcQiW7g8w6KwsyMRW0ktYDyMPfQReBeBJ8IfvmTsrWHT+wYcQU1PrA5PZy5v1HXkx571
+ RXFniYFsEvGLMNw6OzCYUzQVxzZBdNpLg0AM/rqrowWM7PvwqGBK/tM7NGI2V49WVjV1 UQ== 
+Received: from ppma05wdc.us.ibm.com (1b.90.2fa9.ip4.static.sl-reverse.com [169.47.144.27])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 360v70sxqu-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 11 Jan 2021 14:58:05 -0500
+Received: from pps.filterd (ppma05wdc.us.ibm.com [127.0.0.1])
+        by ppma05wdc.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 10BJqAQ6008906;
+        Mon, 11 Jan 2021 19:58:04 GMT
+Received: from b03cxnp07028.gho.boulder.ibm.com (b03cxnp07028.gho.boulder.ibm.com [9.17.130.15])
+        by ppma05wdc.us.ibm.com with ESMTP id 35y448ry9x-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 11 Jan 2021 19:58:04 +0000
+Received: from b03ledav005.gho.boulder.ibm.com (b03ledav005.gho.boulder.ibm.com [9.17.130.236])
+        by b03cxnp07028.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 10BJw3di15925698
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 11 Jan 2021 19:58:03 GMT
+Received: from b03ledav005.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 8F9EABE054;
+        Mon, 11 Jan 2021 19:58:03 +0000 (GMT)
+Received: from b03ledav005.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 5D3F3BE053;
+        Mon, 11 Jan 2021 19:58:03 +0000 (GMT)
+Received: from suka-w540.localdomain (unknown [9.85.154.19])
+        by b03ledav005.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Mon, 11 Jan 2021 19:58:03 +0000 (GMT)
+Received: by suka-w540.localdomain (Postfix, from userid 1000)
+        id 13B7A2E287F; Mon, 11 Jan 2021 11:57:59 -0800 (PST)
+Date:   Mon, 11 Jan 2021 11:57:59 -0800
+From:   Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Dany Madden <drt@linux.ibm.com>,
+        Lijun Pan <ljp@linux.ibm.com>
+Subject: Re: [PATCH 2/7] ibmvnic: update reset function prototypes
+Message-ID: <20210111195759.GA178503@us.ibm.com>
+References: <20210108071236.123769-1-sukadev@linux.ibm.com>
+ <20210108071236.123769-3-sukadev@linux.ibm.com>
+ <20210109193755.606a4aef@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20210111031221.GA165065@us.ibm.com>
+ <20210111113249.1026433f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210111113249.1026433f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+X-Operating-System: Linux 2.0.32 on an i486
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
+ definitions=2021-01-11_30:2021-01-11,2021-01-11 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 spamscore=0
+ priorityscore=1501 mlxlogscore=999 phishscore=0 adultscore=0 mlxscore=0
+ bulkscore=0 malwarescore=0 suspectscore=0 lowpriorityscore=0 clxscore=1015
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2101110109
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is no usrio config defined for default gem config leading to
-a kernel panic devices that don't define a data. This issue can be
-reprdouced with microchip polar fire soc where compatible string
-is defined as "cdns,macb".
+Jakub Kicinski [kuba@kernel.org] wrote:
+> On Sun, 10 Jan 2021 19:12:21 -0800 Sukadev Bhattiprolu wrote:
+> > Jakub Kicinski [kuba@kernel.org] wrote:
+> > > On Thu,  7 Jan 2021 23:12:31 -0800 Sukadev Bhattiprolu wrote:  
+> > > > The reset functions need just the 'reset reason' parameter and not
+> > > > the ibmvnic_rwi list element. Update the functions so we can simplify
+> > > > the handling of the ->rwi_list in a follow-on patch.
+> > > > 
+> > > > Fixes: 2770a7984db5 ("ibmvnic: Introduce hard reset recovery")
+> > > >   
+> > > 
+> > > No empty lines after Fixes tags, please. They should also not be
+> > > wrapped.  
+> > 
+> > Ah ok, will fix.
+> > >   
+> > > > Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>  
+> > > 
+> > > Are these patches for net or net-next? It looks like they are fixing
+> > > races, but at the same time they are rather large. Can you please
+> > > produce minimal fixes, e.g. patch 3 should just fix the existing leaks
+> > > rather than refactor the code to not do allocations. 130+ LoC is a lot
+> > > for a fix.  
+> > 
+> > This is a set of bug fixes, but yes a bit large. Should I submit to
+> > net-next instead?
+> 
+> I'd rather you tried to address the problems with minimal patches, then
+> you can refactor the code in net-next.
 
-Fixes: edac63861db7 ("add userio bits as platform configuration")
+I had thought about that but fixing the leaks and then throwing away the
+code did not seem very useful. The diff stat shows 78 insertions and 59
+deletions. The bulk of the new code, about 70 lines including comments,
+is just the fairly straightforward helper functions:
 
-Signed-off-by: Atish Patra <atish.patra@wdc.com>
----
- drivers/net/ethernet/cadence/macb_main.c | 1 +
- 1 file changed, 1 insertion(+)
+	- get_pending_reset()
+	- add_pending_reset() 
 
-diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
-index 814a5b10141d..47ee72ab7002 100644
---- a/drivers/net/ethernet/cadence/macb_main.c
-+++ b/drivers/net/ethernet/cadence/macb_main.c
-@@ -4590,6 +4590,7 @@ static const struct macb_config default_gem_config = {
- 	.dma_burst_length = 16,
- 	.clk_init = macb_clk_init,
- 	.init = macb_init,
-+	.usrio = &macb_default_usrio,
- 	.jumbo_max_len = 10240,
- };
- 
--- 
-2.25.1
+Fixing the leak in the existing code would not reduce the size of these
+helpers. We are now using a simpler approach with no allocations, so no
+leaks.
 
+Sukadev
