@@ -2,59 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DB2B2F1C58
-	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 18:29:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E34EA2F1C61
+	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 18:31:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389419AbhAKR3N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jan 2021 12:29:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48040 "EHLO
+        id S2389562AbhAKRbJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jan 2021 12:31:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48458 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389316AbhAKR3L (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 12:29:11 -0500
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 771D6C061786
-        for <netdev@vger.kernel.org>; Mon, 11 Jan 2021 09:28:31 -0800 (PST)
-Received: by mail-pl1-x629.google.com with SMTP id t6so210447plq.1
-        for <netdev@vger.kernel.org>; Mon, 11 Jan 2021 09:28:31 -0800 (PST)
+        with ESMTP id S1732337AbhAKRbH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 12:31:07 -0500
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A245CC061786
+        for <netdev@vger.kernel.org>; Mon, 11 Jan 2021 09:30:27 -0800 (PST)
+Received: by mail-pl1-x62c.google.com with SMTP id x12so183696plr.10
+        for <netdev@vger.kernel.org>; Mon, 11 Jan 2021 09:30:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=lVD0sV63fJTrGLYUEY7GioX8opLr5HORlyQsy6kbV1c=;
-        b=MA/X+aHIbKZp93YXRdYvSjaCJTm23maJMrry59BEzZA0zgk4QEOheN7hYE6dY1exb+
-         fcZ4aALWcq715GsL6j3UulmgJLjA+deXiCO1JT9Lj7Fal0Ug2VIfCygt5ONnuc3NJULe
-         E/hqfqaO6Ckd5AwFX21Qa0QFC7idqmEp/AgCuAsPC5eG2II+qPJr2CsR8yGC51QqDfb/
-         8OGyYe2JNjeq+hlBF9c2A1+kyTenFTt0FB5nlOQdvk/4CIq602qz0b6qY2kvFDLyHHYh
-         y49ezn8v6iVG9rv186byRc/Hg4nDG+w/UC260l3kLCnHB67E11hoORh60hYCLDKF3CYR
-         QHhg==
+        bh=9i6u0oT/bTGBg4/16ZgZkk+ZrjrLLZ7ZoZSczpo4MHs=;
+        b=T2fLWZDtwAOf7TCIbaon+EkhBY06/+RyCp0wVSa9oT8i0d4XlouZ+ve6DIbO2gbQcK
+         CRm43r0i3dPC8+ZfAkdu4Xtfcrdry/0WrNgDA51lqwp7v3YeSK6Vb75Mwlnjfoy0c0cj
+         8oybRj+3+S4Ny9jHAUnYarSK5hFW87ZiQZ+0Q+XlRW0SIlT/Mc2yeYXKPGdChjHtKXEK
+         wRf77jtY4pTBk6lkzXcfpWJSK2ospWXf0DVHiE0W1nj3E/G6P/92MQ5rNmA8IIPDEk+f
+         ooEqAXo8J+uiKDdmn+BOLya5IAABa995uM4RWTFgVdr0E1wzvQ83l7CifI0NpLAmuJZe
+         5rCQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=lVD0sV63fJTrGLYUEY7GioX8opLr5HORlyQsy6kbV1c=;
-        b=gceLyZ7dTjD/fg8Q9583WZF+ND3uSKbYpckbGrmQJDVfE2koHnPfP6jvaWsaUrxrnA
-         npsX7TQUxY4JQu445GI1wEFWmwqsjq9eqj1t12Kik2KuI/uaWvgvs8cTtBCHy1zgKJ5N
-         3o6KDAG0i2GHK3qfF63TaNbdLtn2GpYA5HBcOjNA2BDV1gsC/6gqI0oJVHhG3RpzaCzJ
-         iiJf8xBpudmHMZBipsjS872Mv1niFDWc14mzQNI71g9Y+mFwc8AE5V2ANI2G5DvcfJ0o
-         CENdug/KDDCrF0NhpATv2d1lpMgw6piGO+YZOv1F3FCqaK9GfODNyW2KjbdYVr43Y//1
-         7Vzg==
-X-Gm-Message-State: AOAM532f6ZC5PQuBCPXG/tn2N4BfpusptttBjc8a0k9/0vYntCfbQNao
-        dDvas9AjFAbjNCa9WeNd56M=
-X-Google-Smtp-Source: ABdhPJysoVgAp4jVaulYt9fPQrhBU/tjd22zFCno8WRaIw1+DEGkKLD5yoXzeq1EmmyqRdeAH7I+Uw==
-X-Received: by 2002:a17:90a:eac5:: with SMTP id ev5mr299734pjb.65.1610386111025;
-        Mon, 11 Jan 2021 09:28:31 -0800 (PST)
+        bh=9i6u0oT/bTGBg4/16ZgZkk+ZrjrLLZ7ZoZSczpo4MHs=;
+        b=b79OhzL73W4lnnHXXDTpPln+CgNMOQD3rTWDEiKv30I535p/8Kr541I9YfGjLqYKYx
+         oeLM6VvBsSI7jyAG217Pg8kDkQJMe9dB/Vtdckkh6fLtDoVHPc8E1qQrWrdDj1pLnRZK
+         NVcaSU1qQeYSwn8O0m9MTC9y4h7w/DltbAhsjMNA4tC0P3FEpZDzb1A1V0+Of3VXth8u
+         XtAuubp7Hc8ZPXoeSl8vtQPIeKPYerT+Xl1deRNsU7LeCjRYnrsT44wW249hFu4SrLTg
+         mK1XVFAvvpV5G/Q1xxyXqJ1SQuRrW6wvqE4JB1LUiCggupqpWE6FWIv8CkEudUHdQqnB
+         oyBw==
+X-Gm-Message-State: AOAM530i9ddyXzApYDgMwspqcI7r9cksU6fuKLC82BA7XseqkIeKUFic
+        yAQBtNfJNs51cFYHrZMYoxo=
+X-Google-Smtp-Source: ABdhPJyhw5q1Ofm5xnQGMJJFl8tMgsH84a/l7vkG7zCeiBxRrmP/wn0GiaOxK9Z+QQ/mzQbAQynreg==
+X-Received: by 2002:a17:90a:fe8e:: with SMTP id co14mr300331pjb.105.1610386227121;
+        Mon, 11 Jan 2021 09:30:27 -0800 (PST)
 Received: from [10.67.48.230] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id a13sm222554pfr.59.2021.01.11.09.28.29
+        by smtp.googlemail.com with ESMTPSA id a19sm202237pfi.130.2021.01.11.09.30.25
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 11 Jan 2021 09:28:30 -0800 (PST)
-Subject: Re: [PATCH 2/6] ethernet: stmmac: stop each tx channal independently
+        Mon, 11 Jan 2021 09:30:26 -0800 (PST)
+Subject: Re: [PATCH 4/6] ethernet: stmmac: fix dma physical address of
+ descriptor when display ring
 To:     Joakim Zhang <qiangqing.zhang@nxp.com>, peppe.cavallaro@st.com,
         alexandre.torgue@st.com, joabreu@synopsys.com, davem@davemloft.net,
         kuba@kernel.org
 Cc:     netdev@vger.kernel.org, linux-imx@nxp.com
 References: <20210111113538.12077-1-qiangqing.zhang@nxp.com>
- <20210111113538.12077-3-qiangqing.zhang@nxp.com>
+ <20210111113538.12077-5-qiangqing.zhang@nxp.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -110,12 +111,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
  M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <e84b2459-470d-5219-07ed-17626f388f3d@gmail.com>
-Date:   Mon, 11 Jan 2021 09:28:27 -0800
+Message-ID: <e2ff7caa-6af8-49b9-cbf0-82b1e97a15c9@gmail.com>
+Date:   Mon, 11 Jan 2021 09:30:23 -0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <20210111113538.12077-3-qiangqing.zhang@nxp.com>
+In-Reply-To: <20210111113538.12077-5-qiangqing.zhang@nxp.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -124,20 +125,44 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 1/11/21 3:35 AM, Joakim Zhang wrote:
-> If clear GMAC_CONFIG_TE bit, it would stop all tx channals, but users
-> may only want to stop secific tx channel.
+> Driver uses dma_alloc_coherent to allocate dma memory for descriptors,
+> dma_alloc_coherent will return both the virtual address and physical
+> address. AFAIK, virt_to_phys could not convert virtual address to
+> physical address, for which memory is allocated by dma_alloc_coherent.
 > 
-> Fixes: 48863ce5940f ("stmmac: add DMA support for GMAC 4.xx")
 > Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
+> ---
+>  .../ethernet/stmicro/stmmac/dwmac4_descs.c    |  5 +-
+>  .../net/ethernet/stmicro/stmmac/enh_desc.c    |  5 +-
+>  drivers/net/ethernet/stmicro/stmmac/hwif.h    |  3 +-
+>  .../net/ethernet/stmicro/stmmac/norm_desc.c   |  5 +-
+>  .../net/ethernet/stmicro/stmmac/stmmac_main.c | 50 ++++++++++++-------
+>  5 files changed, 44 insertions(+), 24 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.c b/drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.c
+> index c6540b003b43..8e1ee33ba1e6 100644
+> --- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.c
+> +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_descs.c
+> @@ -402,7 +402,8 @@ static void dwmac4_rd_set_tx_ic(struct dma_desc *p)
+>  	p->des2 |= cpu_to_le32(TDES2_INTERRUPT_ON_COMPLETION);
+>  }
+>  
+> -static void dwmac4_display_ring(void *head, unsigned int size, bool rx)
+> +static void dwmac4_display_ring(void *head, unsigned int size, bool rx,
+> +				unsigned int dma_rx_phy, unsigned int desc_size)
+>  {
+>  	struct dma_desc *p = (struct dma_desc *)head;
+>  	int i;
+> @@ -411,7 +412,7 @@ static void dwmac4_display_ring(void *head, unsigned int size, bool rx)
+>  
+>  	for (i = 0; i < size; i++) {
+>  		pr_info("%03d [0x%x]: 0x%x 0x%x 0x%x 0x%x\n",
+> -			i, (unsigned int)virt_to_phys(p),
+> +			i, (unsigned int)(dma_rx_phy + i * desc_size),
 
-You have a typo in your subject:channal vs. channel. You should also
-prefix your patches with "net: stmmac" to be consistent. Finally, since
-these are fixes, please indicate clearly which networking tree you are
-targeting:
-
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/networking/netdev-FAQ.rst#n28
-
-Thanks
-
+This code will probably not work correctly on a machine with physical
+addresses greater than 32-bit anyway and the address bits would be
+truncated then, cannot you use a phy_addr_t or dma_addr_t and use %pa as
+far as the printk format goes?
 -- 
 Florian
