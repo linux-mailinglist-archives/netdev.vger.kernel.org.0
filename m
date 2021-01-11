@@ -2,142 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BFC912F1EF4
-	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 20:20:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B7EB2F1F22
+	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 20:23:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390831AbhAKTTv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jan 2021 14:19:51 -0500
-Received: from mail.kernel.org ([198.145.29.99]:47590 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729848AbhAKTTv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 11 Jan 2021 14:19:51 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id DBDD322CA1;
-        Mon, 11 Jan 2021 19:19:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610392750;
-        bh=qyqtYiDmyEJXiOemYdrIt2SHtlQMWZ+2Xd4LmitfmoU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=e8OCsIY83PyHbl+NyweSe9Ax6hHeJ6kR+ULuYRocRXhPT2ipZ9QNBfxUgndi06aYE
-         M6xDGsVSXtVC/x0UkYzUUUMwm2TIsm9S2QXxZrquq4Vj+PdjnAu0OE5TciblvNXauF
-         X7awNGaia4bS3D1VRLSLFe6A3uYUg4kYyxBIFuW47SjqcEpXC26PvtFGx/6X+/5Ok/
-         C/JcFZ1UGjdc5oexENpomWfYq4opzrPeSKamoGSdcY152GF8kWQptvrXjzCpBre/Nt
-         szjGVoc+cyb6g9Y3sguDZ+bcDPdEB05s6FycWcGbJWGw3qdvFacMPOiesfp4WqPF7r
-         PSwu/v4PYPFZA==
-Date:   Mon, 11 Jan 2021 11:19:09 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     netdev@vger.kernel.org, alexandre.belloni@bootlin.com,
-        andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
-        alexandru.marginean@nxp.com, claudiu.manoil@nxp.com,
-        xiaoliang.yang_1@nxp.com, hongbo.wang@nxp.com, jiri@resnulli.us,
-        idosch@idosch.org, UNGLinuxDriver@microchip.com
-Subject: Re: [PATCH v3 net-next 08/10] net: mscc: ocelot: register devlink
- ports
-Message-ID: <20210111111909.4cf0174f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210111171344.j6chsp5djr5t5ykk@skbuf>
-References: <20210108175950.484854-1-olteanv@gmail.com>
-        <20210108175950.484854-9-olteanv@gmail.com>
-        <20210109174439.404713f6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20210111171344.j6chsp5djr5t5ykk@skbuf>
+        id S2404070AbhAKTWf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jan 2021 14:22:35 -0500
+Received: from smtprelay0251.hostedemail.com ([216.40.44.251]:60392 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S2403887AbhAKTVS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 14:21:18 -0500
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay05.hostedemail.com (Postfix) with ESMTP id 2BF5C1802912A;
+        Mon, 11 Jan 2021 19:20:37 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:800:960:973:982:988:989:1260:1261:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1541:1593:1594:1711:1730:1747:1777:1792:2110:2393:2553:2559:2562:2828:2915:3138:3139:3140:3141:3142:3353:3622:3865:3867:3868:3870:3871:3874:4321:4384:5007:7652:7809:10004:10400:10848:10967:11232:11658:11914:12043:12295:12297:12438:12555:12679:12712:12737:12740:12895:13069:13160:13229:13311:13357:13439:13894:14096:14097:14181:14659:14721:21080:21451:21627:21740:30012:30029:30054:30069:30090:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:2,LUA_SUMMARY:none
+X-HE-Tag: thumb88_29104752750f
+X-Filterd-Recvd-Size: 2849
+Received: from [192.168.1.159] (unknown [47.151.137.21])
+        (Authenticated sender: joe@perches.com)
+        by omf12.hostedemail.com (Postfix) with ESMTPA;
+        Mon, 11 Jan 2021 19:20:35 +0000 (UTC)
+Message-ID: <1250007e1e8b70c2ee5b0f3289c592f121ebaa8f.camel@perches.com>
+Subject: Re: [PATCH net 6/9] MAINTAINERS: mtk-eth: remove Felix
+From:   Joe Perches <joe@perches.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, corbet@lwn.net,
+        Felix Fietkau <nbd@nbd.name>, John Crispin <john@phrozen.org>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Mark Lee <Mark-MC.Lee@mediatek.com>
+Date:   Mon, 11 Jan 2021 11:20:33 -0800
+In-Reply-To: <20210111094137.0ead3481@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20210111052759.2144758-1-kuba@kernel.org>
+         <20210111052759.2144758-7-kuba@kernel.org>
+         <c5d10d66321ee8b58263d6d9fce6c34e99d839e8.camel@perches.com>
+         <20210111094137.0ead3481@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.38.1-1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 11 Jan 2021 19:13:44 +0200 Vladimir Oltean wrote:
-> On Sat, Jan 09, 2021 at 05:44:39PM -0800, Jakub Kicinski wrote:
-> > On Fri,  8 Jan 2021 19:59:48 +0200 Vladimir Oltean wrote:  
-> > > From: Vladimir Oltean <vladimir.oltean@nxp.com>
+On Mon, 2021-01-11 at 09:41 -0800, Jakub Kicinski wrote:
+> On Sun, 10 Jan 2021 21:45:46 -0800 Joe Perches wrote:
+> > On Sun, 2021-01-10 at 21:27 -0800, Jakub Kicinski wrote:
+> > > Drop Felix from Mediatek Ethernet driver maintainers.
+> > > We haven't seen any tags since the initial submission.  
+> > []
+> > > diff --git a/MAINTAINERS b/MAINTAINERS  
+> > []
+> > > @@ -11165,7 +11165,6 @@ F:	Documentation/devicetree/bindings/dma/mtk-*
+> > >  F:	drivers/dma/mediatek/
+> > >  
 > > > 
-> > > Add devlink integration into the mscc_ocelot switchdev driver. Only the
-> > > probed interfaces are registered with devlink, because for convenience,
-> > > struct devlink_port was included into struct ocelot_port_private, which
-> > > is only initialized for the ports that are used.
-> > > 
-> > > Since we use devlink_port_type_eth_set to link the devlink port to the
-> > > net_device, we can as well remove the .ndo_get_phys_port_name and
-> > > .ndo_get_port_parent_id implementations, since devlink takes care of
-> > > retrieving the port name and number automatically, once
-> > > .ndo_get_devlink_port is implemented.
-> > > 
-> > > Note that the felix DSA driver is already integrated with devlink by
-> > > default, since that is a thing that the DSA core takes care of. This is
-> > > the reason why these devlink stubs were put in ocelot_net.c and not in
-> > > the common library.
-> > > 
-> > > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>  
-> >   
-> > > diff --git a/drivers/net/ethernet/mscc/ocelot_net.c b/drivers/net/ethernet/mscc/ocelot_net.c
-> > > index 2bd2840d88bd..d0d98c6adea8 100644
-> > > --- a/drivers/net/ethernet/mscc/ocelot_net.c
-> > > +++ b/drivers/net/ethernet/mscc/ocelot_net.c
-> > > @@ -8,6 +8,116 @@
-> > >  #include "ocelot.h"
-> > >  #include "ocelot_vcap.h"
-> > >  
-> > > +struct ocelot_devlink_private {
-> > > +	struct ocelot *ocelot;
-> > > +};  
+> > >  MEDIATEK ETHERNET DRIVER
+> > > -M:	Felix Fietkau <nbd@nbd.name>
+> > >  M:	John Crispin <john@phrozen.org>
+> > >  M:	Sean Wang <sean.wang@mediatek.com>
+> > >  M:	Mark Lee <Mark-MC.Lee@mediatek.com>  
 > > 
-> > Why not make struct ocelot part of devlink_priv?  
+> > I think your script is broken as there are multiple subdirectories
+> > for this entry and 
+
 > 
-> I am not sure what you mean.
+> Quite the opposite, the script intentionally only counts contributions
+> only to the code under the MAINTAINERS entry.
 
-You put a pointer to struct ocelot inside devlink->priv, why not put
-the actual struct ocelot there?
+My mistake.  I'd seen Felix's name fairly often.
 
-> > > +static const struct devlink_ops ocelot_devlink_ops = {
-> > > +};
-> > > +
-> > > +static int ocelot_port_devlink_init(struct ocelot *ocelot, int port)
-> > > +{
-> > > +	struct ocelot_port *ocelot_port = ocelot->ports[port];
-> > > +	int id_len = sizeof(ocelot->base_mac);
-> > > +	struct devlink *dl = ocelot->devlink;
-> > > +	struct devlink_port_attrs attrs = {};
-> > > +	struct ocelot_port_private *priv;
-> > > +	struct devlink_port *dlp;
-> > > +	int err;
-> > > +
-> > > +	if (!ocelot_port)
-> > > +		return 0;
-> > > +
-> > > +	priv = container_of(ocelot_port, struct ocelot_port_private, port);
-> > > +	dlp = &priv->devlink_port;
-> > > +
-> > > +	memcpy(attrs.switch_id.id, &ocelot->base_mac, id_len);
-> > > +	attrs.switch_id.id_len = id_len;
-> > > +	attrs.phys.port_number = port;
-> > > +
-> > > +	if (priv->dev)
-> > > +		attrs.flavour = DEVLINK_PORT_FLAVOUR_PHYSICAL;
-> > > +	else
-> > > +		attrs.flavour = DEVLINK_PORT_FLAVOUR_UNUSED;
-> > > +
-> > > +	devlink_port_attrs_set(dlp, &attrs);
-> > > +
-> > > +	err = devlink_port_register(dl, dlp, port);
-> > > +	if (err)
-> > > +		return err;
-> > > +
-> > > +	if (priv->dev)
-> > > +		devlink_port_type_eth_set(dlp, priv->dev);  
-> > 
-> > devlink_port_attrs_set() should be called before netdev is registered,
-> > and devlink_port_type_eth_set() after. So this sequence makes me a tad
-> > suspicious.
-> > 
-> > In particular IIRC devlink's .ndo_get_phys_port_name depends on it,
-> > because udev event needs to carry the right info for interface renaming
-> > to work reliably. No?
-> 
-> If I change the driver's Kconfig from tristate to bool, all is fine,
-> isn't it?
+I ran this command:
 
-How does Kconfig change the order of registration of objects to
-subsystems _within_ the driver?
+$ git log --pretty=oneline --since=5-years-ago --grep="-by: Felix Fietkau" drivers/net/ethernet/mediatek/
+656e705243fd0c2864b89634ea16ed444ef64dc6 net-next: mediatek: add support for MT7623 ethernet
 
-Can you unbind and bind the driver back and see if phys_port_name
-always gets the correct value? (replay/udevadm test is not sufficient)
+Saw that felix had worked on mediatek and then looked up files in
+drivers/net with mediatek and conflated the wireless files and ethernet files.
+
+btw: because I didn't see the script published and so can't verify what's
+being done here, the MAINTAINERS file shows:
+
+	F: *Files* and directories wildcard patterns.
+	   A trailing slash includes all files and subdirectory files.
+	   F:	drivers/net/	all files in and below drivers/net
+	   F:	drivers/net/*	all files in drivers/net, but not below
+
+cheers, Joe
+
+
