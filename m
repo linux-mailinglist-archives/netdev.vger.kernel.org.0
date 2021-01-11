@@ -2,101 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9270F2F1019
-	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 11:30:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2D8ED2F1026
+	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 11:35:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728986AbhAKK3l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jan 2021 05:29:41 -0500
-Received: from mail.katalix.com ([3.9.82.81]:36800 "EHLO mail.katalix.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728664AbhAKK3k (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 11 Jan 2021 05:29:40 -0500
-Received: from localhost (82-69-49-219.dsl.in-addr.zen.co.uk [82.69.49.219])
-        (Authenticated sender: tom)
-        by mail.katalix.com (Postfix) with ESMTPSA id 25C947D722;
-        Mon, 11 Jan 2021 10:28:59 +0000 (GMT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=katalix.com; s=mail;
-        t=1610360939; bh=bTpyf17xeL+79t4qa6NHSCi5T21B9QFRslHYKCcMj/k=;
-        h=Date:From:To:Cc:Subject:Message-ID:References:MIME-Version:
-         Content-Disposition:In-Reply-To:From;
-        z=Date:=20Mon,=2011=20Jan=202021=2010:28:58=20+0000|From:=20Tom=20P
-         arkin=20<tparkin@katalix.com>|To:=20Guillaume=20Nault=20<gnault@re
-         dhat.com>|Cc:=20netdev@vger.kernel.org,=20jchapman@katalix.com|Sub
-         ject:=20Re:=20[PATCH=20net=20v3]=20ppp:=20fix=20refcount=20underfl
-         ow=20on=20channel=20unbridge|Message-ID:=20<20210111102858.GA6062@
-         katalix.com>|References:=20<20210107181315.3128-1-tparkin@katalix.
-         com>=0D=0A=20<20210108205750.GA14215@linux.home>|MIME-Version:=201
-         .0|Content-Disposition:=20inline|In-Reply-To:=20<20210108205750.GA
-         14215@linux.home>;
-        b=SzBnEmd/uBu4ZYo09QNHPtPowcILETmK9PMZC3Zq/vUpAZDvgKzhlULtHGxQ36+qM
-         WBAEX64uWgGfuZ7KaSBmFCah1huz3Xsgk+oJkG0pvcKkdXtCHkaA/DIIuQtH64Km2E
-         QenG0k64CfZbxv+eEJH6yRywEX76Omlg1sfY4VBWm4XiVdkJD3UgrY3dKhcdF/W1vH
-         8vbvV3UzKcYDTY63T/TVOnds6cyeNA9oaJ5qdLepy/o/c+XWc9tOr1wZbNDMJxMzdq
-         L8vHBckUiqKLQ1fFCClLRHCVjotGUrLAOPWVGFj8JQEKCuFOsTjFrdG0rhsN9LV5q6
-         Zds/2EarJh7uQ==
-Date:   Mon, 11 Jan 2021 10:28:58 +0000
-From:   Tom Parkin <tparkin@katalix.com>
-To:     Guillaume Nault <gnault@redhat.com>
-Cc:     netdev@vger.kernel.org, jchapman@katalix.com
-Subject: Re: [PATCH net v3] ppp: fix refcount underflow on channel unbridge
-Message-ID: <20210111102858.GA6062@katalix.com>
-References: <20210107181315.3128-1-tparkin@katalix.com>
- <20210108205750.GA14215@linux.home>
+        id S1729194AbhAKKdC convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Mon, 11 Jan 2021 05:33:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43124 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728959AbhAKKdB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 05:33:01 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DA53C061794
+        for <netdev@vger.kernel.org>; Mon, 11 Jan 2021 02:32:21 -0800 (PST)
+Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
+        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1kyuUh-0002Iu-V7; Mon, 11 Jan 2021 11:32:15 +0100
+Received: from ore by pty.hi.pengutronix.de with local (Exim 4.89)
+        (envelope-from <ore@pengutronix.de>)
+        id 1kyuUg-0007sF-4C; Mon, 11 Jan 2021 11:32:14 +0100
+Date:   Mon, 11 Jan 2021 11:32:14 +0100
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mips@vger.kernel.org
+Subject: Re: [PATCH v7 net-next 2/2] net: dsa: qca: ar9331: export stats64
+Message-ID: <20210111103214.zsradoj5t6drgp73@pengutronix.de>
+References: <20210107125613.19046-1-o.rempel@pengutronix.de>
+ <20210107125613.19046-3-o.rempel@pengutronix.de>
+ <X/ccfY+9a8R6wcJX@lunn.ch>
+ <20210108053228.2efctejqxbqijm6l@pengutronix.de>
+ <20210109002143.r4aokvewrgwv3qqv@skbuf>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="Dxnq1zWXvFF0Q93v"
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20210108205750.GA14215@linux.home>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Transfer-Encoding: 8BIT
+In-Reply-To: <20210109002143.r4aokvewrgwv3qqv@skbuf>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 11:27:20 up 40 days, 33 min, 29 users,  load average: 0.09, 0.10,
+ 0.12
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sat, Jan 09, 2021 at 02:21:43AM +0200, Vladimir Oltean wrote:
+> On Fri, Jan 08, 2021 at 06:32:28AM +0100, Oleksij Rempel wrote:
+> > May be the "net: dsa: add optional stats64 support" can already be
+> > taken?
+> 
+> I'm not sure that I see the point. David and Jakub won't cherry-pick
+> partial series, and if you resend just patch 1/2, they won't accept new
+> code that doesn't have any callers.
+> 
+> You don't have to wait for my series if you don't want to. If you're
+> going to conflict with it anyway (it changes the prototype of
+> ndo_get_stats64), you might as well not wait. I don't know when, or if,
+> it's going to be over with it. It is going to take at least one more
+> respin since it now conflicts with net.git commit 9f9d41f03bb0 ("docs:
+> net: fix documentation on .ndo_get_stats") merged a few hours ago into
+> net-next. So just say which way it is that you prefer.
 
---Dxnq1zWXvFF0Q93v
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Ok, thx. If no one is against it, i'll prefer to push this patches now.
 
-On  Fri, Jan 08, 2021 at 21:57:50 +0100, Guillaume Nault wrote:
-> On Thu, Jan 07, 2021 at 06:13:15PM +0000, Tom Parkin wrote:
-> > When setting up a channel bridge, ppp_bridge_channels sets the
-> > pch->bridge field before taking the associated reference on the bridge
-> > file instance.
-> >=20
-> > This opens up a refcount underflow bug if ppp_bridge_channels called
-> > via. iotcl runs concurrently with ppp_unbridge_channels executing via.
-> > file release.
-> >=20
-> > The bug is triggered by ppp_bridge_channels taking the error path
-> > through the 'err_unset' label.  In this scenario, pch->bridge is set,
-> > but the reference on the bridged channel will not be taken because
-> > the function errors out.  If ppp_unbridge_channels observes pch->bridge
-> > before it is unset by the error path, it will erroneously drop the
-> > reference on the bridged channel and cause a refcount underflow.
-> >=20
-> > To avoid this, ensure that ppp_bridge_channels holds a reference on
-> > each channel in advance of setting the bridge pointers.
->=20
-> Thanks for following up on this!
->=20
-> Acked-by: Guillaume Nault <gnault@redhat.com>
-
-Thanks again for reviewing, Guillaume.
-
---Dxnq1zWXvFF0Q93v
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEsUkgyDzMwrj81nq0lIwGZQq6i9AFAl/8KGUACgkQlIwGZQq6
-i9AC4gf+NOEQkelSMa+Z9nVcCS777yaxKRrwyIroX8i2gZag5scN+d2gl8I8qnNC
-VvNNky+/4IkEK17KAhpdxvaSFQPDukSLVfq/gcOXb7u/PED4JhB2JU7Uzy2XMtRH
-KIwLrGJ+mmdD1z0bso4+DjFxQvPewKHfy2KcDYN6nl0jlZQ6UFJ+BseA5Dy9MVE2
-Bn1QAZkOp9qpPYNwbdRKqc54EGfUZItck8Gk6oVYKlSjZTxzS/Lv8gbG7ztei50i
-HNyCvW+LJTQaPwvlayqw9prrVBXNJ/+bVr9GR4Ajn1P2sMtZLHrvEZmcwf9lkjT6
-MmhoNTCSIq3q+ZWCoAUhSPh5UfyGwA==
-=O4Kq
------END PGP SIGNATURE-----
-
---Dxnq1zWXvFF0Q93v--
+Regards,
+Oleksij
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
