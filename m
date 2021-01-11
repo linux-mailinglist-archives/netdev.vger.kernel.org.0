@@ -2,255 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E69FD2F0BC2
-	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 05:20:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3745B2F0C10
+	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 06:07:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726657AbhAKETj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 10 Jan 2021 23:19:39 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:31180 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726278AbhAKETi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 10 Jan 2021 23:19:38 -0500
-Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
-        by m0089730.ppops.net (8.16.0.43/8.16.0.43) with SMTP id 10B4EIvn010861;
-        Sun, 10 Jan 2021 20:18:43 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
- references : from : message-id : date : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=facebook;
- bh=0i6ksNt9jY314CDq0pZpmkpZTl4hN7MASIKBqkc3IOM=;
- b=S+3H04q7PUgfDPMzXoB70nnzAVSLsUqtMzhzjzUdfI3uXyCUp9EILOIsEZDN4YUjRUL1
- bPhhtjuDPgKw5Y6txwclArkdYGTG2lUNkIRCgJbGE6qyPIhsRQ3Qzn0h0fkwtug2TMnW
- yTdN9oQmAneGrufuWTrhey5p6i17qGaU3Ug= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by m0089730.ppops.net with ESMTP id 35y8v5dtv2-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Sun, 10 Jan 2021 20:18:43 -0800
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (100.104.98.9) by
- o365-in.thefacebook.com (100.104.94.197) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Sun, 10 Jan 2021 20:18:42 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nUIU7nyCkFd7bFZCMEn0X3cs8etyv1vtKCh+mE+i39Tm41tz2EAMG/OHEyJxjfnJpO5YwWE56bhJBj7VXqFrEsc03RrfGyKXGmbnNYwAbP1BohtS5rQt2Y8Fa7U6akvruNWfwt3dI7qL8X1hw0hGDeeZxMybyTZWG/yHJqvx+iXazdmXjpL6qLJ1HS+GYpXCE4yZlIvULCCzGbFFvaSXuls/+6Rxvyh3YeFJq11SZMCouDxdxVmEapvIKW9FYIaM/9i89D7gWWlDLpDt/5MufcCcQH31J11dRnxm4pTRqT3wrlLLbqLaHt6GTw2FC8V40CcgGCNyoIvN4MuEosqq5Q==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0i6ksNt9jY314CDq0pZpmkpZTl4hN7MASIKBqkc3IOM=;
- b=BFZgZ7Gos4OSuVZmABC8xmshuEv7xffbnoVNEFQq0BMDBmJo8sN1G1ae+OpD9N5RUY2YOhE5bkQTgv7h9X6fnuJS2rbZ+BE8o24IqqBS0nwJl6k7F4kgUD9sbApMKawnwy1gklnrvBRtGx43DfLUXrqGwr30h4Sb2MeJBU+n6mssntQZZmXp9YvtFdA3mry7RMJEu6nNn89UwkH5X9BwtNcKi0TIaZms962hnOYRCij6C5RlM5ezD/TurNcg6b+ixCG5m2O2uJjbCo81FSpuKNyzK6nKo5VNN9HLbX4qyR/WtRG0TPvT9/STSIzIDiTkFQ0ZbwVQq3r+FX8Ljn7Ccw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0i6ksNt9jY314CDq0pZpmkpZTl4hN7MASIKBqkc3IOM=;
- b=LU+PzzfkI3FRyKhJHYEe4vaAa00lCtELM4J2ONUPWn70f75fffCsYqgHihKt5Q9T+tXmg5Mb/qv/Wv0VD5fT0Y9/xV6MbWXgTgCWWR36M49RXgEtgwP3DcCndGLpjeBt9RKGOhnLWDfhGV7Vxy6ulJeZvh6C4QjdzXIBNyN4kXY=
-Authentication-Results: google.com; dkim=none (message not signed)
- header.d=none;google.com; dmarc=none action=none header.from=fb.com;
-Received: from BYAPR15MB4088.namprd15.prod.outlook.com (2603:10b6:a02:c3::18)
- by BYAPR15MB3256.namprd15.prod.outlook.com (2603:10b6:a03:10f::24) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3742.9; Mon, 11 Jan
- 2021 04:18:41 +0000
-Received: from BYAPR15MB4088.namprd15.prod.outlook.com
- ([fe80::9ae:1628:daf9:4b03]) by BYAPR15MB4088.namprd15.prod.outlook.com
- ([fe80::9ae:1628:daf9:4b03%7]) with mapi id 15.20.3742.012; Mon, 11 Jan 2021
- 04:18:40 +0000
-Subject: Re: [PATCH v2 bpf-next 7/7] selftests/bpf: test kernel module ksym
- externs
-To:     Andrii Nakryiko <andrii@kernel.org>, <bpf@vger.kernel.org>,
-        <netdev@vger.kernel.org>, <ast@fb.com>, <daniel@iogearbox.net>
-CC:     <kernel-team@fb.com>, Hao Luo <haoluo@google.com>
-References: <20210108220930.482456-1-andrii@kernel.org>
- <20210108220930.482456-8-andrii@kernel.org>
-From:   Yonghong Song <yhs@fb.com>
-Message-ID: <24b84186-4cd6-131c-2284-d0fdc51ce7b4@fb.com>
-Date:   Sun, 10 Jan 2021 20:18:37 -0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.6.0
-In-Reply-To: <20210108220930.482456-8-andrii@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [2620:10d:c090:400::5:b212]
-X-ClientProxiedBy: MWHPR08CA0037.namprd08.prod.outlook.com
- (2603:10b6:300:c0::11) To BYAPR15MB4088.namprd15.prod.outlook.com
- (2603:10b6:a02:c3::18)
+        id S1725977AbhAKFFt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jan 2021 00:05:49 -0500
+Received: from fallback24.m.smailru.net ([94.100.187.223]:55450 "EHLO
+        fallback24.mail.ru" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1725871AbhAKFFt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 00:05:49 -0500
+X-Greylist: delayed 1566 seconds by postgrey-1.27 at vger.kernel.org; Mon, 11 Jan 2021 00:05:47 EST
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=inbox.ru; s=mail;
+        h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:Cc:To:From; bh=In2wv/p6a/1VVwiCznM4zbujVCuMut6Th0d++MEkXfM=;
+        b=eZ+cukA3HtHiG6c6Z5tWxvUYWYg72kvD3oSd5ArNvHBXaHJEkjugkaPYJeZ/YnuZPH7rKsKvJIozEram67Fj3TEpx1Mu9L0IJTvhCHHysP0qY7nrC08gYEU+n44KoYK40pGkj8DD2q5JA7iHIJBpC2GHdXuzoPlUIKSV5O8vkT8=;
+Received: from [10.161.64.53] (port=42330 helo=smtp45.i.mail.ru)
+        by fallback24.m.smailru.net with esmtp (envelope-from <fido_max@inbox.ru>)
+        id 1kyoyf-0006MT-Ib; Mon, 11 Jan 2021 07:38:49 +0300
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=inbox.ru; s=mail3;
+        h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:Cc:To:From:From:Subject:Content-Type:Content-Transfer-Encoding:To:Cc; bh=In2wv/p6a/1VVwiCznM4zbujVCuMut6Th0d++MEkXfM=;
+        b=jYKU2nuYumCKoj2AhthmcSoFBbi4f0NZlHCCxQVus6Lim+K8+I45j9KB9km5jlbDiWYpZ0mMA7MvxdalVuvEJCinGEnrKIAql/XhAeYDkqaDlsc5GKluSyn2kNohqefYn5f8tiYksJtwl4rL2HrG9IGn3T+mGad2YkBdfVLnHQE=;
+Received: by smtp45.i.mail.ru with esmtpa (envelope-from <fido_max@inbox.ru>)
+        id 1kyoxu-0008QW-13; Mon, 11 Jan 2021 07:38:02 +0300
+From:   Maxim Kochetkov <fido_max@inbox.ru>
+Cc:     madalin.bucur@nxp.com, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, Maxim Kochetkov <fido_max@inbox.ru>
+Subject: [PATCH net-next] fsl/fman: Add MII mode support.
+Date:   Mon, 11 Jan 2021 07:39:03 +0300
+Message-Id: <20210111043903.8044-1-fido_max@inbox.ru>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [IPv6:2620:10d:c085:21c1::1158] (2620:10d:c090:400::5:b212) by MWHPR08CA0037.namprd08.prod.outlook.com (2603:10b6:300:c0::11) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3742.6 via Frontend Transport; Mon, 11 Jan 2021 04:18:40 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 2af6fc7c-df76-4339-7b1d-08d8b5e7fa0a
-X-MS-TrafficTypeDiagnostic: BYAPR15MB3256:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <BYAPR15MB325630C8DF61A531D836AF3AD3AB0@BYAPR15MB3256.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Czxpqgbh7/qH1GWC8Rqg15KKCzFLvfuQgnMdsIy0W+c4YCDQsamtiXlbE4WNC0ONMP0X7NOOwDoPtM5iMgoREwHpAyuISChw6r3Dp19gz9qzY4BQTYBTmoUhP7r8Tl1EscR1naa+pCJ8KGALDBUp44wZtK/8JZuWfGDPqaCozRqOyiwGzNsXTgOIHff4IhtLb/zCRtvhNikX6vPYtv7TfGE3AySp5kt6N0HkVo/TLN+J0tCAf90xHdfGiqLclP1gFok2dhakXxntoHhnhhTEA+AOTMTqgaJaUyEi/N8siMuvLev6OtZxngrJMIv1qsgxbUPhJtWziomvGmsiFlIPejlyiKmAEy9xMYW6HKdgzNBe0UtZBlivEJNggMY1I3OT8cUCUvm+VntgyGGSFAIwoqafuxbjI2d0uQe/sK7Syxtu7nJYqHJlHFZawGdeD47+Fj98rj6NkTu7eMfmyqD5r4nGfyf5wDr+jrLlO4a/UvI=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB4088.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(376002)(136003)(396003)(346002)(366004)(39860400002)(186003)(52116002)(31696002)(6666004)(6486002)(86362001)(66946007)(66476007)(478600001)(8676002)(66556008)(53546011)(2906002)(36756003)(31686004)(5660300002)(316002)(4326008)(83380400001)(2616005)(8936002)(16526019)(45980500001)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?d0F3NzNzQWxrSTJvRUZDZkx2RXJGM09ZQTY2dyt1NThtbVNJN0VucDFNNEhK?=
- =?utf-8?B?cnV2amZ1bzJDYnhCOFNmK2grNXRSeHRYc1Z4ditoVWFGTE82NkE2NmZjUmts?=
- =?utf-8?B?Rzc3c1ZDNmpzTWMycG5LTVJ2eG5BdkJkazFUSCttYVF5WE85dFZnWVZSZmkw?=
- =?utf-8?B?TzU2YnI5K2lzeVpkUGoxNG9malBsOCs2VTlyaUQ0eHlhQUpmaTJ2T1pFQi9J?=
- =?utf-8?B?MFEzc1BvYzFiWUtJajFaeWkvdFgrWUZZUEcxR3pUNUJxT2JJVnN4cXVJVzdw?=
- =?utf-8?B?SXlBYjdXK0gwLzBJUEJYUFQxcGFSRGp5L1dpaDhOaFRxOVd2QW1QZ1Q4d3ph?=
- =?utf-8?B?WmhzYTZZc2RtT0syZGpUc3haNWhRVW5ZSHlDdEpsRC8vdENjUWZlNmdDQ0ZH?=
- =?utf-8?B?MFFrYWZGcUZneC9FaTdYZURaWnMvVVYzSWpCZUJtMFZ2ZHlvdDYzcnJ5Rlhm?=
- =?utf-8?B?bUY5TWJkNHNwWGhtWCt0N21BY2ZqSm5XcDQ0TjNWc1ZuUVlKSmZLbWJaY01P?=
- =?utf-8?B?djYyZjRWV3pBekxwd0EzaEpoUGF2SUZUcllza1dTcjFuTVFLY0NGM2g2V3RU?=
- =?utf-8?B?N3g4eVVYaUJhM2o2ZDRJb3V4L2ZNU2loTTc5eEJoNHdHRjBQdXBZWUVmREJu?=
- =?utf-8?B?QmFMV0pBOHdFKzY1WXlvYWJ4alBGUFBpMjRTcFQ5Z1FLUW1rTXdSd0t2Smht?=
- =?utf-8?B?UllFR2Z0WVhjdFRMQXB2ckVEU1MvRGVVNEpRaGd2NVRuaUdobVZ1cEJySkc4?=
- =?utf-8?B?bHhGTENWRUhpMDVHVDVZTU9HWjgzTUUrTzNZNnRZdTh4UFhacUJ1dXRqcXlC?=
- =?utf-8?B?cGNZbks1ZzZnKzc5U1pGdndGNWsrOG10WHEwVVgwbmpPdEFvMDBmYUl0WStX?=
- =?utf-8?B?YkhWTnIzOFczSDZjRWxqb3ZESWZrY2tjSjNJc3J1NkxJRDlxR05NNVVyL09p?=
- =?utf-8?B?MzVXc1l1UFVvNnUwZnY4UDl1b1pBbnE2OXpvZ29ZOTc2NmRoa2NkY0lKM29S?=
- =?utf-8?B?dkkyL2hzOXV4bkJ1MU1HOGZmNGpuVC8zNllQTXQyTThLSEpIU3Y1MGdjVVQ2?=
- =?utf-8?B?dk5vYUQxejVNMlRoZHNXYXVTRVpUdHFDMEwveU4xQWFqZC81R1pQOEQ1T2NF?=
- =?utf-8?B?LzE4MFlPTHZRWGNjZTNuWm1yaS9KWS9NaTFLdWloeE9pSzN6d2hHV0RCK0tM?=
- =?utf-8?B?WHVIeUNkY0tOTndUa3Q1bUtCMEZuMW4rcUZwN21MbHRXcFZZN1FMMFNEODlG?=
- =?utf-8?B?TkRDMXJOTGVGS0MyckJCWFFUQzN4RHFoYzhmaE43aXl4OVVreE1UaUtqY0k4?=
- =?utf-8?B?a0prZk1mL3JQcUhUQUtRWVRkY2hqdmRlbmVxMU9PVzBrWG1Yd245UWVITm5M?=
- =?utf-8?B?NDQ1UjhHWm13WXc9PQ==?=
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR15MB4088.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Jan 2021 04:18:40.9229
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-Network-Message-Id: 2af6fc7c-df76-4339-7b1d-08d8b5e7fa0a
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: nVCrB0ZZ+QrGCWjK76M2ncLed16/EnD79KRn/9jFmMV4JmUyaHdx2svbY7UAST+n
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB3256
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
- definitions=2021-01-09_13:2021-01-07,2021-01-09 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 adultscore=0
- priorityscore=1501 mlxlogscore=999 mlxscore=0 spamscore=0
- lowpriorityscore=0 suspectscore=0 clxscore=1015 phishscore=0
- impostorscore=0 bulkscore=0 malwarescore=0 classifier=spam adjust=0
- reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2101110024
-X-FB-Internal: deliver
+Content-Transfer-Encoding: 8bit
+X-7564579A: 646B95376F6C166E
+X-77F55803: 4F1203BC0FB41BD9D0E79FBC973162CD9B382B274FF537389656BC690FF7BBE200894C459B0CD1B94452034DF163596FB47B2064DADED92D1EB9079B03EE8F4D7AD2C9CDF6B3E5BD
+X-7FA49CB5: FF5795518A3D127A4AD6D5ED66289B5278DA827A17800CE7D950999244A4B2E6EA1F7E6F0F101C67BD4B6F7A4D31EC0BCC500DACC3FED6E28638F802B75D45FF8AA50765F790063768D6DD405B71470F8638F802B75D45FF5571747095F342E8C7A0BC55FA0FE5FC498C9B83B45F9506BB8031DB57836D591DABFF12944AE5EF389733CBF5DBD5E913377AFFFEAFD2691661749BA6B9773586DB53B01D1D7C7B8941B15DA834481FCF19DD082D7633A0EF3E4896CB9E6436389733CBF5DBD5E9D5E8D9A59859A8B6E954A0C70C50C109CC7F00164DA146DA6F5DAA56C3B73B237318B6A418E8EAB8D32BA5DBAC0009BE9E8FC8737B5C22491554A6620921A7F476E601842F6C81A12EF20D2F80756B5F7E9C4E3C761E06A776E601842F6C81A127C277FBC8AE2E8B466D3D576E50FFFBD81D268191BDAD3D698AB9A7B718F8C442539A7722CA490C13377AFFFEAFD26923F8577A6DFFEA7C64E4DC1543031AB74AD6D5ED66289B524E70A05D1297E1BB35872C767BF85DA227C277FBC8AE2E8BBB46F953B4600AAB75ECD9A6C639B01B4E70A05D1297E1BBC6867C52282FAC85D9B7C4F32B44FF57285124B2A10EEC6C00306258E7E6ABB4E4A6367B16DE6309
+X-C1DE0DAB: C20DE7B7AB408E4181F030C43753B8186998911F362727C414F749A5E30D975CFA107D2111241699D2D99C7EC59182C30FD6F8F85B8AD8F89C2B6934AE262D3EE7EAB7254005DCED556CBE7F905700A49510FB958DCE06DB6ED91DBE5ABE359A3485EE9140A7D39D7D06A436E56C8DB493EDB24507CE13387DFF0A840B692CF8
+X-C8649E89: 4E36BF7865823D7055A7F0CF078B5EC49A30900B95165D34D8C933888226C8418E5D637576A0128E0B425341AEB840D8FC115A2989262256ECCC6D8FF0BBED841D7E09C32AA3244C9A5C32B004745A7B5B66FE8092C43AF76C2483212766842283B48618A63566E0
+X-D57D3AED: 3ZO7eAau8CL7WIMRKs4sN3D3tLDjz0dLbV79QFUyzQ2Ujvy7cMT6pYYqY16iZVKkSc3dCLJ7zSJH7+u4VD18S7Vl4ZUrpaVfd2+vE6kuoey4m4VkSEu530nj6fImhcD4MUrOEAnl0W826KZ9Q+tr5ycPtXkTV4k65bRjmOUUP8cvGozZ33TWg5HZplvhhXbhDGzqmQDTd6OAevLeAnq3Ra9uf7zvY2zzsIhlcp/Y7m53TZgf2aB4JOg4gkr2biojmz2Dv49v36iHNcyo1yzlhA==
+X-Mailru-Sender: 11C2EC085EDE56FA9C10FA2967F5AB2454983B901D9880D4E354834829DAFE705A5E3B305626C841EE9242D420CFEBFD3DDE9B364B0DF2891A624F84B2C74EDA4239CF2AF0A6D4F80DA7A0AF5A3A8387
+X-Mras: Ok
+X-7564579A: B8F34718100C35BD
+X-77F55803: 6242723A09DB00B40E5D90E44ABF6C6604BA033ECC7B62DE3D1ACDDC4D7315E2049FFFDB7839CE9E8C4BD7E8152C928BC83CC2AAECE5233442FE30F277AFF6ED2E8E0ABF17D84214
+X-7FA49CB5: 0D63561A33F958A5629A8AE9E7E79C0818E25EA71A045D456449D03926DC3F1E8941B15DA834481FA18204E546F3947C151DCBF0643CA2B4F6B57BC7E64490618DEB871D839B7333395957E7521B51C2DFABB839C843B9C08941B15DA834481F8AA50765F7900637178027617757BE7C389733CBF5DBD5E9B5C8C57E37DE458BD9DD9810294C998ED8FC6C240DEA76428AA50765F7900637EEFB9C4726E9C49AD81D268191BDAD3DBD4B6F7A4D31EC0BEA7A3FFF5B025636A7F4EDE966BC389F9E8FC8737B5C22499E984C673F3CBADA089D37D7C0E48F6CCF19DD082D7633A0E7DDDDC251EA7DABAAAE862A0553A39223F8577A6DFFEA7C56BCE7F9FF91C5B943847C11F186F3C5E7DDDDC251EA7DABCC89B49CDF41148FA8EF81845B15A4842623479134186CDE6BA297DBC24807EABDAD6C7F3747799A
+X-C1DE0DAB: C20DE7B7AB408E4181F030C43753B8186998911F362727C414F749A5E30D975CFA107D211124169947A2B3C2269980A37383275DAE3A7C3A9C2B6934AE262D3EE7EAB7254005DCED556CBE7F905700A4DC48ACC2A39D04F89CDFB48F4795C241BDAD6C7F3747799A
+X-D57D3AED: 3ZO7eAau8CL7WIMRKs4sN3D3tLDjz0dLbV79QFUyzQ2Ujvy7cMT6pYYqY16iZVKkSc3dCLJ7zSJH7+u4VD18S7Vl4ZUrpaVfd2+vE6kuoey4m4VkSEu530nj6fImhcD4MUrOEAnl0W826KZ9Q+tr5ycPtXkTV4k65bRjmOUUP8cvGozZ33TWg5HZplvhhXbhDGzqmQDTd6OAevLeAnq3Ra9uf7zvY2zzsIhlcp/Y7m53TZgf2aB4JOg4gkr2biojmz2Dv49v36gAFtqcxic4KA==
+X-Mailru-MI: 800
+X-Mailru-Sender: A5480F10D64C900521F65ACE11A97E3DD977334E25A6A46BBB324CD5F2292D89F37D3E488DDBD968C099ADC76E806A99D50E20E2BC48EF5A30D242760C51EA9CEAB4BC95F72C04283CDA0F3B3F5B9367
+X-Mras: Ok
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Set proper value to IF_MODE register for MII mode.
 
+Signed-off-by: Maxim Kochetkov <fido_max@inbox.ru>
+---
+ drivers/net/ethernet/freescale/fman/fman_memac.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-On 1/8/21 2:09 PM, Andrii Nakryiko wrote:
-> Add per-CPU variable to bpf_testmod.ko and use those from new selftest to
-> validate it works end-to-end.
-> 
-> Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+diff --git a/drivers/net/ethernet/freescale/fman/fman_memac.c b/drivers/net/ethernet/freescale/fman/fman_memac.c
+index bb9887f98841..62f42921933d 100644
+--- a/drivers/net/ethernet/freescale/fman/fman_memac.c
++++ b/drivers/net/ethernet/freescale/fman/fman_memac.c
+@@ -111,6 +111,7 @@ do {									\
+ 
+ #define IF_MODE_MASK		0x00000003 /* 30-31 Mask on i/f mode bits */
+ #define IF_MODE_10G		0x00000000 /* 30-31 10G interface */
++#define IF_MODE_MII		0x00000001 /* 30-31 MII interface */
+ #define IF_MODE_GMII		0x00000002 /* 30-31 GMII (1G) interface */
+ #define IF_MODE_RGMII		0x00000004
+ #define IF_MODE_RGMII_AUTO	0x00008000
+@@ -442,6 +443,9 @@ static int init(struct memac_regs __iomem *regs, struct memac_cfg *cfg,
+ 	case PHY_INTERFACE_MODE_XGMII:
+ 		tmp |= IF_MODE_10G;
+ 		break;
++	case PHY_INTERFACE_MODE_MII:
++		tmp |= IF_MODE_MII;
++		break;
+ 	default:
+ 		tmp |= IF_MODE_GMII;
+ 		if (phy_if == PHY_INTERFACE_MODE_RGMII ||
+-- 
+2.29.2
 
-Ack with a nit below.
-
-Acked-by: Yonghong Song <yhs@fb.com>
-
-> ---
->   .../selftests/bpf/bpf_testmod/bpf_testmod.c   |  3 ++
->   .../selftests/bpf/prog_tests/ksyms_module.c   | 33 +++++++++++++++++++
->   .../selftests/bpf/progs/test_ksyms_module.c   | 26 +++++++++++++++
->   3 files changed, 62 insertions(+)
->   create mode 100644 tools/testing/selftests/bpf/prog_tests/ksyms_module.c
->   create mode 100644 tools/testing/selftests/bpf/progs/test_ksyms_module.c
-> 
-> diff --git a/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.c b/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.c
-> index 2df19d73ca49..0b991e115d1f 100644
-> --- a/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.c
-> +++ b/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.c
-> @@ -3,6 +3,7 @@
->   #include <linux/error-injection.h>
->   #include <linux/init.h>
->   #include <linux/module.h>
-> +#include <linux/percpu-defs.h>
->   #include <linux/sysfs.h>
->   #include <linux/tracepoint.h>
->   #include "bpf_testmod.h"
-> @@ -10,6 +11,8 @@
->   #define CREATE_TRACE_POINTS
->   #include "bpf_testmod-events.h"
->   
-> +DEFINE_PER_CPU(int, bpf_testmod_ksym_percpu) = 123;
-> +
->   noinline ssize_t
->   bpf_testmod_test_read(struct file *file, struct kobject *kobj,
->   		      struct bin_attribute *bin_attr,
-> diff --git a/tools/testing/selftests/bpf/prog_tests/ksyms_module.c b/tools/testing/selftests/bpf/prog_tests/ksyms_module.c
-> new file mode 100644
-> index 000000000000..7fa3d8b6ca30
-> --- /dev/null
-> +++ b/tools/testing/selftests/bpf/prog_tests/ksyms_module.c
-> @@ -0,0 +1,33 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/* Copyright (c) 2021 Facebook */
-> +
-> +#include <test_progs.h>
-> +#include <bpf/libbpf.h>
-> +#include <bpf/btf.h>
-> +#include "test_ksyms_module.skel.h"
-> +
-> +static int duration;
-> +
-> +void test_ksyms_module(void)
-> +{
-> +	struct test_ksyms_module* skel;
-> +	struct test_ksyms_module__bss *bss;
-> +	int err;
-> +
-> +	skel = test_ksyms_module__open_and_load();
-> +	if (CHECK(!skel, "skel_open", "failed to open skeleton\n"))
-> +		return;
-> +	bss = skel->bss;
-> +
-> +	err = test_ksyms_module__attach(skel);
-> +	if (CHECK(err, "skel_attach", "skeleton attach failed: %d\n", err))
-> +		goto cleanup;
-> +
-> +	usleep(1);
-
-The above bss = skel->bss might be moved here for better readability.
-Or better, you can remove definition bss and just use skel->bss
-in below two ASSERT_EQs.
-
-> +	ASSERT_EQ(bss->triggered, true, "triggered");
-> +	ASSERT_EQ(bss->out_mod_ksym_global, 123, "global_ksym_val");
-> +
-> +cleanup:
-> +	test_ksyms_module__destroy(skel);
-> +}
-> diff --git a/tools/testing/selftests/bpf/progs/test_ksyms_module.c b/tools/testing/selftests/bpf/progs/test_ksyms_module.c
-> new file mode 100644
-> index 000000000000..d6a0b3086b90
-> --- /dev/null
-> +++ b/tools/testing/selftests/bpf/progs/test_ksyms_module.c
-> @@ -0,0 +1,26 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/* Copyright (c) 2021 Facebook */
-> +
-> +#include "vmlinux.h"
-> +
-> +#include <bpf/bpf_helpers.h>
-> +
-> +extern const int bpf_testmod_ksym_percpu __ksym;
-> +
-> +int out_mod_ksym_global = 0;
-> +bool triggered = false;
-> +
-> +SEC("raw_tp/sys_enter")
-> +int handler(const void *ctx)
-> +{
-> +	int *val;
-> +	__u32 cpu;
-> +
-> +	val = (int *)bpf_this_cpu_ptr(&bpf_testmod_ksym_percpu);
-> +	out_mod_ksym_global = *val;
-> +	triggered = true;
-> +
-> +	return 0;
-> +}
-> +
-> +char LICENSE[] SEC("license") = "GPL";
-> 
