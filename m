@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CB4A82F0C7C
-	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 06:29:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C1F22F0C7F
+	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 06:29:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726672AbhAKF2o (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jan 2021 00:28:44 -0500
-Received: from mail.kernel.org ([198.145.29.99]:59612 "EHLO mail.kernel.org"
+        id S1727196AbhAKF2s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jan 2021 00:28:48 -0500
+Received: from mail.kernel.org ([198.145.29.99]:59626 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725747AbhAKF2n (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 11 Jan 2021 00:28:43 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 2ABA1225AB;
+        id S1725831AbhAKF2o (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 11 Jan 2021 00:28:44 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 88F8022795;
         Mon, 11 Jan 2021 05:28:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1610342883;
-        bh=6sNBeFdrVXPxgS59xVd078bOMwdGAYHFCWY6SjY4Aqg=;
+        bh=mc5svK7kNbk2ItAXXTBb/+K43sl6Ln8jhje+t0jeH5E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=V+fCS1INZ7aiEiRb+wzlbgMplBnlHHuVqqWGnBoVxO7ON+FT4Ggx3eGKb8away2kZ
-         gUAon/9uMuWUDkupEeYtWPhCN3UjKgF+E9EYH/nyhf9ckkUgDje9epC2XVRD9ujf89
-         2TR1RG8KL8Lou3f4olyKkZy9N7O70G8+LL2acqWty0sT1q4DZ7yGFw5IDjN9JhT+Mx
-         VninL6jQ1RQ8RgS7H3faZ+m+gygwJuV+nXV5SNriZqUgLb2fWQtle9A0QisxvA5Du/
-         Gi5cBjGPx3gbXe7YgP4zLAmQVr11Kvy0GOKNymFx/oFEEKkKUEGvZsSoT6HbUSn5Nj
-         mbryHODkYdrVw==
+        b=Opl1fKORp1bLGzZNhgW0zgzDWmE5HlEGKk0y1iZVfTEqBbA7puExqB736EPu5twfV
+         TQ8MUTvn02oX4WqQXOXIWEJgRa/IpEnhEWa4LMdvYNg4ii3IIUBfk2HJt4DYdkW4ho
+         fdfdm+UvfRgeLkDxxypB6rNkxjcApkENyWS5LXHSlwCl1NmdQ9eWMo5Z4qbvbeGfna
+         5TPgTt/2XZTP+WX07rTzw0BQaIWgHmVigFKT5BlV+QhYr218up5KEEXW1m9a55RtCw
+         ccBxR20n+K8HLrWdsC7Wfi899zmlOhNTzlzGwoBSGyRxdkGvI1i77qjtP0hmGtbfY3
+         7TNPMQoTRUkEw==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, corbet@lwn.net,
         Jakub Kicinski <kuba@kernel.org>,
-        Jay Cliburn <jcliburn@gmail.com>,
-        Chris Snook <chris.snook@gmail.com>
-Subject: [PATCH net 1/9] MAINTAINERS: altx: move Jay Cliburn to CREDITS
-Date:   Sun, 10 Jan 2021 21:27:51 -0800
-Message-Id: <20210111052759.2144758-2-kuba@kernel.org>
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
+Subject: [PATCH net 2/9] MAINTAINERS: net: move Alexey Kuznetsov to CREDITS
+Date:   Sun, 10 Jan 2021 21:27:52 -0800
+Message-Id: <20210111052759.2144758-3-kuba@kernel.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20210111052759.2144758-1-kuba@kernel.org>
 References: <20210111052759.2144758-1-kuba@kernel.org>
@@ -41,55 +41,61 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jay was not active in recent years and does not have plans
-to return to work on ATLX drivers.
+Move Alexey to CREDITS.
 
-Subsystem ATLX ETHERNET DRIVERS
-  Changes 20 / 116 (17%)
-  Last activity: 2020-02-24
-  Jay Cliburn <jcliburn@gmail.com>:
-  Chris Snook <chris.snook@gmail.com>:
-    Tags ea973742140b 2020-02-24 00:00:00 1
+I am probably not giving him enough justice with
+the description line..
+
+Subsystem NETWORKING [IPv4/IPv6]
+  Changes 1535 / 5111 (30%)
+  Last activity: 2020-12-10
+  "David S. Miller" <davem@davemloft.net>:
+    Author b7e4ba9a91df 2020-12-09 00:00:00 407
+    Committer e0fecb289ad3 2020-12-10 00:00:00 3992
+    Tags e0fecb289ad3 2020-12-10 00:00:00 3978
+  Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>:
+  Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>:
+    Tags d5d8760b78d0 2016-06-16 00:00:00 8
   Top reviewers:
-    [4]: andrew@lunn.ch
-    [2]: kuba@kernel.org
-    [2]: o.rempel@pengutronix.de
-  INACTIVE MAINTAINER Jay Cliburn <jcliburn@gmail.com>
+    [225]: edumazet@google.com
+    [222]: dsahern@gmail.com
+    [176]: ncardwell@google.com
+  INACTIVE MAINTAINER Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
-CC: Jay Cliburn <jcliburn@gmail.com>
-CC: Chris Snook <chris.snook@gmail.com>
+CC: Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>
+CC: Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
 ---
  CREDITS     | 4 ++++
  MAINTAINERS | 1 -
  2 files changed, 4 insertions(+), 1 deletion(-)
 
 diff --git a/CREDITS b/CREDITS
-index 090ed4b004a5..59a704a45170 100644
+index 59a704a45170..3dceea737694 100644
 --- a/CREDITS
 +++ b/CREDITS
-@@ -710,6 +710,10 @@ S: Las Cuevas 2385 - Bo Guemes
- S: Las Heras, Mendoza CP 5539
- S: Argentina
+@@ -2142,6 +2142,10 @@ E: seasons@falcon.sch.bme.hu
+ E: seasons@makosteszta.sote.hu
+ D: Original author of software suspend
  
-+N: Jay Cliburn
-+E: jcliburn@gmail.com
-+D: ATLX Ethernet drivers
++N: Alexey Kuznetsov
++E: kuznet@ms2.inr.ac.ru
++D: Author and maintainer of large parts of the networking stack
 +
- N: Steven P. Cole
- E: scole@lanl.gov
- E: elenstev@mesatop.com
+ N: Jaroslav Kysela
+ E: perex@perex.cz
+ W: https://www.perex.cz
 diff --git a/MAINTAINERS b/MAINTAINERS
-index b15514a770e3..57e17762d411 100644
+index 57e17762d411..c6e7f6bf7f6d 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
-@@ -2942,7 +2942,6 @@ S:	Maintained
- F:	drivers/hwmon/asus_atk0110.c
+@@ -12417,7 +12417,6 @@ F:	tools/testing/selftests/net/ipsec.c
  
- ATLX ETHERNET DRIVERS
--M:	Jay Cliburn <jcliburn@gmail.com>
- M:	Chris Snook <chris.snook@gmail.com>
+ NETWORKING [IPv4/IPv6]
+ M:	"David S. Miller" <davem@davemloft.net>
+-M:	Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>
+ M:	Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
  L:	netdev@vger.kernel.org
  S:	Maintained
 -- 
