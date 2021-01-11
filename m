@@ -2,138 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3350D2F1DE4
-	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 19:22:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 67C582F1DFA
+	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 19:28:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390358AbhAKSVi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jan 2021 13:21:38 -0500
-Received: from foss.arm.com ([217.140.110.172]:34234 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2390214AbhAKSVh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 11 Jan 2021 13:21:37 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5661911FB;
-        Mon, 11 Jan 2021 10:20:51 -0800 (PST)
-Received: from e107158-lin.cambridge.arm.com (unknown [10.1.194.78])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 1F3DD3F70D;
-        Mon, 11 Jan 2021 10:20:50 -0800 (PST)
-From:   Qais Yousef <qais.yousef@arm.com>
-To:     netdev@vger.kernel.org, bpf@vger.kernel.org
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        linux-kernel@vger.kernel.org, Qais Yousef <qais.yousef@arm.com>
-Subject: [PATCH bpf-next 2/2] selftests: bpf: Add a new test for bare tracepoints
-Date:   Mon, 11 Jan 2021 18:20:27 +0000
-Message-Id: <20210111182027.1448538-3-qais.yousef@arm.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210111182027.1448538-1-qais.yousef@arm.com>
-References: <20210111182027.1448538-1-qais.yousef@arm.com>
+        id S2389982AbhAKS2J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jan 2021 13:28:09 -0500
+Received: from mail-40131.protonmail.ch ([185.70.40.131]:57984 "EHLO
+        mail-40131.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728056AbhAKS2I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 13:28:08 -0500
+Date:   Mon, 11 Jan 2021 18:27:21 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
+        t=1610389644; bh=zMoAhzMpBXRXHs8lVx+DOgiDZHIU73jEHLkoY9JLnro=;
+        h=Date:To:From:Cc:Reply-To:Subject:From;
+        b=SWUU5ht8L8ZEe+kq1pnXCVazfDuj3E0bZwUcIqz3GWofA9V1xwnen3KkUeccl6/fa
+         hrf9LP2PYE31fih+pPVTs6RjWESZV+Xak2qqPWcRy07faCTzdAy/xxJBRomecvoVM0
+         7lncmRkMYZn7DP0Sp3mld9wsKupMLOpWImge9tifNRaFoXSIqk9k85bGvkql4uwXjk
+         Lj+lOuLb948PHi7PLXlulZwOB8hKh6+q3S0yBS2treuFPzeVJK0exjyak7ZXbnuhmF
+         roHG4aC0whxt+38tbw5/IoruCAJMcVvJQ1Pih7rjaD7MJ9Nnsdp16sv51w1liXSzGE
+         nutOmEIKsmpmg==
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+From:   Alexander Lobakin <alobakin@pm.me>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        Edward Cree <ecree@solarflare.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Guillaume Nault <gnault@redhat.com>,
+        Yadu Kishore <kyk.segfault@gmail.com>,
+        Al Viro <viro@zeniv.linux.org.uk>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Reply-To: Alexander Lobakin <alobakin@pm.me>
+Subject: [PATCH net-next 0/5] skbuff: introduce skbuff_heads bulking and reusing
+Message-ID: <20210111182655.12159-1-alobakin@pm.me>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.2 required=10.0 tests=ALL_TRUSTED,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF shortcircuit=no
+        autolearn=disabled version=3.4.4
+X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on
+        mailout.protonmail.ch
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Reuse module_attach infrastructure to add a new bare tracepoint to check
-we can attach to it as a raw tracepoint.
+Inspired by cpu_map_kthread_run() and _kfree_skb_defer() logics.
 
-Signed-off-by: Qais Yousef <qais.yousef@arm.com>
----
+Currently, all sorts of skb allocation always do allocate
+skbuff_heads one by one via kmem_cache_alloc().
+On the other hand, we have percpu napi_alloc_cache to store
+skbuff_heads queued up for freeing and flush them by bulks.
 
-Andrii
+We can use this struct to cache and bulk not only freeing, but also
+allocation of new skbuff_heads, as well as to reuse cached-to-free
+heads instead of allocating the new ones.
+As accessing napi_alloc_cache implies NAPI softirq context, do this
+only for __napi_alloc_skb() and its derivatives (napi_alloc_skb()
+and napi_get_frags()). The rough amount of their call sites are 69,
+which is quite a number.
 
-I was getting the error below when I was trying to run the test.
-I had to comment out all related fentry* code to be able to test the raw_tp
-stuff. Not sure something I've done wrong or it's broken for some reason.
-I was on v5.11-rc2.
+iperf3 showed a nice bump from 910 to 935 Mbits while performing
+UDP VLAN NAT on 1.2 GHz MIPS board. The boost is likely to be
+way bigger on more powerful hosts and NICs with tens of Mpps.
 
-	$ sudo ./test_progs -v -t module_attach
-	bpf_testmod.ko is already unloaded.
-	Loading bpf_testmod.ko...
-	Successfully loaded bpf_testmod.ko.
-	test_module_attach:PASS:skel_open 0 nsec
-	test_module_attach:PASS:set_attach_target 0 nsec
-	test_module_attach:PASS:skel_load 0 nsec
-	libbpf: prog 'handle_fentry': failed to attach: ERROR: strerror_r(-524)=22
-	libbpf: failed to auto-attach program 'handle_fentry': -524
-	test_module_attach:FAIL:skel_attach skeleton attach failed: -524
-	#58 module_attach:FAIL
-	Successfully unloaded bpf_testmod.ko.
-	Summary: 0/0 PASSED, 0 SKIPPED, 1 FAILED
+Patches 1-2 are preparation steps, while 3-5 do the real work.
 
+Alexander Lobakin (5):
+  skbuff: rename fields of struct napi_alloc_cache to be more intuitive
+  skbuff: open-code __build_skb() inside __napi_alloc_skb()
+  skbuff: reuse skbuff_heads from flush_skb_cache if available
+  skbuff: allocate skbuff_heads by bulks instead of one by one
+  skbuff: refill skb_cache early from deferred-to-consume entries
 
- .../selftests/bpf/bpf_testmod/bpf_testmod-events.h     |  6 ++++++
- tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.c  |  2 ++
- tools/testing/selftests/bpf/prog_tests/module_attach.c |  1 +
- tools/testing/selftests/bpf/progs/test_module_attach.c | 10 ++++++++++
- 4 files changed, 19 insertions(+)
+ net/core/skbuff.c | 62 ++++++++++++++++++++++++++++++++++++-----------
+ 1 file changed, 48 insertions(+), 14 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod-events.h b/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod-events.h
-index b83ea448bc79..e1ada753f10c 100644
---- a/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod-events.h
-+++ b/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod-events.h
-@@ -28,6 +28,12 @@ TRACE_EVENT(bpf_testmod_test_read,
- 		  __entry->pid, __entry->comm, __entry->off, __entry->len)
- );
- 
-+/* A bare tracepoint with no event associated with it */
-+DECLARE_TRACE(bpf_testmod_test_read_bare,
-+	TP_PROTO(struct task_struct *task, struct bpf_testmod_test_read_ctx *ctx),
-+	TP_ARGS(task, ctx)
-+);
-+
- #endif /* _BPF_TESTMOD_EVENTS_H */
- 
- #undef TRACE_INCLUDE_PATH
-diff --git a/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.c b/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.c
-index 2df19d73ca49..d63cebdaca44 100644
---- a/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.c
-+++ b/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.c
-@@ -22,6 +22,8 @@ bpf_testmod_test_read(struct file *file, struct kobject *kobj,
- 	};
- 
- 	trace_bpf_testmod_test_read(current, &ctx);
-+	ctx.len++;
-+	trace_bpf_testmod_test_read_bare(current, &ctx);
- 
- 	return -EIO; /* always fail */
- }
-diff --git a/tools/testing/selftests/bpf/prog_tests/module_attach.c b/tools/testing/selftests/bpf/prog_tests/module_attach.c
-index 50796b651f72..7085a118f38c 100644
---- a/tools/testing/selftests/bpf/prog_tests/module_attach.c
-+++ b/tools/testing/selftests/bpf/prog_tests/module_attach.c
-@@ -50,6 +50,7 @@ void test_module_attach(void)
- 	ASSERT_OK(trigger_module_test_read(READ_SZ), "trigger_read");
- 
- 	ASSERT_EQ(bss->raw_tp_read_sz, READ_SZ, "raw_tp");
-+	ASSERT_EQ(bss->raw_tp_bare_read_sz, READ_SZ+1, "raw_tp_bare");
- 	ASSERT_EQ(bss->tp_btf_read_sz, READ_SZ, "tp_btf");
- 	ASSERT_EQ(bss->fentry_read_sz, READ_SZ, "fentry");
- 	ASSERT_EQ(bss->fentry_manual_read_sz, READ_SZ, "fentry_manual");
-diff --git a/tools/testing/selftests/bpf/progs/test_module_attach.c b/tools/testing/selftests/bpf/progs/test_module_attach.c
-index efd1e287ac17..08aa157afa1d 100644
---- a/tools/testing/selftests/bpf/progs/test_module_attach.c
-+++ b/tools/testing/selftests/bpf/progs/test_module_attach.c
-@@ -17,6 +17,16 @@ int BPF_PROG(handle_raw_tp,
- 	return 0;
- }
- 
-+__u32 raw_tp_bare_read_sz = 0;
-+
-+SEC("raw_tp/bpf_testmod_test_read_bare")
-+int BPF_PROG(handle_raw_tp_bare,
-+	     struct task_struct *task, struct bpf_testmod_test_read_ctx *read_ctx)
-+{
-+	raw_tp_bare_read_sz = BPF_CORE_READ(read_ctx, len);
-+	return 0;
-+}
-+
- __u32 tp_btf_read_sz = 0;
- 
- SEC("tp_btf/bpf_testmod_test_read")
--- 
-2.25.1
+--=20
+2.30.0
+
 
