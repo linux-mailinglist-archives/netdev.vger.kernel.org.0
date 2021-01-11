@@ -2,76 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 457282F2177
-	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 22:05:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BDC9F2F21A4
+	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 22:19:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388847AbhAKVEq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jan 2021 16:04:46 -0500
-Received: from mail-40131.protonmail.ch ([185.70.40.131]:24282 "EHLO
-        mail-40131.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730563AbhAKVEp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 16:04:45 -0500
-Date:   Mon, 11 Jan 2021 21:03:57 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
-        t=1610399042; bh=vcu//doyECUTnhIiITA/X39kwSyLf2KhHEjPp8bJwpg=;
-        h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
-        b=gcPLtnWEa+t+9+1BPvXLHnZlcc4wAQhhVrcczGB8ewUh7b1aY3/V7wUxE27cFJx6+
-         tpUbFzh4YzvhUuy/o5nWOONHEyWTm3u1NIjg2jlmPFFGgZd9sh7Dz/BtxH8fLsfusG
-         RKVecP9Q+HCSgyIVWxgKzf5s6IcqlB3n5TddCjrqaLM80fWhfAylg6GLv/nXrQXj4V
-         0tvgBykcaCN3iG+ZSKfN/XlDdm0GMSY2Q7ADqSy6sk+KbxuZQnx3u0+1641f/Wicxb
-         4q1NcbtMKcFdWy4t/83Qhag0OBgT63NVo+i6YgHgrMA4oTjoRa4dQzWuiHOWw0oiCl
-         4idWrzklmWJKg==
-To:     Jonathan Lemon <jonathan.lemon@gmail.com>
-From:   Alexander Lobakin <alobakin@pm.me>
-Cc:     Alexander Lobakin <alobakin@pm.me>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Edward Cree <ecree@solarflare.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Guillaume Nault <gnault@redhat.com>,
-        Yadu Kishore <kyk.segfault@gmail.com>,
-        Al Viro <viro@zeniv.linux.org.uk>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Reply-To: Alexander Lobakin <alobakin@pm.me>
-Subject: Re: [PATCH net-next 1/5] skbuff: rename fields of struct napi_alloc_cache to be more intuitive
-Message-ID: <20210111210329.18881-1-alobakin@pm.me>
-In-Reply-To: <20210111184945.e7y35uym73ujfif2@bsd-mbp>
-References: <20210111182655.12159-1-alobakin@pm.me> <20210111182801.12609-1-alobakin@pm.me> <20210111184945.e7y35uym73ujfif2@bsd-mbp>
+        id S1730289AbhAKVS4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jan 2021 16:18:56 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:23339 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727150AbhAKVS4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 16:18:56 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1610399849;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=SCB2GqMRzpSLrROmd2i5ytegCaTaZU6PyeFCGOKDImk=;
+        b=EMmxvJYwGZDuId/+nDb1WFSygBG2d6Oee1dlFDdJA4M2qIAwMhQa6fs16rg7Eqbl4pXl2J
+        Esv8g1M0YWwNsG4eU7oQyfTzXibrc6NLRECzSVEcWpia7Rp13rX/EU42ZREPZ8b5pIyED6
+        E/o99a4qv9GUMbnT6UXkcmUfMdIgIy8=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-463-fuuvH0CXOAyrbopb-ZX05w-1; Mon, 11 Jan 2021 16:17:27 -0500
+X-MC-Unique: fuuvH0CXOAyrbopb-ZX05w-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D883C80ED8A;
+        Mon, 11 Jan 2021 21:17:25 +0000 (UTC)
+Received: from krava (unknown [10.40.192.185])
+        by smtp.corp.redhat.com (Postfix) with SMTP id 33BDB5B4A7;
+        Mon, 11 Jan 2021 21:17:20 +0000 (UTC)
+Date:   Mon, 11 Jan 2021 22:17:19 +0100
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
+Subject: Re: [PATCH] bpf: Prevent double bpf_prog_put call from
+ bpf_tracing_prog_attach
+Message-ID: <20210111211719.GD1210240@krava>
+References: <20210111191650.1241578-1-jolsa@kernel.org>
+ <CAEf4BzboXkJ96z45+CNJ0QNf74sR9=Ew7Nr94eXiBUk_5w-mDA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.2 required=10.0 tests=ALL_TRUSTED,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF shortcircuit=no
-        autolearn=disabled version=3.4.4
-X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on
-        mailout.protonmail.ch
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzboXkJ96z45+CNJ0QNf74sR9=Ew7Nr94eXiBUk_5w-mDA@mail.gmail.com>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jonathan Lemon <jonathan.lemon@gmail.com>
-Date: Mon, 11 Jan 2021 10:49:45 -0800
+On Mon, Jan 11, 2021 at 12:34:48PM -0800, Andrii Nakryiko wrote:
+> On Mon, Jan 11, 2021 at 11:18 AM Jiri Olsa <jolsa@kernel.org> wrote:
+> >
+> > The bpf_tracing_prog_attach error path calls bpf_prog_put
+> > on prog, which causes refcount underflow when it's called
+> > from link_create function.
+> >
+> >   link_create
+> >     prog = bpf_prog_get              <-- get
+> >     ...
+> >     tracing_bpf_link_attach(prog..
+> >       bpf_tracing_prog_attach(prog..
+> >         out_put_prog:
+> >           bpf_prog_put(prog);        <-- put
+> >
+> >     if (ret < 0)
+> >       bpf_prog_put(prog);            <-- put
+> >
+> > Removing bpf_prog_put call from bpf_tracing_prog_attach
+> > and making sure its callers call it instead.
+> >
+> > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> > ---
+> 
+> I also double-checked all other attach functions called from
+> link_create, they all seem to be fine and don't put prog on failure,
+> so this should be the only needed fix. Also, missing:
 
-> On Mon, Jan 11, 2021 at 06:28:21PM +0000, Alexander Lobakin wrote:
->> skb_cache and skb_count fields are used to store skbuff_heads queued
->> for freeing to flush them by bulks, and aren't related to allocation
->> path. Give them more obvious names to improve code understanding and
->> allow to expand this struct with more allocation-related elements.
->
-> I don't think prefixing these with flush_ is the correct approach;
-> flush is just an operation on the structure, not a property of the
-> structure itself.  It especially becomes confusing in the later
-> patches when the cache is used on the allocation path.
+it'd be easier to spot this if we use refcount_t instead of the atomic64_t,
+I replaced it for this refcount and got nice console warning for this bug
 
-Agree, but didn't come up with anything more fitting. Any suggestions
-maybe?
+then I saw:
+  85192dbf4de0 bpf: Convert bpf_prog refcnt to atomic64_t
 
-> --
-> Jonathan
+so I guess we need something like refcount64_t first
 
-Thanks,
-Al
+jirka
+
+> 
+> Fixes: 4a1e7c0c63e0 ("bpf: Support attaching freplace programs to
+> multiple attach points")
+> 
+> Acked-by: Andrii Nakryiko <andrii@kernel.org>
+> 
+> >  kernel/bpf/syscall.c | 6 ++++--
+> >  1 file changed, 4 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+> > index c3bb03c8371f..e5999d86c76e 100644
+> > --- a/kernel/bpf/syscall.c
+> > +++ b/kernel/bpf/syscall.c
+> > @@ -2712,7 +2712,6 @@ static int bpf_tracing_prog_attach(struct bpf_prog *prog,
+> >  out_put_prog:
+> >         if (tgt_prog_fd && tgt_prog)
+> >                 bpf_prog_put(tgt_prog);
+> > -       bpf_prog_put(prog);
+> >         return err;
+> >  }
+> >
+> > @@ -2825,7 +2824,10 @@ static int bpf_raw_tracepoint_open(const union bpf_attr *attr)
+> >                         tp_name = prog->aux->attach_func_name;
+> >                         break;
+> >                 }
+> > -               return bpf_tracing_prog_attach(prog, 0, 0);
+> > +               err = bpf_tracing_prog_attach(prog, 0, 0);
+> > +               if (err >= 0)
+> > +                       return err;
+> > +               goto out_put_prog;
+> >         case BPF_PROG_TYPE_RAW_TRACEPOINT:
+> >         case BPF_PROG_TYPE_RAW_TRACEPOINT_WRITABLE:
+> >                 if (strncpy_from_user(buf,
+> > --
+> > 2.26.2
+> >
+> 
 
