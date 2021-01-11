@@ -2,73 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 721972F156B
-	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 14:40:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B8BA2F157B
+	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 14:41:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733159AbhAKNkC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jan 2021 08:40:02 -0500
-Received: from mail-out.m-online.net ([212.18.0.10]:58376 "EHLO
-        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731786AbhAKNj7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 08:39:59 -0500
-Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
-        by mail-out.m-online.net (Postfix) with ESMTP id 4DDvth0ky5z1s0tM;
-        Mon, 11 Jan 2021 14:38:52 +0100 (CET)
-Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
-        by mail.m-online.net (Postfix) with ESMTP id 4DDvth07YPz1qqkt;
-        Mon, 11 Jan 2021 14:38:51 +0100 (CET)
-X-Virus-Scanned: amavisd-new at mnet-online.de
-Received: from mail.mnet-online.de ([192.168.8.182])
-        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
-        with ESMTP id yPiVEDtfPfin; Mon, 11 Jan 2021 14:38:50 +0100 (CET)
-X-Auth-Info: 2T5VXtt+r0Lv4HpDlaXdjO0/+0LnAdCs9KaJ4hC6G98=
-Received: from [IPv6:::1] (p578adb1c.dip0.t-ipconnect.de [87.138.219.28])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.mnet-online.de (Postfix) with ESMTPSA;
-        Mon, 11 Jan 2021 14:38:50 +0100 (CET)
-Subject: Re: [PATCH net-next] net: ks8851: Connect and start/stop the internal
- PHY
-To:     Heiner Kallweit <hkallweit1@gmail.com>, netdev@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>, Lukas Wunner <lukas@wunner.de>
-References: <20210111125337.36513-1-marex@denx.de>
- <a8eb8186-cde4-19ab-5b3c-e885e11106cf@gmail.com>
-From:   Marek Vasut <marex@denx.de>
-Message-ID: <8c46baf2-28c9-190a-090c-c2980842b78e@denx.de>
-Date:   Mon, 11 Jan 2021 14:38:48 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+        id S2387518AbhAKNko (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jan 2021 08:40:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55194 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731984AbhAKNkl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 08:40:41 -0500
+Received: from mail-io1-xd31.google.com (mail-io1-xd31.google.com [IPv6:2607:f8b0:4864:20::d31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A6FCC061786;
+        Mon, 11 Jan 2021 05:40:01 -0800 (PST)
+Received: by mail-io1-xd31.google.com with SMTP id 81so17761534ioc.13;
+        Mon, 11 Jan 2021 05:40:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=VPX+TWLUVWMLDjFiSnhOZGL+SWYosAkfqkHnqdSxUAM=;
+        b=oYpWOHIwy6XftMFufPxgO9fchZbGj2sitlgT6yrncOYW3o+rDnEaoDdEBgXbnIkNeX
+         BRgMVzfxXtPehTLtxH6/A+/pCGEJ3rhhXAiCTmRByGxtCcl8HuLLDc4BXZpAV55H3biZ
+         0yDuJ/sOHEfW0HPXS5Fkcy+xtw+eO8Vz+ABu8n7XEudo17TUNCRfI2C5ZA6PpHF0HWLe
+         Lx7Pjc40cr4XA321nE1pFq1IE4Pg7cHaco2k4hd0nh2MkbN3i8tPv7ypcjFqWMR7xBRv
+         c3Bd9zDm7FaaHKwWj0GVydeK7Us4jjDSjh2RO7254w2P/sPOk9WCkIF5XTrXgUCTwGu8
+         z98g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=VPX+TWLUVWMLDjFiSnhOZGL+SWYosAkfqkHnqdSxUAM=;
+        b=ExQYTm2mjN9pDwKXVoFR7DGfblCYkkdZkc4f9UaQ7+fkxpHeXRVhVMvENp7hSN/Y8S
+         YqUc8vgAPYotsIiKOg9iFsSYqxpYIKm2wiIjaRdiwANVdVXqHXXTN59t82ZfYmaieIEj
+         K4mmHeSN2h65tGQV/b5UFf1KXRowRtJBN0ctomcpdecmkzITic1BnaSv4lxEmltu+ybB
+         RK0PngNCKnciaKKu1mHbyZpj4TojRH7Tbz9BpHHvpp3AOvFvquPT/SUoS0rVEMfmFmhE
+         oyExkAKPDRtAfPagJWpA/d6ZicvTE9R4tl9Wr9+oy/yr7c3onK+sHs4vTWTST+gnkJQ5
+         T2RA==
+X-Gm-Message-State: AOAM532w/nemwmpkAXu4NksVBYPXr34KoLkKWZcFfvLtKUYx0u7WCE9r
+        pLCxSViWjNhEen45aRq3XBPuJTLt7bj0QUMNKwU=
+X-Google-Smtp-Source: ABdhPJxdIHd1jmADjrtYp3Zsp0l/yfn12bjpz+qSZpWV+XVteUVCntZjcfHonB6Q9MK8aoe7wB6LwfSgeU+sRkaghGs=
+X-Received: by 2002:a02:c8c7:: with SMTP id q7mr14527159jao.7.1610372400687;
+ Mon, 11 Jan 2021 05:40:00 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <a8eb8186-cde4-19ab-5b3c-e885e11106cf@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20210111054428.3273-1-dqfext@gmail.com> <20210111054428.3273-3-dqfext@gmail.com>
+ <20210111110407.GR1551@shell.armlinux.org.uk>
+In-Reply-To: <20210111110407.GR1551@shell.armlinux.org.uk>
+From:   DENG Qingfang <dqfext@gmail.com>
+Date:   Mon, 11 Jan 2021 21:40:00 +0800
+Message-ID: <CALW65jaqciOiRxJxzPiEADgpmKa7-q2QfQnBdaVMcOa5YDHjRA@mail.gmail.com>
+Subject: Re: [PATCH net-next 2/2] drivers: net: dsa: mt7530: MT7530 optional
+ GPIO support
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        netdev <netdev@vger.kernel.org>, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>, linux-kernel@vger.kernel.org,
+        =?UTF-8?Q?Ren=C3=A9_van_Dorst?= <opensource@vdorst.com>,
+        Frank Wunderlich <frank-w@public-files.de>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/11/21 2:26 PM, Heiner Kallweit wrote:
-[...]
+On Mon, Jan 11, 2021 at 7:04 PM Russell King - ARM Linux admin
+<linux@armlinux.org.uk> wrote:
+>
+> FYI, Documentation/driver-api/gpio/consumer.rst says:
+>
+>   For output GPIOs, the value provided becomes the initial output value.
+>   This helps avoid signal glitching during system startup.
+>
+> Setting the pin to be an output, and then setting its initial value
+> does not avoid the glitch. You may wish to investigate whether you
+> can set the value before setting the pin as an output to avoid this
+> issue.
+>
 
-> LGTM. When having a brief look at the driver I stumbled across two things:
-> 
-> 1. Do MAC/PHY support any pause mode? Then a call to
->     phy_support_(a)sym_pause() would be missing.
-
-https://ww1.microchip.com/downloads/en/DeviceDoc/KSZ8851-16MLL-Single-Port-Ethernet-MAC-Controller-with-8-Bit-or-16-Bit-Non-PCI-Interface-DS00002357B.pdf
-page 64
-
-https://www.mouser.com/datasheet/2/268/ksz8851-16mll_ds-776208.pdf
-page 65
-
-The later is more complete.
-
-Apparently it does support pause.
-
-> 2. Don't have the datasheet, but IRQ_LCI seems to be the link change
->     interrupt. So far it's ignored by the driver. You could configure
->     it and use phy_mac_interrupt() to operate the internal PHY in
->     interrupt mode.
-
-That's only for link state change, shouldn't the PHY interrupt trigger 
-on other things as well ?
+So, setting the Output Enable bit _after_ setting the direction and
+initial value should avoid this issue. Right?
