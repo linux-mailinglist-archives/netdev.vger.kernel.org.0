@@ -2,23 +2,23 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 41A412F1DD4
+	by mail.lfdr.de (Postfix) with ESMTP id AD6252F1DD5
 	for <lists+netdev@lfdr.de>; Mon, 11 Jan 2021 19:19:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390147AbhAKSSw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jan 2021 13:18:52 -0500
-Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:14099 "EHLO
-        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389348AbhAKSSw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 13:18:52 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B5ffc96640000>; Mon, 11 Jan 2021 10:18:12 -0800
-Received: from HQMAIL107.nvidia.com (172.20.187.13) by HQMAIL109.nvidia.com
- (172.20.187.15) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 11 Jan
- 2021 18:18:10 +0000
+        id S2390323AbhAKSS5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jan 2021 13:18:57 -0500
+Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:7207 "EHLO
+        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390313AbhAKSS4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 13:18:56 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B5ffc96670001>; Mon, 11 Jan 2021 10:18:15 -0800
+Received: from HQMAIL107.nvidia.com (172.20.187.13) by HQMAIL105.nvidia.com
+ (172.20.187.12) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 11 Jan
+ 2021 18:18:13 +0000
 Received: from vdi.nvidia.com (172.20.145.6) by mail.nvidia.com
  (172.20.187.13) with Microsoft SMTP Server id 15.0.1473.3 via Frontend
- Transport; Mon, 11 Jan 2021 18:18:06 +0000
+ Transport; Mon, 11 Jan 2021 18:18:10 +0000
 From:   Eran Ben Elisha <eranbe@nvidia.com>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -32,69 +32,72 @@ CC:     <netdev@vger.kernel.org>, Tariq Toukan <tariqt@nvidia.com>,
         Richard Cochran <richardcochran@gmail.com>,
         Andrew Lunn <andrew@lunn.ch>,
         Eran Ben Elisha <eranbe@nvidia.com>
-Subject: [PATCH net-next v3 1/2] net: vlan: Add parse protocol header ops
-Date:   Mon, 11 Jan 2021 20:17:47 +0200
-Message-ID: <1610389068-2133-2-git-send-email-eranbe@nvidia.com>
+Subject: [PATCH net-next v3 2/2] net: flow_dissector: Parse PTP L2 packet header
+Date:   Mon, 11 Jan 2021 20:17:48 +0200
+Message-ID: <1610389068-2133-3-git-send-email-eranbe@nvidia.com>
 X-Mailer: git-send-email 1.8.4.3
 In-Reply-To: <1610389068-2133-1-git-send-email-eranbe@nvidia.com>
 References: <1610389068-2133-1-git-send-email-eranbe@nvidia.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1610389092; bh=tCYjgofZgw0uArsqzR5z4wwhD1tZyn0bJ13TuqGapCw=;
+        t=1610389095; bh=lObJbASHXKKjOEQYPTDuANV7rlY0GCChQO5bCNMDWcI=;
         h=From:To:CC:Subject:Date:Message-ID:X-Mailer:In-Reply-To:
          References:MIME-Version:Content-Type;
-        b=P/YmZsFMZZb4Ux/+zmwAr6QSyS38Ac6dGdnsp/6/ebc1Wvpr69IA6BHId+400A5H/
-         Jng+D0dBhvwNYjAe4tFHAG6XSFSI4miyeYgl3nprnfBr1TNqpmGy7jDkluKm95y3R/
-         Uw9qzAdlAMcWEmFE6dk4fxbBN3fYsbO/Yf6p6i7dlfaeH+YmCMV4hn9N4M2Yhv8GlK
-         t+SxTshPzWTNerUtiMm8HPFoWn1UdkgfuckA7v4P/YOUOmuVKDq/bThnWX1zm/kkK3
-         wazgqyoucB4LaRCLBbJlw52G/X6RnrL6QUt29oDt77GM2dDuUz+u2As8HpYdXD9+T4
-         EB4M0mAcG3nGA==
+        b=HrkAm6M03K571ys+9/hUNL3NwLKW9d0BTXTO9ieyitxXy5z2kv7wslZWsxQnUj8Xd
+         uluKfxKnNL6CpCc4NjHrYEyjOFPin2kfg8hVBkzw0YurQQgY2t+2OwHgCrlEjABQvY
+         S0qKG1cElJt+QNuh5znqkIS0lwiO6iptbLVpTRuY3TTXaj7SaejI+8ZdiFnPn7jQOA
+         AkcDNT9FD9bvGyFpbxXiByuN08Xcnd9My09eJE258o/quoOrhDKudmgLs3iMfZgq77
+         soQWQe9mIpJb8WRn0LZkb3ldti8gEhvPtlsOnmpikUVP9uk8+I1GUrWL4/mLNl2iXh
+         7jQrcS6NCmU4g==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add parse protocol header ops for vlan device. Before this patch, vlan
-tagged packet transmitted by af_packet had skb->protocol unset. Some
-kernel methods (like __skb_flow_dissect()) rely on this missing information
-for its packet processing.
+Add support for parsing PTP L2 packet header. Such packet consists
+of an L2 header (with ethertype of ETH_P_1588), PTP header, body
+and an optional suffix.
 
 Signed-off-by: Eran Ben Elisha <eranbe@nvidia.com>
 Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
 ---
- net/8021q/vlan_dev.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ net/core/flow_dissector.c | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
 
-diff --git a/net/8021q/vlan_dev.c b/net/8021q/vlan_dev.c
-index ec8408d1638f..dc1a197792e6 100644
---- a/net/8021q/vlan_dev.c
-+++ b/net/8021q/vlan_dev.c
-@@ -510,9 +510,17 @@ static void vlan_dev_set_lockdep_class(struct net_device *dev)
- 	netdev_for_each_tx_queue(dev, vlan_dev_set_lockdep_one, NULL);
- }
+diff --git a/net/core/flow_dissector.c b/net/core/flow_dissector.c
+index 6f1adba6695f..fcaa223c7cdc 100644
+--- a/net/core/flow_dissector.c
++++ b/net/core/flow_dissector.c
+@@ -23,6 +23,7 @@
+ #include <linux/if_ether.h>
+ #include <linux/mpls.h>
+ #include <linux/tcp.h>
++#include <linux/ptp_classify.h>
+ #include <net/flow_dissector.h>
+ #include <scsi/fc/fc_fcoe.h>
+ #include <uapi/linux/batadv_packet.h>
+@@ -1251,6 +1252,21 @@ bool __skb_flow_dissect(const struct net *net,
+ 						  &proto, &nhoff, hlen, flags);
+ 		break;
  
-+static __be16 vlan_parse_protocol(const struct sk_buff *skb)
-+{
-+	struct vlan_ethhdr *veth = (struct vlan_ethhdr *)(skb->data);
++	case htons(ETH_P_1588): {
++		struct ptp_header *hdr, _hdr;
 +
-+	return __vlan_get_protocol(skb, veth->h_vlan_proto, NULL);
-+}
++		hdr = __skb_header_pointer(skb, nhoff, sizeof(_hdr), data,
++					   hlen, &_hdr);
++		if (!hdr || (hlen - nhoff) < sizeof(_hdr)) {
++			fdret = FLOW_DISSECT_RET_OUT_BAD;
++			break;
++		}
 +
- static const struct header_ops vlan_header_ops = {
- 	.create	 = vlan_dev_hard_header,
- 	.parse	 = eth_header_parse,
-+	.parse_protocol = vlan_parse_protocol,
- };
- 
- static int vlan_passthru_hard_header(struct sk_buff *skb, struct net_device *dev,
-@@ -532,6 +540,7 @@ static int vlan_passthru_hard_header(struct sk_buff *skb, struct net_device *dev
- static const struct header_ops vlan_passthru_header_ops = {
- 	.create	 = vlan_passthru_hard_header,
- 	.parse	 = eth_header_parse,
-+	.parse_protocol = vlan_parse_protocol,
- };
- 
- static struct device_type vlan_type = {
++		nhoff += ntohs(hdr->message_length);
++		fdret = FLOW_DISSECT_RET_OUT_GOOD;
++		break;
++	}
++
+ 	default:
+ 		fdret = FLOW_DISSECT_RET_OUT_BAD;
+ 		break;
 -- 
 2.17.1
 
