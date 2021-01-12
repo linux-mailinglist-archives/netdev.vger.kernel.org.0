@@ -2,191 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AE0D2F28C9
-	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 08:15:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B86282F28DA
+	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 08:21:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391967AbhALHPS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jan 2021 02:15:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56298 "EHLO
+        id S1730416AbhALHVi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jan 2021 02:21:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2391911AbhALHPR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 02:15:17 -0500
-Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22B1DC061575;
-        Mon, 11 Jan 2021 23:14:37 -0800 (PST)
-Received: by mail-yb1-xb30.google.com with SMTP id r63so1270246ybf.5;
-        Mon, 11 Jan 2021 23:14:37 -0800 (PST)
+        with ESMTP id S1726949AbhALHVi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 02:21:38 -0500
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E65DC061575;
+        Mon, 11 Jan 2021 23:20:58 -0800 (PST)
+Received: by mail-lf1-x134.google.com with SMTP id s26so1818447lfc.8;
+        Mon, 11 Jan 2021 23:20:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=poqEsJKUqbi5q6gJHl8uXM58SBSZyDT+q0k8szBsA2w=;
-        b=kDk2nqge0hKimd8X+Qyg7wIl2wcFF8bwwqg63vWK0sXmCj7coW6GbO272s0waLNUTV
-         6Uyk7xxB5iTMfoII5kNC8vYJHXOomxU9bfoR/rZOzWU+b1bGCgK4wB1Okh5640UQmk1j
-         FZvuYw1b7tu9GDF8kUfeFQISaPc9ycpPU6a+2NKSci9WQvgTj95w7NR7B1vPgXG58ksn
-         uLyzskJKMAERW5ZBlc+slnslah4AqpfcU4Mb+UkQmRTGtORIRfBOhXK2xCAWvzDh4HB2
-         TJOkVNnltdM7MT9+H3kkc25ITkOtBV7C67Zfw9LIiDP503gAsXcukaFv4IIRRku2WSdN
-         ms2Q==
+        bh=7ygf0+sa9FROZR6Ry1uOnT1Kwi/qXO3Bcb7rJvLV/HE=;
+        b=RceFeGlOIQUrR6aTdNaqAtGJdZhNGjTC16zDNqczl/JTEH9avUESxNdf5BUpWN1uf1
+         ET0yH9LTDlB+8gbNRZUgaA3uyVC1zZkKwXVKaRc/wdS3n4dAQwcEUuRNnpH8DPp5xkXs
+         VW38p3CP/7oT5DBi24z4DvGRkvwMz4baUB6TKdgSbCYOH8OADY66CklunOrN4Fy+LrAs
+         ioz6pbEcyhxzSl6F2cTr81xjznh39csQHFZqoAoO7T7Mw2O4GnFWXqwJIvKsAJgQl3Af
+         ckowkPjYUJNFYWTJPOWlmbu9nDx5SKvCVfEt23QFMDAK0Gd4oQKah9/agtMvn3aGGZ2h
+         CUsw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=poqEsJKUqbi5q6gJHl8uXM58SBSZyDT+q0k8szBsA2w=;
-        b=VN+ezHm52YxB6CVVo51gbg9CJovJI+p/AOzR0gFQnmpORV22XD7LDZRDJN29RlHb9a
-         +jMhmvrra2Th0WZrUo4Mchz5HFS14j4aVYK8XdngMceupMKAXmYTN05YHEACnqKYvHG1
-         ZyOsyOKy/XSkmo3KCcls0PA8V6M0Ielv4IsM4deOS4Kt/KdMj3pmeIBeR8luVGXGzYbn
-         m7cUj+FpfusPCTTPKxiFQEoLZBCcTOl8F2+wMLN/ek2Yn/rw+WkhHOllr5lnb28Ih5v2
-         V4lBXdt0OtnM7nl6TFLj7j9MZm3Wv21Kdt1cM19S+xARS7hfjiUp9fOZyfXiQ6WWB936
-         bxnA==
-X-Gm-Message-State: AOAM5329fzPG1/weyDYmViWM1ft80zP2BLY+nvWoSp9OXJXlFHpLTO16
-        eEBoiGWVI9bXSznBl6iaKQ/9SVtzEERNnK4+CEk=
-X-Google-Smtp-Source: ABdhPJwt0X370NZIjw+4up+qc8Hqzg/eRCuXoaZPO/ERuG2aM1WwHStXQY+RD+xf209idrWL+bOw1ka52PXapZxMsvo=
-X-Received: by 2002:a25:f40e:: with SMTP id q14mr355322ybd.230.1610435676396;
- Mon, 11 Jan 2021 23:14:36 -0800 (PST)
+        bh=7ygf0+sa9FROZR6Ry1uOnT1Kwi/qXO3Bcb7rJvLV/HE=;
+        b=lEnBeCAmCksaVH9OTrHODg6jRbAMrsU0dO740lD5RuMD6DdJP8QVKL0itY7/kLm8m3
+         CpD1XUCyCfkg6WCZmcsRX/CekJfJjk+hvwn4fSbw217BuyLWy/uOLaObWjyA6TGSJN7g
+         nAG2mkSDflFF1NovUeDK/r3/I11EDkadYcQCdiSajy123pOC2JYilqt8aDRKcnNiMN1Q
+         DFVeICiLhUfi3iXKpZ4guzdOX4EHF6GVL/d63zr0Lh2raxpmvD4bHzDo8ptcYlQfA3Zg
+         0LeGDYyuDTUgvXRZvn1gioNoJvMHpZ3jzMQn6ayzAMJxl3sQrHPbxHf2mL2++8y4nQ41
+         n8yg==
+X-Gm-Message-State: AOAM531J9SZOyNxWwBJINdg2BY4LCJp+dZBJBKC6+MaISDu+C4I1akO0
+        Mh4oz+Asa5SNCojCckc52YB/qlGBBGc2HEIC2ig=
+X-Google-Smtp-Source: ABdhPJxUfvi4aqUZrI/dJUMcoENOauvcsxX+RWTuWTuqL7cOSSjaUWaSGQaV6+LxK99561d7A9bhl7yXytLfVS1lRtw=
+X-Received: by 2002:a19:716:: with SMTP id 22mr1620843lfh.390.1610436056586;
+ Mon, 11 Jan 2021 23:20:56 -0800 (PST)
 MIME-Version: 1.0
-References: <20210108231950.3844417-1-songliubraving@fb.com>
- <20210108231950.3844417-5-songliubraving@fb.com> <ad40d69d-9c0f-8205-26df-c5a755778f9e@fb.com>
- <352FED72-11B3-44F0-9B1C-92552AEB4AE8@fb.com> <e890e08e-99d0-9d81-b835-c3a1b4b8bbbf@fb.com>
-In-Reply-To: <e890e08e-99d0-9d81-b835-c3a1b4b8bbbf@fb.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 11 Jan 2021 23:14:25 -0800
-Message-ID: <CAEf4BzZivGBmDbUxfiDwAC3aFoTWNfyWaiZRA4Vu16ZT9kzE8A@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 4/4] bpf: runqslower: use task local storage
-To:     Yonghong Song <yhs@fb.com>
-Cc:     Song Liu <songliubraving@fb.com>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        "peterz@infradead.org" <peterz@infradead.org>,
-        "ast@kernel.org" <ast@kernel.org>,
-        "daniel@iogearbox.net" <daniel@iogearbox.net>,
-        "andrii@kernel.org" <andrii@kernel.org>,
-        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
-        "kpsingh@chromium.org" <kpsingh@chromium.org>,
-        Kernel Team <Kernel-team@fb.com>,
-        "haoluo@google.com" <haoluo@google.com>
+References: <cover.1610368918.git.lucien.xin@gmail.com> <a34a8dcde6a158c64b0478c7098da757a6690f0b.1610368918.git.lucien.xin@gmail.com>
+ <CAKgT0UdgL-aYGUfeYVRoqLpDFhPzko26z7mxvi2HyTdrLpCF5A@mail.gmail.com>
+In-Reply-To: <CAKgT0UdgL-aYGUfeYVRoqLpDFhPzko26z7mxvi2HyTdrLpCF5A@mail.gmail.com>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Tue, 12 Jan 2021 15:20:44 +0800
+Message-ID: <CADvbK_c4wUUp0We=Cv9jczzACAurZnu0_pRen7Oa=4k8bKcCMw@mail.gmail.com>
+Subject: Re: [PATCH net-next 1/2] net: move the hsize check to the else block
+ in skb_segment
+To:     Alexander Duyck <alexander.duyck@gmail.com>
+Cc:     network dev <netdev@vger.kernel.org>,
+        "linux-sctp @ vger . kernel . org" <linux-sctp@vger.kernel.org>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 11, 2021 at 7:24 PM Yonghong Song <yhs@fb.com> wrote:
+On Tue, Jan 12, 2021 at 12:26 AM Alexander Duyck
+<alexander.duyck@gmail.com> wrote:
 >
->
->
-> On 1/11/21 2:54 PM, Song Liu wrote:
+> On Mon, Jan 11, 2021 at 4:45 AM Xin Long <lucien.xin@gmail.com> wrote:
 > >
+> > After commit 89319d3801d1 ("net: Add frag_list support to skb_segment"),
+> > it goes to process frag_list when !hsize in skb_segment(). However, when
+> > using skb frag_list, sg normally should not be set. In this case, hsize
+> > will be set with len right before !hsize check, then it won't go to
+> > frag_list processing code.
 > >
-> >> On Jan 11, 2021, at 9:49 AM, Yonghong Song <yhs@fb.com> wrote:
-> >>
-> >>
-> >>
-> >> On 1/8/21 3:19 PM, Song Liu wrote:
-> >>> Replace hashtab with task local storage in runqslower. This improves the
-> >>> performance of these BPF programs. The following table summarizes average
-> >>> runtime of these programs, in nanoseconds:
-> >>>                            task-local   hash-prealloc   hash-no-prealloc
-> >>> handle__sched_wakeup             125             340               3124
-> >>> handle__sched_wakeup_new        2812            1510               2998
-> >>> handle__sched_switch             151             208                991
-> >>> Note that, task local storage gives better performance than hashtab for
-> >>> handle__sched_wakeup and handle__sched_switch. On the other hand, for
-> >>> handle__sched_wakeup_new, task local storage is slower than hashtab with
-> >>> prealloc. This is because handle__sched_wakeup_new accesses the data for
-> >>> the first time, so it has to allocate the data for task local storage.
-> >>> Once the initial allocation is done, subsequent accesses, as those in
-> >>> handle__sched_wakeup, are much faster with task local storage. If we
-> >>> disable hashtab prealloc, task local storage is much faster for all 3
-> >>> functions.
-> >>> Signed-off-by: Song Liu <songliubraving@fb.com>
-> >>> ---
-> >>>   tools/bpf/runqslower/runqslower.bpf.c | 26 +++++++++++++++-----------
-> >>>   1 file changed, 15 insertions(+), 11 deletions(-)
-> >>> diff --git a/tools/bpf/runqslower/runqslower.bpf.c b/tools/bpf/runqslower/runqslower.bpf.c
-> >>> index 1f18a409f0443..c4de4179a0a17 100644
-> >>> --- a/tools/bpf/runqslower/runqslower.bpf.c
-> >>> +++ b/tools/bpf/runqslower/runqslower.bpf.c
-> >>> @@ -11,9 +11,9 @@ const volatile __u64 min_us = 0;
-> >>>   const volatile pid_t targ_pid = 0;
-> >>>     struct {
-> >>> -   __uint(type, BPF_MAP_TYPE_HASH);
-> >>> -   __uint(max_entries, 10240);
-> >>> -   __type(key, u32);
-> >>> +   __uint(type, BPF_MAP_TYPE_TASK_STORAGE);
-> >>> +   __uint(map_flags, BPF_F_NO_PREALLOC);
-> >>> +   __type(key, int);
-> >>>     __type(value, u64);
-> >>>   } start SEC(".maps");
-> >>>   @@ -25,15 +25,19 @@ struct {
-> >>>     /* record enqueue timestamp */
-> >>>   __always_inline
-> >>> -static int trace_enqueue(u32 tgid, u32 pid)
-> >>> +static int trace_enqueue(struct task_struct *t)
-> >>>   {
-> >>> -   u64 ts;
-> >>> +   u32 pid = t->pid;
-> >>> +   u64 ts, *ptr;
-> >>>             if (!pid || (targ_pid && targ_pid != pid))
-> >>>             return 0;
-> >>>             ts = bpf_ktime_get_ns();
-> >>> -   bpf_map_update_elem(&start, &pid, &ts, 0);
-> >>> +   ptr = bpf_task_storage_get(&start, t, 0,
-> >>> +                              BPF_LOCAL_STORAGE_GET_F_CREATE);
-> >>> +   if (ptr)
-> >>> +           *ptr = ts;
-> >>>     return 0;
-> >>>   }
-> >>>   @@ -43,7 +47,7 @@ int handle__sched_wakeup(u64 *ctx)
-> >>>     /* TP_PROTO(struct task_struct *p) */
-> >>>     struct task_struct *p = (void *)ctx[0];
-> >>>   - return trace_enqueue(p->tgid, p->pid);
-> >>> +   return trace_enqueue(p);
-> >>>   }
-> >>>     SEC("tp_btf/sched_wakeup_new")
-> >>> @@ -52,7 +56,7 @@ int handle__sched_wakeup_new(u64 *ctx)
-> >>>     /* TP_PROTO(struct task_struct *p) */
-> >>>     struct task_struct *p = (void *)ctx[0];
-> >>>   - return trace_enqueue(p->tgid, p->pid);
-> >>> +   return trace_enqueue(p);
-> >>>   }
-> >>>     SEC("tp_btf/sched_switch")
-> >>> @@ -70,12 +74,12 @@ int handle__sched_switch(u64 *ctx)
-> >>>             /* ivcsw: treat like an enqueue event and store timestamp */
-> >>>     if (prev->state == TASK_RUNNING)
-> >>> -           trace_enqueue(prev->tgid, prev->pid);
-> >>> +           trace_enqueue(prev);
-> >>>             pid = next->pid;
-> >>>             /* fetch timestamp and calculate delta */
-> >>> -   tsp = bpf_map_lookup_elem(&start, &pid);
-> >>> +   tsp = bpf_task_storage_get(&start, next, 0, 0);
-> >>>     if (!tsp)
-> >>>             return 0;   /* missed enqueue */
-> >>
-> >> Previously, hash table may overflow so we may have missed enqueue.
-> >> Here with task local storage, is it possible to add additional pid
-> >> filtering in the beginning of handle__sched_switch such that
-> >> missed enqueue here can be treated as an error?
+> > So the right thing to do is move the hsize check to the else block, so
+> > that it won't affect the !hsize check for frag_list processing.
 > >
-> > IIUC, hashtab overflow is not the only reason of missed enqueue. If the
-> > wakeup (which calls trace_enqueue) happens before runqslower starts, we
-> > may still get missed enqueue in sched_switch, no?
+> > Signed-off-by: Xin Long <lucien.xin@gmail.com>
+> > ---
+> >  net/core/skbuff.c | 5 +++--
+> >  1 file changed, 3 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+> > index 7626a33..ea79359 100644
+> > --- a/net/core/skbuff.c
+> > +++ b/net/core/skbuff.c
+> > @@ -3855,8 +3855,6 @@ struct sk_buff *skb_segment(struct sk_buff *head_skb,
+> >                 hsize = skb_headlen(head_skb) - offset;
+> >                 if (hsize < 0)
+> >                         hsize = 0;
+> > -               if (hsize > len || !sg)
+> > -                       hsize = len;
+> >
+> >                 if (!hsize && i >= nfrags && skb_headlen(list_skb) &&
+> >                     (skb_headlen(list_skb) == len || sg)) {
 >
-> the wakeup won't happen before runqslower starts since runqslower needs
-> to start to do attachment first and then trace_enqueue() can run.
-
-I think Song is right. Given wakeup and sched_switch need to be
-matched, depending at which exact time we attach BPF programs, we can
-end up missing wakeup, but not missing sched_switch, no? So it's not
-an error.
+> So looking at the function it seems like the only spot where the
+> standard path actually reads the hsize value is right here, and it is
+> overwritten before we exit the non-error portion of the if statement.
+> I wonder if we couldn't save ourselves a few cycles and avoid an
+> unnecessary assignment by replacing the "!hsize" with a check for
+> "hsize <= 0" and just move the entire set of checks above down into
+> the lower block.
+>
+> > @@ -3901,6 +3899,9 @@ struct sk_buff *skb_segment(struct sk_buff *head_skb,
+> >                         skb_release_head_state(nskb);
+> >                         __skb_push(nskb, doffset);
+> >                 } else {
+> > +                       if (hsize > len || !sg)
+> > +                               hsize = len;
+> > +
+>
+> Then you could essentially just add the "if (hsize < 0)" piece here as
+> an "else if" check and avoid the check if it isn't needed.
+Look correct, will post v2. Thanks!
 
 >
-> For the current implementation trace_enqueue() will happen for any non-0
-> pid before setting test_progs tgid, and will happen for any non-0 and
-> test_progs tgid if it is set, so this should be okay if we do filtering
-> in handle__sched_switch. Maybe you can do an experiment to prove whether
-> my point is correct or not.
->
-> >
-> > Thanks,
-> > Song
+> >                         nskb = __alloc_skb(hsize + doffset + headroom,
+> >                                            GFP_ATOMIC, skb_alloc_rx_flag(head_skb),
+> >                                            NUMA_NO_NODE);
+> > --
+> > 2.1.0
 > >
