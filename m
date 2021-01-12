@@ -2,57 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 276FE2F2875
+	by mail.lfdr.de (Postfix) with ESMTP id 9D9B92F2876
 	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 07:44:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387865AbhALGnu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jan 2021 01:43:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49558 "EHLO
+        id S2387888AbhALGnw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jan 2021 01:43:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49564 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
         with ESMTP id S2387756AbhALGnu (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 01:43:50 -0500
-Received: from mail-oo1-xc2c.google.com (mail-oo1-xc2c.google.com [IPv6:2607:f8b0:4864:20::c2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1267C06179F
-        for <netdev@vger.kernel.org>; Mon, 11 Jan 2021 22:43:09 -0800 (PST)
-Received: by mail-oo1-xc2c.google.com with SMTP id q6so351576ooo.8
-        for <netdev@vger.kernel.org>; Mon, 11 Jan 2021 22:43:09 -0800 (PST)
+Received: from mail-oi1-x232.google.com (mail-oi1-x232.google.com [IPv6:2607:f8b0:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E8F4C0617A2
+        for <netdev@vger.kernel.org>; Mon, 11 Jan 2021 22:43:10 -0800 (PST)
+Received: by mail-oi1-x232.google.com with SMTP id x13so1327091oic.5
+        for <netdev@vger.kernel.org>; Mon, 11 Jan 2021 22:43:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=o4Xmc9wfwqZ8rH9tMXF4rzLE1R2SsM9VUBBGWoN0w4A=;
-        b=r62LVyqxKCRurNsd/AUxSdLLuxtOjw4z0hzQMOh6yhgHK0h6ry8HGusCj3eGwBc4Hw
-         DdnPBirQf6HvhONDGYbqAHa3EhaIaPCUks/01eJ8HTQiT9Ba/NE64Z5chfHVgym3HNAD
-         vVQ9iUOK0Cxm2YSHiJ2cRtCfCZdZthBf5Zis6o9z478hOU5iF3lLjLqXGifRJybffgr0
-         qD3gEQvZyZ5LE+wIyVpoLGtVnJBMcQwRVE3lZpvh+Bw5mKb13IXShXEH3PI1tQyH0KgK
-         mcnOVyUUNy3p4xyqVh+1MLotes6EF9GUgLo/0jU20KovTCDFQTTWxRNbGXga7FZzYnhi
-         hW+Q==
+        bh=nFkfyhtA/p6JxBeO3XIMrxsFQEkcBYrraZE4qffCy84=;
+        b=rBuH3viQRqXQdNchiP0UZZv9ePfmomwGqFxUVwkyZOko22stO4dPdsu9GTKsUR9ioS
+         iLJCzG08ka0dmw0x1FoezulJYd/U3TtYLRTVh5TsKVrY1R/GDWARg4sdXGExOklIUR9o
+         32so3DVmyj6vOx9ZEc5EXVju3MyARuVloKH8rZy1MqVcNAYauhFo6tPCbQQ8zmQNfaUh
+         Jdv54z4FnK6BTFuY2Jpm1w8/Odfj3wUVe0bpXLJ+4g7Z6cKdW0PrIkkPnxkPwLFzEZuV
+         AKnGQa+gllan+rrBV2E7xDeSmz/UnRjLw8aeScwPv15UW+fnKCUI5S4x1GOcC+WGXLMG
+         ThdA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=o4Xmc9wfwqZ8rH9tMXF4rzLE1R2SsM9VUBBGWoN0w4A=;
-        b=YzXWLIq0B6eMc9l6hLVgSg2bWRQyxZYAtUaQQVDockRHlThvv16/kOex5eLH3pistv
-         s7MzgHimNFul+aMytqj6+js+kkZ8+gxseM6c7koi2519a6yGYCR5OvzM1ZZDnTpx99GX
-         vFPqjeJ7RAjLlTG6elDstsRCpoYP1YxRLwuk24DdKJZxYG46g3wPPFsAhOmg8L8554B9
-         rRrt2Y9aw2FLG7to6C0dLZqYk32t2gfgXQ8sQWN7qx0HlOhmG1elBXtjRENttZP9cadp
-         A9grQafBCk46h22A3lT9P5Z3Nu8GJrCaW/j0JHQn8RGOsPLJ46wR2Hm2oRFhk79c+pQS
-         dBaw==
-X-Gm-Message-State: AOAM533+jsO4CptINbxt5N5+KskrNxi4ZzNx7yUOUMa5qz9OxOEB20zu
-        izNp9polq402YXeUJgCGGhJS7Kbr3/Y6kw==
-X-Google-Smtp-Source: ABdhPJzegDNxamqARdi3lfbnFuj8YLN3GUQYP2uVjcPG548cUGzZzpMZJalKfmPnOw41HGl70QU09A==
-X-Received: by 2002:a4a:d197:: with SMTP id j23mr1912106oor.19.1610433789274;
+        bh=nFkfyhtA/p6JxBeO3XIMrxsFQEkcBYrraZE4qffCy84=;
+        b=rsz8KbgxweBAWdDbxc/t8cmCo57KD9WRaH9gfn8Jo5CSbgLcYM8DHivP4YnLQnooJH
+         +qI7SUipxYSAb8ivoxkSOyaQvKyH/pGQE0GnzlEeXXqECqpHrZ0mAbQuNnIrFIx/k4J8
+         0S9f119P0uLLALQEW7GaSSSSCpMx8FJbn05WTM/tuXMRM7QtwwO1I94+zQSsOuWAbani
+         HB0TWDNTZAUq47K+rznhkqONPCLAl4tS/y2VjIc9K2rh0qALczKl/ICx+8K3SmTgp55F
+         JhOXpgnYVp5PpgrgNQw31ixwl0Kzbfeka9QG2Lr6fRtUpUUXl5zqDsMwgRZwUZlou6AH
+         E5Uw==
+X-Gm-Message-State: AOAM533hcuc3wbWpUtm663MI34UM+ARuDQVXwQJsbjt3bXP3NTmzFzDt
+        VR8ubyHP8qmOhqcyodo2YLCFGY3ijBC4AA==
+X-Google-Smtp-Source: ABdhPJzVIVOuheKA3/icRsLkwl6EUkq/f2yCjDkf3skaVyHAa0C1urqojA9UdP/1A9fyJJySG6InEg==
+X-Received: by 2002:aca:5196:: with SMTP id f144mr1206954oib.51.1610433789939;
         Mon, 11 Jan 2021 22:43:09 -0800 (PST)
 Received: from pear.attlocal.net ([2600:1700:271:1a80:ddc5:e91b:d3cf:e2ba])
-        by smtp.gmail.com with ESMTPSA id 94sm482271otw.41.2021.01.11.22.43.08
+        by smtp.gmail.com with ESMTPSA id 94sm482271otw.41.2021.01.11.22.43.09
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
         Mon, 11 Jan 2021 22:43:09 -0800 (PST)
 From:   Lijun Pan <lijunp213@gmail.com>
 To:     netdev@vger.kernel.org
 Cc:     Lijun Pan <lijunp213@gmail.com>
-Subject: [PATCH net-next 3/7] ibmvnic: fix braces
-Date:   Tue, 12 Jan 2021 00:43:01 -0600
-Message-Id: <20210112064305.31606-4-lijunp213@gmail.com>
+Subject: [PATCH net-next 4/7] ibmvnic: avoid multiple line dereference
+Date:   Tue, 12 Jan 2021 00:43:02 -0600
+Message-Id: <20210112064305.31606-5-lijunp213@gmail.com>
 X-Mailer: git-send-email 2.23.0
 In-Reply-To: <20210112064305.31606-1-lijunp213@gmail.com>
 References: <20210112064305.31606-1-lijunp213@gmail.com>
@@ -63,28 +63,60 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Fix the following checkpatch warning:
-WARNING: braces {} are not necessary for single statement blocks
+WARNING: Avoid multiple line dereference
 
 Signed-off-by: Lijun Pan <lijunp213@gmail.com>
 ---
- drivers/net/ethernet/ibm/ibmvnic.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/net/ethernet/ibm/ibmvnic.c | 17 ++++++++---------
+ 1 file changed, 8 insertions(+), 9 deletions(-)
 
 diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-index fe08c5415b9e..eb3ab0e6156f 100644
+index eb3ab0e6156f..30add8a8a3dc 100644
 --- a/drivers/net/ethernet/ibm/ibmvnic.c
 +++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -2040,9 +2040,8 @@ static int do_reset(struct ibmvnic_adapter *adapter,
+@@ -2447,9 +2447,8 @@ static int ibmvnic_poll(struct napi_struct *napi, int budget)
+ 		 */
+ 		dma_rmb();
+ 		next = ibmvnic_next_scrq(adapter, rx_scrq);
+-		rx_buff =
+-		    (struct ibmvnic_rx_buff *)be64_to_cpu(next->
+-							  rx_comp.correlator);
++		rx_buff = (struct ibmvnic_rx_buff *)
++			  be64_to_cpu(next->rx_comp.correlator);
+ 		/* do error checking */
+ 		if (next->rx_comp.rc) {
+ 			netdev_dbg(netdev, "rx buffer returned with rc %x\n",
+@@ -3865,15 +3864,15 @@ static int send_login(struct ibmvnic_adapter *adapter)
+ 
+ 	for (i = 0; i < adapter->req_tx_queues; i++) {
+ 		if (adapter->tx_scrq[i]) {
+-			tx_list_p[i] = cpu_to_be64(adapter->tx_scrq[i]->
+-						   crq_num);
++			tx_list_p[i] =
++				cpu_to_be64(adapter->tx_scrq[i]->crq_num);
  		}
+ 	}
  
- 		rc = ibmvnic_login(netdev);
--		if (rc) {
-+		if (rc)
- 			goto out;
--		}
+ 	for (i = 0; i < adapter->req_rx_queues; i++) {
+ 		if (adapter->rx_scrq[i]) {
+-			rx_list_p[i] = cpu_to_be64(adapter->rx_scrq[i]->
+-						   crq_num);
++			rx_list_p[i] =
++				cpu_to_be64(adapter->rx_scrq[i]->crq_num);
+ 		}
+ 	}
  
- 		if (adapter->reset_reason == VNIC_RESET_CHANGE_PARAM) {
- 			rc = init_resources(adapter);
+@@ -4416,8 +4415,8 @@ static void handle_request_cap_rsp(union ibmvnic_crq *crq,
+ 	case PARTIALSUCCESS:
+ 		dev_info(dev, "req=%lld, rsp=%ld in %s queue, retrying.\n",
+ 			 *req_value,
+-			 (long)be64_to_cpu(crq->request_capability_rsp.
+-					       number), name);
++			 (long)be64_to_cpu(crq->request_capability_rsp.number),
++			 name);
+ 
+ 		if (be16_to_cpu(crq->request_capability_rsp.capability) ==
+ 		    REQ_MTU) {
 -- 
 2.23.0
 
