@@ -2,62 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BBDDA2F2A05
-	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 09:31:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D4B82F2A13
+	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 09:31:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405418AbhALI30 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jan 2021 03:29:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43938 "EHLO
+        id S2405554AbhALIae (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jan 2021 03:30:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2405405AbhALI30 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 03:29:26 -0500
-Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81444C061575
-        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 00:28:45 -0800 (PST)
-Received: by mail-wm1-x330.google.com with SMTP id 190so1106570wmz.0
-        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 00:28:45 -0800 (PST)
+        with ESMTP id S2405068AbhALIad (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 03:30:33 -0500
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 117DDC061575
+        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 00:29:49 -0800 (PST)
+Received: by mail-wr1-x433.google.com with SMTP id a12so1490115wrv.8
+        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 00:29:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:from:to:cc:references:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=l0azDAxFxfqdbj7nWlyJ2wSq6xWvCEoOtEgYv1pxqRw=;
-        b=bJ1+MXu2A+uIDlRmoihGslRkuOAtdf5LpKh5Fl9fYyP6ER8IKwff6OU557nyFnpo3C
-         r+Q/Y9N8bBySFfDqUXUOI9yexE3fU4u50LVxSRdnhFB8nwsJeoxLhU/2oO8ur7wUlcvN
-         uazLVIsSrygxYpWVTyDB0ezWzE8KSO8sdjpE9/lmrmUMSwaEV1xOjiZfsg5QKCnGnSNC
-         G33KYTQX7P9O8V04LXmFgl1AmICL07uqFXRbOK/1jyWqhLtx5WZ3ZAnAXaZQauvlWojH
-         92/qRfE2k21dMobqJEK7ghBc3BDXLSFsI6QdGcREDnPPbuJvBhJG6nype6Ps4YYtwvP5
-         369g==
+        bh=cePMcyi0KtDrhtKJT1Dly10onkOcNFFKNROUVgRJ3aw=;
+        b=flyV+i6+WyvJPnUl2PvZbOfhLZRzmRTC8E0vXgoDQdXTkBR91Fr1iZd1OBuMBolAII
+         XkrtA1QHlMWxH0Idk/UJ+1stT1jhFQ/fEzC4Sc2/lyNMa7zclQmb/ZZHKxAQ2QXSkMhb
+         Stf/iOX7zNV1DgwWPNyFJ7HC32R3ikV7EKfcgBEfJNGmdqUDmCq/W3swwizp936iV4vd
+         JOvgaDagNDqLYhgDEwK97Rfq0TslgPgOYwOJIw0QRuY+e9i/2rNzoLIO1OqHCbUSF2Oe
+         GlFnP8UzJP9Fr6MyEdKBt8vEnC189zvHzcmmHi1W5xe2GjplEhWAvTGPgCWgeV1bv28u
+         HjoA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:from:to:cc:references:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=l0azDAxFxfqdbj7nWlyJ2wSq6xWvCEoOtEgYv1pxqRw=;
-        b=OeCHO9NYVEUF2BceQvPQGr1w4mNcuC/uZ2++7sx0Sg24hJGmuLYYOopGmQdpykxWK4
-         Z1lEdQbjt44RCQ7ykt8+jxjwkrbKxt9TvZvlgUeNPxk75ymbXRcSP0AL3yN7HJQAts+I
-         0GvTM32UDjZU4B5HqFmquDMLCk9KF5b/0nKvFTpUzsrTkd24coaRI8yotApMS7hzvNE7
-         dxcdtZ4dZxFQJoHFSw4ig5eGb3cNww4rcmezBQFPYgyno8bEJ48a5YrWiu/LgDPOTBdV
-         qdS/pyrXAfl4M8IhCBguBty/VP57HfI4kGXuccHhQzrBWgNhEbN0iGbAyH4i7w0lbd3j
-         UbGw==
-X-Gm-Message-State: AOAM530Qo5Qkl9cKIK2IyP19F7Q2BavVwpYbg1mPKvf1HI/ke8helX0W
-        y3lqivuKFK94SHGtwTQ3S3a9CGMgrtM=
-X-Google-Smtp-Source: ABdhPJxecei1syp/iGzMLtJDltbOz43kwiQi0v3hWJyGCPzfZnGwmj6kBKkcAXoGCbUPE/JmmuOGBA==
-X-Received: by 2002:a1c:4e19:: with SMTP id g25mr2359021wmh.93.1610440124091;
-        Tue, 12 Jan 2021 00:28:44 -0800 (PST)
+        bh=cePMcyi0KtDrhtKJT1Dly10onkOcNFFKNROUVgRJ3aw=;
+        b=Npl+tbjEx1DYOCqfg6Lgt1OxmURe4LUDaVtPXGxglAtcd+uakHR46u9D5vum9Y+u4D
+         oo6KB6AlaZj9mxaCZwBSw2hcUyytcUGuwS4WjNkz7BNeatLtKhxm2bHyz4UujCkul9hu
+         /JVN41JC20/cK7Z4T3nLMVglCRwbtcHty4lWHu2/BwLxpN1sqU+M1lic5Uleixl1Oy4x
+         NjiDyndzSaduvmOmL2nneudi5F+PEEnkiNVimMBWg5unpNBH+m8EYK1wd37GjFcqY/24
+         ld8J6GInQpavFMDU94j6NHVj37ZQEp0vJwh/7cAJN/9ejYOFMFn0blx02jNbmBfJpJEs
+         1Zrg==
+X-Gm-Message-State: AOAM531WM7SOcG4H7GIBo8tYc1dqqMNJYlZfn46BK54uFJsU1Z0ss/+I
+        zHREdFKYoLbznaKxFnfcg/ipwV5MjZ4=
+X-Google-Smtp-Source: ABdhPJxM8TU3NGQKWe/5JLFtV5EI1dg7oYtLQCLl9oYmmuODd9qC1tflDMjD5u+SqBxUWv5g9+9CMw==
+X-Received: by 2002:a5d:690d:: with SMTP id t13mr2998698wru.410.1610440187620;
+        Tue, 12 Jan 2021 00:29:47 -0800 (PST)
 Received: from ?IPv6:2003:ea:8f06:5500:d420:a714:6def:4af7? (p200300ea8f065500d420a7146def4af7.dip0.t-ipconnect.de. [2003:ea:8f06:5500:d420:a714:6def:4af7])
-        by smtp.googlemail.com with ESMTPSA id h13sm3609582wrm.28.2021.01.12.00.28.43
+        by smtp.googlemail.com with ESMTPSA id z8sm1376462wrh.65.2021.01.12.00.29.46
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 12 Jan 2021 00:28:43 -0800 (PST)
-Subject: [PATCH net-next 1/3] r8169: align rtl_wol_suspend_quirk with vendor
- driver and rename it
+        Tue, 12 Jan 2021 00:29:47 -0800 (PST)
+Subject: [PATCH net-next 2/3] r8169: improve rtl8169_rx_csum
 From:   Heiner Kallweit <hkallweit1@gmail.com>
 To:     Jakub Kicinski <kuba@kernel.org>,
         David Miller <davem@davemloft.net>,
         Realtek linux nic maintainers <nic_swsd@realtek.com>
 Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
 References: <1bc3b7ef-b54a-d517-df54-27d61ca7ba94@gmail.com>
-Message-ID: <f9e7121d-90bc-bfca-3987-c12e68bd9ddc@gmail.com>
-Date:   Tue, 12 Jan 2021 09:28:41 +0100
+Message-ID: <ab2f84ca-c832-dca8-ff17-bc3a69cf4865@gmail.com>
+Date:   Tue, 12 Jan 2021 09:29:45 +0100
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
  Thunderbird/78.6.0
 MIME-Version: 1.0
@@ -69,63 +68,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-At least from chip version 25 the vendor driver sets these rx flags
-for all chip versions if WOL is enabled. Therefore I wouldn't consider
-it a quirk, so let's rename the function.
+Extend the mask to include the checksum failure bits. This allows to
+simplify the condition in rtl8169_rx_csum().
 
 Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 ---
- drivers/net/ethernet/realtek/r8169_main.c | 20 ++++----------------
- 1 file changed, 4 insertions(+), 16 deletions(-)
+ drivers/net/ethernet/realtek/r8169_main.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index 33336098b..84f488d1c 100644
+index 84f488d1c..b4c080cc6 100644
 --- a/drivers/net/ethernet/realtek/r8169_main.c
 +++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -2210,23 +2210,11 @@ static int rtl_set_mac_address(struct net_device *dev, void *p)
- 	return 0;
- }
+@@ -533,6 +533,9 @@ enum rtl_rx_desc_bit {
+ 	IPFail		= (1 << 16), /* IP checksum failed */
+ 	UDPFail		= (1 << 15), /* UDP/IP checksum failed */
+ 	TCPFail		= (1 << 14), /* TCP/IP checksum failed */
++
++#define RxCSFailMask	(IPFail | UDPFail | TCPFail)
++
+ 	RxVlanTag	= (1 << 16), /* VLAN tag available */
+ };
  
--static void rtl_wol_suspend_quirk(struct rtl8169_private *tp)
-+static void rtl_wol_enable_rx(struct rtl8169_private *tp)
+@@ -4377,10 +4380,9 @@ static inline int rtl8169_fragmented_frame(u32 status)
+ 
+ static inline void rtl8169_rx_csum(struct sk_buff *skb, u32 opts1)
  {
--	switch (tp->mac_version) {
--	case RTL_GIGA_MAC_VER_25:
--	case RTL_GIGA_MAC_VER_26:
--	case RTL_GIGA_MAC_VER_29:
--	case RTL_GIGA_MAC_VER_30:
--	case RTL_GIGA_MAC_VER_32:
--	case RTL_GIGA_MAC_VER_33:
--	case RTL_GIGA_MAC_VER_34:
--	case RTL_GIGA_MAC_VER_37 ... RTL_GIGA_MAC_VER_63:
-+	if (tp->mac_version >= RTL_GIGA_MAC_VER_25)
- 		RTL_W32(tp, RxConfig, RTL_R32(tp, RxConfig) |
- 			AcceptBroadcast | AcceptMulticast | AcceptMyPhys);
--		break;
--	default:
--		break;
--	}
- }
+-	u32 status = opts1 & RxProtoMask;
++	u32 status = opts1 & (RxProtoMask | RxCSFailMask);
  
- static void rtl_prepare_power_down(struct rtl8169_private *tp)
-@@ -2240,7 +2228,7 @@ static void rtl_prepare_power_down(struct rtl8169_private *tp)
- 
- 	if (device_may_wakeup(tp_to_dev(tp))) {
- 		phy_speed_down(tp->phydev, false);
--		rtl_wol_suspend_quirk(tp);
-+		rtl_wol_enable_rx(tp);
- 	}
- }
- 
-@@ -4872,7 +4860,7 @@ static void rtl_shutdown(struct pci_dev *pdev)
- 
- 	if (system_state == SYSTEM_POWER_OFF) {
- 		if (tp->saved_wolopts) {
--			rtl_wol_suspend_quirk(tp);
-+			rtl_wol_enable_rx(tp);
- 			rtl_wol_shutdown_quirk(tp);
- 		}
- 
+-	if (((status == RxProtoTCP) && !(opts1 & TCPFail)) ||
+-	    ((status == RxProtoUDP) && !(opts1 & UDPFail)))
++	if (status == RxProtoTCP || status == RxProtoUDP)
+ 		skb->ip_summed = CHECKSUM_UNNECESSARY;
+ 	else
+ 		skb_checksum_none_assert(skb);
 -- 
 2.30.0
 
