@@ -2,96 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D12242F35C7
-	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 17:29:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B5472F35D6
+	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 17:32:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392628AbhALQ3N (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jan 2021 11:29:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34508 "EHLO
+        id S2392743AbhALQa0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jan 2021 11:30:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34722 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2392580AbhALQ3M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 11:29:12 -0500
-Received: from mail-qk1-x749.google.com (mail-qk1-x749.google.com [IPv6:2607:f8b0:4864:20::749])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BD8DC061794
-        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 08:28:32 -0800 (PST)
-Received: by mail-qk1-x749.google.com with SMTP id q3so1914007qkq.21
-        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 08:28:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=sender:date:message-id:mime-version:subject:from:to:cc;
-        bh=mWcf/+iFwpreBNElvxMjcceqxx7yuNB9Ov/Q1i5x95c=;
-        b=GtbUADTogOQ/ogEKQtWG8v5LTG+fN37POyE1dZSnbv0gP+hOo5hgjsZsc85mKhIYX0
-         hb7/fOogYbJykyHNMEowmiR1JlKSKPLvU1cr0bjgdL8IB+ZWBZl9BJP+Ob4FRTrMA58G
-         07eOIGDFGX9n2vdkjjC2X7MsZ2VXqzVSIQHUI+ETEIC20eIsjWmWTRpZClCAXFlvBcR0
-         XGfQ+eNq8qBpnxrcbXBUXg9OArGD0piKiggHQBkDEgASpAswHK8wyoHUWFhO1u5jDOPz
-         BPN2cVdRnrWDbBsjHIVXX/AsF0tOQqNkArhkzV9RvOBWN0ehop1O6Ruvq3BMRgncr3YC
-         /Ihw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:message-id:mime-version:subject:from
-         :to:cc;
-        bh=mWcf/+iFwpreBNElvxMjcceqxx7yuNB9Ov/Q1i5x95c=;
-        b=WCO/BY6Ac+7zvSafhmugmsxS3ilJHdyh3M/RSipOjFsZldAgvLIBMMUzCD3mTxBR9d
-         JXB+FJnxTMg1tcXU6uTsDlbSkZjJo2RiS1+Axj5Jyvx6WaZcojVPwEw7uDRHBj/bHez6
-         6/FD5qTdssZG8MiIVBDraufKERxMqZRglbnYw9uPQZ0DZT7u0XTwkvwu3fnn5LMQTucg
-         644KhgtPI/95URDNEfsMF+SutI4Iztt1bBvW9W8LH2iKp7QefWCew32AEbeT6/xt1U6+
-         x5BJifcnG3QkO1394T3QKnVx3WAWtekLQq7iLelgIxBy4faS5FYZjgTec+8nO4uTfSIN
-         WtSA==
-X-Gm-Message-State: AOAM532UhFp6OapSseirhjr/iDQs3pN/MLxQEEey6oNdR4ZMj2supb1F
-        02qsRYtHkYRDfLN81CCdIZ+HGeH1JP5JPIEgo5xl2VnMplexuYKsSc7SKPylW8lHkn3k2gMBmFN
-        AnyYc7laVabObPIDxS/N++8AGTKI7fUvSkWwFECVAXk8S0bXvnXm1dQ==
-X-Google-Smtp-Source: ABdhPJzNYjN/PhOiSRUE+jMM4Yn5u04yvHhluC6A2cuHl4benPwxniuxname9VeK/WdxPK0tgjeZR+g=
-Sender: "sdf via sendgmr" <sdf@sdf2.svl.corp.google.com>
-X-Received: from sdf2.svl.corp.google.com ([2620:15c:2c4:1:7220:84ff:fe09:7732])
- (user=sdf job=sendgmr) by 2002:ad4:4f4a:: with SMTP id eu10mr5576394qvb.17.1610468911514;
- Tue, 12 Jan 2021 08:28:31 -0800 (PST)
-Date:   Tue, 12 Jan 2021 08:28:29 -0800
-Message-Id: <20210112162829.775079-1-sdf@google.com>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.30.0.284.gd98b1dd5eaa7-goog
-Subject: [PATCH bpf v2] bpf: don't leak memory in bpf getsockopt when optlen
- == 0
-From:   Stanislav Fomichev <sdf@google.com>
-To:     netdev@vger.kernel.org, bpf@vger.kernel.org
-Cc:     ast@kernel.org, daniel@iogearbox.net,
-        Stanislav Fomichev <sdf@google.com>,
-        Martin KaFai Lau <kafai@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+        with ESMTP id S2392179AbhALQaZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 11:30:25 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 940A9C06179F
+        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 08:29:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=AhHHiuPGvMNUmEiXO/NNkJkFQnW3au6lNGVQrV2PKec=; b=wMyco02XJBnN2ZBZPFaNX54ep
+        yBjmLTK4gRhfxAIxj5UIsRMWGfLy7sxcdz1QOGeZKK5a1KEH5tzYVjla1d50lyYtFz0boO19i4unv
+        oHFpJugfMXsr2G+tCe4MSF1WpeMWrrjeVUcgU8QK5zAZpVnp9NcuOpL0bs2a0CLd+xVzVckrglAp4
+        acCSNo9zBl2CiIusJnrbK6Z4DvQqgj0qJnPijEMvLXBc2gBkRYoZGE2hF+fTB29xYc7b5XsFzM7Na
+        +A0udklTPnI0QRgvCBL5EgrF6ItR3kXuR5gM8lZDmtFy8xkh3ht7U5c1mJvVFwtasywtrEORCyh8r
+        uqFJyXWKQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:47088)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1kzMXn-00007p-95; Tue, 12 Jan 2021 16:29:19 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1kzMXd-0006Pv-W9; Tue, 12 Jan 2021 16:29:10 +0000
+Date:   Tue, 12 Jan 2021 16:29:09 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
+Cc:     Vladimir Oltean <olteanv@gmail.com>, netdev@vger.kernel.org,
+        pavana.sharma@digi.com, vivien.didelot@gmail.com,
+        f.fainelli@gmail.com, kuba@kernel.org, lkp@intel.com,
+        davem@davemloft.net, ashkan.boldaji@digi.com, andrew@lunn.ch,
+        Chris Packham <chris.packham@alliedtelesis.co.nz>
+Subject: Re: [PATCH net-next v14 5/6] net: dsa: mv88e6xxx: Add support for
+ mv88e6393x family of Marvell
+Message-ID: <20210112162909.GD1551@shell.armlinux.org.uk>
+References: <20210111012156.27799-1-kabel@kernel.org>
+ <20210111012156.27799-6-kabel@kernel.org>
+ <20210112111139.hp56x5nzgadqlthw@skbuf>
+ <20210112170226.3f2009bd@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210112170226.3f2009bd@kernel.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-optlen == 0 indicates that the kernel should ignore BPF buffer
-and use the original one from the user. We, however, forget
-to free the temporary buffer that we've allocated for BPF.
+On Tue, Jan 12, 2021 at 05:02:26PM +0100, Marek Behún wrote:
+> > > +static void mv88e6393x_phylink_validate(struct mv88e6xxx_chip *chip, int port,
+> > > +					unsigned long *mask,
+> > > +					struct phylink_link_state *state)
+> > > +{
+> > > +	if (port == 0 || port == 9 || port == 10) {
+> > > +		phylink_set(mask, 10000baseT_Full);
+> > > +		phylink_set(mask, 10000baseKR_Full);  
+> > 
+> > I think I understand the reason for declaring 10GBase-KR support in
+> > phylink_validate, in case the PHY supports that link mode on the media
+> > side, but...
+> 
+> Hmm, yes, maybe KR shouldn't be here, but then why is it in
+> mv88e6390x_phylink_validate?
 
-Reported-by: Martin KaFai Lau <kafai@fb.com>
-Fixes: d8fe449a9c51 ("bpf: Don't return EINVAL from {get,set}sockopt when optlen > PAGE_SIZE")
-Signed-off-by: Stanislav Fomichev <sdf@google.com>
----
- kernel/bpf/cgroup.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+I'm seriously thinking about changing the phylink_validate() interface
+such that the question of which link _modes_ are supported no longer
+comes up with MAC drivers, but instead MAC drivers say what interface
+modes, speeds for each interface mode, duplexes for each speed are
+supported.
 
-diff --git a/kernel/bpf/cgroup.c b/kernel/bpf/cgroup.c
-index 6ec088a96302..96555a8a2c54 100644
---- a/kernel/bpf/cgroup.c
-+++ b/kernel/bpf/cgroup.c
-@@ -1391,12 +1391,13 @@ int __cgroup_bpf_run_filter_setsockopt(struct sock *sk, int *level,
- 		if (ctx.optlen != 0) {
- 			*optlen = ctx.optlen;
- 			*kernel_optval = ctx.optval;
-+			/* export and don't free sockopt buf */
-+			return 0;
- 		}
- 	}
- 
- out:
--	if (ret)
--		sockopt_free_buf(&ctx);
-+	sockopt_free_buf(&ctx);
- 	return ret;
- }
- 
+There are certainly PHYs out there that take XAUI/RXAUI on the host
+side and provide 10GBASE-KR on the "media" side. VSC8489 is an
+example of such a PHY.
+
 -- 
-2.30.0.284.gd98b1dd5eaa7-goog
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
