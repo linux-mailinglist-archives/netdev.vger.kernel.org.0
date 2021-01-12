@@ -2,118 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C73AE2F28BB
-	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 08:15:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F2B92F28BC
+	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 08:15:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391880AbhALHOY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S2391887AbhALHOY (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Tue, 12 Jan 2021 02:14:24 -0500
-Received: from mail.kernel.org ([198.145.29.99]:37540 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:37548 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726790AbhALHOX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 12 Jan 2021 02:14:23 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 00D8122AAF;
-        Tue, 12 Jan 2021 07:13:42 +0000 (UTC)
+        id S2391826AbhALHOY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 Jan 2021 02:14:24 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 7FEEF22CB2;
+        Tue, 12 Jan 2021 07:13:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1610435623;
-        bh=5Oa7WCJ6dUUjPTnFfSDfHWEPV7R/QzPmSefzMNlD+rI=;
-        h=From:To:Cc:Subject:Date:From;
-        b=pPZA25MScOP74Kgwn37+3pgGjWV6Jnq5cI8P1EmkIluxb9yE4vwETQMs7OAoY0q8d
-         Dw8lMGfhMO6S004gU36263iHflNbTrzktbJOV2BVqKLV5xIWIdp74NwY7F5e9ltXk2
-         EZmay42/STOteizJpAnicxW9tUVgdBWHv54HRcpC8tJa0H+mYTY3XLCJYaRAOLxa+Y
-         ufXY5GizpuXMF8Qg5uqyzKcnf1k5aYGieMufvqtOl86Pu0/41lHpccboMMZfrE9UU6
-         P9sKosHQYp4SNVlctfUtVJbXFDcmIk1xMzRRa7BsiOwxlhdoD/orjcoVPxT2ooeR0x
-         I2UOmfuZ4jR4w==
+        bh=DIYi1pTi4ziIO3htASEwKM7n+G9PhZdNTtI7pRdFk0c=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=HXSv3k+nOqlH1kre2I9AA6eSZZP+fgPbmtbkJp4IUb1tBTCV0v2nVaJm+MbgwOg8i
+         +0jkOEz0HscyfHS/BMLxxzACi9+vAIXH0NdXyl0XyhLgx/VISBOukRqc7eml3KiXl3
+         rZJ/AmhZyGiGWHkIUy7DXzpEcVgtA1Ow/lHXuujPP9wrkoNzdxOJSRjLmiDAZfQxbe
+         aR2LZYWJ2BOB9M9HBog9+uzrnfdpj3vn2QkFWmkamf+R44tUD8SrmMlVy7XeJ4CMVg
+         cbQHSjlki3M6SxSazXMXga3B+0vUf98E764tyTM0IoWS0iHLXTcgfv+xZXJIixwWX8
+         3Ohe1xnm4SnbQ==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Saeed Mahameed <saeedm@nvidia.com>
-Subject: [pull request][net-next V2 00/11] mlx5 updates 2021-01-07
-Date:   Mon, 11 Jan 2021 23:05:23 -0800
-Message-Id: <20210112070534.136841-1-saeed@kernel.org>
+Cc:     netdev@vger.kernel.org, Paul Blakey <paulb@mellanox.com>,
+        Maor Dickman <maord@nvidia.com>, Roi Dayan <roid@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: [net-next V2 01/11] net/mlx5: Add HW definition of reg_c_preserve
+Date:   Mon, 11 Jan 2021 23:05:24 -0800
+Message-Id: <20210112070534.136841-2-saeed@kernel.org>
 X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20210112070534.136841-1-saeed@kernel.org>
+References: <20210112070534.136841-1-saeed@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Saeed Mahameed <saeedm@nvidia.com>
+From: Paul Blakey <paulb@mellanox.com>
 
-Hi Dave, Jakub
+Add capability bit to test whether reg_c value is preserved on
+recirculation.
 
-This series provides misc updates for mlx5 driver. 
-v1->v2:
-  - Drop the +trk+new TC feature for now until we handle the module
-    dependency issue.
-
-For more information please see tag log below.
-
-Please pull and let me know if there is any problem.
-
-Thanks,
-Saeed.
-
+Signed-off-by: Paul Blakey <paulb@mellanox.com>
+Signed-off-by: Maor Dickman <maord@nvidia.com>
+Reviewed-by: Roi Dayan <roid@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
-The following changes since commit c73a45965dd54a10c368191804b9de661eee1007:
+ include/linux/mlx5/mlx5_ifc.h | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-  net: mvpp2: prs: improve ipv4 parse flow (2021-01-11 17:46:21 -0800)
+diff --git a/include/linux/mlx5/mlx5_ifc.h b/include/linux/mlx5/mlx5_ifc.h
+index 442c0160caab..823411e288c0 100644
+--- a/include/linux/mlx5/mlx5_ifc.h
++++ b/include/linux/mlx5/mlx5_ifc.h
+@@ -1278,7 +1278,9 @@ struct mlx5_ifc_cmd_hca_cap_bits {
+ 
+ 	u8         reserved_at_a0[0x3];
+ 	u8	   ece_support[0x1];
+-	u8	   reserved_at_a4[0x7];
++	u8	   reserved_at_a4[0x5];
++	u8         reg_c_preserve[0x1];
++	u8         reserved_at_aa[0x1];
+ 	u8         log_max_srq[0x5];
+ 	u8         reserved_at_b0[0x1];
+ 	u8         uplink_follow[0x1];
+-- 
+2.26.2
 
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-updates-2021-01-07
-
-for you to fetch changes up to 85d1f989d2ed1462a21364e3b8f685e513dab645:
-
-  net/mlx5e: IPsec, Remove unnecessary config flag usage (2021-01-11 23:02:28 -0800)
-
-----------------------------------------------------------------
-mlx5-updates-2021-01-07
-
-Misc updates series for mlx5 driver:
-
-1) From Eli and Jianbo, E-Switch cleanups and usage of new
-   FW capability for mpls over udp
-
-2) Paul Blakey, Adds support for mirroring with Connection tracking
-by splitting rules to pre and post Connection tracking to perform the
-mirroring.
-
-3) Roi Dayan, cleanups for connection tracking
-
-4) From Tariq, Cleanups and improvements to IPSec
-
-----------------------------------------------------------------
-Eli Cohen (2):
-      net/mlx5e: Simplify condition on esw_vport_enable_qos()
-      net/mlx5: E-Switch, use new cap as condition for mpls over udp
-
-Jianbo Liu (1):
-      net/mlx5e: E-Switch, Offload all chain 0 priorities when modify header and forward action is not supported
-
-Paul Blakey (1):
-      net/mlx5: Add HW definition of reg_c_preserve
-
-Roi Dayan (3):
-      net/mlx5e: CT: Pass null instead of zero spec
-      net/mlx5e: Remove redundant initialization to null
-      net/mlx5e: CT: Remove redundant usage of zone mask
-
-Tariq Toukan (4):
-      net/mlx5e: IPsec, Enclose csum logic under ipsec config
-      net/mlx5e: IPsec, Avoid unreachable return
-      net/mlx5e: IPsec, Inline feature_check fast-path function
-      net/mlx5e: IPsec, Remove unnecessary config flag usage
-
- drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c |  7 ++----
- .../mellanox/mlx5/core/en/tc_tun_mplsoudp.c        |  4 +--
- .../mellanox/mlx5/core/en_accel/en_accel.h         |  4 +--
- .../mellanox/mlx5/core/en_accel/ipsec_rxtx.c       | 14 -----------
- .../mellanox/mlx5/core/en_accel/ipsec_rxtx.h       | 29 ++++++++++++++++++++--
- drivers/net/ethernet/mellanox/mlx5/core/en_main.c  |  4 ---
- drivers/net/ethernet/mellanox/mlx5/core/en_rx.c    |  2 --
- drivers/net/ethernet/mellanox/mlx5/core/en_tc.c    |  6 -----
- drivers/net/ethernet/mellanox/mlx5/core/en_tx.c    |  3 +--
- drivers/net/ethernet/mellanox/mlx5/core/eswitch.c  |  3 +--
- .../ethernet/mellanox/mlx5/core/lib/fs_chains.c    |  7 ++----
- include/linux/mlx5/mlx5_ifc.h                      |  4 ++-
- 12 files changed, 40 insertions(+), 47 deletions(-)
