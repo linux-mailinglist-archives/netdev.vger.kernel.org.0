@@ -2,59 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A94912F273B
-	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 05:44:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B96222F275B
+	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 05:51:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731527AbhALEnd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jan 2021 23:43:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51976 "EHLO
+        id S1732927AbhALEvH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jan 2021 23:51:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726882AbhALEnc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 23:43:32 -0500
-Received: from mail-io1-xd32.google.com (mail-io1-xd32.google.com [IPv6:2607:f8b0:4864:20::d32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74833C061575;
-        Mon, 11 Jan 2021 20:42:52 -0800 (PST)
-Received: by mail-io1-xd32.google.com with SMTP id 81so1365993ioc.13;
-        Mon, 11 Jan 2021 20:42:52 -0800 (PST)
+        with ESMTP id S1727713AbhALEvG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 23:51:06 -0500
+Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 805BBC061575;
+        Mon, 11 Jan 2021 20:50:26 -0800 (PST)
+Received: by mail-io1-xd2e.google.com with SMTP id p187so1449014iod.4;
+        Mon, 11 Jan 2021 20:50:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=/RsQ8+tqR8SqIOB6a09VH+U+kRQ1ioeuOmyKXdfomv0=;
-        b=N2aroRGk5iUtCtiduYfpPzGPwj89M0i2RKlZLzGUVOinOBRcGmsBytB8OtUWnqTckS
-         OqviiUTlTQy1gPIxC0AxAtbrPgcVih8xHetJqaVtqmxpqCI5JNKZrxmAWy3IsUFDCvYh
-         FS3n9uVb8rLXP/XnU6ZQKRMp/GGWgDb0Jx0RPt/2s1kKbrbb+Mah9LkbTDy7QVd4T02O
-         UFaSjWsWw+gy40etnHqIQbNoo1CJM0z9gj2mwzq8fjaecn63Hj7xflaFONtoVcMdezFt
-         /u69WGHfhb6sL3Y1YdO5ivUypGK2/Ws4RDqKo6ksOmXoqjbI26wtzWXx/89XdC0UCipu
-         wVHw==
+        bh=fQwJ/zQI4XXD5wXIIQJHRYMn67QDCXvxmnE6LCbaUCE=;
+        b=qTEAK4tRyH4x/S/RzWc+M30mi2lTlMlw3UzKWioAlIDViZWSmDL0AjBLutltWjD5v5
+         eqmtu6MeLN1VH4iwVptk5nSvHaaWRW5UdDDDWnNwFu+Po1khJu044RWX4VrK1hCvLuod
+         1LhA585YyLy3ngI43N3yf2vVqMt+jT0B9ocEcgw7cVYg8JsTJE6I6lfoMgyA6kuK88YE
+         gTasTRbvxiU+rgKxg2oF34VkCIrqwDKtYDsiLQyHgHLRbViiE/sBI9gjlZnIrVJ4nrgV
+         MmdH9DRtYt0d4f/47cYFngt4Rj1r6ViU9zENXTcxD1Uo4xIk1rZlKJ6PLnqgVnu4kTco
+         AOow==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=/RsQ8+tqR8SqIOB6a09VH+U+kRQ1ioeuOmyKXdfomv0=;
-        b=geG8x3rg1pBbsQf47A2RQrar7PNNBUpLJmFn/HvEMfhCilZjhc6X1hOsi1ufPKdNEc
-         fBgBhARrpyOjL5CugZcQzLuWPDmUvsyMj2oRxfKzPw2KJvjM1xlH/AxvihTXKdABbfta
-         p09ULFI3Oe4UZLD5vinq5oH8yjlQPZpNjRysTlcAHM4cI1bvMsOOAac8VCJpg/28Tw+j
-         oOSSVPGsYyXOWD5sG645EnlIWm+r+nZ1tR+qiYBFA0rROBFkelJjDDcjiJg7pUvaRRff
-         QYRsII4cOIPwt47Ksu/LAAYhpLlcM5h15mf1MvZR9hYWP8goP32pFH2haaLZsM7GCIN8
-         Z99Q==
-X-Gm-Message-State: AOAM530xzF9U6QcEr8/Rj5kP2f12i02/B4kcc1QxFzlPl2Mu6IhYhabD
-        oe7fcQi89ZARgdtxfjGoPOI=
-X-Google-Smtp-Source: ABdhPJxEtq01nSI3TY0qOFDWcYf3Hkmpr5WVngMZwMwZJJf6udqr9Js3zuByjS4oBqeqWUgHaoaCZg==
-X-Received: by 2002:a5d:8a1a:: with SMTP id w26mr1945300iod.112.1610426571857;
-        Mon, 11 Jan 2021 20:42:51 -0800 (PST)
+        bh=fQwJ/zQI4XXD5wXIIQJHRYMn67QDCXvxmnE6LCbaUCE=;
+        b=MlZzgMj1gcy1xtXAkULNbwq/SXyKWDtGYcHRtC2xIMJg1BD7QYwWVd437+SGRSh3zI
+         zMV5V3YT/Ro02GTA/URFOBVtI56bKpl4i6mgA9heexE4foDEKMMzYXyL5f88dKcos/1H
+         z0uxu75NKNZNkJIU0cGTIO4nwe2bKGEB29MgYF5onGQTQoAXdQlGt3ktI+sGVVF+tcqu
+         dxPH/qq7g7/4/htbU5T7hMF0tpbu61Y7YM3KxKXjwBImPYvq60EXZ9CKOPROyrVJJzVk
+         z/yW7QQsRQYGoYnhRR64CAKnvj78nvQkKe4nZKRpWdgZf1jpidJOVxepAhN41RG3qBNr
+         IQiA==
+X-Gm-Message-State: AOAM533gv06Ah8u3jAv4EfxjT9F+fsgeF2rejLJX4Ub6CjlA7l3n4bQ+
+        JDoNzIebDpm6wLeQTjPvigo=
+X-Google-Smtp-Source: ABdhPJzBS/UnLHLWQiJGrLtphGPTbikgOrMy5d7J9tAAgZjrzP9a7iV628YN9cc/b1KAw7N0/vgBuA==
+X-Received: by 2002:a02:2ace:: with SMTP id w197mr2641353jaw.132.1610427025994;
+        Mon, 11 Jan 2021 20:50:25 -0800 (PST)
 Received: from localhost.localdomain ([156.146.36.246])
-        by smtp.gmail.com with ESMTPSA id n4sm1535777ilm.63.2021.01.11.20.42.47
+        by smtp.gmail.com with ESMTPSA id e5sm475174ilu.27.2021.01.11.20.50.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Jan 2021 20:42:50 -0800 (PST)
+        Mon, 11 Jan 2021 20:50:25 -0800 (PST)
 From:   Bhaskar Chowdhury <unixbhaskar@gmail.com>
-To:     mw@semihalf.com, linux@armlinux.org.uk, davem@davemloft.net,
-        kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+To:     rostedt@goodmis.org, mingo@redhat.com, ast@kernel.org,
+        daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
+        kpsingh@kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, bpf@vger.kernel.org
 Cc:     rdunlap@infradead.org, Bhaskar Chowdhury <unixbhaskar@gmail.com>
-Subject: [PATCH] drivers: net: ehternet: marvell: Change controling to controlling
-Date:   Tue, 12 Jan 2021 10:12:41 +0530
-Message-Id: <20210112044241.10829-1-unixbhaskar@gmail.com>
+Subject: [PATCH] kernel: trace: uprobe:  Fix word to the correct spelling
+Date:   Tue, 12 Jan 2021 10:20:08 +0530
+Message-Id: <20210112045008.29834-1-unixbhaskar@gmail.com>
 X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -66,22 +68,22 @@ s/controling/controlling/p
 
 Signed-off-by: Bhaskar Chowdhury <unixbhaskar@gmail.com>
 ---
- drivers/net/ethernet/marvell/mvpp2/mvpp2_cls.h | 2 +-
+ kernel/trace/trace_uprobe.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_cls.h b/drivers/net/ethernet/marvell/mvpp2/mvpp2_cls.h
-index 8867f25afab4..24034fe1e148 100644
---- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_cls.h
-+++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_cls.h
-@@ -143,7 +143,7 @@ struct mvpp2_cls_c2_entry {
- /* Number of per-port dedicated entries in the C2 TCAM */
- #define MVPP22_CLS_C2_PORT_N_FLOWS	MVPP2_N_RFS_ENTRIES_PER_FLOW
+diff --git a/kernel/trace/trace_uprobe.c b/kernel/trace/trace_uprobe.c
+index 3cf7128e1ad3..55c6afd8cb27 100644
+--- a/kernel/trace/trace_uprobe.c
++++ b/kernel/trace/trace_uprobe.c
+@@ -1635,7 +1635,7 @@ void destroy_local_trace_uprobe(struct trace_event_call *event_call)
+ }
+ #endif /* CONFIG_PERF_EVENTS */
 
--/* Each port has oen range per flow type + one entry controling the global RSS
-+/* Each port has oen range per flow type + one entry controlling the global RSS
-  * setting and the default rx queue
-  */
- #define MVPP22_CLS_C2_PORT_RANGE	(MVPP22_CLS_C2_PORT_N_FLOWS + 1)
+-/* Make a trace interface for controling probe points */
++/* Make a trace interface for controlling probe points */
+ static __init int init_uprobe_trace(void)
+ {
+ 	int ret;
 --
 2.26.2
 
