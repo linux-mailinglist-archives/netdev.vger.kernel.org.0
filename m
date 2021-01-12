@@ -2,40 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 672252F2FB0
-	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 13:58:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 596B32F3136
+	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 14:25:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404561AbhALM6E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jan 2021 07:58:04 -0500
-Received: from mail.kernel.org ([198.145.29.99]:54634 "EHLO mail.kernel.org"
+        id S2389229AbhALM47 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jan 2021 07:56:59 -0500
+Received: from mail.kernel.org ([198.145.29.99]:53814 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2404403AbhALM6B (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 12 Jan 2021 07:58:01 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id BA70D23121;
-        Tue, 12 Jan 2021 12:56:59 +0000 (UTC)
+        id S2388644AbhALM46 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 Jan 2021 07:56:58 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 927E02311C;
+        Tue, 12 Jan 2021 12:55:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610456220;
-        bh=kHChC0PX9AlMu3NdLHgFXYHYy+a+bM7w1VqarGp3qCY=;
+        s=k20201202; t=1610456142;
+        bh=NjnX7vpBdEObQj3DwhFQMHbnPeyqEPEVzfFPPN/J79E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fabJQ+N4wQelOYEhUNxx8/jEiPFerj2OB3rNTeoSadozwc3xl/WrOoPiGs6kP26eE
-         ceOgm2t5JdJ0RlMfNOXz00xQbHH76ZmkVkyuE6FSLn1arraZAfW18rb7x+nrKx7onf
-         OsFPiRC8SLASdxopjcK37AGDaM2KFeedAZD9rojRjBUSUQyyMwwCYTyG5NQOMzI4TX
-         I8EYItLwlspoJdj9goFVyjZdRTZZB+WpZho3lsw//apBdnZZtRnFSZvnXyEhrZeahn
-         XunntX2BnhVQbDZ8hQNoAavIIfqh0pF7i3i1u6zREN4lD1d8CSwFhcMtB96xqd9R50
-         ddmaotyGRr2Qw==
+        b=LrZFA5NkW+JrBdZU//FW5B0aGq5yuKD0m2yGiIl+bPnXXeBlVSh4DPzuu8T5qA8Qu
+         L6fPmmnPDXyUn/GawuskNvm/N7m2xzrehC/Y3nXpDEEl4PLa4+aDEQFUQW8uVA1Jmc
+         QGSPs3bqGUISiuBjSauKo4VuXk90n0eprd2jxOCutlYuvWfsNM+ENxyYG6oXeE/TbM
+         PzVqnWS+4LaQCof4gz0ra7hOZXctz228xmJXBIdQn6/uq2RaXRoJbILLFyXApw6wUT
+         tmTbqxFVrzRoKFnDZu8TXQt1sJ1FGfcMdGsYzD0bWZtLlENTSo0JC77kgDAdUrr0ty
+         bit2IEIrWGEwg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Roland Dreier <roland@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 11/28] CDC-NCM: remove "connected" log message
-Date:   Tue, 12 Jan 2021 07:56:27 -0500
-Message-Id: <20210112125645.70739-11-sashal@kernel.org>
+Cc:     Carl Huang <cjhuang@codeaurora.org>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Sasha Levin <sashal@kernel.org>, ath11k@lists.infradead.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 06/51] ath11k: fix crash caused by NULL rx_channel
+Date:   Tue, 12 Jan 2021 07:54:48 -0500
+Message-Id: <20210112125534.70280-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20210112125645.70739-1-sashal@kernel.org>
-References: <20210112125645.70739-1-sashal@kernel.org>
+In-Reply-To: <20210112125534.70280-1-sashal@kernel.org>
+References: <20210112125534.70280-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -44,44 +43,64 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Roland Dreier <roland@kernel.org>
+From: Carl Huang <cjhuang@codeaurora.org>
 
-[ Upstream commit 59b4a8fa27f5a895582ada1ae5034af7c94a57b5 ]
+[ Upstream commit 3597010630d0aa96f5778901e691c6068bb86318 ]
 
-The cdc_ncm driver passes network connection notifications up to
-usbnet_link_change(), which is the right place for any logging.
-Remove the netdev_info() duplicating this from the driver itself.
+During connect and disconnect stress test, crashed happened
+because ar->rx_channel is NULL. Fix it by checking whether
+ar->rx_channel is NULL.
 
-This stops devices such as my "TRENDnet USB 10/100/1G/2.5G LAN"
-(ID 20f4:e02b) adapter from spamming the kernel log with
+Crash stack is as below:
+RIP: 0010:ath11k_dp_rx_h_ppdu+0x110/0x230 [ath11k]
+[ 5028.808963]  ath11k_dp_rx_wbm_err+0x14a/0x360 [ath11k]
+[ 5028.808970]  ath11k_dp_rx_process_wbm_err+0x41c/0x520 [ath11k]
+[ 5028.808978]  ath11k_dp_service_srng+0x25e/0x2d0 [ath11k]
+[ 5028.808982]  ath11k_pci_ext_grp_napi_poll+0x23/0x80 [ath11k_pci]
+[ 5028.808986]  net_rx_action+0x27e/0x400
+[ 5028.808990]  __do_softirq+0xfd/0x2bb
+[ 5028.808993]  irq_exit+0xa6/0xb0
+[ 5028.808995]  do_IRQ+0x56/0xe0
+[ 5028.808997]  common_interrupt+0xf/0xf
 
-    cdc_ncm 2-2:2.0 enp0s2u2c2: network connection: connected
+Tested-on: QCA6390 hw2.0 PCI WLAN.HST.1.0.1-01740-QCAHSTSWPLZ_V2_TO_X86-1
 
-messages every 60 msec or so.
-
-Signed-off-by: Roland Dreier <roland@kernel.org>
-Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Link: https://lore.kernel.org/r/20201224032116.2453938-1-roland@kernel.org
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Carl Huang <cjhuang@codeaurora.org>
+Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
+Link: https://lore.kernel.org/r/20201211055613.9310-1-cjhuang@codeaurora.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/usb/cdc_ncm.c | 3 ---
- 1 file changed, 3 deletions(-)
+ drivers/net/wireless/ath/ath11k/dp_rx.c | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/usb/cdc_ncm.c b/drivers/net/usb/cdc_ncm.c
-index c2c82e6391b4f..d407489cec904 100644
---- a/drivers/net/usb/cdc_ncm.c
-+++ b/drivers/net/usb/cdc_ncm.c
-@@ -1625,9 +1625,6 @@ static void cdc_ncm_status(struct usbnet *dev, struct urb *urb)
- 		 * USB_CDC_NOTIFY_NETWORK_CONNECTION notification shall be
- 		 * sent by device after USB_CDC_NOTIFY_SPEED_CHANGE.
- 		 */
--		netif_info(dev, link, dev->net,
--			   "network connection: %sconnected\n",
--			   !!event->wValue ? "" : "dis");
- 		usbnet_link_change(dev, !!event->wValue, 0);
- 		break;
+diff --git a/drivers/net/wireless/ath/ath11k/dp_rx.c b/drivers/net/wireless/ath/ath11k/dp_rx.c
+index 01625327eef7c..3638501a09593 100644
+--- a/drivers/net/wireless/ath/ath11k/dp_rx.c
++++ b/drivers/net/wireless/ath/ath11k/dp_rx.c
+@@ -2272,6 +2272,7 @@ static void ath11k_dp_rx_h_ppdu(struct ath11k *ar, struct hal_rx_desc *rx_desc,
+ {
+ 	u8 channel_num;
+ 	u32 center_freq;
++	struct ieee80211_channel *channel;
  
+ 	rx_status->freq = 0;
+ 	rx_status->rate_idx = 0;
+@@ -2292,9 +2293,12 @@ static void ath11k_dp_rx_h_ppdu(struct ath11k *ar, struct hal_rx_desc *rx_desc,
+ 		rx_status->band = NL80211_BAND_5GHZ;
+ 	} else {
+ 		spin_lock_bh(&ar->data_lock);
+-		rx_status->band = ar->rx_channel->band;
+-		channel_num =
+-			ieee80211_frequency_to_channel(ar->rx_channel->center_freq);
++		channel = ar->rx_channel;
++		if (channel) {
++			rx_status->band = channel->band;
++			channel_num =
++				ieee80211_frequency_to_channel(channel->center_freq);
++		}
+ 		spin_unlock_bh(&ar->data_lock);
+ 		ath11k_dbg_dump(ar->ab, ATH11K_DBG_DATA, NULL, "rx_desc: ",
+ 				rx_desc, sizeof(struct hal_rx_desc));
 -- 
 2.27.0
 
