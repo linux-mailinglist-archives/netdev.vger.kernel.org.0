@@ -2,60 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 97A6C2F3932
-	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 19:50:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F4262F3940
+	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 19:53:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392732AbhALSuI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jan 2021 13:50:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36894 "EHLO
+        id S2392228AbhALSwW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jan 2021 13:52:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2392713AbhALSuH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 13:50:07 -0500
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8C41C061786
-        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 10:49:26 -0800 (PST)
-Received: by mail-pj1-x102a.google.com with SMTP id md11so363257pjb.0
-        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 10:49:26 -0800 (PST)
+        with ESMTP id S1729923AbhALSwW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 13:52:22 -0500
+Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6B37C06179F
+        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 10:51:41 -0800 (PST)
+Received: by mail-pj1-x1033.google.com with SMTP id b5so2274253pjk.2
+        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 10:51:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=akAZ7/GTdO4EfKY0FK6iVdgrEiYO0cBkth5hWEa2YpM=;
-        b=UFYXObcaTFCDhqv5nhtpj9nctUdg6ZB+TmGZ6u6B59qjXwdN/QP7kmn472iMTsD6dt
-         Iwx/eTxMdpyyxAfeujxd1AfARa2V16ZIVZyghhrVQQUVQZLUYRZ5JKlyIUcjqzdUul5T
-         0FhBg47fQNpX9k0axvSS4BOT7c7PGH1t+ATjQsg09Qf2SDBbonA4zpzEhPXwMykT8zox
-         W28v2w+oPrRlvybtfaFs7sWQt/20XGAgmv3xE1t4FUbalETWaRDf7WrSUZ0kiOmBJgkw
-         iW4sFee4T8xkMkPZwHnrnK7bVu0OuMXSbkAHFZ5IxMWWeMMZb1XoFBvFP5wIVfY+anb2
-         icFw==
+        bh=KxyvncnFFLYrPx0BX76P5pV/cZOWEiLtYBHcOaz1hSw=;
+        b=JA2SF/4XLli96KUHirqvoVobTryAQejNxhkL5lUj0lkFWDwxfjOn5b7I5wEWncIlCx
+         58pzJR8SyQ5vX/7UpRHX//1pBgv2N9TuiP49VnR5lPNyOATmvU+AKkuAIvivD+R8Kmh7
+         /X/tAWGaeKHrKd+NRctAyGtHHuWU3u6dyYrIfLKD6Hz5a5p7dw9oBN38T7XHIOsNwgUq
+         lD2ckZP87saHbhUbhKMlyCjgGWtkLdiGGVAEhJsQqJ9243421UvotmiSz4SgPGS4YxiT
+         pz8TtIC8+NY9DXr6nF8DQ/8SP2fugg4VBNkXsi7+hdiycmUmkITRBxGsHJcOgra2QDOB
+         Xl9A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=akAZ7/GTdO4EfKY0FK6iVdgrEiYO0cBkth5hWEa2YpM=;
-        b=GWUK7Nsci++8MFgJYdctDsvUc3HqyNXmCAszLTxMpdFAUEGDllT5iD1lUMWMnDEEDz
-         IaNzS14HN1yiHjoazkSAMt/DJVCaLIVcICUMTE6epciq33TMGTLpqBQj8VqcNPSXlDsV
-         Q687WOMgA4qA5pEvsUtI5UoASSlt9ktIpNU5etv67hmOlH3n+apmxgRhbsA4IxSoq9aX
-         hk7o2OXgCtRXuq2ZJ+t44EO+9Za+8uakiTVPMa09uqipFTY78d2iSTzgVUxlPCf7c+nt
-         2DCYG+EL7tvHZaT7+n7rGUkt3aPKiEPBDkVrbeLU2BDbLDJx12kQgh0VOUCD6oFn+kEF
-         2ijQ==
-X-Gm-Message-State: AOAM531RJHE1OlcEiao34KFfvqMqXqZxLuNAguS9LQFM4kqa9jfb1hWi
-        EBsK3bXn8e2vV1EDbTntHXg=
-X-Google-Smtp-Source: ABdhPJzlHU7oKrKKA4pbN9Plk3Q2X3CEwJWsgrKiopAXl7yJhw2eQno13lMlUEbfeTVErmXBwPdyqg==
-X-Received: by 2002:a17:902:b7c3:b029:da:76bc:2aa9 with SMTP id v3-20020a170902b7c3b02900da76bc2aa9mr481516plz.21.1610477366190;
-        Tue, 12 Jan 2021 10:49:26 -0800 (PST)
+        bh=KxyvncnFFLYrPx0BX76P5pV/cZOWEiLtYBHcOaz1hSw=;
+        b=i9Y+CTXP3Qei08rbBRdX0jLf377mW8z1ZnIu6x2JD/Hponp6EAeNCdUyWCPFTUg6pQ
+         EFLTddsMxN/meNl884i//0KAEnXBCzc/IRqwpv0ZirTjNJmfrlWnuqiSBPJEZFUPmOBM
+         Gv1YFW02a9j5aSnbndJIm1ikM3YHIqmwQ6wnd/BgZJCYUjiKBP8ZWR+MdrAkYH1zJrvt
+         jOcmCb6zMTIL/fgwXJU6IuhLTwLeDaxGngeJcQaBvIVhK06iZKfvN0BOFglUsYjat9QC
+         vBCSl9ThZHeyTxnOrb6gd2iVezJ9nWDOLfFUd/NXFiwdxpJohxNPIuLqiQkpN9aBl/+O
+         OnmA==
+X-Gm-Message-State: AOAM533g+s/2zDfVdc+Dli4XbLxvvZgx/wjQsv5KXHexX7fiKhtQwo43
+        Q4nkXPh45ufsp9MPTq3M+vk=
+X-Google-Smtp-Source: ABdhPJyyZJjhmiYj7wqZFxQwoGpjlTWKtsTgu7rNPxKL20vWw6yhAnY9fCUNNvVEjnZo9o3cbGQmHg==
+X-Received: by 2002:a17:902:7b84:b029:da:60e0:9d38 with SMTP id w4-20020a1709027b84b02900da60e09d38mr535918pll.55.1610477501455;
+        Tue, 12 Jan 2021 10:51:41 -0800 (PST)
 Received: from [10.67.48.230] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id r67sm3950507pfc.82.2021.01.12.10.49.24
+        by smtp.googlemail.com with ESMTPSA id x6sm3960001pfq.57.2021.01.12.10.51.40
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 12 Jan 2021 10:49:25 -0800 (PST)
-Subject: Re: [PATCH net] net: dsa: clear devlink port type before
- unregistering slave netdevs
+        Tue, 12 Jan 2021 10:51:40 -0800 (PST)
+Subject: Re: [PATCH net] net: dsa: unbind all switches from tree when DSA
+ master unbinds
 To:     Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Cc:     Jiri Pirko <jiri@nvidia.com>, andrew@lunn.ch,
-        vivien.didelot@gmail.com
-References: <20210112004831.3778323-1-olteanv@gmail.com>
+Cc:     andrew@lunn.ch, vivien.didelot@gmail.com
+References: <20210111230943.3701806-1-olteanv@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -111,12 +110,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
  M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <f2974f4e-41d0-379a-3014-39926cf011a0@gmail.com>
-Date:   Tue, 12 Jan 2021 10:49:21 -0800
+Message-ID: <6d6cc153-85ca-62c8-8d9c-4f4c6a325e91@gmail.com>
+Date:   Tue, 12 Jan 2021 10:51:39 -0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <20210112004831.3778323-1-olteanv@gmail.com>
+In-Reply-To: <20210111230943.3701806-1-olteanv@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -124,68 +123,89 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/11/21 4:48 PM, Vladimir Oltean wrote:
+On 1/11/21 3:09 PM, Vladimir Oltean wrote:
 > From: Vladimir Oltean <vladimir.oltean@nxp.com>
 > 
-> Florian reported a use-after-free bug in devlink_nl_port_fill found with
-> KASAN:
+> Currently the following happens when a DSA master driver unbinds while
+> there are DSA switches attached to it:
 > 
-> (devlink_nl_port_fill)
-> (devlink_port_notify)
-> (devlink_port_unregister)
-> (dsa_switch_teardown.part.3)
-> (dsa_tree_teardown_switches)
-> (dsa_unregister_switch)
-> (bcm_sf2_sw_remove)
-> (platform_remove)
-> (device_release_driver_internal)
-> (device_links_unbind_consumers)
-> (device_release_driver_internal)
-> (device_driver_detach)
-> (unbind_store)
+> $ echo 0000:00:00.5 > /sys/bus/pci/drivers/mscc_felix/unbind
+> ------------[ cut here ]------------
+> WARNING: CPU: 0 PID: 392 at net/core/dev.c:9507
+> Call trace:
+>  rollback_registered_many+0x5fc/0x688
+>  unregister_netdevice_queue+0x98/0x120
+>  dsa_slave_destroy+0x4c/0x88
+>  dsa_port_teardown.part.16+0x78/0xb0
+>  dsa_tree_teardown_switches+0x58/0xc0
+>  dsa_unregister_switch+0x104/0x1b8
+>  felix_pci_remove+0x24/0x48
+>  pci_device_remove+0x48/0xf0
+>  device_release_driver_internal+0x118/0x1e8
+>  device_driver_detach+0x28/0x38
+>  unbind_store+0xd0/0x100
 > 
-> Allocated by task 31:
->  alloc_netdev_mqs+0x5c/0x50c
->  dsa_slave_create+0x110/0x9c8
->  dsa_register_switch+0xdb0/0x13a4
->  b53_switch_register+0x47c/0x6dc
->  bcm_sf2_sw_probe+0xaa4/0xc98
->  platform_probe+0x90/0xf4
->  really_probe+0x184/0x728
->  driver_probe_device+0xa4/0x278
->  __device_attach_driver+0xe8/0x148
->  bus_for_each_drv+0x108/0x158
+> Located at the above location is this WARN_ON:
 > 
-> Freed by task 249:
->  free_netdev+0x170/0x194
->  dsa_slave_destroy+0xac/0xb0
->  dsa_port_teardown.part.2+0xa0/0xb4
->  dsa_tree_teardown_switches+0x50/0xc4
->  dsa_unregister_switch+0x124/0x250
->  bcm_sf2_sw_remove+0x98/0x13c
->  platform_remove+0x44/0x5c
->  device_release_driver_internal+0x150/0x254
->  device_links_unbind_consumers+0xf8/0x12c
->  device_release_driver_internal+0x84/0x254
->  device_driver_detach+0x30/0x34
->  unbind_store+0x90/0x134
+> 	/* Notifier chain MUST detach us all upper devices. */
+> 	WARN_ON(netdev_has_any_upper_dev(dev));
 > 
-> What happens is that devlink_port_unregister emits a netlink
-> DEVLINK_CMD_PORT_DEL message which associates the devlink port that is
-> getting unregistered with the ifindex of its corresponding net_device.
-> Only trouble is, the net_device has already been unregistered.
+> Other stacked interfaces, like VLAN, do indeed listen for
+> NETDEV_UNREGISTER on the real_dev and also unregister themselves at that
+> time, which is clearly the behavior that rollback_registered_many
+> expects. But DSA interfaces are not VLAN. They have backing hardware
+> (platform devices, PCI devices, MDIO, SPI etc) which have a life cycle
+> of their own and we can't just trigger an unregister from the DSA
+> framework when we receive a netdev notifier that the master unregisters.
 > 
-> It looks like we can stub out the search for a corresponding net_device
-> if we clear the devlink_port's type. This looks like a bit of a hack,
-> but also seems to be the reason why the devlink_port_type_clear function
-> exists in the first place.
+> Luckily, there is something we can do, and that is to inform the driver
+> core that we have a runtime dependency to the DSA master interface's
+> device, and create a device link where that is the supplier and we are
+> the consumer. Having this device link will make the DSA switch unbind
+> before the DSA master unbinds, which is enough to avoid the WARN_ON from
+> rollback_registered_many.
 > 
-> Fixes: 3122433eb533 ("net: dsa: Register devlink ports before calling DSA driver setup()")
+> Note that even before the blamed commit, DSA did nothing intelligent
+> when the master interface got unregistered either. See the discussion
+> here:
+> https://lore.kernel.org/netdev/20200505210253.20311-1-f.fainelli@gmail.com/
+> But this time, at least the WARN_ON is loud enough that the
+> upper_dev_link commit can be blamed.
+> 
+> The advantage with this approach vs dev_hold(master) in the attached
+> link is that the latter is not meant for long term reference counting.
+> With dev_hold, the only thing that will happen is that when the user
+> attempts an unbind of the DSA master, netdev_wait_allrefs will keep
+> waiting and waiting, due to DSA keeping the refcount forever. DSA would
+> not access freed memory corresponding to the master interface, but the
+> unbind would still result in a freeze. Whereas with device links,
+> graceful teardown is ensured. It even works with cascaded DSA trees.
+> 
+> $ echo 0000:00:00.2 > /sys/bus/pci/drivers/fsl_enetc/unbind
+> [ 1818.797546] device swp0 left promiscuous mode
+> [ 1819.301112] sja1105 spi2.0: Link is Down
+> [ 1819.307981] DSA: tree 1 torn down
+> [ 1819.312408] device eno2 left promiscuous mode
+> [ 1819.656803] mscc_felix 0000:00:00.5: Link is Down
+> [ 1819.667194] DSA: tree 0 torn down
+> [ 1819.711557] fsl_enetc 0000:00:00.2 eno2: Link is Down
+> 
+> This approach allows us to keep the DSA framework absolutely unchanged,
+> and the driver core will just know to unbind us first when the master
+> goes away - as opposed to the large (and probably impossible) rework
+> required if attempting to listen for NETDEV_UNREGISTER.
+> 
+> As per the documentation at Documentation/driver-api/device_link.rst,
+> specifying the DL_FLAG_AUTOREMOVE_CONSUMER flag causes the device link
+> to be automatically purged when the consumer fails to probe or later
+> unbinds. So we don't need to keep the consumer_link variable in struct
+> dsa_switch.
+> 
+> Fixes: 2f1e8ea726e9 ("net: dsa: link interfaces with the DSA master to get rid of lockdep warnings")
 > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Tested-by: Florian fainelli <f.fainelli@gmail.com>
-Reported-by: Florian Fainelli <f.fainelli@gmail.com>
+Tested-by: Florian Fainelli <f.fainelli@gmail.com>
 
 Thanks!
 -- 
