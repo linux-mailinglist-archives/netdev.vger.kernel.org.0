@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 94EEB2F3856
-	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 19:17:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 437482F3853
+	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 19:17:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391603AbhALSPl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jan 2021 13:15:41 -0500
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:62796 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2406232AbhALSPb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 13:15:31 -0500
-Received: from pps.filterd (m0098393.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 10CI2FCP124378
+        id S2406700AbhALSPf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jan 2021 13:15:35 -0500
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:33924 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S2406128AbhALSPc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 13:15:32 -0500
+Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 10CIEWJe054335
         for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 13:14:50 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
  content-transfer-encoding; s=pp1;
- bh=agd2CayxWlu/pjGCV/9UvhlyS7e8snVb1OmUvmyKMwo=;
- b=g4JeLXybVT+b3SPh7dypr+mvbmiRfpbteZoRZN176KRrV9iE7MgMxGWVU+5Y0SwhvYSs
- EyvF8wFroi4PDF7CslDRgKHwG/wcx7WwEuhZXA0k0XhJ/ciD6b6C7T/JRgjo+DVvn75r
- 4Ww3X4zICp1d967pQStzBx1TZRqNauBq7ZjbjeVKvme2qo6stkoh18QQBQqrWNicgfgt
- 9M0UPzCYLMZri2jgsGF7QGNUWh9HUCGZJMy/V2P8UUizgM3BCFpY2vxtctVagHoTVSIz
- JXiSQ/ZNi/5k60VdDUakSTlvhLqUF/IWfVhpLKNGUX21XDqj9r68pKhSFnHkprJiubgk XQ== 
-Received: from ppma01wdc.us.ibm.com (fd.55.37a9.ip4.static.sl-reverse.com [169.55.85.253])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 361f74k9rs-1
+ bh=uBPyJl/MqgWhzc0KvhfRDj0fqd+5oJwYu4k9kNsxTcE=;
+ b=Ak42KDMqeaIN3lIEUbtdSHSuuox3C8wLQo8HCeukghUkWS6ZmfpgBz78RWPXWPP9/Raa
+ dbcVEVtNzKf7AgNUIZuXTZo/LwAyhLk/XW9e5NccupnVKtHdOBdEL/OjrX4WwuN1X13L
+ XOY1Mr37l7Kox/CYckcqW4UbbhosGKRb2GTcPJxAO5LbqqwVRbqjdaogIwNRk0Qt4t4h
+ 0B8CSSemTF8005w4TIeU/h3bff8oRxl8bsvjesAR75VfoWlTuTx4ov5dXcjqTcIDBtYV
+ 2R6hxK2Rd/r3GYSVpIKGbBpWzVCyAVPyLV0kjvq/LkozuBbz2rsFS70IUcujzEz3OHM7 /g== 
+Received: from ppma04wdc.us.ibm.com (1a.90.2fa9.ip4.static.sl-reverse.com [169.47.144.26])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 361gvbr04g-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
         for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 13:14:50 -0500
-Received: from pps.filterd (ppma01wdc.us.ibm.com [127.0.0.1])
-        by ppma01wdc.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 10CHvS5M015411
+Received: from pps.filterd (ppma04wdc.us.ibm.com [127.0.0.1])
+        by ppma04wdc.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 10CI7Iqn030850
         for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 18:14:49 GMT
-Received: from b01cxnp22036.gho.pok.ibm.com (b01cxnp22036.gho.pok.ibm.com [9.57.198.26])
-        by ppma01wdc.us.ibm.com with ESMTP id 35y448ywha-1
+Received: from b01cxnp23032.gho.pok.ibm.com (b01cxnp23032.gho.pok.ibm.com [9.57.198.27])
+        by ppma04wdc.us.ibm.com with ESMTP id 35y448yw9p-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
         for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 18:14:49 +0000
 Received: from b01ledav003.gho.pok.ibm.com (b01ledav003.gho.pok.ibm.com [9.57.199.108])
-        by b01cxnp22036.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 10CIEmGS7799382
+        by b01cxnp23032.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 10CIEnh324248646
         (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 12 Jan 2021 18:14:48 GMT
+        Tue, 12 Jan 2021 18:14:49 GMT
 Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 4FBB2B2073;
+        by IMSVA (Postfix) with ESMTP id 365F7B2071;
+        Tue, 12 Jan 2021 18:14:49 +0000 (GMT)
+Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 87750B2074;
         Tue, 12 Jan 2021 18:14:48 +0000 (GMT)
-Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id A9878B2064;
-        Tue, 12 Jan 2021 18:14:47 +0000 (GMT)
 Received: from suka-w540.ibmuc.com (unknown [9.85.179.93])
         by b01ledav003.gho.pok.ibm.com (Postfix) with ESMTP;
-        Tue, 12 Jan 2021 18:14:47 +0000 (GMT)
+        Tue, 12 Jan 2021 18:14:48 +0000 (GMT)
 From:   Sukadev Bhattiprolu <sukadev@linux.ibm.com>
 To:     netdev@vger.kernel.org
 Cc:     Dany Madden <drt@linux.ibm.com>, Lijun Pan <ljp@linux.ibm.com>,
         Rick Lindsley <ricklind@linux.ibm.com>, sukadev@linux.ibm.com
-Subject: [PATCH net-next v2 6/7] ibmvnic: check adapter->state under state_lock
-Date:   Tue, 12 Jan 2021 10:14:40 -0800
-Message-Id: <20210112181441.206545-7-sukadev@linux.ibm.com>
+Subject: [PATCH net-next v2 7/7] ibmvnic: add comments about state_lock
+Date:   Tue, 12 Jan 2021 10:14:41 -0800
+Message-Id: <20210112181441.206545-8-sukadev@linux.ibm.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20210112181441.206545-1-sukadev@linux.ibm.com>
 References: <20210112181441.206545-1-sukadev@linux.ibm.com>
@@ -61,409 +61,230 @@ MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-TM-AS-GCONF: 00
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
- definitions=2021-01-12_12:2021-01-12,2021-01-12 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 clxscore=1015
- mlxlogscore=999 adultscore=0 bulkscore=0 impostorscore=0 mlxscore=0
- spamscore=0 lowpriorityscore=0 phishscore=0 malwarescore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2101120103
+ definitions=2021-01-12_15:2021-01-12,2021-01-12 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 bulkscore=0
+ spamscore=0 clxscore=1015 adultscore=0 malwarescore=0 mlxlogscore=999
+ impostorscore=0 suspectscore=0 lowpriorityscore=0 priorityscore=1501
+ mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2101120106
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Consider following code from __ibmvnic_reset()
+Add some comments, notes and TODOs about ->state_lock and RTNL.
 
-                spin_lock_irqsave(&adapter->state_lock, flags);
-
-                if (adapter->state == VNIC_REMOVING ||
-                    adapter->state == VNIC_REMOVED) {
-                        spin_unlock_irqrestore(&adapter->state_lock, flags);
-                        kfree(rwi);
-                        rc = EBUSY;
-                        break;
-                }
-
-                if (!saved_state) {
-                        reset_state = adapter->state;
-                        saved_state = true;
-                }
-                spin_unlock_irqrestore(&adapter->state_lock, flags);
-
-and following from ibmvnic_open():
-
-	if (adapter->failover_pending) {
-		adapter->state = VNIC_OPEN;
-		return 0;
-	}
-
-They have following issues:
-
-	a. __ibmvnic_reset() caches the adapter->state while holding
-	   the state_lock but ibmvnic_open() sets state to OPEN without
-	   holding a lock.
-
-	b. Even if adapter state changes to OPEN after __ibmvnic_reset()
-	   cached the state but before reset begins, the reset process
-	   will leave the adapter in PROBED state instead of OPEN state.
-
-The reason current code caches the adapter state is so we know what state
-to go back to if the reset fails. But due to recent bug fixes, the reset
-functions __restore__ the adapter state on both success/failure, so we
-no longer need to cache the state.
-
-To fix the race condition b above, use ->state_lock more consistently and
-throughout the open, close and reset functions. But since these may have
-to block, change the ->state_lock from a spinlock to mutex.
-
-A follow-on patch will audit/document the uses of ->state field outside
-open/close/reset.
-
-Thanks to a lot of input from Dany Madden, Lijun Pan and Rick Lindsley.
-
-Fixes: 7d7195a026ba ("ibmvnic: Do not process device remove during device reset")
 Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
 ---
----
- drivers/net/ethernet/ibm/ibmvnic.c | 118 ++++++++++++++++++++---------
- drivers/net/ethernet/ibm/ibmvnic.h |   5 +-
- 2 files changed, 87 insertions(+), 36 deletions(-)
+ drivers/net/ethernet/ibm/ibmvnic.c | 58 ++++++++++++++++++++++++++++++
+ drivers/net/ethernet/ibm/ibmvnic.h | 51 +++++++++++++++++++++++++-
+ 2 files changed, 108 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-index 7645df37e886..3ca92a207d16 100644
+index 3ca92a207d16..d56e73b64da4 100644
 --- a/drivers/net/ethernet/ibm/ibmvnic.c
 +++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -1150,6 +1150,8 @@ static int __ibmvnic_open(struct net_device *netdev)
- 	enum vnic_state prev_state = adapter->state;
- 	int i, rc;
+@@ -1202,6 +1202,14 @@ static int ibmvnic_open(struct net_device *netdev)
  
-+	WARN_ON_ONCE(!mutex_is_locked(&adapter->state_lock));
-+
- 	adapter->state = VNIC_OPENING;
- 	replenish_pools(adapter);
- 	ibmvnic_napi_enable(adapter);
-@@ -1196,11 +1198,14 @@ static int ibmvnic_open(struct net_device *netdev)
- 	struct ibmvnic_adapter *adapter = netdev_priv(netdev);
- 	int rc;
- 
-+	mutex_lock(&adapter->state_lock);
-+
  	/* If device failover is pending, just set device state and return.
  	 * Device operation will be handled by reset routine.
++	 *
++	 * Note that ->failover_pending is not protected by ->state_lock
++	 * because the tasklet (executing ibmvnic_handle_crq()) cannot
++	 * block. Even otherwise this can deadlock due to CRQs issued in
++	 * ibmvnic_open().
++	 *
++	 * We check failover_pending again at the end in case of errors.
++	 * so its okay if we miss the change to true here.
  	 */
  	if (adapter->failover_pending) {
  		adapter->state = VNIC_OPEN;
-+		mutex_unlock(&adapter->state_lock);
- 		return 0;
- 	}
+@@ -1380,6 +1388,9 @@ static int ibmvnic_close(struct net_device *netdev)
  
-@@ -1228,6 +1233,8 @@ static int ibmvnic_open(struct net_device *netdev)
- 		adapter->state = VNIC_OPEN;
- 		rc = 0;
- 	}
-+
-+	mutex_unlock(&adapter->state_lock);
- 	return rc;
- }
- 
-@@ -1350,6 +1357,8 @@ static int __ibmvnic_close(struct net_device *netdev)
- 	struct ibmvnic_adapter *adapter = netdev_priv(netdev);
- 	int rc = 0;
- 
-+	WARN_ON_ONCE(!mutex_is_locked(&adapter->state_lock));
-+
- 	adapter->state = VNIC_CLOSING;
- 	rc = set_link_state(adapter, IBMVNIC_LOGICAL_LNK_DN);
- 	if (rc)
-@@ -1363,6 +1372,8 @@ static int ibmvnic_close(struct net_device *netdev)
- 	struct ibmvnic_adapter *adapter = netdev_priv(netdev);
- 	int rc;
- 
-+	mutex_lock(&adapter->state_lock);
-+
- 	netdev_dbg(netdev, "[S:%d FOP:%d FRR:%d] Closing\n",
- 		   adapter->state, adapter->failover_pending,
- 		   adapter->force_reset_recovery);
-@@ -1372,12 +1383,15 @@ static int ibmvnic_close(struct net_device *netdev)
+ 	/* If device failover is pending, just set device state and return.
+ 	 * Device operation will be handled by reset routine.
++	 *
++	 * Note that ->failover_pending is not protected by ->state_lock
++	 * See comments in ibmvnic_open().
  	 */
  	if (adapter->failover_pending) {
  		adapter->state = VNIC_CLOSED;
-+		mutex_unlock(&adapter->state_lock);
- 		return 0;
- 	}
+@@ -1930,6 +1941,14 @@ static int ibmvnic_set_mac(struct net_device *netdev, void *p)
+ 	if (!is_valid_ether_addr(addr->sa_data))
+ 		return -EADDRNOTAVAIL;
  
-+
- 	rc = __ibmvnic_close(netdev);
- 	ibmvnic_cleanup(netdev);
- 
-+	mutex_unlock(&adapter->state_lock);
- 	return rc;
- }
- 
-@@ -1929,15 +1943,24 @@ static int ibmvnic_set_mac(struct net_device *netdev, void *p)
++	/*
++	 * TODO: Can this race with a reset? The reset could briefly
++	 *       set state to PROBED causing us to skip setting the
++	 *       mac address. When reset complets, we set the old mac
++	 *       address? Can we check ->resetting bit instead and
++	 *       save the new mac address in adapter->mac_addr
++	 *       so reset function can set it when it is done?
++	 */
+ 	if (adapter->state != VNIC_PROBED) {
+ 		ether_addr_copy(adapter->mac_addr, addr->sa_data);
+ 		rc = __ibmvnic_set_mac(netdev, addr->sa_data);
+@@ -1941,6 +1960,14 @@ static int ibmvnic_set_mac(struct net_device *netdev, void *p)
+ /**
+  * do_change_param_reset returns zero if we are able to keep processing reset
   * events, or non-zero if we hit a fatal error and must halt.
++ *
++ * Notes:
++ * 	- Regardless of success/failure, this function restores adapter state
++ * 	  to what as it was on entry. In case of failure, it is assumed that
++ * 	  a new hard-reset will be attempted.
++ *	- Caller must hold the rtnl lock before calling and release upon
++ *	  return.
++ *
   */
  static int do_change_param_reset(struct ibmvnic_adapter *adapter,
--				 enum ibmvnic_reset_reason reason,
--				 u32 reset_state)
-+				 enum ibmvnic_reset_reason reason)
- {
- 	struct net_device *netdev = adapter->netdev;
-+	u32 reset_state;
- 	int i, rc;
- 
- 	netdev_dbg(adapter->netdev, "Change param resetting driver (%d)\n",
- 		   reason);
- 
-+	mutex_lock(&adapter->state_lock);
-+
-+	reset_state = adapter->state;
-+	if (reset_state == VNIC_REMOVING || reset_state == VNIC_REMOVED) {
-+		netdev_err(netdev, "Adapter removed before change-param!\n");
-+		rc = IBMVNIC_NODEV;
-+		goto out;
-+	}
-+
- 	netif_carrier_off(netdev);
- 	adapter->reset_reason = reason;
- 
-@@ -2007,6 +2030,9 @@ static int do_change_param_reset(struct ibmvnic_adapter *adapter,
- out:
- 	if (rc)
- 		adapter->state = reset_state;
-+
-+	mutex_unlock(&adapter->state_lock);
-+
- 	return rc;
- }
- 
-@@ -2015,19 +2041,31 @@ static int do_change_param_reset(struct ibmvnic_adapter *adapter,
+ 				 enum ibmvnic_reset_reason reason)
+@@ -2039,6 +2066,11 @@ static int do_change_param_reset(struct ibmvnic_adapter *adapter,
+ /**
+  * do_reset returns zero if we are able to keep processing reset events, or
   * non-zero if we hit a fatal error and must halt.
++ *
++ * Notes:
++ * 	- Regardless of success/failure, this function restores adapter state
++ * 	  to what as it was on entry. In case of failure, it is assumed that
++ * 	  a new hard-reset will be attempted.
   */
  static int do_reset(struct ibmvnic_adapter *adapter,
--		    enum ibmvnic_reset_reason reason, u32 reset_state)
-+		    enum ibmvnic_reset_reason reason)
- {
-+	struct net_device *netdev = adapter->netdev;
- 	u64 old_num_rx_queues, old_num_tx_queues;
- 	u64 old_num_rx_slots, old_num_tx_slots;
--	struct net_device *netdev = adapter->netdev;
-+	u32 reset_state;
- 	int i, rc;
- 
-+	rtnl_lock();
-+
-+	mutex_lock(&adapter->state_lock);
-+
-+	reset_state = adapter->state;
-+
- 	netdev_dbg(adapter->netdev,
- 		   "[S:%d FOP:%d] Reset reason %d, reset_state %d\n",
- 		   adapter->state, adapter->failover_pending,
- 		   reason, reset_state);
- 
--	rtnl_lock();
-+	if (reset_state == VNIC_REMOVING || reset_state == VNIC_REMOVED) {
-+		netdev_err(netdev, "Adapter removed before reset!\n");
-+		rc = IBMVNIC_NODEV;
-+		goto out;
-+	}
-+
- 	/*
- 	 * Now that we have the rtnl lock, clear any pending failover.
- 	 * This will ensure ibmvnic_open() has either completed or will
-@@ -2054,11 +2092,21 @@ static int do_reset(struct ibmvnic_adapter *adapter,
- 		/* Release the RTNL lock before link state change and
- 		 * re-acquire after the link state change to allow
- 		 * linkwatch_event to grab the RTNL lock and run during
--		 * a reset.
-+		 * a reset. To reacquire RTNL, we must also drop/reacquire
-+		 * state_lock. Once we reacquire state_lock, we don't need
-+		 * to check for REMOVING since ->resetting bit is still set
-+		 * (any ibmvnic_remove() in between would have failed).
-+		 *
-+		 * We set the state to CLOSING above. If adapter is no
-+		 * longer in CLOSING state, another thread changed the
-+		 * state when we dropped the lock, so fail the reset
-+		 * and retry.
- 		 */
-+		mutex_unlock(&adapter->state_lock);
- 		rtnl_unlock();
- 		rc = set_link_state(adapter, IBMVNIC_LOGICAL_LNK_DN);
- 		rtnl_lock();
-+		mutex_lock(&adapter->state_lock);
- 		if (rc)
- 			goto out;
- 
-@@ -2180,6 +2228,8 @@ static int do_reset(struct ibmvnic_adapter *adapter,
- 	/* restore the adapter state if reset failed */
- 	if (rc)
- 		adapter->state = reset_state;
-+
-+	mutex_unlock(&adapter->state_lock);
- 	rtnl_unlock();
- 
- 	netdev_dbg(adapter->netdev, "[S:%d FOP:%d] Reset done, rc %d\n",
-@@ -2188,11 +2238,24 @@ static int do_reset(struct ibmvnic_adapter *adapter,
- }
- 
- static int do_hard_reset(struct ibmvnic_adapter *adapter,
--			 enum ibmvnic_reset_reason reason, u32 reset_state)
-+			 enum ibmvnic_reset_reason reason)
- {
- 	struct net_device *netdev = adapter->netdev;
-+	u32 reset_state;
- 	int rc;
- 
-+	WARN_ON_ONCE(!rtnl_is_locked());
-+
-+	mutex_lock(&adapter->state_lock);
-+
-+	reset_state = adapter->state;
-+
-+	if (reset_state == VNIC_REMOVING || reset_state == VNIC_REMOVED) {
-+		netdev_err(netdev, "Adapter removed before hard reset!\n");
-+		rc = IBMVNIC_NODEV;
-+		goto out;
-+	}
-+
- 	netdev_dbg(adapter->netdev, "Hard resetting driver (%d)\n",
- 		   reason);
- 
-@@ -2254,6 +2317,7 @@ static int do_hard_reset(struct ibmvnic_adapter *adapter,
- 		adapter->state = reset_state;
- 	netdev_dbg(adapter->netdev, "[S:%d FOP:%d] Hard reset done, rc %d\n",
- 		   adapter->state, adapter->failover_pending, rc);
-+	mutex_unlock(&adapter->state_lock);
+ 		    enum ibmvnic_reset_reason reason)
+@@ -2237,6 +2269,17 @@ static int do_reset(struct ibmvnic_adapter *adapter,
  	return rc;
  }
  
-@@ -2333,9 +2397,6 @@ static void __ibmvnic_reset(struct work_struct *work)
++/**
++ * Perform a hard reset possibly because a prior reset encountered
++ * an error.
++ *
++ * Notes:
++ * 	- Regardless of success/failure, this function restores adapter state
++ * 	  to what as it was on entry. In case of failure, it is assumed that
++ * 	  a new hard-reset will be attempted.
++ *	- Caller must hold the rtnl lock before calling and release upon
++ *	  return.
++ */
+ static int do_hard_reset(struct ibmvnic_adapter *adapter,
+ 			 enum ibmvnic_reset_reason reason)
  {
- 	enum ibmvnic_reset_reason reason;
- 	struct ibmvnic_adapter *adapter;
--	bool saved_state = false;
--	unsigned long flags;
--	u32 reset_state;
- 	int rc = 0;
- 
- 	adapter = container_of(work, struct ibmvnic_adapter, ibmvnic_reset);
-@@ -2348,24 +2409,9 @@ static void __ibmvnic_reset(struct work_struct *work)
- 
- 	reason = get_pending_reset(adapter);
- 	while (reason) {
--		spin_lock_irqsave(&adapter->state_lock, flags);
--
--		if (adapter->state == VNIC_REMOVING ||
--		    adapter->state == VNIC_REMOVED) {
--			spin_unlock_irqrestore(&adapter->state_lock, flags);
--			rc = EBUSY;
--			break;
--		}
--
--		if (!saved_state) {
--			reset_state = adapter->state;
--			saved_state = true;
--		}
--		spin_unlock_irqrestore(&adapter->state_lock, flags);
--
- 		if (reason == VNIC_RESET_CHANGE_PARAM) {
- 			/* CHANGE_PARAM requestor holds rtnl_lock */
--			rc = do_change_param_reset(adapter, reason, reset_state);
-+			rc = do_change_param_reset(adapter, reason);
- 		} else if (adapter->force_reset_recovery) {
- 			/*
- 			 * Since we are doing a hard reset now, clear the
-@@ -2378,11 +2424,11 @@ static void __ibmvnic_reset(struct work_struct *work)
- 			if (adapter->wait_for_reset) {
- 				/* Previous was CHANGE_PARAM; caller locked */
- 				adapter->force_reset_recovery = false;
--				rc = do_hard_reset(adapter, reason, reset_state);
-+				rc = do_hard_reset(adapter, reason);
- 			} else {
- 				rtnl_lock();
- 				adapter->force_reset_recovery = false;
--				rc = do_hard_reset(adapter, reason, reset_state);
-+				rc = do_hard_reset(adapter, reason);
- 				rtnl_unlock();
- 			}
- 			if (rc) {
-@@ -2395,12 +2441,16 @@ static void __ibmvnic_reset(struct work_struct *work)
- 			}
- 		} else if (!(reason == VNIC_RESET_FATAL &&
- 				adapter->from_passive_init)) {
--			rc = do_reset(adapter, reason, reset_state);
-+			rc = do_reset(adapter, reason);
- 		}
- 		adapter->last_reset_time = jiffies;
- 
- 		if (rc)
- 			netdev_dbg(adapter->netdev, "Reset failed, rc=%d\n", rc);
-+		if (rc == IBMVNIC_NODEV) {
-+			rc = EBUSY;
-+			break;
-+		}
- 
- 		reason = get_pending_reset(adapter);
- 
-@@ -5390,7 +5440,7 @@ static int ibmvnic_probe(struct vio_dev *dev, const struct vio_device_id *id)
- 	adapter->next_reset = 0;
- 	memset(&adapter->pending_resets, 0, sizeof(adapter->pending_resets));
- 	spin_lock_init(&adapter->rwi_lock);
--	spin_lock_init(&adapter->state_lock);
-+	mutex_init(&adapter->state_lock);
- 	spin_lock_init(&adapter->remove_lock);
- 	mutex_init(&adapter->fw_lock);
- 	init_completion(&adapter->init_done);
-@@ -5466,9 +5516,9 @@ static int ibmvnic_remove(struct vio_dev *dev)
- 	struct ibmvnic_adapter *adapter = netdev_priv(netdev);
- 	unsigned long flags;
- 
--	spin_lock_irqsave(&adapter->state_lock, flags);
-+	mutex_lock(&adapter->state_lock);
- 	if (test_bit(0, &adapter->resetting)) {
--		spin_unlock_irqrestore(&adapter->state_lock, flags);
-+		mutex_unlock(&adapter->state_lock);
- 		return -EBUSY;
+@@ -2651,6 +2694,11 @@ static int ibmvnic_poll(struct napi_struct *napi, int budget)
+ 		frames_processed++;
  	}
  
-@@ -5481,7 +5531,7 @@ static int ibmvnic_remove(struct vio_dev *dev)
++	/* TODO: Can this race with reset and/or is release_rx_pools()?
++	 *       Is that why we check for VNIC_CLOSING? What if we go to
++	 *       CLOSING just after we check? We cannot take ->state_lock
++	 *       since we are in interrupt context.
++	 */
+ 	if (adapter->state != VNIC_CLOSING &&
+ 	    ((atomic_read(&adapter->rx_pool[scrq_num].available) <
+ 	      adapter->req_rx_add_entries_per_subcrq / 2) ||
+@@ -5358,6 +5406,9 @@ static int ibmvnic_reset_init(struct ibmvnic_adapter *adapter, bool reset)
+ 	}
+ 
+ 	if (adapter->from_passive_init) {
++		/* ibmvnic_reset_init() is always called with ->state_lock
++		 * held except from ibmvnic_probe(), so safe to update state.
++		 */
+ 		adapter->state = VNIC_OPEN;
+ 		adapter->from_passive_init = false;
+ 		return -1;
+@@ -5531,6 +5582,9 @@ static int ibmvnic_remove(struct vio_dev *dev)
  	adapter->state = VNIC_REMOVING;
  	spin_unlock_irqrestore(&adapter->remove_lock, flags);
  
--	spin_unlock_irqrestore(&adapter->state_lock, flags);
-+	mutex_unlock(&adapter->state_lock);
++	/* drop state_lock so __ibmvnic_reset() can make progress
++	 * during flush_work()
++	 */
+ 	mutex_unlock(&adapter->state_lock);
  
  	flush_work(&adapter->ibmvnic_reset);
- 	flush_delayed_work(&adapter->ibmvnic_delayed_reset);
-@@ -5497,7 +5547,7 @@ static int ibmvnic_remove(struct vio_dev *dev)
+@@ -5546,6 +5600,9 @@ static int ibmvnic_remove(struct vio_dev *dev)
+ 	release_stats_token(adapter);
  	release_stats_buffers(adapter);
  
++	/* Adapter going away. There better be no one checking ->state
++	 * or getting state_lock now TODO: Do we need the REMOVED state?
++	 */
  	adapter->state = VNIC_REMOVED;
--
-+	mutex_destroy(&adapter->state_lock);
+ 	mutex_destroy(&adapter->state_lock);
  	rtnl_unlock();
- 	mutex_destroy(&adapter->fw_lock);
- 	device_remove_file(&dev->dev, &dev_attr_failover);
+@@ -5627,6 +5684,7 @@ static int ibmvnic_resume(struct device *dev)
+ 	struct net_device *netdev = dev_get_drvdata(dev);
+ 	struct ibmvnic_adapter *adapter = netdev_priv(netdev);
+ 
++	/* resuming from power-down so ignoring state_lock */
+ 	if (adapter->state != VNIC_OPEN)
+ 		return 0;
+ 
 diff --git a/drivers/net/ethernet/ibm/ibmvnic.h b/drivers/net/ethernet/ibm/ibmvnic.h
-index 2779696ade09..ac79dfa76333 100644
+index ac79dfa76333..d79bc9444c9f 100644
 --- a/drivers/net/ethernet/ibm/ibmvnic.h
 +++ b/drivers/net/ethernet/ibm/ibmvnic.h
-@@ -21,6 +21,7 @@
- #define IBMVNIC_STATS_TIMEOUT	1
- #define IBMVNIC_INIT_FAILED	2
- #define IBMVNIC_OPEN_FAILED	3
-+#define IBMVNIC_NODEV		4
+@@ -963,6 +963,55 @@ struct ibmvnic_tunables {
+ 	u64 mtu;
+ };
  
- /* basic structures plus 100 2k buffers */
- #define IBMVNIC_IO_ENTITLEMENT_DEFAULT	610305
-@@ -1097,6 +1098,6 @@ struct ibmvnic_adapter {
++/**
++ * ->state_lock:
++ *  	Mutex to serialize read/write of adapter->state field specially
++ *  	between open and reset functions. If rtnl also needs to be held,
++ *  	acquire rtnl first and then state_lock (to be consistent with
++ *  	functions that enter ibmvnic with rtnl already held).
++ *
++ *  	In general, ->state_lock must be held for all read/writes to the
++ *  	state field. Exceptions are:
++ *  	- checks for VNIC_PROBING state - since the adapter is itself
++ *  	  under construction and because we never go _back_ to PROBING.
++ *
++ *  	- in debug messages involving ->state
++ *
++ *  	- in ibmvnic_tx_interrupt(), ibmvnic_rx_interrupt() because
++ *  	  a) this is a mutex and b) no (known) impact of getting a stale
++ *  	  state (i.e we will likely recover on the next interrupt).
++ *
++ *  	- ibmvnic_resume() - we are resuming from a power-down state?
++ *
++ *  	- ibmvnic_reset() - see ->remove_lock below.
++ *
++ *  	Besides these, there are couple of TODOs in ibmvnic_poll() and
++ *  	ibmvnic_set_mac() that need to be investigated separately.
++ *
++ *  ->remove_lock
++ *  	A spin lock used to serialize ibmvnic_reset() and ibmvnic_remove().
++ *  	ibmvnic_reset() can be called from a tasklet which cannot block,
++ *  	so it cannot use the ->state_lock. The only states ibmvnic_reset()
++ *  	checks for are PROBING, REMOVING and REMOVED. PROBING can be ignored
++ *  	as mentioned above. On entering REMOVING state, ibmvnic_reset()
++ *  	will skip scheduling resets for the adapter.
++ *
++ *  ->pending_resets[], ->next_reset:
++ *  	A "queue" of pending resets, implemented as a simple array. Resets
++ *  	are not frequent and even when they do occur, we will usually have
++ *  	just 1 or 2 entries in the queue at any time. Note that we don't
++ *  	need/allow duplicates in the queue. In the worst case, we would have
++ *  	VNIC_RESET_MAX-1 entries (but that means adapter is processing all
++ *  	valid types of resets at once!) so the slight overhead of the array
++ *  	is probably acceptable.
++ *
++ *  	We could still use a linked list but then have to deal with allocation
++ *  	failure when scheduling a reset. We sometimes enqueue reset from a
++ *  	tasklet so cannot block when we have allocation failure. Trying to
++ *  	close the adapter on failure requires us to hold the state_lock, which
++ *  	then cannot be a mutex (tasklet cannot block) - i.e complicates locking
++ *  	just for the occasional memory allocation failure.
++ */
+ struct ibmvnic_adapter {
+ 	struct vio_dev *vdev;
+ 	struct net_device *netdev;
+@@ -1098,6 +1147,6 @@ struct ibmvnic_adapter {
  	struct ibmvnic_tunables desired;
  	struct ibmvnic_tunables fallback;
  
--	/* Used for serializatin of state field */
--	spinlock_t state_lock;
-+	/* Used for serialization of state field */
-+	struct mutex state_lock;
+-	/* Used for serialization of state field */
++	/* see block comments above */
+ 	struct mutex state_lock;
  };
 -- 
 2.26.2
