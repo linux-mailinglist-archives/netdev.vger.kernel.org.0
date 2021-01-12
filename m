@@ -2,106 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 687B02F3A1F
-	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 20:24:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 48A962F3A37
+	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 20:29:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2436812AbhALTXW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jan 2021 14:23:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44040 "EHLO
+        id S2393008AbhALTYa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jan 2021 14:24:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44284 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2436791AbhALTXS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 14:23:18 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6292FC061575
-        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 11:22:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=Bwv8rcg73lMNKkJCmApjYr4bJR5F5Cs8gC2rMjoEoPw=; b=UD1Ti2XGe/on2lKNlNDU6aShg
-        mORepwTNapedrd+zHwvYt8WuTqbk2NnUc6N5W9B5wtkl13psC1p4xpTWRRul0f5iT1xQiGw+FDP3v
-        BKXGCSwgMqejqE0sW17tjwRjK5xxRPVgkSVR7CSkZs0s032Hs5H55uZj4hBCRRerIlIA8e63NRfPs
-        R1h0ntcWc/E3ANZlepp9NPYXeSNLILpnMAn/YUVxKi7wB54qHBfyLarcCIG4bYK6Abx7LyK+I9DoG
-        WEXqTkByZtUqMvEMeuifOJB7pnpqY9wu45+8gTSdaW83PGI9AW0y+igwQ50f8dcxQSkqz/uRapNav
-        q99oBhdZA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:47134)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1kzPFT-0000HJ-5Y; Tue, 12 Jan 2021 19:22:35 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1kzPFR-0006XH-Uv; Tue, 12 Jan 2021 19:22:33 +0000
-Date:   Tue, 12 Jan 2021 19:22:33 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
-        netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net,
-        pali@kernel.org
-Subject: Re: [PATCH net-next v4 1/4] net: phy: mdio-i2c: support I2C MDIO
- protocol for RollBall SFP modules
-Message-ID: <20210112192233.GE1551@shell.armlinux.org.uk>
-References: <20210111050044.22002-1-kabel@kernel.org>
- <20210111050044.22002-2-kabel@kernel.org>
- <51416633-ab53-460f-0606-ef6408299adc@gmail.com>
+        with ESMTP id S2392984AbhALTYZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 14:24:25 -0500
+Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 338DEC061786;
+        Tue, 12 Jan 2021 11:23:45 -0800 (PST)
+Received: by mail-yb1-xb29.google.com with SMTP id r63so3205919ybf.5;
+        Tue, 12 Jan 2021 11:23:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=gWw4Dda5GiSp13AvM2vk3l+3hQNYmIhj9JeG1aKw79Y=;
+        b=aln0JArqpb7Be8nuLbKkpfI5c/0TUU4Da7OvHFHlkAL06EuOuUS2dV2WuMGxX33IQi
+         a3LRYDDmgnPjFrI7c1HmrRP2KV0TEWbJ0Kj87zZJOtjHEJuxSgHT39ruR0eU69cP5/g5
+         O1JKu4r/yhY0AkK0IjbGGupzNTz8W5xrJjyXyQ/y69hFlFx1Wz4Wgz3u6MwjSXxIE/xC
+         iijZkvo3RBLJZf//I01AoJ3pwxpXA24ioLaDMvt5uydh+ncIyHsaJKMOHVwJ7bfJIiMb
+         UpDRFJGoX2MLE6Z+2Iwv997Ja0rlgpMFs076pBBV2Hr1OYYpVYj5xehUZpj2Pz4e2w4j
+         j0rQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=gWw4Dda5GiSp13AvM2vk3l+3hQNYmIhj9JeG1aKw79Y=;
+        b=mYWvMtjPGuooYITp9Q37y5PmbCLBGAFyAJqFN43nTo4V8vif3xLj52LyqimYgRemE7
+         RU286HFabQiMUzZ4KEnOb3YRsIO4tdnCNw/WxdpytkWnyLtQUecu8VkSRdEU1UGzexGH
+         TJeb9TulsocC27wvydZRYRTodYEaqkoihyMN83/fg/TiJQbdy00Gw5SnL7gO36Zu0cwD
+         Abw/r3MMLqDebejUo0xVHq0LpG1la07cmG+rhlbDX0fQ2CynS65lXRkfcyz8DDRik9Zl
+         IbkOF2Q+qyhZdeRTbCJQ6UQvh2CoWwRfhWjsSEBmNJbtLWRq4AcN+LyUaucjbJ5oeQna
+         TWgA==
+X-Gm-Message-State: AOAM533NGtuJhKI09zN1ORO1LHk8hXGDv4Z8qk0NF/e4X0P7mCxM4YaB
+        1eoRWtVtwXYJ78d1dMX+m463cOm7XKH8yfK046I=
+X-Google-Smtp-Source: ABdhPJwH6Q/HsjT7/TKnk7Vzr6JskyrBhP82FYuc2i9rCCnHBmGAZjWGeji8hlqUPbjwxq3c/Bdn4RjNltTWPlkqIvk=
+X-Received: by 2002:a25:48c7:: with SMTP id v190mr1396610yba.260.1610479424515;
+ Tue, 12 Jan 2021 11:23:44 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <51416633-ab53-460f-0606-ef6408299adc@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+References: <161047346644.4003084.2653117664787086168.stgit@firesoul> <161047352084.4003084.16468571234023057969.stgit@firesoul>
+In-Reply-To: <161047352084.4003084.16468571234023057969.stgit@firesoul>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 12 Jan 2021 11:23:33 -0800
+Message-ID: <CAEf4Bzb0Z+qeuDTtfz6Ae3ab5hz_iG0vt8ALiry2zYWkgRh2Fw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next V11 4/7] bpf: add BPF-helper for MTU checking
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        =?UTF-8?Q?Maciej_=C5=BBenczykowski?= <maze@google.com>,
+        Lorenz Bauer <lmb@cloudflare.com>, shaun@tigera.io,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Marek Majkowski <marek@cloudflare.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>, eyal.birger@gmail.com,
+        colrack@gmail.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 12, 2021 at 09:42:56AM +0100, Heiner Kallweit wrote:
-> On 11.01.2021 06:00, Marek Behún wrote:
-> > Some multigig SFPs from RollBall and Hilink do not expose functional
-> > MDIO access to the internal PHY of the SFP via I2C address 0x56
-> > (although there seems to be read-only clause 22 access on this address).
-> > 
-> > Instead these SFPs PHY can be accessed via I2C via the SFP Enhanced
-> > Digital Diagnostic Interface - I2C address 0x51. The SFP_PAGE has to be
-> > selected to 3 and the password must be filled with 0xff bytes for this
-> > PHY communication to work.
-> > 
-> > This extends the mdio-i2c driver to support this protocol by adding a
-> > special parameter to mdio_i2c_alloc function via which this RollBall
-> > protocol can be selected.
-> > 
-> I'd think that mdio-i2c.c is for generic code. When adding a
-> vendor-specific protocol, wouldn't it make sense to use a dedicated
-> source file for it?
+On Tue, Jan 12, 2021 at 9:49 AM Jesper Dangaard Brouer
+<brouer@redhat.com> wrote:
+>
+> This BPF-helper bpf_check_mtu() works for both XDP and TC-BPF programs.
+>
+> The SKB object is complex and the skb->len value (accessible from
+> BPF-prog) also include the length of any extra GRO/GSO segments, but
+> without taking into account that these GRO/GSO segments get added
+> transport (L4) and network (L3) headers before being transmitted. Thus,
+> this BPF-helper is created such that the BPF-programmer don't need to
+> handle these details in the BPF-prog.
+>
+> The API is designed to help the BPF-programmer, that want to do packet
+> context size changes, which involves other helpers. These other helpers
+> usually does a delta size adjustment. This helper also support a delta
+> size (len_diff), which allow BPF-programmer to reuse arguments needed by
+> these other helpers, and perform the MTU check prior to doing any actual
+> size adjustment of the packet context.
+>
+> It is on purpose, that we allow the len adjustment to become a negative
+> result, that will pass the MTU check. This might seem weird, but it's not
+> this helpers responsibility to "catch" wrong len_diff adjustments. Other
+> helpers will take care of these checks, if BPF-programmer chooses to do
+> actual size adjustment.
+>
+> V9:
+> - Use dev->hard_header_len (instead of ETH_HLEN)
+> - Annotate with unlikely req from Daniel
+> - Fix logic error using skb_gso_validate_network_len from Daniel
+>
+> V6:
+> - Took John's advice and dropped BPF_MTU_CHK_RELAX
+> - Returned MTU is kept at L3-level (like fib_lookup)
+>
+> V4: Lot of changes
+>  - ifindex 0 now use current netdev for MTU lookup
+>  - rename helper from bpf_mtu_check to bpf_check_mtu
+>  - fix bug for GSO pkt length (as skb->len is total len)
+>  - remove __bpf_len_adj_positive, simply allow negative len adj
+>
+> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+> ---
+>  include/uapi/linux/bpf.h       |   67 ++++++++++++++++++++++
+>  net/core/filter.c              |  122 ++++++++++++++++++++++++++++++++++++++++
+>  tools/include/uapi/linux/bpf.h |   67 ++++++++++++++++++++++
+>  3 files changed, 256 insertions(+)
+>
+> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> index 649586d656b6..fa2e99351758 100644
+> --- a/include/uapi/linux/bpf.h
+> +++ b/include/uapi/linux/bpf.h
+> @@ -3833,6 +3833,61 @@ union bpf_attr {
+>   *     Return
+>   *             A pointer to a struct socket on success or NULL if the file is
+>   *             not a socket.
+> + *
+> + * int bpf_check_mtu(void *ctx, u32 ifindex, u32 *mtu_len, s32 len_diff, u64 flags)
 
-There is nothing in the SFP MSAs about how to access an on-board PHY
-on a SFP. This is something that vendors choose to do (or in some
-cases, not do.)
+should return long, same as most other helpers
 
-mdio-i2c currently implements the access protocol for Marvell 88E1111
-PHYs which have an I2C mode. It was extended to support the DM7052
-module which has a Broadcom Clause 45 PHY and either a microcontroller
-or FPGA to convert I2C cycles to MDIO cycles - and sensibly performs
-clock stretching.
+> + *     Description
+> + *             Check ctx packet size against MTU of net device (based on
+> + *             *ifindex*).  This helper will likely be used in combination with
+> + *             helpers that adjust/change the packet size.  The argument
+> + *             *len_diff* can be used for querying with a planned size
+> + *             change. This allows to check MTU prior to changing packet ctx.
+> + *
 
-There are modules that the clause 45 PHY is accessible via exactly the
-same I2C address, using exactly the same data accesses, but do not
-do the clock stretching thing, instead telling you that you must wait
-N microseconds between the bus transactions. We don't yet support
-these.
-
-Then there is Marek's module, where the PHY is accessible via a page
-in the diagnostic address - which is another entirely reasonable
-implementation. The solution we have here is one that I've worked with
-Marek for a few months now.
-
-I don't think we should grow lots of separate mdio-i2c-vendorfoo.c
-drivers - at least not yet. Maybe if we get lots of different access
-methods, it may make sense in the future.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+[...]
