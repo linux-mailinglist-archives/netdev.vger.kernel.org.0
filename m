@@ -2,168 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9486A2F3635
-	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 17:55:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 29D9A2F363F
+	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 17:57:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405611AbhALQyA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jan 2021 11:54:00 -0500
-Received: from mail.kernel.org ([198.145.29.99]:43208 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2405518AbhALQyA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 12 Jan 2021 11:54:00 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id DA8DF2312F
-        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 16:53:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610470399;
-        bh=QD1QJEfLDth6VGUjNynnB2WirA8KnKteRRZBlSzAYQQ=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=dC4KpxGNTjgHWv6D/zGJS03x5DTdOmLutnM9zThNp1p5Giv42ldU5wInwlBeQQ/tW
-         h9byiy4KvPw3TE0Tjqv4GJydJB+eB0huzKK+jprtlO2yH14/g3nubKGO91UfYKriZi
-         EjgkYOybfVNMHJ6yX2r+L8q6/aNqMWzU+YrJkkrk49sj22JGKoIa4OCfJlJGySHalx
-         nb4KTo52OKv+Wz76NBzz1lR6ZABQZeWm7Z02Tl8kBLLLbHecO9sVQsLI5qoJL/D43h
-         LwPuyinJV39WsvPJghAYaTPqpMiBjchkRzT00YDwPuWa+LXz1iQDhcDxz9dtkCAE5r
-         O4ah3TkWlyhvw==
-Received: by mail-lf1-f44.google.com with SMTP id s26so4372620lfc.8
-        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 08:53:18 -0800 (PST)
-X-Gm-Message-State: AOAM533ICrAvB6bOP5Rase2WMpc8QD6VEGXSUpnPRR8WIWlzqkO1dWRk
-        YRRO8GaXucPLKA9yKgsxxPZh8qIjzoALDZ2VCM02gg==
-X-Google-Smtp-Source: ABdhPJz9nqLIAzGt11vPK09cH6bIF347IGkZvDv8OLO2n+fNHSBK1ps+zDZrk5DQgJZvjC7Hy3Fiiqtdoe0yMydEh4Q=
-X-Received: by 2002:a19:cbd8:: with SMTP id b207mr2602394lfg.550.1610470396912;
- Tue, 12 Jan 2021 08:53:16 -0800 (PST)
+        id S2390925AbhALQz3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jan 2021 11:55:29 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:29383 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2388051AbhALQz3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 11:55:29 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1610470440;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=RJtenorxDtU5qCjG/2C59Y/pygUXPLN1pUzLWTld9gk=;
+        b=LjlAJ5ix1gZqJEt1M4np88/ETVUMaHToN5f/b6c4W6j5t+km5LFlkIxptfBk7V0ezvvZMf
+        p7D6q8Cp6fSGn3aptFSxs/kBbaP+R1mc3MdD80HVMkyKzvNArodthva8NYkB94ZKLJfLej
+        SopxPjnomWa7KJxbuBZI47jx2wd9EOw=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-549-3HJhCj4SOJSOZp6mOmKhxQ-1; Tue, 12 Jan 2021 11:53:59 -0500
+X-MC-Unique: 3HJhCj4SOJSOZp6mOmKhxQ-1
+Received: by mail-wr1-f70.google.com with SMTP id w5so1406679wrl.9
+        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 08:53:58 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=RJtenorxDtU5qCjG/2C59Y/pygUXPLN1pUzLWTld9gk=;
+        b=d1rXCnVjW4HnF61fPcj6DEHkZ065ZK4+jazSyWFTmBk6qcbk4EubBmhlMEd0fiiE0A
+         VHvnVkuTy79EZQ4odL7niWDXcAlbfcaJuDfAF5OU9v9Zfu8Rf4XP+1o+k8E4pTys6r5e
+         WDMSs6vdXozMi0aJSAP8bdp9ZPMcV+qEqN9sABj/Ar2v+hIpQJcL5No+K/MCJLczN1di
+         FmHMAiIcjksySXx+TDxa4y062c5evuAN4gmIJuDekW1Ai2ja+9a5ZuWaB91QMUHrlnfn
+         02dP2SZcuagMyAVJCvyS6TlbG9DGEflY3WTa2Riex6vQO5yTQiwqiPpn7qwnh1ZuEP4u
+         IiYQ==
+X-Gm-Message-State: AOAM530dVV1pg3NhcrWoC4Et2P7+cStIRZod+KpODhNdCOV3qqRNTcVu
+        orO9xfp6s0IEPUxTEKLO0jXWuafrdFbfhaPJMY+lCz7QOBVpim7PQk885rrEuUW96Ul+UVfxBNx
+        tNlXbQaRtOnBmH72s
+X-Received: by 2002:a7b:c259:: with SMTP id b25mr216177wmj.40.1610470437708;
+        Tue, 12 Jan 2021 08:53:57 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxkpsJgLE4nHknWC0kIpvnV/jVYsf6dNCkqVBTyu/Q/yN0VKpaJ+lHsw2I62kyayjn0SAEgiw==
+X-Received: by 2002:a7b:c259:: with SMTP id b25mr216165wmj.40.1610470437551;
+        Tue, 12 Jan 2021 08:53:57 -0800 (PST)
+Received: from localhost ([151.66.42.92])
+        by smtp.gmail.com with ESMTPSA id z6sm4431035wmi.15.2021.01.12.08.53.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Jan 2021 08:53:57 -0800 (PST)
+Date:   Tue, 12 Jan 2021 17:53:53 +0100
+From:   Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, davem@davemloft.net,
+        kuba@kernel.org, ast@kernel.org, brouer@redhat.com,
+        toshiaki.makita1@gmail.com
+Subject: Re: [PATCH bpf-next 0/2] add xdp_build_skb_from_frame utility routine
+Message-ID: <20210112165353.GD2555@lore-desk>
+References: <cover.1608142960.git.lorenzo@kernel.org>
+ <20210112160842.GC2555@lore-desk>
+ <de334a62-c249-ea05-abec-2e1fe6c282ac@iogearbox.net>
 MIME-Version: 1.0
-References: <20210108231950.3844417-1-songliubraving@fb.com>
- <20210108231950.3844417-2-songliubraving@fb.com> <20210111185650.hsvfpoqmqc2mj7ci@kafai-mbp.dhcp.thefacebook.com>
- <CACYkzJ4mQrx1=owwrgBtu1Nvy9t0W4qP4=dthEutKpWPHxHrBw@mail.gmail.com>
- <20210111215820.t4z4g4cv66j7piio@kafai-mbp.dhcp.thefacebook.com>
- <9FF8CA8D-2D52-4120-99A5-86A68704BF4C@fb.com> <e4002f5c-6c2c-0945-9324-a8dc51125018@fb.com>
-In-Reply-To: <e4002f5c-6c2c-0945-9324-a8dc51125018@fb.com>
-From:   KP Singh <kpsingh@kernel.org>
-Date:   Tue, 12 Jan 2021 17:53:06 +0100
-X-Gmail-Original-Message-ID: <CACYkzJ64h53iZq9EpL01NukB6Rh+rQ0fupdn+shn-dTQ8NWH=A@mail.gmail.com>
-Message-ID: <CACYkzJ64h53iZq9EpL01NukB6Rh+rQ0fupdn+shn-dTQ8NWH=A@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 1/4] bpf: enable task local storage for tracing programs
-To:     Yonghong Song <yhs@fb.com>
-Cc:     Song Liu <songliubraving@fb.com>, Martin Lau <kafai@fb.com>,
-        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        "mingo@redhat.com" <mingo@redhat.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Kernel Team <Kernel-team@fb.com>, Hao Luo <haoluo@google.com>,
-        kernel test robot <lkp@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="EP0wieDxd4TSJjHq"
+Content-Disposition: inline
+In-Reply-To: <de334a62-c249-ea05-abec-2e1fe6c282ac@iogearbox.net>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 12, 2021 at 5:32 PM Yonghong Song <yhs@fb.com> wrote:
->
->
->
-> On 1/11/21 3:45 PM, Song Liu wrote:
-> >
-> >
-> >> On Jan 11, 2021, at 1:58 PM, Martin Lau <kafai@fb.com> wrote:
-> >>
-> >> On Mon, Jan 11, 2021 at 10:35:43PM +0100, KP Singh wrote:
-> >>> On Mon, Jan 11, 2021 at 7:57 PM Martin KaFai Lau <kafai@fb.com> wrote:
-> >>>>
-> >>>> On Fri, Jan 08, 2021 at 03:19:47PM -0800, Song Liu wrote:
-> >>>>
-> >>>> [ ... ]
-> >>>>
-> >>>>> diff --git a/kernel/bpf/bpf_local_storage.c b/kernel/bpf/bpf_local_storage.c
-> >>>>> index dd5aedee99e73..9bd47ad2b26f1 100644
-> >>>>> --- a/kernel/bpf/bpf_local_storage.c
-> >>>>> +++ b/kernel/bpf/bpf_local_storage.c
 
-[...]
+--EP0wieDxd4TSJjHq
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> >>>>> +#include <linux/bpf.h>
-> >>>>>
-> >>>>> #include <asm/pgalloc.h>
-> >>>>> #include <linux/uaccess.h>
-> >>>>> @@ -734,6 +735,7 @@ void __put_task_struct(struct task_struct *tsk)
-> >>>>>       cgroup_free(tsk);
-> >>>>>       task_numa_free(tsk, true);
-> >>>>>       security_task_free(tsk);
-> >>>>> +     bpf_task_storage_free(tsk);
-> >>>>>       exit_creds(tsk);
-> >>>> If exit_creds() is traced by a bpf and this bpf is doing
-> >>>> bpf_task_storage_get(..., BPF_LOCAL_STORAGE_GET_F_CREATE),
-> >>>> new task storage will be created after bpf_task_storage_free().
-> >>>>
-> >>>> I recalled there was an earlier discussion with KP and KP mentioned
-> >>>> BPF_LSM will not be called with a task that is going away.
-> >>>> It seems enabling bpf task storage in bpf tracing will break
-> >>>> this assumption and needs to be addressed?
-> >>>
-> >>> For tracing programs, I think we will need an allow list where
-> >>> task local storage can be used.
-> >> Instead of whitelist, can refcount_inc_not_zero(&tsk->usage) be used?
-> >
-> > I think we can put refcount_inc_not_zero() in bpf_task_storage_get, like:
-> >
-> > diff --git i/kernel/bpf/bpf_task_storage.c w/kernel/bpf/bpf_task_storage.c
-> > index f654b56907b69..93d01b0a010e6 100644
-> > --- i/kernel/bpf/bpf_task_storage.c
-> > +++ w/kernel/bpf/bpf_task_storage.c
-> > @@ -216,6 +216,9 @@ BPF_CALL_4(bpf_task_storage_get, struct bpf_map *, map, struct task_struct *,
-> >           * by an RCU read-side critical section.
-> >           */
-> >          if (flags & BPF_LOCAL_STORAGE_GET_F_CREATE) {
-> > +               if (!refcount_inc_not_zero(&task->usage))
-> > +                       return -EBUSY;
-> > +
-> >                  sdata = bpf_local_storage_update(
-> >                          task, (struct bpf_local_storage_map *)map, value,
-> >                          BPF_NOEXIST);
-> >
-> > But where shall we add the refcount_dec()? IIUC, we cannot add it to
-> > __put_task_struct().
->
-> Maybe put_task_struct()?
+> On 1/12/21 5:08 PM, Lorenzo Bianconi wrote:
+> > > Introduce __xdp_build_skb_from_frame and xdp_build_skb_from_frame rou=
+tines to
+> > > build the skb from a xdp_frame. Respect to __xdp_build_skb_from_frame,
+> > > xdp_build_skb_from_frame will allocate the skb object.
+> > > Rely on __xdp_build_skb_from_frame/xdp_build_skb_from_frame in cpumap=
+ and veth
+> > > code.
+> >=20
+> > since this series is marked as "archived" in patchwork, do I need to re=
+submit it?
+>=20
+> Yes please do, afaik there was some minor feedback from Toshiaki which wa=
+s not yet
+> addressed from your side.
 
-Yeah, something like, or if you find a more elegant alternative :)
+ack, will do.
 
---- a/include/linux/sched/task.h
-+++ b/include/linux/sched/task.h
-@@ -107,13 +107,20 @@ extern void __put_task_struct(struct task_struct *t);
+Regards,
+Lorenzo
 
- static inline void put_task_struct(struct task_struct *t)
- {
--       if (refcount_dec_and_test(&t->usage))
-+
-+       if (rcu_access_pointer(t->bpf_storage)) {
-+               if (refcount_sub_and_test(2, &t->usage))
-+                       __put_task_struct(t);
-+       } else if (refcount_dec_and_test(&t->usage))
-                __put_task_struct(t);
- }
+>=20
+> Thanks,
+> Daniel
+>=20
 
- static inline void put_task_struct_many(struct task_struct *t, int nr)
- {
--       if (refcount_sub_and_test(nr, &t->usage))
-+       if (rcu_access_pointer(t->bpf_storage)) {
-+               if (refcount_sub_and_test(nr + 1, &t->usage))
-+                       __put_task_struct(t);
-+       } else if (refcount_sub_and_test(nr, &t->usage))
-                __put_task_struct(t);
- }
+--EP0wieDxd4TSJjHq
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
 
-I may be missing something but shouldn't bpf_storage be an __rcu
-member like we have for sk_bpf_storage?
+iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCX/3UHwAKCRA6cBh0uS2t
+rAFrAQDgKHdlgiLGIXXoYEj/3XCfNFtleVVttuwpKlhTZhytiAEAmPhDQeCtnLbu
+f/XVwUslLScgyS9r2ZKpp6DahFrT5Qs=
+=fIjx
+-----END PGP SIGNATURE-----
 
-#ifdef CONFIG_BPF_SYSCALL
-struct bpf_local_storage __rcu *sk_bpf_storage;
-#endif
+--EP0wieDxd4TSJjHq--
 
-
->
-> > Thanks,
-> > Song
-> >
