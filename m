@@ -2,97 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2619C2F3D68
+	by mail.lfdr.de (Postfix) with ESMTP id 92B112F3D6A
 	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 01:44:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2407061AbhALVia (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jan 2021 16:38:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41892 "EHLO
+        id S1732972AbhALVih (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jan 2021 16:38:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2437155AbhALVXl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 16:23:41 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1463DC061786
-        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 13:23:01 -0800 (PST)
+        with ESMTP id S2437161AbhALVa0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 16:30:26 -0500
+Received: from merlin.infradead.org (merlin.infradead.org [IPv6:2001:8b0:10b:1231::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26892C061786;
+        Tue, 12 Jan 2021 13:29:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=Q5b8jMAkKRAhOnGLVh/VJdovZLXQ8ePUSX0KZ6DgjFg=; b=D8Brr88bxFbHhFJyvwk8Ewn7Q
-        P3IQUPrGNqr8jTVv5tBgRgVfXATaiNIhK5v2hDiySSdQJ+g0d2Jd/NpnCeLHMu2pAgoBDyRrWqm67
-        ZHa20wHjBhPREXRLJHbOB9Y1C7DG/XAVdWv1R4gz4GKyNQ1cRbzwUMq66ISRqsgPw8KDTR10yPemn
-        /JFiwm1JiEUKkx0+FjCPhgMm+iXePuIaGfHf1gvVJL5Iuj1r5PBzwMal4zbzcEEo/sNnwzaS3yplr
-        fT58UQRW9ccEp1XbNnOkcybL45OaP+8ip2O4hwufC6UMTGUo/I1kJrKbtMqh/WA0bzUXTAeHQXLEE
-        L+pFPMU0A==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:47168)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1kzR7z-0000QY-5a; Tue, 12 Jan 2021 21:22:59 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1kzR7y-0006ck-92; Tue, 12 Jan 2021 21:22:58 +0000
-Date:   Tue, 12 Jan 2021 21:22:58 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
-        netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        davem@davemloft.net, pali@kernel.org
-Subject: Re: [PATCH net-next v4 1/4] net: phy: mdio-i2c: support I2C MDIO
- protocol for RollBall SFP modules
-Message-ID: <20210112212258.GF1551@shell.armlinux.org.uk>
-References: <20210111050044.22002-1-kabel@kernel.org>
- <20210111050044.22002-2-kabel@kernel.org>
- <X/4MgF+n+jQZ11Gd@lunn.ch>
+        d=infradead.org; s=merlin.20170209; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
+        :Reply-To:Content-ID:Content-Description;
+        bh=Z5ech7lMOEi8A0xFzwLs1v8qWUXfPofbI1uhUfji1RA=; b=Ar30arYs5Kb5q9RNYupVGHAn1A
+        U0FSqTi3L8HHyjMQezhSd66MpV6NUkVaW/8hOcE4yEo/+6oCBYsL/g+/fZNgT5nh/+ZzfZp6jFnW5
+        NgRNtMHzFti3O7uIthSl+6q7dJ68R/ykjjjwGxU2T0Tby5mDrjdJh3QgaPLfIB/wRD+SlueKvVvOq
+        pU1xZ6QB2A74vCv1WesyJOmOnirQvJbhzzy+7KUGwrKGqJhasdxGWM6LhUVSTOkdlLAFHfOVsUg3T
+        7TVWpQzSbLmlLZLPny0kAzY9spxnk198R2oz2+/4zgNPTwkR1fl2MOS6uSNzn8BTr7gXpkO9C1ELZ
+        NlCgJhtw==;
+Received: from [2601:1c0:6280:3f0::79df]
+        by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1kzRET-00024X-G4; Tue, 12 Jan 2021 21:29:41 +0000
+Subject: Re: [PATCH net-next] net: ipa: add config dependency on QCOM_SMEM
+To:     Alex Elder <elder@linaro.org>, davem@davemloft.net, kuba@kernel.org
+Cc:     evgreen@chromium.org, bjorn.andersson@linaro.org,
+        cpratapa@codeaurora.org, subashab@codeaurora.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20210112192134.493-1-elder@linaro.org>
+From:   Randy Dunlap <rdunlap@infradead.org>
+Message-ID: <fc143824-e989-8ad7-2dbd-95b81636f828@infradead.org>
+Date:   Tue, 12 Jan 2021 13:29:35 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.4.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <X/4MgF+n+jQZ11Gd@lunn.ch>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+In-Reply-To: <20210112192134.493-1-elder@linaro.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 12, 2021 at 09:54:24PM +0100, Andrew Lunn wrote:
-> > +static int i2c_transfer_rollball(struct i2c_adapter *i2c,
-> > +				 struct i2c_msg *msgs, int num)
-> > +{
-> > +	u8 saved_page;
-> > +	int ret;
-> > +
-> > +	i2c_lock_bus(i2c, I2C_LOCK_SEGMENT);
-> > +
-> > +	/* save original page */
-> > +	ret = __i2c_rollball_get_page(i2c, msgs->addr, &saved_page);
-> > +	if (ret)
-> > +		goto unlock;
-> > +
-> > +	/* change to RollBall MDIO page */
-> > +	ret = __i2c_rollball_set_page(i2c, msgs->addr, SFP_PAGE_ROLLBALL_MDIO);
-> > +	if (ret)
-> > +		goto unlock;
-> > +
-> > +	/* do the transfer */
-> > +	ret = __i2c_transfer_err(i2c, msgs, num);
-> > +	if (ret)
-> > +		goto unlock;
+On 1/12/21 11:21 AM, Alex Elder wrote:
+> The IPA driver depends on some SMEM functionality (qcom_smem_init(),
+> qcom_smem_alloc(), and qcom_smem_virt_to_phys()), but this is not
+> reflected in the configuration dependencies.  Add a dependency on
+> QCOM_SMEM to avoid attempts to build the IPA driver without SMEM.
+> This avoids a link error for certain configurations.
 > 
-> If get page and set page worked, and you get an error in during the
-> actual data transfer, i wonder if you should try restoring the page
-> before returning with the error?
+> Reported-by: Randy Dunlap <rdunlap@infradead.org>
+> Fixes: 38a4066f593c5 ("net: ipa: support COMPILE_TEST")
+> Signed-off-by: Alex Elder <elder@linaro.org>
 
-That's what we do with paged PHYs - if the access encounters an error,
-we still attempt to restore the page and propagate the _original_ error.
-We would only propagate the error from the page restore if it was the
-only error.  See the logic and comments for phy_restore_page().
+Acked-by: Randy Dunlap <rdunlap@infradead.org> # build-tested
 
-Note that phy_(save|select)_page()..phy_restore_page() deal with the
-locking, which is why they always have to be paired (also means that
-the user doesn't have to think too hard about error handling.)
+Thanks.
+
+> ---
+>  drivers/net/ipa/Kconfig | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ipa/Kconfig b/drivers/net/ipa/Kconfig
+> index 10a0e041ee775..b68f1289b89ef 100644
+> --- a/drivers/net/ipa/Kconfig
+> +++ b/drivers/net/ipa/Kconfig
+> @@ -1,6 +1,6 @@
+>  config QCOM_IPA
+>  	tristate "Qualcomm IPA support"
+> -	depends on 64BIT && NET
+> +	depends on 64BIT && NET && QCOM_SMEM
+>  	depends on ARCH_QCOM || COMPILE_TEST
+>  	depends on QCOM_RPROC_COMMON || (QCOM_RPROC_COMMON=n && COMPILE_TEST)
+>  	select QCOM_MDT_LOADER if ARCH_QCOM
+> 
+
 
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+~Randy
+
