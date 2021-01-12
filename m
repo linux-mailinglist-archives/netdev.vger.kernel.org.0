@@ -2,103 +2,190 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B67582F343D
-	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 16:36:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8FEDB2F3447
+	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 16:39:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2403796AbhALPfi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jan 2021 10:35:38 -0500
-Received: from esa.microchip.iphmx.com ([68.232.153.233]:2780 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2391542AbhALPfi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 10:35:38 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1610465739; x=1642001739;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=QyGWuPqLtbiZ4Sx64HpU/v/Ruq4xAC5p6ggIJuivk+s=;
-  b=lIacRtONk1BGSZmweluysCTNaERdz4/bL3lB4kUtykaOBHEvHBLgxUBx
-   fhAU7pk4eWVCJNmq/E7IOIEFkosHDky0PVnBCYeGs7abb9Sg0DORJVuOJ
-   MN2wHIP5eJJ92522iQMCxlaskccAmfqWTVCWmuHtZNCq4etyjUPHZDj4V
-   FEqoUlGUUTq2kTwqliaIR0nVxOugUCxloyncIRt0yFI//hYcAGqdi1BM4
-   Ao0k0kZf6KM9577M+HVwyjO8umwe4buhukl9p4ck+QumZKS7DDiJH2fRE
-   dwq6GLBXDNe1FVZVEsWtnv25B4hgaHOlzZYRbUvoH0ol3B28zywTJ5yha
-   Q==;
-IronPort-SDR: 110ZQelFImbkW/oUe53p+ndZm1cnNMb1cJvC9OfeOqQ/nFtCsuZc0WfvVgyZebrypJhzfbPEkc
- i/5q+0aWKDS041JK5M2Aqg9zMlYIbrYyl51OH5vEsG/g7wa8asRiVEwllmjJ5lklSB0pYFf7Hi
- E7I92vxCrQ+ImyAMKmqHQrN4XxGo9BNXJxYRB3scTONZ1Viyqmo5Y0CAFWMStDmjodqVysSnUX
- xqlDJL4E8UQD1mg5MPW2nmEr2thJgsSoG2bu9XmF8ySL0lsU+km1jtlSkveLpja5mkh2C+ls5G
- mrY=
-X-IronPort-AV: E=Sophos;i="5.79,341,1602572400"; 
-   d="scan'208";a="105149176"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 12 Jan 2021 08:34:23 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
- chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Tue, 12 Jan 2021 08:34:22 -0700
-Received: from soft-dev2 (10.10.115.15) by chn-vm-ex02.mchp-main.com
- (10.10.85.144) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
- Transport; Tue, 12 Jan 2021 08:34:20 -0700
-Message-ID: <4080678764ff0abfb7491e9b34fc4f46bf3262a8.camel@microchip.com>
-Subject: Re: [PATCH v1 1/2] net: phy: Add 100 base-x mode
-From:   Bjarni Jonasson <bjarni.jonasson@microchip.com>
-To:     =?UTF-8?Q?Micha=C5=82_Miros=C5=82aw?= <mirqus@gmail.com>
-CC:     Russell King <linux@armlinux.org.uk>, Andrew Lunn <andrew@lunn.ch>,
-        "Heiner Kallweit" <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        "Linux Kernel" <linux-kernel@vger.kernel.org>,
-        UNGLinuxDriver <UNGLinuxDriver@microchip.com>
-Date:   Tue, 12 Jan 2021 16:34:19 +0100
-In-Reply-To: <CAHXqBFJSgebLn9GxgdYGdVR6_+i76uX5YyjHw5niOet9BuYj6A@mail.gmail.com>
-References: <20210111130657.10703-1-bjarni.jonasson@microchip.com>
-         <20210111130657.10703-2-bjarni.jonasson@microchip.com>
-         <CAHXqBFJSgebLn9GxgdYGdVR6_+i76uX5YyjHw5niOet9BuYj6A@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        id S2391763AbhALPgs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jan 2021 10:36:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51336 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2391149AbhALPgr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 10:36:47 -0500
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BDE8C061786;
+        Tue, 12 Jan 2021 07:36:07 -0800 (PST)
+Received: by mail-ej1-x62b.google.com with SMTP id g20so4154788ejb.1;
+        Tue, 12 Jan 2021 07:36:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=3H58F2EgPUmA9bBKPktDhyUlZCxmuNrKvZMlcefSEDw=;
+        b=ukQC+u6UU6t7vIYYTsdaKblvTwE2VZ68ooJSzYA3HhooqQ2y9Wug/aYJRae3XvdFWQ
+         MdUl9O3DpIUtquLNVEURj8/Uin0KvUjSfBaKa9/c8MNAuoPUudPwapeVfERWj50je7IT
+         ztD+8fOsVUuQ3BSMSInF+/Q3IWWQa1g4OnHRLqE1/LiojhuYXIrpWic02h6zPf8HKfDZ
+         EOA9SYtNayXd+hc7QnG09kvp4PACyHsXXSEz/1MCDUFhrpL+ieza5dvav1r8dCkuN+e+
+         Abdn//3VwCsspRWEXnZTTuxLPzGzk85bB2EPvJUBD7tydn+MsFiNRXt1RnRVqkYpFRqg
+         E6Wg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=3H58F2EgPUmA9bBKPktDhyUlZCxmuNrKvZMlcefSEDw=;
+        b=PsAym8jOAy2cZC5uprS9mpAv+8NYX4gRMLhJ7AcfjIrJfWrP/DwUPb4dwj1ET3OrLz
+         4M86FhOmtYq+g2kD4l+xwuovQZOw0novsO4Q3UDjT5K8AlRRUGTAItrtrE0Q1CLuYDt7
+         yjbvxif/y49sPT+2WrW7JgWU4taYf/np3mCM70DC1akul95FARwxjBafjI8j/oy2OI42
+         cqM+I19rj4Dx0p+H7DYoxV/qN33iB2HhM+DpXgh5s1d+RNavPLYeqYDWqSP4MC6QS1KR
+         VdfsyyT90RTWKomPtkZu3y8afsRfpo0Gi9VXOjpYLn75biNXDIh9P1JCCMOaWNJo2GlU
+         IbQQ==
+X-Gm-Message-State: AOAM531opSG0EJyiVOA9hbCRgK5BQgw/IWsVxq2dEsy9J+3dHy77lUMR
+        N7RUDl9QHNztjjZSgSm5ncDpSW3l7Ji+LGCsBuU=
+X-Google-Smtp-Source: ABdhPJyBthTeKmOHV1bPwZzzrSsODrn8asKpgzmW7chz9v9JOHxcYnX2KugHRntNpQOYwB2em9V1TVZ00aOdGtDGhZA=
+X-Received: by 2002:a17:906:2ccb:: with SMTP id r11mr3715902ejr.39.1610465765748;
+ Tue, 12 Jan 2021 07:36:05 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210112091545.10535-1-gilad.reti@gmail.com> <CACYkzJ69serkHRymzDEAcQ-_KAdHA+RxP4qpAwzGmppWUxYeQQ@mail.gmail.com>
+In-Reply-To: <CACYkzJ69serkHRymzDEAcQ-_KAdHA+RxP4qpAwzGmppWUxYeQQ@mail.gmail.com>
+From:   Gilad Reti <gilad.reti@gmail.com>
+Date:   Tue, 12 Jan 2021 17:35:29 +0200
+Message-ID: <CANaYP3G_39cWx_L5Xs3tf1k4Vj9JSHcsr+qzNQN-dcY3qvT8Yg@mail.gmail.com>
+Subject: Re: [PATCH 2/2] selftests/bpf: add verifier test for PTR_TO_MEM spill
+To:     KP Singh <kpsingh@kernel.org>
+Cc:     bpf <bpf@vger.kernel.org>, Shuah Khan <shuah@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        linux-kselftest@vger.kernel.org,
+        Networking <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 2021-01-11 at 20:37 +0100, Michał Mirosław wrote:
-> EXTERNAL EMAIL: Do not click links or open attachments unless you
-> know the content is safe
-> 
-> pon., 11 sty 2021 o 14:54 Bjarni Jonasson
-> <bjarni.jonasson@microchip.com> napisał(a):
-> > Sparx-5 supports this mode and it is missing in the PHY core.
-> > 
-> > Signed-off-by: Bjarni Jonasson <bjarni.jonasson@microchip.com>
+On Tue, Jan 12, 2021 at 4:56 PM KP Singh <kpsingh@kernel.org> wrote:
+>
+> On Tue, Jan 12, 2021 at 10:16 AM Gilad Reti <gilad.reti@gmail.com> wrote:
+> >
+> > Add test to check that the verifier is able to recognize spilling of
+> > PTR_TO_MEM registers.
+> >
+>
+> It would be nice to have some explanation of what the test does to
+> recognize the spilling of the PTR_TO_MEM registers in the commit
+> log as well.
+>
+> Would it be possible to augment an existing test_progs
+> program like tools/testing/selftests/bpf/progs/test_ringbuf.c to test
+> this functionality?
+>
+
+It may be possible, but from what I understood from Daniel's comment here
+
+https://lore.kernel.org/bpf/17629073-4fab-a922-ecc3-25b019960f44@iogearbox.net/
+
+the test should be a part of the verifier tests (which is reasonable
+to me since it is
+a verifier bugfix)
+
+>
+>
+> > The patch was partially contibuted by CyberArk Software, Inc.
+> >
+> > Signed-off-by: Gilad Reti <gilad.reti@gmail.com>
 > > ---
-> >  include/linux/phy.h | 4 ++++
-> >  1 file changed, 4 insertions(+)
-> > 
-> > diff --git a/include/linux/phy.h b/include/linux/phy.h
-> > index 56563e5e0dc7..dce867222d58 100644
-> > --- a/include/linux/phy.h
-> > +++ b/include/linux/phy.h
-> > @@ -111,6 +111,7 @@ extern const int phy_10gbit_features_array[1];
-> >   * @PHY_INTERFACE_MODE_10GBASER: 10G BaseR
-> >   * @PHY_INTERFACE_MODE_USXGMII:  Universal Serial 10GE MII
-> >   * @PHY_INTERFACE_MODE_10GKR: 10GBASE-KR - with Clause 73 AN
-> > + * @PHY_INTERFACE_MODE_100BASEX: 100 BaseX
-> >   * @PHY_INTERFACE_MODE_MAX: Book keeping
-> 
-> [...]
-> 
-> This is kernel-internal interface, so maybe the new mode can be
-> inserted before 1000baseX for easier lookup?
-> 
-> Best Regards
-> Michał Mirosław
-
-Yes, will do that.
---
-Bjarni Jonasson
-Microchip
-
-
+> >  tools/testing/selftests/bpf/test_verifier.c   | 12 +++++++-
+> >  .../selftests/bpf/verifier/spill_fill.c       | 30 +++++++++++++++++++
+> >  2 files changed, 41 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/tools/testing/selftests/bpf/test_verifier.c b/tools/testing/selftests/bpf/test_verifier.c
+> > index 777a81404fdb..f8569f04064b 100644
+> > --- a/tools/testing/selftests/bpf/test_verifier.c
+> > +++ b/tools/testing/selftests/bpf/test_verifier.c
+> > @@ -50,7 +50,7 @@
+> >  #define MAX_INSNS      BPF_MAXINSNS
+> >  #define MAX_TEST_INSNS 1000000
+> >  #define MAX_FIXUPS     8
+> > -#define MAX_NR_MAPS    20
+> > +#define MAX_NR_MAPS    21
+> >  #define MAX_TEST_RUNS  8
+> >  #define POINTER_VALUE  0xcafe4all
+> >  #define TEST_DATA_LEN  64
+> > @@ -87,6 +87,7 @@ struct bpf_test {
+> >         int fixup_sk_storage_map[MAX_FIXUPS];
+> >         int fixup_map_event_output[MAX_FIXUPS];
+> >         int fixup_map_reuseport_array[MAX_FIXUPS];
+> > +       int fixup_map_ringbuf[MAX_FIXUPS];
+> >         const char *errstr;
+> >         const char *errstr_unpriv;
+> >         uint32_t insn_processed;
+> > @@ -640,6 +641,7 @@ static void do_test_fixup(struct bpf_test *test, enum bpf_prog_type prog_type,
+> >         int *fixup_sk_storage_map = test->fixup_sk_storage_map;
+> >         int *fixup_map_event_output = test->fixup_map_event_output;
+> >         int *fixup_map_reuseport_array = test->fixup_map_reuseport_array;
+> > +       int *fixup_map_ringbuf = test->fixup_map_ringbuf;
+> >
+> >         if (test->fill_helper) {
+> >                 test->fill_insns = calloc(MAX_TEST_INSNS, sizeof(struct bpf_insn));
+> > @@ -817,6 +819,14 @@ static void do_test_fixup(struct bpf_test *test, enum bpf_prog_type prog_type,
+> >                         fixup_map_reuseport_array++;
+> >                 } while (*fixup_map_reuseport_array);
+> >         }
+> > +       if (*fixup_map_ringbuf) {
+> > +               map_fds[20] = create_map(BPF_MAP_TYPE_RINGBUF, 0,
+> > +                                          0, 4096);
+> > +               do {
+> > +                       prog[*fixup_map_ringbuf].imm = map_fds[20];
+> > +                       fixup_map_ringbuf++;
+> > +               } while (*fixup_map_ringbuf);
+> > +       }
+> >  }
+> >
+> >  struct libcap {
+> > diff --git a/tools/testing/selftests/bpf/verifier/spill_fill.c b/tools/testing/selftests/bpf/verifier/spill_fill.c
+> > index 45d43bf82f26..1833b6c730dd 100644
+> > --- a/tools/testing/selftests/bpf/verifier/spill_fill.c
+> > +++ b/tools/testing/selftests/bpf/verifier/spill_fill.c
+> > @@ -28,6 +28,36 @@
+> >         .result = ACCEPT,
+> >         .result_unpriv = ACCEPT,
+> >  },
+> > +{
+> > +       "check valid spill/fill, ptr to mem",
+> > +       .insns = {
+> > +       /* reserve 8 byte ringbuf memory */
+> > +       BPF_ST_MEM(BPF_DW, BPF_REG_10, -8, 0),
+> > +       BPF_LD_MAP_FD(BPF_REG_1, 0),
+> > +       BPF_MOV64_IMM(BPF_REG_2, 8),
+> > +       BPF_MOV64_IMM(BPF_REG_3, 0),
+> > +       BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_ringbuf_reserve),
+> > +       /* store a pointer to the reserved memory in R6 */
+> > +       BPF_MOV64_REG(BPF_REG_6, BPF_REG_0),
+> > +       /* check whether the reservation was successful */
+> > +       BPF_JMP_IMM(BPF_JEQ, BPF_REG_0, 0, 6),
+> > +       /* spill R6(mem) into the stack */
+> > +       BPF_STX_MEM(BPF_DW, BPF_REG_10, BPF_REG_6, -8),
+> > +       /* fill it back in R7 */
+> > +       BPF_LDX_MEM(BPF_DW, BPF_REG_7, BPF_REG_10, -8),
+> > +       /* should be able to access *(R7) = 0 */
+> > +       BPF_ST_MEM(BPF_DW, BPF_REG_7, 0, 0),
+> > +       /* submit the reserved rungbuf memory */
+> > +       BPF_MOV64_REG(BPF_REG_1, BPF_REG_7),
+> > +       BPF_MOV64_IMM(BPF_REG_2, 0),
+> > +       BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_ringbuf_submit),
+> > +       BPF_MOV64_IMM(BPF_REG_0, 0),
+> > +       BPF_EXIT_INSN(),
+> > +       },
+> > +       .fixup_map_ringbuf = { 1 },
+> > +       .result = ACCEPT,
+> > +       .result_unpriv = ACCEPT,
+> > +},
+> >  {
+> >         "check corrupted spill/fill",
+> >         .insns = {
+> > --
+> > 2.27.0
+> >
