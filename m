@@ -2,213 +2,262 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9CEB42F407C
-	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 01:56:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B2EE2F4080
+	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 01:56:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2393370AbhAMAmy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jan 2021 19:42:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44396 "EHLO
+        id S2393472AbhAMAmz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jan 2021 19:42:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390246AbhALXoe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 18:44:34 -0500
-Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35A56C061795;
-        Tue, 12 Jan 2021 15:43:54 -0800 (PST)
-Received: by mail-io1-xd33.google.com with SMTP id r9so421164ioo.7;
-        Tue, 12 Jan 2021 15:43:54 -0800 (PST)
+        with ESMTP id S2391666AbhALXse (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 18:48:34 -0500
+Received: from mail-vk1-xa30.google.com (mail-vk1-xa30.google.com [IPv6:2607:f8b0:4864:20::a30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FC94C061794
+        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 15:47:54 -0800 (PST)
+Received: by mail-vk1-xa30.google.com with SMTP id o195so109824vka.9
+        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 15:47:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:reply-to:from:date:message-id
-         :subject:to:cc;
-        bh=UjqLWBff2oAK5ITVU1oqIMtLhE5XUJaVTO6IhzmEgyE=;
-        b=EDsfLPV4vrt/W4PZd9DRhmCdwvvtq0w8+LEJLTfx8FZ7u6W+EKIBGr3mNgEXS0fIdt
-         DME307Wmd//3s8MtFDgFZNieHuREheLUMaZpaszuUxowqdlO5186D4oVDy8uBcnwR/E6
-         CGTYOcB6lgTTpv6NsOi9yuzEBg7V7C30GMxqFYjTKlDQmsWcU/vlmnPC1/yZO7/fmEIN
-         ujt4qss+0ZM96XwUYT7vQb2gAhYFXdE7sGIHC9ySdZB1PFO7TAGIlylHRZdsIS8UqVO+
-         YTugWGVwN9RyIAsam1CD990I1dDIVqP/dEnh8ZsHwexc8Sq/aFUtc+RZwPJBu/vDSriF
-         b8zw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=TRqAJSpYMDEJu/B9agr6xpDyrfe3UAVnQcCi0dRewe4=;
+        b=OsWtLSsb4L+fW0+uOPO2F6EmPdCV8LbBB2Vx/5PPNw+ct7lUPcRZpFu9+1zF3VkPUG
+         QKkjYJg+d1CMLIKZ3iXNxdG8W/Dkwq2n0lycWiXwhIcEp9sU9hK25Z2WHJ3UlR+S1aB7
+         2geAX2+o2OVngfb4ppNS1b/ErxvGpZV9Ck6KiiL8B43c46l+MkYElIkqWqn8aE8yD7q8
+         ra5SrXJko/s5LVpxAWe4qVGI2WGS3aVyh9qyUy2DwiUCiW9X73t7Oiu88dp872V2wWio
+         jfQO04E3NL2gvn+8sXx3Vom9ct6OD6zbwyrj+HFSVtoUljtThy8Kcj/0w960VtyTRusU
+         hk+A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:reply-to
-         :from:date:message-id:subject:to:cc;
-        bh=UjqLWBff2oAK5ITVU1oqIMtLhE5XUJaVTO6IhzmEgyE=;
-        b=H2EIO6xaSalF47N8qqCqcWzyyTJxwLflfgp6AQJw6W3YkUgxinLybXY4wRq1HLr26y
-         mVMIG3jhXL8+3ei6cEorEnvVyaoIUUoLjrhPkZv50OfxXE3a7WZzLKfrlSjRcIecYLrw
-         cJ3wLRs1BAmmv2AEFuc/CKy3ar8Dg5T7KvyjR4cIbFw2xhX9UKBcw98BnVCUbv4GW7vu
-         8gjbNIS6XQP1KfAbTyjDw0K/RVCBQb97hbY6Lp9VMrj7ixUeSb+5phyLhshOHCHI+Kqo
-         rnVJq0Ki0z/v0mqthfHD+4fo95ZQPGtoau0NP8kmJKEhTZeMyFJlXcQkm5dHjL+Sgo3W
-         D4lw==
-X-Gm-Message-State: AOAM530fVR9ZSfiBVAEhp9hOHtXlc3N00NmFiTNO1xgrXYFXGt8CxW3X
-        8L8LedwKUthCOGiebOdaImj/qCMDiE4hWuzmMnZXtpMcz6eI2g==
-X-Google-Smtp-Source: ABdhPJz5UQydtVFyQkapceVkeXgXLEU2zu+TJjfwekFMpYmQxv1TC9yWVtHQPhujSFXyn2UUDF3SeyLd/mAI0bhV7Ug=
-X-Received: by 2002:a5e:d70e:: with SMTP id v14mr1247099iom.75.1610495033522;
- Tue, 12 Jan 2021 15:43:53 -0800 (PST)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=TRqAJSpYMDEJu/B9agr6xpDyrfe3UAVnQcCi0dRewe4=;
+        b=eIC7B13rN4TywGiN+ohmxHv8imdMUgw+lIDsFw2Q2mHLQXIsVg5DRzHL1PIso4ToTV
+         lfHKXxBjZsl0nGk7d9joglepHPKy4oUSWXT4BiImA9k1PhBpJ2uiiTxk3fGyl9AmkMUk
+         S4lTpoh3zTCCMSRHqZI5IQpVm1bN2+n7bgdMqCywkSg+L4YWaRYGieD2hkfAfRTTKuv6
+         eDeYUmolp+bm4t5DQU8rSGV3SJ+31ZwiGMNRgJoynASOsEC3rkL4mMZ4BpbZXXsvKvVB
+         agw7DNj8cMFE1Dp/+STxzbQZ9dCAs2KuiAIx5YgG11sCAEK8+TFvIUFtkxaJTGrWBqUC
+         8/Zw==
+X-Gm-Message-State: AOAM533XnopGT2gHNXf/8jz/6Zfa2kV/YUHxaq+y+05NIkjaZYy8YulI
+        u6zX/IfzBnYqqptK1y/N94UtEW/+4Ho=
+X-Google-Smtp-Source: ABdhPJzYyK1DpCewwqf2qswvZSudCGa/km4Wz98c/plX1/nzJiJhlXg+71nVa2DuqP2HQJMkrfJ6/w==
+X-Received: by 2002:a1f:9156:: with SMTP id t83mr2191240vkd.3.1610495273247;
+        Tue, 12 Jan 2021 15:47:53 -0800 (PST)
+Received: from mail-vk1-f180.google.com (mail-vk1-f180.google.com. [209.85.221.180])
+        by smtp.gmail.com with ESMTPSA id i18sm62746vkp.48.2021.01.12.15.47.50
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 12 Jan 2021 15:47:52 -0800 (PST)
+Received: by mail-vk1-f180.google.com with SMTP id t16so107827vkl.10
+        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 15:47:50 -0800 (PST)
+X-Received: by 2002:a67:f043:: with SMTP id q3mr2034470vsm.14.1610495269034;
+ Tue, 12 Jan 2021 15:47:49 -0800 (PST)
 MIME-Version: 1.0
-References: <20210111180609.713998-1-natechancellor@gmail.com>
-In-Reply-To: <20210111180609.713998-1-natechancellor@gmail.com>
-Reply-To: sedat.dilek@gmail.com
-From:   Sedat Dilek <sedat.dilek@gmail.com>
-Date:   Wed, 13 Jan 2021 00:43:41 +0100
-Message-ID: <CA+icZUXcsjwXOcoHRL3HSDMbE9thq7G3A9Uvzeg8tbNfLP7dfw@mail.gmail.com>
-Subject: Re: [PATCH] bpf: Hoise pahole version checks into Kconfig
-To:     Nathan Chancellor <natechancellor@gmail.com>
-Cc:     Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
+References: <20210112194143.1494-1-yuri.benditovich@daynix.com>
+ <CAOEp5OejaX4ZETThrj4-n8_yZoeTZs56CBPHbQqNsR2oni8dWw@mail.gmail.com> <CAOEp5Oc5qif_krU8oC6qhq6X0xRW-9GpWrBzWgPw0WevyhT8Mg@mail.gmail.com>
+In-Reply-To: <CAOEp5Oc5qif_krU8oC6qhq6X0xRW-9GpWrBzWgPw0WevyhT8Mg@mail.gmail.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Tue, 12 Jan 2021 18:47:12 -0500
+X-Gmail-Original-Message-ID: <CA+FuTSfhBZfEf8+LKNUJQpSxt8c5h1wMpARupekqFKuei6YBsA@mail.gmail.com>
+Message-ID: <CA+FuTSfhBZfEf8+LKNUJQpSxt8c5h1wMpARupekqFKuei6YBsA@mail.gmail.com>
+Subject: Re: [RFC PATCH 0/7] Support for virtio-net hash reporting
+To:     Yuri Benditovich <yuri.benditovich@daynix.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-kbuild@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
+        KP Singh <kpsingh@kernel.org>, rdunlap@infradead.org,
+        "Gustavo A . R . Silva" <gustavoars@kernel.org>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>, decui@microsoft.com,
+        cai@lca.pw, Jakub Sitnicki <jakub@cloudflare.com>,
+        Marco Elver <elver@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Network Development <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        bpf <bpf@vger.kernel.org>, Yan Vugenfirer <yan@daynix.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 11, 2021 at 7:06 PM Nathan Chancellor
-<natechancellor@gmail.com> wrote:
+On Tue, Jan 12, 2021 at 3:29 PM Yuri Benditovich
+<yuri.benditovich@daynix.com> wrote:
 >
-> After commit da5fb18225b4 ("bpf: Support pre-2.25-binutils objcopy for
-> vmlinux BTF"), having CONFIG_DEBUG_INFO_BTF enabled but lacking a valid
-> copy of pahole results in a kernel that will fully compile but fail to
-> link. The user then has to either install pahole or disable
-> CONFIG_DEBUG_INFO_BTF and rebuild the kernel but only after their build
-> has failed, which could have been a significant amount of time depending
-> on the hardware.
+> On Tue, Jan 12, 2021 at 9:49 PM Yuri Benditovich
+> <yuri.benditovich@daynix.com> wrote:
+> >
+> > On Tue, Jan 12, 2021 at 9:41 PM Yuri Benditovich
+> > <yuri.benditovich@daynix.com> wrote:
+> > >
+> > > Existing TUN module is able to use provided "steering eBPF" to
+> > > calculate per-packet hash and derive the destination queue to
+> > > place the packet to. The eBPF uses mapped configuration data
+> > > containing a key for hash calculation and indirection table
+> > > with array of queues' indices.
+> > >
+> > > This series of patches adds support for virtio-net hash reporting
+> > > feature as defined in virtio specification. It extends the TUN module
+> > > and the "steering eBPF" as follows:
+> > >
+> > > Extended steering eBPF calculates the hash value and hash type, keeps
+> > > hash value in the skb->hash and returns index of destination virtqueue
+> > > and the type of the hash. TUN module keeps returned hash type in
+> > > (currently unused) field of the skb.
+> > > skb->__unused renamed to 'hash_report_type'.
+> > >
+> > > When TUN module is called later to allocate and fill the virtio-net
+> > > header and push it to destination virtqueue it populates the hash
+> > > and the hash type into virtio-net header.
+> > >
+> > > VHOST driver is made aware of respective virtio-net feature that
+> > > extends the virtio-net header to report the hash value and hash report
+> > > type.
+> >
+> > Comment from Willem de Bruijn:
+> >
+> > Skbuff fields are in short supply. I don't think we need to add one
+> > just for this narrow path entirely internal to the tun device.
+> >
 >
-> Avoid a poor user experience and require pahole to be installed with an
-> appropriate version to select and use CONFIG_DEBUG_INFO_BTF, which is
-> standard for options that require a specific tools version.
->
-> Suggested-by: Sedat Dilek <sedat.dilek@gmail.com>
-> Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
+> We understand that and try to minimize the impact by using an already
+> existing unused field of skb.
 
-Thanks for the patch, Nathan,
+Not anymore. It was repurposed as a flags field very recently.
 
-Might be good to gave a hint to the user if pahole version does not
-match requirements?
+This use case is also very narrow in scope. And a very short path from
+data producer to consumer. So I don't think it needs to claim scarce
+bits in the skb.
 
-Feel free to add my:
+tun_ebpf_select_queue stores the field, tun_put_user reads it and
+converts it to the virtio_net_hdr in the descriptor.
 
-Tested-by: Sedat Dilek <sedat.dilek@gmail.com>
+tun_ebpf_select_queue is called from .ndo_select_queue.  Storing the
+field in skb->cb is fragile, as in theory some code could overwrite
+that between field between ndo_select_queue and
+ndo_start_xmit/tun_net_xmit, from which point it is fully under tun
+control again. But in practice, I don't believe anything does.
 
-- Sedat -
+Alternatively an existing skb field that is used only on disjoint
+datapaths, such as ingress-only, could be viable.
 
+> > Instead, you could just run the flow_dissector in tun_put_user if the
+> > feature is negotiated. Indeed, the flow dissector seems more apt to me
+> > than BPF here. Note that the flow dissector internally can be
+> > overridden by a BPF program if the admin so chooses.
+> >
+> When this set of patches is related to hash delivery in the virtio-net
+> packet in general,
+> it was prepared in context of RSS feature implementation as defined in
+> virtio spec [1]
+> In case of RSS it is not enough to run the flow_dissector in tun_put_user:
+> in tun_ebpf_select_queue the TUN calls eBPF to calculate the hash,
+> hash type and queue index
+> according to the (mapped) parameters (key, hash types, indirection
+> table) received from the guest.
 
+TUNSETSTEERINGEBPF was added to support more diverse queue selection
+than the default in case of multiqueue tun. Not sure what the exact
+use cases are.
 
-> ---
->  MAINTAINERS               |  1 +
->  init/Kconfig              |  4 ++++
->  lib/Kconfig.debug         |  6 ++----
->  scripts/link-vmlinux.sh   | 13 -------------
->  scripts/pahole-version.sh | 16 ++++++++++++++++
->  5 files changed, 23 insertions(+), 17 deletions(-)
->  create mode 100755 scripts/pahole-version.sh
+But RSS is exactly the purpose of the flow dissector. It is used for
+that purpose in the software variant RPS. The flow dissector
+implements a superset of the RSS spec, and certainly computes a
+four-tuple for TCP/IPv6. In the case of RPS, it is skipped if the NIC
+has already computed a 4-tuple hash.
+
+What it does not give is a type indication, such as
+VIRTIO_NET_HASH_TYPE_TCPv6. I don't understand how this would be used.
+In datapaths where the NIC has already computed the four-tuple hash
+and stored it in skb->hash --the common case for servers--, That type
+field is the only reason to have to compute again.
+
+> Our intention is to keep the hash and hash type in the skb to populate them
+> into a virtio-net header later in tun_put_user.
+> Note that in this case the type of calculated hash is selected not
+> only from flow dissections
+> but also from limitations provided by the guest.
 >
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index b8db7637263a..6f6e24285a94 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -3282,6 +3282,7 @@ F:        net/core/filter.c
->  F:     net/sched/act_bpf.c
->  F:     net/sched/cls_bpf.c
->  F:     samples/bpf/
-> +F:     scripts/pahole-version.sh
->  F:     tools/bpf/
->  F:     tools/lib/bpf/
->  F:     tools/testing/selftests/bpf/
-> diff --git a/init/Kconfig b/init/Kconfig
-> index b77c60f8b963..872c61b5d204 100644
-> --- a/init/Kconfig
-> +++ b/init/Kconfig
-> @@ -74,6 +74,10 @@ config TOOLS_SUPPORT_RELR
->  config CC_HAS_ASM_INLINE
->         def_bool $(success,echo 'void foo(void) { asm inline (""); }' | $(CC) -x c - -c -o /dev/null)
+> This is already implemented in qemu (for case of vhost=off), see [2]
+> (virtio_net_process_rss)
+> For case of vhost=on there are WIP for qemu to load eBPF and attach it to TUN.
+
+> Note that exact way of selecting rx virtqueue depends on the guest,
+> it could be automatic steering (typical for Linux VM), RSS (typical
+> for Windows VM) or
+> any other steering mechanism implemented in loadable TUN steering BPF with
+> or without hash calculation.
 >
-> +config PAHOLE_VERSION
-> +       int
-> +       default $(shell,$(srctree)/scripts/pahole-version.sh $(PAHOLE))
-> +
->  config CONSTRUCTORS
->         bool
->         depends on !UML
-> diff --git a/lib/Kconfig.debug b/lib/Kconfig.debug
-> index 7937265ef879..70c446af9664 100644
-> --- a/lib/Kconfig.debug
-> +++ b/lib/Kconfig.debug
-> @@ -267,6 +267,7 @@ config DEBUG_INFO_DWARF4
+> [1] https://github.com/oasis-tcs/virtio-spec/blob/master/content.tex#L3740
+> [2] https://github.com/qemu/qemu/blob/master/hw/net/virtio-net.c#L1591
 >
->  config DEBUG_INFO_BTF
->         bool "Generate BTF typeinfo"
-> +       depends on PAHOLE_VERSION >= 116
->         depends on !DEBUG_INFO_SPLIT && !DEBUG_INFO_REDUCED
->         depends on !GCC_PLUGIN_RANDSTRUCT || COMPILE_TEST
->         help
-> @@ -274,12 +275,9 @@ config DEBUG_INFO_BTF
->           Turning this on expects presence of pahole tool, which will convert
->           DWARF type info into equivalent deduplicated BTF type info.
+> > This also hits on a deeper point with the choice of hash values, that
+> > I also noticed in my RFC patchset to implement the inverse [1][2]. It
+> > is much more detailed than skb->hash + skb->l4_hash currently offers,
+> > and that can be gotten for free from most hardware.
 >
-> -config PAHOLE_HAS_SPLIT_BTF
-> -       def_bool $(success, test `$(PAHOLE) --version | sed -E 's/v([0-9]+)\.([0-9]+)/\1\2/'` -ge "119")
-> -
->  config DEBUG_INFO_BTF_MODULES
->         def_bool y
-> -       depends on DEBUG_INFO_BTF && MODULES && PAHOLE_HAS_SPLIT_BTF
-> +       depends on DEBUG_INFO_BTF && MODULES && PAHOLE_VERSION >= 119
->         help
->           Generate compact split BTF type information for kernel modules.
+> Unfortunately in the case of RSS we can't get this hash from the hardware as
+> this requires configuration of the NIC's hardware with key and hash types for
+> Toeplitz hash calculation.
+
+I don't understand. Toeplitz hash calculation is enabled by default
+for multiqueue devices, and many devices will pass the toeplitz hash
+along for free to avoid software flow dissection.
+
+> > In most practical
+> > cases, that information suffices. I added less specific fields
+> > VIRTIO_NET_HASH_REPORT_L4, VIRTIO_NET_HASH_REPORT_OTHER that work
+> > without explicit flow dissection. I understand that the existing
+> > fields are part of the standard. Just curious, what is their purpose
+> > beyond 4-tuple based flow hashing?
 >
-> diff --git a/scripts/link-vmlinux.sh b/scripts/link-vmlinux.sh
-> index 6eded325c837..eef40fa9485d 100755
-> --- a/scripts/link-vmlinux.sh
-> +++ b/scripts/link-vmlinux.sh
-> @@ -139,19 +139,6 @@ vmlinux_link()
->  # ${2} - file to dump raw BTF data into
->  gen_btf()
->  {
-> -       local pahole_ver
-> -
-> -       if ! [ -x "$(command -v ${PAHOLE})" ]; then
-> -               echo >&2 "BTF: ${1}: pahole (${PAHOLE}) is not available"
-> -               return 1
-> -       fi
-> -
-> -       pahole_ver=$(${PAHOLE} --version | sed -E 's/v([0-9]+)\.([0-9]+)/\1\2/')
-> -       if [ "${pahole_ver}" -lt "116" ]; then
-> -               echo >&2 "BTF: ${1}: pahole version $(${PAHOLE} --version) is too old, need at least v1.16"
-> -               return 1
-> -       fi
-> -
->         vmlinux_link ${1}
->
->         info "BTF" ${2}
-> diff --git a/scripts/pahole-version.sh b/scripts/pahole-version.sh
-> new file mode 100755
-> index 000000000000..6de6f734a345
-> --- /dev/null
-> +++ b/scripts/pahole-version.sh
-> @@ -0,0 +1,16 @@
-> +#!/bin/sh
-> +# SPDX-License-Identifier: GPL-2.0
-> +#
-> +# Usage: $ ./scripts/pahole-version.sh pahole
-> +#
-> +# Print the pahole version as a three digit string
-> +# such as `119' for pahole v1.19 etc.
-> +
-> +pahole="$*"
-> +
-> +if ! [ -x "$(command -v $pahole)" ]; then
-> +    echo 0
-> +    exit 1
-> +fi
-> +
-> +$pahole --version | sed -E 's/v([0-9]+)\.([0-9]+)/\1\2/'
->
-> base-commit: e22d7f05e445165e58feddb4e40cc9c0f94453bc
-> --
-> 2.30.0
->
+> The hash is used in combination with the indirection table to select
+> destination rx virtqueue.
+> The hash and hash type are to be reported in virtio-net header, if requested.
+> For Windows VM - in case the device does not report the hash (even if
+> it calculated it to
+> schedule the packet to a proper queue), the driver must do that for each packet
+> (this is a certification requirement).
+
+I understand the basics of RSS. My question is what the hash-type is
+intended to be used for by the guest. It is part of the virtio spec,
+so this point is somewhat moot: it has to be passed along with the
+hash value now.
+
+But it is not entirely moot. If most users are satisfied with knowing
+whether a hash is L4 or not, we could add two new types
+VIRTIO_NET_HASH_TYPE_L4 and VIRTIO_NET_HASH_TYPE_OTHER. And then pass
+the existing skb->hash as is, likely computed by the NIC.
+
+[1] https://patchwork.kernel.org/project/netdevbpf/patch/20201228162233.2032571-2-willemdebruijn.kernel@gmail.com/
+
+> >
+> > [1] https://patchwork.kernel.org/project/netdevbpf/list/?series=406859&state=*
+> > [2] https://github.com/wdebruij/linux/commit/0f77febf22cd6ffc242a575807fa8382a26e511e
+> > >
+> > > Yuri Benditovich (7):
+> > >   skbuff: define field for hash report type
+> > >   vhost: support for hash report virtio-net feature
+> > >   tun: allow use of BPF_PROG_TYPE_SCHED_CLS program type
+> > >   tun: free bpf_program by bpf_prog_put instead of bpf_prog_destroy
+> > >   tun: add ioctl code TUNSETHASHPOPULATION
+> > >   tun: populate hash in virtio-net header when needed
+> > >   tun: report new tun feature IFF_HASH
+> > >
+> > >  drivers/net/tun.c           | 43 +++++++++++++++++++++++++++++++------
+> > >  drivers/vhost/net.c         | 37 ++++++++++++++++++++++++-------
+> > >  include/linux/skbuff.h      |  7 +++++-
+> > >  include/uapi/linux/if_tun.h |  2 ++
+> > >  4 files changed, 74 insertions(+), 15 deletions(-)
+> > >
+> > > --
+> > > 2.17.1
+> > >
