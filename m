@@ -2,68 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D2BC2F2636
-	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 03:21:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AFDBE2F2648
+	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 03:31:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731384AbhALCVF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jan 2021 21:21:05 -0500
-Received: from rtits2.realtek.com ([211.75.126.72]:48390 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727886AbhALCVF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 21:21:05 -0500
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 10C2K97Q0017170, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexmbs04.realtek.com.tw[172.21.6.97])
-        by rtits2.realtek.com.tw (8.15.2/2.70/5.88) with ESMTPS id 10C2K97Q0017170
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Tue, 12 Jan 2021 10:20:09 +0800
-Received: from RTEXMB06.realtek.com.tw (172.21.6.99) by
- RTEXMBS04.realtek.com.tw (172.21.6.97) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Tue, 12 Jan 2021 10:20:08 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXMB06.realtek.com.tw (172.21.6.99) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2044.4; Tue, 12 Jan 2021 10:20:08 +0800
-Received: from RTEXMBS04.realtek.com.tw ([fe80::ecca:80ca:53:e833]) by
- RTEXMBS04.realtek.com.tw ([fe80::ecca:80ca:53:e833%12]) with mapi id
- 15.01.2106.006; Tue, 12 Jan 2021 10:20:08 +0800
-From:   Pkshih <pkshih@realtek.com>
-To:     "tony0620emma@gmail.com" <tony0620emma@gmail.com>,
-        "abaci-bugfix@linux.alibaba.com" <abaci-bugfix@linux.alibaba.com>
-CC:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "kvalo@codeaurora.org" <kvalo@codeaurora.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH] rtw88: debug: style: Simplify bool comparison
-Thread-Topic: [PATCH] rtw88: debug: style: Simplify bool comparison
-Thread-Index: AQHW5/ucgdIAEnze3069k02IgzXoGqoivKgA
-Date:   Tue, 12 Jan 2021 02:20:08 +0000
-Message-ID: <1610417974.3495.6.camel@realtek.com>
-References: <1610356932-56073-1-git-send-email-abaci-bugfix@linux.alibaba.com>
-In-Reply-To: <1610356932-56073-1-git-send-email-abaci-bugfix@linux.alibaba.com>
-Accept-Language: en-US, zh-TW
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.69.213]
+        id S1728686AbhALCat (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jan 2021 21:30:49 -0500
+Received: from mail.kernel.org ([198.145.29.99]:36972 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726645AbhALCat (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 11 Jan 2021 21:30:49 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id 0D5A922D5B;
+        Tue, 12 Jan 2021 02:30:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1610418609;
+        bh=zih+8cmGn04mIodAXE1fJa/r1UIa+jDDfKimAr2reR4=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Tj4x1QD9G2L6SaZOsDPWNqHC2RcKnL+Q08N1rfn6uDYNdyLSWXGf/tIIZ+PzxRd3q
+         ySxwjWQJXsosAhTtgJLuRbR6cQXM5gRi+s0VG3vo3E065GWja/FbyH2yn/4mUw7UBs
+         kxI5fv9kC7V6qLTT3eTS2b+fhnSp3ErkksIdZg6ih4JOeEJTHtJbZ8PBLJamJqJPM3
+         GhsVbkPABhq3dQfBgJ8NsZmP1wXBwGYhCxejLlmUDLI/GZUcK81+5oMMgehI7PxzUj
+         JlzXz0UoeABQ+atYd2CFFrtNL/SYakgobhRTkq8rPOXjzM1VtBuOgA2aabu1QFlYPm
+         JB3rCvGjzMBWQ==
+Received: from pdx-korg-docbuild-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-1.ci.codeaurora.org (Postfix) with ESMTP id F2EE36013D;
+        Tue, 12 Jan 2021 02:30:08 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
-Content-ID: <890FF8EFC305BA41B518A4523CA4C9E2@realtek.com>
-Content-Transfer-Encoding: base64
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net v2 0/3] skb frag: kmap_atomic fixes
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161041860899.19672.17362498590268966329.git-patchwork-notify@kernel.org>
+Date:   Tue, 12 Jan 2021 02:30:08 +0000
+References: <20210109221834.3459768-1-willemdebruijn.kernel@gmail.com>
+In-Reply-To: <20210109221834.3459768-1-willemdebruijn.kernel@gmail.com>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        willemb@google.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gTW9uLCAyMDIxLTAxLTExIGF0IDA5OjIyICswMDAwLCBZQU5HIExJIHdyb3RlOg0KPiBGaXgg
-dGhlIGZvbGxvd2luZyBjb2NjaWNoZWNrIHdhcm5pbmc6DQo+IMKgLi9kcml2ZXJzL25ldC93aXJl
-bGVzcy9yZWFsdGVrL3J0dzg4L2RlYnVnLmM6ODAwOjE3LTIzOiBXQVJOSU5HOg0KPiBDb21wYXJp
-c29uIG9mIDAvMSB0byBib29sIHZhcmlhYmxlDQo+IA0KPiBTaWduZWQtb2ZmLWJ5OiBZQU5HIExJ
-IDxhYmFjaS1idWdmaXhAbGludXguYWxpYmFiYS5jb20+DQo+IFJlcG9ydGVkLWJ5OiBBYmFjaSBS
-b2JvdDxhYmFjaUBsaW51eC5hbGliYWJhLmNvbT4tLS0NCj4gwqBkcml2ZXJzL25ldC93aXJlbGVz
-cy9yZWFsdGVrL3J0dzg4L2RlYnVnLmMgfCAyICstDQo+IMKgMSBmaWxlIGNoYW5nZWQsIDEgaW5z
-ZXJ0aW9uKCspLCAxIGRlbGV0aW9uKC0pDQo+IA0KPiANCg0KSSB0aGluayB0aGF0ICJydHc4ODoi
-IG9yICJydHc4ODogZGVidWc6IiBhcyBzdWJqZWN0IHByZWZpeCBpcyBlbm91Z2guDQpPdGhlcnMg
-YXJlIGdvb2QgdG8gbWUuDQoNCi0tLQ0KUGluZy1LZQ0KDQo=
+Hello:
+
+This series was applied to netdev/net.git (refs/heads/master):
+
+On Sat,  9 Jan 2021 17:18:31 -0500 you wrote:
+> From: Willem de Bruijn <willemb@google.com>
+> 
+> skb frags may be backed by highmem and/or compound pages. Various
+> code calls kmap_atomic to safely access highmem pages. But this
+> needs additional care for compound pages. Fix a few issues:
+> 
+> patch 1 expect kmap mappings with CONFIG_DEBUG_KMAP_LOCAL_FORCE_MAP
+> patch 2 fixes kmap_atomic + compound page support in skb_seq_read
+> patch 3 fixes kmap_atomic + compound page support in esp
+> 
+> [...]
+
+Here is the summary with links:
+  - [net,v2,1/3] net: support kmap_local forced debugging in skb_frag_foreach
+    https://git.kernel.org/netdev/net/c/29766bcffad0
+  - [net,v2,2/3] net: compound page support in skb_seq_read
+    https://git.kernel.org/netdev/net/c/97550f6fa592
+  - [net,v2,3/3] esp: avoid unneeded kmap_atomic call
+    https://git.kernel.org/netdev/net/c/9bd6b629c39e
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
