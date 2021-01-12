@@ -2,64 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B666B2F3B4E
-	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 20:57:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FAB92F3B50
+	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 20:57:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406876AbhALT4b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jan 2021 14:56:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51392 "EHLO
+        id S2406890AbhALT46 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jan 2021 14:56:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51494 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2406063AbhALT4a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 14:56:30 -0500
-Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6F85C061795
-        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 11:55:49 -0800 (PST)
-Received: by mail-pl1-x630.google.com with SMTP id v3so1969210plz.13
-        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 11:55:49 -0800 (PST)
+        with ESMTP id S1729231AbhALT46 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 14:56:58 -0500
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3144CC061786
+        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 11:56:18 -0800 (PST)
+Received: by mail-pj1-x1032.google.com with SMTP id l23so2380408pjg.1
+        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 11:56:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=o7iNcFkL7k9NQC6JhcrxzWlPu9DO3BV6lfrqvcrAK74=;
-        b=cdXitYrEqYFq0BOVrGRXO6Y/gyNC4LAewVQsVZ3VRbiq/BU2ahD0zGRJ0AFOghR4bT
-         Msh+H9GYj/Yjyd9tzaTZ1YsYSv8zZQp5NTryJ0UMrgbgbRMB9ibCWop/IOfjbkQJ3lte
-         aQadTvz7p1RPdA1QvowaDys+8OQ/GNwGHip6AoS0tpLwhRunJ0h4VEKu6tCseHn65TZU
-         ZpmLILMiNVlJ0EHFbtYQA1C77LX0aMOLWMAZAb/ydS9xQM+wnIfZlNKJXFwlRSbsi+4D
-         Rnry77n/gyAtZ4Ix+Rf44c2RXB7bm1GZivsjyuMi11HPrEQVefz7dsEiDmmj+NR975es
-         Pjsg==
+        bh=IUq9iDezTnJf9Q6W3v34oVKtz5+Yk8GN849VOLFbadA=;
+        b=V9dVXNiF6fDeD3vSDhoRUhjxrNg4Zp45Uw1eXHV7v3aK3sOyrP3NO18aisU8AEjd/I
+         Dhpp+ulKIufcln4BT5wBO7+x7draz7Ip7RxLwj+fyhUYzoJvksu8y/XiqOu8Yf2cTy4j
+         cAPHkpZlSTj4uwRihvHx7R5RxN09fzXrZCAOlgQB6oSzL1WNlMAhEVPtanXwudohz08P
+         PDk3JqrDbc9h4d7IxdwPXMDYnSZuAfU2IFdf7EZSsXNGbS9MdY1tsfEcN/slZ6bfA7nX
+         faytMVCjoMZfltK5lBxIBAbGOONca51FWZlGYLPtKWj/wXDmi81z41gntZZoSmDYAjMl
+         eqrw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=o7iNcFkL7k9NQC6JhcrxzWlPu9DO3BV6lfrqvcrAK74=;
-        b=Ds0TJ2ur+0B21Gyk2+hEbghPaajG0Ampwl7BthlXjOGbBuPU0CFEG/EFdOwt4LbNm9
-         nnMx3fsFpGdg2czdJ3nmXyenSZAHEyfoo8A55fXWDaGsPnNotQLyPAggm14XKJu7EGqM
-         0U9v5taC36ALPvwNxeFHgeN9w0KhyFpGlpQQHTAQikw+9vrSi2pDMn2ES0PIdf8UaM00
-         /lag2wqHHU8aF+pCNq4TSAElRQyoFxnmEC77FoRepB1vECU+gjkBE7q5EDkzIYr4ZAd5
-         ChW7XqFuEiHJTTAqge3i3D8VNdj/D5B/Virv3TdU3IuHuDQxdSyRW1kh6kgQqkdW5XXv
-         9XIQ==
-X-Gm-Message-State: AOAM531cYPUAHnEz34Mo0AmnP89Fnx52+V0b+Tec0QS8/ky5WXsK68AM
-        RpUw3XGG+XLxN73rdhjrTSQ=
-X-Google-Smtp-Source: ABdhPJyeJpl/hpZ9e1BfNPEVIegUkMhEk37JI7on/WMhgGstg2YV10aTGpKPEmdS09lVfo89FEkQpw==
-X-Received: by 2002:a17:90b:1901:: with SMTP id mp1mr762059pjb.233.1610481349308;
-        Tue, 12 Jan 2021 11:55:49 -0800 (PST)
+        bh=IUq9iDezTnJf9Q6W3v34oVKtz5+Yk8GN849VOLFbadA=;
+        b=Qq1jtPfRuaQ8i0kckJi1OzJSVohqneXXF3sT0TZSJaQ98v629Vf9Rghkda3u2C8LUt
+         L1sETDmRmWhrmPchuTIyn+DewLTT2nCTFhRjUGBi6Wkqfm3VaIS+Ao/qL9iREhjFo11H
+         UVL8EPKtDL+PRgaBs3TfbEJHTjA3sKiXkCw2QINQAP8f6a1KGtOA8BrHQz4P+A9zIfCH
+         MJANxLaK137y6Z0+GK5wzjGOjl6O9h/HHINJ5v5HoJ7iDdngp5bNAkw0adMBm8SJa74i
+         K3bd6+MLwWCa5ObUHeA8rbKgp44a4/GqgoH/8xWCgNvEJmaHQQcx1s7RQwAC3cnAJR7b
+         xrBw==
+X-Gm-Message-State: AOAM533JymPzjUnIdcJIB2MLfJGIjsvBFTBBUQXDCjDusLsn2ON83jcq
+        VqsduJga6VY9OdxNIvx/VTo=
+X-Google-Smtp-Source: ABdhPJz6gSj03ZiVRcHcId/Bm1DP9oPnbxEbV53N/GIB+I82we6d2ak7lMB8d8MC0cG3lg9p4LPI7w==
+X-Received: by 2002:a17:902:b7c3:b029:da:74c3:427 with SMTP id v3-20020a170902b7c3b02900da74c30427mr635343plz.38.1610481377775;
+        Tue, 12 Jan 2021 11:56:17 -0800 (PST)
 Received: from [10.67.48.230] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id a13sm4189189pfr.59.2021.01.12.11.55.47
+        by smtp.googlemail.com with ESMTPSA id y6sm3934171pfn.145.2021.01.12.11.56.16
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 12 Jan 2021 11:55:48 -0800 (PST)
-Subject: Re: [PATCH net-next v15 1/6] dt-bindings: net: Add 5GBASER phy
- interface
+        Tue, 12 Jan 2021 11:56:17 -0800 (PST)
+Subject: Re: [PATCH net-next v15 2/6] net: phy: Add 5GBASER interface mode
 To:     =?UTF-8?Q?Marek_Beh=c3=ban?= <kabel@kernel.org>,
         netdev@vger.kernel.org
 Cc:     pavana.sharma@digi.com, vivien.didelot@gmail.com, kuba@kernel.org,
         lkp@intel.com, davem@davemloft.net, ashkan.boldaji@digi.com,
         andrew@lunn.ch, Chris Packham <chris.packham@alliedtelesis.co.nz>,
         olteanv@gmail.com,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Rob Herring <robh@kernel.org>
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>
 References: <20210112195405.12890-1-kabel@kernel.org>
- <20210112195405.12890-2-kabel@kernel.org>
+ <20210112195405.12890-3-kabel@kernel.org>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -115,12 +113,12 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
  M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <543ae22a-b75d-f300-d0c2-b98d20c8726c@gmail.com>
-Date:   Tue, 12 Jan 2021 11:55:44 -0800
+Message-ID: <3045e00d-ac32-3a25-a828-c9ec3f2823dc@gmail.com>
+Date:   Tue, 12 Jan 2021 11:56:15 -0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <20210112195405.12890-2-kabel@kernel.org>
+In-Reply-To: <20210112195405.12890-3-kabel@kernel.org>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 8bit
@@ -131,11 +129,10 @@ X-Mailing-List: netdev@vger.kernel.org
 On 1/12/21 11:54 AM, Marek Behún wrote:
 > From: Pavana Sharma <pavana.sharma@digi.com>
 > 
-> Add 5gbase-r PHY interface mode.
+> Add 5GBASE-R phy interface mode
 > 
 > Signed-off-by: Pavana Sharma <pavana.sharma@digi.com>
 > Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-> Acked-by: Rob Herring <robh@kernel.org>
 > Signed-off-by: Marek Behún <kabel@kernel.org>
 
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
