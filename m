@@ -2,46 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CD8A62F2628
-	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 03:17:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D24552F2630
+	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 03:19:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728597AbhALCPf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jan 2021 21:15:35 -0500
-Received: from mail.kernel.org ([198.145.29.99]:35434 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726852AbhALCPf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 11 Jan 2021 21:15:35 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 88B2122510;
-        Tue, 12 Jan 2021 02:14:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610417694;
-        bh=wVFbzVvFYTEMfIkqviaJMP0T5ojYrAFh/NIlVAzZAOU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=A0Fgwo5mU45bMpYdPARle9T8kKbUoojwOpk30wEIalMUAcdFqRmE5LtT75kKMeJ7o
-         P+bYmssVouZR4ODrflvLIVRrBRg3qWpQgsun2ekUZJX1CDz2zFSTqq49LOIp43n/Y2
-         blRA+E+LL+nk3wqZ5Nl9J0PkDfqC8mD1la4OpxL3a2+4VAH1DVeP58/30JQcN4oVXl
-         m1Qq7Y8w1Et7zehg0GTiBUQSCF2+ZqbGBR0Zwp26AcaRfafanwQnvnPM+d/2/6AADa
-         G2bSeydhvTITHs9TFTEL78oyzg2ERj0XkpFFPAqCwRMV1rUGADC/2+C7oYf0BbSrjf
-         VwBIX1ubuAYaQ==
-Date:   Mon, 11 Jan 2021 18:14:53 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Ayush Sawal <ayush.sawal@chelsio.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, secdev@chelsio.com,
-        Rohit Maheshwari <rohitm@chelsio.com>
-Subject: Re: [PATCH net V2] cxgb4/chtls: Fix tid stuck due to wrong update
- of qid
-Message-ID: <20210111181453.4e86301a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210109025106.21488-1-ayush.sawal@chelsio.com>
-References: <20210109025106.21488-1-ayush.sawal@chelsio.com>
+        id S1730567AbhALCTI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jan 2021 21:19:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49352 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728010AbhALCTH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 21:19:07 -0500
+Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CE7FC061794;
+        Mon, 11 Jan 2021 18:18:27 -0800 (PST)
+Received: by mail-yb1-xb33.google.com with SMTP id d37so748315ybi.4;
+        Mon, 11 Jan 2021 18:18:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:from:date:message-id:subject:to;
+        bh=/jqrwzJgo9eVxAXeM6jKN5/Sa/ECb+x63YL/dYcjaww=;
+        b=FFITv9L+CRR9SKokSSwXQz08Vq3LSY2cvOh6eL3csUn+UHXj9+BmUeX/FJVtLc1ARd
+         8uvDBieYmaE3usyRRAPtpOAr09KIp36kQkVlVX5xiQZw3oGsSskg/k10ndwYSjBG0RgM
+         oObZb+eE+X8cAcxgl49Yvmykhn03v5Bd/pUrFaNRpzkBj+tm6QzgT296/wjiWaK/sHXB
+         B5FyH4YOJRVZI8AnO+KujtJRAIE+NMj1Du9dJpCN1GA/1XbHee7q1z0YahQfSxCGJYSI
+         qwueenfvDufy7ZPJ5bOfefW1s4khPt5096iogMDrxnZaPl+9Es5i3IpAbz7rupkvWhg4
+         Z7VA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=/jqrwzJgo9eVxAXeM6jKN5/Sa/ECb+x63YL/dYcjaww=;
+        b=LxIRjM65Ahw+AyiT75D9MlODUDdNJ3AklKCVRJEEPFXaph9w2me4DUvVbTin9IDR2n
+         8kBGAHApHQ46ZNeulLtV+R6KF+TvUbVlja3r1evO8TzMDV3bTAsAyd4wA+hTojvy9opV
+         W+ALamw3auhJ8FGQiPNGgH7+tx78A6N7yT0jfVbSBBgjIpsBm95AGwHtJQhl1MKOgtJj
+         DZNwKv/Ovgn1ooqSSfZ32jbUS3eu+BWCJSa4dGShNcyoYQPJnQaRSOT9SpKzInwmQUmt
+         dNv1QVK+VZF+yujbmDBxFubpnOBnM6wLxzYzWZq3Ca4CYykZXUhW2qeZRIhgPDbPOL1S
+         Asrw==
+X-Gm-Message-State: AOAM5315hFPOGczrNeYLesGxcK5smnGNJp42UgYbVlPpUgGE/dPAYKO2
+        tfdAagF4w2YKD7hpJaQENTFS2J0CX9BuhA1B60k=
+X-Google-Smtp-Source: ABdhPJzQRUSeX3651DgjlAt22Gg2Gq9OwNSpiGrNACArTzDBmmQ/QHbpdc3Ar5s6EzSGzzwVlfmDq4782wvK4jKbnk0=
+X-Received: by 2002:a25:880a:: with SMTP id c10mr3724649ybl.456.1610417906674;
+ Mon, 11 Jan 2021 18:18:26 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+From:   =?UTF-8?B?5oWV5Yas5Lqu?= <mudongliangabcd@gmail.com>
+Date:   Tue, 12 Jan 2021 10:18:00 +0800
+Message-ID: <CAD-N9QWDdRDiud42D8HMeRabqVvQ+Pbz=qgbOYrvpUvjRFp05Q@mail.gmail.com>
+Subject: "general protection fault in sctp_ulpevent_notify_peer_addr_change"
+ and "general protection fault in sctp_ulpevent_nofity_peer_addr_change"
+ should share the same root cause
+To:     davem@davemloft.net, kuba@kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        linux-sctp@vger.kernel.org, marcelo.leitner@gmail.com,
+        netdev@vger.kernel.org, nhorman@tuxdriver.com, vyasevich@gmail.com,
+        rkovhaev@gmail.com,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat,  9 Jan 2021 08:21:06 +0530 Ayush Sawal wrote:
-> +	if (skb)
-> +		kfree_skb(skb);
+Dear developers,
 
-kfree_skb() handles NULL just fine
+I find that "general protection fault in l2cap_sock_getsockopt" and
+"general protection fault in sco_sock_getsockopt" may be duplicated
+bugs from the same root cause.
+
+First, by comparing the PoC similarity after own minimization, we find
+they share the same PoC. Second, the stack traces for both bug reports
+are the same except for the last function. And the different last
+functions are due to a function name change (typo fix) from
+"sctp_ulpevent_nofity_peer_addr_change" to
+"sctp_ulpevent_notify_peer_addr_change"
+
+--
+My best regards to you.
+
+     No System Is Safe!
+     Dongliang Mu
