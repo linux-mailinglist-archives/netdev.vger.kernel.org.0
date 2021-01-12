@@ -2,274 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 68C282F259B
-	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 02:48:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1737B2F25A5
+	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 02:48:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731868AbhALBfg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jan 2021 20:35:36 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:61948 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728387AbhALBfg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 20:35:36 -0500
-Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 10C1Sp2t003312;
-        Mon, 11 Jan 2021 17:34:38 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
- references : from : message-id : date : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=facebook;
- bh=HvahM3fa5WSOlHWkSGgQoQ8WrdUSl11vrnutixj2pDU=;
- b=A4N3L+PKCVkeSTuULoos+NKFwRGrDYUzIwWZzOw8M3It4RJ7rBPd+7vGFBZKBmrxu6y3
- /ifa0HK0sMdHNUn9tFlgUKL0WmCd5T+k4q9M50bNPR8FKPhhhdqs9DAcR+MsOZ0+iWhC
- PY4p/jBGu0bOc1UsPwFBOUcSqVBC8Cpna0k= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 35ywdbr7fq-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Mon, 11 Jan 2021 17:34:37 -0800
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (100.104.98.9) by
- o365-in.thefacebook.com (100.104.94.197) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Mon, 11 Jan 2021 17:34:37 -0800
+        id S1729461AbhALBm1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jan 2021 20:42:27 -0500
+Received: from mail-eopbgr50088.outbound.protection.outlook.com ([40.107.5.88]:1351
+        "EHLO EUR03-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726837AbhALBm0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 11 Jan 2021 20:42:26 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lV0sdolxwENXhDZZBJzZUHzVoJh40zXCQImmQHpAqtq9/JYtLPmioDxArkEdKbhFuIeGqFCrGnpra9bTpubERdOyxrSJ9RWFZCB0xpO7yrlljoootZ8P+RSRmJ2avXWbN0+LMuz7UVcDXHBMPW2dzx23VgEdld6H9gB9Hi7wM7d2i9aA2quLZ4aoUCJ9FOyCLhUD9m4UapmONs5mRMpPQeefSmmoZPCqzJSRoON6q4PQ+Zcj8aGmX9w63NTm/B3I38NSTEHOZpsYWOmxaTSEmSE8kYtKdM0x0Qab7AIIsIvUBBB3HJvzgTiRch1zDzKe5tCMAP3NjaOOgFCe7E6LEA==
+ b=BO1cGbrfK8k9YgVVWoxdAmS6fBa3M7HoKEs3fKFascyM2oStuo6W1xpzzdtZPSihlT1KFGgOl6BuKGPrn5EyGOYiXrfW2a0cHDLH/YqbSQMbNOdoC3Qx2Zm1owppmF0V8k9dL/AT7O038g2kqcE+1EdxFtiF0rlBI3RaeeNHPVPJ8r/m1cPQnbsJakvn0LW0K2V89VXDZJ2MKDgpuKoUXasJMZW+uDT3y1TlodWf7EoZlYKvPbGaT8cQ7zzI9mgGGnur9IYV/ZF/VTsfGIzNesMmfjWv9xpiaVDSzkuNo8TeHdAJQD+7oYwCGkK4VMoO3rUJmBLy7TLfCf8iJYOD1Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HvahM3fa5WSOlHWkSGgQoQ8WrdUSl11vrnutixj2pDU=;
- b=CeZCblV75NsvOJZxBz1FWkQRQT+8N0xxyWnEnsMjik97v9M2Sqt3zogujC1C1s4C9oWai/i1tjBO6yCmroir1L+BE8wGUpEjtF5T/DUDAH+ULJ3dHK+NTgwB8E7Ze44ZFJDP+OAK7cYWpFV1wOeIA4R3ryKKB4WTYt6wpWd7GMtiX3B82GNPpzrsrCrfWOdV0T9SElOPOKCt7knURnQKod2sYZoYeVb4MYTz1aHepAhV5zBlXf0yY9yD+wHAU12J4/Peh4gpYov6nx0Xr4AQ5rFiKibyl/dpBHuF2lcbuPYfSF1F03/Cw/Guf3Teck+d37BXY3asaFYdnibEsyo4jA==
+ bh=7HBFYOYN4+kkNPN+osijaFMPlDD8ztKU6P51io+s3N8=;
+ b=FqPsVA175pC2+blhw587sXSVotsXerfTW0Rc+H7e0FGDSt1R8OYI7K6YWLhABdPC8moqpwnLo/DIyV7Cszpjc6wkwRSe5vywiPitI+25ARxBoebaC4PVmIF7DOF6dj3dL2pijT4HiPTPrmSBMIBQ1EK8468sd8wxd/kvZsbyUeUpyVOux+rHR45ksPkfWHDwJhpyTDTVjf+RSreNpkc0V7pV8qFo7r+aFbz2E7ocGZmv6uMRFscony/sm1N32AjBu5lwXwSbLxiK5W+aQ9gASwKdsAPBs3EGB7t3xlVnsWwambmC9dflKYD67MxV3DWppDOpY1LzCY/12uaOpcsrng==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=HvahM3fa5WSOlHWkSGgQoQ8WrdUSl11vrnutixj2pDU=;
- b=g60a+x08wmU1OPGhg0ZAOSlssDlBCBK39Xqch3kczPBoUz2XpGGNAkcdwYGW7lBGygAlO+1vIUnDl0e89doFf6qToP4aKODc7ezhOVMWoNwPLISupm2MI7ob+3k3c2XKGRoE7dp9tvnfr7xuqGeumUcYrI//oZwpd297JXEis1o=
-Authentication-Results: google.com; dkim=none (message not signed)
- header.d=none;google.com; dmarc=none action=none header.from=fb.com;
-Received: from BYAPR15MB4088.namprd15.prod.outlook.com (2603:10b6:a02:c3::18)
- by BYAPR15MB3413.namprd15.prod.outlook.com (2603:10b6:a03:10b::32) with
+ bh=7HBFYOYN4+kkNPN+osijaFMPlDD8ztKU6P51io+s3N8=;
+ b=AD1Rzhp3mq009sIo8sDrHW2/+RXppnPLscYWTfbRnU1TP1wcHkD/v9nQGdZ+dMwlJUA194EGkeU0AFdbrLMYB54k1PprmFXHq9TE13Npk9XBFQGD59LTs37LVslr9fE7UwW1KNOZMrpQqTfqcHTvSB7FfMRR33n+KauGYhHfVo8=
+Received: from DB8PR04MB6795.eurprd04.prod.outlook.com (2603:10a6:10:fa::15)
+ by DBBPR04MB7705.eurprd04.prod.outlook.com (2603:10a6:10:209::23) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3742.6; Tue, 12 Jan
- 2021 01:34:32 +0000
-Received: from BYAPR15MB4088.namprd15.prod.outlook.com
- ([fe80::9ae:1628:daf9:4b03]) by BYAPR15MB4088.namprd15.prod.outlook.com
- ([fe80::9ae:1628:daf9:4b03%7]) with mapi id 15.20.3742.012; Tue, 12 Jan 2021
- 01:34:32 +0000
-Subject: Re: [PATCH v2 bpf-next 6/7] libbpf: support kernel module ksym
- externs
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-CC:     Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>, Hao Luo <haoluo@google.com>
-References: <20210108220930.482456-1-andrii@kernel.org>
- <20210108220930.482456-7-andrii@kernel.org>
- <dc1a06fe-f957-deb8-772c-b4c65042c3b3@fb.com>
- <CAEf4BzZGm9=XGWrj_1Q8ZpxZVhcogZVqb=5yCop2mNgdoTT0zA@mail.gmail.com>
-From:   Yonghong Song <yhs@fb.com>
-Message-ID: <b9e91dbb-03df-e7d2-8fd9-25bbc77c5188@fb.com>
-Date:   Mon, 11 Jan 2021 17:34:30 -0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.6.0
-In-Reply-To: <CAEf4BzZGm9=XGWrj_1Q8ZpxZVhcogZVqb=5yCop2mNgdoTT0zA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+ 2021 01:41:37 +0000
+Received: from DB8PR04MB6795.eurprd04.prod.outlook.com
+ ([fe80::b83c:2edc:17e8:2666]) by DB8PR04MB6795.eurprd04.prod.outlook.com
+ ([fe80::b83c:2edc:17e8:2666%5]) with mapi id 15.20.3742.012; Tue, 12 Jan 2021
+ 01:41:36 +0000
+From:   Joakim Zhang <qiangqing.zhang@nxp.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>,
+        "peppe.cavallaro@st.com" <peppe.cavallaro@st.com>,
+        "alexandre.torgue@st.com" <alexandre.torgue@st.com>,
+        "joabreu@synopsys.com" <joabreu@synopsys.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        dl-linux-imx <linux-imx@nxp.com>
+Subject: RE: [PATCH 4/6] ethernet: stmmac: fix dma physical address of
+ descriptor when display ring
+Thread-Topic: [PATCH 4/6] ethernet: stmmac: fix dma physical address of
+ descriptor when display ring
+Thread-Index: AQHW6A4AOMxqzlC/p0u4GcQLrdx1PqoirsWAgACJBwA=
+Date:   Tue, 12 Jan 2021 01:41:36 +0000
+Message-ID: <DB8PR04MB679592B0547495108BBADBD5E6AA0@DB8PR04MB6795.eurprd04.prod.outlook.com>
+References: <20210111113538.12077-1-qiangqing.zhang@nxp.com>
+ <20210111113538.12077-5-qiangqing.zhang@nxp.com>
+ <e2ff7caa-6af8-49b9-cbf0-82b1e97a15c9@gmail.com>
+In-Reply-To: <e2ff7caa-6af8-49b9-cbf0-82b1e97a15c9@gmail.com>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [2620:10d:c090:400::5:7b7c]
-X-ClientProxiedBy: BYAPR02CA0055.namprd02.prod.outlook.com
- (2603:10b6:a03:54::32) To BYAPR15MB4088.namprd15.prod.outlook.com
- (2603:10b6:a02:c3::18)
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [119.31.174.71]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 6c2320da-87df-4f06-ec2a-08d8b69b334e
+x-ms-traffictypediagnostic: DBBPR04MB7705:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <DBBPR04MB77052010314853753D3F9296E6AA0@DBBPR04MB7705.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:3173;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: TlO6XKL2PImGVpw2plu2I41rri7HudNRCS5GtAGp4TQQpLAfAoq3auot6abJdkmI4HGeDbhgZm+tF97jInU9CDuicH/aThtlENWalVJIBsJSC6mBHps+zgujplcu3BAzBSqxLp290DgZkoYLV+1M2s64fmR7qdt378Rv85z+zMPWmmIsYHR6Gr+lDB9Q8u0IL3fbNlwuZ5N+WvnJ9KyNlp4slsquODNIySSib7C10rmNZ9OSfXbWrpsSyCP6yn5bN9tU8qm0RNGE2E1iWgpDyIq4+nluQL5kdERz09U1gQFCGhqC8WWbZqMrRF/mErEmr3Xb+KrOSyFxEZuE6sxun+e/QrkkMjuwvR3U38M//0xJMrCT6Zn5N6OlTQKLqNZ2iJfBPn/MWdaYJ0zfZHFzTg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR04MB6795.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39860400002)(136003)(366004)(396003)(376002)(346002)(8676002)(478600001)(66946007)(66556008)(33656002)(66476007)(66446008)(76116006)(5660300002)(8936002)(83380400001)(2906002)(86362001)(64756008)(7696005)(316002)(53546011)(186003)(4326008)(54906003)(6506007)(71200400001)(26005)(52536014)(55016002)(110136005)(9686003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: =?utf-8?B?TGtSVENpYUI3a09DYzFidE51YXFmTU5qeVM0TGFCeld6dUFka3lUOWtWSTl4?=
+ =?utf-8?B?ZjdsZVJLYXpadG1ZWU5vRFEvZFlRalg3K01NSkpQL1l1cWdRT0haczRNcGZU?=
+ =?utf-8?B?ZEY0b3Jxa21sM3k4ckwrVEFKYmFRRExuUm5KN0lOdHptTEpGbExnbDQvK2gz?=
+ =?utf-8?B?aFdyYjBGN3laRkhXcFNPbE92cVZlNHRXd1IyNW03cXpQYXhTeGx2aHNkR1c1?=
+ =?utf-8?B?ajY1QWlWUlRKaTcwcnZmejdaYnNqOEpzcHZ3OEI1ZVJoSzR6eHVOMVMzVkM0?=
+ =?utf-8?B?dm9KOUxpVS9ZeEhEbmUzUjMzY1puVzd5VWpYTzVGeHJJaENHU2NZZ2VrWTF5?=
+ =?utf-8?B?alFLSEFURmRadUhaY3I5aW9EUStCRTRQUnE3ZzhyMDBhd0lHSjVZQWJ3YTM5?=
+ =?utf-8?B?K0l2ZDFhUFRxSlJBU2VSamY2MGNudmYyZUV6UGN1YnhzWjd5eVdtYUVSOFh0?=
+ =?utf-8?B?aExXdzBsRDNhSENtTFV4ZG1BSlZGanFBUGtWT0Y5dWczMll2eTdNbzBlTlVl?=
+ =?utf-8?B?WjB4YzNmR3ZxNWlTV21hOE1wMVRNeE1TVm9iWGRVT3E0dXNYUldTWHNXcGhZ?=
+ =?utf-8?B?MkxPeEdQVlI3UzRDOFZ3eGVLdW5MY2dXeHF6L2JMZWV4dFBXWUdILzRvWDZq?=
+ =?utf-8?B?Z2VtbzFtNjhwMEFOWk1iOW1EUTd5QXVibzNTcyszUktCdDBoQUpiWTkxRFdi?=
+ =?utf-8?B?M28xK1dUSUVyYXJ5VnIrTXdWVTBtcy9oSlREQnRxdVhZZFN0bS96aUFpQTJp?=
+ =?utf-8?B?dENZMjNQUjFJSWtzZ3dYZkpIRDJFRjNFUEpETHdnYmNKb3EwVkUxMWJ2YkxB?=
+ =?utf-8?B?eGVXV0R6eHNqcFZFRFFiNXloZEk4TitZVFNYNzFWZWl2cUlSSnVlOUdPZkxK?=
+ =?utf-8?B?N3haV3lnT0dXek1oTCtGcUwxQlhITHkrQ1hkSDBNM2FVSllsb0xDVmtIL1Za?=
+ =?utf-8?B?ZzVYUUU3bGRIT2J3QU1NQjF0MjNhSHhjZHF5anB6RkZSd3o1R3hCRCtoVFQr?=
+ =?utf-8?B?TTMvZUZWeEppWTIzUUkyazZ4Mi9ZYlJ2cWI3MVdLZFVRL1lndkQzZ0lZc0ZC?=
+ =?utf-8?B?ZWtOU0s0anpPS3NzMUdWTXUrK1FZbUQyd1V5dVZLZzNSN1NPMmFhMHlhUUVG?=
+ =?utf-8?B?YWFlaWpOc1cvcldmZVJHYUZ5aFRPbnRRQ0VKejFoSHN3dWMxbzJ2OHhOOHFl?=
+ =?utf-8?B?K3pyUkZKZ2s3a1ZVYkFsZXlYellGWFQzQzgyNDBFTzE3VDVRUVJKUTcrR2JJ?=
+ =?utf-8?B?bWJuZEE3U3g0dmx4YThnd0JvT1dHeWdBZGd6cHFOU3hsTngwUlhRYWw1K2tU?=
+ =?utf-8?Q?cum0EsfekDSb8=3D?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [IPv6:2620:10d:c085:21e1::190b] (2620:10d:c090:400::5:7b7c) by BYAPR02CA0055.namprd02.prod.outlook.com (2603:10b6:a03:54::32) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3742.6 via Frontend Transport; Tue, 12 Jan 2021 01:34:31 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: ecbde767-6565-4bd2-bc51-08d8b69a3613
-X-MS-TrafficTypeDiagnostic: BYAPR15MB3413:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <BYAPR15MB3413187E397790705FF35F6ED3AA0@BYAPR15MB3413.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:2958;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 1tETmS0diSN0ONLuhbtAh+CeH9RxYiee93V92BkX9tuFF5DuTONbcr9AenBNfWjGZCginqUXJEVrbpECUwGGXqmu3xktE0xZk216xW+Y/BZmkR3JZsCiv2bBFE33ShibvLUCFMmnBtnwdBu2TSngjeAo8gzW08soNjak+resoIYhzr70rVXT0yFiLtDGK7hrBcJYfKBg5S3hW1WmyE9PVqDcthKweeMw2OzlKcK6QK5tWiPap9Vezgof0Z/n1h5mwJVRlDS4ZUExI9C/H8CKxQpnRKz1AS6A3NTAtpuaQmG7Czljz6UZT2Htwlo7RUG+JNycfqUaFz1hNtvjWzch8O7sO0AlHlBSaZrI4svNAV0x3PBmM5WBVKMpRpFP1lhGvpcaU3SHKs+/iPk7Kcr03L3BOK6kBKBSa/VxMcLcEtogtacA19FlxNiydICrmNLNKa5uBRiU9LAkVs+7E7FkIirlpvAx0gIj7I7q2pU4GeA=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB4088.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(346002)(136003)(366004)(376002)(39860400002)(396003)(54906003)(16526019)(8676002)(31696002)(86362001)(8936002)(31686004)(52116002)(6916009)(36756003)(186003)(2906002)(4326008)(5660300002)(66476007)(66946007)(6486002)(53546011)(2616005)(316002)(478600001)(66556008)(83380400001)(43740500002)(45980500001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?RzVlaU1tYmxKUzYyOFJWcXUvQWJYSlF2by9DQ2tlL0V6T2NZTUJXUXRWbGNm?=
- =?utf-8?B?SXBNcUhYU1laVXRlQjR3ajVlMzRYY2l4aDBSNS9UK3FScTIySXBmR09hS296?=
- =?utf-8?B?ODFCYnNoQnk2L0MzSjMyR3poRWNUL1ZsRmxOaUhXRSt0cTVWWmMzNWp4YUI1?=
- =?utf-8?B?VlNoZ3EzTUMrZTQ1c1RIUERBRjFQSXVwaVE0RlNNWFFOZTh3MmI4MlBMV2pU?=
- =?utf-8?B?MVRNTU5hZURubXRrazZFMzdrN1ZBSDJyaDB5RmoxVGFtNitRL1VuclFUN29R?=
- =?utf-8?B?eWNLNjc4NEQ5WU01Q2NDeE9kbHI1QkhlVFZXNHVLVlJEMHlHYm1pZzhSNDJ6?=
- =?utf-8?B?VUVITTNNdzAvTjM5Q0FwTFBYM3M3ekZZZVNoTC85aytlWW13RkhhRG0vc09u?=
- =?utf-8?B?M2xXYlBwdjFqaW5NNGFxQmUrR1pUaWozTWZhYm5BbzJtOSsxZFN4Q2d4R1Nm?=
- =?utf-8?B?NHREcEw3dUw4ZGdvd3lOcmQ1MFo3T0xiVFN6cVJHRHVDWHJXMThNVHZwVVVx?=
- =?utf-8?B?anB1TDU0T0dlVndHWDRmT0R3N205VWpsN3pLQ1QrbzhQMThQcWkzYkVzWkxI?=
- =?utf-8?B?WHc0eFVHb1BLZ25XRHZVdUdJSVE4d3JiQVZDQVdRTjhscDRHaWRkRzVsWHlU?=
- =?utf-8?B?TTY2TXh4SUV4ZXVlYlZiY0dTcE1Qdm9GTXBJV1AzN05oY1RYK1U2NExScXha?=
- =?utf-8?B?Nis2bzR0bWNiT0JoOXZraHVubEhLejg0WWxYWHU4T1p0ZjMzbnJSYWFtL3NO?=
- =?utf-8?B?QXhnVE91Y2prUDRpQXMyTDF5U2R3c0pDR3QyRHg2emtPN3UvQzhNUkpENzVH?=
- =?utf-8?B?c2tucnIvUFJPS1ZadTFicnJGb0NxWU5BYmdTT2lGWnN3emF4ZE41RnJsUndj?=
- =?utf-8?B?akRNTkJIaTBFK24vK3JZR0tucWpyMndYbEdGYlNMM1dLc0l2RGdBK3pqWFJC?=
- =?utf-8?B?R1JIR2I1Zy8xWi8vL0taamFTU2Y1cHRyVEJMeE9DbEJDN2ZROUpNL3Z1VEtU?=
- =?utf-8?B?UXlFVTY4SGo2SDEwaVQwYU90dytJVWVsRGVBazBpdy9Ha2d3eHBUdWw1UWw0?=
- =?utf-8?B?M29FZC9ieFVnRmVZQSs0d3J4MThKYkRsZGw2RUJPQzgwb1dmdWtPd284eUpZ?=
- =?utf-8?B?c2k5QkdESGt4ck5mVkdVeUV1WmVNWUNFbDl0L00zUG9UZ2ZOVU53akc2d3Uw?=
- =?utf-8?B?SmtpWGNVZjM4K0E2Mm1FdHdOaXMwb0RlbWpBbGhZODA0SnRtQlVyU0YyRWtp?=
- =?utf-8?B?MEdvblV6RXUxYUVOalJ5aUZFYWRubC94dDBhMXlxQnUyQ0RyK0JaQTcxemJ4?=
- =?utf-8?B?aDB1SXdBWm9sdU5BTXE2Vkt5M0VoMngrR1FaSG1xNXFJUVJxdlVZZDAxSkVV?=
- =?utf-8?B?Vkt0cEtIam5YdkE9PQ==?=
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR15MB4088.namprd15.prod.outlook.com
+X-OriginatorOrg: nxp.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Jan 2021 01:34:32.0817
+X-MS-Exchange-CrossTenant-AuthSource: DB8PR04MB6795.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6c2320da-87df-4f06-ec2a-08d8b69b334e
+X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Jan 2021 01:41:36.8308
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-Network-Message-Id: ecbde767-6565-4bd2-bc51-08d8b69a3613
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: NddtFwbjwv19BAQ2Wj9OFUFU6CRkPNS2eYzKpKBNy/Z8iCQXI4m6i4PdBwxrmclR
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB3413
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
- definitions=2021-01-11_34:2021-01-11,2021-01-11 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 priorityscore=1501
- phishscore=0 impostorscore=0 clxscore=1015 malwarescore=0 suspectscore=0
- mlxlogscore=999 spamscore=0 bulkscore=0 lowpriorityscore=0 adultscore=0
- mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2101120004
-X-FB-Internal: deliver
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: tJM5dB93DzJGi+wbQGB2VpmJHL9rl0PKZsen5oO+pJ/nhnGyPIBl9FVjOAQEQ+OparTWX0RJnoTVfmObeANIDw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBBPR04MB7705
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 1/11/21 1:37 PM, Andrii Nakryiko wrote:
-> On Sun, Jan 10, 2021 at 8:15 PM Yonghong Song <yhs@fb.com> wrote:
->>
->>
->>
->> On 1/8/21 2:09 PM, Andrii Nakryiko wrote:
->>> Add support for searching for ksym externs not just in vmlinux BTF, but across
->>> all module BTFs, similarly to how it's done for CO-RE relocations. Kernels
->>> that expose module BTFs through sysfs are assumed to support new ldimm64
->>> instruction extension with BTF FD provided in insn[1].imm field, so no extra
->>> feature detection is performed.
->>>
->>> Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
->>> ---
->>>    tools/lib/bpf/libbpf.c | 47 +++++++++++++++++++++++++++---------------
->>>    1 file changed, 30 insertions(+), 17 deletions(-)
->>>
->>> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
->>> index 6ae748f6ea11..57559a71e4de 100644
->>> --- a/tools/lib/bpf/libbpf.c
->>> +++ b/tools/lib/bpf/libbpf.c
->>> @@ -395,7 +395,8 @@ struct extern_desc {
->>>                        unsigned long long addr;
->>>
->>>                        /* target btf_id of the corresponding kernel var. */
->>> -                     int vmlinux_btf_id;
->>> +                     int kernel_btf_obj_fd;
->>> +                     int kernel_btf_id;
->>>
->>>                        /* local btf_id of the ksym extern's type. */
->>>                        __u32 type_id;
->>> @@ -6162,7 +6163,8 @@ bpf_object__relocate_data(struct bpf_object *obj, struct bpf_program *prog)
->>>                        } else /* EXT_KSYM */ {
->>>                                if (ext->ksym.type_id) { /* typed ksyms */
->>>                                        insn[0].src_reg = BPF_PSEUDO_BTF_ID;
->>> -                                     insn[0].imm = ext->ksym.vmlinux_btf_id;
->>> +                                     insn[0].imm = ext->ksym.kernel_btf_id;
->>> +                                     insn[1].imm = ext->ksym.kernel_btf_obj_fd;
->>>                                } else { /* typeless ksyms */
->>>                                        insn[0].imm = (__u32)ext->ksym.addr;
->>>                                        insn[1].imm = ext->ksym.addr >> 32;
->>> @@ -7319,7 +7321,8 @@ static int bpf_object__read_kallsyms_file(struct bpf_object *obj)
->>>    static int bpf_object__resolve_ksyms_btf_id(struct bpf_object *obj)
->>>    {
->>>        struct extern_desc *ext;
->>> -     int i, id;
->>> +     struct btf *btf;
->>> +     int i, j, id, btf_fd, err;
->>>
->>>        for (i = 0; i < obj->nr_extern; i++) {
->>>                const struct btf_type *targ_var, *targ_type;
->>> @@ -7331,8 +7334,22 @@ static int bpf_object__resolve_ksyms_btf_id(struct bpf_object *obj)
->>>                if (ext->type != EXT_KSYM || !ext->ksym.type_id)
->>>                        continue;
->>>
->>> -             id = btf__find_by_name_kind(obj->btf_vmlinux, ext->name,
->>> -                                         BTF_KIND_VAR);
->>> +             btf = obj->btf_vmlinux;
->>> +             btf_fd = 0;
->>> +             id = btf__find_by_name_kind(btf, ext->name, BTF_KIND_VAR);
->>> +             if (id == -ENOENT) {
->>> +                     err = load_module_btfs(obj);
->>> +                     if (err)
->>> +                             return err;
->>> +
->>> +                     for (j = 0; j < obj->btf_module_cnt; j++) {
->>> +                             btf = obj->btf_modules[j].btf;
->>> +                             btf_fd = obj->btf_modules[j].fd;
->>
->> Do we have possibility btf_fd == 0 here?
-> 
-> Extremely unlikely. But if we are really worried about 0 fd, we should
-> handle that in a centralized fashion in libbpf. I.e., for any
-> operation that can return FD, check if that FD is 0, and if yes, dup()
-> it. And then make everything call that helper. So in the context of
-> this patch I'm just ignoring such possibility.
-Maybe at least add some comments here to document such a possibility?
-
-> 
->>
->>> +                             id = btf__find_by_name_kind(btf, ext->name, BTF_KIND_VAR);
->>> +                             if (id != -ENOENT)
->>> +                                     break;
->>> +                     }
->>> +             }
->>>                if (id <= 0) {
->>>                        pr_warn("extern (ksym) '%s': failed to find BTF ID in vmlinux BTF.\n",
->>>                                ext->name);
->>> @@ -7343,24 +7360,19 @@ static int bpf_object__resolve_ksyms_btf_id(struct bpf_object *obj)
->>>                local_type_id = ext->ksym.type_id;
->>>
->>>                /* find target type_id */
->>> -             targ_var = btf__type_by_id(obj->btf_vmlinux, id);
->>> -             targ_var_name = btf__name_by_offset(obj->btf_vmlinux,
->>> -                                                 targ_var->name_off);
->>> -             targ_type = skip_mods_and_typedefs(obj->btf_vmlinux,
->>> -                                                targ_var->type,
->>> -                                                &targ_type_id);
->>> +             targ_var = btf__type_by_id(btf, id);
->>> +             targ_var_name = btf__name_by_offset(btf, targ_var->name_off);
->>> +             targ_type = skip_mods_and_typedefs(btf, targ_var->type, &targ_type_id);
->>>
->>>                ret = bpf_core_types_are_compat(obj->btf, local_type_id,
->>> -                                             obj->btf_vmlinux, targ_type_id);
->>> +                                             btf, targ_type_id);
->>>                if (ret <= 0) {
->>>                        const struct btf_type *local_type;
->>>                        const char *targ_name, *local_name;
->>>
->>>                        local_type = btf__type_by_id(obj->btf, local_type_id);
->>> -                     local_name = btf__name_by_offset(obj->btf,
->>> -                                                      local_type->name_off);
->>> -                     targ_name = btf__name_by_offset(obj->btf_vmlinux,
->>> -                                                     targ_type->name_off);
->>> +                     local_name = btf__name_by_offset(obj->btf, local_type->name_off);
->>> +                     targ_name = btf__name_by_offset(btf, targ_type->name_off);
->>>
->>>                        pr_warn("extern (ksym) '%s': incompatible types, expected [%d] %s %s, but kernel has [%d] %s %s\n",
->>>                                ext->name, local_type_id,
->>> @@ -7370,7 +7382,8 @@ static int bpf_object__resolve_ksyms_btf_id(struct bpf_object *obj)
->>>                }
->>>
->>>                ext->is_set = true;
->>> -             ext->ksym.vmlinux_btf_id = id;
->>> +             ext->ksym.kernel_btf_obj_fd = btf_fd;
->>> +             ext->ksym.kernel_btf_id = id;
->>>                pr_debug("extern (ksym) '%s': resolved to [%d] %s %s\n",
->>>                         ext->name, id, btf_kind_str(targ_var), targ_var_name);
->>>        }
->>>
+DQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZyb206IEZsb3JpYW4gRmFpbmVsbGkg
+PGYuZmFpbmVsbGlAZ21haWwuY29tPg0KPiBTZW50OiAyMDIx5bm0MeaciDEy5pelIDE6MzANCj4g
+VG86IEpvYWtpbSBaaGFuZyA8cWlhbmdxaW5nLnpoYW5nQG54cC5jb20+OyBwZXBwZS5jYXZhbGxh
+cm9Ac3QuY29tOw0KPiBhbGV4YW5kcmUudG9yZ3VlQHN0LmNvbTsgam9hYnJldUBzeW5vcHN5cy5j
+b207IGRhdmVtQGRhdmVtbG9mdC5uZXQ7DQo+IGt1YmFAa2VybmVsLm9yZw0KPiBDYzogbmV0ZGV2
+QHZnZXIua2VybmVsLm9yZzsgZGwtbGludXgtaW14IDxsaW51eC1pbXhAbnhwLmNvbT4NCj4gU3Vi
+amVjdDogUmU6IFtQQVRDSCA0LzZdIGV0aGVybmV0OiBzdG1tYWM6IGZpeCBkbWEgcGh5c2ljYWwg
+YWRkcmVzcyBvZg0KPiBkZXNjcmlwdG9yIHdoZW4gZGlzcGxheSByaW5nDQo+IA0KPiBPbiAxLzEx
+LzIxIDM6MzUgQU0sIEpvYWtpbSBaaGFuZyB3cm90ZToNCj4gPiBEcml2ZXIgdXNlcyBkbWFfYWxs
+b2NfY29oZXJlbnQgdG8gYWxsb2NhdGUgZG1hIG1lbW9yeSBmb3IgZGVzY3JpcHRvcnMsDQo+ID4g
+ZG1hX2FsbG9jX2NvaGVyZW50IHdpbGwgcmV0dXJuIGJvdGggdGhlIHZpcnR1YWwgYWRkcmVzcyBh
+bmQgcGh5c2ljYWwNCj4gPiBhZGRyZXNzLiBBRkFJSywgdmlydF90b19waHlzIGNvdWxkIG5vdCBj
+b252ZXJ0IHZpcnR1YWwgYWRkcmVzcyB0bw0KPiA+IHBoeXNpY2FsIGFkZHJlc3MsIGZvciB3aGlj
+aCBtZW1vcnkgaXMgYWxsb2NhdGVkIGJ5IGRtYV9hbGxvY19jb2hlcmVudC4NCj4gPg0KPiA+IFNp
+Z25lZC1vZmYtYnk6IEpvYWtpbSBaaGFuZyA8cWlhbmdxaW5nLnpoYW5nQG54cC5jb20+DQo+ID4g
+LS0tDQo+ID4gIC4uLi9ldGhlcm5ldC9zdG1pY3JvL3N0bW1hYy9kd21hYzRfZGVzY3MuYyAgICB8
+ICA1ICstDQo+ID4gIC4uLi9uZXQvZXRoZXJuZXQvc3RtaWNyby9zdG1tYWMvZW5oX2Rlc2MuYyAg
+ICB8ICA1ICstDQo+ID4gIGRyaXZlcnMvbmV0L2V0aGVybmV0L3N0bWljcm8vc3RtbWFjL2h3aWYu
+aCAgICB8ICAzICstDQo+ID4gIC4uLi9uZXQvZXRoZXJuZXQvc3RtaWNyby9zdG1tYWMvbm9ybV9k
+ZXNjLmMgICB8ICA1ICstDQo+ID4gIC4uLi9uZXQvZXRoZXJuZXQvc3RtaWNyby9zdG1tYWMvc3Rt
+bWFjX21haW4uYyB8IDUwDQo+ID4gKysrKysrKysrKysrLS0tLS0tLQ0KPiA+ICA1IGZpbGVzIGNo
+YW5nZWQsIDQ0IGluc2VydGlvbnMoKyksIDI0IGRlbGV0aW9ucygtKQ0KPiA+DQo+ID4gZGlmZiAt
+LWdpdCBhL2RyaXZlcnMvbmV0L2V0aGVybmV0L3N0bWljcm8vc3RtbWFjL2R3bWFjNF9kZXNjcy5j
+DQo+ID4gYi9kcml2ZXJzL25ldC9ldGhlcm5ldC9zdG1pY3JvL3N0bW1hYy9kd21hYzRfZGVzY3Mu
+Yw0KPiA+IGluZGV4IGM2NTQwYjAwM2I0My4uOGUxZWUzM2JhMWU2IDEwMDY0NA0KPiA+IC0tLSBh
+L2RyaXZlcnMvbmV0L2V0aGVybmV0L3N0bWljcm8vc3RtbWFjL2R3bWFjNF9kZXNjcy5jDQo+ID4g
+KysrIGIvZHJpdmVycy9uZXQvZXRoZXJuZXQvc3RtaWNyby9zdG1tYWMvZHdtYWM0X2Rlc2NzLmMN
+Cj4gPiBAQCAtNDAyLDcgKzQwMiw4IEBAIHN0YXRpYyB2b2lkIGR3bWFjNF9yZF9zZXRfdHhfaWMo
+c3RydWN0IGRtYV9kZXNjDQo+ICpwKQ0KPiA+ICAJcC0+ZGVzMiB8PSBjcHVfdG9fbGUzMihUREVT
+Ml9JTlRFUlJVUFRfT05fQ09NUExFVElPTik7DQo+ID4gIH0NCj4gPg0KPiA+IC1zdGF0aWMgdm9p
+ZCBkd21hYzRfZGlzcGxheV9yaW5nKHZvaWQgKmhlYWQsIHVuc2lnbmVkIGludCBzaXplLCBib29s
+DQo+ID4gcngpDQo+ID4gK3N0YXRpYyB2b2lkIGR3bWFjNF9kaXNwbGF5X3Jpbmcodm9pZCAqaGVh
+ZCwgdW5zaWduZWQgaW50IHNpemUsIGJvb2wgcngsDQo+ID4gKwkJCQl1bnNpZ25lZCBpbnQgZG1h
+X3J4X3BoeSwgdW5zaWduZWQgaW50IGRlc2Nfc2l6ZSkNCj4gPiAgew0KPiA+ICAJc3RydWN0IGRt
+YV9kZXNjICpwID0gKHN0cnVjdCBkbWFfZGVzYyAqKWhlYWQ7DQo+ID4gIAlpbnQgaTsNCj4gPiBA
+QCAtNDExLDcgKzQxMiw3IEBAIHN0YXRpYyB2b2lkIGR3bWFjNF9kaXNwbGF5X3Jpbmcodm9pZCAq
+aGVhZCwNCj4gPiB1bnNpZ25lZCBpbnQgc2l6ZSwgYm9vbCByeCkNCj4gPg0KPiA+ICAJZm9yIChp
+ID0gMDsgaSA8IHNpemU7IGkrKykgew0KPiA+ICAJCXByX2luZm8oIiUwM2QgWzB4JXhdOiAweCV4
+IDB4JXggMHgleCAweCV4XG4iLA0KPiA+IC0JCQlpLCAodW5zaWduZWQgaW50KXZpcnRfdG9fcGh5
+cyhwKSwNCj4gPiArCQkJaSwgKHVuc2lnbmVkIGludCkoZG1hX3J4X3BoeSArIGkgKiBkZXNjX3Np
+emUpLA0KPiANCj4gVGhpcyBjb2RlIHdpbGwgcHJvYmFibHkgbm90IHdvcmsgY29ycmVjdGx5IG9u
+IGEgbWFjaGluZSB3aXRoIHBoeXNpY2FsIGFkZHJlc3Nlcw0KPiBncmVhdGVyIHRoYW4gMzItYml0
+IGFueXdheSBhbmQgdGhlIGFkZHJlc3MgYml0cyB3b3VsZCBiZSB0cnVuY2F0ZWQgdGhlbiwNCj4g
+Y2Fubm90IHlvdSB1c2UgYSBwaHlfYWRkcl90IG9yIGRtYV9hZGRyX3QgYW5kIHVzZSAlcGEgYXMg
+ZmFyIGFzIHRoZSBwcmludGsNCj4gZm9ybWF0IGdvZXM/DQoNClRoYW5rcywgSSB3aWxsIGZpeCBp
+dC4NCg0KQmVzdCBSZWdhcmRzLA0KSm9ha2ltIFpoYW5nDQo+IC0tDQo+IEZsb3JpYW4NCg==
