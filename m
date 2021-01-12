@@ -2,74 +2,217 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 27C652F27EB
-	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 06:34:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 357712F27F0
+	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 06:37:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733218AbhALFeS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jan 2021 00:34:18 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:41677 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1732716AbhALFeS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 00:34:18 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1610429572;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=3tdKW3SLUhCLxVY2DOdCzA12uRd5TyP8aBW/+yPnNmQ=;
-        b=JC3b0Qu6xa2OvgxlH/WzDq8muGMQmyxzpnYX1FiN6CsLanNxAwlvvUkoemuvqnPucNGdXM
-        F/fkAfC/SuTZmJa05/6ZRVCF7n0NuHpyYvq3Wxwg50W1mph3O3E4KYT1qcMkTEYyObbeC8
-        X56lEbF76LgMxR1yHomaVb/Oq2rHS+w=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-585-qI6e3ArVMbCdtWuQePZw8Q-1; Tue, 12 Jan 2021 00:32:50 -0500
-X-MC-Unique: qI6e3ArVMbCdtWuQePZw8Q-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D80291842140;
-        Tue, 12 Jan 2021 05:32:48 +0000 (UTC)
-Received: from laptop.redhat.com (ovpn-12-95.pek2.redhat.com [10.72.12.95])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 7E0B510016F6;
-        Tue, 12 Jan 2021 05:32:42 +0000 (UTC)
-From:   Cindy Lu <lulu@redhat.com>
-To:     lulu@redhat.com, jasowang@redhat.com, mst@redhat.com,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        lingshan.zhu@intel.com
-Cc:     stable@vger.kernel.org
-Subject: [PATCH v2] vhost_vdpa: fix the problem in vhost_vdpa_set_config_call
-Date:   Tue, 12 Jan 2021 13:32:27 +0800
-Message-Id: <20210112053227.8574-1-lulu@redhat.com>
+        id S1732684AbhALFhB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jan 2021 00:37:01 -0500
+Received: from stargate.chelsio.com ([12.32.117.8]:62080 "EHLO
+        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726483AbhALFhB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 00:37:01 -0500
+Received: from heptagon.blr.asicdesigners.com (heptagon.blr.asicdesigners.com [10.193.186.108])
+        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 10C5a2WQ027355;
+        Mon, 11 Jan 2021 21:36:02 -0800
+From:   Ayush Sawal <ayush.sawal@chelsio.com>
+To:     kuba@kernel.org, netdev@vger.kernel.org, davem@davemloft.net
+Cc:     secdev@chelsio.com, Ayush Sawal <ayush.sawal@chelsio.com>,
+        Rohit Maheshwari <rohitm@chelsio.com>
+Subject: [PATCH net V3] cxgb4/chtls: Fix tid stuck due to wrong update of qid
+Date:   Tue, 12 Jan 2021 11:06:00 +0530
+Message-Id: <20210112053600.24590-1-ayush.sawal@chelsio.com>
+X-Mailer: git-send-email 2.28.0.rc1.6.gae46588
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In vhost_vdpa_set_config_call, the cb.private should be vhost_vdpa.
-this cb.private will finally use in vhost_vdpa_config_cb as
-vhost_vdpa. Fix this issue.
+TID stuck is seen when there is a race in
+CPL_PASS_ACCEPT_RPL/CPL_ABORT_REQ and abort is arriving
+before the accept reply, which sets the queue number.
+In this case HW ends up sending CPL_ABORT_RPL_RSS to an
+incorrect ingress queue.
 
-Signed-off-by: Cindy Lu <lulu@redhat.com>
+V1->V2:
+- Removed the unused variable len in chtls_set_quiesce_ctrl().
+
+V2->V3:
+- As kfree_skb() has a check for null skb, so removed this
+check before calling kfree_skb() in func chtls_send_reset().
+
+Fixes: cc35c88ae4db ("crypto : chtls - CPL handler definition")
+Signed-off-by: Rohit Maheshwari <rohitm@chelsio.com>
+Signed-off-by: Ayush Sawal <ayush.sawal@chelsio.com>
 ---
- drivers/vhost/vdpa.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/chelsio/cxgb4/t4_tcb.h   |  7 ++++
+ .../chelsio/inline_crypto/chtls/chtls.h       |  4 ++
+ .../chelsio/inline_crypto/chtls/chtls_cm.c    | 32 ++++++++++++++-
+ .../chelsio/inline_crypto/chtls/chtls_hw.c    | 41 +++++++++++++++++++
+ 4 files changed, 82 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-index ef688c8c0e0e..3fbb9c1f49da 100644
---- a/drivers/vhost/vdpa.c
-+++ b/drivers/vhost/vdpa.c
-@@ -319,7 +319,7 @@ static long vhost_vdpa_set_config_call(struct vhost_vdpa *v, u32 __user *argp)
- 	struct eventfd_ctx *ctx;
+diff --git a/drivers/net/ethernet/chelsio/cxgb4/t4_tcb.h b/drivers/net/ethernet/chelsio/cxgb4/t4_tcb.h
+index 92473dda55d9..22a0220123ad 100644
+--- a/drivers/net/ethernet/chelsio/cxgb4/t4_tcb.h
++++ b/drivers/net/ethernet/chelsio/cxgb4/t4_tcb.h
+@@ -40,6 +40,13 @@
+ #define TCB_L2T_IX_M		0xfffULL
+ #define TCB_L2T_IX_V(x)		((x) << TCB_L2T_IX_S)
  
- 	cb.callback = vhost_vdpa_config_cb;
--	cb.private = v->vdpa;
-+	cb.private = v;
- 	if (copy_from_user(&fd, argp, sizeof(fd)))
- 		return  -EFAULT;
++#define TCB_T_FLAGS_W           1
++#define TCB_T_FLAGS_S           0
++#define TCB_T_FLAGS_M           0xffffffffffffffffULL
++#define TCB_T_FLAGS_V(x)        ((__u64)(x) << TCB_T_FLAGS_S)
++
++#define TCB_FIELD_COOKIE_TFLAG	1
++
+ #define TCB_SMAC_SEL_W		0
+ #define TCB_SMAC_SEL_S		24
+ #define TCB_SMAC_SEL_M		0xffULL
+diff --git a/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls.h b/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls.h
+index 72bb123d53db..9e2378013642 100644
+--- a/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls.h
++++ b/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls.h
+@@ -575,7 +575,11 @@ int send_tx_flowc_wr(struct sock *sk, int compl,
+ void chtls_tcp_push(struct sock *sk, int flags);
+ int chtls_push_frames(struct chtls_sock *csk, int comp);
+ int chtls_set_tcb_tflag(struct sock *sk, unsigned int bit_pos, int val);
++void chtls_set_tcb_field_rpl_skb(struct sock *sk, u16 word,
++				 u64 mask, u64 val, u8 cookie,
++				 int through_l2t);
+ int chtls_setkey(struct chtls_sock *csk, u32 keylen, u32 mode, int cipher_type);
++void chtls_set_quiesce_ctrl(struct sock *sk, int val);
+ void skb_entail(struct sock *sk, struct sk_buff *skb, int flags);
+ unsigned int keyid_to_addr(int start_addr, int keyid);
+ void free_tls_keyid(struct sock *sk);
+diff --git a/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c b/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c
+index 51dd030b3b36..e5cfbe196ba6 100644
+--- a/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c
++++ b/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c
+@@ -32,6 +32,7 @@
+ #include "chtls.h"
+ #include "chtls_cm.h"
+ #include "clip_tbl.h"
++#include "t4_tcb.h"
  
+ /*
+  * State transitions and actions for close.  Note that if we are in SYN_SENT
+@@ -267,7 +268,9 @@ static void chtls_send_reset(struct sock *sk, int mode, struct sk_buff *skb)
+ 	if (sk->sk_state != TCP_SYN_RECV)
+ 		chtls_send_abort(sk, mode, skb);
+ 	else
+-		goto out;
++		chtls_set_tcb_field_rpl_skb(sk, TCB_T_FLAGS_W,
++					    TCB_T_FLAGS_V(TCB_T_FLAGS_M), 0,
++					    TCB_FIELD_COOKIE_TFLAG, 1);
+ 
+ 	return;
+ out:
+@@ -1949,6 +1952,8 @@ static void chtls_close_con_rpl(struct sock *sk, struct sk_buff *skb)
+ 		else if (tcp_sk(sk)->linger2 < 0 &&
+ 			 !csk_flag_nochk(csk, CSK_ABORT_SHUTDOWN))
+ 			chtls_abort_conn(sk, skb);
++		else if (csk_flag_nochk(csk, CSK_TX_DATA_SENT))
++			chtls_set_quiesce_ctrl(sk, 0);
+ 		break;
+ 	default:
+ 		pr_info("close_con_rpl in bad state %d\n", sk->sk_state);
+@@ -2292,6 +2297,28 @@ static int chtls_wr_ack(struct chtls_dev *cdev, struct sk_buff *skb)
+ 	return 0;
+ }
+ 
++static int chtls_set_tcb_rpl(struct chtls_dev *cdev, struct sk_buff *skb)
++{
++	struct cpl_set_tcb_rpl *rpl = cplhdr(skb) + RSS_HDR;
++	unsigned int hwtid = GET_TID(rpl);
++	struct sock *sk;
++
++	sk = lookup_tid(cdev->tids, hwtid);
++
++	/* return EINVAL if socket doesn't exist */
++	if (!sk)
++		return -EINVAL;
++
++	/* Reusing the skb as size of cpl_set_tcb_field structure
++	 * is greater than cpl_abort_req
++	 */
++	if (TCB_COOKIE_G(rpl->cookie) == TCB_FIELD_COOKIE_TFLAG)
++		chtls_send_abort(sk, CPL_ABORT_SEND_RST, NULL);
++
++	kfree_skb(skb);
++	return 0;
++}
++
+ chtls_handler_func chtls_handlers[NUM_CPL_CMDS] = {
+ 	[CPL_PASS_OPEN_RPL]     = chtls_pass_open_rpl,
+ 	[CPL_CLOSE_LISTSRV_RPL] = chtls_close_listsrv_rpl,
+@@ -2304,5 +2331,6 @@ chtls_handler_func chtls_handlers[NUM_CPL_CMDS] = {
+ 	[CPL_CLOSE_CON_RPL]     = chtls_conn_cpl,
+ 	[CPL_ABORT_REQ_RSS]     = chtls_conn_cpl,
+ 	[CPL_ABORT_RPL_RSS]     = chtls_conn_cpl,
+-	[CPL_FW4_ACK]           = chtls_wr_ack,
++	[CPL_FW4_ACK]		= chtls_wr_ack,
++	[CPL_SET_TCB_RPL]	= chtls_set_tcb_rpl,
+ };
+diff --git a/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_hw.c b/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_hw.c
+index a4fb463af22a..1e67140b0f80 100644
+--- a/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_hw.c
++++ b/drivers/net/ethernet/chelsio/inline_crypto/chtls/chtls_hw.c
+@@ -88,6 +88,24 @@ static int chtls_set_tcb_field(struct sock *sk, u16 word, u64 mask, u64 val)
+ 	return ret < 0 ? ret : 0;
+ }
+ 
++void chtls_set_tcb_field_rpl_skb(struct sock *sk, u16 word,
++				 u64 mask, u64 val, u8 cookie,
++				 int through_l2t)
++{
++	struct sk_buff *skb;
++	unsigned int wrlen;
++
++	wrlen = sizeof(struct cpl_set_tcb_field) + sizeof(struct ulptx_idata);
++	wrlen = roundup(wrlen, 16);
++
++	skb = alloc_skb(wrlen, GFP_KERNEL | __GFP_NOFAIL);
++	if (!skb)
++		return;
++
++	__set_tcb_field(sk, skb, word, mask, val, cookie, 0);
++	send_or_defer(sk, tcp_sk(sk), skb, through_l2t);
++}
++
+ /*
+  * Set one of the t_flags bits in the TCB.
+  */
+@@ -113,6 +131,29 @@ static int chtls_set_tcb_quiesce(struct sock *sk, int val)
+ 				   TF_RX_QUIESCE_V(val));
+ }
+ 
++void chtls_set_quiesce_ctrl(struct sock *sk, int val)
++{
++	struct chtls_sock *csk;
++	struct sk_buff *skb;
++	unsigned int wrlen;
++	int ret;
++
++	wrlen = sizeof(struct cpl_set_tcb_field) + sizeof(struct ulptx_idata);
++	wrlen = roundup(wrlen, 16);
++
++	skb = alloc_skb(wrlen, GFP_ATOMIC);
++	if (!skb)
++		return;
++
++	csk = rcu_dereference_sk_user_data(sk);
++
++	__set_tcb_field(sk, skb, 1, TF_RX_QUIESCE_V(1), 0, 0, 1);
++	set_wr_txq(skb, CPL_PRIORITY_CONTROL, csk->port_id);
++	ret = cxgb4_ofld_send(csk->egress_dev, skb);
++	if (ret < 0)
++		kfree_skb(skb);
++}
++
+ /* TLS Key bitmap processing */
+ int chtls_init_kmap(struct chtls_dev *cdev, struct cxgb4_lld_info *lldi)
+ {
 -- 
-2.21.3
+2.28.0.rc1.6.gae46588
 
