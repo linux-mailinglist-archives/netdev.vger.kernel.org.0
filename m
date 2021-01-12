@@ -2,36 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1EDC02F30E3
-	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 14:16:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C4E062F3064
+	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 14:15:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731287AbhALNMr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jan 2021 08:12:47 -0500
-Received: from mail.kernel.org ([198.145.29.99]:54600 "EHLO mail.kernel.org"
+        id S2404365AbhALM6A (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jan 2021 07:58:00 -0500
+Received: from mail.kernel.org ([198.145.29.99]:54604 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2390385AbhALM54 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 12 Jan 2021 07:57:56 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id DC359236F9;
-        Tue, 12 Jan 2021 12:56:55 +0000 (UTC)
+        id S2390402AbhALM55 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 Jan 2021 07:57:57 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 3B90A2388C;
+        Tue, 12 Jan 2021 12:56:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610456216;
-        bh=hFIOfH+hro2qgV4reHOMhXX2n/F4QodE6AHLGwF4bdw=;
+        s=k20201202; t=1610456218;
+        bh=cwH9I6om9mOnEA0nxe4QTzzXwhsfSs4afbZQWKkDMVQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BwfNq/wQU8TKHh/rWeBswMhgbu1isrfheax9qCqk8cuwhxXWSy9fA5rhY3FNaUPds
-         aO3pDPTLsfEPaWN6QQweYUaHyv+0c073uaW4eNy5DRjnYeET5IctDJGUBPIqS+hYWz
-         b+8bB/OAnn9yRg3AUAvr/40AKmAOqBFQ6Ua+zazJ4vP7DOKqBDpLPviA3UQDwxrqbx
-         8PTudhiIDLRRJotJ8RORFqEmkb08AcsFcQlwckH5ux2r4PD/dBuC6yqUtp67x3Kl5i
-         lT/JVxofA6VSAjlyyFCgN841dtIKI2UGNv3VMAJkF+geOlO9MijBwheIyAi39R9BlK
-         cWJN4kcj9j+dQ==
+        b=VnHyeqP+uyGDStFFTXjJkFKFijdBXFowuj5LL2/m+v/Wih5bp4N2YRuvWtXbwW3YN
+         17dgXPVAllmWjC0TkKExAjnnXYC1AUo2Q0iyxU0dr6zNJnJT/ERCq4qyTNLM9kqrCd
+         nrKrblIWJRoRe5H240URFWBNtfNIirOLhcD2zi4nXromMJR8nXBqytnA89ylL7ZYp2
+         38OtEqK07QbUEAn/O+WSxSpzgpntQnaxZYHKQABVRNI1w/d+WCdHoSqsdJmVffEdom
+         PFwXdGjB4EPm8LiobEKWN+EXt5nzxSeCai27y1aJ9wOjeuUleo8mU5/s5JVfEglPtE
+         fwpxbNWWE2Vxg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Rasmus Villemoes <rasmus.villemoes@prevas.dk>,
+Cc:     Manish Chopra <manishc@marvell.com>,
+        Sudarsana Kalluru <skalluru@marvell.com>,
+        Igor Russkikh <irusskikh@marvell.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org
-Subject: [PATCH AUTOSEL 5.4 08/28] ethernet: ucc_geth: fix definition and size of ucc_geth_tx_global_pram
-Date:   Tue, 12 Jan 2021 07:56:24 -0500
-Message-Id: <20210112125645.70739-8-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.4 09/28] qede: fix offload for IPIP tunnel packets
+Date:   Tue, 12 Jan 2021 07:56:25 -0500
+Message-Id: <20210112125645.70739-9-sashal@kernel.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20210112125645.70739-1-sashal@kernel.org>
 References: <20210112125645.70739-1-sashal@kernel.org>
@@ -43,61 +44,41 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Rasmus Villemoes <rasmus.villemoes@prevas.dk>
+From: Manish Chopra <manishc@marvell.com>
 
-[ Upstream commit 887078de2a23689e29d6fa1b75d7cbc544c280be ]
+[ Upstream commit 5d5647dad259bb416fd5d3d87012760386d97530 ]
 
-Table 8-53 in the QUICC Engine Reference manual shows definitions of
-fields up to a size of 192 bytes, not just 128. But in table 8-111,
-one does find the text
+IPIP tunnels packets are unknown to device,
+hence these packets are incorrectly parsed and
+caused the packet corruption, so disable offlods
+for such packets at run time.
 
-  Base Address of the Global Transmitter Parameter RAM Page. [...]
-  The user needs to allocate 128 bytes for this page. The address must
-  be aligned to the page size.
-
-I've checked both rev. 7 (11/2015) and rev. 9 (05/2018) of the manual;
-they both have this inconsistency (and the table numbers are the
-same).
-
-Adding a bit of debug printing, on my board the struct
-ucc_geth_tx_global_pram is allocated at offset 0x880, while
-the (opaque) ucc_geth_thread_data_tx gets allocated immediately
-afterwards, at 0x900. So whatever the engine writes into the thread
-data overlaps with the tail of the global tx pram (and devmem says
-that something does get written during a simple ping).
-
-I haven't observed any failure that could be attributed to this, but
-it seems to be the kind of thing that would be extremely hard to
-debug. So extend the struct definition so that we do allocate 192
-bytes.
-
-Signed-off-by: Rasmus Villemoes <rasmus.villemoes@prevas.dk>
+Signed-off-by: Manish Chopra <manishc@marvell.com>
+Signed-off-by: Sudarsana Kalluru <skalluru@marvell.com>
+Signed-off-by: Igor Russkikh <irusskikh@marvell.com>
+Link: https://lore.kernel.org/r/20201221145530.7771-1-manishc@marvell.com
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/ethernet/freescale/ucc_geth.h | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/qlogic/qede/qede_fp.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-diff --git a/drivers/net/ethernet/freescale/ucc_geth.h b/drivers/net/ethernet/freescale/ucc_geth.h
-index a86a42131fc71..b00fbef612cfe 100644
---- a/drivers/net/ethernet/freescale/ucc_geth.h
-+++ b/drivers/net/ethernet/freescale/ucc_geth.h
-@@ -576,7 +576,14 @@ struct ucc_geth_tx_global_pram {
- 	u32 vtagtable[0x8];	/* 8 4-byte VLAN tags */
- 	u32 tqptr;		/* a base pointer to the Tx Queues Memory
- 				   Region */
--	u8 res2[0x80 - 0x74];
-+	u8 res2[0x78 - 0x74];
-+	u64 snums_en;
-+	u32 l2l3baseptr;	/* top byte consists of a few other bit fields */
-+
-+	u16 mtu[8];
-+	u8 res3[0xa8 - 0x94];
-+	u32 wrrtablebase;	/* top byte is reserved */
-+	u8 res4[0xc0 - 0xac];
- } __packed;
+diff --git a/drivers/net/ethernet/qlogic/qede/qede_fp.c b/drivers/net/ethernet/qlogic/qede/qede_fp.c
+index 004c0bfec41d7..f310a94e04898 100644
+--- a/drivers/net/ethernet/qlogic/qede/qede_fp.c
++++ b/drivers/net/ethernet/qlogic/qede/qede_fp.c
+@@ -1737,6 +1737,11 @@ netdev_features_t qede_features_check(struct sk_buff *skb,
+ 			      ntohs(udp_hdr(skb)->dest) != gnv_port))
+ 				return features & ~(NETIF_F_CSUM_MASK |
+ 						    NETIF_F_GSO_MASK);
++		} else if (l4_proto == IPPROTO_IPIP) {
++			/* IPIP tunnels are unknown to the device or at least unsupported natively,
++			 * offloads for them can't be done trivially, so disable them for such skb.
++			 */
++			return features & ~(NETIF_F_CSUM_MASK | NETIF_F_GSO_MASK);
+ 		}
+ 	}
  
- /* structure representing Extended Filtering Global Parameters in PRAM */
 -- 
 2.27.0
 
