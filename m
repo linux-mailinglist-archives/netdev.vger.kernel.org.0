@@ -2,132 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2C2D92F2675
-	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 03:58:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1EA0F2F2681
+	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 04:07:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731131AbhALC4m (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jan 2021 21:56:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57332 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728044AbhALC4l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 21:56:41 -0500
-Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8295EC061575
-        for <netdev@vger.kernel.org>; Mon, 11 Jan 2021 18:56:01 -0800 (PST)
-Received: by mail-oi1-x22a.google.com with SMTP id l200so855326oig.9
-        for <netdev@vger.kernel.org>; Mon, 11 Jan 2021 18:56:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=tkhhlh0ax1zebrf/ztDg+GsDD7mIaP6cRJYlZlKkR2s=;
-        b=amqqhpiJIBPlGsmoAenw/C4zMHTU2gaGEfkIK8MoVflEq+vstdESxm1hBGdB9Twmwi
-         wFIHW0qQHjF8FsPCOt4L3RP+6wJFzlEE2CGQqJlunLaJnMWhlGXD0wDzfX5M11La/lOw
-         GqdgdtK3B/uA6izLeluukRooPB+9FQJdk4J4M+B+t4eMHaN2lVNG4A+jLQIaEapajDfD
-         v+vcH2/DQWLlESTIpVcCEAbxdrF/zho1x7irrAJKkNgwYWKksMq1NAa0xKzLEJlfeZ7n
-         EA0W9Pals3bt2Msl8l/QIhiXiTjN9ZaUEky+i7knY5VypZ2ZvxChd9t9y1lAAv115ugy
-         wvRg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=tkhhlh0ax1zebrf/ztDg+GsDD7mIaP6cRJYlZlKkR2s=;
-        b=pOSK/9tOZnBmO3GkkgBURK7t2KtgFnaUq9q7p/Fhcz+hM7WNbllgBadmE3O4ftJhyG
-         o7kVx+7amwrOlFjXKSVVOt3Lyagx29fJDYmfFmcPVlpkT0GMIwrBgt0xaT0v5WOYmaQ1
-         JCzWK62DxXldblhxtHrzMYW0EOSl/BSNUflHcr4IRVc3vfQzJ7Nw1cLkzlEcyKOoY60v
-         rlaN/qg3ZHju6JjeS4Guwnn2YoTD8lSwn+wktFjeQY6UPRS+hRFVIRTVgHsLAnpaGPGp
-         ycyx1iu6CpW0W41ETnISDT+2VGro1UpdRpBqYw3VKu69lSjLVQhK0uvXOvjPgRmBu4Or
-         Sb3A==
-X-Gm-Message-State: AOAM530WxQ7mxsKdjyQDhoM/mhT5wWW2VBtQkgmqJERQ5ZMMtu6aCkT/
-        gju96RvR6WexVo5CfN7rQvpXPHmDvd42Wg==
-X-Google-Smtp-Source: ABdhPJzg+2XXKft4cur7aWeLPCXf3ProneULMTsxAeJv9/QwPvymI930jAj5rKdmPNneW71GvE2UJg==
-X-Received: by 2002:a05:6808:650:: with SMTP id z16mr1115812oih.50.1610420160659;
-        Mon, 11 Jan 2021 18:56:00 -0800 (PST)
-Received: from unknown.attlocal.net ([2600:1700:65a0:ab60:245e:7a53:4c33:e5e8])
-        by smtp.gmail.com with ESMTPSA id b8sm386531oia.39.2021.01.11.18.55.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Jan 2021 18:55:59 -0800 (PST)
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Cong Wang <cong.wang@bytedance.com>,
-        syzbot+2624e3778b18fc497c92@syzkaller.appspotmail.com,
-        Pieter Jansen van Vuuren 
-        <pieter.jansenvanvuuren@netronome.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Xin Long <lucien.xin@gmail.com>, Jiri Pirko <jiri@resnulli.us>
-Subject: [Patch net] cls_flower: call nla_ok() before nla_next()
-Date:   Mon, 11 Jan 2021 18:55:48 -0800
-Message-Id: <20210112025548.19107-1-xiyou.wangcong@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        id S1731189AbhALDFd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jan 2021 22:05:33 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:55176 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728472AbhALDFd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 22:05:33 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1610420646;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=/q+3diGbNbiDTDR3ZpUe92kzq2qzz2QYzsJFq+WzsIY=;
+        b=RVEo7gZuQUDkEyItDUst3gYVugDSQ8N8B5t75TmqB8xANK+7coHCeA152+qRITfnzWFrJE
+        ipTgSbQKqsBdyQP3lMk4Z+8Oz1HJiql1pt5cq43AC4zozacHKbiDLYvnOEK7Q0Qvjftlov
+        IVeIUcDqopb5ucBNuYDevyGy31B9j3k=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-370-niF-ownANeyDKdF3x8ahXQ-1; Mon, 11 Jan 2021 22:04:03 -0500
+X-MC-Unique: niF-ownANeyDKdF3x8ahXQ-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 26BAE1842140;
+        Tue, 12 Jan 2021 03:04:02 +0000 (UTC)
+Received: from [10.72.12.225] (ovpn-12-225.pek2.redhat.com [10.72.12.225])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 9BB301001281;
+        Tue, 12 Jan 2021 03:03:55 +0000 (UTC)
+Subject: Re: [PATCH net-next 0/2] Introduce XDP_FLAGS_NO_TX flag
+To:     Charlie Somerville <charlie@charlie.bz>, davem@davemloft.net,
+        kuba@kernel.org, mst@redhat.com
+Cc:     netdev@vger.kernel.org, Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+References: <20210109024950.4043819-1-charlie@charlie.bz>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <ee57b0ed-89e2-675e-b080-0059c181a2be@redhat.com>
+Date:   Tue, 12 Jan 2021 11:03:53 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
+In-Reply-To: <20210109024950.4043819-1-charlie@charlie.bz>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Cong Wang <cong.wang@bytedance.com>
 
-fl_set_enc_opt() simply checks if there are still bytes left to parse,
-but this is not sufficent as syzbot seems to be able to generate
-malformatted netlink messages. nla_ok() is more strict so should be
-used to validate the next nlattr here.
+On 2021/1/9 上午10:49, Charlie Somerville wrote:
+> This patch series introduces a new flag XDP_FLAGS_NO_TX which prevents
+> the allocation of additional send queues for XDP programs.
 
-And nla_validate_nested_deprecated() has less strict check too, it is
-probably too late to switch to the strict version, but we can just
-call nla_ok() too after it.
 
-Reported-and-tested-by: syzbot+2624e3778b18fc497c92@syzkaller.appspotmail.com
-Fixes: 0a6e77784f49 ("net/sched: allow flower to match tunnel options")
-Fixes: 79b1011cb33d ("net: sched: allow flower to match erspan options")
-Cc: Pieter Jansen van Vuuren <pieter.jansenvanvuuren@netronome.com>
-Cc: Jamal Hadi Salim <jhs@mojatatu.com>
-Cc: Xin Long <lucien.xin@gmail.com>
-Cc: Jiri Pirko <jiri@resnulli.us>
-Signed-off-by: Cong Wang <cong.wang@bytedance.com>
----
- net/sched/cls_flower.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+This part I don't understand. Is such flag a must? I think the answer is 
+probably not.
 
-diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
-index 1319986693fc..e265c443536e 100644
---- a/net/sched/cls_flower.c
-+++ b/net/sched/cls_flower.c
-@@ -1272,6 +1272,8 @@ static int fl_set_enc_opt(struct nlattr **tb, struct fl_flow_key *key,
- 
- 		nla_opt_msk = nla_data(tb[TCA_FLOWER_KEY_ENC_OPTS_MASK]);
- 		msk_depth = nla_len(tb[TCA_FLOWER_KEY_ENC_OPTS_MASK]);
-+		if (!nla_ok(nla_opt_msk, msk_depth))
-+			return -EINVAL;
- 	}
- 
- 	nla_for_each_attr(nla_opt_key, nla_enc_key,
-@@ -1308,7 +1310,7 @@ static int fl_set_enc_opt(struct nlattr **tb, struct fl_flow_key *key,
- 				return -EINVAL;
- 			}
- 
--			if (msk_depth)
-+			if (nla_ok(nla_opt_msk, msk_depth))
- 				nla_opt_msk = nla_next(nla_opt_msk, &msk_depth);
- 			break;
- 		case TCA_FLOWER_KEY_ENC_OPTS_VXLAN:
-@@ -1341,7 +1343,7 @@ static int fl_set_enc_opt(struct nlattr **tb, struct fl_flow_key *key,
- 				return -EINVAL;
- 			}
- 
--			if (msk_depth)
-+			if (nla_ok(nla_opt_msk, msk_depth))
- 				nla_opt_msk = nla_next(nla_opt_msk, &msk_depth);
- 			break;
- 		case TCA_FLOWER_KEY_ENC_OPTS_ERSPAN:
-@@ -1374,7 +1376,7 @@ static int fl_set_enc_opt(struct nlattr **tb, struct fl_flow_key *key,
- 				return -EINVAL;
- 			}
- 
--			if (msk_depth)
-+			if (nla_ok(nla_opt_msk, msk_depth))
- 				nla_opt_msk = nla_next(nla_opt_msk, &msk_depth);
- 			break;
- 		default:
--- 
-2.25.1
+Why not simply do:
+
+1) if we had sufficient TX queues, use dedicated TX queues for XDP_TX
+2) if we don't, simple synchronize through spin_lock[1]
+
+Thanks
+
+[1] https://www.spinics.net/lists/bpf/msg32587.html
+
+
+>
+> Included in this patch series is an implementation of XDP_FLAGS_NO_TX
+> for the virtio_net driver. This flag is intended to be advisory - not
+> all drivers must implement support for it.
+>
+> Many virtualised environments only provide enough virtio_net send queues
+> for the number of processors allocated to the VM:
+>
+> # nproc
+> 8
+> # ethtool --show-channels ens3
+> Channel parameters for ens3:
+> Pre-set maximums:
+> RX:     0
+> TX:     0
+> Other:      0
+> Combined:   8
+>
+> In this configuration XDP is unusable because the virtio_net driver
+> always tries to allocate an extra send queue for each processor - even
+> if the XDP the program never uses the XDP_TX functionality.
+>
+> While XDP_TX is still unavailable in these environments, this new flag
+> expands the set of XDP programs that can be used.
+>
+> This is my first contribution to the kernel, so apologies if I've sent
+> this to the wrong list. I have tried to cc relevant maintainers but
+> it's possible I may have missed some people. I'm looking forward to
+> receiving feedback on this change.
+>
+> Charlie Somerville (2):
+>    xdp: Add XDP_FLAGS_NO_TX flag
+>    virtio_net: Implement XDP_FLAGS_NO_TX support
+>
+>   drivers/net/virtio_net.c     | 17 +++++++++++++----
+>   include/uapi/linux/if_link.h |  5 ++++-
+>   2 files changed, 17 insertions(+), 5 deletions(-)
+>
 
