@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D76E62F2951
-	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 08:56:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E8D82F2959
+	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 08:56:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392164AbhALH4Q convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 12 Jan 2021 02:56:16 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:28134 "EHLO
+        id S2392181AbhALH4T convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 12 Jan 2021 02:56:19 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:38644 "EHLO
         mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2392152AbhALH4Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 02:56:16 -0500
-Received: from pps.filterd (m0044012.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 10C7tXef023095
-        for <netdev@vger.kernel.org>; Mon, 11 Jan 2021 23:55:35 -0800
+        by vger.kernel.org with ESMTP id S2392171AbhALH4S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 02:56:18 -0500
+Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 10C7kNbQ027640
+        for <netdev@vger.kernel.org>; Mon, 11 Jan 2021 23:55:38 -0800
 Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 35yw1phdhu-7
+        by mx0a-00082601.pphosted.com with ESMTP id 35ywdusa71-7
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT)
-        for <netdev@vger.kernel.org>; Mon, 11 Jan 2021 23:55:35 -0800
-Received: from intmgw002.08.frc2.facebook.com (2620:10d:c0a8:1b::d) by
- mail.thefacebook.com (2620:10d:c0a8:82::f) with Microsoft SMTP Server
+        for <netdev@vger.kernel.org>; Mon, 11 Jan 2021 23:55:37 -0800
+Received: from intmgw001.08.frc2.facebook.com (2620:10d:c0a8:1b::d) by
+ mail.thefacebook.com (2620:10d:c0a8:83::5) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Mon, 11 Jan 2021 23:55:32 -0800
+ 15.1.1979.3; Mon, 11 Jan 2021 23:55:35 -0800
 Received: by devbig012.ftw2.facebook.com (Postfix, from userid 137359)
-        id D62F42ECD646; Mon, 11 Jan 2021 23:55:27 -0800 (PST)
+        id 131372ECD646; Mon, 11 Jan 2021 23:55:30 -0800 (PST)
 From:   Andrii Nakryiko <andrii@kernel.org>
 To:     <bpf@vger.kernel.org>, <netdev@vger.kernel.org>, <ast@fb.com>,
         <daniel@iogearbox.net>
 CC:     <andrii@kernel.org>, <kernel-team@fb.com>,
         Hao Luo <haoluo@google.com>, kernel test robot <lkp@intel.com>,
         Yonghong Song <yhs@fb.com>
-Subject: [PATCH v3 bpf-next 2/7] bpf: avoid warning when re-casting __bpf_call_base into __bpf_call_base_args
-Date:   Mon, 11 Jan 2021 23:55:15 -0800
-Message-ID: <20210112075520.4103414-3-andrii@kernel.org>
+Subject: [PATCH v3 bpf-next 3/7] bpf: declare __bpf_free_used_maps() unconditionally
+Date:   Mon, 11 Jan 2021 23:55:16 -0800
+Message-ID: <20210112075520.4103414-4-andrii@kernel.org>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20210112075520.4103414-1-andrii@kernel.org>
 References: <20210112075520.4103414-1-andrii@kernel.org>
@@ -42,41 +42,51 @@ X-FB-Internal: Safe
 Content-Type: text/plain
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
  definitions=2021-01-12_03:2021-01-11,2021-01-12 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxscore=0 bulkscore=0
- phishscore=0 priorityscore=1501 impostorscore=0 adultscore=0
- malwarescore=0 clxscore=1034 suspectscore=0 mlxlogscore=762 spamscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2101120042
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxlogscore=800
+ malwarescore=0 lowpriorityscore=0 bulkscore=0 suspectscore=0 adultscore=0
+ impostorscore=0 clxscore=1034 mlxscore=0 priorityscore=1501 spamscore=0
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2101120041
 X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-BPF interpreter uses extra input argument, so re-casts __bpf_call_base into
-__bpf_call_base_args. Avoid compiler warning about incompatible function
-prototypes by casting to void * first.
+__bpf_free_used_maps() is always defined in kernel/bpf/core.c, while
+include/linux/bpf.h is guarding it behind CONFIG_BPF_SYSCALL. Move it out of
+that guard region and fix compiler warning.
 
 Reported-by: kernel test robot <lkp@intel.com>
-Fixes: 1ea47e01ad6e ("bpf: add support for bpf_call to interpreter")
+Fixes: a2ea07465c8d ("bpf: Fix missing prog untrack in release_maps")
 Acked-by: Yonghong Song <yhs@fb.com>
 Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
 ---
- include/linux/filter.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/linux/bpf.h | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/include/linux/filter.h b/include/linux/filter.h
-index 29c27656165b..5edf2b660881 100644
---- a/include/linux/filter.h
-+++ b/include/linux/filter.h
-@@ -886,7 +886,7 @@ void sk_filter_uncharge(struct sock *sk, struct sk_filter *fp);
- u64 __bpf_call_base(u64 r1, u64 r2, u64 r3, u64 r4, u64 r5);
- #define __bpf_call_base_args \
- 	((u64 (*)(u64, u64, u64, u64, u64, const struct bpf_insn *)) \
--	 __bpf_call_base)
-+	 (void *)__bpf_call_base)
+diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+index ef9309604b3e..6e585dbc10df 100644
+--- a/include/linux/bpf.h
++++ b/include/linux/bpf.h
+@@ -1206,8 +1206,6 @@ void bpf_prog_sub(struct bpf_prog *prog, int i);
+ void bpf_prog_inc(struct bpf_prog *prog);
+ struct bpf_prog * __must_check bpf_prog_inc_not_zero(struct bpf_prog *prog);
+ void bpf_prog_put(struct bpf_prog *prog);
+-void __bpf_free_used_maps(struct bpf_prog_aux *aux,
+-			  struct bpf_map **used_maps, u32 len);
  
- struct bpf_prog *bpf_int_jit_compile(struct bpf_prog *prog);
- void bpf_jit_compile(struct bpf_prog *prog);
+ void bpf_prog_free_id(struct bpf_prog *prog, bool do_idr_lock);
+ void bpf_map_free_id(struct bpf_map *map, bool do_idr_lock);
+@@ -1676,6 +1674,9 @@ static inline struct bpf_prog *bpf_prog_get_type(u32 ufd,
+ 	return bpf_prog_get_type_dev(ufd, type, false);
+ }
+ 
++void __bpf_free_used_maps(struct bpf_prog_aux *aux,
++			  struct bpf_map **used_maps, u32 len);
++
+ bool bpf_prog_get_ok(struct bpf_prog *, enum bpf_prog_type *, bool);
+ 
+ int bpf_prog_offload_compile(struct bpf_prog *prog);
 -- 
 2.24.1
 
