@@ -2,74 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AFDBE2F2648
-	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 03:31:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AB7272F265B
+	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 03:40:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728686AbhALCat (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jan 2021 21:30:49 -0500
-Received: from mail.kernel.org ([198.145.29.99]:36972 "EHLO mail.kernel.org"
+        id S1730865AbhALCj4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jan 2021 21:39:56 -0500
+Received: from mail.kernel.org ([198.145.29.99]:37660 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726645AbhALCat (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 11 Jan 2021 21:30:49 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 0D5A922D5B;
-        Tue, 12 Jan 2021 02:30:09 +0000 (UTC)
+        id S1726018AbhALCjz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 11 Jan 2021 21:39:55 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id DF22722CAD;
+        Tue, 12 Jan 2021 02:39:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610418609;
-        bh=zih+8cmGn04mIodAXE1fJa/r1UIa+jDDfKimAr2reR4=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Tj4x1QD9G2L6SaZOsDPWNqHC2RcKnL+Q08N1rfn6uDYNdyLSWXGf/tIIZ+PzxRd3q
-         ySxwjWQJXsosAhTtgJLuRbR6cQXM5gRi+s0VG3vo3E065GWja/FbyH2yn/4mUw7UBs
-         kxI5fv9kC7V6qLTT3eTS2b+fhnSp3ErkksIdZg6ih4JOeEJTHtJbZ8PBLJamJqJPM3
-         GhsVbkPABhq3dQfBgJ8NsZmP1wXBwGYhCxejLlmUDLI/GZUcK81+5oMMgehI7PxzUj
-         JlzXz0UoeABQ+atYd2CFFrtNL/SYakgobhRTkq8rPOXjzM1VtBuOgA2aabu1QFlYPm
-         JB3rCvGjzMBWQ==
-Received: from pdx-korg-docbuild-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-1.ci.codeaurora.org (Postfix) with ESMTP id F2EE36013D;
-        Tue, 12 Jan 2021 02:30:08 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1610419155;
+        bh=b6GBjyepUMR8c3Bnd+8yw9hOFJEKD9I570MzfcXyRtE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=uEx6MTvVDjfKk7BupQbG5VrgG+0ADFnDcuwsQV1eRw73/cS0RRTZSYuZHvIG+MtFW
+         mEbTJqaOVV6Ym48wgHYAZGs/vf32rGa1HA9T7pZWH0skHabZRqt2yZJbvnJpFQKadJ
+         vI9y/c+vHUzL6V5FBSEpTfLBrDDb+lqUPTt7pBtYH2YFsYRfJ2/b+vXYGxjUW1zMqK
+         6ejArYTkISyI0UZwD0xDh6XO660l6nYgOJg6s2kOtLvzNUCr1eNKqZ57e4mvyo6Xe4
+         CoSGDgaphCKFsts4AYwKLDAg59b5LayFX8hrVUNu+acAj7C0hXFMM+E1blEu5G7Jdo
+         Ks/zAkr9XIrgw==
+Date:   Mon, 11 Jan 2021 18:39:14 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Chris Snook <chris.snook@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>, corbet@lwn.net,
+        Jay Cliburn <jcliburn@gmail.com>
+Subject: Re: [PATCH net 1/9] MAINTAINERS: altx: move Jay Cliburn to CREDITS
+Message-ID: <20210111183914.2b18ac82@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CAMXMK6uWAmghRw-G3P=315iZyQO+HaELUB_hQ1E6rVLGfVG6Hw@mail.gmail.com>
+References: <20210111052759.2144758-1-kuba@kernel.org>
+        <20210111052759.2144758-2-kuba@kernel.org>
+        <CAMXMK6uWAmghRw-G3P=315iZyQO+HaELUB_hQ1E6rVLGfVG6Hw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net v2 0/3] skb frag: kmap_atomic fixes
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161041860899.19672.17362498590268966329.git-patchwork-notify@kernel.org>
-Date:   Tue, 12 Jan 2021 02:30:08 +0000
-References: <20210109221834.3459768-1-willemdebruijn.kernel@gmail.com>
-In-Reply-To: <20210109221834.3459768-1-willemdebruijn.kernel@gmail.com>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        willemb@google.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net.git (refs/heads/master):
-
-On Sat,  9 Jan 2021 17:18:31 -0500 you wrote:
-> From: Willem de Bruijn <willemb@google.com>
+On Sun, 10 Jan 2021 21:36:24 -0800 Chris Snook wrote:
+> On Sun, Jan 10, 2021 at 9:28 PM Jakub Kicinski <kuba@kernel.org> wrote:
+> > Jay was not active in recent years and does not have plans
+> > to return to work on ATLX drivers.
+> >
+> > Subsystem ATLX ETHERNET DRIVERS
+> >   Changes 20 / 116 (17%)
+> >   Last activity: 2020-02-24
+> >   Jay Cliburn <jcliburn@gmail.com>:
+> >   Chris Snook <chris.snook@gmail.com>:
+> >     Tags ea973742140b 2020-02-24 00:00:00 1
+> >   Top reviewers:
+> >     [4]: andrew@lunn.ch
+> >     [2]: kuba@kernel.org
+> >     [2]: o.rempel@pengutronix.de
+> >   INACTIVE MAINTAINER Jay Cliburn <jcliburn@gmail.com>
+> >
+> > Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 > 
-> skb frags may be backed by highmem and/or compound pages. Various
-> code calls kmap_atomic to safely access highmem pages. But this
-> needs additional care for compound pages. Fix a few issues:
-> 
-> patch 1 expect kmap mappings with CONFIG_DEBUG_KMAP_LOCAL_FORCE_MAP
-> patch 2 fixes kmap_atomic + compound page support in skb_seq_read
-> patch 3 fixes kmap_atomic + compound page support in esp
-> 
-> [...]
+> I'm overdue to be moved to CREDITS as well. I never had alx hardware,
+> I no longer have atl1c or atl1e hardware, and I haven't powered on my
+> atl1 or atl2 hardware in years.
 
-Here is the summary with links:
-  - [net,v2,1/3] net: support kmap_local forced debugging in skb_frag_foreach
-    https://git.kernel.org/netdev/net/c/29766bcffad0
-  - [net,v2,2/3] net: compound page support in skb_seq_read
-    https://git.kernel.org/netdev/net/c/97550f6fa592
-  - [net,v2,3/3] esp: avoid unneeded kmap_atomic call
-    https://git.kernel.org/netdev/net/c/9bd6b629c39e
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Your call, obviously, but having someone familiar with the code and the
+hardware look at the patches and provide Ack or Review tags is in
+itself very, very helpful. There is no requirement to actually test any
+of the changes or develop new features.
