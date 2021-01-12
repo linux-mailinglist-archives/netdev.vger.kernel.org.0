@@ -2,112 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B3552F3D6C
+	by mail.lfdr.de (Postfix) with ESMTP id 796C82F3D6E
 	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 01:44:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406937AbhALVin (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jan 2021 16:38:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43572 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2437162AbhALVbc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 16:31:32 -0500
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 172ECC061786
-        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 13:30:52 -0800 (PST)
-Received: by mail-ej1-x62a.google.com with SMTP id w1so19775ejf.11
-        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 13:30:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=PJd0ALgVMcSWNszhOrAdVjODXiGkl3GLwoN6F+nTFS0=;
-        b=h181h1pgrfaX5SQu48R8Sa4JEwUHapAmjpqm80xhrdBVegAT9U6o8tRnP/1AlYEfv+
-         0DUPu8z2Aq4nvDnyIdPd3RdxQlLivYEHzK1rPWqhMK7+NjFX5UcmeyNiEjsRk3axmd0Y
-         8w0vmvgoz4WqFvh3qnn6HQq6hbCpvKI8Eglt9ZYqrX5m6Wnc10y7AivUtiKxS7rYenYL
-         JD/l2LZBbyf5o4reCUSAUoJzMIVPU1xNowCsVYwGLiKycMxiXt8xxkKSgau2/ypBuZnS
-         IRv/+AFkG75XfDicl2jqLli0MAIlkGmGUR2hnqHorvpCpRudWYvqLheikjvtKzxULLPA
-         cMJg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=PJd0ALgVMcSWNszhOrAdVjODXiGkl3GLwoN6F+nTFS0=;
-        b=lJ7PZLadTcJXMf0lP/wg6YEXhn8qNt1m5Os1aGn0qXXxOe8hSCprseihSSrL9RWAlf
-         Ybst2RDC6xP3JTRQKb5tnSgrWIV+ds6c8EHxW9xn1X41JLRmE6Vtj/db5zZxQjJ6TCLo
-         gDyGOdcCFomnrkT4lFdEe+9GRy/EmpQRtRAFzbgRf43j4yu/nXMJZJdrlPy+t7Zll3Ga
-         GibYGot9ib9jaFTREAxgHj+KoXc0nRGaNN4wceuKEIRCAJvKWktmlSZRa99TH+PAPXE3
-         SXFrm1SU89ueHMHzmVrEkPiBvehELBvjlONwjMxOY4czKS3PZT7lw1aI4vgAUJSP1wgU
-         kgaw==
-X-Gm-Message-State: AOAM531Nv81ac6GgO9mD+5yn7AIoyNCPLMlIXsmIaqd1gE0IjcMnLmX1
-        9+8Zn26G1SQdkfv6/LCr3qM=
-X-Google-Smtp-Source: ABdhPJzEuKVUGrhIGDFeC9yT1CXlfFyJN1pxpzSHOP3iYd6bFZuD2uSZ3FcrhKMxK9bmQmilfX9MHw==
-X-Received: by 2002:a17:906:941a:: with SMTP id q26mr573462ejx.266.1610487050797;
-        Tue, 12 Jan 2021 13:30:50 -0800 (PST)
-Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id ak17sm1699104ejc.103.2021.01.12.13.30.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Jan 2021 13:30:50 -0800 (PST)
-Date:   Tue, 12 Jan 2021 23:30:48 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>
-Cc:     netdev@vger.kernel.org, pavana.sharma@digi.com,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com, kuba@kernel.org,
-        lkp@intel.com, davem@davemloft.net, ashkan.boldaji@digi.com,
-        andrew@lunn.ch, Chris Packham <chris.packham@alliedtelesis.co.nz>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Subject: Re: [PATCH net-next v15 5/6] net: dsa: mv88e6xxx: Add support for
- mv88e6393x family of Marvell
-Message-ID: <20210112213048.grqrqx4imgbypmdh@skbuf>
-References: <20210112195405.12890-1-kabel@kernel.org>
- <20210112195405.12890-6-kabel@kernel.org>
- <20210112203808.4mkryi3tcut7mvz7@skbuf>
- <20210112221632.611c8a7e@kernel.org>
+        id S2407081AbhALVio (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jan 2021 16:38:44 -0500
+Received: from mail-co1nam11on2122.outbound.protection.outlook.com ([40.107.220.122]:10465
+        "EHLO NAM11-CO1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S2437163AbhALVcM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 Jan 2021 16:32:12 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=hS6mX+hs4kmO7jD+xxg8ZcAmpkjOY2ko2FtNAYN8nh/zvsC1bCERld83E1QWOW0zk29U2UMjmX6C+c/V/GPbwFjjYqj2EtkJweVK68bd0tOLZlFZdIuB9cesRtcnz9mQoWGUTPgrwyxSzkVE8uyxL5VfB2286rSMpd+GQDMnPWEHKKPLIjIH4u0Ss3zl+ox60G1UCQ1p3+AMQr96Bxi1r15R9l5z38UufPLCj41iWmVTc43GbatLZEeiFyUw1ggebpOQY4WzeX1KUWLrbsEJS+mNoMTQEI20sn8OJfawvSenFXVk34JM/15X3BWeGBywXgmmVoSSE76b0mcRhG87uw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=pgiLmQNubKy3UGAMcpiKWYR3bFNX6vLv6gh16piSk5M=;
+ b=iKMHTrchhVaY3+kKZlqC71+yRG8UTm25JTnvrVOWZ8vdHLJLyV6MoZIZfizLpev9Q7cyzRWpnI2HdYJfc4dFYX7TEJhYkYDWaMDpsFEojYHep3dvw3IkG4bK3HEOy0ewTDWETPobyJ1/mEFc+Xw5qXfOrT/P9qM3C9qYJeiw+JBXi5tL+zhuwNZ7uaN61aoCh0lGakHTCr3Zny/Ybl9DWRP0Il+Z4TDIMhNUHEQW+LRJBMWtZJROEz65LJtu/WrmHpzjuFNFYDlwJvWz0vR1ptictQHqao0ZOAEpbUT+UQAQebHa50REutta3ZXby/Tqp8KnAq1ARZhDUqof8/tkPw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=pgiLmQNubKy3UGAMcpiKWYR3bFNX6vLv6gh16piSk5M=;
+ b=bn41mXrqsbBN3asz+p+utk1pZ9EHH3qnHVw8QFtGxjbykDDCkSKhjXRsJ6G5Z51qi2BKVpEEBuK4sF0Cd6ihsKWkDyBMGEzW+z3n3kSUv/4sMwu2F6tpvPx8sWMTSs+FE5EKslDfi6o4K3XSR/zZSrI1Dvs/KyJ8FOvqG8JfigY=
+Received: from (2603:10b6:208:fe::31) by
+ BL0PR2101MB1794.namprd21.prod.outlook.com (2603:10b6:207:1a::33) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3784.4; Tue, 12 Jan
+ 2021 21:31:24 +0000
+Received: from MN2PR21MB1166.namprd21.prod.outlook.com
+ ([fe80::64ae:b13b:a0a3:5bd1]) by MN2PR21MB1166.namprd21.prod.outlook.com
+ ([fe80::64ae:b13b:a0a3:5bd1%3]) with mapi id 15.20.3784.004; Tue, 12 Jan 2021
+ 21:31:24 +0000
+From:   Long Li <longli@microsoft.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Long Li <longli@linuxonhyperv.com>
+CC:     KY Srinivasan <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH v2 0/3] hv_netvsc: Prevent packet loss during VF
+ add/remove
+Thread-Topic: [PATCH v2 0/3] hv_netvsc: Prevent packet loss during VF
+ add/remove
+Thread-Index: AQHW5iHnNrYxEgDKNki14pVRntGh26ojQwmAgAFElHA=
+Date:   Tue, 12 Jan 2021 21:31:23 +0000
+Message-ID: <MN2PR21MB11666A2B3D026DA710E470ADCEAA9@MN2PR21MB1166.namprd21.prod.outlook.com>
+References: <1610153623-17500-1-git-send-email-longli@linuxonhyperv.com>
+ <20210111180717.19126810@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210111180717.19126810@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=02531aca-3510-445d-bf07-b389d7e1a10d;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2021-01-12T21:28:59Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+authentication-results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=microsoft.com;
+x-originating-ip: [67.168.111.68]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 51462a90-1b3b-4c49-e863-08d8b7416970
+x-ms-traffictypediagnostic: BL0PR2101MB1794:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BL0PR2101MB1794F539C3044F869C53CB2CCEAA9@BL0PR2101MB1794.namprd21.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7219;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: GTWj3K9wgrvrw9DaoGGcT9mWVhFDq7MLB44ghWakC92Gy3Din154+u5VbXGSN9hVE39FfDnce3Y8OawdnIFZmb3ZcFvW115y2awQzVu+eDb/uPnkQoLmHyU2nMUx3QM2Csmz37yqjOCxzZWlzTnDeSJaDZPAXl6EtWmnEKxZxPKCjmkvysCeFo21SA16MJvEmr17Rbhtg+td5gTfA7Rn76puj5g0k7Zateb+Fpjh45xpd0MNW6sIqsdsRK+YWc5Gz0CXP7mDyPDhRpYO8i8fKqic35NoEwfiB92XFjX8mL14N62iwoAzUuBPBVxsatqaQ294f5MCwRDXYobJOmZKFI6Gm6+cKxfMeO7hJT3KEnkQpoCmvewiqNtJYXumGmxaDGCN1mNHsFFiNQQ55MfnWxHWmJ8qfpLJZrkbdpNaH98t1R0esG5yAAVQtFMflYGYyx72YcOZLFFNPVUMaW2e201qmWvedwY5W5TbyLxPsSypnTA9In+QFoywz1W8fM6ZajVjF8PJpHnD4uFRxceCYg==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR21MB1166.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(366004)(396003)(136003)(39860400002)(346002)(4744005)(5660300002)(54906003)(6506007)(2906002)(8676002)(9686003)(8936002)(86362001)(4326008)(316002)(33656002)(26005)(110136005)(64756008)(66556008)(66946007)(7696005)(66446008)(66476007)(76116006)(55016002)(478600001)(52536014)(186003)(10290500003)(71200400001)(82960400001)(8990500004)(82950400001);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?gIoJ1Q7+Ihrf8NeWvE4KxBSv6WUU1vS+yqpjYQVMterdfj4eoEkl6BieIC+M?=
+ =?us-ascii?Q?CDe9sp7XKAE4jsa4e6ANKpBriSjCKlnHwvGxQifLcF1ABWyQ7q1hxuEIkWhd?=
+ =?us-ascii?Q?P2JabY9ZggH/dihylLwUeUPPqxd4z9mbnb1P9bP/gyA9R/AlZysx1nwwxkjb?=
+ =?us-ascii?Q?kltFywqwEntaoDBPMugZ4wChO+5DIkjEdGkiVrVsnnY2WObdBXZQLmIC31MH?=
+ =?us-ascii?Q?fn26+YAArndmlgAq2OKkLWJ0iNqg+0jQkBViv1llvR2TYiR8mgEx+dDOTbb+?=
+ =?us-ascii?Q?5YJ7ZtFr5OmI2tvEtB3i/N4aYvu7C/XWaQzLjW+e8FKiK1Y/LXG9wgytJ5+P?=
+ =?us-ascii?Q?T0UzeR1Zdkz74z57Hw/HSF54G0rUMRxPJf6i+B+oxiR7goHnsk8CX9dDq0g3?=
+ =?us-ascii?Q?Y3PpL4w3ECtLbPe6x3zs0evQdp1RkTRNt9ur0LUHQdKXDzWpoOvPrQGDEiRu?=
+ =?us-ascii?Q?yGI8Dzx+Zcx/dtsXMjP/KgjUQjpT3zrqq5M56XNdeqISNqgi0lKXP7rWV7SO?=
+ =?us-ascii?Q?nvQAq5m6jpTIFfakPwM7Q9G1lJmx8fXrnmrNMBauOHojPrXTs0DpwAWOCx2z?=
+ =?us-ascii?Q?QE6qoyAwFBqTznbg4yGofhbf7vT0umG9UG4tFBqZmluLklB8VXwKbLf2JI0U?=
+ =?us-ascii?Q?K9jLcqGLKkItNx3seeMH4VGnxIEDaGuD4GmIJAq6mx/SUsdJAuN7pUV7m7e+?=
+ =?us-ascii?Q?Vt44LtrwBlYs6BDoYBD6fwbk6KRFEF4EfBNgEm8We+hPPhpANMMnJWHH8Z8r?=
+ =?us-ascii?Q?E0t/8VvDRsnW7QGWnrg+CgiPmgiQxc++JMYTRoQMo+5JTtrHO/lFP6ynaKZ3?=
+ =?us-ascii?Q?D7HKUQ9vjMNB+XPv5QqC4unkBbWH4//6FewzrTa9zcOUd0XygOC70i5tawB8?=
+ =?us-ascii?Q?u75TmMhlxIvbeHe//obqXTmF6guNz1tRpjMouew8r2BIJw9axuDJHrewktXz?=
+ =?us-ascii?Q?0n56byokrAfEwe5snlJ7+5F0s9Np4h0B3OMZvR5Mr00=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210112221632.611c8a7e@kernel.org>
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: MN2PR21MB1166.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 51462a90-1b3b-4c49-e863-08d8b7416970
+X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Jan 2021 21:31:24.1410
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: n6QuFLLqNv7MXxLLoIL3PJRAXc+LlZUF4ZQ5ulyAKow2sFKsX9R6RVwyqJYL9e/vpFrwewjFUdeeS+YgNjhq7Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR2101MB1794
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 12, 2021 at 10:16:32PM +0100, Marek Behún wrote:
-> On Tue, 12 Jan 2021 22:38:08 +0200
-> Vladimir Oltean <olteanv@gmail.com> wrote:
-> 
-> > > +		phylink_set(mask, 10000baseT_Full);
-> > > +		phylink_set(mask, 10000baseCR_Full);
-> > > +		phylink_set(mask, 10000baseSR_Full);
-> > > +		phylink_set(mask, 10000baseLR_Full);
-> > > +		phylink_set(mask, 10000baseLRM_Full);
-> > > +		phylink_set(mask, 10000baseER_Full);
-> > 
-> > Why did you remove 1000baseKR_Full from here?
-> 
-> I am confused now. Should 1000baseKR_Full be here? 10g-kr is 10g-r with
-> clause 73 autonegotiation, so they are not compatible, or are they?
+> Subject: Re: [PATCH v2 0/3] hv_netvsc: Prevent packet loss during VF
+> add/remove
+>=20
+> On Fri,  8 Jan 2021 16:53:40 -0800 Long Li wrote:
+> > From: Long Li <longli@microsoft.com>
+> >
+> > This patch set fixes issues with packet loss on VF add/remove.
+>=20
+> These patches are for net-next? They just optimize the amount of packet
+> loss on switch, not fix bugs, right?
 
-ETHTOOL_LINK_MODE_10000baseKR_Full_BIT and most of everything else from
-enum ethtool_link_mode_bit_indices are network-side media interfaces
-(aka between the PHY and the link partner).
+Yes, those patches are for net-next.
 
-Whereas PHY_INTERFACE_MODE_10GKR and most of everything else from
-phy_interface_t is a system-side media independent interface (aka
-between the MAC and the PHY).
-
-What the 6393X does not support is PHY_INTERFACE_MODE_10GKR, and my
-feedback from your previous series did not ask you to remove
-1000baseKR_Full from phylink_validate. There's nothing that would
-prevent somebody from attaching a PHY with a different (and compatible)
-system-side SERDES protocol, and 10GBase-KR on the media side.
-
-What Russell said is that he's seriously thinking about reworking the
-phylink_validate API so that the MAC driver would not need to sign off
-on things it does not care about (such as what media-side interface will
-the PHY use, of which there is an ever increasing plethora). But at the
-moment, the API is what it is, and you should put as many media-side
-link modes as possible, at the given speed and duplex that the MAC
-supports.
-
-_I_ am confused. What did you say you were happy to help with?
+They eliminate the packet loss introduced from Linux side during VF changes=
+. They can be seen as optimizations.
