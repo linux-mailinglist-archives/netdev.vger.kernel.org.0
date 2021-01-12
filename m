@@ -2,83 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 77CF62F243D
+	by mail.lfdr.de (Postfix) with ESMTP id 019162F243C
 	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 01:34:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405485AbhALAZg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S2405492AbhALAZg (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Mon, 11 Jan 2021 19:25:36 -0500
-Received: from mail-yb1-f181.google.com ([209.85.219.181]:33122 "EHLO
-        mail-yb1-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404219AbhALABZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 19:01:25 -0500
-Received: by mail-yb1-f181.google.com with SMTP id o144so526977ybc.0;
-        Mon, 11 Jan 2021 16:01:09 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=WYFvp4pRAM4I/ettmtAye/8Q4IbY3OpbPnErkgoce1U=;
-        b=OAHGanJiW1cArupnEBR8NfBR2WjUwgS3dXjbElol9ZSNHBHL+eBYDVqrFWR22MnERr
-         4k4aS7O6nv4zDe5KK/s6jTpxAiS2s7JUGkf8nkaTuG32nMIHCiYz0gA6r5qCeCDPrFw2
-         2V0asE6R8OTsCKUepwZeMUldbGEOsEO4QpzFKfLry/JvU/1hNnFotXk++W28UWJzkR1F
-         KhE2l4HR64WPTQVMj28TIWyhir/mD9RIoooLFvyWYrF33IrIuwvjl/RvwFcwgdi2UPkQ
-         +E9SRppB9DVgD0BF655ylTHsmKtR2fApzKY3Lak5nnx75F0oSZSOeXrNi1tT8tW+ZQwB
-         K6DQ==
-X-Gm-Message-State: AOAM533mB8I9pPOJLAMux7db2iSO1+w6vVD8VaVp/1AxO+QzDLx++Hc4
-        6hrYKcBujH3PIPrvzsIVuxJ7dgt8mN8clMGe08w=
-X-Google-Smtp-Source: ABdhPJyZU2BdSQ+kFkk8X57TMyaU2YTJdJxlj5Zf+wUs4Crk+U/tbWoCABMCQIpaDWVbmxIKdlTqvyvx3vtp86RICU4=
-X-Received: by 2002:a05:6902:4f4:: with SMTP id w20mr3149495ybs.125.1610409643862;
- Mon, 11 Jan 2021 16:00:43 -0800 (PST)
+Received: from mail.kernel.org ([198.145.29.99]:39618 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2404256AbhALAQ2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 11 Jan 2021 19:16:28 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 3C80922C7E;
+        Tue, 12 Jan 2021 00:15:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1610410547;
+        bh=97Pv/SPOh7LTbMDeepoAS9okjWD7GizcM0m0GQ8GNTY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Qgj4RP/8DKmeR6t7A9CtFtMmDaJ8QZ/6MNFOLOfj+JDHlX+HB9OXvGKktl5rxJmIz
+         lk2rQqaeeJlAF5+b80KyrDG96vuWh3dwMzdFqnOvoAja+ds5K6uEDGp3FxAoFLrUGT
+         ZQO8f5Z4B6a4U5A9b1xFUJ9gMu/pH+DU2FaESW6IJg1UiIEZ3IDMcXOJdpRBsr5NYJ
+         ezR4CxY5En9GPVzHJ5sVe5a8/THci+9K69rKz7+/G1bSwtcJzW9MW1RSc32YY2bBSw
+         LmyCNEehoHvuThIiyorRnCKtLAx6+euHh4STR+5+/wwLvovzvjWdGBhe1XhrIAb1sv
+         sVqa59N/D2M4Q==
+Date:   Mon, 11 Jan 2021 16:15:46 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     David Ahern <dsahern@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, schoen@loyalty.org,
+        David Ahern <dsahern@gmail.com>
+Subject: Re: [PATCH net-next v2 06/11] selftests: Use separate stdout and
+ stderr buffers in nettest
+Message-ID: <20210111161546.1310e9da@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210110001852.35653-7-dsahern@kernel.org>
+References: <20210110001852.35653-1-dsahern@kernel.org>
+        <20210110001852.35653-7-dsahern@kernel.org>
 MIME-Version: 1.0
-References: <20210110124903.109773-1-mailhol.vincent@wanadoo.fr>
- <20210110124903.109773-2-mailhol.vincent@wanadoo.fr> <20210111171152.GB11715@hoboy.vegasvil.org>
-In-Reply-To: <20210111171152.GB11715@hoboy.vegasvil.org>
-From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Date:   Tue, 12 Jan 2021 09:00:33 +0900
-Message-ID: <CAMZ6RqJqWOGVb_oAhk+CSZAvsej_xSDR6jqktU_nwLgFpWTb9Q@mail.gmail.com>
-Subject: Re: [PATCH v3 1/1] can: dev: add software tx timestamps
-To:     Richard Cochran <richardcochran@gmail.com>
-Cc:     Marc Kleine-Budde <mkl@pengutronix.de>,
-        linux-can <linux-can@vger.kernel.org>,
-        Jeroen Hofstee <jhofstee@victronenergy.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue. 12 Jan 2021 at 02:11, Richard Cochran <richardcochran@gmail.com> wrote:
->
-> On Sun, Jan 10, 2021 at 09:49:03PM +0900, Vincent Mailhol wrote:
-> >   * The hardware rx timestamp of a local loopback message is the
-> >     hardware tx timestamp. This means that there are no needs to
-> >     implement SOF_TIMESTAMPING_TX_HARDWARE for CAN sockets.
->
-> I can't agree with that statement.  The local loopback is a special
-> "feature" of CAN sockets, and some programs turn it off.  Furthermore,
-> requiring user space to handle CAN sockets differently WRT Tx time
-> stamps is user-unfriendly.  So I would strongly support adding
-> SOF_TIMESTAMPING_TX_HARDWARE to the CAN layer in the future.
->
-> (This isn't a criticism of the current patch, though.)
+On Sat,  9 Jan 2021 17:18:47 -0700 David Ahern wrote:
+> From: David Ahern <dsahern@gmail.com>
+> 
+> When a single instance of nettest is doing both client and
+> server modes, stdout and stderr messages can get interlaced
+> and become unreadable. Allocate a new set of buffers for the
+> child process handling server mode.
+> 
+> Signed-off-by: David Ahern <dsahern@gmail.com>
+> ---
+>  tools/testing/selftests/net/nettest.c | 20 +++++++++++++++++++-
+>  1 file changed, 19 insertions(+), 1 deletion(-)
+> 
+> diff --git a/tools/testing/selftests/net/nettest.c b/tools/testing/selftests/net/nettest.c
+> index 0e4196027d63..13c74774e357 100644
+> --- a/tools/testing/selftests/net/nettest.c
+> +++ b/tools/testing/selftests/net/nettest.c
+> @@ -1705,9 +1705,27 @@ static char *random_msg(int len)
+>  
+>  static int ipc_child(int fd, struct sock_args *args)
+>  {
+> +	char *outbuf, *errbuf;
+> +	int rc;
+> +
+> +	outbuf = malloc(4096);
+> +	errbuf = malloc(4096);
+> +	if (!outbuf || !errbuf) {
+> +		fprintf(stderr, "server: Failed to allocate buffers for stdout and stderr\n");
+> +		return 1;
 
-Fair enough. Implementing SOF_TIMESTAMPING_TX_HARDWARE would
-result into having the timestamp being duplicated for the
-loopback frames but allowing existing programs to work as
-with no modifications is a good enough reason.
+that's a memleak, rc = 1, goto free; ?
 
-Out of curiosity, which programs do you use? I guess wireshark
-but please let me know if you use any other programs (I just use
-to write a small C program to do the stuff).
+Also there's a few uses of fprintf(stderr, .. instead of log_error()
+is there a reason for it?
 
-Mark: do you want me to send a v4 of that patch with above
-comment removed or can you directly do the change in your testing
-branch?
+I don't think this is a big deal, I'll apply unless you object in time.
 
+> +	}
+> +
+> +	setbuffer(stdout, outbuf, 4096);
+> +	setbuffer(stderr, errbuf, 4096);
+> +
+>  	server_mode = 1; /* to tell log_msg in case we are in both_mode */
+>  
+> -	return do_server(args, fd);
+> +	rc = do_server(args, fd);
+> +
+> +	free(outbuf);
+> +	free(errbuf);
+> +
+> +	return rc;
+>  }
+>  
+>  static int ipc_parent(int cpid, int fd, struct sock_args *args)
 
-Yours sincerely,
-Vincent
