@@ -2,92 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2981D2F3A05
-	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 20:24:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 687B02F3A1F
+	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 20:24:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392791AbhALTWT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jan 2021 14:22:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43834 "EHLO
+        id S2436812AbhALTXW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jan 2021 14:23:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726091AbhALTWS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 14:22:18 -0500
-Received: from mail-io1-xd29.google.com (mail-io1-xd29.google.com [IPv6:2607:f8b0:4864:20::d29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49359C061786
-        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 11:21:38 -0800 (PST)
-Received: by mail-io1-xd29.google.com with SMTP id y19so6486317iov.2
-        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 11:21:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=W4tq1P7BnAkatrqNGDQpHOpe5z56inFlYg2XDNhNI+Q=;
-        b=biaMRh0O9oDOQvx+oUwwPRWjjh/FX6NN135X/N2buus5TzUhR55MoJv4zuKpIoYAIZ
-         Qpk2fPpgtGqm3IMUGA6Ut6s4dlU1YV6VwT/1nmR6PisW2nZxCtwkZQEYYJbktm91R+pD
-         zOcMUAD5BhEnxHcec2DUcBehAwEN53a+9pJmMOLCugznPyks1zjPcDykKJL2HlnIlW/e
-         Yb0io3THIRc8zzANyucGE9xIuS6jJTosYJzhjoK5qMhTuUblS+yHIhmfQH3N9F/qr21K
-         oeEAlM50SXxIOxrXf78GzSs4F+MqZ/Zx6yfUh4YpnVg2Moh7qlwixYve2ADb/AMp5zIC
-         Pb8w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=W4tq1P7BnAkatrqNGDQpHOpe5z56inFlYg2XDNhNI+Q=;
-        b=AIZW4hXUFUhsLG5/wu1dpHa1+Y4St1qK9gMgI1/rkD4jjqRky4IUCAZzbWk2mtXHhX
-         bi76R0FuvRJkntn12thiWJqqiu/iM1FQ4RJRWWNsXdQddgQbB4avOeW2f8UFsxKG2NBH
-         uRGY4pv4c0oJrGooa4NAdU53ozCPd2gZhX346ooCkaQEuhShCHKPFfMU96W2EUhLsLX1
-         tZWAu70yTrgMDk+u3sP9bu1c7ZsRJ0CaqnpgkfuMj6i+ue5utw1cvoOGVzX+M6u0hmGx
-         051NF0gg0uxB5upgN4QkLJg6f7qNuVYs99TFSolTg2ruzqAgWWep9wOL5QP9K7k9Twxz
-         Zq/g==
-X-Gm-Message-State: AOAM530dfrffmhaMYzqdyjgz0RxHBHe0cNMlSsvBPADD0gsYvxEJDBlA
-        ii1u+yFal6ydJDgTRxHoNHYucA==
-X-Google-Smtp-Source: ABdhPJxpPxmhQHrmSjY3rRV/bFSkL94mUsO5XSD8ArciPST0jxNWcLFah6PJ0XjEYkWj1KHuJp0D+Q==
-X-Received: by 2002:a92:cb44:: with SMTP id f4mr539177ilq.131.1610479297674;
-        Tue, 12 Jan 2021 11:21:37 -0800 (PST)
-Received: from beast.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id x64sm2112147ilk.47.2021.01.12.11.21.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Jan 2021 11:21:36 -0800 (PST)
-From:   Alex Elder <elder@linaro.org>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     evgreen@chromium.org, bjorn.andersson@linaro.org,
-        cpratapa@codeaurora.org, subashab@codeaurora.org,
-        rdunlap@infradead.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH net-next] net: ipa: add config dependency on QCOM_SMEM
-Date:   Tue, 12 Jan 2021 13:21:34 -0600
-Message-Id: <20210112192134.493-1-elder@linaro.org>
-X-Mailer: git-send-email 2.20.1
+        with ESMTP id S2436791AbhALTXS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 14:23:18 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6292FC061575
+        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 11:22:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=Bwv8rcg73lMNKkJCmApjYr4bJR5F5Cs8gC2rMjoEoPw=; b=UD1Ti2XGe/on2lKNlNDU6aShg
+        mORepwTNapedrd+zHwvYt8WuTqbk2NnUc6N5W9B5wtkl13psC1p4xpTWRRul0f5iT1xQiGw+FDP3v
+        BKXGCSwgMqejqE0sW17tjwRjK5xxRPVgkSVR7CSkZs0s032Hs5H55uZj4hBCRRerIlIA8e63NRfPs
+        R1h0ntcWc/E3ANZlepp9NPYXeSNLILpnMAn/YUVxKi7wB54qHBfyLarcCIG4bYK6Abx7LyK+I9DoG
+        WEXqTkByZtUqMvEMeuifOJB7pnpqY9wu45+8gTSdaW83PGI9AW0y+igwQ50f8dcxQSkqz/uRapNav
+        q99oBhdZA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:47134)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1kzPFT-0000HJ-5Y; Tue, 12 Jan 2021 19:22:35 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1kzPFR-0006XH-Uv; Tue, 12 Jan 2021 19:22:33 +0000
+Date:   Tue, 12 Jan 2021 19:22:33 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
+        netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net,
+        pali@kernel.org
+Subject: Re: [PATCH net-next v4 1/4] net: phy: mdio-i2c: support I2C MDIO
+ protocol for RollBall SFP modules
+Message-ID: <20210112192233.GE1551@shell.armlinux.org.uk>
+References: <20210111050044.22002-1-kabel@kernel.org>
+ <20210111050044.22002-2-kabel@kernel.org>
+ <51416633-ab53-460f-0606-ef6408299adc@gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <51416633-ab53-460f-0606-ef6408299adc@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The IPA driver depends on some SMEM functionality (qcom_smem_init(),
-qcom_smem_alloc(), and qcom_smem_virt_to_phys()), but this is not
-reflected in the configuration dependencies.  Add a dependency on
-QCOM_SMEM to avoid attempts to build the IPA driver without SMEM.
-This avoids a link error for certain configurations.
+On Tue, Jan 12, 2021 at 09:42:56AM +0100, Heiner Kallweit wrote:
+> On 11.01.2021 06:00, Marek Behún wrote:
+> > Some multigig SFPs from RollBall and Hilink do not expose functional
+> > MDIO access to the internal PHY of the SFP via I2C address 0x56
+> > (although there seems to be read-only clause 22 access on this address).
+> > 
+> > Instead these SFPs PHY can be accessed via I2C via the SFP Enhanced
+> > Digital Diagnostic Interface - I2C address 0x51. The SFP_PAGE has to be
+> > selected to 3 and the password must be filled with 0xff bytes for this
+> > PHY communication to work.
+> > 
+> > This extends the mdio-i2c driver to support this protocol by adding a
+> > special parameter to mdio_i2c_alloc function via which this RollBall
+> > protocol can be selected.
+> > 
+> I'd think that mdio-i2c.c is for generic code. When adding a
+> vendor-specific protocol, wouldn't it make sense to use a dedicated
+> source file for it?
 
-Reported-by: Randy Dunlap <rdunlap@infradead.org>
-Fixes: 38a4066f593c5 ("net: ipa: support COMPILE_TEST")
-Signed-off-by: Alex Elder <elder@linaro.org>
----
- drivers/net/ipa/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+There is nothing in the SFP MSAs about how to access an on-board PHY
+on a SFP. This is something that vendors choose to do (or in some
+cases, not do.)
 
-diff --git a/drivers/net/ipa/Kconfig b/drivers/net/ipa/Kconfig
-index 10a0e041ee775..b68f1289b89ef 100644
---- a/drivers/net/ipa/Kconfig
-+++ b/drivers/net/ipa/Kconfig
-@@ -1,6 +1,6 @@
- config QCOM_IPA
- 	tristate "Qualcomm IPA support"
--	depends on 64BIT && NET
-+	depends on 64BIT && NET && QCOM_SMEM
- 	depends on ARCH_QCOM || COMPILE_TEST
- 	depends on QCOM_RPROC_COMMON || (QCOM_RPROC_COMMON=n && COMPILE_TEST)
- 	select QCOM_MDT_LOADER if ARCH_QCOM
+mdio-i2c currently implements the access protocol for Marvell 88E1111
+PHYs which have an I2C mode. It was extended to support the DM7052
+module which has a Broadcom Clause 45 PHY and either a microcontroller
+or FPGA to convert I2C cycles to MDIO cycles - and sensibly performs
+clock stretching.
+
+There are modules that the clause 45 PHY is accessible via exactly the
+same I2C address, using exactly the same data accesses, but do not
+do the clock stretching thing, instead telling you that you must wait
+N microseconds between the bus transactions. We don't yet support
+these.
+
+Then there is Marek's module, where the PHY is accessible via a page
+in the diagnostic address - which is another entirely reasonable
+implementation. The solution we have here is one that I've worked with
+Marek for a few months now.
+
+I don't think we should grow lots of separate mdio-i2c-vendorfoo.c
+drivers - at least not yet. Maybe if we get lots of different access
+methods, it may make sense in the future.
+
 -- 
-2.20.1
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
