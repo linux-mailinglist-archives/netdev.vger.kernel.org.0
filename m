@@ -2,53 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C2A22F2D3E
-	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 11:54:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 887432F2D42
+	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 11:57:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728489AbhALKx6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jan 2021 05:53:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46878 "EHLO
+        id S1728772AbhALKyl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jan 2021 05:54:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727976AbhALKx6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 05:53:58 -0500
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C67F9C061575
-        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 02:53:16 -0800 (PST)
-Received: by mail-ed1-x532.google.com with SMTP id j16so1811627edr.0
-        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 02:53:16 -0800 (PST)
+        with ESMTP id S1727730AbhALKyl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 05:54:41 -0500
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA514C061575
+        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 02:54:00 -0800 (PST)
+Received: by mail-ej1-x62e.google.com with SMTP id g20so2894337ejb.1
+        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 02:54:00 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=rpbYUHLDYNoe0aUzOs6xVDw/LqV/sO/iqWMmtqrYge0=;
-        b=iGaxeFwmZO753zcMLHBukE6Ph7Gngfzi8Q3sgVGa1OppWjLYgLvJgFfW5TEZYaFDYO
-         eYUiYl4txgFDZ5cA3RXk1TH3DCIxf/EOBfd+uRz5shfjtvuxMByw+Zt+xrEXKCVS4p6f
-         weJlVr99TDguPZbZ7OdZMPHsFzgB39aASVZKEF/f/bAVOrN9hpiEbVLr5BDoaCrelAzV
-         kAnRagxMERqG9GEB9uYh8N4US2YfBevupK5loPuqgkQrU5zGnI4TEhk2k/G9AbbTKGsw
-         RARbnXPIOHvbWnOs9PMBG+4a7trP5LAzLHOeJD1pnzGY9DjK2cdiEZWUjhrfLer8t2op
-         Zv7Q==
+        bh=rrPJamrWyO8ERbZGTpnTQZtUSeEPcJD16qdKKOE8csc=;
+        b=KSJilCKIYbvNOKU/vIkKhlycwlVH3Chkb5DI5HoTbWE6D2TPgJFFoyLrxayYEuRs+C
+         xJYv8y4oY/GX5W0HdoILZK+etS3YRTxocWg2I/rTuQ6XrZn2RbtGGKTEq0G2NjvMguxz
+         CbtnRTZfKHNmSjQcQq5LHl/Tdip5fOR75CiLy0Gy8pR/6cuZMc9JqD1V1HENnmTnAlwc
+         8uQciJImUjPN+sCnE9raIB7fRprc+TL+K+BXe+38AQGxSH2rXZtpTi+rAaqVTkKuYaO/
+         EdEQYClZs41W+kYrT8ftRTrbbWOaPx5dKoKpXhVSfZ4TtiSnHw8OE7mK09zVLH5T6Vqs
+         H3yw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:content-transfer-encoding
          :in-reply-to;
-        bh=rpbYUHLDYNoe0aUzOs6xVDw/LqV/sO/iqWMmtqrYge0=;
-        b=QWGuqsBcGFXFWJjSJUP/N0KG4T6lJK933jpHIz5k6dWmsJwF1RhplYIVSGd8eOldDm
-         9KiNOIzv+wfUVwhcBr8S+iDXveIGbGYxl2737cSurjlHoXyzKKfzVRrDVGOtk3UKH9hH
-         TZPQZ6/Jxo0RPfYysBtKr7Y3mhGw4o7RqZ3EsCybihI4Po2ZxAdoU/MnRzZmG32tXZNU
-         Ql6vOxRyCfNwWQpEvb8kKLhND7h2cpxzfDHzwZtvCqIWzbwuCl6/e5hfrv5qFzj3vGvQ
-         KS1+9jGmYRZ55Evh751qb8Z//JtyCVeBuC9wprmkBBBRiLBOGHBkyGZ3b1PwUdyBbaI/
-         3qNQ==
-X-Gm-Message-State: AOAM532Gu+U0sb02RNtQPcGaFzGDaBOkLhcJApZegaxikELD7frlzj+V
-        EpaswQpGpV8oCu8jSZ3jxNg=
-X-Google-Smtp-Source: ABdhPJwSTLp3EOnhPaCHv4cJYH/GvR/3uiluGVUSZ4LAaGFVjOc8AwTjIp5h9V0VbuVlVIueKE2Thg==
-X-Received: by 2002:a05:6402:1597:: with SMTP id c23mr2934707edv.212.1610448795549;
-        Tue, 12 Jan 2021 02:53:15 -0800 (PST)
+        bh=rrPJamrWyO8ERbZGTpnTQZtUSeEPcJD16qdKKOE8csc=;
+        b=fWyQhyB77HVWCRpA+RsrGu47/h56brygdLXmiuGyWzEWASxZeXHxwcwvLMms3nJyVP
+         B6l9H2N7Yf6SdHzwxk+HqHbj2K5jyGqBK+Hfw6B0HFESZ5qn8lbFVyubXfX6i63rQHaf
+         vUDce2KNSTbiiwwrkAhqAwX7duoZ/vsNaAWm6BCSAaT2tAAUtb1b7Y5jrn+p8zGblpoc
+         hwQ+d3EMyd4pe0FzK2vnF/F1rQir/ShTaDx1f/h2YFQH6dXn1E7gE95g4fjvOAqIiSdk
+         XWjwtlhaA5RLvbMEoKXlBhSjAOCigzB6xHvLkaowUXOsGzsK0asP1nPdnRis6xNA1jEA
+         Z7xA==
+X-Gm-Message-State: AOAM531DIijAJDCLzsAOJiV5VxMB65rm1mDId+36DZssjzrO+LvPSQMl
+        AETWpglZ9nRP0iWeeGe/CBI=
+X-Google-Smtp-Source: ABdhPJxW4DC+TEiFpMLEO9yjg4cBRLlEtCOm8ojTMIQwKeQ0S3p9fFMI7Oycq6ZwfoGfuG5i1WdKLg==
+X-Received: by 2002:a17:907:11ca:: with SMTP id va10mr2638406ejb.78.1610448839407;
+        Tue, 12 Jan 2021 02:53:59 -0800 (PST)
 Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id by30sm1224013edb.15.2021.01.12.02.53.14
+        by smtp.gmail.com with ESMTPSA id qu21sm1025811ejb.95.2021.01.12.02.53.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Jan 2021 02:53:15 -0800 (PST)
-Date:   Tue, 12 Jan 2021 12:53:13 +0200
+        Tue, 12 Jan 2021 02:53:58 -0800 (PST)
+Date:   Tue, 12 Jan 2021 12:53:57 +0200
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>
 Cc:     netdev@vger.kernel.org, pavana.sharma@digi.com,
@@ -56,51 +56,31 @@ Cc:     netdev@vger.kernel.org, pavana.sharma@digi.com,
         lkp@intel.com, davem@davemloft.net, ashkan.boldaji@digi.com,
         andrew@lunn.ch, Chris Packham <chris.packham@alliedtelesis.co.nz>,
         Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Subject: Re: [PATCH net-next v14 4/6] net: dsa: mv88e6xxx: wrap
- .set_egress_port method
-Message-ID: <20210112105313.rka5m6ha6qjwjpcn@skbuf>
+Subject: Re: [PATCH net-next v14 3/6] net: dsa: mv88e6xxx: Change serdes lane
+ parameter type from u8 type to int
+Message-ID: <20210112105357.sjlz27pjlqrnhia3@skbuf>
 References: <20210111012156.27799-1-kabel@kernel.org>
- <20210111012156.27799-5-kabel@kernel.org>
+ <20210111012156.27799-4-kabel@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210111012156.27799-5-kabel@kernel.org>
+In-Reply-To: <20210111012156.27799-4-kabel@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 11, 2021 at 02:21:54AM +0100, Marek Behún wrote:
-> There are two implementations of the .set_egress_port method, and both
-> of them, if successful, set chip->*gress_dest_port variable.
+On Mon, Jan 11, 2021 at 02:21:53AM +0100, Marek Behún wrote:
+> From: Pavana Sharma <pavana.sharma@digi.com>
 > 
-> To avoid code repetition, wrap this method into
-> mv88e6xxx_set_egress_port.
+> Returning 0 is no more an error case with MV88E6393 family
+> which has serdes lane numbers 0, 9 or 10.
+> So with this change .serdes_get_lane will return lane number
+> or -errno (-ENODEV or -EOPNOTSUPP).
 > 
-> Signed-off-by: Marek Behún <kabel@kernel.org>
+> Signed-off-by: Pavana Sharma <pavana.sharma@digi.com>
+> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+> Reviewed-by: Marek Behún <kabel@kernel.org>
 > ---
->  drivers/net/dsa/mv88e6xxx/chip.c    | 48 ++++++++++++++++++-----------
->  drivers/net/dsa/mv88e6xxx/global1.c | 19 ++----------
->  2 files changed, 32 insertions(+), 35 deletions(-)
-> 
-> diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-> index 9bddd70449c6..62bef0759077 100644
-> --- a/drivers/net/dsa/mv88e6xxx/chip.c
-> +++ b/drivers/net/dsa/mv88e6xxx/chip.c
-> @@ -2521,6 +2521,26 @@ static int mv88e6xxx_serdes_power(struct mv88e6xxx_chip *chip, int port,
->  	return err;
->  }
->  
-> +static int mv88e6xxx_set_egress_port(struct mv88e6xxx_chip *chip,
-> +				     enum mv88e6xxx_egress_direction direction,
-> +				     int port)
-> +{
-> +	int err = -EOPNOTSUPP;
-> +
-> +	if (chip->info->ops->set_egress_port) {
 
-I would probably return -EOPNOTSUPP early and reduce the indentation
-level by one:
-
-	if (!chip->info->ops->set_egress_port)
-		return -EOPNOTSUPP;
+Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
