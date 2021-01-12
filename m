@@ -2,209 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 009602F2C28
-	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 11:05:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 77E212F2CE9
+	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 11:33:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392922AbhALKDy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jan 2021 05:03:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36144 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2391193AbhALKDx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 05:03:53 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 283E0C061794
-        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 02:03:13 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1kzGW3-0007IN-2b; Tue, 12 Jan 2021 11:03:07 +0100
-Received: from [IPv6:2a03:f580:87bc:d400:6421:fa79:a26c:5f73] (unknown [IPv6:2a03:f580:87bc:d400:6421:fa79:a26c:5f73])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256
-         client-signature RSA-PSS (4096 bits) client-digest SHA256)
-        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
-        (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id CAE095C1A47;
-        Tue, 12 Jan 2021 10:03:03 +0000 (UTC)
-Subject: Re: [PATCH v4 1/1] can: dev: add software tx timestamps
-To:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        linux-can@vger.kernel.org,
-        Jeroen Hofstee <jhofstee@victronenergy.com>,
-        Richard Cochran <richardcochran@gmail.com>
-Cc:     Wolfgang Grandegger <wg@grandegger.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "open list : NETWORKING DRIVERS" <netdev@vger.kernel.org>
-References: <20210112095437.6488-1-mailhol.vincent@wanadoo.fr>
- <20210112095437.6488-2-mailhol.vincent@wanadoo.fr>
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
- 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
-Message-ID: <f9ebb060-f190-79af-d57a-d5394390d222@pengutronix.de>
-Date:   Tue, 12 Jan 2021 11:03:00 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        id S2391676AbhALKc1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jan 2021 05:32:27 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:56326 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729786AbhALKc0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 05:32:26 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1610447459;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=bZX7T/GcITpvaqudzgsvakBtyTR9G2iobjByWtn7UhQ=;
+        b=VaJQcnYb9JPF+0ZXnF2cuQhJ8vKPAnqikv550bFpiTip+x99USN6PrBqP4FDHGit5NTSTb
+        5b4gheemdP0DgakUS/9wNVj1K4462kJabHNiNmXIDRX7B9uVY1yQDkIccFwPbkAZCO4ekv
+        XF8zKiQ0jOYlM/77ALovlEOuJ1X52Q0=
+Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
+ [209.85.221.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-296-MKLXKUYQPYebpQx6RsG9gg-1; Tue, 12 Jan 2021 05:30:57 -0500
+X-MC-Unique: MKLXKUYQPYebpQx6RsG9gg-1
+Received: by mail-wr1-f71.google.com with SMTP id b8so930232wrv.14
+        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 02:30:57 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=bZX7T/GcITpvaqudzgsvakBtyTR9G2iobjByWtn7UhQ=;
+        b=BDEOFFCGeAWvoLeJBvW9fluqaEzwwkTQm3p5ThCjQz3QiCbMdqECgxTsjFj96f2eI0
+         cIxa2InMyV1raCdGgd804XFLUQ/03IFtO9uNrG5Sf3Xb/kAX6VHBNHxijqSFq0o+fCif
+         vrH4bVGuOpW137x6n+1fiPvJp5XoL8EaDsg9tYHRqd/hcjIowVKDslyr0XY3I8CScvTY
+         NX+WepjvVIlXVArH+/IFbw2QmaRBTEOoSEvqQSiX8gRrGxCpUky7ncaozfMH2pEqYCzr
+         H14otbQ2PQOyTr/etODi0rPLJARRkHp92nQpH/uXfMcKgdqj/bDxpQ/aVvJnMaRI4voy
+         fIXQ==
+X-Gm-Message-State: AOAM533V2zojX/5KokmLQFBtXuW5sHSCNRPIIFxN6eSfY6Lu39WJUuCG
+        gKjYXqewmk52FdfqxAXkqMlIbBzs55n0a4J+Xg03wyYbeZHp9ppK3IP7wgWhK53cXCfeUq0l9l3
+        y1fJl7XNXnofMVoOz
+X-Received: by 2002:a1c:7c03:: with SMTP id x3mr2930493wmc.17.1610447456314;
+        Tue, 12 Jan 2021 02:30:56 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxnRRUKBmFtSwDXie6RaQOmofUAd0MFxvnB44WY3qqegqPZNjbymUECAk3oGmvVeQUAyxNCHA==
+X-Received: by 2002:a1c:7c03:: with SMTP id x3mr2930478wmc.17.1610447456144;
+        Tue, 12 Jan 2021 02:30:56 -0800 (PST)
+Received: from linux.home (2a01cb058918ce00dd1a5a4f9908f2d5.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:dd1a:5a4f:9908:f2d5])
+        by smtp.gmail.com with ESMTPSA id e15sm3572440wrg.72.2021.01.12.02.30.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Jan 2021 02:30:55 -0800 (PST)
+Date:   Tue, 12 Jan 2021 11:30:53 +0100
+From:   Guillaume Nault <gnault@redhat.com>
+To:     Stephen Hemminger <stephen@networkplumber.org>
+Cc:     netdev@vger.kernel.org, David Ahern <dsahern@gmail.com>
+Subject: [PATCH v2 iproute2] tc: flower: fix json output with mpls lse
+Message-ID: <d183b144526b1638e4069fdc0c5cbe311a543142.1610445956.git.gnault@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <20210112095437.6488-2-mailhol.vincent@wanadoo.fr>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="zjIYY08AIE49DMigJOxX8JR74lGHovsfq"
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---zjIYY08AIE49DMigJOxX8JR74lGHovsfq
-Content-Type: multipart/mixed; boundary="HUkb8zObw6FfkGlIdatA9SHlh5bDNdlur";
- protected-headers="v1"
-From: Marc Kleine-Budde <mkl@pengutronix.de>
-To: Vincent Mailhol <mailhol.vincent@wanadoo.fr>, linux-can@vger.kernel.org,
- Jeroen Hofstee <jhofstee@victronenergy.com>,
- Richard Cochran <richardcochran@gmail.com>
-Cc: Wolfgang Grandegger <wg@grandegger.com>,
- "David S . Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>,
- "open list : NETWORKING DRIVERS" <netdev@vger.kernel.org>
-Message-ID: <f9ebb060-f190-79af-d57a-d5394390d222@pengutronix.de>
-Subject: Re: [PATCH v4 1/1] can: dev: add software tx timestamps
-References: <20210112095437.6488-1-mailhol.vincent@wanadoo.fr>
- <20210112095437.6488-2-mailhol.vincent@wanadoo.fr>
-In-Reply-To: <20210112095437.6488-2-mailhol.vincent@wanadoo.fr>
+The json output of the TCA_FLOWER_KEY_MPLS_OPTS attribute was invalid.
 
---HUkb8zObw6FfkGlIdatA9SHlh5bDNdlur
-Content-Type: text/plain; charset=utf-8
-Content-Language: de-DE
-Content-Transfer-Encoding: quoted-printable
+Example:
 
-On 1/12/21 10:54 AM, Vincent Mailhol wrote:
-> Call skb_tx_timestamp() within can_put_echo_skb() so that a software
-> tx timestamp gets attached on the skb.
->=20
-> There two main reasons to include this call in can_put_echo_skb():
->=20
->   * It easily allow to enable the tx timestamp on all devices with
->     just one small change.
->=20
->   * According to Documentation/networking/timestamping.rst, the tx
->     timestamps should be generated in the device driver as close as
->     possible, but always prior to passing the packet to the network
->     interface. During the call to can_put_echo_skb(), the skb gets
->     cloned meaning that the driver should not dereference the skb
->     variable anymore after can_put_echo_skb() returns. This makes
->     can_put_echo_skb() the very last place we can use the skb without
->     having to access the echo_skb[] array.
->=20
-> Remark: by default, skb_tx_timestamp() does nothing. It needs to be
-> activated by passing the SOF_TIMESTAMPING_TX_SOFTWARE flag either
-> through socket options or control messages.
->=20
-> References:
->=20
->  * Support for the error queue in CAN RAW sockets (which is needed for
->    tx timestamps) was introduced in:
->    https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/c=
-ommit/?id=3Deb88531bdbfaafb827192d1fc6c5a3fcc4fadd96
->=20
->   * Put the call to skb_tx_timestamp() just before adding it to the
->     array: https://lkml.org/lkml/2021/1/10/54
->=20
->   * About Tx hardware timestamps
->     https://lore.kernel.org/linux-can/20210111171152.GB11715@hoboy.vega=
-svil.org/
->=20
-> Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+  $ tc filter add dev eth0 ingress protocol mpls_uc flower mpls \
+      lse depth 1 label 100                                     \
+      lse depth 2 label 200
 
-Applied to linux-can-next/testing
+  $ tc -json filter show dev eth0 ingress
+    ...{"eth_type":"8847",
+        "  mpls":["    lse":["depth":1,"label":100],
+                  "    lse":["depth":2,"label":200]]}...
 
-tnx,
-Marc
+This is invalid as the arrays, introduced by "[", can't contain raw
+string:value pairs. Those must be enclosed into "{}" to form valid json
+ojects. Also, there are spurious whitespaces before the mpls and lse
+strings because of the indentation used for normal output.
 
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+Fix this by putting all LSE parameters (depth, label, tc, bos and ttl)
+into the same json object. The "mpls" key now directly contains a list
+of such objects.
 
+Also, handle strings differently for normal and json output, so that
+json strings don't get spurious indentation whitespaces.
 
---HUkb8zObw6FfkGlIdatA9SHlh5bDNdlur--
+Normal output isn't modified.
+The json output now looks like:
 
---zjIYY08AIE49DMigJOxX8JR74lGHovsfq
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+  $ tc -json filter show dev eth0 ingress
+    ...{"eth_type":"8847",
+        "mpls":[{"depth":1,"label":100},
+                {"depth":2,"label":200}]}...
 
------BEGIN PGP SIGNATURE-----
+Fixes: eb09a15c12fb ("tc: flower: support multiple MPLS LSE match")
+Signed-off-by: Guillaume Nault <gnault@redhat.com>
+---
+v1 -> v2: simple rebase on top of iproute2 tree (v1 was lost in
+patchwork).
 
-iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAl/9c9QACgkQqclaivrt
-76lIHAf/SSEmwDCUc4nIn6GccGFmL+mWiINGHrqJmz/uFnZkC/ZsA/TbquP+RtR5
-q+bjB6TArslu30uwh0JpWyixddNZb+eKMBrG6BlItYGrMCVNfoAkFELWczO2J2uC
-54KqTei8xFExX0jVH7yBWklOnWzg6QzjjQXiUrsX4Dkuw0c43oK9qcL4gaUm5YJX
-Ijh0B4AVy7zF3jRG6vjbKYSM3K42PxaqO1ce31jKsEqBtNzznFAgWlpE5L8y+ezm
-Q56TkOiyzRZEKh+AdX1RNAQeAVakzYx3oOCfO3HsLoaF+VlNu/UkHc1mhuYQBzkz
-HIUHOB28JC3ezljyW8Ny8n7/KYZ4jg==
-=JQIe
------END PGP SIGNATURE-----
+ tc/f_flower.c | 16 +++++++++-------
+ 1 file changed, 9 insertions(+), 7 deletions(-)
 
---zjIYY08AIE49DMigJOxX8JR74lGHovsfq--
+diff --git a/tc/f_flower.c b/tc/f_flower.c
+index 9b278f3c..1fe0ef42 100644
+--- a/tc/f_flower.c
++++ b/tc/f_flower.c
+@@ -2470,7 +2470,7 @@ static void flower_print_u32(const char *name, struct rtattr *attr)
+ 	print_uint(PRINT_ANY, name, namefrm, rta_getattr_u32(attr));
+ }
+ 
+-static void flower_print_mpls_opt_lse(const char *name, struct rtattr *lse)
++static void flower_print_mpls_opt_lse(struct rtattr *lse)
+ {
+ 	struct rtattr *tb[TCA_FLOWER_KEY_MPLS_OPT_LSE_MAX + 1];
+ 	struct rtattr *attr;
+@@ -2487,7 +2487,8 @@ static void flower_print_mpls_opt_lse(const char *name, struct rtattr *lse)
+ 		     RTA_PAYLOAD(lse));
+ 
+ 	print_nl();
+-	open_json_array(PRINT_ANY, name);
++	print_string(PRINT_FP, NULL, "    lse", NULL);
++	open_json_object(NULL);
+ 	attr = tb[TCA_FLOWER_KEY_MPLS_OPT_LSE_DEPTH];
+ 	if (attr)
+ 		print_hhu(PRINT_ANY, "depth", " depth %u",
+@@ -2505,10 +2506,10 @@ static void flower_print_mpls_opt_lse(const char *name, struct rtattr *lse)
+ 	attr = tb[TCA_FLOWER_KEY_MPLS_OPT_LSE_TTL];
+ 	if (attr)
+ 		print_hhu(PRINT_ANY, "ttl", " ttl %u", rta_getattr_u8(attr));
+-	close_json_array(PRINT_JSON, NULL);
++	close_json_object();
+ }
+ 
+-static void flower_print_mpls_opts(const char *name, struct rtattr *attr)
++static void flower_print_mpls_opts(struct rtattr *attr)
+ {
+ 	struct rtattr *lse;
+ 	int rem;
+@@ -2517,11 +2518,12 @@ static void flower_print_mpls_opts(const char *name, struct rtattr *attr)
+ 		return;
+ 
+ 	print_nl();
+-	open_json_array(PRINT_ANY, name);
++	print_string(PRINT_FP, NULL, "  mpls", NULL);
++	open_json_array(PRINT_JSON, "mpls");
+ 	rem = RTA_PAYLOAD(attr);
+ 	lse = RTA_DATA(attr);
+ 	while (RTA_OK(lse, rem)) {
+-		flower_print_mpls_opt_lse("    lse", lse);
++		flower_print_mpls_opt_lse(lse);
+ 		lse = RTA_NEXT(lse, rem);
+ 	};
+ 	if (rem)
+@@ -2644,7 +2646,7 @@ static int flower_print_opt(struct filter_util *qu, FILE *f,
+ 	flower_print_ip_attr("ip_ttl", tb[TCA_FLOWER_KEY_IP_TTL],
+ 			    tb[TCA_FLOWER_KEY_IP_TTL_MASK]);
+ 
+-	flower_print_mpls_opts("  mpls", tb[TCA_FLOWER_KEY_MPLS_OPTS]);
++	flower_print_mpls_opts(tb[TCA_FLOWER_KEY_MPLS_OPTS]);
+ 	flower_print_u32("mpls_label", tb[TCA_FLOWER_KEY_MPLS_LABEL]);
+ 	flower_print_u8("mpls_tc", tb[TCA_FLOWER_KEY_MPLS_TC]);
+ 	flower_print_u8("mpls_bos", tb[TCA_FLOWER_KEY_MPLS_BOS]);
+-- 
+2.21.3
+
