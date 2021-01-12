@@ -2,79 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F3A362F33BB
-	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 16:14:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F234F2F341F
+	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 16:26:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390176AbhALPL5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jan 2021 10:11:57 -0500
-Received: from mail-yb1-f169.google.com ([209.85.219.169]:37566 "EHLO
-        mail-yb1-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728629AbhALPL4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 10:11:56 -0500
-Received: by mail-yb1-f169.google.com with SMTP id d37so2462162ybi.4;
-        Tue, 12 Jan 2021 07:11:40 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=o1JVphUh6csByWehomTtn4Y0pMSqrHqyK8fOkl0xS6Q=;
-        b=MvSWWC6HGMsCF1+MJDz8h0HIVfvMDvUq1GVk9a9N7qYtzhW+m7G53shqkzoPpiMMnw
-         InHg4uoGzjohHbzO8MZ3CWMHj7rK5obHwioZv6TNJPGEvbx4RXyTIeZY9Lg/kL064Cv7
-         priKdU8NHldeOIFK/1mx8N0TQ21GfD2pbArZqTOolB6IfYLh2TdsvZ/wB/URP4x7zwjt
-         ABirEnCP7U9dcC3tfYXqD0ifrUb+tBtL9ptXtoOw4Kc2WS+nVlevcAUqIoPge7kXunrP
-         xQyxIHQPlt+U44ThZCNaSr6Qjuvl0Oe2u3S3ZeMFMqfONktzEOmyp5p9SV62K0fkQ1OR
-         4LKw==
-X-Gm-Message-State: AOAM533HTbzshCjonDiof1XA9vRA3daCXIzrPOORLypBjTmdUPue24ej
-        PvaLuhSV7PpXQe9GC/D7QhUSF7RDN3w+L/V2gDY=
-X-Google-Smtp-Source: ABdhPJywtHB6H35zxD2Un9WyH84bwqmNO29lX0h4gMDaEPtlKbotlPycHYa6Wye8XG5L/CaHjtllfjD9NXbVpXQv0FE=
-X-Received: by 2002:a25:76c3:: with SMTP id r186mr8115147ybc.226.1610464275289;
- Tue, 12 Jan 2021 07:11:15 -0800 (PST)
+        id S2391157AbhALPZX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jan 2021 10:25:23 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:59671 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727292AbhALPZV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 10:25:21 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1610465035;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=wDH3uGhZpjYzlpdmZqM/oLSKif0MBL0h3J0QCBOw+Lg=;
+        b=AHNjwBFEtakuW7eLFNRro3e2kNM/PBGtPqWJ241bdeVCM5AVW1zh2EOSsrbL5t69Kx9RAx
+        6Tlf+LouJORs46KJYXoFOFY0VGwAdnH1Xnzxw3wwz4LwnB4Jta/r5HdP73gHSypHzRKnx8
+        7l7ZwH1keKtCW+C/oWjTLZkaGo04CHE=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-102-sCqrVvGyNj-10isFofht1w-1; Tue, 12 Jan 2021 10:23:53 -0500
+X-MC-Unique: sCqrVvGyNj-10isFofht1w-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id D99F01835861;
+        Tue, 12 Jan 2021 15:23:52 +0000 (UTC)
+Received: from warthog.procyon.org.uk (ovpn-112-8.rdu2.redhat.com [10.10.112.8])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id F3BA760C5D;
+        Tue, 12 Jan 2021 15:23:51 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+Subject: [PATCH net] rxrpc: Fix handling of an unsupported token type in
+ rxrpc_read()
+From:   David Howells <dhowells@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     Tom Rix <trix@redhat.com>, Tom Rix <trix@redhat.com>,
+        linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org,
+        dhowells@redhat.com
+Date:   Tue, 12 Jan 2021 15:23:51 +0000
+Message-ID: <161046503122.2445787.16714129930607546635.stgit@warthog.procyon.org.uk>
+User-Agent: StGit/0.23
 MIME-Version: 1.0
-References: <20210112130538.14912-1-mailhol.vincent@wanadoo.fr> <20210112130538.14912-2-mailhol.vincent@wanadoo.fr>
-In-Reply-To: <20210112130538.14912-2-mailhol.vincent@wanadoo.fr>
-From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Date:   Wed, 13 Jan 2021 00:11:03 +0900
-Message-ID: <CAMZ6Rq+vwBtUZtHTDQw_1KGFx_VSoep7ZtD3bu6cx5y8VyQFgw@mail.gmail.com>
-Subject: Re: [PATCH v10 1/1] can: usb: etas_es58X: add support for ETAS ES58X
- CAN USB interfaces
-To:     Marc Kleine-Budde <mkl@pengutronix.de>,
-        linux-can <linux-can@vger.kernel.org>
-Cc:     Arunachalam Santhanam <arunachalam.santhanam@in.bosch.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jimmy Assarsson <extja@kvaser.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        "open list : NETWORKING DRIVERS" <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue. 12 Jan 2021 at 22:05, Vincent Mailhol
-<mailhol.vincent@wanadoo.fr> wrote:
->
-> This driver supports the ES581.4, ES582.1 and ES584.1 interfaces from
-> ETAS GmbH (https://www.etas.com/en/products/es58x.php).
->
-> Co-developed-by: Arunachalam Santhanam <arunachalam.santhanam@in.bosch.com>
-> Signed-off-by: Arunachalam Santhanam <arunachalam.santhanam@in.bosch.com>
-> Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-> ---
->
+Clang static analysis reports the following:
 
-Something strange is going on with the mailing list.  I can not
-see the second patch (1/1) in the *linux-can* mailing
-archive (only the cover letter is present):
-https://lore.kernel.org/linux-can/20210112130538.14912-1-mailhol.vincent@wanadoo.fr/T/#
+net/rxrpc/key.c:657:11: warning: Assigned value is garbage or undefined
+                toksize = toksizes[tok++];
+                        ^ ~~~~~~~~~~~~~~~
 
-However, the full patch series is present on the *netdev* mailing
-archives: https://lore.kernel.org/netdev/20210112130538.14912-2-mailhol.vincent@wanadoo.fr/
+rxrpc_read() contains two consecutive loops.  The first loop calculates the
+token sizes and stores the results in toksizes[] and the second one uses
+the array.  When there is an error in identifying the token in the first
+loop, the token is skipped, no change is made to the toksizes[] array.
+When the same error happens in the second loop, the token is not skipped.
+This will cause the toksizes[] array to be out of step and will overrun
+past the calculated sizes.
 
-Are there any restrictions in regard to the patch size on the
-linux-can mailing list? Or did I did anything wrong which
-triggered some kind of spam filter?
+Fix this by making both loops log a message and return an error in this
+case.  This should only happen if a new token type is incompletely
+implemented, so it should normally be impossible to trigger this.
+
+Fixes: 9a059cd5ca7d ("rxrpc: Downgrade the BUG() for unsupported token type in rxrpc_read()")
+Reported-by: Tom Rix <trix@redhat.com>
+Signed-off-by: David Howells <dhowells@redhat.com>
+Reviewed-by: Tom Rix <trix@redhat.com>
+---
+
+ net/rxrpc/key.c |    6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/net/rxrpc/key.c b/net/rxrpc/key.c
+index 9631aa8543b5..8d2073e0e3da 100644
+--- a/net/rxrpc/key.c
++++ b/net/rxrpc/key.c
+@@ -598,7 +598,7 @@ static long rxrpc_read(const struct key *key,
+ 		default: /* we have a ticket we can't encode */
+ 			pr_err("Unsupported key token type (%u)\n",
+ 			       token->security_index);
+-			continue;
++			return -ENOPKG;
+ 		}
+ 
+ 		_debug("token[%u]: toksize=%u", ntoks, toksize);
+@@ -674,7 +674,9 @@ static long rxrpc_read(const struct key *key,
+ 			break;
+ 
+ 		default:
+-			break;
++			pr_err("Unsupported key token type (%u)\n",
++			       token->security_index);
++			return -ENOPKG;
+ 		}
+ 
+ 		ASSERTCMP((unsigned long)xdr - (unsigned long)oldxdr, ==,
 
 
-Yours sincerely,
-Vincent
