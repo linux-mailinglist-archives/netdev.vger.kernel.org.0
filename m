@@ -2,118 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BE51B2F3515
-	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 17:10:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 793B62F3576
+	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 17:21:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390204AbhALQKR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jan 2021 11:10:17 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:21578 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1732977AbhALQKR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 11:10:17 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1610467730;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=Y6sZ4cxUNRk4fPFiMnVEXrm1dvmSU2hAiRoio1vVYTU=;
-        b=TC88twoxlp32sNXcVHz0/coJF5r8iezmcM4RvI/Ho9LR6rNjwZwdpADY9yL7VACT6dO/1q
-        zupIre+JYbl96PfuUdfqRbLD6p3zazr/ri59q8odH+2MEqNOsj9PKj5EelFqzb0Fi+gqyS
-        Rcr6NpQySZFXmu/xPU6n9p9YzMdrJik=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-520-_4zv6_TdOZast91Q7OA8Bg-1; Tue, 12 Jan 2021 11:08:48 -0500
-X-MC-Unique: _4zv6_TdOZast91Q7OA8Bg-1
-Received: by mail-wr1-f71.google.com with SMTP id 88so1346079wrc.17
-        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 08:08:48 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Y6sZ4cxUNRk4fPFiMnVEXrm1dvmSU2hAiRoio1vVYTU=;
-        b=CDY4wWm/XScfXsnw66PEnAU1dFRkYGL84pyDwTXk3fkoxN3kPAcTs3sT3FpZkwvDR9
-         uuk7g4H0wAfDMHvMchHfUSgeDsT6KAVXo0NMJXfsNGtdTBeyAtxl0kSS+W1NQ8W6lZ2g
-         SmjTivM4CcI0kPgOtXJNPOS8L96bYy9biyldbFolMORf/MbYjzaoE+hwSh2Qpzl8fR4c
-         eGdy83gzfExfFLtVY6TeT4g6rXD6qUrL93BojaAWGMsHmOVIxnKyX4PdXb7BJublXmRP
-         LCaWSw2cttSodSq0MFQEj5Rp4VUmOqnU2scW5C/pV1LulVEINVs74NfAVsV9fZLrrRkM
-         z2Sg==
-X-Gm-Message-State: AOAM530RKBoCjwtURJ3EwQg6KaRZKjS8M7WYeKRJdKtXpLytN9ipWmsh
-        A14O5YoqsDuLpKnwL8S9AQ5/jvgSZ8f/dL3OGTqi2oJzWyLu2W5V/ObGIIEItqmnztYl/pGd1p2
-        8p91I/2Ranz0MfS12
-X-Received: by 2002:a1c:1c1:: with SMTP id 184mr22652wmb.112.1610467727238;
-        Tue, 12 Jan 2021 08:08:47 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwQnuo/64cyXR+hn5hkSXeHj8seVug91ac3zN5RDfXCqjV5E/EmalC6WVzTcXKV6L0CaoizHw==
-X-Received: by 2002:a1c:1c1:: with SMTP id 184mr22642wmb.112.1610467727086;
-        Tue, 12 Jan 2021 08:08:47 -0800 (PST)
-Received: from localhost ([151.66.42.92])
-        by smtp.gmail.com with ESMTPSA id s133sm4625715wmf.38.2021.01.12.08.08.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Jan 2021 08:08:45 -0800 (PST)
-Date:   Tue, 12 Jan 2021 17:08:42 +0100
-From:   Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-To:     bpf@vger.kernel.org
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, brouer@redhat.com,
-        toshiaki.makita1@gmail.com
-Subject: Re: [PATCH bpf-next 0/2] add xdp_build_skb_from_frame utility routine
-Message-ID: <20210112160842.GC2555@lore-desk>
-References: <cover.1608142960.git.lorenzo@kernel.org>
+        id S2406525AbhALQSV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jan 2021 11:18:21 -0500
+Received: from mail.kernel.org ([198.145.29.99]:53612 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2406508AbhALQSU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 Jan 2021 11:18:20 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 9560C23117
+        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 16:17:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1610468260;
+        bh=CoI1g52qNIryGpFWepCTL4prXOBxmbo4WiGrzxRBQlA=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=JJVzSHdgO1ws6H/D24wVXlrgHNqXtP+dlwOmTRrVvjDaJMavwKl00ORf0Sq7tdDtE
+         n8oulnveMEUZ7FWxrvEbctTohR2Z9hE85YJGMYRYUnkOSTVTPkNSGg7A1NYNAXIvcB
+         O2deKc9s5kBQF7ouaaTvie2lytEIXJ4OENfHkrtNxPHZoXU4NP3ncDwIy9s5ZfMhOy
+         TdsVLPYFJniq2pEuDIvMFUgZO2Hj13yEO4h73mr+gQCt2uN3mBbG1WRRGyLsT5VuWA
+         3R8AEoUCzrwzD7GA2NM9EgeR3t24E5TEGLeZyMkT3H49kBAA82wZt/CLk8NRwdIMOB
+         cUM4L64Fj1wvg==
+Received: by mail-lf1-f44.google.com with SMTP id h205so4218261lfd.5
+        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 08:17:39 -0800 (PST)
+X-Gm-Message-State: AOAM531g0sfjc6sgFMkguhDINWUjlYrOQ+p9ZAkkLw33k8PYW0BWjxQI
+        5jhz4b+MOfGWn1rb4PubPG7wsJO6OJY/asb4Gput3A==
+X-Google-Smtp-Source: ABdhPJyphcIptdvuiusWElNIOsd2UVvUfETzlw5D23qNpR/REKCWs64wDJXdXhm1+cIiNbm+DcFAY8IGibS/or6YFBQ=
+X-Received: by 2002:a19:cbd8:: with SMTP id b207mr2542971lfg.550.1610468257650;
+ Tue, 12 Jan 2021 08:17:37 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="FsscpQKzF/jJk6ya"
-Content-Disposition: inline
-In-Reply-To: <cover.1608142960.git.lorenzo@kernel.org>
+References: <20210112091545.10535-1-gilad.reti@gmail.com> <CACYkzJ69serkHRymzDEAcQ-_KAdHA+RxP4qpAwzGmppWUxYeQQ@mail.gmail.com>
+ <CANaYP3G_39cWx_L5Xs3tf1k4Vj9JSHcsr+qzNQN-dcY3qvT8Yg@mail.gmail.com> <60034a79-573f-125c-76b0-17e04941a155@iogearbox.net>
+In-Reply-To: <60034a79-573f-125c-76b0-17e04941a155@iogearbox.net>
+From:   KP Singh <kpsingh@kernel.org>
+Date:   Tue, 12 Jan 2021 17:17:26 +0100
+X-Gmail-Original-Message-ID: <CACYkzJ7dK62zbn_z0S=-Xps1=DCEcd1FPYFon-BUeha=N5KnJQ@mail.gmail.com>
+Message-ID: <CACYkzJ7dK62zbn_z0S=-Xps1=DCEcd1FPYFon-BUeha=N5KnJQ@mail.gmail.com>
+Subject: Re: [PATCH 2/2] selftests/bpf: add verifier test for PTR_TO_MEM spill
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Gilad Reti <gilad.reti@gmail.com>, bpf <bpf@vger.kernel.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        linux-kselftest@vger.kernel.org,
+        Networking <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Jan 12, 2021 at 4:43 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
+>
+> On 1/12/21 4:35 PM, Gilad Reti wrote:
+> > On Tue, Jan 12, 2021 at 4:56 PM KP Singh <kpsingh@kernel.org> wrote:
+> >> On Tue, Jan 12, 2021 at 10:16 AM Gilad Reti <gilad.reti@gmail.com> wrote:
+> >>>
+> >>> Add test to check that the verifier is able to recognize spilling of
+> >>> PTR_TO_MEM registers.
+> >>
+> >> It would be nice to have some explanation of what the test does to
+> >> recognize the spilling of the PTR_TO_MEM registers in the commit
+> >> log as well.
+> >>
+> >> Would it be possible to augment an existing test_progs
+> >> program like tools/testing/selftests/bpf/progs/test_ringbuf.c to test
+> >> this functionality?
+>
+> How would you guarantee that LLVM generates the spill/fill, via inline asm?
 
---FsscpQKzF/jJk6ya
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Yeah, I guess there is no sure-shot way to do it and, adding inline asm would
+just be doing the same thing as this verifier test. You can ignore me
+on this one :)
 
-> Introduce __xdp_build_skb_from_frame and xdp_build_skb_from_frame routine=
-s to
-> build the skb from a xdp_frame. Respect to __xdp_build_skb_from_frame,
-> xdp_build_skb_from_frame will allocate the skb object.
-> Rely on __xdp_build_skb_from_frame/xdp_build_skb_from_frame in cpumap and=
- veth
-> code.
+It would, however, be nice to have a better description about what the test is
+actually doing./
 
-Hi Daniel/Alexei,
 
-since this series is marked as "archived" in patchwork, do I need to resubm=
-it it?
-
-Regards,
-Lorenzo
-
->=20
-> Lorenzo Bianconi (2):
->   net: xdp: introduce __xdp_build_skb_from_frame utility routine
->   net: xdp: introduce xdp_build_skb_from_frame utility routine
->=20
->  drivers/net/veth.c  | 18 +++-----------
->  include/net/xdp.h   |  5 ++++
->  kernel/bpf/cpumap.c | 45 +---------------------------------
->  net/core/xdp.c      | 59 +++++++++++++++++++++++++++++++++++++++++++++
->  4 files changed, 68 insertions(+), 59 deletions(-)
->=20
-> --=20
-> 2.29.2
->=20
-
---FsscpQKzF/jJk6ya
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCX/3JhwAKCRA6cBh0uS2t
-rGYXAP0faiWViGGo03bFcPMrUOd1hFZOykCmszMKT38fk8LKLAEAlLJAtXZWuBOp
-KRC4srGKp1SYGG9h13GGTGSEjFQkzAE=
-=MTN8
------END PGP SIGNATURE-----
-
---FsscpQKzF/jJk6ya--
-
+>
+> > It may be possible, but from what I understood from Daniel's comment here
+> >
+> > https://lore.kernel.org/bpf/17629073-4fab-a922-ecc3-25b019960f44@iogearbox.net/
+> >
+> > the test should be a part of the verifier tests (which is reasonable
+> > to me since it is
+> > a verifier bugfix)
+>
+> Yeah, the test_verifier case as you have is definitely the most straight
+> forward way to add coverage in this case.
