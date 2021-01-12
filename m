@@ -2,83 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 11A5F2F3DBA
-	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 01:44:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E97C2F3DC4
+	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 01:44:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406946AbhALVhM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jan 2021 16:37:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57682 "EHLO
+        id S2406947AbhALVhR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jan 2021 16:37:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2436909AbhALUZt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 15:25:49 -0500
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEEF2C061575
-        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 12:25:08 -0800 (PST)
-Received: by mail-ej1-x631.google.com with SMTP id 6so5353339ejz.5
-        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 12:25:08 -0800 (PST)
+        with ESMTP id S2436916AbhALU1i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 15:27:38 -0500
+Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A505C061575
+        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 12:26:58 -0800 (PST)
+Received: by mail-io1-xd34.google.com with SMTP id p187so6872172iod.4
+        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 12:26:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=YYuEIJqXLXQgytml1bBH1e9/E+0O9VrS6ufoPj0bRhI=;
-        b=p4itdLBfazJv7sL6hKURoSt+Knw34GogjeGGKS84Ftd9pM9wQYfVs/SFGXtuSRVEjj
-         Ljve3cRBYC/SmzduMOajt6bFSV8C3wKXptQ1hSfbR5hUHpQ93MeY2g8y7pYg3pFTZyST
-         LUcnxQ0TKmChR1VeZvH2qobrLK42Nayq2H6JkJIUubiC7Ssdt+jDPH2nFZADQ+rtnmWg
-         KzqLFjU2Awv4FDrDN5NL6xbZWyNnbH2jO8pkmLeIZYBnWAnZ0hJD5I+VNiMYyD2DQ3yw
-         6NKguayaxQD6oDTEJOL9smpF5ro1u2TtXNaXHEpDBNcW9d3z9AGJG4hREewoinS8dfqw
-         sNIg==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=oiWOkXc1xI0t8NElnoFoYTlFQTVS3zhw5lONJrLRU9M=;
+        b=mHaAJlrQLz+1O9bonKxTL13JZHxSy0YMb3j9mNufAzgzbjrlMoyVSVG61rSQAtp1aC
+         gh0EhCe5opEs90pBxa6O1e2CJtbE3kWjeW3yE8YEwme2p5FlYLvAxbtJDMafU8GHDMCS
+         aU/kd8irifznfs0MMm5MEf7oG/tgs4ciVOePtzGstwXryo72H6T8RmMR0p0Je2bPyxu1
+         3nDKuj9ul/ufZ5gwRGMXsoF+Wq1tQxztBZpTkY9n7bbS6XRxcRQq79k1SfqXstbSAS2U
+         OuXdXjxXQw1Lr98YySdp3pXNCFdr9deLKgDrDj8owqNg2rYSXZDL/A2hDdpo18Ei0hoT
+         7evQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=YYuEIJqXLXQgytml1bBH1e9/E+0O9VrS6ufoPj0bRhI=;
-        b=iNa1dl2ulzoQVXBasC+IHu/Wq7WVv0nBJYhQa91Md1lyXVm6FfRGYi0lJY9IV0sBEJ
-         645CrXD6Kw9na75ATipACofO69hdG6D/kZMk8/aFryciqHN8GvHecHlOCGBkxRp7r4iF
-         BQw2S4Gj0pw0aT7makGxICjKB+v3+oD0f/hw9yKC9q3RafgARVLsF0RDjaGMPD7xDxEb
-         y85tDa/lsPQ+ZKiZJLpf/HIkT21VkKb/P+ShrztYQu1k4PrYh2k8wV36auE47VXhy73L
-         AWS7OD7WeHE0ulE549Gg3+idnyRiql5y8ZKgjgzhhOIlX7EBLTThW32CYMdMT2U0kAEW
-         7qVg==
-X-Gm-Message-State: AOAM533lPPGZe7D6Hnr6BRmxP/iFkQ8PMMcOO+8ATNJR67o/SD1XVOhT
-        2e3LWe4G2y4MSYUhE5dTe/w=
-X-Google-Smtp-Source: ABdhPJxi8YbKR67q3DE8rhlgyIMVW3FVAVY63FnINZDD38LHvksc1ZjNoB9bluPGGWnQ23zbIphA9Q==
-X-Received: by 2002:a17:906:4bc5:: with SMTP id x5mr397147ejv.55.1610483107002;
-        Tue, 12 Jan 2021 12:25:07 -0800 (PST)
-Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id i18sm1891031edq.79.2021.01.12.12.25.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Jan 2021 12:25:06 -0800 (PST)
-Date:   Tue, 12 Jan 2021 22:25:04 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>
-Cc:     netdev@vger.kernel.org, pavana.sharma@digi.com,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com, kuba@kernel.org,
-        lkp@intel.com, davem@davemloft.net, ashkan.boldaji@digi.com,
-        andrew@lunn.ch, Chris Packham <chris.packham@alliedtelesis.co.nz>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Subject: Re: [PATCH net-next v15 4/6] net: dsa: mv88e6xxx: wrap
- .set_egress_port method
-Message-ID: <20210112202504.e55g7azsvmqkchua@skbuf>
-References: <20210112195405.12890-1-kabel@kernel.org>
- <20210112195405.12890-5-kabel@kernel.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=oiWOkXc1xI0t8NElnoFoYTlFQTVS3zhw5lONJrLRU9M=;
+        b=nD+R93qrfB5+SDlXq+TfcKxzJysQwFPsv8VusLcr/20fcfFEmIHTGLxpbhBBOyBlNq
+         ikjC8gvDpV+sqhFL6K2b1rr5ZCZPt04r0nt7nZzhzaLqAMPznRJGxpY/F5B7/jBDC0Wf
+         1Fw1pZoFNWjQLYNipUIeCxr/els1DGSUuzOlJjj9czqVX7KIrQKxXHw9n4/ypgR3nqR0
+         ZXEHL31EYL1jecrwZ9lExFI8lK1ZmRkkM2imo8kR+mCVAC7nO7wRtGjONoV7GM5sJEUX
+         P4T/ZTwI6plld81Fkq+9sPk6qjHZouzJlhfxJlLIKwu3u6pdcR4n6Ts2YM8zdYXKrSDz
+         NNAg==
+X-Gm-Message-State: AOAM530YXnSn8rZ9YZVcj0SFPg3ygt12pkU3XZ5crULtg7pcqSNLiHpR
+        EQXWhFyclQwWvw2S6Bbg7/UZDoP9vuWaAkhg5RKvlQ==
+X-Google-Smtp-Source: ABdhPJz4ZWJLGUNNpJ9Q7JHz81xV1kNEhCUWH+fUIJCMWv+DpDq+dqDSyOh0HCf3tQ03OkhJSZsWt0bdViiAeOOshk4=
+X-Received: by 2002:a05:6e02:42:: with SMTP id i2mr885580ilr.68.1610483217529;
+ Tue, 12 Jan 2021 12:26:57 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210112195405.12890-5-kabel@kernel.org>
+References: <20210111222411.232916-1-hcaldwel@akamai.com> <20210111222411.232916-5-hcaldwel@akamai.com>
+ <CANn89iLheJ+a0AZ_JZyitsZK5RCVsadzgsBK=DeHs-7ko5OMuQ@mail.gmail.com>
+ <24573.51244.563087.333291@gargle.gargle.HOWL> <CANn89i+1qN6A0vw=unv60VBfxb1SMMErAyfB9jzzHbx49HzE+A@mail.gmail.com>
+ <24573.63409.26608.321427@gargle.gargle.HOWL>
+In-Reply-To: <24573.63409.26608.321427@gargle.gargle.HOWL>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Tue, 12 Jan 2021 21:26:45 +0100
+Message-ID: <CANn89iJWkgkF+kKDFnqAO9oMMziZGPe_QYMJvx80AbbTfQFQmQ@mail.gmail.com>
+Subject: Re: [PATCH net-next 4/4] tcp: remove limit on initial receive window
+To:     Heath Caldwell <hcaldwel@akamai.com>
+Cc:     netdev <netdev@vger.kernel.org>, Yuchung Cheng <ycheng@google.com>,
+        Josh Hunt <johunt@akamai.com>, Ji Li <jli@akamai.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 12, 2021 at 08:54:03PM +0100, Marek Behún wrote:
-> There are two implementations of the .set_egress_port method, and both
-> of them, if successful, set chip->*gress_dest_port variable.
-> 
-> To avoid code repetition, wrap this method into
-> mv88e6xxx_set_egress_port.
-> 
-> Signed-off-by: Marek Behún <kabel@kernel.org>
-> Reviewed-by: Pavana Sharma <pavana.sharma@digi.com>
-> ---
+On Tue, Jan 12, 2021 at 8:25 PM Heath Caldwell <hcaldwel@akamai.com> wrote:
+>
+> On 2021-01-12 18:05 (+0100), Eric Dumazet <edumazet@google.com> wrote:
+> > On Tue, Jan 12, 2021 at 5:02 PM Heath Caldwell <hcaldwel@akamai.com> wrote:
+> > >
+> > > On 2021-01-12 09:30 (+0100), Eric Dumazet <edumazet@google.com> wrote:
+> > > > I think the whole patch series is an attempt to badly break TCP stack.
+> > >
+> > > Can you explain the concern that you have about how these changes might
+> > > break the TCP stack?
+> > >
+> > > Patches 1 and 3 fix clear bugs.
+> >
+> > Not clear to me at least.
+> >
+> > If they were bug fixes, a FIxes: tag would be provided.
+>
+> The underlying bugs that are addressed in patches 1 and 3 are present in
+> 1da177e4c3f4 ("Linux-2.6.12-rc2") which looks to be the earliest parent
+> commit in the repository.  What should I do for a Fixes: tag in this
+> case?
+>
+> > You are a first time contributor to linux TCP stack, so better make
+> > sure your claims are solid.
+>
+> I fear that I may not have expressed the problems and solutions in a
+> manner that imparted the ideas well.
+>
+> Maybe I added too much detail in the description for patch 1, which may
+> have obscured the problem: val is capped to sysctl_rmem_max *before* it
+> is doubled (resulting in the possibility for sk_rcvbuf to be set to
+> 2*sysctl_rmem_max, rather than it being capped at sysctl_rmem_max).
 
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+This is fine. This has been done forever. Your change might break applications.
+
+I would advise documenting this fact, since existing behavior will be kept
+in many linux hosts for years to come.
+
+>
+> Maybe I was not explicit enough in the description for patch 3: space is
+> expanded into sock_net(sk)->ipv4.sysctl_tcp_rmem[2] and sysctl_rmem_max
+> without first shrinking them to discount the overhead.
+>
+> > > Patches 2 and 4 might be arguable, though.
+> >
+> > So we have to pick up whatever pleases us ?
+>
+> I have been treating all of these changes together because they all kind
+> of work together to provide a consistent model and configurability for
+> the initial receive window.
+>
+> Patches 1 and 3 address bugs.
+
+Maybe, but will break applications.
+
+> Patch 2 addresses an inconsistency in how overhead is treated specially
+> for TCP sockets.
+> Patch 4 addresses the 64KB limit which has been imposed.
+
+For very good reasons.
+
+This is going nowhere. I will stop right now.
