@@ -2,127 +2,289 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 796C82F3D6E
-	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 01:44:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 10B9B2F3DF1
+	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 01:44:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2407081AbhALVio (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jan 2021 16:38:44 -0500
-Received: from mail-co1nam11on2122.outbound.protection.outlook.com ([40.107.220.122]:10465
-        "EHLO NAM11-CO1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2437163AbhALVcM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 12 Jan 2021 16:32:12 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hS6mX+hs4kmO7jD+xxg8ZcAmpkjOY2ko2FtNAYN8nh/zvsC1bCERld83E1QWOW0zk29U2UMjmX6C+c/V/GPbwFjjYqj2EtkJweVK68bd0tOLZlFZdIuB9cesRtcnz9mQoWGUTPgrwyxSzkVE8uyxL5VfB2286rSMpd+GQDMnPWEHKKPLIjIH4u0Ss3zl+ox60G1UCQ1p3+AMQr96Bxi1r15R9l5z38UufPLCj41iWmVTc43GbatLZEeiFyUw1ggebpOQY4WzeX1KUWLrbsEJS+mNoMTQEI20sn8OJfawvSenFXVk34JM/15X3BWeGBywXgmmVoSSE76b0mcRhG87uw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=pgiLmQNubKy3UGAMcpiKWYR3bFNX6vLv6gh16piSk5M=;
- b=iKMHTrchhVaY3+kKZlqC71+yRG8UTm25JTnvrVOWZ8vdHLJLyV6MoZIZfizLpev9Q7cyzRWpnI2HdYJfc4dFYX7TEJhYkYDWaMDpsFEojYHep3dvw3IkG4bK3HEOy0ewTDWETPobyJ1/mEFc+Xw5qXfOrT/P9qM3C9qYJeiw+JBXi5tL+zhuwNZ7uaN61aoCh0lGakHTCr3Zny/Ybl9DWRP0Il+Z4TDIMhNUHEQW+LRJBMWtZJROEz65LJtu/WrmHpzjuFNFYDlwJvWz0vR1ptictQHqao0ZOAEpbUT+UQAQebHa50REutta3ZXby/Tqp8KnAq1ARZhDUqof8/tkPw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=pgiLmQNubKy3UGAMcpiKWYR3bFNX6vLv6gh16piSk5M=;
- b=bn41mXrqsbBN3asz+p+utk1pZ9EHH3qnHVw8QFtGxjbykDDCkSKhjXRsJ6G5Z51qi2BKVpEEBuK4sF0Cd6ihsKWkDyBMGEzW+z3n3kSUv/4sMwu2F6tpvPx8sWMTSs+FE5EKslDfi6o4K3XSR/zZSrI1Dvs/KyJ8FOvqG8JfigY=
-Received: from (2603:10b6:208:fe::31) by
- BL0PR2101MB1794.namprd21.prod.outlook.com (2603:10b6:207:1a::33) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3784.4; Tue, 12 Jan
- 2021 21:31:24 +0000
-Received: from MN2PR21MB1166.namprd21.prod.outlook.com
- ([fe80::64ae:b13b:a0a3:5bd1]) by MN2PR21MB1166.namprd21.prod.outlook.com
- ([fe80::64ae:b13b:a0a3:5bd1%3]) with mapi id 15.20.3784.004; Tue, 12 Jan 2021
- 21:31:24 +0000
-From:   Long Li <longli@microsoft.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        Long Li <longli@linuxonhyperv.com>
-CC:     KY Srinivasan <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: RE: [PATCH v2 0/3] hv_netvsc: Prevent packet loss during VF
- add/remove
-Thread-Topic: [PATCH v2 0/3] hv_netvsc: Prevent packet loss during VF
- add/remove
-Thread-Index: AQHW5iHnNrYxEgDKNki14pVRntGh26ojQwmAgAFElHA=
-Date:   Tue, 12 Jan 2021 21:31:23 +0000
-Message-ID: <MN2PR21MB11666A2B3D026DA710E470ADCEAA9@MN2PR21MB1166.namprd21.prod.outlook.com>
-References: <1610153623-17500-1-git-send-email-longli@linuxonhyperv.com>
- <20210111180717.19126810@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210111180717.19126810@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=02531aca-3510-445d-bf07-b389d7e1a10d;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2021-01-12T21:28:59Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
-authentication-results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=microsoft.com;
-x-originating-ip: [67.168.111.68]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 51462a90-1b3b-4c49-e863-08d8b7416970
-x-ms-traffictypediagnostic: BL0PR2101MB1794:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BL0PR2101MB1794F539C3044F869C53CB2CCEAA9@BL0PR2101MB1794.namprd21.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:7219;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: GTWj3K9wgrvrw9DaoGGcT9mWVhFDq7MLB44ghWakC92Gy3Din154+u5VbXGSN9hVE39FfDnce3Y8OawdnIFZmb3ZcFvW115y2awQzVu+eDb/uPnkQoLmHyU2nMUx3QM2Csmz37yqjOCxzZWlzTnDeSJaDZPAXl6EtWmnEKxZxPKCjmkvysCeFo21SA16MJvEmr17Rbhtg+td5gTfA7Rn76puj5g0k7Zateb+Fpjh45xpd0MNW6sIqsdsRK+YWc5Gz0CXP7mDyPDhRpYO8i8fKqic35NoEwfiB92XFjX8mL14N62iwoAzUuBPBVxsatqaQ294f5MCwRDXYobJOmZKFI6Gm6+cKxfMeO7hJT3KEnkQpoCmvewiqNtJYXumGmxaDGCN1mNHsFFiNQQ55MfnWxHWmJ8qfpLJZrkbdpNaH98t1R0esG5yAAVQtFMflYGYyx72YcOZLFFNPVUMaW2e201qmWvedwY5W5TbyLxPsSypnTA9In+QFoywz1W8fM6ZajVjF8PJpHnD4uFRxceCYg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR21MB1166.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(366004)(396003)(136003)(39860400002)(346002)(4744005)(5660300002)(54906003)(6506007)(2906002)(8676002)(9686003)(8936002)(86362001)(4326008)(316002)(33656002)(26005)(110136005)(64756008)(66556008)(66946007)(7696005)(66446008)(66476007)(76116006)(55016002)(478600001)(52536014)(186003)(10290500003)(71200400001)(82960400001)(8990500004)(82950400001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: =?us-ascii?Q?gIoJ1Q7+Ihrf8NeWvE4KxBSv6WUU1vS+yqpjYQVMterdfj4eoEkl6BieIC+M?=
- =?us-ascii?Q?CDe9sp7XKAE4jsa4e6ANKpBriSjCKlnHwvGxQifLcF1ABWyQ7q1hxuEIkWhd?=
- =?us-ascii?Q?P2JabY9ZggH/dihylLwUeUPPqxd4z9mbnb1P9bP/gyA9R/AlZysx1nwwxkjb?=
- =?us-ascii?Q?kltFywqwEntaoDBPMugZ4wChO+5DIkjEdGkiVrVsnnY2WObdBXZQLmIC31MH?=
- =?us-ascii?Q?fn26+YAArndmlgAq2OKkLWJ0iNqg+0jQkBViv1llvR2TYiR8mgEx+dDOTbb+?=
- =?us-ascii?Q?5YJ7ZtFr5OmI2tvEtB3i/N4aYvu7C/XWaQzLjW+e8FKiK1Y/LXG9wgytJ5+P?=
- =?us-ascii?Q?T0UzeR1Zdkz74z57Hw/HSF54G0rUMRxPJf6i+B+oxiR7goHnsk8CX9dDq0g3?=
- =?us-ascii?Q?Y3PpL4w3ECtLbPe6x3zs0evQdp1RkTRNt9ur0LUHQdKXDzWpoOvPrQGDEiRu?=
- =?us-ascii?Q?yGI8Dzx+Zcx/dtsXMjP/KgjUQjpT3zrqq5M56XNdeqISNqgi0lKXP7rWV7SO?=
- =?us-ascii?Q?nvQAq5m6jpTIFfakPwM7Q9G1lJmx8fXrnmrNMBauOHojPrXTs0DpwAWOCx2z?=
- =?us-ascii?Q?QE6qoyAwFBqTznbg4yGofhbf7vT0umG9UG4tFBqZmluLklB8VXwKbLf2JI0U?=
- =?us-ascii?Q?K9jLcqGLKkItNx3seeMH4VGnxIEDaGuD4GmIJAq6mx/SUsdJAuN7pUV7m7e+?=
- =?us-ascii?Q?Vt44LtrwBlYs6BDoYBD6fwbk6KRFEF4EfBNgEm8We+hPPhpANMMnJWHH8Z8r?=
- =?us-ascii?Q?E0t/8VvDRsnW7QGWnrg+CgiPmgiQxc++JMYTRoQMo+5JTtrHO/lFP6ynaKZ3?=
- =?us-ascii?Q?D7HKUQ9vjMNB+XPv5QqC4unkBbWH4//6FewzrTa9zcOUd0XygOC70i5tawB8?=
- =?us-ascii?Q?u75TmMhlxIvbeHe//obqXTmF6guNz1tRpjMouew8r2BIJw9axuDJHrewktXz?=
- =?us-ascii?Q?0n56byokrAfEwe5snlJ7+5F0s9Np4h0B3OMZvR5Mr00=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S2393554AbhALVtP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jan 2021 16:49:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44558 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2392300AbhALVgF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 16:36:05 -0500
+Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57F98C0617A7;
+        Tue, 12 Jan 2021 13:35:02 -0800 (PST)
+Received: by mail-io1-xd2d.google.com with SMTP id u26so7294411iof.3;
+        Tue, 12 Jan 2021 13:35:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=sDeAqm+LFH/+YEjj7tR7t+NLtygzAyr4AwNJQrZj4o8=;
+        b=d3KS/b6o4l1X7mT9/yVOtc79XKM/ftjmGKrR+8dcVWGzgzUZva3IjKiBby3kIFdDeJ
+         gYiwgydpo6taTF0jDTtpzkTEoH101w9+AAOtfpkWEm8GByCs/1pNFbdqsoRgWxr3xPlP
+         Ufw2tDxiZEV2DqpadhIIRyM2BZh97qigG20ujKG+yHOMzTpMGXJFESvTZvbKtGOL794t
+         a6q84vcoKRyxDin0I7IYDfOF93K6DkleGQm0qH4Z08Ll69k73IeWY1RHcupliweOggD0
+         f8SepEg4fBhVbN8tgwHkCWcvkUg4j6zh8/YIennY9c8syFXhmS5jN3xQl1EpgNQ5YcuH
+         hREA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=sDeAqm+LFH/+YEjj7tR7t+NLtygzAyr4AwNJQrZj4o8=;
+        b=AT3dcmDuBqFplj2IlfGB2Avz6c+pBW0cE8K9mpVZ7X4wP6YCCN2cdiwdjD/gJXZ8r/
+         XCs4kWBbP24od4PK6ZYVZ5pUuNB24vqemB6Y5BqfQbBcsuM0AGmE7sv+Rp0nHOxH0MUU
+         3Ex1jZpKaIVfZOKBHOqbUM5oAAMkZzbwx2y8OrObH2behu5Tio/chgN5S4Wg2y0Vpvde
+         yY3+2MkWPVj2tf4iOyyhzrb25b6waTry8WPvErHL7t6PqC5NBi2DtsodXSy/V6jbof2e
+         QHOm24O3L5/TQUHEZ3Q+lafzz5t7zB5/hQk2Zo4tKyqqbL+FLQ0D+9tCPYA4zr3CmCki
+         vH9A==
+X-Gm-Message-State: AOAM533VO2wioTO/02SnUnJxs08NOEAM/7CqKS5z5rMqlLUDK1PA7V9O
+        O8yL4STjq2Lr8GTIIImnV5MCL2NU45wlB0K5POM=
+X-Google-Smtp-Source: ABdhPJzjn/TNYAGAH6/SXpllAAMU5SXgaWLsv3NEdJpo5dqEL96pcE0w+cXeO3MWP28fnIjqwgn2BDVfncP71gze6FQ=
+X-Received: by 2002:a5e:9812:: with SMTP id s18mr846974ioj.138.1610487301573;
+ Tue, 12 Jan 2021 13:35:01 -0800 (PST)
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MN2PR21MB1166.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 51462a90-1b3b-4c49-e863-08d8b7416970
-X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Jan 2021 21:31:24.1410
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: n6QuFLLqNv7MXxLLoIL3PJRAXc+LlZUF4ZQ5ulyAKow2sFKsX9R6RVwyqJYL9e/vpFrwewjFUdeeS+YgNjhq7Q==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR2101MB1794
+References: <20210110150727.1965295-1-leon@kernel.org> <20210110150727.1965295-3-leon@kernel.org>
+ <CAKgT0Uczu6cULPsVjFuFVmir35SpL-bs0hosbfH-T5sZLZ78BQ@mail.gmail.com> <20210112065601.GD4678@unreal>
+In-Reply-To: <20210112065601.GD4678@unreal>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Tue, 12 Jan 2021 13:34:50 -0800
+Message-ID: <CAKgT0UdndGdA3xONBr62hE-_RBdL-fq6rHLy0PrdsuMn1936TA@mail.gmail.com>
+Subject: Re: [PATCH mlx5-next v1 2/5] PCI: Add SR-IOV sysfs entry to read
+ number of MSI-X vectors
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Bjorn Helgaas <bhelgaas@google.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-pci <linux-pci@vger.kernel.org>,
+        linux-rdma@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
+        Don Dutile <ddutile@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> Subject: Re: [PATCH v2 0/3] hv_netvsc: Prevent packet loss during VF
-> add/remove
->=20
-> On Fri,  8 Jan 2021 16:53:40 -0800 Long Li wrote:
-> > From: Long Li <longli@microsoft.com>
+On Mon, Jan 11, 2021 at 10:56 PM Leon Romanovsky <leon@kernel.org> wrote:
+>
+> On Mon, Jan 11, 2021 at 11:30:39AM -0800, Alexander Duyck wrote:
+> > On Sun, Jan 10, 2021 at 7:10 AM Leon Romanovsky <leon@kernel.org> wrote:
+> > >
+> > > From: Leon Romanovsky <leonro@nvidia.com>
+> > >
+> > > Some SR-IOV capable devices provide an ability to configure specific
+> > > number of MSI-X vectors on their VF prior driver is probed on that VF.
+> > >
+> > > In order to make management easy, provide new read-only sysfs file that
+> > > returns a total number of possible to configure MSI-X vectors.
+> > >
+> > > cat /sys/bus/pci/devices/.../sriov_vf_total_msix
+> > >   = 0 - feature is not supported
+> > >   > 0 - total number of MSI-X vectors to consume by the VFs
+> > >
+> > > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> > > ---
+> > >  Documentation/ABI/testing/sysfs-bus-pci | 14 +++++++++++
+> > >  drivers/pci/iov.c                       | 31 +++++++++++++++++++++++++
+> > >  drivers/pci/pci.h                       |  3 +++
+> > >  include/linux/pci.h                     |  2 ++
+> > >  4 files changed, 50 insertions(+)
+> > >
+> > > diff --git a/Documentation/ABI/testing/sysfs-bus-pci b/Documentation/ABI/testing/sysfs-bus-pci
+> > > index 05e26e5da54e..64e9b700acc9 100644
+> > > --- a/Documentation/ABI/testing/sysfs-bus-pci
+> > > +++ b/Documentation/ABI/testing/sysfs-bus-pci
+> > > @@ -395,3 +395,17 @@ Description:
+> > >                 The file is writable if the PF is bound to a driver that
+> > >                 supports the ->sriov_set_msix_vec_count() callback and there
+> > >                 is no driver bound to the VF.
+> > > +
+> > > +What:          /sys/bus/pci/devices/.../sriov_vf_total_msix
 > >
-> > This patch set fixes issues with packet loss on VF add/remove.
->=20
-> These patches are for net-next? They just optimize the amount of packet
-> loss on switch, not fix bugs, right?
+> > In this case I would drop the "vf" and just go with sriov_total_msix
+> > since now you are referring to a global value instead of a per VF
+> > value.
+>
+> This field indicates the amount of MSI-X available for VFs, it doesn't
+> include PFs. The missing "_vf_" will mislead users who will believe that
+> it is all MSI-X vectors available for this device. They will need to take
+> into consideration amount of PF MSI-X in order to calculate the VF distribution.
+>
+> So I would leave "_vf_" here.
 
-Yes, those patches are for net-next.
+The problem is you aren't indicating how many are available for an
+individual VF though, you are indicating how many are available for
+use by SR-IOV to give to the VFs. The fact that you are dealing with a
+pool makes things confusing in my opinion. For example sriov_vf_device
+describes the device ID that will be given to each VF.
 
-They eliminate the packet loss introduced from Linux side during VF changes=
-. They can be seen as optimizations.
+> >
+> > > +Date:          January 2021
+> > > +Contact:       Leon Romanovsky <leonro@nvidia.com>
+> > > +Description:
+> > > +               This file is associated with the SR-IOV PFs.
+> > > +               It returns a total number of possible to configure MSI-X
+> > > +               vectors on the enabled VFs.
+> > > +
+> > > +               The values returned are:
+> > > +                * > 0 - this will be total number possible to consume by VFs,
+> > > +                * = 0 - feature is not supported
+> > > +
+> > > +               If no SR-IOV VFs are enabled, this value will return 0.
+> > > diff --git a/drivers/pci/iov.c b/drivers/pci/iov.c
+> > > index 42c0df4158d1..0a6ddf3230fd 100644
+> > > --- a/drivers/pci/iov.c
+> > > +++ b/drivers/pci/iov.c
+> > > @@ -394,12 +394,22 @@ static ssize_t sriov_drivers_autoprobe_store(struct device *dev,
+> > >         return count;
+> > >  }
+> > >
+> > > +static ssize_t sriov_vf_total_msix_show(struct device *dev,
+> > > +                                       struct device_attribute *attr,
+> > > +                                       char *buf)
+> > > +{
+> > > +       struct pci_dev *pdev = to_pci_dev(dev);
+> > > +
+> > > +       return sprintf(buf, "%d\n", pdev->sriov->vf_total_msix);
+> > > +}
+> > > +
+> >
+> > You display it as a signed value, but unsigned values are not
+> > supported, correct?
+>
+> Right, I made it similar to the vf_msix_set. I can change.
+>
+> >
+> > >  static DEVICE_ATTR_RO(sriov_totalvfs);
+> > >  static DEVICE_ATTR_RW(sriov_numvfs);
+> > >  static DEVICE_ATTR_RO(sriov_offset);
+> > >  static DEVICE_ATTR_RO(sriov_stride);
+> > >  static DEVICE_ATTR_RO(sriov_vf_device);
+> > >  static DEVICE_ATTR_RW(sriov_drivers_autoprobe);
+> > > +static DEVICE_ATTR_RO(sriov_vf_total_msix);
+> > >
+> > >  static struct attribute *sriov_dev_attrs[] = {
+> > >         &dev_attr_sriov_totalvfs.attr,
+> > > @@ -408,6 +418,7 @@ static struct attribute *sriov_dev_attrs[] = {
+> > >         &dev_attr_sriov_stride.attr,
+> > >         &dev_attr_sriov_vf_device.attr,
+> > >         &dev_attr_sriov_drivers_autoprobe.attr,
+> > > +       &dev_attr_sriov_vf_total_msix.attr,
+> > >         NULL,
+> > >  };
+> > >
+> > > @@ -658,6 +669,7 @@ static void sriov_disable(struct pci_dev *dev)
+> > >                 sysfs_remove_link(&dev->dev.kobj, "dep_link");
+> > >
+> > >         iov->num_VFs = 0;
+> > > +       iov->vf_total_msix = 0;
+> > >         pci_iov_set_numvfs(dev, 0);
+> > >  }
+> > >
+> > > @@ -1116,6 +1128,25 @@ int pci_sriov_get_totalvfs(struct pci_dev *dev)
+> > >  }
+> > >  EXPORT_SYMBOL_GPL(pci_sriov_get_totalvfs);
+> > >
+> > > +/**
+> > > + * pci_sriov_set_vf_total_msix - set total number of MSI-X vectors for the VFs
+> > > + * @dev: the PCI PF device
+> > > + * @numb: the total number of MSI-X vector to consume by the VFs
+> > > + *
+> > > + * Sets the number of MSI-X vectors that is possible to consume by the VFs.
+> > > + * This interface is complimentary part of the pci_set_msix_vec_count()
+> > > + * that will be used to configure the required number on the VF.
+> > > + */
+> > > +void pci_sriov_set_vf_total_msix(struct pci_dev *dev, int numb)
+> > > +{
+> > > +       if (!dev->is_physfn || !dev->driver ||
+> > > +           !dev->driver->sriov_set_msix_vec_count)
+> > > +               return;
+> > > +
+> > > +       dev->sriov->vf_total_msix = numb;
+> > > +}
+> > > +EXPORT_SYMBOL_GPL(pci_sriov_set_vf_total_msix);
+> > > +
+> >
+> > This seems broken. What validation is being done on the numb value?
+> > You pass it as int, and your documentation all refers to tests for >=
+> > 0, but isn't a signed input a possibility as well? Also "numb" doesn't
+> > make for a good abbreviation as it is already a word of its own. It
+> > might make more sense to use count or something like that rather than
+> > trying to abbreviate number.
+>
+> "Broken" is a nice word to describe misunderstanding.
+
+Would you prefer "lacking input validation".
+
+I see all this code in there checking for is_physfn and driver and
+sriov_set_msix_vec_count before allowing the setting of vf_total_msix.
+It just seems like a lot of validation is taking place on the wrong
+things if you are just going to be setting a value reporting the total
+number of MSI-X vectors in use for SR-IOV.
+
+In addition this value seems like a custom purpose being pushed into
+the PCIe code since there isn't anything that defaults the value. It
+seems like at a minimum there should be something that programs a
+default value for both of these new fields that are being added so
+that you pull the maximum number of VFs when SR-IOV is enabled, the
+maximum number of MSI-X vectors from a single VF, and then the default
+value for this should be the multiple of the two which can then be
+overridden later.
+
+> The vf_total_msix is not set by the users and used solely by the drivers
+> to advertise their capability. This field is needed to give a way to
+> calculate how much MSI-X VFs can get. The driver code is part of the
+> kernel and like any other kernel code, it is trusted.
+>
+> I'm checking < 0 in another _set_ routine to make sure that we will be
+> able to extend this sysfs entry if at some point of time negative vector
+> count will make sense.
+
+I would rather have a strict interface that doesn't allow for
+unintended flexibility. Out-of-tree drivers tend to exploit that kind
+of stuff and it is problematic when it can occur.
+
+> "Count" instead of "numb" is fine by me.
+> >
+> >
+> > >  /**
+> > >   * pci_sriov_configure_simple - helper to configure SR-IOV
+> > >   * @dev: the PCI device
+> > > diff --git a/drivers/pci/pci.h b/drivers/pci/pci.h
+> > > index 1fd273077637..0fbe291eb0f2 100644
+> > > --- a/drivers/pci/pci.h
+> > > +++ b/drivers/pci/pci.h
+> > > @@ -327,6 +327,9 @@ struct pci_sriov {
+> > >         u16             subsystem_device; /* VF subsystem device */
+> > >         resource_size_t barsz[PCI_SRIOV_NUM_BARS];      /* VF BAR size */
+> > >         bool            drivers_autoprobe; /* Auto probing of VFs by driver */
+> > > +       int             vf_total_msix;  /* Total number of MSI-X vectors the VFs
+> > > +                                        * can consume
+> > > +                                        */
+> > >  };
+> > >
+> > >  /**
+> > > diff --git a/include/linux/pci.h b/include/linux/pci.h
+> > > index a17cfc28eb66..fd9ff1f42a09 100644
+> > > --- a/include/linux/pci.h
+> > > +++ b/include/linux/pci.h
+> > > @@ -2074,6 +2074,7 @@ int pci_sriov_get_totalvfs(struct pci_dev *dev);
+> > >  int pci_sriov_configure_simple(struct pci_dev *dev, int nr_virtfn);
+> > >  resource_size_t pci_iov_resource_size(struct pci_dev *dev, int resno);
+> > >  void pci_vf_drivers_autoprobe(struct pci_dev *dev, bool probe);
+> > > +void pci_sriov_set_vf_total_msix(struct pci_dev *dev, int numb);
+> > >
+> > >  /* Arch may override these (weak) */
+> > >  int pcibios_sriov_enable(struct pci_dev *pdev, u16 num_vfs);
+> > > @@ -2114,6 +2115,7 @@ static inline int pci_sriov_get_totalvfs(struct pci_dev *dev)
+> > >  static inline resource_size_t pci_iov_resource_size(struct pci_dev *dev, int resno)
+> > >  { return 0; }
+> > >  static inline void pci_vf_drivers_autoprobe(struct pci_dev *dev, bool probe) { }
+> > > +static inline void pci_sriov_set_vf_total_msix(struct pci_dev *dev, int numb) {}
+> > >  #endif
+> > >
+> > >  #if defined(CONFIG_HOTPLUG_PCI) || defined(CONFIG_HOTPLUG_PCI_MODULE)
+> > > --
+> > > 2.29.2
+> > >
