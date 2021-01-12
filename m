@@ -2,1335 +2,750 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 760042F3272
-	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 15:02:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EF2BC2F3270
+	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 15:02:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388312AbhALOAa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jan 2021 09:00:30 -0500
-Received: from esa.microchip.iphmx.com ([68.232.153.233]:13934 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728021AbhALOAa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 09:00:30 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1610460029; x=1641996029;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=5z9omTjY3Vfs28VHRGtBI4ChySpQs9sX+Ize/g3yiJs=;
-  b=F0Dn6H8a7NZhhnVyR+klShKKyUlYfg79WsD5ARk7Mi1i0OZMjd++5xMp
-   Z9DzOPX9slSNHLMOrVpG9XHm7D9mR5vZFXvmwxCHF172Ox4YxdQs9iW+A
-   HNKoO4Caw01o8WV7NS22MRL+lC1qwQnjppG+qDAJzVmD+erKGohfgzD4b
-   zYpfAUpk8+apBi3aBRzCGysNfzxyL7uHk7FKQepsCuRKvPvhRinb0iiRC
-   jz3GAKxzIoB3kvG+thsbiZzFxak31tLF+WhGuKdV/xMd3681vSaxrnyu8
-   E3zaQqgjE0T+rmhCsXy8wbwZPb9AKHrxiqWQGzQetEEj9DzP+GLzTSUgY
-   g==;
-IronPort-SDR: KlNLc8eSSOscXmt4YX6G+8Qh5rqTv4fdxuig6MYoTkXsOcVuIT/0L0u6qlVUHoEC7r8rALENeV
- /dAVVqb6r7zrsk4tHote4Qp+n9hXRPePkFnQfrrIYkaPl8rf4rXJ24+1IEqZk/tcVsYPrH3/Hx
- lPn1H4IufyjcFClwek/lClg3tnniM7yAozh4275WqJ1HX4MLNhWJ0IVvIFfJPVDcFVLSoPZFhR
- 6Em8iBqOSuygyP6pL933gz8WLsJMSWAhjTQjW9yyMXk9o5px/g5bCg6uaLLcv8hPbY3q4Ptrao
- s+4=
+        id S1731627AbhALOAY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jan 2021 09:00:24 -0500
+Received: from mga02.intel.com ([134.134.136.20]:41380 "EHLO mga02.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728021AbhALOAY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 Jan 2021 09:00:24 -0500
+IronPort-SDR: 5Y72Bh28Ib+JYqB7ochxyBrBVSyVjmvPgtVyC+YP/iYeZAA7Sdjargq/RspWOgxxxlZcpczfUm
+ n2NugGupHFtA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9861"; a="165124504"
 X-IronPort-AV: E=Sophos;i="5.79,341,1602572400"; 
-   d="scan'208";a="105676140"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 12 Jan 2021 06:59:13 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Tue, 12 Jan 2021 06:59:13 -0700
-Received: from soft-dev3.localdomain (10.10.115.15) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.1979.3 via Frontend Transport; Tue, 12 Jan 2021 06:59:11 -0700
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <roopa@nvidia.com>,
-        <nikolay@nvidia.com>, <allan.nielsen@microchip.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <bridge@lists.linux-foundation.org>
-CC:     Horatiu Vultur <horatiu.vultur@microchip.com>
-Subject: [RFC PATCH v2] net: bridge: igmp: Extend IGMP query to be per vlan
-Date:   Tue, 12 Jan 2021 14:59:03 +0100
-Message-ID: <20210112135903.3730765-1-horatiu.vultur@microchip.com>
-X-Mailer: git-send-email 2.27.0
+   d="gz'50?scan'50,208,50";a="165124504"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jan 2021 06:00:02 -0800
+IronPort-SDR: u5NW4E6s807UEqOUdwNjUUQsbYTvIZPgvFAKwVOnEy8QQipjgVtSN7KOHZfGHsQwC2A8iCJ1Ld
+ jGQSCU3B4WWg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.79,341,1602572400"; 
+   d="gz'50?scan'50,208,50";a="404469322"
+Received: from lkp-server01.sh.intel.com (HELO b73930e00c65) ([10.239.97.150])
+  by FMSMGA003.fm.intel.com with ESMTP; 12 Jan 2021 05:59:59 -0800
+Received: from kbuild by b73930e00c65 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1kzKDG-0000C2-Rk; Tue, 12 Jan 2021 13:59:58 +0000
+Date:   Tue, 12 Jan 2021 21:59:50 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Joakim Zhang <qiangqing.zhang@nxp.com>, peppe.cavallaro@st.com,
+        alexandre.torgue@st.com, joabreu@synopsys.com, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     kbuild-all@lists.01.org, netdev@vger.kernel.org, linux-imx@nxp.com,
+        andrew@lunn.ch, f.fainelli@gmail.com
+Subject: Re: [PATCH V2 net 4/6] net: stmmac: fix dma physical address of
+ descriptor when display ring
+Message-ID: <202101122156.w6q7acR5-lkp@intel.com>
+References: <20210112113345.12937-5-qiangqing.zhang@nxp.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+Content-Type: multipart/mixed; boundary="9jxsPFA5p3P2qPhR"
+Content-Disposition: inline
+In-Reply-To: <20210112113345.12937-5-qiangqing.zhang@nxp.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Based on the comments of the previous version, we started to work on a
-new version, so it would be possible to enable/disable queries per vlan.
-This is still work in progress and there are plenty of things that are
-not implemented and tested:
-- ipv6 support
-- the fast path needs to be improved
-- currently it is possible only to enable/disable the queries per vlan,
-  all the other configurations are global
-- toggling vlan_filtering is not tested
-- remove duplicated information
-- etc...
 
-But there are few things that are working like:
-- sending queries per vlan
-- stop sending queries if there is a better querier per vlan
-- when ports are added/removed from vlan
-- etc...
+--9jxsPFA5p3P2qPhR
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-We were wondering if this what you had in mind when you proposed to have
-this per vlan? Or we are completely off? Or we should fix some of the
-issues that I mentioned, before you can see more clearly the direction?
+Hi Joakim,
 
-Signed-off-by: Horatiu Vultur <horatiu.vultur@microchip.com>
+Thank you for the patch! Perhaps something to improve:
+
+[auto build test WARNING on net/master]
+
+url:    https://github.com/0day-ci/linux/commits/Joakim-Zhang/ethernet-fixes-for-stmmac-driver/20210112-193904
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/davem/net.git 1ee527a79fa6d0a85425cafc1632e09bd8d3dca7
+config: i386-randconfig-a004-20210112 (attached as .config)
+compiler: gcc-9 (Debian 9.3.0-15) 9.3.0
+reproduce (this is a W=1 build):
+        # https://github.com/0day-ci/linux/commit/7464ee433bef5bfbed3649c3bb4fb47815de1d26
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Joakim-Zhang/ethernet-fixes-for-stmmac-driver/20210112-193904
+        git checkout 7464ee433bef5bfbed3649c3bb4fb47815de1d26
+        # save the attached .config to linux build tree
+        make W=1 ARCH=i386 
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+All warnings (new ones prefixed by >>):
+
+   drivers/net/ethernet/stmicro/stmmac/stmmac_main.c: In function 'sysfs_display_ring':
+>> drivers/net/ethernet/stmicro/stmmac/stmmac_main.c:4341:30: warning: format '%llx' expects argument of type 'long long unsigned int', but argument 4 has type 'dma_addr_t' {aka 'unsigned int'} [-Wformat=]
+    4341 |    seq_printf(seq, "%d [0x%llx]: 0x%x 0x%x 0x%x 0x%x\n",
+         |                           ~~~^
+         |                              |
+         |                              long long unsigned int
+         |                           %x
+    4342 |        i, dma_phy_addr + i * sizeof(ep),
+         |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+         |                        |
+         |                        dma_addr_t {aka unsigned int}
+   drivers/net/ethernet/stmicro/stmmac/stmmac_main.c:4349:30: warning: format '%llx' expects argument of type 'long long unsigned int', but argument 4 has type 'dma_addr_t' {aka 'unsigned int'} [-Wformat=]
+    4349 |    seq_printf(seq, "%d [0x%llx]: 0x%x 0x%x 0x%x 0x%x\n",
+         |                           ~~~^
+         |                              |
+         |                              long long unsigned int
+         |                           %x
+    4350 |        i, dma_phy_addr + i * sizeof(p),
+         |           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+         |                        |
+         |                        dma_addr_t {aka unsigned int}
+
+
+vim +4341 drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+
+  4331	
+  4332	static void sysfs_display_ring(void *head, int size, int extend_desc,
+  4333				       struct seq_file *seq, dma_addr_t dma_phy_addr)
+  4334	{
+  4335		int i;
+  4336		struct dma_extended_desc *ep = (struct dma_extended_desc *)head;
+  4337		struct dma_desc *p = (struct dma_desc *)head;
+  4338	
+  4339		for (i = 0; i < size; i++) {
+  4340			if (extend_desc) {
+> 4341				seq_printf(seq, "%d [0x%llx]: 0x%x 0x%x 0x%x 0x%x\n",
+  4342					   i, dma_phy_addr + i * sizeof(ep),
+  4343					   le32_to_cpu(ep->basic.des0),
+  4344					   le32_to_cpu(ep->basic.des1),
+  4345					   le32_to_cpu(ep->basic.des2),
+  4346					   le32_to_cpu(ep->basic.des3));
+  4347				ep++;
+  4348			} else {
+  4349				seq_printf(seq, "%d [0x%llx]: 0x%x 0x%x 0x%x 0x%x\n",
+  4350					   i, dma_phy_addr + i * sizeof(p),
+  4351					   le32_to_cpu(p->des0), le32_to_cpu(p->des1),
+  4352					   le32_to_cpu(p->des2), le32_to_cpu(p->des3));
+  4353				p++;
+  4354			}
+  4355			seq_printf(seq, "\n");
+  4356		}
+  4357	}
+  4358	
+
 ---
- include/uapi/linux/if_link.h |   1 +
- net/bridge/br_device.c       |   2 +-
- net/bridge/br_input.c        |   2 +-
- net/bridge/br_multicast.c    | 505 ++++++++++++++++++++++++++++++-----
- net/bridge/br_netlink.c      |   9 +-
- net/bridge/br_private.h      |  90 ++++++-
- net/bridge/br_sysfs_br.c     |  31 ++-
- net/bridge/br_vlan.c         |   3 +
- 8 files changed, 560 insertions(+), 83 deletions(-)
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
 
-diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
-index 82708c6db432..11ec1d45c24e 100644
---- a/include/uapi/linux/if_link.h
-+++ b/include/uapi/linux/if_link.h
-@@ -472,6 +472,7 @@ enum {
- 	IFLA_BR_MCAST_MLD_VERSION,
- 	IFLA_BR_VLAN_STATS_PER_PORT,
- 	IFLA_BR_MULTI_BOOLOPT,
-+	IFLA_BR_MCAST_QUERIER_VID,
- 	__IFLA_BR_MAX,
- };
- 
-diff --git a/net/bridge/br_device.c b/net/bridge/br_device.c
-index 3f2f06b4dd27..aca4e8074a8f 100644
---- a/net/bridge/br_device.c
-+++ b/net/bridge/br_device.c
-@@ -89,7 +89,7 @@ netdev_tx_t br_dev_xmit(struct sk_buff *skb, struct net_device *dev)
- 
- 		mdst = br_mdb_get(br, skb, vid);
- 		if ((mdst || BR_INPUT_SKB_CB_MROUTERS_ONLY(skb)) &&
--		    br_multicast_querier_exists(br, eth_hdr(skb), mdst))
-+		    br_multicast_querier_exists(br, eth_hdr(skb), mdst, vid))
- 			br_multicast_flood(mdst, skb, false, true);
- 		else
- 			br_flood(br, skb, BR_PKT_MULTICAST, false, true);
-diff --git a/net/bridge/br_input.c b/net/bridge/br_input.c
-index 222285d9dae2..03e445af6c1f 100644
---- a/net/bridge/br_input.c
-+++ b/net/bridge/br_input.c
-@@ -130,7 +130,7 @@ int br_handle_frame_finish(struct net *net, struct sock *sk, struct sk_buff *skb
- 	case BR_PKT_MULTICAST:
- 		mdst = br_mdb_get(br, skb, vid);
- 		if ((mdst || BR_INPUT_SKB_CB_MROUTERS_ONLY(skb)) &&
--		    br_multicast_querier_exists(br, eth_hdr(skb), mdst)) {
-+		    br_multicast_querier_exists(br, eth_hdr(skb), mdst, vid)) {
- 			if ((mdst && mdst->host_joined) ||
- 			    br_multicast_is_router(br)) {
- 				local_rcv = true;
-diff --git a/net/bridge/br_multicast.c b/net/bridge/br_multicast.c
-index 257ac4e25f6d..b4fac25101e4 100644
---- a/net/bridge/br_multicast.c
-+++ b/net/bridge/br_multicast.c
-@@ -48,8 +48,11 @@ static const struct rhashtable_params br_sg_port_rht_params = {
- 	.automatic_shrinking = true,
- };
- 
-+static void br_ip4_multicast_query_expired(struct timer_list *t);
-+static void br_ip4_multicast_querier_expired(struct timer_list *t);
- static void br_multicast_start_querier(struct net_bridge *br,
--				       struct bridge_mcast_own_query *query);
-+				       struct bridge_mcast_own_query *query,
-+				       u16 vid);
- static void br_multicast_add_router(struct net_bridge *br,
- 				    struct net_bridge_port *port);
- static void br_ip4_multicast_leave_group(struct net_bridge *br,
-@@ -87,6 +90,112 @@ br_sg_port_find(struct net_bridge *br,
- 				      br_sg_port_rht_params);
- }
- 
-+static void br_mcast_del_other_query(struct bridge_mcast_other_query *query)
-+{
-+	del_timer_sync(&query->timer);
-+	list_del(&query->list);
-+	kfree(query);
-+}
-+
-+static struct bridge_mcast_other_query *
-+br_mcast_add_other_query(struct list_head *list, u16 vid,
-+			 void (*callback)(struct timer_list *t))
-+{
-+	struct bridge_mcast_other_query *query;
-+
-+	query = kzalloc(sizeof(*query), GFP_KERNEL);
-+	if (!query)
-+		return NULL;
-+
-+	query->vid = vid;
-+	timer_setup(&query->timer, callback, 0);
-+
-+	list_add(&query->list, list);
-+
-+	return query;
-+}
-+
-+static void br_mcast_del_own_query(struct bridge_mcast_own_query *query)
-+{
-+	del_timer_sync(&query->timer);
-+	list_del(&query->list);
-+	kfree(query);
-+}
-+
-+static struct bridge_mcast_own_query *
-+br_mcast_add_own_query(struct list_head *list, u16 vid,
-+		       void (*callback)(struct timer_list *t))
-+{
-+	struct bridge_mcast_own_query *query;
-+
-+	query = kzalloc(sizeof(*query), GFP_KERNEL);
-+	if (!query)
-+		return NULL;
-+
-+	query->vid = vid;
-+	timer_setup(&query->timer, callback, 0);
-+
-+	list_add(&query->list, list);
-+
-+	return query;
-+}
-+
-+static void br_mcast_add_queries(struct net_bridge *br, u16 vid)
-+{
-+	struct bridge_mcast_other_query *other;
-+	struct bridge_mcast_own_query *own;
-+
-+	own = br_mcast_find_own_query(&br->ip4_own_queries, vid);
-+	if (!own) {
-+		own = br_mcast_add_own_query(&br->ip4_own_queries, vid,
-+					     br_ip4_multicast_query_expired);
-+		own->ip4 = true;
-+		own->br = br;
-+	}
-+
-+	other = br_mcast_find_other_query(&br->ip4_other_queries, vid);
-+	if (!other) {
-+		other = br_mcast_add_other_query(&br->ip4_other_queries, vid,
-+						 br_ip4_multicast_querier_expired);
-+		other->br = br;
-+	}
-+}
-+
-+struct bridge_mcast_own_query *
-+br_mcast_find_own_query(struct list_head *list, u16 vid)
-+{
-+	struct bridge_mcast_own_query *query = NULL;
-+
-+	list_for_each_entry(query, list, list)
-+		if (query->vid == vid)
-+			return query;
-+
-+	return NULL;
-+}
-+
-+struct bridge_mcast_other_query *
-+br_mcast_find_other_query(struct list_head *list, u16 vid)
-+{
-+	struct bridge_mcast_other_query *query = NULL;
-+
-+	list_for_each_entry(query, list, list)
-+		if (query->vid == vid)
-+			return query;
-+
-+	return NULL;
-+}
-+
-+bool br_mcast_exist_own_query(struct net_bridge *br)
-+{
-+	struct bridge_mcast_own_query *query = NULL;
-+
-+	list_for_each_entry(query, &br->ip4_own_queries, list)
-+		if (query->enabled)
-+			return true;
-+
-+	return false;
-+}
-+
- static struct net_bridge_mdb_entry *br_mdb_ip_get_rcu(struct net_bridge *br,
- 						      struct br_ip *dst)
- {
-@@ -688,7 +797,8 @@ static struct sk_buff *br_ip4_multicast_alloc_query(struct net_bridge *br,
- 						    __be32 ip_dst, __be32 group,
- 						    bool with_srcs, bool over_lmqt,
- 						    u8 sflag, u8 *igmp_type,
--						    bool *need_rexmit)
-+						    bool *need_rexmit,
-+						    u16 vid)
- {
- 	struct net_bridge_port *p = pg ? pg->key.port : NULL;
- 	struct net_bridge_group_src *ent;
-@@ -724,6 +834,9 @@ static struct sk_buff *br_ip4_multicast_alloc_query(struct net_bridge *br,
- 	}
- 
- 	pkt_size = sizeof(*eth) + sizeof(*iph) + 4 + igmp_hdr_size;
-+	if (br_vlan_enabled(br->dev) && vid != 0)
-+		pkt_size += 4;
-+
- 	if ((p && pkt_size > p->dev->mtu) ||
- 	    pkt_size > br->dev->mtu)
- 		return NULL;
-@@ -732,6 +845,9 @@ static struct sk_buff *br_ip4_multicast_alloc_query(struct net_bridge *br,
- 	if (!skb)
- 		goto out;
- 
-+	if (br_vlan_enabled(br->dev) && vid != 0)
-+		__vlan_hwaccel_put_tag(skb, htons(ETH_P_8021Q), vid);
-+
- 	skb->protocol = htons(ETH_P_IP);
- 
- 	skb_reset_mac_header(skb);
-@@ -1008,7 +1124,7 @@ static struct sk_buff *br_multicast_alloc_query(struct net_bridge *br,
- 						    ip4_dst, group->dst.ip4,
- 						    with_srcs, over_lmqt,
- 						    sflag, igmp_type,
--						    need_rexmit);
-+						    need_rexmit, group->vid);
- #if IS_ENABLED(CONFIG_IPV6)
- 	case htons(ETH_P_IPV6): {
- 		struct in6_addr ip6_dst;
-@@ -1398,7 +1514,7 @@ static void br_multicast_querier_expired(struct net_bridge *br,
- 	if (!netif_running(br->dev) || !br_opt_get(br, BROPT_MULTICAST_ENABLED))
- 		goto out;
- 
--	br_multicast_start_querier(br, query);
-+	br_multicast_start_querier(br, query, query->vid);
- 
- out:
- 	spin_unlock(&br->multicast_lock);
-@@ -1406,9 +1522,14 @@ static void br_multicast_querier_expired(struct net_bridge *br,
- 
- static void br_ip4_multicast_querier_expired(struct timer_list *t)
- {
--	struct net_bridge *br = from_timer(br, t, ip4_other_query.timer);
-+	struct bridge_mcast_other_query *other_query =
-+		from_timer(other_query, t, timer);
-+	struct net_bridge *br = other_query->br;
-+	struct bridge_mcast_own_query *query;
- 
--	br_multicast_querier_expired(br, &br->ip4_own_query);
-+	list_for_each_entry(query, &br->ip4_own_queries, list)
-+		if (query->enabled && query->vid == other_query->vid)
-+			br_multicast_querier_expired(br, query);
- }
- 
- #if IS_ENABLED(CONFIG_IPV6)
-@@ -1477,19 +1598,22 @@ static void br_multicast_send_query(struct net_bridge *br,
- 				    struct bridge_mcast_own_query *own_query)
- {
- 	struct bridge_mcast_other_query *other_query = NULL;
-+	struct net_bridge_vlan_group *vg;
- 	struct br_ip br_group;
- 	unsigned long time;
- 
- 	if (!netif_running(br->dev) ||
--	    !br_opt_get(br, BROPT_MULTICAST_ENABLED) ||
--	    !br_opt_get(br, BROPT_MULTICAST_QUERIER))
-+	    !br_opt_get(br, BROPT_MULTICAST_ENABLED))
- 		return;
- 
--	memset(&br_group.dst, 0, sizeof(br_group.dst));
-+	if (!own_query->enabled)
-+		return;
- 
--	if (port ? (own_query == &port->ip4_own_query) :
--		   (own_query == &br->ip4_own_query)) {
--		other_query = &br->ip4_other_query;
-+	memset(&br_group, 0, sizeof(br_group));
-+
-+	if (own_query->ip4) {
-+		other_query = br_mcast_find_other_query(&br->ip4_other_queries,
-+							own_query->vid);
- 		br_group.proto = htons(ETH_P_IP);
- #if IS_ENABLED(CONFIG_IPV6)
- 	} else {
-@@ -1501,6 +1625,12 @@ static void br_multicast_send_query(struct net_bridge *br,
- 	if (!other_query || timer_pending(&other_query->timer))
- 		return;
- 
-+	br_group.vid = own_query->vid;
-+
-+	vg =  port ? nbp_vlan_group(port) : br_vlan_group(br);
-+	if (vg->pvid == own_query->vid)
-+		br_group.vid = 0;
-+
- 	__br_multicast_send_query(br, port, NULL, NULL, &br_group, false, 0,
- 				  NULL);
- 
-@@ -1533,9 +1663,10 @@ br_multicast_port_query_expired(struct net_bridge_port *port,
- 
- static void br_ip4_multicast_port_query_expired(struct timer_list *t)
- {
--	struct net_bridge_port *port = from_timer(port, t, ip4_own_query.timer);
-+	struct bridge_mcast_own_query *query = from_timer(query, t, timer);
-+	struct net_bridge_port *port = query->port;
- 
--	br_multicast_port_query_expired(port, &port->ip4_own_query);
-+	br_multicast_port_query_expired(port, query);
- }
- 
- #if IS_ENABLED(CONFIG_IPV6)
-@@ -1551,17 +1682,23 @@ static void br_multicast_port_group_rexmit(struct timer_list *t)
- {
- 	struct net_bridge_port_group *pg = from_timer(pg, t, rexmit_timer);
- 	struct bridge_mcast_other_query *other_query = NULL;
-+	struct bridge_mcast_own_query *own_query = NULL;
- 	struct net_bridge *br = pg->key.port->br;
-+	u16 vid = pg->key.addr.vid;
- 	bool need_rexmit = false;
- 
- 	spin_lock(&br->multicast_lock);
-+	own_query = br_mcast_find_own_query(&pg->key.port->ip4_own_queries,
-+					    vid);
-+
- 	if (!netif_running(br->dev) || hlist_unhashed(&pg->mglist) ||
- 	    !br_opt_get(br, BROPT_MULTICAST_ENABLED) ||
--	    !br_opt_get(br, BROPT_MULTICAST_QUERIER))
-+	    !own_query || !own_query->enabled)
- 		goto out;
- 
- 	if (pg->key.addr.proto == htons(ETH_P_IP))
--		other_query = &br->ip4_other_query;
-+		other_query = br_mcast_find_other_query(&br->ip4_other_queries,
-+							vid);
- #if IS_ENABLED(CONFIG_IPV6)
- 	else
- 		other_query = &br->ip6_other_query;
-@@ -1603,8 +1740,7 @@ int br_multicast_add_port(struct net_bridge_port *port)
- 
- 	timer_setup(&port->multicast_router_timer,
- 		    br_multicast_router_expired, 0);
--	timer_setup(&port->ip4_own_query.timer,
--		    br_ip4_multicast_port_query_expired, 0);
-+	INIT_LIST_HEAD(&port->ip4_own_queries);
- #if IS_ENABLED(CONFIG_IPV6)
- 	timer_setup(&port->ip6_own_query.timer,
- 		    br_ip6_multicast_port_query_expired, 0);
-@@ -1621,6 +1757,7 @@ int br_multicast_add_port(struct net_bridge_port *port)
- 
- void br_multicast_del_port(struct net_bridge_port *port)
- {
-+	struct bridge_mcast_own_query *query, *tmp;
- 	struct net_bridge *br = port->br;
- 	struct net_bridge_port_group *pg;
- 	HLIST_HEAD(deleted_head);
-@@ -1635,6 +1772,9 @@ void br_multicast_del_port(struct net_bridge_port *port)
- 	br_multicast_gc(&deleted_head);
- 	del_timer_sync(&port->multicast_router_timer);
- 	free_percpu(port->mcast_stats);
-+
-+	list_for_each_entry_safe(query, tmp, &port->ip4_own_queries, list)
-+		br_mcast_del_own_query(query);
- }
- 
- static void br_multicast_enable(struct bridge_mcast_own_query *query)
-@@ -1646,14 +1786,49 @@ static void br_multicast_enable(struct bridge_mcast_own_query *query)
- 		mod_timer(&query->timer, jiffies);
- }
- 
-+static void br_multicast_disable(struct bridge_mcast_own_query *query)
-+{
-+	del_timer_sync(&query->timer);
-+}
-+
- static void __br_multicast_enable_port(struct net_bridge_port *port)
- {
-+	struct bridge_mcast_own_query *query;
- 	struct net_bridge *br = port->br;
- 
- 	if (!br_opt_get(br, BROPT_MULTICAST_ENABLED) || !netif_running(br->dev))
- 		return;
- 
--	br_multicast_enable(&port->ip4_own_query);
-+	list_for_each_entry(query, &br->ip4_own_queries, list) {
-+		struct bridge_mcast_own_query *port_query;
-+		struct net_bridge_vlan_group *vg;
-+
-+		if (!query->enabled)
-+			continue;
-+
-+		if (br_vlan_enabled(br->dev)) {
-+			vg = nbp_vlan_group(port);
-+			if (!vg || (vg && !br_vlan_find(vg, query->vid)))
-+				continue;
-+		}
-+
-+		port_query = br_mcast_find_own_query(&port->ip4_own_queries,
-+						     query->vid);
-+		if (!port_query) {
-+			port_query = br_mcast_add_own_query(&port->ip4_own_queries,
-+							    query->vid,
-+							    br_ip4_multicast_port_query_expired);
-+			if (!port_query)
-+				continue;
-+
-+			port_query->port = port;
-+		}
-+
-+		if (query->ip4) {
-+			port_query->ip4 = true;
-+			br_multicast_enable(port_query);
-+		}
-+	}
- #if IS_ENABLED(CONFIG_IPV6)
- 	br_multicast_enable(&port->ip6_own_query);
- #endif
-@@ -1673,6 +1848,7 @@ void br_multicast_enable_port(struct net_bridge_port *port)
- 
- void br_multicast_disable_port(struct net_bridge_port *port)
- {
-+	struct bridge_mcast_own_query *query;
- 	struct net_bridge *br = port->br;
- 	struct net_bridge_port_group *pg;
- 	struct hlist_node *n;
-@@ -1685,7 +1861,8 @@ void br_multicast_disable_port(struct net_bridge_port *port)
- 	__del_port_router(port);
- 
- 	del_timer(&port->multicast_router_timer);
--	del_timer(&port->ip4_own_query.timer);
-+	list_for_each_entry(query, &port->ip4_own_queries, list)
-+		del_timer(&query->timer);
- #if IS_ENABLED(CONFIG_IPV6)
- 	del_timer(&port->ip6_own_query.timer);
- #endif
-@@ -1717,17 +1894,23 @@ static void __grp_src_mod_timer(struct net_bridge_group_src *src,
- static void __grp_src_query_marked_and_rexmit(struct net_bridge_port_group *pg)
- {
- 	struct bridge_mcast_other_query *other_query = NULL;
-+	struct bridge_mcast_own_query *own_query = NULL;
- 	struct net_bridge *br = pg->key.port->br;
- 	u32 lmqc = br->multicast_last_member_count;
- 	unsigned long lmqt, lmi, now = jiffies;
- 	struct net_bridge_group_src *ent;
-+	u16 vid = pg->key.addr.vid;
-+
-+	own_query = br_mcast_find_own_query(&pg->key.port->ip4_own_queries,
-+					    vid);
- 
- 	if (!netif_running(br->dev) ||
- 	    !br_opt_get(br, BROPT_MULTICAST_ENABLED))
- 		return;
- 
- 	if (pg->key.addr.proto == htons(ETH_P_IP))
--		other_query = &br->ip4_other_query;
-+		other_query = br_mcast_find_other_query(&br->ip4_other_queries,
-+							vid);
- #if IS_ENABLED(CONFIG_IPV6)
- 	else
- 		other_query = &br->ip6_other_query;
-@@ -1738,7 +1921,7 @@ static void __grp_src_query_marked_and_rexmit(struct net_bridge_port_group *pg)
- 		if (ent->flags & BR_SGRP_F_SEND) {
- 			ent->flags &= ~BR_SGRP_F_SEND;
- 			if (ent->timer.expires > lmqt) {
--				if (br_opt_get(br, BROPT_MULTICAST_QUERIER) &&
-+				if (own_query && own_query->enabled &&
- 				    other_query &&
- 				    !timer_pending(&other_query->timer))
- 					ent->src_query_rexmit_cnt = lmqc;
-@@ -1747,7 +1930,7 @@ static void __grp_src_query_marked_and_rexmit(struct net_bridge_port_group *pg)
- 		}
- 	}
- 
--	if (!br_opt_get(br, BROPT_MULTICAST_QUERIER) ||
-+	if (!own_query || !own_query->enabled ||
- 	    !other_query || timer_pending(&other_query->timer))
- 		return;
- 
-@@ -1763,21 +1946,27 @@ static void __grp_src_query_marked_and_rexmit(struct net_bridge_port_group *pg)
- static void __grp_send_query_and_rexmit(struct net_bridge_port_group *pg)
- {
- 	struct bridge_mcast_other_query *other_query = NULL;
-+	struct bridge_mcast_own_query *own_query = NULL;
- 	struct net_bridge *br = pg->key.port->br;
- 	unsigned long now = jiffies, lmi;
-+	u16 vid = pg->key.addr.vid;
- 
- 	if (!netif_running(br->dev) ||
- 	    !br_opt_get(br, BROPT_MULTICAST_ENABLED))
- 		return;
- 
-+	own_query = br_mcast_find_own_query(&pg->key.port->ip4_own_queries,
-+					    vid);
-+
- 	if (pg->key.addr.proto == htons(ETH_P_IP))
--		other_query = &br->ip4_other_query;
-+		other_query = br_mcast_find_other_query(&br->ip4_other_queries,
-+							vid);
- #if IS_ENABLED(CONFIG_IPV6)
- 	else
- 		other_query = &br->ip6_other_query;
- #endif
- 
--	if (br_opt_get(br, BROPT_MULTICAST_QUERIER) &&
-+	if (own_query && own_query->enabled &&
- 	    other_query && !timer_pending(&other_query->timer)) {
- 		lmi = now + br->multicast_last_member_interval;
- 		pg->grp_query_rexmit_cnt = br->multicast_last_member_count - 1;
-@@ -2484,10 +2673,12 @@ static int br_ip6_multicast_mld2_report(struct net_bridge *br,
- 
- static bool br_ip4_multicast_select_querier(struct net_bridge *br,
- 					    struct net_bridge_port *port,
--					    __be32 saddr)
-+					    __be32 saddr,
-+					    struct bridge_mcast_own_query *own,
-+					    struct bridge_mcast_other_query *other)
- {
--	if (!timer_pending(&br->ip4_own_query.timer) &&
--	    !timer_pending(&br->ip4_other_query.timer))
-+	if (own && !timer_pending(&own->timer) &&
-+	    !timer_pending(&other->timer))
- 		goto update;
- 
- 	if (!br->ip4_querier.addr.src.ip4)
-@@ -2533,11 +2724,14 @@ static bool br_ip6_multicast_select_querier(struct net_bridge *br,
- 
- static bool br_multicast_select_querier(struct net_bridge *br,
- 					struct net_bridge_port *port,
--					struct br_ip *saddr)
-+					struct br_ip *saddr,
-+					struct bridge_mcast_own_query *query,
-+					struct bridge_mcast_other_query *other_query)
- {
- 	switch (saddr->proto) {
- 	case htons(ETH_P_IP):
--		return br_ip4_multicast_select_querier(br, port, saddr->src.ip4);
-+		return br_ip4_multicast_select_querier(br, port, saddr->src.ip4,
-+						       query, other_query);
- #if IS_ENABLED(CONFIG_IPV6)
- 	case htons(ETH_P_IPV6):
- 		return br_ip6_multicast_select_querier(br, port, &saddr->src.ip6);
-@@ -2628,9 +2822,10 @@ static void br_multicast_query_received(struct net_bridge *br,
- 					struct net_bridge_port *port,
- 					struct bridge_mcast_other_query *query,
- 					struct br_ip *saddr,
--					unsigned long max_delay)
-+					unsigned long max_delay,
-+					struct bridge_mcast_own_query *own_query)
- {
--	if (!br_multicast_select_querier(br, port, saddr))
-+	if (!br_multicast_select_querier(br, port, saddr, own_query, query))
- 		return;
- 
- 	br_multicast_update_query_timer(br, query, max_delay);
-@@ -2643,6 +2838,8 @@ static void br_ip4_multicast_query(struct net_bridge *br,
- 				   u16 vid)
- {
- 	unsigned int transport_len = ip_transport_len(skb);
-+	struct bridge_mcast_other_query *other_query;
-+	struct bridge_mcast_own_query *own_query;
- 	const struct iphdr *iph = ip_hdr(skb);
- 	struct igmphdr *ih = igmp_hdr(skb);
- 	struct net_bridge_mdb_entry *mp;
-@@ -2684,8 +2881,13 @@ static void br_ip4_multicast_query(struct net_bridge *br,
- 		saddr.proto = htons(ETH_P_IP);
- 		saddr.src.ip4 = iph->saddr;
- 
--		br_multicast_query_received(br, port, &br->ip4_other_query,
--					    &saddr, max_delay);
-+		br_mcast_add_queries(br, vid);
-+
-+		own_query = br_mcast_find_own_query(&br->ip4_own_queries, vid);
-+		other_query = br_mcast_find_other_query(&br->ip4_other_queries,
-+							vid);
-+		br_multicast_query_received(br, port, other_query, &saddr,
-+					    max_delay, own_query);
- 		goto out;
- 	}
- 
-@@ -2773,7 +2975,7 @@ static int br_ip6_multicast_query(struct net_bridge *br,
- 		saddr.src.ip6 = ipv6_hdr(skb)->saddr;
- 
- 		br_multicast_query_received(br, port, &br->ip6_other_query,
--					    &saddr, max_delay);
-+					    &saddr, max_delay, NULL);
- 		goto out;
- 	} else if (!group) {
- 		goto out;
-@@ -2850,7 +3052,7 @@ br_multicast_leave_group(struct net_bridge *br,
- 	if (timer_pending(&other_query->timer))
- 		goto out;
- 
--	if (br_opt_get(br, BROPT_MULTICAST_QUERIER)) {
-+	if (own_query && own_query->enabled) {
- 		__br_multicast_send_query(br, port, NULL, NULL, &mp->addr,
- 					  false, 0, NULL);
- 
-@@ -2916,21 +3118,26 @@ static void br_ip4_multicast_leave_group(struct net_bridge *br,
- 					 __u16 vid,
- 					 const unsigned char *src)
- {
--	struct br_ip br_group;
-+	struct bridge_mcast_other_query *other_query;
- 	struct bridge_mcast_own_query *own_query;
-+	struct br_ip br_group;
- 
- 	if (ipv4_is_local_multicast(group))
- 		return;
- 
--	own_query = port ? &port->ip4_own_query : &br->ip4_own_query;
-+	if (port)
-+		own_query = br_mcast_find_own_query(&port->ip4_own_queries, vid);
-+	else
-+		own_query = br_mcast_find_own_query(&br->ip4_own_queries, vid);
- 
- 	memset(&br_group, 0, sizeof(br_group));
- 	br_group.dst.ip4 = group;
- 	br_group.proto = htons(ETH_P_IP);
- 	br_group.vid = vid;
- 
--	br_multicast_leave_group(br, port, &br_group, &br->ip4_other_query,
--				 own_query, src);
-+	other_query = br_mcast_find_other_query(&br->ip4_other_queries, vid);
-+	br_multicast_leave_group(br, port, &br_group, other_query, own_query,
-+				 src);
- }
- 
- #if IS_ENABLED(CONFIG_IPV6)
-@@ -3195,9 +3402,10 @@ static void br_multicast_query_expired(struct net_bridge *br,
- 
- static void br_ip4_multicast_query_expired(struct timer_list *t)
- {
--	struct net_bridge *br = from_timer(br, t, ip4_own_query.timer);
-+	struct bridge_mcast_own_query *query = from_timer(query, t, timer);
-+	struct net_bridge *br = query->br;
- 
--	br_multicast_query_expired(br, &br->ip4_own_query, &br->ip4_querier);
-+	br_multicast_query_expired(br, query, &br->ip4_querier);
- }
- 
- #if IS_ENABLED(CONFIG_IPV6)
-@@ -3237,7 +3445,6 @@ void br_multicast_init(struct net_bridge *br)
- 	br->multicast_querier_interval = 255 * HZ;
- 	br->multicast_membership_interval = 260 * HZ;
- 
--	br->ip4_other_query.delay_time = 0;
- 	br->ip4_querier.port = NULL;
- 	br->multicast_igmp_version = 2;
- #if IS_ENABLED(CONFIG_IPV6)
-@@ -3251,10 +3458,8 @@ void br_multicast_init(struct net_bridge *br)
- 	spin_lock_init(&br->multicast_lock);
- 	timer_setup(&br->multicast_router_timer,
- 		    br_multicast_local_router_expired, 0);
--	timer_setup(&br->ip4_other_query.timer,
--		    br_ip4_multicast_querier_expired, 0);
--	timer_setup(&br->ip4_own_query.timer,
--		    br_ip4_multicast_query_expired, 0);
-+	INIT_LIST_HEAD(&br->ip4_other_queries);
-+	INIT_LIST_HEAD(&br->ip4_own_queries);
- #if IS_ENABLED(CONFIG_IPV6)
- 	timer_setup(&br->ip6_other_query.timer,
- 		    br_ip6_multicast_querier_expired, 0);
-@@ -3341,7 +3546,10 @@ static void __br_multicast_open(struct net_bridge *br,
- 
- void br_multicast_open(struct net_bridge *br)
- {
--	__br_multicast_open(br, &br->ip4_own_query);
-+	struct bridge_mcast_own_query *query;
-+
-+	list_for_each_entry(query, &br->ip4_own_queries, list)
-+		__br_multicast_open(br, query);
- #if IS_ENABLED(CONFIG_IPV6)
- 	__br_multicast_open(br, &br->ip6_own_query);
- #endif
-@@ -3349,9 +3557,14 @@ void br_multicast_open(struct net_bridge *br)
- 
- void br_multicast_stop(struct net_bridge *br)
- {
-+	struct bridge_mcast_other_query *other_query;
-+	struct bridge_mcast_own_query *query;
-+
- 	del_timer_sync(&br->multicast_router_timer);
--	del_timer_sync(&br->ip4_other_query.timer);
--	del_timer_sync(&br->ip4_own_query.timer);
-+	list_for_each_entry(other_query, &br->ip4_other_queries, list)
-+		del_timer_sync(&other_query->timer);
-+	list_for_each_entry(query, &br->ip4_own_queries, list)
-+		del_timer_sync(&query->timer);
- #if IS_ENABLED(CONFIG_IPV6)
- 	del_timer_sync(&br->ip6_other_query.timer);
- 	del_timer_sync(&br->ip6_own_query.timer);
-@@ -3461,11 +3674,20 @@ int br_multicast_set_port_router(struct net_bridge_port *p, unsigned long val)
- }
- 
- static void br_multicast_start_querier(struct net_bridge *br,
--				       struct bridge_mcast_own_query *query)
-+				       struct bridge_mcast_own_query *query,
-+				       u16 vid)
- {
-+	struct bridge_mcast_own_query *port_query;
-+	struct net_bridge_vlan_group *vg;
- 	struct net_bridge_port *port;
- 
--	__br_multicast_open(br, query);
-+	if (br_vlan_enabled(br->dev)) {
-+		vg = br_vlan_group(br);
-+		if (vg && br_vlan_find(vg, vid))
-+			__br_multicast_open(br, query);
-+	} else {
-+		__br_multicast_open(br, query);
-+	}
- 
- 	rcu_read_lock();
- 	list_for_each_entry_rcu(port, &br->port_list, list) {
-@@ -3473,11 +3695,66 @@ static void br_multicast_start_querier(struct net_bridge *br,
- 		    port->state == BR_STATE_BLOCKING)
- 			continue;
- 
--		if (query == &br->ip4_own_query)
--			br_multicast_enable(&port->ip4_own_query);
-+		if (br_vlan_enabled(br->dev)) {
-+			vg = nbp_vlan_group(port);
-+			if (!vg || (vg && !br_vlan_find(vg, vid)))
-+				continue;
-+		}
-+
-+		port_query = br_mcast_find_own_query(&port->ip4_own_queries,
-+						     vid);
-+		if (!port_query)
-+			continue;
-+
-+		port_query->enabled = true;
-+
-+		if (query->ip4) {
-+			port_query->ip4 = true;
-+			br_multicast_enable(port_query);
-+		}
- #if IS_ENABLED(CONFIG_IPV6)
--		else
-+		else {
- 			br_multicast_enable(&port->ip6_own_query);
-+		}
-+#endif
-+	}
-+	rcu_read_unlock();
-+}
-+
-+static void br_multicast_stop_querier(struct net_bridge *br,
-+				      struct bridge_mcast_own_query *query,
-+				      u16 vid)
-+{
-+	struct bridge_mcast_own_query *port_query;
-+	struct net_bridge_vlan_group *vg;
-+	struct net_bridge_port *port;
-+
-+	query->enabled = false;
-+
-+	rcu_read_lock();
-+	list_for_each_entry_rcu(port, &br->port_list, list) {
-+		if (port->state == BR_STATE_DISABLED ||
-+		    port->state == BR_STATE_BLOCKING)
-+			continue;
-+
-+		if (br_vlan_enabled(br->dev)) {
-+			vg = nbp_vlan_group(port);
-+			if (!vg || (vg && !br_vlan_find(vg, vid)))
-+				continue;
-+		}
-+
-+		port_query = br_mcast_find_own_query(&port->ip4_own_queries,
-+						     vid);
-+		if (!port_query)
-+			continue;
-+
-+		port_query->enabled = false;
-+
-+		if (query->ip4)
-+			br_multicast_disable(port_query);
-+#if IS_ENABLED(CONFIG_IPV6)
-+		else
-+			br_multicast_disable(&port->ip6_own_query);
- #endif
- 	}
- 	rcu_read_unlock();
-@@ -3553,32 +3830,55 @@ bool br_multicast_router(const struct net_device *dev)
- }
- EXPORT_SYMBOL_GPL(br_multicast_router);
- 
--int br_multicast_set_querier(struct net_bridge *br, unsigned long val)
-+int br_multicast_set_querier(struct net_bridge *br, unsigned long val, u16 vid)
- {
-+	struct bridge_mcast_other_query *other_query;
-+	struct bridge_mcast_own_query *query;
-+	struct net_bridge_vlan_group *vg;
- 	unsigned long max_delay;
- 
- 	val = !!val;
- 
-+	if (vid == 0) {
-+		vg = br_vlan_group(br);
-+		if (vg)
-+			vid = vg->pvid;
-+	}
-+
- 	spin_lock_bh(&br->multicast_lock);
--	if (br_opt_get(br, BROPT_MULTICAST_QUERIER) == val)
-+	query = br_mcast_find_own_query(&br->ip4_own_queries, vid);
-+	if (!query) {
-+		if (br_vlan_enabled(br->dev))
-+			goto unlock;
-+
-+		br_mcast_add_queries(br, vid);
-+	}
-+
-+	other_query = br_mcast_find_other_query(&br->ip4_other_queries, vid);
-+	if (!other_query)
- 		goto unlock;
- 
--	br_opt_toggle(br, BROPT_MULTICAST_QUERIER, !!val);
--	if (!val)
-+	if (!val && query) {
-+		br_multicast_stop_querier(br, query, vid);
- 		goto unlock;
-+	}
- 
--	max_delay = br->multicast_query_response_interval;
-+	if (val & query->enabled)
-+		goto unlock;
- 
--	if (!timer_pending(&br->ip4_other_query.timer))
--		br->ip4_other_query.delay_time = jiffies + max_delay;
-+	query->enabled = true;
- 
--	br_multicast_start_querier(br, &br->ip4_own_query);
-+	max_delay = br->multicast_query_response_interval;
-+	if (!timer_pending(&other_query->timer))
-+		other_query->delay_time = jiffies + max_delay;
-+
-+	br_multicast_start_querier(br, query, vid);
- 
- #if IS_ENABLED(CONFIG_IPV6)
- 	if (!timer_pending(&br->ip6_other_query.timer))
- 		br->ip6_other_query.delay_time = jiffies + max_delay;
- 
--	br_multicast_start_querier(br, &br->ip6_own_query);
-+	br_multicast_start_querier(br, &br->ip6_own_query, vid);
- #endif
- 
- unlock:
-@@ -3587,6 +3887,79 @@ int br_multicast_set_querier(struct net_bridge *br, unsigned long val)
- 	return 0;
- }
- 
-+void br_multicast_vlan_add(struct net_bridge_vlan *v)
-+{
-+	struct bridge_mcast_own_query *query, *port_query;
-+	struct net_bridge_port *p;
-+	struct net_bridge *br;
-+
-+	if (br_vlan_is_master(v)) {
-+		br_mcast_add_queries(v->br, v->vid);
-+		return;
-+	}
-+
-+	p = v->port;
-+	br = p->br;
-+
-+	query = br_mcast_find_own_query(&br->ip4_own_queries, v->vid);
-+
-+	port_query = br_mcast_add_own_query(&p->ip4_own_queries,
-+					    v->vid,
-+					    br_ip4_multicast_port_query_expired);
-+	if (!port_query)
-+		return;
-+
-+	port_query->port = p;
-+	port_query->ip4 = true;
-+
-+	if (query->enabled) {
-+		port_query->enabled = true;
-+		br_multicast_enable(port_query);
-+	}
-+}
-+
-+void br_multicast_vlan_del(struct net_bridge_vlan *v)
-+{
-+	struct bridge_mcast_other_query *other_query, *other_tmp;
-+	struct bridge_mcast_own_query *query, *tmp;
-+	struct net_bridge_port *p;
-+	struct net_bridge *br;
-+
-+	if (br_vlan_is_master(v)) {
-+		br = v->br;
-+
-+		list_for_each_entry_safe(other_query, other_tmp,
-+					 &br->ip4_other_queries, list)
-+			if (other_query->vid == v->vid)
-+				br_mcast_del_other_query(other_query);
-+
-+		list_for_each_entry_safe(query, tmp, &br->ip4_own_queries, list)
-+			if (query->vid == v->vid)
-+				br_mcast_del_own_query(query);
-+
-+		return;
-+	}
-+
-+	p = v->port;
-+
-+	list_for_each_entry_safe(query, tmp, &p->ip4_own_queries, list) {
-+		if (query->vid == v->vid)
-+			br_mcast_del_own_query(query);
-+	}
-+}
-+
-+void br_multicast_vlan_toggle(struct net_bridge *br, bool on)
-+{
-+	struct bridge_mcast_own_query *query;
-+
-+	list_for_each_entry(query, &br->ip4_own_queries, list) {
-+		if (!on)
-+			br_multicast_stop_querier(br, query, query->vid);
-+		else
-+			br_multicast_start_querier(br, query, query->vid);
-+	}
-+}
-+
- int br_multicast_set_igmp_version(struct net_bridge *br, unsigned long val)
- {
- 	/* Currently we support only version 2 and 3 */
-@@ -3711,7 +4084,7 @@ bool br_multicast_has_querier_anywhere(struct net_device *dev, int proto)
- 	memset(&eth, 0, sizeof(eth));
- 	eth.h_proto = htons(proto);
- 
--	ret = br_multicast_querier_exists(br, &eth, NULL);
-+	ret = br_multicast_any_querier_exists(br, &eth);
- 
- unlock:
- 	rcu_read_unlock();
-@@ -3746,7 +4119,7 @@ bool br_multicast_has_querier_adjacent(struct net_device *dev, int proto)
- 
- 	switch (proto) {
- 	case ETH_P_IP:
--		if (!timer_pending(&br->ip4_other_query.timer) ||
-+		if (!br_multicast_any_querier_adjacent(br) ||
- 		    rcu_dereference(br->ip4_querier.port) == port)
- 			goto unlock;
- 		break;
-diff --git a/net/bridge/br_netlink.c b/net/bridge/br_netlink.c
-index 49700ce0e919..d32f4c185364 100644
---- a/net/bridge/br_netlink.c
-+++ b/net/bridge/br_netlink.c
-@@ -1186,6 +1186,7 @@ static const struct nla_policy br_policy[IFLA_BR_MAX + 1] = {
- 	[IFLA_BR_VLAN_STATS_PER_PORT] = { .type = NLA_U8 },
- 	[IFLA_BR_MULTI_BOOLOPT] =
- 		NLA_POLICY_EXACT_LEN(sizeof(struct br_boolopt_multi)),
-+	[IFLA_BR_MCAST_QUERIER_VID] = { .type = NLA_U16 },
- };
- 
- static int br_changelink(struct net_device *brdev, struct nlattr *tb[],
-@@ -1193,6 +1194,7 @@ static int br_changelink(struct net_device *brdev, struct nlattr *tb[],
- 			 struct netlink_ext_ack *extack)
- {
- 	struct net_bridge *br = netdev_priv(brdev);
-+	u16 vid = 0;
- 	int err;
- 
- 	if (!data)
-@@ -1204,6 +1206,9 @@ static int br_changelink(struct net_device *brdev, struct nlattr *tb[],
- 			return err;
- 	}
- 
-+	if (data[IFLA_BR_MCAST_QUERIER_VID])
-+		vid = nla_get_u16(data[IFLA_BR_MCAST_QUERIER_VID]);
-+
- 	if (data[IFLA_BR_HELLO_TIME]) {
- 		err = br_set_hello_time(br, nla_get_u32(data[IFLA_BR_HELLO_TIME]));
- 		if (err)
-@@ -1333,7 +1338,7 @@ static int br_changelink(struct net_device *brdev, struct nlattr *tb[],
- 	if (data[IFLA_BR_MCAST_QUERIER]) {
- 		u8 mcast_querier = nla_get_u8(data[IFLA_BR_MCAST_QUERIER]);
- 
--		err = br_multicast_set_querier(br, mcast_querier);
-+		err = br_multicast_set_querier(br, mcast_querier, vid);
- 		if (err)
- 			return err;
- 	}
-@@ -1596,7 +1601,7 @@ static int br_fill_info(struct sk_buff *skb, const struct net_device *brdev)
- 	    nla_put_u8(skb, IFLA_BR_MCAST_QUERY_USE_IFADDR,
- 		       br_opt_get(br, BROPT_MULTICAST_QUERY_USE_IFADDR)) ||
- 	    nla_put_u8(skb, IFLA_BR_MCAST_QUERIER,
--		       br_opt_get(br, BROPT_MULTICAST_QUERIER)) ||
-+		       br_mcast_exist_own_query(br)) ||
- 	    nla_put_u8(skb, IFLA_BR_MCAST_STATS_ENABLED,
- 		       br_opt_get(br, BROPT_MULTICAST_STATS_ENABLED)) ||
- 	    nla_put_u32(skb, IFLA_BR_MCAST_HASH_ELASTICITY, RHT_ELASTICITY) ||
-diff --git a/net/bridge/br_private.h b/net/bridge/br_private.h
-index d62c6e1af64a..84f597f542b1 100644
---- a/net/bridge/br_private.h
-+++ b/net/bridge/br_private.h
-@@ -66,14 +66,24 @@ struct mac_addr {
- #ifdef CONFIG_BRIDGE_IGMP_SNOOPING
- /* our own querier */
- struct bridge_mcast_own_query {
-+	struct list_head	list;
- 	struct timer_list	timer;
- 	u32			startup_sent;
-+	struct net_bridge_port	*port;
-+	struct net_bridge	*br;
-+	bool			ip4;
-+	u16			vid;
-+	bool			enabled;
- };
- 
- /* other querier */
- struct bridge_mcast_other_query {
-+	struct list_head		list;
- 	struct timer_list		timer;
- 	unsigned long			delay_time;
-+	struct net_bridge		*br;
-+	bool				ip4;
-+	u16				vid;
- };
- 
- /* selected querier */
-@@ -304,7 +314,7 @@ struct net_bridge_port {
- 	struct rcu_head			rcu;
- 
- #ifdef CONFIG_BRIDGE_IGMP_SNOOPING
--	struct bridge_mcast_own_query	ip4_own_query;
-+	struct list_head		ip4_own_queries;
- #if IS_ENABLED(CONFIG_IPV6)
- 	struct bridge_mcast_own_query	ip6_own_query;
- #endif /* IS_ENABLED(CONFIG_IPV6) */
-@@ -448,8 +458,8 @@ struct net_bridge {
- 	struct hlist_head		router_list;
- 
- 	struct timer_list		multicast_router_timer;
--	struct bridge_mcast_other_query	ip4_other_query;
--	struct bridge_mcast_own_query	ip4_own_query;
-+	struct list_head		ip4_other_queries;
-+	struct list_head		ip4_own_queries;
- 	struct bridge_mcast_querier	ip4_querier;
- 	struct bridge_mcast_stats	__percpu *mcast_stats;
- #if IS_ENABLED(CONFIG_IPV6)
-@@ -788,6 +798,9 @@ int br_ioctl_deviceless_stub(struct net *net, unsigned int cmd,
- 
- /* br_multicast.c */
- #ifdef CONFIG_BRIDGE_IGMP_SNOOPING
-+void br_multicast_vlan_add(struct net_bridge_vlan *v);
-+void br_multicast_vlan_del(struct net_bridge_vlan *v);
-+void br_multicast_vlan_toggle(struct net_bridge *br, bool on);
- int br_multicast_rcv(struct net_bridge *br, struct net_bridge_port *port,
- 		     struct sk_buff *skb, u16 vid);
- struct net_bridge_mdb_entry *br_mdb_get(struct net_bridge *br,
-@@ -807,7 +820,7 @@ void br_multicast_flood(struct net_bridge_mdb_entry *mdst,
- int br_multicast_set_router(struct net_bridge *br, unsigned long val);
- int br_multicast_set_port_router(struct net_bridge_port *p, unsigned long val);
- int br_multicast_toggle(struct net_bridge *br, unsigned long val);
--int br_multicast_set_querier(struct net_bridge *br, unsigned long val);
-+int br_multicast_set_querier(struct net_bridge *br, unsigned long val, u16 vid);
- int br_multicast_set_hash_max(struct net_bridge *br, unsigned long val);
- int br_multicast_set_igmp_version(struct net_bridge *br, unsigned long val);
- #if IS_ENABLED(CONFIG_IPV6)
-@@ -846,6 +859,11 @@ void br_multicast_star_g_handle_mode(struct net_bridge_port_group *pg,
- 				     u8 filter_mode);
- void br_multicast_sg_add_exclude_ports(struct net_bridge_mdb_entry *star_mp,
- 				       struct net_bridge_port_group *sg);
-+struct bridge_mcast_other_query *
-+br_mcast_find_other_query(struct list_head *list, u16 vid);
-+struct bridge_mcast_own_query *
-+br_mcast_find_own_query(struct list_head *list, u16 vid);
-+bool br_mcast_exist_own_query(struct net_bridge *br);
- 
- static inline bool br_group_is_l2(const struct br_ip *group)
- {
-@@ -865,11 +883,15 @@ static inline bool br_multicast_is_router(struct net_bridge *br)
- static inline bool
- __br_multicast_querier_exists(struct net_bridge *br,
- 				struct bridge_mcast_other_query *querier,
--				const bool is_ipv6)
-+				const bool is_ipv6,
-+				u16 vid)
- {
-+	struct bridge_mcast_own_query *query;
- 	bool own_querier_enabled;
- 
--	if (br_opt_get(br, BROPT_MULTICAST_QUERIER)) {
-+	query = br_mcast_find_own_query(&br->ip4_own_queries, vid);
-+
-+	if (query && query->enabled) {
- 		if (is_ipv6 && !br_opt_get(br, BROPT_HAS_IPV6_ADDR))
- 			own_querier_enabled = false;
- 		else
-@@ -878,28 +900,62 @@ __br_multicast_querier_exists(struct net_bridge *br,
- 		own_querier_enabled = false;
- 	}
- 
-+	if (!querier)
-+		return own_querier_enabled;
-+
- 	return time_is_before_jiffies(querier->delay_time) &&
- 	       (own_querier_enabled || timer_pending(&querier->timer));
- }
- 
- static inline bool br_multicast_querier_exists(struct net_bridge *br,
- 					       struct ethhdr *eth,
--					       const struct net_bridge_mdb_entry *mdb)
-+					       const struct net_bridge_mdb_entry *mdb,
-+					       u16 vid)
- {
-+	struct bridge_mcast_other_query *query =
-+		br_mcast_find_other_query(&br->ip4_other_queries, vid);
-+
- 	switch (eth->h_proto) {
- 	case (htons(ETH_P_IP)):
--		return __br_multicast_querier_exists(br,
--			&br->ip4_other_query, false);
-+		return __br_multicast_querier_exists(br, query, false, vid);
- #if IS_ENABLED(CONFIG_IPV6)
- 	case (htons(ETH_P_IPV6)):
- 		return __br_multicast_querier_exists(br,
--			&br->ip6_other_query, true);
-+			&br->ip6_other_query, true, vid);
- #endif
- 	default:
- 		return !!mdb && br_group_is_l2(&mdb->addr);
- 	}
- }
- 
-+static inline bool br_multicast_any_querier_exists(struct net_bridge *br,
-+						   struct ethhdr *eth)
-+{
-+	struct bridge_mcast_other_query *query;
-+
-+	list_for_each_entry(query, &br->ip4_other_queries, list) {
-+		if (!timer_pending(&query->timer))
-+			continue;
-+
-+		if (br_multicast_querier_exists(br, eth, NULL, query->vid))
-+			return true;
-+	}
-+
-+	return false;
-+}
-+
-+static inline bool br_multicast_any_querier_adjacent(struct net_bridge *br)
-+{
-+	struct bridge_mcast_other_query *query;
-+
-+	list_for_each_entry(query, &br->ip4_other_queries, list) {
-+		if (timer_pending(&query->timer))
-+			return true;
-+	}
-+
-+	return false;
-+}
-+
- static inline bool br_multicast_is_star_g(const struct br_ip *ip)
- {
- 	switch (ip->proto) {
-@@ -1015,7 +1071,19 @@ static inline bool br_multicast_is_router(struct net_bridge *br)
- 
- static inline bool br_multicast_querier_exists(struct net_bridge *br,
- 					       struct ethhdr *eth,
--					       const struct net_bridge_mdb_entry *mdb)
-+					       const struct net_bridge_mdb_entry *mdb,
-+					       u16 vid)
-+{
-+	return false;
-+}
-+
-+static inline bool br_multicast_any_querier_exists(struct net_bridge *br,
-+						   struct ethhdr *eth)
-+{
-+	return false;
-+}
-+
-+static inline bool br_multicast_any_querier_adjacent(struct net_bridge *br)
- {
- 	return false;
- }
-diff --git a/net/bridge/br_sysfs_br.c b/net/bridge/br_sysfs_br.c
-index 7db06e3f642a..23bf6a065d78 100644
---- a/net/bridge/br_sysfs_br.c
-+++ b/net/bridge/br_sysfs_br.c
-@@ -51,6 +51,33 @@ static ssize_t store_bridge_parm(struct device *d,
- 	return err ? err : len;
- }
- 
-+static ssize_t store_bridge_parm2(struct device *d,
-+				  const char *buf, size_t len,
-+				  int (*set)(struct net_bridge *, unsigned long, u16))
-+{
-+	struct net_bridge *br = to_bridge(d);
-+	char *endp;
-+	unsigned long val;
-+	int err;
-+
-+	if (!ns_capable(dev_net(br->dev)->user_ns, CAP_NET_ADMIN))
-+		return -EPERM;
-+
-+	val = simple_strtoul(buf, &endp, 0);
-+	if (endp == buf)
-+		return -EINVAL;
-+
-+	if (!rtnl_trylock())
-+		return restart_syscall();
-+
-+	err = (*set)(br, val, 0);
-+	if (!err)
-+		netdev_state_change(br->dev);
-+	rtnl_unlock();
-+
-+	return err ? err : len;
-+}
-+
- 
- static ssize_t forward_delay_show(struct device *d,
- 				  struct device_attribute *attr, char *buf)
-@@ -404,14 +431,14 @@ static ssize_t multicast_querier_show(struct device *d,
- 				      char *buf)
- {
- 	struct net_bridge *br = to_bridge(d);
--	return sprintf(buf, "%d\n", br_opt_get(br, BROPT_MULTICAST_QUERIER));
-+	return sprintf(buf, "%d\n", br_mcast_exist_own_query(br));
- }
- 
- static ssize_t multicast_querier_store(struct device *d,
- 				       struct device_attribute *attr,
- 				       const char *buf, size_t len)
- {
--	return store_bridge_parm(d, buf, len, br_multicast_set_querier);
-+	return store_bridge_parm2(d, buf, len, br_multicast_set_querier);
- }
- static DEVICE_ATTR_RW(multicast_querier);
- 
-diff --git a/net/bridge/br_vlan.c b/net/bridge/br_vlan.c
-index 701cad646b20..2e0b544a3560 100644
---- a/net/bridge/br_vlan.c
-+++ b/net/bridge/br_vlan.c
-@@ -308,6 +308,7 @@ static int __vlan_add(struct net_bridge_vlan *v, u16 flags,
- 
- 	__vlan_add_list(v);
- 	__vlan_add_flags(v, flags);
-+	br_multicast_vlan_add(v);
- 
- 	if (p)
- 		nbp_vlan_set_vlan_dev_state(p, v->vid);
-@@ -353,6 +354,7 @@ static int __vlan_del(struct net_bridge_vlan *v)
- 		masterv = v->brvlan;
- 	}
- 
-+	br_multicast_vlan_del(v);
- 	__vlan_delete_pvid(vg, v->vid);
- 	if (p) {
- 		err = __vlan_vid_del(p->dev, p->br, v);
-@@ -827,6 +829,7 @@ int __br_vlan_filter_toggle(struct net_bridge *br, unsigned long val)
- 	br_manage_promisc(br);
- 	recalculate_group_addr(br);
- 	br_recalculate_fwd_mask(br);
-+	br_multicast_vlan_toggle(br, !!val);
- 
- 	return 0;
- }
--- 
-2.27.0
+--9jxsPFA5p3P2qPhR
+Content-Type: application/gzip
+Content-Disposition: attachment; filename=".config.gz"
+Content-Transfer-Encoding: base64
 
+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
+
+--9jxsPFA5p3P2qPhR--
