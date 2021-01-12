@@ -2,38 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 374352F2F94
-	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 13:57:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 794812F2FA7
+	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 13:58:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389332AbhALM5A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jan 2021 07:57:00 -0500
-Received: from mail.kernel.org ([198.145.29.99]:53818 "EHLO mail.kernel.org"
+        id S2404104AbhALM5o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jan 2021 07:57:44 -0500
+Received: from mail.kernel.org ([198.145.29.99]:54600 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388710AbhALM46 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 12 Jan 2021 07:56:58 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 782D62311E;
-        Tue, 12 Jan 2021 12:55:44 +0000 (UTC)
+        id S2403960AbhALM5k (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 Jan 2021 07:57:40 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id DE28523130;
+        Tue, 12 Jan 2021 12:56:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610456145;
-        bh=Ey9cdj9Qb3y4GEM57tNeEL9UWD6+5fS93Hq6+cABaTY=;
+        s=k20201202; t=1610456165;
+        bh=mxrOyx50zYnD+PXA6krjmpAE9+v/G6l9keQzUlXiBY4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ArTF6Bx69XEN2EVvMGe1KA4TAHUDvqcBF1yG+EoYrXkxSXHSa1djj03KrcNYPyg68
-         sGwjq99f7aeejpTJvmkiOa93SSYq/xhy9hxKrzAlLN3Zw2Np2glJ4VURWCWr2USV1v
-         2epdqtj3Dr+494tw2lw2/RdiT2bKgaA9Lbx1QO4bIEaYrKH35Xr3YuVw/Hl3lLXCRr
-         cAAzeWQXdVLXI7A/leTYj1UKHiz2qb3XtMj1u643hmS7iUKXbDK0kE/NhsZYFv0ghG
-         ZFGSgROZH5ksshJK7d1yStNU2Uhebn1Yo7mRjlFHrbL8qa5acgmSE23pOZrxfTSCdE
-         ij5XGo+UlvT/g==
+        b=mRHkipXskZ0uTmiq2QYMw+NWJ9VGWb8b2/eBMYYclSYFizf0xroz/qu/Ne2HtfJAT
+         iwYGJiFBvr9vkbLRUjZg/LMAO3Al2Y1FMYcWKEVgkjnTmCN8Rf1KKdhysrdscT6DZS
+         BP+mxodFMASv0mrxniggJ8KC3016gIMGEZ7iwV6aToKgpz0jtbmBex9uQzCE68s4+U
+         OhgLfe+0Xvt53d3m6F8wpIXkJqXVNYvf3rkFml8DDzoAwyzcRePM90ZSFm8mu+368R
+         Yu8R3/TvQiXnjZsWz++0XAYn8qWl6iTsSdIuNFNBzvo/eFvRO5OcSaGW8szn2RyezI
+         YPQTDzPbe0yPg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Vasily Averin <vvs@virtuozzo.com>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Sasha Levin <sashal@kernel.org>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
+Cc:     Roland Dreier <roland@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, linux-usb@vger.kernel.org,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 08/51] netfilter: ipset: fixes possible oops in mtype_resize
-Date:   Tue, 12 Jan 2021 07:54:50 -0500
-Message-Id: <20210112125534.70280-8-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.10 23/51] CDC-NCM: remove "connected" log message
+Date:   Tue, 12 Jan 2021 07:55:05 -0500
+Message-Id: <20210112125534.70280-23-sashal@kernel.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20210112125534.70280-1-sashal@kernel.org>
 References: <20210112125534.70280-1-sashal@kernel.org>
@@ -45,78 +44,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vasily Averin <vvs@virtuozzo.com>
+From: Roland Dreier <roland@kernel.org>
 
-[ Upstream commit 2b33d6ffa9e38f344418976b06057e2fc2aa9e2a ]
+[ Upstream commit 59b4a8fa27f5a895582ada1ae5034af7c94a57b5 ]
 
-currently mtype_resize() can cause oops
+The cdc_ncm driver passes network connection notifications up to
+usbnet_link_change(), which is the right place for any logging.
+Remove the netdev_info() duplicating this from the driver itself.
 
-        t = ip_set_alloc(htable_size(htable_bits));
-        if (!t) {
-                ret = -ENOMEM;
-                goto out;
-        }
-        t->hregion = ip_set_alloc(ahash_sizeof_regions(htable_bits));
+This stops devices such as my "TRENDnet USB 10/100/1G/2.5G LAN"
+(ID 20f4:e02b) adapter from spamming the kernel log with
 
-Increased htable_bits can force htable_size() to return 0.
-In own turn ip_set_alloc(0) returns not 0 but ZERO_SIZE_PTR,
-so follwoing access to t->hregion should trigger an OOPS.
+    cdc_ncm 2-2:2.0 enp0s2u2c2: network connection: connected
 
-Signed-off-by: Vasily Averin <vvs@virtuozzo.com>
-Acked-by: Jozsef Kadlecsik <kadlec@netfilter.org>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+messages every 60 msec or so.
+
+Signed-off-by: Roland Dreier <roland@kernel.org>
+Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Link: https://lore.kernel.org/r/20201224032116.2453938-1-roland@kernel.org
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/netfilter/ipset/ip_set_hash_gen.h | 22 +++++++++++++---------
- 1 file changed, 13 insertions(+), 9 deletions(-)
+ drivers/net/usb/cdc_ncm.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
-diff --git a/net/netfilter/ipset/ip_set_hash_gen.h b/net/netfilter/ipset/ip_set_hash_gen.h
-index 521e970be4028..8d4a9e0fd723f 100644
---- a/net/netfilter/ipset/ip_set_hash_gen.h
-+++ b/net/netfilter/ipset/ip_set_hash_gen.h
-@@ -644,7 +644,7 @@ mtype_resize(struct ip_set *set, bool retried)
- 	struct htype *h = set->data;
- 	struct htable *t, *orig;
- 	u8 htable_bits;
--	size_t dsize = set->dsize;
-+	size_t hsize, dsize = set->dsize;
- #ifdef IP_SET_HASH_WITH_NETS
- 	u8 flags;
- 	struct mtype_elem *tmp;
-@@ -668,14 +668,12 @@ mtype_resize(struct ip_set *set, bool retried)
- retry:
- 	ret = 0;
- 	htable_bits++;
--	if (!htable_bits) {
--		/* In case we have plenty of memory :-) */
--		pr_warn("Cannot increase the hashsize of set %s further\n",
--			set->name);
--		ret = -IPSET_ERR_HASH_FULL;
--		goto out;
--	}
--	t = ip_set_alloc(htable_size(htable_bits));
-+	if (!htable_bits)
-+		goto hbwarn;
-+	hsize = htable_size(htable_bits);
-+	if (!hsize)
-+		goto hbwarn;
-+	t = ip_set_alloc(hsize);
- 	if (!t) {
- 		ret = -ENOMEM;
- 		goto out;
-@@ -817,6 +815,12 @@ mtype_resize(struct ip_set *set, bool retried)
- 	if (ret == -EAGAIN)
- 		goto retry;
- 	goto out;
-+
-+hbwarn:
-+	/* In case we have plenty of memory :-) */
-+	pr_warn("Cannot increase the hashsize of set %s further\n", set->name);
-+	ret = -IPSET_ERR_HASH_FULL;
-+	goto out;
- }
+diff --git a/drivers/net/usb/cdc_ncm.c b/drivers/net/usb/cdc_ncm.c
+index e04f588538ccb..5dc1365dc1f9a 100644
+--- a/drivers/net/usb/cdc_ncm.c
++++ b/drivers/net/usb/cdc_ncm.c
+@@ -1863,9 +1863,6 @@ static void cdc_ncm_status(struct usbnet *dev, struct urb *urb)
+ 		 * USB_CDC_NOTIFY_NETWORK_CONNECTION notification shall be
+ 		 * sent by device after USB_CDC_NOTIFY_SPEED_CHANGE.
+ 		 */
+-		netif_info(dev, link, dev->net,
+-			   "network connection: %sconnected\n",
+-			   !!event->wValue ? "" : "dis");
+ 		usbnet_link_change(dev, !!event->wValue, 0);
+ 		break;
  
- /* Get the current number of elements and ext_size in the set  */
 -- 
 2.27.0
 
