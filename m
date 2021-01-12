@@ -2,95 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B83DA2F2437
+	by mail.lfdr.de (Postfix) with ESMTP id 3EE872F2436
 	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 01:34:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391720AbhALAZh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jan 2021 19:25:37 -0500
-Received: from mail.kernel.org ([198.145.29.99]:40208 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2404266AbhALAUv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 11 Jan 2021 19:20:51 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 3D6C222C7E;
-        Tue, 12 Jan 2021 00:20:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610410810;
-        bh=mOX3a5Y8YOSDqjJZWrAJUslNVzyGaFCsuGxTlWabxfU=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=W0w2djxkBSHi5TcZ/ZWrClIDl0pQkUG1LM5B/nfUlXT7T6BdRjEqWtQGCGpV7LjVw
-         nCoWS8PTAy9798tnO3ZowHm3s5UIsZBMufSrkqfZsrkOwaat+1tiuYPerUjeWK1CMu
-         9dqsXu8zIGzwF8jxsh9dmJBpwMh98aXMnRQh8wO+UIk+0GFJ3b7GWuz3VsLLMGihk+
-         Kgfna+0loZ8rrbrNezc+3KpInc8yD9gSzsrQ5hZwC71+RHPBY6qEnFmgLngWGhLCq+
-         kssVBOOxAIVdWkATlWni5251sYBWlnA8DJf4u/TzeB63xroPvfmK2PlfhxIOV+iIpx
-         s6HKaSJqSi1BQ==
-Received: from pdx-korg-docbuild-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-1.ci.codeaurora.org (Postfix) with ESMTP id 2E5746026B;
-        Tue, 12 Jan 2021 00:20:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S2391727AbhALAZi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jan 2021 19:25:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52236 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2404268AbhALAVj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 19:21:39 -0500
+Received: from mail-oi1-x22b.google.com (mail-oi1-x22b.google.com [IPv6:2607:f8b0:4864:20::22b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C282C061575
+        for <netdev@vger.kernel.org>; Mon, 11 Jan 2021 16:20:59 -0800 (PST)
+Received: by mail-oi1-x22b.google.com with SMTP id l200so537507oig.9
+        for <netdev@vger.kernel.org>; Mon, 11 Jan 2021 16:20:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=kNqltu1OF1hMLrUr3D3bv/ySnEJldW6xz9ogdhiNQ5E=;
+        b=RSMcpgnYQfFSELcgPUds6AOjXrYRDYDYypuze9oK3hjdMgBV6bXxGtXN/ZMmJ/U+Kg
+         ScKWthBwUbPxhPlSA6jLjxI3RvZSggwDAlOZu/mhtH+Tycdvu9afi+FBzp2ujKVMQSVk
+         Gq64+GIhftKiepY2894VAkrbUy7z98JewpIm8Cdw6y2LoW2glik3cPhMGY0pfSTe9eDr
+         Ic3Bww2UkiBPsRCcD6/rLea1bhZHwZ6EmZ/2bSSLbZRFwFnmv9AYqixuqbkxkmpnanFO
+         4N8da6yyFWaGSbMo7LBP0rUlghKimTGtnLtqxbbF/sVrMWAqHGWkkL5OelnHwcTBQ4dh
+         kyhQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=kNqltu1OF1hMLrUr3D3bv/ySnEJldW6xz9ogdhiNQ5E=;
+        b=c18pC/h1F8jkUhvoMH7YERRyKQU5RO3zJcI1vTW5Bp7mgRz75UHyEOvNqWu2Hq0fsR
+         oT7D+nlhlRGwdhRFAh4DaDeesu6IUD8t3edwvQyLq+XXGJnAA1Gw1FFdYCiwaBz/tOXX
+         TbTSmnoajl99IG3UgLMD7riIv9ZMePfU2rbG9cDIRv7EQK3g0DgCHX9SHVcDVn4QNzuU
+         nXNq1+4HWIMV5Rw5XGnofrtgcOjKpUsgEO6+hAGlfO5Jf+RmHqwNX77V3gBliSEcp3Tg
+         RiA6FfUergfoK5QtfTNV1st8FnaYChoTq2AW14TVsPkY0nSt/d72Kof7t67yYoiN447f
+         QJOg==
+X-Gm-Message-State: AOAM5313g4IQ1DDHjpD8KxHUNDPQ/nQJUFebE+zRwFpJDPyfjj81D7ZR
+        vzIj/j9OCyly7CkemQi4+yLjI2P7NrM=
+X-Google-Smtp-Source: ABdhPJx8Nhqd37awE21j0dN1vAMZhwiu/oIslGDfs5lNaPFOCA2YGl1501jQM1wjtjjQ8IswdP5+Jw==
+X-Received: by 2002:aca:5fd6:: with SMTP id t205mr814096oib.13.1610410858782;
+        Mon, 11 Jan 2021 16:20:58 -0800 (PST)
+Received: from Davids-MacBook-Pro.local ([8.48.134.51])
+        by smtp.googlemail.com with ESMTPSA id z3sm251947ooj.26.2021.01.11.16.20.57
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 11 Jan 2021 16:20:58 -0800 (PST)
+Subject: Re: [PATCH net-next v2 06/11] selftests: Use separate stdout and
+ stderr buffers in nettest
+To:     Jakub Kicinski <kuba@kernel.org>, David Ahern <dsahern@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, schoen@loyalty.org
+References: <20210110001852.35653-1-dsahern@kernel.org>
+ <20210110001852.35653-7-dsahern@kernel.org>
+ <20210111161546.1310e9da@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <45473342-cba7-c489-2cd4-738eb7424dc8@gmail.com>
+Date:   Mon, 11 Jan 2021 17:20:56 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
+ Gecko/20100101 Thunderbird/78.6.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v4 net-next 00/11] Get rid of the switchdev transactional
- model
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161041081018.29857.3487050409879010465.git-patchwork-notify@kernel.org>
-Date:   Tue, 12 Jan 2021 00:20:10 +0000
-References: <20210109000156.1246735-1-olteanv@gmail.com>
-In-Reply-To: <20210109000156.1246735-1-olteanv@gmail.com>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        f.fainelli@gmail.com, andrew@lunn.ch, vivien.didelot@gmail.com,
-        kurt@linutronix.de, hauke@hauke-m.de, woojung.huh@microchip.com,
-        UNGLinuxDriver@microchip.com, sean.wang@mediatek.com,
-        Landen.Chao@mediatek.com, claudiu.manoil@nxp.com,
-        alexandre.belloni@bootlin.com, linus.walleij@linaro.org,
-        vkochan@marvell.com, tchornyi@marvell.com, jiri@nvidia.com,
-        idosch@nvidia.com, grygorii.strashko@ti.com, ioana.ciornei@nxp.com,
-        ivecera@redhat.com, petrm@nvidia.com
+In-Reply-To: <20210111161546.1310e9da@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net-next.git (refs/heads/master):
-
-On Sat,  9 Jan 2021 02:01:45 +0200 you wrote:
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+On 1/11/21 5:15 PM, Jakub Kicinski wrote:
+>> diff --git a/tools/testing/selftests/net/nettest.c b/tools/testing/selftests/net/nettest.c
+>> index 0e4196027d63..13c74774e357 100644
+>> --- a/tools/testing/selftests/net/nettest.c
+>> +++ b/tools/testing/selftests/net/nettest.c
+>> @@ -1705,9 +1705,27 @@ static char *random_msg(int len)
+>>  
+>>  static int ipc_child(int fd, struct sock_args *args)
+>>  {
+>> +	char *outbuf, *errbuf;
+>> +	int rc;
+>> +
+>> +	outbuf = malloc(4096);
+>> +	errbuf = malloc(4096);
+>> +	if (!outbuf || !errbuf) {
+>> +		fprintf(stderr, "server: Failed to allocate buffers for stdout and stderr\n");
+>> +		return 1;
 > 
-> Changes in v4:
-> - Fixed build error in dsa_loop and build warning in hellcreek driver.
-> - Scheduling the mlxsw SPAN work item regardless of the VLAN add return
->   code, as per Ido's and Petr's request.
+> that's a memleak, rc = 1, goto free; ?
 > 
-> [...]
+> Also there's a few uses of fprintf(stderr, .. instead of log_error()
+> is there a reason for it?
+> 
+> I don't think this is a big deal, I'll apply unless you object in time.
+> 
 
-Here is the summary with links:
-  - [v4,net-next,01/11] net: switchdev: remove vid_begin -> vid_end range from VLAN objects
-    https://git.kernel.org/netdev/net-next/c/b7a9e0da2d1c
-  - [v4,net-next,02/11] net: dsa: mv88e6xxx: deny vid 0 on the CPU port and DSA links too
-    https://git.kernel.org/netdev/net-next/c/3e85f580e3fc
-  - [v4,net-next,03/11] net: switchdev: remove the transaction structure from port object notifiers
-    https://git.kernel.org/netdev/net-next/c/ffb68fc58e96
-  - [v4,net-next,04/11] net: switchdev: delete switchdev_port_obj_add_now
-    https://git.kernel.org/netdev/net-next/c/cf6def51bade
-  - [v4,net-next,05/11] net: switchdev: remove the transaction structure from port attributes
-    https://git.kernel.org/netdev/net-next/c/bae33f2b5afe
-  - [v4,net-next,06/11] net: dsa: remove the transactional logic from ageing time notifiers
-    https://git.kernel.org/netdev/net-next/c/77b61365ecef
-  - [v4,net-next,07/11] net: dsa: remove the transactional logic from MDB entries
-    https://git.kernel.org/netdev/net-next/c/a52b2da778fc
-  - [v4,net-next,08/11] net: dsa: remove the transactional logic from VLAN objects
-    https://git.kernel.org/netdev/net-next/c/1958d5815c91
-  - [v4,net-next,09/11] net: dsa: remove obsolete comments about switchdev transactions
-    https://git.kernel.org/netdev/net-next/c/417b99bf75c3
-  - [v4,net-next,10/11] mlxsw: spectrum_switchdev: remove transactional logic for VLAN objects
-    https://git.kernel.org/netdev/net-next/c/4b400fea76e1
-  - [v4,net-next,11/11] net: switchdev: delete the transaction object
-    https://git.kernel.org/netdev/net-next/c/8f73cc50ba2d
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+good catch. I found a bug in patch 5 as well. I'll fix and re-send.
