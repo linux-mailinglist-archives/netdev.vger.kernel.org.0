@@ -2,290 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 437482F3853
-	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 19:17:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F0F02F38AA
+	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 19:25:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406700AbhALSPf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jan 2021 13:15:35 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:33924 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2406128AbhALSPc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 13:15:32 -0500
-Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 10CIEWJe054335
-        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 13:14:50 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=uBPyJl/MqgWhzc0KvhfRDj0fqd+5oJwYu4k9kNsxTcE=;
- b=Ak42KDMqeaIN3lIEUbtdSHSuuox3C8wLQo8HCeukghUkWS6ZmfpgBz78RWPXWPP9/Raa
- dbcVEVtNzKf7AgNUIZuXTZo/LwAyhLk/XW9e5NccupnVKtHdOBdEL/OjrX4WwuN1X13L
- XOY1Mr37l7Kox/CYckcqW4UbbhosGKRb2GTcPJxAO5LbqqwVRbqjdaogIwNRk0Qt4t4h
- 0B8CSSemTF8005w4TIeU/h3bff8oRxl8bsvjesAR75VfoWlTuTx4ov5dXcjqTcIDBtYV
- 2R6hxK2Rd/r3GYSVpIKGbBpWzVCyAVPyLV0kjvq/LkozuBbz2rsFS70IUcujzEz3OHM7 /g== 
-Received: from ppma04wdc.us.ibm.com (1a.90.2fa9.ip4.static.sl-reverse.com [169.47.144.26])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 361gvbr04g-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 13:14:50 -0500
-Received: from pps.filterd (ppma04wdc.us.ibm.com [127.0.0.1])
-        by ppma04wdc.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 10CI7Iqn030850
-        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 18:14:49 GMT
-Received: from b01cxnp23032.gho.pok.ibm.com (b01cxnp23032.gho.pok.ibm.com [9.57.198.27])
-        by ppma04wdc.us.ibm.com with ESMTP id 35y448yw9p-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 18:14:49 +0000
-Received: from b01ledav003.gho.pok.ibm.com (b01ledav003.gho.pok.ibm.com [9.57.199.108])
-        by b01cxnp23032.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 10CIEnh324248646
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 12 Jan 2021 18:14:49 GMT
-Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 365F7B2071;
-        Tue, 12 Jan 2021 18:14:49 +0000 (GMT)
-Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 87750B2074;
-        Tue, 12 Jan 2021 18:14:48 +0000 (GMT)
-Received: from suka-w540.ibmuc.com (unknown [9.85.179.93])
-        by b01ledav003.gho.pok.ibm.com (Postfix) with ESMTP;
-        Tue, 12 Jan 2021 18:14:48 +0000 (GMT)
-From:   Sukadev Bhattiprolu <sukadev@linux.ibm.com>
-To:     netdev@vger.kernel.org
-Cc:     Dany Madden <drt@linux.ibm.com>, Lijun Pan <ljp@linux.ibm.com>,
-        Rick Lindsley <ricklind@linux.ibm.com>, sukadev@linux.ibm.com
-Subject: [PATCH net-next v2 7/7] ibmvnic: add comments about state_lock
-Date:   Tue, 12 Jan 2021 10:14:41 -0800
-Message-Id: <20210112181441.206545-8-sukadev@linux.ibm.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20210112181441.206545-1-sukadev@linux.ibm.com>
-References: <20210112181441.206545-1-sukadev@linux.ibm.com>
+        id S2406506AbhALSXC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jan 2021 13:23:02 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:41916 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2406483AbhALSXB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 13:23:01 -0500
+Received: from pps.filterd (m0148461.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 10CIEBFa002070;
+        Tue, 12 Jan 2021 10:21:57 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
+ subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=facebook; bh=Hpu8DFA7YwEMMfUHbQbjR6DgkBDYe47o8rFP0Vu60TA=;
+ b=fHL8OnDB288OOcLS0A7sTCC9I62ysQG35LUF7VtX0JL1qNbP4Y5EaA0feuI2Yr1+7t9v
+ ET33SuutgFemjmeMLivsvHJc5jb/cEFKadMMPwQ42pulZQsTpfrrsEWummy0QXWL8j8y
+ CGnD7YozbWDLMkGSMXCt2vYzp3p8Lp6ZPf0= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 361fpp8hf4-2
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Tue, 12 Jan 2021 10:21:57 -0800
+Received: from NAM10-BN7-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.36.100) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Tue, 12 Jan 2021 10:21:56 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=hHzJqsgusyk9UaaJ/ZRkUmCGEr9cut3XPApM6JkW4Ti8WqdcS35pCQxovqDJx5K/X9FKAszvEnoQM/kNdn7QjHfUM5Z+vTpeNS+hzkxjH/+sHXQmMnUPnmCfxY4klI7vLZeIUstWcaP7bAxXeLKXVhJf+4Z8DrGnRYTE29szY9PqATKLyqeT3Di0hWTNGCpVo5KbXL/QhRDJSyqe06lD02O1y7Y4fIv70CcCmI8t0A+GU+4eRFQVOdfsoMaJ4q4AukeWN0/2giYQGZpyQNDhxaivNXU4No9oGu3L6DlIWpK5y6BofsMMhxd7ayxQzmUqyDH8LKZXpa8U0caodGbZcg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Hpu8DFA7YwEMMfUHbQbjR6DgkBDYe47o8rFP0Vu60TA=;
+ b=cbKWrjG5iM2AZbGiedGmzNBojPE1xuXNc4BeExK02pN/x/oEFgpuTHptG0bG0lMIkpoD5IILzgZsqjc78fA60S+8ozamuTVV6bnVEFWnvCm92+vtxnIUtA4GmeOBNm3WhyoQe7jWAsD4TfRonfh82DZIrEBw3mfh20ZccoPICzsN9BFeag5Zu6Evb8umduYMnq5aXAkMk2t6M+GucwMF5NiLDniQP7MqSREL1uK5jQqkraN/cs1MzlSmRsZ9qnp1me2iB2kik2aYbsBvlDCOE25zLNU4uIOo2PI8lSciwdE2fuxkre1BipJ60CkbJuJvoN9mZPeO7l8hUKRG8Jy9aw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Hpu8DFA7YwEMMfUHbQbjR6DgkBDYe47o8rFP0Vu60TA=;
+ b=alr2bYornj1aF/KQ7gLk9bBJUg/SJG4AKgx4HJMK89P48GkzFHC15lXSjRkFknotSl025QI5PAiLT2LZlUv3PiEQmw877w/q9vfC+86XpTSFDEkZxHfSKxyEhugYg5EbD6AsWYK8kfMtPFqc+ORdpXXQsIscfXpdi4GSCKIL9FE=
+Received: from CH2PR15MB3573.namprd15.prod.outlook.com (2603:10b6:610:e::28)
+ by CH2PR15MB3542.namprd15.prod.outlook.com (2603:10b6:610:7::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3763.9; Tue, 12 Jan
+ 2021 18:21:53 +0000
+Received: from CH2PR15MB3573.namprd15.prod.outlook.com
+ ([fe80::a875:5b25:a9b4:e84e]) by CH2PR15MB3573.namprd15.prod.outlook.com
+ ([fe80::a875:5b25:a9b4:e84e%7]) with mapi id 15.20.3742.012; Tue, 12 Jan 2021
+ 18:21:52 +0000
+Date:   Tue, 12 Jan 2021 10:21:45 -0800
+From:   Martin KaFai Lau <kafai@fb.com>
+To:     Song Liu <songliubraving@fb.com>
+CC:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "mingo@redhat.com" <mingo@redhat.com>,
+        "peterz@infradead.org" <peterz@infradead.org>,
+        "ast@kernel.org" <ast@kernel.org>,
+        "daniel@iogearbox.net" <daniel@iogearbox.net>,
+        "andrii@kernel.org" <andrii@kernel.org>,
+        "john.fastabend@gmail.com" <john.fastabend@gmail.com>,
+        "kpsingh@chromium.org" <kpsingh@chromium.org>,
+        Kernel Team <Kernel-team@fb.com>,
+        "haoluo@google.com" <haoluo@google.com>,
+        kernel test robot <lkp@intel.com>
+Subject: Re: [PATCH bpf-next 1/4] bpf: enable task local storage for tracing
+ programs
+Message-ID: <20210112182109.ti434nov2c6dmuvn@kafai-mbp>
+References: <20210108231950.3844417-1-songliubraving@fb.com>
+ <20210108231950.3844417-2-songliubraving@fb.com>
+ <20210111185650.hsvfpoqmqc2mj7ci@kafai-mbp.dhcp.thefacebook.com>
+ <4D0333B1-C729-41BF-AB1D-9AC233431094@fb.com>
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <4D0333B1-C729-41BF-AB1D-9AC233431094@fb.com>
+X-Originating-IP: [2620:10d:c090:400::5:bc5d]
+X-ClientProxiedBy: SJ0PR05CA0096.namprd05.prod.outlook.com
+ (2603:10b6:a03:334::11) To CH2PR15MB3573.namprd15.prod.outlook.com
+ (2603:10b6:610:e::28)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from kafai-mbp (2620:10d:c090:400::5:bc5d) by SJ0PR05CA0096.namprd05.prod.outlook.com (2603:10b6:a03:334::11) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3763.2 via Frontend Transport; Tue, 12 Jan 2021 18:21:51 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 4d24315c-f147-47de-117c-08d8b726ef9f
+X-MS-TrafficTypeDiagnostic: CH2PR15MB3542:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <CH2PR15MB35420C78C38D501015C5B85ED5AA0@CH2PR15MB3542.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:2512;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: gHvLCmUiYBczJe94oUCZgsG3/7zw7xZkAUj3LPIhYe+MZgXU3vtxc7hEsTp6lnT8WFsIOlcsqtyOVof64xCr4IrKPbYZ1qyWXmv0qrbaF9FZhC9TKZWHcym1s2ZQMi/zhfITKQ7lQtXS9VYMowZ3MK1YZKI1AsTPQF7D/KYIKr0MnRB7K2JE8leiygQreoYY5EH6jVDsrQTYtV33quOg61wYR24L7KLDtB87dfKFmFdyITSd34kIdBCF5hthuc1f3mnqVGlfweJyP2oP0AyVLzUGLjNqzayc1tufGW+vxUbn0khWdFp4JA3sV5BnCH/Ai3O1urriAiZQ6109hDCXRQyWKk5UmPiKD1QVT5RSDxNk4G/XwQOi2/y7uF+OJkwWBHBYxdHDEPmxAVv0zZic5w==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CH2PR15MB3573.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(346002)(366004)(376002)(396003)(136003)(39860400002)(4326008)(6862004)(6666004)(33716001)(53546011)(52116002)(6636002)(8676002)(316002)(8936002)(6496006)(186003)(16526019)(478600001)(55016002)(9686003)(2906002)(54906003)(83380400001)(1076003)(66946007)(66556008)(66476007)(86362001)(7416002)(5660300002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?Jk5DnKc6/Tq209g+QiW3HKLhmWghkoLISjxX6E1cWIiZDNhE1uYhhY4ApKlZ?=
+ =?us-ascii?Q?Ay2git0vRrLuYbCe5gyKF3yVse/AbzMY0Loh5eoSDDKq0/ouZqgx0Jz5/l5r?=
+ =?us-ascii?Q?NDWItRfp3cdLyTcrfNSvIP9Ek+FTsD0/nisauQgqaP+jD58j/tRVopzdSwoj?=
+ =?us-ascii?Q?z+UAZerVxDSAtJDXdE/R5jYlfCMtqzCoYF4mJpYn/I1THPdKRKXVaA+QFQTd?=
+ =?us-ascii?Q?XPSBRcWPMkHF4sWnzbNw+GAy5hgjYkq/XAPf3TVR1lad5V5PTQPfhBec7WwP?=
+ =?us-ascii?Q?Sjn2nAg2DcYm/Ej3hZ1v3emI/+Up8UxftUtYL+pw3lF3tqnzmkl8XUEtDyye?=
+ =?us-ascii?Q?EVl8WqChwTF112H3lQZ1yYn0VBeQWn7Y45WA/YMcaWYX6SJ0HMzSixY2rH96?=
+ =?us-ascii?Q?DmrBSgk8Paegh16/rlBaDSU6v+ucbZ1fE2KhVeorWymNnsRHEuUOsaekwTFf?=
+ =?us-ascii?Q?q23xsfQMAOmrfBgNeD9Xmo2N0M+J7KIyLv5AxWQXOrqZn2c8GMIrVpAxtmr7?=
+ =?us-ascii?Q?R9604OPIL9HejPGMGRGmvFlVB29oe7rA1deoR/VNi7lIVa8J172XYlMtyi5g?=
+ =?us-ascii?Q?dXgscySLDXtWuSiLGL2mYBAleD0MZXe77yiosiIE5f7lmJv415A15saZuHP3?=
+ =?us-ascii?Q?orPFrJn8dcTmiVpY4JM3oLemW/ny2b2ItDW8kFD4yP1FW5MwOGz4wlrBgsbR?=
+ =?us-ascii?Q?h6gSfM2gCcjXG/Pmvwo+5Cl8GoulqyqRy4dyS0olMhLY2CNVHQBiQ3G9rpGz?=
+ =?us-ascii?Q?6J2Yeeg+KHRCfr+M0XzbXwczoFv0Lj7D+cICm5rSww3I/crl5PgUHfqylVgv?=
+ =?us-ascii?Q?nsm0+iSOjS48MSGf3tKpPWBr8KkpqE4lB/ZhrTpzJvYztodRz27m+r5hEy3Q?=
+ =?us-ascii?Q?atwt/eQFUUjEV6bvbLx2779JpPtV5Cv59vdwp3huZaWnhLiqW0nxfxGBtEcs?=
+ =?us-ascii?Q?H0SceYrF6HeKAw6tuU9eXUPKwQ9EsQrshrsXxOjVOOOywhaH9cfjAzIehp7E?=
+ =?us-ascii?Q?66iVJEp74kX1YLL0Cd03w5D7+w=3D=3D?=
+X-MS-Exchange-CrossTenant-AuthSource: CH2PR15MB3573.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 12 Jan 2021 18:21:52.8535
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4d24315c-f147-47de-117c-08d8b726ef9f
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: sjL091mF0Au+9F1tEbBK/WMXA5sFDP9XMCIiZgybQkhhQpVm1B793lemeSshql+e
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR15MB3542
+X-OriginatorOrg: fb.com
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
  definitions=2021-01-12_15:2021-01-12,2021-01-12 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 bulkscore=0
- spamscore=0 clxscore=1015 adultscore=0 malwarescore=0 mlxlogscore=999
- impostorscore=0 suspectscore=0 lowpriorityscore=0 priorityscore=1501
- mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2101120106
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxlogscore=999
+ mlxscore=0 phishscore=0 spamscore=0 clxscore=1015 bulkscore=0
+ impostorscore=0 priorityscore=1501 lowpriorityscore=0 suspectscore=0
+ adultscore=0 malwarescore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2009150000 definitions=main-2101120108
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add some comments, notes and TODOs about ->state_lock and RTNL.
+On Mon, Jan 11, 2021 at 03:41:26PM -0800, Song Liu wrote:
+> 
+> 
+> > On Jan 11, 2021, at 10:56 AM, Martin Lau <kafai@fb.com> wrote:
+> > 
+> > On Fri, Jan 08, 2021 at 03:19:47PM -0800, Song Liu wrote:
+> > 
+> > [ ... ]
+> > 
+> >> diff --git a/kernel/bpf/bpf_local_storage.c b/kernel/bpf/bpf_local_storage.c
+> >> index dd5aedee99e73..9bd47ad2b26f1 100644
+> >> --- a/kernel/bpf/bpf_local_storage.c
+> >> +++ b/kernel/bpf/bpf_local_storage.c
+> >> @@ -140,17 +140,18 @@ static void __bpf_selem_unlink_storage(struct bpf_local_storage_elem *selem)
+> >> {
+> >> 	struct bpf_local_storage *local_storage;
+> >> 	bool free_local_storage = false;
+> >> +	unsigned long flags;
+> >> 
+> >> 	if (unlikely(!selem_linked_to_storage(selem)))
+> >> 		/* selem has already been unlinked from sk */
+> >> 		return;
+> >> 
+> >> 	local_storage = rcu_dereference(selem->local_storage);
+> >> -	raw_spin_lock_bh(&local_storage->lock);
+> >> +	raw_spin_lock_irqsave(&local_storage->lock, flags);
+> > It will be useful to have a few words in commit message on this change
+> > for future reference purpose.
+> > 
+> > Please also remove the in_irq() check from bpf_sk_storage.c
+> > to avoid confusion in the future.  It probably should
+> > be in a separate patch.
+> 
+> Do you mean we allow bpf_sk_storage_get_tracing() and 
+> bpf_sk_storage_delete_tracing() in irq context? Like
+Right.
 
-Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
----
- drivers/net/ethernet/ibm/ibmvnic.c | 58 ++++++++++++++++++++++++++++++
- drivers/net/ethernet/ibm/ibmvnic.h | 51 +++++++++++++++++++++++++-
- 2 files changed, 108 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-index 3ca92a207d16..d56e73b64da4 100644
---- a/drivers/net/ethernet/ibm/ibmvnic.c
-+++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -1202,6 +1202,14 @@ static int ibmvnic_open(struct net_device *netdev)
- 
- 	/* If device failover is pending, just set device state and return.
- 	 * Device operation will be handled by reset routine.
-+	 *
-+	 * Note that ->failover_pending is not protected by ->state_lock
-+	 * because the tasklet (executing ibmvnic_handle_crq()) cannot
-+	 * block. Even otherwise this can deadlock due to CRQs issued in
-+	 * ibmvnic_open().
-+	 *
-+	 * We check failover_pending again at the end in case of errors.
-+	 * so its okay if we miss the change to true here.
- 	 */
- 	if (adapter->failover_pending) {
- 		adapter->state = VNIC_OPEN;
-@@ -1380,6 +1388,9 @@ static int ibmvnic_close(struct net_device *netdev)
- 
- 	/* If device failover is pending, just set device state and return.
- 	 * Device operation will be handled by reset routine.
-+	 *
-+	 * Note that ->failover_pending is not protected by ->state_lock
-+	 * See comments in ibmvnic_open().
- 	 */
- 	if (adapter->failover_pending) {
- 		adapter->state = VNIC_CLOSED;
-@@ -1930,6 +1941,14 @@ static int ibmvnic_set_mac(struct net_device *netdev, void *p)
- 	if (!is_valid_ether_addr(addr->sa_data))
- 		return -EADDRNOTAVAIL;
- 
-+	/*
-+	 * TODO: Can this race with a reset? The reset could briefly
-+	 *       set state to PROBED causing us to skip setting the
-+	 *       mac address. When reset complets, we set the old mac
-+	 *       address? Can we check ->resetting bit instead and
-+	 *       save the new mac address in adapter->mac_addr
-+	 *       so reset function can set it when it is done?
-+	 */
- 	if (adapter->state != VNIC_PROBED) {
- 		ether_addr_copy(adapter->mac_addr, addr->sa_data);
- 		rc = __ibmvnic_set_mac(netdev, addr->sa_data);
-@@ -1941,6 +1960,14 @@ static int ibmvnic_set_mac(struct net_device *netdev, void *p)
- /**
-  * do_change_param_reset returns zero if we are able to keep processing reset
-  * events, or non-zero if we hit a fatal error and must halt.
-+ *
-+ * Notes:
-+ * 	- Regardless of success/failure, this function restores adapter state
-+ * 	  to what as it was on entry. In case of failure, it is assumed that
-+ * 	  a new hard-reset will be attempted.
-+ *	- Caller must hold the rtnl lock before calling and release upon
-+ *	  return.
-+ *
-  */
- static int do_change_param_reset(struct ibmvnic_adapter *adapter,
- 				 enum ibmvnic_reset_reason reason)
-@@ -2039,6 +2066,11 @@ static int do_change_param_reset(struct ibmvnic_adapter *adapter,
- /**
-  * do_reset returns zero if we are able to keep processing reset events, or
-  * non-zero if we hit a fatal error and must halt.
-+ *
-+ * Notes:
-+ * 	- Regardless of success/failure, this function restores adapter state
-+ * 	  to what as it was on entry. In case of failure, it is assumed that
-+ * 	  a new hard-reset will be attempted.
-  */
- static int do_reset(struct ibmvnic_adapter *adapter,
- 		    enum ibmvnic_reset_reason reason)
-@@ -2237,6 +2269,17 @@ static int do_reset(struct ibmvnic_adapter *adapter,
- 	return rc;
- }
- 
-+/**
-+ * Perform a hard reset possibly because a prior reset encountered
-+ * an error.
-+ *
-+ * Notes:
-+ * 	- Regardless of success/failure, this function restores adapter state
-+ * 	  to what as it was on entry. In case of failure, it is assumed that
-+ * 	  a new hard-reset will be attempted.
-+ *	- Caller must hold the rtnl lock before calling and release upon
-+ *	  return.
-+ */
- static int do_hard_reset(struct ibmvnic_adapter *adapter,
- 			 enum ibmvnic_reset_reason reason)
- {
-@@ -2651,6 +2694,11 @@ static int ibmvnic_poll(struct napi_struct *napi, int budget)
- 		frames_processed++;
- 	}
- 
-+	/* TODO: Can this race with reset and/or is release_rx_pools()?
-+	 *       Is that why we check for VNIC_CLOSING? What if we go to
-+	 *       CLOSING just after we check? We cannot take ->state_lock
-+	 *       since we are in interrupt context.
-+	 */
- 	if (adapter->state != VNIC_CLOSING &&
- 	    ((atomic_read(&adapter->rx_pool[scrq_num].available) <
- 	      adapter->req_rx_add_entries_per_subcrq / 2) ||
-@@ -5358,6 +5406,9 @@ static int ibmvnic_reset_init(struct ibmvnic_adapter *adapter, bool reset)
- 	}
- 
- 	if (adapter->from_passive_init) {
-+		/* ibmvnic_reset_init() is always called with ->state_lock
-+		 * held except from ibmvnic_probe(), so safe to update state.
-+		 */
- 		adapter->state = VNIC_OPEN;
- 		adapter->from_passive_init = false;
- 		return -1;
-@@ -5531,6 +5582,9 @@ static int ibmvnic_remove(struct vio_dev *dev)
- 	adapter->state = VNIC_REMOVING;
- 	spin_unlock_irqrestore(&adapter->remove_lock, flags);
- 
-+	/* drop state_lock so __ibmvnic_reset() can make progress
-+	 * during flush_work()
-+	 */
- 	mutex_unlock(&adapter->state_lock);
- 
- 	flush_work(&adapter->ibmvnic_reset);
-@@ -5546,6 +5600,9 @@ static int ibmvnic_remove(struct vio_dev *dev)
- 	release_stats_token(adapter);
- 	release_stats_buffers(adapter);
- 
-+	/* Adapter going away. There better be no one checking ->state
-+	 * or getting state_lock now TODO: Do we need the REMOVED state?
-+	 */
- 	adapter->state = VNIC_REMOVED;
- 	mutex_destroy(&adapter->state_lock);
- 	rtnl_unlock();
-@@ -5627,6 +5684,7 @@ static int ibmvnic_resume(struct device *dev)
- 	struct net_device *netdev = dev_get_drvdata(dev);
- 	struct ibmvnic_adapter *adapter = netdev_priv(netdev);
- 
-+	/* resuming from power-down so ignoring state_lock */
- 	if (adapter->state != VNIC_OPEN)
- 		return 0;
- 
-diff --git a/drivers/net/ethernet/ibm/ibmvnic.h b/drivers/net/ethernet/ibm/ibmvnic.h
-index ac79dfa76333..d79bc9444c9f 100644
---- a/drivers/net/ethernet/ibm/ibmvnic.h
-+++ b/drivers/net/ethernet/ibm/ibmvnic.h
-@@ -963,6 +963,55 @@ struct ibmvnic_tunables {
- 	u64 mtu;
- };
- 
-+/**
-+ * ->state_lock:
-+ *  	Mutex to serialize read/write of adapter->state field specially
-+ *  	between open and reset functions. If rtnl also needs to be held,
-+ *  	acquire rtnl first and then state_lock (to be consistent with
-+ *  	functions that enter ibmvnic with rtnl already held).
-+ *
-+ *  	In general, ->state_lock must be held for all read/writes to the
-+ *  	state field. Exceptions are:
-+ *  	- checks for VNIC_PROBING state - since the adapter is itself
-+ *  	  under construction and because we never go _back_ to PROBING.
-+ *
-+ *  	- in debug messages involving ->state
-+ *
-+ *  	- in ibmvnic_tx_interrupt(), ibmvnic_rx_interrupt() because
-+ *  	  a) this is a mutex and b) no (known) impact of getting a stale
-+ *  	  state (i.e we will likely recover on the next interrupt).
-+ *
-+ *  	- ibmvnic_resume() - we are resuming from a power-down state?
-+ *
-+ *  	- ibmvnic_reset() - see ->remove_lock below.
-+ *
-+ *  	Besides these, there are couple of TODOs in ibmvnic_poll() and
-+ *  	ibmvnic_set_mac() that need to be investigated separately.
-+ *
-+ *  ->remove_lock
-+ *  	A spin lock used to serialize ibmvnic_reset() and ibmvnic_remove().
-+ *  	ibmvnic_reset() can be called from a tasklet which cannot block,
-+ *  	so it cannot use the ->state_lock. The only states ibmvnic_reset()
-+ *  	checks for are PROBING, REMOVING and REMOVED. PROBING can be ignored
-+ *  	as mentioned above. On entering REMOVING state, ibmvnic_reset()
-+ *  	will skip scheduling resets for the adapter.
-+ *
-+ *  ->pending_resets[], ->next_reset:
-+ *  	A "queue" of pending resets, implemented as a simple array. Resets
-+ *  	are not frequent and even when they do occur, we will usually have
-+ *  	just 1 or 2 entries in the queue at any time. Note that we don't
-+ *  	need/allow duplicates in the queue. In the worst case, we would have
-+ *  	VNIC_RESET_MAX-1 entries (but that means adapter is processing all
-+ *  	valid types of resets at once!) so the slight overhead of the array
-+ *  	is probably acceptable.
-+ *
-+ *  	We could still use a linked list but then have to deal with allocation
-+ *  	failure when scheduling a reset. We sometimes enqueue reset from a
-+ *  	tasklet so cannot block when we have allocation failure. Trying to
-+ *  	close the adapter on failure requires us to hold the state_lock, which
-+ *  	then cannot be a mutex (tasklet cannot block) - i.e complicates locking
-+ *  	just for the occasional memory allocation failure.
-+ */
- struct ibmvnic_adapter {
- 	struct vio_dev *vdev;
- 	struct net_device *netdev;
-@@ -1098,6 +1147,6 @@ struct ibmvnic_adapter {
- 	struct ibmvnic_tunables desired;
- 	struct ibmvnic_tunables fallback;
- 
--	/* Used for serialization of state field */
-+	/* see block comments above */
- 	struct mutex state_lock;
- };
--- 
-2.26.2
-
+However, after another thought, may be lets skip that for now
+till a use case comes up and a test can be written.
