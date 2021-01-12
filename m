@@ -2,201 +2,243 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DE6EC2F287B
-	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 07:46:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 295752F2899
+	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 07:57:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388066AbhALGqR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jan 2021 01:46:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50088 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730405AbhALGqR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 01:46:17 -0500
-Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CD50C061575;
-        Mon, 11 Jan 2021 22:45:37 -0800 (PST)
-Received: by mail-yb1-xb36.google.com with SMTP id k4so1207194ybp.6;
-        Mon, 11 Jan 2021 22:45:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=YMABv7IXzzi+2vJU2KcUrOGfO1LLdYJ0/qMijkS7ZzY=;
-        b=rme9GDsZWRKvpP+GKCNH7MoIhf3jycV6a9gMceopZGqedBaXn/95uYw2gzEWwMSuFO
-         UF61ixrm/FYxbUDC4a/uWfe3oE3hhWQU/QIDvV2j38HPw8/62+VTX7nxFG/Pv1dv8sxb
-         yjyjv4VEq/jutlCqrRDoDIiLnH50zKQ/v16z438UIlA3zPWCP+dSg6N9e9nDzIMYoFGs
-         KSr4nYHzq+09O/0QnM5a5MUy4avsvy+cydB9bmcrxTMO+6H6gLJDHOg60WZHfME6HASu
-         9v4/cs7Bivfh80mF0ZDBXLfqRUcbBqiV7BDlJBwbDmP0gnfxvQjWeIlSjuC+bYx4fDhq
-         OFIg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=YMABv7IXzzi+2vJU2KcUrOGfO1LLdYJ0/qMijkS7ZzY=;
-        b=nqbHqOCvPWz1NX3Gmb9gMbNHwCeniOpCXMt1nDaikI2ggpxPWXKuvFSQeIGYth9A6h
-         Av1kSv3MWoUrE/NoSio/+nSx2Ysqm0OhLPu5dFx5t2tcuqV4PLryT0e4NJ4kzzUL8y5P
-         O6tfi2xi5cALcslFZB/TopaOmlqVEN3vx1ezYDfp0IdFJ/BhwYu2J+iQ1aOkulp5/IK0
-         cFV54Yp2fcPr2h5m+4Ij4KVlQTU3l1BllFrZvYZvK4U3zvfy1HRyzzrESbTOBthIC5X9
-         hLQo1WrLFXo3raGNu+FuKyudd4K1hooZiqsx47kXGHu8suSYHT9oW1aCV4tbkku0CwWn
-         jwDw==
-X-Gm-Message-State: AOAM531cWvzcfr+kuXmjtnSRm6wJ3agm8UJDPjKfkQu36zasqDSNA9TW
-        +4ui0JVWF6kgYxb+qb5j5Rx7V8C14QvECaSYjMazrMNorXQ=
-X-Google-Smtp-Source: ABdhPJxPsvrmSViraxxeiRxln3itiyMrea1VDdMYKfbLqjDA2i+6yfZCxw0QqjvzrooeGkmGtswrmgFL97yH66LaAvs=
-X-Received: by 2002:a25:f40e:: with SMTP id q14mr235859ybd.230.1610433936261;
- Mon, 11 Jan 2021 22:45:36 -0800 (PST)
+        id S2391602AbhALG4r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jan 2021 01:56:47 -0500
+Received: from mail.kernel.org ([198.145.29.99]:35804 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728453AbhALG4r (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 Jan 2021 01:56:47 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1C7AC22AAF;
+        Tue, 12 Jan 2021 06:56:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1610434565;
+        bh=5vRK0VD1rFHmEvf6NfJkIugDWxsEb+dTmpoax0jk+Ic=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Mc5EpUwm4Fx5pDZ4HB2d6Pw5srv1rQs8c4qgDmw2FS/MOhDPSIj4WDjiYZW+aVVPq
+         aO7TjLBX4vJVcD4mVQraW0y4IMPmot0xRWYkQPERt9DUh975jcNLP7N4R2haN67bWr
+         P/GfcmmAhjdEBUDWYtVQx+tJz6YytkzmFsCOiz+lRl0Yb3Bs2MwUXqybKhOEhf4aAq
+         gS9gz+YYlre6+BE1lvypG3DujPxSc2eiY7QpW+c0+JYzVSEEf3k2inTgjTIghkfBod
+         GBLksOBmFpBlynualtv3srcAiJjSJX0ZJAitlj1rNObhBsM3kqBagmCg00pVIaNX02
+         KTDZoVFQO24Ow==
+Date:   Tue, 12 Jan 2021 08:56:01 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Alexander Duyck <alexander.duyck@gmail.com>
+Cc:     Bjorn Helgaas <bhelgaas@google.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-pci <linux-pci@vger.kernel.org>,
+        linux-rdma@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
+        Don Dutile <ddutile@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>
+Subject: Re: [PATCH mlx5-next v1 2/5] PCI: Add SR-IOV sysfs entry to read
+ number of MSI-X vectors
+Message-ID: <20210112065601.GD4678@unreal>
+References: <20210110150727.1965295-1-leon@kernel.org>
+ <20210110150727.1965295-3-leon@kernel.org>
+ <CAKgT0Uczu6cULPsVjFuFVmir35SpL-bs0hosbfH-T5sZLZ78BQ@mail.gmail.com>
 MIME-Version: 1.0
-References: <20210108220930.482456-1-andrii@kernel.org> <20210108220930.482456-7-andrii@kernel.org>
- <dc1a06fe-f957-deb8-772c-b4c65042c3b3@fb.com> <CAEf4BzZGm9=XGWrj_1Q8ZpxZVhcogZVqb=5yCop2mNgdoTT0zA@mail.gmail.com>
- <b9e91dbb-03df-e7d2-8fd9-25bbc77c5188@fb.com>
-In-Reply-To: <b9e91dbb-03df-e7d2-8fd9-25bbc77c5188@fb.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 11 Jan 2021 22:45:25 -0800
-Message-ID: <CAEf4BzaSzGCjdjw6naPsdPRhwnH=fpqNVJKj7c47WF__V13R_w@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next 6/7] libbpf: support kernel module ksym externs
-To:     Yonghong Song <yhs@fb.com>
-Cc:     Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>, Hao Luo <haoluo@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAKgT0Uczu6cULPsVjFuFVmir35SpL-bs0hosbfH-T5sZLZ78BQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 11, 2021 at 5:34 PM Yonghong Song <yhs@fb.com> wrote:
->
->
->
-> On 1/11/21 1:37 PM, Andrii Nakryiko wrote:
-> > On Sun, Jan 10, 2021 at 8:15 PM Yonghong Song <yhs@fb.com> wrote:
-> >>
-> >>
-> >>
-> >> On 1/8/21 2:09 PM, Andrii Nakryiko wrote:
-> >>> Add support for searching for ksym externs not just in vmlinux BTF, but across
-> >>> all module BTFs, similarly to how it's done for CO-RE relocations. Kernels
-> >>> that expose module BTFs through sysfs are assumed to support new ldimm64
-> >>> instruction extension with BTF FD provided in insn[1].imm field, so no extra
-> >>> feature detection is performed.
-> >>>
-> >>> Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-> >>> ---
-> >>>    tools/lib/bpf/libbpf.c | 47 +++++++++++++++++++++++++++---------------
-> >>>    1 file changed, 30 insertions(+), 17 deletions(-)
-> >>>
-> >>> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> >>> index 6ae748f6ea11..57559a71e4de 100644
-> >>> --- a/tools/lib/bpf/libbpf.c
-> >>> +++ b/tools/lib/bpf/libbpf.c
-> >>> @@ -395,7 +395,8 @@ struct extern_desc {
-> >>>                        unsigned long long addr;
-> >>>
-> >>>                        /* target btf_id of the corresponding kernel var. */
-> >>> -                     int vmlinux_btf_id;
-> >>> +                     int kernel_btf_obj_fd;
-> >>> +                     int kernel_btf_id;
-> >>>
-> >>>                        /* local btf_id of the ksym extern's type. */
-> >>>                        __u32 type_id;
-> >>> @@ -6162,7 +6163,8 @@ bpf_object__relocate_data(struct bpf_object *obj, struct bpf_program *prog)
-> >>>                        } else /* EXT_KSYM */ {
-> >>>                                if (ext->ksym.type_id) { /* typed ksyms */
-> >>>                                        insn[0].src_reg = BPF_PSEUDO_BTF_ID;
-> >>> -                                     insn[0].imm = ext->ksym.vmlinux_btf_id;
-> >>> +                                     insn[0].imm = ext->ksym.kernel_btf_id;
-> >>> +                                     insn[1].imm = ext->ksym.kernel_btf_obj_fd;
-> >>>                                } else { /* typeless ksyms */
-> >>>                                        insn[0].imm = (__u32)ext->ksym.addr;
-> >>>                                        insn[1].imm = ext->ksym.addr >> 32;
-> >>> @@ -7319,7 +7321,8 @@ static int bpf_object__read_kallsyms_file(struct bpf_object *obj)
-> >>>    static int bpf_object__resolve_ksyms_btf_id(struct bpf_object *obj)
-> >>>    {
-> >>>        struct extern_desc *ext;
-> >>> -     int i, id;
-> >>> +     struct btf *btf;
-> >>> +     int i, j, id, btf_fd, err;
-> >>>
-> >>>        for (i = 0; i < obj->nr_extern; i++) {
-> >>>                const struct btf_type *targ_var, *targ_type;
-> >>> @@ -7331,8 +7334,22 @@ static int bpf_object__resolve_ksyms_btf_id(struct bpf_object *obj)
-> >>>                if (ext->type != EXT_KSYM || !ext->ksym.type_id)
-> >>>                        continue;
-> >>>
-> >>> -             id = btf__find_by_name_kind(obj->btf_vmlinux, ext->name,
-> >>> -                                         BTF_KIND_VAR);
-> >>> +             btf = obj->btf_vmlinux;
-> >>> +             btf_fd = 0;
-> >>> +             id = btf__find_by_name_kind(btf, ext->name, BTF_KIND_VAR);
-> >>> +             if (id == -ENOENT) {
-> >>> +                     err = load_module_btfs(obj);
-> >>> +                     if (err)
-> >>> +                             return err;
-> >>> +
-> >>> +                     for (j = 0; j < obj->btf_module_cnt; j++) {
-> >>> +                             btf = obj->btf_modules[j].btf;
-> >>> +                             btf_fd = obj->btf_modules[j].fd;
-> >>
-> >> Do we have possibility btf_fd == 0 here?
+On Mon, Jan 11, 2021 at 11:30:39AM -0800, Alexander Duyck wrote:
+> On Sun, Jan 10, 2021 at 7:10 AM Leon Romanovsky <leon@kernel.org> wrote:
 > >
-> > Extremely unlikely. But if we are really worried about 0 fd, we should
-> > handle that in a centralized fashion in libbpf. I.e., for any
-> > operation that can return FD, check if that FD is 0, and if yes, dup()
-> > it. And then make everything call that helper. So in the context of
-> > this patch I'm just ignoring such possibility.
-> Maybe at least add some comments here to document such a possibility?
+> > From: Leon Romanovsky <leonro@nvidia.com>
+> >
+> > Some SR-IOV capable devices provide an ability to configure specific
+> > number of MSI-X vectors on their VF prior driver is probed on that VF.
+> >
+> > In order to make management easy, provide new read-only sysfs file that
+> > returns a total number of possible to configure MSI-X vectors.
+> >
+> > cat /sys/bus/pci/devices/.../sriov_vf_total_msix
+> >   = 0 - feature is not supported
+> >   > 0 - total number of MSI-X vectors to consume by the VFs
+> >
+> > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> > ---
+> >  Documentation/ABI/testing/sysfs-bus-pci | 14 +++++++++++
+> >  drivers/pci/iov.c                       | 31 +++++++++++++++++++++++++
+> >  drivers/pci/pci.h                       |  3 +++
+> >  include/linux/pci.h                     |  2 ++
+> >  4 files changed, 50 insertions(+)
+> >
+> > diff --git a/Documentation/ABI/testing/sysfs-bus-pci b/Documentation/ABI/testing/sysfs-bus-pci
+> > index 05e26e5da54e..64e9b700acc9 100644
+> > --- a/Documentation/ABI/testing/sysfs-bus-pci
+> > +++ b/Documentation/ABI/testing/sysfs-bus-pci
+> > @@ -395,3 +395,17 @@ Description:
+> >                 The file is writable if the PF is bound to a driver that
+> >                 supports the ->sriov_set_msix_vec_count() callback and there
+> >                 is no driver bound to the VF.
+> > +
+> > +What:          /sys/bus/pci/devices/.../sriov_vf_total_msix
+>
+> In this case I would drop the "vf" and just go with sriov_total_msix
+> since now you are referring to a global value instead of a per VF
+> value.
 
-sure, will add
+This field indicates the amount of MSI-X available for VFs, it doesn't
+include PFs. The missing "_vf_" will mislead users who will believe that
+it is all MSI-X vectors available for this device. They will need to take
+into consideration amount of PF MSI-X in order to calculate the VF distribution.
+
+So I would leave "_vf_" here.
 
 >
+> > +Date:          January 2021
+> > +Contact:       Leon Romanovsky <leonro@nvidia.com>
+> > +Description:
+> > +               This file is associated with the SR-IOV PFs.
+> > +               It returns a total number of possible to configure MSI-X
+> > +               vectors on the enabled VFs.
+> > +
+> > +               The values returned are:
+> > +                * > 0 - this will be total number possible to consume by VFs,
+> > +                * = 0 - feature is not supported
+> > +
+> > +               If no SR-IOV VFs are enabled, this value will return 0.
+> > diff --git a/drivers/pci/iov.c b/drivers/pci/iov.c
+> > index 42c0df4158d1..0a6ddf3230fd 100644
+> > --- a/drivers/pci/iov.c
+> > +++ b/drivers/pci/iov.c
+> > @@ -394,12 +394,22 @@ static ssize_t sriov_drivers_autoprobe_store(struct device *dev,
+> >         return count;
+> >  }
 > >
-> >>
-> >>> +                             id = btf__find_by_name_kind(btf, ext->name, BTF_KIND_VAR);
-> >>> +                             if (id != -ENOENT)
-> >>> +                                     break;
-> >>> +                     }
-> >>> +             }
-> >>>                if (id <= 0) {
-> >>>                        pr_warn("extern (ksym) '%s': failed to find BTF ID in vmlinux BTF.\n",
-> >>>                                ext->name);
-> >>> @@ -7343,24 +7360,19 @@ static int bpf_object__resolve_ksyms_btf_id(struct bpf_object *obj)
-> >>>                local_type_id = ext->ksym.type_id;
-> >>>
-> >>>                /* find target type_id */
-> >>> -             targ_var = btf__type_by_id(obj->btf_vmlinux, id);
-> >>> -             targ_var_name = btf__name_by_offset(obj->btf_vmlinux,
-> >>> -                                                 targ_var->name_off);
-> >>> -             targ_type = skip_mods_and_typedefs(obj->btf_vmlinux,
-> >>> -                                                targ_var->type,
-> >>> -                                                &targ_type_id);
-> >>> +             targ_var = btf__type_by_id(btf, id);
-> >>> +             targ_var_name = btf__name_by_offset(btf, targ_var->name_off);
-> >>> +             targ_type = skip_mods_and_typedefs(btf, targ_var->type, &targ_type_id);
-> >>>
-> >>>                ret = bpf_core_types_are_compat(obj->btf, local_type_id,
-> >>> -                                             obj->btf_vmlinux, targ_type_id);
-> >>> +                                             btf, targ_type_id);
-> >>>                if (ret <= 0) {
-> >>>                        const struct btf_type *local_type;
-> >>>                        const char *targ_name, *local_name;
-> >>>
-> >>>                        local_type = btf__type_by_id(obj->btf, local_type_id);
-> >>> -                     local_name = btf__name_by_offset(obj->btf,
-> >>> -                                                      local_type->name_off);
-> >>> -                     targ_name = btf__name_by_offset(obj->btf_vmlinux,
-> >>> -                                                     targ_type->name_off);
-> >>> +                     local_name = btf__name_by_offset(obj->btf, local_type->name_off);
-> >>> +                     targ_name = btf__name_by_offset(btf, targ_type->name_off);
-> >>>
-> >>>                        pr_warn("extern (ksym) '%s': incompatible types, expected [%d] %s %s, but kernel has [%d] %s %s\n",
-> >>>                                ext->name, local_type_id,
-> >>> @@ -7370,7 +7382,8 @@ static int bpf_object__resolve_ksyms_btf_id(struct bpf_object *obj)
-> >>>                }
-> >>>
-> >>>                ext->is_set = true;
-> >>> -             ext->ksym.vmlinux_btf_id = id;
-> >>> +             ext->ksym.kernel_btf_obj_fd = btf_fd;
-> >>> +             ext->ksym.kernel_btf_id = id;
-> >>>                pr_debug("extern (ksym) '%s': resolved to [%d] %s %s\n",
-> >>>                         ext->name, id, btf_kind_str(targ_var), targ_var_name);
-> >>>        }
-> >>>
+> > +static ssize_t sriov_vf_total_msix_show(struct device *dev,
+> > +                                       struct device_attribute *attr,
+> > +                                       char *buf)
+> > +{
+> > +       struct pci_dev *pdev = to_pci_dev(dev);
+> > +
+> > +       return sprintf(buf, "%d\n", pdev->sriov->vf_total_msix);
+> > +}
+> > +
+>
+> You display it as a signed value, but unsigned values are not
+> supported, correct?
+
+Right, I made it similar to the vf_msix_set. I can change.
+
+>
+> >  static DEVICE_ATTR_RO(sriov_totalvfs);
+> >  static DEVICE_ATTR_RW(sriov_numvfs);
+> >  static DEVICE_ATTR_RO(sriov_offset);
+> >  static DEVICE_ATTR_RO(sriov_stride);
+> >  static DEVICE_ATTR_RO(sriov_vf_device);
+> >  static DEVICE_ATTR_RW(sriov_drivers_autoprobe);
+> > +static DEVICE_ATTR_RO(sriov_vf_total_msix);
+> >
+> >  static struct attribute *sriov_dev_attrs[] = {
+> >         &dev_attr_sriov_totalvfs.attr,
+> > @@ -408,6 +418,7 @@ static struct attribute *sriov_dev_attrs[] = {
+> >         &dev_attr_sriov_stride.attr,
+> >         &dev_attr_sriov_vf_device.attr,
+> >         &dev_attr_sriov_drivers_autoprobe.attr,
+> > +       &dev_attr_sriov_vf_total_msix.attr,
+> >         NULL,
+> >  };
+> >
+> > @@ -658,6 +669,7 @@ static void sriov_disable(struct pci_dev *dev)
+> >                 sysfs_remove_link(&dev->dev.kobj, "dep_link");
+> >
+> >         iov->num_VFs = 0;
+> > +       iov->vf_total_msix = 0;
+> >         pci_iov_set_numvfs(dev, 0);
+> >  }
+> >
+> > @@ -1116,6 +1128,25 @@ int pci_sriov_get_totalvfs(struct pci_dev *dev)
+> >  }
+> >  EXPORT_SYMBOL_GPL(pci_sriov_get_totalvfs);
+> >
+> > +/**
+> > + * pci_sriov_set_vf_total_msix - set total number of MSI-X vectors for the VFs
+> > + * @dev: the PCI PF device
+> > + * @numb: the total number of MSI-X vector to consume by the VFs
+> > + *
+> > + * Sets the number of MSI-X vectors that is possible to consume by the VFs.
+> > + * This interface is complimentary part of the pci_set_msix_vec_count()
+> > + * that will be used to configure the required number on the VF.
+> > + */
+> > +void pci_sriov_set_vf_total_msix(struct pci_dev *dev, int numb)
+> > +{
+> > +       if (!dev->is_physfn || !dev->driver ||
+> > +           !dev->driver->sriov_set_msix_vec_count)
+> > +               return;
+> > +
+> > +       dev->sriov->vf_total_msix = numb;
+> > +}
+> > +EXPORT_SYMBOL_GPL(pci_sriov_set_vf_total_msix);
+> > +
+>
+> This seems broken. What validation is being done on the numb value?
+> You pass it as int, and your documentation all refers to tests for >=
+> 0, but isn't a signed input a possibility as well? Also "numb" doesn't
+> make for a good abbreviation as it is already a word of its own. It
+> might make more sense to use count or something like that rather than
+> trying to abbreviate number.
+
+"Broken" is a nice word to describe misunderstanding.
+
+The vf_total_msix is not set by the users and used solely by the drivers
+to advertise their capability. This field is needed to give a way to
+calculate how much MSI-X VFs can get. The driver code is part of the
+kernel and like any other kernel code, it is trusted.
+
+I'm checking < 0 in another _set_ routine to make sure that we will be
+able to extend this sysfs entry if at some point of time negative vector
+count will make sense.
+
+"Count" instead of "numb" is fine by me.
+
+>
+>
+> >  /**
+> >   * pci_sriov_configure_simple - helper to configure SR-IOV
+> >   * @dev: the PCI device
+> > diff --git a/drivers/pci/pci.h b/drivers/pci/pci.h
+> > index 1fd273077637..0fbe291eb0f2 100644
+> > --- a/drivers/pci/pci.h
+> > +++ b/drivers/pci/pci.h
+> > @@ -327,6 +327,9 @@ struct pci_sriov {
+> >         u16             subsystem_device; /* VF subsystem device */
+> >         resource_size_t barsz[PCI_SRIOV_NUM_BARS];      /* VF BAR size */
+> >         bool            drivers_autoprobe; /* Auto probing of VFs by driver */
+> > +       int             vf_total_msix;  /* Total number of MSI-X vectors the VFs
+> > +                                        * can consume
+> > +                                        */
+> >  };
+> >
+> >  /**
+> > diff --git a/include/linux/pci.h b/include/linux/pci.h
+> > index a17cfc28eb66..fd9ff1f42a09 100644
+> > --- a/include/linux/pci.h
+> > +++ b/include/linux/pci.h
+> > @@ -2074,6 +2074,7 @@ int pci_sriov_get_totalvfs(struct pci_dev *dev);
+> >  int pci_sriov_configure_simple(struct pci_dev *dev, int nr_virtfn);
+> >  resource_size_t pci_iov_resource_size(struct pci_dev *dev, int resno);
+> >  void pci_vf_drivers_autoprobe(struct pci_dev *dev, bool probe);
+> > +void pci_sriov_set_vf_total_msix(struct pci_dev *dev, int numb);
+> >
+> >  /* Arch may override these (weak) */
+> >  int pcibios_sriov_enable(struct pci_dev *pdev, u16 num_vfs);
+> > @@ -2114,6 +2115,7 @@ static inline int pci_sriov_get_totalvfs(struct pci_dev *dev)
+> >  static inline resource_size_t pci_iov_resource_size(struct pci_dev *dev, int resno)
+> >  { return 0; }
+> >  static inline void pci_vf_drivers_autoprobe(struct pci_dev *dev, bool probe) { }
+> > +static inline void pci_sriov_set_vf_total_msix(struct pci_dev *dev, int numb) {}
+> >  #endif
+> >
+> >  #if defined(CONFIG_HOTPLUG_PCI) || defined(CONFIG_HOTPLUG_PCI_MODULE)
+> > --
+> > 2.29.2
+> >
