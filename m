@@ -2,78 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D24552F2630
-	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 03:19:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4D2BC2F2636
+	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 03:21:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730567AbhALCTI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jan 2021 21:19:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49352 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728010AbhALCTH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 21:19:07 -0500
-Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CE7FC061794;
-        Mon, 11 Jan 2021 18:18:27 -0800 (PST)
-Received: by mail-yb1-xb33.google.com with SMTP id d37so748315ybi.4;
-        Mon, 11 Jan 2021 18:18:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to;
-        bh=/jqrwzJgo9eVxAXeM6jKN5/Sa/ECb+x63YL/dYcjaww=;
-        b=FFITv9L+CRR9SKokSSwXQz08Vq3LSY2cvOh6eL3csUn+UHXj9+BmUeX/FJVtLc1ARd
-         8uvDBieYmaE3usyRRAPtpOAr09KIp36kQkVlVX5xiQZw3oGsSskg/k10ndwYSjBG0RgM
-         oObZb+eE+X8cAcxgl49Yvmykhn03v5Bd/pUrFaNRpzkBj+tm6QzgT296/wjiWaK/sHXB
-         B5FyH4YOJRVZI8AnO+KujtJRAIE+NMj1Du9dJpCN1GA/1XbHee7q1z0YahQfSxCGJYSI
-         qwueenfvDufy7ZPJ5bOfefW1s4khPt5096iogMDrxnZaPl+9Es5i3IpAbz7rupkvWhg4
-         Z7VA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=/jqrwzJgo9eVxAXeM6jKN5/Sa/ECb+x63YL/dYcjaww=;
-        b=LxIRjM65Ahw+AyiT75D9MlODUDdNJ3AklKCVRJEEPFXaph9w2me4DUvVbTin9IDR2n
-         8kBGAHApHQ46ZNeulLtV+R6KF+TvUbVlja3r1evO8TzMDV3bTAsAyd4wA+hTojvy9opV
-         W+ALamw3auhJ8FGQiPNGgH7+tx78A6N7yT0jfVbSBBgjIpsBm95AGwHtJQhl1MKOgtJj
-         DZNwKv/Ovgn1ooqSSfZ32jbUS3eu+BWCJSa4dGShNcyoYQPJnQaRSOT9SpKzInwmQUmt
-         dNv1QVK+VZF+yujbmDBxFubpnOBnM6wLxzYzWZq3Ca4CYykZXUhW2qeZRIhgPDbPOL1S
-         Asrw==
-X-Gm-Message-State: AOAM5315hFPOGczrNeYLesGxcK5smnGNJp42UgYbVlPpUgGE/dPAYKO2
-        tfdAagF4w2YKD7hpJaQENTFS2J0CX9BuhA1B60k=
-X-Google-Smtp-Source: ABdhPJzQRUSeX3651DgjlAt22Gg2Gq9OwNSpiGrNACArTzDBmmQ/QHbpdc3Ar5s6EzSGzzwVlfmDq4782wvK4jKbnk0=
-X-Received: by 2002:a25:880a:: with SMTP id c10mr3724649ybl.456.1610417906674;
- Mon, 11 Jan 2021 18:18:26 -0800 (PST)
+        id S1731384AbhALCVF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jan 2021 21:21:05 -0500
+Received: from rtits2.realtek.com ([211.75.126.72]:48390 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727886AbhALCVF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 21:21:05 -0500
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 10C2K97Q0017170, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexmbs04.realtek.com.tw[172.21.6.97])
+        by rtits2.realtek.com.tw (8.15.2/2.70/5.88) with ESMTPS id 10C2K97Q0017170
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Tue, 12 Jan 2021 10:20:09 +0800
+Received: from RTEXMB06.realtek.com.tw (172.21.6.99) by
+ RTEXMBS04.realtek.com.tw (172.21.6.97) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Tue, 12 Jan 2021 10:20:08 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXMB06.realtek.com.tw (172.21.6.99) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2044.4; Tue, 12 Jan 2021 10:20:08 +0800
+Received: from RTEXMBS04.realtek.com.tw ([fe80::ecca:80ca:53:e833]) by
+ RTEXMBS04.realtek.com.tw ([fe80::ecca:80ca:53:e833%12]) with mapi id
+ 15.01.2106.006; Tue, 12 Jan 2021 10:20:08 +0800
+From:   Pkshih <pkshih@realtek.com>
+To:     "tony0620emma@gmail.com" <tony0620emma@gmail.com>,
+        "abaci-bugfix@linux.alibaba.com" <abaci-bugfix@linux.alibaba.com>
+CC:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "kvalo@codeaurora.org" <kvalo@codeaurora.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH] rtw88: debug: style: Simplify bool comparison
+Thread-Topic: [PATCH] rtw88: debug: style: Simplify bool comparison
+Thread-Index: AQHW5/ucgdIAEnze3069k02IgzXoGqoivKgA
+Date:   Tue, 12 Jan 2021 02:20:08 +0000
+Message-ID: <1610417974.3495.6.camel@realtek.com>
+References: <1610356932-56073-1-git-send-email-abaci-bugfix@linux.alibaba.com>
+In-Reply-To: <1610356932-56073-1-git-send-email-abaci-bugfix@linux.alibaba.com>
+Accept-Language: en-US, zh-TW
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.21.69.213]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <890FF8EFC305BA41B518A4523CA4C9E2@realtek.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-From:   =?UTF-8?B?5oWV5Yas5Lqu?= <mudongliangabcd@gmail.com>
-Date:   Tue, 12 Jan 2021 10:18:00 +0800
-Message-ID: <CAD-N9QWDdRDiud42D8HMeRabqVvQ+Pbz=qgbOYrvpUvjRFp05Q@mail.gmail.com>
-Subject: "general protection fault in sctp_ulpevent_notify_peer_addr_change"
- and "general protection fault in sctp_ulpevent_nofity_peer_addr_change"
- should share the same root cause
-To:     davem@davemloft.net, kuba@kernel.org,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-sctp@vger.kernel.org, marcelo.leitner@gmail.com,
-        netdev@vger.kernel.org, nhorman@tuxdriver.com, vyasevich@gmail.com,
-        rkovhaev@gmail.com,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear developers,
-
-I find that "general protection fault in l2cap_sock_getsockopt" and
-"general protection fault in sco_sock_getsockopt" may be duplicated
-bugs from the same root cause.
-
-First, by comparing the PoC similarity after own minimization, we find
-they share the same PoC. Second, the stack traces for both bug reports
-are the same except for the last function. And the different last
-functions are due to a function name change (typo fix) from
-"sctp_ulpevent_nofity_peer_addr_change" to
-"sctp_ulpevent_notify_peer_addr_change"
-
---
-My best regards to you.
-
-     No System Is Safe!
-     Dongliang Mu
+T24gTW9uLCAyMDIxLTAxLTExIGF0IDA5OjIyICswMDAwLCBZQU5HIExJIHdyb3RlOg0KPiBGaXgg
+dGhlIGZvbGxvd2luZyBjb2NjaWNoZWNrIHdhcm5pbmc6DQo+IMKgLi9kcml2ZXJzL25ldC93aXJl
+bGVzcy9yZWFsdGVrL3J0dzg4L2RlYnVnLmM6ODAwOjE3LTIzOiBXQVJOSU5HOg0KPiBDb21wYXJp
+c29uIG9mIDAvMSB0byBib29sIHZhcmlhYmxlDQo+IA0KPiBTaWduZWQtb2ZmLWJ5OiBZQU5HIExJ
+IDxhYmFjaS1idWdmaXhAbGludXguYWxpYmFiYS5jb20+DQo+IFJlcG9ydGVkLWJ5OiBBYmFjaSBS
+b2JvdDxhYmFjaUBsaW51eC5hbGliYWJhLmNvbT4tLS0NCj4gwqBkcml2ZXJzL25ldC93aXJlbGVz
+cy9yZWFsdGVrL3J0dzg4L2RlYnVnLmMgfCAyICstDQo+IMKgMSBmaWxlIGNoYW5nZWQsIDEgaW5z
+ZXJ0aW9uKCspLCAxIGRlbGV0aW9uKC0pDQo+IA0KPiANCg0KSSB0aGluayB0aGF0ICJydHc4ODoi
+IG9yICJydHc4ODogZGVidWc6IiBhcyBzdWJqZWN0IHByZWZpeCBpcyBlbm91Z2guDQpPdGhlcnMg
+YXJlIGdvb2QgdG8gbWUuDQoNCi0tLQ0KUGluZy1LZQ0KDQo=
