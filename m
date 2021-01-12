@@ -2,136 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 137B62F3CF9
-	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 01:43:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FB282F3D07
+	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 01:43:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2438102AbhALVhY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jan 2021 16:37:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60476 "EHLO
+        id S2438119AbhALVhZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jan 2021 16:37:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2436991AbhALUiw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 15:38:52 -0500
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 398EEC061575
-        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 12:38:12 -0800 (PST)
-Received: by mail-ej1-x62b.google.com with SMTP id d17so5365445ejy.9
-        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 12:38:12 -0800 (PST)
+        with ESMTP id S2436992AbhALUjH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 15:39:07 -0500
+Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D36DC061786;
+        Tue, 12 Jan 2021 12:38:27 -0800 (PST)
+Received: by mail-yb1-xb36.google.com with SMTP id y4so15697ybn.3;
+        Tue, 12 Jan 2021 12:38:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=oEnEDIDJIc2OwLDtqzqOSyMhSyOzqr/b8CHtvwH6Y9o=;
-        b=s5ntTrC4DEDA0hGZxhKMZ+pqiVRsG18glTxAmnSaWrFKdchFh8p+1KafJxxwTaDAAk
-         mORJnUR3AyYr/V9pGF+MHsYpnnoJsF+0ebAwatkRYT0jp4oN22zIn5apzroE4pTv2D5G
-         o7ok6SRAJICgfOyGNrZ8yjLBJ6vxuzc5j+ljhlXUFfE6lGe2uWNNBTvhfQ9XQkCRDm7I
-         V7mlSAOfrmt6t3dG5CVaREeC1SgVN/KhysY9+arxfRHiszMC5UWc9A2iuJkazZCz3JyF
-         /+r7YxC3rk/PI7mJhKpHDdcJMCYU4SWhwJuqvZfI+rrzpxw58+e7O4dKC7SGFMXoyPD6
-         RkuQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=FGkjr+ZPHg8gkKHMJ5dVZ/qAAwMPTiEQsQ9NPkLnGsw=;
+        b=jULcu12WaU9v0odTNjin4I1OYOe8T02A7taISfBFOi26DQrCPqobzVqchIkxAhlvL8
+         R5wgzYG3UO3qRqNyzpGRfAa/wkdrkQ995zf8XPgSqEQPkl0zL6m8ZsfxI1TBBnsaiDmh
+         RyCM1s7r1IZyJNy/MlUQcxVESKvnZvn4gI3DUbn7RjNcJ6fZ6Cl2oHnAO7MWDaCNUobs
+         mwhmdeewrmcv3u68Xp0MfBboWFcerxbJ07HIl4ejXomMhxo2jAqc7WUSAUO157iidCdB
+         MwVgWvV2yslpnrPhAzj3L8S+iGfJuZZmiRKIpWcGSeR4gGn73bzD2tA/qoWjKKMFEBMh
+         pfhQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=oEnEDIDJIc2OwLDtqzqOSyMhSyOzqr/b8CHtvwH6Y9o=;
-        b=VaFyeOfNlBVzdEdqHFRS4lA06EmlyUh1ujEjumTILeDpEkOWN+Vky2imFOHilxusXq
-         rBHscVVoNZolUuLifAsKSj7Cm0n661HT5+tX5pbA7VVQxDu98M/u1WCKoAFJV1o2kHIH
-         1B0EqOaENWxfeRNEAFICGPwqO04gJ73uu+1VQkH6Y5UD33z5ExeVfR0zNm+G+wSZoAoM
-         QNmj3xclX5vJVgT1O4YmHjmfI6Vit98HtZ91l2nFznabNrp6Sew3s8DTwy27jG0Z4r/g
-         FgwPDmLszc57Cvr2sQsPvJI+Mo8RoX9CgGwNbIhdLvP9RAFgl8zhq3ESBydP1Pd1zujl
-         khAQ==
-X-Gm-Message-State: AOAM531gXGqst/kYvjgkYOx0vP9IuB2p5lrGmY5bJZXMsq2nZrpTqPYi
-        ekuKQk0AWDZP5dKXuk48kDU=
-X-Google-Smtp-Source: ABdhPJwiEd+sesqhQY+J7QQ3E3NWQgru9f0rwZOaMFgOgNmfY6SF7VoR363N1smMXJgVuUTTh95xxg==
-X-Received: by 2002:a17:906:edd1:: with SMTP id sb17mr433528ejb.118.1610483890728;
-        Tue, 12 Jan 2021 12:38:10 -0800 (PST)
-Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id v16sm1893474eds.64.2021.01.12.12.38.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Jan 2021 12:38:10 -0800 (PST)
-Date:   Tue, 12 Jan 2021 22:38:08 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>
-Cc:     netdev@vger.kernel.org, pavana.sharma@digi.com,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com, kuba@kernel.org,
-        lkp@intel.com, davem@davemloft.net, ashkan.boldaji@digi.com,
-        andrew@lunn.ch, Chris Packham <chris.packham@alliedtelesis.co.nz>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Subject: Re: [PATCH net-next v15 5/6] net: dsa: mv88e6xxx: Add support for
- mv88e6393x family of Marvell
-Message-ID: <20210112203808.4mkryi3tcut7mvz7@skbuf>
-References: <20210112195405.12890-1-kabel@kernel.org>
- <20210112195405.12890-6-kabel@kernel.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=FGkjr+ZPHg8gkKHMJ5dVZ/qAAwMPTiEQsQ9NPkLnGsw=;
+        b=pwL3dr+y+kOGOmkMirT+yduWzeHIGYNxIOZLQLxiYd1LAAikJsrLLwR7YdUdepjLrS
+         S+vls6ZBj/dcMlr1AwI79vkuzTEbdh9sgOwKM6BxiovKPtSfJMiBr0ZFd6OfFb2fbpcB
+         geUviroqlxUD8vUQMhK+/M31ZFN2Ad5GcfNq94aghs2J5wMhrWF5OQoDp8v18O9NGXO9
+         EbBZCGPaPHLHQz2p9Zn39uvXNt9dCh2hUxEyUKmLekS9hpkEbEjc+fPKJ8LXtBFSKTCa
+         Ny3lqV3Lc1Y4BOmBBcYLXdmepCw1zL+QmykC9248G0DZZDy25yK4OsxsvqwWtq7bt6a9
+         lMmA==
+X-Gm-Message-State: AOAM533T/KSIXtCiSJvz0oCTmDTrjlc9d+3cg8Ww/A87kj4hODIEjb4A
+        gaBzcheHNiWUW1z621gKT+N9zfP4TUVkqf8BYxw=
+X-Google-Smtp-Source: ABdhPJzOss52FqTn1amUQk7+g9gwMXium7+WRElgGVdglKBYIVt9zkPRYqG4/TB6JpZhEugXBz2Iwo/uxk8TARw3kQA=
+X-Received: by 2002:a25:9882:: with SMTP id l2mr1665224ybo.425.1610483906401;
+ Tue, 12 Jan 2021 12:38:26 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210112195405.12890-6-kabel@kernel.org>
+References: <20210112075520.4103414-1-andrii@kernel.org> <20210112075520.4103414-6-andrii@kernel.org>
+ <4155ef59-9e5e-f596-f22b-ecd4bde73e85@iogearbox.net>
+In-Reply-To: <4155ef59-9e5e-f596-f22b-ecd4bde73e85@iogearbox.net>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Tue, 12 Jan 2021 12:38:15 -0800
+Message-ID: <CAEf4BzbjuWO68DKNH28wYYN9Bcu8HjWN3_sGnRhoZozvfanJkQ@mail.gmail.com>
+Subject: Re: [PATCH v3 bpf-next 5/7] bpf: support BPF ksym variables in kernel modules
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Kernel Team <kernel-team@fb.com>, Hao Luo <haoluo@google.com>,
+        Yonghong Song <yhs@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 12, 2021 at 08:54:04PM +0100, Marek Behún wrote:
-> From: Pavana Sharma <pavana.sharma@digi.com>
-> 
-> The Marvell 88E6393X device is a single-chip integration of a 11-port
-> Ethernet switch with eight integrated Gigabit Ethernet (GbE)
-> transceivers and three 10-Gigabit interfaces.
-> 
-> This patch adds functionalities specific to mv88e6393x family (88E6393X,
-> 88E6193X and 88E6191X).
-> 
-> The main differences between previous devices and this one are:
-> - port 0 can be a SERDES port
-> - all SERDESes are one-lane, eg. no XAUI nor RXAUI
-> - on the other hand the SERDESes can do USXGMII, 10GBASER and 5GBASER
->   (on 6191X only one SERDES is capable of more than 1g; USXGMII is not
->   yet supported with this change)
-> - Port Policy CTL register is changed to Port Policy MGMT CTL register,
->   via which several more registers can be accessed indirectly
-> - egress monitor port is configured differently
-> - ingress monitor/CPU/mirror ports are configured differently and can be
->   configured per port (ie. each port can have different ingress monitor
->   port, for example)
-> - port speed AltBit works differently than previously
-> - PHY registers can be also accessed via MDIO address 0x18 and 0x19
->   (on previous devices they could be accessed only via Global 2 offsets
->    0x18 and 0x19, which means two indirections; this feature is not yet
->    leveraged with this patch)
-> 
-> Co-developed-by: Ashkan Boldaji <ashkan.boldaji@digi.com>
-> Signed-off-by: Ashkan Boldaji <ashkan.boldaji@digi.com>
-> Signed-off-by: Pavana Sharma <pavana.sharma@digi.com>
-> Co-developed-by: Marek Behún <kabel@kernel.org>
-> Signed-off-by: Marek Behún <kabel@kernel.org>
-> ---
->  drivers/net/dsa/mv88e6xxx/chip.c    | 149 +++++++++++++
->  drivers/net/dsa/mv88e6xxx/chip.h    |   4 +
->  drivers/net/dsa/mv88e6xxx/global1.h |   2 +
->  drivers/net/dsa/mv88e6xxx/global2.h |   8 +
->  drivers/net/dsa/mv88e6xxx/port.c    | 267 ++++++++++++++++++++++++
->  drivers/net/dsa/mv88e6xxx/port.h    |  47 ++++-
->  drivers/net/dsa/mv88e6xxx/serdes.c  | 312 ++++++++++++++++++++++++++++
->  drivers/net/dsa/mv88e6xxx/serdes.h  |  44 ++++
->  8 files changed, 831 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-> index ed07cb29b285..c2dc6858481a 100644
-> --- a/drivers/net/dsa/mv88e6xxx/chip.c
-> +++ b/drivers/net/dsa/mv88e6xxx/chip.c
-> @@ -635,6 +635,28 @@ static void mv88e6390x_phylink_validate(struct mv88e6xxx_chip *chip, int port,
->  	mv88e6390_phylink_validate(chip, port, mask, state);
->  }
->  
-> +static void mv88e6393x_phylink_validate(struct mv88e6xxx_chip *chip, int port,
-> +					unsigned long *mask,
-> +					struct phylink_link_state *state)
-> +{
-> +	if (port == 0 || port == 9 || port == 10) {
-> +		phylink_set(mask, 10000baseT_Full);
-> +		phylink_set(mask, 10000baseCR_Full);
-> +		phylink_set(mask, 10000baseSR_Full);
-> +		phylink_set(mask, 10000baseLR_Full);
-> +		phylink_set(mask, 10000baseLRM_Full);
-> +		phylink_set(mask, 10000baseER_Full);
+On Tue, Jan 12, 2021 at 8:27 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
+>
+> On 1/12/21 8:55 AM, Andrii Nakryiko wrote:
+> > Add support for directly accessing kernel module variables from BPF programs
+> > using special ldimm64 instructions. This functionality builds upon vmlinux
+> > ksym support, but extends ldimm64 with src_reg=BPF_PSEUDO_BTF_ID to allow
+> > specifying kernel module BTF's FD in insn[1].imm field.
+> >
+> > During BPF program load time, verifier will resolve FD to BTF object and will
+> > take reference on BTF object itself and, for module BTFs, corresponding module
+> > as well, to make sure it won't be unloaded from under running BPF program. The
+> > mechanism used is similar to how bpf_prog keeps track of used bpf_maps.
+> >
+> > One interesting change is also in how per-CPU variable is determined. The
+> > logic is to find .data..percpu data section in provided BTF, but both vmlinux
+> > and module each have their own .data..percpu entries in BTF. So for module's
+> > case, the search for DATASEC record needs to look at only module's added BTF
+> > types. This is implemented with custom search function.
+> >
+> > Acked-by: Yonghong Song <yhs@fb.com>
+> > Acked-by: Hao Luo <haoluo@google.com>
+> > Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+> [...]
+> > +
+> > +struct module *btf_try_get_module(const struct btf *btf)
+> > +{
+> > +     struct module *res = NULL;
+> > +#ifdef CONFIG_DEBUG_INFO_BTF_MODULES
+> > +     struct btf_module *btf_mod, *tmp;
+> > +
+> > +     mutex_lock(&btf_module_mutex);
+> > +     list_for_each_entry_safe(btf_mod, tmp, &btf_modules, list) {
+> > +             if (btf_mod->btf != btf)
+> > +                     continue;
+> > +
+> > +             if (try_module_get(btf_mod->module))
+> > +                     res = btf_mod->module;
+>
+> One more thought (follow-up would be okay I'd think) ... when a module references
+> a symbol from another module, it similarly needs to bump the refcount of the module
+> that is owning it and thus disallowing to unload for that other module's lifetime.
+> That usage dependency is visible via /proc/modules however, so if unload doesn't work
+> then lsmod allows a way to introspect that to the user. This seems to be achieved via
+> resolve_symbol() where it records its dependency/usage. Would be great if we could at
+> some point also include the BPF prog name into that list so that this is more obvious.
+> Wdyt?
+>
 
-Why did you remove 1000baseKR_Full from here?
+Yeah, it's definitely nice to see dependent bpf progs. There is struct
+module_use, which is used to record these dependencies, but the
+assumption there is that dependencies could be only other modules. So
+one way is to somehow extend that or add another set of bpf_prog
+dependencies. First is a bit intrusive, while the seconds sucks even
+more, IMO.
+
+Alternatively, we can rely on bpf_link info to emit module info, if
+the BPF program is attached to BTF type from the module. Then with
+bpftool it would be easy to see this, but it's not as
+readily-available info as /proc/modules, of course.
+
+Any preferences?
+
+> > +             break;
+> > +     }
+> > +     mutex_unlock(&btf_module_mutex);
+> > +#endif
+> > +
+> > +     return res;
+> > +}
+> > diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+> > index 261f8692d0d2..69c3c308de5e 100644
+> > --- a/kernel/bpf/core.c
+> > +++ b/kernel/bpf/core.c
+> > @@ -2119,6 +2119,28 @@ static void bpf_free_used_maps(struct bpf_prog_aux *aux)
+> >       kfree(aux->used_maps);
+> >   }
+> >
+> > +void __bpf_free_used_btfs(struct bpf_prog_aux *aux,
+> > +                       struct btf_mod_pair *used_btfs, u32 len)
+> > +{
+> > +#ifdef CONFIG_BPF_SYSCALL
+> > +     struct btf_mod_pair *btf_mod;
+> > +     u32 i;
+> > +
+> > +     for (i = 0; i < len; i++) {
+> > +             btf_mod = &used_btfs[i];
+> > +             if (btf_mod->module)
+> > +                     module_put(btf_mod->module);
+> > +             btf_put(btf_mod->btf);
+> > +     }
+> > +#endif
+> > +}
