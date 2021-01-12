@@ -2,73 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EDB7D2F252E
-	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 02:18:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 39B432F2535
+	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 02:18:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728785AbhALA6T (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jan 2021 19:58:19 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50438 "EHLO mail.kernel.org"
+        id S1730412AbhALBAu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jan 2021 20:00:50 -0500
+Received: from mail.kernel.org ([198.145.29.99]:50984 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727261AbhALA6T (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 11 Jan 2021 19:58:19 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 31E6922510;
-        Tue, 12 Jan 2021 00:57:38 +0000 (UTC)
+        id S1727905AbhALBAt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 11 Jan 2021 20:00:49 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id 2D44222D6D;
+        Tue, 12 Jan 2021 01:00:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610413058;
-        bh=CAs1nlA+1s1zeNCU9zjes48V/Qhq5PGxzrZG/M5JCMs=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=OS7Ygjdurr4piuyIcRgwoGxjFQZ1eKz8v17HJholGHZ+cmySzJXoc53P/Ueqsciq7
-         yuPxnGcmteCddMzkUMXoi1qqYOjQAZB806IdMYNRn5EbPkCtzcMbwbSWe4u33DZrYk
-         Pz27YU7fAzjQ60dY3ryumtFUlOhLFS9Ns9FC/AEwnq1s0m7jI1xWcQOYZ+wb69v43k
-         ZtqVxlsU2s2vc30v/mTBzMqK5Vl1LjuNbqxSBT+7d+vTO8WoPNnUACV6SqA3PmRyk6
-         29e+50TwGd1Qti7aqTqR89/C69DDUYUwvf+JX+6vigtJPw7CvAtrFOEDZUAryjt1A0
-         t2v+rzMqbJkrw==
-Date:   Mon, 11 Jan 2021 16:57:37 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     stefanc@marvell.com, netdev@vger.kernel.org,
-        thomas.petazzoni@bootlin.com, davem@davemloft.net,
-        nadavh@marvell.com, ymarkman@marvell.com,
-        linux-kernel@vger.kernel.org, linux@armlinux.org.uk,
-        mw@semihalf.com, rmk+kernel@armlinux.org.uk, atenart@kernel.org
-Subject: Re: [PATCH net ] net: mvpp2: Remove Pause and Asym_Pause support
-Message-ID: <20210111165737.092f02c8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <X/zxnyyTRf0xsYmd@lunn.ch>
-References: <1610306582-16641-1-git-send-email-stefanc@marvell.com>
-        <20210111163653.6483ae82@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <X/zxnyyTRf0xsYmd@lunn.ch>
+        s=k20201202; t=1610413209;
+        bh=3eZOHq/Es3zefZlhcpUBdit+FARwD24CyoZ6hnfmDNM=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=lyf3U0JNoKKinD2/zwarRBjVejk9J+an9JrZFb6/SFuph7KqQhHPuaMaeiN0dfwWJ
+         tDhyBozoHN3Rnh2Vl+93lnAfm1BSYIPIO4zbWAvpJ8CFb0FMHK5/F8IMvZ6tUViwcv
+         aOmjAzhWD8+mH4UeIpbGElmcNdvIUESk4QSB8Bqf+qysHrg6wKvREhrraJLO7xfW28
+         KlAwdsXyukH/xaRYQpklO8AdLhb1bUJQhmnsKfLCsTjyACLqSXwpOdcHkXpTE45BQg
+         YnAc5+4GjzSaklMkO4mkXSEJqxnhG5NO+RajqIUgvpHlmQXCc1NyKiNkl2poiesCrG
+         0yCBDhBjFcCEw==
+Received: from pdx-korg-docbuild-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-1.ci.codeaurora.org (Postfix) with ESMTP id 1F2EC600E0;
+        Tue, 12 Jan 2021 01:00:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next] r8169: make use of the unaligned access helpers
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161041320912.15587.7478873532753899302.git-patchwork-notify@kernel.org>
+Date:   Tue, 12 Jan 2021 01:00:09 +0000
+References: <cfaf9176-e4f9-c32d-4d4d-e8fb52009f35@gmail.com>
+In-Reply-To: <cfaf9176-e4f9-c32d-4d4d-e8fb52009f35@gmail.com>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     kuba@kernel.org, davem@davemloft.net, nic_swsd@realtek.com,
+        netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 12 Jan 2021 01:47:27 +0100 Andrew Lunn wrote:
-> On Mon, Jan 11, 2021 at 04:36:53PM -0800, Jakub Kicinski wrote:
-> > On Sun, 10 Jan 2021 21:23:02 +0200 stefanc@marvell.com wrote:  
-> > > From: Stefan Chulski <stefanc@marvell.com>
-> > > 
-> > > Packet Processor hardware not connected to MAC flow control unit and
-> > > cannot support TX flow control.
-> > > This patch disable flow control support.
-> > > 
-> > > Fixes: 3f518509dedc ("ethernet: Add new driver for Marvell Armada 375 network unit")
-> > > Signed-off-by: Stefan Chulski <stefanc@marvell.com>  
-> > 
-> > I'm probably missing something, but why not 4bb043262878 ("net: mvpp2:
-> > phylink support")?  
-> 
-> Hi Jakub
-> 
-> Before that change, it used phylib. The same is true with phylib, you
-> need to tell phylib it should not advertise pause. How you do it is
-> different, but the basic issue is the same. Anybody doing a backport
-> past 4bb043262878is going to need a different fix, but the basic issue
-> is there all the way back to when the driver was added.
+Hello:
 
-Thanks for confirming, I didn't see any code being removed which would
-tell phylib pause is supported, so I wanted to make sure phylib
-defaults to on / gets it from some register. 
+This patch was applied to netdev/net-next.git (refs/heads/master):
 
-Applied now, thanks!
+On Sat, 9 Jan 2021 23:53:26 +0100 you wrote:
+> Instead of open-coding unaligned access let's use the predefined
+> unaligned access helpers.
+> 
+> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+> ---
+>  drivers/net/ethernet/realtek/r8169_main.c | 35 +++++++++--------------
+>  1 file changed, 13 insertions(+), 22 deletions(-)
+
+Here is the summary with links:
+  - [net-next] r8169: make use of the unaligned access helpers
+    https://git.kernel.org/netdev/net-next/c/ae1e82c6b741
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
