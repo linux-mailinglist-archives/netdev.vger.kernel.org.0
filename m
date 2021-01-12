@@ -2,190 +2,225 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8FEDB2F3447
-	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 16:39:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E370A2F344C
+	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 16:39:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391763AbhALPgs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jan 2021 10:36:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51336 "EHLO
+        id S2391713AbhALPh3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jan 2021 10:37:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51486 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2391149AbhALPgr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 10:36:47 -0500
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BDE8C061786;
-        Tue, 12 Jan 2021 07:36:07 -0800 (PST)
-Received: by mail-ej1-x62b.google.com with SMTP id g20so4154788ejb.1;
-        Tue, 12 Jan 2021 07:36:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=3H58F2EgPUmA9bBKPktDhyUlZCxmuNrKvZMlcefSEDw=;
-        b=ukQC+u6UU6t7vIYYTsdaKblvTwE2VZ68ooJSzYA3HhooqQ2y9Wug/aYJRae3XvdFWQ
-         MdUl9O3DpIUtquLNVEURj8/Uin0KvUjSfBaKa9/c8MNAuoPUudPwapeVfERWj50je7IT
-         ztD+8fOsVUuQ3BSMSInF+/Q3IWWQa1g4OnHRLqE1/LiojhuYXIrpWic02h6zPf8HKfDZ
-         EOA9SYtNayXd+hc7QnG09kvp4PACyHsXXSEz/1MCDUFhrpL+ieza5dvav1r8dCkuN+e+
-         Abdn//3VwCsspRWEXnZTTuxLPzGzk85bB2EPvJUBD7tydn+MsFiNRXt1RnRVqkYpFRqg
-         E6Wg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3H58F2EgPUmA9bBKPktDhyUlZCxmuNrKvZMlcefSEDw=;
-        b=PsAym8jOAy2cZC5uprS9mpAv+8NYX4gRMLhJ7AcfjIrJfWrP/DwUPb4dwj1ET3OrLz
-         4M86FhOmtYq+g2kD4l+xwuovQZOw0novsO4Q3UDjT5K8AlRRUGTAItrtrE0Q1CLuYDt7
-         yjbvxif/y49sPT+2WrW7JgWU4taYf/np3mCM70DC1akul95FARwxjBafjI8j/oy2OI42
-         cqM+I19rj4Dx0p+H7DYoxV/qN33iB2HhM+DpXgh5s1d+RNavPLYeqYDWqSP4MC6QS1KR
-         VdfsyyT90RTWKomPtkZu3y8afsRfpo0Gi9VXOjpYLn75biNXDIh9P1JCCMOaWNJo2GlU
-         IbQQ==
-X-Gm-Message-State: AOAM531opSG0EJyiVOA9hbCRgK5BQgw/IWsVxq2dEsy9J+3dHy77lUMR
-        N7RUDl9QHNztjjZSgSm5ncDpSW3l7Ji+LGCsBuU=
-X-Google-Smtp-Source: ABdhPJyBthTeKmOHV1bPwZzzrSsODrn8asKpgzmW7chz9v9JOHxcYnX2KugHRntNpQOYwB2em9V1TVZ00aOdGtDGhZA=
-X-Received: by 2002:a17:906:2ccb:: with SMTP id r11mr3715902ejr.39.1610465765748;
- Tue, 12 Jan 2021 07:36:05 -0800 (PST)
+        with ESMTP id S2389699AbhALPh3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 10:37:29 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7838C061786
+        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 07:36:48 -0800 (PST)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1kzLim-0006WJ-KQ; Tue, 12 Jan 2021 16:36:36 +0100
+Received: from [IPv6:2a03:f580:87bc:d400:6421:fa79:a26c:5f73] (unknown [IPv6:2a03:f580:87bc:d400:6421:fa79:a26c:5f73])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
+         client-signature RSA-PSS (4096 bits))
+        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
+        (Authenticated sender: mkl@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 040FE5C1E93;
+        Tue, 12 Jan 2021 15:36:34 +0000 (UTC)
+To:     David Laight <David.Laight@ACULAB.COM>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
+        "kernel@pengutronix.de" <kernel@pengutronix.de>,
+        Dan Murphy <dmurphy@ti.com>, Sean Nyekjaer <sean@geanix.com>
+References: <20210107094900.173046-1-mkl@pengutronix.de>
+ <20210107094900.173046-16-mkl@pengutronix.de>
+ <20210107110035.42a6bb46@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20210107110656.7e49772b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <c98003bf-e62a-ab6a-a526-1f3ed0bb1ab7@pengutronix.de>
+ <2aab5f57ffc2485e99cf04dee6441328@AcuMS.aculab.com>
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
+ mQINBFFVq30BEACtnSvtXHoeHJxG6nRULcvlkW6RuNwHKmrqoksispp43X8+nwqIFYgb8UaX
+ zu8T6kZP2wEIpM9RjEL3jdBjZNCsjSS6x1qzpc2+2ivjdiJsqeaagIgvy2JWy7vUa4/PyGfx
+ QyUeXOxdj59DvLwAx8I6hOgeHx2X/ntKAMUxwawYfPZpP3gwTNKc27dJWSomOLgp+gbmOmgc
+ 6U5KwhAxPTEb3CsT5RicsC+uQQFumdl5I6XS+pbeXZndXwnj5t84M+HEj7RN6bUfV2WZO/AB
+ Xt5+qFkC/AVUcj/dcHvZwQJlGeZxoi4veCoOT2MYqfR0ax1MmN+LVRvKm29oSyD4Ts/97cbs
+ XsZDRxnEG3z/7Winiv0ZanclA7v7CQwrzsbpCv+oj+zokGuKasofzKdpywkjAfSE1zTyF+8K
+ nxBAmzwEqeQ3iKqBc3AcCseqSPX53mPqmwvNVS2GqBpnOfY7Mxr1AEmxdEcRYbhG6Xdn+ACq
+ Dq0Db3A++3PhMSaOu125uIAIwMXRJIzCXYSqXo8NIeo9tobk0C/9w3fUfMTrBDtSviLHqlp8
+ eQEP8+TDSmRP/CwmFHv36jd+XGmBHzW5I7qw0OORRwNFYBeEuiOIgxAfjjbLGHh9SRwEqXAL
+ kw+WVTwh0MN1k7I9/CDVlGvc3yIKS0sA+wudYiselXzgLuP5cQARAQABtCZNYXJjIEtsZWlu
+ ZS1CdWRkZSA8bWtsQHBlbmd1dHJvbml4LmRlPokCVAQTAQoAPgIbAwIeAQIXgAULCQgHAwUV
+ CgkICwUWAgMBABYhBMFAC6CzmJ5vvH1bXCte4hHFiupUBQJfEWX4BQkQo2czAAoJECte4hHF
+ iupUvfMP/iNtiysSr5yU4tbMBzRkGov1/FjurfH1kPweLVHDwiQJOGBz9HgM5+n8boduRv36
+ 0lU32g3PehN0UHZdHWhygUd6J09YUi2mJo1l2Fz1fQ8elUGUOXpT/xoxNQjslZjJGItCjza8
+ +D1DO+0cNFgElcNPa7DFBnglatOCZRiMjo4Wx0i8njEVRU+4ySRU7rCI36KPts+uVmZAMD7V
+ 3qiR1buYklJaPCJsnXURXYsilBIE9mZRmQjTDVqjLWAit++flqUVmDjaD/pj2AQe2Jcmd2gm
+ sYW5P1moz7ACA1GzMjLDmeFtpJOIB7lnDX0F/vvsG3V713/701aOzrXqBcEZ0E4aWeZJzaXw
+ n1zVIrl/F3RKrWDhMKTkjYy7HA8hQ9SJApFXsgP334Vo0ea82H3dOU755P89+Eoj0y44MbQX
+ 7xUy4UTRAFydPl4pJskveHfg4dO6Yf0PGIvVWOY1K04T1C5dpnHAEMvVNBrfTA8qcahRN82V
+ /iIGB+KSC2xR79q1kv1oYn0GOnWkvZmMhqGLhxIqHYitwH4Jn5uRfanKYWBk12LicsjRiTyW
+ Z9cJf2RgAtQgvMPvmaOL8vB3U4ava48qsRdgxhXMagU618EszVdYRNxGLCqsKVYIDySTrVzu
+ ZGs2ibcRhN4TiSZjztWBAe1MaaGk05Ce4h5IdDLbOOxhuQENBF8SDLABCADohJLQ5yffd8Sq
+ 8Lo9ymzgaLcWboyZ46pY4CCCcAFDRh++QNOJ8l4mEJMNdEa/yrW4lDQDhBWV75VdBuapYoal
+ LFrSzDzrqlHGG4Rt4/XOqMo6eSeSLipYBu4Xhg59S9wZOWbHVT/6vZNmiTa3d40+gBg68dQ8
+ iqWSU5NhBJCJeLYdG6xxeUEtsq/25N1erxmhs/9TD0sIeX36rFgWldMwKmZPe8pgZEv39Sdd
+ B+ykOlRuHag+ySJxwovfdVoWT0o0LrGlHzAYo6/ZSi/Iraa9R/7A1isWOBhw087BMNkRYx36
+ B77E4KbyBPx9h3wVyD/R6T0Q3ZNPu6SQLnsWojMzABEBAAGJAjwEGAEKACYWIQTBQAugs5ie
+ b7x9W1wrXuIRxYrqVAUCXxIMsAIbDAUJAucGAAAKCRArXuIRxYrqVOu0D/48xSLyVZ5NN2Bb
+ yqo3zxdv/PMGJSzM3JqSv7hnMZPQGy9XJaTc5Iz/hyXaNRwpH5X0UNKqhQhlztChuAKZ7iu+
+ 2VKzq4JJe9qmydRUwylluc4HmGwlIrDNvE0N66pRvC3h8tOVIsippAQlt5ciH74bJYXr0PYw
+ Aksw1jugRxMbNRzgGECg4O6EBNaHwDzsVPX1tDj0d9t/7ClzJUy20gg8r9Wm/I/0rcNkQOpV
+ RJLDtSbGSusKxor2XYmVtHGauag4YO6Vdq+2RjArB3oNLgSOGlYVpeqlut+YYHjWpaX/cTf8
+ /BHtIQuSAEu/WnycpM3Z9aaLocYhbp5lQKL6/bcWQ3udd0RfFR/Gv7eR7rn3evfqNTtQdo4/
+ YNmd7P8TS7ALQV/5bNRe+ROLquoAZvhaaa6SOvArcmFccnPeyluX8+o9K3BCdXPwONhsrxGO
+ wrPI+7XKMlwWI3O076NqNshh6mm8NIC0mDUr7zBUITa67P3Q2VoPoiPkCL9RtsXdQx5BI9iI
+ h/6QlzDxcBdw2TVWyGkVTCdeCBpuRndOMVmfjSWdCXXJCLXO6sYeculJyPkuNvumxgwUiK/H
+ AqqdUfy1HqtzP2FVhG5Ce0TeMJepagR2CHPXNg88Xw3PDjzdo+zNpqPHOZVKpLUkCvRv1p1q
+ m1qwQVWtAwMML/cuPga78rkBDQRfEXGWAQgAt0Cq8SRiLhWyTqkf16Zv/GLkUgN95RO5ntYM
+ fnc2Tr3UlRq2Cqt+TAvB928lN3WHBZx6DkuxRM/Y/iSyMuhzL5FfhsICuyiBs5f3QG70eZx+
+ Bdj4I7LpnIAzmBdNWxMHpt0m7UnkNVofA0yH6rcpCsPrdPRJNOLFI6ZqXDQk9VF+AB4HVAJY
+ BDU3NAHoyVGdMlcxev0+gEXfBQswEcysAyvzcPVTAqmrDsupnIB2f0SDMROQCLO6F+/cLG4L
+ Stbz+S6YFjESyXblhLckTiPURvDLTywyTOxJ7Mafz6ZCene9uEOqyd/h81nZOvRd1HrXjiTE
+ 1CBw+Dbvbch1ZwGOTQARAQABiQNyBBgBCgAmFiEEwUALoLOYnm+8fVtcK17iEcWK6lQFAl8R
+ cZYCGwIFCQLnoRoBQAkQK17iEcWK6lTAdCAEGQEKAB0WIQQreQhYm33JNgw/d6GpyVqK+u3v
+ qQUCXxFxlgAKCRCpyVqK+u3vqatQCAC3QIk2Y0g/07xNLJwhWcD7JhIqfe7Qc5Vz9kf8ZpWr
+ +6w4xwRfjUSmrXz3s6e/vrQsfdxjVMDFOkyG8c6DWJo0TVm6Ucrf9G06fsjjE/6cbE/gpBkk
+ /hOVz/a7UIELT+HUf0zxhhu+C9hTSl8Nb0bwtm6JuoY5AW0LP2KoQ6LHXF9KNeiJZrSzG6WE
+ h7nf3KRFS8cPKe+trbujXZRb36iIYUfXKiUqv5xamhohy1hw+7Sy8nLmw8rZPa40bDxX0/Gi
+ 98eVyT4/vi+nUy1gF1jXgNBSkbTpbVwNuldBsGJsMEa8lXnYuLzn9frLdtufUjjCymdcV/iT
+ sFKziU9AX7TLZ5AP/i1QMP9OlShRqERH34ufA8zTukNSBPIBfmSGUe6G2KEWjzzNPPgcPSZx
+ Do4jfQ/m/CiiibM6YCa51Io72oq43vMeBwG9/vLdyev47bhSfMLTpxdlDJ7oXU9e8J61iAF7
+ vBwerBZL94I3QuPLAHptgG8zPGVzNKoAzxjlaxI1MfqAD9XUM80MYBVjunIQlkU/AubdvmMY
+ X7hY1oMkTkC5hZNHLgIsDvWUG0g3sACfqF6gtMHY2lhQ0RxgxAEx+ULrk/svF6XGDe6iveyc
+ z5Mg5SUggw3rMotqgjMHHRtB3nct6XqgPXVDGYR7nAkXitG+nyG5zWhbhRDglVZ0mLlW9hij
+ z3Emwa94FaDhN2+1VqLFNZXhLwrNC5mlA6LUjCwOL+zb9a07HyjekLyVAdA6bZJ5BkSXJ1CO
+ 5YeYolFjr4YU7GXcSVfUR6fpxrb8N+yH+kJhY3LmS9vb2IXxneE/ESkXM6a2YAZWfW8sgwTm
+ 0yCEJ41rW/p3UpTV9wwE2VbGD1XjzVKl8SuAUfjjcGGys3yk5XQ5cccWTCwsVdo2uAcY1MVM
+ HhN6YJjnMqbFoHQq0H+2YenTlTBn2Wsp8TIytE1GL6EbaPWbMh3VLRcihlMj28OUWGSERxat
+ xlygDG5cBiY3snN3xJyBroh5xk/sHRgOdHpmujnFyu77y4RTZ2W8
+Subject: Re: [net-next 15/19] can: tcan4x5x: rework SPI access
+Message-ID: <707ce6b7-883c-6214-c144-f8a8fe4a8def@pengutronix.de>
+Date:   Tue, 12 Jan 2021 16:36:31 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-References: <20210112091545.10535-1-gilad.reti@gmail.com> <CACYkzJ69serkHRymzDEAcQ-_KAdHA+RxP4qpAwzGmppWUxYeQQ@mail.gmail.com>
-In-Reply-To: <CACYkzJ69serkHRymzDEAcQ-_KAdHA+RxP4qpAwzGmppWUxYeQQ@mail.gmail.com>
-From:   Gilad Reti <gilad.reti@gmail.com>
-Date:   Tue, 12 Jan 2021 17:35:29 +0200
-Message-ID: <CANaYP3G_39cWx_L5Xs3tf1k4Vj9JSHcsr+qzNQN-dcY3qvT8Yg@mail.gmail.com>
-Subject: Re: [PATCH 2/2] selftests/bpf: add verifier test for PTR_TO_MEM spill
-To:     KP Singh <kpsingh@kernel.org>
-Cc:     bpf <bpf@vger.kernel.org>, Shuah Khan <shuah@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        linux-kselftest@vger.kernel.org,
-        Networking <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <2aab5f57ffc2485e99cf04dee6441328@AcuMS.aculab.com>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="BdDUwLXI0Hu1Vdc6gJh1SxFauRycavF0C"
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 12, 2021 at 4:56 PM KP Singh <kpsingh@kernel.org> wrote:
->
-> On Tue, Jan 12, 2021 at 10:16 AM Gilad Reti <gilad.reti@gmail.com> wrote:
-> >
-> > Add test to check that the verifier is able to recognize spilling of
-> > PTR_TO_MEM registers.
-> >
->
-> It would be nice to have some explanation of what the test does to
-> recognize the spilling of the PTR_TO_MEM registers in the commit
-> log as well.
->
-> Would it be possible to augment an existing test_progs
-> program like tools/testing/selftests/bpf/progs/test_ringbuf.c to test
-> this functionality?
->
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--BdDUwLXI0Hu1Vdc6gJh1SxFauRycavF0C
+Content-Type: multipart/mixed; boundary="Zf4Cf9CKQOgV55uwX6urGGoC93vHDQbRD";
+ protected-headers="v1"
+From: Marc Kleine-Budde <mkl@pengutronix.de>
+To: David Laight <David.Laight@ACULAB.COM>, Jakub Kicinski <kuba@kernel.org>
+Cc: "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+ "davem@davemloft.net" <davem@davemloft.net>,
+ "linux-can@vger.kernel.org" <linux-can@vger.kernel.org>,
+ "kernel@pengutronix.de" <kernel@pengutronix.de>, Dan Murphy
+ <dmurphy@ti.com>, Sean Nyekjaer <sean@geanix.com>
+Message-ID: <707ce6b7-883c-6214-c144-f8a8fe4a8def@pengutronix.de>
+Subject: Re: [net-next 15/19] can: tcan4x5x: rework SPI access
+References: <20210107094900.173046-1-mkl@pengutronix.de>
+ <20210107094900.173046-16-mkl@pengutronix.de>
+ <20210107110035.42a6bb46@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20210107110656.7e49772b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <c98003bf-e62a-ab6a-a526-1f3ed0bb1ab7@pengutronix.de>
+ <2aab5f57ffc2485e99cf04dee6441328@AcuMS.aculab.com>
+In-Reply-To: <2aab5f57ffc2485e99cf04dee6441328@AcuMS.aculab.com>
 
-It may be possible, but from what I understood from Daniel's comment here
+--Zf4Cf9CKQOgV55uwX6urGGoC93vHDQbRD
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: quoted-printable
 
-https://lore.kernel.org/bpf/17629073-4fab-a922-ecc3-25b019960f44@iogearbox.net/
+On 1/8/21 10:53 PM, David Laight wrote:
+>> On 1/7/21 8:06 PM, Jakub Kicinski wrote:
+>>> On Thu, 7 Jan 2021 11:00:35 -0800 Jakub Kicinski wrote:
+>>>> On Thu,  7 Jan 2021 10:48:56 +0100 Marc Kleine-Budde wrote:
+>>>>> +struct __packed tcan4x5x_map_buf {
+>>>>> +	struct tcan4x5x_buf_cmd cmd;
+>>>>> +	u8 data[256 * sizeof(u32)];
+>>>>> +} ____cacheline_aligned;
+>>>>
+>>>> Interesting attribute combo, I must say.
+>>>
+>>> Looking at the rest of the patch I don't really see a reason for
+>>> __packed.  Perhaps it can be dropped?
+>>
+>> It's the stream of bytes send via SPI to the chip. Here are both struc=
+ts for
+>> reference:
+>>
+>>> +struct __packed tcan4x5x_buf_cmd {
+>>> +	u8 cmd;
+>>> +	__be16 addr;
+>>> +	u8 len;
+>>> +};
+>>
+>> This has to be packed, as I assume the compiler would add some space a=
+fter the
+>> "u8 cmd" to align the __be16 naturally.
+>=20
+> Why not generate a series of 32bit words to be sent over the SPI bus.
+> Slightly less faffing in the code.
+> Then have a #define (or inline function) to merge the cmd+addr+len
+> into a single 32bit word.
 
-the test should be a part of the verifier tests (which is reasonable
-to me since it is
-a verifier bugfix)
+The driver uses regmap. With proper configuration regmap already formats =
+the
+"cmd" and the "addr" in correct byte order into the first 3 bytes of the =
+"reg_buf".
 
->
->
-> > The patch was partially contibuted by CyberArk Software, Inc.
-> >
-> > Signed-off-by: Gilad Reti <gilad.reti@gmail.com>
-> > ---
-> >  tools/testing/selftests/bpf/test_verifier.c   | 12 +++++++-
-> >  .../selftests/bpf/verifier/spill_fill.c       | 30 +++++++++++++++++++
-> >  2 files changed, 41 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/tools/testing/selftests/bpf/test_verifier.c b/tools/testing/selftests/bpf/test_verifier.c
-> > index 777a81404fdb..f8569f04064b 100644
-> > --- a/tools/testing/selftests/bpf/test_verifier.c
-> > +++ b/tools/testing/selftests/bpf/test_verifier.c
-> > @@ -50,7 +50,7 @@
-> >  #define MAX_INSNS      BPF_MAXINSNS
-> >  #define MAX_TEST_INSNS 1000000
-> >  #define MAX_FIXUPS     8
-> > -#define MAX_NR_MAPS    20
-> > +#define MAX_NR_MAPS    21
-> >  #define MAX_TEST_RUNS  8
-> >  #define POINTER_VALUE  0xcafe4all
-> >  #define TEST_DATA_LEN  64
-> > @@ -87,6 +87,7 @@ struct bpf_test {
-> >         int fixup_sk_storage_map[MAX_FIXUPS];
-> >         int fixup_map_event_output[MAX_FIXUPS];
-> >         int fixup_map_reuseport_array[MAX_FIXUPS];
-> > +       int fixup_map_ringbuf[MAX_FIXUPS];
-> >         const char *errstr;
-> >         const char *errstr_unpriv;
-> >         uint32_t insn_processed;
-> > @@ -640,6 +641,7 @@ static void do_test_fixup(struct bpf_test *test, enum bpf_prog_type prog_type,
-> >         int *fixup_sk_storage_map = test->fixup_sk_storage_map;
-> >         int *fixup_map_event_output = test->fixup_map_event_output;
-> >         int *fixup_map_reuseport_array = test->fixup_map_reuseport_array;
-> > +       int *fixup_map_ringbuf = test->fixup_map_ringbuf;
-> >
-> >         if (test->fill_helper) {
-> >                 test->fill_insns = calloc(MAX_TEST_INSNS, sizeof(struct bpf_insn));
-> > @@ -817,6 +819,14 @@ static void do_test_fixup(struct bpf_test *test, enum bpf_prog_type prog_type,
-> >                         fixup_map_reuseport_array++;
-> >                 } while (*fixup_map_reuseport_array);
-> >         }
-> > +       if (*fixup_map_ringbuf) {
-> > +               map_fds[20] = create_map(BPF_MAP_TYPE_RINGBUF, 0,
-> > +                                          0, 4096);
-> > +               do {
-> > +                       prog[*fixup_map_ringbuf].imm = map_fds[20];
-> > +                       fixup_map_ringbuf++;
-> > +               } while (*fixup_map_ringbuf);
-> > +       }
-> >  }
-> >
-> >  struct libcap {
-> > diff --git a/tools/testing/selftests/bpf/verifier/spill_fill.c b/tools/testing/selftests/bpf/verifier/spill_fill.c
-> > index 45d43bf82f26..1833b6c730dd 100644
-> > --- a/tools/testing/selftests/bpf/verifier/spill_fill.c
-> > +++ b/tools/testing/selftests/bpf/verifier/spill_fill.c
-> > @@ -28,6 +28,36 @@
-> >         .result = ACCEPT,
-> >         .result_unpriv = ACCEPT,
-> >  },
-> > +{
-> > +       "check valid spill/fill, ptr to mem",
-> > +       .insns = {
-> > +       /* reserve 8 byte ringbuf memory */
-> > +       BPF_ST_MEM(BPF_DW, BPF_REG_10, -8, 0),
-> > +       BPF_LD_MAP_FD(BPF_REG_1, 0),
-> > +       BPF_MOV64_IMM(BPF_REG_2, 8),
-> > +       BPF_MOV64_IMM(BPF_REG_3, 0),
-> > +       BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_ringbuf_reserve),
-> > +       /* store a pointer to the reserved memory in R6 */
-> > +       BPF_MOV64_REG(BPF_REG_6, BPF_REG_0),
-> > +       /* check whether the reservation was successful */
-> > +       BPF_JMP_IMM(BPF_JEQ, BPF_REG_0, 0, 6),
-> > +       /* spill R6(mem) into the stack */
-> > +       BPF_STX_MEM(BPF_DW, BPF_REG_10, BPF_REG_6, -8),
-> > +       /* fill it back in R7 */
-> > +       BPF_LDX_MEM(BPF_DW, BPF_REG_7, BPF_REG_10, -8),
-> > +       /* should be able to access *(R7) = 0 */
-> > +       BPF_ST_MEM(BPF_DW, BPF_REG_7, 0, 0),
-> > +       /* submit the reserved rungbuf memory */
-> > +       BPF_MOV64_REG(BPF_REG_1, BPF_REG_7),
-> > +       BPF_MOV64_IMM(BPF_REG_2, 0),
-> > +       BPF_RAW_INSN(BPF_JMP | BPF_CALL, 0, 0, 0, BPF_FUNC_ringbuf_submit),
-> > +       BPF_MOV64_IMM(BPF_REG_0, 0),
-> > +       BPF_EXIT_INSN(),
-> > +       },
-> > +       .fixup_map_ringbuf = { 1 },
-> > +       .result = ACCEPT,
-> > +       .result_unpriv = ACCEPT,
-> > +},
-> >  {
-> >         "check corrupted spill/fill",
-> >         .insns = {
-> > --
-> > 2.27.0
-> >
+As regmap doesn't support generating a length parameter, I use the above =
+struct
+tcan4x5x_buf_cmd to set the length.
+
+> Also if the length is in 32bit units, then the data[] field
+> ought to be u32[].
+
+In the regmap callback the data is passed with a void pointer and a lengt=
+h (in
+bytes), so copying this to a "u8 data[]" felt more natural to me.
+
+regards,
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+
+--Zf4Cf9CKQOgV55uwX6urGGoC93vHDQbRD--
+
+--BdDUwLXI0Hu1Vdc6gJh1SxFauRycavF0C
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAl/9wf8ACgkQqclaivrt
+76kgkggAqdPgv/6BIIycYPCDyikVubwmepCs9s3kSP+R8t6NefSOGVdv/WTIgHgZ
+Xn2LH/wKqoHYyZfChgk5Sv2SCf9q+Ww7F5ybPAk15aMgbjoljoxIeD/jFr8xPTXU
+GK/s0par5viDtCTECN6Wo9s+8n3If+22+y4ROBjAeML2yKu032JX5wWFe9FvGyC8
+4kx93Iwel2O7F8JYX5vWAKUm5Mx799Fc42vnFrz/0EE2ii5tLriyerW7ZtebVK9Z
+GS7NYb+w3ryvo95shqseE9mQg0bKzbd7jrI1/9f40btvAVDC+vJ7M4CX7X682BQD
+bsRnLfEpy0wVN+NcNDrbOJxrmhHOlA==
+=1990
+-----END PGP SIGNATURE-----
+
+--BdDUwLXI0Hu1Vdc6gJh1SxFauRycavF0C--
