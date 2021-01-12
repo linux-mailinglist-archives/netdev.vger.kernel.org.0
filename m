@@ -2,285 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 40DF92F3304
-	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 15:36:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DCDE2F330C
+	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 15:38:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387858AbhALOex (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jan 2021 09:34:53 -0500
-Received: from esa.microchip.iphmx.com ([68.232.153.233]:42657 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725957AbhALOex (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 09:34:53 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1610462094; x=1641998094;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version;
-  bh=rSkhGVUnKJoWu7SCqLjQX8zmMPKtWbpeCAUSQs2cKms=;
-  b=ZQdUwXejYU+8WZialm+vX46tv9Jj1FGQDYwLfa+lOC72pAreoowzYxex
-   ksZlqUQnUwRWIj5DUk4PKOcfFohaU1WqUuNop3RQ6QIfkqA2bW5TeMRko
-   aiXq2cKiDxD3tTL29g4KxXHmedZFmxoqTbd5L/L6iMKDxYQ9U455NY1PY
-   hhuw12ZvAhrciJatBHV5qkM0cs37R80h4C1Kay6gSbJqbkEuTcIdBEuHc
-   TbJRcLSaSLYaT+MZVqtNu8Z1zk6DR/p4nooV74dxWMdUM5jBYw3mKPJX/
-   ZaTVS4pD3I0sJ6FOKZt70QLwFOdUPKI3BsOVy/i6il8y7qoQjijJ691ra
-   Q==;
-IronPort-SDR: SL1OJuaBSfb0knGFgRj5bZJ3GMzgvJ1wOTc+5R3GyegUn1VpP1Mg1Krnfdx096zcR8FE1MGErH
- r7nSOxvvmhlyVZiGrBuWNosddajj+ISbdFntBCLvDT5dBj6DJuuAwZhby+FwpIokdu9oD7izBu
- +RYmONYzVsvlfTXxNJbuI57wIp7T6RdRh+M52XHO8aJ08wQsqr01Gvm3ABf8TnNLKK3RmmZQvk
- qnQe2fafjEt7un+sQTop+1qZOxWlkYKh36faRXX9IKM71+X3+qTI45B2giAH+v3x37o0hlnMAL
- uP4=
-X-IronPort-AV: E=Sophos;i="5.79,341,1602572400"; 
-   d="bin'?scan'208";a="105137235"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 12 Jan 2021 07:33:38 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Tue, 12 Jan 2021 07:33:36 -0700
-Received: from soft-dev2 (10.10.115.15) by chn-vm-ex03.mchp-main.com
- (10.10.85.151) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
- Transport; Tue, 12 Jan 2021 07:33:35 -0700
-Message-ID: <a727ddabfed0dbd0cf75a045076df7a66d4d6a67.camel@microchip.com>
-Subject: Re: [PATCH v1 0/2] Add 100 base-x mode
-From:   Bjarni Jonasson <bjarni.jonasson@microchip.com>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-CC:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        UNGLinuxDriver <UNGLinuxDriver@microchip.com>
-Date:   Tue, 12 Jan 2021 15:33:34 +0100
-In-Reply-To: <20210111141847.GU1551@shell.armlinux.org.uk>
-References: <20210111130657.10703-1-bjarni.jonasson@microchip.com>
-         <20210111141847.GU1551@shell.armlinux.org.uk>
-Content-Type: multipart/mixed; boundary="=-RhFF99NoOr/wzTqNsGXE"
-X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
+        id S1727244AbhALOhz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jan 2021 09:37:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38624 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726329AbhALOhz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 09:37:55 -0500
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A8ADC061575
+        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 06:37:14 -0800 (PST)
+Received: by mail-ej1-x62f.google.com with SMTP id d17so3810470ejy.9
+        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 06:37:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=61FjCtpXzvlphj4T6JdOdJ406Vj4ifXYb7l05Ik0pvM=;
+        b=qrB+LYVg89WvpS63mfpIF8OwL5kQQEu4sm08RplVN9jqNgkVhKhZrVFT7uWOJoVT3n
+         j5uHj2rdQVF/xwz2JWUKQGPtiZaEfRaqwBPoF7npOJ2SUffRQTMNZgNQtoG/DgOOw6Nu
+         1YXi5u0r7tk2DLxJnI4pxeMF7++L5aqeOzTQEhKDyRDgYys6Yu7UjxZD0bFDNSwDCaU9
+         4LT/9Pnj7HNGuvmkmr31z5XX1+YKEHmUMNciwiuY8Bb9nyQnQoUiNpyu3ZPolghiRyh7
+         WL5r1ptXit0xM3h5LhSZP0wDRF11Gtgec+w654PuzO/aT89NsldjvXmG/8JDS4zrHnut
+         TDsA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=61FjCtpXzvlphj4T6JdOdJ406Vj4ifXYb7l05Ik0pvM=;
+        b=F1MqMftq9yv7wnzualpPVooxtYwNePNEBTuUdwX9X+wydAgMIRyYag79YblcR03a8u
+         lG/IzkM1gJQuebu0RYS7jSi4/5iPUCO3FvTVrnqWweWznRDDwLEMcK18MDbiGE/NdTGd
+         9Zh46v11Qtee7Q8LChdgbIt2F1/VIPRnkyqE5U1whReRq6tUxSjCdKVy2hZ8NKjnnkeK
+         uw13xkwZtdNh78OiGzWioLCnEyyTUwuIU6DFhSGDo07wJ+tz22ZmBv6rHrcDLGO2VHod
+         sKJAFuHRe7I5MTluVmN4nL/Ly80wUMtx3YsQ3lyd7UsYgiXiqiTU8e2dtf+E5nCmdxH7
+         RKjA==
+X-Gm-Message-State: AOAM531P+AsNE3eykqkHOZXlrDx/NHjjJVbuCJAuVan58waWkNcmAjJV
+        sUPBnlPihNgROZ1z5KI/0PLkIEzxvxE=
+X-Google-Smtp-Source: ABdhPJzoX8A3PVWauIJZfwtS0zro6Fh09EgrxVeXEPSSh0tfgXp5+QUbOLba6fJuolmBn8Ux2tpWDQ==
+X-Received: by 2002:a17:906:1ed6:: with SMTP id m22mr3584956ejj.231.1610462233264;
+        Tue, 12 Jan 2021 06:37:13 -0800 (PST)
+Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
+        by smtp.gmail.com with ESMTPSA id q2sm1490255edv.93.2021.01.12.06.37.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 12 Jan 2021 06:37:11 -0800 (PST)
+Date:   Tue, 12 Jan 2021 16:37:10 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Saeed Mahameed <saeed@kernel.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Eric Dumazet <edumazet@google.com>,
+        George McCollister <george.mccollister@gmail.com>,
+        Oleksij Rempel <o.rempel@pengutronix.de>,
+        Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        Arnd Bergmann <arnd@arndb.de>, Taehee Yoo <ap420073@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>, Florian Westphal <fw@strlen.de>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Pravin B Shelar <pshelar@ovn.org>,
+        Sridhar Samudrala <sridhar.samudrala@intel.com>
+Subject: Re: [PATCH v6 net-next 14/15] net: bonding: ensure .ndo_get_stats64
+ can sleep
+Message-ID: <20210112143710.nxpxnlcojhvqipw7@skbuf>
+References: <20210109172624.2028156-1-olteanv@gmail.com>
+ <20210109172624.2028156-15-olteanv@gmail.com>
+ <cbead0479ef0b601bada5ae2ad0f8c28e5b242c9.camel@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cbead0479ef0b601bada5ae2ad0f8c28e5b242c9.camel@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=-RhFF99NoOr/wzTqNsGXE
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 7bit
+On Mon, Jan 11, 2021 at 03:38:49PM -0800, Saeed Mahameed wrote:
+> GFP_ATOMIC is a little bit aggressive especially when user daemons are
+> periodically reading stats. This can be avoided.
+>
+> You can pre-allocate with GFP_KERNEL an array with an "approximate"
+> size.
+> then fill the array up with whatever slaves the the bond has at that
+> moment, num_of_slaves  can be less, equal or more than the array you
+> just allocated but we shouldn't care ..
+>
+> something like:
+> rcu_read_lock()
+> nslaves = bond_get_num_slaves();
+> rcu_read_unlock()
+> sarray = kcalloc(nslaves, sizeof(struct bonding_slave_dev),
+> GFP_KERNEL);
+> rcu_read_lock();
+> bond_fill_slaves_array(bond, sarray); // also do: dev_hold()
+> rcu_read_unlock();
+>
+>
+> bond_get_slaves_array_stats(sarray);
+>
+> bond_put_slaves_array(sarray);
 
-On Mon, 2021-01-11 at 14:18 +0000, Russell King - ARM Linux admin
-wrote:
-> EXTERNAL EMAIL: Do not click links or open attachments unless you
-> know the content is safe
-> 
-> On Mon, Jan 11, 2021 at 02:06:55PM +0100, Bjarni Jonasson wrote:
-> > Adding support for 100 base-x in phylink.
-> > The Sparx5 switch supports 100 base-x pcs (IEEE 802.3 Clause 24)
-> > 4b5b encoded.
-> > These patches adds phylink support for that mode.
-> > 
-> > Tested in Sparx5, using sfp modules:
-> > Axcen 100fx AXFE-1314-0521
-> > Cisco GLC-FE-100LX
-> > HP SFP 100FX J9054C
-> > Excom SFP-SX-M1002
-> 
-> For each of these modules, please send me:
-> 
-> ethtool -m ethx raw on > module.bin
-> 
-> so I can validate future changes with these modules. Thanks.
-> 
-> --
-> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-> FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
-
-I've included the dump from ethtool for:
-Axcen 100fx AXFE-1314-0521
-Axcen 100lx AXFE-1314-0551
-Excom SFP-SX-M1002
-HP SFP 100FX J9054C
-The "ethtool raw" output seems a bit garbled so I added the hex output
-as well.
-
-Rgds
---
-Bjarni Jonasson
-Microchip 
-
-
---=-RhFF99NoOr/wzTqNsGXE
-Content-Type: application/octet-stream;
-	name="axcen_100fx_axfe_1314_0521.bin"
-Content-Disposition: attachment; filename="axcen_100fx_axfe_1314_0521.bin"
-Content-Transfer-Encoding: base64
-
-IyBldGh0b29sIC1tIGV0aDEzIHJhdyBvbg0KIMOIw4hBeGNlbiBQaG90b25pY3MgLUFYRkUtMTMx
-NC0wNTIxICBWMS4wQ0FYMTAxOTAwMDE5NDYgICAxMDA1MTIgIMKrRVhUUkVNRUxZIENPTVBBVElC
-TEUgICAgICAgICAgICBBMDkwOTAzMDA0MTkgICAgw7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/D
-v8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/
-w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/D
-v8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/
-w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w78jDQoNCiMgZXRodG9vbCAtbSBldGgxMyBoZXggb24N
-Ck9mZnNldCAgICAgICAgICBWYWx1ZXMNCi0tLS0tLSAgICAgICAgICAtLS0tLS0NCjB4MDAwMDog
-ICAgICAgICAwMyAwNCAwNyAwMCAwMCAwMSAyMCAwMCAwMCAwMCAwMCAwMiAwMSAwMCAwMCAwMA0K
-MHgwMDEwOiAgICAgICAgIGM4IGM4IDAwIDAwIDQxIDc4IDYzIDY1IDZlIDIwIDUwIDY4IDZmIDc0
-IDZmIDZlDQoweDAwMjA6ICAgICAgICAgNjkgNjMgNzMgMjAgMDAgMDAgMTcgMmQgNDEgNTggNDYg
-NDUgMmQgMzEgMzMgMzENCjB4MDAzMDogICAgICAgICAzNCAyZCAzMCAzNSAzMiAzMSAyMCAyMCA1
-NiAzMSAyZSAzMCAwNSAxZSAwMCA0Mw0KMHgwMDQwOiAgICAgICAgIDAwIDFhIDAwIDAwIDQxIDU4
-IDMxIDMwIDMxIDM5IDMwIDMwIDMwIDMxIDM5IDM0DQoweDAwNTA6ICAgICAgICAgMzYgMjAgMjAg
-MjAgMzEgMzAgMzAgMzUgMzEgMzIgMjAgMjAgMDAgMDAgMDAgYWINCjB4MDA2MDogICAgICAgICA0
-NSA1OCA1NCA1MiA0NSA0ZCA0NSA0YyA1OSAyMCA0MyA0ZiA0ZCA1MCA0MSA1NA0KMHgwMDcwOiAg
-ICAgICAgIDQ5IDQyIDRjIDQ1IDIwIDIwIDIwIDIwIDIwIDIwIDIwIDIwIDIwIDIwIDIwIDIwDQow
-eDAwODA6ICAgICAgICAgNDEgMzAgMzkgMzAgMzkgMzAgMzMgMzAgMzAgMzQgMzEgMzkgMjAgMjAg
-MjAgMjANCjB4MDA5MDogICAgICAgICBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBm
-ZiBmZiBmZiBmZiBmZg0KMHgwMGEwOiAgICAgICAgIGZmIGZmIGZmIGZmIGZmIGZmIGZmIGZmIGZm
-IGZmIGZmIGZmIGZmIGZmIGZmIGZmDQoweDAwYjA6ICAgICAgICAgZmYgZmYgZmYgZmYgZmYgZmYg
-ZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYNCjB4MDBjMDogICAgICAgICBmZiBmZiBmZiBm
-ZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZg0KMHgwMGQwOiAgICAgICAgIGZm
-IGZmIGZmIGZmIGZmIGZmIGZmIGZmIGZmIGZmIGZmIGZmIGZmIGZmIGZmIGZmDQoweDAwZTA6ICAg
-ICAgICAgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYNCjB4
-MDBmMDogICAgICAgICBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBm
-ZiBmZg==
-
-
---=-RhFF99NoOr/wzTqNsGXE
-Content-Type: application/octet-stream;
-	name="axcen_100lx_axfe_1314_0551.bin"
-Content-Disposition: attachment; filename="axcen_100lx_axfe_1314_0551.bin"
-Content-Transfer-Encoding: base64
-
-IyBldGh0b29sIC1tIGV0aDEzIHJhdyBvbg0Kw79BeGNlbiBQaG90b25pY3MgLUFYRkUtMTMxNC0w
-NTUxICBWMS4ww5RBWDE0MDkxNzAyMjYwICAgMDkwNDIwICDCskVYVFJFTUVMWSBDT01QQVRJQkxF
-ICAgICAgICAgICAgQTA5MDMwMDAzMTAwMTU1N8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/D
-v8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/
-w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/D
-v8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/
-w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/Iw0KDQojIGV0aHRvb2wgLW0gZXRoMTMgaGV4IG9uDQpP
-ZmZzZXQgICAgICAgICAgVmFsdWVzDQotLS0tLS0gICAgICAgICAgLS0tLS0tDQoweDAwMDA6ICAg
-ICAgICAgMDMgMDQgMDcgMDAgMTAgMDIgMTAgMDAgMDAgMDAgMDAgMDIgMDEgMDAgMWUgZmYNCjB4
-MDAxMDogICAgICAgICAwMCAwMCAwMCAwMCA0MSA3OCA2MyA2NSA2ZSAyMCA1MCA2OCA2ZiA3NCA2
-ZiA2ZQ0KMHgwMDIwOiAgICAgICAgIDY5IDYzIDczIDIwIDAwIDAwIDE3IDJkIDQxIDU4IDQ2IDQ1
-IDJkIDMxIDMzIDMxDQoweDAwMzA6ICAgICAgICAgMzQgMmQgMzAgMzUgMzUgMzEgMjAgMjAgNTYg
-MzEgMmUgMzAgMDUgMWUgMDAgZDQNCjB4MDA0MDogICAgICAgICAwMCAxYSAwMCAwMCA0MSA1OCAz
-MSAzNCAzMCAzOSAzMSAzNyAzMCAzMiAzMiAzNg0KMHgwMDUwOiAgICAgICAgIDMwIDIwIDIwIDIw
-IDMwIDM5IDMwIDM0IDMyIDMwIDIwIDIwIDAwIDAwIDAwIGIyDQoweDAwNjA6ICAgICAgICAgNDUg
-NTggNTQgNTIgNDUgNGQgNDUgNGMgNTkgMjAgNDMgNGYgNGQgNTAgNDEgNTQNCjB4MDA3MDogICAg
-ICAgICA0OSA0MiA0YyA0NSAyMCAyMCAyMCAyMCAyMCAyMCAyMCAyMCAyMCAyMCAyMCAyMA0KMHgw
-MDgwOiAgICAgICAgIDQxIDMwIDM5IDMwIDMzIDMwIDMwIDMwIDMzIDMxIDMwIDMwIDMxIDM1IDM1
-IDM3DQoweDAwOTA6ICAgICAgICAgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYg
-ZmYgZmYgZmYgZmYNCjB4MDBhMDogICAgICAgICBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBm
-ZiBmZiBmZiBmZiBmZiBmZiBmZg0KMHgwMGIwOiAgICAgICAgIGZmIGZmIGZmIGZmIGZmIGZmIGZm
-IGZmIGZmIGZmIGZmIGZmIGZmIGZmIGZmIGZmDQoweDAwYzA6ICAgICAgICAgZmYgZmYgZmYgZmYg
-ZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYNCjB4MDBkMDogICAgICAgICBmZiBm
-ZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZg0KMHgwMGUwOiAgICAg
-ICAgIGZmIGZmIGZmIGZmIGZmIGZmIGZmIGZmIGZmIGZmIGZmIGZmIGZmIGZmIGZmIGZmDQoweDAw
-ZjA6ICAgICAgICAgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYg
-ZmY=
-
-
---=-RhFF99NoOr/wzTqNsGXE
-Content-Type: application/octet-stream; name="excom_sfp_sx_m1002.bin"
-Content-Disposition: attachment; filename="excom_sfp_sx_m1002.bin"
-Content-Transfer-Encoding: base64
-
-IyBldGh0b29sIC1tIGV0aDEzIHJhdyBvbg0KwrTDv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/
-w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/D
-v8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/
-w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/D
-v8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/
-WsOTVcOYcGltYMODUMKvw4gyDQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgWsO7IMOQPMKm
-w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w78/w7/Dv8O/cyrDv8O/w7/Dv0DDv0DDv8O/
-w79DTlVJQURZQUFBMTAtMjA3Ny0wMVYwMSBGwr/CqsKqR0xDLUZFLTEwMEZYICAgICAgICAxNjco
-Li4xNCk2ZsO/w4DDv8O/w7/DgMO/w78jDQoNCiMgZXRodG9vbCAtbSBldGgxMyBoZXggb24NCk9m
-ZnNldCAgICAgICAgICBWYWx1ZXMNCi0tLS0tLSAgICAgICAgICAtLS0tLS0NCjB4MDAwMDogICAg
-ICAgICAwMyAwNCAwNyAwMCAwMCAwMSAxMCAwMCAwMCAwMCAwMCAwMiAwMSAwMCAwMCAwMA0KMHgw
-MDEwOiAgICAgICAgIGM4IGM4IDAwIDAwIDQ1IDc4IDYzIDZmIDZkIDIwIDIwIDIwIDIwIDIwIDIw
-IDIwDQoweDAwMjA6ICAgICAgICAgMjAgMjAgMjAgMjAgMDAgMDAgMDAgMDAgNTMgNDYgNTAgMmQg
-NTMgNTggMmQgNGQNCjB4MDAzMDogICAgICAgICAzMSAzMCAzMCAzMiAyMCAyMCAyMCAyMCA0MSAy
-MCAyMCAyMCAwNSAxZSAwMCA1MA0KMHgwMDQwOiAgICAgICAgIDAwIDEyIDAwIDAwIDQ1IDU4IDMx
-IDM2IDMwIDMzIDMxIDM0IDMwIDMzIDM2IDIwDQoweDAwNTA6ICAgICAgICAgMjAgMjAgMjAgMjAg
-MzEgMzYgMzAgMzMgMzEgMzQgMjAgMjAgNjggOTAgMDEgN2YNCjB4MDA2MDogICAgICAgICAyYiAw
-MCAxMSAzOCA5NyBjZSAwOSAxOSAxZSA2OSBjYSBlYiBlNSAxNyA2YSA1ZQ0KMHgwMDcwOiAgICAg
-ICAgIDg5IGFjIGNlIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDFhIDdkIDhkIGI0DQoweDAw
-ODA6ICAgICAgICAgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYg
-ZmYNCjB4MDA5MDogICAgICAgICBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBm
-ZiBmZiBmZiBmZg0KMHgwMGEwOiAgICAgICAgIGZmIGZmIGZmIGZmIGZmIGZmIGZmIGZmIGZmIGZm
-IGZmIGZmIGZmIGZmIGZmIGZmDQoweDAwYjA6ICAgICAgICAgZmYgZmYgZmYgZmYgZmYgZmYgZmYg
-ZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYNCjB4MDBjMDogICAgICAgICBmZiBmZiBmZiBmZiBm
-ZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZg0KMHgwMGQwOiAgICAgICAgIGZmIGZm
-IGZmIGZmIGZmIGZmIGZmIGZmIGZmIGZmIGZmIGZmIGZmIGZmIGZmIGZmDQoweDAwZTA6ICAgICAg
-ICAgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYNCjB4MDBm
-MDogICAgICAgICBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBm
-Zg0KMHgwMTAwOiAgICAgICAgIDVhIDAwIGQzIDAwIDU1IDAwIGQ4IDAwIDk0IDcwIDY5IDc4IDkw
-IDg4IDZkIDYwDQoweDAxMTA6ICAgICAgICAgYzMgNTAgMDAgMDAgYWYgYzggMDAgMzIgMGMgNWEg
-MDAgZmIgMDkgZDAgMDEgM2MNCjB4MDEyMDogICAgICAgICAxOCBhNiAwMCAwMyAxMyA5NCAwMCAw
-NCBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZg0KMHgwMTMwOiAgICAgICAgIGZmIGZmIGZmIGZmIGZm
-IGZmIGZmIGZmIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwDQoweDAxNDA6ICAgICAgICAgMDAgMDAg
-MDAgMDAgM2YgODAgMDAgMDAgMDAgMDAgMDAgMDAgMDEgMDAgMDAgMDANCjB4MDE1MDogICAgICAg
-ICAwMSAwMCAwMCAwMCAwMSAwMCAwMCAwMCAwMSAwMCAwMCAwMCBmZiBmZiBmZiA3Mw0KMHgwMTYw
-OiAgICAgICAgIDFiIDA2IDgzIGMxIDJiIGQ0IDAzIGUyIDAwIDAwIGZmIGZmIGZmIGZmIDAyIDAw
-DQoweDAxNzA6ICAgICAgICAgMDAgNDAgMDAgZmYgMDAgNDAgZmYgZmYgMDAgMDAgZmYgMDAgMDAg
-MDAgMDAgMDANCjB4MDE4MDogICAgICAgICA0MyA0ZSA1NSA0OSA0MSA0NCA1OSA0MSA0MSA0MSAz
-MSAzMCAyZCAzMiAzMCAzNw0KMHgwMTkwOiAgICAgICAgIDM3IDJkIDMwIDMxIDU2IDMwIDMxIDIw
-IDAxIDAwIDQ2IDAwIDAwIDAwIDAwIGJmDQoweDAxYTA6ICAgICAgICAgMDAgMDAgMDAgMDAgMDAg
-MDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDANCjB4MDFiMDogICAgICAgICAwMCAwMCAw
-MCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCBhYSBhYQ0KMHgwMWMwOiAgICAgICAg
-IDQ3IDRjIDQzIDJkIDQ2IDQ1IDJkIDMxIDMwIDMwIDQ2IDU4IDIwIDIwIDIwIDIwDQoweDAxZDA6
-ICAgICAgICAgMjAgMjAgMjAgMjAgMzEgMzYgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMzcN
-CjB4MDFlMDogICAgICAgICAxZSAyOCAyZSAyZSAzMSAzNCAyOSAzNiAwMCAwMCAwMCAwMCAwMCAw
-MCAwMCAwMA0KMHgwMWYwOiAgICAgICAgIDAwIDAwIDAwIDAwIDAwIDY2IDAwIDAwIGZmIGMwIGZm
-IGZmIGZmIGMwIGZmIGZm
-
-
---=-RhFF99NoOr/wzTqNsGXE
-Content-Type: application/octet-stream; name="hp_100fx_j9054c.bin"
-Content-Disposition: attachment; filename="hp_100fx_j9054c.bin"
-Content-Transfer-Encoding: base64
-
-IyBldGh0b29sIC1tIGV0aDEzIHJhdyBvbg0KQMOIw4hPUE5FWFQgSU5DDQogICAgICAgICAgICAg
-ICAgICAgQFRSRjUzMjZBTkxCNDA0ICBBMkEgSUNOMTlEWTkwMEggICAgICAxMTA5MzAgIGjDsEo5
-MDU0QyAxOTkwLTQxMTJGw73DlkXDscOiPkhQIFByb0N1cnZlIFByb3ByaWV0YXJ5IFRlY2hub2xv
-Z3kgLSBVc2UgaW1wbGllcyBhY2NlcHRhbmNlIG9mIGxpY2Vuc2luZyB0ZXJtcy5IUDEwMC1GWCAg
-ICBVw7ZQw7sNCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICDCoHXCuHl1
-MMO0YcKow6jDv8O/DQrDv8O/DQp2w7U/bcOQQEANCg0KIyBldGh0b29sIC1tIGV0aDEzIGhleCBv
-bg0KT2Zmc2V0ICAgICAgICAgIFZhbHVlcw0KLS0tLS0tICAgICAgICAgIC0tLS0tLQ0KMHgwMDAw
-OiAgICAgICAgIDAzIDA0IDA3IDAwIDAwIDAwIDQwIDAwIDAwIDAwIDAwIDAyIDAxIDAwIDAwIDAw
-DQoweDAwMTA6ICAgICAgICAgYzggYzggMDAgMDAgNGYgNTAgNGUgNDUgNTggNTQgMjAgNDkgNGUg
-NDMgMjAgMjANCjB4MDAyMDogICAgICAgICAyMCAyMCAyMCAyMCAwMCAwMCAwYiA0MCA1NCA1MiA0
-NiAzNSAzMyAzMiAzNiA0MQ0KMHgwMDMwOiAgICAgICAgIDRlIDRjIDQyIDM0IDMwIDM0IDIwIDIw
-IDQxIDMyIDQxIDIwIDAwIDAwIDAwIDQ5DQoweDAwNDA6ICAgICAgICAgMDAgMWEgMDAgMDAgNDMg
-NGUgMzEgMzkgNDQgNTkgMzkgMzAgMzAgNDggMjAgMjANCjB4MDA1MDogICAgICAgICAyMCAyMCAy
-MCAyMCAzMSAzMSAzMCAzOSAzMyAzMCAyMCAyMCA2OCBmMCAwMSAxYQ0KMHgwMDYwOiAgICAgICAg
-IDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDRhIDM5IDMwIDM1IDM0IDQzIDIwIDMxDQoweDAwNzA6
-ICAgICAgICAgMzkgMzkgMzAgMmQgMzQgMzEgMzEgMzIgNDYgZmQgZDYgODAgNDUgZjEgODYgZTIN
-CjB4MDA4MDogICAgICAgICAzZSA0OCA1MCAyMCA1MCA3MiA2ZiA0MyA3NSA3MiA3NiA2NSAyMCA1
-MCA3MiA2Zg0KMHgwMDkwOiAgICAgICAgIDcwIDcyIDY5IDY1IDc0IDYxIDcyIDc5IDIwIDU0IDY1
-IDYzIDY4IDZlIDZmIDZjDQoweDAwYTA6ICAgICAgICAgNmYgNjcgNzkgMjAgMmQgMjAgNTUgNzMg
-NjUgMjAgNjkgNmQgNzAgNmMgNjkgNjUNCjB4MDBiMDogICAgICAgICA3MyAyMCA2MSA2MyA2MyA2
-NSA3MCA3NCA2MSA2ZSA2MyA2NSAyMCA2ZiA2NiAyMA0KMHgwMGMwOiAgICAgICAgIDZjIDY5IDYz
-IDY1IDZlIDczIDY5IDZlIDY3IDIwIDc0IDY1IDcyIDZkIDczIDJlDQoweDAwZDA6ICAgICAgICAg
-NDggNTAgMzEgMzAgMzAgMmQgNDYgNTggMjAgMjAgMjAgMjAgMDAgMDAgMDAgMDANCjB4MDBlMDog
-ICAgICAgICAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMA0K
-MHgwMGYwOiAgICAgICAgIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAw
-IDAwIDAwDQoweDAxMDA6ICAgICAgICAgNTUgMDAgZjYgMDAgNTAgMDAgZmIgMDAgOGMgYTAgNzUg
-MzAgODggYjggNzkgMTgNCjB4MDExMDogICAgICAgICA3NSAzMCAwMSBmNCA2MSBhOCAwMyBlOCBm
-ZiBmZiAwMCAwYSBmZiBmZiAwMCAwYQ0KMHgwMTIwOiAgICAgICAgIDAyIDc2IDAwIDA1IDAxIGY1
-IDAwIDA2IDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwDQoweDAxMzA6ICAgICAgICAgMDAgMDAgMDAg
-MDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDANCjB4MDE0MDogICAgICAgICAw
-MCAwMCAwMCAwMCAzZiA4MCAwMCAwMCAwMCAwMCAwMCAwMCAwMSAwMCAwMCAwMA0KMHgwMTUwOiAg
-ICAgICAgIDAxIDAwIDAwIDAwIDAxIDAwIDAwIDAwIDAxIDAwIDAwIDAwIDAwIDAwIDAwIDEyDQow
-eDAxNjA6ICAgICAgICAgMWUgMDAgODIgMDAgMWYgMzUgMDAgZDggMDAgMDAgMDAgMDAgMDAgMDAg
-MTIgMDANCjB4MDE3MDogICAgICAgICAwMCA0MCAwMCAwMCAwMCA0MCAwMCAwMCAwMCAwMCAwMCAw
-MCAwMCAwMCAwMCAwMA0KMHgwMTgwOiAgICAgICAgIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAw
-IDAwIDAwIDAwIDAwIDAwIDAwIDAwDQoweDAxOTA6ICAgICAgICAgMDAgMDAgMDAgMDAgMDAgMDAg
-MDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDANCjB4MDFhMDogICAgICAgICAwMCAwMCAwMCAw
-MCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMA0KMHgwMWIwOiAgICAgICAgIDAw
-IDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwDQoweDAxYzA6ICAg
-ICAgICAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDANCjB4
-MDFkMDogICAgICAgICAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAw
-MCAwMA0KMHgwMWUwOiAgICAgICAgIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAw
-IDAwIDAwIDAwIDAwDQoweDAxZjA6ICAgICAgICAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAg
-MDAgMDAgMDAgMDAgMDAgMDAgMDA=
-
-
---=-RhFF99NoOr/wzTqNsGXE--
+I don't know what to say about acquiring RCU read lock twice and
+traversing the list of interfaces three or four times.
+On the other hand, what's the worst that can happen if the GFP_ATOMIC
+memory allocation fails. It's not like there is any data loss.
+User space will retry when there is less memory pressure.
