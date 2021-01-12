@@ -2,58 +2,57 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D43462F2EF4
-	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 13:25:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C3CE12F2F2C
+	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 13:35:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387511AbhALMYK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jan 2021 07:24:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38024 "EHLO
+        id S2388199AbhALMdt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jan 2021 07:33:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40120 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387465AbhALMYJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 07:24:09 -0500
-Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E70DBC061786
-        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 04:23:28 -0800 (PST)
-Received: by mail-io1-xd2d.google.com with SMTP id n4so3479673iow.12
-        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 04:23:28 -0800 (PST)
+        with ESMTP id S2388120AbhALMds (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 07:33:48 -0500
+Received: from mail-io1-xd29.google.com (mail-io1-xd29.google.com [IPv6:2607:f8b0:4864:20::d29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 556FDC061786
+        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 04:33:08 -0800 (PST)
+Received: by mail-io1-xd29.google.com with SMTP id d9so3559203iob.6
+        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 04:33:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=nZIezxfzF5cQVfnp9/DvcL98QklFJMeqwz8OE0o7lBM=;
-        b=cdhH9HEUB47b4fq3e07Gy4hh0BO4wPghQRXBEikULAHwkROwydMITx/LuS06kY8XkT
-         hIngq3U3IZuDa/l2J6YMdt4dyvhL7iRs4NE9WlZGZ1K7iDpLya2TnUXsdJUlw00hIO4Y
-         HiDq5o+4Zuy0jAJPVhAJ403wQW6Prj1ccTVWu8OYxUoGYkqbL1LJS5OXrx0LQhuWHgcY
-         1yi2u/URnELdm3je9GrLljj9yxcMCLjH+XzoTjUzU/eyyBNpgcC2ms21MrRZFxRc8cwi
-         fmGovBHSfx3oMiI+yzacG7Gz+0hgLiWpwj1DJI7gfWCZ+nKU0PZuwTUSrP7UhqOP0bQG
-         ByaQ==
+        bh=Of78Vmc8hauFqd9I7zupUdsPMLB4WSeLIFBQZhkt6D0=;
+        b=MKW2IKppYfWC8TX5Q9Cc26aDS0tUhLFPNRZ8DYFW6JKZxT9nhFFRNcoxJFp26Q997M
+         GIAsw6oPGFbk+L12zZRfygAWffLL/ik6B7anx9Zo3V303ga1AwpRUJVwF3N9BcWrupBw
+         2O8riPClVVLPU0baIWY7uACtS9lnME9uNhnVveUAkjLxeTy6Qek5bYLvuf8Ep1SUairF
+         CznXKsoePlneK0AxhyXfMYoH73CuH91FGivryh1zTuYaVDBCWQXp1Vu2bogGFmr+re5b
+         CrQRe7GFvBB+/LCcG+6OyWS/kcCd+yIN9ekfHj4ZJmvfprAgyl3skiRIjINvkCV+7Zbf
+         1wyQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=nZIezxfzF5cQVfnp9/DvcL98QklFJMeqwz8OE0o7lBM=;
-        b=SfT0PsJXt7Luh0q/t4bnzUFfUTvnttcoUfAsJNE9gLIDp3dDniKkZpXdnNBUthvQwD
-         Yvv86Om6rPt2gu56bnR2G9vHdbDZnMwzUm0ndmz+3ss9GuAbR58eXXfYiJF2ZJ4sMlOe
-         ktUNumxDD0wEbMivi84cWSNmSAC4XpdnF/jiZqk7hhrwTSRolfvi1HJo6Kck+jXmIEtq
-         UsU7RM7ZCdlSwh7z9iyo2dqmdf6qIvanSUxs0svGqpRLdHOIlWRJwKCkfMYyWDAZeLe1
-         sRzxUO+HtnHbIKdQ/iEmJE7bWfNLn99KXNj3a64St0zhEIR8NUi0Der/40A5vfMexBS3
-         Yilg==
-X-Gm-Message-State: AOAM532RnlfdcuWvxrsKBmi4W/PJ7uYgBmdNd9dsEELU9frvYAyZjMUY
-        qLzsJr/0vmkhfzVOOdES10xTplYPExSpp0UHzQ/3Vg==
-X-Google-Smtp-Source: ABdhPJzCX4Z3ZyGgv0cScTyr9oPuvm6uuLBWsAZpZf4YTAFVuDYAtQ49Yue7KnksqB9gfzM0eWDP4MDKUCJ2/OTtvgY=
-X-Received: by 2002:a02:c981:: with SMTP id b1mr4002348jap.6.1610454207998;
- Tue, 12 Jan 2021 04:23:27 -0800 (PST)
+        bh=Of78Vmc8hauFqd9I7zupUdsPMLB4WSeLIFBQZhkt6D0=;
+        b=RopBEmAl22ispPu6OJTL8cL3UcOoTHRIbm5Mn/ccy45M5v1vJ9aYN78L9+DQDl0qYE
+         pzAgf3yJKVszWXhQS+sFa6DbKUXxwX3sf0E20Ja/YW0l1Lyv2Ld6yYjsxsr4ZmWUuUYo
+         JSzx83/9UrndHHFqGpb9amuiTLZ059r2T3ZtUHpiFD2PGKEDNGUUwG3sz0HhysqiQIkE
+         UeD1D32wJHmsxng4pZEUbrDYLX/NNjMvV7doGmb6LMj1DzzsPUD1Liqy2A300xd+4aSm
+         F5Y05QWjeZR4DhrniuMAhOaQHJNqUH6Dd6VRshqCWWeNZQRcY1d99E7phZiEsIyOio8U
+         mlRg==
+X-Gm-Message-State: AOAM5312wGCFPTkLuVOmT62VTjsCW9C1zruFjqddTy7tklN0dDcLPYA+
+        ovTSkL0/rxGZ77IwIMRAJSGgPZXjdOQk+N1UQlj9VQ==
+X-Google-Smtp-Source: ABdhPJycqY3rswN9NW/Vo08dGf7zIPK57Sy6wLEU25pmLm88I4BVOLs+rK/QLeFQiypa3Okwur/TwYIwhW8Uo+Z+/78=
+X-Received: by 2002:a92:9153:: with SMTP id t80mr3776680ild.216.1610454787513;
+ Tue, 12 Jan 2021 04:33:07 -0800 (PST)
 MIME-Version: 1.0
-References: <20210111182655.12159-1-alobakin@pm.me> <d4f4b6ba-fb3b-d873-23b2-4b5ba9cf4db8@gmail.com>
- <20210112110802.3914-1-alobakin@pm.me>
-In-Reply-To: <20210112110802.3914-1-alobakin@pm.me>
+References: <20210111182655.12159-1-alobakin@pm.me> <CANn89iKceTG_Mm4RrF+WVg-EEoFBD48gwpWX=GQiNdNnj2R8+A@mail.gmail.com>
+ <20210112105529.3592-1-alobakin@pm.me>
+In-Reply-To: <20210112105529.3592-1-alobakin@pm.me>
 From:   Eric Dumazet <edumazet@google.com>
-Date:   Tue, 12 Jan 2021 13:23:16 +0100
-Message-ID: <CANn89iKEc_8_ySqV+KrbheTDKRL4Ws6JUKYeKXfogJNhfd+pGQ@mail.gmail.com>
+Date:   Tue, 12 Jan 2021 13:32:56 +0100
+Message-ID: <CANn89i+2VC3ZH5_fyWZvJA_6QrJLzaSupusQ1rXe8CqVffCB1Q@mail.gmail.com>
 Subject: Re: [PATCH net-next 0/5] skbuff: introduce skbuff_heads bulking and reusing
 To:     Alexander Lobakin <alobakin@pm.me>
-Cc:     Edward Cree <ecree.xilinx@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+Cc:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Edward Cree <ecree@solarflare.com>,
         Jonathan Lemon <jonathan.lemon@gmail.com>,
@@ -70,43 +69,21 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 12, 2021 at 12:08 PM Alexander Lobakin <alobakin@pm.me> wrote:
->
-> From: Edward Cree <ecree.xilinx@gmail.com>
-> Date: Tue, 12 Jan 2021 09:54:04 +0000
->
-> > Without wishing to weigh in on whether this caching is a good idea...
->
-> Well, we already have a cache to bulk flush "consumed" skbs, although
-> kmem_cache_free() is generally lighter than kmem_cache_alloc(), and
-> a page frag cache to allocate skb->head that is also bulking the
-> operations, since it contains a (compound) page with the size of
-> min(SZ_32K, PAGE_SIZE).
-> If they wouldn't give any visible boosts, I think they wouldn't hit
-> mainline.
->
-> > Wouldn't it be simpler, rather than having two separate "alloc" and "flush"
-> >  caches, to have a single larger cache, such that whenever it becomes full
-> >  we bulk flush the top half, and when it's empty we bulk alloc the bottom
-> >  half?  That should mean fewer branches, fewer instructions etc. than
-> >  having to decide which cache to act upon every time.
->
-> I though about a unified cache, but couldn't decide whether to flush
-> or to allocate heads and how much to process. Your suggestion answers
-> these questions and generally seems great. I'll try that one, thanks!
+On Tue, Jan 12, 2021 at 11:56 AM Alexander Lobakin <alobakin@pm.me> wrote:
 >
 
+>
+> Ah, I should've mentioned that I use UDP GRO Fraglists, so these
+> numbers are for GRO.
+>
 
-The thing is : kmalloc() is supposed to have batches already, and nice
-per-cpu caches.
+Right, this suggests UDP GRO fraglist is a pathological case of GRO,
+not saving memory.
 
-This looks like an mm issue, are we sure we want to get over it ?
+Real GRO (TCP in most cases) will consume one skb, and have page
+fragments for each segment.
 
-I would like a full analysis of why SLAB/SLUB does not work well for
-your test workload.
+Having skbs linked together is not cache friendly.
 
-More details, more numbers.... before we accept yet another
-'networking optimization' adding more code to the 'fast' path.
-
-More code means more latencies when all code needs to be brought up in
-cpu caches.
+So I would try first to make this case better, instead of trying to
+work around the real issue.
