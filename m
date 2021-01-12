@@ -2,97 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3EE872F2436
-	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 01:34:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 058F42F23FD
+	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 01:34:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391727AbhALAZi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jan 2021 19:25:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52236 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404268AbhALAVj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 19:21:39 -0500
-Received: from mail-oi1-x22b.google.com (mail-oi1-x22b.google.com [IPv6:2607:f8b0:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C282C061575
-        for <netdev@vger.kernel.org>; Mon, 11 Jan 2021 16:20:59 -0800 (PST)
-Received: by mail-oi1-x22b.google.com with SMTP id l200so537507oig.9
-        for <netdev@vger.kernel.org>; Mon, 11 Jan 2021 16:20:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=kNqltu1OF1hMLrUr3D3bv/ySnEJldW6xz9ogdhiNQ5E=;
-        b=RSMcpgnYQfFSELcgPUds6AOjXrYRDYDYypuze9oK3hjdMgBV6bXxGtXN/ZMmJ/U+Kg
-         ScKWthBwUbPxhPlSA6jLjxI3RvZSggwDAlOZu/mhtH+Tycdvu9afi+FBzp2ujKVMQSVk
-         Gq64+GIhftKiepY2894VAkrbUy7z98JewpIm8Cdw6y2LoW2glik3cPhMGY0pfSTe9eDr
-         Ic3Bww2UkiBPsRCcD6/rLea1bhZHwZ6EmZ/2bSSLbZRFwFnmv9AYqixuqbkxkmpnanFO
-         4N8da6yyFWaGSbMo7LBP0rUlghKimTGtnLtqxbbF/sVrMWAqHGWkkL5OelnHwcTBQ4dh
-         kyhQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=kNqltu1OF1hMLrUr3D3bv/ySnEJldW6xz9ogdhiNQ5E=;
-        b=c18pC/h1F8jkUhvoMH7YERRyKQU5RO3zJcI1vTW5Bp7mgRz75UHyEOvNqWu2Hq0fsR
-         oT7D+nlhlRGwdhRFAh4DaDeesu6IUD8t3edwvQyLq+XXGJnAA1Gw1FFdYCiwaBz/tOXX
-         TbTSmnoajl99IG3UgLMD7riIv9ZMePfU2rbG9cDIRv7EQK3g0DgCHX9SHVcDVn4QNzuU
-         nXNq1+4HWIMV5Rw5XGnofrtgcOjKpUsgEO6+hAGlfO5Jf+RmHqwNX77V3gBliSEcp3Tg
-         RiA6FfUergfoK5QtfTNV1st8FnaYChoTq2AW14TVsPkY0nSt/d72Kof7t67yYoiN447f
-         QJOg==
-X-Gm-Message-State: AOAM5313g4IQ1DDHjpD8KxHUNDPQ/nQJUFebE+zRwFpJDPyfjj81D7ZR
-        vzIj/j9OCyly7CkemQi4+yLjI2P7NrM=
-X-Google-Smtp-Source: ABdhPJx8Nhqd37awE21j0dN1vAMZhwiu/oIslGDfs5lNaPFOCA2YGl1501jQM1wjtjjQ8IswdP5+Jw==
-X-Received: by 2002:aca:5fd6:: with SMTP id t205mr814096oib.13.1610410858782;
-        Mon, 11 Jan 2021 16:20:58 -0800 (PST)
-Received: from Davids-MacBook-Pro.local ([8.48.134.51])
-        by smtp.googlemail.com with ESMTPSA id z3sm251947ooj.26.2021.01.11.16.20.57
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 11 Jan 2021 16:20:58 -0800 (PST)
-Subject: Re: [PATCH net-next v2 06/11] selftests: Use separate stdout and
- stderr buffers in nettest
-To:     Jakub Kicinski <kuba@kernel.org>, David Ahern <dsahern@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, schoen@loyalty.org
-References: <20210110001852.35653-1-dsahern@kernel.org>
- <20210110001852.35653-7-dsahern@kernel.org>
- <20210111161546.1310e9da@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <45473342-cba7-c489-2cd4-738eb7424dc8@gmail.com>
-Date:   Mon, 11 Jan 2021 17:20:56 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
- Gecko/20100101 Thunderbird/78.6.0
+        id S1729334AbhALAbf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jan 2021 19:31:35 -0500
+Received: from mail.kernel.org ([198.145.29.99]:42262 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728045AbhALAbV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 11 Jan 2021 19:31:21 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 9A58322CB8;
+        Tue, 12 Jan 2021 00:31:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1610411465;
+        bh=vZLdTkMoOu2F4nasG0f0KXIUGYxkW5UO6asGtPQPAz0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=C0gx2yFE5AgAd/WT16thHDJM2+CEkESES6I+WtrRRmqkd7yveXoyRV8is4xXUow0d
+         DQTvADmmze8y7noL2NIbtjtjnLz6vXC3sDEMVe9gdi9O1MuzmN253jxtEXA4flM7JO
+         xdhhrlnRWCfE8llVK8bs+i2TBWyxMhVg0pDKKq5fi8M1NxOV1s+rx2NWeVHkvdT2tb
+         iBE4SWPbvuclN60K2XnblufTlS86NcO1pz5sJfyTjrB4Z/s0idj6f0ZjZzioP9eb9q
+         KJ35aQZvN6qshy+/GWlWN3wCjsOxH5EvORnBVPzoYm0e0+rcANTHsVRjQrJXezq6Ke
+         oNWPtORx4b6LQ==
+Date:   Mon, 11 Jan 2021 16:31:04 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Russell King <rmk+kernel@armlinux.org.uk>
+Cc:     Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next] net: phy: at803x: use phy_modify_mmd()
+Message-ID: <20210111163104.603c8f21@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <X/swkuuuZcwgH+sM@lunn.ch>
+References: <E1kyc72-0008Pq-1x@rmk-PC.armlinux.org.uk>
+        <X/swkuuuZcwgH+sM@lunn.ch>
 MIME-Version: 1.0
-In-Reply-To: <20210111161546.1310e9da@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/11/21 5:15 PM, Jakub Kicinski wrote:
->> diff --git a/tools/testing/selftests/net/nettest.c b/tools/testing/selftests/net/nettest.c
->> index 0e4196027d63..13c74774e357 100644
->> --- a/tools/testing/selftests/net/nettest.c
->> +++ b/tools/testing/selftests/net/nettest.c
->> @@ -1705,9 +1705,27 @@ static char *random_msg(int len)
->>  
->>  static int ipc_child(int fd, struct sock_args *args)
->>  {
->> +	char *outbuf, *errbuf;
->> +	int rc;
->> +
->> +	outbuf = malloc(4096);
->> +	errbuf = malloc(4096);
->> +	if (!outbuf || !errbuf) {
->> +		fprintf(stderr, "server: Failed to allocate buffers for stdout and stderr\n");
->> +		return 1;
+On Sun, 10 Jan 2021 17:51:30 +0100 Andrew Lunn wrote:
+> On Sun, Jan 10, 2021 at 02:54:36PM +0000, Russell King wrote:
+> > Convert at803x_clk_out_config() to use phy_modify_mmd().
+> > 
+> > Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>  
 > 
-> that's a memleak, rc = 1, goto free; ?
-> 
-> Also there's a few uses of fprintf(stderr, .. instead of log_error()
-> is there a reason for it?
-> 
-> I don't think this is a big deal, I'll apply unless you object in time.
-> 
+> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-good catch. I found a bug in patch 5 as well. I'll fix and re-send.
+Applied, thanks!
