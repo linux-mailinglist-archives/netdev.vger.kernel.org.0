@@ -2,94 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E2D62F2C07
-	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 10:59:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 591332F2C12
+	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 11:01:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389319AbhALJ5c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jan 2021 04:57:32 -0500
-Received: from smtp05.smtpout.orange.fr ([80.12.242.127]:21601 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728810AbhALJ5c (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 04:57:32 -0500
-Received: from localhost.localdomain ([153.202.107.157])
-        by mwinf5d28 with ME
-        id Flvf240043PnFJp03lvkoN; Tue, 12 Jan 2021 10:55:47 +0100
-X-ME-Helo: localhost.localdomain
-X-ME-Auth: bWFpbGhvbC52aW5jZW50QHdhbmFkb28uZnI=
-X-ME-Date: Tue, 12 Jan 2021 10:55:47 +0100
-X-ME-IP: 153.202.107.157
-From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>, linux-can@vger.kernel.org,
-        Jeroen Hofstee <jhofstee@victronenergy.com>,
-        Richard Cochran <richardcochran@gmail.com>
-Cc:     Wolfgang Grandegger <wg@grandegger.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "open list : NETWORKING DRIVERS" <netdev@vger.kernel.org>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Subject: [PATCH v4 1/1] can: dev: add software tx timestamps
-Date:   Tue, 12 Jan 2021 18:54:37 +0900
-Message-Id: <20210112095437.6488-2-mailhol.vincent@wanadoo.fr>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20210112095437.6488-1-mailhol.vincent@wanadoo.fr>
-References: <20210112095437.6488-1-mailhol.vincent@wanadoo.fr>
+        id S2388713AbhALJ7P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jan 2021 04:59:15 -0500
+Received: from mail-yb1-f179.google.com ([209.85.219.179]:40013 "EHLO
+        mail-yb1-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726342AbhALJ7P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 04:59:15 -0500
+Received: by mail-yb1-f179.google.com with SMTP id b64so1612770ybg.7;
+        Tue, 12 Jan 2021 01:58:59 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=dGNUkGeCzldSz5Jx25dtI9sopkbs7ZGwNPYz1mZfW3A=;
+        b=aW9EJyHX+ccIeD9ALiZ4AO6PmBgZw+UBl2eiYH9KcAdFIy6Rdad20YZS4vV9blMaIh
+         E9jjwrkWQUfnW3Gcqej9dgInKE4R5xtcQpa64T+8+sgsJ87FX9a1vIekqG/7g9nfUVDY
+         FbnRdL9a1L9wyP3UVbZw3JUFsjKo9PSiWA+H/lnXFHn3C+kjIw5urRxLF6y5hS11aTQm
+         twD2+ZgER5rnR2M+mYpHpfICbeldutYy1N6Hf0SGg7z3anZsQaxd+AoRyA5FOvfSB5xV
+         rgLANlQkHplxqTuOQrmhiBbeY3IWt5HnUx53Q5cmIMIMdeHRriUfvvC98NtID1QAgjw0
+         lbcg==
+X-Gm-Message-State: AOAM530F0oqrNtiGUsoZQwxncbeSOM7MZ1KBCKb+AyhfK8/txmJVHC7I
+        vWDUUtAZbNyPuzeKraSn54sjDcmVPsijFrC4nSw=
+X-Google-Smtp-Source: ABdhPJw+eXujMb1kBAEv5nRJYDAF+/pYMZmPBq84N0+GBAcjBf03nyeAZL7ew1Y1byfhyo15kp79nKU8i2nUGxwmm7I=
+X-Received: by 2002:a25:7c05:: with SMTP id x5mr5725712ybc.487.1610445514201;
+ Tue, 12 Jan 2021 01:58:34 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210110124903.109773-1-mailhol.vincent@wanadoo.fr>
+ <20210110124903.109773-2-mailhol.vincent@wanadoo.fr> <20210111171152.GB11715@hoboy.vegasvil.org>
+ <CAMZ6RqJqWOGVb_oAhk+CSZAvsej_xSDR6jqktU_nwLgFpWTb9Q@mail.gmail.com> <0de66e27-8ac3-c2fe-a986-dc4a00ebcb00@pengutronix.de>
+In-Reply-To: <0de66e27-8ac3-c2fe-a986-dc4a00ebcb00@pengutronix.de>
+From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Date:   Tue, 12 Jan 2021 18:58:23 +0900
+Message-ID: <CAMZ6Rq+6pV2nHYTMWP9yOhRxP0VVJHUfF9fQUPohHfXh++APqA@mail.gmail.com>
+Subject: Re: [PATCH v3 1/1] can: dev: add software tx timestamps
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     Richard Cochran <richardcochran@gmail.com>,
+        linux-can <linux-can@vger.kernel.org>,
+        Jeroen Hofstee <jhofstee@victronenergy.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Call skb_tx_timestamp() within can_put_echo_skb() so that a software
-tx timestamp gets attached on the skb.
+On Tue. 12 Jan 2021 at 16:58, Marc Kleine-Budde <mkl@pengutronix.de> wrote:
+>
+> On 1/12/21 1:00 AM, Vincent MAILHOL wrote:
+> [...]
+>
+> > Mark: do you want me to send a v4 of that patch with above
+> > comment removed or can you directly do the change in your testing
+> > branch?
+>
+> Please send a patch on-top of linux-can-next/testing
 
-There two main reasons to include this call in can_put_echo_skb():
+Done: https://lore.kernel.org/linux-can/20210112095437.6488-1-mailhol.vincent@wanadoo.fr/
 
-  * It easily allow to enable the tx timestamp on all devices with
-    just one small change.
 
-  * According to Documentation/networking/timestamping.rst, the tx
-    timestamps should be generated in the device driver as close as
-    possible, but always prior to passing the packet to the network
-    interface. During the call to can_put_echo_skb(), the skb gets
-    cloned meaning that the driver should not dereference the skb
-    variable anymore after can_put_echo_skb() returns. This makes
-    can_put_echo_skb() the very last place we can use the skb without
-    having to access the echo_skb[] array.
-
-Remark: by default, skb_tx_timestamp() does nothing. It needs to be
-activated by passing the SOF_TIMESTAMPING_TX_SOFTWARE flag either
-through socket options or control messages.
-
-References:
-
- * Support for the error queue in CAN RAW sockets (which is needed for
-   tx timestamps) was introduced in:
-   https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=eb88531bdbfaafb827192d1fc6c5a3fcc4fadd96
-
-  * Put the call to skb_tx_timestamp() just before adding it to the
-    array: https://lkml.org/lkml/2021/1/10/54
-
-  * About Tx hardware timestamps
-    https://lore.kernel.org/linux-can/20210111171152.GB11715@hoboy.vegasvil.org/
-
-Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
----
- drivers/net/can/dev/skb.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/drivers/net/can/dev/skb.c b/drivers/net/can/dev/skb.c
-index 53683d4312f1..6a64fe410987 100644
---- a/drivers/net/can/dev/skb.c
-+++ b/drivers/net/can/dev/skb.c
-@@ -65,6 +65,8 @@ int can_put_echo_skb(struct sk_buff *skb, struct net_device *dev,
- 		/* save frame_len to reuse it when transmission is completed */
- 		can_skb_prv(skb)->frame_len = frame_len;
- 
-+		skb_tx_timestamp(skb);
-+
- 		/* save this skb for tx interrupt echo handling */
- 		priv->echo_skb[idx] = skb;
- 	} else {
--- 
-2.26.2
-
+Yours sincerely,
+Vincent
