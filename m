@@ -2,179 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D14B82F370F
-	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 18:27:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 929972F3715
+	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 18:29:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390350AbhALR1U (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jan 2021 12:27:20 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:35355 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729952AbhALR1U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 12:27:20 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1610472353;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=iWnPwHmwpPq8dtT0EJ/0cNl6TcaYEVCoOV2Vqd6D1Gw=;
-        b=BeNxSWIF9gRFZHWZA/WriAYgecLHZPmWXnjcIBBHH1DS17CXvjsjrJus1ihaVyU2eHGBUI
-        ySnHj9K+okE/7L6P0TyPbKS2FBTkrzoKOkNjC/7GL2PoKCqUeOpCvUl6zi0pGE/5k048/6
-        Z0WisBDK5tq2KtShdqYzYLFQj9HxAtg=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-98-DDwjxtAJPtuQbMuh-d_Big-1; Tue, 12 Jan 2021 12:25:51 -0500
-X-MC-Unique: DDwjxtAJPtuQbMuh-d_Big-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 84CF88049C1;
-        Tue, 12 Jan 2021 17:25:50 +0000 (UTC)
-Received: from gerbillo.redhat.com (ovpn-115-120.ams2.redhat.com [10.36.115.120])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 5B4FA1975E;
-        Tue, 12 Jan 2021 17:25:49 +0000 (UTC)
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     mptcp@lists.01.org, "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net 2/2] mptcp: better msk-level shutdown.
-Date:   Tue, 12 Jan 2021 18:25:24 +0100
-Message-Id: <4cd18371d7caa6ee4a4e7ef988b50b45e362e177.1610471474.git.pabeni@redhat.com>
-In-Reply-To: <cover.1610471474.git.pabeni@redhat.com>
-References: <cover.1610471474.git.pabeni@redhat.com>
+        id S2391093AbhALR1l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jan 2021 12:27:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47140 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732976AbhALR1l (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 12:27:41 -0500
+Received: from merlin.infradead.org (merlin.infradead.org [IPv6:2001:8b0:10b:1231::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D07CFC061575;
+        Tue, 12 Jan 2021 09:27:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=merlin.20170209; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:MIME-Version:Date:Message-ID:From:References:To:Subject:Sender:
+        Reply-To:Cc:Content-ID:Content-Description;
+        bh=5tDr7aGlDz3PeLcWiqxZrrnAZ5+05QuRz8RnWDW1ykk=; b=coFDAqFatOSMe9YScssCANk8Ou
+        ckZ1ZnzvJ3fNKx14nYfPTRzdg0wKfn+J3Cu66Dd3vn0yLqhUjzoTRWp6vr/hf6kw3DKJWd+4eeQZN
+        oBcjdHXfa+VtsxlgaQnp9e7KyQnvtuOu/ONtSLb/lY7W4Q5aqULLy00YzsIKBKd+ba24W6Svm4zl+
+        X955olxkuAvxGDGJHhgAlBOjcuhzieuYWCd20TWsz8v/n8F4aG2vpGg8+79/et3K6l2XiAGt/kMJh
+        xrZVM/mgCtCl30KH5MAzgytKJLu8+OWBlZDkSEpRpr28yh9NDFMOnDJOuCTmk5PCsSxVKP4c0mw/9
+        sTCg3rfw==;
+Received: from [2601:1c0:6280:3f0::79df]
+        by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1kzNRW-0005Z8-UB; Tue, 12 Jan 2021 17:26:55 +0000
+Subject: Re: [PATCH V3] drivers: net: marvell: Fixed two spellings,controling
+ to controlling and oen to one
+To:     Bhaskar Chowdhury <unixbhaskar@gmail.com>, mw@semihalf.com,
+        linux@armlinux.org.uk, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        gustavo@embeddedor.com
+References: <20210112103152.13222-1-unixbhaskar@gmail.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+Message-ID: <2cf30ec7-07cc-650c-d94b-a9cd7aadb906@infradead.org>
+Date:   Tue, 12 Jan 2021 09:26:48 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.4.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+In-Reply-To: <20210112103152.13222-1-unixbhaskar@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Instead of re-implementing most of inet_shutdown, re-use
-such helper, and implement the MPTCP-specific bits at the
-'proto' level.
+On 1/12/21 2:31 AM, Bhaskar Chowdhury wrote:
+> s/oen/one/
+> s/controling/controlling/
+> 
+> Signed-off-by: Bhaskar Chowdhury <unixbhaskar@gmail.com>
 
-The msk-level disconnect() can now be invoked, lets provide a
-suitable implementation.
+Acked-by: Randy Dunlap <rdunlap@infradead.org>
 
-As a side effect, this fixes bad state management for listener
-sockets. The latter could lead to division by 0 oops since
-commit ea4ca586b16f ("mptcp: refine MPTCP-level ack scheduling").
+Thanks.
 
-Fixes: 43b54c6ee382 ("mptcp: Use full MPTCP-level disconnect state machine")
-Fixes: ea4ca586b16f ("mptcp: refine MPTCP-level ack scheduling")
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
----
- net/mptcp/protocol.c | 62 ++++++++++++--------------------------------
- 1 file changed, 17 insertions(+), 45 deletions(-)
+> ---
+> Changes from V2 : Correct the versioning,mentioned both the changes
+> 
+>  drivers/net/ethernet/marvell/mvpp2/mvpp2_cls.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_cls.h b/drivers/net/ethernet/marvell/mvpp2/mvpp2_cls.h
+> index 8867f25afab4..663157dc8062 100644
+> --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_cls.h
+> +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_cls.h
+> @@ -143,7 +143,7 @@ struct mvpp2_cls_c2_entry {
+>  /* Number of per-port dedicated entries in the C2 TCAM */
+>  #define MVPP22_CLS_C2_PORT_N_FLOWS	MVPP2_N_RFS_ENTRIES_PER_FLOW
+> 
+> -/* Each port has oen range per flow type + one entry controling the global RSS
+> +/* Each port has one range per flow type + one entry controlling the global RSS
+>   * setting and the default rx queue
+>   */
+>  #define MVPP22_CLS_C2_PORT_RANGE	(MVPP22_CLS_C2_PORT_N_FLOWS + 1)
+> ./--
+> 2.26.2
+> 
 
-diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-index 2ff8c7caf74f..81faeff8f3bb 100644
---- a/net/mptcp/protocol.c
-+++ b/net/mptcp/protocol.c
-@@ -2642,11 +2642,12 @@ static void mptcp_copy_inaddrs(struct sock *msk, const struct sock *ssk)
- 
- static int mptcp_disconnect(struct sock *sk, int flags)
- {
--	/* Should never be called.
--	 * inet_stream_connect() calls ->disconnect, but that
--	 * refers to the subflow socket, not the mptcp one.
--	 */
--	WARN_ON_ONCE(1);
-+	struct mptcp_subflow_context *subflow;
-+	struct mptcp_sock *msk = mptcp_sk(sk);
-+
-+	__mptcp_flush_join_list(msk);
-+	mptcp_for_each_subflow(msk, subflow)
-+		tcp_disconnect(mptcp_subflow_tcp_sock(subflow), flags);
- 	return 0;
- }
- 
-@@ -3089,6 +3090,14 @@ bool mptcp_finish_join(struct sock *ssk)
- 	return true;
- }
- 
-+static void mptcp_shutdown(struct sock *sk, int how)
-+{
-+	pr_debug("sk=%p, how=%d", sk, how);
-+
-+	if ((how & SEND_SHUTDOWN) && mptcp_close_state(sk))
-+		__mptcp_wr_shutdown(sk);
-+}
-+
- static struct proto mptcp_prot = {
- 	.name		= "MPTCP",
- 	.owner		= THIS_MODULE,
-@@ -3098,7 +3107,7 @@ static struct proto mptcp_prot = {
- 	.accept		= mptcp_accept,
- 	.setsockopt	= mptcp_setsockopt,
- 	.getsockopt	= mptcp_getsockopt,
--	.shutdown	= tcp_shutdown,
-+	.shutdown	= mptcp_shutdown,
- 	.destroy	= mptcp_destroy,
- 	.sendmsg	= mptcp_sendmsg,
- 	.recvmsg	= mptcp_recvmsg,
-@@ -3344,43 +3353,6 @@ static __poll_t mptcp_poll(struct file *file, struct socket *sock,
- 	return mask;
- }
- 
--static int mptcp_shutdown(struct socket *sock, int how)
--{
--	struct mptcp_sock *msk = mptcp_sk(sock->sk);
--	struct sock *sk = sock->sk;
--	int ret = 0;
--
--	pr_debug("sk=%p, how=%d", msk, how);
--
--	lock_sock(sk);
--
--	how++;
--	if ((how & ~SHUTDOWN_MASK) || !how) {
--		ret = -EINVAL;
--		goto out_unlock;
--	}
--
--	if (sock->state == SS_CONNECTING) {
--		if ((1 << sk->sk_state) &
--		    (TCPF_SYN_SENT | TCPF_SYN_RECV | TCPF_CLOSE))
--			sock->state = SS_DISCONNECTING;
--		else
--			sock->state = SS_CONNECTED;
--	}
--
--	sk->sk_shutdown |= how;
--	if ((how & SEND_SHUTDOWN) && mptcp_close_state(sk))
--		__mptcp_wr_shutdown(sk);
--
--	/* Wake up anyone sleeping in poll. */
--	sk->sk_state_change(sk);
--
--out_unlock:
--	release_sock(sk);
--
--	return ret;
--}
--
- static const struct proto_ops mptcp_stream_ops = {
- 	.family		   = PF_INET,
- 	.owner		   = THIS_MODULE,
-@@ -3394,7 +3366,7 @@ static const struct proto_ops mptcp_stream_ops = {
- 	.ioctl		   = inet_ioctl,
- 	.gettstamp	   = sock_gettstamp,
- 	.listen		   = mptcp_listen,
--	.shutdown	   = mptcp_shutdown,
-+	.shutdown	   = inet_shutdown,
- 	.setsockopt	   = sock_common_setsockopt,
- 	.getsockopt	   = sock_common_getsockopt,
- 	.sendmsg	   = inet_sendmsg,
-@@ -3444,7 +3416,7 @@ static const struct proto_ops mptcp_v6_stream_ops = {
- 	.ioctl		   = inet6_ioctl,
- 	.gettstamp	   = sock_gettstamp,
- 	.listen		   = mptcp_listen,
--	.shutdown	   = mptcp_shutdown,
-+	.shutdown	   = inet_shutdown,
- 	.setsockopt	   = sock_common_setsockopt,
- 	.getsockopt	   = sock_common_getsockopt,
- 	.sendmsg	   = inet6_sendmsg,
+
 -- 
-2.26.2
+~Randy
 
