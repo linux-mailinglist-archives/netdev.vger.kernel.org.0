@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 728512F316D
-	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 14:26:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C759D2F315C
+	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 14:25:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732674AbhALNTS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jan 2021 08:19:18 -0500
-Received: from mail.kernel.org ([198.145.29.99]:53820 "EHLO mail.kernel.org"
+        id S1732490AbhALNSS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jan 2021 08:18:18 -0500
+Received: from mail.kernel.org ([198.145.29.99]:53892 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388736AbhALM47 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 12 Jan 2021 07:56:59 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 1112623121;
-        Tue, 12 Jan 2021 12:55:45 +0000 (UTC)
+        id S2389501AbhALM5D (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 Jan 2021 07:57:03 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 2486C2312C;
+        Tue, 12 Jan 2021 12:55:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610456147;
-        bh=kAeYGyxjJHr6PJUf3V2kvHwuqdbVpOB+4IXFVhgsRB0=;
+        s=k20201202; t=1610456154;
+        bh=aMsWEpKVWH1Rl/dMhyks5Uqr+pvexaRExzaT85Cp/Mg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MS3uXayHXZBhg7uZ8+WCDPmfRLQlNhudg0hoC2RFH1N8J+6jiaDYJR5vw5izJIGt3
-         EA50MqwIet1Rzr8dXSQcAjyAMluZT3wf11jduIBgx7iSZj8NeahmiWpfzOVlcYWJco
-         C60SpJXLeXA80YfX6EukKzzrRLP5iBN33v47fmUF4tLtAaZkcSlZOTmNwWiCKI1Bv0
-         2X6/d+fUAxfDwk610Xsz/ETkc+3E1G/Gz9T59V79XqTrfhMTGfEktAEB+1v5jKyfgU
-         GJHG9l6Zc6e2HYAPaqAsTZjiFN1bUYSzv1qUxmLF7QR3zEemc4+CHzaa8Nv25D458l
-         bSw1tBnAkT+sQ==
+        b=PlZyq/ZqmMuuwfAQT7RRfOsbkEmedon9QgMbg7522YSZNkTSk8aPL7u/IBNvMhWBQ
+         +MyFcgcrVzixJ5+pk8nOVDNwyaC6mvtxGzgde3Ko20AxeyjA72V8z4gKY7O5rVLn2V
+         YtyyVuZvaPrB3Vqg8mSAZIdNMuJir3g0qXyihO1vR0Kqqoq7rbvDmsl72eu/xZQ5R7
+         clDM4JS+33amnNQ8S/4iAkcw0gC2tqzHQ0ahJmmVIM4lR5IUYV6cQixBIhxUufz3y9
+         HMQaQvTnhM9VAgj/tTr/SyFxcp4B327mKzOQP9CNKyabOkbIEMBxkZm1gCsVTui6hZ
+         E3ioyhxCErMcg==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Carl Huang <cjhuang@codeaurora.org>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>, ath11k@lists.infradead.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 09/51] ath11k: qmi: try to allocate a big block of DMA memory first
-Date:   Tue, 12 Jan 2021 07:54:51 -0500
-Message-Id: <20210112125534.70280-9-sashal@kernel.org>
+Cc:     Rasmus Villemoes <rasmus.villemoes@prevas.dk>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org
+Subject: [PATCH AUTOSEL 5.10 14/51] ethernet: ucc_geth: fix definition and size of ucc_geth_tx_global_pram
+Date:   Tue, 12 Jan 2021 07:54:56 -0500
+Message-Id: <20210112125534.70280-14-sashal@kernel.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20210112125534.70280-1-sashal@kernel.org>
 References: <20210112125534.70280-1-sashal@kernel.org>
@@ -43,117 +43,61 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Carl Huang <cjhuang@codeaurora.org>
+From: Rasmus Villemoes <rasmus.villemoes@prevas.dk>
 
-[ Upstream commit f6f92968e1e5a7a9d211faaebefc26ebe408dad7 ]
+[ Upstream commit 887078de2a23689e29d6fa1b75d7cbc544c280be ]
 
-Not all firmware versions support allocating DMA memory in smaller blocks so
-first try to allocate big block of DMA memory for QMI. If the allocation fails,
-let firmware request multiple blocks of DMA memory with smaller size.
+Table 8-53 in the QUICC Engine Reference manual shows definitions of
+fields up to a size of 192 bytes, not just 128. But in table 8-111,
+one does find the text
 
-This also fixes an unnecessary error message seen during ath11k probe on
-QCA6390:
+  Base Address of the Global Transmitter Parameter RAM Page. [...]
+  The user needs to allocate 128 bytes for this page. The address must
+  be aligned to the page size.
 
-ath11k_pci 0000:06:00.0: Respond mem req failed, result: 1, err: 0
-ath11k_pci 0000:06:00.0: qmi failed to respond fw mem req:-22
+I've checked both rev. 7 (11/2015) and rev. 9 (05/2018) of the manual;
+they both have this inconsistency (and the table numbers are the
+same).
 
-Tested-on: QCA6390 hw2.0 PCI WLAN.HST.1.0.1-01740-QCAHSTSWPLZ_V2_TO_X86-1
+Adding a bit of debug printing, on my board the struct
+ucc_geth_tx_global_pram is allocated at offset 0x880, while
+the (opaque) ucc_geth_thread_data_tx gets allocated immediately
+afterwards, at 0x900. So whatever the engine writes into the thread
+data overlaps with the tail of the global tx pram (and devmem says
+that something does get written during a simple ping).
 
-Signed-off-by: Carl Huang <cjhuang@codeaurora.org>
-Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/1608127593-15192-1-git-send-email-kvalo@codeaurora.org
+I haven't observed any failure that could be attributed to this, but
+it seems to be the kind of thing that would be extremely hard to
+debug. So extend the struct definition so that we do allocate 192
+bytes.
+
+Signed-off-by: Rasmus Villemoes <rasmus.villemoes@prevas.dk>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/ath/ath11k/qmi.c | 24 ++++++++++++++++++++++--
- drivers/net/wireless/ath/ath11k/qmi.h |  1 +
- 2 files changed, 23 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/freescale/ucc_geth.h | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/wireless/ath/ath11k/qmi.c b/drivers/net/wireless/ath/ath11k/qmi.c
-index 99a88ca83deaa..2ae7c6bf091e9 100644
---- a/drivers/net/wireless/ath/ath11k/qmi.c
-+++ b/drivers/net/wireless/ath/ath11k/qmi.c
-@@ -1654,6 +1654,7 @@ static int ath11k_qmi_respond_fw_mem_request(struct ath11k_base *ab)
- 	struct qmi_wlanfw_respond_mem_resp_msg_v01 resp;
- 	struct qmi_txn txn = {};
- 	int ret = 0, i;
-+	bool delayed;
- 
- 	req = kzalloc(sizeof(*req), GFP_KERNEL);
- 	if (!req)
-@@ -1666,11 +1667,13 @@ static int ath11k_qmi_respond_fw_mem_request(struct ath11k_base *ab)
- 	 * failure to FW and FW will then request mulitple blocks of small
- 	 * chunk size memory.
- 	 */
--	if (!ab->bus_params.fixed_mem_region && ab->qmi.mem_seg_count <= 2) {
-+	if (!ab->bus_params.fixed_mem_region && ab->qmi.target_mem_delayed) {
-+		delayed = true;
- 		ath11k_dbg(ab, ATH11K_DBG_QMI, "qmi delays mem_request %d\n",
- 			   ab->qmi.mem_seg_count);
- 		memset(req, 0, sizeof(*req));
- 	} else {
-+		delayed = false;
- 		req->mem_seg_len = ab->qmi.mem_seg_count;
- 
- 		for (i = 0; i < req->mem_seg_len ; i++) {
-@@ -1702,6 +1705,12 @@ static int ath11k_qmi_respond_fw_mem_request(struct ath11k_base *ab)
- 	}
- 
- 	if (resp.resp.result != QMI_RESULT_SUCCESS_V01) {
-+		/* the error response is expected when
-+		 * target_mem_delayed is true.
-+		 */
-+		if (delayed && resp.resp.error == 0)
-+			goto out;
+diff --git a/drivers/net/ethernet/freescale/ucc_geth.h b/drivers/net/ethernet/freescale/ucc_geth.h
+index 3fe9039721952..c80bed2c995c1 100644
+--- a/drivers/net/ethernet/freescale/ucc_geth.h
++++ b/drivers/net/ethernet/freescale/ucc_geth.h
+@@ -575,7 +575,14 @@ struct ucc_geth_tx_global_pram {
+ 	u32 vtagtable[0x8];	/* 8 4-byte VLAN tags */
+ 	u32 tqptr;		/* a base pointer to the Tx Queues Memory
+ 				   Region */
+-	u8 res2[0x80 - 0x74];
++	u8 res2[0x78 - 0x74];
++	u64 snums_en;
++	u32 l2l3baseptr;	/* top byte consists of a few other bit fields */
 +
- 		ath11k_warn(ab, "Respond mem req failed, result: %d, err: %d\n",
- 			    resp.resp.result, resp.resp.error);
- 		ret = -EINVAL;
-@@ -1736,6 +1745,8 @@ static int ath11k_qmi_alloc_target_mem_chunk(struct ath11k_base *ab)
- 	int i;
- 	struct target_mem_chunk *chunk;
++	u16 mtu[8];
++	u8 res3[0xa8 - 0x94];
++	u32 wrrtablebase;	/* top byte is reserved */
++	u8 res4[0xc0 - 0xac];
+ } __packed;
  
-+	ab->qmi.target_mem_delayed = false;
-+
- 	for (i = 0; i < ab->qmi.mem_seg_count; i++) {
- 		chunk = &ab->qmi.target_mem[i];
- 		chunk->vaddr = dma_alloc_coherent(ab->dev,
-@@ -1743,6 +1754,15 @@ static int ath11k_qmi_alloc_target_mem_chunk(struct ath11k_base *ab)
- 						  &chunk->paddr,
- 						  GFP_KERNEL);
- 		if (!chunk->vaddr) {
-+			if (ab->qmi.mem_seg_count <= 2) {
-+				ath11k_dbg(ab, ATH11K_DBG_QMI,
-+					   "qmi dma allocation failed (%d B type %u), will try later with small size\n",
-+					    chunk->size,
-+					    chunk->type);
-+				ath11k_qmi_free_target_mem_chunk(ab);
-+				ab->qmi.target_mem_delayed = true;
-+				return 0;
-+			}
- 			ath11k_err(ab, "failed to alloc memory, size: 0x%x, type: %u\n",
- 				   chunk->size,
- 				   chunk->type);
-@@ -2467,7 +2487,7 @@ static void ath11k_qmi_msg_mem_request_cb(struct qmi_handle *qmi_hdl,
- 				    ret);
- 			return;
- 		}
--	} else if (msg->mem_seg_len > 2) {
-+	} else {
- 		ret = ath11k_qmi_alloc_target_mem_chunk(ab);
- 		if (ret) {
- 			ath11k_warn(ab, "qmi failed to alloc target memory: %d\n",
-diff --git a/drivers/net/wireless/ath/ath11k/qmi.h b/drivers/net/wireless/ath/ath11k/qmi.h
-index b0a818f0401b9..59f1452b3544c 100644
---- a/drivers/net/wireless/ath/ath11k/qmi.h
-+++ b/drivers/net/wireless/ath/ath11k/qmi.h
-@@ -121,6 +121,7 @@ struct ath11k_qmi {
- 	struct target_mem_chunk target_mem[ATH11K_QMI_WLANFW_MAX_NUM_MEM_SEG_V01];
- 	u32 mem_seg_count;
- 	u32 target_mem_mode;
-+	bool target_mem_delayed;
- 	u8 cal_done;
- 	struct target_info target;
- 	struct m3_mem_region m3_mem;
+ /* structure representing Extended Filtering Global Parameters in PRAM */
 -- 
 2.27.0
 
