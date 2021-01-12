@@ -2,37 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8CE672F313D
-	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 14:25:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 728512F316D
+	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 14:26:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389403AbhALM5B (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jan 2021 07:57:01 -0500
-Received: from mail.kernel.org ([198.145.29.99]:53816 "EHLO mail.kernel.org"
+        id S1732674AbhALNTS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jan 2021 08:19:18 -0500
+Received: from mail.kernel.org ([198.145.29.99]:53820 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388706AbhALM47 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S2388736AbhALM47 (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 12 Jan 2021 07:56:59 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 018602311F;
-        Tue, 12 Jan 2021 12:55:42 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1112623121;
+        Tue, 12 Jan 2021 12:55:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610456144;
-        bh=697ysmwKoKRSvCrwtszXFk25QAtHZknzwmmQ92IkpXk=;
+        s=k20201202; t=1610456147;
+        bh=kAeYGyxjJHr6PJUf3V2kvHwuqdbVpOB+4IXFVhgsRB0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=s72kCF9aH9Z4eXIdKdmgg256FRJPcYekuIpodTUIZDK55OAD+R6pmblKkP47FdPjC
-         u3cz820O6NQGWjvJP23vz6RhExmtXH1UNYfeeEqRQG4S54kgjqFiSsirCc65u927EY
-         8uw8UaLYw6pMktAKHjxbsDuq7DEgXpNSNvwpFz6EcyOi39MT4Pis4j8MzJHtno58Fm
-         68W5WyoP5xROSd9KJZKwwf6j/J7kOjhGpv3O5NuW8l1iXB8vNHsC6bUd6K0H6/qE4w
-         4CSW8jd2xnq6RhNBeih4rB6gumoJ/EmHZ3cHaaiPx9eDdTwoGL8jdgoPnTLUIyt3S9
-         iaufdH9I6G8zg==
+        b=MS3uXayHXZBhg7uZ8+WCDPmfRLQlNhudg0hoC2RFH1N8J+6jiaDYJR5vw5izJIGt3
+         EA50MqwIet1Rzr8dXSQcAjyAMluZT3wf11jduIBgx7iSZj8NeahmiWpfzOVlcYWJco
+         C60SpJXLeXA80YfX6EukKzzrRLP5iBN33v47fmUF4tLtAaZkcSlZOTmNwWiCKI1Bv0
+         2X6/d+fUAxfDwk610Xsz/ETkc+3E1G/Gz9T59V79XqTrfhMTGfEktAEB+1v5jKyfgU
+         GJHG9l6Zc6e2HYAPaqAsTZjiFN1bUYSzv1qUxmLF7QR3zEemc4+CHzaa8Nv25D458l
+         bSw1tBnAkT+sQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Ping-Ke Shih <pkshih@realtek.com>,
-        syzbot+65be4277f3c489293939@syzkaller.appspotmail.com,
+Cc:     Carl Huang <cjhuang@codeaurora.org>,
         Kalle Valo <kvalo@codeaurora.org>,
-        Sasha Levin <sashal@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, ath11k@lists.infradead.org,
         linux-wireless@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 07/51] rtlwifi: rise completion at the last step of firmware callback
-Date:   Tue, 12 Jan 2021 07:54:49 -0500
-Message-Id: <20210112125534.70280-7-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.10 09/51] ath11k: qmi: try to allocate a big block of DMA memory first
+Date:   Tue, 12 Jan 2021 07:54:51 -0500
+Message-Id: <20210112125534.70280-9-sashal@kernel.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20210112125534.70280-1-sashal@kernel.org>
 References: <20210112125534.70280-1-sashal@kernel.org>
@@ -44,102 +43,117 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Ping-Ke Shih <pkshih@realtek.com>
+From: Carl Huang <cjhuang@codeaurora.org>
 
-[ Upstream commit 4dfde294b9792dcf8615b55c58f093d544f472f0 ]
+[ Upstream commit f6f92968e1e5a7a9d211faaebefc26ebe408dad7 ]
 
-request_firmware_nowait() which schedules another work is used to load
-firmware when USB is probing. If USB is unplugged before running the
-firmware work, it goes disconnect ops, and then causes use-after-free.
-Though we wait for completion of firmware work before freeing the hw,
-firmware callback rises completion too early. So I move it to the
-last step.
+Not all firmware versions support allocating DMA memory in smaller blocks so
+first try to allocate big block of DMA memory for QMI. If the allocation fails,
+let firmware request multiple blocks of DMA memory with smaller size.
 
-usb 5-1: Direct firmware load for rtlwifi/rtl8192cufw.bin failed with error -2
-rtlwifi: Loading alternative firmware rtlwifi/rtl8192cufw.bin
-rtlwifi: Selected firmware is not available
-==================================================================
-BUG: KASAN: use-after-free in rtl_fw_do_work.cold+0x68/0x6a drivers/net/wireless/realtek/rtlwifi/core.c:93
-Write of size 4 at addr ffff8881454cff50 by task kworker/0:6/7379
+This also fixes an unnecessary error message seen during ath11k probe on
+QCA6390:
 
-CPU: 0 PID: 7379 Comm: kworker/0:6 Not tainted 5.10.0-rc7-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: events request_firmware_work_func
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x107/0x163 lib/dump_stack.c:118
- print_address_description.constprop.0.cold+0xae/0x4c8 mm/kasan/report.c:385
- __kasan_report mm/kasan/report.c:545 [inline]
- kasan_report.cold+0x1f/0x37 mm/kasan/report.c:562
- rtl_fw_do_work.cold+0x68/0x6a drivers/net/wireless/realtek/rtlwifi/core.c:93
- request_firmware_work_func+0x12c/0x230 drivers/base/firmware_loader/main.c:1079
- process_one_work+0x933/0x1520 kernel/workqueue.c:2272
- worker_thread+0x64c/0x1120 kernel/workqueue.c:2418
- kthread+0x38c/0x460 kernel/kthread.c:292
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
+ath11k_pci 0000:06:00.0: Respond mem req failed, result: 1, err: 0
+ath11k_pci 0000:06:00.0: qmi failed to respond fw mem req:-22
 
-The buggy address belongs to the page:
-page:00000000f54435b3 refcount:0 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x1454cf
-flags: 0x200000000000000()
-raw: 0200000000000000 0000000000000000 ffffea00051533c8 0000000000000000
-raw: 0000000000000000 0000000000000000 00000000ffffffff 0000000000000000
-page dumped because: kasan: bad access detected
+Tested-on: QCA6390 hw2.0 PCI WLAN.HST.1.0.1-01740-QCAHSTSWPLZ_V2_TO_X86-1
 
-Memory state around the buggy address:
- ffff8881454cfe00: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
- ffff8881454cfe80: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
->ffff8881454cff00: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
-                                                 ^
- ffff8881454cff80: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
- ffff8881454d0000: ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff ff
-
-Reported-by: syzbot+65be4277f3c489293939@syzkaller.appspotmail.com
-Signed-off-by: Ping-Ke Shih <pkshih@realtek.com>
+Signed-off-by: Carl Huang <cjhuang@codeaurora.org>
 Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
-Link: https://lore.kernel.org/r/20201214053106.7748-1-pkshih@realtek.com
+Link: https://lore.kernel.org/r/1608127593-15192-1-git-send-email-kvalo@codeaurora.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/net/wireless/realtek/rtlwifi/core.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ drivers/net/wireless/ath/ath11k/qmi.c | 24 ++++++++++++++++++++++--
+ drivers/net/wireless/ath/ath11k/qmi.h |  1 +
+ 2 files changed, 23 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/wireless/realtek/rtlwifi/core.c b/drivers/net/wireless/realtek/rtlwifi/core.c
-index a7259dbc953da..965bd95890459 100644
---- a/drivers/net/wireless/realtek/rtlwifi/core.c
-+++ b/drivers/net/wireless/realtek/rtlwifi/core.c
-@@ -78,7 +78,6 @@ static void rtl_fw_do_work(const struct firmware *firmware, void *context,
+diff --git a/drivers/net/wireless/ath/ath11k/qmi.c b/drivers/net/wireless/ath/ath11k/qmi.c
+index 99a88ca83deaa..2ae7c6bf091e9 100644
+--- a/drivers/net/wireless/ath/ath11k/qmi.c
++++ b/drivers/net/wireless/ath/ath11k/qmi.c
+@@ -1654,6 +1654,7 @@ static int ath11k_qmi_respond_fw_mem_request(struct ath11k_base *ab)
+ 	struct qmi_wlanfw_respond_mem_resp_msg_v01 resp;
+ 	struct qmi_txn txn = {};
+ 	int ret = 0, i;
++	bool delayed;
  
- 	rtl_dbg(rtlpriv, COMP_ERR, DBG_LOUD,
- 		"Firmware callback routine entered!\n");
--	complete(&rtlpriv->firmware_loading_complete);
- 	if (!firmware) {
- 		if (rtlpriv->cfg->alt_fw_name) {
- 			err = request_firmware(&firmware,
-@@ -91,13 +90,13 @@ static void rtl_fw_do_work(const struct firmware *firmware, void *context,
- 		}
- 		pr_err("Selected firmware is not available\n");
- 		rtlpriv->max_fw_size = 0;
--		return;
-+		goto exit;
+ 	req = kzalloc(sizeof(*req), GFP_KERNEL);
+ 	if (!req)
+@@ -1666,11 +1667,13 @@ static int ath11k_qmi_respond_fw_mem_request(struct ath11k_base *ab)
+ 	 * failure to FW and FW will then request mulitple blocks of small
+ 	 * chunk size memory.
+ 	 */
+-	if (!ab->bus_params.fixed_mem_region && ab->qmi.mem_seg_count <= 2) {
++	if (!ab->bus_params.fixed_mem_region && ab->qmi.target_mem_delayed) {
++		delayed = true;
+ 		ath11k_dbg(ab, ATH11K_DBG_QMI, "qmi delays mem_request %d\n",
+ 			   ab->qmi.mem_seg_count);
+ 		memset(req, 0, sizeof(*req));
+ 	} else {
++		delayed = false;
+ 		req->mem_seg_len = ab->qmi.mem_seg_count;
+ 
+ 		for (i = 0; i < req->mem_seg_len ; i++) {
+@@ -1702,6 +1705,12 @@ static int ath11k_qmi_respond_fw_mem_request(struct ath11k_base *ab)
  	}
- found_alt:
- 	if (firmware->size > rtlpriv->max_fw_size) {
- 		pr_err("Firmware is too big!\n");
- 		release_firmware(firmware);
--		return;
-+		goto exit;
- 	}
- 	if (!is_wow) {
- 		memcpy(rtlpriv->rtlhal.pfirmware, firmware->data,
-@@ -109,6 +108,9 @@ static void rtl_fw_do_work(const struct firmware *firmware, void *context,
- 		rtlpriv->rtlhal.wowlan_fwsize = firmware->size;
- 	}
- 	release_firmware(firmware);
+ 
+ 	if (resp.resp.result != QMI_RESULT_SUCCESS_V01) {
++		/* the error response is expected when
++		 * target_mem_delayed is true.
++		 */
++		if (delayed && resp.resp.error == 0)
++			goto out;
 +
-+exit:
-+	complete(&rtlpriv->firmware_loading_complete);
- }
+ 		ath11k_warn(ab, "Respond mem req failed, result: %d, err: %d\n",
+ 			    resp.resp.result, resp.resp.error);
+ 		ret = -EINVAL;
+@@ -1736,6 +1745,8 @@ static int ath11k_qmi_alloc_target_mem_chunk(struct ath11k_base *ab)
+ 	int i;
+ 	struct target_mem_chunk *chunk;
  
- void rtl_fw_cb(const struct firmware *firmware, void *context)
++	ab->qmi.target_mem_delayed = false;
++
+ 	for (i = 0; i < ab->qmi.mem_seg_count; i++) {
+ 		chunk = &ab->qmi.target_mem[i];
+ 		chunk->vaddr = dma_alloc_coherent(ab->dev,
+@@ -1743,6 +1754,15 @@ static int ath11k_qmi_alloc_target_mem_chunk(struct ath11k_base *ab)
+ 						  &chunk->paddr,
+ 						  GFP_KERNEL);
+ 		if (!chunk->vaddr) {
++			if (ab->qmi.mem_seg_count <= 2) {
++				ath11k_dbg(ab, ATH11K_DBG_QMI,
++					   "qmi dma allocation failed (%d B type %u), will try later with small size\n",
++					    chunk->size,
++					    chunk->type);
++				ath11k_qmi_free_target_mem_chunk(ab);
++				ab->qmi.target_mem_delayed = true;
++				return 0;
++			}
+ 			ath11k_err(ab, "failed to alloc memory, size: 0x%x, type: %u\n",
+ 				   chunk->size,
+ 				   chunk->type);
+@@ -2467,7 +2487,7 @@ static void ath11k_qmi_msg_mem_request_cb(struct qmi_handle *qmi_hdl,
+ 				    ret);
+ 			return;
+ 		}
+-	} else if (msg->mem_seg_len > 2) {
++	} else {
+ 		ret = ath11k_qmi_alloc_target_mem_chunk(ab);
+ 		if (ret) {
+ 			ath11k_warn(ab, "qmi failed to alloc target memory: %d\n",
+diff --git a/drivers/net/wireless/ath/ath11k/qmi.h b/drivers/net/wireless/ath/ath11k/qmi.h
+index b0a818f0401b9..59f1452b3544c 100644
+--- a/drivers/net/wireless/ath/ath11k/qmi.h
++++ b/drivers/net/wireless/ath/ath11k/qmi.h
+@@ -121,6 +121,7 @@ struct ath11k_qmi {
+ 	struct target_mem_chunk target_mem[ATH11K_QMI_WLANFW_MAX_NUM_MEM_SEG_V01];
+ 	u32 mem_seg_count;
+ 	u32 target_mem_mode;
++	bool target_mem_delayed;
+ 	u8 cal_done;
+ 	struct target_info target;
+ 	struct m3_mem_region m3_mem;
 -- 
 2.27.0
 
