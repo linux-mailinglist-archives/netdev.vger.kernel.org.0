@@ -2,84 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 36AA12F3F75
-	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 01:46:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A0E132F3F9F
+	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 01:46:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404873AbhALWVk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jan 2021 17:21:40 -0500
-Received: from correo.us.es ([193.147.175.20]:49916 "EHLO mail.us.es"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2404829AbhALWV2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 12 Jan 2021 17:21:28 -0500
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 72495D28D1
-        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 23:20:01 +0100 (CET)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 63505DA78F
-        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 23:20:01 +0100 (CET)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 58B5EDA78B; Tue, 12 Jan 2021 23:20:01 +0100 (CET)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WELCOMELIST,USER_IN_WHITELIST
-        autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id C816ADA72F;
-        Tue, 12 Jan 2021 23:19:58 +0100 (CET)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Tue, 12 Jan 2021 23:19:58 +0100 (CET)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from salvia.lan (unknown [90.77.255.23])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S2403793AbhALW3k (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jan 2021 17:29:40 -0500
+Received: from mail-out.m-online.net ([212.18.0.10]:37714 "EHLO
+        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2394594AbhALW3L (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 17:29:11 -0500
+Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
+        by mail-out.m-online.net (Postfix) with ESMTP id 4DFlZp2Htbz1s46c;
+        Tue, 12 Jan 2021 23:28:02 +0100 (CET)
+Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
+        by mail.m-online.net (Postfix) with ESMTP id 4DFlZp1nRSz1tSPw;
+        Tue, 12 Jan 2021 23:28:02 +0100 (CET)
+X-Virus-Scanned: amavisd-new at mnet-online.de
+Received: from mail.mnet-online.de ([192.168.8.182])
+        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
+        with ESMTP id DA9Re4kRXOe8; Tue, 12 Jan 2021 23:28:01 +0100 (CET)
+X-Auth-Info: WsqRAc3017K+IJyGHqkoJTGMikCRbWSJ6VYgSzAxhWY=
+Received: from [127.0.0.1] (p578adb1c.dip0.t-ipconnect.de [87.138.219.28])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: pneira@us.es)
-        by entrada.int (Postfix) with ESMTPSA id 846FF42EF528;
-        Tue, 12 Jan 2021 23:19:58 +0100 (CET)
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     netfilter-devel@vger.kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net 3/3] netfilter: nf_nat: Fix memleak in nf_nat_init
-Date:   Tue, 12 Jan 2021 23:20:33 +0100
-Message-Id: <20210112222033.9732-4-pablo@netfilter.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20210112222033.9732-1-pablo@netfilter.org>
-References: <20210112222033.9732-1-pablo@netfilter.org>
+        by mail.mnet-online.de (Postfix) with ESMTPSA;
+        Tue, 12 Jan 2021 23:28:01 +0100 (CET)
+Subject: Re: [PATCH net-next] net: ks8851: Connect and start/stop the internal
+ PHY
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev@vger.kernel.org, Heiner Kallweit <hkallweit1@gmail.com>,
+        Lukas Wunner <lukas@wunner.de>
+References: <20210111125337.36513-1-marex@denx.de> <X/xlDTUQTLgVoaUE@lunn.ch>
+From:   Marek Vasut <marex@denx.de>
+Message-ID: <dd43881e-edff-74fd-dbcb-26c5ca5b6e72@denx.de>
+Date:   Tue, 12 Jan 2021 23:28:00 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Virus-Scanned: ClamAV using ClamSMTP
+In-Reply-To: <X/xlDTUQTLgVoaUE@lunn.ch>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Dinghao Liu <dinghao.liu@zju.edu.cn>
+On 1/11/21 3:47 PM, Andrew Lunn wrote:
+> On Mon, Jan 11, 2021 at 01:53:37PM +0100, Marek Vasut wrote:
+>> Unless the internal PHY is connected and started, the phylib will not
+>> poll the PHY for state and produce state updates. Connect the PHY and
+>> start/stop it.
+> 
+> Hi Marek
+> 
+> Please continue the conversion and remove all mii_calls.
+> 
+> ks8851_set_link_ksettings() calling mii_ethtool_set_link_ksettings()
+> is not good, phylib will not know about changes which we made to the
+> PHY etc.
 
-When register_pernet_subsys() fails, nf_nat_bysource
-should be freed just like when nf_ct_extend_register()
-fails.
+Hi,
 
-Fixes: 1cd472bf036ca ("netfilter: nf_nat: add nat hook register functions to nf_nat")
-Signed-off-by: Dinghao Liu <dinghao.liu@zju.edu.cn>
-Acked-by: Florian Westphal <fw@strlen.de>
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
----
- net/netfilter/nf_nat_core.c | 1 +
- 1 file changed, 1 insertion(+)
+I noticed a couple of drivers implement both the mii and mdiobus 
+options, I was pondering why is that. Is there some legacy backward 
+compatibility reason for keeping both or is it safe to remove the mii 
+support completely from the driver?
 
-diff --git a/net/netfilter/nf_nat_core.c b/net/netfilter/nf_nat_core.c
-index ea923f8cf9c4..b7c3c902290f 100644
---- a/net/netfilter/nf_nat_core.c
-+++ b/net/netfilter/nf_nat_core.c
-@@ -1174,6 +1174,7 @@ static int __init nf_nat_init(void)
- 	ret = register_pernet_subsys(&nat_net_ops);
- 	if (ret < 0) {
- 		nf_ct_extend_unregister(&nat_extend);
-+		kvfree(nf_nat_bysource);
- 		return ret;
- 	}
- 
--- 
-2.20.1
-
+Either way, I will do that in a separate patch, so it could be reverted 
+if it breaks something.
