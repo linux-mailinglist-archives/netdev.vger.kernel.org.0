@@ -2,76 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CFB5A2F27F3
-	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 06:38:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 205422F284A
+	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 07:17:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732578AbhALFiK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jan 2021 00:38:10 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:43688 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1732528AbhALFiJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 00:38:09 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1610429802;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=VH1DnjM7C34WcJYdUsZY2fXbHo1byMf7LCcAsLj7Uv8=;
-        b=RhoS5SaRHW3Od+Zxb/4HowZ0x6SqFBLTWmoieWF7DpvhpLqrSdAWrH2KGtD/XzALPV+JIn
-        s6lCG2punM8Y525jaUR+Ti9Noqh9L/Z+oOT21fxxv4Nx0LzStW3NOhtOmFHRMc8wfNgtg5
-        nreYGGz0VGmgT5Cvl9mCR3z7Bt+G6/g=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-268-l5RWiJr-MDS2JphWcs2S1g-1; Tue, 12 Jan 2021 00:36:40 -0500
-X-MC-Unique: l5RWiJr-MDS2JphWcs2S1g-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 3B67C802B40;
-        Tue, 12 Jan 2021 05:36:39 +0000 (UTC)
-Received: from laptop.redhat.com (ovpn-12-95.pek2.redhat.com [10.72.12.95])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 97A9B60BE2;
-        Tue, 12 Jan 2021 05:36:32 +0000 (UTC)
-From:   Cindy Lu <lulu@redhat.com>
-To:     lulu@redhat.com, jasowang@redhat.com, mst@redhat.com,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        lingshan.zhu@intel.com
-Cc:     stable@vger.kernel.org
-Subject: [PATCH v3] vhost_vdpa: fix the problem in vhost_vdpa_set_config_call
-Date:   Tue, 12 Jan 2021 13:36:29 +0800
-Message-Id: <20210112053629.9853-1-lulu@redhat.com>
+        id S1732629AbhALGQV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jan 2021 01:16:21 -0500
+Received: from mail.kernel.org ([198.145.29.99]:50352 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726478AbhALGQU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 Jan 2021 01:16:20 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 0EBC1206E9;
+        Tue, 12 Jan 2021 06:15:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1610432139;
+        bh=c6tyWxprww/4ROQ93yiG3cN7IOvwGECUGF1dHM038AQ=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=K3XL207jPsUySe7cGwEo+sNYxiUaUIeQ04Z2naKZbLESTfTkIdijqzrDv1C7JUwdH
+         +5IIVEIDy30eldpwgnSvBTzEgvkLkzuI3jc83pFRvzD8978O3/4Gn9LYiKWeWcwf0A
+         1iA0sczRPqJU/dRrfLmmQwBcGq6seJbK9jyicBM/37BQfuhvCOWJ5e530Y2EmrCT1/
+         h0uPSX2zZ50dbxeMQOUV1sa5pGFTH2sFlHXmuvvn12MykHbaISxtkBt9yHKGkDQaS4
+         7KUoPKNatI7nOyGv+FCUJ1QqWlZjY/puUWQg69PGhhsNTcjU0OyXzbPAz+tAA3Yh6H
+         6u+leHsOIji/g==
+Date:   Tue, 12 Jan 2021 08:15:35 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Don Dutile <ddutile@redhat.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>
+Cc:     Bjorn Helgaas <bhelgaas@google.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-pci <linux-pci@vger.kernel.org>,
+        linux-rdma@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
+        Alex Williamson <alex.williamson@redhat.com>
+Subject: Re: [PATCH mlx5-next v1 1/5] PCI: Add sysfs callback to allow MSI-X
+ table size change of SR-IOV VFs
+Message-ID: <20210112061535.GB4678@unreal>
+References: <20210110150727.1965295-1-leon@kernel.org>
+ <20210110150727.1965295-2-leon@kernel.org>
+ <CAKgT0UcJrSNMPAOoniRSnUn+wyRUkL62AfgR3-8QbAkak=pQ=w@mail.gmail.com>
+ <397a7ed5-c98f-560e-107e-0b354bebb9bd@redhat.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <397a7ed5-c98f-560e-107e-0b354bebb9bd@redhat.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In vhost_vdpa_set_config_call, the cb.private should be vhost_vdpa.
-this cb.private will finally use in vhost_vdpa_config_cb as
-vhost_vdpa. Fix this issue.
+On Mon, Jan 11, 2021 at 10:25:42PM -0500, Don Dutile wrote:
+> On 1/11/21 2:30 PM, Alexander Duyck wrote:
+> > On Sun, Jan 10, 2021 at 7:12 AM Leon Romanovsky <leon@kernel.org> wrote:
+> > > From: Leon Romanovsky <leonro@nvidia.com>
+> > >
+> > > Extend PCI sysfs interface with a new callback that allows configure
+> > > the number of MSI-X vectors for specific SR-IO VF. This is needed
+> > > to optimize the performance of newly bound devices by allocating
+> > > the number of vectors based on the administrator knowledge of targeted VM.
+> > >
+> > > This function is applicable for SR-IOV VF because such devices allocate
+> > > their MSI-X table before they will run on the VMs and HW can't guess the
+> > > right number of vectors, so the HW allocates them statically and equally.
+> > >
+> > > The newly added /sys/bus/pci/devices/.../vf_msix_vec file will be seen
+> > > for the VFs and it is writable as long as a driver is not bounded to the VF.
+> > >
+> > > The values accepted are:
+> > >   * > 0 - this will be number reported by the VF's MSI-X capability
+> > >   * < 0 - not valid
+> > >   * = 0 - will reset to the device default value
+> > >
+> > > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> > > ---
+> > >   Documentation/ABI/testing/sysfs-bus-pci | 20 ++++++++
+> > >   drivers/pci/iov.c                       | 62 +++++++++++++++++++++++++
+> > >   drivers/pci/msi.c                       | 29 ++++++++++++
+> > >   drivers/pci/pci-sysfs.c                 |  1 +
+> > >   drivers/pci/pci.h                       |  2 +
+> > >   include/linux/pci.h                     |  8 +++-
+> > >   6 files changed, 121 insertions(+), 1 deletion(-)
 
-Fixes: 776f395004d82 ("vhost_vdpa: Support config interrupt in vdpa")
-Acked-by: Jason Wang <jasowang@redhat.com>
-Signed-off-by: Cindy Lu <lulu@redhat.com>
----
- drivers/vhost/vdpa.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+<...>
 
-diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-index ef688c8c0e0e..3fbb9c1f49da 100644
---- a/drivers/vhost/vdpa.c
-+++ b/drivers/vhost/vdpa.c
-@@ -319,7 +319,7 @@ static long vhost_vdpa_set_config_call(struct vhost_vdpa *v, u32 __user *argp)
- 	struct eventfd_ctx *ctx;
- 
- 	cb.callback = vhost_vdpa_config_cb;
--	cb.private = v->vdpa;
-+	cb.private = v;
- 	if (copy_from_user(&fd, argp, sizeof(fd)))
- 		return  -EFAULT;
- 
--- 
-2.21.3
+> > > +
+> > This doesn't make sense to me. You are getting the vector count for
+> > the PCI device and reporting that. Are you expecting to call this on
+> > the PF or the VFs? It seems like this should be a PF attribute and not
+> > be called on the individual VFs.
+> >
+> > If you are calling this on the VFs then it doesn't really make any
+> > sense anyway since the VF is not a "VF PCI dev representor" and
+> > shouldn't be treated as such. In my opinion if we are going to be
+> > doing per-port resource limiting that is something that might make
+> > more sense as a part of the devlink configuration for the VF since the
+> > actual change won't be visible to an assigned device.
+> if the op were just limited to nic ports, devlink may be used; but I believe Leon is trying to handle it from an sriov/vf perspective for other non-nic devices as well,
+> e.g., ib ports, nvme vf's (which don't have a port concept at all).
 
+Right, the SR-IOV VFs are common entities outside of nic/devlink world.
+In addition to the netdev world, SR-IOV is used for crypto, storage, FPGA
+and IB devices.
+
+From what I see, There are three possible ways to configure MSI-X vector count:
+1. PCI device is on the same CPU - regular server/desktop as we know it.
+2. PCI device is on remote CPU - SmartNIC use case, the CPUs are
+connected through eswitch model.
+3. Some direct interface - DEVX for the mlx5_ib.
+
+This implementation handles item #1 for all devices without any exception.
+From my point of view, the majority of interested users of this feature
+will use this option.
+
+The second item should be solved differently (with devlink) when configuring
+eswitch port, but it is orthogonal to the item #1 and I will do it after.
+
+The third item is not managed by the kernel, so not relevant for our discussion.
+
+Thanks
