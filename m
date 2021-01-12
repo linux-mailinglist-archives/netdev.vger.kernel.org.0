@@ -2,88 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 680EC2F4037
-	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 01:47:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 334572F403E
+	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 01:47:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388095AbhALXTY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jan 2021 18:19:24 -0500
-Received: from mail.kernel.org ([198.145.29.99]:41588 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730671AbhALXTY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 12 Jan 2021 18:19:24 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id D44C523123;
-        Tue, 12 Jan 2021 23:18:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610493523;
-        bh=p4DckI6ojqTBJjsLgAhtVdszW1hMcOFjGhIjlUEUegY=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=Vf3nPc5inL5kKxJl15NhQNKtpBswixRYf21hWTGTZZvsUn1FEzO/FWkmqHgUwj5kP
-         gDxpqWGWuB/lYHDe9SExxh7S8WX/dOPDFmQOdyP9nFF/NV9RJTsCZpuh8p8hM1VDxc
-         PnU4rbZMv0ti+FTz6tBuoclM9Xmyb3imReA6GvtG+At4hsDph0deWCv0NtGmfVl2xN
-         4+1F0kBEBeZ6A1+e6oNcwh/NUf0C/Z078eZFSJ1J1Wu6a1gNMAS9OAHYkV8OWg2aCN
-         wIqnXYp4AbBj3dh34IWcmlsBHqM4AWjq5Hmi6JJPJORgXZAXpgMgkYYBA64E+LbhD5
-         4MFvuHw2ounPA==
-Message-ID: <b2f089b5ac625f8bce15e322534d4d405384c4f2.camel@kernel.org>
-Subject: Re: [PATCv4 net-next] octeontx2-pf: Add RSS multi group support
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     Geetha sowjanya <gakula@marvell.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     sgoutham@marvell.com, davem@davemloft.net, kuba@kernel.org
-Date:   Tue, 12 Jan 2021 15:18:41 -0800
-In-Reply-To: <5f140376c36bbe47edeb8784ada3b74fafe05afe.camel@kernel.org>
-References: <20210104072039.27297-1-gakula@marvell.com>
-         <5f140376c36bbe47edeb8784ada3b74fafe05afe.camel@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+        id S2388638AbhALXTx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jan 2021 18:19:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39128 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388390AbhALXTw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 18:19:52 -0500
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36444C061575;
+        Tue, 12 Jan 2021 15:19:12 -0800 (PST)
+Received: by mail-lf1-x133.google.com with SMTP id o17so5926177lfg.4;
+        Tue, 12 Jan 2021 15:19:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=V2Ayl33U2+jwFSkBY0C2/B0oa+AK3RI49yKP+WjxVhg=;
+        b=LbRWSzUcLdepsLvb8kTLdaLBag4uohB7z/fJT2cFD6Ki5GzDIbtG2UFVLF229snzwV
+         lkLyyGPWwHGgPlB9G+U759uOn7O589qOQ6I1jcn4I75YrN2ry9lKOjoaljOF6Ig9lzVb
+         4Fx2ufDuzu89uKCnRTLV9gLLE2m3wJQNUPeGW9NPiYL8s0E92wYna5rTpcPF5dsm6Wob
+         qXPQk4Wy2IfGMeEONZ/VoWswjrTQvKdq0ZQJI3hsx8kNnb8kqajoih+HRfmClPT52Aqr
+         +UpNl8cwNfYnp0XbyBs4TYrhXO3brpLxEhV0ZUgloIjzXN0pUsSMrGFZ2QiL1ibqoLp7
+         4y6Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=V2Ayl33U2+jwFSkBY0C2/B0oa+AK3RI49yKP+WjxVhg=;
+        b=UvPbPzjzKpxP6NOBQ4qw1DNNONl3EyFuzAxGnTx39cVwinNdgrxDUA8FLz05eEd3nT
+         40wYSUE2W9N2vn80QuIDxeqxeGsuB34AGOcyimLt7B7enEV36pyd1wL4scI1rLqCxHj6
+         6OspUQv8VZk6/m2zHzMuCAkn8Y/k8yHEF1L1zvUtMFr/NUYHQRpExj2ZhjRl8uLyp1gS
+         ORvOuYlU+g/31AmGSHsUEN/bvtK9H8kxcTDKAP5B+ZEwg5atlBr4Qld3vebCalpVh6QY
+         V6G31pCDf38SwcNNzqrqS4Gt7evT1U6RKesvyjDsIE4plsPDPx1Vqnp+bl9O6DiQ2Zpr
+         3Ffg==
+X-Gm-Message-State: AOAM532l4vFmGm5fCDH0rHhMnsdmFSmjOCWBYM+FlmDqhz5JbOojFnr8
+        i2jT2W7JThyFgtzdWql7e67Wdd4SbBnyK2EZtRC60w+1zgM=
+X-Google-Smtp-Source: ABdhPJxPHixFYs6g/zX3DOUEMOuUb3z06V+hSOSkCimhR9xOiiFqXkeYg79q1wA2oWYnG/qPMpVqVRWkrD1oZkAYNRU=
+X-Received: by 2002:a19:8b83:: with SMTP id n125mr565827lfd.75.1610493550708;
+ Tue, 12 Jan 2021 15:19:10 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+References: <20210112075520.4103414-1-andrii@kernel.org> <20210112075520.4103414-6-andrii@kernel.org>
+ <4155ef59-9e5e-f596-f22b-ecd4bde73e85@iogearbox.net>
+In-Reply-To: <4155ef59-9e5e-f596-f22b-ecd4bde73e85@iogearbox.net>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Tue, 12 Jan 2021 15:18:59 -0800
+Message-ID: <CAADnVQLjv3iLT3yWyR8tK7kAU8sM1giW_cbMcHHQpDCMigivgQ@mail.gmail.com>
+Subject: Re: [PATCH v3 bpf-next 5/7] bpf: support BPF ksym variables in kernel modules
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Kernel Team <kernel-team@fb.com>, Hao Luo <haoluo@google.com>,
+        Yonghong Song <yhs@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2021-01-12 at 15:16 -0800, Saeed Mahameed wrote:
-> On Mon, 2021-01-04 at 12:50 +0530, Geetha sowjanya wrote:
-> > Hardware supports 8 RSS groups per interface. Currently we are
-> > using
-> > only group '0'. This patch allows user to create new RSS
-> > groups/contexts
-> > and use the same as destination for flow steering rules.
-> > 
-> > usage:
-> > To steer the traffic to RQ 2,3
-> > 
-> > ethtool -X eth0 weight 0 0 1 1 context new
-> > (It will print the allocated context id number)
-> > New RSS context is 1
-> > 
-> > ethtool -N eth0 flow-type tcp4 dst-port 80 context 1 loc 1
-> > 
-> > To delete the context
-> > ethtool -X eth0 context 1 delete
-> > 
-> > When an RSS context is removed, the active classification
-> > rules using this context are also removed.
-> > 
-> > Change-log:
-> > 
-> > v4
-> > - Fixed compiletime warning.
-> > - Address Saeed's comments on v3.
-> > 
-> 
-> This patch is marked as accepted in patchwork
-> https://patchwork.kernel.org/project/netdevbpf/patch/20210104072039.27297-1-gakula@marvell.com/
-> 
-> but it is not actually applied, maybe resend..
-> 
-> 
-> you can add:
-> Reviewed-by: Saeed Mahameed <saeedm@nvidia.com>
-> 
-> 
+On Tue, Jan 12, 2021 at 8:30 AM Daniel Borkmann <daniel@iogearbox.net> wrote:
+>
+> On 1/12/21 8:55 AM, Andrii Nakryiko wrote:
+> > Add support for directly accessing kernel module variables from BPF programs
+> > using special ldimm64 instructions. This functionality builds upon vmlinux
+> > ksym support, but extends ldimm64 with src_reg=BPF_PSEUDO_BTF_ID to allow
+> > specifying kernel module BTF's FD in insn[1].imm field.
+> >
+> > During BPF program load time, verifier will resolve FD to BTF object and will
+> > take reference on BTF object itself and, for module BTFs, corresponding module
+> > as well, to make sure it won't be unloaded from under running BPF program. The
+> > mechanism used is similar to how bpf_prog keeps track of used bpf_maps.
+> >
+> > One interesting change is also in how per-CPU variable is determined. The
+> > logic is to find .data..percpu data section in provided BTF, but both vmlinux
+> > and module each have their own .data..percpu entries in BTF. So for module's
+> > case, the search for DATASEC record needs to look at only module's added BTF
+> > types. This is implemented with custom search function.
+> >
+> > Acked-by: Yonghong Song <yhs@fb.com>
+> > Acked-by: Hao Luo <haoluo@google.com>
+> > Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+> [...]
+> > +
+> > +struct module *btf_try_get_module(const struct btf *btf)
+> > +{
+> > +     struct module *res = NULL;
+> > +#ifdef CONFIG_DEBUG_INFO_BTF_MODULES
+> > +     struct btf_module *btf_mod, *tmp;
+> > +
+> > +     mutex_lock(&btf_module_mutex);
+> > +     list_for_each_entry_safe(btf_mod, tmp, &btf_modules, list) {
+> > +             if (btf_mod->btf != btf)
+> > +                     continue;
+> > +
+> > +             if (try_module_get(btf_mod->module))
+> > +                     res = btf_mod->module;
+>
+> One more thought (follow-up would be okay I'd think) ... when a module references
+> a symbol from another module, it similarly needs to bump the refcount of the module
+> that is owning it and thus disallowing to unload for that other module's lifetime.
+> That usage dependency is visible via /proc/modules however, so if unload doesn't work
+> then lsmod allows a way to introspect that to the user. This seems to be achieved via
+> resolve_symbol() where it records its dependency/usage. Would be great if we could at
+> some point also include the BPF prog name into that list so that this is more obvious.
+> Wdyt?
 
-I missed Jakub's comment, The patch is already applied, i looked at the
-wrong tree.
-
-Thanks.
-
+I thought about it as well, but plenty of kernel things just grab the ref of ko
+and don't add any way to introspect what piece of kernel is holding ko.
+So this case won't be the first.
+Also if we add it for bpf progs it could be confusing in lsmod.
+Since it currently only shows other ko-s in there.
+Long ago I had an awk script to parse that output to rmmod dependent modules
+before rmmoding the main one. If somebody doing something like this
+bpf prog names in the same place may break things.
+So I think there are more cons than pros.
+That is certainly a follow up if we agree on the direction.
