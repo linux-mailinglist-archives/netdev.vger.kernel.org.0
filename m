@@ -2,190 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 839C62F2796
-	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 06:15:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 486392F27A7
+	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 06:24:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388086AbhALFO4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jan 2021 00:14:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58768 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730568AbhALFO4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 00:14:56 -0500
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C13FAC061575;
-        Mon, 11 Jan 2021 21:14:15 -0800 (PST)
-Received: by mail-wr1-x432.google.com with SMTP id q18so1102794wrn.1;
-        Mon, 11 Jan 2021 21:14:15 -0800 (PST)
+        id S2388604AbhALFYV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jan 2021 00:24:21 -0500
+Received: from esa9.fujitsucc.c3s2.iphmx.com ([68.232.159.90]:41549 "EHLO
+        esa9.fujitsucc.c3s2.iphmx.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2388548AbhALFYU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 00:24:20 -0500
+X-Greylist: delayed 455 seconds by postgrey-1.27 at vger.kernel.org; Tue, 12 Jan 2021 00:24:19 EST
+IronPort-SDR: +Gqmma/PAMZq7tzfYCpNsdDzZ2JHZM1uwqg5aXXhjgO1jRF4SGCBa4bfHPUvacvC8l1PkO6zo8
+ kI7v13qDbnwKahOwcz9t2TDVFh51olgxAD2qaoQbpjy+PyhCc8O6v1nFrAzVHoXGjnKbmOnjye
+ AIGbE1bg6vWUQK6xDypw+wgGRs2w23k05CSpqqHxcieEgVW/K6rLvu03iCd61J6u2ITSl44BlL
+ IpgQd4VAYYmVJt5Xt8lY/tNDGoyDuMYouBM4DWHFFbqhnz/f6XcZ2vv3fy5uwkfSxA5Q67Zrvq
+ PdY=
+X-IronPort-AV: E=McAfee;i="6000,8403,9861"; a="24238466"
+X-IronPort-AV: E=Sophos;i="5.79,340,1602514800"; 
+   d="scan'208";a="24238466"
+Received: from mail-os2jpn01lp2057.outbound.protection.outlook.com (HELO JPN01-OS2-obe.outbound.protection.outlook.com) ([104.47.92.57])
+  by ob1.fujitsucc.c3s2.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 12 Jan 2021 14:14:27 +0900
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=O44G2EVDqwQ4D13aBHvqKRi/G4DQNJVet+yhFkUnx4CF09D8Tou/Dn+0A9Y9upbEmg3kBS4dDnibgfpbggKvmigKJaDkjXG7jAsLOeIPPp67BCF9sXFH2Ju7KNULi/sUl23iwsypKoSvY+dL4WYNCVEjt7GirrQCZ8VsxkVnhpAy1SrZ3orhetmJg1GhtbTP4jhgDqrud8WmNRP2HAN7KPchLLoqWT2eJ07lSaGFSgN4PzvzJRsRUXXKVg+3+afitAFol9uGOoB91l3CQ3A/7h0xrytal6yhNVDBplMuAJfM+lkGRcSF7w8F0qR2oq33eNdMX+F3Xlkm9pflyLVC5g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=BAGL3y44LxjFVIzK0zHOrDA7hN5VnHQVR3H+Gussa/k=;
+ b=IoPytVlymfSiLWdFBNg84G3JSNWX2FaVzTyHF1uT9AI7VzHZbYt+V24XiITgl+ZmWFM8sRHnVT6nlb1r7mpjO1yjatGrvbMHGWO6qJ+/oXB+IioMpgNzXxEgg9MVcrOVrbMutl5VO8WPq3+HIVMZvgHFeaMD9nw6/2rF2uPER74nWjYc89yCxRSe0QaxBXSlxSJRE6HyldeDUl/m3ascIcjwfe/pTmmc6A3ApRS8jWzqPZJO8jmOncK0+BiGxHRJbZoxndEmD6kGMeYrv7MKPtxS5lbuS76sT6Dy6Al/s67pbRmmDYoIxmJf62QH69EFF3sp+DFUmLTw0NbQUO3KYA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fujitsu.com; dmarc=pass action=none header.from=fujitsu.com;
+ dkim=pass header.d=fujitsu.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=vp3jpumNfTANvMHmUWs99QCkazh7SVXBE91SzQo7bxA=;
-        b=P3mZIljPJzEv/3XCFkU8l5XR3RNmvFLvWGo/YDD9D/tKeJ+r4SNwh79FBkHpoRcdH7
-         ltlHBlvFZnf80xb06pIcPpzS+w3zBex4CPLVrsnu0Cr0w0JIXDHvuTOBUQB+cSickEkx
-         V06y9w5BNaZS09GzrvayLbuw4GZ/VB6vtma9ICK6aECkf1Xj1kP5MWeqJdJL+d9ITdWq
-         QWm44R4zvjJLkHdSGzxzUiRllaAndlLBD+6v2E4hW9NMOEAhzOGS8aFlXcEr0PNqFWxs
-         RRmCFuy5RPxEp4IXJhLTWl8k6I+xqIDWmiCyhyG8ZrkR70bX3UQZCjmQg654rMFoRYOw
-         nT+w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=vp3jpumNfTANvMHmUWs99QCkazh7SVXBE91SzQo7bxA=;
-        b=kI1BmiANeFqscWvTJrCLQgbNyM9pUSXnVx97D8AxUTdbb3+6vlnrKJAL7/PB+/h778
-         FbnyEj9Y8J2xK6Ov404DjOsIs4kaioHK5g1YWDdHv+paNgtyIAqY7gLY+vwhO7rFqJ5n
-         VGu4r+a3s7PeH6CDnC0387uJ8amdSwzJnUY1pSJv61tbtNOm7O30oOY1h372vCUSoF4k
-         RdSWkjbhrz0sYYxr3l04JtHJpgtcndSW9RYF744o5axQmpNK1a7nKIzj+P7v4rJo1r2a
-         2WGcjrNBtIaIz5akB8G/eS0nSolZ/WZyHw/91As3HikPpQy/ujqyfLjiNvzblSBztZzw
-         vDzQ==
-X-Gm-Message-State: AOAM5303PmvxHIGYjDI9NAbwI/b/M+W00tXcqUWzL6KNGLCIf0dgJJy2
-        DTAHML+lwMe0DqU6caXSDYWGg0N8B9oMo7Ivx2w4muFsHm3Y5g==
-X-Google-Smtp-Source: ABdhPJyC+jsAMjOLWX2rLW9aO/5PHWHMQEnuPy/TQUJTT5Q1lSV7r+YoS5tzM5lpdg937uCG8eNfHoV4I8qHX5yHfR8=
-X-Received: by 2002:a5d:6749:: with SMTP id l9mr2228745wrw.395.1610428454527;
- Mon, 11 Jan 2021 21:14:14 -0800 (PST)
+ d=fujitsu.onmicrosoft.com; s=selector2-fujitsu-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=BAGL3y44LxjFVIzK0zHOrDA7hN5VnHQVR3H+Gussa/k=;
+ b=MU9opy+i+QFcekEA2DhgdVE2v3bbav0/Jfiou7qZ3xyDPens/TCU1zV5yluK6FdNwPTNnf1TTTiUNClob+hBfeRuO1LAEV/b2q2mzB4wCnnOFPqW3ByCosDhe7NzNNfUWxwiKKU5hyeP3Mgp+Ac3j4LzElWLC7vIE9646Sd11oI=
+Received: from OSAPR01MB3844.jpnprd01.prod.outlook.com (2603:1096:604:5d::13)
+ by OSBPR01MB3333.jpnprd01.prod.outlook.com (2603:1096:604:2e::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3742.6; Tue, 12 Jan
+ 2021 05:14:21 +0000
+Received: from OSAPR01MB3844.jpnprd01.prod.outlook.com
+ ([fe80::a555:499e:e445:e0dd]) by OSAPR01MB3844.jpnprd01.prod.outlook.com
+ ([fe80::a555:499e:e445:e0dd%3]) with mapi id 15.20.3742.012; Tue, 12 Jan 2021
+ 05:14:21 +0000
+From:   "ashiduka@fujitsu.com" <ashiduka@fujitsu.com>
+To:     'Andrew Lunn' <andrew@lunn.ch>
+CC:     "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "torii.ken1@fujitsu.com" <torii.ken1@fujitsu.com>
+Subject: RE: [PATCH v2] net: phy: realtek: Add support for RTL9000AA/AN
+Thread-Topic: [PATCH v2] net: phy: realtek: Add support for RTL9000AA/AN
+Thread-Index: AQHW5y31ARgi0NV/wE25+9nETrMkFKohCyYAgAJo02A=
+Date:   Tue, 12 Jan 2021 05:14:21 +0000
+Message-ID: <OSAPR01MB3844F3CE410F7BB24BAA54B6DFAA0@OSAPR01MB3844.jpnprd01.prod.outlook.com>
+References: <20210110085221.5881-1-ashiduka@fujitsu.com>
+ <X/sptqSqUS7T5XWR@lunn.ch>
+In-Reply-To: <X/sptqSqUS7T5XWR@lunn.ch>
+Accept-Language: ja-JP, en-US
+Content-Language: ja-JP
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-securitypolicycheck: OK by SHieldMailChecker v2.6.2
+x-shieldmailcheckerpolicyversion: FJ-ISEC-20181130-VDI-enc
+x-shieldmailcheckermailid: 066a060e79ef4cbf85d6f50d6688659c
+authentication-results: lunn.ch; dkim=none (message not signed)
+ header.d=none;lunn.ch; dmarc=none action=none header.from=fujitsu.com;
+x-originating-ip: [218.44.52.176]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: f2e6f42e-34f9-456a-3588-08d8b6b8ebcf
+x-ms-traffictypediagnostic: OSBPR01MB3333:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <OSBPR01MB333335A5E115E03596CEE705DFAA0@OSBPR01MB3333.jpnprd01.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:7691;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 9dSMBHnG+OqjnI7UB1O3XsynwlT621Pe7JufC4Wfs5hYToao9lbqX5urG/hL8UdhaO3FU9Qc4eTnLcL2zt0d5Lu4KMOwViXHqcg46+jn0uuhZkKxiJcdpDrj9dAIjJkHQc0nWw5CfeBpbNRFTqrCpIinIIe6KaX8cvC+Y5Az73tOGm4d4p+YoF1UIl5/A/j7r1HiKV14c8uXv9B6eeDYC+NkHVt7fwvHqb4KI0nMx30nxFtWHrdw146nmIXMIM0/hVrBBj+JIDH2JSgBR5gxwK/NgjmsdT5n1uZxV5yhOKMPjNNY4G1U3PO7kN/E0qOY92JQzXB48/ZNox68VNs+cqadqMrluIq7x96tjxcZqGoaxF4Y9OPMtNQTkWEtG1KLpviTHTkIRDsVzrUnjtLGWJiGIZJMv5OJ5DZl4S+kZwBCS5Ne+IWk/MhA1dQmKS+d
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:OSAPR01MB3844.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39860400002)(396003)(366004)(346002)(136003)(376002)(83380400001)(2906002)(86362001)(6506007)(4326008)(26005)(186003)(107886003)(66446008)(478600001)(33656002)(52536014)(316002)(8676002)(54906003)(85182001)(5660300002)(7696005)(9686003)(71200400001)(55016002)(4744005)(66556008)(66946007)(8936002)(6916009)(76116006)(66476007)(64756008)(777600001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: =?iso-2022-jp?B?VmYrZHJMTmlqT2JuOEJRZ2VXMWlodDNiUWhycE1CT29DUExSV054KzJD?=
+ =?iso-2022-jp?B?cGNIWFQ2dzQwMWZ5aEQ4ZmVkZFJzT1dtVkZOQ0dBZGxMSTV0WjA5MHJX?=
+ =?iso-2022-jp?B?U1RBQmpKRlUwM1UyeFVSZGhaeFdRWlJUTjBkV3J5TFFwTE5oSWZYSStF?=
+ =?iso-2022-jp?B?a3pQd3VWUlU0NjgvNXpBWmVuc1h3dkNsd0xpVE0zT0xxZExud1V2dDUr?=
+ =?iso-2022-jp?B?MnlzRWFuNFJYdWpDMTI4OXFzdlZTVEVjb1B5TVFPcEU2V2NNWWtZdlNJ?=
+ =?iso-2022-jp?B?akczUzFpSjlaV2JyYlJhcUZQa2krK3BUNTJ0ekttMG44aXc5NklpTWM0?=
+ =?iso-2022-jp?B?Z2gyaEZJVmZpQy9aMUc4bDZLVmM1TzkyMG9uT1ZaYnRaYXE3QllEbmdt?=
+ =?iso-2022-jp?B?aXlMWmxtMWZRR2FncTlCekRlcERmWnlXeldrbkhuYVFnWDh4S1ArQWZP?=
+ =?iso-2022-jp?B?M2FuMEV0OWVSdk9sdEtGMStxTnBpRDBOTDBLQ2I1SGNoNmxsY2YydVRp?=
+ =?iso-2022-jp?B?YmV3ZWZKdkwwTVJHRkhZTFhieXZ6VnkxL1hXK1VoUmE3c1dtUVNEQ2p3?=
+ =?iso-2022-jp?B?eit0ckhVWU10UXhKeUwxT3NmNWRDeXVqaFV3S1o0eFZNRWNjNVF4UEJN?=
+ =?iso-2022-jp?B?Y1ZVdDkrUVpWZnZlQjVGVEorcHkrQko1OXNKaUZMV0VadlorYjRhTS9G?=
+ =?iso-2022-jp?B?eEh1bXAxR1poaDVrMUpoNjZpNlJyMkQwZXN5SDhMTXlNUnBQLzdxeHRk?=
+ =?iso-2022-jp?B?dXRoTkhWRW1KQlMzaHY1VWJkaDB6MWxjQmw0S2pOMUtLMUFBQjJINFRt?=
+ =?iso-2022-jp?B?SXdWeVhrYkIzejN3a0xtWHVjSG9JTGtDVDNnQmdCUXJQQzNkNXQvbzFC?=
+ =?iso-2022-jp?B?blh1UFRCSDEvd1czYllOZEUzT1dRRzlNU3VIOHNKb0c0djkwbnI2Mk5Q?=
+ =?iso-2022-jp?B?N3p5QUhTQTFIRnFXOFJhaXk2clZHaHNMa1pBallGQkpRVy9id250MlNZ?=
+ =?iso-2022-jp?B?UWZKT0Nlbm5KRGtCRkgwcThiWnV4ZHJ1czJ4TkF0Z3ZKcVgyY3BZRHhT?=
+ =?iso-2022-jp?B?cmd1aTBEbnNHNkRsTDdLR21NMGorNHZReGFtb1NnOVJZbGNKcTVLUllo?=
+ =?iso-2022-jp?B?TUY2Sk5hWVJieWtOeTd2UUFlcU5qc1ozOENLOUlIeEdjcms4VDJlZVoz?=
+ =?iso-2022-jp?B?Tjd1Z0crY1BYd0hOMGFaOGpRVjZMMEdGSUlOc1VvM0Y4ZlR5YVlEQmJn?=
+ =?iso-2022-jp?B?RUlkNmRaQ2FBaXQzcU80Q3dJN0RoelpLMnB5azJoSmlWM1hmS2QzV0dM?=
+ =?iso-2022-jp?B?cTAxdERRb2VPbVA5ZVN4bFFkL0IwcGdkMWJiUjZ2N2c1Wjg4bVIzR0Ur?=
+ =?iso-2022-jp?B?MXIvZTlTWHQzMzdxWTVWcU9LOGdxaGNkYkpKazFjbURSV09XWT0=?=
+Content-Type: text/plain; charset="iso-2022-jp"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <d8dc3cd362915974426d8274bb8ac6970a2096bb.1610371323.git.lucien.xin@gmail.com>
- <CAKgT0UeEkqQjSU_t1wp3_k4pRYxM=FE-rTk2sBa-mdSwPnAstw@mail.gmail.com>
-In-Reply-To: <CAKgT0UeEkqQjSU_t1wp3_k4pRYxM=FE-rTk2sBa-mdSwPnAstw@mail.gmail.com>
-From:   Xin Long <lucien.xin@gmail.com>
-Date:   Tue, 12 Jan 2021 13:14:03 +0800
-Message-ID: <CADvbK_cr1bYUjUi-FrcDZwPX9nBkUqP3LZNx06b4sKrO3kdVdw@mail.gmail.com>
-Subject: Re: [PATCHv2 net-next] ip_gre: remove CRC flag from dev features in gre_gso_segment
-To:     Alexander Duyck <alexander.duyck@gmail.com>
-Cc:     network dev <netdev@vger.kernel.org>,
-        "linux-sctp @ vger . kernel . org" <linux-sctp@vger.kernel.org>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Lorenzo Bianconi <lorenzo@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: fujitsu.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: OSAPR01MB3844.jpnprd01.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f2e6f42e-34f9-456a-3588-08d8b6b8ebcf
+X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Jan 2021 05:14:21.8778
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: a19f121d-81e1-4858-a9d8-736e267fd4c7
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: rAvkgTNk5YetcimyqTg9qByCDfUppALKYrWBDyRVcq+ZdzGZe3DlT3xnqDalPgTMLDbT5WcY7GnPl8pGGVjB2A==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: OSBPR01MB3333
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 12, 2021 at 12:48 AM Alexander Duyck
-<alexander.duyck@gmail.com> wrote:
->
-> On Mon, Jan 11, 2021 at 5:22 AM Xin Long <lucien.xin@gmail.com> wrote:
-> >
-> > This patch is to let it always do CRC checksum in sctp_gso_segment()
-> > by removing CRC flag from the dev features in gre_gso_segment() for
-> > SCTP over GRE, just as it does in Commit 527beb8ef9c0 ("udp: support
-> > sctp over udp in skb_udp_tunnel_segment") for SCTP over UDP.
-> >
-> > It could set csum/csum_start in GSO CB properly in sctp_gso_segment()
-> > after that commit, so it would do checksum with gso_make_checksum()
-> > in gre_gso_segment(), and Commit 622e32b7d4a6 ("net: gre: recompute
-> > gre csum for sctp over gre tunnels") can be reverted now.
-> >
-> > Note that the current HWs like igb NIC can only handle the SCTP CRC
-> > when it's in the outer packet, not in the inner packet like in this
-> > case, so here it removes CRC flag from the dev features even when
-> > need_csum is false.
->
-> So the limitation in igb is not the hardware but the driver
-> configuration. When I had coded things up I put in a limitation on the
-> igb_tx_csum code that it would have to validate that the protocol we
-> are requesting an SCTP CRC offload since it is a different calculation
-> than a 1's complement checksum. Since igb doesn't support tunnels we
-> limited that check to the outer headers.
-Ah.. I see, thanks.
->
-> We could probably enable this for tunnels as long as the tunnel isn't
-> requesting an outer checksum offload from the driver.
-I think in igb_tx_csum(), by checking skb->csum_not_inet would be enough
-to validate that is a SCTP request:
--               if (((first->protocol == htons(ETH_P_IP)) &&
--                    (ip_hdr(skb)->protocol == IPPROTO_SCTP)) ||
--                   ((first->protocol == htons(ETH_P_IPV6)) &&
--                    igb_ipv6_csum_is_sctp(skb))) {
-+               if (skb->csum_not_inet) {
-                        type_tucmd = E1000_ADVTXD_TUCMD_L4T_SCTP;
-                        break;
-                }
+> For T1, it seems like Master is pretty important. Do you have
+> information to be able to return the current Master/slave
+> configuration, or allow it to be configured? See the nxp-tja11xx.c
+> for an example.
 
-Otherwise, we will need to parse the packet a little bit, as it does in
-hns3_get_l4_protocol().
+I think it's possible to return a Master/Slave configuration.
 
->
-> > v1->v2:
-> >   - improve the changelog.
-> >   - fix "rev xmas tree" in varibles declaration.
-> >
-> > Signed-off-by: Xin Long <lucien.xin@gmail.com>
-> > ---
-> >  net/ipv4/gre_offload.c | 15 ++++-----------
-> >  1 file changed, 4 insertions(+), 11 deletions(-)
-> >
-> > diff --git a/net/ipv4/gre_offload.c b/net/ipv4/gre_offload.c
-> > index e0a2465..a681306 100644
-> > --- a/net/ipv4/gre_offload.c
-> > +++ b/net/ipv4/gre_offload.c
-> > @@ -15,10 +15,10 @@ static struct sk_buff *gre_gso_segment(struct sk_buff *skb,
-> >                                        netdev_features_t features)
-> >  {
-> >         int tnl_hlen = skb_inner_mac_header(skb) - skb_transport_header(skb);
-> > -       bool need_csum, need_recompute_csum, gso_partial;
-> >         struct sk_buff *segs = ERR_PTR(-EINVAL);
-> >         u16 mac_offset = skb->mac_header;
-> >         __be16 protocol = skb->protocol;
-> > +       bool need_csum, gso_partial;
-> >         u16 mac_len = skb->mac_len;
-> >         int gre_offset, outer_hlen;
-> >
-> > @@ -41,10 +41,11 @@ static struct sk_buff *gre_gso_segment(struct sk_buff *skb,
-> >         skb->protocol = skb->inner_protocol;
-> >
-> >         need_csum = !!(skb_shinfo(skb)->gso_type & SKB_GSO_GRE_CSUM);
-> > -       need_recompute_csum = skb->csum_not_inet;
-> >         skb->encap_hdr_csum = need_csum;
-> >
-> >         features &= skb->dev->hw_enc_features;
-> > +       /* CRC checksum can't be handled by HW when SCTP is the inner proto. */
-> > +       features &= ~NETIF_F_SCTP_CRC;
-> >
-> >         /* segment inner packet. */
-> >         segs = skb_mac_gso_segment(skb, features);
->
-> Do we have NICs that are advertising NETIF_S_SCTP_CRC as part of their
-> hw_enc_features and then not supporting it? Based on your comment
-Yes, igb/igbvf/igc/ixgbe/ixgbevf, they have a similar code of SCTP
-proto validation.
+By the way, do you need the cable test function as implemented in nxp-tja11=
+xx.c?
 
-> above it seems like you are masking this out because hardware is
-> advertising features it doesn't actually support. I'm just wondering
-> if that is the case or if this is something where this should be
-> cleared if need_csum is set since we only support one level of
-> checksum offload.
-Since only these drivers only do SCTP proto validation, and "only
-one level checksum offload" issue only exists when inner packet
-is SCTP packet, clearing NETIF_F_SCTP_CRC should be enough.
+Thanks & Best Regards,
+Yuusuke Ashiduka
 
-But seems to fix the drivers will be better, as hw_enc_features should
-tell the correct features for inner proto. wdyt?
-
-(Just note udp tunneling SCTP doesn't have this issue, as the outer
- udp checksum is always required by RFC)
-
->
-> > @@ -99,15 +100,7 @@ static struct sk_buff *gre_gso_segment(struct sk_buff *skb,
-> >                 }
-> >
-> >                 *(pcsum + 1) = 0;
-> > -               if (need_recompute_csum && !skb_is_gso(skb)) {
-> > -                       __wsum csum;
-> > -
-> > -                       csum = skb_checksum(skb, gre_offset,
-> > -                                           skb->len - gre_offset, 0);
-> > -                       *pcsum = csum_fold(csum);
-> > -               } else {
-> > -                       *pcsum = gso_make_checksum(skb, 0);
-> > -               }
-> > +               *pcsum = gso_make_checksum(skb, 0);
-> >         } while ((skb = skb->next));
-> >  out:
-> >         return segs;
-> > --
-> > 2.1.0
-> >
