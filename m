@@ -2,88 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 33CFA2F2731
-	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 05:40:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E1D72F2735
+	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 05:41:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731170AbhALEjp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 11 Jan 2021 23:39:45 -0500
-Received: from out2-smtp.messagingengine.com ([66.111.4.26]:49889 "EHLO
-        out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729988AbhALEjo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 23:39:44 -0500
-Received: from compute2.internal (compute2.nyi.internal [10.202.2.42])
-        by mailout.nyi.internal (Postfix) with ESMTP id 36A175C01D0;
-        Mon, 11 Jan 2021 23:38:58 -0500 (EST)
-Received: from imap2 ([10.202.2.52])
-  by compute2.internal (MEProxy); Mon, 11 Jan 2021 23:38:58 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:content-type
-        :date:from:in-reply-to:message-id:mime-version:references
-        :subject:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm1; bh=4HfYX1xajuMdg1coxOKoe6H1ospBFa15xxW0t2ghm
-        40=; b=G1xEaYV8Uv4Fc1v7yd+eVS+7LwkwCZG1rpiJVEtGEenX4/Vf3+UCKAR6h
-        MoSCugniV37JhBEnPRwR7cAy5a8z3gawS2CKI+q/HN0lunI4JvjSbUjDEJxvY3jF
-        QGQLPoN53HcE357WrTilL6jeC6NWa2bdnItWujgV0t8/j4qY5PRVhto+DhKLo69c
-        vwjFNiUmghsmS6uX69wlCnslGusN1z7MxRAVP1WCk5z2QR6/+e0HiwQmvN1nfVEQ
-        5je9UGgq8BTfQ1Tn0siB/9JVCohX3JVT9aF/L3tKezLhjhP3J5e5k8HqHxRbx4R7
-        xm3k2rGt+ot1v4PUbzJVo6t5iQ7hw==
-X-ME-Sender: <xms:4Cf9XyIRhFpCzxlVVYRYq9_MjPyxyAvviCtE24CdhFYgck-JBRbIiA>
-    <xme:4Cf9X6Lz7cAxvZ1NU2mW-lFKxiKK88HjnZ4j6kesIAL-nJPbMjYVX5PwachWQWeF9
-    eVQMzg2q1-fjK7zaw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedujedrvdehvddgjeefucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepofgfggfkjghffffhvffutgfgsehtqhertderreejnecuhfhrohhmpedfvehh
-    rghrlhhivgcuufhomhgvrhhvihhllhgvfdcuoegthhgrrhhlihgvsegthhgrrhhlihgvrd
-    gsiieqnecuggftrfgrthhtvghrnhepteduheegkedviefhvdelveegkefgudfhfffgudet
-    feeljeevgfdvuddtueeftdefnecuffhomhgrihhnpehsphhinhhitghsrdhnvghtnecuve
-    hluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomheptghhrghrlhhi
-    vgestghhrghrlhhivgdrsgii
-X-ME-Proxy: <xmx:4Cf9Xyug7Pq1yStn2TyPjV3jgWBKQGeTasLmaPhmroreoqRyQ4CPCg>
-    <xmx:4Cf9X3ZALqXYoqmn-rGPXZvZ72OhWMuvVFMehw39G9zBTocIErEazg>
-    <xmx:4Cf9X5Y6p9-pqW7FvZTDdZSS8buR7HsdKTwEE7iiZ9G1AYdNW3ZqSg>
-    <xmx:4if9X9HNU_WPlwcueEAXgQm8OhfP3Osq2qagBeKzJAMxoKXuy0yxGg>
-Received: by mailuser.nyi.internal (Postfix, from userid 501)
-        id CE5BAE00C7; Mon, 11 Jan 2021 23:38:56 -0500 (EST)
-X-Mailer: MessagingEngine.com Webmail Interface
-User-Agent: Cyrus-JMAP/3.5.0-alpha0-45-g4839256-fm-20210104.001-g48392560
-Mime-Version: 1.0
-Message-Id: <2e591053-05f4-4dc2-81bc-4d3320b75930@www.fastmail.com>
-In-Reply-To: <ee57b0ed-89e2-675e-b080-0059c181a2be@redhat.com>
-References: <20210109024950.4043819-1-charlie@charlie.bz>
- <ee57b0ed-89e2-675e-b080-0059c181a2be@redhat.com>
-Date:   Tue, 12 Jan 2021 15:38:36 +1100
-From:   "Charlie Somerville" <charlie@charlie.bz>
-To:     "Jason Wang" <jasowang@redhat.com>, davem@davemloft.net,
-        kuba@kernel.org, mst@redhat.com
-Cc:     netdev@vger.kernel.org, "Xuan Zhuo" <xuanzhuo@linux.alibaba.com>
-Subject: Re: [PATCH net-next 0/2] Introduce XDP_FLAGS_NO_TX flag
-Content-Type: text/plain;charset=utf-8
+        id S1731369AbhALEkl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 11 Jan 2021 23:40:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51366 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729988AbhALEkk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 23:40:40 -0500
+Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7955C061575;
+        Mon, 11 Jan 2021 20:39:59 -0800 (PST)
+Received: by mail-yb1-xb2b.google.com with SMTP id d37so990549ybi.4;
+        Mon, 11 Jan 2021 20:39:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=tGZClHUpaj3Cm/gs9dDdIPBw4DYUZttzUeth9TUTOKc=;
+        b=D58cdCKfLXyaUNVojpEvgJqfjWt11W5JTvHcqLp6/qketMD8EsQwfGqQxHVF1o4gd7
+         s9VqM6UVlQvttf8ZnitstC+teOq63QHCxeOamyPl2XS2nGJgq00lLpL2bUjAAtCmb3/2
+         es7nOslgha1HvUrXPo2mPN3DzazJ+3rWUlM0x8/wHs5+/QBYdW2iOc7pEp93RPfeqZvR
+         T4Mlf4eQ3Sq0WMWBO5mePL9hlwYwEeosHdoX88FfhoNB3W+Dpn037JCuYxpUTZYhTbl6
+         8JTD3Ycbkuu59eXrijz+5bH3e/KHNSzclrXHKarr/dieRpdEea/tupmxoE/Q/QIeUKse
+         lhIw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=tGZClHUpaj3Cm/gs9dDdIPBw4DYUZttzUeth9TUTOKc=;
+        b=ZkcE3iANQElt9IM5gLS7HV8yBrUCDDbroiSoUsTspuJFzB7avdFRz2CI3Ig8SxYUOa
+         lIQjCBR19kagueuTWR17sNxo6ASuQxG0mxe63bQ+kXnHplg+uqvuQ7ZVBtkBg67Wyv3Y
+         ZMkjtuZTTlhQjyMV8Yzfa+pJX+DO8eTPh2b2B0RpXFsa6v3mThgxhZCYUn0gZXBzLoMf
+         nKekAOMiCO5Z8MsvyYdzd6cr7DcswjhCTClkvZ5Crss8TUF8XNd7EkCiDOETa7O684LV
+         9pVhxJqltkWkNQjAbw7tw6bKpczdYDYkbUAxlkKEeuEectn6t26w9UZXnOJ2VJFsbl8L
+         vzfA==
+X-Gm-Message-State: AOAM533c8vpiZ0rDasmrdkZfYtlEFiXDoFL+EERgoAzAWAixJD24s4yU
+        gno+8Gljb4HRrIhJdPo7dcgdePVpc5AZp4BySI1hbBDKP0G/BH4Z
+X-Google-Smtp-Source: ABdhPJzwnAVKcwOnr1e+p/BrL8XtIrv1gNtL4nnHrOLh/rkuCQ3pRU0yvQj6om2KRGt8+9cDCn7M9o3m/6HyTbURKjU=
+X-Received: by 2002:a25:df05:: with SMTP id w5mr4554207ybg.477.1610426399217;
+ Mon, 11 Jan 2021 20:39:59 -0800 (PST)
+MIME-Version: 1.0
+References: <CAD-N9QWDdRDiud42D8HMeRabqVvQ+Pbz=qgbOYrvpUvjRFp05Q@mail.gmail.com>
+ <20210112032713.GB2677@horizon.localdomain>
+In-Reply-To: <20210112032713.GB2677@horizon.localdomain>
+From:   =?UTF-8?B?5oWV5Yas5Lqu?= <mudongliangabcd@gmail.com>
+Date:   Tue, 12 Jan 2021 12:39:33 +0800
+Message-ID: <CAD-N9QUap9JpVe3Fm=dAxe6EeHHh99MJctisSyE=JSNutk=xKA@mail.gmail.com>
+Subject: Re: "general protection fault in sctp_ulpevent_notify_peer_addr_change"
+ and "general protection fault in sctp_ulpevent_nofity_peer_addr_change"
+ should share the same root cause
+To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        linux-sctp@vger.kernel.org, netdev@vger.kernel.org,
+        nhorman@tuxdriver.com, vyasevich@gmail.com, rkovhaev@gmail.com,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 12, 2021, at 14:03, Jason Wang wrote:
->=20
-> On 2021/1/9 =E4=B8=8A=E5=8D=8810:49, Charlie Somerville wrote:
-> > This patch series introduces a new flag XDP_FLAGS_NO_TX which preven=
-ts
-> > the allocation of additional send queues for XDP programs.
->=20
->=20
-> This part I don't understand. Is such flag a must? I think the answer =
-is=20
-> probably not.
->=20
-> Why not simply do:
->=20
-> 1) if we had sufficient TX queues, use dedicated TX queues for XDP_TX
-> 2) if we don't, simple synchronize through spin_lock[1]
->=20
-> Thanks
->=20
-> [1] https://www.spinics.net/lists/bpf/msg32587.html
+On Tue, Jan 12, 2021 at 11:27 AM Marcelo Ricardo Leitner
+<marcelo.leitner@gmail.com> wrote:
+>
+> On Tue, Jan 12, 2021 at 10:18:00AM +0800, =E6=85=95=E5=86=AC=E4=BA=AE wro=
+te:
+> > Dear developers,
+> >
+> > I find that "general protection fault in l2cap_sock_getsockopt" and
+> > "general protection fault in sco_sock_getsockopt" may be duplicated
+> > bugs from the same root cause.
+> >
 
-The patch from Xuan Zhuo looks like a much better approach. I am happy t=
-o close this out in favour of that one! Thanks for the link.
+I am sorry that the above description is for another bug group -
+https://groups.google.com/g/syzkaller-bugs/c/csbAcYWGd2I. I forget to
+modify this paragraph. Embarrassing :(
+
+The correct description here should be, "I find that general
+protection fault in sctp_ulpevent_notify_peer_addr_change" and
+"general protection fault in sctp_ulpevent_nofity_peer_addr_change"
+should share the same root cause, like the title.
+
+> > First, by comparing the PoC similarity after own minimization, we find
+> > they share the same PoC. Second, the stack traces for both bug reports
+> > are the same except for the last function. And the different last
+> > functions are due to a function name change (typo fix) from
+> > "sctp_ulpevent_nofity_peer_addr_change" to
+> > "sctp_ulpevent_notify_peer_addr_change"
+>
+> Not sure where you saw stack traces with this sctp function in it, but
+> the syzkaller reports from 17 Feb 2020 are not related to SCTP.
+>
+> The one on sco_sock_getsockopt() seems to be lack of parameter
+> validation: it doesn't check if optval is big enough when handling
+> BT_PHY (which has the same value as SCTP_STATUS). It seems also miss a
+> check on if level !=3D SOL_BLUETOOTH, but I may be wrong here.
+>
+> l2cap_sock_getsockopt also lacks checking optlen.
+>
+
+Please ignore my mistake, and discuss the issue of
+sco/l2tp_sock_getsockopt in the thread - "general protection fault in
+l2cap_sock_getsockopt" and "general protection fault in
+sco_sock_getsockopt" may share the same root cause
+(https://groups.google.com/g/syzkaller-bugs/c/csbAcYWGd2I)
+
+
+>   Marcelo
