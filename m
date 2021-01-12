@@ -2,414 +2,148 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0DDDD2F3FF0
-	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 01:46:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DDE92F3F78
+	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 01:46:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2438386AbhALWkO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jan 2021 17:40:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58780 "EHLO
+        id S2394761AbhALWtV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jan 2021 17:49:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2438374AbhALWkN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 17:40:13 -0500
-Received: from mail-qv1-xf49.google.com (mail-qv1-xf49.google.com [IPv6:2607:f8b0:4864:20::f49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 295A0C0617A7
-        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 14:38:58 -0800 (PST)
-Received: by mail-qv1-xf49.google.com with SMTP id c17so150271qvv.9
-        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 14:38:58 -0800 (PST)
+        with ESMTP id S1728030AbhALWtU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 17:49:20 -0500
+Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05264C061575
+        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 14:48:40 -0800 (PST)
+Received: by mail-wm1-x334.google.com with SMTP id g10so1853751wmh.2
+        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 14:48:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
-        h=sender:date:in-reply-to:message-id:mime-version:references:subject
-         :from:to:cc;
-        bh=jHU+opxMvqpe38AZxglin9xZarfkmdhZUgXCg3Ea2Fs=;
-        b=nlk7/I2/sy0Q1iA7TMfkXHUt7tz0H+FU2Ce+CXLgYDv6CUp3gv7RS8FJJn3ZxPO62m
-         uAYIpdQno5asEnL+e6OOL804ta9YirnYCYwpHKSpAcljshKLP6GfPQSA9NoNrz9XbXv/
-         VJy+7Jlepxe+Ax+Ff/HNAwHM7Ut5+e60Lf1X9Ze/0uOus0AEcrC9iKpVCZ36IJpdgHTt
-         6BEf6/5y62BrGxoxgD8tXB0SxfqxXLF2aHb6nXFj3P8VaH7a2ksNEDTzZo9gvOVkJBru
-         0+MFLHNGRXa0sxiNcJPfhk+7pEYZTtVXlfll7OLPzEl0LEkItfhyyRBGxpqP9iAH/Wdx
-         THdA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ArlcvqJC9q51hscbwB0x0D1UTjuMUpHLsr6hfqKDboU=;
+        b=Z+UVCsDEuZ+jOvAGZqP7xaXkuN3UW1kYQK/efl9+WKHVo5u+O5SwRfH9Gsl0sizrYu
+         PWd1gJIoe+vCvbB8U2ExGkGY14jFqmrYonaEsAABcHzAF7RvqVXwIIsMU8HCsfCiUcAR
+         jIA8E6eIoa7S+WSV/y3R3DB3b+kd271uJz+/uQWxIhENojaxqCrWLwd9Ydu/bYIdDYRe
+         Lqk9g0KZysiZrjQc99BSYfvFWea4LcZGJQ0oj1euEnZxafWG7VOV4PQIP0EdkiOJu1C+
+         rlCGXPpqFwNAp45H833PPgC6zYSs97/jdS6WV7CH59XPci3wFJacCMv1/vXLXQUyC+/v
+         /Nbw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=jHU+opxMvqpe38AZxglin9xZarfkmdhZUgXCg3Ea2Fs=;
-        b=t50GjegPsEIe0qZUSNSK+68dj+fV59VSm0YKNWGDuZWSDKXItzabEo+EVM110ctUkd
-         X3CCxOhMDmdi5oqfoyc1YSwCZskMZeG966IGJnp5yzLD35fvi3nb8kDPWMW3F7ZcmTh5
-         Req+zBf5qgcMxNWmuLd3XvhDMG1vqmoAS3i/TTjBJfY+M0fjs+RrtXtak2dfCtKoWIgx
-         hxBqu62Wmx1m7FNo/f5u2fBr2YV7On4p7R+KGtaXjRP8KwSD+iBGew5ZTTbn5i8VJzfJ
-         MDk/BtQ1JkshVEWuw7SfebAZQLtCTn3VZ0MRohONYCtgweZJm+hrEQNv3n3xsj+NOjHY
-         vwBg==
-X-Gm-Message-State: AOAM533pmEwDMEsVNgX7SCAMoAtx04ddxgG0QW3swWT8IScBwW7l3Izm
-        JNfgih1s9G4ydjA9ghznn6M1xl+7TZZDncfAScadl5LsCzIKaVRmKXAVFojnCFai33UYrTkVp1V
-        5t3nJufeyuGuib8b3rDzHdGMhZxkS3Z8Fovv847g1Ob/bOBrNZhT8TA==
-X-Google-Smtp-Source: ABdhPJxMQxRUTGXNXBDS+VtBg3aUxxBvSbFkygqqBOY0HjWgm7J4ClXQYism6zdUHQ2g6sC+v9cX4bs=
-Sender: "sdf via sendgmr" <sdf@sdf2.svl.corp.google.com>
-X-Received: from sdf2.svl.corp.google.com ([2620:15c:2c4:1:7220:84ff:fe09:7732])
- (user=sdf job=sendgmr) by 2002:a0c:da07:: with SMTP id x7mr1536723qvj.39.1610491137184;
- Tue, 12 Jan 2021 14:38:57 -0800 (PST)
-Date:   Tue, 12 Jan 2021 14:38:47 -0800
-In-Reply-To: <20210112223847.1915615-1-sdf@google.com>
-Message-Id: <20210112223847.1915615-5-sdf@google.com>
-Mime-Version: 1.0
-References: <20210112223847.1915615-1-sdf@google.com>
-X-Mailer: git-send-email 2.30.0.284.gd98b1dd5eaa7-goog
-Subject: [PATCH bpf-next v7 4/4] bpf: split cgroup_bpf_enabled per attach type
-From:   Stanislav Fomichev <sdf@google.com>
-To:     netdev@vger.kernel.org, bpf@vger.kernel.org
-Cc:     ast@kernel.org, daniel@iogearbox.net,
-        Stanislav Fomichev <sdf@google.com>,
-        Song Liu <songliubraving@fb.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ArlcvqJC9q51hscbwB0x0D1UTjuMUpHLsr6hfqKDboU=;
+        b=Rc9eR4sJenD2GIUKgmKtXk4+XoH1PJXHQ1dk59cwWLNmw/YYqTF0knKpGV1z5ZoeuL
+         8mpaEAmKEAHztTdi3b4baj8OQkQ8iw2xmLNQk87xazcdvgF5LCAWlHpt8iO4bw84op4M
+         U7n45RsYayxG53AK6Xb1YiJk1POoOfHFCaTrBWl7Xkl2McQPbb/gbKr0L+SHfnbNozx2
+         csf6KSwg70pSCQJJwVvfLzMk4BV5DiLc0XxN1P6fGrCW/2jpcAaisUbHrggjvcMVjhSN
+         VdZ9T+krU+gXKlIJQkp08ZUH350wO88GpI7XkHObn0OC3af0cGBUncCtwZ8sRy7YaIZJ
+         1j0A==
+X-Gm-Message-State: AOAM530sEB8aQgVW3x+yXWLDIv6i3OG99aWvtLAPOItSUni4mnr/LPrz
+        iw0p4HXGLcpBGns0cZz3/uD3SanDbpUOs/9oNZGRHA==
+X-Google-Smtp-Source: ABdhPJwew+56qPJeIfkyBnlXq2O9bDLp34KDvagCCtYIVTv+EkeaGP52WgQjDqtOJ//+AAhFTUAj/0b/MVRTcygrODc=
+X-Received: by 2002:a1c:4907:: with SMTP id w7mr967923wma.118.1610491718575;
+ Tue, 12 Jan 2021 14:48:38 -0800 (PST)
+MIME-Version: 1.0
+References: <20210112192544.GA12209@localhost.localdomain>
+In-Reply-To: <20210112192544.GA12209@localhost.localdomain>
+From:   Yuchung Cheng <ycheng@google.com>
+Date:   Tue, 12 Jan 2021 14:48:01 -0800
+Message-ID: <CAK6E8=fq6Jec94FDmDHGWhsmjtZQmt3AwQB0-tLcpJpvJ=oLgg@mail.gmail.com>
+Subject: Re: [PATCH] tcp: keepalive fixes
+To:     Enke Chen <enkechen2020@gmail.com>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Neal Cardwell <ncardwell@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When we attach any cgroup hook, the rest (even if unused/unattached) start
-to contribute small overhead. In particular, the one we want to avoid is
-__cgroup_bpf_run_filter_skb which does two redirections to get to
-the cgroup and pushes/pulls skb.
+On Tue, Jan 12, 2021 at 2:31 PM Enke Chen <enkechen2020@gmail.com> wrote:
+>
+> From: Enke Chen <enchen@paloaltonetworks.com>
+>
+> In this patch two issues with TCP keepalives are fixed:
+>
+> 1) TCP keepalive does not timeout when there are data waiting to be
+>    delivered and then the connection got broken. The TCP keepalive
+>    timeout is not evaluated in that condition.
+hi enke
+Do you have an example to demonstrate this issue -- in theory when
+there is data inflight, an RTO timer should be pending (which
+considers user-timeout setting). based on the user-timeout description
+(man tcp), the user timeout should abort the socket per the specified
+time after data commences. some data would help to understand the
+issue.
 
-Let's split cgroup_bpf_enabled to be per-attach to make sure
-only used attach types trigger.
-
-I've dropped some existing high-level cgroup_bpf_enabled in some
-places because BPF_PROG_CGROUP_XXX_RUN macros usually have another
-cgroup_bpf_enabled check.
-
-I also had to copy-paste BPF_CGROUP_RUN_SA_PROG_LOCK for
-GETPEERNAME/GETSOCKNAME because type for cgroup_bpf_enabled[type]
-has to be constant and known at compile time.
-
-Signed-off-by: Stanislav Fomichev <sdf@google.com>
-Acked-by: Song Liu <songliubraving@fb.com>
----
- include/linux/bpf-cgroup.h | 38 ++++++++++++++++++++------------------
- kernel/bpf/cgroup.c        | 14 ++++++--------
- net/ipv4/af_inet.c         |  9 +++++----
- net/ipv4/udp.c             |  7 +++----
- net/ipv6/af_inet6.c        |  9 +++++----
- net/ipv6/udp.c             |  7 +++----
- 6 files changed, 42 insertions(+), 42 deletions(-)
-
-diff --git a/include/linux/bpf-cgroup.h b/include/linux/bpf-cgroup.h
-index bcb2915e6124..0748fd87969e 100644
---- a/include/linux/bpf-cgroup.h
-+++ b/include/linux/bpf-cgroup.h
-@@ -23,8 +23,8 @@ struct ctl_table_header;
- 
- #ifdef CONFIG_CGROUP_BPF
- 
--extern struct static_key_false cgroup_bpf_enabled_key;
--#define cgroup_bpf_enabled static_branch_unlikely(&cgroup_bpf_enabled_key)
-+extern struct static_key_false cgroup_bpf_enabled_key[MAX_BPF_ATTACH_TYPE];
-+#define cgroup_bpf_enabled(type) static_branch_unlikely(&cgroup_bpf_enabled_key[type])
- 
- DECLARE_PER_CPU(struct bpf_cgroup_storage*,
- 		bpf_cgroup_storage[MAX_BPF_CGROUP_STORAGE_TYPE]);
-@@ -189,7 +189,7 @@ int bpf_percpu_cgroup_storage_update(struct bpf_map *map, void *key,
- #define BPF_CGROUP_RUN_PROG_INET_INGRESS(sk, skb)			      \
- ({									      \
- 	int __ret = 0;							      \
--	if (cgroup_bpf_enabled)						      \
-+	if (cgroup_bpf_enabled(BPF_CGROUP_INET_INGRESS))		      \
- 		__ret = __cgroup_bpf_run_filter_skb(sk, skb,		      \
- 						    BPF_CGROUP_INET_INGRESS); \
- 									      \
-@@ -199,7 +199,7 @@ int bpf_percpu_cgroup_storage_update(struct bpf_map *map, void *key,
- #define BPF_CGROUP_RUN_PROG_INET_EGRESS(sk, skb)			       \
- ({									       \
- 	int __ret = 0;							       \
--	if (cgroup_bpf_enabled && sk && sk == skb->sk) {		       \
-+	if (cgroup_bpf_enabled(BPF_CGROUP_INET_EGRESS) && sk && sk == skb->sk) { \
- 		typeof(sk) __sk = sk_to_full_sk(sk);			       \
- 		if (sk_fullsock(__sk))					       \
- 			__ret = __cgroup_bpf_run_filter_skb(__sk, skb,	       \
-@@ -211,7 +211,7 @@ int bpf_percpu_cgroup_storage_update(struct bpf_map *map, void *key,
- #define BPF_CGROUP_RUN_SK_PROG(sk, type)				       \
- ({									       \
- 	int __ret = 0;							       \
--	if (cgroup_bpf_enabled) {					       \
-+	if (cgroup_bpf_enabled(type)) {					       \
- 		__ret = __cgroup_bpf_run_filter_sk(sk, type);		       \
- 	}								       \
- 	__ret;								       \
-@@ -232,7 +232,7 @@ int bpf_percpu_cgroup_storage_update(struct bpf_map *map, void *key,
- #define BPF_CGROUP_RUN_SA_PROG(sk, uaddr, type)				       \
- ({									       \
- 	int __ret = 0;							       \
--	if (cgroup_bpf_enabled)						       \
-+	if (cgroup_bpf_enabled(type))					       \
- 		__ret = __cgroup_bpf_run_filter_sock_addr(sk, uaddr, type,     \
- 							  NULL);	       \
- 	__ret;								       \
-@@ -241,7 +241,7 @@ int bpf_percpu_cgroup_storage_update(struct bpf_map *map, void *key,
- #define BPF_CGROUP_RUN_SA_PROG_LOCK(sk, uaddr, type, t_ctx)		       \
- ({									       \
- 	int __ret = 0;							       \
--	if (cgroup_bpf_enabled)	{					       \
-+	if (cgroup_bpf_enabled(type))	{				       \
- 		lock_sock(sk);						       \
- 		__ret = __cgroup_bpf_run_filter_sock_addr(sk, uaddr, type,     \
- 							  t_ctx);	       \
-@@ -256,8 +256,10 @@ int bpf_percpu_cgroup_storage_update(struct bpf_map *map, void *key,
- #define BPF_CGROUP_RUN_PROG_INET6_BIND_LOCK(sk, uaddr)			       \
- 	BPF_CGROUP_RUN_SA_PROG_LOCK(sk, uaddr, BPF_CGROUP_INET6_BIND, NULL)
- 
--#define BPF_CGROUP_PRE_CONNECT_ENABLED(sk) (cgroup_bpf_enabled && \
--					    sk->sk_prot->pre_connect)
-+#define BPF_CGROUP_PRE_CONNECT_ENABLED(sk)				       \
-+	((cgroup_bpf_enabled(BPF_CGROUP_INET4_CONNECT) ||		       \
-+	  cgroup_bpf_enabled(BPF_CGROUP_INET6_CONNECT)) &&		       \
-+	 (sk)->sk_prot->pre_connect)
- 
- #define BPF_CGROUP_RUN_PROG_INET4_CONNECT(sk, uaddr)			       \
- 	BPF_CGROUP_RUN_SA_PROG(sk, uaddr, BPF_CGROUP_INET4_CONNECT)
-@@ -301,7 +303,7 @@ int bpf_percpu_cgroup_storage_update(struct bpf_map *map, void *key,
- #define BPF_CGROUP_RUN_PROG_SOCK_OPS_SK(sock_ops, sk)			\
- ({									\
- 	int __ret = 0;							\
--	if (cgroup_bpf_enabled)						\
-+	if (cgroup_bpf_enabled(BPF_CGROUP_SOCK_OPS))			\
- 		__ret = __cgroup_bpf_run_filter_sock_ops(sk,		\
- 							 sock_ops,	\
- 							 BPF_CGROUP_SOCK_OPS); \
-@@ -311,7 +313,7 @@ int bpf_percpu_cgroup_storage_update(struct bpf_map *map, void *key,
- #define BPF_CGROUP_RUN_PROG_SOCK_OPS(sock_ops)				       \
- ({									       \
- 	int __ret = 0;							       \
--	if (cgroup_bpf_enabled && (sock_ops)->sk) {	       \
-+	if (cgroup_bpf_enabled(BPF_CGROUP_SOCK_OPS) && (sock_ops)->sk) {       \
- 		typeof(sk) __sk = sk_to_full_sk((sock_ops)->sk);	       \
- 		if (__sk && sk_fullsock(__sk))				       \
- 			__ret = __cgroup_bpf_run_filter_sock_ops(__sk,	       \
-@@ -324,7 +326,7 @@ int bpf_percpu_cgroup_storage_update(struct bpf_map *map, void *key,
- #define BPF_CGROUP_RUN_PROG_DEVICE_CGROUP(type, major, minor, access)	      \
- ({									      \
- 	int __ret = 0;							      \
--	if (cgroup_bpf_enabled)						      \
-+	if (cgroup_bpf_enabled(BPF_CGROUP_DEVICE))			      \
- 		__ret = __cgroup_bpf_check_dev_permission(type, major, minor, \
- 							  access,	      \
- 							  BPF_CGROUP_DEVICE); \
-@@ -336,7 +338,7 @@ int bpf_percpu_cgroup_storage_update(struct bpf_map *map, void *key,
- #define BPF_CGROUP_RUN_PROG_SYSCTL(head, table, write, buf, count, pos)  \
- ({									       \
- 	int __ret = 0;							       \
--	if (cgroup_bpf_enabled)						       \
-+	if (cgroup_bpf_enabled(BPF_CGROUP_SYSCTL))			       \
- 		__ret = __cgroup_bpf_run_filter_sysctl(head, table, write,     \
- 						       buf, count, pos,        \
- 						       BPF_CGROUP_SYSCTL);     \
-@@ -347,7 +349,7 @@ int bpf_percpu_cgroup_storage_update(struct bpf_map *map, void *key,
- 				       kernel_optval)			       \
- ({									       \
- 	int __ret = 0;							       \
--	if (cgroup_bpf_enabled)						       \
-+	if (cgroup_bpf_enabled(BPF_CGROUP_SETSOCKOPT))			       \
- 		__ret = __cgroup_bpf_run_filter_setsockopt(sock, level,	       \
- 							   optname, optval,    \
- 							   optlen,	       \
-@@ -358,7 +360,7 @@ int bpf_percpu_cgroup_storage_update(struct bpf_map *map, void *key,
- #define BPF_CGROUP_GETSOCKOPT_MAX_OPTLEN(optlen)			       \
- ({									       \
- 	int __ret = 0;							       \
--	if (cgroup_bpf_enabled)						       \
-+	if (cgroup_bpf_enabled(BPF_CGROUP_GETSOCKOPT))			       \
- 		get_user(__ret, optlen);				       \
- 	__ret;								       \
- })
-@@ -367,7 +369,7 @@ int bpf_percpu_cgroup_storage_update(struct bpf_map *map, void *key,
- 				       max_optlen, retval)		       \
- ({									       \
- 	int __ret = retval;						       \
--	if (cgroup_bpf_enabled)						       \
-+	if (cgroup_bpf_enabled(BPF_CGROUP_GETSOCKOPT))			       \
- 		if (!(sock)->sk_prot->bpf_bypass_getsockopt ||		       \
- 		    !INDIRECT_CALL_INET_1((sock)->sk_prot->bpf_bypass_getsockopt, \
- 					tcp_bpf_bypass_getsockopt,	       \
-@@ -382,7 +384,7 @@ int bpf_percpu_cgroup_storage_update(struct bpf_map *map, void *key,
- 					    optlen, retval)		       \
- ({									       \
- 	int __ret = retval;						       \
--	if (cgroup_bpf_enabled)						       \
-+	if (cgroup_bpf_enabled(BPF_CGROUP_GETSOCKOPT))			       \
- 		__ret = __cgroup_bpf_run_filter_getsockopt_kern(	       \
- 			sock, level, optname, optval, optlen, retval);	       \
- 	__ret;								       \
-@@ -444,7 +446,7 @@ static inline int bpf_percpu_cgroup_storage_update(struct bpf_map *map,
- 	return 0;
- }
- 
--#define cgroup_bpf_enabled (0)
-+#define cgroup_bpf_enabled(type) (0)
- #define BPF_CGROUP_RUN_SA_PROG_LOCK(sk, uaddr, type, t_ctx) ({ 0; })
- #define BPF_CGROUP_PRE_CONNECT_ENABLED(sk) (0)
- #define BPF_CGROUP_RUN_PROG_INET_INGRESS(sk,skb) ({ 0; })
-diff --git a/kernel/bpf/cgroup.c b/kernel/bpf/cgroup.c
-index dbeef7afbbf9..ac9f70574cdc 100644
---- a/kernel/bpf/cgroup.c
-+++ b/kernel/bpf/cgroup.c
-@@ -19,7 +19,7 @@
- 
- #include "../cgroup/cgroup-internal.h"
- 
--DEFINE_STATIC_KEY_FALSE(cgroup_bpf_enabled_key);
-+DEFINE_STATIC_KEY_ARRAY_FALSE(cgroup_bpf_enabled_key, MAX_BPF_ATTACH_TYPE);
- EXPORT_SYMBOL(cgroup_bpf_enabled_key);
- 
- void cgroup_bpf_offline(struct cgroup *cgrp)
-@@ -128,7 +128,7 @@ static void cgroup_bpf_release(struct work_struct *work)
- 			if (pl->link)
- 				bpf_cgroup_link_auto_detach(pl->link);
- 			kfree(pl);
--			static_branch_dec(&cgroup_bpf_enabled_key);
-+			static_branch_dec(&cgroup_bpf_enabled_key[type]);
- 		}
- 		old_array = rcu_dereference_protected(
- 				cgrp->bpf.effective[type],
-@@ -499,7 +499,7 @@ int __cgroup_bpf_attach(struct cgroup *cgrp,
- 	if (old_prog)
- 		bpf_prog_put(old_prog);
- 	else
--		static_branch_inc(&cgroup_bpf_enabled_key);
-+		static_branch_inc(&cgroup_bpf_enabled_key[type]);
- 	bpf_cgroup_storages_link(new_storage, cgrp, type);
- 	return 0;
- 
-@@ -698,7 +698,7 @@ int __cgroup_bpf_detach(struct cgroup *cgrp, struct bpf_prog *prog,
- 		cgrp->bpf.flags[type] = 0;
- 	if (old_prog)
- 		bpf_prog_put(old_prog);
--	static_branch_dec(&cgroup_bpf_enabled_key);
-+	static_branch_dec(&cgroup_bpf_enabled_key[type]);
- 	return 0;
- 
- cleanup:
-@@ -1360,8 +1360,7 @@ int __cgroup_bpf_run_filter_setsockopt(struct sock *sk, int *level,
- 	 * attached to the hook so we don't waste time allocating
- 	 * memory and locking the socket.
- 	 */
--	if (!cgroup_bpf_enabled ||
--	    __cgroup_bpf_prog_array_is_empty(cgrp, BPF_CGROUP_SETSOCKOPT))
-+	if (__cgroup_bpf_prog_array_is_empty(cgrp, BPF_CGROUP_SETSOCKOPT))
- 		return 0;
- 
- 	/* Allocate a bit more than the initial user buffer for
-@@ -1457,8 +1456,7 @@ int __cgroup_bpf_run_filter_getsockopt(struct sock *sk, int level,
- 	 * attached to the hook so we don't waste time allocating
- 	 * memory and locking the socket.
- 	 */
--	if (!cgroup_bpf_enabled ||
--	    __cgroup_bpf_prog_array_is_empty(cgrp, BPF_CGROUP_GETSOCKOPT))
-+	if (__cgroup_bpf_prog_array_is_empty(cgrp, BPF_CGROUP_GETSOCKOPT))
- 		return retval;
- 
- 	ctx.optlen = max_optlen;
-diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
-index b94fa8eb831b..6ba2930ff49b 100644
---- a/net/ipv4/af_inet.c
-+++ b/net/ipv4/af_inet.c
-@@ -777,18 +777,19 @@ int inet_getname(struct socket *sock, struct sockaddr *uaddr,
- 			return -ENOTCONN;
- 		sin->sin_port = inet->inet_dport;
- 		sin->sin_addr.s_addr = inet->inet_daddr;
-+		BPF_CGROUP_RUN_SA_PROG_LOCK(sk, (struct sockaddr *)sin,
-+					    BPF_CGROUP_INET4_GETPEERNAME,
-+					    NULL);
- 	} else {
- 		__be32 addr = inet->inet_rcv_saddr;
- 		if (!addr)
- 			addr = inet->inet_saddr;
- 		sin->sin_port = inet->inet_sport;
- 		sin->sin_addr.s_addr = addr;
--	}
--	if (cgroup_bpf_enabled)
- 		BPF_CGROUP_RUN_SA_PROG_LOCK(sk, (struct sockaddr *)sin,
--					    peer ? BPF_CGROUP_INET4_GETPEERNAME :
--						   BPF_CGROUP_INET4_GETSOCKNAME,
-+					    BPF_CGROUP_INET4_GETSOCKNAME,
- 					    NULL);
-+	}
- 	memset(sin->sin_zero, 0, sizeof(sin->sin_zero));
- 	return sizeof(*sin);
- }
-diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-index 7103b0a89756..51535d2a23cf 100644
---- a/net/ipv4/udp.c
-+++ b/net/ipv4/udp.c
-@@ -1124,7 +1124,7 @@ int udp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
- 		rcu_read_unlock();
- 	}
- 
--	if (cgroup_bpf_enabled && !connected) {
-+	if (cgroup_bpf_enabled(BPF_CGROUP_UDP4_SENDMSG) && !connected) {
- 		err = BPF_CGROUP_RUN_PROG_UDP4_SENDMSG_LOCK(sk,
- 					    (struct sockaddr *)usin, &ipc.addr);
- 		if (err)
-@@ -1858,9 +1858,8 @@ int udp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len, int noblock,
- 		memset(sin->sin_zero, 0, sizeof(sin->sin_zero));
- 		*addr_len = sizeof(*sin);
- 
--		if (cgroup_bpf_enabled)
--			BPF_CGROUP_RUN_PROG_UDP4_RECVMSG_LOCK(sk,
--							(struct sockaddr *)sin);
-+		BPF_CGROUP_RUN_PROG_UDP4_RECVMSG_LOCK(sk,
-+						      (struct sockaddr *)sin);
- 	}
- 
- 	if (udp_sk(sk)->gro_enabled)
-diff --git a/net/ipv6/af_inet6.c b/net/ipv6/af_inet6.c
-index 8e9c3e9ea36e..b9c654836b72 100644
---- a/net/ipv6/af_inet6.c
-+++ b/net/ipv6/af_inet6.c
-@@ -527,18 +527,19 @@ int inet6_getname(struct socket *sock, struct sockaddr *uaddr,
- 		sin->sin6_addr = sk->sk_v6_daddr;
- 		if (np->sndflow)
- 			sin->sin6_flowinfo = np->flow_label;
-+		BPF_CGROUP_RUN_SA_PROG_LOCK(sk, (struct sockaddr *)sin,
-+					    BPF_CGROUP_INET6_GETPEERNAME,
-+					    NULL);
- 	} else {
- 		if (ipv6_addr_any(&sk->sk_v6_rcv_saddr))
- 			sin->sin6_addr = np->saddr;
- 		else
- 			sin->sin6_addr = sk->sk_v6_rcv_saddr;
- 		sin->sin6_port = inet->inet_sport;
--	}
--	if (cgroup_bpf_enabled)
- 		BPF_CGROUP_RUN_SA_PROG_LOCK(sk, (struct sockaddr *)sin,
--					    peer ? BPF_CGROUP_INET6_GETPEERNAME :
--						   BPF_CGROUP_INET6_GETSOCKNAME,
-+					    BPF_CGROUP_INET6_GETSOCKNAME,
- 					    NULL);
-+	}
- 	sin->sin6_scope_id = ipv6_iface_scope_id(&sin->sin6_addr,
- 						 sk->sk_bound_dev_if);
- 	return sizeof(*sin);
-diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
-index b9f3dfdd2383..a02ac875a923 100644
---- a/net/ipv6/udp.c
-+++ b/net/ipv6/udp.c
-@@ -409,9 +409,8 @@ int udpv6_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
- 		}
- 		*addr_len = sizeof(*sin6);
- 
--		if (cgroup_bpf_enabled)
--			BPF_CGROUP_RUN_PROG_UDP6_RECVMSG_LOCK(sk,
--						(struct sockaddr *)sin6);
-+		BPF_CGROUP_RUN_PROG_UDP6_RECVMSG_LOCK(sk,
-+						      (struct sockaddr *)sin6);
- 	}
- 
- 	if (udp_sk(sk)->gro_enabled)
-@@ -1462,7 +1461,7 @@ int udpv6_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
- 		fl6.saddr = np->saddr;
- 	fl6.fl6_sport = inet->inet_sport;
- 
--	if (cgroup_bpf_enabled && !connected) {
-+	if (cgroup_bpf_enabled(BPF_CGROUP_UDP6_SENDMSG) && !connected) {
- 		err = BPF_CGROUP_RUN_PROG_UDP6_SENDMSG_LOCK(sk,
- 					   (struct sockaddr *)sin6, &fl6.saddr);
- 		if (err)
--- 
-2.30.0.284.gd98b1dd5eaa7-goog
-
+>
+>    The fix is to remove the code that prevents TCP keepalive from
+>    being evaluated for timeout.
+>
+> 2) With the fix for #1, TCP keepalive can erroneously timeout after
+>    the 0-window probe kicks in. The 0-window probe counter is wrongly
+>    applied to TCP keepalives.
+>
+>    The fix is to use the elapsed time instead of the 0-window probe
+>    counter in evaluating TCP keepalive timeout.
+>
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Enke Chen <enchen@paloaltonetworks.com>
+> ---
+>  net/ipv4/tcp_timer.c | 15 +++------------
+>  1 file changed, 3 insertions(+), 12 deletions(-)
+>
+> diff --git a/net/ipv4/tcp_timer.c b/net/ipv4/tcp_timer.c
+> index 6c62b9ea1320..40953aa40d53 100644
+> --- a/net/ipv4/tcp_timer.c
+> +++ b/net/ipv4/tcp_timer.c
+> @@ -696,12 +696,6 @@ static void tcp_keepalive_timer (struct timer_list *t)
+>             ((1 << sk->sk_state) & (TCPF_CLOSE | TCPF_SYN_SENT)))
+>                 goto out;
+>
+> -       elapsed = keepalive_time_when(tp);
+> -
+> -       /* It is alive without keepalive 8) */
+> -       if (tp->packets_out || !tcp_write_queue_empty(sk))
+> -               goto resched;
+> -
+>         elapsed = keepalive_time_elapsed(tp);
+>
+>         if (elapsed >= keepalive_time_when(tp)) {
+> @@ -709,16 +703,15 @@ static void tcp_keepalive_timer (struct timer_list *t)
+>                  * to determine when to timeout instead.
+>                  */
+>                 if ((icsk->icsk_user_timeout != 0 &&
+> -                   elapsed >= msecs_to_jiffies(icsk->icsk_user_timeout) &&
+> -                   icsk->icsk_probes_out > 0) ||
+> +                    elapsed >= msecs_to_jiffies(icsk->icsk_user_timeout)) ||
+>                     (icsk->icsk_user_timeout == 0 &&
+> -                   icsk->icsk_probes_out >= keepalive_probes(tp))) {
+> +                    (elapsed >= keepalive_time_when(tp) +
+> +                     keepalive_intvl_when(tp) * keepalive_probes(tp)))) {
+>                         tcp_send_active_reset(sk, GFP_ATOMIC);
+>                         tcp_write_err(sk);
+>                         goto out;
+>                 }
+>                 if (tcp_write_wakeup(sk, LINUX_MIB_TCPKEEPALIVE) <= 0) {
+> -                       icsk->icsk_probes_out++;
+>                         elapsed = keepalive_intvl_when(tp);
+>                 } else {
+>                         /* If keepalive was lost due to local congestion,
+> @@ -732,8 +725,6 @@ static void tcp_keepalive_timer (struct timer_list *t)
+>         }
+>
+>         sk_mem_reclaim(sk);
+> -
+> -resched:
+>         inet_csk_reset_keepalive_timer (sk, elapsed);
+>         goto out;
+>
+> --
+> 2.29.2
+>
