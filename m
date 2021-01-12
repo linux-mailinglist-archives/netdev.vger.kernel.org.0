@@ -2,91 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 09A0E2F28C2
-	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 08:15:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B94D52F28AA
+	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 08:07:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391942AbhALHPH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jan 2021 02:15:07 -0500
-Received: from mail.kernel.org ([198.145.29.99]:37720 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2391912AbhALHPG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 12 Jan 2021 02:15:06 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 3180B22D58;
-        Tue, 12 Jan 2021 07:13:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610435629;
-        bh=eVmEEl5IUzxV3I5seYOrjoQkTz0LoW+wRp276OxEuQY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=iHtRdVowJrxnkkLf+5m/ZpAojeJJjEQN/2rChhRSfcbf8G6t81z6ac//JylTmm8Bl
-         xqmIa//N+4SZXQiUEDQiAGGewLvf5PxqM+UJ/ZeAR6KZC4LBzD6Iucg1dqYDBHerMT
-         Xcjeznfc7R3eLJEM6WisRCVzCl1rNopFti1dsq548Q3DVlwLkcUBl2gc3K5EBQE5mH
-         G8+xrWdZR5Yf0ZZSqufhKpMtNNLT6zhKwGykxF5yVtEZQLhMN9SNF7Igw2Y7X6xU3g
-         BieXAsOZIV75M0eiITIcDWwCnhCMgSUFqym+6WQBSAo/22kfXbqO/HmfYdid0r40Ap
-         1XOx/3iJBa0gg==
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Tariq Toukan <tariqt@nvidia.com>,
-        Raed Salem <raeds@nvidia.com>, Huy Nguyen <huyn@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next V2 11/11] net/mlx5e: IPsec, Remove unnecessary config flag usage
-Date:   Mon, 11 Jan 2021 23:05:34 -0800
-Message-Id: <20210112070534.136841-12-saeed@kernel.org>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20210112070534.136841-1-saeed@kernel.org>
-References: <20210112070534.136841-1-saeed@kernel.org>
+        id S2391814AbhALHHa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jan 2021 02:07:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54648 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725988AbhALHHa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 02:07:30 -0500
+Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30E63C061575;
+        Mon, 11 Jan 2021 23:06:50 -0800 (PST)
+Received: by mail-yb1-xb32.google.com with SMTP id f13so1225055ybk.11;
+        Mon, 11 Jan 2021 23:06:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=S+f76NTEOkHVw13mifQvc2gu6YvEEJ5SVA6pZQpjWSE=;
+        b=I+dKM2xByBdb9epVG7BkzzKJ9y6pAVMUppRUNDW8ivic4IquF6zKHe6gr5gMvz/kLl
+         Ft65GFr0f7nvg284kFbiVd0JI57dB/n07Z56LqfWXUo5Wzqj6r/HgBU8vhOIsFmIZj8c
+         /6nonxX9VTDx6hw2vwmgSJD8wyF72Jo8vXiN6JtVjv3SQej1d+e1lVYCeOq8GqdUHN82
+         TuUA9OyPP1gyPca6M89+zrodqyrRdgqkjFq01pxHkdb9t8lLmvJTR1Ia5PwTisE2jh+Y
+         ewhPqxVlpzumg84w4aL0YfWGxfNZ72kj4pzQ28pwsO++43APJuGmev/ZBSue/mxFou0b
+         EEBQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=S+f76NTEOkHVw13mifQvc2gu6YvEEJ5SVA6pZQpjWSE=;
+        b=PYC6i2KPs/CGuux5M/b4Tld3a4Q+57LGRjzs4TYnuxJxtq+1UCVlO17zdL3l3cvVz/
+         8wV5/WzfDz/uGkxn9/XVaxJxm64glm7zV6rVoXcWKJkWljAYdFrUICheBu8IrNyZV827
+         92AXF0/kE7NiQ5HkQtcMbL+MlWCsRZWHGYLBhCZ36oXouz6zZrSuUnsOt1Q6nULct3QU
+         MQ6VGlMLsQkzB4yOT1zr9A2ZWa8/2s6q8mrQ3lBzHhRDFHHd/wKoc/0PPjtZnP6GMUJz
+         /KS/M4lnU5aKJHxyRqXrf8gVPGOBLjEGrsODAXMryH4FK++vdO71IlHOBF1NMDGl8kd0
+         zKRg==
+X-Gm-Message-State: AOAM5337icovg6E/0swfqQ8Aun5LXKZCXV77nJRaXTNqnErLCXLC/Lk0
+        h/nMDCtaU1AxcH0lGEqh39aAu5JwheQrb5+MXfbqLy4et2Y=
+X-Google-Smtp-Source: ABdhPJySev7Z1tq9/M7y9SHm/izI6+EKgPjYByLfN1ZF/jdtLJDqmPZgP126IuPz/StMoXl6rDABKkIV4Uh9YOuliPg=
+X-Received: by 2002:a25:48c7:: with SMTP id v190mr1176118yba.260.1610435209325;
+ Mon, 11 Jan 2021 23:06:49 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210108231950.3844417-1-songliubraving@fb.com> <20210108231950.3844417-3-songliubraving@fb.com>
+In-Reply-To: <20210108231950.3844417-3-songliubraving@fb.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Mon, 11 Jan 2021 23:06:38 -0800
+Message-ID: <CAEf4BzbfiAx1QuNaDxcV0zX4wxOAOLUres61B7wf6SgZKa-E7w@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 2/4] selftests/bpf: add non-BPF_LSM test for task
+ local storage
+To:     Song Liu <songliubraving@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Peter Ziljstra <peterz@infradead.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        john fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Kernel Team <kernel-team@fb.com>, Hao Luo <haoluo@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tariq Toukan <tariqt@nvidia.com>
+On Fri, Jan 8, 2021 at 3:30 PM Song Liu <songliubraving@fb.com> wrote:
+>
+> Task local storage is enabled for tracing programs. Add a test for it
+> without CONFIG_BPF_LSM.
+>
+> Signed-off-by: Song Liu <songliubraving@fb.com>
+> ---
+>  .../bpf/prog_tests/test_task_local_storage.c  | 34 +++++++++++++++++
+>  .../selftests/bpf/progs/task_local_storage.c  | 37 +++++++++++++++++++
+>  2 files changed, 71 insertions(+)
+>  create mode 100644 tools/testing/selftests/bpf/prog_tests/test_task_local_storage.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/task_local_storage.c
+>
+> diff --git a/tools/testing/selftests/bpf/prog_tests/test_task_local_storage.c b/tools/testing/selftests/bpf/prog_tests/test_task_local_storage.c
+> new file mode 100644
+> index 0000000000000..7de7a154ebbe6
+> --- /dev/null
+> +++ b/tools/testing/selftests/bpf/prog_tests/test_task_local_storage.c
+> @@ -0,0 +1,34 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/* Copyright (c) 2020 Facebook */
+> +
+> +#include <sys/types.h>
+> +#include <unistd.h>
+> +#include <test_progs.h>
+> +#include "task_local_storage.skel.h"
+> +
+> +static unsigned int duration;
+> +
+> +void test_test_task_local_storage(void)
 
-MLX5_IPSEC_DEV() is always defined, no need to protect it under config
-flag CONFIG_MLX5_EN_IPSEC, especially in slow path.
+nit: let's not use "test_test_" tautology. It can be simply
+test_task_local_storage() and this file itself should be called
+task_local_storage.c.
 
-Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
-Reviewed-by: Raed Salem <raeds@nvidia.com>
-Reviewed-by: Huy Nguyen <huyn@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
----
- drivers/net/ethernet/mellanox/mlx5/core/en_main.c | 2 --
- drivers/net/ethernet/mellanox/mlx5/core/en_rx.c   | 2 --
- 2 files changed, 4 deletions(-)
+> +{
+> +       struct task_local_storage *skel;
+> +       const int count = 10;
+> +       int i, err;
+> +
+> +       skel = task_local_storage__open_and_load();
+> +
+> +       if (CHECK(!skel, "skel_open_and_load", "skeleton open and load failed\n"))
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-index ee86b2b57f4d..f33c38629886 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -2068,10 +2068,8 @@ static void mlx5e_build_rq_frags_info(struct mlx5_core_dev *mdev,
- 	u32 buf_size = 0;
- 	int i;
- 
--#ifdef CONFIG_MLX5_EN_IPSEC
- 	if (MLX5_IPSEC_DEV(mdev))
- 		byte_count += MLX5E_METADATA_ETHER_LEN;
--#endif
- 
- 	if (mlx5e_rx_is_linear_skb(params, xsk)) {
- 		int frag_stride;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-index 7f5851c61218..cb8e3d2b4750 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
-@@ -1786,12 +1786,10 @@ int mlx5e_rq_set_handlers(struct mlx5e_rq *rq, struct mlx5e_params *params, bool
- 		rq->dealloc_wqe = mlx5e_dealloc_rx_mpwqe;
- 
- 		rq->handle_rx_cqe = priv->profile->rx_handlers->handle_rx_cqe_mpwqe;
--#ifdef CONFIG_MLX5_EN_IPSEC
- 		if (MLX5_IPSEC_DEV(mdev)) {
- 			netdev_err(netdev, "MPWQE RQ with IPSec offload not supported\n");
- 			return -EINVAL;
- 		}
--#endif
- 		if (!rq->handle_rx_cqe) {
- 			netdev_err(netdev, "RX handler of MPWQE RQ is not set\n");
- 			return -EINVAL;
--- 
-2.26.2
+btw, can you ASSERT_OK_PTR(skel, "skel_open_and_load"); and save
+yourself a bunch of typing
 
+> +               return;
+> +
+> +       err = task_local_storage__attach(skel);
+> +
+> +       if (CHECK(err, "skel_attach", "skeleton attach failed\n"))
+> +               goto out;
+
+similarly, ASSERT_OK(err, "skel_attach")
+
+> +
+> +       for (i = 0; i < count; i++)
+> +               usleep(1000);
+> +       CHECK(skel->bss->value < count, "task_local_storage_value",
+> +             "task local value too small\n");
+> +
+> +out:
+> +       task_local_storage__destroy(skel);
+> +}
+
+[...]
