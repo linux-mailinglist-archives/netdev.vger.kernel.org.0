@@ -2,130 +2,285 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 577BF2F32E5
-	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 15:26:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 40DF92F3304
+	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 15:36:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732706AbhALOY4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jan 2021 09:24:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35852 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725901AbhALOYz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 09:24:55 -0500
-Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10E1BC061786;
-        Tue, 12 Jan 2021 06:24:15 -0800 (PST)
-Received: by mail-ej1-x62b.google.com with SMTP id jx16so3739987ejb.10;
-        Tue, 12 Jan 2021 06:24:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=O5/HL8VVGM5tx4Z8dAyAokogpc1Z04/fo1fGs1jUizo=;
-        b=tYMBvZXJbgouAv/74jI0R/AItKNmhSOgh+xASdDYxzc8X7c7KSAwM4ftUkoHfnyYxW
-         y9WzzBCSjsRKZURM1WaLTtme+zOUnSmIRdTkvNMZFd8cPore2leXkWeE+NFnFe3/cmr/
-         daOMwVcCpFOyvBePet7lF5Fr40U+AljLRaY7uI1QIRGPc/a6PUzpnzs3daBP6QU2GDcX
-         QEUrOrB+Y4MW/BOdm59cvUIzoNM8OPeJOxMafGkCd8U/kmt92ij/0V1u3n1T/4GkxcMR
-         YPin4m4Vx77ktlClhtLJZRuZbc4XqK9YOaqYJ+fxtrf8M9/vqIBL7V6BwONF9oRZ4t2o
-         tpjQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=O5/HL8VVGM5tx4Z8dAyAokogpc1Z04/fo1fGs1jUizo=;
-        b=O3T6jXu+OPkNcNDTlDcdoQmFW/ohX0Uy3P27URq7bfwt15LMuWA8drcwsocAWMlUEG
-         aPHpWKpdR9+6XHcf+2l9u+WavDv6XlTtFezNXFkBA//g3yx3ELuj2M605oSLOUUPyGOY
-         WLK55ABx7jl4OPEmFCz05GzQdP5E3BPmlB3sZvNWMxEJJ18NWle9G0woUPuUYRwJupNi
-         UDiCaTN+UOf8cwOTJi+my6q6ptrwiGuYoqdSB10b6AN2Asgr/TC8YqUtz4326+j1bt4j
-         Dkq46MIVBAHGyTo3mYratZJxRBvfRCi/UQG+CnmSKp+rsrctswDdFn6sC2hc/ywAHGQB
-         bhAw==
-X-Gm-Message-State: AOAM532BikWpSwXhwRNUlYFK6b3PlLuJJWal1t9rAGORDXYLU05wilCZ
-        uz2WYbfJMQnDgP60v/s+LzWUCwIxVJGTJaiGcts=
-X-Google-Smtp-Source: ABdhPJwUicnFgTajXRPkiUNbl2a34Wk/ysj6ZVQx7/4K5mvC1OnJOAdExATWq4YM05B3nzcs8HGowKXT0bzg0tRt3eA=
-X-Received: by 2002:a17:907:1004:: with SMTP id ox4mr3381026ejb.240.1610461453603;
- Tue, 12 Jan 2021 06:24:13 -0800 (PST)
+        id S2387858AbhALOex (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jan 2021 09:34:53 -0500
+Received: from esa.microchip.iphmx.com ([68.232.153.233]:42657 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725957AbhALOex (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 09:34:53 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1610462094; x=1641998094;
+  h=message-id:subject:from:to:cc:date:in-reply-to:
+   references:mime-version;
+  bh=rSkhGVUnKJoWu7SCqLjQX8zmMPKtWbpeCAUSQs2cKms=;
+  b=ZQdUwXejYU+8WZialm+vX46tv9Jj1FGQDYwLfa+lOC72pAreoowzYxex
+   ksZlqUQnUwRWIj5DUk4PKOcfFohaU1WqUuNop3RQ6QIfkqA2bW5TeMRko
+   aiXq2cKiDxD3tTL29g4KxXHmedZFmxoqTbd5L/L6iMKDxYQ9U455NY1PY
+   hhuw12ZvAhrciJatBHV5qkM0cs37R80h4C1Kay6gSbJqbkEuTcIdBEuHc
+   TbJRcLSaSLYaT+MZVqtNu8Z1zk6DR/p4nooV74dxWMdUM5jBYw3mKPJX/
+   ZaTVS4pD3I0sJ6FOKZt70QLwFOdUPKI3BsOVy/i6il8y7qoQjijJ691ra
+   Q==;
+IronPort-SDR: SL1OJuaBSfb0knGFgRj5bZJ3GMzgvJ1wOTc+5R3GyegUn1VpP1Mg1Krnfdx096zcR8FE1MGErH
+ r7nSOxvvmhlyVZiGrBuWNosddajj+ISbdFntBCLvDT5dBj6DJuuAwZhby+FwpIokdu9oD7izBu
+ +RYmONYzVsvlfTXxNJbuI57wIp7T6RdRh+M52XHO8aJ08wQsqr01Gvm3ABf8TnNLKK3RmmZQvk
+ qnQe2fafjEt7un+sQTop+1qZOxWlkYKh36faRXX9IKM71+X3+qTI45B2giAH+v3x37o0hlnMAL
+ uP4=
+X-IronPort-AV: E=Sophos;i="5.79,341,1602572400"; 
+   d="bin'?scan'208";a="105137235"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 12 Jan 2021 07:33:38 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Tue, 12 Jan 2021 07:33:36 -0700
+Received: from soft-dev2 (10.10.115.15) by chn-vm-ex03.mchp-main.com
+ (10.10.85.151) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
+ Transport; Tue, 12 Jan 2021 07:33:35 -0700
+Message-ID: <a727ddabfed0dbd0cf75a045076df7a66d4d6a67.camel@microchip.com>
+Subject: Re: [PATCH v1 0/2] Add 100 base-x mode
+From:   Bjarni Jonasson <bjarni.jonasson@microchip.com>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+CC:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        UNGLinuxDriver <UNGLinuxDriver@microchip.com>
+Date:   Tue, 12 Jan 2021 15:33:34 +0100
+In-Reply-To: <20210111141847.GU1551@shell.armlinux.org.uk>
+References: <20210111130657.10703-1-bjarni.jonasson@microchip.com>
+         <20210111141847.GU1551@shell.armlinux.org.uk>
+Content-Type: multipart/mixed; boundary="=-RhFF99NoOr/wzTqNsGXE"
+X-Mailer: Evolution 3.28.5-0ubuntu0.18.04.2 
 MIME-Version: 1.0
-References: <20210112091403.10458-1-gilad.reti@gmail.com> <CACYkzJ6DJ0NEm+qTBpMSJNFfgNHBFPZc=Ytj4w+4hY=Co4=0yg@mail.gmail.com>
-In-Reply-To: <CACYkzJ6DJ0NEm+qTBpMSJNFfgNHBFPZc=Ytj4w+4hY=Co4=0yg@mail.gmail.com>
-From:   Gilad Reti <gilad.reti@gmail.com>
-Date:   Tue, 12 Jan 2021 16:23:37 +0200
-Message-ID: <CANaYP3EQhTQ_o6QF_JNffJqHmVWRw6wcc95u8XvDpm+pY8ER3Q@mail.gmail.com>
-Subject: Re: [PATCH bpf 1/2] bpf: support PTR_TO_MEM{,_OR_NULL} register spilling
-To:     KP Singh <kpsingh@kernel.org>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Networking <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 12, 2021 at 3:57 PM KP Singh <kpsingh@kernel.org> wrote:
->
-> On Tue, Jan 12, 2021 at 10:14 AM Gilad Reti <gilad.reti@gmail.com> wrote:
-> >
-> > Add support for pointer to mem register spilling, to allow the verifier
-> > to track pointer to valid memory addresses. Such pointers are returned
->
-> nit: pointers
+--=-RhFF99NoOr/wzTqNsGXE
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 
-Thanks
+On Mon, 2021-01-11 at 14:18 +0000, Russell King - ARM Linux admin
+wrote:
+> EXTERNAL EMAIL: Do not click links or open attachments unless you
+> know the content is safe
+> 
+> On Mon, Jan 11, 2021 at 02:06:55PM +0100, Bjarni Jonasson wrote:
+> > Adding support for 100 base-x in phylink.
+> > The Sparx5 switch supports 100 base-x pcs (IEEE 802.3 Clause 24)
+> > 4b5b encoded.
+> > These patches adds phylink support for that mode.
+> > 
+> > Tested in Sparx5, using sfp modules:
+> > Axcen 100fx AXFE-1314-0521
+> > Cisco GLC-FE-100LX
+> > HP SFP 100FX J9054C
+> > Excom SFP-SX-M1002
+> 
+> For each of these modules, please send me:
+> 
+> ethtool -m ethx raw on > module.bin
+> 
+> so I can validate future changes with these modules. Thanks.
+> 
+> --
+> RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+> FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
 
->
-> > for example by a successful call of the bpf_ringbuf_reserve helper.
-> >
-> > This patch was suggested as a solution by Yonghong Song.
->
-> You can use the "Suggested-by:" tag for this.
+I've included the dump from ethtool for:
+Axcen 100fx AXFE-1314-0521
+Axcen 100lx AXFE-1314-0551
+Excom SFP-SX-M1002
+HP SFP 100FX J9054C
+The "ethtool raw" output seems a bit garbled so I added the hex output
+as well.
 
-Thanks
+Rgds
+--
+Bjarni Jonasson
+Microchip 
 
->
-> >
-> > The patch was partially contibuted by CyberArk Software, Inc.
->
-> nit: typo *contributed
 
-Thanks. Should I submit a v2 of the patch to correct all of those?
+--=-RhFF99NoOr/wzTqNsGXE
+Content-Type: application/octet-stream;
+	name="axcen_100fx_axfe_1314_0521.bin"
+Content-Disposition: attachment; filename="axcen_100fx_axfe_1314_0521.bin"
+Content-Transfer-Encoding: base64
 
->
-> Also, I was wondering if "partially" here means someone collaborated with you
-> on the patch? And, in that case:
->
-> "Co-developed-by:" would be a better tag here.
+IyBldGh0b29sIC1tIGV0aDEzIHJhdyBvbg0KIMOIw4hBeGNlbiBQaG90b25pY3MgLUFYRkUtMTMx
+NC0wNTIxICBWMS4wQ0FYMTAxOTAwMDE5NDYgICAxMDA1MTIgIMKrRVhUUkVNRUxZIENPTVBBVElC
+TEUgICAgICAgICAgICBBMDkwOTAzMDA0MTkgICAgw7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/D
+v8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/
+w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/D
+v8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/
+w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w78jDQoNCiMgZXRodG9vbCAtbSBldGgxMyBoZXggb24N
+Ck9mZnNldCAgICAgICAgICBWYWx1ZXMNCi0tLS0tLSAgICAgICAgICAtLS0tLS0NCjB4MDAwMDog
+ICAgICAgICAwMyAwNCAwNyAwMCAwMCAwMSAyMCAwMCAwMCAwMCAwMCAwMiAwMSAwMCAwMCAwMA0K
+MHgwMDEwOiAgICAgICAgIGM4IGM4IDAwIDAwIDQxIDc4IDYzIDY1IDZlIDIwIDUwIDY4IDZmIDc0
+IDZmIDZlDQoweDAwMjA6ICAgICAgICAgNjkgNjMgNzMgMjAgMDAgMDAgMTcgMmQgNDEgNTggNDYg
+NDUgMmQgMzEgMzMgMzENCjB4MDAzMDogICAgICAgICAzNCAyZCAzMCAzNSAzMiAzMSAyMCAyMCA1
+NiAzMSAyZSAzMCAwNSAxZSAwMCA0Mw0KMHgwMDQwOiAgICAgICAgIDAwIDFhIDAwIDAwIDQxIDU4
+IDMxIDMwIDMxIDM5IDMwIDMwIDMwIDMxIDM5IDM0DQoweDAwNTA6ICAgICAgICAgMzYgMjAgMjAg
+MjAgMzEgMzAgMzAgMzUgMzEgMzIgMjAgMjAgMDAgMDAgMDAgYWINCjB4MDA2MDogICAgICAgICA0
+NSA1OCA1NCA1MiA0NSA0ZCA0NSA0YyA1OSAyMCA0MyA0ZiA0ZCA1MCA0MSA1NA0KMHgwMDcwOiAg
+ICAgICAgIDQ5IDQyIDRjIDQ1IDIwIDIwIDIwIDIwIDIwIDIwIDIwIDIwIDIwIDIwIDIwIDIwDQow
+eDAwODA6ICAgICAgICAgNDEgMzAgMzkgMzAgMzkgMzAgMzMgMzAgMzAgMzQgMzEgMzkgMjAgMjAg
+MjAgMjANCjB4MDA5MDogICAgICAgICBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBm
+ZiBmZiBmZiBmZiBmZg0KMHgwMGEwOiAgICAgICAgIGZmIGZmIGZmIGZmIGZmIGZmIGZmIGZmIGZm
+IGZmIGZmIGZmIGZmIGZmIGZmIGZmDQoweDAwYjA6ICAgICAgICAgZmYgZmYgZmYgZmYgZmYgZmYg
+ZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYNCjB4MDBjMDogICAgICAgICBmZiBmZiBmZiBm
+ZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZg0KMHgwMGQwOiAgICAgICAgIGZm
+IGZmIGZmIGZmIGZmIGZmIGZmIGZmIGZmIGZmIGZmIGZmIGZmIGZmIGZmIGZmDQoweDAwZTA6ICAg
+ICAgICAgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYNCjB4
+MDBmMDogICAgICAgICBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBm
+ZiBmZg==
 
-No, I did it alone. I mentioned CyberArk since I work there and did some of the
-coding during my daily work, so they deserve credit.
 
->
-> Acked-by: KP Singh <kpsingh@kernel.org>
->
->
-> >
-> > Fixes: 457f44363a88 ("bpf: Implement BPF ring buffer and verifier
-> > support for it")
-> > Signed-off-by: Gilad Reti <gilad.reti@gmail.com>
-> > ---
-> >  kernel/bpf/verifier.c | 2 ++
-> >  1 file changed, 2 insertions(+)
-> >
-> > diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-> > index 17270b8404f1..36af69fac591 100644
-> > --- a/kernel/bpf/verifier.c
-> > +++ b/kernel/bpf/verifier.c
-> > @@ -2217,6 +2217,8 @@ static bool is_spillable_regtype(enum bpf_reg_type type)
-> >         case PTR_TO_RDWR_BUF:
-> >         case PTR_TO_RDWR_BUF_OR_NULL:
-> >         case PTR_TO_PERCPU_BTF_ID:
-> > +       case PTR_TO_MEM:
-> > +       case PTR_TO_MEM_OR_NULL:
-> >                 return true;
-> >         default:
-> >                 return false;
-> > --
-> > 2.27.0
-> >
+--=-RhFF99NoOr/wzTqNsGXE
+Content-Type: application/octet-stream;
+	name="axcen_100lx_axfe_1314_0551.bin"
+Content-Disposition: attachment; filename="axcen_100lx_axfe_1314_0551.bin"
+Content-Transfer-Encoding: base64
+
+IyBldGh0b29sIC1tIGV0aDEzIHJhdyBvbg0Kw79BeGNlbiBQaG90b25pY3MgLUFYRkUtMTMxNC0w
+NTUxICBWMS4ww5RBWDE0MDkxNzAyMjYwICAgMDkwNDIwICDCskVYVFJFTUVMWSBDT01QQVRJQkxF
+ICAgICAgICAgICAgQTA5MDMwMDAzMTAwMTU1N8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/D
+v8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/
+w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/D
+v8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/
+w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/Iw0KDQojIGV0aHRvb2wgLW0gZXRoMTMgaGV4IG9uDQpP
+ZmZzZXQgICAgICAgICAgVmFsdWVzDQotLS0tLS0gICAgICAgICAgLS0tLS0tDQoweDAwMDA6ICAg
+ICAgICAgMDMgMDQgMDcgMDAgMTAgMDIgMTAgMDAgMDAgMDAgMDAgMDIgMDEgMDAgMWUgZmYNCjB4
+MDAxMDogICAgICAgICAwMCAwMCAwMCAwMCA0MSA3OCA2MyA2NSA2ZSAyMCA1MCA2OCA2ZiA3NCA2
+ZiA2ZQ0KMHgwMDIwOiAgICAgICAgIDY5IDYzIDczIDIwIDAwIDAwIDE3IDJkIDQxIDU4IDQ2IDQ1
+IDJkIDMxIDMzIDMxDQoweDAwMzA6ICAgICAgICAgMzQgMmQgMzAgMzUgMzUgMzEgMjAgMjAgNTYg
+MzEgMmUgMzAgMDUgMWUgMDAgZDQNCjB4MDA0MDogICAgICAgICAwMCAxYSAwMCAwMCA0MSA1OCAz
+MSAzNCAzMCAzOSAzMSAzNyAzMCAzMiAzMiAzNg0KMHgwMDUwOiAgICAgICAgIDMwIDIwIDIwIDIw
+IDMwIDM5IDMwIDM0IDMyIDMwIDIwIDIwIDAwIDAwIDAwIGIyDQoweDAwNjA6ICAgICAgICAgNDUg
+NTggNTQgNTIgNDUgNGQgNDUgNGMgNTkgMjAgNDMgNGYgNGQgNTAgNDEgNTQNCjB4MDA3MDogICAg
+ICAgICA0OSA0MiA0YyA0NSAyMCAyMCAyMCAyMCAyMCAyMCAyMCAyMCAyMCAyMCAyMCAyMA0KMHgw
+MDgwOiAgICAgICAgIDQxIDMwIDM5IDMwIDMzIDMwIDMwIDMwIDMzIDMxIDMwIDMwIDMxIDM1IDM1
+IDM3DQoweDAwOTA6ICAgICAgICAgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYg
+ZmYgZmYgZmYgZmYNCjB4MDBhMDogICAgICAgICBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBm
+ZiBmZiBmZiBmZiBmZiBmZiBmZg0KMHgwMGIwOiAgICAgICAgIGZmIGZmIGZmIGZmIGZmIGZmIGZm
+IGZmIGZmIGZmIGZmIGZmIGZmIGZmIGZmIGZmDQoweDAwYzA6ICAgICAgICAgZmYgZmYgZmYgZmYg
+ZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYNCjB4MDBkMDogICAgICAgICBmZiBm
+ZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZg0KMHgwMGUwOiAgICAg
+ICAgIGZmIGZmIGZmIGZmIGZmIGZmIGZmIGZmIGZmIGZmIGZmIGZmIGZmIGZmIGZmIGZmDQoweDAw
+ZjA6ICAgICAgICAgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYg
+ZmY=
+
+
+--=-RhFF99NoOr/wzTqNsGXE
+Content-Type: application/octet-stream; name="excom_sfp_sx_m1002.bin"
+Content-Disposition: attachment; filename="excom_sfp_sx_m1002.bin"
+Content-Transfer-Encoding: base64
+
+IyBldGh0b29sIC1tIGV0aDEzIHJhdyBvbg0KwrTDv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/
+w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/D
+v8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/
+w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/D
+v8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/
+WsOTVcOYcGltYMODUMKvw4gyDQogICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgWsO7IMOQPMKm
+w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w7/Dv8O/w78/w7/Dv8O/cyrDv8O/w7/Dv0DDv0DDv8O/
+w79DTlVJQURZQUFBMTAtMjA3Ny0wMVYwMSBGwr/CqsKqR0xDLUZFLTEwMEZYICAgICAgICAxNjco
+Li4xNCk2ZsO/w4DDv8O/w7/DgMO/w78jDQoNCiMgZXRodG9vbCAtbSBldGgxMyBoZXggb24NCk9m
+ZnNldCAgICAgICAgICBWYWx1ZXMNCi0tLS0tLSAgICAgICAgICAtLS0tLS0NCjB4MDAwMDogICAg
+ICAgICAwMyAwNCAwNyAwMCAwMCAwMSAxMCAwMCAwMCAwMCAwMCAwMiAwMSAwMCAwMCAwMA0KMHgw
+MDEwOiAgICAgICAgIGM4IGM4IDAwIDAwIDQ1IDc4IDYzIDZmIDZkIDIwIDIwIDIwIDIwIDIwIDIw
+IDIwDQoweDAwMjA6ICAgICAgICAgMjAgMjAgMjAgMjAgMDAgMDAgMDAgMDAgNTMgNDYgNTAgMmQg
+NTMgNTggMmQgNGQNCjB4MDAzMDogICAgICAgICAzMSAzMCAzMCAzMiAyMCAyMCAyMCAyMCA0MSAy
+MCAyMCAyMCAwNSAxZSAwMCA1MA0KMHgwMDQwOiAgICAgICAgIDAwIDEyIDAwIDAwIDQ1IDU4IDMx
+IDM2IDMwIDMzIDMxIDM0IDMwIDMzIDM2IDIwDQoweDAwNTA6ICAgICAgICAgMjAgMjAgMjAgMjAg
+MzEgMzYgMzAgMzMgMzEgMzQgMjAgMjAgNjggOTAgMDEgN2YNCjB4MDA2MDogICAgICAgICAyYiAw
+MCAxMSAzOCA5NyBjZSAwOSAxOSAxZSA2OSBjYSBlYiBlNSAxNyA2YSA1ZQ0KMHgwMDcwOiAgICAg
+ICAgIDg5IGFjIGNlIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDFhIDdkIDhkIGI0DQoweDAw
+ODA6ICAgICAgICAgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYg
+ZmYNCjB4MDA5MDogICAgICAgICBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBm
+ZiBmZiBmZiBmZg0KMHgwMGEwOiAgICAgICAgIGZmIGZmIGZmIGZmIGZmIGZmIGZmIGZmIGZmIGZm
+IGZmIGZmIGZmIGZmIGZmIGZmDQoweDAwYjA6ICAgICAgICAgZmYgZmYgZmYgZmYgZmYgZmYgZmYg
+ZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYNCjB4MDBjMDogICAgICAgICBmZiBmZiBmZiBmZiBm
+ZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZg0KMHgwMGQwOiAgICAgICAgIGZmIGZm
+IGZmIGZmIGZmIGZmIGZmIGZmIGZmIGZmIGZmIGZmIGZmIGZmIGZmIGZmDQoweDAwZTA6ICAgICAg
+ICAgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYgZmYNCjB4MDBm
+MDogICAgICAgICBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZiBm
+Zg0KMHgwMTAwOiAgICAgICAgIDVhIDAwIGQzIDAwIDU1IDAwIGQ4IDAwIDk0IDcwIDY5IDc4IDkw
+IDg4IDZkIDYwDQoweDAxMTA6ICAgICAgICAgYzMgNTAgMDAgMDAgYWYgYzggMDAgMzIgMGMgNWEg
+MDAgZmIgMDkgZDAgMDEgM2MNCjB4MDEyMDogICAgICAgICAxOCBhNiAwMCAwMyAxMyA5NCAwMCAw
+NCBmZiBmZiBmZiBmZiBmZiBmZiBmZiBmZg0KMHgwMTMwOiAgICAgICAgIGZmIGZmIGZmIGZmIGZm
+IGZmIGZmIGZmIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwDQoweDAxNDA6ICAgICAgICAgMDAgMDAg
+MDAgMDAgM2YgODAgMDAgMDAgMDAgMDAgMDAgMDAgMDEgMDAgMDAgMDANCjB4MDE1MDogICAgICAg
+ICAwMSAwMCAwMCAwMCAwMSAwMCAwMCAwMCAwMSAwMCAwMCAwMCBmZiBmZiBmZiA3Mw0KMHgwMTYw
+OiAgICAgICAgIDFiIDA2IDgzIGMxIDJiIGQ0IDAzIGUyIDAwIDAwIGZmIGZmIGZmIGZmIDAyIDAw
+DQoweDAxNzA6ICAgICAgICAgMDAgNDAgMDAgZmYgMDAgNDAgZmYgZmYgMDAgMDAgZmYgMDAgMDAg
+MDAgMDAgMDANCjB4MDE4MDogICAgICAgICA0MyA0ZSA1NSA0OSA0MSA0NCA1OSA0MSA0MSA0MSAz
+MSAzMCAyZCAzMiAzMCAzNw0KMHgwMTkwOiAgICAgICAgIDM3IDJkIDMwIDMxIDU2IDMwIDMxIDIw
+IDAxIDAwIDQ2IDAwIDAwIDAwIDAwIGJmDQoweDAxYTA6ICAgICAgICAgMDAgMDAgMDAgMDAgMDAg
+MDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDANCjB4MDFiMDogICAgICAgICAwMCAwMCAw
+MCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCBhYSBhYQ0KMHgwMWMwOiAgICAgICAg
+IDQ3IDRjIDQzIDJkIDQ2IDQ1IDJkIDMxIDMwIDMwIDQ2IDU4IDIwIDIwIDIwIDIwDQoweDAxZDA6
+ICAgICAgICAgMjAgMjAgMjAgMjAgMzEgMzYgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMzcN
+CjB4MDFlMDogICAgICAgICAxZSAyOCAyZSAyZSAzMSAzNCAyOSAzNiAwMCAwMCAwMCAwMCAwMCAw
+MCAwMCAwMA0KMHgwMWYwOiAgICAgICAgIDAwIDAwIDAwIDAwIDAwIDY2IDAwIDAwIGZmIGMwIGZm
+IGZmIGZmIGMwIGZmIGZm
+
+
+--=-RhFF99NoOr/wzTqNsGXE
+Content-Type: application/octet-stream; name="hp_100fx_j9054c.bin"
+Content-Disposition: attachment; filename="hp_100fx_j9054c.bin"
+Content-Transfer-Encoding: base64
+
+IyBldGh0b29sIC1tIGV0aDEzIHJhdyBvbg0KQMOIw4hPUE5FWFQgSU5DDQogICAgICAgICAgICAg
+ICAgICAgQFRSRjUzMjZBTkxCNDA0ICBBMkEgSUNOMTlEWTkwMEggICAgICAxMTA5MzAgIGjDsEo5
+MDU0QyAxOTkwLTQxMTJGw73DlkXDscOiPkhQIFByb0N1cnZlIFByb3ByaWV0YXJ5IFRlY2hub2xv
+Z3kgLSBVc2UgaW1wbGllcyBhY2NlcHRhbmNlIG9mIGxpY2Vuc2luZyB0ZXJtcy5IUDEwMC1GWCAg
+ICBVw7ZQw7sNCiAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICDCoHXCuHl1
+MMO0YcKow6jDv8O/DQrDv8O/DQp2w7U/bcOQQEANCg0KIyBldGh0b29sIC1tIGV0aDEzIGhleCBv
+bg0KT2Zmc2V0ICAgICAgICAgIFZhbHVlcw0KLS0tLS0tICAgICAgICAgIC0tLS0tLQ0KMHgwMDAw
+OiAgICAgICAgIDAzIDA0IDA3IDAwIDAwIDAwIDQwIDAwIDAwIDAwIDAwIDAyIDAxIDAwIDAwIDAw
+DQoweDAwMTA6ICAgICAgICAgYzggYzggMDAgMDAgNGYgNTAgNGUgNDUgNTggNTQgMjAgNDkgNGUg
+NDMgMjAgMjANCjB4MDAyMDogICAgICAgICAyMCAyMCAyMCAyMCAwMCAwMCAwYiA0MCA1NCA1MiA0
+NiAzNSAzMyAzMiAzNiA0MQ0KMHgwMDMwOiAgICAgICAgIDRlIDRjIDQyIDM0IDMwIDM0IDIwIDIw
+IDQxIDMyIDQxIDIwIDAwIDAwIDAwIDQ5DQoweDAwNDA6ICAgICAgICAgMDAgMWEgMDAgMDAgNDMg
+NGUgMzEgMzkgNDQgNTkgMzkgMzAgMzAgNDggMjAgMjANCjB4MDA1MDogICAgICAgICAyMCAyMCAy
+MCAyMCAzMSAzMSAzMCAzOSAzMyAzMCAyMCAyMCA2OCBmMCAwMSAxYQ0KMHgwMDYwOiAgICAgICAg
+IDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDRhIDM5IDMwIDM1IDM0IDQzIDIwIDMxDQoweDAwNzA6
+ICAgICAgICAgMzkgMzkgMzAgMmQgMzQgMzEgMzEgMzIgNDYgZmQgZDYgODAgNDUgZjEgODYgZTIN
+CjB4MDA4MDogICAgICAgICAzZSA0OCA1MCAyMCA1MCA3MiA2ZiA0MyA3NSA3MiA3NiA2NSAyMCA1
+MCA3MiA2Zg0KMHgwMDkwOiAgICAgICAgIDcwIDcyIDY5IDY1IDc0IDYxIDcyIDc5IDIwIDU0IDY1
+IDYzIDY4IDZlIDZmIDZjDQoweDAwYTA6ICAgICAgICAgNmYgNjcgNzkgMjAgMmQgMjAgNTUgNzMg
+NjUgMjAgNjkgNmQgNzAgNmMgNjkgNjUNCjB4MDBiMDogICAgICAgICA3MyAyMCA2MSA2MyA2MyA2
+NSA3MCA3NCA2MSA2ZSA2MyA2NSAyMCA2ZiA2NiAyMA0KMHgwMGMwOiAgICAgICAgIDZjIDY5IDYz
+IDY1IDZlIDczIDY5IDZlIDY3IDIwIDc0IDY1IDcyIDZkIDczIDJlDQoweDAwZDA6ICAgICAgICAg
+NDggNTAgMzEgMzAgMzAgMmQgNDYgNTggMjAgMjAgMjAgMjAgMDAgMDAgMDAgMDANCjB4MDBlMDog
+ICAgICAgICAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMA0K
+MHgwMGYwOiAgICAgICAgIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAw
+IDAwIDAwDQoweDAxMDA6ICAgICAgICAgNTUgMDAgZjYgMDAgNTAgMDAgZmIgMDAgOGMgYTAgNzUg
+MzAgODggYjggNzkgMTgNCjB4MDExMDogICAgICAgICA3NSAzMCAwMSBmNCA2MSBhOCAwMyBlOCBm
+ZiBmZiAwMCAwYSBmZiBmZiAwMCAwYQ0KMHgwMTIwOiAgICAgICAgIDAyIDc2IDAwIDA1IDAxIGY1
+IDAwIDA2IDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwDQoweDAxMzA6ICAgICAgICAgMDAgMDAgMDAg
+MDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDANCjB4MDE0MDogICAgICAgICAw
+MCAwMCAwMCAwMCAzZiA4MCAwMCAwMCAwMCAwMCAwMCAwMCAwMSAwMCAwMCAwMA0KMHgwMTUwOiAg
+ICAgICAgIDAxIDAwIDAwIDAwIDAxIDAwIDAwIDAwIDAxIDAwIDAwIDAwIDAwIDAwIDAwIDEyDQow
+eDAxNjA6ICAgICAgICAgMWUgMDAgODIgMDAgMWYgMzUgMDAgZDggMDAgMDAgMDAgMDAgMDAgMDAg
+MTIgMDANCjB4MDE3MDogICAgICAgICAwMCA0MCAwMCAwMCAwMCA0MCAwMCAwMCAwMCAwMCAwMCAw
+MCAwMCAwMCAwMCAwMA0KMHgwMTgwOiAgICAgICAgIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAw
+IDAwIDAwIDAwIDAwIDAwIDAwIDAwDQoweDAxOTA6ICAgICAgICAgMDAgMDAgMDAgMDAgMDAgMDAg
+MDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDANCjB4MDFhMDogICAgICAgICAwMCAwMCAwMCAw
+MCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMA0KMHgwMWIwOiAgICAgICAgIDAw
+IDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwDQoweDAxYzA6ICAg
+ICAgICAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDANCjB4
+MDFkMDogICAgICAgICAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAwMCAw
+MCAwMA0KMHgwMWUwOiAgICAgICAgIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAwIDAw
+IDAwIDAwIDAwIDAwDQoweDAxZjA6ICAgICAgICAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAgMDAg
+MDAgMDAgMDAgMDAgMDAgMDAgMDA=
+
+
+--=-RhFF99NoOr/wzTqNsGXE--
