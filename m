@@ -2,113 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C10D62F38D8
-	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 19:28:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CA322F38F6
+	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 19:37:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392395AbhALS1L (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jan 2021 13:27:11 -0500
-Received: from mail-40134.protonmail.ch ([185.70.40.134]:24719 "EHLO
-        mail-40134.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390350AbhALS1K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 13:27:10 -0500
-Date:   Tue, 12 Jan 2021 18:26:22 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
-        t=1610475986; bh=8n93bPOPZQTgDRmrlPkdqmVljXTeEe9OQ3MWPKXyrJI=;
-        h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
-        b=PBzyz6k5GbGYVRRkn0uPUXUBtgqGvUCXdEZonPgRpVNdgFKHd0nbklw+1uZvoU8DS
-         V8pK/x/9H6Gkh4C4IR3Ql+Yx497sVBWXnyQa6O11/hNu+uAL06u8rCrJOQFjSUil77
-         NDPU8bJ5oRvWrG/g5bqTeNrifhZcVbN5MSarRKvveYKCS/wDDDdhsw6aSJ+wp4oVAo
-         gH3wLBZh800jwgqrA2nEz1AYNohWr6/uljB72l8Dbzd/g9zq3R48Muqc7yF61UfJ8n
-         fEfJ8qnN1u6ua2A+o0gXw5PRIyEcNu+ZOQhdbaT0xeALdi2ss4CqDXwEDFI3mz0Xpg
-         +RgZ42r1OLRiQ==
-To:     Eric Dumazet <edumazet@google.com>
-From:   Alexander Lobakin <alobakin@pm.me>
-Cc:     Alexander Lobakin <alobakin@pm.me>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Edward Cree <ecree@solarflare.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Guillaume Nault <gnault@redhat.com>,
-        Yadu Kishore <kyk.segfault@gmail.com>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Reply-To: Alexander Lobakin <alobakin@pm.me>
-Subject: Re: [PATCH net-next 0/5] skbuff: introduce skbuff_heads bulking and reusing
-Message-ID: <20210112182601.154198-1-alobakin@pm.me>
-In-Reply-To: <CANn89i+2VC3ZH5_fyWZvJA_6QrJLzaSupusQ1rXe8CqVffCB1Q@mail.gmail.com>
-References: <20210111182655.12159-1-alobakin@pm.me> <CANn89iKceTG_Mm4RrF+WVg-EEoFBD48gwpWX=GQiNdNnj2R8+A@mail.gmail.com> <20210112105529.3592-1-alobakin@pm.me> <CANn89i+2VC3ZH5_fyWZvJA_6QrJLzaSupusQ1rXe8CqVffCB1Q@mail.gmail.com>
+        id S2392006AbhALSgb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jan 2021 13:36:31 -0500
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:28904 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728889AbhALSgb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 13:36:31 -0500
+Received: from pps.filterd (m0098413.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 10CIW1rY065520
+        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 13:35:50 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=mime-version :
+ content-type : content-transfer-encoding : date : from : to : cc : subject
+ : in-reply-to : references : message-id; s=pp1;
+ bh=gRAtOj77a8+L5xTlcvuCJMuY6nvtOIePjdulwKSt6Ho=;
+ b=tfTAkc+7ZEPX9XQk2EUhXR4LW8Z6Hfra1z2hTkOYPE12IR5AX/1CoN+SgiLk4KpPF+YP
+ Sezs0sGiJsd2iJ2MYzzM/3Egeir+zMmSFtiK5P6eRdFWfdPSl1ty5YYWU/7Cmn/eB/0J
+ A/ZgYRCK3TEzZu9dGeZMbbaAVN7MVA6C/mK9Bi7eSxSHHr5TbErfwH9wMiIhg9pjO7wE
+ K7pn1kRjfJ0DWXD7OvSCa+NrpsDSGMLDVjzKguscN+42HfHjMxlyjJOnjojDCV2jF0ar
+ yFI22D9Uy2XK2KrbWbShsiz84o1evGfjQA6HTvzOkfLXOppp6RWk3nY81gw6D8PZyq5y Tg== 
+Received: from ppma04wdc.us.ibm.com (1a.90.2fa9.ip4.static.sl-reverse.com [169.47.144.26])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 361gue8knn-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 13:35:50 -0500
+Received: from pps.filterd (ppma04wdc.us.ibm.com [127.0.0.1])
+        by ppma04wdc.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 10CIHI48012029
+        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 18:35:49 GMT
+Received: from b03cxnp07029.gho.boulder.ibm.com (b03cxnp07029.gho.boulder.ibm.com [9.17.130.16])
+        by ppma04wdc.us.ibm.com with ESMTP id 35y44900x3-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 18:35:49 +0000
+Received: from b03ledav002.gho.boulder.ibm.com (b03ledav002.gho.boulder.ibm.com [9.17.130.233])
+        by b03cxnp07029.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 10CIZm5e25559448
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 12 Jan 2021 18:35:48 GMT
+Received: from b03ledav002.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 09CF6136059;
+        Tue, 12 Jan 2021 18:35:48 +0000 (GMT)
+Received: from b03ledav002.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id D032F13605D;
+        Tue, 12 Jan 2021 18:35:47 +0000 (GMT)
+Received: from ltc.linux.ibm.com (unknown [9.10.229.42])
+        by b03ledav002.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Tue, 12 Jan 2021 18:35:47 +0000 (GMT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.2 required=10.0 tests=ALL_TRUSTED,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF shortcircuit=no
-        autolearn=disabled version=3.4.4
-X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on
-        mailout.protonmail.ch
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Tue, 12 Jan 2021 10:35:47 -0800
+From:   Dany Madden <drt@linux.ibm.com>
+To:     Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+Cc:     netdev@vger.kernel.org, Lijun Pan <ljp@linux.ibm.com>,
+        Rick Lindsley <ricklind@linux.ibm.com>
+Subject: Re: [PATCH net-next v2 1/7] ibmvnic: restore state in change-param
+ reset
+In-Reply-To: <20210112181441.206545-2-sukadev@linux.ibm.com>
+References: <20210112181441.206545-1-sukadev@linux.ibm.com>
+ <20210112181441.206545-2-sukadev@linux.ibm.com>
+Message-ID: <6bb3682f009ea189182ae1307f237130@imap.linux.ibm.com>
+X-Sender: drt@linux.ibm.com
+User-Agent: Roundcube Webmail/1.1.12
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
+ definitions=2021-01-12_15:2021-01-12,2021-01-12 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ phishscore=0 adultscore=0 mlxlogscore=999 clxscore=1015 impostorscore=0
+ bulkscore=0 malwarescore=0 mlxscore=0 spamscore=0 suspectscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2101120106
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
-Date: Tue, 12 Jan 2021 13:32:56 +0100
+On 2021-01-12 10:14, Sukadev Bhattiprolu wrote:
+> Restore adapter state before returning from change-param reset.
+> In case of errors, caller will try a hard-reset anyway.
+> 
+> Fixes: 0cb4bc66ba5e ("ibmvnic: restore adapter state on failed reset")
+> Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+Reviewed-by: Dany Madden <drt@linux.ibm.com>
 
-> On Tue, Jan 12, 2021 at 11:56 AM Alexander Lobakin <alobakin@pm.me> wrote=
-:
->>
->
->>
->> Ah, I should've mentioned that I use UDP GRO Fraglists, so these
->> numbers are for GRO.
->>
->
-> Right, this suggests UDP GRO fraglist is a pathological case of GRO,
-> not saving memory.
->
-> Real GRO (TCP in most cases) will consume one skb, and have page
-> fragments for each segment.
->
-> Having skbs linked together is not cache friendly.
-
-OK, so I rebased test setup a bit to clarify the things out.
-
-I disabled fraglists and GRO/GSO fraglists support advertisement
-in driver to exclude any "pathological" cases and switched it
-from napi_get_frags() + napi_gro_frags() to napi_alloc_skb() +
-napi_gro_receive() to disable local skb reusing (napi_reuse_skb()).
-I also enabled GSO UDP L4 ("classic" one: one skbuff_head + frags)
-for forwarding, not only local traffic, and disabled NF flow offload
-to increase CPU loading and drop performance below link speed so I
-could see the changes.
-
-So, the traffic flows looked like:
- - TCP GRO (one head + frags) -> NAT -> hardware TSO;
- - UDP GRO (one head + frags) -> NAT -> driver-side GSO.
-
-Baseline 5.11-rc3:
- - 865 Mbps TCP, 866 Mbps UDP.
-
-This patch (both separate caches and Edward's unified cache):
- - 899 Mbps TCP, 893 Mbps UDP.
-
-So that's cleary *not* only "pathological" UDP GRO Fraglists
-"problem" as TCP also got ~35 Mbps from this, as well as
-non-fraglisted UDP.
-
-Regarding latencies: I remember there were talks about latencies when
-Edward introduced batched GRO (using linked lists to pass skbs from
-GRO layer to core stack instead of passing one by one), so I think
-it's a perennial question when it comes to batching/caching.
-
-Thanks for the feedback, will post v2 soon.
-The question about if this caching is reasonable isn't closed anyway,
-but I don't see significant "cons" for now.
-
-> So I would try first to make this case better, instead of trying to
-> work around the real issue.
-
-Al
-
+> ---
+>  drivers/net/ethernet/ibm/ibmvnic.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/ethernet/ibm/ibmvnic.c
+> b/drivers/net/ethernet/ibm/ibmvnic.c
+> index f302504faa8a..d548779561fd 100644
+> --- a/drivers/net/ethernet/ibm/ibmvnic.c
+> +++ b/drivers/net/ethernet/ibm/ibmvnic.c
+> @@ -1960,7 +1960,7 @@ static int do_change_param_reset(struct
+> ibmvnic_adapter *adapter,
+>  	if (rc) {
+>  		netdev_err(adapter->netdev,
+>  			   "Couldn't initialize crq. rc=%d\n", rc);
+> -		return rc;
+> +		goto out;
+>  	}
+> 
+>  	rc = ibmvnic_reset_init(adapter, true);
