@@ -2,32 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AF612F3489
-	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 16:48:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 97AE32F3498
+	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 16:51:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2403778AbhALPrP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jan 2021 10:47:15 -0500
-Received: from so254-31.mailgun.net ([198.61.254.31]:52042 "EHLO
+        id S2405736AbhALPsJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jan 2021 10:48:09 -0500
+Received: from so254-31.mailgun.net ([198.61.254.31]:59291 "EHLO
         so254-31.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2391528AbhALPrP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 10:47:15 -0500
+        with ESMTP id S2404932AbhALPsI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 10:48:08 -0500
 DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1610466414; h=Content-Type: MIME-Version: Message-ID:
+ s=smtp; t=1610466469; h=Content-Type: MIME-Version: Message-ID:
  In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=cPVeuoGsg/YYpiHkUCPYFmOYLufDCXBoM4oRJNPO+qU=; b=RPaZA5G/q7DsLZ3iwU4mRZCQva3o0wCFBGWU0Ig0i6H35PDzZkVNfL/jqrfX2SQ9E0Zu1mFi
- TFsXmGsypE8wKVFVlA21ISpzWqldzUx8wOMrQ3w/i1QMEYQghdEVzQiRqtqeKnPnjzFRMWNb
- U8hy0KytlHuC6zCuAp6TK4ICopg=
+ bh=Npsm5bOJjjcIuADdoI2VTocPa/2BU7I+DV9Z9yFCxjA=; b=lqg7NvuShMEOhrnwlERdqBrQ8MWAVrgesbFxyUVos5De+lD0X+kImbBcRV7n/6ajarvU0Ooq
+ sAuu9Jar5RHBln45j/ktK1g2sV3m3irJm8EYmdnPGUJK/i0/wdfmV7hfNXOa15ZtGKQkzro+
+ hs3Y+jMgzCFZKhLIug8J6/qKfGc=
 X-Mailgun-Sending-Ip: 198.61.254.31
 X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
 Received: from smtp.codeaurora.org
  (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n09.prod.us-west-2.postgun.com with SMTP id
- 5ffdc454d84bad354791ebad (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 12 Jan 2021 15:46:28
+ smtp-out-n05.prod.us-east-1.postgun.com with SMTP id
+ 5ffdc4858fb3cda82feebb07 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 12 Jan 2021 15:47:17
  GMT
 Sender: kvalo=codeaurora.org@mg.codeaurora.org
 Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 44339C433CA; Tue, 12 Jan 2021 15:46:28 +0000 (UTC)
+        id 39015C43462; Tue, 12 Jan 2021 15:47:17 +0000 (UTC)
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
         aws-us-west-2-caf-mail-1.web.codeaurora.org
 X-Spam-Level: 
@@ -37,26 +37,26 @@ Received: from x230.qca.qualcomm.com (88-114-240-156.elisa-laajakaista.fi [88.11
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
         (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 91F8CC433C6;
-        Tue, 12 Jan 2021 15:46:23 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 91F8CC433C6
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id C4861C433CA;
+        Tue, 12 Jan 2021 15:47:14 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org C4861C433CA
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
 Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
 From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Takashi Iwai <tiwai@suse.de>
-Cc:     Michal Kubecek <mkubecek@suse.cz>, linux-wireless@vger.kernel.org,
-        Mordechay Goodstein <mordechay.goodstein@intel.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Arjen de Korte <suse+build@de-korte.org>,
-        Luca Coelho <luciano.coelho@intel.com>
-Subject: Re: regression in iwlwifi: page fault in iwl_dbg_tlv_alloc_region() (commit ba8f6f4ae254)
-References: <20201228115814.GA5880@lion.mk-sys.cz>
-        <87v9c2qtj9.fsf@tynnyri.adurom.net> <s5ha6tes58m.wl-tiwai@suse.de>
-        <87v9c2ias2.fsf@codeaurora.org> <s5h5z42s44x.wl-tiwai@suse.de>
-Date:   Tue, 12 Jan 2021 17:46:21 +0200
-In-Reply-To: <s5h5z42s44x.wl-tiwai@suse.de> (Takashi Iwai's message of "Tue,
-        12 Jan 2021 13:58:54 +0100")
-Message-ID: <8735z6taya.fsf@codeaurora.org>
+To:     Pkshih <pkshih@realtek.com>
+Cc:     "abaci-bugfix\@linux.alibaba.com" <abaci-bugfix@linux.alibaba.com>,
+        "linux-wireless\@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "davem\@davemloft.net" <davem@davemloft.net>,
+        "linux-kernel\@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "kuba\@kernel.org" <kuba@kernel.org>,
+        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH] rtlwifi: rtl8821ae: style: Simplify bool comparison
+References: <1610440409-73330-1-git-send-email-abaci-bugfix@linux.alibaba.com>
+        <1610457587.2793.2.camel@realtek.com>
+Date:   Tue, 12 Jan 2021 17:47:12 +0200
+In-Reply-To: <1610457587.2793.2.camel@realtek.com> (pkshih@realtek.com's
+        message of "Tue, 12 Jan 2021 13:20:21 +0000")
+Message-ID: <87y2gyrwcf.fsf@codeaurora.org>
 User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
 MIME-Version: 1.0
 Content-Type: text/plain
@@ -64,67 +64,22 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Takashi Iwai <tiwai@suse.de> writes:
+Pkshih <pkshih@realtek.com> writes:
 
-> On Tue, 12 Jan 2021 13:45:33 +0100,
-> Kalle Valo wrote:
+> On Tue, 2021-01-12 at 16:33 +0800, YANG LI wrote:
+>> Fix the following coccicheck warning:
+>> ./drivers/net/wireless/realtek/rtlwifi/rtl8821ae/phy.c:3853:7-17:
+>> WARNING: Comparison of 0/1 to bool variable
 >> 
->> Takashi Iwai <tiwai@suse.de> writes:
+>> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+>> Signed-off-by: YANG LI <abaci-bugfix@linux.alibaba.com>
 >> 
->> > On Tue, 12 Jan 2021 12:33:14 +0100,
->> > Kalle Valo wrote:
->> >> 
->> >> (adding luca)
->> >> 
->> >> Michal Kubecek <mkubecek@suse.cz> writes:
->> >> 
->> >> > FYI, there is a regression in iwlwifi driver caused by commit
->> >> > ba8f6f4ae254 ("iwlwifi: dbg: add dumping special device memory")
->> >> > reported at
->> >> >
->> >> >   https://bugzilla.kernel.org/show_bug.cgi?id=210733
->> >> >   https://bugzilla.suse.com/show_bug.cgi?id=1180344
->> >> >
->> >> > The problem seems to be an attempt to write terminating null character
->> >> > into a string which may be read only. There is also a proposed fix.
->> >> 
->> >> Can someone submit a proper patch, please? See instructions below how to
->> >> submit.
->> >> 
->> >> And please add Fixes tag to the commit log:
->> >> 
->> >> Fixes: ba8f6f4ae254 ("iwlwifi: dbg: add dumping special device memory")
->> >
->> > OK, I'll do it for my own
->> 
->> Thanks.
->> 
->> > but really I hoped that someone would have reacted on the bugzilla
->> > report before the official patch submission. So far no one from the
->> > upstream devs showed interest in the bug at all, unfortunately.
->> 
->> Bugzilla is problematic as I don't know if anyone tracks it actively, at
->> least I don't have time for that. I recommend reporting all wireless
->> issues to mailing lists to make sure everyone see it.
 >
-> I share your feeling as a subsystem maintainer, but at the same time,
-> I see it's a big problem if the whole bugzilla reports are just
-> silently ignored.  If it's a void, shouldn't we rather shut it down?
+> I think your name of Signed-off-by should be "Yang Li".
+>
+> And, the subject prefix "rtlwifi: " is preferred.
 
-I'm all for shutting down bugzilla.kernel.org as silent bug reports are
-frustrating the users. But I don't know what others would think about
-that, maybe some subsystems use it actively?
-
-At least there should be a big warning for wireless bugs.
-
-> And, although a mailing list is fine to report via only some texts or
-> some patches, it's not suitable to attach large logs or such, which is
-> often essential for debugging.  Thanks to lore, the archivability is
-> no longer a problem with ML recently, but the lack of data assignment
-> is another problem, IMO.
-
-Sure, I fully agree on the benefits of a bug tracker. The issue here is
-the lack of people managing bug reports, not the tool.
+I can fix those during commit.
 
 -- 
 https://patchwork.kernel.org/project/linux-wireless/list/
