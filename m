@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DD57C2F38D6
-	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 19:28:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 390072F38D9
+	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 19:28:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392205AbhALS1J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jan 2021 13:27:09 -0500
-Received: from mail.kernel.org ([198.145.29.99]:35364 "EHLO mail.kernel.org"
+        id S2392628AbhALS1M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jan 2021 13:27:12 -0500
+Received: from mail.kernel.org ([198.145.29.99]:35386 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2390350AbhALS1I (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 12 Jan 2021 13:27:08 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 028182311F;
-        Tue, 12 Jan 2021 18:26:25 +0000 (UTC)
+        id S2392380AbhALS1L (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 Jan 2021 13:27:11 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E137123121;
+        Tue, 12 Jan 2021 18:26:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610475987;
-        bh=FmfHKhEreWOd+DqEoY7qIIRvYCFy5o5A1p4oKLuB+bc=;
+        s=k20201202; t=1610475990;
+        bh=Szh6saMLxdZWpYRkTzFvafxw2ceyvrSm3aOiwAK0tA4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AQWS9yiOF+emudw5aia6wT3m+ciKd7i1e8oWAad3wmY65FBVyj3OXCo5hV0fouun0
-         h7aYRmuHtioovu074r1Ot8sN+ESuPSTZZL26e/uFdsedphRamr/egypqNGVFBZNHm1
-         8eehV5NyXxpKhk8U4Ylb23IsrLZ7Mgfs1oTPEC9gkl1gm/o4bZ4Ni6mwyG8PEWGFJ0
-         MGbXLTr7trUiJMOZjga/WR31qmT2zX0VMqJ1iCsI4n3dvEm7qWDAD4e+ErnQlMeTlo
-         OGWz2L7VzA7a00cFmNz/BdatgkV9l9fpk04WfKT+fDFtyJhXZKqbVH/YVe9ijWLiOA
-         GtJBGDaPuxkPA==
+        b=SjuMUsC+9VdyuYcMSNo5T+RUMFJ85LkMZ8N+j4eDbW3Uue9RCSfKMRmTxDkxx8FJC
+         bjUP28hZXC2HHZpHcN7yqOAV4vEcTxaxOJv0s/R/+1tbP8Ud1eel4K2URJq0dQ2ar+
+         Ms7X15p9+QE5mhCuUp0P/w7H/10Ypql+jK8xOE7iXUtjcfuj0GQSJvIQ65vukHHWzE
+         UALh0ghOiJ/3qlKXrGwrNHCVdt5b/eB30vH/nCO8nh/ak01Nlb1cScWRLoT3rpO5uZ
+         GkylwG4yNTBslLD6QbSOOb10dxslE38JJ0RueYe5pa+RsGxaiqM2hL9+Nlyt+U4dKG
+         oclAACERusBAw==
 From:   Lorenzo Bianconi <lorenzo@kernel.org>
 To:     bpf@vger.kernel.org
 Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
         ast@kernel.org, daniel@iogearbox.net, brouer@redhat.com,
         lorenzo.bianconi@redhat.com, toshiaki.makita1@gmail.com
-Subject: [PATCH v2 bpf-next 1/2] net: xdp: introduce __xdp_build_skb_from_frame utility routine
-Date:   Tue, 12 Jan 2021 19:26:12 +0100
-Message-Id: <4f9f4c6b3dd3933770c617eb6689dbc0c6e25863.1610475660.git.lorenzo@kernel.org>
+Subject: [PATCH v2 bpf-next 2/2] net: xdp: introduce xdp_build_skb_from_frame utility routine
+Date:   Tue, 12 Jan 2021 19:26:13 +0100
+Message-Id: <94ade9e853162ae1947941965193190da97457bc.1610475660.git.lorenzo@kernel.org>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <cover.1610475660.git.lorenzo@kernel.org>
 References: <cover.1610475660.git.lorenzo@kernel.org>
@@ -40,148 +40,110 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Introduce __xdp_build_skb_from_frame utility routine to build
-the skb from xdp_frame. Rely on __xdp_build_skb_from_frame in
-cpumap code.
+Introduce xdp_build_skb_from_frame utility routine to build the skb
+from xdp_frame. Respect to __xdp_build_skb_from_frame,
+xdp_build_skb_from_frame will allocate the skb object. Rely on
+xdp_build_skb_from_frame in veth driver.
+Introduce missing xdp metadata support in veth_xdp_rcv_one routine.
+Add missing metadata support in veth_xdp_rcv_one().
 
+Reviewed-by: Toshiaki Makita <toshiaki.makita1@gmail.com>
 Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
 Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 ---
- include/net/xdp.h   |  3 +++
- kernel/bpf/cpumap.c | 46 ++-------------------------------------------
- net/core/xdp.c      | 44 +++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 49 insertions(+), 44 deletions(-)
+ drivers/net/veth.c | 18 +++---------------
+ include/net/xdp.h  |  2 ++
+ net/core/xdp.c     | 15 +++++++++++++++
+ 3 files changed, 20 insertions(+), 15 deletions(-)
 
+diff --git a/drivers/net/veth.c b/drivers/net/veth.c
+index 99caae7d1641..6e03b619c93c 100644
+--- a/drivers/net/veth.c
++++ b/drivers/net/veth.c
+@@ -567,16 +567,10 @@ static struct sk_buff *veth_xdp_rcv_one(struct veth_rq *rq,
+ 					struct veth_xdp_tx_bq *bq,
+ 					struct veth_stats *stats)
+ {
+-	void *hard_start = frame->data - frame->headroom;
+-	int len = frame->len, delta = 0;
+ 	struct xdp_frame orig_frame;
+ 	struct bpf_prog *xdp_prog;
+-	unsigned int headroom;
+ 	struct sk_buff *skb;
+ 
+-	/* bpf_xdp_adjust_head() assures BPF cannot access xdp_frame area */
+-	hard_start -= sizeof(struct xdp_frame);
+-
+ 	rcu_read_lock();
+ 	xdp_prog = rcu_dereference(rq->xdp_prog);
+ 	if (likely(xdp_prog)) {
+@@ -590,8 +584,8 @@ static struct sk_buff *veth_xdp_rcv_one(struct veth_rq *rq,
+ 
+ 		switch (act) {
+ 		case XDP_PASS:
+-			delta = frame->data - xdp.data;
+-			len = xdp.data_end - xdp.data;
++			if (xdp_update_frame_from_buff(&xdp, frame))
++				goto err_xdp;
+ 			break;
+ 		case XDP_TX:
+ 			orig_frame = *frame;
+@@ -629,18 +623,12 @@ static struct sk_buff *veth_xdp_rcv_one(struct veth_rq *rq,
+ 	}
+ 	rcu_read_unlock();
+ 
+-	headroom = sizeof(struct xdp_frame) + frame->headroom - delta;
+-	skb = veth_build_skb(hard_start, headroom, len, frame->frame_sz);
++	skb = xdp_build_skb_from_frame(frame, rq->dev);
+ 	if (!skb) {
+ 		xdp_return_frame(frame);
+ 		stats->rx_drops++;
+-		goto err;
+ 	}
+ 
+-	xdp_release_frame(frame);
+-	xdp_scrub_frame(frame);
+-	skb->protocol = eth_type_trans(skb, rq->dev);
+-err:
+ 	return skb;
+ err_xdp:
+ 	rcu_read_unlock();
 diff --git a/include/net/xdp.h b/include/net/xdp.h
-index 0cf3976ce77c..689206dee6de 100644
+index 689206dee6de..c4bfdc9a8b79 100644
 --- a/include/net/xdp.h
 +++ b/include/net/xdp.h
-@@ -164,6 +164,9 @@ void xdp_warn(const char *msg, const char *func, const int line);
- #define XDP_WARN(msg) xdp_warn(msg, __func__, __LINE__)
- 
- struct xdp_frame *xdp_convert_zc_to_xdp_frame(struct xdp_buff *xdp);
-+struct sk_buff *__xdp_build_skb_from_frame(struct xdp_frame *xdpf,
-+					   struct sk_buff *skb,
-+					   struct net_device *dev);
+@@ -167,6 +167,8 @@ struct xdp_frame *xdp_convert_zc_to_xdp_frame(struct xdp_buff *xdp);
+ struct sk_buff *__xdp_build_skb_from_frame(struct xdp_frame *xdpf,
+ 					   struct sk_buff *skb,
+ 					   struct net_device *dev);
++struct sk_buff *xdp_build_skb_from_frame(struct xdp_frame *xdpf,
++					 struct net_device *dev);
  
  static inline
  void xdp_convert_frame_to_buff(struct xdp_frame *frame, struct xdp_buff *xdp)
-diff --git a/kernel/bpf/cpumap.c b/kernel/bpf/cpumap.c
-index 747313698178..5d1469de6921 100644
---- a/kernel/bpf/cpumap.c
-+++ b/kernel/bpf/cpumap.c
-@@ -141,49 +141,6 @@ static void cpu_map_kthread_stop(struct work_struct *work)
- 	kthread_stop(rcpu->kthread);
- }
- 
--static struct sk_buff *cpu_map_build_skb(struct xdp_frame *xdpf,
--					 struct sk_buff *skb)
--{
--	unsigned int hard_start_headroom;
--	unsigned int frame_size;
--	void *pkt_data_start;
--
--	/* Part of headroom was reserved to xdpf */
--	hard_start_headroom = sizeof(struct xdp_frame) +  xdpf->headroom;
--
--	/* Memory size backing xdp_frame data already have reserved
--	 * room for build_skb to place skb_shared_info in tailroom.
--	 */
--	frame_size = xdpf->frame_sz;
--
--	pkt_data_start = xdpf->data - hard_start_headroom;
--	skb = build_skb_around(skb, pkt_data_start, frame_size);
--	if (unlikely(!skb))
--		return NULL;
--
--	skb_reserve(skb, hard_start_headroom);
--	__skb_put(skb, xdpf->len);
--	if (xdpf->metasize)
--		skb_metadata_set(skb, xdpf->metasize);
--
--	/* Essential SKB info: protocol and skb->dev */
--	skb->protocol = eth_type_trans(skb, xdpf->dev_rx);
--
--	/* Optional SKB info, currently missing:
--	 * - HW checksum info		(skb->ip_summed)
--	 * - HW RX hash			(skb_set_hash)
--	 * - RX ring dev queue index	(skb_record_rx_queue)
--	 */
--
--	/* Until page_pool get SKB return path, release DMA here */
--	xdp_release_frame(xdpf);
--
--	/* Allow SKB to reuse area used by xdp_frame */
--	xdp_scrub_frame(xdpf);
--
--	return skb;
--}
--
- static void __cpu_map_ring_cleanup(struct ptr_ring *ring)
- {
- 	/* The tear-down procedure should have made sure that queue is
-@@ -350,7 +307,8 @@ static int cpu_map_kthread_run(void *data)
- 			struct sk_buff *skb = skbs[i];
- 			int ret;
- 
--			skb = cpu_map_build_skb(xdpf, skb);
-+			skb = __xdp_build_skb_from_frame(xdpf, skb,
-+							 xdpf->dev_rx);
- 			if (!skb) {
- 				xdp_return_frame(xdpf);
- 				continue;
 diff --git a/net/core/xdp.c b/net/core/xdp.c
-index 3a8c9ab4ecbe..aeb09ed0704c 100644
+index aeb09ed0704c..0d2630a35c3e 100644
 --- a/net/core/xdp.c
 +++ b/net/core/xdp.c
-@@ -513,3 +513,47 @@ void xdp_warn(const char *msg, const char *func, const int line)
- 	WARN(1, "XDP_WARN: %s(line:%d): %s\n", func, line, msg);
- };
- EXPORT_SYMBOL_GPL(xdp_warn);
+@@ -557,3 +557,18 @@ struct sk_buff *__xdp_build_skb_from_frame(struct xdp_frame *xdpf,
+ 	return skb;
+ }
+ EXPORT_SYMBOL_GPL(__xdp_build_skb_from_frame);
 +
-+struct sk_buff *__xdp_build_skb_from_frame(struct xdp_frame *xdpf,
-+					   struct sk_buff *skb,
-+					   struct net_device *dev)
++struct sk_buff *xdp_build_skb_from_frame(struct xdp_frame *xdpf,
++					 struct net_device *dev)
 +{
-+	unsigned int headroom, frame_size;
-+	void *hard_start;
++	struct sk_buff *skb;
 +
-+	/* Part of headroom was reserved to xdpf */
-+	headroom = sizeof(*xdpf) + xdpf->headroom;
-+
-+	/* Memory size backing xdp_frame data already have reserved
-+	 * room for build_skb to place skb_shared_info in tailroom.
-+	 */
-+	frame_size = xdpf->frame_sz;
-+
-+	hard_start = xdpf->data - headroom;
-+	skb = build_skb_around(skb, hard_start, frame_size);
++	skb = kmem_cache_alloc(skbuff_head_cache, GFP_ATOMIC);
 +	if (unlikely(!skb))
 +		return NULL;
 +
-+	skb_reserve(skb, headroom);
-+	__skb_put(skb, xdpf->len);
-+	if (xdpf->metasize)
-+		skb_metadata_set(skb, xdpf->metasize);
++	memset(skb, 0, offsetof(struct sk_buff, tail));
 +
-+	/* Essential SKB info: protocol and skb->dev */
-+	skb->protocol = eth_type_trans(skb, dev);
-+
-+	/* Optional SKB info, currently missing:
-+	 * - HW checksum info		(skb->ip_summed)
-+	 * - HW RX hash			(skb_set_hash)
-+	 * - RX ring dev queue index	(skb_record_rx_queue)
-+	 */
-+
-+	/* Until page_pool get SKB return path, release DMA here */
-+	xdp_release_frame(xdpf);
-+
-+	/* Allow SKB to reuse area used by xdp_frame */
-+	xdp_scrub_frame(xdpf);
-+
-+	return skb;
++	return __xdp_build_skb_from_frame(xdpf, skb, dev);
 +}
-+EXPORT_SYMBOL_GPL(__xdp_build_skb_from_frame);
++EXPORT_SYMBOL_GPL(xdp_build_skb_from_frame);
 -- 
 2.29.2
 
