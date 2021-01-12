@@ -2,110 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B90372F3771
-	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 18:44:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 13DF72F3780
+	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 18:47:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727622AbhALRoT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jan 2021 12:44:19 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50766 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726236AbhALRoR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 12:44:17 -0500
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08678C061575
-        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 09:43:37 -0800 (PST)
-Received: by mail-pl1-x631.google.com with SMTP id j1so1790852pld.3
-        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 09:43:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=BzmIqEmiAsBQeGRuZXDrmfW3VJTtFNWm4pArIga4sc0=;
-        b=CPoxrWdosO7Iaqn3diWVwEu3TgMcAKnLqPCx8aAIb2PF/FfFNYV+FVrA1yfz22GA2q
-         Wc3oEo0K+5CrnWPE30RWzEluBD5DOzscuj8odr4gZoHW0prJ2hZLJujYtYVExeokAm3I
-         /xZjEQf4WFiCQjq0hbgaYJOjjoMvPNkSh+0GVfSmdaYO41RYoV7zeZOefP2DYvm5/fKo
-         MlaY1iqwePXiWi2tpUWPYq2FjjrBXXOMHZjy3zZJNgpYega1pfcewOekjW4k4DR/qktj
-         s0HC/b0yTl/HU+K4OWHEnUNqawaPGzQL8gCXkmgacJItIpIjlt5qkwyFuNJ4oSefTeeL
-         s0Ug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=BzmIqEmiAsBQeGRuZXDrmfW3VJTtFNWm4pArIga4sc0=;
-        b=JenbEb3HEWZV7EV+ESugj4+YpulcKJqzCefz1Uf5wCRxnAVSnW0ZoEtJ2EqSJD14Ds
-         Z4cLmtlC2rizLdfZ1gJhaF4s66cKyyHbDBXxlt3lfrt8q1yDxkNGcxPWd4lGWTrBPDVb
-         9MHf/u6hwMg/tjScn5LZkBPei7VxlyVtCeeoILHoTGOExiGzXwnEkJLXbcrhJiqzXMul
-         z08kQiHPgmJXwcUuhs4CoZyUgh6LOjvIEZtcrk+rxpIbz1fVZ1ly9l/COVfhslp2sCS3
-         JGnMUQF5eqdSOQybCWPG9uKcHPKVQJ7IagfiU25K7Ht8CsTtCPA/w2shpwLPCbIxPVHt
-         LIVA==
-X-Gm-Message-State: AOAM530Q0MZ6bkZJO7cUsMvibp/gPeWcHt8NxwLCEChNdYnbfkFo7tk7
-        qyypfugQI7Aph1QIITCPWTg1NIVU1pluE89GdVQ=
-X-Google-Smtp-Source: ABdhPJxBFM6eocolBUl5ywDD3Z1WOKJq7FI8yHr4IKIMNjMB0EBBZaBTjbPd3pSk2OvhGadRCZCyYWPtfrDwbP+aTsA=
-X-Received: by 2002:a17:90a:f2ce:: with SMTP id gt14mr179141pjb.215.1610473416583;
- Tue, 12 Jan 2021 09:43:36 -0800 (PST)
+        id S2391613AbhALRqv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jan 2021 12:46:51 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:35531 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725843AbhALRqu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 12:46:50 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1610473523;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=+lqA2oW216IffgVLse7jSxzzKT75ytHb1bfBjowVRV4=;
+        b=HMTOyvxKgugW4YV/MREuVB0QxhLgxPjDyjzCGZQ/+1eE0pS8oE2FdpJqjscIbuF8Mka6IK
+        1NrDZjtAMKlh8bFXSXPJtBsnahQzSQ5GTR1GicadWjRx9FnR/7sJCo1AxAqaa3nK8W6Tu/
+        xd8IvxExHJe1yPwTz8A9vSCA1x+vI/E=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-433-z8adBOD_OTuye75KEXQqLg-1; Tue, 12 Jan 2021 12:45:10 -0500
+X-MC-Unique: z8adBOD_OTuye75KEXQqLg-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 85F758049C4;
+        Tue, 12 Jan 2021 17:45:06 +0000 (UTC)
+Received: from firesoul.localdomain (unknown [10.40.208.19])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id B422C5C25A;
+        Tue, 12 Jan 2021 17:45:01 +0000 (UTC)
+Received: from [192.168.42.3] (localhost [IPv6:::1])
+        by firesoul.localdomain (Postfix) with ESMTP id 8F5B532138454;
+        Tue, 12 Jan 2021 18:45:00 +0100 (CET)
+Subject: [PATCH bpf-next V11 0/7] bpf: New approach for BPF MTU handling
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     bpf@vger.kernel.org
+Cc:     Jesper Dangaard Brouer <brouer@redhat.com>, netdev@vger.kernel.org,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        maze@google.com, lmb@cloudflare.com, shaun@tigera.io,
+        Lorenzo Bianconi <lorenzo@kernel.org>, marek@cloudflare.com,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>, eyal.birger@gmail.com,
+        colrack@gmail.com
+Date:   Tue, 12 Jan 2021 18:45:00 +0100
+Message-ID: <161047346644.4003084.2653117664787086168.stgit@firesoul>
+User-Agent: StGit/0.19
 MIME-Version: 1.0
-References: <20210112025548.19107-1-xiyou.wangcong@gmail.com> <CADvbK_dvG9LNTTxh9R4QYO_0UHjKTvxaccb2AingaAzyXpzp4g@mail.gmail.com>
-In-Reply-To: <CADvbK_dvG9LNTTxh9R4QYO_0UHjKTvxaccb2AingaAzyXpzp4g@mail.gmail.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Tue, 12 Jan 2021 09:43:25 -0800
-Message-ID: <CAM_iQpW6m8xaTyi4Czi7BKFfv-oWkhJni9LUa8ETs1AorKdSVQ@mail.gmail.com>
-Subject: Re: [Patch net] cls_flower: call nla_ok() before nla_next()
-To:     Xin Long <lucien.xin@gmail.com>
-Cc:     network dev <netdev@vger.kernel.org>,
-        Cong Wang <cong.wang@bytedance.com>,
-        syzbot <syzbot+2624e3778b18fc497c92@syzkaller.appspotmail.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 12, 2021 at 3:52 AM Xin Long <lucien.xin@gmail.com> wrote:
->
-> On Tue, Jan 12, 2021 at 10:56 AM Cong Wang <xiyou.wangcong@gmail.com> wrote:
-> >
-> > From: Cong Wang <cong.wang@bytedance.com>
-> >
-> > fl_set_enc_opt() simply checks if there are still bytes left to parse,
-> > but this is not sufficent as syzbot seems to be able to generate
-> > malformatted netlink messages. nla_ok() is more strict so should be
-> > used to validate the next nlattr here.
-> >
-> > And nla_validate_nested_deprecated() has less strict check too, it is
-> > probably too late to switch to the strict version, but we can just
-> > call nla_ok() too after it.
-> >
-> > Reported-and-tested-by: syzbot+2624e3778b18fc497c92@syzkaller.appspotmail.com
-> > Fixes: 0a6e77784f49 ("net/sched: allow flower to match tunnel options")
-> > Fixes: 79b1011cb33d ("net: sched: allow flower to match erspan options")
-> > Cc: Pieter Jansen van Vuuren <pieter.jansenvanvuuren@netronome.com>
-> > Cc: Jamal Hadi Salim <jhs@mojatatu.com>
-> > Cc: Xin Long <lucien.xin@gmail.com>
-> > Cc: Jiri Pirko <jiri@resnulli.us>
-> > Signed-off-by: Cong Wang <cong.wang@bytedance.com>
-> > ---
-> >  net/sched/cls_flower.c | 8 +++++---
-> >  1 file changed, 5 insertions(+), 3 deletions(-)
-> >
-> > diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
-> > index 1319986693fc..e265c443536e 100644
-> > --- a/net/sched/cls_flower.c
-> > +++ b/net/sched/cls_flower.c
-> > @@ -1272,6 +1272,8 @@ static int fl_set_enc_opt(struct nlattr **tb, struct fl_flow_key *key,
-> >
-> >                 nla_opt_msk = nla_data(tb[TCA_FLOWER_KEY_ENC_OPTS_MASK]);
-> >                 msk_depth = nla_len(tb[TCA_FLOWER_KEY_ENC_OPTS_MASK]);
-> > +               if (!nla_ok(nla_opt_msk, msk_depth))
-> > +                       return -EINVAL;
-> >         }
-> I think it's better to also add  NL_SET_ERR_MSG(extack, xxxx);
-> for this error return, like all the other places in this function.
+This patchset drops all the MTU checks in TC BPF-helpers that limits
+growing the packet size. This is done because these BPF-helpers doesn't
+take redirect into account, which can result in their MTU check being done
+against the wrong netdev.
 
-I think ext message is primarily for end users who usually can not
-generate malformat netlink messages.
+The new approach is to give BPF-programs knowledge about the MTU on a
+netdev (via ifindex) and fib route lookup level. Meaning some BPF-helpers
+are added and extended to make it possible to do MTU checks in the
+BPF-code.
 
-On the other hand, the nla_validate_nested_deprecated() right above
-the quoted code does not set ext message either.
+If BPF-prog doesn't comply with the MTU then the packet will eventually
+get dropped as some other layer. In some cases the existing kernel MTU
+checks will drop the packet, but there are also cases where BPF can bypass
+these checks. Specifically doing TC-redirect from ingress step
+(sch_handle_ingress) into egress code path (basically calling
+dev_queue_xmit()). It is left up to driver code to handle these kind of
+MTU violations.
 
-Thanks.
+One advantage of this approach is that it ingress-to-egress BPF-prog can
+send information via packet data. With the MTU checks removed in the
+helpers, and also not done in skb_do_redirect() call, this allows for an
+ingress BPF-prog to communicate with an egress BPF-prog via packet data,
+as long as egress BPF-prog remove this prior to transmitting packet.
+
+This patchset is primarily focused on TC-BPF, but I've made sure that the
+MTU BPF-helpers also works for XDP BPF-programs.
+
+V2: Change BPF-helper API from lookup to check.
+V3: Drop enforcement of MTU in net-core, leave it to drivers.
+V4: Keep sanity limit + netdev "up" checks + rename BPF-helper.
+V5: Fix uninit variable + name struct output member mtu_result.
+V6: Use bpf_check_mtu() in selftest
+V7: Fix logic using tot_len and add another selftest
+V8: Add better selftests for BPF-helper bpf_check_mtu
+V9: Remove patch that use skb_set_redirected
+V10: Fix selftests and 'tot_len' MTU check like XDP
+V11: Fix nitpicks in selftests
+
+---
+
+Jesper Dangaard Brouer (7):
+      bpf: Remove MTU check in __bpf_skb_max_len
+      bpf: fix bpf_fib_lookup helper MTU check for SKB ctx
+      bpf: bpf_fib_lookup return MTU value as output when looked up
+      bpf: add BPF-helper for MTU checking
+      bpf: drop MTU check when doing TC-BPF redirect to ingress
+      selftests/bpf: use bpf_check_mtu in selftest test_cls_redirect
+      bpf/selftests: tests using bpf_check_mtu BPF-helper
+
+
+ include/linux/netdevice.h                          |   31 +++
+ include/uapi/linux/bpf.h                           |   78 +++++++
+ net/core/dev.c                                     |   19 --
+ net/core/filter.c                                  |  183 +++++++++++++++--
+ tools/include/uapi/linux/bpf.h                     |   78 +++++++
+ tools/testing/selftests/bpf/prog_tests/check_mtu.c |  216 ++++++++++++++++++++
+ tools/testing/selftests/bpf/progs/test_check_mtu.c |  198 ++++++++++++++++++
+ .../selftests/bpf/progs/test_cls_redirect.c        |    7 +
+ 8 files changed, 766 insertions(+), 44 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/check_mtu.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_check_mtu.c
+
+--
+
