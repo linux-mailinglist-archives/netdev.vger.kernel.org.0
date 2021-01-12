@@ -2,104 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 25E072F3B08
-	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 20:50:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E4A472F3B0C
+	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 20:50:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406850AbhALTre (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jan 2021 14:47:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49426 "EHLO
+        id S2406937AbhALTrl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jan 2021 14:47:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2406756AbhALTre (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 14:47:34 -0500
-Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B1E62C061795;
-        Tue, 12 Jan 2021 11:46:53 -0800 (PST)
-Received: by mail-yb1-xb35.google.com with SMTP id o144so3301635ybc.0;
-        Tue, 12 Jan 2021 11:46:53 -0800 (PST)
+        with ESMTP id S2406756AbhALTrk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 14:47:40 -0500
+Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE8B8C06179F;
+        Tue, 12 Jan 2021 11:46:59 -0800 (PST)
+Received: by mail-lj1-x22b.google.com with SMTP id p13so4235147ljg.2;
+        Tue, 12 Jan 2021 11:46:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=45DA4vH/D9c7gYWc+sPX522gNKfwVRgZeQ5tT9hcRQo=;
-        b=iSfEpB6nullBDGHMzkUIL4Mg1xbmNjQ+3ukI2cEAZgRJjEWC2U1lmlzzctiayjmS5I
-         FvSdX/eWz+XH/1k4vE7/wm6LOX08RRxWgLhiyZ3ZdMvvyTjnJAol3p4bYvgWvr3bodaQ
-         5wFEoMgjHQzdLrgbrTp8BFxMxqnXrdxYRW3K+TbjWKaB8JIk0ca3JiueznIU3kJCJ3GU
-         fwHwXrth5BDAT3Rnbpv8g43efKESLp91jk6BuEd9kWbye/XgsI+2hNTmd4RGzOovquOh
-         HmzFHEfFdewWeSFzz+C8oK6OPjMdLL2940ve6EgZ6F3w8NWMhgMcKYXREJ+cY6q/JT+N
-         xaXQ==
+        bh=nLuzLYNt5T8osq7JXeaiHrLO6+i9dEnVYqGJgVkKi9Y=;
+        b=vYfNW4936VSfsfaE4FPjVdNXto4N/M6kGen+8Mc9PnTNtkt3FVhlO9Lji+rTbggdvU
+         efVCBHX+QBBFFLAFdKchQ9dGckH15dNbIkoMq40g8WcfI8bO4r8omaKScS211OynYzio
+         pwt0Af28IscLBvCfEPiZOP32LiaGnrTdwTR8t01o0T8cix8TCiWYtr2bztCZ7EK7HmeC
+         CG3gbo/QgzsMZwhBldrnwCNwPwwfDG8/cDqA3S16bIuaw2LV5L8InT8eWdbL5WxiA1iD
+         rB3byLm4YjGBcbnHqTtCMuvlbGkrDi88jaoc8oqgOVG7r/OokbENWKJ7gGq16KhulWI0
+         HrYQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=45DA4vH/D9c7gYWc+sPX522gNKfwVRgZeQ5tT9hcRQo=;
-        b=fH4kcu1TSQKcfsEhzUTMMS5bPTZdag4Xr+MZisuLfprp7Eh8Ig/inR/FfO78sOAwRZ
-         MDRiqK/LWl4WtC6tiEjdYw2WoCsWpG95nJPglnsK09h7M4P0xdK7ymAPg7ZR5V0YEnYw
-         QVvahDBCP4vqjiO6ln2O3tyxAA8ktB5L5CHZ4NwRvLmhnArwJ3OH4vByyJNNjdaDEhMU
-         WIDNb9KAPCxxspdz0qN7CX9VHAu0CfbKaj0+m/QdDhhskbhwzE18bsf7mYsJfC3vW8ZK
-         k5oUVMefjU/g9ZPEr90mu6hvwE9DDM75ZLDOHRZDTqvYEIVMBg3cTX/oYToDudIr63IT
-         LZnA==
-X-Gm-Message-State: AOAM531utvPWG5cG32FqgtMypeT+usC0b2FJGEGEiRrzhAopifojtViO
-        TEb2pohlqfe1HrZAikzqCw1VlV1ktKaX/wAYU48=
-X-Google-Smtp-Source: ABdhPJyg6ovhqg+xDQhRKNU5YXSFgATRKfoACZupNoxS39SiRB6XL+BC/HaI5L5kshdU8ViPPfX5WV4EE+WX7PDFawU=
-X-Received: by 2002:a25:9882:: with SMTP id l2mr1400221ybo.425.1610480812991;
- Tue, 12 Jan 2021 11:46:52 -0800 (PST)
+        bh=nLuzLYNt5T8osq7JXeaiHrLO6+i9dEnVYqGJgVkKi9Y=;
+        b=fjqn4NsamChvqZhLXDepzqXB44JWpAHsk/BBFtoIA6yzEnxDY8Ydq8ILGD4XmMlBoC
+         x+FvAovBnCJJaRghpWMPQEpvd2MhIiUlWdM+CPEjAkHP9EU6Iqzm4DlXvylg35UuN9Au
+         QM4FUW6fZfoTEvzwez6/Z92S1AlF9XbsSOobxmazt3QMXP0470PpH74ogMg81woWtGTA
+         P6viVsxH9yKUoufiY4qBRxsO0QMPQhXvh9uKex62JLTCf0wh7FlL0vsK1O7WmqGW8S6V
+         HpHVNOWrtSB1nBDfpQN8UjKLcE6/7NogHv4yPpYFnQOs8JGw0vX4Pdh4yjZLSPfa6Pp1
+         G/Fw==
+X-Gm-Message-State: AOAM532lzIPpAiIwIGHetI6oKHXeLypttXmwRH39VZe2hpOpDiFHcSpW
+        i/5wVdo9optl5SFVbVaWRcDZ1RKMdSiWgpAS4w0=
+X-Google-Smtp-Source: ABdhPJwZhBCGKnrIy2pClnDTPtHGtrdA4y52ofV0ZvmD0av1lZET+wEvea6DglcSlWgjWslhNj+O3PtSrJmX0zO8gd8=
+X-Received: by 2002:a2e:878a:: with SMTP id n10mr350199lji.236.1610480818432;
+ Tue, 12 Jan 2021 11:46:58 -0800 (PST)
 MIME-Version: 1.0
-References: <20210112091403.10458-1-gilad.reti@gmail.com>
-In-Reply-To: <20210112091403.10458-1-gilad.reti@gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 12 Jan 2021 11:46:42 -0800
-Message-ID: <CAEf4BzY2ezxxeUbhMy-kw-zRv974JG2NAQ+2g5_rtVSn8EmNcw@mail.gmail.com>
-Subject: Re: [PATCH bpf 1/2] bpf: support PTR_TO_MEM{,_OR_NULL} register spilling
-To:     Gilad Reti <gilad.reti@gmail.com>
-Cc:     bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+References: <20210112194143.1494-1-yuri.benditovich@daynix.com> <20210112194143.1494-4-yuri.benditovich@daynix.com>
+In-Reply-To: <20210112194143.1494-4-yuri.benditovich@daynix.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Tue, 12 Jan 2021 11:46:46 -0800
+Message-ID: <CAADnVQ++1_voT2fZ021ExcON0KfHtA8MyHc-WYe-XXJoPTD6ig@mail.gmail.com>
+Subject: Re: [RFC PATCH 3/7] tun: allow use of BPF_PROG_TYPE_SCHED_CLS program type
+To:     Yuri Benditovich <yuri.benditovich@daynix.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andrii@kernel.org>,
         Martin KaFai Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
         KP Singh <kpsingh@kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
+        Randy Dunlap <rdunlap@infradead.org>,
+        Willem de Bruijn <willemb@google.com>, gustavoars@kernel.org,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        nogikh@google.com, Pablo Neira Ayuso <pablo@netfilter.org>,
+        decui@microsoft.com, cai@lca.pw,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Marco Elver <elver@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        bpf <bpf@vger.kernel.org>, Yan Vugenfirer <yan@daynix.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 12, 2021 at 1:14 AM Gilad Reti <gilad.reti@gmail.com> wrote:
+On Tue, Jan 12, 2021 at 11:42 AM Yuri Benditovich
+<yuri.benditovich@daynix.com> wrote:
 >
-> Add support for pointer to mem register spilling, to allow the verifier
-> to track pointer to valid memory addresses. Such pointers are returned
-> for example by a successful call of the bpf_ringbuf_reserve helper.
+> This program type can set skb hash value. It will be useful
+> when the tun will support hash reporting feature if virtio-net.
 >
-> This patch was suggested as a solution by Yonghong Song.
->
-> The patch was partially contibuted by CyberArk Software, Inc.
->
-> Fixes: 457f44363a88 ("bpf: Implement BPF ring buffer and verifier
-> support for it")
-
-Surprised no one mentioned this yet. Fixes tag should always be on a
-single unwrapped line, however long it is, please fix.
-
-
-> Signed-off-by: Gilad Reti <gilad.reti@gmail.com>
+> Signed-off-by: Yuri Benditovich <yuri.benditovich@daynix.com>
 > ---
->  kernel/bpf/verifier.c | 2 ++
+>  drivers/net/tun.c | 2 ++
 >  1 file changed, 2 insertions(+)
 >
-> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-> index 17270b8404f1..36af69fac591 100644
-> --- a/kernel/bpf/verifier.c
-> +++ b/kernel/bpf/verifier.c
-> @@ -2217,6 +2217,8 @@ static bool is_spillable_regtype(enum bpf_reg_type type)
->         case PTR_TO_RDWR_BUF:
->         case PTR_TO_RDWR_BUF_OR_NULL:
->         case PTR_TO_PERCPU_BTF_ID:
-> +       case PTR_TO_MEM:
-> +       case PTR_TO_MEM_OR_NULL:
->                 return true;
->         default:
->                 return false;
-> --
-> 2.27.0
->
+> diff --git a/drivers/net/tun.c b/drivers/net/tun.c
+> index 7959b5c2d11f..455f7afc1f36 100644
+> --- a/drivers/net/tun.c
+> +++ b/drivers/net/tun.c
+> @@ -2981,6 +2981,8 @@ static int tun_set_ebpf(struct tun_struct *tun, struct tun_prog __rcu **prog_p,
+>                 prog = NULL;
+>         } else {
+>                 prog = bpf_prog_get_type(fd, BPF_PROG_TYPE_SOCKET_FILTER);
+> +               if (IS_ERR(prog))
+> +                       prog = bpf_prog_get_type(fd, BPF_PROG_TYPE_SCHED_CLS);
+
+You've ignored the feedback and just resend? what for?
