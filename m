@@ -2,104 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E4A472F3B0C
-	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 20:50:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 30B652F3B24
+	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 20:51:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406937AbhALTrl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jan 2021 14:47:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49454 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2406756AbhALTrk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 14:47:40 -0500
-Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE8B8C06179F;
-        Tue, 12 Jan 2021 11:46:59 -0800 (PST)
-Received: by mail-lj1-x22b.google.com with SMTP id p13so4235147ljg.2;
-        Tue, 12 Jan 2021 11:46:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=nLuzLYNt5T8osq7JXeaiHrLO6+i9dEnVYqGJgVkKi9Y=;
-        b=vYfNW4936VSfsfaE4FPjVdNXto4N/M6kGen+8Mc9PnTNtkt3FVhlO9Lji+rTbggdvU
-         efVCBHX+QBBFFLAFdKchQ9dGckH15dNbIkoMq40g8WcfI8bO4r8omaKScS211OynYzio
-         pwt0Af28IscLBvCfEPiZOP32LiaGnrTdwTR8t01o0T8cix8TCiWYtr2bztCZ7EK7HmeC
-         CG3gbo/QgzsMZwhBldrnwCNwPwwfDG8/cDqA3S16bIuaw2LV5L8InT8eWdbL5WxiA1iD
-         rB3byLm4YjGBcbnHqTtCMuvlbGkrDi88jaoc8oqgOVG7r/OokbENWKJ7gGq16KhulWI0
-         HrYQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=nLuzLYNt5T8osq7JXeaiHrLO6+i9dEnVYqGJgVkKi9Y=;
-        b=fjqn4NsamChvqZhLXDepzqXB44JWpAHsk/BBFtoIA6yzEnxDY8Ydq8ILGD4XmMlBoC
-         x+FvAovBnCJJaRghpWMPQEpvd2MhIiUlWdM+CPEjAkHP9EU6Iqzm4DlXvylg35UuN9Au
-         QM4FUW6fZfoTEvzwez6/Z92S1AlF9XbsSOobxmazt3QMXP0470PpH74ogMg81woWtGTA
-         P6viVsxH9yKUoufiY4qBRxsO0QMPQhXvh9uKex62JLTCf0wh7FlL0vsK1O7WmqGW8S6V
-         HpHVNOWrtSB1nBDfpQN8UjKLcE6/7NogHv4yPpYFnQOs8JGw0vX4Pdh4yjZLSPfa6Pp1
-         G/Fw==
-X-Gm-Message-State: AOAM532lzIPpAiIwIGHetI6oKHXeLypttXmwRH39VZe2hpOpDiFHcSpW
-        i/5wVdo9optl5SFVbVaWRcDZ1RKMdSiWgpAS4w0=
-X-Google-Smtp-Source: ABdhPJwZhBCGKnrIy2pClnDTPtHGtrdA4y52ofV0ZvmD0av1lZET+wEvea6DglcSlWgjWslhNj+O3PtSrJmX0zO8gd8=
-X-Received: by 2002:a2e:878a:: with SMTP id n10mr350199lji.236.1610480818432;
- Tue, 12 Jan 2021 11:46:58 -0800 (PST)
-MIME-Version: 1.0
-References: <20210112194143.1494-1-yuri.benditovich@daynix.com> <20210112194143.1494-4-yuri.benditovich@daynix.com>
-In-Reply-To: <20210112194143.1494-4-yuri.benditovich@daynix.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 12 Jan 2021 11:46:46 -0800
-Message-ID: <CAADnVQ++1_voT2fZ021ExcON0KfHtA8MyHc-WYe-XXJoPTD6ig@mail.gmail.com>
-Subject: Re: [RFC PATCH 3/7] tun: allow use of BPF_PROG_TYPE_SCHED_CLS program type
-To:     Yuri Benditovich <yuri.benditovich@daynix.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Willem de Bruijn <willemb@google.com>, gustavoars@kernel.org,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        nogikh@google.com, Pablo Neira Ayuso <pablo@netfilter.org>,
-        decui@microsoft.com, cai@lca.pw,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Marco Elver <elver@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Network Development <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        bpf <bpf@vger.kernel.org>, Yan Vugenfirer <yan@daynix.com>
+        id S2393184AbhALTtl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jan 2021 14:49:41 -0500
+Received: from mail.kernel.org ([198.145.29.99]:57750 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2393171AbhALTtk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 Jan 2021 14:49:40 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 8351E2311C;
+        Tue, 12 Jan 2021 19:48:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1610480939;
+        bh=k2RvpzuAQAJgMUCYEgmLCHVgf5LAp7MTRGbLwfHksvI=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=EavPA6JzneKDXFR/5P+rK+3gAUiiBJSHU5EBD0qfT4coCqNnsZ3CWzeXE4knjIQFB
+         teIOq/LulMhmbXPu4GBOh8PZXDgpMOZQhHaag0V+wcKkhZrWrPFrM+4Mjjq2POQ61d
+         oWbZ3oF7PhwTgLlBmNJI2gL/9WBQMepSTEythsGxJHBhQOKKbRozAIDC4A1k9xhU02
+         uMDMZ3XnsDEUfqnPjg7L5MNr6vrulo1uZpXiLzzocR/Ox7QvJJqRueoHYhKEFVMpA5
+         /pfY6MsoTF/+ow/YSG7YorcF0b5fJzQNs28x3hKEA93J+mQXkGx6Blve0lbpj1b4MD
+         3zMUTRvbn0B8A==
+Message-ID: <ee2fe19334bc8a23009df4cf1c54731bacb7d95c.camel@kernel.org>
+Subject: Re: [PATCH net-next v2 3/7] ibmvnic: avoid allocating rwi entries
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     Sukadev Bhattiprolu <sukadev@linux.ibm.com>, netdev@vger.kernel.org
+Cc:     Dany Madden <drt@linux.ibm.com>, Lijun Pan <ljp@linux.ibm.com>,
+        Rick Lindsley <ricklind@linux.ibm.com>
+Date:   Tue, 12 Jan 2021 11:48:58 -0800
+In-Reply-To: <20210112181441.206545-4-sukadev@linux.ibm.com>
+References: <20210112181441.206545-1-sukadev@linux.ibm.com>
+         <20210112181441.206545-4-sukadev@linux.ibm.com>
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 12, 2021 at 11:42 AM Yuri Benditovich
-<yuri.benditovich@daynix.com> wrote:
->
-> This program type can set skb hash value. It will be useful
-> when the tun will support hash reporting feature if virtio-net.
->
-> Signed-off-by: Yuri Benditovich <yuri.benditovich@daynix.com>
+On Tue, 2021-01-12 at 10:14 -0800, Sukadev Bhattiprolu wrote:
+> Whenever we need to schedule a reset, we allocate an rwi (reset work
+> item?) entry and add to the list of pending resets.
+> 
+> Since we only add one rwi for a given reason type to the list (no
+> duplicates).
+> we will only have a handful of reset types in the list - even in the
+> worst case. In the common case we should just have a couple of
+> entries
+> at most.
+> 
+> Rather than allocating/freeing every time (and dealing with the
+> corner
+> case of the allocation failing), use a fixed number of rwi entries.
+> The extra memory needed is tiny and most of it will be used over the
+> active life of the adapter.
+> 
+> This also fixes a couple of tiny memory leaks. One is in
+> ibmvnic_reset()
+> where we don't free the rwi entries after deleting them from the list
+> due
+> to a transport event.  The second is in __ibmvnic_reset() where if we
+> find that the adapter is being removed, we simply break out of the
+> loop
+> (with rc = EBUSY) but ignore any rwi entries that remain on the list.
+> 
+> Fixes: 2770a7984db58 ("Introduce hard reset recovery")
+> Fixes: 36f1031c51a2 ("ibmvnic: Do not process reset during or after
+> device removal")
+> Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
 > ---
->  drivers/net/tun.c | 2 ++
->  1 file changed, 2 insertions(+)
->
-> diff --git a/drivers/net/tun.c b/drivers/net/tun.c
-> index 7959b5c2d11f..455f7afc1f36 100644
-> --- a/drivers/net/tun.c
-> +++ b/drivers/net/tun.c
-> @@ -2981,6 +2981,8 @@ static int tun_set_ebpf(struct tun_struct *tun, struct tun_prog __rcu **prog_p,
->                 prog = NULL;
->         } else {
->                 prog = bpf_prog_get_type(fd, BPF_PROG_TYPE_SOCKET_FILTER);
-> +               if (IS_ERR(prog))
-> +                       prog = bpf_prog_get_type(fd, BPF_PROG_TYPE_SCHED_CLS);
+>  drivers/net/ethernet/ibm/ibmvnic.c | 123 +++++++++++++++++--------
+> ----
+>  drivers/net/ethernet/ibm/ibmvnic.h |  14 ++--
+>  2 files changed, 78 insertions(+), 59 deletions(-)
+> 
 
-You've ignored the feedback and just resend? what for?
+[...]
+
+> -enum ibmvnic_reset_reason {VNIC_RESET_FAILOVER = 1,
+> +enum ibmvnic_reset_reason {VNIC_RESET_UNUSED = 0,
+> +			   VNIC_RESET_FAILOVER = 1,
+>  			   VNIC_RESET_MOBILITY,
+>  			   VNIC_RESET_FATAL,
+>  			   VNIC_RESET_NON_FATAL,
+>  			   VNIC_RESET_TIMEOUT,
+> -			   VNIC_RESET_CHANGE_PARAM};
+> -
+> -struct ibmvnic_rwi {
+> -	enum ibmvnic_reset_reason reset_reason;
+> -	struct list_head list;
+> -};
+> +			   VNIC_RESET_CHANGE_PARAM,
+> +			   VNIC_RESET_MAX};	// must be last
+       this is not the preferred comment style: ^^
+
+I would just drop the comment here, it is clear from the name of the
+enum.
+
+
+
