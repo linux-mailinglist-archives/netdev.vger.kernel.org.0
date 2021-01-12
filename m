@@ -2,72 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C2B8C2F30C9
-	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 14:16:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 32D1F2F3173
+	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 14:26:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726526AbhALNL0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jan 2021 08:11:26 -0500
-Received: from mail.kernel.org ([198.145.29.99]:34288 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726224AbhALNLZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 12 Jan 2021 08:11:25 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E902A23104;
-        Tue, 12 Jan 2021 13:10:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1610457044;
-        bh=+I0/CAlCSgREEqQUkT62aVbfKK8iKlEIHmnPI9Xh+LU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=oBRMoK91OPAtO51gk8exkl4tg1E+5bRaxZssSyfLuIrpFG/yq0ZO7NIiD9g1gjYxY
-         wRPw5f//p2rico1l2rTePxE8qvR7/ymw6MlxhHqHYYvfDLrvYM7TwbcwaGz6lMJ6Eh
-         NPcuF4XJPGTSasFb64QSpYyoyli1TAHm2oLJ8HSA=
-Date:   Tue, 12 Jan 2021 14:11:53 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Sasha Levin <sashal@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
-        Roland Dreier <roland@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>, linux-usb@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH AUTOSEL 5.10 23/51] CDC-NCM: remove "connected" log
- message
-Message-ID: <X/2gGVG7Dn4nvj2V@kroah.com>
-References: <20210112125534.70280-1-sashal@kernel.org>
- <20210112125534.70280-23-sashal@kernel.org>
+        id S1731428AbhALNVX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jan 2021 08:21:23 -0500
+Received: from rtits2.realtek.com ([211.75.126.72]:34460 "EHLO
+        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728281AbhALNVX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 08:21:23 -0500
+Authenticated-By: 
+X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 10CDKMWC0013545, This message is accepted by code: ctloc85258
+Received: from mail.realtek.com (rtexmbs01.realtek.com.tw[172.21.6.94])
+        by rtits2.realtek.com.tw (8.15.2/2.70/5.88) with ESMTPS id 10CDKMWC0013545
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Tue, 12 Jan 2021 21:20:22 +0800
+Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
+ RTEXMBS01.realtek.com.tw (172.21.6.94) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Tue, 12 Jan 2021 21:20:22 +0800
+Received: from RTEXMBS04.realtek.com.tw ([fe80::ecca:80ca:53:e833]) by
+ RTEXMBS04.realtek.com.tw ([fe80::ecca:80ca:53:e833%12]) with mapi id
+ 15.01.2106.006; Tue, 12 Jan 2021 21:20:22 +0800
+From:   Pkshih <pkshih@realtek.com>
+To:     "abaci-bugfix@linux.alibaba.com" <abaci-bugfix@linux.alibaba.com>
+CC:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "kvalo@codeaurora.org" <kvalo@codeaurora.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH] rtlwifi: rtl8821ae: style: Simplify bool comparison
+Thread-Topic: [PATCH] rtlwifi: rtl8821ae: style: Simplify bool comparison
+Thread-Index: AQHW6L2orBBpKoBBgkeYxkTWwRIaRaojc5qA
+Date:   Tue, 12 Jan 2021 13:20:21 +0000
+Message-ID: <1610457587.2793.2.camel@realtek.com>
+References: <1610440409-73330-1-git-send-email-abaci-bugfix@linux.alibaba.com>
+In-Reply-To: <1610440409-73330-1-git-send-email-abaci-bugfix@linux.alibaba.com>
+Accept-Language: en-US, zh-TW
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [125.224.66.71]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <A6A38BB325AB144790D7DFD15CA130C6@realtek.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210112125534.70280-23-sashal@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 12, 2021 at 07:55:05AM -0500, Sasha Levin wrote:
-> From: Roland Dreier <roland@kernel.org>
-> 
-> [ Upstream commit 59b4a8fa27f5a895582ada1ae5034af7c94a57b5 ]
-> 
-> The cdc_ncm driver passes network connection notifications up to
-> usbnet_link_change(), which is the right place for any logging.
-> Remove the netdev_info() duplicating this from the driver itself.
-> 
-> This stops devices such as my "TRENDnet USB 10/100/1G/2.5G LAN"
-> (ID 20f4:e02b) adapter from spamming the kernel log with
-> 
->     cdc_ncm 2-2:2.0 enp0s2u2c2: network connection: connected
-> 
-> messages every 60 msec or so.
-> 
-> Signed-off-by: Roland Dreier <roland@kernel.org>
-> Reviewed-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-> Link: https://lore.kernel.org/r/20201224032116.2453938-1-roland@kernel.org
-> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> Signed-off-by: Sasha Levin <sashal@kernel.org>
-> ---
->  drivers/net/usb/cdc_ncm.c | 3 ---
->  1 file changed, 3 deletions(-)
-
-This is already queued up to be in the next round of stable releases, so
-no need to queue it up again :)
-
-thanks,
-
-greg k-h
+T24gVHVlLCAyMDIxLTAxLTEyIGF0IDE2OjMzICswODAwLCBZQU5HIExJIHdyb3RlOg0KPiBGaXgg
+dGhlIGZvbGxvd2luZyBjb2NjaWNoZWNrIHdhcm5pbmc6DQo+IC4vZHJpdmVycy9uZXQvd2lyZWxl
+c3MvcmVhbHRlay9ydGx3aWZpL3J0bDg4MjFhZS9waHkuYzozODUzOjctMTc6DQo+IFdBUk5JTkc6
+IENvbXBhcmlzb24gb2YgMC8xIHRvIGJvb2wgdmFyaWFibGUNCj4gDQo+IFJlcG9ydGVkLWJ5OiBB
+YmFjaSBSb2JvdCA8YWJhY2lAbGludXguYWxpYmFiYS5jb20+DQo+IFNpZ25lZC1vZmYtYnk6IFlB
+TkcgTEkgPGFiYWNpLWJ1Z2ZpeEBsaW51eC5hbGliYWJhLmNvbT4NCj4gDQoNCkkgdGhpbmsgeW91
+ciBuYW1lIG9mIFNpZ25lZC1vZmYtYnkgc2hvdWxkIGJlICJZYW5nIExpIi4NCg0KQW5kLCB0aGUg
+c3ViamVjdCBwcmVmaXggInJ0bHdpZmk6ICIgaXMgcHJlZmVycmVkLg0KDQotLS0NClBpbmctS2UN
+Cg==
