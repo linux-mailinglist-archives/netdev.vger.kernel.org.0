@@ -2,120 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E7A3E2F243E
+	by mail.lfdr.de (Postfix) with ESMTP id 77CF62F243D
 	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 01:34:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405479AbhALAZg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S2405485AbhALAZg (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Mon, 11 Jan 2021 19:25:36 -0500
-Received: from mail.kernel.org ([198.145.29.99]:37214 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2404212AbhAKXwW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 11 Jan 2021 18:52:22 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id C362522CA2;
-        Mon, 11 Jan 2021 23:51:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610409101;
-        bh=ZPYc4GFouwm3fx5C95hfGBzL/wcWXKcGSjaireBf2bc=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=m9mwyBiqnBKczqX7DPieHgm1/eAYOnSN+Zrq7xY3nmTmFMkceF4tp+EOjVJ6a55Re
-         DUNIAAyFtT0dTImxC2Ivs33Md+xwvxA64Mxwhq1J1VUd3YxFvRwUqZCHRB1FX17/aV
-         tXxgAfRbKRBbGVK7wFUTqtAn25D4UEccRMmjYS9c87BogfjNArEzLHZeuqc3Ybd4Hj
-         58Qr+btcSa31dSQP8PnMnoCYsXSXH7LKMYcIZxHeyQbDGUJKJtCX47ZSzvejs0OhIK
-         rjAhzu2kmTWOi/5Sx8r3gUw8AVV6pnDKnb0h+03mHGda0qQ2pGaj3+DgUWlWWGOFyc
-         mwhieA+KpYUTw==
-Message-ID: <6a6f5e835255a196f461b0e63a68b9bfa576ca1f.camel@kernel.org>
-Subject: Re: [PATCH v6 net-next 11/15] net: catch errors from dev_get_stats
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Eric Dumazet <edumazet@google.com>,
-        George McCollister <george.mccollister@gmail.com>,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        Arnd Bergmann <arnd@arndb.de>, Taehee Yoo <ap420073@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>, Florian Westphal <fw@strlen.de>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Pravin B Shelar <pshelar@ovn.org>,
-        Sridhar Samudrala <sridhar.samudrala@intel.com>
-Date:   Mon, 11 Jan 2021 15:51:39 -0800
-In-Reply-To: <20210111231535.lfkv7ggjzynbiicc@skbuf>
-References: <20210109172624.2028156-1-olteanv@gmail.com>
-         <20210109172624.2028156-12-olteanv@gmail.com>
-         <b517b9a54761a0ee650d6d64712844606cf8a631.camel@kernel.org>
-         <20210111231535.lfkv7ggjzynbiicc@skbuf>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+Received: from mail-yb1-f181.google.com ([209.85.219.181]:33122 "EHLO
+        mail-yb1-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2404219AbhALABZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 11 Jan 2021 19:01:25 -0500
+Received: by mail-yb1-f181.google.com with SMTP id o144so526977ybc.0;
+        Mon, 11 Jan 2021 16:01:09 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=WYFvp4pRAM4I/ettmtAye/8Q4IbY3OpbPnErkgoce1U=;
+        b=OAHGanJiW1cArupnEBR8NfBR2WjUwgS3dXjbElol9ZSNHBHL+eBYDVqrFWR22MnERr
+         4k4aS7O6nv4zDe5KK/s6jTpxAiS2s7JUGkf8nkaTuG32nMIHCiYz0gA6r5qCeCDPrFw2
+         2V0asE6R8OTsCKUepwZeMUldbGEOsEO4QpzFKfLry/JvU/1hNnFotXk++W28UWJzkR1F
+         KhE2l4HR64WPTQVMj28TIWyhir/mD9RIoooLFvyWYrF33IrIuwvjl/RvwFcwgdi2UPkQ
+         +E9SRppB9DVgD0BF655ylTHsmKtR2fApzKY3Lak5nnx75F0oSZSOeXrNi1tT8tW+ZQwB
+         K6DQ==
+X-Gm-Message-State: AOAM533mB8I9pPOJLAMux7db2iSO1+w6vVD8VaVp/1AxO+QzDLx++Hc4
+        6hrYKcBujH3PIPrvzsIVuxJ7dgt8mN8clMGe08w=
+X-Google-Smtp-Source: ABdhPJyZU2BdSQ+kFkk8X57TMyaU2YTJdJxlj5Zf+wUs4Crk+U/tbWoCABMCQIpaDWVbmxIKdlTqvyvx3vtp86RICU4=
+X-Received: by 2002:a05:6902:4f4:: with SMTP id w20mr3149495ybs.125.1610409643862;
+ Mon, 11 Jan 2021 16:00:43 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+References: <20210110124903.109773-1-mailhol.vincent@wanadoo.fr>
+ <20210110124903.109773-2-mailhol.vincent@wanadoo.fr> <20210111171152.GB11715@hoboy.vegasvil.org>
+In-Reply-To: <20210111171152.GB11715@hoboy.vegasvil.org>
+From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Date:   Tue, 12 Jan 2021 09:00:33 +0900
+Message-ID: <CAMZ6RqJqWOGVb_oAhk+CSZAvsej_xSDR6jqktU_nwLgFpWTb9Q@mail.gmail.com>
+Subject: Re: [PATCH v3 1/1] can: dev: add software tx timestamps
+To:     Richard Cochran <richardcochran@gmail.com>
+Cc:     Marc Kleine-Budde <mkl@pengutronix.de>,
+        linux-can <linux-can@vger.kernel.org>,
+        Jeroen Hofstee <jhofstee@victronenergy.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "open list:NETWORKING DRIVERS" <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2021-01-12 at 01:15 +0200, Vladimir Oltean wrote:
-> On Mon, Jan 11, 2021 at 02:54:50PM -0800, Saeed Mahameed wrote:
-> > On Sat, 2021-01-09 at 19:26 +0200, Vladimir Oltean wrote:
-> > > From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> > > 
-> > > dev_get_stats can now return error codes. Convert all remaining
-> > > call
-> > > sites to look at that error code and stop processing.
-> > > 
-> > > The effects of simulating a kernel error (returning -ENOMEM) upon
-> > > existing programs or kernel interfaces:
-> > > 
-> > > - ifconfig and "cat /proc/net/dev" print up until the interface
-> > > that
-> > >   failed, and there they return:
-> > > cat: read error: Cannot allocate memory
-> > > 
-> > > - ifstat and "ip -s -s link show":
-> > > RTNETLINK answers: Cannot allocate memory
-> > > Dump terminated
-> > > 
-> > > Some call sites are coming from a context that returns void
-> > > (ethtool
-> > > stats, workqueue context). So since we can't report to the upper
-> > > layer,
-> > > do the next best thing: print an error to the console.
-> > > 
-> > 
-> > another concern, one buggy netdev driver in a system will cause
-> > unnecessary global failures when reading stats via netlink/procfs
-> > for
-> > all the netdev in a netns, when other drivers will be happy to
-> > report.
-> > 
-> > can't we just show a message in that driver's stats line about the
-> > occurred err ? and show the normal stats line of all others ?
-> 
-> So you're worried that user space apps won't handle an error code
-> when
-> reading from a file, but you're not worried that they'll start
-> scraping
-> junk from procfs when we print this?
-> 
+On Tue. 12 Jan 2021 at 02:11, Richard Cochran <richardcochran@gmail.com> wrote:
+>
+> On Sun, Jan 10, 2021 at 09:49:03PM +0900, Vincent Mailhol wrote:
+> >   * The hardware rx timestamp of a local loopback message is the
+> >     hardware tx timestamp. This means that there are no needs to
+> >     implement SOF_TIMESTAMPING_TX_HARDWARE for CAN sockets.
+>
+> I can't agree with that statement.  The local loopback is a special
+> "feature" of CAN sockets, and some programs turn it off.  Furthermore,
+> requiring user space to handle CAN sockets differently WRT Tx time
+> stamps is user-unfriendly.  So I would strongly support adding
+> SOF_TIMESTAMPING_TX_HARDWARE to the CAN layer in the future.
+>
+> (This isn't a criticism of the current patch, though.)
 
-both are equivalently concerning.
-to avoid any user crashes, we can just toss failed netdevs out from the
-output.
+Fair enough. Implementing SOF_TIMESTAMPING_TX_HARDWARE would
+result into having the timestamp being duplicated for the
+loopback frames but allowing existing programs to work as
+with no modifications is a good enough reason.
 
-> cat /proc/net/dev
-> Inter-
-> |   Receive                                                |  Transmi
-> t
->  face |bytes    packets errs drop fifo frame compressed
-> multicast|bytes    packets errs drop fifo colls carrier compressed
->     lo:       0       0    0    0    0     0          0         0    
->     0       0    0    0    0     0       0          0
->  bond0: Cannot allocate memory
->  
-> sit0:       0       0    0    0    0     0          0         0      
->   0       0    0    0    0     0       0          0
+Out of curiosity, which programs do you use? I guess wireshark
+but please let me know if you use any other programs (I just use
+to write a small C program to do the stuff).
 
+Mark: do you want me to send a v4 of that patch with above
+comment removed or can you directly do the change in your testing
+branch?
+
+
+Yours sincerely,
+Vincent
