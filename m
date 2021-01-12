@@ -2,138 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 43B772F2B42
-	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 10:28:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 51A212F2B5E
+	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 10:35:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2403805AbhALJ1v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jan 2021 04:27:51 -0500
-Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:11346 "EHLO
-        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387783AbhALJ1u (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 04:27:50 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B5ffd6b6e0000>; Tue, 12 Jan 2021 01:27:10 -0800
-Received: from [172.27.12.183] (172.20.145.6) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 12 Jan
- 2021 09:27:07 +0000
-Subject: Re: [net-next 08/15] net/mlx5e: CT: Preparation for offloading
- +trk+new ct rules
-To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Roi Dayan <roid@nvidia.com>
-CC:     Saeed Mahameed <saeed@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        Paul Blakey <paulb@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-References: <20210108053054.660499-1-saeed@kernel.org>
- <20210108053054.660499-9-saeed@kernel.org>
- <20210108214812.GB3678@horizon.localdomain>
- <c11867d2-6fda-d77c-6b52-f4093c751379@nvidia.com>
- <218258b2-3a86-2d87-dfc6-8b3c1e274b26@nvidia.com>
- <20210111235116.GA2595@horizon.localdomain>
-From:   Oz Shlomo <ozsh@nvidia.com>
-Message-ID: <f25eee28-4c4a-9036-8c3d-d84b15a8b5e7@nvidia.com>
-Date:   Tue, 12 Jan 2021 11:27:04 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+        id S2405880AbhALJd5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jan 2021 04:33:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57892 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2392649AbhALJdz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 04:33:55 -0500
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3062CC061575
+        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 01:33:15 -0800 (PST)
+Received: by mail-lf1-x12d.google.com with SMTP id m12so2324889lfo.7
+        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 01:33:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=IqiZEbRQcwCtjD1LO6y+NMBTL0OXveAwwo9Y+0t4/Xg=;
+        b=J2CXhZ5hYfWH6CK+TGLl0DK1GDcUhb2Fz75Rz0HN3IRbADE90b2r2FKxLXk7FwxqIT
+         JQMGHoPxDU2yTR73FC3d+VS6iqUXFNZSMmFCD551yn4wEpjuXwPPLr1Uk2RXVzJXqmPH
+         aej/Z9fCEHyhnkCvtbE+kQ2RBtbuSe8W9NPJ6vEHJu2k5IFq1UUECen8tSsgrkW4KNdl
+         JrF7fER1yl0MyBGV7E75V5rtMZ4uokOMTf8TEOZk76eeEDIFWRDceshxdzBn0hMUj4d7
+         krFdABkh0G1Ss0/wtY8wkb9Pa71nZnrbqdIH8gSHwLC+HM1uXXDjHT51PPyqJPt7K0i/
+         f+4g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=IqiZEbRQcwCtjD1LO6y+NMBTL0OXveAwwo9Y+0t4/Xg=;
+        b=GdyJkATKvYhqmWghEaxc9PPKe2fHQuTBBvEmh4xXt+lmHr9COjFTFs371CHa5vLriO
+         oOIotq8wzOTAuwOZgW3IbXuP3ANL2cSTqWsfzsAr3nrXiYdE/QlIm28HlzUUdMbO8z4U
+         dbXOqmj7TCAEkTA4M5HkS5nLbTQHFt1FIXfyl7TqDqtWlZkdv5QHoC8xllp8FRsa+Eim
+         ow2Aj4PC1zOtnykltTWn/jQvIZ4UOYAblnXpJoRSHT0qPfgPCqTHmekMyMJaZOiLvaWS
+         pATyuXUA9v1vKY4KfD0Y0iy07pcGXb+jfv7/9/E1jF4n7NSTwgRq0wNAA/25KoEUkxnU
+         qtvw==
+X-Gm-Message-State: AOAM5321O3VVjDN8a5xowWKBTetZ9PzVeGWRL5AMaOn/76r4lYEDGWJo
+        EEfbaDt1hOyKGFAVtTo2KZx6KoM22cWL/MMYUNu9og==
+X-Google-Smtp-Source: ABdhPJyyXORht4jpPyJMKyduwAn/uvJKQn5+vRCiYXf3HRLBztOxZYK+F75neMbfn1F422xk8qRu2RxTtGYgbMXcOjc=
+X-Received: by 2002:a19:495b:: with SMTP id l27mr1662837lfj.451.1610443993417;
+ Tue, 12 Jan 2021 01:33:13 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20210111235116.GA2595@horizon.localdomain>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: quoted-printable
-X-Originating-IP: [172.20.145.6]
-X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
- HQMAIL107.nvidia.com (172.20.187.13)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1610443630; bh=m+1jTPunNoBDrWF+1ZU6ibPljI+fSAmAA9rDhmrQazE=;
-        h=Subject:To:CC:References:From:Message-ID:Date:User-Agent:
-         MIME-Version:In-Reply-To:Content-Type:Content-Language:
-         Content-Transfer-Encoding:X-Originating-IP:X-ClientProxiedBy;
-        b=jkzsCkx79MqozvwIsT6UMIXYlTbyZkndBt2q3v3joEqIubN05B1UwvmZoDS0e/TbP
-         H19+IaugX9hig5Hg5sv6FkZiMtAmg7BaX0hH5nHE1BZyrj93bZjKUkn/Vn1D6FuTaa
-         M/VB/VouwJY2BSLeE3yi+z5juH/9rkYY71hLeScn0ZmWPHRrx88mtiGffErpx2Wf7x
-         yqzcPoNWIKHfGXa990JZsGFqN5JssIXueLtb+eBI4bj6zPSGbCfggpd6zSWciKXq9I
-         UZelBaYtcKuEiAStnAMjGQyhm9Q+FeereP9T5Hq/AuGQ9G5qTvHo62UOVLJoCrZMbF
-         oVmrX4tNwvobA==
+References: <20201222102629.1335742-1-apusaka@google.com>
+In-Reply-To: <20201222102629.1335742-1-apusaka@google.com>
+From:   Archie Pusaka <apusaka@google.com>
+Date:   Tue, 12 Jan 2021 17:33:02 +0800
+Message-ID: <CAJQfnxFX0-uJG7Ds7Jxmyfpbq4EHWdEWW3=QqcXMOHu2oWT9Dg@mail.gmail.com>
+Subject: Re: [PATCH v5 0/5] MSFT offloading support for advertisement monitor
+To:     linux-bluetooth <linux-bluetooth@vger.kernel.org>,
+        Marcel Holtmann <marcel@holtmann.org>
+Cc:     CrosBT Upstreaming <chromeos-bluetooth-upstreaming@chromium.org>,
+        Archie Pusaka <apusaka@chromium.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johan Hedberg <johan.hedberg@gmail.com>,
+        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        "open list:NETWORKING [GENERAL]" <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi maintainers,
+
+Gentle ping to review this patch, thanks~!
+
+Regards,
+Archie
 
 
-On 1/12/2021 1:51 AM, Marcelo Ricardo Leitner wrote:
-> On Sun, Jan 10, 2021 at 09:52:55AM +0200, Roi Dayan wrote:
->>
->>
->> On 2021-01-10 9:45 AM, Roi Dayan wrote:
->>>
->>>
->>> On 2021-01-08 11:48 PM, Marcelo Ricardo Leitner wrote:
->>>> Hi,
->>>>
->>>> On Thu, Jan 07, 2021 at 09:30:47PM -0800, Saeed Mahameed wrote:
->>>>> From: Roi Dayan <roid@nvidia.com>
->>>>>
->>>>> Connection tracking associates the connection state per packet. The
->>>>> first packet of a connection is assigned with the +trk+new state. The
->>>>> connection enters the established state once a packet is seen on the
->>>>> other direction.
->>>>>
->>>>> Currently we offload only the established flows. However, UDP traffic
->>>>> using source port entropy (e.g. vxlan, RoCE) will never enter the
->>>>> established state. Such protocols do not require stateful processing,
->>>>> and therefore could be offloaded.
->>>>
->>>> If it doesn't require stateful processing, please enlight me on why
->>>> conntrack is being used in the first place. What's the use case here?
->>>>
->>>
->>> The use case for example is when we have vxlan traffic but we do
->>> conntrack on the inner packet (rules on the physical port) so
->>> we never get established but on miss we can still offload as normal
->>> vxlan traffic.
->>>
->>
->> my mistake about "inner packet". we do CT on the underlay network, i.e.
->> the outer header.
->=20
-> I miss why the CT match is being used there then. Isn't it a config
-> issue/waste of resources? What is CT adding to the matches/actions
-> being done on these flows?
->=20
-
-Consider a use case where the network port receives both east-west encapsul=
-ated traffic and=20
-north-south non-encapsulated traffic that requires NAT.
-
-One possible configuration is to first apply the CT-NAT action.
-Established north-south connections will successfully execute the nat actio=
-n and will set the +est=20
-ct state.
-However, the +new state may apply either for valid east-west traffic (e.g. =
-vxlan) due to source port=20
-entropy, or to insecure north-south traffic that the fw should block. The u=
-ser may distinguish=20
-between the two cases, for example, by matching on the dest udp port.
-
-
->>
->>>>>
->>>>> The change in the model is that a miss on the CT table will be forwar=
-ded
->>>>> to a new +trk+new ct table and a miss there will be forwarded to
->>>>> the slow
->>>>> path table.
->>>>
->>>> AFAICU this new +trk+new ct table is a wildcard match on sport with
->>>> specific dports. Also AFAICU, such entries will not be visible to the
->>>> userspace then. Is this right?
->>>>
->>>>  =C2=A0=C2=A0 Marcelo
->>>>
->>>
->>> right.
->=20
-> Thanks,
-> Marcelo
->=20
+On Tue, 22 Dec 2020 at 18:26, Archie Pusaka <apusaka@google.com> wrote:
+>
+> From: Archie Pusaka <apusaka@chromium.org>
+>
+>
+> Hi linux-bluetooth,
+>
+> This series of patches manages the hardware offloading part of MSFT
+> extension API. The full documentation can be accessed by this link:
+> https://docs.microsoft.com/en-us/windows-hardware/drivers/bluetooth/microsoft-defined-bluetooth-hci-commands-and-events
+>
+> Only four of the HCI commands are planned to be implemented:
+> HCI_VS_MSFT_Read_Supported_Features (implemented in previous patch),
+> HCI_VS_MSFT_LE_Monitor_Advertisement,
+> HCI_VS_MSFT_LE_Cancel_Monitor_Advertisement, and
+> HCI_VS_MSFT_LE_Set_Advertisement_Filter_Enable.
+> These are the commands which would be used for advertisement monitor
+> feature. Only if the controller supports the MSFT extension would
+> these commands be sent. Otherwise, software-based monitoring would be
+> performed in the user space instead.
+>
+> Thanks in advance for your feedback!
+>
+> Archie
+>
+> Changes in v5:
+> * Discard struct flags on msft_data and use it's members directly
+>
+> Changes in v4:
+> * Change the logic of merging add_adv_patterns_monitor with rssi
+> * Aligning variable declaration on mgmt.h
+> * Replacing the usage of BT_DBG with bt_dev_dbg
+>
+> Changes in v3:
+> * Flips the order of rssi and pattern_count on mgmt struct
+> * Fix return type of msft_remove_monitor
+>
+> Changes in v2:
+> * Add a new opcode instead of modifying an existing one
+> * Also implement the new MGMT opcode and merge the functionality with
+>   the old one.
+>
+> Archie Pusaka (5):
+>   Bluetooth: advmon offload MSFT add rssi support
+>   Bluetooth: advmon offload MSFT add monitor
+>   Bluetooth: advmon offload MSFT remove monitor
+>   Bluetooth: advmon offload MSFT handle controller reset
+>   Bluetooth: advmon offload MSFT handle filter enablement
+>
+>  include/net/bluetooth/hci_core.h |  34 ++-
+>  include/net/bluetooth/mgmt.h     |  16 ++
+>  net/bluetooth/hci_core.c         | 174 +++++++++---
+>  net/bluetooth/mgmt.c             | 391 +++++++++++++++++++-------
+>  net/bluetooth/msft.c             | 453 ++++++++++++++++++++++++++++++-
+>  net/bluetooth/msft.h             |  27 ++
+>  6 files changed, 963 insertions(+), 132 deletions(-)
+>
+> --
+> 2.29.2.729.g45daf8777d-goog
+>
