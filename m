@@ -2,93 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 870F92F34E1
-	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 17:00:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BA5C52F34E8
+	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 17:00:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405087AbhALP44 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jan 2021 10:56:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55746 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2392118AbhALP4z (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 10:56:55 -0500
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AFF4C0617A3;
-        Tue, 12 Jan 2021 07:56:13 -0800 (PST)
-Received: by mail-pl1-x632.google.com with SMTP id v3so1594503plz.13;
-        Tue, 12 Jan 2021 07:56:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=leu+iGWuFuIFoxOjAi3J0tECQ+RVSdVbKU6UoDrVBEE=;
-        b=kYg7ZEU5pZ8VZO2VglKcrqKeDz9dQQ7Olt0L/H6Ipz5VuI4W3LZ4y7tob4242FOCUq
-         xqW41+VCdiO8U3SC0OCTYgYJB0pvFgCjy+c0zxe7hX6BVS7WZp25zChg8Cf3dFnnj0Nj
-         HD8LiGdT2I/obZug9n5emjHW4fPqEO7sMArxLlfpQE7/x8qnjWQ9K2dDGgm5AWlE3na1
-         HXdhvGXo03uGwPVDOKZDuO6j/DP1Q984t5TPoGZhhbuBKukw9Wvg/gVwAVqX5okRbBoo
-         RrzHBVYe2BEIvU3uBBH/c+RKFBhm5hwVOrnTqoMkpn2TS8p+uuMcLhmcTlqxpySVxH5y
-         +5/Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=leu+iGWuFuIFoxOjAi3J0tECQ+RVSdVbKU6UoDrVBEE=;
-        b=Ic+WlDsBX2cmNyfuReo4xpJp4iNx73pCJTa4Kd7jxYf/kYYt8Btqd3loN93DRdlWds
-         S60qpxwOfjKil3xd/rhJHaCDNnN0VGbF0ckp8rQWMgqX/CrZRA+isH/O0x5IB7viAQ64
-         0JJTAWAWsZFdVh9kY4znpPBn7DGMFUbm/81waOWjxq0px170RsOZ/SxTn8rkdZNOJcXf
-         d8x3LcfJ9pPpFed3owOAHsYsp0Y8/JUywopNYENRQTlCiUPiyWQuiCsyW2OlU0YzJs56
-         X/Gp4ZAR4ZlGjZmRQJV0xT30Gr02bU+jdHmqrYJtkq/TnGcvKLAlONytL5oLkV31rV/F
-         XXdQ==
-X-Gm-Message-State: AOAM5338AMUV9g0DKNPzenq3es1K0vOHZ/hWbNIVIf1w4Jpczv+W4i7M
-        +b5oGDHtOHx6v38I8UadKfOzBVV4frLJjWrK0kI=
-X-Google-Smtp-Source: ABdhPJwDCERUgiqjqQjEwIe7miZDoAg0tvPatjrtE4R6uWtEgl+YrARvybZDy65egAgjMsYQB805yHLfdtLHfbnUlFo=
-X-Received: by 2002:a17:902:c244:b029:da:e63c:cede with SMTP id
- 4-20020a170902c244b02900dae63ccedemr82422plg.0.1610466973007; Tue, 12 Jan
- 2021 07:56:13 -0800 (PST)
-MIME-Version: 1.0
-References: <20210112134054.342-1-calvin.johnson@oss.nxp.com> <20210112134054.342-15-calvin.johnson@oss.nxp.com>
-In-Reply-To: <20210112134054.342-15-calvin.johnson@oss.nxp.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 12 Jan 2021 17:57:01 +0200
-Message-ID: <CAHp75VdAB=k10oLHbYEekbQAhOqnoVWHxN-gNW7zcayZxv0M7Q@mail.gmail.com>
-Subject: Re: [net-next PATCH v3 14/15] net: phylink: Refactor phylink_of_phy_connect()
-To:     Calvin Johnson <calvin.johnson@oss.nxp.com>
-Cc:     Grant Likely <grant.likely@arm.com>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Jeremy Linton <jeremy.linton@arm.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
-        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Pieter Jansen Van Vuuren <pieter.jansenvv@bamboosystems.io>,
-        Jon <jon@solid-run.com>,
-        Diana Madalina Craciun <diana.craciun@nxp.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        "linux.cj" <linux.cj@gmail.com>,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        id S2392171AbhALQAL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jan 2021 11:00:11 -0500
+Received: from mx2.suse.de ([195.135.220.15]:45076 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2392090AbhALQAK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 Jan 2021 11:00:10 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id C46DEABD6;
+        Tue, 12 Jan 2021 15:59:28 +0000 (UTC)
+Date:   Tue, 12 Jan 2021 16:59:28 +0100
+Message-ID: <s5h7doiqh7j.wl-tiwai@suse.de>
+From:   Takashi Iwai <tiwai@suse.de>
+To:     Kalle Valo <kvalo@codeaurora.org>
+Cc:     Michal Kubecek <mkubecek@suse.cz>, linux-wireless@vger.kernel.org,
+        Mordechay Goodstein <mordechay.goodstein@intel.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Arjen de Korte <suse+build@de-korte.org>,
+        Luca Coelho <luciano.coelho@intel.com>
+Subject: Re: regression in iwlwifi: page fault in iwl_dbg_tlv_alloc_region() (commit ba8f6f4ae254)
+In-Reply-To: <8735z6taya.fsf@codeaurora.org>
+References: <20201228115814.GA5880@lion.mk-sys.cz>
+        <87v9c2qtj9.fsf@tynnyri.adurom.net>
+        <s5ha6tes58m.wl-tiwai@suse.de>
+        <87v9c2ias2.fsf@codeaurora.org>
+        <s5h5z42s44x.wl-tiwai@suse.de>
+        <8735z6taya.fsf@codeaurora.org>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI/1.14.6 (Maruoka)
+ FLIM/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL/10.8 Emacs/25.3
+ (x86_64-suse-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI 1.14.6 - "Maruoka")
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 12, 2021 at 3:43 PM Calvin Johnson
-<calvin.johnson@oss.nxp.com> wrote:
->
-> Refactor phylink_of_phy_connect() to use phylink_fwnode_phy_connect().
+On Tue, 12 Jan 2021 16:46:21 +0100,
+Kalle Valo wrote:
+> 
+> Takashi Iwai <tiwai@suse.de> writes:
+> 
+> > On Tue, 12 Jan 2021 13:45:33 +0100,
+> > Kalle Valo wrote:
+> >> 
+> >> Takashi Iwai <tiwai@suse.de> writes:
+> >> 
+> >> > On Tue, 12 Jan 2021 12:33:14 +0100,
+> >> > Kalle Valo wrote:
+> >> >> 
+> >> >> (adding luca)
+> >> >> 
+> >> >> Michal Kubecek <mkubecek@suse.cz> writes:
+> >> >> 
+> >> >> > FYI, there is a regression in iwlwifi driver caused by commit
+> >> >> > ba8f6f4ae254 ("iwlwifi: dbg: add dumping special device memory")
+> >> >> > reported at
+> >> >> >
+> >> >> >   https://bugzilla.kernel.org/show_bug.cgi?id=210733
+> >> >> >   https://bugzilla.suse.com/show_bug.cgi?id=1180344
+> >> >> >
+> >> >> > The problem seems to be an attempt to write terminating null character
+> >> >> > into a string which may be read only. There is also a proposed fix.
+> >> >> 
+> >> >> Can someone submit a proper patch, please? See instructions below how to
+> >> >> submit.
+> >> >> 
+> >> >> And please add Fixes tag to the commit log:
+> >> >> 
+> >> >> Fixes: ba8f6f4ae254 ("iwlwifi: dbg: add dumping special device memory")
+> >> >
+> >> > OK, I'll do it for my own
+> >> 
+> >> Thanks.
+> >> 
+> >> > but really I hoped that someone would have reacted on the bugzilla
+> >> > report before the official patch submission. So far no one from the
+> >> > upstream devs showed interest in the bug at all, unfortunately.
+> >> 
+> >> Bugzilla is problematic as I don't know if anyone tracks it actively, at
+> >> least I don't have time for that. I recommend reporting all wireless
+> >> issues to mailing lists to make sure everyone see it.
+> >
+> > I share your feeling as a subsystem maintainer, but at the same time,
+> > I see it's a big problem if the whole bugzilla reports are just
+> > silently ignored.  If it's a void, shouldn't we rather shut it down?
+> 
+> I'm all for shutting down bugzilla.kernel.org as silent bug reports are
+> frustrating the users. But I don't know what others would think about
+> that, maybe some subsystems use it actively?
 
-Same Q as per previous patch. If it's indeed a bug in the existing
-code, should be fixed in a separate patch
+Yes, I'm still checking bugzilla.kernel.org for sound bug reports.
+Not always promptly reacting like the distro bugzilla, but it's
+regularly scanned and covered in the best effort basis.
 
--- 
-With Best Regards,
-Andy Shevchenko
+Graphics people already moved out of bugzilla to gitlab Issues in
+their own gitlab.freedesktop.org.  Not sure about others.
+
+> At least there should be a big warning for wireless bugs.
+
+Maybe we can ask Konstantin about that at least for wireless
+components?
+
+> > And, although a mailing list is fine to report via only some texts or
+> > some patches, it's not suitable to attach large logs or such, which is
+> > often essential for debugging.  Thanks to lore, the archivability is
+> > no longer a problem with ML recently, but the lack of data assignment
+> > is another problem, IMO.
+> 
+> Sure, I fully agree on the benefits of a bug tracker. The issue here is
+> the lack of people managing bug reports, not the tool.
+
+Yeah, it's not only about wireless but true in general: handling bug
+reports is a tough task and often annoying.  Moreover, everyone of
+course wants to believe that their driver is bug free :)
+
+
+Takashi
