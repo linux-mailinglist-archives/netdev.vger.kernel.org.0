@@ -2,36 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 262502F28C0
-	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 08:15:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F1332F28CB
+	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 08:15:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391921AbhALHPF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jan 2021 02:15:05 -0500
-Received: from mail.kernel.org ([198.145.29.99]:37664 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388596AbhALHPE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S2391915AbhALHPE (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Tue, 12 Jan 2021 02:15:04 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id DF57E22D06;
-        Tue, 12 Jan 2021 07:13:45 +0000 (UTC)
+Received: from mail.kernel.org ([198.145.29.99]:37666 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2388407AbhALHPE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 Jan 2021 02:15:04 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 7D44C22CF6;
+        Tue, 12 Jan 2021 07:13:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1610435626;
-        bh=m6jjF8CIJrv5Sle98gSrzR2yWnL6cpBnoG3HKr1TEDA=;
+        bh=mdwVSbRH5eEhxTjqaDtaoXYM4NwSCcLKgGfFHlIWcNA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oSoY2sGOPg/ntq35yjo9uxBvzVUIz+DCHJ1OEJOspVuXLoG3/JgSXWvJymhIuVPMp
-         uYPm6jj99kQV9/F0FPN/emF5I4CMzRVFnK6kT5k1rCHDpugL9a1McbAHO3QSjV5Cux
-         tmHGy3g4P1rxIcc2uGmZRMRHoE15EZ43oHXMulLzBdFXHC2sDHW4ZU1HfAtd/121nN
-         lIj5oLg58np82n1SFg6uNaDJ25m0ykYY7oGVKvTZRm2mMmqus4MXn2jSMyjHsrpLIF
-         hxO70iTaAvLjLh10iNPETJVfbNG+JQy3oB3btBVrZzIvW/F/hINqwdp2MwUW30AMd0
-         xNpljiU7IsgSQ==
+        b=H2TrVCsTJkUcn6Wl+Cpg+ZwC8nbaOLFURlxswNY6oERPEHp3PbCRZMqdCNbtYp5pS
+         Pr93u09JKVHD1YtFD9YWa/3nRjx/nIXuts/wCJyG/qEBtdoMdh8lWwiuDym2kVfJ0+
+         hRM9GfFPdGykji9oASQtEGJsRExNA9QDQ7RMuOHaG7qkkRsD+Osd4f9uqYstuQOUiF
+         mzTmOXUEruMZ09ijT8g38xSnY2z5XSgIdvAdtZeD+K6bcAAQf2itm0BIwAcr/IiEUN
+         yQWiehMeTjojBeqRVXMS2xl3efdjMMc8il4VQxzgy1485TiodU4Fdy0QeoN1ydAzJD
+         msYWOvsjhb5NA==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 Cc:     netdev@vger.kernel.org, Roi Dayan <roid@nvidia.com>,
         Oz Shlomo <ozsh@nvidia.com>, Paul Blakey <paulb@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next V2 05/11] net/mlx5e: CT: Pass null instead of zero spec
-Date:   Mon, 11 Jan 2021 23:05:28 -0800
-Message-Id: <20210112070534.136841-6-saeed@kernel.org>
+Subject: [net-next V2 06/11] net/mlx5e: Remove redundant initialization to null
+Date:   Mon, 11 Jan 2021 23:05:29 -0800
+Message-Id: <20210112070534.136841-7-saeed@kernel.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20210112070534.136841-1-saeed@kernel.org>
 References: <20210112070534.136841-1-saeed@kernel.org>
@@ -43,32 +43,37 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Roi Dayan <roid@nvidia.com>
 
-No need to pass zero spec to mlx5_add_flow_rules() as the
-function can handle null spec.
+miss_rule and prio_s args are not being referenced before assigned
+so there is no need to init them.
 
 Signed-off-by: Roi Dayan <roid@nvidia.com>
 Reviewed-by: Oz Shlomo <ozsh@nvidia.com>
 Reviewed-by: Paul Blakey <paulb@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/lib/fs_chains.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
-index 072363e73f1c..97bfc42e3913 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/tc_ct.c
-@@ -1241,9 +1241,8 @@ static int tc_ct_pre_ct_add_rules(struct mlx5_ct_ft *ct_ft,
- 	pre_ct->flow_rule = rule;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/lib/fs_chains.c b/drivers/net/ethernet/mellanox/mlx5/core/lib/fs_chains.c
+index fa61d305990c..381325b4a863 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/lib/fs_chains.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/lib/fs_chains.c
+@@ -538,13 +538,13 @@ mlx5_chains_create_prio(struct mlx5_fs_chains *chains,
+ 			u32 chain, u32 prio, u32 level)
+ {
+ 	int inlen = MLX5_ST_SZ_BYTES(create_flow_group_in);
+-	struct mlx5_flow_handle *miss_rule = NULL;
++	struct mlx5_flow_handle *miss_rule;
+ 	struct mlx5_flow_group *miss_group;
+ 	struct mlx5_flow_table *next_ft;
+ 	struct mlx5_flow_table *ft;
+-	struct prio *prio_s = NULL;
+ 	struct fs_chain *chain_s;
+ 	struct list_head *pos;
++	struct prio *prio_s;
+ 	u32 *flow_group_in;
+ 	int err;
  
- 	/* add miss rule */
--	memset(spec, 0, sizeof(*spec));
- 	dest.ft = nat ? ct_priv->ct_nat : ct_priv->ct;
--	rule = mlx5_add_flow_rules(ft, spec, &flow_act, &dest, 1);
-+	rule = mlx5_add_flow_rules(ft, NULL, &flow_act, &dest, 1);
- 	if (IS_ERR(rule)) {
- 		err = PTR_ERR(rule);
- 		ct_dbg("Failed to add pre ct miss rule zone %d", zone);
 -- 
 2.26.2
 
