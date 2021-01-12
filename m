@@ -2,30 +2,31 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 97E712F2D45
-	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 11:57:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 75E522F2D92
+	for <lists+netdev@lfdr.de>; Tue, 12 Jan 2021 12:09:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728959AbhALK5E (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jan 2021 05:57:04 -0500
-Received: from mail-40131.protonmail.ch ([185.70.40.131]:18630 "EHLO
-        mail-40131.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727794AbhALK5D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 05:57:03 -0500
-Date:   Tue, 12 Jan 2021 10:56:06 +0000
+        id S2390891AbhALLJ1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jan 2021 06:09:27 -0500
+Received: from mail-40133.protonmail.ch ([185.70.40.133]:30871 "EHLO
+        mail-40133.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727174AbhALLJZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 06:09:25 -0500
+Date:   Tue, 12 Jan 2021 11:08:35 +0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
-        t=1610448975; bh=o4WjqD8WRsgGX3zA0kQjiOkl+6TXdpW90sXH0o/3bao=;
+        t=1610449723; bh=9Pj0YAwWv/zYIG9LK/XF1RnE+W2Pai5Bl/8RQ1TEw0g=;
         h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
-        b=mpXD/HtGnvzYArAWrxjXJJC6+7EgBZTl4SI5oarD8YmnknRdQ+vrY3gRp6AQdaUHY
-         Eh8KFg8WnJg0Mpsv7OUGKokRP1CSj5arakiy47gN6YjJVgxPgUYNhFk76nJ5ykwUMG
-         +6tjYUIvWEXzS9jmtf8MBVsc9KKYPJsy3wyznQxmH4YnuRSbmL7GjHUV5YhSORarh7
-         JBfDQzq8jkWok3U67UA4H3b7aS+iZiCosw/h7oPNM0u32dSwJs5/KaFNG1pPDQJPXa
-         sF46v1qJO0+OzKzC/IDGUFEhdGSesX6P0wMquQqx7/h5CVeyQaxkr4WHzdceuO86DU
-         It+dsY+WdgkpA==
-To:     Eric Dumazet <edumazet@google.com>
+        b=YVqimRxGmPdGr1qE4VwCnwpP3KC1lGN44f6RR5Rm2gF5aYeTlgz6C25GwT2Nt6+Gz
+         tBvSsfkIdiXvniE6xTsuRJvpcv9t0srAcdVwO3h1gcQmDsG/TjEunpMCUNAVlndxPD
+         kaJU+DgcktAQPBNy7ukifvHAxLGrzDPQCSj+KpRab6WG10vfBcxcvEevW4Rkv4wXwG
+         DVi2ZlzxJYcEPD5sEokuQFEu2BagdGxkXfW9seZwp9R1z5CqQhW0g+08YbjB5qDwaC
+         PIvn4vXoK6UM/w+N1IlZ5k/KOBXjTxu+URBOQcBzN+ArRkLoQLW5o5mrcpl0JMGMV0
+         GYLqdaj7AYRCg==
+To:     Edward Cree <ecree.xilinx@gmail.com>
 From:   Alexander Lobakin <alobakin@pm.me>
 Cc:     Alexander Lobakin <alobakin@pm.me>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
         Edward Cree <ecree@solarflare.com>,
         Jonathan Lemon <jonathan.lemon@gmail.com>,
         Willem de Bruijn <willemb@google.com>,
@@ -33,14 +34,13 @@ Cc:     Alexander Lobakin <alobakin@pm.me>,
         Steffen Klassert <steffen.klassert@secunet.com>,
         Guillaume Nault <gnault@redhat.com>,
         Yadu Kishore <kyk.segfault@gmail.com>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
+        Al Viro <viro@zeniv.linux.org.uk>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Reply-To: Alexander Lobakin <alobakin@pm.me>
 Subject: Re: [PATCH net-next 0/5] skbuff: introduce skbuff_heads bulking and reusing
-Message-ID: <20210112105529.3592-1-alobakin@pm.me>
-In-Reply-To: <CANn89iKceTG_Mm4RrF+WVg-EEoFBD48gwpWX=GQiNdNnj2R8+A@mail.gmail.com>
-References: <20210111182655.12159-1-alobakin@pm.me> <CANn89iKceTG_Mm4RrF+WVg-EEoFBD48gwpWX=GQiNdNnj2R8+A@mail.gmail.com>
+Message-ID: <20210112110802.3914-1-alobakin@pm.me>
+In-Reply-To: <d4f4b6ba-fb3b-d873-23b2-4b5ba9cf4db8@gmail.com>
+References: <20210111182655.12159-1-alobakin@pm.me> <d4f4b6ba-fb3b-d873-23b2-4b5ba9cf4db8@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
@@ -53,57 +53,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
-Date: Tue, 12 Jan 2021 09:20:39 +0100
+From: Edward Cree <ecree.xilinx@gmail.com>
+Date: Tue, 12 Jan 2021 09:54:04 +0000
 
-> On Mon, Jan 11, 2021 at 7:27 PM Alexander Lobakin <alobakin@pm.me> wrote:
->>
->> Inspired by cpu_map_kthread_run() and _kfree_skb_defer() logics.
->>
->> Currently, all sorts of skb allocation always do allocate
->> skbuff_heads one by one via kmem_cache_alloc().
->> On the other hand, we have percpu napi_alloc_cache to store
->> skbuff_heads queued up for freeing and flush them by bulks.
->>
->> We can use this struct to cache and bulk not only freeing, but also
->> allocation of new skbuff_heads, as well as to reuse cached-to-free
->> heads instead of allocating the new ones.
->> As accessing napi_alloc_cache implies NAPI softirq context, do this
->> only for __napi_alloc_skb() and its derivatives (napi_alloc_skb()
->> and napi_get_frags()). The rough amount of their call sites are 69,
->> which is quite a number.
->>
->> iperf3 showed a nice bump from 910 to 935 Mbits while performing
->> UDP VLAN NAT on 1.2 GHz MIPS board. The boost is likely to be
->> way bigger on more powerful hosts and NICs with tens of Mpps.
->
-> What is the latency cost of these bulk allocations, and for TCP traffic
-> on which GRO is the norm ?
->
-> Adding caches is increasing cache foot print when the cache is populated.
->
-> I wonder if your iperf3 numbers are simply wrong because of lack of
-> GRO in this UDP VLAN NAT case.
+> Without wishing to weigh in on whether this caching is a good idea...
 
-Ah, I should've mentioned that I use UDP GRO Fraglists, so these
-numbers are for GRO.
+Well, we already have a cache to bulk flush "consumed" skbs, although
+kmem_cache_free() is generally lighter than kmem_cache_alloc(), and
+a page frag cache to allocate skb->head that is also bulking the
+operations, since it contains a (compound) page with the size of
+min(SZ_32K, PAGE_SIZE).
+If they wouldn't give any visible boosts, I think they wouldn't hit
+mainline.
 
-My board gives full 1 Gbps (link speed) for TCP for more than a year,
-so I can't really rely on TCP passthrough to measure the gains or
-regressions.
+> Wouldn't it be simpler, rather than having two separate "alloc" and "flus=
+h"
+>  caches, to have a single larger cache, such that whenever it becomes ful=
+l
+>  we bulk flush the top half, and when it's empty we bulk alloc the bottom
+>  half?  That should mean fewer branches, fewer instructions etc. than
+>  having to decide which cache to act upon every time.
 
-> We are adding a log of additional code, thus icache pressure, that
-> iperf3 tests can not really measure.
+I though about a unified cache, but couldn't decide whether to flush
+or to allocate heads and how much to process. Your suggestion answers
+these questions and generally seems great. I'll try that one, thanks!
 
-Not sure if MIPS arch can provide enough debug information to measure
-icache pressure, but I'll try to catch this.
-
-> Most linus devices simply handle one packet at a time (one packet per int=
-errupt)
-
-I disagree here, most modern NICs usually handle thousands of packets
-per single interrupt due to NAPI, hardware interrupt moderation and so
-on, at least in cases with high traffic load.
+> -ed
 
 Al
 
