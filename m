@@ -2,132 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CE372F4711
-	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 10:08:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 60FC82F474C
+	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 10:15:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727466AbhAMJDf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jan 2021 04:03:35 -0500
-Received: from mail-oo1-f44.google.com ([209.85.161.44]:33712 "EHLO
-        mail-oo1-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727037AbhAMJDe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 04:03:34 -0500
-Received: by mail-oo1-f44.google.com with SMTP id k7so347585ooa.0;
-        Wed, 13 Jan 2021 01:03:18 -0800 (PST)
+        id S1727665AbhAMJMr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jan 2021 04:12:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53442 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727387AbhAMJMq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 04:12:46 -0500
+Received: from mail-yb1-xb35.google.com (mail-yb1-xb35.google.com [IPv6:2607:f8b0:4864:20::b35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59CF9C061575;
+        Wed, 13 Jan 2021 01:12:06 -0800 (PST)
+Received: by mail-yb1-xb35.google.com with SMTP id k4so1507999ybp.6;
+        Wed, 13 Jan 2021 01:12:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:from:date:message-id:subject:to;
+        bh=+UISjrL550gfhmvw9AzjdNc0+nCeTUcmhmxQT8jwGJU=;
+        b=n8mHVnHZwJxlQMZgjIZo73AWm9QQ84X9tp+JYCWoBkCrdJYNY4bu2DgzJ9ZMKoYWMc
+         /OEYICE8Cc1jJKFrcn581XcoIYMs+mVOtsOvRF91IpiKmav6EUzvlJPrOT7ZlZuOu55j
+         jsdvUJohWo+zMLyhPrhWCwya5ByBcVvInvGuoBJ3nreFs0toUCICXV55CTMAdiEkZ/6f
+         wvE9Uf5TXhMsA5xHwmp1u2qRBtjWZ7u0bJpDzK4HA/8dvczW26QAFsvggtQ0RjO7RUFO
+         mehGCJkg9cIRSIzN3eIUVL6nn0XujnPWvNy8URrljvzJE5DbhNxfrMwttUErYBe3iSTE
+         Ep9A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=0P5oXwciG7rvWzFIp9uw4gFqSPn1af+OY8OLTrEVgSg=;
-        b=Z5clb8Dp9pEQ7pE5YxBbwCJkjgPzLxGAN80Rnqa/kR1ZpR+csjmliLcYhAXg6IuUM8
-         dBWpO3JmBjBTC32/JmEnubJyKlk9kV4exaLUAJQBiMrYcnLCZVSACr98PnSNWzzXrWr+
-         KAsC8lzp77VF8JtTtWtKu4AlLylb6LH2easl0XPVrVlqM//3AxVmbUZW0Qh8S7r50za0
-         AEU799iG8/2qtxl83JbvSJjLQK2QOlW4F1mpLyRd+Bsscphm2B3JSLdZPUGFkMPZNFaD
-         x0JOYe4OSe+FlbYDo87TVKO9qo5W0EmgoOh3H6+fnk50JC9R1CkemJfbi0DkONf/2aZ6
-         Mhdw==
-X-Gm-Message-State: AOAM532nQN91c/uQga+whCZi78l0MLdWL73gpT1wABdKgrHg2cYsJMaT
-        MYQf5EdIRb2pg6ym0IMEkbbMr7E5TmQTF7OmDG7zwbJeBYw=
-X-Google-Smtp-Source: ABdhPJxZ8b1O01Slp8YgOfIrQOdXZ1RkGQvggnEfMIOYHGBIozCu9m/bS5q+SWZZ3QaEoKRSzoS5eDJ12Pi8Dt0T+uw=
-X-Received: by 2002:a4a:ca14:: with SMTP id w20mr546580ooq.11.1610528573224;
- Wed, 13 Jan 2021 01:02:53 -0800 (PST)
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=+UISjrL550gfhmvw9AzjdNc0+nCeTUcmhmxQT8jwGJU=;
+        b=pX78VJz4q0Y+MHZZ5mMxXykwmI6eoXGdMhCOA+CEkmpo3Dxa2qXaoYxPOovxhnCp9a
+         B21c9h4AOORcDWtWgnMhgwZG7WkZ/IbOz0kW705Oc9pzRn6VqQ84xxVlyE7KpWx4R3ul
+         qjFJWsDVa4nTTmLNwNwCMh2Hr8zEY/+du8TqDyElXeL6Azqu1VycB+4eUSQX4sTQdzLq
+         Ny7NVBcc2Oh24bHFs3c0J2Z93cPnH+RL+4XhADqclxmGjzRJjsaNPjHeS4pGzbvNl1WQ
+         Cg2lN5vqYoSluKZvrGGyBSYfWYKbiD3y+uYKhCVO+3YDtl040giPq7gw0PL1CuW4O5AH
+         kafA==
+X-Gm-Message-State: AOAM533d03zk4oyH8FQOaH08x81eXsRjCmQiLN7y1VofmYUjukWacMUM
+        farptBegkyDm3IB1jYVfEPS/KIvozEIVviWW8Pc=
+X-Google-Smtp-Source: ABdhPJxHYJlNJ+tzU0vPiAhQXYN4nl9mQe3E1HlzQ3U/nyC0k0Foq0tAx2at32v+QjlKNlPoaA2Zsbwy00ZVA9dXp78=
+X-Received: by 2002:a25:880a:: with SMTP id c10mr1906156ybl.456.1610529125588;
+ Wed, 13 Jan 2021 01:12:05 -0800 (PST)
 MIME-Version: 1.0
-References: <20210104122415.1263541-1-geert+renesas@glider.be>
- <20210104145331.tlwjwbzey5i4vgvp@skbuf> <CAMuHMdUVsSuAur1wWkjs7FW5N-36XV9iXA6wmvst59eKoUFDHQ@mail.gmail.com>
- <20210104170112.hn6t3kojhifyuaf6@skbuf> <X/NNS3FUeSNxbqwo@lunn.ch>
- <X/NQ2fYdBygm3CYc@lunn.ch> <20210104184341.szvnl24wnfnxg4k7@skbuf>
- <alpine.DEB.2.22.394.2101051038550.302140@ramsan.of.borg> <X/RzRd0zXHzAqLDl@lunn.ch>
-In-Reply-To: <X/RzRd0zXHzAqLDl@lunn.ch>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 13 Jan 2021 10:02:42 +0100
-Message-ID: <CAMuHMdVhOWQiZNBmq8aH-pPS64AoFAEEHQTmVAsse2W4rxBuMA@mail.gmail.com>
-Subject: Re: [PATCH] [RFC] net: phy: Fix reboot crash if CONFIG_IP_PNP is not set
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+From:   =?UTF-8?B?5oWV5Yas5Lqu?= <mudongliangabcd@gmail.com>
+Date:   Wed, 13 Jan 2021 17:11:39 +0800
+Message-ID: <CAD-N9QWcdR5oxt2JJrEowPwddyNTZVfU5iSOXNV+cTy2+TKnuQ@mail.gmail.com>
+Subject: "KASAN: vmalloc-out-of-bounds Read in bpf_trace_run1/2/3/5" and "BUG:
+ unable to handle kernel paging request in bpf_trace_run1/2/3/4" should share
+ the same root cause
+To:     andriin@fb.com, ast@kernel.org, bpf@vger.kernel.org,
+        Daniel Borkmann <daniel@iogearbox.net>, davem@davemloft.net,
+        hawk@kernel.org, john.fastabend@gmail.com, kafai@fb.com,
+        kpsingh@chromium.org, kuba@kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>, mingo@redhat.com,
+        netdev@vger.kernel.org, rostedt@goodmis.org, songliubraving@fb.com,
+        yhs@fb.com, Dmitry Vyukov <dvyukov@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew,
+Hi developers,
 
-On Tue, Jan 5, 2021 at 3:10 PM Andrew Lunn <andrew@lunn.ch> wrote:
-> > I added a statically-linked ethtool binary to my initramfs, and can
-> > confirm that retrieving the PHY statistics does not access the PHY
-> > registers when the device is suspended:
-> >
-> >     # ethtool --phy-statistics eth0
-> >     no stats available
-> >     # ifconfig eth0 up
-> >     # ethtool --phy-statistics eth0
-> >     PHY statistics:
-> >        phy_receive_errors: 0
-> >        phy_idle_errors: 0
-> >     #
-> >
-> > In the past, we've gone to great lengths to avoid accessing the PHY
-> > registers when the device is suspended, usually in the statistics
-> > handling (see e.g. [1][2]).
->
-> I would argue that is the wrong approach. The PHY device is a
-> device. It has its own lifetime. You would not suspend a PCI bus
-> controller without first suspending all PCI devices on the bus etc.
+I found the following cases should share the same root cause:
 
-Makes sense.  So perhaps the PHY devices should become full citizens
-instead, and start using Runtime PM theirselves? Then the device
-framework will take care of it automatically through the devices'
-parent/child relations.
+BUG: unable to handle kernel paging request in bpf_trace_run1
+BUG: unable to handle kernel paging request in bpf_trace_run2
+BUG: unable to handle kernel paging request in bpf_trace_run3
+BUG: unable to handle kernel paging request in bpf_trace_run4
+KASAN: vmalloc-out-of-bounds Read in bpf_trace_run1
+KASAN: vmalloc-out-of-bounds Read in bpf_trace_run2
+KASAN: vmalloc-out-of-bounds Read in bpf_trace_run3
+KASAN: vmalloc-out-of-bounds Read in bpf_trace_run5
 
-This would be similar to e.g. commit 3a611e26e958b037 ("net/smsc911x:
-Add minimal runtime PM support"), but now for PHYs w.r.t. their parent
-network controller device, instead of for the network controller device
-w.r.t. its parent bus.
+The PoCs after minimization are almost the same except for the
+different tracepoint arguments.
+And the difference for "bpf_trace_run1/2/3/4/5" is due to the
+corresponding tracepoints -
+"ext4_mballoc_alloc"/"sys_enter"/"sched_switch"/"ext4_ext_show_extent"/"ext4_journal_start".
 
-> > +static int sh_mdiobb_read(struct mii_bus *bus, int phy, int reg)
-> > +{
-> > +     struct bb_info *bb = container_of(bus->priv, struct bb_info, ctrl);
->
-> mii_bus->parent should give you dev, so there is no need to add it to
-> bb_info.
+The underlying reason for those cases is the allocation failure in the
+following trace:
 
-OK.
+tracepoint_probe_unregister
+    tracepoint_remove_func
+        func_remove
+             allocate_probes
+                 kmalloc
 
-> > +     /* Wrap accessors with Runtime PM-aware ops */
-> > +     bitbang->read = mdp->mii_bus->read;
-> > +     bitbang->write = mdp->mii_bus->write;
-> > +     mdp->mii_bus->read = sh_mdiobb_read;
-> > +     mdp->mii_bus->write = sh_mdiobb_write;
->
-> I did wonder about just exporting the two functions so you can
-> directly call them.
+--
+My best regards to you.
 
-I did consider that. Do you prefer exporting the functions?
-
-> Otherwise, this looks good.
-
-Thanks. Do you want me to submit (with the above changed) as an interim
-solution?
-
-Note that the same issue seems to be present in the Renesas EtherAVB
-driver.  But that is more difficult to reproduce, as I don't have any arm32
-boards that use RAVB, and on arm64 register access while a device is
-suspended doesn't cause a crash, but continues silently without any effect.
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
--- 
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+     No System Is Safe!
+     Dongliang Mu
