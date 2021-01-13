@@ -2,107 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A4EF92F53A0
-	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 20:52:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 890532F53A2
+	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 20:52:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728721AbhAMTt6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jan 2021 14:49:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50102 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728555AbhAMTt5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 14:49:57 -0500
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BCB5C061575;
-        Wed, 13 Jan 2021 11:49:17 -0800 (PST)
-Received: by mail-ed1-x534.google.com with SMTP id i24so3233024edj.8;
-        Wed, 13 Jan 2021 11:49:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Hum8GyG3YMlF2j+bxEQbnrEJdDI8ZwOXjUuAUt+nY5o=;
-        b=nyp9gl2zbAqKPACHRjRmZ6TXdtLeiEsBNMwfT3WGY+fCYVRR+c1leQub87DsLVeJfq
-         9NWb113ao8Eu34k9t8uRuezckTJ/iJhhD1vXiY3bq3Z1RUns4FgxxA8vhShVZQC+gFD4
-         Xt5UnainWHnatCq2QeBDPdnpIAYN+lFPOpAgok7mZDkcKkwRs+OJWgbEOi+N43JWS3zM
-         MROQgfyGprzFpIoKPPOxBqD6sJFKkJwWeN7ckn72dcS/RMONnGn7EaZMHK2PdcBbSyoX
-         6kyYuFnIpRCW7mPzT+ptucYB832V5x4L7njN+eCOZUlfHZy/RmkBpy6lCl6LFCShJHSR
-         OTsg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Hum8GyG3YMlF2j+bxEQbnrEJdDI8ZwOXjUuAUt+nY5o=;
-        b=PeNZDDLivyIk6KnzkPXb+jHNC1XOMeJRnj4kerDjtuMtSYYJ4Ve74EKpy4ZlBiBF2S
-         DoTpRon8gN9f6siSlw3M835MgkwPE14xaee60BFgiVkUix16lYUybYfJrhP/XSwEorog
-         9uu4TOnqzu8em9I/YTjKXn83uew/ky1ARvnu4PU7X2KcAkvls89uv3gt5nHjtQ6pq4Zo
-         kPtEKmLPWwQoPgjaDqHtpKAUJzz5+ecQ/wpNIxWllI5JgwvyAixKvRzi1DRFzfjY6dQ4
-         mjk5O39G4rHgsyQoetQdm2b0TKo+tsnuSr99a71bKKRosta04gxBaYZijSCZ9Kj817uj
-         qomQ==
-X-Gm-Message-State: AOAM532uXkgvqrCkDDrdLJNn2Nx6yEeFq9aSi8FqOAGVG07MuBRERVo5
-        mSuVznt8OXDX+o6qQ0i20IJN7ceQpqI85M6gAukKQK46a2tWog==
-X-Google-Smtp-Source: ABdhPJyJaxgJMfUXIfDa3mHs8m3ahoENpeSe735GUb4ZErj5SmpdGwF3yo0BrKjfh5HDkbATF/1dB2+wWsP+ziud/8A=
-X-Received: by 2002:a05:6402:1c8a:: with SMTP id cy10mr3106450edb.151.1610567356100;
- Wed, 13 Jan 2021 11:49:16 -0800 (PST)
+        id S1728766AbhAMTuD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jan 2021 14:50:03 -0500
+Received: from mail.kernel.org ([198.145.29.99]:58818 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728512AbhAMTuC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 13 Jan 2021 14:50:02 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 4B808206C0;
+        Wed, 13 Jan 2021 19:49:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1610567362;
+        bh=liKrlxPQO3vjDSJyVqFsYCRIjwPMLfx+k+nniFEpqlU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=dTB4Oc5o260FgWHCxQiX8+qM0/Py4+y2rjBBS1eZrBMH5AJo3e67kAPdtn2cNMVzA
+         reD4hn2Faeq1CsTrB32fSG85T4OC5sGYlSLTaMuaGL0SAPajHY0q4jaqSE6zLhCaEU
+         JuXVnKjwCygLuwDYWuHt9VwgG0gGubAFq6jyt5lS8tWOYYvqsB/g4q2/BgH/0tmDiM
+         KbbF0zmWyNu3TLDPSwFUdcn2SnOBHdhbkIGVL7PAuJ+HPCRYEJeJoMVO310AFTmfMH
+         H4P5EJJg07VMql2QwSQelTnEabTEpz+B32wRSYm+EHlQm1hqO2g7YgBT90JYcIKW2i
+         jwxVyvIUToYJg==
+Date:   Wed, 13 Jan 2021 21:49:18 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Alex Williamson <alex.williamson@redhat.com>
+Cc:     Bjorn Helgaas <bhelgaas@google.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>, linux-pci@vger.kernel.org,
+        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
+        Don Dutile <ddutile@redhat.com>
+Subject: Re: [PATCH mlx5-next v1 1/5] PCI: Add sysfs callback to allow MSI-X
+ table size change of SR-IOV VFs
+Message-ID: <20210113194918.GJ4678@unreal>
+References: <20210110150727.1965295-1-leon@kernel.org>
+ <20210110150727.1965295-2-leon@kernel.org>
+ <20210113105052.43cf3c15@omen.home.shazbot.org>
 MIME-Version: 1.0
-References: <20210112214105.1440932-1-shakeelb@google.com> <20210112233108.GD99586@carbon.dhcp.thefacebook.com>
- <CAOFY-A3=mCvfvMYBJvDL1LfjgYgc3kzebRNgeg0F+e=E1hMPXA@mail.gmail.com>
- <20210112234822.GA134064@carbon.dhcp.thefacebook.com> <CAOFY-A2YbE3_GGq-QpVOHTmd=35Lt-rxi8gpXBcNVKvUzrzSNg@mail.gmail.com>
- <CALvZod4am_dNcj2+YZmraCj0+BYHB9PnQqKcrhiOnV8gzd+S3w@mail.gmail.com>
- <20210113184302.GA355124@carbon.dhcp.thefacebook.com> <CALvZod4V3M=P8_Z14asBG8bKa=mYic4_OPLeoz5M7J5tsx=Gug@mail.gmail.com>
-In-Reply-To: <CALvZod4V3M=P8_Z14asBG8bKa=mYic4_OPLeoz5M7J5tsx=Gug@mail.gmail.com>
-From:   Yang Shi <shy828301@gmail.com>
-Date:   Wed, 13 Jan 2021 11:49:02 -0800
-Message-ID: <CAHbLzkrqX9mJb0E_Y4Q76x=bZpg3RNxKa3k8cG_NiU+++1LWsQ@mail.gmail.com>
-Subject: Re: [PATCH] mm: net: memcg accounting for TCP rx zerocopy
-To:     Shakeel Butt <shakeelb@google.com>
-Cc:     Roman Gushchin <guro@fb.com>, Arjun Roy <arjunroy@google.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux MM <linux-mm@kvack.org>,
-        Cgroups <cgroups@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210113105052.43cf3c15@omen.home.shazbot.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 13, 2021 at 11:13 AM Shakeel Butt <shakeelb@google.com> wrote:
+On Wed, Jan 13, 2021 at 10:50:52AM -0700, Alex Williamson wrote:
+> On Sun, 10 Jan 2021 17:07:23 +0200
+> Leon Romanovsky <leon@kernel.org> wrote:
 >
-> On Wed, Jan 13, 2021 at 10:43 AM Roman Gushchin <guro@fb.com> wrote:
+> > From: Leon Romanovsky <leonro@nvidia.com>
 > >
-> > On Tue, Jan 12, 2021 at 04:18:44PM -0800, Shakeel Butt wrote:
-> > > On Tue, Jan 12, 2021 at 4:12 PM Arjun Roy <arjunroy@google.com> wrote:
-> > > >
-> > > > On Tue, Jan 12, 2021 at 3:48 PM Roman Gushchin <guro@fb.com> wrote:
-> > > > >
-> > > [snip]
-> > > > > Historically we have a corresponding vmstat counter to each charged page.
-> > > > > It helps with finding accounting/stastistics issues: we can check that
-> > > > > memory.current ~= anon + file + sock + slab + percpu + stack.
-> > > > > It would be nice to preserve such ability.
-> > > > >
-> > > >
-> > > > Perhaps one option would be to have it count as a file page, or have a
-> > > > new category.
-> > > >
-> > >
-> > > Oh these are actually already accounted for in NR_FILE_MAPPED.
+> > Extend PCI sysfs interface with a new callback that allows configure
+> > the number of MSI-X vectors for specific SR-IO VF. This is needed
+> > to optimize the performance of newly bound devices by allocating
+> > the number of vectors based on the administrator knowledge of targeted VM.
 > >
-> > Well, it's confusing. Can't we fix this by looking at the new page memcg flag?
->
-> Yes we can. I am inclined more towards just using NR_FILE_PAGES (as
-> Arjun suggested) instead of adding a new metric.
+> > This function is applicable for SR-IOV VF because such devices allocate
+> > their MSI-X table before they will run on the VMs and HW can't guess the
+> > right number of vectors, so the HW allocates them statically and equally.
+> >
+> > The newly added /sys/bus/pci/devices/.../vf_msix_vec file will be seen
+> > for the VFs and it is writable as long as a driver is not bounded to the VF.
+> >
+> > The values accepted are:
+> >  * > 0 - this will be number reported by the VF's MSI-X capability
+> >  * < 0 - not valid
+> >  * = 0 - will reset to the device default value
+> >
+> > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> > ---
+> >  Documentation/ABI/testing/sysfs-bus-pci | 20 ++++++++
+> >  drivers/pci/iov.c                       | 62 +++++++++++++++++++++++++
+> >  drivers/pci/msi.c                       | 29 ++++++++++++
+> >  drivers/pci/pci-sysfs.c                 |  1 +
+> >  drivers/pci/pci.h                       |  2 +
+> >  include/linux/pci.h                     |  8 +++-
+> >  6 files changed, 121 insertions(+), 1 deletion(-)
 
-IMHO I tend to agree with Roman, it sounds confusing. I'm not sure how
-people relies on the counter to have ballpark estimation about the
-amount of reclaimable memory for specific memcg, but they are
-unreclaimable. And, I don't think they are accounted to
-NR_ACTIVE_FILE/NR_INACTIVE_FILE, right? So, the disparity between
-NR_FILE_PAGES and NR_{IN}ACTIVE_FILE may be confusing either.
+<...>
 
+> > +/**
+> > + * pci_set_msix_vec_count - change the reported number of MSI-X vectors
+> > + * This function is applicable for SR-IOV VF because such devices allocate
+> > + * their MSI-X table before they will run on the VMs and HW can't guess the
+> > + * right number of vectors, so the HW allocates them statically and equally.
+> > + * @dev: VF device that is going to be changed
+> > + * @numb: amount of MSI-X vectors
+> > + **/
+> > +int pci_set_msix_vec_count(struct pci_dev *dev, int numb)
+> > +{
+> > +	struct pci_dev *pdev = pci_physfn(dev);
+> > +
+> > +	if (!dev->msix_cap || !pdev->msix_cap)
+> > +		return -EINVAL;
+> > +
+> > +	if (dev->driver || !pdev->driver ||
+> > +	    !pdev->driver->sriov_set_msix_vec_count)
+> > +		return -EOPNOTSUPP;
 >
+>
+> This seems racy, don't we need to hold device_lock on both the VF and
+> PF to avoid driver {un}binding races?  Does that happen implicitly
+> somewhere?  Thanks,
+
+Yes, you are right absolutely, pdev and dev are not protected here.
+
+Thanks
