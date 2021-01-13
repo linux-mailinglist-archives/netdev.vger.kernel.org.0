@@ -2,139 +2,322 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BA982F5112
-	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 18:25:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 79AAB2F5176
+	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 18:52:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727944AbhAMRYA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jan 2021 12:24:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46908 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726996AbhAMRX7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 12:23:59 -0500
-Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1030C061794;
-        Wed, 13 Jan 2021 09:23:19 -0800 (PST)
-Received: by mail-pl1-x62b.google.com with SMTP id t6so1453498plq.1;
-        Wed, 13 Jan 2021 09:23:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=9g+kWeLMWZfV/Z/hn8eRUUjpSyMfChsGZ3pxJD2wiic=;
-        b=W0sgfeCrZ+ij0fYkStN0wka1ShrAOcppEkG/qhiimvvg17lFULu7u69NMQHFu9V/IQ
-         JAcB1i/EsKEBhFWVKaHKLTonpv7CbjjQPMi0/rz4XEaY1MtyLCMhlZ4UvD37xwN3BavK
-         w4SVs8g3BSFHStSjvL/dl4f59AQmngHOiSGRlWE0ox9WULVs42SdELBRZVupj7iI+TS4
-         iilMp91KEwfO8tu92rAvP9xORfbmMHii3oJZ5ss6rJYCMoVdjOjdRqY/wDfXQpTL5+fe
-         Yqx+OJ2B4AeT65MIuFvjRzEv2lL9af2INzFSzO2thRPpCMn7EcelItN4xGedVbX7uaIQ
-         jn+w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=9g+kWeLMWZfV/Z/hn8eRUUjpSyMfChsGZ3pxJD2wiic=;
-        b=lfmsMQqBoHP/Et/KQGmhWDciP2dxhH1WdiICD1l5Lzfg8R/Xx+wFSsME9YE9cA3Eqz
-         Mry98aAKES1mZKqO/b2gCQo6JqRqGhxQWyCxpYmD+X31VZvZ230S+O7qINe/VC1MeDbN
-         OgZ1yctTy9ExCOVu1xG/bluYDIyau2E38bWelE0Schpe2lZ44WjgTBndxSd4mjIY1u8J
-         Cg0TbsNNSUXbYrfCmxQTgoSufCE9l3eT6g45facd66dG+Y67Ld6xvkz1V3ldBigF08MM
-         FqhanzPvdGPPCthRSRofJWP4rHO1gsglJtgEVKwoLTzKb/IEmS9DWrtbx8Itzp2mO1pl
-         AeJg==
-X-Gm-Message-State: AOAM530l0hTbZV5jaxJJmEMw3erzan2WsZf3+9LQO97WUzlOMw9EbQPV
-        LmisGjfO6HZJPBtG3sl2pN6ovy01Xk4=
-X-Google-Smtp-Source: ABdhPJzfq+QOyl/qv/5C1l+Jc+jDBhx2REFSnCTm89ny+UNjimJRYF1C6atDZLBW/ufMOeuP9ffZig==
-X-Received: by 2002:a17:90a:a60f:: with SMTP id c15mr308764pjq.53.1610558598803;
-        Wed, 13 Jan 2021 09:23:18 -0800 (PST)
-Received: from [10.67.48.230] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id d20sm40845951pjz.3.2021.01.13.09.23.15
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 13 Jan 2021 09:23:16 -0800 (PST)
-Subject: Re: [PATCH net 5/6] net: dsa: ksz: fix wrong pvid
-To:     Gilles DOFFE <gilles.doffe@savoirfairelinux.com>,
-        netdev@vger.kernel.org
-Cc:     Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org
-References: <cover.1610540603.git.gilles.doffe@savoirfairelinux.com>
- <4d34da2534c912e290d77d4296a4aa68229fd6e6.1610540603.git.gilles.doffe@savoirfairelinux.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
- mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
- xGlkaOSDuu09rxuW+69Y2f1TzjFuGpBk4ysWOR85O2Nx8AJ6fYGCoeTbovrNlGT1M9obSFGQ
- X3IzRnWoqlfudjTO5TKoqkbOgpYqIo5n1QbEjCCwCwCg3DOH/4ug2AUUlcIT9/l3pGvoRJ0E
- AICDzi3l7pmC5IWn2n1mvP5247urtHFs/uusE827DDj3K8Upn2vYiOFMBhGsxAk6YKV6IP0d
- ZdWX6fqkJJlu9cSDvWtO1hXeHIfQIE/xcqvlRH783KrihLcsmnBqOiS6rJDO2x1eAgC8meAX
- SAgsrBhcgGl2Rl5gh/jkeA5ykwbxA/9u1eEuL70Qzt5APJmqVXR+kWvrqdBVPoUNy/tQ8mYc
- nzJJ63ng3tHhnwHXZOu8hL4nqwlYHRa9eeglXYhBqja4ZvIvCEqSmEukfivk+DlIgVoOAJbh
- qIWgvr3SIEuR6ayY3f5j0f2ejUMYlYYnKdiHXFlF9uXm1ELrb0YX4GMHz7QnRmxvcmlhbiBG
- YWluZWxsaSA8Zi5mYWluZWxsaUBnbWFpbC5jb20+iGYEExECACYCGyMGCwkIBwMCBBUCCAME
- FgIDAQIeAQIXgAUCVF/S8QUJHlwd3wAKCRBhV5kVtWN2DvCVAJ4u4/bPF4P3jxb4qEY8I2gS
- 6hG0gACffNWlqJ2T4wSSn+3o7CCZNd7SLSC5BA0ESM+4EhAQAL/o09boR9D3Vk1Tt7+gpYr3
- WQ6hgYVON905q2ndEoA2J0dQxJNRw3snabHDDzQBAcqOvdi7YidfBVdKi0wxHhSuRBfuOppu
- pdXkb7zxuPQuSveCLqqZWRQ+Cc2QgF7SBqgznbe6Ngout5qXY5Dcagk9LqFNGhJQzUGHAsIs
- hap1f0B1PoUyUNeEInV98D8Xd/edM3mhO9nRpUXRK9Bvt4iEZUXGuVtZLT52nK6Wv2EZ1TiT
- OiqZlf1P+vxYLBx9eKmabPdm3yjalhY8yr1S1vL0gSA/C6W1o/TowdieF1rWN/MYHlkpyj9c
- Rpc281gAO0AP3V1G00YzBEdYyi0gaJbCEQnq8Vz1vDXFxHzyhgGz7umBsVKmYwZgA8DrrB0M
- oaP35wuGR3RJcaG30AnJpEDkBYHznI2apxdcuTPOHZyEilIRrBGzDwGtAhldzlBoBwE3Z3MY
- 31TOpACu1ZpNOMysZ6xiE35pWkwc0KYm4hJA5GFfmWSN6DniimW3pmdDIiw4Ifcx8b3mFrRO
- BbDIW13E51j9RjbO/nAaK9ndZ5LRO1B/8Fwat7bLzmsCiEXOJY7NNpIEpkoNoEUfCcZwmLrU
- +eOTPzaF6drw6ayewEi5yzPg3TAT6FV3oBsNg3xlwU0gPK3v6gYPX5w9+ovPZ1/qqNfOrbsE
- FRuiSVsZQ5s3AAMFD/9XjlnnVDh9GX/r/6hjmr4U9tEsM+VQXaVXqZuHKaSmojOLUCP/YVQo
- 7IiYaNssCS4FCPe4yrL4FJJfJAsbeyDykMN7wAnBcOkbZ9BPJPNCbqU6dowLOiy8AuTYQ48m
- vIyQ4Ijnb6GTrtxIUDQeOBNuQC/gyyx3nbL/lVlHbxr4tb6YkhkO6shjXhQh7nQb33FjGO4P
- WU11Nr9i/qoV8QCo12MQEo244RRA6VMud06y/E449rWZFSTwGqb0FS0seTcYNvxt8PB2izX+
- HZA8SL54j479ubxhfuoTu5nXdtFYFj5Lj5x34LKPx7MpgAmj0H7SDhpFWF2FzcC1bjiW9mjW
- HaKaX23Awt97AqQZXegbfkJwX2Y53ufq8Np3e1542lh3/mpiGSilCsaTahEGrHK+lIusl6mz
- Joil+u3k01ofvJMK0ZdzGUZ/aPMZ16LofjFA+MNxWrZFrkYmiGdv+LG45zSlZyIvzSiG2lKy
- kuVag+IijCIom78P9jRtB1q1Q5lwZp2TLAJlz92DmFwBg1hyFzwDADjZ2nrDxKUiybXIgZp9
- aU2d++ptEGCVJOfEW4qpWCCLPbOT7XBr+g/4H3qWbs3j/cDDq7LuVYIe+wchy/iXEJaQVeTC
- y5arMQorqTFWlEOgRA8OP47L9knl9i4xuR0euV6DChDrguup2aJVU4hPBBgRAgAPAhsMBQJU
- X9LxBQkeXB3fAAoJEGFXmRW1Y3YOj4UAn3nrFLPZekMeqX5aD/aq/dsbXSfyAKC45Go0YyxV
- HGuUuzv+GKZ6nsysJ7kCDQRXG8fwARAA6q/pqBi5PjHcOAUgk2/2LR5LjjesK50bCaD4JuNc
- YDhFR7Vs108diBtsho3w8WRd9viOqDrhLJTroVckkk74OY8r+3t1E0Dd4wHWHQZsAeUvOwDM
- PQMqTUBFuMi6ydzTZpFA2wBR9x6ofl8Ax+zaGBcFrRlQnhsuXLnM1uuvS39+pmzIjasZBP2H
- UPk5ifigXcpelKmj6iskP3c8QN6x6GjUSmYx+xUfs/GNVSU1XOZn61wgPDbgINJd/THGdqiO
- iJxCLuTMqlSsmh1+E1dSdfYkCb93R/0ZHvMKWlAx7MnaFgBfsG8FqNtZu3PCLfizyVYYjXbV
- WO1A23riZKqwrSJAATo5iTS65BuYxrFsFNPrf7TitM8E76BEBZk0OZBvZxMuOs6Z1qI8YKVK
- UrHVGFq3NbuPWCdRul9SX3VfOunr9Gv0GABnJ0ET+K7nspax0xqq7zgnM71QEaiaH17IFYGS
- sG34V7Wo3vyQzsk7qLf9Ajno0DhJ+VX43g8+AjxOMNVrGCt9RNXSBVpyv2AMTlWCdJ5KI6V4
- KEzWM4HJm7QlNKE6RPoBxJVbSQLPd9St3h7mxLcne4l7NK9eNgNnneT7QZL8fL//s9K8Ns1W
- t60uQNYvbhKDG7+/yLcmJgjF74XkGvxCmTA1rW2bsUriM533nG9gAOUFQjURkwI8jvMAEQEA
- AYkCaAQYEQIACQUCVxvH8AIbAgIpCRBhV5kVtWN2DsFdIAQZAQIABgUCVxvH8AAKCRCH0Jac
- RAcHBIkHD/9nmfog7X2ZXMzL9ktT++7x+W/QBrSTCTmq8PK+69+INN1ZDOrY8uz6htfTLV9+
- e2W6G8/7zIvODuHk7r+yQ585XbplgP0V5Xc8iBHdBgXbqnY5zBrcH+Q/oQ2STalEvaGHqNoD
- UGyLQ/fiKoLZTPMur57Fy1c9rTuKiSdMgnT0FPfWVDfpR2Ds0gpqWePlRuRGOoCln5GnREA/
- 2MW2rWf+CO9kbIR+66j8b4RUJqIK3dWn9xbENh/aqxfonGTCZQ2zC4sLd25DQA4w1itPo+f5
- V/SQxuhnlQkTOCdJ7b/mby/pNRz1lsLkjnXueLILj7gNjwTabZXYtL16z24qkDTI1x3g98R/
- xunb3/fQwR8FY5/zRvXJq5us/nLvIvOmVwZFkwXc+AF+LSIajqQz9XbXeIP/BDjlBNXRZNdo
- dVuSU51ENcMcilPr2EUnqEAqeczsCGpnvRCLfVQeSZr2L9N4svNhhfPOEscYhhpHTh0VPyxI
- pPBNKq+byuYPMyk3nj814NKhImK0O4gTyCK9b+gZAVvQcYAXvSouCnTZeJRrNHJFTgTgu6E0
- caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
- 6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
- M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <b0559d92-abcb-5754-f2e9-dfaa92989a85@gmail.com>
-Date:   Wed, 13 Jan 2021 09:23:14 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1728077AbhAMRw1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jan 2021 12:52:27 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:21431 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727560AbhAMRw1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 12:52:27 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1610560259;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=XJ4eBQpZbVGXMxVKRUFfIzF28RtG2WxV81QvTU+zyjc=;
+        b=JQJLXEgfo9eaJYWJzC1/vFrYiwDv/e1ePwWRk3jfyVK/pYHYHLX4VcQqkhISKAMkRdTczY
+        cZWEb/wID/6oUFDT6kPdy9YPC+PM5cMaERuDUFUGk9+MR8nDw0GEOJOHArAQJI5+zmU7P6
+        +pG1j8ysk9Lc8JadCi74NcnuBxiOWrU=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-557-Kd0oRvpyNcaV-Oa2TF5egA-1; Wed, 13 Jan 2021 12:50:55 -0500
+X-MC-Unique: Kd0oRvpyNcaV-Oa2TF5egA-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2181B107ACF7;
+        Wed, 13 Jan 2021 17:50:54 +0000 (UTC)
+Received: from omen.home.shazbot.org (ovpn-112-255.phx2.redhat.com [10.3.112.255])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 6297218A60;
+        Wed, 13 Jan 2021 17:50:53 +0000 (UTC)
+Date:   Wed, 13 Jan 2021 10:50:52 -0700
+From:   Alex Williamson <alex.williamson@redhat.com>
+To:     Leon Romanovsky <leon@kernel.org>
+Cc:     Bjorn Helgaas <bhelgaas@google.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>, linux-pci@vger.kernel.org,
+        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
+        Don Dutile <ddutile@redhat.com>
+Subject: Re: [PATCH mlx5-next v1 1/5] PCI: Add sysfs callback to allow MSI-X
+ table size change of SR-IOV VFs
+Message-ID: <20210113105052.43cf3c15@omen.home.shazbot.org>
+In-Reply-To: <20210110150727.1965295-2-leon@kernel.org>
+References: <20210110150727.1965295-1-leon@kernel.org>
+        <20210110150727.1965295-2-leon@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <4d34da2534c912e290d77d4296a4aa68229fd6e6.1610540603.git.gilles.doffe@savoirfairelinux.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/13/21 4:45 AM, Gilles DOFFE wrote:
-> A logical 'or' was performed until now.
-> So if vlan 1 is the current pvid and vlan 20 is set as the new one,
-> vlan 21 is the new pvid.
-> This commit fixes this by setting the right mask to set the new pvid.
-> 
-> Signed-off-by: Gilles DOFFE <gilles.doffe@savoirfairelinux.com>
+On Sun, 10 Jan 2021 17:07:23 +0200
+Leon Romanovsky <leon@kernel.org> wrote:
 
-Looks about right, can you provide a Fixes: tag for this change?
--- 
-Florian
+> From: Leon Romanovsky <leonro@nvidia.com>
+> 
+> Extend PCI sysfs interface with a new callback that allows configure
+> the number of MSI-X vectors for specific SR-IO VF. This is needed
+> to optimize the performance of newly bound devices by allocating
+> the number of vectors based on the administrator knowledge of targeted VM.
+> 
+> This function is applicable for SR-IOV VF because such devices allocate
+> their MSI-X table before they will run on the VMs and HW can't guess the
+> right number of vectors, so the HW allocates them statically and equally.
+> 
+> The newly added /sys/bus/pci/devices/.../vf_msix_vec file will be seen
+> for the VFs and it is writable as long as a driver is not bounded to the VF.
+> 
+> The values accepted are:
+>  * > 0 - this will be number reported by the VF's MSI-X capability
+>  * < 0 - not valid
+>  * = 0 - will reset to the device default value
+> 
+> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> ---
+>  Documentation/ABI/testing/sysfs-bus-pci | 20 ++++++++
+>  drivers/pci/iov.c                       | 62 +++++++++++++++++++++++++
+>  drivers/pci/msi.c                       | 29 ++++++++++++
+>  drivers/pci/pci-sysfs.c                 |  1 +
+>  drivers/pci/pci.h                       |  2 +
+>  include/linux/pci.h                     |  8 +++-
+>  6 files changed, 121 insertions(+), 1 deletion(-)
+> 
+> diff --git a/Documentation/ABI/testing/sysfs-bus-pci b/Documentation/ABI/testing/sysfs-bus-pci
+> index 25c9c39770c6..05e26e5da54e 100644
+> --- a/Documentation/ABI/testing/sysfs-bus-pci
+> +++ b/Documentation/ABI/testing/sysfs-bus-pci
+> @@ -375,3 +375,23 @@ Description:
+>  		The value comes from the PCI kernel device state and can be one
+>  		of: "unknown", "error", "D0", D1", "D2", "D3hot", "D3cold".
+>  		The file is read only.
+> +
+> +What:		/sys/bus/pci/devices/.../vf_msix_vec
+> +Date:		December 2020
+> +Contact:	Leon Romanovsky <leonro@nvidia.com>
+> +Description:
+> +		This file is associated with the SR-IOV VFs.
+> +		It allows configuration of the number of MSI-X vectors for
+> +		the VF. This is needed to optimize performance of newly bound
+> +		devices by allocating the number of vectors based on the
+> +		administrator knowledge of targeted VM.
+> +
+> +		The values accepted are:
+> +		 * > 0 - this will be number reported by the VF's MSI-X
+> +			 capability
+> +		 * < 0 - not valid
+> +		 * = 0 - will reset to the device default value
+> +
+> +		The file is writable if the PF is bound to a driver that
+> +		supports the ->sriov_set_msix_vec_count() callback and there
+> +		is no driver bound to the VF.
+> diff --git a/drivers/pci/iov.c b/drivers/pci/iov.c
+> index 4afd4ee4f7f0..42c0df4158d1 100644
+> --- a/drivers/pci/iov.c
+> +++ b/drivers/pci/iov.c
+> @@ -31,6 +31,7 @@ int pci_iov_virtfn_devfn(struct pci_dev *dev, int vf_id)
+>  	return (dev->devfn + dev->sriov->offset +
+>  		dev->sriov->stride * vf_id) & 0xff;
+>  }
+> +EXPORT_SYMBOL(pci_iov_virtfn_devfn);
+> 
+>  /*
+>   * Per SR-IOV spec sec 3.3.10 and 3.3.11, First VF Offset and VF Stride may
+> @@ -426,6 +427,67 @@ const struct attribute_group sriov_dev_attr_group = {
+>  	.is_visible = sriov_attrs_are_visible,
+>  };
+> 
+> +#ifdef CONFIG_PCI_MSI
+> +static ssize_t vf_msix_vec_show(struct device *dev,
+> +				struct device_attribute *attr, char *buf)
+> +{
+> +	struct pci_dev *pdev = to_pci_dev(dev);
+> +	int numb = pci_msix_vec_count(pdev);
+> +	struct pci_dev *pfdev;
+> +
+> +	if (numb < 0)
+> +		return numb;
+> +
+> +	pfdev = pci_physfn(pdev);
+> +	if (!pfdev->driver || !pfdev->driver->sriov_set_msix_vec_count)
+> +		return -EOPNOTSUPP;
+> +
+> +	return sprintf(buf, "%d\n", numb);
+> +}
+> +
+> +static ssize_t vf_msix_vec_store(struct device *dev,
+> +				 struct device_attribute *attr, const char *buf,
+> +				 size_t count)
+> +{
+> +	struct pci_dev *vf_dev = to_pci_dev(dev);
+> +	int val, ret;
+> +
+> +	ret = kstrtoint(buf, 0, &val);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = pci_set_msix_vec_count(vf_dev, val);
+> +	if (ret)
+> +		return ret;
+> +
+> +	return count;
+> +}
+> +static DEVICE_ATTR_RW(vf_msix_vec);
+> +#endif
+> +
+> +static struct attribute *sriov_vf_dev_attrs[] = {
+> +#ifdef CONFIG_PCI_MSI
+> +	&dev_attr_vf_msix_vec.attr,
+> +#endif
+> +	NULL,
+> +};
+> +
+> +static umode_t sriov_vf_attrs_are_visible(struct kobject *kobj,
+> +					  struct attribute *a, int n)
+> +{
+> +	struct device *dev = kobj_to_dev(kobj);
+> +
+> +	if (dev_is_pf(dev))
+> +		return 0;
+> +
+> +	return a->mode;
+> +}
+> +
+> +const struct attribute_group sriov_vf_dev_attr_group = {
+> +	.attrs = sriov_vf_dev_attrs,
+> +	.is_visible = sriov_vf_attrs_are_visible,
+> +};
+> +
+>  int __weak pcibios_sriov_enable(struct pci_dev *pdev, u16 num_vfs)
+>  {
+>  	return 0;
+> diff --git a/drivers/pci/msi.c b/drivers/pci/msi.c
+> index 3162f88fe940..20705ca94666 100644
+> --- a/drivers/pci/msi.c
+> +++ b/drivers/pci/msi.c
+> @@ -991,6 +991,35 @@ int pci_msix_vec_count(struct pci_dev *dev)
+>  }
+>  EXPORT_SYMBOL(pci_msix_vec_count);
+> 
+> +/**
+> + * pci_set_msix_vec_count - change the reported number of MSI-X vectors
+> + * This function is applicable for SR-IOV VF because such devices allocate
+> + * their MSI-X table before they will run on the VMs and HW can't guess the
+> + * right number of vectors, so the HW allocates them statically and equally.
+> + * @dev: VF device that is going to be changed
+> + * @numb: amount of MSI-X vectors
+> + **/
+> +int pci_set_msix_vec_count(struct pci_dev *dev, int numb)
+> +{
+> +	struct pci_dev *pdev = pci_physfn(dev);
+> +
+> +	if (!dev->msix_cap || !pdev->msix_cap)
+> +		return -EINVAL;
+> +
+> +	if (dev->driver || !pdev->driver ||
+> +	    !pdev->driver->sriov_set_msix_vec_count)
+> +		return -EOPNOTSUPP;
+
+
+This seems racy, don't we need to hold device_lock on both the VF and
+PF to avoid driver {un}binding races?  Does that happen implicitly
+somewhere?  Thanks,
+
+Alex
+
+> +
+> +	if (numb < 0)
+> +		/*
+> +		 * We don't support negative numbers for now,
+> +		 * but maybe in the future it will make sense.
+> +		 */
+> +		return -EINVAL;
+> +
+> +	return pdev->driver->sriov_set_msix_vec_count(dev, numb);
+> +}
+> +
+>  static int __pci_enable_msix(struct pci_dev *dev, struct msix_entry *entries,
+>  			     int nvec, struct irq_affinity *affd, int flags)
+>  {
+> diff --git a/drivers/pci/pci-sysfs.c b/drivers/pci/pci-sysfs.c
+> index fb072f4b3176..0af2222643c2 100644
+> --- a/drivers/pci/pci-sysfs.c
+> +++ b/drivers/pci/pci-sysfs.c
+> @@ -1557,6 +1557,7 @@ static const struct attribute_group *pci_dev_attr_groups[] = {
+>  	&pci_dev_hp_attr_group,
+>  #ifdef CONFIG_PCI_IOV
+>  	&sriov_dev_attr_group,
+> +	&sriov_vf_dev_attr_group,
+>  #endif
+>  	&pci_bridge_attr_group,
+>  	&pcie_dev_attr_group,
+> diff --git a/drivers/pci/pci.h b/drivers/pci/pci.h
+> index 5c59365092fa..1fd273077637 100644
+> --- a/drivers/pci/pci.h
+> +++ b/drivers/pci/pci.h
+> @@ -183,6 +183,7 @@ extern unsigned int pci_pm_d3hot_delay;
+> 
+>  #ifdef CONFIG_PCI_MSI
+>  void pci_no_msi(void);
+> +int pci_set_msix_vec_count(struct pci_dev *dev, int numb);
+>  #else
+>  static inline void pci_no_msi(void) { }
+>  #endif
+> @@ -502,6 +503,7 @@ resource_size_t pci_sriov_resource_alignment(struct pci_dev *dev, int resno);
+>  void pci_restore_iov_state(struct pci_dev *dev);
+>  int pci_iov_bus_range(struct pci_bus *bus);
+>  extern const struct attribute_group sriov_dev_attr_group;
+> +extern const struct attribute_group sriov_vf_dev_attr_group;
+>  #else
+>  static inline int pci_iov_init(struct pci_dev *dev)
+>  {
+> diff --git a/include/linux/pci.h b/include/linux/pci.h
+> index b32126d26997..a17cfc28eb66 100644
+> --- a/include/linux/pci.h
+> +++ b/include/linux/pci.h
+> @@ -856,6 +856,8 @@ struct module;
+>   *		e.g. drivers/net/e100.c.
+>   * @sriov_configure: Optional driver callback to allow configuration of
+>   *		number of VFs to enable via sysfs "sriov_numvfs" file.
+> + * @sriov_set_msix_vec_count: Driver callback to change number of MSI-X vectors
+> + *              exposed by the sysfs "vf_msix_vec" entry.
+>   * @err_handler: See Documentation/PCI/pci-error-recovery.rst
+>   * @groups:	Sysfs attribute groups.
+>   * @driver:	Driver model structure.
+> @@ -871,6 +873,7 @@ struct pci_driver {
+>  	int  (*resume)(struct pci_dev *dev);	/* Device woken up */
+>  	void (*shutdown)(struct pci_dev *dev);
+>  	int  (*sriov_configure)(struct pci_dev *dev, int num_vfs); /* On PF */
+> +	int  (*sriov_set_msix_vec_count)(struct pci_dev *vf, int msix_vec_count); /* On PF */
+>  	const struct pci_error_handlers *err_handler;
+>  	const struct attribute_group **groups;
+>  	struct device_driver	driver;
+> @@ -2057,7 +2060,6 @@ void __iomem *pci_ioremap_wc_bar(struct pci_dev *pdev, int bar);
+> 
+>  #ifdef CONFIG_PCI_IOV
+>  int pci_iov_virtfn_bus(struct pci_dev *dev, int id);
+> -int pci_iov_virtfn_devfn(struct pci_dev *dev, int id);
+> 
+>  int pci_enable_sriov(struct pci_dev *dev, int nr_virtfn);
+>  void pci_disable_sriov(struct pci_dev *dev);
+> @@ -2402,6 +2404,10 @@ static inline bool pci_is_thunderbolt_attached(struct pci_dev *pdev)
+>  void pci_uevent_ers(struct pci_dev *pdev, enum  pci_ers_result err_type);
+>  #endif
+> 
+> +#ifdef CONFIG_PCI_IOV
+> +int pci_iov_virtfn_devfn(struct pci_dev *dev, int vf_id);
+> +#endif
+> +
+>  /* Provide the legacy pci_dma_* API */
+>  #include <linux/pci-dma-compat.h>
+> 
+> --
+> 2.29.2
+> 
+
