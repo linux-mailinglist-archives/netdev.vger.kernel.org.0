@@ -2,181 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 70CC52F586A
-	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 04:02:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 56E7F2F585D
+	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 04:02:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727700AbhANCTC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jan 2021 21:19:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35550 "EHLO
+        id S1728492AbhANCSG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jan 2021 21:18:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728991AbhAMUyy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 15:54:54 -0500
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AEE7C061786;
-        Wed, 13 Jan 2021 12:52:31 -0800 (PST)
-Received: by mail-wm1-x32d.google.com with SMTP id c124so2790851wma.5;
-        Wed, 13 Jan 2021 12:52:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:references:subject:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=XzR+bZaWiVntItapmbJT7hixkAXKLBUEq7gHIsoczCo=;
-        b=Dh8muhmAKWVRALQMPwOWhXVAd4O40LKtqtcoiGaw58Im+vayl6yRd3SOxBUi0aCZPp
-         GYWW7ZHrnpd4gA9XUZkfMiPkhz9krKoUhUDB+25BSXZYC7prJqh6cVxhkpIHyp/7Q18N
-         s6KDAdG2E/o9XNfrbefb/YSqXeGNAAsIrF3g8yotju61avWPCO/Yob+JWkzJCf/NWPxH
-         mexpQ7rU5E7Kg3/10GBEzcflIdy++iJh6dbm1ptNiffnI72lp+skIcHDrURGdBTCVfIL
-         LFYEmX0sohItYtHK5pn3DCMpelbz+FiKT+8I1QUXugRPLULKT/mc2uRbHSdGYcIvC7qS
-         vYAg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:references:subject:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=XzR+bZaWiVntItapmbJT7hixkAXKLBUEq7gHIsoczCo=;
-        b=Sr8XXqXD6W85XdIJHTcvqpPXMDRHjcebU+f+rmOzGvaltLerd7L6Z2AfpyaqmFhdhL
-         OkBwUm2GhhRqKhiN8xEW0zCUmhZZeYUoZz0Jdw4AIYj6vRQW+jVjcHScmEvowo86Q4PM
-         VpVCRiE9ABb+co+DNPbpcFrqnnOAdGOtzn56Lygt0rSSPF3B7us7TVQDEwZxHCg5xwCa
-         tTdaSiOP+bcbJC98U7EXmqHc7Y44SLRS7jWnjqY6/Yyxl7x0h9WoCNK7jA/hLv6EOmaQ
-         noQv7Vj4pt3FVc/VSlKI08f+wB6dY3nc/AZCpn3uU1XnXeHpZLk9XisXiD1RrRrXHH2g
-         5L2g==
-X-Gm-Message-State: AOAM531nuztABtYAg8WBeWpvuKO1vT7DK+PcO69rUFJVaGS/Vgb8WLj7
-        HtAE6EfVwvbs2PGGzhq/At6yJXC0u7E=
-X-Google-Smtp-Source: ABdhPJxkGmBTESYXWorIndm/GuiGjUhdjyALJag8TFWm+IY7xSWtIlt21TomtfAHyuWb0u90wZkehw==
-X-Received: by 2002:a7b:c849:: with SMTP id c9mr907463wml.11.1610571149816;
-        Wed, 13 Jan 2021 12:52:29 -0800 (PST)
-Received: from ?IPv6:2003:ea:8f06:5500:391b:9f3f:c40b:cb6d? (p200300ea8f065500391b9f3fc40bcb6d.dip0.t-ipconnect.de. [2003:ea:8f06:5500:391b:9f3f:c40b:cb6d])
-        by smtp.googlemail.com with ESMTPSA id x66sm4686731wmg.26.2021.01.13.12.52.28
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 13 Jan 2021 12:52:29 -0800 (PST)
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-To:     Bjorn Helgaas <helgaas@kernel.org>,
-        Lennert Buytenhek <kernel@wantstofly.org>,
-        Russell King - ARM Linux <linux@armlinux.org.uk>
-Cc:     Bjorn Helgaas <bhelgaas@google.com>,
-        Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <20210106192233.GA1329080@bjorn-Precision-5520>
- <768d90a3-93ea-1f4e-f4e0-e039933bc17b@gmail.com>
-Subject: Re: [PATCH v3 1/3] PCI: Disable parity checking if broken_parity is
- set
-Message-ID: <8e9c5b3a-f239-8d8d-08e5-015ec38dd3a0@gmail.com>
-Date:   Wed, 13 Jan 2021 21:52:23 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
+        with ESMTP id S1728793AbhAMVNl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 16:13:41 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 210D6C061786
+        for <netdev@vger.kernel.org>; Wed, 13 Jan 2021 13:14:18 -0800 (PST)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1kznT6-0001Q1-M9
+        for netdev@vger.kernel.org; Wed, 13 Jan 2021 22:14:16 +0100
+Received: from dspam.blackshift.org (localhost [127.0.0.1])
+        by bjornoya.blackshift.org (Postfix) with SMTP id 6ED115C3013
+        for <netdev@vger.kernel.org>; Wed, 13 Jan 2021 21:14:13 +0000 (UTC)
+Received: from hardanger.blackshift.org (unknown [172.20.34.65])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id C955F5C2FF9;
+        Wed, 13 Jan 2021 21:14:11 +0000 (UTC)
+Received: from blackshift.org (localhost [::1])
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id b3163a16;
+        Wed, 13 Jan 2021 21:14:11 +0000 (UTC)
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
+        kernel@pengutronix.de
+Subject: pull-request: can-next 2021-01-13
+Date:   Wed, 13 Jan 2021 22:13:53 +0100
+Message-Id: <20210113211410.917108-1-mkl@pengutronix.de>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-In-Reply-To: <768d90a3-93ea-1f4e-f4e0-e039933bc17b@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 06.01.2021 20:34, Heiner Kallweit wrote:
-> On 06.01.2021 20:22, Bjorn Helgaas wrote:
->> On Wed, Jan 06, 2021 at 06:50:22PM +0100, Heiner Kallweit wrote:
->>> If we know that a device has broken parity checking, then disable it.
->>> This avoids quirks like in r8169 where on the first parity error
->>> interrupt parity checking will be disabled if broken_parity_status
->>> is set. Make pci_quirk_broken_parity() public so that it can be used
->>> by platform code, e.g. for Thecus N2100.
->>>
->>> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
->>> Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
->>
->> Acked-by: Bjorn Helgaas <bhelgaas@google.com>
->>
->> This series should all go together.  Let me know if you want me to do
->> anything more (would require acks for arm and r8169, of course).
->>
-> Right. For r8169 I'm the maintainer myself and agreed with Jakub that
-> the r8169 patch will go through the PCI tree.
-> 
-> Regarding the arm/iop32x part:
-> MAINTAINERS file lists Lennert as maintainer, let me add him.
-> Strange thing is that the MAINTAINERS entry for arm/iop32x has no
-> F entry, therefore the get_maintainers scripts will never list him
-> as addressee. The script lists Russell as "odd fixer".
-> @Lennert: Please provide a patch to add the missing F entry.
-> 
-> ARM/INTEL IOP32X ARM ARCHITECTURE
-> M:	Lennert Buytenhek <kernel@wantstofly.org>
-> L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
-> S:	Maintained
-> 
+Hello Jakub, hello David,
 
-Bjorn, I saw that you set the series to "not applicable". Is this because
-of the missing ack for the arm part?
-I checked and Lennert's last kernel contribution is from 2015. Having said
-that the maintainer's entry may be outdated. Not sure who else would be
-entitled to ack this patch. The change is simple enough, could you take
-it w/o an ack? 
-Alternatively, IIRC Russell has got such a device. Russell, would it
-be possible that you test that there's still no false-positive parity
-errors with this series?
+this is a pull request of 17 patches for net-next/master.
 
+The first two patches update the MAINTAINERS file, Lukas Bulwahn's patch fixes
+the files entry for the tcan4x5x driver, which was broken by me in net-next.
+A patch by me adds the a missing header file to the CAN Networking Layer.
 
-> 
->>> ---
->>>  drivers/pci/quirks.c | 17 +++++++++++------
->>>  include/linux/pci.h  |  2 ++
->>>  2 files changed, 13 insertions(+), 6 deletions(-)
->>>
->>> diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
->>> index 653660e3b..ab54e26b8 100644
->>> --- a/drivers/pci/quirks.c
->>> +++ b/drivers/pci/quirks.c
->>> @@ -205,17 +205,22 @@ static void quirk_mmio_always_on(struct pci_dev *dev)
->>>  DECLARE_PCI_FIXUP_CLASS_EARLY(PCI_ANY_ID, PCI_ANY_ID,
->>>  				PCI_CLASS_BRIDGE_HOST, 8, quirk_mmio_always_on);
->>>  
->>> +void pci_quirk_broken_parity(struct pci_dev *dev)
->>> +{
->>> +	u16 cmd;
->>> +
->>> +	dev->broken_parity_status = 1;	/* This device gives false positives */
->>> +	pci_read_config_word(dev, PCI_COMMAND, &cmd);
->>> +	pci_write_config_word(dev, PCI_COMMAND, cmd & ~PCI_COMMAND_PARITY);
->>> +}
->>> +
->>>  /*
->>>   * The Mellanox Tavor device gives false positive parity errors.  Mark this
->>>   * device with a broken_parity_status to allow PCI scanning code to "skip"
->>>   * this now blacklisted device.
->>>   */
->>> -static void quirk_mellanox_tavor(struct pci_dev *dev)
->>> -{
->>> -	dev->broken_parity_status = 1;	/* This device gives false positives */
->>> -}
->>> -DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_MELLANOX, PCI_DEVICE_ID_MELLANOX_TAVOR, quirk_mellanox_tavor);
->>> -DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_MELLANOX, PCI_DEVICE_ID_MELLANOX_TAVOR_BRIDGE, quirk_mellanox_tavor);
->>> +DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_MELLANOX, PCI_DEVICE_ID_MELLANOX_TAVOR, pci_quirk_broken_parity);
->>> +DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_MELLANOX, PCI_DEVICE_ID_MELLANOX_TAVOR_BRIDGE, pci_quirk_broken_parity);
->>>  
->>>  /*
->>>   * Deal with broken BIOSes that neglect to enable passive release,
->>> diff --git a/include/linux/pci.h b/include/linux/pci.h
->>> index b32126d26..161dcc474 100644
->>> --- a/include/linux/pci.h
->>> +++ b/include/linux/pci.h
->>> @@ -1916,6 +1916,8 @@ enum pci_fixup_pass {
->>>  	pci_fixup_suspend_late,	/* pci_device_suspend_late() */
->>>  };
->>>  
->>> +void pci_quirk_broken_parity(struct pci_dev *dev);
->>> +
->>>  #ifdef CONFIG_HAVE_ARCH_PREL32_RELOCATIONS
->>>  #define __DECLARE_PCI_FIXUP_SECTION(sec, name, vendor, device, class,	\
->>>  				    class_shift, hook)			\
->>> -- 
->>> 2.30.0
->>>
->>>
->>>
-> 
+The next 5 patches are by me and split the the CAN driver related
+infrastructure code into more files in a separate subdir. The next two patches
+by me clean up the CAN length related code. This is followed by 6 patches by
+Vincent Mailhol and me, they add helper code for for CAN frame length
+calculation neede for BQL support.
+
+A patch by Vincent Mailhol adds software TX timestamp support.
+
+The last patch is by me, targets the tcan4x5x driver, and removes the unneeded
+__packed attribute from the struct tcan4x5x_map_buf.
+
+regards,
+Marc
+
+---
+
+The following changes since commit f50e2f9f791647aa4e5b19d0064f5cabf630bf6e:
+
+  hci: llc_shdlc: style: Simplify bool comparison (2021-01-12 20:18:30 -0800)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can-next.git tags/linux-can-next-for-5.12-20210113
+
+for you to fetch changes up to b42e45a913f2ae76807e656a1c053808d7d34352:
+
+  can: tcan4x5x: remove __packed attribute from struct tcan4x5x_map_buf (2021-01-13 21:48:28 +0100)
+
+----------------------------------------------------------------
+linux-can-next-for-5.12-20210113
+
+----------------------------------------------------------------
+Lukas Bulwahn (1):
+      MAINTAINERS: adjust entry to tcan4x5x file split
+
+Marc Kleine-Budde (13):
+      MAINTAINERS: CAN network layer: add missing header file can-ml.h
+      can: dev: move driver related infrastructure into separate subdir
+      can: dev: move bittiming related code into seperate file
+      can: dev: move length related code into seperate file
+      can: dev: move skb related into seperate file
+      can: dev: move netlink related code into seperate file
+      can: length: convert to kernel coding style
+      can: length: can_fd_len2dlc(): simplify length calculcation
+      can: length: canfd_sanitize_len(): add function to sanitize CAN-FD data length
+      can: dev: extend struct can_skb_priv to hold CAN frame length
+      can: dev: can_get_echo_skb(): extend to return can frame length
+      can: dev: can_rx_offload_get_echo_skb(): extend to return can frame length
+      can: tcan4x5x: remove __packed attribute from struct tcan4x5x_map_buf
+
+Vincent Mailhol (3):
+      can: length: can_skb_get_frame_len(): introduce function to get data length of frame in data link layer
+      can: dev: can_put_echo_skb(): extend to handle frame_len
+      can: dev: can_put_echo_skb(): add software tx timestamps
+
+ MAINTAINERS                                       |    5 +-
+ drivers/net/can/Makefile                          |    7 +-
+ drivers/net/can/at91_can.c                        |    4 +-
+ drivers/net/can/c_can/c_can.c                     |    4 +-
+ drivers/net/can/cc770/cc770.c                     |    4 +-
+ drivers/net/can/dev.c                             | 1338 ---------------------
+ drivers/net/can/dev/Makefile                      |   11 +
+ drivers/net/can/dev/bittiming.c                   |  261 ++++
+ drivers/net/can/dev/dev.c                         |  467 +++++++
+ drivers/net/can/dev/length.c                      |   90 ++
+ drivers/net/can/dev/netlink.c                     |  379 ++++++
+ drivers/net/can/{ => dev}/rx-offload.c            |    5 +-
+ drivers/net/can/dev/skb.c                         |  231 ++++
+ drivers/net/can/flexcan.c                         |    7 +-
+ drivers/net/can/grcan.c                           |    4 +-
+ drivers/net/can/ifi_canfd/ifi_canfd.c             |    4 +-
+ drivers/net/can/kvaser_pciefd.c                   |    6 +-
+ drivers/net/can/m_can/m_can.c                     |    8 +-
+ drivers/net/can/m_can/tcan4x5x.h                  |    2 +-
+ drivers/net/can/mscan/mscan.c                     |    4 +-
+ drivers/net/can/pch_can.c                         |    4 +-
+ drivers/net/can/peak_canfd/peak_canfd.c           |    4 +-
+ drivers/net/can/rcar/rcar_can.c                   |    4 +-
+ drivers/net/can/rcar/rcar_canfd.c                 |    4 +-
+ drivers/net/can/sja1000/sja1000.c                 |    4 +-
+ drivers/net/can/softing/softing_main.c            |    4 +-
+ drivers/net/can/spi/hi311x.c                      |    4 +-
+ drivers/net/can/spi/mcp251x.c                     |    4 +-
+ drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c    |    4 +-
+ drivers/net/can/sun4i_can.c                       |    4 +-
+ drivers/net/can/ti_hecc.c                         |    4 +-
+ drivers/net/can/usb/ems_usb.c                     |    4 +-
+ drivers/net/can/usb/esd_usb2.c                    |    4 +-
+ drivers/net/can/usb/gs_usb.c                      |    4 +-
+ drivers/net/can/usb/kvaser_usb/kvaser_usb_core.c  |    2 +-
+ drivers/net/can/usb/kvaser_usb/kvaser_usb_hydra.c |    2 +-
+ drivers/net/can/usb/kvaser_usb/kvaser_usb_leaf.c  |    2 +-
+ drivers/net/can/usb/mcba_usb.c                    |    4 +-
+ drivers/net/can/usb/peak_usb/pcan_usb_core.c      |    4 +-
+ drivers/net/can/usb/ucan.c                        |    4 +-
+ drivers/net/can/usb/usb_8dev.c                    |    4 +-
+ drivers/net/can/xilinx_can.c                      |    6 +-
+ include/linux/can/bittiming.h                     |   44 +
+ include/linux/can/dev.h                           |  135 +--
+ include/linux/can/length.h                        |  174 +++
+ include/linux/can/rx-offload.h                    |    3 +-
+ include/linux/can/skb.h                           |   80 ++
+ 47 files changed, 1819 insertions(+), 1542 deletions(-)
+ delete mode 100644 drivers/net/can/dev.c
+ create mode 100644 drivers/net/can/dev/Makefile
+ create mode 100644 drivers/net/can/dev/bittiming.c
+ create mode 100644 drivers/net/can/dev/dev.c
+ create mode 100644 drivers/net/can/dev/length.c
+ create mode 100644 drivers/net/can/dev/netlink.c
+ rename drivers/net/can/{ => dev}/rx-offload.c (98%)
+ create mode 100644 drivers/net/can/dev/skb.c
+ create mode 100644 include/linux/can/bittiming.h
+ create mode 100644 include/linux/can/length.h
+
 
