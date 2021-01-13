@@ -2,239 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1248C2F4478
-	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 07:20:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A17A2F44AD
+	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 07:52:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725871AbhAMGT4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jan 2021 01:19:56 -0500
-Received: from mail.kernel.org ([198.145.29.99]:45030 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725747AbhAMGTz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 13 Jan 2021 01:19:55 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 3412C23120;
-        Wed, 13 Jan 2021 06:19:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610518754;
-        bh=5d5LwY0RUorQfhuQ6vAe0Wzb9pYjAYwXQdLfgnpn5v4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=s29t29Sp3LNhVfrNYjNyNtqX7LBSCJFd/dofHpQ/QvqfdtPXjJzlc3SE1fjf3PJh/
-         JyR0k5ZtYTFRBQiPp+tscI7A7244Ui8OPe3c7Xto9rtPqfWnZuaEOS9eAUVC16l8ex
-         Ayxf90mpi8CpfS+IHOhcrzhlOww8wfsZc4EhHY17PklwwVIsQDBvB0mfb1EM6SoPuR
-         zzhqqbLgJxXS5CkTg7XGJM5zR2qBIxb9UCV0w11QTZ11F8pcjgvOt25NJ+7HKNKbKq
-         bO6IPhRGH6yTN0OUz31JFFDfSjHDZQUEhKTD/23J2qqN0fysWCDJjqqZDU4fHTWyBS
-         dcZTcJDsGZrkA==
-Date:   Wed, 13 Jan 2021 08:19:09 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Alexander Duyck <alexander.duyck@gmail.com>
-Cc:     Bjorn Helgaas <bhelgaas@google.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-pci <linux-pci@vger.kernel.org>,
-        linux-rdma@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
-        Don Dutile <ddutile@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>
-Subject: Re: [PATCH mlx5-next v1 2/5] PCI: Add SR-IOV sysfs entry to read
- number of MSI-X vectors
-Message-ID: <20210113061909.GG4678@unreal>
-References: <20210110150727.1965295-1-leon@kernel.org>
- <20210110150727.1965295-3-leon@kernel.org>
- <CAKgT0Uczu6cULPsVjFuFVmir35SpL-bs0hosbfH-T5sZLZ78BQ@mail.gmail.com>
- <20210112065601.GD4678@unreal>
- <CAKgT0UdndGdA3xONBr62hE-_RBdL-fq6rHLy0PrdsuMn1936TA@mail.gmail.com>
+        id S1726475AbhAMGvM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jan 2021 01:51:12 -0500
+Received: from m43-15.mailgun.net ([69.72.43.15]:15631 "EHLO
+        m43-15.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726445AbhAMGvL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 01:51:11 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1610520648; h=Content-Type: MIME-Version: Message-ID:
+ In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
+ bh=LEaPdDLevh2p3sskm5HfcmgXr0Bdw4YtFZo1OimLfYE=; b=px64J8IGwuz1IGtXJk7QO2uyGYzHUqUIV531dr003+knAE8Dio3Tx6jZbp3CL2o0iUI+WneX
+ urMMXyvsWK/DWcCvZ1yk7Ksr262tdlM6kARB9rRXmQGYLGrnAfs9JCdqS9x0bsNh6MCOctGD
+ vcVv+NTTdc1QkQ+Jx4Meu+iwVls=
+X-Mailgun-Sending-Ip: 69.72.43.15
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n08.prod.us-west-2.postgun.com with SMTP id
+ 5ffe98212a47972bcc779b74 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 13 Jan 2021 06:50:09
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id D36FCC43461; Wed, 13 Jan 2021 06:50:08 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL,
+        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+Received: from x230.qca.qualcomm.com (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id C538DC433C6;
+        Wed, 13 Jan 2021 06:50:06 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org C538DC433C6
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     "Coelho\, Luciano" <luciano.coelho@intel.com>
+Cc:     "tiwai\@suse.de" <tiwai@suse.de>,
+        "linux-wireless\@vger.kernel.org" <linux-wireless@vger.kernel.org>,
+        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH 2/2] iwlwifi: dbg: Mark ucode tlv data as const
+References: <20210112132449.22243-1-tiwai@suse.de>
+        <20210112132449.22243-3-tiwai@suse.de> <87pn2arw69.fsf@codeaurora.org>
+        <s5h4kjmqgxw.wl-tiwai@suse.de>
+        <636fdc5b53b6f4855e25981e0454064524e6905d.camel@intel.com>
+Date:   Wed, 13 Jan 2021 08:50:04 +0200
+In-Reply-To: <636fdc5b53b6f4855e25981e0454064524e6905d.camel@intel.com>
+        (Luciano Coelho's message of "Tue, 12 Jan 2021 17:13:59 +0000")
+Message-ID: <87lfcxs543.fsf@codeaurora.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAKgT0UdndGdA3xONBr62hE-_RBdL-fq6rHLy0PrdsuMn1936TA@mail.gmail.com>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 12, 2021 at 01:34:50PM -0800, Alexander Duyck wrote:
-> On Mon, Jan 11, 2021 at 10:56 PM Leon Romanovsky <leon@kernel.org> wrote:
-> >
-> > On Mon, Jan 11, 2021 at 11:30:39AM -0800, Alexander Duyck wrote:
-> > > On Sun, Jan 10, 2021 at 7:10 AM Leon Romanovsky <leon@kernel.org> wrote:
-> > > >
-> > > > From: Leon Romanovsky <leonro@nvidia.com>
-> > > >
-> > > > Some SR-IOV capable devices provide an ability to configure specific
-> > > > number of MSI-X vectors on their VF prior driver is probed on that VF.
-> > > >
-> > > > In order to make management easy, provide new read-only sysfs file that
-> > > > returns a total number of possible to configure MSI-X vectors.
-> > > >
-> > > > cat /sys/bus/pci/devices/.../sriov_vf_total_msix
-> > > >   = 0 - feature is not supported
-> > > >   > 0 - total number of MSI-X vectors to consume by the VFs
-> > > >
-> > > > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-> > > > ---
-> > > >  Documentation/ABI/testing/sysfs-bus-pci | 14 +++++++++++
-> > > >  drivers/pci/iov.c                       | 31 +++++++++++++++++++++++++
-> > > >  drivers/pci/pci.h                       |  3 +++
-> > > >  include/linux/pci.h                     |  2 ++
-> > > >  4 files changed, 50 insertions(+)
-> > > >
-> > > > diff --git a/Documentation/ABI/testing/sysfs-bus-pci b/Documentation/ABI/testing/sysfs-bus-pci
-> > > > index 05e26e5da54e..64e9b700acc9 100644
-> > > > --- a/Documentation/ABI/testing/sysfs-bus-pci
-> > > > +++ b/Documentation/ABI/testing/sysfs-bus-pci
-> > > > @@ -395,3 +395,17 @@ Description:
-> > > >                 The file is writable if the PF is bound to a driver that
-> > > >                 supports the ->sriov_set_msix_vec_count() callback and there
-> > > >                 is no driver bound to the VF.
-> > > > +
-> > > > +What:          /sys/bus/pci/devices/.../sriov_vf_total_msix
-> > >
-> > > In this case I would drop the "vf" and just go with sriov_total_msix
-> > > since now you are referring to a global value instead of a per VF
-> > > value.
-> >
-> > This field indicates the amount of MSI-X available for VFs, it doesn't
-> > include PFs. The missing "_vf_" will mislead users who will believe that
-> > it is all MSI-X vectors available for this device. They will need to take
-> > into consideration amount of PF MSI-X in order to calculate the VF distribution.
-> >
-> > So I would leave "_vf_" here.
+"Coelho, Luciano" <luciano.coelho@intel.com> writes:
+
+> On Tue, 2021-01-12 at 17:05 +0100, Takashi Iwai wrote:
+>> On Tue, 12 Jan 2021 16:50:54 +0100,
+>> Kalle Valo wrote:
+>> > 
+>> > Takashi Iwai <tiwai@suse.de> writes:
+>> > 
+>> > > The ucode TLV data may be read-only and should be treated as const
+>> > > pointers, but currently a few code forcibly cast to the writable
+>> > > pointer unnecessarily.  This gave developers a wrong impression as if
+>> > > it can be modified, resulting in crashing regressions already a couple
+>> > > of times.
+>> > > 
+>> > > This patch adds the const prefix to those cast pointers, so that such
+>> > > attempt can be caught more easily in future.
+>> > > 
+>> > > Signed-off-by: Takashi Iwai <tiwai@suse.de>
+>> > 
+>> > So this need to go to -next, right?
+>> 
+>> Yes, this isn't urgently needed for 5.11.
 >
-> The problem is you aren't indicating how many are available for an
-> individual VF though, you are indicating how many are available for
-> use by SR-IOV to give to the VFs. The fact that you are dealing with a
-> pool makes things confusing in my opinion. For example sriov_vf_device
-> describes the device ID that will be given to each VF.
-
-sriov_vf_device is different and is implemented accordingly to the PCI
-spec, 9.3.3.11 VF Device ID (Offset 1Ah)
-"This field contains the Device ID that should be presented for every VF
-to the SI."
-
-It is one ID for all VFs.
-
+> Acked-by: Luca Coelho <luciano.coelho@intel.com>
 >
-> > >
-> > > > +Date:          January 2021
-> > > > +Contact:       Leon Romanovsky <leonro@nvidia.com>
-> > > > +Description:
-> > > > +               This file is associated with the SR-IOV PFs.
-> > > > +               It returns a total number of possible to configure MSI-X
-> > > > +               vectors on the enabled VFs.
-> > > > +
-> > > > +               The values returned are:
-> > > > +                * > 0 - this will be total number possible to consume by VFs,
-> > > > +                * = 0 - feature is not supported
-> > > > +
-> > > > +               If no SR-IOV VFs are enabled, this value will return 0.
-> > > > diff --git a/drivers/pci/iov.c b/drivers/pci/iov.c
-> > > > index 42c0df4158d1..0a6ddf3230fd 100644
-> > > > --- a/drivers/pci/iov.c
-> > > > +++ b/drivers/pci/iov.c
-> > > > @@ -394,12 +394,22 @@ static ssize_t sriov_drivers_autoprobe_store(struct device *dev,
-> > > >         return count;
-> > > >  }
-> > > >
-> > > > +static ssize_t sriov_vf_total_msix_show(struct device *dev,
-> > > > +                                       struct device_attribute *attr,
-> > > > +                                       char *buf)
-> > > > +{
-> > > > +       struct pci_dev *pdev = to_pci_dev(dev);
-> > > > +
-> > > > +       return sprintf(buf, "%d\n", pdev->sriov->vf_total_msix);
-> > > > +}
-> > > > +
-> > >
-> > > You display it as a signed value, but unsigned values are not
-> > > supported, correct?
-> >
-> > Right, I made it similar to the vf_msix_set. I can change.
-> >
-> > >
-> > > >  static DEVICE_ATTR_RO(sriov_totalvfs);
-> > > >  static DEVICE_ATTR_RW(sriov_numvfs);
-> > > >  static DEVICE_ATTR_RO(sriov_offset);
-> > > >  static DEVICE_ATTR_RO(sriov_stride);
-> > > >  static DEVICE_ATTR_RO(sriov_vf_device);
-> > > >  static DEVICE_ATTR_RW(sriov_drivers_autoprobe);
-> > > > +static DEVICE_ATTR_RO(sriov_vf_total_msix);
-> > > >
-> > > >  static struct attribute *sriov_dev_attrs[] = {
-> > > >         &dev_attr_sriov_totalvfs.attr,
-> > > > @@ -408,6 +418,7 @@ static struct attribute *sriov_dev_attrs[] = {
-> > > >         &dev_attr_sriov_stride.attr,
-> > > >         &dev_attr_sriov_vf_device.attr,
-> > > >         &dev_attr_sriov_drivers_autoprobe.attr,
-> > > > +       &dev_attr_sriov_vf_total_msix.attr,
-> > > >         NULL,
-> > > >  };
-> > > >
-> > > > @@ -658,6 +669,7 @@ static void sriov_disable(struct pci_dev *dev)
-> > > >                 sysfs_remove_link(&dev->dev.kobj, "dep_link");
-> > > >
-> > > >         iov->num_VFs = 0;
-> > > > +       iov->vf_total_msix = 0;
-> > > >         pci_iov_set_numvfs(dev, 0);
-> > > >  }
-> > > >
-> > > > @@ -1116,6 +1128,25 @@ int pci_sriov_get_totalvfs(struct pci_dev *dev)
-> > > >  }
-> > > >  EXPORT_SYMBOL_GPL(pci_sriov_get_totalvfs);
-> > > >
-> > > > +/**
-> > > > + * pci_sriov_set_vf_total_msix - set total number of MSI-X vectors for the VFs
-> > > > + * @dev: the PCI PF device
-> > > > + * @numb: the total number of MSI-X vector to consume by the VFs
-> > > > + *
-> > > > + * Sets the number of MSI-X vectors that is possible to consume by the VFs.
-> > > > + * This interface is complimentary part of the pci_set_msix_vec_count()
-> > > > + * that will be used to configure the required number on the VF.
-> > > > + */
-> > > > +void pci_sriov_set_vf_total_msix(struct pci_dev *dev, int numb)
-> > > > +{
-> > > > +       if (!dev->is_physfn || !dev->driver ||
-> > > > +           !dev->driver->sriov_set_msix_vec_count)
-> > > > +               return;
-> > > > +
-> > > > +       dev->sriov->vf_total_msix = numb;
-> > > > +}
-> > > > +EXPORT_SYMBOL_GPL(pci_sriov_set_vf_total_msix);
-> > > > +
-> > >
-> > > This seems broken. What validation is being done on the numb value?
-> > > You pass it as int, and your documentation all refers to tests for >=
-> > > 0, but isn't a signed input a possibility as well? Also "numb" doesn't
-> > > make for a good abbreviation as it is already a word of its own. It
-> > > might make more sense to use count or something like that rather than
-> > > trying to abbreviate number.
-> >
-> > "Broken" is a nice word to describe misunderstanding.
 >
-> Would you prefer "lacking input validation".
+>> > Does this depend on patch 1 or can
+>> > this be applied independently?
+>> 
+>> It depends on the first patch, otherwise you'll get the warning in the
+>> code changing the const data (it must warn -- that's the purpose of
+>> this change :)
+>> 
+>> So, if applying to a separate branch is difficult, applying together
+>> for 5.11 would be an option.
 >
-> I see all this code in there checking for is_physfn and driver and
-> sriov_set_msix_vec_count before allowing the setting of vf_total_msix.
-> It just seems like a lot of validation is taking place on the wrong
-> things if you are just going to be setting a value reporting the total
-> number of MSI-X vectors in use for SR-IOV.
+> It doesn't matter to me how you apply it.  Applying together is
+> obviously going to be easier, but applying separately wouldn't be that
+> hard either.  You'd just have to track when 1/2 went into net-next
+> before applying this one.  Kalle's call.
 
-All those checks are in place to ensure that we are not overwriting the
-default value, which is 0.
+Ok, I'll apply this to wireless-drivers-next after wireless-drivers is
+merged to -next. It might take a while.
 
->
-> In addition this value seems like a custom purpose being pushed into
-> the PCIe code since there isn't anything that defaults the value. It
-> seems like at a minimum there should be something that programs a
-> default value for both of these new fields that are being added so
-> that you pull the maximum number of VFs when SR-IOV is enabled, the
-> maximum number of MSI-X vectors from a single VF, and then the default
-> value for this should be the multiple of the two which can then be
-> overridden later.
+-- 
+https://patchwork.kernel.org/project/linux-wireless/list/
 
-The default is 0, because most SR-IOV doesn't have proper support of
-setting VF MSI-X.
-
-Regarding the calculation, it is not correct for the mlx5. We have large
-pool of MSI-X vectors, but setting small number of them. This allows us
-to increase that number on specific VF without need to decrease on
-others "to free" the vectors.
-
-Thanks
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
