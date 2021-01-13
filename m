@@ -2,408 +2,229 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E1F7D2F4B22
-	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 13:20:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B07C2F4B57
+	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 13:35:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727555AbhAMMQP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jan 2021 07:16:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36540 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726899AbhAMMQO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 07:16:14 -0500
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 648C6C061786
-        for <netdev@vger.kernel.org>; Wed, 13 Jan 2021 04:15:34 -0800 (PST)
-Received: by mail-wr1-x42a.google.com with SMTP id w5so1858607wrm.11
-        for <netdev@vger.kernel.org>; Wed, 13 Jan 2021 04:15:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=XdxJTvWvaHBiV3VIQ3bPCNJD5OxTrXOwIIXGgEKqopw=;
-        b=X4ORhkbbPjk1DJizTXJaIlnbXWSnrco/Kwf1ibbHsQIx9rxIWT+aWZx05PeQ/8aqLt
-         2LLnCt4Co0RwUEE1APeItNLH0nkw/gj0suK2VT4QBo2vt8B2L2UhlHq5TICiBaaxmfEQ
-         oLpTzTHN6Scs8HaQsnAb3QURm8hPMBYW3+Nr3GYt8huVX3lVpM4dnJDqH33Z7SN/cd1K
-         UDRXfjdbDSn5fbU1ZWKlCrH5x7BelmeXxj4hPcJ85ovsriT9vKNOmTf/1pmf1y6umoHw
-         NNC+LfW1bY7+2qykJT+3r4bj6SQCgmYb8TmtjISIOAwvFMAos+AB6dYhYfzwAWYTNDud
-         zXBw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=XdxJTvWvaHBiV3VIQ3bPCNJD5OxTrXOwIIXGgEKqopw=;
-        b=sxtNjFwDr3CrSPLy4DM99YwWDw11ClOVYBGLtCZwAQPp5afap1cO8QiEOychPdkwkt
-         hcYwx6A1NsP42NIFB5/8kv79m/7bYoL7FEucWD+2YYIN3Ja5nfMkUhrxvrIrcXeO3q4i
-         3NgJNyq2iF5ugUmyZez4ckHtC3Eq0cQtnWZwfEUnf9paIwjRxHXGW/4oW1g9+Pl9J0Wu
-         VX2Do1qlM+cd7J98omwS7bhokEVqYm7cBMq3K9SaEh6yxpvKtc4OWsX2KgzX+5X+0n7p
-         I9ROU4blpx65kylbPj1L2z20wjUSw2zUCsbSnBxl9eI89UPVSBd8YJt6UkuDWriCge6B
-         r9rw==
-X-Gm-Message-State: AOAM530nPq+qTlRNgzsRXRCyLI9aBcIGxEr9yzCCY9/LNpRk9Txib/kO
-        2RduNyV2ve8xxApnKRpxL1RZYZq8p01nf+t2
-X-Google-Smtp-Source: ABdhPJyWxqIyCLQOU+NI1cP4r5Db18m28+2pWd1zVLpQc/FWax7kbu/KiwOTL2tRVC8lJcO4qY0+fw==
-X-Received: by 2002:adf:fb52:: with SMTP id c18mr2299081wrs.186.1610540132800;
-        Wed, 13 Jan 2021 04:15:32 -0800 (PST)
-Received: from localhost ([85.163.43.78])
-        by smtp.gmail.com with ESMTPSA id w17sm2637561wmk.12.2021.01.13.04.15.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Jan 2021 04:15:32 -0800 (PST)
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, jacob.e.keller@intel.com,
-        roopa@nvidia.com, mlxsw@nvidia.com
-Subject: [patch iproute2/net-next RFC] devlink: add support for linecard show and provision
-Date:   Wed, 13 Jan 2021 13:15:31 +0100
-Message-Id: <20210113121531.733849-1-jiri@resnulli.us>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20210113121222.733517-1-jiri@resnulli.u>
-References: <20210113121222.733517-1-jiri@resnulli.u>
+        id S1726796AbhAMMcN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jan 2021 07:32:13 -0500
+Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:14144 "EHLO
+        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726633AbhAMMcM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 07:32:12 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B5ffee8240000>; Wed, 13 Jan 2021 04:31:32 -0800
+Received: from HQMAIL101.nvidia.com (172.20.187.10) by HQMAIL109.nvidia.com
+ (172.20.187.15) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Wed, 13 Jan
+ 2021 12:31:31 +0000
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.44) by
+ HQMAIL101.nvidia.com (172.20.187.10) with Microsoft SMTP Server (TLS) id
+ 15.0.1473.3 via Frontend Transport; Wed, 13 Jan 2021 12:31:31 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=aAajb7NBrCBAG9OQNjfCIeNb328bErtqRk5vNS4qDsQXq9y+14ZwmfCyPNiHy7l3WSCGqzv7Nyv8TNcIqKBkLiTqYxL0wTQEBR7BVPmUgaYvOvxfnMKkXlX8Y5aMj23c95DBqfFGGS2gJd6T8qKZ3RlWLCKPtuFB3mgHHBhxhEuzWn1FMD4oudCq/aThdBkYDCCBYicPqxZ3YDyp/IJAvvmExL0+5FuUyG7+vD3cHki56Qf2Bo2jl3xzDL91h+SdEl9RJx5zPe7RjchpD+zp8SxJ7AYUkISSkExABJq/N+7NBQNhhZtDAPeCdD1P9cJs3w63oJCHFilM7XwM+R8TBw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=zKrsCjGyunzwe9D9aC9OxipbEWiN3GxgGL1YdD/4WFA=;
+ b=HXpLIC2+bMsvAhQGLLnGqnDA76BhqGBnIdZkYBEdJMx9LZefl9Ty6VFsxmux5PtFpJVRc/OL8CLHZ3jJ6bsmq478YELqPBl74XjdRe/BqiOQ+Z8GMF38NjbBL9n6P+GZsm8UqQw7H02VNcfe+H23BffPegOgawfNCw9zBrM5AWWkv+pyu+A4+tAyoD8d7pBM+YR5Jd4022IWIlmGPTLYLMO06+K80hki8t5rF0tgbms5mXZYbP4opH5GKmRpGZHcT/ADud8UtpwsgCvWCNX+3KergqaX1FVQ7nxwAWpf7xESIxCE7FkneSMz21StgnklK/siiCQePPpIhXwdcq+piA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+Authentication-Results: vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=none action=none header.from=nvidia.com;
+Received: from DM6PR12MB4403.namprd12.prod.outlook.com (2603:10b6:5:2ab::24)
+ by DM6PR12MB2777.namprd12.prod.outlook.com (2603:10b6:5:51::25) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3742.6; Wed, 13 Jan
+ 2021 12:31:30 +0000
+Received: from DM6PR12MB4403.namprd12.prod.outlook.com
+ ([fe80::6:2468:8ec8:acae]) by DM6PR12MB4403.namprd12.prod.outlook.com
+ ([fe80::6:2468:8ec8:acae%5]) with mapi id 15.20.3763.010; Wed, 13 Jan 2021
+ 12:31:30 +0000
+Subject: Re: [PATCH] net/bridge: Fix inconsistent format argument types
+To:     Jiapeng Zhong <abaci-bugfix@linux.alibaba.com>, <roopa@nvidia.com>
+CC:     <davem@davemloft.net>, <kuba@kernel.org>,
+        <bridge@lists.linux-foundation.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+References: <1610530584-48554-1-git-send-email-abaci-bugfix@linux.alibaba.com>
+From:   Nikolay Aleksandrov <nikolay@nvidia.com>
+Message-ID: <f5fe3b09-44e5-939b-3969-3b9136aa4ed5@nvidia.com>
+Date:   Wed, 13 Jan 2021 14:31:23 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
+In-Reply-To: <1610530584-48554-1-git-send-email-abaci-bugfix@linux.alibaba.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [213.179.129.39]
+X-ClientProxiedBy: GV0P278CA0012.CHEP278.PROD.OUTLOOK.COM
+ (2603:10a6:710:26::22) To DM6PR12MB4403.namprd12.prod.outlook.com
+ (2603:10b6:5:2ab::24)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [10.21.240.209] (213.179.129.39) by GV0P278CA0012.CHEP278.PROD.OUTLOOK.COM (2603:10a6:710:26::22) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3763.9 via Frontend Transport; Wed, 13 Jan 2021 12:31:27 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: d48e668e-696c-4346-a2c5-08d8b7bf279f
+X-MS-TrafficTypeDiagnostic: DM6PR12MB2777:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <DM6PR12MB277783489185F880F417D154DFA90@DM6PR12MB2777.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:162;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 7imemNToLlD65q/VREy6gaPDPWd/hS3/ETQ6zhJ0jnNFlXAyJpoG4vClnjQfuLta3Y1/t3Aj31RMhS99maHw1nAmfeeSCwgnFML88rvXnQgo+hzXkTJ/yrnQJoE6nVEonaortBmyMaEDdquj557mh86CIpIs2q0OmzNW0UpJxnh5rII5xCSg7sn19O2W7cJz8dTdXlrVPdi0FzGCv9PiS469f2RICWvfTk5lXsT9GwSNqoNVpOs+veTqVJVeL9TlEY0lOAIo6tn5CxO+89rfFJSibSBmYSh7f2Y0UDoY+IhaHVzuGCNu32sAaSVmA+hXfV0CxlIz5wFRTOBeNhoA+HU3bB9zIDPLwuANTJIPE/XBzLQlldag2id+Cknkw3uo2pe+G/Lurt8MEL/BeTaEMEv3iCd3yGdTNzSRE/xATUiGXxem9Z8DqWZdLsC/s4Bu2CIw3usi6iputJY1SHmByyFh6/QcLm30i0g5812r6Ps=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB4403.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(136003)(366004)(346002)(396003)(376002)(39860400002)(2616005)(5660300002)(31686004)(66556008)(2906002)(66946007)(86362001)(6486002)(26005)(66476007)(6636002)(31696002)(53546011)(16576012)(4326008)(8936002)(316002)(478600001)(8676002)(956004)(83380400001)(36756003)(16526019)(6666004)(186003)(43740500002)(45980500001);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?cHFKY2lsOU5ZQVV3cHlScmtFSzE5ZkFudkdSVUFiNVFIZUpRU1NZVGN6dUF0?=
+ =?utf-8?B?aVU4eXNQa0tYWGNVWVg2Y1JtUW5RR0FwcWRlemJjTWt6U0wxcUF1R2VtSWh1?=
+ =?utf-8?B?WWxJNDBsSUFCbktkNVhOZDZ4ek1YS3phVlJyL3VFdVl6N25HMDBCQWp4VG00?=
+ =?utf-8?B?N3p5dW53TExydk0ybFlFdUM1UitqRGs3SXBlS25MTTBkTVgyUmpRWDJQWWJB?=
+ =?utf-8?B?cTBjNFE5WDJ0cmVrRVB5WjBMUzVRYVU1WmtGQjNsRmxZUmhnQ3NUOXZyY09H?=
+ =?utf-8?B?US8ybFNkdm5ONzJ3LzFOTDBWL3VRTzJ1bXJCQ3ZrRkc2Zkl3SmZwcnlmSE5v?=
+ =?utf-8?B?aEFteHZpOC9GVG96cGFGeUQ0Ri9LLzR2MElid084UXF6NVFnQllwb2czWFI0?=
+ =?utf-8?B?bW9mVXp1QmxqRkpTTGRHQStlSGlUcnBmNStVTXZjOEErUk0rdEZ2RVZEY0sz?=
+ =?utf-8?B?bUN3U0RuYTA3SlRVRzNPVXQ3Z0N1NWQ0dWwzbmtEUk5rWWEvY2J0cjNoTDZG?=
+ =?utf-8?B?MkxrZTBkSDhSVTlJOExTWmR6aHYzWG5RV3Vza0pmemNDeEJnUytTQ2JObFhu?=
+ =?utf-8?B?TW8vSXYxM0trWWlSM2pyeWJmbnM0dGo1bVFranlmQndOTG5oakRoR2NUOHBL?=
+ =?utf-8?B?ZkIzSUM2K2dVUmZyOUNjME9uM2Z2MDc0cFhRTG0vcWo5SXlIaFRMcUQxUHJM?=
+ =?utf-8?B?YU9Bb0NTajRkaVBaVHZaSkdoTnQyYTdMdlZITHFGZW42VTk4ZmVZV2RJQThN?=
+ =?utf-8?B?elJDejBvQTRYUEZBMmRkMk5zSkZWZXNkWlkwR2oxN0ZrUUY1ZHkwUXU0djZD?=
+ =?utf-8?B?N0t0aDA0ZERsRTE3dEdaUy8rblFRVjdUUVQ2aUFpS21vdHhudDBobkorVXow?=
+ =?utf-8?B?UGJTOE5mS3N4MjFKVDJ3K0J6Wkd5TlB6RzZhNWZYVGZldXdSWGFaRlhpc3ZD?=
+ =?utf-8?B?a2xQY3p4R0tiR3RDdm9GSU83TGJFR3dGd3ZCLzhDdzAvUHlxajJldlYwYXU1?=
+ =?utf-8?B?OTJOZDZNRXBldERadk9lM1VrNnJtSWYrOGdDa0t2SHozNUMyVFVvRC81RThB?=
+ =?utf-8?B?SXF3UnlJK0lsTVdWdTN0SldjckE1bExMTXlNbXgvN3NyKzI2SThGWmgvWXVF?=
+ =?utf-8?B?NjhHU096SVVnaHp4SFcxUytkbWltZ1ZvQndJMkVlZVF0TVIrNUFlblBEeDFj?=
+ =?utf-8?B?Wi81djNuOUJ5M3J6STZDMXpOSFg3NG1XampSekZTclZ3dW51MEpOcC85Vjl1?=
+ =?utf-8?B?V2pONFA0Tndra2dBa3JTV3JmSC8vK1RCa3R4MHRoUy9FT3RPUElRcGwrYXVE?=
+ =?utf-8?Q?7MQkU+BVbMc0MmE0Y3AGrv5tTLdp2hc8C0?=
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB4403.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jan 2021 12:31:30.3190
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-Network-Message-Id: d48e668e-696c-4346-a2c5-08d8b7bf279f
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: hDsQaAqP39aWe4Ntp5eMPoOqZcM4Rj60CndGiS1IHH16aGn5CNYb3EUqs5RWyWBd++qccP8QYKVV4T0p4b6V3g==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB2777
+X-OriginatorOrg: Nvidia.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1610541092; bh=zKrsCjGyunzwe9D9aC9OxipbEWiN3GxgGL1YdD/4WFA=;
+        h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:
+         Authentication-Results:Subject:To:CC:References:From:Message-ID:
+         Date:User-Agent:In-Reply-To:Content-Type:Content-Language:
+         Content-Transfer-Encoding:X-Originating-IP:X-ClientProxiedBy:
+         MIME-Version:X-MS-Exchange-MessageSentRepresentingType:
+         X-MS-PublicTrafficType:X-MS-Office365-Filtering-Correlation-Id:
+         X-MS-TrafficTypeDiagnostic:X-MS-Exchange-Transport-Forked:
+         X-Microsoft-Antispam-PRVS:X-MS-Oob-TLC-OOBClassifiers:
+         X-MS-Exchange-SenderADCheck:X-Microsoft-Antispam:
+         X-Microsoft-Antispam-Message-Info:X-Forefront-Antispam-Report:
+         X-MS-Exchange-AntiSpam-MessageData:
+         X-MS-Exchange-CrossTenant-AuthSource:
+         X-MS-Exchange-CrossTenant-AuthAs:
+         X-MS-Exchange-CrossTenant-OriginalArrivalTime:
+         X-MS-Exchange-CrossTenant-FromEntityHeader:
+         X-MS-Exchange-CrossTenant-Id:
+         X-MS-Exchange-CrossTenant-Network-Message-Id:
+         X-MS-Exchange-CrossTenant-MailboxType:
+         X-MS-Exchange-CrossTenant-UserPrincipalName:
+         X-MS-Exchange-Transport-CrossTenantHeadersStamped:X-OriginatorOrg;
+        b=jl6S2K4iBPuVImDicHsRVEsoiA5vUptS+9xfUTc5T5oU58pKwkriovut4QE/bpSXx
+         sclrd42pOmx7RbJvHXFoevvnLq4A+QnZFdfscLv8NWWt+FTv97oOIbayU/UnyYWMSJ
+         hhdNAIFsPCaeKDZB5ODF9rrjrK4ZzQYudaSNlJoLTxkwVIthr7EmIsUUApdg4fbebI
+         qhFHia/FmISo7FESVnNJYpt0GLOoZ1NY9zEeFsSriWmJhdUNs8ow+5IklOqCW1qB82
+         29BTX4GE+p4oQpP6iIcE/pquKGziYbEfp0LhqXKYD4zaZxxPOYxsJtMCM3t8Nq8M5E
+         +rz8MoCXsB7sw==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Jiri Pirko <jiri@nvidia.com>
+On 13/01/2021 11:36, Jiapeng Zhong wrote:
+> Fix the following warnings:
+> 
+> net/bridge/br_sysfs_br.c(833): warning: %u in format string (no. 1)
+> requires 'unsigned int' but the argument type is 'signed int'.
+> net/bridge/br_sysfs_br.c(817): warning: %u in format string (no. 1)
+> requires 'unsigned int' but the argument type is 'signed int'.
+> net/bridge/br_sysfs_br.c(261): warning: %ld in format string (no. 1)
+> requires 'long' but the argument type is 'unsigned long'.
+> net/bridge/br_sysfs_br.c(253): warning: %ld in format string (no. 1)
+> requires 'long' but the argument type is 'unsigned long'.
+> net/bridge/br_sysfs_br.c(244): warning: %ld in format string (no. 1)
+> requires 'long' but the argument type is 'unsigned long'.
+> net/bridge/br_sysfs_br.c(236): warning: %ld in format string (no. 1)
+> requires 'long' but the argument type is 'unsigned long'.
+> 
+> Signed-off-by: Jiapeng Zhong <abaci-bugfix@linux.alibaba.com>
+> Reported-by: Abaci Robot<abaci@linux.alibaba.com>
+> ---
+>  net/bridge/br_sysfs_br.c | 12 ++++++------
+>  1 file changed, 6 insertions(+), 6 deletions(-)
+> 
 
-Signed-off-by: Jiri Pirko <jiri@nvidia.com>
----
- devlink/devlink.c | 218 +++++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 214 insertions(+), 4 deletions(-)
+Hi,
+You have sent 2 patches with the same subject.. Please squash them into a single
+patch and target it to net-next, these don't need to be backported.
 
-diff --git a/devlink/devlink.c b/devlink/devlink.c
-index a2e066441e8a..960f1078591e 100644
---- a/devlink/devlink.c
-+++ b/devlink/devlink.c
-@@ -306,6 +306,8 @@ static void ifname_map_free(struct ifname_map *ifname_map)
- #define DL_OPT_FLASH_OVERWRITE		BIT(39)
- #define DL_OPT_RELOAD_ACTION		BIT(40)
- #define DL_OPT_RELOAD_LIMIT	BIT(41)
-+#define DL_OPT_LINECARD		BIT(42)
-+#define DL_OPT_LINECARD_TYPE	BIT(43)
- 
- struct dl_opts {
- 	uint64_t present; /* flags of present items */
-@@ -356,6 +358,8 @@ struct dl_opts {
- 	uint32_t overwrite_mask;
- 	enum devlink_reload_action reload_action;
- 	enum devlink_reload_limit reload_limit;
-+	uint32_t linecard_index;
-+	const char *linecard_type;
- };
- 
- struct dl {
-@@ -1414,6 +1418,8 @@ static const struct dl_args_metadata dl_args_required[] = {
- 	{DL_OPT_TRAP_NAME,            "Trap's name is expected."},
- 	{DL_OPT_TRAP_GROUP_NAME,      "Trap group's name is expected."},
- 	{DL_OPT_PORT_FUNCTION_HW_ADDR, "Port function's hardware address is expected."},
-+	{DL_OPT_LINECARD,	      "Linecard index expected."},
-+	{DL_OPT_LINECARD_TYPE,	      "Linecard type expected."},
- };
- 
- static int dl_args_finding_required_validate(uint64_t o_required,
-@@ -1832,7 +1838,20 @@ static int dl_argv_parse(struct dl *dl, uint64_t o_required,
- 			if (err)
- 				return err;
- 			o_found |= DL_OPT_PORT_FUNCTION_HW_ADDR;
--
-+		} else if (dl_argv_match(dl, "lc") &&
-+			   (o_all & DL_OPT_LINECARD)) {
-+			dl_arg_inc(dl);
-+			err = dl_argv_uint32_t(dl, &opts->linecard_index);
-+			if (err)
-+				return err;
-+			o_found |= DL_OPT_LINECARD;
-+		} else if (dl_argv_match(dl, "type") &&
-+			   (o_all & DL_OPT_LINECARD_TYPE)) {
-+			dl_arg_inc(dl);
-+			err = dl_argv_str(dl, &opts->linecard_type);
-+			if (err)
-+				return err;
-+			o_found |= DL_OPT_LINECARD_TYPE;
- 		} else {
- 			pr_err("Unknown option \"%s\"\n", dl_argv(dl));
- 			return -EINVAL;
-@@ -2015,6 +2034,12 @@ static void dl_opts_put(struct nlmsghdr *nlh, struct dl *dl)
- 				 opts->trap_policer_burst);
- 	if (opts->present & DL_OPT_PORT_FUNCTION_HW_ADDR)
- 		dl_function_attr_put(nlh, opts);
-+	if (opts->present & DL_OPT_LINECARD)
-+		mnl_attr_put_u32(nlh, DEVLINK_ATTR_LINECARD_INDEX,
-+				 opts->linecard_index);
-+	if (opts->present & DL_OPT_LINECARD_TYPE)
-+		mnl_attr_put_strz(nlh, DEVLINK_ATTR_LINECARD_TYPE,
-+				  opts->linecard_type);
- }
- 
- static int dl_argv_parse_put(struct nlmsghdr *nlh, struct dl *dl,
-@@ -2036,6 +2061,7 @@ static bool dl_dump_filter(struct dl *dl, struct nlattr **tb)
- 	struct nlattr *attr_dev_name = tb[DEVLINK_ATTR_DEV_NAME];
- 	struct nlattr *attr_port_index = tb[DEVLINK_ATTR_PORT_INDEX];
- 	struct nlattr *attr_sb_index = tb[DEVLINK_ATTR_SB_INDEX];
-+	struct nlattr *attr_linecard_index = tb[DEVLINK_ATTR_LINECARD_INDEX];
- 
- 	if (opts->present & DL_OPT_HANDLE &&
- 	    attr_bus_name && attr_dev_name) {
-@@ -2063,6 +2089,12 @@ static bool dl_dump_filter(struct dl *dl, struct nlattr **tb)
- 		if (sb_index != opts->sb_index)
- 			return false;
- 	}
-+	if (opts->present & DL_OPT_LINECARD && attr_linecard_index) {
-+		uint32_t linecard_index = mnl_attr_get_u32(attr_linecard_index);
-+
-+		if (linecard_index != opts->linecard_index)
-+			return false;
-+	}
- 	return true;
- }
- 
-@@ -3833,6 +3865,9 @@ static void pr_out_port(struct dl *dl, struct nlattr **tb)
- 			break;
- 		}
- 	}
-+	if (tb[DEVLINK_ATTR_LINECARD_INDEX])
-+		print_uint(PRINT_ANY, "lc", " lc %u",
-+			   mnl_attr_get_u32(tb[DEVLINK_ATTR_LINECARD_INDEX]));
- 	if (tb[DEVLINK_ATTR_PORT_NUMBER]) {
- 		uint32_t port_number;
- 
-@@ -4005,6 +4040,156 @@ static int cmd_port(struct dl *dl)
- 	return -ENOENT;
- }
- 
-+static void cmd_linecard_help(void)
-+{
-+	pr_err("Usage: devlink lc show [ DEV [ lc LC_INDEX ] ]\n");
-+	pr_err("       devlink lc provision DEV lc LC_INDEX type LC_TYPE\n");
-+	pr_err("       devlink lc unprovision DEV lc LC_INDEX\n");
-+}
-+
-+static const char *linecard_state_name(uint16_t flavour)
-+{
-+	switch (flavour) {
-+	case DEVLINK_LINECARD_STATE_UNPROVISIONED:
-+		return "unprovisioned";
-+	case DEVLINK_LINECARD_STATE_UNPROVISIONING:
-+		return "unprovisioning";
-+	case DEVLINK_LINECARD_STATE_PROVISIONING:
-+		return "provisioning";
-+	case DEVLINK_LINECARD_STATE_PROVISIONED:
-+		return "provisioned";
-+	case DEVLINK_LINECARD_STATE_ACTIVE:
-+		return "active";
-+	default:
-+		return "<unknown state>";
-+	}
-+}
-+
-+static void pr_out_linecard_supported_types(struct dl *dl, struct nlattr **tb)
-+{
-+	struct nlattr *nla_types = tb[DEVLINK_ATTR_LINECARD_SUPPORTED_TYPES];
-+	struct nlattr *nla_type;
-+
-+	if (!nla_types)
-+		return;
-+
-+	pr_out_array_start(dl, "supported_types");
-+	check_indent_newline(dl);
-+	mnl_attr_for_each_nested(nla_type, nla_types) {
-+		print_string(PRINT_ANY, NULL, " %s",
-+			     mnl_attr_get_str(nla_type));
-+	}
-+	pr_out_array_end(dl);
-+}
-+
-+static void pr_out_linecard(struct dl *dl, struct nlattr **tb)
-+{
-+	uint8_t state;
-+
-+	pr_out_handle_start_arr(dl, tb);
-+	check_indent_newline(dl);
-+	print_uint(PRINT_ANY, "lc", "lc %u",
-+		   mnl_attr_get_u32(tb[DEVLINK_ATTR_LINECARD_INDEX]));
-+	state = mnl_attr_get_u8(tb[DEVLINK_ATTR_LINECARD_STATE]);
-+	print_string(PRINT_ANY, "state", " state %s",
-+		     linecard_state_name(state));
-+	if (tb[DEVLINK_ATTR_LINECARD_TYPE])
-+		print_string(PRINT_ANY, "type", " type %s",
-+			     mnl_attr_get_str(tb[DEVLINK_ATTR_LINECARD_TYPE]));
-+	pr_out_linecard_supported_types(dl, tb);
-+	pr_out_handle_end(dl);
-+}
-+
-+static int cmd_linecard_show_cb(const struct nlmsghdr *nlh, void *data)
-+{
-+	struct dl *dl = data;
-+	struct nlattr *tb[DEVLINK_ATTR_MAX + 1] = {};
-+	struct genlmsghdr *genl = mnl_nlmsg_get_payload(nlh);
-+
-+	mnl_attr_parse(nlh, sizeof(*genl), attr_cb, tb);
-+	if (!tb[DEVLINK_ATTR_BUS_NAME] || !tb[DEVLINK_ATTR_DEV_NAME] ||
-+	    !tb[DEVLINK_ATTR_LINECARD_INDEX] ||
-+	    !tb[DEVLINK_ATTR_LINECARD_STATE])
-+		return MNL_CB_ERROR;
-+	pr_out_linecard(dl, tb);
-+	return MNL_CB_OK;
-+}
-+
-+static int cmd_linecard_show(struct dl *dl)
-+{
-+	struct nlmsghdr *nlh;
-+	uint16_t flags = NLM_F_REQUEST | NLM_F_ACK;
-+	int err;
-+
-+	if (dl_argc(dl) == 0)
-+		flags |= NLM_F_DUMP;
-+
-+	nlh = mnlg_msg_prepare(dl->nlg, DEVLINK_CMD_LINECARD_GET, flags);
-+
-+	if (dl_argc(dl) > 0) {
-+		err = dl_argv_parse_put(nlh, dl, DL_OPT_HANDLE,
-+					DL_OPT_LINECARD);
-+		if (err)
-+			return err;
-+	}
-+
-+	pr_out_section_start(dl, "lc");
-+	err = _mnlg_socket_sndrcv(dl->nlg, nlh, cmd_linecard_show_cb, dl);
-+	pr_out_section_end(dl);
-+	return err;
-+}
-+
-+static int cmd_linecard_provision(struct dl *dl)
-+{
-+	struct nlmsghdr *nlh;
-+	int err;
-+
-+	nlh = mnlg_msg_prepare(dl->nlg, DEVLINK_CMD_LINECARD_PROVISION,
-+			       NLM_F_REQUEST | NLM_F_ACK);
-+
-+	err = dl_argv_parse_put(nlh, dl, DL_OPT_HANDLE | DL_OPT_LINECARD |
-+					 DL_OPT_LINECARD_TYPE, 0);
-+	if (err)
-+		return err;
-+
-+	return _mnlg_socket_sndrcv(dl->nlg, nlh, NULL, NULL);
-+}
-+
-+static int cmd_linecard_unprovision(struct dl *dl)
-+{
-+	struct nlmsghdr *nlh;
-+	int err;
-+
-+	nlh = mnlg_msg_prepare(dl->nlg, DEVLINK_CMD_LINECARD_UNPROVISION,
-+			       NLM_F_REQUEST | NLM_F_ACK);
-+
-+	err = dl_argv_parse_put(nlh, dl, DL_OPT_HANDLE | DL_OPT_LINECARD, 0);
-+	if (err)
-+		return err;
-+
-+	return _mnlg_socket_sndrcv(dl->nlg, nlh, NULL, NULL);
-+}
-+
-+static int cmd_linecard(struct dl *dl)
-+{
-+	if (dl_argv_match(dl, "help")) {
-+		cmd_linecard_help();
-+		return 0;
-+	} else if (dl_argv_match(dl, "show") ||
-+		   dl_argv_match(dl, "list") || dl_no_arg(dl)) {
-+		dl_arg_inc(dl);
-+		return cmd_linecard_show(dl);
-+	} else if (dl_argv_match(dl, "provision")) {
-+		dl_arg_inc(dl);
-+		return cmd_linecard_provision(dl);
-+	} else if (dl_argv_match(dl, "unprovision")) {
-+		dl_arg_inc(dl);
-+		return cmd_linecard_unprovision(dl);
-+	}
-+	pr_err("Command \"%s\" not found\n", dl_argv(dl));
-+	return -ENOENT;
-+}
-+
- static void cmd_sb_help(void)
- {
- 	pr_err("Usage: devlink sb show [ DEV [ sb SB_INDEX ] ]\n");
-@@ -4818,6 +5003,10 @@ static const char *cmd_name(uint8_t cmd)
- 	case DEVLINK_CMD_TRAP_POLICER_SET: return "set";
- 	case DEVLINK_CMD_TRAP_POLICER_NEW: return "new";
- 	case DEVLINK_CMD_TRAP_POLICER_DEL: return "del";
-+	case DEVLINK_CMD_LINECARD_GET: return "get";
-+	case DEVLINK_CMD_LINECARD_SET: return "set";
-+	case DEVLINK_CMD_LINECARD_NEW: return "new";
-+	case DEVLINK_CMD_LINECARD_DEL: return "del";
- 	default: return "<unknown cmd>";
- 	}
- }
-@@ -4867,6 +5056,11 @@ static const char *cmd_obj(uint8_t cmd)
- 	case DEVLINK_CMD_TRAP_POLICER_NEW:
- 	case DEVLINK_CMD_TRAP_POLICER_DEL:
- 		return "trap-policer";
-+	case DEVLINK_CMD_LINECARD_GET:
-+	case DEVLINK_CMD_LINECARD_SET:
-+	case DEVLINK_CMD_LINECARD_NEW:
-+	case DEVLINK_CMD_LINECARD_DEL:
-+		return "lc";
- 	default: return "<unknown obj>";
- 	}
- }
-@@ -5059,6 +5253,18 @@ static int cmd_mon_show_cb(const struct nlmsghdr *nlh, void *data)
- 		pr_out_mon_header(genl->cmd);
- 		pr_out_trap_policer(dl, tb, false);
- 		break;
-+	case DEVLINK_CMD_LINECARD_GET: /* fall through */
-+	case DEVLINK_CMD_LINECARD_SET: /* fall through */
-+	case DEVLINK_CMD_LINECARD_NEW: /* fall through */
-+	case DEVLINK_CMD_LINECARD_DEL:
-+		mnl_attr_parse(nlh, sizeof(*genl), attr_cb, tb);
-+		if (!tb[DEVLINK_ATTR_BUS_NAME] || !tb[DEVLINK_ATTR_DEV_NAME] ||
-+		    !tb[DEVLINK_ATTR_LINECARD_INDEX])
-+			return MNL_CB_ERROR;
-+		pr_out_mon_header(genl->cmd);
-+		pr_out_linecard(dl, tb);
-+		pr_out_mon_footer();
-+		break;
- 	}
- 	fflush(stdout);
- 	return MNL_CB_OK;
-@@ -5077,7 +5283,8 @@ static int cmd_mon_show(struct dl *dl)
- 		    strcmp(cur_obj, "health") != 0 &&
- 		    strcmp(cur_obj, "trap") != 0 &&
- 		    strcmp(cur_obj, "trap-group") != 0 &&
--		    strcmp(cur_obj, "trap-policer") != 0) {
-+		    strcmp(cur_obj, "trap-policer") != 0 &&
-+		    strcmp(cur_obj, "lc") != 0) {
- 			pr_err("Unknown object \"%s\"\n", cur_obj);
- 			return -EINVAL;
- 		}
-@@ -5098,7 +5305,7 @@ static int cmd_mon_show(struct dl *dl)
- static void cmd_mon_help(void)
- {
- 	pr_err("Usage: devlink monitor [ all | OBJECT-LIST ]\n"
--	       "where  OBJECT-LIST := { dev | port | health | trap | trap-group | trap-policer }\n");
-+	       "where  OBJECT-LIST := { dev | port | lc | health | trap | trap-group | trap-policer }\n");
- }
- 
- static int cmd_mon(struct dl *dl)
-@@ -8073,7 +8280,7 @@ static void help(void)
- {
- 	pr_err("Usage: devlink [ OPTIONS ] OBJECT { COMMAND | help }\n"
- 	       "       devlink [ -f[orce] ] -b[atch] filename -N[etns] netnsname\n"
--	       "where  OBJECT := { dev | port | sb | monitor | dpipe | resource | region | health | trap }\n"
-+	       "where  OBJECT := { dev | port | lc | sb | monitor | dpipe | resource | region | health | trap }\n"
- 	       "       OPTIONS := { -V[ersion] | -n[o-nice-names] | -j[son] | -p[retty] | -v[erbose] -s[tatistics] }\n");
- }
- 
-@@ -8112,6 +8319,9 @@ static int dl_cmd(struct dl *dl, int argc, char **argv)
- 	} else if (dl_argv_match(dl, "trap")) {
- 		dl_arg_inc(dl);
- 		return cmd_trap(dl);
-+	} else if (dl_argv_match(dl, "lc")) {
-+		dl_arg_inc(dl);
-+		return cmd_linecard(dl);
- 	}
- 	pr_err("Object \"%s\" not found\n", dl_argv(dl));
- 	return -ENOENT;
--- 
-2.26.2
+Thanks,
+ Nik
+
+> diff --git a/net/bridge/br_sysfs_br.c b/net/bridge/br_sysfs_br.c
+> index 7db06e3..7512921 100644
+> --- a/net/bridge/br_sysfs_br.c
+> +++ b/net/bridge/br_sysfs_br.c
+> @@ -233,7 +233,7 @@ static ssize_t hello_timer_show(struct device *d,
+>  				struct device_attribute *attr, char *buf)
+>  {
+>  	struct net_bridge *br = to_bridge(d);
+> -	return sprintf(buf, "%ld\n", br_timer_value(&br->hello_timer));
+> +	return sprintf(buf, "%lu\n", br_timer_value(&br->hello_timer));
+>  }
+>  static DEVICE_ATTR_RO(hello_timer);
+>  
+> @@ -241,7 +241,7 @@ static ssize_t tcn_timer_show(struct device *d, struct device_attribute *attr,
+>  			      char *buf)
+>  {
+>  	struct net_bridge *br = to_bridge(d);
+> -	return sprintf(buf, "%ld\n", br_timer_value(&br->tcn_timer));
+> +	return sprintf(buf, "%lu\n", br_timer_value(&br->tcn_timer));
+>  }
+>  static DEVICE_ATTR_RO(tcn_timer);
+>  
+> @@ -250,7 +250,7 @@ static ssize_t topology_change_timer_show(struct device *d,
+>  					  char *buf)
+>  {
+>  	struct net_bridge *br = to_bridge(d);
+> -	return sprintf(buf, "%ld\n", br_timer_value(&br->topology_change_timer));
+> +	return sprintf(buf, "%lu\n", br_timer_value(&br->topology_change_timer));
+>  }
+>  static DEVICE_ATTR_RO(topology_change_timer);
+>  
+> @@ -258,7 +258,7 @@ static ssize_t gc_timer_show(struct device *d, struct device_attribute *attr,
+>  			     char *buf)
+>  {
+>  	struct net_bridge *br = to_bridge(d);
+> -	return sprintf(buf, "%ld\n", br_timer_value(&br->gc_work.timer));
+> +	return sprintf(buf, "%lu\n", br_timer_value(&br->gc_work.timer));
+>  }
+>  static DEVICE_ATTR_RO(gc_timer);
+>  
+> @@ -814,7 +814,7 @@ static ssize_t vlan_stats_enabled_show(struct device *d,
+>  				       char *buf)
+>  {
+>  	struct net_bridge *br = to_bridge(d);
+> -	return sprintf(buf, "%u\n", br_opt_get(br, BROPT_VLAN_STATS_ENABLED));
+> +	return sprintf(buf, "%d\n", br_opt_get(br, BROPT_VLAN_STATS_ENABLED));
+>  }
+>  
+>  static ssize_t vlan_stats_enabled_store(struct device *d,
+> @@ -830,7 +830,7 @@ static ssize_t vlan_stats_per_port_show(struct device *d,
+>  					char *buf)
+>  {
+>  	struct net_bridge *br = to_bridge(d);
+> -	return sprintf(buf, "%u\n", br_opt_get(br, BROPT_VLAN_STATS_PER_PORT));
+> +	return sprintf(buf, "%d\n", br_opt_get(br, BROPT_VLAN_STATS_PER_PORT));
+>  }
+>  
+>  static ssize_t vlan_stats_per_port_store(struct device *d,
+> 
 
