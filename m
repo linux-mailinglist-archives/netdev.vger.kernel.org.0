@@ -2,38 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 289DE2F41BE
-	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 03:27:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4EA302F41C7
+	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 03:30:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727784AbhAMC0P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jan 2021 21:26:15 -0500
-Received: from mail.kernel.org ([198.145.29.99]:38430 "EHLO mail.kernel.org"
+        id S1727858AbhAMC37 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jan 2021 21:29:59 -0500
+Received: from mail.kernel.org ([198.145.29.99]:38742 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726831AbhAMC0P (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 12 Jan 2021 21:26:15 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 3DE59230FC;
-        Wed, 13 Jan 2021 02:25:34 +0000 (UTC)
+        id S1726484AbhAMC37 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 Jan 2021 21:29:59 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 7D021230FC;
+        Wed, 13 Jan 2021 02:29:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610504734;
-        bh=OVSsCu3O6op4evDB7dHlA1IoxeA8C7iVziAjW3AVx3c=;
+        s=k20201202; t=1610504958;
+        bh=bwM/+4ZnOGn6R3CazElX5qW00u0dfS0O09MDa1BPvuA=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Euyu0tk7CxMojhWaKk/ScBCLLnnZFXPPLHo0zvqtqotElCRaUwYxwhTFDk8AX0uzV
-         zRfNQiE+kBMz+Odw5jUcK2KI2aPa6KVtHCuhYzcaIhteYfNX4w5qB29eijGrapCvdT
-         DWitOfmJLGOTD7sEIoy+RhF0lzAtOM3EH1kbEfaJ63Ca3E31PMUeNBBi9Ye9qTLYjL
-         QAV/1R8zLL7VtvObbPPqpVvmx3qi1uznghGpv0wVjpDproKaIE6DIqGVVHjoyJn9D/
-         KFbPdEOdlpjRvCh1hhknZRnnOm2gR2mi/MorhohbtjbCWI9IhVIPS+kDdJ80bLPa6h
-         Vyy0UdyNQ6Bpg==
-Date:   Tue, 12 Jan 2021 18:25:33 -0800
+        b=E02d5Ka3mvTpI4gj7Q65dC5OLUSxbVS10uHkdFLW+LnH5Z3gmytVkVxpyGTBWkDtm
+         bTPR3Z9SXPUnPXOn/bdt48cfv4ABTTJgcCBkrSofkULHkOfrugfaK8VaERNmtgASJj
+         JDnZ0J/mdCqDpEh8+blAI6qKJ+DXLaHXCFbBP1bxE6BBtCUY77BwxG8Iu9mmBikH+0
+         cccpWiRYwSk+qVKBWpQsy/uS1yhFZgVo6h4WPdAGX/Z9yckqL9xFMBYy/LG8nMSO7m
+         gOujYfH5b19wuZ8mnmzUjQheWVOa2sUKR6lsHNUR/5VgLHPNybCNnKSWNmLDHlXpMQ
+         huNOEjepd/QCw==
+Date:   Tue, 12 Jan 2021 18:29:17 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     David Howells <dhowells@redhat.com>
-Cc:     netdev@vger.kernel.org,
-        Baptiste Lepers <baptiste.lepers@gmail.com>,
-        linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net] rxrpc: Call state should be read with READ_ONCE()
- under some circumstances
-Message-ID: <20210112182533.13b1c787@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <161046715522.2450566.488819910256264150.stgit@warthog.procyon.org.uk>
-References: <161046715522.2450566.488819910256264150.stgit@warthog.procyon.org.uk>
+To:     Yannick Vignon <yannick.vignon@oss.nxp.com>
+Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Yannick Vignon <yannick.vignon@nxp.com>
+Subject: Re: [PATCH net 1/2] net: stmmac: fix taprio schedule configuration
+Message-ID: <20210112182917.43a1edaa@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210112172457.20539-1-yannick.vignon@oss.nxp.com>
+References: <20210112172457.20539-1-yannick.vignon@oss.nxp.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -41,38 +42,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 12 Jan 2021 15:59:15 +0000 David Howells wrote:
-> From: Baptiste Lepers <baptiste.lepers@gmail.com>
+On Tue, 12 Jan 2021 18:24:56 +0100 Yannick Vignon wrote:
+> From: Yannick Vignon <yannick.vignon@nxp.com>
 > 
-> The call state may be changed at any time by the data-ready routine in
-> response to received packets, so if the call state is to be read and acted
-> upon several times in a function, READ_ONCE() must be used unless the call
-> state lock is held.
+> When configuring a 802.1Qbv schedule through the tc taprio qdisc on an NXP
+> i.MX8MPlus device, the effective cycle time differed from the requested one
+> by N*96ns, with N number of entries in the Qbv Gate Control List. This is
+> because the driver was adding a 96ns margin to each interval of the GCL,
+> apparently to account for the IPG. The problem was observed on NXP
+> i.MX8MPlus devices but likely affected all devices relying on the same
+> configuration callback (dwmac 4.00, 4.10, 5.10 variants).
 > 
-> As it happens, we used READ_ONCE() to read the state a few lines above the
-> unmarked read in rxrpc_input_data(), so use that value rather than
-> re-reading it.
+> Fix the issue by removing the margins, and simply setup the MAC with the
+> provided cycle time value. This is the behavior expected by the user-space
+> API, as altering the Qbv schedule timings would break standards conformance.
+> This is also the behavior of several other Ethernet MAC implementations
+> supporting taprio, including the dwxgmac variant of stmmac.
 > 
-> Signed-off-by: Baptiste Lepers <baptiste.lepers@gmail.com>
-> Signed-off-by: David Howells <dhowells@redhat.com>
+> Signed-off-by: Yannick Vignon <yannick.vignon@nxp.com>
 
-Fixes: a158bdd3247b ("rxrpc: Fix call timeouts")
+Thanks for the patches, could you repost and include appropriate Fixes
+tags?
 
-maybe?
+https://www.kernel.org/doc/html/latest/process/submitting-patches.html#describe-your-changes
 
-> diff --git a/net/rxrpc/input.c b/net/rxrpc/input.c
-> index 667c44aa5a63..dc201363f2c4 100644
-> --- a/net/rxrpc/input.c
-> +++ b/net/rxrpc/input.c
-> @@ -430,7 +430,7 @@ static void rxrpc_input_data(struct rxrpc_call *call, struct sk_buff *skb)
->  		return;
->  	}
->  
-> -	if (call->state == RXRPC_CALL_SERVER_RECV_REQUEST) {
-> +	if (state == RXRPC_CALL_SERVER_RECV_REQUEST) {
->  		unsigned long timo = READ_ONCE(call->next_req_timo);
->  		unsigned long now, expect_req_by;
->  
-> 
-> 
+> +	u32 ctrl;
+> 	int i, ret = 0x0;
 
+Please keep the variable declaration lines sorted longest to shortest
+in both patches.
