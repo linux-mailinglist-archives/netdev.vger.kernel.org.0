@@ -2,158 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B8612F4E0A
-	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 16:00:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 855652F4E65
+	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 16:21:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727067AbhAMPAb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jan 2021 10:00:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43678 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726837AbhAMPA2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 10:00:28 -0500
-Received: from mail-ot1-x333.google.com (mail-ot1-x333.google.com [IPv6:2607:f8b0:4864:20::333])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94E15C06179F;
-        Wed, 13 Jan 2021 06:59:47 -0800 (PST)
-Received: by mail-ot1-x333.google.com with SMTP id q25so2110753otn.10;
-        Wed, 13 Jan 2021 06:59:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=dxs0NJvJmBAu/+s8TLnC3MeVApUdCV36QEczfzjAyAs=;
-        b=Etc7CczaK+zRgqYlHy0I9d278nKUDa+LXjO9jeA+hc2GVdmN0dd0thOwl5mU3aMJei
-         H5aquTe14HHr4jMdVqzthnK8bajy7K++KIClGCPFsx86hXh4tN3szIFh+hVksyVlL3H3
-         sbCGwfogWD7hrLbCxqV4QGQEQOnZs7pLk9XileMuYpC7njfbFJtqLJl3SfsiktCuq6UP
-         TfhzvnlXS0cUfKsOeJkDelRV7pXt+X/Bx9w3FQcOYlNh74ijnyU+XjSRXHIfiJxPAzu7
-         w+i3uOnXfvMEFEQG0W+AsFzty3btlBPSW/YyBEcRNAyPRD4foVqjr6QBAf6G5qG7ELJL
-         QnPQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=dxs0NJvJmBAu/+s8TLnC3MeVApUdCV36QEczfzjAyAs=;
-        b=JUX741tDTC3qM6cGrTdUL5WCoUDc6kFt6M/yhqTMc4N/tRI0JBAHo8AWAZzyEK7qPA
-         HJpgE933E8bHvdbVntVwAHu04Ef6Wth1twg821Q8aGvh+rHDTHDT96rcQKl9GPpC4H9D
-         sAdMv9vos00ezlMwGRxzqnWHyYe+rVTpbFDi3oVzNRBv3mJ01XXxzjUvvXLL3N0Im5Av
-         fEgRZecEI8/2OKAHg3h7A6kJe0DdT6VTM2D7TCQhidhb6B4P8/BZzDXmEnf46nni+gzZ
-         XWWqbxL6UoeH+/jK1400imhQq+yDQHjnRdZo07uSyfjndfPSO/KpJuGKYjH4HT7accbS
-         5YsQ==
-X-Gm-Message-State: AOAM532aaOKL4XpNr5ID1U7ZceNnq+9zP43EYAhXMgtbVZ2fiDZ/QITh
-        zkNp8kI5hFIrj7bkO+HZmA==
-X-Google-Smtp-Source: ABdhPJzGT6yX+sn3TY+N84dyQvctxdfCn1JZx6Aona/JcuNQbnwrmB2JQqU5qDNxdRtlsGapD1us1Q==
-X-Received: by 2002:a9d:5c8b:: with SMTP id a11mr1477351oti.126.1610549986945;
-        Wed, 13 Jan 2021 06:59:46 -0800 (PST)
-Received: from threadripper.novatech-llc.local ([216.21.169.52])
-        by smtp.gmail.com with ESMTPSA id f25sm440719oou.39.2021.01.13.06.59.45
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 13 Jan 2021 06:59:45 -0800 (PST)
-From:   George McCollister <george.mccollister@gmail.com>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-Cc:     Rob Herring <robh@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org,
-        George McCollister <george.mccollister@gmail.com>
-Subject: [PATCH net-next v4 3/3] dt-bindings: net: dsa: add bindings for xrs700x switches
-Date:   Wed, 13 Jan 2021 08:59:22 -0600
-Message-Id: <20210113145922.92848-4-george.mccollister@gmail.com>
-X-Mailer: git-send-email 2.11.0
-In-Reply-To: <20210113145922.92848-1-george.mccollister@gmail.com>
-References: <20210113145922.92848-1-george.mccollister@gmail.com>
+        id S1727197AbhAMPVT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jan 2021 10:21:19 -0500
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:26796 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727105AbhAMPVS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 10:21:18 -0500
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 10DF54pY012940;
+        Wed, 13 Jan 2021 07:20:33 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-transfer-encoding :
+ content-type; s=pfpt0220; bh=88dwH/rdI8nsLHGYwDGUbJpwFmgrrLKRMOlWJLNOxWk=;
+ b=jtVe1eSRvm1o0dhMKjFTqnCVk4wVG16sMBLUDCRs/eQbAyGFfo31wbI2EGV7b/nJL3lQ
+ 2qa7yXVSVyFxH9JCF9GQnx7b8VAv87VVQJVHyBBw+a2E3t/RPHo93rwxf7e/jWb7sT4+
+ YNWxEfUX/WJ4Cf04ZjeegPU9e3ss475Ke3SII2dn7UCUUaCkO1cTMRx94iKIDvn10o8a
+ Kvf2VePCt7wIdauf+m9MZgzGYgrUTlT1hIqaF3feoHP7sD2X6MszxywJriDpsec09tax
+ siryD9jPDq2RwaU8Cp1/4n8kJuYUcxsaC6cL2ep6Ri0cdUou5p5AYzcNWpNKLWCYK7oI pw== 
+Received: from dc5-exch02.marvell.com ([199.233.59.182])
+        by mx0b-0016f401.pphosted.com with ESMTP id 35ycvputyd-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Wed, 13 Jan 2021 07:20:33 -0800
+Received: from SC-EXCH02.marvell.com (10.93.176.82) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 13 Jan
+ 2021 07:20:32 -0800
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH02.marvell.com
+ (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 13 Jan
+ 2021 07:20:31 -0800
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 13 Jan 2021 07:20:31 -0800
+Received: from hyd1schalla-dt.caveonetworks.com.com (unknown [10.29.8.39])
+        by maili.marvell.com (Postfix) with ESMTP id 733343F7044;
+        Wed, 13 Jan 2021 07:20:28 -0800 (PST)
+From:   Srujana Challa <schalla@marvell.com>
+To:     <davem@davemloft.net>
+CC:     <netdev@vger.kernel.org>, <kuba@kernel.org>,
+        <sgoutham@marvell.com>, <gakula@marvell.com>,
+        <sbhatta@marvell.com>, <schandran@marvell.com>,
+        <pathreya@marvell.com>, <jerinj@marvell.com>,
+        Srujana Challa <schalla@marvell.com>
+Subject: [PATCH net-next,0/3] Support for OcteonTX2 98xx CPT block.
+Date:   Wed, 13 Jan 2021 20:50:04 +0530
+Message-ID: <20210113152007.30293-1-schalla@marvell.com>
+X-Mailer: git-send-email 2.29.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
+ definitions=2021-01-13_07:2021-01-13,2021-01-13 signatures=0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add documentation and an example for Arrow SpeedChips XRS7000 Series
-single chip Ethernet switches.
+OcteonTX2 series of silicons have multiple variants, the
+98xx variant has two crypto (CPT) blocks to double the crypto
+performance. This patchset adds support for new CPT block(CPT1). 
 
-Signed-off-by: George McCollister <george.mccollister@gmail.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
----
- .../devicetree/bindings/net/dsa/arrow,xrs700x.yaml | 73 ++++++++++++++++++++++
- 1 file changed, 73 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/net/dsa/arrow,xrs700x.yaml
+Srujana Challa (3):
+  octeontx2-af: Mailbox changes for 98xx CPT block
+  octeontx2-af: Add support for CPT1 in debugfs
+  octeontx2-af: Handle CPT function level reset
 
-diff --git a/Documentation/devicetree/bindings/net/dsa/arrow,xrs700x.yaml b/Documentation/devicetree/bindings/net/dsa/arrow,xrs700x.yaml
-new file mode 100644
-index 000000000000..3f01b65f3b22
---- /dev/null
-+++ b/Documentation/devicetree/bindings/net/dsa/arrow,xrs700x.yaml
-@@ -0,0 +1,73 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/net/dsa/arrow,xrs700x.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Arrow SpeedChips XRS7000 Series Switch Device Tree Bindings
-+
-+allOf:
-+  - $ref: dsa.yaml#
-+
-+maintainers:
-+  - George McCollister <george.mccollister@gmail.com>
-+
-+description:
-+  The Arrow SpeedChips XRS7000 Series of single chip gigabit Ethernet switches
-+  are designed for critical networking applications. They have up to three
-+  RGMII ports and one RMII port and are managed via i2c or mdio.
-+
-+properties:
-+  compatible:
-+    oneOf:
-+      - enum:
-+          - arrow,xrs7003e
-+          - arrow,xrs7003f
-+          - arrow,xrs7004e
-+          - arrow,xrs7004f
-+
-+  reg:
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - reg
-+
-+unevaluatedProperties: false
-+
-+examples:
-+  - |
-+    i2c {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+        switch@8 {
-+            compatible = "arrow,xrs7004e";
-+            reg = <0x8>;
-+
-+            ethernet-ports {
-+                #address-cells = <1>;
-+                #size-cells = <0>;
-+                ethernet-port@1 {
-+                    reg = <1>;
-+                    label = "lan0";
-+                    phy-handle = <&swphy0>;
-+                    phy-mode = "rgmii-id";
-+                };
-+                ethernet-port@2 {
-+                    reg = <2>;
-+                    label = "lan1";
-+                    phy-handle = <&swphy1>;
-+                    phy-mode = "rgmii-id";
-+                };
-+                ethernet-port@3 {
-+                    reg = <3>;
-+                    label = "cpu";
-+                    ethernet = <&fec1>;
-+                    fixed-link {
-+                        speed = <1000>;
-+                        full-duplex;
-+                    };
-+                };
-+            };
-+        };
-+    };
+ .../net/ethernet/marvell/octeontx2/af/mbox.h  |   2 +
+ .../net/ethernet/marvell/octeontx2/af/rvu.c   |   3 +
+ .../net/ethernet/marvell/octeontx2/af/rvu.h   |   2 +
+ .../ethernet/marvell/octeontx2/af/rvu_cpt.c   | 115 +++++++++++++++---
+ .../marvell/octeontx2/af/rvu_debugfs.c        |  45 ++++---
+ .../ethernet/marvell/octeontx2/af/rvu_reg.h   |   8 ++
+ 6 files changed, 140 insertions(+), 35 deletions(-)
+
 -- 
-2.11.0
+2.29.0
 
