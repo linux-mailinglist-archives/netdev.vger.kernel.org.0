@@ -2,44 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 56E7F2F585D
-	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 04:02:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D48DB2F585C
+	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 04:02:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728492AbhANCSG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jan 2021 21:18:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40110 "EHLO
+        id S1727158AbhANCSB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jan 2021 21:18:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728793AbhAMVNl (ORCPT
+        with ESMTP id S1728865AbhAMVNl (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 16:13:41 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 210D6C061786
-        for <netdev@vger.kernel.org>; Wed, 13 Jan 2021 13:14:18 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 968F5C06179F
+        for <netdev@vger.kernel.org>; Wed, 13 Jan 2021 13:14:20 -0800 (PST)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1kznT6-0001Q1-M9
-        for netdev@vger.kernel.org; Wed, 13 Jan 2021 22:14:16 +0100
+        id 1kznT9-0001Wk-8c
+        for netdev@vger.kernel.org; Wed, 13 Jan 2021 22:14:19 +0100
 Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id 6ED115C3013
-        for <netdev@vger.kernel.org>; Wed, 13 Jan 2021 21:14:13 +0000 (UTC)
+        by bjornoya.blackshift.org (Postfix) with SMTP id 3181F5C3022
+        for <netdev@vger.kernel.org>; Wed, 13 Jan 2021 21:14:15 +0000 (UTC)
 Received: from hardanger.blackshift.org (unknown [172.20.34.65])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id C955F5C2FF9;
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id DE97A5C2FFA;
         Wed, 13 Jan 2021 21:14:11 +0000 (UTC)
 Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id b3163a16;
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 7d4fed6a;
         Wed, 13 Jan 2021 21:14:11 +0000 (UTC)
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        kernel@pengutronix.de
-Subject: pull-request: can-next 2021-01-13
-Date:   Wed, 13 Jan 2021 22:13:53 +0100
-Message-Id: <20210113211410.917108-1-mkl@pengutronix.de>
+        kernel@pengutronix.de, Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [net-next 01/17] MAINTAINERS: adjust entry to tcan4x5x file split
+Date:   Wed, 13 Jan 2021 22:13:54 +0100
+Message-Id: <20210113211410.917108-2-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.29.2
+In-Reply-To: <20210113211410.917108-1-mkl@pengutronix.de>
+References: <20210113211410.917108-1-mkl@pengutronix.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
@@ -50,126 +53,44 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Jakub, hello David,
+From: Lukas Bulwahn <lukas.bulwahn@gmail.com>
 
-this is a pull request of 17 patches for net-next/master.
+Commit 7813887ea972 ("can: tcan4x5x: rename tcan4x5x.c -> tcan4x5x-core.c") and
+commit 67def4ef8bb9 ("can: tcan4x5x: move regmap code into seperate file")
+split the file tcan4x5x.c into two files, but missed to adjust the TI TCAN4X5X
+DEVICE DRIVER section in MAINTAINERS.
 
-The first two patches update the MAINTAINERS file, Lukas Bulwahn's patch fixes
-the files entry for the tcan4x5x driver, which was broken by me in net-next.
-A patch by me adds the a missing header file to the CAN Networking Layer.
+Hence, ./scripts/get_maintainer.pl --self-test=patterns complains:
 
-The next 5 patches are by me and split the the CAN driver related
-infrastructure code into more files in a separate subdir. The next two patches
-by me clean up the CAN length related code. This is followed by 6 patches by
-Vincent Mailhol and me, they add helper code for for CAN frame length
-calculation neede for BQL support.
+  warning: no file matches    F:    drivers/net/can/m_can/tcan4x5x.c
 
-A patch by Vincent Mailhol adds software TX timestamp support.
+Adjust the file entry in MAINTAINERS to the tcan4x5x file splitting.
 
-The last patch is by me, targets the tcan4x5x driver, and removes the unneeded
-__packed attribute from the struct tcan4x5x_map_buf.
-
-regards,
-Marc
-
+Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Fixes: 67def4ef8bb9 ("can: tcan4x5x: move regmap code into seperate file")
+Fixes: 7813887ea972 ("can: tcan4x5x: rename tcan4x5x.c -> tcan4x5x-core.c")
+Link: https://lore.kernel.org/r/20210108073932.20804-1-lukas.bulwahn@gmail.com
+Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
+ MAINTAINERS | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-The following changes since commit f50e2f9f791647aa4e5b19d0064f5cabf630bf6e:
+diff --git a/MAINTAINERS b/MAINTAINERS
+index c2cb79198288..54fcd5fe572d 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -17839,7 +17839,7 @@ M:	Dan Murphy <dmurphy@ti.com>
+ L:	linux-can@vger.kernel.org
+ S:	Maintained
+ F:	Documentation/devicetree/bindings/net/can/tcan4x5x.txt
+-F:	drivers/net/can/m_can/tcan4x5x.c
++F:	drivers/net/can/m_can/tcan4x5x*
+ 
+ TI TRF7970A NFC DRIVER
+ M:	Mark Greer <mgreer@animalcreek.com>
 
-  hci: llc_shdlc: style: Simplify bool comparison (2021-01-12 20:18:30 -0800)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can-next.git tags/linux-can-next-for-5.12-20210113
-
-for you to fetch changes up to b42e45a913f2ae76807e656a1c053808d7d34352:
-
-  can: tcan4x5x: remove __packed attribute from struct tcan4x5x_map_buf (2021-01-13 21:48:28 +0100)
-
-----------------------------------------------------------------
-linux-can-next-for-5.12-20210113
-
-----------------------------------------------------------------
-Lukas Bulwahn (1):
-      MAINTAINERS: adjust entry to tcan4x5x file split
-
-Marc Kleine-Budde (13):
-      MAINTAINERS: CAN network layer: add missing header file can-ml.h
-      can: dev: move driver related infrastructure into separate subdir
-      can: dev: move bittiming related code into seperate file
-      can: dev: move length related code into seperate file
-      can: dev: move skb related into seperate file
-      can: dev: move netlink related code into seperate file
-      can: length: convert to kernel coding style
-      can: length: can_fd_len2dlc(): simplify length calculcation
-      can: length: canfd_sanitize_len(): add function to sanitize CAN-FD data length
-      can: dev: extend struct can_skb_priv to hold CAN frame length
-      can: dev: can_get_echo_skb(): extend to return can frame length
-      can: dev: can_rx_offload_get_echo_skb(): extend to return can frame length
-      can: tcan4x5x: remove __packed attribute from struct tcan4x5x_map_buf
-
-Vincent Mailhol (3):
-      can: length: can_skb_get_frame_len(): introduce function to get data length of frame in data link layer
-      can: dev: can_put_echo_skb(): extend to handle frame_len
-      can: dev: can_put_echo_skb(): add software tx timestamps
-
- MAINTAINERS                                       |    5 +-
- drivers/net/can/Makefile                          |    7 +-
- drivers/net/can/at91_can.c                        |    4 +-
- drivers/net/can/c_can/c_can.c                     |    4 +-
- drivers/net/can/cc770/cc770.c                     |    4 +-
- drivers/net/can/dev.c                             | 1338 ---------------------
- drivers/net/can/dev/Makefile                      |   11 +
- drivers/net/can/dev/bittiming.c                   |  261 ++++
- drivers/net/can/dev/dev.c                         |  467 +++++++
- drivers/net/can/dev/length.c                      |   90 ++
- drivers/net/can/dev/netlink.c                     |  379 ++++++
- drivers/net/can/{ => dev}/rx-offload.c            |    5 +-
- drivers/net/can/dev/skb.c                         |  231 ++++
- drivers/net/can/flexcan.c                         |    7 +-
- drivers/net/can/grcan.c                           |    4 +-
- drivers/net/can/ifi_canfd/ifi_canfd.c             |    4 +-
- drivers/net/can/kvaser_pciefd.c                   |    6 +-
- drivers/net/can/m_can/m_can.c                     |    8 +-
- drivers/net/can/m_can/tcan4x5x.h                  |    2 +-
- drivers/net/can/mscan/mscan.c                     |    4 +-
- drivers/net/can/pch_can.c                         |    4 +-
- drivers/net/can/peak_canfd/peak_canfd.c           |    4 +-
- drivers/net/can/rcar/rcar_can.c                   |    4 +-
- drivers/net/can/rcar/rcar_canfd.c                 |    4 +-
- drivers/net/can/sja1000/sja1000.c                 |    4 +-
- drivers/net/can/softing/softing_main.c            |    4 +-
- drivers/net/can/spi/hi311x.c                      |    4 +-
- drivers/net/can/spi/mcp251x.c                     |    4 +-
- drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c    |    4 +-
- drivers/net/can/sun4i_can.c                       |    4 +-
- drivers/net/can/ti_hecc.c                         |    4 +-
- drivers/net/can/usb/ems_usb.c                     |    4 +-
- drivers/net/can/usb/esd_usb2.c                    |    4 +-
- drivers/net/can/usb/gs_usb.c                      |    4 +-
- drivers/net/can/usb/kvaser_usb/kvaser_usb_core.c  |    2 +-
- drivers/net/can/usb/kvaser_usb/kvaser_usb_hydra.c |    2 +-
- drivers/net/can/usb/kvaser_usb/kvaser_usb_leaf.c  |    2 +-
- drivers/net/can/usb/mcba_usb.c                    |    4 +-
- drivers/net/can/usb/peak_usb/pcan_usb_core.c      |    4 +-
- drivers/net/can/usb/ucan.c                        |    4 +-
- drivers/net/can/usb/usb_8dev.c                    |    4 +-
- drivers/net/can/xilinx_can.c                      |    6 +-
- include/linux/can/bittiming.h                     |   44 +
- include/linux/can/dev.h                           |  135 +--
- include/linux/can/length.h                        |  174 +++
- include/linux/can/rx-offload.h                    |    3 +-
- include/linux/can/skb.h                           |   80 ++
- 47 files changed, 1819 insertions(+), 1542 deletions(-)
- delete mode 100644 drivers/net/can/dev.c
- create mode 100644 drivers/net/can/dev/Makefile
- create mode 100644 drivers/net/can/dev/bittiming.c
- create mode 100644 drivers/net/can/dev/dev.c
- create mode 100644 drivers/net/can/dev/length.c
- create mode 100644 drivers/net/can/dev/netlink.c
- rename drivers/net/can/{ => dev}/rx-offload.c (98%)
- create mode 100644 drivers/net/can/dev/skb.c
- create mode 100644 include/linux/can/bittiming.h
- create mode 100644 include/linux/can/length.h
+base-commit: f50e2f9f791647aa4e5b19d0064f5cabf630bf6e
+-- 
+2.29.2
 
 
