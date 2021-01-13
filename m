@@ -2,194 +2,173 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B8282F4F88
-	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 17:09:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B9BA32F4F90
+	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 17:09:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727496AbhAMQG4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jan 2021 11:06:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58168 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727481AbhAMQGy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 11:06:54 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 841E2C061795
-        for <netdev@vger.kernel.org>; Wed, 13 Jan 2021 08:06:14 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1kziet-00033J-JH; Wed, 13 Jan 2021 17:06:07 +0100
-Received: from [IPv6:2a03:f580:87bc:d400:fee8:1d97:dec2:c25] (unknown [IPv6:2a03:f580:87bc:d400:fee8:1d97:dec2:c25])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
-         client-signature RSA-PSS (4096 bits))
-        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
-        (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 190775C2D81;
-        Wed, 13 Jan 2021 16:06:06 +0000 (UTC)
-Subject: Re: [PATCH v10 1/1] can: usb: etas_es58X: add support for ETAS ES58X
- CAN USB interfaces
-To:     Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Cc:     linux-can <linux-can@vger.kernel.org>,
-        Arunachalam Santhanam <arunachalam.santhanam@in.bosch.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jimmy Assarsson <extja@kvaser.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        "open list : NETWORKING DRIVERS" <netdev@vger.kernel.org>
-References: <20210112130538.14912-1-mailhol.vincent@wanadoo.fr>
- <20210112130538.14912-2-mailhol.vincent@wanadoo.fr>
- <7643bd48-6594-9ede-b791-de6e155c62c1@pengutronix.de>
- <CAMZ6Rq+HggK2HHkPn_QTKzz-niyiU8AkHc4rP5AXE+AqJmkbrg@mail.gmail.com>
- <CAMZ6Rq+ZXG3LTgf9ZUohLGXKkSxqOf1W5WX0o5XGowQrwW+WRg@mail.gmail.com>
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
- mQINBFFVq30BEACtnSvtXHoeHJxG6nRULcvlkW6RuNwHKmrqoksispp43X8+nwqIFYgb8UaX
- zu8T6kZP2wEIpM9RjEL3jdBjZNCsjSS6x1qzpc2+2ivjdiJsqeaagIgvy2JWy7vUa4/PyGfx
- QyUeXOxdj59DvLwAx8I6hOgeHx2X/ntKAMUxwawYfPZpP3gwTNKc27dJWSomOLgp+gbmOmgc
- 6U5KwhAxPTEb3CsT5RicsC+uQQFumdl5I6XS+pbeXZndXwnj5t84M+HEj7RN6bUfV2WZO/AB
- Xt5+qFkC/AVUcj/dcHvZwQJlGeZxoi4veCoOT2MYqfR0ax1MmN+LVRvKm29oSyD4Ts/97cbs
- XsZDRxnEG3z/7Winiv0ZanclA7v7CQwrzsbpCv+oj+zokGuKasofzKdpywkjAfSE1zTyF+8K
- nxBAmzwEqeQ3iKqBc3AcCseqSPX53mPqmwvNVS2GqBpnOfY7Mxr1AEmxdEcRYbhG6Xdn+ACq
- Dq0Db3A++3PhMSaOu125uIAIwMXRJIzCXYSqXo8NIeo9tobk0C/9w3fUfMTrBDtSviLHqlp8
- eQEP8+TDSmRP/CwmFHv36jd+XGmBHzW5I7qw0OORRwNFYBeEuiOIgxAfjjbLGHh9SRwEqXAL
- kw+WVTwh0MN1k7I9/CDVlGvc3yIKS0sA+wudYiselXzgLuP5cQARAQABtCZNYXJjIEtsZWlu
- ZS1CdWRkZSA8bWtsQHBlbmd1dHJvbml4LmRlPokCVAQTAQoAPgIbAwIeAQIXgAULCQgHAwUV
- CgkICwUWAgMBABYhBMFAC6CzmJ5vvH1bXCte4hHFiupUBQJfEWX4BQkQo2czAAoJECte4hHF
- iupUvfMP/iNtiysSr5yU4tbMBzRkGov1/FjurfH1kPweLVHDwiQJOGBz9HgM5+n8boduRv36
- 0lU32g3PehN0UHZdHWhygUd6J09YUi2mJo1l2Fz1fQ8elUGUOXpT/xoxNQjslZjJGItCjza8
- +D1DO+0cNFgElcNPa7DFBnglatOCZRiMjo4Wx0i8njEVRU+4ySRU7rCI36KPts+uVmZAMD7V
- 3qiR1buYklJaPCJsnXURXYsilBIE9mZRmQjTDVqjLWAit++flqUVmDjaD/pj2AQe2Jcmd2gm
- sYW5P1moz7ACA1GzMjLDmeFtpJOIB7lnDX0F/vvsG3V713/701aOzrXqBcEZ0E4aWeZJzaXw
- n1zVIrl/F3RKrWDhMKTkjYy7HA8hQ9SJApFXsgP334Vo0ea82H3dOU755P89+Eoj0y44MbQX
- 7xUy4UTRAFydPl4pJskveHfg4dO6Yf0PGIvVWOY1K04T1C5dpnHAEMvVNBrfTA8qcahRN82V
- /iIGB+KSC2xR79q1kv1oYn0GOnWkvZmMhqGLhxIqHYitwH4Jn5uRfanKYWBk12LicsjRiTyW
- Z9cJf2RgAtQgvMPvmaOL8vB3U4ava48qsRdgxhXMagU618EszVdYRNxGLCqsKVYIDySTrVzu
- ZGs2ibcRhN4TiSZjztWBAe1MaaGk05Ce4h5IdDLbOOxhuQENBF8SDLABCADohJLQ5yffd8Sq
- 8Lo9ymzgaLcWboyZ46pY4CCCcAFDRh++QNOJ8l4mEJMNdEa/yrW4lDQDhBWV75VdBuapYoal
- LFrSzDzrqlHGG4Rt4/XOqMo6eSeSLipYBu4Xhg59S9wZOWbHVT/6vZNmiTa3d40+gBg68dQ8
- iqWSU5NhBJCJeLYdG6xxeUEtsq/25N1erxmhs/9TD0sIeX36rFgWldMwKmZPe8pgZEv39Sdd
- B+ykOlRuHag+ySJxwovfdVoWT0o0LrGlHzAYo6/ZSi/Iraa9R/7A1isWOBhw087BMNkRYx36
- B77E4KbyBPx9h3wVyD/R6T0Q3ZNPu6SQLnsWojMzABEBAAGJAjwEGAEKACYWIQTBQAugs5ie
- b7x9W1wrXuIRxYrqVAUCXxIMsAIbDAUJAucGAAAKCRArXuIRxYrqVOu0D/48xSLyVZ5NN2Bb
- yqo3zxdv/PMGJSzM3JqSv7hnMZPQGy9XJaTc5Iz/hyXaNRwpH5X0UNKqhQhlztChuAKZ7iu+
- 2VKzq4JJe9qmydRUwylluc4HmGwlIrDNvE0N66pRvC3h8tOVIsippAQlt5ciH74bJYXr0PYw
- Aksw1jugRxMbNRzgGECg4O6EBNaHwDzsVPX1tDj0d9t/7ClzJUy20gg8r9Wm/I/0rcNkQOpV
- RJLDtSbGSusKxor2XYmVtHGauag4YO6Vdq+2RjArB3oNLgSOGlYVpeqlut+YYHjWpaX/cTf8
- /BHtIQuSAEu/WnycpM3Z9aaLocYhbp5lQKL6/bcWQ3udd0RfFR/Gv7eR7rn3evfqNTtQdo4/
- YNmd7P8TS7ALQV/5bNRe+ROLquoAZvhaaa6SOvArcmFccnPeyluX8+o9K3BCdXPwONhsrxGO
- wrPI+7XKMlwWI3O076NqNshh6mm8NIC0mDUr7zBUITa67P3Q2VoPoiPkCL9RtsXdQx5BI9iI
- h/6QlzDxcBdw2TVWyGkVTCdeCBpuRndOMVmfjSWdCXXJCLXO6sYeculJyPkuNvumxgwUiK/H
- AqqdUfy1HqtzP2FVhG5Ce0TeMJepagR2CHPXNg88Xw3PDjzdo+zNpqPHOZVKpLUkCvRv1p1q
- m1qwQVWtAwMML/cuPga78rkBDQRfEXGWAQgAt0Cq8SRiLhWyTqkf16Zv/GLkUgN95RO5ntYM
- fnc2Tr3UlRq2Cqt+TAvB928lN3WHBZx6DkuxRM/Y/iSyMuhzL5FfhsICuyiBs5f3QG70eZx+
- Bdj4I7LpnIAzmBdNWxMHpt0m7UnkNVofA0yH6rcpCsPrdPRJNOLFI6ZqXDQk9VF+AB4HVAJY
- BDU3NAHoyVGdMlcxev0+gEXfBQswEcysAyvzcPVTAqmrDsupnIB2f0SDMROQCLO6F+/cLG4L
- Stbz+S6YFjESyXblhLckTiPURvDLTywyTOxJ7Mafz6ZCene9uEOqyd/h81nZOvRd1HrXjiTE
- 1CBw+Dbvbch1ZwGOTQARAQABiQNyBBgBCgAmFiEEwUALoLOYnm+8fVtcK17iEcWK6lQFAl8R
- cZYCGwIFCQLnoRoBQAkQK17iEcWK6lTAdCAEGQEKAB0WIQQreQhYm33JNgw/d6GpyVqK+u3v
- qQUCXxFxlgAKCRCpyVqK+u3vqatQCAC3QIk2Y0g/07xNLJwhWcD7JhIqfe7Qc5Vz9kf8ZpWr
- +6w4xwRfjUSmrXz3s6e/vrQsfdxjVMDFOkyG8c6DWJo0TVm6Ucrf9G06fsjjE/6cbE/gpBkk
- /hOVz/a7UIELT+HUf0zxhhu+C9hTSl8Nb0bwtm6JuoY5AW0LP2KoQ6LHXF9KNeiJZrSzG6WE
- h7nf3KRFS8cPKe+trbujXZRb36iIYUfXKiUqv5xamhohy1hw+7Sy8nLmw8rZPa40bDxX0/Gi
- 98eVyT4/vi+nUy1gF1jXgNBSkbTpbVwNuldBsGJsMEa8lXnYuLzn9frLdtufUjjCymdcV/iT
- sFKziU9AX7TLZ5AP/i1QMP9OlShRqERH34ufA8zTukNSBPIBfmSGUe6G2KEWjzzNPPgcPSZx
- Do4jfQ/m/CiiibM6YCa51Io72oq43vMeBwG9/vLdyev47bhSfMLTpxdlDJ7oXU9e8J61iAF7
- vBwerBZL94I3QuPLAHptgG8zPGVzNKoAzxjlaxI1MfqAD9XUM80MYBVjunIQlkU/AubdvmMY
- X7hY1oMkTkC5hZNHLgIsDvWUG0g3sACfqF6gtMHY2lhQ0RxgxAEx+ULrk/svF6XGDe6iveyc
- z5Mg5SUggw3rMotqgjMHHRtB3nct6XqgPXVDGYR7nAkXitG+nyG5zWhbhRDglVZ0mLlW9hij
- z3Emwa94FaDhN2+1VqLFNZXhLwrNC5mlA6LUjCwOL+zb9a07HyjekLyVAdA6bZJ5BkSXJ1CO
- 5YeYolFjr4YU7GXcSVfUR6fpxrb8N+yH+kJhY3LmS9vb2IXxneE/ESkXM6a2YAZWfW8sgwTm
- 0yCEJ41rW/p3UpTV9wwE2VbGD1XjzVKl8SuAUfjjcGGys3yk5XQ5cccWTCwsVdo2uAcY1MVM
- HhN6YJjnMqbFoHQq0H+2YenTlTBn2Wsp8TIytE1GL6EbaPWbMh3VLRcihlMj28OUWGSERxat
- xlygDG5cBiY3snN3xJyBroh5xk/sHRgOdHpmujnFyu77y4RTZ2W8
-Message-ID: <a0ea23cb-cf97-ca0b-be88-74c20bedc869@pengutronix.de>
-Date:   Wed, 13 Jan 2021 17:06:03 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        id S1727423AbhAMQHy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jan 2021 11:07:54 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:59886 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726110AbhAMQHx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 11:07:53 -0500
+Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
+        by m0001303.ppops.net (8.16.0.43/8.16.0.43) with SMTP id 10DG3QrQ010708;
+        Wed, 13 Jan 2021 08:06:21 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
+ references : from : message-id : date : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=facebook;
+ bh=DIiceqYDML+OZZdgEDt9022/VUGobr9S0GbCjnBd1K8=;
+ b=oA7rPouW8vHqPFHuPw6n9VojfVpalbJPKEhqnc0Cn/Xu80iSRC66xL7xVVKGem1TPQEm
+ ayFc1uKRDUEzN7poiGFo4YsuwKQBMczd1hREgbZ0YQiz4IrrMfCHON9pcUqspOasX82H
+ pCkUEHPFT1INH1/JksN6JWBl4nIPpz5WVhk= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by m0001303.ppops.net with ESMTP id 361fp3nua2-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Wed, 13 Jan 2021 08:06:21 -0800
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.35.174) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Wed, 13 Jan 2021 08:06:08 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=KzOAk0OX+GsGa6skjPBZR2L5T6TuYlM9rsJ9be6+ue7z9CaH99Jvuhuac8VoLP+tO7cyyml2Hyar5KBVgKLZAHhF7XvYiNVQ6v0SGRzDCCr86j9aazpBP4GQRvx5IYMf1+cJa7pEQjMQl7aBuPzRZsz0XSnK772LI4x7Y4FFtHa9ETpuoKLgqnaAFmQrFBI7Mp0g5ufEGhaxSlZFJp/T7NP7dUJECpyTWVKLuT1ls6U1/mik9pOWvcB+LXs0fgNmZEqPewlZ1segPOXvmFcnUEHhUcoz7N/WbEZH63NtYVfRok/OhIekYAXn/JaOdRthld3OPrPhVs0BBZUTDU04rg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=DIiceqYDML+OZZdgEDt9022/VUGobr9S0GbCjnBd1K8=;
+ b=JuphJ67V8mP0jYYUiyaAb+OSNV4/9jakPGMBs84ZBJoeYhVvrfdTX2+eHdwKELDCvY5cWZ40r593H3qK1MQFBZmMIgrSrUw5btCQElj5JHrs+AOVtJt/B2ADnXgkwjC01vHse+KUd9TEP7bJUfkOCmb/4dq227BwtIlHEGMI5zSBohGuIvkl4TnWo55Pts4pVhWqObrtu099v5Nf+/+swIobgYTIoc8b4XGwuUVWv0SPmI9zODH1FY3DW6FtX2yjuFH8SqD1vaBp8ZUQWTn5xSDavieaxuD50lEUOn8xnMNP/Mu4H5Rz5zHX8cS5u5G8X7qWBIYLGtGRN6Joz+E1tw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=DIiceqYDML+OZZdgEDt9022/VUGobr9S0GbCjnBd1K8=;
+ b=GFx4fdcY3XlpKRdbOTyGLgtFvEoro2VKfLPqcSfv7Perb3f+YG2Nn1eVm0VMIIzCbspBQnVOAIW05bxVw20MYbjuYB0tXJZ1+ha7vuR6+t3bhqyntjkgrZTRMeeLlT+vLv3zDZeTGIhYEWoc/76IrFsiNMjWIeO8GGO0SWtr1ZE=
+Authentication-Results: vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=none action=none header.from=fb.com;
+Received: from BYAPR15MB4088.namprd15.prod.outlook.com (2603:10b6:a02:c3::18)
+ by BYAPR15MB2582.namprd15.prod.outlook.com (2603:10b6:a03:154::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3763.9; Wed, 13 Jan
+ 2021 16:06:07 +0000
+Received: from BYAPR15MB4088.namprd15.prod.outlook.com
+ ([fe80::9ae:1628:daf9:4b03]) by BYAPR15MB4088.namprd15.prod.outlook.com
+ ([fe80::9ae:1628:daf9:4b03%7]) with mapi id 15.20.3742.012; Wed, 13 Jan 2021
+ 16:06:07 +0000
+Subject: Re: [PATCH bpf-next 1/2] trace: bpf: Allow bpf to attach to bare
+ tracepoints
+To:     Qais Yousef <qais.yousef@arm.com>
+CC:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        <linux-kernel@vger.kernel.org>
+References: <20210111182027.1448538-1-qais.yousef@arm.com>
+ <20210111182027.1448538-2-qais.yousef@arm.com>
+ <8ef6c8e8-c462-a780-b1ab-b7f2e4fa9836@fb.com>
+ <20210113101606.lpsn4scnsecdfxwr@e107158-lin>
+From:   Yonghong Song <yhs@fb.com>
+Message-ID: <98738d92-7679-5ed2-71c8-1ba71d7cac6e@fb.com>
+Date:   Wed, 13 Jan 2021 08:06:03 -0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.6.1
+In-Reply-To: <20210113101606.lpsn4scnsecdfxwr@e107158-lin>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [2620:10d:c090:400::5:e777]
+X-ClientProxiedBy: MWHPR07CA0013.namprd07.prod.outlook.com
+ (2603:10b6:300:116::23) To BYAPR15MB4088.namprd15.prod.outlook.com
+ (2603:10b6:a02:c3::18)
 MIME-Version: 1.0
-In-Reply-To: <CAMZ6Rq+ZXG3LTgf9ZUohLGXKkSxqOf1W5WX0o5XGowQrwW+WRg@mail.gmail.com>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="DZHLbIiEc9muuREis2EHsdRLtwfbzXTYJ"
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [IPv6:2620:10d:c085:21e1::13f6] (2620:10d:c090:400::5:e777) by MWHPR07CA0013.namprd07.prod.outlook.com (2603:10b6:300:116::23) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3763.10 via Frontend Transport; Wed, 13 Jan 2021 16:06:05 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 24b5c8f2-483f-4d2a-76fd-08d8b7dd2307
+X-MS-TrafficTypeDiagnostic: BYAPR15MB2582:
+X-Microsoft-Antispam-PRVS: <BYAPR15MB258284388293C733E4BAE3AAD3A90@BYAPR15MB2582.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:3513;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: ehn6wTe/tGQUSbvnLfiUa7CBl9vmCvLLqALPODvHBrzLWD5N454D4SW3BQSJGJV/OdykPpardgfIL2agO8pItgqypqeo7ambFuxFr6+O8PDiKhbXtQ75SfWksARTRfBzczT/CM7nodnP6BRPr2P8sJmJx/LqFGCTdjhA+KcMnGhYqPMJXavB9NVrwVHKIAO91puN973Oj/raVjbTkJ5znPDTpsKzFyd4NZVrZMMOhgqSz7UiA/2RV4yylJ9USIV8WCXjwLRDnL/sNpk7zkFiY6nzl1Q69/rhLTb7V75BLRxwZDwkuRNznE8KBSzCq1iv5F3Hm4amY0hkdb7dLKyPYJS0I8UQDnUMfVxf0nj9raTMbBJ4xRCwLHpFwtblmmHccS8MP/lut1/GIKvqH6bn/wFdE0wXVmnmxFrqhQIAbOJbzWpy4ApY05NYsFPYeLb4duIP3aGmLaVid0TEXvbkW2UCTRBi4h3Y/ZGAfT4Kvxc=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB4088.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(376002)(396003)(136003)(366004)(39860400002)(346002)(478600001)(36756003)(6486002)(31686004)(54906003)(2616005)(5660300002)(52116002)(31696002)(8936002)(8676002)(316002)(86362001)(66556008)(4744005)(66946007)(16526019)(186003)(66476007)(53546011)(2906002)(83380400001)(4326008)(6916009)(45980500001)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?M0RISEpCYzdoTWx0bUVoVkdsZzdEZzRtejZUNTdXOWZOL0NrTFM2K2drMzl6?=
+ =?utf-8?B?bU5JT21PTFFLM1lmNGNDNmtIa25NdWNwWnJyMUtZb2tIOWMwT1E2V1VMUnNT?=
+ =?utf-8?B?SndqTXBrTjNUMmRoT1oyLzJVUXBmN0ZkazU5cDJJN0pzb0s5aG1rRWZNK1Yz?=
+ =?utf-8?B?MDRtUWVreXFUOXdrTmd6d2g2RGp5THpFeHVqWGFvRzlJbGtqbVRXR0o1c0hn?=
+ =?utf-8?B?V0pwYzRSRFpYZVJWWDJEL1Y2Z1ZNTjQzNzJpNlVjaXJoODFuWkczbjdaWC82?=
+ =?utf-8?B?S1BtYmxYaTRrMXRXRFd5eC9SNi95bmNvM09OOHd4c2NMY05vRVI1Y3prS2FQ?=
+ =?utf-8?B?ZnIvYUF2VFZlbi9ENHI5WExJTzErc09yQzJvaFhPcVpVWnhoaVJkcjFacHdC?=
+ =?utf-8?B?WDZFcVN0d2pCeXZ1VDFHTFhGY2ZIbGxmK3h1UTNQMHVjOGVYV291RkZLd0h4?=
+ =?utf-8?B?K1lsVGt3eGVpTVJCNlc3RlBXYUdPNnFxSWliaUtSd3dKK0ZRSHo5WkUzSGRi?=
+ =?utf-8?B?YlJxMjBBNk9SNGdreDdmTWJrSmRpSG9Nc0dpdmpYWTlyL256bUFtWFZaWkI1?=
+ =?utf-8?B?RHNLZUVXT2c5b3VmTkppTC9BTW9tUDIraUNnMGVhT0FuUml0UGdselYwMm9v?=
+ =?utf-8?B?MFdxcGlrYUYrY3VTOElSODJWS3dVQlZ5ME53QzV0Vk8vL3pTZUJkM2FSUVg0?=
+ =?utf-8?B?enl0QmxqdTNSSDBGeHNEdzZ0eHB0Sy9oRVpCV2ZYZWtsSi9yS1pPeUR6M2k3?=
+ =?utf-8?B?ZUhoS24vRGljaXJING1Rd1d3cFdPZzhmTHNUN1Y1dFdWWW8vbmZSNVN2MGF3?=
+ =?utf-8?B?aUFRRW5XdHBLUjVKQlR3T2xlK20xVmdzcExpMXdRTE9pL3hmOEt5cFZ2bUo3?=
+ =?utf-8?B?YXVzbS9OMkwvdERtTkhrM0t4TjFLL1ZSMGlBMG5GWVdYZXRmdlMxT29oaGZJ?=
+ =?utf-8?B?Z0dQVHlYTlgzTTQzSndva2Z6MEczUzE1OGcvMElnZVVpL2tvRkFVL1hsQVZE?=
+ =?utf-8?B?TjZNZHB3SmJFQW1qVW5JTUh5emYwc05kVFJrWC9haEl6dFlObGZaVDF2dUtr?=
+ =?utf-8?B?VGRVNVdGMDlMRXhWK1hXZnV4Tm5QcExOdTlna0R3ck03QnN4Q0pyVWxxWGY0?=
+ =?utf-8?B?b0JWZFNoWENybGRjZVEwM0lBekFJL3hlQUVLRzJWTUZDTHVnb09CeG5ES3Jv?=
+ =?utf-8?B?YWZFNXcxZC9KeUNmZVJ6TXhZQ1dXMTdzSmhsdStOQkQzcWNYa2NaTGxkRkZX?=
+ =?utf-8?B?ekd2T2dqRUJQQWJHRlQ2U2VTdVlQQW9wN0Zhd1BwUmtZM3IyMHVsczIrVG5G?=
+ =?utf-8?B?QU1tYVhERjZjQTd0V0pBY1A1ODZYSnRJRndFQ1RLS0pRM0pyOEh1VytSS3ZN?=
+ =?utf-8?B?RUZ0RWdVdjlTT0E9PQ==?=
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR15MB4088.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jan 2021 16:06:07.4933
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-Network-Message-Id: 24b5c8f2-483f-4d2a-76fd-08d8b7dd2307
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Ekok6t9OA4dsnKs6doPvo9WyNVvdAAtlDupkRTiPEH640mXn6qnIvJzzjty5wmQK
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2582
+X-OriginatorOrg: fb.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
+ definitions=2021-01-13_07:2021-01-13,2021-01-13 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 suspectscore=0
+ mlxlogscore=938 phishscore=0 spamscore=0 priorityscore=1501 bulkscore=0
+ clxscore=1015 mlxscore=0 impostorscore=0 adultscore=0 malwarescore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2101130097
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---DZHLbIiEc9muuREis2EHsdRLtwfbzXTYJ
-Content-Type: multipart/mixed; boundary="DDIikifoSUZHUYBAyHmNRECs0wFQZmYZY";
- protected-headers="v1"
-From: Marc Kleine-Budde <mkl@pengutronix.de>
-To: Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Cc: linux-can <linux-can@vger.kernel.org>,
- Arunachalam Santhanam <arunachalam.santhanam@in.bosch.com>,
- Wolfgang Grandegger <wg@grandegger.com>,
- "David S . Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>,
- Jimmy Assarsson <extja@kvaser.com>, Masahiro Yamada <masahiroy@kernel.org>,
- "open list : NETWORKING DRIVERS" <netdev@vger.kernel.org>
-Message-ID: <a0ea23cb-cf97-ca0b-be88-74c20bedc869@pengutronix.de>
-Subject: Re: [PATCH v10 1/1] can: usb: etas_es58X: add support for ETAS ES58X
- CAN USB interfaces
-References: <20210112130538.14912-1-mailhol.vincent@wanadoo.fr>
- <20210112130538.14912-2-mailhol.vincent@wanadoo.fr>
- <7643bd48-6594-9ede-b791-de6e155c62c1@pengutronix.de>
- <CAMZ6Rq+HggK2HHkPn_QTKzz-niyiU8AkHc4rP5AXE+AqJmkbrg@mail.gmail.com>
- <CAMZ6Rq+ZXG3LTgf9ZUohLGXKkSxqOf1W5WX0o5XGowQrwW+WRg@mail.gmail.com>
-In-Reply-To: <CAMZ6Rq+ZXG3LTgf9ZUohLGXKkSxqOf1W5WX0o5XGowQrwW+WRg@mail.gmail.com>
-
---DDIikifoSUZHUYBAyHmNRECs0wFQZmYZY
-Content-Type: text/plain; charset=utf-8
-Content-Language: de-DE
-Content-Transfer-Encoding: quoted-printable
-
-On 1/13/21 3:35 PM, Vincent MAILHOL wrote:
->> My understanding is that having a queue size being a power of two is
->> required in order not to use spinlocks (else, modulo operations would
->> break when the index wraparound back to zero). I tried to minimize the=
-
->> number of spinlock: only one per bulk send or bulk receive.
->=20
-> Or do you mean to round up the skb_echo array length to the next power
-> of two in the driver despite the actual size of the device FIFO? Did
-> not think about that in the past but that should work.
->=20
-> I am going to think a bit more of how to improve that.
-
-For the echo_skb rounding up might work, but you should round down, so th=
-at your
-can directly use the masked value.
-
-Marc
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
 
---DDIikifoSUZHUYBAyHmNRECs0wFQZmYZY--
+On 1/13/21 2:16 AM, Qais Yousef wrote:
+> On 01/12/21 12:19, Yonghong Song wrote:
+>> I applied the patch to my local bpf-next repo, and got the following
+>> compilation error:
+> 
+> [...]
+> 
+>>
+>> I dumped preprecessor result but after macro expansion, the code
+>> becomes really complex and I have not figured out why it failed.
+>> Do you know what is the possible reason?
+> 
+> Yeah I did a last minute fix to address a checkpatch.pl error and my
+> verification of the change wasn't good enough obviously.
+> 
+> If you're keen to try out I can send you a patch with the fix. I should send v2
+> by the weekend too.
 
---DZHLbIiEc9muuREis2EHsdRLtwfbzXTYJ
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
+Thanks. I can wait and will check v2 once it is available.
 
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAl//GmsACgkQqclaivrt
-76krQAf/cOrvYybwj9Pl9uG9xNvWnZojKOo4fmZNt3RJbHVZm31XeTBhU01ll3xt
-5gtczymrjnrVZIv1/Ltv59LJv1wA/ppSo2lElUSU2XxXylRmGmZlVFKNl0lVqWXC
-JAvGoSRG4R2qes8GqvWmR2kRpF2o8cxaLFQZWy3jb+cb92fDYbcQMTmk48PWMi1g
-EcOb4zgq1PQW6VKBwlZnRuYWjTwlzvK3myCaZA/vsEesaXuGSP8OPlOq1okGkre8
-YnCVaBxvFxKbXY/losJzo3OYgvl4T8XXFmhFqWTj/b0Drj6nw9CKnywllelT8Fw+
-wwuiYZeo7a2qhCorAwKlUeREuB6amg==
-=eZo6
------END PGP SIGNATURE-----
-
---DZHLbIiEc9muuREis2EHsdRLtwfbzXTYJ--
+> 
+> Thanks for having a look.
+> 
+> Cheers
+> 
+> --
+> Qais Yousef
+> 
