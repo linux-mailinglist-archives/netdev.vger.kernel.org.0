@@ -2,93 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 52EA82F4299
-	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 04:41:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 544612F42A5
+	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 04:51:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726176AbhAMDkM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jan 2021 22:40:12 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:33916 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726003AbhAMDkM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 22:40:12 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1610509125;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=fSaLRoG57KvO7g+HhBEQBIyCeK5sYiN7HkTE57zkReU=;
-        b=WGu/K8aYD7DCrnGN7gDIRGROSZBEJEaOxP47+7gCAvYNsVF2AgL8ilT+1C3VFNcs535MgC
-        YjUZ1aNVoaGNdzzu6EV//KVzUfSxh8FJivhu8opmIsaap8UlF2OCgu8riAOKJJIDCdS+hi
-        2vNNsj7xw9TAIchRNythflXdJYQF0Po=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-286-LlhP_UCCPhyJ2DE4Q9BBuA-1; Tue, 12 Jan 2021 22:38:43 -0500
-X-MC-Unique: LlhP_UCCPhyJ2DE4Q9BBuA-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9D45A805EE3;
-        Wed, 13 Jan 2021 03:38:42 +0000 (UTC)
-Received: from [10.72.12.205] (ovpn-12-205.pek2.redhat.com [10.72.12.205])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id F370B60BFA;
-        Wed, 13 Jan 2021 03:38:36 +0000 (UTC)
-Subject: Re: [PATCH v3] vhost_vdpa: fix the problem in
- vhost_vdpa_set_config_call
-To:     Cindy Lu <lulu@redhat.com>, mst@redhat.com, kvm@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        lingshan.zhu@intel.com
-Cc:     stable@vger.kernel.org
-References: <20210112053629.9853-1-lulu@redhat.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <1403c336-4493-255f-54e3-c55dd2015c40@redhat.com>
-Date:   Wed, 13 Jan 2021 11:38:35 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1725818AbhAMDuT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jan 2021 22:50:19 -0500
+Received: from lucky1.263xmail.com ([211.157.147.133]:53370 "EHLO
+        lucky1.263xmail.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725536AbhAMDuT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 22:50:19 -0500
+X-Greylist: delayed 382 seconds by postgrey-1.27 at vger.kernel.org; Tue, 12 Jan 2021 22:50:17 EST
+Received: from localhost (unknown [192.168.167.235])
+        by lucky1.263xmail.com (Postfix) with ESMTP id 8915FCA88D;
+        Wed, 13 Jan 2021 11:41:36 +0800 (CST)
+X-MAIL-GRAY: 0
+X-MAIL-DELIVERY: 1
+X-ADDR-CHECKED4: 1
+X-ANTISPAM-LEVEL: 2
+X-ABS-CHECKED: 0
+Received: from thinkpad-p51.mshome.net (unknown [58.22.7.114])
+        by smtp.263.net (postfix) whith ESMTP id P25768T139698924463872S1610509294957598_;
+        Wed, 13 Jan 2021 11:41:36 +0800 (CST)
+X-IP-DOMAINF: 1
+X-UNIQUE-TAG: <5523297ee3983dc260e5c9721f8e3364>
+X-RL-SENDER: david.wu@rock-chips.com
+X-SENDER: wdc@rock-chips.com
+X-LOGIN-NAME: david.wu@rock-chips.com
+X-FST-TO: netdev@vger.kernel.org
+X-SENDER-IP: 58.22.7.114
+X-ATTACHMENT-NUM: 0
+X-System-Flag: 0
+From:   David Wu <david.wu@rock-chips.com>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, joabreu@synopsys.com,
+        alexandre.torgue@st.com, peppe.cavallaro@st.com,
+        linux-kernel@vger.kernel.org, David Wu <david.wu@rock-chips.com>
+Subject: [PATCH] net: stmmac: Fixed mtu channged by cache aligned
+Date:   Wed, 13 Jan 2021 11:41:09 +0800
+Message-Id: <20210113034109.27865-1-david.wu@rock-chips.com>
+X-Mailer: git-send-email 2.19.1
 MIME-Version: 1.0
-In-Reply-To: <20210112053629.9853-1-lulu@redhat.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Since the original mtu is not used when the mtu is updated,
+the mtu is aligned with cache, this will get an incorrect.
+For example, if you want to configure the mtu to be 1500,
+but mtu 1536 is configured in fact.
 
-On 2021/1/12 下午1:36, Cindy Lu wrote:
-> In vhost_vdpa_set_config_call, the cb.private should be vhost_vdpa.
-> this cb.private will finally use in vhost_vdpa_config_cb as
-> vhost_vdpa. Fix this issue.
->
-> Fixes: 776f395004d82 ("vhost_vdpa: Support config interrupt in vdpa")
-> Acked-by: Jason Wang <jasowang@redhat.com>
-> Signed-off-by: Cindy Lu <lulu@redhat.com>
-> ---
+Fixed: eaf4fac478077 ("net: stmmac: Do not accept invalid MTU values")
+Signed-off-by: David Wu <david.wu@rock-chips.com>
+---
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index 5b1c12ff98c0..e8640123db76 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -4025,7 +4025,7 @@ static void stmmac_set_rx_mode(struct net_device *dev)
+ static int stmmac_change_mtu(struct net_device *dev, int new_mtu)
+ {
+ 	struct stmmac_priv *priv = netdev_priv(dev);
+-	int txfifosz = priv->plat->tx_fifo_size;
++	int txfifosz = priv->plat->tx_fifo_size, mtu = new_mtu;
+ 
+ 	if (txfifosz == 0)
+ 		txfifosz = priv->dma_cap.tx_fifo_size;
+@@ -4043,7 +4043,7 @@ static int stmmac_change_mtu(struct net_device *dev, int new_mtu)
+ 	if ((txfifosz < new_mtu) || (new_mtu > BUF_SIZE_16KiB))
+ 		return -EINVAL;
+ 
+-	dev->mtu = new_mtu;
++	dev->mtu = mtu;
+ 
+ 	netdev_update_features(dev);
+ 
+-- 
+2.19.1
 
 
-Hi Cindy:
-
-I think at least you forget to cc stable.
-
-Thanks
-
-
->   drivers/vhost/vdpa.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-> index ef688c8c0e0e..3fbb9c1f49da 100644
-> --- a/drivers/vhost/vdpa.c
-> +++ b/drivers/vhost/vdpa.c
-> @@ -319,7 +319,7 @@ static long vhost_vdpa_set_config_call(struct vhost_vdpa *v, u32 __user *argp)
->   	struct eventfd_ctx *ctx;
->   
->   	cb.callback = vhost_vdpa_config_cb;
-> -	cb.private = v->vdpa;
-> +	cb.private = v;
->   	if (copy_from_user(&fd, argp, sizeof(fd)))
->   		return  -EFAULT;
->   
 
