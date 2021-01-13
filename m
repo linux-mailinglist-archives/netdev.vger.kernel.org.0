@@ -2,69 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4B8372F57B1
-	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 04:00:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F4C92F57AC
+	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 04:00:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729402AbhANCEl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jan 2021 21:04:41 -0500
-Received: from mail.kernel.org ([198.145.29.99]:45692 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727693AbhAMWbU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 13 Jan 2021 17:31:20 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 7944123437
-        for <netdev@vger.kernel.org>; Wed, 13 Jan 2021 22:29:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610576967;
-        bh=mHvKCEj3/7nBBxrW4tVVo0k16Rhddoa7YQd2OFic81Y=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=FVFcyxYuFODJwc1NmCq6dGYUEoqC8dzhGHg0FuoCqh5X/YZZkUMGkePdU8HMTwX/t
-         jfKtp1SjnptuInY/ZByd0inH/ALCBa4jES85UEPmrbobY0vm1aRGAjO1FX2Hjxu0yS
-         gLVKbjdZ8mBUhuVzF9QyrZVXqPKwznB+/+Qrgc6Zy0l6P1LiCMOyS3DX5e7yvD9Cgf
-         x8n3IsFITJilMRqyu8twyH4Ke/Wufmh+GciuVls7JYHwIcTqszFYFWxmznlp+cqVZC
-         Qow/5H0y6+He63QtAcrQ1Cb8GkDm5mUvGfJBTBt6UJVGX7xH0DJqn4bAlEud9gFEhx
-         a8xdjguWtOnYQ==
-Received: by mail-lj1-f171.google.com with SMTP id f17so4318691ljg.12
-        for <netdev@vger.kernel.org>; Wed, 13 Jan 2021 14:29:27 -0800 (PST)
-X-Gm-Message-State: AOAM531H15g/E1+ZHq7913SCqs+1VyLECpzo5rn+8HVP2kzc4G7itDLE
-        k9kz0hvykmhBa5A0yjgQV6FoPU09rXp+KJ1q3Qs6zQ==
-X-Google-Smtp-Source: ABdhPJwSFcQoW+n63mgov3Msp2haXfpDPP8xwUvqAEp/d3ESBqh434XmbQzSCR2/v+Bz6JmsJNnCb6xYp2oVwbjPD3g=
-X-Received: by 2002:a2e:b5dc:: with SMTP id g28mr1848338ljn.112.1610576965768;
- Wed, 13 Jan 2021 14:29:25 -0800 (PST)
-MIME-Version: 1.0
-References: <20210113053810.13518-1-gilad.reti@gmail.com>
-In-Reply-To: <20210113053810.13518-1-gilad.reti@gmail.com>
-From:   KP Singh <kpsingh@kernel.org>
-Date:   Wed, 13 Jan 2021 23:29:16 +0100
-X-Gmail-Original-Message-ID: <CACYkzJ5o7QBR1stFTqxGJv2gbS0qsVKZW6BJ3iBUagy5_S+N0w@mail.gmail.com>
-Message-ID: <CACYkzJ5o7QBR1stFTqxGJv2gbS0qsVKZW6BJ3iBUagy5_S+N0w@mail.gmail.com>
-Subject: Re: [PATCH bpf v2 1/2] bpf: support PTR_TO_MEM{,_OR_NULL} register spilling
-To:     Gilad Reti <gilad.reti@gmail.com>
-Cc:     bpf <bpf@vger.kernel.org>, Yonghong Song <yhs@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
+        id S1729392AbhANCEU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jan 2021 21:04:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57784 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729384AbhAMWg6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 17:36:58 -0500
+Received: from mail-pg1-x549.google.com (mail-pg1-x549.google.com [IPv6:2607:f8b0:4864:20::549])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03A9EC061786
+        for <netdev@vger.kernel.org>; Wed, 13 Jan 2021 14:36:17 -0800 (PST)
+Received: by mail-pg1-x549.google.com with SMTP id z20so2325755pgh.18
+        for <netdev@vger.kernel.org>; Wed, 13 Jan 2021 14:36:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=sender:date:message-id:mime-version:subject:from:to:cc;
+        bh=RvmtRhkONMmfhKRRv0A/mu12QKo6Pw33tPGzPMsnY7U=;
+        b=eNg+TgZVgGKOKdnt+s9s+B/MNQiswvTMCwgmo8Ii3RPSXI63/n0z2lZa0uLfn6edAe
+         CqelYSNlg/KPvUyYhf+1H/U2Ulf9zF+gH256Rntm3+MEw48hdJACm34mL+qcU+1QgjSn
+         YBhqF6hrnorqu+sZO3j380PcokaYnk0LzyiFjAUBJyuhyOvdf0DCMwsyjKOJ2wMgNroG
+         f8AJqhwiK5daTSrJdQskC2X+vFNAX78I7MABZIYr6BguQ6hN/u8GeUpaw4C+v7kWNO1x
+         ayhVFWgdpJdPlDacSn3uevpU+Qdpduf0rkz1PDStxciqbonDSVJPOoyXwRVrGRN9xz87
+         tg3Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:sender:date:message-id:mime-version:subject:from
+         :to:cc;
+        bh=RvmtRhkONMmfhKRRv0A/mu12QKo6Pw33tPGzPMsnY7U=;
+        b=M/Gxj69/4u69TCwF3aTaqtED9lMB88WQrd5qSpqmwQZhUhjpKlAE5dVQYO255+5HSu
+         0Gsu0HtpU7OSVOoG0XpNfNrJbOKkQXXV0/Z09+MM7l5EjIOLvor+3KX4zSth2Arz/IoQ
+         +o24wYlqUs1h/sfIsu1qHAw1jW/EoSXXysGolsMCsaUuDH0G4xd7/tG9LxFK8fQVCZIx
+         mUas+w1cGoRZB6HaOPsf6VVNZXwT2veI5MMr/QYmlaiyj37R0XUpzO0t/yHqwSv3Wa4J
+         9sw3D9Xpzmxachy3Ik0VwwHIJ+0tQnaurVhrRFyKHMt9LWEs4tngaUnheDWlC4IWphyM
+         sfOA==
+X-Gm-Message-State: AOAM531FY5L57TylSHAUGqtZN0609F+06PYaDPAZmbACR5R04M5HLg59
+        excTdqq/XAwe2+VRkVXk3HymLqF7Wuk7
+X-Google-Smtp-Source: ABdhPJxuT5GN8uIB0Yk80LlDAp87gi4fAKPUBt19+DQuoK0Q2qZEJ//A/7To9qS2YuaQflTY45diDpaAilnm
+Sender: "irogers via sendgmr" <irogers@irogers.svl.corp.google.com>
+X-Received: from irogers.svl.corp.google.com ([2620:15c:2cd:2:f693:9fff:fef4:4583])
+ (user=irogers job=sendgmr) by 2002:a17:902:12c:b029:da:e63c:dc92 with SMTP id
+ 41-20020a170902012cb02900dae63cdc92mr4528156plb.71.1610577376422; Wed, 13 Jan
+ 2021 14:36:16 -0800 (PST)
+Date:   Wed, 13 Jan 2021 14:36:08 -0800
+Message-Id: <20210113223609.3358812-1-irogers@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.30.0.284.gd98b1dd5eaa7-goog
+Subject: [PATCH 1/2] bpf, libbpf: Avoid unused function warning on bpf_tail_call_static
+From:   Ian Rogers <irogers@google.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
         Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        Andrii Nakryiko <andriin@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
-        Shuah Khan <shuah@kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        linux-kselftest@vger.kernel.org
+        KP Singh <kpsingh@chromium.org>,
+        Quentin Monnet <quentin@isovalent.com>,
+        Jean-Philippe Brucker <jean-philippe@linaro.org>,
+        Tobias Klauser <tklauser@distanz.ch>,
+        Ilya Leoshkevich <iii@linux.ibm.com>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Ian Rogers <irogers@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 13, 2021 at 6:38 AM Gilad Reti <gilad.reti@gmail.com> wrote:
->
-> Add support for pointer to mem register spilling, to allow the verifier
-> to track pointers to valid memory addresses. Such pointers are returned
-> for example by a successful call of the bpf_ringbuf_reserve helper.
->
-> The patch was partially contributed by CyberArk Software, Inc.
->
-> Fixes: 457f44363a88 ("bpf: Implement BPF ring buffer and verifier support for it")
-> Suggested-by: Yonghong Song <yhs@fb.com>
-> Signed-off-by: Gilad Reti <gilad.reti@gmail.com>
+Add inline to __always_inline making it match the linux/compiler.h.
+Adding this avoids an unused function warning on bpf_tail_call_static
+when compining with -Wall.
 
-Acked-by: KP Singh <kpsingh@kernel.org>
+Signed-off-by: Ian Rogers <irogers@google.com>
+---
+ tools/lib/bpf/bpf_helpers.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tools/lib/bpf/bpf_helpers.h b/tools/lib/bpf/bpf_helpers.h
+index 72b251110c4d..ae6c975e0b87 100644
+--- a/tools/lib/bpf/bpf_helpers.h
++++ b/tools/lib/bpf/bpf_helpers.h
+@@ -30,7 +30,7 @@
+ #define SEC(NAME) __attribute__((section(NAME), used))
+ 
+ #ifndef __always_inline
+-#define __always_inline __attribute__((always_inline))
++#define __always_inline inline __attribute__((always_inline))
+ #endif
+ #ifndef __noinline
+ #define __noinline __attribute__((noinline))
+-- 
+2.30.0.284.gd98b1dd5eaa7-goog
+
