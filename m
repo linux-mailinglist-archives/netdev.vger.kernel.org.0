@@ -2,303 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 10B3F2F5808
-	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 04:01:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 481B42F5805
+	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 04:01:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727237AbhANCNA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jan 2021 21:13:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49084 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729158AbhAMV4e (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 16:56:34 -0500
-Received: from mail-io1-xd31.google.com (mail-io1-xd31.google.com [IPv6:2607:f8b0:4864:20::d31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E677AC061575;
-        Wed, 13 Jan 2021 13:55:51 -0800 (PST)
-Received: by mail-io1-xd31.google.com with SMTP id d9so7233429iob.6;
-        Wed, 13 Jan 2021 13:55:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=C1KpeLF8z04zYzPK9f6optkTaPnIGlMvee+/+Z7VX54=;
-        b=iPnQ2y1+fYKaR/Efg55DqBP4QIy8QpDXZI2SRF/I9YDSKpA/4L1zWblhvRq6Dr6qPc
-         DX1CO97VXqd/dnmbnhKeRJOzT05nZR8YLQp4lPKpmcFsetpIlpQl0KaFRpbhqOhYpSCZ
-         XxquSgLfTSM7mm/czDn4gyjr4KNi5BFToVxAb3CKoCviyA3mBQr5w2ZAPTYDreNY39US
-         fwPV9vK48Yw/lPiEAn3HbM8qIctpuUExBNPLnMODPFTsw107zX7N1lWAAk0n9X4Lp5RO
-         mzZAhFnLeiF1N0WUpY1mDvxy0oNlHwBSFLWTxfpu1kHkWOaIuVw7rUJK/UqBp+HUVQwt
-         P4CQ==
+        id S1727975AbhANCMv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jan 2021 21:12:51 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:35397 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729220AbhAMV5q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 16:57:46 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1610574973;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=TcMhDFu40M2vbcmXTpEq5AfXfYVWbjvJciRmB33PZNI=;
+        b=aShgT3fgYyh3204GRR1UHMm4H/WffVKP8JgdEOykPeu2mZBEnjQyaUF7eXiFSHKPuso4pQ
+        gE+jZNfx9oPn0r4A+lX8ud+2Z7oNuKabUlfQuxP/dFWInCaMUAaiRzOE2EKJ6S+MQcxkVa
+        /mm85c9zJ5IoX+oTgIspdKfdFVxJ0WU=
+Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
+ [209.85.222.197]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-152-WmXdQCPXP1ab26WDLknm7w-1; Wed, 13 Jan 2021 16:56:11 -0500
+X-MC-Unique: WmXdQCPXP1ab26WDLknm7w-1
+Received: by mail-qk1-f197.google.com with SMTP id g26so2639561qkk.13
+        for <netdev@vger.kernel.org>; Wed, 13 Jan 2021 13:56:11 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=C1KpeLF8z04zYzPK9f6optkTaPnIGlMvee+/+Z7VX54=;
-        b=QbcGbpYPdQMd8Hlnu4I4YUKUdR5AJpgyJcpxpX4XL5o582qq7y3D5btMkRX+dtboAm
-         4epOY6hw3Io6dK9Z0x/y9ZGkvJB3uzld7HNciNNCCu43zMYWjuWYC024T9bD24dozKKU
-         9+bve67cBXoWkN4Wut4+1pDUgWpvrK5UCy0OfndnnwUC9M4sja8VmTfBugD1dDw3Bo7F
-         g3y2XCGVbkaOJqPCToU6VazIJ5d9ctG1e4RyG6DF+c/SvJ429cWFw/qt7SCJS5Vf8DBT
-         KrpRcSA6+F2ByyY4PiZ5uSG+hXgWCEb3zuWo5h6UtFRhHkiZ1XdXN0WhLeP7/su8sDti
-         jS9g==
-X-Gm-Message-State: AOAM531iuLjRdwe8X2S5cptM1jnolUL7UD3JjhuVk8ArArqZSW9XXL8g
-        gAA+V2uWsdiuEJm2hJ4ygqytJyYEKGLbqDLX8g+PrZoMMm826w==
-X-Google-Smtp-Source: ABdhPJwFG8DCnnEME6ZSQAxJ7v6+aurobSTgX0CgwzDV6/RSYymJmsrButHJPvXdhEBqgTwdWNljqn/6wew5bjXa9CM=
-X-Received: by 2002:a05:6e02:929:: with SMTP id o9mr4000052ilt.42.1610574951069;
- Wed, 13 Jan 2021 13:55:51 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=TcMhDFu40M2vbcmXTpEq5AfXfYVWbjvJciRmB33PZNI=;
+        b=dfo0WJbDIAv2rUqlMyaNJbZmIqR4MbvdiE3AKQHkb5ACkqCyTppll2GDxgl17QNVNr
+         YvbIUsUWwhq4Nzki4yg8B9oyFk7B8Ixd+SYPENYtTQbIFR/IE9jr9hP4T1kU3NHJ8feg
+         bDxkuy3TM+vcMD9UESQXxHUEiR2/9M44NidvLp6rAObEtFhW5WLVYe8MByqf6sqn4m/M
+         /iRfqXS1OuqFEmxgq+NrWFtlT/QCjQpV7l+GZnkLxtfNqe/T3GN2GIXLdJ1oyEDUyLkI
+         KQPSjElQ/izUBgakx/OMeERTYHqRRpmNmzYqgblSGu8QiAFf4o8mnM3dFI4dfGOoVSmp
+         46fw==
+X-Gm-Message-State: AOAM531wYyjV6goDRDfro3jtx6CFUHkIOMm3J7tR1Ju6fGVF8wz3vKX1
+        lvZuJJJvB9k2hasrvpHek7Y1Le4GosAi4yl5ugGwhk4E9fvZEkGmImsPkKUfgaf4716X1BRm1uf
+        H85pcvJ4MyprrHBct
+X-Received: by 2002:a05:6214:1230:: with SMTP id p16mr4305623qvv.47.1610574970924;
+        Wed, 13 Jan 2021 13:56:10 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzZW1vCbp2lWzBVZ/9CHzZnH8/2XiV+QNphgjQ5RHwl/EwUN+7SzCeUi4g+9Mvjrek/eLuusA==
+X-Received: by 2002:a05:6214:1230:: with SMTP id p16mr4305603qvv.47.1610574970679;
+        Wed, 13 Jan 2021 13:56:10 -0800 (PST)
+Received: from trix.remote.csb (075-142-250-213.res.spectrum.com. [75.142.250.213])
+        by smtp.gmail.com with ESMTPSA id p6sm1803386qtl.21.2021.01.13.13.56.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Jan 2021 13:56:10 -0800 (PST)
+From:   trix@redhat.com
+To:     claudiu.manoil@nxp.com, davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Tom Rix <trix@redhat.com>
+Subject: [PATCH] gianfar: remove definition of DEBUG
+Date:   Wed, 13 Jan 2021 13:56:03 -0800
+Message-Id: <20210113215603.1721958-1-trix@redhat.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-References: <d8dc3cd362915974426d8274bb8ac6970a2096bb.1610371323.git.lucien.xin@gmail.com>
- <CAKgT0UeEkqQjSU_t1wp3_k4pRYxM=FE-rTk2sBa-mdSwPnAstw@mail.gmail.com>
- <CADvbK_cr1bYUjUi-FrcDZwPX9nBkUqP3LZNx06b4sKrO3kdVdw@mail.gmail.com>
- <CAKgT0UfDQhD=J7RomDZmzjRsMSm6wgtaS-sc-grE00a=8kWN8Q@mail.gmail.com> <CADvbK_fQove=-Oox8aLiZSdrpAFSiBNmtVBUs65v3O9rbzhE+A@mail.gmail.com>
-In-Reply-To: <CADvbK_fQove=-Oox8aLiZSdrpAFSiBNmtVBUs65v3O9rbzhE+A@mail.gmail.com>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Wed, 13 Jan 2021 13:55:40 -0800
-Message-ID: <CAKgT0UcCEdTdWJjO4+7CjWPy=kVOaTtY6a2Dd0LEUYoszEiKgg@mail.gmail.com>
-Subject: Re: [PATCHv2 net-next] ip_gre: remove CRC flag from dev features in gre_gso_segment
-To:     Xin Long <lucien.xin@gmail.com>
-Cc:     network dev <netdev@vger.kernel.org>,
-        "linux-sctp @ vger . kernel . org" <linux-sctp@vger.kernel.org>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Neil Horman <nhorman@tuxdriver.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Lorenzo Bianconi <lorenzo@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 13, 2021 at 1:46 AM Xin Long <lucien.xin@gmail.com> wrote:
->
-> On Wed, Jan 13, 2021 at 10:11 AM Alexander Duyck
-> <alexander.duyck@gmail.com> wrote:
-> >
-> > On Mon, Jan 11, 2021 at 9:14 PM Xin Long <lucien.xin@gmail.com> wrote:
-> > >
-> > > On Tue, Jan 12, 2021 at 12:48 AM Alexander Duyck
-> > > <alexander.duyck@gmail.com> wrote:
-> > > >
-> > > > On Mon, Jan 11, 2021 at 5:22 AM Xin Long <lucien.xin@gmail.com> wrote:
-> > > > >
-> > > > > This patch is to let it always do CRC checksum in sctp_gso_segment()
-> > > > > by removing CRC flag from the dev features in gre_gso_segment() for
-> > > > > SCTP over GRE, just as it does in Commit 527beb8ef9c0 ("udp: support
-> > > > > sctp over udp in skb_udp_tunnel_segment") for SCTP over UDP.
-> > > > >
-> > > > > It could set csum/csum_start in GSO CB properly in sctp_gso_segment()
-> > > > > after that commit, so it would do checksum with gso_make_checksum()
-> > > > > in gre_gso_segment(), and Commit 622e32b7d4a6 ("net: gre: recompute
-> > > > > gre csum for sctp over gre tunnels") can be reverted now.
-> > > > >
-> > > > > Note that the current HWs like igb NIC can only handle the SCTP CRC
-> > > > > when it's in the outer packet, not in the inner packet like in this
-> > > > > case, so here it removes CRC flag from the dev features even when
-> > > > > need_csum is false.
-> > > >
-> > > > So the limitation in igb is not the hardware but the driver
-> > > > configuration. When I had coded things up I put in a limitation on the
-> > > > igb_tx_csum code that it would have to validate that the protocol we
-> > > > are requesting an SCTP CRC offload since it is a different calculation
-> > > > than a 1's complement checksum. Since igb doesn't support tunnels we
-> > > > limited that check to the outer headers.
-> > > Ah.. I see, thanks.
-> > > >
-> > > > We could probably enable this for tunnels as long as the tunnel isn't
-> > > > requesting an outer checksum offload from the driver.
-> > > I think in igb_tx_csum(), by checking skb->csum_not_inet would be enough
-> > > to validate that is a SCTP request:
-> > > -               if (((first->protocol == htons(ETH_P_IP)) &&
-> > > -                    (ip_hdr(skb)->protocol == IPPROTO_SCTP)) ||
-> > > -                   ((first->protocol == htons(ETH_P_IPV6)) &&
-> > > -                    igb_ipv6_csum_is_sctp(skb))) {
-> > > +               if (skb->csum_not_inet) {
-> > >                         type_tucmd = E1000_ADVTXD_TUCMD_L4T_SCTP;
-> > >                         break;
-> > >                 }
-> > >
-> >
-> > So if I may ask. Why go with something like csum_not_inet instead of
-> > specifying something like crc32_csum? I'm just wondering if there are
-> > any other non-1's complement checksums that we are dealing with?
-> I don't think there is, here is the thread of that patch:
->
-> https://lore.kernel.org/netdev/CALx6S36rem=OuN_At6qYA=se5cpuYM1N2R8efoaszvo8b8Tz5A@mail.gmail.com/
->
-> I'm writing GRE checksum, and trying to change csum_not_inet:1 to
-> csum_type:2, by doing the below, no bit hole occurs:
->
-> -       __u8                    csum_not_inet:1;
-> -       __u8                    dst_pending_confirm:1;
-> +       __u8                    csum_type:2;
->  #ifdef CONFIG_IPV6_NDISC_NODETYPE
->         __u8                    ndisc_nodetype:2;
->  #endif
-> +       __u8                    dst_pending_confirm:1;
->
+From: Tom Rix <trix@redhat.com>
 
-If we only have two types of checksum we probably don't need to add a
-new bit. We can basically leave it as a single bit with 0 being the
-inet style checksum, and 1 being a crc32. The main thing I would want
-to be able to verify is that we are specifically talking about a crc32
-checksum so that if the type of checksum and offset match then we can
-go forward with the hardware offload. If you need to add additional
-types you could probably add them later.
+Defining DEBUG should only be done in development.
+So remove DEBUG.
 
-> and in skb_csum_hwoffload_help():
->  int skb_csum_hwoffload_help(struct sk_buff *skb,
->                             const netdev_features_t features)
->  {
-> -       if (unlikely(skb->csum_not_inet))
-> -               return !!(features & NETIF_F_SCTP_CRC) ? 0 :
-> -                       skb_crc32c_csum_help(skb);
+Signed-off-by: Tom Rix <trix@redhat.com>
+---
+ drivers/net/ethernet/freescale/gianfar.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-Based on this it would seem like csum_not_inet is more of a sctp_crc
-specific flag.
+diff --git a/drivers/net/ethernet/freescale/gianfar.c b/drivers/net/ethernet/freescale/gianfar.c
+index d391a45cebb6..541de32ea662 100644
+--- a/drivers/net/ethernet/freescale/gianfar.c
++++ b/drivers/net/ethernet/freescale/gianfar.c
+@@ -58,7 +58,6 @@
+  */
+ 
+ #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+-#define DEBUG
+ 
+ #include <linux/kernel.h>
+ #include <linux/string.h>
+-- 
+2.27.0
 
-> +       if (likely(!skb->csum_type))
-> +               return !!(features & NETIF_F_CSUM_MASK) ? 0 :
-> skb_checksum_help(skb);
-> +
-> +       if (skb->csum_type == CSUM_T_GENERIC) {
-> +               return !!(features & NETIF_F_HW_CSUM) ? 0 :
-> skb_checksum_help(skb);
-> +       } else if (skb->csum_type == CSUM_T_SCTP_CRC) {
-> +               return !!(features & NETIF_F_SCTP_CRC) ? 0 :
-> skb_crc32c_csum_help(skb);
-> +       } else {
-> +               pr_warn("Wrong csum type: %d\n", skb->csum_type);
-> +               return 1;
-> +       }
->
-> then the driver fix will be:
->         case offsetof(struct sctphdr, checksum):
->                 /* validate that this is actually an SCTP request */
-> -               if (((first->protocol == htons(ETH_P_IP)) &&
-> -                    (ip_hdr(skb)->protocol == IPPROTO_SCTP)) ||
-> -                   ((first->protocol == htons(ETH_P_IPV6)) &&
-> -                    igb_ipv6_csum_is_sctp(skb))) {
-> +               if (skb->csum_type == CSUM_T_SCTP_CRC) {
->                         type_tucmd = E1000_ADVTXD_TUCMD_L4T_SCTP;
->                         break;
->                 }
->
-
-So the one thing here is that I would prefer to avoid referencing
-whatever our solution is directly. I would rather have a function that
-performs this test. So what you end up with is something like:
-static inline bool skb_csum_is_sctp(struct sk_buff *skb)
-{
-    return skb->csum_type == CSUM_T_SCTP_CRC;
-}
-
-Then it simplifies the driver code and will make backports easier as
-they would just have to do something like:
-    if (skb_csum_is_sctp(skb)) {
-        type_tucmd = E1000_ADVTXD_TUCMD_L4T_SCTP;
-        break;
-    }
-
-For older kernels the driver can do their own version of
-skb_csum_is_sctp and still work correctly.
-
-
-> then the gre csum set will be:
-> +                               skb->csum_type = CSUM_T_GENERIC;
-> +                               skb->ip_summed = CHECKSUM_PARTIAL;
-> +                               skb->csum_start =
-> skb_transport_header(skb) - skb->head;
-> +                               skb->csum_offset = sizeof(*greh);
->
-> >
-> > One thing we might want to do to make eventual backporting for this
-> > easier would be to add an accessor inline function. Maybe something
-> > like a skb_csum_is_crc32() so that for older kernels the function
-> > could just be defined to return false since the csum_not_inet may not
-> > exist.
-> >
-> > > Otherwise, we will need to parse the packet a little bit, as it does in
-> > > hns3_get_l4_protocol().
-> >
-> > Agreed. If the csum_not_inet means it is a crc32 checksum then we
-> > could just look at the offsets and as long as they are correct for
-> > sctp we could just go forward with what we have.
-> >
-> > > >
-> > > > > v1->v2:
-> > > > >   - improve the changelog.
-> > > > >   - fix "rev xmas tree" in varibles declaration.
-> > > > >
-> > > > > Signed-off-by: Xin Long <lucien.xin@gmail.com>
-> > > > > ---
-> > > > >  net/ipv4/gre_offload.c | 15 ++++-----------
-> > > > >  1 file changed, 4 insertions(+), 11 deletions(-)
-> > > > >
-> > > > > diff --git a/net/ipv4/gre_offload.c b/net/ipv4/gre_offload.c
-> > > > > index e0a2465..a681306 100644
-> > > > > --- a/net/ipv4/gre_offload.c
-> > > > > +++ b/net/ipv4/gre_offload.c
-> > > > > @@ -15,10 +15,10 @@ static struct sk_buff *gre_gso_segment(struct sk_buff *skb,
-> > > > >                                        netdev_features_t features)
-> > > > >  {
-> > > > >         int tnl_hlen = skb_inner_mac_header(skb) - skb_transport_header(skb);
-> > > > > -       bool need_csum, need_recompute_csum, gso_partial;
-> > > > >         struct sk_buff *segs = ERR_PTR(-EINVAL);
-> > > > >         u16 mac_offset = skb->mac_header;
-> > > > >         __be16 protocol = skb->protocol;
-> > > > > +       bool need_csum, gso_partial;
-> > > > >         u16 mac_len = skb->mac_len;
-> > > > >         int gre_offset, outer_hlen;
-> > > > >
-> > > > > @@ -41,10 +41,11 @@ static struct sk_buff *gre_gso_segment(struct sk_buff *skb,
-> > > > >         skb->protocol = skb->inner_protocol;
-> > > > >
-> > > > >         need_csum = !!(skb_shinfo(skb)->gso_type & SKB_GSO_GRE_CSUM);
-> > > > > -       need_recompute_csum = skb->csum_not_inet;
-> > > > >         skb->encap_hdr_csum = need_csum;
-> > > > >
-> > > > >         features &= skb->dev->hw_enc_features;
-> > > > > +       /* CRC checksum can't be handled by HW when SCTP is the inner proto. */
-> > > > > +       features &= ~NETIF_F_SCTP_CRC;
-> > > > >
-> > > > >         /* segment inner packet. */
-> > > > >         segs = skb_mac_gso_segment(skb, features);
-> > > >
-> > > > Do we have NICs that are advertising NETIF_S_SCTP_CRC as part of their
-> > > > hw_enc_features and then not supporting it? Based on your comment
-> > > Yes, igb/igbvf/igc/ixgbe/ixgbevf, they have a similar code of SCTP
-> > > proto validation.
-> >
-> > Yeah, it is old code. It was added in 4.6 before tunnels supported
-> > SCTP_CRC I am guessing. It looks like csum_not_inet wasn't added until
-> > 4.13. So it would probably be best to fix the drivers since the driver
-> > code is outdated.
-> >
-> > > > above it seems like you are masking this out because hardware is
-> > > > advertising features it doesn't actually support. I'm just wondering
-> > > > if that is the case or if this is something where this should be
-> > > > cleared if need_csum is set since we only support one level of
-> > > > checksum offload.
-> > > Since only these drivers only do SCTP proto validation, and "only
-> > > one level checksum offload" issue only exists when inner packet
-> > > is SCTP packet, clearing NETIF_F_SCTP_CRC should be enough.
-> > >
-> > > But seems to fix the drivers will be better, as hw_enc_features should
-> > > tell the correct features for inner proto. wdyt?
-> >
-> > Yes, it would be better to fix the drivers. However the one limitation
-> > is that this will only work when we don't have an outer checksum in
-> > place. If we have an outer checksum then we have to compute the crc32
-> > checksum and then offload the outer checksum if we can.
-> >
-> > > (Just note udp tunneling SCTP doesn't have this issue, as the outer
-> > >  udp checksum is always required by RFC)
-> But sctp over Vxlan/Geneve may still use noudpcsum, so need_csum
-> may still be false in there.
->
-> vxlan and geneve is not supporting fraglist, which sctp hw gso requires.
-> I will add NETIF_F_FRAGLIST flag for udp tunnel device in another patch.
->
-> Thanks.
-
-Okay, so in those cases we still have SCTP over UDP without an outer
-checksum then. I agree that it makes sense to allow offloading the
-SCTP CRC32 in the noudpcsum case since we should only have one item to
-offload.
