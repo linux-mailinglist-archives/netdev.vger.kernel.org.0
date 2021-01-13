@@ -2,40 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0DDD72F4146
-	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 02:38:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 64C5D2F4153
+	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 02:48:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727124AbhAMBi4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jan 2021 20:38:56 -0500
-Received: from mail.kernel.org ([198.145.29.99]:60946 "EHLO mail.kernel.org"
+        id S1726562AbhAMBrX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jan 2021 20:47:23 -0500
+Received: from mail.kernel.org ([198.145.29.99]:33544 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726996AbhAMBi4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 12 Jan 2021 20:38:56 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id EB41B2310F;
-        Wed, 13 Jan 2021 01:38:14 +0000 (UTC)
+        id S1725983AbhAMBrJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 Jan 2021 20:47:09 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 885242310A;
+        Wed, 13 Jan 2021 01:46:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610501895;
-        bh=nXQKJuHXqcVXEQ7fA4OkmpuzJf/dqsi2h6uSXjiGVcU=;
+        s=k20201202; t=1610502387;
+        bh=HTbdulOpGkshGom0oAVv9h8Rv14hB1msllun9d1Fi6g=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=WLbnB8FVuW8RC5fxMvmfRZjOSZmTeJyohQAzCyn1cREUIu+/DUqYuywA4VPTO1d9W
-         mDCy8dvzILKcjqE4ByBb17s0phLWyWZsZ2ozJcGKRLGQQ4nq9y/iCEuj8zUrObguhC
-         HnOQSaccR/IXsnM5MZ8cgQ/vMzHw0BGQdJp1aHdRkCLEcI3qkQM4PY1b9hRb/iinXy
-         5aWr4gCeNvkEq8hcIED0/6sDqQCKg2k3PCVtTEQLqiQnJfzT4beRf2Qpd9GjAyczw+
-         hoXdtmxDc6iubflAmM5ckWJ4ZriQm4shnB9lIkuGHLXE2JbiLyfaGzyCM/tz3/um/B
-         tbJPp8bLEZhpg==
-Date:   Tue, 12 Jan 2021 17:38:13 -0800
+        b=hLLbzLo2QpiKr0VFuVjMrr5OR80Lzr0LppKGTQ9OzcFtnuZKFbooW0ytEJ79l82uP
+         Zka2W5aD0wYacBcDm5keSQBs0+Y5LrKnXVQqeFrF4U5IwXlWp34obpt1z55t2d5OKq
+         JvyeL2srCtVvjt7w+V4I7zUOuewfPWM4jf03/QNj767GOuO0D3aO16EMNpg50tQdDF
+         tdDuuPcVUEqmzUM1gffD8rKyybQtJC2qW4JPHJxxqMlPg4OEkwdNESZtxLen8pOvUh
+         coV8VAAA4VjC/mOmYlEe3TgMKQdKMNSJRaL5Ei3tdhWDvjT9CAd5GSZ36/wPhTMfP0
+         7Mf7rj5/Erc2A==
+Date:   Tue, 12 Jan 2021 17:46:25 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     netdev@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>,
-        syzbot+2624e3778b18fc497c92@syzkaller.appspotmail.com,
-        Pieter Jansen van Vuuren 
-        <pieter.jansenvanvuuren@netronome.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Xin Long <lucien.xin@gmail.com>, Jiri Pirko <jiri@resnulli.us>
-Subject: Re: [Patch net] cls_flower: call nla_ok() before nla_next()
-Message-ID: <20210112173813.17861ae6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210112025548.19107-1-xiyou.wangcong@gmail.com>
-References: <20210112025548.19107-1-xiyou.wangcong@gmail.com>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        linux-can@vger.kernel.org,
+        Jeroen Hofstee <jhofstee@victronenergy.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        "open list : NETWORKING DRIVERS" <netdev@vger.kernel.org>
+Subject: Re: [PATCH v4 1/1] can: dev: add software tx timestamps
+Message-ID: <20210112174625.40c02021@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <f9ebb060-f190-79af-d57a-d5394390d222@pengutronix.de>
+References: <20210112095437.6488-1-mailhol.vincent@wanadoo.fr>
+        <20210112095437.6488-2-mailhol.vincent@wanadoo.fr>
+        <f9ebb060-f190-79af-d57a-d5394390d222@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -43,59 +46,47 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 11 Jan 2021 18:55:48 -0800 Cong Wang wrote:
-> From: Cong Wang <cong.wang@bytedance.com>
+On Tue, 12 Jan 2021 11:03:00 +0100 Marc Kleine-Budde wrote:
+> On 1/12/21 10:54 AM, Vincent Mailhol wrote:
+> > Call skb_tx_timestamp() within can_put_echo_skb() so that a software
+> > tx timestamp gets attached on the skb.
+> > 
+> > There two main reasons to include this call in can_put_echo_skb():
+> > 
+> >   * It easily allow to enable the tx timestamp on all devices with
+> >     just one small change.
+> > 
+> >   * According to Documentation/networking/timestamping.rst, the tx
+> >     timestamps should be generated in the device driver as close as
+> >     possible, but always prior to passing the packet to the network
+> >     interface. During the call to can_put_echo_skb(), the skb gets
+> >     cloned meaning that the driver should not dereference the skb
+> >     variable anymore after can_put_echo_skb() returns. This makes
+> >     can_put_echo_skb() the very last place we can use the skb without
+> >     having to access the echo_skb[] array.
+> > 
+> > Remark: by default, skb_tx_timestamp() does nothing. It needs to be
+> > activated by passing the SOF_TIMESTAMPING_TX_SOFTWARE flag either
+> > through socket options or control messages.
+> > 
+> > References:
+> > 
+> >  * Support for the error queue in CAN RAW sockets (which is needed for
+> >    tx timestamps) was introduced in:
+> >    https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=eb88531bdbfaafb827192d1fc6c5a3fcc4fadd96
+> > 
+> >   * Put the call to skb_tx_timestamp() just before adding it to the
+> >     array: https://lkml.org/lkml/2021/1/10/54
+> > 
+> >   * About Tx hardware timestamps
+> >     https://lore.kernel.org/linux-can/20210111171152.GB11715@hoboy.vegasvil.org/
+> > 
+> > Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>  
 > 
-> fl_set_enc_opt() simply checks if there are still bytes left to parse,
-> but this is not sufficent as syzbot seems to be able to generate
-> malformatted netlink messages. nla_ok() is more strict so should be
-> used to validate the next nlattr here.
-> 
-> And nla_validate_nested_deprecated() has less strict check too, it is
-> probably too late to switch to the strict version, but we can just
-> call nla_ok() too after it.
-> 
-> Reported-and-tested-by: syzbot+2624e3778b18fc497c92@syzkaller.appspotmail.com
-> Fixes: 0a6e77784f49 ("net/sched: allow flower to match tunnel options")
-> Fixes: 79b1011cb33d ("net: sched: allow flower to match erspan options")
-> Cc: Pieter Jansen van Vuuren <pieter.jansenvanvuuren@netronome.com>
-> Cc: Jamal Hadi Salim <jhs@mojatatu.com>
-> Cc: Xin Long <lucien.xin@gmail.com>
-> Cc: Jiri Pirko <jiri@resnulli.us>
-> Signed-off-by: Cong Wang <cong.wang@bytedance.com>
+> Applied to linux-can-next/testing
 
-Thanks for keeping up with the syzbot bugs!
+Please make sure to address the warnings before this hits net-next:
 
-> diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
-> index 1319986693fc..e265c443536e 100644
-> --- a/net/sched/cls_flower.c
-> +++ b/net/sched/cls_flower.c
-> @@ -1272,6 +1272,8 @@ static int fl_set_enc_opt(struct nlattr **tb, struct fl_flow_key *key,
->  
->  		nla_opt_msk = nla_data(tb[TCA_FLOWER_KEY_ENC_OPTS_MASK]);
->  		msk_depth = nla_len(tb[TCA_FLOWER_KEY_ENC_OPTS_MASK]);
-> +		if (!nla_ok(nla_opt_msk, msk_depth))
-> +			return -EINVAL;
+https://patchwork.kernel.org/project/netdevbpf/patch/20210112130538.14912-2-mailhol.vincent@wanadoo.fr/
 
-Can we just add another call to nla_validate_nested_deprecated() 
-here instead of having to worry about each attr individually?
-See below..
-
->  	}
->  
->  	nla_for_each_attr(nla_opt_key, nla_enc_key,
-> @@ -1308,7 +1310,7 @@ static int fl_set_enc_opt(struct nlattr **tb, struct fl_flow_key *key,
->  				return -EINVAL;
->  			}
->  
-> -			if (msk_depth)
-> +			if (nla_ok(nla_opt_msk, msk_depth))
->  				nla_opt_msk = nla_next(nla_opt_msk, &msk_depth);
-
-Should we not error otherwise? if msk_depth && !nla_ok() then the
-message is clearly misformatted. If we don't error out we'll keep
-reusing the same mask over and over, while the intention of this 
-code was to have mask per key AFAICT.
-
->  			break;
->  		case TCA_FLOWER_KEY_ENC_OPTS_VXLAN:
+Actually it appears not to build with allmodconfig..?
