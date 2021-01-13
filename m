@@ -2,39 +2,38 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E0AA2F534C
-	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 20:29:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9039B2F534E
+	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 20:29:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728706AbhAMT2e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jan 2021 14:28:34 -0500
-Received: from mail.kernel.org ([198.145.29.99]:55890 "EHLO mail.kernel.org"
+        id S1728716AbhAMT2f (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jan 2021 14:28:35 -0500
+Received: from mail.kernel.org ([198.145.29.99]:55898 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728628AbhAMT2a (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1727688AbhAMT2a (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 13 Jan 2021 14:28:30 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 0B9CF23122;
-        Wed, 13 Jan 2021 19:27:47 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 0996A2313E;
+        Wed, 13 Jan 2021 19:27:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610566068;
-        bh=huldKtagp1CrI6m8Xc+wrtS2WUNzP8F9WlPn8+xsT7k=;
+        s=k20201202; t=1610566069;
+        bh=73O7B1obLekUiXn4ZGdmlUGPp6alM/k/8TDYckFpyIc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Sp3YkoqHb/8jD4/W2xAeL/od9NkPX64X5ccdQF5M/H/k/DsgB7h7KCLz1dfMBREvm
-         2C9P94Wji+RoXynNeB35E4S+fpIGJZ63IMCKKBJVbVDZohB9pvMjYEE1U0d+YRx75X
-         58W+TUfRSj6ElHab+814/n+hNSV5Cx8D5OPBjbDqak9VQjgZDL6dLGN7JLXyN8s+j5
-         O06g+fpqJUgdYxb5r+JoMy9mZYnFHowst4ZjOs8pmzYQwsmcbsAJ0LobHkXyf3NDjt
-         VUj14HBK3uakIBAI8rx2PL03OWnvXOSsP0BGTQ/F1Z7pmClWX3IE5+GpzQjE8xq7pc
-         EwpfJhdMEJzTQ==
+        b=nDFeeAGhkyxOq8BRyyi4k/1Jue5eGDuCn1A8muK1Zs3nYruvZpd/rOCIIKPPicaO4
+         e+yWND6HgrAC/1pNbbnNUsaG/lFLOqh+BJhL78WqoLZ0BZNn4meNTg+RiAdSP/zI3z
+         AvAmnX8Xqpr0xqlnAsvEmQAFCAyUVO1aVXtwdcP9c3U26+7b3wkA6n98R+L64y04nY
+         AujBJ/TO3XVtt3AdyiKZPleUKKhaFPBzYDaLP5x7I/eI1ImOR3RWLRtuWF7S+hVWvc
+         P0aDaGmn7TM7yUs+sWOEkfHwYmH5sEyf/vzXFNb1zIYSBT4uq9gvy+5+uEv16E50O8
+         bAltC5GwYAtoQ==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Jason Gunthorpe <jgg@nvidia.com>
 Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
         Leon Romanovsky <leonro@nvidia.com>,
-        Parav Pandit <parav@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
-        Vu Pham <vuhuong@nvidia.com>,
+        Parav Pandit <parav@nvidia.com>, Vu Pham <vuhuong@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next V6 02/14] devlink: Introduce PCI SF port flavour and port attribute
-Date:   Wed, 13 Jan 2021 11:27:18 -0800
-Message-Id: <20210113192730.280656-3-saeed@kernel.org>
+Subject: [net-next V6 03/14] devlink: Support add and delete devlink port
+Date:   Wed, 13 Jan 2021 11:27:19 -0800
+Message-Id: <20210113192730.280656-4-saeed@kernel.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20210113192730.280656-1-saeed@kernel.org>
 References: <20210113192730.280656-1-saeed@kernel.org>
@@ -46,194 +45,266 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Parav Pandit <parav@nvidia.com>
 
-A PCI sub-function (SF) represents a portion of the device similar
-to PCI VF.
+Extended devlink interface for the user to add and delete a port.
+Extend devlink to connect user requests to driver to add/delete
+a port in the device.
 
-In an eswitch, PCI SF may have port which is normally represented
-using a representor netdevice.
-To have better visibility of eswitch port, its association with SF,
-and its representor netdevice, introduce a PCI SF port flavour.
+Driver routines are invoked without holding devlink instance lock.
+This enables driver to perform several devlink objects registration,
+unregistration such as (port, health reporter, resource etc) by using
+existing devlink APIs.
+This also helps to uniformly use the code for port unregistration
+during driver unload and during port deletion initiated by user.
 
-When devlink port flavour is PCI SF, fill up PCI SF attributes of the
-port.
+Examples of add, show and delete commands:
+$ devlink dev eswitch set pci/0000:06:00.0 mode switchdev
 
-Extend port name creation using PCI PF and SF number scheme on best
-effort basis, so that vendor drivers can skip defining their own
-scheme.
-This is done as cApfNSfM, where A, N and M are controller, PCI PF and
-PCI SF number respectively.
-This is similar to existing naming for PCI PF and PCI VF ports.
+$ devlink port show
+pci/0000:06:00.0/65535: type eth netdev ens2f0np0 flavour physical port 0 splittable false
 
-An example view of a PCI SF port:
+$ devlink port add pci/0000:06:00.0 flavour pcisf pfnum 0 sfnum 88
+pci/0000:06:00.0/32768: type eth netdev eth6 flavour pcisf controller 0 pfnum 0 sfnum 88 external false splittable false
+  function:
+    hw_addr 00:00:00:00:00:00 state inactive opstate detached
 
 $ devlink port show pci/0000:06:00.0/32768
-pci/0000:06:00.0/32768: type eth netdev ens2f0npf0sf88 flavour pcisf controller 0 pfnum 0 sfnum 88 external false splittable false
+pci/0000:06:00.0/32768: type eth netdev eth6 flavour pcisf controller 0 pfnum 0 sfnum 88 external false splittable false
   function:
-    hw_addr 00:00:00:00:88:88 state active opstate attached
+    hw_addr 00:00:00:00:00:00 state inactive opstate detached
 
-$ devlink port show pci/0000:06:00.0/32768 -jp
-{
-    "port": {
-        "pci/0000:06:00.0/32768": {
-            "type": "eth",
-            "netdev": "ens2f0npf0sf88",
-            "flavour": "pcisf",
-            "controller": 0,
-            "pfnum": 0,
-            "sfnum": 88,
-            "splittable": false,
-            "function": {
-                "hw_addr": "00:00:00:00:88:88",
-                "state": "active",
-                "opstate": "attached"
-            }
-        }
-    }
-}
+$ udevadm test-builtin net_id /sys/class/net/eth6
+Load module index
+Parsed configuration file /usr/lib/systemd/network/99-default.link
+Created link configuration context.
+Using default interface naming scheme 'v245'.
+ID_NET_NAMING_SCHEME=v245
+ID_NET_NAME_PATH=enp6s0f0npf0sf88
+ID_NET_NAME_SLOT=ens2f0npf0sf88
+Unload module index
+Unloaded link configuration context.
 
 changelog:
 v5->v6:
- - aligned code to 80 characters wherever readability is not affected
- - packed the sf attribute structure
- - removed external flag for sf for initial patchset
+ - return port attributes of newly created port
+ - moved port add and delete callbacks pointer check before preparing
+   attributes for driver
+ - aligned code for 80 characters limits
+ - changed 'should' to 'must' in comments of driver callback
+ - simplified comments of driver callbacks
+ - added comment to clarify that about desired port index during add
+   callback
+ - place SF number attribute only when port flavour is SF
 
 Signed-off-by: Parav Pandit <parav@nvidia.com>
-Reviewed-by: Jiri Pirko <jiri@nvidia.com>
 Reviewed-by: Vu Pham <vuhuong@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- include/net/devlink.h        | 15 ++++++++++++++
- include/uapi/linux/devlink.h |  5 +++++
- net/core/devlink.c           | 39 ++++++++++++++++++++++++++++++++++++
- 3 files changed, 59 insertions(+)
+ include/net/devlink.h |  38 +++++++++++++
+ net/core/devlink.c    | 121 ++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 159 insertions(+)
 
 diff --git a/include/net/devlink.h b/include/net/devlink.h
-index f466819cc477..b6ebb516f1b0 100644
+index b6ebb516f1b0..bdf54830d975 100644
 --- a/include/net/devlink.h
 +++ b/include/net/devlink.h
-@@ -93,6 +93,18 @@ struct devlink_port_pci_vf_attrs {
- 	u8 external:1;
+@@ -151,6 +151,17 @@ struct devlink_port {
+ 	struct mutex reporters_lock; /* Protects reporter_list */
  };
  
-+/**
-+ * struct devlink_port_pci_sf_attrs - devlink port's PCI SF attributes
-+ * @controller: Associated controller number
-+ * @sf: Associated PCI SF for of the PCI PF for this port.
-+ * @pf: Associated PCI PF number for this port.
-+ */
-+struct devlink_port_pci_sf_attrs {
++struct devlink_port_new_attrs {
++	enum devlink_port_flavour flavour;
++	unsigned int port_index;
 +	u32 controller;
-+	u32 sf;
-+	u16 pf;
++	u32 sfnum;
++	u16 pfnum;
++	u8 port_index_valid:1,
++	   controller_valid:1,
++	   sfnum_valid:1;
 +};
 +
- /**
-  * struct devlink_port_attrs - devlink port object
-  * @flavour: flavour of the port
-@@ -114,6 +126,7 @@ struct devlink_port_attrs {
- 		struct devlink_port_phys_attrs phys;
- 		struct devlink_port_pci_pf_attrs pci_pf;
- 		struct devlink_port_pci_vf_attrs pci_vf;
-+		struct devlink_port_pci_sf_attrs pci_sf;
- 	};
+ struct devlink_sb_pool_info {
+ 	enum devlink_sb_pool_type pool_type;
+ 	u32 size;
+@@ -1361,6 +1372,33 @@ struct devlink_ops {
+ 	int (*port_function_hw_addr_set)(struct devlink *devlink, struct devlink_port *port,
+ 					 const u8 *hw_addr, int hw_addr_len,
+ 					 struct netlink_ext_ack *extack);
++	/**
++	 * @port_new: Port add function.
++	 *
++	 * Should be used by device driver to let caller add new port of a
++	 * specified flavour with optional attributes.
++	 * Driver must return -EOPNOTSUPP if it doesn't support port addition
++	 * of a specified flavour or specified attributes. Driver should set
++	 * extack error message in case of failure. Driver callback is called
++	 * without holding the devlink instance lock. Driver must ensure
++	 * synchronization when adding or deleting a port. Driver must register
++	 * a port with devlink core.
++	 */
++	int (*port_new)(struct devlink *devlink,
++			const struct devlink_port_new_attrs *attrs,
++			struct netlink_ext_ack *extack,
++			unsigned int *new_port_index);
++	/**
++	 * @port_del: Port delete function.
++	 *
++	 * Should be used by device driver to let caller delete port which was
++	 * previously created using port_new() callback.
++	 * Driver must return -EOPNOTSUPP if it doesn't support port deletion.
++	 * Driver should set extack error message in case of failure. Driver
++	 * callback is called without holding the devlink instance lock.
++	 */
++	int (*port_del)(struct devlink *devlink, unsigned int port_index,
++			struct netlink_ext_ack *extack);
  };
  
-@@ -1404,6 +1417,8 @@ void devlink_port_attrs_pci_pf_set(struct devlink_port *devlink_port, u32 contro
- 				   u16 pf, bool external);
- void devlink_port_attrs_pci_vf_set(struct devlink_port *devlink_port, u32 controller,
- 				   u16 pf, u16 vf, bool external);
-+void devlink_port_attrs_pci_sf_set(struct devlink_port *devlink_port,
-+				   u32 controller, u16 pf, u32 sf);
- int devlink_sb_register(struct devlink *devlink, unsigned int sb_index,
- 			u32 size, u16 ingress_pools_count,
- 			u16 egress_pools_count, u16 ingress_tc_count,
-diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
-index cf89c318f2ac..1a241b09a7f8 100644
---- a/include/uapi/linux/devlink.h
-+++ b/include/uapi/linux/devlink.h
-@@ -200,6 +200,10 @@ enum devlink_port_flavour {
- 	DEVLINK_PORT_FLAVOUR_UNUSED, /* Port which exists in the switch, but
- 				      * is not used in any way.
- 				      */
-+	DEVLINK_PORT_FLAVOUR_PCI_SF, /* Represents eswitch port
-+				      * for the PCI SF. It is an internal
-+				      * port that faces the PCI SF.
-+				      */
- };
- 
- enum devlink_param_cmode {
-@@ -529,6 +533,7 @@ enum devlink_attr {
- 	DEVLINK_ATTR_RELOAD_ACTION_INFO,        /* nested */
- 	DEVLINK_ATTR_RELOAD_ACTION_STATS,       /* nested */
- 
-+	DEVLINK_ATTR_PORT_PCI_SF_NUMBER,	/* u32 */
- 	/* add new attributes above here, update the policy in devlink.c */
- 
- 	__DEVLINK_ATTR_MAX,
+ static inline void *devlink_priv(struct devlink *devlink)
 diff --git a/net/core/devlink.c b/net/core/devlink.c
-index c39496311b71..4cbc02fb602d 100644
+index 4cbc02fb602d..541b5f549274 100644
 --- a/net/core/devlink.c
 +++ b/net/core/devlink.c
-@@ -690,6 +690,15 @@ static int devlink_nl_port_attrs_put(struct sk_buff *msg,
- 		if (nla_put_u8(msg, DEVLINK_ATTR_PORT_EXTERNAL, attrs->pci_vf.external))
- 			return -EMSGSIZE;
- 		break;
-+	case DEVLINK_PORT_FLAVOUR_PCI_SF:
-+		if (nla_put_u32(msg, DEVLINK_ATTR_PORT_CONTROLLER_NUMBER,
-+				attrs->pci_sf.controller) ||
-+		    nla_put_u16(msg, DEVLINK_ATTR_PORT_PCI_PF_NUMBER,
-+				attrs->pci_sf.pf) ||
-+		    nla_put_u32(msg, DEVLINK_ATTR_PORT_PCI_SF_NUMBER,
-+				attrs->pci_sf.sf))
-+			return -EMSGSIZE;
-+		break;
- 	case DEVLINK_PORT_FLAVOUR_PHYSICAL:
- 	case DEVLINK_PORT_FLAVOUR_CPU:
- 	case DEVLINK_PORT_FLAVOUR_DSA:
-@@ -8374,6 +8383,32 @@ void devlink_port_attrs_pci_vf_set(struct devlink_port *devlink_port, u32 contro
+@@ -1147,6 +1147,111 @@ static int devlink_nl_cmd_port_unsplit_doit(struct sk_buff *skb,
+ 	return devlink_port_unsplit(devlink, port_index, info->extack);
  }
- EXPORT_SYMBOL_GPL(devlink_port_attrs_pci_vf_set);
  
-+/**
-+ *	devlink_port_attrs_pci_sf_set - Set PCI SF port attributes
-+ *
-+ *	@devlink_port: devlink port
-+ *	@controller: associated controller number for the devlink port instance
-+ *	@pf: associated PF for the devlink port instance
-+ *	@sf: associated SF of a PF for the devlink port instance
-+ */
-+void devlink_port_attrs_pci_sf_set(struct devlink_port *devlink_port, u32 controller,
-+				   u16 pf, u32 sf)
++static int devlink_port_new_notifiy(struct devlink *devlink,
++				    unsigned int port_index,
++				    struct genl_info *info)
 +{
-+	struct devlink_port_attrs *attrs = &devlink_port->attrs;
-+	int ret;
++	struct devlink_port *devlink_port;
++	struct sk_buff *msg;
++	int err;
 +
-+	if (WARN_ON(devlink_port->registered))
-+		return;
-+	ret = __devlink_port_attrs_set(devlink_port,
-+				       DEVLINK_PORT_FLAVOUR_PCI_SF);
-+	if (ret)
-+		return;
-+	attrs->pci_sf.controller = controller;
-+	attrs->pci_sf.pf = pf;
-+	attrs->pci_sf.sf = sf;
++	msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
++	if (!msg)
++		return -ENOMEM;
++
++	mutex_lock(&devlink->lock);
++	devlink_port = devlink_port_get_by_index(devlink, port_index);
++	if (!devlink_port) {
++		err = -ENODEV;
++		goto out;
++	}
++
++	err = devlink_nl_port_fill(msg, devlink, devlink_port,
++				   DEVLINK_CMD_NEW, info->snd_portid,
++				   info->snd_seq, 0, NULL);
++	if (err)
++		goto out;
++
++	err = genlmsg_reply(msg, info);
++	mutex_unlock(&devlink->lock);
++	return err;
++
++out:
++	mutex_unlock(&devlink->lock);
++	nlmsg_free(msg);
++	return err;
 +}
-+EXPORT_SYMBOL_GPL(devlink_port_attrs_pci_sf_set);
 +
- static int __devlink_port_phys_port_name_get(struct devlink_port *devlink_port,
- 					     char *name, size_t len)
- {
-@@ -8422,6 +8457,10 @@ static int __devlink_port_phys_port_name_get(struct devlink_port *devlink_port,
- 		n = snprintf(name, len, "pf%uvf%u",
- 			     attrs->pci_vf.pf, attrs->pci_vf.vf);
- 		break;
-+	case DEVLINK_PORT_FLAVOUR_PCI_SF:
-+		n = snprintf(name, len, "pf%usf%u", attrs->pci_sf.pf,
-+			     attrs->pci_sf.sf);
-+		break;
- 	}
++static int devlink_nl_cmd_port_new_doit(struct sk_buff *skb,
++					struct genl_info *info)
++{
++	struct netlink_ext_ack *extack = info->extack;
++	struct devlink_port_new_attrs new_attrs = {};
++	struct devlink *devlink = info->user_ptr[0];
++	unsigned int new_port_index;
++	int err;
++
++	if (!devlink->ops->port_new || !devlink->ops->port_del)
++		return -EOPNOTSUPP;
++
++	if (!info->attrs[DEVLINK_ATTR_PORT_FLAVOUR] ||
++	    !info->attrs[DEVLINK_ATTR_PORT_PCI_PF_NUMBER]) {
++		NL_SET_ERR_MSG_MOD(extack, "Port flavour or PCI PF are not specified");
++		return -EINVAL;
++	}
++	new_attrs.flavour = nla_get_u16(info->attrs[DEVLINK_ATTR_PORT_FLAVOUR]);
++	new_attrs.pfnum =
++		nla_get_u16(info->attrs[DEVLINK_ATTR_PORT_PCI_PF_NUMBER]);
++
++	if (info->attrs[DEVLINK_ATTR_PORT_INDEX]) {
++		/* Port index of the new port being created by driver. */
++		new_attrs.port_index =
++			nla_get_u32(info->attrs[DEVLINK_ATTR_PORT_INDEX]);
++		new_attrs.port_index_valid = true;
++	}
++	if (info->attrs[DEVLINK_ATTR_PORT_CONTROLLER_NUMBER]) {
++		new_attrs.controller =
++			nla_get_u16(info->attrs[DEVLINK_ATTR_PORT_CONTROLLER_NUMBER]);
++		new_attrs.controller_valid = true;
++	}
++	if (new_attrs.flavour == DEVLINK_PORT_FLAVOUR_PCI_SF &&
++	    info->attrs[DEVLINK_ATTR_PORT_PCI_SF_NUMBER]) {
++		new_attrs.sfnum = nla_get_u32(info->attrs[DEVLINK_ATTR_PORT_PCI_SF_NUMBER]);
++		new_attrs.sfnum_valid = true;
++	}
++
++	err = devlink->ops->port_new(devlink, &new_attrs, extack,
++				     &new_port_index);
++	if (err)
++		return err;
++
++	err = devlink_port_new_notifiy(devlink, new_port_index, info);
++	if (err && err != -ENODEV) {
++		/* Fail to send the response; destroy newly created port. */
++		devlink->ops->port_del(devlink, new_port_index, extack);
++	}
++	return err;
++}
++
++static int devlink_nl_cmd_port_del_doit(struct sk_buff *skb,
++					struct genl_info *info)
++{
++	struct netlink_ext_ack *extack = info->extack;
++	struct devlink *devlink = info->user_ptr[0];
++	unsigned int port_index;
++
++	if (!devlink->ops->port_del)
++		return -EOPNOTSUPP;
++
++	if (!info->attrs[DEVLINK_ATTR_PORT_INDEX]) {
++		NL_SET_ERR_MSG_MOD(extack, "Port index is not specified");
++		return -EINVAL;
++	}
++	port_index = nla_get_u32(info->attrs[DEVLINK_ATTR_PORT_INDEX]);
++
++	return devlink->ops->port_del(devlink, port_index, extack);
++}
++
+ static int devlink_nl_sb_fill(struct sk_buff *msg, struct devlink *devlink,
+ 			      struct devlink_sb *devlink_sb,
+ 			      enum devlink_command cmd, u32 portid,
+@@ -7605,6 +7710,10 @@ static const struct nla_policy devlink_nl_policy[DEVLINK_ATTR_MAX + 1] = {
+ 	[DEVLINK_ATTR_RELOAD_ACTION] = NLA_POLICY_RANGE(NLA_U8, DEVLINK_RELOAD_ACTION_DRIVER_REINIT,
+ 							DEVLINK_RELOAD_ACTION_MAX),
+ 	[DEVLINK_ATTR_RELOAD_LIMITS] = NLA_POLICY_BITFIELD32(DEVLINK_RELOAD_LIMITS_VALID_MASK),
++	[DEVLINK_ATTR_PORT_FLAVOUR] = { .type = NLA_U16 },
++	[DEVLINK_ATTR_PORT_PCI_PF_NUMBER] = { .type = NLA_U16 },
++	[DEVLINK_ATTR_PORT_PCI_SF_NUMBER] = { .type = NLA_U32 },
++	[DEVLINK_ATTR_PORT_CONTROLLER_NUMBER] = { .type = NLA_U32 },
+ };
  
- 	if (n >= len)
+ static const struct genl_small_ops devlink_nl_ops[] = {
+@@ -7644,6 +7753,18 @@ static const struct genl_small_ops devlink_nl_ops[] = {
+ 		.flags = GENL_ADMIN_PERM,
+ 		.internal_flags = DEVLINK_NL_FLAG_NO_LOCK,
+ 	},
++	{
++		.cmd = DEVLINK_CMD_PORT_NEW,
++		.doit = devlink_nl_cmd_port_new_doit,
++		.flags = GENL_ADMIN_PERM,
++		.internal_flags = DEVLINK_NL_FLAG_NO_LOCK,
++	},
++	{
++		.cmd = DEVLINK_CMD_PORT_DEL,
++		.doit = devlink_nl_cmd_port_del_doit,
++		.flags = GENL_ADMIN_PERM,
++		.internal_flags = DEVLINK_NL_FLAG_NO_LOCK,
++	},
+ 	{
+ 		.cmd = DEVLINK_CMD_SB_GET,
+ 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
 -- 
 2.26.2
 
