@@ -2,121 +2,225 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 00B262F4CA2
-	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 15:00:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 853542F4CAB
+	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 15:03:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726223AbhAMN7c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jan 2021 08:59:32 -0500
-Received: from mail.kernel.org ([198.145.29.99]:42118 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725858AbhAMN7c (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 13 Jan 2021 08:59:32 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 130EA23382;
-        Wed, 13 Jan 2021 13:58:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610546331;
-        bh=ZVHkw4SZ0zP+NQZO1eP4JZQI0rrs8DvxB8GpoyPOqA0=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=oXCwUFgBYyhqZhkxShts0TSL02rA+4D1AJl+bOFjRZG7B/VgdpSKclpGGMvrSXNi5
-         zTfH50cyYVSo7c9IFCTXxndXsioVRXxZu2dC6rm3fLv8PFnOB92UUT8Sghdbr19ITu
-         8IbSMW4zsYNec/1mSUfG9KjEJNltL9xTGqAHjj2qCBC5w2bBBzzvTzV4zstuWUvXfH
-         0fbCktn2q/B5aeox3azuT3nwUqisd5SaeETwLhLSzKg4aKF6yAjq+BWyRVI7f3pzIP
-         pD2BdDFIolIVI0fbSv6JUIIegA+Bky9Ufd5kqCOxCebRHP466K5523ev6PJsSeeG7M
-         p7AI+Z2C+Ny/w==
-Received: by pali.im (Postfix)
-        id 7C13676D; Wed, 13 Jan 2021 14:58:48 +0100 (CET)
-Date:   Wed, 13 Jan 2021 14:58:48 +0100
-From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>,
-        netdev@vger.kernel.org, Russell King <rmk+kernel@armlinux.org.uk>,
-        Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
-Subject: Re: [PATCH net-next v4 1/4] net: phy: mdio-i2c: support I2C MDIO
- protocol for RollBall SFP modules
-Message-ID: <20210113135848.jahge3bytrwpnyzv@pali>
-References: <20210111050044.22002-1-kabel@kernel.org>
- <20210111050044.22002-2-kabel@kernel.org>
- <20210113112204.h3piuoni7amvx7i2@pali>
- <X/77/eB4aq5csmoe@lunn.ch>
+        id S1726812AbhAMOCC convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 13 Jan 2021 09:02:02 -0500
+Received: from mail.savoirfairelinux.com ([208.88.110.44]:46878 "EHLO
+        mail.savoirfairelinux.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726510AbhAMOCB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 09:02:01 -0500
+Received: from localhost (localhost [127.0.0.1])
+        by mail.savoirfairelinux.com (Postfix) with ESMTP id 1099E9C0DC1;
+        Wed, 13 Jan 2021 09:01:20 -0500 (EST)
+Received: from mail.savoirfairelinux.com ([127.0.0.1])
+        by localhost (mail.savoirfairelinux.com [127.0.0.1]) (amavisd-new, port 10032)
+        with ESMTP id dEgDgiRf_U4e; Wed, 13 Jan 2021 09:01:19 -0500 (EST)
+Received: from localhost (localhost [127.0.0.1])
+        by mail.savoirfairelinux.com (Postfix) with ESMTP id 716FE9C0DD5;
+        Wed, 13 Jan 2021 09:01:19 -0500 (EST)
+X-Virus-Scanned: amavisd-new at mail.savoirfairelinux.com
+Received: from mail.savoirfairelinux.com ([127.0.0.1])
+        by localhost (mail.savoirfairelinux.com [127.0.0.1]) (amavisd-new, port 10026)
+        with ESMTP id ijHyM6KBQP8K; Wed, 13 Jan 2021 09:01:19 -0500 (EST)
+Received: from mail.savoirfairelinux.com (mail.savoirfairelinux.com [192.168.48.237])
+        by mail.savoirfairelinux.com (Postfix) with ESMTP id 468639C0DC1;
+        Wed, 13 Jan 2021 09:01:19 -0500 (EST)
+Date:   Wed, 13 Jan 2021 09:01:19 -0500 (EST)
+From:   Gilles Doffe <gilles.doffe@savoirfairelinux.com>
+To:     netdev@vger.kernel.org
+Cc:     Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Message-ID: <309642574.258062.1610546479144.JavaMail.zimbra@savoirfairelinux.com>
+In-Reply-To: <c5c35fb4a3e4784a5e26a7b7181a0a2925674712.1610540603.git.gilles.doffe@savoirfairelinux.com>
+References: <cover.1610540603.git.gilles.doffe@savoirfairelinux.com> <c5c35fb4a3e4784a5e26a7b7181a0a2925674712.1610540603.git.gilles.doffe@savoirfairelinux.com>
+Subject: Re: [PATCH net 1/6] net: dsa: ksz: fix FID management
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <X/77/eB4aq5csmoe@lunn.ch>
-User-Agent: NeoMutt/20180716
+Content-Transfer-Encoding: 8BIT
+X-Mailer: Zimbra 8.8.15_GA_3991 (ZimbraWebClient - GC87 (Linux)/8.8.15_GA_3980)
+Thread-Topic: fix FID management
+Thread-Index: dwYe9SMrlEHtiii9DTEZkWte16xAwA==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wednesday 13 January 2021 14:56:13 Andrew Lunn wrote:
-> On Wed, Jan 13, 2021 at 12:22:04PM +0100, Pali Rohár wrote:
-> > Hello! See my comments below.
-> > 
-> > On Monday 11 January 2021 06:00:41 Marek Behún wrote:
-> > > Some multigig SFPs from RollBall and Hilink do not expose functional
-> > > MDIO access to the internal PHY of the SFP via I2C address 0x56
-> > > (although there seems to be read-only clause 22 access on this address).
-> > 
-> > Maybe it could be interesting to test if clause 22 access via i2c
-> > address 0x56 can work also in write mode after setting rollball
-> > password...
-> > 
-> > > Instead these SFPs PHY can be accessed via I2C via the SFP Enhanced
-> > > Digital Diagnostic Interface - I2C address 0x51. The SFP_PAGE has to be
-> > > selected to 3 and the password must be filled with 0xff bytes for this
-> > > PHY communication to work.
-> > > 
-> > > This extends the mdio-i2c driver to support this protocol by adding a
-> > > special parameter to mdio_i2c_alloc function via which this RollBall
-> > > protocol can be selected.
-> > > 
-> > > Signed-off-by: Marek Behún <kabel@kernel.org>
-> > > Cc: Andrew Lunn <andrew@lunn.ch>
-> > > Cc: Russell King <rmk+kernel@armlinux.org.uk>
-> > > ---
-> > >  drivers/net/mdio/mdio-i2c.c   | 319 +++++++++++++++++++++++++++++++++-
-> > >  drivers/net/phy/sfp.c         |   2 +-
-> > >  include/linux/mdio/mdio-i2c.h |   8 +-
-> > >  3 files changed, 322 insertions(+), 7 deletions(-)
-> > > 
-> > > diff --git a/drivers/net/mdio/mdio-i2c.c b/drivers/net/mdio/mdio-i2c.c
-> > > index 09200a70b315..7be582c0891a 100644
-> > > --- a/drivers/net/mdio/mdio-i2c.c
-> > > +++ b/drivers/net/mdio/mdio-i2c.c
-> > ...
-> > > @@ -91,9 +94,297 @@ static int i2c_mii_write(struct mii_bus *bus, int phy_id, int reg, u16 val)
-> > >  	return ret < 0 ? ret : 0;
-> > >  }
-> > >  
-> > > -struct mii_bus *mdio_i2c_alloc(struct device *parent, struct i2c_adapter *i2c)
-> > > +/* RollBall SFPs do not access internal PHY via I2C address 0x56, but
-> > > + * instead via address 0x51, when SFP page is set to 0x03 and password to
-> > > + * 0xffffffff.
-> > > + * Since current SFP code does not modify SFP_PAGE, we set it to 0x03 only at
-> > > + * bus creation time, and expect it to remain set to 0x03 throughout the
-> > > + * lifetime of the module plugged into the system. If the SFP code starts
-> > > + * modifying SFP_PAGE in the future, this code will need to change.
-> > > + *
-> > > + * address  size  contents  description
-> > > + * -------  ----  --------  -----------
-> > > + * 0x80     1     CMD       0x01/0x02/0x04 for write/read/done
-> > > + * 0x81     1     DEV       Clause 45 device
-> > > + * 0x82     2     REG       Clause 45 register
-> > > + * 0x84     2     VAL       Register value
-> > > + */
-> > > +#define ROLLBALL_PHY_I2C_ADDR		0x51
-> > > +#define ROLLBALL_SFP_PASSWORD_ADDR	0x7b
-> > 
-> > It looks like that this password entry is standard field described in
-> > QSFP+ specifications SFF-8436 and SFF-8636. Should not it be rather
-> > named vendor-neutral (as it is not Rollball specific)? And maybe defined
-> > in include/linux/sfp.h file where also also other standard macros, like
-> > SFP_PAGE macro?
-> 
-> If it is generic, the functions themselves should probably move into
-> sfp.c. Being able to swap pages is something needed for accessing the
-> diagnostic registers under some conditions. Because we don't have
-> support for changing the page, the HWMON support is disabled in this
-> condition.
+----- Le 13 Jan 21, à 13:45, Gilles Doffe gilles.doffe@savoirfairelinux.com a écrit :
 
-Only password is described in SFF-8436 and SFF-8636, nothing more.
+> The FID (Filter ID) is a 7 bits field used to link the VLAN table
+> to the static and dynamic mac address tables.
+> Until now the KSZ8795 driver could only add one VLAN as the FID was
+> always set to 1.
+> This commit allows setting a FID for each new active VLAN.
+> The FID list is stored in a static table dynamically allocated from
+> ks8795_fid structure.
+> Each newly activated VLAN is associated to the next available FID.
+> Only the VLAN 0 is not added to the list as it is a special VLAN.
+> As it has a special meaning, see IEEE 802.1q.
+> When a VLAN is no more used, the associated FID table entry is reset
+> to 0.
+> 
+> Signed-off-by: Gilles DOFFE <gilles.doffe@savoirfairelinux.com>
+> ---
+> drivers/net/dsa/microchip/ksz8795.c     | 59 +++++++++++++++++++++++--
+> drivers/net/dsa/microchip/ksz8795_reg.h |  1 +
+> drivers/net/dsa/microchip/ksz_common.h  |  1 +
+> 3 files changed, 57 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/net/dsa/microchip/ksz8795.c
+> b/drivers/net/dsa/microchip/ksz8795.c
+> index c973db101b72..6962ba4ee125 100644
+> --- a/drivers/net/dsa/microchip/ksz8795.c
+> +++ b/drivers/net/dsa/microchip/ksz8795.c
+> @@ -648,7 +648,7 @@ static enum dsa_tag_protocol ksz8795_get_tag_protocol(struct
+> dsa_switch *ds,
+> 						      int port,
+> 						      enum dsa_tag_protocol mp)
+> {
+> -	return DSA_TAG_PROTO_KSZ8795;
+> +	return DSA_TAG_PROTO_NONE;
+
+This is an oversight, will be removed in V2.
+
+> }
+> 
+> static void ksz8795_get_strings(struct dsa_switch *ds, int port,
+> @@ -796,6 +796,41 @@ static int ksz8795_port_vlan_filtering(struct dsa_switch
+> *ds, int port,
+> 	return 0;
+> }
+> 
+> +static void ksz8795_del_fid(u16 *ksz_fid_table, u16 vid)
+> +{
+> +	u8 i = 0;
+> +
+> +	if (!ksz_fid_table)
+> +		return;
+> +
+> +	for (i = 0; i < VLAN_TABLE_FID_SIZE; i++) {
+> +		if (ksz_fid_table[i] == vid) {
+> +			ksz_fid_table[i] = 0;
+> +			break;
+> +		}
+> +	}
+> +}
+> +
+> +static int ksz8795_get_next_fid(u16 *ksz_fid_table, u16 vid, u8 *fid)
+> +{
+> +	u8 i = 0;
+> +	int ret = -EOVERFLOW;
+> +
+> +	if (!ksz_fid_table)
+> +		return ret;
+> +
+> +	for (i = 0; i < VLAN_TABLE_FID_SIZE; i++) {
+> +		if (!ksz_fid_table[i]) {
+> +			ksz_fid_table[i] = vid;
+> +			*fid = i;
+> +			ret = 0;
+> +			break;
+> +		}
+> +	}
+> +
+> +	return ret;
+> +}
+> +
+> static void ksz8795_port_vlan_add(struct dsa_switch *ds, int port,
+> 				  const struct switchdev_obj_port_vlan *vlan)
+> {
+> @@ -803,17 +838,24 @@ static void ksz8795_port_vlan_add(struct dsa_switch *ds,
+> int port,
+> 	struct ksz_device *dev = ds->priv;
+> 	u16 data, vid, new_pvid = 0;
+> 	u8 fid, member, valid;
+> +	int ret;
+> 
+> 	ksz_port_cfg(dev, port, P_TAG_CTRL, PORT_REMOVE_TAG, untagged);
+> 
+> 	for (vid = vlan->vid_begin; vid <= vlan->vid_end; vid++) {
+> +		if (vid == 0)
+> +			continue;
+> +
+> 		ksz8795_r_vlan_table(dev, vid, &data);
+> 		ksz8795_from_vlan(data, &fid, &member, &valid);
+> 
+> 		/* First time to setup the VLAN entry. */
+> 		if (!valid) {
+> -			/* Need to find a way to map VID to FID. */
+> -			fid = 1;
+> +			ret = ksz8795_get_next_fid(dev->ksz_fid_table, vid, &fid);
+> +			if (ret) {
+> +				dev_err(ds->dev, "Switch FID table is full, cannot add");
+> +				return;
+> +			}
+> 			valid = 1;
+> 		}
+> 		member |= BIT(port);
+> @@ -855,7 +897,7 @@ static int ksz8795_port_vlan_del(struct dsa_switch *ds, int
+> port,
+> 
+> 		/* Invalidate the entry if no more member. */
+> 		if (!member) {
+> -			fid = 0;
+> +			ksz8795_del_fid(dev->ksz_fid_table, vid);
+> 			valid = 0;
+> 		}
+> 
+> @@ -1087,6 +1129,9 @@ static int ksz8795_setup(struct dsa_switch *ds)
+> 	for (i = 0; i < (dev->num_vlans / 4); i++)
+> 		ksz8795_r_vlan_entries(dev, i);
+> 
+> +	/* Assign first FID to VLAN 1 and always return FID=0 for this vlan */
+> +	dev->ksz_fid_table[0] = 1;
+> +
+> 	/* Setup STP address for STP operation. */
+> 	memset(&alu, 0, sizeof(alu));
+> 	ether_addr_copy(alu.mac, eth_stp_addr);
+> @@ -1261,6 +1306,12 @@ static int ksz8795_switch_init(struct ksz_device *dev)
+> 	/* set the real number of ports */
+> 	dev->ds->num_ports = dev->port_cnt;
+> 
+> +	dev->ksz_fid_table = devm_kzalloc(dev->dev,
+> +					  VLAN_TABLE_FID_SIZE * sizeof(u16),
+> +					  GFP_KERNEL);
+> +	if (!dev->ksz_fid_table)
+> +		return -ENOMEM;
+> +
+> 	return 0;
+> }
+> 
+> diff --git a/drivers/net/dsa/microchip/ksz8795_reg.h
+> b/drivers/net/dsa/microchip/ksz8795_reg.h
+> index 40372047d40d..fe4c4f7fdd47 100644
+> --- a/drivers/net/dsa/microchip/ksz8795_reg.h
+> +++ b/drivers/net/dsa/microchip/ksz8795_reg.h
+> @@ -915,6 +915,7 @@
+>  */
+> 
+> #define VLAN_TABLE_FID			0x007F
+> +#define VLAN_TABLE_FID_SIZE		128
+> #define VLAN_TABLE_MEMBERSHIP		0x0F80
+> #define VLAN_TABLE_VALID		0x1000
+> 
+> diff --git a/drivers/net/dsa/microchip/ksz_common.h
+> b/drivers/net/dsa/microchip/ksz_common.h
+> index 720f22275c84..44e97c55c2da 100644
+> --- a/drivers/net/dsa/microchip/ksz_common.h
+> +++ b/drivers/net/dsa/microchip/ksz_common.h
+> @@ -77,6 +77,7 @@ struct ksz_device {
+> 	bool synclko_125;
+> 
+> 	struct vlan_table *vlan_cache;
+> +	u16 *ksz_fid_table;
+> 
+> 	struct ksz_port *ports;
+> 	struct delayed_work mib_read;
+> --
+> 2.25.1
