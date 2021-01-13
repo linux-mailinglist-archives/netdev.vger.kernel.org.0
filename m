@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C6B662F4BB3
-	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 13:56:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 939282F4BB7
+	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 13:56:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726602AbhAMMxe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jan 2021 07:53:34 -0500
-Received: from mail.kernel.org ([198.145.29.99]:59706 "EHLO mail.kernel.org"
+        id S1726881AbhAMMyK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jan 2021 07:54:10 -0500
+Received: from mail.kernel.org ([198.145.29.99]:59802 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725809AbhAMMxe (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 13 Jan 2021 07:53:34 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id BF664233F6;
-        Wed, 13 Jan 2021 12:52:51 +0000 (UTC)
+        id S1726626AbhAMMyK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 13 Jan 2021 07:54:10 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 15A04233F8;
+        Wed, 13 Jan 2021 12:53:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610542373;
-        bh=K7rfJRt7FTyScHAF7Dc1SebMYXDZ9njQhTE1qfF4ZUc=;
+        s=k20201202; t=1610542409;
+        bh=xejEFAPZ3I6jmEQrIeXD/2zG/sIhK5c/B8ciA3nDuwE=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=l3zntwyUARbT34Zn/5cgDiko7uTG+bQ0XokCI4osKNhDgqKgLoy0CmYnemvogSu00
-         TMZ0e7XiyjGU2WF06hXeW+bWerZDkuPTrzmRFd2bx6/Va9J81cwgmHJTTsiUnwKqVu
-         YMO/IlSkqrmsPZaxiWbnpQYjgcvGG5ZmBlASJT/RTB2N2eTd/lYLVg86sasG/Y4KtO
-         CF5auJsOgsqrrP6fYDUfl56IZaQi9R0DOF8TFMkLEJNJsX+WwzlRf/3AeiRRFeSWCi
-         GQwFk4ljSf3dhg0i8JLBoqBd3cmxQWp3Czctpu8TWE0pVvrx/PqO3M4mh8W07xY1lu
-         AEnGW/dr4Z0MA==
-Date:   Wed, 13 Jan 2021 18:22:42 +0530
+        b=krYvN951qnp5EA27PwQqGtMCn43p+yVGY7aofWqMMKElRs5C80i19B/mSq/gNsq8H
+         sGWZ2ICGAR3F2xt4kKpNP6aIx3crnR//pfTdOi1jA4WHZM9yYsYgv6t8pPb066X0sU
+         O3AyqXtK+JOzG1rgX974LqNF5qVm+zJj6s8B3e0a3Xk/C5PIXiidOHw+vPEOY9wAJj
+         rmTA8/3mYp9H80x7O8m7T+/d7YyNPZxCz73Jzr7CniHWPyOw5O+z+SbvBdBgDSctMM
+         tPDRgDbW27dWcuw2QaEsdP9pHt2U/rOA2lFJfKcg8L6wjU0zFsxjTEWdyz1Q1izvrY
+         rKlVjmoEgDGHA==
+Date:   Wed, 13 Jan 2021 18:23:25 +0530
 From:   Vinod Koul <vkoul@kernel.org>
 To:     Chunfeng Yun <chunfeng.yun@mediatek.com>
 Cc:     Rob Herring <robh+dt@kernel.org>,
@@ -43,21 +43,21 @@ Cc:     Rob Herring <robh+dt@kernel.org>,
         linux-arm-kernel@lists.infradead.org,
         linux-mediatek@lists.infradead.org, linux-usb@vger.kernel.org,
         Serge Semin <Sergey.Semin@baikalelectronics.ru>
-Subject: Re: [PATCH v5 03/11] dt-bindings: phy: convert phy-mtk-xsphy.txt to
+Subject: Re: [PATCH v5 04/11] dt-bindings: phy: convert phy-mtk-tphy.txt to
  YAML schema
-Message-ID: <20210113125242.GJ2771@vkoul-mobl>
+Message-ID: <20210113125325.GK2771@vkoul-mobl>
 References: <20201225075258.33352-1-chunfeng.yun@mediatek.com>
- <20201225075258.33352-3-chunfeng.yun@mediatek.com>
+ <20201225075258.33352-4-chunfeng.yun@mediatek.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20201225075258.33352-3-chunfeng.yun@mediatek.com>
+In-Reply-To: <20201225075258.33352-4-chunfeng.yun@mediatek.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 25-12-20, 15:52, Chunfeng Yun wrote:
-> Convert phy-mtk-xsphy.txt to YAML schema mediatek,xsphy.yaml
+> Convert phy-mtk-tphy.txt to YAML schema mediatek,tphy.yaml
 
 Applied, thanks
 
