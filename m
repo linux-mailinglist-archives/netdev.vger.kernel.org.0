@@ -2,38 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C3BF2F41FE
-	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 03:46:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8BF712F4216
+	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 03:54:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728275AbhAMCqV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jan 2021 21:46:21 -0500
-Received: from mail.kernel.org ([198.145.29.99]:41544 "EHLO mail.kernel.org"
+        id S1728326AbhAMCyX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jan 2021 21:54:23 -0500
+Received: from mail.kernel.org ([198.145.29.99]:42568 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728202AbhAMCqV (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 12 Jan 2021 21:46:21 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 6EE88207C8;
-        Wed, 13 Jan 2021 02:45:40 +0000 (UTC)
+        id S1726578AbhAMCyX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 Jan 2021 21:54:23 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E6C4B2311F;
+        Wed, 13 Jan 2021 02:53:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610505940;
-        bh=InbeshzR2jcMCogkG5+IbdbQ+lHeQ/A9xCz37F0BmpA=;
+        s=k20201202; t=1610506423;
+        bh=uEMDyYxD3uqbtHcF7hYnqi8etYdbkhTDaF/kptgnbfo=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=UHtQAzfbuOodUR8KMyedmxVlZFWrHPfC144cRBLgemngLaIhiJvgnTJvhDQlYin1S
-         oW+nh9i8LfXRzQJvH950xNXxoeiB+IEbC08fWQHRM27r0zyFjad43ac6QCgyTCJ1Or
-         mXyBkigsPOvUI4Yp1nJYR2o+OlC+q6tnWXmXkCJ8nFaA01waHFA/zro4sWm4PuQeNo
-         EadHaie2ev8LmppHzxBVNLxgP2OtT4Jk3vi6FPHQC4k9I4iYYFP7V5vQ7l8OCMlUgc
-         X3XUsjk2tBmj+IxO0X7oEYfobkIUE/GqdqtF/bnMhZFxE85ZnyBIZf+s9UqYB6NLtK
-         Cz6Ylnp3lus7g==
-Date:   Tue, 12 Jan 2021 18:45:39 -0800
+        b=mIna82veh0HKt1uffkHNFp5kD8B1L6vLCudqXMfzAxj+CeumQtSfFJfJbUCzNQtDL
+         17KXf5xi/DmP0pzM+ROfW/98JJ7mF5IE5OBy+O2AwnB/mjbL3IphjjF/458DWWqMtS
+         i1Zc7Tq4CGl7CQsMOz2vH/Yqh02E2meuW+gg0CFkSkIETzI4BILszHYxvU0QaCUMKC
+         OZ4yGu5Q/pfRkWQ/mPHZYdTOWn3uTS9yQC/6fj4bjl/ECN1eBbWnuOApClIcH3zrUY
+         GKEwlwza5hHTOsBQ5h3TN8wjZrIOTIF13tO7x0eClNU230W8D8GhyfRmHpvRuH5X4m
+         3cCC80jFB2xzg==
+Date:   Tue, 12 Jan 2021 18:53:42 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Andrew Lunn <andrew@lunn.ch>, Marek Vasut <marex@denx.de>
-Cc:     netdev@vger.kernel.org, Heiner Kallweit <hkallweit1@gmail.com>,
-        Lukas Wunner <lukas@wunner.de>
-Subject: Re: [PATCH net-next] net: ks8851: Select PHYLIB and MICREL_PHY in
- Kconfig
-Message-ID: <20210112184539.6aa005d7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <X/xlfe5oxi4zwOeo@lunn.ch>
-References: <20210111125046.36326-1-marex@denx.de>
-        <X/xlfe5oxi4zwOeo@lunn.ch>
+To:     Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        andrew@lunn.ch, vivien.didelot@gmail.com
+Subject: Re: [PATCH net] net: dsa: unbind all switches from tree when DSA
+ master unbinds
+Message-ID: <20210112185342.6d3c3116@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <6d6cc153-85ca-62c8-8d9c-4f4c6a325e91@gmail.com>
+References: <20210111230943.3701806-1-olteanv@gmail.com>
+        <6d6cc153-85ca-62c8-8d9c-4f4c6a325e91@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -41,18 +42,34 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 11 Jan 2021 15:49:33 +0100 Andrew Lunn wrote:
-> On Mon, Jan 11, 2021 at 01:50:46PM +0100, Marek Vasut wrote:
-> > The PHYLIB must be selected to provide mdiobus_*() functions, and the
-> > MICREL_PHY is necessary too, as that is the only possible PHY attached
-> > to the KS8851 (it is the internal PHY).
+On Tue, 12 Jan 2021 10:51:39 -0800 Florian Fainelli wrote:
+> On 1/11/21 3:09 PM, Vladimir Oltean wrote:
+> > From: Vladimir Oltean <vladimir.oltean@nxp.com>
 > > 
-> > Fixes: ef3631220d2b ("net: ks8851: Register MDIO bus and the internal PHY")
-> > Signed-off-by: Marek Vasut <marex@denx.de>
-> > Cc: Andrew Lunn <andrew@lunn.ch>
-> > Cc: Heiner Kallweit <hkallweit1@gmail.com>
-> > Cc: Lukas Wunner <lukas@wunner.de>  
+> > Currently the following happens when a DSA master driver unbinds while
+> > there are DSA switches attached to it:
+> > 
+> > $ echo 0000:00:00.5 > /sys/bus/pci/drivers/mscc_felix/unbind
+> > ------------[ cut here ]------------
+> > WARNING: CPU: 0 PID: 392 at net/core/dev.c:9507
+> > Call trace:
+> >  rollback_registered_many+0x5fc/0x688
+> >  unregister_netdevice_queue+0x98/0x120
+> >  dsa_slave_destroy+0x4c/0x88
+> >  dsa_port_teardown.part.16+0x78/0xb0
+> >  dsa_tree_teardown_switches+0x58/0xc0
+> >  dsa_unregister_switch+0x104/0x1b8
+> >  felix_pci_remove+0x24/0x48
+> >  pci_device_remove+0x48/0xf0
+> >  device_release_driver_internal+0x118/0x1e8
+> >  device_driver_detach+0x28/0x38
+> >  unbind_store+0xd0/0x100
+> > [...]
+> > 
+> > Fixes: 2f1e8ea726e9 ("net: dsa: link interfaces with the DSA master to get rid of lockdep warnings")
+> > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>  
 > 
-> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+> Tested-by: Florian Fainelli <f.fainelli@gmail.com>
 
 Applied, thanks!
