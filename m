@@ -2,156 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D14C2F46C6
-	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 09:46:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6CE372F4711
+	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 10:08:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727057AbhAMIoj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jan 2021 03:44:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47418 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727052AbhAMIoi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 03:44:38 -0500
-Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F63FC0617A4
-        for <netdev@vger.kernel.org>; Wed, 13 Jan 2021 00:43:47 -0800 (PST)
-Received: by mail-lj1-x234.google.com with SMTP id y22so1603561ljn.9
-        for <netdev@vger.kernel.org>; Wed, 13 Jan 2021 00:43:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :organization;
-        bh=WxzaFX+fxgdMYuoXdwfDg6QYJrlQ84AA/FpaoU5//zw=;
-        b=NATJp2vkS4PBuqIrfMbMXDlvovXDy3xg31hNtCduyO+4J0EMbFBWksUHnwOg+lgeNE
-         2/RD2/k+bk6bL1mDu14Kz6hBed/TNsIlW6957WJKQIVtFADPmw6sZ8PoNC5GzNy5LvJa
-         mwFOjQr2kaqyTi3XLL/QeeM8G1WxWXEkyFOimZxC1Sxx14GH7bscv3JZOWe0yt2qULMq
-         O2Fcfbba7MFzZDcR7sSDwKX/xz4QlDPn7zuMWKxJC1dsRnXeVk2aZ2u/XMPQV+vJCr0b
-         WLmtX85pO3akZXrn9CjKE8sVGlXUrLlnNzaHK8mnDNxJsWUI4nZ5HVrvaLuEY8VYuhDS
-         H2Rw==
+        id S1727466AbhAMJDf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jan 2021 04:03:35 -0500
+Received: from mail-oo1-f44.google.com ([209.85.161.44]:33712 "EHLO
+        mail-oo1-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727037AbhAMJDe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 04:03:34 -0500
+Received: by mail-oo1-f44.google.com with SMTP id k7so347585ooa.0;
+        Wed, 13 Jan 2021 01:03:18 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:organization;
-        bh=WxzaFX+fxgdMYuoXdwfDg6QYJrlQ84AA/FpaoU5//zw=;
-        b=H+3DmvECSp3Khg+1fbAzb9njG+cYgpGiksOe8879pu0aWuvO9QwpmfomTwb10NqYdB
-         qJ8Y0D/mqwtGNgGzkuHq+8kNXsGUHExzkk6O5OHy8WqUReaUaRyF2G8aNR/4hsP92nPq
-         hnN0AsWaDn1mVmKaBy0Fd0WTYadCTZLdENjXfF/6zge6VL6QkpZCHlj22no8RoBLpU7b
-         z/GieiaF9uOzShjPwnKjE2aBnSbiVAEZ+M9y5Lh/zQ+Az6JhRa3aUhb8sH7xwyxTUIOf
-         TR0yFO8umirayvp63fEa4Juiv+BB3WClm+0Id7/O+RBBoHYXESKDWaxSxSvpX+/UKgD3
-         hVRA==
-X-Gm-Message-State: AOAM530D0os4Zu0CtEfjK/DmSMuV/7sULEPZE9poIMEanZhnoTH20Baa
-        gGasiDLFf3z09HPdtoAR1wqQ7w==
-X-Google-Smtp-Source: ABdhPJzdkkWlYjnp76MPh8Z6S0TK9zYv1jzQ4MdIl/gd9v3G7CsC3+9d81vRVnB+aJJ+lflLdrbdrQ==
-X-Received: by 2002:a2e:9b1a:: with SMTP id u26mr465396lji.187.1610527425891;
-        Wed, 13 Jan 2021 00:43:45 -0800 (PST)
-Received: from veiron.westermo.com (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
-        by smtp.gmail.com with ESMTPSA id u14sm137027lfk.108.2021.01.13.00.43.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Jan 2021 00:43:45 -0800 (PST)
-From:   Tobias Waldekranz <tobias@waldekranz.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        olteanv@gmail.com, j.vosburgh@gmail.com, vfalico@gmail.com,
-        andy@greyhouse.net, netdev@vger.kernel.org
-Subject: [PATCH v5 net-next 5/5] net: dsa: tag_dsa: Support reception of packets from LAG devices
-Date:   Wed, 13 Jan 2021 09:42:55 +0100
-Message-Id: <20210113084255.22675-6-tobias@waldekranz.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210113084255.22675-1-tobias@waldekranz.com>
-References: <20210113084255.22675-1-tobias@waldekranz.com>
-Organization: Westermo
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=0P5oXwciG7rvWzFIp9uw4gFqSPn1af+OY8OLTrEVgSg=;
+        b=Z5clb8Dp9pEQ7pE5YxBbwCJkjgPzLxGAN80Rnqa/kR1ZpR+csjmliLcYhAXg6IuUM8
+         dBWpO3JmBjBTC32/JmEnubJyKlk9kV4exaLUAJQBiMrYcnLCZVSACr98PnSNWzzXrWr+
+         KAsC8lzp77VF8JtTtWtKu4AlLylb6LH2easl0XPVrVlqM//3AxVmbUZW0Qh8S7r50za0
+         AEU799iG8/2qtxl83JbvSJjLQK2QOlW4F1mpLyRd+Bsscphm2B3JSLdZPUGFkMPZNFaD
+         x0JOYe4OSe+FlbYDo87TVKO9qo5W0EmgoOh3H6+fnk50JC9R1CkemJfbi0DkONf/2aZ6
+         Mhdw==
+X-Gm-Message-State: AOAM532nQN91c/uQga+whCZi78l0MLdWL73gpT1wABdKgrHg2cYsJMaT
+        MYQf5EdIRb2pg6ym0IMEkbbMr7E5TmQTF7OmDG7zwbJeBYw=
+X-Google-Smtp-Source: ABdhPJxZ8b1O01Slp8YgOfIrQOdXZ1RkGQvggnEfMIOYHGBIozCu9m/bS5q+SWZZ3QaEoKRSzoS5eDJ12Pi8Dt0T+uw=
+X-Received: by 2002:a4a:ca14:: with SMTP id w20mr546580ooq.11.1610528573224;
+ Wed, 13 Jan 2021 01:02:53 -0800 (PST)
+MIME-Version: 1.0
+References: <20210104122415.1263541-1-geert+renesas@glider.be>
+ <20210104145331.tlwjwbzey5i4vgvp@skbuf> <CAMuHMdUVsSuAur1wWkjs7FW5N-36XV9iXA6wmvst59eKoUFDHQ@mail.gmail.com>
+ <20210104170112.hn6t3kojhifyuaf6@skbuf> <X/NNS3FUeSNxbqwo@lunn.ch>
+ <X/NQ2fYdBygm3CYc@lunn.ch> <20210104184341.szvnl24wnfnxg4k7@skbuf>
+ <alpine.DEB.2.22.394.2101051038550.302140@ramsan.of.borg> <X/RzRd0zXHzAqLDl@lunn.ch>
+In-Reply-To: <X/RzRd0zXHzAqLDl@lunn.ch>
+From:   Geert Uytterhoeven <geert@linux-m68k.org>
+Date:   Wed, 13 Jan 2021 10:02:42 +0100
+Message-ID: <CAMuHMdVhOWQiZNBmq8aH-pPS64AoFAEEHQTmVAsse2W4rxBuMA@mail.gmail.com>
+Subject: Re: [PATCH] [RFC] net: phy: Fix reboot crash if CONFIG_IP_PNP is not set
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-renesas-soc@vger.kernel.org" 
+        <linux-renesas-soc@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Packets ingressing on a LAG that egress on the CPU port, which are not
-classified as management, will have a FORWARD tag that does not
-contain the normal source device/port tuple. Instead the trunk bit
-will be set, and the port field holds the LAG id.
+Hi Andrew,
 
-Since the exact source port information is not available in the tag,
-frames are injected directly on the LAG interface and thus do never
-pass through any DSA port interface on ingress.
+On Tue, Jan 5, 2021 at 3:10 PM Andrew Lunn <andrew@lunn.ch> wrote:
+> > I added a statically-linked ethtool binary to my initramfs, and can
+> > confirm that retrieving the PHY statistics does not access the PHY
+> > registers when the device is suspended:
+> >
+> >     # ethtool --phy-statistics eth0
+> >     no stats available
+> >     # ifconfig eth0 up
+> >     # ethtool --phy-statistics eth0
+> >     PHY statistics:
+> >        phy_receive_errors: 0
+> >        phy_idle_errors: 0
+> >     #
+> >
+> > In the past, we've gone to great lengths to avoid accessing the PHY
+> > registers when the device is suspended, usually in the statistics
+> > handling (see e.g. [1][2]).
+>
+> I would argue that is the wrong approach. The PHY device is a
+> device. It has its own lifetime. You would not suspend a PCI bus
+> controller without first suspending all PCI devices on the bus etc.
 
-Management frames (TO_CPU) are not affected and will pass through the
-DSA port interface as usual.
+Makes sense.  So perhaps the PHY devices should become full citizens
+instead, and start using Runtime PM theirselves? Then the device
+framework will take care of it automatically through the devices'
+parent/child relations.
 
-Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
----
- net/dsa/dsa.c     | 12 +++++++++++-
- net/dsa/tag_dsa.c | 17 ++++++++++++++++-
- 2 files changed, 27 insertions(+), 2 deletions(-)
+This would be similar to e.g. commit 3a611e26e958b037 ("net/smsc911x:
+Add minimal runtime PM support"), but now for PHYs w.r.t. their parent
+network controller device, instead of for the network controller device
+w.r.t. its parent bus.
 
-diff --git a/net/dsa/dsa.c b/net/dsa/dsa.c
-index df75481b12ed..f4ce3c5826a0 100644
---- a/net/dsa/dsa.c
-+++ b/net/dsa/dsa.c
-@@ -219,11 +219,21 @@ static int dsa_switch_rcv(struct sk_buff *skb, struct net_device *dev,
- 	}
- 
- 	skb = nskb;
--	p = netdev_priv(skb->dev);
- 	skb_push(skb, ETH_HLEN);
- 	skb->pkt_type = PACKET_HOST;
- 	skb->protocol = eth_type_trans(skb, skb->dev);
- 
-+	if (unlikely(!dsa_slave_dev_check(skb->dev))) {
-+		/* Packet is to be injected directly on an upper
-+		 * device, e.g. a team/bond, so skip all DSA-port
-+		 * specific actions.
-+		 */
-+		netif_rx(skb);
-+		return 0;
-+	}
-+
-+	p = netdev_priv(skb->dev);
-+
- 	if (unlikely(cpu_dp->ds->untag_bridge_pvid)) {
- 		nskb = dsa_untag_bridge_pvid(skb);
- 		if (!nskb) {
-diff --git a/net/dsa/tag_dsa.c b/net/dsa/tag_dsa.c
-index 112c7c6dd568..7e7b7decdf39 100644
---- a/net/dsa/tag_dsa.c
-+++ b/net/dsa/tag_dsa.c
-@@ -163,6 +163,7 @@ static struct sk_buff *dsa_rcv_ll(struct sk_buff *skb, struct net_device *dev,
- 				  u8 extra)
- {
- 	int source_device, source_port;
-+	bool trunk = false;
- 	enum dsa_code code;
- 	enum dsa_cmd cmd;
- 	u8 *dsa_header;
-@@ -174,6 +175,8 @@ static struct sk_buff *dsa_rcv_ll(struct sk_buff *skb, struct net_device *dev,
- 	switch (cmd) {
- 	case DSA_CMD_FORWARD:
- 		skb->offload_fwd_mark = 1;
-+
-+		trunk = !!(dsa_header[1] & 7);
- 		break;
- 
- 	case DSA_CMD_TO_CPU:
-@@ -216,7 +219,19 @@ static struct sk_buff *dsa_rcv_ll(struct sk_buff *skb, struct net_device *dev,
- 	source_device = dsa_header[0] & 0x1f;
- 	source_port = (dsa_header[1] >> 3) & 0x1f;
- 
--	skb->dev = dsa_master_find_slave(dev, source_device, source_port);
-+	if (trunk) {
-+		struct dsa_port *cpu_dp = dev->dsa_ptr;
-+
-+		/* The exact source port is not available in the tag,
-+		 * so we inject the frame directly on the upper
-+		 * team/bond.
-+		 */
-+		skb->dev = dsa_lag_dev(cpu_dp->dst, source_port);
-+	} else {
-+		skb->dev = dsa_master_find_slave(dev, source_device,
-+						 source_port);
-+	}
-+
- 	if (!skb->dev)
- 		return NULL;
- 
+> > +static int sh_mdiobb_read(struct mii_bus *bus, int phy, int reg)
+> > +{
+> > +     struct bb_info *bb = container_of(bus->priv, struct bb_info, ctrl);
+>
+> mii_bus->parent should give you dev, so there is no need to add it to
+> bb_info.
+
+OK.
+
+> > +     /* Wrap accessors with Runtime PM-aware ops */
+> > +     bitbang->read = mdp->mii_bus->read;
+> > +     bitbang->write = mdp->mii_bus->write;
+> > +     mdp->mii_bus->read = sh_mdiobb_read;
+> > +     mdp->mii_bus->write = sh_mdiobb_write;
+>
+> I did wonder about just exporting the two functions so you can
+> directly call them.
+
+I did consider that. Do you prefer exporting the functions?
+
+> Otherwise, this looks good.
+
+Thanks. Do you want me to submit (with the above changed) as an interim
+solution?
+
+Note that the same issue seems to be present in the Renesas EtherAVB
+driver.  But that is more difficult to reproduce, as I don't have any arm32
+boards that use RAVB, and on arm64 register access while a device is
+suspended doesn't cause a crash, but continues silently without any effect.
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
 -- 
-2.17.1
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
