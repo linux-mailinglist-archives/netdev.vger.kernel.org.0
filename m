@@ -2,121 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6075F2F49B8
-	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 12:11:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 454F72F49BA
+	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 12:11:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727785AbhAMLJi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jan 2021 06:09:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50434 "EHLO
+        id S1727852AbhAMLKY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jan 2021 06:10:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727716AbhAMLJh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 06:09:37 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D21FC061575
-        for <netdev@vger.kernel.org>; Wed, 13 Jan 2021 03:08:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=RVXHYkovhMMd2Bh0vK42OEvWbflwwk67vgd4HEtp70o=; b=rjQE+3ZQseRDjSAuW6W/lgmjv
-        YW8QQl2ZU7S21nKWGLr3WumwtZBeC13H2cLG5oJDjpjGN44SMJgAi6wZxM3uIz87aLOPgMNGAZ22i
-        JNWz5KFCbzCX2BwywqcUqaWt2X6Gysgo3LrxkTpSlVsQ4mUj/c9X/Utj/tIEV0bUTXxj35SeJ5anS
-        g/5VgILl+D10/11HeuK0ZhvqJX4dMbMT6hYPwurPKAVER7vBOhjXvHdu1arX7fTRGT1BSqKdmmBbt
-        TnnVJ/toMuajIIgbmDT7BQrNj1zh38HEgHGuUptFfO3CrGwMJtBpJnba0tX1YPKvOUK0/yLtxEU/3
-        8MFHWcBeg==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:47410)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1kze1F-00016c-2y; Wed, 13 Jan 2021 11:08:53 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1kze1E-0007FE-6a; Wed, 13 Jan 2021 11:08:52 +0000
-Date:   Wed, 13 Jan 2021 11:08:52 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>
-Cc:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
-        netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
-Subject: Re: [PATCH net-next v4 4/4] net: sfp: add support for multigig
- RollBall transceivers
-Message-ID: <20210113110852.GH1551@shell.armlinux.org.uk>
-References: <20210111050044.22002-1-kabel@kernel.org>
- <20210111050044.22002-5-kabel@kernel.org>
- <20210113104936.ka74oaa6xo2mvwbo@pali>
+        with ESMTP id S1727716AbhAMLKY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 06:10:24 -0500
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE8A9C061575;
+        Wed, 13 Jan 2021 03:09:43 -0800 (PST)
+Received: by mail-wm1-x32d.google.com with SMTP id h17so1018794wmq.1;
+        Wed, 13 Jan 2021 03:09:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=to:cc:references:from:subject:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=UMQi/tBvEKdEimXx+EFDrWUxg58rI/isxR33AmE9DZQ=;
+        b=sHxBp11HxkeBq5dpd3LoxrqfkeetD4G8db6oe7+kucTgDw9cxn/PKaduCtWWtuNz4N
+         XDo2nKRN7DfJ1WPRzwYbU6Fg4hl7AIgdQZiAolIQVKIIEevR3zMcWFdqZE8hTQ0pf7y5
+         5JJd6BxKhJPJdKZ5Qv6LE5NO7U+sx1p2+Gj9PLGx079xvImEFMSM9auwJ4W3YjGXzj8z
+         N2TFYGz5GhiSp8HyUjJYVnJk3GDgd859WoCC6MiAyuWgTNFdst1MXN9Vht1kjkoQvtUb
+         xQj2GxfZ21YZIvAJGAr6KbIpCIehF05/BQ/MUwyDmFU+RHBCIlvAt/52V4BCIZKwYgAx
+         HpOw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=UMQi/tBvEKdEimXx+EFDrWUxg58rI/isxR33AmE9DZQ=;
+        b=EFZLQdBSITGzhr1gK4IDYUX/CQn6zW/JE4GwLJy7kYuxzAEsG+mkXwsEABW1okQdwq
+         LXVkuT2iwp6/XUZGtoIsuJRH5qbm9m+9D0vGTMJAc3MTcgyaBJucV5kvnaH84UE0tGaw
+         hk93uO5BkYW/nWZSXoDpsscOEC2vhn4gGYteOtTZ8V3RyZ13qQcWRba5ZUqLnS/63SL1
+         U68r+lrD6OpH1C+l7Ite4smpmHk2SNtxnyr/HbTQ7uVQHB8nPtV2oHdJXAoXyorMvo1X
+         1Bkx1i4tIgPs2ZNV4tTLjgDcsligE/16yWp+O6Ke8XADAocYr62bXXjRpn2LvMHvDX+M
+         4Btw==
+X-Gm-Message-State: AOAM533QNPf4Gpgd2fMkY0jRqj4emExelvPxPkjGvs1L+pvDa0cXyxsj
+        lT5oP6J7XmRruujls3G/UCWtP7zWFS8=
+X-Google-Smtp-Source: ABdhPJwh0w6DilTj8o3+r2xlFBs0NrlQBzN77ulhHtuSo+0EZnSuxSYNPPHOxskJzuLMfaUmNNlzqg==
+X-Received: by 2002:a1c:5406:: with SMTP id i6mr1647564wmb.137.1610536182334;
+        Wed, 13 Jan 2021 03:09:42 -0800 (PST)
+Received: from ?IPv6:2003:ea:8f06:5500:88b8:675a:f9a7:fc44? (p200300ea8f06550088b8675af9a7fc44.dip0.t-ipconnect.de. [2003:ea:8f06:5500:88b8:675a:f9a7:fc44])
+        by smtp.googlemail.com with ESMTPSA id u3sm3237824wre.54.2021.01.13.03.09.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 13 Jan 2021 03:09:41 -0800 (PST)
+To:     Claudiu.Beznea@microchip.com, andrew@lunn.ch,
+        linux@armlinux.org.uk, davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <1610120754-14331-1-git-send-email-claudiu.beznea@microchip.com>
+ <25ec943f-ddfc-9bcd-ef30-d0baf3c6b2a2@gmail.com>
+ <ce20d4f3-3e43-154a-0f57-2c2d42752597@microchip.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH] net: phy: micrel: reconfigure the phy on resume
+Message-ID: <ee0fd287-c737-faa5-eee1-99ffa120540a@gmail.com>
+Date:   Wed, 13 Jan 2021 12:09:35 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+In-Reply-To: <ce20d4f3-3e43-154a-0f57-2c2d42752597@microchip.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210113104936.ka74oaa6xo2mvwbo@pali>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 13, 2021 at 11:49:36AM +0100, Pali Rohár wrote:
-> On Monday 11 January 2021 06:00:44 Marek Behún wrote:
-> > @@ -1453,7 +1459,7 @@ static int sfp_sm_probe_phy(struct sfp *sfp, bool is_c45)
-> >  	struct phy_device *phy;
-> >  	int err;
-> >  
-> > -	phy = get_phy_device(sfp->i2c_mii, SFP_PHY_ADDR, is_c45);
-> > +	phy = get_phy_device(sfp->i2c_mii, sfp->phy_addr, is_c45);
-> >  	if (phy == ERR_PTR(-ENODEV))
-> >  		return PTR_ERR(phy);
-> >  	if (IS_ERR(phy)) {
-> > @@ -1835,6 +1841,23 @@ static int sfp_sm_mod_probe(struct sfp *sfp, bool report)
-> >  
-> >  	sfp->mdio_protocol = MDIO_I2C_DEFAULT;
-> >  
-> > +	sfp->phy_addr = SFP_PHY_ADDR;
-> > +	sfp->module_t_wait = T_WAIT;
-> > +
-> > +	if (((!memcmp(id.base.vendor_name, "OEM             ", 16) ||
-> > +	      !memcmp(id.base.vendor_name, "Turris          ", 16)) &&
-> > +	     (!memcmp(id.base.vendor_pn, "SFP-10G-T       ", 16) ||
-> > +	      !memcmp(id.base.vendor_pn, "RTSFP-10", 8)))) {
-> > +		sfp->mdio_protocol = MDIO_I2C_ROLLBALL;
-> > +		sfp->phy_addr = SFP_PHY_ADDR_ROLLBALL;
-> > +		sfp->module_t_wait = T_WAIT_ROLLBALL;
-> > +
-> > +		/* RollBall SFPs may have wrong (zero) extended compliacne code
-
-Spelling error - "compliance"
-
-> > +		 * burned in EEPROM. For PHY probing we need the correct one.
-> > +		 */
-> > +		id.base.extended_cc = SFF8024_ECC_10GBASE_T_SFI;
+On 13.01.2021 10:29, Claudiu.Beznea@microchip.com wrote:
+> Hi Heiner,
 > 
-> Should not we rather in sfp_sm_probe_for_phy() function in "default"
-> section try to probe also for clause 45 PHY when clause 22 fails?
+> On 08.01.2021 18:31, Heiner Kallweit wrote:
+>> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+>>
+>> On 08.01.2021 16:45, Claudiu Beznea wrote:
+>>> KSZ9131 is used in setups with SAMA7G5. SAMA7G5 supports a special
+>>> power saving mode (backup mode) that cuts the power for almost all
+>>> parts of the SoC. The rail powering the ethernet PHY is also cut off.
+>>> When resuming, in case the PHY has been configured on probe with
+>>> slew rate or DLL settings these needs to be restored thus call
+>>> driver's config_init() on resume.
+>>>
+>> When would the SoC enter this backup mode?
+> 
+> It could enter in this mode based on request for standby or suspend-to-mem:
+> echo mem > /sys/power/state
+> echo standby > /sys/power/state
+> 
+> What I didn't mentioned previously is that the RAM remains in self-refresh
+> while the rest of the SoC is powered down.
+> 
 
-Why? That's opening the possibilities for more problems - remember,
-the access method is vendor defined, and we already have the situation
-where I2C address 0x56 is used in two different styles that are
-indistinguishable:
+This leaves the question which driver sets backup mode in the SoC.
+Whatever/whoever wakes the SoC later would have to take care that basically
+everything that was switched off is reconfigured (incl. calling phy_init_hw()). 
+So it' more or less the same as waking up from hibernation. Therefore I think
+the .restore of all subsystems would have to be executed, incl. .restore of
+the MDIO bus. Having said that I don't think that change belongs into the
+PHY driver.
+Just imagine tomorrow another PHY type is used in a SAMA7G5 setup.
+Then you would have to do same change in another PHY driver.
 
-- Clause 22 write:
-	Write register address, value high, value low.
-- Clause 22 read:
-	Write register address.
-	Read value high, low.
-- Clause 45 write:
-	Write devad, register address high, register address low,
-		value high, value low.
-- Clause 45 read:
-	Write devad, register address high, register address low.
-	Read value high, low.
 
-Look closely at the similarities of Clause 22 write and Clause 45
-read, you'll see that if you issue a clause 45 read to a SFP module
-that implements Clause 22, you actually end up issuing a write to it.
+>> And would it suspend the
+>> MDIO bus before cutting power to the PHY?
+> 
+> SAMA7G5 embeds Cadence macb driver which has a integrated MDIO bus. Inside
+> macb driver the bus is registered with of_mdiobus_register() or
+> mdiobus_register() based on the PHY devices present in DT or not. On macb
+> suspend()/resume() functions there are calls to
+> phylink_stop()/phylink_start() before cutting/after enabling the power to
+> the PHY.
+> 
+>> I'm asking because in mdio_bus_phy_restore() we call phy_init_hw()
+>> already (that calls the driver's config_init).
+> 
+> As far as I can see from documentation the .restore API of dev_pm_ops is
+> hibernation specific (please correct me if I'm wrong). On transitions to
+> backup mode the suspend()/resume() PM APIs are called on the drivers.
+> 
+> Thank you,
+> Claudiu Beznea
+> 
+>>
+>>> Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
+>>> ---
+>>>  drivers/net/phy/micrel.c | 2 +-
+>>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>>>
+>>> diff --git a/drivers/net/phy/micrel.c b/drivers/net/phy/micrel.c
+>>> index 3fe552675dd2..52d3a0480158 100644
+>>> --- a/drivers/net/phy/micrel.c
+>>> +++ b/drivers/net/phy/micrel.c
+>>> @@ -1077,7 +1077,7 @@ static int kszphy_resume(struct phy_device *phydev)
+>>>        */
+>>>       usleep_range(1000, 2000);
+>>>
+>>> -     ret = kszphy_config_reset(phydev);
+>>> +     ret = phydev->drv->config_init(phydev);
+>>>       if (ret)
+>>>               return ret;
+>>>
+>>>
 
-Sending random MDIO cycles to a SFP is a really bad idea.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
