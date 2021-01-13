@@ -2,181 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BAC362F45FF
-	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 09:14:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3940B2F4676
+	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 09:30:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727252AbhAMIK3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jan 2021 03:10:29 -0500
-Received: from out30-132.freemail.mail.aliyun.com ([115.124.30.132]:41489 "EHLO
-        out30-132.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727089AbhAMIK1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 03:10:27 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R161e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=12;SR=0;TI=SMTPD_---0ULbRoz7_1610525337;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0ULbRoz7_1610525337)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 13 Jan 2021 16:08:58 +0800
-From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-To:     netdev@vger.kernel.org
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org,
-        dust.li@linux.alibaba.com
-Subject: [PATCH netdev] virtio-net: support XDP_TX when not more queues
-Date:   Wed, 13 Jan 2021 16:08:57 +0800
-Message-Id: <81abae33fc8dbec37ef0061ff6f6fd696b484a3e.1610523188.git.xuanzhuo@linux.alibaba.com>
-X-Mailer: git-send-email 1.8.3.1
+        id S1727276AbhAMIZ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jan 2021 03:25:26 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:34988 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727141AbhAMIZ0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 03:25:26 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1610526239;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=tZ5zssNLjbWPBBlPoWwdC0E0uJ9x0pd9V4VxEY62kGU=;
+        b=cy4sjbebPZDqujdvVG2jSgiTW+cFbamH8wgFvIyxlMLFsThcCBLAEI0YAaa2aYGpsI5pOf
+        D6Hju2y3p3a2bPIaJYepZhuyr20pjZe1LLUhd041uznAanASI+PRabXmt6K+mQAdjuReTo
+        7w92mK5C8vhSQT/R2aTqp2CmPC0CMNo=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-66-lLBpzd3jM66giHU3uJ5AJQ-1; Wed, 13 Jan 2021 03:23:57 -0500
+X-MC-Unique: lLBpzd3jM66giHU3uJ5AJQ-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 5BCED1005D4C;
+        Wed, 13 Jan 2021 08:23:56 +0000 (UTC)
+Received: from warthog.procyon.org.uk (ovpn-112-8.rdu2.redhat.com [10.10.112.8])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 562C050F7D;
+        Wed, 13 Jan 2021 08:23:55 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+From:   David Howells <dhowells@redhat.com>
+In-Reply-To: <20210112182533.13b1c787@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20210112182533.13b1c787@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <161046715522.2450566.488819910256264150.stgit@warthog.procyon.org.uk>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     dhowells@redhat.com, netdev@vger.kernel.org,
+        Baptiste Lepers <baptiste.lepers@gmail.com>,
+        linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net] rxrpc: Call state should be read with READ_ONCE() under some circumstances
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <2630108.1610526234.1@warthog.procyon.org.uk>
+Date:   Wed, 13 Jan 2021 08:23:54 +0000
+Message-ID: <2630109.1610526234@warthog.procyon.org.uk>
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The number of queues implemented by many virtio backends is limited,
-especially some machines have a large number of CPUs. In this case, it
-is often impossible to allocate a separate queue for XDP_TX.
+Jakub Kicinski <kuba@kernel.org> wrote:
 
-This patch allows XDP_TX to run by reuse the existing SQ with
-__netif_tx_lock() hold when there are not enough queues.
+> On Tue, 12 Jan 2021 15:59:15 +0000 David Howells wrote:
+> > From: Baptiste Lepers <baptiste.lepers@gmail.com>
+> > 
+> > The call state may be changed at any time by the data-ready routine in
+> > response to received packets, so if the call state is to be read and acted
+> > upon several times in a function, READ_ONCE() must be used unless the call
+> > state lock is held.
+> > 
+> > As it happens, we used READ_ONCE() to read the state a few lines above the
+> > unmarked read in rxrpc_input_data(), so use that value rather than
+> > re-reading it.
+> > 
+> > Signed-off-by: Baptiste Lepers <baptiste.lepers@gmail.com>
+> > Signed-off-by: David Howells <dhowells@redhat.com>
+> 
+> Fixes: a158bdd3247b ("rxrpc: Fix call timeouts")
+> 
+> maybe?
 
-Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Reviewed-by: Dust Li <dust.li@linux.alibaba.com>
----
- drivers/net/virtio_net.c | 47 +++++++++++++++++++++++++++++++++++------------
- 1 file changed, 35 insertions(+), 12 deletions(-)
+Ah, yes.  I missed there wasn't a Fixes line.  Can you add that one in, or do
+I need to resubmit the patch?
 
-diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index ba8e637..7a3b2a7 100644
---- a/drivers/net/virtio_net.c
-+++ b/drivers/net/virtio_net.c
-@@ -195,6 +195,9 @@ struct virtnet_info {
- 	/* # of XDP queue pairs currently used by the driver */
- 	u16 xdp_queue_pairs;
- 
-+	/* xdp_queue_pairs may be 0, when xdp is already loaded. So add this. */
-+	bool xdp_enabled;
-+
- 	/* I like... big packets and I cannot lie! */
- 	bool big_packets;
- 
-@@ -481,14 +484,34 @@ static int __virtnet_xdp_xmit_one(struct virtnet_info *vi,
- 	return 0;
- }
- 
--static struct send_queue *virtnet_xdp_sq(struct virtnet_info *vi)
-+static struct send_queue *virtnet_get_xdp_sq(struct virtnet_info *vi)
- {
- 	unsigned int qp;
-+	struct netdev_queue *txq;
-+
-+	if (vi->curr_queue_pairs > nr_cpu_ids) {
-+		qp = vi->curr_queue_pairs - vi->xdp_queue_pairs + smp_processor_id();
-+	} else {
-+		qp = smp_processor_id() % vi->curr_queue_pairs;
-+		txq = netdev_get_tx_queue(vi->dev, qp);
-+		__netif_tx_lock(txq, raw_smp_processor_id());
-+	}
- 
--	qp = vi->curr_queue_pairs - vi->xdp_queue_pairs + smp_processor_id();
- 	return &vi->sq[qp];
- }
- 
-+static void virtnet_put_xdp_sq(struct virtnet_info *vi)
-+{
-+	unsigned int qp;
-+	struct netdev_queue *txq;
-+
-+	if (vi->curr_queue_pairs <= nr_cpu_ids) {
-+		qp = smp_processor_id() % vi->curr_queue_pairs;
-+		txq = netdev_get_tx_queue(vi->dev, qp);
-+		__netif_tx_unlock(txq);
-+	}
-+}
-+
- static int virtnet_xdp_xmit(struct net_device *dev,
- 			    int n, struct xdp_frame **frames, u32 flags)
- {
-@@ -512,7 +535,7 @@ static int virtnet_xdp_xmit(struct net_device *dev,
- 	if (!xdp_prog)
- 		return -ENXIO;
- 
--	sq = virtnet_xdp_sq(vi);
-+	sq = virtnet_get_xdp_sq(vi);
- 
- 	if (unlikely(flags & ~XDP_XMIT_FLAGS_MASK)) {
- 		ret = -EINVAL;
-@@ -560,12 +583,13 @@ static int virtnet_xdp_xmit(struct net_device *dev,
- 	sq->stats.kicks += kicks;
- 	u64_stats_update_end(&sq->stats.syncp);
- 
-+	virtnet_put_xdp_sq(vi);
- 	return ret;
- }
- 
- static unsigned int virtnet_get_headroom(struct virtnet_info *vi)
- {
--	return vi->xdp_queue_pairs ? VIRTIO_XDP_HEADROOM : 0;
-+	return vi->xdp_enabled ? VIRTIO_XDP_HEADROOM : 0;
- }
- 
- /* We copy the packet for XDP in the following cases:
-@@ -1457,12 +1481,13 @@ static int virtnet_poll(struct napi_struct *napi, int budget)
- 		xdp_do_flush();
- 
- 	if (xdp_xmit & VIRTIO_XDP_TX) {
--		sq = virtnet_xdp_sq(vi);
-+		sq = virtnet_get_xdp_sq(vi);
- 		if (virtqueue_kick_prepare(sq->vq) && virtqueue_notify(sq->vq)) {
- 			u64_stats_update_begin(&sq->stats.syncp);
- 			sq->stats.kicks++;
- 			u64_stats_update_end(&sq->stats.syncp);
- 		}
-+		virtnet_put_xdp_sq(vi);
- 	}
- 
- 	return received;
-@@ -2416,12 +2441,8 @@ static int virtnet_xdp_set(struct net_device *dev, struct bpf_prog *prog,
- 		xdp_qp = nr_cpu_ids;
- 
- 	/* XDP requires extra queues for XDP_TX */
--	if (curr_qp + xdp_qp > vi->max_queue_pairs) {
--		NL_SET_ERR_MSG_MOD(extack, "Too few free TX rings available");
--		netdev_warn(dev, "request %i queues but max is %i\n",
--			    curr_qp + xdp_qp, vi->max_queue_pairs);
--		return -ENOMEM;
--	}
-+	if (curr_qp + xdp_qp > vi->max_queue_pairs)
-+		xdp_qp = 0;
- 
- 	old_prog = rtnl_dereference(vi->rq[0].xdp_prog);
- 	if (!prog && !old_prog)
-@@ -2453,12 +2474,14 @@ static int virtnet_xdp_set(struct net_device *dev, struct bpf_prog *prog,
- 	netif_set_real_num_rx_queues(dev, curr_qp + xdp_qp);
- 	vi->xdp_queue_pairs = xdp_qp;
- 
-+	vi->xdp_enabled = false;
- 	if (prog) {
- 		for (i = 0; i < vi->max_queue_pairs; i++) {
- 			rcu_assign_pointer(vi->rq[i].xdp_prog, prog);
- 			if (i == 0 && !old_prog)
- 				virtnet_clear_guest_offloads(vi);
- 		}
-+		vi->xdp_enabled = true;
- 	}
- 
- 	for (i = 0; i < vi->max_queue_pairs; i++) {
-@@ -2526,7 +2549,7 @@ static int virtnet_set_features(struct net_device *dev,
- 	int err;
- 
- 	if ((dev->features ^ features) & NETIF_F_LRO) {
--		if (vi->xdp_queue_pairs)
-+		if (vi->xdp_enabled)
- 			return -EBUSY;
- 
- 		if (features & NETIF_F_LRO)
--- 
-1.8.3.1
+David
 
