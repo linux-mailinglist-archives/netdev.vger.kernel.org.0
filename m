@@ -2,121 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E736D2F4F03
-	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 16:43:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3DFCA2F4F18
+	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 16:46:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727037AbhAMPmc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jan 2021 10:42:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52670 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726584AbhAMPmb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 10:42:31 -0500
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEF7CC061795
-        for <netdev@vger.kernel.org>; Wed, 13 Jan 2021 07:41:50 -0800 (PST)
-Received: by mail-ej1-x62c.google.com with SMTP id jx16so3676210ejb.10
-        for <netdev@vger.kernel.org>; Wed, 13 Jan 2021 07:41:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=TvkS6i4Fyjzn1ikKAEuAkoStATy8hbPW+VQB7jOQ0kU=;
-        b=eCNUIkpcJv/737U2dz6PTiX88o5c4NodTvoL51QO6SD7kTUvu68Ir+SQUpOBUKEZ7D
-         YQUvukIwJM5ACHUFuyxUCk2F/zm9ikp726cHaAlP+Nl/eo03afsy46EFIDQ6iQQyhOJv
-         5XSLAiof1flW7zIjMK2weC3sCZffwsaLkD5mbo3Y0yKEq6cTkr157Net01IURjb+6X5o
-         R+au1X/grs3tjpritL44+UhCqeybCZAFxL4w16VESvdWtJfydbospVe/9dwhasAEdpar
-         8Y+H5QAcRdIQHxby1Q/T5ceM8WW+Snw0pKGIPFHreBEbb3B4UlnRO49/AL7fwulO8mxi
-         OZjQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=TvkS6i4Fyjzn1ikKAEuAkoStATy8hbPW+VQB7jOQ0kU=;
-        b=FdDaukT2kZBwhVCzpncN6UHpfBeUWtsRlMBh50p9bRBjv72cTjrxHp5zHC042JYc9h
-         BU5RHlqZ1k+lBvWEaKtbwmb9q/lLcufJIYW4sk+Qd/cfLGutXIkCgIvNAOKZ+u6iS2sw
-         Wp0gc24lZjq49Yp1UzZdmyODjwC9sjQgxwQSc9Pp4qLpdU9rZBLXliHnc/bk519k2NHX
-         ZK3ppRJYaDo7gpyT/gjqW1lIZ/vEpw+7hhtawlHAhJ27qlL765c8iCHinME/RoHs+2AX
-         VLu7YJweBwAcE+LB2Mn5/urhvqUJi3xndb1jxMbZYeO8V3r9tE4hFeCC4/gvPpQ8RdRl
-         HX4w==
-X-Gm-Message-State: AOAM530Exjo4Bs4bFOeAEKEu5NCS/9Pjb3ecNDfQidbaY7GocuCDwX23
-        C+NfBQHtf+g2rpwZDIvSZcI=
-X-Google-Smtp-Source: ABdhPJzr1L1qtW1R6kbxMBI81mEKKmU6RYdQMhvrAjTox4rtFrBElokwLq7TKZHHvDJU4WsqJnPOJg==
-X-Received: by 2002:a17:907:3d90:: with SMTP id he16mr2076443ejc.235.1610552509569;
-        Wed, 13 Jan 2021 07:41:49 -0800 (PST)
-Received: from localhost.localdomain (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id bn21sm852499ejb.47.2021.01.13.07.41.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Jan 2021 07:41:48 -0800 (PST)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Cc:     Ido Schimmel <idosch@nvidia.com>, Petr Machata <petrm@nvidia.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@nvidia.com>, andrew@lunn.ch,
-        f.fainelli@gmail.com, vivien.didelot@gmail.com
-Subject: [RFC PATCH net-next 2/2] net: dsa: felix: offload port priority
-Date:   Wed, 13 Jan 2021 17:41:39 +0200
-Message-Id: <20210113154139.1803705-3-olteanv@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210113154139.1803705-1-olteanv@gmail.com>
-References: <20210113154139.1803705-1-olteanv@gmail.com>
+        id S1725977AbhAMPqZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jan 2021 10:46:25 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:31829 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725773AbhAMPqZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 10:46:25 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1610552698;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=XFDWpBt23ab/a+GLPKINLXPOKztfWYhyd/38BHS6Ncs=;
+        b=FlUjIGlMXTNMNnE5xufvhrBHJyWtPZl6TfWsJTxaAvEhFy+nK0L1lbCRDzDlKzh80a3d1T
+        YrFsxH0FyK5whm9funs+NG9dktswDYzOWl3SCBrUGPxGCR1jexXmIDjAOx4hbuP/WjKMHq
+        5QoQQzWfJsg+a6SwKH2i1IB6lxt6Yo8=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-378-2L_XHVpXMn6aBTerjPaQKg-1; Wed, 13 Jan 2021 10:44:54 -0500
+X-MC-Unique: 2L_XHVpXMn6aBTerjPaQKg-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 8219215723;
+        Wed, 13 Jan 2021 15:44:53 +0000 (UTC)
+Received: from ovpn-115-228.ams2.redhat.com (ovpn-115-228.ams2.redhat.com [10.36.115.228])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 5ED3713470;
+        Wed, 13 Jan 2021 15:44:47 +0000 (UTC)
+Message-ID: <2135e96c89ce3dced96c77702f2539ae3ce9d8bb.camel@redhat.com>
+Subject: Re: [PATCH net] Revert "virtio_net: replace
+ netdev_alloc_skb_ip_align() with napi_alloc_skb()"
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Greg Thelen <gthelen@google.com>
+Date:   Wed, 13 Jan 2021 16:44:46 +0100
+In-Reply-To: <20210113051207.142711-1-eric.dumazet@gmail.com>
+References: <20210113051207.142711-1-eric.dumazet@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+On Tue, 2021-01-12 at 21:12 -0800, Eric Dumazet wrote:
+> From: Eric Dumazet <edumazet@google.com>
+> 
+> This reverts commit c67f5db82027ba6d2ea4ac9176bc45996a03ae6a.
+> 
+> While using page fragments instead of a kmalloc backed skb->head might give
+> a small performance improvement in some cases, there is a huge risk of
+> memory use under estimation.
+> 
+> GOOD_COPY_LEN is 128 bytes. This means that we need a small amount
+> of memory to hold the headers and struct skb_shared_info
+> 
+> Yet, napi_alloc_skb() might use a whole 32KB page (or 64KB on PowerPc)
+> for long lived incoming TCP packets.
+> 
+> We have been tracking OOM issues on GKE hosts hitting tcp_mem limits
+> but consuming far more memory for TCP buffers than instructed in tcp_mem[2]
+> 
+> Even if we force napi_alloc_skb() to only use order-0 pages, the issue
+> would still be there on arches with PAGE_SIZE >= 32768
+> 
+> Using alloc_skb() and thus standard kmallloc() for skb->head allocations
+> will get the benefit of letting other objects in each page being independently
+> used by other skbs, regardless of the lifetime.
+> 
+> Note that a similar problem exists for skbs allocated from napi_get_frags(),
+> this is handled in a separate patch.
+> 
+> I would like to thank Greg Thelen for his precious help on this matter,
+> analysing crash dumps is always a time consuming task.
+> 
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Cc: Paolo Abeni <pabeni@redhat.com>
+> Cc: Michael S. Tsirkin <mst@redhat.com>
+> Cc: Greg Thelen <gthelen@google.com>
+> ---
+>  drivers/net/virtio_net.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> index 508408fbe78fbd8658dc226834b5b1b334b8b011..5886504c1acacf3f6148127b5c1cc7f6a906b827 100644
+> --- a/drivers/net/virtio_net.c
+> +++ b/drivers/net/virtio_net.c
+> @@ -386,7 +386,7 @@ static struct sk_buff *page_to_skb(struct virtnet_info *vi,
+>  	p = page_address(page) + offset;
+>  
+>  	/* copy small packet so we can reuse these pages for small data */
+> -	skb = napi_alloc_skb(&rq->napi, GOOD_COPY_LEN);
+> +	skb = netdev_alloc_skb_ip_align(vi->dev, GOOD_COPY_LEN);
+>  	if (unlikely(!skb))
+>  		return NULL;
 
-Even though we should really share the implementation with the ocelot
-switchdev driver, that one needs a little bit of rework first, since its
-struct ocelot_port_tc only supports one tc matchall action at a time,
-which at the moment is used for port policers. Whereas DSA keeps a list
-of port-based actions in struct dsa_slave_priv::mall_tc_list, so it is
-much more easily extensible. It is too tempting to add the implementation
-for the port priority directly in Felix at the moment, which is what we
-do.
+I'm ok with the revert. The gain given by the original change in my
+tests was measurable, but small.
 
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
- drivers/net/dsa/ocelot/felix.c | 15 +++++++++++++++
- 1 file changed, 15 insertions(+)
-
-diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
-index 768a74dc462a..5cc42c3aaf0d 100644
---- a/drivers/net/dsa/ocelot/felix.c
-+++ b/drivers/net/dsa/ocelot/felix.c
-@@ -739,6 +739,20 @@ static void felix_port_policer_del(struct dsa_switch *ds, int port)
- 	ocelot_port_policer_del(ocelot, port);
- }
- 
-+static int felix_port_priority_set(struct dsa_switch *ds, int port,
-+				   struct dsa_mall_skbedit_tc_entry *skbedit)
-+{
-+	struct ocelot *ocelot = ds->priv;
-+
-+	ocelot_rmw_gix(ocelot,
-+		       ANA_PORT_QOS_CFG_QOS_DEFAULT_VAL(skbedit->priority),
-+		       ANA_PORT_QOS_CFG_QOS_DEFAULT_VAL_M,
-+		       ANA_PORT_QOS_CFG,
-+		       port);
-+
-+	return 0;
-+}
-+
- static int felix_port_setup_tc(struct dsa_switch *ds, int port,
- 			       enum tc_setup_type type,
- 			       void *type_data)
-@@ -786,6 +800,7 @@ const struct dsa_switch_ops felix_switch_ops = {
- 	.port_max_mtu		= felix_get_max_mtu,
- 	.port_policer_add	= felix_port_policer_add,
- 	.port_policer_del	= felix_port_policer_del,
-+	.port_priority_set	= felix_port_priority_set,
- 	.cls_flower_add		= felix_cls_flower_add,
- 	.cls_flower_del		= felix_cls_flower_del,
- 	.cls_flower_stats	= felix_cls_flower_stats,
--- 
-2.25.1
+Acked-by: Paolo Abeni <pabeni@redhat.com>
 
