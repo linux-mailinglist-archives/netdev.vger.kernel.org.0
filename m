@@ -2,44 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 054072F5842
-	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 04:02:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DF3B2F584F
+	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 04:02:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727180AbhANCQs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jan 2021 21:16:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40644 "EHLO
+        id S1728636AbhANCRO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jan 2021 21:17:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729046AbhAMVQZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 16:16:25 -0500
+        with ESMTP id S1729029AbhAMVPa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 16:15:30 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43A5AC061381
-        for <netdev@vger.kernel.org>; Wed, 13 Jan 2021 13:14:34 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD571C0617BE
+        for <netdev@vger.kernel.org>; Wed, 13 Jan 2021 13:14:33 -0800 (PST)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1kznTM-0001uu-OT
+        id 1kznTM-0001ug-6I
         for netdev@vger.kernel.org; Wed, 13 Jan 2021 22:14:32 +0100
 Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id B02495C306F
-        for <netdev@vger.kernel.org>; Wed, 13 Jan 2021 21:14:24 +0000 (UTC)
+        by bjornoya.blackshift.org (Postfix) with SMTP id DAE815C3069
+        for <netdev@vger.kernel.org>; Wed, 13 Jan 2021 21:14:23 +0000 (UTC)
 Received: from hardanger.blackshift.org (unknown [172.20.34.65])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id 0AFE05C300A;
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id 2D11B5C300D;
         Wed, 13 Jan 2021 21:14:13 +0000 (UTC)
 Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id b9092209;
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 9204726a;
         Wed, 13 Jan 2021 21:14:11 +0000 (UTC)
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
         kernel@pengutronix.de, Marc Kleine-Budde <mkl@pengutronix.de>,
         Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Subject: [net-next 09/17] can: length: can_fd_len2dlc(): simplify length calculcation
-Date:   Wed, 13 Jan 2021 22:14:02 +0100
-Message-Id: <20210113211410.917108-10-mkl@pengutronix.de>
+Subject: [net-next 10/17] can: length: canfd_sanitize_len(): add function to sanitize CAN-FD data length
+Date:   Wed, 13 Jan 2021 22:14:03 +0100
+Message-Id: <20210113211410.917108-11-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20210113211410.917108-1-mkl@pengutronix.de>
 References: <20210113211410.917108-1-mkl@pengutronix.de>
@@ -53,41 +53,32 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If the length paramter in len2dlc() exceeds the size of the len2dlc array, we
-return 0xF. This is equal to the last 16 members of the array.
-
-This patch removes these members from the array, uses ARRAY_SIZE() for the
-length check, and returns CANFD_MAX_DLC (which is 0xf).
+The data field in CAN-FD frames have specifig frame length (0, 1, 2, 3, 4, 5,
+6, 7, 8, 12, 16, 20, 24, 32, 48, 64). This function "rounds" up a given length
+to the next valid CAN-FD frame length.
 
 Reviewed-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Link: https://lore.kernel.org/r/20210111141930.693847-9-mkl@pengutronix.de
+Link: https://lore.kernel.org/r/20210111141930.693847-10-mkl@pengutronix.de
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
- drivers/net/can/dev/length.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ include/linux/can/length.h | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/net/can/dev/length.c b/drivers/net/can/dev/length.c
-index 5e7d481717ea..d695a3bee1ed 100644
---- a/drivers/net/can/dev/length.c
-+++ b/drivers/net/can/dev/length.c
-@@ -27,15 +27,13 @@ static const u8 len2dlc[] = {
- 	13, 13, 13, 13, 13, 13, 13, 13,	/* 25 - 32 */
- 	14, 14, 14, 14, 14, 14, 14, 14,	/* 33 - 40 */
- 	14, 14, 14, 14, 14, 14, 14, 14,	/* 41 - 48 */
--	15, 15, 15, 15, 15, 15, 15, 15,	/* 49 - 56 */
--	15, 15, 15, 15, 15, 15, 15, 15	/* 57 - 64 */
- };
- 
+diff --git a/include/linux/can/length.h b/include/linux/can/length.h
+index 156b9d17969a..b2313b2a0b02 100644
+--- a/include/linux/can/length.h
++++ b/include/linux/can/length.h
+@@ -45,4 +45,10 @@ u8 can_fd_dlc2len(u8 dlc);
  /* map the sanitized data length to an appropriate data length code */
- u8 can_fd_len2dlc(u8 len)
- {
--	if (unlikely(len > 64))
--		return 0xF;
-+	if (len > ARRAY_SIZE(len2dlc))
-+		return CANFD_MAX_DLC;
+ u8 can_fd_len2dlc(u8 len);
  
- 	return len2dlc[len];
- }
++/* map the data length to an appropriate data link layer length */
++static inline u8 canfd_sanitize_len(u8 len)
++{
++	return can_fd_dlc2len(can_fd_len2dlc(len));
++}
++
+ #endif /* !_CAN_LENGTH_H */
 -- 
 2.29.2
 
