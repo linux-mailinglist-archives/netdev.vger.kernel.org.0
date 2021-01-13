@@ -2,144 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2CD5B2F46C1
-	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 09:46:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 120642F46C3
+	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 09:46:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726996AbhAMIoY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jan 2021 03:44:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47360 "EHLO
+        id S1727024AbhAMIo2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jan 2021 03:44:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726987AbhAMIoX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 03:44:23 -0500
-Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15EFCC061794
-        for <netdev@vger.kernel.org>; Wed, 13 Jan 2021 00:43:43 -0800 (PST)
-Received: by mail-lf1-x12d.google.com with SMTP id v67so1602683lfa.0
-        for <netdev@vger.kernel.org>; Wed, 13 Jan 2021 00:43:43 -0800 (PST)
+        with ESMTP id S1726576AbhAMIoZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 03:44:25 -0500
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E981C06179F
+        for <netdev@vger.kernel.org>; Wed, 13 Jan 2021 00:43:45 -0800 (PST)
+Received: by mail-lf1-x131.google.com with SMTP id o19so1596407lfo.1
+        for <netdev@vger.kernel.org>; Wed, 13 Jan 2021 00:43:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:organization;
-        bh=JrPBS0zJD7+lalmOwJEn9u18RSbGdCouKuN9XZPvKCc=;
-        b=WHTWuiDbhzHrbQrg/k4uoHdsuTIakK+6oUV2Nna95wIu/qutbc8y2zsDoklRPN2wxn
-         5WwYy99YoTTR+1Qg2i4a1/7cni1iPDTvbh01CJXhesvUjZ+vgZy0mR0s0W/PD3B2rAEU
-         AYFHU0utsQcNLc8I7NH5q4IDof8svp7ZYlVGWFy1eCNVoOtmLJnPV0H3YtPKBjdo6Nw2
-         u6bKLXhB91ba9ZKPBMG/LdTUshGaY7h3HBu2xsE+DjQWfJ0ANykyjpmf4sn26Gz6cf7E
-         R3Uob33e6iNv8UqerySwEIgECxlBxjUMwwJCdF2S8+iIGeE3yPgkRHX8JoGHyJ8RN4om
-         v0eA==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :organization;
+        bh=jYsYUPMJW5/QalGVIYLB0FRD4cRJBAZJQQHBbr95zms=;
+        b=MD3Wdf7NBqdKe+hmJ8MV5yitglBnZKccSdp1r6uiE3H/Ojy/bKynxhQiGM2AOioD3w
+         usdi6Mbyq5VBpLTuzrCzKO929wPJPnBazKWMWg1/XsfBWpPFb0PZ7Aeo39ENJ6AGzjhV
+         bcTwiKiqjy34yZr19yeucZ9Ihcw/HjVJBUyzyjLZhrzflKFXMRkdDwyf8FHKVBsAY+ub
+         grvLPfxZjLN1BOcaDfJyurCzSbYQJroUEKbiIs/f+XhiNQMTuTnFZlEeHSRgX3rWd0gZ
+         xE+LrRfUaFHDLcU9cHx8YrwsRviZIqBKuUm3zmVtozICblYybxz+avk03O7GRh2QqV3z
+         PLZQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:organization;
-        bh=JrPBS0zJD7+lalmOwJEn9u18RSbGdCouKuN9XZPvKCc=;
-        b=O0xfY5sY7t1aEhqEjnZBfm87ma0dUjuVwyJSwOytgGcg7kMT0TeRepAmb3jkBtEOEU
-         AMazieAOrlp/DKaJ5EFL28G60Ae88D+Rm7rOLSUgKysLZQgmfDKD9ktpmrqyxXBemTaq
-         FJmYVynfSiiqhLtfMKOuMXXGVG5MC6rl3J4UEBgRHQ6S5tMbG4uLRguGJKntLtPLNGje
-         UYVJ6nlsbd1n4i10CYkb3GITSYn8gbU9OCUO7nYKXykH7fHyHaTeIq1R0nEk3fTPMB0Y
-         Slgf4LpKo3fjUOSx/mp34l02wbu2g9OZj3RA17ze3a1AUX5EPxbtwpMlMe9EFQc9Z+5V
-         3FQw==
-X-Gm-Message-State: AOAM532HKz31Qf6rGBgMuUa2P8aQLKYSLZstktPphJWM1eivja39FBe/
-        H/QfelIAxjlhieuRSu/c43RYVA==
-X-Google-Smtp-Source: ABdhPJzhcAA6yBgNMFenQ5O5bSQZk6x2Sk6OAVEVrHA3JWyjSWXAAA/CUK3MWycw/40MQGiXDMEnNA==
-X-Received: by 2002:a19:8214:: with SMTP id e20mr417418lfd.16.1610527421539;
-        Wed, 13 Jan 2021 00:43:41 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:organization;
+        bh=jYsYUPMJW5/QalGVIYLB0FRD4cRJBAZJQQHBbr95zms=;
+        b=Desp1rvosh5gBXBx4TOAxsZRIYMSJjtQjgDb2WIEl13GQ2j/E4YdUwg5AfRpYBQjlI
+         F3AR6BQUO/qj/5uvRzCeJ4Qz48YTQeqKhD33IhZXRJrU8CPF+NlLRzWdfywz00ye30XN
+         XX9EVzgJuXP7XUNCMchkLXRcSsQQRtDdaqk/YU2Sbb8ONGxPkCzWdZfy7hDZH4HbYoxg
+         krMh2xQB63e/O7+21ErWY6GaB05ZgL4NUAKaaP+3vmaCx7unmw99FuQwt9W/wo9ZhqXx
+         jxgcsBlsSsYk7espzcZq1rKj3SM1kkro5nYrANhX6fAOcigdmEoopWVTIzfSOkyVR9iD
+         ydEA==
+X-Gm-Message-State: AOAM531JVOnLuCgI2WDZLbkeDNtvVepYCBr1XKSO1l5kbs7x/uuW4hO7
+        O2dP+jxPcsiZ68/XeGQEZRXztw==
+X-Google-Smtp-Source: ABdhPJyz0H/jImmCQQ2QK/22BgqhL04dnBlZLHeUr6xQPja/kkcNCm6zC2TDh/nLt2wczV9xO3w/mw==
+X-Received: by 2002:a05:6512:314c:: with SMTP id s12mr432889lfi.100.1610527422298;
+        Wed, 13 Jan 2021 00:43:42 -0800 (PST)
 Received: from veiron.westermo.com (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
-        by smtp.gmail.com with ESMTPSA id u14sm137027lfk.108.2021.01.13.00.43.37
+        by smtp.gmail.com with ESMTPSA id u14sm137027lfk.108.2021.01.13.00.43.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Jan 2021 00:43:37 -0800 (PST)
+        Wed, 13 Jan 2021 00:43:41 -0800 (PST)
 From:   Tobias Waldekranz <tobias@waldekranz.com>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
         olteanv@gmail.com, j.vosburgh@gmail.com, vfalico@gmail.com,
         andy@greyhouse.net, netdev@vger.kernel.org
-Subject: [PATCH v5 net-next 0/5] net: dsa: Link aggregation support
-Date:   Wed, 13 Jan 2021 09:42:50 +0100
-Message-Id: <20210113084255.22675-1-tobias@waldekranz.com>
+Subject: [PATCH v5 net-next 1/5] net: bonding: Notify ports about their initial state
+Date:   Wed, 13 Jan 2021 09:42:51 +0100
+Message-Id: <20210113084255.22675-2-tobias@waldekranz.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20210113084255.22675-1-tobias@waldekranz.com>
+References: <20210113084255.22675-1-tobias@waldekranz.com>
 Organization: Westermo
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Start of by adding an extra notification when adding a port to a bond,
-this allows static LAGs to be offloaded using the bonding driver.
+When creating a static bond (e.g. balance-xor), all ports will always
+be enabled. This is set, and the corresponding notification is sent
+out, before the port is linked to the bond upper.
 
-Then add the generic support required to offload link aggregates to
-drivers built on top of the DSA subsystem.
+In the offloaded case, this ordering is hard to deal with.
 
-Finally, implement offloading for the mv88e6xxx driver, i.e. Marvell's
-LinkStreet family.
+The lower will first see a notification that it can not associate with
+any bond. Then the bond is joined. After that point no more
+notifications are sent, so all ports remain disabled.
 
-Supported LAG implementations:
-- Bonding
-- Team
+This change simply sends an extra notification once the port has been
+linked to the upper to synchronize the initial state.
 
-Supported modes:
-- Isolated. The LAG may be used as a regular interface outside of any
-  bridge.
-- Bridged. The LAG may be added to a bridge, in which case switching
-  is offloaded between the LAG and any other switch ports. I.e. the
-  LAG behaves just like a port from this perspective.
+Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+Acked-by: Jay Vosburgh <jay.vosburgh@canonical.com>
+Tested-by: Vladimir Oltean <olteanv@gmail.com>
+---
+ drivers/net/bonding/bond_main.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-In bridged mode, the following is supported:
-- STP filtering.
-- VLAN filtering.
-- Multicast filtering. The bridge correctly snoops IGMP and configures
-  the proper groups if snooping is enabled. Static groups can also be
-  configured. MLD seems to work, but has not been extensively tested.
-- Unicast filtering. Automatic learning works. Static entries are
-  _not_ supported. This will be added in a later series as it requires
-  some more general refactoring in mv88e6xxx before I can test it.
-
-v4 -> v5:
-- Cleanup PVT configuration for LAGed ports in mv88e6xxx (Vladimir)
-- Document dsa_lag_{map,unmap} (Vladimir)
-
-v3 -> v4:
-- Remove `struct dsa_lag`, leaving only a linear mapping to/from
-  ID/netdev that drivers can opt-in to.
-- Always fallback to a software LAG if offloading is not possible.
-- mv88e6xxx: Do not offload unless the LAG mode matches what the
-  hardware can do (hash based balancing).
-
-v2 -> v3:
-- Skip unnecessary RCU protection of the LAG device pointer, as
-  suggested by Vladimir.
-- Refcount LAGs with a plain refcount_t instead of `struct kref`, as
-  suggested by Vladimir.
-
-v1 -> v2:
-- Allocate LAGs from a static pool to avoid late errors under memory
-  pressure, as suggested by Andrew.
-
-RFC -> v1:
-- Properly propagate MDB operations.
-- Support for bonding in addition to team.
-- Fixed a locking bug in mv88e6xxx.
-- Make sure ports are disabled-by-default in mv88e6xxx.
-- Support for both DSA and EDSA tagging.
-
-Tobias Waldekranz (5):
-  net: bonding: Notify ports about their initial state
-  net: dsa: Don't offload port attributes on standalone ports
-  net: dsa: Link aggregation support
-  net: dsa: mv88e6xxx: Link aggregation support
-  net: dsa: tag_dsa: Support reception of packets from LAG devices
-
- drivers/net/bonding/bond_main.c     |   2 +
- drivers/net/dsa/mv88e6xxx/chip.c    | 296 +++++++++++++++++++++++++++-
- drivers/net/dsa/mv88e6xxx/global2.c |   8 +-
- drivers/net/dsa/mv88e6xxx/global2.h |   5 +
- drivers/net/dsa/mv88e6xxx/port.c    |  21 ++
- drivers/net/dsa/mv88e6xxx/port.h    |   5 +
- include/net/dsa.h                   |  60 ++++++
- net/dsa/dsa.c                       |  12 +-
- net/dsa/dsa2.c                      |  93 +++++++++
- net/dsa/dsa_priv.h                  |  36 ++++
- net/dsa/port.c                      |  79 ++++++++
- net/dsa/slave.c                     |  71 ++++++-
- net/dsa/switch.c                    |  50 +++++
- net/dsa/tag_dsa.c                   |  17 +-
- 14 files changed, 742 insertions(+), 13 deletions(-)
-
+diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
+index 5fe5232cc3f3..ad5192ee1845 100644
+--- a/drivers/net/bonding/bond_main.c
++++ b/drivers/net/bonding/bond_main.c
+@@ -1922,6 +1922,8 @@ int bond_enslave(struct net_device *bond_dev, struct net_device *slave_dev,
+ 		goto err_unregister;
+ 	}
+ 
++	bond_lower_state_changed(new_slave);
++
+ 	res = bond_sysfs_slave_add(new_slave);
+ 	if (res) {
+ 		slave_dbg(bond_dev, slave_dev, "Error %d calling bond_sysfs_slave_add\n", res);
 -- 
 2.17.1
 
