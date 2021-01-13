@@ -2,48 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6BB312F4314
-	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 05:23:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ADD572F4319
+	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 05:27:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726223AbhAMEXd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jan 2021 23:23:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48044 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726176AbhAMEXd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 23:23:33 -0500
-Received: from mail.nic.cz (lists.nic.cz [IPv6:2001:1488:800:400::400])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2C3CC061575
-        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 20:22:52 -0800 (PST)
-Received: from localhost (unknown [IPv6:2a0e:b107:ae1:0:3e97:eff:fe61:c680])
-        by mail.nic.cz (Postfix) with ESMTPSA id F0ED7140BBD;
-        Wed, 13 Jan 2021 05:22:48 +0100 (CET)
-Date:   Wed, 13 Jan 2021 05:22:48 +0100
-From:   Marek Behun <marek.behun@nic.cz>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        andrew@lunn.ch
-Cc:     netdev@vger.kernel.org, olteanv@gmail.com, pavana.sharma@digi.com
-Subject: Re: mv88e6xxx: 2500base-x inband AN is broken on Amethyst? what to
- do?
-Message-ID: <20210113052248.53f6032c@nic.cz>
-In-Reply-To: <20210113011823.3e407b31@kernel.org>
-References: <20210113011823.3e407b31@kernel.org>
-X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S1726136AbhAME1P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jan 2021 23:27:15 -0500
+Received: from mail.kernel.org ([198.145.29.99]:54226 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725681AbhAME1O (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 Jan 2021 23:27:14 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D4C3C2312E;
+        Wed, 13 Jan 2021 04:26:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1610511994;
+        bh=ebWVBNgjIS95zbpspVZ4MTQupc/TKqWi3PdJD+H0BkQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=cq6PZu6/bbI0/Z8ZxBqURoT2oxNksJ1tKYuGg4Gbxwh4PkELdLbT9IIGmbKYFex2m
+         66p5UhknPIzBuH6yvyJgJxaa9WCCtcqiig85j6WqbWPGOBC1qOGViugjRJJXDS7p6w
+         8g/BfOYO2k/Rf6KFLFuNTDLTGmf+dOntFh30sXu8OVU3KiJYVdTNlG3BdSbkU5f+uK
+         0gl6/dW/2/dNtvT8kmswK3w/Ug+DKPMlgCQKqqp0kl6Jt8/3xdTzHo07oElfUtrkC0
+         dmUCMuZ3SAsb6p2OSf/kYSYXrmW9CUhTxphRi4eFC+SlBIC6DMquw09G8zCyuRhz7L
+         4Rk2Dn9w8CqmA==
+Date:   Tue, 12 Jan 2021 20:26:32 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Pablo Neira Ayuso <pablo@netfilter.org>
+Cc:     netfilter-devel@vger.kernel.org, davem@davemloft.net,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net 0/3] Netfilter fixes for net
+Message-ID: <20210112202632.7286b8a2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210112222033.9732-1-pablo@netfilter.org>
+References: <20210112222033.9732-1-pablo@netfilter.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Spam-Status: No, score=-100.0 required=5.9 tests=SHORTCIRCUIT,
-        USER_IN_WELCOMELIST,USER_IN_WHITELIST shortcircuit=ham
-        autolearn=disabled version=3.4.2
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.nic.cz
-X-Virus-Scanned: clamav-milter 0.102.2 at mail
-X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It seems this problem can manifest somehow with Peridot as well, at
-least when in combination with 88X3310 PHY.
+On Tue, 12 Jan 2021 23:20:30 +0100 Pablo Neira Ayuso wrote:
+> The following patchset contains Netfilter fixes for net:
+> 
+> 1) Pass conntrack -f to specify family in netfilter conntrack helper
+>    selftests, from Chen Yi.
+> 
+> 2) Honor hashsize modparam from nf_conntrack_buckets sysctl,
+>    from Jesper D. Brouer.
+> 
+> 3) Fix memleak in nf_nat_init() error path, from Dinghao Liu.
 
-I will do some more experiments and try to come up with a solution.
-
-Marek
+Pulled, thanks!
