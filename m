@@ -2,107 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 767112F53D9
-	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 21:09:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C66952F53E2
+	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 21:11:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728840AbhAMUHL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jan 2021 15:07:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53838 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728804AbhAMUHK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 15:07:10 -0500
-Received: from mail-oi1-x22b.google.com (mail-oi1-x22b.google.com [IPv6:2607:f8b0:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DA7CC061795;
-        Wed, 13 Jan 2021 12:06:30 -0800 (PST)
-Received: by mail-oi1-x22b.google.com with SMTP id s75so3494664oih.1;
-        Wed, 13 Jan 2021 12:06:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=lv1Kbmm4YHPjDW6jxGU7xhxNaDP025bj9EsoV9E8pOE=;
-        b=cRPm9pZPSknFMMW6crH2FgRrxmhcQ+9YGAlUaON/y/ybThM0pf/7uptAjn2AMJT8fg
-         WwPzkkD+u39tegiwh6mZ/7DlW7JRJ17EG6DMTTcBLCxIpsx4yd0DuEJBa+BI8GVR0iYE
-         ATNGoQzT0/d5/Fe+SneQV2JnBG3GLHa0lBIQHNsOUXYR8alYsQmrU/TKpwelf8XAl0P5
-         eZ6LiFxDatmCPUK+1yQx9wmra+nhMDLmNImNCASOeuxppbXiCpdFqVrJEnzlC1bg3kw8
-         Prb9U0fyqhZVzuuek2g8XAKWO4j50FAbQnhTDpRa04z3m4o42BAy6msoM9nRUhKUSBGX
-         iPzQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=lv1Kbmm4YHPjDW6jxGU7xhxNaDP025bj9EsoV9E8pOE=;
-        b=A6+pJNP4GiUZ4zXQY/ilQOlKXMTuOCRFOAA2OBDCAr2RH+JgXJcwVivftRVcz0iEy0
-         QPcwhaNKqmV1HANKt8WxmVpsf6Ye8LyS7SJW5nnsMj8TIcGOrS59tXA+6rcY2gFIl4m9
-         OIrMsMyaq1sjrYWwbNjZBCCRMlScg3ZRjwM/es6i2OQoVF5mugJikYWVc59QJLapBf4G
-         hawTLz4EFtiiRJj/9HvZF93cXIb04gObtznJkRHjeRn6P4PoUQj7reqR7T9WLzAShOaC
-         91B5o93wyGHcGNmlV0813nAlaUFIdVAcrx11mVcku4YeoHoSRpLHbzpVNzHp+nUBEEBG
-         HxDg==
-X-Gm-Message-State: AOAM5321dFbN/8AQPXA+bFojq5B2xdpGJ0buKRFXPFZ+59YPikUehAVl
-        7ZrcetnaYskK1JQKqAaR+6tIQvj6ANI=
-X-Google-Smtp-Source: ABdhPJzoFRcRa704M1sWroE2BwDPq8dQvtRz8H0YTrXDy4cVEGBeiMhCV157HqoLFcuVHtupz/u24w==
-X-Received: by 2002:aca:b06:: with SMTP id 6mr610373oil.74.1610568389622;
-        Wed, 13 Jan 2021 12:06:29 -0800 (PST)
-Received: from localhost.localdomain (99-6-134-177.lightspeed.snmtca.sbcglobal.net. [99.6.134.177])
-        by smtp.gmail.com with ESMTPSA id m7sm621454oou.11.2021.01.13.12.06.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Jan 2021 12:06:29 -0800 (PST)
-Date:   Wed, 13 Jan 2021 12:06:27 -0800
-From:   Enke Chen <enkechen2020@gmail.com>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     Yuchung Cheng <ycheng@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Neal Cardwell <ncardwell@google.com>
-Subject: Re: [PATCH] tcp: keepalive fixes
-Message-ID: <20210113200626.GB2274@localhost.localdomain>
-References: <20210112192544.GA12209@localhost.localdomain>
- <CAK6E8=fq6Jec94FDmDHGWhsmjtZQmt3AwQB0-tLcpJpvJ=oLgg@mail.gmail.com>
- <CANn89i+w-_caN+D=W9Jv1VK4u8ZOLi-WzKJXi1pdEkr_5c+abQ@mail.gmail.com>
+        id S1728867AbhAMUJY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jan 2021 15:09:24 -0500
+Received: from mail.kernel.org ([198.145.29.99]:60898 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728763AbhAMUJY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 13 Jan 2021 15:09:24 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id A2075208B8;
+        Wed, 13 Jan 2021 20:08:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1610568523;
+        bh=Ej/rzxfSzsaQGeKJE6VmjaR8gM40cv/+y3lw7hw1xAA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Rtg1iQA3qrCOKSL2FHmpu87c4xJJn6YV/5cCDCcWNDBQ6/A54RpWZvkfA4ZDRXXs9
+         4Hje3aH4qEfK2/3MVfi+6JTMSXzG7SM4JYaJL2Ysf3ps3X3WTcUHwFmOTTnLRJRdIV
+         UzAZ1PloM8mUdDLGXt7fsbwaxOsuf8IHPRb8svqH+YYgl1wwM27D9SO72Ye9OzpDW9
+         vZ/uimCb0xpufj4vXy8m7PgWTBucArhTqn4GEmwY0AGfhc2sVOQzVI/1/Oyqqrjn7E
+         2zfRTqPUWWCKwKW7JQRA7k3i3lqd8zHzUIwJeuybGiJ1ANYhg2iwA/JFj5NbP6EAdJ
+         OJka5svupLBDw==
+Date:   Wed, 13 Jan 2021 21:08:39 +0100
+From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     andrew@lunn.ch, netdev@vger.kernel.org, olteanv@gmail.com,
+        pavana.sharma@digi.com
+Subject: Re: mv88e6xxx: 2500base-x inband AN is broken on Amethyst? what to
+ do?
+Message-ID: <20210113210839.40bb9446@kernel.org>
+In-Reply-To: <20210113102849.GG1551@shell.armlinux.org.uk>
+References: <20210113011823.3e407b31@kernel.org>
+        <20210113102849.GG1551@shell.armlinux.org.uk>
+X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CANn89i+w-_caN+D=W9Jv1VK4u8ZOLi-WzKJXi1pdEkr_5c+abQ@mail.gmail.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi, Eric:
+OK, so I did some tests with Peridot and 88X3310:
 
-Just to clarify: the issues for tcp keepalive and TCP_USER_TIMEOUT are
-separate isues, and the fixes would not conflict afaik.
+On 88E6390 switch, when CMODE in the port register for a port capable of
+SerDes is set to 1000base-x, the switch self-configures the SerDes PHY
+to inband AN:
+  register 4.2000 has value 0x1940
 
-Thanks.  -- Enke
+but when CMODE is set to 2500base-x, the switch self-configure the PHY
+without inband AN:
+  register 4.2000 has value 0x0940
 
-On Tue, Jan 12, 2021 at 11:52:43PM +0100, Eric Dumazet wrote:
-> On Tue, Jan 12, 2021 at 11:48 PM Yuchung Cheng <ycheng@google.com> wrote:
-> >
-> > On Tue, Jan 12, 2021 at 2:31 PM Enke Chen <enkechen2020@gmail.com> wrote:
-> > >
-> > > From: Enke Chen <enchen@paloaltonetworks.com>
-> > >
-> > > In this patch two issues with TCP keepalives are fixed:
-> > >
-> > > 1) TCP keepalive does not timeout when there are data waiting to be
-> > >    delivered and then the connection got broken. The TCP keepalive
-> > >    timeout is not evaluated in that condition.
-> > hi enke
-> > Do you have an example to demonstrate this issue -- in theory when
-> > there is data inflight, an RTO timer should be pending (which
-> > considers user-timeout setting). based on the user-timeout description
-> > (man tcp), the user timeout should abort the socket per the specified
-> > time after data commences. some data would help to understand the
-> > issue.
-> >
-> 
-> +1
-> 
-> A packetdrill test would be ideal.
-> 
-> Also, given that there is this ongoing issue with TCP_USER_TIMEOUT,
-> lets not mix things
-> or risk added work for backports to stable versions.
+Also the 88X3310 PHY, when configured with MACTYPE=4
+ (that is the mode that switches host interface between
+  10gbase-r/5gbase-r/2500base-x/sgmii, depending on copper speed)
+and when copper speed is 2500, the PHY self-configures without inband
+AN:
+  register 4.2000 has value 0x0140
+
+It seems to me that on these Marvell devices, they consider 2500base-x
+not capable of inband AN and disable it by default.
+
+Moreover when the PHY has disabled inband AN and the Peridot switch has
+it enabled (by software), they won't link. I tried enabling the inband
+AN on the PHY, but it does not seem to work. Peridot can only
+communicate with the PHY in 2500base-x with inband AN disabled.
+
+This means that the commit
+  a5a6858b793ff ("net: dsa: mv88e6xxx: extend phylink to Serdes PHYs")
+causes a regression, since the code started enabling inband AN on
+2500base-x mode on the mv88e6390 family, and they stopped working with
+the PHY.
+
+Russell, could we, for now, just edit the code so that when
+  mv88e6390_serdes_pcs_config
+is being configured with inband mode in 2500base-x, the inband mode
+won't be enabled and the function will print a warning?
+This could come with a Fixes tag so that it is backported to stable.
+
+Afterwards we can work on refactoring the phylink code so that either
+the driver can inform phylink whether 2500base-x inband AN is supported,
+or maybe we can determine from some documentation or whatnot whether
+inband AN is supported on 2500base-x at all.
+
+Marek
