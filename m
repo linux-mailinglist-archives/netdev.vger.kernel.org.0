@@ -2,85 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A8902F4088
-	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 01:56:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2879E2F4093
+	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 01:56:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2393532AbhAMAm5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jan 2021 19:42:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51952 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2392321AbhAMATj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 19:19:39 -0500
-Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0607DC061794
-        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 16:18:59 -0800 (PST)
-Received: by mail-lj1-x22e.google.com with SMTP id f17so524322ljg.12
-        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 16:18:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=xDSBLu/dQ/DU7FQZj8b6YPh8lI8akCH+mH01uvaPees=;
-        b=oKYBO4SPdgSBJUsDMIW5CP9v8Ehx9/bCarB8oGP/mHA4+sLd3xf01hYN8meRfn3Z/C
-         VRExJAQITYqEfrJHkfEK/+BUy2bi9V125dcXdPXwnGIrz1gChJ8Eagc6sfu5NxDOsM7Q
-         s4JHrGiTwBj0egpN48LNdJhwOkgrQljcrnDdfzV8s4tuYkxOP5J3ifDaVQItl+uBWKRi
-         hjaQ04uwbDzWLPPYGOzdK8OrUuidnmRBgEslg8HxcWMOGc+R2HncERyeNHOejDUAcGLp
-         U6ugLoGlBW/HnCUEp1wdREM2Q0knqc9CwXOGdVRuSBw5YniV+N1wwskoAEZ2xBEOuVvD
-         3xUw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=xDSBLu/dQ/DU7FQZj8b6YPh8lI8akCH+mH01uvaPees=;
-        b=HNr9ZDpmPt2XNnN4HJGGmUQJRYInb3NAdm/wS6zZsZK09k4fyfOtB4OMqOS6Ui/c5u
-         RzE2KfSvgA56E9Fb82dl9COizzk5d00yKcIYWsbagcwJEe2L9A6Gb1HKvdwIC6Vctaa7
-         kzlFvdubt3i6YOnsItz4aHLL0AYNp7YBPsWdwNpEIEpw9sCerqcbvczM0oLLCbuN9Jzw
-         ulOXSDFqfPMj2bkNwikVGa6yPRJuUhhEApV5s7peWuVd1SPqzeOez7sF2+9cSfRhAOpZ
-         y7fTvgERtYd+CxH0cAW6L4KU2hWiYPxbmiOpAqX/SSy1l4tShuSTAjuro+2LF/3McZBW
-         3e2A==
-X-Gm-Message-State: AOAM530v26P2oCJynqBVlJAcOXYECdzSqpGHDLtz6Q41cvOuGZTlKHXe
-        2uFHTIwMVmHwRfUrmFsnKp+eQ76Rc+M5yKMyaVmZoA==
-X-Google-Smtp-Source: ABdhPJzLMkGXD6keBgkD1QE7S34ntTTrgx2rICPfCSovNaFVK6UFbwtZ7AQr2ENR3QwGr5QWxwVbsZua9hjphAbv6aQ=
-X-Received: by 2002:a2e:9a84:: with SMTP id p4mr715148lji.160.1610497136091;
- Tue, 12 Jan 2021 16:18:56 -0800 (PST)
+        id S2393556AbhAMAm6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jan 2021 19:42:58 -0500
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:21080 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2392345AbhAMAlf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 19:41:35 -0500
+Received: from pps.filterd (m0098393.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 10D0WJ4r051398;
+        Tue, 12 Jan 2021 19:40:54 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=pp1; bh=DAtSyzwtxXG0k9oppJhBOgXVNK/QvwvtVpeHD0AMcGI=;
+ b=EaGiWWBgJPaSAfy3BSyycLs3z/VS0ZBb2m8rg49G0ig+inJyh8lzhQ0S9WBVMl0NmJAq
+ 5qaiFbS+JJj3UZPiT/RFhQQZfJwzMT69GGY4S2586QGgBj9rB5Lz2Jz3Mo1Dmn9dBgQ4
+ YOPOkODAOzIrCk6x6UCBouOqDdk8sgYio2xA87Kpq1oTcuxluajwzSrb56nZJgWWMQgA
+ iyuonSA+SMf/oqVpnjado24UUbAEGdej48LHiGU7YBWnK9XibOoOv7RdyB+aGqqq/s1Z
+ hzedeUKtT/+axUEYLsC8qxF9FMgbxcLvjtYFxHByYJnnLeO+/xdn/d5W2He4xJ3oEiFZ vA== 
+Received: from ppma01dal.us.ibm.com (83.d6.3fa9.ip4.static.sl-reverse.com [169.63.214.131])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 361np9h2f0-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 12 Jan 2021 19:40:54 -0500
+Received: from pps.filterd (ppma01dal.us.ibm.com [127.0.0.1])
+        by ppma01dal.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 10D0W0bZ006561;
+        Wed, 13 Jan 2021 00:40:53 GMT
+Received: from b01cxnp23034.gho.pok.ibm.com (b01cxnp23034.gho.pok.ibm.com [9.57.198.29])
+        by ppma01dal.us.ibm.com with ESMTP id 35y4498c65-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 13 Jan 2021 00:40:53 +0000
+Received: from b01ledav002.gho.pok.ibm.com (b01ledav002.gho.pok.ibm.com [9.57.199.107])
+        by b01cxnp23034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 10D0eqHi41287956
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 13 Jan 2021 00:40:52 GMT
+Received: from b01ledav002.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id A2A84124058;
+        Wed, 13 Jan 2021 00:40:52 +0000 (GMT)
+Received: from b01ledav002.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 7E9FD124053;
+        Wed, 13 Jan 2021 00:40:52 +0000 (GMT)
+Received: from suka-w540.localdomain (unknown [9.85.207.168])
+        by b01ledav002.gho.pok.ibm.com (Postfix) with ESMTP;
+        Wed, 13 Jan 2021 00:40:52 +0000 (GMT)
+Received: by suka-w540.localdomain (Postfix, from userid 1000)
+        id CA9A72E288B; Tue, 12 Jan 2021 16:40:49 -0800 (PST)
+Date:   Tue, 12 Jan 2021 16:40:49 -0800
+From:   Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+To:     Saeed Mahameed <saeed@kernel.org>
+Cc:     netdev@vger.kernel.org, Dany Madden <drt@linux.ibm.com>,
+        Lijun Pan <ljp@linux.ibm.com>,
+        Rick Lindsley <ricklind@linux.ibm.com>
+Subject: Re: [PATCH net-next v2 5/7] ibmvnic: serialize access to work queue
+Message-ID: <20210113004049.GA216185@us.ibm.com>
+References: <20210112181441.206545-1-sukadev@linux.ibm.com>
+ <20210112181441.206545-6-sukadev@linux.ibm.com>
+ <47e7f34d0c8a14eefba6aac00b08fc39cab61679.camel@kernel.org>
 MIME-Version: 1.0
-References: <20210112214105.1440932-1-shakeelb@google.com> <20210112233108.GD99586@carbon.dhcp.thefacebook.com>
- <CAOFY-A3=mCvfvMYBJvDL1LfjgYgc3kzebRNgeg0F+e=E1hMPXA@mail.gmail.com>
- <20210112234822.GA134064@carbon.dhcp.thefacebook.com> <CAOFY-A2YbE3_GGq-QpVOHTmd=35Lt-rxi8gpXBcNVKvUzrzSNg@mail.gmail.com>
-In-Reply-To: <CAOFY-A2YbE3_GGq-QpVOHTmd=35Lt-rxi8gpXBcNVKvUzrzSNg@mail.gmail.com>
-From:   Shakeel Butt <shakeelb@google.com>
-Date:   Tue, 12 Jan 2021 16:18:44 -0800
-Message-ID: <CALvZod4am_dNcj2+YZmraCj0+BYHB9PnQqKcrhiOnV8gzd+S3w@mail.gmail.com>
-Subject: Re: [PATCH] mm: net: memcg accounting for TCP rx zerocopy
-To:     Arjun Roy <arjunroy@google.com>
-Cc:     Roman Gushchin <guro@fb.com>, Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Linux MM <linux-mm@kvack.org>,
-        Cgroups <cgroups@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <47e7f34d0c8a14eefba6aac00b08fc39cab61679.camel@kernel.org>
+X-Operating-System: Linux 2.0.32 on an i486
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
+ definitions=2021-01-12_21:2021-01-12,2021-01-12 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ suspectscore=0 malwarescore=0 mlxlogscore=999 clxscore=1011
+ lowpriorityscore=0 bulkscore=0 spamscore=0 mlxscore=0 impostorscore=0
+ adultscore=0 phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2101120137
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 12, 2021 at 4:12 PM Arjun Roy <arjunroy@google.com> wrote:
->
-> On Tue, Jan 12, 2021 at 3:48 PM Roman Gushchin <guro@fb.com> wrote:
-> >
-[snip]
-> > Historically we have a corresponding vmstat counter to each charged page.
-> > It helps with finding accounting/stastistics issues: we can check that
-> > memory.current ~= anon + file + sock + slab + percpu + stack.
-> > It would be nice to preserve such ability.
-> >
->
-> Perhaps one option would be to have it count as a file page, or have a
-> new category.
->
+Saeed Mahameed [saeed@kernel.org] wrote:
+> On Tue, 2021-01-12 at 10:14 -0800, Sukadev Bhattiprolu wrote:
 
-Oh these are actually already accounted for in NR_FILE_MAPPED.
+<snip>
+> > @@ -5467,7 +5472,15 @@ static int ibmvnic_remove(struct vio_dev *dev)
+> >  		return -EBUSY;
+> >  	}
+> >  
+> > +	/* If ibmvnic_reset() is scheduling a reset, wait for it to
+> > +	 * finish. Then prevent it from scheduling any more resets
+> > +	 * and have the reset functions ignore any resets that have
+> > +	 * already been scheduled.
+> > +	 */
+> > +	spin_lock_irqsave(&adapter->remove_lock, flags);
+> >  	adapter->state = VNIC_REMOVING;
+> > +	spin_unlock_irqrestore(&adapter->remove_lock, flags);
+> > +
+> 
+> Why irqsave/restore variants ? are you expecting this spinlock to be
+> held in interruptcontext ?
+> 
+> >  	spin_unlock_irqrestore(&adapter->state_lock, flags);
+
+Good question.
+
+One of the callers of ibmvnic_reset() is the ->ndo_tx_timeout()
+method which gets called from the watchdog timer.
+
+Thanks for the review.
+
+Sukadev
