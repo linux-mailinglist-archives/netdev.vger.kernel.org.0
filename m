@@ -2,277 +2,408 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D17C2F4B1F
-	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 13:20:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E1F7D2F4B22
+	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 13:20:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727351AbhAMMP7 convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 13 Jan 2021 07:15:59 -0500
-Received: from mail-yb1-f179.google.com ([209.85.219.179]:40771 "EHLO
-        mail-yb1-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726754AbhAMMP6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 07:15:58 -0500
-Received: by mail-yb1-f179.google.com with SMTP id b64so1936762ybg.7;
-        Wed, 13 Jan 2021 04:15:42 -0800 (PST)
+        id S1727555AbhAMMQP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jan 2021 07:16:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36540 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726899AbhAMMQO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 07:16:14 -0500
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 648C6C061786
+        for <netdev@vger.kernel.org>; Wed, 13 Jan 2021 04:15:34 -0800 (PST)
+Received: by mail-wr1-x42a.google.com with SMTP id w5so1858607wrm.11
+        for <netdev@vger.kernel.org>; Wed, 13 Jan 2021 04:15:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=XdxJTvWvaHBiV3VIQ3bPCNJD5OxTrXOwIIXGgEKqopw=;
+        b=X4ORhkbbPjk1DJizTXJaIlnbXWSnrco/Kwf1ibbHsQIx9rxIWT+aWZx05PeQ/8aqLt
+         2LLnCt4Co0RwUEE1APeItNLH0nkw/gj0suK2VT4QBo2vt8B2L2UhlHq5TICiBaaxmfEQ
+         oLpTzTHN6Scs8HaQsnAb3QURm8hPMBYW3+Nr3GYt8huVX3lVpM4dnJDqH33Z7SN/cd1K
+         UDRXfjdbDSn5fbU1ZWKlCrH5x7BelmeXxj4hPcJ85ovsriT9vKNOmTf/1pmf1y6umoHw
+         NNC+LfW1bY7+2qykJT+3r4bj6SQCgmYb8TmtjISIOAwvFMAos+AB6dYhYfzwAWYTNDud
+         zXBw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=2wUt4z1Zsz9iM7CRpKvt0vyz96nLLvj41PURHjsvbRY=;
-        b=dXeAPX2XjiEE5II0IEyDDiQPMuePlULqb1drABdrYCLEtzeOjJ1TOQYa0UEJLnnVnW
-         snV/ZrkYxF3CMCaIjGwqhfJrkkG3+EMi4RtWCiA1rEalmvBEV2anEiydzfsUBWwCORYH
-         Ru2Xek1tM7VYSxHf9RYn3Ysky6JhGj2qn7L7HhmIF07Gjm5cgTgfQfcgWQ7ZT4rY5RD/
-         Ie7wS/hwGi6I7GiEzwzr6+lKAh8av7QX7WFaHI8cP3neovY8xmmKqC/88zmDGyd50arT
-         nL0MBCq8Vb0dO36mItOA+d5vcCbW++1/M5LC7/Y++z0F1LE1/ocWjf/Xs0HP4WPNoSbD
-         y0dQ==
-X-Gm-Message-State: AOAM531xNA+TaH0ZotMcxNRsNQDmgIQdFMPA2AoIo7211+gydgi5wvp3
-        f8XMJWukP4X3LIn9TZYUq4H47wnXasPTo9R/IdI=
-X-Google-Smtp-Source: ABdhPJzyffLUsPWd7j0/OwP119CbOrw/CMuKEU+UdoLUXyhfReHpjKOZhWKYwv87TuYgK/xA0o3hBbwOX2LdHv5K3sI=
-X-Received: by 2002:a25:f30a:: with SMTP id c10mr2658250ybs.514.1610540117068;
- Wed, 13 Jan 2021 04:15:17 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=XdxJTvWvaHBiV3VIQ3bPCNJD5OxTrXOwIIXGgEKqopw=;
+        b=sxtNjFwDr3CrSPLy4DM99YwWDw11ClOVYBGLtCZwAQPp5afap1cO8QiEOychPdkwkt
+         hcYwx6A1NsP42NIFB5/8kv79m/7bYoL7FEucWD+2YYIN3Ja5nfMkUhrxvrIrcXeO3q4i
+         3NgJNyq2iF5ugUmyZez4ckHtC3Eq0cQtnWZwfEUnf9paIwjRxHXGW/4oW1g9+Pl9J0Wu
+         VX2Do1qlM+cd7J98omwS7bhokEVqYm7cBMq3K9SaEh6yxpvKtc4OWsX2KgzX+5X+0n7p
+         I9ROU4blpx65kylbPj1L2z20wjUSw2zUCsbSnBxl9eI89UPVSBd8YJt6UkuDWriCge6B
+         r9rw==
+X-Gm-Message-State: AOAM530nPq+qTlRNgzsRXRCyLI9aBcIGxEr9yzCCY9/LNpRk9Txib/kO
+        2RduNyV2ve8xxApnKRpxL1RZYZq8p01nf+t2
+X-Google-Smtp-Source: ABdhPJyWxqIyCLQOU+NI1cP4r5Db18m28+2pWd1zVLpQc/FWax7kbu/KiwOTL2tRVC8lJcO4qY0+fw==
+X-Received: by 2002:adf:fb52:: with SMTP id c18mr2299081wrs.186.1610540132800;
+        Wed, 13 Jan 2021 04:15:32 -0800 (PST)
+Received: from localhost ([85.163.43.78])
+        by smtp.gmail.com with ESMTPSA id w17sm2637561wmk.12.2021.01.13.04.15.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Jan 2021 04:15:32 -0800 (PST)
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, jacob.e.keller@intel.com,
+        roopa@nvidia.com, mlxsw@nvidia.com
+Subject: [patch iproute2/net-next RFC] devlink: add support for linecard show and provision
+Date:   Wed, 13 Jan 2021 13:15:31 +0100
+Message-Id: <20210113121531.733849-1-jiri@resnulli.us>
+X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20210113121222.733517-1-jiri@resnulli.u>
+References: <20210113121222.733517-1-jiri@resnulli.u>
 MIME-Version: 1.0
-References: <20210112130538.14912-1-mailhol.vincent@wanadoo.fr>
- <20210112130538.14912-2-mailhol.vincent@wanadoo.fr> <7643bd48-6594-9ede-b791-de6e155c62c1@pengutronix.de>
-In-Reply-To: <7643bd48-6594-9ede-b791-de6e155c62c1@pengutronix.de>
-From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Date:   Wed, 13 Jan 2021 21:15:04 +0900
-Message-ID: <CAMZ6Rq+HggK2HHkPn_QTKzz-niyiU8AkHc4rP5AXE+AqJmkbrg@mail.gmail.com>
-Subject: Re: [PATCH v10 1/1] can: usb: etas_es58X: add support for ETAS ES58X
- CAN USB interfaces
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     linux-can <linux-can@vger.kernel.org>,
-        Arunachalam Santhanam <arunachalam.santhanam@in.bosch.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jimmy Assarsson <extja@kvaser.com>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        "open list : NETWORKING DRIVERS" <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Marc,
+From: Jiri Pirko <jiri@nvidia.com>
 
-Thanks for the comments!
+Signed-off-by: Jiri Pirko <jiri@nvidia.com>
+---
+ devlink/devlink.c | 218 +++++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 214 insertions(+), 4 deletions(-)
 
-On Wed. 13 Jan 2021 à 18:33, Marc Kleine-Budde <mkl@pengutronix.de> wrote:
->
-> On 1/12/21 2:05 PM, Vincent Mailhol wrote:
-> > This driver supports the ES581.4, ES582.1 and ES584.1 interfaces from
-> > ETAS GmbH (https://www.etas.com/en/products/es58x.php).
-> >
-> > Co-developed-by: Arunachalam Santhanam <arunachalam.santhanam@in.bosch.com>
-> > Signed-off-by: Arunachalam Santhanam <arunachalam.santhanam@in.bosch.com>
-> > Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
->
-> [...]
->
-> > diff --git a/drivers/net/can/usb/etas_es58x/es58x_core.c b/drivers/net/can/usb/etas_es58x/es58x_core.c
-> > new file mode 100644
-> > index 000000000000..30692d78d8e6
-> > --- /dev/null
-> > +++ b/drivers/net/can/usb/etas_es58x/es58x_core.c
-> > @@ -0,0 +1,2589 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +
-> > +/* Driver for ETAS GmbH ES58X USB CAN(-FD) Bus Interfaces.
-> > + *
-> > + * File es58x_core.c: Core logic to manage the network devices and the
-> > + * USB interface.
-> > + *
-> > + * Copyright (C) 2019 Robert Bosch Engineering and Business
-> > + * Solutions. All rights reserved.
-> > + * Copyright (C) 2020 ETAS K.K.. All rights reserved.
-> > + */
-> > +
-> > +#include <linux/kernel.h>
-> > +#include <linux/module.h>
-> > +#include <linux/moduleparam.h>
-> > +#include <linux/usb.h>
-> > +#include <linux/crc16.h>
-> > +#include <linux/spinlock.h>
-> > +#include <asm/unaligned.h>
-> > +
-> > +#include "es58x_core.h"
-> > +
-> > +#define DRV_VERSION "1.00"
-> > +MODULE_AUTHOR("Mailhol Vincent <mailhol.vincent@wanadoo.fr>");
-> > +MODULE_AUTHOR("Arunachalam Santhanam <arunachalam.santhanam@in.bosch.com>");
-> > +MODULE_DESCRIPTION("Socket CAN driver for ETAS ES58X USB adapters");
-> > +MODULE_VERSION(DRV_VERSION);
-> > +MODULE_LICENSE("GPL v2");
-> > +
-> > +/* Vendor and product id */
-> > +#define ES58X_MODULE_NAME "etas_es58x"
-> > +#define ES58X_VENDOR_ID 0x108C
-> > +#define ES581_4_PRODUCT_ID 0x0159
-> > +#define ES582_1_PRODUCT_ID 0x0168
-> > +#define ES584_1_PRODUCT_ID 0x0169
-> > +
-> > +/* Table of devices which work with this driver */
-> > +static const struct usb_device_id es58x_id_table[] = {
-> > +     {USB_DEVICE(ES58X_VENDOR_ID, ES581_4_PRODUCT_ID)},
-> > +     {USB_DEVICE(ES58X_VENDOR_ID, ES582_1_PRODUCT_ID)},
-> > +     {USB_DEVICE(ES58X_VENDOR_ID, ES584_1_PRODUCT_ID)},
-> > +     {}                      /* Terminating entry */
-> > +};
-> > +
-> > +MODULE_DEVICE_TABLE(usb, es58x_id_table);
-> > +
-> > +#define es58x_print_hex_dump(buf, len)                                       \
-> > +     print_hex_dump(KERN_DEBUG,                                      \
-> > +                    ES58X_MODULE_NAME " " __stringify(buf) ": ",     \
-> > +                    DUMP_PREFIX_NONE, 16, 1, buf, len, false)
-> > +
-> > +#define es58x_print_hex_dump_debug(buf, len)                          \
-> > +     print_hex_dump_debug(ES58X_MODULE_NAME " " __stringify(buf) ": ",\
-> > +                          DUMP_PREFIX_NONE, 16, 1, buf, len, false)
-> > +
-> > +/* The last two bytes of an ES58X command is a CRC16. The first two
-> > + * bytes (the start of frame) are skipped and the CRC calculation
-> > + * starts on the third byte.
-> > + */
-> > +#define ES58X_CRC_CALC_OFFSET        2
-> > +
-> > +/**
-> > + * es58x_calculate_crc() - Compute the crc16 of a given URB.
-> > + * @urb_cmd: The URB command for which we want to calculate the CRC.
-> > + * @urb_len: Length of @urb_cmd. Must be at least bigger than 4
-> > + *   (ES58X_CRC_CALC_OFFSET + sizeof(crc))
-> > + *
-> > + * Return: crc16 value.
-> > + */
-> > +static u16 es58x_calculate_crc(const union es58x_urb_cmd *urb_cmd, u16 urb_len)
-> > +{
-> > +     u16 crc;
-> > +     ssize_t len = urb_len - ES58X_CRC_CALC_OFFSET - sizeof(crc);
-> > +
-> > +     WARN_ON(len < 0);
->
-> Is it possible to ensure earlier, that the urbs are of correct length?
+diff --git a/devlink/devlink.c b/devlink/devlink.c
+index a2e066441e8a..960f1078591e 100644
+--- a/devlink/devlink.c
++++ b/devlink/devlink.c
+@@ -306,6 +306,8 @@ static void ifname_map_free(struct ifname_map *ifname_map)
+ #define DL_OPT_FLASH_OVERWRITE		BIT(39)
+ #define DL_OPT_RELOAD_ACTION		BIT(40)
+ #define DL_OPT_RELOAD_LIMIT	BIT(41)
++#define DL_OPT_LINECARD		BIT(42)
++#define DL_OPT_LINECARD_TYPE	BIT(43)
+ 
+ struct dl_opts {
+ 	uint64_t present; /* flags of present items */
+@@ -356,6 +358,8 @@ struct dl_opts {
+ 	uint32_t overwrite_mask;
+ 	enum devlink_reload_action reload_action;
+ 	enum devlink_reload_limit reload_limit;
++	uint32_t linecard_index;
++	const char *linecard_type;
+ };
+ 
+ struct dl {
+@@ -1414,6 +1418,8 @@ static const struct dl_args_metadata dl_args_required[] = {
+ 	{DL_OPT_TRAP_NAME,            "Trap's name is expected."},
+ 	{DL_OPT_TRAP_GROUP_NAME,      "Trap group's name is expected."},
+ 	{DL_OPT_PORT_FUNCTION_HW_ADDR, "Port function's hardware address is expected."},
++	{DL_OPT_LINECARD,	      "Linecard index expected."},
++	{DL_OPT_LINECARD_TYPE,	      "Linecard type expected."},
+ };
+ 
+ static int dl_args_finding_required_validate(uint64_t o_required,
+@@ -1832,7 +1838,20 @@ static int dl_argv_parse(struct dl *dl, uint64_t o_required,
+ 			if (err)
+ 				return err;
+ 			o_found |= DL_OPT_PORT_FUNCTION_HW_ADDR;
+-
++		} else if (dl_argv_match(dl, "lc") &&
++			   (o_all & DL_OPT_LINECARD)) {
++			dl_arg_inc(dl);
++			err = dl_argv_uint32_t(dl, &opts->linecard_index);
++			if (err)
++				return err;
++			o_found |= DL_OPT_LINECARD;
++		} else if (dl_argv_match(dl, "type") &&
++			   (o_all & DL_OPT_LINECARD_TYPE)) {
++			dl_arg_inc(dl);
++			err = dl_argv_str(dl, &opts->linecard_type);
++			if (err)
++				return err;
++			o_found |= DL_OPT_LINECARD_TYPE;
+ 		} else {
+ 			pr_err("Unknown option \"%s\"\n", dl_argv(dl));
+ 			return -EINVAL;
+@@ -2015,6 +2034,12 @@ static void dl_opts_put(struct nlmsghdr *nlh, struct dl *dl)
+ 				 opts->trap_policer_burst);
+ 	if (opts->present & DL_OPT_PORT_FUNCTION_HW_ADDR)
+ 		dl_function_attr_put(nlh, opts);
++	if (opts->present & DL_OPT_LINECARD)
++		mnl_attr_put_u32(nlh, DEVLINK_ATTR_LINECARD_INDEX,
++				 opts->linecard_index);
++	if (opts->present & DL_OPT_LINECARD_TYPE)
++		mnl_attr_put_strz(nlh, DEVLINK_ATTR_LINECARD_TYPE,
++				  opts->linecard_type);
+ }
+ 
+ static int dl_argv_parse_put(struct nlmsghdr *nlh, struct dl *dl,
+@@ -2036,6 +2061,7 @@ static bool dl_dump_filter(struct dl *dl, struct nlattr **tb)
+ 	struct nlattr *attr_dev_name = tb[DEVLINK_ATTR_DEV_NAME];
+ 	struct nlattr *attr_port_index = tb[DEVLINK_ATTR_PORT_INDEX];
+ 	struct nlattr *attr_sb_index = tb[DEVLINK_ATTR_SB_INDEX];
++	struct nlattr *attr_linecard_index = tb[DEVLINK_ATTR_LINECARD_INDEX];
+ 
+ 	if (opts->present & DL_OPT_HANDLE &&
+ 	    attr_bus_name && attr_dev_name) {
+@@ -2063,6 +2089,12 @@ static bool dl_dump_filter(struct dl *dl, struct nlattr **tb)
+ 		if (sb_index != opts->sb_index)
+ 			return false;
+ 	}
++	if (opts->present & DL_OPT_LINECARD && attr_linecard_index) {
++		uint32_t linecard_index = mnl_attr_get_u32(attr_linecard_index);
++
++		if (linecard_index != opts->linecard_index)
++			return false;
++	}
+ 	return true;
+ }
+ 
+@@ -3833,6 +3865,9 @@ static void pr_out_port(struct dl *dl, struct nlattr **tb)
+ 			break;
+ 		}
+ 	}
++	if (tb[DEVLINK_ATTR_LINECARD_INDEX])
++		print_uint(PRINT_ANY, "lc", " lc %u",
++			   mnl_attr_get_u32(tb[DEVLINK_ATTR_LINECARD_INDEX]));
+ 	if (tb[DEVLINK_ATTR_PORT_NUMBER]) {
+ 		uint32_t port_number;
+ 
+@@ -4005,6 +4040,156 @@ static int cmd_port(struct dl *dl)
+ 	return -ENOENT;
+ }
+ 
++static void cmd_linecard_help(void)
++{
++	pr_err("Usage: devlink lc show [ DEV [ lc LC_INDEX ] ]\n");
++	pr_err("       devlink lc provision DEV lc LC_INDEX type LC_TYPE\n");
++	pr_err("       devlink lc unprovision DEV lc LC_INDEX\n");
++}
++
++static const char *linecard_state_name(uint16_t flavour)
++{
++	switch (flavour) {
++	case DEVLINK_LINECARD_STATE_UNPROVISIONED:
++		return "unprovisioned";
++	case DEVLINK_LINECARD_STATE_UNPROVISIONING:
++		return "unprovisioning";
++	case DEVLINK_LINECARD_STATE_PROVISIONING:
++		return "provisioning";
++	case DEVLINK_LINECARD_STATE_PROVISIONED:
++		return "provisioned";
++	case DEVLINK_LINECARD_STATE_ACTIVE:
++		return "active";
++	default:
++		return "<unknown state>";
++	}
++}
++
++static void pr_out_linecard_supported_types(struct dl *dl, struct nlattr **tb)
++{
++	struct nlattr *nla_types = tb[DEVLINK_ATTR_LINECARD_SUPPORTED_TYPES];
++	struct nlattr *nla_type;
++
++	if (!nla_types)
++		return;
++
++	pr_out_array_start(dl, "supported_types");
++	check_indent_newline(dl);
++	mnl_attr_for_each_nested(nla_type, nla_types) {
++		print_string(PRINT_ANY, NULL, " %s",
++			     mnl_attr_get_str(nla_type));
++	}
++	pr_out_array_end(dl);
++}
++
++static void pr_out_linecard(struct dl *dl, struct nlattr **tb)
++{
++	uint8_t state;
++
++	pr_out_handle_start_arr(dl, tb);
++	check_indent_newline(dl);
++	print_uint(PRINT_ANY, "lc", "lc %u",
++		   mnl_attr_get_u32(tb[DEVLINK_ATTR_LINECARD_INDEX]));
++	state = mnl_attr_get_u8(tb[DEVLINK_ATTR_LINECARD_STATE]);
++	print_string(PRINT_ANY, "state", " state %s",
++		     linecard_state_name(state));
++	if (tb[DEVLINK_ATTR_LINECARD_TYPE])
++		print_string(PRINT_ANY, "type", " type %s",
++			     mnl_attr_get_str(tb[DEVLINK_ATTR_LINECARD_TYPE]));
++	pr_out_linecard_supported_types(dl, tb);
++	pr_out_handle_end(dl);
++}
++
++static int cmd_linecard_show_cb(const struct nlmsghdr *nlh, void *data)
++{
++	struct dl *dl = data;
++	struct nlattr *tb[DEVLINK_ATTR_MAX + 1] = {};
++	struct genlmsghdr *genl = mnl_nlmsg_get_payload(nlh);
++
++	mnl_attr_parse(nlh, sizeof(*genl), attr_cb, tb);
++	if (!tb[DEVLINK_ATTR_BUS_NAME] || !tb[DEVLINK_ATTR_DEV_NAME] ||
++	    !tb[DEVLINK_ATTR_LINECARD_INDEX] ||
++	    !tb[DEVLINK_ATTR_LINECARD_STATE])
++		return MNL_CB_ERROR;
++	pr_out_linecard(dl, tb);
++	return MNL_CB_OK;
++}
++
++static int cmd_linecard_show(struct dl *dl)
++{
++	struct nlmsghdr *nlh;
++	uint16_t flags = NLM_F_REQUEST | NLM_F_ACK;
++	int err;
++
++	if (dl_argc(dl) == 0)
++		flags |= NLM_F_DUMP;
++
++	nlh = mnlg_msg_prepare(dl->nlg, DEVLINK_CMD_LINECARD_GET, flags);
++
++	if (dl_argc(dl) > 0) {
++		err = dl_argv_parse_put(nlh, dl, DL_OPT_HANDLE,
++					DL_OPT_LINECARD);
++		if (err)
++			return err;
++	}
++
++	pr_out_section_start(dl, "lc");
++	err = _mnlg_socket_sndrcv(dl->nlg, nlh, cmd_linecard_show_cb, dl);
++	pr_out_section_end(dl);
++	return err;
++}
++
++static int cmd_linecard_provision(struct dl *dl)
++{
++	struct nlmsghdr *nlh;
++	int err;
++
++	nlh = mnlg_msg_prepare(dl->nlg, DEVLINK_CMD_LINECARD_PROVISION,
++			       NLM_F_REQUEST | NLM_F_ACK);
++
++	err = dl_argv_parse_put(nlh, dl, DL_OPT_HANDLE | DL_OPT_LINECARD |
++					 DL_OPT_LINECARD_TYPE, 0);
++	if (err)
++		return err;
++
++	return _mnlg_socket_sndrcv(dl->nlg, nlh, NULL, NULL);
++}
++
++static int cmd_linecard_unprovision(struct dl *dl)
++{
++	struct nlmsghdr *nlh;
++	int err;
++
++	nlh = mnlg_msg_prepare(dl->nlg, DEVLINK_CMD_LINECARD_UNPROVISION,
++			       NLM_F_REQUEST | NLM_F_ACK);
++
++	err = dl_argv_parse_put(nlh, dl, DL_OPT_HANDLE | DL_OPT_LINECARD, 0);
++	if (err)
++		return err;
++
++	return _mnlg_socket_sndrcv(dl->nlg, nlh, NULL, NULL);
++}
++
++static int cmd_linecard(struct dl *dl)
++{
++	if (dl_argv_match(dl, "help")) {
++		cmd_linecard_help();
++		return 0;
++	} else if (dl_argv_match(dl, "show") ||
++		   dl_argv_match(dl, "list") || dl_no_arg(dl)) {
++		dl_arg_inc(dl);
++		return cmd_linecard_show(dl);
++	} else if (dl_argv_match(dl, "provision")) {
++		dl_arg_inc(dl);
++		return cmd_linecard_provision(dl);
++	} else if (dl_argv_match(dl, "unprovision")) {
++		dl_arg_inc(dl);
++		return cmd_linecard_unprovision(dl);
++	}
++	pr_err("Command \"%s\" not found\n", dl_argv(dl));
++	return -ENOENT;
++}
++
+ static void cmd_sb_help(void)
+ {
+ 	pr_err("Usage: devlink sb show [ DEV [ sb SB_INDEX ] ]\n");
+@@ -4818,6 +5003,10 @@ static const char *cmd_name(uint8_t cmd)
+ 	case DEVLINK_CMD_TRAP_POLICER_SET: return "set";
+ 	case DEVLINK_CMD_TRAP_POLICER_NEW: return "new";
+ 	case DEVLINK_CMD_TRAP_POLICER_DEL: return "del";
++	case DEVLINK_CMD_LINECARD_GET: return "get";
++	case DEVLINK_CMD_LINECARD_SET: return "set";
++	case DEVLINK_CMD_LINECARD_NEW: return "new";
++	case DEVLINK_CMD_LINECARD_DEL: return "del";
+ 	default: return "<unknown cmd>";
+ 	}
+ }
+@@ -4867,6 +5056,11 @@ static const char *cmd_obj(uint8_t cmd)
+ 	case DEVLINK_CMD_TRAP_POLICER_NEW:
+ 	case DEVLINK_CMD_TRAP_POLICER_DEL:
+ 		return "trap-policer";
++	case DEVLINK_CMD_LINECARD_GET:
++	case DEVLINK_CMD_LINECARD_SET:
++	case DEVLINK_CMD_LINECARD_NEW:
++	case DEVLINK_CMD_LINECARD_DEL:
++		return "lc";
+ 	default: return "<unknown obj>";
+ 	}
+ }
+@@ -5059,6 +5253,18 @@ static int cmd_mon_show_cb(const struct nlmsghdr *nlh, void *data)
+ 		pr_out_mon_header(genl->cmd);
+ 		pr_out_trap_policer(dl, tb, false);
+ 		break;
++	case DEVLINK_CMD_LINECARD_GET: /* fall through */
++	case DEVLINK_CMD_LINECARD_SET: /* fall through */
++	case DEVLINK_CMD_LINECARD_NEW: /* fall through */
++	case DEVLINK_CMD_LINECARD_DEL:
++		mnl_attr_parse(nlh, sizeof(*genl), attr_cb, tb);
++		if (!tb[DEVLINK_ATTR_BUS_NAME] || !tb[DEVLINK_ATTR_DEV_NAME] ||
++		    !tb[DEVLINK_ATTR_LINECARD_INDEX])
++			return MNL_CB_ERROR;
++		pr_out_mon_header(genl->cmd);
++		pr_out_linecard(dl, tb);
++		pr_out_mon_footer();
++		break;
+ 	}
+ 	fflush(stdout);
+ 	return MNL_CB_OK;
+@@ -5077,7 +5283,8 @@ static int cmd_mon_show(struct dl *dl)
+ 		    strcmp(cur_obj, "health") != 0 &&
+ 		    strcmp(cur_obj, "trap") != 0 &&
+ 		    strcmp(cur_obj, "trap-group") != 0 &&
+-		    strcmp(cur_obj, "trap-policer") != 0) {
++		    strcmp(cur_obj, "trap-policer") != 0 &&
++		    strcmp(cur_obj, "lc") != 0) {
+ 			pr_err("Unknown object \"%s\"\n", cur_obj);
+ 			return -EINVAL;
+ 		}
+@@ -5098,7 +5305,7 @@ static int cmd_mon_show(struct dl *dl)
+ static void cmd_mon_help(void)
+ {
+ 	pr_err("Usage: devlink monitor [ all | OBJECT-LIST ]\n"
+-	       "where  OBJECT-LIST := { dev | port | health | trap | trap-group | trap-policer }\n");
++	       "where  OBJECT-LIST := { dev | port | lc | health | trap | trap-group | trap-policer }\n");
+ }
+ 
+ static int cmd_mon(struct dl *dl)
+@@ -8073,7 +8280,7 @@ static void help(void)
+ {
+ 	pr_err("Usage: devlink [ OPTIONS ] OBJECT { COMMAND | help }\n"
+ 	       "       devlink [ -f[orce] ] -b[atch] filename -N[etns] netnsname\n"
+-	       "where  OBJECT := { dev | port | sb | monitor | dpipe | resource | region | health | trap }\n"
++	       "where  OBJECT := { dev | port | lc | sb | monitor | dpipe | resource | region | health | trap }\n"
+ 	       "       OPTIONS := { -V[ersion] | -n[o-nice-names] | -j[son] | -p[retty] | -v[erbose] -s[tatistics] }\n");
+ }
+ 
+@@ -8112,6 +8319,9 @@ static int dl_cmd(struct dl *dl, int argc, char **argv)
+ 	} else if (dl_argv_match(dl, "trap")) {
+ 		dl_arg_inc(dl);
+ 		return cmd_trap(dl);
++	} else if (dl_argv_match(dl, "lc")) {
++		dl_arg_inc(dl);
++		return cmd_linecard(dl);
+ 	}
+ 	pr_err("Object \"%s\" not found\n", dl_argv(dl));
+ 	return -ENOENT;
+-- 
+2.26.2
 
-Easy answer: it is ensured. On the Tx branch, I create the urbs so I
-know for sure that the length is correct. On the Rx branch, I have a
-dedicated function: es58x_check_rx_urb() for this purpose.  I
-will remove that WARN_ON() and the one in es58x_get_crc().
-
-I will also check the other WARN_ON() in my code to see if they
-can be removed (none on my test throughout the last ten months or
-so could trigger any of these WARN_ON() so should be fine to
-remove but I will double check).
-
-> > +     crc = crc16(0, &urb_cmd->raw_cmd[ES58X_CRC_CALC_OFFSET], len);
-> > +     return crc;
-> > +}
->
-> [...]
->
-> > +/**
-> > + * struct es58x_priv - All information specific to a CAN channel.
-> > + * @can: struct can_priv must be the first member (Socket CAN relies
-> > + *   on the fact that function netdev_priv() returns a pointer to
-> > + *   a struct can_priv).
-> > + * @es58x_dev: pointer to the corresponding ES58X device.
-> > + * @tx_urb: Used as a buffer to concatenate the TX messages and to do
-> > + *   a bulk send. Please refer to es58x_start_xmit() for more
-> > + *   details.
-> > + * @echo_skb_spinlock: Spinlock to protect the access to the echo skb
-> > + *   FIFO.
-> > + * @current_packet_idx: Keeps track of the packet indexes.
-> > + * @echo_skb_tail_idx: beginning of the echo skb FIFO, i.e. index of
-> > + *   the first element.
-> > + * @echo_skb_head_idx: end of the echo skb FIFO plus one, i.e. first
-> > + *   free index.
-> > + * @num_echo_skb: actual number of elements in the FIFO. Thus, the end
-> > + *   of the FIFO is echo_skb_head = (echo_skb_tail_idx +
-> > + *   num_echo_skb) % can.echo_skb_max.
-> > + * @tx_total_frame_len: sum, in bytes, of the length of each of the
-> > + *   CAN messages contained in @tx_urb. To be used as an input of
-> > + *   netdev_sent_queue() for BQL.
-> > + * @tx_can_msg_cnt: Number of messages in @tx_urb.
-> > + * @tx_can_msg_is_fd: false: all messages in @tx_urb are Classical
-> > + *   CAN, true: all messages in @tx_urb are CAN FD. Rationale:
-> > + *   ES58X FD devices do not allow to mix Classical CAN and FD CAN
-> > + *   frames in one single bulk transmission.
-> > + * @err_passive_before_rtx_success: The ES58X device might enter in a
-> > + *   state in which it keeps alternating between error passive
-> > + *   and active state. This counter keeps track of the number of
-> > + *   error passive and if it gets bigger than
-> > + *   ES58X_CONSECUTIVE_ERR_PASSIVE_MAX, es58x_rx_err_msg() will
-> > + *   force the status to bus-off.
-> > + * @channel_idx: Channel index, starts at zero.
-> > + */
-> > +struct es58x_priv {
-> > +     struct can_priv can;
-> > +     struct es58x_device *es58x_dev;
-> > +     struct urb *tx_urb;
-> > +
-> > +     spinlock_t echo_skb_spinlock;   /* Comments: c.f. supra */
-> > +     u32 current_packet_idx;
-> > +     u16 echo_skb_tail_idx;
-> > +     u16 echo_skb_head_idx;
-> > +     u16 num_echo_skb;
->
-> Can you explain me how the tx-path works, especially why you need the
-> current_packet_idx.
->
-> In the mcp251xfd driver, the number of TX buffers is a power of two, that makes
-> things easier. tx_heads % len points to the next buffer to be filled, tx_tail %
-> len points to the next buffer to be completed. tx_head - tx_tail is the fill
-> level of the FIFO. This works without spinlocks.
-
-For what I understand of your explanations here are the equivalences
-between the etas_es58x and the mcp251xfd drivers:
-
- +--------------------+-------------------+
- | etas_es58x         | mcp251xfd         |
- +--------------------+-------------------+
- | current_packet_idx | tx_head           |
- | echo_skb_tail_idx  | tx_tail % len     |
- | echo_skb_head_idx  | tx_head % len     |
- | num_echo_skb       | tx_head - tx_tail |
- +--------------------+-------------------+
-
-Especially, the current_packet_idx is sent to the device and returned
-to the driver upon completion.
-
-I wish the TX buffers were a power of two which is unfortunately not
-the case. The theoretical TX buffer sizes are 330 and 500 for the two
-devices so I wrote the code to work with those values. The exact size
-of the TX buffer is actually even more of a mystery because during
-testing both devices were unstable when using the theoretical values
-and I had to lower these. There is a comment at the bottom of
-es581_4.c and es58x_fd.c to reflect those issues. Because I do not
-have access to the source code of the firmware, I could not identify
-the root cause.
-
-My understanding is that having a queue size being a power of two is
-required in order not to use spinlocks (else, modulo operations would
-break when the index wraparound back to zero). I tried to minimize the
-number of spinlock: only one per bulk send or bulk receive.
-
-
-Yours sincerely,
-Vincent
-
-
-> > +
-> > +     u16 tx_total_frame_len;
-> > +     u8 tx_can_msg_cnt;
-> > +     bool tx_can_msg_is_fd;
-> > +
-> > +     u8 err_passive_before_rtx_success;
-> > +
-> > +     u8 channel_idx;
-> > +};
->
-> Marc
->
-> --
-> Pengutronix e.K.                 | Marc Kleine-Budde           |
-> Embedded Linux                   | https://www.pengutronix.de  |
-> Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-> Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
->
