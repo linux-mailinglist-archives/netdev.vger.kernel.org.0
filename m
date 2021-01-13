@@ -2,75 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 464292F412F
-	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 02:29:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CFB9C2F4136
+	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 02:30:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727131AbhAMB3F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jan 2021 20:29:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38644 "EHLO
+        id S1727286AbhAMBaM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jan 2021 20:30:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38886 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726945AbhAMB3C (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 20:29:02 -0500
-Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 365BBC061575;
-        Tue, 12 Jan 2021 17:28:22 -0800 (PST)
-Received: by mail-lf1-x12d.google.com with SMTP id 23so317876lfg.10;
-        Tue, 12 Jan 2021 17:28:21 -0800 (PST)
+        with ESMTP id S1726722AbhAMBaL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 20:30:11 -0500
+Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB311C061575;
+        Tue, 12 Jan 2021 17:29:30 -0800 (PST)
+Received: by mail-lj1-x22f.google.com with SMTP id n11so716331lji.5;
+        Tue, 12 Jan 2021 17:29:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=/gnIe5vrh3z2zk/rBgVHipnsDtqZSPnamylj09vkYEM=;
-        b=QvXhyw9Yd2xUmidy2NlqeifSMU3WS0JHgzg46ipitOFI3gQNtZT6l6uP7C6dXEvfxj
-         HaYE/Ou0SOqE8v8XldzMBG8ucIxI/IXhsxjMPw/C8NwKOMPnv5a59Eq0YpCKMxMH0QFb
-         tUkIEPaJy2Mvmc93w/lj+j0c0vR8ItGxwAIKD8rVwEs21I3J0jktNeiRWaBEndr7yvB0
-         ncXOxcb6KF/6I1SQQsGXdl6zEZItAkbEiNeOyjYWJvbfN+tsE3lFbVFL8h0WfRnRcFjP
-         JBm3PMcb91N/DSzjQ7bp2jkO5q0AlbTglMu9y2tb+EzN/d8A/j9HL2j3voc5mAWucbwk
-         Hvzw==
+        bh=7OzEdrgsXIQxiJXUsDqH0AQlhsFIMk4yh3iZifJglRI=;
+        b=cbGdmVGNuCgakrB8GlQBE6xkWOlHMoMX6A32FxG/Q4QGr5gzsVryzUuKi4dcz/9zRY
+         Urx80t+k3vMAsevDJ2oIv6g+VKNgiWAhlDNIwOmWn8nVSacxQrV+HatFlioWr9iSm1ss
+         CedL8hbBKLYaypVwkCKbcKKHHkoDcMTZJXTAPUsJWZ0CxGA5eaO7IDm0izLiPnx4onzL
+         pHz8Ia+O0Ipd0chUU0otXavYbTjUwwMqV/9K/geDsclYaPXgKxVEH5Zh69xKBuSJDTIA
+         vqX1zuGXjUh6cfE9tttaYM469Z/memZQScQGmmtAE6ZEUqsKng1AAWJxd/TY9ePiLIHA
+         ma5g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=/gnIe5vrh3z2zk/rBgVHipnsDtqZSPnamylj09vkYEM=;
-        b=K+0lJJaCmpWD/TqeU5s8is3KoHzje2pi6Gm1ir161Sp47KH6R5MMWvE60z1J/9w8EW
-         fvzYztHlLuVzUNRwlJocsR+utFT3zSk8m9t4OI7tIi3nyR9Us2BSg9DFO8k5EjS1P0gD
-         ZecJbUikC92UfNMtgGMUXGQ2ZSeQNJ2qEVckiZLbRdrRBKf/MjCT7DR+NmfKVm+Z59xE
-         WuAR/+tScfCPTj6adlWaMpxkvsAvKg62lsHkuoNc43hq+oByKxqsw6amtKMVT5GQmU2Z
-         /+mKUyCu1bfpJ99IuktwaC2hV1WTObf81nWJnLYXdvQ/cVAam3chx9IUTj4yYYId0570
-         RmJA==
-X-Gm-Message-State: AOAM531oKVMvoNM8hlwwAxwKnzBVRH7uE6T3+gt9htDTaU3/g0ab4Td5
-        MUGPuvPtzNeuU02AztOOYEje/+A06GyGj3D4kGs=
-X-Google-Smtp-Source: ABdhPJzvqKJpVYHV7agDJmwMKQQC0YJYKuNh8aDJ5ef/59QiFGopb1H+9dlS5Qpr/HgwrI41rIBGBthapLBrtY5+gb0=
-X-Received: by 2002:a19:8b83:: with SMTP id n125mr763690lfd.75.1610501300454;
- Tue, 12 Jan 2021 17:28:20 -0800 (PST)
+        bh=7OzEdrgsXIQxiJXUsDqH0AQlhsFIMk4yh3iZifJglRI=;
+        b=CBpLGU/9VH7JozHwW/dFO/LpTg0j7d4zCxTx9joaH+UdA/Yq9vXSpvQ2uiauOsLYtB
+         N0/5Nf4/ZIFycdYYYSKTxEA7oBODb6pAJ6vYw52HeHW8mto6533n+I3cWV/xR4vCtO0y
+         PQs/kb7W7yerIp21fydab9RQ3gQjOL/UJgkuiAn95q11hSdRvNuz6aqRR+B8KSzTARmd
+         bzkAKRysQBxs22djPdnFedlHzbl4YUttsKs9l1LBKQbY/0AUB67s+l02SB9SXMVTCThX
+         s2PQiKaDApwrN9hdtU8lJXTmfmRdLGSbqMgG35/Hir4Day3/nOkObC40Lp6fYKYfCTSQ
+         E+zw==
+X-Gm-Message-State: AOAM533aZtsm7VpYrFjiZ8PhiSEQbuX9WvtPEluB5q61FN+6aF9U0jJv
+        DIhniWk8fVwaDeTvuxKtPe0+5hD2zWVVLngpbqw=
+X-Google-Smtp-Source: ABdhPJyzfWDD+oAbVc9I/79/ciPc//xjSknbFO6v/jsEA3LB5XVqzc4VbkC92g8vKRgHSPg39VTZ1yUefM+ve4G3x7w=
+X-Received: by 2002:a2e:3c01:: with SMTP id j1mr858783lja.258.1610501368034;
+ Tue, 12 Jan 2021 17:29:28 -0800 (PST)
 MIME-Version: 1.0
-References: <cba44439b801e5ddc1170e5be787f4dc93a2d7f9.1610406333.git.daniel@iogearbox.net>
-In-Reply-To: <cba44439b801e5ddc1170e5be787f4dc93a2d7f9.1610406333.git.daniel@iogearbox.net>
+References: <20210112075520.4103414-1-andrii@kernel.org> <20210112075520.4103414-8-andrii@kernel.org>
+In-Reply-To: <20210112075520.4103414-8-andrii@kernel.org>
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Tue, 12 Jan 2021 17:28:09 -0800
-Message-ID: <CAADnVQK0iK6maUGtz1xnJcboHO=h-W4YU5CG_Mi+HYqG8XB_1w@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 1/2] bpf: allow to retrieve sol_socket opts
- from sock_addr progs
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Alexei Starovoitov <ast@kernel.org>, Yonghong Song <yhs@fb.com>,
-        bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>
+Date:   Tue, 12 Jan 2021 17:29:16 -0800
+Message-ID: <CAADnVQ+8-wrK1CFSLoVwAhZD3BQkbB-_niDKPcadf6WV7d+vkw@mail.gmail.com>
+Subject: Re: [PATCH v3 bpf-next 7/7] selftests/bpf: test kernel module ksym externs
+To:     Andrii Nakryiko <andrii@kernel.org>
+Cc:     bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@fb.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Kernel Team <kernel-team@fb.com>, Hao Luo <haoluo@google.com>,
+        Yonghong Song <yhs@fb.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 11, 2021 at 3:09 PM Daniel Borkmann <daniel@iogearbox.net> wrote:
+On Tue, Jan 12, 2021 at 3:41 AM Andrii Nakryiko <andrii@kernel.org> wrote:
 >
-> The _bpf_setsockopt() is able to set some of the SOL_SOCKET level options,
-> however, _bpf_getsockopt() has little support to actually retrieve them.
-> This small patch adds few misc options such as SO_MARK, SO_PRIORITY and
-> SO_BINDTOIFINDEX. For the latter getter and setter are added. The mark and
-> priority in particular allow to retrieve the options from BPF cgroup hooks
-> to then implement custom behavior / settings on the syscall hooks compared
-> to other sockets that stick to the defaults, for example.
+> Add per-CPU variable to bpf_testmod.ko and use those from new selftest to
+> validate it works end-to-end.
 >
-> Signed-off-by: Daniel Borkmann <daniel@iogearbox.net>
 > Acked-by: Yonghong Song <yhs@fb.com>
+> Acked-by: Hao Luo <haoluo@google.com>
+> Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
 
 Applied.
+
+FYI for everyone. This test needs the latest pahole.
