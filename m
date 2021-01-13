@@ -2,292 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C6C82F5354
-	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 20:29:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C42332F536C
+	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 20:37:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728796AbhAMT3R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jan 2021 14:29:17 -0500
-Received: from mail.kernel.org ([198.145.29.99]:56034 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728763AbhAMT3Q (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 13 Jan 2021 14:29:16 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id B673F23435;
-        Wed, 13 Jan 2021 19:27:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610566080;
-        bh=9n5162lUSx/lZHHbDuIz/xZwbuzzBn7e0KVtSWTnRrE=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=B2CC4GKI+PRsEkJF8+UBch04w6ucdSYveGU87xeeAe+7vAyRQZf2l57NtDEeoM/fe
-         GQV8IjI7C/7nTYcyoxopeECAlPOQKSXNi4M0/ar35dctaFmSPKSJWkLKHvCT7JXA0q
-         rQZeEr50fJpPRgz43gIQPV55tyGOyLjAgzDm/Sx7Om1hbfbgwN6/ycUwITaGrVJG/A
-         bMS3+Bzi7UmEc9ahGL+5vrlQgRpRMtn6toyAijs1CPmRdSAo62PCXqeH6anz+6yPB3
-         etP+luEcKurLaHMiNwlyKyXzwVtY8IM6FZapNOb52IFcyIfWqzaTtc342riLmln+rI
-         bjCMaUopO1Qcg==
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jason Gunthorpe <jgg@nvidia.com>
-Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Parav Pandit <parav@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next V6 14/14] net/mlx5: Add devlink subfunction port documentation
-Date:   Wed, 13 Jan 2021 11:27:30 -0800
-Message-Id: <20210113192730.280656-15-saeed@kernel.org>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20210113192730.280656-1-saeed@kernel.org>
-References: <20210113192730.280656-1-saeed@kernel.org>
+        id S1728669AbhAMTfk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jan 2021 14:35:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47002 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728108AbhAMTfk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 14:35:40 -0500
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF944C061575
+        for <netdev@vger.kernel.org>; Wed, 13 Jan 2021 11:34:59 -0800 (PST)
+Received: by mail-lf1-x131.google.com with SMTP id x20so4451334lfe.12
+        for <netdev@vger.kernel.org>; Wed, 13 Jan 2021 11:34:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=5x9peSoztZZwP3wRwUEonf3kp2KcQ+8lUkdq4yGVsyU=;
+        b=dKHEpR8cis9PjPy0+s2wYpOJqK1jNlMC+AYrUDzd55sLM4EjSEbWjXCDMiHPNN4zdh
+         2P193WmaFtrb6GOXbsiKGuG1Wloi2abeZNrFAXtpZZhUOExC5T4Y7XhFOH8g2JUDuMnr
+         7QJY6Z40GpV8nHxvfUpsZW3+7c7FoTJPu26hvBTPXgk9p7lrw8JYrysx/Pf29BLn4Ty0
+         Dpb5apB5yMbdw7ne2ezOVgWBtKfjA9ZjEpVGRlisyGCZ8Cmxlhu2O9RiI/lRFnLeCCOf
+         lwBWTa7PnreEl+34r7HT3Tqu5FroOmAPNFcg2K+79LHu/GPJQHjGE8eCdAyPJW+rJsMh
+         C7Ag==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=5x9peSoztZZwP3wRwUEonf3kp2KcQ+8lUkdq4yGVsyU=;
+        b=Ts0GczbxdNI6MQKcQC0N7N8HgnycfVRILevk2Nxxxta3DuA7dJ0xKc4XduC58m+rlI
+         yguKi0z/0M4ikH0L57Vo5lRXAkfQF3Y7f8sUhXGMzm5qo+gmwOuIFBs62zUCxbJQTEcu
+         ajDP5xrUbJ/IEcuTzBj/a4l72tM687RdVuG66E/yD0z4OuzXp4fyOuntmQ31LYNOVNim
+         BG55dbjvkkLQsLVqAynegcgwYP3Xpr4c+f+rurtbHBVic3wVa+JIly/Hhrl8IQs0eRkJ
+         Vfavw2FCnwJ+G0ciHCOC0QXylnekKNprQuTxF2Ymed79XjeA6rG9fV49qcII1bbpHoLg
+         ZjAA==
+X-Gm-Message-State: AOAM531NnKl1lJb+d7VW1DC0jAjyRBw+uSTjT0Z52ENtkyqsnubSbup6
+        gJZSDmA/YYUVgqWvYMVSkuXRCappBAtqmnzVDJCTdw==
+X-Google-Smtp-Source: ABdhPJzgEk/DkNFqYOJv7Wp3xvz2mFJqsh5LD2B6QlApDjIaztQLZ1/D3AGlb0+PbTDL2rcNBlcg0ARxuR8CLhhhOiY=
+X-Received: by 2002:a05:6512:32ad:: with SMTP id q13mr1443000lfe.83.1610566497883;
+ Wed, 13 Jan 2021 11:34:57 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210112214105.1440932-1-shakeelb@google.com> <20210112233108.GD99586@carbon.dhcp.thefacebook.com>
+ <CAOFY-A3=mCvfvMYBJvDL1LfjgYgc3kzebRNgeg0F+e=E1hMPXA@mail.gmail.com>
+ <20210112234822.GA134064@carbon.dhcp.thefacebook.com> <CAOFY-A2YbE3_GGq-QpVOHTmd=35Lt-rxi8gpXBcNVKvUzrzSNg@mail.gmail.com>
+ <20210113184753.GB355124@carbon.dhcp.thefacebook.com>
+In-Reply-To: <20210113184753.GB355124@carbon.dhcp.thefacebook.com>
+From:   Shakeel Butt <shakeelb@google.com>
+Date:   Wed, 13 Jan 2021 11:34:46 -0800
+Message-ID: <CALvZod57bG02rP7-Pyb_myssxDeROrU_+L6X9bwrrdEzQTxqYg@mail.gmail.com>
+Subject: Re: [PATCH] mm: net: memcg accounting for TCP rx zerocopy
+To:     Roman Gushchin <guro@fb.com>
+Cc:     Arjun Roy <arjunroy@google.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux MM <linux-mm@kvack.org>,
+        Cgroups <cgroups@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Parav Pandit <parav@nvidia.com>
+On Wed, Jan 13, 2021 at 10:48 AM Roman Gushchin <guro@fb.com> wrote:
+>
+[snip]
+> > > Does it mean that a page can be accounted twice (even temporarily)?
+> > >
+> >
+> > This was an actual consideration for this patchset that we went back
+> > and forth on a little bit.
+> > Short answer, for this patch in its current form: yes. We're calling
+> > mem_cgroup_charge_sock_pages() immediately prior to vm_insert_pages();
+> > and the skb isn't cleaned up until afterwards. Thus we have a period
+> > of double charging.
+> >
+> > The pseudocode for the approach in this patch is:
+> >
+> > while skb = next skb in queue is not null:
+> >     charge_skb_pages(skb.pages) // sets page.memcg for each page
+> >     // at this point pages are double counted
+> >     vm_insert_pages(skb.pages)
+> >     free(skb) // unrefs the pages, no longer double counted
+> >
+> > An alternative version of this patch went the other way: have a short
+> > period of undercharging.
+> >
+> > while skb = next skb in queue is not null:
+> >     for page in skb.pages set page.memcg
+> >     vm_insert_pages(skb.pages)
+> >     free(skb) // unrefs the pages. pages are now undercounted
+> > charge_skb_pages(nr_pages_mapped, FORCE_CHARGE) // count is now correct again
+> > ret
+>
+> I have to think more, but at the first look the second approach is better.
+> IMO forcing the charge is less of a problem than double accounting
+> (we're forcing sock memory charging anyway). I'm afraid that even if the
+> double counting is temporarily for each individual page, with a constant
+> traffic it will create a permanent difference.
+>
 
-Add documentation for subfunction management using devlink
-port.
-
-changelog:
-v5->v6:
- - corrected spellings
- - updated port add example
- - corrected port delete example
-
-Signed-off-by: Parav Pandit <parav@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
----
- .../device_drivers/ethernet/mellanox/mlx5.rst | 210 ++++++++++++++++++
- 1 file changed, 210 insertions(+)
-
-diff --git a/Documentation/networking/device_drivers/ethernet/mellanox/mlx5.rst b/Documentation/networking/device_drivers/ethernet/mellanox/mlx5.rst
-index a5eb22793bb9..a1b32fcd0d76 100644
---- a/Documentation/networking/device_drivers/ethernet/mellanox/mlx5.rst
-+++ b/Documentation/networking/device_drivers/ethernet/mellanox/mlx5.rst
-@@ -12,6 +12,8 @@ Contents
- - `Enabling the driver and kconfig options`_
- - `Devlink info`_
- - `Devlink parameters`_
-+- `mlx5 subfunction`_
-+- `mlx5 port function`_
- - `Devlink health reporters`_
- - `mlx5 tracepoints`_
- 
-@@ -181,6 +183,214 @@ User command examples:
-       values:
-          cmode driverinit value true
- 
-+mlx5 subfunction
-+================
-+mlx5 supports subfunction management using devlink port (see :ref:`Documentation/networking/devlink/devlink-port.rst <devlink_port>`) interface.
-+
-+A Subfunction has its own function capabilities and its own resources. This
-+means a subfunction has its own dedicated queues (txq, rxq, cq, eq). These
-+queues are neither shared nor stolen from the parent PCI function.
-+
-+When a subfunction is RDMA capable, it has its own QP1, GID table and rdma
-+resources neither shared nor stolen from the parent PCI function.
-+
-+A subfunction has a dedicated window in PCI BAR space that is not shared
-+with ther other subfunctions or the parent PCI function. This ensures that all
-+devices (netdev, rdma, vdpa etc.) of the subfunction accesses only assigned
-+PCI BAR space.
-+
-+A Subfunction supports eswitch representation through which it supports tc
-+offloads. The user configures eswitch to send/receive packets from/to
-+the subfunction port.
-+
-+Subfunctions share PCI level resources such as PCI MSI-X IRQs with
-+other subfunctions and/or with its parent PCI function.
-+
-+Example mlx5 software, system and device view::
-+
-+       _______
-+      | admin |
-+      | user  |----------
-+      |_______|         |
-+          |             |
-+      ____|____       __|______            _________________
-+     |         |     |         |          |                 |
-+     | devlink |     | tc tool |          |    user         |
-+     | tool    |     |_________|          | applications    |
-+     |_________|         |                |_________________|
-+           |             |                   |          |
-+           |             |                   |          |         Userspace
-+ +---------|-------------|-------------------|----------|--------------------+
-+           |             |           +----------+   +----------+   Kernel
-+           |             |           |  netdev  |   | rdma dev |
-+           |             |           +----------+   +----------+
-+   (devlink port add/del |              ^               ^
-+    port function set)   |              |               |
-+           |             |              +---------------|
-+      _____|___          |              |        _______|_______
-+     |         |         |              |       | mlx5 class    |
-+     | devlink |   +------------+       |       |   drivers     |
-+     | kernel  |   | rep netdev |       |       |(mlx5_core,ib) |
-+     |_________|   +------------+       |       |_______________|
-+           |             |              |               ^
-+   (devlink ops)         |              |          (probe/remove)
-+  _________|________     |              |           ____|________
-+ | subfunction      |    |     +---------------+   | subfunction |
-+ | management driver|-----     | subfunction   |---|  driver     |
-+ | (mlx5_core)      |          | auxiliary dev |   | (mlx5_core) |
-+ |__________________|          +---------------+   |_____________|
-+           |                                            ^
-+  (sf add/del, vhca events)                             |
-+           |                                      (device add/del)
-+      _____|____                                    ____|________
-+     |          |                                  | subfunction |
-+     |  PCI NIC |---- activate/deactive events---->| host driver |
-+     |__________|                                  | (mlx5_core) |
-+                                                   |_____________|
-+
-+Subfunction is created using devlink port interface.
-+
-+- Change device to switchdev mode::
-+
-+    $ devlink dev eswitch set pci/0000:06:00.0 mode switchdev
-+
-+- Add a devlink port of subfunction flaovur::
-+
-+    $ devlink port add pci/0000:06:00.0 flavour pcisf pfnum 0 sfnum 88
-+    pci/0000:06:00.0/32768: type eth netdev eth6 flavour pcisf controller 0 pfnum 0 sfnum 88 external false splittable false
-+      function:
-+        hw_addr 00:00:00:00:00:00 state inactive opstate detached
-+
-+- Show a devlink port of the subfunction::
-+
-+    $ devlink port show pci/0000:06:00.0/32768
-+    pci/0000:06:00.0/32768: type eth netdev enp6s0pf0sf88 flavour pcisf pfnum 0 sfnum 88
-+      function:
-+        hw_addr 00:00:00:00:00:00 state inactive opstate detached
-+
-+- Delete a devlink port of subfunction after use::
-+
-+    $ devlink port del pci/0000:06:00.0/32768
-+
-+mlx5 function attributes
-+========================
-+The mlx5 driver provides a mechanism to setup PCI VF/SF function attributes in
-+a unified way for SmartNIC and non-SmartNIC.
-+
-+This is supported only when the eswitch mode is set to switchdev. Port function
-+configuration of the PCI VF/SF is supported through devlink eswitch port.
-+
-+Port function attributes should be set before PCI VF/SF is enumerated by the
-+driver.
-+
-+MAC address setup
-+-----------------
-+mlx5 driver provides mechanism to setup the MAC address of the PCI VF/SF.
-+
-+The configured MAC address of the PCI VF/SF will be used by netdevice and rdma
-+device created for the PCI VF/SF.
-+
-+- Get the MAC address of the VF identified by its unique devlink port index::
-+
-+    $ devlink port show pci/0000:06:00.0/2
-+    pci/0000:06:00.0/2: type eth netdev enp6s0pf0vf1 flavour pcivf pfnum 0 vfnum 1
-+      function:
-+        hw_addr 00:00:00:00:00:00
-+
-+- Set the MAC address of the VF identified by its unique devlink port index::
-+
-+    $ devlink port function set pci/0000:06:00.0/2 hw_addr 00:11:22:33:44:55
-+
-+    $ devlink port show pci/0000:06:00.0/2
-+    pci/0000:06:00.0/2: type eth netdev enp6s0pf0vf1 flavour pcivf pfnum 0 vfnum 1
-+      function:
-+        hw_addr 00:11:22:33:44:55
-+
-+- Get the MAC address of the SF identified by its unique devlink port index::
-+
-+    $ devlink port show pci/0000:06:00.0/32768
-+    pci/0000:06:00.0/32768: type eth netdev enp6s0pf0sf88 flavour pcisf pfnum 0 sfnum 88
-+      function:
-+        hw_addr 00:00:00:00:00:00
-+
-+- Set the MAC address of the VF identified by its unique devlink port index::
-+
-+    $ devlink port function set pci/0000:06:00.0/32768 hw_addr 00:00:00:00:88:88
-+
-+    $ devlink port show pci/0000:06:00.0/32768
-+    pci/0000:06:00.0/32768: type eth netdev enp6s0pf0sf88 flavour pcivf pfnum 0 sfnum 88
-+      function:
-+        hw_addr 00:00:00:00:88:88
-+
-+SF state setup
-+--------------
-+To use the SF, the user must active the SF using the SF function state
-+attribute.
-+
-+- Get the state of the SF identified by its unique devlink port index::
-+
-+   $ devlink port show ens2f0npf0sf88
-+   pci/0000:06:00.0/32768: type eth netdev ens2f0npf0sf88 flavour pcisf controller 0 pfnum 0 sfnum 88 external false splittable false
-+     function:
-+       hw_addr 00:00:00:00:88:88 state inactive opstate detached
-+
-+- Activate the function and verify its state is active::
-+
-+   $ devlink port function set ens2f0npf0sf88 state active
-+
-+   $ devlink port show ens2f0npf0sf88
-+   pci/0000:06:00.0/32768: type eth netdev ens2f0npf0sf88 flavour pcisf controller 0 pfnum 0 sfnum 88 external false splittable false
-+     function:
-+       hw_addr 00:00:00:00:88:88 state active opstate detached
-+
-+Upon function activation, the PF driver instance gets the event from the device
-+that a particular SF was activated. It's the cue to put the device on bus, probe
-+it and instantiate the devlink instance and class specific auxiliary devices
-+for it.
-+
-+- Show the auxiliary device and port of the subfunction::
-+
-+    $ devlink dev show
-+    devlink dev show auxiliary/mlx5_core.sf.4
-+
-+    $ devlink port show auxiliary/mlx5_core.sf.4/1
-+    auxiliary/mlx5_core.sf.4/1: type eth netdev p0sf88 flavour virtual port 0 splittable false
-+
-+    $ rdma link show mlx5_0/1
-+    link mlx5_0/1 state ACTIVE physical_state LINK_UP netdev p0sf88
-+
-+    $ rdma dev show
-+    8: rocep6s0f1: node_type ca fw 16.29.0550 node_guid 248a:0703:00b3:d113 sys_image_guid 248a:0703:00b3:d112
-+    13: mlx5_0: node_type ca fw 16.29.0550 node_guid 0000:00ff:fe00:8888 sys_image_guid 248a:0703:00b3:d112
-+
-+- Subfunction auxiliary device and class device hierarchy::
-+
-+                 mlx5_core.sf.4
-+          (subfunction auxiliary device)
-+                       /\
-+                      /  \
-+                     /    \
-+                    /      \
-+                   /        \
-+      mlx5_core.eth.4     mlx5_core.rdma.4
-+     (sf eth aux dev)     (sf rdma aux dev)
-+         |                      |
-+         |                      |
-+      p0sf88                  mlx5_0
-+     (sf netdev)          (sf rdma device)
-+
-+Additionally, the SF port also gets the event when the driver attaches to the
-+auxiliary device of the subfunction. This results in changing the operational
-+state of the function. This provides visiblity to the user to decide when is it
-+safe to delete the SF port for graceful termination of the subfunction.
-+
-+- Show the SF port operational state::
-+
-+    $ devlink port show ens2f0npf0sf88
-+    pci/0000:06:00.0/32768: type eth netdev ens2f0npf0sf88 flavour pcisf controller 0 pfnum 0 sfnum 88 external false splittable false
-+      function:
-+        hw_addr 00:00:00:00:88:88 state active opstate attached
-+
- Devlink health reporters
- ========================
- 
--- 
-2.26.2
-
+The double accounting behavior is a bit different in cgroup v1 vs v2
+world as skmem is accounted in memory for v2 and a separate tcp
+counter for v1. I am fine with either approaches mentioned by Arjun
+but I would prefer to not add complexity by doing one approach for v1
+and the other for v2.
