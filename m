@@ -2,153 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 77A252F55B8
-	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 02:10:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AE7822F571C
+	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 02:59:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727047AbhANBJD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jan 2021 20:09:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33452 "EHLO
+        id S1728962AbhANB67 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jan 2021 20:58:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725846AbhANBGM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 20:06:12 -0500
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA1AEC06179F;
-        Wed, 13 Jan 2021 17:05:22 -0800 (PST)
-Received: by mail-ej1-x62d.google.com with SMTP id e18so5767575ejt.12;
-        Wed, 13 Jan 2021 17:05:22 -0800 (PST)
+        with ESMTP id S1729455AbhAMXj5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 18:39:57 -0500
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BC85C0617A3;
+        Wed, 13 Jan 2021 15:26:38 -0800 (PST)
+Received: by mail-ej1-x635.google.com with SMTP id q22so5563874eja.2;
+        Wed, 13 Jan 2021 15:26:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=ALcfKJBsmbqqdDqRB4st0llIoEoKfCPT10X6T0zbwkU=;
-        b=Pj3aCnTaWbkb53KhA2cV4tY8Fgxju7zHO9hGw1mdBF89UwcVYpKDkkQdeNqTOF/rn7
-         ml81BIDwoNkINK3icM/SP3XPRk5Aqbkjl5Vi7ogszqAIzIQit4mYmFzP+5KytL4SWwUW
-         R+0yeKE+HqEQIJCG+EnvFyfMhDoskmn1MiTDEkh9AswBTmx5kV6PLhFJj5L6QIbUJd3p
-         BKyE5qD92oEtu+xhs+qYfZwvitIIzCOMa7vxFsfft5IiV+qqssvVu9EEPZ5tX46ZtUvC
-         uDzr8QWMqIMq+KbWnmefEZPAMw4MzRKdNjz9uo115SK79dkozfxKHigfC6rst6AL8srV
-         PzeQ==
+        bh=cqg0wNGRTTkRJwGtfx/C5BvxZwI3bxOus+69CkzX8pw=;
+        b=o2QRiIAkVgwzuSeSCIuaYpLbiKd66o6IlbF5tzRMkJHIaVX9zMlzGr5u7q5/oazqkX
+         rjST24rT5ff+Zvegxuk22uuI5B4ErY32Z5zK++NKg4YqpQoRyhVFm2F+yl1sn7IK2EiD
+         ruu2oPI+lQeFiMUK4K9U/TBZgrcvSH8CT7ciWoGYmT14oodB7X+KZarmBUicask5aWkb
+         6nr7mSj6KGDcawgKLLESOaZO3YbXYh3WsfNJd1D4qHCzzIX7AXnPYz4jaZSQE1GVYfVm
+         QpCloFhqcefJ136zyHeVZlXSW8ScagBZJzsITTXUHjwO4g/fW/yqAVowRnQihtW2ORWM
+         DaqQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=ALcfKJBsmbqqdDqRB4st0llIoEoKfCPT10X6T0zbwkU=;
-        b=bLUE9vk636ZJI9vZYvew1rIkfiVESXm/4aGL6MrBlY8OhnyPnDABDRDW5I1K7bHhq5
-         Wj4tnNTco17DieZhi7KYrrvtLEgkEOouwNPlCAfRKnckEHbbeZj2kflCHmXVcYJCNMMy
-         GAJ4S93kvW5uiGvRBaaFbJ+bnbYtx5al9sMxjTxg1TMZ+UJ1njSqD3/LaJnDLpsWA6dK
-         +/d/unTbVkMsBI1j47yGLZwalr5RS/Nm6ivZIOyb2jMU/a+NvLkjTNRJ2JL/sEhx5OaT
-         +VIvdsXkmhHTE/CQa+5u93iyjzPUPJBTnsXsfXsEEUiijAKq8vtIV5VmHU7lv8cUJqnb
-         4szQ==
-X-Gm-Message-State: AOAM530txiAXLV9u1fd/FWJ1HgBkbjJVkpjWZ75o3/58LfE8E/728Rxo
-        NONnTAdykiwsUgUPzTG8w0g=
-X-Google-Smtp-Source: ABdhPJyYOVMn/DEqhlWYi/YpW3YVztwJFTPD4leH4hUZdvnj8anDgZZAco+WEranBa2+QOwO/S20Jw==
-X-Received: by 2002:a17:906:4e46:: with SMTP id g6mr3316344ejw.243.1610586321512;
-        Wed, 13 Jan 2021 17:05:21 -0800 (PST)
+        bh=cqg0wNGRTTkRJwGtfx/C5BvxZwI3bxOus+69CkzX8pw=;
+        b=c9ZOiCW6FOvoBggvtSAcDELCYfP/UNgjQW/KoTkq5tX4mcw+9n3pBlXOCwnduGnh4s
+         Px5mo8s9ffJCmESzzNLTlVdmS7S3OI5SSCSPGqklagOo27bX2C/2tNkR+LjQrBmvZZSG
+         0Ff89tteH89++BQ+NNYo5scOBaKOoieI4sHqCZ6czJzAP7+gfYvuNhFzb/HvTAmeY2ow
+         57Qa+Q6Xqx/ca7HYMUWDCqGtP+MDAnvnw6g67zCW83kMsmr/nLM28QWt7oIr/jxa6nPZ
+         4Qb9XHFH+D15kpzu/nIIHx22VAvJ67Ll8/hkXgZ1KCAcGmdu4MTU1GbJ+HdbC0Sj0M8T
+         x0Bw==
+X-Gm-Message-State: AOAM531CAkOVeBv/JpQtYjaGaSiUckNEdv0xnQDGiqGA1Usd0B/Zyqwa
+        li/yXopvta3dncXrL+ixpIA=
+X-Google-Smtp-Source: ABdhPJzehR9zw8MncRaIdYBxxdbLrzNqmElPtZGGpIejvwz+M2v13W/c9CLYiJ+XDd4C0DWWPxcCig==
+X-Received: by 2002:a17:906:7689:: with SMTP id o9mr3327438ejm.324.1610580397107;
+        Wed, 13 Jan 2021 15:26:37 -0800 (PST)
 Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id x5sm558448edi.35.2021.01.13.17.05.20
+        by smtp.gmail.com with ESMTPSA id r21sm1470219eds.91.2021.01.13.15.26.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Jan 2021 17:05:20 -0800 (PST)
-Date:   Thu, 14 Jan 2021 03:05:19 +0200
+        Wed, 13 Jan 2021 15:26:36 -0800 (PST)
+Date:   Thu, 14 Jan 2021 01:26:35 +0200
 From:   Vladimir Oltean <olteanv@gmail.com>
-To:     George McCollister <george.mccollister@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
+To:     Gilles DOFFE <gilles.doffe@savoirfairelinux.com>
+Cc:     netdev@vger.kernel.org, Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        Rob Herring <robh@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH net-next v4 1/3] dsa: add support for Arrow XRS700x tag
- trailer
-Message-ID: <20210114010519.td6q2pzy4mg6viuh@skbuf>
-References: <20210113145922.92848-1-george.mccollister@gmail.com>
- <20210113145922.92848-2-george.mccollister@gmail.com>
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net 1/6] net: dsa: ksz: fix FID management
+Message-ID: <20210113232635.gcqohiuhwpeb2oqc@skbuf>
+References: <cover.1610540603.git.gilles.doffe@savoirfairelinux.com>
+ <c5c35fb4a3e4784a5e26a7b7181a0a2925674712.1610540603.git.gilles.doffe@savoirfairelinux.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210113145922.92848-2-george.mccollister@gmail.com>
+In-Reply-To: <c5c35fb4a3e4784a5e26a7b7181a0a2925674712.1610540603.git.gilles.doffe@savoirfairelinux.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 13, 2021 at 08:59:20AM -0600, George McCollister wrote:
-> Add support for Arrow SpeedChips XRS700x single byte tag trailer. This
-> is modeled on tag_trailer.c which works in a similar way.
-> 
-> Signed-off-by: George McCollister <george.mccollister@gmail.com>
-> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-> ---
+On Wed, Jan 13, 2021 at 01:45:17PM +0100, Gilles DOFFE wrote:
+> The FID (Filter ID) is a 7 bits field used to link the VLAN table
+> to the static and dynamic mac address tables.
+> Until now the KSZ8795 driver could only add one VLAN as the FID was
+> always set to 1.
 
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+What do you mean the ksz8769 driver could only add one VLAN? That is
+obviously a false statement.
 
-A few comments below.
+All VLANs use the same FID of 1 means that the switch is currently
+configured for shared address learning. Whereas each VLAN having a
+separate FID would mean that it is configured for individual address
+learning.
 
-> diff --git a/net/dsa/tag_xrs700x.c b/net/dsa/tag_xrs700x.c
-> new file mode 100644
-> index 000000000000..4ee7c260a8a9
-> --- /dev/null
-> +++ b/net/dsa/tag_xrs700x.c
-> @@ -0,0 +1,67 @@
-> +// SPDX-License-Identifier: GPL-2.0+
-> +/*
-> + * XRS700x tag format handling
-> + * Copyright (c) 2008-2009 Marvell Semiconductor
+> This commit allows setting a FID for each new active VLAN.
+> The FID list is stored in a static table dynamically allocated from
+> ks8795_fid structure.
+> Each newly activated VLAN is associated to the next available FID.
+> Only the VLAN 0 is not added to the list as it is a special VLAN.
+> As it has a special meaning, see IEEE 802.1q.
+> When a VLAN is no more used, the associated FID table entry is reset
+> to 0.
 
-Why does Marvell get copyright?
-
-> + * Copyright (c) 2020 NovaTech LLC
-> + */
-> +
-> +#include <linux/etherdevice.h>
-> +#include <linux/list.h>
-> +#include <linux/slab.h>
-
-These 3 includes are not needed. You can probably remove them later
-though, if there is no other reason to resend.
-
-> +#include <linux/bitops.h>
-> +
-> +#include "dsa_priv.h"
-> +
-> +static struct sk_buff *xrs700x_xmit(struct sk_buff *skb, struct net_device *dev)
-> +{
-> +	struct dsa_port *dp = dsa_slave_to_port(dev);
-> +	u8 *trailer;
-> +
-> +	trailer = skb_put(skb, 1);
-> +	trailer[0] = BIT(dp->index);
-> +
-> +	return skb;
-> +}
-> +
-> +static struct sk_buff *xrs700x_rcv(struct sk_buff *skb, struct net_device *dev,
-> +				   struct packet_type *pt)
-> +{
-> +	int source_port;
-> +	u8 *trailer;
-> +
-> +	if (skb_linearize(skb))
-> +		return NULL;
-
-We've been through this, there should be no reason to linearize an skb
-for a one-byte tail tag..
-
-> +
-> +	trailer = skb_tail_pointer(skb) - 1;
-> +
-> +	source_port = ffs((int)trailer[0]) - 1;
-> +
-> +	if (source_port < 0)
-> +		return NULL;
-> +
-> +	skb->dev = dsa_master_find_slave(dev, 0, source_port);
-> +	if (!skb->dev)
-> +		return NULL;
-> +
-> +	if (pskb_trim_rcsum(skb, skb->len - 1))
-> +		return NULL;
-> +
-> +	/* Frame is forwarded by hardware, don't forward in software. */
-> +	skb->offload_fwd_mark = 1;
-> +
-> +	return skb;
-> +}
+Why is this patch targeting the "net" tree? What is the problem that it
+resolves?
