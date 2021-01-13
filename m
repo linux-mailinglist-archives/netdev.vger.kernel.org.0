@@ -2,96 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 31C8B2F4155
-	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 02:49:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D9A552F415A
+	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 02:52:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726291AbhAMBtF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jan 2021 20:49:05 -0500
-Received: from mail.kernel.org ([198.145.29.99]:33656 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725983AbhAMBtE (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 12 Jan 2021 20:49:04 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 569CD2310A;
-        Wed, 13 Jan 2021 01:48:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610502503;
-        bh=43aJ9tyLYObjqala5EtmpQdOSUPdjov/kxghKOSUQfQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=pJrmKAe4U7o3rUbX7j4XJF+YSidpUGn5ou0Fos34mixb7eoYW47/3JtMGkRZGPnk7
-         8Xz9is3hnWW2BhYEtOWqOVfig9xdEfmV5iGAHohvHoRzrIgPmXxyRd27oGAQ6m/6q2
-         uh/4stT9gdMd1Yz2pWKsfWCt59ixFof7r1L6N9fEYhviWCe4s6dY+ea6dUg1fTxawd
-         JRtVsVO8qgVbJZ8OIS12Tnl0cVh4u8u/gHNcFi8/LwhEqGncNSd4GzjED0kSTqXTc8
-         vqzIZhukGg5D5ClnborttsSK7rPoKgK4XG3Xpvyla2NREWzSdd8eIKX8eF/LsUmkxW
-         vIFmUXlf1iwJg==
-Date:   Tue, 12 Jan 2021 17:48:22 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        linux-can@vger.kernel.org,
-        Jeroen Hofstee <jhofstee@victronenergy.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        "open list : NETWORKING DRIVERS" <netdev@vger.kernel.org>
-Subject: Re: [PATCH v4 1/1] can: dev: add software tx timestamps
-Message-ID: <20210112174822.7ee9b67d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210112174625.40c02021@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <20210112095437.6488-1-mailhol.vincent@wanadoo.fr>
-        <20210112095437.6488-2-mailhol.vincent@wanadoo.fr>
-        <f9ebb060-f190-79af-d57a-d5394390d222@pengutronix.de>
-        <20210112174625.40c02021@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S1726858AbhAMBvX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jan 2021 20:51:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43638 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726329AbhAMBvW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 20:51:22 -0500
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE3E8C0617A5;
+        Tue, 12 Jan 2021 17:50:41 -0800 (PST)
+Received: by mail-pf1-x433.google.com with SMTP id m6so266093pfk.1;
+        Tue, 12 Jan 2021 17:50:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=lVMcs8UX05yYXnv8U8ZRWy0QX2Aplqzdx81ZhiBh7Rg=;
+        b=YSrS63qemmiLiixU+9VJW7ig6DvBllC70+EwxvUTHxHvABJQI7xoO5KhU//Ft86i+T
+         gR1wNiUxIxadrz6NaT3D2Yq8yNjByMD47EJkrhi8jBLt/UboGUhqCsPz0brvudDVv3oG
+         w3rm5kAtE/aOb1AqlMZRfc1vEYIwGNvgKDkHB622O3j3L59LqaDHxV16QhbO6Rfx5Tah
+         7iDbrnNZHyjoEIk0VyAk8O3vWp3+KHR6HD4YLJ3N/OCeRpfoFDok4w7vXxKnbxBXFfLQ
+         2rxCKxW0PW23LeIzenJCyhKeGGFrtiLvQIjY/JKH3WtnlEyR1tbuI62k3RCTgr9p7te6
+         QI4w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=lVMcs8UX05yYXnv8U8ZRWy0QX2Aplqzdx81ZhiBh7Rg=;
+        b=eg89Z1yKzmSC3mXBXny/UzecSnFhNYJyye5gMKOIOJA2dg5aaPZ7AbH1aqAryNBdUE
+         uqtGRuyqj+rZofEhvm+uCesDgfohD9m1rY5w2yO3ZiULBiVvunAQBvkBUxZ2S8wypZlC
+         /saqX8JbATN1Mx337CLS5OX+HjLy94B3RH/n0HzRb6hThnqfACxWTYr5p/P1ZdtO6245
+         uZoOou1OHvtcgLj/23+bw3ey2I5i7Z/mpdCEaS9gYgbWAegdXY+0oZGpPuQ+frwN81h9
+         5Y7HUIxnQuSQNaA3mziUsPuvKeKFWpRaAh8ToLGNK4BGzIewSFXeGnNrUesS8FZAezai
+         jctg==
+X-Gm-Message-State: AOAM530LqpY4o7AX/Kd1em9jeSdZOpVcFQakcVQeRT835jcR3yGOPtuR
+        R/Jta9c+g6egvYD56PjtZp8y6/Dio+V4
+X-Google-Smtp-Source: ABdhPJwTz97VyacaNkUBhukAr/6SlYHlN8opCDa4IIoJbI8KKVvtHMQfGKBcVgLgxtjeH5FoFS4GOg==
+X-Received: by 2002:a65:50c8:: with SMTP id s8mr2028437pgp.68.1610502641398;
+        Tue, 12 Jan 2021 17:50:41 -0800 (PST)
+Received: from localhost.localdomain ([216.52.21.4])
+        by smtp.gmail.com with ESMTPSA id a18sm388345pfg.107.2021.01.12.17.50.40
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 12 Jan 2021 17:50:40 -0800 (PST)
+From:   Praveen Chaudhary <praveen5582@gmail.com>
+X-Google-Original-From: Praveen Chaudhary <pchaudhary@linkedin.com>
+To:     davem@davemloft.net, kuba@kernel.org, corbet@lwn.net,
+        kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
+        netdev@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v1 net-next 0/1] Allow user to set metric on default route learned via Router Advertisement.
+Date:   Tue, 12 Jan 2021 17:50:35 -0800
+Message-Id: <20210113015036.17674-1-pchaudhary@linkedin.com>
+X-Mailer: git-send-email 2.29.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 12 Jan 2021 17:46:25 -0800 Jakub Kicinski wrote:
-> On Tue, 12 Jan 2021 11:03:00 +0100 Marc Kleine-Budde wrote:
-> > On 1/12/21 10:54 AM, Vincent Mailhol wrote:  
-> > > Call skb_tx_timestamp() within can_put_echo_skb() so that a software
-> > > tx timestamp gets attached on the skb.
-> > > 
-> > > There two main reasons to include this call in can_put_echo_skb():
-> > > 
-> > >   * It easily allow to enable the tx timestamp on all devices with
-> > >     just one small change.
-> > > 
-> > >   * According to Documentation/networking/timestamping.rst, the tx
-> > >     timestamps should be generated in the device driver as close as
-> > >     possible, but always prior to passing the packet to the network
-> > >     interface. During the call to can_put_echo_skb(), the skb gets
-> > >     cloned meaning that the driver should not dereference the skb
-> > >     variable anymore after can_put_echo_skb() returns. This makes
-> > >     can_put_echo_skb() the very last place we can use the skb without
-> > >     having to access the echo_skb[] array.
-> > > 
-> > > Remark: by default, skb_tx_timestamp() does nothing. It needs to be
-> > > activated by passing the SOF_TIMESTAMPING_TX_SOFTWARE flag either
-> > > through socket options or control messages.
-> > > 
-> > > References:
-> > > 
-> > >  * Support for the error queue in CAN RAW sockets (which is needed for
-> > >    tx timestamps) was introduced in:
-> > >    https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=eb88531bdbfaafb827192d1fc6c5a3fcc4fadd96
-> > > 
-> > >   * Put the call to skb_tx_timestamp() just before adding it to the
-> > >     array: https://lkml.org/lkml/2021/1/10/54
-> > > 
-> > >   * About Tx hardware timestamps
-> > >     https://lore.kernel.org/linux-can/20210111171152.GB11715@hoboy.vegasvil.org/
-> > > 
-> > > Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>    
-> > 
-> > Applied to linux-can-next/testing  
-> 
-> Please make sure to address the warnings before this hits net-next:
-> 
-> https://patchwork.kernel.org/project/netdevbpf/patch/20210112130538.14912-2-mailhol.vincent@wanadoo.fr/
-> 
-> Actually it appears not to build with allmodconfig..?
+Allow user to set metric on default route learned via Router Advertisement.
 
-Erm, apologies, I confused different CAN patches, this one did not get
-build tested.
+Note: RFC 4191 does not say anything for metric for IPv6 default route.
+
+Fix:
+For IPv4, default route is learned via DHCPv4 and user is allowed to change
+metric using config in etc/network/interfaces. But for IPv6, default route can
+be learned via RA, for which, currently a fixed metric value 1024 is used.
+
+Ideally, user should be able to configure metric on default route for IPv6
+similar to IPv4. This fix adds sysctl for the same.
+
+Logs:
+----------------------------------------------------------------
+For IPv4:
+----------------------------------------------------------------
+
+Config in etc/network/interfaces
+----------------------------------------------------------------
+```
+auto eth0
+iface eth0 inet dhcp
+    metric 4261413864
+```
+
+IPv4 Kernel Route Table:
+----------------------------------------------------------------
+```
+$ sudo route -n
+Kernel IP routing table
+Destination     Gateway         Genmask         Flags Metric Ref    Use Iface
+0.0.0.0         172.11.44.1     0.0.0.0         UG    -33553432 0        0 eth0
+```
+
+FRR Table, if a static route is configured. [In real scenario, it is useful to prefer BGP learned default route over DHCPv4 default route.]
+----------------------------------------------------------------
+```
+Codes: K - kernel route, C - connected, S - static, R - RIP,
+       O - OSPF, I - IS-IS, B - BGP, P - PIM, E - EIGRP, N - NHRP,
+       T - Table, v - VNC, V - VNC-Direct, A - Babel, D - SHARP,
+       > - selected route, * - FIB route
+
+S>* 0.0.0.0/0 [20/0] is directly connected, eth0, 00:00:03
+K   0.0.0.0/0 [254/1000] via 172.21.47.1, eth0, 6d08h51m
+```
+
+----------------------------------------------------------------
+i.e. User can prefer Default Router learned via Routing Protocol,
+Similar behavior is not possible for IPv6, without this fix.
+
+
+----------------------------------------------------------------
+After fix [for IPv6]:
+----------------------------------------------------------------
+```
+sudo sysctl -w net.ipv6.conf.eth0.net.ipv6.conf.eth0.accept_ra_defrtr_metric=0x770003e9
+```
+
+IP monitor:
+----------------------------------------------------------------
+```
+default via fe80::xx16:xxxx:feb3:ce8e dev eth0 proto ra metric 1996489705  pref high
+```
+
+Kernel IPv6 routing table
+----------------------------------------------------------------
+```
+Destination                    Next Hop                   Flag Met Ref Use If
+::/0                           fe80::xx16:xxxx:feb3:ce8e  UGDAe 1996489705 0
+ 0 eth0
+```
+
+FRR Table, if a static route is configured. [In real scenario, it is useful to prefer BGP learned default route over IPv6 RA default route.]
+```
+----------------------------------------------------------------
+Codes: K - kernel route, C - connected, S - static, R - RIPng,
+       O - OSPFv3, I - IS-IS, B - BGP, N - NHRP, T - Table,
+       v - VNC, V - VNC-Direct, A - Babel, D - SHARP,
+       > - selected route, * - FIB route
+
+S>* ::/0 [20/0] is directly connected, eth0, 00:00:06
+K   ::/0 [119/1001] via fe80::xx16:xxxx:feb3:ce8e, eth0, 6d07h43m
+----------------------------------------------------------------
+```
+
+If the metric is changed later, the effect will be seen only when IPv6 RA is received, because the default route must be fully controlled by RA msg.
+```
+admin@lnos-x1-a-asw03:~$ sudo sysctl -w net.ipv6.conf.eth0.accept_ra_defrtr_metric=0x770003e8
+net.ipv6.conf.eth0.accept_ra_defrtr_metric = 0x770003e8
+
+```
+
+IP monitor: when metric is changed after learning Default Route from previous IPv6 RA msg:
+```
+Deleted default via fe80::xx16:xxxx:feb3:ce8e dev eth0 proto ra metric 1996489705  expires 3sec hoplimit 64 pref high
+default via fe80::xx16:xxxx:feb3:ce8e dev eth0 proto ra metric 1996489704  pref high
+```
+
+Praveen Chaudhary (1):
+  Allow user to set metric on default route learned via Router
+    Advertisement.
+
+ Documentation/networking/ip-sysctl.rst | 18 ++++++++++++++++++
+ include/linux/ipv6.h                   |  1 +
+ include/net/ip6_route.h                |  3 ++-
+ include/uapi/linux/ipv6.h              |  1 +
+ include/uapi/linux/sysctl.h            |  1 +
+ net/ipv6/addrconf.c                    | 10 ++++++++++
+ net/ipv6/ndisc.c                       | 14 ++++++++++----
+ net/ipv6/route.c                       |  5 +++--
+ 8 files changed, 46 insertions(+), 7 deletions(-)
+
+
+base-commit: 139711f033f636cc78b6aaf7363252241b9698ef
+-- 
+2.29.0
+
