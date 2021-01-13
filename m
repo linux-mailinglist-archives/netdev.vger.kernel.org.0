@@ -2,69 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D96182F430E
-	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 05:21:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 06C042F430F
+	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 05:23:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726664AbhAMEUt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jan 2021 23:20:49 -0500
-Received: from mail.kernel.org ([198.145.29.99]:52720 "EHLO mail.kernel.org"
+        id S1726650AbhAMEWE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jan 2021 23:22:04 -0500
+Received: from mail.kernel.org ([198.145.29.99]:53288 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726607AbhAMEUs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 12 Jan 2021 23:20:48 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 48E0723134;
-        Wed, 13 Jan 2021 04:20:08 +0000 (UTC)
+        id S1725775AbhAMEWE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 Jan 2021 23:22:04 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 00C5E23122;
+        Wed, 13 Jan 2021 04:21:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610511608;
-        bh=5KUuhIq3uOqRP7W9A2HCOu6gyEGmBhVNKHwxZAsOoFo=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=fNjdM0i7al3wjz6ayQAsC7VGR7LqKQ0Iq6NopHQKESyusL2OQ1GJmjsYcoDvs+QV9
-         Q7YJvoaq/8HiRwKV1MaT6kloMi4QA0o23zb1CvIeOat2nbj0ACMvKi67R2Xb4xI88G
-         vSsFvglq+y1Q6ensu9mBnxqusumTrgHNK5XKgognI2DFsvFksHCXXgWE+xhj732Ndj
-         /x3P90vaNCke1g3+13laH7One8Ch5OHbojtJgbi2Pl8hxymlcLXlsXtsth4dVyDwvP
-         GA25vaD3T8tDC/Z3BxlxlO4KtflMram6o5LMoKLqZg9UTP3PjVzCADRyMj3Mj6A7V/
-         SLYEWuHSsuCSA==
-Received: from pdx-korg-docbuild-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-1.ci.codeaurora.org (Postfix) with ESMTP id 39E2B604FD;
-        Wed, 13 Jan 2021 04:20:08 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1610511683;
+        bh=RkAKArIj2Lz2+aFdr3x7SAnsAaDH3Tsu/LDdKQXMFWM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=lwmDU+z+XFa64Yg0WiB2ThGekGx7fWp2Oxa0wsTN37n2QP5qkrF5vT/aDyGqMI4JZ
+         HxvS6qfYiFfZNyECVlm6vSfklsVWbrTMWPxPcGYLVV4V6OXRyp3u/oAU8knKTmdR2o
+         gJmygWN/KXY89FImbn5wWNp2yHj2/xlzcqlNlG/76gwNlqjxSvH0hphZGoZVNjLYBv
+         L0ZustdtkECXeq+qZzMPQmp+U6kZJU54D9Ls7TFItVzGrgQ8WUEj6SRffpA4BfCzEn
+         i0RaM55tlxiVquSt+VV7c/GAU/mP7GVcsVIW+WUAvqihXtuxXH3vK7I8TnG9lIylLv
+         GQYAA4tFL5jCQ==
+Date:   Tue, 12 Jan 2021 20:21:22 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, jiri@nvidia.com,
+        danieller@nvidia.com, mlxsw@nvidia.com,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: Re: [PATCH net-next 1/2] mlxsw: Register physical ports as a
+ devlink resource
+Message-ID: <20210112202122.5751bc9f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210112083931.1662874-2-idosch@idosch.org>
+References: <20210112083931.1662874-1-idosch@idosch.org>
+        <20210112083931.1662874-2-idosch@idosch.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net 0/2] mptcp: a couple of fixes
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161051160823.32446.9328881553119033183.git-patchwork-notify@kernel.org>
-Date:   Wed, 13 Jan 2021 04:20:08 +0000
-References: <cover.1610471474.git.pabeni@redhat.com>
-In-Reply-To: <cover.1610471474.git.pabeni@redhat.com>
-To:     Paolo Abeni <pabeni@redhat.com>
-Cc:     netdev@vger.kernel.org, mptcp@lists.01.org, davem@davemloft.net,
-        kuba@kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net.git (refs/heads/master):
-
-On Tue, 12 Jan 2021 18:25:22 +0100 you wrote:
-> This series includes two related fixes addressing potential divide by 0
-> bugs in the MPTCP datapath.
+On Tue, 12 Jan 2021 10:39:30 +0200 Ido Schimmel wrote:
+> From: Danielle Ratson <danieller@nvidia.com>
 > 
-> Paolo Abeni (2):
->   mptcp: more strict state checking for acks
->   mptcp: better msk-level shutdown.
+> The switch ASIC has a limited capacity of physical ('flavour physical'
+> in devlink terminology) ports that it can support. While each system is
+> brought up with a different number of ports, this number can be
+> increased via splitting up to the ASIC's limit.
 > 
-> [...]
+> Expose physical ports as a devlink resource so that user space will have
+> visibility to the maximum number of ports that can be supported and the
+> current occupancy.
 
-Here is the summary with links:
-  - [net,1/2] mptcp: more strict state checking for acks
-    https://git.kernel.org/netdev/net/c/20bc80b6f582
-  - [net,2/2] mptcp: better msk-level shutdown.
-    https://git.kernel.org/netdev/net/c/76e2a55d1625
+Any thoughts on making this a "generic" resource?
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+The limitation on number of logical ports is pretty common for switches.
