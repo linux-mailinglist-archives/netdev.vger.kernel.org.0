@@ -2,39 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BF712F4216
-	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 03:54:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A3D462F421A
+	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 03:55:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728326AbhAMCyX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jan 2021 21:54:23 -0500
-Received: from mail.kernel.org ([198.145.29.99]:42568 "EHLO mail.kernel.org"
+        id S1728472AbhAMCys (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jan 2021 21:54:48 -0500
+Received: from mail.kernel.org ([198.145.29.99]:42622 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726578AbhAMCyX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 12 Jan 2021 21:54:23 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E6C4B2311F;
-        Wed, 13 Jan 2021 02:53:42 +0000 (UTC)
+        id S1726578AbhAMCyr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 Jan 2021 21:54:47 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id ABEFC23120;
+        Wed, 13 Jan 2021 02:54:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610506423;
-        bh=uEMDyYxD3uqbtHcF7hYnqi8etYdbkhTDaF/kptgnbfo=;
+        s=k20201202; t=1610506447;
+        bh=GYCEKugAEjTz9/WmfVTHe33onj7+dkmAssGRnXoR5ek=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=mIna82veh0HKt1uffkHNFp5kD8B1L6vLCudqXMfzAxj+CeumQtSfFJfJbUCzNQtDL
-         17KXf5xi/DmP0pzM+ROfW/98JJ7mF5IE5OBy+O2AwnB/mjbL3IphjjF/458DWWqMtS
-         i1Zc7Tq4CGl7CQsMOz2vH/Yqh02E2meuW+gg0CFkSkIETzI4BILszHYxvU0QaCUMKC
-         OZ4yGu5Q/pfRkWQ/mPHZYdTOWn3uTS9yQC/6fj4bjl/ECN1eBbWnuOApClIcH3zrUY
-         GKEwlwza5hHTOsBQ5h3TN8wjZrIOTIF13tO7x0eClNU230W8D8GhyfRmHpvRuH5X4m
-         3cCC80jFB2xzg==
-Date:   Tue, 12 Jan 2021 18:53:42 -0800
+        b=B9Tq+rKvmAA8WdpLVEvq9mp3fJD4iEfNm+7VablIXX3c4dw+shplIkciclmE2iwPf
+         sXNt8lpEgtV7fBN7mCAvtmxgDu/2OAv6OWSkoYp9AWxlfcRIg87nWcfbGJfXI/xGTI
+         8eMTYbl5ln/LJrIUWdmZRj4bZ07pByDLX9TPcWq3f8L/TjjbUXW8BPPrvxt2AClxP1
+         dhICs99LigCjG8BuwuZ53gk3W62EmI7uRX+OaZLGYSLpK5dCG0jD/Y5cvJXebtz+Vs
+         rJ2oTbgtTLNzP9jgybVi04MS4V2rzcAFv+HMcgi0xklmi5mW3nWaJa/xow4C7NgUU+
+         SPD9gOXBfP1tQ==
+Date:   Tue, 12 Jan 2021 18:54:05 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     Florian Fainelli <f.fainelli@gmail.com>,
         Vladimir Oltean <olteanv@gmail.com>
 Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        andrew@lunn.ch, vivien.didelot@gmail.com
-Subject: Re: [PATCH net] net: dsa: unbind all switches from tree when DSA
- master unbinds
-Message-ID: <20210112185342.6d3c3116@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <6d6cc153-85ca-62c8-8d9c-4f4c6a325e91@gmail.com>
-References: <20210111230943.3701806-1-olteanv@gmail.com>
-        <6d6cc153-85ca-62c8-8d9c-4f4c6a325e91@gmail.com>
+        Jiri Pirko <jiri@nvidia.com>, andrew@lunn.ch,
+        vivien.didelot@gmail.com
+Subject: Re: [PATCH net] net: dsa: clear devlink port type before
+ unregistering slave netdevs
+Message-ID: <20210112185405.1c1f24e2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <f2974f4e-41d0-379a-3014-39926cf011a0@gmail.com>
+References: <20210112004831.3778323-1-olteanv@gmail.com>
+        <f2974f4e-41d0-379a-3014-39926cf011a0@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -42,34 +43,68 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 12 Jan 2021 10:51:39 -0800 Florian Fainelli wrote:
-> On 1/11/21 3:09 PM, Vladimir Oltean wrote:
+On Tue, 12 Jan 2021 10:49:21 -0800 Florian Fainelli wrote:
+> On 1/11/21 4:48 PM, Vladimir Oltean wrote:
 > > From: Vladimir Oltean <vladimir.oltean@nxp.com>
 > > 
-> > Currently the following happens when a DSA master driver unbinds while
-> > there are DSA switches attached to it:
+> > Florian reported a use-after-free bug in devlink_nl_port_fill found with
+> > KASAN:
 > > 
-> > $ echo 0000:00:00.5 > /sys/bus/pci/drivers/mscc_felix/unbind
-> > ------------[ cut here ]------------
-> > WARNING: CPU: 0 PID: 392 at net/core/dev.c:9507
-> > Call trace:
-> >  rollback_registered_many+0x5fc/0x688
-> >  unregister_netdevice_queue+0x98/0x120
-> >  dsa_slave_destroy+0x4c/0x88
-> >  dsa_port_teardown.part.16+0x78/0xb0
-> >  dsa_tree_teardown_switches+0x58/0xc0
-> >  dsa_unregister_switch+0x104/0x1b8
-> >  felix_pci_remove+0x24/0x48
-> >  pci_device_remove+0x48/0xf0
-> >  device_release_driver_internal+0x118/0x1e8
-> >  device_driver_detach+0x28/0x38
-> >  unbind_store+0xd0/0x100
-> > [...]
+> > (devlink_nl_port_fill)
+> > (devlink_port_notify)
+> > (devlink_port_unregister)
+> > (dsa_switch_teardown.part.3)
+> > (dsa_tree_teardown_switches)
+> > (dsa_unregister_switch)
+> > (bcm_sf2_sw_remove)
+> > (platform_remove)
+> > (device_release_driver_internal)
+> > (device_links_unbind_consumers)
+> > (device_release_driver_internal)
+> > (device_driver_detach)
+> > (unbind_store)
 > > 
-> > Fixes: 2f1e8ea726e9 ("net: dsa: link interfaces with the DSA master to get rid of lockdep warnings")
+> > Allocated by task 31:
+> >  alloc_netdev_mqs+0x5c/0x50c
+> >  dsa_slave_create+0x110/0x9c8
+> >  dsa_register_switch+0xdb0/0x13a4
+> >  b53_switch_register+0x47c/0x6dc
+> >  bcm_sf2_sw_probe+0xaa4/0xc98
+> >  platform_probe+0x90/0xf4
+> >  really_probe+0x184/0x728
+> >  driver_probe_device+0xa4/0x278
+> >  __device_attach_driver+0xe8/0x148
+> >  bus_for_each_drv+0x108/0x158
+> > 
+> > Freed by task 249:
+> >  free_netdev+0x170/0x194
+> >  dsa_slave_destroy+0xac/0xb0
+> >  dsa_port_teardown.part.2+0xa0/0xb4
+> >  dsa_tree_teardown_switches+0x50/0xc4
+> >  dsa_unregister_switch+0x124/0x250
+> >  bcm_sf2_sw_remove+0x98/0x13c
+> >  platform_remove+0x44/0x5c
+> >  device_release_driver_internal+0x150/0x254
+> >  device_links_unbind_consumers+0xf8/0x12c
+> >  device_release_driver_internal+0x84/0x254
+> >  device_driver_detach+0x30/0x34
+> >  unbind_store+0x90/0x134
+> > 
+> > What happens is that devlink_port_unregister emits a netlink
+> > DEVLINK_CMD_PORT_DEL message which associates the devlink port that is
+> > getting unregistered with the ifindex of its corresponding net_device.
+> > Only trouble is, the net_device has already been unregistered.
+> > 
+> > It looks like we can stub out the search for a corresponding net_device
+> > if we clear the devlink_port's type. This looks like a bit of a hack,
+> > but also seems to be the reason why the devlink_port_type_clear function
+> > exists in the first place.
+> > 
+> > Fixes: 3122433eb533 ("net: dsa: Register devlink ports before calling DSA driver setup()")
 > > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>  
 > 
 > Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-> Tested-by: Florian Fainelli <f.fainelli@gmail.com>
+> Tested-by: Florian fainelli <f.fainelli@gmail.com>
+> Reported-by: Florian Fainelli <f.fainelli@gmail.com>
 
 Applied, thanks!
