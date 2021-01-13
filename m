@@ -2,322 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 79AAB2F5176
-	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 18:52:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B66802F5199
+	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 19:01:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728077AbhAMRw1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jan 2021 12:52:27 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:21431 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727560AbhAMRw1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 12:52:27 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1610560259;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=XJ4eBQpZbVGXMxVKRUFfIzF28RtG2WxV81QvTU+zyjc=;
-        b=JQJLXEgfo9eaJYWJzC1/vFrYiwDv/e1ePwWRk3jfyVK/pYHYHLX4VcQqkhISKAMkRdTczY
-        cZWEb/wID/6oUFDT6kPdy9YPC+PM5cMaERuDUFUGk9+MR8nDw0GEOJOHArAQJI5+zmU7P6
-        +pG1j8ysk9Lc8JadCi74NcnuBxiOWrU=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-557-Kd0oRvpyNcaV-Oa2TF5egA-1; Wed, 13 Jan 2021 12:50:55 -0500
-X-MC-Unique: Kd0oRvpyNcaV-Oa2TF5egA-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2181B107ACF7;
-        Wed, 13 Jan 2021 17:50:54 +0000 (UTC)
-Received: from omen.home.shazbot.org (ovpn-112-255.phx2.redhat.com [10.3.112.255])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 6297218A60;
-        Wed, 13 Jan 2021 17:50:53 +0000 (UTC)
-Date:   Wed, 13 Jan 2021 10:50:52 -0700
-From:   Alex Williamson <alex.williamson@redhat.com>
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Bjorn Helgaas <bhelgaas@google.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>, linux-pci@vger.kernel.org,
-        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-        Don Dutile <ddutile@redhat.com>
-Subject: Re: [PATCH mlx5-next v1 1/5] PCI: Add sysfs callback to allow MSI-X
- table size change of SR-IOV VFs
-Message-ID: <20210113105052.43cf3c15@omen.home.shazbot.org>
-In-Reply-To: <20210110150727.1965295-2-leon@kernel.org>
-References: <20210110150727.1965295-1-leon@kernel.org>
-        <20210110150727.1965295-2-leon@kernel.org>
+        id S1728198AbhAMSBY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jan 2021 13:01:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54962 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728184AbhAMSBX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 13:01:23 -0500
+Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E26DC061575
+        for <netdev@vger.kernel.org>; Wed, 13 Jan 2021 10:00:43 -0800 (PST)
+Received: by mail-io1-xd2e.google.com with SMTP id q2so4265595iow.13
+        for <netdev@vger.kernel.org>; Wed, 13 Jan 2021 10:00:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=b8oVyV0Cd2sbC+BGOjlGGVGmUzatq7OrKLny89DeMR8=;
+        b=HHgUstqIdqDrdcvDSK3/xvm+4ZogX8R2HQOXQqtJgg1jrAGAyKRzzh2j5WkRc3sDl9
+         sKzIQ2aa3FsaCP5uV0Y4nD0WvSGM3UNpLKFuFEluixLhHkilLNoPsDROCs78oR+UqfRN
+         wk9qiZhY9x19T2UkU2WFFxlz0gCzvEABdcO7AKv2saoyf+1dN6uwDOsnmSnr+usuW1y2
+         kFZOBDml2IfqYtVDa/mzz8pQUSk6HvnvjBfJTXdMr9R465eNGfjdN6vD9FZFEl5eqbld
+         xo2yEAFMp4lw7BO1Fcr1IcmhJl+VgVVSI/PMWB7Ns6gePL/2zDJYpcxA9VuKTKsTLdCX
+         6dSg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=b8oVyV0Cd2sbC+BGOjlGGVGmUzatq7OrKLny89DeMR8=;
+        b=MA0XUCN7kuI+/BF9Hnr9vYgrjvIg9aCZB3UFphVurbu/OQW5lZLTN4HMEloU9mJOGA
+         uyi01yBC0RcBw8zD/cyQeexgOdjhoZT5ZyGcGD/L+X1QomBmhDUMxcj8fDdlTTteJgsy
+         jfgKM6G2gH6TmUNHnI+wTuXHX/JI2wJCtEp+hpScoPHWhwa0GyYHqasfmLJFFXQ9Yxbg
+         ZXrUYxf7LFLlsBpxhYIYhVViMM00L8i9S+51eYasI9T5sz8Zd6R4okZkw8blVKxqTd9E
+         1Odfhm7LPJ6VjEsXUaX3j0npBUd1GvstORKpTmTMrbuvwcIZore5p5zfsW9LGk/TMKSK
+         GpSg==
+X-Gm-Message-State: AOAM532P+77xsFfVc5uJ6rx5bsf6inaZC9FeHmPtvssc31Wn9xfweN9G
+        /BXFhe3XRLa3bZ8zje5TcHO9SGclnnT+LHIQvT9U3poulqxbAA==
+X-Google-Smtp-Source: ABdhPJynDsGOKS78CMwjG0tYz1H0ND5o80XuvdZDf4njUhDcriUo/kcPYCw1Zc+1yYBU3asUFrfC3gyxPUrJ0+rCshY=
+X-Received: by 2002:a92:d210:: with SMTP id y16mr3401985ily.97.1610560842491;
+ Wed, 13 Jan 2021 10:00:42 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+References: <20210113161819.1155526-1-eric.dumazet@gmail.com>
+In-Reply-To: <20210113161819.1155526-1-eric.dumazet@gmail.com>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Wed, 13 Jan 2021 10:00:31 -0800
+Message-ID: <CAKgT0UeyiQdHASed8x5Lkn1cfq58j6OLsM8n993V9i9XDJqiiQ@mail.gmail.com>
+Subject: Re: [PATCH net] net: avoid 32 x truesize under-estimation for tiny skbs
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Alexander Duyck <alexanderduyck@fb.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Greg Thelen <gthelen@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 10 Jan 2021 17:07:23 +0200
-Leon Romanovsky <leon@kernel.org> wrote:
-
-> From: Leon Romanovsky <leonro@nvidia.com>
-> 
-> Extend PCI sysfs interface with a new callback that allows configure
-> the number of MSI-X vectors for specific SR-IO VF. This is needed
-> to optimize the performance of newly bound devices by allocating
-> the number of vectors based on the administrator knowledge of targeted VM.
-> 
-> This function is applicable for SR-IOV VF because such devices allocate
-> their MSI-X table before they will run on the VMs and HW can't guess the
-> right number of vectors, so the HW allocates them statically and equally.
-> 
-> The newly added /sys/bus/pci/devices/.../vf_msix_vec file will be seen
-> for the VFs and it is writable as long as a driver is not bounded to the VF.
-> 
-> The values accepted are:
->  * > 0 - this will be number reported by the VF's MSI-X capability
->  * < 0 - not valid
->  * = 0 - will reset to the device default value
-> 
-> Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+On Wed, Jan 13, 2021 at 8:20 AM Eric Dumazet <eric.dumazet@gmail.com> wrote:
+>
+> From: Eric Dumazet <edumazet@google.com>
+>
+> Both virtio net and napi_get_frags() allocate skbs
+> with a very small skb->head
+>
+> While using page fragments instead of a kmalloc backed skb->head might give
+> a small performance improvement in some cases, there is a huge risk of
+> under estimating memory usage.
+>
+> For both GOOD_COPY_LEN and GRO_MAX_HEAD, we can fit at least 32 allocations
+> per page (order-3 page in x86), or even 64 on PowerPC
+>
+> We have been tracking OOM issues on GKE hosts hitting tcp_mem limits
+> but consuming far more memory for TCP buffers than instructed in tcp_mem[2]
+>
+> Even if we force napi_alloc_skb() to only use order-0 pages, the issue
+> would still be there on arches with PAGE_SIZE >= 32768
+>
+> This patch makes sure that small skb head are kmalloc backed, so that
+> other objects in the slab page can be reused instead of being held as long
+> as skbs are sitting in socket queues.
+>
+> Note that we might in the future use the sk_buff napi cache,
+> instead of going through a more expensive __alloc_skb()
+>
+> Another idea would be to use separate page sizes depending
+> on the allocated length (to never have more than 4 frags per page)
+>
+> I would like to thank Greg Thelen for his precious help on this matter,
+> analysing crash dumps is always a time consuming task.
+>
+> Fixes: fd11a83dd363 ("net: Pull out core bits of __netdev_alloc_skb and add __napi_alloc_skb")
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Cc: Alexander Duyck <alexanderduyck@fb.com>
+> Cc: Paolo Abeni <pabeni@redhat.com>
+> Cc: Michael S. Tsirkin <mst@redhat.com>
+> Cc: Greg Thelen <gthelen@google.com>
 > ---
->  Documentation/ABI/testing/sysfs-bus-pci | 20 ++++++++
->  drivers/pci/iov.c                       | 62 +++++++++++++++++++++++++
->  drivers/pci/msi.c                       | 29 ++++++++++++
->  drivers/pci/pci-sysfs.c                 |  1 +
->  drivers/pci/pci.h                       |  2 +
->  include/linux/pci.h                     |  8 +++-
->  6 files changed, 121 insertions(+), 1 deletion(-)
-> 
-> diff --git a/Documentation/ABI/testing/sysfs-bus-pci b/Documentation/ABI/testing/sysfs-bus-pci
-> index 25c9c39770c6..05e26e5da54e 100644
-> --- a/Documentation/ABI/testing/sysfs-bus-pci
-> +++ b/Documentation/ABI/testing/sysfs-bus-pci
-> @@ -375,3 +375,23 @@ Description:
->  		The value comes from the PCI kernel device state and can be one
->  		of: "unknown", "error", "D0", D1", "D2", "D3hot", "D3cold".
->  		The file is read only.
-> +
-> +What:		/sys/bus/pci/devices/.../vf_msix_vec
-> +Date:		December 2020
-> +Contact:	Leon Romanovsky <leonro@nvidia.com>
-> +Description:
-> +		This file is associated with the SR-IOV VFs.
-> +		It allows configuration of the number of MSI-X vectors for
-> +		the VF. This is needed to optimize performance of newly bound
-> +		devices by allocating the number of vectors based on the
-> +		administrator knowledge of targeted VM.
-> +
-> +		The values accepted are:
-> +		 * > 0 - this will be number reported by the VF's MSI-X
-> +			 capability
-> +		 * < 0 - not valid
-> +		 * = 0 - will reset to the device default value
-> +
-> +		The file is writable if the PF is bound to a driver that
-> +		supports the ->sriov_set_msix_vec_count() callback and there
-> +		is no driver bound to the VF.
-> diff --git a/drivers/pci/iov.c b/drivers/pci/iov.c
-> index 4afd4ee4f7f0..42c0df4158d1 100644
-> --- a/drivers/pci/iov.c
-> +++ b/drivers/pci/iov.c
-> @@ -31,6 +31,7 @@ int pci_iov_virtfn_devfn(struct pci_dev *dev, int vf_id)
->  	return (dev->devfn + dev->sriov->offset +
->  		dev->sriov->stride * vf_id) & 0xff;
->  }
-> +EXPORT_SYMBOL(pci_iov_virtfn_devfn);
-> 
->  /*
->   * Per SR-IOV spec sec 3.3.10 and 3.3.11, First VF Offset and VF Stride may
-> @@ -426,6 +427,67 @@ const struct attribute_group sriov_dev_attr_group = {
->  	.is_visible = sriov_attrs_are_visible,
->  };
-> 
-> +#ifdef CONFIG_PCI_MSI
-> +static ssize_t vf_msix_vec_show(struct device *dev,
-> +				struct device_attribute *attr, char *buf)
-> +{
-> +	struct pci_dev *pdev = to_pci_dev(dev);
-> +	int numb = pci_msix_vec_count(pdev);
-> +	struct pci_dev *pfdev;
-> +
-> +	if (numb < 0)
-> +		return numb;
-> +
-> +	pfdev = pci_physfn(pdev);
-> +	if (!pfdev->driver || !pfdev->driver->sriov_set_msix_vec_count)
-> +		return -EOPNOTSUPP;
-> +
-> +	return sprintf(buf, "%d\n", numb);
-> +}
-> +
-> +static ssize_t vf_msix_vec_store(struct device *dev,
-> +				 struct device_attribute *attr, const char *buf,
-> +				 size_t count)
-> +{
-> +	struct pci_dev *vf_dev = to_pci_dev(dev);
-> +	int val, ret;
-> +
-> +	ret = kstrtoint(buf, 0, &val);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = pci_set_msix_vec_count(vf_dev, val);
-> +	if (ret)
-> +		return ret;
-> +
-> +	return count;
-> +}
-> +static DEVICE_ATTR_RW(vf_msix_vec);
-> +#endif
-> +
-> +static struct attribute *sriov_vf_dev_attrs[] = {
-> +#ifdef CONFIG_PCI_MSI
-> +	&dev_attr_vf_msix_vec.attr,
-> +#endif
-> +	NULL,
-> +};
-> +
-> +static umode_t sriov_vf_attrs_are_visible(struct kobject *kobj,
-> +					  struct attribute *a, int n)
-> +{
-> +	struct device *dev = kobj_to_dev(kobj);
-> +
-> +	if (dev_is_pf(dev))
-> +		return 0;
-> +
-> +	return a->mode;
-> +}
-> +
-> +const struct attribute_group sriov_vf_dev_attr_group = {
-> +	.attrs = sriov_vf_dev_attrs,
-> +	.is_visible = sriov_vf_attrs_are_visible,
-> +};
-> +
->  int __weak pcibios_sriov_enable(struct pci_dev *pdev, u16 num_vfs)
+>  net/core/skbuff.c | 9 +++++++--
+>  1 file changed, 7 insertions(+), 2 deletions(-)
+>
+> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+> index 7626a33cce590e530f36167bd096026916131897..3a8f55a43e6964344df464a27b9b1faa0eb804f3 100644
+> --- a/net/core/skbuff.c
+> +++ b/net/core/skbuff.c
+> @@ -501,13 +501,17 @@ EXPORT_SYMBOL(__netdev_alloc_skb);
+>  struct sk_buff *__napi_alloc_skb(struct napi_struct *napi, unsigned int len,
+>                                  gfp_t gfp_mask)
 >  {
->  	return 0;
-> diff --git a/drivers/pci/msi.c b/drivers/pci/msi.c
-> index 3162f88fe940..20705ca94666 100644
-> --- a/drivers/pci/msi.c
-> +++ b/drivers/pci/msi.c
-> @@ -991,6 +991,35 @@ int pci_msix_vec_count(struct pci_dev *dev)
->  }
->  EXPORT_SYMBOL(pci_msix_vec_count);
-> 
-> +/**
-> + * pci_set_msix_vec_count - change the reported number of MSI-X vectors
-> + * This function is applicable for SR-IOV VF because such devices allocate
-> + * their MSI-X table before they will run on the VMs and HW can't guess the
-> + * right number of vectors, so the HW allocates them statically and equally.
-> + * @dev: VF device that is going to be changed
-> + * @numb: amount of MSI-X vectors
-> + **/
-> +int pci_set_msix_vec_count(struct pci_dev *dev, int numb)
-> +{
-> +	struct pci_dev *pdev = pci_physfn(dev);
-> +
-> +	if (!dev->msix_cap || !pdev->msix_cap)
-> +		return -EINVAL;
-> +
-> +	if (dev->driver || !pdev->driver ||
-> +	    !pdev->driver->sriov_set_msix_vec_count)
-> +		return -EOPNOTSUPP;
+> -       struct napi_alloc_cache *nc = this_cpu_ptr(&napi_alloc_cache);
+> +       struct napi_alloc_cache *nc;
+>         struct sk_buff *skb;
+>         void *data;
+>
+>         len += NET_SKB_PAD + NET_IP_ALIGN;
+>
+> -       if ((len > SKB_WITH_OVERHEAD(PAGE_SIZE)) ||
+> +       /* If requested length is either too small or too big,
+> +        * we use kmalloc() for skb->head allocation.
+> +        */
+> +       if (len <= SKB_WITH_OVERHEAD(1024) ||
+> +           len > SKB_WITH_OVERHEAD(PAGE_SIZE) ||
+>             (gfp_mask & (__GFP_DIRECT_RECLAIM | GFP_DMA))) {
+>                 skb = __alloc_skb(len, gfp_mask, SKB_ALLOC_RX, NUMA_NO_NODE);
+>                 if (!skb)
+> @@ -515,6 +519,7 @@ struct sk_buff *__napi_alloc_skb(struct napi_struct *napi, unsigned int len,
+>                 goto skb_success;
+>         }
+>
+> +       nc = this_cpu_ptr(&napi_alloc_cache);
+>         len += SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
+>         len = SKB_DATA_ALIGN(len);
+>
 
+The fix here looks good to me.
+Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
 
-This seems racy, don't we need to hold device_lock on both the VF and
-PF to avoid driver {un}binding races?  Does that happen implicitly
-somewhere?  Thanks,
-
-Alex
-
-> +
-> +	if (numb < 0)
-> +		/*
-> +		 * We don't support negative numbers for now,
-> +		 * but maybe in the future it will make sense.
-> +		 */
-> +		return -EINVAL;
-> +
-> +	return pdev->driver->sriov_set_msix_vec_count(dev, numb);
-> +}
-> +
->  static int __pci_enable_msix(struct pci_dev *dev, struct msix_entry *entries,
->  			     int nvec, struct irq_affinity *affd, int flags)
->  {
-> diff --git a/drivers/pci/pci-sysfs.c b/drivers/pci/pci-sysfs.c
-> index fb072f4b3176..0af2222643c2 100644
-> --- a/drivers/pci/pci-sysfs.c
-> +++ b/drivers/pci/pci-sysfs.c
-> @@ -1557,6 +1557,7 @@ static const struct attribute_group *pci_dev_attr_groups[] = {
->  	&pci_dev_hp_attr_group,
->  #ifdef CONFIG_PCI_IOV
->  	&sriov_dev_attr_group,
-> +	&sriov_vf_dev_attr_group,
->  #endif
->  	&pci_bridge_attr_group,
->  	&pcie_dev_attr_group,
-> diff --git a/drivers/pci/pci.h b/drivers/pci/pci.h
-> index 5c59365092fa..1fd273077637 100644
-> --- a/drivers/pci/pci.h
-> +++ b/drivers/pci/pci.h
-> @@ -183,6 +183,7 @@ extern unsigned int pci_pm_d3hot_delay;
-> 
->  #ifdef CONFIG_PCI_MSI
->  void pci_no_msi(void);
-> +int pci_set_msix_vec_count(struct pci_dev *dev, int numb);
->  #else
->  static inline void pci_no_msi(void) { }
->  #endif
-> @@ -502,6 +503,7 @@ resource_size_t pci_sriov_resource_alignment(struct pci_dev *dev, int resno);
->  void pci_restore_iov_state(struct pci_dev *dev);
->  int pci_iov_bus_range(struct pci_bus *bus);
->  extern const struct attribute_group sriov_dev_attr_group;
-> +extern const struct attribute_group sriov_vf_dev_attr_group;
->  #else
->  static inline int pci_iov_init(struct pci_dev *dev)
->  {
-> diff --git a/include/linux/pci.h b/include/linux/pci.h
-> index b32126d26997..a17cfc28eb66 100644
-> --- a/include/linux/pci.h
-> +++ b/include/linux/pci.h
-> @@ -856,6 +856,8 @@ struct module;
->   *		e.g. drivers/net/e100.c.
->   * @sriov_configure: Optional driver callback to allow configuration of
->   *		number of VFs to enable via sysfs "sriov_numvfs" file.
-> + * @sriov_set_msix_vec_count: Driver callback to change number of MSI-X vectors
-> + *              exposed by the sysfs "vf_msix_vec" entry.
->   * @err_handler: See Documentation/PCI/pci-error-recovery.rst
->   * @groups:	Sysfs attribute groups.
->   * @driver:	Driver model structure.
-> @@ -871,6 +873,7 @@ struct pci_driver {
->  	int  (*resume)(struct pci_dev *dev);	/* Device woken up */
->  	void (*shutdown)(struct pci_dev *dev);
->  	int  (*sriov_configure)(struct pci_dev *dev, int num_vfs); /* On PF */
-> +	int  (*sriov_set_msix_vec_count)(struct pci_dev *vf, int msix_vec_count); /* On PF */
->  	const struct pci_error_handlers *err_handler;
->  	const struct attribute_group **groups;
->  	struct device_driver	driver;
-> @@ -2057,7 +2060,6 @@ void __iomem *pci_ioremap_wc_bar(struct pci_dev *pdev, int bar);
-> 
->  #ifdef CONFIG_PCI_IOV
->  int pci_iov_virtfn_bus(struct pci_dev *dev, int id);
-> -int pci_iov_virtfn_devfn(struct pci_dev *dev, int id);
-> 
->  int pci_enable_sriov(struct pci_dev *dev, int nr_virtfn);
->  void pci_disable_sriov(struct pci_dev *dev);
-> @@ -2402,6 +2404,10 @@ static inline bool pci_is_thunderbolt_attached(struct pci_dev *pdev)
->  void pci_uevent_ers(struct pci_dev *pdev, enum  pci_ers_result err_type);
->  #endif
-> 
-> +#ifdef CONFIG_PCI_IOV
-> +int pci_iov_virtfn_devfn(struct pci_dev *dev, int vf_id);
-> +#endif
-> +
->  /* Provide the legacy pci_dma_* API */
->  #include <linux/pci-dma-compat.h>
-> 
-> --
-> 2.29.2
-> 
-
+I think at some point in the future we may need to follow up and do a
+rework of a bunch of this code. One thing I am wondering is if we
+should look at doing some sort of memory accounting per napi_struct.
+Maybe it is something we could work on tying into the page pool work
+that Jesper did earlier.
