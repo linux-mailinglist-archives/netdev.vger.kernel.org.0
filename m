@@ -2,63 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0DDD52F4145
-	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 02:38:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0DDD72F4146
+	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 02:38:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727304AbhAMBhw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jan 2021 20:37:52 -0500
-Received: from mx21.baidu.com ([220.181.3.85]:47628 "EHLO baidu.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725773AbhAMBhv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 12 Jan 2021 20:37:51 -0500
-Received: from BC-Mail-Ex30.internal.baidu.com (unknown [172.31.51.24])
-        by Forcepoint Email with ESMTPS id 6BE8323B6FECE21FF455;
-        Wed, 13 Jan 2021 09:36:59 +0800 (CST)
-Received: from BJHW-Mail-Ex15.internal.baidu.com (10.127.64.38) by
- BC-Mail-Ex30.internal.baidu.com (172.31.51.24) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2106.2; Wed, 13 Jan 2021 09:36:59 +0800
-Received: from BJHW-Mail-Ex15.internal.baidu.com ([100.100.100.38]) by
- BJHW-Mail-Ex15.internal.baidu.com ([100.100.100.38]) with mapi id
- 15.01.2106.006; Wed, 13 Jan 2021 09:36:59 +0800
-From:   "Li,Rongqing" <lirongqing@baidu.com>
-To:     Alexander Duyck <alexander.duyck@gmail.com>
-CC:     Netdev <netdev@vger.kernel.org>,
-        intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
-        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
-Subject: RE: [PATCH] igb: avoid premature Rx buffer reuse
-Thread-Topic: [PATCH] igb: avoid premature Rx buffer reuse
-Thread-Index: AQHW6Fvbto35lVctrkuLVJL42A+U1qojSruAgACwj4CAAM0BMA==
-Date:   Wed, 13 Jan 2021 01:36:58 +0000
-Message-ID: <005b033dad0a47d7858a9d71d20acda0@baidu.com>
-References: <1609990905-29220-1-git-send-email-lirongqing@baidu.com>
- <CAKgT0Ucar6h-V2pQK6Gx4wrwFzJqySfv-MGXtW1yEc6Jq3uNSQ@mail.gmail.com>
- <65a7da2dc20c4fa5b69270f078026100@baidu.com>
- <CAKgT0UccR7Mh4efd+d193bvQNP2-QMdBxP0uk0__0Z+dYepNjg@mail.gmail.com>
-In-Reply-To: <CAKgT0UccR7Mh4efd+d193bvQNP2-QMdBxP0uk0__0Z+dYepNjg@mail.gmail.com>
-Accept-Language: zh-CN, en-US
-Content-Language: zh-CN
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.22.198.52]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1727124AbhAMBi4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jan 2021 20:38:56 -0500
+Received: from mail.kernel.org ([198.145.29.99]:60946 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726996AbhAMBi4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 Jan 2021 20:38:56 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id EB41B2310F;
+        Wed, 13 Jan 2021 01:38:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1610501895;
+        bh=nXQKJuHXqcVXEQ7fA4OkmpuzJf/dqsi2h6uSXjiGVcU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=WLbnB8FVuW8RC5fxMvmfRZjOSZmTeJyohQAzCyn1cREUIu+/DUqYuywA4VPTO1d9W
+         mDCy8dvzILKcjqE4ByBb17s0phLWyWZsZ2ozJcGKRLGQQ4nq9y/iCEuj8zUrObguhC
+         HnOQSaccR/IXsnM5MZ8cgQ/vMzHw0BGQdJp1aHdRkCLEcI3qkQM4PY1b9hRb/iinXy
+         5aWr4gCeNvkEq8hcIED0/6sDqQCKg2k3PCVtTEQLqiQnJfzT4beRf2Qpd9GjAyczw+
+         hoXdtmxDc6iubflAmM5ckWJ4ZriQm4shnB9lIkuGHLXE2JbiLyfaGzyCM/tz3/um/B
+         tbJPp8bLEZhpg==
+Date:   Tue, 12 Jan 2021 17:38:13 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     netdev@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>,
+        syzbot+2624e3778b18fc497c92@syzkaller.appspotmail.com,
+        Pieter Jansen van Vuuren 
+        <pieter.jansenvanvuuren@netronome.com>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Xin Long <lucien.xin@gmail.com>, Jiri Pirko <jiri@resnulli.us>
+Subject: Re: [Patch net] cls_flower: call nla_ok() before nla_next()
+Message-ID: <20210112173813.17861ae6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210112025548.19107-1-xiyou.wangcong@gmail.com>
+References: <20210112025548.19107-1-xiyou.wangcong@gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogQWxleGFuZGVyIER1eWNr
-IFttYWlsdG86YWxleGFuZGVyLmR1eWNrQGdtYWlsLmNvbV0NCj4gU2VudDogV2VkbmVzZGF5LCBK
-YW51YXJ5IDEzLCAyMDIxIDU6MjMgQU0NCj4gVG86IExpLFJvbmdxaW5nIDxsaXJvbmdxaW5nQGJh
-aWR1LmNvbT4NCj4gQ2M6IE5ldGRldiA8bmV0ZGV2QHZnZXIua2VybmVsLm9yZz47IGludGVsLXdp
-cmVkLWxhbg0KPiA8aW50ZWwtd2lyZWQtbGFuQGxpc3RzLm9zdW9zbC5vcmc+OyBCasO2cm4gVMO2
-cGVsIDxiam9ybi50b3BlbEBpbnRlbC5jb20+DQo+IFN1YmplY3Q6IFJlOiBbUEFUQ0hdIGlnYjog
-YXZvaWQgcHJlbWF0dXJlIFJ4IGJ1ZmZlciByIA0KPiBPa2F5LCB0aGlzIGV4cGxhbmF0aW9uIG1h
-a2VzIG11Y2ggbW9yZSBzZW5zZS4gQ291bGQgeW91IHBsZWFzZSBlaXRoZXIgaW5jbHVkZQ0KPiB0
-aGlzIGV4cGxhbmF0aW9uIGluIHlvdXIgcGF0Y2gsIG9yIGluY2x1ZGUgYSByZWZlcmVuY2UgdG8g
-dGhpcyBwYXRjaCBhcyB0aGlzDQo+IGV4cGxhaW5zIGNsZWFybHkgd2hhdCB0aGUgaXNzdWUgaXMg
-d2hpbGUgeW91cnMgZGlkbid0IGFuZCBsZWQgdG8gdGhlIGNvbmZ1c2lvbiBhcyBJDQo+IHdhcyBh
-c3N1bWluZyB0aGUgZnJlZWluZyB3YXMgaGFwcGVuaW5nIGNsb3NlciB0byB0aGUgdDAgY2FzZSwg
-YW5kIHJlYWxseSB0aGUNCj4gcHJvYmxlbSBpcyB0MS4NCj4gDQo+IFRoYW5rcy4NCj4gDQo+IC0g
-QWxleA0KDQoNCk9rLCBJIHdpbGwgc2VuZCBWMg0KDQpUaGFua3MNCg0KLUxpDQo=
+On Mon, 11 Jan 2021 18:55:48 -0800 Cong Wang wrote:
+> From: Cong Wang <cong.wang@bytedance.com>
+> 
+> fl_set_enc_opt() simply checks if there are still bytes left to parse,
+> but this is not sufficent as syzbot seems to be able to generate
+> malformatted netlink messages. nla_ok() is more strict so should be
+> used to validate the next nlattr here.
+> 
+> And nla_validate_nested_deprecated() has less strict check too, it is
+> probably too late to switch to the strict version, but we can just
+> call nla_ok() too after it.
+> 
+> Reported-and-tested-by: syzbot+2624e3778b18fc497c92@syzkaller.appspotmail.com
+> Fixes: 0a6e77784f49 ("net/sched: allow flower to match tunnel options")
+> Fixes: 79b1011cb33d ("net: sched: allow flower to match erspan options")
+> Cc: Pieter Jansen van Vuuren <pieter.jansenvanvuuren@netronome.com>
+> Cc: Jamal Hadi Salim <jhs@mojatatu.com>
+> Cc: Xin Long <lucien.xin@gmail.com>
+> Cc: Jiri Pirko <jiri@resnulli.us>
+> Signed-off-by: Cong Wang <cong.wang@bytedance.com>
+
+Thanks for keeping up with the syzbot bugs!
+
+> diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
+> index 1319986693fc..e265c443536e 100644
+> --- a/net/sched/cls_flower.c
+> +++ b/net/sched/cls_flower.c
+> @@ -1272,6 +1272,8 @@ static int fl_set_enc_opt(struct nlattr **tb, struct fl_flow_key *key,
+>  
+>  		nla_opt_msk = nla_data(tb[TCA_FLOWER_KEY_ENC_OPTS_MASK]);
+>  		msk_depth = nla_len(tb[TCA_FLOWER_KEY_ENC_OPTS_MASK]);
+> +		if (!nla_ok(nla_opt_msk, msk_depth))
+> +			return -EINVAL;
+
+Can we just add another call to nla_validate_nested_deprecated() 
+here instead of having to worry about each attr individually?
+See below..
+
+>  	}
+>  
+>  	nla_for_each_attr(nla_opt_key, nla_enc_key,
+> @@ -1308,7 +1310,7 @@ static int fl_set_enc_opt(struct nlattr **tb, struct fl_flow_key *key,
+>  				return -EINVAL;
+>  			}
+>  
+> -			if (msk_depth)
+> +			if (nla_ok(nla_opt_msk, msk_depth))
+>  				nla_opt_msk = nla_next(nla_opt_msk, &msk_depth);
+
+Should we not error otherwise? if msk_depth && !nla_ok() then the
+message is clearly misformatted. If we don't error out we'll keep
+reusing the same mask over and over, while the intention of this 
+code was to have mask per key AFAICT.
+
+>  			break;
+>  		case TCA_FLOWER_KEY_ENC_OPTS_VXLAN:
