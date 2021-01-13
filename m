@@ -2,87 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CEC32F51BC
-	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 19:12:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3345B2F5253
+	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 19:39:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727990AbhAMSMx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jan 2021 13:12:53 -0500
-Received: from mail.kernel.org ([198.145.29.99]:37038 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727198AbhAMSMx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 13 Jan 2021 13:12:53 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id BCA88233ED;
-        Wed, 13 Jan 2021 18:12:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610561532;
-        bh=9elX7cNWCe9G39/ZIw1v4prZnJFSz0GD4UUQdqJ6cqE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=RgeWmANpXc1zGm081hvR7XF+GkBpB0TC98RrJNkav937ZHj09ykKwwD8xh3/uU97T
-         Vt2UhvNZFdwfsOPFEYKH1H9a/ttv4wSLURnfnZrTrfzkNXPjFKl6+tijxAoEbgVAOk
-         S2Ptnrzty7BXw0YCJWEoYe9NmIQ2RF1gB0VzBtNeoM2uzsRmUCr8CKix9oNXUx3CdS
-         sXLpFNTXSzqFzeXvBczfr3C5qEqCxJKkwfHb856KV8nxGRSTukfB+UFslnUfrYukz6
-         g6iAurhru6LdWCrTZ8xJGbfbLh/PhXu5gdqI2ndxW1p+4CXMLNc06OfaSCI+nJ3ggp
-         tSge7vUBE9q4g==
-Date:   Wed, 13 Jan 2021 10:12:10 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     Alexander Lobakin <alobakin@pm.me>,
-        Edward Cree <ecree.xilinx@gmail.com>,
+        id S1728352AbhAMSi5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jan 2021 13:38:57 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:33082 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728308AbhAMSi5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 13:38:57 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1610563051;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=JYLa2cOxqmc+CvxuI8h3Yk6+SIJRgLOEwT+NkOwhWow=;
+        b=M7Zoa1TS38sD1ljldzmmnREK1DB6JpY2tn7+YSlFAnnUpHnUW2l5oPDN5r+vnbIVhHzOYl
+        M1hY3rGYEHXlNyNajeQZwJ3EJ13/vEYmLH+wwdFtOHW5QvqXsKAzHgfYe0AefpznSl9BNd
+        GTv6EA6SL/AmZ90yqquVWCimHxxiyl4=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-362-rBzvAVxYO7q4tdJY0Df7tw-1; Wed, 13 Jan 2021 13:37:27 -0500
+X-MC-Unique: rBzvAVxYO7q4tdJY0Df7tw-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id EF673180E460;
+        Wed, 13 Jan 2021 18:37:23 +0000 (UTC)
+Received: from ovpn-115-228.ams2.redhat.com (ovpn-115-228.ams2.redhat.com [10.36.115.228])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 01AA319C47;
+        Wed, 13 Jan 2021 18:37:19 +0000 (UTC)
+Message-ID: <532f2d63cc7b842f6d75a22da277c2a841dcb40e.camel@redhat.com>
+Subject: Re: [PATCH v2 net-next] udp: allow forwarding of plain
+ (non-fraglisted) UDP GRO packets
+From:   Paolo Abeni <pabeni@redhat.com>
+To:     Alexander Lobakin <alobakin@pm.me>,
         "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Alexander Duyck <alexander.duyck@gmail.com>,
+        Eric Dumazet <edumazet@google.com>,
         Edward Cree <ecree@solarflare.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
         Willem de Bruijn <willemb@google.com>,
-        Miaohe Lin <linmiaohe@huawei.com>,
         Steffen Klassert <steffen.klassert@secunet.com>,
-        Guillaume Nault <gnault@redhat.com>,
-        Yadu Kishore <kyk.segfault@gmail.com>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next 0/5] skbuff: introduce skbuff_heads bulking and
- reusing
-Message-ID: <20210113101210.6d0ad308@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CANn89iJeJR+i-WLi=VwNSmWQ2aFepmFO8w6Yh9DQX6hvV4BceA@mail.gmail.com>
-References: <20210111182655.12159-1-alobakin@pm.me>
-        <d4f4b6ba-fb3b-d873-23b2-4b5ba9cf4db8@gmail.com>
-        <20210112110802.3914-1-alobakin@pm.me>
-        <CANn89iKEc_8_ySqV+KrbheTDKRL4Ws6JUKYeKXfogJNhfd+pGQ@mail.gmail.com>
-        <20210112170242.414b8664@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CANn89i+ppTAPYwQ2mH5cZtcMqanFU8hXzD4szdygrjOBewPb+Q@mail.gmail.com>
-        <20210113090341.74832be9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CANn89iJeJR+i-WLi=VwNSmWQ2aFepmFO8w6Yh9DQX6hvV4BceA@mail.gmail.com>
+        Dongseok Yi <dseok.yi@samsung.com>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Wed, 13 Jan 2021 19:37:18 +0100
+In-Reply-To: <20210113103232.4761-1-alobakin@pm.me>
+References: <20210113103232.4761-1-alobakin@pm.me>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 13 Jan 2021 18:15:20 +0100 Eric Dumazet wrote:
-> > IDK much about MM, but we already have a kmem_cache for skbs and now
-> > we're building a cache on top of a cache.  Shouldn't MM take care of
-> > providing a per-CPU BH-only lockless cache?  
+On Wed, 2021-01-13 at 10:32 +0000, Alexander Lobakin wrote:
+> Commit 9fd1ff5d2ac7 ("udp: Support UDP fraglist GRO/GSO.") actually
+> not only added a support for fraglisted UDP GRO, but also tweaked
+> some logics the way that non-fraglisted UDP GRO started to work for
+> forwarding too.
+> Commit 2e4ef10f5850 ("net: add GSO UDP L4 and GSO fraglists to the
+> list of software-backed types") added GSO UDP L4 to the list of
+> software GSO to allow virtual netdevs to forward them as is up to
+> the real drivers.
 > 
-> I think part of the improvement comes from bulk operations, which are
-> provided by mm layer.
-> 
-> I also note Alexander made no provision for NUMA awareness.
-> Probably reusing skb located on a remote node will not be ideal.
+> Tests showed that currently forwarding and NATing of plain UDP GRO
+> packets are performed fully correctly, regardless if the target
+> netdevice has a support for hardware/driver GSO UDP L4 or not.
+> Add the last element and allow to form plain UDP GRO packets if
+> there is no socket -> we are on forwarding path.
 
-I was wondering about that yesterday, but couldn't really think 
-of a legitimate reason not to have XPS set up right. Do you have
-particular config in mind, or are we taking "default config"?
+If I read correctly, the above will make UDP GRO in the forwarding path
+always enabled (admin can't disable that, if forwarding is enabled).
 
-Also can't the skb _itself_ be pfmemalloc?
+UDP GRO can introduce measurable latency for UDP packets staging in the
+napi GRO hash (no push flag for UDP ;).
 
-My main point is that I'm wondering if this sort of cache would be
-useful when allocating skbs for sockets? Assuming that the network
-stack is not isolated to its own cores, won't fronting alloc_skb() 
-with 
+Currently the admin (for fraglist) or the application (for socket-based 
+"plain" GRO) have to explicitly enable the feature, but this change
+will impact every user.
 
-	bh_disable() 
-	try the cache
-	bh_enable()
+I think we need at lest an explict switch for this.
 
-potentially help? In that sense fronting kmem_cache would feel cleaner
-than our own little ring buffer.
+Cheers,
+
+Paolo
+
