@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B783F2F4B0E
-	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 13:14:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FCA32F4B0F
+	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 13:14:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727312AbhAMMNH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jan 2021 07:13:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35852 "EHLO
+        id S1727330AbhAMMNJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jan 2021 07:13:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726834AbhAMMNH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 07:13:07 -0500
-Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94515C061786
-        for <netdev@vger.kernel.org>; Wed, 13 Jan 2021 04:12:26 -0800 (PST)
-Received: by mail-wr1-x42d.google.com with SMTP id 91so1868459wrj.7
-        for <netdev@vger.kernel.org>; Wed, 13 Jan 2021 04:12:26 -0800 (PST)
+        with ESMTP id S1726852AbhAMMNI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 07:13:08 -0500
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2BBBC061794
+        for <netdev@vger.kernel.org>; Wed, 13 Jan 2021 04:12:27 -0800 (PST)
+Received: by mail-wr1-x434.google.com with SMTP id r7so1870983wrc.5
+        for <netdev@vger.kernel.org>; Wed, 13 Jan 2021 04:12:27 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=l5oNXmwmy/iZXgUmTX4ON2k66GUzJt8/nt5Sf8nKUDI=;
-        b=0WK07mMnq68B4Ax4an15CQZSVzJZVn0p+LpmYqMhLlkiMrXf8KD+6qFl71U90fyXXo
-         mpUWE3YwfMcelw84wpyE817yrGLduB7tUSqUQXUR6NWZfNpU9NsfKd7hEaIyEaC8C8h7
-         XgRLcw8QjvhnTvEqwXcce0h/kY69P1L0WMWmPEtC2zdYSE6AbnyxeAat+kbkDhq1AD+p
-         HYhCS2E7s6pjXd8+z5dNqmPEitj0/p+5KKizVxUpTdXtYGjKAZkpH3vkalrFSmgi1Gtv
-         kygv227H57LYfCtWaeKxnETAw/kxCvW9glF6X5CaEC7FCKddLjG8zEVrxFAQVD+h55Z+
-         h0Xg==
+        bh=uyB8QWTqN7dE+Bhpok/Tm0FFRe0cWIIcYpY5tQDKDs8=;
+        b=qWywD6eGc2waYHF/uyxdY8b0/WbSDYR9RXFmpgGwMSUUTpqES3JxKAs/d7aX0quXRg
+         VDx8VTET/WyT4TBtDdI1ILLpVw6h3+XKRkFJuniHxYvhR1VQySi+xMJiopMiPWDMYMQw
+         5cbtOJSPUMNbPV01cgosYMZ5pNdyDRBKM40yEf/yuiDsXqMEnOsPU8oOxgzkq9AeqmPV
+         xb93frShemquk8KN4yh9nkj9xWEQd2OA9NnT7fc2lsIl+rCHhTHTspjL3d9D2TKbGQoW
+         ScEe6t03+xHmiCpwtNtwKIktW9YKgr6fVaXJ7rPz5Q/pzN4zCHB31JSdJ7rWP8klFyW8
+         E3xw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=l5oNXmwmy/iZXgUmTX4ON2k66GUzJt8/nt5Sf8nKUDI=;
-        b=TEXoAat3LJGlfiKoEEjjghMsXrgrLEXOrHOWF4zPkE74Y0CTLT/mDcZXXxOJ1E0jZC
-         7Vhxa0KhsjpxX/FRH0aWZcU1ToUkLSfb/5rVvmYqteTtVP+iUotQIBdEy7Y9G54uasIP
-         9nH7V8IQheuJqoWNw9Gl02bCY7nVebYzuTy+LH98fKt0+ThWfzkILO35Z5IYhsT8qLHS
-         iRUKYXmoGHGHTG7K/5+yG2ufg2aL0baBsaDxIJ5pD8QGZ87SexBv1NaKvP9qXzkLPBHp
-         yG1S5ELEDQjAVqn5bf6HU87umPjJ0Uop2+I2/Yir7uW/rlW5wLZZY7vKUs/eNWInqQ2V
-         P9Hw==
-X-Gm-Message-State: AOAM5322yZfW8GZpmaK/E+vTlEut9dNdQRSGow9ntZOLRyKAcUQ1+apZ
-        SvtrIboYziLOWPIyI/WUfX67Ti2v07pSFr1X
-X-Google-Smtp-Source: ABdhPJzMVFkTE3T+Io0bulr9kEfTEDWkiyvnKiyadsOwwyppAkVzUkb37KvepiYohy0npwi6cTKOMg==
-X-Received: by 2002:a5d:5917:: with SMTP id v23mr2407539wrd.308.1610539944991;
-        Wed, 13 Jan 2021 04:12:24 -0800 (PST)
+        bh=uyB8QWTqN7dE+Bhpok/Tm0FFRe0cWIIcYpY5tQDKDs8=;
+        b=dBTA9JnHsLz8/V8CF3NPv52qsfA9b0Y7P7M6BlMNfnzyZN51YSPS7jZ3wX3wiR3gfO
+         kBHch4v5JW7xjuUSW0N/9fa4aRyUYMR2Vc9AsBlgO7HFgXhoVvsRRgTugkzYudFIqyyD
+         4HoE12NB2aZMt8AX+WiLRK2vboY1f8RblP2J4+X+lTjahYXcG1GszGNkOoM6Kvq9bkYj
+         8dmh0vCREhk8CzDwh0HIoED27yUMm5ft9NGe3/tcxvGeoPvc4MCuoM/XX14DhDInqf+f
+         AgCXr/5bfDlzoAulgLSKgShNVrng/L0kzXJRSUhsE0gvdiHjy3ycHNFHHlZhvbkG/LDv
+         zuMQ==
+X-Gm-Message-State: AOAM532lnXLqO0JBvmLqGliQZ7RGsyKf+b5T8MUbu0hcepn8OJTnKPXS
+        4RwApJCxIIuZTt5bQidXyaUXtqlksgTjrHtv
+X-Google-Smtp-Source: ABdhPJxYdNvXbj3crHN5gmb6BB1tLjF/OZGlw5xvmUWTDFC7AvXhMixhAzS7YO/60Qm7QtZGD/+dsA==
+X-Received: by 2002:a5d:6ccb:: with SMTP id c11mr2314259wrc.224.1610539946094;
+        Wed, 13 Jan 2021 04:12:26 -0800 (PST)
 Received: from localhost ([85.163.43.78])
-        by smtp.gmail.com with ESMTPSA id h16sm2633813wmb.41.2021.01.13.04.12.24
+        by smtp.gmail.com with ESMTPSA id x66sm2731803wmg.26.2021.01.13.04.12.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Jan 2021 04:12:24 -0800 (PST)
+        Wed, 13 Jan 2021 04:12:25 -0800 (PST)
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, jacob.e.keller@intel.com,
         roopa@nvidia.com, mlxsw@nvidia.com
-Subject: [patch net-next RFC 01/10] devlink: add support to create line card and expose to user
-Date:   Wed, 13 Jan 2021 13:12:13 +0100
-Message-Id: <20210113121222.733517-2-jiri@resnulli.us>
+Subject: [patch net-next RFC 02/10] devlink: implement line card provisioning
+Date:   Wed, 13 Jan 2021 13:12:14 +0100
+Message-Id: <20210113121222.733517-3-jiri@resnulli.us>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20210113121222.733517-1-jiri@resnulli.us>
 References: <20210113121222.733517-1-jiri@resnulli.us>
@@ -65,377 +65,325 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@nvidia.com>
 
-Extend the devlink API so the driver is going to be able to create and
-destroy linecard instances. There can be multiple line cards per devlink
-device. Expose this new type of object over devlink netlink API to the
-userspace, with notifications.
+In order to be able to configure all needed stuff on a port/netdevice
+of a line card without the line card being present, introduce line card
+provisioning. Basically provisioning will create a placeholder for
+instances (ports/netdevices) for a line card type.
+
+Allow the user to query the supported line card types over line card
+get command. Then implement two netlink commands to allow user to
+provision/unprovision the line card with selected line card type.
+
+On the driver API side, add provision/unprovision ops and supported
+types array to be advertised. Upon provision op call, the driver should
+take care of creating the instances for the particular line card type.
+Introduce provision_set/clear() functions to be called by the driver
+once the provisioning/unprovisioning is done on its side.
 
 Signed-off-by: Jiri Pirko <jiri@nvidia.com>
 ---
- include/net/devlink.h        |  10 ++
- include/uapi/linux/devlink.h |   7 ++
- net/core/devlink.c           | 227 ++++++++++++++++++++++++++++++++++-
- 3 files changed, 243 insertions(+), 1 deletion(-)
+ include/net/devlink.h        |  31 +++++++-
+ include/uapi/linux/devlink.h |  17 +++++
+ net/core/devlink.c           | 141 ++++++++++++++++++++++++++++++++++-
+ 3 files changed, 185 insertions(+), 4 deletions(-)
 
 diff --git a/include/net/devlink.h b/include/net/devlink.h
-index dd0c0b8fba6e..67c2547d5ef9 100644
+index 67c2547d5ef9..854abd53e9ea 100644
 --- a/include/net/devlink.h
 +++ b/include/net/devlink.h
-@@ -45,6 +45,7 @@ struct devlink {
- 	struct list_head trap_list;
- 	struct list_head trap_group_list;
- 	struct list_head trap_policer_list;
-+	struct list_head linecard_list;
- 	const struct devlink_ops *ops;
- 	struct xarray snapshot_ids;
- 	struct devlink_dev_stats stats;
-@@ -138,6 +139,12 @@ struct devlink_port {
+@@ -139,10 +139,33 @@ struct devlink_port {
  	struct mutex reporters_lock; /* Protects reporter_list */
  };
  
-+struct devlink_linecard {
-+	struct list_head list;
-+	struct devlink *devlink;
-+	unsigned int index;
++struct devlink_linecard_ops;
++
+ struct devlink_linecard {
+ 	struct list_head list;
+ 	struct devlink *devlink;
+ 	unsigned int index;
++	const struct devlink_linecard_ops *ops;
++	void *priv;
++	enum devlink_linecard_state state;
++	const char *provisioned_type;
 +};
 +
++/**
++ * struct devlink_linecard_ops - Linecard operations
++ * @supported_types: array of supported types of linecards
++ * @supported_types_count: number of elements in the array above
++ * @provision: callback to provision the linecard slot with certain
++ *	       type of linecard
++ * @unprovision: callback to unprovision the linecard slot
++ */
++struct devlink_linecard_ops {
++	const char **supported_types;
++	unsigned int supported_types_count;
++	int (*provision)(struct devlink_linecard *linecard, void *priv,
++			 u32 type_index, struct netlink_ext_ack *extack);
++	int (*unprovision)(struct devlink_linecard *linecard, void *priv,
++			   struct netlink_ext_ack *extack);
+ };
+ 
  struct devlink_sb_pool_info {
- 	enum devlink_sb_pool_type pool_type;
- 	u32 size;
-@@ -1407,6 +1414,9 @@ void devlink_port_attrs_pci_pf_set(struct devlink_port *devlink_port, u32 contro
+@@ -1414,9 +1437,13 @@ void devlink_port_attrs_pci_pf_set(struct devlink_port *devlink_port, u32 contro
  				   u16 pf, bool external);
  void devlink_port_attrs_pci_vf_set(struct devlink_port *devlink_port, u32 controller,
  				   u16 pf, u16 vf, bool external);
-+struct devlink_linecard *devlink_linecard_create(struct devlink *devlink,
-+						 unsigned int linecard_index);
-+void devlink_linecard_destroy(struct devlink_linecard *linecard);
+-struct devlink_linecard *devlink_linecard_create(struct devlink *devlink,
+-						 unsigned int linecard_index);
++struct devlink_linecard *
++devlink_linecard_create(struct devlink *devlink, unsigned int linecard_index,
++			const struct devlink_linecard_ops *ops, void *priv);
+ void devlink_linecard_destroy(struct devlink_linecard *linecard);
++void devlink_linecard_provision_set(struct devlink_linecard *linecard,
++				    u32 type_index);
++void devlink_linecard_provision_clear(struct devlink_linecard *linecard);
  int devlink_sb_register(struct devlink *devlink, unsigned int sb_index,
  			u32 size, u16 ingress_pools_count,
  			u16 egress_pools_count, u16 ingress_tc_count,
 diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
-index cf89c318f2ac..e5ed0522591f 100644
+index e5ed0522591f..4111ddcc000b 100644
 --- a/include/uapi/linux/devlink.h
 +++ b/include/uapi/linux/devlink.h
-@@ -126,6 +126,11 @@ enum devlink_command {
+@@ -131,6 +131,9 @@ enum devlink_command {
+ 	DEVLINK_CMD_LINECARD_NEW,
+ 	DEVLINK_CMD_LINECARD_DEL,
  
- 	DEVLINK_CMD_HEALTH_REPORTER_TEST,
- 
-+	DEVLINK_CMD_LINECARD_GET,		/* can dump */
-+	DEVLINK_CMD_LINECARD_SET,
-+	DEVLINK_CMD_LINECARD_NEW,
-+	DEVLINK_CMD_LINECARD_DEL,
++	DEVLINK_CMD_LINECARD_PROVISION,
++	DEVLINK_CMD_LINECARD_UNPROVISION,
 +
  	/* add new commands above here */
  	__DEVLINK_CMD_MAX,
  	DEVLINK_CMD_MAX = __DEVLINK_CMD_MAX - 1
-@@ -529,6 +534,8 @@ enum devlink_attr {
- 	DEVLINK_ATTR_RELOAD_ACTION_INFO,        /* nested */
+@@ -329,6 +332,17 @@ enum devlink_reload_limit {
+ 
+ #define DEVLINK_RELOAD_LIMITS_VALID_MASK (_BITUL(__DEVLINK_RELOAD_LIMIT_MAX) - 1)
+ 
++enum devlink_linecard_state {
++	DEVLINK_LINECARD_STATE_UNSPEC,
++	DEVLINK_LINECARD_STATE_UNPROVISIONED,
++	DEVLINK_LINECARD_STATE_UNPROVISIONING,
++	DEVLINK_LINECARD_STATE_PROVISIONING,
++	DEVLINK_LINECARD_STATE_PROVISIONED,
++
++	__DEVLINK_LINECARD_STATE_MAX,
++	DEVLINK_LINECARD_STATE_MAX = __DEVLINK_LINECARD_STATE_MAX - 1
++};
++
+ enum devlink_attr {
+ 	/* don't change the order or add anything between, this is ABI! */
+ 	DEVLINK_ATTR_UNSPEC,
+@@ -535,6 +549,9 @@ enum devlink_attr {
  	DEVLINK_ATTR_RELOAD_ACTION_STATS,       /* nested */
  
-+	DEVLINK_ATTR_LINECARD_INDEX,		/* u32 */
-+
+ 	DEVLINK_ATTR_LINECARD_INDEX,		/* u32 */
++	DEVLINK_ATTR_LINECARD_STATE,		/* u8 */
++	DEVLINK_ATTR_LINECARD_TYPE,		/* string */
++	DEVLINK_ATTR_LINECARD_SUPPORTED_TYPES,	/* nested */
+ 
  	/* add new attributes above here, update the policy in devlink.c */
  
- 	__DEVLINK_ATTR_MAX,
 diff --git a/net/core/devlink.c b/net/core/devlink.c
-index f86688bfad46..564e921133cf 100644
+index 564e921133cf..434eecc310c3 100644
 --- a/net/core/devlink.c
 +++ b/net/core/devlink.c
-@@ -187,6 +187,46 @@ static struct devlink_port *devlink_port_get_from_info(struct devlink *devlink,
- 	return devlink_port_get_from_attrs(devlink, info->attrs);
- }
- 
-+static struct devlink_linecard *
-+devlink_linecard_get_by_index(struct devlink *devlink,
-+			      unsigned int linecard_index)
-+{
-+	struct devlink_linecard *devlink_linecard;
-+
-+	list_for_each_entry(devlink_linecard, &devlink->linecard_list, list) {
-+		if (devlink_linecard->index == linecard_index)
-+			return devlink_linecard;
-+	}
-+	return NULL;
-+}
-+
-+static bool devlink_linecard_index_exists(struct devlink *devlink,
-+					  unsigned int linecard_index)
-+{
-+	return devlink_linecard_get_by_index(devlink, linecard_index);
-+}
-+
-+static struct devlink_linecard *
-+devlink_linecard_get_from_attrs(struct devlink *devlink, struct nlattr **attrs)
-+{
-+	if (attrs[DEVLINK_ATTR_LINECARD_INDEX]) {
-+		u32 linecard_index = nla_get_u32(attrs[DEVLINK_ATTR_LINECARD_INDEX]);
-+		struct devlink_linecard *linecard;
-+
-+		linecard = devlink_linecard_get_by_index(devlink, linecard_index);
-+		if (!linecard)
-+			return ERR_PTR(-ENODEV);
-+		return linecard;
-+	}
-+	return ERR_PTR(-EINVAL);
-+}
-+
-+static struct devlink_linecard *
-+devlink_linecard_get_from_info(struct devlink *devlink, struct genl_info *info)
-+{
-+	return devlink_linecard_get_from_attrs(devlink, info->attrs);
-+}
-+
- struct devlink_sb {
- 	struct list_head list;
- 	unsigned int index;
-@@ -405,16 +445,18 @@ devlink_region_snapshot_get_by_id(struct devlink_region *region, u32 id)
- 
- #define DEVLINK_NL_FLAG_NEED_PORT		BIT(0)
- #define DEVLINK_NL_FLAG_NEED_DEVLINK_OR_PORT	BIT(1)
-+#define DEVLINK_NL_FLAG_NEED_LINECARD		BIT(2)
- 
- /* The per devlink instance lock is taken by default in the pre-doit
-  * operation, yet several commands do not require this. The global
-  * devlink lock is taken and protects from disruption by user-calls.
-  */
--#define DEVLINK_NL_FLAG_NO_LOCK			BIT(2)
-+#define DEVLINK_NL_FLAG_NO_LOCK			BIT(3)
- 
- static int devlink_nl_pre_doit(const struct genl_ops *ops,
- 			       struct sk_buff *skb, struct genl_info *info)
+@@ -1192,7 +1192,9 @@ static int devlink_nl_linecard_fill(struct sk_buff *msg,
+ 				    u32 seq, int flags,
+ 				    struct netlink_ext_ack *extack)
  {
-+	struct devlink_linecard *linecard;
- 	struct devlink_port *devlink_port;
- 	struct devlink *devlink;
- 	int err;
-@@ -439,6 +481,13 @@ static int devlink_nl_pre_doit(const struct genl_ops *ops,
- 		devlink_port = devlink_port_get_from_info(devlink, info);
- 		if (!IS_ERR(devlink_port))
- 			info->user_ptr[1] = devlink_port;
-+	} else if (ops->internal_flags & DEVLINK_NL_FLAG_NEED_LINECARD) {
-+		linecard = devlink_linecard_get_from_info(devlink, info);
-+		if (IS_ERR(linecard)) {
-+			err = PTR_ERR(linecard);
-+			goto unlock;
-+		}
-+		info->user_ptr[1] = linecard;
- 	}
- 	return 0;
++	struct nlattr *attr;
+ 	void *hdr;
++	int i;
  
-@@ -1136,6 +1185,121 @@ static int devlink_nl_cmd_port_unsplit_doit(struct sk_buff *skb,
- 	return devlink_port_unsplit(devlink, port_index, info->extack);
+ 	hdr = genlmsg_put(msg, portid, seq, &devlink_nl_family, flags, cmd);
+ 	if (!hdr)
+@@ -1202,6 +1204,22 @@ static int devlink_nl_linecard_fill(struct sk_buff *msg,
+ 		goto nla_put_failure;
+ 	if (nla_put_u32(msg, DEVLINK_ATTR_LINECARD_INDEX, linecard->index))
+ 		goto nla_put_failure;
++	if (nla_put_u8(msg, DEVLINK_ATTR_LINECARD_STATE, linecard->state))
++		goto nla_put_failure;
++	if (linecard->state >= DEVLINK_LINECARD_STATE_PROVISIONED &&
++	    nla_put_string(msg, DEVLINK_ATTR_LINECARD_TYPE,
++			   linecard->provisioned_type))
++		goto nla_put_failure;
++
++	attr = nla_nest_start(msg, DEVLINK_ATTR_LINECARD_SUPPORTED_TYPES);
++	if (!attr)
++		return -EMSGSIZE;
++	for (i = 0; i < linecard->ops->supported_types_count; i++) {
++		if (nla_put_string(msg, DEVLINK_ATTR_LINECARD_TYPE,
++				   linecard->ops->supported_types[i]))
++			goto nla_put_failure;
++	}
++	nla_nest_end(msg, attr);
+ 
+ 	genlmsg_end(msg, hdr);
+ 	return 0;
+@@ -1300,6 +1318,68 @@ static int devlink_nl_cmd_linecard_get_dumpit(struct sk_buff *msg,
+ 	return msg->len;
  }
  
-+static int devlink_nl_linecard_fill(struct sk_buff *msg,
-+				    struct devlink *devlink,
-+				    struct devlink_linecard *linecard,
-+				    enum devlink_command cmd, u32 portid,
-+				    u32 seq, int flags,
-+				    struct netlink_ext_ack *extack)
-+{
-+	void *hdr;
-+
-+	hdr = genlmsg_put(msg, portid, seq, &devlink_nl_family, flags, cmd);
-+	if (!hdr)
-+		return -EMSGSIZE;
-+
-+	if (devlink_nl_put_handle(msg, devlink))
-+		goto nla_put_failure;
-+	if (nla_put_u32(msg, DEVLINK_ATTR_LINECARD_INDEX, linecard->index))
-+		goto nla_put_failure;
-+
-+	genlmsg_end(msg, hdr);
-+	return 0;
-+
-+nla_put_failure:
-+	genlmsg_cancel(msg, hdr);
-+	return -EMSGSIZE;
-+}
-+
-+static void devlink_linecard_notify(struct devlink_linecard *linecard,
-+				    enum devlink_command cmd)
-+{
-+	struct devlink *devlink = linecard->devlink;
-+	struct sk_buff *msg;
-+	int err;
-+
-+	WARN_ON(cmd != DEVLINK_CMD_LINECARD_NEW &&
-+		cmd != DEVLINK_CMD_LINECARD_DEL);
-+
-+	msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
-+	if (!msg)
-+		return;
-+
-+	err = devlink_nl_linecard_fill(msg, devlink, linecard, cmd, 0, 0, 0,
-+				       NULL);
-+	if (err) {
-+		nlmsg_free(msg);
-+		return;
-+	}
-+
-+	genlmsg_multicast_netns(&devlink_nl_family, devlink_net(devlink),
-+				msg, 0, DEVLINK_MCGRP_CONFIG, GFP_KERNEL);
-+}
-+
-+static int devlink_nl_cmd_linecard_get_doit(struct sk_buff *skb,
-+					    struct genl_info *info)
++static int devlink_nl_cmd_linecard_provision_doit(struct sk_buff *skb,
++						  struct genl_info *info)
 +{
 +	struct devlink_linecard *linecard = info->user_ptr[1];
-+	struct devlink *devlink = linecard->devlink;
-+	struct sk_buff *msg;
-+	int err;
++	const char *type;
++	int i;
 +
-+	msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
-+	if (!msg)
-+		return -ENOMEM;
-+
-+	err = devlink_nl_linecard_fill(msg, devlink, linecard,
-+				       DEVLINK_CMD_LINECARD_NEW,
-+				       info->snd_portid, info->snd_seq, 0,
-+				       info->extack);
-+	if (err) {
-+		nlmsg_free(msg);
-+		return err;
++	if (linecard->state == DEVLINK_LINECARD_STATE_PROVISIONING) {
++		NL_SET_ERR_MSG_MOD(info->extack, "Linecard is currently being provisioned");
++		return -EBUSY;
++	}
++	if (linecard->state == DEVLINK_LINECARD_STATE_UNPROVISIONING) {
++		NL_SET_ERR_MSG_MOD(info->extack, "Linecard is currently being unprovisioned");
++		return -EBUSY;
++	}
++	if (linecard->state != DEVLINK_LINECARD_STATE_UNPROVISIONED) {
++		NL_SET_ERR_MSG_MOD(info->extack, "Linecard already provisioned");
++		return -EBUSY;
 +	}
 +
-+	return genlmsg_reply(msg, info);
++	if (!info->attrs[DEVLINK_ATTR_LINECARD_TYPE]) {
++		NL_SET_ERR_MSG_MOD(info->extack, "Provision type not provided");
++		return -EINVAL;
++	}
++
++	type = nla_data(info->attrs[DEVLINK_ATTR_LINECARD_TYPE]);
++	for (i = 0; i < linecard->ops->supported_types_count; i++) {
++		if (!strcmp(linecard->ops->supported_types[i], type)) {
++			linecard->state = DEVLINK_LINECARD_STATE_PROVISIONING;
++			devlink_linecard_notify(linecard, DEVLINK_CMD_LINECARD_NEW);
++			return linecard->ops->provision(linecard,
++							linecard->priv, i,
++							info->extack);
++		}
++	}
++	NL_SET_ERR_MSG_MOD(info->extack, "Unsupported provision type provided");
++	return -EINVAL;
 +}
 +
-+static int devlink_nl_cmd_linecard_get_dumpit(struct sk_buff *msg,
-+					      struct netlink_callback *cb)
++static int devlink_nl_cmd_linecard_unprovision_doit(struct sk_buff *skb,
++						    struct genl_info *info)
 +{
-+	struct devlink_linecard *linecard;
-+	struct devlink *devlink;
-+	int start = cb->args[0];
-+	int idx = 0;
-+	int err;
++	struct devlink_linecard *linecard = info->user_ptr[1];
 +
-+	mutex_lock(&devlink_mutex);
-+	list_for_each_entry(devlink, &devlink_list, list) {
-+		if (!net_eq(devlink_net(devlink), sock_net(msg->sk)))
-+			continue;
-+		mutex_lock(&devlink->lock);
-+		list_for_each_entry(linecard, &devlink->linecard_list, list) {
-+			if (idx < start) {
-+				idx++;
-+				continue;
-+			}
-+			err = devlink_nl_linecard_fill(msg, devlink, linecard,
-+						       DEVLINK_CMD_LINECARD_NEW,
-+						       NETLINK_CB(cb->skb).portid,
-+						       cb->nlh->nlmsg_seq,
-+						       NLM_F_MULTI,
-+						       cb->extack);
-+			if (err) {
-+				mutex_unlock(&devlink->lock);
-+				goto out;
-+			}
-+			idx++;
-+		}
-+		mutex_unlock(&devlink->lock);
++	if (linecard->state == DEVLINK_LINECARD_STATE_PROVISIONING) {
++		NL_SET_ERR_MSG_MOD(info->extack, "Linecard is currently being provisioned");
++		return -EBUSY;
 +	}
-+out:
-+	mutex_unlock(&devlink_mutex);
-+
-+	cb->args[0] = idx;
-+	return msg->len;
++	if (linecard->state == DEVLINK_LINECARD_STATE_UNPROVISIONING) {
++		NL_SET_ERR_MSG_MOD(info->extack, "Linecard is currently being unprovisioned");
++		return -EBUSY;
++	}
++	if (linecard->state == DEVLINK_LINECARD_STATE_UNPROVISIONED) {
++		NL_SET_ERR_MSG_MOD(info->extack, "Linecard is not provisioned");
++		return -EOPNOTSUPP;
++	}
++	linecard->state = DEVLINK_LINECARD_STATE_UNPROVISIONING;
++	devlink_linecard_notify(linecard, DEVLINK_CMD_LINECARD_NEW);
++	return linecard->ops->unprovision(linecard, linecard->priv,
++					  info->extack);
 +}
 +
  static int devlink_nl_sb_fill(struct sk_buff *msg, struct devlink *devlink,
  			      struct devlink_sb *devlink_sb,
  			      enum devlink_command cmd, u32 portid,
-@@ -7594,6 +7758,7 @@ static const struct nla_policy devlink_nl_policy[DEVLINK_ATTR_MAX + 1] = {
- 	[DEVLINK_ATTR_RELOAD_ACTION] = NLA_POLICY_RANGE(NLA_U8, DEVLINK_RELOAD_ACTION_DRIVER_REINIT,
+@@ -7759,6 +7839,7 @@ static const struct nla_policy devlink_nl_policy[DEVLINK_ATTR_MAX + 1] = {
  							DEVLINK_RELOAD_ACTION_MAX),
  	[DEVLINK_ATTR_RELOAD_LIMITS] = NLA_POLICY_BITFIELD32(DEVLINK_RELOAD_LIMITS_VALID_MASK),
-+	[DEVLINK_ATTR_LINECARD_INDEX] = { .type = NLA_U32 },
+ 	[DEVLINK_ATTR_LINECARD_INDEX] = { .type = NLA_U32 },
++	[DEVLINK_ATTR_LINECARD_TYPE] = { .type = NLA_NUL_STRING },
  };
  
  static const struct genl_small_ops devlink_nl_ops[] = {
-@@ -7633,6 +7798,14 @@ static const struct genl_small_ops devlink_nl_ops[] = {
- 		.flags = GENL_ADMIN_PERM,
- 		.internal_flags = DEVLINK_NL_FLAG_NO_LOCK,
+@@ -7806,6 +7887,20 @@ static const struct genl_small_ops devlink_nl_ops[] = {
+ 		.internal_flags = DEVLINK_NL_FLAG_NEED_LINECARD,
+ 		/* can be retrieved by unprivileged users */
  	},
 +	{
-+		.cmd = DEVLINK_CMD_LINECARD_GET,
++		.cmd = DEVLINK_CMD_LINECARD_PROVISION,
 +		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
-+		.doit = devlink_nl_cmd_linecard_get_doit,
-+		.dumpit = devlink_nl_cmd_linecard_get_dumpit,
++		.doit = devlink_nl_cmd_linecard_provision_doit,
++		.flags = GENL_ADMIN_PERM,
 +		.internal_flags = DEVLINK_NL_FLAG_NEED_LINECARD,
-+		/* can be retrieved by unprivileged users */
++	},
++	{
++		.cmd = DEVLINK_CMD_LINECARD_UNPROVISION,
++		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
++		.doit = devlink_nl_cmd_linecard_unprovision_doit,
++		.flags = GENL_ADMIN_PERM,
++		.internal_flags = DEVLINK_NL_FLAG_NEED_LINECARD,
 +	},
  	{
  		.cmd = DEVLINK_CMD_SB_GET,
  		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
-@@ -7982,6 +8155,7 @@ struct devlink *devlink_alloc(const struct devlink_ops *ops, size_t priv_size)
- 	xa_init_flags(&devlink->snapshot_ids, XA_FLAGS_ALLOC);
- 	__devlink_net_set(devlink, &init_net);
- 	INIT_LIST_HEAD(&devlink->port_list);
-+	INIT_LIST_HEAD(&devlink->linecard_list);
- 	INIT_LIST_HEAD(&devlink->sb_list);
- 	INIT_LIST_HEAD_RCU(&devlink->dpipe_table_list);
- 	INIT_LIST_HEAD(&devlink->resource_list);
-@@ -8084,6 +8258,7 @@ void devlink_free(struct devlink *devlink)
- 	WARN_ON(!list_empty(&devlink->resource_list));
- 	WARN_ON(!list_empty(&devlink->dpipe_table_list));
- 	WARN_ON(!list_empty(&devlink->sb_list));
-+	WARN_ON(!list_empty(&devlink->linecard_list));
- 	WARN_ON(!list_empty(&devlink->port_list));
+@@ -8613,11 +8708,17 @@ static int __devlink_port_phys_port_name_get(struct devlink_port *devlink_port,
+  *	Create devlink linecard instance with provided linecard index.
+  *	Caller can use any indexing, even hw-related one.
+  */
+-struct devlink_linecard *devlink_linecard_create(struct devlink *devlink,
+-						 unsigned int linecard_index)
++struct devlink_linecard *
++devlink_linecard_create(struct devlink *devlink, unsigned int linecard_index,
++			const struct devlink_linecard_ops *ops, void *priv)
+ {
+ 	struct devlink_linecard *linecard;
  
- 	xa_destroy(&devlink->snapshot_ids);
-@@ -8428,6 +8603,56 @@ static int __devlink_port_phys_port_name_get(struct devlink_port *devlink_port,
- 	return 0;
++	if (WARN_ON(!ops || !ops->supported_types ||
++		    !ops->supported_types_count ||
++		    !ops->provision || !ops->unprovision))
++		return ERR_PTR(-EINVAL);
++
+ 	mutex_lock(&devlink->lock);
+ 	if (devlink_linecard_index_exists(devlink, linecard_index)) {
+ 		mutex_unlock(&devlink->lock);
+@@ -8630,6 +8731,9 @@ struct devlink_linecard *devlink_linecard_create(struct devlink *devlink,
+ 
+ 	linecard->devlink = devlink;
+ 	linecard->index = linecard_index;
++	linecard->ops = ops;
++	linecard->priv = priv;
++	linecard->state = DEVLINK_LINECARD_STATE_UNPROVISIONED;
+ 	list_add_tail(&linecard->list, &devlink->linecard_list);
+ 	mutex_unlock(&devlink->lock);
+ 	devlink_linecard_notify(linecard, DEVLINK_CMD_LINECARD_NEW);
+@@ -8653,6 +8757,39 @@ void devlink_linecard_destroy(struct devlink_linecard *linecard)
  }
+ EXPORT_SYMBOL_GPL(devlink_linecard_create);
  
 +/**
-+ *	devlink_linecard_register - Register devlink linecard
++ *	devlink_linecard_provision_set - Set provisioning on linecard
 + *
-+ *	@devlink: devlink
 + *	@devlink_linecard: devlink linecard
-+ *	@linecard_index: driver-specific numerical identifier of the linecard
-+ *
-+ *	Create devlink linecard instance with provided linecard index.
-+ *	Caller can use any indexing, even hw-related one.
++ *	@type_index: index of the linecard type (in array of types in ops)
 + */
-+struct devlink_linecard *devlink_linecard_create(struct devlink *devlink,
-+						 unsigned int linecard_index)
++void devlink_linecard_provision_set(struct devlink_linecard *linecard,
++				    u32 type_index)
 +{
-+	struct devlink_linecard *linecard;
-+
-+	mutex_lock(&devlink->lock);
-+	if (devlink_linecard_index_exists(devlink, linecard_index)) {
-+		mutex_unlock(&devlink->lock);
-+		return ERR_PTR(-EEXIST);
-+	}
-+
-+	linecard = kzalloc(sizeof(*linecard), GFP_KERNEL);
-+	if (!linecard)
-+		return ERR_PTR(-ENOMEM);
-+
-+	linecard->devlink = devlink;
-+	linecard->index = linecard_index;
-+	list_add_tail(&linecard->list, &devlink->linecard_list);
-+	mutex_unlock(&devlink->lock);
++	WARN_ON(type_index >= linecard->ops->supported_types_count);
++	mutex_lock(&linecard->devlink->lock);
++	linecard->state = DEVLINK_LINECARD_STATE_PROVISIONED;
++	linecard->provisioned_type = linecard->ops->supported_types[type_index];
++	mutex_unlock(&linecard->devlink->lock);
 +	devlink_linecard_notify(linecard, DEVLINK_CMD_LINECARD_NEW);
-+	return linecard;
 +}
-+EXPORT_SYMBOL_GPL(devlink_linecard_create);
++EXPORT_SYMBOL_GPL(devlink_linecard_provision_set);
 +
 +/**
-+ *	devlink_linecard_destroy - Destroy devlink linecard
++ *	devlink_linecard_provision_clear - Clear provisioning on linecard
 + *
 + *	@devlink_linecard: devlink linecard
 + */
-+void devlink_linecard_destroy(struct devlink_linecard *linecard)
++void devlink_linecard_provision_clear(struct devlink_linecard *linecard)
 +{
-+	struct devlink *devlink = linecard->devlink;
-+
-+	devlink_linecard_notify(linecard, DEVLINK_CMD_LINECARD_DEL);
-+	mutex_lock(&devlink->lock);
-+	list_del(&linecard->list);
-+	mutex_unlock(&devlink->lock);
++	mutex_lock(&linecard->devlink->lock);
++	linecard->state = DEVLINK_LINECARD_STATE_UNPROVISIONED;
++	linecard->provisioned_type = NULL;
++	mutex_unlock(&linecard->devlink->lock);
++	devlink_linecard_notify(linecard, DEVLINK_CMD_LINECARD_NEW);
 +}
-+EXPORT_SYMBOL_GPL(devlink_linecard_create);
++EXPORT_SYMBOL_GPL(devlink_linecard_provision_clear);
 +
  int devlink_sb_register(struct devlink *devlink, unsigned int sb_index,
  			u32 size, u16 ingress_pools_count,
