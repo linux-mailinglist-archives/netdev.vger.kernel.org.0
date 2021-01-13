@@ -2,65 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 71C552F408D
-	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 01:56:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B00E2F408B
+	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 01:56:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392023AbhAMAm5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S2393508AbhAMAm5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Tue, 12 Jan 2021 19:42:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50510 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50658 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2392255AbhAMANA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 19:13:00 -0500
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66D4DC061786
-        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 16:12:20 -0800 (PST)
-Received: by mail-pl1-x636.google.com with SMTP id v3so36116plz.13
-        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 16:12:20 -0800 (PST)
+        with ESMTP id S2392278AbhAMANl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 19:13:41 -0500
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DDC04C06179F
+        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 16:13:00 -0800 (PST)
+Received: by mail-lf1-x131.google.com with SMTP id o17so137429lfg.4
+        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 16:13:00 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=3IGkoTRZrnyvZ6jLkwzARD6R+4JtvTtBZjTYPsPzMhg=;
-        b=ic+NBTt7tbBKct5myOxtKhtbhrnYnEpG4HK+1cN8B3IFfYR13kl4Az6h6AkQqZ9J5L
-         Gl37jtYAlUnqAgWz8zrXnTT0Up5j43XdZ5ypScrENwDEylodmYKrHIB3P1dhXpW/g+WY
-         AH3l3F/N0hUA08rS3rymdSnCEa3OiZK9w2FYNR6G5odZ2cfK0qFUurH5zcTfY2gD1Eik
-         kooO5wtapMsszNWJBMRVGIVgMXj4iny5njdtGnEv9rJeBn0zVoqhDiTZQebaNN/q9+d1
-         na6OnCeIVB7lZdWlPzffQL3oncs5HJYhGwqwZWx2s83V9JGmiTBNiSDHTe+CMTljk1nV
-         4JWg==
+        bh=tab6Enz612n0UEaGXXTasn8EcadOeEalCik4C7Y4JR4=;
+        b=Wnd0A1DqYau6lQS2BNRZf68TjeUJv51eJTXSZtLeP9/9inpCfiAd0yH/AFgMos0FWQ
+         ViWgFf6WegefdV0Zfgk70hO40ZT8D2uobc3AVSQYCKVfC0DT3NbdR+28qelgDOixdQqP
+         rNVsMCoY7n2oo+qzo157lRx0hwQodLiAQiliwP/5VMdBalQSy2JaW34heNpCGBDSWTmc
+         8AzuPJQFsMaf7k51HBKWKl6GU803Xp2Oo7Q+t6lfRaJTkdblF14XqGGn17UzVUQFFxV7
+         nlQSYrr5C+e+KN0Dy+AFgG0/Qm0W7e0puT3WBsbUG0xBQ5R3IVAE1ll3GMNkKYb3Ya6n
+         Njpw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=3IGkoTRZrnyvZ6jLkwzARD6R+4JtvTtBZjTYPsPzMhg=;
-        b=ZxhA5ccaA+tIUQrAhDQe1YTjrUQYgp4yswXs8buUv+x0QdYP7CUhp0s53knfuPgLUy
-         3sZPnddbu6OuysOD0HCZFfnjtXCwCy6xTipgTIgJJ8LGHbHdeBYInCWAmps4q58crEM2
-         ZxknC26G1AN74MzYi58q6RF9kVBEg4NuREeABUvuoVOJ1pWna79071gWtt3lPd3z1puJ
-         PTEA9WKnB1K4Kw0w+xGpfvYTWfpJGpWxUVaQHi95GDFhw9fURhk4T/j4Ln795Sh5aCWG
-         BS3Y0d40Vq4bM6HV8zo08P/UEvMpa+FP6Q/8C2Xw+ylnOrjauyjPEoM012EGZBWzpZ3E
-         Oecg==
-X-Gm-Message-State: AOAM530oAL5sJPe89XEMnV+vKTcJym9K/80YXjHACa9jljbhGzCulMes
-        Q/NvWG1n4X8ol6BOBJOVyvsxVyCXJGlZTC1uRz28Zw==
-X-Google-Smtp-Source: ABdhPJx48U870v7scKUgnp4MkMOlnmlE2wBiZbZNAzoEdtoIYSJ2i12SKKFy+rtc8neQvWvhRLgNmtEGHlkkkXItydM=
-X-Received: by 2002:a17:902:7242:b029:db:d1ae:46bb with SMTP id
- c2-20020a1709027242b02900dbd1ae46bbmr1857779pll.77.1610496739477; Tue, 12 Jan
- 2021 16:12:19 -0800 (PST)
+        bh=tab6Enz612n0UEaGXXTasn8EcadOeEalCik4C7Y4JR4=;
+        b=BXjx6NQ7N6WoKG8Xupzcybh/t5iXUDeuQb1wvRMI62rNCji+yqHYp1Fd152G8WFWxq
+         Bpm7KehudZZjikFTLf2GoozA7VPlCYvAq+BVK0jNY7d7wkJdr74SPnPocVpAldZb3rCm
+         cM+t2P1pC5qE65Uyov6cpTNZALS5UyHg6zwqfjkJOk84t6+aSv8Rb1qz2pKUCdG2yu1V
+         6eZKd8ddSGDhA0jvdEk5GfVSa0PzzkVFlIRFUbLRMSydfT/9QVsVRAGBTFwC0hswXLTY
+         ppJlbNGnHXTnLntM+8EEdiARVKySGAiFZGbEWG32tQpUJ0kq4bTUw4PEGpHfj2z7/WAW
+         cWSw==
+X-Gm-Message-State: AOAM530ElM8bKEZtFYHNPT0qY2uZJfxfifkcllpDMPGCQKUK08beP5wH
+        b1Ag3f/Xm9sSGtXnUJdHd+B/kh5QbNm38yan5Y/Jkg==
+X-Google-Smtp-Source: ABdhPJyeJjq8cVl+U5HOK9BQpy06Z7bvDsN5eTP6PqT3rUHPym1Je7pDMN8fvYZ41T9slvKbqPOuhhUZ9oJRpzanO6Q=
+X-Received: by 2002:ac2:4294:: with SMTP id m20mr565365lfh.347.1610496779028;
+ Tue, 12 Jan 2021 16:12:59 -0800 (PST)
 MIME-Version: 1.0
 References: <20210112214105.1440932-1-shakeelb@google.com> <20210112233108.GD99586@carbon.dhcp.thefacebook.com>
  <CAOFY-A3=mCvfvMYBJvDL1LfjgYgc3kzebRNgeg0F+e=E1hMPXA@mail.gmail.com> <20210112234822.GA134064@carbon.dhcp.thefacebook.com>
 In-Reply-To: <20210112234822.GA134064@carbon.dhcp.thefacebook.com>
-From:   Arjun Roy <arjunroy@google.com>
-Date:   Tue, 12 Jan 2021 16:12:08 -0800
-Message-ID: <CAOFY-A2YbE3_GGq-QpVOHTmd=35Lt-rxi8gpXBcNVKvUzrzSNg@mail.gmail.com>
+From:   Shakeel Butt <shakeelb@google.com>
+Date:   Tue, 12 Jan 2021 16:12:47 -0800
+Message-ID: <CALvZod7Te77n1EprntM_+8EBai3o+X0-f=5QZ9Q=SkJU9x1cSQ@mail.gmail.com>
 Subject: Re: [PATCH] mm: net: memcg accounting for TCP rx zerocopy
 To:     Roman Gushchin <guro@fb.com>
-Cc:     Shakeel Butt <shakeelb@google.com>,
+Cc:     Arjun Roy <arjunroy@google.com>,
         Johannes Weiner <hannes@cmpxchg.org>,
         Michal Hocko <mhocko@kernel.org>,
         Eric Dumazet <edumazet@google.com>,
         Andrew Morton <akpm@linux-foundation.org>,
         "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-mm@kvack.org,
-        cgroups@vger.kernel.org, netdev <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux MM <linux-mm@kvack.org>,
+        Cgroups <cgroups@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
@@ -265,54 +266,30 @@ On Tue, Jan 12, 2021 at 3:48 PM Roman Gushchin <guro@fb.com> wrote:
 > Does it mean that a page can be accounted twice (even temporarily)?
 >
 
-This was an actual consideration for this patchset that we went back
-and forth on a little bit.
-Short answer, for this patch in its current form: yes. We're calling
-mem_cgroup_charge_sock_pages() immediately prior to vm_insert_pages();
-and the skb isn't cleaned up until afterwards. Thus we have a period
-of double charging.
-
-The pseudocode for the approach in this patch is:
-
-while skb = next skb in queue is not null:
-    charge_skb_pages(skb.pages) // sets page.memcg for each page
-    // at this point pages are double counted
-    vm_insert_pages(skb.pages)
-    free(skb) // unrefs the pages, no longer double counted
-
-An alternative version of this patch went the other way: have a short
-period of undercharging.
-
-while skb = next skb in queue is not null:
-    for page in skb.pages set page.memcg
-    vm_insert_pages(skb.pages)
-    free(skb) // unrefs the pages. pages are now undercounted
-charge_skb_pages(nr_pages_mapped, FORCE_CHARGE) // count is now correct again
-ret
-
-The latter would have the benefit of having less charge operations
-(less pricey atomics etc.) but would require the charge to be forced
-to succeed since we already made it available to the user. But if one
-assumes that in the common case, that sock->memcg == current->memcg,
-then perhaps a forced charge is ok in that case.
-
+Actually yes depending on the environment. For applications running in
+cgroup v2 where the skmem is charged against the memcg's memory
+counter and if sk->sk_memcg is equal to current's memcg there is a
+small window where the memory is double charged. However that is not
+the case for cgroup v1 or if sk->sk_memcg is different from current's
+memcg. IMO this small window of double charging is fine as it is
+somewhat similar to recv*() syscalls where the application has to
+pre-allocate memory where the kernel copies the network data which is
+charged to sk->sk_memcg.
 
 > Historically we have a corresponding vmstat counter to each charged page.
 > It helps with finding accounting/stastistics issues: we can check that
 > memory.current ~= anon + file + sock + slab + percpu + stack.
 > It would be nice to preserve such ability.
+
+I think it can be either sock memcg stat or a new one. I will think of
+something.
+
 >
-
-Perhaps one option would be to have it count as a file page, or have a
-new category.
-
 > >
 > > To double check, what do you mean by shrinker?
 >
 > I mean do we plan to implement a mechanism to reclaim memory from these drivers
 > on-demand, if a cgroup is experiencing high memory pressure.
 
-Not that I'm aware of.
-
-Thanks,
--Arjun
+These pages are not really reclaimable as these are not really LRU or
+page cache pages. These will get freed when application unmaps them.
