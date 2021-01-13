@@ -2,163 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A00EE2F4537
-	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 08:32:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0353D2F45A0
+	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 09:00:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725787AbhAMHaF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jan 2021 02:30:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59646 "EHLO
+        id S1726254AbhAMH6B (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jan 2021 02:58:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725372AbhAMHaE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 02:30:04 -0500
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3E6DC061575
-        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 23:29:24 -0800 (PST)
-Received: by mail-pj1-x102a.google.com with SMTP id m5so611330pjv.5
-        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 23:29:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=cQJ6LhoRoBeAUuhCdV6OHzUgTYDtqGqBBm2yZZjVgY8=;
-        b=AjUJQRKWl2d71+JzI54zxAzKVmLoNdusKbua+V7qTUE0yUVjm+r6JjXWA4bavIjjie
-         9nWuAXq1pC9i4hPC3zeou0F/AyZOmmpXjt4dsAqSPzGl3ckYPvc9gjO3RP2wgRnbz/83
-         uOb58frDLyNTLDJCyEtgdMrZzmAbmTCFrehrFdqxSOPboGPSvK7zaVAS0lkBIhz9QGKc
-         62psP6EFDMA6QNsRn0dF5Hv4vM2DzFHHaJqmAGIapcOfFHyRdn0FbRFXW8ou4NPCPmny
-         nmkRQOU+kQFu8YWVWaTyt/w2sKPt7Tf/Ss5IsZMUOZA5UcbLmro/WcmpLrD+iAZBwfZn
-         K0Xg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=cQJ6LhoRoBeAUuhCdV6OHzUgTYDtqGqBBm2yZZjVgY8=;
-        b=JJD0aY/bksSlxnndeIAwQJ2Nf6mdhmnVRR6BpS8sCF/4o8uTajduxLkbIp1mfXhCsR
-         x78n9Pg5bYxbIi2GLRGJ7o+7WtOpQGFv/mHa2bbxXiz/F2QrgxAgH+RBGxYmC0eZpRth
-         8+VpgP4V3v5mwiVHxvDuy6i8lCGfmQ/WUIzTJ3bW5t4VgCnq8/CohFFNOpZ6zE+KO/wr
-         6AYk+wyWoYb2ZH01X6/hPiNUxZYxDVsEpkHxMH5SEOKQIcffBdG4Z0jy+2RrIIO5udeD
-         7GykGfVOuOqpWpLNsI7gyCIRX8qsc9NIGVTFNan9rZm10tjJ53S6DSOP/unwHXMIlMoo
-         EGCg==
-X-Gm-Message-State: AOAM530wCbYebrrLQZb4EQ4+9Qc/PoVIiyGcd8zEuJFBxe4HB6R5VMWi
-        TcnE6HI7O2qeHoMNShaDmNzP3ZOo/T3wFw4meH5zYGJIssY=
-X-Google-Smtp-Source: ABdhPJx5OQsTysL1b3pCns7kHJNfAARYww94taJPuHbil6E2V0F1PJwEdWWfWXpxN5m90e7sCmhffpiB5rpgqxhnYeg=
-X-Received: by 2002:a17:902:7c04:b029:dc:99f2:eea4 with SMTP id
- x4-20020a1709027c04b02900dc99f2eea4mr1027250pll.43.1610522964249; Tue, 12 Jan
- 2021 23:29:24 -0800 (PST)
+        with ESMTP id S1725747AbhAMH6A (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 02:58:00 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52380C061786
+        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 23:57:20 -0800 (PST)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1kzb1f-0001Vv-2N; Wed, 13 Jan 2021 08:57:07 +0100
+Received: from [IPv6:2a03:f580:87bc:d400:fee8:1d97:dec2:c25] (unknown [IPv6:2a03:f580:87bc:d400:fee8:1d97:dec2:c25])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256
+         client-signature RSA-PSS (4096 bits) client-digest SHA256)
+        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
+        (Authenticated sender: mkl@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 205685C2809;
+        Wed, 13 Jan 2021 07:57:01 +0000 (UTC)
+Subject: Re: [PATCH] can: mcp251xfd: fix wrong check in
+ mcp251xfd_handle_rxif_one
+To:     Qinglang Miao <miaoqinglang@huawei.com>,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Thomas Kopp <thomas.kopp@microchip.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20210113073100.79552-1-miaoqinglang@huawei.com>
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
+ 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
+Message-ID: <22d4f83c-81c4-f51a-e03a-414b2f4ffe58@pengutronix.de>
+Date:   Wed, 13 Jan 2021 08:56:57 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-References: <1609757998.875103-1-xuanzhuo@linux.alibaba.com>
- <741209d2a42d46ebdb8249caaef7531f5ad8fa76.camel@kernel.org>
- <CAJ8uoz0xkGUd6V9-+x6pfMoqz0UjhkSBWz-dBChi=eNGM2cS4w@mail.gmail.com> <06917964a6abf26ddad21a22b29d760fc89cfcf7.camel@kernel.org>
-In-Reply-To: <06917964a6abf26ddad21a22b29d760fc89cfcf7.camel@kernel.org>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Wed, 13 Jan 2021 08:29:13 +0100
-Message-ID: <CAJ8uoz1yFtqO1nx=768Fv2tcWSko9hFALpcPKE74EGLuxbY1Yg@mail.gmail.com>
-Subject: Re: mlx5 error when the skb linear space is empty
-To:     Saeed Mahameed <saeed@kernel.org>
-Cc:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Network Development <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20210113073100.79552-1-miaoqinglang@huawei.com>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="DrJKX9FNQh5PWe03OozL6VS1koqDvnBsf"
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 12, 2021 at 9:35 PM Saeed Mahameed <saeed@kernel.org> wrote:
->
-> On Mon, 2021-01-11 at 09:02 +0100, Magnus Karlsson wrote:
-> > On Tue, Jan 5, 2021 at 9:51 PM Saeed Mahameed <saeed@kernel.org>
-> > wrote:
-> > > On Mon, 2021-01-04 at 18:59 +0800, Xuan Zhuo wrote:
-> > > > hi
-> > > >
-> > > > In the process of developing xdp socket, we tried to directly use
-> > > > page to
-> > > > construct skb directly, to avoid data copy. And the MAC
-> > > > information
-> > > > is also in
-> > > > the page, which caused the linear space of skb to be empty. In
-> > > > this
-> > > > case, I
-> > > > encountered a problem :
-> > > >
-> > > > mlx5_core 0000:3b:00.1 eth1: Error cqe on cqn 0x817, ci 0x8, qn
-> > > > 0x1dbb, opcode 0xd, syndrome 0x1, vendor syndrome 0x68
-> > > > 00000000: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-> > > > 00000010: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-> > > > 00000020: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-> > > > 00000030: 00 00 00 00 60 10 68 01 0a 00 1d bb 00 0f 9f d2
-> > > > WQE DUMP: WQ size 1024 WQ cur size 0, WQE index 0xf, len: 64
-> > > > 00000000: 00 00 0f 0a 00 1d bb 03 00 00 00 08 00 00 00 00
-> > > > 00000010: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-> > > > 00000020: 00 00 00 2b 00 08 00 00 00 00 00 05 9e e3 08 00
-> > > > 00000030: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-> > > > mlx5_core 0000:3b:00.1 eth1: ERR CQE on SQ: 0x1dbb
-> > > >
-> > > >
-> > > > And when I try to copy only the mac address into the linear space
-> > > > of
-> > > > skb, the
-> > > > other parts are still placed in the page. When constructing skb
-> > > > in
-> > > > this way, I
-> > > > found that although the data can be sent successfully, the
-> > > > sending
-> > > > performance
-> > > > is relatively poor!!
-> > > >
-> > >
-> > > Hi,
-> > >
-> > > This is an expected behavior of ConnectX4-LX, ConnectX4-LX requires
-> > > the
-> > > driver to copy at least the L2 headers into the linear part, in
-> > > some
-> > > DCB/DSCP configuration it will require L3 headers.
-> >
-> > Do I understand this correctly if I say whatever is calling
-> > ndo_start_xmit has to make sure at least the L2 headers is in the
-> > linear part of the skb? If Xuan does not do this, the ConnectX4
-> > driver
-> > crashes, but if he does, it works. So from an ndo_start_xmit
-> > interface
-> > perspective, what is the requirement of an skb that is passed to it?
-> > Do all users of ndo_start_xmit make sure the L2 header is in the
-> > linear part, or are there users that do not make sure this is the
-> > case? Judging from the ConnectX5 code it seems that the latter is
-> > possible (since it has code to deal with this), but from the
-> > ConnectX4, it seems like the former is true (since it does not copy
-> > the L2 headers into the linear part as far as I can see). Sorry for
-> > my
-> > confusion, but I think it is important to get some clarity here as it
-> > will decide if Xuan's patch is a good idea or not in its current
-> > form.
-> >
->
-> To clarify:
-> Connectx4Lx, doesn't really require data to be in the linear part, I
-> was refereing to a HW limitation that requires the driver to copy the
-> L2/L3 headers (depending on current HW config) to a special area in the
-> tx descriptor, currently the driver copy the L2/L3 headers only from
-> the linear part of the SKB, but this can be changed via calling
-> pskb_may_pull in mlx5 ConnectX4LX tx path to make sure the linear part
-> has the needed data ..
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--DrJKX9FNQh5PWe03OozL6VS1koqDvnBsf
+Content-Type: multipart/mixed; boundary="GMsxDGbKVLBwcLWNgd609uZGiOCcrMgWh";
+ protected-headers="v1"
+From: Marc Kleine-Budde <mkl@pengutronix.de>
+To: Qinglang Miao <miaoqinglang@huawei.com>,
+ Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+ Thomas Kopp <thomas.kopp@microchip.com>,
+ Wolfgang Grandegger <wg@grandegger.com>,
+ "David S. Miller" <davem@davemloft.net>, Jakub Kicinski <kuba@kernel.org>
+Cc: linux-can@vger.kernel.org, netdev@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Message-ID: <22d4f83c-81c4-f51a-e03a-414b2f4ffe58@pengutronix.de>
+Subject: Re: [PATCH] can: mcp251xfd: fix wrong check in
+ mcp251xfd_handle_rxif_one
+References: <20210113073100.79552-1-miaoqinglang@huawei.com>
+In-Reply-To: <20210113073100.79552-1-miaoqinglang@huawei.com>
 
-That made it clear. Thank you.
+--GMsxDGbKVLBwcLWNgd609uZGiOCcrMgWh
+Content-Type: text/plain; charset=utf-8
+Content-Language: de-DE
+Content-Transfer-Encoding: quoted-printable
 
-> Something like:
->
-> diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
-> b/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
-> index 61ed671fe741..5939fd8eed2c 100644
-> --- a/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
-> +++ b/drivers/net/ethernet/mellanox/mlx5/core/en_tx.c
-> @@ -159,6 +159,7 @@ static inline int mlx5e_skb_l2_header_offset(struct
-> sk_buff *skb)
->  {
->  #define MLX5E_MIN_INLINE (ETH_HLEN + VLAN_HLEN)
->
-> +       /* need to check ret val */
-> +       pskb_may_pull(skb, MLX5E_MIN_INLINE);
->         return max(skb_network_offset(skb), MLX5E_MIN_INLINE);
->  }
->
->
+On 1/13/21 8:31 AM, Qinglang Miao wrote:
+> If alloc_canfd_skb returns NULL, 'cfg' is an uninitialized
+> variable, so we should check 'skb' rather than 'cfd' after
+> calling alloc_canfd_skb(priv->ndev, &cfd).
+>=20
+> Fixes: 55e5b97f003e ("can: mcp25xxfd: add driver for Microchip MCP25xxF=
+D SPI CAN")
+> Signed-off-by: Qinglang Miao <miaoqinglang@huawei.com>
+
+applied to linux-can/testing
+
+Tnx,
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+
+--GMsxDGbKVLBwcLWNgd609uZGiOCcrMgWh--
+
+--DrJKX9FNQh5PWe03OozL6VS1koqDvnBsf
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAl/+p8kACgkQqclaivrt
+76mU8Qf/Zw47ewdSX350c3IPxXt2mJlTSYZlnY4qE44HmYA+qF8M5dFzD0GXIFKC
+MeMACrcqynWkJOtWv4fSyNC54xrOk1WIymGvJMTlASEoeiZcQZv0UyTWHfWSWRYR
+T5s1K2NKveqBAMtoRW3h/a+LZKbjoRcM+0eRcNj32z7BIr9ZNRvmYU2+LkrAhZwW
+GMkUly2ZpawmMzqI8yzhZtXeroG2+nonp0Q4mJp6Ed+rYIqTlqrx6jXu0tMqNQsk
+keb0bJuczPb5sk2krTyr3d1CpHu1E57ydzC8Zi7G5RQFqVbc9AuaKpz2xya5fasc
+SQFrbTJAFYIAeAj26RN69jladIwBbg==
+=eIji
+-----END PGP SIGNATURE-----
+
+--DrJKX9FNQh5PWe03OozL6VS1koqDvnBsf--
