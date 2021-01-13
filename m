@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B2702F42BB
+	by mail.lfdr.de (Postfix) with ESMTP id E34B92F42BC
 	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 05:03:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726350AbhAMEBj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jan 2021 23:01:39 -0500
-Received: from mail.kernel.org ([198.145.29.99]:48560 "EHLO mail.kernel.org"
+        id S1726385AbhAMEBk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jan 2021 23:01:40 -0500
+Received: from mail.kernel.org ([198.145.29.99]:48570 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726151AbhAMEBj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726152AbhAMEBj (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 12 Jan 2021 23:01:39 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 643D723136;
-        Wed, 13 Jan 2021 04:00:57 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 2108223139;
+        Wed, 13 Jan 2021 04:00:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610510457;
-        bh=A7fICvUmlqY05fcclR5wKwuk/ao5eGVQ2x0uhWW8TTY=;
+        s=k20201202; t=1610510458;
+        bh=XSNvpuXX/43Px+JSR9m1SXDrGyusm6n3pqBeVNn5AWo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uWjch6M8YBA3Pu+b/ImYrzsGnVKV+EdTQ1WGrS/E5+FBmg3dyiqEdzYIyaAuBD1ky
-         gNs1WnSw0wy/ldz4nzGzIRxH2qzXSS2MLUyeoerHqlZKukEh9ddIUiHCkKlysuz9Kc
-         nJGyvu8JiypkG0lq5o+KqhkTWdtGkO0xUwZPVpcX3f6cmx6R9+gN0c8cDxmwXW+EUA
-         LqeOLiSdprB47/lklCyKe3mkFORgO2OExSMMDWfgrkqhQb6GM1o33irO6KfLxKfe2L
-         0ssmw52lX+Lc0EKv1CK1pteo62cmDDFsVVrJIY3Ua9Ddrf87ftfz+WIyTqmVKLIXAd
-         o3gx6VpFbLq6w==
+        b=OiSCO6G+Kih2uJH/nUxkhXsronjEyXhs9U43rcf9pDPOER1Gx8Z5x5rXJgTq5JoyG
+         FtbfnxKxcwgSN74Rz+wZ04jsi+xMpaPBo4wsNTub85qb3fR7AkSc0oso64IDzvZ3RE
+         sRlJLPl/dF1dfiuZ429vHtGTwong5LTbwgkb3yP7bS93iU9hxTWSgg85n3k2j+Ha1w
+         07NmGkXSuKqv5rX+mCx3xs1Y+HiwIThb/vU6RbAJpzVp1qNuSqxTSA9LhV078TXHqn
+         xT2To779WFXyyD2EiRHmsWJ759QnoRSxhExD58g8gw2zQLNSPpUr2ZUYjc8C4yOyrH
+         ya8/Se357RBLQ==
 From:   David Ahern <dsahern@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, schoen@loyalty.org,
         David Ahern <dsahern@gmail.com>
-Subject: [PATCH net-next v3 03/13] selftests: Move address validation in nettest
-Date:   Tue, 12 Jan 2021 21:00:30 -0700
-Message-Id: <20210113040040.50813-4-dsahern@kernel.org>
+Subject: [PATCH net-next v3 04/13] selftests: Add options to set network namespace to nettest
+Date:   Tue, 12 Jan 2021 21:00:31 -0700
+Message-Id: <20210113040040.50813-5-dsahern@kernel.org>
 X-Mailer: git-send-email 2.24.3 (Apple Git-128)
 In-Reply-To: <20210113040040.50813-1-dsahern@kernel.org>
 References: <20210113040040.50813-1-dsahern@kernel.org>
@@ -41,176 +41,145 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: David Ahern <dsahern@gmail.com>
 
-IPv6 addresses can have a device name to declare a scope (e.g.,
-fe80::5054:ff:fe12:3456%eth0). The next patch adds support to
-switch network namespace before running client or server code
-(or both), so move the address validation to the server and
-client functions.
+Add options to specify server and client network namespace to
+use before running respective functions.
 
-IPv4 multicast groups do not have the device scope in the address
-specification, so they can be validated inline with option parsing.
-
+Signed-off-by: Seth David Schoen <schoen@loyalty.org>
 Signed-off-by: David Ahern <dsahern@gmail.com>
 ---
- tools/testing/selftests/net/nettest.c | 60 +++++++++++++++++++--------
- 1 file changed, 43 insertions(+), 17 deletions(-)
+ tools/testing/selftests/net/nettest.c | 56 ++++++++++++++++++++++++++-
+ 1 file changed, 55 insertions(+), 1 deletion(-)
 
 diff --git a/tools/testing/selftests/net/nettest.c b/tools/testing/selftests/net/nettest.c
-index 337ae54e252d..3b083fad3577 100644
+index 3b083fad3577..cc9635b6461f 100644
 --- a/tools/testing/selftests/net/nettest.c
 +++ b/tools/testing/selftests/net/nettest.c
-@@ -43,12 +43,14 @@
+@@ -9,6 +9,7 @@
+ #include <sys/types.h>
+ #include <sys/ioctl.h>
+ #include <sys/socket.h>
++#include <sys/wait.h>
+ #include <linux/tcp.h>
+ #include <arpa/inet.h>
+ #include <net/if.h>
+@@ -17,6 +18,7 @@
+ #include <fcntl.h>
+ #include <libgen.h>
+ #include <limits.h>
++#include <sched.h>
+ #include <stdarg.h>
+ #include <stdio.h>
+ #include <stdlib.h>
+@@ -34,6 +36,8 @@
  
- struct sock_args {
- 	/* local address */
-+	const char *local_addr_str;
- 	union {
- 		struct in_addr  in;
- 		struct in6_addr in6;
- 	} local_addr;
+ #define DEFAULT_PORT 12345
  
- 	/* remote address */
-+	const char *remote_addr_str;
- 	union {
- 		struct in_addr  in;
- 		struct in6_addr in6;
-@@ -77,6 +79,7 @@ struct sock_args {
++#define NS_PREFIX "/run/netns/"
++
+ #ifndef MAX
+ #define MAX(a, b)  ((a) > (b) ? (a) : (b))
+ #endif
+@@ -77,6 +81,9 @@ struct sock_args {
+ 	const char *dev;
+ 	int ifindex;
  
++	const char *clientns;
++	const char *serverns;
++
  	const char *password;
  	/* prefix for MD5 password */
-+	const char *md5_prefix_str;
- 	union {
- 		struct sockaddr_in v4;
- 		struct sockaddr_in6 v6;
-@@ -88,12 +91,14 @@ struct sock_args {
- 	int expected_ifindex;
- 
- 	/* local address */
-+	const char *expected_laddr_str;
- 	union {
- 		struct in_addr  in;
- 		struct in6_addr in6;
- 	} expected_laddr;
- 
- 	/* remote address */
-+	const char *expected_raddr_str;
- 	union {
- 		struct in_addr  in;
- 		struct in6_addr in6;
-@@ -753,6 +758,34 @@ static int convert_addr(struct sock_args *args, const char *_str,
- 	return rc;
+ 	const char *md5_prefix_str;
+@@ -213,6 +220,27 @@ static void log_address(const char *desc, struct sockaddr *sa)
+ 	fflush(stdout);
  }
  
-+static int validate_addresses(struct sock_args *args)
++static int switch_ns(const char *ns)
 +{
-+	if (args->local_addr_str &&
-+	    convert_addr(args, args->local_addr_str, ADDR_TYPE_LOCAL) < 0)
-+		return 1;
++	char path[PATH_MAX];
++	int fd, ret;
 +
-+	if (args->remote_addr_str &&
-+	    convert_addr(args, args->remote_addr_str, ADDR_TYPE_REMOTE) < 0)
-+		return 1;
++	if (geteuid())
++		log_error("warning: likely need root to set netns %s!\n", ns);
 +
-+	if (args->md5_prefix_str &&
-+	    convert_addr(args, args->md5_prefix_str,
-+			 ADDR_TYPE_MD5_PREFIX) < 0)
++	snprintf(path, sizeof(path), "%s%s", NS_PREFIX, ns);
++	fd = open(path, 0);
++	if (fd < 0) {
++		log_err_errno("Failed to open netns path; can not switch netns");
 +		return 1;
++	}
 +
-+	if (args->expected_laddr_str &&
-+	    convert_addr(args, args->expected_laddr_str,
-+			 ADDR_TYPE_EXPECTED_LOCAL))
-+		return 1;
++	ret = setns(fd, CLONE_NEWNET);
++	close(fd);
 +
-+	if (args->expected_raddr_str &&
-+	    convert_addr(args, args->expected_raddr_str,
-+			 ADDR_TYPE_EXPECTED_REMOTE))
-+		return 1;
-+
-+	return 0;
++	return ret;
 +}
 +
- static int get_index_from_cmsg(struct msghdr *m)
+ static int tcp_md5sig(int sd, void *addr, socklen_t alen, struct sock_args *args)
  {
- 	struct cmsghdr *cm;
-@@ -1344,7 +1377,7 @@ static int do_server(struct sock_args *args)
+ 	int keylen = strlen(args->password);
+@@ -1377,6 +1405,15 @@ static int do_server(struct sock_args *args)
  	fd_set rfds;
  	int rc;
  
--	if (resolve_devices(args))
-+	if (resolve_devices(args) || validate_addresses(args))
++	if (args->serverns) {
++		if (switch_ns(args->serverns)) {
++			log_error("Could not set server netns to %s\n",
++				  args->serverns);
++			return 1;
++		}
++		log_msg("Switched server netns\n");
++	}
++
+ 	if (resolve_devices(args) || validate_addresses(args))
  		return 1;
  
- 	if (prog_timeout)
-@@ -1532,7 +1565,7 @@ static int do_client(struct sock_args *args)
- 		return 1;
- 	}
- 
--	if (resolve_devices(args))
-+	if (resolve_devices(args) || validate_addresses(args))
- 		return 1;
- 
- 	if ((args->use_setsockopt || args->use_cmsg) && !args->ifindex) {
-@@ -1680,13 +1713,11 @@ int main(int argc, char *argv[])
- 			break;
- 		case 'l':
- 			args.has_local_ip = 1;
--			if (convert_addr(&args, optarg, ADDR_TYPE_LOCAL) < 0)
--				return 1;
-+			args.local_addr_str = optarg;
- 			break;
- 		case 'r':
- 			args.has_remote_ip = 1;
--			if (convert_addr(&args, optarg, ADDR_TYPE_REMOTE) < 0)
--				return 1;
-+			args.remote_addr_str = optarg;
- 			break;
- 		case 'p':
- 			if (str_to_uint(optarg, 1, 65535, &tmp) != 0) {
-@@ -1733,8 +1764,7 @@ int main(int argc, char *argv[])
- 			args.password = optarg;
- 			break;
- 		case 'm':
--			if (convert_addr(&args, optarg, ADDR_TYPE_MD5_PREFIX) < 0)
--				return 1;
-+			args.md5_prefix_str = optarg;
- 			break;
- 		case 'S':
- 			args.use_setsockopt = 1;
-@@ -1762,16 +1792,11 @@ int main(int argc, char *argv[])
- 			break;
- 		case '0':
- 			args.has_expected_laddr = 1;
--			if (convert_addr(&args, optarg,
--					 ADDR_TYPE_EXPECTED_LOCAL))
--				return 1;
-+			args.expected_laddr_str = optarg;
- 			break;
- 		case '1':
- 			args.has_expected_raddr = 1;
--			if (convert_addr(&args, optarg,
--					 ADDR_TYPE_EXPECTED_REMOTE))
--				return 1;
--
-+			args.expected_raddr_str = optarg;
- 			break;
- 		case '2':
- 			args.expected_dev = optarg;
-@@ -1786,12 +1811,13 @@ int main(int argc, char *argv[])
- 	}
- 
- 	if (args.password &&
--	    ((!args.has_remote_ip && !args.prefix_len) || args.type != SOCK_STREAM)) {
-+	    ((!args.has_remote_ip && !args.md5_prefix_str) ||
-+	      args.type != SOCK_STREAM)) {
- 		log_error("MD5 passwords apply to TCP only and require a remote ip for the password\n");
+@@ -1565,6 +1602,15 @@ static int do_client(struct sock_args *args)
  		return 1;
  	}
  
--	if (args.prefix_len && !args.password) {
-+	if (args.md5_prefix_str && !args.password) {
- 		log_error("Prefix range for MD5 protection specified without a password\n");
++	if (args->clientns) {
++		if (switch_ns(args->clientns)) {
++			log_error("Could not set client netns to %s\n",
++				  args->clientns);
++			return 1;
++		}
++		log_msg("Switched client netns\n");
++	}
++
+ 	if (resolve_devices(args) || validate_addresses(args))
  		return 1;
- 	}
+ 
+@@ -1642,7 +1688,7 @@ static char *random_msg(int len)
+ 	return m;
+ }
+ 
+-#define GETOPT_STR  "sr:l:p:t:g:P:DRn:M:m:d:SCi6L:0:1:2:Fbq"
++#define GETOPT_STR  "sr:l:p:t:g:P:DRn:M:m:d:N:O:SCi6L:0:1:2:Fbq"
+ 
+ static void print_usage(char *prog)
+ {
+@@ -1656,6 +1702,8 @@ static void print_usage(char *prog)
+ 	"    -t            timeout seconds (default: none)\n"
+ 	"\n"
+ 	"Optional:\n"
++	"    -N ns         set client to network namespace ns (requires root)\n"
++	"    -O ns         set server to network namespace ns (requires root)\n"
+ 	"    -F            Restart server loop\n"
+ 	"    -6            IPv6 (default is IPv4)\n"
+ 	"    -P proto      protocol for socket: icmp, ospf (default: none)\n"
+@@ -1757,6 +1805,12 @@ int main(int argc, char *argv[])
+ 		case 'n':
+ 			iter = atoi(optarg);
+ 			break;
++		case 'N':
++			args.clientns = optarg;
++			break;
++		case 'O':
++			args.serverns = optarg;
++			break;
+ 		case 'L':
+ 			msg = random_msg(atoi(optarg));
+ 			break;
 -- 
 2.24.3 (Apple Git-128)
 
