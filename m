@@ -2,135 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 010702F53B6
+	by mail.lfdr.de (Postfix) with ESMTP id D97672F53B8
 	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 20:56:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728792AbhAMTzu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jan 2021 14:55:50 -0500
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:53204 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726599AbhAMTzt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 14:55:49 -0500
-Received: from pps.filterd (m0098396.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 10DJYgdw162743;
-        Wed, 13 Jan 2021 14:55:08 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : references : mime-version : content-type :
- in-reply-to; s=pp1; bh=u4yqQOLfhMeSSLYiZMaRyx1VpaEwLgYlqJlbRgjjZZQ=;
- b=eotytf2b18zo0CfHOK5bnbgO/eTNEE7LOvq1S012pCe+/Uhpl0buIEEZA7hHI9ADS7j0
- HU811FlbNnQL44R6Ut3IQ20JWmBGYcZisgIcCt+FuQf2rHg28RaNAlEbxw9m2O2JsxiD
- hFEwPG8bLqqHouNeVhm0cBtqB3ixEon119wBKEW2YGrdhoMw27no3r8lL+zNC5fsjrl/
- q8fn0OeFs0XQW3Ysz0Kh+q7zrOTggrWJSoCGUi4nCI5qYw7oNf6PUoMSkXWglXwF46mG
- QiDS4vd4KEBB2KELPhqBbvSuN44+uxaqIqNFKt72Tf9ajWUN2eBrGSsysSmBI8NPxDLP dQ== 
-Received: from ppma01wdc.us.ibm.com (fd.55.37a9.ip4.static.sl-reverse.com [169.55.85.253])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3625smb26a-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 13 Jan 2021 14:55:07 -0500
-Received: from pps.filterd (ppma01wdc.us.ibm.com [127.0.0.1])
-        by ppma01wdc.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 10DJsatI022998;
-        Wed, 13 Jan 2021 19:55:06 GMT
-Received: from b01cxnp22035.gho.pok.ibm.com (b01cxnp22035.gho.pok.ibm.com [9.57.198.25])
-        by ppma01wdc.us.ibm.com with ESMTP id 35y4497ytm-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 13 Jan 2021 19:55:06 +0000
-Received: from b01ledav003.gho.pok.ibm.com (b01ledav003.gho.pok.ibm.com [9.57.199.108])
-        by b01cxnp22035.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 10DJt61930212566
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 13 Jan 2021 19:55:06 GMT
-Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 28D8CB206E;
-        Wed, 13 Jan 2021 19:55:06 +0000 (GMT)
-Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 062C6B2064;
-        Wed, 13 Jan 2021 19:55:05 +0000 (GMT)
-Received: from suka-w540.localdomain (unknown [9.85.167.168])
-        by b01ledav003.gho.pok.ibm.com (Postfix) with ESMTP;
-        Wed, 13 Jan 2021 19:55:05 +0000 (GMT)
-Received: by suka-w540.localdomain (Postfix, from userid 1000)
-        id 579FE2E2856; Wed, 13 Jan 2021 11:55:03 -0800 (PST)
-Date:   Wed, 13 Jan 2021 11:55:03 -0800
-From:   Sukadev Bhattiprolu <sukadev@linux.ibm.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Dany Madden <drt@linux.ibm.com>,
-        Lijun Pan <ljp@linux.ibm.com>,
-        Rick Lindsley <ricklind@linux.ibm.com>
-Subject: Re: [PATCH net-next v2 0/7] ibmvnic: Use more consistent locking
-Message-ID: <20210113195503.GA236972@us.ibm.com>
-References: <20210112181441.206545-1-sukadev@linux.ibm.com>
- <20210112180054.28ebcd1a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20210113044247.GA224486@us.ibm.com>
- <20210113105735.20853d1f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S1728830AbhAMT4F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jan 2021 14:56:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51446 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728450AbhAMT4E (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 14:56:04 -0500
+Received: from mail-lj1-x22a.google.com (mail-lj1-x22a.google.com [IPv6:2a00:1450:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F081C061795
+        for <netdev@vger.kernel.org>; Wed, 13 Jan 2021 11:55:24 -0800 (PST)
+Received: by mail-lj1-x22a.google.com with SMTP id n8so3936105ljg.3
+        for <netdev@vger.kernel.org>; Wed, 13 Jan 2021 11:55:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=V0bs1fi/eE8isvmmJjMQkUZIf1rb+BYIcBHJLO1oqcE=;
+        b=fU8xQWv0qAos49JfkFhq/SvSl9DKk4R3hCOQ4ZYyfA3JjIvM9fSyygUqQVtmaCvUzT
+         O02v3DcrsaONKGxXgfUbBgPNgmFjvw9UrWHP+BT4AjzOrGrt/vGx+rxIEnYp/JjOFSsf
+         8cCMDfNLPbBE4L6R+FHyQBO4n/+akvzeZSp1rYbjjaAfNWmetJ+OPJz40voyNp+rxEKM
+         YNd5erKC9LZ3UfjpbuWOFRFIy1I4p9ki2KTunusZzgU6DEAyjCNvmyMOi3ZKUyHVswc0
+         rSPFYJd779xIcQOtVoL5Cp0NZZZK9bK59dRQ9lBsm0masjFs4u3FVlh2SUw7SCXNb3Ox
+         0jcA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=V0bs1fi/eE8isvmmJjMQkUZIf1rb+BYIcBHJLO1oqcE=;
+        b=iEYzcQuehTrLT+PZ+PgpsuM1yJmRIWWqCnlMk9+uXe90GtXM+3/3+0Qbmf59OLd8A+
+         MMPf+ePsTvYsKtx8PVaCXAdx6pc71MK+J2IaSBh6ygsc8eGJurqTVeMO9i6aFLmlaTgl
+         2OZrXqU6Z6wHi3YVVHz4VpB5vinazFO1y92YgbrHWEjUJKyhWKTjSzuKb0ctnOn2Vcqr
+         AqfhFK1QBsRnc2+/7g3m6p3M1ainVlJMhaghR5/+eELqNJQ+PlFzRp7CfjnnoiF3S0jP
+         n62phAiG6t2j1UYQRu7b0vPbwuVqniO2JpbV5yIlc3WlyIrx1JYr2p2m73WTL+sro2/K
+         H0+A==
+X-Gm-Message-State: AOAM531yDJcJ4D3JoLmHqiqPlm9o63r8SF0oQF1uyNtE/8f6KIr0qbqk
+        /V7/xLzK24+S7hhurhfG7jL6ZLDOUyhPYax6dXbfCA==
+X-Google-Smtp-Source: ABdhPJzpKHbnFV0lFf5tfz8ktI8u8IjUm7QAokZ+THXeZEzaW2cWimQTsgN22rWUbtrNTtMpaJrNsDZ2I7PV4RQ3cA0=
+X-Received: by 2002:a2e:9a84:: with SMTP id p4mr1506293lji.160.1610567722324;
+ Wed, 13 Jan 2021 11:55:22 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210113105735.20853d1f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-X-Operating-System: Linux 2.0.32 on an i486
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
- definitions=2021-01-13_11:2021-01-13,2021-01-13 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- malwarescore=0 impostorscore=0 mlxscore=0 phishscore=0 bulkscore=0
- adultscore=0 priorityscore=1501 mlxlogscore=999 clxscore=1015 spamscore=0
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2101130117
+References: <20210112214105.1440932-1-shakeelb@google.com> <20210112233108.GD99586@carbon.dhcp.thefacebook.com>
+ <CAOFY-A3=mCvfvMYBJvDL1LfjgYgc3kzebRNgeg0F+e=E1hMPXA@mail.gmail.com>
+ <20210112234822.GA134064@carbon.dhcp.thefacebook.com> <CAOFY-A2YbE3_GGq-QpVOHTmd=35Lt-rxi8gpXBcNVKvUzrzSNg@mail.gmail.com>
+ <CALvZod4am_dNcj2+YZmraCj0+BYHB9PnQqKcrhiOnV8gzd+S3w@mail.gmail.com>
+ <20210113184302.GA355124@carbon.dhcp.thefacebook.com> <CALvZod4V3M=P8_Z14asBG8bKa=mYic4_OPLeoz5M7J5tsx=Gug@mail.gmail.com>
+ <CAHbLzkrqX9mJb0E_Y4Q76x=bZpg3RNxKa3k8cG_NiU+++1LWsQ@mail.gmail.com>
+In-Reply-To: <CAHbLzkrqX9mJb0E_Y4Q76x=bZpg3RNxKa3k8cG_NiU+++1LWsQ@mail.gmail.com>
+From:   Shakeel Butt <shakeelb@google.com>
+Date:   Wed, 13 Jan 2021 11:55:11 -0800
+Message-ID: <CALvZod4Ncf4H8VWgetWoRnOWPT4h+QDK_CY+oK11Q4akcs4Eqw@mail.gmail.com>
+Subject: Re: [PATCH] mm: net: memcg accounting for TCP rx zerocopy
+To:     Yang Shi <shy828301@gmail.com>
+Cc:     Roman Gushchin <guro@fb.com>, Arjun Roy <arjunroy@google.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux MM <linux-mm@kvack.org>,
+        Cgroups <cgroups@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jakub Kicinski [kuba@kernel.org] wrote:
-> On Tue, 12 Jan 2021 20:42:47 -0800 Sukadev Bhattiprolu wrote:
-> > Jakub Kicinski [kuba@kernel.org] wrote:
-> > > On Tue, 12 Jan 2021 10:14:34 -0800 Sukadev Bhattiprolu wrote:  
-> > > > Use more consistent locking when reading/writing the adapter->state
-> > > > field. This patch set fixes a race condition during ibmvnic_open()
-> > > > where the adapter could be left in the PROBED state if a reset occurs
-> > > > at the wrong time. This can cause networking to not come up during
-> > > > boot and potentially require manual intervention in bringing up
-> > > > applications that depend on the network.  
-> > > 
-> > > Apologies for not having enough time to suggest details, but let me
-> > > state this again - the patches which fix bugs need to go into net with
-> > > Fixes tags, the refactoring needs to go to net-next without Fixes tags.
-> > > If there are dependencies, patches go to net first, then within a week
-> > > or so the reset can be posted for net-next, after net -> net-next merge.  
-> > 
-> > Well, the patch set fixes a set of bugs - main one is a locking bug fixed
-> > in patch 6. Other bugs are more minor or corner cases. Fixing the locking
-> > bug requires some refactoring/simplifying/reordering checks so lock can be
-> > properly acquired.
-> > 
-> > Because of the size/cleanup, should we treat it as "next" material? i.e
-> > should I just drop the Fixes tag and resend to net-next?
-> > 
-> > Or can we ignore the size of patchset and treat it all as bug fixes?
-> 
-> No, focus on doing this right rather than trying to justify why your
-> patches deserve special treatment.
+On Wed, Jan 13, 2021 at 11:49 AM Yang Shi <shy828301@gmail.com> wrote:
+>
+> On Wed, Jan 13, 2021 at 11:13 AM Shakeel Butt <shakeelb@google.com> wrote:
+> >
+> > On Wed, Jan 13, 2021 at 10:43 AM Roman Gushchin <guro@fb.com> wrote:
+> > >
+> > > On Tue, Jan 12, 2021 at 04:18:44PM -0800, Shakeel Butt wrote:
+> > > > On Tue, Jan 12, 2021 at 4:12 PM Arjun Roy <arjunroy@google.com> wrote:
+> > > > >
+> > > > > On Tue, Jan 12, 2021 at 3:48 PM Roman Gushchin <guro@fb.com> wrote:
+> > > > > >
+> > > > [snip]
+> > > > > > Historically we have a corresponding vmstat counter to each charged page.
+> > > > > > It helps with finding accounting/stastistics issues: we can check that
+> > > > > > memory.current ~= anon + file + sock + slab + percpu + stack.
+> > > > > > It would be nice to preserve such ability.
+> > > > > >
+> > > > >
+> > > > > Perhaps one option would be to have it count as a file page, or have a
+> > > > > new category.
+> > > > >
+> > > >
+> > > > Oh these are actually already accounted for in NR_FILE_MAPPED.
+> > >
+> > > Well, it's confusing. Can't we fix this by looking at the new page memcg flag?
+> >
+> > Yes we can. I am inclined more towards just using NR_FILE_PAGES (as
+> > Arjun suggested) instead of adding a new metric.
+>
+> IMHO I tend to agree with Roman, it sounds confusing. I'm not sure how
+> people relies on the counter to have ballpark estimation about the
+> amount of reclaimable memory for specific memcg, but they are
+> unreclaimable. And, I don't think they are accounted to
+> NR_ACTIVE_FILE/NR_INACTIVE_FILE, right? So, the disparity between
+> NR_FILE_PAGES and NR_{IN}ACTIVE_FILE may be confusing either.
+>
 
-I am not asking for special treatment. I just don't get the rationale
-for saying that a bug fix cannot have some amount of refactoring.
-Specially a bug fix like this locking one which clearly touches various
-parts of the code. To take the lock properly we do have to move code
-around.
-> 
-> Throw this entire series out and start over with the goal of fixing 
-> the bugs with minimal patches.
+Please note that due to shmem/tmpfs there is already disparity between
+NR_FILE_PAGES and NR_{IN}ACTIVE_FILE.
 
-Fixing corner case bugs that have been around for a while in code that
-we are going to throw away feels like spinning wheels just to comply
-with the "process".
-
-Other than the optimization for the spin lock, there have been no
-reported technical issues with the patch set. Throwing away the
-patch set and starting over - I would be focusing not on the bugs
-or making the driver better but somehow complying with the process.
-
-The tiny memory leak issues I mention for completeness are just rare
-corner cases and a distraction. The main issue that people actually
-hit is the locking one. Fixing the locking issue touches lot of code.
-
-I to throw away the list implementation and add a couple of simple
-interfaces because if the allocation fails we call ibmvnic_close() -
-that messes with the locking I am trying to fix.
-
-Sukadev
+BTW I don't have a strong opinion against adding a new metric. If
+there is consensus we can add one.
