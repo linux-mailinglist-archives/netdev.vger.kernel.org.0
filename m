@@ -2,106 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2AFDC2F492F
-	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 12:00:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6075F2F49B8
+	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 12:11:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727203AbhAMK6g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jan 2021 05:58:36 -0500
-Received: from mail.loongson.cn ([114.242.206.163]:54198 "EHLO loongson.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727116AbhAMK6f (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 13 Jan 2021 05:58:35 -0500
-Received: from linux.localdomain (unknown [113.200.148.30])
-        by mail.loongson.cn (Coremail) with SMTP id AQAAf9Dxr78d0v5fhLMDAA--.6498S4;
-        Wed, 13 Jan 2021 18:57:37 +0800 (CST)
-From:   Tiezhu Yang <yangtiezhu@loongson.cn>
-To:     Luc Van Oostenryck <luc.vanoostenryck@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Nathan Chancellor <natechancellor@gmail.com>,
-        Nick Desaulniers <ndesaulniers@google.com>
-Cc:     linux-sparse@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, clang-built-linux@googlegroups.com,
-        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Xuefeng Li <lixuefeng@loongson.cn>
-Subject: [PATCH 2/2] compiler.h: Include asm/rwonce.h under ARM64 and ALPHA to fix build errors
-Date:   Wed, 13 Jan 2021 18:57:33 +0800
-Message-Id: <1610535453-2352-3-git-send-email-yangtiezhu@loongson.cn>
-X-Mailer: git-send-email 2.1.0
-In-Reply-To: <1610535453-2352-1-git-send-email-yangtiezhu@loongson.cn>
-References: <1610535453-2352-1-git-send-email-yangtiezhu@loongson.cn>
-X-CM-TRANSID: AQAAf9Dxr78d0v5fhLMDAA--.6498S4
-X-Coremail-Antispam: 1UD129KBjvJXoW7Kw1UZFyrZr1rXr4kAw4kCrg_yoW8XrW3pF
-        1DZr18KFW5ur1UGr98Aw12y347Zw4rGF17AFyDu348ZFyaq393X390gryYkF97Za9FqFWx
-        Kr9rWrW3Cr1UZ3DanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUPK14x267AKxVWrJVCq3wAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2048vs2IY020E87I2jVAFwI0_Jryl82xGYIkIc2
-        x26xkF7I0E14v26ryj6s0DM28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8wA2z4x0
-        Y4vE2Ix0cI8IcVAFwI0_Gr0_Xr1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Cr0_Gr1UM2
-        8EF7xvwVC2z280aVAFwI0_Cr1j6rxdM28EF7xvwVC2z280aVCY1x0267AKxVW0oVCq3wAS
-        0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0I7IYx2
-        IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Cr0_Gr1UMcvjeVCFs4IE7xkEbVWUJVW8JwAC
-        jcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lFIxGxcIEc7CjxVA2Y2ka0x
-        kIwI1lc2xSY4AK67AK6r4DMxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r1j6r4U
-        MI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67
-        AKxVW8ZVWrXwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0
-        cI8IcVCY1x0267AKxVWxJVW8Jr1lIxAIcVCF04k26cxKx2IYs7xG6r1j6r1xMIIF0xvEx4
-        A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU
-        0xZFpf9x0JUCzuAUUUUU=
-X-CM-SenderInfo: p1dqw3xlh2x3gn0dqz5rrqw2lrqou0/
+        id S1727785AbhAMLJi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jan 2021 06:09:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50434 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727716AbhAMLJh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 06:09:37 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D21FC061575
+        for <netdev@vger.kernel.org>; Wed, 13 Jan 2021 03:08:57 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=RVXHYkovhMMd2Bh0vK42OEvWbflwwk67vgd4HEtp70o=; b=rjQE+3ZQseRDjSAuW6W/lgmjv
+        YW8QQl2ZU7S21nKWGLr3WumwtZBeC13H2cLG5oJDjpjGN44SMJgAi6wZxM3uIz87aLOPgMNGAZ22i
+        JNWz5KFCbzCX2BwywqcUqaWt2X6Gysgo3LrxkTpSlVsQ4mUj/c9X/Utj/tIEV0bUTXxj35SeJ5anS
+        g/5VgILl+D10/11HeuK0ZhvqJX4dMbMT6hYPwurPKAVER7vBOhjXvHdu1arX7fTRGT1BSqKdmmBbt
+        TnnVJ/toMuajIIgbmDT7BQrNj1zh38HEgHGuUptFfO3CrGwMJtBpJnba0tX1YPKvOUK0/yLtxEU/3
+        8MFHWcBeg==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:47410)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1kze1F-00016c-2y; Wed, 13 Jan 2021 11:08:53 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1kze1E-0007FE-6a; Wed, 13 Jan 2021 11:08:52 +0000
+Date:   Wed, 13 Jan 2021 11:08:52 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>
+Cc:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
+        netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
+Subject: Re: [PATCH net-next v4 4/4] net: sfp: add support for multigig
+ RollBall transceivers
+Message-ID: <20210113110852.GH1551@shell.armlinux.org.uk>
+References: <20210111050044.22002-1-kabel@kernel.org>
+ <20210111050044.22002-5-kabel@kernel.org>
+ <20210113104936.ka74oaa6xo2mvwbo@pali>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210113104936.ka74oaa6xo2mvwbo@pali>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When make M=samples/bpf on the Loongson 3A3000 platform which
-belongs to MIPS arch, there exists many similar build errors
-about 'asm/rwonce.h' file not found, so include it only under
-CONFIG_ARM64 and CONFIG_ALPHA due to it exists only in arm64
-and alpha arch.
+On Wed, Jan 13, 2021 at 11:49:36AM +0100, Pali Rohár wrote:
+> On Monday 11 January 2021 06:00:44 Marek Behún wrote:
+> > @@ -1453,7 +1459,7 @@ static int sfp_sm_probe_phy(struct sfp *sfp, bool is_c45)
+> >  	struct phy_device *phy;
+> >  	int err;
+> >  
+> > -	phy = get_phy_device(sfp->i2c_mii, SFP_PHY_ADDR, is_c45);
+> > +	phy = get_phy_device(sfp->i2c_mii, sfp->phy_addr, is_c45);
+> >  	if (phy == ERR_PTR(-ENODEV))
+> >  		return PTR_ERR(phy);
+> >  	if (IS_ERR(phy)) {
+> > @@ -1835,6 +1841,23 @@ static int sfp_sm_mod_probe(struct sfp *sfp, bool report)
+> >  
+> >  	sfp->mdio_protocol = MDIO_I2C_DEFAULT;
+> >  
+> > +	sfp->phy_addr = SFP_PHY_ADDR;
+> > +	sfp->module_t_wait = T_WAIT;
+> > +
+> > +	if (((!memcmp(id.base.vendor_name, "OEM             ", 16) ||
+> > +	      !memcmp(id.base.vendor_name, "Turris          ", 16)) &&
+> > +	     (!memcmp(id.base.vendor_pn, "SFP-10G-T       ", 16) ||
+> > +	      !memcmp(id.base.vendor_pn, "RTSFP-10", 8)))) {
+> > +		sfp->mdio_protocol = MDIO_I2C_ROLLBALL;
+> > +		sfp->phy_addr = SFP_PHY_ADDR_ROLLBALL;
+> > +		sfp->module_t_wait = T_WAIT_ROLLBALL;
+> > +
+> > +		/* RollBall SFPs may have wrong (zero) extended compliacne code
 
-  CLANG-bpf  samples/bpf/xdpsock_kern.o
-In file included from samples/bpf/xdpsock_kern.c:2:
-In file included from ./include/linux/bpf.h:9:
-In file included from ./include/linux/workqueue.h:9:
-In file included from ./include/linux/timer.h:5:
-In file included from ./include/linux/list.h:9:
-In file included from ./include/linux/kernel.h:10:
-./include/linux/compiler.h:246:10: fatal error: 'asm/rwonce.h' file not found
-         ^~~~~~~~~~~~~~
-1 error generated.
+Spelling error - "compliance"
 
-$ find . -name rwonce.h
-./include/asm-generic/rwonce.h
-./arch/arm64/include/asm/rwonce.h
-./arch/alpha/include/asm/rwonce.h
+> > +		 * burned in EEPROM. For PHY probing we need the correct one.
+> > +		 */
+> > +		id.base.extended_cc = SFF8024_ECC_10GBASE_T_SFI;
+> 
+> Should not we rather in sfp_sm_probe_for_phy() function in "default"
+> section try to probe also for clause 45 PHY when clause 22 fails?
 
-Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
----
- include/linux/compiler.h | 6 ++++++
- 1 file changed, 6 insertions(+)
+Why? That's opening the possibilities for more problems - remember,
+the access method is vendor defined, and we already have the situation
+where I2C address 0x56 is used in two different styles that are
+indistinguishable:
 
-diff --git a/include/linux/compiler.h b/include/linux/compiler.h
-index b8fe0c2..bdbe759 100644
---- a/include/linux/compiler.h
-+++ b/include/linux/compiler.h
-@@ -243,6 +243,12 @@ static inline void *offset_to_ptr(const int *off)
-  */
- #define prevent_tail_call_optimization()	mb()
- 
-+#ifdef CONFIG_ARM64
- #include <asm/rwonce.h>
-+#endif
-+
-+#ifdef CONFIG_ALPHA
-+#include <asm/rwonce.h>
-+#endif
- 
- #endif /* __LINUX_COMPILER_H */
+- Clause 22 write:
+	Write register address, value high, value low.
+- Clause 22 read:
+	Write register address.
+	Read value high, low.
+- Clause 45 write:
+	Write devad, register address high, register address low,
+		value high, value low.
+- Clause 45 read:
+	Write devad, register address high, register address low.
+	Read value high, low.
+
+Look closely at the similarities of Clause 22 write and Clause 45
+read, you'll see that if you issue a clause 45 read to a SFP module
+that implements Clause 22, you actually end up issuing a write to it.
+
+Sending random MDIO cycles to a SFP is a really bad idea.
+
 -- 
-2.1.0
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
