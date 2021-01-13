@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E9EF2F4B10
-	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 13:14:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 16AFA2F4B11
+	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 13:14:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727342AbhAMMNK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jan 2021 07:13:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35862 "EHLO
+        id S1727357AbhAMMNL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jan 2021 07:13:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35870 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725801AbhAMMNJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 07:13:09 -0500
-Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C1FBC061795
+        with ESMTP id S1726852AbhAMMNK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 07:13:10 -0500
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D39C0C06179F
         for <netdev@vger.kernel.org>; Wed, 13 Jan 2021 04:12:29 -0800 (PST)
-Received: by mail-wr1-x42e.google.com with SMTP id c5so1871499wrp.6
+Received: by mail-wr1-x42c.google.com with SMTP id a12so1856699wrv.8
         for <netdev@vger.kernel.org>; Wed, 13 Jan 2021 04:12:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=q5KdQEKor/xNGEAiee3yVmkHYi5dKtkCDib7jFEW8Bw=;
-        b=KWeB45D/RpQ9wwN/+e0VrDWH/jVH0ofcnDlw0HKXuXdYNAWC6EeJB1fx/CutZH60z8
-         gLqKIY1pMoCQ4GGPMdpUy/eQw63DQfw+GgL2V8UtaOEZkquUE+akUil+9q1UDK/4KY3h
-         uTrovYNDVXIf1D7ThrrryCWvX22UmUTPuW8EiD3LfZ2PDjr5O1p4ZS4m/lOZ8GD4nj72
-         XGnaeuTzYtLi2G9dUVhNICe0Im68rSyGg+rPJwpG3KEOywh7DyPbTOOlMnRrCg4LBvkC
-         8oufVJm1e5a8XGNVmqMb+TWJCqKuurvc/BGIGeDaghkZhrZD0bkRpyNS9eC+f4ffwWYV
-         rQrg==
+        bh=2/6Viei4wUAY+PsK+PLnXLv1pWrXcOkQrAGShU5Kxx0=;
+        b=aCvq8iXZdjuUWvW7dTYgMdsItdhNtG2eb+XPfDTlHe/Z2LH6srjt30M/pBh35TF0kY
+         pwd9AtKft2XUOXusNn4SkFUkjWYALgvpbUz+GCn3UrxChDOy1MESKXZ1jDvSQgJAt107
+         WcHEoPFKarrz0AxQpMMfkBuW+b21m5lxjFx2FG1eA42Mwg2gTvAmI1HzoVUkzcCujyhJ
+         R2tO0hanqESY5EydvcOtay6YjzevEfjVb5MHb3mRSSQpKJ9Oefxs6idpC9PO1VXYlf7P
+         FNZHiFcEPMOO+hFU1ifOQjfBcPV1+xqb+vbfU8XFAh25/yAU+yF7ODzvdtkwZxBIco1Z
+         WHRA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=q5KdQEKor/xNGEAiee3yVmkHYi5dKtkCDib7jFEW8Bw=;
-        b=gT5tW+s3z07ur/kC1PF94RfHvNa59Amn0Q0Dq3PvegnYHkpF4ZvJZ5YRNhrM3S/fYf
-         4YUcEqmQQh0TJ5v16tKernLlm0UM2i9z5UymROQwWllrOhASJCS9FTbW2UM8O97qx1fF
-         wT1ugl2cCrbInowEZejXLvwiAOC3zOYujj5MkX2hlq4nKWAhz8derrVmcrl1NhkkUVGU
-         ZC5ZXA+rvR2oCuwdpoZ3yF9hudbJmxRCjgpz+3iUbTvcK3BbTzdJg0c8jnl9a2FGGiEY
-         LVaEeNCH40ANWdAJbvHmkC9Ofpj0aVE9bXmHeiA2G/k8BXskodidVzVQ+LniW/axyrM0
-         PxKw==
-X-Gm-Message-State: AOAM531cRiO8mTpZhvctxSwZNTIwqLH0ueZicSEzjrksM574AS7U77hM
-        345mMlvh9QNAlIUynqtdzqXphCJA2OBTmEPP
-X-Google-Smtp-Source: ABdhPJwv4982CaJB4sNJTeOPxXPZqtpeLm/c6XReG66v8100IMmVnyyFnEKNrE7Q9ZKQ/adHh3Rl2g==
-X-Received: by 2002:a05:6000:222:: with SMTP id l2mr2275189wrz.392.1610539947204;
-        Wed, 13 Jan 2021 04:12:27 -0800 (PST)
+        bh=2/6Viei4wUAY+PsK+PLnXLv1pWrXcOkQrAGShU5Kxx0=;
+        b=N2CiaF7f4xa4b4jaPehKReJqrz+pM9/p58yvEXVbQTa0Mqzkp3jR0XoJEIeKfq2t0t
+         DhgFKKS19QnRwzi5vVR7HRo8uxD4pt8pfC7XmbO8cXTVA+zTUmWLlhHYYAi7TsxPZc68
+         9FcKjSBWjAfQDGFsOxTDdfHJJyXjurXi6F4p8jcSm8nH6dJMb+gBf4WcZbiyVcf+6saZ
+         381b+QkzSJcUy5M/HycAwna7WFLJrxUSp6+jOiOo9EBdTJgYn6fKp2CIoPOa50SmHUwH
+         khQwjIx038U52Pipz1DRyNKVTr9TW5ZNsjd/yNkUknCUSyGX+Qrj0y0GIcLtXK1v9g6g
+         6Apw==
+X-Gm-Message-State: AOAM531VspmnRZbqJWcK0b5NWyn3s3lx681vH9dPNsXO75gQcwrWMag+
+        wQl6Q5YfcTPorTAKRIW3debekFh3duYVkOqw
+X-Google-Smtp-Source: ABdhPJzHNmitR6ByHql70eU9T1mupHyKJ7wwagKU8dtNCUQ3dMRuEPuAVuc4TiyRa4zSihoZuZC7CA==
+X-Received: by 2002:adf:92a4:: with SMTP id 33mr2274641wrn.347.1610539948324;
+        Wed, 13 Jan 2021 04:12:28 -0800 (PST)
 Received: from localhost ([85.163.43.78])
-        by smtp.gmail.com with ESMTPSA id l20sm3237356wrh.82.2021.01.13.04.12.26
+        by smtp.gmail.com with ESMTPSA id v65sm2867470wme.23.2021.01.13.04.12.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Jan 2021 04:12:26 -0800 (PST)
+        Wed, 13 Jan 2021 04:12:27 -0800 (PST)
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, jacob.e.keller@intel.com,
         roopa@nvidia.com, mlxsw@nvidia.com
-Subject: [patch net-next RFC 03/10] devlink: implement line card active state
-Date:   Wed, 13 Jan 2021 13:12:15 +0100
-Message-Id: <20210113121222.733517-4-jiri@resnulli.us>
+Subject: [patch net-next RFC 04/10] devlink: append split port number to the port name
+Date:   Wed, 13 Jan 2021 13:12:16 +0100
+Message-Id: <20210113121222.733517-5-jiri@resnulli.us>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20210113121222.733517-1-jiri@resnulli.us>
 References: <20210113121222.733517-1-jiri@resnulli.us>
@@ -65,107 +65,35 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@nvidia.com>
 
-Allow driver to mark a lin ecards as active. Expose this state to the
-userspace over devlink netlink interface with proper notifications.
+Instead of doing sprintf twice in case the port is split or not, append
+the split port suffix in case the port is split.
 
 Signed-off-by: Jiri Pirko <jiri@nvidia.com>
 ---
- include/net/devlink.h        |  4 ++++
- include/uapi/linux/devlink.h |  1 +
- net/core/devlink.c           | 46 ++++++++++++++++++++++++++++++++++++
- 3 files changed, 51 insertions(+)
+ net/core/devlink.c | 10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
 
-diff --git a/include/net/devlink.h b/include/net/devlink.h
-index 854abd53e9ea..ec00cd94c626 100644
---- a/include/net/devlink.h
-+++ b/include/net/devlink.h
-@@ -149,6 +149,7 @@ struct devlink_linecard {
- 	void *priv;
- 	enum devlink_linecard_state state;
- 	const char *provisioned_type;
-+	bool active;
- };
- 
- /**
-@@ -1444,6 +1445,9 @@ void devlink_linecard_destroy(struct devlink_linecard *linecard);
- void devlink_linecard_provision_set(struct devlink_linecard *linecard,
- 				    u32 type_index);
- void devlink_linecard_provision_clear(struct devlink_linecard *linecard);
-+void devlink_linecard_activate(struct devlink_linecard *linecard);
-+void devlink_linecard_deactivate(struct devlink_linecard *linecard);
-+bool devlink_linecard_is_active(struct devlink_linecard *linecard);
- int devlink_sb_register(struct devlink *devlink, unsigned int sb_index,
- 			u32 size, u16 ingress_pools_count,
- 			u16 egress_pools_count, u16 ingress_tc_count,
-diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
-index 4111ddcc000b..d961d31fe288 100644
---- a/include/uapi/linux/devlink.h
-+++ b/include/uapi/linux/devlink.h
-@@ -338,6 +338,7 @@ enum devlink_linecard_state {
- 	DEVLINK_LINECARD_STATE_UNPROVISIONING,
- 	DEVLINK_LINECARD_STATE_PROVISIONING,
- 	DEVLINK_LINECARD_STATE_PROVISIONED,
-+	DEVLINK_LINECARD_STATE_ACTIVE,
- 
- 	__DEVLINK_LINECARD_STATE_MAX,
- 	DEVLINK_LINECARD_STATE_MAX = __DEVLINK_LINECARD_STATE_MAX - 1
 diff --git a/net/core/devlink.c b/net/core/devlink.c
-index 434eecc310c3..9c76edf8c8af 100644
+index 9c76edf8c8af..347976b88404 100644
 --- a/net/core/devlink.c
 +++ b/net/core/devlink.c
-@@ -8790,6 +8790,52 @@ void devlink_linecard_provision_clear(struct devlink_linecard *linecard)
- }
- EXPORT_SYMBOL_GPL(devlink_linecard_provision_clear);
- 
-+/**
-+ *	devlink_linecard_activate - Set linecard active
-+ *
-+ *	@devlink_linecard: devlink linecard
-+ */
-+void devlink_linecard_activate(struct devlink_linecard *linecard)
-+{
-+	mutex_lock(&linecard->devlink->lock);
-+	WARN_ON(linecard->state != DEVLINK_LINECARD_STATE_PROVISIONED);
-+	linecard->state = DEVLINK_LINECARD_STATE_ACTIVE;
-+	devlink_linecard_notify(linecard, DEVLINK_CMD_LINECARD_NEW);
-+	mutex_unlock(&linecard->devlink->lock);
-+}
-+EXPORT_SYMBOL_GPL(devlink_linecard_activate);
-+
-+/**
-+ *	devlink_linecard_deactivate - Set linecard deactive
-+ *
-+ *	@devlink_linecard: devlink linecard
-+ */
-+void devlink_linecard_deactivate(struct devlink_linecard *linecard)
-+{
-+	mutex_lock(&linecard->devlink->lock);
-+	WARN_ON(linecard->state != DEVLINK_LINECARD_STATE_ACTIVE);
-+	linecard->state = DEVLINK_LINECARD_STATE_PROVISIONED;
-+	devlink_linecard_notify(linecard, DEVLINK_CMD_LINECARD_NEW);
-+	mutex_unlock(&linecard->devlink->lock);
-+}
-+EXPORT_SYMBOL_GPL(devlink_linecard_deactivate);
-+
-+/**
-+ *	devlink_linecard_is_active - Check if active
-+ *
-+ *	@devlink_linecard: devlink linecard
-+ */
-+bool devlink_linecard_is_active(struct devlink_linecard *linecard)
-+{
-+	bool active;
-+
-+	mutex_lock(&linecard->devlink->lock);
-+	active = linecard->state == DEVLINK_LINECARD_STATE_ACTIVE;
-+	mutex_unlock(&linecard->devlink->lock);
-+	return active;
-+}
-+EXPORT_SYMBOL_GPL(devlink_linecard_is_active);
-+
- int devlink_sb_register(struct devlink *devlink, unsigned int sb_index,
- 			u32 size, u16 ingress_pools_count,
- 			u16 egress_pools_count, u16 ingress_tc_count,
+@@ -8654,12 +8654,10 @@ static int __devlink_port_phys_port_name_get(struct devlink_port *devlink_port,
+ 	switch (attrs->flavour) {
+ 	case DEVLINK_PORT_FLAVOUR_PHYSICAL:
+ 	case DEVLINK_PORT_FLAVOUR_VIRTUAL:
+-		if (!attrs->split)
+-			n = snprintf(name, len, "p%u", attrs->phys.port_number);
+-		else
+-			n = snprintf(name, len, "p%us%u",
+-				     attrs->phys.port_number,
+-				     attrs->phys.split_subport_number);
++		n = snprintf(name, len, "p%u", attrs->phys.port_number);
++		if (attrs->split)
++			n += snprintf(name + n, len - n, "s%u",
++				      attrs->phys.split_subport_number);
+ 		break;
+ 	case DEVLINK_PORT_FLAVOUR_CPU:
+ 	case DEVLINK_PORT_FLAVOUR_DSA:
 -- 
 2.26.2
 
