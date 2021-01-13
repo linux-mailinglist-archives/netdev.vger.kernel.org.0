@@ -2,60 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4A9FE2F537B
-	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 20:43:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A4EF92F53A0
+	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 20:52:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728722AbhAMTmU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jan 2021 14:42:20 -0500
-Received: from mail.kernel.org ([198.145.29.99]:57298 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725997AbhAMTmU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 13 Jan 2021 14:42:20 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 039932333E;
-        Wed, 13 Jan 2021 19:41:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610566899;
-        bh=sy/xsRZ83xiC/bL9POsUHJU6O60B9nJN8f53pZkC3j8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=RQdescFN6Al7JIrl0cC169kus1nRHAeqjjMcihWqKyhOWe4FcMcybEL3KBfpOW5pa
-         VuOyQ5ZppPqNZ8h70TT6bU8T7WBlw8QAf5Zg9ZDXPcTFvtYYV6KhULWxmUPkDuUC2M
-         EfZ6wPGrpg9p/asXLv+urJirjTQ+4yYzHGuu8G3JJVJAOWW9mXm7V0BIu2r4OROB9w
-         XODONcNKfBzaeI8Ugj70p8V5ueAxUAdL1nkoLcdOXs3P55lRTQ74npAjWLcJjEYMNe
-         aBxfb8t5t1ppTgMD+/wjICmWggCc2mfHDKIWFSJBEOe/sgxHCIsE9/1dILR1JKhTDV
-         EaRIfboOn0bvg==
-Date:   Wed, 13 Jan 2021 11:41:36 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     syzbot <syzbot+2393580080a2da190f04@syzkaller.appspotmail.com>
-Cc:     andrii@kernel.org, andriin@fb.com, ast@kernel.org,
-        bpf@vger.kernel.org, daniel@iogearbox.net, davem@davemloft.net,
-        edumazet@google.com, f.fainelli@gmail.com, hawk@kernel.org,
-        john.fastabend@gmail.com, kafai@fb.com, kpsingh@kernel.org,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        roopa@cumulusnetworks.com, songliubraving@fb.com,
-        syzkaller-bugs@googlegroups.com, yhs@fb.com
-Subject: Re: kernel BUG at net/core/dev.c:NUM!
-Message-ID: <20210113114136.4b23f753@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <000000000000f9191905b8c59562@google.com>
-References: <000000000000f9191905b8c59562@google.com>
+        id S1728721AbhAMTt6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jan 2021 14:49:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50102 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728555AbhAMTt5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 14:49:57 -0500
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BCB5C061575;
+        Wed, 13 Jan 2021 11:49:17 -0800 (PST)
+Received: by mail-ed1-x534.google.com with SMTP id i24so3233024edj.8;
+        Wed, 13 Jan 2021 11:49:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Hum8GyG3YMlF2j+bxEQbnrEJdDI8ZwOXjUuAUt+nY5o=;
+        b=nyp9gl2zbAqKPACHRjRmZ6TXdtLeiEsBNMwfT3WGY+fCYVRR+c1leQub87DsLVeJfq
+         9NWb113ao8Eu34k9t8uRuezckTJ/iJhhD1vXiY3bq3Z1RUns4FgxxA8vhShVZQC+gFD4
+         Xt5UnainWHnatCq2QeBDPdnpIAYN+lFPOpAgok7mZDkcKkwRs+OJWgbEOi+N43JWS3zM
+         MROQgfyGprzFpIoKPPOxBqD6sJFKkJwWeN7ckn72dcS/RMONnGn7EaZMHK2PdcBbSyoX
+         6kyYuFnIpRCW7mPzT+ptucYB832V5x4L7njN+eCOZUlfHZy/RmkBpy6lCl6LFCShJHSR
+         OTsg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Hum8GyG3YMlF2j+bxEQbnrEJdDI8ZwOXjUuAUt+nY5o=;
+        b=PeNZDDLivyIk6KnzkPXb+jHNC1XOMeJRnj4kerDjtuMtSYYJ4Ve74EKpy4ZlBiBF2S
+         DoTpRon8gN9f6siSlw3M835MgkwPE14xaee60BFgiVkUix16lYUybYfJrhP/XSwEorog
+         9uu4TOnqzu8em9I/YTjKXn83uew/ky1ARvnu4PU7X2KcAkvls89uv3gt5nHjtQ6pq4Zo
+         kPtEKmLPWwQoPgjaDqHtpKAUJzz5+ecQ/wpNIxWllI5JgwvyAixKvRzi1DRFzfjY6dQ4
+         mjk5O39G4rHgsyQoetQdm2b0TKo+tsnuSr99a71bKKRosta04gxBaYZijSCZ9Kj817uj
+         qomQ==
+X-Gm-Message-State: AOAM532uXkgvqrCkDDrdLJNn2Nx6yEeFq9aSi8FqOAGVG07MuBRERVo5
+        mSuVznt8OXDX+o6qQ0i20IJN7ceQpqI85M6gAukKQK46a2tWog==
+X-Google-Smtp-Source: ABdhPJyJaxgJMfUXIfDa3mHs8m3ahoENpeSe735GUb4ZErj5SmpdGwF3yo0BrKjfh5HDkbATF/1dB2+wWsP+ziud/8A=
+X-Received: by 2002:a05:6402:1c8a:: with SMTP id cy10mr3106450edb.151.1610567356100;
+ Wed, 13 Jan 2021 11:49:16 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20210112214105.1440932-1-shakeelb@google.com> <20210112233108.GD99586@carbon.dhcp.thefacebook.com>
+ <CAOFY-A3=mCvfvMYBJvDL1LfjgYgc3kzebRNgeg0F+e=E1hMPXA@mail.gmail.com>
+ <20210112234822.GA134064@carbon.dhcp.thefacebook.com> <CAOFY-A2YbE3_GGq-QpVOHTmd=35Lt-rxi8gpXBcNVKvUzrzSNg@mail.gmail.com>
+ <CALvZod4am_dNcj2+YZmraCj0+BYHB9PnQqKcrhiOnV8gzd+S3w@mail.gmail.com>
+ <20210113184302.GA355124@carbon.dhcp.thefacebook.com> <CALvZod4V3M=P8_Z14asBG8bKa=mYic4_OPLeoz5M7J5tsx=Gug@mail.gmail.com>
+In-Reply-To: <CALvZod4V3M=P8_Z14asBG8bKa=mYic4_OPLeoz5M7J5tsx=Gug@mail.gmail.com>
+From:   Yang Shi <shy828301@gmail.com>
+Date:   Wed, 13 Jan 2021 11:49:02 -0800
+Message-ID: <CAHbLzkrqX9mJb0E_Y4Q76x=bZpg3RNxKa3k8cG_NiU+++1LWsQ@mail.gmail.com>
+Subject: Re: [PATCH] mm: net: memcg accounting for TCP rx zerocopy
+To:     Shakeel Butt <shakeelb@google.com>
+Cc:     Roman Gushchin <guro@fb.com>, Arjun Roy <arjunroy@google.com>,
+        Johannes Weiner <hannes@cmpxchg.org>,
+        Michal Hocko <mhocko@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux MM <linux-mm@kvack.org>,
+        Cgroups <cgroups@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 13 Jan 2021 02:27:27 -0800 syzbot wrote:
-> Hello,
-> 
-> syzbot found the following issue on:
-> 
-> HEAD commit:    c49243e8 Merge branch 'net-fix-issues-around-register_netd..
-> git tree:       net
-> console output: https://syzkaller.appspot.com/x/log.txt?x=11da7ba8d00000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=bacfc914704718d3
-> dashboard link: https://syzkaller.appspot.com/bug?extid=2393580080a2da190f04
-> compiler:       gcc (GCC) 10.1.0-syz 20200507
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=13704c3f500000
-> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=160cc357500000
+On Wed, Jan 13, 2021 at 11:13 AM Shakeel Butt <shakeelb@google.com> wrote:
+>
+> On Wed, Jan 13, 2021 at 10:43 AM Roman Gushchin <guro@fb.com> wrote:
+> >
+> > On Tue, Jan 12, 2021 at 04:18:44PM -0800, Shakeel Butt wrote:
+> > > On Tue, Jan 12, 2021 at 4:12 PM Arjun Roy <arjunroy@google.com> wrote:
+> > > >
+> > > > On Tue, Jan 12, 2021 at 3:48 PM Roman Gushchin <guro@fb.com> wrote:
+> > > > >
+> > > [snip]
+> > > > > Historically we have a corresponding vmstat counter to each charged page.
+> > > > > It helps with finding accounting/stastistics issues: we can check that
+> > > > > memory.current ~= anon + file + sock + slab + percpu + stack.
+> > > > > It would be nice to preserve such ability.
+> > > > >
+> > > >
+> > > > Perhaps one option would be to have it count as a file page, or have a
+> > > > new category.
+> > > >
+> > >
+> > > Oh these are actually already accounted for in NR_FILE_MAPPED.
+> >
+> > Well, it's confusing. Can't we fix this by looking at the new page memcg flag?
+>
+> Yes we can. I am inclined more towards just using NR_FILE_PAGES (as
+> Arjun suggested) instead of adding a new metric.
 
-#syz test: git://git.kernel.org/pub/scm/linux/kernel/git/kuba/linux.git sit-fix
+IMHO I tend to agree with Roman, it sounds confusing. I'm not sure how
+people relies on the counter to have ballpark estimation about the
+amount of reclaimable memory for specific memcg, but they are
+unreclaimable. And, I don't think they are accounted to
+NR_ACTIVE_FILE/NR_INACTIVE_FILE, right? So, the disparity between
+NR_FILE_PAGES and NR_{IN}ACTIVE_FILE may be confusing either.
+
+>
