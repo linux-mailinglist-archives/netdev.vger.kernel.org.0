@@ -2,89 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 481B42F5805
-	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 04:01:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DC55B2F5800
+	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 04:01:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727975AbhANCMv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jan 2021 21:12:51 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:35397 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729220AbhAMV5q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 16:57:46 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1610574973;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=TcMhDFu40M2vbcmXTpEq5AfXfYVWbjvJciRmB33PZNI=;
-        b=aShgT3fgYyh3204GRR1UHMm4H/WffVKP8JgdEOykPeu2mZBEnjQyaUF7eXiFSHKPuso4pQ
-        gE+jZNfx9oPn0r4A+lX8ud+2Z7oNuKabUlfQuxP/dFWInCaMUAaiRzOE2EKJ6S+MQcxkVa
-        /mm85c9zJ5IoX+oTgIspdKfdFVxJ0WU=
-Received: from mail-qk1-f197.google.com (mail-qk1-f197.google.com
- [209.85.222.197]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-152-WmXdQCPXP1ab26WDLknm7w-1; Wed, 13 Jan 2021 16:56:11 -0500
-X-MC-Unique: WmXdQCPXP1ab26WDLknm7w-1
-Received: by mail-qk1-f197.google.com with SMTP id g26so2639561qkk.13
-        for <netdev@vger.kernel.org>; Wed, 13 Jan 2021 13:56:11 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=TcMhDFu40M2vbcmXTpEq5AfXfYVWbjvJciRmB33PZNI=;
-        b=dfo0WJbDIAv2rUqlMyaNJbZmIqR4MbvdiE3AKQHkb5ACkqCyTppll2GDxgl17QNVNr
-         YvbIUsUWwhq4Nzki4yg8B9oyFk7B8Ixd+SYPENYtTQbIFR/IE9jr9hP4T1kU3NHJ8feg
-         bDxkuy3TM+vcMD9UESQXxHUEiR2/9M44NidvLp6rAObEtFhW5WLVYe8MByqf6sqn4m/M
-         /iRfqXS1OuqFEmxgq+NrWFtlT/QCjQpV7l+GZnkLxtfNqe/T3GN2GIXLdJ1oyEDUyLkI
-         KQPSjElQ/izUBgakx/OMeERTYHqRRpmNmzYqgblSGu8QiAFf4o8mnM3dFI4dfGOoVSmp
-         46fw==
-X-Gm-Message-State: AOAM531wYyjV6goDRDfro3jtx6CFUHkIOMm3J7tR1Ju6fGVF8wz3vKX1
-        lvZuJJJvB9k2hasrvpHek7Y1Le4GosAi4yl5ugGwhk4E9fvZEkGmImsPkKUfgaf4716X1BRm1uf
-        H85pcvJ4MyprrHBct
-X-Received: by 2002:a05:6214:1230:: with SMTP id p16mr4305623qvv.47.1610574970924;
-        Wed, 13 Jan 2021 13:56:10 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzZW1vCbp2lWzBVZ/9CHzZnH8/2XiV+QNphgjQ5RHwl/EwUN+7SzCeUi4g+9Mvjrek/eLuusA==
-X-Received: by 2002:a05:6214:1230:: with SMTP id p16mr4305603qvv.47.1610574970679;
-        Wed, 13 Jan 2021 13:56:10 -0800 (PST)
-Received: from trix.remote.csb (075-142-250-213.res.spectrum.com. [75.142.250.213])
-        by smtp.gmail.com with ESMTPSA id p6sm1803386qtl.21.2021.01.13.13.56.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Jan 2021 13:56:10 -0800 (PST)
-From:   trix@redhat.com
-To:     claudiu.manoil@nxp.com, davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Tom Rix <trix@redhat.com>
-Subject: [PATCH] gianfar: remove definition of DEBUG
-Date:   Wed, 13 Jan 2021 13:56:03 -0800
-Message-Id: <20210113215603.1721958-1-trix@redhat.com>
-X-Mailer: git-send-email 2.27.0
+        id S1727265AbhANCM1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jan 2021 21:12:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50242 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727221AbhAMWDf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 17:03:35 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D6D8C061786;
+        Wed, 13 Jan 2021 14:01:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=kMt4tzXEyZzNXhXDNDNa+WkVrGDE2C6DCq5UGtjS/iQ=; b=YXAqIZQGaO1AOo8MZzQcCJsgp
+        ouAu5eJjxcdwrFYx1YhPECe9PgwA8C0rEpK42ipF6niA/LqorO+VqqY/bghd+vYakyZbg1XfepjCH
+        9pkonuU2FpADC1KzPO6c8lYUR2RNUPggCqhmkymYWXdun7KIdGaPWi9ZlU2FNhc/Pso8aDLOTF8dG
+        JetyoyF8i3NiE0pU+2gBY7SWrJtsugy9QTN8/O9vGvzkrG6oMo38BiwJe0/kxdQoDZh0d4+YKZtWH
+        ZCjjrgZ2+xv7BRDPhr1Yuvi6BkCGEVci11mXwd/FUNI39SWOgPiQ7HMhdvA5NWtQbjG2m5jicjocE
+        V3oqNkStQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:47610)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1kzoCT-0001j4-GN; Wed, 13 Jan 2021 22:01:09 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1kzoCR-0007fa-RQ; Wed, 13 Jan 2021 22:01:07 +0000
+Date:   Wed, 13 Jan 2021 22:01:07 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Claudiu.Beznea@microchip.com, andrew@lunn.ch, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: phy: micrel: reconfigure the phy on resume
+Message-ID: <20210113220107.GN1551@shell.armlinux.org.uk>
+References: <1610120754-14331-1-git-send-email-claudiu.beznea@microchip.com>
+ <25ec943f-ddfc-9bcd-ef30-d0baf3c6b2a2@gmail.com>
+ <ce20d4f3-3e43-154a-0f57-2c2d42752597@microchip.com>
+ <ee0fd287-c737-faa5-eee1-99ffa120540a@gmail.com>
+ <ae4e73e9-109f-fdb9-382c-e33513109d1c@microchip.com>
+ <7976f7df-c22f-d444-c910-b0462b3d7f61@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <7976f7df-c22f-d444-c910-b0462b3d7f61@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tom Rix <trix@redhat.com>
+On Wed, Jan 13, 2021 at 10:34:53PM +0100, Heiner Kallweit wrote:
+> On 13.01.2021 13:36, Claudiu.Beznea@microchip.com wrote:
+> > On 13.01.2021 13:09, Heiner Kallweit wrote:
+> >> On 13.01.2021 10:29, Claudiu.Beznea@microchip.com wrote:
+> >>> It could enter in this mode based on request for standby or suspend-to-mem:
+> >>> echo mem > /sys/power/state
+> >>> echo standby > /sys/power/state
 
-Defining DEBUG should only be done in development.
-So remove DEBUG.
+This is a standard way to enter S2R - I've used it many times in the
+past on platforms that support it.
 
-Signed-off-by: Tom Rix <trix@redhat.com>
----
- drivers/net/ethernet/freescale/gianfar.c | 1 -
- 1 file changed, 1 deletion(-)
+> I'm not a Linux PM expert, to me it seems your use case is somewhere in the
+> middle between s2r and hibernation. I *think* the assumption with s2r is
+> that one component shouldn't simply cut the power to another component,
+> and the kernel has no idea about it.
 
-diff --git a/drivers/net/ethernet/freescale/gianfar.c b/drivers/net/ethernet/freescale/gianfar.c
-index d391a45cebb6..541de32ea662 100644
---- a/drivers/net/ethernet/freescale/gianfar.c
-+++ b/drivers/net/ethernet/freescale/gianfar.c
-@@ -58,7 +58,6 @@
-  */
- 
- #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
--#define DEBUG
- 
- #include <linux/kernel.h>
- #include <linux/string.h>
+When entering S2R, power can (and probably will) be cut to all system
+components, certainly all components that do not support wakeup. If
+the system doesn't support WoL, then that will include the ethernet
+PHY.
+
+When resuming, the responsibility is of the kernel and each driver's
+.resume function to ensure that the hardware state is restored. Only
+each device driver that knows the device itself can restore the state
+of that device. In the case of an ethernet PHY, that is phylib and
+its associated PHY driver.
+
+One has to be a tad careful with phylib and PHYs compared to their
+MAC devices in terms of the resume order - it has not been unheard
+of over the years for a MAC device to be resumed before its connected
+PHY has been.
+
 -- 
-2.27.0
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
