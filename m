@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EA7B2F46C4
-	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 09:46:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 20A572F46C5
+	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 09:46:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727039AbhAMIoh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jan 2021 03:44:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47408 "EHLO
+        id S1727050AbhAMIoi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jan 2021 03:44:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725865AbhAMIog (ORCPT
+        with ESMTP id S1726576AbhAMIog (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 03:44:36 -0500
-Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC61BC0617A2
-        for <netdev@vger.kernel.org>; Wed, 13 Jan 2021 00:43:45 -0800 (PST)
-Received: by mail-lj1-x229.google.com with SMTP id m13so1596310ljo.11
-        for <netdev@vger.kernel.org>; Wed, 13 Jan 2021 00:43:45 -0800 (PST)
+Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A584C0617A3
+        for <netdev@vger.kernel.org>; Wed, 13 Jan 2021 00:43:46 -0800 (PST)
+Received: by mail-lf1-x132.google.com with SMTP id s26so1549677lfc.8
+        for <netdev@vger.kernel.org>; Wed, 13 Jan 2021 00:43:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :organization;
-        bh=3hQoWGXwl9ouPepPRNu7SzxfWUk7k2Gpp6kvQZc18OQ=;
-        b=pXnli98zhZhse1aNXCoo0DW3KdLSL8mDzGSS67ZPSjwkkWhB2LTruYbkBSqHRsjz7T
-         1vcRfto3SKUwE9rX2vnsGCbz40zAwX/iWEY5fGhQ3iUpcfilNgPrB2u8rlLBEPtqlx2v
-         0FJbrg3eQFOEAbzjQ0yb00l64piE30uWmHhlVgBBLACqlEOXX3giFmo0BM5z2g03SKJj
-         +ya0dFCksv5UPi/RCY9rqrgg8wLBKv+0I90HUCFQ/jNBItk7u+OCozZNS9/wyA8yRWdH
-         pNvTyj6ixEejbQ/x473a4bvMl2GsPFKBodOgPeHXTWNbxIMpogoGmrQ0imkOipbg/Vc3
-         wt6Q==
+        bh=on1b1JASTyUZBQH1Tu9rJPhDBGM1vpa0lRaTGjuPwcU=;
+        b=1Wn6P/bc38RZIbHDD5kGVDMLnRjMgi7HLAHSy6RypFnyv+hphb+J0w1UbHHZXHcPoy
+         mJno/Llzuuas3H0TQKvTe8rBLlVYY7ALzFtkRgQdXvLM1ZP2MUePsMewzsrSPDDVgaLK
+         l+xslbM2vnicMTJRAq3JzZ+qWRqlmeFcNrEC+VYSbytESrX0pX+jqfgZYVXQ4W1fq+eW
+         QbC8/JIWMol8ip5De7UIWKbENGpvFSVrf+IdNFGesBft0aPYtZFo9kNAqtNbRsqkqkRi
+         MCW8c2uqkrQmY38qP4B2Nh9vkabupYWsEghOO/sDCJm2tSdjPHev15YPUX3gKX1veE4b
+         d/Gw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:organization;
-        bh=3hQoWGXwl9ouPepPRNu7SzxfWUk7k2Gpp6kvQZc18OQ=;
-        b=Zy9gxfOQZSfzw7GW7polkPVb3g5kjPfenLVeIkts3euOqBIy0/g+WqujFqbrvDHl5U
-         ic863ni3QnnpW21y8zw/HcBL+wv/xagTwj8jRkPuazAeJOYuW31WvgBOa2+FeDBukKx/
-         ytQ8ixEujlkG/L3mKP8W9ipsuqdGw3yJm6Wg4w1NGTKrz51x+tqZy7+StO2GkjEmEh9K
-         oP3jIq4GvyRAmNu4HpvaVptl1QzXHCijB4tcdlNokoVw1O9cr5Af3SOkfACsVKcC2YXv
-         mM9dUTRJOanfttWQCzyL0Tu+lcmV5mQr5Uoq+/ki66C6N2DRJLnHEAdX+8dR9I1X9MJB
-         3PKQ==
-X-Gm-Message-State: AOAM5311P6u2ig3X4XgysVr5C0SsBVKCI9FiTvWtWTQgVs5nuLidpSQ2
-        1U66+pxlLajrQ/Euz36115+D2Q==
-X-Google-Smtp-Source: ABdhPJwX3TMarOfJuBRCJHKXKSggXcoyzp98ClrwYR9EFpjuRcnycVDfwTFjtBqNLmqGB+w41K11FA==
-X-Received: by 2002:a2e:8844:: with SMTP id z4mr471876ljj.412.1610527424220;
-        Wed, 13 Jan 2021 00:43:44 -0800 (PST)
+        bh=on1b1JASTyUZBQH1Tu9rJPhDBGM1vpa0lRaTGjuPwcU=;
+        b=LcBWJXhrobSVvR212ADda0B4bgM4SS77gIw8a9H2quRGYaEr9s1uSh4NyRmmOTM6AR
+         f9P+WmpA59zjhyXYVpLH9BQJxbjJOsBiyRCVcuBjGMCfvDkuRtefjdj/K2rOmZ0/QUW8
+         aOks1++wsi7QkIt/KsXZ7W2ApxToyvE83KGP5pcHrun1etbObDFgMCUpWzI6d9xAFC6l
+         T9pQPCykpwrdSEyhnm5x/fZpSL8x1y4005f2hnMfrJdVAFGQqS/F/dGSaFckwFhIRQtg
+         ZmFS0WmbCl+jdLyOcxUIwja8c6xvPhNtXiEH4bZpo3YVbar1ZPL5nSSAM0ZKroSpPGZj
+         /npg==
+X-Gm-Message-State: AOAM530c5FiAgr8gOTx+GUziM4+oiKy0F2aS84NwBb41rIBLfN4CWjP+
+        kC2T329MdAS80myz+DWkKQozew==
+X-Google-Smtp-Source: ABdhPJzfFvylKwdUrF2FPTwzYIOKGN+lt3cQyHDyzM9NMUH2Yt1xvzjNDsVkRl+vpAJNOVvLLiBnCA==
+X-Received: by 2002:a19:c2:: with SMTP id 185mr445385lfa.608.1610527425016;
+        Wed, 13 Jan 2021 00:43:45 -0800 (PST)
 Received: from veiron.westermo.com (static-193-12-47-89.cust.tele2.se. [193.12.47.89])
-        by smtp.gmail.com with ESMTPSA id u14sm137027lfk.108.2021.01.13.00.43.43
+        by smtp.gmail.com with ESMTPSA id u14sm137027lfk.108.2021.01.13.00.43.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Jan 2021 00:43:43 -0800 (PST)
+        Wed, 13 Jan 2021 00:43:44 -0800 (PST)
 From:   Tobias Waldekranz <tobias@waldekranz.com>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
         olteanv@gmail.com, j.vosburgh@gmail.com, vfalico@gmail.com,
         andy@greyhouse.net, netdev@vger.kernel.org
-Subject: [PATCH v5 net-next 3/5] net: dsa: Link aggregation support
-Date:   Wed, 13 Jan 2021 09:42:53 +0100
-Message-Id: <20210113084255.22675-4-tobias@waldekranz.com>
+Subject: [PATCH v5 net-next 4/5] net: dsa: mv88e6xxx: Link aggregation support
+Date:   Wed, 13 Jan 2021 09:42:54 +0100
+Message-Id: <20210113084255.22675-5-tobias@waldekranz.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20210113084255.22675-1-tobias@waldekranz.com>
 References: <20210113084255.22675-1-tobias@waldekranz.com>
@@ -63,637 +63,459 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Monitor the following events and notify the driver when:
-
-- A DSA port joins/leaves a LAG.
-- A LAG, made up of DSA ports, joins/leaves a bridge.
-- A DSA port in a LAG is enabled/disabled (enabled meaning
-  "distributing" in 802.3ad LACP terms).
-
-When a LAG joins a bridge, the DSA subsystem will treat that as each
-individual port joining the bridge. The driver may look at the port's
-LAG device pointer to see if it is associated with any LAG, if that is
-required. This is analogue to how switchdev events are replicated out
-to all lower devices when reaching e.g. a LAG.
-
-Drivers can optionally request that DSA maintain a linear mapping from
-a LAG ID to the corresponding netdev by setting ds->num_lag_ids to the
-desired size.
-
-In the event that the hardware is not capable of offloading a
-particular LAG for any reason (the typical case being use of exotic
-modes like broadcast), DSA will take a hands-off approach, allowing
-the LAG to be formed as a pure software construct. This is reported
-back through the extended ACK, but is otherwise transparent to the
-user.
+Support offloading of LAGs to hardware. LAGs may be attached to a
+bridge in which case VLANs, multicast groups, etc. are also offloaded
+as usual.
 
 Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
-Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
-Tested-by: Vladimir Oltean <olteanv@gmail.com>
 ---
+ drivers/net/dsa/mv88e6xxx/chip.c    | 296 +++++++++++++++++++++++++++-
+ drivers/net/dsa/mv88e6xxx/global2.c |   8 +-
+ drivers/net/dsa/mv88e6xxx/global2.h |   5 +
+ drivers/net/dsa/mv88e6xxx/port.c    |  21 ++
+ drivers/net/dsa/mv88e6xxx/port.h    |   5 +
+ 5 files changed, 330 insertions(+), 5 deletions(-)
 
-I tried in vain to win checkpatch's approval of the foreach macros, no
-matter how many parentheses I added. Looking at existing macros, this
-style seems to be widely accepted. Is this a known issue?
-
- include/net/dsa.h  | 60 ++++++++++++++++++++++++++++++
- net/dsa/dsa2.c     | 93 ++++++++++++++++++++++++++++++++++++++++++++++
- net/dsa/dsa_priv.h | 36 ++++++++++++++++++
- net/dsa/port.c     | 79 +++++++++++++++++++++++++++++++++++++++
- net/dsa/slave.c    | 70 ++++++++++++++++++++++++++++++----
- net/dsa/switch.c   | 50 +++++++++++++++++++++++++
- 6 files changed, 381 insertions(+), 7 deletions(-)
-
-diff --git a/include/net/dsa.h b/include/net/dsa.h
-index c3485ba6c312..06e3784ec55c 100644
---- a/include/net/dsa.h
-+++ b/include/net/dsa.h
-@@ -149,8 +149,41 @@ struct dsa_switch_tree {
+diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
+index 4aa7d0a8f197..dcb1726b68cc 100644
+--- a/drivers/net/dsa/mv88e6xxx/chip.c
++++ b/drivers/net/dsa/mv88e6xxx/chip.c
+@@ -1396,15 +1396,32 @@ static int mv88e6xxx_mac_setup(struct mv88e6xxx_chip *chip)
  
- 	/* List of DSA links composing the routing table */
- 	struct list_head rtable;
-+
-+	/* Maps offloaded LAG netdevs to a zero-based linear ID for
-+	 * drivers that need it.
-+	 */
-+	struct net_device **lags;
-+	unsigned int lags_len;
- };
- 
-+#define dsa_lags_foreach_id(_id, _dst)				\
-+	for ((_id) = 0; (_id) < (_dst)->lags_len; (_id)++)	\
-+		if ((_dst)->lags[(_id)])
-+
-+#define dsa_lag_foreach_port(_dp, _dst, _lag)			\
-+	list_for_each_entry((_dp), &(_dst)->ports, list)	\
-+		if ((_dp)->lag_dev == (_lag))
-+
-+static inline struct net_device *dsa_lag_dev(struct dsa_switch_tree *dst,
-+					     unsigned int id)
-+{
-+	return dst->lags[id];
-+}
-+
-+static inline int dsa_lag_id(struct dsa_switch_tree *dst,
-+			     struct net_device *lag)
-+{
-+	unsigned int id;
-+
-+	dsa_lags_foreach_id(id, dst) {
-+		if (dsa_lag_dev(dst, id) == lag)
-+			return id;
-+	}
-+
-+	return -ENODEV;
-+}
-+
- /* TC matchall action types */
- enum dsa_port_mall_action_type {
- 	DSA_PORT_MALL_MIRROR,
-@@ -220,6 +253,8 @@ struct dsa_port {
- 	bool			devlink_port_setup;
- 	struct phylink		*pl;
- 	struct phylink_config	pl_config;
-+	struct net_device	*lag_dev;
-+	bool			lag_tx_enabled;
- 
- 	struct list_head list;
- 
-@@ -340,6 +375,14 @@ struct dsa_switch {
- 	 */
- 	bool			mtu_enforcement_ingress;
- 
-+	/* Drivers that benefit from having an ID associated with each
-+	 * offloaded LAG should set this to the maximum number of
-+	 * supported IDs. DSA will then maintain a mapping of _at
-+	 * least_ these many IDs, accessible to drivers via
-+	 * dsa_lag_id().
-+	 */
-+	unsigned int		num_lag_ids;
-+
- 	size_t num_ports;
- };
- 
-@@ -626,6 +669,13 @@ struct dsa_switch_ops {
- 	void	(*crosschip_bridge_leave)(struct dsa_switch *ds, int tree_index,
- 					  int sw_index, int port,
- 					  struct net_device *br);
-+	int	(*crosschip_lag_change)(struct dsa_switch *ds, int sw_index,
-+					int port);
-+	int	(*crosschip_lag_join)(struct dsa_switch *ds, int sw_index,
-+				      int port, struct net_device *lag,
-+				      struct netdev_lag_upper_info *info);
-+	int	(*crosschip_lag_leave)(struct dsa_switch *ds, int sw_index,
-+				       int port, struct net_device *lag);
- 
- 	/*
- 	 * PTP functionality
-@@ -657,6 +707,16 @@ struct dsa_switch_ops {
- 	int	(*port_change_mtu)(struct dsa_switch *ds, int port,
- 				   int new_mtu);
- 	int	(*port_max_mtu)(struct dsa_switch *ds, int port);
-+
-+	/*
-+	 * LAG integration
-+	 */
-+	int	(*port_lag_change)(struct dsa_switch *ds, int port);
-+	int	(*port_lag_join)(struct dsa_switch *ds, int port,
-+				 struct net_device *lag,
-+				 struct netdev_lag_upper_info *info);
-+	int	(*port_lag_leave)(struct dsa_switch *ds, int port,
-+				  struct net_device *lag);
- };
- 
- #define DSA_DEVLINK_PARAM_DRIVER(_id, _name, _type, _cmodes)		\
-diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
-index 01f21b0b379a..fd343466df27 100644
---- a/net/dsa/dsa2.c
-+++ b/net/dsa/dsa2.c
-@@ -21,6 +21,65 @@
- static DEFINE_MUTEX(dsa2_mutex);
- LIST_HEAD(dsa_tree_list);
- 
-+/**
-+ * dsa_lag_map() - Map LAG netdev to a linear LAG ID
-+ * @dst: Tree in which to record the mapping.
-+ * @lag: Netdev that is to be mapped to an ID.
-+ *
-+ * dsa_lag_id/dsa_lag_dev can then be used to translate between the
-+ * two spaces. The size of the mapping space is determined by the
-+ * driver by setting ds->num_lag_ids. It is perfectly legal to leave
-+ * it unset if it is not needed, in which case these functions become
-+ * no-ops.
-+ */
-+void dsa_lag_map(struct dsa_switch_tree *dst, struct net_device *lag)
-+{
-+	unsigned int id;
-+
-+	if (dsa_lag_id(dst, lag) >= 0)
-+		/* Already mapped */
-+		return;
-+
-+	for (id = 0; id < dst->lags_len; id++) {
-+		if (!dsa_lag_dev(dst, id)) {
-+			dst->lags[id] = lag;
-+			return;
-+		}
-+	}
-+
-+	/* No IDs left, which is OK. Some drivers do not need it. The
-+	 * ones that do, e.g. mv88e6xxx, will discover that dsa_lag_id
-+	 * returns an error for this device when joining the LAG. The
-+	 * driver can then return -EOPNOTSUPP back to DSA, which will
-+	 * fall back to a software LAG.
-+	 */
-+}
-+
-+/**
-+ * dsa_lag_unmap() - Remove a LAG ID mapping
-+ * @dst: Tree in which the mapping is recorded.
-+ * @lag: Netdev that was mapped.
-+ *
-+ * As there may be multiple users of the mapping, it is only removed
-+ * if there are no other references to it.
-+ */
-+void dsa_lag_unmap(struct dsa_switch_tree *dst, struct net_device *lag)
-+{
-+	struct dsa_port *dp;
-+	unsigned int id;
-+
-+	dsa_lag_foreach_port(dp, dst, lag)
-+		/* There are remaining users of this mapping */
-+		return;
-+
-+	dsa_lags_foreach_id(id, dst) {
-+		if (dsa_lag_dev(dst, id) == lag) {
-+			dst->lags[id] = NULL;
-+			break;
-+		}
-+	}
-+}
-+
- struct dsa_switch *dsa_switch_find(int tree_index, int sw_index)
+ static int mv88e6xxx_pvt_map(struct mv88e6xxx_chip *chip, int dev, int port)
  {
- 	struct dsa_switch_tree *dst;
-@@ -578,6 +637,32 @@ static void dsa_tree_teardown_master(struct dsa_switch_tree *dst)
- 			dsa_master_teardown(dp->master);
++	struct dsa_switch_tree *dst = chip->ds->dst;
++	struct dsa_switch *ds;
++	struct dsa_port *dp;
+ 	u16 pvlan = 0;
+ 
+ 	if (!mv88e6xxx_has_pvt(chip))
+ 		return 0;
+ 
+ 	/* Skip the local source device, which uses in-chip port VLAN */
+-	if (dev != chip->ds->index)
++	if (dev != chip->ds->index) {
+ 		pvlan = mv88e6xxx_port_vlan(chip, dev, port);
+ 
++		ds = dsa_switch_find(dst->index, dev);
++		dp = ds ? dsa_to_port(ds, port) : NULL;
++		if (dp && dp->lag_dev) {
++			/* As the PVT is used to limit flooding of
++			 * FORWARD frames, which use the LAG ID as the
++			 * source port, we must translate dev/port to
++			 * the special "LAG device" in the PVT, using
++			 * the LAG ID as the port number.
++			 */
++			dev = MV88E6XXX_G2_PVT_ADRR_DEV_TRUNK;
++			port = dsa_lag_id(dst, dp->lag_dev);
++		}
++	}
++
+ 	return mv88e6xxx_g2_pvt_write(chip, dev, port, pvlan);
  }
  
-+static int dsa_tree_setup_lags(struct dsa_switch_tree *dst)
+@@ -5364,6 +5381,271 @@ static int mv88e6xxx_port_egress_floods(struct dsa_switch *ds, int port,
+ 	return err;
+ }
+ 
++static bool mv88e6xxx_lag_can_offload(struct dsa_switch *ds,
++				      struct net_device *lag,
++				      struct netdev_lag_upper_info *info)
 +{
-+	unsigned int len = 0;
 +	struct dsa_port *dp;
++	int id, members = 0;
 +
-+	list_for_each_entry(dp, &dst->ports, list) {
-+		if (dp->ds->num_lag_ids > len)
-+			len = dp->ds->num_lag_ids;
-+	}
++	id = dsa_lag_id(ds->dst, lag);
++	if (id < 0 || id >= ds->num_lag_ids)
++		return false;
 +
-+	if (!len)
-+		return 0;
++	dsa_lag_foreach_port(dp, ds->dst, lag)
++		/* Includes the port joining the LAG */
++		members++;
 +
-+	dst->lags = kcalloc(len, sizeof(*dst->lags), GFP_KERNEL);
-+	if (!dst->lags)
-+		return -ENOMEM;
++	if (members > 8)
++		return false;
 +
-+	dst->lags_len = len;
-+	return 0;
++	/* We could potentially relax this to include active
++	 * backup in the future.
++	 */
++	if (info->tx_type != NETDEV_LAG_TX_TYPE_HASH)
++		return false;
++
++	/* Ideally we would also validate that the hash type matches
++	 * the hardware. Alas, this is always set to unknown on team
++	 * interfaces.
++	 */
++	return true;
 +}
 +
-+static void dsa_tree_teardown_lags(struct dsa_switch_tree *dst)
++static int mv88e6xxx_lag_sync_map(struct dsa_switch *ds, struct net_device *lag)
 +{
-+	kfree(dst->lags);
++	struct mv88e6xxx_chip *chip = ds->priv;
++	struct dsa_port *dp;
++	u16 map = 0;
++	int id;
++
++	id = dsa_lag_id(ds->dst, lag);
++
++	/* Build the map of all ports to distribute flows destined for
++	 * this LAG. This can be either a local user port, or a DSA
++	 * port if the LAG port is on a remote chip.
++	 */
++	dsa_lag_foreach_port(dp, ds->dst, lag)
++		map |= BIT(dsa_towards_port(ds, dp->ds->index, dp->index));
++
++	return mv88e6xxx_g2_trunk_mapping_write(chip, id, map);
 +}
 +
- static int dsa_tree_setup(struct dsa_switch_tree *dst)
- {
- 	bool complete;
-@@ -605,12 +690,18 @@ static int dsa_tree_setup(struct dsa_switch_tree *dst)
- 	if (err)
- 		goto teardown_switches;
- 
-+	err = dsa_tree_setup_lags(dst);
-+	if (err)
-+		goto teardown_master;
-+
- 	dst->setup = true;
- 
- 	pr_info("DSA: tree %d setup\n", dst->index);
- 
- 	return 0;
- 
-+teardown_master:
-+	dsa_tree_teardown_master(dst);
- teardown_switches:
- 	dsa_tree_teardown_switches(dst);
- teardown_default_cpu:
-@@ -626,6 +717,8 @@ static void dsa_tree_teardown(struct dsa_switch_tree *dst)
- 	if (!dst->setup)
- 		return;
- 
-+	dsa_tree_teardown_lags(dst);
-+
- 	dsa_tree_teardown_master(dst);
- 
- 	dsa_tree_teardown_switches(dst);
-diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
-index 89143cc049db..2ce46bb87703 100644
---- a/net/dsa/dsa_priv.h
-+++ b/net/dsa/dsa_priv.h
-@@ -20,6 +20,9 @@ enum {
- 	DSA_NOTIFIER_BRIDGE_LEAVE,
- 	DSA_NOTIFIER_FDB_ADD,
- 	DSA_NOTIFIER_FDB_DEL,
-+	DSA_NOTIFIER_LAG_CHANGE,
-+	DSA_NOTIFIER_LAG_JOIN,
-+	DSA_NOTIFIER_LAG_LEAVE,
- 	DSA_NOTIFIER_MDB_ADD,
- 	DSA_NOTIFIER_MDB_DEL,
- 	DSA_NOTIFIER_VLAN_ADD,
-@@ -55,6 +58,15 @@ struct dsa_notifier_mdb_info {
- 	int port;
- };
- 
-+/* DSA_NOTIFIER_LAG_* */
-+struct dsa_notifier_lag_info {
-+	struct net_device *lag;
-+	int sw_index;
-+	int port;
-+
-+	struct netdev_lag_upper_info *info;
++static const u8 mv88e6xxx_lag_mask_table[8][8] = {
++	/* Row number corresponds to the number of active members in a
++	 * LAG. Each column states which of the eight hash buckets are
++	 * mapped to the column:th port in the LAG.
++	 *
++	 * Example: In a LAG with three active ports, the second port
++	 * ([2][1]) would be selected for traffic mapped to buckets
++	 * 3,4,5 (0x38).
++	 */
++	{ 0xff,    0,    0,    0,    0,    0,    0,    0 },
++	{ 0x0f, 0xf0,    0,    0,    0,    0,    0,    0 },
++	{ 0x07, 0x38, 0xc0,    0,    0,    0,    0,    0 },
++	{ 0x03, 0x0c, 0x30, 0xc0,    0,    0,    0,    0 },
++	{ 0x03, 0x0c, 0x30, 0x40, 0x80,    0,    0,    0 },
++	{ 0x03, 0x0c, 0x10, 0x20, 0x40, 0x80,    0,    0 },
++	{ 0x03, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80,    0 },
++	{ 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80 },
 +};
 +
- /* DSA_NOTIFIER_VLAN_* */
- struct dsa_notifier_vlan_info {
- 	const struct switchdev_obj_port_vlan *vlan;
-@@ -134,6 +146,11 @@ void dsa_port_disable_rt(struct dsa_port *dp);
- void dsa_port_disable(struct dsa_port *dp);
- int dsa_port_bridge_join(struct dsa_port *dp, struct net_device *br);
- void dsa_port_bridge_leave(struct dsa_port *dp, struct net_device *br);
-+int dsa_port_lag_change(struct dsa_port *dp,
-+			struct netdev_lag_lower_state_info *linfo);
-+int dsa_port_lag_join(struct dsa_port *dp, struct net_device *lag_dev,
-+		      struct netdev_lag_upper_info *uinfo);
-+void dsa_port_lag_leave(struct dsa_port *dp, struct net_device *lag_dev);
- int dsa_port_vlan_filtering(struct dsa_port *dp, bool vlan_filtering);
- bool dsa_port_skip_vlan_configuration(struct dsa_port *dp);
- int dsa_port_ageing_time(struct dsa_port *dp, clock_t ageing_clock);
-@@ -159,6 +176,22 @@ int dsa_port_link_register_of(struct dsa_port *dp);
- void dsa_port_link_unregister_of(struct dsa_port *dp);
- extern const struct phylink_mac_ops dsa_port_phylink_mac_ops;
- 
-+static inline bool dsa_port_offloads_netdev(struct dsa_port *dp,
-+					    struct net_device *dev)
++static void mv88e6xxx_lag_set_port_mask(u16 *mask, int port,
++					int num_tx, int nth)
 +{
-+	/* Switchdev offloading can be configured on: */
++	u8 active = 0;
++	int i;
 +
-+	if (dev == dp->slave)
-+		/* DSA ports directly connected to a bridge. */
-+		return true;
++	num_tx = num_tx <= 8 ? num_tx : 8;
++	if (nth < num_tx)
++		active = mv88e6xxx_lag_mask_table[num_tx - 1][nth];
 +
-+	if (dp->lag_dev == dev)
-+		/* DSA ports connected to a bridge via a LAG */
-+		return true;
-+
-+	return false;
++	for (i = 0; i < 8; i++) {
++		if (BIT(i) & active)
++			mask[i] |= BIT(port);
++	}
 +}
 +
- /* slave.c */
- extern const struct dsa_device_ops notag_netdev_ops;
- void dsa_slave_mii_bus_init(struct dsa_switch *ds);
-@@ -248,6 +281,9 @@ int dsa_switch_register_notifier(struct dsa_switch *ds);
- void dsa_switch_unregister_notifier(struct dsa_switch *ds);
- 
- /* dsa2.c */
-+void dsa_lag_map(struct dsa_switch_tree *dst, struct net_device *lag);
-+void dsa_lag_unmap(struct dsa_switch_tree *dst, struct net_device *lag);
-+
- extern struct list_head dsa_tree_list;
- 
- #endif
-diff --git a/net/dsa/port.c b/net/dsa/port.c
-index e59bf66c4c0d..f5b0f72ee7cd 100644
---- a/net/dsa/port.c
-+++ b/net/dsa/port.c
-@@ -191,6 +191,85 @@ void dsa_port_bridge_leave(struct dsa_port *dp, struct net_device *br)
- 	dsa_port_set_state_now(dp, BR_STATE_FORWARDING);
- }
- 
-+int dsa_port_lag_change(struct dsa_port *dp,
-+			struct netdev_lag_lower_state_info *linfo)
++static int mv88e6xxx_lag_sync_masks(struct dsa_switch *ds)
 +{
-+	struct dsa_notifier_lag_info info = {
-+		.sw_index = dp->ds->index,
-+		.port = dp->index,
-+	};
-+	bool tx_enabled;
++	struct mv88e6xxx_chip *chip = ds->priv;
++	unsigned int id, num_tx;
++	struct net_device *lag;
++	struct dsa_port *dp;
++	int i, err, nth;
++	u16 mask[8];
++	u16 ivec;
 +
-+	if (!dp->lag_dev)
-+		return 0;
++	/* Assume no port is a member of any LAG. */
++	ivec = BIT(mv88e6xxx_num_ports(chip)) - 1;
 +
-+	/* On statically configured aggregates (e.g. loadbalance
-+	 * without LACP) ports will always be tx_enabled, even if the
-+	 * link is down. Thus we require both link_up and tx_enabled
-+	 * in order to include it in the tx set.
-+	 */
-+	tx_enabled = linfo->link_up && linfo->tx_enabled;
++	/* Disable all masks for ports that _are_ members of a LAG. */
++	list_for_each_entry(dp, &ds->dst->ports, list) {
++		if (!dp->lag_dev || dp->ds != ds)
++			continue;
 +
-+	if (tx_enabled == dp->lag_tx_enabled)
-+		return 0;
-+
-+	dp->lag_tx_enabled = tx_enabled;
-+
-+	return dsa_port_notify(dp, DSA_NOTIFIER_LAG_CHANGE, &info);
-+}
-+
-+int dsa_port_lag_join(struct dsa_port *dp, struct net_device *lag,
-+		      struct netdev_lag_upper_info *uinfo)
-+{
-+	struct dsa_notifier_lag_info info = {
-+		.sw_index = dp->ds->index,
-+		.port = dp->index,
-+		.lag = lag,
-+		.info = uinfo,
-+	};
-+	int err;
-+
-+	dsa_lag_map(dp->ds->dst, lag);
-+	dp->lag_dev = lag;
-+
-+	err = dsa_port_notify(dp, DSA_NOTIFIER_LAG_JOIN, &info);
-+	if (err) {
-+		dp->lag_dev = NULL;
-+		dsa_lag_unmap(dp->ds->dst, lag);
++		ivec &= ~BIT(dp->index);
 +	}
 +
-+	return err;
-+}
++	for (i = 0; i < 8; i++)
++		mask[i] = ivec;
 +
-+void dsa_port_lag_leave(struct dsa_port *dp, struct net_device *lag)
-+{
-+	struct dsa_notifier_lag_info info = {
-+		.sw_index = dp->ds->index,
-+		.port = dp->index,
-+		.lag = lag,
-+	};
-+	int err;
-+
-+	if (!dp->lag_dev)
-+		return;
-+
-+	/* Port might have been part of a LAG that in turn was
-+	 * attached to a bridge.
++	/* Enable the correct subset of masks for all LAG ports that
++	 * are in the Tx set.
 +	 */
-+	if (dp->bridge_dev)
-+		dsa_port_bridge_leave(dp, dp->bridge_dev);
++	dsa_lags_foreach_id(id, ds->dst) {
++		lag = dsa_lag_dev(ds->dst, id);
++		if (!lag)
++			continue;
 +
-+	dp->lag_tx_enabled = false;
-+	dp->lag_dev = NULL;
++		num_tx = 0;
++		dsa_lag_foreach_port(dp, ds->dst, lag) {
++			if (dp->lag_tx_enabled)
++				num_tx++;
++		}
 +
-+	err = dsa_port_notify(dp, DSA_NOTIFIER_LAG_LEAVE, &info);
-+	if (err)
-+		pr_err("DSA: failed to notify DSA_NOTIFIER_LAG_LEAVE: %d\n",
-+		       err);
++		if (!num_tx)
++			continue;
 +
-+	dsa_lag_unmap(dp->ds->dst, lag);
-+}
++		nth = 0;
++		dsa_lag_foreach_port(dp, ds->dst, lag) {
++			if (!dp->lag_tx_enabled)
++				continue;
 +
- /* Must be called under rcu_read_lock() */
- static bool dsa_port_can_apply_vlan_filtering(struct dsa_port *dp,
- 					      bool vlan_filtering)
-diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index e53c8ca6eb66..c5c81cba8259 100644
---- a/net/dsa/slave.c
-+++ b/net/dsa/slave.c
-@@ -273,7 +273,7 @@ static int dsa_slave_port_attr_set(struct net_device *dev,
- 	struct dsa_port *dp = dsa_slave_to_port(dev);
- 	int ret;
- 
--	if (attr->orig_dev != dev)
-+	if (!dsa_port_offloads_netdev(dp, attr->orig_dev))
- 		return -EOPNOTSUPP;
- 
- 	switch (attr->id) {
-@@ -333,7 +333,7 @@ static int dsa_slave_vlan_add(struct net_device *dev,
- 	struct switchdev_obj_port_vlan vlan;
- 	int err;
- 
--	if (obj->orig_dev != dev)
-+	if (!dsa_port_offloads_netdev(dp, obj->orig_dev))
- 		return -EOPNOTSUPP;
- 
- 	if (dsa_port_skip_vlan_configuration(dp))
-@@ -378,7 +378,7 @@ static int dsa_slave_port_obj_add(struct net_device *dev,
- 
- 	switch (obj->id) {
- 	case SWITCHDEV_OBJ_ID_PORT_MDB:
--		if (obj->orig_dev != dev)
-+		if (!dsa_port_offloads_netdev(dp, obj->orig_dev))
- 			return -EOPNOTSUPP;
- 		err = dsa_port_mdb_add(dp, SWITCHDEV_OBJ_PORT_MDB(obj));
- 		break;
-@@ -407,7 +407,7 @@ static int dsa_slave_vlan_del(struct net_device *dev,
- 	struct switchdev_obj_port_vlan *vlan;
- 	int err;
- 
--	if (obj->orig_dev != dev)
-+	if (!dsa_port_offloads_netdev(dp, obj->orig_dev))
- 		return -EOPNOTSUPP;
- 
- 	if (dsa_port_skip_vlan_configuration(dp))
-@@ -435,7 +435,7 @@ static int dsa_slave_port_obj_del(struct net_device *dev,
- 
- 	switch (obj->id) {
- 	case SWITCHDEV_OBJ_ID_PORT_MDB:
--		if (obj->orig_dev != dev)
-+		if (!dsa_port_offloads_netdev(dp, obj->orig_dev))
- 			return -EOPNOTSUPP;
- 		err = dsa_port_mdb_del(dp, SWITCHDEV_OBJ_PORT_MDB(obj));
- 		break;
-@@ -1907,6 +1907,46 @@ static int dsa_slave_changeupper(struct net_device *dev,
- 			dsa_port_bridge_leave(dp, info->upper_dev);
- 			err = NOTIFY_OK;
- 		}
-+	} else if (netif_is_lag_master(info->upper_dev)) {
-+		if (info->linking) {
-+			err = dsa_port_lag_join(dp, info->upper_dev,
-+						info->upper_info);
-+			if (err == -EOPNOTSUPP) {
-+				NL_SET_ERR_MSG_MOD(info->info.extack,
-+						   "Offloading not supported");
-+				err = 0;
-+			}
-+			err = notifier_from_errno(err);
-+		} else {
-+			dsa_port_lag_leave(dp, info->upper_dev);
-+			err = NOTIFY_OK;
++			if (dp->ds == ds)
++				mv88e6xxx_lag_set_port_mask(mask, dp->index,
++							    num_tx, nth);
++
++			nth++;
 +		}
 +	}
 +
++	for (i = 0; i < 8; i++) {
++		err = mv88e6xxx_g2_trunk_mask_write(chip, i, true, mask[i]);
++		if (err)
++			return err;
++	}
++
++	return 0;
++}
++
++static int mv88e6xxx_lag_sync_masks_map(struct dsa_switch *ds,
++					struct net_device *lag)
++{
++	int err;
++
++	err = mv88e6xxx_lag_sync_masks(ds);
++
++	if (!err)
++		err = mv88e6xxx_lag_sync_map(ds, lag);
++
 +	return err;
 +}
 +
-+static int
-+dsa_slave_lag_changeupper(struct net_device *dev,
-+			  struct netdev_notifier_changeupper_info *info)
++static int mv88e6xxx_port_lag_change(struct dsa_switch *ds, int port)
 +{
-+	struct net_device *lower;
-+	struct list_head *iter;
-+	int err = NOTIFY_DONE;
-+	struct dsa_port *dp;
++	struct mv88e6xxx_chip *chip = ds->priv;
++	int err;
 +
-+	netdev_for_each_lower_dev(dev, lower, iter) {
-+		if (!dsa_slave_dev_check(lower))
-+			continue;
++	mv88e6xxx_reg_lock(chip);
++	err = mv88e6xxx_lag_sync_masks(ds);
++	mv88e6xxx_reg_unlock(chip);
++	return err;
++}
 +
-+		dp = dsa_slave_to_port(lower);
-+		if (!dp->lag_dev)
-+			/* Software LAG */
-+			continue;
++static int mv88e6xxx_port_lag_join(struct dsa_switch *ds, int port,
++				   struct net_device *lag,
++				   struct netdev_lag_upper_info *info)
++{
++	struct mv88e6xxx_chip *chip = ds->priv;
++	int err, id;
 +
-+		err = dsa_slave_changeupper(lower, info);
-+		if (notifier_to_errno(err))
-+			break;
- 	}
++	if (!mv88e6xxx_lag_can_offload(ds, lag, info))
++		return -EOPNOTSUPP;
++
++	id = dsa_lag_id(ds->dst, lag);
++
++	mv88e6xxx_reg_lock(chip);
++
++	err = mv88e6xxx_port_set_trunk(chip, port, true, id);
++	if (err)
++		goto err_unlock;
++
++	err = mv88e6xxx_lag_sync_masks_map(ds, lag);
++	if (err)
++		goto err_clear_trunk;
++
++	mv88e6xxx_reg_unlock(chip);
++	return 0;
++
++err_clear_trunk:
++	mv88e6xxx_port_set_trunk(chip, port, false, 0);
++err_unlock:
++	mv88e6xxx_reg_unlock(chip);
++	return err;
++}
++
++static int mv88e6xxx_port_lag_leave(struct dsa_switch *ds, int port,
++				    struct net_device *lag)
++{
++	struct mv88e6xxx_chip *chip = ds->priv;
++	int err_sync, err_trunk;
++
++	mv88e6xxx_reg_lock(chip);
++	err_sync = mv88e6xxx_lag_sync_masks_map(ds, lag);
++	err_trunk = mv88e6xxx_port_set_trunk(chip, port, false, 0);
++	mv88e6xxx_reg_unlock(chip);
++	return err_sync ? : err_trunk;
++}
++
++static int mv88e6xxx_crosschip_lag_change(struct dsa_switch *ds, int sw_index,
++					  int port)
++{
++	struct mv88e6xxx_chip *chip = ds->priv;
++	int err;
++
++	mv88e6xxx_reg_lock(chip);
++	err = mv88e6xxx_lag_sync_masks(ds);
++	mv88e6xxx_reg_unlock(chip);
++	return err;
++}
++
++static int mv88e6xxx_crosschip_lag_join(struct dsa_switch *ds, int sw_index,
++					int port, struct net_device *lag,
++					struct netdev_lag_upper_info *info)
++{
++	struct mv88e6xxx_chip *chip = ds->priv;
++	int err;
++
++	if (!mv88e6xxx_lag_can_offload(ds, lag, info))
++		return -EOPNOTSUPP;
++
++	mv88e6xxx_reg_lock(chip);
++
++	err = mv88e6xxx_lag_sync_masks_map(ds, lag);
++	if (err)
++		goto unlock;
++
++	err = mv88e6xxx_pvt_map(chip, sw_index, port);
++
++unlock:
++	mv88e6xxx_reg_unlock(chip);
++	return err;
++}
++
++static int mv88e6xxx_crosschip_lag_leave(struct dsa_switch *ds, int sw_index,
++					 int port, struct net_device *lag)
++{
++	struct mv88e6xxx_chip *chip = ds->priv;
++	int err_sync, err_pvt;
++
++	mv88e6xxx_reg_lock(chip);
++	err_sync = mv88e6xxx_lag_sync_masks_map(ds, lag);
++	err_pvt = mv88e6xxx_pvt_map(chip, sw_index, port);
++	mv88e6xxx_reg_unlock(chip);
++	return err_sync ? : err_pvt;
++}
++
+ static const struct dsa_switch_ops mv88e6xxx_switch_ops = {
+ 	.get_tag_protocol	= mv88e6xxx_get_tag_protocol,
+ 	.setup			= mv88e6xxx_setup,
+@@ -5416,6 +5698,12 @@ static const struct dsa_switch_ops mv88e6xxx_switch_ops = {
+ 	.devlink_param_get	= mv88e6xxx_devlink_param_get,
+ 	.devlink_param_set	= mv88e6xxx_devlink_param_set,
+ 	.devlink_info_get	= mv88e6xxx_devlink_info_get,
++	.port_lag_change	= mv88e6xxx_port_lag_change,
++	.port_lag_join		= mv88e6xxx_port_lag_join,
++	.port_lag_leave		= mv88e6xxx_port_lag_leave,
++	.crosschip_lag_change	= mv88e6xxx_crosschip_lag_change,
++	.crosschip_lag_join	= mv88e6xxx_crosschip_lag_join,
++	.crosschip_lag_leave	= mv88e6xxx_crosschip_lag_leave,
+ };
  
- 	return err;
-@@ -2004,10 +2044,26 @@ static int dsa_slave_netdevice_event(struct notifier_block *nb,
- 		break;
- 	}
- 	case NETDEV_CHANGEUPPER:
-+		if (dsa_slave_dev_check(dev))
-+			return dsa_slave_changeupper(dev, ptr);
-+
-+		if (netif_is_lag_master(dev))
-+			return dsa_slave_lag_changeupper(dev, ptr);
-+
-+		break;
-+	case NETDEV_CHANGELOWERSTATE: {
-+		struct netdev_notifier_changelowerstate_info *info = ptr;
-+		struct dsa_port *dp;
-+		int err;
-+
- 		if (!dsa_slave_dev_check(dev))
--			return NOTIFY_DONE;
-+			break;
+ static int mv88e6xxx_register_switch(struct mv88e6xxx_chip *chip)
+@@ -5435,6 +5723,12 @@ static int mv88e6xxx_register_switch(struct mv88e6xxx_chip *chip)
+ 	ds->ageing_time_min = chip->info->age_time_coeff;
+ 	ds->ageing_time_max = chip->info->age_time_coeff * U8_MAX;
  
--		return dsa_slave_changeupper(dev, ptr);
-+		dp = dsa_slave_to_port(dev);
++	/* Some chips support up to 32, but that requires enabling the
++	 * 5-bit port mode, which we do not support. 640k^W16 ought to
++	 * be enough for anyone.
++	 */
++	ds->num_lag_ids = 16;
 +
-+		err = dsa_port_lag_change(dp, info->lower_state_info);
-+		return notifier_from_errno(err);
-+	}
- 	}
+ 	dev_set_drvdata(dev, ds);
  
- 	return NOTIFY_DONE;
-diff --git a/net/dsa/switch.c b/net/dsa/switch.c
-index 21d2f842d068..cc0b25f3adea 100644
---- a/net/dsa/switch.c
-+++ b/net/dsa/switch.c
-@@ -166,6 +166,47 @@ static int dsa_switch_fdb_del(struct dsa_switch *ds,
- 	return ds->ops->port_fdb_del(ds, port, info->addr, info->vid);
+ 	return dsa_register_switch(ds);
+diff --git a/drivers/net/dsa/mv88e6xxx/global2.c b/drivers/net/dsa/mv88e6xxx/global2.c
+index 75b227d0f73b..da8bac8813e1 100644
+--- a/drivers/net/dsa/mv88e6xxx/global2.c
++++ b/drivers/net/dsa/mv88e6xxx/global2.c
+@@ -126,8 +126,8 @@ int mv88e6xxx_g2_device_mapping_write(struct mv88e6xxx_chip *chip, int target,
+ 
+ /* Offset 0x07: Trunk Mask Table register */
+ 
+-static int mv88e6xxx_g2_trunk_mask_write(struct mv88e6xxx_chip *chip, int num,
+-					 bool hash, u16 mask)
++int mv88e6xxx_g2_trunk_mask_write(struct mv88e6xxx_chip *chip, int num,
++				  bool hash, u16 mask)
+ {
+ 	u16 val = (num << 12) | (mask & mv88e6xxx_port_mask(chip));
+ 
+@@ -140,8 +140,8 @@ static int mv88e6xxx_g2_trunk_mask_write(struct mv88e6xxx_chip *chip, int num,
+ 
+ /* Offset 0x08: Trunk Mapping Table register */
+ 
+-static int mv88e6xxx_g2_trunk_mapping_write(struct mv88e6xxx_chip *chip, int id,
+-					    u16 map)
++int mv88e6xxx_g2_trunk_mapping_write(struct mv88e6xxx_chip *chip, int id,
++				     u16 map)
+ {
+ 	const u16 port_mask = BIT(mv88e6xxx_num_ports(chip)) - 1;
+ 	u16 val = (id << 11) | (map & port_mask);
+diff --git a/drivers/net/dsa/mv88e6xxx/global2.h b/drivers/net/dsa/mv88e6xxx/global2.h
+index 1f42ee656816..60febaf4da76 100644
+--- a/drivers/net/dsa/mv88e6xxx/global2.h
++++ b/drivers/net/dsa/mv88e6xxx/global2.h
+@@ -101,6 +101,7 @@
+ #define MV88E6XXX_G2_PVT_ADDR_OP_WRITE_PVLAN	0x3000
+ #define MV88E6XXX_G2_PVT_ADDR_OP_READ		0x4000
+ #define MV88E6XXX_G2_PVT_ADDR_PTR_MASK		0x01ff
++#define MV88E6XXX_G2_PVT_ADRR_DEV_TRUNK		0x1f
+ 
+ /* Offset 0x0C: Cross-chip Port VLAN Data Register */
+ #define MV88E6XXX_G2_PVT_DATA		0x0c
+@@ -345,6 +346,10 @@ int mv88e6352_g2_mgmt_rsvd2cpu(struct mv88e6xxx_chip *chip);
+ 
+ int mv88e6xxx_g2_pot_clear(struct mv88e6xxx_chip *chip);
+ 
++int mv88e6xxx_g2_trunk_mask_write(struct mv88e6xxx_chip *chip, int num,
++				  bool hash, u16 mask);
++int mv88e6xxx_g2_trunk_mapping_write(struct mv88e6xxx_chip *chip, int id,
++				     u16 map);
+ int mv88e6xxx_g2_trunk_clear(struct mv88e6xxx_chip *chip);
+ 
+ int mv88e6xxx_g2_device_mapping_write(struct mv88e6xxx_chip *chip, int target,
+diff --git a/drivers/net/dsa/mv88e6xxx/port.c b/drivers/net/dsa/mv88e6xxx/port.c
+index 77a5fd1798cd..4b46e10a2dde 100644
+--- a/drivers/net/dsa/mv88e6xxx/port.c
++++ b/drivers/net/dsa/mv88e6xxx/port.c
+@@ -851,6 +851,27 @@ int mv88e6xxx_port_set_message_port(struct mv88e6xxx_chip *chip, int port,
+ 	return mv88e6xxx_port_write(chip, port, MV88E6XXX_PORT_CTL1, val);
  }
  
-+static int dsa_switch_lag_change(struct dsa_switch *ds,
-+				 struct dsa_notifier_lag_info *info)
++int mv88e6xxx_port_set_trunk(struct mv88e6xxx_chip *chip, int port,
++			     bool trunk, u8 id)
 +{
-+	if (ds->index == info->sw_index && ds->ops->port_lag_change)
-+		return ds->ops->port_lag_change(ds, info->port);
++	u16 val;
++	int err;
 +
-+	if (ds->index != info->sw_index && ds->ops->crosschip_lag_change)
-+		return ds->ops->crosschip_lag_change(ds, info->sw_index,
-+						     info->port);
++	err = mv88e6xxx_port_read(chip, port, MV88E6XXX_PORT_CTL1, &val);
++	if (err)
++		return err;
 +
-+	return 0;
++	val &= ~MV88E6XXX_PORT_CTL1_TRUNK_ID_MASK;
++
++	if (trunk)
++		val |= MV88E6XXX_PORT_CTL1_TRUNK_PORT |
++			(id << MV88E6XXX_PORT_CTL1_TRUNK_ID_SHIFT);
++	else
++		val &= ~MV88E6XXX_PORT_CTL1_TRUNK_PORT;
++
++	return mv88e6xxx_port_write(chip, port, MV88E6XXX_PORT_CTL1, val);
 +}
 +
-+static int dsa_switch_lag_join(struct dsa_switch *ds,
-+			       struct dsa_notifier_lag_info *info)
-+{
-+	if (ds->index == info->sw_index && ds->ops->port_lag_join)
-+		return ds->ops->port_lag_join(ds, info->port, info->lag,
-+					      info->info);
-+
-+	if (ds->index != info->sw_index && ds->ops->crosschip_lag_join)
-+		return ds->ops->crosschip_lag_join(ds, info->sw_index,
-+						   info->port, info->lag,
-+						   info->info);
-+
-+	return 0;
-+}
-+
-+static int dsa_switch_lag_leave(struct dsa_switch *ds,
-+				struct dsa_notifier_lag_info *info)
-+{
-+	if (ds->index == info->sw_index && ds->ops->port_lag_leave)
-+		return ds->ops->port_lag_leave(ds, info->port, info->lag);
-+
-+	if (ds->index != info->sw_index && ds->ops->crosschip_lag_leave)
-+		return ds->ops->crosschip_lag_leave(ds, info->sw_index,
-+						    info->port, info->lag);
-+
-+	return 0;
-+}
-+
- static bool dsa_switch_mdb_match(struct dsa_switch *ds, int port,
- 				 struct dsa_notifier_mdb_info *info)
- {
-@@ -278,6 +319,15 @@ static int dsa_switch_event(struct notifier_block *nb,
- 	case DSA_NOTIFIER_FDB_DEL:
- 		err = dsa_switch_fdb_del(ds, info);
- 		break;
-+	case DSA_NOTIFIER_LAG_CHANGE:
-+		err = dsa_switch_lag_change(ds, info);
-+		break;
-+	case DSA_NOTIFIER_LAG_JOIN:
-+		err = dsa_switch_lag_join(ds, info);
-+		break;
-+	case DSA_NOTIFIER_LAG_LEAVE:
-+		err = dsa_switch_lag_leave(ds, info);
-+		break;
- 	case DSA_NOTIFIER_MDB_ADD:
- 		err = dsa_switch_mdb_add(ds, info);
- 		break;
+ /* Offset 0x06: Port Based VLAN Map */
+ 
+ int mv88e6xxx_port_set_vlan_map(struct mv88e6xxx_chip *chip, int port, u16 map)
+diff --git a/drivers/net/dsa/mv88e6xxx/port.h b/drivers/net/dsa/mv88e6xxx/port.h
+index 500e1d4896ff..a729bba050df 100644
+--- a/drivers/net/dsa/mv88e6xxx/port.h
++++ b/drivers/net/dsa/mv88e6xxx/port.h
+@@ -168,6 +168,9 @@
+ /* Offset 0x05: Port Control 1 */
+ #define MV88E6XXX_PORT_CTL1			0x05
+ #define MV88E6XXX_PORT_CTL1_MESSAGE_PORT	0x8000
++#define MV88E6XXX_PORT_CTL1_TRUNK_PORT		0x4000
++#define MV88E6XXX_PORT_CTL1_TRUNK_ID_MASK	0x0f00
++#define MV88E6XXX_PORT_CTL1_TRUNK_ID_SHIFT	8
+ #define MV88E6XXX_PORT_CTL1_FID_11_4_MASK	0x00ff
+ 
+ /* Offset 0x06: Port Based VLAN Map */
+@@ -351,6 +354,8 @@ int mv88e6351_port_set_ether_type(struct mv88e6xxx_chip *chip, int port,
+ 				  u16 etype);
+ int mv88e6xxx_port_set_message_port(struct mv88e6xxx_chip *chip, int port,
+ 				    bool message_port);
++int mv88e6xxx_port_set_trunk(struct mv88e6xxx_chip *chip, int port,
++			     bool trunk, u8 id);
+ int mv88e6165_port_set_jumbo_size(struct mv88e6xxx_chip *chip, int port,
+ 				  size_t size);
+ int mv88e6095_port_egress_rate_limiting(struct mv88e6xxx_chip *chip, int port);
 -- 
 2.17.1
 
