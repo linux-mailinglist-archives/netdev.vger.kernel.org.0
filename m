@@ -2,209 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 85F802F551C
-	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 00:10:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BDBC92F5542
+	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 00:46:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729409AbhAMXJY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jan 2021 18:09:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58296 "EHLO
+        id S1729597AbhAMXp7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jan 2021 18:45:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43118 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729372AbhAMWj5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 17:39:57 -0500
-Received: from mail-qk1-x729.google.com (mail-qk1-x729.google.com [IPv6:2607:f8b0:4864:20::729])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05789C061786;
-        Wed, 13 Jan 2021 14:38:39 -0800 (PST)
-Received: by mail-qk1-x729.google.com with SMTP id v126so4473480qkd.11;
-        Wed, 13 Jan 2021 14:38:38 -0800 (PST)
+        with ESMTP id S1729550AbhAMXmB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 18:42:01 -0500
+Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00149C06138A;
+        Wed, 13 Jan 2021 15:41:30 -0800 (PST)
+Received: by mail-pf1-x42c.google.com with SMTP id h10so2233680pfo.9;
+        Wed, 13 Jan 2021 15:41:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=GFmuZbwYLEmY3pcAyxIqKW63OwSHxC/C2Nsx5FErA3M=;
-        b=hIir710Y6kxpAHZTvbj+ffs1bXRvZ3R6UMphoJudDGq1vFfwGjoNYxfrfrunyTUfWA
-         MncASkBXMdmio6tzJs6zzIiAubWBxk6byNvp9n+USJrqh+Q1ARYS+fxdA6Qb6scDx9RH
-         2F6zqYZjxUyUKD95BqzmZ+eWx9xBl0015/HBT8gfhizvmAt0WPduQBNK0A0qgZXNeZc/
-         eL0ztWXHKWY6Lwv6x9b/1TTDI4NHANFotVgPzMfpoi0A0O4GS/BTl2BmTs5NbKCYs7Nc
-         7RX8eqt9R59x+EFNf4RC/vE1qr/QG+O5VFSQk8Ejo7Aa+HoCv6xwY/rfZP7jRT29oPMR
-         ErRA==
+        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=DAslXiykyfrCbfxspz3DRx7/iwOfMiAsjoyyNclRZrU=;
+        b=LoDHNNHFSlinbZ7pnvZkSRlBVxioHc33Il9J3oJhYP+2Mm7aJ2gGaujO3IRsoeSexX
+         t5Y3PIDgdXVyXNX7dE5ZQ7uDmgQvU0l4HQEb4L6JNjlHl3RHv0igUkH9EZzs8gxk5v8W
+         MlDBxrsSLq9HmC64oURhjH0oF17LqAWgKe0GdMYyl03u/rUJImg6104orAihoi42ylGu
+         /TnB5YMg3aVSFF+X3HR4C/GfmGMqksWdDOTVuhFGbzTf+mfQIZrlA57zskXqF5IhLdqe
+         n/T0PmWR9U+69xPRIasEzdIs7tU9uwAmUI5IT8+MuOjvUlOopY4/5gMR++JEBzx8YoTL
+         0ebw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=GFmuZbwYLEmY3pcAyxIqKW63OwSHxC/C2Nsx5FErA3M=;
-        b=FZv4WZjiNx1DZ2/utr6sdlkRcUI+pOsmxukt00TkLcBFTDnEocdvGkBBfk9kPXxPF6
-         IsOyqglVROivJmk4auzjGFWCrk31wnfflF6BvYEcMXrwEve4DtiBCD0fsGD9wq8Q236s
-         6x5UhFtBe8sDtCLSzcst6tlbkElLvscbUOmeUh19pagY/Cq4zQHOjt5dtKdsvGkJfnJ4
-         Oj14ZCMB/WiSrmvGXyYIQlqxb2XBtN2CYIJnZqSdHlUbuwnYABsC42VJATRII+nu+HtV
-         2694/1h4CixewVpqHYYFnY4MnEe0y7XErkHuWrlWosacqNthPGm9KeXGKhr5GuZ8ymxL
-         ALCw==
-X-Gm-Message-State: AOAM532BaPCMoEmQ/cj49CBc165ZhuPoKl3K+iLlcEiv1a361juteM0Z
-        UqVCX6SPxLiK1vWt4pBcWgj9YaoVlJG9pOYBPTzVX6EMCscdIQ==
-X-Google-Smtp-Source: ABdhPJzzpwWInqnLViASKl37booGT/1A7M5OcmFRDXKtg+RpYX/VBPCb/A28aLKe7hwx7Rg6ieepYUskBNCWKaZHnpI=
-X-Received: by 2002:a25:4107:: with SMTP id o7mr6281815yba.459.1610577518196;
- Wed, 13 Jan 2021 14:38:38 -0800 (PST)
+        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=DAslXiykyfrCbfxspz3DRx7/iwOfMiAsjoyyNclRZrU=;
+        b=KVCSGms5GWG8ZFl6mMaXr9Fdw/Cpcebsr1UaYGJ7SoDFFSVQaofxX7G5tWSoQ6QEbP
+         gEf4KJ14zTl6EuBlTmQHEeWsuvhREGpCMeSsyULK4c50pNRmLuLN7AYDCWzYutQZpyKX
+         JiuDhX8R5ORzclHGaKhxCRuaxxZBUbXi06VLY44SGXDbGXT2wU69lKYxLqlvTPQJAzQs
+         qPUA02N5U/CIyfGjs+nSgSdcxRrHRMAQ0wcID9O+8vyLp8aJfOJeJ3/pupZmiXagPoV2
+         MBBBciNtyPjDaRlIycywX4LQ/+VP0Fv13VbH2t7oy6inmZ9oe6csMhbMjdCm7Ha02kQe
+         lr2w==
+X-Gm-Message-State: AOAM531R/dmNm0piVR1ZDm8txOx7JwbRBtwaJaRDK/DZb3/ZNQ/Ew0G6
+        IRzll+jftEHYqDkSv6PiGu+XNtoxyMM=
+X-Google-Smtp-Source: ABdhPJwNrweKbvYBvnn4xRX/BpRAAEJvas78BJff2BuSPzc69PW/1l1OpVkiWyycs/VEn0hXrNPlwQ==
+X-Received: by 2002:a65:6811:: with SMTP id l17mr4436045pgt.342.1610581289965;
+        Wed, 13 Jan 2021 15:41:29 -0800 (PST)
+Received: from [10.67.48.230] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id j20sm3488227pfd.106.2021.01.13.15.41.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 13 Jan 2021 15:41:29 -0800 (PST)
+Subject: Re: [PATCH net 3/6] net: dsa: ksz: insert tag on ks8795 ingress
+ packets
+To:     Gilles DOFFE <gilles.doffe@savoirfairelinux.com>,
+        netdev@vger.kernel.org
+Cc:     Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org
+References: <cover.1610540603.git.gilles.doffe@savoirfairelinux.com>
+ <bc79946d1dafded91729ee1674c1b88a3beea110.1610540603.git.gilles.doffe@savoirfairelinux.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
+ mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
+ xGlkaOSDuu09rxuW+69Y2f1TzjFuGpBk4ysWOR85O2Nx8AJ6fYGCoeTbovrNlGT1M9obSFGQ
+ X3IzRnWoqlfudjTO5TKoqkbOgpYqIo5n1QbEjCCwCwCg3DOH/4ug2AUUlcIT9/l3pGvoRJ0E
+ AICDzi3l7pmC5IWn2n1mvP5247urtHFs/uusE827DDj3K8Upn2vYiOFMBhGsxAk6YKV6IP0d
+ ZdWX6fqkJJlu9cSDvWtO1hXeHIfQIE/xcqvlRH783KrihLcsmnBqOiS6rJDO2x1eAgC8meAX
+ SAgsrBhcgGl2Rl5gh/jkeA5ykwbxA/9u1eEuL70Qzt5APJmqVXR+kWvrqdBVPoUNy/tQ8mYc
+ nzJJ63ng3tHhnwHXZOu8hL4nqwlYHRa9eeglXYhBqja4ZvIvCEqSmEukfivk+DlIgVoOAJbh
+ qIWgvr3SIEuR6ayY3f5j0f2ejUMYlYYnKdiHXFlF9uXm1ELrb0YX4GMHz7QnRmxvcmlhbiBG
+ YWluZWxsaSA8Zi5mYWluZWxsaUBnbWFpbC5jb20+iGYEExECACYCGyMGCwkIBwMCBBUCCAME
+ FgIDAQIeAQIXgAUCVF/S8QUJHlwd3wAKCRBhV5kVtWN2DvCVAJ4u4/bPF4P3jxb4qEY8I2gS
+ 6hG0gACffNWlqJ2T4wSSn+3o7CCZNd7SLSC5BA0ESM+4EhAQAL/o09boR9D3Vk1Tt7+gpYr3
+ WQ6hgYVON905q2ndEoA2J0dQxJNRw3snabHDDzQBAcqOvdi7YidfBVdKi0wxHhSuRBfuOppu
+ pdXkb7zxuPQuSveCLqqZWRQ+Cc2QgF7SBqgznbe6Ngout5qXY5Dcagk9LqFNGhJQzUGHAsIs
+ hap1f0B1PoUyUNeEInV98D8Xd/edM3mhO9nRpUXRK9Bvt4iEZUXGuVtZLT52nK6Wv2EZ1TiT
+ OiqZlf1P+vxYLBx9eKmabPdm3yjalhY8yr1S1vL0gSA/C6W1o/TowdieF1rWN/MYHlkpyj9c
+ Rpc281gAO0AP3V1G00YzBEdYyi0gaJbCEQnq8Vz1vDXFxHzyhgGz7umBsVKmYwZgA8DrrB0M
+ oaP35wuGR3RJcaG30AnJpEDkBYHznI2apxdcuTPOHZyEilIRrBGzDwGtAhldzlBoBwE3Z3MY
+ 31TOpACu1ZpNOMysZ6xiE35pWkwc0KYm4hJA5GFfmWSN6DniimW3pmdDIiw4Ifcx8b3mFrRO
+ BbDIW13E51j9RjbO/nAaK9ndZ5LRO1B/8Fwat7bLzmsCiEXOJY7NNpIEpkoNoEUfCcZwmLrU
+ +eOTPzaF6drw6ayewEi5yzPg3TAT6FV3oBsNg3xlwU0gPK3v6gYPX5w9+ovPZ1/qqNfOrbsE
+ FRuiSVsZQ5s3AAMFD/9XjlnnVDh9GX/r/6hjmr4U9tEsM+VQXaVXqZuHKaSmojOLUCP/YVQo
+ 7IiYaNssCS4FCPe4yrL4FJJfJAsbeyDykMN7wAnBcOkbZ9BPJPNCbqU6dowLOiy8AuTYQ48m
+ vIyQ4Ijnb6GTrtxIUDQeOBNuQC/gyyx3nbL/lVlHbxr4tb6YkhkO6shjXhQh7nQb33FjGO4P
+ WU11Nr9i/qoV8QCo12MQEo244RRA6VMud06y/E449rWZFSTwGqb0FS0seTcYNvxt8PB2izX+
+ HZA8SL54j479ubxhfuoTu5nXdtFYFj5Lj5x34LKPx7MpgAmj0H7SDhpFWF2FzcC1bjiW9mjW
+ HaKaX23Awt97AqQZXegbfkJwX2Y53ufq8Np3e1542lh3/mpiGSilCsaTahEGrHK+lIusl6mz
+ Joil+u3k01ofvJMK0ZdzGUZ/aPMZ16LofjFA+MNxWrZFrkYmiGdv+LG45zSlZyIvzSiG2lKy
+ kuVag+IijCIom78P9jRtB1q1Q5lwZp2TLAJlz92DmFwBg1hyFzwDADjZ2nrDxKUiybXIgZp9
+ aU2d++ptEGCVJOfEW4qpWCCLPbOT7XBr+g/4H3qWbs3j/cDDq7LuVYIe+wchy/iXEJaQVeTC
+ y5arMQorqTFWlEOgRA8OP47L9knl9i4xuR0euV6DChDrguup2aJVU4hPBBgRAgAPAhsMBQJU
+ X9LxBQkeXB3fAAoJEGFXmRW1Y3YOj4UAn3nrFLPZekMeqX5aD/aq/dsbXSfyAKC45Go0YyxV
+ HGuUuzv+GKZ6nsysJ7kCDQRXG8fwARAA6q/pqBi5PjHcOAUgk2/2LR5LjjesK50bCaD4JuNc
+ YDhFR7Vs108diBtsho3w8WRd9viOqDrhLJTroVckkk74OY8r+3t1E0Dd4wHWHQZsAeUvOwDM
+ PQMqTUBFuMi6ydzTZpFA2wBR9x6ofl8Ax+zaGBcFrRlQnhsuXLnM1uuvS39+pmzIjasZBP2H
+ UPk5ifigXcpelKmj6iskP3c8QN6x6GjUSmYx+xUfs/GNVSU1XOZn61wgPDbgINJd/THGdqiO
+ iJxCLuTMqlSsmh1+E1dSdfYkCb93R/0ZHvMKWlAx7MnaFgBfsG8FqNtZu3PCLfizyVYYjXbV
+ WO1A23riZKqwrSJAATo5iTS65BuYxrFsFNPrf7TitM8E76BEBZk0OZBvZxMuOs6Z1qI8YKVK
+ UrHVGFq3NbuPWCdRul9SX3VfOunr9Gv0GABnJ0ET+K7nspax0xqq7zgnM71QEaiaH17IFYGS
+ sG34V7Wo3vyQzsk7qLf9Ajno0DhJ+VX43g8+AjxOMNVrGCt9RNXSBVpyv2AMTlWCdJ5KI6V4
+ KEzWM4HJm7QlNKE6RPoBxJVbSQLPd9St3h7mxLcne4l7NK9eNgNnneT7QZL8fL//s9K8Ns1W
+ t60uQNYvbhKDG7+/yLcmJgjF74XkGvxCmTA1rW2bsUriM533nG9gAOUFQjURkwI8jvMAEQEA
+ AYkCaAQYEQIACQUCVxvH8AIbAgIpCRBhV5kVtWN2DsFdIAQZAQIABgUCVxvH8AAKCRCH0Jac
+ RAcHBIkHD/9nmfog7X2ZXMzL9ktT++7x+W/QBrSTCTmq8PK+69+INN1ZDOrY8uz6htfTLV9+
+ e2W6G8/7zIvODuHk7r+yQ585XbplgP0V5Xc8iBHdBgXbqnY5zBrcH+Q/oQ2STalEvaGHqNoD
+ UGyLQ/fiKoLZTPMur57Fy1c9rTuKiSdMgnT0FPfWVDfpR2Ds0gpqWePlRuRGOoCln5GnREA/
+ 2MW2rWf+CO9kbIR+66j8b4RUJqIK3dWn9xbENh/aqxfonGTCZQ2zC4sLd25DQA4w1itPo+f5
+ V/SQxuhnlQkTOCdJ7b/mby/pNRz1lsLkjnXueLILj7gNjwTabZXYtL16z24qkDTI1x3g98R/
+ xunb3/fQwR8FY5/zRvXJq5us/nLvIvOmVwZFkwXc+AF+LSIajqQz9XbXeIP/BDjlBNXRZNdo
+ dVuSU51ENcMcilPr2EUnqEAqeczsCGpnvRCLfVQeSZr2L9N4svNhhfPOEscYhhpHTh0VPyxI
+ pPBNKq+byuYPMyk3nj814NKhImK0O4gTyCK9b+gZAVvQcYAXvSouCnTZeJRrNHJFTgTgu6E0
+ caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
+ 6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
+ M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
+Message-ID: <65c738f0-40de-6a3b-aa79-a6379364e0fe@gmail.com>
+Date:   Wed, 13 Jan 2021 15:41:24 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-References: <20210111180609.713998-1-natechancellor@gmail.com>
- <CAK7LNAQ=38BUi-EG5v2UiuAF-BOsVe5BTd-=jVYHHHPD7ikS5A@mail.gmail.com>
- <20210111193400.GA1343746@ubuntu-m3-large-x86> <CAK7LNASZuWp=aPOCKo6QkdHwM5KG6MUv8305v3x-2yR7cKEX-w@mail.gmail.com>
- <20210111200010.GA3635011@ubuntu-m3-large-x86> <CAEf4BzaL18a2+j3EYaD7jcnbJzqwG2MuBxXR2iRZ3KV9Jwrj6w@mail.gmail.com>
-In-Reply-To: <CAEf4BzaL18a2+j3EYaD7jcnbJzqwG2MuBxXR2iRZ3KV9Jwrj6w@mail.gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 13 Jan 2021 14:38:27 -0800
-Message-ID: <CAEf4Bzbv6nrJNxbZAvFx4Djvf1zbWnrV_i90vPGHtV-W7Tz=bQ@mail.gmail.com>
-Subject: Re: [PATCH] bpf: Hoise pahole version checks into Kconfig
-To:     Nathan Chancellor <natechancellor@gmail.com>
-Cc:     Masahiro Yamada <masahiroy@kernel.org>,
-        Michal Marek <michal.lkml@markovi.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Sedat Dilek <sedat.dilek@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <bc79946d1dafded91729ee1674c1b88a3beea110.1610540603.git.gilles.doffe@savoirfairelinux.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 11, 2021 at 1:24 PM Andrii Nakryiko
-<andrii.nakryiko@gmail.com> wrote:
->
-> On Mon, Jan 11, 2021 at 12:00 PM Nathan Chancellor
-> <natechancellor@gmail.com> wrote:
-> >
-> > On Tue, Jan 12, 2021 at 04:50:50AM +0900, Masahiro Yamada wrote:
-> > > On Tue, Jan 12, 2021 at 4:34 AM Nathan Chancellor
-> > > <natechancellor@gmail.com> wrote:
-> > > >
-> > > > On Tue, Jan 12, 2021 at 04:19:01AM +0900, Masahiro Yamada wrote:
-> > > > > On Tue, Jan 12, 2021 at 3:06 AM Nathan Chancellor
-> > > > > <natechancellor@gmail.com> wrote:
-> > > > > >
-> > > > > > After commit da5fb18225b4 ("bpf: Support pre-2.25-binutils objcopy for
-> > > > > > vmlinux BTF"), having CONFIG_DEBUG_INFO_BTF enabled but lacking a valid
-> > > > > > copy of pahole results in a kernel that will fully compile but fail to
-> > > > > > link. The user then has to either install pahole or disable
-> > > > > > CONFIG_DEBUG_INFO_BTF and rebuild the kernel but only after their build
-> > > > > > has failed, which could have been a significant amount of time depending
-> > > > > > on the hardware.
-> > > > > >
-> > > > > > Avoid a poor user experience and require pahole to be installed with an
-> > > > > > appropriate version to select and use CONFIG_DEBUG_INFO_BTF, which is
-> > > > > > standard for options that require a specific tools version.
-> > > > > >
-> > > > > > Suggested-by: Sedat Dilek <sedat.dilek@gmail.com>
-> > > > > > Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
-> > > > >
-> > > > >
-> > > > >
-> > > > > I am not sure if this is the right direction.
-> > > > >
-> > > > >
-> > > > > I used to believe moving any tool test to the Kconfig
-> > > > > was the right thing to do.
-> > > > >
-> > > > > For example, I tried to move the libelf test to Kconfig,
-> > > > > and make STACK_VALIDATION depend on it.
-> > > > >
-> > > > > https://patchwork.kernel.org/project/linux-kbuild/patch/1531186516-15764-1-git-send-email-yamada.masahiro@socionext.com/
-> > > > >
-> > > > > It was rejected.
-> > > > >
-> > > > >
-> > > > > In my understanding, it is good to test target toolchains
-> > > > > in Kconfig (e.g. cc-option, ld-option, etc).
-> > > > >
-> > > > > As for host tools, in contrast, it is better to _intentionally_
-> > > > > break the build in order to let users know that something needed is missing.
-> > > > > Then, they will install necessary tools or libraries.
-> > > > > It is just a one-time setup, in most cases,
-> > > > > just running 'apt install' or 'dnf install'.
-> > > > >
-> > > > >
-> > > > >
-> > > > > Recently, a similar thing happened to GCC_PLUGINS
-> > > > > https://patchwork.kernel.org/project/linux-kbuild/patch/20201203125700.161354-1-masahiroy@kernel.org/#23855673
-> > > > >
-> > > > >
-> > > > >
-> > > > >
-> > > > > Following this pattern, if a new pahole is not installed,
-> > > > > it might be better to break the build instead of hiding
-> > > > > the CONFIG option.
-> > > > >
-> > > > > In my case, it is just a matter of 'apt install pahole'.
-> > > > > On some distributions, the bundled pahole is not new enough,
-> > > > > and people may end up with building pahole from the source code.
-> > > >
-> > > > This is fair enough. However, I think that parts of this patch could
-> > > > still be salvaged into something that fits this by making it so that if
-> > > > pahole is not installed (CONFIG_PAHOLE_VERSION=0) or too old, the build
-> > > > errors at the beginning, rather at the end. I am not sure where the best
-> > > > place to put that check would be though.
-> > >
-> > > Me neither.
-> > >
-> > >
-> > > Collecting tool checks to the beginning would be user-friendly.
-> > > However, scattering the related code to multiple places is not
-> > > nice from the developer point of view.
-> > >
-> > > How big is it a problem if the build fails
-> > > at the very last stage?
-> > >
-> > > You can install pahole, then resume "make".
-> > >
-> > > Kbuild skips unneeded building, then you will
-> > > be able to come back to the last build stage shortly.
-> >
-> > There will often be times where I am testing multiple configurations in
-> > a row serially and the longer that a build takes to fail, the longer it
-> > takes for me to get a "real" result. That is my motivation behind this
-> > change. If people are happy with the current state of things, I will
-> > just stick with universally disabling CONFIG_DEBUG_INFO_BTF in my test
-> > framework.
-> >
->
-> I see where Masahiro is coming from. Not seeing CONFIG_DEBUG_INFO_BTF
-> option because pahole is not installed (or is not new enough) is, I
-> believe, for the majority of users, a much bigger confusion. Currently
-> they will get a specific and helpful message at the link time, which
-> is much more actionable, IMO. Once you fix pahole dependency, running
-> make again would skip all the already compiled code and would start
-> linking almost immediately, so if you are doing build locally there is
-> a very little downside.
+On 1/13/21 4:45 AM, Gilles DOFFE wrote:
+> If 802.1q VLAN tag is removed from egress traffic, ingress
+> traffic should by logic be tagged.
 
-Hm.. Just saw Linus proposing using $(error-if) in Kconfig for an
-unrelated issue ([0]). If we can make this work, then it would catch
-such issue early on, yet won't have any downsides of hiding
-CONFIG_DEBUG_INFO_BTF if pahole is too old. WDYT?
+Which logic do you refer to? Software or hardware? What an user
+configures with the "bridge vlan add ..." commands is the egress
+tagging, but this also affects what egresses the CPU port, and therefore
+what your Ethernet MAC used as a DSA master "sees", so I am not sure why
+this is doing?
 
-  [0] https://lore.kernel.org/lkml/CAHk-=wh-+TMHPTFo1qs-MYyK7tZh-OQovA=pP3=e06aCVp6_kA@mail.gmail.com/
+> 
+> Signed-off-by: Gilles DOFFE <gilles.doffe@savoirfairelinux.com>
+> ---
+>  drivers/net/dsa/microchip/ksz8795.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/net/dsa/microchip/ksz8795.c b/drivers/net/dsa/microchip/ksz8795.c
+> index 4b060503b2e8..193f03ef9160 100644
+> --- a/drivers/net/dsa/microchip/ksz8795.c
+> +++ b/drivers/net/dsa/microchip/ksz8795.c
+> @@ -874,6 +874,7 @@ static void ksz8795_port_vlan_add(struct dsa_switch *ds, int port,
+>  	}
+>  
+>  	ksz_port_cfg(dev, port, P_TAG_CTRL, PORT_REMOVE_TAG, untagged);
+> +	ksz_port_cfg(dev, port, P_TAG_CTRL, PORT_INSERT_TAG, !untagged);
+>  }
+>  
+>  static int ksz8795_port_vlan_del(struct dsa_switch *ds, int port,
+> 
 
->
-> I understand your situation is a bit different in that you are
-> building from scratch every single time (probably some sort of CI
-> setup, right?). But it's a rarer and more power-user use case. And
-> fixing pahole dependency is a one-time fix, so it's frustrating, but
-> fixable on your side.
->
-> As for disabling CONFIG_DEBUG_INFO_BTF. It's up to you and depends on
-> what you are after, but major distros now enable it by default, so if
-> you want to resemble common kernel configs, it's probably better to
-> stick with it.
->
-> Ideally, I'd love for Kconfig to have a way to express tool
-> dependencies in such a way that it's still possible to choose desired
-> options and if the build environment is lacking dependencies then it
-> would be communicated early on. I have no idea if that's doable and
-> how much effort it'd take, though.
->
->
-> > Cheers,
-> > Nathan
+
+-- 
+Florian
