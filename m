@@ -2,175 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BF142F4012
-	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 01:47:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D4FBA2F40EF
+	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 02:04:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732787AbhAMAoY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jan 2021 19:44:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57068 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727673AbhAMAnd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 19:43:33 -0500
-Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com [IPv6:2607:f8b0:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AA50C061786;
-        Tue, 12 Jan 2021 16:42:53 -0800 (PST)
-Received: by mail-oi1-x22e.google.com with SMTP id s2so370471oij.2;
-        Tue, 12 Jan 2021 16:42:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=1YCMS0WB2gu8/A3DVzRsBYDPWPSiXcpD4uySCn4i6iI=;
-        b=urYDJJA4jLdxKX6QV9O5A9eKzh3WAefL17zggGVKkmSZlD5VJwB7946TXWFyjOlfDt
-         T6Ko4vkk55MM0GTWS3PPqE+Ojaen57nwmgjnthXiVoDnIgXYFOzGVOjoJl5SfAnM0aih
-         fBKP0r2xtr2JcimP3skyq1PgdlJMWX3ueRSeZbglURFqWH5qFxxnY7GaaPpqOIcI6txx
-         Mh6uBi2QlPeJbegrpTZ31+ifHVSLleMCBU3+L9o950CCHXAEi74HSX0xsL2q7CYqzBT1
-         CYtzGeNX6ZHnWFDXEUDMgBJYWt+J0Zj7mVLTmhhU+EODE7FUx/N9/blRRA1xtEV4BZVX
-         p/Fg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=1YCMS0WB2gu8/A3DVzRsBYDPWPSiXcpD4uySCn4i6iI=;
-        b=YopfPekJ4CMnobZA3PpwtlfncBXA9hITQ3VNdpKfkUUS37Mh4hj1i0YyfHG5UlbmeT
-         bBEg0Yvx3OsVJfhNfp5Xc/TfjcaV3O5WMKduldOym/OXayTaMwQd2yDDnPgsM/N3pfDS
-         sU/l06BRYqo0IFEOHpxuLAnarzHNM4b47YO9T9suj7q5NlARTtEonYs9NEd0C9BjXwxS
-         9+1Kk7y5awqrX5jehjKUGxOmptTwgr4CPgJ3fcbSKrUk7hLWCQ/wd15QEoae0jiqhevk
-         4WHWAO3iSnC9BbD+CKcnugXu1RDEqIf5zhxuCKCAXjTvpQtKH/niv0fU0jl+A85hV6c5
-         GC0Q==
-X-Gm-Message-State: AOAM533yY2PJxU5akBoofjYix1F5wyafabpzQdAhpFebK5DiLyTmlKVE
-        8eyDo3B4ckG7/bLo3qAuhjk=
-X-Google-Smtp-Source: ABdhPJwixKnHkNeaIO0rzMFmR0xZszxr+TuXzDoJOAjmjxJVagOqZgnRWh4LtXZzu6JJtIf1E5cpoQ==
-X-Received: by 2002:aca:5792:: with SMTP id l140mr138785oib.175.1610498572768;
-        Tue, 12 Jan 2021 16:42:52 -0800 (PST)
-Received: from localhost.localdomain (99-6-134-177.lightspeed.snmtca.sbcglobal.net. [99.6.134.177])
-        by smtp.gmail.com with ESMTPSA id a195sm91429oib.52.2021.01.12.16.42.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 12 Jan 2021 16:42:52 -0800 (PST)
-Date:   Tue, 12 Jan 2021 16:42:49 -0800
-From:   Enke Chen <enkechen2020@gmail.com>
-To:     Yuchung Cheng <ycheng@google.com>
-Cc:     Eric Dumazet <edumazet@google.com>,
+        id S1726691AbhAMBD0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jan 2021 20:03:26 -0500
+Received: from mail.kernel.org ([198.145.29.99]:55360 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726468AbhAMBDY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 Jan 2021 20:03:24 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 8BB3D2312E;
+        Wed, 13 Jan 2021 01:02:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1610499764;
+        bh=1ar0eB8cpBDMlvgsTxEJtgHSkcfpvXM3Tv7f3mt2YPU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=duoxvqWkehgc9Nyje3pyd/TGQZY7bi5BQL+O7mnnIpGdeb8amdkM7lT51Fh0KijFw
+         1wVGsZ9cF9A6lL+MdMM1Va5Ucbnzt2T9ulczKtNDDcsoiJYq+hmhGiKY6GfZM+06xK
+         4Y71U3onYJlm3xnO86qm4EVP1Im/s15wbKTWN0TT2ChbBLn4F6M29r61H9/yl3366x
+         QORBL3lRE2Sr2VdoP8lIuLKuDXYpZHt8Gw+Ld8EGN2lLvj4CXrl+IH7eBR/1iO/EpL
+         FOJsE2VrIAAXa4VARZ57qT2X6NGcloKx1Q0hpepoOrnDhtZvBUs+BrQrqk3ZHGR9g8
+         6GSV1XCWPeOkg==
+Date:   Tue, 12 Jan 2021 17:02:42 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     Alexander Lobakin <alobakin@pm.me>,
+        Edward Cree <ecree.xilinx@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jakub Kicinski <kuba@kernel.org>,
+        Edward Cree <ecree@solarflare.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Guillaume Nault <gnault@redhat.com>,
+        Yadu Kishore <kyk.segfault@gmail.com>,
+        Al Viro <viro@zeniv.linux.org.uk>,
         netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Neal Cardwell <ncardwell@google.com>, enkechen2020@gmail.com
-Subject: Re: [PATCH] tcp: keepalive fixes
-Message-ID: <20210113004249.GA2358@localhost.localdomain>
-References: <20210112192544.GA12209@localhost.localdomain>
- <CAK6E8=fq6Jec94FDmDHGWhsmjtZQmt3AwQB0-tLcpJpvJ=oLgg@mail.gmail.com>
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next 0/5] skbuff: introduce skbuff_heads bulking and
+ reusing
+Message-ID: <20210112170242.414b8664@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CANn89iKEc_8_ySqV+KrbheTDKRL4Ws6JUKYeKXfogJNhfd+pGQ@mail.gmail.com>
+References: <20210111182655.12159-1-alobakin@pm.me>
+        <d4f4b6ba-fb3b-d873-23b2-4b5ba9cf4db8@gmail.com>
+        <20210112110802.3914-1-alobakin@pm.me>
+        <CANn89iKEc_8_ySqV+KrbheTDKRL4Ws6JUKYeKXfogJNhfd+pGQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAK6E8=fq6Jec94FDmDHGWhsmjtZQmt3AwQB0-tLcpJpvJ=oLgg@mail.gmail.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi, Yuchung:
-
-I have attached the python script that reproduces the keepalive issues.
-The script is a slight modification of the one written by Marek Majkowski:
-
-https://github.com/cloudflare/cloudflare-blog/blob/master/2019-09-tcp-keepalives/test-zero.py
-
-Please note that only the TCP keepalive is configured, and not the user timeout.
-
-Thanks.  -- Enke
-
-On Tue, Jan 12, 2021 at 02:48:01PM -0800, Yuchung Cheng wrote:
-> On Tue, Jan 12, 2021 at 2:31 PM Enke Chen <enkechen2020@gmail.com> wrote:
+On Tue, 12 Jan 2021 13:23:16 +0100 Eric Dumazet wrote:
+> On Tue, Jan 12, 2021 at 12:08 PM Alexander Lobakin <alobakin@pm.me> wrote:
 > >
-> > From: Enke Chen <enchen@paloaltonetworks.com>
+> > From: Edward Cree <ecree.xilinx@gmail.com>
+> > Date: Tue, 12 Jan 2021 09:54:04 +0000
+> >  
+> > > Without wishing to weigh in on whether this caching is a good idea...  
 > >
-> > In this patch two issues with TCP keepalives are fixed:
+> > Well, we already have a cache to bulk flush "consumed" skbs, although
+> > kmem_cache_free() is generally lighter than kmem_cache_alloc(), and
+> > a page frag cache to allocate skb->head that is also bulking the
+> > operations, since it contains a (compound) page with the size of
+> > min(SZ_32K, PAGE_SIZE).
+> > If they wouldn't give any visible boosts, I think they wouldn't hit
+> > mainline.
+> >  
+> > > Wouldn't it be simpler, rather than having two separate "alloc" and "flush"
+> > >  caches, to have a single larger cache, such that whenever it becomes full
+> > >  we bulk flush the top half, and when it's empty we bulk alloc the bottom
+> > >  half?  That should mean fewer branches, fewer instructions etc. than
+> > >  having to decide which cache to act upon every time.  
 > >
-> > 1) TCP keepalive does not timeout when there are data waiting to be
-> >    delivered and then the connection got broken. The TCP keepalive
-> >    timeout is not evaluated in that condition.
-> hi enke
-> Do you have an example to demonstrate this issue -- in theory when
-> there is data inflight, an RTO timer should be pending (which
-> considers user-timeout setting). based on the user-timeout description
-> (man tcp), the user timeout should abort the socket per the specified
-> time after data commences. some data would help to understand the
-> issue.
+> > I though about a unified cache, but couldn't decide whether to flush
+> > or to allocate heads and how much to process. Your suggestion answers
+> > these questions and generally seems great. I'll try that one, thanks!
+>  
+> The thing is : kmalloc() is supposed to have batches already, and nice
+> per-cpu caches.
 > 
+> This looks like an mm issue, are we sure we want to get over it ?
+> 
+> I would like a full analysis of why SLAB/SLUB does not work well for
+> your test workload.
 
-------
-#! /usr/bin/python
++1, it does feel like we're getting into mm territory
 
-import io
-import os
-import select
-import socket
-import time
-import utils
-import ctypes
+> More details, more numbers.... before we accept yet another
+> 'networking optimization' adding more code to the 'fast' path.
+> 
+> More code means more latencies when all code needs to be brought up in
+> cpu caches.
 
-utils.new_ns()
-
-port = 1
-
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
-s.bind(('127.0.0.1', port))
-s.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, 1024)
-
-s.listen(16)
-
-tcpdump = utils.tcpdump_start(port)
-c = socket.socket(socket.AF_INET, socket.SOCK_STREAM, 0)
-c.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, 1024)
-c.connect(('127.0.0.1', port))
-
-x, _ = s.accept()
-
-if False:
-    c.setsockopt(socket.IPPROTO_TCP, socket.TCP_USER_TIMEOUT, 90*1000)
-
-if True:
-    c.setsockopt(socket.SOL_SOCKET, socket.SO_KEEPALIVE, 1)
-    c.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPCNT, 5)
-    c.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPIDLE, 10)
-    c.setsockopt(socket.IPPROTO_TCP, socket.TCP_KEEPINTVL, 10)
-
-time.sleep(0.2)
-print("[ ] c.send()")
-import fcntl
-TIOCOUTQ=0x5411
-c.setblocking(False)
-while True:
-    bytes_avail = ctypes.c_int()
-    fcntl.ioctl(c.fileno(), TIOCOUTQ, bytes_avail)
-    if bytes_avail.value > 64*1024:
-        break
-    try:
-        c.send(b"A" * 16384 * 4)
-    except io.BlockingIOError:
-        break
-c.setblocking(True)
-time.sleep(0.2)
-utils.ss(port)
-utils.check_buffer(c)
-
-t0 = time.time()
-
-if True:
-    utils.drop_start(dport=port)
-    utils.drop_start(sport=port)
-
-poll = select.poll()
-poll.register(c, select.POLLIN)
-poll.poll()
-
-utils.ss(port)
-
-
-e = c.getsockopt(socket.SOL_SOCKET, socket.SO_ERROR)
-print("[ ] SO_ERROR = %s" % (e,))
-
-t1 = time.time()
-print("[ ] took: %f seconds" % (t1-t0,))
