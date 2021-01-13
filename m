@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EFE8A2F4B15
-	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 13:14:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 681B42F4B16
+	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 13:14:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727378AbhAMMNs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jan 2021 07:13:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36004 "EHLO
+        id S1727402AbhAMMNt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jan 2021 07:13:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36006 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726626AbhAMMNr (ORCPT
+        with ESMTP id S1727256AbhAMMNr (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 07:13:47 -0500
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EAFAC0617A4
-        for <netdev@vger.kernel.org>; Wed, 13 Jan 2021 04:12:33 -0800 (PST)
-Received: by mail-wr1-x431.google.com with SMTP id r3so1891188wrt.2
-        for <netdev@vger.kernel.org>; Wed, 13 Jan 2021 04:12:33 -0800 (PST)
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A95A8C0617A5
+        for <netdev@vger.kernel.org>; Wed, 13 Jan 2021 04:12:34 -0800 (PST)
+Received: by mail-wm1-x335.google.com with SMTP id y187so1402789wmd.3
+        for <netdev@vger.kernel.org>; Wed, 13 Jan 2021 04:12:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=resnulli-us.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=vOhGgb7y/DuZ0fHW4uLtmD1PoVTLNKXc3BKeuKC8gZg=;
-        b=wIu2gFvs/WNX/DG4WKt8ixD6cElrmCzJILAMzr0nlDopYpWBvnwKmQC9iGtBc6I9B1
-         /QSbqnrALaKDifMi19rqnqGsd4l3X3LxU/5MUoB9KJwE58fvcSEmw2GPbLRew29L9/D5
-         t8UX6/N9vfgbcGn7ihuWm49m2QG3WXJuUVWhaq7Ge86jYhyYkq+8MBppCHnLRzY8pMsl
-         YQ7GzZYl5tVUexyQ+LU5Kpxr/4rByb35lpmIS2tLBrFdnI2QSHamGhiXPbysYPnHkVQr
-         PPsjuUh44qNSLE3ZN+EesCXa+YKTqbWPblEr/Pbg1IfRj2hvOYTDOrFAMTS6R0jwhFQq
-         /G7Q==
+        bh=w7tEKM8STzYMPv/IRNCUuYVAkgY7njbrDoavQWdwiy4=;
+        b=LdcwkXNtZp8GXY0OiBYvmdMmH1EtTi2vgQa7cz6tmFuMR1EucG+93TvLVhcY8MWQ9E
+         PzA3UbLMdl+80o+Ptw+Si3SQA4kY1DneF9qrVGd/5MgmDkHlhEqjPwKBg2NLZ3mtrt9P
+         oQhceXjQUNZ4iA4qqs6Aep1eZ6Hsn+mGjWDTE02szL3KXO44BI+2CYD2uJsLTtK1pk3s
+         Ad/QumlR2fO718xHSO6ZzsRZWBEYlX8c4tmHEVdNOUNDVNNJL+cO/UGlr0jzY3roiVm0
+         /xPcA9qP6Bap2pz98C0qNEB7jpkhm37+th/0krGEvz3U+NkpDSmwvJhdWJvDm7grMbI3
+         3etw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=vOhGgb7y/DuZ0fHW4uLtmD1PoVTLNKXc3BKeuKC8gZg=;
-        b=RNZNvztQ4u1J20/pWs6AzpNUxF/Ep6WFrq8yKkmM/hKa0RrHQI2eMi32Hb5RHJ0J1w
-         N1EZxXIjIW48SA42GBBkAR9Icv6nuA4Bktittnb+ShyyyYRSgURQVimMC80KXodRdhzQ
-         Z1UWBDvv9p5J1RCIDzSc4o52B5D/15pVx3vbOtzyYe9smmOB+2cxaHj+PfQkDTvuY0zR
-         vIjnJF2o/GaNcuuUGIWZuJ/0HR9QZVtK2D7SV9qRZ3+lHw6tVDdH1vRAbAhI9f+a7MsU
-         3I8a95j+VMUWSj+4s0b5qf10YyE/PNP+HB8UZm8OMQx3o0oQfoDwdYmFjPZHLTowimYm
-         x3Uw==
-X-Gm-Message-State: AOAM533uAm//JzdgeJxt+0i5j05D81ZArsfXNDAzhNP3900bD8B0vr7p
-        VSWkavtsH4+dUDOt/f7EJgAOp38OtCUM6PBe
-X-Google-Smtp-Source: ABdhPJy5SwFxJNcPaTN5bx5UTR4+oEPKct6KBOJQrsjoJsT7RFm+sMsMzNGxKYUmmodwT/fRRnEjBg==
-X-Received: by 2002:adf:dd90:: with SMTP id x16mr2265682wrl.85.1610539951945;
-        Wed, 13 Jan 2021 04:12:31 -0800 (PST)
+        bh=w7tEKM8STzYMPv/IRNCUuYVAkgY7njbrDoavQWdwiy4=;
+        b=td1WGVC0XACBYvhux2syB21Ga/IhNMwYnjDKSWgblZmeW12/w1u66Ku2EdJliNoiTG
+         mY6GRljSsbhEtAmDJEdrJw8SryK+Zu25dCxuT6k0GU1QJ+hTAqCndWT+YAtaRSSXy2k0
+         JJFd+dQ5jAtujllG0SCSf6mu61DQ9gqwda3l5tMr4UCaImponXTRq990zT51+4Mpa8Sl
+         eP9ZjIXis3N9tMiZeDdf7FiJdbgM9HNB2yrkxBGOVfLCRdN8eMk6Onm023qZucUX6wLy
+         Ds2iYn+IUqv41OsWvJ8o+nfU5Ksl4wBLYBOerBaNuK25kmv5sOBleUDWEyM+yVI4DQ1l
+         /N4Q==
+X-Gm-Message-State: AOAM530TOkolaHIZ3liD+72KePXk3m/N9kxMaVQbAAnarGME/AEtoiuF
+        nmrG4dw/UBrvWEq6MiTnq7BHzsREztR5GZ7y
+X-Google-Smtp-Source: ABdhPJyBWxYC2i/N897dJ0k8qxHoJ69xMdK/uy2E7irJCTvYxF9aY1hBARb77l6PjSoLbFZrOBR4bg==
+X-Received: by 2002:a1c:b742:: with SMTP id h63mr1918921wmf.122.1610539953152;
+        Wed, 13 Jan 2021 04:12:33 -0800 (PST)
 Received: from localhost ([85.163.43.78])
-        by smtp.gmail.com with ESMTPSA id h15sm3121168wru.4.2021.01.13.04.12.31
+        by smtp.gmail.com with ESMTPSA id u17sm2621431wmj.35.2021.01.13.04.12.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Jan 2021 04:12:31 -0800 (PST)
+        Wed, 13 Jan 2021 04:12:32 -0800 (PST)
 From:   Jiri Pirko <jiri@resnulli.us>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, jacob.e.keller@intel.com,
         roopa@nvidia.com, mlxsw@nvidia.com
-Subject: [patch net-next RFC 07/10] netdevsim: allow port objects to be linked with line cards
-Date:   Wed, 13 Jan 2021 13:12:19 +0100
-Message-Id: <20210113121222.733517-8-jiri@resnulli.us>
+Subject: [patch net-next RFC 08/10] netdevsim: create devlink line card object and implement provisioning
+Date:   Wed, 13 Jan 2021 13:12:20 +0100
+Message-Id: <20210113121222.733517-9-jiri@resnulli.us>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20210113121222.733517-1-jiri@resnulli.us>
 References: <20210113121222.733517-1-jiri@resnulli.us>
@@ -65,230 +65,238 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Jiri Pirko <jiri@nvidia.com>
 
-Line cards contain ports. Allow ports to be places on the line cards.
-Track the ports that belong under certain line card. Make sure that
-the line card port carrier is down, as it will be taken up later on
-during "activation".
+Use devlink_linecard_create/destroy() to register the line card with
+devlink core. Implement provisioning ops with a list of supported
+line cards. To avoid deadlock and to mimic actual HW flow, use workqueue
+to add/del ports during provisioning as the port add/del calls
+devlink_port_register/unregister() which take devlink mutex.
 
 Signed-off-by: Jiri Pirko <jiri@nvidia.com>
 ---
- drivers/net/netdevsim/bus.c       |  4 +--
- drivers/net/netdevsim/dev.c       | 48 +++++++++++++++++++++++++------
- drivers/net/netdevsim/netdev.c    |  2 ++
- drivers/net/netdevsim/netdevsim.h |  4 +++
- 4 files changed, 48 insertions(+), 10 deletions(-)
+ drivers/net/netdevsim/dev.c       | 135 +++++++++++++++++++++++++++++-
+ drivers/net/netdevsim/netdevsim.h |   4 +
+ 2 files changed, 138 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/netdevsim/bus.c b/drivers/net/netdevsim/bus.c
-index ed57c012e660..a0afd30d76e6 100644
---- a/drivers/net/netdevsim/bus.c
-+++ b/drivers/net/netdevsim/bus.c
-@@ -113,7 +113,7 @@ new_port_store(struct device *dev, struct device_attribute *attr,
- 
- 	mutex_lock(&nsim_bus_dev->nsim_bus_reload_lock);
- 	devlink_reload_disable(devlink);
--	ret = nsim_dev_port_add(nsim_bus_dev, port_index);
-+	ret = nsim_dev_port_add(nsim_bus_dev, NULL, port_index);
- 	devlink_reload_enable(devlink);
- 	mutex_unlock(&nsim_bus_dev->nsim_bus_reload_lock);
- 	return ret ? ret : count;
-@@ -142,7 +142,7 @@ del_port_store(struct device *dev, struct device_attribute *attr,
- 
- 	mutex_lock(&nsim_bus_dev->nsim_bus_reload_lock);
- 	devlink_reload_disable(devlink);
--	ret = nsim_dev_port_del(nsim_bus_dev, port_index);
-+	ret = nsim_dev_port_del(nsim_bus_dev, NULL, port_index);
- 	devlink_reload_enable(devlink);
- 	mutex_unlock(&nsim_bus_dev->nsim_bus_reload_lock);
- 	return ret ? ret : count;
 diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
-index d81ccfa05a28..e706317fc0f9 100644
+index e706317fc0f9..9e9a2a75ddf8 100644
 --- a/drivers/net/netdevsim/dev.c
 +++ b/drivers/net/netdevsim/dev.c
-@@ -35,6 +35,21 @@
+@@ -35,6 +35,20 @@
  
  #include "netdevsim.h"
  
-+#define NSIM_DEV_LINECARD_PORT_INDEX_BASE 1000
-+#define NSIM_DEV_LINECARD_PORT_INDEX_STEP 100
++static const char * const nsim_dev_linecard_supported_types[] = {
++	"card1port", "card2ports", "card4ports",
++};
++
++static const unsigned int nsim_dev_linecard_port_counts[] = {
++	1, 2, 4,
++};
 +
 +static unsigned int
-+nsim_dev_port_index(struct nsim_dev_linecard *nsim_dev_linecard,
-+		    unsigned int port_index)
++nsim_dev_linecard_port_count(struct nsim_dev_linecard *nsim_dev_linecard)
 +{
-+	if (!nsim_dev_linecard)
-+		return port_index;
-+
-+	return NSIM_DEV_LINECARD_PORT_INDEX_BASE +
-+	       nsim_dev_linecard->linecard_index * NSIM_DEV_LINECARD_PORT_INDEX_STEP +
-+	       port_index;
++	return nsim_dev_linecard_port_counts[nsim_dev_linecard->type_index];
 +}
 +
- static struct dentry *nsim_dev_ddir;
+ #define NSIM_DEV_LINECARD_PORT_INDEX_BASE 1000
+ #define NSIM_DEV_LINECARD_PORT_INDEX_STEP 100
  
- #define NSIM_DEV_DUMMY_REGION_SIZE (1024 * 32)
-@@ -942,6 +957,7 @@ static const struct devlink_ops nsim_dev_devlink_ops = {
- #define NSIM_DEV_TEST1_DEFAULT true
+@@ -285,6 +299,25 @@ static void nsim_dev_port_debugfs_exit(struct nsim_dev_port *nsim_dev_port)
+ 	debugfs_remove_recursive(nsim_dev_port->ddir);
+ }
  
- static int __nsim_dev_port_add(struct nsim_dev *nsim_dev,
-+			       struct nsim_dev_linecard *nsim_dev_linecard,
- 			       unsigned int port_index)
- {
- 	struct devlink_port_attrs attrs = {};
-@@ -952,8 +968,9 @@ static int __nsim_dev_port_add(struct nsim_dev *nsim_dev,
- 	nsim_dev_port = kzalloc(sizeof(*nsim_dev_port), GFP_KERNEL);
- 	if (!nsim_dev_port)
- 		return -ENOMEM;
--	nsim_dev_port->port_index = port_index;
--
-+	nsim_dev_port->port_index = nsim_dev_port_index(nsim_dev_linecard,
-+							port_index);
-+	nsim_dev_port->linecard = nsim_dev_linecard;
- 	devlink_port = &nsim_dev_port->devlink_port;
- 	attrs.flavour = DEVLINK_PORT_FLAVOUR_PHYSICAL;
- 	attrs.phys.port_number = port_index + 1;
-@@ -961,7 +978,7 @@ static int __nsim_dev_port_add(struct nsim_dev *nsim_dev,
++static ssize_t nsim_dev_linecard_type_read(struct file *file, char __user *data,
++					   size_t count, loff_t *ppos)
++{
++	struct nsim_dev_linecard *nsim_dev_linecard = file->private_data;
++	const char *type;
++
++	if (!nsim_dev_linecard->provisioned)
++		return -EOPNOTSUPP;
++
++	type = nsim_dev_linecard_supported_types[nsim_dev_linecard->type_index];
++	return simple_read_from_buffer(data, count, ppos, type, strlen(type));
++}
++
++static const struct file_operations nsim_dev_linecard_type_fops = {
++	.open = simple_open,
++	.read = nsim_dev_linecard_type_read,
++	.owner = THIS_MODULE,
++};
++
+ static int
+ nsim_dev_linecard_debugfs_init(struct nsim_dev *nsim_dev,
+ 			       struct nsim_dev_linecard *nsim_dev_linecard)
+@@ -301,6 +334,8 @@ nsim_dev_linecard_debugfs_init(struct nsim_dev *nsim_dev,
+ 	sprintf(dev_link_name, "../../../" DRV_NAME "%u",
+ 		nsim_dev->nsim_bus_dev->dev.id);
+ 	debugfs_create_symlink("dev", nsim_dev_linecard->ddir, dev_link_name);
++	debugfs_create_file("type", 0400, nsim_dev_linecard->ddir,
++			    nsim_dev_linecard, &nsim_dev_linecard_type_fops);
+ 
+ 	return 0;
+ }
+@@ -977,6 +1012,9 @@ static int __nsim_dev_port_add(struct nsim_dev *nsim_dev,
+ 	memcpy(attrs.switch_id.id, nsim_dev->switch_id.id, nsim_dev->switch_id.id_len);
  	attrs.switch_id.id_len = nsim_dev->switch_id.id_len;
  	devlink_port_attrs_set(devlink_port, &attrs);
- 	err = devlink_port_register(priv_to_devlink(nsim_dev), devlink_port,
--				    port_index);
-+				    nsim_dev_port->port_index);
- 	if (err)
- 		goto err_port_free;
- 
-@@ -975,6 +992,11 @@ static int __nsim_dev_port_add(struct nsim_dev *nsim_dev,
- 		goto err_port_debugfs_exit;
- 	}
- 
 +	if (nsim_dev_linecard)
-+		list_add(&nsim_dev_port->list_lc, &nsim_dev_linecard->port_list);
-+	else
-+		netif_carrier_on(nsim_dev_port->ns->netdev);
-+
- 	devlink_port_type_eth_set(devlink_port, nsim_dev_port->ns->netdev);
- 	list_add(&nsim_dev_port->list, &nsim_dev->port_list);
- 
-@@ -994,6 +1016,8 @@ static void __nsim_dev_port_del(struct nsim_dev_port *nsim_dev_port)
- 	struct devlink_port *devlink_port = &nsim_dev_port->devlink_port;
- 
- 	list_del(&nsim_dev_port->list);
-+	if (nsim_dev_port->linecard)
-+		list_del(&nsim_dev_port->list_lc);
- 	devlink_port_type_clear(devlink_port);
- 	nsim_destroy(nsim_dev_port->ns);
- 	nsim_dev_port_debugfs_exit(nsim_dev_port);
-@@ -1018,7 +1042,7 @@ static int nsim_dev_port_add_all(struct nsim_dev *nsim_dev,
- 	int i, err;
- 
- 	for (i = 0; i < port_count; i++) {
--		err = __nsim_dev_port_add(nsim_dev, i);
-+		err = __nsim_dev_port_add(nsim_dev, NULL, i);
- 		if (err)
- 			goto err_port_del_all;
- 	}
-@@ -1040,6 +1064,7 @@ static int __nsim_dev_linecard_add(struct nsim_dev *nsim_dev,
- 		return -ENOMEM;
- 	nsim_dev_linecard->nsim_dev = nsim_dev;
- 	nsim_dev_linecard->linecard_index = linecard_index;
-+	INIT_LIST_HEAD(&nsim_dev_linecard->port_list);
- 
- 	err = nsim_dev_linecard_debugfs_init(nsim_dev, nsim_dev_linecard);
++		devlink_port_linecard_set(devlink_port,
++					  nsim_dev_linecard->devlink_linecard);
+ 	err = devlink_port_register(priv_to_devlink(nsim_dev), devlink_port,
+ 				    nsim_dev_port->port_index);
  	if (err)
-@@ -1286,10 +1311,13 @@ void nsim_dev_remove(struct nsim_bus_dev *nsim_bus_dev)
- }
- 
- static struct nsim_dev_port *
--__nsim_dev_port_lookup(struct nsim_dev *nsim_dev, unsigned int port_index)
-+__nsim_dev_port_lookup(struct nsim_dev *nsim_dev,
-+		       struct nsim_dev_linecard *nsim_dev_linecard,
-+		       unsigned int port_index)
- {
- 	struct nsim_dev_port *nsim_dev_port;
- 
-+	port_index = nsim_dev_port_index(nsim_dev_linecard, port_index);
- 	list_for_each_entry(nsim_dev_port, &nsim_dev->port_list, list)
- 		if (nsim_dev_port->port_index == port_index)
- 			return nsim_dev_port;
-@@ -1297,21 +1325,24 @@ __nsim_dev_port_lookup(struct nsim_dev *nsim_dev, unsigned int port_index)
- }
- 
- int nsim_dev_port_add(struct nsim_bus_dev *nsim_bus_dev,
-+		      struct nsim_dev_linecard *nsim_dev_linecard,
- 		      unsigned int port_index)
- {
- 	struct nsim_dev *nsim_dev = dev_get_drvdata(&nsim_bus_dev->dev);
- 	int err;
- 
- 	mutex_lock(&nsim_dev->port_list_lock);
--	if (__nsim_dev_port_lookup(nsim_dev, port_index))
-+	if (__nsim_dev_port_lookup(nsim_dev, nsim_dev_linecard, port_index))
- 		err = -EEXIST;
- 	else
--		err = __nsim_dev_port_add(nsim_dev, port_index);
-+		err = __nsim_dev_port_add(nsim_dev, nsim_dev_linecard,
-+					  port_index);
- 	mutex_unlock(&nsim_dev->port_list_lock);
+@@ -1053,10 +1091,88 @@ static int nsim_dev_port_add_all(struct nsim_dev *nsim_dev,
  	return err;
  }
  
- int nsim_dev_port_del(struct nsim_bus_dev *nsim_bus_dev,
-+		      struct nsim_dev_linecard *nsim_dev_linecard,
- 		      unsigned int port_index)
- {
- 	struct nsim_dev *nsim_dev = dev_get_drvdata(&nsim_bus_dev->dev);
-@@ -1319,7 +1350,8 @@ int nsim_dev_port_del(struct nsim_bus_dev *nsim_bus_dev,
- 	int err = 0;
- 
- 	mutex_lock(&nsim_dev->port_list_lock);
--	nsim_dev_port = __nsim_dev_port_lookup(nsim_dev, port_index);
-+	nsim_dev_port = __nsim_dev_port_lookup(nsim_dev, nsim_dev_linecard,
-+					       port_index);
- 	if (!nsim_dev_port)
- 		err = -ENOENT;
- 	else
-diff --git a/drivers/net/netdevsim/netdev.c b/drivers/net/netdevsim/netdev.c
-index aec92440eef1..1e0dc298bf20 100644
---- a/drivers/net/netdevsim/netdev.c
-+++ b/drivers/net/netdevsim/netdev.c
-@@ -312,6 +312,8 @@ nsim_create(struct nsim_dev *nsim_dev, struct nsim_dev_port *nsim_dev_port)
- 
- 	nsim_ipsec_init(ns);
- 
-+	netif_carrier_off(dev);
++static void nsim_dev_linecard_provision_work(struct work_struct *work)
++{
++	struct nsim_dev_linecard *nsim_dev_linecard;
++	struct nsim_bus_dev *nsim_bus_dev;
++	int err;
++	int i;
 +
- 	err = register_netdevice(dev);
++	nsim_dev_linecard = container_of(work, struct nsim_dev_linecard,
++					 provision_work);
++
++	nsim_bus_dev = nsim_dev_linecard->nsim_dev->nsim_bus_dev;
++	for (i = 0; i < nsim_dev_linecard_port_count(nsim_dev_linecard); i++) {
++		err = nsim_dev_port_add(nsim_bus_dev, nsim_dev_linecard, i);
++		if (err)
++			goto err_port_del_all;
++	}
++	nsim_dev_linecard->provisioned = true;
++	devlink_linecard_provision_set(nsim_dev_linecard->devlink_linecard,
++				       nsim_dev_linecard->type_index);
++	return;
++
++err_port_del_all:
++	for (i--; i >= 0; i--)
++		nsim_dev_port_del(nsim_bus_dev, nsim_dev_linecard, i);
++	devlink_linecard_provision_clear(nsim_dev_linecard->devlink_linecard);
++}
++
++static int nsim_dev_linecard_provision(struct devlink_linecard *linecard,
++				       void *priv, u32 type_index,
++				       struct netlink_ext_ack *extack)
++{
++	struct nsim_dev_linecard *nsim_dev_linecard = priv;
++
++	nsim_dev_linecard->type_index = type_index;
++	INIT_WORK(&nsim_dev_linecard->provision_work,
++		  nsim_dev_linecard_provision_work);
++	schedule_work(&nsim_dev_linecard->provision_work);
++
++	return 0;
++}
++
++static void nsim_dev_linecard_unprovision_work(struct work_struct *work)
++{
++	struct nsim_dev_linecard *nsim_dev_linecard;
++	struct nsim_bus_dev *nsim_bus_dev;
++	int i;
++
++	nsim_dev_linecard = container_of(work, struct nsim_dev_linecard,
++					 provision_work);
++
++	nsim_bus_dev = nsim_dev_linecard->nsim_dev->nsim_bus_dev;
++	nsim_dev_linecard->provisioned = false;
++	devlink_linecard_provision_clear(nsim_dev_linecard->devlink_linecard);
++	for (i = 0; i < nsim_dev_linecard_port_count(nsim_dev_linecard); i++)
++		nsim_dev_port_del(nsim_bus_dev, nsim_dev_linecard, i);
++}
++
++static int nsim_dev_linecard_unprovision(struct devlink_linecard *linecard,
++					 void *priv,
++					 struct netlink_ext_ack *extack)
++{
++	struct nsim_dev_linecard *nsim_dev_linecard = priv;
++
++	INIT_WORK(&nsim_dev_linecard->provision_work,
++		  nsim_dev_linecard_unprovision_work);
++	schedule_work(&nsim_dev_linecard->provision_work);
++
++	return 0;
++}
++
++static const struct devlink_linecard_ops nsim_dev_linecard_ops = {
++	.supported_types = nsim_dev_linecard_supported_types,
++	.supported_types_count = ARRAY_SIZE(nsim_dev_linecard_supported_types),
++	.provision = nsim_dev_linecard_provision,
++	.unprovision = nsim_dev_linecard_unprovision,
++};
++
+ static int __nsim_dev_linecard_add(struct nsim_dev *nsim_dev,
+ 				   unsigned int linecard_index)
+ {
+ 	struct nsim_dev_linecard *nsim_dev_linecard;
++	struct devlink_linecard *devlink_linecard;
+ 	int err;
+ 
+ 	nsim_dev_linecard = kzalloc(sizeof(*nsim_dev_linecard), GFP_KERNEL);
+@@ -1066,14 +1182,27 @@ static int __nsim_dev_linecard_add(struct nsim_dev *nsim_dev,
+ 	nsim_dev_linecard->linecard_index = linecard_index;
+ 	INIT_LIST_HEAD(&nsim_dev_linecard->port_list);
+ 
++	devlink_linecard = devlink_linecard_create(priv_to_devlink(nsim_dev),
++						   linecard_index,
++						   &nsim_dev_linecard_ops,
++						   nsim_dev_linecard);
++	if (IS_ERR(devlink_linecard)) {
++		err = PTR_ERR(devlink_linecard);
++		goto err_linecard_free;
++	}
++
++	nsim_dev_linecard->devlink_linecard = devlink_linecard;
++
+ 	err = nsim_dev_linecard_debugfs_init(nsim_dev, nsim_dev_linecard);
  	if (err)
- 		goto err_ipsec_teardown;
+-		goto err_linecard_free;
++		goto err_dl_linecard_destroy;
+ 
+ 	list_add(&nsim_dev_linecard->list, &nsim_dev->linecard_list);
+ 
+ 	return 0;
+ 
++err_dl_linecard_destroy:
++	devlink_linecard_destroy(devlink_linecard);
+ err_linecard_free:
+ 	kfree(nsim_dev_linecard);
+ 	return err;
+@@ -1081,8 +1210,12 @@ static int __nsim_dev_linecard_add(struct nsim_dev *nsim_dev,
+ 
+ static void __nsim_dev_linecard_del(struct nsim_dev_linecard *nsim_dev_linecard)
+ {
++	struct devlink_linecard *devlink_linecard =
++					nsim_dev_linecard->devlink_linecard;
++
+ 	list_del(&nsim_dev_linecard->list);
+ 	nsim_dev_linecard_debugfs_exit(nsim_dev_linecard);
++	devlink_linecard_destroy(devlink_linecard);
+ 	kfree(nsim_dev_linecard);
+ }
+ 
 diff --git a/drivers/net/netdevsim/netdevsim.h b/drivers/net/netdevsim/netdevsim.h
-index df10f9d11e9d..88b61b9390bf 100644
+index 88b61b9390bf..ab217b361416 100644
 --- a/drivers/net/netdevsim/netdevsim.h
 +++ b/drivers/net/netdevsim/netdevsim.h
-@@ -184,6 +184,7 @@ struct nsim_dev_linecard;
+@@ -196,10 +196,14 @@ struct nsim_dev;
  
- struct nsim_dev_port {
- 	struct list_head list;
-+	struct list_head list_lc; /* node in linecard list */
- 	struct devlink_port devlink_port;
- 	struct nsim_dev_linecard *linecard;
- 	unsigned int port_index;
-@@ -196,6 +197,7 @@ struct nsim_dev;
  struct nsim_dev_linecard {
  	struct list_head list;
++	struct devlink_linecard *devlink_linecard;
  	struct nsim_dev *nsim_dev;
-+	struct list_head port_list;
+ 	struct list_head port_list;
  	unsigned int linecard_index;
  	struct dentry *ddir;
++	bool provisioned;
++	u32 type_index;
++	struct work_struct provision_work;
  };
-@@ -255,8 +257,10 @@ void nsim_dev_exit(void);
- int nsim_dev_probe(struct nsim_bus_dev *nsim_bus_dev);
- void nsim_dev_remove(struct nsim_bus_dev *nsim_bus_dev);
- int nsim_dev_port_add(struct nsim_bus_dev *nsim_bus_dev,
-+		      struct nsim_dev_linecard *nsim_dev_linecard,
- 		      unsigned int port_index);
- int nsim_dev_port_del(struct nsim_bus_dev *nsim_bus_dev,
-+		      struct nsim_dev_linecard *nsim_dev_linecard,
- 		      unsigned int port_index);
  
- struct nsim_fib_data *nsim_fib_create(struct devlink *devlink,
+ struct nsim_dev {
 -- 
 2.26.2
 
