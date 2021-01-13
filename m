@@ -2,156 +2,296 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B8CA2F533B
-	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 20:23:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8B81E2F5348
+	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 20:29:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728615AbhAMTVY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jan 2021 14:21:24 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:36680 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728560AbhAMTVY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 14:21:24 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1610565597;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=yRpBxJ30lYTsHSF3U2SYVlEielHK4+P3MGYhRxCt4Hg=;
-        b=RdUnH3lYaPdz8GFY+Nc8/Endvf6rA1l0jh6UAsxNMy+mxKy7DmOgdHCN2iohMyjZSdWn9r
-        N6tAX6T3n6hvQQf56738dMY0MCfyV/SlcXlTY5YFxRhVWstKVEzi82TuQWrlLXZKqhieCD
-        tNLfyYIZ8aFXQ6QKLr3hAWxa73s8ipQ=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-126-3tPXaGoxOySiT2mBdex9gQ-1; Wed, 13 Jan 2021 14:19:55 -0500
-X-MC-Unique: 3tPXaGoxOySiT2mBdex9gQ-1
-Received: by mail-wm1-f70.google.com with SMTP id c2so1915708wme.0
-        for <netdev@vger.kernel.org>; Wed, 13 Jan 2021 11:19:55 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=yRpBxJ30lYTsHSF3U2SYVlEielHK4+P3MGYhRxCt4Hg=;
-        b=NDDcCnHQh97c9psgBwrePAPIH1IF7rQNYL4bvHyn3nqQ7IqIVoUTE+/3zhjV8Xqrat
-         31Xg5+2wkxlCY2L13ZUiO7DwK1XglB9M4dOxYr6jEl/MdYMXHxX7+Hs8ewPtO+Dm15n+
-         rgzQcb9Nb7oC0oacLWzYgbKM9uZyyVyaQlgOud0ri05tM8TckzVSwPYpskFy8pHIHcil
-         KZ0RfwpUggdwrv70IqzhkSw2c6SlFueIVi3fl9pP9cGUimoMNbEQUj72u3/OcZ8k/7AD
-         ot7ysVNNlPg7vlQxUKJRphXXPH/0i68eYNmlQFMLHHgpnahmq/xKowebObdsaGGtBa6t
-         kILw==
-X-Gm-Message-State: AOAM530BSp03IWIKdIkkuDdaRFDCxI82cZG2+MPDjxVjh8VNHSbHH4PA
-        YP+8CHf6oIbGQHeonlTWhQ+BE6wcmCWUXOMzn2EkpgGkIbYtSZ7APQCsB08TVCcev1RA5zwiWLT
-        hr4dlRFsp/7eLGHoT
-X-Received: by 2002:a05:600c:2f97:: with SMTP id t23mr699121wmn.82.1610565594272;
-        Wed, 13 Jan 2021 11:19:54 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJw4gBVSzQYm3VQLJvlOnWgFrSyiYh5piugzX3bGlxjD2RFayIbDkqEqiROmSF/E/uW2jn6lhA==
-X-Received: by 2002:a05:600c:2f97:: with SMTP id t23mr699113wmn.82.1610565594108;
-        Wed, 13 Jan 2021 11:19:54 -0800 (PST)
-Received: from redhat.com (bzq-79-178-32-166.red.bezeqint.net. [79.178.32.166])
-        by smtp.gmail.com with ESMTPSA id s13sm4225566wmj.28.2021.01.13.11.19.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 13 Jan 2021 11:19:53 -0800 (PST)
-Date:   Wed, 13 Jan 2021 14:19:50 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Alexander Duyck <alexanderduyck@fb.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Greg Thelen <gthelen@google.com>
-Subject: Re: [PATCH net] net: avoid 32 x truesize under-estimation for tiny
- skbs
-Message-ID: <20210113141904-mutt-send-email-mst@kernel.org>
-References: <20210113161819.1155526-1-eric.dumazet@gmail.com>
+        id S1728675AbhAMT23 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jan 2021 14:28:29 -0500
+Received: from mail.kernel.org ([198.145.29.99]:55870 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727688AbhAMT22 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 13 Jan 2021 14:28:28 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 4B54B2310E;
+        Wed, 13 Jan 2021 19:27:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1610566066;
+        bh=s39rH/q13w0gusx0ANa6je8NkMpBrEkKJr2BBr7RDa8=;
+        h=From:To:Cc:Subject:Date:From;
+        b=a7nafNUbbV/Lbi9zel7PZE92hhg9t1yZpjXCOoeMEBHFeYaK69HQNgAX8kO69vcxx
+         devWw8bB7EtVMBI+7S314D4JWr8PLyx+XxRkiR5BxcQ05Ziqzm/v9aWceU+TWNYpEy
+         OaMcP5ZoBHLxhbeHsW6x79Tnrjxz0KhZ0bPmTvwDdl140AABi8ZokVa2kedz41Jq27
+         vG8G/ubMJx6ox/XfDfra4HtQg+qSR2hOgfrSFXtA0/4yVkrUoIN1pHzIsfPLfjKKS+
+         l7gKaBoGNk3AFfc1Ln+TkUfUDErWIrQ1RsBKXy/gQhoMj5INjYqfF+f516DZtu4c/L
+         0ar1nTxnwLcXw==
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jason Gunthorpe <jgg@nvidia.com>
+Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: [pull request][net-next V6 00/14] Add mlx5 subfunction support
+Date:   Wed, 13 Jan 2021 11:27:16 -0800
+Message-Id: <20210113192730.280656-1-saeed@kernel.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210113161819.1155526-1-eric.dumazet@gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 13, 2021 at 08:18:19AM -0800, Eric Dumazet wrote:
-> From: Eric Dumazet <edumazet@google.com>
-> 
-> Both virtio net and napi_get_frags() allocate skbs
-> with a very small skb->head
-> 
-> While using page fragments instead of a kmalloc backed skb->head might give
-> a small performance improvement in some cases, there is a huge risk of
-> under estimating memory usage.
-> 
-> For both GOOD_COPY_LEN and GRO_MAX_HEAD, we can fit at least 32 allocations
-> per page (order-3 page in x86), or even 64 on PowerPC
-> 
-> We have been tracking OOM issues on GKE hosts hitting tcp_mem limits
-> but consuming far more memory for TCP buffers than instructed in tcp_mem[2]
-> 
-> Even if we force napi_alloc_skb() to only use order-0 pages, the issue
-> would still be there on arches with PAGE_SIZE >= 32768
-> 
-> This patch makes sure that small skb head are kmalloc backed, so that
-> other objects in the slab page can be reused instead of being held as long
-> as skbs are sitting in socket queues.
-> 
-> Note that we might in the future use the sk_buff napi cache,
-> instead of going through a more expensive __alloc_skb()
-> 
-> Another idea would be to use separate page sizes depending
-> on the allocated length (to never have more than 4 frags per page)
-> 
-> I would like to thank Greg Thelen for his precious help on this matter,
-> analysing crash dumps is always a time consuming task.
-> 
-> Fixes: fd11a83dd363 ("net: Pull out core bits of __netdev_alloc_skb and add __napi_alloc_skb")
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Cc: Alexander Duyck <alexanderduyck@fb.com>
-> Cc: Paolo Abeni <pabeni@redhat.com>
-> Cc: Michael S. Tsirkin <mst@redhat.com>
-> Cc: Greg Thelen <gthelen@google.com>
+From: Saeed Mahameed <saeedm@nvidia.com>
 
-Better than tweaking virtio code.
+Hi Dave, Jakub, Jason,
 
-Acked-by: Michael S. Tsirkin <mst@redhat.com>
+This series form Parav was the theme of this mlx5 release cycle,
+we've been waiting anxiously for the auxbus infrastructure to make it into
+the kernel, and now as the auxbus is in and all the stars are aligned, I
+can finally submit this patchset of the devlink and mlx5 subfunction support.
 
-I do hope the sk_buff napi cache idea materializes in the future.
+For more detailed information about subfunctions please see detailed tag
+log below.
 
-> ---
->  net/core/skbuff.c | 9 +++++++--
->  1 file changed, 7 insertions(+), 2 deletions(-)
-> 
-> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-> index 7626a33cce590e530f36167bd096026916131897..3a8f55a43e6964344df464a27b9b1faa0eb804f3 100644
-> --- a/net/core/skbuff.c
-> +++ b/net/core/skbuff.c
-> @@ -501,13 +501,17 @@ EXPORT_SYMBOL(__netdev_alloc_skb);
->  struct sk_buff *__napi_alloc_skb(struct napi_struct *napi, unsigned int len,
->  				 gfp_t gfp_mask)
->  {
-> -	struct napi_alloc_cache *nc = this_cpu_ptr(&napi_alloc_cache);
-> +	struct napi_alloc_cache *nc;
->  	struct sk_buff *skb;
->  	void *data;
->  
->  	len += NET_SKB_PAD + NET_IP_ALIGN;
->  
-> -	if ((len > SKB_WITH_OVERHEAD(PAGE_SIZE)) ||
-> +	/* If requested length is either too small or too big,
-> +	 * we use kmalloc() for skb->head allocation.
-> +	 */
-> +	if (len <= SKB_WITH_OVERHEAD(1024) ||
-> +	    len > SKB_WITH_OVERHEAD(PAGE_SIZE) ||
->  	    (gfp_mask & (__GFP_DIRECT_RECLAIM | GFP_DMA))) {
->  		skb = __alloc_skb(len, gfp_mask, SKB_ALLOC_RX, NUMA_NO_NODE);
->  		if (!skb)
-> @@ -515,6 +519,7 @@ struct sk_buff *__napi_alloc_skb(struct napi_struct *napi, unsigned int len,
->  		goto skb_success;
->  	}
->  
-> +	nc = this_cpu_ptr(&napi_alloc_cache);
->  	len += SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
->  	len = SKB_DATA_ALIGN(len);
->  
-> -- 
-> 2.30.0.284.gd98b1dd5eaa7-goog
+Please pull and let me know if there's any problem.
 
+Thanks,
+Saeed.
+
+---
+Changelog:
+v5->v6:
+ - update docs and corrected spellings and typos according to previous
+   review
+ - use of shorted macro names
+ - using updated callback to return port index
+ - updated commit message example for add command return fields
+ - driver name suffix corrected from 'mlx5_core' to 'sf'
+ - using MLX5_ADEV_NAME prefix to match with other mlx5 auxiliary devices
+ - fixed sf allocated condition
+ - using 80 characters alignment
+ - shorten the enum type names and enum values from
+   PORT_FUNCTION to PORT_FN
+ - return port attributes of newly created port
+ - moved port add and delete callbacks pointer check before preparing
+   attributes for driver
+ - added comment to clarify that about desired port index during add
+   callback
+ - place SF number attribute only when port flavour is SF
+ - packed the sf attribute structure
+ - removed external flag for sf for initial patchset
+
+v4->v5:
+ - Fix some typos in the documentation
+ 
+v3->v4:
+ - Fix 32bit compilation issue
+
+v2->v3:
+ - added header file sf/priv.h to cmd.c to avoid missing prototype warning
+ - made mlx5_sf_table_disable as static function as its used only in one file
+
+v1->v2:
+ - added documentation for subfunction and its mlx5 implementation
+ - add MLX5_SF config option documentation
+ - rebased
+ - dropped devlink global lock improvement patch as mlx5 doesn't support
+   reload while SFs are allocated
+ - dropped devlink reload lock patch as mlx5 doesn't support reload
+   when SFs are allocated
+ - using updated vhca event from device to add remove auxiliary device
+ - split sf devlink port allocation and sf hardware context allocation
+
+
+Thanks,
+Saeed.
+
+---
+The following changes since commit f50e2f9f791647aa4e5b19d0064f5cabf630bf6e:
+
+  hci: llc_shdlc: style: Simplify bool comparison (2021-01-12 20:18:30 -0800)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-updates-2021-01-13
+
+for you to fetch changes up to 5b83bc52fcbcb029d0d0a55b10e758dd18d157a5:
+
+  net/mlx5: Add devlink subfunction port documentation (2021-01-13 11:18:16 -0800)
+
+----------------------------------------------------------------
+mlx5 subfunction support
+
+Parav Pandit Says:
+=================
+
+This patchset introduces support for mlx5 subfunction (SF).
+
+A subfunction is a lightweight function that has a parent PCI function on
+which it is deployed. mlx5 subfunction has its own function capabilities
+and its own resources. This means a subfunction has its own dedicated
+queues(txq, rxq, cq, eq). These queues are neither shared nor stolen from
+the parent PCI function.
+
+When subfunction is RDMA capable, it has its own QP1, GID table and rdma
+resources neither shared nor stolen from the parent PCI function.
+
+A subfunction has dedicated window in PCI BAR space that is not shared
+with the other subfunctions or parent PCI function. This ensures that all
+class devices of the subfunction accesses only assigned PCI BAR space.
+
+A Subfunction supports eswitch representation through which it supports tc
+offloads. User must configure eswitch to send/receive packets from/to
+subfunction port.
+
+Subfunctions share PCI level resources such as PCI MSI-X IRQs with
+their other subfunctions and/or with its parent PCI function.
+
+Patch summary:
+--------------
+Patch 1 to 4 prepares devlink
+patch 5 to 7 mlx5 adds SF device support
+Patch 8 to 11 mlx5 adds SF devlink port support
+Patch 12 and 14 adds documentation
+
+Patch-1 prepares code to handle multiple port function attributes
+Patch-2 introduces devlink pcisf port flavour similar to pcipf and pcivf
+Patch-3 adds port add and delete driver callbacks
+Patch-4 adds port function state get and set callbacks
+Patch-5 mlx5 vhca event notifier support to distribute subfunction
+        state change notification
+Patch-6 adds SF auxiliary device
+Patch-7 adds SF auxiliary driver
+Patch-8 prepares eswitch to handler SF vport
+Patch-9 adds eswitch helpers to add/remove SF vport
+Patch-10 implements devlink port add/del callbacks
+Patch-11 implements devlink port function get/set callbacks
+Patch-12 to 14 adds documentation
+Patch-12 added mlx5 port function documentation
+Patch-13 adds subfunction documentation
+Patch-14 adds mlx5 subfunction documentation
+
+Subfunction support is discussed in detail in RFC [1] and [2].
+RFC [1] and extension [2] describes requirements, design and proposed
+plumbing using devlink, auxiliary bus and sysfs for systemd/udev
+support. Functionality of this patchset is best explained using real
+examples further below.
+
+overview:
+--------
+A subfunction can be created and deleted by a user using devlink port
+add/delete interface.
+
+A subfunction can be configured using devlink port function attribute
+before its activated.
+
+When a subfunction is activated, it results in an auxiliary device on
+the host PCI device where it is deployed. A driver binds to the
+auxiliary device that further creates supported class devices.
+
+example subfunction usage sequence:
+-----------------------------------
+Change device to switchdev mode:
+$ devlink dev eswitch set pci/0000:06:00.0 mode switchdev
+
+Add a devlink port of subfunction flavour:
+$ devlink port add pci/0000:06:00.0 flavour pcisf pfnum 0 sfnum 88
+
+Configure mac address of the port function:
+$ devlink port function set ens2f0npf0sf88 hw_addr 00:00:00:00:88:88
+
+Now activate the function:
+$ devlink port function set ens2f0npf0sf88 state active
+
+Now use the auxiliary device and class devices:
+$ devlink dev show
+pci/0000:06:00.0
+auxiliary/mlx5_core.sf.4
+
+$ ip link show
+127: ens2f0np0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether 24:8a:07:b3:d1:12 brd ff:ff:ff:ff:ff:ff
+    altname enp6s0f0np0
+129: p0sf88: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether 00:00:00:00:88:88 brd ff:ff:ff:ff:ff:ff
+
+$ rdma dev show
+43: rdmap6s0f0: node_type ca fw 16.29.0550 node_guid 248a:0703:00b3:d112 sys_image_guid 248a:0703:00b3:d112
+44: mlx5_0: node_type ca fw 16.29.0550 node_guid 0000:00ff:fe00:8888 sys_image_guid 248a:0703:00b3:d112
+
+After use inactivate the function:
+$ devlink port function set ens2f0npf0sf88 state inactive
+
+Now delete the subfunction port:
+$ devlink port del ens2f0npf0sf88
+
+[1] https://lore.kernel.org/netdev/20200519092258.GF4655@nanopsycho/
+[2] https://marc.info/?l=linux-netdev&m=158555928517777&w=2
+
+=================
+
+----------------------------------------------------------------
+Parav Pandit (13):
+      devlink: Prepare code to fill multiple port function attributes
+      devlink: Introduce PCI SF port flavour and port attribute
+      devlink: Support add and delete devlink port
+      devlink: Support get and set state of port function
+      net/mlx5: Introduce vhca state event notifier
+      net/mlx5: SF, Add auxiliary device support
+      net/mlx5: SF, Add auxiliary device driver
+      net/mlx5: E-switch, Add eswitch helpers for SF vport
+      net/mlx5: SF, Add port add delete functionality
+      net/mlx5: SF, Port function state change support
+      devlink: Add devlink port documentation
+      devlink: Extend devlink port documentation for subfunctions
+      net/mlx5: Add devlink subfunction port documentation
+
+Vu Pham (1):
+      net/mlx5: E-switch, Prepare eswitch to handle SF vport
+
+ Documentation/driver-api/auxiliary_bus.rst         |   2 +
+ .../device_drivers/ethernet/mellanox/mlx5.rst      | 215 ++++++++
+ Documentation/networking/devlink/devlink-port.rst  | 199 ++++++++
+ Documentation/networking/devlink/index.rst         |   1 +
+ drivers/net/ethernet/mellanox/mlx5/core/Kconfig    |  19 +
+ drivers/net/ethernet/mellanox/mlx5/core/Makefile   |   9 +
+ drivers/net/ethernet/mellanox/mlx5/core/cmd.c      |   8 +
+ drivers/net/ethernet/mellanox/mlx5/core/devlink.c  |  19 +
+ drivers/net/ethernet/mellanox/mlx5/core/eq.c       |   5 +-
+ .../mellanox/mlx5/core/esw/acl/egress_ofld.c       |   2 +-
+ .../ethernet/mellanox/mlx5/core/esw/devlink_port.c |  41 ++
+ drivers/net/ethernet/mellanox/mlx5/core/eswitch.c  |  48 +-
+ drivers/net/ethernet/mellanox/mlx5/core/eswitch.h  |  78 +++
+ .../ethernet/mellanox/mlx5/core/eswitch_offloads.c |  47 +-
+ drivers/net/ethernet/mellanox/mlx5/core/events.c   |   7 +
+ drivers/net/ethernet/mellanox/mlx5/core/main.c     |  60 ++-
+ .../net/ethernet/mellanox/mlx5/core/mlx5_core.h    |  12 +
+ drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c  |  20 +
+ drivers/net/ethernet/mellanox/mlx5/core/sf/cmd.c   |  49 ++
+ .../net/ethernet/mellanox/mlx5/core/sf/dev/dev.c   | 275 ++++++++++
+ .../net/ethernet/mellanox/mlx5/core/sf/dev/dev.h   |  55 ++
+ .../ethernet/mellanox/mlx5/core/sf/dev/driver.c    | 101 ++++
+ .../net/ethernet/mellanox/mlx5/core/sf/devlink.c   | 556 +++++++++++++++++++++
+ .../net/ethernet/mellanox/mlx5/core/sf/hw_table.c  | 233 +++++++++
+ .../mellanox/mlx5/core/sf/mlx5_ifc_vhca_event.h    |  82 +++
+ drivers/net/ethernet/mellanox/mlx5/core/sf/priv.h  |  21 +
+ drivers/net/ethernet/mellanox/mlx5/core/sf/sf.h    | 100 ++++
+ .../ethernet/mellanox/mlx5/core/sf/vhca_event.c    | 189 +++++++
+ .../ethernet/mellanox/mlx5/core/sf/vhca_event.h    |  57 +++
+ drivers/net/ethernet/mellanox/mlx5/core/vport.c    |   3 +-
+ include/linux/mlx5/driver.h                        |  16 +-
+ include/net/devlink.h                              |  76 +++
+ include/uapi/linux/devlink.h                       |  25 +
+ net/core/devlink.c                                 | 310 ++++++++++--
+ 34 files changed, 2893 insertions(+), 47 deletions(-)
+ create mode 100644 Documentation/networking/devlink/devlink-port.rst
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/sf/cmd.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/sf/dev/dev.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/sf/dev/dev.h
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/sf/dev/driver.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/sf/devlink.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/sf/hw_table.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/sf/mlx5_ifc_vhca_event.h
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/sf/priv.h
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/sf/sf.h
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/sf/vhca_event.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/sf/vhca_event.h
