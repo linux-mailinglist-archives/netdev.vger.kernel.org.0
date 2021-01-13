@@ -2,61 +2,61 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1884A2F50BF
-	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 18:14:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CA4622F50CD
+	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 18:17:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728008AbhAMRNO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jan 2021 12:13:14 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:8620 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727713AbhAMRNN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 12:13:13 -0500
-Received: from pps.filterd (m0044010.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 10DH0fVp005845;
-        Wed, 13 Jan 2021 09:12:10 -0800
+        id S1728021AbhAMRQB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jan 2021 12:16:01 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:63692 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727593AbhAMRQB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 12:16:01 -0500
+Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
+        by m0089730.ppops.net (8.16.0.43/8.16.0.43) with SMTP id 10DH2f7f020552;
+        Wed, 13 Jan 2021 09:14:59 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
  references : from : message-id : date : in-reply-to : content-type :
  content-transfer-encoding : mime-version; s=facebook;
- bh=T6pNHeN3c7nS04x/FGaP18p57ZxxbBMCVZUc/tEFFXo=;
- b=JgBkHkov8GOqBUZlg4X/xCS6yKPu1hVLC4jMNjiPfHMjealyYw25FLJsPVFDQV96GPFy
- clKTXZDgubHu1VLSxhWagBp+o1UmYJvEYO8Az8xGOB6HuW1y2GzKFCnnBl01/fmxxDqZ
- fDudYxZyQrmeJHgbQMbfnM9RmK+LCxKaxI8= 
-Received: from mail.thefacebook.com ([163.114.132.120])
-        by mx0a-00082601.pphosted.com with ESMTP id 361fpue51c-1
+ bh=QT5aHI96lETRbjD4P5/zctV1fOoqBQGEbAYdVcvVk9U=;
+ b=GrF/4GTiCOj/RSVexi5vG5lnKGzcuNcb5uqezqfDqgPZ+7sq4A5zOoiw9mMJttI5bfFb
+ 0uzvT1RZXD/+rMuxX8V5y5Zdb5IVC4hE9lqK5uYlzt2AWCDBk4MckytrDbqR9i3ScP56
+ 4JEsmaW45Di/yJMetgVnmPXzSZE4Yre/nGE= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by m0089730.ppops.net with ESMTP id 361fpqp872-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Wed, 13 Jan 2021 09:12:09 -0800
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (100.104.98.9) by
- o365-in.thefacebook.com (100.104.94.228) with Microsoft SMTP Server
+        Wed, 13 Jan 2021 09:14:59 -0800
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.35.172) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Wed, 13 Jan 2021 09:12:08 -0800
+ 15.1.1979.3; Wed, 13 Jan 2021 09:14:52 -0800
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LF+36XqzyMx+hNkqgyDJlupsAxlUPnHM2cftAvvSaoLS6ZgxGJZgJACAzu+4Hdc+eh57aUcCTIL/X8EJthD0rgEw1qoCX3zjP2rMP33PDqlan5ERL62IeWUwIw2QyOklPc+y4QsfZB92qAYJMvtgmQVB4v3Jrr0BGqGM5SHp81Y5CfyRxJRmAXMCmaViDxm8xM7oRUvebtNw61CVJtCfu+D4SJUY1+o6Lz+BSYPwevUx0BqiqSbPlD0M5VifXtxHpX9kpOwaIjN0W7zXrnSnkuF5IWd0gatQQ6mOS8jMa04qU5miiroPPvD8FszUWnziL8iMzTRVdC5POVoTmbAcrQ==
+ b=gGXTaEum8QYd2m7vrGJ6y3nCXFXUuFHcitf5ejXl8m/so0rPgxtt2wwTk3TzpjQFsXq8c2jcXUnBoH88olwQeH7mdEMvUz5SQDx47lzpK4iz7Lzse1M018TfaIlNvVkVh9MgNGDXwI2w4M0hXkGXCZpETAK1XMMIT/ZwNK1g42yOQJOZxgaYQbAo0B4s3CKCAQitwosrbOh2P5V8agroSChmjVTkGTMoP56W0iMniRtLuVwO3pU7S79Jk6/UcxGEg2e8zMAqYKZ7/9BmesKunjhIJ1hKA6osVQEJKe8aCUYhjlAQE7i/9i4ZhpOutgKCRQ6ePfLKjy5j7akWly/xxg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=T6pNHeN3c7nS04x/FGaP18p57ZxxbBMCVZUc/tEFFXo=;
- b=g3Cakn2bjEODGbIw0CCv1/rGUOJV6Lsxpsvi6QpSOyytxomv+qoElJ5pLsCeKTJOxTCQHia0XSWvAnHkrFnmIa/fNRiM+OWBm+sU/b5//od9erSpO7e4FkVZsC+ZKYCqQOioOsPoH7rnXRwXpBfE6OA5RmR9ELgypMOIuAeWcfNCzqp5Znd6dWeXFBT7+iCk6WkzNn7Cw4BbaTfVoB3jU1wr5s+TtUkGyr5DSkT5TbRUMPNpNCAVw6fDRP5yMVKZ8wGIhV+Ik2dJ+Q0GCsbZdQnZsJw63VgvwWSIgU81PAobycobYk2uHm1oytvVVFJ8emJmcCXUBfwEU2arMQP/7Q==
+ bh=QT5aHI96lETRbjD4P5/zctV1fOoqBQGEbAYdVcvVk9U=;
+ b=ax5rBb6nu+Chlph+iw1QoZHCEe6ktkhz/XLgzZqBrz0LYozTC3k+efIYIG4yLIzL4G0a8GsyyxWnW2zBFjNJK+sHm9gMhydGwNB67ZuehkYgiXkuqNl+QLemVq9hlHTre4G7V7t+xxiVFxUn/QEUOeUCUW65dbCH8LEe4o1K4vn0nVNy8ZhWTmhsliuNKnAoC5E4ZXt+hRyjuGmOhT4N7DQn/8k5w5RZVa9YxhjKZeYY7MYvQPsCbypLaN/xGSQTFjZM5ESmv6GbTNtunyYQs1BvH62suXLhEFlsIDuS15s3T1pxhrtMnTtCTzzPDe8G7UTlXYaQYJ8/9kM7w+jBIA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
  header.d=fb.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
  s=selector2-fb-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=T6pNHeN3c7nS04x/FGaP18p57ZxxbBMCVZUc/tEFFXo=;
- b=OtlTP1/XHL8bik8NmeK1iSEthPNBse4Oiyxi2TO9EUG3vCZIgeqEXD253Tq5wI3RkTQRMWXM8LTiBBenDbB1m9ZSrzz61mc5KGYH9wTCtcYEagu7MkDb17YbDotPmJQHUaxD0GqOUFFNrDmjvHgvcymJpF7OS+5lnAIIQ7nHXyM=
+ bh=QT5aHI96lETRbjD4P5/zctV1fOoqBQGEbAYdVcvVk9U=;
+ b=SfazGhJLPAQWzIs1Z0Uzb9l7zlm+ye/AEszuo/bU8YFL+BdzvFin5eu0G2z8CSxTDbCzYCKhgWGTC+dl11d+y1bMMK66RZGziGwhIJPRFNhZ5UorHOtYI+PV98BBQnSyCRHTdrSDegYuu5YjSrZ5yqpIk0l261W1D+NcDV4VskQ=
 Authentication-Results: loongson.cn; dkim=none (message not signed)
  header.d=none;loongson.cn; dmarc=none action=none header.from=fb.com;
 Received: from BYAPR15MB4088.namprd15.prod.outlook.com (2603:10b6:a02:c3::18)
- by BYAPR15MB3046.namprd15.prod.outlook.com (2603:10b6:a03:fa::25) with
+ by SJ0PR15MB4204.namprd15.prod.outlook.com (2603:10b6:a03:2c8::9) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3742.6; Wed, 13 Jan
- 2021 17:12:07 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3763.10; Wed, 13 Jan
+ 2021 17:14:51 +0000
 Received: from BYAPR15MB4088.namprd15.prod.outlook.com
  ([fe80::9ae:1628:daf9:4b03]) by BYAPR15MB4088.namprd15.prod.outlook.com
  ([fe80::9ae:1628:daf9:4b03%7]) with mapi id 15.20.3742.012; Wed, 13 Jan 2021
- 17:12:07 +0000
-Subject: Re: [PATCH bpf 1/2] samples/bpf: Set flag __SANE_USERSPACE_TYPES__
- for MIPS to fix build warnings
+ 17:14:51 +0000
+Subject: Re: [PATCH 2/2] compiler.h: Include asm/rwonce.h under ARM64 and
+ ALPHA to fix build errors
 To:     Tiezhu Yang <yangtiezhu@loongson.cn>,
         Luc Van Oostenryck <luc.vanoostenryck@gmail.com>,
         Alexei Starovoitov <ast@kernel.org>,
@@ -73,75 +73,75 @@ CC:     <linux-sparse@vger.kernel.org>, <netdev@vger.kernel.org>,
         <linux-mips@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         Xuefeng Li <lixuefeng@loongson.cn>
 References: <1610535453-2352-1-git-send-email-yangtiezhu@loongson.cn>
- <1610535453-2352-2-git-send-email-yangtiezhu@loongson.cn>
+ <1610535453-2352-3-git-send-email-yangtiezhu@loongson.cn>
 From:   Yonghong Song <yhs@fb.com>
-Message-ID: <e3eb5919-4573-4576-e6aa-bd8ff56409ed@fb.com>
-Date:   Wed, 13 Jan 2021 09:12:03 -0800
+Message-ID: <33050fcc-a4a0-af2e-6fba-dca248f5f23b@fb.com>
+Date:   Wed, 13 Jan 2021 09:14:47 -0800
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
  Gecko/20100101 Thunderbird/78.6.1
-In-Reply-To: <1610535453-2352-2-git-send-email-yangtiezhu@loongson.cn>
+In-Reply-To: <1610535453-2352-3-git-send-email-yangtiezhu@loongson.cn>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 X-Originating-IP: [2620:10d:c090:400::5:e777]
-X-ClientProxiedBy: MW4PR04CA0354.namprd04.prod.outlook.com
- (2603:10b6:303:8a::29) To BYAPR15MB4088.namprd15.prod.outlook.com
+X-ClientProxiedBy: MW4PR04CA0439.namprd04.prod.outlook.com
+ (2603:10b6:303:8b::24) To BYAPR15MB4088.namprd15.prod.outlook.com
  (2603:10b6:a02:c3::18)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [IPv6:2620:10d:c085:21e1::13f6] (2620:10d:c090:400::5:e777) by MW4PR04CA0354.namprd04.prod.outlook.com (2603:10b6:303:8a::29) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3763.10 via Frontend Transport; Wed, 13 Jan 2021 17:12:05 +0000
+Received: from [IPv6:2620:10d:c085:21e1::13f6] (2620:10d:c090:400::5:e777) by MW4PR04CA0439.namprd04.prod.outlook.com (2603:10b6:303:8b::24) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3763.10 via Frontend Transport; Wed, 13 Jan 2021 17:14:49 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 59cfa8b0-1cfa-44d3-97b2-08d8b7e65b29
-X-MS-TrafficTypeDiagnostic: BYAPR15MB3046:
+X-MS-Office365-Filtering-Correlation-Id: 7b45e420-af04-4a05-4f80-08d8b7e6bcfb
+X-MS-TrafficTypeDiagnostic: SJ0PR15MB4204:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <BYAPR15MB3046D3DFB0A6E2281A0D54B9D3A90@BYAPR15MB3046.namprd15.prod.outlook.com>
+X-Microsoft-Antispam-PRVS: <SJ0PR15MB42048A3A54505C89F4A4F5DFD3A90@SJ0PR15MB4204.namprd15.prod.outlook.com>
 X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:843;
+X-MS-Oob-TLC-OOBClassifiers: OLM:6430;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: lpEmsJKnbjuY6+6VV1U6X7ihvUe38zMxwqpvBM7j2lMUybp21PezBn+XkqOB8gC7FHuFdt29PLD1KeGzK+UhxkqqIJDkwpJlmCYSr6mHNM701+jq6j2DAgeVzRlgIdZ6k56R6JD44mz6hDgl9F2A0jkdZHi5LGoIrgDrjlNzXYr0sF6/ckNcxsobP1GrT+xpZN55EyQVHDg8QcNN2LFJ+MzQccEar0Y7bIAnlYWDofBe1VQYZZ9JqIU09o7mwswtotikI48EUndx6ZPSLoKfqMvXIWrr1n6CyyBuSCOi9koniLvbvXldY3NA3RYMtgub+K6FKWvH0bcMLpbkl0KMN/X38abwhYS8M27Fa4LjMbJHzg23Xf2Sq0GpfvrLow8c+z2MQ3cMcdQil5mCMa0HAN/5sXWsidGWLltH5FK5qWu86YPcpSk/k63eT5BQw0yP2aE/liqS3Qx2WcJ7HHNBCc8qUl7aqq2OchdstuYQuFYhXASCeOLm4uhzyBrzk4k0
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB4088.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(39860400002)(136003)(366004)(396003)(376002)(346002)(31686004)(478600001)(66946007)(8676002)(2616005)(53546011)(31696002)(2906002)(66556008)(66476007)(5660300002)(8936002)(921005)(52116002)(36756003)(7416002)(316002)(16526019)(4326008)(186003)(83380400001)(110136005)(6486002)(86362001)(43740500002)(45980500001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?OXpyazRPUTE4V0lCTXVWbXVkWkdPL3EwRWl5a1RwOTQrN2RyQlhRRE1QYjVB?=
- =?utf-8?B?TWQ0VTdkcEFLdUFWNFBtREJlWDRBcGVWdXVrSm55dXZTTERSdDdtaWJOTzZ3?=
- =?utf-8?B?dW5LMEJGb1hRa2JwTjlwSTRjNXYzOFgzWnJ3YlFSNXFSbUlqbDdLbjNtYnBZ?=
- =?utf-8?B?Um9zMEVjbWJzbFpLQW5TTXdRbnpnMkx2UWNIRkZLSnhFRjdxRE14U0diTHZv?=
- =?utf-8?B?cHY4dVVoR0dnYnZmaHZWNzRMbkY1emlXb2ovUTlHZjU0UVIzaGpGUG55R0JZ?=
- =?utf-8?B?MER5WjB4a1ZEV2RTc0xLWTlsNXdOSnFUMUJDQ1dnL2E3ekVDaUFlYmZZbTRk?=
- =?utf-8?B?M092YXhFbmh1bGFjcmRVNFR3RWRmOEdEbXY0SHF4MUF4RXJSKzlUTURLV2Ez?=
- =?utf-8?B?eHdiR1djT3RBVlFoZ0x2UGNxUHovZTI5UkcrQUhqOVc0S3hmdDFZa1Q3RUow?=
- =?utf-8?B?ZUdrQks0UlFCZDdxRkFDSkJpV1Zua3crTUNYR1ZXME1vbnQydlpIZTI4ZXcx?=
- =?utf-8?B?ak9mc1BzNVR3QnRMaDAxYitaZWxRN28wU0pwZlVOZUVJQUtZSFJGalNjS3la?=
- =?utf-8?B?WGl2QmhrenBHWW1TUWNUai9FSlNSZVgxa1BmaGZJdVJaQlA2TXdPYXo3Rllo?=
- =?utf-8?B?ZDBqZFM0aEplYnRZQUM3UHBMU0I4VzR1dC95VVkwVUhOb050emlaVnVqQmlu?=
- =?utf-8?B?OVhhZDV0UmVZWGxCb05vcjRubm5aWkpIOVpqQWxlK1BWSnBpTlAvSHVtdzVk?=
- =?utf-8?B?RWpBdm84REZld1NmNE1BMkFuTUNGVnVpa3pkbnh0dVpVM2xTVmpta0ZpYWhM?=
- =?utf-8?B?L25tUnc3RTZuZzlxVDBkTHZrRkMvZzh2eUxJM0l2eklNWWdLTnNkVlhGTTgr?=
- =?utf-8?B?NkgyRzh3NHVRYzFKcDdDY3VhMDNsd2pNM3lOSDkxL0hnbTFyM0hWWVNBaWJz?=
- =?utf-8?B?NXoyaER4SG9GT3NaRWxQdWU1aml3c2o5ZnpKNkliQ3NReW1QZ1FNMlgzbW1w?=
- =?utf-8?B?c2lGQ1JQSVVpeUR0MndHNDRBUGVDZE9wVE5jNGVxQlB2a1FscXJ1cHhYVTdE?=
- =?utf-8?B?Qzl1aHZsOGo4V0EwdGRneTVHQXI5WEljZlRLM0RIS1BoQkh0elhIREQ2OWdZ?=
- =?utf-8?B?Qm5NdjR5eU51eUgzS3AwUjhReGJTUERzNG1GRDJ6NUY3Snh1U0RmOUh2VXQ3?=
- =?utf-8?B?L0FWQVl2NGFoeTJmNmM0dWZrZFcrc3pmZFBlNkpVOUtZL3NIWml4c0w0REZy?=
- =?utf-8?B?ckdkZU82Qys0K2NDNFBLM0FhYjROaDZIMjhidG91LzQwTE5hbmo2V3cxNmxY?=
- =?utf-8?B?YVFJR2gyK3ljRy9IUmlpVE5SWnYyWG01VGhkMzQzSkJqdXJYY1JLSFdBSnVO?=
- =?utf-8?B?MlhSQTlpR0lnYUE9PQ==?=
+X-Microsoft-Antispam-Message-Info: jovECfrSPHpmYSEJMp+W+mk3Wt+qkCIx4TviaoxDu2axMG+AvU6HDDbuW8DomdBonxbNFnWyYWVnXYNUBxiB9FmvYL7HzeYNGhzaGwlnsB3u4oQRGQuOq4aYAGjJc1+bIDpbylCkb5RNkEheoeRHQp/bIcxOT57DeU2cjOjrO37tFA42XaBrEnSc9on9g7HMh61lDqXoPdCKg/lTSu0pUv/Xk8d6Yz5aoOUSE62b81PwTn53gnmjNEciCJy4J5j2DYo04qyvkLFNR/xHxWbMvGGwp3SA7CdrD0E1q6nLtPLB4pwt9xQnKj/evAgbsaHB2b9NkHkoViku9ITB6juCZU6CeVajCXTLG8dF6lFCWisoGkibH1fn7mLUmhAeKq7SAwy+t0ZRF4GhY6ws1RVvWQQMd2yPNAclSxXAIa1fBcSztjc82pnmSEi/HMgfGzPtL7BYT/uEUTeiVj/q+y+PHb6o1VfxXtU9SIg5/YNbpRd3+uYEofdvRUpavlZxhq0S
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB4088.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(396003)(376002)(366004)(136003)(346002)(39860400002)(6486002)(2906002)(921005)(53546011)(86362001)(316002)(4326008)(16526019)(8676002)(31696002)(2616005)(66476007)(52116002)(66556008)(66946007)(110136005)(8936002)(31686004)(36756003)(7416002)(5660300002)(186003)(478600001)(45980500001)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?YnEzeDMwc3hDU1JCTFhlTnVCTVllbk9weU5uYWx0bnZid1VyelJCOUlJcW5L?=
+ =?utf-8?B?VWU0ZzhHOUYrWWZxZm51ZTVYbE10RXRyNEtuZU4zQnE4OFpiRWQwUGgraVly?=
+ =?utf-8?B?ZG1FUEJuQ3N2NWs4ekpKck1HRUlsTUNVTFFwK0ltamlOY1dlaG05bmJZVUdS?=
+ =?utf-8?B?U1JtZVJnbEx4cEwrbkROUm5FZ0UrSXd6MkVYeWFqaWtuUEJ6QURVMU9sNXZi?=
+ =?utf-8?B?dzNwVG9QQjBEa3RKK2pxcGdOaTVZdTRJa1BDUW5ramh3V3ZWSEVnK3BDNVRG?=
+ =?utf-8?B?KzcyMm1xNHp6a0pQYW5VVjU2OER0S1NQU2FuVnlzcXplbUpwRTl0ZUZKZGNY?=
+ =?utf-8?B?L2pIY1NreFIwd0lCWWhtYXlMMkpUNHdTUkdUNVNnZVM3cnhVU256TVZwNDhr?=
+ =?utf-8?B?cmhTZUdZSHY2L2t0cjlJQjhmY0xuWm9KZlRwRTBmVVRkNWorTHA2Z2kwdE1S?=
+ =?utf-8?B?QkYxRFJEZXFPU0haVDdqZnJWVHV5UFZjUVJVS0JsQ2tJRmtBSktJcnJBNk1G?=
+ =?utf-8?B?VUhicVdWTERDa29SYkJ1SWswQWpSVGxNUDB1Q1N1U0lEMEh3SmhRcUNPN1Zv?=
+ =?utf-8?B?NGorOW4rdUhxSU1zTytQTzdXN3lrdnpXN050VHpGMGdoa3M4bkdxeUhHWkdr?=
+ =?utf-8?B?TU1EeVFKVlA0WlRUUUgxVURUQU95aXo4QW9kZTZzSWk0RkhLNmhtRG9VdWlp?=
+ =?utf-8?B?elFxVzlXQzd1NWJHTThFaDdTMWdDa29DNUFCY0gzNys4bkhobkl0c0FBcmhV?=
+ =?utf-8?B?c3psQ2RJSlJpd2E1R0k4R3dUb01VRHgyWCtjSU94Yy9NckI0WmlLSUNTYmJI?=
+ =?utf-8?B?UjQxVVpaOTJHcDJ4N0IweDcrR2MrZDBDL21HL0RaNXNZNDBQQ2pCVk56UHM0?=
+ =?utf-8?B?NzJrOXBtMDFkVmxHc2RFMWhMZVE3OWJyWWwvcEd6MFkzcFArVEdSREt5Z2RX?=
+ =?utf-8?B?bVd2VjI5SHQ1cFh0dTVTOGNQSUdNcHN3eGpuN0lCRFZ0TGtOaHA3NDY1V2Nj?=
+ =?utf-8?B?QmdqUkFsQVdiTW9rQ0xJZTRKT0UwV1JUeFV3TDRNakIzYlJ0OW95UTU1d3B5?=
+ =?utf-8?B?RkFKU0FEM2s1ckJPVjE0dkZ4eEo5TXdybFZPSEljamNYcTJ1SDE2NWRlT3Jv?=
+ =?utf-8?B?VSt5a1cxUmVraFdXbVU3a2xBWXZqcjlBaGRSak1Dc0ZFWnhIeEkwaVdEaFA3?=
+ =?utf-8?B?N3FjZmVSbmxxbGlmTE5rS0h6VjVTTjcxT0hVMXJIOFcwVXVPSDVGVkU4N0Fx?=
+ =?utf-8?B?b29qNnNUWm5UOUJnTnViV2JoYlFmbWJNUGZVNmdjZW9GZE1GZGZXbWphdmRN?=
+ =?utf-8?B?b1REZ1RMeWR0dVhESzBYcy9vN1UwVm5HdExZb2V6OW5CWU9DNXE4MnFrdUFS?=
+ =?utf-8?B?TXl1ekVqZFhhT1E9PQ==?=
 X-MS-Exchange-CrossTenant-AuthSource: BYAPR15MB4088.namprd15.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jan 2021 17:12:07.1209
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jan 2021 17:14:50.7816
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-Network-Message-Id: 59cfa8b0-1cfa-44d3-97b2-08d8b7e65b29
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7b45e420-af04-4a05-4f80-08d8b7e6bcfb
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 65BSGNJzbtS0DB5X+2/+85TMmc94ye+wHQEHn8dOO/wSiRoaHlckW2RsWr7TUVgX
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB3046
+X-MS-Exchange-CrossTenant-UserPrincipalName: XPLHhCvxMm22NPSvBhqEHh68eMFFpRp8SlBupLuWPdHAye7QatVYGn/pPYbYiawM
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR15MB4204
 X-OriginatorOrg: fb.com
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
- definitions=2021-01-13_07:2021-01-13,2021-01-13 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 clxscore=1011
- adultscore=0 lowpriorityscore=0 mlxlogscore=999 spamscore=0 malwarescore=0
- suspectscore=0 bulkscore=0 priorityscore=1501 mlxscore=0 phishscore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ definitions=2021-01-13_09:2021-01-13,2021-01-13 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
+ impostorscore=0 suspectscore=0 phishscore=0 malwarescore=0 adultscore=0
+ mlxlogscore=999 spamscore=0 bulkscore=0 clxscore=1015 priorityscore=1501
+ mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2009150000 definitions=main-2101130103
 X-FB-Internal: deliver
 Precedence: bulk
@@ -151,75 +151,66 @@ X-Mailing-List: netdev@vger.kernel.org
 
 
 On 1/13/21 2:57 AM, Tiezhu Yang wrote:
-> MIPS needs __SANE_USERSPACE_TYPES__ before <linux/types.h> to select
-> 'int-ll64.h' in arch/mips/include/uapi/asm/types.h and avoid compile
-> warnings when printing __u64 with %llu, %llx or %lld.
-
-could you mention which command produces the following warning?
-
+> When make M=samples/bpf on the Loongson 3A3000 platform which
+> belongs to MIPS arch, there exists many similar build errors
+> about 'asm/rwonce.h' file not found, so include it only under
+> CONFIG_ARM64 and CONFIG_ALPHA due to it exists only in arm64
+> and alpha arch.
 > 
->      printf("0x%02x : %llu\n", key, value);
->                       ~~~^          ~~~~~
->                       %lu
->     printf("%s/%llx;", sym->name, addr);
->                ~~~^               ~~~~
->                %lx
->    printf(";%s %lld\n", key->waker, count);
->                ~~~^                 ~~~~~
->                %ld
+>    CLANG-bpf  samples/bpf/xdpsock_kern.o
+> In file included from samples/bpf/xdpsock_kern.c:2:
+> In file included from ./include/linux/bpf.h:9:
+> In file included from ./include/linux/workqueue.h:9:
+> In file included from ./include/linux/timer.h:5:
+> In file included from ./include/linux/list.h:9:
+> In file included from ./include/linux/kernel.h:10:
+> ./include/linux/compiler.h:246:10: fatal error: 'asm/rwonce.h' file not found
+>           ^~~~~~~~~~~~~~
+> 1 error generated.
+> 
+> $ find . -name rwonce.h
+> ./include/asm-generic/rwonce.h
+> ./arch/arm64/include/asm/rwonce.h
+> ./arch/alpha/include/asm/rwonce.h
 > 
 > Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
 > ---
->   samples/bpf/Makefile        | 4 ++++
->   tools/include/linux/types.h | 3 +++
->   2 files changed, 7 insertions(+)
+>   include/linux/compiler.h | 6 ++++++
+>   1 file changed, 6 insertions(+)
 > 
-> diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
-> index 26fc96c..27de306 100644
-> --- a/samples/bpf/Makefile
-> +++ b/samples/bpf/Makefile
-> @@ -183,6 +183,10 @@ BPF_EXTRA_CFLAGS := $(ARM_ARCH_SELECTOR)
->   TPROGS_CFLAGS += $(ARM_ARCH_SELECTOR)
->   endif
+> diff --git a/include/linux/compiler.h b/include/linux/compiler.h
+> index b8fe0c2..bdbe759 100644
+> --- a/include/linux/compiler.h
+> +++ b/include/linux/compiler.h
+> @@ -243,6 +243,12 @@ static inline void *offset_to_ptr(const int *off)
+>    */
+>   #define prevent_tail_call_optimization()	mb()
 >   
-> +ifeq ($(ARCH), mips)
-> +TPROGS_CFLAGS += -D__SANE_USERSPACE_TYPES__
-> +endif
+> +#ifdef CONFIG_ARM64
+>   #include <asm/rwonce.h>
+> +#endif
 > +
-
-This change looks okay based on description in
-arch/mips/include/uapi/asm/types.h
-
-'''
-/*
-  * We don't use int-l64.h for the kernel anymore but still use it for
-  * userspace to avoid code changes.
-  *
-  * However, some user programs (e.g. perf) may not want this. They can
-  * flag __SANE_USERSPACE_TYPES__ to get int-ll64.h here.
-  */
-'''
-
->   TPROGS_CFLAGS += -Wall -O2
->   TPROGS_CFLAGS += -Wmissing-prototypes
->   TPROGS_CFLAGS += -Wstrict-prototypes
-> diff --git a/tools/include/linux/types.h b/tools/include/linux/types.h
-> index 154eb4e..e9c5a21 100644
-> --- a/tools/include/linux/types.h
-> +++ b/tools/include/linux/types.h
-> @@ -6,7 +6,10 @@
->   #include <stddef.h>
->   #include <stdint.h>
->   
-> +#ifndef __SANE_USERSPACE_TYPES__
->   #define __SANE_USERSPACE_TYPES__	/* For PPC64, to get LL64 types */
+> +#ifdef CONFIG_ALPHA
+> +#include <asm/rwonce.h>
 > +#endif
 
-What problem this patch fixed? If this header is used, you can just
-change comment from "PPC64" to "PPC64/MIPS", right?
+I do not think this fix is correct. x86 does not define its own
+rwonce.h and still compiles fine.
 
-> +
->   #include <asm/types.h>
->   #include <asm/posix_types.h>
+As noted in the above, we have include/asm-generic/rwonce.h.
+Once you do a proper build, you will have rwonce.h in arch
+generated directory like
+
+-bash-4.4$ find . -name rwonce.h
+./include/asm-generic/rwonce.h
+./arch/alpha/include/asm/rwonce.h
+./arch/arm64/include/asm/rwonce.h
+./arch/x86/include/generated/asm/rwonce.h
+
+for mips, it should generated in 
+arch/mips/include/generated/asm/rwonce.h. Please double check why this 
+does not happen.
+
 >   
+>   #endif /* __LINUX_COMPILER_H */
 > 
