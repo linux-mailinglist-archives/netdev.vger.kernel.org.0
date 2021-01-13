@@ -2,117 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 551A92F4888
-	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 11:23:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B8A62F488A
+	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 11:23:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726980AbhAMKVo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jan 2021 05:21:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40144 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725372AbhAMKVo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 05:21:44 -0500
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D5E3FC061575
-        for <netdev@vger.kernel.org>; Wed, 13 Jan 2021 02:21:03 -0800 (PST)
-Received: by mail-wm1-x334.google.com with SMTP id g25so3343486wmh.1
-        for <netdev@vger.kernel.org>; Wed, 13 Jan 2021 02:21:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=t7X9JmEYAV33UPHNNmYfL1urqVLdpyq17RETZySR0c0=;
-        b=Md2JO0BXTNuGVS4hDjOg7+ukcwCJk93szFO2zvgRKtizNSQ1JNVtWZxYioOYZT5vp6
-         pBXiLCJO8nMrGsMW6ekl6BcbHE4d8jZVdoJJS2wU8r2Z5m0vnkEoUHOreglXKUlxHzfb
-         xUpSskRmibYpDTukcc5hNTS7bexVaab/CxuX2UO8brSSm/BHsm5/8FjFcxUQcYDMlyh1
-         9oG63JGBMhE2WpnZLQMZV85binvGaCwnTJ7AJXOo7kmwqolYqADz8J1UKvYxVwz11K27
-         0f8lhiaAgx6mhp24ZHAkAOLgvnh6HbvfGnVY2FQ/aB04kIStERofXRqexXyQHNFowdaD
-         /6Uw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=t7X9JmEYAV33UPHNNmYfL1urqVLdpyq17RETZySR0c0=;
-        b=EWT3iMgDrPHSdMmbpFa+TrNiMKX/8AyQqUmUbMqsqzGxPh6YdEdKUl92M9we0ianfu
-         Xfgji3UecHTzS2HyB011gKUXOq0EsUT95OB2LI4HfUWMqI+iggkbwNwnbakK3PwR9iat
-         gEqKnxkUYLrfVSyvG6Q3h6dL9E+8ZY2Cr4ExNm+hIO+JEociJMLbWCm0DAuLywV0nDuc
-         nocrAF9UHH8dVg3/7lAMGGw99GEQ9jaZmvIDAuGB/sxsmZWBkvKto4DGVHX2qfvsqxdw
-         NsM/sNZZkcycjDyDuWilB3+xzs/sdUpEMM7hbJOebQwNGqE5P4GIP4KXIJLwTcjgy+Pw
-         K/QQ==
-X-Gm-Message-State: AOAM533oDrwjoyMIaUWx/JXR+YTqJs9vQ+ifhmT5UGCnC9ppLMp6Jefn
-        f2/aOaAYVGgRgRuQwl9uGoY=
-X-Google-Smtp-Source: ABdhPJwQioTrm+oLpVDXAcOLjk1gAtAg1/VQnSOgNCEeyZwiWI+md75zKwbfzElY1931Og19cEhbbw==
-X-Received: by 2002:a1c:e10b:: with SMTP id y11mr1522980wmg.65.1610533262594;
-        Wed, 13 Jan 2021 02:21:02 -0800 (PST)
-Received: from [192.168.1.101] ([37.165.157.144])
-        by smtp.gmail.com with ESMTPSA id n10sm2383874wrx.21.2021.01.13.02.21.01
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 13 Jan 2021 02:21:02 -0800 (PST)
-Subject: Re: [PATCH net 2/2] mptcp: better msk-level shutdown.
-To:     Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org
-Cc:     mptcp@lists.01.org, "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-References: <cover.1610471474.git.pabeni@redhat.com>
- <4cd18371d7caa6ee4a4e7ef988b50b45e362e177.1610471474.git.pabeni@redhat.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <a42a3c10-0183-a232-aec6-b1e6bbfaa800@gmail.com>
-Date:   Wed, 13 Jan 2021 11:21:00 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.1
+        id S1727170AbhAMKWV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jan 2021 05:22:21 -0500
+Received: from foss.arm.com ([217.140.110.172]:33734 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727036AbhAMKWV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 13 Jan 2021 05:22:21 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2CA631042;
+        Wed, 13 Jan 2021 02:21:35 -0800 (PST)
+Received: from e107158-lin (e107158-lin.cambridge.arm.com [10.1.194.78])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id E65913F66E;
+        Wed, 13 Jan 2021 02:21:33 -0800 (PST)
+Date:   Wed, 13 Jan 2021 10:21:31 +0000
+From:   Qais Yousef <qais.yousef@arm.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH bpf-next 2/2] selftests: bpf: Add a new test for bare
+ tracepoints
+Message-ID: <20210113102131.mjxpqpoi4n6rhbny@e107158-lin>
+References: <20210111182027.1448538-1-qais.yousef@arm.com>
+ <20210111182027.1448538-3-qais.yousef@arm.com>
+ <CAEf4BzYwOAHGOiZBUx86yZ1ofwJ1WqCDR3dyRMrTeQa2ZU7ftA@mail.gmail.com>
+ <20210112192729.q47avnmnzl54nekg@e107158-lin>
+ <CAEf4BzZiYv1M04FBmuzMH5cxLUXzLthDfpp4nORMEmvkcfzyRQ@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <4cd18371d7caa6ee4a4e7ef988b50b45e362e177.1610471474.git.pabeni@redhat.com>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzZiYv1M04FBmuzMH5cxLUXzLthDfpp4nORMEmvkcfzyRQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 1/12/21 6:25 PM, Paolo Abeni wrote:
-> Instead of re-implementing most of inet_shutdown, re-use
-> such helper, and implement the MPTCP-specific bits at the
-> 'proto' level.
+On 01/12/21 12:07, Andrii Nakryiko wrote:
+> > > >         $ sudo ./test_progs -v -t module_attach
+> > >
+> > > use -vv when debugging stuff like that with test_progs, it will output
+> > > libbpf detailed logs, that often are very helpful
+> >
+> > I tried that but it didn't help me. Full output is here
+> >
+> >         https://paste.debian.net/1180846
+> >
 > 
-> The msk-level disconnect() can now be invoked, lets provide a
-> suitable implementation.
+> It did help a bit for me to make sure that you have bpf_testmod
+> properly loaded and its BTF was found, so the problem is somewhere
+> else. Also, given load succeeded and attach failed with OPNOTSUPP, I
+> suspect you are missing some of FTRACE configs, which seems to be
+> missing from selftests's config as well. Check that you have
+> CONFIG_FTRACE=y and CONFIG_DYNAMIC_FTRACE=y, and you might need some
+> more. See [0] for a real config we are using to run all tests in
+> libbpf CI. If you figure out what you were missing, please also
+> contribute a patch to selftests' config.
 > 
-> As a side effect, this fixes bad state management for listener
-> sockets. The latter could lead to division by 0 oops since
-> commit ea4ca586b16f ("mptcp: refine MPTCP-level ack scheduling").
-> 
-> Fixes: 43b54c6ee382 ("mptcp: Use full MPTCP-level disconnect state machine")
-> Fixes: ea4ca586b16f ("mptcp: refine MPTCP-level ack scheduling")
-> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-> ---
->  net/mptcp/protocol.c | 62 ++++++++++++--------------------------------
->  1 file changed, 17 insertions(+), 45 deletions(-)
-> 
-> diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-> index 2ff8c7caf74f..81faeff8f3bb 100644
-> --- a/net/mptcp/protocol.c
-> +++ b/net/mptcp/protocol.c
-> @@ -2642,11 +2642,12 @@ static void mptcp_copy_inaddrs(struct sock *msk, const struct sock *ssk)
->  
->  static int mptcp_disconnect(struct sock *sk, int flags)
->  {
-> -	/* Should never be called.
-> -	 * inet_stream_connect() calls ->disconnect, but that
-> -	 * refers to the subflow socket, not the mptcp one.
-> -	 */
-> -	WARN_ON_ONCE(1);
-> +	struct mptcp_subflow_context *subflow;
-> +	struct mptcp_sock *msk = mptcp_sk(sk);
-> +
-> +	__mptcp_flush_join_list(msk);
-> +	mptcp_for_each_subflow(msk, subflow)
-> +		tcp_disconnect(mptcp_subflow_tcp_sock(subflow), flags);
+>   [0] https://github.com/libbpf/libbpf/blob/master/travis-ci/vmtest/configs/latest.config
 
-Ouch.
+Yeah that occurred to me too. I do have all necessary FTRACE options enabled,
+including DYNAMIC_FTRACE. I think I did try enabling fault injection too just
+in case. I have CONFIG_FAULT_INJECTION=y and CONFIG_FUNCTION_ERROR_INJECTION=y.
 
-tcp_disconnect() is supposed to be called with socket lock being held.
+I will look at the CI config and see if I can figure it out.
 
-Really, CONFIG_LOCKDEP=y should have warned you :/
+I will likely get a chance to look at all of this and send v2  over the
+weekend.
 
+Thanks
 
+--
+Qais Yousef
