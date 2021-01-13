@@ -2,170 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DBF3B2F50F0
-	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 18:21:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8BA982F5112
+	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 18:25:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728230AbhAMRRf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jan 2021 12:17:35 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:14514 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728214AbhAMRRd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 12:17:33 -0500
-Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
-        by m0089730.ppops.net (8.16.0.43/8.16.0.43) with SMTP id 10DH2gxY020568;
-        Wed, 13 Jan 2021 09:16:29 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
- references : from : message-id : date : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=facebook;
- bh=gT0Z30JEx+02UCcfqvm4mb4iJ9gUDmE35HN+ehgo5Fk=;
- b=lAP/DKbvK7CYvRlIKZ+rroF6Q0CqwrpCcAJJD3gUU5w+9khSWrtNpACCJB6ft8Ugny+d
- Lqu9uNf/6vmOssV4zvrxZN1skcFOAvXYKyAa8QkTU2g4HufNqHc7XzjMwguYVR0+tyOM
- jpOhEZ/6aJdZdQ3BrEitDytlaE1Q/nvCJ4o= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by m0089730.ppops.net with ESMTP id 361fpqp8es-12
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Wed, 13 Jan 2021 09:16:29 -0800
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.35.174) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Wed, 13 Jan 2021 09:16:28 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UAOtHHpSM6mLoQ9NkH/abf4W0nXY3D2+pBqC8nNmdCbpXUdec1NOUirXxNuU5NX9E3hXIDrUMCYhjy6ye2ZufAh/JPVqhQn5mxApxYfKYBhF9iQjjWrIxi+nRTm6tglii6NL5GEOghzS9sBPp9lMQ76mZyOKKOYSb9kt0jkunv/jwcT/1T2T7xsawB2ZIh8gb+U0wRdmOymvI792XnFxtuuxspTEuA2ti+ZyHaTGFpsjeW8i5hTuc7HFwMcz/CNmIlNoHta2ffIpuApwTf/7VrNaF9rbJZGix1aNZV8ePvLFHDIIoVwDzSy1E/BS4D3sWogiPmrOsGgxFp4Dam1l8A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=gT0Z30JEx+02UCcfqvm4mb4iJ9gUDmE35HN+ehgo5Fk=;
- b=iWtLlxexf552jkhw9sUm4O97/FdpH4292HHxiutyc1FGRb/wwXRqPs/JfJnY8rwBB1NUzVkXG/xYGtMUu+bzhazdeQKtA6OSeKy89bS3lFblMBoWlT6ZLB0ryK2OO9JI6riVoO3H/XfPtKU0q8vFNo/kQsmMXHwGw//8XsYfasm4r6HcoC1cBkzKPCj4B8LBpImbKDBfwow3vPylcItL1Zi1gOiUDIKWhpJZBAEh42XgtbCtKhrCmxA6ulxFEvOENl8Q82o09kdC+LncND7Qs87PxM5gu7irADV0H3gKBVlXAdtqcX0PU9KbP1W08bogTe+m8+uzS9B2e4tsTDFmxg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=gT0Z30JEx+02UCcfqvm4mb4iJ9gUDmE35HN+ehgo5Fk=;
- b=Q0r4HvFSdkYwgbk0YOkaCGxbpAwiUH+sbhJxij01y4ZEFqRXdA8ezWMj+UCPPQnyMWT8qD4Vz8FrG7vP6lJR3fr0FC4TW3kF5Y4v92Sezsolgea4IovxY3DEKLe9QoQfjJvP6CbQNS9DifK/rT/vkTldLlaWKoqOvphTDLjbJLo=
-Authentication-Results: loongson.cn; dkim=none (message not signed)
- header.d=none;loongson.cn; dmarc=none action=none header.from=fb.com;
-Received: from BYAPR15MB4088.namprd15.prod.outlook.com (2603:10b6:a02:c3::18)
- by SJ0PR15MB4204.namprd15.prod.outlook.com (2603:10b6:a03:2c8::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3763.10; Wed, 13 Jan
- 2021 17:16:28 +0000
-Received: from BYAPR15MB4088.namprd15.prod.outlook.com
- ([fe80::9ae:1628:daf9:4b03]) by BYAPR15MB4088.namprd15.prod.outlook.com
- ([fe80::9ae:1628:daf9:4b03%7]) with mapi id 15.20.3742.012; Wed, 13 Jan 2021
- 17:16:28 +0000
-Subject: Re: [PATCH 0/2] Fix build errors and warnings when make M=samples/bpf
-To:     Tiezhu Yang <yangtiezhu@loongson.cn>,
-        Luc Van Oostenryck <luc.vanoostenryck@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Nathan Chancellor <natechancellor@gmail.com>,
-        Nick Desaulniers <ndesaulniers@google.com>
-CC:     <linux-sparse@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <bpf@vger.kernel.org>, <clang-built-linux@googlegroups.com>,
-        <linux-mips@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Xuefeng Li <lixuefeng@loongson.cn>
-References: <1610535453-2352-1-git-send-email-yangtiezhu@loongson.cn>
-From:   Yonghong Song <yhs@fb.com>
-Message-ID: <0a85390d-b918-ab56-cccf-e3896f0f50e9@fb.com>
-Date:   Wed, 13 Jan 2021 09:16:24 -0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.6.1
-In-Reply-To: <1610535453-2352-1-git-send-email-yangtiezhu@loongson.cn>
-Content-Type: text/plain; charset=utf-8; format=flowed
+        id S1727944AbhAMRYA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jan 2021 12:24:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46908 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726996AbhAMRX7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 12:23:59 -0500
+Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1030C061794;
+        Wed, 13 Jan 2021 09:23:19 -0800 (PST)
+Received: by mail-pl1-x62b.google.com with SMTP id t6so1453498plq.1;
+        Wed, 13 Jan 2021 09:23:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=9g+kWeLMWZfV/Z/hn8eRUUjpSyMfChsGZ3pxJD2wiic=;
+        b=W0sgfeCrZ+ij0fYkStN0wka1ShrAOcppEkG/qhiimvvg17lFULu7u69NMQHFu9V/IQ
+         JAcB1i/EsKEBhFWVKaHKLTonpv7CbjjQPMi0/rz4XEaY1MtyLCMhlZ4UvD37xwN3BavK
+         w4SVs8g3BSFHStSjvL/dl4f59AQmngHOiSGRlWE0ox9WULVs42SdELBRZVupj7iI+TS4
+         iilMp91KEwfO8tu92rAvP9xORfbmMHii3oJZ5ss6rJYCMoVdjOjdRqY/wDfXQpTL5+fe
+         Yqx+OJ2B4AeT65MIuFvjRzEv2lL9af2INzFSzO2thRPpCMn7EcelItN4xGedVbX7uaIQ
+         jn+w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=9g+kWeLMWZfV/Z/hn8eRUUjpSyMfChsGZ3pxJD2wiic=;
+        b=lfmsMQqBoHP/Et/KQGmhWDciP2dxhH1WdiICD1l5Lzfg8R/Xx+wFSsME9YE9cA3Eqz
+         Mry98aAKES1mZKqO/b2gCQo6JqRqGhxQWyCxpYmD+X31VZvZ230S+O7qINe/VC1MeDbN
+         OgZ1yctTy9ExCOVu1xG/bluYDIyau2E38bWelE0Schpe2lZ44WjgTBndxSd4mjIY1u8J
+         Cg0TbsNNSUXbYrfCmxQTgoSufCE9l3eT6g45facd66dG+Y67Ld6xvkz1V3ldBigF08MM
+         FqhanzPvdGPPCthRSRofJWP4rHO1gsglJtgEVKwoLTzKb/IEmS9DWrtbx8Itzp2mO1pl
+         AeJg==
+X-Gm-Message-State: AOAM530l0hTbZV5jaxJJmEMw3erzan2WsZf3+9LQO97WUzlOMw9EbQPV
+        LmisGjfO6HZJPBtG3sl2pN6ovy01Xk4=
+X-Google-Smtp-Source: ABdhPJzfq+QOyl/qv/5C1l+Jc+jDBhx2REFSnCTm89ny+UNjimJRYF1C6atDZLBW/ufMOeuP9ffZig==
+X-Received: by 2002:a17:90a:a60f:: with SMTP id c15mr308764pjq.53.1610558598803;
+        Wed, 13 Jan 2021 09:23:18 -0800 (PST)
+Received: from [10.67.48.230] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id d20sm40845951pjz.3.2021.01.13.09.23.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 13 Jan 2021 09:23:16 -0800 (PST)
+Subject: Re: [PATCH net 5/6] net: dsa: ksz: fix wrong pvid
+To:     Gilles DOFFE <gilles.doffe@savoirfairelinux.com>,
+        netdev@vger.kernel.org
+Cc:     Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org
+References: <cover.1610540603.git.gilles.doffe@savoirfairelinux.com>
+ <4d34da2534c912e290d77d4296a4aa68229fd6e6.1610540603.git.gilles.doffe@savoirfairelinux.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
+ mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
+ xGlkaOSDuu09rxuW+69Y2f1TzjFuGpBk4ysWOR85O2Nx8AJ6fYGCoeTbovrNlGT1M9obSFGQ
+ X3IzRnWoqlfudjTO5TKoqkbOgpYqIo5n1QbEjCCwCwCg3DOH/4ug2AUUlcIT9/l3pGvoRJ0E
+ AICDzi3l7pmC5IWn2n1mvP5247urtHFs/uusE827DDj3K8Upn2vYiOFMBhGsxAk6YKV6IP0d
+ ZdWX6fqkJJlu9cSDvWtO1hXeHIfQIE/xcqvlRH783KrihLcsmnBqOiS6rJDO2x1eAgC8meAX
+ SAgsrBhcgGl2Rl5gh/jkeA5ykwbxA/9u1eEuL70Qzt5APJmqVXR+kWvrqdBVPoUNy/tQ8mYc
+ nzJJ63ng3tHhnwHXZOu8hL4nqwlYHRa9eeglXYhBqja4ZvIvCEqSmEukfivk+DlIgVoOAJbh
+ qIWgvr3SIEuR6ayY3f5j0f2ejUMYlYYnKdiHXFlF9uXm1ELrb0YX4GMHz7QnRmxvcmlhbiBG
+ YWluZWxsaSA8Zi5mYWluZWxsaUBnbWFpbC5jb20+iGYEExECACYCGyMGCwkIBwMCBBUCCAME
+ FgIDAQIeAQIXgAUCVF/S8QUJHlwd3wAKCRBhV5kVtWN2DvCVAJ4u4/bPF4P3jxb4qEY8I2gS
+ 6hG0gACffNWlqJ2T4wSSn+3o7CCZNd7SLSC5BA0ESM+4EhAQAL/o09boR9D3Vk1Tt7+gpYr3
+ WQ6hgYVON905q2ndEoA2J0dQxJNRw3snabHDDzQBAcqOvdi7YidfBVdKi0wxHhSuRBfuOppu
+ pdXkb7zxuPQuSveCLqqZWRQ+Cc2QgF7SBqgznbe6Ngout5qXY5Dcagk9LqFNGhJQzUGHAsIs
+ hap1f0B1PoUyUNeEInV98D8Xd/edM3mhO9nRpUXRK9Bvt4iEZUXGuVtZLT52nK6Wv2EZ1TiT
+ OiqZlf1P+vxYLBx9eKmabPdm3yjalhY8yr1S1vL0gSA/C6W1o/TowdieF1rWN/MYHlkpyj9c
+ Rpc281gAO0AP3V1G00YzBEdYyi0gaJbCEQnq8Vz1vDXFxHzyhgGz7umBsVKmYwZgA8DrrB0M
+ oaP35wuGR3RJcaG30AnJpEDkBYHznI2apxdcuTPOHZyEilIRrBGzDwGtAhldzlBoBwE3Z3MY
+ 31TOpACu1ZpNOMysZ6xiE35pWkwc0KYm4hJA5GFfmWSN6DniimW3pmdDIiw4Ifcx8b3mFrRO
+ BbDIW13E51j9RjbO/nAaK9ndZ5LRO1B/8Fwat7bLzmsCiEXOJY7NNpIEpkoNoEUfCcZwmLrU
+ +eOTPzaF6drw6ayewEi5yzPg3TAT6FV3oBsNg3xlwU0gPK3v6gYPX5w9+ovPZ1/qqNfOrbsE
+ FRuiSVsZQ5s3AAMFD/9XjlnnVDh9GX/r/6hjmr4U9tEsM+VQXaVXqZuHKaSmojOLUCP/YVQo
+ 7IiYaNssCS4FCPe4yrL4FJJfJAsbeyDykMN7wAnBcOkbZ9BPJPNCbqU6dowLOiy8AuTYQ48m
+ vIyQ4Ijnb6GTrtxIUDQeOBNuQC/gyyx3nbL/lVlHbxr4tb6YkhkO6shjXhQh7nQb33FjGO4P
+ WU11Nr9i/qoV8QCo12MQEo244RRA6VMud06y/E449rWZFSTwGqb0FS0seTcYNvxt8PB2izX+
+ HZA8SL54j479ubxhfuoTu5nXdtFYFj5Lj5x34LKPx7MpgAmj0H7SDhpFWF2FzcC1bjiW9mjW
+ HaKaX23Awt97AqQZXegbfkJwX2Y53ufq8Np3e1542lh3/mpiGSilCsaTahEGrHK+lIusl6mz
+ Joil+u3k01ofvJMK0ZdzGUZ/aPMZ16LofjFA+MNxWrZFrkYmiGdv+LG45zSlZyIvzSiG2lKy
+ kuVag+IijCIom78P9jRtB1q1Q5lwZp2TLAJlz92DmFwBg1hyFzwDADjZ2nrDxKUiybXIgZp9
+ aU2d++ptEGCVJOfEW4qpWCCLPbOT7XBr+g/4H3qWbs3j/cDDq7LuVYIe+wchy/iXEJaQVeTC
+ y5arMQorqTFWlEOgRA8OP47L9knl9i4xuR0euV6DChDrguup2aJVU4hPBBgRAgAPAhsMBQJU
+ X9LxBQkeXB3fAAoJEGFXmRW1Y3YOj4UAn3nrFLPZekMeqX5aD/aq/dsbXSfyAKC45Go0YyxV
+ HGuUuzv+GKZ6nsysJ7kCDQRXG8fwARAA6q/pqBi5PjHcOAUgk2/2LR5LjjesK50bCaD4JuNc
+ YDhFR7Vs108diBtsho3w8WRd9viOqDrhLJTroVckkk74OY8r+3t1E0Dd4wHWHQZsAeUvOwDM
+ PQMqTUBFuMi6ydzTZpFA2wBR9x6ofl8Ax+zaGBcFrRlQnhsuXLnM1uuvS39+pmzIjasZBP2H
+ UPk5ifigXcpelKmj6iskP3c8QN6x6GjUSmYx+xUfs/GNVSU1XOZn61wgPDbgINJd/THGdqiO
+ iJxCLuTMqlSsmh1+E1dSdfYkCb93R/0ZHvMKWlAx7MnaFgBfsG8FqNtZu3PCLfizyVYYjXbV
+ WO1A23riZKqwrSJAATo5iTS65BuYxrFsFNPrf7TitM8E76BEBZk0OZBvZxMuOs6Z1qI8YKVK
+ UrHVGFq3NbuPWCdRul9SX3VfOunr9Gv0GABnJ0ET+K7nspax0xqq7zgnM71QEaiaH17IFYGS
+ sG34V7Wo3vyQzsk7qLf9Ajno0DhJ+VX43g8+AjxOMNVrGCt9RNXSBVpyv2AMTlWCdJ5KI6V4
+ KEzWM4HJm7QlNKE6RPoBxJVbSQLPd9St3h7mxLcne4l7NK9eNgNnneT7QZL8fL//s9K8Ns1W
+ t60uQNYvbhKDG7+/yLcmJgjF74XkGvxCmTA1rW2bsUriM533nG9gAOUFQjURkwI8jvMAEQEA
+ AYkCaAQYEQIACQUCVxvH8AIbAgIpCRBhV5kVtWN2DsFdIAQZAQIABgUCVxvH8AAKCRCH0Jac
+ RAcHBIkHD/9nmfog7X2ZXMzL9ktT++7x+W/QBrSTCTmq8PK+69+INN1ZDOrY8uz6htfTLV9+
+ e2W6G8/7zIvODuHk7r+yQ585XbplgP0V5Xc8iBHdBgXbqnY5zBrcH+Q/oQ2STalEvaGHqNoD
+ UGyLQ/fiKoLZTPMur57Fy1c9rTuKiSdMgnT0FPfWVDfpR2Ds0gpqWePlRuRGOoCln5GnREA/
+ 2MW2rWf+CO9kbIR+66j8b4RUJqIK3dWn9xbENh/aqxfonGTCZQ2zC4sLd25DQA4w1itPo+f5
+ V/SQxuhnlQkTOCdJ7b/mby/pNRz1lsLkjnXueLILj7gNjwTabZXYtL16z24qkDTI1x3g98R/
+ xunb3/fQwR8FY5/zRvXJq5us/nLvIvOmVwZFkwXc+AF+LSIajqQz9XbXeIP/BDjlBNXRZNdo
+ dVuSU51ENcMcilPr2EUnqEAqeczsCGpnvRCLfVQeSZr2L9N4svNhhfPOEscYhhpHTh0VPyxI
+ pPBNKq+byuYPMyk3nj814NKhImK0O4gTyCK9b+gZAVvQcYAXvSouCnTZeJRrNHJFTgTgu6E0
+ caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
+ 6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
+ M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
+Message-ID: <b0559d92-abcb-5754-f2e9-dfaa92989a85@gmail.com>
+Date:   Wed, 13 Jan 2021 09:23:14 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
+MIME-Version: 1.0
+In-Reply-To: <4d34da2534c912e290d77d4296a4aa68229fd6e6.1610540603.git.gilles.doffe@savoirfairelinux.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [2620:10d:c090:400::5:e777]
-X-ClientProxiedBy: MW4PR04CA0424.namprd04.prod.outlook.com
- (2603:10b6:303:8b::9) To BYAPR15MB4088.namprd15.prod.outlook.com
- (2603:10b6:a02:c3::18)
-MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [IPv6:2620:10d:c085:21e1::13f6] (2620:10d:c090:400::5:e777) by MW4PR04CA0424.namprd04.prod.outlook.com (2603:10b6:303:8b::9) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3763.9 via Frontend Transport; Wed, 13 Jan 2021 17:16:26 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: b531cf23-35fe-43e6-60b9-08d8b7e6f69d
-X-MS-TrafficTypeDiagnostic: SJ0PR15MB4204:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <SJ0PR15MB42040C4D663822B7651F500ED3A90@SJ0PR15MB4204.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:3968;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: pu09rn1ihN2KUp4KZmdOLIUf376R/SoCcNM5STdNzOfh8Jji5mOnQZ7k2LOp4rzgQNviiDDbhlh27rqaxD6PKBJOEC0u9Zjnc3WbjDIE2+LLuncLIGQdRAB3o9/G5h5gwjSUtOh+e95+TF0gUsxslptGgVTJjE8xdkXd4RatFLJGg0NohG+kFfdJ1B6oRa0dcgEz2nBO4jBQ7pi4pdHSMMZwGQtd7CbArr7iPyMVxra4oLFX3KpC34hlH7P2ZtFBhhN5cq9gFOPoXko1SxFpQ8/I79wT+NOv19pDhntSvYKoE6FcpSAh9g5EGpVSEGU8RlQ46siwJEam4CX3kCeWELGei+IxTi4eHC2L22g2Pg9TSNogC++e8OQ+omvoEwNa1hG20yZyftddMG6EfOZ9Da4gVYyAT6/bw/YiNc7hJ1hSwVJ1z6JodnknQLnNEyXftVdZH0FE9ZnhAPK+td4ie0pue0PzrbKhSuMvRb/31bqXvIWUr11UOaJ1/oA8bUr8
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB4088.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(396003)(376002)(366004)(136003)(346002)(39860400002)(6486002)(83380400001)(2906002)(921005)(4744005)(53546011)(86362001)(316002)(4326008)(16526019)(8676002)(31696002)(2616005)(66476007)(52116002)(66556008)(66946007)(110136005)(8936002)(31686004)(36756003)(7416002)(5660300002)(186003)(478600001)(45980500001)(43740500002);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?S2djRGNUOURtbnhYdlpBUjdTZHp0ZnQyMEZES3B1TDgrTnVlUWtKbC8rc0ZH?=
- =?utf-8?B?MWtnOTJGVjNMaHI3TjdwaVFjalNubUxnNWNxRE9HWG5FZ3hzY3Bhcm9PTnB5?=
- =?utf-8?B?N1YwSklYNEEvRFpRM1Z2VVBYbkNveStqT0xvcW1leDUrK2V5S05QbXhRbWkz?=
- =?utf-8?B?Y25RQ1dYQ1p6TjJ5TndSek91T1FQdVMrTmpza0xKU0pLdFR0Zm9rc2RtOVd2?=
- =?utf-8?B?WjFQcVVTZERjRWtvZEhkQjJpenRNNG4wOUxUMjBCTmJjVWJVVEtOWE1qSE1u?=
- =?utf-8?B?WDZMOUUwdW91cEN3V0tQV2ludnFNREpDSmc0a1FOa3dKOFFERDRYNWVIMEQy?=
- =?utf-8?B?UytYVHloT3c0eVlMRTAwSGVKdktsaDluVkowckduR3ZDOWUwZVlIQXhhaHU0?=
- =?utf-8?B?aElIK0lZbFdzb1JqNmhZdXc3UjZobDZON0l6UWVNNkxwM2RISzc5WVFkNzFp?=
- =?utf-8?B?VVMvYWp1L1VJelNzZmFYS0hLV3RjcFFHUXRiUUlxUkgyZUJpbjJPVTBTZ0cz?=
- =?utf-8?B?U2x5eHptbUt0K3hlS1p3ZnVwMEVGY3dabXpaQmlLZjFSRVNjb00wZldnd2pX?=
- =?utf-8?B?aG5kcGFoOEtnQXJSYkU3Y1Z3UVVqL1p6MUVOUmRCamt5STBOKzFYMXJsWThj?=
- =?utf-8?B?Qk5HTktVa1dNZkcxRVhPbkljV3FQbVJCM1FGU0VQZDVkQzl5aWRnTWgvQ2Yx?=
- =?utf-8?B?eWI3K0FUY2QzTXVoeXVPTE0raHZReHRNRUM5QUV5S3gyQ1VEMERsOGZlYVdF?=
- =?utf-8?B?cWFObmowNGFncVBpRStjWG9xSzlWalovV3RNSFRFT0dpNmpHUUVUeEQvQWpw?=
- =?utf-8?B?RndOSTZVaHBwejFXWlZ6eE1rdTQydExHU0NsYk5jQ09YRi83aGxiNHIzNWFu?=
- =?utf-8?B?TWRkU20vS3RvSUxSNnBBNE1lTkc2eUNFYWNqQmNTdjhjWEhVNzlob3JQTG10?=
- =?utf-8?B?QWEreXlUQ1ZhajY3ay80OVd5VjNtOGdNWStsVG04MEp2TkhLSHh1MWhvaVB3?=
- =?utf-8?B?TCtuZHZiVXNIZDFBRnJQbjNrZWlMSmxVd0NpQ1E5UGxiaTBndUxjR3FCQ0ZZ?=
- =?utf-8?B?eXdBbXlIdkFzT0lnb0JsZGVGMDF0Y3FScVFPM0YvZFNUMTREeDdNM0pBeVlj?=
- =?utf-8?B?NWhPRG5RQlJZYzVva3JML3JIZjc2MVpJZENDcmdPOGpCeHM3cjEvVWRkelVy?=
- =?utf-8?B?QXY0UXE5cDhkUnE5WmptWDBCbm9keGhqbHpXWk94eTcyT3FOVVhwb3hLOWEz?=
- =?utf-8?B?dzE5U2RGUnhMczd6bitleTZPbmtEM0YwK1BmSDRWMTFNNVkrWE0wZEtJaVpj?=
- =?utf-8?B?RUtsZUNWbTdQakZQd0M0cXpraGFhVUFFbVpqWldLcklWbS9Wbmh1czJOUnpn?=
- =?utf-8?B?c3FScGp3ZVhQR3c9PQ==?=
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR15MB4088.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 13 Jan 2021 17:16:27.9815
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-Network-Message-Id: b531cf23-35fe-43e6-60b9-08d8b7e6f69d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: /O+Sbztf3KQQ7OKzSonOzRKAL9N3+hr8Atfo0ijK1nj37UdeFjbl6h/1oQMIUsNO
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR15MB4204
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
- definitions=2021-01-13_09:2021-01-13,2021-01-13 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 lowpriorityscore=0
- impostorscore=0 suspectscore=0 phishscore=0 malwarescore=0 adultscore=0
- mlxlogscore=999 spamscore=0 bulkscore=0 clxscore=1015 priorityscore=1501
- mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2101130103
-X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 1/13/21 2:57 AM, Tiezhu Yang wrote:
-> There exists many build errors and warnings when make M=samples/bpf,
-
-both fixes in this patch related to mips, please do mention in the 
-commit message that this is
-mips related. x86 (and arm64 I assume) compiles just fine.
-
-> this patch series fix some of them, I will submit some other patches
-> related with MIPS later.
+On 1/13/21 4:45 AM, Gilles DOFFE wrote:
+> A logical 'or' was performed until now.
+> So if vlan 1 is the current pvid and vlan 20 is set as the new one,
+> vlan 21 is the new pvid.
+> This commit fixes this by setting the right mask to set the new pvid.
 > 
-> Tiezhu Yang (2):
->    samples/bpf: Set flag __SANE_USERSPACE_TYPES__ for MIPS to fix build
->      warnings
->    compiler.h: Include asm/rwonce.h under ARM64 and ALPHA to fix build
->      errors
-> 
->   include/linux/compiler.h    | 6 ++++++
->   samples/bpf/Makefile        | 4 ++++
->   tools/include/linux/types.h | 3 +++
->   3 files changed, 13 insertions(+)
-> 
+> Signed-off-by: Gilles DOFFE <gilles.doffe@savoirfairelinux.com>
+
+Looks about right, can you provide a Fixes: tag for this change?
+-- 
+Florian
