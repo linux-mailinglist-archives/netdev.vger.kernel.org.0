@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 247672F4C4A
-	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 14:37:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 39A172F4C51
+	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 14:40:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726638AbhAMNgu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jan 2021 08:36:50 -0500
-Received: from mail-40134.protonmail.ch ([185.70.40.134]:16280 "EHLO
+        id S1726657AbhAMNhp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jan 2021 08:37:45 -0500
+Received: from mail-40134.protonmail.ch ([185.70.40.134]:34210 "EHLO
         mail-40134.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725843AbhAMNgq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 08:36:46 -0500
-Date:   Wed, 13 Jan 2021 13:35:55 +0000
+        with ESMTP id S1725770AbhAMNho (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 08:37:44 -0500
+Date:   Wed, 13 Jan 2021 13:36:54 +0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
-        t=1610544962; bh=guUtzNDokVjGcSR8AA0SShEy7FHBvKI0bc1oYHZ+ko0=;
-        h=Date:To:From:Cc:Reply-To:Subject:From;
-        b=NFFsPb8iE0f1jrEgSznqos49PDFv/v59FYBVsI70462JZWFAIjnfl4yIfWVjkK8u8
-         K9CqOBqfmYel+7/e0MOcZ4zUU0BnJLhWLfhR3RVZgb8yYmvHn7ZZmRanv3EE79ABoY
-         lUKAFEwYT5wNl0kmE0aPYo00XfKIaLezJZrzZ1D1WEnWMRkPG7tbfjA2uuRxLNmKMP
-         Q3tm/BkvAjocBLnE559AwyIpzixprfsDmjYjTpXeZa9INBNxoqWF1I7GwwzCYKPClG
-         J+VpS5oPeDOLiu2mzNEVneShD0raUxfl3NraNLnCn1TgtTSTeepOkFOkKGKFcpz4En
-         RzkYoE/jZ81KA==
+        t=1610545022; bh=Wxlzuo0a4dl7vh+BrgTHx6uBHCVOGXVNozBxr9mFN2Q=;
+        h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
+        b=Wx4+MmnLUv7niL6jpu4x8NgcUVxpCedUpf2G7Die60hRiBHBYW7TJZc6f49knbxc7
+         j+T8zI+kcDE+xNf163xH0m8LL7M8jLY1PQR6Q/WPuBa4rNUS4U4Ir+LfMU0RxiSiix
+         IvHCcTXLujUw+fgn7WH+hCVLrVPfdl3kxRT1fU1J39JKUUZ1GHozTITOJEzDdPfyQ2
+         xRwNhQB74LcBdu//REEbDKZ0MQvy7RJ6RHTzDNHdkha8UbkMN9u2YyBo/2xZkXmEFN
+         3TYZLFyVPZCGDTccc7djvGnngSiuMgUGadbFBaAWVfLUAX5hMcfkZHEspa+oO83v5n
+         Dvur77vAI5Ykw==
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 From:   Alexander Lobakin <alobakin@pm.me>
@@ -36,8 +36,10 @@ Cc:     Eric Dumazet <edumazet@google.com>,
         Al Viro <viro@zeniv.linux.org.uk>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Reply-To: Alexander Lobakin <alobakin@pm.me>
-Subject: [PATCH v2 net-next 0/3] skbuff: introduce skbuff_heads reusing and bulking
-Message-ID: <20210113133523.39205-1-alobakin@pm.me>
+Subject: [PATCH v2 net-next 1/3] skbuff: open-code __build_skb() inside __napi_alloc_skb()
+Message-ID: <20210113133635.39402-1-alobakin@pm.me>
+In-Reply-To: <20210113133523.39205-1-alobakin@pm.me>
+References: <20210113133523.39205-1-alobakin@pm.me>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
@@ -50,43 +52,52 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, all sorts of skb allocation always do allocate
-skbuff_heads one by one via kmem_cache_alloc().
-On the other hand, we have percpu napi_alloc_cache to store
-skbuff_heads queued up for freeing and flush them by bulks.
+In preparation for skbuff_heads caching and reusing, open-code
+__build_skb() inside __napi_alloc_skb() with factoring out
+the skbbuff_head allocation itself.
+Note that the return value of __build_skb_around() is not checked
+since it never returns anything except the given skb.
 
-We can use this cache not only for bulk-wiping, but also to obtain
-heads for new skbs and avoid unconditional allocations, as well as
-for bulk-allocating.
-As accessing napi_alloc_cache implies NAPI softirq context, do this
-only for __napi_alloc_skb() and its derivatives (napi_alloc_skb()
-and napi_get_frags()). The rough amount of their call sites are 69,
-which is quite a number.
+Signed-off-by: Alexander Lobakin <alobakin@pm.me>
+---
+ net/core/skbuff.c | 10 +++++++++-
+ 1 file changed, 9 insertions(+), 1 deletion(-)
 
-iperf3 showed 35-50 Mbps bumps for both TCP and UDP while performing
-VLAN NAT on 1.2 GHz MIPS board. The boost is likely to be way bigger
-on more powerful hosts and NICs with tens of Mpps.
-
-Since v1 [0]:
- - use one unified cache instead of two separate to greatly simplify
-   the logics and reduce hotpath overhead (Edward Cree);
- - new: recycle also GRO_MERGED_FREE skbs instead of immediate
-   freeing;
- - correct performance numbers after optimizations and performing
-   lots of tests for different use cases.
-
-[0] https://lore.kernel.org/netdev/20210111182655.12159-1-alobakin@pm.me
-
-Alexander Lobakin (3):
-  skbuff: open-code __build_skb() inside __napi_alloc_skb()
-  skbuff: (re)use NAPI skb cache on allocation path
-  skbuff: recycle GRO_MERGED_FREE skbs into NAPI skb cache
-
- include/linux/skbuff.h |  1 +
- net/core/dev.c         |  9 +----
- net/core/skbuff.c      | 74 +++++++++++++++++++++++++++++-------------
- 3 files changed, 54 insertions(+), 30 deletions(-)
-
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index 7626a33cce59..dc3300dc2ac4 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -485,6 +485,11 @@ struct sk_buff *__netdev_alloc_skb(struct net_device *=
+dev, unsigned int len,
+ }
+ EXPORT_SYMBOL(__netdev_alloc_skb);
+=20
++static struct sk_buff *napi_skb_cache_get(struct napi_alloc_cache *nc)
++{
++=09return kmem_cache_alloc(skbuff_head_cache, GFP_ATOMIC);
++}
++
+ /**
+  *=09__napi_alloc_skb - allocate skbuff for rx in a specific NAPI instance
+  *=09@napi: napi instance this buffer was allocated for
+@@ -525,12 +530,15 @@ struct sk_buff *__napi_alloc_skb(struct napi_struct *=
+napi, unsigned int len,
+ =09if (unlikely(!data))
+ =09=09return NULL;
+=20
+-=09skb =3D __build_skb(data, len);
++=09skb =3D napi_skb_cache_get(nc);
+ =09if (unlikely(!skb)) {
+ =09=09skb_free_frag(data);
+ =09=09return NULL;
+ =09}
+=20
++=09memset(skb, 0, offsetof(struct sk_buff, tail));
++=09__build_skb_around(skb, data, len);
++
+ =09if (nc->page.pfmemalloc)
+ =09=09skb->pfmemalloc =3D 1;
+ =09skb->head_frag =3D 1;
 --=20
 2.30.0
 
