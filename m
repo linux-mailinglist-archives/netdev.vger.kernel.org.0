@@ -2,89 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C9BF02F42F2
-	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 05:15:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D96182F430E
+	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 05:21:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726459AbhAMEPU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jan 2021 23:15:20 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:44265 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726220AbhAMEPT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 23:15:19 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1610511233;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=UfDrAPvjsoYVMqNEVx94XHjGqbWNvX3wApkmUTM+rnQ=;
-        b=Ui9U/WeoHyKUNL4RMn6j9AzeRCVwVIw6LovmI0z1tSXsZT12oSwV03P4QZyGFNurMQGRVS
-        +VzUXJ0UVzOFfVrvFmAuxjRELyDdjfqpOXJuXlIl5CpH1DtY/LeF4hT+B8jfdm+lVUV0Fq
-        WqVkgJ4Jm7CQeW1gZCOYAoQFzjFn78w=
-Received: from mail-pf1-f199.google.com (mail-pf1-f199.google.com
- [209.85.210.199]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-535-LHGj8BcdOfCDSXRYxxJeBQ-1; Tue, 12 Jan 2021 23:13:51 -0500
-X-MC-Unique: LHGj8BcdOfCDSXRYxxJeBQ-1
-Received: by mail-pf1-f199.google.com with SMTP id e4so543158pfc.11
-        for <netdev@vger.kernel.org>; Tue, 12 Jan 2021 20:13:51 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=UfDrAPvjsoYVMqNEVx94XHjGqbWNvX3wApkmUTM+rnQ=;
-        b=QCW8OXn602P3GrmzkP/bqJU/nmBv+uU1UAPi2+62B6jjbx3QBUKky5yp4yANkTVoX6
-         hMaDEN0/IU8WeKdcY0lnpiaPfECJuxUUKdGqAFimVFHlORg7G34OwqXUg0qiq3+UqVdV
-         ALbRs99gCjv6DG8LTvTUcwVHqMQ1wDcoRuvTXil7UfPZQlRqNF0MKo3ILlr7ZPVoXSNi
-         dLbZb71tz0DvzBInMaPLeFSgDLP6S/X8mOXFsZ22CwvP9kg+Ye23BvvK6D1hoQzKWwI0
-         oZRwrQoWdJuYGGt4TIpfcp15cZVVjIpc2ED6ASn0k1Att/uQOGmFS1R+dNcmT8Quw3g4
-         7SyQ==
-X-Gm-Message-State: AOAM532+BxqGkhRW/I//sC1j7ZAYWCZ7+gJMGBnWTLyXUQnzXVOnM/xT
-        w3OPWAVz8+mT60nipViwXhDliknrvrchR1l5W2EpnW7RR2G3ykrAv3xlzXQAg8dAE5c5qi9hBqb
-        QxoYJJiPdw13f4qWVnTkoUoIqjrAf4/KU
-X-Received: by 2002:aa7:97bc:0:b029:19e:18c7:76b with SMTP id d28-20020aa797bc0000b029019e18c7076bmr270870pfq.23.1610511230809;
-        Tue, 12 Jan 2021 20:13:50 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwL2OenbuBUblwlUNcw3x1ULR/Z+jRldpO3boKIQ/Xb8tMIvpRP21VUS+e1MBM0V79w64PV65ol/7dXaBACQ0E=
-X-Received: by 2002:aa7:97bc:0:b029:19e:18c7:76b with SMTP id
- d28-20020aa797bc0000b029019e18c7076bmr270848pfq.23.1610511230515; Tue, 12 Jan
- 2021 20:13:50 -0800 (PST)
+        id S1726664AbhAMEUt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jan 2021 23:20:49 -0500
+Received: from mail.kernel.org ([198.145.29.99]:52720 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726607AbhAMEUs (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 12 Jan 2021 23:20:48 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id 48E0723134;
+        Wed, 13 Jan 2021 04:20:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1610511608;
+        bh=5KUuhIq3uOqRP7W9A2HCOu6gyEGmBhVNKHwxZAsOoFo=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=fNjdM0i7al3wjz6ayQAsC7VGR7LqKQ0Iq6NopHQKESyusL2OQ1GJmjsYcoDvs+QV9
+         Q7YJvoaq/8HiRwKV1MaT6kloMi4QA0o23zb1CvIeOat2nbj0ACMvKi67R2Xb4xI88G
+         vSsFvglq+y1Q6ensu9mBnxqusumTrgHNK5XKgognI2DFsvFksHCXXgWE+xhj732Ndj
+         /x3P90vaNCke1g3+13laH7One8Ch5OHbojtJgbi2Pl8hxymlcLXlsXtsth4dVyDwvP
+         GA25vaD3T8tDC/Z3BxlxlO4KtflMram6o5LMoKLqZg9UTP3PjVzCADRyMj3Mj6A7V/
+         SLYEWuHSsuCSA==
+Received: from pdx-korg-docbuild-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-1.ci.codeaurora.org (Postfix) with ESMTP id 39E2B604FD;
+        Wed, 13 Jan 2021 04:20:08 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20210112053629.9853-1-lulu@redhat.com> <X/1Up+fcTcYq2osi@kroah.com>
-In-Reply-To: <X/1Up+fcTcYq2osi@kroah.com>
-From:   Cindy Lu <lulu@redhat.com>
-Date:   Wed, 13 Jan 2021 12:13:14 +0800
-Message-ID: <CACLfguUbB08xCZ5hk3+8jHGZtBy_YC4twuxpEf-MvKAJHq46Xg@mail.gmail.com>
-Subject: Re: [PATCH v3] vhost_vdpa: fix the problem in vhost_vdpa_set_config_call
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Jason Wang <jasowang@redhat.com>, Michael Tsirkin <mst@redhat.com>,
-        kvm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        "Zhu, Lingshan" <lingshan.zhu@intel.com>, stable@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net 0/2] mptcp: a couple of fixes
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161051160823.32446.9328881553119033183.git-patchwork-notify@kernel.org>
+Date:   Wed, 13 Jan 2021 04:20:08 +0000
+References: <cover.1610471474.git.pabeni@redhat.com>
+In-Reply-To: <cover.1610471474.git.pabeni@redhat.com>
+To:     Paolo Abeni <pabeni@redhat.com>
+Cc:     netdev@vger.kernel.org, mptcp@lists.01.org, davem@davemloft.net,
+        kuba@kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 12, 2021 at 3:53 PM Greg KH <gregkh@linuxfoundation.org> wrote:
->
-> On Tue, Jan 12, 2021 at 01:36:29PM +0800, Cindy Lu wrote:
-> > In vhost_vdpa_set_config_call, the cb.private should be vhost_vdpa.
-> > this cb.private will finally use in vhost_vdpa_config_cb as
-> > vhost_vdpa. Fix this issue.
-> >
-> > Fixes: 776f395004d82 ("vhost_vdpa: Support config interrupt in vdpa")
-> > Acked-by: Jason Wang <jasowang@redhat.com>
-> > Signed-off-by: Cindy Lu <lulu@redhat.com>
-> > ---
-> >  drivers/vhost/vdpa.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> <formletter>
->
-> This is not the correct way to submit patches for inclusion in the
-> stable kernel tree.  Please read:
->     https://www.kernel.org/doc/html/latest/process/stable-kernel-rules.html
-> for how to do this properly.
->
-> </formletter>
->
-Thanks Greg, I will fix this and send a new version
+Hello:
+
+This series was applied to netdev/net.git (refs/heads/master):
+
+On Tue, 12 Jan 2021 18:25:22 +0100 you wrote:
+> This series includes two related fixes addressing potential divide by 0
+> bugs in the MPTCP datapath.
+> 
+> Paolo Abeni (2):
+>   mptcp: more strict state checking for acks
+>   mptcp: better msk-level shutdown.
+> 
+> [...]
+
+Here is the summary with links:
+  - [net,1/2] mptcp: more strict state checking for acks
+    https://git.kernel.org/netdev/net/c/20bc80b6f582
+  - [net,2/2] mptcp: better msk-level shutdown.
+    https://git.kernel.org/netdev/net/c/76e2a55d1625
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
