@@ -2,95 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D3C82F5324
-	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 20:15:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B8CA2F533B
+	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 20:23:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728570AbhAMTNs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jan 2021 14:13:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42310 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728335AbhAMTNr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 14:13:47 -0500
-Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09F5BC061575
-        for <netdev@vger.kernel.org>; Wed, 13 Jan 2021 11:13:07 -0800 (PST)
-Received: by mail-lf1-x131.google.com with SMTP id x20so4361649lfe.12
-        for <netdev@vger.kernel.org>; Wed, 13 Jan 2021 11:13:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=U+qn9UKmISGqyuqrg148xyc55NGo3+P99P9eHwbXFks=;
-        b=e1lWlrbSHGOadgLWl4yAg0TYAsrtiz9LRHk6SRNsnzPtIQqCuldKL1eq6Ryfk62/Lg
-         HEqxNPjNuL2uJVZgjTuNsDb3sRYrPCu72vDogxVGm1xalOh7So+npokdRFzfAUgnxAKI
-         AEGDGxQdnSMCtU3fAmR8N+90S/reL47zvPBpePRxPQuiI06xFzleYXPqhT+rhuSF3dgA
-         ETEpN/5TZwmad6T52YfZbwSX1fyfEZV5qQKrSSED8hhFjuxq2Fy9krdE2ErAcGtjNIjX
-         wuxVEABsyP1pJu1+J559gEfq3GbRwgFPWvEJE2wCGyS9M+Kt1lbDJmn5bvFmgBUXJsO1
-         KUWA==
+        id S1728615AbhAMTVY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jan 2021 14:21:24 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:36680 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728560AbhAMTVY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 14:21:24 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1610565597;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=yRpBxJ30lYTsHSF3U2SYVlEielHK4+P3MGYhRxCt4Hg=;
+        b=RdUnH3lYaPdz8GFY+Nc8/Endvf6rA1l0jh6UAsxNMy+mxKy7DmOgdHCN2iohMyjZSdWn9r
+        N6tAX6T3n6hvQQf56738dMY0MCfyV/SlcXlTY5YFxRhVWstKVEzi82TuQWrlLXZKqhieCD
+        tNLfyYIZ8aFXQ6QKLr3hAWxa73s8ipQ=
+Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
+ [209.85.128.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-126-3tPXaGoxOySiT2mBdex9gQ-1; Wed, 13 Jan 2021 14:19:55 -0500
+X-MC-Unique: 3tPXaGoxOySiT2mBdex9gQ-1
+Received: by mail-wm1-f70.google.com with SMTP id c2so1915708wme.0
+        for <netdev@vger.kernel.org>; Wed, 13 Jan 2021 11:19:55 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=U+qn9UKmISGqyuqrg148xyc55NGo3+P99P9eHwbXFks=;
-        b=fm9XeA7FkX3QKBthdVd2R1i8TjOj/is1S8koobtVIe+BOx6q/4NrHmVMDOqSb0R5cN
-         dA6stlJIEB5cnYq0DraCuJpK7ZgE9WP8oHwTrCa21cQdJq8qu/6oTg+OnH6ZxetglNVn
-         +kFYfI73INuQ9FLLpasEKZV4nsd0P7Yj/UJWn6Sqc5/9n87vk5K+KVxvy/f8AaSf5SUO
-         4u4wFA8UeeDFb/i0QoM4CIhoJD2WNQmu9XQO10u9V6/S/ZY21nTpkRTKb9EYI++HxiWX
-         apB/jLKUFU/PzEZ2PQEUvGtX+7U2mfL3/hsB//vbqCGno/vWq4BQ82U82UB1Mj8EM6ZX
-         5H7Q==
-X-Gm-Message-State: AOAM530/QhgHOLLwfadyJvM+el87LtB/RZ+F2Hwsx440vtTgjXJ1rw1l
-        TDN2s4lDnFrlEC34zORwVMfiwCRMiN7SlHU5epFsZg==
-X-Google-Smtp-Source: ABdhPJy1Lbe6OSS5ubzI/FRHddg/ikE95Xpjjl+xZ7EMAS2W+qa33nEmxdNWb04+aJ3xO8fbHolzl54KJqiQ2OZdZbw=
-X-Received: by 2002:ac2:47e7:: with SMTP id b7mr1499438lfp.117.1610565185286;
- Wed, 13 Jan 2021 11:13:05 -0800 (PST)
-MIME-Version: 1.0
-References: <20210112214105.1440932-1-shakeelb@google.com> <20210112233108.GD99586@carbon.dhcp.thefacebook.com>
- <CAOFY-A3=mCvfvMYBJvDL1LfjgYgc3kzebRNgeg0F+e=E1hMPXA@mail.gmail.com>
- <20210112234822.GA134064@carbon.dhcp.thefacebook.com> <CAOFY-A2YbE3_GGq-QpVOHTmd=35Lt-rxi8gpXBcNVKvUzrzSNg@mail.gmail.com>
- <CALvZod4am_dNcj2+YZmraCj0+BYHB9PnQqKcrhiOnV8gzd+S3w@mail.gmail.com> <20210113184302.GA355124@carbon.dhcp.thefacebook.com>
-In-Reply-To: <20210113184302.GA355124@carbon.dhcp.thefacebook.com>
-From:   Shakeel Butt <shakeelb@google.com>
-Date:   Wed, 13 Jan 2021 11:12:54 -0800
-Message-ID: <CALvZod4V3M=P8_Z14asBG8bKa=mYic4_OPLeoz5M7J5tsx=Gug@mail.gmail.com>
-Subject: Re: [PATCH] mm: net: memcg accounting for TCP rx zerocopy
-To:     Roman Gushchin <guro@fb.com>
-Cc:     Arjun Roy <arjunroy@google.com>,
-        Johannes Weiner <hannes@cmpxchg.org>,
-        Michal Hocko <mhocko@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "David S . Miller" <davem@davemloft.net>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=yRpBxJ30lYTsHSF3U2SYVlEielHK4+P3MGYhRxCt4Hg=;
+        b=NDDcCnHQh97c9psgBwrePAPIH1IF7rQNYL4bvHyn3nqQ7IqIVoUTE+/3zhjV8Xqrat
+         31Xg5+2wkxlCY2L13ZUiO7DwK1XglB9M4dOxYr6jEl/MdYMXHxX7+Hs8ewPtO+Dm15n+
+         rgzQcb9Nb7oC0oacLWzYgbKM9uZyyVyaQlgOud0ri05tM8TckzVSwPYpskFy8pHIHcil
+         KZ0RfwpUggdwrv70IqzhkSw2c6SlFueIVi3fl9pP9cGUimoMNbEQUj72u3/OcZ8k/7AD
+         ot7ysVNNlPg7vlQxUKJRphXXPH/0i68eYNmlQFMLHHgpnahmq/xKowebObdsaGGtBa6t
+         kILw==
+X-Gm-Message-State: AOAM530BSp03IWIKdIkkuDdaRFDCxI82cZG2+MPDjxVjh8VNHSbHH4PA
+        YP+8CHf6oIbGQHeonlTWhQ+BE6wcmCWUXOMzn2EkpgGkIbYtSZ7APQCsB08TVCcev1RA5zwiWLT
+        hr4dlRFsp/7eLGHoT
+X-Received: by 2002:a05:600c:2f97:: with SMTP id t23mr699121wmn.82.1610565594272;
+        Wed, 13 Jan 2021 11:19:54 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJw4gBVSzQYm3VQLJvlOnWgFrSyiYh5piugzX3bGlxjD2RFayIbDkqEqiROmSF/E/uW2jn6lhA==
+X-Received: by 2002:a05:600c:2f97:: with SMTP id t23mr699113wmn.82.1610565594108;
+        Wed, 13 Jan 2021 11:19:54 -0800 (PST)
+Received: from redhat.com (bzq-79-178-32-166.red.bezeqint.net. [79.178.32.166])
+        by smtp.gmail.com with ESMTPSA id s13sm4225566wmj.28.2021.01.13.11.19.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Jan 2021 11:19:53 -0800 (PST)
+Date:   Wed, 13 Jan 2021 14:19:50 -0500
+From:   "Michael S. Tsirkin" <mst@redhat.com>
+To:     Eric Dumazet <eric.dumazet@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Linux MM <linux-mm@kvack.org>,
-        Cgroups <cgroups@vger.kernel.org>,
         netdev <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Eric Dumazet <edumazet@google.com>,
+        Alexander Duyck <alexanderduyck@fb.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Greg Thelen <gthelen@google.com>
+Subject: Re: [PATCH net] net: avoid 32 x truesize under-estimation for tiny
+ skbs
+Message-ID: <20210113141904-mutt-send-email-mst@kernel.org>
+References: <20210113161819.1155526-1-eric.dumazet@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210113161819.1155526-1-eric.dumazet@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 13, 2021 at 10:43 AM Roman Gushchin <guro@fb.com> wrote:
->
-> On Tue, Jan 12, 2021 at 04:18:44PM -0800, Shakeel Butt wrote:
-> > On Tue, Jan 12, 2021 at 4:12 PM Arjun Roy <arjunroy@google.com> wrote:
-> > >
-> > > On Tue, Jan 12, 2021 at 3:48 PM Roman Gushchin <guro@fb.com> wrote:
-> > > >
-> > [snip]
-> > > > Historically we have a corresponding vmstat counter to each charged page.
-> > > > It helps with finding accounting/stastistics issues: we can check that
-> > > > memory.current ~= anon + file + sock + slab + percpu + stack.
-> > > > It would be nice to preserve such ability.
-> > > >
-> > >
-> > > Perhaps one option would be to have it count as a file page, or have a
-> > > new category.
-> > >
-> >
-> > Oh these are actually already accounted for in NR_FILE_MAPPED.
->
-> Well, it's confusing. Can't we fix this by looking at the new page memcg flag?
+On Wed, Jan 13, 2021 at 08:18:19AM -0800, Eric Dumazet wrote:
+> From: Eric Dumazet <edumazet@google.com>
+> 
+> Both virtio net and napi_get_frags() allocate skbs
+> with a very small skb->head
+> 
+> While using page fragments instead of a kmalloc backed skb->head might give
+> a small performance improvement in some cases, there is a huge risk of
+> under estimating memory usage.
+> 
+> For both GOOD_COPY_LEN and GRO_MAX_HEAD, we can fit at least 32 allocations
+> per page (order-3 page in x86), or even 64 on PowerPC
+> 
+> We have been tracking OOM issues on GKE hosts hitting tcp_mem limits
+> but consuming far more memory for TCP buffers than instructed in tcp_mem[2]
+> 
+> Even if we force napi_alloc_skb() to only use order-0 pages, the issue
+> would still be there on arches with PAGE_SIZE >= 32768
+> 
+> This patch makes sure that small skb head are kmalloc backed, so that
+> other objects in the slab page can be reused instead of being held as long
+> as skbs are sitting in socket queues.
+> 
+> Note that we might in the future use the sk_buff napi cache,
+> instead of going through a more expensive __alloc_skb()
+> 
+> Another idea would be to use separate page sizes depending
+> on the allocated length (to never have more than 4 frags per page)
+> 
+> I would like to thank Greg Thelen for his precious help on this matter,
+> analysing crash dumps is always a time consuming task.
+> 
+> Fixes: fd11a83dd363 ("net: Pull out core bits of __netdev_alloc_skb and add __napi_alloc_skb")
+> Signed-off-by: Eric Dumazet <edumazet@google.com>
+> Cc: Alexander Duyck <alexanderduyck@fb.com>
+> Cc: Paolo Abeni <pabeni@redhat.com>
+> Cc: Michael S. Tsirkin <mst@redhat.com>
+> Cc: Greg Thelen <gthelen@google.com>
 
-Yes we can. I am inclined more towards just using NR_FILE_PAGES (as
-Arjun suggested) instead of adding a new metric.
+Better than tweaking virtio code.
+
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
+
+I do hope the sk_buff napi cache idea materializes in the future.
+
+> ---
+>  net/core/skbuff.c | 9 +++++++--
+>  1 file changed, 7 insertions(+), 2 deletions(-)
+> 
+> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+> index 7626a33cce590e530f36167bd096026916131897..3a8f55a43e6964344df464a27b9b1faa0eb804f3 100644
+> --- a/net/core/skbuff.c
+> +++ b/net/core/skbuff.c
+> @@ -501,13 +501,17 @@ EXPORT_SYMBOL(__netdev_alloc_skb);
+>  struct sk_buff *__napi_alloc_skb(struct napi_struct *napi, unsigned int len,
+>  				 gfp_t gfp_mask)
+>  {
+> -	struct napi_alloc_cache *nc = this_cpu_ptr(&napi_alloc_cache);
+> +	struct napi_alloc_cache *nc;
+>  	struct sk_buff *skb;
+>  	void *data;
+>  
+>  	len += NET_SKB_PAD + NET_IP_ALIGN;
+>  
+> -	if ((len > SKB_WITH_OVERHEAD(PAGE_SIZE)) ||
+> +	/* If requested length is either too small or too big,
+> +	 * we use kmalloc() for skb->head allocation.
+> +	 */
+> +	if (len <= SKB_WITH_OVERHEAD(1024) ||
+> +	    len > SKB_WITH_OVERHEAD(PAGE_SIZE) ||
+>  	    (gfp_mask & (__GFP_DIRECT_RECLAIM | GFP_DMA))) {
+>  		skb = __alloc_skb(len, gfp_mask, SKB_ALLOC_RX, NUMA_NO_NODE);
+>  		if (!skb)
+> @@ -515,6 +519,7 @@ struct sk_buff *__napi_alloc_skb(struct napi_struct *napi, unsigned int len,
+>  		goto skb_success;
+>  	}
+>  
+> +	nc = this_cpu_ptr(&napi_alloc_cache);
+>  	len += SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
+>  	len = SKB_DATA_ALIGN(len);
+>  
+> -- 
+> 2.30.0.284.gd98b1dd5eaa7-goog
+
