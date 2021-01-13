@@ -2,146 +2,368 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DA132F4109
-	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 02:20:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 04F252F40FE
+	for <lists+netdev@lfdr.de>; Wed, 13 Jan 2021 02:17:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726786AbhAMBUH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 12 Jan 2021 20:20:07 -0500
-Received: from esa12.fujitsucc.c3s2.iphmx.com ([216.71.156.125]:6191 "EHLO
-        esa12.fujitsucc.c3s2.iphmx.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726631AbhAMBUG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 20:20:06 -0500
-X-Greylist: delayed 456 seconds by postgrey-1.27 at vger.kernel.org; Tue, 12 Jan 2021 20:20:03 EST
-IronPort-SDR: ojoyjH+HFuqe/XgJEGYw6+0DJHv0Z1XsJnzJC1MNA0Vu5SS8z9Fal5JnVWCJ5CTY1pTdirsiyX
- uUULbt93HXCMchl67P99ctgISatzFNrWSdCKbm/heil/FiLohhZqVVGKocLPRu77SQ4DVKeskO
- 38fltpqloa09g84GHrNv7czUYiebv/YNIZDOe3hlbgNJksmoQlTxNVnASlxWKD/tcCT8YCrU3T
- ZjhNbHvdZ4Mo3C07df+1eTS9n36gHpZ47RvIKlDyBBVWm8bXZZeNARgWeCWLEhK9LYHw8ZCRyL
- wyo=
-X-IronPort-AV: E=McAfee;i="6000,8403,9862"; a="24300003"
-X-IronPort-AV: E=Sophos;i="5.79,343,1602514800"; 
-   d="scan'208";a="24300003"
-Received: from mail-os2jpn01lp2059.outbound.protection.outlook.com (HELO JPN01-OS2-obe.outbound.protection.outlook.com) ([104.47.92.59])
-  by ob1.fujitsucc.c3s2.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Jan 2021 10:10:10 +0900
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=bCFtyJ0qBesDULo2kbfLZamnruAaisPDriOAhkMOGfDnz5cyA75ExfFB0cIw2Ol+xT4+GXXmp8c7puOUSMnuGX+dlOkO9Ejgn9lhDsZxRwi1TljWpb18IbpCZ1zawJlGOHAGIw0z6ewUi6gW8+n8exnjKSGVA5felbUOsNWlegltwzdjqlT0rY/We4n7oy7I2/oylCH0Rt070XBlETyZP9Pn/kwUQ94utfJVVmM5Kkalf4g1466T+XJPtsHUKBIGnHmKS7stv8G2kt/8pggj5tcaUqTYImjDmYNEc2alvbphCarPDVxsyWd08s6dpAT95hmhWhjWTo6zLay2cYDEkA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8e3lvydquJYdnPP6Zx9QROyfpXm5V12i4wefzuGrfyk=;
- b=be3eIB0nHI+EdWFvAtZ0cxC+JJEgsd55uJLCq6PlE7cbpmcWOZ87enhx8w9Rw3gelYqrw5wG+lRbuqn2kRNBTgpFNuP3iWu0CxZqI2Rc1gbb2mqrwuHPZDXOqz6XFyD9hXCY/rab1wDF8L07P3aWnYlnrtdiUyxS6PG36n/jY9s5DK2G+oXRQFV9B1x242+8c1tZGOT5YA9PDUGSd5tRdrWqjtE5T2n0PzqtJ8+zVTG4Bk8ZX/Ho5at17QpXv9TDNs6kzAEQB8zG1JiS0MpAWI4Qd+kU81sOCEslq1MAVz1quGI0hYvqqqyFgk7G0ApV7ZOd6OBfTYAaUkoGjAOl3A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fujitsu.com; dmarc=pass action=none header.from=fujitsu.com;
- dkim=pass header.d=fujitsu.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=fujitsu.onmicrosoft.com; s=selector2-fujitsu-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8e3lvydquJYdnPP6Zx9QROyfpXm5V12i4wefzuGrfyk=;
- b=jxA9ERgKgXpm60UmKEJCnGlPUSNiNXUWblt56iHI+igYHqwdGCSQFVnDehUi9jEz6w7C3SchVfnP89eGyY7YS1zFt2byd+NzOolBoFFykOMjsee8C8AZcqNxdcpCUxwMU4/Fs4AbJ4ExaELDdXhYEIJfr7GOH6Aexnb3wGN/csQ=
-Received: from OSAPR01MB3844.jpnprd01.prod.outlook.com (2603:1096:604:5d::13)
- by OSAPR01MB1937.jpnprd01.prod.outlook.com (2603:1096:603:1b::10) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3763.9; Wed, 13 Jan
- 2021 01:10:07 +0000
-Received: from OSAPR01MB3844.jpnprd01.prod.outlook.com
- ([fe80::a555:499e:e445:e0dd]) by OSAPR01MB3844.jpnprd01.prod.outlook.com
- ([fe80::a555:499e:e445:e0dd%3]) with mapi id 15.20.3742.012; Wed, 13 Jan 2021
- 01:10:07 +0000
-From:   "ashiduka@fujitsu.com" <ashiduka@fujitsu.com>
-To:     'Andrew Lunn' <andrew@lunn.ch>
-CC:     "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "torii.ken1@fujitsu.com" <torii.ken1@fujitsu.com>
-Subject: RE: [PATCH v2] net: phy: realtek: Add support for RTL9000AA/AN
-Thread-Topic: [PATCH v2] net: phy: realtek: Add support for RTL9000AA/AN
-Thread-Index: AQHW5y31ARgi0NV/wE25+9nETrMkFKohCyYAgAJo02CAAJKggIAAtysw
-Date:   Wed, 13 Jan 2021 01:10:07 +0000
-Message-ID: <OSAPR01MB38446846E9DCA49463F05BECDFA90@OSAPR01MB3844.jpnprd01.prod.outlook.com>
-References: <20210110085221.5881-1-ashiduka@fujitsu.com>
- <X/sptqSqUS7T5XWR@lunn.ch>
- <OSAPR01MB3844F3CE410F7BB24BAA54B6DFAA0@OSAPR01MB3844.jpnprd01.prod.outlook.com>
- <X/2qI78PnWrpbWwP@lunn.ch>
-In-Reply-To: <X/2qI78PnWrpbWwP@lunn.ch>
-Accept-Language: ja-JP, en-US
-Content-Language: ja-JP
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-securitypolicycheck: OK by SHieldMailChecker v2.6.2
-x-shieldmailcheckerpolicyversion: FJ-ISEC-20181130-VDI-enc
-x-shieldmailcheckermailid: a7d18f4b23094daea96aaf0e72e21b2c
-authentication-results: lunn.ch; dkim=none (message not signed)
- header.d=none;lunn.ch; dmarc=none action=none header.from=fujitsu.com;
-x-originating-ip: [218.44.52.176]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: d95c65ef-ccac-46f9-207a-08d8b75ff75b
-x-ms-traffictypediagnostic: OSAPR01MB1937:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <OSAPR01MB193773CCC0A56BB9B41A69E8DFA90@OSAPR01MB1937.jpnprd01.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 8jDrCFw3RkqBOGzkkLPVHy+AdRZjqjgoCPXH1X43qu4QoxM6KNhoyIBRXBwyHclNOQkt+X2FiHJokISBIPHSusF4c0dQNhitMWTWzALauATHMshv3V2cfPsjxjVSIT4FqwNEuBbXZ9a6CNMyK7Xm7gnntZuE/0yeqYvPMUhMfVz9A0OQgxhbR6/2g5wbpN3I4N/Vm2bFC0cMQ2iNwH/8aoQlvHTly/q9/5ku66hCTDl8dZb709BrJC1zypRUcTuZOmZTSxzXqI9/bRDEk+JKFNOK4mJx4ZiqpQQxgSMDDYnKxjwkfvVo6ISfs8qn4hAm5+V+g0Xc8fk7E9wsN8pmIuRL6iEQvG1NnRzZHhY1lsZ5CrXx+aHx61XZGezBGT1dOah0WEwNIw8jcl1DYCl9VaY6II9loIRqkDjHKdlbHbd2cBsJkGC7ZTFmBpn6Cj8V
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:OSAPR01MB3844.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(396003)(376002)(39860400002)(366004)(136003)(64756008)(66556008)(66476007)(5660300002)(66446008)(2906002)(71200400001)(54906003)(316002)(76116006)(66946007)(8676002)(86362001)(52536014)(107886003)(4744005)(9686003)(6916009)(8936002)(6506007)(26005)(33656002)(4326008)(186003)(478600001)(7696005)(85182001)(55016002)(777600001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: =?iso-2022-jp?B?cUxpd0d5THhnLzNSN1VmZ09SUm1BVnUzMWxkT2dTWkpnYkR0YUY0eS9w?=
- =?iso-2022-jp?B?WUJMMUNUaDZodGhwbmZNTDRQOFRxZHFqQk00VFp2d3BjSGZ6bU5mUUlh?=
- =?iso-2022-jp?B?M0RPaHNvMGQwai9qZGRCVy9wb1BhVDhmNVVadk1xUC9La3MzWjh1bGtz?=
- =?iso-2022-jp?B?SHlaYVY5OW1MQTZmNHZlSmVLQ2RTVXNhUWFFV3U4V3NTM21HREhLK0tX?=
- =?iso-2022-jp?B?bDN6clMrRGtlTi9jK1dleVdGUmdJZndPSlBXSXFVajMzT3NaQW8xMHdE?=
- =?iso-2022-jp?B?ZlBOVzB2Q2VwYzg1Q0p4dVpibHFzcmlpUkhQUk5wU0JVcWtLSEVKbTVJ?=
- =?iso-2022-jp?B?VWpoKzFBRWxkYjR0UFFmWHQ2ZFFvVmJTMjd4RUhvcDZyZG5XL2l6M25q?=
- =?iso-2022-jp?B?TFRhcGJqZmIrdENyejFjb1FVTHd6N2p4NFBXekV4aUFoVFBZajBSeWNV?=
- =?iso-2022-jp?B?Z1Nyem5seUlsV1pkTkZ0YmUybGE0Ukt2cVErdGJNMEtjRVlhYjRScVh1?=
- =?iso-2022-jp?B?ZEg3Z1B4VWpKQWRyRk85TU43MGlwbkNVT1NPK3pWRXhIUU1neFg4QWR5?=
- =?iso-2022-jp?B?TE9XTlBlT0lTZ2ZDdmMxUHJOcmtXYzRDUjlpN1FCeEpQeWppb3drTTlR?=
- =?iso-2022-jp?B?NUVVMUMyR2RKbGhUKzNNSW8xNXVwY2hwWnpSaVd0bXNMWTV3Um1zMFU1?=
- =?iso-2022-jp?B?cFY4ckN6clFrL21rQjFueGtYZ3llVHFTbmtUUk9ZeHlmTVBqTE5ITlZF?=
- =?iso-2022-jp?B?L2NsS2MxbTMyYXBvancrU0JLUWlJb0ZOcHJrSE9zV0tqSlcwTUtuckcv?=
- =?iso-2022-jp?B?RzBpL2NRN3I1Yy8vaTlQRmF1cHR6UE1BQjdUaHpLWVk4ZnQ2OXFhZGFM?=
- =?iso-2022-jp?B?alZtNnMzUWx5Z0RqRzF2a21pVlNGVy8wSitvSy9kSTllOVFXMVhvbFk0?=
- =?iso-2022-jp?B?dHFRYjgvWkRjVDlKWGM2QTR1L2hxZTNUQUlMQW53VnlKVTMwZzlTY2dN?=
- =?iso-2022-jp?B?bUhSNkFyUllSVXdHeXd5NE1FcXQydmJ3ektNME9kRGR1b2p5MnFuaHly?=
- =?iso-2022-jp?B?b3Z0cGM2MXk1Zk8xVUNOU1pRYmk2SUVPYklJUEZObXJCd1UrRStNZ3U5?=
- =?iso-2022-jp?B?SFdoaUsxVmhpMFNUaDVYbUF2eTFVc0Jzc2hCcENzWTJURVR4Umo2cFJl?=
- =?iso-2022-jp?B?SzZZR0pYRWFKbzNrYVFvR3hrL2ZzMENrdk9IL3Yvd21xS3Z0QzVreGNY?=
- =?iso-2022-jp?B?QUdCbEV6Y05senBFbnhvNU1aQlowekNuSlBIelVTNTdZRExvSmJkV3Jq?=
- =?iso-2022-jp?B?VXBBVEdGNW1DOTVUZDNYdEo1T1EvMGFTc0prL2VjbXM0cERXTGhlTXVC?=
- =?iso-2022-jp?B?WDJiVXVvVjA3SWhPVHNaZ3Q3Mk1VZCtIZmZ5WjFzN1h1RE5qND0=?=
-Content-Type: text/plain; charset="iso-2022-jp"
-Content-Transfer-Encoding: quoted-printable
+        id S1725933AbhAMBQb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 12 Jan 2021 20:16:31 -0500
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:6648 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725536AbhAMBQa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 12 Jan 2021 20:16:30 -0500
+Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 10D1E2Xb173900;
+        Tue, 12 Jan 2021 20:15:48 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
+ subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=pp1; bh=4xhPaprazWiykybz8OZP7L8Sdc5nZSEXyGE+XlZa3Bc=;
+ b=ox74P3TL+HngumPYHWq0ruICYyYKJ1gvQzSUeg9dOWwuW9oydksNbrkgpXRkNHEfUFwV
+ kj0+1+KMOQv5yfAdWRunCkmngdM1/4l94XRdCPSr2Z4MKVz82LFKzwOKrbLnilzRC8zM
+ k4KsI96vP6s5/l2IlFlBsQuurpmOKSzqD843/5xzBFjHbm7BKidS996uNmJDTAesut/k
+ LRnSXSJ/rWhBXIg0X+O3EQwLPaVE0U+g9PkcifF3eA+wZTZc90kuFRIAdP7nB5Jtr6vr
+ IE8TQD9Kd9eLTkqlUv3KJbNUhssDJmN3/A+4sVJEhTVBXzH51BlFad07UX2DFKMQnkXb rg== 
+Received: from ppma03wdc.us.ibm.com (ba.79.3fa9.ip4.static.sl-reverse.com [169.63.121.186])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 361q1000vs-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 12 Jan 2021 20:15:47 -0500
+Received: from pps.filterd (ppma03wdc.us.ibm.com [127.0.0.1])
+        by ppma03wdc.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 10D1DG2o029836;
+        Wed, 13 Jan 2021 01:15:46 GMT
+Received: from b01cxnp22033.gho.pok.ibm.com (b01cxnp22033.gho.pok.ibm.com [9.57.198.23])
+        by ppma03wdc.us.ibm.com with ESMTP id 35y4492297-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 13 Jan 2021 01:15:46 +0000
+Received: from b01ledav002.gho.pok.ibm.com (b01ledav002.gho.pok.ibm.com [9.57.199.107])
+        by b01cxnp22033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 10D1Fkw332375162
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 13 Jan 2021 01:15:46 GMT
+Received: from b01ledav002.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 6102C124052;
+        Wed, 13 Jan 2021 01:15:46 +0000 (GMT)
+Received: from b01ledav002.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 3219F124053;
+        Wed, 13 Jan 2021 01:15:46 +0000 (GMT)
+Received: from suka-w540.localdomain (unknown [9.85.207.168])
+        by b01ledav002.gho.pok.ibm.com (Postfix) with ESMTP;
+        Wed, 13 Jan 2021 01:15:46 +0000 (GMT)
+Received: by suka-w540.localdomain (Postfix, from userid 1000)
+        id 770112E288B; Tue, 12 Jan 2021 17:15:43 -0800 (PST)
+Date:   Tue, 12 Jan 2021 17:15:43 -0800
+From:   Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+To:     Saeed Mahameed <saeed@kernel.org>
+Cc:     netdev@vger.kernel.org, Dany Madden <drt@linux.ibm.com>,
+        Lijun Pan <ljp@linux.ibm.com>,
+        Rick Lindsley <ricklind@linux.ibm.com>
+Subject: Re: [PATCH net-next v2 3/7] ibmvnic: avoid allocating rwi entries
+Message-ID: <20210113011543.GA218424@us.ibm.com>
+References: <20210112181441.206545-1-sukadev@linux.ibm.com>
+ <20210112181441.206545-4-sukadev@linux.ibm.com>
+ <ee2fe19334bc8a23009df4cf1c54731bacb7d95c.camel@kernel.org>
 MIME-Version: 1.0
-X-OriginatorOrg: fujitsu.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: OSAPR01MB3844.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: d95c65ef-ccac-46f9-207a-08d8b75ff75b
-X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Jan 2021 01:10:07.1476
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a19f121d-81e1-4858-a9d8-736e267fd4c7
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 88dDGoWJnVy3T2hUIaeN3f0x/4FMxKxdjI47OsmVtq7SK4rwLrTtXfznxU88ZhOGsEQrHel0zTgepINfGTjQfQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: OSAPR01MB1937
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ee2fe19334bc8a23009df4cf1c54731bacb7d95c.camel@kernel.org>
+X-Operating-System: Linux 2.0.32 on an i486
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
+ definitions=2021-01-12_21:2021-01-12,2021-01-12 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 mlxlogscore=999
+ phishscore=0 priorityscore=1501 suspectscore=0 lowpriorityscore=0
+ mlxscore=0 impostorscore=0 malwarescore=0 adultscore=0 bulkscore=0
+ clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2101130003
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > I think it's possible to return a Master/Slave configuration.
->
-> Great. It would be good to add it.
+Saeed Mahameed [saeed@kernel.org] wrote:
+> > -struct ibmvnic_rwi {
+> > -	enum ibmvnic_reset_reason reset_reason;
+> > -	struct list_head list;
+> > -};
+> > +			   VNIC_RESET_CHANGE_PARAM,
+> > +			   VNIC_RESET_MAX};	// must be last
+>        this is not the preferred comment style: ^^
+> 
+> I would just drop the comment here, it is clear from the name of the
+> enum.
+> 
 
-OK. I think it will take some time to implement this feature,=20
-as we prioritize investigating comments from Russell.
+Yeah, we debated and figured the comment could serve as another reminder.
 
-> > By the way, do you need the cable test function as implementedin
-> > nxp-tja11xx.c?
->=20
-> We don't need it. But if you want to implement it, that would be
-> great.
+Here is updated patch, fixing the comment style.
 
-We also don't need the cable test feature.
-However, we are interested in adding this feature, so we will consider=20
-adding the cable test feature after the RTL9000AA/AN support are merged.
+Thanks
 
-Thanks & Best Regards,
-Yuusuke Ashiduka
+Sukadev
+---
+From 59d4b23fe1f97a67436e14829368744ee288157d Mon Sep 17 00:00:00 2001
+From: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+Date: Wed, 16 Dec 2020 23:00:34 -0600
+Subject: [PATCH net-next v2 3/7] ibmvnic: avoid allocating rwi entries
+
+Whenever we need to schedule a reset, we allocate an rwi (reset work
+item?) entry and add to the list of pending resets.
+
+Since we only add one rwi for a given reason type to the list (no duplicates).
+we will only have a handful of reset types in the list - even in the
+worst case. In the common case we should just have a couple of entries
+at most.
+
+Rather than allocating/freeing every time (and dealing with the corner
+case of the allocation failing), use a fixed number of rwi entries.
+The extra memory needed is tiny and most of it will be used over the
+active life of the adapter.
+
+This also fixes a couple of tiny memory leaks. One is in ibmvnic_reset()
+where we don't free the rwi entries after deleting them from the list due
+to a transport event.  The second is in __ibmvnic_reset() where if we
+find that the adapter is being removed, we simply break out of the loop
+(with rc = EBUSY) but ignore any rwi entries that remain on the list.
+
+Fixes: 2770a7984db58 ("Introduce hard reset recovery")
+Fixes: 36f1031c51a2 ("ibmvnic: Do not process reset during or after device removal")
+Signed-off-by: Sukadev Bhattiprolu <sukadev@linux.ibm.com>
+---
+ drivers/net/ethernet/ibm/ibmvnic.c | 123 +++++++++++++++++------------
+ drivers/net/ethernet/ibm/ibmvnic.h |  14 ++--
+ 2 files changed, 78 insertions(+), 59 deletions(-)
+
+diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
+index cd8108dbddec..d1c2aaed1478 100644
+--- a/drivers/net/ethernet/ibm/ibmvnic.c
++++ b/drivers/net/ethernet/ibm/ibmvnic.c
+@@ -2257,29 +2257,81 @@ static int do_hard_reset(struct ibmvnic_adapter *adapter,
+ 	return rc;
+ }
+ 
+-static struct ibmvnic_rwi *get_next_rwi(struct ibmvnic_adapter *adapter)
++/**
++ * Next reset will always be the first on the list.
++ * When we take it off the list, we move any remaining resets so
++ * that the next one is again the first on the list. Most of the
++ * time the pending_resets[] should have a couple of types of resets
++ * (FAILOVER, TIMEOUT or CHANGE-PARAM and less often, MOBILITY).
++ */
++static enum ibmvnic_reset_reason get_pending_reset(struct ibmvnic_adapter *adapter)
+ {
+-	struct ibmvnic_rwi *rwi;
++	enum ibmvnic_reset_reason *pending_resets;
++	enum ibmvnic_reset_reason reason = 0;
+ 	unsigned long flags;
++	int i;
+ 
+ 	spin_lock_irqsave(&adapter->rwi_lock, flags);
+ 
+-	if (!list_empty(&adapter->rwi_list)) {
+-		rwi = list_first_entry(&adapter->rwi_list, struct ibmvnic_rwi,
+-				       list);
+-		list_del(&rwi->list);
+-	} else {
+-		rwi = NULL;
++	pending_resets = &adapter->pending_resets[0];
++
++	reason = pending_resets[0];
++
++	if (reason)  {
++		for (i = 0; i < adapter->next_reset; i++) {
++			pending_resets[i] = pending_resets[i+1];
++			if (!pending_resets[i])
++				break;
++		}
++		adapter->next_reset--;
++	}
++
++	spin_unlock_irqrestore(&adapter->rwi_lock, flags);
++	return reason;
++}
++
++/**
++ * Add a pending reset, making sure not to add duplicates.
++ * If @clear is set, clear all existing resets before adding.
++ *
++ * TODO: If clear (i.e force_reset_recovery) is true AND we have a
++ * 	 duplicate reset, wouldn't it still make sense to clear the
++ * 	 queue including the duplicate and add this reset? Preserving
++ * 	 existing behavior for now.
++ */
++static void add_pending_reset(struct ibmvnic_adapter *adapter,
++			      enum ibmvnic_reset_reason reason,
++			      bool clear)
++{
++	enum ibmvnic_reset_reason *pending_resets;
++	unsigned long flags;
++	int i;
++
++	spin_lock_irqsave(&adapter->rwi_lock, flags);
++
++	pending_resets = &adapter->pending_resets[0];
++
++	for (i = 0; i < adapter->next_reset; i++) {
++		if (pending_resets[i] == reason)
++			goto out;
++	}
++
++	if (clear) {
++		for (i = 0; i < adapter->next_reset; i++) {
++			pending_resets[i] = 0;
++		}
++		adapter->next_reset = 0;
+ 	}
+ 
++	pending_resets[adapter->next_reset] = reason;
++	adapter->next_reset++;
++out:
+ 	spin_unlock_irqrestore(&adapter->rwi_lock, flags);
+-	return rwi;
+ }
+ 
+ static void __ibmvnic_reset(struct work_struct *work)
+ {
+ 	enum ibmvnic_reset_reason reason;
+-	struct ibmvnic_rwi *rwi;
+ 	struct ibmvnic_adapter *adapter;
+ 	bool saved_state = false;
+ 	unsigned long flags;
+@@ -2294,15 +2346,13 @@ static void __ibmvnic_reset(struct work_struct *work)
+ 		return;
+ 	}
+ 
+-	rwi = get_next_rwi(adapter);
+-	reason = rwi->reset_reason;
+-	while (rwi) {
++	reason = get_pending_reset(adapter);
++	while (reason) {
+ 		spin_lock_irqsave(&adapter->state_lock, flags);
+ 
+ 		if (adapter->state == VNIC_REMOVING ||
+ 		    adapter->state == VNIC_REMOVED) {
+ 			spin_unlock_irqrestore(&adapter->state_lock, flags);
+-			kfree(rwi);
+ 			rc = EBUSY;
+ 			break;
+ 		}
+@@ -2347,14 +2397,12 @@ static void __ibmvnic_reset(struct work_struct *work)
+ 				adapter->from_passive_init)) {
+ 			rc = do_reset(adapter, reason, reset_state);
+ 		}
+-		kfree(rwi);
+ 		adapter->last_reset_time = jiffies;
+ 
+ 		if (rc)
+ 			netdev_dbg(adapter->netdev, "Reset failed, rc=%d\n", rc);
+ 
+-		rwi = get_next_rwi(adapter);
+-		reason = rwi->reset_reason;
++		reason = get_pending_reset(adapter);
+ 
+ 		if (reason && (reason == VNIC_RESET_FAILOVER ||
+ 			       reason == VNIC_RESET_MOBILITY))
+@@ -2386,17 +2434,14 @@ static void __ibmvnic_delayed_reset(struct work_struct *work)
+ static int ibmvnic_reset(struct ibmvnic_adapter *adapter,
+ 			 enum ibmvnic_reset_reason reason)
+ {
+-	struct list_head *entry, *tmp_entry;
+-	struct ibmvnic_rwi *rwi, *tmp;
+ 	struct net_device *netdev = adapter->netdev;
+-	unsigned long flags;
+ 	int ret;
+ 
+ 	/*
+ 	 * If failover is pending don't schedule any other reset.
+ 	 * Instead let the failover complete. If there is already a
+ 	 * a failover reset scheduled, we will detect and drop the
+-	 * duplicate reset when walking the ->rwi_list below.
++	 * duplicate reset when walking the ->pending_resets list.
+ 	 */
+ 	if (adapter->state == VNIC_REMOVING ||
+ 	    adapter->state == VNIC_REMOVED ||
+@@ -2412,36 +2457,11 @@ static int ibmvnic_reset(struct ibmvnic_adapter *adapter,
+ 		goto err;
+ 	}
+ 
+-	spin_lock_irqsave(&adapter->rwi_lock, flags);
+-
+-	list_for_each(entry, &adapter->rwi_list) {
+-		tmp = list_entry(entry, struct ibmvnic_rwi, list);
+-		if (tmp->reset_reason == reason) {
+-			netdev_dbg(netdev, "Skipping matching reset, reason=%d\n",
+-				   reason);
+-			spin_unlock_irqrestore(&adapter->rwi_lock, flags);
+-			ret = EBUSY;
+-			goto err;
+-		}
+-	}
+-
+-	rwi = kzalloc(sizeof(*rwi), GFP_ATOMIC);
+-	if (!rwi) {
+-		spin_unlock_irqrestore(&adapter->rwi_lock, flags);
+-		ibmvnic_close(netdev);
+-		ret = ENOMEM;
+-		goto err;
+-	}
+-	/* if we just received a transport event,
+-	 * flush reset queue and process this reset
++	/* If we just received a transport event, clear
++	 * any pending resets and add just this reset.
+ 	 */
+-	if (adapter->force_reset_recovery && !list_empty(&adapter->rwi_list)) {
+-		list_for_each_safe(entry, tmp_entry, &adapter->rwi_list)
+-			list_del(entry);
+-	}
+-	rwi->reset_reason = reason;
+-	list_add_tail(&rwi->list, &adapter->rwi_list);
+-	spin_unlock_irqrestore(&adapter->rwi_lock, flags);
++	add_pending_reset(adapter, reason, adapter->force_reset_recovery);
++
+ 	netdev_dbg(adapter->netdev, "Scheduling reset (reason %d)\n", reason);
+ 	schedule_work(&adapter->ibmvnic_reset);
+ 
+@@ -5363,7 +5383,8 @@ static int ibmvnic_probe(struct vio_dev *dev, const struct vio_device_id *id)
+ 	INIT_WORK(&adapter->ibmvnic_reset, __ibmvnic_reset);
+ 	INIT_DELAYED_WORK(&adapter->ibmvnic_delayed_reset,
+ 			  __ibmvnic_delayed_reset);
+-	INIT_LIST_HEAD(&adapter->rwi_list);
++	adapter->next_reset = 0;
++	memset(&adapter->pending_resets, 0, sizeof(adapter->pending_resets));
+ 	spin_lock_init(&adapter->rwi_lock);
+ 	spin_lock_init(&adapter->state_lock);
+ 	mutex_init(&adapter->fw_lock);
+diff --git a/drivers/net/ethernet/ibm/ibmvnic.h b/drivers/net/ethernet/ibm/ibmvnic.h
+index c09c3f6bba9f..1179a95a3f92 100644
+--- a/drivers/net/ethernet/ibm/ibmvnic.h
++++ b/drivers/net/ethernet/ibm/ibmvnic.h
+@@ -945,17 +945,14 @@ enum vnic_state {VNIC_PROBING = 1,
+ 		 VNIC_REMOVING,
+ 		 VNIC_REMOVED};
+ 
+-enum ibmvnic_reset_reason {VNIC_RESET_FAILOVER = 1,
++enum ibmvnic_reset_reason {VNIC_RESET_UNUSED = 0,
++			   VNIC_RESET_FAILOVER = 1,
+ 			   VNIC_RESET_MOBILITY,
+ 			   VNIC_RESET_FATAL,
+ 			   VNIC_RESET_NON_FATAL,
+ 			   VNIC_RESET_TIMEOUT,
+-			   VNIC_RESET_CHANGE_PARAM};
+-
+-struct ibmvnic_rwi {
+-	enum ibmvnic_reset_reason reset_reason;
+-	struct list_head list;
+-};
++			   VNIC_RESET_CHANGE_PARAM,
++			   VNIC_RESET_MAX};	/* must be last */
+ 
+ struct ibmvnic_tunables {
+ 	u64 rx_queues;
+@@ -1082,7 +1079,8 @@ struct ibmvnic_adapter {
+ 	enum vnic_state state;
+ 	enum ibmvnic_reset_reason reset_reason;
+ 	spinlock_t rwi_lock;
+-	struct list_head rwi_list;
++	enum ibmvnic_reset_reason pending_resets[VNIC_RESET_MAX-1];
++	short next_reset;
+ 	struct work_struct ibmvnic_reset;
+ 	struct delayed_work ibmvnic_delayed_reset;
+ 	unsigned long resetting;
+-- 
+2.26.2
