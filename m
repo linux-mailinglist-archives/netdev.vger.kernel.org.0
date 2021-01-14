@@ -2,86 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AE4152F6A50
-	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 20:01:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A8E102F6A9D
+	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 20:14:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729677AbhANTAx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jan 2021 14:00:53 -0500
-Received: from mail.kernel.org ([198.145.29.99]:54564 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729460AbhANTAv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 14 Jan 2021 14:00:51 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 2B60823B44;
-        Thu, 14 Jan 2021 19:00:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610650811;
-        bh=8oOHKhwSPz0K/vpgkqbjAagdWhcsxpCGu91uJjBJ67g=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=ApmYOMYsPGJDLXxTxDi4Rxyfyhjgf3hhIMhm8SA+j4gsynb3IxbFscd8Bu1mYaiGr
-         JMk+6nPuPEAVLjfCtp2xoaMxnJCMAKatrt1PEnCNfpF3hGRfeTWVbWxJeZSoB6YfCR
-         +Ybfxgq7EnC44XMT0ViwqEyefXi76b91+HU9FRA3ymTDHYsEMMDKuzLHoUAyc8OFFw
-         jnNyT/JdBZ02rIngVj2tDMu32ksTdWk/cgrNQIpU+ll90IChB58wKt+hRmE7ar7roq
-         P8eIWpAqeEEo/oFGmpJS4gvpglcGE3B8WP6mOjy6urAJpO9wk77YtPIkXNvYEqpYX7
-         Tz3F9gGb1Do2Q==
-Received: from pdx-korg-docbuild-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-1.ci.codeaurora.org (Postfix) with ESMTP id 1DEC660156;
-        Thu, 14 Jan 2021 19:00:11 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S1728813AbhANTLo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jan 2021 14:11:44 -0500
+Received: from mail-oi1-f171.google.com ([209.85.167.171]:37736 "EHLO
+        mail-oi1-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725883AbhANTLo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 14:11:44 -0500
+Received: by mail-oi1-f171.google.com with SMTP id l207so7061382oib.4;
+        Thu, 14 Jan 2021 11:11:28 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=OuweyPlkRjUfbMjqqh2CV+mLsPdrJqy3G1dkbVS1eZU=;
+        b=Ji8ABhGHXtoWIj/TN+o/oWL/4H3wsSJMiy7jrgpAOiQsIF4Sc0dMevThp0q/wmnVC+
+         HXF5bsAhGSMPT1dK/RV2GvxILKWJlLCPRPs0ueiM8mthp5rcBuEIlce/RJ5O4h1IXx6e
+         1A2+F6TCiz3SBEYRcDJ31U7z6Mk4ibMB3AbtRiuUB7rohoYcqdK7JDc9ECgmm3H381dy
+         +DrK4+DJKkxIqP5ADeM7mviEC6BKNvz4V+wFRGuLy96uGLwPxCELkJTHsic+zDm8bbfb
+         Shb2mNdP1WRpUXV2O6UrUPb0D5YrBSceUlgSxS0SarkQUnn8X1W5EVHeEeIsGFQCgvQn
+         TtvA==
+X-Gm-Message-State: AOAM532XaRt/L/YKi8VN2qm7pmPekwtXNnPFymWRvNw2Kvmu52gJOlYM
+        DqHhMfr3/zoCcahqEXTlzFTeG/BodQ==
+X-Google-Smtp-Source: ABdhPJyCyN8iVoD3FUbCeTJenZbnGOUNr+ssedz+pYr3XOjuc6dn6KR63VcCPPxZ0XOw3w/v9MuUzw==
+X-Received: by 2002:aca:c582:: with SMTP id v124mr3444409oif.115.1610651463114;
+        Thu, 14 Jan 2021 11:11:03 -0800 (PST)
+Received: from robh.at.kernel.org (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
+        by smtp.gmail.com with ESMTPSA id o135sm1234449ooo.38.2021.01.14.11.11.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Jan 2021 11:11:02 -0800 (PST)
+Received: (nullmailer pid 3393424 invoked by uid 1000);
+        Thu, 14 Jan 2021 19:11:00 -0000
+Date:   Thu, 14 Jan 2021 13:11:00 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     DENG Qingfang <dqfext@gmail.com>
+Cc:     Philipp Zabel <p.zabel@pengutronix.de>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, linux-kernel@vger.kernel.org,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        =?iso-8859-1?Q?Ren=E9?= van Dorst <opensource@vdorst.com>,
+        Vladimir Oltean <olteanv@gmail.com>, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-mediatek@lists.infradead.org,
+        Landen Chao <Landen.Chao@mediatek.com>
+Subject: Re: [PATCH net-next 1/2] dt-bindings: net: dsa: add MT7530 GPIO
+ controller binding
+Message-ID: <20210114191100.GA3393390@robh.at.kernel.org>
+References: <20210111054428.3273-1-dqfext@gmail.com>
+ <20210111054428.3273-2-dqfext@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net v2 0/7] MAINTAINERS: remove inactive folks from networking 
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161065081111.20848.7577461351346623187.git-patchwork-notify@kernel.org>
-Date:   Thu, 14 Jan 2021 19:00:11 +0000
-References: <20210114014912.2519931-1-kuba@kernel.org>
-In-Reply-To: <20210114014912.2519931-1-kuba@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, corbet@lwn.net
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210111054428.3273-2-dqfext@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net.git (refs/heads/master):
-
-On Wed, 13 Jan 2021 17:49:05 -0800 you wrote:
-> Hi!
+On Mon, 11 Jan 2021 13:44:27 +0800, DENG Qingfang wrote:
+> Add device tree binding to support MT7530 GPIO controller.
 > 
-> This series intends to remove some most evidently inactive maintainers.
+> Signed-off-by: DENG Qingfang <dqfext@gmail.com>
+> ---
+>  Documentation/devicetree/bindings/net/dsa/mt7530.txt | 6 ++++++
+>  1 file changed, 6 insertions(+)
 > 
-> To make maintainers' lives easier we're trying to nudge people
-> towards CCing all the relevant folks on patches, in an attempt
-> to improve review rate. We have a check in patchwork which validates
-> the CC list against get_maintainers.pl. It's a little awkward, however,
-> to force people to CC maintainers who we haven't seen on the mailing
-> list for years. This series removes from maintainers folks who didn't
-> provide any tag (incl. authoring a patch) in the last 5 years.
-> To ensure reasonable signal to noise ratio we only considered
-> MAINTAINERS entries which had more than 100 patches fall under
-> them in that time period.
-> 
-> [...]
 
-Here is the summary with links:
-  - [net,v2,1/7] MAINTAINERS: altx: move Jay Cliburn to CREDITS
-    https://git.kernel.org/netdev/net/c/93089de91e85
-  - [net,v2,2/7] MAINTAINERS: net: move Alexey Kuznetsov to CREDITS
-    https://git.kernel.org/netdev/net/c/09cd3f4683a9
-  - [net,v2,3/7] MAINTAINERS: vrf: move Shrijeet to CREDITS
-    https://git.kernel.org/netdev/net/c/5e62d124f75a
-  - [net,v2,4/7] MAINTAINERS: ena: remove Zorik Machulsky from reviewers
-    https://git.kernel.org/netdev/net/c/c41efbf2ad56
-  - [net,v2,5/7] MAINTAINERS: tls: move Aviad to CREDITS
-    https://git.kernel.org/netdev/net/c/0e4ed0b62b5a
-  - [net,v2,6/7] MAINTAINERS: ipvs: move Wensong Zhang to CREDITS
-    https://git.kernel.org/netdev/net/c/4f3786e01194
-  - [net,v2,7/7] MAINTAINERS: dccp: move Gerrit Renker to CREDITS
-    https://git.kernel.org/netdev/net/c/054c4610bd05
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Acked-by: Rob Herring <robh@kernel.org>
