@@ -2,187 +2,216 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 540F92F699E
-	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 19:36:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 093112F69A4
+	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 19:36:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727228AbhANSd2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jan 2021 13:33:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33054 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726131AbhANSd0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 13:33:26 -0500
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40145C061757;
-        Thu, 14 Jan 2021 10:32:46 -0800 (PST)
-Received: by mail-ej1-x631.google.com with SMTP id l9so3928645ejx.3;
-        Thu, 14 Jan 2021 10:32:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Y0c5Nx8W2urmWex5m6DmBEl26zCZs3A4t+gb05nA8VQ=;
-        b=Qaxn2PkC9f4GQ4NOnPQlgmbIoooJsOh30WVZhiuDSdkNEUZuZvPS5zshqw4M7Li1YL
-         3CblAXn8XX5fQ8GKgg02Z1L3mHlZir0y6qO09+CY6pX2p9n6fETMde1o9uwl646UAQ0Z
-         lzDrT8ucpxUe7vUcR03vYmCY7S6Y8XEghc271X00Ud2VqJ72GdE7LkmcKJ2KOwzGeRe5
-         neCaCAfGnVQBgAIaIVoyg3TmH2Qdyr9n3IgBJjNza1FOAXOCzh0BcqZ5r5BVOOriGrig
-         DsVOh+OpYznkXz18dWeBXGIR7Aw+ybUUetM4wj1l8EvgA7aJrdLC7PShew1ls8z5BH/S
-         jUUQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Y0c5Nx8W2urmWex5m6DmBEl26zCZs3A4t+gb05nA8VQ=;
-        b=hwiXt5CidFDwGKT2fQVnHmYOgbmKsc/Jwn9/8uUUgUDuFstlTBJGmme+sAwCScAs1U
-         B6Nkjgtizv4Ske8e7D+AnDA8GYEa8d78bRxQ7kmXJyjdrI2n8j5sfWIWkv1su0ujPlZI
-         Z8LFwmjt8w+WYUVbB6gexOiJaqaS9k+1acdDfkv13Db6BUu12kMJP70riGwV0idxXzSl
-         RuyFY49idiHwj010u3O/PvkM1JFSBt9bFyJbAyEMn3sIvmntXmOoKkl3C/t3nf55z2Bf
-         mLkY+4njWiXqxgAF7ID7j3zhdFUE9Z2ky7y6/oFBr9b9lAS7nb5HfB5lllN83CQxQctb
-         1XHg==
-X-Gm-Message-State: AOAM532xa3t1REyxTAp0v6NK48bp+ClH0xB7GI7egc6VEB9xdx3q9Os5
-        aaFMXvBpW6GDIoJyJQCs1a8=
-X-Google-Smtp-Source: ABdhPJyfq2WDYDXrAKqF8SE0Tw84cm/1O2KlVkbuOm9xO+UAvMcNLZ7zUzIdNyZEhD616hB0Hv2/Sw==
-X-Received: by 2002:a17:906:b244:: with SMTP id ce4mr988278ejb.159.1610649164964;
-        Thu, 14 Jan 2021 10:32:44 -0800 (PST)
-Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id jt8sm719248ejc.40.2021.01.14.10.32.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Jan 2021 10:32:44 -0800 (PST)
-Date:   Thu, 14 Jan 2021 20:32:43 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     George McCollister <george.mccollister@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Rob Herring <robh@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        "open list:OPEN FIRMWARE AND..." <devicetree@vger.kernel.org>
-Subject: Re: [PATCH net-next v4 2/3] net: dsa: add Arrow SpeedChips XRS700x
- driver
-Message-ID: <20210114183243.4kse75ksw3u7h4uz@skbuf>
-References: <20210113145922.92848-1-george.mccollister@gmail.com>
- <20210113145922.92848-3-george.mccollister@gmail.com>
- <20210114015659.33shdlfthywqdla7@skbuf>
- <CAFSKS=NU4hrnXB5FcAFvnFnmAtK5HfYR8dAKyw3cd=5UKOBNfg@mail.gmail.com>
+        id S1728123AbhANSeK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jan 2021 13:34:10 -0500
+Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:19134 "EHLO
+        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725935AbhANSeJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 13:34:09 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B60008e790000>; Thu, 14 Jan 2021 10:33:29 -0800
+Received: from HQMAIL111.nvidia.com (172.20.187.18) by HQMAIL101.nvidia.com
+ (172.20.187.10) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 14 Jan
+ 2021 18:33:29 +0000
+Received: from NAM04-DM6-obe.outbound.protection.outlook.com (104.47.73.46) by
+ HQMAIL111.nvidia.com (172.20.187.18) with Microsoft SMTP Server (TLS) id
+ 15.0.1473.3 via Frontend Transport; Thu, 14 Jan 2021 18:33:29 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=OGfmcXWg3F1zdEuviqdk0M3AuVWKqBa7PKpHwLfGxMOVwQAOONL4DT/a+CU/wyt4qjLkrEs/hMbnILfkNpyO86FN4/U4EPVI49+lpf5ZQfVGUWZXHR6F1SXrHGQEvOm4IX4VX7qtrUvqhxcOBku1Q33DpxcCnG/u7pqZWQbSaSyVCROY/Y+lJsdsvlQ/cA6pt6SyQsuVGJGl/dYW3/aBrtm+zzMDS3YFfkv6nQbMnA71zG6VXaMg3DKVDvUQmzUVKKZ5tCGeIATJsTbh4kBDIpb4S5ZRwdNBq3PMlx2UawPJeqFDNSnmpQdx5s3i2YCM9fDRFYz/uqR4aPGzf+dSXw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=HxDHB8eApzwmX2M4Cp63Jiy9vxa9p5kkzuCdqgjSHjA=;
+ b=CJFh73rbfIqE5yILi1jS96/E+Dcnnpx5y2BNWV88XC4GXrVJva9iArGqcD1kVJ2rUu7i4ikll3seyhrKELWkIj7tos1eGjXirnWH8PK2ChoEQ1qTN3nJQIXeyZjdIcRKr5hn/zhz8UwW2UQSHfS/ibzvVKH3oQmb1h+w3AisCq18uuY9T1BL/84s9WK1EFpZPn1KWzMLnlxqQTSieRKzgU9Ukk253G3gTDjFO5FcJ/kK2uujG+66acLjTPn9O1I36TVgQTsZcwdxdgIFa6aB/aJl/bQAUMSSBSNJNKBuJitmPw9Da3e+dGwIsmDq1+chcckovb2EhivOgy3h2tMt+g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+Received: from BY5PR12MB4322.namprd12.prod.outlook.com (2603:10b6:a03:20a::20)
+ by BY5PR12MB3908.namprd12.prod.outlook.com (2603:10b6:a03:1ae::25) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3763.10; Thu, 14 Jan
+ 2021 18:33:27 +0000
+Received: from BY5PR12MB4322.namprd12.prod.outlook.com
+ ([fe80::f9f4:8fdd:8e2a:67a4]) by BY5PR12MB4322.namprd12.prod.outlook.com
+ ([fe80::f9f4:8fdd:8e2a:67a4%5]) with mapi id 15.20.3763.011; Thu, 14 Jan 2021
+ 18:33:27 +0000
+From:   Parav Pandit <parav@nvidia.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     Saeed Mahameed <saeed@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        Leon Romanovsky <leonro@nvidia.com>,
+        Jiri Pirko <jiri@nvidia.com>, Vu Pham <vuhuong@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: RE: [net-next V6 02/14] devlink: Introduce PCI SF port flavour and
+ port attribute
+Thread-Topic: [net-next V6 02/14] devlink: Introduce PCI SF port flavour and
+ port attribute
+Thread-Index: AQHW6eIwbq3q2BZokkO623Y7jeJLvqonZX4AgAACO8CAAAjxgIAAAm/A
+Date:   Thu, 14 Jan 2021 18:33:27 +0000
+Message-ID: <BY5PR12MB432265CFFCAB96BE314A905FDCA80@BY5PR12MB4322.namprd12.prod.outlook.com>
+References: <20210113192730.280656-1-saeed@kernel.org>
+        <20210113192730.280656-3-saeed@kernel.org>
+        <20210114094230.67e8bef9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <BY5PR12MB43220F26F558A6CFCE013876DCA80@BY5PR12MB4322.namprd12.prod.outlook.com>
+ <20210114102229.3ac56a1c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210114102229.3ac56a1c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=nvidia.com;
+x-originating-ip: [122.167.131.74]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: f3ab225a-2d9a-477e-c5ca-08d8b8bae245
+x-ms-traffictypediagnostic: BY5PR12MB3908:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BY5PR12MB39082182185E0BB38CADA460DCA80@BY5PR12MB3908.namprd12.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 0B78ZS3VuD04uBy6e1b4dm5fW/7L7vC52hBl2kVpIgIu/PvQVVzljh2X5iWCzVcBBxCC7lPBPbHvxV+Ywf5GX1D/NUFEPZsS7mzPgQT6efuyFOIHmjQIfe2O2G/sCY0OI27TMLK819pPX7ycmFRjIJnS7QfhVuK6L2os6RNEb8L8LNUcE/tll5T/sz0IFYXgeoRjXoUBQKUvRhgP5nfB9ESRQLhewH/U1wCjNACJLRq90kMD0OMtMFMYas0Jti6YPMMv3+4QGMXIdTMwwxzDSVnrJrAHX8ZdhkDctL/agXv8CDGVm7F9g+tJD+p3w4qDCN7Cri7OgLtJ3bDBKATcGGeslJlOVowBPZuUlQH762daqH6j5MvuaZq0IlcugCrBtE2dg4dzPqvFfF+L8stbpcnvwqiEARUNT3p9SGEZbwWxlrsaWo+BVlQaLQu6vc0AVKkJleI6sQlRnGvNucdvhA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR12MB4322.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39860400002)(396003)(376002)(346002)(366004)(136003)(186003)(26005)(107886003)(966005)(55016002)(6506007)(83380400001)(2906002)(9686003)(4326008)(71200400001)(5660300002)(66946007)(8676002)(7696005)(6916009)(316002)(86362001)(54906003)(478600001)(52536014)(66446008)(66556008)(76116006)(66476007)(64756008)(8936002)(33656002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?UcvFrqWjgJknsqlDu3gCRIlgyt0xy6LmGYKFFZzVqeZX149HBS2c8yDD5n8t?=
+ =?us-ascii?Q?eHYBwIQVPAiBytEoM/xkd+lDDHgm6xGLWTY1SQrzHkotFW13vGb0ovdKAvts?=
+ =?us-ascii?Q?G+LMuW+kI5I+iqsxdGK1pDt2gFhNik4e/osPN//zVQVYW0GUbDXmzBvDsYEx?=
+ =?us-ascii?Q?ppx6Yzlgw1CgQlxXhsGrJj8sJjB7IooaXk2cbwuuJV3jAL8mCPVy3SKS2OFH?=
+ =?us-ascii?Q?45MOnGnleaTmCd2OapMrM/mQZBxHLkwy5M1puO6dl6a64wLE7ScvkIBTHFVT?=
+ =?us-ascii?Q?J60NPRo8GB25D0DiYyp1hwBRXeS0kLjU3TpSq26XnnWQs+iF7kh5Fxw3B6Ds?=
+ =?us-ascii?Q?8BaL1vjaBz59pZPPLaQb6gkLeMqZf6KhK8KeKV+Wzr6l5Z/3T/OtlxY0izUk?=
+ =?us-ascii?Q?08pL0RI955G9vIAwKXEbsJt6DO1N1m6Xb0V25jvZunl3lCRDWTmjEUN/4eM8?=
+ =?us-ascii?Q?YKhTqguJeQcOWIaTojYDUiFsH4CrtN8yi42Uh9kmmD8ETwzuXWF3j9CJhWTY?=
+ =?us-ascii?Q?LK/Yfmg9ln4FEtOWKHLZSJBd9db/r4HO+nwiK3fA8y3VJXfW0QYCOPOH8NUV?=
+ =?us-ascii?Q?ZjbAb+Guj6S05Syuy7pJyKboE+2KOGjxn3Mhgi+tJ8Kqb3Vne5EyJvVqQ5R+?=
+ =?us-ascii?Q?KjdPK3AUUWicwgo1wjVHQaGStytdJ0wojAkIohBtLRuGYDoedDBDZw0agEdM?=
+ =?us-ascii?Q?c1t7oJNQ+PLPTNpVM1vbakrxfOdc+Aam/E2rHt1ltAKC0q8yV1J96zBAzevl?=
+ =?us-ascii?Q?NsxyQDlcESXgvSY9HBf0z85uyHA9r3RxnlrfCy5joXbGzzPzCzCFFh/n9cuT?=
+ =?us-ascii?Q?gcfCtDEF0d1i/B3DzfYdxyY4XO8SAdwdfKof4rZY391EouFY9ttl2T+O3Xtn?=
+ =?us-ascii?Q?cADAuJBBiJigq3w9UVRy7sXISepe5xYi9uAALqjK0Cd+DXdI8YiRyMg6ps4M?=
+ =?us-ascii?Q?whHpOpDfBfxeDi4IMnXO1Wio6TFVZe0Y9QAfeo3R4yo=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAFSKS=NU4hrnXB5FcAFvnFnmAtK5HfYR8dAKyw3cd=5UKOBNfg@mail.gmail.com>
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BY5PR12MB4322.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: f3ab225a-2d9a-477e-c5ca-08d8b8bae245
+X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Jan 2021 18:33:27.1740
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: JXWEBvZ/3c/2/9gFaqxnRDOHMoEzHKjbRvqR00/QkSuVgCun9KoNaXYeOaDU83nRuYETugsAix2M+uHLqcEjPg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR12MB3908
+X-OriginatorOrg: Nvidia.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1610649209; bh=HxDHB8eApzwmX2M4Cp63Jiy9vxa9p5kkzuCdqgjSHjA=;
+        h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:From:To:
+         CC:Subject:Thread-Topic:Thread-Index:Date:Message-ID:References:
+         In-Reply-To:Accept-Language:Content-Language:X-MS-Has-Attach:
+         X-MS-TNEF-Correlator:authentication-results:x-originating-ip:
+         x-ms-publictraffictype:x-ms-office365-filtering-correlation-id:
+         x-ms-traffictypediagnostic:x-ms-exchange-transport-forked:
+         x-microsoft-antispam-prvs:x-ms-oob-tlc-oobclassifiers:
+         x-ms-exchange-senderadcheck:x-microsoft-antispam:
+         x-microsoft-antispam-message-info:x-forefront-antispam-report:
+         x-ms-exchange-antispam-messagedata:Content-Type:
+         Content-Transfer-Encoding:MIME-Version:
+         X-MS-Exchange-CrossTenant-AuthAs:
+         X-MS-Exchange-CrossTenant-AuthSource:
+         X-MS-Exchange-CrossTenant-Network-Message-Id:
+         X-MS-Exchange-CrossTenant-originalarrivaltime:
+         X-MS-Exchange-CrossTenant-fromentityheader:
+         X-MS-Exchange-CrossTenant-id:X-MS-Exchange-CrossTenant-mailboxtype:
+         X-MS-Exchange-CrossTenant-userprincipalname:
+         X-MS-Exchange-Transport-CrossTenantHeadersStamped:X-OriginatorOrg;
+        b=FheVU4w2zS5fCLOHnfGWVVNHYoLN4ZkBEpA9Y5yzvU8aZ7ylChNhXgScb4xL5sNHW
+         LKgMI/weW3P1eZcJM7+fUDQEHJMcyElGEOTwUDsVgGwuxAHKyGJbGd07EBVIoscenV
+         Pqeqwxg3RkBw5N0YfOWF1DVYOmEuh6FxCvAU8J3WkCsh/0kytVMl9Bd21COcct/3VH
+         IRnSHV4eaW3z+Q52wSw/tIE9G08kGaY89Iumi5TIRbk0Rsucvw4vsej18EnQoObkvG
+         G0JrSQb6odQJ+VI8iaiau1J51Q02F33gNQjFbJ/jTbRh8RHDADo+DJZz5LoDnrv87K
+         yIIze2NenfHmg==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 14, 2021 at 10:53:16AM -0600, George McCollister wrote:
-> On Wed, Jan 13, 2021 at 7:57 PM Vladimir Oltean <olteanv@gmail.com> wrote:
-> >
-> > What PHY interface types does the switch support as of this patch?
-> > No RGMII delay configuration needed?
-> >
-> 
-> Port 0: RMII
-> Port 1-3: RGMII
-> 
-> For RGMII the documentation states:
-> "PCB is required to add 1.5 ns to 2.0 ns more delay to the clock line
-> than the other lines, unless the other end (PHY) has configurable RX
-> clock delay."
 
-Ok, didn't notice that.
 
-> > I've been there too, not the smartest of decisions in the long run. See
-> > commit 0b0e299720bb ("net: dsa: sja1105: use detected device id instead
-> > of DT one on mismatch") if you want a sneak preview of how this is going
-> > to feel two years from now. If you can detect the device id you're
-> > probably better off with a single compatible string.
-> 
-> Previously Andrew said:
-> "Either you need to verify the compatible from day one so it is not
-> wrong, or you just use a single compatible "arrow,xrs700x", which
-> cannot be wrong."
-> 
-> I did it the first way he suggested, if you would have replied at that
-> time to use a single that's the way I would have done it that way.
-> 
-> If you two can agree I should change it to a single string I'd be
-> happy to do so. In my case I need 3 RGMII and only one of the package
-> types will fit on the board so there's no risk of changing to one of
-> the existing parts. Perhaps this could be an issue if a new part is
-> added in the future or on someone else's design.
+> From: Jakub Kicinski <kuba@kernel.org>
+> Sent: Thursday, January 14, 2021 11:52 PM
+>=20
+> On Thu, 14 Jan 2021 17:53:09 +0000 Parav Pandit wrote:
+> > > From: Jakub Kicinski <kuba@kernel.org>
+> > > Sent: Thursday, January 14, 2021 11:13 PM
+> > >
+> > > On Wed, 13 Jan 2021 11:27:18 -0800 Saeed Mahameed wrote:
+> > > >  /**
+> > > >   * struct devlink_port_attrs - devlink port object
+> > > >   * @flavour: flavour of the port
+> > > > @@ -114,6 +126,7 @@ struct devlink_port_attrs {
+> > > >  		struct devlink_port_phys_attrs phys;
+> > > >  		struct devlink_port_pci_pf_attrs pci_pf;
+> > > >  		struct devlink_port_pci_vf_attrs pci_vf;
+> > > > +		struct devlink_port_pci_sf_attrs pci_sf;
+> > > >  	};
+> > > >  };
+> > >
+> > > include/net/devlink.h:131: warning: Function parameter or member
+> 'pci_sf'
+> > > not described in 'devlink_port_attrs'
+> > Wasn't reported till v5.
+> > Can you please share, which script catches this? So that I can run next=
+ time
+> early.
+>=20
+> This is just scripts/kernel-doc from the tree.
+>=20
+Ok. Got it. This is helpful.
+Will wait to gather other comments.
+Otherwise better to do bulk conversion for all the below one in include/net=
+/devlink.h apart from this SF one.
 
-Ok, if the parts are not pin-compatible I guess the range of potential
-issues to deal with may be lower. Don't get me wrong, I don't have a
-strong opinion. I'm fine if you ignore this comment and keep the
-specific compatibles, I think this is what the Open Firmware document
-recommends anyway.
+./scripts/kernel-doc -none include/net/devlink.h
 
-> > > +static int xrs700x_alloc_port_mib(struct xrs700x *dev, int port)
-> > > +{
-> > > +     struct xrs700x_port *p = &dev->ports[port];
-> > > +     size_t mib_size = sizeof(*p->mib_data) * ARRAY_SIZE(xrs700x_mibs);
-> >
-> > Reverse Christmas tree ordering... sorry.
-> 
-> The second line uses p so that won't work. I'll change the function to
-> use devm_kcalloc like you recommended below and just get rid of
-> mib_size.
+include/net/devlink.h:217: warning: Function parameter or member 'field_id'=
+ not described in 'devlink_dpipe_match'
+include/net/devlink.h:232: warning: Function parameter or member 'field_id'=
+ not described in 'devlink_dpipe_action'
+include/net/devlink.h:275: warning: Function parameter or member 'match_val=
+ues_count' not described in 'devlink_dpipe_entry'
+include/net/devlink.h:320: warning: Function parameter or member 'list' not=
+ described in 'devlink_dpipe_table'
+include/net/devlink.h:339: warning: Function parameter or member 'actions_d=
+ump' not described in 'devlink_dpipe_table_ops'
+include/net/devlink.h:339: warning: Function parameter or member 'matches_d=
+ump' not described in 'devlink_dpipe_table_ops'
+include/net/devlink.h:339: warning: Function parameter or member 'entries_d=
+ump' not described in 'devlink_dpipe_table_ops'
+include/net/devlink.h:339: warning: Function parameter or member 'counters_=
+set_update' not described in 'devlink_dpipe_table_ops'
+include/net/devlink.h:339: warning: Function parameter or member 'size_get'=
+ not described in 'devlink_dpipe_table_ops'
+include/net/devlink.h:349: warning: Function parameter or member 'headers' =
+not described in 'devlink_dpipe_headers'
+include/net/devlink.h:349: warning: Function parameter or member 'headers_c=
+ount' not described in 'devlink_dpipe_headers'
+include/net/devlink.h:363: warning: Function parameter or member 'unit' not=
+ described in 'devlink_resource_size_params'
+include/net/devlink.h:404: warning: Function parameter or member 'occ_get' =
+not described in 'devlink_resource'
+include/net/devlink.h:404: warning: Function parameter or member 'occ_get_p=
+riv' not described in 'devlink_resource'
+include/net/devlink.h:477: warning: Function parameter or member 'id' not d=
+escribed in 'devlink_param'
+include/net/devlink.h:606: warning: Function parameter or member 'overwrite=
+_mask' not described in 'devlink_flash_update_params'
 
-Yes, if you can get rid of it, that works.
-Generally when somebody says "reverse xmas tree" and it's obvious that
-there are data dependencies between variables, what they mean to request
-is:
 
-	struct xrs700x_port *p = &dev->ports[port];
-	size_t mib_size;
-
-	mib_size = sizeof(*p->mib_data) * ARRAY_SIZE(xrs700x_mibs);
-
-> > > diff --git a/drivers/net/dsa/xrs700x/xrs700x_mdio.c b/drivers/net/dsa/xrs700x/xrs700x_mdio.c
-> > > new file mode 100644
-> > > index 000000000000..4fa6cc8f871c
-> > > --- /dev/null
-> > > +++ b/drivers/net/dsa/xrs700x/xrs700x_mdio.c
-> > > +static int xrs700x_mdio_reg_read(void *context, unsigned int reg,
-> > > +                              unsigned int *val)
-> > > +{
-> > > +     struct mdio_device *mdiodev = context;
-> > > +     struct device *dev = &mdiodev->dev;
-> > > +     u16 uval;
-> > > +     int ret;
-> > > +
-> > > +     uval = (u16)FIELD_GET(GENMASK(31, 16), reg);
-> > > +
-> > > +     ret = mdiobus_write(mdiodev->bus, mdiodev->addr, XRS_MDIO_IBA1, uval);
-> > > +     if (ret < 0) {
-> > > +             dev_err(dev, "xrs mdiobus_write returned %d\n", ret);
-> > > +             return ret;
-> > > +     }
-> > > +
-> > > +     uval = (u16)((reg & GENMASK(15, 1)) | XRS_IB_READ);
-> >
-> > What happened to bit 0 of "reg"?
-> 
-> From the datasheet:
-> "Bits 15-1 of the address on the internal bus to where data is written
-> or from where data is read. Address bit 0 is always 0 (because of 16
-> bit registers)."
-> 
-> reg_stride is set to 2.
-> "The register address stride. Valid register addresses are a multiple
-> of this value."
-
-Ok, clear now.
-
-> > May boil down to preference too, but I don't believe "dev" is a happy
-> > name to give to a driver private data structure.
-> 
-> There are other drivers in the subsystem that do this. If there was a
-> consistent pattern followed in the subsystem I would have followed it.
-> Trust me I was a bit frustrated with home much time I spent going
-> through multiple drivers trying to determine the best practices for
-> organization, naming, etc.
-> If it's a big let me know and I'll change it.
-
-Funny that you are complaining about consistency in other drivers,
-because if I count correctly, out of a total of 22 occurrences of
-struct xrs700x variables in yours, 13 are named priv and 9 are named
-dev. So you are not even consistent with yourself. But it's not a major
-issue either way.
+> All the tests are here:
+>=20
+> https://github.com/kuba-moo/nipa/blob/master/tests/
