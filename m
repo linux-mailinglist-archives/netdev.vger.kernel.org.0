@@ -2,68 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1CD582F6D27
-	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 22:26:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A19C02F6D24
+	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 22:26:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729469AbhANVYB (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jan 2021 16:24:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41618 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726123AbhANVYA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 16:24:00 -0500
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED675C061757;
-        Thu, 14 Jan 2021 13:23:19 -0800 (PST)
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.94)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1l0A57-006O3k-Sa; Thu, 14 Jan 2021 22:23:01 +0100
-Message-ID: <8b6f763d3eba85f664fd05d7a3c7c311c0648da2.camel@sipsolutions.net>
-Subject: Re: [PATCH v6 12/16] net: tip: fix a couple kernel-doc markups
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Jakub Kicinski <kuba@kernel.org>, Jon Maloy <jmaloy@redhat.com>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>,
+        id S1728798AbhANVX5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jan 2021 16:23:57 -0500
+Received: from mail.kernel.org ([198.145.29.99]:47938 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726123AbhANVX5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 14 Jan 2021 16:23:57 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D450622DFA;
+        Thu, 14 Jan 2021 21:23:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1610659396;
+        bh=J/aHoyoF4gk742GnjC+IHIsC05inBGzfoIzUewtb5eM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=nyZv4R5EA0wzueGWWrToa/OKwIFT0kIhhX69EK0mBfnOnL1A/HOUKsfbZnWjQOr2I
+         LEW89Re0OXmI/y7MPpVXLD16+fQaqvQ2dGi0wDws2ude3EIjJv8W+tbCFWllgtfNdR
+         K/yDWga3yJpCa0s9bmB9OYd6lItvy48ONosMHuEMyy6r5Y1dTnztrcM5Kf23VQI0kN
+         D+Svii8ujuZfLioTaVKYafCtvn/f1/GAOBoIxkIwUSjposhlaZrMh/R0lK8s9SqIGF
+         LG0DyLhmss6MIoWEYWcyQyjNh1WbdZJvpEGLjwzdgPlGiXDYAMxdaT5TGlmqD/QjQw
+         YM0Hrcm0FfYlw==
+Date:   Thu, 14 Jan 2021 13:23:14 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jarod Wilson <jarod@redhat.com>
+Cc:     linux-kernel@vger.kernel.org, Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
         "David S. Miller" <davem@davemloft.net>,
-        Ying Xue <ying.xue@windriver.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        tipc-discussion@lists.sourceforge.net
-Date:   Thu, 14 Jan 2021 22:22:58 +0100
-In-Reply-To: <20210114103402.31946ed4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <cover.1610610937.git.mchehab+huawei@kernel.org>
-         <9d205b0e080153af0fbddee06ad0eb23457e1b1b.1610610937.git.mchehab+huawei@kernel.org>
-         <da52ef69-753a-7aa8-a2b1-1b5ef48df94e@redhat.com>
-         <20210114103402.31946ed4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+        Thomas Davis <tadavis@lbl.gov>, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v2] bonding: add a vlan+mac tx hashing option
+Message-ID: <20210114132314.2c484e9f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210114211141.GH1171031@redhat.com>
+References: <20201218193033.6138-1-jarod@redhat.com>
+        <20210113223548.1171655-1-jarod@redhat.com>
+        <20210113175818.7dce3076@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20210114211141.GH1171031@redhat.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-malware-bazaar: not-scanned
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2021-01-14 at 10:34 -0800, Jakub Kicinski wrote:
-> On Thu, 14 Jan 2021 10:59:08 -0500 Jon Maloy wrote:
-> > On 1/14/21 3:04 AM, Mauro Carvalho Chehab wrote:
-> > > A function has a different name between their prototype
-> > > and its kernel-doc markup:
-> > > 
-> > > 	../net/tipc/link.c:2551: warning: expecting prototype for link_reset_stats(). Prototype was for tipc_link_reset_stats() instead
-> > > 	../net/tipc/node.c:1678: warning: expecting prototype for is the general link level function for message sending(). Prototype was for tipc_node_xmit() instead
-> > > 
-> > > Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-> > 
-> > Acked-by: Jon Maloy <jmaloy@redhat.com>
+On Thu, 14 Jan 2021 16:11:41 -0500 Jarod Wilson wrote:
+> In truth, this code started out as a copy of bond_eth_hash(), which also
+> only uses the last byte, though of both source and destination macs. In
+> the typical use case for the requesting user, the bond is formed from two
+> onboard NICs, which typically have adjacent mac addresses, i.e.,
+> AA:BB:CC:DD:EE:01 and AA:BB:CC:DD:EE:02, so only the last byte is really
+> relevant to hash differently, but in thinking about it, a replacement NIC
+> because an onboard one died could have the same last byte, and maybe we
+> ought to just go full source mac right off the go here.
 > 
-> Thanks! Applied this one to net, the cfg80211 one does not apply to
-> net, so I'll leave it to Johannes.
+> Something like this instead maybe:
+> 
+> static u32 bond_vlan_srcmac_hash(struct sk_buff *skb)
+> {
+>         struct ethhdr *mac_hdr = (struct ethhdr *)skb_mac_header(skb);
+>         u32 srcmac = 0;
+>         u16 vlan;
+>         int i;
+> 
+>         for (i = 0; i < ETH_ALEN; i++)
+>                 srcmac = (srcmac << 8) | mac_hdr->h_source[i];
+> 
+>         if (!skb_vlan_tag_present(skb))
+>                 return srcmac;
+> 
+>         vlan = skb_vlan_tag_get(skb);
+> 
+>         return vlan ^ srcmac;
+> }
+> 
+> Then the documentation is spot-on, and we're future-proof, though
+> marginally less performant in calculating the hash, which may have been a
+> consideration when the original function was written, but is probably
+> basically irrelevant w/modern systems...
 
-Right, that was diffed against -next, and I've got a fix pending that I
-didn't send yet.
-
-I've applied this now, thanks.
-
-johannes
-
+No preference, especially if bond_eth_hash() already uses the last byte.
+Just make sure the choice is explained in the commit message.
