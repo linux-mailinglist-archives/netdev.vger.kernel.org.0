@@ -2,85 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D0912F67AF
-	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 18:30:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D2C062F67C1
+	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 18:36:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728612AbhANR37 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jan 2021 12:29:59 -0500
-Received: from m43-15.mailgun.net ([69.72.43.15]:62273 "EHLO
-        m43-15.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728404AbhANR36 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 12:29:58 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1610645374; h=Date: Message-Id: Cc: To: References:
- In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=J7fXt9Pzjy4xDZMwYIou3GmDhIbn8nANhLmm5feFgtU=;
- b=eW/v0wqKExG5ymFcaQPuBjryFptI/vvuIJ59JlLxK4WaKayyC2IavTBQE0oJCEO2gvG/ruWf
- vfEIaBz39x6iQd6d1emoFOiQMldvXu8sIzGxcaJmz8Jjpe27krPGCk9tsMLRdd34WeA1MLaY
- TMG3b2IqZzyXj7iUbLSr+FlE2IA=
-X-Mailgun-Sending-Ip: 69.72.43.15
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n02.prod.us-west-2.postgun.com with SMTP id
- 60007f61af68fb3b061148c7 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Thu, 14 Jan 2021 17:29:05
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 38C71C433C6; Thu, 14 Jan 2021 17:29:05 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        MISSING_DATE,MISSING_MID,SPF_FAIL autolearn=no autolearn_force=no
-        version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id A1234C433CA;
-        Thu, 14 Jan 2021 17:29:02 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org A1234C433CA
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        id S1727341AbhANRb4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jan 2021 12:31:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47908 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725772AbhANRbz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 12:31:55 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26A80C061574
+        for <netdev@vger.kernel.org>; Thu, 14 Jan 2021 09:31:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=Dn6L65rN0t+cXuNLr/L+aB9a14vAbZIuUTES9/alShY=; b=rL5yp7U0I+oBKxVJoQBXZtozO
+        jLZ6JGXNgtoYMWERDwrFqaS53+1vxf55sS54c0yDX0LjE5DMlIUZAXXaT3MXxA6GSwSp3wzSz/KKk
+        PPD+jtLyb90EI0uQOXTjltREHBH3nJdjRzEb9IeVoTBsbR8miJFSeCEmesvsixPdzfHJXUm0z2oXF
+        vyZuk0TxQMiS9qP59g7sPEHRsyQ/R7BH+KxJyaRJRKpQnnyAvO0G+WGZogtRDnlnZOuhzmiJIGmkK
+        owdQmSzxM1qb/V/VyJ4kpSEPQ6KFUYBk46ntmecz6XKHflXQJnrBNPQgX58pjqkwrpKG7RZ6Kxjhi
+        BMwOJCLrw==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:47968)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1l06Sm-0002kQ-6N; Thu, 14 Jan 2021 17:31:12 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1l06Sl-00005a-Vy; Thu, 14 Jan 2021 17:31:12 +0000
+Date:   Thu, 14 Jan 2021 17:31:11 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Richard Cochran <richardcochran@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next] net: ethtool: allow MAC drivers to override
+ ethtool get_ts_info
+Message-ID: <20210114173111.GX1551@shell.armlinux.org.uk>
+References: <E1kyYfI-0004wl-Tf@rmk-PC.armlinux.org.uk>
+ <20210114125506.GC3154@hoboy.vegasvil.org>
+ <20210114132217.GR1551@shell.armlinux.org.uk>
+ <20210114133235.GP1605@shell.armlinux.org.uk>
+ <20210114172712.GA13644@hoboy.vegasvil.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH][V2] wilc1000: fix spelling mistake in Kconfig "devision"
- ->
- "division"
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20201216115808.12987-1-colin.king@canonical.com>
-References: <20201216115808.12987-1-colin.king@canonical.com>
-To:     Colin King <colin.king@canonical.com>
-Cc:     Ajay Singh <ajay.kathat@microchip.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
-Message-Id: <20210114172905.38C71C433C6@smtp.codeaurora.org>
-Date:   Thu, 14 Jan 2021 17:29:05 +0000 (UTC)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210114172712.GA13644@hoboy.vegasvil.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Colin King <colin.king@canonical.com> wrote:
-
-> From: Colin Ian King <colin.king@canonical.com>
+On Thu, Jan 14, 2021 at 09:27:12AM -0800, Richard Cochran wrote:
+> On Thu, Jan 14, 2021 at 01:32:35PM +0000, Russell King - ARM Linux admin wrote:
+> > > We had already discussed this patch last year, and you agreed with it
+> > > then. What has changed?
+> > 
+> > See the discussion in this sub-thread:
+> > 
+> > https://lore.kernel.org/netdev/20200729105807.GZ1551@shell.armlinux.org.uk/
 > 
-> There is a spelling mistake in the Kconfig help text. Fix it.
+> Thanks for the reminder.  We ended up with having to review the MAC
+> drivers that support phydev.
 > 
-> Signed-off-by: Colin Ian King <colin.king@canonical.com>
+>    https://lore.kernel.org/netdev/20200730194427.GE1551@shell.armlinux.org.uk/
+> 
+> There is at least the FEC that supports phydev.  I have a board that
+> combines the FEC with the dp83640 PHYTER, and your patch would break
+> this setup.  (In the case of this HW combination, the PHYTER is
+> superior in every way.)
+> 
+> Another combination that I have seen twice is the TI am335x with its
+> cpsw MAC and the PHYTER.  Unfortunately I don't have one of these
+> boards, but people made them because the cpsw MAC supports time
+> stamping in a way that is inadequate.
+> 
+> I *think* the cpsw/phyter combination would work with your patch, but
+> only if the users disable CONFIG_TI_CPTS at compile time.
 
-Patch applied to wireless-drivers-next.git, thanks.
+I think then the only solution is to move the decision how to handle
+get_ts_info into each MAC driver and get rid of:
 
-e4c748ee4af1 wilc1000: fix spelling mistake in Kconfig "devision" -> "division"
+	if (phy_has_tsinfo(phydev))
+	        return phy_ts_info(phydev, info);
+
+in __ethtool_get_ts_info().
 
 -- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20201216115808.12987-1-colin.king@canonical.com/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
