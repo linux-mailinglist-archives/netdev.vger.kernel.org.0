@@ -2,138 +2,322 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B5F392F5C94
-	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 09:42:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8ADB12F5CA0
+	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 09:50:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727964AbhANIli (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jan 2021 03:41:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46444 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726893AbhANIlg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 03:41:36 -0500
-Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A54EAC061794;
-        Thu, 14 Jan 2021 00:40:55 -0800 (PST)
-Received: by mail-lj1-x233.google.com with SMTP id f11so5517226ljm.8;
-        Thu, 14 Jan 2021 00:40:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:organization:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=yZyuwqgUBskABVFLYIWGAD2FMF/t9yzwUC2QTWtpxG8=;
-        b=M9TsRLMOYhUEtXeMsks6hjymvFGTAFTtcnSeAioUr1V+e+Ys/w+5+tmqSuQePbJWQN
-         nLX1XzhyCkUuxejX9U0wCBV7ltnfewMSvNOsCBSHvm6lwsiYXfuc7fUQ78au0oc61Jty
-         b86r7TpT/4J5m+IyZw8My3f2eTw/PnR5ILB4rSDdqb7zATPtcCA2ec6OeOPgCj+Lpz3F
-         wDdCpERqEDPy95Q4ktU8XrtwdlPJONjEUnSUHYOPhQYFkg0d3DfV1RUb40UCRj/N8GLN
-         SZG7CNzjeGOBkp4gfx2/FRDLg18C47oM0goFLQC4r41mH/yWXONx4CfJYELM97u6ch54
-         mztw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:organization
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=yZyuwqgUBskABVFLYIWGAD2FMF/t9yzwUC2QTWtpxG8=;
-        b=ClvHaL9jKNmU54YObMuqaaVlECsovXYBqaVDD4UMk9zyqDp+qr4i0HPbZarb1uIZfR
-         niEbibsq0LMckibcBL22lN7a2YyjeshuxBkvCT13gn2drCYZgAEtnuW9Zgdm0oF5+9a7
-         yHtQT80UHIIr8R0R4fif7mtcvkO0CLi/425xcvn2WW7sfKuIPFdFE5/3LMauECIltgTC
-         7ld6yoHWgUh68EhvKmkiFhDa30KHbdAxTxjg0IQWMgL11bNA0I6PETMOTNf89LekyMQK
-         Qq01qIdiOito9wuIF1uKPBsDtwJwMDfVmoHPfUETcnSVF5yre6mTlUv1dtAd8x9e/ZH+
-         tKzw==
-X-Gm-Message-State: AOAM533x5ChcCI7G+NwNyX07XPlWKxfW3YTUR2iK+2L8WBqxr1jC1JAq
-        8GS6jvrnabWS/4Rxyszv53gjt4vI53HYbQ==
-X-Google-Smtp-Source: ABdhPJxonLgQGhSHZPoirG03V75YnKFqQQBe+h3FFzullyWpE6EXPydwpEsbUTDijMJvfHPA3qrGbA==
-X-Received: by 2002:a2e:8745:: with SMTP id q5mr2546502ljj.77.1610613654215;
-        Thu, 14 Jan 2021 00:40:54 -0800 (PST)
-Received: from [192.168.1.100] ([178.176.79.115])
-        by smtp.gmail.com with ESMTPSA id p5sm476176lfj.295.2021.01.14.00.40.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 14 Jan 2021 00:40:53 -0800 (PST)
-Subject: Re: [PATCH 2/2] compiler.h: Include asm/rwonce.h under ARM64 and
- ALPHA to fix build errors
-To:     Tiezhu Yang <yangtiezhu@loongson.cn>,
-        Luc Van Oostenryck <luc.vanoostenryck@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Nathan Chancellor <natechancellor@gmail.com>,
-        Nick Desaulniers <ndesaulniers@google.com>
-Cc:     linux-sparse@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, clang-built-linux@googlegroups.com,
-        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Xuefeng Li <lixuefeng@loongson.cn>
-References: <1610535453-2352-1-git-send-email-yangtiezhu@loongson.cn>
- <1610535453-2352-3-git-send-email-yangtiezhu@loongson.cn>
-From:   Sergei Shtylyov <sergei.shtylyov@gmail.com>
-Organization: Brain-dead Software
-Message-ID: <04749e2c-6e80-5316-a575-e4aaf780bb81@gmail.com>
-Date:   Thu, 14 Jan 2021 11:40:39 +0300
-User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
+        id S1727561AbhANItt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jan 2021 03:49:49 -0500
+Received: from smtp09.smtpout.orange.fr ([80.12.242.131]:25152 "EHLO
+        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727174AbhANItq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 03:49:46 -0500
+Received: from localhost.localdomain ([92.131.99.25])
+        by mwinf5d44 with ME
+        id GYny2400C0Ys01Y03YnyVR; Thu, 14 Jan 2021 09:48:00 +0100
+X-ME-Helo: localhost.localdomain
+X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
+X-ME-Date: Thu, 14 Jan 2021 09:48:00 +0100
+X-ME-IP: 92.131.99.25
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     jiri@nvidia.com, idosch@nvidia.com, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Subject: [PATCH] mlxsw: pci: switch from 'pci_' to 'dma_' API
+Date:   Thu, 14 Jan 2021 09:47:57 +0100
+Message-Id: <20210114084757.490540-1-christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-In-Reply-To: <1610535453-2352-3-git-send-email-yangtiezhu@loongson.cn>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello!
+The wrappers in include/linux/pci-dma-compat.h should go away.
 
-On 13.01.2021 13:57, Tiezhu Yang wrote:
+The patch has been generated with the coccinelle script below and has been
+hand modified to replace GFP_ with a correct flag.
+It has been compile tested.
 
-> When make M=samples/bpf on the Loongson 3A3000 platform which
-> belongs to MIPS arch, there exists many similar build errors
-> about 'asm/rwonce.h' file not found, so include it only under
-> CONFIG_ARM64 and CONFIG_ALPHA due to it exists only in arm64
-> and alpha arch.
-> 
->    CLANG-bpf  samples/bpf/xdpsock_kern.o
-> In file included from samples/bpf/xdpsock_kern.c:2:
-> In file included from ./include/linux/bpf.h:9:
-> In file included from ./include/linux/workqueue.h:9:
-> In file included from ./include/linux/timer.h:5:
-> In file included from ./include/linux/list.h:9:
-> In file included from ./include/linux/kernel.h:10:
-> ./include/linux/compiler.h:246:10: fatal error: 'asm/rwonce.h' file not found
->           ^~~~~~~~~~~~~~
-> 1 error generated.
-> 
-> $ find . -name rwonce.h
-> ./include/asm-generic/rwonce.h
-> ./arch/arm64/include/asm/rwonce.h
-> ./arch/alpha/include/asm/rwonce.h
-> 
-> Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
-> ---
->   include/linux/compiler.h | 6 ++++++
->   1 file changed, 6 insertions(+)
-> 
-> diff --git a/include/linux/compiler.h b/include/linux/compiler.h
-> index b8fe0c2..bdbe759 100644
-> --- a/include/linux/compiler.h
-> +++ b/include/linux/compiler.h
-> @@ -243,6 +243,12 @@ static inline void *offset_to_ptr(const int *off)
->    */
->   #define prevent_tail_call_optimization()	mb()
->   
-> +#ifdef CONFIG_ARM64
+When memory is allocated in 'mlxsw_pci_queue_init()' and
+'mlxsw_pci_fw_area_init()' GFP_KERNEL can be used because both functions
+are already using this flag and no lock is acquired.
 
-    Why not #if defined(CONFIG_ALPHA) || defined(CONFIG_ARM64)?
+When memory is allocated in 'mlxsw_pci_mbox_alloc()' GFP_KERNEL can be used
+because it is only called from the probe function and no lock is acquired
+in the between.
+The call chain is:
+  --> mlxsw_pci_probe()
+    --> mlxsw_pci_cmd_init()
+      --> mlxsw_pci_mbox_alloc()
 
->   #include <asm/rwonce.h>
-> +#endif
-> +
-> +#ifdef CONFIG_ALPHA
-> +#include <asm/rwonce.h>
-> +#endif
->   
->   #endif /* __LINUX_COMPILER_H */
-> 
+While at it, also replace the 'dma_set_mask/dma_set_coherent_mask' sequence
+by a less verbose 'dma_set_mask_and_coherent() call.
 
-MBR, Sergei
+
+@@
+@@
+-    PCI_DMA_BIDIRECTIONAL
++    DMA_BIDIRECTIONAL
+
+@@
+@@
+-    PCI_DMA_TODEVICE
++    DMA_TO_DEVICE
+
+@@
+@@
+-    PCI_DMA_FROMDEVICE
++    DMA_FROM_DEVICE
+
+@@
+@@
+-    PCI_DMA_NONE
++    DMA_NONE
+
+@@
+expression e1, e2, e3;
+@@
+-    pci_alloc_consistent(e1, e2, e3)
++    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
+
+@@
+expression e1, e2, e3;
+@@
+-    pci_zalloc_consistent(e1, e2, e3)
++    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_free_consistent(e1, e2, e3, e4)
++    dma_free_coherent(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_map_single(e1, e2, e3, e4)
++    dma_map_single(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_unmap_single(e1, e2, e3, e4)
++    dma_unmap_single(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4, e5;
+@@
+-    pci_map_page(e1, e2, e3, e4, e5)
++    dma_map_page(&e1->dev, e2, e3, e4, e5)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_unmap_page(e1, e2, e3, e4)
++    dma_unmap_page(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_map_sg(e1, e2, e3, e4)
++    dma_map_sg(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_unmap_sg(e1, e2, e3, e4)
++    dma_unmap_sg(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_single_for_cpu(e1, e2, e3, e4)
++    dma_sync_single_for_cpu(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_single_for_device(e1, e2, e3, e4)
++    dma_sync_single_for_device(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_sg_for_cpu(e1, e2, e3, e4)
++    dma_sync_sg_for_cpu(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_sg_for_device(e1, e2, e3, e4)
++    dma_sync_sg_for_device(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2;
+@@
+-    pci_dma_mapping_error(e1, e2)
++    dma_mapping_error(&e1->dev, e2)
+
+@@
+expression e1, e2;
+@@
+-    pci_set_dma_mask(e1, e2)
++    dma_set_mask(&e1->dev, e2)
+
+@@
+expression e1, e2;
+@@
+-    pci_set_consistent_dma_mask(e1, e2)
++    dma_set_coherent_mask(&e1->dev, e2)
+
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+If needed, see post from Christoph Hellwig on the kernel-janitors ML:
+   https://marc.info/?l=kernel-janitors&m=158745678307186&w=4
+---
+ drivers/net/ethernet/mellanox/mlxsw/pci.c | 56 ++++++++++-------------
+ 1 file changed, 25 insertions(+), 31 deletions(-)
+
+diff --git a/drivers/net/ethernet/mellanox/mlxsw/pci.c b/drivers/net/ethernet/mellanox/mlxsw/pci.c
+index 4eeae8d78006..d0052537e627 100644
+--- a/drivers/net/ethernet/mellanox/mlxsw/pci.c
++++ b/drivers/net/ethernet/mellanox/mlxsw/pci.c
+@@ -323,8 +323,8 @@ static int mlxsw_pci_wqe_frag_map(struct mlxsw_pci *mlxsw_pci, char *wqe,
+ 	struct pci_dev *pdev = mlxsw_pci->pdev;
+ 	dma_addr_t mapaddr;
+ 
+-	mapaddr = pci_map_single(pdev, frag_data, frag_len, direction);
+-	if (unlikely(pci_dma_mapping_error(pdev, mapaddr))) {
++	mapaddr = dma_map_single(&pdev->dev, frag_data, frag_len, direction);
++	if (unlikely(dma_mapping_error(&pdev->dev, mapaddr))) {
+ 		dev_err_ratelimited(&pdev->dev, "failed to dma map tx frag\n");
+ 		return -EIO;
+ 	}
+@@ -342,7 +342,7 @@ static void mlxsw_pci_wqe_frag_unmap(struct mlxsw_pci *mlxsw_pci, char *wqe,
+ 
+ 	if (!frag_len)
+ 		return;
+-	pci_unmap_single(pdev, mapaddr, frag_len, direction);
++	dma_unmap_single(&pdev->dev, mapaddr, frag_len, direction);
+ }
+ 
+ static int mlxsw_pci_rdq_skb_alloc(struct mlxsw_pci *mlxsw_pci,
+@@ -858,9 +858,9 @@ static int mlxsw_pci_queue_init(struct mlxsw_pci *mlxsw_pci, char *mbox,
+ 		tasklet_setup(&q->tasklet, q_ops->tasklet);
+ 
+ 	mem_item->size = MLXSW_PCI_AQ_SIZE;
+-	mem_item->buf = pci_alloc_consistent(mlxsw_pci->pdev,
+-					     mem_item->size,
+-					     &mem_item->mapaddr);
++	mem_item->buf = dma_alloc_coherent(&mlxsw_pci->pdev->dev,
++					   mem_item->size, &mem_item->mapaddr,
++					   GFP_KERNEL);
+ 	if (!mem_item->buf)
+ 		return -ENOMEM;
+ 
+@@ -890,8 +890,8 @@ static int mlxsw_pci_queue_init(struct mlxsw_pci *mlxsw_pci, char *mbox,
+ err_q_ops_init:
+ 	kfree(q->elem_info);
+ err_elem_info_alloc:
+-	pci_free_consistent(mlxsw_pci->pdev, mem_item->size,
+-			    mem_item->buf, mem_item->mapaddr);
++	dma_free_coherent(&mlxsw_pci->pdev->dev, mem_item->size,
++			  mem_item->buf, mem_item->mapaddr);
+ 	return err;
+ }
+ 
+@@ -903,8 +903,8 @@ static void mlxsw_pci_queue_fini(struct mlxsw_pci *mlxsw_pci,
+ 
+ 	q_ops->fini(mlxsw_pci, q);
+ 	kfree(q->elem_info);
+-	pci_free_consistent(mlxsw_pci->pdev, mem_item->size,
+-			    mem_item->buf, mem_item->mapaddr);
++	dma_free_coherent(&mlxsw_pci->pdev->dev, mem_item->size,
++			  mem_item->buf, mem_item->mapaddr);
+ }
+ 
+ static int mlxsw_pci_queue_group_init(struct mlxsw_pci *mlxsw_pci, char *mbox,
+@@ -1273,9 +1273,9 @@ static int mlxsw_pci_fw_area_init(struct mlxsw_pci *mlxsw_pci, char *mbox,
+ 		mem_item = &mlxsw_pci->fw_area.items[i];
+ 
+ 		mem_item->size = MLXSW_PCI_PAGE_SIZE;
+-		mem_item->buf = pci_alloc_consistent(mlxsw_pci->pdev,
+-						     mem_item->size,
+-						     &mem_item->mapaddr);
++		mem_item->buf = dma_alloc_coherent(&mlxsw_pci->pdev->dev,
++						   mem_item->size,
++						   &mem_item->mapaddr, GFP_KERNEL);
+ 		if (!mem_item->buf) {
+ 			err = -ENOMEM;
+ 			goto err_alloc;
+@@ -1304,8 +1304,8 @@ static int mlxsw_pci_fw_area_init(struct mlxsw_pci *mlxsw_pci, char *mbox,
+ 	for (i--; i >= 0; i--) {
+ 		mem_item = &mlxsw_pci->fw_area.items[i];
+ 
+-		pci_free_consistent(mlxsw_pci->pdev, mem_item->size,
+-				    mem_item->buf, mem_item->mapaddr);
++		dma_free_coherent(&mlxsw_pci->pdev->dev, mem_item->size,
++				  mem_item->buf, mem_item->mapaddr);
+ 	}
+ 	kfree(mlxsw_pci->fw_area.items);
+ 	return err;
+@@ -1321,8 +1321,8 @@ static void mlxsw_pci_fw_area_fini(struct mlxsw_pci *mlxsw_pci)
+ 	for (i = 0; i < mlxsw_pci->fw_area.count; i++) {
+ 		mem_item = &mlxsw_pci->fw_area.items[i];
+ 
+-		pci_free_consistent(mlxsw_pci->pdev, mem_item->size,
+-				    mem_item->buf, mem_item->mapaddr);
++		dma_free_coherent(&mlxsw_pci->pdev->dev, mem_item->size,
++				  mem_item->buf, mem_item->mapaddr);
+ 	}
+ 	kfree(mlxsw_pci->fw_area.items);
+ }
+@@ -1347,8 +1347,8 @@ static int mlxsw_pci_mbox_alloc(struct mlxsw_pci *mlxsw_pci,
+ 	int err = 0;
+ 
+ 	mbox->size = MLXSW_CMD_MBOX_SIZE;
+-	mbox->buf = pci_alloc_consistent(pdev, MLXSW_CMD_MBOX_SIZE,
+-					 &mbox->mapaddr);
++	mbox->buf = dma_alloc_coherent(&pdev->dev, MLXSW_CMD_MBOX_SIZE,
++				       &mbox->mapaddr, GFP_KERNEL);
+ 	if (!mbox->buf) {
+ 		dev_err(&pdev->dev, "Failed allocating memory for mailbox\n");
+ 		err = -ENOMEM;
+@@ -1362,8 +1362,8 @@ static void mlxsw_pci_mbox_free(struct mlxsw_pci *mlxsw_pci,
+ {
+ 	struct pci_dev *pdev = mlxsw_pci->pdev;
+ 
+-	pci_free_consistent(pdev, MLXSW_CMD_MBOX_SIZE, mbox->buf,
+-			    mbox->mapaddr);
++	dma_free_coherent(&pdev->dev, MLXSW_CMD_MBOX_SIZE, mbox->buf,
++			  mbox->mapaddr);
+ }
+ 
+ static int mlxsw_pci_sys_ready_wait(struct mlxsw_pci *mlxsw_pci,
+@@ -1848,17 +1848,11 @@ static int mlxsw_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+ 		goto err_pci_request_regions;
+ 	}
+ 
+-	err = pci_set_dma_mask(pdev, DMA_BIT_MASK(64));
+-	if (!err) {
+-		err = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(64));
+-		if (err) {
+-			dev_err(&pdev->dev, "pci_set_consistent_dma_mask failed\n");
+-			goto err_pci_set_dma_mask;
+-		}
+-	} else {
+-		err = pci_set_dma_mask(pdev, DMA_BIT_MASK(32));
++	err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
++	if (err) {
++		err = dma_set_mask(&pdev->dev, DMA_BIT_MASK(32));
+ 		if (err) {
+-			dev_err(&pdev->dev, "pci_set_dma_mask failed\n");
++			dev_err(&pdev->dev, "dma_set_mask failed\n");
+ 			goto err_pci_set_dma_mask;
+ 		}
+ 	}
+-- 
+2.27.0
+
