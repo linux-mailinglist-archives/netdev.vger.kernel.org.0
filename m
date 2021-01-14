@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C35D2F5901
-	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 04:32:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 61C432F58FB
+	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 04:32:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727827AbhANDLn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jan 2021 22:11:43 -0500
-Received: from mail.kernel.org ([198.145.29.99]:53060 "EHLO mail.kernel.org"
+        id S1727561AbhANDLT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jan 2021 22:11:19 -0500
+Received: from mail.kernel.org ([198.145.29.99]:53062 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727221AbhANDLS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1727521AbhANDLS (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 13 Jan 2021 22:11:18 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E75F623770;
-        Thu, 14 Jan 2021 03:09:58 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C285B23787;
+        Thu, 14 Jan 2021 03:09:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610593799;
-        bh=wsm+A5jY+QTIU4fd2ObPBK8dZXdKgfZ+vE97utz/YTg=;
+        s=k20201202; t=1610593800;
+        bh=vUaYP8Hi9hjLrmV7JP5BErEhnxwbLhof13DtOQujLX4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=S9fI/0MoD+GJyJq+771hG/u/1IxTWq5t78fNJWvoskR7svdSkcb6X2XAM8gRKZnuq
-         x3l6jmdNiiRfUVt4I4R3cpLSSG7yG5U89VNAalP7X6Us/rW0su07pHrFcLe/d/nK+f
-         0ad99uxs2JZfkL1cd15y2XqZUU5FEnWi4g063ms13h9V0g0Wsjjf9wnOUIfVpJqklZ
-         gepJC8DiELAGS0PTtBaNUWbyyVUW6WjXVpLqGxF1D4LSTIS+/XIhdOzqRmZcCpzZiC
-         JkjaLwszM8D2w2rh0mddb6HKm8dfoScVh13hYPB8AHDitX5z5IoJeJR+ToEDu9nI1E
-         uO546UYIUS7xg==
+        b=VSqoe1f6mt60GjMW05GF7wG26L8f+2wI0BPV2YBlhtKUhK0QLcsCn7xQRgWmpT5i/
+         pPDyHZoek3nsg7L1j9VvBNzGDnaMrzJhBh2UHPrGfAlDy0PoXFv2Tqnn3DG4qb3jIa
+         t2NFDilXRV4Yt3v+57TWp4FwSmiUvpOZr4kw5GbOAlzJXekFNPP2PIgexPobDHXi5T
+         NX18nYjYS6IkFayqtI6zA6y8evVlLsjKOhDQPVEJmCvrQWn80yEHQqZlvWb3+Koh2b
+         G+KOp2yCRwusiCvyPtYK83dUufM/PFa82HB7GQSo4GAchFgUzwREL2/9oHdJIQV9dT
+         Cjo7RTQscQTIQ==
 From:   David Ahern <dsahern@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, schoen@loyalty.org,
         David Ahern <dsahern@gmail.com>
-Subject: [PATCH net-next v4 05/13] selftests: Add support to nettest to run both client and server
-Date:   Wed, 13 Jan 2021 20:09:41 -0700
-Message-Id: <20210114030949.54425-6-dsahern@kernel.org>
+Subject: [PATCH net-next v4 06/13] selftests: Use separate stdout and stderr buffers in nettest
+Date:   Wed, 13 Jan 2021 20:09:42 -0700
+Message-Id: <20210114030949.54425-7-dsahern@kernel.org>
 X-Mailer: git-send-email 2.24.3 (Apple Git-128)
 In-Reply-To: <20210114030949.54425-1-dsahern@kernel.org>
 References: <20210114030949.54425-1-dsahern@kernel.org>
@@ -41,211 +41,50 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: David Ahern <dsahern@gmail.com>
 
-Add option to nettest to run both client and server within a
-single instance. Client forks a child process to run the server
-code. A pipe is used for the server to tell the client it has
-initialized and is ready or had an error. This avoid unnecessary
-sleeps to handle such race when the commands are separately launched.
+When a single instance of nettest is doing both client and
+server modes, stdout and stderr messages can get interlaced
+and become unreadable. Allocate a new set of buffers for the
+child process handling server mode.
 
-Signed-off-by: Seth David Schoen <schoen@loyalty.org>
 Signed-off-by: David Ahern <dsahern@gmail.com>
 ---
- tools/testing/selftests/net/nettest.c | 93 ++++++++++++++++++++++++---
- 1 file changed, 85 insertions(+), 8 deletions(-)
+ tools/testing/selftests/net/nettest.c | 21 ++++++++++++++++++++-
+ 1 file changed, 20 insertions(+), 1 deletion(-)
 
 diff --git a/tools/testing/selftests/net/nettest.c b/tools/testing/selftests/net/nettest.c
-index cc9635b6461f..685cbe8933de 100644
+index 685cbe8933de..aba3615ce977 100644
 --- a/tools/testing/selftests/net/nettest.c
 +++ b/tools/testing/selftests/net/nettest.c
-@@ -1395,8 +1395,19 @@ static int lsock_init(struct sock_args *args)
- 	return -1;
- }
+@@ -1707,9 +1707,28 @@ static char *random_msg(int len)
  
--static int do_server(struct sock_args *args)
-+static void ipc_write(int fd, int message)
+ static int ipc_child(int fd, struct sock_args *args)
  {
-+	/* Not in both_mode, so there's no process to signal */
-+	if (fd < 0)
-+		return;
++	char *outbuf, *errbuf;
++	int rc = 1;
 +
-+	if (write(fd, &message, sizeof(message)) < 0)
-+		log_err_errno("Failed to send client status");
-+}
++	outbuf = malloc(4096);
++	errbuf = malloc(4096);
++	if (!outbuf || !errbuf) {
++		fprintf(stderr, "server: Failed to allocate buffers for stdout and stderr\n");
++		goto out;
++	}
 +
-+static int do_server(struct sock_args *args, int ipc_fd)
-+{
-+	/* ipc_fd = -1 if no parent process to signal */
- 	struct timeval timeout = { .tv_sec = prog_timeout }, *ptval = NULL;
- 	unsigned char addr[sizeof(struct sockaddr_in6)] = {};
- 	socklen_t alen = sizeof(addr);
-@@ -1409,13 +1420,13 @@ static int do_server(struct sock_args *args)
- 		if (switch_ns(args->serverns)) {
- 			log_error("Could not set server netns to %s\n",
- 				  args->serverns);
--			return 1;
-+			goto err_exit;
- 		}
- 		log_msg("Switched server netns\n");
- 	}
++	setbuffer(stdout, outbuf, 4096);
++	setbuffer(stderr, errbuf, 4096);
++
+ 	server_mode = 1; /* to tell log_msg in case we are in both_mode */
  
- 	if (resolve_devices(args) || validate_addresses(args))
--		return 1;
-+		goto err_exit;
- 
- 	if (prog_timeout)
- 		ptval = &timeout;
-@@ -1426,14 +1437,16 @@ static int do_server(struct sock_args *args)
- 		lsd = lsock_init(args);
- 
- 	if (lsd < 0)
--		return 1;
-+		goto err_exit;
- 
- 	if (args->bind_test_only) {
- 		close(lsd);
-+		ipc_write(ipc_fd, 1);
- 		return 0;
- 	}
- 
- 	if (args->type != SOCK_STREAM) {
-+		ipc_write(ipc_fd, 1);
- 		rc = msg_loop(0, lsd, (void *) addr, alen, args);
- 		close(lsd);
- 		return rc;
-@@ -1441,9 +1454,10 @@ static int do_server(struct sock_args *args)
- 
- 	if (args->password && tcp_md5_remote(lsd, args)) {
- 		close(lsd);
--		return 1;
-+		goto err_exit;
- 	}
- 
-+	ipc_write(ipc_fd, 1);
- 	while (1) {
- 		log_msg("\n");
- 		log_msg("waiting for client connection.\n");
-@@ -1491,6 +1505,9 @@ static int do_server(struct sock_args *args)
- 	close(lsd);
- 
- 	return rc;
-+err_exit:
-+	ipc_write(ipc_fd, 0);
-+	return 1;
+-	return do_server(args, fd);
++	rc = do_server(args, fd);
++
++out:
++	free(outbuf);
++	free(errbuf);
++
++	return rc;
  }
  
- static int wait_for_connect(int sd)
-@@ -1688,7 +1705,43 @@ static char *random_msg(int len)
- 	return m;
- }
- 
--#define GETOPT_STR  "sr:l:p:t:g:P:DRn:M:m:d:N:O:SCi6L:0:1:2:Fbq"
-+static int ipc_child(int fd, struct sock_args *args)
-+{
-+	server_mode = 1; /* to tell log_msg in case we are in both_mode */
-+
-+	return do_server(args, fd);
-+}
-+
-+static int ipc_parent(int cpid, int fd, struct sock_args *args)
-+{
-+	int client_status;
-+	int status;
-+	int buf;
-+
-+	/* do the client-side function here in the parent process,
-+	 * waiting to be told when to continue
-+	 */
-+	if (read(fd, &buf, sizeof(buf)) <= 0) {
-+		log_err_errno("Failed to read IPC status from status");
-+		return 1;
-+	}
-+	if (!buf) {
-+		log_error("Server failed; can not continue\n");
-+		return 1;
-+	}
-+	log_msg("Server is ready\n");
-+
-+	client_status = do_client(args);
-+	log_msg("parent is done!\n");
-+
-+	if (kill(cpid, 0) == 0)
-+		kill(cpid, SIGKILL);
-+
-+	wait(&status);
-+	return client_status;
-+}
-+
-+#define GETOPT_STR  "sr:l:p:t:g:P:DRn:M:m:d:BN:O:SCi6L:0:1:2:Fbq"
- 
- static void print_usage(char *prog)
- {
-@@ -1702,6 +1755,7 @@ static void print_usage(char *prog)
- 	"    -t            timeout seconds (default: none)\n"
- 	"\n"
- 	"Optional:\n"
-+	"    -B            do both client and server via fork and IPC\n"
- 	"    -N ns         set client to network namespace ns (requires root)\n"
- 	"    -O ns         set server to network namespace ns (requires root)\n"
- 	"    -F            Restart server loop\n"
-@@ -1740,8 +1794,11 @@ int main(int argc, char *argv[])
- 		.port    = DEFAULT_PORT,
- 	};
- 	struct protoent *pe;
-+	int both_mode = 0;
- 	unsigned int tmp;
- 	int forever = 0;
-+	int fd[2];
-+	int cpid;
- 
- 	/* process inputs */
- 	extern char *optarg;
-@@ -1753,6 +1810,9 @@ int main(int argc, char *argv[])
- 
- 	while ((rc = getopt(argc, argv, GETOPT_STR)) != -1) {
- 		switch (rc) {
-+		case 'B':
-+			both_mode = 1;
-+			break;
- 		case 's':
- 			server_mode = 1;
- 			break;
-@@ -1892,7 +1952,7 @@ int main(int argc, char *argv[])
- 		return 1;
- 	}
- 
--	if (!server_mode && !args.has_grp &&
-+	if ((both_mode || !server_mode) && !args.has_grp &&
- 	    !args.has_remote_ip && !args.has_local_ip) {
- 		fprintf(stderr,
- 			"Local (server mode) or remote IP (client IP) required\n");
-@@ -1904,9 +1964,26 @@ int main(int argc, char *argv[])
- 		msg = NULL;
- 	}
- 
-+	if (both_mode) {
-+		if (pipe(fd) < 0) {
-+			perror("pipe");
-+			exit(1);
-+		}
-+
-+		cpid = fork();
-+		if (cpid < 0) {
-+			perror("fork");
-+			exit(1);
-+		}
-+		if (cpid)
-+			return ipc_parent(cpid, fd[0], &args);
-+
-+		return ipc_child(fd[1], &args);
-+	}
-+
- 	if (server_mode) {
- 		do {
--			rc = do_server(&args);
-+			rc = do_server(&args, -1);
- 		} while (forever);
- 
- 		return rc;
+ static int ipc_parent(int cpid, int fd, struct sock_args *args)
 -- 
 2.24.3 (Apple Git-128)
 
