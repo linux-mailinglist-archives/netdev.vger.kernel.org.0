@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 553282F58FD
-	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 04:32:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D578C2F58FC
+	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 04:32:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727721AbhANDLW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jan 2021 22:11:22 -0500
-Received: from mail.kernel.org ([198.145.29.99]:53074 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727521AbhANDLU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1727648AbhANDLU (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Wed, 13 Jan 2021 22:11:20 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id B995C23788;
-        Thu, 14 Jan 2021 03:10:00 +0000 (UTC)
+Received: from mail.kernel.org ([198.145.29.99]:53076 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727171AbhANDLT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 13 Jan 2021 22:11:19 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 99E4423719;
+        Thu, 14 Jan 2021 03:10:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610593801;
-        bh=f7FOP//LHy6zKZUypHUQpW83f6stVlIO3fD2YOfoTgo=;
+        s=k20201202; t=1610593802;
+        bh=znc4U6E72r24fegAtxZa3ihiNf9HEbk725YfFDGRE7Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sj0KAEWc9S5stU11oYhm9v8L4X7xtorMEosr1cZAReSPryMvl9SgXik/ntyOI/1ow
-         6A+ebGGYHrSPBddSGc81Z/MtXthh3Dd2wkydry0xVu2lAZxme3f9QJwa43ZgOYz4lQ
-         Z6SqPGs+kefHxYM+tvrGOZT9sqNDos0RNMDAVMcREGTAyF3/KB1tLcvsvzwRZxJEeJ
-         uQXSpN8ZkZ09CevEhy48YzrJOfE5pn6t3EFmdtr5eqGPCu+l5AOlJNg0w5PJYC8+Hr
-         JRCucc82mr9SMDGaJWmHVSGDECZHnmrwH3Uz90ndcvE8OGCMTo7cVOFTgI/Mn9R9x4
-         au5yi44GRxl5g==
+        b=IWGRHPsXEzOXqWRUWvrZDZsdKVj7pfg6N4pxigN1GjZj5iv4a9prIM2gja8bFelgF
+         mW81ptZnQV0f6cR0J2m/ajtkIXx1jFHdLav3R7htg+zd2whovtfgcwzh1fxOsMwCl5
+         xTXraoqTSSwKk2f5PyD1433Yt8abDC1gdQkoSrebYgmixWCGn1S1ieu88hBJtMBcRk
+         iWyLBeH9Y9Bgu8jFB8tUHuuDLZbzGiLbas6uRWbAllES0ol3rDl5t25owZIcbgwNVi
+         xhhb0yHMT+S0Cx7+5TppdjIatvhitYBwmsxYoGyYUoLwyuhAM5YC2FUSF/xooGQBfD
+         GGIr0k3WNrk5Q==
 From:   David Ahern <dsahern@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, schoen@loyalty.org,
         David Ahern <dsahern@gmail.com>
-Subject: [PATCH net-next v4 07/13] selftests: Add missing newline in nettest error messages
-Date:   Wed, 13 Jan 2021 20:09:43 -0700
-Message-Id: <20210114030949.54425-8-dsahern@kernel.org>
+Subject: [PATCH net-next v4 08/13] selftests: Make address validation apply only to client mode
+Date:   Wed, 13 Jan 2021 20:09:44 -0700
+Message-Id: <20210114030949.54425-9-dsahern@kernel.org>
 X-Mailer: git-send-email 2.24.3 (Apple Git-128)
 In-Reply-To: <20210114030949.54425-1-dsahern@kernel.org>
 References: <20210114030949.54425-1-dsahern@kernel.org>
@@ -41,79 +41,31 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: David Ahern <dsahern@gmail.com>
 
-A few logging lines are missing the newline, or need it moved up for
-cleaner logging.
+When a single instance of nettest is used for client and server
+make sure address validation is only done for client mode.
 
 Signed-off-by: David Ahern <dsahern@gmail.com>
 ---
- tools/testing/selftests/net/nettest.c | 14 ++++++--------
- 1 file changed, 6 insertions(+), 8 deletions(-)
+ tools/testing/selftests/net/nettest.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
 diff --git a/tools/testing/selftests/net/nettest.c b/tools/testing/selftests/net/nettest.c
-index aba3615ce977..186262a702bf 100644
+index 186262a702bf..0e01a7447521 100644
 --- a/tools/testing/selftests/net/nettest.c
 +++ b/tools/testing/selftests/net/nettest.c
-@@ -199,7 +199,7 @@ static void log_address(const char *desc, struct sockaddr *sa)
- 	if (sa->sa_family == AF_INET) {
- 		struct sockaddr_in *s = (struct sockaddr_in *) sa;
+@@ -1720,6 +1720,12 @@ static int ipc_child(int fd, struct sock_args *args)
  
--		log_msg("%s %s:%d",
-+		log_msg("%s %s:%d\n",
- 			desc,
- 			inet_ntop(AF_INET, &s->sin_addr, addrstr,
- 				  sizeof(addrstr)),
-@@ -208,15 +208,13 @@ static void log_address(const char *desc, struct sockaddr *sa)
- 	} else if (sa->sa_family == AF_INET6) {
- 		struct sockaddr_in6 *s6 = (struct sockaddr_in6 *) sa;
+ 	server_mode = 1; /* to tell log_msg in case we are in both_mode */
  
--		log_msg("%s [%s]:%d",
-+		log_msg("%s [%s]:%d\n",
- 			desc,
- 			inet_ntop(AF_INET6, &s6->sin6_addr, addrstr,
- 				  sizeof(addrstr)),
- 			ntohs(s6->sin6_port));
- 	}
++	/* when running in both mode, address validation applies
++	 * solely to client side
++	 */
++	args->has_expected_laddr = 0;
++	args->has_expected_raddr = 0;
++
+ 	rc = do_server(args, fd);
  
--	printf("\n");
--
- 	fflush(stdout);
- }
- 
-@@ -594,7 +592,7 @@ static int expected_addr_match(struct sockaddr *sa, void *expected,
- 		struct in_addr *exp_in = (struct in_addr *) expected;
- 
- 		if (s->sin_addr.s_addr != exp_in->s_addr) {
--			log_error("%s address does not match expected %s",
-+			log_error("%s address does not match expected %s\n",
- 				  desc,
- 				  inet_ntop(AF_INET, exp_in,
- 					    addrstr, sizeof(addrstr)));
-@@ -605,14 +603,14 @@ static int expected_addr_match(struct sockaddr *sa, void *expected,
- 		struct in6_addr *exp_in = (struct in6_addr *) expected;
- 
- 		if (memcmp(&s6->sin6_addr, exp_in, sizeof(*exp_in))) {
--			log_error("%s address does not match expected %s",
-+			log_error("%s address does not match expected %s\n",
- 				  desc,
- 				  inet_ntop(AF_INET6, exp_in,
- 					    addrstr, sizeof(addrstr)));
- 			rc = 1;
- 		}
- 	} else {
--		log_error("%s address does not match expected - unknown family",
-+		log_error("%s address does not match expected - unknown family\n",
- 			  desc);
- 		rc = 1;
- 	}
-@@ -731,7 +729,7 @@ static int convert_addr(struct sock_args *args, const char *_str,
- 		}
- 		break;
- 	default:
--		log_error("unknown address type");
-+		log_error("unknown address type\n");
- 		exit(1);
- 	}
- 
+ out:
 -- 
 2.24.3 (Apple Git-128)
 
