@@ -2,15 +2,15 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DD2FD2F6425
-	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 16:20:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CDF472F63F2
+	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 16:12:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729233AbhANPSe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jan 2021 10:18:34 -0500
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:39910 "EHLO
+        id S1727590AbhANPMr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jan 2021 10:12:47 -0500
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:39000 "EHLO
         mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1728098AbhANPSb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 10:18:31 -0500
+        with ESMTP id S1729315AbhANPMr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 10:12:47 -0500
 Received: from Internal Mail-Server by MTLPINE1 (envelope-from borisp@mellanox.com)
         with SMTP; 14 Jan 2021 17:10:45 +0200
 Received: from gen-l-vrt-133.mtl.labs.mlnx. (gen-l-vrt-133.mtl.labs.mlnx [10.237.11.160])
