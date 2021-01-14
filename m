@@ -2,272 +2,213 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5919E2F5E24
-	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 10:57:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6BF962F5E31
+	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 11:00:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728377AbhANJzx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jan 2021 04:55:53 -0500
-Received: from de-smtp-delivery-102.mimecast.com ([194.104.109.102]:31550 "EHLO
-        de-smtp-delivery-102.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728160AbhANJzu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 04:55:50 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=mimecast20200619;
-        t=1610618081;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=hyrYqRtTXMHSyqoUwmKQEUTSYec7i3mrrG1VEpyCw98=;
-        b=TJdzrI29mTLdP4YgZyHOslJlGyXcZrDDe6PUOgc5bYe77Cnr1izIeYc0sTUNtpzXsdfs90
-        RYuE2f1IKq1LKfPTAfObBr8ToeggpDISjCYdaLKFNmUWjlwwiUXfSy1Gb9V6Qx6Qqkyz5W
-        eiOLwCMg1Rs4g/1nw5p2rEOc2o6O26Q=
-Received: from EUR04-HE1-obe.outbound.protection.outlook.com
- (mail-he1eur04lp2057.outbound.protection.outlook.com [104.47.13.57]) (Using
- TLS) by relay.mimecast.com with ESMTP id de-mta-1-xTsiowqBPIq9eRA1HRLM0A-1;
- Thu, 14 Jan 2021 10:54:40 +0100
-X-MC-Unique: xTsiowqBPIq9eRA1HRLM0A-1
+        id S1728450AbhANJ6P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jan 2021 04:58:15 -0500
+Received: from mga09.intel.com ([134.134.136.24]:34421 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728191AbhANJ6N (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 14 Jan 2021 04:58:13 -0500
+IronPort-SDR: DA8CAndxJo6Pan9MVEtPCUM62IOjSCjULTMYknLFJMxQcYhffPiMtQSMNsaLDKwSKFbyaAjB8B
+ E8CdVZb3b+uQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9863"; a="178491117"
+X-IronPort-AV: E=Sophos;i="5.79,347,1602572400"; 
+   d="scan'208";a="178491117"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jan 2021 01:57:32 -0800
+IronPort-SDR: U5o3kiy/mu4PI8d+1HffNn9rEeOlrcJ+gX+zmEoYwjKOJPr6d/iPEkw/ojv/AFW7fiqMb4oebF
+ n5Fo65Jp6vYQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.79,347,1602572400"; 
+   d="scan'208";a="424897648"
+Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
+  by orsmga001.jf.intel.com with ESMTP; 14 Jan 2021 01:57:31 -0800
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Thu, 14 Jan 2021 01:57:31 -0800
+Received: from fmsmsx602.amr.corp.intel.com (10.18.126.82) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Thu, 14 Jan 2021 01:57:29 -0800
+Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
+ fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5
+ via Frontend Transport; Thu, 14 Jan 2021 01:57:29 -0800
+Received: from NAM02-SN1-obe.outbound.protection.outlook.com (104.47.36.51) by
+ edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.1713.5; Thu, 14 Jan 2021 01:57:29 -0800
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=etjIhXPFP/+DT2R/IMsNxaEUtxbSEcit851a8O+IMID5nlR+sBE3L0+G1j7GUF0kuZwfg1E4itv1XTkAjC3OiwGXzFhHRvY5e93CE/Ik/W5BnSQu0JPfoWy6Cu2MkiMzUMgbDGFlFtltGvdwSZ+wM728KbrQLE1sdGbbGAjenogrGuhQ6qH3IK+hBjAQknLVzcBXhYEkvVDLJT7nFcMJwHyWtLrLox0x6+CMnRoYV1Vyy1l69DCxrdapXuUXRg/yhhBLDsW1UmyUhOm2vPherJFXjjv/FLeNgGV+SyKtNQY9gb0JkCXG1HIzqLjJiRwH9TRKutRwJqdk44thKFZUbA==
+ b=VhfMLo2QlrIs9sOaoY4SQ54num8TDpu8wVNWR2yOWRz8Feja0NKnVOpGDU1kvFDCaLNeZ8P552bsjo92u485i3WVwANNSaHHywtC2zbL66/w9ResosB3QDyIA5Cj1WtVRl+Gu5wlu9ncOz3x2eNi3HtYcc6OrY8ghfpi5byBZTJDv3csqVuGuF+B3kfhkg6Ndx6DQnBK8V4S4tMvSfdRolyWWWR/lidqgWBfkj6N1dFTooZRLlKZC0YeBxfns5xCYlyFWHflBc0dYUOppqd6Kxqv4lb1bAB3MnTuYaGvypWRnLWkcSGqZPuGWk4mgZtjLxTNO6BAEpKW71fYgpfpbA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=BfsH9zmb27Cp6M9alTjweF2YknHyXXP5e6uFAYUAYj8=;
- b=GwVToAE0nsRQzAMJfxsn3kC5awlirK9GN4wMK9zQ/cmhwJLHylgELLaRrAI66mOR57RVjr3o5We5Wu1kV2oZ68I2E5g1hV7qRvll9txnhP2yB2zhEVazaqheu1eSictEx0TVEpN2pV/1XVIFwhaZXZvm7nxSpqvI2jVxK+qnEJsYuT+0HYvNpxHhBnqqly6FXOdr23eI1miWqnpjoP0aUJ4VBkTQHV4gynzMPumoEzRJKddnkuwIM7ZVK5bCSszlRbxZx9oGEgYI/hpcV55Apmyx23yzO5u0z58U0g82vtErBbuRWS69+EyIwtKr7I6ZoQWRB5d1PsOfEce8NvF3Rw==
+ bh=FRrb4L2DDR4q2wsL2TS5NGrCxbS0+rTcTlPb6R9L0eo=;
+ b=GXTuSoWlBfmHFgJ0YL1plWfCr0H1BqfizE3Lte12sK7j8lTs/DAsGA3Qc1AA/KDnxosBgXjJKzVytLT72mcimnPGGGGwbjp1OfL9hqciiqcg3+4lFBjGHvnPVvD91RsYrzJpxx3FHdPCvS8N1lIq4pChKONFGlm0Kc0NdLe/rby9rYoCyy/T4gX5rHk50jwr+Jph39KTXwPd4qPVoCBAcbExkcT75srH+PglHmenF3gqHpGdi+ujuxCpIwQ0dDhxgqXeIkhFME9czsLBgIHHUPUU5soybrUSdD1zvAmuOpD7EnwW0oKkZVSfkxh+oCN8rT59BdtGMV0/DXCqnrsVrw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=suse.com; dmarc=pass action=none header.from=suse.com;
- dkim=pass header.d=suse.com; arc=none
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none header.from=suse.com;
-Received: from DB3PR0402MB3641.eurprd04.prod.outlook.com (2603:10a6:8:b::12)
- by DBBPR04MB6156.eurprd04.prod.outlook.com (2603:10a6:10:cd::13) with
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
+ s=selector2-intel-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=FRrb4L2DDR4q2wsL2TS5NGrCxbS0+rTcTlPb6R9L0eo=;
+ b=aRAP4ktf37ETXJvPqAsRh5+K6JYMBjCqMbo2Yu81WlDygpwPFT8w1cLPoDY9igt628xECtqX+lFnTQ9w7nW+wQltISTCERaWCeWNsA5XDKZ8yzlXgJ9SlaNDHcJHBlyZg6chpkvwx6yNyiT+tVU4UamMbdUETMHVOhTxV8ocOoU=
+Received: from CY4PR11MB1576.namprd11.prod.outlook.com (2603:10b6:910:d::15)
+ by CY4PR1101MB2088.namprd11.prod.outlook.com (2603:10b6:910:17::14) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3763.9; Thu, 14 Jan
- 2021 09:54:38 +0000
-Received: from DB3PR0402MB3641.eurprd04.prod.outlook.com
- ([fe80::80c9:1fa3:ae84:7313]) by DB3PR0402MB3641.eurprd04.prod.outlook.com
- ([fe80::80c9:1fa3:ae84:7313%6]) with mapi id 15.20.3763.011; Thu, 14 Jan 2021
- 09:54:38 +0000
-From:   Gary Lin <glin@suse.com>
-To:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-CC:     Eric Dumazet <eric.dumazet@gmail.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        andreas.taschner@suse.com
-Subject: [PATCH v3 3/3] selftests/bpf: Add verifier test for x64 jit jump padding
-Date:   Thu, 14 Jan 2021 17:54:11 +0800
-Message-ID: <20210114095411.20903-4-glin@suse.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20210114095411.20903-1-glin@suse.com>
-References: <20210114095411.20903-1-glin@suse.com>
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain
-X-Originating-IP: [111.240.145.171]
-X-ClientProxiedBy: AM0PR10CA0111.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:208:e6::28) To DB3PR0402MB3641.eurprd04.prod.outlook.com
- (2603:10a6:8:b::12)
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3763.10; Thu, 14 Jan
+ 2021 09:57:28 +0000
+Received: from CY4PR11MB1576.namprd11.prod.outlook.com
+ ([fe80::e832:8392:8dea:28d7]) by CY4PR11MB1576.namprd11.prod.outlook.com
+ ([fe80::e832:8392:8dea:28d7%7]) with mapi id 15.20.3763.010; Thu, 14 Jan 2021
+ 09:57:28 +0000
+From:   "Jankowski, Konrad0" <konrad0.jankowski@intel.com>
+To:     Wei Xu <xuwei5@hisilicon.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     "salil.mehta@huawei.com" <salil.mehta@huawei.com>,
+        "jinying@hisilicon.com" <jinying@hisilicon.com>,
+        "tangkunshan@huawei.com" <tangkunshan@huawei.com>,
+        "huangdaode@hisilicon.com" <huangdaode@hisilicon.com>,
+        "john.garry@huawei.com" <john.garry@huawei.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linuxarm@huawei.com" <linuxarm@huawei.com>,
+        "shameerali.kolothum.thodi@huawei.com" 
+        <shameerali.kolothum.thodi@huawei.com>,
+        "zhangyi.ac@huawei.com" <zhangyi.ac@huawei.com>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "jonathan.cameron@huawei.com" <jonathan.cameron@huawei.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "liguozhu@hisilicon.com" <liguozhu@hisilicon.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "shiju.jose@huawei.com" <shiju.jose@huawei.com>
+Subject: RE: [Intel-wired-lan] [net-next] net: iavf: Use the ARRAY_SIZE macro
+ for aq_to_posix
+Thread-Topic: [Intel-wired-lan] [net-next] net: iavf: Use the ARRAY_SIZE macro
+ for aq_to_posix
+Thread-Index: AQHWhrJTlOhH9ZnF0Ui9Tr4Lsx8uZqonqdWA
+Date:   Thu, 14 Jan 2021 09:57:28 +0000
+Message-ID: <CY4PR11MB15769D5697074F230C8742CAABA80@CY4PR11MB1576.namprd11.prod.outlook.com>
+References: <1599641471-204919-1-git-send-email-xuwei5@hisilicon.com>
+In-Reply-To: <1599641471-204919-1-git-send-email-xuwei5@hisilicon.com>
+Accept-Language: pl-PL, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-version: 11.5.1.3
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+authentication-results: hisilicon.com; dkim=none (message not signed)
+ header.d=none;hisilicon.com; dmarc=none action=none header.from=intel.com;
+x-originating-ip: [188.147.103.87]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: ab8be4de-97ed-4be6-9c38-08d8b872cd76
+x-ms-traffictypediagnostic: CY4PR1101MB2088:
+x-microsoft-antispam-prvs: <CY4PR1101MB208871F60BCE25105BCABDE6ABA80@CY4PR1101MB2088.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:5797;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: MZkMXQAY9LexzqwXCVjOfld/ryEbt67e7Jlt6rTNCCwZcySUeAUvnn+Na6HJLpL2XoKZ6WMBwMKiqFYBAaMa2ZTKTp/Zqf1fONvWqxZZvop7p6V5Kox1eK+rFL5NbdHMMg7op/HXYpmxvnnDdVE2EGbOxaSX/mwin2Eeb01ON938yK6X17VvuuT+jPWOfZrkoKHEE/PWSr66811OoUKtScRdeGhCsM3g6nqiK2iXaas2PECLoFvzEKdVMK0WBff7waYE/21xsjkTnssXxEbGJ0cyJLWj8JS79N+nLNBm8JqTUuNsFiuyAG3JEngxFmjKzfEqfESR3vgoEqU00mpNpvpWJstaUQv0jghApr3UoDpI4eX0IxMuHauqNgSflw25uz6UPwAOc7noIUxXJa/m/g==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY4PR11MB1576.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39860400002)(136003)(366004)(376002)(396003)(346002)(76116006)(52536014)(4326008)(7696005)(8936002)(186003)(9686003)(7416002)(110136005)(66556008)(66476007)(66446008)(64756008)(54906003)(66946007)(478600001)(316002)(8676002)(6506007)(86362001)(83380400001)(33656002)(2906002)(53546011)(26005)(66574015)(71200400001)(55016002)(5660300002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: =?iso-8859-2?Q?ohT1bNiwqH97qfQ6B5fRVWDfRA3Uu5fHk1LcPn/sCWCZWx3Cdr5ZY5tLxu?=
+ =?iso-8859-2?Q?qC3OmjYVCKy9MxM3OiO6I2bKGW751VpIv3RvzCSYur0dFfa4lycmkhNCo8?=
+ =?iso-8859-2?Q?OPmTmc1fjvO8otZCmFrq5JURkDwihg3do2kEljh0OcoUYBgiS5TDt+lnyc?=
+ =?iso-8859-2?Q?tUbmDpazJu3VMaQLU7m0TcNv2ASshXLr95SiESF1CSZTDMizvg1FZ8BGyY?=
+ =?iso-8859-2?Q?/LO6RJKHnxdEZVDcdEFBji5n8YQAhweeQEToR/qH1DuYUppoqK8yxT1l6s?=
+ =?iso-8859-2?Q?qbIWHAYLXNJOSDgkZyg2n+Ow/wkBM18uDF6wIsV9eCszE29bfdRFevroPo?=
+ =?iso-8859-2?Q?O8rrfC9x96kxn4cGyI+l5AX7Sl+cB7VwHIFT6pEUcWk5rCuxq9nF6KK3A6?=
+ =?iso-8859-2?Q?54PI2u/NkEiLFEkKcRbLCNoGzKMpyY1569uOAqIixFP7owJU8LjE0if7zO?=
+ =?iso-8859-2?Q?hc6Y9+PsvQPfHaDqMh5do/ZpbICv/heexztQF1V1hBWMv7cH4PWd2+7hBy?=
+ =?iso-8859-2?Q?pzEfw8TDTk+/xbl4gBRSqM1nBCi6iYSPYM40rPJSmz5PnVz7yFpZFd7mCq?=
+ =?iso-8859-2?Q?F4N9jduEgXC//bFzvJfxoXK5wQGpJrv+s/A9RerrahW6tIi3jd4sUkvnfl?=
+ =?iso-8859-2?Q?Dyj00HXrHFEpK22tgXT6sS599pslbenozN84ZL65cdl4KlB95JqA7qn9+5?=
+ =?iso-8859-2?Q?Ot4APu230+Sbdog2F5DbwDqlX1/zY4pkTltnq/YlbMDPe7Z1jBy5WtI7Cy?=
+ =?iso-8859-2?Q?i+8Gbp3XmIZtBITM01j0RAIMq3vAZf0n1alC8/dm9JPx4+HOFJYE2NAswL?=
+ =?iso-8859-2?Q?3GUxXxRu2HNqcus0lHITWhJ9uf93hSEnK+L5YffcpwvedCj0FfjymqItQM?=
+ =?iso-8859-2?Q?buATWmjD5AgSKzo8IJmZ5C0+pmezpO/+9IYIZeGVlFxEJ5w7y0EQCqkrpz?=
+ =?iso-8859-2?Q?F4N9HgoUrvSYLmZTu7vUnZKvHQMqTlCPrJIa6uSLbvuX+vr6X1g1LF8QYP?=
+ =?iso-8859-2?Q?O7qiADW0P6+NOzX5E=3D?=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="iso-8859-2"
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from GaryLaptop.prv.suse.net (111.240.145.171) by AM0PR10CA0111.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:208:e6::28) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3763.9 via Frontend Transport; Thu, 14 Jan 2021 09:54:36 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: e368f792-f7bf-4788-899e-08d8b8726826
-X-MS-TrafficTypeDiagnostic: DBBPR04MB6156:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <DBBPR04MB6156158466B1215E602E9AFDA9A80@DBBPR04MB6156.eurprd04.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 2u0f8mxeHNdOIgaXvqVx1jmfRXCwIIhFgIPrScIuMtZaxul6jQa0q4tA6vNIJZRuBewcL7W2oLAhpTAhczW6nTqz2FhA540sk3XhLo19MEv/5OOtWUgA7Atjfi9N2hZpVwH2DjjKwpMtoF4nScGkhL37GzTQE9zXm/NsZsDw2cRyryQ91r5BLWAGZ9VrDgSl+Bs6b11esF+KTE8rYuotHabazLVTVhjmvdCKYfKNXWiqZ9hfmTluDZK1YD8XWNKiC5aW8PU4hhiZ/ITkVCkonomm3fl/R1je7RgDrrRElILAGbOyznIml4hYYvPEV01TVk22S6DEaJYX8ad2pgWKau1MeFzXKi9nlA3uSmy4al1PY8/sf4lK/E9Yx4j4ZcdM
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB3PR0402MB3641.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(346002)(39860400002)(366004)(396003)(376002)(136003)(1076003)(66946007)(186003)(6506007)(5660300002)(86362001)(2906002)(4326008)(66476007)(66556008)(16526019)(2616005)(956004)(6512007)(316002)(52116002)(6486002)(478600001)(54906003)(110136005)(36756003)(8676002)(26005)(107886003)(6666004)(8936002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?Ie9JPWxgqhIoacDcBfDUGtbyqmK12rZhFjaki+S6ysYAsSVJEYi729KfOXsR?=
- =?us-ascii?Q?jNA8Tqv8yXxd7/MYIVgxtBGNFN6dba6qkxOUBja1ygxoEyzbGJYm/kW8uIac?=
- =?us-ascii?Q?ri1PsII7HUWDAnF8d17CHKfE92foiQ5Vo1Z2lbe3hYrTvOuDtlHDrPpCXbHy?=
- =?us-ascii?Q?oBnsdrEnN7w9TPPMus7qz5j/Y5TMf+S1UnyTsZxJcS46QS79r38MHcYwojuX?=
- =?us-ascii?Q?jKTofU6QIySxU0WWrQoESspX5QBV9evu7f2ZCksecHLN2t3Qx23W6ZWe1uNN?=
- =?us-ascii?Q?F/FWq+isW1kXdsgzVszki2j36pe84Y8+u62ehbtf6QAyiPfF19oWpnQvtXU0?=
- =?us-ascii?Q?HH4mi48/WO49JPy8wMeR12d8HmCjA896k6MQPf3phfmX4TJzN429zhpOsFG9?=
- =?us-ascii?Q?uhWwVZ8mSPYkhxhFL7879u9H96ZJwCTzEExeMV7etPuDo1f8VevFooCugs9u?=
- =?us-ascii?Q?EoghiS3PBHVGlodCTXr0/MtrTawDTBsYcFfxqYq2WBzzb/A+tqRFnwsHUxqq?=
- =?us-ascii?Q?tGZoRIZldO6mewFydpscQJbOMfucMk8sJ8C+fc4nVEgxvRDlKMz6no2oUIPs?=
- =?us-ascii?Q?K2VNJ03KUDAAC0R9Yk4uxvF8a88UPmdkpHyLwxM1Ak80p6DhiG2AFcTNGwRH?=
- =?us-ascii?Q?W/x3GH7y7SxcCPhlFfrok8RXdZcGVfXJvgilY0B+XU0+K3k6XHah4rYNO95x?=
- =?us-ascii?Q?TnvT2W2Duh9wiFsLcazI+LBzKFE8EC7zdqZY+XI1alklCBQPn7NS9RqaOkqm?=
- =?us-ascii?Q?DAfHaD1/EAcUTSxS9YPYtNkqamfdfByxOs+cPE1I1As5K9loLAt7RvFirL8Y?=
- =?us-ascii?Q?3oQRvo5n0qdMiT4f+1fC3Z7x/QllojGFlFlSsddws05bkh0fHCDTJhHhG6hh?=
- =?us-ascii?Q?xhw+cW/51ZzhFaknpx97z5X1W3YI7NzGrpNqtopsS7QWPEeiCRcjr7jFQVZN?=
- =?us-ascii?Q?K+u4o61k7JEQD67aE2mF1miLZ6ihvWijDzeOpCq96n4KoJz9Icq1/dhvhNMv?=
- =?us-ascii?Q?ZQGY?=
-X-OriginatorOrg: suse.com
-X-MS-Exchange-CrossTenant-AuthSource: DB3PR0402MB3641.eurprd04.prod.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Jan 2021 09:54:38.5234
+X-MS-Exchange-CrossTenant-AuthSource: CY4PR11MB1576.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: ab8be4de-97ed-4be6-9c38-08d8b872cd76
+X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Jan 2021 09:57:28.4610
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: f7a17af6-1c5c-4a36-aa8b-f5be247aa4ba
-X-MS-Exchange-CrossTenant-Network-Message-Id: e368f792-f7bf-4788-899e-08d8b8726826
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: GDvqt3/ulJ/fNcdvAOGzJe+3bOg3YyFJPGUvHtcQwMdyrzmW14DEC6Qt5ZZ04rur
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DBBPR04MB6156
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: v+pn2lHDB5R51vKImnNVZiFZCiC7eUDR/uHbsaIOvkiKGGpjuO4J6Tb3UsP1Ikic8lG+mdBV3CFQHNfTcEgSrNOM9IyM3JMkFjmFJ47p+ZU=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR1101MB2088
+X-OriginatorOrg: intel.com
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There are two tests added into verifier's jit tests to trigger x64
-jit jump padding. The first test can be represented as the following
-assembly code:
 
-      1: bpf_call bpf_get_prandom_u32
-      2: if r0 =3D=3D 0 goto pc+128
-      3: if r0 =3D=3D 1 goto pc+128
-         ...
-    129: if r0 =3D=3D 127 goto pc+128
-    130: goto pc+128
-    131: goto pc+127
-         ...
-    256: goto pc+1
-    257: goto pc+0
-    258: r0 =3D 1
-    259: ret
+> -----Original Message-----
+> From: Intel-wired-lan <intel-wired-lan-bounces@osuosl.org> On Behalf Of
+> Wei Xu
+> Sent: =B6roda, 9 wrze=B6nia 2020 10:51
+> To: netdev@vger.kernel.org
+> Cc: salil.mehta@huawei.com; jinying@hisilicon.com;
+> tangkunshan@huawei.com; huangdaode@hisilicon.com;
+> john.garry@huawei.com; linux-kernel@vger.kernel.org;
+> linuxarm@huawei.com; shameerali.kolothum.thodi@huawei.com;
+> zhangyi.ac@huawei.com; intel-wired-lan@lists.osuosl.org;
+> xuwei5@hisilicon.com; jonathan.cameron@huawei.com; Jakub Kicinski
+> <kuba@kernel.org>; liguozhu@hisilicon.com; davem@davemloft.net;
+> shiju.jose@huawei.com
+> Subject: [Intel-wired-lan] [net-next] net: iavf: Use the ARRAY_SIZE macro=
+ for
+> aq_to_posix
+> =
 
-We first store a random number to r0 and add the corresponding
-conditional jumps (2~129) to make verifier believe that those jump
-instructions from 130 to 257 are reachable. When the program is sent to
-x64 jit, it starts to optimize out the NOP jumps backwards from 257.
-Since there are 128 such jumps, the program easily reaches 15 passes and
-triggers jump padding.
+> Use the ARRAY_SIZE macro to calculate the size of an array.
+> This code was detected with the help of Coccinelle.
+> =
 
-Here is the x64 jit code of the first test:
+> Signed-off-by: Wei Xu <xuwei5@hisilicon.com>
+> ---
+>  drivers/net/ethernet/intel/iavf/iavf_adminq.h | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> =
 
-      0:    0f 1f 44 00 00          nop    DWORD PTR [rax+rax*1+0x0]
-      5:    66 90                   xchg   ax,ax
-      7:    55                      push   rbp
-      8:    48 89 e5                mov    rbp,rsp
-      b:    e8 4c 90 75 e3          call   0xffffffffe375905c
-     10:    48 83 f8 01             cmp    rax,0x1
-     14:    0f 84 fe 04 00 00       je     0x518
-     1a:    48 83 f8 02             cmp    rax,0x2
-     1e:    0f 84 f9 04 00 00       je     0x51d
-      ...
-     f6:    48 83 f8 18             cmp    rax,0x18
-     fa:    0f 84 8b 04 00 00       je     0x58b
-    100:    48 83 f8 19             cmp    rax,0x19
-    104:    0f 84 86 04 00 00       je     0x590
-    10a:    48 83 f8 1a             cmp    rax,0x1a
-    10e:    0f 84 81 04 00 00       je     0x595
-      ...
-    500:    0f 84 83 01 00 00       je     0x689
-    506:    48 81 f8 80 00 00 00    cmp    rax,0x80
-    50d:    0f 84 76 01 00 00       je     0x689
-    513:    e9 71 01 00 00          jmp    0x689
-    518:    e9 6c 01 00 00          jmp    0x689
-      ...
-    5fe:    e9 86 00 00 00          jmp    0x689
-    603:    e9 81 00 00 00          jmp    0x689
-    608:    0f 1f 00                nop    DWORD PTR [rax]
-    60b:    eb 7c                   jmp    0x689
-    60d:    eb 7a                   jmp    0x689
-      ...
-    683:    eb 04                   jmp    0x689
-    685:    eb 02                   jmp    0x689
-    687:    66 90                   xchg   ax,ax
-    689:    b8 01 00 00 00          mov    eax,0x1
-    68e:    c9                      leave
-    68f:    c3                      ret
+> diff --git a/drivers/net/ethernet/intel/iavf/iavf_adminq.h
+> b/drivers/net/ethernet/intel/iavf/iavf_adminq.h
+> index baf2fe2..eead12c 100644
+> --- a/drivers/net/ethernet/intel/iavf/iavf_adminq.h
+> +++ b/drivers/net/ethernet/intel/iavf/iavf_adminq.h
+> @@ -120,7 +120,7 @@ static inline int iavf_aq_rc_to_posix(int aq_ret, int
+> aq_rc)
+>  	if (aq_ret =3D=3D IAVF_ERR_ADMIN_QUEUE_TIMEOUT)
+>  		return -EAGAIN;
+> =
 
-As expected, a 3 bytes NOPs is inserted at 608 due to the transition
-from imm32 jmp to imm8 jmp. A 2 bytes NOPs is also inserted at 687 to
-replace a NOP jump.
+> -	if (!((u32)aq_rc < (sizeof(aq_to_posix) / sizeof((aq_to_posix)[0]))))
+> +	if (!((u32)aq_rc < ARRAY_SIZE(aq_to_posix)))
+>  		return -ERANGE;
+> =
 
-The second test is to invoke the first test as a subprog to test
-bpf2bpf. Per the system log, there was one more jit happened with only
-one pass and the same jit code was produced.
+>  	return aq_to_posix[aq_rc];
 
-Signed-off-by: Gary Lin <glin@suse.com>
----
- tools/testing/selftests/bpf/test_verifier.c | 43 +++++++++++++++++++++
- tools/testing/selftests/bpf/verifier/jit.c  | 16 ++++++++
- 2 files changed, 59 insertions(+)
-
-diff --git a/tools/testing/selftests/bpf/test_verifier.c b/tools/testing/se=
-lftests/bpf/test_verifier.c
-index 9be395d9dc64..0671e88bc15d 100644
---- a/tools/testing/selftests/bpf/test_verifier.c
-+++ b/tools/testing/selftests/bpf/test_verifier.c
-@@ -296,6 +296,49 @@ static void bpf_fill_scale(struct bpf_test *self)
- 	}
- }
+Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
+---------------------------------------------------------------------
+Intel Technology Poland sp. z o.o.
+ul. Sowackiego 173 | 80-298 Gdask | Sd Rejonowy Gdask Pnoc | VII Wydzia Gos=
+podarczy Krajowego Rejestru Sdowego - KRS 101882 | NIP 957-07-52-316 | Kapi=
+ta zakadowy 200.000 PLN.
+Ta wiadomo wraz z zacznikami jest przeznaczona dla okrelonego adresata i mo=
+e zawiera informacje poufne. W razie przypadkowego otrzymania tej wiadomoci=
+, prosimy o powiadomienie nadawcy oraz trwae jej usunicie; jakiekolwiek prz=
+egldanie lub rozpowszechnianie jest zabronione.
+This e-mail and any attachments may contain confidential material for the s=
+ole use of the intended recipient(s). If you are not the intended recipient=
+, please contact the sender and delete all copies; any review or distributi=
+on by others is strictly prohibited.
 =20
-+static int bpf_fill_torturous_jumps_insn(struct bpf_insn *insn)
-+{
-+	unsigned int len =3D 259, hlen =3D 128;
-+	int i;
-+
-+	insn[0] =3D BPF_EMIT_CALL(BPF_FUNC_get_prandom_u32);
-+	for (i =3D 1; i <=3D hlen; i++) {
-+		insn[i]        =3D BPF_JMP_IMM(BPF_JEQ, BPF_REG_0, i, hlen);
-+		insn[i + hlen] =3D BPF_JMP_A(hlen - i);
-+	}
-+	insn[len - 2] =3D BPF_MOV64_IMM(BPF_REG_0, 1);
-+	insn[len - 1] =3D BPF_EXIT_INSN();
-+
-+	return len;
-+}
-+
-+static void bpf_fill_torturous_jumps(struct bpf_test *self)
-+{
-+	struct bpf_insn *insn =3D self->fill_insns;
-+	int i =3D 0;
-+
-+	switch (self->retval) {
-+	case 1:
-+		self->prog_len =3D bpf_fill_torturous_jumps_insn(insn);
-+		return;
-+	case 2:
-+		/* main */
-+		insn[i++] =3D BPF_RAW_INSN(BPF_JMP|BPF_CALL, 0, 1, 0, 3);
-+		insn[i++] =3D BPF_ST_MEM(BPF_B, BPF_REG_10, -32, 0);
-+		insn[i++] =3D BPF_MOV64_IMM(BPF_REG_0, 2);
-+		insn[i++] =3D BPF_EXIT_INSN();
-+
-+		/* subprog */
-+		i +=3D bpf_fill_torturous_jumps_insn(insn + i);
-+
-+		self->prog_len =3D i;
-+		return;
-+	default:
-+		self->prog_len =3D 0;
-+		break;
-+	}
-+}
-+
- /* BPF_SK_LOOKUP contains 13 instructions, if you need to fix up maps */
- #define BPF_SK_LOOKUP(func)						\
- 	/* struct bpf_sock_tuple tuple =3D {} */				\
-diff --git a/tools/testing/selftests/bpf/verifier/jit.c b/tools/testing/sel=
-ftests/bpf/verifier/jit.c
-index c33adf344fae..b7653a334497 100644
---- a/tools/testing/selftests/bpf/verifier/jit.c
-+++ b/tools/testing/selftests/bpf/verifier/jit.c
-@@ -105,3 +105,19 @@
- 	.result =3D ACCEPT,
- 	.retval =3D 2,
- },
-+{
-+	"jit: torturous jumps",
-+	.insns =3D { },
-+	.fill_helper =3D bpf_fill_torturous_jumps,
-+	.prog_type =3D BPF_PROG_TYPE_SCHED_CLS,
-+	.result =3D ACCEPT,
-+	.retval =3D 1,
-+},
-+{
-+	"jit: torturous jumps in subprog",
-+	.insns =3D { },
-+	.fill_helper =3D bpf_fill_torturous_jumps,
-+	.prog_type =3D BPF_PROG_TYPE_SCHED_CLS,
-+	.result =3D ACCEPT,
-+	.retval =3D 2,
-+},
---=20
-2.29.2
 
