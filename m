@@ -2,65 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EEF2C2F6737
-	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 18:16:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 86FE02F6766
+	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 18:23:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728527AbhANRPh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jan 2021 12:15:37 -0500
-Received: from mail.kernel.org ([198.145.29.99]:57282 "EHLO mail.kernel.org"
+        id S1727787AbhANRUZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jan 2021 12:20:25 -0500
+Received: from mail.kernel.org ([198.145.29.99]:58486 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726172AbhANRPg (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 14 Jan 2021 12:15:36 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 1C723238EC;
-        Thu, 14 Jan 2021 17:14:54 +0000 (UTC)
+        id S1726442AbhANRUZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 14 Jan 2021 12:20:25 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 250F023B31;
+        Thu, 14 Jan 2021 17:19:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610644495;
-        bh=RDEJdDVwILr1jM/hUHMK43X/Aq2TqFRPO473xjQ/s4U=;
+        s=k20201202; t=1610644784;
+        bh=3yRB9zTBm8PskaFuKrT1QxttDuA1ZGkQjvLqAKWmyVU=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=k4n/STNmaNHIWsT916GZmz4QENJO11kKIpmhTvbk+3HBZbLsJS5+OOU5kdJp8GsqJ
-         jc7NomeF0hPCzT0GF0uPkxUbffiWCJr1vCgbcugvXeJHZonSh7o/oKtcZOT/9Ses5D
-         cZacciofUZDcTAyidREbaNUiW32XgyI3zoa+jFvu05di+mGUv2rGqJEO7IoesrXS5O
-         1eBMFEKEF79c6FsTgQU6A6tHuxBjMVP6GlaxD3sbs/SfjxsYWPCEXyJWCmt+i8czt3
-         9/X4W4WmRiMBPIHSF6tMMy3SVsQJc3YdRAosQp9cOyWYmerHidiQ+Rvdi/KmnmiQSo
-         2+qDHsOaHb3Ng==
-Date:   Thu, 14 Jan 2021 09:14:53 -0800
+        b=MeuQB6SuFG3OW7EHqAtnb6IiJiMemyxN8jaNckYUxPWjZQiMu8FKY1EVkKNngMv9I
+         1aOIc9D2vg9EPxNQGkCfkuEmHqqG61a4hWLf8vXdrny+HcqRXaXTm0m9miPHjS3zMg
+         GCKhnngKjYb4pu1467/DGoNh+nfZ2RSHxotuhAAmMOfnW0bHBQUyLwprzzfIKWXKTF
+         vP1wrDwscQtBPJ8+Fd0rINAeRIgbAAMRRRkNqcuOIgx4+NqH1jSkTBx9AdC0/ov3K8
+         zX56BUl09THOInzBpcPxI0QCXhrIW1O+lYvoy6h0Lopxa5MM2mi+nrRa3BFGAD7+4J
+         1GAMbdqikBemg==
+Date:   Thu, 14 Jan 2021 09:19:43 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Lee Jones <lee.jones@linaro.org>
-Cc:     linux-kernel@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        bpf@vger.kernel.org, Daniel Borkmann <daniel@iogearbox.net>,
-        Dany Madden <drt@linux.ibm.com>,
-        Daris A Nevil <dnevil@snmc.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Erik Stahlman <erik@vt.edu>,
-        Geoff Levand <geoff@infradead.org>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Ishizaki Kou <kou.ishizaki@toshiba.co.jp>,
-        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
-        Jens Osterkamp <Jens.Osterkamp@de.ibm.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Allen <jallen@linux.vnet.ibm.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Lijun Pan <ljp@linux.ibm.com>, linuxppc-dev@lists.ozlabs.org,
-        Michael Ellerman <mpe@ellerman.id.au>, netdev@vger.kernel.org,
-        Nicolas Pitre <nico@fluxnic.net>, Paul Durrant <paul@xen.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Peter Cammaert <pc@denkart.be>,
-        Russell King <rmk@arm.linux.org.uk>,
-        Rusty Russell <rusty@rustcorp.com.au>,
-        Santiago Leon <santi_leon@yahoo.com>,
-        Sukadev Bhattiprolu <sukadev@linux.ibm.com>,
-        Thomas Falcon <tlfalcon@linux.vnet.ibm.com>,
-        Utz Bacher <utz.bacher@de.ibm.com>,
-        Wei Liu <wei.liu@kernel.org>, xen-devel@lists.xenproject.org
-Subject: Re: [PATCH v2 0/7] Rid W=1 warnings in Ethernet
-Message-ID: <20210114091453.30177d20@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210114083349.GI3975472@dell>
-References: <20210113164123.1334116-1-lee.jones@linaro.org>
-        <20210113183551.6551a6a2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20210114083349.GI3975472@dell>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        alexandre.belloni@bootlin.com, andrew@lunn.ch,
+        f.fainelli@gmail.com, vivien.didelot@gmail.com,
+        alexandru.marginean@nxp.com, claudiu.manoil@nxp.com,
+        xiaoliang.yang_1@nxp.com, hongbo.wang@nxp.com, jiri@resnulli.us,
+        idosch@idosch.org, UNGLinuxDriver@microchip.com
+Subject: Re: [PATCH v4 net-next 08/10] net: mscc: ocelot: register devlink
+ ports
+Message-ID: <20210114091943.3236215f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210114102743.etmvn7jq5jcgiqxk@skbuf>
+References: <20210111174316.3515736-1-olteanv@gmail.com>
+        <20210111174316.3515736-9-olteanv@gmail.com>
+        <20210113193033.77242881@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20210114102743.etmvn7jq5jcgiqxk@skbuf>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -68,40 +47,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 14 Jan 2021 08:33:49 +0000 Lee Jones wrote:
-> On Wed, 13 Jan 2021, Jakub Kicinski wrote:
-> 
-> > On Wed, 13 Jan 2021 16:41:16 +0000 Lee Jones wrote:  
-> > > Resending the stragglers again.                                                                                  
-> > > 
-> > > This set is part of a larger effort attempting to clean-up W=1                                                   
-> > > kernel builds, which are currently overwhelmingly riddled with                                                   
-> > > niggly little warnings.                                                                                          
-> > >                                                                                                                  
-> > > v2:                                                                                                              
-> > >  - Squashed IBM patches                                                                                      
-> > >  - Fixed real issue in SMSC
-> > >  - Added Andrew's Reviewed-by tags on remainder  
+On Thu, 14 Jan 2021 12:27:43 +0200 Vladimir Oltean wrote:
+> On Wed, Jan 13, 2021 at 07:30:33PM -0800, Jakub Kicinski wrote:
+> > On Mon, 11 Jan 2021 19:43:14 +0200 Vladimir Oltean wrote:  
+> > > +struct ocelot_devlink_private {
+> > > +	struct ocelot *ocelot;
+> > > +};  
 > > 
-> > Does not apply, please rebase on net-next/master.  
+> > I don't think you ever explained to me why you don't put struct ocelot
+> > in the priv.
+> > 
+> > -	ocelot = devm_kzalloc(&pdev->dev, sizeof(*ocelot), GFP_KERNEL);
+> > -	if (!ocelot)
+> > +	devlink = devlink_alloc(&ocelot_devlink_ops, sizeof(*ocelot));
+> > +	if (!devlink)
+> >                  return -ENOMEM;
+> > +	ocelot = devlink_priv(ocelot->devlink);  
 > 
-> These are based on Tuesday's next/master.
+> Because that's not going to be all? The error path handling and teardown
+> all need to change, because I no longer use device-managed allocation,
+> and I wanted to avoid that.
 
-What's next/master?
-
-This is net-next:
-
-https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/
-
-> I just rebased them now with no issue.
-> 
-> What conflict are you seeing?
-
-Applying: net: ethernet: smsc: smc91x: Fix function name in kernel-doc header
-error: patch failed: drivers/net/ethernet/smsc/smc91x.c:2192
-error: drivers/net/ethernet/smsc/smc91x.c: patch does not apply
-Patch failed at 0001 net: ethernet: smsc: smc91x: Fix function name in kernel-doc header
-hint: Use 'git am --show-current-patch=diff' to see the failed patch
-When you have resolved this problem, run "git am --continue".
-If you prefer to skip this patch, run "git am --skip" instead.
-To restore the original branch and stop patching, run "git am --abort".
+Come on, is it really hard enough to warrant us exchanging multiple
+emails? Having driver structure in devlink priv is the standard way
+of handling this, there's value in uniformity.
