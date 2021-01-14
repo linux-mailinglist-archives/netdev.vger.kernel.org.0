@@ -2,132 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 45A5C2F6097
-	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 12:57:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 626542F6145
+	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 13:53:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728140AbhANL4i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jan 2021 06:56:38 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:37464 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726376AbhANL4i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 06:56:38 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1610625311;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=DlZ5F5E1ivwqXZEXGI43ZKr4tUgsk7s+d0KLqvxzOB4=;
-        b=bEkNIqTkpg1xJb+Y8ExCMfHA3XqeoH9jCXdSbQQgeDh6gzTvBN9ol7pPwaOT15me6FS5fg
-        bneUUdOJIqa7rxl+g6xAA9Izk87hb0EXUYVJZ/mQKMskgJ1O+yMXCIMZ4ZSJ15bYZH/Ate
-        a6zDq5QMcV0D+GORbx5DE6JMe7SM+6o=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-588-tQeAeZtZN6mEoNlbbSHbhA-1; Thu, 14 Jan 2021 06:55:09 -0500
-X-MC-Unique: tQeAeZtZN6mEoNlbbSHbhA-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 69AD3806675;
-        Thu, 14 Jan 2021 11:55:08 +0000 (UTC)
-Received: from ceranb.redhat.com (unknown [10.40.195.230])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 3EC305D9E2;
-        Thu, 14 Jan 2021 11:55:07 +0000 (UTC)
-From:   Ivan Vecera <ivecera@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     Jiri Pirko <jiri@resnulli.us>
-Subject: [PATCH net] team: fix deadlock during setting of MTU
-Date:   Thu, 14 Jan 2021 12:55:06 +0100
-Message-Id: <20210114115506.1713330-1-ivecera@redhat.com>
+        id S1728500AbhANMvc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jan 2021 07:51:32 -0500
+Received: from hmm.wantstofly.org ([213.239.204.108]:54810 "EHLO
+        mail.wantstofly.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725955AbhANMvb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 07:51:31 -0500
+X-Greylist: delayed 516 seconds by postgrey-1.27 at vger.kernel.org; Thu, 14 Jan 2021 07:51:29 EST
+Received: by mail.wantstofly.org (Postfix, from userid 1000)
+        id E0B507F44F; Thu, 14 Jan 2021 14:42:11 +0200 (EET)
+Date:   Thu, 14 Jan 2021 14:42:11 +0200
+From:   Lennert Buytenhek <kernel@wantstofly.org>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Bjorn Helgaas <helgaas@kernel.org>,
+        Russell King - ARM Linux <linux@armlinux.org.uk>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "linux-pci@vger.kernel.org" <linux-pci@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH v3 1/3] PCI: Disable parity checking if broken_parity is
+ set
+Message-ID: <20210114124211.GG65905@wantstofly.org>
+References: <20210106192233.GA1329080@bjorn-Precision-5520>
+ <768d90a3-93ea-1f4e-f4e0-e039933bc17b@gmail.com>
+ <8e9c5b3a-f239-8d8d-08e5-015ec38dd3a0@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <8e9c5b3a-f239-8d8d-08e5-015ec38dd3a0@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Team driver protects port list traversal in team_change_mtu()
-by its team->lock mutex. This causes a deadlock with certain
-devices that calls netdev_update_features() during their
-.ndo_change_mtu() callback. In this case netdev_update_features()
-calls team's netdevice notifier team_device_event() that in case
-of NETDEV_FEAT_CHANGE tries lock team->lock mutex again.
+On Wed, Jan 13, 2021 at 09:52:23PM +0100, Heiner Kallweit wrote:
+> On 06.01.2021 20:34, Heiner Kallweit wrote:
+> > On 06.01.2021 20:22, Bjorn Helgaas wrote:
+> >> On Wed, Jan 06, 2021 at 06:50:22PM +0100, Heiner Kallweit wrote:
+> >>> If we know that a device has broken parity checking, then disable it.
+> >>> This avoids quirks like in r8169 where on the first parity error
+> >>> interrupt parity checking will be disabled if broken_parity_status
+> >>> is set. Make pci_quirk_broken_parity() public so that it can be used
+> >>> by platform code, e.g. for Thecus N2100.
+> >>>
+> >>> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+> >>> Reviewed-by: Leon Romanovsky <leonro@nvidia.com>
+> >>
+> >> Acked-by: Bjorn Helgaas <bhelgaas@google.com>
+> >>
+> >> This series should all go together.  Let me know if you want me to do
+> >> anything more (would require acks for arm and r8169, of course).
+> >>
+> > Right. For r8169 I'm the maintainer myself and agreed with Jakub that
+> > the r8169 patch will go through the PCI tree.
+> > 
+> > Regarding the arm/iop32x part:
+> > MAINTAINERS file lists Lennert as maintainer, let me add him.
+> > Strange thing is that the MAINTAINERS entry for arm/iop32x has no
+> > F entry, therefore the get_maintainers scripts will never list him
+> > as addressee. The script lists Russell as "odd fixer".
+> > @Lennert: Please provide a patch to add the missing F entry.
+> > 
+> > ARM/INTEL IOP32X ARM ARCHITECTURE
+> > M:	Lennert Buytenhek <kernel@wantstofly.org>
+> > L:	linux-arm-kernel@lists.infradead.org (moderated for non-subscribers)
+> > S:	Maintained
+> 
+> Bjorn, I saw that you set the series to "not applicable". Is this because
+> of the missing ack for the arm part?
+> I checked and Lennert's last kernel contribution is from 2015. Having said
+> that the maintainer's entry may be outdated. Not sure who else would be
+> entitled to ack this patch. The change is simple enough, could you take
+> it w/o an ack? 
 
-Example (r8169 case):
-...
-[ 6391.348202]  __mutex_lock.isra.6+0x2d0/0x4a0
-[ 6391.358602]  team_device_event+0x9d/0x160 [team]
-[ 6391.363756]  notifier_call_chain+0x47/0x70
-[ 6391.368329]  netdev_update_features+0x56/0x60
-[ 6391.373207]  rtl8169_change_mtu+0x14/0x50 [r8169]
-[ 6391.378457]  dev_set_mtu_ext+0xe1/0x1d0
-[ 6391.387022]  dev_set_mtu+0x52/0x90
-[ 6391.390820]  team_change_mtu+0x64/0xf0 [team]
-[ 6391.395683]  dev_set_mtu_ext+0xe1/0x1d0
-[ 6391.399963]  do_setlink+0x231/0xf50
-...
+This entry is indeed outdated, I don't have access to this
+hardware anymore.
 
-To fix the problem the port list traversal in team_change_mtu() can
-be protected by RCU read lock. In case of failure the failing port
-is marked and unwind code-path is done also under RCU read lock
-protection (but not in reverse order).
 
-Fixes: 3d249d4ca7d0 ("net: introduce ethernet teaming device")
-Cc: Jiri Pirko <jiri@resnulli.us>
-Signed-off-by: Ivan Vecera <ivecera@redhat.com>
----
- drivers/net/team/team.c | 20 ++++++++++----------
- 1 file changed, 10 insertions(+), 10 deletions(-)
-
-diff --git a/drivers/net/team/team.c b/drivers/net/team/team.c
-index c19dac21c468..69d4b28beb17 100644
---- a/drivers/net/team/team.c
-+++ b/drivers/net/team/team.c
-@@ -1802,35 +1802,35 @@ static int team_set_mac_address(struct net_device *dev, void *p)
- static int team_change_mtu(struct net_device *dev, int new_mtu)
- {
- 	struct team *team = netdev_priv(dev);
--	struct team_port *port;
-+	struct team_port *port, *fail_port;
- 	int err;
- 
--	/*
--	 * Alhough this is reader, it's guarded by team lock. It's not possible
--	 * to traverse list in reverse under rcu_read_lock
--	 */
--	mutex_lock(&team->lock);
-+	rcu_read_lock();
- 	team->port_mtu_change_allowed = true;
--	list_for_each_entry(port, &team->port_list, list) {
-+	list_for_each_entry_rcu(port, &team->port_list, list) {
- 		err = dev_set_mtu(port->dev, new_mtu);
- 		if (err) {
- 			netdev_err(dev, "Device %s failed to change mtu",
- 				   port->dev->name);
-+			fail_port = port;
- 			goto unwind;
- 		}
- 	}
- 	team->port_mtu_change_allowed = false;
--	mutex_unlock(&team->lock);
-+	rcu_read_unlock();
- 
- 	dev->mtu = new_mtu;
- 
- 	return 0;
- 
- unwind:
--	list_for_each_entry_continue_reverse(port, &team->port_list, list)
-+	list_for_each_entry_rcu(port, &team->port_list, list) {
-+		if (port == fail_port)
-+			break;
- 		dev_set_mtu(port->dev, dev->mtu);
-+	}
- 	team->port_mtu_change_allowed = false;
--	mutex_unlock(&team->lock);
-+	rcu_read_unlock();
- 
- 	return err;
- }
--- 
-2.26.2
-
+> Alternatively, IIRC Russell has got such a device. Russell, would it
+> be possible that you test that there's still no false-positive parity
+> errors with this series?
+> 
+> 
+> > 
+> >>> ---
+> >>>  drivers/pci/quirks.c | 17 +++++++++++------
+> >>>  include/linux/pci.h  |  2 ++
+> >>>  2 files changed, 13 insertions(+), 6 deletions(-)
+> >>>
+> >>> diff --git a/drivers/pci/quirks.c b/drivers/pci/quirks.c
+> >>> index 653660e3b..ab54e26b8 100644
+> >>> --- a/drivers/pci/quirks.c
+> >>> +++ b/drivers/pci/quirks.c
+> >>> @@ -205,17 +205,22 @@ static void quirk_mmio_always_on(struct pci_dev *dev)
+> >>>  DECLARE_PCI_FIXUP_CLASS_EARLY(PCI_ANY_ID, PCI_ANY_ID,
+> >>>  				PCI_CLASS_BRIDGE_HOST, 8, quirk_mmio_always_on);
+> >>>  
+> >>> +void pci_quirk_broken_parity(struct pci_dev *dev)
+> >>> +{
+> >>> +	u16 cmd;
+> >>> +
+> >>> +	dev->broken_parity_status = 1;	/* This device gives false positives */
+> >>> +	pci_read_config_word(dev, PCI_COMMAND, &cmd);
+> >>> +	pci_write_config_word(dev, PCI_COMMAND, cmd & ~PCI_COMMAND_PARITY);
+> >>> +}
+> >>> +
+> >>>  /*
+> >>>   * The Mellanox Tavor device gives false positive parity errors.  Mark this
+> >>>   * device with a broken_parity_status to allow PCI scanning code to "skip"
+> >>>   * this now blacklisted device.
+> >>>   */
+> >>> -static void quirk_mellanox_tavor(struct pci_dev *dev)
+> >>> -{
+> >>> -	dev->broken_parity_status = 1;	/* This device gives false positives */
+> >>> -}
+> >>> -DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_MELLANOX, PCI_DEVICE_ID_MELLANOX_TAVOR, quirk_mellanox_tavor);
+> >>> -DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_MELLANOX, PCI_DEVICE_ID_MELLANOX_TAVOR_BRIDGE, quirk_mellanox_tavor);
+> >>> +DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_MELLANOX, PCI_DEVICE_ID_MELLANOX_TAVOR, pci_quirk_broken_parity);
+> >>> +DECLARE_PCI_FIXUP_FINAL(PCI_VENDOR_ID_MELLANOX, PCI_DEVICE_ID_MELLANOX_TAVOR_BRIDGE, pci_quirk_broken_parity);
+> >>>  
+> >>>  /*
+> >>>   * Deal with broken BIOSes that neglect to enable passive release,
+> >>> diff --git a/include/linux/pci.h b/include/linux/pci.h
+> >>> index b32126d26..161dcc474 100644
+> >>> --- a/include/linux/pci.h
+> >>> +++ b/include/linux/pci.h
+> >>> @@ -1916,6 +1916,8 @@ enum pci_fixup_pass {
+> >>>  	pci_fixup_suspend_late,	/* pci_device_suspend_late() */
+> >>>  };
+> >>>  
+> >>> +void pci_quirk_broken_parity(struct pci_dev *dev);
+> >>> +
+> >>>  #ifdef CONFIG_HAVE_ARCH_PREL32_RELOCATIONS
+> >>>  #define __DECLARE_PCI_FIXUP_SECTION(sec, name, vendor, device, class,	\
+> >>>  				    class_shift, hook)			\
+> >>> -- 
+> >>> 2.30.0
+> >>>
+> >>>
+> >>>
+> > 
