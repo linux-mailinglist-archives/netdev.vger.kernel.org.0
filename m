@@ -2,192 +2,225 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 31E942F5FC5
-	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 12:24:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 277A92F6069
+	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 12:43:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726806AbhANLWk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jan 2021 06:22:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52790 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726008AbhANLWj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 06:22:39 -0500
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 413DCC061757;
-        Thu, 14 Jan 2021 03:21:53 -0800 (PST)
-Received: by mail-pl1-x62e.google.com with SMTP id s15so2744962plr.9;
-        Thu, 14 Jan 2021 03:21:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
-         :user-agent;
-        bh=h8f1dMYtlAZ7DKjOr3TKBIWJ2EYKtUHiop2OPGodnrM=;
-        b=N2pe0hWLkweig/TIpI/BIsd7BwLqXlQVpISWt/j8+V0nWKVEmdztH/dX6nr/uEQm4m
-         JcbEery26j2IL7kTQ8zoCBBHut2RmWyC+DWEWihyqOkMFLxfUq7hlJ4CIJQMqddRuWWi
-         qZb4tmkf6MN0SoAtpSRkVfntN0G0JeqgqgHvrAqldQgVjIN/FIncRZK/pNtVMaC2Au1Y
-         onaua4uQCP46CM9gNyWFyET5EeuzUuxbF2JX2huJWfhRVHlfh3kogs5qf+HjgJzHxxgZ
-         yOvFE/R3jgwraMxxIiKG+MSbxzV7VWpy6i3Nsa5sSFEvSFos4aqqGK+CeLkKWc98q1QI
-         ZJ0w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition:user-agent;
-        bh=h8f1dMYtlAZ7DKjOr3TKBIWJ2EYKtUHiop2OPGodnrM=;
-        b=HdkU3DS0gdgudSZlpPr17EP6tDCwggr/C/OFNwuDpbfLsdvbLHLhR9gIls0MeT2DDK
-         ETGHKnXzAhqroNur2XO4qoyjM3hmjuKm991IY9+d27NidpAOHKV6wOBHG7/bP5p1XrzO
-         +aeUSb61J+zeErJNxp8VBQj6s66vQJjVXGWmW0K3E/9EMjoshpAgoW5yZxVeeqrFM2fu
-         E2P4CIwa+MAlkAFh+D7FIY4FdYBZhLiltHlgK3ZD0A9xtHydfKe/17maUFxX7mGblnGc
-         ZHyYqz5aGngxZ77alrUcm6lWc/3DgCOTTsHqM3+83HujFq0QHWasqW7S8cOuGQX/syyU
-         NP2g==
-X-Gm-Message-State: AOAM533iNFMvykzlfCxJ6hL0AObDN7SRGsvhFAxi+y9wrasi4+oToj5h
-        nC2Q+cw26oWenG8jGqRhGDU=
-X-Google-Smtp-Source: ABdhPJyHTsn9QIm3/8CFcMQLLZccRnAy21ueeVqO9bY4W0TP7K8wvMxouIBFQ7ocPseWkS6He+ANDQ==
-X-Received: by 2002:a17:902:be02:b029:da:c6c9:c9db with SMTP id r2-20020a170902be02b02900dac6c9c9dbmr7038693pls.69.1610623312699;
-        Thu, 14 Jan 2021 03:21:52 -0800 (PST)
-Received: from cosmos ([103.113.142.250])
-        by smtp.gmail.com with ESMTPSA id w2sm5225593pfj.110.2021.01.14.03.21.49
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 14 Jan 2021 03:21:52 -0800 (PST)
-Date:   Thu, 14 Jan 2021 16:51:47 +0530
-From:   Vamshi K Sthambamkadi <vamshi.k.sthambamkadi@gmail.com>
-To:     marcel@holtmann.org, johan.hedberg@gmail.com, luiz.dentz@gmail.com
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2] Bluetooth: btusb: fix memory leak on suspend and resume
-Message-ID: <20210114112143.GA1318@cosmos>
+        id S1727466AbhANLmJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jan 2021 06:42:09 -0500
+Received: from mail1.protonmail.ch ([185.70.40.18]:19607 "EHLO
+        mail1.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726150AbhANLmJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 06:42:09 -0500
+Date:   Thu, 14 Jan 2021 11:41:14 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
+        t=1610624484; bh=2OqWEb6C3glb5DS0gtuvY2Ez4Mm+WE5SlZPF/lo+ZjM=;
+        h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
+        b=f92/aWuY/P97cX7aw6gO/Edb67oFN7B5LJlKgx2S+TrjopuLghtL9X3qk5R7Ug1aH
+         bbqfx4lYPUY9E4bb/6432NIw5sx1Z5OyYVkTKIlchy9iJ7PbGCv/NBp0xYNNLEtUtV
+         78pOGLycoSrbIAF/gmySKsNPMW0EEmT7L4jm2t/WYtqI6GcWGT2oLJ6n5MrbIBqHo0
+         TCWM5twiR1I0He8VydyZC+QWMlM6laAFlYCheNLD3e1DTajDWCCRIeaQXBXoZ5/hFF
+         90Rz0HPjqwSa57ZQ/Awa46MpzHHUMTB2vUyEQVz+pzHXgh95x2FX4HpaMucGA05zSJ
+         PvogArlN27PPQ==
+To:     Eric Dumazet <edumazet@google.com>
+From:   Alexander Lobakin <alobakin@pm.me>
+Cc:     Alexander Lobakin <alobakin@pm.me>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Edward Cree <ecree.xilinx@gmail.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Guillaume Nault <gnault@redhat.com>,
+        Yadu Kishore <kyk.segfault@gmail.com>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Dmitry Vyukov <dvyukov@google.com>
+Reply-To: Alexander Lobakin <alobakin@pm.me>
+Subject: Re: [PATCH v2 net-next 2/3] skbuff: (re)use NAPI skb cache on allocation path
+Message-ID: <20210114114046.7272-1-alobakin@pm.me>
+In-Reply-To: <CANn89i+azKGzpt4LrVVVCQdf82TLOC=dwUjA4NK3ziQHSKvtFw@mail.gmail.com>
+References: <20210113133523.39205-1-alobakin@pm.me> <20210113133635.39402-1-alobakin@pm.me> <20210113133635.39402-2-alobakin@pm.me> <CANn89i+azKGzpt4LrVVVCQdf82TLOC=dwUjA4NK3ziQHSKvtFw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.2 required=10.0 tests=ALL_TRUSTED,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF shortcircuit=no
+        autolearn=disabled version=3.4.4
+X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on
+        mailout.protonmail.ch
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-kmemleak report:
-unreferenced object 0xffff9b1127f00500 (size 208):
-  comm "kworker/u17:2", pid 500, jiffies 4294937470 (age 580.136s)
-  hex dump (first 32 bytes):
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-    00 60 ed 05 11 9b ff ff 00 00 00 00 00 00 00 00  .`..............
-  backtrace:
-    [<000000006ab3fd59>] kmem_cache_alloc_node+0x17a/0x480
-    [<0000000051a5f6f9>] __alloc_skb+0x5b/0x1d0
-    [<0000000037e2d252>] hci_prepare_cmd+0x32/0xc0 [bluetooth]
-    [<0000000010b586d5>] hci_req_add_ev+0x84/0xe0 [bluetooth]
-    [<00000000d2deb520>] hci_req_clear_event_filter+0x42/0x70 [bluetooth]
-    [<00000000f864bd8c>] hci_req_prepare_suspend+0x84/0x470 [bluetooth]
-    [<000000001deb2cc4>] hci_prepare_suspend+0x31/0x40 [bluetooth]
-    [<000000002677dd79>] process_one_work+0x209/0x3b0
-    [<00000000aaa62b07>] worker_thread+0x34/0x400
-    [<00000000826d176c>] kthread+0x126/0x140
-    [<000000002305e558>] ret_from_fork+0x22/0x30
-unreferenced object 0xffff9b1125c6ee00 (size 512):
-  comm "kworker/u17:2", pid 500, jiffies 4294937470 (age 580.136s)
-  hex dump (first 32 bytes):
-    04 00 00 00 0d 00 00 00 05 0c 01 00 11 9b ff ff  ................
-    00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00  ................
-  backtrace:
-    [<000000009f07c0cc>] slab_post_alloc_hook+0x59/0x270
-    [<0000000049431dc2>] __kmalloc_node_track_caller+0x15f/0x330
-    [<00000000027a42f6>] __kmalloc_reserve.isra.70+0x31/0x90
-    [<00000000e8e3e76a>] __alloc_skb+0x87/0x1d0
-    [<0000000037e2d252>] hci_prepare_cmd+0x32/0xc0 [bluetooth]
-    [<0000000010b586d5>] hci_req_add_ev+0x84/0xe0 [bluetooth]
-    [<00000000d2deb520>] hci_req_clear_event_filter+0x42/0x70 [bluetooth]
-    [<00000000f864bd8c>] hci_req_prepare_suspend+0x84/0x470 [bluetooth]
-    [<000000001deb2cc4>] hci_prepare_suspend+0x31/0x40 [bluetooth]
-    [<000000002677dd79>] process_one_work+0x209/0x3b0
-    [<00000000aaa62b07>] worker_thread+0x34/0x400
-    [<00000000826d176c>] kthread+0x126/0x140
-    [<000000002305e558>] ret_from_fork+0x22/0x30
-unreferenced object 0xffff9b112b395788 (size 8):
-  comm "kworker/u17:2", pid 500, jiffies 4294937470 (age 580.136s)
-  hex dump (first 8 bytes):
-    20 00 00 00 00 00 04 00                           .......
-  backtrace:
-    [<0000000052dc28d2>] kmem_cache_alloc_trace+0x15e/0x460
-    [<0000000046147591>] alloc_ctrl_urb+0x52/0xe0 [btusb]
-    [<00000000a2ed3e9e>] btusb_send_frame+0x91/0x100 [btusb]
-    [<000000001e66030e>] hci_send_frame+0x7e/0xf0 [bluetooth]
-    [<00000000bf6b7269>] hci_cmd_work+0xc5/0x130 [bluetooth]
-    [<000000002677dd79>] process_one_work+0x209/0x3b0
-    [<00000000aaa62b07>] worker_thread+0x34/0x400
-    [<00000000826d176c>] kthread+0x126/0x140
-    [<000000002305e558>] ret_from_fork+0x22/0x30
+From: Eric Dumazet <edumazet@google.com>
+Date: Wed, 13 Jan 2021 15:36:05 +0100
 
-In pm sleep-resume context, while the btusb device rebinds, it enters
-hci_unregister_dev(), whilst there is a possibility of hdev receiving
-PM_POST_SUSPEND suspend_notifier event, leading to generation of msg
-frames. When hci_unregister_dev() completes, i.e. hdev context is
-destroyed/freed, those intermittently sent msg frames cause memory
-leak.
+> On Wed, Jan 13, 2021 at 2:37 PM Alexander Lobakin <alobakin@pm.me> wrote:
+>>
+>> Instead of calling kmem_cache_alloc() every time when building a NAPI
+>> skb, (re)use skbuff_heads from napi_alloc_cache.skb_cache. Previously
+>> this cache was only used for bulk-freeing skbuff_heads consumed via
+>> napi_consume_skb() or __kfree_skb_defer().
+>>
+>> Typical path is:
+>>  - skb is queued for freeing from driver or stack, its skbuff_head
+>>    goes into the cache instead of immediate freeing;
+>>  - driver or stack requests NAPI skb allocation, an skbuff_head is
+>>    taken from the cache instead of allocation.
+>>
+>> Corner cases:
+>>  - if it's empty on skb allocation, bulk-allocate the first half;
+>>  - if it's full on skb consuming, bulk-wipe the second half.
+>>
+>> Also try to balance its size after completing network softirqs
+>> (__kfree_skb_flush()).
+>
+> I do not see the point of doing this rebalance (especially if we do not c=
+hange
+> its name describing its purpose more accurately).
+>
+> For moderate load, we will have a reduced bulk size (typically one or two=
+).
+> Number of skbs in the cache is in [0, 64[ , there is really no risk of
+> letting skbs there for a long period of time.
+> (32 * sizeof(sk_buff) =3D 8192)
+> I would personally get rid of this function completely.
 
-BUG details:
-Below is stack trace of thread that enters hci_unregister_dev(), marks
-the hdev flag HCI_UNREGISTER to 1, and then goes onto to wait on notifier
-lock - refer unregister_pm_notifier().
+When I had a cache of 128 entries, I had worse results without this
+function. But seems like I forgot to retest when I switched to the
+original size of 64.
+I also thought about removing this function entirely, will test.
 
-  hci_unregister_dev+0xa5/0x320 [bluetoot]
-  btusb_disconnect+0x68/0x150 [btusb]
-  usb_unbind_interface+0x77/0x250
-  ? kernfs_remove_by_name_ns+0x75/0xa0
-  device_release_driver_internal+0xfe/0x1
-  device_release_driver+0x12/0x20
-  bus_remove_device+0xe1/0x150
-  device_del+0x192/0x3e0
-  ? usb_remove_ep_devs+0x1f/0x30
-  usb_disable_device+0x92/0x1b0
-  usb_disconnect+0xc2/0x270
-  hub_event+0x9f6/0x15d0
-  ? rpm_idle+0x23/0x360
-  ? rpm_idle+0x26b/0x360
-  process_one_work+0x209/0x3b0
-  worker_thread+0x34/0x400
-  ? process_one_work+0x3b0/0x3b0
-  kthread+0x126/0x140
-  ? kthread_park+0x90/0x90
-  ret_from_fork+0x22/0x30
+> Also it seems you missed my KASAN support request ?
+> I guess this is a matter of using kasan_unpoison_range(), we can ask for =
+help.
 
-Below is stack trace of thread executing hci_suspend_notifier() which
-processes the PM_POST_SUSPEND event, while the unbinding thread is
-waiting on lock.
+I saw your request, but don't see a reason for doing this.
+We are not caching already freed skbuff_heads. They don't get
+kmem_cache_freed before getting into local cache. KASAN poisons
+them no earlier than at kmem_cache_free() (or did I miss someting?).
+heads being cached just get rid of all references and at the moment
+of dropping to the cache they are pretty the same as if they were
+allocated.
 
-  hci_suspend_notifier.cold.39+0x5/0x2b [bluetooth]
-  blocking_notifier_call_chain+0x69/0x90
-  pm_notifier_call_chain+0x1a/0x20
-  pm_suspend.cold.9+0x334/0x352
-  state_store+0x84/0xf0
-  kobj_attr_store+0x12/0x20
-  sysfs_kf_write+0x3b/0x40
-  kernfs_fop_write+0xda/0x1c0
-  vfs_write+0xbb/0x250
-  ksys_write+0x61/0xe0
-  __x64_sys_write+0x1a/0x20
-  do_syscall_64+0x37/0x80
-  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+I also remind that only skbs that are caught by napi_consume_skb() or
+__kfree_skb_defer() are getting into skb_cache, not every single one.
 
-Fix hci_suspend_notifer(), not to act on events when flag HCI_UNREGISTER
-is set.
+Regarding other emails:
 
-Signed-off-by: Vamshi K Sthambamkadi <vamshi.k.sthambamkadi@gmail.com>
----
- net/bluetooth/hci_core.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+1. NUMA awareness.
 
-diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
-index 9d2c9a1c552f..1c793e6eb92a 100644
---- a/net/bluetooth/hci_core.c
-+++ b/net/bluetooth/hci_core.c
-@@ -3566,7 +3566,8 @@ static int hci_suspend_notifier(struct notifier_block *nb, unsigned long action,
- 	}
- 
- 	/* Suspend notifier should only act on events when powered. */
--	if (!hdev_is_powered(hdev))
-+	if (!hdev_is_powered(hdev) ||
-+	    hci_dev_test_flag(hdev, HCI_UNREGISTER))
- 		goto done;
- 
- 	if (action == PM_SUSPEND_PREPARE) {
--- 
-2.17.1
+napi_alloc_cache is percpu, we're partly protected. The only thing
+that might happen is that napi_consume_skb() can be called for skb
+that was allocated at a distant node, and then it's requested by
+napi_alloc_skb() (and there were no bulk-wipes between).
+This can occur only if a NAPI polling cycle for cleaning up the
+completion/send queue(s) is scheduled on a CPU that is far away
+from the one(s) that clean(s) up the receive queue(s).
+That is really very unlikely to be caught, but...
+
+One of the ways to handle this is like (inside napi_skb_cache_get()):
+
+=09skb =3D nc->skb_cache[--nc->skb_count];
+=09if (unlikely(pfn_to_nid(virt_to_pfn(skb)) !=3D numa_mem_id())) {
+=09=09kmem_cache_free(skbuff_head_cache, skb);
+=09=09skb =3D kmem_cache_alloc(skbuff_head_cache, GFP_ATOMIC);
+=09}
+
+=09return skb;
+
+This whole condition will be optimized out on !CONFIG_NUMA, as
+pfn_to_nid() and numa_mem_id() are compile-time 0 in this case.
+This won't break currently present bulk-freeing.
+
+2. Where do optimizations come from.
+
+Not only from bulk allocations, but also from the shortcut:
+
+napi_consume_skb()/__kfree_skb_defer() -> skb_cache -> napi_alloc_skb();
+
+napi_alloc_skb() will get a new head directly without calling for MM
+functions.
+I'm aware that kmem_cache has its own cache, but this also applies to
+page allocators etc. which doesn't prevent from having things like
+page_frag_cache or page_pool to recycle pages and fragments directly,
+not through MM layer.
+
+>> prefetchw() on CONFIG_SLUB is dropped since it makes no sense anymore.
+>>
+>> Suggested-by: Edward Cree <ecree.xilinx@gmail.com>
+>> Signed-off-by: Alexander Lobakin <alobakin@pm.me>
+>> ---
+>>  net/core/skbuff.c | 54 ++++++++++++++++++++++++++++++-----------------
+>>  1 file changed, 35 insertions(+), 19 deletions(-)
+>>
+>> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+>> index dc3300dc2ac4..f42a3a04b918 100644
+>> --- a/net/core/skbuff.c
+>> +++ b/net/core/skbuff.c
+>> @@ -364,6 +364,7 @@ struct sk_buff *build_skb_around(struct sk_buff *skb=
+,
+>>  EXPORT_SYMBOL(build_skb_around);
+>>
+>>  #define NAPI_SKB_CACHE_SIZE    64
+>> +#define NAPI_SKB_CACHE_HALF    (NAPI_SKB_CACHE_SIZE / 2)
+>>
+>>  struct napi_alloc_cache {
+>>         struct page_frag_cache page;
+>> @@ -487,7 +488,15 @@ EXPORT_SYMBOL(__netdev_alloc_skb);
+>>
+>>  static struct sk_buff *napi_skb_cache_get(struct napi_alloc_cache *nc)
+>>  {
+>> -       return kmem_cache_alloc(skbuff_head_cache, GFP_ATOMIC);
+>> +       if (unlikely(!nc->skb_count))
+>> +               nc->skb_count =3D kmem_cache_alloc_bulk(skbuff_head_cach=
+e,
+>> +                                                     GFP_ATOMIC,
+>> +                                                     NAPI_SKB_CACHE_HAL=
+F,
+>> +                                                     nc->skb_cache);
+>> +       if (unlikely(!nc->skb_count))
+>> +               return NULL;
+>> +
+>> +       return nc->skb_cache[--nc->skb_count];
+>>  }
+>>
+>>  /**
+>> @@ -867,40 +876,47 @@ void __consume_stateless_skb(struct sk_buff *skb)
+>>  void __kfree_skb_flush(void)
+>>  {
+>>         struct napi_alloc_cache *nc =3D this_cpu_ptr(&napi_alloc_cache);
+>> +       size_t count;
+>> +       void **ptr;
+>> +
+>> +       if (unlikely(nc->skb_count =3D=3D NAPI_SKB_CACHE_HALF))
+>> +               return;
+>> +
+>> +       if (nc->skb_count > NAPI_SKB_CACHE_HALF) {
+>> +               count =3D nc->skb_count - NAPI_SKB_CACHE_HALF;
+>> +               ptr =3D nc->skb_cache + NAPI_SKB_CACHE_HALF;
+>>
+>> -       /* flush skb_cache if containing objects */
+>> -       if (nc->skb_count) {
+>> -               kmem_cache_free_bulk(skbuff_head_cache, nc->skb_count,
+>> -                                    nc->skb_cache);
+>> -               nc->skb_count =3D 0;
+>> +               kmem_cache_free_bulk(skbuff_head_cache, count, ptr);
+>> +               nc->skb_count =3D NAPI_SKB_CACHE_HALF;
+>> +       } else {
+>> +               count =3D NAPI_SKB_CACHE_HALF - nc->skb_count;
+>> +               ptr =3D nc->skb_cache + nc->skb_count;
+>> +
+>> +               nc->skb_count +=3D kmem_cache_alloc_bulk(skbuff_head_cac=
+he,
+>> +                                                      GFP_ATOMIC, count=
+,
+>> +                                                      ptr);
+>>         }
+>>  }
+>>
+
+Al
 
