@@ -2,68 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6EFA42F568B
-	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 02:58:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BCD7D2F56A4
+	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 02:58:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728547AbhANBtP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jan 2021 20:49:15 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:39322 "EHLO vps0.lunn.ch"
+        id S1727896AbhANBuZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jan 2021 20:50:25 -0500
+Received: from mail.kernel.org ([198.145.29.99]:38614 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727019AbhANBtO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 13 Jan 2021 20:49:14 -0500
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1kzrkS-000Rcf-KU; Thu, 14 Jan 2021 02:48:28 +0100
-Date:   Thu, 14 Jan 2021 02:48:28 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     George McCollister <george.mccollister@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Rob Herring <robh@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH net-next v4 1/3] dsa: add support for Arrow XRS700x tag
- trailer
-Message-ID: <X/+i7LwLurfzn51t@lunn.ch>
-References: <20210113145922.92848-1-george.mccollister@gmail.com>
- <20210113145922.92848-2-george.mccollister@gmail.com>
- <20210114010519.td6q2pzy4mg6viuh@skbuf>
+        id S1728758AbhANBuF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 13 Jan 2021 20:50:05 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 635F42343B;
+        Thu, 14 Jan 2021 01:49:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1610588964;
+        bh=2ccZHLU4CWXsqjnD9/TJOJPYJ2TLtOTn2NRJySDvYz0=;
+        h=From:To:Cc:Subject:Date:From;
+        b=CvhUhzsBL8Vdap758YpHva1hOH14DO98pB9YUk+gxGmtEOy6zu4+GKYr0T9BauM7b
+         OIAyElJlpEO0sY0ZqUtI3hqcZqGxMAxiHM29lhHjulYgnqo6Ao81lmTnGMqRSylA8i
+         NAUAgxLZc6LlGDTSt2g+w75VMm2YuZ0FP0HQ3yk9krOUSxyiIzRtS7WNOYz4+nEswi
+         w0/rtPZd/Pag/vtyotTGiOTlp8ILwT3TSRSlKMN2sD7uyhL3QjpXVeL4KpSzo47cm7
+         Hpv1kg2YFqyC7IaSZ24r0VwXB+xZoh1xQRL+4ZS3OvOc9II/jSQFcCq/Rg4E8w6/86
+         +l6lO4RgMdNpg==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, corbet@lwn.net,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net v2 0/7] MAINTAINERS: remove inactive folks from networking 
+Date:   Wed, 13 Jan 2021 17:49:05 -0800
+Message-Id: <20210114014912.2519931-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210114010519.td6q2pzy4mg6viuh@skbuf>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 14, 2021 at 03:05:19AM +0200, Vladimir Oltean wrote:
-> On Wed, Jan 13, 2021 at 08:59:20AM -0600, George McCollister wrote:
-> > Add support for Arrow SpeedChips XRS700x single byte tag trailer. This
-> > is modeled on tag_trailer.c which works in a similar way.
-> > 
-> > Signed-off-by: George McCollister <george.mccollister@gmail.com>
-> > Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-> > Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-> > ---
-> 
-> Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
-> 
-> A few comments below.
-> 
-> > diff --git a/net/dsa/tag_xrs700x.c b/net/dsa/tag_xrs700x.c
-> > new file mode 100644
-> > index 000000000000..4ee7c260a8a9
-> > --- /dev/null
-> > +++ b/net/dsa/tag_xrs700x.c
-> > @@ -0,0 +1,67 @@
-> > +// SPDX-License-Identifier: GPL-2.0+
-> > +/*
-> > + * XRS700x tag format handling
-> > + * Copyright (c) 2008-2009 Marvell Semiconductor
-> 
-> Why does Marvell get copyright?
+Hi!
 
-Probably because it started life as tag_trailer.c?
+This series intends to remove some most evidently inactive maintainers.
 
-	 Andrew
+To make maintainers' lives easier we're trying to nudge people
+towards CCing all the relevant folks on patches, in an attempt
+to improve review rate. We have a check in patchwork which validates
+the CC list against get_maintainers.pl. It's a little awkward, however,
+to force people to CC maintainers who we haven't seen on the mailing
+list for years. This series removes from maintainers folks who didn't
+provide any tag (incl. authoring a patch) in the last 5 years.
+To ensure reasonable signal to noise ratio we only considered
+MAINTAINERS entries which had more than 100 patches fall under
+them in that time period.
+
+All this is purely a process-greasing exercise, I hope nobody
+sees this series as an affront. Most folks are moved to CREDITS,
+a couple entries are simply removed. 
+
+The following inactive maintainers are kept, because they indicated
+the intention to come back in the near future:
+
+ - Veaceslav Falico (bonding)
+ - Christian Benvenuti (Cisco drivers)
+ - Felix Fietkau (mtk-eth)
+ - Mirko Linder (skge/sky2)
+
+Patches in this series contain report from a script which did
+the analysis. Big thanks to Jonathan Corbet for help and writing
+the script (although I feel like I used it differently than Jon
+may have intended ;)). The output format is thus:
+
+ Subsystem $name
+  Changes $reviewed / $total ($percent%)           // how many changes to the subsystem had at least one ack/review
+  Last activity: $date_of_most_recent_patch
+  $maintainer/reviewer1:
+    Author $last_commit_authored_by_the_person $how_many_in_5yrs
+    Committer $last_committed $how_many
+    Tags $last_tag_like_review_signoff_etc $how_many
+  $maintainer/reviewer2:
+    Author $last_commit_authored_by_the_person $how_many_in_5yrs
+    Committer $last_committed $how_many
+    Tags $last_tag_like_review_signoff_etc $how_many
+  Top reviewers: // Top 3 reviewers (who are not listed in MAINTAINERS)
+    [$count_of_reviews_and_acks]: $email
+  INACTIVE MAINTAINER $name   // maintainer / reviewer who has done nothing in last 5yrs
+
+v2:
+ - keep Felix and Mirko
+
+Jakub Kicinski (7):
+  MAINTAINERS: altx: move Jay Cliburn to CREDITS
+  MAINTAINERS: net: move Alexey Kuznetsov to CREDITS
+  MAINTAINERS: vrf: move Shrijeet to CREDITS
+  MAINTAINERS: ena: remove Zorik Machulsky from reviewers
+  MAINTAINERS: tls: move Aviad to CREDITS
+  MAINTAINERS: ipvs: move Wensong Zhang to CREDITS
+  MAINTAINERS: dccp: move Gerrit Renker to CREDITS
+
+ CREDITS     | 24 ++++++++++++++++++++++++
+ MAINTAINERS |  9 +--------
+ 2 files changed, 25 insertions(+), 8 deletions(-)
+
+-- 
+2.26.2
+
