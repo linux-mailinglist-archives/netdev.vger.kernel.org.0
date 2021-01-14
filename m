@@ -2,130 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E57EF2F5CD3
-	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 10:05:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BB1FB2F5D1E
+	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 10:17:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727699AbhANJE0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jan 2021 04:04:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51316 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727634AbhANJEX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 04:04:23 -0500
-Received: from mail-ot1-x336.google.com (mail-ot1-x336.google.com [IPv6:2607:f8b0:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E02E6C061575;
-        Thu, 14 Jan 2021 01:03:42 -0800 (PST)
-Received: by mail-ot1-x336.google.com with SMTP id o11so4578406ote.4;
-        Thu, 14 Jan 2021 01:03:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=yr/MMAs2Fb11VuHGp9TyeBPIvbzmDxCwMaynvb9fj1c=;
-        b=qXLLo+nH99Djx2egzXgEeUHGgswYvV8wC6i4G5yQIog24gZfejHtbLKr4nV4qPLesr
-         qbZtQKACKYArx78k5TQlnQKUznguBespZdbCSt2hdUcKRAdBWIxtWD7iHXBzncf0lIC2
-         ozoCl4OAgyQqWWIjxTTW7r2t0UNNZblMP1tILFjMRVO0YMNPypasSOtO0J4tyg+4KfWO
-         hrWpcc3R1hw4XG8cp3sO98BpXvCCxeTDf8IWjU9JeakGm6OCCDaQG205ZeOXKZxKOTOv
-         TNCBLrCZyddKOO54AQDI0Qt/ISZfA2t/NsOKK1rIchOGOZ3ho2eaz41ldep2BAa8UIMt
-         C1Gg==
+        id S1728102AbhANJRJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jan 2021 04:17:09 -0500
+Received: from mail-qk1-f173.google.com ([209.85.222.173]:33699 "EHLO
+        mail-qk1-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727512AbhANJRG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 04:17:06 -0500
+Received: by mail-qk1-f173.google.com with SMTP id f26so6573864qka.0;
+        Thu, 14 Jan 2021 01:16:50 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=yr/MMAs2Fb11VuHGp9TyeBPIvbzmDxCwMaynvb9fj1c=;
-        b=O+eJTZY0jdb134CrCm+nBhCqz4GeoHxr9xUrVspOEIEF72/3ejECwpCsDVFSmv2utv
-         zDZhGp4Z+jXfxKrqc3dBUjys3dznyzyWFep/R6P949ogq4JWGlNbuKud7fUuei7ccaHW
-         opBJawIO4H2hZL0DLG7jhvPN+EaXJX0MBNYexBD5k9VIacox2P9JVJzgWhFk9tZHEiNg
-         WnVKvGC2Ox38yNqlTvPGxDQLK5f3p466G1NdalKgzngEQIwEl+Q9B2rB6lJ3pxKEALLd
-         TqhoWnq/1lTlued8VzlFOY4tBxUMlYzR2FwwbsIvBYEuDVWRIoKO7/y4boqVY5Ne4V8W
-         Q6LQ==
-X-Gm-Message-State: AOAM533TA7FQjhvr+zhDsd6HbsdO3D7zwb7iNGJDBTgNTU7CMbwxPgxs
-        4uJi96TMq47+AWGBxsiXTTs=
-X-Google-Smtp-Source: ABdhPJwPTpZNYg199+JfX7XSvWftMDOAhHuoJ57StjLhZgaGtiOFGtX7w68/DWQLOIqrc8levJINaQ==
-X-Received: by 2002:a9d:71c9:: with SMTP id z9mr4180699otj.61.1610615022347;
-        Thu, 14 Jan 2021 01:03:42 -0800 (PST)
-Received: from localhost ([172.243.146.206])
-        by smtp.gmail.com with ESMTPSA id g92sm945326otb.66.2021.01.14.01.03.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Jan 2021 01:03:41 -0800 (PST)
-Date:   Thu, 14 Jan 2021 01:03:33 -0800
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     Jesper Dangaard Brouer <brouer@redhat.com>, bpf@vger.kernel.org
-Cc:     Jesper Dangaard Brouer <brouer@redhat.com>, netdev@vger.kernel.org,
-        Daniel Borkmann <borkmann@iogearbox.net>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        maze@google.com, lmb@cloudflare.com, shaun@tigera.io,
-        Lorenzo Bianconi <lorenzo@kernel.org>, marek@cloudflare.com,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>, eyal.birger@gmail.com,
-        colrack@gmail.com
-Message-ID: <600008e5e2e80_1eeef20852@john-XPS-13-9370.notmuch>
-In-Reply-To: <161047352593.4003084.6778762780747210369.stgit@firesoul>
-References: <161047346644.4003084.2653117664787086168.stgit@firesoul>
- <161047352593.4003084.6778762780747210369.stgit@firesoul>
-Subject: RE: [PATCH bpf-next V11 5/7] bpf: drop MTU check when doing TC-BPF
- redirect to ingress
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: 7bit
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Py9tv1BOpYTNv98TYkoTeeYi5fcvbtH9uFZFAg3tHPA=;
+        b=JVFLQ9a4i65jcHmmTQsoGidozDFYUs3C3o6Y7wSSxK7E5RyoWcKvxbxbSSWDCD03H7
+         SlWmui3A+/X8mH1b7NFiT7Ew+Ocwb796314vtj5FGm+ZGIegR4QYKwvLVTu6FX0EhJYy
+         Rva3PZYqO4TRnEh0b/nXeYawXNbpc+hsytP9084f5e4UmU+1xoBFyap1KSEoh69pMXuP
+         ge+KVSdbUHvMTvN6UXycQYQYSZLPddf8f1ZyY7jxPDhAhsRUciemgPlbslD/p8GYXDno
+         EpPwrzW7gMOREMcXCVpGKw+QrkYU1y5zXm87rB4+Fldw2KSu26DBMNz6noCGE6GX5NcO
+         kVWQ==
+X-Gm-Message-State: AOAM531WrZXBoUdKRKonDVrYu/v/6VfPiB1Y6CA8Ql2UVHmKJTlcb8+Y
+        5SnjRuIRuJ1NHJnlE003Rg5xfy7XwA86VMB5nz4=
+X-Google-Smtp-Source: ABdhPJxSDzUfvPdnulzChrmcZy1CTadAtqqs9/JIrB+O94LLFUqJl9pZaZrwEu/zPXmwUwIhaMRFeL+2myUrX2Nzq5M=
+X-Received: by 2002:a25:5583:: with SMTP id j125mr8348157ybb.307.1610615785252;
+ Thu, 14 Jan 2021 01:16:25 -0800 (PST)
+MIME-Version: 1.0
+References: <20210113211410.917108-1-mkl@pengutronix.de> <20210113211410.917108-10-mkl@pengutronix.de>
+ <CAMZ6Rq+Wxn_kG7rSkUrMYMqNw790SMe-UKmpUVdEA_eGcjoT+g@mail.gmail.com> <2f3fff1a-9a50-030b-6a29-2009c8b65b68@hartkopp.net>
+In-Reply-To: <2f3fff1a-9a50-030b-6a29-2009c8b65b68@hartkopp.net>
+From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Date:   Thu, 14 Jan 2021 18:16:14 +0900
+Message-ID: <CAMZ6RqLKYnGDePueN1ftL9a47Qf-ZR7bc4eLGwzCkncsD6ok2Q@mail.gmail.com>
+Subject: Re: [net-next 09/17] can: length: can_fd_len2dlc(): simplify length calculcation
+To:     Oliver Hartkopp <socketcan@hartkopp.net>
+Cc:     Marc Kleine-Budde <mkl@pengutronix.de>,
+        netdev <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-can <linux-can@vger.kernel.org>, kernel@pengutronix.de
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Jesper Dangaard Brouer wrote:
-> The use-case for dropping the MTU check when TC-BPF does redirect to
-> ingress, is described by Eyal Birger in email[0]. The summary is the
-> ability to increase packet size (e.g. with IPv6 headers for NAT64) and
-> ingress redirect packet and let normal netstack fragment packet as needed.
-> 
-> [0] https://lore.kernel.org/netdev/CAHsH6Gug-hsLGHQ6N0wtixdOa85LDZ3HNRHVd0opR=19Qo4W4Q@mail.gmail.com/
-> 
-> V9:
->  - Make net_device "up" (IFF_UP) check explicit in skb_do_redirect
-> 
-> V4:
->  - Keep net_device "up" (IFF_UP) check.
->  - Adjustment to handle bpf_redirect_peer() helper
-> 
-> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
-> ---
->  include/linux/netdevice.h |   31 +++++++++++++++++++++++++++++--
->  net/core/dev.c            |   19 ++-----------------
->  net/core/filter.c         |   14 +++++++++++---
->  3 files changed, 42 insertions(+), 22 deletions(-)
-> 
+On Tue. 14 Jan 2021 at 17:23, Oliver Hartkopp <socketcan@hartkopp.net> wrote:
+> On 14.01.21 02:59, Vincent MAILHOL wrote:
+> > On Tue. 14 Jan 2021 at 06:14, Marc Kleine-Budde <mkl@pengutronix.de> wrote:
+> >>
+> >> If the length paramter in len2dlc() exceeds the size of the len2dlc array, we
+> >> return 0xF. This is equal to the last 16 members of the array.
+> >>
+> >> This patch removes these members from the array, uses ARRAY_SIZE() for the
+> >> length check, and returns CANFD_MAX_DLC (which is 0xf).
+> >>
+> >> Reviewed-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+> >> Link: https://lore.kernel.org/r/20210111141930.693847-9-mkl@pengutronix.de
+> >> Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
+> >> ---
+> >>   drivers/net/can/dev/length.c | 6 ++----
+> >>   1 file changed, 2 insertions(+), 4 deletions(-)
+> >>
+> >> diff --git a/drivers/net/can/dev/length.c b/drivers/net/can/dev/length.c
+> >> index 5e7d481717ea..d695a3bee1ed 100644
+> >> --- a/drivers/net/can/dev/length.c
+> >> +++ b/drivers/net/can/dev/length.c
+> >> @@ -27,15 +27,13 @@ static const u8 len2dlc[] = {
+> >>          13, 13, 13, 13, 13, 13, 13, 13, /* 25 - 32 */
+> >>          14, 14, 14, 14, 14, 14, 14, 14, /* 33 - 40 */
+> >>          14, 14, 14, 14, 14, 14, 14, 14, /* 41 - 48 */
+> >> -       15, 15, 15, 15, 15, 15, 15, 15, /* 49 - 56 */
+> >> -       15, 15, 15, 15, 15, 15, 15, 15  /* 57 - 64 */
+> >>   };
+> >>
+> >>   /* map the sanitized data length to an appropriate data length code */
+> >>   u8 can_fd_len2dlc(u8 len)
+> >>   {
+> >> -       if (unlikely(len > 64))
+> >> -               return 0xF;
+> >> +       if (len > ARRAY_SIZE(len2dlc))
+> >
+> > Sorry but I missed an of-by-one issue when I did my first
+> > review. Don't know why but it popped to my eyes this morning when
+> > casually reading the emails.
+>
+> Oh, yes.
+>
+> The fist line is 0 .. 8 which has 9 bytes.
+>
+> I also looked on it (from the back), and wondered if it was correct. But
+> didn't see it either at first sight.
+>
+> >
+> > ARRAY_SIZE(len2dlc) is 49. If len is between 0 and 48, use the
+> > array, if len is greater *or equal* return CANFD_MAX_DLC.
+>
+> All these changes and discussions make it very obviously more tricky to
+> understand that code.
+>
+> I don't really like this kind of improvement ...
+>
+> Before that it was pretty clear that we only catch an out of bounds
+> value and usually grab the value from the table.
 
-[...]
+I understand your point: all three of us initially missed that
+bug. But now that it is fixed, I would still prefer to keep
+Marc's patch.
 
-> diff --git a/net/core/filter.c b/net/core/filter.c
-> index 3f2e593244ca..1908800b671c 100644
-> --- a/net/core/filter.c
-> +++ b/net/core/filter.c
-> @@ -2083,13 +2083,21 @@ static const struct bpf_func_proto bpf_csum_level_proto = {
->  
->  static inline int __bpf_rx_skb(struct net_device *dev, struct sk_buff *skb)
->  {
-> -	return dev_forward_skb(dev, skb);
 
-> +	int ret = ____dev_forward_skb(dev, skb, false);
-> +
-> +	if (likely(!ret)) {
-> +		skb->protocol = eth_type_trans(skb, dev);
-> +		skb_postpull_rcsum(skb, eth_hdr(skb), ETH_HLEN);
-> +		ret = netif_rx(skb);
-> +	}
-> +
-> +	return ret;
+Yours sincerely,
+Vincent
 
-How about putting above block into a dev.c routine call it
-
- dev_forward_skb_nomtu(...)
-
-or something like that. Then we keep this code next to its pair
-with mtu check, dev_forward_skb().
-
-dev_forward_skb() also uses netif_rx_internal() looks like maybe we should
-just do the same here?
-
-Thanks,
-John
+> >
+> > In short, replace > by >=:
+> > +       if (len >= ARRAY_SIZE(len2dlc))
+> >
+> >> +               return CANFD_MAX_DLC;
+> >>
+> >>          return len2dlc[len];
+> >>   }
