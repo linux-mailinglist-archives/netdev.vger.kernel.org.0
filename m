@@ -2,115 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D8862F6F1B
-	for <lists+netdev@lfdr.de>; Fri, 15 Jan 2021 00:48:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 984282F6F1D
+	for <lists+netdev@lfdr.de>; Fri, 15 Jan 2021 00:49:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731027AbhANXrM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jan 2021 18:47:12 -0500
-Received: from mail.kernel.org ([198.145.29.99]:37142 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730755AbhANXrM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 14 Jan 2021 18:47:12 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 6C7ED23A3B;
-        Thu, 14 Jan 2021 23:46:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610667991;
-        bh=2ETqslzrc3BObXDt2oH3b5RNNuC90uSLxcwQ5UA15ig=;
-        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
-        b=PlmcAFPfkM3I61ywTPwaTZRHikH9KuwetZI+eub1Q+GaXENY87fLo9nKvDWtpoPsg
-         5dqtlOZXOLqow/GsJXVlhFzvQjpDUCWHDXwtezmyryB0HH3Ui+jQebQSAU2F9vqOux
-         793lUVy6IRi7VMR+2JX/+QaLZ0BuHfRkyr/bqpsjYWinIo7SlhL0AhVFD9QEtQur2B
-         /E6osjG7isRxA3Mi94Kz+L6LZcCxAD/tGD7l2Lc10V0HvlOt+7RQ/zYaOUt3dVY8UE
-         9VWqqjP+x0sGYj3+gc9b8f+fqI1BQdJhiyul4I0qteNCEqql6yJSlT1kthQZW0iVM8
-         TD+boAHFdT1sg==
-Message-ID: <c8ea9deda401f4c2996129d5089aa10cb0a31e84.camel@kernel.org>
-Subject: Re: [PATCH net-next,1/3] octeontx2-af: Mailbox changes for 98xx CPT
- block
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     Srujana Challa <schalla@marvell.com>, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, sgoutham@marvell.com,
-        gakula@marvell.com, sbhatta@marvell.com, schandran@marvell.com,
-        pathreya@marvell.com, jerinj@marvell.com,
-        Mahipal Challa <mchalla@marvell.com>
-Date:   Thu, 14 Jan 2021 15:46:30 -0800
-In-Reply-To: <20210113152007.30293-2-schalla@marvell.com>
-References: <20210113152007.30293-1-schalla@marvell.com>
-         <20210113152007.30293-2-schalla@marvell.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+        id S1731056AbhANXso (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jan 2021 18:48:44 -0500
+Received: from m43-15.mailgun.net ([69.72.43.15]:54737 "EHLO
+        m43-15.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731034AbhANXsn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 18:48:43 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1610668104; h=Message-ID: Subject: Cc: To: From: Date:
+ Content-Transfer-Encoding: Content-Type: MIME-Version: Sender;
+ bh=VqOOSdGNfO/h3J3IXfSdwQd9CHDv+2u1qcF0HvHMhF0=; b=j9tYLxyCfD7H/DtZFZFFsfagsbp75Dj7+Dp9SUUOm7/YtQNyzQfIpw7zuXAu+HwXgmKo7up6
+ 0uMXaCn8uoY9OiUNMxb38AsfDu9Z2rRRCV9BunZdqnkscvdpj5nybxx/+82tszyTfgOz2bKF
+ eC+VHAgF4rkhieKvGnf95OJr0v0=
+X-Mailgun-Sending-Ip: 69.72.43.15
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n06.prod.us-east-1.postgun.com with SMTP id
+ 6000d82cba7f86850673554d (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Thu, 14 Jan 2021 23:47:56
+ GMT
+Sender: stranche=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 1A4B5C433ED; Thu, 14 Jan 2021 23:47:56 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00
+        autolearn=unavailable autolearn_force=no version=3.4.0
+Received: from mail.codeaurora.org (localhost.localdomain [127.0.0.1])
+        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: stranche)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 88A25C433C6;
+        Thu, 14 Jan 2021 23:47:55 +0000 (UTC)
 MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
 Content-Transfer-Encoding: 7bit
+Date:   Thu, 14 Jan 2021 16:47:55 -0700
+From:   stranche@codeaurora.org
+To:     netdev@vger.kernel.org
+Cc:     subashab@codeaurora.org, dsahern@gmail.com, weiwan@google.com
+Subject: List corruption from ipv6_route_seq_start
+Message-ID: <a0d35019167c32728aa810fee91909b5@codeaurora.org>
+X-Sender: stranche@codeaurora.org
+User-Agent: Roundcube Webmail/1.3.9
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2021-01-13 at 20:50 +0530, Srujana Challa wrote:
-> This patch changes CPT mailbox message format to
-> support new block CPT1 in 98xx silicon.
-> 
-> cpt_rd_wr_reg ->
->     Modify cpt_rd_wr_reg mailbox and its handler to
->     accommodate new block CPT1.
-> cpt_lf_alloc ->
->     Modify cpt_lf_alloc mailbox and its handler to
->     configure LFs from a block address out of multiple
->     blocks of same type. If a PF/VF needs to configure
->     LFs from both the blocks then this mbox should be
->     called twice.
-> 
-> Signed-off-by: Mahipal Challa <mchalla@marvell.com>
-> Signed-off-by: Srujana Challa <schalla@marvell.com>
-> ---
->  .../net/ethernet/marvell/octeontx2/af/mbox.h  |  2 +
->  .../ethernet/marvell/octeontx2/af/rvu_cpt.c   | 41 +++++++++++----
-> ----
->  2 files changed, 27 insertions(+), 16 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-> b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-> index f919283ddc34..cbbab070f22b 100644
-> --- a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-> +++ b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-> @@ -1071,6 +1071,7 @@ struct cpt_rd_wr_reg_msg {
->  	u64 *ret_val;
->  	u64 val;
->  	u8 is_write;
-> +	int blkaddr;
->  };
->  
->  struct cpt_lf_alloc_req_msg {
-> @@ -1078,6 +1079,7 @@ struct cpt_lf_alloc_req_msg {
->  	u16 nix_pf_func;
->  	u16 sso_pf_func;
->  	u16 eng_grpmsk;
-> +	int blkaddr;
->  };
->  
->  #endif /* MBOX_H */
-> diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c
-> b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c
-> index 35261d52c997..b6de4b95a72a 100644
-> --- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c
-> +++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c
-> @@ -65,13 +65,13 @@ int rvu_mbox_handler_cpt_lf_alloc(struct rvu
-> *rvu,
->  	int num_lfs, slot;
->  	u64 val;
->  
-> +	blkaddr = req->blkaddr ? req->blkaddr : BLKADDR_CPT0;
-> +	if (blkaddr != BLKADDR_CPT0 && blkaddr != BLKADDR_CPT1)
-> +		return -ENODEV;
-> +
->  
+Hi everyone,
 
-Just out of curiosity, why do you need to check against your driver's
-internals function calls ? 
+We've had a list corruption reported to us when using the 
+/proc/net/ipv6_route file to read the routing information on the system 
+on the 5.4.61 kernel.
+ From the list pointers, it seems that the list_head in the fib6_walker 
+has been reinitialized with INIT_LIST_HEAD() in 
+ipv6_route_seq_setup_walk() while the walker was still on the 
+fib6_walker list.
 
-who calls this function: I Couldn't find any caller !
+net->ipv6.fib6_walkers : 0xFFFFFFC013114DB0
+next : 0xFFFFFF81E0899C88
+prev : 0xFFFFFF81E0899C88
 
-$ git grep rvu_mbox_handler_cpt_lf_alloc
-drivers/net/ethernet/marvell/octeontx2/af/rvu_cpt.c:int
-rvu_mbox_handler_cpt_lf_alloc(struct rvu *rvu,
+w->lh : 0xFFFFFF81E0899C88
+next : 0xFFFFFF81E0899C88 // should be 0xFFFFFFC013114DB0
+prev : 0xFFFFFF81E0899C88 // should be 0xFFFFFFC013114DB0
 
+Looking over the seq_file operations for this, the only way I can see 
+ipv6_route_seq_setup_walk() being called on a walker that has not been 
+removed from the list with fib6_walker_unlink() is if 
+ipv6_route_iter_active() returns false during ipv6_route_seq_stop(). As 
+far as I can tell, this check is trying to assess if the walker has 
+reached the end of the tree, and therefore no longer placed back on the 
+fib6_walker list by ipv6_route_seq_next(), to avoid trying to double 
+unlink the entry. This check seems to only be needed since 
+fib6_unlink_walker() uses a plain list_del() call instead of 
+list_del_init(), so simply checking list_empty(&w->lh) wouldn't 
+correctly indicate if the walker had been unlinked previously.
 
+At least from the semantics of the seq_file operations being used in 
+seq_read(), it seems that there wouldn't be a reason to keep the walker 
+around in the list after the completion of ipv6_route_seq_stop(), so I'm 
+wondering if switching to this more direct check would be appropriate, 
+as there seems to be some way that the current roundabout method is 
+failing.
 
+Call trace:
+   __list_add_valid+0x74/0x90
+   fib6_walker_link+0x78/0xb8
+   ipv6_route_seq_start+0xec/0x138
+   seq_read+0x18c/0x5b8
+   proc_reg_read+0xa4/0x188
+   __vfs_read+0x60/0x204
+   vfs_read+0xa4/0x144
+
+Thanks,
+Sean
