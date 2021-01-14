@@ -2,92 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EED312F6F25
-	for <lists+netdev@lfdr.de>; Fri, 15 Jan 2021 00:57:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AEE712F6F27
+	for <lists+netdev@lfdr.de>; Fri, 15 Jan 2021 00:57:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731073AbhANXzq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jan 2021 18:55:46 -0500
-Received: from mail-40134.protonmail.ch ([185.70.40.134]:35906 "EHLO
-        mail-40134.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728545AbhANXzq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 18:55:46 -0500
-Date:   Thu, 14 Jan 2021 23:54:55 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
-        t=1610668503; bh=fkj15JFInAacwkcXWADIVGKRGYKKKaLvXr53v7A5jGA=;
-        h=Date:To:From:Cc:Reply-To:Subject:From;
-        b=AxpLtlAd9rxvfz1UeO9vM5UmufvzQ2aYxgRQVfTNt0hZaAwHMemLnVvS7bSZQDhaG
-         bQeSbycH5J9BL7Q8gB/CkH7fXTHdcme+sT/OScqfEKwqscsnaANhcLkz8LVD/mLFGr
-         GUsvJ5KCAx667B/64+HcbI1Mqh9FD0jKFPbobNeBV0ttXRZ6zdl7dSN7HlvwyVPpuF
-         esE9drroF13bRyzZdjpuiHpUFNGmT43nWD4c0cgEr5TuKvjWupcaS1o/l/n/ExAvH0
-         T7Dv5zgBx7bAO0wZAcs4HN+6kNyKGzI++b4ahBGwMphGWO/gcQXlT2iYzqWtxB4v0K
-         Hu8JBdt2YjXFw==
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-From:   Alexander Lobakin <alobakin@pm.me>
-Cc:     Willem de Bruijn <willemb@google.com>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Guillaume Nault <gnault@redhat.com>,
-        Yunsheng Lin <linyunsheng@huawei.com>,
-        Florian Westphal <fw@strlen.de>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Dongseok Yi <dseok.yi@samsung.com>,
-        Yadu Kishore <kyk.segfault@gmail.com>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Marco Elver <elver@google.com>,
-        Alexander Duyck <alexanderduyck@fb.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Reply-To: Alexander Lobakin <alobakin@pm.me>
-Subject: [PATCH net] skbuff: back tiny skbs with kmalloc() in __netdev_alloc_skb() too
-Message-ID: <20210114235423.232737-1-alobakin@pm.me>
+        id S1731119AbhANX4E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jan 2021 18:56:04 -0500
+Received: from mail.kernel.org ([198.145.29.99]:38130 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1731040AbhANX4E (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 14 Jan 2021 18:56:04 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 405C823356;
+        Thu, 14 Jan 2021 23:55:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1610668523;
+        bh=+UDf1VuTxcx0O3kFj8ek2bxtWAkjVs/EfjwDj85SFzA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=C/zcKlQukXgOu8Cn71onNcTdNR119n1DJzBDYNB+IkB9E8vblwfjK/R5ypwnDeB39
+         eUwW8pcd6f/gHRHN1QkD+wrRUiABybGcQE0NeDqURV+xoN9n9IvjuAee+qD0cM2/w8
+         POxVit6svynREDVc3xj2SxRTHlg6a97XBUjjVIEquQeQ7+lMRgZvv6UTB6XFptglX9
+         i3Pf7agq5E3wbNsB4TO9qsFgjq+Qia9wqyK4mNhvUZb1QaPZox0JtFakxPc3CguzEd
+         x4Y/HYSdfCSWhDa9SY3tN0YSaS4tmZESFXpr44OHinZM4fVEKk4zF/4YQp7duxqxs2
+         /u5fCTMVPZfaw==
+Date:   Fri, 15 Jan 2021 00:55:16 +0100
+From:   Marek =?UTF-8?B?QmVow7pu?= <kabel@kernel.org>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev@vger.kernel.org, pavana.sharma@digi.com,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com, kuba@kernel.org,
+        lkp@intel.com, davem@davemloft.net, ashkan.boldaji@digi.com,
+        Chris Packham <chris.packham@alliedtelesis.co.nz>,
+        olteanv@gmail.com,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Russell King <rmk+kernel@armlinux.org.uk>
+Subject: Re: [PATCH net] net: dsa: mv88e6xxx: do not allow inband AN for
+ 2500base-x mode
+Message-ID: <20210115005516.03f0f772@kernel.org>
+In-Reply-To: <YADNEWkiPQX34Tyo@lunn.ch>
+References: <20210114024055.17602-1-kabel@kernel.org>
+        <YADNEWkiPQX34Tyo@lunn.ch>
+X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.2 required=10.0 tests=ALL_TRUSTED,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF shortcircuit=no
-        autolearn=disabled version=3.4.4
-X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on
-        mailout.protonmail.ch
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 3226b158e67c ("net: avoid 32 x truesize under-estimation for
-tiny skbs") ensured that skbs with data size lower than 1025 bytes
-will be kmalloc'ed to avoid excessive page cache fragmentation and
-memory consumption.
-However, the same issue can still be achieved manually via
-__netdev_alloc_skb(), where the check for size hasn't been changed.
-Mirror the condition from __napi_alloc_skb() to prevent from that.
+On Fri, 15 Jan 2021 00:00:33 +0100
+Andrew Lunn <andrew@lunn.ch> wrote:
 
-Fixes: 3226b158e67c ("net: avoid 32 x truesize under-estimation for tiny sk=
-bs")
-Signed-off-by: Alexander Lobakin <alobakin@pm.me>
----
- net/core/skbuff.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+> > diff --git a/drivers/net/dsa/mv88e6xxx/serdes.c b/drivers/net/dsa/mv88e6xxx/serdes.c
+> > index 3195936dc5be..b8241820679e 100644
+> > --- a/drivers/net/dsa/mv88e6xxx/serdes.c
+> > +++ b/drivers/net/dsa/mv88e6xxx/serdes.c
+> > @@ -55,9 +55,20 @@ static int mv88e6xxx_serdes_pcs_get_state(struct mv88e6xxx_chip *chip,
+> >  {
+> >  	if (status & MV88E6390_SGMII_PHY_STATUS_SPD_DPL_VALID) {
+> >  		state->link = !!(status & MV88E6390_SGMII_PHY_STATUS_LINK);
+> > +
+> > +		if (state->interface == PHY_INTERFACE_MODE_2500BASEX) {
+> > +			if (state->link) {
+> > +				state->speed = SPEED_2500;
+> > +				state->duplex = DUPLEX_FULL;
+> > +			}
+> > +
+> > +			return 0;
+> > +		}
+> > +
+> > +		state->an_complete = 1;  
+> 
+> Should this be here? It seems like a logically different change, it is
+> not clear to me it is to do with PHY_INTERFACE_MODE_2500BASEX.
 
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index c1a6f262636a..785daff48030 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -437,7 +437,11 @@ struct sk_buff *__netdev_alloc_skb(struct net_device *=
-dev, unsigned int len,
-=20
- =09len +=3D NET_SKB_PAD;
-=20
--=09if ((len > SKB_WITH_OVERHEAD(PAGE_SIZE)) ||
-+=09/* If requested length is either too small or too big,
-+=09 * we use kmalloc() for skb->head allocation.
-+=09 */
-+=09if (len <=3D SKB_WITH_OVERHEAD(1024) ||
-+=09    len > SKB_WITH_OVERHEAD(PAGE_SIZE) ||
- =09    (gfp_mask & (__GFP_DIRECT_RECLAIM | GFP_DMA))) {
- =09=09skb =3D __alloc_skb(len, gfp_mask, SKB_ALLOC_RX, NUMA_NO_NODE);
- =09=09if (!skb)
---=20
-2.30.0
+This function does not set an_complete at all, and as I understand it,
+it should. But maybe this should be in different commit, and more
+thought put into it. I will rethink it and send another version.
 
+> >  		state->duplex = status &
+> >  				MV88E6390_SGMII_PHY_STATUS_DUPLEX_FULL ?
+> > -			                         DUPLEX_FULL : DUPLEX_HALF;
+> > +						DUPLEX_FULL : DUPLEX_HALF;  
+> 
+> This looks like an unintended white space change.
 
+This change is intended. There were 17 space there istead of 2 tabs + 1
+space. And the last space is not needed, since it does not provide any
+other alignment. Should this be in separate commit?
+
+BTW Andrew, the code in serdes.c does many read and write calls, and it
+could be simplified a lot by implementing modify, setbits and clearbits
+methods, like phy.h implements. Or maybe we can use phy_mmd_* methods
+here instead of mv88e6390_serdes_read/write ?
+
+I fear such change will make future backporting of new fix commits
+a pain. But I still think it should be done. What do you think?
+
+Marek
