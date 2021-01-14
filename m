@@ -2,93 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1516A2F5C9A
-	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 09:49:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 673CC2F5CA1
+	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 09:53:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727067AbhANItJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jan 2021 03:49:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48020 "EHLO
+        id S1727683AbhANIui (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jan 2021 03:50:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48332 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725989AbhANItI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 03:49:08 -0500
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 156DEC061575
-        for <netdev@vger.kernel.org>; Thu, 14 Jan 2021 00:48:22 -0800 (PST)
-Received: by mail-ej1-x632.google.com with SMTP id by1so622924ejc.0
-        for <netdev@vger.kernel.org>; Thu, 14 Jan 2021 00:48:21 -0800 (PST)
+        with ESMTP id S1727653AbhANIuh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 03:50:37 -0500
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6728C061575
+        for <netdev@vger.kernel.org>; Thu, 14 Jan 2021 00:49:51 -0800 (PST)
+Received: by mail-wr1-x42d.google.com with SMTP id d26so4859048wrb.12
+        for <netdev@vger.kernel.org>; Thu, 14 Jan 2021 00:49:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=/czrQQC+4nr84ZXvjU3O3TP7AAP6CJzKZKz3oVwhwpE=;
-        b=T30sjzYvcmJm5NMVOotHX1W0vmLEnBCeQei1/b4NgbP58HR0Q+4rCNTIqHlGAIg3dl
-         R17f5j1c74THUYhRrkEnmuCRYakcS005ZKg8k/aWnq87Swzgc1mhDgWUwAVme78n1+XP
-         eSjGpvbZI7L8S+hn7gXWDdLic/CR2LWW1fcMEWneDA1fcfjwZpTYjW/FeaNdlfzTk/A6
-         DA1lZtLx09mtv8SsQza/AG7KLt0hMOZvNEMRleWKJbrqNhvfnO6lwJUWTgk7ZsNkOlkv
-         Y/D4nScCzE4IswStZyCNAiqYKAZsi1cqZOQXyVEWG5JXApOOVRnWFFHjVViia24OXK6H
-         GQhg==
+        d=6wind.com; s=google;
+        h=reply-to:subject:to:cc:references:from:organization:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Q6BI4wzIUI1CmnUE/I7AYdI3YACE2q3tnUeqo749Z5I=;
+        b=VgRQsyYfkyRSKoxNQjEABaqWvCAFj+MRwcmA59y8HOC1Z0Lu4k87xofr8cz7W5+lr+
+         JwlpvH3N2NCoaTACdeHlNa/GoJ3Qs9AHKoMWzPutFFUwR65MaSGeS1iTmrwyU/sdNq/F
+         0shIFi/is4wJe5nAFIRGzGeBzrmVw7CfO4f/9xM8owYpKvYPRf1kU6/iz8Ou/wxFtx8K
+         2nrRpOwxvGZHgu2DvorujkpXaHqMgl/dn+dE4UTJqnGUBya9w4eLghlSmTe8UQMU/TtP
+         4X5VEcY4nuEqO5neaUloKKk5pt+rtQJvZ76HfR2Mcul8ecIaQ80mJbjdYUdNpFN0yMpx
+         6bOA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=/czrQQC+4nr84ZXvjU3O3TP7AAP6CJzKZKz3oVwhwpE=;
-        b=KchgsQrzMzYSmdoe8DFV2vt6OShK6L8QXZ8vbqz0QXV8EAsCz9+EcVh8qdBA8RbG9g
-         gJdHHWee5xzbTHiHJQG6goYVgi3bqxdVBkjY21IIc+POka2V60f73Hgz9PuE9eSbR+vJ
-         na0Ehl+M2QxJb334s9Gi9y+aq9SCqA1X2oYz6Ibi3SZzijf5kjsXEPpFfDO7zDT8suVT
-         XZjZQF6GVPJtFgaj1QAg7hsfq1BtVphwHohgJx7j+kBhzgsZDC8QBrHQMDZNdJ3926F3
-         jfsE+hM8Tvk3pCFIw7BWMn0fxI1cbjmGgjQQbhKoViz2Xhjb/Fxa20myv71+mTDPQshO
-         5nxA==
-X-Gm-Message-State: AOAM530pv6tCAiWmUIyxwq8bcySL2Uj9ZiwfBYSVIy7d7tsxI2S1d1lS
-        D6vAJJcdjSn10uCuK/uZTpq4AiUDMrc=
-X-Google-Smtp-Source: ABdhPJybWJihGmxZNQsgd2vpyehkiQQhNOWVb9aA3zSGHvbpohEJjqtMkw7AWm37zD54vpj/3UAyxg==
-X-Received: by 2002:a17:906:c5b:: with SMTP id t27mr527841ejf.129.1610614100641;
-        Thu, 14 Jan 2021 00:48:20 -0800 (PST)
-Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id h12sm1686991eja.113.2021.01.14.00.48.19
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Jan 2021 00:48:20 -0800 (PST)
-Date:   Thu, 14 Jan 2021 10:48:18 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        alexandre.belloni@bootlin.com, andrew@lunn.ch,
-        f.fainelli@gmail.com, vivien.didelot@gmail.com,
-        alexandru.marginean@nxp.com, claudiu.manoil@nxp.com,
-        xiaoliang.yang_1@nxp.com, hongbo.wang@nxp.com, jiri@resnulli.us,
-        idosch@idosch.org, UNGLinuxDriver@microchip.com
-Subject: Re: [PATCH v4 net-next 00/10] Configuring congestion watermarks on
- ocelot switch using devlink-sb
-Message-ID: <20210114084818.eht7qbs2grynbqrq@skbuf>
-References: <20210111174316.3515736-1-olteanv@gmail.com>
- <20210113192552.7d06261d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        h=x-gm-message-state:reply-to:subject:to:cc:references:from
+         :organization:message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=Q6BI4wzIUI1CmnUE/I7AYdI3YACE2q3tnUeqo749Z5I=;
+        b=WFwnUW8IIc3ehFf0JR9yEeyISUkpbLjdFuXsgYPkHBdeegRRxYuG2EpFMRTX1lTkWa
+         Kl4nhUha54UnaSLl2eJ7MSdg1C4AIF+fJjECfwtPwGnM/y4pWslvbiTIAm6+zC3tiNv+
+         fePd/KUDldTKOo8fbDO5fYxQS+E/fqqVCPpKaDFkoazEeip249uMojL6yIoUAlyWyZaB
+         CZpqYxxUNORYFHj7FqE/mLLtuUaG1j+YCL1Sw/0fgDPYxt7ZHp8aaJ7NaZdlWJp6HZxB
+         E6kOuXf2fsaHarQj4CxYnhgI7XIN4O9PLPpG618Ph/qly1Vf8rUwVR2RfRDxj3B+2mpi
+         DGiQ==
+X-Gm-Message-State: AOAM5326qRoJbR24tARrdAp5R463j+uqUF7BB29kseejExgyrlXzmPbd
+        bLRoto55gTXq/FMxFPnuzPdKsg==
+X-Google-Smtp-Source: ABdhPJxGKXC/GuWzj3B5eGO6jDA4ECH1JOm2tsbJUwqmRCX+C8xPFg846aCOprvIYwIEu2AABVh/yA==
+X-Received: by 2002:adf:ef8b:: with SMTP id d11mr6826842wro.156.1610614190435;
+        Thu, 14 Jan 2021 00:49:50 -0800 (PST)
+Received: from ?IPv6:2a01:e0a:410:bb00:bdf0:d24a:73d7:779b? ([2a01:e0a:410:bb00:bdf0:d24a:73d7:779b])
+        by smtp.gmail.com with ESMTPSA id x17sm8330407wro.40.2021.01.14.00.49.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 14 Jan 2021 00:49:49 -0800 (PST)
+Reply-To: nicolas.dichtel@6wind.com
+Subject: Re: [PATCH net] net: sit: unregister_netdevice on newlink's error
+ path
+To:     Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net
+Cc:     netdev@vger.kernel.org,
+        syzbot+2393580080a2da190f04@syzkaller.appspotmail.com
+References: <20210114012947.2515313-1-kuba@kernel.org>
+From:   Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Organization: 6WIND
+Message-ID: <f7ddd59c-8446-4771-c1a6-c58819d5bcdb@6wind.com>
+Date:   Thu, 14 Jan 2021 09:49:48 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210113192552.7d06261d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210114012947.2515313-1-kuba@kernel.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 13, 2021 at 07:25:52PM -0800, Jakub Kicinski wrote:
-> On Mon, 11 Jan 2021 19:43:06 +0200 Vladimir Oltean wrote:
-> > In some applications, it is important to create resource reservations in
-> > the Ethernet switches, to prevent background traffic, or deliberate
-> > attacks, from inducing denial of service into the high-priority traffic.
-> >
-> > These patches give the user some knobs to turn. The ocelot switches
-> > support per-port and per-port-tc reservations, on ingress and on egress.
-> > The resources that are monitored are packet buffers (in cells of 60
-> > bytes each) and frame references.
-> >
-> > The frames that exceed the reservations can optionally consume from
-> > sharing watermarks which are not per-port but global across the switch.
-> > There are 10 sharing watermarks, 8 of them are per traffic class and 2
-> > are per drop priority.
-> >
-> > I am configuring the hardware using the best of my knowledge, and mostly
-> > through trial and error. Same goes for devlink-sb integration. Feedback
-> > is welcome.
->
-> This no longer applies.
+Le 14/01/2021 à 02:29, Jakub Kicinski a écrit :
+[snip]
+> --- a/net/ipv6/sit.c
+> +++ b/net/ipv6/sit.c
+> @@ -1645,8 +1645,11 @@ static int ipip6_newlink(struct net *src_net, struct net_device *dev,
+>  	}
+>  
+>  #ifdef CONFIG_IPV6_SIT_6RD
+> -	if (ipip6_netlink_6rd_parms(data, &ip6rd))
+> +	if (ipip6_netlink_6rd_parms(data, &ip6rd)) {
+>  		err = ipip6_tunnel_update_6rd(nt, &ip6rd);
+> +		if (err)
+nit: I would prefer 'if (err < 0)' to be consistent with the rest of the sit
+code, but it's purely aesthetic (ipip6_tunnel_update_6rd() returns a negative
+value or 0).
 
-I was not expecting you to apply it, giving the feedback.
+With or without this:
+Acked-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
+
+> +			unregister_netdevice_queue(dev, NULL);
+> +	}
+>  #endif
+>  
+>  	return err;
+> 
