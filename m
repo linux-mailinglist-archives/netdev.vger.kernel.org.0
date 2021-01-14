@@ -2,91 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BDD352F59D6
-	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 05:17:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B7DA2F59E1
+	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 05:21:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726795AbhANEPx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jan 2021 23:15:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46014 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725997AbhANEPx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 23:15:53 -0500
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D9CAC061575;
-        Wed, 13 Jan 2021 20:15:07 -0800 (PST)
-Received: by mail-pj1-x1034.google.com with SMTP id cq1so2394174pjb.4;
-        Wed, 13 Jan 2021 20:15:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=i/xZY8DpdABEtyxGJwRPJ3Gox+RIWU/dLajPoWgwjqs=;
-        b=Fv5i6Gtp40PbeMJwpKIdACaEM36r4nswQT66xInERfTRx/Dps1FhpiZpPvE3V6CIMH
-         lFRIuuFABGaFGdPLEe6hBwyvqU8hDz2GeAS/mOy7IEd7qoWbBVgNaeQ15tFBeBg87FD+
-         Zjx/wdrmdj/0C83Sq0hY1wTp4mkUEdYw0YP2zlH8uam/k1bZOY0R1baDt5wS8/DLtMQO
-         cJDJ4iX7TJS0Ly4rLYt6xqovTsBnVfd/3BtmRDT6KqQpR26BjMYrm89l0tzYm6kSadu8
-         yuTKQLwQF4cOIWKPozw2hdlr7SnmkMVgdTLfe/m59IWDRJuCyTT62QidyeIbvzH4fMYY
-         aWeA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=i/xZY8DpdABEtyxGJwRPJ3Gox+RIWU/dLajPoWgwjqs=;
-        b=uHcVjdCDZyBUqNjWNqzM6w9MJbOEJxo2c1+ue3ndaPnUf3a2wPbLTYxLRv8qyZpop4
-         hyJVexbgb1TyDyMs4IPjnnDlXSiSYShrDXdlbm/Tg+Aw1mRLSiF07oZ4u5wYLDa3mVnv
-         4V7+GjU2ndTT8EUl10AcwLJQsEAedubNDhmw3bgnjoKauy6hbfQzszP7ZHKrzSrhkTwu
-         hv9REQw9A4GZvYDQIEjEfIDmd2WS6QA5uPITHOTcLHYpW3brcUb1iTQWuIS2e5ynQzbn
-         oON6yhBsrcqyFnFBlR8da/kFTZTGgIjmbi6jbx0JHZVUuMbk0/y1dlzTCRnfpFSs73X2
-         kZ0w==
-X-Gm-Message-State: AOAM531U7MlwfwL/F0XLOirHMDecobikzSl2j5leCApuh6G16XZMeuKe
-        UHGGeL+P4axcTYgNvyw7ztA=
-X-Google-Smtp-Source: ABdhPJyz6UUg9D+AVhweeioOxbEoLYSIkELCtNpqwduCHFHytLFcBJU8kPEDp8DtaUKli5OvnnQ+Xw==
-X-Received: by 2002:a17:90a:2f22:: with SMTP id s31mr2948608pjd.192.1610597706920;
-        Wed, 13 Jan 2021 20:15:06 -0800 (PST)
-Received: from localhost.localdomain ([122.10.161.207])
-        by smtp.gmail.com with ESMTPSA id l7sm4033523pjy.29.2021.01.13.20.15.04
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 13 Jan 2021 20:15:06 -0800 (PST)
-From:   Yejune Deng <yejune.deng@gmail.com>
-To:     edumazet@google.com, davem@davemloft.net, kuznet@ms2.inr.ac.ru,
-        yoshfuji@linux-ipv6.org, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        yejune.deng@gmail.com
-Subject: [PATCH] tcp_cubic: use memset and offsetof init
-Date:   Thu, 14 Jan 2021 12:14:56 +0800
-Message-Id: <1610597696-128610-1-git-send-email-yejune.deng@gmail.com>
-X-Mailer: git-send-email 1.9.1
+        id S1727146AbhANETd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jan 2021 23:19:33 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:53275 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726110AbhANETd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 23:19:33 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1610597887;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=eRMqhJYEIzS7qqs8p7MdIVwG7fzXeZHJWGj3Ki4v9wE=;
+        b=cswNaV2KUE1FwJ6VP5LdBSVXI6t3r02QeTh5GqxLDbtz/f8A7922aYJ69Ju1ea1c7zysNQ
+        nbKACOk0X5VU8pfJIwNQPSktoHzuUEXU+2uqWa8lIT7r0lvabqP92UtYob+x9K3CGNlOOF
+        OBbRlxTDLIZ8uXF/+jSgORfAeVFMe88=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-211-ci9WnyBDP6-D8H5oYr2dIw-1; Wed, 13 Jan 2021 23:18:03 -0500
+X-MC-Unique: ci9WnyBDP6-D8H5oYr2dIw-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id CED44107ACF7;
+        Thu, 14 Jan 2021 04:18:01 +0000 (UTC)
+Received: from [10.72.12.100] (ovpn-12-100.pek2.redhat.com [10.72.12.100])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 34F64614FA;
+        Thu, 14 Jan 2021 04:17:54 +0000 (UTC)
+Subject: Re: [PATCH linux-next v3 6/6] vdpa_sim_net: Add support for user
+ supported devices
+To:     Parav Pandit <parav@nvidia.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>
+Cc:     "virtualization@lists.linux-foundation.org" 
+        <virtualization@lists.linux-foundation.org>,
+        Eli Cohen <elic@nvidia.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+References: <20201112064005.349268-1-parav@nvidia.com>
+ <20210105103203.82508-1-parav@nvidia.com>
+ <20210105103203.82508-7-parav@nvidia.com>
+ <20210105064707-mutt-send-email-mst@kernel.org>
+ <BY5PR12MB4322E5E7CA71CB2EE0577706DCD10@BY5PR12MB4322.namprd12.prod.outlook.com>
+ <20210105071101-mutt-send-email-mst@kernel.org>
+ <BY5PR12MB432235169D805760EC0CF7CEDCD10@BY5PR12MB4322.namprd12.prod.outlook.com>
+ <20210105082243-mutt-send-email-mst@kernel.org>
+ <BY5PR12MB4322EC8D0AD648063C607E17DCAF0@BY5PR12MB4322.namprd12.prod.outlook.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <66dc44ac-52da-eaba-3f5e-69254e42d75b@redhat.com>
+Date:   Thu, 14 Jan 2021 12:17:53 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
+MIME-Version: 1.0
+In-Reply-To: <BY5PR12MB4322EC8D0AD648063C607E17DCAF0@BY5PR12MB4322.namprd12.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In bictcp_reset(), use memset and offsetof instead of = 0.
 
-Signed-off-by: Yejune Deng <yejune.deng@gmail.com>
----
- net/ipv4/tcp_cubic.c | 11 +----------
- 1 file changed, 1 insertion(+), 10 deletions(-)
+On 2021/1/7 上午11:48, Parav Pandit wrote:
+>
+>> From: Michael S. Tsirkin <mst@redhat.com>
+>> Sent: Tuesday, January 5, 2021 6:53 PM
+>>
+>> On Tue, Jan 05, 2021 at 12:30:15PM +0000, Parav Pandit wrote:
+>>>
+>>>> From: Michael S. Tsirkin <mst@redhat.com>
+>>>> Sent: Tuesday, January 5, 2021 5:45 PM
+>>>>
+>>>> On Tue, Jan 05, 2021 at 12:02:33PM +0000, Parav Pandit wrote:
+>>>>>
+>>>>>> From: Michael S. Tsirkin <mst@redhat.com>
+>>>>>> Sent: Tuesday, January 5, 2021 5:19 PM
+>>>>>>
+>>>>>> On Tue, Jan 05, 2021 at 12:32:03PM +0200, Parav Pandit wrote:
+>>>>>>> Enable user to create vdpasim net simulate devices.
+>>>>>>>
+>>>>>>>
+>>>>>>> $ vdpa dev add mgmtdev vdpasim_net name foo2
+>>>>>>>
+>>>>>>> Show the newly created vdpa device by its name:
+>>>>>>> $ vdpa dev show foo2
+>>>>>>> foo2: type network mgmtdev vdpasim_net vendor_id 0 max_vqs 2
+>>>>>>> max_vq_size 256
+>>>>>>>
+>>>>>>> $ vdpa dev show foo2 -jp
+>>>>>>> {
+>>>>>>>      "dev": {
+>>>>>>>          "foo2": {
+>>>>>>>              "type": "network",
+>>>>>>>              "mgmtdev": "vdpasim_net",
+>>>>>>>              "vendor_id": 0,
+>>>>>>>              "max_vqs": 2,
+>>>>>>>              "max_vq_size": 256
+>>>>>>>          }
+>>>>>>>      }
+>>>>>>> }
+>>>>>>
+>>>>>> I'd like an example of how do device specific (e.g. net
+>>>>>> specific) interfaces tie in to this.
+>>>>> Not sure I follow your question.
+>>>>> Do you mean how to set mac address or mtu of this vdpa device of
+>>>>> type
+>>>> net?
+>>>>> If so, dev add command will be extended shortly in subsequent
+>>>>> series to
+>>>> set this net specific attributes.
+>>>>> (I did mention in the next steps in cover letter).
+>>>>>
+>>>>>>> +static int __init vdpasim_net_init(void) {
+>>>>>>> +	int ret;
+>>>>>>> +
+>>>>>>> +	if (macaddr) {
+>>>>>>> +		mac_pton(macaddr, macaddr_buf);
+>>>>>>> +		if (!is_valid_ether_addr(macaddr_buf))
+>>>>>>> +			return -EADDRNOTAVAIL;
+>>>>>>> +	} else {
+>>>>>>> +		eth_random_addr(macaddr_buf);
+>>>>>>>   	}
+>>>>>> Hmm so all devices start out with the same MAC until changed?
+>>>>>> And how is the change effected?
+>>>>> Post this patchset and post we have iproute2 vdpa in the tree,
+>>>>> will add the
+>>>> mac address as the input attribute during "vdpa dev add" command.
+>>>>> So that each different vdpa device can have user specified
+>>>>> (different) mac
+>>>> address.
+>>>>
+>>>> For now maybe just avoid VIRTIO_NET_F_MAC then for new devices
+>> then?
+>>> That would require book keeping existing net vdpa_sim devices created to
+>> avoid setting VIRTIO_NET_F_MAC.
+>>> Such book keeping code will be short lived anyway.
+>>> Not sure if its worth it.
+>>> Until now only one device was created. So not sure two vdpa devices with
+>> same mac address will be a real issue.
+>>> When we add mac address attribute in add command, at that point also
+>> remove the module parameter macaddr.
+>>
+>> Will that be mandatory? I'm not to happy with a UAPI we intend to break
+>> straight away ...
+> No. Specifying mac address shouldn't be mandatory. UAPI wont' be broken.
 
-diff --git a/net/ipv4/tcp_cubic.c b/net/ipv4/tcp_cubic.c
-index c7bf5b2..ffcbe46 100644
---- a/net/ipv4/tcp_cubic.c
-+++ b/net/ipv4/tcp_cubic.c
-@@ -104,16 +104,7 @@ struct bictcp {
- 
- static inline void bictcp_reset(struct bictcp *ca)
- {
--	ca->cnt = 0;
--	ca->last_max_cwnd = 0;
--	ca->last_cwnd = 0;
--	ca->last_time = 0;
--	ca->bic_origin_point = 0;
--	ca->bic_K = 0;
--	ca->delay_min = 0;
--	ca->epoch_start = 0;
--	ca->ack_cnt = 0;
--	ca->tcp_cwnd = 0;
-+	memset(ca, 0, offsetof(struct bictcp, unused));
- 	ca->found = 0;
- }
- 
--- 
-1.9.1
+
+If it's not mandatory. Does it mean the vDPA parent need to use its own 
+logic to generate a validate mac? I'm not sure this is what management 
+(libvirt want).
+
+Thanks
+
+
+>
 
