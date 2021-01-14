@@ -2,312 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E91D62F6678
-	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 17:56:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D14662F667A
+	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 17:56:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727068AbhANQyK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jan 2021 11:54:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39698 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725935AbhANQyJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 11:54:09 -0500
-Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com [IPv6:2607:f8b0:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5955BC061574;
-        Thu, 14 Jan 2021 08:53:29 -0800 (PST)
-Received: by mail-oi1-x22e.google.com with SMTP id w124so6561376oia.6;
-        Thu, 14 Jan 2021 08:53:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=+EOdxAUtT3vRFLe3ss8hT6ceHOcvFiqKOxd8XUKB+h4=;
-        b=bg3dwQqIjnxoBLIrB95ooghS/aqn3/z2LSdtR0f1Au3w4QYJYjDl7ElOtpj5EVyFLj
-         Z5UYcz+Myq4JkF3CGzLN2dpt9SHHtjyXx5AOXY/I3q2W8Py9ur5IPeOghM1fooYZCM+O
-         db4nfIZqGfcO5Ov4kz1Kcj4kjSLBCpVGo4yH+bR7q30aVaJBY99LJdj9Yc+5BYwajFiN
-         lt7zsh2PlanlV6htwy5nw7x6gDdtvmjyuTBsT3divY1gBnHup4q0qfSuI8XKZCVBYXBd
-         5JlQ5FWvVCy+w5IVtlnVHtwoNN42ry6BDSvL0BzKt3cZcYM9yF1spdx2Ss7RVWF5acPZ
-         IKaA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=+EOdxAUtT3vRFLe3ss8hT6ceHOcvFiqKOxd8XUKB+h4=;
-        b=PugAi4zCO5BLd4e8In6bnI5whnSBOv4aN8u8MSDELQp5DBhtnkyKX8A4IA7qxgG49b
-         xe+KEpRu0EzjORwwOlXrhxUBolo7oa5diOEafllGVkXPC5/m468zQsIpOcw++ErZ3W6B
-         5cy+nIIgHKv+ztMqs0OODXHkJabD4U7srW1q/KFPkfNrQPq0nr5QX/HVGe4HAYfNLBNb
-         uljZ0H5t/9trQLeuf1FowyCm/KeKgcNtWOGV2T8r72iyCUYfyPcOHiCS4WIfjpyw6h3M
-         DTH+eeJqcwmhgYwXr4inoHyegiAjKybGsPQqcy+hVuIjlb60jWG+z1IXeCQy7G/ccxMS
-         uTtA==
-X-Gm-Message-State: AOAM531d0XBk/sVi2d0pX/dSpVu0a5TmB9T2/XX8HdwYXN+Yh51f4wYq
-        uIJWDBQUd8TyKS927lAJ+9vHT2sPorung40fWg==
-X-Google-Smtp-Source: ABdhPJzPJHiQ3YSKKB7tBmALGTgqSGX0Tv5SzoYNUSXFbb2WKfEj1x8cKowAzDMfujFTASN/q1weCS990RkxG0039Lc=
-X-Received: by 2002:aca:b145:: with SMTP id a66mr3132179oif.92.1610643208567;
- Thu, 14 Jan 2021 08:53:28 -0800 (PST)
+        id S1727686AbhANQzD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jan 2021 11:55:03 -0500
+Received: from m43-15.mailgun.net ([69.72.43.15]:54280 "EHLO
+        m43-15.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726278AbhANQzB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 11:55:01 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1610643275; h=Date: Message-Id: Cc: To: References:
+ In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
+ Content-Type: Sender; bh=2dDSdRh9UZ/2znGwAyp9VyErRlya3vyr5Lu5YMhcqbE=;
+ b=Y/g+ANIGctEa5EZpxdIUz0GJjAgLoJGi1ZMec4P0+dEpAcNDmypxKdKrrQesiLmU7x8KYD/U
+ hVDDfg6zvqAFL/k/5sGcnGUIUC1FJ6YwPKCSviKem73fNEwdEfd4/lKc7by8s4NlAqfaIhzb
+ P2BnDaUKry15XIhTTrQJOPwHlxk=
+X-Mailgun-Sending-Ip: 69.72.43.15
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n05.prod.us-west-2.postgun.com with SMTP id
+ 6000772c415a6293c59074c8 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Thu, 14 Jan 2021 16:54:04
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id D9318C43466; Thu, 14 Jan 2021 16:54:04 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        MISSING_DATE,MISSING_MID,SPF_FAIL,URIBL_BLOCKED autolearn=no
+        autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 8E295C43461;
+        Thu, 14 Jan 2021 16:54:00 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 8E295C43461
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <20210113145922.92848-1-george.mccollister@gmail.com>
- <20210113145922.92848-3-george.mccollister@gmail.com> <20210114015659.33shdlfthywqdla7@skbuf>
-In-Reply-To: <20210114015659.33shdlfthywqdla7@skbuf>
-From:   George McCollister <george.mccollister@gmail.com>
-Date:   Thu, 14 Jan 2021 10:53:16 -0600
-Message-ID: <CAFSKS=NU4hrnXB5FcAFvnFnmAtK5HfYR8dAKyw3cd=5UKOBNfg@mail.gmail.com>
-Subject: Re: [PATCH net-next v4 2/3] net: dsa: add Arrow SpeedChips XRS700x driver
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Rob Herring <robh@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        "open list:OPEN FIRMWARE AND..." <devicetree@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH] mt76: mt7915: fix misplaced #ifdef
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20210103135811.3749775-1-arnd@kernel.org>
+References: <20210103135811.3749775-1-arnd@kernel.org>
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     Felix Fietkau <nbd@nbd.name>,
+        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Ryder Lee <ryder.lee@mediatek.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Shayne Chen <shayne.chen@mediatek.com>,
+        Yiwei Chung <yiwei.chung@mediatek.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
+Message-Id: <20210114165404.D9318C43466@smtp.codeaurora.org>
+Date:   Thu, 14 Jan 2021 16:54:04 +0000 (UTC)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 13, 2021 at 7:57 PM Vladimir Oltean <olteanv@gmail.com> wrote:
->
-> What PHY interface types does the switch support as of this patch?
-> No RGMII delay configuration needed?
->
+Arnd Bergmann <arnd@kernel.org> wrote:
 
-Port 0: RMII
-Port 1-3: RGMII
+> From: Arnd Bergmann <arnd@arndb.de>
+> 
+> The lone '|' at the end of a line causes a build failure:
+> 
+> drivers/net/wireless/mediatek/mt76/mt7915/init.c:47:2: error: expected expression before '}' token
+> 
+> Replace the #ifdef with an equivalent IS_ENABLED() check.
+> 
+> Fixes: af901eb4ab80 ("mt76: mt7915: get rid of dbdc debugfs knob")
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 
-For RGMII the documentation states:
-"PCB is required to add 1.5 ns to 2.0 ns more delay to the clock line
-than the other lines, unless the other end (PHY) has configurable RX
-clock delay."
+This was already fixed by:
 
-> > +
-> > +static int xrs700x_bridge_common(struct dsa_switch *ds, int port,
-> > +                              struct net_device *bridge, bool join)
-> > +{
-> > +     unsigned int i, cpu_mask = 0, mask = 0;
-> > +     struct xrs700x *priv = ds->priv;
-> > +     int ret;
-> > +
-> > +     for (i = 0; i < ds->num_ports; i++) {
-> > +             if (dsa_is_cpu_port(ds, i))
-> > +                     continue;
-> > +
-> > +             cpu_mask |= BIT(i);
-> > +
-> > +             if (dsa_to_port(ds, i)->bridge_dev == bridge)
-> > +                     continue;
-> > +
-> > +             mask |= BIT(i);
-> > +     }
-> > +
-> > +     for (i = 0; i < ds->num_ports; i++) {
-> > +             if (dsa_to_port(ds, i)->bridge_dev != bridge)
-> > +                     continue;
-> > +
-> > +             ret = regmap_write(priv->regmap, XRS_PORT_FWD_MASK(i), mask);
->
-> Maybe it would be worth mentioning in a comment that PORT_FWD_MASK's
-> encoding is "1 = Disable forwarding to the port", otherwise this is
-> confusing.
+0bd157fa2aaa mt76: mt7915: fix MESH ifdef block
 
-Okay, done.
+Recorded preimage for 'drivers/net/wireless/mediatek/mt76/mt7915/init.c'
+error: Failed to merge in the changes.
+Applying: mt76: mt7915: fix misplaced #ifdef
+Using index info to reconstruct a base tree...
+M	drivers/net/wireless/mediatek/mt76/mt7915/init.c
+Falling back to patching base and 3-way merge...
+Auto-merging drivers/net/wireless/mediatek/mt76/mt7915/init.c
+CONFLICT (content): Merge conflict in drivers/net/wireless/mediatek/mt76/mt7915/init.c
+Patch failed at 0001 mt76: mt7915: fix misplaced #ifdef
+The copy of the patch that failed is found in: .git/rebase-apply/patch
 
->
-> > +             if (ret)
-> > +                     return ret;
-> > +     }
-> > +
-> > +     if (!join) {
-> > +             ret = regmap_write(priv->regmap, XRS_PORT_FWD_MASK(port),
-> > +                                cpu_mask);
-> > +             if (ret)
-> > +                     return ret;
-> > +     }
-> > +
-> > +     return 0;
-> > +}
->
-> > +static int xrs700x_detect(struct xrs700x *dev)
-> > +{
-> > +     const struct xrs700x_info *info;
-> > +     unsigned int id;
-> > +     int ret;
-> > +
-> > +     ret = regmap_read(dev->regmap, XRS_DEV_ID0, &id);
-> > +     if (ret) {
-> > +             dev_err(dev->dev, "error %d while reading switch id.\n",
-> > +                     ret);
-> > +             return ret;
-> > +     }
-> > +
-> > +     info = of_device_get_match_data(dev->dev);
-> > +     if (!info)
-> > +             return -EINVAL;
-> > +
-> > +     if (info->id == id) {
-> > +             dev->ds->num_ports = info->num_ports;
-> > +             dev_info(dev->dev, "%s detected.\n", info->name);
-> > +             return 0;
-> > +     }
-> > +
-> > +     dev_err(dev->dev, "expected switch id 0x%x but found 0x%x.\n",
-> > +             info->id, id);
->
-> I've been there too, not the smartest of decisions in the long run. See
-> commit 0b0e299720bb ("net: dsa: sja1105: use detected device id instead
-> of DT one on mismatch") if you want a sneak preview of how this is going
-> to feel two years from now. If you can detect the device id you're
-> probably better off with a single compatible string.
+Patch set to Superseded.
 
-Previously Andrew said:
-"Either you need to verify the compatible from day one so it is not
-wrong, or you just use a single compatible "arrow,xrs700x", which
-cannot be wrong."
+-- 
+https://patchwork.kernel.org/project/linux-wireless/patch/20210103135811.3749775-1-arnd@kernel.org/
 
-I did it the first way he suggested, if you would have replied at that
-time to use a single that's the way I would have done it that way.
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
-If you two can agree I should change it to a single string I'd be
-happy to do so. In my case I need 3 RGMII and only one of the package
-types will fit on the board so there's no risk of changing to one of
-the existing parts. Perhaps this could be an issue if a new part is
-added in the future or on someone else's design.
-
->
-> > +
-> > +     return -ENODEV;
-> > +}
-> > +
-> > +static int xrs700x_alloc_port_mib(struct xrs700x *dev, int port)
-> > +{
-> > +     struct xrs700x_port *p = &dev->ports[port];
-> > +     size_t mib_size = sizeof(*p->mib_data) * ARRAY_SIZE(xrs700x_mibs);
->
-> Reverse Christmas tree ordering... sorry.
-
-The second line uses p so that won't work. I'll change the function to
-use devm_kcalloc like you recommended below and just get rid of
-mib_size.
-
->
-> > +int xrs700x_switch_register(struct xrs700x *dev)
-> > +{
-> > +     int ret;
-> > +     int i;
-> > +
-> > +     ret = xrs700x_detect(dev);
-> > +     if (ret)
-> > +             return ret;
-> > +
-> > +     ret = xrs700x_setup_regmap_range(dev);
-> > +     if (ret)
-> > +             return ret;
-> > +
-> > +     dev->ports = devm_kzalloc(dev->dev,
-> > +                               sizeof(*dev->ports) * dev->ds->num_ports,
-> > +                               GFP_KERNEL);
->
-> devm_kcalloc?
-
-Ok, done.
-
-
->
-> > +     if (!dev->ports)
-> > +             return -ENOMEM;
-> > +
-> > +     for (i = 0; i < dev->ds->num_ports; i++) {
-> > +             ret = xrs700x_alloc_port_mib(dev, i);
-> > +             if (ret)
-> > +                     return ret;
-> > +     }
-> > +
-> > +     ret = dsa_register_switch(dev->ds);
-> > +
-> > +     return ret;
->
-> return dsa_register_switch
->
-> > +}
-> > +EXPORT_SYMBOL(xrs700x_switch_register);
-> > +
-> > +void xrs700x_switch_remove(struct xrs700x *dev)
-> > +{
-> > +     cancel_delayed_work_sync(&dev->mib_work);
->
-> Is it not enough that this is called from xrs700x_teardown too, which is
-> in the call path of dsa_unregister_switch below?
-
-yeah, looks like it. I'll remove this.
-
->
-> > +
-> > +     dsa_unregister_switch(dev->ds);
-> > +}
-> > +EXPORT_SYMBOL(xrs700x_switch_remove);
-> > diff --git a/drivers/net/dsa/xrs700x/xrs700x_mdio.c b/drivers/net/dsa/xrs700x/xrs700x_mdio.c
-> > new file mode 100644
-> > index 000000000000..4fa6cc8f871c
-> > --- /dev/null
-> > +++ b/drivers/net/dsa/xrs700x/xrs700x_mdio.c
-> > +static int xrs700x_mdio_reg_read(void *context, unsigned int reg,
-> > +                              unsigned int *val)
-> > +{
-> > +     struct mdio_device *mdiodev = context;
-> > +     struct device *dev = &mdiodev->dev;
-> > +     u16 uval;
-> > +     int ret;
-> > +
-> > +     uval = (u16)FIELD_GET(GENMASK(31, 16), reg);
-> > +
-> > +     ret = mdiobus_write(mdiodev->bus, mdiodev->addr, XRS_MDIO_IBA1, uval);
-> > +     if (ret < 0) {
-> > +             dev_err(dev, "xrs mdiobus_write returned %d\n", ret);
-> > +             return ret;
-> > +     }
-> > +
-> > +     uval = (u16)((reg & GENMASK(15, 1)) | XRS_IB_READ);
->
-> What happened to bit 0 of "reg"?
-
-From the datasheet:
-"Bits 15-1 of the address on the internal bus to where data is written
-or from where data is read. Address bit 0 is always 0 (because of 16
-bit registers)."
-
-reg_stride is set to 2.
-"The register address stride. Valid register addresses are a multiple
-of this value."
-
->
-> > +
-> > +     ret = mdiobus_write(mdiodev->bus, mdiodev->addr, XRS_MDIO_IBA0, uval);
-> > +     if (ret < 0) {
-> > +             dev_err(dev, "xrs mdiobus_write returned %d\n", ret);
-> > +             return ret;
-> > +     }
-> > +
-> > +     ret = mdiobus_read(mdiodev->bus, mdiodev->addr, XRS_MDIO_IBD);
-> > +     if (ret < 0) {
-> > +             dev_err(dev, "xrs mdiobus_read returned %d\n", ret);
-> > +             return ret;
-> > +     }
-> > +
-> > +     *val = (unsigned int)ret;
-> > +
-> > +     return 0;
-> > +}
->
-> > +static int xrs700x_mdio_probe(struct mdio_device *mdiodev)
-> > +{
-> > +     struct xrs700x *dev;
->
-> May boil down to preference too, but I don't believe "dev" is a happy
-> name to give to a driver private data structure.
-
-There are other drivers in the subsystem that do this. If there was a
-consistent pattern followed in the subsystem I would have followed it.
-Trust me I was a bit frustrated with home much time I spent going
-through multiple drivers trying to determine the best practices for
-organization, naming, etc.
-If it's a big let me know and I'll change it.
-
-Thanks,
-George
