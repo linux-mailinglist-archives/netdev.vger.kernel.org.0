@@ -2,212 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 29C962F5FA6
-	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 12:17:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 252B72F5FB1
+	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 12:19:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726382AbhANLRK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jan 2021 06:17:10 -0500
-Received: from mail.wangsu.com ([123.103.51.198]:47499 "EHLO wangsu.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726008AbhANLRJ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 14 Jan 2021 06:17:09 -0500
-X-Greylist: delayed 1077 seconds by postgrey-1.27 at vger.kernel.org; Thu, 14 Jan 2021 06:17:08 EST
-Received: from 101.localdomain (unknown [218.107.205.212])
-        by app1 (Coremail) with SMTP id xjNnewC3orqtIwBggf8IAA--.2S2;
-        Thu, 14 Jan 2021 18:57:49 +0800 (CST)
-From:   Pengcheng Yang <yangpc@wangsu.com>
-To:     edumazet@google.com, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, Pengcheng Yang <yangpc@wangsu.com>
-Subject: [PATCH net] tcp: fix TCP_SKB_CB(skb)->tcp_tw_isn not being used
-Date:   Tue, 29 Dec 2020 05:59:20 +0800
-Message-Id: <1609192760-4505-1-git-send-email-yangpc@wangsu.com>
-X-Mailer: git-send-email 1.8.3.1
-X-CM-TRANSID: xjNnewC3orqtIwBggf8IAA--.2S2
-X-Coremail-Antispam: 1UD129KBjvJXoW3WFy3Aw18uw47JFW3Zw1kKrg_yoW7uryxp3
-        ZrGw4fWrWkur9Yvw18ZF1qv3WSqrsYyryfur4kX3y3KFnxJFs5Ka95tFW2vr45GrZ3Aw12
-        yFyYqw1fJr9rZ3DanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUyl1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l87I20VAv
-        wVCjjxC26w4a6s0DM28lY4IEw2IIxxk0rwA2F7IY1VAKz4vEj48ve4kI8wA2z4x0Y4vE2I
-        x0cI8IcVAFwI0_tr0E3s1l84ACjcxK6xIIjxv20xvEc7CjxVAFwI0_Cr1j6rxdM28EF7xv
-        wVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s0DM2AIxVAIcx
-        kEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6x8ErcxFaVAv8VW8
-        GwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20V
-        AGYxC7MxkIecxEwVAFwVW8twCF04k20xvY0x0EwIxGrwCF04k20xvE74AGY7Cv6cx26r48
-        MxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwV
-        AFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUAVWUtwCIc40Y0x0EwIxGrwCI42IY6xIIjxv2
-        0xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVWUJVW8JwCI42IY6xAIw20EY4
-        v20xvaj40_Wr1j6rW3Jr1lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x02
-        67AKxVWUJVW8JbIYCTnIWIevJa73UjIFyTuYvjfUsyCJDUUUU
-X-CM-SenderInfo: p1dqw1nf6zt0xjvxhudrp/
+        id S1727949AbhANLTW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jan 2021 06:19:22 -0500
+Received: from mslow2.mail.gandi.net ([217.70.178.242]:53162 "EHLO
+        mslow2.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726262AbhANLTU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 06:19:20 -0500
+Received: from relay9-d.mail.gandi.net (unknown [217.70.183.199])
+        by mslow2.mail.gandi.net (Postfix) with ESMTP id 148523B2D11;
+        Thu, 14 Jan 2021 11:03:39 +0000 (UTC)
+X-Originating-IP: 86.202.109.140
+Received: from localhost (lfbn-lyo-1-13-140.w86-202.abo.wanadoo.fr [86.202.109.140])
+        (Authenticated sender: alexandre.belloni@bootlin.com)
+        by relay9-d.mail.gandi.net (Postfix) with ESMTPSA id 5EAE2FF802;
+        Thu, 14 Jan 2021 11:02:15 +0000 (UTC)
+Date:   Thu, 14 Jan 2021 12:02:14 +0100
+From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
+To:     Steen Hegelund <steen.hegelund@microchip.com>
+Cc:     Kishon Vijay Abraham I <kishon@ti.com>,
+        Vinod Koul <vkoul@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Device Tree List <devicetree@vger.kernel.org>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
+        Microchip UNG Driver List <UNGLinuxDriver@microchip.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Rob Herring <robh@kernel.org>, Andrew Lunn <andrew@lunn.ch>
+Subject: Re: [PATCH v12 1/4] dt-bindings: phy: Add sparx5-serdes bindings
+Message-ID: <20210114110214.GY3654@piout.net>
+References: <20210107091924.1569575-1-steen.hegelund@microchip.com>
+ <20210107091924.1569575-2-steen.hegelund@microchip.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210107091924.1569575-2-steen.hegelund@microchip.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-TCP_SKB_CB(skb)->tcp_tw_isn contains an ISN, chosen by
-tcp_timewait_state_process() , when SYN is received in TIMEWAIT state.
-But tcp_tw_isn is not used because it is overwritten by
-tcp_v4_restore_cb() after commit eeea10b83a13 ("tcp: add
-tcp_v4_fill_cb()/tcp_v4_restore_cb()").
+On 07/01/2021 10:19:21+0100, Steen Hegelund wrote:
+> Document the Sparx5 ethernet serdes phy driver bindings.
+> 
+> Signed-off-by: Lars Povlsen <lars.povlsen@microchip.com>
+> Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
+> Reviewed-by: Rob Herring <robh@kernel.org>
+> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Reviewed-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
 
-To fix this case, we record tcp_tw_isn before tcp_v4_restore_cb() and
-then set it in tcp_v4_fill_cb(). V6 does the same.
+> ---
+>  .../bindings/phy/microchip,sparx5-serdes.yaml | 100 ++++++++++++++++++
+>  1 file changed, 100 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/phy/microchip,sparx5-serdes.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/phy/microchip,sparx5-serdes.yaml b/Documentation/devicetree/bindings/phy/microchip,sparx5-serdes.yaml
+> new file mode 100644
+> index 000000000000..bdbdb3bbddbe
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/phy/microchip,sparx5-serdes.yaml
+> @@ -0,0 +1,100 @@
+> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/phy/microchip,sparx5-serdes.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Microchip Sparx5 Serdes controller
+> +
+> +maintainers:
+> +  - Steen Hegelund <steen.hegelund@microchip.com>
+> +
+> +description: |
+> +  The Sparx5 SERDES interfaces share the same basic functionality, but
+> +  support different operating modes and line rates.
+> +
+> +  The following list lists the SERDES features:
+> +
+> +  * RX Adaptive Decision Feedback Equalizer (DFE)
+> +  * Programmable continuous time linear equalizer (CTLE)
+> +  * Rx variable gain control
+> +  * Rx built-in fault detector (loss-of-lock/loss-of-signal)
+> +  * Adjustable tx de-emphasis (FFE)
+> +  * Tx output amplitude control
+> +  * Supports rx eye monitor
+> +  * Multiple loopback modes
+> +  * Prbs generator and checker
+> +  * Polarity inversion control
+> +
+> +  SERDES6G:
+> +
+> +  The SERDES6G is a high-speed SERDES interface, which can operate at
+> +  the following data rates:
+> +
+> +  * 100 Mbps (100BASE-FX)
+> +  * 1.25 Gbps (SGMII/1000BASE-X/1000BASE-KX)
+> +  * 3.125 Gbps (2.5GBASE-X/2.5GBASE-KX)
+> +  * 5.15625 Gbps (5GBASE-KR/5G-USXGMII)
+> +
+> +  SERDES10G
+> +
+> +  The SERDES10G is a high-speed SERDES interface, which can operate at
+> +  the following data rates:
+> +
+> +  * 100 Mbps (100BASE-FX)
+> +  * 1.25 Gbps (SGMII/1000BASE-X/1000BASE-KX)
+> +  * 3.125 Gbps (2.5GBASE-X/2.5GBASE-KX)
+> +  * 5 Gbps (QSGMII/USGMII)
+> +  * 5.15625 Gbps (5GBASE-KR/5G-USXGMII)
+> +  * 10 Gbps (10G-USGMII)
+> +  * 10.3125 Gbps (10GBASE-R/10GBASE-KR/USXGMII)
+> +
+> +  SERDES25G
+> +
+> +  The SERDES25G is a high-speed SERDES interface, which can operate at
+> +  the following data rates:
+> +
+> +  * 1.25 Gbps (SGMII/1000BASE-X/1000BASE-KX)
+> +  * 3.125 Gbps (2.5GBASE-X/2.5GBASE-KX)
+> +  * 5 Gbps (QSGMII/USGMII)
+> +  * 5.15625 Gbps (5GBASE-KR/5G-USXGMII)
+> +  * 10 Gbps (10G-USGMII)
+> +  * 10.3125 Gbps (10GBASE-R/10GBASE-KR/USXGMII)
+> +  * 25.78125 Gbps (25GBASE-KR/25GBASE-CR/25GBASE-SR/25GBASE-LR/25GBASE-ER)
+> +
+> +properties:
+> +  $nodename:
+> +    pattern: "^serdes@[0-9a-f]+$"
+> +
+> +  compatible:
+> +    const: microchip,sparx5-serdes
+> +
+> +  reg:
+> +    minItems: 1
+> +
+> +  '#phy-cells':
+> +    const: 1
+> +    description: |
+> +      - The main serdes input port
+> +
+> +  clocks:
+> +    maxItems: 1
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - '#phy-cells'
+> +  - clocks
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    serdes: serdes@10808000 {
+> +      compatible = "microchip,sparx5-serdes";
+> +      #phy-cells = <1>;
+> +      clocks = <&sys_clk>;
+> +      reg = <0x10808000 0x5d0000>;
+> +    };
+> +
+> +...
+> -- 
+> 2.29.2
+> 
 
-Fixes: eeea10b83a13 ("tcp: add tcp_v4_fill_cb()/tcp_v4_restore_cb()")
-Reported-by: chenc <chenc9@wangsu.com>
-Signed-off-by: Pengcheng Yang <yangpc@wangsu.com>
----
- net/ipv4/tcp_ipv4.c | 14 ++++++++------
- net/ipv6/tcp_ipv6.c | 14 ++++++++------
- 2 files changed, 16 insertions(+), 12 deletions(-)
-
-diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-index 58207c7..c8cceaa 100644
---- a/net/ipv4/tcp_ipv4.c
-+++ b/net/ipv4/tcp_ipv4.c
-@@ -1892,7 +1892,7 @@ static void tcp_v4_restore_cb(struct sk_buff *skb)
- }
- 
- static void tcp_v4_fill_cb(struct sk_buff *skb, const struct iphdr *iph,
--			   const struct tcphdr *th)
-+			   const struct tcphdr *th, __u32 isn)
- {
- 	/* This is tricky : We move IPCB at its correct location into TCP_SKB_CB()
- 	 * barrier() makes sure compiler wont play fool^Waliasing games.
-@@ -1906,7 +1906,7 @@ static void tcp_v4_fill_cb(struct sk_buff *skb, const struct iphdr *iph,
- 				    skb->len - th->doff * 4);
- 	TCP_SKB_CB(skb)->ack_seq = ntohl(th->ack_seq);
- 	TCP_SKB_CB(skb)->tcp_flags = tcp_flag_byte(th);
--	TCP_SKB_CB(skb)->tcp_tw_isn = 0;
-+	TCP_SKB_CB(skb)->tcp_tw_isn = isn;
- 	TCP_SKB_CB(skb)->ip_dsfield = ipv4_get_dsfield(iph);
- 	TCP_SKB_CB(skb)->sacked	 = 0;
- 	TCP_SKB_CB(skb)->has_rxtstamp =
-@@ -1927,6 +1927,7 @@ int tcp_v4_rcv(struct sk_buff *skb)
- 	const struct tcphdr *th;
- 	bool refcounted;
- 	struct sock *sk;
-+	__u32 isn = 0;
- 	int ret;
- 
- 	if (skb->pkt_type != PACKET_HOST)
-@@ -1993,7 +1994,7 @@ int tcp_v4_rcv(struct sk_buff *skb)
- 		if (!tcp_filter(sk, skb)) {
- 			th = (const struct tcphdr *)skb->data;
- 			iph = ip_hdr(skb);
--			tcp_v4_fill_cb(skb, iph, th);
-+			tcp_v4_fill_cb(skb, iph, th, isn);
- 			nsk = tcp_check_req(sk, skb, req, false, &req_stolen);
- 		}
- 		if (!nsk) {
-@@ -2038,7 +2039,7 @@ int tcp_v4_rcv(struct sk_buff *skb)
- 		goto discard_and_relse;
- 	th = (const struct tcphdr *)skb->data;
- 	iph = ip_hdr(skb);
--	tcp_v4_fill_cb(skb, iph, th);
-+	tcp_v4_fill_cb(skb, iph, th, isn);
- 
- 	skb->dev = NULL;
- 
-@@ -2075,7 +2076,7 @@ int tcp_v4_rcv(struct sk_buff *skb)
- 	if (!xfrm4_policy_check(NULL, XFRM_POLICY_IN, skb))
- 		goto discard_it;
- 
--	tcp_v4_fill_cb(skb, iph, th);
-+	tcp_v4_fill_cb(skb, iph, th, isn);
- 
- 	if (tcp_checksum_complete(skb)) {
- csum_error:
-@@ -2103,7 +2104,7 @@ int tcp_v4_rcv(struct sk_buff *skb)
- 		goto discard_it;
- 	}
- 
--	tcp_v4_fill_cb(skb, iph, th);
-+	tcp_v4_fill_cb(skb, iph, th, isn);
- 
- 	if (tcp_checksum_complete(skb)) {
- 		inet_twsk_put(inet_twsk(sk));
-@@ -2121,6 +2122,7 @@ int tcp_v4_rcv(struct sk_buff *skb)
- 		if (sk2) {
- 			inet_twsk_deschedule_put(inet_twsk(sk));
- 			sk = sk2;
-+			isn = TCP_SKB_CB(skb)->tcp_tw_isn;
- 			tcp_v4_restore_cb(skb);
- 			refcounted = false;
- 			goto process;
-diff --git a/net/ipv6/tcp_ipv6.c b/net/ipv6/tcp_ipv6.c
-index 0e1509b..a2ff19d 100644
---- a/net/ipv6/tcp_ipv6.c
-+++ b/net/ipv6/tcp_ipv6.c
-@@ -1557,7 +1557,7 @@ static int tcp_v6_do_rcv(struct sock *sk, struct sk_buff *skb)
- }
- 
- static void tcp_v6_fill_cb(struct sk_buff *skb, const struct ipv6hdr *hdr,
--			   const struct tcphdr *th)
-+			   const struct tcphdr *th, __u32 isn)
- {
- 	/* This is tricky: we move IP6CB at its correct location into
- 	 * TCP_SKB_CB(). It must be done after xfrm6_policy_check(), because
-@@ -1573,7 +1573,7 @@ static void tcp_v6_fill_cb(struct sk_buff *skb, const struct ipv6hdr *hdr,
- 				    skb->len - th->doff*4);
- 	TCP_SKB_CB(skb)->ack_seq = ntohl(th->ack_seq);
- 	TCP_SKB_CB(skb)->tcp_flags = tcp_flag_byte(th);
--	TCP_SKB_CB(skb)->tcp_tw_isn = 0;
-+	TCP_SKB_CB(skb)->tcp_tw_isn = isn;
- 	TCP_SKB_CB(skb)->ip_dsfield = ipv6_get_dsfield(hdr);
- 	TCP_SKB_CB(skb)->sacked = 0;
- 	TCP_SKB_CB(skb)->has_rxtstamp =
-@@ -1589,6 +1589,7 @@ INDIRECT_CALLABLE_SCOPE int tcp_v6_rcv(struct sk_buff *skb)
- 	const struct ipv6hdr *hdr;
- 	bool refcounted;
- 	struct sock *sk;
-+	__u32 isn = 0;
- 	int ret;
- 	struct net *net = dev_net(skb->dev);
- 
-@@ -1652,7 +1653,7 @@ INDIRECT_CALLABLE_SCOPE int tcp_v6_rcv(struct sk_buff *skb)
- 		if (!tcp_filter(sk, skb)) {
- 			th = (const struct tcphdr *)skb->data;
- 			hdr = ipv6_hdr(skb);
--			tcp_v6_fill_cb(skb, hdr, th);
-+			tcp_v6_fill_cb(skb, hdr, th, isn);
- 			nsk = tcp_check_req(sk, skb, req, false, &req_stolen);
- 		}
- 		if (!nsk) {
-@@ -1695,7 +1696,7 @@ INDIRECT_CALLABLE_SCOPE int tcp_v6_rcv(struct sk_buff *skb)
- 		goto discard_and_relse;
- 	th = (const struct tcphdr *)skb->data;
- 	hdr = ipv6_hdr(skb);
--	tcp_v6_fill_cb(skb, hdr, th);
-+	tcp_v6_fill_cb(skb, hdr, th, isn);
- 
- 	skb->dev = NULL;
- 
-@@ -1730,7 +1731,7 @@ INDIRECT_CALLABLE_SCOPE int tcp_v6_rcv(struct sk_buff *skb)
- 	if (!xfrm6_policy_check(NULL, XFRM_POLICY_IN, skb))
- 		goto discard_it;
- 
--	tcp_v6_fill_cb(skb, hdr, th);
-+	tcp_v6_fill_cb(skb, hdr, th, isn);
- 
- 	if (tcp_checksum_complete(skb)) {
- csum_error:
-@@ -1757,7 +1758,7 @@ INDIRECT_CALLABLE_SCOPE int tcp_v6_rcv(struct sk_buff *skb)
- 		goto discard_it;
- 	}
- 
--	tcp_v6_fill_cb(skb, hdr, th);
-+	tcp_v6_fill_cb(skb, hdr, th, isn);
- 
- 	if (tcp_checksum_complete(skb)) {
- 		inet_twsk_put(inet_twsk(sk));
-@@ -1780,6 +1781,7 @@ INDIRECT_CALLABLE_SCOPE int tcp_v6_rcv(struct sk_buff *skb)
- 			struct inet_timewait_sock *tw = inet_twsk(sk);
- 			inet_twsk_deschedule_put(tw);
- 			sk = sk2;
-+			isn = TCP_SKB_CB(skb)->tcp_tw_isn;
- 			tcp_v6_restore_cb(skb);
- 			refcounted = false;
- 			goto process;
 -- 
-1.8.3.1
-
+Alexandre Belloni, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
