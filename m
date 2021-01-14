@@ -2,38 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 492D12F56AE
-	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 02:58:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 57CFF2F56AC
+	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 02:58:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727817AbhANBu5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jan 2021 20:50:57 -0500
-Received: from mail.kernel.org ([198.145.29.99]:38824 "EHLO mail.kernel.org"
+        id S1727882AbhANBuz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jan 2021 20:50:55 -0500
+Received: from mail.kernel.org ([198.145.29.99]:38820 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727423AbhANBuv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1727457AbhANBuv (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 13 Jan 2021 20:50:51 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id C5269235FA;
-        Thu, 14 Jan 2021 01:49:26 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 6C311235FF;
+        Thu, 14 Jan 2021 01:49:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1610588967;
-        bh=uvpFKpZIYnYAfE+BZMDDN1ummCwtUM1Hwvisj/xH0IE=;
+        bh=C5+s0PAMidhIwIYtcL/rpfHpRYh4nXlftK0MEQM4/Ao=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vRwjlLTC5avNRgCsGsBxj8F6sCrUoWfmKZs/uZz7P2J6dzytzkjaUkR/OnKG/jh4F
-         4CtSWVFK3YQToHa/FUpGh8nBkQE8YmcayzpSHO8iYtxlhZQfIhWTA/R2xpGSjxoNpq
-         NVTkM0Hj64cmyQ0sAlfI9hIomhU0WV9U8lW3rUvlPMSglUBkInwAtj5pAX7fsB1kQo
-         ESr/jzsZdJJgN81cBm8Pfvq8Pkv/3UPJ6RFQqINGhBaDGyxj5y18SySHBeF901lIGF
-         xHBPIQ9sVprNV+YURnkQmqJUQ72IBTrZzXI/ttf8/dG1lAGiTFXaFvf10DoilhWXQT
-         Z0fTGpieJtfbw==
+        b=k+QbSREXoR6o++6vJzdPKJIy45JTylxu34QClK26Mo15xBowDQDUxoIvZ6Gt/b4Aj
+         GiG+CpJuCjHfUmKcR/7XW97AY3foj+Y5QTje6kXLrbF2Re/uNYKXpQoNXm3x9fxf/s
+         L2q256GKuaYS/fFQEK/XFoFtnMYkpaDjN/fnAXkM/P9TPSq8hT/lJmAtX2ZXgOCUXT
+         Zy7nvXetnQpfREGDM5jmshfKfUaLRhhx4rkzf8fqrARqIQikj+81ixGUyGeBmvuzp/
+         HnI5inNbUtNDHrmHVTvKUZy2kHvAIViPb26eUb4Rj4l5uMCGRqNGPiOXycfIAZH1my
+         y/OqK+dtmguGw==
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     davem@davemloft.net
 Cc:     netdev@vger.kernel.org, corbet@lwn.net,
         Jakub Kicinski <kuba@kernel.org>,
-        Aviad Yehezkel <aviadye@nvidia.com>,
-        Boris Pismenny <borisp@nvidia.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Subject: [PATCH net v2 5/7] MAINTAINERS: tls: move Aviad to CREDITS
-Date:   Wed, 13 Jan 2021 17:49:10 -0800
-Message-Id: <20210114014912.2519931-6-kuba@kernel.org>
+        Wensong Zhang <wensong@linux-vs.org>,
+        Simon Horman <horms@verge.net.au>, Julian Anastasov <ja@ssi.bg>
+Subject: [PATCH net v2 6/7] MAINTAINERS: ipvs: move Wensong Zhang to CREDITS
+Date:   Wed, 13 Jan 2021 17:49:11 -0800
+Message-Id: <20210114014912.2519931-7-kuba@kernel.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20210114014912.2519931-1-kuba@kernel.org>
 References: <20210114014912.2519931-1-kuba@kernel.org>
@@ -43,70 +41,60 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Aviad wrote parts of the initial TLS implementation
-but hasn't been contributing to TLS since.
+Move Wensong Zhang to credits, we haven't heard from
+him in years.
 
-Subsystem NETWORKING [TLS]
-  Changes 123 / 308 (39%)
-  Last activity: 2020-12-01
-  Boris Pismenny <borisp@nvidia.com>:
-    Tags 138559b9f99d 2020-11-17 00:00:00 1
-  Aviad Yehezkel <aviadye@nvidia.com>:
-  John Fastabend <john.fastabend@gmail.com>:
-    Author e91de6afa81c 2020-06-01 00:00:00 22
-    Tags e91de6afa81c 2020-06-01 00:00:00 29
-  Daniel Borkmann <daniel@iogearbox.net>:
-    Author c16ee04c9b30 2018-10-20 00:00:00 7
-    Committer b8e202d1d1d0 2020-02-21 00:00:00 19
-    Tags b8e202d1d1d0 2020-02-21 00:00:00 28
-  Jakub Kicinski <kuba@kernel.org>:
-    Author 5c39f26e67c9 2020-11-27 00:00:00 89
-    Committer d31c08007523 2020-12-01 00:00:00 15
-    Tags d31c08007523 2020-12-01 00:00:00 117
+Subsystem IPVS
+  Changes 83 / 226 (36%)
+  Last activity: 2020-11-27
+  Wensong Zhang <wensong@linux-vs.org>:
+  Simon Horman <horms@verge.net.au>:
+    Committer c24b75e0f923 2019-10-24 00:00:00 33
+    Tags 7980d2eabde8 2020-10-12 00:00:00 76
+  Julian Anastasov <ja@ssi.bg>:
+    Author 7980d2eabde8 2020-10-12 00:00:00 26
+    Tags 4bc3c8dc9f5f 2020-11-27 00:00:00 78
   Top reviewers:
-    [50]: dirk.vandermerwe@netronome.com
-    [26]: simon.horman@netronome.com
-    [14]: john.hurley@netronome.com
-  INACTIVE MAINTAINER Aviad Yehezkel <aviadye@nvidia.com>
+    [6]: horms+renesas@verge.net.au
+  INACTIVE MAINTAINER Wensong Zhang <wensong@linux-vs.org>
 
 Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
-CC: Aviad Yehezkel <aviadye@nvidia.com>
-CC: Boris Pismenny <borisp@nvidia.com>
-CC: John Fastabend <john.fastabend@gmail.com>
-CC: Daniel Borkmann <daniel@iogearbox.net>
+CC: Wensong Zhang <wensong@linux-vs.org>
+CC: Simon Horman <horms@verge.net.au>
+CC: Julian Anastasov <ja@ssi.bg>
 ---
  CREDITS     | 4 ++++
  MAINTAINERS | 1 -
  2 files changed, 4 insertions(+), 1 deletion(-)
 
 diff --git a/CREDITS b/CREDITS
-index 98e7485ec106..90384691876c 100644
+index 90384691876c..ce8eae8c5aa4 100644
 --- a/CREDITS
 +++ b/CREDITS
-@@ -4122,6 +4122,10 @@ S: B-1206 Jingmao Guojigongyu
- S: 16 Baliqiao Nanjie, Beijing 101100
- S: People's Repulic of China
+@@ -4183,6 +4183,10 @@ S: 1507 145th Place SE #B5
+ S: Bellevue, Washington 98007
+ S: USA
  
-+N: Aviad Yehezkel
-+E: aviadye@nvidia.com
-+D: Kernel TLS implementation and offload support.
++N: Wensong Zhang
++E: wensong@linux-vs.org
++D: IP virtual server (IPVS).
 +
- N: Victor Yodaiken
- E: yodaiken@fsmlabs.com
- D: RTLinux (RealTime Linux)
+ N: Haojian Zhuang
+ E: haojian.zhuang@gmail.com
+ D: MMP support
 diff --git a/MAINTAINERS b/MAINTAINERS
-index 64dd19dfc9c3..92fdc134ca14 100644
+index 92fdc134ca14..18e75e29c672 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
-@@ -12472,7 +12472,6 @@ F:	net/ipv6/tcp*.c
+@@ -9325,7 +9325,6 @@ W:	http://www.adaptec.com/
+ F:	drivers/scsi/ips*
  
- NETWORKING [TLS]
- M:	Boris Pismenny <borisp@nvidia.com>
--M:	Aviad Yehezkel <aviadye@nvidia.com>
- M:	John Fastabend <john.fastabend@gmail.com>
- M:	Daniel Borkmann <daniel@iogearbox.net>
- M:	Jakub Kicinski <kuba@kernel.org>
+ IPVS
+-M:	Wensong Zhang <wensong@linux-vs.org>
+ M:	Simon Horman <horms@verge.net.au>
+ M:	Julian Anastasov <ja@ssi.bg>
+ L:	netdev@vger.kernel.org
 -- 
 2.26.2
 
