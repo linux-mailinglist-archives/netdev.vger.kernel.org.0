@@ -2,43 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6FE0B2F5C1C
-	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 09:07:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A66F52F5C08
+	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 09:07:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728397AbhANIHF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jan 2021 03:07:05 -0500
-Received: from mail.kernel.org ([198.145.29.99]:59242 "EHLO mail.kernel.org"
+        id S1728192AbhANIG0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jan 2021 03:06:26 -0500
+Received: from mail.kernel.org ([198.145.29.99]:59014 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728117AbhANIHD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 14 Jan 2021 03:07:03 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 7D94423A77;
-        Thu, 14 Jan 2021 08:05:01 +0000 (UTC)
+        id S1728123AbhANIGW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 14 Jan 2021 03:06:22 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id AAA6823A55;
+        Thu, 14 Jan 2021 08:05:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610611501;
-        bh=3zVDkTpXYYSPlX83jUVJYOwCXXEP5O6e+4oOu3uM/QQ=;
+        s=k20201202; t=1610611500;
+        bh=j3vuD+4dfRwkLcutbaOqNgukR9x6zrYbX+EHYnGNnww=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UhqyF9OQDpRzHo+RuUu93fWzsPAekpJ9luHJdjIEoiUWVb8S+YhToX5JNdCVm8aXl
-         a7+PFmWftb+KKlFEsNfqEJ0QLnfdzzvaTFBSMNXem5E4DcfmQoMjGL4OCqbyQ2muba
-         qbosviT6WawO50HEqLH01OkHL6ziejZ8J7XP/DZXf82n+9s+g1KgriIjOio7oUBvdR
-         NLxpn9rmhVEdNQ9NsZ79hPRoZdBWNmfHsDr+1wBw6DUchUB+ehDvlwB1YTIBGXhEgy
-         PT+VnHrcU7Uj+OQ3K6DlMkSOne5MrpOA9qRpDYvRKqrpYYYjnGvqbIZfo8TigeQJng
-         wLTQRvWKM8Keg==
+        b=IgDHGsDyf+shTEJTgRukn+ZVPF3cld8ySmHXr7zdf/CUufXC3giv2ceR9WHLPO8Hv
+         Ogr8EL/f0SMxDsHYUX/yC+m5T3rIYffEZ8I8pZWJqyRwIySjk6ARkdMGCq9E0zEO4g
+         h6oMywmK0MKoGH/mFuxS2WLtM+TMcewPdnAmAt5eIWTHgRZ7A40GWTZoYIxLWZqAbM
+         g5wIg62yagTnJKaCil/zU7HbBiVbzBeDVeLMTqL/J3N8ldp3DSxTJtwuvAS5FGWrkx
+         jAQA0fBRjn9H0nTBE01EnebSughIetQTZWMZFS7IoQB1mhtN+CjqU6O+zo7Mnayhfw
+         uBk774MF8eESA==
 Received: by mail.kernel.org with local (Exim 4.94)
         (envelope-from <mchehab@kernel.org>)
-        id 1kzxco-00EQ6s-AE; Thu, 14 Jan 2021 09:04:58 +0100
+        id 1kzxco-00EQ6w-CP; Thu, 14 Jan 2021 09:04:58 +0100
 From:   Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
         Jonathan Corbet <corbet@lwn.net>
 Cc:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Jon Maloy <jmaloy@redhat.com>,
-        Ying Xue <ying.xue@windriver.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        tipc-discussion@lists.sourceforge.net
-Subject: [PATCH v6 12/16] net: tip: fix a couple kernel-doc markups
-Date:   Thu, 14 Jan 2021 09:04:48 +0100
-Message-Id: <9d205b0e080153af0fbddee06ad0eb23457e1b1b.1610610937.git.mchehab+huawei@kernel.org>
+        Johannes Berg <johannes@sipsolutions.net>,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH v6 13/16] net: cfg80211: fix a kerneldoc markup
+Date:   Thu, 14 Jan 2021 09:04:49 +0100
+Message-Id: <c7ed4bc4d9e992ead16d3d2df246f3b56dbfb1fb.1610610937.git.mchehab+huawei@kernel.org>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <cover.1610610937.git.mchehab+huawei@kernel.org>
 References: <cover.1610610937.git.mchehab+huawei@kernel.org>
@@ -51,42 +50,26 @@ X-Mailing-List: netdev@vger.kernel.org
 
 A function has a different name between their prototype
 and its kernel-doc markup:
-
-	../net/tipc/link.c:2551: warning: expecting prototype for link_reset_stats(). Prototype was for tipc_link_reset_stats() instead
-	../net/tipc/node.c:1678: warning: expecting prototype for is the general link level function for message sending(). Prototype was for tipc_node_xmit() instead
+	../include/net/cfg80211.h:1766: warning: expecting prototype for struct cfg80211_sar_chan_ranges. Prototype was for struct cfg80211_sar_freq_ranges instead
 
 Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 ---
- net/tipc/link.c | 2 +-
- net/tipc/node.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ include/net/cfg80211.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/tipc/link.c b/net/tipc/link.c
-index a6a694b78927..115109259430 100644
---- a/net/tipc/link.c
-+++ b/net/tipc/link.c
-@@ -2544,7 +2544,7 @@ void tipc_link_set_queue_limits(struct tipc_link *l, u32 min_win, u32 max_win)
- }
+diff --git a/include/net/cfg80211.h b/include/net/cfg80211.h
+index 1b3954afcda4..0d6f7ec86061 100644
+--- a/include/net/cfg80211.h
++++ b/include/net/cfg80211.h
+@@ -1756,7 +1756,7 @@ struct cfg80211_sar_specs {
+ 
  
  /**
-- * link_reset_stats - reset link statistics
-+ * tipc_link_reset_stats - reset link statistics
-  * @l: pointer to link
+- * struct cfg80211_sar_chan_ranges - sar frequency ranges
++ * struct cfg80211_sar_freq_ranges - sar frequency ranges
+  * @start_freq:  start range edge frequency
+  * @end_freq:    end range edge frequency
   */
- void tipc_link_reset_stats(struct tipc_link *l)
-diff --git a/net/tipc/node.c b/net/tipc/node.c
-index 83d9eb830592..008670d1f43e 100644
---- a/net/tipc/node.c
-+++ b/net/tipc/node.c
-@@ -1665,7 +1665,7 @@ static void tipc_lxc_xmit(struct net *peer_net, struct sk_buff_head *list)
- }
- 
- /**
-- * tipc_node_xmit() is the general link level function for message sending
-+ * tipc_node_xmit() - general link level function for message sending
-  * @net: the applicable net namespace
-  * @list: chain of buffers containing message
-  * @dnode: address of destination node
 -- 
 2.29.2
 
