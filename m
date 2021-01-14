@@ -2,122 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 73BEC2F6569
-	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 17:08:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A0B22F656E
+	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 17:08:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727450AbhANQHL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jan 2021 11:07:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57860 "EHLO
+        id S1728723AbhANQIF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jan 2021 11:08:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725950AbhANQHK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 11:07:10 -0500
-Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BE23C061575
-        for <netdev@vger.kernel.org>; Thu, 14 Jan 2021 08:06:43 -0800 (PST)
-Received: by mail-pl1-x635.google.com with SMTP id v3so3107611plz.13
-        for <netdev@vger.kernel.org>; Thu, 14 Jan 2021 08:06:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=jshthWkfursUYeoa93OIN20KDm6kOD11YBN+qn6iVt8=;
-        b=cM1au4dRRrk7gfAtJBg05j7q1z6nw+H7+DICqL6BoR+mUt/L0HTv2NZt87IOfnzOgI
-         A1yaI+jMCvuc+hWSj99W8Ngi6X5dPhWTRBNxXbg06OSIs8nlEx69LTozA2Ccc9f662Ez
-         u6eXzuqAtazlbMfXJQIIO+eondOnQQd86IANsS9McTY3L70/ZbF/ClFFPm21KrLusOwN
-         HkJQXfBob0tOMB6cppPbodlWTIwhY8rqDtHdA5+8J98Y1gbM9snKRsAjJpT5pHQWwNBo
-         yyrG5rw8tIFBoSrWIIqi0/p2oRaXBoWgl0lSUH6oMIazOFFzx6gFjV6DmxO+L0JN2/5t
-         zEEA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=jshthWkfursUYeoa93OIN20KDm6kOD11YBN+qn6iVt8=;
-        b=kCLjCgbq5jHx+K2XwXEktcYrmeEvIxrxGvHnTQNUVF2apLMOZ2qD51Kai6llA6IdLf
-         jgY8s3iy5x9L17o+QN8eerm51awkXs0U1KOi2vLfDkV8/LXlLdP8XhvMS8sD2KlMaOEI
-         aDvcPx3r6bUpdef/Ydz2RRvqGz5A71qDCgoKu/0uh/Nw/iqxVD1aHJbP3ErY6eS10V33
-         B32inoGPFLbcquNRUFK6TXV3yUiTO+8ht7ztxN2P96U8jbnG6nCargtijkqbBX17LqJj
-         jdXKjaSAvjPmRTm+iSwmxG1aEaqrNpELdeZ99uD4UChjMgfUKqPWCXOScX2mhQnfu+US
-         Z8HA==
-X-Gm-Message-State: AOAM531gfDhO+spj65OMJlQ9lfJrATMBtYuLCsV7fmGfR6+YlkG7U9dU
-        0C+tP+UWviPAL+Dni7iTedB5mOl2+Ns=
-X-Google-Smtp-Source: ABdhPJyGeBi+Dj9r2EcVn1xT0V2+EblIU1HEp+hWe6FiTOFHLe6VlVcfSf5BJlZk23p0bOBiriTznQ==
-X-Received: by 2002:a17:90a:4d84:: with SMTP id m4mr5669329pjh.145.1610640402134;
-        Thu, 14 Jan 2021 08:06:42 -0800 (PST)
-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:7220:84ff:fe09:1424])
-        by smtp.gmail.com with ESMTPSA id s7sm5413480pfh.207.2021.01.14.08.06.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Jan 2021 08:06:41 -0800 (PST)
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        syzbot <syzkaller@googlegroups.com>
-Subject: [PATCH net] net_sched: reject silly cell_log in qdisc_get_rtab()
-Date:   Thu, 14 Jan 2021 08:06:37 -0800
-Message-Id: <20210114160637.1660597-1-eric.dumazet@gmail.com>
-X-Mailer: git-send-email 2.30.0.284.gd98b1dd5eaa7-goog
+        with ESMTP id S1726293AbhANQIF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 11:08:05 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63880C061574
+        for <netdev@vger.kernel.org>; Thu, 14 Jan 2021 08:07:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=SMrs3P+5EdO//YJvMfhcjIDwq4DzTSXhEXZyMIdqlAE=; b=JyZGY/ezUMaFrYiYRfYwR4tH+
+        3AzxbpsbM91dNbQTbxD+l80242NNGmYwWlvEug7/cavbo1Zt8rfcTb65mzlq0aAr83Fnsg+RX7CzQ
+        uLIRjwaUvqtBVAtaKp1XYugcLQ+NGsmxkDGY0P3Ng0gaWSoomWyyOjbyN/U33XP1cO26TmZ9awj6S
+        RIfRC20XQjdUAKUcGTw5fS51US+wNaweZ8heXiMorPMuyiJXH6mpDjoXrhJQ3HOAe5eA/XJ5DnRsP
+        9fqLzN3bG34V91PI9Ffq5AVSJK4dJQk7wltSLlMk8wGAkBti1ylHjjGdYkJXobO3k62Ue8MapuXge
+        DYQY9oWCA==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:47938)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1l059c-0002eB-Gj; Thu, 14 Jan 2021 16:07:20 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1l059b-0008TQ-G2; Thu, 14 Jan 2021 16:07:19 +0000
+Date:   Thu, 14 Jan 2021 16:07:19 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net,
+        pali@kernel.org
+Subject: Re: [PATCH net-next v5 4/5] net: sfp: create/destroy I2C mdiobus
+ before PHY probe/after PHY release
+Message-ID: <20210114160719.GV1551@shell.armlinux.org.uk>
+References: <20210114044331.5073-1-kabel@kernel.org>
+ <20210114044331.5073-5-kabel@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210114044331.5073-5-kabel@kernel.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+On Thu, Jan 14, 2021 at 05:43:30AM +0100, Marek Behún wrote:
+> Instead of configuring the I2C mdiobus when SFP driver is probed,
+> create/destroy the mdiobus before the PHY is probed for/after it is
+> released.
+> 
+> This way we can tell the mdio-i2c code which protocol to use for each
+> SFP transceiver.
 
-iproute2 probably never goes beyond 8 for the cell exponent,
-but stick to the max shift exponent for signed 32bit.
+I've been thinking a bit more about this. It looks like it will
+allocate and free the MDIO bus each time any module is inserted or
+removed, even a fiber module that wouldn't ever have a PHY. This adds
+unnecessary noise to the kernel message log.
 
-UBSAN reported:
-UBSAN: shift-out-of-bounds in net/sched/sch_api.c:389:22
-shift exponent 130 is too large for 32-bit type 'int'
-CPU: 1 PID: 8450 Comm: syz-executor586 Not tainted 5.11.0-rc3-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:79 [inline]
- dump_stack+0x183/0x22e lib/dump_stack.c:120
- ubsan_epilogue lib/ubsan.c:148 [inline]
- __ubsan_handle_shift_out_of_bounds+0x432/0x4d0 lib/ubsan.c:395
- __detect_linklayer+0x2a9/0x330 net/sched/sch_api.c:389
- qdisc_get_rtab+0x2b5/0x410 net/sched/sch_api.c:435
- cbq_init+0x28f/0x12c0 net/sched/sch_cbq.c:1180
- qdisc_create+0x801/0x1470 net/sched/sch_api.c:1246
- tc_modify_qdisc+0x9e3/0x1fc0 net/sched/sch_api.c:1662
- rtnetlink_rcv_msg+0xb1d/0xe60 net/core/rtnetlink.c:5564
- netlink_rcv_skb+0x1f0/0x460 net/netlink/af_netlink.c:2494
- netlink_unicast_kernel net/netlink/af_netlink.c:1304 [inline]
- netlink_unicast+0x7de/0x9b0 net/netlink/af_netlink.c:1330
- netlink_sendmsg+0xaa6/0xe90 net/netlink/af_netlink.c:1919
- sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg net/socket.c:672 [inline]
- ____sys_sendmsg+0x5a2/0x900 net/socket.c:2345
- ___sys_sendmsg net/socket.c:2399 [inline]
- __sys_sendmsg+0x319/0x400 net/socket.c:2432
- do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
+We only probe for a PHY if one of:
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
----
- net/sched/sch_api.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+- id.base.extended_cc is SFF8024_ECC_10GBASE_T_SFI,
+  SFF8024_ECC_10GBASE_T_SR, SFF8024_ECC_5GBASE_T, or
+  SFF8024_ECC_2_5GBASE_T.
+- id.base.e1000_base_t is set.
 
-diff --git a/net/sched/sch_api.c b/net/sched/sch_api.c
-index 51cb553e4317a3e2bca1996e0df004aab8111d58..6fe4e5cc807c90b046a16f014df43bfe841cbc43 100644
---- a/net/sched/sch_api.c
-+++ b/net/sched/sch_api.c
-@@ -412,7 +412,8 @@ struct qdisc_rate_table *qdisc_get_rtab(struct tc_ratespec *r,
- {
- 	struct qdisc_rate_table *rtab;
- 
--	if (tab == NULL || r->rate == 0 || r->cell_log == 0 ||
-+	if (tab == NULL || r->rate == 0 ||
-+	    r->cell_log == 0 || r->cell_log >= 32 ||
- 	    nla_len(tab) != TC_RTAB_SIZE) {
- 		NL_SET_ERR_MSG(extack, "Invalid rate table parameters for searching");
- 		return NULL;
+So, we only need the MDIO bus to be registered if one of those is true.
+
+As you are introducing "enum mdio_i2c_proto", I'm wondering whether
+that should include "MDIO_I2C_NONE", and we should only register the
+bus and probe for a PHY if it is not MDIO_I2C_NONE.
+
+Maybe we should have:
+
+enum mdio_i2c_proto {
+	MDIO_I2C_NONE,
+	MDIO_I2C_MARVELL_C22,
+	MDIO_I2C_C45,
+	MDIO_I2C_ROLLBALL,
+	...
+};
+
+with:
+
+	sfp->mdio_protocol = MDIO_I2C_NONE;
+	if (((!memcmp(id.base.vendor_name, "OEM             ", 16) ||
+	      !memcmp(id.base.vendor_name, "Turris          ", 16)) &&
+	     (!memcmp(id.base.vendor_pn, "SFP-10G-T       ", 16) ||
+	      !memcmp(id.base.vendor_pn, "RTSFP-10", 8)))) {
+		sfp->mdio_protocol = MDIO_I2C_ROLLBALL;
+		sfp->module_t_wait = T_WAIT_ROLLBALL;
+	} else {
+		switch (id.base.extended_cc) {
+		...
+		}
+	}
+
+static int sfp_sm_add_mdio_bus(struct sfp *sfp)
+{
+	int err = 0;
+
+	if (sfp->mdio_protocol != MDIO_I2C_NONE)
+		err = sfp_i2c_mdiobus_create(sfp);
+
+	return err;
+}
+
+called from the place you call sfp_i2c_mdiobus_create(), and
+sfp_sm_probe_for_phy() becomes:
+
+static int sfp_sm_probe_for_phy(struct sfp *sfp)
+{
+	int err = 0;
+
+	switch (sfp->mdio_protocol) {
+	case MDIO_I2C_NONE:
+		break;
+
+	case MDIO_I2C_MARVELL_C22:
+		err = sfp_sm_probe_phy(sfp, SFP_PHY_ADDR, false);
+		break;
+
+	case MDIO_I2C_C45:
+		err = sfp_sm_probe_phy(sfp, SFP_PHY_ADDR, true);
+		break;
+
+	case MDIO_I2C_ROLLBALL:
+		err = sfp_sm_probe_phy(sfp, SFP_PHY_ADDR_ROLLBALL, true);
+		break;
+	}
+
+	return err;
+}
+
+This avoids having to add the PHY address, as well as fudge around with
+id.base.extended_cc to get the PHY probed.
+
+Thoughts?
+
 -- 
-2.30.0.284.gd98b1dd5eaa7-goog
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
