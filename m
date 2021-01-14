@@ -2,116 +2,144 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4509E2F6397
-	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 16:02:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 868B22F63A7
+	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 16:05:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727480AbhANPAw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jan 2021 10:00:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43364 "EHLO
+        id S1727686AbhANPEq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jan 2021 10:04:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726565AbhANPAw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 10:00:52 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEC63C061574
-        for <netdev@vger.kernel.org>; Thu, 14 Jan 2021 06:59:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
-        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
-        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=NvL97tsH3xPtRBRPWdy1qmCILCqkx20olHUYvAYLS1g=; b=iJZa2fPpzQ/t+VdNHlvxpN+um
-        WYGZCmnINtnYNnVcHHWofIaoCNVU6GtiqRK0nK0B+DU3UusPj6JvFUs18hMCo2ZEjrPoBn6Waanov
-        o6xolYhJhejHuz+gHnx1yZpJXqP/i2DRDe2ZY68FBKBmcDKWKolyXaW5Ax+CBFVpiXMpzO1V+lAF6
-        7BDMNY0a7MrXfj8eZHdEPx0vIxZ4fnvtHgFh1K8LGuHSK8cefB5JO4PCXN9o+mjLqB6sj2L3GKqyB
-        tnRtsJ2J1Aal7gssbqUUIb2oVBe4fcGNBXep+dIbaJPjI0ErCyr+n42H4Xw9rkloOIUTUgPupSv59
-        4P9ajGCfQ==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:47916)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1l046M-0002aX-FE; Thu, 14 Jan 2021 14:59:54 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1l046L-0008Qe-Hz; Thu, 14 Jan 2021 14:59:53 +0000
-Date:   Thu, 14 Jan 2021 14:59:53 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
-Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net,
-        pali@kernel.org
-Subject: Re: [PATCH net-next v5 1/5] net: sfp: add SFP_PASSWORD address
-Message-ID: <20210114145953.GS1551@shell.armlinux.org.uk>
-References: <20210114044331.5073-1-kabel@kernel.org>
- <20210114044331.5073-2-kabel@kernel.org>
+        with ESMTP id S1726563AbhANPEq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 10:04:46 -0500
+Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8AA3C061574;
+        Thu, 14 Jan 2021 07:04:05 -0800 (PST)
+Received: by mail-oi1-x22a.google.com with SMTP id l207so6193011oib.4;
+        Thu, 14 Jan 2021 07:04:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=/jHFgmoPeXHiV4YcqawMp6uZQ8LlT8fRndukyjzJVg8=;
+        b=JPWfB/w9V9+Kw8HoApq5LrRQoQgHRMrEuu/H+ONr2nIkngZZX63asF57yR+pcHFaCf
+         OM7rfUcxJPUfQ4lZulSLhfzm6izbNWbYHYqQUCeGRhw+C+FOy/AhGUbbAJxXJ4pdAwKB
+         QG6F2zh4P7nNHoH3vBxc1NFHjFAPvs8sSIbrnq9cCyME0NDJ7zlKM6JXA4634ALhZfO7
+         wjEH4iziCpeBrz+fkFSDh0zbLOpGNKvvqe8pnxYA2ReK11apeFxTK6vi+l0JpAUyezf1
+         fhypWlMmxVKpqhwQe+9V0JBv/eY3o585oVkA7sHXM8U2w9sPEF7Cv6ySnpQ6dqn/m4KQ
+         izFA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/jHFgmoPeXHiV4YcqawMp6uZQ8LlT8fRndukyjzJVg8=;
+        b=RYNNvIYRHRnBt4rl040xx2+mR349sQvDRHMMmQSY5GexCKa8BQjV06YTtfLYeLEcc3
+         tXSBSgHnESo4CBYemQoMemPTJo0XgDv9d6x2M2MZf7GgfXu/+3s9cQQ0QD+kJNRwm7OR
+         SapJnt7MR40tXDWGdPg64nqUhUsIVjrbQeCOBPUi6jcJF4KeSrepCYwjuWuENoWGIgfW
+         ESLkEq7D7u13SEPbrsmmQpaQ26cjWopntuFTZnPIWOiaNLlK0rc8JSxxxbfWZA8IgxqH
+         +hHK735n6qCCBjo/aEyNh4jZknPxlP7rOSPqxBgNzxNDgSzC879nIjITQ9p+nq2y3stR
+         7dQA==
+X-Gm-Message-State: AOAM531loF0AVbKi4FqkkR1GPOqQJ9udkGj9ChUYRNh1XW3cfflCCdQY
+        kafDidExoO+gztDWP0MUDgs7MmZgK0fP09mZ7w==
+X-Google-Smtp-Source: ABdhPJzLcYo0vmSHvOURWzZZv9H7hQYf9f4KTJGzSrGmc/uN1MH7bW93Frnz3tY06HdfSl/Ubw7GfZLvn2rmdqm/zhU=
+X-Received: by 2002:a05:6808:8e7:: with SMTP id d7mr2876538oic.127.1610636645135;
+ Thu, 14 Jan 2021 07:04:05 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210114044331.5073-2-kabel@kernel.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+References: <20210113145922.92848-1-george.mccollister@gmail.com>
+ <20210113145922.92848-2-george.mccollister@gmail.com> <20210114010519.td6q2pzy4mg6viuh@skbuf>
+In-Reply-To: <20210114010519.td6q2pzy4mg6viuh@skbuf>
+From:   George McCollister <george.mccollister@gmail.com>
+Date:   Thu, 14 Jan 2021 09:03:53 -0600
+Message-ID: <CAFSKS=PZ5_FgtOmSq=9xCgYPmqnmwjp6v7JFwx1tyBCP8ayopQ@mail.gmail.com>
+Subject: Re: [PATCH net-next v4 1/3] dsa: add support for Arrow XRS700x tag trailer
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Rob Herring <robh@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        "open list:OPEN FIRMWARE AND..." <devicetree@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 14, 2021 at 05:43:27AM +0100, Marek Behún wrote:
-> Add SFP_PASSWORD = 0x7b to the diagnostics enumerator. This address is
-> described in SFF-8436 and SFF-8636.
+On Wed, Jan 13, 2021 at 7:05 PM Vladimir Oltean <olteanv@gmail.com> wrote:
+> > +++ b/net/dsa/tag_xrs700x.c
+> > @@ -0,0 +1,67 @@
+> > +// SPDX-License-Identifier: GPL-2.0+
+> > +/*
+> > + * XRS700x tag format handling
+> > + * Copyright (c) 2008-2009 Marvell Semiconductor
+>
+> Why does Marvell get copyright?
 
-However, as I mentioned previously, these are not relevant for SFPs,
-but are for QSFPs, and QSFPs have a totally different layout.
+What Andrew said. I started with tag_trailer.c since it is quite
+similar and it seemed wrong to remove the copyright.
 
-The data structure for this enum is described by SFF-8472, and it lists
+>
+> > + * Copyright (c) 2020 NovaTech LLC
+> > + */
+> > +
+> > +#include <linux/etherdevice.h>
+> > +#include <linux/list.h>
+> > +#include <linux/slab.h>
+>
+> These 3 includes are not needed. You can probably remove them later
+> though, if there is no other reason to resend.
 
-	Vendor Specific Locations [Address A2h, Bytes 120-126]
+Removed.
 
-This is what the SFP_VSL definition covers.
+>
+> > +#include <linux/bitops.h>
+> > +
+> > +#include "dsa_priv.h"
+> > +
+> > +static struct sk_buff *xrs700x_xmit(struct sk_buff *skb, struct net_device *dev)
+> > +{
+> > +     struct dsa_port *dp = dsa_slave_to_port(dev);
+> > +     u8 *trailer;
+> > +
+> > +     trailer = skb_put(skb, 1);
+> > +     trailer[0] = BIT(dp->index);
+> > +
+> > +     return skb;
+> > +}
+> > +
+> > +static struct sk_buff *xrs700x_rcv(struct sk_buff *skb, struct net_device *dev,
+> > +                                struct packet_type *pt)
+> > +{
+> > +     int source_port;
+> > +     u8 *trailer;
+> > +
+> > +     if (skb_linearize(skb))
+> > +             return NULL;
+>
+> We've been through this, there should be no reason to linearize an skb
+> for a one-byte tail tag..
 
-SFF-8436 defines the layout for "QSFP+ 10 Gbs 4X PLUGGABLE TRANSCEIVER":
+Sorry about this. You and Andrew started discussing it and I guess I
+got distracted fixing the other issues. Removed. I'll retest after
+making other changes to patches in the series but based on what you've
+said it should be fine without it.
 
-                            Table 17 - Lower Memory Map (A0h)
-       Address       Description         Type         Passive Copper,     Optical
-                                                      Active Copper,      Module                                                      Active Optical
-       0             Identifier (1       Read-Only    R                   R
-                     Byte)
-       1-2           Status (2 Bytes)     Read-Only    See Table 18
-       3-21          Interrupt Flags      Read-Only    See Tables 19-21
-                     (19 Bytes)
-...
-       123-126       Password Entry       Read/Write   O                  O
-                     Area (optional) 4
-                     Bytes
-       127           Page Select Byte     Read/Write   R                  R
-
-So, SFF-8436 is not relevant - not only is it for a different address
-but the whole format is different.
-
-SFF-8636 is "Specification for Management Interface for Cabled
-Environments" and defines:
-
-                             2-Wire Serial Address 1010000x
-                                     Lower Page 00h
-                            0 Identifier
-                        1- 2 Status
-                        3- 21 Interrupt Flags
-...
-                      123-126 Password Entry Area (Optional)
-                      127     Page Select Byte
-
-So again, SFF-8636 is not relevant for the same reasons as SFF-8436.
-
-We're left with SFF-8472, which mentions no password entry area, but
-leaves the area from 120-127 open as "vendor specific", so I don't
-think it is appropriate to start adding vendor specific definitions as
-if they were generic to sfp.h
-
-I would instead suggest defining this inside mdio-i2c.c as
-
-#define ROLLERBALL_PASSWORD	(SFP_VSL + 3)
-
-rather than trying to make this appear generic.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+>
+> > +
+> > +     trailer = skb_tail_pointer(skb) - 1;
+> > +
+> > +     source_port = ffs((int)trailer[0]) - 1;
+> > +
+> > +     if (source_port < 0)
+> > +             return NULL;
+> > +
+> > +     skb->dev = dsa_master_find_slave(dev, 0, source_port);
+> > +     if (!skb->dev)
+> > +             return NULL;
+> > +
+> > +     if (pskb_trim_rcsum(skb, skb->len - 1))
+> > +             return NULL;
+> > +
+> > +     /* Frame is forwarded by hardware, don't forward in software. */
+> > +     skb->offload_fwd_mark = 1;
+> > +
+> > +     return skb;
+> > +}
