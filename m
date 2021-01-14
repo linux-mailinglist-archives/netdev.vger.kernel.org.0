@@ -2,111 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1303F2F5F26
-	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 11:46:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D188C2F5F2A
+	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 11:46:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728563AbhANKpF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jan 2021 05:45:05 -0500
-Received: from so254-31.mailgun.net ([198.61.254.31]:16003 "EHLO
-        so254-31.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728623AbhANKpE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 05:45:04 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1610621085; h=Content-Transfer-Encoding: Content-Type:
- MIME-Version: Message-ID: In-Reply-To: Date: References: Subject: Cc:
- To: From: Sender; bh=OjjfXZal6B47GNRAOFXmbhnpHD2u3Oq2qC6Px4eVK1Q=; b=XUALIEs8n4JHSqxkRQi+yQFbBIEMEafKEDnWY6djppdkJzR9Kz4sRw3LTlu+6J00drfs7ZPT
- fnzckf4eJ6vuy6NTWPhP32GljSLxyX1DoKrKrs79t81IQp6Q21nRx3QEp6o4RAkvuPGq5+AT
- oHcL4HLt8vAJjkRPU14Z1japAWU=
-X-Mailgun-Sending-Ip: 198.61.254.31
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n09.prod.us-east-1.postgun.com with SMTP id
- 600020978fb3cda82f3ce0c7 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Thu, 14 Jan 2021 10:44:39
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 47896C43464; Thu, 14 Jan 2021 10:44:38 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL,
-        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id E11AFC433CA;
-        Thu, 14 Jan 2021 10:44:33 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org E11AFC433CA
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Petr =?utf-8?Q?=C5=A0tetiar?= <ynezz@true.cz>
-Cc:     Arnd Bergmann <arnd@kernel.org>, Felix Fietkau <nbd@nbd.name>,
-        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Ryder Lee <ryder.lee@mediatek.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Shayne Chen <shayne.chen@mediatek.com>,
-        Yiwei Chung <yiwei.chung@mediatek.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] mt76: mt7915: fix misplaced #ifdef
-References: <20210103135811.3749775-1-arnd@kernel.org>
-        <20210106135801.GA27377@meh.true.cz>
-Date:   Thu, 14 Jan 2021 12:44:31 +0200
-In-Reply-To: <20210106135801.GA27377@meh.true.cz> ("Petr \=\?utf-8\?Q\?\=C5\=A0t\?\=
- \=\?utf-8\?Q\?etiar\=22's\?\= message of
-        "Wed, 6 Jan 2021 14:58:01 +0100")
-Message-ID: <87r1mnhk6o.fsf@codeaurora.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        id S1728725AbhANKpk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jan 2021 05:45:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44850 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727440AbhANKpj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 05:45:39 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1E75AC061573;
+        Thu, 14 Jan 2021 02:44:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:Content-Type:MIME-Version:
+        Message-ID:Subject:Cc:To:From:Date:Reply-To:Content-Transfer-Encoding:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=F68eulvXFZnAl5pZI2tB8ZalnqWIEVZQNyoa3f/vSfs=; b=1+PsGp7gsUMf+LHqCtJKBArVm
+        WP/UXkNP7vLIkUGBLCgPKqMEHpthoqKRhWwXZUxFme8DiLG8PZVGHCxLFYHAKJOJZq9ZY93lzRQGh
+        TJwrKZNBikaMgWa9oZhQbYW8yikg4L/TiBmPn6BecganzP2ma01+TVcHrQpijLzAF3Hwyofgymb98
+        S+KV0SLhIWqsgcK3aqePesTczUli33vxnU2yKNauiQTB4BKCJSdVJPhXSnfNL2BVwEdPFj8HhQugj
+        aYDXg8elEfsPoUg4Y4H9nH9Zimbk6OhIKGMzogcDJM8mFXTX/Ise313+SrOYnaPODiXbqgdv+3ZPI
+        mKt3vcBkQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:47830)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1l007c-0002KB-SN; Thu, 14 Jan 2021 10:44:56 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1l007c-0008H6-4K; Thu, 14 Jan 2021 10:44:56 +0000
+Date:   Thu, 14 Jan 2021 10:44:56 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        devicetree@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>,
+        Jon Nettleton <jon@solid-run.com>
+Subject: [PATCH net-next 0/2] Add further DT configuration for AT803x PHYs
+Message-ID: <20210114104455.GP1551@shell.armlinux.org.uk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Petr =C5=A0tetiar <ynezz@true.cz> writes:
+Hi,
 
-> Arnd Bergmann <arnd@kernel.org> [2021-01-03 14:57:55]:
->
-> Hi,
->
-> just a small nitpick,
->
->> From: Arnd Bergmann <arnd@arndb.de>
->>=20
->> The lone '|' at the end of a line causes a build failure:
->>=20
->> drivers/net/wireless/mediatek/mt76/mt7915/init.c:47:2: error:
->> expected expression before '}' token
->>=20
->> Replace the #ifdef with an equivalent IS_ENABLED() check.
->>=20
->> Fixes: af901eb4ab80 ("mt76: mt7915: get rid of dbdc debugfs knob")
->
-> I think, that the correct fixes tag is following:
->
->  Fixes: 8aa2c6f4714e ("mt76: mt7915: support 32 station interfaces")
->
-> I've used the af901eb4ab80 as well first in
-> https://github.com/openwrt/mt76/pull/490 but then looked at it once more =
-and
-> actually found the probably correct 8aa2c6f4714e.
+This patch series adds the ability to configure the SmartEEE feature
+in AT803x PHYs. SmartEEE defaults to enabled on these PHYs, and has
+a history of causing random sporadic link drops at Gigabit speeds.
 
-Ok, I'll change that during commit.
+There appears to be two solutions to this. There is the approach that
+Freescale adopted early on, which is to disable the SmartEEE feature.
+However, this loses the power saving provided by EEE. Another solution
+was found by Jon Nettleton is to increase the Tw parameter for Gigabit
+links.
 
-Felix, I'm planning to apply this to wireless-drivers and assigned this
-to me in patchwork.
+This patch series adds support for both approaches, by adding a boolean:
 
---=20
-https://patchwork.kernel.org/project/linux-wireless/list/
+	qca,disable-smarteee
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatc=
-hes
+if one wishes to disable SmartEEE, and two properties to configure the
+SmartEEE Tw parameters:
+
+	qca,smarteee-tw-us-100m
+	qca,smarteee-tw-us-1g
+
+Sadly, the PHY quirk I merged a while back for AT8035 on iMX6 is broken 
+- rather than disabling SmartEEE mode, it enables it.
+
+The addition of these properties will be sent to the appropriate
+platform maintainers - although for SolidRun platforms, we only make use
+of "qca,smarteee-tw-us-1g".
+
+ .../devicetree/bindings/net/qca,ar803x.yaml        | 16 ++++++
+ drivers/net/phy/at803x.c                           | 65 +++++++++++++++++++++-
+ 2 files changed, 80 insertions(+), 1 deletion(-)
+
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
