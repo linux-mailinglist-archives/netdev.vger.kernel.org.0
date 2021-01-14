@@ -2,64 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DC6752F69F0
-	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 19:50:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B84112F69FC
+	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 19:54:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729594AbhANSst (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jan 2021 13:48:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36350 "EHLO
+        id S1727116AbhANSuZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jan 2021 13:50:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729564AbhANSst (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 13:48:49 -0500
-Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1BDEC061757
-        for <netdev@vger.kernel.org>; Thu, 14 Jan 2021 10:48:08 -0800 (PST)
-Received: by mail-pg1-x536.google.com with SMTP id 30so4382773pgr.6
-        for <netdev@vger.kernel.org>; Thu, 14 Jan 2021 10:48:08 -0800 (PST)
+        with ESMTP id S1726131AbhANSuY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 13:50:24 -0500
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E62EBC061757
+        for <netdev@vger.kernel.org>; Thu, 14 Jan 2021 10:49:43 -0800 (PST)
+Received: by mail-pg1-x52b.google.com with SMTP id p18so4359641pgm.11
+        for <netdev@vger.kernel.org>; Thu, 14 Jan 2021 10:49:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=33yyNVQErzJPfoGpCs99bWzmQVnoW+dJXia/2eggvg8=;
-        b=bPh8W7/ieolheaOUVyy3I7ZVTo8rd7nqIy/0HfqKBEVZhhjftHcnPJpTJZgRTNqmI5
-         yGrR6Hz1g6pxfDbG8Rmaqe6JBl/BUXdACm75CJs4of5f3HOIe9EtxDeS5bS5BA/7YKnZ
-         7Qa8tsfKlwx1/sqDTkhMjznhRFNhhuvc7KrFrGw2O175YiO0xKCo5w+Ot2v8xbtq4lKk
-         LwWuD+67T/UsCAP8KMJgNY2+rz0he/YDL3Wos4i+qKesHOu9rBVgS2Ya051N9UaiUciM
-         FUmYprSIemxy6LverjckyiSd9rfieupAk09vGBGqtbVcAqe3tzUmolUtSCVnthSENTEI
-         OsYg==
+        bh=pdXsUdpez1Mg23QbheBdmS73+SfVR6rgoNCWFtokD44=;
+        b=i3ndw05pJfR7LSuswqpSsbShr/KsrsVAVpnY+mUdCmCdtH9epHzaFE01/L/9bISUKy
+         /IdeVqAD//agzbfLwmabK72O/Yo/JYWQ1t+ZLuelVIe543kxwFDM1Ovnh6hy3/1ZQ9qD
+         6gEukjRdnxPcfjXR+lXbN+ExDivTTIQZ+RW2PDcwgoU/tj9hbG7DKd67gOscup8Jykct
+         llta0XX3+VkdzSgABXXtHJ1x1+/U3Yt8EA9RaiUi5FkbVTuCUmdbPJEERqch6Nf7sX9K
+         tpnIdo644X/xmI1NsSqrK2XmeDw6l2dANYIe6x18bk21V39X8I+mIC5Xe1A+VNOfJsZ9
+         b0SA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=33yyNVQErzJPfoGpCs99bWzmQVnoW+dJXia/2eggvg8=;
-        b=j7toa8PxMu/9NhG9m8uq1ssim7HAxGEJ4ZNKTANW44YISiC/4mvai5PlrgVCVHvJzK
-         8LOE/evOc6yPWIi5Pb/iYnGl/4C4N9DhGRo3sEHYrZEbzopH3AmYq9AisI+rGsMcaOuu
-         O3sk4scGE/pT8boFF5xKUUWl4HW1jrJClhFDEYWE2/MHro4TppSoB9D0O3Csl13Cufgz
-         kW4eauTQdXxImiKBO/EAL38lX+3TqXqdt2/x5FIKtvk1zuS44DqewY85Tf6gKPGfJSVk
-         qU7FrVWSh+VM8DYEb14e5IkOWYcYFR3/V9cIzpTKWG25+cGE+aMjht9/gJdFNUu1Qww9
-         +cOg==
-X-Gm-Message-State: AOAM531bSqHwluAFK/TJIWw9ZOqDuz9vRXcrgLMSzVuj7HDjvyPt2HE0
-        ncTk3DiNM81ApHJDiFtMLg0=
-X-Google-Smtp-Source: ABdhPJzB4CpA0LuR2XsoZ8SnlSda9nO6OVknMQLIYxDOnd5IG7jNsle94EaNqK50KugghrsmtOuX/w==
-X-Received: by 2002:a62:1d43:0:b029:1ab:7f7a:4ab8 with SMTP id d64-20020a621d430000b02901ab7f7a4ab8mr8610614pfd.43.1610650088172;
-        Thu, 14 Jan 2021 10:48:08 -0800 (PST)
+        bh=pdXsUdpez1Mg23QbheBdmS73+SfVR6rgoNCWFtokD44=;
+        b=QUkOBiRQKOWHwQP3hM0ncGZpD1U6pnzDHh8yrjAhnpvGptP/RZQ/WqAC73deW/zpNe
+         Yb6ieTYCYPfUKPS004OKYFXqWD1Wrxpm9k9mLJnU9gyTlcI4qG323hF9Rb49G332TA/z
+         o5tpiKF0mObjoW2sZ2vE+/HSVpHHdWY/5nXkd7YRhkpiLPJhEWNd0868iMevw7qTzs1i
+         fGgEUdiMVZJFJEPAyctJI358qku3laG9IpAOeU9Nn9DSiwT5EaCixeofozQ1tIWnS+aN
+         1vRrf5fC/fOoQHj3iAeDpRcdcRAjkAkFhXhcAfOxAF/RpPq43xTFqe1imXvubqOJTqsh
+         UQCA==
+X-Gm-Message-State: AOAM533/mq/pJsIakv1CelP+LcIbtKenchSoQ57KtmATjtqY0l1FtcMi
+        KZkPWENnjLiasfSUnYSOfYc=
+X-Google-Smtp-Source: ABdhPJy5AkPunLp5k0SAqnYuhuzFfDm9uDXowPPqjckGBBaALThQwXA/pXTzr64NFClRbaHqjsUOWA==
+X-Received: by 2002:a63:ca45:: with SMTP id o5mr8797051pgi.48.1610650183538;
+        Thu, 14 Jan 2021 10:49:43 -0800 (PST)
 Received: from [10.67.48.230] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id w19sm5935750pgf.23.2021.01.14.10.48.03
+        by smtp.googlemail.com with ESMTPSA id q12sm6227195pgj.24.2021.01.14.10.49.35
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 14 Jan 2021 10:48:07 -0800 (PST)
-Subject: Re: [PATCH net-next] net: marvell: prestera: fix uninitialized vid in
- prestera_port_vlans_add
-To:     Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Cc:     Kurt Kanzenbach <kurt@linutronix.de>,
-        Vadym Kochan <vkochan@marvell.com>,
-        Taras Chornyi <tchornyi@marvell.com>,
-        Ido Schimmel <idosch@nvidia.com>,
-        clang-built-linux@googlegroups.com, linux-mm@kvack.org,
-        kbuild-all@lists.01.org
-References: <20210114083556.2274440-1-olteanv@gmail.com>
+        Thu, 14 Jan 2021 10:49:42 -0800 (PST)
+Subject: Re: [PATCH net-next v16 3/6] net: dsa: mv88e6xxx: Change serdes lane
+ parameter type from u8 type to int
+To:     =?UTF-8?Q?Marek_Beh=c3=ban?= <kabel@kernel.org>,
+        netdev@vger.kernel.org
+Cc:     pavana.sharma@digi.com, vivien.didelot@gmail.com, kuba@kernel.org,
+        lkp@intel.com, davem@davemloft.net, ashkan.boldaji@digi.com,
+        andrew@lunn.ch, Chris Packham <chris.packham@alliedtelesis.co.nz>,
+        olteanv@gmail.com,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>
+References: <20210114043331.4572-1-kabel@kernel.org>
+ <20210114043331.4572-4-kabel@kernel.org>
 From:   Florian Fainelli <f.fainelli@gmail.com>
 Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
@@ -115,29 +114,31 @@ Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
  caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
  6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
  M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <03979f1b-851e-d5ff-2928-323f5aed696e@gmail.com>
-Date:   Thu, 14 Jan 2021 10:48:00 -0800
+Message-ID: <1a9f0e94-9165-6923-8fa4-7365276ffea7@gmail.com>
+Date:   Thu, 14 Jan 2021 10:49:34 -0800
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <20210114083556.2274440-1-olteanv@gmail.com>
+In-Reply-To: <20210114043331.4572-4-kabel@kernel.org>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/14/21 12:35 AM, Vladimir Oltean wrote:
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+On 1/13/21 8:33 PM, Marek Behún wrote:
+> From: Pavana Sharma <pavana.sharma@digi.com>
 > 
-> prestera_bridge_port_vlan_add should have been called with vlan->vid,
-> however this was masked by the presence of the local vid variable and I
-> did not notice the build warning.
+> Returning 0 is no more an error case with MV88E6393 family
+> which has serdes lane numbers 0, 9 or 10.
+> So with this change .serdes_get_lane will return lane number
+> or -errno (-ENODEV or -EOPNOTSUPP).
 > 
-> Reported-by: kernel test robot <lkp@intel.com>
-> Fixes: b7a9e0da2d1c ("net: switchdev: remove vid_begin -> vid_end range from VLAN objects")
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> Signed-off-by: Pavana Sharma <pavana.sharma@digi.com>
+> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+> Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+> Signed-off-by: Marek Behún <kabel@kernel.org>
 
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
