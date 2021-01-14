@@ -2,97 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 102AC2F5D9A
-	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 10:31:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CFA2E2F5DDB
+	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 10:39:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728239AbhANJbI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jan 2021 04:31:08 -0500
-Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:57777 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727324AbhANJbE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 04:31:04 -0500
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-168-4vWQi2tZNvCQACouP4RCUg-1; Thu, 14 Jan 2021 09:29:24 +0000
-X-MC-Unique: 4vWQi2tZNvCQACouP4RCUg-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
- Server (TLS) id 15.0.1347.2; Thu, 14 Jan 2021 09:29:23 +0000
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Thu, 14 Jan 2021 09:29:23 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Eric Dumazet' <edumazet@google.com>
-CC:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Alexander Duyck <alexanderduyck@fb.com>,
-        "Paolo Abeni" <pabeni@redhat.com>,
-        "Michael S . Tsirkin" <mst@redhat.com>,
-        "Greg Thelen" <gthelen@google.com>
-Subject: RE: [PATCH net] net: avoid 32 x truesize under-estimation for tiny
- skbs
-Thread-Topic: [PATCH net] net: avoid 32 x truesize under-estimation for tiny
- skbs
-Thread-Index: AQHW6cgHRTEecj4eIU+21eAugdAvOaomIBlQgAB1MYCAAEJBAA==
-Date:   Thu, 14 Jan 2021 09:29:23 +0000
-Message-ID: <787e2b85cd2f4f0f90d7fe871dce85ff@AcuMS.aculab.com>
-References: <20210113161819.1155526-1-eric.dumazet@gmail.com>
- <b0c5b2164e90492c99752584070510d7@AcuMS.aculab.com>
- <CANn89iKS-J8BzMd+_PmFV67C+3hPx-C0saY0yFMdDWfHPwazHQ@mail.gmail.com>
-In-Reply-To: <CANn89iKS-J8BzMd+_PmFV67C+3hPx-C0saY0yFMdDWfHPwazHQ@mail.gmail.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S1728145AbhANJhR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jan 2021 04:37:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58330 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727482AbhANJhO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 04:37:14 -0500
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5009DC061575
+        for <netdev@vger.kernel.org>; Thu, 14 Jan 2021 01:36:34 -0800 (PST)
+Received: by mail-ej1-x62b.google.com with SMTP id q22so7217183eja.2
+        for <netdev@vger.kernel.org>; Thu, 14 Jan 2021 01:36:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=4WPhESZ2Ino1UQ+7G+F0v8AM8oEjEHY5bkl74A+HS9U=;
+        b=SHJ9j/iZ90wmHmG96hK7ogsn+S7r1luxoBa6keVoDk4NWbSCNnoALijDtih8olEzBp
+         eDDDm4LvTYIbIOa9nrF326FdHiHrMyGHEI0TXd3HrkbhFqbAVtF/7e5WQUgCknaSHz2x
+         oaFoSLatWj55lgEdC8DqqwywnwvJxqk6B9c+akWMvuSp2zsd7hpbZ5o5I5aijPmm7V6s
+         zwK4nJ3wNqC2p35i6MuadpL+gY2FguImFJ1W8Ikba4vihJrR/AQPmBP33UibkinQaJwF
+         Qv9v/EYxpCWlszMU3oHqnTK2fSoOvRL037tvswAb4X2vqXIa3f/aG5y1lQsta3pccOjm
+         akZA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=4WPhESZ2Ino1UQ+7G+F0v8AM8oEjEHY5bkl74A+HS9U=;
+        b=lR21PD7kD70fLDWeDFXlO+dso9OK1qovKJ5wVN/qC6+JVZx16Uz3l3Jlsd3jsiHfnW
+         UVEGSgYHYsTXhvpq8U4nDZSg4OZ7x6wb9vdkn5E9xq4mvwlUEsbdsZeIBPWZVDHFc4ib
+         vpODBB+Aidbjvd6hKctD+gbvg9rXpf6CridO70oSZ7JuSZVAaiB7HaVPc5uTwMkv7YnX
+         /dPzMVOMaRNIAlJC9dCR2DySLTWpI0b9giA4KAwcU5gK1ExwBmPSdm9d4d3dzEwQD1sU
+         EGmbrsLPXE36QzQxmoA94U8KHssHFUfGodgOWj6aMMD4CV8b6BfOX2fCMpeaThiXdtn1
+         FlnA==
+X-Gm-Message-State: AOAM532I69dugSBVsmuAF6qHeZSanVI3tksDSlEjfbpjZmtE03c4//5b
+        6U5aiFCCKQ1ERKwvr7bouEACeG38Gji/FrkRXlYUEg==
+X-Google-Smtp-Source: ABdhPJyrveNlmYlJtZwqPTnLW1uRvgk2qAwIeuLIPI8/FEwrO+3RCMe8L28l1DrM60nxOvEbNEfYmHp69hbWY7kCXSc=
+X-Received: by 2002:a17:906:19c3:: with SMTP id h3mr4605167ejd.429.1610616993048;
+ Thu, 14 Jan 2021 01:36:33 -0800 (PST)
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: base64
+References: <20210111054428.3273-1-dqfext@gmail.com> <20210111134349.vdhyebdllbaakukk@skbuf>
+In-Reply-To: <20210111134349.vdhyebdllbaakukk@skbuf>
+From:   Bartosz Golaszewski <bgolaszewski@baylibre.com>
+Date:   Thu, 14 Jan 2021 10:36:22 +0100
+Message-ID: <CAMpxmJWi=BPvXyE_m0dyfmhuK76wYjVTtmvVEk7xSfPcaTYbkA@mail.gmail.com>
+Subject: Re: [PATCH net-next 0/2] dsa: add MT7530 GPIO support
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     DENG Qingfang <dqfext@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-gpio <linux-gpio@vger.kernel.org>,
+        Pavel Machek <pavel@ucw.cz>, Dan Murphy <dmurphy@ti.com>,
+        Linux LED Subsystem <linux-leds@vger.kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Russell King <linux@armlinux.org.uk>,
+        netdev <netdev@vger.kernel.org>,
+        linux-devicetree <devicetree@vger.kernel.org>,
+        arm-soc <linux-arm-kernel@lists.infradead.org>,
+        "moderated list:ARM/Mediatek SoC..." 
+        <linux-mediatek@lists.infradead.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Frank Wunderlich <frank-w@public-files.de>,
+        =?UTF-8?Q?Ren=C3=A9_van_Dorst?= <opensource@vdorst.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogRXJpYyBEdW1hemV0DQo+IFNlbnQ6IDE0IEphbnVhcnkgMjAyMSAwNToxNw0KPiANCj4g
-T24gV2VkLCBKYW4gMTMsIDIwMjEgYXQgMTE6MjMgUE0gRGF2aWQgTGFpZ2h0IDxEYXZpZC5MYWln
-aHRAYWN1bGFiLmNvbT4gd3JvdGU6DQo+ID4NCj4gPiBGcm9tOiBFcmljIER1bWF6ZXQNCj4gPiA+
-IFNlbnQ6IDEzIEphbnVhcnkgMjAyMSAxNjoxOA0KPiA+ID4NCj4gPiA+IEZyb206IEVyaWMgRHVt
-YXpldCA8ZWR1bWF6ZXRAZ29vZ2xlLmNvbT4NCj4gPiA+DQo+ID4gPiBCb3RoIHZpcnRpbyBuZXQg
-YW5kIG5hcGlfZ2V0X2ZyYWdzKCkgYWxsb2NhdGUgc2ticw0KPiA+ID4gd2l0aCBhIHZlcnkgc21h
-bGwgc2tiLT5oZWFkDQo+ID4gPg0KPiA+ID4gV2hpbGUgdXNpbmcgcGFnZSBmcmFnbWVudHMgaW5z
-dGVhZCBvZiBhIGttYWxsb2MgYmFja2VkIHNrYi0+aGVhZCBtaWdodCBnaXZlDQo+ID4gPiBhIHNt
-YWxsIHBlcmZvcm1hbmNlIGltcHJvdmVtZW50IGluIHNvbWUgY2FzZXMsIHRoZXJlIGlzIGEgaHVn
-ZSByaXNrIG9mDQo+ID4gPiB1bmRlciBlc3RpbWF0aW5nIG1lbW9yeSB1c2FnZS4NCj4gPg0KPiA+
-IFRoZXJlIGlzIChvciB3YXMgbGFzdCB0aW1lIEkgbG9va2VkKSBhbHNvIGEgcHJvYmxlbSB3aXRo
-DQo+ID4gc29tZSBvZiB0aGUgVVNCIGV0aGVybmV0IGRyaXZlcnMuDQo+ID4NCj4gPiBJSVJDIG9u
-ZSBvZiB0aGUgQVNYbm5ubm5uICg/Pz8pIFVTQjMgb25lcyBhbGxvY2F0ZXMgNjRrIHNrYiB0byBw
-YXNzDQo+ID4gdG8gdGhlIFVTQiBzdGFjayBhbmQgdGhlbiBqdXN0IGxpZXMgYWJvdXQgc2tiLT50
-cnVlc2l6ZSB3aGVuIHBhc3NpbmcNCj4gPiB0aGVtIGludG8gdGhlIG5ldHdvcmsgc3RhY2suDQo+
-IA0KPiBZb3Ugc3VyZSA/IEkgdGhpbmsgSSBoYXZlIGZpeGVkIHRoaXMgYXQgc29tZSBwb2ludA0K
-PiANCj4gaHR0cHM6Ly9naXQua2VybmVsLm9yZy9wdWIvc2NtL2xpbnV4L2tlcm5lbC9naXQvbmV0
-ZGV2L25ldC5naXQvY29tbWl0Lz9pZD1hOWUwYWNhNGIzNzg4NWI1NTk5ZTUyMjExZjA5DQo+IDhi
-ZDdmNTY1ZTc0OQ0KDQpJIG1pZ2h0IGhhdmUgZm9yZ290dGVuIHRoYXQgcGF0Y2ggOi0pDQpPciBw
-b3NzaWJseSBvbmx5IHJlbWVtYmVyZWQgaXQgY2hhbmdpbmcgc21hbGwgcGFja2V0cy4NCg0KPiA+
-IFRoZSBVU0IgaGFyZHdhcmUgd2lsbCBtZXJnZSBUQ1AgcmVjZWl2ZXMgYW5kIHB1dCBtdWx0aXBs
-ZSBldGhlcm5ldA0KPiA+IHBhY2tldHMgaW50byBhIHNpbmdsZSBVU0IgbWVzc2FnZS4NCj4gPiBC
-dXQgc2luZ2xlIGZyYW1lcyBjYW4gZW5kIHVwIGluIHZlcnkgYmlnIGtlcm5lbCBtZW1vcnkgYnVm
-ZmVycy4NCj4gPg0KPiANCj4gWWVhaCwgdGhpcyBpcyBhIGtub3duIHByb2JsZW0uDQoNClRoZSB3
-aG9sZSBVU0IgZXRoZXJuZXQgYmxvY2sgaXMgc29tZXdoYXQgaG9ycmlkIGFuZCBpbmVmZmljaWVu
-dA0KZXNwZWNpYWxseSBmb3IgWEhDSS9VU0IzIC0gd2hpY2ggY291bGQgaGF2ZSBoaWdoIHNwZWVk
-IGV0aGVybmV0Lg0KSXQgcmVhbGx5IG5lZWRzIHRvIGVpdGhlciBkaXJlY3RseSBpbnRlcmZhY2Ug
-dG8gdGhlIFhIQ0kgcmluZw0KKGxpa2UgYSBub3JtYWwgZXRoZXJuZXQgZHJpdmVyKSBvciBiZSBn
-aXZlbiB0aGUgc2VxdWVuY2Ugb2YNClVTQiByeCBwYWNrZXRzIHRvIHNwbGl0L2pvaW4gaW50byBl
-dGhlcm5ldCBmcmFtZXMuDQoNCkhvd2V2ZXIgSSBkb24ndCBoYXZlIHRoZSB0aW1lIHRvIG1ha2Ug
-dGhvc2UgY2hhbmdlcy4NCldoZW4gSSB3YXMgbG9va2luZyBhdCB0aGF0IGRyaXZlciAnZGF5am9i
-JyB3YXMgYWN0dWFsbHkNCnRyeWluZyB0byBtYWtlIGl0IHdvcmsuDQpUaGV5IGRyb3BwZWQgdGhh
-dCBpZGVhIGxhdGVyLg0KSSd2ZSBub3QgZ290IHRoZSBldGhlcm5ldCBkb25nbGUgYW55IG1vcmUg
-ZWl0aGVyLg0KDQoJRGF2aWQNCg0KLQ0KUmVnaXN0ZXJlZCBBZGRyZXNzIExha2VzaWRlLCBCcmFt
-bGV5IFJvYWQsIE1vdW50IEZhcm0sIE1pbHRvbiBLZXluZXMsIE1LMSAxUFQsIFVLDQpSZWdpc3Ry
-YXRpb24gTm86IDEzOTczODYgKFdhbGVzKQ0K
+On Mon, Jan 11, 2021 at 2:43 PM Vladimir Oltean <olteanv@gmail.com> wrote:
+>
+> On Mon, Jan 11, 2021 at 01:44:26PM +0800, DENG Qingfang wrote:
+> > MT7530's LED controller can be used as GPIO controller. Add support for
+> > it.
+> >
+> > DENG Qingfang (2):
+> >   dt-bindings: net: dsa: add MT7530 GPIO controller binding
+> >   drivers: net: dsa: mt7530: MT7530 optional GPIO support
+> >
+> >  .../devicetree/bindings/net/dsa/mt7530.txt    |  6 ++
+> >  drivers/net/dsa/mt7530.c                      | 96 +++++++++++++++++++
+> >  drivers/net/dsa/mt7530.h                      | 20 ++++
+> >  3 files changed, 122 insertions(+)
+> >
+> > --
+> > 2.25.1
+>
+> Adding GPIO and LED maintainers to also have a look.
+> https://patchwork.kernel.org/project/netdevbpf/cover/20210111054428.3273-1-dqfext@gmail.com/
 
+Can you resend the series with GPIO maintainers in CC?
+
+Bart
