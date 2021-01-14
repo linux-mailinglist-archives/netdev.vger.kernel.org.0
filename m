@@ -2,144 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B84112F69FC
-	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 19:54:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EF78F2F6A33
+	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 19:57:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727116AbhANSuZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jan 2021 13:50:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36688 "EHLO
+        id S1729551AbhANS4g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jan 2021 13:56:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726131AbhANSuY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 13:50:24 -0500
-Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E62EBC061757
-        for <netdev@vger.kernel.org>; Thu, 14 Jan 2021 10:49:43 -0800 (PST)
-Received: by mail-pg1-x52b.google.com with SMTP id p18so4359641pgm.11
-        for <netdev@vger.kernel.org>; Thu, 14 Jan 2021 10:49:43 -0800 (PST)
+        with ESMTP id S1727134AbhANS4f (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 13:56:35 -0500
+Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57A00C0613C1
+        for <netdev@vger.kernel.org>; Thu, 14 Jan 2021 10:55:55 -0800 (PST)
+Received: by mail-pg1-x531.google.com with SMTP id g15so4379624pgu.9
+        for <netdev@vger.kernel.org>; Thu, 14 Jan 2021 10:55:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=pdXsUdpez1Mg23QbheBdmS73+SfVR6rgoNCWFtokD44=;
-        b=i3ndw05pJfR7LSuswqpSsbShr/KsrsVAVpnY+mUdCmCdtH9epHzaFE01/L/9bISUKy
-         /IdeVqAD//agzbfLwmabK72O/Yo/JYWQ1t+ZLuelVIe543kxwFDM1Ovnh6hy3/1ZQ9qD
-         6gEukjRdnxPcfjXR+lXbN+ExDivTTIQZ+RW2PDcwgoU/tj9hbG7DKd67gOscup8Jykct
-         llta0XX3+VkdzSgABXXtHJ1x1+/U3Yt8EA9RaiUi5FkbVTuCUmdbPJEERqch6Nf7sX9K
-         tpnIdo644X/xmI1NsSqrK2XmeDw6l2dANYIe6x18bk21V39X8I+mIC5Xe1A+VNOfJsZ9
-         b0SA==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=UuJZ7b4I8I2BhJ3rTZek3mieIiGlG3aAA1BcP9TCOYU=;
+        b=m2RMx5xmmGjJq+xIpuPGUwc0z0RaOVMUx8PDkgmfnbdQ4lTjrSCzCT93X+XWNetzkY
+         SnpFa6F3Y04eGbXxcRN5LiWRzIcwvD75v4Wu5aSUq1gdtIgnoDVgMJD1IItxTkOFh4NR
+         +q87mKjq1SaLaDIttxyduCCyJaAjwkB03ukyTA+ZY4Y/oezhzDzp9QNYuDUTFYBeskpF
+         ragDk9NkIXP7GjO7jkYUE/UkcHEG8ND9qWf8r4vg6rMR0m1x7dx9mIh1cSqsM+Bui4ki
+         USMCg0XU/Ea0urvbFzI3PRQYjJ1+cl6lFDM2NP9ncYBVxQVz+sv1xUcJVQgdRz9DDS1R
+         22NQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=pdXsUdpez1Mg23QbheBdmS73+SfVR6rgoNCWFtokD44=;
-        b=QUkOBiRQKOWHwQP3hM0ncGZpD1U6pnzDHh8yrjAhnpvGptP/RZQ/WqAC73deW/zpNe
-         Yb6ieTYCYPfUKPS004OKYFXqWD1Wrxpm9k9mLJnU9gyTlcI4qG323hF9Rb49G332TA/z
-         o5tpiKF0mObjoW2sZ2vE+/HSVpHHdWY/5nXkd7YRhkpiLPJhEWNd0868iMevw7qTzs1i
-         fGgEUdiMVZJFJEPAyctJI358qku3laG9IpAOeU9Nn9DSiwT5EaCixeofozQ1tIWnS+aN
-         1vRrf5fC/fOoQHj3iAeDpRcdcRAjkAkFhXhcAfOxAF/RpPq43xTFqe1imXvubqOJTqsh
-         UQCA==
-X-Gm-Message-State: AOAM533/mq/pJsIakv1CelP+LcIbtKenchSoQ57KtmATjtqY0l1FtcMi
-        KZkPWENnjLiasfSUnYSOfYc=
-X-Google-Smtp-Source: ABdhPJy5AkPunLp5k0SAqnYuhuzFfDm9uDXowPPqjckGBBaALThQwXA/pXTzr64NFClRbaHqjsUOWA==
-X-Received: by 2002:a63:ca45:: with SMTP id o5mr8797051pgi.48.1610650183538;
-        Thu, 14 Jan 2021 10:49:43 -0800 (PST)
-Received: from [10.67.48.230] ([192.19.223.252])
-        by smtp.googlemail.com with ESMTPSA id q12sm6227195pgj.24.2021.01.14.10.49.35
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 14 Jan 2021 10:49:42 -0800 (PST)
-Subject: Re: [PATCH net-next v16 3/6] net: dsa: mv88e6xxx: Change serdes lane
- parameter type from u8 type to int
-To:     =?UTF-8?Q?Marek_Beh=c3=ban?= <kabel@kernel.org>,
-        netdev@vger.kernel.org
-Cc:     pavana.sharma@digi.com, vivien.didelot@gmail.com, kuba@kernel.org,
-        lkp@intel.com, davem@davemloft.net, ashkan.boldaji@digi.com,
-        andrew@lunn.ch, Chris Packham <chris.packham@alliedtelesis.co.nz>,
-        olteanv@gmail.com,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>
-References: <20210114043331.4572-1-kabel@kernel.org>
- <20210114043331.4572-4-kabel@kernel.org>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
- 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
- M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
-Message-ID: <1a9f0e94-9165-6923-8fa4-7365276ffea7@gmail.com>
-Date:   Thu, 14 Jan 2021 10:49:34 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=UuJZ7b4I8I2BhJ3rTZek3mieIiGlG3aAA1BcP9TCOYU=;
+        b=c56h9Uay6hfSc1vdGM4gzDindlUwvQhQwc1gIEpWYbOv9RhWbH6giZl/+nR3Rp8mlr
+         63XQNS6QJolsdfxJbIhm47WzdREqZaaCUZNQ+kTBRBeLjIH+kTyGHFV9bm+xXCtEsS/2
+         aBxNmGwokziujkdFjvM0ESEsgHAaeLshn3Z7NFXlV1C+a3EAHcTyq9rUhiln10byGN7z
+         9zTKXOlJikWfzh1HoJxwVHVFQMcoidUApuAo38ybq7ZFSxXzbwJ287c8G6nwrRiwcKag
+         NwaELJbf/twKHaMF/7Sm8rE6jg7+bMlw1Gk43UJpMSP2gCRaBta3ehQ3UGoSOVB9FPih
+         Hrmw==
+X-Gm-Message-State: AOAM530XFckmxIW3DR9wZRs+7dKnQBtScN0avy/nb9uybytS4vmL1GAV
+        cvCexUsJHTJqkuDTLVYM667S5RHVjyE=
+X-Google-Smtp-Source: ABdhPJxkQ8JzxbV4xaHSefN/E+EsFwxIGNiqB8XHKDZZMQJNhwvDMRyGy7o/tOea+yiq6dYkbnwUEA==
+X-Received: by 2002:a05:6a00:88b:b029:19c:780e:1cd with SMTP id q11-20020a056a00088bb029019c780e01cdmr8648647pfj.64.1610650554864;
+        Thu, 14 Jan 2021 10:55:54 -0800 (PST)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:7220:84ff:fe09:1424])
+        by smtp.gmail.com with ESMTPSA id j17sm5671509pfh.183.2021.01.14.10.55.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Jan 2021 10:55:54 -0800 (PST)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        syzbot <syzkaller@googlegroups.com>
+Subject: [PATCH net] net_sched: avoid shift-out-of-bounds in tcindex_set_parms()
+Date:   Thu, 14 Jan 2021 10:52:29 -0800
+Message-Id: <20210114185229.1742255-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.30.0.284.gd98b1dd5eaa7-goog
 MIME-Version: 1.0
-In-Reply-To: <20210114043331.4572-4-kabel@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/13/21 8:33 PM, Marek Behún wrote:
-> From: Pavana Sharma <pavana.sharma@digi.com>
-> 
-> Returning 0 is no more an error case with MV88E6393 family
-> which has serdes lane numbers 0, 9 or 10.
-> So with this change .serdes_get_lane will return lane number
-> or -errno (-ENODEV or -EOPNOTSUPP).
-> 
-> Signed-off-by: Pavana Sharma <pavana.sharma@digi.com>
-> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-> Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
-> Signed-off-by: Marek Behún <kabel@kernel.org>
+From: Eric Dumazet <edumazet@google.com>
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+tc_index being 16bit wide, we need to check that TCA_TCINDEX_SHIFT
+attribute is not silly.
+
+UBSAN: shift-out-of-bounds in net/sched/cls_tcindex.c:260:29
+shift exponent 255 is too large for 32-bit type 'int'
+CPU: 0 PID: 8516 Comm: syz-executor228 Not tainted 5.10.0-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:79 [inline]
+ dump_stack+0x107/0x163 lib/dump_stack.c:120
+ ubsan_epilogue+0xb/0x5a lib/ubsan.c:148
+ __ubsan_handle_shift_out_of_bounds.cold+0xb1/0x181 lib/ubsan.c:395
+ valid_perfect_hash net/sched/cls_tcindex.c:260 [inline]
+ tcindex_set_parms.cold+0x1b/0x215 net/sched/cls_tcindex.c:425
+ tcindex_change+0x232/0x340 net/sched/cls_tcindex.c:546
+ tc_new_tfilter+0x13fb/0x21b0 net/sched/cls_api.c:2127
+ rtnetlink_rcv_msg+0x8b6/0xb80 net/core/rtnetlink.c:5555
+ netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2494
+ netlink_unicast_kernel net/netlink/af_netlink.c:1304 [inline]
+ netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1330
+ netlink_sendmsg+0x907/0xe40 net/netlink/af_netlink.c:1919
+ sock_sendmsg_nosec net/socket.c:652 [inline]
+ sock_sendmsg+0xcf/0x120 net/socket.c:672
+ ____sys_sendmsg+0x6e8/0x810 net/socket.c:2336
+ ___sys_sendmsg+0xf3/0x170 net/socket.c:2390
+ __sys_sendmsg+0xe5/0x1b0 net/socket.c:2423
+ do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: syzbot <syzkaller@googlegroups.com>
+---
+ net/sched/cls_tcindex.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
+
+diff --git a/net/sched/cls_tcindex.c b/net/sched/cls_tcindex.c
+index 78bec347b8b66f660e620dd715d0eb68f9bcd2d3..c4007b9cd16d6a200d943e3e0536d6b20022ba77 100644
+--- a/net/sched/cls_tcindex.c
++++ b/net/sched/cls_tcindex.c
+@@ -366,9 +366,13 @@ tcindex_set_parms(struct net *net, struct tcf_proto *tp, unsigned long base,
+ 	if (tb[TCA_TCINDEX_MASK])
+ 		cp->mask = nla_get_u16(tb[TCA_TCINDEX_MASK]);
+ 
+-	if (tb[TCA_TCINDEX_SHIFT])
++	if (tb[TCA_TCINDEX_SHIFT]) {
+ 		cp->shift = nla_get_u32(tb[TCA_TCINDEX_SHIFT]);
+-
++		if (cp->shift > 16) {
++			err = -EINVAL;
++			goto errout;
++		}
++	}
+ 	if (!cp->hash) {
+ 		/* Hash not specified, use perfect hash if the upper limit
+ 		 * of the hashing index is below the threshold.
 -- 
-Florian
+2.30.0.284.gd98b1dd5eaa7-goog
+
