@@ -2,68 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 97D152F6E5F
-	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 23:41:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C80222F6E76
+	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 23:45:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730793AbhANWlU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jan 2021 17:41:20 -0500
-Received: from mail.kernel.org ([198.145.29.99]:57998 "EHLO mail.kernel.org"
+        id S1730830AbhANWoy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jan 2021 17:44:54 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:41586 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728452AbhANWlT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 14 Jan 2021 17:41:19 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 3DDF323977;
-        Thu, 14 Jan 2021 22:40:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610664039;
-        bh=f7FdxZlvX3iXHrhJjazOt7jDXpblTW06ltYkPFES+Ho=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=t9LXk8jOXoNXcW7Fwr8Lb6CUdB0aaCRecE055xySyXP9DVF3I2elxdb+MMWsM4s2t
-         OXm8VcOwFs6CWvV4TRiugakSWeGXac4693Bul3tVLny7+srBaCJANYqhFrrYEU0t5n
-         JzuDiMWFNVgUSdEDKUwIxXtVilUZafhCUpxCuKwqFfDRChygwGaKwxGt36JQaGazeX
-         74XYKlpXGb4ByjgkcE08rTDZF1xugLDtwWs3/Ja4w4F8onpoXg1S0kKzYo+thIxm2D
-         bUp4R33GhqzcHBe5lKKGEFtpD5OjAtrPE+DHPKCviXPAkM3jijUNGQEbK4Z4cgOuHU
-         np8cpkkUM+bqg==
-Received: from pdx-korg-docbuild-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-1.ci.codeaurora.org (Postfix) with ESMTP id 359156018E;
-        Thu, 14 Jan 2021 22:40:39 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S1730812AbhANWox (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 14 Jan 2021 17:44:53 -0500
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1l0BLZ-000eCw-4o; Thu, 14 Jan 2021 23:44:05 +0100
+Date:   Thu, 14 Jan 2021 23:44:05 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     George McCollister <george.mccollister@gmail.com>
+Cc:     Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Rob Herring <robh@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH net-next v5 2/3] net: dsa: add Arrow SpeedChips XRS700x
+ driver
+Message-ID: <YADJNRo+IWczUhzl@lunn.ch>
+References: <20210114195734.55313-1-george.mccollister@gmail.com>
+ <20210114195734.55313-3-george.mccollister@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [GIT PULL] Networking for 5.11-rc4
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161066403921.16239.10890664021293856691.git-patchwork-notify@kernel.org>
-Date:   Thu, 14 Jan 2021 22:40:39 +0000
-References: <20210114200551.208209-1-kuba@kernel.org>
-In-Reply-To: <20210114200551.208209-1-kuba@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     torvalds@linux-foundation.org, davem@davemloft.net,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210114195734.55313-3-george.mccollister@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This pull request was applied to netdev/net.git (refs/heads/master):
-
-On Thu, 14 Jan 2021 12:05:51 -0800 you wrote:
-> Hi!
+On Thu, Jan 14, 2021 at 01:57:33PM -0600, George McCollister wrote:
+> Add a driver with initial support for the Arrow SpeedChips XRS7000
+> series of gigabit Ethernet switch chips which are typically used in
+> critical networking applications.
 > 
-> We have a few fixes for long standing issues, in particular
-> Eric's fix to not underestimate the skb sizes, and my fix for
-> brokenness of register_netdevice() error path. They may uncover
-> other bugs so we will keep an eye on them. Also included are
-> Willem's fixes for kmap(_atomic).
+> The switches have up to three RGMII ports and one RMII port.
+> Management to the switches can be performed over i2c or mdio.
 > 
-> [...]
+> Support for advanced features such as PTP and
+> HSR/PRP (IEC 62439-3 Clause 5 & 4) is not included in this patch and
+> may be added at a later date.
+> 
+> Signed-off-by: George McCollister <george.mccollister@gmail.com>
 
-Here is the summary with links:
-  - [GIT,PULL] Networking for 5.11-rc4
-    https://git.kernel.org/netdev/net/c/e8c13a6bc8eb
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+    Andrew
