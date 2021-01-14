@@ -2,19 +2,19 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 813CE2F63E2
-	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 16:12:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DD2FD2F6425
+	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 16:20:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729322AbhANPLo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jan 2021 10:11:44 -0500
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:38992 "EHLO
+        id S1729233AbhANPSe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jan 2021 10:18:34 -0500
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:39910 "EHLO
         mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1729314AbhANPLm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 10:11:42 -0500
+        with ESMTP id S1728098AbhANPSb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 10:18:31 -0500
 Received: from Internal Mail-Server by MTLPINE1 (envelope-from borisp@mellanox.com)
         with SMTP; 14 Jan 2021 17:10:45 +0200
 Received: from gen-l-vrt-133.mtl.labs.mlnx. (gen-l-vrt-133.mtl.labs.mlnx [10.237.11.160])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 10EFAh0I000835;
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 10EFAh0J000835;
         Thu, 14 Jan 2021 17:10:45 +0200
 From:   Boris Pismenny <borisp@mellanox.com>
 To:     kuba@kernel.org, davem@davemloft.net, saeedm@nvidia.com,
@@ -25,9 +25,9 @@ Cc:     boris.pismenny@gmail.com, linux-nvme@lists.infradead.org,
         netdev@vger.kernel.org, benishay@nvidia.com, ogerlitz@nvidia.com,
         yorayz@nvidia.com, Or Gerlitz <ogerlitz@mellanox.com>,
         Yoray Zack <yorayz@mellanox.com>
-Subject: [PATCH v2 net-next 18/21] net/mlx5e: NVMEoTCP ddp setup and resync
-Date:   Thu, 14 Jan 2021 17:10:30 +0200
-Message-Id: <20210114151033.13020-19-borisp@mellanox.com>
+Subject: [PATCH v2 net-next 19/21] net/mlx5e: NVMEoTCP, data-path for DDP offload
+Date:   Thu, 14 Jan 2021 17:10:31 +0200
+Message-Id: <20210114151033.13020-20-borisp@mellanox.com>
 X-Mailer: git-send-email 2.24.1
 In-Reply-To: <20210114151033.13020-1-borisp@mellanox.com>
 References: <20210114151033.13020-1-borisp@mellanox.com>
@@ -39,79 +39,512 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Ben Ben-Ishay <benishay@nvidia.com>
 
-NVMEoTCP offload uses buffer registration for every NVME request to perform direct data placement,
-The registration is done via KLM UMR WQE's.
-The driver resync handler advertise the software resync response via static params WQE.
+NVMEoTCP direct data placement constructs an SKB from each CQE, while
+pointing at NVME buffers.
+
+This enables the offload, as the NVMe-TCP layer will skip the copy when
+src == dst.
 
 Signed-off-by: Boris Pismenny <borisp@mellanox.com>
 Signed-off-by: Ben Ben-Ishay <benishay@nvidia.com>
 Signed-off-by: Or Gerlitz <ogerlitz@mellanox.com>
 Signed-off-by: Yoray Zack <yorayz@mellanox.com>
 ---
- .../mellanox/mlx5/core/en_accel/nvmeotcp.c    | 33 +++++++++++++++++--
- 1 file changed, 31 insertions(+), 2 deletions(-)
+ .../net/ethernet/mellanox/mlx5/core/Makefile  |   2 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en.h  |   1 +
+ .../ethernet/mellanox/mlx5/core/en/xsk/rx.c   |   1 +
+ .../ethernet/mellanox/mlx5/core/en/xsk/rx.h   |   1 +
+ .../mlx5/core/en_accel/nvmeotcp_rxtx.c        | 243 ++++++++++++++++++
+ .../mlx5/core/en_accel/nvmeotcp_rxtx.h        |  43 ++++
+ .../net/ethernet/mellanox/mlx5/core/en_rx.c   |  41 ++-
+ 7 files changed, 325 insertions(+), 7 deletions(-)
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en_accel/nvmeotcp_rxtx.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en_accel/nvmeotcp_rxtx.h
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/nvmeotcp.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/nvmeotcp.c
-index 22fa1e9f3e7a..c2967cb4cb6a 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/nvmeotcp.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/nvmeotcp.c
-@@ -751,6 +751,30 @@ mlx5e_nvmeotcp_ddp_setup(struct net_device *netdev,
- 			 struct sock *sk,
- 			 struct tcp_ddp_io *ddp)
- {
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/Makefile b/drivers/net/ethernet/mellanox/mlx5/core/Makefile
+index ada8cd22f8fb..fe22895ab1ee 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/Makefile
++++ b/drivers/net/ethernet/mellanox/mlx5/core/Makefile
+@@ -97,4 +97,4 @@ mlx5_core-$(CONFIG_MLX5_SF) += sf/vhca_event.o sf/dev/dev.o sf/dev/driver.o
+ #
+ mlx5_core-$(CONFIG_MLX5_SF_MANAGER) += sf/cmd.o sf/hw_table.o sf/devlink.o
+ 
+-mlx5_core-$(CONFIG_MLX5_EN_NVMEOTCP) += en_accel/fs_tcp.o en_accel/nvmeotcp.o
++mlx5_core-$(CONFIG_MLX5_EN_NVMEOTCP) += en_accel/fs_tcp.o en_accel/nvmeotcp.o en_accel/nvmeotcp_rxtx.o
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en.h b/drivers/net/ethernet/mellanox/mlx5/core/en.h
+index dc6ebcfffb1b..f41eb807d026 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
+@@ -573,6 +573,7 @@ struct mlx5e_rq;
+ typedef void (*mlx5e_fp_handle_rx_cqe)(struct mlx5e_rq*, struct mlx5_cqe64*);
+ typedef struct sk_buff *
+ (*mlx5e_fp_skb_from_cqe_mpwrq)(struct mlx5e_rq *rq, struct mlx5e_mpw_info *wi,
++			       struct mlx5_cqe64 *cqe,
+ 			       u16 cqe_bcnt, u32 head_offset, u32 page_idx);
+ typedef struct sk_buff *
+ (*mlx5e_fp_skb_from_cqe)(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe,
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.c
+index 8e7b877d8a12..9a6fbd1b1c34 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.c
+@@ -25,6 +25,7 @@ static struct sk_buff *mlx5e_xsk_construct_skb(struct mlx5e_rq *rq, void *data,
+ 
+ struct sk_buff *mlx5e_xsk_skb_from_cqe_mpwrq_linear(struct mlx5e_rq *rq,
+ 						    struct mlx5e_mpw_info *wi,
++						    struct mlx5_cqe64 *cqe,
+ 						    u16 cqe_bcnt,
+ 						    u32 head_offset,
+ 						    u32 page_idx)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.h b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.h
+index 7f88ccf67fdd..112c5b3ec165 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/xsk/rx.h
+@@ -11,6 +11,7 @@
+ 
+ struct sk_buff *mlx5e_xsk_skb_from_cqe_mpwrq_linear(struct mlx5e_rq *rq,
+ 						    struct mlx5e_mpw_info *wi,
++						    struct mlx5_cqe64 *cqe,
+ 						    u16 cqe_bcnt,
+ 						    u32 head_offset,
+ 						    u32 page_idx);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/nvmeotcp_rxtx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/nvmeotcp_rxtx.c
+new file mode 100644
+index 000000000000..f446b5d56d64
+--- /dev/null
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/nvmeotcp_rxtx.c
+@@ -0,0 +1,243 @@
++// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
++/* Copyright (c) 2021 Mellanox Technologies. */
++
++#include "en_accel/nvmeotcp_rxtx.h"
++#include "en_accel/nvmeotcp.h"
++#include <linux/mlx5/mlx5_ifc.h>
++
++#define	MLX5E_TC_FLOW_ID_MASK  0x00ffffff
++static void nvmeotcp_update_resync(struct mlx5e_nvmeotcp_queue *queue,
++				   struct mlx5e_cqe128 *cqe128)
++{
++	const struct tcp_ddp_ulp_ops *ulp_ops;
++	u32 seq;
++
++	seq = be32_to_cpu(cqe128->resync_tcp_sn);
++	ulp_ops = inet_csk(queue->sk)->icsk_ulp_ddp_ops;
++	if (ulp_ops && ulp_ops->resync_request)
++		ulp_ops->resync_request(queue->sk, seq, TCP_DDP_RESYNC_REQ);
++}
++
++static void mlx5e_nvmeotcp_advance_sgl_iter(struct mlx5e_nvmeotcp_queue *queue)
++{
++	struct nvmeotcp_queue_entry *nqe = &queue->ccid_table[queue->ccid];
++
++	queue->ccoff += nqe->sgl[queue->ccsglidx].length;
++	queue->ccoff_inner = 0;
++	queue->ccsglidx++;
++}
++
++static inline void
++mlx5e_nvmeotcp_add_skb_frag(struct net_device *netdev, struct sk_buff *skb,
++			    struct mlx5e_nvmeotcp_queue *queue,
++			    struct nvmeotcp_queue_entry *nqe, u32 fragsz)
++{
++	dma_sync_single_for_cpu(&netdev->dev,
++				nqe->sgl[queue->ccsglidx].offset + queue->ccoff_inner,
++				fragsz, DMA_FROM_DEVICE);
++	page_ref_inc(compound_head(sg_page(&nqe->sgl[queue->ccsglidx])));
++	// XXX: consider reducing the truesize, as no new memory is consumed
++	skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags,
++			sg_page(&nqe->sgl[queue->ccsglidx]),
++			nqe->sgl[queue->ccsglidx].offset + queue->ccoff_inner,
++			fragsz,
++			fragsz);
++}
++
++static struct sk_buff*
++mlx5_nvmeotcp_add_tail_nonlinear(struct mlx5e_nvmeotcp_queue *queue,
++				 struct sk_buff *skb, skb_frag_t *org_frags,
++				 int org_nr_frags, int frag_index)
++{
++	struct mlx5e_priv *priv = queue->priv;
++
++	while (org_nr_frags != frag_index) {
++		if (skb_shinfo(skb)->nr_frags >= MAX_SKB_FRAGS) {
++			dev_kfree_skb_any(skb);
++			return NULL;
++		}
++		skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags,
++				skb_frag_page(&org_frags[frag_index]),
++				skb_frag_off(&org_frags[frag_index]),
++				skb_frag_size(&org_frags[frag_index]),
++				skb_frag_size(&org_frags[frag_index]));
++		page_ref_inc(skb_frag_page(&org_frags[frag_index]));
++		frag_index++;
++	}
++	return skb;
++}
++
++static struct sk_buff*
++mlx5_nvmeotcp_add_tail(struct mlx5e_nvmeotcp_queue *queue, struct sk_buff *skb,
++		       int offset, int len)
++{
++	struct mlx5e_priv *priv = queue->priv;
++
++	if (skb_shinfo(skb)->nr_frags >= MAX_SKB_FRAGS) {
++		dev_kfree_skb_any(skb);
++		return NULL;
++	}
++	skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags,
++			virt_to_page(skb->data),
++			offset,
++			len,
++			len);
++	page_ref_inc(virt_to_page(skb->data));
++	return skb;
++}
++
++static void mlx5_nvmeotcp_trim_nonlinear(struct sk_buff *skb,
++					 skb_frag_t *org_frags,
++					 int *frag_index,
++					 int remaining)
++{
++	unsigned int frag_size;
++	int nr_frags;
++
++	/* skip @remaining bytes in frags */
++	*frag_index = 0;
++	while (remaining) {
++		frag_size = skb_frag_size(&skb_shinfo(skb)->frags[*frag_index]);
++		if (frag_size > remaining) {
++			skb_frag_off_add(&skb_shinfo(skb)->frags[*frag_index],
++					 remaining);
++			skb_frag_size_sub(&skb_shinfo(skb)->frags[*frag_index],
++					  remaining);
++			remaining = 0;
++		} else {
++			remaining -= frag_size;
++			skb_frag_unref(skb, *frag_index);
++			*frag_index += 1;
++		}
++	}
++
++	/* save original frags for the tail and unref */
++	nr_frags = skb_shinfo(skb)->nr_frags;
++	memcpy(&org_frags[*frag_index], &skb_shinfo(skb)->frags[*frag_index],
++	       (nr_frags - *frag_index) * sizeof(skb_frag_t));
++	while (--nr_frags >= *frag_index)
++		skb_frag_unref(skb, nr_frags);
++
++	/* remove frags from skb */
++	skb_shinfo(skb)->nr_frags = 0;
++	skb->len -= skb->data_len;
++	skb->truesize -= skb->data_len;
++	skb->data_len = 0;
++}
++
++struct sk_buff*
++mlx5e_nvmeotcp_handle_rx_skb(struct net_device *netdev, struct sk_buff *skb,
++			     struct mlx5_cqe64 *cqe, u32 cqe_bcnt,
++			     bool linear)
++{
++	int ccoff, cclen, hlen, ccid, remaining, fragsz, to_copy = 0;
 +	struct mlx5e_priv *priv = netdev_priv(netdev);
-+	struct scatterlist *sg = ddp->sg_table.sgl;
++	skb_frag_t org_frags[MAX_SKB_FRAGS];
 +	struct mlx5e_nvmeotcp_queue *queue;
-+	struct mlx5_core_dev *mdev;
-+	int i, size = 0, count = 0;
++	struct nvmeotcp_queue_entry *nqe;
++	int org_nr_frags, frag_index;
++	struct mlx5e_cqe128 *cqe128;
++	u32 queue_id;
 +
-+	queue = container_of(tcp_ddp_get_ctx(sk), struct mlx5e_nvmeotcp_queue, tcp_ddp_ctx);
++	queue_id = (be32_to_cpu(cqe->sop_drop_qpn) & MLX5E_TC_FLOW_ID_MASK);
++	queue = mlx5e_nvmeotcp_get_queue(priv->nvmeotcp, queue_id);
++	if (unlikely(!queue)) {
++		dev_kfree_skb_any(skb);
++		return NULL;
++	}
 +
-+	mdev = queue->priv->mdev;
-+	count = dma_map_sg(mdev->device, ddp->sg_table.sgl, ddp->nents,
-+			   DMA_FROM_DEVICE);
++	cqe128 = container_of(cqe, struct mlx5e_cqe128, cqe64);
++	if (cqe_is_nvmeotcp_resync(cqe)) {
++		nvmeotcp_update_resync(queue, cqe128);
++		mlx5e_nvmeotcp_put_queue(queue);
++		return skb;
++	}
 +
-+	if (WARN_ON(count > mlx5e_get_max_sgl(mdev)))
-+		return -ENOSPC;
++#ifdef CONFIG_TCP_DDP_CRC
++	/* If a resync occurred in the previous cqe,
++	 * the current cqe.crcvalid bit may not be valid,
++	 * so we will treat it as 0
++	 */
++	skb->ddp_crc = queue->after_resync_cqe ? 0 :
++		cqe_is_nvmeotcp_crcvalid(cqe);
++	queue->after_resync_cqe = 0;
++#endif
++	if (!cqe_is_nvmeotcp_zc(cqe)) {
++		mlx5e_nvmeotcp_put_queue(queue);
++		return skb;
++	}
 +
-+	for (i = 0; i < count; i++)
-+		size += sg[i].length;
++	/* cc ddp from cqe */
++	ccid = be16_to_cpu(cqe128->ccid);
++	ccoff = be32_to_cpu(cqe128->ccoff);
++	cclen = be16_to_cpu(cqe128->cclen);
++	hlen  = be16_to_cpu(cqe128->hlen);
 +
-+	queue->ccid_table[ddp->command_id].size = size;
-+	queue->ccid_table[ddp->command_id].ddp = ddp;
-+	queue->ccid_table[ddp->command_id].sgl = sg;
-+	queue->ccid_table[ddp->command_id].ccid_gen++;
-+	queue->ccid_table[ddp->command_id].sgl_length = count;
++	/* carve a hole in the skb for DDP data */
++	if (linear) {
++		skb_trim(skb, hlen);
++	} else {
++		org_nr_frags = skb_shinfo(skb)->nr_frags;
++		mlx5_nvmeotcp_trim_nonlinear(skb, org_frags, &frag_index,
++					     cclen);
++	}
 +
- 	return 0;
++	nqe = &queue->ccid_table[ccid];
++
++	/* packet starts new ccid? */
++	if (queue->ccid != ccid || queue->ccid_gen != nqe->ccid_gen) {
++		queue->ccid = ccid;
++		queue->ccoff = 0;
++		queue->ccoff_inner = 0;
++		queue->ccsglidx = 0;
++		queue->ccid_gen = nqe->ccid_gen;
++	}
++
++	/* skip inside cc until the ccoff in the cqe */
++	while (queue->ccoff + queue->ccoff_inner < ccoff) {
++		remaining = nqe->sgl[queue->ccsglidx].length - queue->ccoff_inner;
++		fragsz = min_t(off_t, remaining,
++			       ccoff - (queue->ccoff + queue->ccoff_inner));
++
++		if (fragsz == remaining)
++			mlx5e_nvmeotcp_advance_sgl_iter(queue);
++		else
++			queue->ccoff_inner += fragsz;
++	}
++
++	/* adjust the skb according to the cqe cc */
++	while (to_copy < cclen) {
++		if (skb_shinfo(skb)->nr_frags >= MAX_SKB_FRAGS) {
++			dev_kfree_skb_any(skb);
++			mlx5e_nvmeotcp_put_queue(queue);
++			return NULL;
++		}
++
++		remaining = nqe->sgl[queue->ccsglidx].length - queue->ccoff_inner;
++		fragsz = min_t(int, remaining, cclen - to_copy);
++
++		mlx5e_nvmeotcp_add_skb_frag(netdev, skb, queue, nqe, fragsz);
++		to_copy += fragsz;
++		if (fragsz == remaining)
++			mlx5e_nvmeotcp_advance_sgl_iter(queue);
++		else
++			queue->ccoff_inner += fragsz;
++	}
++
++	if (cqe_bcnt > hlen + cclen) {
++		remaining = cqe_bcnt - hlen - cclen;
++		if (linear)
++			skb = mlx5_nvmeotcp_add_tail(queue, skb,
++						     offset_in_page(skb->data) +
++								hlen + cclen,
++						     remaining);
++		else
++			skb = mlx5_nvmeotcp_add_tail_nonlinear(queue, skb,
++							       org_frags,
++							       org_nr_frags,
++							       frag_index);
++	}
++
++	mlx5e_nvmeotcp_put_queue(queue);
++	return skb;
++}
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_accel/nvmeotcp_rxtx.h b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/nvmeotcp_rxtx.h
+new file mode 100644
+index 000000000000..65456b46c33f
+--- /dev/null
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_accel/nvmeotcp_rxtx.h
+@@ -0,0 +1,43 @@
++/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
++/* Copyright (c) 2021 Mellanox Technologies. */
++#ifndef __MLX5E_NVMEOTCP_RXTX_H__
++#define __MLX5E_NVMEOTCP_RXTX_H__
++
++#ifdef CONFIG_MLX5_EN_NVMEOTCP
++
++#include <linux/skbuff.h>
++#include "en.h"
++
++struct sk_buff*
++mlx5e_nvmeotcp_handle_rx_skb(struct net_device *netdev, struct sk_buff *skb,
++			     struct mlx5_cqe64 *cqe, u32 cqe_bcnt, bool linear);
++
++static inline int mlx5_nvmeotcp_get_headlen(struct mlx5_cqe64 *cqe, u32 cqe_bcnt)
++{
++	struct mlx5e_cqe128 *cqe128;
++
++	if (!cqe_is_nvmeotcp_zc(cqe) || cqe_is_nvmeotcp_resync(cqe))
++		return cqe_bcnt;
++
++	cqe128 = container_of(cqe, struct mlx5e_cqe128, cqe64);
++	return be16_to_cpu(cqe128->hlen);
++}
++
++#else
++static inline struct sk_buff*
++mlx5e_nvmeotcp_handle_rx_skb(struct net_device *netdev, struct sk_buff *skb,
++			     struct mlx5_cqe64 *cqe, u32 cqe_bcnt, bool linear)
++{ return skb; }
++
++static inline int mlx5_nvmeotcp_get_headlen(struct mlx5_cqe64 *cqe, u32 cqe_bcnt)
++{ return cqe_bcnt; }
++
++#endif /* CONFIG_MLX5_EN_NVMEOTCP */
++
++static inline u16 mlx5e_get_headlen_hint(struct mlx5_cqe64 *cqe, u32 cqe_bcnt)
++{
++	return min_t(u32, MLX5E_RX_MAX_HEAD, mlx5_nvmeotcp_get_headlen(cqe, cqe_bcnt));
++}
++
++
++#endif /* __MLX5E_NVMEOTCP_RXTX_H__ */
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
+index 598d62366af2..168a4f490b8d 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_rx.c
+@@ -48,6 +48,7 @@
+ #include "en_accel/ipsec_rxtx.h"
+ #include "en_accel/tls_rxtx.h"
+ #include "en_accel/nvmeotcp.h"
++#include "en_accel/nvmeotcp_rxtx.h"
+ #include "lib/clock.h"
+ #include "en/xdp.h"
+ #include "en/xsk/rx.h"
+@@ -57,9 +58,11 @@
+ 
+ static struct sk_buff *
+ mlx5e_skb_from_cqe_mpwrq_linear(struct mlx5e_rq *rq, struct mlx5e_mpw_info *wi,
++				struct mlx5_cqe64 *cqe,
+ 				u16 cqe_bcnt, u32 head_offset, u32 page_idx);
+ static struct sk_buff *
+ mlx5e_skb_from_cqe_mpwrq_nonlinear(struct mlx5e_rq *rq, struct mlx5e_mpw_info *wi,
++				   struct mlx5_cqe64 *cqe,
+ 				   u16 cqe_bcnt, u32 head_offset, u32 page_idx);
+ static void mlx5e_handle_rx_cqe(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe);
+ static void mlx5e_handle_rx_cqe_mpwrq(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe);
+@@ -1189,6 +1192,12 @@ mlx5e_skb_from_cqe_linear(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe,
+ 	/* queue up for recycling/reuse */
+ 	page_ref_inc(di->page);
+ 
++#if defined(CONFIG_TCP_DDP) && defined(CONFIG_MLX5_EN_NVMEOTCP)
++	if (cqe_is_nvmeotcp(cqe))
++		skb = mlx5e_nvmeotcp_handle_rx_skb(rq->netdev, skb, cqe,
++						   cqe_bcnt, true);
++#endif
++
+ 	return skb;
  }
  
-@@ -788,11 +812,11 @@ mlx5e_nvmeotcp_ddp_teardown(struct net_device *netdev,
- 			    struct tcp_ddp_io *ddp,
- 			    void *ddp_ctx)
+@@ -1197,8 +1206,8 @@ mlx5e_skb_from_cqe_nonlinear(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe,
+ 			     struct mlx5e_wqe_frag_info *wi, u32 cqe_bcnt)
  {
--	struct mlx5e_nvmeotcp_queue *queue =
--		(struct mlx5e_nvmeotcp_queue *)tcp_ddp_get_ctx(sk);
-+	struct mlx5e_nvmeotcp_queue *queue;
- 	struct mlx5e_priv *priv = netdev_priv(netdev);
- 	struct nvmeotcp_queue_entry *q_entry;
+ 	struct mlx5e_rq_frag_info *frag_info = &rq->wqe.info.arr[0];
++	u16 headlen = mlx5e_get_headlen_hint(cqe, cqe_bcnt);
+ 	struct mlx5e_wqe_frag_info *head_wi = wi;
+-	u16 headlen      = min_t(u32, MLX5E_RX_MAX_HEAD, cqe_bcnt);
+ 	u16 frag_headlen = headlen;
+ 	u16 byte_cnt     = cqe_bcnt - headlen;
+ 	struct sk_buff *skb;
+@@ -1207,7 +1216,7 @@ mlx5e_skb_from_cqe_nonlinear(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe,
+ 	 * might spread among multiple pages.
+ 	 */
+ 	skb = napi_alloc_skb(rq->cq.napi,
+-			     ALIGN(MLX5E_RX_MAX_HEAD, sizeof(long)));
++			     ALIGN(headlen, sizeof(long)));
+ 	if (unlikely(!skb)) {
+ 		rq->stats->buff_alloc_err++;
+ 		return NULL;
+@@ -1233,6 +1242,12 @@ mlx5e_skb_from_cqe_nonlinear(struct mlx5e_rq *rq, struct mlx5_cqe64 *cqe,
+ 	skb->tail += headlen;
+ 	skb->len  += headlen;
  
-+	queue = container_of(tcp_ddp_get_ctx(sk), struct mlx5e_nvmeotcp_queue, tcp_ddp_ctx);
- 	q_entry  = &queue->ccid_table[ddp->command_id];
- 	WARN_ON(q_entry->sgl_length == 0);
- 
-@@ -808,6 +832,11 @@ static void
- mlx5e_nvmeotcp_dev_resync(struct net_device *netdev,
- 			  struct sock *sk, u32 seq)
- {
-+	struct mlx5e_nvmeotcp_queue *queue =
-+		container_of(tcp_ddp_get_ctx(sk), struct mlx5e_nvmeotcp_queue, tcp_ddp_ctx);
++#if defined(CONFIG_TCP_DDP) && defined(CONFIG_MLX5_EN_NVMEOTCP)
++	if (cqe_is_nvmeotcp(cqe))
++		skb = mlx5e_nvmeotcp_handle_rx_skb(rq->netdev, skb, cqe,
++						   cqe_bcnt, false);
++#endif
 +
-+	queue->after_resync_cqe = 1;
-+	mlx5e_nvmeotcp_rx_post_static_params_wqe(queue, seq);
+ 	return skb;
  }
  
- static const struct tcp_ddp_dev_ops mlx5e_nvmeotcp_ops = {
+@@ -1387,7 +1402,7 @@ static void mlx5e_handle_rx_cqe_mpwrq_rep(struct mlx5e_rq *rq, struct mlx5_cqe64
+ 	skb = INDIRECT_CALL_2(rq->mpwqe.skb_from_cqe_mpwrq,
+ 			      mlx5e_skb_from_cqe_mpwrq_linear,
+ 			      mlx5e_skb_from_cqe_mpwrq_nonlinear,
+-			      rq, wi, cqe_bcnt, head_offset, page_idx);
++			      rq, wi, cqe, cqe_bcnt, head_offset, page_idx);
+ 	if (!skb)
+ 		goto mpwrq_cqe_out;
+ 
+@@ -1418,17 +1433,18 @@ const struct mlx5e_rx_handlers mlx5e_rx_handlers_rep = {
+ 
+ static struct sk_buff *
+ mlx5e_skb_from_cqe_mpwrq_nonlinear(struct mlx5e_rq *rq, struct mlx5e_mpw_info *wi,
++				   struct mlx5_cqe64 *cqe,
+ 				   u16 cqe_bcnt, u32 head_offset, u32 page_idx)
+ {
+-	u16 headlen = min_t(u16, MLX5E_RX_MAX_HEAD, cqe_bcnt);
+ 	struct mlx5e_dma_info *di = &wi->umr.dma_info[page_idx];
++	u16 headlen = mlx5e_get_headlen_hint(cqe, cqe_bcnt);
+ 	u32 frag_offset    = head_offset + headlen;
+ 	u32 byte_cnt       = cqe_bcnt - headlen;
+ 	struct mlx5e_dma_info *head_di = di;
+ 	struct sk_buff *skb;
+ 
+ 	skb = napi_alloc_skb(rq->cq.napi,
+-			     ALIGN(MLX5E_RX_MAX_HEAD, sizeof(long)));
++			     ALIGN(headlen, sizeof(long)));
+ 	if (unlikely(!skb)) {
+ 		rq->stats->buff_alloc_err++;
+ 		return NULL;
+@@ -1459,11 +1475,18 @@ mlx5e_skb_from_cqe_mpwrq_nonlinear(struct mlx5e_rq *rq, struct mlx5e_mpw_info *w
+ 	skb->tail += headlen;
+ 	skb->len  += headlen;
+ 
++#if defined(CONFIG_TCP_DDP) && defined(CONFIG_MLX5_EN_NVMEOTCP)
++	if (cqe_is_nvmeotcp(cqe))
++		skb = mlx5e_nvmeotcp_handle_rx_skb(rq->netdev, skb, cqe,
++						   cqe_bcnt, false);
++#endif
++
+ 	return skb;
+ }
+ 
+ static struct sk_buff *
+ mlx5e_skb_from_cqe_mpwrq_linear(struct mlx5e_rq *rq, struct mlx5e_mpw_info *wi,
++				struct mlx5_cqe64 *cqe,
+ 				u16 cqe_bcnt, u32 head_offset, u32 page_idx)
+ {
+ 	struct mlx5e_dma_info *di = &wi->umr.dma_info[page_idx];
+@@ -1505,6 +1528,12 @@ mlx5e_skb_from_cqe_mpwrq_linear(struct mlx5e_rq *rq, struct mlx5e_mpw_info *wi,
+ 	/* queue up for recycling/reuse */
+ 	page_ref_inc(di->page);
+ 
++#if defined(CONFIG_TCP_DDP) && defined(CONFIG_MLX5_EN_NVMEOTCP)
++	if (cqe_is_nvmeotcp(cqe))
++		skb = mlx5e_nvmeotcp_handle_rx_skb(rq->netdev, skb, cqe,
++						   cqe_bcnt, true);
++#endif
++
+ 	return skb;
+ }
+ 
+@@ -1543,7 +1572,7 @@ static void mlx5e_handle_rx_cqe_mpwrq(struct mlx5e_rq *rq, struct mlx5_cqe64 *cq
+ 	skb = INDIRECT_CALL_2(rq->mpwqe.skb_from_cqe_mpwrq,
+ 			      mlx5e_skb_from_cqe_mpwrq_linear,
+ 			      mlx5e_skb_from_cqe_mpwrq_nonlinear,
+-			      rq, wi, cqe_bcnt, head_offset, page_idx);
++			      rq, wi, cqe, cqe_bcnt, head_offset, page_idx);
+ 	if (!skb)
+ 		goto mpwrq_cqe_out;
+ 
 -- 
 2.24.1
 
