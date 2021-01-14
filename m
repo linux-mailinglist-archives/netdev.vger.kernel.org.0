@@ -2,88 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 49FA82F662B
-	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 17:45:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 37FD52F6654
+	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 17:52:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726636AbhANQpT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jan 2021 11:45:19 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50944 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726067AbhANQpT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 14 Jan 2021 11:45:19 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 64F7723B18;
-        Thu, 14 Jan 2021 16:44:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610642676;
-        bh=PS1dhuKrAt2v8OEyvqgU7BzXS3gCX7ZqPqnjXyY11sw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=fXk6ePTt+W9O2cwzEB6JQdD6LcpKPeOYvc88TdarZTS2pBc6Fd5yP3C1f+Zv9SCDX
-         WPAFM5GpN/JKnA3+xOs/B4nMHQtc33nLdyK7I+0UZVCDpKWpzoTIVtv7SlSlvs5yXS
-         2u84v/R3VyZUi3TjqoVOuGHYD4rK3wehXN8o/YZoF+QTyNKRIycHvLpveCfeUAwxPh
-         wLcUPcNyjCw8ClFczV65B8ugyoIiMTcbQGCkZRfumXaLF35QZsKGUkmDlUpnfubuKZ
-         TznSiry8+OgETDi4wv3vQfcQBNCXtdW63Y37Uj+ZLY5bbfRzlbSZODGEOkipDIsZhp
-         Oz5AvAP0p0/qQ==
-Date:   Thu, 14 Jan 2021 08:44:35 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     netdev@vger.kernel.org, alexandre.belloni@bootlin.com,
-        andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
-        alexandru.marginean@nxp.com, claudiu.manoil@nxp.com,
-        xiaoliang.yang_1@nxp.com, hongbo.wang@nxp.com, jiri@resnulli.us,
-        idosch@idosch.org, UNGLinuxDriver@microchip.com
-Subject: Re: [PATCH v3 net-next 08/10] net: mscc: ocelot: register devlink
- ports
-Message-ID: <20210114084435.094c260a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210114103405.yizjfsk4idzgnpot@skbuf>
-References: <20210108175950.484854-1-olteanv@gmail.com>
-        <20210108175950.484854-9-olteanv@gmail.com>
-        <20210109174439.404713f6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20210111171344.j6chsp5djr5t5ykk@skbuf>
-        <20210111111909.4cf0174f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20210114103405.yizjfsk4idzgnpot@skbuf>
+        id S1727171AbhANQtw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jan 2021 11:49:52 -0500
+Received: from so254-31.mailgun.net ([198.61.254.31]:36659 "EHLO
+        so254-31.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725928AbhANQtw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 11:49:52 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1610642968; h=Date: Message-Id: Cc: To: References:
+ In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
+ Content-Type: Sender; bh=pTOhOFjKTSVZKN1D0SJ1Pg5lWOEdKXufF+sYmOfnZOw=;
+ b=uK7m3LlTMNeYZcTmuS+5lJm56cD5bsc6Pbkwn6rrSg6veFCosQGXkBP/4ZVHiNs0xxbE+YRC
+ MZTVw86QYph8A/pOGHXalFOOPKx1RZ0GCf/+9JPLyEV+JuUPtHhsVJMhaDqmH9rTDGQaO7xw
+ lUNBV9bsGDuHcBeZcx2UH4TTOgo=
+X-Mailgun-Sending-Ip: 198.61.254.31
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n06.prod.us-east-1.postgun.com with SMTP id
+ 600075ebc88af06107ced53d (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Thu, 14 Jan 2021 16:48:43
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id BE983C43461; Thu, 14 Jan 2021 16:48:42 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        MISSING_DATE,MISSING_MID,SPF_FAIL autolearn=no autolearn_force=no
+        version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id D370BC433C6;
+        Thu, 14 Jan 2021 16:48:39 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org D370BC433C6
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH] mt76: Fix queue ID variable types after mcu queue split
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20201229211548.1348077-1-natechancellor@gmail.com>
+References: <20201229211548.1348077-1-natechancellor@gmail.com>
+To:     Nathan Chancellor <natechancellor@gmail.com>
+Cc:     Felix Fietkau <nbd@nbd.name>,
+        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
+        Ryder Lee <ryder.lee@mediatek.com>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        clang-built-linux@googlegroups.com,
+        Nathan Chancellor <natechancellor@gmail.com>
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
+Message-Id: <20210114164842.BE983C43461@smtp.codeaurora.org>
+Date:   Thu, 14 Jan 2021 16:48:42 +0000 (UTC)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 14 Jan 2021 12:34:05 +0200 Vladimir Oltean wrote:
-> On Mon, Jan 11, 2021 at 11:19:09AM -0800, Jakub Kicinski wrote:
-> > > > devlink_port_attrs_set() should be called before netdev is registered,
-> > > > and devlink_port_type_eth_set() after. So this sequence makes me a tad
-> > > > suspicious.
-> > > >
-> > > > In particular IIRC devlink's .ndo_get_phys_port_name depends on it,
-> > > > because udev event needs to carry the right info for interface renaming
-> > > > to work reliably. No?  
-> > >
-> > > If I change the driver's Kconfig from tristate to bool, all is fine,
-> > > isn't it?  
-> >
-> > How does Kconfig change the order of registration of objects to
-> > subsystems _within_ the driver?  
-> 
-> The registration order within the driver is not what matters. What
-> matters is that the devlink_port and net_device are both registered
-> _before_ udev is up.
+Nathan Chancellor <natechancellor@gmail.com> wrote:
 
-I see.
+> Clang warns in both mt7615 and mt7915:
+> 
+> drivers/net/wireless/mediatek/mt76/mt7915/mcu.c:271:9: warning: implicit
+> conversion from enumeration type 'enum mt76_mcuq_id' to different
+> enumeration type 'enum mt76_txq_id' [-Wenum-conversion]
+>                 txq = MT_MCUQ_FWDL;
+>                     ~ ^~~~~~~~~~~~
+> drivers/net/wireless/mediatek/mt76/mt7915/mcu.c:278:9: warning: implicit
+> conversion from enumeration type 'enum mt76_mcuq_id' to different
+> enumeration type 'enum mt76_txq_id' [-Wenum-conversion]
+>                 txq = MT_MCUQ_WA;
+>                     ~ ^~~~~~~~~~
+> drivers/net/wireless/mediatek/mt76/mt7915/mcu.c:282:9: warning: implicit
+> conversion from enumeration type 'enum mt76_mcuq_id' to different
+> enumeration type 'enum mt76_txq_id' [-Wenum-conversion]
+>                 txq = MT_MCUQ_WM;
+>                     ~ ^~~~~~~~~~
+> 3 warnings generated.
+> 
+> drivers/net/wireless/mediatek/mt76/mt7615/mcu.c:238:9: warning: implicit
+> conversion from enumeration type 'enum mt76_mcuq_id' to different
+> enumeration type 'enum mt76_txq_id' [-Wenum-conversion]
+>                 qid = MT_MCUQ_WM;
+>                     ~ ^~~~~~~~~~
+> drivers/net/wireless/mediatek/mt76/mt7615/mcu.c:240:9: warning: implicit
+> conversion from enumeration type 'enum mt76_mcuq_id' to different
+> enumeration type 'enum mt76_txq_id' [-Wenum-conversion]
+>                 qid = MT_MCUQ_FWDL;
+>                     ~ ^~~~~~~~~~~~
+> 2 warnings generated.
+> 
+> Use the proper type for the queue ID variables to fix these warnings.
+> Additionally, rename the txq variable in mt7915_mcu_send_message to be
+> more neutral like mt7615_mcu_send_message.
+> 
+> Fixes: e637763b606b ("mt76: move mcu queues to mt76_dev q_mcu array")
+> Link: https://github.com/ClangBuiltLinux/linux/issues/1229
+> Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
+> Acked-by: Lorenzo Bianconi <lorenzo@kernel.org>
 
-> > Can you unbind and bind the driver back and see if phys_port_name
-> > always gets the correct value? (replay/udevadm test is not sufficient)  
-> 
-> Yes, and that udev renaming test failed miserably still.
-> 
-> I have dhcpcd in my system, and it races with my udev script by
-> auto-upping the interfaces when they probe. Then, dev_change_name()
-> returns -EBUSY because the interfaces are up but its priv_flags do not
-> declare IFF_LIVE_RENAME_OK.
-> 
-> How is that one solved?
+Patch applied to wireless-drivers.git, thanks.
 
-Yeah, that's one of those perennial problems we never found a strong
-answer to. IIRC IFF_LIVE_RENAME_OK was more of a dirty hack than a
-serious answer. I think we should allow renaming interfaces while
-they're up, and see if anything breaks. We'd just need to add the right
-netlink notifications to dev_change_name(), maybe?
+b7c568752ef3 mt76: Fix queue ID variable types after mcu queue split
+
+-- 
+https://patchwork.kernel.org/project/linux-wireless/patch/20201229211548.1348077-1-natechancellor@gmail.com/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+
