@@ -2,77 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 080F42F564A
-	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 02:57:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 887DF2F5609
+	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 02:57:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728063AbhANBp1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jan 2021 20:45:27 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:39280 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726017AbhANBDw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 13 Jan 2021 20:03:52 -0500
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1kzr2Q-000RN4-4c; Thu, 14 Jan 2021 02:02:58 +0100
-Date:   Thu, 14 Jan 2021 02:02:58 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Ido Schimmel <idosch@nvidia.com>,
-        Petr Machata <petrm@nvidia.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@nvidia.com>, f.fainelli@gmail.com,
-        vivien.didelot@gmail.com
-Subject: Re: [RFC PATCH net-next 1/2] net: dsa: allow setting port-based QoS
- priority using tc matchall skbedit
-Message-ID: <X/+YQlEkeNYXditV@lunn.ch>
-References: <20210113154139.1803705-1-olteanv@gmail.com>
- <20210113154139.1803705-2-olteanv@gmail.com>
- <X/+FKCRgkqOtoWbo@lunn.ch>
- <20210114001759.atz5vehkdrire6p7@skbuf>
+        id S1727570AbhANBaM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jan 2021 20:30:12 -0500
+Received: from mail-wm1-f53.google.com ([209.85.128.53]:51587 "EHLO
+        mail-wm1-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727471AbhANB2G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 20:28:06 -0500
+Received: by mail-wm1-f53.google.com with SMTP id h17so2991912wmq.1
+        for <netdev@vger.kernel.org>; Wed, 13 Jan 2021 17:27:49 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=V4wqRrQDMqpx+zERSu2u4Ej1vEpfmwbS23jyI8NIX9c=;
+        b=Hs/GdzEe2jCoEr6PWXxqfG4VaCnW9fm/xU168qU9wqWsOWPMxSUEc87EvbhSO8CMFP
+         Rm4WwmNJVd762aM+1bSqXM6c6ONm8EVZ5wa5YiKc8WqzbJ++A7l24zVVGtuYk8YXML4M
+         SxyW7FSv4rqVOoGFb5bDyonIS3Q7krn5mVaudfOVJf5bOuNaUsWD/jR84Ue/ktJn+wsE
+         uYnd+2n61G219NQDWgTdL+S7KpkIsLGyzFzPT1z8GC7n48HgPD8/OniTbIYCyAhWwzE5
+         ZXMw6X4QEDz6zivPQvRSb7Nsxz8YNxGc8ChEixS+J4ZWwZcG0slASihtbOOVsvZrCSug
+         Ku7w==
+X-Gm-Message-State: AOAM533EjdEcPp+hIsjcPTPG3oI/eSA0v2aIooPxFQ64GQwAD2in57g+
+        +gxlR5t7D8vOfTpNBU0pAto=
+X-Google-Smtp-Source: ABdhPJw5XViKYvOG6U3VmMSM7YrcwXpi9bp2OpEwMO4JjmkNSGC4jiz0FLlH1sDZ+4ZUvAc16lUc3g==
+X-Received: by 2002:a1c:6402:: with SMTP id y2mr1530111wmb.43.1610587643046;
+        Wed, 13 Jan 2021 17:27:23 -0800 (PST)
+Received: from ?IPv6:2601:647:4802:9070:e70c:620a:4d8a:b988? ([2601:647:4802:9070:e70c:620a:4d8a:b988])
+        by smtp.gmail.com with ESMTPSA id u3sm7664075wre.54.2021.01.13.17.27.19
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 13 Jan 2021 17:27:22 -0800 (PST)
+Subject: Re: [PATCH v1 net-next 00/15] nvme-tcp receive offloads
+To:     Boris Pismenny <borisp@mellanox.com>, kuba@kernel.org,
+        davem@davemloft.net, saeedm@nvidia.com, hch@lst.de, axboe@fb.com,
+        kbusch@kernel.org, viro@zeniv.linux.org.uk, edumazet@google.com
+Cc:     yorayz@nvidia.com, boris.pismenny@gmail.com, benishay@nvidia.com,
+        linux-nvme@lists.infradead.org, netdev@vger.kernel.org,
+        ogerlitz@nvidia.com
+References: <20201207210649.19194-1-borisp@mellanox.com>
+From:   Sagi Grimberg <sagi@grimberg.me>
+Message-ID: <69f9a7c3-e2ab-454a-2713-2e9c9dea4e47@grimberg.me>
+Date:   Wed, 13 Jan 2021 17:27:17 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210114001759.atz5vehkdrire6p7@skbuf>
+In-Reply-To: <20201207210649.19194-1-borisp@mellanox.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 14, 2021 at 02:17:59AM +0200, Vladimir Oltean wrote:
-> On Thu, Jan 14, 2021 at 12:41:28AM +0100, Andrew Lunn wrote:
-> > On Wed, Jan 13, 2021 at 05:41:38PM +0200, Vladimir Oltean wrote:
-> > > +	int	(*port_priority_set)(struct dsa_switch *ds, int port,
-> > > +				     struct dsa_mall_skbedit_tc_entry *skbedit);
-> > 
-> > The fact we can turn this on/off suggests there should be a way to
-> > disable this in the hardware, when the matchall is removed. I don't
-> > see any such remove support in this patch.
-> 
-> I don't understand this comment, sorry. When the matchall filter
-> containing the skbedit action gets removed, DSA calls the driver's
-> .port_priority_set callback again, this time with a priority of 0.
-> There's nothing to "remove" about a port priority. I made an assumption
-> (which I still consider perfectly reasonable) that no port-based
-> prioritization means that all traffic gets classified to traffic class 0.
+Hey Boris, sorry for some delays on my end...
 
-That does not work for mv88e6xxx. Its default setup, if i remember
-correctly, is it looks at the TOS bits to determine priority
-classes. So in its default state, it is using all the available
-traffic classes.  It can also be configured to look at the VLAN
-priority, or the TCAM can set the priority class, or there is a per
-port default priority, which is what you are describing here. There
-are bits to select which of these happen on ingress, on a per port
-basis.
+I saw some long discussions on this set with David, what is
+the status here?
 
-So setting the port priority to 0 means setting the priority of
-zero. It does not mean go back to the default prioritisation scheme.
+I'll take some more look into the patches, but if you
+addressed the feedback from the last iteration I don't
+expect major issues with this patch set (at least from
+nvme-tcp side).
 
-I guess any switch which has a range of options for prioritisation
-selection will have a similar problem. It defaults to something,
-probably something a bit smarter than everything goes to traffic class
-0.
+> Changes since RFC v1:
+> =========================================
+> * Split mlx5 driver patches to several commits
+> * Fix nvme-tcp handling of recovery flows. In particular, move queue offlaod
+>    init/teardown to the start/stop functions.
 
-      Andrew
+I'm assuming that you tested controller resets and network hiccups
+during traffic right?
