@@ -2,93 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9564E2F55EC
-	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 02:57:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6CEBC2F56C0
+	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 02:58:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729712AbhANAA6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jan 2021 19:00:58 -0500
-Received: from mail.kernel.org ([198.145.29.99]:55794 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729675AbhAMX5j (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 13 Jan 2021 18:57:39 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 9C46121734;
-        Wed, 13 Jan 2021 23:56:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610582213;
-        bh=V0652LK2rYvFrQLQilK2ZsEoQfHwxsO6hZ2J1HXl7pA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=WA1VVGs1ziZwejLJIaBT45VPD8gLLvuRhUlMTXtWhIY8hODuh8bRcZxQ0NHfT63ef
-         TVlH59IjBJoXTBtA4ARgKPxWRdbFEcFbLXATsC4nJ+kVZFbPJAg0vV+E8bZFbBwBk6
-         1bSGtGTMS21kcXJm0WTY/Jp3pRn+/1wTg1H157OK/0lDMHdi7EqFpBeVmkKEPC/uea
-         pifPm/UzCI+JNJVb1hbpaqo/90QRn1UlVmnF5P1ztlEDOaJ7sE5FiRSfU8eQEzlvuz
-         +uHAsKFMvVLZYtyDhcQrfGoV7tOIU/8bxP0YVLyXJ2HjV8CowH/UvYjFufkRSKLYuN
-         haZ3zNwHV+pDA==
-Date:   Wed, 13 Jan 2021 15:56:52 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     David Ahern <dsahern@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, schoen@loyalty.org,
-        David Ahern <dsahern@gmail.com>
-Subject: Re: [PATCH net-next v3 06/13] selftests: Use separate stdout and
- stderr buffers in nettest
-Message-ID: <20210113155652.5fd41775@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210113040040.50813-7-dsahern@kernel.org>
-References: <20210113040040.50813-1-dsahern@kernel.org>
-        <20210113040040.50813-7-dsahern@kernel.org>
+        id S1727910AbhANBww (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jan 2021 20:52:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47558 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729685AbhANADP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 19:03:15 -0500
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AF0AC061786;
+        Wed, 13 Jan 2021 16:00:30 -0800 (PST)
+Received: by mail-ej1-x62d.google.com with SMTP id d17so5610406ejy.9;
+        Wed, 13 Jan 2021 16:00:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=OxkcNELkcCo/aMS9YNTMH8XO6gLQFInf3RW2jo57p2o=;
+        b=PqDLE4/VPwfZX+brKhVkhTucguav9SJ0jN8BBlLU6Il0OqlarzFPkFmn8k5p1n0YCN
+         owKhrluy+DPHKU72y5Rz0NOE39O/VThfnYJe1Znih5GSaFWwXCGFb075cE+bmlP/FXKi
+         hwKjJozoF5D73+8yee+xK0h/d8sccVmjH6cOFJJDzFCmyszb69Ed84XvQkOyqO3nmAgx
+         M3yy8dhA5cr9OGXLKUknE+QoYA+IR9R4rVd+S5EVBlM7pevDWXs2kH+yF5KqApRuUHFW
+         zpRkpWIU73ORR2EWLDvMC58mZqm6gNQWkbtaR4jXzbskWC3PWRURiIBhdOY4JLI8ZIVp
+         6sPw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=OxkcNELkcCo/aMS9YNTMH8XO6gLQFInf3RW2jo57p2o=;
+        b=m8ndxzO1D3XeWz4yyQcn/VkBUTnd3iqUhW0kcgi2pZ8lo3b0mASG03rYgJI3G/vZ+m
+         Fw/j3zsl77D3i7PVfzA2xNQa3kl4mhgb1encnldi0ynLZq+6bsRehh1Hrh7vxvJsPuOQ
+         luxOgB2BY1GnrePhQ8eG6hDXlidEYjOFCx/P8FYVPgYr3ddaKc+APpCPqYjIuoRr7jFh
+         Az8IUas9I6yb1VMlbwUohr62mBAcpCQocvgMNwS9DzzNBE42cOYRrcnVgcENSWDeIpa5
+         luqem93vC+jMuZmmd7S4r7qWjbNEnal1ZUH5evepydFCbf/dRjGCx5kp8uIse9Nd4Q80
+         VZWA==
+X-Gm-Message-State: AOAM531rfaXt26V720+nRMgYf+vCZA6sF/zuB3mZqxqZfrssZ/u1s2iq
+        vXTvz+kTRH5RGz9NbhHoRyY=
+X-Google-Smtp-Source: ABdhPJz4UN+z3MR0r0/BbGmjZbw4opSgWZAGV5LOPo8h0B684A11rl0DB8Lsb+fwR3/QxQKBhMwYWw==
+X-Received: by 2002:a17:906:3d6a:: with SMTP id r10mr2256707ejf.408.1610582428831;
+        Wed, 13 Jan 2021 16:00:28 -0800 (PST)
+Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
+        by smtp.gmail.com with ESMTPSA id r16sm1480325edp.43.2021.01.13.16.00.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Jan 2021 16:00:28 -0800 (PST)
+Date:   Thu, 14 Jan 2021 02:00:27 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Gilles DOFFE <gilles.doffe@savoirfairelinux.com>
+Cc:     netdev@vger.kernel.org, Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net 2/6] net: dsa: ksz: move tag/untag action
+Message-ID: <20210114000027.sw5gkdedtwnhswi4@skbuf>
+References: <cover.1610540603.git.gilles.doffe@savoirfairelinux.com>
+ <8e1cd9b167bd39c0f82ca8970a355cdfbc0fe885.1610540603.git.gilles.doffe@savoirfairelinux.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <8e1cd9b167bd39c0f82ca8970a355cdfbc0fe885.1610540603.git.gilles.doffe@savoirfairelinux.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 12 Jan 2021 21:00:33 -0700 David Ahern wrote:
-> From: David Ahern <dsahern@gmail.com>
+On Wed, Jan 13, 2021 at 01:45:18PM +0100, Gilles DOFFE wrote:
+> Move tag/untag action at the end of the function to avoid
+> tagging or untagging traffic if only vlan 0 is handled.
 > 
-> When a single instance of nettest is doing both client and
-> server modes, stdout and stderr messages can get interlaced
-> and become unreadable. Allocate a new set of buffers for the
-> child process handling server mode.
-> 
-> Signed-off-by: David Ahern <dsahern@gmail.com>
+> Signed-off-by: Gilles DOFFE <gilles.doffe@savoirfairelinux.com>
 > ---
->  tools/testing/selftests/net/nettest.c | 20 +++++++++++++++++++-
->  1 file changed, 19 insertions(+), 1 deletion(-)
-> 
-> diff --git a/tools/testing/selftests/net/nettest.c b/tools/testing/selftests/net/nettest.c
-> index 685cbe8933de..9114bc823092 100644
-> --- a/tools/testing/selftests/net/nettest.c
-> +++ b/tools/testing/selftests/net/nettest.c
-> @@ -1707,9 +1707,27 @@ static char *random_msg(int len)
->  
->  static int ipc_child(int fd, struct sock_args *args)
->  {
-> +	char *outbuf, *errbuf;
-> +	int rc;
-> +
-> +	outbuf = malloc(4096);
-> +	errbuf = malloc(4096);
-> +	if (!outbuf || !errbuf) {
-> +		fprintf(stderr, "server: Failed to allocate buffers for stdout and stderr\n");
-> +		return 1;
 
-So this patch did not change? Did you send the wrong version,
-or am I missing something?
+No matter how much you move the assignment around, there's no escaping
+the truth that the Tag Removal bit in the Port Registers affects all
+VLANs that egress a port, whereas the BRIDGE_VLAN_INFO_UNTAGGED flag
+controls egress VLAN stripping per VLAN. Sorry, if you work with broken
+hardware, you might as well treat it accordingly too.
 
-> +	}
-> +
-> +	setbuffer(stdout, outbuf, 4096);
-> +	setbuffer(stderr, errbuf, 4096);
-> +
->  	server_mode = 1; /* to tell log_msg in case we are in both_mode */
->  
-> -	return do_server(args, fd);
-> +	rc = do_server(args, fd);
-> +
-> +	free(outbuf);
-> +	free(errbuf);
-> +
-> +	return rc;
->  }
->  
->  static int ipc_parent(int cpid, int fd, struct sock_args *args)
-
+And as to why the moving around would make any difference in the first
+place, you need to do a better job explaining that. There is nothing
+that prevents PORT_REMOVE_TAG from being written to the port, regardless
+of the order of operations. Unless the order matters?
