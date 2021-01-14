@@ -2,88 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D2C992F6EC7
-	for <lists+netdev@lfdr.de>; Fri, 15 Jan 2021 00:06:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E4EE2F6EE7
+	for <lists+netdev@lfdr.de>; Fri, 15 Jan 2021 00:22:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730932AbhANXFA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jan 2021 18:05:00 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:41666 "EHLO vps0.lunn.ch"
+        id S1730776AbhANXVk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jan 2021 18:21:40 -0500
+Received: from mail.kernel.org ([198.145.29.99]:34182 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726512AbhANXFA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 14 Jan 2021 18:05:00 -0500
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1l0Bf5-000eOz-KK; Fri, 15 Jan 2021 00:04:15 +0100
-Date:   Fri, 15 Jan 2021 00:04:15 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     "ashiduka@fujitsu.com" <ashiduka@fujitsu.com>
-Cc:     "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "torii.ken1@fujitsu.com" <torii.ken1@fujitsu.com>
-Subject: Re: [PATCH v2] net: phy: realtek: Add support for RTL9000AA/AN
-Message-ID: <YADN77NvrpnZYUVo@lunn.ch>
-References: <20210110085221.5881-1-ashiduka@fujitsu.com>
- <X/sptqSqUS7T5XWR@lunn.ch>
- <OSAPR01MB38441EE1695CCAD1FE3476DEDFA80@OSAPR01MB3844.jpnprd01.prod.outlook.com>
+        id S1730611AbhANXVj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 14 Jan 2021 18:21:39 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 4D44223A59;
+        Thu, 14 Jan 2021 23:20:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1610666459;
+        bh=4AvcktsqhF9eIbCN8RiHlOi8KkSMVaQLSIIGFCdVXnA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=drOi6LvdpVF1tMkWLk7C5LkaYn5tHzMn3UAolCm0sfwEwY7OhuM4nOkUfOmmCB6Uh
+         idtJ5KJ9ScCQHvHhrTZRJSYPcLYXZj0+0E8i+YGYjzJv5DtzPH5Jz8cOnH2A0c2GdJ
+         CWuuCYRGuLjJOuIwm+cBTIq8WYbTXngcLz4mOopBvKmmZTCoyKA4N8ywPMsFuFDgFM
+         C09WlKtvwoiUd6vjdmdcnBQSa/FcSq6yoCE9GUUUbp84wqRgLutZE6CksWsBWGbRJu
+         KMYotpWI0oetqF7Zf0dcQiWUCAJ52Th88lESCvakR/Ffk0u2ZZrZipnB1J49YIYxeq
+         jXrIXAq2sFFvw==
+Date:   Thu, 14 Jan 2021 15:20:58 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jacob Keller <jacob.e.keller@intel.com>
+Cc:     Jiri Pirko <jiri@resnulli.us>, netdev@vger.kernel.org,
+        davem@davemloft.net, roopa@nvidia.com, mlxsw@nvidia.com
+Subject: Re: [patch net-next RFC 00/10] introduce line card support for
+ modular switch
+Message-ID: <20210114152058.704c9f6d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <13348f01-2c68-c0a6-3bd8-a111fb0e565b@intel.com>
+References: <20210113121222.733517-1-jiri@resnulli.us>
+        <20210113182716.2b2aa8fa@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <13348f01-2c68-c0a6-3bd8-a111fb0e565b@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <OSAPR01MB38441EE1695CCAD1FE3476DEDFA80@OSAPR01MB3844.jpnprd01.prod.outlook.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 14, 2021 at 08:38:12AM +0000, ashiduka@fujitsu.com wrote:
-> Hi Andrew
+On Thu, 14 Jan 2021 14:58:33 -0800 Jacob Keller wrote:
+> > There is no way to tell a breakout cable from normal one, so the
+> > system has no chance to magically configure itself. Besides SFP
+> > is just plugging a cable, not a module of the system.. 
+> >   
+> If you're able to tell what is plugged in, why would we want to force
+> user to provision ahead of time? Wouldn't it make more sense to just
+> instantiate them as the card is plugged in? I guess it might be useful
+> to allow programming the netdevices before the cable is actually
+> inserted... I guess I don't see why that is valuable.
 > 
-> > For T1, it seems like Master is pretty important. Do you have
-> > information to be able to return the current Master/slave
-> > configuration, or allow it to be configured? See the nxp-tja11xx.c for
-> > an example.
-> 
-> Do you know how to switch between master/slave?
+> It would be sort of like if you provision a PCI slot before a device is
+> plugged into it..
 
-There was a patch to ethtool merged for this:
-
-commit 558f7cc33daf82f945af432c79db40edcbe0dad0
-Author: Oleksij Rempel <o.rempel@pengutronix.de>
-Date:   Wed Jun 10 10:37:43 2020 +0200
-
-    netlink: add master/slave configuration support
-    
-    This UAPI is needed for BroadR-Reach 100BASE-T1 devices. Due to lack of
-    auto-negotiation support, we needed to be able to configure the
-    MASTER-SLAVE role of the port manually or from an application in user
-    space.
-    
-    The same UAPI can be used for 1000BASE-T or MultiGBASE-T devices to
-    force MASTER or SLAVE role. See IEEE 802.3-2018:
-    22.2.4.3.7 MASTER-SLAVE control register (Register 9)
-    22.2.4.3.8 MASTER-SLAVE status register (Register 10)
-    40.5.2 MASTER-SLAVE configuration resolution
-    45.2.1.185.1 MASTER-SLAVE config value (1.2100.14)
-    45.2.7.10 MultiGBASE-T AN control 1 register (Register 7.32)
-    
-    The MASTER-SLAVE role affects the clock configuration:
-    
-    -------------------------------------------------------------------------------
-    When the  PHY is configured as MASTER, the PMA Transmit function shall
-    source TX_TCLK from a local clock source. When configured as SLAVE, the
-    PMA Transmit function shall source TX_TCLK from the clock recovered from
-    data stream provided by MASTER.
-    
-    iMX6Q                     KSZ9031                XXX
-    ------\                /-----------\        /------------\
-          |                |           |        |            |
-     MAC  |<----RGMII----->| PHY Slave |<------>| PHY Master |
-          |<--- 125 MHz ---+-<------/  |        | \          |
-    ------/                \-----------/        \------------/
-                                                   ^
-                                                    \-TX_TCLK
-    
-    -------------------------------------------------------------------------------
-
-    Andrew
+Yup, that's pretty much my thinking as well.
