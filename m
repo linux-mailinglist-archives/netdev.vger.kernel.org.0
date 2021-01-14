@@ -2,213 +2,192 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6BF962F5E31
-	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 11:00:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BE97D2F5E34
+	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 11:00:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728450AbhANJ6P (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jan 2021 04:58:15 -0500
-Received: from mga09.intel.com ([134.134.136.24]:34421 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728191AbhANJ6N (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 14 Jan 2021 04:58:13 -0500
-IronPort-SDR: DA8CAndxJo6Pan9MVEtPCUM62IOjSCjULTMYknLFJMxQcYhffPiMtQSMNsaLDKwSKFbyaAjB8B
- E8CdVZb3b+uQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9863"; a="178491117"
-X-IronPort-AV: E=Sophos;i="5.79,347,1602572400"; 
-   d="scan'208";a="178491117"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jan 2021 01:57:32 -0800
-IronPort-SDR: U5o3kiy/mu4PI8d+1HffNn9rEeOlrcJ+gX+zmEoYwjKOJPr6d/iPEkw/ojv/AFW7fiqMb4oebF
- n5Fo65Jp6vYQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.79,347,1602572400"; 
-   d="scan'208";a="424897648"
-Received: from fmsmsx603.amr.corp.intel.com ([10.18.126.83])
-  by orsmga001.jf.intel.com with ESMTP; 14 Jan 2021 01:57:31 -0800
-Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
- fmsmsx603.amr.corp.intel.com (10.18.126.83) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Thu, 14 Jan 2021 01:57:31 -0800
-Received: from fmsmsx602.amr.corp.intel.com (10.18.126.82) by
- fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Thu, 14 Jan 2021 01:57:29 -0800
-Received: from FMSEDG603.ED.cps.intel.com (10.1.192.133) by
- fmsmsx602.amr.corp.intel.com (10.18.126.82) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5
- via Frontend Transport; Thu, 14 Jan 2021 01:57:29 -0800
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (104.47.36.51) by
- edgegateway.intel.com (192.55.55.68) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.1713.5; Thu, 14 Jan 2021 01:57:29 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=VhfMLo2QlrIs9sOaoY4SQ54num8TDpu8wVNWR2yOWRz8Feja0NKnVOpGDU1kvFDCaLNeZ8P552bsjo92u485i3WVwANNSaHHywtC2zbL66/w9ResosB3QDyIA5Cj1WtVRl+Gu5wlu9ncOz3x2eNi3HtYcc6OrY8ghfpi5byBZTJDv3csqVuGuF+B3kfhkg6Ndx6DQnBK8V4S4tMvSfdRolyWWWR/lidqgWBfkj6N1dFTooZRLlKZC0YeBxfns5xCYlyFWHflBc0dYUOppqd6Kxqv4lb1bAB3MnTuYaGvypWRnLWkcSGqZPuGWk4mgZtjLxTNO6BAEpKW71fYgpfpbA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=FRrb4L2DDR4q2wsL2TS5NGrCxbS0+rTcTlPb6R9L0eo=;
- b=GXTuSoWlBfmHFgJ0YL1plWfCr0H1BqfizE3Lte12sK7j8lTs/DAsGA3Qc1AA/KDnxosBgXjJKzVytLT72mcimnPGGGGwbjp1OfL9hqciiqcg3+4lFBjGHvnPVvD91RsYrzJpxx3FHdPCvS8N1lIq4pChKONFGlm0Kc0NdLe/rby9rYoCyy/T4gX5rHk50jwr+Jph39KTXwPd4qPVoCBAcbExkcT75srH+PglHmenF3gqHpGdi+ujuxCpIwQ0dDhxgqXeIkhFME9czsLBgIHHUPUU5soybrUSdD1zvAmuOpD7EnwW0oKkZVSfkxh+oCN8rT59BdtGMV0/DXCqnrsVrw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
- s=selector2-intel-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=FRrb4L2DDR4q2wsL2TS5NGrCxbS0+rTcTlPb6R9L0eo=;
- b=aRAP4ktf37ETXJvPqAsRh5+K6JYMBjCqMbo2Yu81WlDygpwPFT8w1cLPoDY9igt628xECtqX+lFnTQ9w7nW+wQltISTCERaWCeWNsA5XDKZ8yzlXgJ9SlaNDHcJHBlyZg6chpkvwx6yNyiT+tVU4UamMbdUETMHVOhTxV8ocOoU=
-Received: from CY4PR11MB1576.namprd11.prod.outlook.com (2603:10b6:910:d::15)
- by CY4PR1101MB2088.namprd11.prod.outlook.com (2603:10b6:910:17::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3763.10; Thu, 14 Jan
- 2021 09:57:28 +0000
-Received: from CY4PR11MB1576.namprd11.prod.outlook.com
- ([fe80::e832:8392:8dea:28d7]) by CY4PR11MB1576.namprd11.prod.outlook.com
- ([fe80::e832:8392:8dea:28d7%7]) with mapi id 15.20.3763.010; Thu, 14 Jan 2021
- 09:57:28 +0000
-From:   "Jankowski, Konrad0" <konrad0.jankowski@intel.com>
-To:     Wei Xu <xuwei5@hisilicon.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     "salil.mehta@huawei.com" <salil.mehta@huawei.com>,
-        "jinying@hisilicon.com" <jinying@hisilicon.com>,
-        "tangkunshan@huawei.com" <tangkunshan@huawei.com>,
-        "huangdaode@hisilicon.com" <huangdaode@hisilicon.com>,
-        "john.garry@huawei.com" <john.garry@huawei.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linuxarm@huawei.com" <linuxarm@huawei.com>,
-        "shameerali.kolothum.thodi@huawei.com" 
-        <shameerali.kolothum.thodi@huawei.com>,
-        "zhangyi.ac@huawei.com" <zhangyi.ac@huawei.com>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "jonathan.cameron@huawei.com" <jonathan.cameron@huawei.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "liguozhu@hisilicon.com" <liguozhu@hisilicon.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "shiju.jose@huawei.com" <shiju.jose@huawei.com>
-Subject: RE: [Intel-wired-lan] [net-next] net: iavf: Use the ARRAY_SIZE macro
- for aq_to_posix
-Thread-Topic: [Intel-wired-lan] [net-next] net: iavf: Use the ARRAY_SIZE macro
- for aq_to_posix
-Thread-Index: AQHWhrJTlOhH9ZnF0Ui9Tr4Lsx8uZqonqdWA
-Date:   Thu, 14 Jan 2021 09:57:28 +0000
-Message-ID: <CY4PR11MB15769D5697074F230C8742CAABA80@CY4PR11MB1576.namprd11.prod.outlook.com>
-References: <1599641471-204919-1-git-send-email-xuwei5@hisilicon.com>
-In-Reply-To: <1599641471-204919-1-git-send-email-xuwei5@hisilicon.com>
-Accept-Language: pl-PL, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-version: 11.5.1.3
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-authentication-results: hisilicon.com; dkim=none (message not signed)
- header.d=none;hisilicon.com; dmarc=none action=none header.from=intel.com;
-x-originating-ip: [188.147.103.87]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: ab8be4de-97ed-4be6-9c38-08d8b872cd76
-x-ms-traffictypediagnostic: CY4PR1101MB2088:
-x-microsoft-antispam-prvs: <CY4PR1101MB208871F60BCE25105BCABDE6ABA80@CY4PR1101MB2088.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:5797;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: MZkMXQAY9LexzqwXCVjOfld/ryEbt67e7Jlt6rTNCCwZcySUeAUvnn+Na6HJLpL2XoKZ6WMBwMKiqFYBAaMa2ZTKTp/Zqf1fONvWqxZZvop7p6V5Kox1eK+rFL5NbdHMMg7op/HXYpmxvnnDdVE2EGbOxaSX/mwin2Eeb01ON938yK6X17VvuuT+jPWOfZrkoKHEE/PWSr66811OoUKtScRdeGhCsM3g6nqiK2iXaas2PECLoFvzEKdVMK0WBff7waYE/21xsjkTnssXxEbGJ0cyJLWj8JS79N+nLNBm8JqTUuNsFiuyAG3JEngxFmjKzfEqfESR3vgoEqU00mpNpvpWJstaUQv0jghApr3UoDpI4eX0IxMuHauqNgSflw25uz6UPwAOc7noIUxXJa/m/g==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CY4PR11MB1576.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39860400002)(136003)(366004)(376002)(396003)(346002)(76116006)(52536014)(4326008)(7696005)(8936002)(186003)(9686003)(7416002)(110136005)(66556008)(66476007)(66446008)(64756008)(54906003)(66946007)(478600001)(316002)(8676002)(6506007)(86362001)(83380400001)(33656002)(2906002)(53546011)(26005)(66574015)(71200400001)(55016002)(5660300002);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: =?iso-8859-2?Q?ohT1bNiwqH97qfQ6B5fRVWDfRA3Uu5fHk1LcPn/sCWCZWx3Cdr5ZY5tLxu?=
- =?iso-8859-2?Q?qC3OmjYVCKy9MxM3OiO6I2bKGW751VpIv3RvzCSYur0dFfa4lycmkhNCo8?=
- =?iso-8859-2?Q?OPmTmc1fjvO8otZCmFrq5JURkDwihg3do2kEljh0OcoUYBgiS5TDt+lnyc?=
- =?iso-8859-2?Q?tUbmDpazJu3VMaQLU7m0TcNv2ASshXLr95SiESF1CSZTDMizvg1FZ8BGyY?=
- =?iso-8859-2?Q?/LO6RJKHnxdEZVDcdEFBji5n8YQAhweeQEToR/qH1DuYUppoqK8yxT1l6s?=
- =?iso-8859-2?Q?qbIWHAYLXNJOSDgkZyg2n+Ow/wkBM18uDF6wIsV9eCszE29bfdRFevroPo?=
- =?iso-8859-2?Q?O8rrfC9x96kxn4cGyI+l5AX7Sl+cB7VwHIFT6pEUcWk5rCuxq9nF6KK3A6?=
- =?iso-8859-2?Q?54PI2u/NkEiLFEkKcRbLCNoGzKMpyY1569uOAqIixFP7owJU8LjE0if7zO?=
- =?iso-8859-2?Q?hc6Y9+PsvQPfHaDqMh5do/ZpbICv/heexztQF1V1hBWMv7cH4PWd2+7hBy?=
- =?iso-8859-2?Q?pzEfw8TDTk+/xbl4gBRSqM1nBCi6iYSPYM40rPJSmz5PnVz7yFpZFd7mCq?=
- =?iso-8859-2?Q?F4N9jduEgXC//bFzvJfxoXK5wQGpJrv+s/A9RerrahW6tIi3jd4sUkvnfl?=
- =?iso-8859-2?Q?Dyj00HXrHFEpK22tgXT6sS599pslbenozN84ZL65cdl4KlB95JqA7qn9+5?=
- =?iso-8859-2?Q?Ot4APu230+Sbdog2F5DbwDqlX1/zY4pkTltnq/YlbMDPe7Z1jBy5WtI7Cy?=
- =?iso-8859-2?Q?i+8Gbp3XmIZtBITM01j0RAIMq3vAZf0n1alC8/dm9JPx4+HOFJYE2NAswL?=
- =?iso-8859-2?Q?3GUxXxRu2HNqcus0lHITWhJ9uf93hSEnK+L5YffcpwvedCj0FfjymqItQM?=
- =?iso-8859-2?Q?buATWmjD5AgSKzo8IJmZ5C0+pmezpO/+9IYIZeGVlFxEJ5w7y0EQCqkrpz?=
- =?iso-8859-2?Q?F4N9HgoUrvSYLmZTu7vUnZKvHQMqTlCPrJIa6uSLbvuX+vr6X1g1LF8QYP?=
- =?iso-8859-2?Q?O7qiADW0P6+NOzX5E=3D?=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="iso-8859-2"
+        id S1728386AbhANJ7o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jan 2021 04:59:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34954 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727906AbhANJ7m (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 04:59:42 -0500
+Received: from mail-pj1-x1031.google.com (mail-pj1-x1031.google.com [IPv6:2607:f8b0:4864:20::1031])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6700CC061573;
+        Thu, 14 Jan 2021 01:59:03 -0800 (PST)
+Received: by mail-pj1-x1031.google.com with SMTP id j13so2917067pjz.3;
+        Thu, 14 Jan 2021 01:59:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
+         :user-agent;
+        bh=rLBzwlf8KBkW1DZlLF9GkNc0sIjNTFqLeUdb09RmAqE=;
+        b=SI+5KCpdIIA+vpcGjqLojJqks95heRRt8JglLCenKIRLbWBRwNrd3f4IL4va8gITod
+         Rqvm5pwP7AJXLoVmw7qv4s/47JX/F5GldSQ89HgxRlFHmRv2rD2XEuonUT22DMsQFsGX
+         apvS6J+Vni+I2+drdEbzPoOxvJEUOp3RdsAAREpoKfnI2q5aG/G6zJKZwx/Iw7+XOrxO
+         ImsQe8iVJSPVdrzwIOZmeZ6815hooqP0RvYJeYdj/r1Bx/ABb8WEfOM1tTgUEQjUMZHW
+         94VoAtbU2NPU/O8f3zsTWtA3PWkXG/7JWAWpEsSqZgadYnA04LwG34LiekW6ttI93vSI
+         L3dQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition:user-agent;
+        bh=rLBzwlf8KBkW1DZlLF9GkNc0sIjNTFqLeUdb09RmAqE=;
+        b=fnnYHYyjNjGdFZziz9uDeWwL2And0OyjkdJKDjFiiZ2D8CreCHLVO1jOoGvELk1zif
+         Vfyq26/g1tkFVHPZxvXxxrLu2SLvzVyfDqwWT1pNhRpHCK5fNN8x3EdJi24RcQwDNZiY
+         WJdt+EI24u885ZzDS83onuDDUBkucGDTWMnAUrLiZh3la6EHsxqQQLKSmox9/qu+6WAW
+         AoyZfEGE9OppkPLQ3DN3qlWH5Lhwydu6jCAlF+P9UY+LyMHUBKWSWag7VzGHsu9h3bW1
+         XYgYuxlnhPPDGw2QkriCVSys+bHey4o6x3ViRnhzv1ACcZNX/J3N7Z9tSJv/cvrrO1qd
+         s/Lw==
+X-Gm-Message-State: AOAM532m3S9axKUZ6qwRc9LYLPwgOAIexgeWK33uGSigA8n8Bqm7SwgL
+        +Hf50mmLAfsT/XcUMZD3fHPETp9Dk1A=
+X-Google-Smtp-Source: ABdhPJz0SGBjrjifzRJmyB+WZRJUpQk5USuqf81S9cZEdd18n+6UVo0RA/aluPP9Oj8WFiaYOZvKXQ==
+X-Received: by 2002:a17:90b:490c:: with SMTP id kr12mr4191801pjb.227.1610618342943;
+        Thu, 14 Jan 2021 01:59:02 -0800 (PST)
+Received: from cosmos ([103.113.142.250])
+        by smtp.gmail.com with ESMTPSA id w200sm4896023pfc.14.2021.01.14.01.58.59
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Thu, 14 Jan 2021 01:59:02 -0800 (PST)
+Date:   Thu, 14 Jan 2021 15:28:57 +0530
+From:   Vamshi K Sthambamkadi <vamshi.k.sthambamkadi@gmail.com>
+To:     marcel@holtmann.org, johan.hedberg@gmail.com, luiz.dentz@gmail.com
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] Bluetooth: btusb: fix memory leak on suspend and resume
+Message-ID: <20210114095853.GA1650@cosmos>
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: CY4PR11MB1576.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: ab8be4de-97ed-4be6-9c38-08d8b872cd76
-X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Jan 2021 09:57:28.4610
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: v+pn2lHDB5R51vKImnNVZiFZCiC7eUDR/uHbsaIOvkiKGGpjuO4J6Tb3UsP1Ikic8lG+mdBV3CFQHNfTcEgSrNOM9IyM3JMkFjmFJ47p+ZU=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR1101MB2088
-X-OriginatorOrg: intel.com
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+kmemleak report:
+unreferenced object 0xffff9b1127f00500 (size 208):
+  comm "kworker/u17:2", pid 500, jiffies 4294937470 (age 580.136s)
+  hex dump (first 32 bytes):
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+    00 60 ed 05 11 9b ff ff 00 00 00 00 00 00 00 00  .`..............
+  backtrace:
+    [<000000006ab3fd59>] kmem_cache_alloc_node+0x17a/0x480
+    [<0000000051a5f6f9>] __alloc_skb+0x5b/0x1d0
+    [<0000000037e2d252>] hci_prepare_cmd+0x32/0xc0 [bluetooth]
+    [<0000000010b586d5>] hci_req_add_ev+0x84/0xe0 [bluetooth]
+    [<00000000d2deb520>] hci_req_clear_event_filter+0x42/0x70 [bluetooth]
+    [<00000000f864bd8c>] hci_req_prepare_suspend+0x84/0x470 [bluetooth]
+    [<000000001deb2cc4>] hci_prepare_suspend+0x31/0x40 [bluetooth]
+    [<000000002677dd79>] process_one_work+0x209/0x3b0
+    [<00000000aaa62b07>] worker_thread+0x34/0x400
+    [<00000000826d176c>] kthread+0x126/0x140
+    [<000000002305e558>] ret_from_fork+0x22/0x30
+unreferenced object 0xffff9b1125c6ee00 (size 512):
+  comm "kworker/u17:2", pid 500, jiffies 4294937470 (age 580.136s)
+  hex dump (first 32 bytes):
+    04 00 00 00 0d 00 00 00 05 0c 01 00 11 9b ff ff  ................
+    00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00  ................
+  backtrace:
+    [<000000009f07c0cc>] slab_post_alloc_hook+0x59/0x270
+    [<0000000049431dc2>] __kmalloc_node_track_caller+0x15f/0x330
+    [<00000000027a42f6>] __kmalloc_reserve.isra.70+0x31/0x90
+    [<00000000e8e3e76a>] __alloc_skb+0x87/0x1d0
+    [<0000000037e2d252>] hci_prepare_cmd+0x32/0xc0 [bluetooth]
+    [<0000000010b586d5>] hci_req_add_ev+0x84/0xe0 [bluetooth]
+    [<00000000d2deb520>] hci_req_clear_event_filter+0x42/0x70 [bluetooth]
+    [<00000000f864bd8c>] hci_req_prepare_suspend+0x84/0x470 [bluetooth]
+    [<000000001deb2cc4>] hci_prepare_suspend+0x31/0x40 [bluetooth]
+    [<000000002677dd79>] process_one_work+0x209/0x3b0
+    [<00000000aaa62b07>] worker_thread+0x34/0x400
+    [<00000000826d176c>] kthread+0x126/0x140
+    [<000000002305e558>] ret_from_fork+0x22/0x30
+unreferenced object 0xffff9b112b395788 (size 8):
+  comm "kworker/u17:2", pid 500, jiffies 4294937470 (age 580.136s)
+  hex dump (first 8 bytes):
+    20 00 00 00 00 00 04 00                           .......
+  backtrace:
+    [<0000000052dc28d2>] kmem_cache_alloc_trace+0x15e/0x460
+    [<0000000046147591>] alloc_ctrl_urb+0x52/0xe0 [btusb]
+    [<00000000a2ed3e9e>] btusb_send_frame+0x91/0x100 [btusb]
+    [<000000001e66030e>] hci_send_frame+0x7e/0xf0 [bluetooth]
+    [<00000000bf6b7269>] hci_cmd_work+0xc5/0x130 [bluetooth]
+    [<000000002677dd79>] process_one_work+0x209/0x3b0
+    [<00000000aaa62b07>] worker_thread+0x34/0x400
+    [<00000000826d176c>] kthread+0x126/0x140
+    [<000000002305e558>] ret_from_fork+0x22/0x30
 
-> -----Original Message-----
-> From: Intel-wired-lan <intel-wired-lan-bounces@osuosl.org> On Behalf Of
-> Wei Xu
-> Sent: =B6roda, 9 wrze=B6nia 2020 10:51
-> To: netdev@vger.kernel.org
-> Cc: salil.mehta@huawei.com; jinying@hisilicon.com;
-> tangkunshan@huawei.com; huangdaode@hisilicon.com;
-> john.garry@huawei.com; linux-kernel@vger.kernel.org;
-> linuxarm@huawei.com; shameerali.kolothum.thodi@huawei.com;
-> zhangyi.ac@huawei.com; intel-wired-lan@lists.osuosl.org;
-> xuwei5@hisilicon.com; jonathan.cameron@huawei.com; Jakub Kicinski
-> <kuba@kernel.org>; liguozhu@hisilicon.com; davem@davemloft.net;
-> shiju.jose@huawei.com
-> Subject: [Intel-wired-lan] [net-next] net: iavf: Use the ARRAY_SIZE macro=
- for
-> aq_to_posix
-> =
+In pm sleep-resume context, while the btusb device rebinds, it enters
+hci_unregister_dev(), whilst there is a possibility of hdev receiving
+PM_POST_SUSPEND suspend_notifier event, leading to generation of msg
+frames. When hci_unregister_dev() completes, i.e. hdev context is
+destroyed/freed, those intermittently sent msg frames cause memory
+leak.
 
-> Use the ARRAY_SIZE macro to calculate the size of an array.
-> This code was detected with the help of Coccinelle.
-> =
+BUG details:
+Below is stack trace of thread that enters hci_unregister_dev(), marks
+the hdev flag HCI_UNREGISTER to 1, and then goes onto to wait on notifier
+lock - refer unregister_pm_notifier().
 
-> Signed-off-by: Wei Xu <xuwei5@hisilicon.com>
-> ---
->  drivers/net/ethernet/intel/iavf/iavf_adminq.h | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> =
+  hci_unregister_dev+0xa5/0x320 [bluetoot]
+  btusb_disconnect+0x68/0x150 [btusb]
+  usb_unbind_interface+0x77/0x250
+  ? kernfs_remove_by_name_ns+0x75/0xa0
+  device_release_driver_internal+0xfe/0x1
+  device_release_driver+0x12/0x20
+  bus_remove_device+0xe1/0x150
+  device_del+0x192/0x3e0
+  ? usb_remove_ep_devs+0x1f/0x30
+  usb_disable_device+0x92/0x1b0
+  usb_disconnect+0xc2/0x270
+  hub_event+0x9f6/0x15d0
+  ? rpm_idle+0x23/0x360
+  ? rpm_idle+0x26b/0x360
+  process_one_work+0x209/0x3b0
+  worker_thread+0x34/0x400
+  ? process_one_work+0x3b0/0x3b0
+  kthread+0x126/0x140
+  ? kthread_park+0x90/0x90
+  ret_from_fork+0x22/0x30
 
-> diff --git a/drivers/net/ethernet/intel/iavf/iavf_adminq.h
-> b/drivers/net/ethernet/intel/iavf/iavf_adminq.h
-> index baf2fe2..eead12c 100644
-> --- a/drivers/net/ethernet/intel/iavf/iavf_adminq.h
-> +++ b/drivers/net/ethernet/intel/iavf/iavf_adminq.h
-> @@ -120,7 +120,7 @@ static inline int iavf_aq_rc_to_posix(int aq_ret, int
-> aq_rc)
->  	if (aq_ret =3D=3D IAVF_ERR_ADMIN_QUEUE_TIMEOUT)
->  		return -EAGAIN;
-> =
+Below is stack trace of thread executing hci_suspend_notifier() which
+processes the PM_POST_SUSPEND event, while the unbinding thread is
+waiting on lock.
 
-> -	if (!((u32)aq_rc < (sizeof(aq_to_posix) / sizeof((aq_to_posix)[0]))))
-> +	if (!((u32)aq_rc < ARRAY_SIZE(aq_to_posix)))
->  		return -ERANGE;
-> =
+  hci_suspend_notifier.cold.39+0x5/0x2b [bluetooth]
+  blocking_notifier_call_chain+0x69/0x90
+  pm_notifier_call_chain+0x1a/0x20
+  pm_suspend.cold.9+0x334/0x352
+  state_store+0x84/0xf0
+  kobj_attr_store+0x12/0x20
+  sysfs_kf_write+0x3b/0x40
+  kernfs_fop_write+0xda/0x1c0
+  vfs_write+0xbb/0x250
+  ksys_write+0x61/0xe0
+  __x64_sys_write+0x1a/0x20
+  do_syscall_64+0x37/0x80
+  entry_SYSCALL_64_after_hwframe+0x44/0xa9
 
->  	return aq_to_posix[aq_rc];
+Fix hci_suspend_notifer(), not to act on events when flag HCI_UNREGISTER
+is set.
 
-Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
----------------------------------------------------------------------
-Intel Technology Poland sp. z o.o.
-ul. Sowackiego 173 | 80-298 Gdask | Sd Rejonowy Gdask Pnoc | VII Wydzia Gos=
-podarczy Krajowego Rejestru Sdowego - KRS 101882 | NIP 957-07-52-316 | Kapi=
-ta zakadowy 200.000 PLN.
-Ta wiadomo wraz z zacznikami jest przeznaczona dla okrelonego adresata i mo=
-e zawiera informacje poufne. W razie przypadkowego otrzymania tej wiadomoci=
-, prosimy o powiadomienie nadawcy oraz trwae jej usunicie; jakiekolwiek prz=
-egldanie lub rozpowszechnianie jest zabronione.
-This e-mail and any attachments may contain confidential material for the s=
-ole use of the intended recipient(s). If you are not the intended recipient=
-, please contact the sender and delete all copies; any review or distributi=
-on by others is strictly prohibited.
-=20
+Signed-off-by: Vamshi K Sthambamkadi <vamshi.k.sthambamkadi@gmail.com>
+---
+ net/bluetooth/hci_core.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/net/bluetooth/hci_core.c b/net/bluetooth/hci_core.c
+index 9d2c9a1c552f..29c88dbbc3fe 100644
+--- a/net/bluetooth/hci_core.c
++++ b/net/bluetooth/hci_core.c
+@@ -3566,7 +3566,8 @@ static int hci_suspend_notifier(struct notifier_block *nb, unsigned long action,
+ 	}
+ 
+ 	/* Suspend notifier should only act on events when powered. */
+-	if (!hdev_is_powered(hdev))
++	if (!hdev_is_powered(hdev) ||
++	    !hci_dev_test_flag(hdev, HCI_UNREGISTER))
+ 		goto done;
+ 
+ 	if (action == PM_SUSPEND_PREPARE) {
+-- 
+2.17.1
 
