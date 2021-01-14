@@ -2,102 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 491CA2F614B
-	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 13:56:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EC3522F6164
+	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 14:02:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727439AbhANMzv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jan 2021 07:55:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44714 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726376AbhANMzu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 07:55:50 -0500
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7049DC061575
-        for <netdev@vger.kernel.org>; Thu, 14 Jan 2021 04:55:10 -0800 (PST)
-Received: by mail-pf1-x42e.google.com with SMTP id c12so3276251pfo.10
-        for <netdev@vger.kernel.org>; Thu, 14 Jan 2021 04:55:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=9IX90Y5k78sPwXuBqN8BS+ueGMmHGt30Db1KTLFlVAA=;
-        b=FAPN6WVXJgGXHrZKPGT+mshy7QsgbGsfsNGqkktkDPDY8h0VF4ULVjhdB2SXlVs4iJ
-         WKHKtbhOxW9LyxOJoWpnDt3XzXqLaK8jstL5I1TqLYE2gGQITUrXid0N/KmpnIGfAyc6
-         qAbeTdyM4T+Kw+6OuG9AfOYZhabiIocejoAO7A3ACWtRvpDZUSiZw2nhs/UPNkwzDCmE
-         Tzg6xal3r/mfdJqRKzEKVxoHkCKn9hPqb6xvIUoztaROWmyBfwPazeLl/yLbv0iXS2yr
-         yRLPUd7vu+/9CmKovbrJJDTbNV+dNP6PM4EU8s4wJx9Icm3QaEz9RLJXQiYsphg7g6O2
-         U/kQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=9IX90Y5k78sPwXuBqN8BS+ueGMmHGt30Db1KTLFlVAA=;
-        b=TDJgBuqTipOfPoNN+EWQXsL3a3YZtThvyOGsmUwEzl7dXEIitnguPVPzrpFZyw1bWB
-         J8ve/iNf+VKhHl8+odFogI9sybEhyqtOsWl09D3aZUTOSJC4Uzhj2K2NrA9697c6kSSa
-         +WuCkLQHuixFOf49IQjzLC5lBEehu42YtKhjldlYHUfx25p9geDMOI2XcjGy5y3wO7Fy
-         HVSJP61DC7cWGQtekhl0kc6POkvlZhjmF9156LHuVBL50OxUuj/M4VanxqOOB8Q853gE
-         1NaYL97TXVewHn4bkuFsC0gbb7SJFiy5wYdAutLJ280ZwNOqT9FZFxT17iAisz0FMRc5
-         foAQ==
-X-Gm-Message-State: AOAM533PBi/P9Uy8gpSq2IG2ZF/NQpOHoUu068XRiuqYhrb5I9ylgxH6
-        w1m19d33T9VXTaSGwWkqFu4=
-X-Google-Smtp-Source: ABdhPJywCiRDitbh5LvJUrU1gfyU+rERxy1o+CFOdjKl/x1TVaqKT8B1RXh/0Ai86o60lC/y+J3veg==
-X-Received: by 2002:a63:4404:: with SMTP id r4mr7388249pga.149.1610628910046;
-        Thu, 14 Jan 2021 04:55:10 -0800 (PST)
-Received: from hoboy.vegasvil.org (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
-        by smtp.gmail.com with ESMTPSA id c5sm5632069pgt.73.2021.01.14.04.55.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Jan 2021 04:55:09 -0800 (PST)
-Date:   Thu, 14 Jan 2021 04:55:06 -0800
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Russell King <rmk+kernel@armlinux.org.uk>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] net: ethtool: allow MAC drivers to override
- ethtool get_ts_info
-Message-ID: <20210114125506.GC3154@hoboy.vegasvil.org>
-References: <E1kyYfI-0004wl-Tf@rmk-PC.armlinux.org.uk>
+        id S1728513AbhANM7M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jan 2021 07:59:12 -0500
+Received: from foss.arm.com ([217.140.110.172]:49668 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726175AbhANM7M (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 14 Jan 2021 07:59:12 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 569531FB;
+        Thu, 14 Jan 2021 04:58:26 -0800 (PST)
+Received: from e107158-lin (e107158-lin.cambridge.arm.com [10.1.194.78])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 035553F719;
+        Thu, 14 Jan 2021 04:58:24 -0800 (PST)
+Date:   Thu, 14 Jan 2021 12:58:22 +0000
+From:   Qais Yousef <qais.yousef@arm.com>
+To:     Jean-Philippe Brucker <jean-philippe@linaro.org>
+Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH bpf-next 2/2] selftests: bpf: Add a new test for bare
+ tracepoints
+Message-ID: <20210114125822.4eptwt36dql254dd@e107158-lin>
+References: <20210111182027.1448538-1-qais.yousef@arm.com>
+ <20210111182027.1448538-3-qais.yousef@arm.com>
+ <CAEf4BzYwOAHGOiZBUx86yZ1ofwJ1WqCDR3dyRMrTeQa2ZU7ftA@mail.gmail.com>
+ <20210112192729.q47avnmnzl54nekg@e107158-lin>
+ <CAEf4BzZiYv1M04FBmuzMH5cxLUXzLthDfpp4nORMEmvkcfzyRQ@mail.gmail.com>
+ <20210113102131.mjxpqpoi4n6rhbny@e107158-lin>
+ <X/8ieO6sMVizowMk@myrica>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <E1kyYfI-0004wl-Tf@rmk-PC.armlinux.org.uk>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <X/8ieO6sMVizowMk@myrica>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jan 10, 2021 at 11:13:44AM +0000, Russell King wrote:
-> This allows network drivers such as mvpp2 to use their more accurate
-> timestamping implementation than using a less accurate implementation
-> in the PHY. Network drivers can opt to defer to phylib by returning
-> -EOPNOTSUPP.
+On 01/13/21 17:40, Jean-Philippe Brucker wrote:
+> On Wed, Jan 13, 2021 at 10:21:31AM +0000, Qais Yousef wrote:
+> > On 01/12/21 12:07, Andrii Nakryiko wrote:
+> > > > > >         $ sudo ./test_progs -v -t module_attach
+> > > > >
+> > > > > use -vv when debugging stuff like that with test_progs, it will output
+> > > > > libbpf detailed logs, that often are very helpful
+> > > >
+> > > > I tried that but it didn't help me. Full output is here
+> > > >
+> > > >         https://paste.debian.net/1180846
+> > > >
+> > > 
+> > > It did help a bit for me to make sure that you have bpf_testmod
+> > > properly loaded and its BTF was found, so the problem is somewhere
+> > > else. Also, given load succeeded and attach failed with OPNOTSUPP, I
+> > > suspect you are missing some of FTRACE configs, which seems to be
+> > > missing from selftests's config as well. Check that you have
+> > > CONFIG_FTRACE=y and CONFIG_DYNAMIC_FTRACE=y, and you might need some
+> > > more. See [0] for a real config we are using to run all tests in
+> > > libbpf CI. If you figure out what you were missing, please also
+> > > contribute a patch to selftests' config.
+> > > 
+> > >   [0] https://github.com/libbpf/libbpf/blob/master/travis-ci/vmtest/configs/latest.config
+> > 
+> > Yeah that occurred to me too. I do have all necessary FTRACE options enabled,
+> > including DYNAMIC_FTRACE. I think I did try enabling fault injection too just
+> > in case. I have CONFIG_FAULT_INJECTION=y and CONFIG_FUNCTION_ERROR_INJECTION=y.
+> 
+> Could it come from lack of fentry support on arm64 (or are you testing on
+> x86?) Since the arm64 JIT doesn't have trampoline support at the moment, a
+> lot of bpf selftests fail with ENOTSUPP.
 
-My expectation is that PHY time stamping is more accurate than MAC
-time stamping.
- 
-> This change will be needed if the Marvell PHY drivers add support for
-> PTP.
+I am on arm64. I honestly have no clue about this. I'll try to dig out.
 
-Huh?  The mvpp2 appears to be a MAC.  If this device has integrated
-PHYs then I don't see the issue.  If your board has the nvpp2 device
-with the dp83640 PHYTER, then don't you want to actually use the
-PHYTER?
+Thanks
 
-From my observation of the product offerings, I have yet to see a new
-PHY (besides the dp83640 PHYTER) that implement time stamping.  The
-PHYTER is 100 megabit only, and my understanding that it is too
-difficult or even impossible to provide time stamps from within a
-gigabit+ PHY.  So you needn't fear new time stamping PHYs to spoil
-your setup!
-
-> Note: this may cause a change for any drivers that use phylib and
-> provide get_ts_info(). It is not obvious if any such cases exist.
-
-Up until now, the code always favored PHY devices and devices external
-to the MAC that snoop on the MII bus.  The assumption is that anyone
-who builds a board with such specialty devices really wants to use
-them.
-
-Thanks,
-Richard
+--
+Qais Yousef
