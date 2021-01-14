@@ -2,149 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BCBFA2F6389
-	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 15:56:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4509E2F6397
+	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 16:02:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729242AbhANOyM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jan 2021 09:54:12 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:55240 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726236AbhANOyM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 09:54:12 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1610635965;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=hsIohmEQeJszq1jgbSf64ncayWX6iJlFCFcEXl8xGas=;
-        b=V838G72eZK61XQgUWZSv/daxsHsD3FuzMvAeUxTrjIj6bENx7X/uUCkKYQ+w1F1+HYfUZA
-        yvRZTbXTUaJg2rRcxxYP6+JIEpJxJMA4ZZmazbRx6jtYU7UzVlsUtSiRlZyWwsCvgGr10h
-        bGy7Ig7gCMR9jdxoC6aJzZYvRdlsOyI=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-540-0qM94kpdNo28mpLCWyKb4Q-1; Thu, 14 Jan 2021 09:52:41 -0500
-X-MC-Unique: 0qM94kpdNo28mpLCWyKb4Q-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 98954100A5EF;
-        Thu, 14 Jan 2021 14:52:39 +0000 (UTC)
-Received: from carbon (unknown [10.36.110.51])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 3F98A74ABF;
-        Thu, 14 Jan 2021 14:52:28 +0000 (UTC)
-Date:   Thu, 14 Jan 2021 15:52:28 +0100
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Daniel Borkmann <borkmann@iogearbox.net>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Maciej =?UTF-8?B?xbtlbmN6eWtvd3NraQ==?= <maze@google.com>,
-        Lorenz Bauer <lmb@cloudflare.com>, shaun@tigera.io,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Marek Majkowski <marek@cloudflare.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>, eyal.birger@gmail.com,
-        colrack@gmail.com, brouer@redhat.com
-Subject: Re: [PATCH bpf-next V11 4/7] bpf: add BPF-helper for MTU checking
-Message-ID: <20210114155228.128457c7@carbon>
-In-Reply-To: <CAEf4Bzb0Z+qeuDTtfz6Ae3ab5hz_iG0vt8ALiry2zYWkgRh2Fw@mail.gmail.com>
-References: <161047346644.4003084.2653117664787086168.stgit@firesoul>
-        <161047352084.4003084.16468571234023057969.stgit@firesoul>
-        <CAEf4Bzb0Z+qeuDTtfz6Ae3ab5hz_iG0vt8ALiry2zYWkgRh2Fw@mail.gmail.com>
+        id S1727480AbhANPAw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jan 2021 10:00:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43364 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726565AbhANPAw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 10:00:52 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BEC63C061574
+        for <netdev@vger.kernel.org>; Thu, 14 Jan 2021 06:59:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=NvL97tsH3xPtRBRPWdy1qmCILCqkx20olHUYvAYLS1g=; b=iJZa2fPpzQ/t+VdNHlvxpN+um
+        WYGZCmnINtnYNnVcHHWofIaoCNVU6GtiqRK0nK0B+DU3UusPj6JvFUs18hMCo2ZEjrPoBn6Waanov
+        o6xolYhJhejHuz+gHnx1yZpJXqP/i2DRDe2ZY68FBKBmcDKWKolyXaW5Ax+CBFVpiXMpzO1V+lAF6
+        7BDMNY0a7MrXfj8eZHdEPx0vIxZ4fnvtHgFh1K8LGuHSK8cefB5JO4PCXN9o+mjLqB6sj2L3GKqyB
+        tnRtsJ2J1Aal7gssbqUUIb2oVBe4fcGNBXep+dIbaJPjI0ErCyr+n42H4Xw9rkloOIUTUgPupSv59
+        4P9ajGCfQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:47916)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1l046M-0002aX-FE; Thu, 14 Jan 2021 14:59:54 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1l046L-0008Qe-Hz; Thu, 14 Jan 2021 14:59:53 +0000
+Date:   Thu, 14 Jan 2021 14:59:53 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>
+Cc:     netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Jakub Kicinski <kuba@kernel.org>, davem@davemloft.net,
+        pali@kernel.org
+Subject: Re: [PATCH net-next v5 1/5] net: sfp: add SFP_PASSWORD address
+Message-ID: <20210114145953.GS1551@shell.armlinux.org.uk>
+References: <20210114044331.5073-1-kabel@kernel.org>
+ <20210114044331.5073-2-kabel@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210114044331.5073-2-kabel@kernel.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 12 Jan 2021 11:23:33 -0800
-Andrii Nakryiko <andrii.nakryiko@gmail.com> wrote:
+On Thu, Jan 14, 2021 at 05:43:27AM +0100, Marek Behún wrote:
+> Add SFP_PASSWORD = 0x7b to the diagnostics enumerator. This address is
+> described in SFF-8436 and SFF-8636.
 
-> On Tue, Jan 12, 2021 at 9:49 AM Jesper Dangaard Brouer
-> <brouer@redhat.com> wrote:
-> >
-> > This BPF-helper bpf_check_mtu() works for both XDP and TC-BPF programs.
-> >
-> > The SKB object is complex and the skb->len value (accessible from
-> > BPF-prog) also include the length of any extra GRO/GSO segments, but
-> > without taking into account that these GRO/GSO segments get added
-> > transport (L4) and network (L3) headers before being transmitted. Thus,
-> > this BPF-helper is created such that the BPF-programmer don't need to
-> > handle these details in the BPF-prog.
-> >
-> > The API is designed to help the BPF-programmer, that want to do packet
-> > context size changes, which involves other helpers. These other helpers
-> > usually does a delta size adjustment. This helper also support a delta
-> > size (len_diff), which allow BPF-programmer to reuse arguments needed by
-> > these other helpers, and perform the MTU check prior to doing any actual
-> > size adjustment of the packet context.
-> >
-> > It is on purpose, that we allow the len adjustment to become a negative
-> > result, that will pass the MTU check. This might seem weird, but it's not
-> > this helpers responsibility to "catch" wrong len_diff adjustments. Other
-> > helpers will take care of these checks, if BPF-programmer chooses to do
-> > actual size adjustment.
-> >
-> > V9:
-> > - Use dev->hard_header_len (instead of ETH_HLEN)
-> > - Annotate with unlikely req from Daniel
-> > - Fix logic error using skb_gso_validate_network_len from Daniel
-> >
-> > V6:
-> > - Took John's advice and dropped BPF_MTU_CHK_RELAX
-> > - Returned MTU is kept at L3-level (like fib_lookup)
-> >
-> > V4: Lot of changes
-> >  - ifindex 0 now use current netdev for MTU lookup
-> >  - rename helper from bpf_mtu_check to bpf_check_mtu
-> >  - fix bug for GSO pkt length (as skb->len is total len)
-> >  - remove __bpf_len_adj_positive, simply allow negative len adj
-> >
-> > Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
-> > ---
-> >  include/uapi/linux/bpf.h       |   67 ++++++++++++++++++++++
-> >  net/core/filter.c              |  122 ++++++++++++++++++++++++++++++++++++++++
-> >  tools/include/uapi/linux/bpf.h |   67 ++++++++++++++++++++++
-> >  3 files changed, 256 insertions(+)
-> >
-> > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> > index 649586d656b6..fa2e99351758 100644
-> > --- a/include/uapi/linux/bpf.h
-> > +++ b/include/uapi/linux/bpf.h
-> > @@ -3833,6 +3833,61 @@ union bpf_attr {
-> >   *     Return
-> >   *             A pointer to a struct socket on success or NULL if the file is
-> >   *             not a socket.
-> > + *
-> > + * int bpf_check_mtu(void *ctx, u32 ifindex, u32 *mtu_len, s32 len_diff, u64 flags)  
-> 
-> should return long, same as most other helpers
+However, as I mentioned previously, these are not relevant for SFPs,
+but are for QSFPs, and QSFPs have a totally different layout.
 
-Is it enough to change it here?
-(as this will be used for generating the helpers header file,
-via ./scripts/bpf_helpers_doc.py --header)
+The data structure for this enum is described by SFF-8472, and it lists
 
-Or do I also need to change bpf_func_proto.ret_type ?
+	Vendor Specific Locations [Address A2h, Bytes 120-126]
 
-> > + *     Description
-> > + *             Check ctx packet size against MTU of net device (based on
-> > + *             *ifindex*).  This helper will likely be used in combination with
-> > + *             helpers that adjust/change the packet size.  The argument
-> > + *             *len_diff* can be used for querying with a planned size
-> > + *             change. This allows to check MTU prior to changing packet ctx.
-> > + *  
-> 
-> [...]
-> 
+This is what the SFP_VSL definition covers.
 
+SFF-8436 defines the layout for "QSFP+ 10 Gbs 4X PLUGGABLE TRANSCEIVER":
 
+                            Table 17 - Lower Memory Map (A0h)
+       Address       Description         Type         Passive Copper,     Optical
+                                                      Active Copper,      Module                                                      Active Optical
+       0             Identifier (1       Read-Only    R                   R
+                     Byte)
+       1-2           Status (2 Bytes)     Read-Only    See Table 18
+       3-21          Interrupt Flags      Read-Only    See Tables 19-21
+                     (19 Bytes)
+...
+       123-126       Password Entry       Read/Write   O                  O
+                     Area (optional) 4
+                     Bytes
+       127           Page Select Byte     Read/Write   R                  R
+
+So, SFF-8436 is not relevant - not only is it for a different address
+but the whole format is different.
+
+SFF-8636 is "Specification for Management Interface for Cabled
+Environments" and defines:
+
+                             2-Wire Serial Address 1010000x
+                                     Lower Page 00h
+                            0 Identifier
+                        1- 2 Status
+                        3- 21 Interrupt Flags
+...
+                      123-126 Password Entry Area (Optional)
+                      127     Page Select Byte
+
+So again, SFF-8636 is not relevant for the same reasons as SFF-8436.
+
+We're left with SFF-8472, which mentions no password entry area, but
+leaves the area from 120-127 open as "vendor specific", so I don't
+think it is appropriate to start adding vendor specific definitions as
+if they were generic to sfp.h
+
+I would instead suggest defining this inside mdio-i2c.c as
+
+#define ROLLERBALL_PASSWORD	(SFP_VSL + 3)
+
+rather than trying to make this appear generic.
 
 -- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
