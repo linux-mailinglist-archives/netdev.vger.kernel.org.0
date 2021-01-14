@@ -2,76 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C4CD42F6979
-	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 19:28:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D78712F6988
+	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 19:32:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728992AbhANSXM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jan 2021 13:23:12 -0500
-Received: from mail.kernel.org ([198.145.29.99]:47176 "EHLO mail.kernel.org"
+        id S1727134AbhANS2S (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jan 2021 13:28:18 -0500
+Received: from mail.kernel.org ([198.145.29.99]:48094 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727306AbhANSXL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 14 Jan 2021 13:23:11 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 99AAE23B5D;
-        Thu, 14 Jan 2021 18:22:30 +0000 (UTC)
+        id S1726035AbhANS2S (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 14 Jan 2021 13:28:18 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 70BB723A50;
+        Thu, 14 Jan 2021 18:27:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610648551;
-        bh=I0biHUngS0/mSenJpUH7hAIaOnnOC/Usgk8HeM2y/oU=;
+        s=k20201202; t=1610648857;
+        bh=+ekRq6+uvmYnay2fHyfawgs0fDHgxr8CClDTPQkuR6Q=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Urqu1pEbxAIwI9Q0EZctHPmrjJHY4X8L8Q38SGFpm6tTXlnb2PJO9ojwPUsJ/spwk
-         0UlFuJEuz3F40jC2Crhn7mxqvQzKtU25/IwdoFLGkv/7x8YBo+XwHGqOBfX2sWCavF
-         7CE+H/wYM+lNRduhXCOFWm6KWOrAFI60atd8XlIkCWSN9wWPaFnfLRyFUICBMtV7CA
-         cR0ISf98FyYRriZLJ4AAXL4mGvEGxOHVf3/wMJgtNrg+yM8bFU0TNp4YnFyTiKaM/0
-         C6ZVZw9jEMvXDfY/NmX5oUPakUJpUJAe6POZEeDWpwaB60Jl5hi7/GI0nXIk4A0MdZ
-         Oa+Oj/OYq+Rpw==
-Date:   Thu, 14 Jan 2021 10:22:29 -0800
+        b=FE40DPDSz5+073s5PDhXDHU6c+oVT0iVJVcEw99PEIQ0fUl6bsnZUrZq1xpuW/4ZR
+         8wdqSo+gWWYliwmfgwry9n1hntdUbt8zKrom38hB4anJ+OxJ0RLjvJ8Npicvme38P3
+         80q7IMQz30+aYNmYQBwMkyenWEvUjX0BQRi02XXo+eMCbJQBN60v2HoFDfcBts5WA8
+         S1rX8pz4xQMJOkQ0TZP1i9lgCRuzslHS4hLNHnnN6ZaQQLhBV+qULSbfuLa+hBaKUH
+         nvyQkmKQLgJZrKsO6EGHWLYNdf8aNz0Kvq1k9KhGs0Gd+zLeVkQe/SjaWuFOpaByB9
+         ZdAQO8VmoXFoQ==
+Date:   Thu, 14 Jan 2021 10:27:36 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Parav Pandit <parav@nvidia.com>
-Cc:     Saeed Mahameed <saeed@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        Leon Romanovsky <leonro@nvidia.com>,
-        Jiri Pirko <jiri@nvidia.com>, Vu Pham <vuhuong@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: Re: [net-next V6 02/14] devlink: Introduce PCI SF port flavour and
- port attribute
-Message-ID: <20210114102229.3ac56a1c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <BY5PR12MB43220F26F558A6CFCE013876DCA80@BY5PR12MB4322.namprd12.prod.outlook.com>
-References: <20210113192730.280656-1-saeed@kernel.org>
-        <20210113192730.280656-3-saeed@kernel.org>
-        <20210114094230.67e8bef9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <BY5PR12MB43220F26F558A6CFCE013876DCA80@BY5PR12MB4322.namprd12.prod.outlook.com>
+To:     Nicolas Dichtel <nicolas.dichtel@6wind.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        syzbot+2393580080a2da190f04@syzkaller.appspotmail.com
+Subject: Re: [PATCH net] net: sit: unregister_netdevice on newlink's error
+ path
+Message-ID: <20210114102736.037c6494@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <f7ddd59c-8446-4771-c1a6-c58819d5bcdb@6wind.com>
+References: <20210114012947.2515313-1-kuba@kernel.org>
+        <f7ddd59c-8446-4771-c1a6-c58819d5bcdb@6wind.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 14 Jan 2021 17:53:09 +0000 Parav Pandit wrote:
-> > From: Jakub Kicinski <kuba@kernel.org>
-> > Sent: Thursday, January 14, 2021 11:13 PM
-> > 
-> > On Wed, 13 Jan 2021 11:27:18 -0800 Saeed Mahameed wrote:  
-> > >  /**
-> > >   * struct devlink_port_attrs - devlink port object
-> > >   * @flavour: flavour of the port
-> > > @@ -114,6 +126,7 @@ struct devlink_port_attrs {
-> > >  		struct devlink_port_phys_attrs phys;
-> > >  		struct devlink_port_pci_pf_attrs pci_pf;
-> > >  		struct devlink_port_pci_vf_attrs pci_vf;
-> > > +		struct devlink_port_pci_sf_attrs pci_sf;
-> > >  	};
-> > >  };  
-> > 
-> > include/net/devlink.h:131: warning: Function parameter or member 'pci_sf'
-> > not described in 'devlink_port_attrs'  
-> Wasn't reported till v5.
-> Can you please share, which script catches this? So that I can run next time early.
+On Thu, 14 Jan 2021 09:49:48 +0100 Nicolas Dichtel wrote:
+> Le 14/01/2021 =C3=A0 02:29, Jakub Kicinski a =C3=A9crit=C2=A0:
+> [snip]
+> > --- a/net/ipv6/sit.c
+> > +++ b/net/ipv6/sit.c
+> > @@ -1645,8 +1645,11 @@ static int ipip6_newlink(struct net *src_net, st=
+ruct net_device *dev,
+> >  	}
+> > =20
+> >  #ifdef CONFIG_IPV6_SIT_6RD
+> > -	if (ipip6_netlink_6rd_parms(data, &ip6rd))
+> > +	if (ipip6_netlink_6rd_parms(data, &ip6rd)) {
+> >  		err =3D ipip6_tunnel_update_6rd(nt, &ip6rd);
+> > +		if (err) =20
+> nit: I would prefer 'if (err < 0)' to be consistent with the rest of the =
+sit
+> code, but it's purely aesthetic (ipip6_tunnel_update_6rd() returns a nega=
+tive
+> value or 0).
 
-This is just scripts/kernel-doc from the tree.
+Done.
 
-All the tests are here:
+> With or without this:
+> Acked-by: Nicolas Dichtel <nicolas.dichtel@6wind.com>
 
-https://github.com/kuba-moo/nipa/blob/master/tests/
+Thanks for the review, applied!
