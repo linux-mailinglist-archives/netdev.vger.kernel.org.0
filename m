@@ -2,49 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E5B7E2F6BA0
-	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 20:58:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5EB012F6BA1
+	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 20:58:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730331AbhANT60 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jan 2021 14:58:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51398 "EHLO
+        id S1730347AbhANT63 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jan 2021 14:58:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51406 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729069AbhANT60 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 14:58:26 -0500
-Received: from mail-oo1-xc34.google.com (mail-oo1-xc34.google.com [IPv6:2607:f8b0:4864:20::c34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A2F8C061575;
-        Thu, 14 Jan 2021 11:57:46 -0800 (PST)
-Received: by mail-oo1-xc34.google.com with SMTP id j8so1664363oon.3;
-        Thu, 14 Jan 2021 11:57:46 -0800 (PST)
+        with ESMTP id S1729069AbhANT62 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 14:58:28 -0500
+Received: from mail-oo1-xc35.google.com (mail-oo1-xc35.google.com [IPv6:2607:f8b0:4864:20::c35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CD4AC061757;
+        Thu, 14 Jan 2021 11:57:48 -0800 (PST)
+Received: by mail-oo1-xc35.google.com with SMTP id y14so1649997oom.10;
+        Thu, 14 Jan 2021 11:57:48 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=syC+eoDuMnnkg3JHLhJFFPrmvuYEpcdHPmE2Pdh377A=;
-        b=TGxMNi7kerF0tEfZ8rPOd5ItzSjo04/mPeKO+XYgHqc7qBPwZ1Ti3eNunNv/m+2mCQ
-         KyO/eoaf5EY0nv/Pi0A2RhgyNGEQTsdeVxbdpztKE4aAB3FtWjkZzDQxw2IniO5RA3mG
-         y0/47bDt8Fph+db18oqaTTz/PDmF/H5fiWM2zszIi3YthwjAvA+NM9kbDo3/hkbz2pVP
-         crVBdiM1k0yKYyxJJrb7+ksMN/fxY4o+aYGrgehzzATgjGAHqRLMdSkOLTIcG3YVxJBT
-         nEBHLryW/d6HILFbbwSzOqVRAlhI+eNHyCgYFtu1FSH93OSsgrDUMQT6f8mOjbD98YJG
-         zTag==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=srrihTdP83kkaii+4P/xPu1Zy6Z+rb6DxOXiimJIHjs=;
+        b=ThUBDBgaxjNIfPKczEKbRRjqspkjal4K9Kbo16HJssJGrQLvatiKSwziCPmFM0ta4v
+         2dPitp9zsx2dioiRXpy7G7groMKqBNePI6y6LU+9EDEpezhDGqT4nD3gT7Fr+yYieDaa
+         muuuTtb+6lV8W9kAB5MHsmq6EIzfWyOBU/thCe5BfIud6eoAWX/WVwsUtzK8m0csZkmD
+         v7yLulzfPxguycXPJMfYyZc4PKlp1yZcvo8WqjeOk6Rn25V6gtdRqtGNQQnIYhTxc2+R
+         UPoif9xeJ55CJuFJWOY+EnT/JPe+epLimsiBkLXPQYydxPbxhFElQ/AJV8AAbxo/UDvz
+         uQLQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=syC+eoDuMnnkg3JHLhJFFPrmvuYEpcdHPmE2Pdh377A=;
-        b=TvXB1zOGgi7suI1YRIoREhtVURyRnG7lgYrb3Qefv++wF8JX2zXHiUE6ioBh/4Ge1Q
-         kW1O/IMwjT3HPzxu7VKAR8MADJLN0vCYJsqlbyBtu5oSEDYSyfg4IUffQrKvEyaSn3v1
-         SHcEM66/5r5R+THpyago3huIhzQTAO2YmPFTCZ9KD60DtIMXJu6c1+L7qDx2dplfL+hx
-         El2oul2vyMKvHmlqUAKPvdSyjDGpIuK96yVsbyWKQl0v8xnE0ICWnu1LIQ0I9k9POX34
-         6sG4roa0NeprAll2MYGnb/NexmjZLdh7XrSZO6av0Xd8k4oo54tjIrQOFZQnn34t0wcJ
-         6FBQ==
-X-Gm-Message-State: AOAM532CY16dPpKVOKlo3bNsowW6nhMEhOMJ7tND3H207Uc9g6+ooGfY
-        TG7lhwjVng1F1QWTeWbBqg==
-X-Google-Smtp-Source: ABdhPJw/Y2UEAMCQ5R4rchBr33l9lt+rMyzXat5++Yog4HY2+Jyxz5lrxRPMg14JaqERvd/yo+rbTw==
-X-Received: by 2002:a4a:98a3:: with SMTP id a32mr5754406ooj.51.1610654265615;
-        Thu, 14 Jan 2021 11:57:45 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=srrihTdP83kkaii+4P/xPu1Zy6Z+rb6DxOXiimJIHjs=;
+        b=bumtvtujeQWQJQZ2ya7GhVVpWWk7wfe4PmH2F1b1IUpn1pF0YIEllWyA1COgoTLR+u
+         ncjlYs1Q0F1NW63nIEdeTdJiOQMSewiBdVDtFa83qGkHnJwXlW3SiZSTui0rsO5aWjnA
+         iGofwgSISsdO4of4G9IeEpfzO8teeSXfWw5cNf6FcpAQplpcNhsv2OrY9tppBHTpQRCL
+         o9DGZJzTdirc5D4kA+A2NH7A5PkdPvw7xpLKmBg2H77/BxgjKr6HsR2Lz6KNi0nZdrUt
+         mSJmnHHQxQ22f5+SPkDEuqLa621KpBZ0wfJSWQApg1GqGgpGpLVhiQdM3TpAMNgL889p
+         kdDA==
+X-Gm-Message-State: AOAM532QIbHonWXf6itevEFLRsx6Z4O2ZERwJ7gCN+byLNyDczEWPRwn
+        aIxroS3ojjnt88MDqlTgPA==
+X-Google-Smtp-Source: ABdhPJzv1GofgRnQw1sN90tsebW5M2vFj57Ju04iJsHDObOYGPOWMgNtw4BrfP8MXP4kt0YdSjrlYw==
+X-Received: by 2002:a05:6820:34b:: with SMTP id m11mr5867328ooe.74.1610654267503;
+        Thu, 14 Jan 2021 11:57:47 -0800 (PST)
 Received: from threadripper.novatech-llc.local ([216.21.169.52])
-        by smtp.gmail.com with ESMTPSA id e17sm1244820otk.64.2021.01.14.11.57.43
+        by smtp.gmail.com with ESMTPSA id e17sm1244820otk.64.2021.01.14.11.57.45
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 14 Jan 2021 11:57:44 -0800 (PST)
+        Thu, 14 Jan 2021 11:57:46 -0800 (PST)
 From:   George McCollister <george.mccollister@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -54,94 +55,141 @@ Cc:     Rob Herring <robh@kernel.org>,
         "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
         devicetree@vger.kernel.org,
         George McCollister <george.mccollister@gmail.com>
-Subject: [PATCH net-next v5 0/3] Arrow SpeedChips XRS700x DSA Driver
-Date:   Thu, 14 Jan 2021 13:57:31 -0600
-Message-Id: <20210114195734.55313-1-george.mccollister@gmail.com>
+Subject: [PATCH net-next v5 1/3] dsa: add support for Arrow XRS700x tag trailer
+Date:   Thu, 14 Jan 2021 13:57:32 -0600
+Message-Id: <20210114195734.55313-2-george.mccollister@gmail.com>
 X-Mailer: git-send-email 2.11.0
+In-Reply-To: <20210114195734.55313-1-george.mccollister@gmail.com>
+References: <20210114195734.55313-1-george.mccollister@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series adds a DSA driver for the Arrow SpeedChips XRS 7000 series
-of HSR/PRP gigabit switch chips.
+Add support for Arrow SpeedChips XRS700x single byte tag trailer. This
+is modeled on tag_trailer.c which works in a similar way.
 
-The chips use Flexibilis IP.
-More information can be found here:
- https://www.flexibilis.com/products/speedchips-xrs7000/
-
-The switches have up to three RGMII ports and one MII port and are
-managed via mdio or i2c. They use a one byte trailing tag to identify
-the switch port when in managed mode so I've added a tag driver which
-implements this.
-
-This series contains minimal DSA functionality which may be built upon
-in future patches. The ultimate goal is to add HSR and PRP
-(IEC 62439-3 Clause 5 & 4) offloading with integration into net/hsr.
-
-Changes since v1:
- * Use central TX reallocation in tag driver. (Andrew Lunn)
- * Code style fixes. (Andrew Lunn, Vladimir Oltean)
- * Code simplifications. (Andrew Lunn, Vladimir Oltean)
- * Verify detected switch matches compatible. (Andrew Lunn)
- * Add inbound policy to allow BPDUs. (Andrew Lunn)
- * Move files into their own subdir. (Vladimir Oltean)
- * Automate regmap field allocation. (Vladimir Oltean)
- * Move setting link speed to .mac_link_up. (Vladimir Oltean)
- * Use different compatible strings for e/f variants.
-
-Changes since v2:
- * Export constant xrs700x_info symbols. (Jakub Kicinski)
- * Report stats via .get_stats64. (Jakub Kicinski, Vladimir Oltean)
- * Use a 3 second polling rate for counters.
-
-Changes since v3:
- * Builds against net-next now that get_stats64 commit has been merged.
- * Don't show status in devicetree examples. (Rob Herring)
- * Use ethernet-port(s) in devicetree examples. (Rob Herring)
- * Use strscpy() instead of strlcpy().
-
-Changes since v4:
- * Removed some unneeded includes. (Vladimir Oltean)
- * Remove unneeded call to skb_linearize(). (Vladimir Oltean)
- * Make naming of variables more consistent. (Vladimir Oltean)
- * Use VLAN_N_VID instead of creating a define for MAX_VLAN.
-   (Florian Fainelli)
- * Use devm_kcalloc instead of devm_kzalloc where appropriate.
-   (Vladimir Oltean)
- * Use eth_stp_addr and write BPDU inbound policy address in a loop.
-   (Florian Fainelli)
- * Set i2c/mdio data before registering. (Florian Fainelli)
-
-George McCollister (3):
-  dsa: add support for Arrow XRS700x tag trailer
-  net: dsa: add Arrow SpeedChips XRS700x driver
-  dt-bindings: net: dsa: add bindings for xrs700x switches
-
- .../devicetree/bindings/net/dsa/arrow,xrs700x.yaml |  73 +++
- drivers/net/dsa/Kconfig                            |   2 +
- drivers/net/dsa/Makefile                           |   1 +
- drivers/net/dsa/xrs700x/Kconfig                    |  26 +
- drivers/net/dsa/xrs700x/Makefile                   |   4 +
- drivers/net/dsa/xrs700x/xrs700x.c                  | 622 +++++++++++++++++++++
- drivers/net/dsa/xrs700x/xrs700x.h                  |  42 ++
- drivers/net/dsa/xrs700x/xrs700x_i2c.c              | 150 +++++
- drivers/net/dsa/xrs700x/xrs700x_mdio.c             | 163 ++++++
- drivers/net/dsa/xrs700x/xrs700x_reg.h              | 203 +++++++
- include/net/dsa.h                                  |   2 +
- net/dsa/Kconfig                                    |   6 +
- net/dsa/Makefile                                   |   1 +
- net/dsa/tag_xrs700x.c                              |  61 ++
- 14 files changed, 1356 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/net/dsa/arrow,xrs700x.yaml
- create mode 100644 drivers/net/dsa/xrs700x/Kconfig
- create mode 100644 drivers/net/dsa/xrs700x/Makefile
- create mode 100644 drivers/net/dsa/xrs700x/xrs700x.c
- create mode 100644 drivers/net/dsa/xrs700x/xrs700x.h
- create mode 100644 drivers/net/dsa/xrs700x/xrs700x_i2c.c
- create mode 100644 drivers/net/dsa/xrs700x/xrs700x_mdio.c
- create mode 100644 drivers/net/dsa/xrs700x/xrs700x_reg.h
+Signed-off-by: George McCollister <george.mccollister@gmail.com>
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+---
+ include/net/dsa.h     |  2 ++
+ net/dsa/Kconfig       |  6 +++++
+ net/dsa/Makefile      |  1 +
+ net/dsa/tag_xrs700x.c | 61 +++++++++++++++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 70 insertions(+)
  create mode 100644 net/dsa/tag_xrs700x.c
 
+diff --git a/include/net/dsa.h b/include/net/dsa.h
+index c3485ba6c312..74b5bf835657 100644
+--- a/include/net/dsa.h
++++ b/include/net/dsa.h
+@@ -46,6 +46,7 @@ struct phylink_link_state;
+ #define DSA_TAG_PROTO_AR9331_VALUE		16
+ #define DSA_TAG_PROTO_RTL4_A_VALUE		17
+ #define DSA_TAG_PROTO_HELLCREEK_VALUE		18
++#define DSA_TAG_PROTO_XRS700X_VALUE		19
+ 
+ enum dsa_tag_protocol {
+ 	DSA_TAG_PROTO_NONE		= DSA_TAG_PROTO_NONE_VALUE,
+@@ -67,6 +68,7 @@ enum dsa_tag_protocol {
+ 	DSA_TAG_PROTO_AR9331		= DSA_TAG_PROTO_AR9331_VALUE,
+ 	DSA_TAG_PROTO_RTL4_A		= DSA_TAG_PROTO_RTL4_A_VALUE,
+ 	DSA_TAG_PROTO_HELLCREEK		= DSA_TAG_PROTO_HELLCREEK_VALUE,
++	DSA_TAG_PROTO_XRS700X		= DSA_TAG_PROTO_XRS700X_VALUE,
+ };
+ 
+ struct packet_type;
+diff --git a/net/dsa/Kconfig b/net/dsa/Kconfig
+index dfecd7b22fd7..2d226a5c085f 100644
+--- a/net/dsa/Kconfig
++++ b/net/dsa/Kconfig
+@@ -139,4 +139,10 @@ config NET_DSA_TAG_TRAILER
+ 	  Say Y or M if you want to enable support for tagging frames at
+ 	  with a trailed. e.g. Marvell 88E6060.
+ 
++config NET_DSA_TAG_XRS700X
++	tristate "Tag driver for XRS700x switches"
++	help
++	  Say Y or M if you want to enable support for tagging frames for
++	  Arrow SpeedChips XRS700x switches that use a single byte tag trailer.
++
+ endif
+diff --git a/net/dsa/Makefile b/net/dsa/Makefile
+index 0fb2b75a7ae3..92cea2132241 100644
+--- a/net/dsa/Makefile
++++ b/net/dsa/Makefile
+@@ -18,3 +18,4 @@ obj-$(CONFIG_NET_DSA_TAG_OCELOT) += tag_ocelot.o
+ obj-$(CONFIG_NET_DSA_TAG_QCA) += tag_qca.o
+ obj-$(CONFIG_NET_DSA_TAG_SJA1105) += tag_sja1105.o
+ obj-$(CONFIG_NET_DSA_TAG_TRAILER) += tag_trailer.o
++obj-$(CONFIG_NET_DSA_TAG_XRS700X) += tag_xrs700x.o
+diff --git a/net/dsa/tag_xrs700x.c b/net/dsa/tag_xrs700x.c
+new file mode 100644
+index 000000000000..db0ed1a5fcb7
+--- /dev/null
++++ b/net/dsa/tag_xrs700x.c
+@@ -0,0 +1,61 @@
++// SPDX-License-Identifier: GPL-2.0+
++/*
++ * XRS700x tag format handling
++ * Copyright (c) 2008-2009 Marvell Semiconductor
++ * Copyright (c) 2020 NovaTech LLC
++ */
++
++#include <linux/bitops.h>
++
++#include "dsa_priv.h"
++
++static struct sk_buff *xrs700x_xmit(struct sk_buff *skb, struct net_device *dev)
++{
++	struct dsa_port *dp = dsa_slave_to_port(dev);
++	u8 *trailer;
++
++	trailer = skb_put(skb, 1);
++	trailer[0] = BIT(dp->index);
++
++	return skb;
++}
++
++static struct sk_buff *xrs700x_rcv(struct sk_buff *skb, struct net_device *dev,
++				   struct packet_type *pt)
++{
++	int source_port;
++	u8 *trailer;
++
++	trailer = skb_tail_pointer(skb) - 1;
++
++	source_port = ffs((int)trailer[0]) - 1;
++
++	if (source_port < 0)
++		return NULL;
++
++	skb->dev = dsa_master_find_slave(dev, 0, source_port);
++	if (!skb->dev)
++		return NULL;
++
++	if (pskb_trim_rcsum(skb, skb->len - 1))
++		return NULL;
++
++	/* Frame is forwarded by hardware, don't forward in software. */
++	skb->offload_fwd_mark = 1;
++
++	return skb;
++}
++
++static const struct dsa_device_ops xrs700x_netdev_ops = {
++	.name	= "xrs700x",
++	.proto	= DSA_TAG_PROTO_XRS700X,
++	.xmit	= xrs700x_xmit,
++	.rcv	= xrs700x_rcv,
++	.overhead = 1,
++	.tail_tag = true,
++};
++
++MODULE_LICENSE("GPL");
++MODULE_ALIAS_DSA_TAG_DRIVER(DSA_TAG_PROTO_XRS700X);
++
++module_dsa_tag_driver(xrs700x_netdev_ops);
 -- 
 2.11.0
 
