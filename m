@@ -2,72 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 11C722F58F1
-	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 04:31:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DF3062F58F6
+	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 04:31:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727034AbhANDGk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jan 2021 22:06:40 -0500
-Received: from mail.kernel.org ([198.145.29.99]:51848 "EHLO mail.kernel.org"
+        id S1727245AbhANDKj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jan 2021 22:10:39 -0500
+Received: from mail.kernel.org ([198.145.29.99]:52730 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725875AbhANDGh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 13 Jan 2021 22:06:37 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 2D246235FA;
-        Thu, 14 Jan 2021 03:05:57 +0000 (UTC)
+        id S1725871AbhANDKf (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 13 Jan 2021 22:10:35 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1E476235FA;
+        Thu, 14 Jan 2021 03:09:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610593557;
-        bh=QNr4JJvWMR/qdBxM+RhNO7YPB5scb3q4zTwfPBJriCc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=XV7Y+W/2qU2rnFxrQkZD2e270WxjfLvkWrb0UNpxmCyBwbHVDHOwM8iY5V4oZjkO8
-         7TLZvI28hS++eJNDVgiMzwUAJNgvxjsY1okix//l+SzmsH+BHYHhmuubfhoTbs13jK
-         2rVPJCa0QVVsrsjX/rrj27o2MS7uYU1YUr4kTs2u0BeCRbWOPlpHWYhSujDXhd1rWd
-         wDlCebSGBvc9CmQtCeeNSZIJ5oqmNjBQLVsK85dfl3JjjSpUWG2dNIa+vysufTiyXK
-         71FqiWKmTpOYEF8fVOKcKWRI+aQOm2ECPEwf9RXkB94aaryUx/taefFsEuTuZnjgiv
-         peDZMeMNw7s5Q==
-Date:   Wed, 13 Jan 2021 19:05:55 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        Russell King <rmk+kernel@armlinux.org.uk>
-Cc:     Richard Cochran <richardcochran@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] net: ethtool: allow MAC drivers to override
- ethtool get_ts_info
-Message-ID: <20210113190555.095bf937@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <X/sszQBPDHehtQWM@lunn.ch>
-References: <E1kyYfI-0004wl-Tf@rmk-PC.armlinux.org.uk>
-        <X/sszQBPDHehtQWM@lunn.ch>
+        s=k20201202; t=1610593794;
+        bh=vUD48pTk3EWrgSTJkk5y82ywPI3/KgZVDwPF0NXQKng=;
+        h=From:To:Cc:Subject:Date:From;
+        b=At1+g5ajd+AsZLlfx889gKobORNSR9kmMhpbmwX7GAvqiSPrGYeNbtjxaAvC0p6kB
+         y8m/x6Bb+SHuoYHWSKBuafEA+wiaWCAgIU3S/970pTzSFBoDv0daXrwk2ehYWqAbY0
+         0Ownqg83nxmzgTAAU5mY5H3YJ0kZsvEmd5HwTMUCdpz/pF74Fx1dR24WUMF3Nz9kyP
+         12y8NpAr040ad0B3bzsAYhE308ApaLmY9wNObBc/fHfUVJYgbKJhvNOqSmJUqJxIZu
+         3O3s9gmbJQK5SA8xame3hfS0eVuWPso+d/F9uZeloZ5aRbqLiMAyrSaItJ28bnnplY
+         mSW13nO/1U4tA==
+From:   David Ahern <dsahern@kernel.org>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, schoen@loyalty.org,
+        David Ahern <dsahern@kernel.org>
+Subject: [PATCH net-next v4 00/13] selftests: Updates to allow single instance of nettest for client and server
+Date:   Wed, 13 Jan 2021 20:09:36 -0700
+Message-Id: <20210114030949.54425-1-dsahern@kernel.org>
+X-Mailer: git-send-email 2.24.3 (Apple Git-128)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 10 Jan 2021 17:35:25 +0100 Andrew Lunn wrote:
-> On Sun, Jan 10, 2021 at 11:13:44AM +0000, Russell King wrote:
-> > Check whether the MAC driver has implemented the get_ts_info()
-> > method first, and call it if present.  If this method returns
-> > -EOPNOTSUPP, defer to the phylib or default implementation.
-> > 
-> > This allows network drivers such as mvpp2 to use their more accurate
-> > timestamping implementation than using a less accurate implementation
-> > in the PHY. Network drivers can opt to defer to phylib by returning
-> > -EOPNOTSUPP.
-> > 
-> > This change will be needed if the Marvell PHY drivers add support for
-> > PTP.
-> > 
-> > Note: this may cause a change for any drivers that use phylib and
-> > provide get_ts_info(). It is not obvious if any such cases exist.  
-> 
-> Hi Russell
-> 
-> We can detect that condition through? Call both, then do a WARN() if
-> we are changing the order? Maybe we should do that for a couple of
-> cycles?
-> 
-> For netlink ethtool, we can also provide an additional attribute. A
-> MAC, or PHY indicator we can do in the core. A string for the name of
-> the driver would need a bigger change.
+Update nettest to handle namespace change internally to allow a
+single instance to run both client and server modes. Device validation
+needs to be moved after the namespace change and a few run time
+options need to be split to allow values for client and server.
 
-I'm not seeing a response to this suggestion, did vger eat it?
+v4
+- really fix the memory leak with stdout/stderr buffers
+
+v3
+- send proper status in do_server for UDP sockets
+- fix memory leak with stdout/stderr buffers
+- new patch with separate option for address binding
+- new patch to remove unnecessary newline
+
+v2
+- fix checkpath warnings
+
+David Ahern (13):
+  selftests: Move device validation in nettest
+  selftests: Move convert_addr up in nettest
+  selftests: Move address validation in nettest
+  selftests: Add options to set network namespace to nettest
+  selftests: Add support to nettest to run both client and server
+  selftests: Use separate stdout and stderr buffers in nettest
+  selftests: Add missing newline in nettest error messages
+  selftests: Make address validation apply only to client mode
+  selftests: Consistently specify address for MD5 protection
+  selftests: Add new option for client-side passwords
+  selftests: Add separate options for server device bindings
+  selftests: Remove exraneous newline in nettest
+  selftests: Add separate option to nettest for address binding
+
+ tools/testing/selftests/net/fcnal-test.sh | 402 +++++++--------
+ tools/testing/selftests/net/nettest.c     | 585 +++++++++++++++-------
+ 2 files changed, 606 insertions(+), 381 deletions(-)
+
+-- 
+2.24.3 (Apple Git-128)
+
