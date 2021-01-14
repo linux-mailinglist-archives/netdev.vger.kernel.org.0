@@ -2,291 +2,191 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C96902F6D68
-	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 22:46:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C83E2F6D7A
+	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 22:50:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729565AbhANVox (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jan 2021 16:44:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46090 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726239AbhANVou (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 16:44:50 -0500
-Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE0B6C061757;
-        Thu, 14 Jan 2021 13:44:09 -0800 (PST)
-Received: by mail-io1-xd2b.google.com with SMTP id u17so14308935iow.1;
-        Thu, 14 Jan 2021 13:44:09 -0800 (PST)
+        id S1729412AbhANVr7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jan 2021 16:47:59 -0500
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:5096 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1727196AbhANVr6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 16:47:58 -0500
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 10ELTihl002122;
+        Thu, 14 Jan 2021 13:47:00 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : references : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=pfpt0220;
+ bh=qo1S7pD+MGbpB4hcFE+VNh9Ylq0zHf0BI5DWz4EMVdc=;
+ b=eV0rLYJoM0w3AuuwmeZO3VpRUuPtWAt0bxcESerse4vpW8h6JrRt3u9bCsG2EJrScHEM
+ 0LjZndi+Peao/9JBTguEyL3ZPLS6atiwKTWXMBj8VGtc05HUtWGUpEiAYqbUySP0Vwy9
+ nXJDu51zVEuj2EYlrcfvSu3P+s+KOds8Pyjt+oADMhQayb/aEce2RvVnwgq3HHuuk3RS
+ 6uaFLvH79cx/wyMm5Woin4aaFc9gsLkuhKZgNpKos6/1deauz0waPD10SM320M1kR3Ke
+ CsvDkfARSLHyvcTR4n4KrSZmL0dptkFfkGKjT/+Xzvz0JB4YgzhOl9mJZvU4KQ2tCBkt cQ== 
+Received: from dc5-exch01.marvell.com ([199.233.59.181])
+        by mx0a-0016f401.pphosted.com with ESMTP id 35yaqt0vs6-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Thu, 14 Jan 2021 13:47:00 -0800
+Received: from SC-EXCH02.marvell.com (10.93.176.82) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 14 Jan
+ 2021 13:46:58 -0800
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH02.marvell.com
+ (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Thu, 14 Jan
+ 2021 13:46:59 -0800
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.175)
+ by DC5-EXCH01.marvell.com (10.69.176.38) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2 via Frontend Transport; Thu, 14 Jan 2021 13:46:58 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=DUJN/ExS0L2zMr4mvdw1Ftq1QxUKvHuTXs+UXStU3dFCOG46YLtgldeX55qlNaX5b5Z6tAX9reqEDSRMvM9BB0mauRluVZje5bUeM8Ft6jf8H4pplKFk+pOuEHo+i5Pq0i4d3OP+C4n7pt7bYML/NJCNiyEXfaxPcLM59k62doN/z+1XXGSCWK9zMDgECZdohQ461kSVDvfuKmi5PTZnPMqA9MT2g1J04ooB9kohK7vPVTEUDn6aE2It93WBOtZMqzW6H61B6gVnGd3gwV+GxrsMv/CgYW/ULHevmO7T46u060R7+7+JMcMNjd/N2nj4Dm0HK0kWOWQXOoAoyFQqXA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=qo1S7pD+MGbpB4hcFE+VNh9Ylq0zHf0BI5DWz4EMVdc=;
+ b=PugWgIu+tKshMDWtrfHOBTL11oIa5lsCmUk+U2XONp2OR+/vDyQLZU5uKh8t5tThi+LuhAp44bqLAl/VnimLlSBFU+5n0JjA2hOgwbnLRvOVDa2qngjBUUPoiPO6ktVAbNsy9r2eJT+Y9fJ95qPfGOogbxv8RBNwMbqbZ2eqXPFgVhpj06fQpvTqE/8LzUlSwEma1NQN5K7gG1yPieHcKWiAZtQ7feY3D+M3oOKtIqpoAELFaK5SxWjSEtERbBkV+pXDkkffmQDfx5DfQVvDPTD+ahronlRLo2zLPF/3CFiIte5n0felS9CjLZjF4kITgS04suiCZEMp9ekBmjRKpQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
+ dkim=pass header.d=marvell.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=pFRKfXI+geT2Xti5kKSP2qV5qTl25DZTIwSYqP1kwwQ=;
-        b=p+ri3TuIU+me8X0FKf4kJ7zNrAqx5WNbNEs1rUW2BQKAOqWkJqc74aFMEObI5AfIsd
-         qMVdebSUSuGPBgXtL3H218On0W2J36U6pjuO1piPiJDtuZUaKMOSq9PClm2BgNwbaPAo
-         VDdiO+1JcnZEiSbF7fxbiHXFVJoiTZzVLS3Iyk6mud+v87dnJ6tKim14D2VMMyfwKPd4
-         Bq+h7JHn7r49CjYPgI8RFbaw96k8dJtwXCtv2pCXC9dEsDYJaNoNo8oQ2C+e+6fjAKV6
-         GUfu8ItwEMUJc/Q3K7D6llwDeiUw20YbrigQxEUjFN30ZY7pDTM3glsuieYIHMo8ov9G
-         TCpg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=pFRKfXI+geT2Xti5kKSP2qV5qTl25DZTIwSYqP1kwwQ=;
-        b=fDNnA9/j7S8wOF+R0X/l3TTpHhFoCufOMENeLnGAkb83aXCHKgmT2ypTyHCYrNp4Nr
-         IBfk5ViwrH55uHM83mpMAqhS556s59nTYsJhVE4CFVx9VknFsFsWRuok4Chj/Qgj6I3h
-         xQLuWFSGbV3Foumsli9qfRzVlmMErAyLc3gswAXMn5W2gYW49hN3KHNDVDm8OZ0BQjOp
-         1/u6HBj5aPwK0ZjV6aRULcZVtmt3acwxl9FRDv16sO2XVMwxBm+Zg5lT1gk+Dw4oqzQX
-         41N4qxfbz4N8fNGXP0BAAbZLFfOlMT+/sLDxr+kgSSBiEY9fU8MuOqPBUeclj+FOeNNY
-         5dNw==
-X-Gm-Message-State: AOAM532vAbpi/AOM2amdNK0EaxElE0XO8vclPo4y1dAI5lgKSWu+yaWA
-        aZOvqJ7/msTXStqYfXkCQmK7JHEjKgpS8NdWO5M=
-X-Google-Smtp-Source: ABdhPJzYgu5OLqSb7W7y06Hia0gwsS8lLSCxvAD8zMz7PosHcN0Xs2ZgwtJ1OW5dIp0Qh7jtMvTUHB/JVymfW83OW/A=
-X-Received: by 2002:a92:d592:: with SMTP id a18mr8389451iln.64.1610660649069;
- Thu, 14 Jan 2021 13:44:09 -0800 (PST)
-MIME-Version: 1.0
-References: <20210112065601.GD4678@unreal> <CAKgT0UdndGdA3xONBr62hE-_RBdL-fq6rHLy0PrdsuMn1936TA@mail.gmail.com>
- <20210113061909.GG4678@unreal> <CAKgT0Uc4v54vqRVk_HhjOk=OLJu-20AhuBVcg7=C9_hsLtzxLA@mail.gmail.com>
- <20210114065024.GK4678@unreal> <CAKgT0UeTXMeH24L9=wsPc2oJ=ZJ5jSpJeOqiJvsB2J9TFRFzwQ@mail.gmail.com>
- <20210114164857.GN4147@nvidia.com> <CAKgT0UcKqt=EgE+eitB8-u8LvxqHBDfF+u2ZSi5urP_Aj0Btvg@mail.gmail.com>
- <20210114182945.GO4147@nvidia.com> <CAKgT0UcQW+nJjTircZAYs1_GWNrRud=hSTsphfVpsc=xaF7aRQ@mail.gmail.com>
- <20210114200825.GR4147@nvidia.com>
-In-Reply-To: <20210114200825.GR4147@nvidia.com>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Thu, 14 Jan 2021 13:43:57 -0800
-Message-ID: <CAKgT0UcaRgY4XnM0jgWRvwBLj+ufiabFzKPyrf3jkLrF1Z8zEg@mail.gmail.com>
-Subject: Re: [PATCH mlx5-next v1 2/5] PCI: Add SR-IOV sysfs entry to read
- number of MSI-X vectors
-To:     Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Leon Romanovsky <leon@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
+ d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=qo1S7pD+MGbpB4hcFE+VNh9Ylq0zHf0BI5DWz4EMVdc=;
+ b=cbMx06Wuve1GoHYvm5JrXDbWeKV6u6KpPQhCexO6rF5fhmTySD/hRSGR7JvWzhU8dqNJsGB/AAz5TR6XejJTS7k/f64l9k1tboL9EZhxDMpjg89WLa4CRLij2MoEiY9LDNUfWtDKBd8eR1AqpeO2RYVeAggMjy5aIiX0M29e87M=
+Received: from CO6PR18MB4083.namprd18.prod.outlook.com (2603:10b6:5:348::9) by
+ MW2PR18MB2185.namprd18.prod.outlook.com (2603:10b6:907:5::18) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3763.11; Thu, 14 Jan 2021 21:46:55 +0000
+Received: from CO6PR18MB4083.namprd18.prod.outlook.com
+ ([fe80::e911:9f46:795f:a420]) by CO6PR18MB4083.namprd18.prod.outlook.com
+ ([fe80::e911:9f46:795f:a420%4]) with mapi id 15.20.3763.011; Thu, 14 Jan 2021
+ 21:46:55 +0000
+From:   "Taras Chornyi [C]" <tchornyi@marvell.com>
+To:     Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        linux-pci <linux-pci@vger.kernel.org>,
-        linux-rdma@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
-        Don Dutile <ddutile@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     Florian Fainelli <f.fainelli@gmail.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        "Vadym Kochan [C]" <vkochan@marvell.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        "clang-built-linux@googlegroups.com" 
+        <clang-built-linux@googlegroups.com>,
+        "linux-mm@kvack.org" <linux-mm@kvack.org>,
+        "kbuild-all@lists.01.org" <kbuild-all@lists.01.org>
+Subject: Re: [PATCH net-next] net: marvell: prestera: fix uninitialized vid in
+ prestera_port_vlans_add
+Thread-Topic: [PATCH net-next] net: marvell: prestera: fix uninitialized vid
+ in prestera_port_vlans_add
+Thread-Index: AQHW6r7GluD9pVsAXEiI80TTQU7EpQ==
+Date:   Thu, 14 Jan 2021 21:46:55 +0000
+Message-ID: <CO6PR18MB40835482AA82B3A34FCAA165C4A81@CO6PR18MB4083.namprd18.prod.outlook.com>
+References: <20210114083556.2274440-1-olteanv@gmail.com>
+In-Reply-To: <20210114083556.2274440-1-olteanv@gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=marvell.com;
+x-originating-ip: [193.93.219.25]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 4349d0c0-9388-4157-52fc-08d8b8d5e920
+x-ms-traffictypediagnostic: MW2PR18MB2185:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <MW2PR18MB21856AD8467433C5A8F6ADB4C4A81@MW2PR18MB2185.namprd18.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:2887;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: YqzJ1Fwr3HK238w0rXsYoNsUWfhOG4rzBOf1/0FPqS7Da8im8VY89sxx09ORE7V2N78XsaDUQBXTTFZ/VpFVzfn7AarjkemBAu+/5sRlvuUu4jRlOfYZt7oSC8gtxoBIpmFHAVIvNLaGYBLLsMtj7W/YohAlp5cyliVe427ChpPZOJ+AJYuOhFrzykzwzHGrgTnhB1GvsVlBS3CdNIC/OydesKIfSEHN5UsUbbPAvDpjwjgE3pb2y+XZchHm7MhGLOJG2RIafI0uRdD1l2KhGOOT1J5IPfVG36HvaeJY6CVokV/Rdegllv3T5bnUFCrC2YnSDi1sXQTnoiScbz76zH7OqrRNv7sW6eAv4eLmGI2Fu5qMliteP5Ee1ydLaQQ5mzH75uAd+nkCPRgPACxCKZdcewk6UdgAQRAWC2Vo7AgXW868sGgf+MrRew8xEsiM
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO6PR18MB4083.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(366004)(39860400002)(136003)(376002)(396003)(186003)(33656002)(4326008)(83380400001)(66476007)(7416002)(26005)(478600001)(110136005)(66556008)(91956017)(76116006)(66946007)(6506007)(2906002)(55016002)(52536014)(8676002)(5660300002)(86362001)(8936002)(71200400001)(7696005)(316002)(53546011)(54906003)(66446008)(64756008)(9686003)(586874002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: =?iso-8859-1?Q?UO4MKNwf7gXcM8A7oxaf95wmniomXAf0MjJabLCOQ423kEY7aloq+W9d7S?=
+ =?iso-8859-1?Q?9qcpO1do9fA4XR4d+sbOwQqYAaT2ppy7GPZ50Yi7r0EbiLO4HxNUBtxl9c?=
+ =?iso-8859-1?Q?bWZXzHbJg6kAoNTJqFmkYFYzU6T81m/Zal2baC9JD5NKUDYfzy+FLV+LSu?=
+ =?iso-8859-1?Q?7muy8zNHMGkNfIYbry3KMnY0/CHNBJGXFk/Kk46r2ZRbNnwSIXicr8IUso?=
+ =?iso-8859-1?Q?VuMcLCSB3VPM2POhaGNCR/XU6Q2+54hqLF/RShoQzUcQHq97QejQLWaREC?=
+ =?iso-8859-1?Q?2Cz4PqZg00vgh8wiIFRkaCQ3kGydlj8F52mPbv089nrvw4ZunaEvbCtu/v?=
+ =?iso-8859-1?Q?xdPNmS8P54IhA25MYXZBjzhxjefpI7AWhiqGXNrOw1kaQAfMU8mVSciuid?=
+ =?iso-8859-1?Q?kZaVFiNZMKZ44ZXRELj9cb85J3K/9VwD4s7VPW635M8hlxmT3Qa8jXwV6a?=
+ =?iso-8859-1?Q?4/8ru7bZugxucchJ5tmA6oWAbB28eAWa+7dR2LwstY6mFJDEZhKk+l3Xgm?=
+ =?iso-8859-1?Q?3VFKFzcxK52Ncxv8gMej61ZLqRlrvHDfWHzqaQYqQsAf9l7VzoRwJXV3fa?=
+ =?iso-8859-1?Q?3PJUCN+V0UwRRPZGyiJCmyPFB7r4UkNF9sTJjL71H3Ud5nCXycEcDFlOTF?=
+ =?iso-8859-1?Q?g08y3LPLP5riJbCi68hslqoNc4tssQSBTrNsqAdfqoUYEzcxJ4fEruioYn?=
+ =?iso-8859-1?Q?jCEiy/e668pFB1zxhtIsWLlPrzm9sTqfVSfb5qYHEcUBhYs8KzTtAwXpU+?=
+ =?iso-8859-1?Q?sOlkSnrKMjhkwoF+W+uXuMlE9C3dcWbDEbnwbRMNAT2MDANFimBb/LH4/3?=
+ =?iso-8859-1?Q?TuVo+DosAqi+9KtWw7sSINXIOeQTd7QyN//Iy8Mo8aTspx/g/zXoxJwaJK?=
+ =?iso-8859-1?Q?OXkNBCy+7FLyPAncfz2obFX284HIRdXjEE9HN3BydHJmeojv1nMieHflh+?=
+ =?iso-8859-1?Q?RBGSDQ6ySu9kmHqSUMGI1qbUhC/+bNSvMNInt5LuYMp1pV6+ekz9r6m6Bk?=
+ =?iso-8859-1?Q?h6HKe+UPZz7yZtC8Y=3D?=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: CO6PR18MB4083.namprd18.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 4349d0c0-9388-4157-52fc-08d8b8d5e920
+X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Jan 2021 21:46:55.0853
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: VMnM9fqjFm72ifIPzW6z171dNRDoEVjaSl0OgIjw3aWbNepd8YjEA/D+frmRKRc7DueG8xa1cpk36gVQqRqP1w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW2PR18MB2185
+X-OriginatorOrg: marvell.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
+ definitions=2021-01-14_08:2021-01-14,2021-01-14 signatures=0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 14, 2021 at 12:08 PM Jason Gunthorpe <jgg@nvidia.com> wrote:
->
-> On Thu, Jan 14, 2021 at 11:24:12AM -0800, Alexander Duyck wrote:
->
-> > > As you say BAR and MSI vector table are not so different, it seems
-> > > perfectly in line with current PCI sig thinking to allow resizing the
-> > > MSI as well
-> >
-> > The resizing of a BAR has an extended capability that goes with it and
-> > isn't something that the device can just do on a whim. This patch set
-> > is not based on implementing some ECN for resizable MSI-X tables. I
-> > view it as arbitrarily rewriting the table size for a device after it
-> > is created.
->
-> The only difference is resizing the BAR is backed by an ECN, and this
-> is an extension. The device does not "do it on a whim" the OS tells it
-> when to change the size, exactly like for BAR resizing.
->
-> > In addition Leon still hasn't answered my question on preventing the
-> > VF driver from altering entries beyond the ones listed in the table.
->
-> Of course this is blocked, the FW completely revokes the HW resource
-> backing the vectors.
-
-One of the troubles with this is that I am having to take your word
-for it. The worst case scenario in my mind is that this is just was
-Leon described it earlier and the firmware interface is doing nothing
-more than altering the table size in the MSI-X config space so that
-the value can be picked up by VFIO and advertised to the guest. In
-such a situation you end up opening up a backdoor as now there are
-vectors that could be configured by userspace since the protections
-provided by VFIO are disabled as you could be reporting a size that is
-smaller than the actual number or vectors.
-
-These are the kind of things I am worried about with this interface.
-It just seems like this is altering the VF PCIe device config to
-address an issue that would be better handled by the vfio interface
-ath VM creation time. At least if this was left to vfio it could
-prevent the VM from being able to access the unused entries and just
-limit the guest to the ones that we want to have the VM access.
-Instead we are just being expected to trust the firmware for security
-from the VF should it decide to try and be malicious.
-
-> > From what I can tell, the mlx5 Linux driver never reads the MSI-X
-> > flags register so it isn't reading the MSI-X size either.
->
-> I don't know why you say that. All Linux drivers call into something
-> like pci_alloc_irq_vectors() requesting a maximum # of vectors and
-> that call returns the actual allocated. Drivers can request more
-> vectors than the system provides, which is what mlx5 does.
->
-> Under the call chain of pci_alloc_irq_vectors() it calls
-> pci_msix_vec_count() which does
->
->         pci_read_config_word(dev, dev->msix_cap + PCI_MSIX_FLAGS, &control);
->         return msix_table_size(control);
->
-> And eventually uses that to return the result to the driver.
->
-> So, yes, it reads the config space and ensures it doesn't allocate
-> more vectors than that.
->
-> Every driver using MSI does this in Linux.
->
-> Adjusting config space *directly* limits the number of vectors the
-> driver allocates.
->
-> You should be able to find the call chain in mlx5 based on the above
-> guidance.
-
-Yes, but at the same time you also end up passing a max_vecs into the
-function as you have multiple limitations that come into account from
-both the driver, the system, and the table. The MSI-X table size is
-just one piece. Specifically the bit in the code for the mlx5 driver
-is:
-
-nvec = MLX5_CAP_GEN(dev, num_ports) * num_online_cpus() +
-      MLX5_IRQ_VEC_COMP_BASE;
-nvec = min_t(int, nvec, num_eqs);
-
-So saying that the MSI-X table size is what defines the number of
-interrupts you can use is only partially true. What it defines is the
-aperture available in MMIO to define the possible addresses and values
-to be written to trigger the interrupts. The device itself plays a
-large role in defining the number of interrupts ultimately requested.
-
-> > At a minimum I really think we need to go through and have a clear
-> > definition on when updating the MSI-X table size is okay and when it
-> > is not. I am not sure just saying to not update it when a driver isn't
-> > attached is enough to guarantee all that.
->
-> If you know of a real issue then please state it, other don't fear
-> monger "maybe" issues that don't exist.
-
-Well I don't have visibility into your firmware so I am not sure what
-is going on in response to this command so forgive me when I do a bit
-of fear mongering when somebody tells me that all this patch set does
-is modify the VF configuration space.
-
-As I have said my main concern is somebody really screwing something
-like this up and creating a security vulnerability where they do
-something exactly like updating just the MSI-X table size without
-protecting the MMIO region that contains the remaining MSI-X table
-entries. This is why I would be much more comfortable with something
-like a vfio ioctl that says that while the device supports the number
-reported in the MSI-X table size the vfio will only present some
-subset of those entries to the guest. With that I could at least
-review the code and verify that it is providing the expected
-protections.
-
-> > What we are talking about is the MSI-X table size. Not the number of
-> > MSI-X vectors being requested by the device driver. Those are normally
-> > two seperate things.
->
-> Yes, table size is what is critical. The number of entries in that BAR
-> memory is what needs to be controlled.
-
-That is where we disagree. My past experience is that in the device
-you have to be able to associate an interrupt cause to an interrupt
-vector. Normally as a part of that the device itself will place some
-limit on how many causes and vectors you can associate before you even
-get to the MSI-X table. The MSI-X table size is usually a formality
-that defines the upper limit on the number of entries the device might
-request. The reason why most drivers don't bother asking for it or
-reading it is because it is defined early as a part of the definition
-of the device itself.
-
-Going back to my earlier example I am not going to size a MSI-X table
-at 2048 for a device that only has a few interrupt sources. Odds are I
-would size it such that I will have enough entries in the table to
-cover all my interrupt sources. Usually the limiting factor for an
-MSI-X request is the system itself as too many devices requesting a
-large number of interrupts may end up eating up all the vectors
-available for a given CPU.
-
-> > > The standards based way to communicate that limit is the MSI table cap
-> > > size.
-> >
-> > This only defines the maximum number of entries, not how many have to be used.
->
-> A driver can't use entries beyond the cap. We are not trying to
-> reclaim vectors that are available but not used by the OS.
-
-The MSI-X table consists of a MMIO region in one of the BARs on the
-device. It is easily possible to code something up in a driver that
-would go in and be able to access the region. Most sensible devices
-place it in a separate BAR but even then you have to worry about them
-possibly sharing the memory region internally among several devices.
-
-The big thing I see as an issue with all this is that arbitrarily
-reducing the size of the MSI-X table doesn't have any actual effect on
-the MMIO resources. They are still there. So a bad firmware doing
-something like reducing the table size without also restricting access
-to the resources in the BAR potentially opens up a security hole as
-the MSI-X vector is really nothing more than a pre-programmed PCIe
-write waiting for something to trigger it. Odds are an IOMMU would
-block it, but still not necessarily a good thing.
-
-As such my preference would be to leave the MSI-X table size static at
-the size of possible vectors that could be modified, and instead have
-the firmware guarantee that writing to those registers has no effect.
-Then when you do something like a direct assignment vfio_pci will also
-guard that region of MMIO instead of only guarding a portion of it.
-
-> > I'm not offering up a non-standard way to do this. Just think about
-> > it. If I have a device that defines an MSI-X table size of 2048 but
-> > makes use of only one vector how would that be any different than what
-> > I am suggesting where you size your VF to whatever the maximum is you
-> > need but only make use of some fixed number from the hardware.
->
-> That is completely different, in the hypervisor there is no idea how
-> many vectors a guest OS will create. The FW is told to only permit 1
-> vector. How is the guest to know this if we don't update the config
-> space *as the standard requires* ?
-
-Doesn't the guest driver talk to the firmware? Last I knew it had to
-request additional resources such as queues and those come from the
-firmware don't they?
-
-> > I will repeat what I said before. Why can't this be handled via the
-> > vfio interface?
->
-> 1) The FW has to be told of the limit and everything has to be in sync
->    If the FW is out of sync with the config space then everything
->    breaks if the user makes even a small mistake - for instance
->    forgetting to use the ioctl to override vfio. This is needlessly
->    frail and complicated.
-
-That is also the way I feel about the sysfs solution.
-
-I just see VFIO making the call to the device to notify it that it
-only needs X number of vectors instead of having the VF sysfs doing
-it.
-
-> 2) VFIO needs to know how to tell the FW the limit so it can override
->    the config space with emulation. This is all device specific and I
->    don't see that adding an extension to vfio is any better than
->    adding one here.
-
-So it depends on the setup. In my suggestion I was suggesting VFIO
-defines the maximum, not the minimum. So the guest would automatically
-know exactly how many it would have as the table size would be
-specified inside the guest.
-
-> 3) VFIO doesn't cover any other driver that binds to the VF, so
->    this "solution" leaves the normal mlx5_core functionally broken on
->    VFs which is a major regression.
->
-> Overall the entire idea to have the config space not reflect the
-> actual current device configuration seems completely wrong to me - why
-> do this? For what gain? It breaks everything.
-
-Your configuration is admittedly foreign to me as well. So if I am
-understanding correctly your limiting factor isn't the number of
-interrupt causes in the platform, but the firmware deciding to provide
-too few interrupt vectors in the MSI-X table. I'm just kind of
-surprised the firmware itself isn't providing some sort of messaging
-on the number of interrupt vectors that a given device has since I
-assume that it is already providing you with information on the number
-of queues and such since that isn't provided by any other mechanism.
+=0A=
+=0A=
+________________________________________=0A=
+From: Vladimir Oltean <olteanv@gmail.com>=0A=
+Sent: Thursday, January 14, 2021 10:35 AM=0A=
+To: David S. Miller; Jakub Kicinski; netdev@vger.kernel.org=0A=
+Cc: Florian Fainelli; Kurt Kanzenbach; Vadym Kochan [C]; Taras Chornyi [C];=
+ Ido Schimmel; clang-built-linux@googlegroups.com; linux-mm@kvack.org; kbui=
+ld-all@lists.01.org=0A=
+Subject:  [PATCH net-next] net: marvell: prestera: fix uninitialized vid in=
+ prestera_port_vlans_add=0A=
+----------------------------------------------------------------------=0A=
+From: Vladimir Oltean <vladimir.oltean@nxp.com>=0A=
+=0A=
+prestera_bridge_port_vlan_add should have been called with vlan->vid,=0A=
+however this was masked by the presence of the local vid variable and I=0A=
+did not notice the build warning.=0A=
+=0A=
+Reported-by: kernel test robot <lkp@intel.com>=0A=
+Fixes: b7a9e0da2d1c ("net: switchdev: remove vid_begin -> vid_end range fro=
+m VLAN objects")=0A=
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>=0A=
+---=0A=
+ drivers/net/ethernet/marvell/prestera/prestera_switchdev.c | 3 +--=0A=
+ 1 file changed, 1 insertion(+), 2 deletions(-)=0A=
+=0A=
+diff --git a/drivers/net/ethernet/marvell/prestera/prestera_switchdev.c b/d=
+rivers/net/ethernet/marvell/prestera/prestera_switchdev.c=0A=
+index beb6447fbe40..8c2b03151736 100644=0A=
+--- a/drivers/net/ethernet/marvell/prestera/prestera_switchdev.c=0A=
++++ b/drivers/net/ethernet/marvell/prestera/prestera_switchdev.c=0A=
+@@ -1007,7 +1007,6 @@ static int prestera_port_vlans_add(struct prestera_po=
+rt *port,=0A=
+        struct prestera_bridge_port *br_port;=0A=
+        struct prestera_switch *sw =3D port->sw;=0A=
+        struct prestera_bridge *bridge;=0A=
+-       u16 vid;=0A=
+=0A=
+        if (netif_is_bridge_master(dev))=0A=
+                return 0;=0A=
+@@ -1021,7 +1020,7 @@ static int prestera_port_vlans_add(struct prestera_po=
+rt *port,=0A=
+                return 0;=0A=
+=0A=
+        return prestera_bridge_port_vlan_add(port, br_port,=0A=
+-                                            vid, flag_untagged,=0A=
++                                            vlan->vid, flag_untagged,=0A=
+                                             flag_pvid, extack);=0A=
+ }=0A=
+=0A=
+--=0A=
+2.25.1=0A=
+=0A=
+Reviewed-by: Taras Chornyi <tchornyi@marvell.com>=
