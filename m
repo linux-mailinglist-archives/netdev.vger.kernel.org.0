@@ -2,83 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A19C02F6D24
-	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 22:26:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 80BF72F6D39
+	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 22:34:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728798AbhANVX5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jan 2021 16:23:57 -0500
-Received: from mail.kernel.org ([198.145.29.99]:47938 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726123AbhANVX5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 14 Jan 2021 16:23:57 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id D450622DFA;
-        Thu, 14 Jan 2021 21:23:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610659396;
-        bh=J/aHoyoF4gk742GnjC+IHIsC05inBGzfoIzUewtb5eM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=nyZv4R5EA0wzueGWWrToa/OKwIFT0kIhhX69EK0mBfnOnL1A/HOUKsfbZnWjQOr2I
-         LEW89Re0OXmI/y7MPpVXLD16+fQaqvQ2dGi0wDws2ude3EIjJv8W+tbCFWllgtfNdR
-         K/yDWga3yJpCa0s9bmB9OYd6lItvy48ONosMHuEMyy6r5Y1dTnztrcM5Kf23VQI0kN
-         D+Svii8ujuZfLioTaVKYafCtvn/f1/GAOBoIxkIwUSjposhlaZrMh/R0lK8s9SqIGF
-         LG0DyLhmss6MIoWEYWcyQyjNh1WbdZJvpEGLjwzdgPlGiXDYAMxdaT5TGlmqD/QjQw
-         YM0Hrcm0FfYlw==
-Date:   Thu, 14 Jan 2021 13:23:14 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jarod Wilson <jarod@redhat.com>
-Cc:     linux-kernel@vger.kernel.org, Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Thomas Davis <tadavis@lbl.gov>, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next v2] bonding: add a vlan+mac tx hashing option
-Message-ID: <20210114132314.2c484e9f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210114211141.GH1171031@redhat.com>
-References: <20201218193033.6138-1-jarod@redhat.com>
-        <20210113223548.1171655-1-jarod@redhat.com>
-        <20210113175818.7dce3076@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20210114211141.GH1171031@redhat.com>
+        id S1726786AbhANVb1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jan 2021 16:31:27 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:32837 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728419AbhANVaw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 16:30:52 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1610659766;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=Q2P0vyfvm+lC2mrTYNPxI2NyRvXwdgTknWpZPQ4nBmo=;
+        b=Mq4MpoROuNdPmmC9yZO/lDhJ9EykltMTOkthMRSDBjMNoAWbsUaOOEPsXSyxSg7flp48hJ
+        TXoJ8/zZDXD/xzl1BArDCN25gjP/9nANtLAK5bpWBzCdvWJ437UIFLC8DrBmio/9nTMhY6
+        V05/Gtd1hh/W9miDtlH6CJcCNvvBAgk=
+Received: from mail-qk1-f200.google.com (mail-qk1-f200.google.com
+ [209.85.222.200]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-521-bHq1f4MCNtag3TYJu7uq2Q-1; Thu, 14 Jan 2021 16:29:24 -0500
+X-MC-Unique: bHq1f4MCNtag3TYJu7uq2Q-1
+Received: by mail-qk1-f200.google.com with SMTP id g5so5854291qke.22
+        for <netdev@vger.kernel.org>; Thu, 14 Jan 2021 13:29:24 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Q2P0vyfvm+lC2mrTYNPxI2NyRvXwdgTknWpZPQ4nBmo=;
+        b=fRdMg5nibR+5Bdz9xpUeKIBGBKTNOLn48ZdRiFU17+ILqIaouqFwermJe1WV6sSbIc
+         HBYR4TvMrJ6nkAj1AXLQEwtG/nPpjGXp2gzyy+gnM6kQRXdaYUqsRoAWFwJw5prnr6Na
+         vuc7cShOK088QElsKpsd2m4uvgPw7TQOulIhAhgzLAmbtGKxngIuWtZ2ToYCOYEx1R5Q
+         AiIDVZyaJvNVros6UaOaU2mNVA7kJkAtkafG15NoOtMqkubFzK/X1c2fwqtoYdr+Jj3q
+         ZEkdQcPK0CO1fdWX437dYyZVFt6tyKStR2TfuDGBv8PMNY5/Llm+FHs2uq8EP8mFamg+
+         BqSg==
+X-Gm-Message-State: AOAM530LnyRAT43H53GWaR5vMlx4vTUshuN2TdBblQVn6GtM4p0cQHqR
+        HqlesTxI98i+BadfJVJv5pjcsN7QjaNIYM2ww5UwSBFLxwTLuyQi87FVtNJPgD2abYaGSr8skhf
+        dVEKj/Rf9N4yu4kSq
+X-Received: by 2002:a37:aa15:: with SMTP id t21mr8790911qke.86.1610659764060;
+        Thu, 14 Jan 2021 13:29:24 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJy660NxlfmFC7YykhHaL7gpHQa4Mlrrf+1B0hrXr457WolnKxaoCBz0Ox7FHABSYo6DgKEeIw==
+X-Received: by 2002:a37:aa15:: with SMTP id t21mr8790902qke.86.1610659763883;
+        Thu, 14 Jan 2021 13:29:23 -0800 (PST)
+Received: from trix.remote.csb (075-142-250-213.res.spectrum.com. [75.142.250.213])
+        by smtp.gmail.com with ESMTPSA id t184sm3722613qkd.100.2021.01.14.13.29.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Jan 2021 13:29:23 -0800 (PST)
+From:   trix@redhat.com
+To:     davem@davemloft.net, kuba@kernel.org, dsahern@kernel.org,
+        liuhangbin@gmail.com, viro@zeniv.linux.org.uk, jdike@akamai.com,
+        mrv@mojatatu.com, lirongqing@baidu.com, roopa@cumulusnetworks.com,
+        weichen.chen@linux.alibaba.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Tom Rix <trix@redhat.com>
+Subject: [PATCH] neighbor: remove definition of DEBUG
+Date:   Thu, 14 Jan 2021 13:29:17 -0800
+Message-Id: <20210114212917.48174-1-trix@redhat.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 14 Jan 2021 16:11:41 -0500 Jarod Wilson wrote:
-> In truth, this code started out as a copy of bond_eth_hash(), which also
-> only uses the last byte, though of both source and destination macs. In
-> the typical use case for the requesting user, the bond is formed from two
-> onboard NICs, which typically have adjacent mac addresses, i.e.,
-> AA:BB:CC:DD:EE:01 and AA:BB:CC:DD:EE:02, so only the last byte is really
-> relevant to hash differently, but in thinking about it, a replacement NIC
-> because an onboard one died could have the same last byte, and maybe we
-> ought to just go full source mac right off the go here.
-> 
-> Something like this instead maybe:
-> 
-> static u32 bond_vlan_srcmac_hash(struct sk_buff *skb)
-> {
->         struct ethhdr *mac_hdr = (struct ethhdr *)skb_mac_header(skb);
->         u32 srcmac = 0;
->         u16 vlan;
->         int i;
-> 
->         for (i = 0; i < ETH_ALEN; i++)
->                 srcmac = (srcmac << 8) | mac_hdr->h_source[i];
-> 
->         if (!skb_vlan_tag_present(skb))
->                 return srcmac;
-> 
->         vlan = skb_vlan_tag_get(skb);
-> 
->         return vlan ^ srcmac;
-> }
-> 
-> Then the documentation is spot-on, and we're future-proof, though
-> marginally less performant in calculating the hash, which may have been a
-> consideration when the original function was written, but is probably
-> basically irrelevant w/modern systems...
+From: Tom Rix <trix@redhat.com>
 
-No preference, especially if bond_eth_hash() already uses the last byte.
-Just make sure the choice is explained in the commit message.
+Defining DEBUG should only be done in development.
+So remove DEBUG.
+
+Signed-off-by: Tom Rix <trix@redhat.com>
+---
+ net/core/neighbour.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/net/core/neighbour.c b/net/core/neighbour.c
+index 277ed854aef1..ff073581b5b1 100644
+--- a/net/core/neighbour.c
++++ b/net/core/neighbour.c
+@@ -41,7 +41,6 @@
+ 
+ #include <trace/events/neigh.h>
+ 
+-#define DEBUG
+ #define NEIGH_DEBUG 1
+ #define neigh_dbg(level, fmt, ...)		\
+ do {						\
+-- 
+2.27.0
+
