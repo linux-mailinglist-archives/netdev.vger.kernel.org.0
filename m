@@ -2,103 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C8DF2F655B
-	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 17:03:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 73BEC2F6569
+	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 17:08:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729393AbhANQAe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jan 2021 11:00:34 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:49084 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727838AbhANQAe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 11:00:34 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1610639960;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=N1jiFZ+BTbOnp7BDFCcT1kr+iDpCrn9geTo5A349Jxs=;
-        b=h6sc5S/e8WzriJZeodn/zeb8/IbMuL8U3MO26ic5tcYgJyPFe6aJyteTV9AShn2RE3xLZs
-        wOQKJKLqB2nYBRwt9vCxBGfS9gqIsBFdmNXmyWSJ8QEwEqkRfy73XvBFP9FyiLmrtPuFx7
-        WfGdAJ3iT588pAwK7KhJzWzjqGaz7Ik=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-547-WJoENA_jPsCQCmvq4JJr6Q-1; Thu, 14 Jan 2021 10:59:15 -0500
-X-MC-Unique: WJoENA_jPsCQCmvq4JJr6Q-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id CF028107565A;
-        Thu, 14 Jan 2021 15:59:10 +0000 (UTC)
-Received: from [10.10.119.172] (ovpn-119-172.rdu2.redhat.com [10.10.119.172])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 933F718A50;
-        Thu, 14 Jan 2021 15:59:09 +0000 (UTC)
-Subject: Re: [PATCH v6 12/16] net: tip: fix a couple kernel-doc markups
-To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Ying Xue <ying.xue@windriver.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        tipc-discussion@lists.sourceforge.net
-References: <cover.1610610937.git.mchehab+huawei@kernel.org>
- <9d205b0e080153af0fbddee06ad0eb23457e1b1b.1610610937.git.mchehab+huawei@kernel.org>
-From:   Jon Maloy <jmaloy@redhat.com>
-Message-ID: <da52ef69-753a-7aa8-a2b1-1b5ef48df94e@redhat.com>
-Date:   Thu, 14 Jan 2021 10:59:08 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.0
+        id S1727450AbhANQHL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jan 2021 11:07:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57860 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725950AbhANQHK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 11:07:10 -0500
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BE23C061575
+        for <netdev@vger.kernel.org>; Thu, 14 Jan 2021 08:06:43 -0800 (PST)
+Received: by mail-pl1-x635.google.com with SMTP id v3so3107611plz.13
+        for <netdev@vger.kernel.org>; Thu, 14 Jan 2021 08:06:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=jshthWkfursUYeoa93OIN20KDm6kOD11YBN+qn6iVt8=;
+        b=cM1au4dRRrk7gfAtJBg05j7q1z6nw+H7+DICqL6BoR+mUt/L0HTv2NZt87IOfnzOgI
+         A1yaI+jMCvuc+hWSj99W8Ngi6X5dPhWTRBNxXbg06OSIs8nlEx69LTozA2Ccc9f662Ez
+         u6eXzuqAtazlbMfXJQIIO+eondOnQQd86IANsS9McTY3L70/ZbF/ClFFPm21KrLusOwN
+         HkJQXfBob0tOMB6cppPbodlWTIwhY8rqDtHdA5+8J98Y1gbM9snKRsAjJpT5pHQWwNBo
+         yyrG5rw8tIFBoSrWIIqi0/p2oRaXBoWgl0lSUH6oMIazOFFzx6gFjV6DmxO+L0JN2/5t
+         zEEA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=jshthWkfursUYeoa93OIN20KDm6kOD11YBN+qn6iVt8=;
+        b=kCLjCgbq5jHx+K2XwXEktcYrmeEvIxrxGvHnTQNUVF2apLMOZ2qD51Kai6llA6IdLf
+         jgY8s3iy5x9L17o+QN8eerm51awkXs0U1KOi2vLfDkV8/LXlLdP8XhvMS8sD2KlMaOEI
+         aDvcPx3r6bUpdef/Ydz2RRvqGz5A71qDCgoKu/0uh/Nw/iqxVD1aHJbP3ErY6eS10V33
+         B32inoGPFLbcquNRUFK6TXV3yUiTO+8ht7ztxN2P96U8jbnG6nCargtijkqbBX17LqJj
+         jdXKjaSAvjPmRTm+iSwmxG1aEaqrNpELdeZ99uD4UChjMgfUKqPWCXOScX2mhQnfu+US
+         Z8HA==
+X-Gm-Message-State: AOAM531gfDhO+spj65OMJlQ9lfJrATMBtYuLCsV7fmGfR6+YlkG7U9dU
+        0C+tP+UWviPAL+Dni7iTedB5mOl2+Ns=
+X-Google-Smtp-Source: ABdhPJyGeBi+Dj9r2EcVn1xT0V2+EblIU1HEp+hWe6FiTOFHLe6VlVcfSf5BJlZk23p0bOBiriTznQ==
+X-Received: by 2002:a17:90a:4d84:: with SMTP id m4mr5669329pjh.145.1610640402134;
+        Thu, 14 Jan 2021 08:06:42 -0800 (PST)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:7220:84ff:fe09:1424])
+        by smtp.gmail.com with ESMTPSA id s7sm5413480pfh.207.2021.01.14.08.06.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 Jan 2021 08:06:41 -0800 (PST)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        syzbot <syzkaller@googlegroups.com>
+Subject: [PATCH net] net_sched: reject silly cell_log in qdisc_get_rtab()
+Date:   Thu, 14 Jan 2021 08:06:37 -0800
+Message-Id: <20210114160637.1660597-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.30.0.284.gd98b1dd5eaa7-goog
 MIME-Version: 1.0
-In-Reply-To: <9d205b0e080153af0fbddee06ad0eb23457e1b1b.1610610937.git.mchehab+huawei@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Eric Dumazet <edumazet@google.com>
 
+iproute2 probably never goes beyond 8 for the cell exponent,
+but stick to the max shift exponent for signed 32bit.
 
-On 1/14/21 3:04 AM, Mauro Carvalho Chehab wrote:
-> A function has a different name between their prototype
-> and its kernel-doc markup:
->
-> 	../net/tipc/link.c:2551: warning: expecting prototype for link_reset_stats(). Prototype was for tipc_link_reset_stats() instead
-> 	../net/tipc/node.c:1678: warning: expecting prototype for is the general link level function for message sending(). Prototype was for tipc_node_xmit() instead
->
-> Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-> ---
->   net/tipc/link.c | 2 +-
->   net/tipc/node.c | 2 +-
->   2 files changed, 2 insertions(+), 2 deletions(-)
->
-> diff --git a/net/tipc/link.c b/net/tipc/link.c
-> index a6a694b78927..115109259430 100644
-> --- a/net/tipc/link.c
-> +++ b/net/tipc/link.c
-> @@ -2544,7 +2544,7 @@ void tipc_link_set_queue_limits(struct tipc_link *l, u32 min_win, u32 max_win)
->   }
->   
->   /**
-> - * link_reset_stats - reset link statistics
-> + * tipc_link_reset_stats - reset link statistics
->    * @l: pointer to link
->    */
->   void tipc_link_reset_stats(struct tipc_link *l)
-> diff --git a/net/tipc/node.c b/net/tipc/node.c
-> index 83d9eb830592..008670d1f43e 100644
-> --- a/net/tipc/node.c
-> +++ b/net/tipc/node.c
-> @@ -1665,7 +1665,7 @@ static void tipc_lxc_xmit(struct net *peer_net, struct sk_buff_head *list)
->   }
->   
->   /**
-> - * tipc_node_xmit() is the general link level function for message sending
-> + * tipc_node_xmit() - general link level function for message sending
->    * @net: the applicable net namespace
->    * @list: chain of buffers containing message
->    * @dnode: address of destination node
-Acked-by: Jon Maloy <jmaloy@redhat.com>
+UBSAN reported:
+UBSAN: shift-out-of-bounds in net/sched/sch_api.c:389:22
+shift exponent 130 is too large for 32-bit type 'int'
+CPU: 1 PID: 8450 Comm: syz-executor586 Not tainted 5.11.0-rc3-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:79 [inline]
+ dump_stack+0x183/0x22e lib/dump_stack.c:120
+ ubsan_epilogue lib/ubsan.c:148 [inline]
+ __ubsan_handle_shift_out_of_bounds+0x432/0x4d0 lib/ubsan.c:395
+ __detect_linklayer+0x2a9/0x330 net/sched/sch_api.c:389
+ qdisc_get_rtab+0x2b5/0x410 net/sched/sch_api.c:435
+ cbq_init+0x28f/0x12c0 net/sched/sch_cbq.c:1180
+ qdisc_create+0x801/0x1470 net/sched/sch_api.c:1246
+ tc_modify_qdisc+0x9e3/0x1fc0 net/sched/sch_api.c:1662
+ rtnetlink_rcv_msg+0xb1d/0xe60 net/core/rtnetlink.c:5564
+ netlink_rcv_skb+0x1f0/0x460 net/netlink/af_netlink.c:2494
+ netlink_unicast_kernel net/netlink/af_netlink.c:1304 [inline]
+ netlink_unicast+0x7de/0x9b0 net/netlink/af_netlink.c:1330
+ netlink_sendmsg+0xaa6/0xe90 net/netlink/af_netlink.c:1919
+ sock_sendmsg_nosec net/socket.c:652 [inline]
+ sock_sendmsg net/socket.c:672 [inline]
+ ____sys_sendmsg+0x5a2/0x900 net/socket.c:2345
+ ___sys_sendmsg net/socket.c:2399 [inline]
+ __sys_sendmsg+0x319/0x400 net/socket.c:2432
+ do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Reported-by: syzbot <syzkaller@googlegroups.com>
+---
+ net/sched/sch_api.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/net/sched/sch_api.c b/net/sched/sch_api.c
+index 51cb553e4317a3e2bca1996e0df004aab8111d58..6fe4e5cc807c90b046a16f014df43bfe841cbc43 100644
+--- a/net/sched/sch_api.c
++++ b/net/sched/sch_api.c
+@@ -412,7 +412,8 @@ struct qdisc_rate_table *qdisc_get_rtab(struct tc_ratespec *r,
+ {
+ 	struct qdisc_rate_table *rtab;
+ 
+-	if (tab == NULL || r->rate == 0 || r->cell_log == 0 ||
++	if (tab == NULL || r->rate == 0 ||
++	    r->cell_log == 0 || r->cell_log >= 32 ||
+ 	    nla_len(tab) != TC_RTAB_SIZE) {
+ 		NL_SET_ERR_MSG(extack, "Invalid rate table parameters for searching");
+ 		return NULL;
+-- 
+2.30.0.284.gd98b1dd5eaa7-goog
 
