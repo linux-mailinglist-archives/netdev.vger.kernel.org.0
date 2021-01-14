@@ -2,118 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 37FD52F6654
-	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 17:52:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DAD182F6651
+	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 17:52:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727171AbhANQtw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jan 2021 11:49:52 -0500
-Received: from so254-31.mailgun.net ([198.61.254.31]:36659 "EHLO
-        so254-31.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725928AbhANQtw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 11:49:52 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1610642968; h=Date: Message-Id: Cc: To: References:
- In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=pTOhOFjKTSVZKN1D0SJ1Pg5lWOEdKXufF+sYmOfnZOw=;
- b=uK7m3LlTMNeYZcTmuS+5lJm56cD5bsc6Pbkwn6rrSg6veFCosQGXkBP/4ZVHiNs0xxbE+YRC
- MZTVw86QYph8A/pOGHXalFOOPKx1RZ0GCf/+9JPLyEV+JuUPtHhsVJMhaDqmH9rTDGQaO7xw
- lUNBV9bsGDuHcBeZcx2UH4TTOgo=
-X-Mailgun-Sending-Ip: 198.61.254.31
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n06.prod.us-east-1.postgun.com with SMTP id
- 600075ebc88af06107ced53d (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Thu, 14 Jan 2021 16:48:43
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id BE983C43461; Thu, 14 Jan 2021 16:48:42 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        MISSING_DATE,MISSING_MID,SPF_FAIL autolearn=no autolearn_force=no
-        version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id D370BC433C6;
-        Thu, 14 Jan 2021 16:48:39 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org D370BC433C6
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        id S1727006AbhANQtl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jan 2021 11:49:41 -0500
+Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:18816 "EHLO
+        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725928AbhANQtk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 11:49:40 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B600075fc0000>; Thu, 14 Jan 2021 08:49:00 -0800
+Received: from HQMAIL101.nvidia.com (172.20.187.10) by HQMAIL109.nvidia.com
+ (172.20.187.15) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 14 Jan
+ 2021 16:48:59 +0000
+Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.171)
+ by HQMAIL101.nvidia.com (172.20.187.10) with Microsoft SMTP Server (TLS) id
+ 15.0.1473.3 via Frontend Transport; Thu, 14 Jan 2021 16:48:59 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=lbYJNqaOA/uwTTgDtg8/lf4grLqE3YQpi5NXoSX3+5SbIoiPBwThlPhSCqv+DRcoQ7aXVnGiP+Q50A/VHkTYh22c/Vu8vWAfliwpqKuVslclhz2lxpHiKhTLGOIJKmpytbQfUKzPuxTBEFzqg1NbDu7eewnvTLjEFPUTezpGovl45aOcD9Az+/guZoVPnG4FZ70R9iQTO68ACryIKq43Tl3KPslK/gNAd4rucNxxPtzSmd805ITisLPfTsiMAD8Kz3PlxzGL18pgB3yuNzjY8w0XfmQSs716MU87G75OYqwkNuC9xxXt3Ai+f28RroGuxZW8BNVdWwZYmUCBswtu9A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=hiASIEIaF5ivVqHCUiACO2OJS2o39vjpsPmKeKH7zf4=;
+ b=LZ9nQULg4ziYZf+7V0iVWvPeFcgEu8yMS19KCb0u6zEF1/q8Q9JMDnA0gi9qLnIu9gub4IjNwh6n1WwclV42VCozG9GKu3cIW6+BERD61HZuMpyMFSablG70esAFIR/hDE/pkZ578KOgz8nGaYrE5uSy1+DrEv+AB/D7+DkDgRnfKt8lOpP7cc/bNN5cUta50P838YNnlV9CxkQ17dfaJeDFGf6jKf15AGqJ3ecpG4BDzpVEZ61kCjmD6NmYBc0rrgOhbXlJ+6E9azCNjjeCIrlkXT4QHoQRiMEEl4t6bN+ebmQz3Y9adwNyVExOzKukTsMkRb23fRT3CxHnChbiTw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
+ by DM6PR12MB3211.namprd12.prod.outlook.com (2603:10b6:5:15c::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3742.6; Thu, 14 Jan
+ 2021 16:48:58 +0000
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::546d:512c:72fa:4727]) by DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::546d:512c:72fa:4727%7]) with mapi id 15.20.3742.012; Thu, 14 Jan 2021
+ 16:48:58 +0000
+Date:   Thu, 14 Jan 2021 12:48:57 -0400
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Alexander Duyck <alexander.duyck@gmail.com>
+CC:     Leon Romanovsky <leon@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-pci <linux-pci@vger.kernel.org>,
+        <linux-rdma@vger.kernel.org>, Netdev <netdev@vger.kernel.org>,
+        Don Dutile <ddutile@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>
+Subject: Re: [PATCH mlx5-next v1 2/5] PCI: Add SR-IOV sysfs entry to read
+ number of MSI-X vectors
+Message-ID: <20210114164857.GN4147@nvidia.com>
+References: <20210110150727.1965295-1-leon@kernel.org>
+ <20210110150727.1965295-3-leon@kernel.org>
+ <CAKgT0Uczu6cULPsVjFuFVmir35SpL-bs0hosbfH-T5sZLZ78BQ@mail.gmail.com>
+ <20210112065601.GD4678@unreal>
+ <CAKgT0UdndGdA3xONBr62hE-_RBdL-fq6rHLy0PrdsuMn1936TA@mail.gmail.com>
+ <20210113061909.GG4678@unreal>
+ <CAKgT0Uc4v54vqRVk_HhjOk=OLJu-20AhuBVcg7=C9_hsLtzxLA@mail.gmail.com>
+ <20210114065024.GK4678@unreal>
+ <CAKgT0UeTXMeH24L9=wsPc2oJ=ZJ5jSpJeOqiJvsB2J9TFRFzwQ@mail.gmail.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <CAKgT0UeTXMeH24L9=wsPc2oJ=ZJ5jSpJeOqiJvsB2J9TFRFzwQ@mail.gmail.com>
+X-ClientProxiedBy: BL0PR02CA0020.namprd02.prod.outlook.com
+ (2603:10b6:207:3c::33) To DM6PR12MB3834.namprd12.prod.outlook.com
+ (2603:10b6:5:14a::12)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] mt76: Fix queue ID variable types after mcu queue split
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20201229211548.1348077-1-natechancellor@gmail.com>
-References: <20201229211548.1348077-1-natechancellor@gmail.com>
-To:     Nathan Chancellor <natechancellor@gmail.com>
-Cc:     Felix Fietkau <nbd@nbd.name>,
-        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
-        Ryder Lee <ryder.lee@mediatek.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        clang-built-linux@googlegroups.com,
-        Nathan Chancellor <natechancellor@gmail.com>
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
-Message-Id: <20210114164842.BE983C43461@smtp.codeaurora.org>
-Date:   Thu, 14 Jan 2021 16:48:42 +0000 (UTC)
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from mlx.ziepe.ca (142.162.115.133) by BL0PR02CA0020.namprd02.prod.outlook.com (2603:10b6:207:3c::33) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3763.9 via Frontend Transport; Thu, 14 Jan 2021 16:48:58 +0000
+Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1l05nt-001D6P-J4; Thu, 14 Jan 2021 12:48:57 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1610642940; bh=hiASIEIaF5ivVqHCUiACO2OJS2o39vjpsPmKeKH7zf4=;
+        h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:Date:
+         From:To:CC:Subject:Message-ID:References:Content-Type:
+         Content-Disposition:In-Reply-To:X-ClientProxiedBy:MIME-Version:
+         X-MS-Exchange-MessageSentRepresentingType;
+        b=Iu1AnFLSoJxvchQbQu68opP+C9Jc3XxbUw8JoOnL7js80nWcv4ysOgrEEsKI9elre
+         XNxIrJBqszikE7zZsk4guYyK50wOvDkY9Ut91MadM9/AnaZUbtaDV0eTIg3qVPgBIG
+         8ewsDOFFP05HH4XhRsgIDxg+1Unitf3b6hfMcJ5RBHWBJoJa4a8As49g21/IyqLAKI
+         zGsSi3ynhiCef6rn0BNrjxTz33GZN2NiqyokI/KDz20m38PFLQbWtiEI501mJD8bBn
+         K18N2k8PAFUXz8hCSniPl93baOEnqViSSg8h/DoTVrHpJ2FmnjG3zl5sLh6/jdTfA+
+         JZRi3t/3nxcdw==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Nathan Chancellor <natechancellor@gmail.com> wrote:
+On Thu, Jan 14, 2021 at 08:40:14AM -0800, Alexander Duyck wrote:
 
-> Clang warns in both mt7615 and mt7915:
-> 
-> drivers/net/wireless/mediatek/mt76/mt7915/mcu.c:271:9: warning: implicit
-> conversion from enumeration type 'enum mt76_mcuq_id' to different
-> enumeration type 'enum mt76_txq_id' [-Wenum-conversion]
->                 txq = MT_MCUQ_FWDL;
->                     ~ ^~~~~~~~~~~~
-> drivers/net/wireless/mediatek/mt76/mt7915/mcu.c:278:9: warning: implicit
-> conversion from enumeration type 'enum mt76_mcuq_id' to different
-> enumeration type 'enum mt76_txq_id' [-Wenum-conversion]
->                 txq = MT_MCUQ_WA;
->                     ~ ^~~~~~~~~~
-> drivers/net/wireless/mediatek/mt76/mt7915/mcu.c:282:9: warning: implicit
-> conversion from enumeration type 'enum mt76_mcuq_id' to different
-> enumeration type 'enum mt76_txq_id' [-Wenum-conversion]
->                 txq = MT_MCUQ_WM;
->                     ~ ^~~~~~~~~~
-> 3 warnings generated.
-> 
-> drivers/net/wireless/mediatek/mt76/mt7615/mcu.c:238:9: warning: implicit
-> conversion from enumeration type 'enum mt76_mcuq_id' to different
-> enumeration type 'enum mt76_txq_id' [-Wenum-conversion]
->                 qid = MT_MCUQ_WM;
->                     ~ ^~~~~~~~~~
-> drivers/net/wireless/mediatek/mt76/mt7615/mcu.c:240:9: warning: implicit
-> conversion from enumeration type 'enum mt76_mcuq_id' to different
-> enumeration type 'enum mt76_txq_id' [-Wenum-conversion]
->                 qid = MT_MCUQ_FWDL;
->                     ~ ^~~~~~~~~~~~
-> 2 warnings generated.
-> 
-> Use the proper type for the queue ID variables to fix these warnings.
-> Additionally, rename the txq variable in mt7915_mcu_send_message to be
-> more neutral like mt7615_mcu_send_message.
-> 
-> Fixes: e637763b606b ("mt76: move mcu queues to mt76_dev q_mcu array")
-> Link: https://github.com/ClangBuiltLinux/linux/issues/1229
-> Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
-> Acked-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> Where I think you and I disagree is that I really think the MSI-X
+> table size should be fixed at one value for the life of the VF.
+> Instead of changing the table size it should be the number of vectors
+> that are functional that should be the limit. Basically there should
+> be only some that are functional and some that are essentially just
+> dummy vectors that you can write values into that will never be used.
 
-Patch applied to wireless-drivers.git, thanks.
+Ignoring the PCI config space to learn the # of available MSI-X
+vectors is big break on the how the device's programming ABI works.
 
-b7c568752ef3 mt76: Fix queue ID variable types after mcu queue split
+Or stated another way, that isn't compatible with any existing drivers
+so it is basically not a useful approach as it can't be deployed.
 
--- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20201229211548.1348077-1-natechancellor@gmail.com/
+I don't know why you think that is better.
 
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
-
+Jason
