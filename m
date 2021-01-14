@@ -2,90 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6BA852F69E4
-	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 19:50:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2EBAA2F69EA
+	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 19:50:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729481AbhANSp6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jan 2021 13:45:58 -0500
-Received: from m43-15.mailgun.net ([69.72.43.15]:26683 "EHLO
-        m43-15.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728335AbhANSp6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 13:45:58 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1610649933; h=Date: Message-Id: Cc: To: References:
- In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=3zjXkQXLJWqqe3jg+JhaQfBk8Fz3LZHrdbV179oe6tw=;
- b=eQVf6TQV6SDwDkTNGzCkIBbcDsPjjDNANpaV3FD5TNJhF9PxkpS59g7cKFp0oRjGkYdRbc8z
- HCnTANZHdxIxTiWtt5wyOTlsOKOKglQ2c8FHpu8T6sX8vta4di8xpIPsAfOQjEBYynfzjA/p
- 5hG/skRPuwc8EA4m7CVkDk2J/Lk=
-X-Mailgun-Sending-Ip: 69.72.43.15
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n03.prod.us-west-2.postgun.com with SMTP id
- 600091314104d9478dc728af (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Thu, 14 Jan 2021 18:45:05
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 54D81C43467; Thu, 14 Jan 2021 18:45:05 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        MISSING_DATE,MISSING_MID,SPF_FAIL,URIBL_BLOCKED autolearn=no
-        autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 09882C433C6;
-        Thu, 14 Jan 2021 18:45:01 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 09882C433C6
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        id S1728741AbhANSsj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jan 2021 13:48:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36314 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727888AbhANSsj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 13:48:39 -0500
+Received: from mail-oi1-x22c.google.com (mail-oi1-x22c.google.com [IPv6:2607:f8b0:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06C2BC061575;
+        Thu, 14 Jan 2021 10:47:58 -0800 (PST)
+Received: by mail-oi1-x22c.google.com with SMTP id l200so6950134oig.9;
+        Thu, 14 Jan 2021 10:47:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=wAEkWZc3x9gtdwn0n1Cy4Doqy7JyUlW2E27OCg1gzAA=;
+        b=lCQF4LQuCjNT0I13TUYMWsGFa4HwDMonwlxqtBS4JzA/4dMf3ETcZXEeLtMJVpm90y
+         1d0md5R4LFlL6No7jVuCO/db8ry1jeoIBfDTmwOTcZxba9p912dWFIxcG7Tltverftqn
+         WqOelZjHsShseru8m+JkMqM1vYoayk3lP0W422+yquz0JyVYrpRg48aZ3aOLVD/tNZb9
+         YDn/vJz3HSPi5y/HMqyOkLiQyPKP0dBdCiJbYB7B+rjVGp3gNHdQGQDAgNDMjXmYwwcY
+         KXxWuvnVPx1GFq9ptOJNMJ9gub6tfTj/9d1N7wpECbSQZc/v/iqUKOvKo2SSE29Sfzot
+         bQ6w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=wAEkWZc3x9gtdwn0n1Cy4Doqy7JyUlW2E27OCg1gzAA=;
+        b=Fg4Xl3YbnaIYTflqfp3XXAA5IeOe2lQWzxI9dtz8uy/ldAqHoN/sJnnwf8RlozNR5/
+         g7S2yAdXKiCEpOSkt6XlNd57cP6qABgXlQthOG/2j8lXkQ//HdCwnBWYEW6K/LBXAQw8
+         kO96/V5hH/jloJ9QCZP4GNz5K+EDDc+1A2Yhn2CbIQ+fhIooUX1mPWKM7J9BRIyQj12Z
+         tZ0RTqCCqx1jFTfdQrKnb0mSf92HZ+3K+ReCenon0/v2LoHVzbnJdB/JEcPBWGTBcYd3
+         XbXtz1yp/N07/8uV36cKtLLaxqn1EN6lDsXb1g5AetG2dB1zxUYp/DE2deyMIrSYl4PF
+         /q8Q==
+X-Gm-Message-State: AOAM532u2ZLIAFWrmOP/ROMOe2biSTNoVYIr7nzUW9eEOcSi4g8tFtz1
+        EVuROUMC59M6OS8Q6EhpAj31qeyRr84r6952Tw==
+X-Google-Smtp-Source: ABdhPJxikTc++JzeVOXBK+hZUYwTsvAtM1b1663z6h7nBr2ND3PhxsnHVxbMwddVRSJruYjWc+I0A89rTb5G0MyjcRc=
+X-Received: by 2002:a05:6808:8e7:: with SMTP id d7mr3482505oic.127.1610650078274;
+ Thu, 14 Jan 2021 10:47:58 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH 4/7] wil6210: select CONFIG_CRC32
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <20210103213645.1994783-4-arnd@kernel.org>
-References: <20210103213645.1994783-4-arnd@kernel.org>
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     Maya Erez <merez@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        "John W. Linville" <linville@tuxdriver.com>,
-        Vladimir Kondratiev <qca_vkondrat@qca.qualcomm.com>,
-        linux-wireless@vger.kernel.org, wil6210@qti.qualcomm.com,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
-Message-Id: <20210114184505.54D81C43467@smtp.codeaurora.org>
-Date:   Thu, 14 Jan 2021 18:45:05 +0000 (UTC)
+References: <20210113145922.92848-1-george.mccollister@gmail.com>
+ <20210113145922.92848-3-george.mccollister@gmail.com> <20210114015659.33shdlfthywqdla7@skbuf>
+ <CAFSKS=NU4hrnXB5FcAFvnFnmAtK5HfYR8dAKyw3cd=5UKOBNfg@mail.gmail.com> <20210114183243.4kse75ksw3u7h4uz@skbuf>
+In-Reply-To: <20210114183243.4kse75ksw3u7h4uz@skbuf>
+From:   George McCollister <george.mccollister@gmail.com>
+Date:   Thu, 14 Jan 2021 12:47:46 -0600
+Message-ID: <CAFSKS=NrdVSDEh5DWN+JOcZ5fycM1y_N5b8cxzZwQxm-hJbVHQ@mail.gmail.com>
+Subject: Re: [PATCH net-next v4 2/3] net: dsa: add Arrow SpeedChips XRS700x driver
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Rob Herring <robh@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        "open list:OPEN FIRMWARE AND..." <devicetree@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Arnd Bergmann <arnd@kernel.org> wrote:
+On Thu, Jan 14, 2021 at 12:32 PM Vladimir Oltean <olteanv@gmail.com> wrote:
+> > > May boil down to preference too, but I don't believe "dev" is a happy
+> > > name to give to a driver private data structure.
+> >
+> > There are other drivers in the subsystem that do this. If there was a
+> > consistent pattern followed in the subsystem I would have followed it.
+> > Trust me I was a bit frustrated with home much time I spent going
+> > through multiple drivers trying to determine the best practices for
+> > organization, naming, etc.
+> > If it's a big let me know and I'll change it.
+>
+> Funny that you are complaining about consistency in other drivers,
+> because if I count correctly, out of a total of 22 occurrences of
+> struct xrs700x variables in yours, 13 are named priv and 9 are named
+> dev. So you are not even consistent with yourself. But it's not a major
+> issue either way.
 
-> From: Arnd Bergmann <arnd@arndb.de>
-> 
-> Without crc32, the driver fails to link:
-> 
-> arm-linux-gnueabi-ld: drivers/net/wireless/ath/wil6210/fw.o: in function `wil_fw_verify':
-> fw.c:(.text+0x74c): undefined reference to `crc32_le'
-> arm-linux-gnueabi-ld: drivers/net/wireless/ath/wil6210/fw.o:fw.c:(.text+0x758): more undefined references to `crc32_le' follow
-> 
-> Fixes: 151a9706503f ("wil6210: firmware download")
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-
-Dave had already applied this so dropping from my queue.
-
-Patch set to Not Applicable.
-
--- 
-https://patchwork.kernel.org/project/linux-wireless/patch/20210103213645.1994783-4-arnd@kernel.org/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
-
+Touch=C3=A9. This ended up happening because I followed the pattern used by
+different drivers in different places. Specifically ksz was using
+regmap to work on multiple buses but wasn't a very clean example for
+much else.
+I'll just change it to priv everywhere.
