@@ -2,77 +2,173 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DF3062F58F6
-	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 04:31:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6313B2F58F7
+	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 04:31:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727245AbhANDKj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jan 2021 22:10:39 -0500
-Received: from mail.kernel.org ([198.145.29.99]:52730 "EHLO mail.kernel.org"
+        id S1727336AbhANDKl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jan 2021 22:10:41 -0500
+Received: from mail.kernel.org ([198.145.29.99]:52756 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725871AbhANDKf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 13 Jan 2021 22:10:35 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 1E476235FA;
-        Thu, 14 Jan 2021 03:09:54 +0000 (UTC)
+        id S1726113AbhANDKg (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 13 Jan 2021 22:10:36 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 4565123715;
+        Thu, 14 Jan 2021 03:09:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610593794;
-        bh=vUD48pTk3EWrgSTJkk5y82ywPI3/KgZVDwPF0NXQKng=;
-        h=From:To:Cc:Subject:Date:From;
-        b=At1+g5ajd+AsZLlfx889gKobORNSR9kmMhpbmwX7GAvqiSPrGYeNbtjxaAvC0p6kB
-         y8m/x6Bb+SHuoYHWSKBuafEA+wiaWCAgIU3S/970pTzSFBoDv0daXrwk2ehYWqAbY0
-         0Ownqg83nxmzgTAAU5mY5H3YJ0kZsvEmd5HwTMUCdpz/pF74Fx1dR24WUMF3Nz9kyP
-         12y8NpAr040ad0B3bzsAYhE308ApaLmY9wNObBc/fHfUVJYgbKJhvNOqSmJUqJxIZu
-         3O3s9gmbJQK5SA8xame3hfS0eVuWPso+d/F9uZeloZ5aRbqLiMAyrSaItJ28bnnplY
-         mSW13nO/1U4tA==
+        s=k20201202; t=1610593795;
+        bh=AXL/SfAhp3iipMrDDhPgxZ5OeO7xe0IeTSwbThZ9jfU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=SbO43dEffUsTzN7g5jFF4HIHMeBx6stdZnVNGIwixyABVBjWBv9Mjbf6vkTG3MYdc
+         mtIoCuKQWdZSRyV8Nt204AMTbYBOD8Zt3wgPROLCbrLiwFHf/MOD+ST1LHvcM3uq5N
+         ZCqBi3TWhExMsra/SU4sZ0yhjj5yNOgvGm1RmIGth8I+ghZUUc1KPYA3g56PR77YyC
+         3ZXkL0+oUptrNhA+wRRjWY3mmekgkZ7KUmXSNtpvsO5HxHSV9YMs49uoTkiv+hMHna
+         gTTZAR07CiJcXnPKrwuT2HwUldzkYZ2p8uzUdhFhsMVwyLaVcyU+JC1FjqSHQ7EQXe
+         xFgXima9MvdMw==
 From:   David Ahern <dsahern@kernel.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, schoen@loyalty.org,
-        David Ahern <dsahern@kernel.org>
-Subject: [PATCH net-next v4 00/13] selftests: Updates to allow single instance of nettest for client and server
-Date:   Wed, 13 Jan 2021 20:09:36 -0700
-Message-Id: <20210114030949.54425-1-dsahern@kernel.org>
+        David Ahern <dsahern@gmail.com>
+Subject: [PATCH net-next v4 01/13] selftests: Move device validation in nettest
+Date:   Wed, 13 Jan 2021 20:09:37 -0700
+Message-Id: <20210114030949.54425-2-dsahern@kernel.org>
 X-Mailer: git-send-email 2.24.3 (Apple Git-128)
+In-Reply-To: <20210114030949.54425-1-dsahern@kernel.org>
+References: <20210114030949.54425-1-dsahern@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Update nettest to handle namespace change internally to allow a
-single instance to run both client and server modes. Device validation
-needs to be moved after the namespace change and a few run time
-options need to be split to allow values for client and server.
+From: David Ahern <dsahern@gmail.com>
 
-v4
-- really fix the memory leak with stdout/stderr buffers
+Later patch adds support for switching network namespaces before
+running client, server or both. Device validations need to be
+done after the network namespace switch, so add a helper to do it
+and invoke in server and client code versus inline with argument
+parsing. Move related argument checks as well.
 
-v3
-- send proper status in do_server for UDP sockets
-- fix memory leak with stdout/stderr buffers
-- new patch with separate option for address binding
-- new patch to remove unnecessary newline
+Signed-off-by: David Ahern <dsahern@gmail.com>
+---
+ tools/testing/selftests/net/nettest.c | 64 ++++++++++++++++++---------
+ 1 file changed, 42 insertions(+), 22 deletions(-)
 
-v2
-- fix checkpath warnings
-
-David Ahern (13):
-  selftests: Move device validation in nettest
-  selftests: Move convert_addr up in nettest
-  selftests: Move address validation in nettest
-  selftests: Add options to set network namespace to nettest
-  selftests: Add support to nettest to run both client and server
-  selftests: Use separate stdout and stderr buffers in nettest
-  selftests: Add missing newline in nettest error messages
-  selftests: Make address validation apply only to client mode
-  selftests: Consistently specify address for MD5 protection
-  selftests: Add new option for client-side passwords
-  selftests: Add separate options for server device bindings
-  selftests: Remove exraneous newline in nettest
-  selftests: Add separate option to nettest for address binding
-
- tools/testing/selftests/net/fcnal-test.sh | 402 +++++++--------
- tools/testing/selftests/net/nettest.c     | 585 +++++++++++++++-------
- 2 files changed, 606 insertions(+), 381 deletions(-)
-
+diff --git a/tools/testing/selftests/net/nettest.c b/tools/testing/selftests/net/nettest.c
+index f75c53ce0a2d..2bb06a3e6880 100644
+--- a/tools/testing/selftests/net/nettest.c
++++ b/tools/testing/selftests/net/nettest.c
+@@ -84,6 +84,7 @@ struct sock_args {
+ 	unsigned int prefix_len;
+ 
+ 	/* expected addresses and device index for connection */
++	const char *expected_dev;
+ 	int expected_ifindex;
+ 
+ 	/* local address */
+@@ -522,6 +523,33 @@ static int str_to_uint(const char *str, int min, int max, unsigned int *value)
+ 	return -1;
+ }
+ 
++static int resolve_devices(struct sock_args *args)
++{
++	if (args->dev) {
++		args->ifindex = get_ifidx(args->dev);
++		if (args->ifindex < 0) {
++			log_error("Invalid device name\n");
++			return 1;
++		}
++	}
++
++	if (args->expected_dev) {
++		unsigned int tmp;
++
++		if (str_to_uint(args->expected_dev, 0, INT_MAX, &tmp) == 0) {
++			args->expected_ifindex = (int)tmp;
++		} else {
++			args->expected_ifindex = get_ifidx(args->expected_dev);
++			if (args->expected_ifindex < 0) {
++				fprintf(stderr, "Invalid expected device\n");
++				return 1;
++			}
++		}
++	}
++
++	return 0;
++}
++
+ static int expected_addr_match(struct sockaddr *sa, void *expected,
+ 			       const char *desc)
+ {
+@@ -1190,6 +1218,9 @@ static int do_server(struct sock_args *args)
+ 	fd_set rfds;
+ 	int rc;
+ 
++	if (resolve_devices(args))
++		return 1;
++
+ 	if (prog_timeout)
+ 		ptval = &timeout;
+ 
+@@ -1375,6 +1406,16 @@ static int do_client(struct sock_args *args)
+ 		return 1;
+ 	}
+ 
++	if (resolve_devices(args))
++		return 1;
++
++	if ((args->use_setsockopt || args->use_cmsg) && !args->ifindex) {
++		fprintf(stderr, "Device binding not specified\n");
++		return 1;
++	}
++	if (args->use_setsockopt || args->use_cmsg)
++		args->dev = NULL;
++
+ 	switch (args->version) {
+ 	case AF_INET:
+ 		sin.sin_port = htons(args->port);
+@@ -1703,11 +1744,6 @@ int main(int argc, char *argv[])
+ 			break;
+ 		case 'd':
+ 			args.dev = optarg;
+-			args.ifindex = get_ifidx(optarg);
+-			if (args.ifindex < 0) {
+-				fprintf(stderr, "Invalid device name\n");
+-				return 1;
+-			}
+ 			break;
+ 		case 'i':
+ 			interactive = 1;
+@@ -1738,16 +1774,7 @@ int main(int argc, char *argv[])
+ 
+ 			break;
+ 		case '2':
+-			if (str_to_uint(optarg, 0, INT_MAX, &tmp) == 0) {
+-				args.expected_ifindex = (int)tmp;
+-			} else {
+-				args.expected_ifindex = get_ifidx(optarg);
+-				if (args.expected_ifindex < 0) {
+-					fprintf(stderr,
+-						"Invalid expected device\n");
+-					return 1;
+-				}
+-			}
++			args.expected_dev = optarg;
+ 			break;
+ 		case 'q':
+ 			quiet = 1;
+@@ -1769,13 +1796,6 @@ int main(int argc, char *argv[])
+ 		return 1;
+ 	}
+ 
+-	if ((args.use_setsockopt || args.use_cmsg) && !args.ifindex) {
+-		fprintf(stderr, "Device binding not specified\n");
+-		return 1;
+-	}
+-	if (args.use_setsockopt || args.use_cmsg)
+-		args.dev = NULL;
+-
+ 	if (iter == 0) {
+ 		fprintf(stderr, "Invalid number of messages to send\n");
+ 		return 1;
 -- 
 2.24.3 (Apple Git-128)
 
