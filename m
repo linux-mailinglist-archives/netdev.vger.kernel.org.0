@@ -2,88 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EBAA2F69EA
-	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 19:50:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DC6752F69F0
+	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 19:50:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728741AbhANSsj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jan 2021 13:48:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36314 "EHLO
+        id S1729594AbhANSst (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jan 2021 13:48:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36350 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727888AbhANSsj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 13:48:39 -0500
-Received: from mail-oi1-x22c.google.com (mail-oi1-x22c.google.com [IPv6:2607:f8b0:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06C2BC061575;
-        Thu, 14 Jan 2021 10:47:58 -0800 (PST)
-Received: by mail-oi1-x22c.google.com with SMTP id l200so6950134oig.9;
-        Thu, 14 Jan 2021 10:47:58 -0800 (PST)
+        with ESMTP id S1729564AbhANSst (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 13:48:49 -0500
+Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1BDEC061757
+        for <netdev@vger.kernel.org>; Thu, 14 Jan 2021 10:48:08 -0800 (PST)
+Received: by mail-pg1-x536.google.com with SMTP id 30so4382773pgr.6
+        for <netdev@vger.kernel.org>; Thu, 14 Jan 2021 10:48:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=wAEkWZc3x9gtdwn0n1Cy4Doqy7JyUlW2E27OCg1gzAA=;
-        b=lCQF4LQuCjNT0I13TUYMWsGFa4HwDMonwlxqtBS4JzA/4dMf3ETcZXEeLtMJVpm90y
-         1d0md5R4LFlL6No7jVuCO/db8ry1jeoIBfDTmwOTcZxba9p912dWFIxcG7Tltverftqn
-         WqOelZjHsShseru8m+JkMqM1vYoayk3lP0W422+yquz0JyVYrpRg48aZ3aOLVD/tNZb9
-         YDn/vJz3HSPi5y/HMqyOkLiQyPKP0dBdCiJbYB7B+rjVGp3gNHdQGQDAgNDMjXmYwwcY
-         KXxWuvnVPx1GFq9ptOJNMJ9gub6tfTj/9d1N7wpECbSQZc/v/iqUKOvKo2SSE29Sfzot
-         bQ6w==
+        h=subject:to:cc:references:from:autocrypt:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=33yyNVQErzJPfoGpCs99bWzmQVnoW+dJXia/2eggvg8=;
+        b=bPh8W7/ieolheaOUVyy3I7ZVTo8rd7nqIy/0HfqKBEVZhhjftHcnPJpTJZgRTNqmI5
+         yGrR6Hz1g6pxfDbG8Rmaqe6JBl/BUXdACm75CJs4of5f3HOIe9EtxDeS5bS5BA/7YKnZ
+         7Qa8tsfKlwx1/sqDTkhMjznhRFNhhuvc7KrFrGw2O175YiO0xKCo5w+Ot2v8xbtq4lKk
+         LwWuD+67T/UsCAP8KMJgNY2+rz0he/YDL3Wos4i+qKesHOu9rBVgS2Ya051N9UaiUciM
+         FUmYprSIemxy6LverjckyiSd9rfieupAk09vGBGqtbVcAqe3tzUmolUtSCVnthSENTEI
+         OsYg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=wAEkWZc3x9gtdwn0n1Cy4Doqy7JyUlW2E27OCg1gzAA=;
-        b=Fg4Xl3YbnaIYTflqfp3XXAA5IeOe2lQWzxI9dtz8uy/ldAqHoN/sJnnwf8RlozNR5/
-         g7S2yAdXKiCEpOSkt6XlNd57cP6qABgXlQthOG/2j8lXkQ//HdCwnBWYEW6K/LBXAQw8
-         kO96/V5hH/jloJ9QCZP4GNz5K+EDDc+1A2Yhn2CbIQ+fhIooUX1mPWKM7J9BRIyQj12Z
-         tZ0RTqCCqx1jFTfdQrKnb0mSf92HZ+3K+ReCenon0/v2LoHVzbnJdB/JEcPBWGTBcYd3
-         XbXtz1yp/N07/8uV36cKtLLaxqn1EN6lDsXb1g5AetG2dB1zxUYp/DE2deyMIrSYl4PF
-         /q8Q==
-X-Gm-Message-State: AOAM532u2ZLIAFWrmOP/ROMOe2biSTNoVYIr7nzUW9eEOcSi4g8tFtz1
-        EVuROUMC59M6OS8Q6EhpAj31qeyRr84r6952Tw==
-X-Google-Smtp-Source: ABdhPJxikTc++JzeVOXBK+hZUYwTsvAtM1b1663z6h7nBr2ND3PhxsnHVxbMwddVRSJruYjWc+I0A89rTb5G0MyjcRc=
-X-Received: by 2002:a05:6808:8e7:: with SMTP id d7mr3482505oic.127.1610650078274;
- Thu, 14 Jan 2021 10:47:58 -0800 (PST)
+        h=x-gm-message-state:subject:to:cc:references:from:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=33yyNVQErzJPfoGpCs99bWzmQVnoW+dJXia/2eggvg8=;
+        b=j7toa8PxMu/9NhG9m8uq1ssim7HAxGEJ4ZNKTANW44YISiC/4mvai5PlrgVCVHvJzK
+         8LOE/evOc6yPWIi5Pb/iYnGl/4C4N9DhGRo3sEHYrZEbzopH3AmYq9AisI+rGsMcaOuu
+         O3sk4scGE/pT8boFF5xKUUWl4HW1jrJClhFDEYWE2/MHro4TppSoB9D0O3Csl13Cufgz
+         kW4eauTQdXxImiKBO/EAL38lX+3TqXqdt2/x5FIKtvk1zuS44DqewY85Tf6gKPGfJSVk
+         qU7FrVWSh+VM8DYEb14e5IkOWYcYFR3/V9cIzpTKWG25+cGE+aMjht9/gJdFNUu1Qww9
+         +cOg==
+X-Gm-Message-State: AOAM531bSqHwluAFK/TJIWw9ZOqDuz9vRXcrgLMSzVuj7HDjvyPt2HE0
+        ncTk3DiNM81ApHJDiFtMLg0=
+X-Google-Smtp-Source: ABdhPJzB4CpA0LuR2XsoZ8SnlSda9nO6OVknMQLIYxDOnd5IG7jNsle94EaNqK50KugghrsmtOuX/w==
+X-Received: by 2002:a62:1d43:0:b029:1ab:7f7a:4ab8 with SMTP id d64-20020a621d430000b02901ab7f7a4ab8mr8610614pfd.43.1610650088172;
+        Thu, 14 Jan 2021 10:48:08 -0800 (PST)
+Received: from [10.67.48.230] ([192.19.223.252])
+        by smtp.googlemail.com with ESMTPSA id w19sm5935750pgf.23.2021.01.14.10.48.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 14 Jan 2021 10:48:07 -0800 (PST)
+Subject: Re: [PATCH net-next] net: marvell: prestera: fix uninitialized vid in
+ prestera_port_vlans_add
+To:     Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Cc:     Kurt Kanzenbach <kurt@linutronix.de>,
+        Vadym Kochan <vkochan@marvell.com>,
+        Taras Chornyi <tchornyi@marvell.com>,
+        Ido Schimmel <idosch@nvidia.com>,
+        clang-built-linux@googlegroups.com, linux-mm@kvack.org,
+        kbuild-all@lists.01.org
+References: <20210114083556.2274440-1-olteanv@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Autocrypt: addr=f.fainelli@gmail.com; prefer-encrypt=mutual; keydata=
+ mQGiBEjPuBIRBACW9MxSJU9fvEOCTnRNqG/13rAGsj+vJqontvoDSNxRgmafP8d3nesnqPyR
+ xGlkaOSDuu09rxuW+69Y2f1TzjFuGpBk4ysWOR85O2Nx8AJ6fYGCoeTbovrNlGT1M9obSFGQ
+ X3IzRnWoqlfudjTO5TKoqkbOgpYqIo5n1QbEjCCwCwCg3DOH/4ug2AUUlcIT9/l3pGvoRJ0E
+ AICDzi3l7pmC5IWn2n1mvP5247urtHFs/uusE827DDj3K8Upn2vYiOFMBhGsxAk6YKV6IP0d
+ ZdWX6fqkJJlu9cSDvWtO1hXeHIfQIE/xcqvlRH783KrihLcsmnBqOiS6rJDO2x1eAgC8meAX
+ SAgsrBhcgGl2Rl5gh/jkeA5ykwbxA/9u1eEuL70Qzt5APJmqVXR+kWvrqdBVPoUNy/tQ8mYc
+ nzJJ63ng3tHhnwHXZOu8hL4nqwlYHRa9eeglXYhBqja4ZvIvCEqSmEukfivk+DlIgVoOAJbh
+ qIWgvr3SIEuR6ayY3f5j0f2ejUMYlYYnKdiHXFlF9uXm1ELrb0YX4GMHz7QnRmxvcmlhbiBG
+ YWluZWxsaSA8Zi5mYWluZWxsaUBnbWFpbC5jb20+iGYEExECACYCGyMGCwkIBwMCBBUCCAME
+ FgIDAQIeAQIXgAUCVF/S8QUJHlwd3wAKCRBhV5kVtWN2DvCVAJ4u4/bPF4P3jxb4qEY8I2gS
+ 6hG0gACffNWlqJ2T4wSSn+3o7CCZNd7SLSC5BA0ESM+4EhAQAL/o09boR9D3Vk1Tt7+gpYr3
+ WQ6hgYVON905q2ndEoA2J0dQxJNRw3snabHDDzQBAcqOvdi7YidfBVdKi0wxHhSuRBfuOppu
+ pdXkb7zxuPQuSveCLqqZWRQ+Cc2QgF7SBqgznbe6Ngout5qXY5Dcagk9LqFNGhJQzUGHAsIs
+ hap1f0B1PoUyUNeEInV98D8Xd/edM3mhO9nRpUXRK9Bvt4iEZUXGuVtZLT52nK6Wv2EZ1TiT
+ OiqZlf1P+vxYLBx9eKmabPdm3yjalhY8yr1S1vL0gSA/C6W1o/TowdieF1rWN/MYHlkpyj9c
+ Rpc281gAO0AP3V1G00YzBEdYyi0gaJbCEQnq8Vz1vDXFxHzyhgGz7umBsVKmYwZgA8DrrB0M
+ oaP35wuGR3RJcaG30AnJpEDkBYHznI2apxdcuTPOHZyEilIRrBGzDwGtAhldzlBoBwE3Z3MY
+ 31TOpACu1ZpNOMysZ6xiE35pWkwc0KYm4hJA5GFfmWSN6DniimW3pmdDIiw4Ifcx8b3mFrRO
+ BbDIW13E51j9RjbO/nAaK9ndZ5LRO1B/8Fwat7bLzmsCiEXOJY7NNpIEpkoNoEUfCcZwmLrU
+ +eOTPzaF6drw6ayewEi5yzPg3TAT6FV3oBsNg3xlwU0gPK3v6gYPX5w9+ovPZ1/qqNfOrbsE
+ FRuiSVsZQ5s3AAMFD/9XjlnnVDh9GX/r/6hjmr4U9tEsM+VQXaVXqZuHKaSmojOLUCP/YVQo
+ 7IiYaNssCS4FCPe4yrL4FJJfJAsbeyDykMN7wAnBcOkbZ9BPJPNCbqU6dowLOiy8AuTYQ48m
+ vIyQ4Ijnb6GTrtxIUDQeOBNuQC/gyyx3nbL/lVlHbxr4tb6YkhkO6shjXhQh7nQb33FjGO4P
+ WU11Nr9i/qoV8QCo12MQEo244RRA6VMud06y/E449rWZFSTwGqb0FS0seTcYNvxt8PB2izX+
+ HZA8SL54j479ubxhfuoTu5nXdtFYFj5Lj5x34LKPx7MpgAmj0H7SDhpFWF2FzcC1bjiW9mjW
+ HaKaX23Awt97AqQZXegbfkJwX2Y53ufq8Np3e1542lh3/mpiGSilCsaTahEGrHK+lIusl6mz
+ Joil+u3k01ofvJMK0ZdzGUZ/aPMZ16LofjFA+MNxWrZFrkYmiGdv+LG45zSlZyIvzSiG2lKy
+ kuVag+IijCIom78P9jRtB1q1Q5lwZp2TLAJlz92DmFwBg1hyFzwDADjZ2nrDxKUiybXIgZp9
+ aU2d++ptEGCVJOfEW4qpWCCLPbOT7XBr+g/4H3qWbs3j/cDDq7LuVYIe+wchy/iXEJaQVeTC
+ y5arMQorqTFWlEOgRA8OP47L9knl9i4xuR0euV6DChDrguup2aJVU4hPBBgRAgAPAhsMBQJU
+ X9LxBQkeXB3fAAoJEGFXmRW1Y3YOj4UAn3nrFLPZekMeqX5aD/aq/dsbXSfyAKC45Go0YyxV
+ HGuUuzv+GKZ6nsysJ7kCDQRXG8fwARAA6q/pqBi5PjHcOAUgk2/2LR5LjjesK50bCaD4JuNc
+ YDhFR7Vs108diBtsho3w8WRd9viOqDrhLJTroVckkk74OY8r+3t1E0Dd4wHWHQZsAeUvOwDM
+ PQMqTUBFuMi6ydzTZpFA2wBR9x6ofl8Ax+zaGBcFrRlQnhsuXLnM1uuvS39+pmzIjasZBP2H
+ UPk5ifigXcpelKmj6iskP3c8QN6x6GjUSmYx+xUfs/GNVSU1XOZn61wgPDbgINJd/THGdqiO
+ iJxCLuTMqlSsmh1+E1dSdfYkCb93R/0ZHvMKWlAx7MnaFgBfsG8FqNtZu3PCLfizyVYYjXbV
+ WO1A23riZKqwrSJAATo5iTS65BuYxrFsFNPrf7TitM8E76BEBZk0OZBvZxMuOs6Z1qI8YKVK
+ UrHVGFq3NbuPWCdRul9SX3VfOunr9Gv0GABnJ0ET+K7nspax0xqq7zgnM71QEaiaH17IFYGS
+ sG34V7Wo3vyQzsk7qLf9Ajno0DhJ+VX43g8+AjxOMNVrGCt9RNXSBVpyv2AMTlWCdJ5KI6V4
+ KEzWM4HJm7QlNKE6RPoBxJVbSQLPd9St3h7mxLcne4l7NK9eNgNnneT7QZL8fL//s9K8Ns1W
+ t60uQNYvbhKDG7+/yLcmJgjF74XkGvxCmTA1rW2bsUriM533nG9gAOUFQjURkwI8jvMAEQEA
+ AYkCaAQYEQIACQUCVxvH8AIbAgIpCRBhV5kVtWN2DsFdIAQZAQIABgUCVxvH8AAKCRCH0Jac
+ RAcHBIkHD/9nmfog7X2ZXMzL9ktT++7x+W/QBrSTCTmq8PK+69+INN1ZDOrY8uz6htfTLV9+
+ e2W6G8/7zIvODuHk7r+yQ585XbplgP0V5Xc8iBHdBgXbqnY5zBrcH+Q/oQ2STalEvaGHqNoD
+ UGyLQ/fiKoLZTPMur57Fy1c9rTuKiSdMgnT0FPfWVDfpR2Ds0gpqWePlRuRGOoCln5GnREA/
+ 2MW2rWf+CO9kbIR+66j8b4RUJqIK3dWn9xbENh/aqxfonGTCZQ2zC4sLd25DQA4w1itPo+f5
+ V/SQxuhnlQkTOCdJ7b/mby/pNRz1lsLkjnXueLILj7gNjwTabZXYtL16z24qkDTI1x3g98R/
+ xunb3/fQwR8FY5/zRvXJq5us/nLvIvOmVwZFkwXc+AF+LSIajqQz9XbXeIP/BDjlBNXRZNdo
+ dVuSU51ENcMcilPr2EUnqEAqeczsCGpnvRCLfVQeSZr2L9N4svNhhfPOEscYhhpHTh0VPyxI
+ pPBNKq+byuYPMyk3nj814NKhImK0O4gTyCK9b+gZAVvQcYAXvSouCnTZeJRrNHJFTgTgu6E0
+ caxTGgc5zzQHeX67eMzrGomG3ZnIxmd1sAbgvJUDaD2GrYlulfwGWwWyTNbWRvMighVdPkSF
+ 6XFgQaosWxkV0OELLy2N485YrTr2Uq64VKyxpncLh50e2RnyAJ9Za0Dx0yyp44iD1OvHtkEI
+ M5kY0ACeNhCZJvZ5g4C2Lc9fcTHu8jxmEkI=
+Message-ID: <03979f1b-851e-d5ff-2928-323f5aed696e@gmail.com>
+Date:   Thu, 14 Jan 2021 10:48:00 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-References: <20210113145922.92848-1-george.mccollister@gmail.com>
- <20210113145922.92848-3-george.mccollister@gmail.com> <20210114015659.33shdlfthywqdla7@skbuf>
- <CAFSKS=NU4hrnXB5FcAFvnFnmAtK5HfYR8dAKyw3cd=5UKOBNfg@mail.gmail.com> <20210114183243.4kse75ksw3u7h4uz@skbuf>
-In-Reply-To: <20210114183243.4kse75ksw3u7h4uz@skbuf>
-From:   George McCollister <george.mccollister@gmail.com>
-Date:   Thu, 14 Jan 2021 12:47:46 -0600
-Message-ID: <CAFSKS=NrdVSDEh5DWN+JOcZ5fycM1y_N5b8cxzZwQxm-hJbVHQ@mail.gmail.com>
-Subject: Re: [PATCH net-next v4 2/3] net: dsa: add Arrow SpeedChips XRS700x driver
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Rob Herring <robh@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        "open list:OPEN FIRMWARE AND..." <devicetree@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20210114083556.2274440-1-olteanv@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 14, 2021 at 12:32 PM Vladimir Oltean <olteanv@gmail.com> wrote:
-> > > May boil down to preference too, but I don't believe "dev" is a happy
-> > > name to give to a driver private data structure.
-> >
-> > There are other drivers in the subsystem that do this. If there was a
-> > consistent pattern followed in the subsystem I would have followed it.
-> > Trust me I was a bit frustrated with home much time I spent going
-> > through multiple drivers trying to determine the best practices for
-> > organization, naming, etc.
-> > If it's a big let me know and I'll change it.
->
-> Funny that you are complaining about consistency in other drivers,
-> because if I count correctly, out of a total of 22 occurrences of
-> struct xrs700x variables in yours, 13 are named priv and 9 are named
-> dev. So you are not even consistent with yourself. But it's not a major
-> issue either way.
+On 1/14/21 12:35 AM, Vladimir Oltean wrote:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> 
+> prestera_bridge_port_vlan_add should have been called with vlan->vid,
+> however this was masked by the presence of the local vid variable and I
+> did not notice the build warning.
+> 
+> Reported-by: kernel test robot <lkp@intel.com>
+> Fixes: b7a9e0da2d1c ("net: switchdev: remove vid_begin -> vid_end range from VLAN objects")
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Touch=C3=A9. This ended up happening because I followed the pattern used by
-different drivers in different places. Specifically ksz was using
-regmap to work on multiple buses but wasn't a very clean example for
-much else.
-I'll just change it to priv everywhere.
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
