@@ -2,320 +2,195 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D381B2F6BC9
-	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 21:09:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2220F2F6BCE
+	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 21:09:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730466AbhANUGe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jan 2021 15:06:34 -0500
-Received: from mail.kernel.org ([198.145.29.99]:37410 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727560AbhANUGd (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 14 Jan 2021 15:06:33 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E576A22DFA;
-        Thu, 14 Jan 2021 20:05:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610654752;
-        bh=wob9sN21sFhiGllCBbiibV5Ik888Gr008rmHdO5CDgs=;
-        h=From:To:Cc:Subject:Date:From;
-        b=W7gOtDh94KaVfK/9VwP9WYYFL9kDHlebWjyVp2ZkGR+ywTTgBDUOE1XGNUNu4BGHK
-         s8ahLdJUUmaiwp2wKUejkHKE+PNMK6N4NXbWf8CmnGnN7A1NIRzbYnBSLbj365TvKn
-         0LKsp8qJiFFoHVqmh8D7EiEf+rVqDBR+begDYwpcRHhITmt4n0Vy6ay70F070AX8eb
-         /7zWYy4Igb2smG3zw1qrRmuqVHcwX/LA1xMsAA9nUXy723vStwzK0LdOQhGtbgCu2j
-         +nWBxI7xG9YoIllSyXlPSzHmjykExRjmlWGXg3VH8y/dm0jj8LNk+dT2ddA0OohaD4
-         qzUHuYglbMuoQ==
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     torvalds@linux-foundation.org
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [GIT PULL] Networking for 5.11-rc4
-Date:   Thu, 14 Jan 2021 12:05:51 -0800
-Message-Id: <20210114200551.208209-1-kuba@kernel.org>
-X-Mailer: git-send-email 2.26.2
+        id S1728654AbhANUJJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jan 2021 15:09:09 -0500
+Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:2731 "EHLO
+        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725869AbhANUJJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 15:09:09 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B6000a4bc0000>; Thu, 14 Jan 2021 12:08:28 -0800
+Received: from HQMAIL107.nvidia.com (172.20.187.13) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 14 Jan
+ 2021 20:08:28 +0000
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.176)
+ by HQMAIL107.nvidia.com (172.20.187.13) with Microsoft SMTP Server (TLS) id
+ 15.0.1473.3 via Frontend Transport; Thu, 14 Jan 2021 20:08:28 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=WIXIgjrnJq2n5HZcgY/tT2JMw6ZhD/MTgTO9ZRjraNqplqy/RDbjZXi9bT5HaJZo55/YBKL+mJFMv8Hnk+R3iEPB5SaNMM0ZLvCu+wHHI+qJFbgoMaUgsd01eAbxpR7hHDM6YF6IAVm35KCK02qm1+2eOM1HrX7V6W6set8nD/w73F3siBEnUGvWlTh3K5xIVWe9EhtM4o0TFJaLCdg4Hn6BxPZAmUmBirJp9mwnpyyyr8oMzR1aWLPp03JAFmrwCAaxZ21khBF7SEF1DzNpniH4g3VKREqilvBXikob1XVF4w4ZXQ1+UEhJFLpAQQxmH4/JRbPPwlgpl9Z1UJcwmw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=f8cJQO334QpnU3YwY9lpSaLe5gAXLQGzieDEWXFJoOY=;
+ b=Swz2vLY4k41KxJqBCjruRJioEKmBcnOCVq1eSOr/JXL4C9N5IAONWTAwsEYho0KkUblWAYRxjwGq1l5L1HetRKVw43ctPD53QgOuCGEsHkoKroFPDtpA2wzcCqEywXk0iU25IEKJ8uGe/JE4g2GtqzgxmuMJDZK8Kg60HHJL9sb8ET5AcZ13CrY/hv/Dz+xQ9esmosC7yds8sv4jqM7VLPTFYSY2eNfIhQgdIui/xagjpQuTLyKevk3tI4QXN/F4Ia0sEdh9amWIYdWvHXOXq3rVs5MgthMuKfJpoBVHTgWo5lzzTyn6rtwt6GLwCIXFVN42O7AOhTpoMKn4ya24fg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
+ by DM6PR12MB4266.namprd12.prod.outlook.com (2603:10b6:5:21a::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3763.11; Thu, 14 Jan
+ 2021 20:08:27 +0000
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::546d:512c:72fa:4727]) by DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::546d:512c:72fa:4727%7]) with mapi id 15.20.3742.012; Thu, 14 Jan 2021
+ 20:08:27 +0000
+Date:   Thu, 14 Jan 2021 16:08:25 -0400
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Alexander Duyck <alexander.duyck@gmail.com>
+CC:     Leon Romanovsky <leon@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-pci <linux-pci@vger.kernel.org>,
+        <linux-rdma@vger.kernel.org>, Netdev <netdev@vger.kernel.org>,
+        Don Dutile <ddutile@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>
+Subject: Re: [PATCH mlx5-next v1 2/5] PCI: Add SR-IOV sysfs entry to read
+ number of MSI-X vectors
+Message-ID: <20210114200825.GR4147@nvidia.com>
+References: <20210112065601.GD4678@unreal>
+ <CAKgT0UdndGdA3xONBr62hE-_RBdL-fq6rHLy0PrdsuMn1936TA@mail.gmail.com>
+ <20210113061909.GG4678@unreal>
+ <CAKgT0Uc4v54vqRVk_HhjOk=OLJu-20AhuBVcg7=C9_hsLtzxLA@mail.gmail.com>
+ <20210114065024.GK4678@unreal>
+ <CAKgT0UeTXMeH24L9=wsPc2oJ=ZJ5jSpJeOqiJvsB2J9TFRFzwQ@mail.gmail.com>
+ <20210114164857.GN4147@nvidia.com>
+ <CAKgT0UcKqt=EgE+eitB8-u8LvxqHBDfF+u2ZSi5urP_Aj0Btvg@mail.gmail.com>
+ <20210114182945.GO4147@nvidia.com>
+ <CAKgT0UcQW+nJjTircZAYs1_GWNrRud=hSTsphfVpsc=xaF7aRQ@mail.gmail.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <CAKgT0UcQW+nJjTircZAYs1_GWNrRud=hSTsphfVpsc=xaF7aRQ@mail.gmail.com>
+X-ClientProxiedBy: MN2PR22CA0018.namprd22.prod.outlook.com
+ (2603:10b6:208:238::23) To DM6PR12MB3834.namprd12.prod.outlook.com
+ (2603:10b6:5:14a::12)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from mlx.ziepe.ca (142.162.115.133) by MN2PR22CA0018.namprd22.prod.outlook.com (2603:10b6:208:238::23) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3763.9 via Frontend Transport; Thu, 14 Jan 2021 20:08:26 +0000
+Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1l08uv-001NXw-Up; Thu, 14 Jan 2021 16:08:25 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1610654908; bh=f8cJQO334QpnU3YwY9lpSaLe5gAXLQGzieDEWXFJoOY=;
+        h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:Date:
+         From:To:CC:Subject:Message-ID:References:Content-Type:
+         Content-Disposition:In-Reply-To:X-ClientProxiedBy:MIME-Version:
+         X-MS-Exchange-MessageSentRepresentingType;
+        b=XtrZ16PNSlECBtpw6sWOQrt9/nomh5wvfMI2PKi9Or/hA0b4xvJhWkPxKzRTOScLt
+         KA2wV2x7Log1dFpiEWycK2RoFj2C86igxi4cK4HAgJHz0Xo9Hp7Fy/8Szwm9XeHjVR
+         rS6qOzQpj9DPeN/d7L3gA9lMPwwfOqzOeYOZasaPnKYZNOy9ArJB2Kjs9/l7QAa73S
+         OMDbQGyEcSImYI9QcOxFOV+WlVxaIz6ky8qay7CUeZ6fh1xbg3l+a5ewasKr7mRIQU
+         ozBdzgoPkK7Np2Z+7/oIva9ZLehBS7FkyhDYBgbI3yB4t0487tLEdO1+J8xOLd0fPR
+         MWAW6YxvMwgwA==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi!
+On Thu, Jan 14, 2021 at 11:24:12AM -0800, Alexander Duyck wrote:
 
-We have a few fixes for long standing issues, in particular
-Eric's fix to not underestimate the skb sizes, and my fix for
-brokenness of register_netdevice() error path. They may uncover
-other bugs so we will keep an eye on them. Also included are
-Willem's fixes for kmap(_atomic).
+> > As you say BAR and MSI vector table are not so different, it seems
+> > perfectly in line with current PCI sig thinking to allow resizing the
+> > MSI as well
+> 
+> The resizing of a BAR has an extended capability that goes with it and
+> isn't something that the device can just do on a whim. This patch set
+> is not based on implementing some ECN for resizable MSI-X tables. I
+> view it as arbitrarily rewriting the table size for a device after it
+> is created.
 
-Looking at the "current release" fixes, it seems we are about
-one rc behind a normal cycle. We've previously seen an uptick
-of "people had run their test suites" / "humans actually tried 
-to use new features" fixes between rc2 and rc3.
+The only difference is resizing the BAR is backed by an ECN, and this
+is an extension. The device does not "do it on a whim" the OS tells it
+when to change the size, exactly like for BAR resizing.
 
-The following changes since commit 6279d812eab67a6df6b22fa495201db6f2305924:
+> In addition Leon still hasn't answered my question on preventing the
+> VF driver from altering entries beyond the ones listed in the table.
 
-  Merge tag 'net-5.11-rc3-2' of git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net (2021-01-08 12:12:30 -0800)
+Of course this is blocked, the FW completely revokes the HW resource
+backing the vectors.
 
-are available in the Git repository at:
+> From what I can tell, the mlx5 Linux driver never reads the MSI-X
+> flags register so it isn't reading the MSI-X size either.
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.11-rc4
+I don't know why you say that. All Linux drivers call into something
+like pci_alloc_irq_vectors() requesting a maximum # of vectors and
+that call returns the actual allocated. Drivers can request more
+vectors than the system provides, which is what mlx5 does.
 
-for you to fetch changes up to 13a9499e833387fcc7a53915bbe5cddf3c336b59:
+Under the call chain of pci_alloc_irq_vectors() it calls
+pci_msix_vec_count() which does
 
-  mptcp: fix locking in mptcp_disconnect() (2021-01-14 11:25:21 -0800)
+	pci_read_config_word(dev, dev->msix_cap + PCI_MSIX_FLAGS, &control);
+	return msix_table_size(control);
 
-----------------------------------------------------------------
-Networking fixes for 5.11-rc4, including fixes from can and netfilter.
+And eventually uses that to return the result to the driver.
 
-Current release - regressions:
+So, yes, it reads the config space and ensures it doesn't allocate
+more vectors than that.
 
- - fix feature enforcement to allow NETIF_F_HW_TLS_TX
-   if IP_CSUM && IPV6_CSUM
+Every driver using MSI does this in Linux.
 
- - dcb: accept RTM_GETDCB messages carrying set-like DCB commands
-        if user is admin for backward-compatibility
+Adjusting config space *directly* limits the number of vectors the
+driver allocates.
 
- - selftests/tls: fix selftests build after adding ChaCha20-Poly1305
+You should be able to find the call chain in mlx5 based on the above
+guidance.
 
-Current release - always broken:
+> At a minimum I really think we need to go through and have a clear
+> definition on when updating the MSI-X table size is okay and when it
+> is not. I am not sure just saying to not update it when a driver isn't
+> attached is enough to guarantee all that.
 
- - ppp: fix refcount underflow on channel unbridge
+If you know of a real issue then please state it, other don't fear
+monger "maybe" issues that don't exist.
 
- - bnxt_en: clear DEFRAG flag in firmware message when retry flashing
+> What we are talking about is the MSI-X table size. Not the number of
+> MSI-X vectors being requested by the device driver. Those are normally
+> two seperate things.
 
- - smc: fix out of bound access in the new netlink interface
+Yes, table size is what is critical. The number of entries in that BAR
+memory is what needs to be controlled.
 
-Previous releases - regressions:
+> > The standards based way to communicate that limit is the MSI table cap
+> > size.
+> 
+> This only defines the maximum number of entries, not how many have to be used.
 
- - fix use-after-free with UDP GRO by frags
+A driver can't use entries beyond the cap. We are not trying to
+reclaim vectors that are available but not used by the OS.
 
- - mptcp: better msk-level shutdown
+> I'm not offering up a non-standard way to do this. Just think about
+> it. If I have a device that defines an MSI-X table size of 2048 but
+> makes use of only one vector how would that be any different than what
+> I am suggesting where you size your VF to whatever the maximum is you
+> need but only make use of some fixed number from the hardware.
 
- - rndis_host: set proper input size for OID_GEN_PHYSICAL_MEDIUM request
+That is completely different, in the hypervisor there is no idea how
+many vectors a guest OS will create. The FW is told to only permit 1
+vector. How is the guest to know this if we don't update the config
+space *as the standard requires* ?
 
- - i40e: xsk: fix potential NULL pointer dereferencing
+> I will repeat what I said before. Why can't this be handled via the
+> vfio interface? 
 
-Previous releases - always broken:
+1) The FW has to be told of the limit and everything has to be in sync
+   If the FW is out of sync with the config space then everything
+   breaks if the user makes even a small mistake - for instance
+   forgetting to use the ioctl to override vfio. This is needlessly
+   frail and complicated.
 
- - skb frag: kmap_atomic fixes
+2) VFIO needs to know how to tell the FW the limit so it can override
+   the config space with emulation. This is all device specific and I
+   don't see that adding an extension to vfio is any better than
+   adding one here.
 
- - avoid 32 x truesize under-estimation for tiny skbs
+3) VFIO doesn't cover any other driver that binds to the VF, so
+   this "solution" leaves the normal mlx5_core functionally broken on
+   VFs which is a major regression.
 
- - fix issues around register_netdevice() failures
+Overall the entire idea to have the config space not reflect the
+actual current device configuration seems completely wrong to me - why
+do this? For what gain? It breaks everything.
 
- - udp: prevent reuseport_select_sock from reading uninitialized socks
-
- - dsa: unbind all switches from tree when DSA master unbinds
-
- - dsa: clear devlink port type before unregistering slave netdevs
-
- - can: isotp: isotp_getname(): fix kernel information leak
-
- - mlxsw: core: Thermal control fixes
-
- - ipv6: validate GSO SKB against MTU before finish IPv6 processing
-
- - stmmac: use __napi_schedule() for PREEMPT_RT
-
- - net: mvpp2: remove Pause and Asym_Pause support
-
-Misc:
-
- - remove from MAINTAINERS folks who had been inactive for >5yrs
-
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-
-----------------------------------------------------------------
-Andrey Zhizhikin (1):
-      rndis_host: set proper input size for OID_GEN_PHYSICAL_MEDIUM request
-
-Aya Levin (1):
-      net: ipv6: Validate GSO SKB before finish IPv6 processing
-
-Ayush Sawal (1):
-      cxgb4/chtls: Fix tid stuck due to wrong update of qid
-
-Baptiste Lepers (2):
-      udp: Prevent reuseport_select_sock from reading uninitialized socks
-      rxrpc: Call state should be read with READ_ONCE() under some circumstances
-
-Chen Yi (1):
-      selftests: netfilter: Pass family parameter "-f" to conntrack tool
-
-Cristian Dumitrescu (1):
-      i40e: fix potential NULL pointer dereferencing
-
-David Howells (1):
-      rxrpc: Fix handling of an unsupported token type in rxrpc_read()
-
-David Wu (1):
-      net: stmmac: Fixed mtu channged by cache aligned
-
-Dinghao Liu (1):
-      netfilter: nf_nat: Fix memleak in nf_nat_init
-
-Dongseok Yi (1):
-      net: fix use-after-free when UDP GRO with shared fraglist
-
-Eric Dumazet (1):
-      net: avoid 32 x truesize under-estimation for tiny skbs
-
-Geert Uytterhoeven (2):
-      dt-bindings: net: renesas,etheravb: RZ/G2H needs tx-internal-delay-ps
-      nt: usb: USB_RTL8153_ECM should not default to y
-
-Guvenc Gulce (1):
-      net/smc: use memcpy instead of snprintf to avoid out of bounds read
-
-Hoang Le (1):
-      tipc: fix NULL deref in tipc_link_xmit()
-
-Jakub Kicinski (21):
-      docs: net: explain struct net_device lifetime
-      net: make free_netdev() more lenient with unregistering devices
-      net: make sure devices go through netdev_wait_all_refs
-      Merge branch 'net-fix-issues-around-register_netdevice-failures'
-      Merge branch 'mlxsw-core-thermal-control-fixes'
-      Merge branch 'skb-frag-kmap_atomic-fixes'
-      Merge branch 'bnxt_en-bug-fixes'
-      Merge branch 'mptcp-a-couple-of-fixes'
-      smc: fix out of bound access in smc_nl_get_sys_info()
-      Merge branch 'net-smc-fix-out-of-bound-access-in-netlink-interface'
-      Merge git://git.kernel.org/.../pablo/nf
-      Merge tag 'linux-can-fixes-for-5.11-20210113' of git://git.kernel.org/.../mkl/linux-can
-      net: sit: unregister_netdevice on newlink's error path
-      MAINTAINERS: altx: move Jay Cliburn to CREDITS
-      MAINTAINERS: net: move Alexey Kuznetsov to CREDITS
-      MAINTAINERS: vrf: move Shrijeet to CREDITS
-      MAINTAINERS: ena: remove Zorik Machulsky from reviewers
-      MAINTAINERS: tls: move Aviad to CREDITS
-      MAINTAINERS: ipvs: move Wensong Zhang to CREDITS
-      MAINTAINERS: dccp: move Gerrit Renker to CREDITS
-      Merge branch 'maintainers-remove-inactive-folks-from-networking'
-
-Jesper Dangaard Brouer (1):
-      netfilter: conntrack: fix reading nf_conntrack_buckets
-
-Leon Schuermann (2):
-      r8152: Add Lenovo Powered USB-C Travel Hub
-      r8153_ecm: Add Lenovo Powered USB-C Hub as a fallback of r8152
-
-Manish Chopra (1):
-      netxen_nic: fix MSI/MSI-x interrupts
-
-Marco Felsch (1):
-      net: phy: smsc: fix clk error handling
-
-Mauro Carvalho Chehab (1):
-      net: tip: fix a couple kernel-doc markups
-
-Michael Chan (1):
-      bnxt_en: Improve stats context resource accounting with RDMA driver loaded.
-
-Oliver Hartkopp (1):
-      can: isotp: isotp_getname(): fix kernel information leak
-
-Paolo Abeni (3):
-      mptcp: more strict state checking for acks
-      mptcp: better msk-level shutdown.
-      mptcp: fix locking in mptcp_disconnect()
-
-Pavan Chebbi (1):
-      bnxt_en: Clear DEFRAG flag in firmware message when retry flashing.
-
-Petr Machata (1):
-      net: dcb: Accept RTM_GETDCB messages carrying set-like DCB commands
-
-Qinglang Miao (1):
-      can: mcp251xfd: mcp251xfd_handle_rxif_one(): fix wrong NULL pointer check
-
-Seb Laveze (2):
-      dt-bindings: net: dwmac: fix queue priority documentation
-      net: stmmac: use __napi_schedule() for PREEMPT_RT
-
-Stefan Chulski (1):
-      net: mvpp2: Remove Pause and Asym_Pause support
-
-Stephan Gerhold (1):
-      net: ipa: modem: add missing SET_NETDEV_DEV() for proper sysfs links
-
-Tariq Toukan (1):
-      net: Allow NETIF_F_HW_TLS_TX if IP_CSUM && IPV6_CSUM
-
-Tom Parkin (1):
-      ppp: fix refcount underflow on channel unbridge
-
-Vadim Fedorenko (1):
-      selftests/tls: fix selftests after adding ChaCha20-Poly1305
-
-Vadim Pasternak (2):
-      mlxsw: core: Add validation of transceiver temperature thresholds
-      mlxsw: core: Increase critical threshold for ASIC thermal zone
-
-Vladimir Oltean (2):
-      net: dsa: unbind all switches from tree when DSA master unbinds
-      net: dsa: clear devlink port type before unregistering slave netdevs
-
-Willem de Bruijn (3):
-      net: support kmap_local forced debugging in skb_frag_foreach
-      net: compound page support in skb_seq_read
-      esp: avoid unneeded kmap_atomic call
-
-Yannick Vignon (2):
-      net: stmmac: fix taprio schedule configuration
-      net: stmmac: fix taprio configuration when base_time is in the past
-
- CREDITS                                            |  24 +++
- .../devicetree/bindings/net/renesas,etheravb.yaml  |   1 +
- .../devicetree/bindings/net/snps,dwmac.yaml        |   8 +-
- Documentation/networking/netdevices.rst            | 171 ++++++++++++++++++++-
- Documentation/networking/tls-offload.rst           |   2 +-
- MAINTAINERS                                        |   9 +-
- drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c     |   2 +-
- drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c  |   3 +-
- drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c      |   8 +-
- drivers/net/ethernet/chelsio/cxgb4/t4_tcb.h        |   7 +
- .../ethernet/chelsio/inline_crypto/chtls/chtls.h   |   4 +
- .../chelsio/inline_crypto/chtls/chtls_cm.c         |  32 +++-
- .../chelsio/inline_crypto/chtls/chtls_hw.c         |  41 +++++
- drivers/net/ethernet/intel/i40e/i40e_xsk.c         |   2 +-
- drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c    |   2 -
- drivers/net/ethernet/mellanox/mlxsw/core_thermal.c |  13 +-
- .../net/ethernet/qlogic/netxen/netxen_nic_main.c   |   7 +-
- drivers/net/ethernet/stmicro/stmmac/dwmac5.c       |  52 +------
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c  |   7 +-
- drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c    |  20 ++-
- drivers/net/ipa/ipa_modem.c                        |   1 +
- drivers/net/phy/smsc.c                             |   3 +-
- drivers/net/ppp/ppp_generic.c                      |  12 +-
- drivers/net/usb/Kconfig                            |   1 -
- drivers/net/usb/cdc_ether.c                        |   7 +
- drivers/net/usb/r8152.c                            |   1 +
- drivers/net/usb/r8153_ecm.c                        |   8 +
- drivers/net/usb/rndis_host.c                       |   2 +-
- include/linux/skbuff.h                             |   3 +-
- net/8021q/vlan.c                                   |   4 +-
- net/can/isotp.c                                    |   1 +
- net/core/dev.c                                     |  37 +++--
- net/core/rtnetlink.c                               |  23 +--
- net/core/skbuff.c                                  |  57 ++++++-
- net/core/sock_reuseport.c                          |   2 +-
- net/dcb/dcbnl.c                                    |   2 +-
- net/dsa/dsa2.c                                     |   4 +
- net/dsa/master.c                                   |  10 ++
- net/ipv4/esp4.c                                    |   7 +-
- net/ipv6/esp6.c                                    |   7 +-
- net/ipv6/ip6_output.c                              |  41 ++++-
- net/ipv6/sit.c                                     |   5 +-
- net/mptcp/protocol.c                               |  69 +++------
- net/netfilter/nf_conntrack_standalone.c            |   3 +
- net/netfilter/nf_nat_core.c                        |   1 +
- net/rxrpc/input.c                                  |   2 +-
- net/rxrpc/key.c                                    |   6 +-
- net/smc/smc_core.c                                 |  20 ++-
- net/smc/smc_ib.c                                   |   6 +-
- net/smc/smc_ism.c                                  |   3 +-
- net/tipc/link.c                                    |  11 +-
- net/tipc/node.c                                    |   2 +-
- tools/testing/selftests/net/tls.c                  |   4 +-
- .../selftests/netfilter/nft_conntrack_helper.sh    |  12 +-
- 54 files changed, 569 insertions(+), 223 deletions(-)
+Jason
