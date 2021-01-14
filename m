@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5EB012F6BA1
-	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 20:58:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C20A02F6BA3
+	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 20:59:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730347AbhANT63 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jan 2021 14:58:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51406 "EHLO
+        id S1730357AbhANT6b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jan 2021 14:58:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729069AbhANT62 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 14:58:28 -0500
-Received: from mail-oo1-xc35.google.com (mail-oo1-xc35.google.com [IPv6:2607:f8b0:4864:20::c35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CD4AC061757;
-        Thu, 14 Jan 2021 11:57:48 -0800 (PST)
-Received: by mail-oo1-xc35.google.com with SMTP id y14so1649997oom.10;
-        Thu, 14 Jan 2021 11:57:48 -0800 (PST)
+        with ESMTP id S1729069AbhANT6a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 14:58:30 -0500
+Received: from mail-oi1-x232.google.com (mail-oi1-x232.google.com [IPv6:2607:f8b0:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 041CAC0613C1;
+        Thu, 14 Jan 2021 11:57:50 -0800 (PST)
+Received: by mail-oi1-x232.google.com with SMTP id l207so7209583oib.4;
+        Thu, 14 Jan 2021 11:57:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=srrihTdP83kkaii+4P/xPu1Zy6Z+rb6DxOXiimJIHjs=;
-        b=ThUBDBgaxjNIfPKczEKbRRjqspkjal4K9Kbo16HJssJGrQLvatiKSwziCPmFM0ta4v
-         2dPitp9zsx2dioiRXpy7G7groMKqBNePI6y6LU+9EDEpezhDGqT4nD3gT7Fr+yYieDaa
-         muuuTtb+6lV8W9kAB5MHsmq6EIzfWyOBU/thCe5BfIud6eoAWX/WVwsUtzK8m0csZkmD
-         v7yLulzfPxguycXPJMfYyZc4PKlp1yZcvo8WqjeOk6Rn25V6gtdRqtGNQQnIYhTxc2+R
-         UPoif9xeJ55CJuFJWOY+EnT/JPe+epLimsiBkLXPQYydxPbxhFElQ/AJV8AAbxo/UDvz
-         uQLQ==
+        bh=2PI9M5T3WcIDyfIplbpMmzqXdw9EmnAoy3qH5HPWPpo=;
+        b=Dut4IASidTrKhbyNMdZgPVDh19CwuGRDth/5W8y0omCe8gZefmzv8Mo9kXiXYDHeSi
+         dwuUqZQqHv7HeNL2D+ppcm91F8lDmpTDDUqaFkcpjAr8P9iZ149TW4hGpXSIBqRojN73
+         tu4vOGmAZJW2ZJAc3/a9l/ULBLhBqUNUv7um5KiUi2cMlcxtsn/T6trd2sGV5y5PetRa
+         XDhn1poHIunV6segR6+dJOtvSfKYNeZww1D/vhpzS50R1uFxFY2gyI51IKBQHIC5XT0W
+         HEfFszAHkZGacbjvhSruDMm7ZNV0DltQVKioJdfKEiehgUX1oBzYHiNcAYUrDHN3zlYY
+         FwrQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=srrihTdP83kkaii+4P/xPu1Zy6Z+rb6DxOXiimJIHjs=;
-        b=bumtvtujeQWQJQZ2ya7GhVVpWWk7wfe4PmH2F1b1IUpn1pF0YIEllWyA1COgoTLR+u
-         ncjlYs1Q0F1NW63nIEdeTdJiOQMSewiBdVDtFa83qGkHnJwXlW3SiZSTui0rsO5aWjnA
-         iGofwgSISsdO4of4G9IeEpfzO8teeSXfWw5cNf6FcpAQplpcNhsv2OrY9tppBHTpQRCL
-         o9DGZJzTdirc5D4kA+A2NH7A5PkdPvw7xpLKmBg2H77/BxgjKr6HsR2Lz6KNi0nZdrUt
-         mSJmnHHQxQ22f5+SPkDEuqLa621KpBZ0wfJSWQApg1GqGgpGpLVhiQdM3TpAMNgL889p
-         kdDA==
-X-Gm-Message-State: AOAM532QIbHonWXf6itevEFLRsx6Z4O2ZERwJ7gCN+byLNyDczEWPRwn
-        aIxroS3ojjnt88MDqlTgPA==
-X-Google-Smtp-Source: ABdhPJzv1GofgRnQw1sN90tsebW5M2vFj57Ju04iJsHDObOYGPOWMgNtw4BrfP8MXP4kt0YdSjrlYw==
-X-Received: by 2002:a05:6820:34b:: with SMTP id m11mr5867328ooe.74.1610654267503;
-        Thu, 14 Jan 2021 11:57:47 -0800 (PST)
+        bh=2PI9M5T3WcIDyfIplbpMmzqXdw9EmnAoy3qH5HPWPpo=;
+        b=VkW5IuBfTqf6wPyPbMcYjaFCHcSn46E09Y2D4YetJKvQdm5Xsbvub0l/QItm+kGA9O
+         78n4fSDvPGgLeJDtoJJOzPfJp9+Bx5OGS7RUOHRHyKnzZu+wmkNXYsbqNUG9Vq+CYOSd
+         sVUB3b5EpSqV9co5mcj+eXtNtfsi2BEnVrN8HmonVLKe0VuNTyUvfvaVL71LNnaFA2du
+         NMrwiLUHQBu+n0J5u6EOLJ8tvCH9bTyKvw4Fqe7dB7DJvYWxOaPQdOtRyq3KPE211VbC
+         07Y26IJ9WgbLbjm1jkrMeB4YTfm0qCuq81fDLuF4fdAmFVAd5srhaxqINDPrIuT2Zzs+
+         nIsg==
+X-Gm-Message-State: AOAM533MlNX4Cu3gg77/Up2IUhcSA3LarUW8keEImFjzVWSIl8JhF2ri
+        ymyXRl3p/xU0tJv+fUw7dw==
+X-Google-Smtp-Source: ABdhPJz19FMTQm4oiKzDV1n3R9vjsaV1ukPCULlko1w2+nTaOA8Rn0TDnKwJ4Nm1KnSFBfssVr8rJA==
+X-Received: by 2002:aca:3bd6:: with SMTP id i205mr3605337oia.156.1610654269253;
+        Thu, 14 Jan 2021 11:57:49 -0800 (PST)
 Received: from threadripper.novatech-llc.local ([216.21.169.52])
-        by smtp.gmail.com with ESMTPSA id e17sm1244820otk.64.2021.01.14.11.57.45
+        by smtp.gmail.com with ESMTPSA id e17sm1244820otk.64.2021.01.14.11.57.47
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 14 Jan 2021 11:57:46 -0800 (PST)
+        Thu, 14 Jan 2021 11:57:48 -0800 (PST)
 From:   George McCollister <george.mccollister@gmail.com>
 To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
@@ -55,9 +55,9 @@ Cc:     Rob Herring <robh@kernel.org>,
         "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
         devicetree@vger.kernel.org,
         George McCollister <george.mccollister@gmail.com>
-Subject: [PATCH net-next v5 1/3] dsa: add support for Arrow XRS700x tag trailer
-Date:   Thu, 14 Jan 2021 13:57:32 -0600
-Message-Id: <20210114195734.55313-2-george.mccollister@gmail.com>
+Subject: [PATCH net-next v5 2/3] net: dsa: add Arrow SpeedChips XRS700x driver
+Date:   Thu, 14 Jan 2021 13:57:33 -0600
+Message-Id: <20210114195734.55313-3-george.mccollister@gmail.com>
 X-Mailer: git-send-email 2.11.0
 In-Reply-To: <20210114195734.55313-1-george.mccollister@gmail.com>
 References: <20210114195734.55313-1-george.mccollister@gmail.com>
@@ -65,131 +65,1311 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for Arrow SpeedChips XRS700x single byte tag trailer. This
-is modeled on tag_trailer.c which works in a similar way.
+Add a driver with initial support for the Arrow SpeedChips XRS7000
+series of gigabit Ethernet switch chips which are typically used in
+critical networking applications.
+
+The switches have up to three RGMII ports and one RMII port.
+Management to the switches can be performed over i2c or mdio.
+
+Support for advanced features such as PTP and
+HSR/PRP (IEC 62439-3 Clause 5 & 4) is not included in this patch and
+may be added at a later date.
 
 Signed-off-by: George McCollister <george.mccollister@gmail.com>
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
- include/net/dsa.h     |  2 ++
- net/dsa/Kconfig       |  6 +++++
- net/dsa/Makefile      |  1 +
- net/dsa/tag_xrs700x.c | 61 +++++++++++++++++++++++++++++++++++++++++++++++++++
- 4 files changed, 70 insertions(+)
- create mode 100644 net/dsa/tag_xrs700x.c
+ drivers/net/dsa/Kconfig                |   2 +
+ drivers/net/dsa/Makefile               |   1 +
+ drivers/net/dsa/xrs700x/Kconfig        |  26 ++
+ drivers/net/dsa/xrs700x/Makefile       |   4 +
+ drivers/net/dsa/xrs700x/xrs700x.c      | 622 +++++++++++++++++++++++++++++++++
+ drivers/net/dsa/xrs700x/xrs700x.h      |  42 +++
+ drivers/net/dsa/xrs700x/xrs700x_i2c.c  | 150 ++++++++
+ drivers/net/dsa/xrs700x/xrs700x_mdio.c | 163 +++++++++
+ drivers/net/dsa/xrs700x/xrs700x_reg.h  | 203 +++++++++++
+ 9 files changed, 1213 insertions(+)
+ create mode 100644 drivers/net/dsa/xrs700x/Kconfig
+ create mode 100644 drivers/net/dsa/xrs700x/Makefile
+ create mode 100644 drivers/net/dsa/xrs700x/xrs700x.c
+ create mode 100644 drivers/net/dsa/xrs700x/xrs700x.h
+ create mode 100644 drivers/net/dsa/xrs700x/xrs700x_i2c.c
+ create mode 100644 drivers/net/dsa/xrs700x/xrs700x_mdio.c
+ create mode 100644 drivers/net/dsa/xrs700x/xrs700x_reg.h
 
-diff --git a/include/net/dsa.h b/include/net/dsa.h
-index c3485ba6c312..74b5bf835657 100644
---- a/include/net/dsa.h
-+++ b/include/net/dsa.h
-@@ -46,6 +46,7 @@ struct phylink_link_state;
- #define DSA_TAG_PROTO_AR9331_VALUE		16
- #define DSA_TAG_PROTO_RTL4_A_VALUE		17
- #define DSA_TAG_PROTO_HELLCREEK_VALUE		18
-+#define DSA_TAG_PROTO_XRS700X_VALUE		19
+diff --git a/drivers/net/dsa/Kconfig b/drivers/net/dsa/Kconfig
+index f6a0488589fc..3af373e90806 100644
+--- a/drivers/net/dsa/Kconfig
++++ b/drivers/net/dsa/Kconfig
+@@ -60,6 +60,8 @@ source "drivers/net/dsa/qca/Kconfig"
  
- enum dsa_tag_protocol {
- 	DSA_TAG_PROTO_NONE		= DSA_TAG_PROTO_NONE_VALUE,
-@@ -67,6 +68,7 @@ enum dsa_tag_protocol {
- 	DSA_TAG_PROTO_AR9331		= DSA_TAG_PROTO_AR9331_VALUE,
- 	DSA_TAG_PROTO_RTL4_A		= DSA_TAG_PROTO_RTL4_A_VALUE,
- 	DSA_TAG_PROTO_HELLCREEK		= DSA_TAG_PROTO_HELLCREEK_VALUE,
-+	DSA_TAG_PROTO_XRS700X		= DSA_TAG_PROTO_XRS700X_VALUE,
- };
+ source "drivers/net/dsa/sja1105/Kconfig"
  
- struct packet_type;
-diff --git a/net/dsa/Kconfig b/net/dsa/Kconfig
-index dfecd7b22fd7..2d226a5c085f 100644
---- a/net/dsa/Kconfig
-+++ b/net/dsa/Kconfig
-@@ -139,4 +139,10 @@ config NET_DSA_TAG_TRAILER
- 	  Say Y or M if you want to enable support for tagging frames at
- 	  with a trailed. e.g. Marvell 88E6060.
- 
-+config NET_DSA_TAG_XRS700X
-+	tristate "Tag driver for XRS700x switches"
-+	help
-+	  Say Y or M if you want to enable support for tagging frames for
-+	  Arrow SpeedChips XRS700x switches that use a single byte tag trailer.
++source "drivers/net/dsa/xrs700x/Kconfig"
 +
- endif
-diff --git a/net/dsa/Makefile b/net/dsa/Makefile
-index 0fb2b75a7ae3..92cea2132241 100644
---- a/net/dsa/Makefile
-+++ b/net/dsa/Makefile
-@@ -18,3 +18,4 @@ obj-$(CONFIG_NET_DSA_TAG_OCELOT) += tag_ocelot.o
- obj-$(CONFIG_NET_DSA_TAG_QCA) += tag_qca.o
- obj-$(CONFIG_NET_DSA_TAG_SJA1105) += tag_sja1105.o
- obj-$(CONFIG_NET_DSA_TAG_TRAILER) += tag_trailer.o
-+obj-$(CONFIG_NET_DSA_TAG_XRS700X) += tag_xrs700x.o
-diff --git a/net/dsa/tag_xrs700x.c b/net/dsa/tag_xrs700x.c
+ config NET_DSA_QCA8K
+ 	tristate "Qualcomm Atheros QCA8K Ethernet switch family support"
+ 	depends on NET_DSA
+diff --git a/drivers/net/dsa/Makefile b/drivers/net/dsa/Makefile
+index a84adb140a04..f3598c040994 100644
+--- a/drivers/net/dsa/Makefile
++++ b/drivers/net/dsa/Makefile
+@@ -24,3 +24,4 @@ obj-y				+= mv88e6xxx/
+ obj-y				+= ocelot/
+ obj-y				+= qca/
+ obj-y				+= sja1105/
++obj-y				+= xrs700x/
+diff --git a/drivers/net/dsa/xrs700x/Kconfig b/drivers/net/dsa/xrs700x/Kconfig
 new file mode 100644
-index 000000000000..db0ed1a5fcb7
+index 000000000000..d10a4dce1676
 --- /dev/null
-+++ b/net/dsa/tag_xrs700x.c
-@@ -0,0 +1,61 @@
-+// SPDX-License-Identifier: GPL-2.0+
++++ b/drivers/net/dsa/xrs700x/Kconfig
+@@ -0,0 +1,26 @@
++# SPDX-License-Identifier: GPL-2.0-only
++config NET_DSA_XRS700X
++	tristate
++	depends on NET_DSA
++	select NET_DSA_TAG_XRS700X
++	select REGMAP
++	help
++	  This enables support for Arrow SpeedChips XRS7003/7004 gigabit
++	  Ethernet switches.
++
++config NET_DSA_XRS700X_I2C
++	tristate "Arrow XRS7000X series switch in I2C mode"
++	depends on NET_DSA && I2C
++	select NET_DSA_XRS700X
++	select REGMAP_I2C
++	help
++	  Enable I2C support for Arrow SpeedChips XRS7003/7004 gigabit Ethernet
++	  switches.
++
++config NET_DSA_XRS700X_MDIO
++	tristate "Arrow XRS7000X series switch in MDIO mode"
++	depends on NET_DSA
++	select NET_DSA_XRS700X
++	help
++	  Enable MDIO support for Arrow SpeedChips XRS7003/7004 gigabit Ethernet
++	  switches.
+diff --git a/drivers/net/dsa/xrs700x/Makefile b/drivers/net/dsa/xrs700x/Makefile
+new file mode 100644
+index 000000000000..51a3a7d9296a
+--- /dev/null
++++ b/drivers/net/dsa/xrs700x/Makefile
+@@ -0,0 +1,4 @@
++# SPDX-License-Identifier: GPL-2.0-only
++obj-$(CONFIG_NET_DSA_XRS700X) += xrs700x.o
++obj-$(CONFIG_NET_DSA_XRS700X_I2C) += xrs700x_i2c.o
++obj-$(CONFIG_NET_DSA_XRS700X_MDIO) += xrs700x_mdio.o
+diff --git a/drivers/net/dsa/xrs700x/xrs700x.c b/drivers/net/dsa/xrs700x/xrs700x.c
+new file mode 100644
+index 000000000000..db3cec859488
+--- /dev/null
++++ b/drivers/net/dsa/xrs700x/xrs700x.c
+@@ -0,0 +1,622 @@
++// SPDX-License-Identifier: GPL-2.0
 +/*
-+ * XRS700x tag format handling
-+ * Copyright (c) 2008-2009 Marvell Semiconductor
-+ * Copyright (c) 2020 NovaTech LLC
++ * Copyright (C) 2020 NovaTech LLC
++ * George McCollister <george.mccollister@gmail.com>
 + */
 +
-+#include <linux/bitops.h>
++#include <net/dsa.h>
++#include <linux/if_bridge.h>
++#include <linux/of_device.h>
++#include "xrs700x.h"
++#include "xrs700x_reg.h"
 +
-+#include "dsa_priv.h"
++#define XRS700X_MIB_INTERVAL msecs_to_jiffies(3000)
 +
-+static struct sk_buff *xrs700x_xmit(struct sk_buff *skb, struct net_device *dev)
-+{
-+	struct dsa_port *dp = dsa_slave_to_port(dev);
-+	u8 *trailer;
++#define XRS7003E_ID	0x100
++#define XRS7003F_ID	0x101
++#define XRS7004E_ID	0x200
++#define XRS7004F_ID	0x201
 +
-+	trailer = skb_put(skb, 1);
-+	trailer[0] = BIT(dp->index);
++const struct xrs700x_info xrs7003e_info = {XRS7003E_ID, "XRS7003E", 3};
++EXPORT_SYMBOL(xrs7003e_info);
 +
-+	return skb;
-+}
++const struct xrs700x_info xrs7003f_info = {XRS7003F_ID, "XRS7003F", 3};
++EXPORT_SYMBOL(xrs7003f_info);
 +
-+static struct sk_buff *xrs700x_rcv(struct sk_buff *skb, struct net_device *dev,
-+				   struct packet_type *pt)
-+{
-+	int source_port;
-+	u8 *trailer;
++const struct xrs700x_info xrs7004e_info = {XRS7004E_ID, "XRS7004E", 4};
++EXPORT_SYMBOL(xrs7004e_info);
 +
-+	trailer = skb_tail_pointer(skb) - 1;
++const struct xrs700x_info xrs7004f_info = {XRS7004F_ID, "XRS7004F", 4};
++EXPORT_SYMBOL(xrs7004f_info);
 +
-+	source_port = ffs((int)trailer[0]) - 1;
-+
-+	if (source_port < 0)
-+		return NULL;
-+
-+	skb->dev = dsa_master_find_slave(dev, 0, source_port);
-+	if (!skb->dev)
-+		return NULL;
-+
-+	if (pskb_trim_rcsum(skb, skb->len - 1))
-+		return NULL;
-+
-+	/* Frame is forwarded by hardware, don't forward in software. */
-+	skb->offload_fwd_mark = 1;
-+
-+	return skb;
-+}
-+
-+static const struct dsa_device_ops xrs700x_netdev_ops = {
-+	.name	= "xrs700x",
-+	.proto	= DSA_TAG_PROTO_XRS700X,
-+	.xmit	= xrs700x_xmit,
-+	.rcv	= xrs700x_rcv,
-+	.overhead = 1,
-+	.tail_tag = true,
++struct xrs700x_regfield {
++	struct reg_field rf;
++	struct regmap_field **rmf;
 +};
 +
-+MODULE_LICENSE("GPL");
-+MODULE_ALIAS_DSA_TAG_DRIVER(DSA_TAG_PROTO_XRS700X);
++struct xrs700x_mib {
++	unsigned int offset;
++	const char *name;
++	int stats64_offset;
++};
 +
-+module_dsa_tag_driver(xrs700x_netdev_ops);
++#define XRS700X_MIB_ETHTOOL_ONLY(o, n) {o, n, -1}
++#define XRS700X_MIB(o, n, m) {o, n, offsetof(struct rtnl_link_stats64, m)}
++
++static const struct xrs700x_mib xrs700x_mibs[] = {
++	XRS700X_MIB(XRS_RX_GOOD_OCTETS_L, "rx_good_octets", rx_bytes),
++	XRS700X_MIB_ETHTOOL_ONLY(XRS_RX_BAD_OCTETS_L, "rx_bad_octets"),
++	XRS700X_MIB(XRS_RX_UNICAST_L, "rx_unicast", rx_packets),
++	XRS700X_MIB(XRS_RX_BROADCAST_L, "rx_broadcast", rx_packets),
++	XRS700X_MIB(XRS_RX_MULTICAST_L, "rx_multicast", multicast),
++	XRS700X_MIB(XRS_RX_UNDERSIZE_L, "rx_undersize", rx_length_errors),
++	XRS700X_MIB(XRS_RX_FRAGMENTS_L, "rx_fragments", rx_length_errors),
++	XRS700X_MIB(XRS_RX_OVERSIZE_L, "rx_oversize", rx_length_errors),
++	XRS700X_MIB(XRS_RX_JABBER_L, "rx_jabber", rx_length_errors),
++	XRS700X_MIB(XRS_RX_ERR_L, "rx_err", rx_errors),
++	XRS700X_MIB(XRS_RX_CRC_L, "rx_crc", rx_crc_errors),
++	XRS700X_MIB_ETHTOOL_ONLY(XRS_RX_64_L, "rx_64"),
++	XRS700X_MIB_ETHTOOL_ONLY(XRS_RX_65_127_L, "rx_65_127"),
++	XRS700X_MIB_ETHTOOL_ONLY(XRS_RX_128_255_L, "rx_128_255"),
++	XRS700X_MIB_ETHTOOL_ONLY(XRS_RX_256_511_L, "rx_256_511"),
++	XRS700X_MIB_ETHTOOL_ONLY(XRS_RX_512_1023_L, "rx_512_1023"),
++	XRS700X_MIB_ETHTOOL_ONLY(XRS_RX_1024_1536_L, "rx_1024_1536"),
++	XRS700X_MIB_ETHTOOL_ONLY(XRS_RX_HSR_PRP_L, "rx_hsr_prp"),
++	XRS700X_MIB_ETHTOOL_ONLY(XRS_RX_WRONGLAN_L, "rx_wronglan"),
++	XRS700X_MIB_ETHTOOL_ONLY(XRS_RX_DUPLICATE_L, "rx_duplicate"),
++	XRS700X_MIB(XRS_TX_OCTETS_L, "tx_octets", tx_bytes),
++	XRS700X_MIB(XRS_TX_UNICAST_L, "tx_unicast", tx_packets),
++	XRS700X_MIB(XRS_TX_BROADCAST_L, "tx_broadcast", tx_packets),
++	XRS700X_MIB(XRS_TX_MULTICAST_L, "tx_multicast", tx_packets),
++	XRS700X_MIB_ETHTOOL_ONLY(XRS_TX_HSR_PRP_L, "tx_hsr_prp"),
++	XRS700X_MIB(XRS_PRIQ_DROP_L, "priq_drop", tx_dropped),
++	XRS700X_MIB(XRS_EARLY_DROP_L, "early_drop", tx_dropped),
++};
++
++static void xrs700x_get_strings(struct dsa_switch *ds, int port,
++				u32 stringset, uint8_t *data)
++{
++	int i;
++
++	if (stringset != ETH_SS_STATS)
++		return;
++
++	for (i = 0; i < ARRAY_SIZE(xrs700x_mibs); i++) {
++		strscpy(data, xrs700x_mibs[i].name, ETH_GSTRING_LEN);
++		data += ETH_GSTRING_LEN;
++	}
++}
++
++static int xrs700x_get_sset_count(struct dsa_switch *ds, int port, int sset)
++{
++	if (sset != ETH_SS_STATS)
++		return -EOPNOTSUPP;
++
++	return ARRAY_SIZE(xrs700x_mibs);
++}
++
++static void xrs700x_read_port_counters(struct xrs700x *priv, int port)
++{
++	struct xrs700x_port *p = &priv->ports[port];
++	struct rtnl_link_stats64 stats;
++	int i;
++
++	memset(&stats, 0, sizeof(stats));
++
++	mutex_lock(&p->mib_mutex);
++
++	/* Capture counter values */
++	regmap_write(priv->regmap, XRS_CNT_CTRL(port), 1);
++
++	for (i = 0; i < ARRAY_SIZE(xrs700x_mibs); i++) {
++		unsigned int high = 0, low = 0, reg;
++
++		reg = xrs700x_mibs[i].offset + XRS_PORT_OFFSET * port;
++		regmap_read(priv->regmap, reg, &low);
++		regmap_read(priv->regmap, reg + 2, &high);
++
++		p->mib_data[i] += (high << 16) | low;
++
++		if (xrs700x_mibs[i].stats64_offset >= 0) {
++			u8 *s = (u8 *)&stats + xrs700x_mibs[i].stats64_offset;
++			*(u64 *)s += p->mib_data[i];
++		}
++	}
++
++	/* multicast must be added to rx_packets (which already includes
++	 * unicast and broadcast)
++	 */
++	stats.rx_packets += stats.multicast;
++
++	u64_stats_update_begin(&p->syncp);
++	p->stats64 = stats;
++	u64_stats_update_end(&p->syncp);
++
++	mutex_unlock(&p->mib_mutex);
++}
++
++static void xrs700x_mib_work(struct work_struct *work)
++{
++	struct xrs700x *priv = container_of(work, struct xrs700x,
++					    mib_work.work);
++	int i;
++
++	for (i = 0; i < priv->ds->num_ports; i++)
++		xrs700x_read_port_counters(priv, i);
++
++	schedule_delayed_work(&priv->mib_work, XRS700X_MIB_INTERVAL);
++}
++
++static void xrs700x_get_ethtool_stats(struct dsa_switch *ds, int port,
++				      uint64_t *data)
++{
++	struct xrs700x *priv = ds->priv;
++	struct xrs700x_port *p = &priv->ports[port];
++
++	xrs700x_read_port_counters(priv, port);
++
++	mutex_lock(&p->mib_mutex);
++	memcpy(data, p->mib_data, sizeof(*data) * ARRAY_SIZE(xrs700x_mibs));
++	mutex_unlock(&p->mib_mutex);
++}
++
++static void xrs700x_get_stats64(struct dsa_switch *ds, int port,
++				struct rtnl_link_stats64 *s)
++{
++	struct xrs700x *priv = ds->priv;
++	struct xrs700x_port *p = &priv->ports[port];
++	unsigned int start;
++
++	do {
++		start = u64_stats_fetch_begin(&p->syncp);
++		*s = p->stats64;
++	} while (u64_stats_fetch_retry(&p->syncp, start));
++}
++
++static int xrs700x_setup_regmap_range(struct xrs700x *priv)
++{
++	struct xrs700x_regfield regfields[] = {
++		{
++			.rf = REG_FIELD_ID(XRS_PORT_STATE(0), 0, 1,
++					   priv->ds->num_ports,
++					   XRS_PORT_OFFSET),
++			.rmf = &priv->ps_forward
++		},
++		{
++			.rf = REG_FIELD_ID(XRS_PORT_STATE(0), 2, 3,
++					   priv->ds->num_ports,
++					   XRS_PORT_OFFSET),
++			.rmf = &priv->ps_management
++		},
++		{
++			.rf = REG_FIELD_ID(XRS_PORT_STATE(0), 4, 9,
++					   priv->ds->num_ports,
++					   XRS_PORT_OFFSET),
++			.rmf = &priv->ps_sel_speed
++		},
++		{
++			.rf = REG_FIELD_ID(XRS_PORT_STATE(0), 10, 11,
++					   priv->ds->num_ports,
++					   XRS_PORT_OFFSET),
++			.rmf = &priv->ps_cur_speed
++		}
++	};
++	int i = 0;
++
++	for (; i < ARRAY_SIZE(regfields); i++) {
++		*regfields[i].rmf = devm_regmap_field_alloc(priv->dev,
++							    priv->regmap,
++							    regfields[i].rf);
++		if (IS_ERR(*regfields[i].rmf))
++			return PTR_ERR(*regfields[i].rmf);
++	}
++
++	return 0;
++}
++
++static enum dsa_tag_protocol xrs700x_get_tag_protocol(struct dsa_switch *ds,
++						      int port,
++						      enum dsa_tag_protocol m)
++{
++	return DSA_TAG_PROTO_XRS700X;
++}
++
++static int xrs700x_reset(struct dsa_switch *ds)
++{
++	struct xrs700x *priv = ds->priv;
++	unsigned int val;
++	int ret;
++
++	ret = regmap_write(priv->regmap, XRS_GENERAL, XRS_GENERAL_RESET);
++	if (ret)
++		goto error;
++
++	ret = regmap_read_poll_timeout(priv->regmap, XRS_GENERAL,
++				       val, !(val & XRS_GENERAL_RESET),
++				       10, 1000);
++error:
++	if (ret) {
++		dev_err_ratelimited(priv->dev, "error resetting switch: %d\n",
++				    ret);
++	}
++
++	return ret;
++}
++
++static void xrs700x_port_stp_state_set(struct dsa_switch *ds, int port,
++				       u8 state)
++{
++	struct xrs700x *priv = ds->priv;
++	unsigned int bpdus = 1;
++	unsigned int val;
++
++	switch (state) {
++	case BR_STATE_DISABLED:
++		bpdus = 0;
++		fallthrough;
++	case BR_STATE_BLOCKING:
++	case BR_STATE_LISTENING:
++		val = XRS_PORT_DISABLED;
++		break;
++	case BR_STATE_LEARNING:
++		val = XRS_PORT_LEARNING;
++		break;
++	case BR_STATE_FORWARDING:
++		val = XRS_PORT_FORWARDING;
++		break;
++	default:
++		dev_err(ds->dev, "invalid STP state: %d\n", state);
++		return;
++	}
++
++	regmap_fields_write(priv->ps_forward, port, val);
++
++	/* Enable/disable inbound policy added by xrs700x_port_add_bpdu_ipf()
++	 * which allows BPDU forwarding to the CPU port when the front facing
++	 * port is in disabled/learning state.
++	 */
++	regmap_update_bits(priv->regmap, XRS_ETH_ADDR_CFG(port, 0), 1, bpdus);
++
++	dev_dbg_ratelimited(priv->dev, "%s - port: %d, state: %u, val: 0x%x\n",
++			    __func__, port, state, val);
++}
++
++/* Add an inbound policy filter which matches the BPDU destination MAC
++ * and forwards to the CPU port. Leave the policy disabled, it will be
++ * enabled as needed.
++ */
++static int xrs700x_port_add_bpdu_ipf(struct dsa_switch *ds, int port)
++{
++	struct xrs700x *priv = ds->priv;
++	unsigned int val = 0;
++	int i = 0;
++	int ret;
++
++	/* Compare all 48 bits of the destination MAC address. */
++	ret = regmap_write(priv->regmap, XRS_ETH_ADDR_CFG(port, 0), 48 << 2);
++	if (ret)
++		return ret;
++
++	/* match BPDU destination 01:80:c2:00:00:00 */
++	for (i = 0; i < sizeof(eth_stp_addr); i += 2) {
++		ret = regmap_write(priv->regmap, XRS_ETH_ADDR_0(port, 0) + i,
++				   eth_stp_addr[i] |
++				   (eth_stp_addr[i + 1] << 8));
++		if (ret)
++			return ret;
++	}
++
++	/* Mirror BPDU to CPU port */
++	for (i = 0; i < ds->num_ports; i++) {
++		if (dsa_is_cpu_port(ds, i))
++			val |= BIT(i);
++	}
++
++	ret = regmap_write(priv->regmap, XRS_ETH_ADDR_FWD_MIRROR(port, 0), val);
++	if (ret)
++		return ret;
++
++	ret = regmap_write(priv->regmap, XRS_ETH_ADDR_FWD_ALLOW(port, 0), 0);
++	if (ret)
++		return ret;
++
++	return 0;
++}
++
++static int xrs700x_port_setup(struct dsa_switch *ds, int port)
++{
++	bool cpu_port = dsa_is_cpu_port(ds, port);
++	struct xrs700x *priv = ds->priv;
++	unsigned int val = 0;
++	int ret, i;
++
++	xrs700x_port_stp_state_set(ds, port, BR_STATE_DISABLED);
++
++	/* Disable forwarding to non-CPU ports */
++	for (i = 0; i < ds->num_ports; i++) {
++		if (!dsa_is_cpu_port(ds, i))
++			val |= BIT(i);
++	}
++
++	/* 1 = Disable forwarding to the port */
++	ret = regmap_write(priv->regmap, XRS_PORT_FWD_MASK(port), val);
++	if (ret)
++		return ret;
++
++	val = cpu_port ? XRS_PORT_MODE_MANAGEMENT : XRS_PORT_MODE_NORMAL;
++	ret = regmap_fields_write(priv->ps_management, port, val);
++	if (ret)
++		return ret;
++
++	if (!cpu_port) {
++		ret = xrs700x_port_add_bpdu_ipf(ds, port);
++		if (ret)
++			return ret;
++	}
++
++	return 0;
++}
++
++static int xrs700x_setup(struct dsa_switch *ds)
++{
++	struct xrs700x *priv = ds->priv;
++	int ret, i;
++
++	ret = xrs700x_reset(ds);
++	if (ret)
++		return ret;
++
++	for (i = 0; i < ds->num_ports; i++) {
++		ret = xrs700x_port_setup(ds, i);
++		if (ret)
++			return ret;
++	}
++
++	schedule_delayed_work(&priv->mib_work, XRS700X_MIB_INTERVAL);
++
++	return 0;
++}
++
++static void xrs700x_teardown(struct dsa_switch *ds)
++{
++	struct xrs700x *priv = ds->priv;
++
++	cancel_delayed_work_sync(&priv->mib_work);
++}
++
++static void xrs700x_phylink_validate(struct dsa_switch *ds, int port,
++				     unsigned long *supported,
++				     struct phylink_link_state *state)
++{
++	__ETHTOOL_DECLARE_LINK_MODE_MASK(mask) = { 0, };
++
++	switch (port) {
++	case 0:
++		break;
++	case 1:
++	case 2:
++	case 3:
++		phylink_set(mask, 1000baseT_Full);
++		break;
++	default:
++		bitmap_zero(supported, __ETHTOOL_LINK_MODE_MASK_NBITS);
++		dev_err(ds->dev, "Unsupported port: %i\n", port);
++		return;
++	}
++
++	phylink_set_port_modes(mask);
++
++	/* The switch only supports full duplex. */
++	phylink_set(mask, 10baseT_Full);
++	phylink_set(mask, 100baseT_Full);
++
++	bitmap_and(supported, supported, mask,
++		   __ETHTOOL_LINK_MODE_MASK_NBITS);
++	bitmap_and(state->advertising, state->advertising, mask,
++		   __ETHTOOL_LINK_MODE_MASK_NBITS);
++}
++
++static void xrs700x_mac_link_up(struct dsa_switch *ds, int port,
++				unsigned int mode, phy_interface_t interface,
++				struct phy_device *phydev,
++				int speed, int duplex,
++				bool tx_pause, bool rx_pause)
++{
++	struct xrs700x *priv = ds->priv;
++	unsigned int val;
++
++	switch (speed) {
++	case SPEED_1000:
++		val = XRS_PORT_SPEED_1000;
++		break;
++	case SPEED_100:
++		val = XRS_PORT_SPEED_100;
++		break;
++	case SPEED_10:
++		val = XRS_PORT_SPEED_10;
++		break;
++	default:
++		return;
++	}
++
++	regmap_fields_write(priv->ps_sel_speed, port, val);
++
++	dev_dbg_ratelimited(priv->dev, "%s: port: %d mode: %u speed: %u\n",
++			    __func__, port, mode, speed);
++}
++
++static int xrs700x_bridge_common(struct dsa_switch *ds, int port,
++				 struct net_device *bridge, bool join)
++{
++	unsigned int i, cpu_mask = 0, mask = 0;
++	struct xrs700x *priv = ds->priv;
++	int ret;
++
++	for (i = 0; i < ds->num_ports; i++) {
++		if (dsa_is_cpu_port(ds, i))
++			continue;
++
++		cpu_mask |= BIT(i);
++
++		if (dsa_to_port(ds, i)->bridge_dev == bridge)
++			continue;
++
++		mask |= BIT(i);
++	}
++
++	for (i = 0; i < ds->num_ports; i++) {
++		if (dsa_to_port(ds, i)->bridge_dev != bridge)
++			continue;
++
++		/* 1 = Disable forwarding to the port */
++		ret = regmap_write(priv->regmap, XRS_PORT_FWD_MASK(i), mask);
++		if (ret)
++			return ret;
++	}
++
++	if (!join) {
++		ret = regmap_write(priv->regmap, XRS_PORT_FWD_MASK(port),
++				   cpu_mask);
++		if (ret)
++			return ret;
++	}
++
++	return 0;
++}
++
++static int xrs700x_bridge_join(struct dsa_switch *ds, int port,
++			       struct net_device *bridge)
++{
++	return xrs700x_bridge_common(ds, port, bridge, true);
++}
++
++static void xrs700x_bridge_leave(struct dsa_switch *ds, int port,
++				 struct net_device *bridge)
++{
++	xrs700x_bridge_common(ds, port, bridge, false);
++}
++
++static const struct dsa_switch_ops xrs700x_ops = {
++	.get_tag_protocol	= xrs700x_get_tag_protocol,
++	.setup			= xrs700x_setup,
++	.teardown		= xrs700x_teardown,
++	.port_stp_state_set	= xrs700x_port_stp_state_set,
++	.phylink_validate	= xrs700x_phylink_validate,
++	.phylink_mac_link_up	= xrs700x_mac_link_up,
++	.get_strings		= xrs700x_get_strings,
++	.get_sset_count		= xrs700x_get_sset_count,
++	.get_ethtool_stats	= xrs700x_get_ethtool_stats,
++	.get_stats64		= xrs700x_get_stats64,
++	.port_bridge_join	= xrs700x_bridge_join,
++	.port_bridge_leave	= xrs700x_bridge_leave,
++};
++
++static int xrs700x_detect(struct xrs700x *priv)
++{
++	const struct xrs700x_info *info;
++	unsigned int id;
++	int ret;
++
++	ret = regmap_read(priv->regmap, XRS_DEV_ID0, &id);
++	if (ret) {
++		dev_err(priv->dev, "error %d while reading switch id.\n",
++			ret);
++		return ret;
++	}
++
++	info = of_device_get_match_data(priv->dev);
++	if (!info)
++		return -EINVAL;
++
++	if (info->id == id) {
++		priv->ds->num_ports = info->num_ports;
++		dev_info(priv->dev, "%s detected.\n", info->name);
++		return 0;
++	}
++
++	dev_err(priv->dev, "expected switch id 0x%x but found 0x%x.\n",
++		info->id, id);
++
++	return -ENODEV;
++}
++
++struct xrs700x *xrs700x_switch_alloc(struct device *base, void *devpriv)
++{
++	struct dsa_switch *ds;
++	struct xrs700x *priv;
++
++	ds = devm_kzalloc(base, sizeof(*ds), GFP_KERNEL);
++	if (!ds)
++		return NULL;
++
++	ds->dev = base;
++
++	priv = devm_kzalloc(base, sizeof(*priv), GFP_KERNEL);
++	if (!priv)
++		return NULL;
++
++	INIT_DELAYED_WORK(&priv->mib_work, xrs700x_mib_work);
++
++	ds->ops = &xrs700x_ops;
++	ds->priv = priv;
++	priv->dev = base;
++
++	priv->ds = ds;
++	priv->priv = devpriv;
++
++	return priv;
++}
++EXPORT_SYMBOL(xrs700x_switch_alloc);
++
++static int xrs700x_alloc_port_mib(struct xrs700x *priv, int port)
++{
++	struct xrs700x_port *p = &priv->ports[port];
++
++	p->mib_data = devm_kcalloc(priv->dev, ARRAY_SIZE(xrs700x_mibs),
++				   sizeof(*p->mib_data), GFP_KERNEL);
++	if (!p->mib_data)
++		return -ENOMEM;
++
++	mutex_init(&p->mib_mutex);
++	u64_stats_init(&p->syncp);
++
++	return 0;
++}
++
++int xrs700x_switch_register(struct xrs700x *priv)
++{
++	int ret;
++	int i;
++
++	ret = xrs700x_detect(priv);
++	if (ret)
++		return ret;
++
++	ret = xrs700x_setup_regmap_range(priv);
++	if (ret)
++		return ret;
++
++	priv->ports = devm_kcalloc(priv->dev, priv->ds->num_ports,
++				   sizeof(*priv->ports), GFP_KERNEL);
++	if (!priv->ports)
++		return -ENOMEM;
++
++	for (i = 0; i < priv->ds->num_ports; i++) {
++		ret = xrs700x_alloc_port_mib(priv, i);
++		if (ret)
++			return ret;
++	}
++
++	return dsa_register_switch(priv->ds);
++}
++EXPORT_SYMBOL(xrs700x_switch_register);
++
++void xrs700x_switch_remove(struct xrs700x *priv)
++{
++	dsa_unregister_switch(priv->ds);
++}
++EXPORT_SYMBOL(xrs700x_switch_remove);
++
++MODULE_AUTHOR("George McCollister <george.mccollister@gmail.com>");
++MODULE_DESCRIPTION("Arrow SpeedChips XRS700x DSA driver");
++MODULE_LICENSE("GPL v2");
+diff --git a/drivers/net/dsa/xrs700x/xrs700x.h b/drivers/net/dsa/xrs700x/xrs700x.h
+new file mode 100644
+index 000000000000..5d022a553f9d
+--- /dev/null
++++ b/drivers/net/dsa/xrs700x/xrs700x.h
+@@ -0,0 +1,42 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++#include <linux/device.h>
++#include <linux/mutex.h>
++#include <linux/regmap.h>
++#include <linux/workqueue.h>
++#include <linux/u64_stats_sync.h>
++#include <uapi/linux/if_link.h>
++
++struct xrs700x_info {
++	unsigned int id;
++	const char *name;
++	size_t num_ports;
++};
++
++extern const struct xrs700x_info xrs7003e_info;
++extern const struct xrs700x_info xrs7003f_info;
++extern const struct xrs700x_info xrs7004e_info;
++extern const struct xrs700x_info xrs7004f_info;
++
++struct xrs700x_port {
++	struct mutex mib_mutex; /* protects mib_data */
++	uint64_t *mib_data;
++	struct rtnl_link_stats64 stats64;
++	struct u64_stats_sync syncp;
++};
++
++struct xrs700x {
++	struct dsa_switch *ds;
++	struct device *dev;
++	void *priv;
++	struct regmap *regmap;
++	struct regmap_field *ps_forward;
++	struct regmap_field *ps_management;
++	struct regmap_field *ps_sel_speed;
++	struct regmap_field *ps_cur_speed;
++	struct delayed_work mib_work;
++	struct xrs700x_port *ports;
++};
++
++struct xrs700x *xrs700x_switch_alloc(struct device *base, void *devpriv);
++int xrs700x_switch_register(struct xrs700x *priv);
++void xrs700x_switch_remove(struct xrs700x *priv);
+diff --git a/drivers/net/dsa/xrs700x/xrs700x_i2c.c b/drivers/net/dsa/xrs700x/xrs700x_i2c.c
+new file mode 100644
+index 000000000000..a5f8883af829
+--- /dev/null
++++ b/drivers/net/dsa/xrs700x/xrs700x_i2c.c
+@@ -0,0 +1,150 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Copyright (C) 2020 NovaTech LLC
++ * George McCollister <george.mccollister@gmail.com>
++ */
++
++#include <linux/bits.h>
++#include <linux/i2c.h>
++#include <linux/module.h>
++#include "xrs700x.h"
++#include "xrs700x_reg.h"
++
++static int xrs700x_i2c_reg_read(void *context, unsigned int reg,
++				unsigned int *val)
++{
++	struct device *dev = context;
++	struct i2c_client *i2c = to_i2c_client(dev);
++	unsigned char buf[4];
++	int ret;
++
++	buf[0] = reg >> 23 & 0xff;
++	buf[1] = reg >> 15 & 0xff;
++	buf[2] = reg >> 7 & 0xff;
++	buf[3] = (reg & 0x7f) << 1;
++
++	ret = i2c_master_send(i2c, buf, sizeof(buf));
++	if (ret < 0) {
++		dev_err(dev, "xrs i2c_master_send returned %d\n", ret);
++		return ret;
++	}
++
++	ret = i2c_master_recv(i2c, buf, 2);
++	if (ret < 0) {
++		dev_err(dev, "xrs i2c_master_recv returned %d\n", ret);
++		return ret;
++	}
++
++	*val = buf[0] << 8 | buf[1];
++
++	return 0;
++}
++
++static int xrs700x_i2c_reg_write(void *context, unsigned int reg,
++				 unsigned int val)
++{
++	struct device *dev = context;
++	struct i2c_client *i2c = to_i2c_client(dev);
++	unsigned char buf[6];
++	int ret;
++
++	buf[0] = reg >> 23 & 0xff;
++	buf[1] = reg >> 15 & 0xff;
++	buf[2] = reg >> 7 & 0xff;
++	buf[3] = (reg & 0x7f) << 1 | 1;
++	buf[4] = val >> 8 & 0xff;
++	buf[5] = val & 0xff;
++
++	ret = i2c_master_send(i2c, buf, sizeof(buf));
++	if (ret < 0) {
++		dev_err(dev, "xrs i2c_master_send returned %d\n", ret);
++		return ret;
++	}
++
++	return 0;
++}
++
++static const struct regmap_config xrs700x_i2c_regmap_config = {
++	.val_bits = 16,
++	.reg_stride = 2,
++	.reg_bits = 32,
++	.pad_bits = 0,
++	.write_flag_mask = 0,
++	.read_flag_mask = 0,
++	.reg_read = xrs700x_i2c_reg_read,
++	.reg_write = xrs700x_i2c_reg_write,
++	.max_register = 0,
++	.cache_type = REGCACHE_NONE,
++	.reg_format_endian = REGMAP_ENDIAN_BIG,
++	.val_format_endian = REGMAP_ENDIAN_BIG
++};
++
++static int xrs700x_i2c_probe(struct i2c_client *i2c,
++			     const struct i2c_device_id *i2c_id)
++{
++	struct xrs700x *priv;
++	int ret;
++
++	priv = xrs700x_switch_alloc(&i2c->dev, i2c);
++	if (!priv)
++		return -ENOMEM;
++
++	priv->regmap = devm_regmap_init(&i2c->dev, NULL, &i2c->dev,
++					&xrs700x_i2c_regmap_config);
++	if (IS_ERR(priv->regmap)) {
++		ret = PTR_ERR(priv->regmap);
++		dev_err(&i2c->dev, "Failed to initialize regmap: %d\n", ret);
++		return ret;
++	}
++
++	i2c_set_clientdata(i2c, priv);
++
++	ret = xrs700x_switch_register(priv);
++
++	/* Main DSA driver may not be started yet. */
++	if (ret)
++		return ret;
++
++	return 0;
++}
++
++static int xrs700x_i2c_remove(struct i2c_client *i2c)
++{
++	struct xrs700x *priv = i2c_get_clientdata(i2c);
++
++	xrs700x_switch_remove(priv);
++
++	return 0;
++}
++
++static const struct i2c_device_id xrs700x_i2c_id[] = {
++	{ "xrs700x-switch", 0 },
++	{},
++};
++
++MODULE_DEVICE_TABLE(i2c, xrs700x_i2c_id);
++
++static const struct of_device_id xrs700x_i2c_dt_ids[] = {
++	{ .compatible = "arrow,xrs7003e", .data = &xrs7003e_info },
++	{ .compatible = "arrow,xrs7003f", .data = &xrs7003f_info },
++	{ .compatible = "arrow,xrs7004e", .data = &xrs7004e_info },
++	{ .compatible = "arrow,xrs7004f", .data = &xrs7004f_info },
++	{},
++};
++MODULE_DEVICE_TABLE(of, xrs700x_i2c_dt_ids);
++
++static struct i2c_driver xrs700x_i2c_driver = {
++	.driver = {
++		.name	= "xrs700x-i2c",
++		.of_match_table = of_match_ptr(xrs700x_i2c_dt_ids),
++	},
++	.probe	= xrs700x_i2c_probe,
++	.remove	= xrs700x_i2c_remove,
++	.id_table = xrs700x_i2c_id,
++};
++
++module_i2c_driver(xrs700x_i2c_driver);
++
++MODULE_AUTHOR("George McCollister <george.mccollister@gmail.com>");
++MODULE_DESCRIPTION("Arrow SpeedChips XRS700x DSA I2C driver");
++MODULE_LICENSE("GPL v2");
+diff --git a/drivers/net/dsa/xrs700x/xrs700x_mdio.c b/drivers/net/dsa/xrs700x/xrs700x_mdio.c
+new file mode 100644
+index 000000000000..a10ee28eb86e
+--- /dev/null
++++ b/drivers/net/dsa/xrs700x/xrs700x_mdio.c
+@@ -0,0 +1,163 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Copyright (C) 2020 NovaTech LLC
++ * George McCollister <george.mccollister@gmail.com>
++ */
++
++#include <linux/bitfield.h>
++#include <linux/bits.h>
++#include <linux/mdio.h>
++#include <linux/module.h>
++#include <linux/phy.h>
++#include <linux/if_vlan.h>
++#include "xrs700x.h"
++#include "xrs700x_reg.h"
++
++#define XRS_MDIO_IBA0	0x10
++#define XRS_MDIO_IBA1	0x11
++#define XRS_MDIO_IBD	0x14
++
++#define XRS_IB_READ	0x0
++#define XRS_IB_WRITE	0x1
++
++static int xrs700x_mdio_reg_read(void *context, unsigned int reg,
++				 unsigned int *val)
++{
++	struct mdio_device *mdiodev = context;
++	struct device *dev = &mdiodev->dev;
++	u16 uval;
++	int ret;
++
++	uval = (u16)FIELD_GET(GENMASK(31, 16), reg);
++
++	ret = mdiobus_write(mdiodev->bus, mdiodev->addr, XRS_MDIO_IBA1, uval);
++	if (ret < 0) {
++		dev_err(dev, "xrs mdiobus_write returned %d\n", ret);
++		return ret;
++	}
++
++	uval = (u16)((reg & GENMASK(15, 1)) | XRS_IB_READ);
++
++	ret = mdiobus_write(mdiodev->bus, mdiodev->addr, XRS_MDIO_IBA0, uval);
++	if (ret < 0) {
++		dev_err(dev, "xrs mdiobus_write returned %d\n", ret);
++		return ret;
++	}
++
++	ret = mdiobus_read(mdiodev->bus, mdiodev->addr, XRS_MDIO_IBD);
++	if (ret < 0) {
++		dev_err(dev, "xrs mdiobus_read returned %d\n", ret);
++		return ret;
++	}
++
++	*val = (unsigned int)ret;
++
++	return 0;
++}
++
++static int xrs700x_mdio_reg_write(void *context, unsigned int reg,
++				  unsigned int val)
++{
++	struct mdio_device *mdiodev = context;
++	struct device *dev = &mdiodev->dev;
++	u16 uval;
++	int ret;
++
++	ret = mdiobus_write(mdiodev->bus, mdiodev->addr, XRS_MDIO_IBD, (u16)val);
++	if (ret < 0) {
++		dev_err(dev, "xrs mdiobus_write returned %d\n", ret);
++		return ret;
++	}
++
++	uval = (u16)FIELD_GET(GENMASK(31, 16), reg);
++
++	ret = mdiobus_write(mdiodev->bus, mdiodev->addr, XRS_MDIO_IBA1, uval);
++	if (ret < 0) {
++		dev_err(dev, "xrs mdiobus_write returned %d\n", ret);
++		return ret;
++	}
++
++	uval = (u16)((reg & GENMASK(15, 1)) | XRS_IB_WRITE);
++
++	ret = mdiobus_write(mdiodev->bus, mdiodev->addr, XRS_MDIO_IBA0, uval);
++	if (ret < 0) {
++		dev_err(dev, "xrs mdiobus_write returned %d\n", ret);
++		return ret;
++	}
++
++	return 0;
++}
++
++static const struct regmap_config xrs700x_mdio_regmap_config = {
++	.val_bits = 16,
++	.reg_stride = 2,
++	.reg_bits = 32,
++	.pad_bits = 0,
++	.write_flag_mask = 0,
++	.read_flag_mask = 0,
++	.reg_read = xrs700x_mdio_reg_read,
++	.reg_write = xrs700x_mdio_reg_write,
++	.max_register = XRS_VLAN(VLAN_N_VID - 1),
++	.cache_type = REGCACHE_NONE,
++	.reg_format_endian = REGMAP_ENDIAN_BIG,
++	.val_format_endian = REGMAP_ENDIAN_BIG
++};
++
++static int xrs700x_mdio_probe(struct mdio_device *mdiodev)
++{
++	struct xrs700x *priv;
++	int ret;
++
++	priv = xrs700x_switch_alloc(&mdiodev->dev, mdiodev);
++	if (!priv)
++		return -ENOMEM;
++
++	priv->regmap = devm_regmap_init(&mdiodev->dev, NULL, mdiodev,
++					&xrs700x_mdio_regmap_config);
++	if (IS_ERR(priv->regmap)) {
++		ret = PTR_ERR(priv->regmap);
++		dev_err(&mdiodev->dev, "Failed to initialize regmap: %d\n", ret);
++		return ret;
++	}
++
++	dev_set_drvdata(&mdiodev->dev, priv);
++
++	ret = xrs700x_switch_register(priv);
++
++	/* Main DSA driver may not be started yet. */
++	if (ret)
++		return ret;
++
++	return 0;
++}
++
++static void xrs700x_mdio_remove(struct mdio_device *mdiodev)
++{
++	struct xrs700x *priv = dev_get_drvdata(&mdiodev->dev);
++
++	xrs700x_switch_remove(priv);
++}
++
++static const struct of_device_id xrs700x_mdio_dt_ids[] = {
++	{ .compatible = "arrow,xrs7003e", .data = &xrs7003e_info },
++	{ .compatible = "arrow,xrs7003f", .data = &xrs7003f_info },
++	{ .compatible = "arrow,xrs7004e", .data = &xrs7004e_info },
++	{ .compatible = "arrow,xrs7004f", .data = &xrs7004f_info },
++	{},
++};
++MODULE_DEVICE_TABLE(of, xrs700x_mdio_dt_ids);
++
++static struct mdio_driver xrs700x_mdio_driver = {
++	.mdiodrv.driver = {
++		.name	= "xrs700x-mdio",
++		.of_match_table = xrs700x_mdio_dt_ids,
++	},
++	.probe	= xrs700x_mdio_probe,
++	.remove	= xrs700x_mdio_remove,
++};
++
++mdio_module_driver(xrs700x_mdio_driver);
++
++MODULE_AUTHOR("George McCollister <george.mccollister@gmail.com>");
++MODULE_DESCRIPTION("Arrow SpeedChips XRS700x DSA MDIO driver");
++MODULE_LICENSE("GPL v2");
+diff --git a/drivers/net/dsa/xrs700x/xrs700x_reg.h b/drivers/net/dsa/xrs700x/xrs700x_reg.h
+new file mode 100644
+index 000000000000..a135d4d92b6d
+--- /dev/null
++++ b/drivers/net/dsa/xrs700x/xrs700x_reg.h
+@@ -0,0 +1,203 @@
++/* SPDX-License-Identifier: GPL-2.0 */
++
++/* Register Base Addresses */
++#define XRS_DEVICE_ID_BASE		0x0
++#define XRS_GPIO_BASE			0x10000
++#define XRS_PORT_OFFSET			0x10000
++#define XRS_PORT_BASE(x)		(0x200000 + XRS_PORT_OFFSET * (x))
++#define XRS_RTC_BASE			0x280000
++#define XRS_TS_OFFSET			0x8000
++#define XRS_TS_BASE(x)			(0x290000 + XRS_TS_OFFSET * (x))
++#define XRS_SWITCH_CONF_BASE		0x300000
++
++/* Device Identification Registers */
++#define XRS_DEV_ID0			(XRS_DEVICE_ID_BASE + 0)
++#define XRS_DEV_ID1			(XRS_DEVICE_ID_BASE + 2)
++#define XRS_INT_ID0			(XRS_DEVICE_ID_BASE + 4)
++#define XRS_INT_ID1			(XRS_DEVICE_ID_BASE + 6)
++#define XRS_REV_ID			(XRS_DEVICE_ID_BASE + 8)
++
++/* GPIO Registers */
++#define XRS_CONFIG0			(XRS_GPIO_BASE + 0x1000)
++#define XRS_INPUT_STATUS0		(XRS_GPIO_BASE + 0x1002)
++#define XRS_CONFIG1			(XRS_GPIO_BASE + 0x1004)
++#define XRS_INPUT_STATUS1		(XRS_GPIO_BASE + 0x1006)
++#define XRS_CONFIG2			(XRS_GPIO_BASE + 0x1008)
++#define XRS_INPUT_STATUS2		(XRS_GPIO_BASE + 0x100a)
++
++/* Port Configuration Registers */
++#define XRS_PORT_GEN_BASE(x)		(XRS_PORT_BASE(x) + 0x0)
++#define XRS_PORT_HSR_BASE(x)		(XRS_PORT_BASE(x) + 0x2000)
++#define XRS_PORT_PTP_BASE(x)		(XRS_PORT_BASE(x) + 0x4000)
++#define XRS_PORT_CNT_BASE(x)		(XRS_PORT_BASE(x) + 0x6000)
++#define XRS_PORT_IPO_BASE(x)		(XRS_PORT_BASE(x) + 0x8000)
++
++/* Port Configuration Registers - General and State */
++#define XRS_PORT_STATE(x)		(XRS_PORT_GEN_BASE(x) + 0x0)
++#define XRS_PORT_FORWARDING		0
++#define XRS_PORT_LEARNING		1
++#define XRS_PORT_DISABLED		2
++#define XRS_PORT_MODE_NORMAL		0
++#define XRS_PORT_MODE_MANAGEMENT	1
++#define XRS_PORT_SPEED_1000		0x12
++#define XRS_PORT_SPEED_100		0x20
++#define XRS_PORT_SPEED_10		0x30
++#define XRS_PORT_VLAN(x)		(XRS_PORT_GEN_BASE(x) + 0x10)
++#define XRS_PORT_VLAN0_MAPPING(x)	(XRS_PORT_GEN_BASE(x) + 0x12)
++#define XRS_PORT_FWD_MASK(x)		(XRS_PORT_GEN_BASE(x) + 0x14)
++#define XRS_PORT_VLAN_PRIO(x)		(XRS_PORT_GEN_BASE(x) + 0x16)
++
++/* Port Configuration Registers - HSR/PRP */
++#define XRS_HSR_CFG(x)			(XRS_PORT_HSR_BASE(x) + 0x0)
++
++/* Port Configuration Registers - PTP */
++#define XRS_PTP_RX_SYNC_DELAY_NS_LO(x)	(XRS_PORT_PTP_BASE(x) + 0x2)
++#define XRS_PTP_RX_SYNC_DELAY_NS_HI(x)	(XRS_PORT_PTP_BASE(x) + 0x4)
++#define XRS_PTP_RX_EVENT_DELAY_NS(x)	(XRS_PORT_PTP_BASE(x) + 0xa)
++#define XRS_PTP_TX_EVENT_DELAY_NS(x)	(XRS_PORT_PTP_BASE(x) + 0x12)
++
++/* Port Configuration Registers - Counter */
++#define XRS_CNT_CTRL(x)			(XRS_PORT_CNT_BASE(x) + 0x0)
++#define XRS_RX_GOOD_OCTETS_L		(XRS_PORT_CNT_BASE(0) + 0x200)
++#define XRS_RX_GOOD_OCTETS_H		(XRS_PORT_CNT_BASE(0) + 0x202)
++#define XRS_RX_BAD_OCTETS_L		(XRS_PORT_CNT_BASE(0) + 0x204)
++#define XRS_RX_BAD_OCTETS_H		(XRS_PORT_CNT_BASE(0) + 0x206)
++#define XRS_RX_UNICAST_L		(XRS_PORT_CNT_BASE(0) + 0x208)
++#define XRS_RX_UNICAST_H		(XRS_PORT_CNT_BASE(0) + 0x20a)
++#define XRS_RX_BROADCAST_L		(XRS_PORT_CNT_BASE(0) + 0x20c)
++#define XRS_RX_BROADCAST_H		(XRS_PORT_CNT_BASE(0) + 0x20e)
++#define XRS_RX_MULTICAST_L		(XRS_PORT_CNT_BASE(0) + 0x210)
++#define XRS_RX_MULTICAST_H		(XRS_PORT_CNT_BASE(0) + 0x212)
++#define XRS_RX_UNDERSIZE_L		(XRS_PORT_CNT_BASE(0) + 0x214)
++#define XRS_RX_UNDERSIZE_H		(XRS_PORT_CNT_BASE(0) + 0x216)
++#define XRS_RX_FRAGMENTS_L		(XRS_PORT_CNT_BASE(0) + 0x218)
++#define XRS_RX_FRAGMENTS_H		(XRS_PORT_CNT_BASE(0) + 0x21a)
++#define XRS_RX_OVERSIZE_L		(XRS_PORT_CNT_BASE(0) + 0x21c)
++#define XRS_RX_OVERSIZE_H		(XRS_PORT_CNT_BASE(0) + 0x21e)
++#define XRS_RX_JABBER_L			(XRS_PORT_CNT_BASE(0) + 0x220)
++#define XRS_RX_JABBER_H			(XRS_PORT_CNT_BASE(0) + 0x222)
++#define XRS_RX_ERR_L			(XRS_PORT_CNT_BASE(0) + 0x224)
++#define XRS_RX_ERR_H			(XRS_PORT_CNT_BASE(0) + 0x226)
++#define XRS_RX_CRC_L			(XRS_PORT_CNT_BASE(0) + 0x228)
++#define XRS_RX_CRC_H			(XRS_PORT_CNT_BASE(0) + 0x22a)
++#define XRS_RX_64_L			(XRS_PORT_CNT_BASE(0) + 0x22c)
++#define XRS_RX_64_H			(XRS_PORT_CNT_BASE(0) + 0x22e)
++#define XRS_RX_65_127_L			(XRS_PORT_CNT_BASE(0) + 0x230)
++#define XRS_RX_65_127_H			(XRS_PORT_CNT_BASE(0) + 0x232)
++#define XRS_RX_128_255_L		(XRS_PORT_CNT_BASE(0) + 0x234)
++#define XRS_RX_128_255_H		(XRS_PORT_CNT_BASE(0) + 0x236)
++#define XRS_RX_256_511_L		(XRS_PORT_CNT_BASE(0) + 0x238)
++#define XRS_RX_256_511_H		(XRS_PORT_CNT_BASE(0) + 0x23a)
++#define XRS_RX_512_1023_L		(XRS_PORT_CNT_BASE(0) + 0x23c)
++#define XRS_RX_512_1023_H		(XRS_PORT_CNT_BASE(0) + 0x23e)
++#define XRS_RX_1024_1536_L		(XRS_PORT_CNT_BASE(0) + 0x240)
++#define XRS_RX_1024_1536_H		(XRS_PORT_CNT_BASE(0) + 0x242)
++#define XRS_RX_HSR_PRP_L		(XRS_PORT_CNT_BASE(0) + 0x244)
++#define XRS_RX_HSR_PRP_H		(XRS_PORT_CNT_BASE(0) + 0x246)
++#define XRS_RX_WRONGLAN_L		(XRS_PORT_CNT_BASE(0) + 0x248)
++#define XRS_RX_WRONGLAN_H		(XRS_PORT_CNT_BASE(0) + 0x24a)
++#define XRS_RX_DUPLICATE_L		(XRS_PORT_CNT_BASE(0) + 0x24c)
++#define XRS_RX_DUPLICATE_H		(XRS_PORT_CNT_BASE(0) + 0x24e)
++#define XRS_TX_OCTETS_L			(XRS_PORT_CNT_BASE(0) + 0x280)
++#define XRS_TX_OCTETS_H			(XRS_PORT_CNT_BASE(0) + 0x282)
++#define XRS_TX_UNICAST_L		(XRS_PORT_CNT_BASE(0) + 0x284)
++#define XRS_TX_UNICAST_H		(XRS_PORT_CNT_BASE(0) + 0x286)
++#define XRS_TX_BROADCAST_L		(XRS_PORT_CNT_BASE(0) + 0x288)
++#define XRS_TX_BROADCAST_H		(XRS_PORT_CNT_BASE(0) + 0x28a)
++#define XRS_TX_MULTICAST_L		(XRS_PORT_CNT_BASE(0) + 0x28c)
++#define XRS_TX_MULTICAST_H		(XRS_PORT_CNT_BASE(0) + 0x28e)
++#define XRS_TX_HSR_PRP_L		(XRS_PORT_CNT_BASE(0) + 0x290)
++#define XRS_TX_HSR_PRP_H		(XRS_PORT_CNT_BASE(0) + 0x292)
++#define XRS_PRIQ_DROP_L			(XRS_PORT_CNT_BASE(0) + 0x2c0)
++#define XRS_PRIQ_DROP_H			(XRS_PORT_CNT_BASE(0) + 0x2c2)
++#define XRS_EARLY_DROP_L		(XRS_PORT_CNT_BASE(0) + 0x2c4)
++#define XRS_EARLY_DROP_H		(XRS_PORT_CNT_BASE(0) + 0x2c6)
++
++/* Port Configuration Registers - Inbound Policy 0 - 15 */
++#define XRS_ETH_ADDR_CFG(x, p)		(XRS_PORT_IPO_BASE(x) + \
++					 (p) * 0x20 + 0x0)
++#define XRS_ETH_ADDR_FWD_ALLOW(x, p)	(XRS_PORT_IPO_BASE(x) + \
++					 (p) * 0x20 + 0x2)
++#define XRS_ETH_ADDR_FWD_MIRROR(x, p)	(XRS_PORT_IPO_BASE(x) + \
++					 (p) * 0x20 + 0x4)
++#define XRS_ETH_ADDR_0(x, p)		(XRS_PORT_IPO_BASE(x) + \
++					 (p) * 0x20 + 0x8)
++#define XRS_ETH_ADDR_1(x, p)		(XRS_PORT_IPO_BASE(x) + \
++					 (p) * 0x20 + 0xa)
++#define XRS_ETH_ADDR_2(x, p)		(XRS_PORT_IPO_BASE(x) + \
++					 (p) * 0x20 + 0xc)
++
++/* RTC Registers */
++#define XRS_CUR_NSEC0			(XRS_RTC_BASE + 0x1004)
++#define XRS_CUR_NSEC1			(XRS_RTC_BASE + 0x1006)
++#define XRS_CUR_SEC0			(XRS_RTC_BASE + 0x1008)
++#define XRS_CUR_SEC1			(XRS_RTC_BASE + 0x100a)
++#define XRS_CUR_SEC2			(XRS_RTC_BASE + 0x100c)
++#define XRS_TIME_CC0			(XRS_RTC_BASE + 0x1010)
++#define XRS_TIME_CC1			(XRS_RTC_BASE + 0x1012)
++#define XRS_TIME_CC2			(XRS_RTC_BASE + 0x1014)
++#define XRS_STEP_SIZE0			(XRS_RTC_BASE + 0x1020)
++#define XRS_STEP_SIZE1			(XRS_RTC_BASE + 0x1022)
++#define XRS_STEP_SIZE2			(XRS_RTC_BASE + 0x1024)
++#define XRS_ADJUST_NSEC0		(XRS_RTC_BASE + 0x1034)
++#define XRS_ADJUST_NSEC1		(XRS_RTC_BASE + 0x1036)
++#define XRS_ADJUST_SEC0			(XRS_RTC_BASE + 0x1038)
++#define XRS_ADJUST_SEC1			(XRS_RTC_BASE + 0x103a)
++#define XRS_ADJUST_SEC2			(XRS_RTC_BASE + 0x103c)
++#define XRS_TIME_CMD			(XRS_RTC_BASE + 0x1040)
++
++/* Time Stamper Registers */
++#define XRS_TS_CTRL(x)			(XRS_TS_BASE(x) + 0x1000)
++#define XRS_TS_INT_MASK(x)		(XRS_TS_BASE(x) + 0x1008)
++#define XRS_TS_INT_STATUS(x)		(XRS_TS_BASE(x) + 0x1010)
++#define XRS_TS_NSEC0(x)			(XRS_TS_BASE(x) + 0x1104)
++#define XRS_TS_NSEC1(x)			(XRS_TS_BASE(x) + 0x1106)
++#define XRS_TS_SEC0(x)			(XRS_TS_BASE(x) + 0x1108)
++#define XRS_TS_SEC1(x)			(XRS_TS_BASE(x) + 0x110a)
++#define XRS_TS_SEC2(x)			(XRS_TS_BASE(x) + 0x110c)
++#define XRS_PNCT0(x)			(XRS_TS_BASE(x) + 0x1110)
++#define XRS_PNCT1(x)			(XRS_TS_BASE(x) + 0x1112)
++
++/* Switch Configuration Registers */
++#define XRS_SWITCH_GEN_BASE		(XRS_SWITCH_CONF_BASE + 0x0)
++#define XRS_SWITCH_TS_BASE		(XRS_SWITCH_CONF_BASE + 0x2000)
++#define XRS_SWITCH_VLAN_BASE		(XRS_SWITCH_CONF_BASE + 0x4000)
++
++/* Switch Configuration Registers - General */
++#define XRS_GENERAL			(XRS_SWITCH_GEN_BASE + 0x10)
++#define XRS_GENERAL_TIME_TRAILER	BIT(9)
++#define XRS_GENERAL_MOD_SYNC		BIT(10)
++#define XRS_GENERAL_CUT_THRU		BIT(13)
++#define XRS_GENERAL_CLR_MAC_TBL		BIT(14)
++#define XRS_GENERAL_RESET		BIT(15)
++#define XRS_MT_CLEAR_MASK		(XRS_SWITCH_GEN_BASE + 0x12)
++#define XRS_ADDRESS_AGING		(XRS_SWITCH_GEN_BASE + 0x20)
++#define XRS_TS_CTRL_TX			(XRS_SWITCH_GEN_BASE + 0x28)
++#define XRS_TS_CTRL_RX			(XRS_SWITCH_GEN_BASE + 0x2a)
++#define XRS_INT_MASK			(XRS_SWITCH_GEN_BASE + 0x2c)
++#define XRS_INT_STATUS			(XRS_SWITCH_GEN_BASE + 0x2e)
++#define XRS_MAC_TABLE0			(XRS_SWITCH_GEN_BASE + 0x200)
++#define XRS_MAC_TABLE1			(XRS_SWITCH_GEN_BASE + 0x202)
++#define XRS_MAC_TABLE2			(XRS_SWITCH_GEN_BASE + 0x204)
++#define XRS_MAC_TABLE3			(XRS_SWITCH_GEN_BASE + 0x206)
++
++/* Switch Configuration Registers - Frame Timestamp */
++#define XRS_TX_TS_NS_LO(t)		(XRS_SWITCH_TS_BASE + 0x80 * (t) + 0x0)
++#define XRS_TX_TS_NS_HI(t)		(XRS_SWITCH_TS_BASE + 0x80 * (t) + 0x2)
++#define XRS_TX_TS_S_LO(t)		(XRS_SWITCH_TS_BASE + 0x80 * (t) + 0x4)
++#define XRS_TX_TS_S_HI(t)		(XRS_SWITCH_TS_BASE + 0x80 * (t) + 0x6)
++#define XRS_TX_TS_HDR(t, h)		(XRS_SWITCH_TS_BASE + 0x80 * (t) + \
++					 0x2 * (h) + 0xe)
++#define XRS_RX_TS_NS_LO(t)		(XRS_SWITCH_TS_BASE + 0x80 * (t) + \
++					 0x200)
++#define XRS_RX_TS_NS_HI(t)		(XRS_SWITCH_TS_BASE + 0x80 * (t) + \
++					 0x202)
++#define XRS_RX_TS_S_LO(t)		(XRS_SWITCH_TS_BASE + 0x80 * (t) + \
++					 0x204)
++#define XRS_RX_TS_S_HI(t)		(XRS_SWITCH_TS_BASE + 0x80 * (t) + \
++					 0x206)
++#define XRS_RX_TS_HDR(t, h)		(XRS_SWITCH_TS_BASE + 0x80 * (t) + \
++					 0x2 * (h) + 0xe)
++
++/* Switch Configuration Registers - VLAN */
++#define XRS_VLAN(v)			(XRS_SWITCH_VLAN_BASE + 0x2 * (v))
 -- 
 2.11.0
 
