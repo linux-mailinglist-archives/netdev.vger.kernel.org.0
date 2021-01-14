@@ -2,121 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A9F82F5B35
-	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 08:23:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D745B2F5B59
+	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 08:32:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727218AbhANHWH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jan 2021 02:22:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57620 "EHLO
+        id S1727381AbhANHbV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jan 2021 02:31:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726127AbhANHWH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 02:22:07 -0500
-Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5806C061575
-        for <netdev@vger.kernel.org>; Wed, 13 Jan 2021 23:21:26 -0800 (PST)
-Received: by mail-pf1-x435.google.com with SMTP id c12so2821312pfo.10
-        for <netdev@vger.kernel.org>; Wed, 13 Jan 2021 23:21:26 -0800 (PST)
+        with ESMTP id S1726677AbhANHbS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 02:31:18 -0500
+Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15C29C061786;
+        Wed, 13 Jan 2021 23:30:32 -0800 (PST)
+Received: by mail-wm1-x334.google.com with SMTP id a6so3633462wmc.2;
+        Wed, 13 Jan 2021 23:30:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=NnD8McVk9rV3fLCHjE+nl1JnefXHNVHCuqm/SkguEL8=;
-        b=YGjOkUDlcsE2EADiTNCwlzfQ01K6oC4UaL0OuS52qljPo9joT+yDWE0SXSuiQn+CjC
-         ZRYTFW6h1LqcJFzujlQbocTtb5tgOAIt1NKBs04NlclvLOhXYXALYTV/MavTHIsUvjyE
-         tp9qwurYhNwAoEgLumI6l8qz4idlafitSi1bnLAP3Er2qVn+gDpEHMDAlFBPGe2fgHpC
-         iFZ6Ca5tuSenQBn0h3lqhVRGoCctLz9kPffhlVa67JDhyKC2MFcCKQu7gFcymtB8JGzu
-         GtFEQKT/n9os4CXxwExSpkw8jts2QlmndV7hhovGwpMToTp+1zHc+JAtR6H5zMacvFDc
-         4YdQ==
+        h=to:cc:references:from:subject:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=cdxwErbbAeIf+2FOu3AWts0mwQKXpMiwnQeXg8yT60A=;
+        b=mHk+mT/oUN5j4so5gqyCdCOLVG4FLnjsQtis+vRHXHhgdWniIS5cE7zMDDAGSzMEbt
+         fpG55RhVoN2MtxPg+4xeNixe/dzEKnggSGrIb3I7oSshxPHy97VJU4W9Obc+N0pHQlqu
+         WbFj3ailiVIxBg4CGVhV95YKSmUFClyV3Tmkropv7I7txKchCxp5oSEtFW+6jOczRVKE
+         dPGxUbzOwiDWq+6En4eE9LMf2/q+9fObLE/jKNyPjspKcpAHq7hrJIDVWHQA8Q8QpKpe
+         DS7A7IDNxFHapn2yftsIukDzB8BEd7+ulcEqGcl4rvXBmkiE+c9ECXFi8+A+EsiR6Tqv
+         BOUw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=NnD8McVk9rV3fLCHjE+nl1JnefXHNVHCuqm/SkguEL8=;
-        b=ByAnlfyIcM/G+JOIkmhkEJ+pqZTAEAwz7p0hUqUhd2XbGaSHOfV2usXgNhyKQfr8XL
-         rm2ZIW8EY3YcLTd+wPc659xdUJfJsX2RiSfjL2V/coPldF64J/8QXoh1Fis/MY0gecdq
-         7kFkL0g3kvtKajYIgak5p6Z0f3zipukQdGUqwxXOxOKIeK0DN1okwXHMCOc1paqpcXNM
-         H/4i0zdTFrcuIYnFLXpz4y3JUhvGtrEOjIN1mb8OPGn+C6aeL97oyO+HoLExBg8SOwtu
-         TSSlX6KuVKx0YqyHZjThyyHjFjhg2UKr6n6PhgxbyPnSMmi7DXly+zrCIw7c6Pod68TX
-         V4dA==
-X-Gm-Message-State: AOAM533nBdwJPP+S/2ZCrWw/Y6t3EuAII4S/cunvOO5vWxnLSIyJBua4
-        72Luxhebz9L1ylwb2SBIcKqw/AYe9OdjUzjzis0=
-X-Google-Smtp-Source: ABdhPJxUKOJ3istfJLF5DhSqKtj+emJMlUnA6MPBaHCpDOFp7iyJtbXA2yctGFXuCobRjk0wqu+Juj+USBidKzhN4gQ=
-X-Received: by 2002:a05:6a00:88b:b029:19c:780e:1cd with SMTP id
- q11-20020a056a00088bb029019c780e01cdmr6160376pfj.64.1610608886373; Wed, 13
- Jan 2021 23:21:26 -0800 (PST)
+        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=cdxwErbbAeIf+2FOu3AWts0mwQKXpMiwnQeXg8yT60A=;
+        b=KV82aHSS2amwVPSw3L8uWWwaEJvIKSA5W8R8i4izWkgZJgmakmSPstTl3b3fJuAcye
+         0JmDrkcVQcJgYsmWbLIzuDXfHvyd+Y28P1rUv5vv985eTb5oZnTXp/NXmeuddGEX0PDs
+         6bsIh/5I2Rj++ga+ZQqkRu0fxCl+YQmzVwp5wcpiKIStSogvkRKKlc3aO8qtAx97bpQ3
+         YIhcGMadlFvNQhlRepj9Hg9vgFZuNLAfcE0laHod7Bv0ECVnT+MT1jJyFQ9VB7rX6EhK
+         Rp3zF3L8zo4owwcHwUHOBf/uKCPjUqIWGtsdTgiR6Ys+hXhtuZxt2qLu9isCLFG3B5e+
+         SC8Q==
+X-Gm-Message-State: AOAM533VYkEBXT282prLVpT89iKOHE82Nt6E/0f9PaIIO6Q3Jt8qUiB2
+        QPXoOzQHPX2+xowzbW4UlVgRy+6m5ZQ=
+X-Google-Smtp-Source: ABdhPJx2aOuj/q0jWfFQ9thVui43LNjcY39uqmnYK5gJkU2yMGjlhNVCPgr3lopOlzWrtPSluKVF3w==
+X-Received: by 2002:a7b:c8da:: with SMTP id f26mr2601654wml.50.1610609430531;
+        Wed, 13 Jan 2021 23:30:30 -0800 (PST)
+Received: from ?IPv6:2003:ea:8f06:5500:3037:2ac5:86bd:e008? (p200300ea8f06550030372ac586bde008.dip0.t-ipconnect.de. [2003:ea:8f06:5500:3037:2ac5:86bd:e008])
+        by smtp.googlemail.com with ESMTPSA id k10sm7280482wrq.38.2021.01.13.23.30.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 13 Jan 2021 23:30:30 -0800 (PST)
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     Claudiu.Beznea@microchip.com, andrew@lunn.ch, davem@davemloft.net,
+        kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <1610120754-14331-1-git-send-email-claudiu.beznea@microchip.com>
+ <25ec943f-ddfc-9bcd-ef30-d0baf3c6b2a2@gmail.com>
+ <ce20d4f3-3e43-154a-0f57-2c2d42752597@microchip.com>
+ <ee0fd287-c737-faa5-eee1-99ffa120540a@gmail.com>
+ <ae4e73e9-109f-fdb9-382c-e33513109d1c@microchip.com>
+ <7976f7df-c22f-d444-c910-b0462b3d7f61@gmail.com>
+ <20210113220107.GN1551@shell.armlinux.org.uk>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH] net: phy: micrel: reconfigure the phy on resume
+Message-ID: <8c14937b-1b8c-807c-516c-8dcfb19294f1@gmail.com>
+Date:   Thu, 14 Jan 2021 08:30:18 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.1
 MIME-Version: 1.0
-References: <20210112025548.19107-1-xiyou.wangcong@gmail.com>
- <CADvbK_dvG9LNTTxh9R4QYO_0UHjKTvxaccb2AingaAzyXpzp4g@mail.gmail.com>
- <CAM_iQpW6m8xaTyi4Czi7BKFfv-oWkhJni9LUa8ETs1AorKdSVQ@mail.gmail.com> <CADvbK_dpay5Cajn+Q+tTi00rBi_yvPCUETrtB+CiXE_WdsRUQA@mail.gmail.com>
-In-Reply-To: <CADvbK_dpay5Cajn+Q+tTi00rBi_yvPCUETrtB+CiXE_WdsRUQA@mail.gmail.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Wed, 13 Jan 2021 23:21:15 -0800
-Message-ID: <CAM_iQpWfG69zQ0dp=eL9_0_02BrjOevpc-Dn9tnDxXJwAUYs6g@mail.gmail.com>
-Subject: Re: [Patch net] cls_flower: call nla_ok() before nla_next()
-To:     Xin Long <lucien.xin@gmail.com>
-Cc:     network dev <netdev@vger.kernel.org>,
-        Cong Wang <cong.wang@bytedance.com>,
-        syzbot <syzbot+2624e3778b18fc497c92@syzkaller.appspotmail.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Jiri Pirko <jiri@resnulli.us>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20210113220107.GN1551@shell.armlinux.org.uk>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 12, 2021 at 6:22 PM Xin Long <lucien.xin@gmail.com> wrote:
->
-> On Wed, Jan 13, 2021 at 1:43 AM Cong Wang <xiyou.wangcong@gmail.com> wrote:
-> >
-> > On Tue, Jan 12, 2021 at 3:52 AM Xin Long <lucien.xin@gmail.com> wrote:
-> > >
-> > > On Tue, Jan 12, 2021 at 10:56 AM Cong Wang <xiyou.wangcong@gmail.com> wrote:
-> > > >
-> > > > From: Cong Wang <cong.wang@bytedance.com>
-> > > >
-> > > > fl_set_enc_opt() simply checks if there are still bytes left to parse,
-> > > > but this is not sufficent as syzbot seems to be able to generate
-> > > > malformatted netlink messages. nla_ok() is more strict so should be
-> > > > used to validate the next nlattr here.
-> > > >
-> > > > And nla_validate_nested_deprecated() has less strict check too, it is
-> > > > probably too late to switch to the strict version, but we can just
-> > > > call nla_ok() too after it.
-> > > >
-> > > > Reported-and-tested-by: syzbot+2624e3778b18fc497c92@syzkaller.appspotmail.com
-> > > > Fixes: 0a6e77784f49 ("net/sched: allow flower to match tunnel options")
-> > > > Fixes: 79b1011cb33d ("net: sched: allow flower to match erspan options")
-> > > > Cc: Pieter Jansen van Vuuren <pieter.jansenvanvuuren@netronome.com>
-> > > > Cc: Jamal Hadi Salim <jhs@mojatatu.com>
-> > > > Cc: Xin Long <lucien.xin@gmail.com>
-> > > > Cc: Jiri Pirko <jiri@resnulli.us>
-> > > > Signed-off-by: Cong Wang <cong.wang@bytedance.com>
-> > > > ---
-> > > >  net/sched/cls_flower.c | 8 +++++---
-> > > >  1 file changed, 5 insertions(+), 3 deletions(-)
-> > > >
-> > > > diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
-> > > > index 1319986693fc..e265c443536e 100644
-> > > > --- a/net/sched/cls_flower.c
-> > > > +++ b/net/sched/cls_flower.c
-> > > > @@ -1272,6 +1272,8 @@ static int fl_set_enc_opt(struct nlattr **tb, struct fl_flow_key *key,
-> > > >
-> > > >                 nla_opt_msk = nla_data(tb[TCA_FLOWER_KEY_ENC_OPTS_MASK]);
-> > > >                 msk_depth = nla_len(tb[TCA_FLOWER_KEY_ENC_OPTS_MASK]);
-> > > > +               if (!nla_ok(nla_opt_msk, msk_depth))
-> > > > +                       return -EINVAL;
-> > > >         }
-> > > I think it's better to also add  NL_SET_ERR_MSG(extack, xxxx);
-> > > for this error return, like all the other places in this function.
-> >
-> > I think ext message is primarily for end users who usually can not
-> > generate malformat netlink messages.
-> >
-> > On the other hand, the nla_validate_nested_deprecated() right above
-> > the quoted code does not set ext message either.
-> nla_validate_nested_deprecated(..., extack), it's already done inside
-> when returns error, no?
+On 13.01.2021 23:01, Russell King - ARM Linux admin wrote:
+> On Wed, Jan 13, 2021 at 10:34:53PM +0100, Heiner Kallweit wrote:
+>> On 13.01.2021 13:36, Claudiu.Beznea@microchip.com wrote:
+>>> On 13.01.2021 13:09, Heiner Kallweit wrote:
+>>>> On 13.01.2021 10:29, Claudiu.Beznea@microchip.com wrote:
+>>>>> It could enter in this mode based on request for standby or suspend-to-mem:
+>>>>> echo mem > /sys/power/state
+>>>>> echo standby > /sys/power/state
+> 
+> This is a standard way to enter S2R - I've used it many times in the
+> past on platforms that support it.
+> 
+>> I'm not a Linux PM expert, to me it seems your use case is somewhere in the
+>> middle between s2r and hibernation. I *think* the assumption with s2r is
+>> that one component shouldn't simply cut the power to another component,
+>> and the kernel has no idea about it.
+> 
+> When entering S2R, power can (and probably will) be cut to all system
+> components, certainly all components that do not support wakeup. If
+> the system doesn't support WoL, then that will include the ethernet
+> PHY.
+> 
+I'm with you if we talk about a driver's suspend callback cutting power
+to the component it controls, or at least putting it to a power-saving
+state. However a driver shouldn't have to expect that during S2R somebody
+else cuts the power. If this would be the case, then I think we wouldn't
+need separate resume and restore pm callbacks in general.
 
-Yeah, seems fair.
+> When resuming, the responsibility is of the kernel and each driver's
+> .resume function to ensure that the hardware state is restored. Only
+> each device driver that knows the device itself can restore the state
+> of that device. In the case of an ethernet PHY, that is phylib and
+> its associated PHY driver.
+> 
+Also in phylib we have separate functions mdio_bus_phy_resume() and
+mdio_bus_phy_restore(), with the first one not fully reconfiguring
+the PHY.
 
-Thanks.
+> One has to be a tad careful with phylib and PHYs compared to their
+> MAC devices in terms of the resume order - it has not been unheard
+> of over the years for a MAC device to be resumed before its connected
+> PHY has been.
+> 
+Right.
