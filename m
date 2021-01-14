@@ -2,218 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BB18B2F5B63
-	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 08:36:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 406AE2F5B6F
+	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 08:41:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727178AbhANHfl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jan 2021 02:35:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60520 "EHLO
+        id S1727153AbhANHjv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jan 2021 02:39:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726821AbhANHfk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 02:35:40 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85921C061786
-        for <netdev@vger.kernel.org>; Wed, 13 Jan 2021 23:35:00 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1kzx9j-0004lx-OU; Thu, 14 Jan 2021 08:34:55 +0100
-Received: from [IPv6:2a03:f580:87bc:d400:139b:2156:a22c:f2f2] (unknown [IPv6:2a03:f580:87bc:d400:139b:2156:a22c:f2f2])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
-         client-signature RSA-PSS (4096 bits))
-        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
-        (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 6DDB65C35CE;
-        Thu, 14 Jan 2021 07:34:54 +0000 (UTC)
-Subject: Re: [net-next 09/17] can: length: can_fd_len2dlc(): simplify length
- calculcation
-To:     Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Cc:     netdev <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-can <linux-can@vger.kernel.org>, kernel@pengutronix.de
-References: <20210113211410.917108-1-mkl@pengutronix.de>
- <20210113211410.917108-10-mkl@pengutronix.de>
- <CAMZ6Rq+Wxn_kG7rSkUrMYMqNw790SMe-UKmpUVdEA_eGcjoT+g@mail.gmail.com>
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
- mQINBFFVq30BEACtnSvtXHoeHJxG6nRULcvlkW6RuNwHKmrqoksispp43X8+nwqIFYgb8UaX
- zu8T6kZP2wEIpM9RjEL3jdBjZNCsjSS6x1qzpc2+2ivjdiJsqeaagIgvy2JWy7vUa4/PyGfx
- QyUeXOxdj59DvLwAx8I6hOgeHx2X/ntKAMUxwawYfPZpP3gwTNKc27dJWSomOLgp+gbmOmgc
- 6U5KwhAxPTEb3CsT5RicsC+uQQFumdl5I6XS+pbeXZndXwnj5t84M+HEj7RN6bUfV2WZO/AB
- Xt5+qFkC/AVUcj/dcHvZwQJlGeZxoi4veCoOT2MYqfR0ax1MmN+LVRvKm29oSyD4Ts/97cbs
- XsZDRxnEG3z/7Winiv0ZanclA7v7CQwrzsbpCv+oj+zokGuKasofzKdpywkjAfSE1zTyF+8K
- nxBAmzwEqeQ3iKqBc3AcCseqSPX53mPqmwvNVS2GqBpnOfY7Mxr1AEmxdEcRYbhG6Xdn+ACq
- Dq0Db3A++3PhMSaOu125uIAIwMXRJIzCXYSqXo8NIeo9tobk0C/9w3fUfMTrBDtSviLHqlp8
- eQEP8+TDSmRP/CwmFHv36jd+XGmBHzW5I7qw0OORRwNFYBeEuiOIgxAfjjbLGHh9SRwEqXAL
- kw+WVTwh0MN1k7I9/CDVlGvc3yIKS0sA+wudYiselXzgLuP5cQARAQABtCZNYXJjIEtsZWlu
- ZS1CdWRkZSA8bWtsQHBlbmd1dHJvbml4LmRlPokCVAQTAQoAPgIbAwIeAQIXgAULCQgHAwUV
- CgkICwUWAgMBABYhBMFAC6CzmJ5vvH1bXCte4hHFiupUBQJfEWX4BQkQo2czAAoJECte4hHF
- iupUvfMP/iNtiysSr5yU4tbMBzRkGov1/FjurfH1kPweLVHDwiQJOGBz9HgM5+n8boduRv36
- 0lU32g3PehN0UHZdHWhygUd6J09YUi2mJo1l2Fz1fQ8elUGUOXpT/xoxNQjslZjJGItCjza8
- +D1DO+0cNFgElcNPa7DFBnglatOCZRiMjo4Wx0i8njEVRU+4ySRU7rCI36KPts+uVmZAMD7V
- 3qiR1buYklJaPCJsnXURXYsilBIE9mZRmQjTDVqjLWAit++flqUVmDjaD/pj2AQe2Jcmd2gm
- sYW5P1moz7ACA1GzMjLDmeFtpJOIB7lnDX0F/vvsG3V713/701aOzrXqBcEZ0E4aWeZJzaXw
- n1zVIrl/F3RKrWDhMKTkjYy7HA8hQ9SJApFXsgP334Vo0ea82H3dOU755P89+Eoj0y44MbQX
- 7xUy4UTRAFydPl4pJskveHfg4dO6Yf0PGIvVWOY1K04T1C5dpnHAEMvVNBrfTA8qcahRN82V
- /iIGB+KSC2xR79q1kv1oYn0GOnWkvZmMhqGLhxIqHYitwH4Jn5uRfanKYWBk12LicsjRiTyW
- Z9cJf2RgAtQgvMPvmaOL8vB3U4ava48qsRdgxhXMagU618EszVdYRNxGLCqsKVYIDySTrVzu
- ZGs2ibcRhN4TiSZjztWBAe1MaaGk05Ce4h5IdDLbOOxhuQENBF8SDLABCADohJLQ5yffd8Sq
- 8Lo9ymzgaLcWboyZ46pY4CCCcAFDRh++QNOJ8l4mEJMNdEa/yrW4lDQDhBWV75VdBuapYoal
- LFrSzDzrqlHGG4Rt4/XOqMo6eSeSLipYBu4Xhg59S9wZOWbHVT/6vZNmiTa3d40+gBg68dQ8
- iqWSU5NhBJCJeLYdG6xxeUEtsq/25N1erxmhs/9TD0sIeX36rFgWldMwKmZPe8pgZEv39Sdd
- B+ykOlRuHag+ySJxwovfdVoWT0o0LrGlHzAYo6/ZSi/Iraa9R/7A1isWOBhw087BMNkRYx36
- B77E4KbyBPx9h3wVyD/R6T0Q3ZNPu6SQLnsWojMzABEBAAGJAjwEGAEKACYWIQTBQAugs5ie
- b7x9W1wrXuIRxYrqVAUCXxIMsAIbDAUJAucGAAAKCRArXuIRxYrqVOu0D/48xSLyVZ5NN2Bb
- yqo3zxdv/PMGJSzM3JqSv7hnMZPQGy9XJaTc5Iz/hyXaNRwpH5X0UNKqhQhlztChuAKZ7iu+
- 2VKzq4JJe9qmydRUwylluc4HmGwlIrDNvE0N66pRvC3h8tOVIsippAQlt5ciH74bJYXr0PYw
- Aksw1jugRxMbNRzgGECg4O6EBNaHwDzsVPX1tDj0d9t/7ClzJUy20gg8r9Wm/I/0rcNkQOpV
- RJLDtSbGSusKxor2XYmVtHGauag4YO6Vdq+2RjArB3oNLgSOGlYVpeqlut+YYHjWpaX/cTf8
- /BHtIQuSAEu/WnycpM3Z9aaLocYhbp5lQKL6/bcWQ3udd0RfFR/Gv7eR7rn3evfqNTtQdo4/
- YNmd7P8TS7ALQV/5bNRe+ROLquoAZvhaaa6SOvArcmFccnPeyluX8+o9K3BCdXPwONhsrxGO
- wrPI+7XKMlwWI3O076NqNshh6mm8NIC0mDUr7zBUITa67P3Q2VoPoiPkCL9RtsXdQx5BI9iI
- h/6QlzDxcBdw2TVWyGkVTCdeCBpuRndOMVmfjSWdCXXJCLXO6sYeculJyPkuNvumxgwUiK/H
- AqqdUfy1HqtzP2FVhG5Ce0TeMJepagR2CHPXNg88Xw3PDjzdo+zNpqPHOZVKpLUkCvRv1p1q
- m1qwQVWtAwMML/cuPga78rkBDQRfEXGWAQgAt0Cq8SRiLhWyTqkf16Zv/GLkUgN95RO5ntYM
- fnc2Tr3UlRq2Cqt+TAvB928lN3WHBZx6DkuxRM/Y/iSyMuhzL5FfhsICuyiBs5f3QG70eZx+
- Bdj4I7LpnIAzmBdNWxMHpt0m7UnkNVofA0yH6rcpCsPrdPRJNOLFI6ZqXDQk9VF+AB4HVAJY
- BDU3NAHoyVGdMlcxev0+gEXfBQswEcysAyvzcPVTAqmrDsupnIB2f0SDMROQCLO6F+/cLG4L
- Stbz+S6YFjESyXblhLckTiPURvDLTywyTOxJ7Mafz6ZCene9uEOqyd/h81nZOvRd1HrXjiTE
- 1CBw+Dbvbch1ZwGOTQARAQABiQNyBBgBCgAmFiEEwUALoLOYnm+8fVtcK17iEcWK6lQFAl8R
- cZYCGwIFCQLnoRoBQAkQK17iEcWK6lTAdCAEGQEKAB0WIQQreQhYm33JNgw/d6GpyVqK+u3v
- qQUCXxFxlgAKCRCpyVqK+u3vqatQCAC3QIk2Y0g/07xNLJwhWcD7JhIqfe7Qc5Vz9kf8ZpWr
- +6w4xwRfjUSmrXz3s6e/vrQsfdxjVMDFOkyG8c6DWJo0TVm6Ucrf9G06fsjjE/6cbE/gpBkk
- /hOVz/a7UIELT+HUf0zxhhu+C9hTSl8Nb0bwtm6JuoY5AW0LP2KoQ6LHXF9KNeiJZrSzG6WE
- h7nf3KRFS8cPKe+trbujXZRb36iIYUfXKiUqv5xamhohy1hw+7Sy8nLmw8rZPa40bDxX0/Gi
- 98eVyT4/vi+nUy1gF1jXgNBSkbTpbVwNuldBsGJsMEa8lXnYuLzn9frLdtufUjjCymdcV/iT
- sFKziU9AX7TLZ5AP/i1QMP9OlShRqERH34ufA8zTukNSBPIBfmSGUe6G2KEWjzzNPPgcPSZx
- Do4jfQ/m/CiiibM6YCa51Io72oq43vMeBwG9/vLdyev47bhSfMLTpxdlDJ7oXU9e8J61iAF7
- vBwerBZL94I3QuPLAHptgG8zPGVzNKoAzxjlaxI1MfqAD9XUM80MYBVjunIQlkU/AubdvmMY
- X7hY1oMkTkC5hZNHLgIsDvWUG0g3sACfqF6gtMHY2lhQ0RxgxAEx+ULrk/svF6XGDe6iveyc
- z5Mg5SUggw3rMotqgjMHHRtB3nct6XqgPXVDGYR7nAkXitG+nyG5zWhbhRDglVZ0mLlW9hij
- z3Emwa94FaDhN2+1VqLFNZXhLwrNC5mlA6LUjCwOL+zb9a07HyjekLyVAdA6bZJ5BkSXJ1CO
- 5YeYolFjr4YU7GXcSVfUR6fpxrb8N+yH+kJhY3LmS9vb2IXxneE/ESkXM6a2YAZWfW8sgwTm
- 0yCEJ41rW/p3UpTV9wwE2VbGD1XjzVKl8SuAUfjjcGGys3yk5XQ5cccWTCwsVdo2uAcY1MVM
- HhN6YJjnMqbFoHQq0H+2YenTlTBn2Wsp8TIytE1GL6EbaPWbMh3VLRcihlMj28OUWGSERxat
- xlygDG5cBiY3snN3xJyBroh5xk/sHRgOdHpmujnFyu77y4RTZ2W8
-Message-ID: <a0d321d3-3e14-147d-121b-cd9074ab848e@pengutronix.de>
-Date:   Thu, 14 Jan 2021 08:34:50 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        with ESMTP id S1726204AbhANHju (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 02:39:50 -0500
+Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A700C061575;
+        Wed, 13 Jan 2021 23:39:10 -0800 (PST)
+Received: by mail-pj1-x1041.google.com with SMTP id p15so2536153pjv.3;
+        Wed, 13 Jan 2021 23:39:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=rvhN3aTOzOTNxmpEYBaHxzDtDQoYpqXFe9XFc5qQrWE=;
+        b=lCW+6BXLhHMFxXrw2vK6Q1m+1DarAnxVhOlHkbv6uaFq9tgf9saTz5Awr4KJDepPLb
+         YOQcZ9v72o2yID1Psc4Uwu/15Aw4yTjN/TtoYT/EBpyjFoJrH0QyN/tw6AXKwdu+6SPq
+         co7XQKyj48/MbU4MuA/FVjn44AFfALRqYLMSNxllbHbmYxc3kKw0dXMPG1uL8vA5prfr
+         Lth17oqjNKo+lJDpmtpGlVQHHqvY699MuRZ2s1o6hKlKuVu3rGMBKdb85PEHou8Uu1gH
+         ECq5HfC1IQW1n18DPx2t55B5J9q2CgykbB1/t8RA6ZIlZzksNJ7U6tmOUIQfVdXpRiyA
+         9NyA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=rvhN3aTOzOTNxmpEYBaHxzDtDQoYpqXFe9XFc5qQrWE=;
+        b=q6brNPV7eeBk/wT+YEUefQS742tRxS/FyckHFdaFZLzNDpfNHL4xoUHZsEHiXlUO37
+         4V3d3cC4e7ARn713/ofUN+Wt0j+ff7uq/x6IhfN+RVZmsk/vBBPhT9XayKYL8XI04KlV
+         hlMiMKC6k/ryVCIAqtsqz1p7BZZ6KRcs0//4QQpQE2BD8q/6vi4eFtqyE5h5l3mkNrWm
+         s/6JHI6R/Kg5f3/CUbphy7T1EFWM+HNFTnQ0V5xGmgXc+j/qVqvORD36rcamYyWWFHlk
+         zRRGKrtAYvkKZTz47GaN1KyMBWrllAxBwV3yy3jQcvppp2sFPj56JFelR1Dmgtyp56fM
+         Z1nQ==
+X-Gm-Message-State: AOAM532QCvDh8/8CD2LcpRhoSW84ibiKXf6t8FYzqGjd5YAYY5QTPQrK
+        p23mIBFPI24dFRc+dRGkEro=
+X-Google-Smtp-Source: ABdhPJxQ+CI11qO3Num/6lJE3aFajiF+8R2MaYCcqcSyKN5jxKoIsla22SVNQj8Nr7dFseiJ03IQ9w==
+X-Received: by 2002:a17:90a:c798:: with SMTP id gn24mr3645400pjb.49.1610609950251;
+        Wed, 13 Jan 2021 23:39:10 -0800 (PST)
+Received: from localhost.localdomain ([178.236.46.205])
+        by smtp.gmail.com with ESMTPSA id r67sm4221109pfc.82.2021.01.13.23.39.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Jan 2021 23:39:09 -0800 (PST)
+From:   menglong8.dong@gmail.com
+X-Google-Original-From: dong.menglong@zte.com.cn
+To:     kuba@kernel.org
+Cc:     davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Menglong Dong <dong.menglong@zte.com.cn>
+Subject: [PATCH net-next] net: tap: use eth_type_vlan in tap_get_user
+Date:   Wed, 13 Jan 2021 23:37:18 -0800
+Message-Id: <20210114073718.5972-1-dong.menglong@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <CAMZ6Rq+Wxn_kG7rSkUrMYMqNw790SMe-UKmpUVdEA_eGcjoT+g@mail.gmail.com>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="vwiJpRlKoz4ySlBbepVrQRYesLI90nvAw"
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---vwiJpRlKoz4ySlBbepVrQRYesLI90nvAw
-Content-Type: multipart/mixed; boundary="e2H2rwbCbUDG9fh7z1RfITXVFER9NShwz";
- protected-headers="v1"
-From: Marc Kleine-Budde <mkl@pengutronix.de>
-To: Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Cc: netdev <netdev@vger.kernel.org>, David Miller <davem@davemloft.net>,
- Jakub Kicinski <kuba@kernel.org>, linux-can <linux-can@vger.kernel.org>,
- kernel@pengutronix.de
-Message-ID: <a0d321d3-3e14-147d-121b-cd9074ab848e@pengutronix.de>
-Subject: Re: [net-next 09/17] can: length: can_fd_len2dlc(): simplify length
- calculcation
-References: <20210113211410.917108-1-mkl@pengutronix.de>
- <20210113211410.917108-10-mkl@pengutronix.de>
- <CAMZ6Rq+Wxn_kG7rSkUrMYMqNw790SMe-UKmpUVdEA_eGcjoT+g@mail.gmail.com>
-In-Reply-To: <CAMZ6Rq+Wxn_kG7rSkUrMYMqNw790SMe-UKmpUVdEA_eGcjoT+g@mail.gmail.com>
+From: Menglong Dong <dong.menglong@zte.com.cn>
 
---e2H2rwbCbUDG9fh7z1RfITXVFER9NShwz
-Content-Type: text/plain; charset=utf-8
-Content-Language: de-DE
-Content-Transfer-Encoding: quoted-printable
+Replace the check for ETH_P_8021Q and ETH_P_8021AD in
+tap_get_user with eth_type_vlan.
 
-On 1/14/21 2:59 AM, Vincent MAILHOL wrote:
-> On Tue. 14 Jan 2021 at 06:14, Marc Kleine-Budde <mkl@pengutronix.de> wr=
-ote:
->>
->> If the length paramter in len2dlc() exceeds the size of the len2dlc ar=
-ray, we
->> return 0xF. This is equal to the last 16 members of the array.
->>
->> This patch removes these members from the array, uses ARRAY_SIZE() for=
- the
->> length check, and returns CANFD_MAX_DLC (which is 0xf).
->>
->> Reviewed-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
->> Link: https://lore.kernel.org/r/20210111141930.693847-9-mkl@pengutroni=
-x.de
->> Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
->> ---
->>  drivers/net/can/dev/length.c | 6 ++----
->>  1 file changed, 2 insertions(+), 4 deletions(-)
->>
->> diff --git a/drivers/net/can/dev/length.c b/drivers/net/can/dev/length=
-=2Ec
->> index 5e7d481717ea..d695a3bee1ed 100644
->> --- a/drivers/net/can/dev/length.c
->> +++ b/drivers/net/can/dev/length.c
->> @@ -27,15 +27,13 @@ static const u8 len2dlc[] =3D {
->>         13, 13, 13, 13, 13, 13, 13, 13, /* 25 - 32 */
->>         14, 14, 14, 14, 14, 14, 14, 14, /* 33 - 40 */
->>         14, 14, 14, 14, 14, 14, 14, 14, /* 41 - 48 */
->> -       15, 15, 15, 15, 15, 15, 15, 15, /* 49 - 56 */
->> -       15, 15, 15, 15, 15, 15, 15, 15  /* 57 - 64 */
->>  };
->>
->>  /* map the sanitized data length to an appropriate data length code *=
-/
->>  u8 can_fd_len2dlc(u8 len)
->>  {
->> -       if (unlikely(len > 64))
->> -               return 0xF;
->> +       if (len > ARRAY_SIZE(len2dlc))
->=20
-> Sorry but I missed an of-by-one issue when I did my first
-> review. Don't know why but it popped to my eyes this morning when
-> casually reading the emails.
->=20
-> ARRAY_SIZE(len2dlc) is 49. If len is between 0 and 48, use the
-> array, if len is greater *or equal* return CANFD_MAX_DLC.
+Signed-off-by: Menglong Dong <dong.menglong@zte.com.cn>
+---
+ drivers/net/tap.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-Doh!
+diff --git a/drivers/net/tap.c b/drivers/net/tap.c
+index 3c652c8ac5ba..cf9197fe3bb6 100644
+--- a/drivers/net/tap.c
++++ b/drivers/net/tap.c
+@@ -713,8 +713,7 @@ static ssize_t tap_get_user(struct tap_queue *q, void *msg_control,
+ 	skb_probe_transport_header(skb);
+ 
+ 	/* Move network header to the right position for VLAN tagged packets */
+-	if ((skb->protocol == htons(ETH_P_8021Q) ||
+-	     skb->protocol == htons(ETH_P_8021AD)) &&
++	if (eth_type_vlan(skb->protocol) &&
+ 	    __vlan_get_protocol(skb, skb->protocol, &depth) != 0)
+ 		skb_set_network_header(skb, depth);
+ 
+-- 
+2.25.1
 
-Looking for his brown paper bag,
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
-
---e2H2rwbCbUDG9fh7z1RfITXVFER9NShwz--
-
---vwiJpRlKoz4ySlBbepVrQRYesLI90nvAw
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAl//9BsACgkQqclaivrt
-76n0Agf/T8IUab+21jpaqoIH+ghn7nUDjw4Zz5BBIuIW/NJX84nzJHE6LxU0IXtp
-Mv7zWE37nV+a1HzosbTonLS2waSL/jHL1U/oiJlo8J0WwCgaNpYVB228UTKm+b+V
-MAEDMSM6t1Okl4MUJljPzhP/hqBjPa4yOhYLewTAMjvCFqhZ5tncWZu4+/dgv+XF
-9JhbKI9StKEWI0g5j7/dNOLux8fzV85g7z7mQkyRckDEiKZgK4mTOTYDEQr4NMeu
-t34yDrvWbNfIouj13IezZWV+EREqo4gfQYnlpvrphY56NYst9BNCM0tpz4Rb3WkF
-Zjai6UPg76Yr35UQFd+HLQNumawrug==
-=VCvI
------END PGP SIGNATURE-----
-
---vwiJpRlKoz4ySlBbepVrQRYesLI90nvAw--
