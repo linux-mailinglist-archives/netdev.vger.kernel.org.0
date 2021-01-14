@@ -2,85 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2940C2F67E4
-	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 18:41:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 887052F67FE
+	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 18:45:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728729AbhANRgj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jan 2021 12:36:39 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:51433 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727497AbhANRgg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 12:36:36 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1610645710;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=rOHAdlgqauRBwXPD9c71qFXJvfD2MycfcJmzwTSg5/w=;
-        b=MtrPISixWaNQKhg9/nvE5VSzxAVfhLUTEiOdZqc1iFLtzAGAGyb6CMYmXMCjQpBQF1XxhX
-        Ysz8GbUTRDkJ5Xj/ovAY6+caGsRp6fri8eN2J7uxC0vvVNRfwgpHok+kcESWGgB65oTVvn
-        DxSUpFkA6CNBSRkzUJ9fCz1UmPxj/dQ=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-208-FPnpFKJAPS6bUN3TEsWgUQ-1; Thu, 14 Jan 2021 12:35:08 -0500
-X-MC-Unique: FPnpFKJAPS6bUN3TEsWgUQ-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 8BCEA8CA3CA;
-        Thu, 14 Jan 2021 17:34:30 +0000 (UTC)
-Received: from ovpn-115-2.ams2.redhat.com (ovpn-115-2.ams2.redhat.com [10.36.115.2])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 73BF15D748;
-        Thu, 14 Jan 2021 17:34:29 +0000 (UTC)
-Message-ID: <3c6852e30a1a7202ea0fba662dfef369d4d2851d.camel@redhat.com>
-Subject: Re: iproute2 ss "RTNETLINK answers: Invalid argument" with 5.4
- kernel
-From:   Paolo Abeni <pabeni@redhat.com>
-To:     "Rantala, Tommi T. (Nokia - FI/Espoo)" <tommi.t.rantala@nokia.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Cc:     "dsahern@kernel.org" <dsahern@kernel.org>
-Date:   Thu, 14 Jan 2021 18:34:28 +0100
-In-Reply-To: <a94ad61d28b69cdaac3b524e4f837e8d63ba65b0.camel@nokia.com>
-References: <a94ad61d28b69cdaac3b524e4f837e8d63ba65b0.camel@nokia.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+        id S1727143AbhANRnM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jan 2021 12:43:12 -0500
+Received: from mail.kernel.org ([198.145.29.99]:36688 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726310AbhANRnM (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 14 Jan 2021 12:43:12 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id A7AE723B40;
+        Thu, 14 Jan 2021 17:42:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1610646152;
+        bh=qyCgoMQS1q3Gbl/YPa4tVX/MZkl9Rw9Fb3rWjKlYnKQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=QexCp9ikjfo2fgUELpThJrlfN3qRvRKKeFFKetHH9Si0gW1yJEMGoiXCpxvLbmxbB
+         3Ae5QD/LvXlo1x9wn06oBAE3GtNsag8mY19NoMaipaikTaBdeRJiOAX8KT7Y24qwun
+         +5+J0UzdCjkLdVF0zAi9QYZkwJQVL85W44zvRrBRQAno4Ysro6DrHcI02VuTeLiDlD
+         IwhVNAg4Obct5NgzXcUnnzzY1eNk63NUR3DTFVCj44u5TJZWMn7aselENLT+x/de5h
+         JHnzupfTOmALgG+4p81htYVH+YzIl34rUS0ZNs0ekhEjOqlCvzPliX1E4Nui5Kej9Q
+         iL3izsHBVTCrw==
+Date:   Thu, 14 Jan 2021 09:42:30 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Saeed Mahameed <saeed@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jason Gunthorpe <jgg@nvidia.com>, netdev@vger.kernel.org,
+        linux-rdma@vger.kernel.org, Leon Romanovsky <leonro@nvidia.com>,
+        Parav Pandit <parav@nvidia.com>, Jiri Pirko <jiri@nvidia.com>,
+        Vu Pham <vuhuong@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: Re: [net-next V6 02/14] devlink: Introduce PCI SF port flavour and
+ port attribute
+Message-ID: <20210114094230.67e8bef9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210113192730.280656-3-saeed@kernel.org>
+References: <20210113192730.280656-1-saeed@kernel.org>
+        <20210113192730.280656-3-saeed@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 2021-01-14 at 13:17 +0000, Rantala, Tommi T. (Nokia - FI/Espoo)
-wrote:
-> Hi,
-> 
-> Since iproute2 v5.9.0, running ss on LTS kernels (for example 5.4.y)
-> produces error message in stderr (it's working otherwise fine, just printing
-> this extra error):
-> 
->   $ ss
->   RTNETLINK answers: Invalid argument
->   ...
-> 
-> Bisected to:
-> 
-> commit 9c3be2c0eee01be7832b7900a8be798a19c659a5
-> Author: Paolo Abeni <pabeni@redhat.com>
-> Date:   Fri Jul 10 15:52:35 2020 +0200
-> 
->     ss: mptcp: add msk diag interface support
-> 
-> 
-> As 5.4 does not have any mptcp support, it's not surprising that there is
-> some EINVAL error. Any nice way to get rid of the error for LTS kernel
-> users?
+On Wed, 13 Jan 2021 11:27:18 -0800 Saeed Mahameed wrote:
+>  /**
+>   * struct devlink_port_attrs - devlink port object
+>   * @flavour: flavour of the port
+> @@ -114,6 +126,7 @@ struct devlink_port_attrs {
+>  		struct devlink_port_phys_attrs phys;
+>  		struct devlink_port_pci_pf_attrs pci_pf;
+>  		struct devlink_port_pci_vf_attrs pci_vf;
+> +		struct devlink_port_pci_sf_attrs pci_sf;
+>  	};
+>  };
 
-Thank you for reporting this! I'll try to have a look ASAP -
-unfortunatelly can't be before next week.
-
-Cheers,
-
-Paolo
-
+include/net/devlink.h:131: warning: Function parameter or member 'pci_sf' not described in 'devlink_port_attrs'
