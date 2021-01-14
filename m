@@ -2,158 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2ED552F5A02
-	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 05:46:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F2E282F5A06
+	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 05:48:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727054AbhANEpD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 13 Jan 2021 23:45:03 -0500
-Received: from mail.kernel.org ([198.145.29.99]:34988 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726640AbhANEpC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 13 Jan 2021 23:45:02 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E8C20239D3;
-        Thu, 14 Jan 2021 04:43:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610599430;
-        bh=G9xPNinZ7l0pEHVaxcUfxEJr7h8qSlkgWk0+EGwZbaw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fXDALwgBCQnKhwQlYKgrcxWMUYzVqp4VDJz4iQpYLht2x6Eh8AbggUhx7oOEzSBqU
-         tdz+Vd0CWuKDRrf9neQEBkl18YzG267rGuQgjZcBOOGZEF6xS+SlEVEY/9o5/RuG6U
-         MtzOdrnA02zBC7SQgeFltj4QH9ycs3sodCPdJ/iYqsb5umkg2DYlIiYpmXIQWJyEFd
-         BwW6bC9HnvuZEm8Z70/7Wcot4OsRkEwaWJjk8ZEt5zEnCooTNaVucYmvoTF2fFMI91
-         oYuLupnSPSAgkcrcbtwJ+WeI1/Iv0zAowhdfMCJ4nw598LGkuojPu01b3mREGWKQMP
-         ZksARDQoHtCCQ==
-From:   =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
-To:     netdev@vger.kernel.org
-Cc:     Russell King <rmk+kernel@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>,
-        davem@davemloft.net, pali@kernel.org,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>
-Subject: [PATCH net-next v5 5/5] net: sfp: add support for multigig RollBall transceivers
-Date:   Thu, 14 Jan 2021 05:43:31 +0100
-Message-Id: <20210114044331.5073-6-kabel@kernel.org>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20210114044331.5073-1-kabel@kernel.org>
-References: <20210114044331.5073-1-kabel@kernel.org>
+        id S1726110AbhANEsY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 13 Jan 2021 23:48:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52942 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725875AbhANEsX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 13 Jan 2021 23:48:23 -0500
+Received: from mail-oi1-x230.google.com (mail-oi1-x230.google.com [IPv6:2607:f8b0:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C260C061575
+        for <netdev@vger.kernel.org>; Wed, 13 Jan 2021 20:47:45 -0800 (PST)
+Received: by mail-oi1-x230.google.com with SMTP id x13so4711142oic.5
+        for <netdev@vger.kernel.org>; Wed, 13 Jan 2021 20:47:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=TpaFTtQGBITkh7gnwnwRnxfc1yeL6k+ojODqTkBdYPA=;
+        b=MK0ZqXZnn3bKw9+cxy1sR1SHP/E3yW9PuaOkIH/fIqpBgsM8GKRPI5uZdKuZqhGFhk
+         pWB+ACP+63FDfrBvDeftcZ+ltL2iSzlOWQBW6ivxqBQ70kwRvYuEnyTIloXxc+IZ44oP
+         TrzEcg9XFzCeD++U3lhpSv3RozGpGs8DLvbcMB0k+MG10TFeYB3XMaLnr91rspyu9xLU
+         LZzD9lYZE4PM37HKsX9pxdHV5zClV7zYhglBK+5Q5B3lhppzBYEhkF5o6xNOi1CSR2oj
+         wdb6qvJXfnaZT4r9dDRBt/QR4L9RWvhSe7EZNdDduNdwp1VMW31UZ7IynLnfsEiqQL4C
+         3asg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=TpaFTtQGBITkh7gnwnwRnxfc1yeL6k+ojODqTkBdYPA=;
+        b=uSdBsKgCbgsN+3OEpzhl4oJ4PLf05Z6R5VTayrbpljMe4ZcD7nFubuULXdXQtUGIV+
+         Mx3lHztzOnKNwyUD0w7AQf5FgmF3htkgH5DJZQuUvjeJBbyzY52v1c7kGb+1wfeTHkML
+         ZgQV8WKOlBwECcxCUW0YhiAQghjenF1pbq0oprOIUEHALIlw0IXY57zuMwz0UTAh4ekA
+         8CaLsUe6iiUxOgAKURy/AOH6Ry1ku0LBEG3mHAyeJ2NX/8tfN99g7z20/b2a4NmHNJ5W
+         EnhMFdI0BsKwrzIIX+mDkNhSDYP4hQqhHZP7FhAYvxF0ZddlKXqFrUodWXmze0hu0U/Z
+         CXdw==
+X-Gm-Message-State: AOAM533PJyB5KkfWxoNp10HJ1RO6v7ZQlDBaLa44ZKQDSPXjImxUXK/e
+        Tx3Iwc9G5P/52kNaPYMChMo=
+X-Google-Smtp-Source: ABdhPJzHylTd5odVg7AypxBwPKvcXHwkdIOlKdkEMQKSV44dkjFxzolrbu8aTTH9quUDrCuiPkp9yQ==
+X-Received: by 2002:aca:cfc2:: with SMTP id f185mr1602038oig.136.1610599664585;
+        Wed, 13 Jan 2021 20:47:44 -0800 (PST)
+Received: from Davids-MacBook-Pro.local ([8.48.134.50])
+        by smtp.googlemail.com with ESMTPSA id z38sm888614ooi.34.2021.01.13.20.47.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 13 Jan 2021 20:47:43 -0800 (PST)
+Subject: Re: [PATCH v1 net-next 00/15] nvme-tcp receive offloads
+To:     Sagi Grimberg <sagi@grimberg.me>,
+        Boris Pismenny <borisp@mellanox.com>, kuba@kernel.org,
+        davem@davemloft.net, saeedm@nvidia.com, hch@lst.de, axboe@fb.com,
+        kbusch@kernel.org, viro@zeniv.linux.org.uk, edumazet@google.com
+Cc:     yorayz@nvidia.com, boris.pismenny@gmail.com, benishay@nvidia.com,
+        linux-nvme@lists.infradead.org, netdev@vger.kernel.org,
+        ogerlitz@nvidia.com
+References: <20201207210649.19194-1-borisp@mellanox.com>
+ <69f9a7c3-e2ab-454a-2713-2e9c9dea4e47@grimberg.me>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <967ae867-42c9-731d-9cb1-2c81fcc1ef77@gmail.com>
+Date:   Wed, 13 Jan 2021 21:47:40 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
+ Gecko/20100101 Thunderbird/78.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+In-Reply-To: <69f9a7c3-e2ab-454a-2713-2e9c9dea4e47@grimberg.me>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This adds support for multigig copper SFP modules from RollBall/Hilink.
-These modules have a specific way to access clause 45 registers of the
-internal PHY.
+On 1/13/21 6:27 PM, Sagi Grimberg wrote:
+>> Changes since RFC v1:
+>> =========================================
+>> * Split mlx5 driver patches to several commits
+>> * Fix nvme-tcp handling of recovery flows. In particular, move queue
+>> offlaod
+>>    init/teardown to the start/stop functions.
+> 
+> I'm assuming that you tested controller resets and network hiccups
+> during traffic right?
 
-We also need to wait at least 22 seconds after deasserting TX disable
-before accessing the PHY. The code waits for 25 seconds just to be sure.
-
-Signed-off-by: Marek Behún <kabel@kernel.org>
-Reviewed-by: Russell King <rmk+kernel@armlinux.org.uk>
-Cc: Andrew Lunn <andrew@lunn.ch>
----
- drivers/net/phy/sfp.c | 36 ++++++++++++++++++++++++++++++------
- 1 file changed, 30 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
-index d1b655f805ab..9f4270c19380 100644
---- a/drivers/net/phy/sfp.c
-+++ b/drivers/net/phy/sfp.c
-@@ -166,6 +166,7 @@ static const enum gpiod_flags gpio_flags[] = {
-  * on board (for a copper SFP) time to initialise.
-  */
- #define T_WAIT			msecs_to_jiffies(50)
-+#define T_WAIT_ROLLBALL		msecs_to_jiffies(25000)
- #define T_START_UP		msecs_to_jiffies(300)
- #define T_START_UP_BAD_GPON	msecs_to_jiffies(60000)
- 
-@@ -205,8 +206,11 @@ static const enum gpiod_flags gpio_flags[] = {
- 
- /* SFP modules appear to always have their PHY configured for bus address
-  * 0x56 (which with mdio-i2c, translates to a PHY address of 22).
-+ * RollBall SFPs access phy via SFP Enhanced Digital Diagnostic Interface
-+ * via address 0x51 (mdio-i2c will use RollBall protocol on this address).
-  */
--#define SFP_PHY_ADDR	22
-+#define SFP_PHY_ADDR		22
-+#define SFP_PHY_ADDR_ROLLBALL	17
- 
- struct sff_data {
- 	unsigned int gpios;
-@@ -219,6 +223,7 @@ struct sfp {
- 	struct mii_bus *i2c_mii;
- 	struct sfp_bus *sfp_bus;
- 	enum mdio_i2c_proto mdio_protocol;
-+	int phy_addr;
- 	struct phy_device *mod_phy;
- 	const struct sff_data *type;
- 	size_t i2c_block_size;
-@@ -251,6 +256,7 @@ struct sfp {
- 	struct sfp_eeprom_id id;
- 	unsigned int module_power_mW;
- 	unsigned int module_t_start_up;
-+	unsigned int module_t_wait;
- 
- #if IS_ENABLED(CONFIG_HWMON)
- 	struct sfp_diag diag;
-@@ -1505,7 +1511,7 @@ static int sfp_sm_probe_phy(struct sfp *sfp, bool is_c45)
- 	struct phy_device *phy;
- 	int err;
- 
--	phy = get_phy_device(sfp->i2c_mii, SFP_PHY_ADDR, is_c45);
-+	phy = get_phy_device(sfp->i2c_mii, sfp->phy_addr, is_c45);
- 	if (phy == ERR_PTR(-ENODEV))
- 		return PTR_ERR(phy);
- 	if (IS_ERR(phy)) {
-@@ -1895,6 +1901,23 @@ static int sfp_sm_mod_probe(struct sfp *sfp, bool report)
- 
- 	sfp->mdio_protocol = MDIO_I2C_DEFAULT;
- 
-+	sfp->phy_addr = SFP_PHY_ADDR;
-+	sfp->module_t_wait = T_WAIT;
-+
-+	if (((!memcmp(id.base.vendor_name, "OEM             ", 16) ||
-+	      !memcmp(id.base.vendor_name, "Turris          ", 16)) &&
-+	     (!memcmp(id.base.vendor_pn, "SFP-10G-T       ", 16) ||
-+	      !memcmp(id.base.vendor_pn, "RTSFP-10", 8)))) {
-+		sfp->mdio_protocol = MDIO_I2C_ROLLBALL;
-+		sfp->phy_addr = SFP_PHY_ADDR_ROLLBALL;
-+		sfp->module_t_wait = T_WAIT_ROLLBALL;
-+
-+		/* RollBall SFPs may have wrong (zero) extended compliance code
-+		 * burned in EEPROM. For PHY probing we need the correct one.
-+		 */
-+		id.base.extended_cc = SFF8024_ECC_10GBASE_T_SFI;
-+	}
-+
- 	return 0;
- }
- 
-@@ -2090,9 +2113,10 @@ static void sfp_sm_main(struct sfp *sfp, unsigned int event)
- 
- 		/* We need to check the TX_FAULT state, which is not defined
- 		 * while TX_DISABLE is asserted. The earliest we want to do
--		 * anything (such as probe for a PHY) is 50ms.
-+		 * anything (such as probe for a PHY) is 50ms. (or more on
-+		 * specific modules).
- 		 */
--		sfp_sm_next(sfp, SFP_S_WAIT, T_WAIT);
-+		sfp_sm_next(sfp, SFP_S_WAIT, sfp->module_t_wait);
- 		break;
- 
- 	case SFP_S_WAIT:
-@@ -2106,8 +2130,8 @@ static void sfp_sm_main(struct sfp *sfp, unsigned int event)
- 			 * deasserting.
- 			 */
- 			timeout = sfp->module_t_start_up;
--			if (timeout > T_WAIT)
--				timeout -= T_WAIT;
-+			if (timeout > sfp->module_t_wait)
-+				timeout -= sfp->module_t_wait;
- 			else
- 				timeout = 1;
- 
--- 
-2.26.2
-
+I had questions on this part as well -- e.g., what happens on a TCP
+retry? packets arrive, sgl filled for the command id, but packet is
+dropped in the stack (e.g., enqueue backlog is filled, so packet gets
+dropped)
