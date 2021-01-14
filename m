@@ -2,106 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A95BD2F5D3F
-	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 10:25:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 102AC2F5D9A
+	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 10:31:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728203AbhANJZR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jan 2021 04:25:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55794 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727174AbhANJZQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 04:25:16 -0500
-Received: from nbd.name (nbd.name [IPv6:2a01:4f8:221:3d45::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DB5DC061786;
-        Thu, 14 Jan 2021 01:24:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=nbd.name;
-         s=20160729; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:
-        MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=2uqg5pSRojZBo6w/FGO6uS669NIaxCuaEwl+DtcVLgI=; b=MZMILskZu+w7kBlmRGoaNKncmM
-        y1maASYjvLIo6Bp3jZNfXsd7014BWXk649R8jFm5IYA99cb6JJ2OoVsOhPWvEQir5k2uB7MTZMEoj
-        v1DLlNQo2/Bmqe2+jmlHhsK92jcO6zJEukKJ0OrqGZdP4kc9kStxqAAUVfCLjpjV3jtQ=;
-Received: from p54ae91f2.dip0.t-ipconnect.de ([84.174.145.242] helo=nf.local)
-        by ds12 with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.89)
-        (envelope-from <nbd@nbd.name>)
-        id 1kzyrn-0004T9-UU; Thu, 14 Jan 2021 10:24:31 +0100
-Subject: Re: [PATCH] mt76: Fix queue ID variable types after mcu queue split
-To:     Kalle Valo <kvalo@codeaurora.org>,
-        Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     Nathan Chancellor <natechancellor@gmail.com>,
-        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
-        Ryder Lee <ryder.lee@mediatek.com>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        clang-built-linux@googlegroups.com
-References: <20201229211548.1348077-1-natechancellor@gmail.com>
- <20201231100918.GA1819773@computer-5.station> <87k0sjlwyb.fsf@codeaurora.org>
-From:   Felix Fietkau <nbd@nbd.name>
-Message-ID: <9af48c35-c987-7eb4-e3a1-5e54555f988b@nbd.name>
-Date:   Thu, 14 Jan 2021 10:24:30 +0100
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.14; rv:78.0)
- Gecko/20100101 Thunderbird/78.6.1
+        id S1728239AbhANJbI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jan 2021 04:31:08 -0500
+Received: from eu-smtp-delivery-151.mimecast.com ([207.82.80.151]:57777 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727324AbhANJbE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 04:31:04 -0500
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-168-4vWQi2tZNvCQACouP4RCUg-1; Thu, 14 Jan 2021 09:29:24 +0000
+X-MC-Unique: 4vWQi2tZNvCQACouP4RCUg-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Thu, 14 Jan 2021 09:29:23 +0000
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Thu, 14 Jan 2021 09:29:23 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Eric Dumazet' <edumazet@google.com>
+CC:     Eric Dumazet <eric.dumazet@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Alexander Duyck <alexanderduyck@fb.com>,
+        "Paolo Abeni" <pabeni@redhat.com>,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        "Greg Thelen" <gthelen@google.com>
+Subject: RE: [PATCH net] net: avoid 32 x truesize under-estimation for tiny
+ skbs
+Thread-Topic: [PATCH net] net: avoid 32 x truesize under-estimation for tiny
+ skbs
+Thread-Index: AQHW6cgHRTEecj4eIU+21eAugdAvOaomIBlQgAB1MYCAAEJBAA==
+Date:   Thu, 14 Jan 2021 09:29:23 +0000
+Message-ID: <787e2b85cd2f4f0f90d7fe871dce85ff@AcuMS.aculab.com>
+References: <20210113161819.1155526-1-eric.dumazet@gmail.com>
+ <b0c5b2164e90492c99752584070510d7@AcuMS.aculab.com>
+ <CANn89iKS-J8BzMd+_PmFV67C+3hPx-C0saY0yFMdDWfHPwazHQ@mail.gmail.com>
+In-Reply-To: <CANn89iKS-J8BzMd+_PmFV67C+3hPx-C0saY0yFMdDWfHPwazHQ@mail.gmail.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
 MIME-Version: 1.0
-In-Reply-To: <87k0sjlwyb.fsf@codeaurora.org>
-Content-Type: text/plain; charset=utf-8
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: base64
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021-01-11 09:06, Kalle Valo wrote:
-> Lorenzo Bianconi <lorenzo@kernel.org> writes:
-> 
->>> Clang warns in both mt7615 and mt7915:
->>> 
->>> drivers/net/wireless/mediatek/mt76/mt7915/mcu.c:271:9: warning: implicit
->>> conversion from enumeration type 'enum mt76_mcuq_id' to different
->>> enumeration type 'enum mt76_txq_id' [-Wenum-conversion]
->>>                 txq = MT_MCUQ_FWDL;
->>>                     ~ ^~~~~~~~~~~~
->>> drivers/net/wireless/mediatek/mt76/mt7915/mcu.c:278:9: warning: implicit
->>> conversion from enumeration type 'enum mt76_mcuq_id' to different
->>> enumeration type 'enum mt76_txq_id' [-Wenum-conversion]
->>>                 txq = MT_MCUQ_WA;
->>>                     ~ ^~~~~~~~~~
->>> drivers/net/wireless/mediatek/mt76/mt7915/mcu.c:282:9: warning: implicit
->>> conversion from enumeration type 'enum mt76_mcuq_id' to different
->>> enumeration type 'enum mt76_txq_id' [-Wenum-conversion]
->>>                 txq = MT_MCUQ_WM;
->>>                     ~ ^~~~~~~~~~
->>> 3 warnings generated.
->>> 
->>> drivers/net/wireless/mediatek/mt76/mt7615/mcu.c:238:9: warning: implicit
->>> conversion from enumeration type 'enum mt76_mcuq_id' to different
->>> enumeration type 'enum mt76_txq_id' [-Wenum-conversion]
->>>                 qid = MT_MCUQ_WM;
->>>                     ~ ^~~~~~~~~~
->>> drivers/net/wireless/mediatek/mt76/mt7615/mcu.c:240:9: warning: implicit
->>> conversion from enumeration type 'enum mt76_mcuq_id' to different
->>> enumeration type 'enum mt76_txq_id' [-Wenum-conversion]
->>>                 qid = MT_MCUQ_FWDL;
->>>                     ~ ^~~~~~~~~~~~
->>> 2 warnings generated.
->>> 
->>> Use the proper type for the queue ID variables to fix these warnings.
->>> Additionally, rename the txq variable in mt7915_mcu_send_message to be
->>> more neutral like mt7615_mcu_send_message.
->>> 
->>> Fixes: e637763b606b ("mt76: move mcu queues to mt76_dev q_mcu array")
->>> Link: https://github.com/ClangBuiltLinux/linux/issues/1229
->>> Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
->>
->> Acked-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> 
-> I see that Felix already applied this, but as this is a regression
-> starting from v5.11-rc1 I think it should be applied to
-> wireless-drivers. Felix, can you drop this from your tree so that I
-> could apply it to wireless-drivers?
-Sure, will do.
-
-- Felix
+RnJvbTogRXJpYyBEdW1hemV0DQo+IFNlbnQ6IDE0IEphbnVhcnkgMjAyMSAwNToxNw0KPiANCj4g
+T24gV2VkLCBKYW4gMTMsIDIwMjEgYXQgMTE6MjMgUE0gRGF2aWQgTGFpZ2h0IDxEYXZpZC5MYWln
+aHRAYWN1bGFiLmNvbT4gd3JvdGU6DQo+ID4NCj4gPiBGcm9tOiBFcmljIER1bWF6ZXQNCj4gPiA+
+IFNlbnQ6IDEzIEphbnVhcnkgMjAyMSAxNjoxOA0KPiA+ID4NCj4gPiA+IEZyb206IEVyaWMgRHVt
+YXpldCA8ZWR1bWF6ZXRAZ29vZ2xlLmNvbT4NCj4gPiA+DQo+ID4gPiBCb3RoIHZpcnRpbyBuZXQg
+YW5kIG5hcGlfZ2V0X2ZyYWdzKCkgYWxsb2NhdGUgc2ticw0KPiA+ID4gd2l0aCBhIHZlcnkgc21h
+bGwgc2tiLT5oZWFkDQo+ID4gPg0KPiA+ID4gV2hpbGUgdXNpbmcgcGFnZSBmcmFnbWVudHMgaW5z
+dGVhZCBvZiBhIGttYWxsb2MgYmFja2VkIHNrYi0+aGVhZCBtaWdodCBnaXZlDQo+ID4gPiBhIHNt
+YWxsIHBlcmZvcm1hbmNlIGltcHJvdmVtZW50IGluIHNvbWUgY2FzZXMsIHRoZXJlIGlzIGEgaHVn
+ZSByaXNrIG9mDQo+ID4gPiB1bmRlciBlc3RpbWF0aW5nIG1lbW9yeSB1c2FnZS4NCj4gPg0KPiA+
+IFRoZXJlIGlzIChvciB3YXMgbGFzdCB0aW1lIEkgbG9va2VkKSBhbHNvIGEgcHJvYmxlbSB3aXRo
+DQo+ID4gc29tZSBvZiB0aGUgVVNCIGV0aGVybmV0IGRyaXZlcnMuDQo+ID4NCj4gPiBJSVJDIG9u
+ZSBvZiB0aGUgQVNYbm5ubm5uICg/Pz8pIFVTQjMgb25lcyBhbGxvY2F0ZXMgNjRrIHNrYiB0byBw
+YXNzDQo+ID4gdG8gdGhlIFVTQiBzdGFjayBhbmQgdGhlbiBqdXN0IGxpZXMgYWJvdXQgc2tiLT50
+cnVlc2l6ZSB3aGVuIHBhc3NpbmcNCj4gPiB0aGVtIGludG8gdGhlIG5ldHdvcmsgc3RhY2suDQo+
+IA0KPiBZb3Ugc3VyZSA/IEkgdGhpbmsgSSBoYXZlIGZpeGVkIHRoaXMgYXQgc29tZSBwb2ludA0K
+PiANCj4gaHR0cHM6Ly9naXQua2VybmVsLm9yZy9wdWIvc2NtL2xpbnV4L2tlcm5lbC9naXQvbmV0
+ZGV2L25ldC5naXQvY29tbWl0Lz9pZD1hOWUwYWNhNGIzNzg4NWI1NTk5ZTUyMjExZjA5DQo+IDhi
+ZDdmNTY1ZTc0OQ0KDQpJIG1pZ2h0IGhhdmUgZm9yZ290dGVuIHRoYXQgcGF0Y2ggOi0pDQpPciBw
+b3NzaWJseSBvbmx5IHJlbWVtYmVyZWQgaXQgY2hhbmdpbmcgc21hbGwgcGFja2V0cy4NCg0KPiA+
+IFRoZSBVU0IgaGFyZHdhcmUgd2lsbCBtZXJnZSBUQ1AgcmVjZWl2ZXMgYW5kIHB1dCBtdWx0aXBs
+ZSBldGhlcm5ldA0KPiA+IHBhY2tldHMgaW50byBhIHNpbmdsZSBVU0IgbWVzc2FnZS4NCj4gPiBC
+dXQgc2luZ2xlIGZyYW1lcyBjYW4gZW5kIHVwIGluIHZlcnkgYmlnIGtlcm5lbCBtZW1vcnkgYnVm
+ZmVycy4NCj4gPg0KPiANCj4gWWVhaCwgdGhpcyBpcyBhIGtub3duIHByb2JsZW0uDQoNClRoZSB3
+aG9sZSBVU0IgZXRoZXJuZXQgYmxvY2sgaXMgc29tZXdoYXQgaG9ycmlkIGFuZCBpbmVmZmljaWVu
+dA0KZXNwZWNpYWxseSBmb3IgWEhDSS9VU0IzIC0gd2hpY2ggY291bGQgaGF2ZSBoaWdoIHNwZWVk
+IGV0aGVybmV0Lg0KSXQgcmVhbGx5IG5lZWRzIHRvIGVpdGhlciBkaXJlY3RseSBpbnRlcmZhY2Ug
+dG8gdGhlIFhIQ0kgcmluZw0KKGxpa2UgYSBub3JtYWwgZXRoZXJuZXQgZHJpdmVyKSBvciBiZSBn
+aXZlbiB0aGUgc2VxdWVuY2Ugb2YNClVTQiByeCBwYWNrZXRzIHRvIHNwbGl0L2pvaW4gaW50byBl
+dGhlcm5ldCBmcmFtZXMuDQoNCkhvd2V2ZXIgSSBkb24ndCBoYXZlIHRoZSB0aW1lIHRvIG1ha2Ug
+dGhvc2UgY2hhbmdlcy4NCldoZW4gSSB3YXMgbG9va2luZyBhdCB0aGF0IGRyaXZlciAnZGF5am9i
+JyB3YXMgYWN0dWFsbHkNCnRyeWluZyB0byBtYWtlIGl0IHdvcmsuDQpUaGV5IGRyb3BwZWQgdGhh
+dCBpZGVhIGxhdGVyLg0KSSd2ZSBub3QgZ290IHRoZSBldGhlcm5ldCBkb25nbGUgYW55IG1vcmUg
+ZWl0aGVyLg0KDQoJRGF2aWQNCg0KLQ0KUmVnaXN0ZXJlZCBBZGRyZXNzIExha2VzaWRlLCBCcmFt
+bGV5IFJvYWQsIE1vdW50IEZhcm0sIE1pbHRvbiBLZXluZXMsIE1LMSAxUFQsIFVLDQpSZWdpc3Ry
+YXRpb24gTm86IDEzOTczODYgKFdhbGVzKQ0K
 
