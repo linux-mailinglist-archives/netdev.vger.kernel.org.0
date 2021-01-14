@@ -2,46 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 36B892F69CD
-	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 19:44:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6BA852F69E4
+	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 19:50:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726822AbhANSnR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jan 2021 13:43:17 -0500
-Received: from mail.kernel.org ([198.145.29.99]:51642 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726131AbhANSnR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 14 Jan 2021 13:43:17 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 9C1C523A55;
-        Thu, 14 Jan 2021 18:42:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610649756;
-        bh=fBmP9/6I4s8rWa63E5u5DuL9tPglqbny3Wl9cNND3Rc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=GeXChYPZ83wti/52ovjGj7YZcxAWz2HzDS7j4t8CSAfX/HsjXgyDkxxr/OSppsP7J
-         0ZYJKQdcjH1cAEaqJBhlgTB0UD1IK/I1b/DMLDiREvQJ9prMmeYzI1u2EKaxdTN87p
-         KaPh8IRJODEr8I8HunFbKYuGd8WJS6xIawCNGPuy8KpsHS5QWkdHra5ReZwXymNVub
-         gRA34RGCxZS1vFJxPCWZKkEH+e9nrxoIaFe4ztjXZV4tNzlbDRj+5+qzKoth5JdRYB
-         6kV4h10dfCextamt/GHBIgA99Mm6IYFsuvFojYJUV6StdQFiqYF090kuimQzNVJ6p/
-         LyvT9CsR5UhUg==
-Date:   Thu, 14 Jan 2021 10:42:35 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Ayush Sawal <ayush.sawal@chelsio.com>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, secdev@chelsio.com
-Subject: Re: [PATCH net] ch_ipsec: Remove initialization of rxq related data
-Message-ID: <20210114104235.00a87c1a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210113044302.25522-1-ayush.sawal@chelsio.com>
-References: <20210113044302.25522-1-ayush.sawal@chelsio.com>
+        id S1729481AbhANSp6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jan 2021 13:45:58 -0500
+Received: from m43-15.mailgun.net ([69.72.43.15]:26683 "EHLO
+        m43-15.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728335AbhANSp6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 13:45:58 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1610649933; h=Date: Message-Id: Cc: To: References:
+ In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
+ Content-Type: Sender; bh=3zjXkQXLJWqqe3jg+JhaQfBk8Fz3LZHrdbV179oe6tw=;
+ b=eQVf6TQV6SDwDkTNGzCkIBbcDsPjjDNANpaV3FD5TNJhF9PxkpS59g7cKFp0oRjGkYdRbc8z
+ HCnTANZHdxIxTiWtt5wyOTlsOKOKglQ2c8FHpu8T6sX8vta4di8xpIPsAfOQjEBYynfzjA/p
+ 5hG/skRPuwc8EA4m7CVkDk2J/Lk=
+X-Mailgun-Sending-Ip: 69.72.43.15
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n03.prod.us-west-2.postgun.com with SMTP id
+ 600091314104d9478dc728af (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Thu, 14 Jan 2021 18:45:05
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 54D81C43467; Thu, 14 Jan 2021 18:45:05 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        MISSING_DATE,MISSING_MID,SPF_FAIL,URIBL_BLOCKED autolearn=no
+        autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 09882C433C6;
+        Thu, 14 Jan 2021 18:45:01 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 09882C433C6
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH 4/7] wil6210: select CONFIG_CRC32
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20210103213645.1994783-4-arnd@kernel.org>
+References: <20210103213645.1994783-4-arnd@kernel.org>
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     Maya Erez <merez@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        "John W. Linville" <linville@tuxdriver.com>,
+        Vladimir Kondratiev <qca_vkondrat@qca.qualcomm.com>,
+        linux-wireless@vger.kernel.org, wil6210@qti.qualcomm.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
+Message-Id: <20210114184505.54D81C43467@smtp.codeaurora.org>
+Date:   Thu, 14 Jan 2021 18:45:05 +0000 (UTC)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 13 Jan 2021 10:13:02 +0530 Ayush Sawal wrote:
-> Removing initialization of nrxq and rxq_size in uld_info. As
-> ipsec uses nic queues only, there is no need to create uld
-> rx queues for ipsec.
+Arnd Bergmann <arnd@kernel.org> wrote:
 
-Why is this a fix? Does it break something or just wastes resources?
-If it's just about efficient use of resources I'll apply to net-next.
+> From: Arnd Bergmann <arnd@arndb.de>
+> 
+> Without crc32, the driver fails to link:
+> 
+> arm-linux-gnueabi-ld: drivers/net/wireless/ath/wil6210/fw.o: in function `wil_fw_verify':
+> fw.c:(.text+0x74c): undefined reference to `crc32_le'
+> arm-linux-gnueabi-ld: drivers/net/wireless/ath/wil6210/fw.o:fw.c:(.text+0x758): more undefined references to `crc32_le' follow
+> 
+> Fixes: 151a9706503f ("wil6210: firmware download")
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+
+Dave had already applied this so dropping from my queue.
+
+Patch set to Not Applicable.
+
+-- 
+https://patchwork.kernel.org/project/linux-wireless/patch/20210103213645.1994783-4-arnd@kernel.org/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+
