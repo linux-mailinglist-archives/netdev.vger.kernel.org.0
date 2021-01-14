@@ -2,126 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EF78F2F6A33
-	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 19:57:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B0D032F6A4E
+	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 20:01:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729551AbhANS4g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jan 2021 13:56:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38026 "EHLO
+        id S1729429AbhANTAq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jan 2021 14:00:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727134AbhANS4f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 13:56:35 -0500
-Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57A00C0613C1
-        for <netdev@vger.kernel.org>; Thu, 14 Jan 2021 10:55:55 -0800 (PST)
-Received: by mail-pg1-x531.google.com with SMTP id g15so4379624pgu.9
-        for <netdev@vger.kernel.org>; Thu, 14 Jan 2021 10:55:55 -0800 (PST)
+        with ESMTP id S1726264AbhANTAp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 14:00:45 -0500
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84982C061757;
+        Thu, 14 Jan 2021 11:00:05 -0800 (PST)
+Received: by mail-ej1-x629.google.com with SMTP id g12so9749147ejf.8;
+        Thu, 14 Jan 2021 11:00:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=UuJZ7b4I8I2BhJ3rTZek3mieIiGlG3aAA1BcP9TCOYU=;
-        b=m2RMx5xmmGjJq+xIpuPGUwc0z0RaOVMUx8PDkgmfnbdQ4lTjrSCzCT93X+XWNetzkY
-         SnpFa6F3Y04eGbXxcRN5LiWRzIcwvD75v4Wu5aSUq1gdtIgnoDVgMJD1IItxTkOFh4NR
-         +q87mKjq1SaLaDIttxyduCCyJaAjwkB03ukyTA+ZY4Y/oezhzDzp9QNYuDUTFYBeskpF
-         ragDk9NkIXP7GjO7jkYUE/UkcHEG8ND9qWf8r4vg6rMR0m1x7dx9mIh1cSqsM+Bui4ki
-         USMCg0XU/Ea0urvbFzI3PRQYjJ1+cl6lFDM2NP9ncYBVxQVz+sv1xUcJVQgdRz9DDS1R
-         22NQ==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=WxXi2MnOGxI5YShKcxudKHqn+/UocONefhZet/zCVLo=;
+        b=UepYyIAWz7xy1nXKq5atNUa2Qm+TftsQELDvxiZ5ZKg3wkOF2UnwM3VUcE3iKk+sao
+         qRlSSbXZDG6FdDcdxF0p+eeVKT2eO2Lqu9ornaQn/+dWSL6sYYsw9BybabV2MvFxuFVy
+         EdDD22RnAuXX7fJzhLcJGpWMJnry4xLWFkjgmcLmLe0ztz0CBLqiyecsdixWS8t8Tlvj
+         3X9tWg++SMQDewtRoPUSy/q0mWSAGjO/vFf/0IFrLfZgy8iFScN0WKyEzMbpkAVtOTIS
+         t0k+ngWObDgEBwhHbUsySqzqeBOKLpJqPh/13FHPfK3ddlhIs+Y+LaNtTly9Jzfx3Hca
+         TsaQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=UuJZ7b4I8I2BhJ3rTZek3mieIiGlG3aAA1BcP9TCOYU=;
-        b=c56h9Uay6hfSc1vdGM4gzDindlUwvQhQwc1gIEpWYbOv9RhWbH6giZl/+nR3Rp8mlr
-         63XQNS6QJolsdfxJbIhm47WzdREqZaaCUZNQ+kTBRBeLjIH+kTyGHFV9bm+xXCtEsS/2
-         aBxNmGwokziujkdFjvM0ESEsgHAaeLshn3Z7NFXlV1C+a3EAHcTyq9rUhiln10byGN7z
-         9zTKXOlJikWfzh1HoJxwVHVFQMcoidUApuAo38ybq7ZFSxXzbwJ287c8G6nwrRiwcKag
-         NwaELJbf/twKHaMF/7Sm8rE6jg7+bMlw1Gk43UJpMSP2gCRaBta3ehQ3UGoSOVB9FPih
-         Hrmw==
-X-Gm-Message-State: AOAM530XFckmxIW3DR9wZRs+7dKnQBtScN0avy/nb9uybytS4vmL1GAV
-        cvCexUsJHTJqkuDTLVYM667S5RHVjyE=
-X-Google-Smtp-Source: ABdhPJxkQ8JzxbV4xaHSefN/E+EsFwxIGNiqB8XHKDZZMQJNhwvDMRyGy7o/tOea+yiq6dYkbnwUEA==
-X-Received: by 2002:a05:6a00:88b:b029:19c:780e:1cd with SMTP id q11-20020a056a00088bb029019c780e01cdmr8648647pfj.64.1610650554864;
-        Thu, 14 Jan 2021 10:55:54 -0800 (PST)
-Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:7220:84ff:fe09:1424])
-        by smtp.gmail.com with ESMTPSA id j17sm5671509pfh.183.2021.01.14.10.55.53
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=WxXi2MnOGxI5YShKcxudKHqn+/UocONefhZet/zCVLo=;
+        b=BjVS2L92EhdNSv2PYWr3OukRKm4tWc22X9MoOpzsxumrswbYWe7/szNrhBi3kNqqVr
+         yfo494k5CVsIhi4IiM2TYXan8jy5cK7AIac+rYnA96i6Ju1ejnL0OgoAXfnKwyuDIBrv
+         o66cBJwXWmg1z91KeFLi9IdnEr2diWOCCv1p4FAHJ/DeLz3fdjpAnZHirrs+HtL7Ca40
+         XRpIKxW7Kqgw9KV8VX3YdZOKFQJujGgvY+GPxC1LFGLzHK8Ql1mmY267+hOpAg8gYDeC
+         4E70uhy/zHkSINx3gB2mEzydeklZYAAvK/DzJnIOJ+3955rkIhgdLBX5Av1p6zaacU3B
+         +BIg==
+X-Gm-Message-State: AOAM530S7Os6IwdKAGPL9D4N6r2XRtXNdS0AKtTzuqCUFq2J9DC8q87g
+        /6dl+prTs7Hd3v84d9MQ1Ko=
+X-Google-Smtp-Source: ABdhPJwdqEhWjoLT4FRVAHKXJUONfjo4T5q556X589F/6yrHtdr///kD7gdbJYS+TC7zRnmj28GM7Q==
+X-Received: by 2002:a17:906:494c:: with SMTP id f12mr2937693ejt.56.1610650803972;
+        Thu, 14 Jan 2021 11:00:03 -0800 (PST)
+Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
+        by smtp.gmail.com with ESMTPSA id m22sm2290181edp.81.2021.01.14.11.00.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Jan 2021 10:55:54 -0800 (PST)
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        syzbot <syzkaller@googlegroups.com>
-Subject: [PATCH net] net_sched: avoid shift-out-of-bounds in tcindex_set_parms()
-Date:   Thu, 14 Jan 2021 10:52:29 -0800
-Message-Id: <20210114185229.1742255-1-eric.dumazet@gmail.com>
-X-Mailer: git-send-email 2.30.0.284.gd98b1dd5eaa7-goog
+        Thu, 14 Jan 2021 11:00:03 -0800 (PST)
+Date:   Thu, 14 Jan 2021 21:00:02 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     George McCollister <george.mccollister@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Rob Herring <robh@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        "open list:OPEN FIRMWARE AND..." <devicetree@vger.kernel.org>
+Subject: Re: [PATCH net-next v4 2/3] net: dsa: add Arrow SpeedChips XRS700x
+ driver
+Message-ID: <20210114190002.eriqfc6yd6kg7w2v@skbuf>
+References: <20210113145922.92848-1-george.mccollister@gmail.com>
+ <20210113145922.92848-3-george.mccollister@gmail.com>
+ <20210114015659.33shdlfthywqdla7@skbuf>
+ <CAFSKS=NU4hrnXB5FcAFvnFnmAtK5HfYR8dAKyw3cd=5UKOBNfg@mail.gmail.com>
+ <20210114183243.4kse75ksw3u7h4uz@skbuf>
+ <CAFSKS=NrdVSDEh5DWN+JOcZ5fycM1y_N5b8cxzZwQxm-hJbVHQ@mail.gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAFSKS=NrdVSDEh5DWN+JOcZ5fycM1y_N5b8cxzZwQxm-hJbVHQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
+On Thu, Jan 14, 2021 at 12:47:46PM -0600, George McCollister wrote:
+> On Thu, Jan 14, 2021 at 12:32 PM Vladimir Oltean <olteanv@gmail.com> wrote:
+> > > > May boil down to preference too, but I don't believe "dev" is a happy
+> > > > name to give to a driver private data structure.
+> > >
+> > > There are other drivers in the subsystem that do this. If there was a
+> > > consistent pattern followed in the subsystem I would have followed it.
+> > > Trust me I was a bit frustrated with home much time I spent going
+> > > through multiple drivers trying to determine the best practices for
+> > > organization, naming, etc.
+> > > If it's a big let me know and I'll change it.
+> >
+> > Funny that you are complaining about consistency in other drivers,
+> > because if I count correctly, out of a total of 22 occurrences of
+> > struct xrs700x variables in yours, 13 are named priv and 9 are named
+> > dev. So you are not even consistent with yourself. But it's not a major
+> > issue either way.
+> 
+> Touché. This ended up happening because I followed the pattern used by
+> different drivers in different places. Specifically ksz was using
+> regmap to work on multiple buses but wasn't a very clean example for
+> much else.
+> I'll just change it to priv everywhere.
 
-tc_index being 16bit wide, we need to check that TCA_TCINDEX_SHIFT
-attribute is not silly.
+Don't worry, I know you copied from the micrel ksz driver, I made sure
+to complain there as well:
+https://lkml.org/lkml/2020/11/12/1344
 
-UBSAN: shift-out-of-bounds in net/sched/cls_tcindex.c:260:29
-shift exponent 255 is too large for 32-bit type 'int'
-CPU: 0 PID: 8516 Comm: syz-executor228 Not tainted 5.10.0-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:79 [inline]
- dump_stack+0x107/0x163 lib/dump_stack.c:120
- ubsan_epilogue+0xb/0x5a lib/ubsan.c:148
- __ubsan_handle_shift_out_of_bounds.cold+0xb1/0x181 lib/ubsan.c:395
- valid_perfect_hash net/sched/cls_tcindex.c:260 [inline]
- tcindex_set_parms.cold+0x1b/0x215 net/sched/cls_tcindex.c:425
- tcindex_change+0x232/0x340 net/sched/cls_tcindex.c:546
- tc_new_tfilter+0x13fb/0x21b0 net/sched/cls_api.c:2127
- rtnetlink_rcv_msg+0x8b6/0xb80 net/core/rtnetlink.c:5555
- netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2494
- netlink_unicast_kernel net/netlink/af_netlink.c:1304 [inline]
- netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1330
- netlink_sendmsg+0x907/0xe40 net/netlink/af_netlink.c:1919
- sock_sendmsg_nosec net/socket.c:652 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:672
- ____sys_sendmsg+0x6e8/0x810 net/socket.c:2336
- ___sys_sendmsg+0xf3/0x170 net/socket.c:2390
- __sys_sendmsg+0xe5/0x1b0 net/socket.c:2423
- do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Signed-off-by: Eric Dumazet <edumazet@google.com>
-Reported-by: syzbot <syzkaller@googlegroups.com>
----
- net/sched/cls_tcindex.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
-
-diff --git a/net/sched/cls_tcindex.c b/net/sched/cls_tcindex.c
-index 78bec347b8b66f660e620dd715d0eb68f9bcd2d3..c4007b9cd16d6a200d943e3e0536d6b20022ba77 100644
---- a/net/sched/cls_tcindex.c
-+++ b/net/sched/cls_tcindex.c
-@@ -366,9 +366,13 @@ tcindex_set_parms(struct net *net, struct tcf_proto *tp, unsigned long base,
- 	if (tb[TCA_TCINDEX_MASK])
- 		cp->mask = nla_get_u16(tb[TCA_TCINDEX_MASK]);
- 
--	if (tb[TCA_TCINDEX_SHIFT])
-+	if (tb[TCA_TCINDEX_SHIFT]) {
- 		cp->shift = nla_get_u32(tb[TCA_TCINDEX_SHIFT]);
--
-+		if (cp->shift > 16) {
-+			err = -EINVAL;
-+			goto errout;
-+		}
-+	}
- 	if (!cp->hash) {
- 		/* Hash not specified, use perfect hash if the upper limit
- 		 * of the hashing index is below the threshold.
--- 
-2.30.0.284.gd98b1dd5eaa7-goog
-
+It's a pretty bad driver to copy from, by the way.
