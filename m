@@ -2,130 +2,320 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AFE622F6BBF
-	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 21:05:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D381B2F6BC9
+	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 21:09:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730331AbhANUEK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jan 2021 15:04:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52634 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727222AbhANUEJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 15:04:09 -0500
-Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8D641C061757
-        for <netdev@vger.kernel.org>; Thu, 14 Jan 2021 12:03:29 -0800 (PST)
-Received: by mail-pg1-x529.google.com with SMTP id 15so4512106pgx.7
-        for <netdev@vger.kernel.org>; Thu, 14 Jan 2021 12:03:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=OLiPrrHqpVMzY7acEpPsYUr7vWHBcAD4wkqETELKSiI=;
-        b=F0brsdV0syJHRcmDWo9WwVrODRXvA7nf0RoCUAcwKtTk0zZg30fovk4bVUt4TqLR2N
-         1EY5+MerSkMj0SepXe14BUTEzVeffhxFc2niuxOgR9nfOwqnZMLViSgGYqMIs6AX8iTD
-         O3ij3cKDwTon+o5M9rEU+pB6sqzCN/T7l/IP4RSDAxVlRd8oYYOITeuQ42QiusaK081p
-         zIjmj2dV/8b4OYAa553bPs/1l7KKMKorHRkTIyKfq048zfTvbcDlgOx5ZHDQIcsba74e
-         xHKJXpEgUujOaIUtxDMUFOwR3OrwjZts5YkHEIYRhJKJgRhhqvul43+q6FSFp+VtMSUG
-         /rKw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=OLiPrrHqpVMzY7acEpPsYUr7vWHBcAD4wkqETELKSiI=;
-        b=KPblO8L0N+P4h9o8xNyvkxLozeKOQ3dprlSp5nXKTesVipFe6ncBlY6AzkEfmtK+UN
-         dQ/dFNKds81dQucsu0TDusLswK35Z2g5pzIqyCZHkd/Q9BsjCXp5MLYx1Tbwkt2AZirA
-         +EN32r6nOstODUg/PJfz+KNhaIKs3bAiylLe0IEVa6EqV7/k1hYk+DIqcAToNF3rtbfK
-         MtXVu8MFy/ZV858hVlv28y9NTIuL0tKTkoZXwPBl4YH3n/LtzSgCRvCxQ1CKnvHFKrIC
-         UPW7amgMPZdQWq9XffZavZU0hC8lpQ6xbU3vKIDe2eiVl35BwGJdmge/xeAdZ4k0/PY8
-         WuLQ==
-X-Gm-Message-State: AOAM53212BKijQGTf9bJsAdYMfzHGNNMGS8SFrKM13C8B+pTZG2eKq5W
-        XjMO6F8m2jgd7vG7rtshRKNab7A38DD0bnAQuJQ=
-X-Google-Smtp-Source: ABdhPJzO0fo6ZzvUgG0GkgC4q3z85fh9XP9um6YFSh8OvguZlVYyupO7wUDMn2Pq02az/teAEsm+zl1vRixwIReOhXE=
-X-Received: by 2002:a62:808d:0:b029:19e:b084:d5b0 with SMTP id
- j135-20020a62808d0000b029019eb084d5b0mr8790462pfd.80.1610654609089; Thu, 14
- Jan 2021 12:03:29 -0800 (PST)
+        id S1730466AbhANUGe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jan 2021 15:06:34 -0500
+Received: from mail.kernel.org ([198.145.29.99]:37410 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727560AbhANUGd (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 14 Jan 2021 15:06:33 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E576A22DFA;
+        Thu, 14 Jan 2021 20:05:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1610654752;
+        bh=wob9sN21sFhiGllCBbiibV5Ik888Gr008rmHdO5CDgs=;
+        h=From:To:Cc:Subject:Date:From;
+        b=W7gOtDh94KaVfK/9VwP9WYYFL9kDHlebWjyVp2ZkGR+ywTTgBDUOE1XGNUNu4BGHK
+         s8ahLdJUUmaiwp2wKUejkHKE+PNMK6N4NXbWf8CmnGnN7A1NIRzbYnBSLbj365TvKn
+         0LKsp8qJiFFoHVqmh8D7EiEf+rVqDBR+begDYwpcRHhITmt4n0Vy6ay70F070AX8eb
+         /7zWYy4Igb2smG3zw1qrRmuqVHcwX/LA1xMsAA9nUXy723vStwzK0LdOQhGtbgCu2j
+         +nWBxI7xG9YoIllSyXlPSzHmjykExRjmlWGXg3VH8y/dm0jj8LNk+dT2ddA0OohaD4
+         qzUHuYglbMuoQ==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     torvalds@linux-foundation.org
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [GIT PULL] Networking for 5.11-rc4
+Date:   Thu, 14 Jan 2021 12:05:51 -0800
+Message-Id: <20210114200551.208209-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-References: <20210114163822.56306-1-xiyou.wangcong@gmail.com> <20210114103848.5153aa5f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210114103848.5153aa5f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Thu, 14 Jan 2021 12:03:16 -0800
-Message-ID: <CAM_iQpUPzSfbQgDE+BBySFVUqYCqse0kKQ-htN81b9JRTGYfJA@mail.gmail.com>
-Subject: Re: [Patch net v2] cls_flower: call nla_ok() before nla_next()
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Cong Wang <cong.wang@bytedance.com>,
-        syzbot <syzbot+2624e3778b18fc497c92@syzkaller.appspotmail.com>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Xin Long <lucien.xin@gmail.com>, Jiri Pirko <jiri@resnulli.us>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 14, 2021 at 10:38 AM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Thu, 14 Jan 2021 08:38:22 -0800 Cong Wang wrote:
-> > From: Cong Wang <cong.wang@bytedance.com>
-> >
-> > fl_set_enc_opt() simply checks if there are still bytes left to parse,
-> > but this is not sufficent as syzbot seems to be able to generate
-> > malformatted netlink messages. nla_ok() is more strict so should be
-> > used to validate the next nlattr here.
-> >
-> > And nla_validate_nested_deprecated() has less strict check too, it is
-> > probably too late to switch to the strict version, but we can just
-> > call nla_ok() too after it.
-> >
-> > Reported-and-tested-by: syzbot+2624e3778b18fc497c92@syzkaller.appspotmail.com
-> > Fixes: 0a6e77784f49 ("net/sched: allow flower to match tunnel options")
-> > Fixes: 79b1011cb33d ("net: sched: allow flower to match erspan options")
->
-> > @@ -1340,9 +1341,6 @@ static int fl_set_enc_opt(struct nlattr **tb, struct fl_flow_key *key,
-> >                               NL_SET_ERR_MSG(extack, "Key and mask miss aligned");
-> >                               return -EINVAL;
-> >                       }
-> > -
-> > -                     if (msk_depth)
-> > -                             nla_opt_msk = nla_next(nla_opt_msk, &msk_depth);
-> >                       break;
-> >               case TCA_FLOWER_KEY_ENC_OPTS_ERSPAN:
-> >                       if (key->enc_opts.dst_opt_type) {
-> > @@ -1373,14 +1371,17 @@ static int fl_set_enc_opt(struct nlattr **tb, struct fl_flow_key *key,
-> >                               NL_SET_ERR_MSG(extack, "Key and mask miss aligned");
-> >                               return -EINVAL;
-> >                       }
-> > -
-> > -                     if (msk_depth)
-> > -                             nla_opt_msk = nla_next(nla_opt_msk, &msk_depth);
-> >                       break;
-> >               default:
-> >                       NL_SET_ERR_MSG(extack, "Unknown tunnel option type");
-> >                       return -EINVAL;
-> >               }
-> > +
-> > +             if (!nla_ok(nla_opt_msk, msk_depth)) {
-> > +                     NL_SET_ERR_MSG(extack, "Mask attribute is invalid");
-> > +                     return -EINVAL;
-> > +             }
-> > +             nla_opt_msk = nla_next(nla_opt_msk, &msk_depth);
->
-> we lost the if (msk_depth) now, nla_opt_msk may be NULL -
-> neither nla_ok() nor nla_next() take NULL
+Hi!
 
-How is "if (msk_depth)" lost when nla_ok() has a stricter one?
+We have a few fixes for long standing issues, in particular
+Eric's fix to not underestimate the skb sizes, and my fix for
+brokenness of register_netdevice() error path. They may uncover
+other bugs so we will keep an eye on them. Also included are
+Willem's fixes for kmap(_atomic).
 
-1156 static inline int nla_ok(const struct nlattr *nla, int remaining)
-1157 {
-1158         return remaining >= (int) sizeof(*nla) &&
-1159                nla->nla_len >= sizeof(*nla) &&
-1160                nla->nla_len <= remaining;
-1161 }
+Looking at the "current release" fixes, it seems we are about
+one rc behind a normal cycle. We've previously seen an uptick
+of "people had run their test suites" / "humans actually tried 
+to use new features" fixes between rc2 and rc3.
 
-Line 1156 assures msk_depth is not only non-zero but also larger
-than the nla struct size, and clearly nla won't be dereferenced unless
-this check is passed.
+The following changes since commit 6279d812eab67a6df6b22fa495201db6f2305924:
 
-I guess you mean we should not error out for nla_opt_msk==NULL
-case as masks are optional?
+  Merge tag 'net-5.11-rc3-2' of git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net (2021-01-08 12:12:30 -0800)
 
-Thanks.
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git tags/net-5.11-rc4
+
+for you to fetch changes up to 13a9499e833387fcc7a53915bbe5cddf3c336b59:
+
+  mptcp: fix locking in mptcp_disconnect() (2021-01-14 11:25:21 -0800)
+
+----------------------------------------------------------------
+Networking fixes for 5.11-rc4, including fixes from can and netfilter.
+
+Current release - regressions:
+
+ - fix feature enforcement to allow NETIF_F_HW_TLS_TX
+   if IP_CSUM && IPV6_CSUM
+
+ - dcb: accept RTM_GETDCB messages carrying set-like DCB commands
+        if user is admin for backward-compatibility
+
+ - selftests/tls: fix selftests build after adding ChaCha20-Poly1305
+
+Current release - always broken:
+
+ - ppp: fix refcount underflow on channel unbridge
+
+ - bnxt_en: clear DEFRAG flag in firmware message when retry flashing
+
+ - smc: fix out of bound access in the new netlink interface
+
+Previous releases - regressions:
+
+ - fix use-after-free with UDP GRO by frags
+
+ - mptcp: better msk-level shutdown
+
+ - rndis_host: set proper input size for OID_GEN_PHYSICAL_MEDIUM request
+
+ - i40e: xsk: fix potential NULL pointer dereferencing
+
+Previous releases - always broken:
+
+ - skb frag: kmap_atomic fixes
+
+ - avoid 32 x truesize under-estimation for tiny skbs
+
+ - fix issues around register_netdevice() failures
+
+ - udp: prevent reuseport_select_sock from reading uninitialized socks
+
+ - dsa: unbind all switches from tree when DSA master unbinds
+
+ - dsa: clear devlink port type before unregistering slave netdevs
+
+ - can: isotp: isotp_getname(): fix kernel information leak
+
+ - mlxsw: core: Thermal control fixes
+
+ - ipv6: validate GSO SKB against MTU before finish IPv6 processing
+
+ - stmmac: use __napi_schedule() for PREEMPT_RT
+
+ - net: mvpp2: remove Pause and Asym_Pause support
+
+Misc:
+
+ - remove from MAINTAINERS folks who had been inactive for >5yrs
+
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+
+----------------------------------------------------------------
+Andrey Zhizhikin (1):
+      rndis_host: set proper input size for OID_GEN_PHYSICAL_MEDIUM request
+
+Aya Levin (1):
+      net: ipv6: Validate GSO SKB before finish IPv6 processing
+
+Ayush Sawal (1):
+      cxgb4/chtls: Fix tid stuck due to wrong update of qid
+
+Baptiste Lepers (2):
+      udp: Prevent reuseport_select_sock from reading uninitialized socks
+      rxrpc: Call state should be read with READ_ONCE() under some circumstances
+
+Chen Yi (1):
+      selftests: netfilter: Pass family parameter "-f" to conntrack tool
+
+Cristian Dumitrescu (1):
+      i40e: fix potential NULL pointer dereferencing
+
+David Howells (1):
+      rxrpc: Fix handling of an unsupported token type in rxrpc_read()
+
+David Wu (1):
+      net: stmmac: Fixed mtu channged by cache aligned
+
+Dinghao Liu (1):
+      netfilter: nf_nat: Fix memleak in nf_nat_init
+
+Dongseok Yi (1):
+      net: fix use-after-free when UDP GRO with shared fraglist
+
+Eric Dumazet (1):
+      net: avoid 32 x truesize under-estimation for tiny skbs
+
+Geert Uytterhoeven (2):
+      dt-bindings: net: renesas,etheravb: RZ/G2H needs tx-internal-delay-ps
+      nt: usb: USB_RTL8153_ECM should not default to y
+
+Guvenc Gulce (1):
+      net/smc: use memcpy instead of snprintf to avoid out of bounds read
+
+Hoang Le (1):
+      tipc: fix NULL deref in tipc_link_xmit()
+
+Jakub Kicinski (21):
+      docs: net: explain struct net_device lifetime
+      net: make free_netdev() more lenient with unregistering devices
+      net: make sure devices go through netdev_wait_all_refs
+      Merge branch 'net-fix-issues-around-register_netdevice-failures'
+      Merge branch 'mlxsw-core-thermal-control-fixes'
+      Merge branch 'skb-frag-kmap_atomic-fixes'
+      Merge branch 'bnxt_en-bug-fixes'
+      Merge branch 'mptcp-a-couple-of-fixes'
+      smc: fix out of bound access in smc_nl_get_sys_info()
+      Merge branch 'net-smc-fix-out-of-bound-access-in-netlink-interface'
+      Merge git://git.kernel.org/.../pablo/nf
+      Merge tag 'linux-can-fixes-for-5.11-20210113' of git://git.kernel.org/.../mkl/linux-can
+      net: sit: unregister_netdevice on newlink's error path
+      MAINTAINERS: altx: move Jay Cliburn to CREDITS
+      MAINTAINERS: net: move Alexey Kuznetsov to CREDITS
+      MAINTAINERS: vrf: move Shrijeet to CREDITS
+      MAINTAINERS: ena: remove Zorik Machulsky from reviewers
+      MAINTAINERS: tls: move Aviad to CREDITS
+      MAINTAINERS: ipvs: move Wensong Zhang to CREDITS
+      MAINTAINERS: dccp: move Gerrit Renker to CREDITS
+      Merge branch 'maintainers-remove-inactive-folks-from-networking'
+
+Jesper Dangaard Brouer (1):
+      netfilter: conntrack: fix reading nf_conntrack_buckets
+
+Leon Schuermann (2):
+      r8152: Add Lenovo Powered USB-C Travel Hub
+      r8153_ecm: Add Lenovo Powered USB-C Hub as a fallback of r8152
+
+Manish Chopra (1):
+      netxen_nic: fix MSI/MSI-x interrupts
+
+Marco Felsch (1):
+      net: phy: smsc: fix clk error handling
+
+Mauro Carvalho Chehab (1):
+      net: tip: fix a couple kernel-doc markups
+
+Michael Chan (1):
+      bnxt_en: Improve stats context resource accounting with RDMA driver loaded.
+
+Oliver Hartkopp (1):
+      can: isotp: isotp_getname(): fix kernel information leak
+
+Paolo Abeni (3):
+      mptcp: more strict state checking for acks
+      mptcp: better msk-level shutdown.
+      mptcp: fix locking in mptcp_disconnect()
+
+Pavan Chebbi (1):
+      bnxt_en: Clear DEFRAG flag in firmware message when retry flashing.
+
+Petr Machata (1):
+      net: dcb: Accept RTM_GETDCB messages carrying set-like DCB commands
+
+Qinglang Miao (1):
+      can: mcp251xfd: mcp251xfd_handle_rxif_one(): fix wrong NULL pointer check
+
+Seb Laveze (2):
+      dt-bindings: net: dwmac: fix queue priority documentation
+      net: stmmac: use __napi_schedule() for PREEMPT_RT
+
+Stefan Chulski (1):
+      net: mvpp2: Remove Pause and Asym_Pause support
+
+Stephan Gerhold (1):
+      net: ipa: modem: add missing SET_NETDEV_DEV() for proper sysfs links
+
+Tariq Toukan (1):
+      net: Allow NETIF_F_HW_TLS_TX if IP_CSUM && IPV6_CSUM
+
+Tom Parkin (1):
+      ppp: fix refcount underflow on channel unbridge
+
+Vadim Fedorenko (1):
+      selftests/tls: fix selftests after adding ChaCha20-Poly1305
+
+Vadim Pasternak (2):
+      mlxsw: core: Add validation of transceiver temperature thresholds
+      mlxsw: core: Increase critical threshold for ASIC thermal zone
+
+Vladimir Oltean (2):
+      net: dsa: unbind all switches from tree when DSA master unbinds
+      net: dsa: clear devlink port type before unregistering slave netdevs
+
+Willem de Bruijn (3):
+      net: support kmap_local forced debugging in skb_frag_foreach
+      net: compound page support in skb_seq_read
+      esp: avoid unneeded kmap_atomic call
+
+Yannick Vignon (2):
+      net: stmmac: fix taprio schedule configuration
+      net: stmmac: fix taprio configuration when base_time is in the past
+
+ CREDITS                                            |  24 +++
+ .../devicetree/bindings/net/renesas,etheravb.yaml  |   1 +
+ .../devicetree/bindings/net/snps,dwmac.yaml        |   8 +-
+ Documentation/networking/netdevices.rst            | 171 ++++++++++++++++++++-
+ Documentation/networking/tls-offload.rst           |   2 +-
+ MAINTAINERS                                        |   9 +-
+ drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c     |   2 +-
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ethtool.c  |   3 +-
+ drivers/net/ethernet/broadcom/bnxt/bnxt_ulp.c      |   8 +-
+ drivers/net/ethernet/chelsio/cxgb4/t4_tcb.h        |   7 +
+ .../ethernet/chelsio/inline_crypto/chtls/chtls.h   |   4 +
+ .../chelsio/inline_crypto/chtls/chtls_cm.c         |  32 +++-
+ .../chelsio/inline_crypto/chtls/chtls_hw.c         |  41 +++++
+ drivers/net/ethernet/intel/i40e/i40e_xsk.c         |   2 +-
+ drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c    |   2 -
+ drivers/net/ethernet/mellanox/mlxsw/core_thermal.c |  13 +-
+ .../net/ethernet/qlogic/netxen/netxen_nic_main.c   |   7 +-
+ drivers/net/ethernet/stmicro/stmmac/dwmac5.c       |  52 +------
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c  |   7 +-
+ drivers/net/ethernet/stmicro/stmmac/stmmac_tc.c    |  20 ++-
+ drivers/net/ipa/ipa_modem.c                        |   1 +
+ drivers/net/phy/smsc.c                             |   3 +-
+ drivers/net/ppp/ppp_generic.c                      |  12 +-
+ drivers/net/usb/Kconfig                            |   1 -
+ drivers/net/usb/cdc_ether.c                        |   7 +
+ drivers/net/usb/r8152.c                            |   1 +
+ drivers/net/usb/r8153_ecm.c                        |   8 +
+ drivers/net/usb/rndis_host.c                       |   2 +-
+ include/linux/skbuff.h                             |   3 +-
+ net/8021q/vlan.c                                   |   4 +-
+ net/can/isotp.c                                    |   1 +
+ net/core/dev.c                                     |  37 +++--
+ net/core/rtnetlink.c                               |  23 +--
+ net/core/skbuff.c                                  |  57 ++++++-
+ net/core/sock_reuseport.c                          |   2 +-
+ net/dcb/dcbnl.c                                    |   2 +-
+ net/dsa/dsa2.c                                     |   4 +
+ net/dsa/master.c                                   |  10 ++
+ net/ipv4/esp4.c                                    |   7 +-
+ net/ipv6/esp6.c                                    |   7 +-
+ net/ipv6/ip6_output.c                              |  41 ++++-
+ net/ipv6/sit.c                                     |   5 +-
+ net/mptcp/protocol.c                               |  69 +++------
+ net/netfilter/nf_conntrack_standalone.c            |   3 +
+ net/netfilter/nf_nat_core.c                        |   1 +
+ net/rxrpc/input.c                                  |   2 +-
+ net/rxrpc/key.c                                    |   6 +-
+ net/smc/smc_core.c                                 |  20 ++-
+ net/smc/smc_ib.c                                   |   6 +-
+ net/smc/smc_ism.c                                  |   3 +-
+ net/tipc/link.c                                    |  11 +-
+ net/tipc/node.c                                    |   2 +-
+ tools/testing/selftests/net/tls.c                  |   4 +-
+ .../selftests/netfilter/nft_conntrack_helper.sh    |  12 +-
+ 54 files changed, 569 insertions(+), 223 deletions(-)
