@@ -2,123 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CFA6B2F670C
-	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 18:15:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EC7622F6717
+	for <lists+netdev@lfdr.de>; Thu, 14 Jan 2021 18:15:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728143AbhANRKa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jan 2021 12:10:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43248 "EHLO
+        id S1726636AbhANRMx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jan 2021 12:12:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725919AbhANRK1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 12:10:27 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEC36C0613C1
-        for <netdev@vger.kernel.org>; Thu, 14 Jan 2021 09:09:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=xdZ1kM+k5bg9THx0FjgGM5hbPVToJtPpAEjDqhgQCR8=; b=PbsHlwdSvi8Ri6D/HIDHgXeEo
-        EBc6rkSBuvJPLxcKqkv10D4bpI7WWamGL2PsdvwBfmO3+fSEUrY2WfESY+AtdKibB/nQZun2e64cv
-        ryrBxiY1bAGZeIIXNIBYN/o5gniSzHLCcGRU0LzPEidoM09/HVF7WAAmeEiqd8D8TtzL6ApR2Yfmj
-        W0NaxXeLS3WJbUa3robUsGTYUvR8KUQ2bNTo3Yb4sxz2jXRKukI7GsKzdc5HyOlwcsUmlUcELIYs5
-        wSQAXxlMD4Ee7mvRApdl+Y8hdGgJzvNeSBxuQUC9XxixAF8IZcwotLmq53QI5KqZXV1/y0r0ESWwF
-        DYML/3VXA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:47956)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1l067z-0002iC-ON; Thu, 14 Jan 2021 17:09:43 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1l067y-00004y-OJ; Thu, 14 Jan 2021 17:09:42 +0000
-Date:   Thu, 14 Jan 2021 17:09:42 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     Richard Cochran <richardcochran@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] net: ethtool: allow MAC drivers to override
- ethtool get_ts_info
-Message-ID: <20210114170942.GW1551@shell.armlinux.org.uk>
-References: <E1kyYfI-0004wl-Tf@rmk-PC.armlinux.org.uk>
- <X/sszQBPDHehtQWM@lunn.ch>
+        with ESMTP id S1725946AbhANRMw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 12:12:52 -0500
+Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F18E0C061575
+        for <netdev@vger.kernel.org>; Thu, 14 Jan 2021 09:12:11 -0800 (PST)
+Received: by mail-io1-xd35.google.com with SMTP id u26so12636051iof.3
+        for <netdev@vger.kernel.org>; Thu, 14 Jan 2021 09:12:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=V6xhx1xdXt6YlSe2sCGOf2AxR90CjnY1bihZzHOPvJk=;
+        b=QLhoUCpSjbryB4uc9zDc2yh2uQ7gVLlKqCbZj42Ik7Q38YukjCvb4hKMdVoMVHvnLk
+         94ofk+2HsZCsfB/d9FEzceKPpMTy4d0m3VK0wxGxRT473ZEWmDjKzHCIAVqYO9C+mGu5
+         V/WvoUl1vBJmgBXDugbv3q10Jm/iouB6pL5m4tM+Uh/xol5/7oXNgBsZX/6Y0YkOymPh
+         2ZCYZRxjhJH2Xq7Fc5l6v0U4Bh0K9rwI/obiN06K1f8Cs6pXObXrXAt91p0QgoRqY1lf
+         td4B6AnxUFWNjrM8Jork1CazB3JV3pp3oFzfZvDqL/54mjXzZdooIjdQHLcp2tcw/kk5
+         LE/g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=V6xhx1xdXt6YlSe2sCGOf2AxR90CjnY1bihZzHOPvJk=;
+        b=p4iaIGGKwO/reNhHd7pkg+rEQSEMAiQAHZ1zqH5Hcul9sN/qIWahTlWMb7ZjRd7yaN
+         3mkkSLoM0YY2WXQbILs9atwF/Ug9lHjI2dBVe10neZBUhsAQ8RJ/y3+8rwbLAkj4iBhR
+         hvsh6c39G0J+bbJwsMlqIPSlV9WSFQG5vaKkAvVsEgboiQSNzz4miYe/ybBFK2ZAKGpy
+         izjE0dMXX1eHzAyqW9IjpHfhXus4li/LamUMBX+kEAhSYbkLyBMqJk+LrxIdsgHRwkQq
+         RPc2SOSkAufFs48uWSWz7TX+fTz6VDHm2xBxWdtnqcjglpmD/gAC+f82lfwkk/qoZNRV
+         4M4g==
+X-Gm-Message-State: AOAM530nIH4x6twz2W8Av8QV1sMMHun24WOyh/QGTjReozIFSu9XAeQ5
+        v/VPEsJ2BV4TmnQ1WUoZUQ81w3t85fJ1p1OsYLUPXQ==
+X-Google-Smtp-Source: ABdhPJzjMiW2/A/Q9x2LhEINscM0FhzRNcJbL2WdYo09NumDbOn/R5RX7AYnpS8E0ZsYm5dEgCIKHR39/3UEzlpMQzo=
+X-Received: by 2002:a92:ce09:: with SMTP id b9mr7294634ilo.69.1610644331127;
+ Thu, 14 Jan 2021 09:12:11 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <X/sszQBPDHehtQWM@lunn.ch>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+References: <1609192760-4505-1-git-send-email-yangpc@wangsu.com> <20210114085308.7cda4d92@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210114085308.7cda4d92@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Thu, 14 Jan 2021 18:11:59 +0100
+Message-ID: <CANn89iK5N-u-DKLmAF4+RSiG1g4Y1YkcizTX5h12hsTdpMt0DA@mail.gmail.com>
+Subject: Re: [PATCH net] tcp: fix TCP_SKB_CB(skb)->tcp_tw_isn not being used
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Pengcheng Yang <yangpc@wangsu.com>,
+        David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jan 10, 2021 at 05:35:25PM +0100, Andrew Lunn wrote:
-> On Sun, Jan 10, 2021 at 11:13:44AM +0000, Russell King wrote:
-> > Check whether the MAC driver has implemented the get_ts_info()
-> > method first, and call it if present.  If this method returns
-> > -EOPNOTSUPP, defer to the phylib or default implementation.
-> > 
-> > This allows network drivers such as mvpp2 to use their more accurate
-> > timestamping implementation than using a less accurate implementation
-> > in the PHY. Network drivers can opt to defer to phylib by returning
-> > -EOPNOTSUPP.
-> > 
-> > This change will be needed if the Marvell PHY drivers add support for
-> > PTP.
-> > 
-> > Note: this may cause a change for any drivers that use phylib and
-> > provide get_ts_info(). It is not obvious if any such cases exist.
-> 
-> Hi Russell
-> 
-> We can detect that condition through? Call both, then do a WARN() if
-> we are changing the order? Maybe we should do that for a couple of
-> cycles?
+On Thu, Jan 14, 2021 at 5:53 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Tue, 29 Dec 2020 05:59:20 +0800 Pengcheng Yang wrote:
+> > TCP_SKB_CB(skb)->tcp_tw_isn contains an ISN, chosen by
+> > tcp_timewait_state_process() , when SYN is received in TIMEWAIT state.
+> > But tcp_tw_isn is not used because it is overwritten by
+> > tcp_v4_restore_cb() after commit eeea10b83a13 ("tcp: add
+> > tcp_v4_fill_cb()/tcp_v4_restore_cb()").
+> >
+> > To fix this case, we record tcp_tw_isn before tcp_v4_restore_cb() and
+> > then set it in tcp_v4_fill_cb(). V6 does the same.
+> >
+> > Fixes: eeea10b83a13 ("tcp: add tcp_v4_fill_cb()/tcp_v4_restore_cb()")
+> > Reported-by: chenc <chenc9@wangsu.com>
+> > Signed-off-by: Pengcheng Yang <yangpc@wangsu.com>
+>
+> Please fix the date and resend. This patch came in last night,
+> but it has a date of December 28th.
 
-I guess we could do something, but IMHO this really does not justify
-using heavy hammers like WARN(). It's pointless producing a backtrace.
-If we want a large noisy multi-line message that stands out, we should
-just do that.
-
-I think we can detect with something like:
-
-	if (ops->get_ts_info && phy_has_tsinfo(phydev)) {
-		netdev_warn(dev, "Both the PHY and the MAC support PTP. Which you end up with may change.\n");
-	}
-
-That said, this is _actually_ a fix.
-
-As the code stands today:
-
-__ethtool_get_ts_info() checks phy_has_tsinfo() and uses phy_ts_info()
-in preference to ops->get_ts_info(), giving the PHY code first dibs on
-intercepting this call.
-
-Meanwhile, the ioctl() code gives the network driver first dibs on
-intercepting the SIOCSHWTSTAMP and SIOCGHWTSTAMP ioctls.
-
-This means that if you have both a PHY supporting timestamping, and a
-MAC driver, you end up with the ethtool get_ts_info() call giving a
-response from the PHY implementation but SIOCSHWTSTAMP and
-SIOCGHWTSTAMP being intercepted by the MAC implementation.
-
-This is exactly what will happen today to mvpp2 if we merge my patches
-adding PTP support to the Marvell 88e151x PHYs without this patch.
-
-So, my patch merely brings consistency to this.
-
-> For netlink ethtool, we can also provide an additional attribute. A
-> MAC, or PHY indicator we can do in the core. A string for the name of
-> the driver would need a bigger change.
-
-Unfortunately, PTP is not solely controlled through ethtool - it's
-also controlled via ioctl() where it's not so easy to direct the
-calls to either the MAC or PHY.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+Not this whole madness about tcp_v4_fill_cb()/tcp_v4_restore_cb()
+could be reverted
+now we have an RB tree for out-of-order packets.
