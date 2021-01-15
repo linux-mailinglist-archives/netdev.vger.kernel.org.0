@@ -2,433 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E045E2F8034
-	for <lists+netdev@lfdr.de>; Fri, 15 Jan 2021 17:04:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7E51F2F8036
+	for <lists+netdev@lfdr.de>; Fri, 15 Jan 2021 17:05:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727679AbhAOQEL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Jan 2021 11:04:11 -0500
-Received: from out4-smtp.messagingengine.com ([66.111.4.28]:47233 "EHLO
-        out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726105AbhAOQEK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jan 2021 11:04:10 -0500
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 1DE125C01C6;
-        Fri, 15 Jan 2021 11:03:23 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Fri, 15 Jan 2021 11:03:23 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=zBmZ4n
-        oN/HEEqeEEgc9NZi0xjVeDetaCBXx9Z8N7C3g=; b=Df1Ck8an9kHZLnh9kHMLod
-        U2rOSK7J8esPr/AEpOgA1nCueulc7JGDQQeMl7qTB3pn5MDvFcA/FNgYV1pptuuX
-        p0dSw3TxhXENmgS+n4SjTN9yGyt9SLgBMOauxp6f35WL1af/WnhGgFUeSZzJekpH
-        A/qNfsoYMbiH/Gi0s9nCcUlc3rRYr8hEys5Juwm0mfkK0reOQiW/lz/0Z1ABDOEe
-        hCbkQU+V+oUo+vfuTD8kN1t2jZFk632m+cX2pHyDWgyz2MFsyIsVmPTqw2BueIiW
-        G+fCm6r2M9j0oREY4V3sjcnv7eAp7R+L/bTUkQ3yG5uafqekW3u1rZpNlTGpWO6Q
-        ==
-X-ME-Sender: <xms:yrwBYJDORkoaFQR9V4xMGELJZCdiDRnU-iVXBNp9qxNkb5MtejDfLQ>
-    <xme:yrwBYHhvcdJhOm6Tdvsu0KttIR9Hd--qUvQy3LQngOSi9EiiRuTH7jXJeifD4F2f1
-    eLpHKbrqEARI5I>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrtddvgdehlecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcuufgt
-    hhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrthhtvg
-    hrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudehleet
-    necukfhppeekgedrvddvledrudehfedrgeegnecuvehluhhsthgvrhfuihiivgeptdenuc
-    frrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:yrwBYEmeck6jjs9BL9HvX4ZrPzbNHhWM0KOGnUPo1kjfXYtfELZrcA>
-    <xmx:yrwBYDxnMt8RF7R5QXRxNNjAEDtCbsWeZBnD9rwXCQaWlJQb9PUH-g>
-    <xmx:yrwBYOSgycAdUVplkUE0rn00PIxLf8UyfYJpgnVuotQhZHTkzEJuHA>
-    <xmx:y7wBYMdh7Ar9llmoPLw7Ar9uEcKB_-Dzj6-yBq7rlutC-cLS-LVvSA>
-Received: from localhost (igld-84-229-153-44.inter.net.il [84.229.153.44])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 89C98240057;
-        Fri, 15 Jan 2021 11:03:21 -0500 (EST)
-Date:   Fri, 15 Jan 2021 18:03:19 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        jacob.e.keller@intel.com, roopa@nvidia.com, mlxsw@nvidia.com
-Subject: Re: [patch net-next RFC 02/10] devlink: implement line card
- provisioning
-Message-ID: <20210115160319.GC2064789@shredder.lan>
-References: <20210113121222.733517-1-jiri@resnulli.us>
- <20210113121222.733517-3-jiri@resnulli.us>
+        id S1730569AbhAOQFB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Jan 2021 11:05:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56514 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727719AbhAOQE7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jan 2021 11:04:59 -0500
+Received: from mail-lf1-x135.google.com (mail-lf1-x135.google.com [IPv6:2a00:1450:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E14D9C061799;
+        Fri, 15 Jan 2021 08:04:18 -0800 (PST)
+Received: by mail-lf1-x135.google.com with SMTP id x20so13815101lfe.12;
+        Fri, 15 Jan 2021 08:04:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=cjjKngUNXSmp5+ZG99wAVh2M/rHKatH6hgVDyGroZyU=;
+        b=aga/UzIvB7XonoZN9FJbkyLXYjzRnOYPE7P3LvOHIsimtqOj5i9WDUx9NUxqLD0Cix
+         G/A7ruEMmPhgoOULPdQ4Fql/24dqyS1v0OZ7/3J+HEWR9MFhC3+fNRi0HVK7xx8z09YN
+         /mro9lDOPzlCMbyHn6Ev3sgSQgml2xM5+WNkzFIbS4s60hsu9teXEHEp7gpCbyJrJqCg
+         StbQNdhgpYjJkKDUKBa4BrgMcX1/JtAzPnfG89F037S1hDGbL8VZWe5ZegWCs/5BYSGZ
+         ZVZKMkHCT0otzW+nlLQbb0DqnklR0JXpcJuUxyjRzw8+xz0zJ0O7u1vvI78rpaSX4RsQ
+         VWUQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=cjjKngUNXSmp5+ZG99wAVh2M/rHKatH6hgVDyGroZyU=;
+        b=fQsvZTJx9AQLga1xOLR5W0ev1RsLxxa3puR8g4CexVXTw0xzstHywfJsUfOxBTxiKt
+         Id2DYgkcvPLkozCrJwD2+kJmhl93poWrfYkcAr5gT1b+fA+Al4Y3hAnfXN/DzmyMx3Jg
+         ctyYeVingG30A32r3TMZOuPYh8fP0A47XsoNyRJK6Rd2tV18pR+lZ5vXeGpRYYDUqnow
+         iIBkMixiXlGt7Q1358jHiy4Yl1CwW/iZOi4jBezK4ruVjrS19WmW0+hEFIDOtSOkAonq
+         zLBVTatwYuG6sBKgxtra7aA278PXuCRamKClPU8lOoq7wj3KVtSxYBDTL1IZ1AmTywAo
+         5lcA==
+X-Gm-Message-State: AOAM530/01zSIJifQF3Mnuk6Ee6gVUeoRix6NLJtNiYQCGGNnffCwnLK
+        Q2qpULsGTKB5L7esqrx049Yv+Qyki859IBcntNU=
+X-Google-Smtp-Source: ABdhPJyAM58RuuCJIC1lGGiETeUBk/Fcbag5Pz3FxGpPQY8BaTmgwgyckOgXWGGopAMW0vBJ/3692m/dBQY1lY5FTdE=
+X-Received: by 2002:a19:8983:: with SMTP id l125mr5670209lfd.182.1610726657406;
+ Fri, 15 Jan 2021 08:04:17 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210113121222.733517-3-jiri@resnulli.us>
+References: <20210114095411.20903-1-glin@suse.com> <20210114095411.20903-2-glin@suse.com>
+ <CAADnVQJiK3BWLr5LRhThUySC=6VyiP=tt3ttiyZPHGLmoU4jDg@mail.gmail.com> <YAFjLNg2XStnTL3W@GaryWorkstation>
+In-Reply-To: <YAFjLNg2XStnTL3W@GaryWorkstation>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Fri, 15 Jan 2021 08:04:06 -0800
+Message-ID: <CAADnVQJ7LQMv513dDwy3ogdq+PaFN5gu6DOS-GiRT72MP4mmcQ@mail.gmail.com>
+Subject: Re: [PATCH v3 1/3] bpf,x64: pad NOPs to make images converge more easily
+To:     Gary Lin <glin@suse.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        andreas.taschner@suse.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 13, 2021 at 01:12:14PM +0100, Jiri Pirko wrote:
-> From: Jiri Pirko <jiri@nvidia.com>
-> 
-> In order to be able to configure all needed stuff on a port/netdevice
-> of a line card without the line card being present, introduce line card
-> provisioning. Basically provisioning will create a placeholder for
-> instances (ports/netdevices) for a line card type.
-> 
-> Allow the user to query the supported line card types over line card
-> get command. Then implement two netlink commands to allow user to
-> provision/unprovision the line card with selected line card type.
-> 
-> On the driver API side, add provision/unprovision ops and supported
-> types array to be advertised. Upon provision op call, the driver should
-> take care of creating the instances for the particular line card type.
-> Introduce provision_set/clear() functions to be called by the driver
-> once the provisioning/unprovisioning is done on its side.
-> 
-> Signed-off-by: Jiri Pirko <jiri@nvidia.com>
-> ---
->  include/net/devlink.h        |  31 +++++++-
->  include/uapi/linux/devlink.h |  17 +++++
->  net/core/devlink.c           | 141 ++++++++++++++++++++++++++++++++++-
->  3 files changed, 185 insertions(+), 4 deletions(-)
-> 
-> diff --git a/include/net/devlink.h b/include/net/devlink.h
-> index 67c2547d5ef9..854abd53e9ea 100644
-> --- a/include/net/devlink.h
-> +++ b/include/net/devlink.h
-> @@ -139,10 +139,33 @@ struct devlink_port {
->  	struct mutex reporters_lock; /* Protects reporter_list */
->  };
->  
-> +struct devlink_linecard_ops;
-> +
->  struct devlink_linecard {
->  	struct list_head list;
->  	struct devlink *devlink;
->  	unsigned int index;
-> +	const struct devlink_linecard_ops *ops;
-> +	void *priv;
-> +	enum devlink_linecard_state state;
-> +	const char *provisioned_type;
-> +};
-> +
-> +/**
-> + * struct devlink_linecard_ops - Linecard operations
-> + * @supported_types: array of supported types of linecards
-> + * @supported_types_count: number of elements in the array above
-> + * @provision: callback to provision the linecard slot with certain
-> + *	       type of linecard
-> + * @unprovision: callback to unprovision the linecard slot
-> + */
-> +struct devlink_linecard_ops {
-> +	const char **supported_types;
-> +	unsigned int supported_types_count;
-> +	int (*provision)(struct devlink_linecard *linecard, void *priv,
-> +			 u32 type_index, struct netlink_ext_ack *extack);
-> +	int (*unprovision)(struct devlink_linecard *linecard, void *priv,
-> +			   struct netlink_ext_ack *extack);
->  };
->  
->  struct devlink_sb_pool_info {
-> @@ -1414,9 +1437,13 @@ void devlink_port_attrs_pci_pf_set(struct devlink_port *devlink_port, u32 contro
->  				   u16 pf, bool external);
->  void devlink_port_attrs_pci_vf_set(struct devlink_port *devlink_port, u32 controller,
->  				   u16 pf, u16 vf, bool external);
-> -struct devlink_linecard *devlink_linecard_create(struct devlink *devlink,
-> -						 unsigned int linecard_index);
-> +struct devlink_linecard *
-> +devlink_linecard_create(struct devlink *devlink, unsigned int linecard_index,
-> +			const struct devlink_linecard_ops *ops, void *priv);
->  void devlink_linecard_destroy(struct devlink_linecard *linecard);
-> +void devlink_linecard_provision_set(struct devlink_linecard *linecard,
-> +				    u32 type_index);
-> +void devlink_linecard_provision_clear(struct devlink_linecard *linecard);
->  int devlink_sb_register(struct devlink *devlink, unsigned int sb_index,
->  			u32 size, u16 ingress_pools_count,
->  			u16 egress_pools_count, u16 ingress_tc_count,
-> diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
-> index e5ed0522591f..4111ddcc000b 100644
-> --- a/include/uapi/linux/devlink.h
-> +++ b/include/uapi/linux/devlink.h
-> @@ -131,6 +131,9 @@ enum devlink_command {
->  	DEVLINK_CMD_LINECARD_NEW,
->  	DEVLINK_CMD_LINECARD_DEL,
->  
-> +	DEVLINK_CMD_LINECARD_PROVISION,
-> +	DEVLINK_CMD_LINECARD_UNPROVISION,
+On Fri, Jan 15, 2021 at 1:41 AM Gary Lin <glin@suse.com> wrote:
+>
+> On Thu, Jan 14, 2021 at 10:37:33PM -0800, Alexei Starovoitov wrote:
+> > On Thu, Jan 14, 2021 at 1:54 AM Gary Lin <glin@suse.com> wrote:
+> > >          * pass to emit the final image.
+> > >          */
+> > > -       for (pass = 0; pass < 20 || image; pass++) {
+> > > -               proglen = do_jit(prog, addrs, image, oldproglen, &ctx);
+> > > +       for (pass = 0; pass < MAX_PASSES || image; pass++) {
+> > > +               if (!padding && pass >= PADDING_PASSES)
+> > > +                       padding = true;
+> > > +               proglen = do_jit(prog, addrs, image, oldproglen, &ctx, padding);
+> >
+> > I'm struggling to reconcile the discussion we had before holidays with
+> > the discussion you guys had in v2:
+> >
+> > >> What is the rationale for the latter when JIT is called again for subprog to fill in relative
+> > >> call locations?
+> > >>
+> > > Hmmmm, my thinking was that we only enable padding for those programs
+> > > which are already padded before. But, you're right. For the programs
+> > > converging without padding, enabling padding won't change the final
+> > > image, so it's safe to always set "padding" to true for the extra pass.
+> > >
+> > > Will remove the "padded" flag in v3.
+> >
+> > I'm not following why "enabling padding won't change the final image"
+> > is correct.
+> > Say the subprog image converges without padding.
+> > Then for subprog we call JIT again.
+> > Now extra_pass==true and padding==true.
+> > The JITed image will be different.
+> Actually no.
+>
+> > The test in patch 3 should have caught it, but it didn't,
+> > because it checks for a subprog that needed padding.
+> > The extra_pass needs to emit insns exactly in the right spots.
+> > Otherwise jump targets will be incorrect.
+> > The saved addrs[] array is crucial.
+> > If extra_pass emits different things the instruction starts won't align
+> > to places where addrs[] expects them to be.
+> >
+> When calculating padding bytes, if the image already converges, the
+> emitted instruction size just matches (addrs[i] - addrs[i-1]), so
+> emit_nops() emits 0 byte, and the image doesn't change.
 
-I do not really see the point in these two commands. Better extend
-DEVLINK_CMD_LINECARD_SET to carry these attributes.
+I see. You're right. That's very tricky.
 
-> +
->  	/* add new commands above here */
->  	__DEVLINK_CMD_MAX,
->  	DEVLINK_CMD_MAX = __DEVLINK_CMD_MAX - 1
-> @@ -329,6 +332,17 @@ enum devlink_reload_limit {
->  
->  #define DEVLINK_RELOAD_LIMITS_VALID_MASK (_BITUL(__DEVLINK_RELOAD_LIMIT_MAX) - 1)
->  
-> +enum devlink_linecard_state {
-> +	DEVLINK_LINECARD_STATE_UNSPEC,
-> +	DEVLINK_LINECARD_STATE_UNPROVISIONED,
-> +	DEVLINK_LINECARD_STATE_UNPROVISIONING,
-> +	DEVLINK_LINECARD_STATE_PROVISIONING,
+The patch set doesn't apply cleanly.
+Could you please rebase and add a detailed comment about this logic?
 
-Can you explain why these two states are necessary? Any reason the
-provision operation can't be synchronous? This is somewhat explained in
-patch #8, but it should really be explained here. Changelog says:
+Also please add comments why we check:
+nops != 0 && nops != 4
+nops != 0 && nops != 2 && nops != 5
+nops != 0 && nops != 3
+None of it is obvious.
 
-"To avoid deadlock and to mimic actual HW flow, use workqueue
-to add/del ports during provisioning as the port add/del calls
-devlink_port_register/unregister() which take devlink mutex."
-
-The deadlock is not really a reason to have these states.
-'DEVLINK_CMD_PORT_SPLIT' also calls devlink_port_register() /
-devlink_port_unregister() and the deadlock is solved by:
-
-'internal_flags = DEVLINK_NL_FLAG_NO_LOCK'
-
-A hardware flow the requires it is something else...
-
-> +	DEVLINK_LINECARD_STATE_PROVISIONED,
-> +
-> +	__DEVLINK_LINECARD_STATE_MAX,
-> +	DEVLINK_LINECARD_STATE_MAX = __DEVLINK_LINECARD_STATE_MAX - 1
-> +};
-> +
->  enum devlink_attr {
->  	/* don't change the order or add anything between, this is ABI! */
->  	DEVLINK_ATTR_UNSPEC,
-> @@ -535,6 +549,9 @@ enum devlink_attr {
->  	DEVLINK_ATTR_RELOAD_ACTION_STATS,       /* nested */
->  
->  	DEVLINK_ATTR_LINECARD_INDEX,		/* u32 */
-> +	DEVLINK_ATTR_LINECARD_STATE,		/* u8 */
-> +	DEVLINK_ATTR_LINECARD_TYPE,		/* string */
-> +	DEVLINK_ATTR_LINECARD_SUPPORTED_TYPES,	/* nested */
->  
->  	/* add new attributes above here, update the policy in devlink.c */
->  
-> diff --git a/net/core/devlink.c b/net/core/devlink.c
-> index 564e921133cf..434eecc310c3 100644
-> --- a/net/core/devlink.c
-> +++ b/net/core/devlink.c
-> @@ -1192,7 +1192,9 @@ static int devlink_nl_linecard_fill(struct sk_buff *msg,
->  				    u32 seq, int flags,
->  				    struct netlink_ext_ack *extack)
->  {
-> +	struct nlattr *attr;
->  	void *hdr;
-> +	int i;
->  
->  	hdr = genlmsg_put(msg, portid, seq, &devlink_nl_family, flags, cmd);
->  	if (!hdr)
-> @@ -1202,6 +1204,22 @@ static int devlink_nl_linecard_fill(struct sk_buff *msg,
->  		goto nla_put_failure;
->  	if (nla_put_u32(msg, DEVLINK_ATTR_LINECARD_INDEX, linecard->index))
->  		goto nla_put_failure;
-> +	if (nla_put_u8(msg, DEVLINK_ATTR_LINECARD_STATE, linecard->state))
-> +		goto nla_put_failure;
-> +	if (linecard->state >= DEVLINK_LINECARD_STATE_PROVISIONED &&
-
-This assumes that every state added after provisioned should report the
-type. Better to check for the specific states
-
-> +	    nla_put_string(msg, DEVLINK_ATTR_LINECARD_TYPE,
-> +			   linecard->provisioned_type))
-> +		goto nla_put_failure;
-> +
-> +	attr = nla_nest_start(msg, DEVLINK_ATTR_LINECARD_SUPPORTED_TYPES);
-> +	if (!attr)
-> +		return -EMSGSIZE;
-> +	for (i = 0; i < linecard->ops->supported_types_count; i++) {
-> +		if (nla_put_string(msg, DEVLINK_ATTR_LINECARD_TYPE,
-> +				   linecard->ops->supported_types[i]))
-> +			goto nla_put_failure;
-> +	}
-> +	nla_nest_end(msg, attr);
->  
->  	genlmsg_end(msg, hdr);
->  	return 0;
-> @@ -1300,6 +1318,68 @@ static int devlink_nl_cmd_linecard_get_dumpit(struct sk_buff *msg,
->  	return msg->len;
->  }
->  
-> +static int devlink_nl_cmd_linecard_provision_doit(struct sk_buff *skb,
-> +						  struct genl_info *info)
-> +{
-> +	struct devlink_linecard *linecard = info->user_ptr[1];
-> +	const char *type;
-> +	int i;
-> +
-> +	if (linecard->state == DEVLINK_LINECARD_STATE_PROVISIONING) {
-> +		NL_SET_ERR_MSG_MOD(info->extack, "Linecard is currently being provisioned");
-> +		return -EBUSY;
-> +	}
-> +	if (linecard->state == DEVLINK_LINECARD_STATE_UNPROVISIONING) {
-> +		NL_SET_ERR_MSG_MOD(info->extack, "Linecard is currently being unprovisioned");
-> +		return -EBUSY;
-> +	}
-> +	if (linecard->state != DEVLINK_LINECARD_STATE_UNPROVISIONED) {
-> +		NL_SET_ERR_MSG_MOD(info->extack, "Linecard already provisioned");
-> +		return -EBUSY;
-> +	}
-> +
-> +	if (!info->attrs[DEVLINK_ATTR_LINECARD_TYPE]) {
-> +		NL_SET_ERR_MSG_MOD(info->extack, "Provision type not provided");
-> +		return -EINVAL;
-> +	}
-> +
-> +	type = nla_data(info->attrs[DEVLINK_ATTR_LINECARD_TYPE]);
-> +	for (i = 0; i < linecard->ops->supported_types_count; i++) {
-> +		if (!strcmp(linecard->ops->supported_types[i], type)) {
-> +			linecard->state = DEVLINK_LINECARD_STATE_PROVISIONING;
-> +			devlink_linecard_notify(linecard, DEVLINK_CMD_LINECARD_NEW);
-> +			return linecard->ops->provision(linecard,
-> +							linecard->priv, i,
-> +							info->extack);
-
-So if this fails user space will see 'provisioning' although nothing is
-being provisioned... Better to set the state and notify if this call did
-not fail
-
-> +		}
-> +	}
-> +	NL_SET_ERR_MSG_MOD(info->extack, "Unsupported provision type provided");
-> +	return -EINVAL;
-> +}
-> +
-> +static int devlink_nl_cmd_linecard_unprovision_doit(struct sk_buff *skb,
-> +						    struct genl_info *info)
-> +{
-> +	struct devlink_linecard *linecard = info->user_ptr[1];
-> +
-> +	if (linecard->state == DEVLINK_LINECARD_STATE_PROVISIONING) {
-> +		NL_SET_ERR_MSG_MOD(info->extack, "Linecard is currently being provisioned");
-> +		return -EBUSY;
-> +	}
-> +	if (linecard->state == DEVLINK_LINECARD_STATE_UNPROVISIONING) {
-> +		NL_SET_ERR_MSG_MOD(info->extack, "Linecard is currently being unprovisioned");
-> +		return -EBUSY;
-> +	}
-> +	if (linecard->state == DEVLINK_LINECARD_STATE_UNPROVISIONED) {
-> +		NL_SET_ERR_MSG_MOD(info->extack, "Linecard is not provisioned");
-> +		return -EOPNOTSUPP;
-> +	}
-> +	linecard->state = DEVLINK_LINECARD_STATE_UNPROVISIONING;
-> +	devlink_linecard_notify(linecard, DEVLINK_CMD_LINECARD_NEW);
-> +	return linecard->ops->unprovision(linecard, linecard->priv,
-> +					  info->extack);
-> +}
-> +
->  static int devlink_nl_sb_fill(struct sk_buff *msg, struct devlink *devlink,
->  			      struct devlink_sb *devlink_sb,
->  			      enum devlink_command cmd, u32 portid,
-> @@ -7759,6 +7839,7 @@ static const struct nla_policy devlink_nl_policy[DEVLINK_ATTR_MAX + 1] = {
->  							DEVLINK_RELOAD_ACTION_MAX),
->  	[DEVLINK_ATTR_RELOAD_LIMITS] = NLA_POLICY_BITFIELD32(DEVLINK_RELOAD_LIMITS_VALID_MASK),
->  	[DEVLINK_ATTR_LINECARD_INDEX] = { .type = NLA_U32 },
-> +	[DEVLINK_ATTR_LINECARD_TYPE] = { .type = NLA_NUL_STRING },
->  };
->  
->  static const struct genl_small_ops devlink_nl_ops[] = {
-> @@ -7806,6 +7887,20 @@ static const struct genl_small_ops devlink_nl_ops[] = {
->  		.internal_flags = DEVLINK_NL_FLAG_NEED_LINECARD,
->  		/* can be retrieved by unprivileged users */
->  	},
-> +	{
-> +		.cmd = DEVLINK_CMD_LINECARD_PROVISION,
-> +		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
-> +		.doit = devlink_nl_cmd_linecard_provision_doit,
-> +		.flags = GENL_ADMIN_PERM,
-> +		.internal_flags = DEVLINK_NL_FLAG_NEED_LINECARD,
-> +	},
-> +	{
-> +		.cmd = DEVLINK_CMD_LINECARD_UNPROVISION,
-> +		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
-> +		.doit = devlink_nl_cmd_linecard_unprovision_doit,
-> +		.flags = GENL_ADMIN_PERM,
-> +		.internal_flags = DEVLINK_NL_FLAG_NEED_LINECARD,
-> +	},
->  	{
->  		.cmd = DEVLINK_CMD_SB_GET,
->  		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
-> @@ -8613,11 +8708,17 @@ static int __devlink_port_phys_port_name_get(struct devlink_port *devlink_port,
->   *	Create devlink linecard instance with provided linecard index.
->   *	Caller can use any indexing, even hw-related one.
->   */
-> -struct devlink_linecard *devlink_linecard_create(struct devlink *devlink,
-> -						 unsigned int linecard_index)
-> +struct devlink_linecard *
-> +devlink_linecard_create(struct devlink *devlink, unsigned int linecard_index,
-> +			const struct devlink_linecard_ops *ops, void *priv)
->  {
->  	struct devlink_linecard *linecard;
->  
-> +	if (WARN_ON(!ops || !ops->supported_types ||
-> +		    !ops->supported_types_count ||
-> +		    !ops->provision || !ops->unprovision))
-> +		return ERR_PTR(-EINVAL);
-> +
->  	mutex_lock(&devlink->lock);
->  	if (devlink_linecard_index_exists(devlink, linecard_index)) {
->  		mutex_unlock(&devlink->lock);
-> @@ -8630,6 +8731,9 @@ struct devlink_linecard *devlink_linecard_create(struct devlink *devlink,
->  
->  	linecard->devlink = devlink;
->  	linecard->index = linecard_index;
-> +	linecard->ops = ops;
-> +	linecard->priv = priv;
-> +	linecard->state = DEVLINK_LINECARD_STATE_UNPROVISIONED;
->  	list_add_tail(&linecard->list, &devlink->linecard_list);
->  	mutex_unlock(&devlink->lock);
->  	devlink_linecard_notify(linecard, DEVLINK_CMD_LINECARD_NEW);
-> @@ -8653,6 +8757,39 @@ void devlink_linecard_destroy(struct devlink_linecard *linecard)
->  }
->  EXPORT_SYMBOL_GPL(devlink_linecard_create);
->  
-> +/**
-> + *	devlink_linecard_provision_set - Set provisioning on linecard
-
-'Set linecard as provisioned' maybe?
-
-> + *
-> + *	@devlink_linecard: devlink linecard
-> + *	@type_index: index of the linecard type (in array of types in ops)
-> + */
-> +void devlink_linecard_provision_set(struct devlink_linecard *linecard,
-> +				    u32 type_index)
-> +{
-> +	WARN_ON(type_index >= linecard->ops->supported_types_count);
-
-Wouldn't this explode below when you use the index to access the array?
-Maybe better to just warn and return
-
-> +	mutex_lock(&linecard->devlink->lock);
-> +	linecard->state = DEVLINK_LINECARD_STATE_PROVISIONED;
-> +	linecard->provisioned_type = linecard->ops->supported_types[type_index];
-> +	mutex_unlock(&linecard->devlink->lock);
-> +	devlink_linecard_notify(linecard, DEVLINK_CMD_LINECARD_NEW);
-> +}
-> +EXPORT_SYMBOL_GPL(devlink_linecard_provision_set);
-> +
-> +/**
-> + *	devlink_linecard_provision_clear - Clear provisioning on linecard
-
-'Set linecard as unprovisioned' maybe?
-
-> + *
-> + *	@devlink_linecard: devlink linecard
-> + */
-> +void devlink_linecard_provision_clear(struct devlink_linecard *linecard)
-> +{
-> +	mutex_lock(&linecard->devlink->lock);
-> +	linecard->state = DEVLINK_LINECARD_STATE_UNPROVISIONED;
-> +	linecard->provisioned_type = NULL;
-> +	mutex_unlock(&linecard->devlink->lock);
-> +	devlink_linecard_notify(linecard, DEVLINK_CMD_LINECARD_NEW);
-> +}
-> +EXPORT_SYMBOL_GPL(devlink_linecard_provision_clear);
-> +
->  int devlink_sb_register(struct devlink *devlink, unsigned int sb_index,
->  			u32 size, u16 ingress_pools_count,
->  			u16 egress_pools_count, u16 ingress_tc_count,
-> -- 
-> 2.26.2
-> 
+Does your single test cover all combinations of numbers?
