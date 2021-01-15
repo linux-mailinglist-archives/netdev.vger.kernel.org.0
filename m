@@ -2,73 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DEABC2F882D
-	for <lists+netdev@lfdr.de>; Fri, 15 Jan 2021 23:09:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 21B842F8868
+	for <lists+netdev@lfdr.de>; Fri, 15 Jan 2021 23:29:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726988AbhAOWHy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Jan 2021 17:07:54 -0500
-Received: from mail-io1-f70.google.com ([209.85.166.70]:53372 "EHLO
-        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726352AbhAOWHy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jan 2021 17:07:54 -0500
-Received: by mail-io1-f70.google.com with SMTP id a19so7689558ioq.20
-        for <netdev@vger.kernel.org>; Fri, 15 Jan 2021 14:07:38 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
-         :from:to;
-        bh=Ni8yaQuabPx7HTWh4ePzjfz8VlgGJ45ofwREdAgCaIA=;
-        b=M9f7slHbM4MxgV8EZnRQJXaSRMKLdpGM2sPVoEPG3tnMZ2ajmrFgqlEY/Nc0UwWB/g
-         Ew5mx0J6OJ9kMZc3/M3NAPS/g4wsRKVpNXVww4sCwkuvS1bF0Z/D3lSX7EHjpIrgF9xK
-         BcZarKfKK1z2fkne9eiXP8qedWLqsnPry7S47fCzhgo+9WDAhCqRajT2ERGNWPTUhLJx
-         rEmqOFcq449nEtpI11M1zU1crhCrEZwb5Iq43qdZKEVRa04N4AK//nEEs7BfvOvBe1SE
-         7UsnxSdoYxPz0XThJzxjx6enTQgTO3EWREgSIcpnO9minQLvKHIohZndsoQQ1n0PEio3
-         cRDQ==
-X-Gm-Message-State: AOAM533OkwS2v78EaQ2+Dy1yNFG+JlyW8RpkSmu9wjbtNHpYhXlAWAge
-        hdx+eD6pMuLcTRAtFz94FTc/7VY72P+L+XUfRTQCFWe/gaYc
-X-Google-Smtp-Source: ABdhPJwl5lqi00q3NK/YL4hxeMbwf8+7Xw7x+Xx7N2oQtjO9QTWtGNrmxRFpAhlx4fn68gu+vAWrPashN7vHa2ezNTX9R9pKv/+c
+        id S1726459AbhAOW3l (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Jan 2021 17:29:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55052 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725863AbhAOW3k (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jan 2021 17:29:40 -0500
+Received: from orbyte.nwl.cc (orbyte.nwl.cc [IPv6:2001:41d0:e:133a::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C54B1C0613D3;
+        Fri, 15 Jan 2021 14:28:59 -0800 (PST)
+Received: from n0-1 by orbyte.nwl.cc with local (Exim 4.94)
+        (envelope-from <n0-1@orbyte.nwl.cc>)
+        id 1l0XaT-0000oS-EB; Fri, 15 Jan 2021 23:28:57 +0100
+Date:   Fri, 15 Jan 2021 23:28:57 +0100
+From:   Phil Sutter <phil@netfilter.org>
+To:     netfilter@vger.kernel.org, netfilter-devel@vger.kernel.org
+Cc:     netdev@vger.kernel.org, netfilter-announce@lists.netfilter.org,
+        lwn@lwn.net
+Subject: [ANNOUNCE] iptables 1.8.7 release
+Message-ID: <20210115222857.GA18001@orbyte.nwl.cc>
+Mail-Followup-To: Phil Sutter <phil@netfilter.org>,
+        netfilter@vger.kernel.org, netfilter-devel@vger.kernel.org,
+        netdev@vger.kernel.org, netfilter-announce@lists.netfilter.org,
+        lwn@lwn.net
 MIME-Version: 1.0
-X-Received: by 2002:a05:6e02:13e2:: with SMTP id w2mr12778970ilj.155.1610748433062;
- Fri, 15 Jan 2021 14:07:13 -0800 (PST)
-Date:   Fri, 15 Jan 2021 14:07:13 -0800
-In-Reply-To: <0000000000005d946305a9f5d206@google.com>
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000002ce11a05b8f7980a@google.com>
-Subject: Re: INFO: rcu detected stall in sock_close (3)
-From:   syzbot <syzbot+4168fa4c45be33afa73c@syzkaller.appspotmail.com>
-To:     Markus.Elfring@web.de, axboe@kernel.dk,
-        christian.brauner@ubuntu.com, davem@davemloft.net,
-        ebiederm@xmission.com, fweisbec@gmail.com, hdanton@sina.com,
-        jmaloy@redhat.com, kuba@kernel.org, linux-kernel@vger.kernel.org,
-        mingo@kernel.org, netdev@vger.kernel.org, oleg@redhat.com,
-        pcc@google.com, peterz@infradead.org,
-        syzkaller-bugs@googlegroups.com, tglx@linutronix.de,
-        tipc-discussion@lists.sourceforge.net, tuong.t.lien@dektech.com.au,
-        ying.xue@windriver.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/mixed; boundary="0OAP2g/MAC+5xKAE"
+Content-Disposition: inline
+Sender:  <n0-1@orbyte.nwl.cc>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-syzbot suspects this issue was fixed by commit:
 
-commit 98b89b649fce39dacb9dc036d6d0fdb8caff73f7
-Author: Jens Axboe <axboe@kernel.dk>
-Date:   Fri Oct 9 22:03:01 2020 +0000
+--0OAP2g/MAC+5xKAE
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-    signal: kill JOBCTL_TASK_WORK
+Hi!
 
-bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=14b99c20d00000
-start commit:   7cc2a8ea Merge tag 'block-5.8-2020-07-01' of git://git.ker..
-git tree:       upstream
-kernel config:  https://syzkaller.appspot.com/x/.config?x=183dd243398ba7ec
-dashboard link: https://syzkaller.appspot.com/bug?extid=4168fa4c45be33afa73c
-syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=112223b7100000
-C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=154793a3100000
+The Netfilter project proudly presents:
 
-If the result looks correct, please mark the issue as fixed by replying with:
+iptables 1.8.7
 
-#syz fix: signal: kill JOBCTL_TASK_WORK
+This release contains the following fixes and enhancements:
 
-For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+iptables-nft:
+- Improved performance when matching on IP/MAC address prefixes if the
+  prefix is byte-aligned. In ideal cases, this doubles packet processing
+  performance.
+  *NOTE*: Older iptables versions will not recognize the mask and thus
+          omit them when listing the ruleset.
+- Dump user-defined chains in lexical order. This way ruleset dumps
+  become stable and easily comparable.
+- Avoid pointless table/chain creation. For instance, 'iptables-nft -L'
+  no longer creates missing base-chains.
+
+ebtables-nft:
+- Renaming user-defined chains was entirely broken.
+
+extensions:
+- Code for printing and parsing of MAC addresses was consolidated
+  internally, slightly reducing binary size. As a noticeable
+  side-effect, all MAC addresses are now printed in lower-case (affects
+  'mac'-extension).
+- Fixed DCCP extension's match on 'INVALID' type, a meta-type which
+  should match any type value in the range from ten to fifteen. In the
+  past it matched on type value 10 only.
+
+xtables-monitor:
+- Don't print unrelated rules in the same chain when tracing.
+- Flush output buffer after each rule when tracing to improve experience
+  when redirecting output.
+- Print the table's family when tracing instead of whatever the user
+  specified on command line.
+- Print the traced packet before the rule it traverses, not vice-versa.
+- Recognize loopback interface and print "LOOPBACK" for link layer
+  header info instead of "LL=0x304".
+
+xtables-translate:
+- Correctly translate DCCP type matches (including 'INVALID').
+
+See the attached changelog for more details.
+
+You can download it from:
+
+http://www.netfilter.org/projects/iptables/downloads.html#iptables-1.8.7
+
+To build the code, libnftnl 1.1.6 is required:
+
+* http://netfilter.org/projects/libnftnl/downloads.html#libnftnl-1.1.6
+
+In case of bugs and feature requests, file them via:
+
+* https://bugzilla.netfilter.org
+
+Happy firewalling!
+
+--0OAP2g/MAC+5xKAE
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: attachment; filename="iptables-1.8.7.txt"
+
+Florian Westphal (4):
+  xtables-monitor: fix rule printing
+  xtables-monitor: fix packet family protocol
+  xtables-monitor: print packet first
+  xtables-monitor: 'LL=0x304' is not very convenient, print LOOPBACK instead.
+
+Pablo Neira Ayuso (1):
+  tests: shell: update format of registers in bitwise payloads.
+
+Phil Sutter (21):
+  nft: Optimize class-based IP prefix matches
+  ebtables: Optimize masked MAC address matches
+  tests/shell: Add test for bitwise avoidance fixes
+  ebtables: Fix for broken chain renaming
+  iptables-test.py: Accept multiple test files on commandline
+  iptables-test.py: Try to unshare netns by default
+  libxtables: Extend MAC address printing/parsing support
+  xtables-arp: Don't use ARPT_INV_*
+  xshared: Merge some command option-related code
+  tests/shell: Test for fixed extension registration
+  extensions: dccp: Fix for DCCP type 'INVALID'
+  nft: Fix selective chain compatibility checks
+  nft: cache: Introduce nft_cache_add_chain()
+  nft: Implement nft_chain_foreach()
+  nft: cache: Move nft_chain_find() over
+  nft: Introduce struct nft_chain
+  nft: Introduce a dedicated base chain array
+  nft: cache: Sort custom chains by name
+  tests: shell: Drop any dump sorting in place
+  nft: Avoid pointless table/chain creation
+  tests/shell: Fix nft-only/0009-needless-bitwise_0
+
+--0OAP2g/MAC+5xKAE--
