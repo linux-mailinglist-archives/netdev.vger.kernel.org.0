@@ -2,188 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DD97B2F74EE
-	for <lists+netdev@lfdr.de>; Fri, 15 Jan 2021 10:11:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C768E2F7508
+	for <lists+netdev@lfdr.de>; Fri, 15 Jan 2021 10:16:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728020AbhAOJJY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Jan 2021 04:09:24 -0500
-Received: from esa.microchip.iphmx.com ([68.232.153.233]:12475 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726375AbhAOJJW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jan 2021 04:09:22 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1610701761; x=1642237761;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=qyhhzoX7sec/GQhphB69vK1LJzQTApmmA0nBYYV6v34=;
-  b=KyAmOsr3wJnlPq6IrpWS69D7huM7cosgBXQyL9UWQU3pe3L50QZUuR1G
-   bFqh48XGI5ueAzcLDjt/v54CnxWDYRLpVUpaN4cx02iRWt2yQA/TZSASz
-   0yyhLs4zHhR2+Jx2TAlQyXxap6C2pLgyF9Gdw1jElrlbXDeaHVBKcSRIt
-   dPo5eRQA3gKfr1obmDT/VNjiscSNSSgBQqE/T2Va36H+v5LioIzWjQdLU
-   c4yyxA4nCuShi3K/n5cm2LHFqp8w0cH06hzI8EtG6AozvkvxwhemvNSwN
-   zvSwTxvtzh6XU2Jb0esZiazJn59gEnNYm1APKV4d7aFfyP2Z6DbTc0jEr
-   w==;
-IronPort-SDR: OXOTmseRT1TfBELjd6oT+u1DrgbP2SoU7Jw3lS+PKddb8G3NmInZmZUHwNcxItT1MrfVI+OItk
- A7k1fr9ul/7SaZs73rGS80vc/DcXx8+LEphAkiwxzQcD21CVAe9Y4lbjerZBjKbxULTNEdnucb
- Hq5EgDzHNNiNXHKmzQEbIURCHSlZVhkQGu43/9rXgYFPDPmqfKOxt1WPI0dxrqD6LF+f9oKXVb
- XE+LNvnATt+Ni1HqAvwx6gI1nTK8VUrnreho+MtLKaNZiMxNvLNgBEoMBElYjhD+4GAluMmevg
- jlY=
-X-IronPort-AV: E=Sophos;i="5.79,349,1602572400"; 
-   d="scan'208";a="111152968"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 15 Jan 2021 02:08:05 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Fri, 15 Jan 2021 02:08:05 -0700
-Received: from tyr.hegelund-hansen.dk (10.10.115.15) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.1979.3 via Frontend Transport; Fri, 15 Jan 2021 02:08:03 -0700
-Message-ID: <fdcb9765ccd6190271ee17f3a262ccede6af8563.camel@microchip.com>
-Subject: Re: [PATCH v12 2/4] phy: Add ethernet serdes configuration option
-From:   Steen Hegelund <steen.hegelund@microchip.com>
-To:     Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>
-CC:     Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
-        Microchip UNG Driver List <UNGLinuxDriver@microchip.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>
-Date:   Fri, 15 Jan 2021 10:08:02 +0100
-In-Reply-To: <41e40e7b-6a3a-cdb9-adfc-e42f6627ea7b@ti.com>
-References: <20210107091924.1569575-1-steen.hegelund@microchip.com>
-         <20210107091924.1569575-3-steen.hegelund@microchip.com>
-         <41e40e7b-6a3a-cdb9-adfc-e42f6627ea7b@ti.com>
+        id S1727294AbhAOJQN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Jan 2021 04:16:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53002 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726694AbhAOJQM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jan 2021 04:16:12 -0500
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D851C061757;
+        Fri, 15 Jan 2021 01:15:32 -0800 (PST)
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.94)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1l0LCa-006aJa-Lt; Fri, 15 Jan 2021 10:15:29 +0100
+Message-ID: <4fffb82632f2b52e4a06d95881dcbb3a01f99ce6.camel@sipsolutions.net>
+Subject: Re: [PATCH 17/18] net: iosm: readme file
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Andrew Lunn <andrew@lunn.ch>,
+        M Chetan Kumar <m.chetan.kumar@intel.com>
+Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
+        krishna.c.sudi@intel.com
+Date:   Fri, 15 Jan 2021 10:15:27 +0100
+In-Reply-To: <X/eJ/rl4U6edWr3i@lunn.ch>
+References: <20210107170523.26531-1-m.chetan.kumar@intel.com>
+         <20210107170523.26531-18-m.chetan.kumar@intel.com>
+         <X/eJ/rl4U6edWr3i@lunn.ch>
 Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.3 
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7bit
+X-malware-bazaar: not-scanned
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Andrew, all,
 
-Hi Kishon,
-
-
-On Fri, 2021-01-15 at 14:14 +0530, Kishon Vijay Abraham I wrote:
-> EXTERNAL EMAIL: Do not click links or open attachments unless you
-> know the content is safe
-> 
-> Hi,
-> 
-> On 07/01/21 2:49 pm, Steen Hegelund wrote:
-> > Provide a new ethernet phy configuration structure, that
-> > allow PHYs used for ethernet to be configured with
-> > speed, media type and clock information.
-> > 
-> > Signed-off-by: Lars Povlsen <lars.povlsen@microchip.com>
-> > Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
-> > Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-> > ---
-> >  include/linux/phy/phy-ethernet-serdes.h | 30
-> > +++++++++++++++++++++++++
-> >  include/linux/phy/phy.h                 |  4 ++++
-> >  2 files changed, 34 insertions(+)
-> >  create mode 100644 include/linux/phy/phy-ethernet-serdes.h
-> > 
-> > diff --git a/include/linux/phy/phy-ethernet-serdes.h
-> > b/include/linux/phy/phy-ethernet-serdes.h
-> > new file mode 100644
-> > index 000000000000..d2462fadf179
-> > --- /dev/null
-> > +++ b/include/linux/phy/phy-ethernet-serdes.h
-> > @@ -0,0 +1,30 @@
-> > +/* SPDX-License-Identifier: (GPL-2.0 OR MIT) */
-> > +/*
-> > + * Microchip Sparx5 Ethernet SerDes driver
-> > + *
-> > + * Copyright (c) 2020 Microschip Inc
-> > + */
-> > +#ifndef __PHY_ETHERNET_SERDES_H_
-> > +#define __PHY_ETHERNET_SERDES_H_
+> > +For example, adding a link for a MBIM IP session with SessionId 5:
 > > +
-> > +#include <linux/types.h>
-> > +
-> > +enum ethernet_media_type {
-> > +     ETH_MEDIA_DEFAULT,
-> > +     ETH_MEDIA_SR,
-> > +     ETH_MEDIA_DAC,
-> > +};
-> > +
-> > +/**
-> > + * struct phy_configure_opts_eth_serdes - Ethernet SerDes This
-> > structure is used
-> > + * to represent the configuration state of a Ethernet Serdes PHY.
-> > + * @speed: Speed of the serdes interface in Mbps
-> > + * @media_type: Specifies which media the serdes will be using
-> > + */
-> > +struct phy_configure_opts_eth_serdes {
-> > +     u32                        speed;
-> > +     enum ethernet_media_type   media_type;
-> > +};
+> > +  ip link add link wwan0 name wwan0.<name> type vlan id 5
 > 
-> Is media type going to be determined dynamically by the Ethernet
-> controller. If it's not determined dynamically, it shouldn't be in
-> PHY
-> ops but rather as a DT parameter.
+> So, this is what all the Ethernet nonsense is all about. You have a
+> session ID you need to somehow represent to user space. And you
+> decided to use VLANs. But to use VLANs, you need an Ethernet
+> header. So you added a bogus Ethernet header.
 
-Yes the media type is dynamic, as it will be determined by the feedback
-from the attached SFP or DAC attached, which can be changed at any
-time, so it is not static in a way that allows it to be part of the DT.
+So yeah, I don't think anyone likes that. I had half-heartedly started
+working on a replacement framework (*1), but then things happened and I
+didn't really have much time, and you also reviewed it and had some
+comments but when I looked the component framework really didn't seem
+appropriate, but didn't really have time to do anything on this either.
 
+(*1) https://lore.kernel.org/netdev/20200225100053.16385-1-johannes@sipsolutions.net/
+
+
+In the mean time, the team doing this driver (I'm not directly involved,
+just helping them out with upstream processes) really needed/wanted to
+continue on this, and this is what they had already, more or less.
+
+Now, the question here at this point of course is they already had it
+that way. But that's easily explained - that's how it works upstream
+today, unfortunately, cf. for example drivers/net/usb/cdc_mbim.c.
+
+Now, granted, some of the newer ones such as drivers/net/ipa/ _don't_
+things that way and come out with ARPHRD_RAWIP, but that requires
+userspace to actually be aware of this, and know how to create the
+necessary channels etc. For IPA this is handled by 'rmnet', but rmnet is
+just Qualcomm's proprietary protocol exposed as an rtnetlink type, so is
+rather unsuitable for this driver.
+
+
+Hence originally the thought we could come up with a generic framework
+to handle this all. Unfortunately, I never had the time to follow up on
+everything there.
+
+T be honest I also lost interest when IPA got merged without any
+thoughts given to unifying this, despite my involvement in the reviews
+and time spent on trying to make a suitable framework that would serve
+both IPA and this IOSM driver.
+
+
+> Is any of this VLAN stuff required by MBIM?
+
+Yes and no. It's not required to do _VLAN_ stuff, but that's one of the
+few ways that userspace currently knows of. Note that as far as I can
+tell Qualcomm (with rmnet/IPA etc.) has basically "reinvented" the world
+here - requiring the use of either their proprietary modem stack, or
+libqmi that knows specifically how to drive their modems.
+
+This was something we wanted to avoid (unless perhaps we could arrive at
+a standardised solution, see above) - thus being left with the VLAN
+method that's used elsewhere in the kernel.
+
+> Linux allows you to dynamically create/destroy network
+> interfaces. So you want to do something like
 > 
-> phy_configure_opts is mostly used with things like DP where the
-> controller probes the configurations supported by SERDES using the
-> configure and validate ops. I don't think for Ethernet it is
-> required.
-
-From what you explained I think the situation is very similar with the
-Ethernet SerDes in that the actual media (and speed) is not known in
-advance, but will be obtained "out-of-band" by the client and may
-change at any point in time when the user changes the physical setup
-(e.g cables).
-
+> ip link add link wwan0 name wwan42 type mbim id 42
 > 
-> Thanks
-> Kishon
-> 
-> > +
-> > +#endif
-> > +
-> > diff --git a/include/linux/phy/phy.h b/include/linux/phy/phy.h
-> > index e435bdb0bab3..78ecb375cede 100644
-> > --- a/include/linux/phy/phy.h
-> > +++ b/include/linux/phy/phy.h
-> > @@ -18,6 +18,7 @@
-> > 
-> >  #include <linux/phy/phy-dp.h>
-> >  #include <linux/phy/phy-mipi-dphy.h>
-> > +#include <linux/phy/phy-ethernet-serdes.h>
-> > 
-> >  struct phy;
-> > 
-> > @@ -49,11 +50,14 @@ enum phy_mode {
-> >   *
-> >   * @mipi_dphy:       Configuration set applicable for phys
-> > supporting
-> >   *           the MIPI_DPHY phy mode.
-> > + * @eth_serdes: Configuration set applicable for phys supporting
-> > + *           the ethernet serdes.
-> >   * @dp:              Configuration set applicable for phys
-> > supporting
-> >   *           the DisplayPort protocol.
-> >   */
-> >  union phy_configure_opts {
-> >       struct phy_configure_opts_mipi_dphy     mipi_dphy;
-> > +     struct phy_configure_opts_eth_serdes    eth_serdes;
-> >       struct phy_configure_opts_dp            dp;
-> >  };
-> > 
-> > 
+> Which will create a new mbim netdev interface using session id 42 on
+> top of the device which provides wwan0. I don't actually like this
+> last bit, but you somehow need to indicate on which MBIM transport you
+> want to create the new session, since you could have multiple bits of
+> hardware providing MBIM services.
 
-BR
-Steen
+I don't even like the fact that 'wwan0' exists there in the first place
+(or how it exists in this driver), because it cannot ever actually
+transport traffic since it's just the root device of sorts.
+
+Hence the proposal to have - similar what we do in wifi - a separate
+abstraction of what a modem device is, and then just allow channels to
+be created on it, and those channels are exposed as netdevs.
+
+
+
+In any case - I'm not sure how we resolve this.
+
+On the one hand, as a technical person going for the most technically
+correct solution, I'd say you're completely right and this should expose
+pure IP netdevs, and have a (custom or not) way to configure channels.
+That still leaves the "dead" wwan0 interface that can't do anything, but
+at least it's better for the channel netdevs.
+Perhaps like with the framework I was trying to do. We could even
+initially side-step the issue with the component framework and simply
+not allow that in the framework from the start.
+
+However, I'm not sure of the value of this. Qualcomm's newer stuff is
+already locked in to their custom APIs in rmnet and IPA, with QMI etc.
+
+If we're honest with ourselves, older stuff that exists in the kernel
+today is highly unlikely to be converted since it works now and very few
+people really care about anything else.
+
+
+Which basically leaves only this driver
+ - either doing some old-fashioned way like it is now, or
+ - doing its own custom way like rmnet/IPA, or
+ - coming with a framework that pretends to be more general than rmnet
+   but really is only used for this driver.
+
+The later two choices both require significant investment on the
+userspace side, so I don't think it's any wonder the first is what the
+driver chose, especially after my more or less failed attempt at getting
+traction for the common framework (before IPA got merged, after all.)
+
+
+Also, non-technically speaking, I'm really not sure as to what we can
+and should require from a single driver like this in terms of "cleaning
+up the ecosystem". Yes, having a common framework would be nice, but if
+nobody's going to use it, what's the point? And we didn't require such
+from IPA. Now, granted, IPA already ships with a slightly better way of
+doing things than ethernet+802.1q, but there's precedent for that as
+well...
+
+johannes
 
