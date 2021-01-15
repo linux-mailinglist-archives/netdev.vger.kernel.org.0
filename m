@@ -2,157 +2,231 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E9B72F81DD
-	for <lists+netdev@lfdr.de>; Fri, 15 Jan 2021 18:13:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B7E42F81E1
+	for <lists+netdev@lfdr.de>; Fri, 15 Jan 2021 18:14:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387625AbhAORM4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Jan 2021 12:12:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43122 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387596AbhAORMu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jan 2021 12:12:50 -0500
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C29D2C061798
-        for <netdev@vger.kernel.org>; Fri, 15 Jan 2021 09:11:45 -0800 (PST)
-Received: by mail-ed1-x52f.google.com with SMTP id g1so9676257edu.4
-        for <netdev@vger.kernel.org>; Fri, 15 Jan 2021 09:11:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=oJ7vHO30mT3PwEX3LIlYnP7lc7tRv3XoUAPGbW7Z2DE=;
-        b=QEBnFFCoM3FqBkcvcVLHGWAd/ZmwVmqVN+JK0TkgNn+/WUO7oy9c7vdEjJYeVeOROR
-         mbYPpvB+OHj16p1aRw6Y0CGRM3xQ/t0qs0JZwouczBqUUuRrlBWe6Sw+D4R45aG2tTnw
-         Zw9lk3cWHoSOdzlgJAMg2rTWkkYKxhe3EKveQf+Aq/Oc7Eok1X7hCe/2Z07/Qcb+E93q
-         GwQm67mPCtcBFGMn6DHpZrSxxu47Plk4OLUaQsAUVNRsNb/6O9jKlUjAYPSANiHP9laZ
-         MHElrL47Mrm8F37vgSHNv9oOLnU1mhlaF9safIRsSON7htr9PCv+gtVAL0i40hcBbBGr
-         PIbA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=oJ7vHO30mT3PwEX3LIlYnP7lc7tRv3XoUAPGbW7Z2DE=;
-        b=glYaYCcWgp77NTIz9nC3YDlmu3vKCvjVCusN5PI+uXoH/RirvjNZelFs+XKaRw//zc
-         uwVuJTZzo6ap/cnzS+vx0HxiPF5UAFUNoR7nGVoSx+qFMul8PQQbSAhiazrgSFqnqLxZ
-         LPe2ZuPVgYlsbcWrv6nfDm67QZabo6Ri7j+8SYazr08PSm2oRRN1Yeexx8eS9Zm7in3j
-         siQ1Ig//9GO+hdsJbMKgIOAiEvjlJVkLoLL8/vsQA02KkpF7FNE4EhWgT6YWJ3AcpMtd
-         67oL3VBwTN0qM/IszdsQhut52wdorEDTplD5n62p8Y1XATnByFBM2XdUZpJOTGz5iX4T
-         A46w==
-X-Gm-Message-State: AOAM532StWs4UcV6J7fjOx2cFmxlvviIIoLE8wj7fYFFMII72IqdyXnW
-        kJ8mP/1qJK4VGBmJOeNhWmU=
-X-Google-Smtp-Source: ABdhPJzCx0moM49KxLdHPCb1/kZkJ6hAvIntXqGYxcOt93T0tvW6uw9d8ArJX5xJ8KZZ3bLkX7Hq2A==
-X-Received: by 2002:a05:6402:487:: with SMTP id k7mr10482901edv.130.1610730704513;
-        Fri, 15 Jan 2021 09:11:44 -0800 (PST)
-Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id g3sm1225229eds.69.2021.01.15.09.11.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 Jan 2021 09:11:43 -0800 (PST)
-Date:   Fri, 15 Jan 2021 19:11:42 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, alexandre.belloni@bootlin.com,
-        andrew@lunn.ch, f.fainelli@gmail.com, vivien.didelot@gmail.com,
-        alexandru.marginean@nxp.com, claudiu.manoil@nxp.com,
-        xiaoliang.yang_1@nxp.com, hongbo.wang@nxp.com, jiri@resnulli.us,
-        idosch@idosch.org, UNGLinuxDriver@microchip.com
-Subject: Renaming interfaces that are up (Was "Re: [PATCH v3 net-next 08/10]
- net: mscc: ocelot: register devlink") ports
-Message-ID: <20210115171142.4iylui5uuv5vljwq@skbuf>
-References: <20210108175950.484854-1-olteanv@gmail.com>
- <20210108175950.484854-9-olteanv@gmail.com>
- <20210109174439.404713f6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20210111171344.j6chsp5djr5t5ykk@skbuf>
- <20210111111909.4cf0174f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20210114103405.yizjfsk4idzgnpot@skbuf>
- <20210114084435.094c260a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S1732744AbhAORN1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Jan 2021 12:13:27 -0500
+Received: from mail-40134.protonmail.ch ([185.70.40.134]:53092 "EHLO
+        mail-40134.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730505AbhAORN0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jan 2021 12:13:26 -0500
+Date:   Fri, 15 Jan 2021 17:12:33 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
+        t=1610730763; bh=LXcmJKBuaYzaNR2L/7SrZkPnX5Pb9ABYbXcPPC91lF0=;
+        h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
+        b=aso/0ju/yHbVPMzIeV6/44swTZ6bbdlkToxmT72XGN00hlcB95nPAihC5iPXmMlCG
+         VqLYlsg1QpTCS5S8Ad6uL8VINpJbffiXdL72aZymfgx4Wr1MMRCirzyx//YPKRKJfR
+         YJgRf1JrikeyC6A0sV8PvFhM657+Fd4tXeBp3LYvRD7DtKbBHqLahJUQcBQX5aZ5uN
+         ovISKbetSuQk64tdfgbU+LheM5NtlYl46i8rvcLhU0CZhVowROrXHZWSDAj2bg0o8n
+         GFrGfWkSvjWIz+pNAvKaY8YnyK110CcsXS1vwB7iFtmAHUFyQn0N/aBKgAN5GrT/+T
+         vwghgsBSnC3bg==
+To:     Dongseok Yi <dseok.yi@samsung.com>
+From:   Alexander Lobakin <alobakin@pm.me>
+Cc:     Alexander Lobakin <alobakin@pm.me>,
+        "David S. Miller" <davem@davemloft.net>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        namkyu78.kim@samsung.com, Jakub Kicinski <kuba@kernel.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Willem de Bruijn <willemb@google.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Reply-To: Alexander Lobakin <alobakin@pm.me>
+Subject: Re: [PATCH net v2] udp: ipv4: manipulate network header of NATed UDP GRO fraglist
+Message-ID: <20210115171203.175115-1-alobakin@pm.me>
+In-Reply-To: <1610716836-140533-1-git-send-email-dseok.yi@samsung.com>
+References: <CGME20210115133200epcas2p1f52efe7bbc2826ed12da2fde4e03e3b2@epcas2p1.samsung.com> <1610716836-140533-1-git-send-email-dseok.yi@samsung.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210114084435.094c260a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.2 required=10.0 tests=ALL_TRUSTED,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF shortcircuit=no
+        autolearn=disabled version=3.4.4
+X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on
+        mailout.protonmail.ch
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 14, 2021 at 08:44:35AM -0800, Jakub Kicinski wrote:
-> > > Can you unbind and bind the driver back and see if phys_port_name
-> > > always gets the correct value? (replay/udevadm test is not sufficient)
-> >
-> > Yes, and that udev renaming test failed miserably still.
-> >
-> > I have dhcpcd in my system, and it races with my udev script by
-> > auto-upping the interfaces when they probe. Then, dev_change_name()
-> > returns -EBUSY because the interfaces are up but its priv_flags do not
-> > declare IFF_LIVE_RENAME_OK.
-> >
-> > How is that one solved?
->
-> Yeah, that's one of those perennial problems we never found a strong
-> answer to. IIRC IFF_LIVE_RENAME_OK was more of a dirty hack than a
-> serious answer. I think we should allow renaming interfaces while
-> they're up, and see if anything breaks. We'd just need to add the right
-> netlink notifications to dev_change_name(), maybe?
+From: Dongseok Yi <dseok.yi@samsung.com>
+Date: Fri, 15 Jan 2021 22:20:35 +0900
 
-I'm probably crazy for even indulging in this, since it is likely going
-to just be a huge time sink. But I need to ask anyway: what netlink
-notification are you thinking of adding? Do you want me to call
-dev_close and then dev_open, like what was discussed in the
-"[virtio-dev] Re: net_failover slave udev renaming (was Re: [RFC PATCH
-net-next v6 4/4] netvsc: refactor notifier/event handling code to use
-the bypass framework)" thread and then in the "failover: allow name
-change on IFF_UP slave interfaces" email threads?
+> UDP/IP header of UDP GROed frag_skbs are not updated even after NAT
+> forwarding. Only the header of head_skb from ip_finish_output_gso ->
+> skb_gso_segment is updated but following frag_skbs are not updated.
+>=20
+> A call path skb_mac_gso_segment -> inet_gso_segment ->
+> udp4_ufo_fragment -> __udp_gso_segment -> __udp_gso_segment_list
+> does not try to update UDP/IP header of the segment list but copy
+> only the MAC header.
+>=20
+> Update dport, daddr and checksums of each skb of the segment list
+> in __udp_gso_segment_list. It covers both SNAT and DNAT.
+>=20
+> Fixes: 9fd1ff5d2ac7 (udp: Support UDP fraglist GRO/GSO.)
+> Signed-off-by: Dongseok Yi <dseok.yi@samsung.com>
+> ---
+> v1:
+> Steffen Klassert said, there could be 2 options.
+> https://lore.kernel.org/patchwork/patch/1362257/
+> I was trying to write a quick fix, but it was not easy to forward
+> segmented list. Currently, assuming DNAT only.
+>=20
+> v2:
+> Per Steffen Klassert request, move the procedure from
+> udp4_ufo_fragment to __udp_gso_segment_list and support SNAT.
+>=20
+> To Alexander Lobakin, I've checked your email late. Just use this
+> patch as a reference. It support SNAT too, but does not support IPv6
+> yet. I cannot make IPv6 header changes in __udp_gso_segment_list due
+> to the file is in IPv4 directory.
 
-By the way I removed the if condition and added nothing in its place,
-just to see what would happen. I see a lot of these messages, I did not
-investigate where they are coming from and why they are emitted. They go
-away when I rename the interface back to swp0.
+I used another approach, tried to make fraglist GRO closer to plain
+in terms of checksummming, as it is confusing to me why GSO packet
+should have CHECKSUM_UNNECESSARY. Just let Netfilter do its mangling,
+and then use classic UDP GSO magic at the end of segmentation.
+I also see the idea of explicit comparing and editing of IP and UDP
+headers right in __udp_gso_segment_list() rather unacceptable.
 
-# ip monitor &
-[1] 26931
-# ip link set swp0 name random
-[ 2857.570246] mscc_felix 0000:00:00.5 random: renamed from swp0
-32: random: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default
-    link/ether 7a:1e:87:48:79:c0 brd ff:ff:ff:ff:ff:ff
-Deleted inet swp0
-inet swp0 forwarding off rp_filter off mc_forwarding off proxy_neigh off ignore_routes_with_linkdown off
-Deleted inet6 swp0
-inet6 swp0 forwarding off mc_forwarding off proxy_neigh off ignore_routes_with_linkdown off
-32: random: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default
-    link/ether 7a:1e:87:48:79:c0 brd ff:ff:ff:ff:ff:ff
-fe80::/64 dev swp0 proto kernel metric 256 pref medium
-32: swp0    inet6 fe80::e4fb:6ac5:7211:7981/64 scope link tentative
-       valid_lft forever preferred_lft forever
-Deleted 32: swp0    inet6 fe80::e4fb:6ac5:7211:7981/64 scope link tentative
-       valid_lft forever preferred_lft forever
-Deleted fe80::/64 dev swp0 proto kernel metric 256 pref medium
-32: random: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default
-    link/ether 7a:1e:87:48:79:c0 brd ff:ff:ff:ff:ff:ff
-fe80::/64 dev swp0 proto kernel metric 256 pref medium
-32: swp0    inet6 fe80::e4fb:6ac5:7211:7981/64 scope link tentative
-       valid_lft forever preferred_lft forever
-Deleted 32: swp0    inet6 fe80::e4fb:6ac5:7211:7981/64 scope link tentative
-       valid_lft forever preferred_lft forever
-Deleted fe80::/64 dev swp0 proto kernel metric 256 pref medium
-32: random: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default
-    link/ether 7a:1e:87:48:79:c0 brd ff:ff:ff:ff:ff:ff
-fe80::/64 dev swp0 proto kernel metric 256 pref medium
-32: swp0    inet6 fe80::e4fb:6ac5:7211:7981/64 scope link tentative
-       valid_lft forever preferred_lft forever
-Deleted 32: swp0    inet6 fe80::e4fb:6ac5:7211:7981/64 scope link tentative
-       valid_lft forever preferred_lft forever
-Deleted fe80::/64 dev swp0 proto kernel metric 256 pref medium
-^C32: random: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default
-    link/ether 7a:1e:87:48:79:c0 brd ff:ff:ff:ff:ff:ff
-fe80::/64 dev swp0 proto kernel metric 256 pref medium
-32: swp0    inet6 fe80::e4fb:6ac5:7211:7981/64 scope link tentative
-       valid_lft forever preferred_lft forever
-Deleted 32: swp0    inet6 fe80::e4fb:6ac5:7211:7981/64 scope link tentative
-       valid_lft forever preferred_lft forever
-Deleted fe80::/64 dev swp0 proto kernel metric 256 pref medium
-32: random: <BROADCAST,MULTICAST,UP,LOWER_UP> mtu 1500 qdisc pfifo_fast state UP group default
-    link/ether 7a:1e:87:48:79:c0 brd ff:ff:ff:ff:ff:ff
-fe80::/64 dev swp0 proto kernel metric 256 pref medium
-32: swp0    inet6 fe80::e4fb:6ac5:7211:7981/64 scope link tentative
-       valid_lft forever preferred_lft forever
-Deleted 32: swp0    inet6 fe80::e4fb:6ac5:7211:7981/64 scope link tentative
-       valid_lft forever preferred_lft forever
-Deleted fe80::/64 dev swp0 proto kernel metric 256 pref medium
+Dongseok, Steffen, please test this WIP diff and tell if this one
+works for you, so I could clean up the code and make a patch.
+For me, it works now in any configurations, with and without
+checksum/GSO/fraglist offload.
+
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index c1a6f262636a..646a42e88e83 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -3674,6 +3674,7 @@ struct sk_buff *skb_segment_list(struct sk_buff *skb,
+ =09=09=09=09 unsigned int offset)
+ {
+ =09struct sk_buff *list_skb =3D skb_shinfo(skb)->frag_list;
++=09unsigned int doffset =3D skb->data - skb_mac_header(skb);
+ =09unsigned int tnl_hlen =3D skb_tnl_header_len(skb);
+ =09unsigned int delta_truesize =3D 0;
+ =09unsigned int delta_len =3D 0;
+@@ -3681,7 +3682,7 @@ struct sk_buff *skb_segment_list(struct sk_buff *skb,
+ =09struct sk_buff *nskb, *tmp;
+ =09int err;
+=20
+-=09skb_push(skb, -skb_network_offset(skb) + offset);
++=09skb_push(skb, doffset);
+=20
+ =09skb_shinfo(skb)->frag_list =3D NULL;
+=20
+@@ -3716,12 +3717,11 @@ struct sk_buff *skb_segment_list(struct sk_buff *sk=
+b,
+ =09=09delta_len +=3D nskb->len;
+ =09=09delta_truesize +=3D nskb->truesize;
+=20
+-=09=09skb_push(nskb, -skb_network_offset(nskb) + offset);
++=09=09skb_push(nskb, skb_headroom(nskb) - skb_headroom(skb));
+=20
+ =09=09skb_release_head_state(nskb);
+-=09=09 __copy_skb_header(nskb, skb);
++=09=09__copy_skb_header(nskb, skb);
+=20
+-=09=09skb_headers_offset_update(nskb, skb_headroom(nskb) - skb_headroom(sk=
+b));
+ =09=09skb_copy_from_linear_data_offset(skb, -tnl_hlen,
+ =09=09=09=09=09=09 nskb->data - tnl_hlen,
+ =09=09=09=09=09=09 offset + tnl_hlen);
+diff --git a/net/ipv4/udp_offload.c b/net/ipv4/udp_offload.c
+index ff39e94781bf..61665fcd8c85 100644
+--- a/net/ipv4/udp_offload.c
++++ b/net/ipv4/udp_offload.c
+@@ -190,13 +190,58 @@ EXPORT_SYMBOL(skb_udp_tunnel_segment);
+ static struct sk_buff *__udp_gso_segment_list(struct sk_buff *skb,
+ =09=09=09=09=09      netdev_features_t features)
+ {
+-=09unsigned int mss =3D skb_shinfo(skb)->gso_size;
++=09struct sk_buff *seg;
++=09struct udphdr *uh;
++=09unsigned int mss;
++=09__be16 newlen;
++=09__sum16 check;
++
++=09mss =3D skb_shinfo(skb)->gso_size;
++=09if (skb->len <=3D sizeof(*uh) + mss)
++=09=09return ERR_PTR(-EINVAL);
+=20
+-=09skb =3D skb_segment_list(skb, features, skb_mac_header_len(skb));
++=09skb_pull(skb, sizeof(*uh));
++
++=09skb =3D skb_segment_list(skb, features, skb->data - skb_mac_header(skb)=
+);
+ =09if (IS_ERR(skb))
+ =09=09return skb;
+=20
+-=09udp_hdr(skb)->len =3D htons(sizeof(struct udphdr) + mss);
++=09seg =3D skb;
++=09uh =3D udp_hdr(seg);
++
++=09/* compute checksum adjustment based on old length versus new */
++=09newlen =3D htons(sizeof(*uh) + mss);
++=09check =3D csum16_add(csum16_sub(uh->check, uh->len), newlen);
++
++=09for (;;) {
++=09=09if (!seg->next)
++=09=09=09break;
++
++=09=09uh->len =3D newlen;
++=09=09uh->check =3D check;
++
++=09=09if (seg->ip_summed =3D=3D CHECKSUM_PARTIAL)
++=09=09=09gso_reset_checksum(seg, ~check);
++=09=09else
++=09=09=09uh->check =3D gso_make_checksum(seg, ~check) ? :
++=09=09=09=09    CSUM_MANGLED_0;
++
++=09=09seg =3D seg->next;
++=09=09uh =3D udp_hdr(seg);
++=09}
++
++=09/* last packet can be partial gso_size, account for that in checksum */
++=09newlen =3D htons(skb_tail_pointer(seg) - skb_transport_header(seg) +
++=09=09       seg->data_len);
++=09check =3D csum16_add(csum16_sub(uh->check, uh->len), newlen);
++
++=09uh->len =3D newlen;
++=09uh->check =3D check;
++
++=09if (seg->ip_summed =3D=3D CHECKSUM_PARTIAL)
++=09=09gso_reset_checksum(seg, ~check);
++=09else
++=09=09uh->check =3D gso_make_checksum(seg, ~check) ? : CSUM_MANGLED_0;
+=20
+ =09return skb;
+ }
+@@ -602,27 +647,13 @@ INDIRECT_CALLABLE_SCOPE int udp4_gro_complete(struct =
+sk_buff *skb, int nhoff)
+ =09const struct iphdr *iph =3D ip_hdr(skb);
+ =09struct udphdr *uh =3D (struct udphdr *)(skb->data + nhoff);
+=20
+-=09if (NAPI_GRO_CB(skb)->is_flist) {
+-=09=09uh->len =3D htons(skb->len - nhoff);
+-
+-=09=09skb_shinfo(skb)->gso_type |=3D (SKB_GSO_FRAGLIST|SKB_GSO_UDP_L4);
+-=09=09skb_shinfo(skb)->gso_segs =3D NAPI_GRO_CB(skb)->count;
+-
+-=09=09if (skb->ip_summed =3D=3D CHECKSUM_UNNECESSARY) {
+-=09=09=09if (skb->csum_level < SKB_MAX_CSUM_LEVEL)
+-=09=09=09=09skb->csum_level++;
+-=09=09} else {
+-=09=09=09skb->ip_summed =3D CHECKSUM_UNNECESSARY;
+-=09=09=09skb->csum_level =3D 0;
+-=09=09}
+-
+-=09=09return 0;
+-=09}
+-
+ =09if (uh->check)
+ =09=09uh->check =3D ~udp_v4_check(skb->len - nhoff, iph->saddr,
+ =09=09=09=09=09  iph->daddr, 0);
+=20
++=09if (NAPI_GRO_CB(skb)->is_flist)
++=09=09skb_shinfo(skb)->gso_type |=3D SKB_GSO_FRAGLIST;
++
+ =09return udp_gro_complete(skb, nhoff, udp4_lib_lookup_skb);
+ }
+=20
+
