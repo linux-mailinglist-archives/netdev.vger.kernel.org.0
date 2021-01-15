@@ -2,103 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2998F2F80FD
-	for <lists+netdev@lfdr.de>; Fri, 15 Jan 2021 17:40:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 825382F812F
+	for <lists+netdev@lfdr.de>; Fri, 15 Jan 2021 17:51:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726920AbhAOQjy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Jan 2021 11:39:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35982 "EHLO
+        id S1726586AbhAOQu2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Jan 2021 11:50:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726019AbhAOQjx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jan 2021 11:39:53 -0500
-Received: from mail-qv1-xf2c.google.com (mail-qv1-xf2c.google.com [IPv6:2607:f8b0:4864:20::f2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECA98C061793
-        for <netdev@vger.kernel.org>; Fri, 15 Jan 2021 08:39:12 -0800 (PST)
-Received: by mail-qv1-xf2c.google.com with SMTP id h1so4209825qvy.12
-        for <netdev@vger.kernel.org>; Fri, 15 Jan 2021 08:39:12 -0800 (PST)
+        with ESMTP id S1725923AbhAOQu2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jan 2021 11:50:28 -0500
+Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2C02C061757
+        for <netdev@vger.kernel.org>; Fri, 15 Jan 2021 08:49:47 -0800 (PST)
+Received: by mail-pj1-x102f.google.com with SMTP id x20so134688pjh.3
+        for <netdev@vger.kernel.org>; Fri, 15 Jan 2021 08:49:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=s+tkUYiTSMZ6aZ2SFhexaT+SsaeIWjTivEj+w6tLR3g=;
-        b=TB5NZE3Hxl8ljI7dGaiqKe3Xr5kVQhSvWat/VKetbaGOEzq81mqtlI7mTc4uOEFGLY
-         WNKbj/URwAYxLVNojc5ihCHBqcTpr5BLfuHAErztTgGOXLp/gu+TCrAZyWn3KxnFsCTa
-         kn75VTHudIHwbLqSzCDi0N0zESdgaT+fd6mg4bOLsXuJKndhNxjrpDGZdQokowK4ZjCG
-         dcPD6OUVGsSg1s8DdQC32qzlnBgRDIskrNHNI2q2OQju+wAAY/+UhA5460ofWLqe6PH6
-         2Qdqfki3MYLxhRxF4aK6VJVjc94B6uCnWXh1avsnldoKB4SUHiGlLpCi+5QzUwkG+yZp
-         dF3Q==
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=4GV12z3SC0201k37ANB10q+RfQzIsZosjSLlDFeUKeo=;
+        b=OC0K77c4ikrHAarsM6b9BDJUzkGGRYIR1MEy3a6vvBjZ/n6tn3XD355PLwQ1776E5H
+         CuMsHHhShQ9gz9wFGgXyqdMR+290sZaoV2nyTpqccI5OEamUqpilLo/3t4rXbrmazDXA
+         kAdEr+3R4Js1YJwMizKeZllM9fTuBXo3xvM5jJnFEwTI+QTQE1inOYhRBwUnPS4cHctU
+         IKX7ZXZebDeN3jpMX05FUj2/zcaqK6kxHQ7DKUnjkyw4hDsTYvnjHZGMM2JF8Fa0SQ3V
+         7NJE3Qj7PBameOclFQdkPdz80t4PjUwc1sXuOyb8WKO5HUJQ59ZJgLAOroC7kymMT7ef
+         9GwQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=s+tkUYiTSMZ6aZ2SFhexaT+SsaeIWjTivEj+w6tLR3g=;
-        b=SruF12IIDM88UYBb4zUq0mqZacE2vLD8rypYtziPmydVjlpPZXBZ6molcF4awGUTba
-         ribwxVo4IVcinTucWjVzJVTgo0HN/XddE+5Hmw14gtK0QcrAl+4w/GYlT8eWcnTLvQ/E
-         2KRvLJspFhAxkVakJuNADooa1nNJU0eCw38MMnpFBC3dVeSHIyMFEGf37Hd7xHkTwFDZ
-         Xa18v8JEU0BrYBemJjMqMYD5sQoqqweiyYVHNwTSdia/iLjA1FmGqWdpqdH4WkHusQGv
-         ki6fAmuG33BPNhcEBLyppe8NjhpHuaUYD1+0utia6HQW1BhCMRULo5LwIGdmYf92+a4J
-         CjGQ==
-X-Gm-Message-State: AOAM530tZUJK051Y5Q24VF2xWXGLDpY9cPWSDLsRrexAd3BrH5WfRG1X
-        VECPdzVRQDlAkD3z1WVbZD+9BZUW3ct1+1ksJ+difA==
-X-Google-Smtp-Source: ABdhPJy1Qtz6TjR5mJqiQ1mxDU1AgQiXDERUi9WuA2dypM2+OnO6K4m4y5ICpOwri14Hil3gSnpU1G2/ynvydUgowbo=
-X-Received: by 2002:a0c:b21e:: with SMTP id x30mr12889913qvd.21.1610728751775;
- Fri, 15 Jan 2021 08:39:11 -0800 (PST)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=4GV12z3SC0201k37ANB10q+RfQzIsZosjSLlDFeUKeo=;
+        b=Ado/kbHTMnNSrBqtbk97MwtSHy4NUl3+VFl6TbMlOWtytPn7bmYkEskmAKA8YOP7FB
+         3cOhkP8mQ13ssE0Q3cotEbiUswXq+MSzhcYTqG5eHb/hZvo8xt3qrG8skHg0uj7KKhw3
+         5VUK4NV4outMIzorxf1cfIJ1jDEE8nsCNQNWrSEtSO5aoJxRoOFYgzfyWqy9943tkSQ1
+         DF5fsFlbs5sfKjQvwqpFUNaoMSg7XLMr/Mj4TNuTRYopIO+2iSrihLsredd1M6b8Fktm
+         n6u1FtS3+i/KTGUg2ZJI8EOlS/3ms3Y3ir/FxIuv6l3oCZsA7gFAW3Si3ZjvtJhfmdho
+         HI5w==
+X-Gm-Message-State: AOAM532iHdTV4RSF0mcPuJThvSJ+CjWzfTBigIhEj7b91+e2MRVJ1Um/
+        OBX8Ol6ImKNox56Yht4Qbmg=
+X-Google-Smtp-Source: ABdhPJxnhAkJlFekRUEeLjrqIyRrEKkVpj9x0ofQvH6qmXBfr/VxqxXjgDvzsN2ADZ6Szdxw2aRd1w==
+X-Received: by 2002:a17:90a:4096:: with SMTP id l22mr11274964pjg.114.1610729387187;
+        Fri, 15 Jan 2021 08:49:47 -0800 (PST)
+Received: from [10.230.29.29] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id d8sm3856515pjm.30.2021.01.15.08.49.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 15 Jan 2021 08:49:46 -0800 (PST)
+Subject: Re: [PATCH net-next] net: dsa: set configure_vlan_while_not_filtering
+ to true by default
+To:     Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Kurt Kanzenbach <kurt@linutronix.de>,
+        Hauke Mehrtens <hauke@hauke-m.de>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com, Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        Oleksij Rempel <linux@rempel-privat.de>
+References: <20210114173426.2731780-1-olteanv@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <fc42fb41-eb97-5ace-91ae-7e4c2d75743f@gmail.com>
+Date:   Fri, 15 Jan 2021 08:49:43 -0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.6.1
 MIME-Version: 1.0
-References: <1627e0f688c7de7fe291b09c524c7fbb55cfe367.1610669653.git.sdf@google.com>
- <CAEf4BzZOt-VZPwHZ4uGxG_mZYb7NX3wJv1UiAnnt3+dOSkkqtA@mail.gmail.com>
- <CAKH8qBuvbRa0qSbYBqJ0cz5vcQ-8XQA8k6B4FS-TNE1QUEnH8Q@mail.gmail.com>
- <CAADnVQJwOteRbJuZXhbkexBYp2Sr2R9KxgTF4xEw16KmCuH1sQ@mail.gmail.com> <500e4d8b-6ed0-92a5-a5ef-9477766be3e4@fb.com>
-In-Reply-To: <500e4d8b-6ed0-92a5-a5ef-9477766be3e4@fb.com>
-From:   Stanislav Fomichev <sdf@google.com>
-Date:   Fri, 15 Jan 2021 08:39:00 -0800
-Message-ID: <CAKH8qBuZ0iLAiuqi=65RBiQ=Vhi3qkitPzj0b7U=XuiH_4TuLA@mail.gmail.com>
-Subject: Re: [RPC PATCH bpf-next] bpf: implement new BPF_CGROUP_INET_SOCK_POST_CONNECT
-To:     Yonghong Song <yhs@fb.com>
-Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20210114173426.2731780-1-olteanv@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 14, 2021 at 8:27 PM Yonghong Song <yhs@fb.com> wrote:
->
->
->
-> On 1/14/21 7:59 PM, Alexei Starovoitov wrote:
-> > On Thu, Jan 14, 2021 at 7:51 PM Stanislav Fomichev <sdf@google.com> wrote:
-> >>>>
-> >>>>          lock_sock(sock->sk);
-> >>>>          err = __inet_stream_connect(sock, uaddr, addr_len, flags, 0);
-> >>>
-> >>> Similarly here, attaching fexit to __inet_stream_connect would execute
-> >>> your BPF program at exactly the same time (and then you can check for
-> >>> err value).
-> >>>
-> >>> Or the point here is to have a more "stable" BPF program type?
-> >> Good suggestion, I can try to play with it, I think it should give me
-> >> all the info I need (I only need sock).
-> >> But yeah, I'd rather prefer a stable interface against stable
-> >> __sk_buff, but maybe fexit will also work.
-> >
-> > Maybe we can add an extension to fentry/fexit that are cgroup scoped?
-> > I think this will solve many such cases.
->
-> Currently, google is pushing LTO build of the kernel. If this happens,
-> it is possible one global function in one file (say a.c) might be
-> inlined into another file (say b.c). So in this particular case,
-> if the global function is inlined, fentry/fexit approach might be
-> missing some cases? We could mark certain *special purpose* function
-> as non-inline, but not sure whether this is scalable or not.
-For this particular case I don't think it matters, right?
-I'd like to fexit ip4_datagram_connect which is exported symbol,
-it's accessed via proto->connect and there is no way it's
-gonna be inlined. Unless our indirect call macros give clang
-a hint :-/
 
-I'm in general a bit concerned about using tracing calls for stuff
-like that and depending on the non-uapi, but it's probably
-time to give it a try and see how co-re works :-)
+
+On 1/14/2021 9:34 AM, Vladimir Oltean wrote:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> 
+> As explained in commit 54a0ed0df496 ("net: dsa: provide an option for
+> drivers to always receive bridge VLANs"), DSA has historically been
+> skipping VLAN switchdev operations when the bridge wasn't in
+> vlan_filtering mode, but the reason why it was doing that has never been
+> clear. So the configure_vlan_while_not_filtering option is there merely
+> to preserve functionality for existing drivers. It isn't some behavior
+> that drivers should opt into. Ideally, when all drivers leave this flag
+> set, we can delete the dsa_port_skip_vlan_configuration() function.
+> 
+> New drivers always seem to omit setting this flag, for some reason. So
+> let's reverse the logic: the DSA core sets it by default to true before
+> the .setup() callback, and legacy drivers can turn it off. This way, new
+> drivers get the new behavior by default, unless they explicitly set the
+> flag to false, which is more obvious during review.
+> 
+> Remove the assignment from drivers which were setting it to true, and
+> add the assignment to false for the drivers that didn't previously have
+> it. This way, it should be easier to see how many we have left.
+> 
+> The following drivers: lan9303, mv88e6060 were skipped from setting this
+> flag to false, because they didn't have any VLAN offload ops in the
+> first place.
+> 
+> The Broadcom Starfighter 2 driver calls the common b53_switch_alloc and
+> therefore also inherits the configure_vlan_while_not_filtering=true
+> behavior.
+> 
+> Also, print a message through netlink extack every time a VLAN has been
+> skipped. This is mildly annoying on purpose, so that (a) it is at least
+> clear that VLANs are being skipped - the legacy behavior in itself is
+> confusing, and the extack should be much more difficult to miss, unlike
+> kernel logs - and (b) people have one more incentive to convert to the
+> new behavior.
+> 
+> No behavior change except for the added prints is intended at this time.
+> 
+> $ ip link add br0 type bridge vlan_filtering 0
+> $ ip link set sw0p2 master br0
+> [   60.315148] br0: port 1(sw0p2) entered blocking state
+> [   60.320350] br0: port 1(sw0p2) entered disabled state
+> [   60.327839] device sw0p2 entered promiscuous mode
+> [   60.334905] br0: port 1(sw0p2) entered blocking state
+> [   60.340142] br0: port 1(sw0p2) entered forwarding state
+> Warning: dsa_core: skipping configuration of VLAN. # This was the pvid
+> $ bridge vlan add dev sw0p2 vid 100
+> Warning: dsa_core: skipping configuration of VLAN.
+> 
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
