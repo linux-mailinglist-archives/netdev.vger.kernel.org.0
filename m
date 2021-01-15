@@ -2,41 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B3C9A2F8987
-	for <lists+netdev@lfdr.de>; Sat, 16 Jan 2021 00:44:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B22A02F899D
+	for <lists+netdev@lfdr.de>; Sat, 16 Jan 2021 00:48:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728181AbhAOXn3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Jan 2021 18:43:29 -0500
-Received: from mail.kernel.org ([198.145.29.99]:42236 "EHLO mail.kernel.org"
+        id S1728197AbhAOXrE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Jan 2021 18:47:04 -0500
+Received: from mail.kernel.org ([198.145.29.99]:42928 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725863AbhAOXn2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 15 Jan 2021 18:43:28 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id CFAE423A5E;
-        Fri, 15 Jan 2021 23:42:47 +0000 (UTC)
+        id S1726607AbhAOXrE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 15 Jan 2021 18:47:04 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 435BF23A5E;
+        Fri, 15 Jan 2021 23:46:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610754168;
-        bh=JPe02qrO1BmcvOvLAnhecImM0Vaay1dmhg0P/iZZuA8=;
+        s=k20201202; t=1610754383;
+        bh=7m1nWwY+wYqnp3OTmsDmOvk9MHLoE5z7hKTXp8avnbU=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=JlZUGX2JiIZqUNUUNwNZwASwe2fmBRxyiriY+wMKYytC/tkYZko0pzdWqUD4qGtod
-         Utn4Cbz1seYChuYqzXt6KrFPkx/F7Lv+qVrQifasCtjJ8DdgijEXzHU9sFTVLzbnv8
-         y2x08wqX4ifAtWSvAHluBsKMgGAk5VFdVhx2O7nH6+GKezMe8m+e5QoXYJQHIVI6Md
-         ppj95hKagBOXe6u6vK/W+PLMi4zTgKMUxnlEkCQLWYL7DsvyH/9wSHhQWlPA30h+kF
-         OIUrgvgdnXrg5JtyGeEUpbpe4BO5EXSt7jBEtm32JrcJuw5mPKs4oFDr1ltl4yBXe2
-         c1/JbzexPbdFA==
-Date:   Fri, 15 Jan 2021 15:42:46 -0800
+        b=JFeBMMxlLCNncsRukd61I0++AXox9PSGkv2E63Nm9Ul0JaGYyYNlFAztYcaFzW7jv
+         rubv0tGNlQeuYkU85RzxdQhhwV6eFmAvuwhK6dZnQWRQScp3T9s+iUP52loWv/haYN
+         3H6xnxQLihkzdos3uuZHHNyI7itkcldzebM5eWhk1QA/GUxz2DdQxuKXcassJsdi6G
+         /f988M8y7+dSqGbLprPAlomX8D+/nxGNzsUvCu0Dn9CFYO7fKsfY+YEUJaRsJXPi8M
+         wN5NMPfuTt9yC4q2CTC+62gp3RpiOWL8XURbSyeS8d8hY9DrcNCqPjY+CdD+r+/z+k
+         jWu+CDf7I/QNw==
+Date:   Fri, 15 Jan 2021 15:46:22 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     George McCollister <george.mccollister@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Rob Herring <robh@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH net-next v5 0/3] Arrow SpeedChips XRS700x DSA Driver
-Message-ID: <20210115154246.0ee57602@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210114195734.55313-1-george.mccollister@gmail.com>
-References: <20210114195734.55313-1-george.mccollister@gmail.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Tobias Waldekranz <tobias@waldekranz.com>, davem@davemloft.net,
+        andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH v2 net-next 0/2] net: dsa: mv88e6xxx: LAG fixes
+Message-ID: <20210115154622.1db7557d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210115232435.gqeify2w35ddvsyi@skbuf>
+References: <20210115125259.22542-1-tobias@waldekranz.com>
+        <20210115150246.550ae169@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20210115232435.gqeify2w35ddvsyi@skbuf>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -44,25 +42,25 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 14 Jan 2021 13:57:31 -0600 George McCollister wrote:
-> This series adds a DSA driver for the Arrow SpeedChips XRS 7000 series
-> of HSR/PRP gigabit switch chips.
+On Sat, 16 Jan 2021 01:24:35 +0200 Vladimir Oltean wrote:
+> On Fri, Jan 15, 2021 at 03:02:46PM -0800, Jakub Kicinski wrote:
+> > On Fri, 15 Jan 2021 13:52:57 +0100 Tobias Waldekranz wrote:  
+> > > The kernel test robot kindly pointed out that Global 2 support in
+> > > mv88e6xxx is optional.
+> > > 
+> > > This also made me realize that we should verify that the hardware
+> > > actually supports LAG offloading before trying to configure it.
+> > > 
+> > > v1 -> v2:
+> > > - Do not allocate LAG ID mappings on unsupported hardware (Vladimir).
+> > > - Simplify _has_lag predicate (Vladimir).  
+> > 
+> > If I'm reading the discussion on v1 right there will be a v3,
+> > LMK if I got it wrong.  
 > 
-> The chips use Flexibilis IP.
-> More information can be found here:
->  https://www.flexibilis.com/products/speedchips-xrs7000/
-> 
-> The switches have up to three RGMII ports and one MII port and are
-> managed via mdio or i2c. They use a one byte trailing tag to identify
-> the switch port when in managed mode so I've added a tag driver which
-> implements this.
-> 
-> This series contains minimal DSA functionality which may be built upon
-> in future patches. The ultimate goal is to add HSR and PRP
-> (IEC 62439-3 Clause 5 & 4) offloading with integration into net/hsr.
+> I don't think a v3 was supposed to be coming, what made you think that?
 
-I corrected a couple uint_t types to kernel types and applied.
+I thought you concluded that the entire CONFIG_NET_DSA_MV88E6XXX_GLOBAL2
+should go, you said:
 
-Please consider adding an entry to MAINTAINERS for this driver.
-
-Thank you!
+> So, roughly, you save 10%/13k. That hardly justifies the complexity IMO.
