@@ -2,227 +2,323 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 78F8B2F7D2A
-	for <lists+netdev@lfdr.de>; Fri, 15 Jan 2021 14:52:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 69BD62F7D4E
+	for <lists+netdev@lfdr.de>; Fri, 15 Jan 2021 14:57:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731149AbhAONvs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Jan 2021 08:51:48 -0500
-Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:3096 "EHLO
-        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727719AbhAONvr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jan 2021 08:51:47 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B60019dca0000>; Fri, 15 Jan 2021 05:51:06 -0800
-Received: from HQMAIL109.nvidia.com (172.20.187.15) by HQMAIL111.nvidia.com
- (172.20.187.18) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Fri, 15 Jan
- 2021 13:51:05 +0000
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.101)
- by HQMAIL109.nvidia.com (172.20.187.15) with Microsoft SMTP Server (TLS) id
- 15.0.1473.3 via Frontend Transport; Fri, 15 Jan 2021 13:51:05 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=fp4P7pWOI6zIblMTlm0C3O64C1fipUCJrVf3UqZEkyixfKygYry2zdZtf4AC/3v25Vj9617NeloAllNBZZXYLWcgowsVppJIkMLK3btLrB6Jh8HJPJHiGfrHIavBq8QYENQZLRLbRG/QLEfYQ6jcleYRkKnL3iNqpZ2N3dLFTNzQEpbWygxKrMCORoLKr29Rgwa4LMJPSctPxevhbWGfQHstVPAtlDocT/uLJiKnYMHOA569uPAnUZ1GhSALQSVGBYrwTKnonMlGykuk3gQiBL7wSUzEPqLZkKRqNUMtTSwhuSPH+/T1xPyQInQQyupwTIkm7MpPdTdZHPsNL4zD7g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=VMpK4w50/w9wRjGK2OnyygB3HriB2HHlDcshwBA3+kI=;
- b=iPT/yQKt48T5NXeyH/6il5ZwCwzjwY74s7nh39o8t+3o48Pzk+oKdMktUFHiCVGGm5RjHI00Uj22wZte39MhkIQEAorOLXegHzuLaWr1RfhXrUJF/dnFbKn3mgflr7wTz0ppy59frbZERvO0YV51XGj7U2EQ+deNyqQHVOJAlXqE2jmT1kgpqDwi/F7mL1RWX2GJMHyBCeZ5bqWxVtX/0SbnuhW2JPyIt1gxKKM5622L+D0zXX2ZkWlq3G7vZoPK1Cx3QBwZT+cPnZ09XKZ4rkoQ3bv27QKC5zy+a29U5LBdn3avZFeVf7+KXTeekT8o/BKN2f08Wx6nTld938VFbQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
- by DM5PR12MB2440.namprd12.prod.outlook.com (2603:10b6:4:b6::39) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3763.11; Fri, 15 Jan
- 2021 13:51:03 +0000
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::546d:512c:72fa:4727]) by DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::546d:512c:72fa:4727%7]) with mapi id 15.20.3742.012; Fri, 15 Jan 2021
- 13:51:03 +0000
-Date:   Fri, 15 Jan 2021 09:51:01 -0400
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     Alexander Duyck <alexander.duyck@gmail.com>
-CC:     Leon Romanovsky <leon@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-pci <linux-pci@vger.kernel.org>,
-        <linux-rdma@vger.kernel.org>, Netdev <netdev@vger.kernel.org>,
-        Don Dutile <ddutile@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>
-Subject: Re: [PATCH mlx5-next v1 2/5] PCI: Add SR-IOV sysfs entry to read
- number of MSI-X vectors
-Message-ID: <20210115135101.GZ4147@nvidia.com>
-References: <20210113061909.GG4678@unreal>
- <CAKgT0Uc4v54vqRVk_HhjOk=OLJu-20AhuBVcg7=C9_hsLtzxLA@mail.gmail.com>
- <20210114065024.GK4678@unreal>
- <CAKgT0UeTXMeH24L9=wsPc2oJ=ZJ5jSpJeOqiJvsB2J9TFRFzwQ@mail.gmail.com>
- <20210114164857.GN4147@nvidia.com>
- <CAKgT0UcKqt=EgE+eitB8-u8LvxqHBDfF+u2ZSi5urP_Aj0Btvg@mail.gmail.com>
- <20210114182945.GO4147@nvidia.com>
- <CAKgT0UcQW+nJjTircZAYs1_GWNrRud=hSTsphfVpsc=xaF7aRQ@mail.gmail.com>
- <20210114200825.GR4147@nvidia.com>
- <CAKgT0UcaRgY4XnM0jgWRvwBLj+ufiabFzKPyrf3jkLrF1Z8zEg@mail.gmail.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <CAKgT0UcaRgY4XnM0jgWRvwBLj+ufiabFzKPyrf3jkLrF1Z8zEg@mail.gmail.com>
-X-ClientProxiedBy: BL0PR05CA0023.namprd05.prod.outlook.com
- (2603:10b6:208:91::33) To DM6PR12MB3834.namprd12.prod.outlook.com
- (2603:10b6:5:14a::12)
+        id S1733105AbhAONzM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Jan 2021 08:55:12 -0500
+Received: from esa.microchip.iphmx.com ([68.232.154.123]:20417 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1733038AbhAONzL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jan 2021 08:55:11 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1610718910; x=1642254910;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=k9+XkPitT3RGtZXtCrH8DwfqUOFo/Zwho/1sS7zAbBk=;
+  b=G8e0YjS6RLWuDaksyzSMTLpQPuExdoiiAfl5i5c3trVtmXTidd0q+GyP
+   bZq2Lj4Ftzp/yGIBQjh8G8qOn7sg05qDCwsm+e3xXio8HTPZRU2JH1ASW
+   Z3ZpXy4CJkT0bBVCAVu22cHCagQZ7M9m3/5wXPiLifyE8xehnqhzcuWSk
+   N7athnv7xXOzgDh9zR8Vdk0NVHLhlvcmgcGGuYSBJYKkzmtCd4wG/cNGc
+   GeYrWHsK7b0glgcprebuqCpyNt8y7CdXEKq0NTI36QON8Vw9WJuZoMmOb
+   83FLTltrPplxszMF8TWeaqFRdyEgeEZ54cKl14QQ7nRuEnkbw3Pb4Huh6
+   A==;
+IronPort-SDR: 3GKjn99KrMiK84GVKK48DfRvPkHoin6atBB2TKpn7pYSWuFWxt8GPRKwStLWy99NzRsLci515F
+ qLs2NgERSN1SHBmPunPwxL0yKwSRUyPy/ZQk2LMXHlsX2l98GwS30yg78nYlKvXMtx9Sze7pk4
+ 7seZxCt5BeAHfcLM6Gh6ico1ATIEq2a5ROQVh0YThacu//VCytSVcv22qnwDZG7DJe7IOr5GD1
+ Pt/PZYsg5NjUcp6a/IbyuyURTks06mEiNXNElsTl/vVPAyN/9qzyYpjSVhPAtJEI4SnUcSa5i5
+ MyQ=
+X-IronPort-AV: E=Sophos;i="5.79,349,1602572400"; 
+   d="scan'208";a="103001373"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 15 Jan 2021 06:53:53 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Fri, 15 Jan 2021 06:53:53 -0700
+Received: from mchp-dev-shegelun.microchip.com (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.1979.3 via Frontend Transport; Fri, 15 Jan 2021 06:53:49 -0700
+From:   Steen Hegelund <steen.hegelund@microchip.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+CC:     Steen Hegelund <steen.hegelund@microchip.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Russell King <linux@armlinux.org.uk>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Mark Einon <mark.einon@gmail.com>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>
+Subject: [RFC PATCH v3 0/8] Adding the Sparx5 Switch Driver
+Date:   Fri, 15 Jan 2021 14:53:31 +0100
+Message-ID: <20210115135339.3127198-1-steen.hegelund@microchip.com>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from mlx.ziepe.ca (142.162.115.133) by BL0PR05CA0023.namprd05.prod.outlook.com (2603:10b6:208:91::33) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3784.6 via Frontend Transport; Fri, 15 Jan 2021 13:51:03 +0000
-Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1l0PVF-001d2B-1s; Fri, 15 Jan 2021 09:51:01 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1610718666; bh=VMpK4w50/w9wRjGK2OnyygB3HriB2HHlDcshwBA3+kI=;
-        h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:Date:
-         From:To:CC:Subject:Message-ID:References:Content-Type:
-         Content-Disposition:In-Reply-To:X-ClientProxiedBy:MIME-Version:
-         X-MS-Exchange-MessageSentRepresentingType;
-        b=VzG2FySHRa+gWAieS+V+HMjnjYpEvg2ImXpNYMFp3HMrsPeVtVmPwJAfZp3UilSiC
-         0TcXXRaflAgWM2w4641VBylWEmTtWssjc6S1IWJwE+6PAE8w2L5XbxaMKx9ZsM6Xdn
-         tWQhKOSCWEJ0ot6eDp9ct256uBlH/9lJ+RBDC4PXQlEj1Noh6fIYFHru4gz6k0P90u
-         VzLkgf+W7jyP4MDEru+OOSErSEmpTRlLZAVRvkffvZXrcM6GfIY1szDhgIXsN/oeA7
-         YzwXrptKrlcUCVw88FhdIYfmgvQ+FOTF14hjQGWoVyubgjStrSz6/+MJaVazlyX978
-         axzKTJHyK4+Ew==
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 14, 2021 at 01:43:57PM -0800, Alexander Duyck wrote:
+This series provides the Microchip Sparx5 Switch Driver
 
-> > > In addition Leon still hasn't answered my question on preventing the
-> > > VF driver from altering entries beyond the ones listed in the table.
-> >
-> > Of course this is blocked, the FW completely revokes the HW resource
-> > backing the vectors.
-> 
-> One of the troubles with this is that I am having to take your word
-> for it.
+The Sparx5 Carrier Ethernet and Industrial switch family delivers 64
+Ethernet ports and up to 200 Gbps of switching bandwidth.
 
-This is a Linux patch review, not a security review of a HW
-implementation. There are million ways to screw up a PCI device
-implementation and in SRIOV the PCI device HW implementation forms
-part of the trust base of the hypervisor.
+It provides a rich set of Ethernet switching features such as hierarchical
+QoS, hardware-based OAM  and service activation testing, protection
+switching, IEEE 1588, and Synchronous Ethernet.
 
-If the HW API can be implemented securely and the Linux code is
-appropriate is the only question here.
+Using provider bridging (Q-in-Q) and MPLS/MPLS-TP technology, it delivers
+MEF CE
+2.0 Ethernet virtual connections (EVCs) and features advanced TCAM
+  classification in both ingress and egress.
 
-In this case mlx5 HW is implemented correctly and securely, if you
-don't belive then you are free not to use it.
+Per-EVC features include advanced L3-aware classification, a rich set of
+statistics, OAM for end-to-end performance monitoring, and dual-rate
+policing and shaping.
 
-> What it defines is the aperture available in MMIO to define the
-> possible addresses and values to be written to trigger the
-> interrupts. The device itself plays a large role in defining the
-> number of interrupts ultimately requested.
+Time sensitive networking (TSN) is supported through a comprehensive set of
+features including frame preemption, cut-through, frame replication and
+elimination for reliability, enhanced scheduling: credit-based shaping,
+time-aware shaping, cyclic queuing, and forwarding, and per-stream policing
+and filtering.
 
-Again you are confused about what is going on here - this is about
-reconfiguring the HW so that MSI vector entries exist or not - it has
-absoultely nothing to do with the driver. We are not optimizing for
-the case where the driver does not use MSI vectors the VF has
-available.
+Together with IEEE 1588 and IEEE 802.1AS support, this guarantees
+low-latency deterministic networking for Fronthaul, Carrier, and Industrial
+Ethernet.
 
-> > > At a minimum I really think we need to go through and have a clear
-> > > definition on when updating the MSI-X table size is okay and when it
-> > > is not. I am not sure just saying to not update it when a driver isn't
-> > > attached is enough to guarantee all that.
-> >
-> > If you know of a real issue then please state it, other don't fear
-> > monger "maybe" issues that don't exist.
->
-> Well I don't have visibility into your firmware so I am not sure what
-> is going on in response to this command so forgive me when I do a bit
-> of fear mongering when somebody tells me that all this patch set does
-> is modify the VF configuration space.
+The Sparx5 switch family consists of following SKUs:
 
-You were not talking about the FW, "is okay and when it is not" is a
-*Linux* question.
+- VSC7546 Sparx5-64 up to 64 Gbps of bandwidth with the following primary
+  port configurations:
+  - 6 *10G
+  - 16 * 2.5G + 2 * 10G
+  - 24 * 1G + 4 * 10G
 
-> > > What we are talking about is the MSI-X table size. Not the number of
-> > > MSI-X vectors being requested by the device driver. Those are normally
-> > > two seperate things.
-> >
-> > Yes, table size is what is critical. The number of entries in that BAR
-> > memory is what needs to be controlled.
-> 
-> That is where we disagree. 
+- VSC7549 Sparx5-90 up to 90 Gbps of bandwidth with the following primary
+  port configurations:
+  - 9 * 10G
+  - 16 * 2.5G + 4 * 10G
+  - 48 * 1G + 4 * 10G
 
-Huh? You are disagreeing this is how the mlx5 device works?
+- VSC7552 Sparx5-128 up to 128 Gbps of bandwidth with the following primary
+  port configurations:
+  - 12 * 10G
+  - 16 * 2.5G + 8 * 10G
+  - 48 * 1G + 8 * 10G
 
-> Normally as a part of that the device itself will place some
-> limit on how many causes and vectors you can associate before you even
-> get to the MSI-X table.
+- VSC7556 Sparx5-160 up to 160 Gbps of bandwidth with the following primary
+  port configurations:
+  - 16 * 10G
+  - 10 * 10G + 2 * 25G
+  - 16 * 2.5G + 10 * 10G
+  - 48 * 1G + 10 * 10G
 
-For mlx5 this cause limit is huge. With IMS it can even be higher than
-the 2K MSI-X limit. Remember on an x86 system you get 256 interrupt
-vectors per CPU *and* per vCPU, so with interrupt remapping there can
-be huge numbers of interrupts required.
+- VSC7558 Sparx5-200 up to 200 Gbps of bandwidth with the following primary
+  port configurations:
+  - 20 * 10G
+  - 8 * 25G
 
-Your "normally" is for simplistic fixed function HW devices not
-intended for use at this scale.
+In addition, the device supports one 10/100/1000/2500/5000 Mbps
+SGMII/SerDes node processor interface (NPI) Ethernet port.
 
-> The MSI-X table size is usually a formality that defines the upper
-> limit on the number of entries the device might request.
+The Sparx5 support is developed on the PCB134 and PCB135 evaluation boards.
 
-It is not a formality. PCI rules require *actual physical HW* to be
-dedicated to the MSI vector entries.
+- PCB134 main networking features:
+  - 12x SFP+ front 10G module slots (connected to Sparx5 through SFI).
+  - 8x SFP28 front 25G module slots (connected to Sparx5 through SFI high
+    speed).
+  - Optional, one additional 10/100/1000BASE-T (RJ45) Ethernet port
+    (on-board VSC8211 PHY connected to Sparx5 through SGMII).
 
-Think of it like this - the device has a large global MSI-X table of
-say 2K entires. This is the actual physical HW SRAM backing MSI
-entires required by PCIe.
+- PCB135 main networking features:
+  - 48x1G (10/100/1000M) RJ45 front ports using 12xVSC8514 QuadPHY’s each
+    connected to VSC7558 through QSGMII.
+  - 4x10G (1G/2.5G/5G/10G) RJ45 front ports using the AQR407 10G QuadPHY
+    each port connects to VSC7558 through SFI.
+  - 4x SFP28 25G module slots on back connected to VSC7558 through SFI high
+    speed.
+  - Optional, one additional 1G (10/100/1000M) RJ45 port using an on-board
+    VSC8211 PHY, which can be connected to VSC7558 NPI port through SGMII
+    using a loopback add-on PCB)
 
-The HW will map the MSI-X table BAR space in every PF/VF to a slice of
-that global table. If the PCI Cap says 8 entries then the MSI-X page has
-only 8 entries, everything else is /dev/null.
+This series provides support for:
+  - SFPs and DAC cables via PHYLINK with a number of 5G, 10G and 25G
+    devices and media types.
+  - Port module configuration for 10M to 25G speeds with SGMII, QSGMII,
+    1000BASEX, 2500BASEX and 10GBASER as appropriate for these modes.
+  - SerDes configuration via the Sparx5 SerDes driver (see below).
+  - Host mode providing register based injection and extraction.
+  - Switch mode providing MAC/VLAN table learning and Layer2 switching
+    offloaded to the Sparx5 switch.
+  - STP state, VLAN support, host/bridge port mode, Forwarding DB, and
+    configuration and statistics via ethtool.
 
-Global MSI entries cannot be shared - the total of all PF/VFs cap
-field must not be more than 2K.
+More support will be added at a later stage.
 
-One application requires 2K MSI-X on a single function because it uses
-VDPA devices and VT-d interrupt remapping
+The Sparx5 Switch chip register model can be browsed here:
+Link: https://microchip-ung.github.io/sparx-5_reginfo/reginfo_sparx-5.html
 
-Another application requires 16 MSI-X on 128 VFs because it is using
-SRIOV with VMs having 16 vCPUs.
+The series depends on the following series currently on their way
+into the kernel:
 
-The HW is configured differently in both cases. It is not something
-that can be faked with VFIO!
+- Sparx5 SerDes Driver
+  Link: https://lore.kernel.org/r/20201211090541.157926-1-steen.hegelund@microchip.com/
 
-> > That is completely different, in the hypervisor there is no idea how
-> > many vectors a guest OS will create. The FW is told to only permit 1
-> > vector. How is the guest to know this if we don't update the config
-> > space *as the standard requires* ?
-> 
-> Doesn't the guest driver talk to the firmware? Last I knew it had to
-> request additional resources such as queues and those come from the
-> firmware don't they?
+- Sparx5 Reset Driver
+  Link: https://lore.kernel.org/lkml/20210114162432.3039657-1-steen.hegelund@microchip.com/
 
-That is not how things work. Because VFIO has to be involved in
-setting up interrupt remapping through its MSI emulation we don't get
-to use a dynamic FW only path as something like IMS might imagine.
+The 100 Base-X mode is being added to the kernel with this series:
+Link: https://lore.kernel.org/netdev/20210113115626.17381-1-bjarni.jonasson@microchip.com/
 
-That would be so much better, but lots of things are not ready for
-that.
+ChangeLog:
+    v3:
+        - Updated the bindings with
+            - adding maxItems: 1 to the port properties in general.
+            - mac-address property added
+            - sd-gpio property added
+            - phy-mode is now required
+        - Main module
+            - Reworked the driver probe to have 3 stages:
+                - Initalization, DT parsing and creating SerDes instances
+                - Mapping IO targets
+                - Creating ports using DT information and further
+                  switch initialization.
+            - Wrapped long lines to fit to 80 chars (netdev style)
+            - Reworking the switch RAM initialization
+            - Made the target table const
+            - Return -EINVAL if no coreclock was found.
+            - Applied the Reverse Christmas Tree pattern to several
+              functions
+            - Changes to DT properties:
+                - max-speed changed to bandwidth
+                - phy-mode is required
+            - Removed the reset postcore_initcall code (will be provided in
+              a reset driver, see link above)
+            - Requesting the reset driver and using that for resetting the
+              switch core.
+            - Using a bool (has_sfp) to determine if an SFP is available
+              for the particular port and removing the sparx5_use_cu_phy
+              function.
+            - For the basic driver patch: added comments to indicate where
+              subsequent patches will be adding more functionality.
+        - Netdev module
+            - Increment Ethernet addresses correctly.
+            - Removed  ether_setup() call.
+        - Packet module
+            - Used error codes instead of -1.
+        - Phylink module
+            - Include autoneg and pause when detecting port config changes
+        - Port module
+            - Added decode_* status functions
+            - Removed the preliminary 100fx functionality.  There is
+              phylink support on the way for 100 Base-X (see link above),
+              so when that is available the 100fx mode will be added again.
+            - Made the taxi dist table constant
+            - Using named symbols in autoneg decoding
+        - MAC table module
+            - Removed inline from functions.
+            - Changed the default aging to BR_DEFAULT_AGEING_TIME
+        - Ethtool module
+            - Removed the mutex. Copy statistic on request. Updating time
+              is 1s.
+        - Device tree
+            - Added reset controller properties
+        - Common
+            - Remove the inclusion of the sparx5_main_regs.h in the
+              sparx5_main.h
 
-> > 1) The FW has to be told of the limit and everything has to be in sync
-> >    If the FW is out of sync with the config space then everything
-> >    breaks if the user makes even a small mistake - for instance
-> >    forgetting to use the ioctl to override vfio. This is needlessly
-> >    frail and complicated.
-> 
-> That is also the way I feel about the sysfs solution.
+    v2:
+        - The driver patch has been split into 6 patches by functionality
+          like this:
+            - the basic sparx5 driver
+            - hostmode with phylink support
+            - port module support
+            - switching, vlan and mactable support
+            - calendar bandwidth allocation support
+            - ethtool configuration and statistics support
+        - IO ranges have been collapsed into just 2 (the SerDes
+          driver uses the area inbetween) and the driver uses an
+          offset table to get the target instances.
+        - register macros have been converted to functions
+        - register_netdev() moved to the end of the switch initialization.
+        - sparx5_update_port_stats: use reverse christmas tree
+        - sparx5_get_sset_strings: copy individual strings
+        - sparx5_port_open: updated to better use phylink: just call
+          phylink_of_phy_connect directly
+        - sparx5_destroy_netdev: always take the NL lock
+        - sparx5_attr_stp_state_set: added learning state.
+        - sparx5_phylink_mac_config: use phylink to provide the
+          status for the devices phylink controls.
+        - sparx5_get_1000basex_status: renamed to sparx5_get_dev2g5_status
+          and corrected an error when combining the sync and link status
+          information.
+        - let phylink provide link status for cuPHYs and SFPs
+        - corrected the pause mode status handling
+        - use ethtool's get_link function directly
+        - remove the use of the phy_validate function
+        - sparx5_update_counter function: no longer inline
+        - Removed the wrapper functions around the mactable mutex
 
-Huh? The sysfs is much safer. If the write() succeeds I can't think of
-any way the system would be left broken? Why do you think it is frail?
 
-> I'm just kind of surprised the firmware itself isn't providing some
-> sort of messaging on the number of interrupt vectors that a given
+Steen Hegelund (8):
+  dt-bindings: net: sparx5: Add sparx5-switch bindings
+  net: sparx5: add the basic sparx5 driver
+  net: sparx5: add hostmode with phylink support
+  net: sparx5: add port module support
+  net: sparx5: add switching, vlan and mactable support
+  net: sparx5: add calendar bandwidth allocation support
+  net: sparx5: add ethtool configuration and statistics support
+  arm64: dts: sparx5: Add the Sparx5 switch node
 
-It does, it is the PCI cap, just because you keep saying it isn't used
-doesn't make that true :)
+ .../bindings/net/microchip,sparx5-switch.yaml |  211 +
+ arch/arm64/boot/dts/microchip/sparx5.dtsi     |   62 +
+ .../dts/microchip/sparx5_pcb134_board.dtsi    |  444 +-
+ .../dts/microchip/sparx5_pcb135_board.dtsi    |  606 ++-
+ drivers/net/ethernet/microchip/Kconfig        |    2 +
+ drivers/net/ethernet/microchip/Makefile       |    2 +
+ drivers/net/ethernet/microchip/sparx5/Kconfig |    9 +
+ .../net/ethernet/microchip/sparx5/Makefile    |   11 +
+ .../microchip/sparx5/sparx5_calendar.c        |  596 +++
+ .../microchip/sparx5/sparx5_ethtool.c         |  969 ++++
+ .../microchip/sparx5/sparx5_mactable.c        |  500 +++
+ .../ethernet/microchip/sparx5/sparx5_main.c   |  851 ++++
+ .../ethernet/microchip/sparx5/sparx5_main.h   |  358 ++
+ .../microchip/sparx5/sparx5_main_regs.h       | 3922 +++++++++++++++++
+ .../ethernet/microchip/sparx5/sparx5_netdev.c |  247 ++
+ .../ethernet/microchip/sparx5/sparx5_packet.c |  283 ++
+ .../microchip/sparx5/sparx5_phylink.c         |  195 +
+ .../ethernet/microchip/sparx5/sparx5_port.c   | 1123 +++++
+ .../ethernet/microchip/sparx5/sparx5_port.h   |   98 +
+ .../microchip/sparx5/sparx5_switchdev.c       |  517 +++
+ .../ethernet/microchip/sparx5/sparx5_vlan.c   |  224 +
+ 21 files changed, 11170 insertions(+), 60 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/net/microchip,sparx5-switch.yaml
+ create mode 100644 drivers/net/ethernet/microchip/sparx5/Kconfig
+ create mode 100644 drivers/net/ethernet/microchip/sparx5/Makefile
+ create mode 100644 drivers/net/ethernet/microchip/sparx5/sparx5_calendar.c
+ create mode 100644 drivers/net/ethernet/microchip/sparx5/sparx5_ethtool.c
+ create mode 100644 drivers/net/ethernet/microchip/sparx5/sparx5_mactable.c
+ create mode 100644 drivers/net/ethernet/microchip/sparx5/sparx5_main.c
+ create mode 100644 drivers/net/ethernet/microchip/sparx5/sparx5_main.h
+ create mode 100644 drivers/net/ethernet/microchip/sparx5/sparx5_main_regs.h
+ create mode 100644 drivers/net/ethernet/microchip/sparx5/sparx5_netdev.c
+ create mode 100644 drivers/net/ethernet/microchip/sparx5/sparx5_packet.c
+ create mode 100644 drivers/net/ethernet/microchip/sparx5/sparx5_phylink.c
+ create mode 100644 drivers/net/ethernet/microchip/sparx5/sparx5_port.c
+ create mode 100644 drivers/net/ethernet/microchip/sparx5/sparx5_port.h
+ create mode 100644 drivers/net/ethernet/microchip/sparx5/sparx5_switchdev.c
+ create mode 100644 drivers/net/ethernet/microchip/sparx5/sparx5_vlan.c
 
-> device has since I assume that it is already providing you with
-> information on the number of queues and such since that isn't
-> provided by any other mechanism.
+--
+2.29.2
 
-Queues are effectively unlimited.
-
-Jason
