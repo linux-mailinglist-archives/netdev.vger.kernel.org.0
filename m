@@ -2,68 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6ACE02F890E
-	for <lists+netdev@lfdr.de>; Sat, 16 Jan 2021 00:01:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 039C92F8919
+	for <lists+netdev@lfdr.de>; Sat, 16 Jan 2021 00:03:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727857AbhAOXAt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Jan 2021 18:00:49 -0500
-Received: from mail.kernel.org ([198.145.29.99]:33310 "EHLO mail.kernel.org"
+        id S1727977AbhAOXDD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Jan 2021 18:03:03 -0500
+Received: from mail.kernel.org ([198.145.29.99]:33872 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726607AbhAOXAs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 15 Jan 2021 18:00:48 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 6591A2399A;
-        Fri, 15 Jan 2021 23:00:08 +0000 (UTC)
+        id S1727939AbhAOXDC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 15 Jan 2021 18:03:02 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 2DFAC23339;
+        Fri, 15 Jan 2021 23:02:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610751608;
-        bh=RuxI0+5o+iF8ELYoih7lRTU/CZKmOIoEc5ZL2ZswYjI=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=C2i6wcPIUOSxDA240gv7CVN1x1bbDwvGhBsUZ8z3I6gbETbPmLhOTqbYaFlj1/ZMt
-         r0obPA5rAYIF7I4sBucQP7fETZYPgNrRL0k4HuW0wyuIYMXMwTPcGY7HiRQtpbz3Dc
-         4ht+fJLHpjheFkdmCbdJo2akI81ID/eo+AioU5ExV/aX0PBF4uIhDo79Ozvh4nUzhM
-         0VQaNjrM7+dOqmT1S/ynQF0JyUNw+Yg2sNpTseRGq5QWfNnPrEJdCbuvNIGxV6dM4L
-         BMmplvy3tXS3NJ4ifKiYkXjAqjbL2SWBERPk1IPnCw4X09ZvN2OTk/xbbGMKWEkaHi
-         InAQI9MvrLKmA==
-Received: from pdx-korg-docbuild-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-1.ci.codeaurora.org (Postfix) with ESMTP id 5CCB1605AB;
-        Fri, 15 Jan 2021 23:00:08 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1610751767;
+        bh=PDPMJXLXN0TL5O/SI7tDKEqEVoDMjZF28//7T7pn4AY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=WqxhRB5kDJq15sQEmPKOHT9GidWDbndKCoIzb5Brf8rqhCRcYF88LFNih9W5ic7Ir
+         /2ZxDr/sVonNCopp66NOkAPRyJJvBt67O7t4QjGZKokrAzjF90v2sfWOqLeghAUdt1
+         HkxEQ2bYhfKBgg/6ftSW/vbLmmleed7FJrb81d8yafb0skT/2bluUMsMrqp9XO3pVE
+         TcWZs8gkBtgseWX6Oi+3V1hJfE0VljC2mkuhSqtpefxDh2s4pIWxRQkwNMfDn0fWXK
+         8s4okv6Q5PS9TezEw7rUH5z/jZJEqvgT+xc3nlpE9JVFUMTQM5U+kmVDAYTO6PJu6o
+         Ctj3gGb/jzcoQ==
+Date:   Fri, 15 Jan 2021 15:02:46 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Tobias Waldekranz <tobias@waldekranz.com>
+Cc:     davem@davemloft.net, andrew@lunn.ch, vivien.didelot@gmail.com,
+        f.fainelli@gmail.com, olteanv@gmail.com, netdev@vger.kernel.org
+Subject: Re: [PATCH v2 net-next 0/2] net: dsa: mv88e6xxx: LAG fixes
+Message-ID: <20210115150246.550ae169@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210115125259.22542-1-tobias@waldekranz.com>
+References: <20210115125259.22542-1-tobias@waldekranz.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH bpf] MAINTAINERS: update my email address
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161075160837.22495.5230649397692870926.git-patchwork-notify@kernel.org>
-Date:   Fri, 15 Jan 2021 23:00:08 +0000
-References: <20210115104337.7751-1-bjorn.topel@gmail.com>
-In-Reply-To: <20210115104337.7751-1-bjorn.topel@gmail.com>
-To:     =?utf-8?b?QmrDtnJuIFTDtnBlbCA8Ympvcm4udG9wZWxAZ21haWwuY29tPg==?=@ci.codeaurora.org
-Cc:     ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, bjorn@kernel.org,
-        linux-riscv@lists.infradead.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to bpf/bpf.git (refs/heads/master):
-
-On Fri, 15 Jan 2021 11:43:37 +0100 you wrote:
-> From: Björn Töpel <bjorn@kernel.org>
+On Fri, 15 Jan 2021 13:52:57 +0100 Tobias Waldekranz wrote:
+> The kernel test robot kindly pointed out that Global 2 support in
+> mv88e6xxx is optional.
 > 
-> My Intel email will stop working in a not too distant future. Move my
-> MAINTAINERS entries to my kernel.org address.
+> This also made me realize that we should verify that the hardware
+> actually supports LAG offloading before trying to configure it.
 > 
-> Signed-off-by: Björn Töpel <bjorn@kernel.org>
-> 
-> [...]
+> v1 -> v2:
+> - Do not allocate LAG ID mappings on unsupported hardware (Vladimir).
+> - Simplify _has_lag predicate (Vladimir).
 
-Here is the summary with links:
-  - [bpf] MAINTAINERS: update my email address
-    https://git.kernel.org/bpf/bpf/c/235ecd36c7a9
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+If I'm reading the discussion on v1 right there will be a v3,
+LMK if I got it wrong.
