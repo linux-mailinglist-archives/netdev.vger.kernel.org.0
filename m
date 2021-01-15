@@ -2,49 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F0062F75CB
-	for <lists+netdev@lfdr.de>; Fri, 15 Jan 2021 10:50:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 21B842F75CC
+	for <lists+netdev@lfdr.de>; Fri, 15 Jan 2021 10:50:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730317AbhAOJs3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Jan 2021 04:48:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60006 "EHLO
+        id S1730471AbhAOJsh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Jan 2021 04:48:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60040 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726439AbhAOJs2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jan 2021 04:48:28 -0500
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B2E5C061757;
-        Fri, 15 Jan 2021 01:47:57 -0800 (PST)
-Received: by mail-pj1-x102c.google.com with SMTP id ce17so2599065pjb.5;
-        Fri, 15 Jan 2021 01:47:57 -0800 (PST)
+        with ESMTP id S1726439AbhAOJsg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jan 2021 04:48:36 -0500
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73996C061794;
+        Fri, 15 Jan 2021 01:48:05 -0800 (PST)
+Received: by mail-pj1-x1030.google.com with SMTP id j13so4889337pjz.3;
+        Fri, 15 Jan 2021 01:48:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=xn4WkMY3sHm5WK+mVkDs3GEV0ZAFPAF055qZPyRV3So=;
-        b=AUDAtDvh6zjSMRFvRSFt8Ec+khvmrbdgH7XjopbIpawLwa5g1eMAJqePDHepuaEAcy
-         GoVSE07hdPSagTEvYBRAeDzDseoJrNrRZspyPdDGpUk7b5NU0DsD7cgR4/691wNLiduz
-         X7O8rJtvJEDGGtizjBeZ+K2klBgCbN8crAN69zLZs8+HtW9XvWH/oTF/lmueetHGrrnm
-         J5awBpLoOig4DLrOB0Q9TWNjl/g6/OZ2iQVia5LUVOgInU4PpZZfUtMrOcPWk5cI1Mpj
-         9pBFI/a/Sj3+bRFd28MbK2sD/+cxdhOv9EHswvDJCo/C3joCb0kQ6Y7HTJ7VlkJE/kvw
-         8v+Q==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :in-reply-to:references;
+        bh=H00cl0DwIpRYCoMPIXu8DVIsewbITBDDpGhtqr9YNek=;
+        b=XO/zfGZEJr9k+VTdbdqArp6UW0x4XwRZOzNdUzmnzYut+JOqdUTRQd/P1PUzSC0MjQ
+         87Anc8RXHLixRPIF4kBT+6IRQwmN4gZ3Rnn/jTlDrVACTzviUx2f/idKp77QQyS4/krq
+         uE87jsmdW862tpBiZLnv19AucYqaANgOAYnfwFklBSDJSCPZXHDhjuDU6evw9PgGh9su
+         mKehb5aIqzSViTYoZnt/WfwKYFSldabQk29QqU+JQZ7J6wSli29HVeuQfjpyqaGdZbpV
+         ex6UdrLz2o5BgxrYquwq19DrY8JDq9/aLv+qt74tZVZ+cUz+Cu5dEbQq64Hxdxrw4/7e
+         knxg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=xn4WkMY3sHm5WK+mVkDs3GEV0ZAFPAF055qZPyRV3So=;
-        b=N4/Bt6tCZSznwH/v1flBZQ+3vrY3gU/T3GfkSR5rG+WJ9QbYuusFSFYLFu8dlAr/xS
-         MpswF8mNFMZ56HtznQ87pnyetWDyvJfd7AeoV1ZzzD6aOBHDg40lhHSTd7Yx2I1wpVsm
-         csYGOnakReU1NFg9rZqyjekkyhzpIHKOGvAYMDbi6V2cF4zHwPBYGoOOe9cueD6FLJl/
-         /55hw2/2nFgeBAUE2W1mrR/YOP3BpeBQpGLGix1OmG89SMemTtmISYT/Cvzy0D5N45Hc
-         3G99ADKkTbYorptegqgY+sk5d3aGixed+JXnvabUhobE5F3Nmv2v53F7eoZqF6P4gxX/
-         eqPw==
-X-Gm-Message-State: AOAM531hM/elkdOkZyKVnC+CcY59fEXVHoS4mm3GLbzoyv8rCXpkORuI
-        zbeuyAI42WR5ZVjCiRJYE/CE0wlUrvcliA==
-X-Google-Smtp-Source: ABdhPJzE7cFpoR4xlxF5tZq/pvPuuqRrp5Rx1HbeV51U/Y5PB3ZIvgcEVGHr1gJv6OeHYJl6HWoGYQ==
-X-Received: by 2002:a17:902:b904:b029:dc:18f2:9419 with SMTP id bf4-20020a170902b904b02900dc18f29419mr11732389plb.66.1610704076492;
-        Fri, 15 Jan 2021 01:47:56 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:in-reply-to:references;
+        bh=H00cl0DwIpRYCoMPIXu8DVIsewbITBDDpGhtqr9YNek=;
+        b=dlcgeSkZPDYE0WoClHA1owfVCnyhjpHKRPD+MTEuxhLNpSJhvKxR3fdy3zuy/gny7C
+         2FYQXvawRPQvONqXdVtnz1pjFTvu4PMNpR8KzMT7bF+xpuiG3zDk9qvmP2btQeIX7nY0
+         d9LLiR858Zwj5pqkeKpqBdExhRC599kDlI32Bc1tp+v+6hWXJQV9I+W9QIOCinuZSiWS
+         OjxUmnfX7WjqfmZm6V2b9Un58eo0u9TlACSOmeJX756t+cE+1HRg46qVcmarv9Jiyxt8
+         Gj54+jmpdLRH5eTu4tGDgFH565lWyCyUn0wOB2jE3FgklPlKjn+8ifD83/7TrehQI+Cd
+         DbIg==
+X-Gm-Message-State: AOAM531DVjIKHehTENlNiQdpr2y5Ftosub7JqECaUo5PGQrspEsb4W5R
+        pan1bSsxpELFF9G3+dQOgWzgVD8UjvrVeQ==
+X-Google-Smtp-Source: ABdhPJxyVKj6xHUESk8pS1eQwZ2HvhWM5+ABENP4P3ahved2z+7fqmu6E5sgVlGNum9KAEfhL8sq8A==
+X-Received: by 2002:a17:90a:4096:: with SMTP id l22mr9516324pjg.114.1610704084854;
+        Fri, 15 Jan 2021 01:48:04 -0800 (PST)
 Received: from localhost ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id l8sm7456762pjt.32.2021.01.15.01.47.55
+        by smtp.gmail.com with ESMTPSA id w90sm7561241pjw.10.2021.01.15.01.48.03
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 15 Jan 2021 01:47:55 -0800 (PST)
+        Fri, 15 Jan 2021 01:48:04 -0800 (PST)
 From:   Xin Long <lucien.xin@gmail.com>
 To:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org
 Cc:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
@@ -52,29 +54,51 @@ Cc:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
         Martin Varghese <martin.varghese@nokia.com>,
         Alexander Duyck <alexander.duyck@gmail.com>
-Subject: [PATCH net-next 0/3] net: make udp tunnel devices support fraglist
-Date:   Fri, 15 Jan 2021 17:47:44 +0800
-Message-Id: <cover.1610704037.git.lucien.xin@gmail.com>
+Subject: [PATCH net-next 1/3] vxlan: add NETIF_F_FRAGLIST flag for dev features
+Date:   Fri, 15 Jan 2021 17:47:45 +0800
+Message-Id: <25be5f99a282231f29ba984596dbb462e8196171.1610704037.git.lucien.xin@gmail.com>
 X-Mailer: git-send-email 2.1.0
+In-Reply-To: <cover.1610704037.git.lucien.xin@gmail.com>
+References: <cover.1610704037.git.lucien.xin@gmail.com>
+In-Reply-To: <cover.1610704037.git.lucien.xin@gmail.com>
+References: <cover.1610704037.git.lucien.xin@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Like GRE device, UDP tunnel devices should also support fraglist, so
-that some protocol (like SCTP) HW GSO that requires NETIF_F_FRAGLIST
-in the dev can work. Especially when the lower device support both
-NETIF_F_GSO_UDP_TUNNEL and NETIF_F_GSO_SCTP.
+Some protocol HW GSO requires fraglist supported by the device, like
+SCTP. Without NETIF_F_FRAGLIST set in the dev features of vxlan, it
+would have to do SW GSO before the packets enter the driver, even
+when the vxlan dev and lower dev (like veth) both have the feature
+of NETIF_F_GSO_SCTP.
 
-Xin Long (3):
-  vxlan: add NETIF_F_FRAGLIST flag for dev features
-  geneve: add NETIF_F_FRAGLIST flag for dev features
-  bareudp: add NETIF_F_FRAGLIST flag for dev features
+So this patch is to add it for vxlan.
 
- drivers/net/bareudp.c | 5 +++--
- drivers/net/geneve.c  | 5 +++--
- drivers/net/vxlan.c   | 5 +++--
- 3 files changed, 9 insertions(+), 6 deletions(-)
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
+---
+ drivers/net/vxlan.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
+diff --git a/drivers/net/vxlan.c b/drivers/net/vxlan.c
+index b936443..3929e43 100644
+--- a/drivers/net/vxlan.c
++++ b/drivers/net/vxlan.c
+@@ -3283,12 +3283,13 @@ static void vxlan_setup(struct net_device *dev)
+ 	SET_NETDEV_DEVTYPE(dev, &vxlan_type);
+ 
+ 	dev->features	|= NETIF_F_LLTX;
+-	dev->features	|= NETIF_F_SG | NETIF_F_HW_CSUM;
++	dev->features	|= NETIF_F_SG | NETIF_F_HW_CSUM | NETIF_F_FRAGLIST;
+ 	dev->features   |= NETIF_F_RXCSUM;
+ 	dev->features   |= NETIF_F_GSO_SOFTWARE;
+ 
+ 	dev->vlan_features = dev->features;
+-	dev->hw_features |= NETIF_F_SG | NETIF_F_HW_CSUM | NETIF_F_RXCSUM;
++	dev->hw_features |= NETIF_F_SG | NETIF_F_HW_CSUM | NETIF_F_FRAGLIST;
++	dev->hw_features |= NETIF_F_RXCSUM;
+ 	dev->hw_features |= NETIF_F_GSO_SOFTWARE;
+ 	netif_keep_dst(dev);
+ 	dev->priv_flags |= IFF_NO_QUEUE;
 -- 
 2.1.0
 
