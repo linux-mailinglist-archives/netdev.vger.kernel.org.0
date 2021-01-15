@@ -2,67 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0722B2F71FB
-	for <lists+netdev@lfdr.de>; Fri, 15 Jan 2021 06:16:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 921AC2F7241
+	for <lists+netdev@lfdr.de>; Fri, 15 Jan 2021 06:38:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729845AbhAOFOa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Jan 2021 00:14:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57764 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726776AbhAOFO3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jan 2021 00:14:29 -0500
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03222C0613C1;
-        Thu, 14 Jan 2021 21:13:49 -0800 (PST)
-Received: by mail-wr1-x432.google.com with SMTP id a12so7960273wrv.8;
-        Thu, 14 Jan 2021 21:13:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=message-id:sender:from:mime-version:content-transfer-encoding
-         :content-description:subject:to:date:reply-to;
-        bh=WwwZ5INxbChgA54D8alL+8opcbTX2Y/SEfcezGICCQg=;
-        b=WaHuHmPAmnWB9P8rEaQuXbS0U5k1yKJGEV4xpeXS1QyV9vG2+JJK9Qk6ClTKYt13RF
-         BSU8XLmxNZ+srxuUzk0m6mtXuATBazXAI/taPgAQ6fQ0jLVUSk/PMk53l2m4m+WXuLvj
-         a9gs+AupckG6vUa5Ur4YMOevehjf5FELmZP+d4126LFrd1v7e1+t82hohGo/NdhvLJyM
-         CyEEAsauBfaaIMo2e9eklrnYIcnBZiLxwvhDt8y9oM/MSu7/MzY7rt0ShvNruc6gmKSV
-         Pc92ZxQjnwiNaefgHrtU720VXpZneT4oQwuDY9XJZarAyE2qPrtJAtjmcPo1rQOEpfJZ
-         YL+A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:message-id:sender:from:mime-version
-         :content-transfer-encoding:content-description:subject:to:date
-         :reply-to;
-        bh=WwwZ5INxbChgA54D8alL+8opcbTX2Y/SEfcezGICCQg=;
-        b=pXiB8QiBtcp8VEeEMCp8fPWnzd1J6v17z4I3JVb2ChTTq7ytaDp3XLQip/He9C/l++
-         dds6hpMxnuZTSv6gjGLKezE7VMhhWB6w+VZ9Fr/9Ujx5mOhxxPxpMag8PxOElcVobnZ7
-         cIWOdpRNwspVjzsdKZ57Mt8Uu06+rk8CnjIkkZTuFm1PU4Ke75IU48exH2CQUUewYFdM
-         fA5P4BwdP7gCQVVL3RpfaNh8vneHJk3xZmCweUoqltX6teA5E2UYVVNm6DmlhWYTQdN+
-         2OSK6D2OPUPBK7OJiQIXvkMdy29qMPWSCm3z/RoKxYJZAk8Elj0ek5If4SI0WtAH46Sk
-         qxCw==
-X-Gm-Message-State: AOAM5305nWNwPG9ykqQ/Wh4WXIU2tlSrxwwgniYuVW9v9Dql/y2OKyu4
-        LLG6xF65K6CCiKdbquP7ObQ=
-X-Google-Smtp-Source: ABdhPJxdr3FH/KcVCnwEbKthbE2WQi+wLg/YXsz86K5zTFQRCeWULrT2zYzPZm8PLxD0jP8dtsF4UA==
-X-Received: by 2002:adf:d218:: with SMTP id j24mr11590746wrh.361.1610687627803;
-        Thu, 14 Jan 2021 21:13:47 -0800 (PST)
-Received: from [192.168.1.8] ([154.124.154.14])
-        by smtp.gmail.com with ESMTPSA id i16sm12485349wrx.89.2021.01.14.21.13.41
-        (version=TLS1 cipher=AES128-SHA bits=128/128);
-        Thu, 14 Jan 2021 21:13:47 -0800 (PST)
-Message-ID: <6001248b.1c69fb81.d7d4c.1646@mx.google.com>
-Sender: Skylar Anderson <mbayetousha2000@gmail.com>
-From:   Skylar Anderson <sgt.andersonskylar0@gmail.com>
-X-Google-Original-From: Skylar Anderson
-Content-Type: text/plain; charset="iso-8859-1"
+        id S1731958AbhAOFhf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Jan 2021 00:37:35 -0500
+Received: from mx13.kaspersky-labs.com ([91.103.66.164]:44727 "EHLO
+        mx13.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729948AbhAOFhd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jan 2021 00:37:33 -0500
+Received: from relay13.kaspersky-labs.com (unknown [127.0.0.10])
+        by relay13.kaspersky-labs.com (Postfix) with ESMTP id 7B4D352116F;
+        Fri, 15 Jan 2021 08:36:48 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kaspersky.com;
+        s=mail; t=1610689008;
+        bh=d1C9LPm5LAzmiTpkTjxAIHdop1GWcTlE4FAGAdIkrRM=;
+        h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type;
+        b=saTY2gsmg7bb7K0SHdKQNO9Tz47bAf3UBsbEAusgClnCh5ZCAXOrAAFibQKcxYqjW
+         n4tK0N1J3pv8ErgrkHLlEwi61TPK7CwF7Zx5D9KQsEcynSQ4OBJCLKPOW1ABGyzbb/
+         4LmcKcZwgf3rTMFWHU4fUgXV/QTXIegz22Tljp/A=
+Received: from mail-hq2.kaspersky.com (unknown [91.103.66.206])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
+        (Client CN "mail-hq2.kaspersky.com", Issuer "Kaspersky MailRelays CA G3" (verified OK))
+        by mailhub13.kaspersky-labs.com (Postfix) with ESMTPS id 99404520ED7;
+        Fri, 15 Jan 2021 08:36:47 +0300 (MSK)
+Received: from arseniy-pc.avp.ru (10.64.68.128) by hqmailmbx3.avp.ru
+ (10.64.67.243) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2044.4; Fri, 15
+ Jan 2021 08:36:47 +0300
+From:   Arseny Krasnov <arseny.krasnov@kaspersky.com>
+To:     Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Arseny Krasnov <arseny.krasnov@kaspersky.com>,
+        Colin Ian King <colin.king@canonical.com>,
+        Andra Paraschiv <andraprs@amazon.com>,
+        Jeff Vander Stoep <jeffv@google.com>
+CC:     <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <stsp2@yandex.ru>, <oxffffaa@gmail.com>
+Subject: [RFC PATCH v2 00/13] virtio/vsock: introduce SOCK_SEQPACKET support.
+Date:   Fri, 15 Jan 2021 08:35:50 +0300
+Message-ID: <20210115053553.1454517-1-arseny.krasnov@kaspersky.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Description: Mail message body
-Subject: hey
-To:     Recipients <Skylar@vger.kernel.org>
-Date:   Fri, 15 Jan 2021 05:13:35 +0000
-Reply-To: sgt.skylar.andersin@gmail.com
-X-Mailer: cdcaafe51be8cdb99a1c85906066cad3d0e60e273541515a58395093a7c4e1f0eefb01d7fc4e6278706e9fb8c4dad093c3263345202970888b6b4d817f9e998c032e7d59
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.64.68.128]
+X-ClientProxiedBy: hqmailmbx2.avp.ru (10.64.67.242) To hqmailmbx3.avp.ru
+ (10.64.67.243)
+X-KSE-ServerInfo: hqmailmbx3.avp.ru, 9
+X-KSE-AntiSpam-Interceptor-Info: scan successful
+X-KSE-AntiSpam-Version: 5.9.16, Database issued on: 01/15/2021 05:18:27
+X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
+X-KSE-AntiSpam-Method: none
+X-KSE-AntiSpam-Rate: 10
+X-KSE-AntiSpam-Info: Lua profiles 161159 [Jan 15 2021]
+X-KSE-AntiSpam-Info: LuaCore: 420 420 0b339e70b2b1bb108f53ec9b40aa316bba18ceea
+X-KSE-AntiSpam-Info: Version: 5.9.16.0
+X-KSE-AntiSpam-Info: Envelope from: arseny.krasnov@kaspersky.com
+X-KSE-AntiSpam-Info: {Prob_from_in_msgid}
+X-KSE-AntiSpam-Info: {Tracking_date, moscow}
+X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
+X-KSE-AntiSpam-Info: arseniy-pc.avp.ru:7.1.1;kaspersky.com:7.1.1;127.0.0.199:7.1.2;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1
+X-KSE-AntiSpam-Info: Rate: 10
+X-KSE-AntiSpam-Info: Status: not_detected
+X-KSE-AntiSpam-Info: Method: none
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Deterministic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 01/15/2021 05:21:00
+X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
+ rules found
+X-KSE-Antivirus-Interceptor-Info: scan successful
+X-KSE-Antivirus-Info: Clean, bases: 15.01.2021 2:12:00
+X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
+X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
+ rules found
+X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
+X-KLMS-Rule-ID: 52
+X-KLMS-Message-Action: clean
+X-KLMS-AntiSpam-Status: not scanned, disabled by settings
+X-KLMS-AntiSpam-Interceptor-Info: not scanned
+X-KLMS-AntiPhishing: Clean, bases: 2021/01/15 05:03:00
+X-KLMS-AntiVirus: Kaspersky Security for Linux Mail Server, version 8.0.3.30, bases: 2021/01/15 02:12:00 #16041563
+X-KLMS-AntiVirus-Status: Clean, skipped
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I'M Skylar I Need To Tell U This
+	This patchset impelements support of SOCK_SEQPACKET for virtio
+transport.
+	As SOCK_SEQPACKET guarantees to save record boundaries, so to
+do it, new packet operation was added: it marks start of record (with
+record length in header), such packet doesn't carry any data.  To send
+record, packet with start marker is sent first, then all data is sent
+as usual 'RW' packets. On receiver's side, length of record is known
+from packet with start record marker. Now as  packets of one socket
+are not reordered neither on vsock nor on vhost transport layers, such
+marker allows to restore original record on receiver's side. If user's
+buffer is smaller that record length, when all out of size data is
+dropped.
+	Maximum length of datagram is not limited as in stream socket,
+because same credit logic is used. Difference with stream socket is
+that user is not woken up until whole record is received or error
+occurred. Implementation also supports 'MSG_EOR' and 'MSG_TRUNC' flags.
+	Tests also implemented.
+
+ Arseny Krasnov (13):
+  af_vsock: implement 'vsock_wait_data()'.
+  af_vsock: separate rx loops for STREAM/SEQPACKET.
+  af_vsock: implement rx loops entry point
+  af_vsock: replace previous stream rx loop.
+  af_vsock: implement send logic for SOCK_SEQPACKET
+  af_vsock: general support of SOCK_SEQPACKET type.
+  af_vsock: update comments for stream sockets.
+  virtio/vsock: dequeue callback for SOCK_SEQPACKET.
+  virtio/vsock: implement fetch of record length
+  virtio/vsock: update receive logic
+  virtio/vsock: rest of SOCK_SEQPACKET support
+  vhost/vsock: support for SOCK_SEQPACKET socket.
+  vsock_test: add SOCK_SEQPACKET tests.
+
+ drivers/vhost/vsock.c                   |   7 +-
+ include/linux/virtio_vsock.h            |  12 +
+ include/net/af_vsock.h                  |   6 +
+ include/uapi/linux/virtio_vsock.h       |   9 +
+ net/vmw_vsock/af_vsock.c                | 483 ++++++++++++++++------
+ net/vmw_vsock/virtio_transport.c        |   4 +
+ net/vmw_vsock/virtio_transport_common.c | 294 +++++++++++--
+ tools/testing/vsock/util.c              |  32 +-
+ tools/testing/vsock/util.h              |   3 +
+ tools/testing/vsock/vsock_test.c        | 126 ++++++
+ 10 files changed, 824 insertions(+), 152 deletions(-)
+
+ v1 -> v2:
+ - patches reordered: af_vsock.c changes now before virtio vsock
+ - patches reorganized: more small patches, where +/- are not mixed
+ - tests for SOCK_SEQPACKET added
+ - all commit messages updated
+ - af_vsock.c: 'vsock_pre_recv_check()' inlined to
+   'vsock_connectible_recvmsg()'
+ - af_vsock.c: 'vsock_assign_transport()' returns ENODEV if transport
+   was not found
+ - virtio_transport_common.c: transport callback for seqpacket dequeue
+ - virtio_transport_common.c: simplified
+   'virtio_transport_recv_connected()'
+ - virtio_transport_common.c: send reset on socket and packet type
+			      mismatch.
+
+Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
+
+-- 
+2.25.1
+
