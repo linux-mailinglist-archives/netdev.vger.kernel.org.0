@@ -2,94 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E0AD02F855F
-	for <lists+netdev@lfdr.de>; Fri, 15 Jan 2021 20:28:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 965E22F857C
+	for <lists+netdev@lfdr.de>; Fri, 15 Jan 2021 20:31:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731525AbhAOT07 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Jan 2021 14:26:59 -0500
-Received: from mail.kernel.org ([198.145.29.99]:34180 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727049AbhAOT06 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 15 Jan 2021 14:26:58 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 03701235F8;
-        Fri, 15 Jan 2021 19:26:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610738778;
-        bh=H5G8eGoBoAb87BIVNQjIxm7imUUOeFnLnGVrmVtyAdQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=NP8k+Xt+KslGyCVm+KjP8tZ+YRSFojorkgTFAptqTiDfmlV4ZNJ6+MQRVN8TzPuQt
-         +U1ksiyyDtRvJtAbrn/9PWi5SyATLJ9or/fm00tGurrq+zE5uHWTGtnNfHFyK3Y8L1
-         YAxLH8+A4dblscFCqxwwYh90WBWVagNcivlW8I3m7YyZhVUFGaP1DN8j0Oo31JYW5J
-         26Yc9OOwLzTeDFrT2uETMkwX+9Dq1lcCnPrlbbGgCNKjY/gWCRrumdDhlSzN/WLyYt
-         VscIpPgLwvxRReLw67p77SrS+j0TfwfuYbm19e5QsyMDET8GBPITvcq0MpK0XgtdlU
-         hu5slZlulCOog==
-Date:   Fri, 15 Jan 2021 11:26:17 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        jacob.e.keller@intel.com, roopa@nvidia.com, mlxsw@nvidia.com
-Subject: Re: [patch net-next RFC 00/10] introduce line card support for
- modular switch
-Message-ID: <20210115112617.064deda8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210115143906.GM3565223@nanopsycho.orion>
-References: <20210113121222.733517-1-jiri@resnulli.us>
-        <20210113182716.2b2aa8fa@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20210114074804.GK3565223@nanopsycho.orion>
-        <20210114153013.2ce357b0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20210115143906.GM3565223@nanopsycho.orion>
+        id S2388483AbhAOTaj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Jan 2021 14:30:39 -0500
+Received: from fllv0016.ext.ti.com ([198.47.19.142]:38086 "EHLO
+        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729507AbhAOTai (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jan 2021 14:30:38 -0500
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 10FJT0Rn067814;
+        Fri, 15 Jan 2021 13:29:00 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1610738940;
+        bh=hhYK5dJAuYydgh5h5MfqOpugS5cO5it8t71+CYUq8qU=;
+        h=From:To:CC:Subject:Date;
+        b=NlDBEkCqW8m1IoFgKJrRtBYbidXfl4PcImAB1J/S3i3XASLMFg8qhj9k28QXQ8YFD
+         YtTVF6bwona31kdWBEjS1/yFaJJbfxfbFkLi/CSEl6zQ94Kk4s4XWslVTT1fQgGAjJ
+         jJJyQzcEb1vUEu0VM1nXqDHhvf8KKCaU4Gy3ZSlM=
+Received: from DFLE108.ent.ti.com (dfle108.ent.ti.com [10.64.6.29])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 10FJT0A6025390
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 15 Jan 2021 13:29:00 -0600
+Received: from DFLE112.ent.ti.com (10.64.6.33) by DFLE108.ent.ti.com
+ (10.64.6.29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Fri, 15
+ Jan 2021 13:28:59 -0600
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE112.ent.ti.com
+ (10.64.6.33) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Fri, 15 Jan 2021 13:28:59 -0600
+Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 10FJSwbu057633;
+        Fri, 15 Jan 2021 13:28:59 -0600
+From:   Grygorii Strashko <grygorii.strashko@ti.com>
+To:     "David S. Miller" <davem@davemloft.net>, <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Peter Ujfalusi <peter.ujfalusi@gmail.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Rob Herring <robh+dt@kernel.org>
+CC:     <linux-kernel@vger.kernel.org>, Sekhar Nori <nsekhar@ti.com>,
+        <devicetree@vger.kernel.org>
+Subject: [net-next 0/6] net: ethernet: ti: am65-cpsw-nuss: introduce support for am64x cpsw3g
+Date:   Fri, 15 Jan 2021 21:28:47 +0200
+Message-ID: <20210115192853.5469-1-grygorii.strashko@ti.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 15 Jan 2021 15:39:06 +0100 Jiri Pirko wrote:
-> >I'm not a SFP experts so maybe someone will correct me but AFAIU
-> >the QSFP (for optics) is the same regardless of breakout. It's the
-> >passive optical strands that are either bundled or not. So there is 
-> >no way for the system to detect the cable type (AFAIK).  
-> 
-> For SFP module, you are able to detect those.
+Hi
 
-Not sure you understand what I'm saying. Maybe you're thinking about
-DACs? This is a optical cable for breakout:
+This series introduces basic support for recently introduced TI K3 AM642x SoC [1]
+which contains 3 port (2 external ports) CPSW3g module. The CPSW3g integrated
+in MAIN domain and can be configured in multi port or switch modes.
+In this series only multi port mode is enabled. The initial version of switchdev
+support was introduced by Vignesh Raghavendra [2] and work is in progress.
 
-https://www.fs.com/products/68048.html
+The overall functionality and DT bindings are similar to other K3 CPSWxg
+versions, so DT binding changes are minimal and driver is mostly re-used for
+TI K3 AM642x CPSW3g.
 
-There is no electronics in it to "detect" things AFAIU. Same QSFP can
-be used with this cable or a non-breakout.
+The main difference is that TI K3 AM642x SoC is not fully DMA coherent and
+instead DMA coherency is supported per DMA channel.
 
-> >Or to put it differently IMO the netdev should be provisioned if the
-> >system has a port into which user can plug in a cable. When there is   
-> 
-> Not really. For slit cables, the ports are provisioned not matter which
-> cable is connected, slitter 1->2/1->4 or 1->1 cable.
-> 
-> 
-> >a line card-sized hole in the chassis, I'd be surprised to see ports.
-> >
-> >That said I never worked with real world routers so maybe that's what
-> >they do. Maybe some with a Cisco router in the basement can tell us? :)  
-> 
-> The need for provision/pre-configure splitter/linecard is that the
-> ports/netdevices do not disapper/reappear when you replace
-> splitter/linecard. Consider a faulty linecard with one port burned. You
-> just want to replace it with new one. And in that case, you really don't
-> want kernel to remove netdevices and possibly mess up routing for
-> example.
+Patches 1-2 - DT bindings update 
+Patches 3-4 - Update driver to support changed DMA coherency model
+Patches 5-6 - adds TI K3 AM642x SoC platform data and so enable CPSW3g 
 
-Having a single burned port sounds like a relatively rare scenario.
-Reconfiguring routing is not the end of the world.
+[1] https://www.ti.com/lit/pdf/spruim2
+[2] https://patchwork.ozlabs.org/project/netdev/cover/20201130082046.16292-1-vigneshr@ti.com/
 
-> >If the device really needs this configuration / can't detect things
-> >automatically, then we gotta do something like what you have.
-> >The only question is do we still want to call it a line card.
-> >Sounds more like a front panel module. At Netronome we called 
-> >those phymods.  
-> 
-> Sure, the name is up to the discussion. We call it "linecard"
-> internally. I don't care about the name.
+Grygorii Strashko (2):
+  dt-binding: ti: am65x-cpts: add assigned-clock and power-domains props
+  dt-binding: net: ti: k3-am654-cpsw-nuss: update bindings for am64x cpsw3g
 
-Yeah, let's call it something more appropriate to indicate its
-breakout/retimer/gearbox nature, and we'll be good :)
+Peter Ujfalusi (2):
+  net: ethernet: ti: am65-cpsw-nuss: Use DMA device for DMA API
+  net: ethernet: ti: am65-cpsw-nuss: Support for transparent ASEL
+    handling
+
+Vignesh Raghavendra (2):
+  net: ti: cpsw_ale: add driver data for AM64 CPSW3g
+  net: ethernet: ti: am65-cpsw: add support for am64x cpsw3g
+
+ .../bindings/net/ti,k3-am654-cpsw-nuss.yaml   | 50 ++++++----
+ .../bindings/net/ti,k3-am654-cpts.yaml        |  7 ++
+ drivers/net/ethernet/ti/am65-cpsw-nuss.c      | 96 +++++++++++--------
+ drivers/net/ethernet/ti/am65-cpsw-nuss.h      |  2 +
+ drivers/net/ethernet/ti/cpsw_ale.c            |  7 ++
+ 5 files changed, 101 insertions(+), 61 deletions(-)
+
+-- 
+2.17.1
+
