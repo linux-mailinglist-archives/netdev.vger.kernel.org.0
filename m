@@ -2,117 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F4462F7F2C
-	for <lists+netdev@lfdr.de>; Fri, 15 Jan 2021 16:14:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B915F2F7F9A
+	for <lists+netdev@lfdr.de>; Fri, 15 Jan 2021 16:31:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732392AbhAOPO2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Jan 2021 10:14:28 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:47684 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1731014AbhAOPO2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jan 2021 10:14:28 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1610723581;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=YQwhgHnFKBM2mHwqBIlUts7RBV39XtCmJJIxmkNYk5U=;
-        b=AZTJjsyycPo+7hyE1rhBEQAUW+VNHF1/VEJoSb4Q2B+1RMSFxiCrQuIgc0KzIuGmVhZocK
-        Jn4qFf9XMmMrmjk6i0ZMl6dvPw8H99rIdbghhwy+Y9QoahZ0yNqjHdhKp6AUaSaxWf/bT3
-        zMZLXS5SPk0waYXYDQlYU7ptgmGjQd0=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-539-wZxQBy_JOoqCyEur6zegkQ-1; Fri, 15 Jan 2021 10:12:57 -0500
-X-MC-Unique: wZxQBy_JOoqCyEur6zegkQ-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B939F806660;
-        Fri, 15 Jan 2021 15:12:56 +0000 (UTC)
-Received: from redhat.com (dhcp-17-185.bos.redhat.com [10.18.17.185])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 21F52620DE;
-        Fri, 15 Jan 2021 15:12:56 +0000 (UTC)
-Date:   Fri, 15 Jan 2021 10:12:54 -0500
-From:   Jarod Wilson <jarod@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        Jay Vosburgh <j.vosburgh@gmail.com>
-Subject: Re: [PATCH iproute2] bond: support xmit_hash_policy=vlan+mac
-Message-ID: <20210115151254.GB1176575@redhat.com>
-References: <20210113223548.1171655-1-jarod@redhat.com>
- <20210113234117.3805255-1-jarod@redhat.com>
+        id S1731623AbhAOPbY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Jan 2021 10:31:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49260 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729568AbhAOPbX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jan 2021 10:31:23 -0500
+Received: from mail-ot1-x335.google.com (mail-ot1-x335.google.com [IPv6:2607:f8b0:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE807C0613D3;
+        Fri, 15 Jan 2021 07:30:42 -0800 (PST)
+Received: by mail-ot1-x335.google.com with SMTP id j20so8859367otq.5;
+        Fri, 15 Jan 2021 07:30:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=qomuYvs4xV1f9BYVRlRCjVYqvWUMJMTCkUJTNsFtmHs=;
+        b=uU2RSfP3MVaj5naLpWHSwuQrQlSKgrM3a0WpzuF9QCbzhsulZosdG+dgSfaOH3DSJa
+         Os51wvTdoV5uJwbu6BnyXK2AhB0zMUrzXhM8krVnGITAf0WRyCkMe8LUueJPITYdA77a
+         dOvIQpAwWQa8qYcu66rb3z0waXAgGF1hWO+XMZ5dLqBowMyPdsXW72WnsULu4UdMtUM8
+         cc7xPNgfLl+xrnyjfCkqO6uAm6ptVpK1pTFTtIqsxOmjsqTfp20n8XfnzOBEnDU/ocQf
+         fJWdvLDPTCSe7NPkkt38MOG7L0AmzIxqQ0t5c5uYo01QdodCkj014ltoF9ykKX3ycEkG
+         x6cg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=qomuYvs4xV1f9BYVRlRCjVYqvWUMJMTCkUJTNsFtmHs=;
+        b=BYRM9oNwV/C6aGUonS04BpVX/w1wWuNYnNR2eZ/3M/EpFId5aAEkp0bw/mHn69qXGx
+         C3jP7AwHB3QOzgoEfZqo2uRC2L7Z3cie3wt9Rat6pRw7jA/E8DrYM6ed0GnbyFhsN+NR
+         JHmQgXvJ9U2j7xmJj7qMukrOlP723/50/ZSje1IYa8JjGIYskqjtY/Hdod9b5a53lbRj
+         L8mahklsMECuCKnIQZFNV4yY1Q5n5hnVXdq5H2t5ODzGU40JESb0EXMpx5PwAEnC9egC
+         apxV8KINPhb+z/MjhuYay0wIYcGBFpqp6F1/XVOy8XJeCuZ0jJa+NI8wHhzdzp7Y/F+B
+         rxZg==
+X-Gm-Message-State: AOAM532Sh3/ErsXl1qo95BJJmOgDoM/3XVOsSAi9A3kLGg7tKgl1hSPN
+        AOXUz2FGa6KUwIZdz6I3HlxXHFTRz5wH1Gi+YUUYhZNUSQidfZg=
+X-Google-Smtp-Source: ABdhPJwmg8O62V4Grbmq5DW54J1+UgOanJ9yTHZKwrJtmZ8ukmW5eqF86ba4C+nPA+BZEZn8JPuKihabHCdH2DZnT6A=
+X-Received: by 2002:a05:6830:1b7b:: with SMTP id d27mr8946037ote.132.1610724642193;
+ Fri, 15 Jan 2021 07:30:42 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210113234117.3805255-1-jarod@redhat.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+References: <20210114195734.55313-1-george.mccollister@gmail.com>
+ <20210114195734.55313-3-george.mccollister@gmail.com> <20210114224843.374dmyzvtszat6m4@skbuf>
+In-Reply-To: <20210114224843.374dmyzvtszat6m4@skbuf>
+From:   George McCollister <george.mccollister@gmail.com>
+Date:   Fri, 15 Jan 2021 09:30:29 -0600
+Message-ID: <CAFSKS=P5u8YAL=1Rww0VqdHkcf11j7R-bJ02sj6pWoxvqRm3jw@mail.gmail.com>
+Subject: Re: [PATCH net-next v5 2/3] net: dsa: add Arrow SpeedChips XRS700x driver
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Rob Herring <robh@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        "open list:OPEN FIRMWARE AND..." <devicetree@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 13, 2021 at 06:41:17PM -0500, Jarod Wilson wrote:
-> There's a new transmit hash policy being added to the bonding driver that
-> is a simple XOR of vlan ID and source MAC, xmit_hash_policy vlan+mac. This
-> trivial patch makes it configurable and queryable via iproute2.
-> 
-> $ sudo modprobe bonding mode=2 max_bonds=1 xmit_hash_policy=0
-> 
-> $ sudo ip link set bond0 type bond xmit_hash_policy vlan+mac
-> 
-> $ ip -d link show bond0
-> 11: bond0: <BROADCAST,MULTICAST,MASTER> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
->     link/ether ce:85:5e:24:ce:90 brd ff:ff:ff:ff:ff:ff promiscuity 0 minmtu 68 maxmtu 65535
->     bond mode balance-xor miimon 0 updelay 0 downdelay 0 peer_notify_delay 0 use_carrier 1 arp_interval 0 arp_validate none arp_all_targets any
-> primary_reselect always fail_over_mac none xmit_hash_policy vlan+mac resend_igmp 1 num_grat_arp 1 all_slaves_active 0 min_links 0 lp_interval 1
-> packets_per_slave 1 lacp_rate slow ad_select stable tlb_dynamic_lb 1 addrgenmode eui64 numtxqueues 16 numrxqueues 16 gso_max_size 65536 gso_max_segs
-> 65535
-> 
-> $ grep Hash /proc/net/bonding/bond0
-> Transmit Hash Policy: vlan+mac (5)
-> 
-> $ sudo ip link add test type bond help
-> Usage: ... bond [ mode BONDMODE ] [ active_slave SLAVE_DEV ]
->                 [ clear_active_slave ] [ miimon MIIMON ]
->                 [ updelay UPDELAY ] [ downdelay DOWNDELAY ]
->                 [ peer_notify_delay DELAY ]
->                 [ use_carrier USE_CARRIER ]
->                 [ arp_interval ARP_INTERVAL ]
->                 [ arp_validate ARP_VALIDATE ]
->                 [ arp_all_targets ARP_ALL_TARGETS ]
->                 [ arp_ip_target [ ARP_IP_TARGET, ... ] ]
->                 [ primary SLAVE_DEV ]
->                 [ primary_reselect PRIMARY_RESELECT ]
->                 [ fail_over_mac FAIL_OVER_MAC ]
->                 [ xmit_hash_policy XMIT_HASH_POLICY ]
->                 [ resend_igmp RESEND_IGMP ]
->                 [ num_grat_arp|num_unsol_na NUM_GRAT_ARP|NUM_UNSOL_NA ]
->                 [ all_slaves_active ALL_SLAVES_ACTIVE ]
->                 [ min_links MIN_LINKS ]
->                 [ lp_interval LP_INTERVAL ]
->                 [ packets_per_slave PACKETS_PER_SLAVE ]
->                 [ tlb_dynamic_lb TLB_DYNAMIC_LB ]
->                 [ lacp_rate LACP_RATE ]
->                 [ ad_select AD_SELECT ]
->                 [ ad_user_port_key PORTKEY ]
->                 [ ad_actor_sys_prio SYSPRIO ]
->                 [ ad_actor_system LLADDR ]
-> 
-> BONDMODE := balance-rr|active-backup|balance-xor|broadcast|802.3ad|balance-tlb|balance-alb
-> ARP_VALIDATE := none|active|backup|all
-> ARP_ALL_TARGETS := any|all
-> PRIMARY_RESELECT := always|better|failure
-> FAIL_OVER_MAC := none|active|follow
-> XMIT_HASH_POLICY := layer2|layer2+3|layer3+4|encap2+3|encap3+4|vlan+mac
-> LACP_RATE := slow|fast
-> AD_SELECT := stable|bandwidth|count
-> 
-> Cc: Stephen Hemminger <stephen@networkplumber.org>
-> Cc: Jay Vosburgh <j.vosburgh@gmail.com>
-> Signed-off-by: Jarod Wilson <jarod@redhat.com>
+On Thu, Jan 14, 2021 at 4:48 PM Vladimir Oltean <olteanv@gmail.com> wrote:
+>
+> On Thu, Jan 14, 2021 at 01:57:33PM -0600, George McCollister wrote:
+[snip]
+>
+> Reviewed-by: Vladimir Oltean <olteanv@gmail.com>
+>
+> This driver is good to go, just one small nitpick below, you can fix it
+> up afterwards if you want.
+>
+> > +static void xrs700x_port_stp_state_set(struct dsa_switch *ds, int port,
+> > +                                    u8 state)
+> > +{
+> > +     struct xrs700x *priv = ds->priv;
+> > +     unsigned int bpdus = 1;
+> > +     unsigned int val;
+> > +
+> > +     switch (state) {
+> > +     case BR_STATE_DISABLED:
+> > +             bpdus = 0;
+> > +             fallthrough;
+> > +     case BR_STATE_BLOCKING:
+> > +     case BR_STATE_LISTENING:
+> > +             val = XRS_PORT_DISABLED;
+> > +             break;
+> > +     case BR_STATE_LEARNING:
+> > +             val = XRS_PORT_LEARNING;
+> > +             break;
+> > +     case BR_STATE_FORWARDING:
+> > +             val = XRS_PORT_FORWARDING;
+> > +             break;
+> > +     default:
+> > +             dev_err(ds->dev, "invalid STP state: %d\n", state);
+> > +             return;
+> > +     }
+> > +
+> > +     regmap_fields_write(priv->ps_forward, port, val);
+> > +
+> > +     /* Enable/disable inbound policy added by xrs700x_port_add_bpdu_ipf()
+> > +      * which allows BPDU forwarding to the CPU port when the front facing
+> > +      * port is in disabled/learning state.
+>                       ~~~~~~~~
+> You probably mean blocking. When the port is in BR_STATE_DISABLED, you
+> set bpdus = 1, which makes sense.
 
-Self-nack on this version, renaming the mode to vlan+srcmac as discussed.
+That doesn't sound quite right, let me try to explain this differently
+and you can tell me if it makes more sense. If so I'll update it, add
+the reviewed-bys and post v6:
 
--- 
-Jarod Wilson
-jarod@redhat.com
+Enable/disable inbound policy added by xrs700x_port_add_bpdu_ipf()
+which allows BPDU forwarding to the CPU port. The policy must be
+enabled when the front facing port is in BLOCKING, LISTENING and
+LEARNING BR_STATEs since the switch doesn't otherwise forward BPDUs
+when the port is set to XRS_PORT_DISABLED and XRS_PORT_LEARNING.
 
+>
+> > +      */
+> > +     regmap_update_bits(priv->regmap, XRS_ETH_ADDR_CFG(port, 0), 1, bpdus);
+> > +
+> > +     dev_dbg_ratelimited(priv->dev, "%s - port: %d, state: %u, val: 0x%x\n",
+> > +                         __func__, port, state, val);
+> > +}
