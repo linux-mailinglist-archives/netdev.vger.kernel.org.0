@@ -2,61 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F8372F804E
-	for <lists+netdev@lfdr.de>; Fri, 15 Jan 2021 17:11:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 13A302F8050
+	for <lists+netdev@lfdr.de>; Fri, 15 Jan 2021 17:11:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731419AbhAOQKL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Jan 2021 11:10:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57648 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729011AbhAOQKK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jan 2021 11:10:10 -0500
-Received: from mail-out.m-online.net (mail-out.m-online.net [IPv6:2001:a60:0:28:0:1:25:1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C1F0C0613C1;
-        Fri, 15 Jan 2021 08:09:15 -0800 (PST)
-Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
-        by mail-out.m-online.net (Postfix) with ESMTP id 4DHR2J0pZ0z1rspt;
-        Fri, 15 Jan 2021 17:09:08 +0100 (CET)
-Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
-        by mail.m-online.net (Postfix) with ESMTP id 4DHR2D14rrz1tYWR;
-        Fri, 15 Jan 2021 17:09:08 +0100 (CET)
-X-Virus-Scanned: amavisd-new at mnet-online.de
-Received: from mail.mnet-online.de ([192.168.8.182])
-        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
-        with ESMTP id 7kEKBGdiBY6k; Fri, 15 Jan 2021 17:09:06 +0100 (CET)
-X-Auth-Info: Vj8+/1od6rEBBzbfIm+0iNjQRk/UCqGp2M1lVqlesjY=
-Received: from [127.0.0.1] (p578adb1c.dip0.t-ipconnect.de [87.138.219.28])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.mnet-online.de (Postfix) with ESMTPSA;
-        Fri, 15 Jan 2021 17:09:06 +0100 (CET)
-Subject: Re: [PATCH] net: ks8851: remove definition of DEBUG
-To:     trix@redhat.com, davem@davemloft.net, kuba@kernel.org,
-        andrew@lunn.ch, zhengyongjun3@huawei.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20210115153128.131026-1-trix@redhat.com>
-From:   Marek Vasut <marex@denx.de>
-Message-ID: <e7844d89-b0af-53ce-c923-a1d91b4ec0cc@denx.de>
-Date:   Fri, 15 Jan 2021 17:09:06 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+        id S1732189AbhAOQLh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Jan 2021 11:11:37 -0500
+Received: from out4-smtp.messagingengine.com ([66.111.4.28]:44865 "EHLO
+        out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727719AbhAOQLh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jan 2021 11:11:37 -0500
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id 30C725C01BE;
+        Fri, 15 Jan 2021 11:10:51 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Fri, 15 Jan 2021 11:10:51 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=s56ZPd
+        zWxpYi4+dUDvRKBO3LuWh1pCGiGd99jmMtSKk=; b=DYjO3sjJSF6MZP6y6tUCbz
+        +nlBvOa92QpVbQ5naKTqd/1UzitDGSCvmayUFekbd7TMXhnkl67YQmaWCisSuKCH
+        aU3nHkCWqd73bbtWZBgfRqqh3AcRfFCyMVwqUknZ/oIj+h4LwOG5LtjwpzxlnGdv
+        VhlL5ZGT8d7TFD3Lwjq0BBysconUy3iH8RB1FnOfV4m89PfqBN+ZsOa+FDb6l/uA
+        UDw5IGt4+CdF6dYG95A/exR6uB8Z/uCLNcCdXGqPr5TwbYl9IBNIVXY80bl3jxBF
+        Bihif87wkZqsMBAiAx2vp/+N4/NOqLm36RoyXtPt6JnPSt8RNkjKbMZEE64HPXwQ
+        ==
+X-ME-Sender: <xms:ir4BYAkF23wAnQGkRbupj1dJLGoPQiaMdKG3XyXJsvEyQbt1fdj1_g>
+    <xme:ir4BYP1WCaoowVzLlZvQ2QOg9pdSzFAdkMZlLJ-bZgBsbO78K0_dOcFPeUHU4UTcW
+    bRhPdROrq08Pks>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrtddvgdeiudcutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcuufgt
+    hhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrthhtvg
+    hrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudehleet
+    necukfhppeekgedrvddvledrudehfedrgeegnecuvehluhhsthgvrhfuihiivgeptdenuc
+    frrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:ir4BYOqvvVgv89vXLYN2w7S-8Tx97RNN65bDoA7CRkRctAL3IhtGzQ>
+    <xmx:ir4BYMmOa5FfqA3gxvSJeNqavBzvc0hw0iBPx8RfJ450noFxMal9aw>
+    <xmx:ir4BYO0lpLjgxvcnReBkuhmRrCpy5zqK7yld_BHOmDjDLcWf3EweRg>
+    <xmx:i74BYDzCM3ggPRk9IyoQr6odo2vYE_u9XZ3if9omZ_av3x6IXSNqkw>
+Received: from localhost (igld-84-229-153-44.inter.net.il [84.229.153.44])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 1C5D6108005F;
+        Fri, 15 Jan 2021 11:10:49 -0500 (EST)
+Date:   Fri, 15 Jan 2021 18:10:48 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        jacob.e.keller@intel.com, roopa@nvidia.com, mlxsw@nvidia.com
+Subject: Re: [patch net-next RFC 05/10] devlink: add port to line card
+ relationship set
+Message-ID: <20210115161048.GE2064789@shredder.lan>
+References: <20210113121222.733517-1-jiri@resnulli.us>
+ <20210113121222.733517-6-jiri@resnulli.us>
 MIME-Version: 1.0
-In-Reply-To: <20210115153128.131026-1-trix@redhat.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210113121222.733517-6-jiri@resnulli.us>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/15/21 4:31 PM, trix@redhat.com wrote:
-> From: Tom Rix <trix@redhat.com>
-> 
-> Defining DEBUG should only be done in development.
-> So remove DEBUG.
-> 
-> Signed-off-by: Tom Rix <trix@redhat.com>
+On Wed, Jan 13, 2021 at 01:12:17PM +0100, Jiri Pirko wrote:
+> index ec00cd94c626..cb911b6fdeda 100644
+> --- a/include/net/devlink.h
+> +++ b/include/net/devlink.h
+> @@ -137,6 +137,7 @@ struct devlink_port {
+>  	struct delayed_work type_warn_dw;
+>  	struct list_head reporter_list;
+>  	struct mutex reporters_lock; /* Protects reporter_list */
+> +	struct devlink_linecard *linecard;
+>  };
+>  
+>  struct devlink_linecard_ops;
+> @@ -1438,6 +1439,8 @@ void devlink_port_attrs_pci_pf_set(struct devlink_port *devlink_port, u32 contro
+>  				   u16 pf, bool external);
+>  void devlink_port_attrs_pci_vf_set(struct devlink_port *devlink_port, u32 controller,
+>  				   u16 pf, u16 vf, bool external);
+> +void devlink_port_linecard_set(struct devlink_port *devlink_port,
+> +			       struct devlink_linecard *linecard);
+>  struct devlink_linecard *
+>  devlink_linecard_create(struct devlink *devlink, unsigned int linecard_index,
+>  			const struct devlink_linecard_ops *ops, void *priv);
+> diff --git a/net/core/devlink.c b/net/core/devlink.c
+> index 347976b88404..2faa30cc5cce 100644
+> --- a/net/core/devlink.c
+> +++ b/net/core/devlink.c
+> @@ -855,6 +855,10 @@ static int devlink_nl_port_fill(struct sk_buff *msg, struct devlink *devlink,
+>  		goto nla_put_failure;
+>  	if (devlink_nl_port_function_attrs_put(msg, devlink_port, extack))
+>  		goto nla_put_failure;
+> +	if (devlink_port->linecard &&
+> +	    nla_put_u32(msg, DEVLINK_ATTR_LINECARD_INDEX,
+> +			devlink_port->linecard->index))
+> +		goto nla_put_failure;
+>  
+>  	genlmsg_end(msg, hdr);
+>  	return 0;
+> @@ -8642,6 +8646,21 @@ void devlink_port_attrs_pci_vf_set(struct devlink_port *devlink_port, u32 contro
+>  }
+>  EXPORT_SYMBOL_GPL(devlink_port_attrs_pci_vf_set);
+>  
+> +/**
+> + *	devlink_port_linecard_set - Link port with a linecard
+> + *
+> + *	@devlink_port: devlink port
+> + *	@devlink_linecard: devlink linecard
+> + */
+> +void devlink_port_linecard_set(struct devlink_port *devlink_port,
+> +			       struct devlink_linecard *linecard)
+> +{
+> +	if (WARN_ON(devlink_port->registered))
+> +		return;
+> +	devlink_port->linecard = linecard;
 
-Reviewed-by: Marek Vasut <marex@denx.de>
+We already have devlink_port_attrs_set() that is called before the port
+is registered, why not extend it to also set the linecard information?
 
-Thanks
+> +}
+> +EXPORT_SYMBOL_GPL(devlink_port_linecard_set);
+> +
+>  static int __devlink_port_phys_port_name_get(struct devlink_port *devlink_port,
+>  					     char *name, size_t len)
+>  {
+> @@ -8654,7 +8673,11 @@ static int __devlink_port_phys_port_name_get(struct devlink_port *devlink_port,
+>  	switch (attrs->flavour) {
+>  	case DEVLINK_PORT_FLAVOUR_PHYSICAL:
+>  	case DEVLINK_PORT_FLAVOUR_VIRTUAL:
+> -		n = snprintf(name, len, "p%u", attrs->phys.port_number);
+> +		if (devlink_port->linecard)
+> +			n = snprintf(name, len, "l%u",
+> +				     devlink_port->linecard->index);
+> +		n += snprintf(name + n, len - n, "p%u",
+> +			      attrs->phys.port_number);
+>  		if (attrs->split)
+>  			n += snprintf(name + n, len - n, "s%u",
+>  				      attrs->phys.split_subport_number);
+> -- 
+> 2.26.2
+> 
