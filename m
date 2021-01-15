@@ -2,74 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 324A22F829A
-	for <lists+netdev@lfdr.de>; Fri, 15 Jan 2021 18:33:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 670792F82A0
+	for <lists+netdev@lfdr.de>; Fri, 15 Jan 2021 18:37:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731729AbhAORdj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Jan 2021 12:33:39 -0500
-Received: from mail.eaton.com ([192.104.67.6]:10501 "EHLO mail.eaton.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728314AbhAORdi (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 15 Jan 2021 12:33:38 -0500
-Received: from mail.eaton.com (simtcimsva03.etn.com [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 73EC8A40E4;
-        Fri, 15 Jan 2021 12:23:30 -0500 (EST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=eaton.com;
-        s=eaton-s2020-01; t=1610731410;
-        bh=FM+Y27qcdPGmrbTMRUtFEyoOo2/l4vOjhw3MyBY+XMk=; h=From:To:Date;
-        b=A3k2JsxpsGJoggavd3wfdTB76GT4r4AtBUrIrDGqArecS2BVaMGKgoRHlhnBDk4Pr
-         38kKcU4GR6in9uqiTCZffT+VD4WSZmbX7R/Z05+lZCIGzPesjGbSaMbqi6J+A4rJuk
-         SjiU643zgOE7DDVVx4uppQ/puPvXoPTcwvIb9nxk9iIV6GLsqwp1toZ2mYnQLzJ0/b
-         Kj3H3AW+UcbvY/UqH628Jwip0rbK2QzoZnlXM+baXyF7XpI1r9lGWTinoBKVh+Uzwc
-         HRblEwq+Gwdr0RgUmKe9ORIm1omuQOKf9ii4ogZnGwtorD+cC7Xjrx4VvBj4UH2GvA
-         EoYs2Q9sNUl3A==
-Received: from mail.eaton.com (simtcimsva03.etn.com [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 6C90EA40E2;
-        Fri, 15 Jan 2021 12:23:30 -0500 (EST)
-Received: from LOUTCSGWY04.napa.ad.etn.com (loutcsgwy04.napa.ad.etn.com [151.110.126.21])
-        by mail.eaton.com (Postfix) with ESMTPS;
-        Fri, 15 Jan 2021 12:23:30 -0500 (EST)
-Received: from USLTCSHYB01.napa.ad.etn.com (151.110.40.71) by
- LOUTCSGWY04.napa.ad.etn.com (151.110.126.21) with Microsoft SMTP Server (TLS)
- id 14.3.487.0; Fri, 15 Jan 2021 12:23:29 -0500
-Received: from USSTCSEXHET01.NAPA.AD.ETN.COM (151.110.240.153) by
- USLTCSHYB01.napa.ad.etn.com (151.110.40.71) with Microsoft SMTP Server (TLS)
- id 14.3.487.0; Fri, 15 Jan 2021 12:23:28 -0500
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.170)
- by hybridmail.eaton.com (151.110.240.153) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.1591.10; Fri, 15 Jan 2021 12:23:15 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=bbdjN7Tyh1TlKCpt/pXmcJ76tRQeyKiNysILKXHVJFE7Ne9t6NahhPC/7NylrJfMUZFVuZNOEElXEVhHnZAb1vqZfF6z85fddcfnwVroYJIMnfEUEYGqwr9mR/Ye0Pk2pbKFpBMruQDi5Vg30b3kI8UFbuOWdGjpaQ3WWSuUusWCmOwAEGjYtCgHNovvENb5vQndgDAtVLSNAGoOzQrGugMDzyoUI5uxtqPmjMmghSLNvSdBTF6lpGNeJrMZ5PSJZeVlGCVN4JMzT4xlrF6ia0an0BL6QdGAU6PlrOCvSJQLdLm9NTeSEb2N8/fw/xukd5bpuxCDOnH/hqnSmJfqBQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=A1cwj9Xl9RNZm+xVFt1PbZ0xgNuPrvUiJZgBfAoQPnU=;
- b=Ff1LgV/nBuqGvyZT0go0QPTrpfX+F/b270tjNYR0WTCsmwLI6+5uS5fsW+NmYTFZTt286UUFjOI/nlZms4omqzr2/OU04dbT0ndbUauvH1ey2EDXRJSobydg0lRpd2nth0bfZ8Dw0tx09CUTezUFf8cHG4NbPpeUgIfy8bV/8LrPpetbqW1bdOQ6ygboJanwBnyefRJMryE/FjtxUbP+jjpig7ZD2f/tMP8VComV+CPPemQAqafBeyok5b1FTKqKUClccYJqXK4OY67fFBWNj1Hz0vJQo6W+zddwBHAYtaoJtFKtgp3cXT9kijYg/xPTSt6tDyZv8KDvjIGBUAj/ig==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=eaton.com; dmarc=pass action=none header.from=eaton.com;
- dkim=pass header.d=eaton.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Eaton.onmicrosoft.com;
- s=selector1-Eaton-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=A1cwj9Xl9RNZm+xVFt1PbZ0xgNuPrvUiJZgBfAoQPnU=;
- b=jMvRMa1Vam/IWoxF/obpQ/qkAAi9BAFdsAYTQVPx1oguMMhciVyTkLWSyFLJTha3C9J2GaGrrne4ibhgUqdPLJN9uQFTfLRq4KyjzzLoKmt+ptWkUnHoChcefPbZUbxF2EuU9JH2kCRNWCKZGHRlHQwAMfGYvyYqBq8W/x8YoHc=
-Received: from MW4PR17MB4243.namprd17.prod.outlook.com (2603:10b6:303:71::6)
- by MWHPR17MB0991.namprd17.prod.outlook.com (2603:10b6:300:9e::8) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3763.9; Fri, 15 Jan
- 2021 17:23:27 +0000
-Received: from MW4PR17MB4243.namprd17.prod.outlook.com
- ([fe80::950b:b237:60e4:d30]) by MW4PR17MB4243.namprd17.prod.outlook.com
- ([fe80::950b:b237:60e4:d30%7]) with mapi id 15.20.3763.012; Fri, 15 Jan 2021
- 17:23:27 +0000
-From:   "Badel, Laurent" <LaurentBadel@eaton.com>
-To:     "davem@davemloft.net" <davem@davemloft.net>,
+        id S1726809AbhAORhe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Jan 2021 12:37:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48490 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726151AbhAORhe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jan 2021 12:37:34 -0500
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 035D7C061757;
+        Fri, 15 Jan 2021 09:36:53 -0800 (PST)
+Received: by mail-wr1-x429.google.com with SMTP id w5so10074077wrm.11;
+        Fri, 15 Jan 2021 09:36:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=to:references:from:subject:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=9/oL1RPdRUYNlfnCCkWKJ/0OLcrfNwJFWYby4oAY4/o=;
+        b=nKjLbMKpq9DL/ayDeE6sFcxF9HKVvYQCkq4C1vrh85qVD/uM8u6LmNfREHTSIELw5B
+         TLuw4RVjBEexIhTvcnNuM5kweIt9gJk2CipAchKhbxALk5jVCRQVA2Z4+u657t0Tk+0d
+         1mTilisMV9fhlJUtqmlf8TlWIItyksFowB374PZCVGP4IO6BZOKqw2xDAue6DRTWL4dq
+         N/Uqq51xwbRHoA1lmpq+tXszByv3SjYoUHsZmKbNbROelRaU0xdvm5c4SVXkywef4va1
+         eebzPXsDOGO8ZP68IeDOXXEzVyL5q4FB3UViTJGol5dQTtrCuYGzAxjjVN5bkNu3iJQ1
+         A1Mw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:to:references:from:subject:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=9/oL1RPdRUYNlfnCCkWKJ/0OLcrfNwJFWYby4oAY4/o=;
+        b=bncBYfeMxwnt0a+oDHAS2UsIs/k1bAiVG3vkHdT5q0lXBJ6ns22Q/sM/VeRjKaWQ9I
+         rDNdpkfqScfd33KLqu+72ENQSGdnx2BSgghRj05ZGbuad5JSRIPwNBrEChVbj0sJpXlL
+         LWVcjZG91/676N3CRdRrENDUq56+PdBV5gaZR0IMbpsnFF1WThlXqktp541LuZj6tCrH
+         R4a048fMDilxWCDlhwGGNR5ud/8iLyeOxB8RvX0Fh1Y6ILN998yy8jFZzNeQ0JB9IEN8
+         HB6E9WZypr23+A+gM5mQhyFsztgxWmmP6t/O5PXL42hR5bNnKK5okK3yFMAuCraqEqpG
+         mp2g==
+X-Gm-Message-State: AOAM531QX8eZ5MGk8B9odOUL79TshLlcmkRfKzV4GH2oluzqL6KbkNVx
+        yn6J3/AEeU0C1cFiXTKtnbo=
+X-Google-Smtp-Source: ABdhPJwO6Rk21uGS+uz0VFIcv29xRQjxnLskFlB7ZDiGsjABd89neQAIj/yXhg+sKWXjwwQAIfdbSw==
+X-Received: by 2002:adf:c5d3:: with SMTP id v19mr14198441wrg.365.1610732212648;
+        Fri, 15 Jan 2021 09:36:52 -0800 (PST)
+Received: from ?IPv6:2003:ea:8f06:5500:fca3:feb5:3aa8:7dc5? (p200300ea8f065500fca3feb53aa87dc5.dip0.t-ipconnect.de. [2003:ea:8f06:5500:fca3:feb5:3aa8:7dc5])
+        by smtp.googlemail.com with ESMTPSA id d2sm15218088wre.39.2021.01.15.09.36.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 15 Jan 2021 09:36:52 -0800 (PST)
+To:     "Badel, Laurent" <LaurentBadel@eaton.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
         "m.felsch@pengutronix.de" <m.felsch@pengutronix.de>,
         "fugang.duan@nxp.com" <fugang.duan@nxp.com>,
         "kuba@kernel.org" <kuba@kernel.org>,
         "andrew@lunn.ch" <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
         "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
         "p.zabel@pengutronix.de" <p.zabel@pengutronix.de>,
         "lgirdwood@gmail.com" <lgirdwood@gmail.com>,
@@ -80,110 +64,167 @@ To:     "davem@davemloft.net" <davem@davemloft.net>,
         "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
         "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
         "marex@denx.de" <marex@denx.de>
-Subject: Subject: [PATCH v3 net-next 4/4] net:phy: Hold LAN8710/20/40 in reset
- after probing
-Thread-Topic: Subject: [PATCH v3 net-next 4/4] net:phy: Hold LAN8710/20/40 in
- reset after probing
-Thread-Index: AdbrYyHB6iHG167iR6CP+hGjiVkkHA==
-Date:   Fri, 15 Jan 2021 17:23:27 +0000
-Message-ID: <MW4PR17MB42433723972317D0AAB25DD1DFA70@MW4PR17MB4243.namprd17.prod.outlook.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: davemloft.net; dkim=none (message not signed)
- header.d=none;davemloft.net; dmarc=none action=none header.from=eaton.com;
-x-originating-ip: [89.217.230.232]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: b07d013c-43a7-4464-bb46-08d8b97a4575
-x-ms-traffictypediagnostic: MWHPR17MB0991:
-x-microsoft-antispam-prvs: <MWHPR17MB0991CF0D247CE65A8894585FDFA70@MWHPR17MB0991.namprd17.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:5516;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: Rt3zfoB2eBo2PT+ShjKXVwTL4AgqKbpgkk06lvJgQZoPEMESiUhcxhHoin1b/+yjfhAGroDJuVXHFtFzSJpjEVkwWwKZiUTNfczDrhRff0npqtae6XzLFD91jcwcuDFZmFEfEOzy4wdhgZ05r+lzJZYJrhVxA4/FFLmPbmbyJONbtxt5zA7fD/Cmd6NKRM6KBhVWwiUxHJLSSZGeXJ/AgaG4zbJzH+VRVq6/d/xdqMRzkHcuPZ0EPDviGLbwcq0PyIH1zh30Otc/WPJiaYVe59tG0NZXsdo1c4b418ObutIOGi5Epr5SkK3YiMA28Xhs4d7fx0W+XWBSY4CydzMLl9a1+BGBYxgfU7oLEH7iUOVl3EbuGTVBlJ2BsM3Lmtr9vo4LP7GCs2hQgT9qJzE261+G/+xyT8jTL/wN3IeOHHd0FNLyk7aJ4vcsK0OWzGoY
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW4PR17MB4243.namprd17.prod.outlook.com;PTR:;CAT:NONE;SFS:(39860400002)(346002)(136003)(366004)(376002)(396003)(33656002)(921005)(26005)(52536014)(316002)(186003)(71200400001)(8676002)(6506007)(8936002)(66556008)(64756008)(86362001)(66476007)(66946007)(55016002)(66446008)(76116006)(4744005)(478600001)(9686003)(2906002)(83380400001)(7696005)(5660300002)(7416002)(110136005);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: =?us-ascii?Q?1eHUpIid2ojZ8v7brrXOYnvlVhBX4hX0kF9Hl2C9kIVxhma74e2WsklsL1/U?=
- =?us-ascii?Q?hSloZdBE/pfQ5pB8goHIpuk4udbpj1lgAdasJ58f78W5qQV31/1rlXztjvti?=
- =?us-ascii?Q?NgwmLxf8pQG0qgnkRHjL14Glcc9mVeuYh7LPRQrAp1A10r42sxNH3uoLoe7E?=
- =?us-ascii?Q?BW12e1X3dRfdVyGxriw0YwfNbr/QFbmf/PtrZnZlIo9PNG7b8vIRPROdl6iu?=
- =?us-ascii?Q?9n+cLEfsWhnp5TyfGMNZBT2iihefflYBk5RnOA6bYDclxepsJanmbRwyBiDK?=
- =?us-ascii?Q?hfxWEs80r+L59yh0nNgNal5m0YYWmrVrct4kwQozKm+52TEnMI0lElGm3mCr?=
- =?us-ascii?Q?ElRN/zIftmNwlVSEB6l+vUBaIJtndieowoKIEvVf2ds1/OjWgTquWjU6+W4n?=
- =?us-ascii?Q?OQF8O7ViobyUhZtGYHp5qcbLExXRh/fEgW+M41BnJ3twQrynYOKulUOfoEvv?=
- =?us-ascii?Q?Ne29pAH6o1do4XMP0hmNw2Vu+pxVSgI4jsB2Lr7VrZwuUpGeer9Hif5FA0W1?=
- =?us-ascii?Q?r2ilk3YIYRjmTv8LxH4b5V92qy7N5bVB6PWzPFDLFv5lqnBy37TJGCYLoIj3?=
- =?us-ascii?Q?izeYJR+emTSpc1L1WVu9aLFRBrkLZs/FLgVtTpBad2vVP/yiNdsxuzw9f3eh?=
- =?us-ascii?Q?KZ5txb8sNwHQ8DFz3j/Mr/GrL1hZjPVZA7bbobXWmDVmGRCM5bA33VlszC/0?=
- =?us-ascii?Q?khUd8oBwi+hh8ylkNqGcFPF5+uI5T/y4G4PC0LiIedLspDdp1ARNoUBYFZUa?=
- =?us-ascii?Q?pT+NCE2CKoPslEci5skbFINfk4RphH00bSuD+O+4ZDJB6ToMwyQ1IazxQPaC?=
- =?us-ascii?Q?TfloCAXbvic/N12PHzywL6HzyjTW/kj7qXDtaU2mN1CaHdQkq4vHwwWBA2zZ?=
- =?us-ascii?Q?ZCk3YSLb9ncD3uy8S1JT60VXhYeYs8l2F5xfG6Gof2bF4reUjOkgzZIA6ECd?=
- =?us-ascii?Q?8eRo7YpDMxJr+fcTUfN55hSe7CXWw6Fxn+LjZai9tJg=3D?=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
+References: <MW4PR17MB4243A17EE8C434AE3DCAEAF4DFA70@MW4PR17MB4243.namprd17.prod.outlook.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: Subject: [PATCH v3 net-next 0/4] net:phy: Fix LAN87xx external
+ reset
+Message-ID: <a54ae202-fed9-1fff-5e71-b7a93f09c411@gmail.com>
+Date:   Fri, 15 Jan 2021 18:36:45 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.1
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: MW4PR17MB4243.namprd17.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b07d013c-43a7-4464-bb46-08d8b97a4575
-X-MS-Exchange-CrossTenant-originalarrivaltime: 15 Jan 2021 17:23:27.4660
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: d6525c95-b906-431a-b926-e9b51ba43cc4
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: ATpZjZoswFubjeg1ahf80Gy4LNpGMuq4p1SSaoD00nxiHEQCFIVD3jcc9vK+mZz/A7rhvl3tySjsTKao12ZYQQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR17MB0991
-X-TM-SNTS-SMTP: C28AD4038357781D2383312D57602D79E51647FAB2B7337E2154B86B66DAE0262002:8
-X-OriginatorOrg: eaton.com
-X-EXCLAIMER-MD-CONFIG: 96b59d02-bc1a-4a40-8c96-611cac62bce9
-X-TM-AS-GCONF: 00
-X-TM-AS-Product-Ver: IMSVA-9.1.0.1988-8.6.0.1013-25914.001
-X-TM-AS-Result: No--0.010-7.0-31-10
-X-imss-scan-details: No--0.010-7.0-31-10
-X-TMASE-Version: IMSVA-9.1.0.1988-8.6.1013-25914.001
-X-TMASE-Result: 10--0.009700-10.000000
-X-TMASE-MatchedRID: uc5cNCUKFYqYizZS4XBb39WxbZgaqhS0XGjQf7uckKvAJMh4mAwEG0/T
-        IrLQ9Peu+PIDJm8nMt1aoQEg7IZiKbVdhtJxXnUIfJy8LojR0khLXPA26IG0hN9RlPzeVuQQhqJ
-        xi9IzezKQ4SVxasmmgbBn8A2CciYo0N7DjAdxZNQmAvD9QfRqyuTCMddcL/gjymsk/wUE4hrAXW
-        GZ8uxEzvYHSPi19GdptEoay9K4dYmW4OQeCUNoQC+t66KGtpg7wZkwW8Om7l0zKPNMJt1cItOJD
-        ukJ6FgKPiNrAzfNmmmuVcedRt77E9vQudwJa1UEbiWMdLprM/mbjP55bWdtQcixCjPGQhvOQwym
-        txuJ6y0=
-X-TMASE-SNAP-Result: 1.821001.0001-0-1-12:0,22:0,33:0,34:0-0
+In-Reply-To: <MW4PR17MB4243A17EE8C434AE3DCAEAF4DFA70@MW4PR17MB4243.namprd17.prod.outlook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-=EF=BB=BFAssert PHY reset at the end of phy_probe(), for PHYs bearing the
-PHY_RST_AFTER_PROBE flag. For FEC-based devices this ensures that PHYs are
-always in reset or power-down whenever the REF_CLK is turned off.
+On 15.01.2021 18:19, Badel, Laurent wrote:
+> ﻿Description: 
+> External PHY reset from the FEC driver was introduced in commit [1] to 
+> mitigate an issue with iMX SoCs and LAN87xx PHYs. The issue occurs 
+> because the FEC driver turns off the reference clock for power saving 
+> reasons [2], which doesn't work out well with LAN87xx PHYs which require 
+> a running REF_CLK during the power-up sequence. As a result, the PHYs 
+> occasionnally (and unpredictably) fail to establish a stable link and
+> require a hardware reset to work reliably.
+> 
+> As previously noted [3] the solution in [1] integrates poorly with the
+> PHY abstraction layer, and it also performs many unnecessary resets. This
+> patch series suggests a simpler solution to this problem, namely to hold
+> the PHY in reset during the time between the PHY driver probe and the first
+> opening of the FEC driver.
+> 
+> To illustrate why this is sufficient, below is a representation of the PHY
+> RST and REF_CLK status at relevant time points (note that RST signal is
+> active-low for LAN8710/20):
+> 
+>  1. During system boot when the PHY is probed:
+>  RST    111111111111111111111000001111111111111
+>  CLK    000011111111111111111111111111111000000
+>  REF_CLK is enabled during fec_probe(), and there is a short reset pulse
+>  due to mdiobus_register_gpiod() which calls gpiod_get_optional() with
+>  the GPIOD_OUT_LOW which sets the initial value to 0. The reset is
+>  de-asserted by phy_device_register() shortly after.  After that, the PHY
+>  runs without clock until the FEC is opened, which causes issues.
+> 
+>  2. At first opening of the FEC:
+>  RST    111111111111111111111111111100000111111
+>  CLK    000000000011111111111111111111111111111
+>  After REF_CLK is enabled, phy_reset_after_clk_enable() causes a
+>  short reset pulse. Reset is needed here because the PHY was running 
+>  without clock before. 
+>    
+>  3. At closing of the FEC driver:
+>  RST    111110000000000000000000000000000000000                 
+>  CLK    111111111111000000000000000000000000000
+>  FEC first disconnects the PHY, which asserts the reset, and then 
+>  disables the clock.
+>    
+>  4. At subsequent openings of the FEC:
+>  RST    000000000000000011111111111110000011111                  
+>  CLK    000000000011111111111111111111111111111
+>  FEC first enables the clock, then connects to the PHY which releases 
+>  the reset. Here the second reset pulse (phy_reset_after_clk_enable()) 
+>  is unnecessary, because REF_CLK is already running when the reset is 
+>  first deasserted. 
+>   
+> This illustrates that the only place where the extra reset pulse is 
+> actually needed, is at the first opening of the FEC driver, and the reason
+> it is needed in the first place, is because the PHY has been running 
+> without clock after it was probed. 
+> 
+> Extensive testing with LAN8720 confirmed that the REF_CLK can be disabled
+> without problems as long as the PHY is either in reset or in power-down 
+> mode (which is relevant for suspend-to-ram as well). Therefore, instead 
+> of relying on extra calls to phy_reset_after_clk_enable(), the issue 
+> addressed by commit [1] can be simply fixed by keeping the PHY in reset 
+> when exiting from phy_probe(). In this way the PHY will always be in reset
+> or power-down whenever the REF_CLK is turned off.
+> 
+> This should not cause issues, since as per the PAL documentation any 
+> driver that has business with the PHY should at least call phy_attach(), 
+> which will deassert the reset in due time. Therefore this fix probably 
+> works equally well for any PHY, but out of caution the patch uses the 
+> existing PHY_RST_AFTER_CLK_EN driver flag (which it renames), to implement
+> the fix only for LAN8710/20/40 PHYs.
+> 
+> Previous versions:
+> This is the 3rd version of the series;  below is a short description of
+> the previous versions.
+> 
+> v1: 
+> The solution in [1] has the unfortunate side-effect of breaking the PHY 
+> interrupt system due to the hardware reset erasing the interrupt mask of
+> the PHY. Patch series v1 suggested performing the extra reset before the 
+> PHY is configured, by moving the call to phy_reset_after_clk_enable() from
+> the FEC into phy_init_hw() instead. The patch was re-examinated after 
+> finding an issue during resume from suspend, where the PHY also seemed to
+> require a hardware reset to work properly. 
+> Further investigation showed that this is in fact due to another
+> peculiarity of the LAN87xx, which also erase their interrupt mask upon 
+> software reset (which is done by phy_init_hw() on resuming from 
+> suspend-to-ram), and is thus a separate issue that will be addressed in 
+> a separate patch. 
+> 
+> v2:
+> During this time the kernel had moved on and 2 new commits rendered the v1
+> fix unnecessary: 
+>   [3] allows the extra PHY reset to still be performed from the FEC, but 
+>   before the interrupt mask is configured, thereby fixing the above 
+>   interrupt mask issue.
+>   [4] allows LAN87xx to take control of the REF_CLK directly, preventing
+>   the FEC from disabling it and thus circumventing the entire REF_CLK 
+>   issue.
+> Patch v2 proposed to fix 2 potential issues with the solution from [4], 
+> namely that (i) failing to set the PHY "clocks" DT property would silently 
+> break the system (because FEC succeeds in disabling the REF_CLK, yet the 
+> extra reset has been removed), and (ii) keeping the REF_CLK enabled
+> defeated the power-saving purpose of commit [2].
+> 
+> The present patch fixes (i), and leaves it up to the user to use the 
+> power-friendly clock management of [2] (leave the DT clocks property 
+> unset), or keep the REF_CLK always enabled (set the clocks property). 
+> It also simplifies the code by removing all calls to 
+> phy_reset_after_clk_enable() and related code, and the function
+> phy_reset_after_clk_enable() altogether.  
+> 
+> Tests: against net-next (5.11-rc3) with LAN8720 and LAN8742 and iMX283 
+> SoC. Unfortunately unable to test LAN8740 which has a different form 
+> factor.
+> 
+> References:
+> [1] commit 1b0a83ac04e3 ("net: fec: add phy_reset_after_clk_enable()
+>     support")
+> [2] commit e8fcfcd5684a ("net: fec: optimize the clock management to save
+>     power")
+> [3] commit 64a632da538a ("net: fec: Fix phy_device lookup for 
+>     phy_reset_after_clk_enable()")
+> [4] commit bedd8d78aba3 ("net: phy: smsc: LAN8710/20: add phy refclk in
+>     support")
+> 
+> Laurent Badel (4):
+>   Remove PHY reset in fec_main.c
+>   Remove phy_reset_after_clk_enable()
+>   Rename PHY_RST_AFTER_CLK_EN to PHY_RST_AFTER_PROBE
+>   Add PHY reset after probe for PHYs with PHY_RST_AFTER_PROBE flag 
+> 
+>  drivers/net/ethernet/freescale/fec_main.c | 40 -----------------------
+>  drivers/net/phy/phy_device.c              | 26 +--------------
+>  drivers/net/phy/smsc.c                    |  4 +--
+>  include/linux/phy.h                       |  3 +-
+>  4 files changed, 4 insertions(+), 69 deletions(-)
+> 
 
-Signed-off-by: Laurent Badel <laurentbadel@eaton.com>
----
- drivers/net/phy/phy_device.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+W/o knowing the exact issue in detail: For the sake of bisectability,
+shouldn't patches 4 and a modified patch 3 be first? After patches 1 and 2
+we may be in trouble, right?
 
-diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-index 13bae0ce31b8..322f569a1162 100644
---- a/drivers/net/phy/phy_device.c
-+++ b/drivers/net/phy/phy_device.c
-@@ -2902,7 +2902,7 @@ static int phy_probe(struct device *dev)
-=20
- out:
- 	/* Assert the reset signal */
--	if (err)
-+	if (err || phydev->drv->flags & PHY_RST_AFTER_PROBE)
- 		phy_device_reset(phydev, 1);
-=20
- 	mutex_unlock(&phydev->lock);
---=20
-2.17.1
+And it seems you composed the mails manually:
+- subject is prefixed with "Subject:"
+- patch subjects in the cover letter don't match the ones of the
+  respective patches
 
-
-
------------------------------
-Eaton Industries Manufacturing GmbH ~ Registered place of business: Route d=
-e la Longeraie 7, 1110, Morges, Switzerland=20
-
------------------------------
-
+For the patch prefixes: Please add a space between net: and phy:
