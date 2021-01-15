@@ -2,93 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 682A22F7E5B
-	for <lists+netdev@lfdr.de>; Fri, 15 Jan 2021 15:36:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B0B282F7E60
+	for <lists+netdev@lfdr.de>; Fri, 15 Jan 2021 15:37:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732572AbhAOOft (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Jan 2021 09:35:49 -0500
-Received: from mail-40134.protonmail.ch ([185.70.40.134]:39771 "EHLO
-        mail-40134.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732214AbhAOOfs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jan 2021 09:35:48 -0500
-Date:   Fri, 15 Jan 2021 14:34:56 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
-        t=1610721305; bh=TQQJqIAOl8U91/OpE5V91qeQpQLEEGZk67YCSZa+8Lo=;
-        h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
-        b=mffgRhhwcN97uCvyqIBv0S412R4INgXfk74WYkNomIF2o/yBP/5oH7pcKMWx0SqWH
-         N1Od6MyrojuRDXmUs6E6JUllsHLmTD5dHyLhm46gzWrc6lmJsbx2Ei3BHtrxkosfXc
-         tVuu8bzPBeEYVs4gFtaUk3YgteTwCHdFXWx34E7xQk/zILkM3DhRSWy709DpjQ46iy
-         kL7dtppXXgi5EcouJYniwZS/ZrOtj84TkyQ1yREPKKpcd4+emWxCygaUjm69cpwozt
-         yw/QAT+gJHrJE7MylyF8k+QrBvYVOTNATHCjriekzEPTI33P4G4nrtaUK5cKK3w2om
-         BraQVaNjLyKoQ==
-To:     Eric Dumazet <edumazet@google.com>
-From:   Alexander Lobakin <alobakin@pm.me>
-Cc:     Alexander Lobakin <alobakin@pm.me>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Guillaume Nault <gnault@redhat.com>,
-        Yunsheng Lin <linyunsheng@huawei.com>,
-        Florian Westphal <fw@strlen.de>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Dongseok Yi <dseok.yi@samsung.com>,
-        Yadu Kishore <kyk.segfault@gmail.com>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Marco Elver <elver@google.com>,
-        Alexander Duyck <alexanderduyck@fb.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Reply-To: Alexander Lobakin <alobakin@pm.me>
-Subject: Re: [PATCH net] skbuff: back tiny skbs with kmalloc() in __netdev_alloc_skb() too
-Message-ID: <20210115143424.83784-1-alobakin@pm.me>
-In-Reply-To: <CANn89iKi8jsBsCPqNvfQ9Wx6k6EZy5daL33c8YnAfkXZS+QWHw@mail.gmail.com>
-References: <20210114235423.232737-1-alobakin@pm.me> <CANn89iKi8jsBsCPqNvfQ9Wx6k6EZy5daL33c8YnAfkXZS+QWHw@mail.gmail.com>
+        id S1728974AbhAOOhd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Jan 2021 09:37:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37730 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726030AbhAOOhd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jan 2021 09:37:33 -0500
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CD77C0613C1
+        for <netdev@vger.kernel.org>; Fri, 15 Jan 2021 06:36:52 -0800 (PST)
+Received: by mail-ej1-x62f.google.com with SMTP id r12so2239230ejb.9
+        for <netdev@vger.kernel.org>; Fri, 15 Jan 2021 06:36:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=4iuWlaSTknRDH9Jbx1b5JQ/w8x3dN2CKguk801qy7nw=;
+        b=E72w2PNhsOY+1pc7VIzZvxc9KYslsn9V7ITOIOgqJXOBlYwE18MqzcdL1BzzTVetif
+         WfkaYO+ExSGs+JxjQMABawlyyTHOlK0auxkBwBzFi19QvilptoD/YofcVlZuGdppBOZ/
+         BzMPmY3Oar1McTJpxJPZjzXdxoPERdDnELz/nAoDxXXlvpLGJgnRtrcD2JdCH3EA4zwD
+         9S2/+6EF36mQlbNNZ2so69sWX+VlyXh6XC9Zl0qt8dQGUC8eDAqWpBiNtCb0rkIDdfc9
+         FJS3AqXb32jzMKqUzTGL8MQziShX/m5dOpQOEc6K18fsQ4Ip1i5pDURni+Db5FHdeAzE
+         bVtQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=4iuWlaSTknRDH9Jbx1b5JQ/w8x3dN2CKguk801qy7nw=;
+        b=SvjMpRhGTJmTvbx7atK5eL0J6wcSpCUMVoxWdDWhTRAhRuzYdJqZgK4SeCFoNqZvfI
+         AGkTp6ZHbs8g7IpGmPVzz9IZ+r4qBGChrphTNQGVENwWQ9tMsbTdGZiu+J962TU+ArYA
+         zNuBy21G1hxgI17EVQm6rDblmal1Oi0Vrubd7Sc9J4niVOQZYF/j7S8CB/LZDkbyrUa9
+         z913Q7T6BIz7Ywi6H5/n//imXP6ZD5aU5wnaxHhAO38b1TdiHW1JB5jsSkZvybTXsD1Q
+         5L0Et19CH4bTU1m68AT01o46esJDx0o6uQdRxorC+Jo7rU7Ws+O6yfNvX1EOpHHAT1ms
+         aEtQ==
+X-Gm-Message-State: AOAM533YMnBOwp088AHEmn7LJO8n2mElrkG/oKYzl11i10aJIl+7JDDY
+        f1S9YZI3rmTX/vY+bP4AS/xq5eGgswg=
+X-Google-Smtp-Source: ABdhPJwxhRZK7tbQqvrOCyKJWPogsdyBYjnrYZZKlBXZe+q/TH3hDWqK0V2PGvKGG8R3VC22l0MqXA==
+X-Received: by 2002:a17:907:10db:: with SMTP id rv27mr7120230ejb.275.1610721411306;
+        Fri, 15 Jan 2021 06:36:51 -0800 (PST)
+Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
+        by smtp.gmail.com with ESMTPSA id he16sm2302718ejc.76.2021.01.15.06.36.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 15 Jan 2021 06:36:50 -0800 (PST)
+Date:   Fri, 15 Jan 2021 16:36:49 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     Tobias Waldekranz <tobias@waldekranz.com>, davem@davemloft.net,
+        kuba@kernel.org, vivien.didelot@gmail.com, f.fainelli@gmail.com,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH net-next 1/2] net: dsa: mv88e6xxx: Provide dummy
+ implementations for trunk setters
+Message-ID: <20210115143649.envmn2ncazcikdmc@skbuf>
+References: <20210115105834.559-1-tobias@waldekranz.com>
+ <20210115105834.559-2-tobias@waldekranz.com>
+ <YAGnBqB08wwWQul8@lunn.ch>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.2 required=10.0 tests=ALL_TRUSTED,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF shortcircuit=no
-        autolearn=disabled version=3.4.4
-X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on
-        mailout.protonmail.ch
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YAGnBqB08wwWQul8@lunn.ch>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Eric Dumazet <edumazet@google.com>
-Date: Fri, 15 Jan 2021 15:28:37 +0100
+On Fri, Jan 15, 2021 at 03:30:30PM +0100, Andrew Lunn wrote:
+> On Fri, Jan 15, 2021 at 11:58:33AM +0100, Tobias Waldekranz wrote:
+> > Support for Global 2 registers is build-time optional.
+> 
+> I was never particularly happy about that. Maybe we should revisit
+> what features we loose when global 2 is dropped, and see if it still
+> makes sense to have it as optional?
 
-> On Fri, Jan 15, 2021 at 12:55 AM Alexander Lobakin <alobakin@pm.me> wrote=
-:
->>
->> Commit 3226b158e67c ("net: avoid 32 x truesize under-estimation for
->> tiny skbs") ensured that skbs with data size lower than 1025 bytes
->> will be kmalloc'ed to avoid excessive page cache fragmentation and
->> memory consumption.
->> However, the same issue can still be achieved manually via
->> __netdev_alloc_skb(), where the check for size hasn't been changed.
->> Mirror the condition from __napi_alloc_skb() to prevent from that.
->>
->> Fixes: 3226b158e67c ("net: avoid 32 x truesize under-estimation for tiny=
- skbs")
->
-> No, this tag is wrong, if you fix a bug, bug is much older than linux-5.1=
-1
->
-> My fix was about GRO head and virtio_net heads, both using pre-sized
-> small buffers.
->
-> You want to fix something else, and this is fine, because some drivers
-> are unfortunately
-> doing copy break ( at the cost of additional copy, even for packets
-> that might be consumed right away)
-
-You're right, it's about copybreak. I thought about wrong "Fixes"
-right after sending, but... Sorry.
-Will send v2 soon.
-
-Thanks,
-Al
-
+Marvell switch newbie here, what do you mean "global 2 is dropped"?
