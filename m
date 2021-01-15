@@ -2,160 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C768E2F7508
-	for <lists+netdev@lfdr.de>; Fri, 15 Jan 2021 10:16:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4247E2F7566
+	for <lists+netdev@lfdr.de>; Fri, 15 Jan 2021 10:30:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727294AbhAOJQN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Jan 2021 04:16:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53002 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726694AbhAOJQM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jan 2021 04:16:12 -0500
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D851C061757;
-        Fri, 15 Jan 2021 01:15:32 -0800 (PST)
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.94)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1l0LCa-006aJa-Lt; Fri, 15 Jan 2021 10:15:29 +0100
-Message-ID: <4fffb82632f2b52e4a06d95881dcbb3a01f99ce6.camel@sipsolutions.net>
-Subject: Re: [PATCH 17/18] net: iosm: readme file
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Andrew Lunn <andrew@lunn.ch>,
-        M Chetan Kumar <m.chetan.kumar@intel.com>
-Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
-        krishna.c.sudi@intel.com
-Date:   Fri, 15 Jan 2021 10:15:27 +0100
-In-Reply-To: <X/eJ/rl4U6edWr3i@lunn.ch>
-References: <20210107170523.26531-1-m.chetan.kumar@intel.com>
-         <20210107170523.26531-18-m.chetan.kumar@intel.com>
-         <X/eJ/rl4U6edWr3i@lunn.ch>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+        id S1730982AbhAOJ2i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Jan 2021 04:28:38 -0500
+Received: from a.mx.secunet.com ([62.96.220.36]:47134 "EHLO a.mx.secunet.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729172AbhAOJ2g (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 15 Jan 2021 04:28:36 -0500
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id 57F47201E5;
+        Fri, 15 Jan 2021 10:27:54 +0100 (CET)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id 3Cf_A9gHytRS; Fri, 15 Jan 2021 10:27:53 +0100 (CET)
+Received: from mail-essen-02.secunet.de (unknown [10.53.40.205])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by a.mx.secunet.com (Postfix) with ESMTPS id 7C4D9201E4;
+        Fri, 15 Jan 2021 10:27:53 +0100 (CET)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ mail-essen-02.secunet.de (10.53.40.205) with Microsoft SMTP Server (TLS) id
+ 14.3.487.0; Fri, 15 Jan 2021 10:27:53 +0100
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2044.4; Fri, 15 Jan
+ 2021 10:27:52 +0100
+Received: by gauss2.secunet.de (Postfix, from userid 1000)      id 90CD731808A7;
+ Fri, 15 Jan 2021 10:27:52 +0100 (CET)
+Date:   Fri, 15 Jan 2021 10:27:52 +0100
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Dongseok Yi <dseok.yi@samsung.com>
+CC:     "'David S. Miller'" <davem@davemloft.net>,
+        <namkyu78.kim@samsung.com>, 'Alexander Lobakin' <alobakin@pm.me>,
+        'Hideaki YOSHIFUJI' <yoshfuji@linux-ipv6.org>,
+        'Jakub Kicinski' <kuba@kernel.org>,
+        "'Willem de Bruijn'" <willemb@google.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net] udp: ipv4: manipulate network header of NATed UDP
+ GRO fraglist
+Message-ID: <20210115092752.GN9390@gauss3.secunet.de>
+References: <CGME20210115061039epcas2p479bc5f3dd3dad5a250c4e0fc42896704@epcas2p4.samsung.com>
+ <1610690304-167832-1-git-send-email-dseok.yi@samsung.com>
+ <20210115081243.GM9390@gauss3.secunet.de>
+ <01e801d6eb1c$2898c300$79ca4900$@samsung.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-malware-bazaar: not-scanned
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <01e801d6eb1c$2898c300$79ca4900$@samsung.com>
+X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew, all,
+On Fri, Jan 15, 2021 at 05:55:22PM +0900, Dongseok Yi wrote:
+> On 2021-01-15 17:12, Steffen Klassert wrote:
+> > On Fri, Jan 15, 2021 at 02:58:24PM +0900, Dongseok Yi wrote:
+> > > UDP/IP header of UDP GROed frag_skbs are not updated even after NAT
+> > > forwarding. Only the header of head_skb from ip_finish_output_gso ->
+> > > skb_gso_segment is updated but following frag_skbs are not updated.
+> > >
+> > > A call path skb_mac_gso_segment -> inet_gso_segment ->
+> > > udp4_ufo_fragment -> __udp_gso_segment -> __udp_gso_segment_list
+> > > does not try to update UDP/IP header of the segment list.
+> > 
+> > We still need to find out why it works for Alexander, but not for you.
+> > Different usecases?
+> 
+> This patch is not for
+> https://lore.kernel.org/patchwork/patch/1364544/
+> Alexander might want to call udp_gro_receive_segment even when
+> !sk and ~NETIF_F_GRO_FRAGLIST.
 
-> > +For example, adding a link for a MBIM IP session with SessionId 5:
+Yes, I know. But he said that fraglist GRO + NAT works for him.
+I want to find out why it works for him, but not for you.
+
+> > 
+> > I would not like to add this to a generic codepath. I think we can
+> > relatively easy copy the full headers in skb_segment_list().
+> 
+> I tried to copy the full headers with the similar approach, but it
+> copies length too. Can we keep the length of each skb of the fraglist?
+
+Ah yes, good point.
+
+Then maybe you can move your approach into __udp_gso_segment_list()
+so that we dont touch generic code.
+
+> 
+> > 
+> > I think about something like the (completely untested) patch below:
+> > 
+> > diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+> > index f62cae3f75d8..63ae7f79fad7 100644
+> > --- a/net/core/skbuff.c
+> > +++ b/net/core/skbuff.c
+> > @@ -3651,13 +3651,14 @@ struct sk_buff *skb_segment_list(struct sk_buff *skb,
+> >  				 unsigned int offset)
+> >  {
+> >  	struct sk_buff *list_skb = skb_shinfo(skb)->frag_list;
+> > +	unsigned int doffset = skb->data - skb_mac_header(skb);
+> >  	unsigned int tnl_hlen = skb_tnl_header_len(skb);
+> >  	unsigned int delta_truesize = 0;
+> >  	unsigned int delta_len = 0;
+> >  	struct sk_buff *tail = NULL;
+> >  	struct sk_buff *nskb;
+> > 
+> > -	skb_push(skb, -skb_network_offset(skb) + offset);
+> > +	skb_push(skb, doffset);
+> > 
+> >  	skb_shinfo(skb)->frag_list = NULL;
+> > 
+> > @@ -3675,7 +3676,7 @@ struct sk_buff *skb_segment_list(struct sk_buff *skb,
+> >  		delta_len += nskb->len;
+> >  		delta_truesize += nskb->truesize;
+> > 
+> > -		skb_push(nskb, -skb_network_offset(nskb) + offset);
+> > +		skb_push(nskb, doffset);
+> > 
+> >  		skb_release_head_state(nskb);
+> >  		 __copy_skb_header(nskb, skb);
+> > diff --git a/net/ipv4/udp_offload.c b/net/ipv4/udp_offload.c
+> > index ff39e94781bf..1181398378b8 100644
+> > --- a/net/ipv4/udp_offload.c
+> > +++ b/net/ipv4/udp_offload.c
+> > @@ -190,9 +190,22 @@ EXPORT_SYMBOL(skb_udp_tunnel_segment);
+> >  static struct sk_buff *__udp_gso_segment_list(struct sk_buff *skb,
+> >  					      netdev_features_t features)
+> >  {
+> > +	struct sk_buff *list_skb = skb_shinfo(skb)->frag_list;
+> >  	unsigned int mss = skb_shinfo(skb)->gso_size;
+> > +	unsigned int offset;
+> > 
+> > -	skb = skb_segment_list(skb, features, skb_mac_header_len(skb));
+> > +	skb_headers_offset_update(list_skb, skb_headroom(list_skb) - skb_headroom(skb));
 > > +
-> > +  ip link add link wwan0 name wwan0.<name> type vlan id 5
+> > +	/* Check for header changes and copy the full header in that case. */
+> > +	if ((udp_hdr(skb)->dest == udp_hdr(list_skb)->dest) &&
+> > +	    (udp_hdr(skb)->source == udp_hdr(list_skb)->source) &&
+> > +	    (ip_hdr(skb)->daddr == ip_hdr(list_skb)->daddr) &&
+> > +	    (ip_hdr(skb)->saddr == ip_hdr(list_skb)->saddr))
+> > +		offset = skb_mac_header_len(skb);
+> > +	else
+> > +		offset = skb->data - skb_mac_header(skb);
+> > +
+> > +	skb = skb_segment_list(skb, features, offset);
+> >  	if (IS_ERR(skb))
+> >  		return skb;
+> > 
+> > 
+> > After that you can apply the CSUM magic in __udp_gso_segment_list().
 > 
-> So, this is what all the Ethernet nonsense is all about. You have a
-> session ID you need to somehow represent to user space. And you
-> decided to use VLANs. But to use VLANs, you need an Ethernet
-> header. So you added a bogus Ethernet header.
+> Sorry, I don't know CSUM magic well. Is it used for checksum
+> incremental update too?
 
-So yeah, I don't think anyone likes that. I had half-heartedly started
-working on a replacement framework (*1), but then things happened and I
-didn't really have much time, and you also reviewed it and had some
-comments but when I looked the component framework really didn't seem
-appropriate, but didn't really have time to do anything on this either.
-
-(*1) https://lore.kernel.org/netdev/20200225100053.16385-1-johannes@sipsolutions.net/
-
-
-In the mean time, the team doing this driver (I'm not directly involved,
-just helping them out with upstream processes) really needed/wanted to
-continue on this, and this is what they had already, more or less.
-
-Now, the question here at this point of course is they already had it
-that way. But that's easily explained - that's how it works upstream
-today, unfortunately, cf. for example drivers/net/usb/cdc_mbim.c.
-
-Now, granted, some of the newer ones such as drivers/net/ipa/ _don't_
-things that way and come out with ARPHRD_RAWIP, but that requires
-userspace to actually be aware of this, and know how to create the
-necessary channels etc. For IPA this is handled by 'rmnet', but rmnet is
-just Qualcomm's proprietary protocol exposed as an rtnetlink type, so is
-rather unsuitable for this driver.
-
-
-Hence originally the thought we could come up with a generic framework
-to handle this all. Unfortunately, I never had the time to follow up on
-everything there.
-
-T be honest I also lost interest when IPA got merged without any
-thoughts given to unifying this, despite my involvement in the reviews
-and time spent on trying to make a suitable framework that would serve
-both IPA and this IOSM driver.
-
-
-> Is any of this VLAN stuff required by MBIM?
-
-Yes and no. It's not required to do _VLAN_ stuff, but that's one of the
-few ways that userspace currently knows of. Note that as far as I can
-tell Qualcomm (with rmnet/IPA etc.) has basically "reinvented" the world
-here - requiring the use of either their proprietary modem stack, or
-libqmi that knows specifically how to drive their modems.
-
-This was something we wanted to avoid (unless perhaps we could arrive at
-a standardised solution, see above) - thus being left with the VLAN
-method that's used elsewhere in the kernel.
-
-> Linux allows you to dynamically create/destroy network
-> interfaces. So you want to do something like
-> 
-> ip link add link wwan0 name wwan42 type mbim id 42
-> 
-> Which will create a new mbim netdev interface using session id 42 on
-> top of the device which provides wwan0. I don't actually like this
-> last bit, but you somehow need to indicate on which MBIM transport you
-> want to create the new session, since you could have multiple bits of
-> hardware providing MBIM services.
-
-I don't even like the fact that 'wwan0' exists there in the first place
-(or how it exists in this driver), because it cannot ever actually
-transport traffic since it's just the root device of sorts.
-
-Hence the proposal to have - similar what we do in wifi - a separate
-abstraction of what a modem device is, and then just allow channels to
-be created on it, and those channels are exposed as netdevs.
-
-
-
-In any case - I'm not sure how we resolve this.
-
-On the one hand, as a technical person going for the most technically
-correct solution, I'd say you're completely right and this should expose
-pure IP netdevs, and have a (custom or not) way to configure channels.
-That still leaves the "dead" wwan0 interface that can't do anything, but
-at least it's better for the channel netdevs.
-Perhaps like with the framework I was trying to do. We could even
-initially side-step the issue with the component framework and simply
-not allow that in the framework from the start.
-
-However, I'm not sure of the value of this. Qualcomm's newer stuff is
-already locked in to their custom APIs in rmnet and IPA, with QMI etc.
-
-If we're honest with ourselves, older stuff that exists in the kernel
-today is highly unlikely to be converted since it works now and very few
-people really care about anything else.
-
-
-Which basically leaves only this driver
- - either doing some old-fashioned way like it is now, or
- - doing its own custom way like rmnet/IPA, or
- - coming with a framework that pretends to be more general than rmnet
-   but really is only used for this driver.
-
-The later two choices both require significant investment on the
-userspace side, so I don't think it's any wonder the first is what the
-driver chose, especially after my more or less failed attempt at getting
-traction for the common framework (before IPA got merged, after all.)
-
-
-Also, non-technically speaking, I'm really not sure as to what we can
-and should require from a single driver like this in terms of "cleaning
-up the ecosystem". Yes, having a common framework would be nice, but if
-nobody's going to use it, what's the point? And we didn't require such
-from IPA. Now, granted, IPA already ships with a slightly better way of
-doing things than ethernet+802.1q, but there's precedent for that as
-well...
-
-johannes
+With that I meant the checksum updating you did in your patch.
 
