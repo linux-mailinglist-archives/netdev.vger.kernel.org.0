@@ -2,51 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DD1AE2F8554
+	by mail.lfdr.de (Postfix) with ESMTP id 711D12F8553
 	for <lists+netdev@lfdr.de>; Fri, 15 Jan 2021 20:24:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733140AbhAOTXe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Jan 2021 14:23:34 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:39309 "EHLO
+        id S1729147AbhAOTXc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Jan 2021 14:23:32 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:28454 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726541AbhAOTXd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jan 2021 14:23:33 -0500
+        by vger.kernel.org with ESMTP id S1726065AbhAOTXb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jan 2021 14:23:31 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1610738526;
+        s=mimecast20190719; t=1610738525;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=zL+Li1KAPklkXdld15i8COR7vDC6udkZ8kTzzchZaCg=;
-        b=W93lOqAJSVHwUW1rWemHi+2SiaZXZelMyowzFnuzLYXd/AEJA6bgLUkCq4KqHOBLMzcf7m
-        T3tCXhb8g8NjwbmjLMytYD5eF8sXFgYI6nhYVzwyWhKHzc6cUlUGP9hl5+6RPqjrvuvXeK
-        3ZPt0yx3wTngb5CaNZQDfOjazKwaXy0=
+        bh=PyUOB7BV9cF0PpC1Vxob1VqiI/JkyrhToZw3I9DDzXc=;
+        b=PwKY/VnrcYDYYl6v5MsG7PtDu6qvHG9w2Y6RqqJY36LVXHO/vmXMXMjGVQZRg8TJsPNUZr
+        ts5iLhDxrnC6FlrilaOTpxPagXIuUmkgOZ/SLIRWSkd6TTJ6CbOuzSieTG3Ithr1ZFb2B/
+        wm7QV5/OtUNdExbnDdmB/DhOeFkNglY=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-344-Hb1M3MQuM1qJR1nKvBtmXg-1; Fri, 15 Jan 2021 14:22:04 -0500
-X-MC-Unique: Hb1M3MQuM1qJR1nKvBtmXg-1
+ us-mta-192-XhF2DwehNaGaV7CkGN4EkQ-1; Fri, 15 Jan 2021 14:22:03 -0500
+X-MC-Unique: XhF2DwehNaGaV7CkGN4EkQ-1
 Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 00BDE180A09B;
-        Fri, 15 Jan 2021 19:22:03 +0000 (UTC)
-Received: from f33vm.wilsonet.com.wilsonet.com (dhcp-17-185.bos.redhat.com [10.18.17.185])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 9EB125C276;
-        Fri, 15 Jan 2021 19:21:58 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2F39A107ACFC;
+        Fri, 15 Jan 2021 19:22:02 +0000 (UTC)
+Received: from hpe-dl360pgen9-01.klab.eng.bos.redhat.com (hpe-dl360pgen9-01.klab.eng.bos.redhat.com [10.16.160.31])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 2194A63746;
+        Fri, 15 Jan 2021 19:21:59 +0000 (UTC)
 From:   Jarod Wilson <jarod@redhat.com>
-To:     linux-kernel@vger.kernel.org
+To:     netdev@vger.kernel.org
 Cc:     Jarod Wilson <jarod@redhat.com>,
-        Jay Vosburgh <j.vosburgh@gmail.com>,
-        Veaceslav Falico <vfalico@gmail.com>,
-        Andy Gospodarek <andy@greyhouse.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Thomas Davis <tadavis@lbl.gov>, netdev@vger.kernel.org
-Subject: [PATCH net-next v3] bonding: add a vlan+srcmac tx hashing option
-Date:   Fri, 15 Jan 2021 14:21:03 -0500
-Message-Id: <20210115192103.1179450-1-jarod@redhat.com>
-In-Reply-To: <20210113223548.1171655-1-jarod@redhat.com>
-References: <20210113223548.1171655-1-jarod@redhat.com>
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Jay Vosburgh <j.vosburgh@gmail.com>
+Subject: [PATCH iproute2 v2] bond: support xmit_hash_policy=vlan+srcmac
+Date:   Fri, 15 Jan 2021 14:21:37 -0500
+Message-Id: <20210115192137.1878336-1-jarod@redhat.com>
+In-Reply-To: <20210113234117.3805255-1-jarod@redhat.com>
+References: <20210113234117.3805255-1-jarod@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
@@ -54,198 +50,89 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This comes from an end-user request, where they're running multiple VMs on
-hosts with bonded interfaces connected to some interest switch topologies,
-where 802.3ad isn't an option. They're currently running a proprietary
-solution that effectively achieves load-balancing of VMs and bandwidth
-utilization improvements with a similar form of transmission algorithm.
+There's a new transmit hash policy being added to the bonding driver that
+is a simple XOR of vlan ID and source MAC, xmit_hash_policy vlan+srcmac.
+This trivial patch makes it configurable and queryable via iproute2.
 
-Basically, each VM has it's own vlan, so it always sends its traffic out
-the same interface, unless that interface fails. Traffic gets split
-between the interfaces, maintaining a consistent path, with failover still
-available if an interface goes down.
+$ sudo modprobe bonding mode=2 max_bonds=1 xmit_hash_policy=0
 
-Unlike bond_eth_hash(), this hash function is using the full source MAC
-address instead of just the last byte, as there are so few components to
-the hash, and in the no-vlan case, we would be returning just the last
-byte of the source MAC as the hash value. It's entirely possible to have
-two NICs in a bond with the same last byte of their MAC, but not the same
-MAC, so this adjustment should guarantee distinct hashes in all cases.
+$ sudo ip link set bond0 type bond xmit_hash_policy vlan+srcmac
 
-This has been rudimetarily tested to provide similar results to the
-proprietary solution it is aiming to replace. A patch for iproute2 is also
-posted, to properly support the new mode there as well.
+$ ip -d link show bond0
+11: bond0: <BROADCAST,MULTICAST,MASTER> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether ce:85:5e:24:ce:90 brd ff:ff:ff:ff:ff:ff promiscuity 0 minmtu 68 maxmtu 65535
+    bond mode balance-xor miimon 0 updelay 0 downdelay 0 peer_notify_delay 0 use_carrier 1 arp_interval 0 arp_validate none arp_all_targets any
+primary_reselect always fail_over_mac none xmit_hash_policy vlan+srcmac resend_igmp 1 num_grat_arp 1 all_slaves_active 0 min_links 0 lp_interval 1
+packets_per_slave 1 lacp_rate slow ad_select stable tlb_dynamic_lb 1 addrgenmode eui64 numtxqueues 16 numrxqueues 16 gso_max_size 65536 gso_max_segs
+65535
 
+$ grep Hash /proc/net/bonding/bond0
+Transmit Hash Policy: vlan+srcmac (5)
+
+$ sudo ip link add test type bond help
+Usage: ... bond [ mode BONDMODE ] [ active_slave SLAVE_DEV ]
+                [ clear_active_slave ] [ miimon MIIMON ]
+                [ updelay UPDELAY ] [ downdelay DOWNDELAY ]
+                [ peer_notify_delay DELAY ]
+                [ use_carrier USE_CARRIER ]
+                [ arp_interval ARP_INTERVAL ]
+                [ arp_validate ARP_VALIDATE ]
+                [ arp_all_targets ARP_ALL_TARGETS ]
+                [ arp_ip_target [ ARP_IP_TARGET, ... ] ]
+                [ primary SLAVE_DEV ]
+                [ primary_reselect PRIMARY_RESELECT ]
+                [ fail_over_mac FAIL_OVER_MAC ]
+                [ xmit_hash_policy XMIT_HASH_POLICY ]
+                [ resend_igmp RESEND_IGMP ]
+                [ num_grat_arp|num_unsol_na NUM_GRAT_ARP|NUM_UNSOL_NA ]
+                [ all_slaves_active ALL_SLAVES_ACTIVE ]
+                [ min_links MIN_LINKS ]
+                [ lp_interval LP_INTERVAL ]
+                [ packets_per_slave PACKETS_PER_SLAVE ]
+                [ tlb_dynamic_lb TLB_DYNAMIC_LB ]
+                [ lacp_rate LACP_RATE ]
+                [ ad_select AD_SELECT ]
+                [ ad_user_port_key PORTKEY ]
+                [ ad_actor_sys_prio SYSPRIO ]
+                [ ad_actor_system LLADDR ]
+
+BONDMODE := balance-rr|active-backup|balance-xor|broadcast|802.3ad|balance-tlb|balance-alb
+ARP_VALIDATE := none|active|backup|all
+ARP_ALL_TARGETS := any|all
+PRIMARY_RESELECT := always|better|failure
+FAIL_OVER_MAC := none|active|follow
+XMIT_HASH_POLICY := layer2|layer2+3|layer3+4|encap2+3|encap3+4|vlan+srcmac
+LACP_RATE := slow|fast
+AD_SELECT := stable|bandwidth|count
+
+Cc: Stephen Hemminger <stephen@networkplumber.org>
 Cc: Jay Vosburgh <j.vosburgh@gmail.com>
-Cc: Veaceslav Falico <vfalico@gmail.com>
-Cc: Andy Gospodarek <andy@greyhouse.net>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: Thomas Davis <tadavis@lbl.gov>
-Cc: netdev@vger.kernel.org
 Signed-off-by: Jarod Wilson <jarod@redhat.com>
 ---
-v2: verified netlink interfaces working, added Documentation, changed
-tx hash mode name to vlan+mac for consistency and clarity.
-v3: drop inline from hash function, use full source MAC, not just the
-last byte, expand explanation in patch description, extend hash name to
-vlan+srcmac.
+ ip/iplink_bond.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
- Documentation/networking/bonding.rst | 13 +++++++++++
- drivers/net/bonding/bond_main.c      | 34 ++++++++++++++++++++++++++--
- drivers/net/bonding/bond_options.c   | 13 ++++++-----
- include/linux/netdevice.h            |  1 +
- include/uapi/linux/if_bonding.h      |  1 +
- 5 files changed, 54 insertions(+), 8 deletions(-)
-
-diff --git a/Documentation/networking/bonding.rst b/Documentation/networking/bonding.rst
-index adc314639085..36562dcd3e1e 100644
---- a/Documentation/networking/bonding.rst
-+++ b/Documentation/networking/bonding.rst
-@@ -951,6 +951,19 @@ xmit_hash_policy
- 		packets will be distributed according to the encapsulated
- 		flows.
- 
-+	vlan+srcmac
-+
-+		This policy uses a very rudimentary vland ID and source mac
-+		ID hash to load-balance traffic per-vlan, with failover
-+		should one leg fail. The intended use case is for a bond
-+		shared by multiple virtual machines, all configured to
-+		use their own vlan, to give lacp-like functionality
-+		without requiring lacp-capable switching hardware.
-+
-+		The formula for the hash is simply
-+
-+		hash = (vlan ID) XOR (source MAC vendor) XOR (source MAC dev)
-+
- 	The default value is layer2.  This option was added in bonding
- 	version 2.6.3.  In earlier versions of bonding, this parameter
- 	does not exist, and the layer2 policy is the only policy.  The
-diff --git a/drivers/net/bonding/bond_main.c b/drivers/net/bonding/bond_main.c
-index 5fe5232cc3f3..d4bc4d4e953b 100644
---- a/drivers/net/bonding/bond_main.c
-+++ b/drivers/net/bonding/bond_main.c
-@@ -164,7 +164,7 @@ module_param(xmit_hash_policy, charp, 0);
- MODULE_PARM_DESC(xmit_hash_policy, "balance-alb, balance-tlb, balance-xor, 802.3ad hashing method; "
- 				   "0 for layer 2 (default), 1 for layer 3+4, "
- 				   "2 for layer 2+3, 3 for encap layer 2+3, "
--				   "4 for encap layer 3+4");
-+				   "4 for encap layer 3+4, 5 for vlan+srcmac");
- module_param(arp_interval, int, 0);
- MODULE_PARM_DESC(arp_interval, "arp interval in milliseconds");
- module_param_array(arp_ip_target, charp, NULL, 0);
-@@ -1434,6 +1434,8 @@ static enum netdev_lag_hash bond_lag_hash_type(struct bonding *bond,
- 		return NETDEV_LAG_HASH_E23;
- 	case BOND_XMIT_POLICY_ENCAP34:
- 		return NETDEV_LAG_HASH_E34;
-+	case BOND_XMIT_POLICY_VLAN_SRCMAC:
-+		return NETDEV_LAG_HASH_VLAN_SRCMAC;
- 	default:
- 		return NETDEV_LAG_HASH_UNKNOWN;
- 	}
-@@ -3494,6 +3496,27 @@ static bool bond_flow_ip(struct sk_buff *skb, struct flow_keys *fk,
- 	return true;
- }
- 
-+static u32 bond_vlan_srcmac_hash(struct sk_buff *skb)
-+{
-+	struct ethhdr *mac_hdr = (struct ethhdr *)skb_mac_header(skb);
-+	u32 srcmac_vendor = 0, srcmac_dev = 0;
-+	u16 vlan;
-+	int i;
-+
-+	for (i = 0; i < 3; i++)
-+		srcmac_vendor = (srcmac_vendor << 8) | mac_hdr->h_source[i];
-+
-+	for (i = 3; i < ETH_ALEN; i++)
-+		srcmac_dev = (srcmac_dev << 8) | mac_hdr->h_source[i];
-+
-+	if (!skb_vlan_tag_present(skb))
-+		return srcmac_vendor ^ srcmac_dev;
-+
-+	vlan = skb_vlan_tag_get(skb);
-+
-+	return vlan ^ srcmac_vendor ^ srcmac_dev;
-+}
-+
- /* Extract the appropriate headers based on bond's xmit policy */
- static bool bond_flow_dissect(struct bonding *bond, struct sk_buff *skb,
- 			      struct flow_keys *fk)
-@@ -3501,10 +3524,14 @@ static bool bond_flow_dissect(struct bonding *bond, struct sk_buff *skb,
- 	bool l34 = bond->params.xmit_policy == BOND_XMIT_POLICY_LAYER34;
- 	int noff, proto = -1;
- 
--	if (bond->params.xmit_policy > BOND_XMIT_POLICY_LAYER23) {
-+	switch (bond->params.xmit_policy) {
-+	case BOND_XMIT_POLICY_ENCAP23:
-+	case BOND_XMIT_POLICY_ENCAP34:
- 		memset(fk, 0, sizeof(*fk));
- 		return __skb_flow_dissect(NULL, skb, &flow_keys_bonding,
- 					  fk, NULL, 0, 0, 0, 0);
-+	default:
-+		break;
- 	}
- 
- 	fk->ports.ports = 0;
-@@ -3556,6 +3583,9 @@ u32 bond_xmit_hash(struct bonding *bond, struct sk_buff *skb)
- 	    skb->l4_hash)
- 		return skb->hash;
- 
-+	if (bond->params.xmit_policy == BOND_XMIT_POLICY_VLAN_SRCMAC)
-+		return bond_vlan_srcmac_hash(skb);
-+
- 	if (bond->params.xmit_policy == BOND_XMIT_POLICY_LAYER2 ||
- 	    !bond_flow_dissect(bond, skb, &flow))
- 		return bond_eth_hash(skb);
-diff --git a/drivers/net/bonding/bond_options.c b/drivers/net/bonding/bond_options.c
-index a4e4e15f574d..c69400c5bf07 100644
---- a/drivers/net/bonding/bond_options.c
-+++ b/drivers/net/bonding/bond_options.c
-@@ -96,12 +96,13 @@ static const struct bond_opt_value bond_pps_tbl[] = {
+diff --git a/ip/iplink_bond.c b/ip/iplink_bond.c
+index 585b6be1..b9470b98 100644
+--- a/ip/iplink_bond.c
++++ b/ip/iplink_bond.c
+@@ -70,6 +70,7 @@ static const char *xmit_hash_policy_tbl[] = {
+ 	"layer2+3",
+ 	"encap2+3",
+ 	"encap3+4",
++	"vlan+srcmac",
+ 	NULL,
  };
  
- static const struct bond_opt_value bond_xmit_hashtype_tbl[] = {
--	{ "layer2",   BOND_XMIT_POLICY_LAYER2, BOND_VALFLAG_DEFAULT},
--	{ "layer3+4", BOND_XMIT_POLICY_LAYER34, 0},
--	{ "layer2+3", BOND_XMIT_POLICY_LAYER23, 0},
--	{ "encap2+3", BOND_XMIT_POLICY_ENCAP23, 0},
--	{ "encap3+4", BOND_XMIT_POLICY_ENCAP34, 0},
--	{ NULL,       -1,                       0},
-+	{ "layer2",      BOND_XMIT_POLICY_LAYER2,      BOND_VALFLAG_DEFAULT},
-+	{ "layer3+4",    BOND_XMIT_POLICY_LAYER34,     0},
-+	{ "layer2+3",    BOND_XMIT_POLICY_LAYER23,     0},
-+	{ "encap2+3",    BOND_XMIT_POLICY_ENCAP23,     0},
-+	{ "encap3+4",    BOND_XMIT_POLICY_ENCAP34,     0},
-+	{ "vlan+srcmac", BOND_XMIT_POLICY_VLAN_SRCMAC, 0},
-+	{ NULL,          -1,                           0},
- };
- 
- static const struct bond_opt_value bond_arp_validate_tbl[] = {
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 5b949076ed23..a94ce80a2fe1 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -2615,6 +2615,7 @@ enum netdev_lag_hash {
- 	NETDEV_LAG_HASH_L23,
- 	NETDEV_LAG_HASH_E23,
- 	NETDEV_LAG_HASH_E34,
-+	NETDEV_LAG_HASH_VLAN_SRCMAC,
- 	NETDEV_LAG_HASH_UNKNOWN,
- };
- 
-diff --git a/include/uapi/linux/if_bonding.h b/include/uapi/linux/if_bonding.h
-index 45f3750aa861..e8eb4ad03cf1 100644
---- a/include/uapi/linux/if_bonding.h
-+++ b/include/uapi/linux/if_bonding.h
-@@ -94,6 +94,7 @@
- #define BOND_XMIT_POLICY_LAYER23	2 /* layer 2+3 (IP ^ MAC) */
- #define BOND_XMIT_POLICY_ENCAP23	3 /* encapsulated layer 2+3 */
- #define BOND_XMIT_POLICY_ENCAP34	4 /* encapsulated layer 3+4 */
-+#define BOND_XMIT_POLICY_VLAN_SRCMAC	5 /* vlan + source MAC */
- 
- /* 802.3ad port state definitions (43.4.2.2 in the 802.3ad standard) */
- #define LACP_STATE_LACP_ACTIVITY   0x1
+@@ -148,7 +149,7 @@ static void print_explain(FILE *f)
+ 		"ARP_ALL_TARGETS := any|all\n"
+ 		"PRIMARY_RESELECT := always|better|failure\n"
+ 		"FAIL_OVER_MAC := none|active|follow\n"
+-		"XMIT_HASH_POLICY := layer2|layer2+3|layer3+4|encap2+3|encap3+4\n"
++		"XMIT_HASH_POLICY := layer2|layer2+3|layer3+4|encap2+3|encap3+4|vlan+srcmac\n"
+ 		"LACP_RATE := slow|fast\n"
+ 		"AD_SELECT := stable|bandwidth|count\n"
+ 	);
 -- 
-2.29.2
+2.27.0
 
