@@ -2,156 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 390112F7FF8
-	for <lists+netdev@lfdr.de>; Fri, 15 Jan 2021 16:48:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1697F2F801E
+	for <lists+netdev@lfdr.de>; Fri, 15 Jan 2021 16:55:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730792AbhAOPsd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Jan 2021 10:48:33 -0500
-Received: from out4-smtp.messagingengine.com ([66.111.4.28]:37489 "EHLO
-        out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729489AbhAOPsc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jan 2021 10:48:32 -0500
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 6B0275C0190;
-        Fri, 15 Jan 2021 10:47:46 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Fri, 15 Jan 2021 10:47:46 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=u6IDgs
-        1moV0f0yU1LtC7oN2tcjKK9L8jrmBFKBEyD74=; b=pqrAYdQedCexP0AmYBZkgC
-        R0ap0BDnO3a6yyeV5PCtiIGLP9UKIsWGdAzDHyRnI6MRUSAmoAt1ub0/kBempuvx
-        Pwq0Jq4DOkr0APDGjh9RtOvXpE3PPtbXfp6scc+vwzGt+MZHZvGsMZ3pG6dLZ30K
-        LZ6a8ffxU0QYUe3cjCYmrH73/HcqT3pPg2xjvMDbXNZ6+jzyG+5U4Usjp4xTI5nM
-        JpdahnDPaJKLSY3uEa/+U/FYcRnTje+/E6DGQOHtEN+d0tZep5OgxCSajQnPb1oX
-        ijjXfXf5TrplSMBPjm4x+5A4q590Yty5sHwImT0fhCe6L34Ij6pbBsBWMXkffIiw
-        ==
-X-ME-Sender: <xms:IbkBYHX9K6-TZVIlwqAzWyTf9iO6-jIKkIIOGbTsoeJk7rjtij71-g>
-    <xme:IbkBYPkkRIFuuLy5SJoq22wRrlPHUvFmYV8hu4qGsqLSG0jbrNNUooaSRwy0t3hsr
-    mt0XqJyRwhTAnE>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrtddvgdehiecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcuufgt
-    hhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrthhtvg
-    hrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudehleet
-    necukfhppeekgedrvddvledrudehfedrgeegnecuvehluhhsthgvrhfuihiivgeptdenuc
-    frrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:IbkBYDbMJz733D7DKWbDgFE5vRNUDbBA8k4-5miMUFk9IHQVm8_L6g>
-    <xmx:IbkBYCXjFZP5DhtbiiswlYA8bHZfOuO6nZY3WU__vEgVr7JPkwfqXQ>
-    <xmx:IbkBYBm5xAJRRrs6t0mixfn6WbLQHmGacA7IdMl-lZpj2ooupodMDQ>
-    <xmx:IrkBYHjv8aCjVTYSiPbJ3R6yUBHG4KphYX-xaDsyJ9OYwCDBKQjGPw>
-Received: from localhost (igld-84-229-153-44.inter.net.il [84.229.153.44])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 6CB0C240062;
-        Fri, 15 Jan 2021 10:47:45 -0500 (EST)
-Date:   Fri, 15 Jan 2021 17:47:42 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        jacob.e.keller@intel.com, roopa@nvidia.com, mlxsw@nvidia.com
-Subject: Re: [patch net-next RFC 01/10] devlink: add support to create line
- card and expose to user
-Message-ID: <20210115154742.GB2064789@shredder.lan>
-References: <20210113121222.733517-1-jiri@resnulli.us>
- <20210113121222.733517-2-jiri@resnulli.us>
+        id S1732973AbhAOPyW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Jan 2021 10:54:22 -0500
+Received: from fllv0016.ext.ti.com ([198.47.19.142]:36356 "EHLO
+        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732707AbhAOPyV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jan 2021 10:54:21 -0500
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 10FFqa9v115961;
+        Fri, 15 Jan 2021 09:52:36 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1610725956;
+        bh=5rybIAVwOkDRzlPOdQwYK8uXyvhz+ZQoD/ZgVc8vJIg=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=seGRolhIKjpD1r2FjnqJY+HCqeg1HYHGUKQv0u6lnPfXk04W1aopB6PeCaGh6H+CZ
+         AUGdkOQxSJL+/x6s2gamsY+B4O4WtEik+iptiXMOBd9ny5+pesoN6jWkFFxuABMGoj
+         G6YlNVJIh8ieb7BMoLDYWlKNVAu64CqSjZTK8dvY=
+Received: from DFLE104.ent.ti.com (dfle104.ent.ti.com [10.64.6.25])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 10FFqaLg074614
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 15 Jan 2021 09:52:36 -0600
+Received: from DFLE107.ent.ti.com (10.64.6.28) by DFLE104.ent.ti.com
+ (10.64.6.25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Fri, 15
+ Jan 2021 09:52:36 -0600
+Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE107.ent.ti.com
+ (10.64.6.28) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Fri, 15 Jan 2021 09:52:36 -0600
+Received: from [10.250.235.36] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id 10FFqW1P023732;
+        Fri, 15 Jan 2021 09:52:33 -0600
+Subject: Re: [PATCH v12 2/4] phy: Add ethernet serdes configuration option
+To:     Steen Hegelund <steen.hegelund@microchip.com>,
+        Vinod Koul <vkoul@kernel.org>
+CC:     Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
+        Microchip UNG Driver List <UNGLinuxDriver@microchip.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>
+References: <20210107091924.1569575-1-steen.hegelund@microchip.com>
+ <20210107091924.1569575-3-steen.hegelund@microchip.com>
+From:   Kishon Vijay Abraham I <kishon@ti.com>
+Message-ID: <92a943cc-b332-4ac6-42a8-bb3cdae13bc0@ti.com>
+Date:   Fri, 15 Jan 2021 21:22:31 +0530
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210113121222.733517-2-jiri@resnulli.us>
+In-Reply-To: <20210107091924.1569575-3-steen.hegelund@microchip.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 13, 2021 at 01:12:13PM +0100, Jiri Pirko wrote:
-> diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
-> index cf89c318f2ac..e5ed0522591f 100644
-> --- a/include/uapi/linux/devlink.h
-> +++ b/include/uapi/linux/devlink.h
-> @@ -126,6 +126,11 @@ enum devlink_command {
->  
->  	DEVLINK_CMD_HEALTH_REPORTER_TEST,
->  
-> +	DEVLINK_CMD_LINECARD_GET,		/* can dump */
-> +	DEVLINK_CMD_LINECARD_SET,
+Hi,
 
-Never used (but should)
-
-> +	DEVLINK_CMD_LINECARD_NEW,
-> +	DEVLINK_CMD_LINECARD_DEL,
-> +
->  	/* add new commands above here */
->  	__DEVLINK_CMD_MAX,
->  	DEVLINK_CMD_MAX = __DEVLINK_CMD_MAX - 1
-> @@ -529,6 +534,8 @@ enum devlink_attr {
->  	DEVLINK_ATTR_RELOAD_ACTION_INFO,        /* nested */
->  	DEVLINK_ATTR_RELOAD_ACTION_STATS,       /* nested */
->  
-> +	DEVLINK_ATTR_LINECARD_INDEX,		/* u32 */
-> +
->  	/* add new attributes above here, update the policy in devlink.c */
->  
->  	__DEVLINK_ATTR_MAX,
-
-[...]
-
->  
-> +/**
-> + *	devlink_linecard_register - Register devlink linecard
-
-Does not match function name
-
+On 07/01/21 2:49 pm, Steen Hegelund wrote:
+> Provide a new ethernet phy configuration structure, that
+> allow PHYs used for ethernet to be configured with
+> speed, media type and clock information.
+> 
+> Signed-off-by: Lars Povlsen <lars.povlsen@microchip.com>
+> Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
+> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+> ---
+>  include/linux/phy/phy-ethernet-serdes.h | 30 +++++++++++++++++++++++++
+>  include/linux/phy/phy.h                 |  4 ++++
+>  2 files changed, 34 insertions(+)
+>  create mode 100644 include/linux/phy/phy-ethernet-serdes.h
+> 
+> diff --git a/include/linux/phy/phy-ethernet-serdes.h b/include/linux/phy/phy-ethernet-serdes.h
+> new file mode 100644
+> index 000000000000..d2462fadf179
+> --- /dev/null
+> +++ b/include/linux/phy/phy-ethernet-serdes.h
+> @@ -0,0 +1,30 @@
+> +/* SPDX-License-Identifier: (GPL-2.0 OR MIT) */
+> +/*
+> + * Microchip Sparx5 Ethernet SerDes driver
 > + *
-> + *	@devlink: devlink
-> + *	@devlink_linecard: devlink linecard
-> + *	@linecard_index: driver-specific numerical identifier of the linecard
-> + *
-> + *	Create devlink linecard instance with provided linecard index.
-> + *	Caller can use any indexing, even hw-related one.
+> + * Copyright (c) 2020 Microschip Inc
 > + */
-> +struct devlink_linecard *devlink_linecard_create(struct devlink *devlink,
-> +						 unsigned int linecard_index)
-> +{
-> +	struct devlink_linecard *linecard;
+> +#ifndef __PHY_ETHERNET_SERDES_H_
+> +#define __PHY_ETHERNET_SERDES_H_
 > +
-> +	mutex_lock(&devlink->lock);
-> +	if (devlink_linecard_index_exists(devlink, linecard_index)) {
-> +		mutex_unlock(&devlink->lock);
-> +		return ERR_PTR(-EEXIST);
-> +	}
+> +#include <linux/types.h>
 > +
-> +	linecard = kzalloc(sizeof(*linecard), GFP_KERNEL);
-> +	if (!linecard)
-> +		return ERR_PTR(-ENOMEM);
-> +
-> +	linecard->devlink = devlink;
-> +	linecard->index = linecard_index;
-> +	list_add_tail(&linecard->list, &devlink->linecard_list);
-> +	mutex_unlock(&devlink->lock);
-> +	devlink_linecard_notify(linecard, DEVLINK_CMD_LINECARD_NEW);
-> +	return linecard;
-> +}
-> +EXPORT_SYMBOL_GPL(devlink_linecard_create);
+> +enum ethernet_media_type {
+> +	ETH_MEDIA_DEFAULT,
+> +	ETH_MEDIA_SR,
+> +	ETH_MEDIA_DAC,
+> +};
+
+I'm not familiar with Ethernet. Are these generic media types? what does
+SR or DAC refer to? Are there other media types? What is the out-of-band
+mechanism by which the controller gets the media type? Why was this not
+required for other existing Ethernet SERDES? Are you aware of any other
+vendors who might require this?
+
+Thanks
+Kishon
 > +
 > +/**
-> + *	devlink_linecard_destroy - Destroy devlink linecard
-> + *
-> + *	@devlink_linecard: devlink linecard
+> + * struct phy_configure_opts_eth_serdes - Ethernet SerDes This structure is used
+> + * to represent the configuration state of a Ethernet Serdes PHY.
+> + * @speed: Speed of the serdes interface in Mbps
+> + * @media_type: Specifies which media the serdes will be using
 > + */
-> +void devlink_linecard_destroy(struct devlink_linecard *linecard)
-> +{
-> +	struct devlink *devlink = linecard->devlink;
+> +struct phy_configure_opts_eth_serdes {
+> +	u32                        speed;
+> +	enum ethernet_media_type   media_type;
+> +};
 > +
-> +	devlink_linecard_notify(linecard, DEVLINK_CMD_LINECARD_DEL);
-> +	mutex_lock(&devlink->lock);
-> +	list_del(&linecard->list);
-> +	mutex_unlock(&devlink->lock);
-> +}
-> +EXPORT_SYMBOL_GPL(devlink_linecard_create);
+> +#endif
 > +
->  int devlink_sb_register(struct devlink *devlink, unsigned int sb_index,
->  			u32 size, u16 ingress_pools_count,
->  			u16 egress_pools_count, u16 ingress_tc_count,
-> -- 
-> 2.26.2
+> diff --git a/include/linux/phy/phy.h b/include/linux/phy/phy.h
+> index e435bdb0bab3..78ecb375cede 100644
+> --- a/include/linux/phy/phy.h
+> +++ b/include/linux/phy/phy.h
+> @@ -18,6 +18,7 @@
+>  
+>  #include <linux/phy/phy-dp.h>
+>  #include <linux/phy/phy-mipi-dphy.h>
+> +#include <linux/phy/phy-ethernet-serdes.h>
+>  
+>  struct phy;
+>  
+> @@ -49,11 +50,14 @@ enum phy_mode {
+>   *
+>   * @mipi_dphy:	Configuration set applicable for phys supporting
+>   *		the MIPI_DPHY phy mode.
+> + * @eth_serdes: Configuration set applicable for phys supporting
+> + *		the ethernet serdes.
+>   * @dp:		Configuration set applicable for phys supporting
+>   *		the DisplayPort protocol.
+>   */
+>  union phy_configure_opts {
+>  	struct phy_configure_opts_mipi_dphy	mipi_dphy;
+> +	struct phy_configure_opts_eth_serdes	eth_serdes;
+>  	struct phy_configure_opts_dp		dp;
+>  };
+>  
 > 
