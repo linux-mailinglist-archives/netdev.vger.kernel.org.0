@@ -2,190 +2,253 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 137B82F777D
-	for <lists+netdev@lfdr.de>; Fri, 15 Jan 2021 12:20:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AB2BD2F7787
+	for <lists+netdev@lfdr.de>; Fri, 15 Jan 2021 12:22:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727707AbhAOLTK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Jan 2021 06:19:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51246 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727111AbhAOLTI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jan 2021 06:19:08 -0500
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 417F5C0613D3
-        for <netdev@vger.kernel.org>; Fri, 15 Jan 2021 03:18:28 -0800 (PST)
-Received: by mail-wm1-x32c.google.com with SMTP id k10so6995360wmi.3
-        for <netdev@vger.kernel.org>; Fri, 15 Jan 2021 03:18:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=1v0kX8Ej1D5vKbj6l4aBaWcu5DlgLp/Dsh/tnFpcg+Y=;
-        b=q3yaL+9Dr08XGvGA9C6LCEyO8dv4MnZdXyFkQYqmFx0J6077BQyNrC3ZfumRsecp3C
-         jhWw5mwhLJPw0Cs1JbrRKisZLtJwnz1td5U9T0NGKs1Du/ixjp/OJBAzJfzKRI6OcJk7
-         jMEwkkp1Tkj+4L5MV7I56bqhm0b41JzVf87hKjB9+45TNRkOJr4vpR/ubLc/6rtvmcJ5
-         7mCbPO3LDc6oV5qxhdZ2mVZdYUEoFwtOSOsE5jhkTTaKb96r2hJSt5iuNgvxYG8TmgQR
-         6/dS/oeqnNfc5YG3pyRPZOkm06JhrYQzWk/YJrzGR6qgls7QN+s9q82XGRS8f8pSX4Qd
-         is3g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=1v0kX8Ej1D5vKbj6l4aBaWcu5DlgLp/Dsh/tnFpcg+Y=;
-        b=bucg4HfB+rl/3ruCBfwM0v/yyFKQdmk/qVkt5AGlZogEhXvuMb/KINrTFCM8hp5NSA
-         T5w06t2koBpGzrKGITRnpkl3XP9R9iju1tuneG/afbb6hVKKMjMOXTLGLSAUEUfZaQFp
-         A/RPfVH0X1FkS+riW7DuLQRsfgqrnCEItV8MKqWKG+xg69lSIK9FW9DOZOlH8PPFGoRG
-         D9utJauA4Yez4rYDVViz3wYU6pXMCmfmTKfi8mxiHMjLzLt3XRB5Lf8RhWpEw05vWBIW
-         rD96XQ0ZSW72NZMdjL/zWgYYTXna/9QNX0BV6H/z3BRMcKfWprBwZya1uYKEnXUF/KiK
-         6dfA==
-X-Gm-Message-State: AOAM5324P70mL/zVpBNRLAD9Yd+nP0csEuTszkufXk08aZP1r1LtVejE
-        bNxCosmql8refyGudk4xyZdQ5g==
-X-Google-Smtp-Source: ABdhPJy6Ksm7TL3YP23vSBkfPg6+Ma2TEXquqULAQIh92rfS/zIKFK4APldrd16rYZnbmfKF7kRaEA==
-X-Received: by 2002:a05:600c:4417:: with SMTP id u23mr8306553wmn.100.1610709506910;
-        Fri, 15 Jan 2021 03:18:26 -0800 (PST)
-Received: from dell ([91.110.221.158])
-        by smtp.gmail.com with ESMTPSA id i18sm14818507wrp.74.2021.01.15.03.18.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 Jan 2021 03:18:26 -0800 (PST)
-Date:   Fri, 15 Jan 2021 11:18:23 +0000
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, Alexei Starovoitov <ast@kernel.org>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        bpf@vger.kernel.org, Daniel Borkmann <daniel@iogearbox.net>,
-        Dany Madden <drt@linux.ibm.com>,
-        Daris A Nevil <dnevil@snmc.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Erik Stahlman <erik@vt.edu>,
-        Geoff Levand <geoff@infradead.org>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        "Gustavo A. R. Silva" <gustavoars@kernel.org>,
-        Ishizaki Kou <kou.ishizaki@toshiba.co.jp>,
-        Ivan Khoronzhuk <ivan.khoronzhuk@linaro.org>,
-        Jens Osterkamp <Jens.Osterkamp@de.ibm.com>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Allen <jallen@linux.vnet.ibm.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Kurt Kanzenbach <kurt@linutronix.de>,
-        Lijun Pan <ljp@linux.ibm.com>, linuxppc-dev@lists.ozlabs.org,
-        Michael Ellerman <mpe@ellerman.id.au>, netdev@vger.kernel.org,
-        Nicolas Pitre <nico@fluxnic.net>, Paul Durrant <paul@xen.org>,
-        Paul Mackerras <paulus@samba.org>,
-        Peter Cammaert <pc@denkart.be>,
-        Russell King <rmk@arm.linux.org.uk>,
-        Rusty Russell <rusty@rustcorp.com.au>,
-        Santiago Leon <santi_leon@yahoo.com>,
-        Sukadev Bhattiprolu <sukadev@linux.ibm.com>,
-        Thomas Falcon <tlfalcon@linux.vnet.ibm.com>,
-        Utz Bacher <utz.bacher@de.ibm.com>,
-        Wei Liu <wei.liu@kernel.org>, xen-devel@lists.xenproject.org
-Subject: Re: [PATCH v2 0/7] Rid W=1 warnings in Ethernet
-Message-ID: <20210115111823.GH3975472@dell>
-References: <20210113164123.1334116-1-lee.jones@linaro.org>
- <20210113183551.6551a6a2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20210114083349.GI3975472@dell>
- <20210114091453.30177d20@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20210114195422.GB3975472@dell>
+        id S1727009AbhAOLVx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Jan 2021 06:21:53 -0500
+Received: from mailout2.samsung.com ([203.254.224.25]:10734 "EHLO
+        mailout2.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726664AbhAOLVw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jan 2021 06:21:52 -0500
+Received: from epcas2p3.samsung.com (unknown [182.195.41.55])
+        by mailout2.samsung.com (KnoxPortal) with ESMTP id 20210115112109epoutp0233183ddf1671089073b310911cc0f761~aY_kbPhkN0397203972epoutp02j
+        for <netdev@vger.kernel.org>; Fri, 15 Jan 2021 11:21:09 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.samsung.com 20210115112109epoutp0233183ddf1671089073b310911cc0f761~aY_kbPhkN0397203972epoutp02j
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1610709669;
+        bh=TIZ5+QlzRMhD/RwX4IqcdCtc797876KPO/iwoBLrka8=;
+        h=From:To:Cc:In-Reply-To:Subject:Date:References:From;
+        b=c6jafIG7uR/tAT7oHUR82oBPAS5djFsNJjR6gOqzhuyTWrvw989k6ykTPT8XEa2kv
+         bNcnbXn1MVbfTGL9ROl6BcgegiEhUxJIbBZj9TONtaF4nZ8fjTtYk2RwzPCx3Eo3ww
+         S+z1NS0PcBLQwg7Cmzk4TITWHTitr69MlkdMsO1g=
+Received: from epsnrtp4.localdomain (unknown [182.195.42.165]) by
+        epcas2p3.samsung.com (KnoxPortal) with ESMTP id
+        20210115112108epcas2p3650881c6e6dda44b1e066345a2f30a45~aY_j0U_ok2153521535epcas2p3E;
+        Fri, 15 Jan 2021 11:21:08 +0000 (GMT)
+Received: from epsmges2p4.samsung.com (unknown [182.195.40.186]) by
+        epsnrtp4.localdomain (Postfix) with ESMTP id 4DHJdv08Pjz4x9Pq; Fri, 15 Jan
+        2021 11:21:07 +0000 (GMT)
+Received: from epcas2p3.samsung.com ( [182.195.41.55]) by
+        epsmges2p4.samsung.com (Symantec Messaging Gateway) with SMTP id
+        AB.03.52511.2AA71006; Fri, 15 Jan 2021 20:21:06 +0900 (KST)
+Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
+        epcas2p4.samsung.com (KnoxPortal) with ESMTPA id
+        20210115112106epcas2p4bebb0ea08a25b4aa285161b6e8045fff~aY_hpGj3x1850918509epcas2p4n;
+        Fri, 15 Jan 2021 11:21:06 +0000 (GMT)
+Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
+        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
+        20210115112106epsmtrp2792ee62467545d396f9a5d33453cec43~aY_hoNVKe0456404564epsmtrp2k;
+        Fri, 15 Jan 2021 11:21:06 +0000 (GMT)
+X-AuditID: b6c32a48-50fff7000000cd1f-cb-60017aa2bab1
+Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
+        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
+        B3.86.13470.2AA71006; Fri, 15 Jan 2021 20:21:06 +0900 (KST)
+Received: from KORDO035731 (unknown [12.36.185.47]) by epsmtip2.samsung.com
+        (KnoxPortal) with ESMTPA id
+        20210115112106epsmtip25180b12d6cf7c0367f296757b2df5d6e~aY_hYXimV2857228572epsmtip2b;
+        Fri, 15 Jan 2021 11:21:06 +0000 (GMT)
+From:   "Dongseok Yi" <dseok.yi@samsung.com>
+To:     "'Alexander Lobakin'" <alobakin@pm.me>,
+        "'Steffen Klassert'" <steffen.klassert@secunet.com>
+Cc:     "'David S. Miller'" <davem@davemloft.net>,
+        <namkyu78.kim@samsung.com>,
+        "'Hideaki YOSHIFUJI'" <yoshfuji@linux-ipv6.org>,
+        "'Jakub Kicinski'" <kuba@kernel.org>,
+        "'Willem de Bruijn'" <willemb@google.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+In-Reply-To: <20210115105048.2689-1-alobakin@pm.me>
+Subject: RE: [PATCH net] udp: ipv4: manipulate network header of NATed UDP
+ GRO fraglist
+Date:   Fri, 15 Jan 2021 20:21:06 +0900
+Message-ID: <020101d6eb30$84363170$8ca29450$@samsung.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210114195422.GB3975472@dell>
+Content-Transfer-Encoding: 7bit
+X-Mailer: Microsoft Outlook 16.0
+Thread-Index: AQHB+vDADvusEXIyolmvL0xqzqJZpgH0BKV0AUiOhq0CaVZx5gLGU+OUAgQYe3Kp/uIy8A==
+Content-Language: ko
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrLJsWRmVeSWpSXmKPExsWy7bCmue6iKsYEg7dTrCxWPd7OYjHnfAuL
+        xYVtfawWl3fNYbNouNPMZnFsgZjF7s4f7Bbvthxht/i6t4vFgdNjy8qbTB4LNpV6bFrVyebR
+        dm0Vk8fRPefYPPq2rGL02NS6hNXj8ya5AI6oHJuM1MSU1CKF1Lzk/JTMvHRbJe/geOd4UzMD
+        Q11DSwtzJYW8xNxUWyUXnwBdt8wcoOuUFMoSc0qBQgGJxcVK+nY2RfmlJakKGfnFJbZKqQUp
+        OQWGhgV6xYm5xaV56XrJ+blWhgYGRqZAlQk5Gf0LelgLLmtUnH/6g6WBcZ9CFyMHh4SAicSn
+        K+JdjFwcQgI7GCXOTNrDCOF8YpSYtuIqlPONUeL9pUNADidYx7wLh6ESexklPkw4xQbhvGCU
+        +DJ7J1gVm4CWxJtZ7awgO0QEEiUeHMkHqWEW6GaS6LvwgxWkhlPAWGLB3XnsILawQKTE5JY1
+        LCA2i4CqxP/LH8Dm8ApYSjTPXMoEYQtKnJz5BKyGWUBeYvvbOcwQFylI/Hy6DGymiECYxI/H
+        C6BqRCRmd7YxgyyWEDjAIXH10mqoBheJZS3XoGxhiVfHt7BD2FISn9/tZYMETL1Ea3cMRG8P
+        o8SVfRCLJYCOnvWsnRGkhllAU2L9Ln2IcmWJI7eg1vJJdBz+yw4R5pXoaBOCMJUkJn6Jh5gh
+        IfHi5GSWCYxKs5D8NQvJX7OQ3D8LYdUCRpZVjGKpBcW56anFRgUmyFG9iRGcbrU8djDOfvtB
+        7xAjEwfjIUYJDmYlEd58ZYYEId6UxMqq1KL8+KLSnNTiQ4ymwJCeyCwlmpwPTPh5JfGGpkZm
+        ZgaWphamZkYWSuK8RQYP4oUE0hNLUrNTUwtSi2D6mDg4pRqYFm5+9GTKT/M+7X3nf7WHhppt
+        4nvpwqs7deLZHpn1H/5M27Sj+gVXVBND/5UdVTznlwh6G207+N7yTG/3/XuezzSmpjfsFfuW
+        l/VKco+hWFKieU1hy6vP/Cudp8zpOXRi52+Dq3LnN/K9mj4zrEGlo1t04cnGuh9WYfmLHP7H
+        X7/J9yXbdbnzatfunEt+0z4Hel6Q3KAadH7i13efuxU/z0rJUd8lpHknOrVxYfjf3eJB+mUh
+        XAyqDLm5GiHyVQxHZqcty2qO/su4WTX35b0FfS9nnsjXunDn0faa9a/5FvFu1a6dtUnULGP5
+        ZhVXxwSH9fv+88ZP/qD01PpL4Llv7zOmW56pS59X/Cnu7k+t/0osxRmJhlrMRcWJAKUvSy5A
+        BAAA
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprFIsWRmVeSWpSXmKPExsWy7bCSvO6iKsYEg5WHJC1WPd7OYjHnfAuL
+        xYVtfawWl3fNYbNouNPMZnFsgZjF7s4f7Bbvthxht/i6t4vFgdNjy8qbTB4LNpV6bFrVyebR
+        dm0Vk8fRPefYPPq2rGL02NS6hNXj8ya5AI4oLpuU1JzMstQifbsEroz+BT2sBZc1Ks4//cHS
+        wLhPoYuRk0NCwERi3oXDjF2MXBxCArsZJR40H2TqYuQASkhI7NrsClEjLHG/5QgriC0k8IxR
+        YtYZXxCbTUBL4s2sdrC4iECixKbrD1hB5jALTGSSaO64zwIx9ACTxKfJFxlBqjgFjCUW3J3H
+        DmILC4RLfFvTzARiswioSvy//AGshlfAUqJ55lImCFtQ4uTMJywgNrOAtkTvw1ZGCFteYvvb
+        OcwQ1ylI/Hy6DOqKMIkfjxdA1YtIzO5sY57AKDwLyahZSEbNQjJqFpKWBYwsqxglUwuKc9Nz
+        iw0LDPNSy/WKE3OLS/PS9ZLzczcxgqNPS3MH4/ZVH/QOMTJxMB5ilOBgVhLhzVdmSBDiTUms
+        rEotyo8vKs1JLT7EKM3BoiTOe6HrZLyQQHpiSWp2ampBahFMlomDU6qBKUDm6AfbA06T7nsd
+        zf77h6koZW6qxcZVauK/Jh7/PuH2RMujYooZ+c8u9UxmtzuhYjtj0XTJ/cLTRb/v2Va2uCux
+        evZxtq0z9soHePSk6dvv4frtn+hzk3+Kiolz1zTe1QtWnXW98ffkAu5jp26IJ0bkzrl56M5E
+        XpOCVoYzEQqzcvav6i9aIS3+X+suv87yuGk3jt7hkWGtc5drKJv77MSXZbOviL3X2q1Subto
+        8fOFrB0t5nMqaj/yJF1Q/P94+vT2gqafNYvfWRXe9FS+Xyl9/FSLYNjDJ3PFt77dPz+/4/4v
+        zo7VTH5uofUimfMFLjBz+B1+tnHVRKbn236+jSuLyBb5l9DwoMD7jYr+ShUlluKMREMt5qLi
+        RABc6t80LQMAAA==
+X-CMS-MailID: 20210115112106epcas2p4bebb0ea08a25b4aa285161b6e8045fff
+X-Msg-Generator: CA
+Content-Type: text/plain; charset="utf-8"
+X-Sendblock-Type: AUTO_CONFIDENTIAL
+CMS-TYPE: 102P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20210115061039epcas2p479bc5f3dd3dad5a250c4e0fc42896704
+References: <CGME20210115061039epcas2p479bc5f3dd3dad5a250c4e0fc42896704@epcas2p4.samsung.com>
+        <1610690304-167832-1-git-send-email-dseok.yi@samsung.com>
+        <20210115081243.GM9390@gauss3.secunet.de>
+        <01e801d6eb1c$2898c300$79ca4900$@samsung.com>
+        <20210115092752.GN9390@gauss3.secunet.de>
+        <20210115105048.2689-1-alobakin@pm.me>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 14 Jan 2021, Lee Jones wrote:
+On 2021-01-15 19:51, Alexander Lobakin wrote:
+> From: Steffen Klassert <steffen.klassert@secunet.com>
+> Date: Fri, 15 Jan 2021 10:27:52 +0100
+> 
+> > On Fri, Jan 15, 2021 at 05:55:22PM +0900, Dongseok Yi wrote:
+> >> On 2021-01-15 17:12, Steffen Klassert wrote:
+> >>> On Fri, Jan 15, 2021 at 02:58:24PM +0900, Dongseok Yi wrote:
+> >>>> UDP/IP header of UDP GROed frag_skbs are not updated even after NAT
+> >>>> forwarding. Only the header of head_skb from ip_finish_output_gso ->
+> >>>> skb_gso_segment is updated but following frag_skbs are not updated.
+> >>>>
+> >>>> A call path skb_mac_gso_segment -> inet_gso_segment ->
+> >>>> udp4_ufo_fragment -> __udp_gso_segment -> __udp_gso_segment_list
+> >>>> does not try to update UDP/IP header of the segment list.
+> >>>
+> >>> We still need to find out why it works for Alexander, but not for you.
+> >>> Different usecases?
+> >>
+> >> This patch is not for
+> >> https://lore.kernel.org/patchwork/patch/1364544/
+> >> Alexander might want to call udp_gro_receive_segment even when
+> >> !sk and ~NETIF_F_GRO_FRAGLIST.
+> >
+> > Yes, I know. But he said that fraglist GRO + NAT works for him.
+> > I want to find out why it works for him, but not for you.
+> 
+> I found that it worked for me because I advertised fraglist GSO
+> support in my driver (and added actual support for xmitting
+> fraglists). If so, kernel won't resegment GSO into a list of
+> plain packets, so no __udp_gso_segment_list() will be called.
+> 
+> I think it will break if I disable fraglist GSO feature through
+> Ethtool, so I could test your patches.
 
-> On Thu, 14 Jan 2021, Jakub Kicinski wrote:
-> 
-> > On Thu, 14 Jan 2021 08:33:49 +0000 Lee Jones wrote:
-> > > On Wed, 13 Jan 2021, Jakub Kicinski wrote:
-> > > 
-> > > > On Wed, 13 Jan 2021 16:41:16 +0000 Lee Jones wrote:  
-> > > > > Resending the stragglers again.                                                                                  
-> > > > > 
-> > > > > This set is part of a larger effort attempting to clean-up W=1                                                   
-> > > > > kernel builds, which are currently overwhelmingly riddled with                                                   
-> > > > > niggly little warnings.                                                                                          
-> > > > >                                                                                                                  
-> > > > > v2:                                                                                                              
-> > > > >  - Squashed IBM patches                                                                                      
-> > > > >  - Fixed real issue in SMSC
-> > > > >  - Added Andrew's Reviewed-by tags on remainder  
-> > > > 
-> > > > Does not apply, please rebase on net-next/master.  
-> > > 
-> > > These are based on Tuesday's next/master.
-> > 
-> > What's next/master?
-> 
-> I'm not sure if this is a joke, or not? :)
-> 
-> next/master == Linux Next.  The daily merged repo where all of the
-> *-next branches end up to ensure interoperability.  It's also the
-> branch that is most heavily tested by the auto-builders to ensure the
-> vast majority of issues are ironed out before hitting Mainline.
-> 
-> > This is net-next:
-> > 
-> > https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/
-> 
-> Looks like net-next gets merged into next/master:
-> 
-> commit 452958f1f3d1c8980a8414f9c37c8c6de24c7d32
-> Merge: 1eabba209a17a f50e2f9f79164
-> Author: Stephen Rothwell <sfr@canb.auug.org.au>
-> Date:   Thu Jan 14 10:35:40 2021 +1100
-> 
->     Merge remote-tracking branch 'net-next/master'
-> 
-> So I'm not sure what it's conflicting with.
-> 
-> Do you have patches in net-next that didn't make it into next/master
-> for some reason?
-> 
-> I'll try to rebase again tomorrow.
-> 
-> Hopefully I am able to reproduce your issue by then.
+Thanks for the reply. In my case I enabled NETIF_F_GRO_FRAGLIST on
+my driver. It expected that NAT done on each skb of the forwarded
+fraglist.
 
-Okay so my development branch rebased again with no issue.
+> 
+> >>>
+> >>> I would not like to add this to a generic codepath. I think we can
+> >>> relatively easy copy the full headers in skb_segment_list().
+> >>
+> >> I tried to copy the full headers with the similar approach, but it
+> >> copies length too. Can we keep the length of each skb of the fraglist?
+> >
+> > Ah yes, good point.
+> >
+> > Then maybe you can move your approach into __udp_gso_segment_list()
+> > so that we dont touch generic code.
+> >
 
-I also took the liberty to checkout net-next and cherry-pick the
-patches [0], which again didn't cause a problem.
+Okay, I will move it into __udp_gso_segment_list() on v3.
 
-I'm not sure what else to suggest.  Is your local copy up-to-date?
+> >>
+> >>>
+> >>> I think about something like the (completely untested) patch below:
+> >>>
+> >>> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+> >>> index f62cae3f75d8..63ae7f79fad7 100644
+> >>> --- a/net/core/skbuff.c
+> >>> +++ b/net/core/skbuff.c
+> >>> @@ -3651,13 +3651,14 @@ struct sk_buff *skb_segment_list(struct sk_buff *skb,
+> >>>  				 unsigned int offset)
+> >>>  {
+> >>>  	struct sk_buff *list_skb = skb_shinfo(skb)->frag_list;
+> >>> +	unsigned int doffset = skb->data - skb_mac_header(skb);
+> >>>  	unsigned int tnl_hlen = skb_tnl_header_len(skb);
+> >>>  	unsigned int delta_truesize = 0;
+> >>>  	unsigned int delta_len = 0;
+> >>>  	struct sk_buff *tail = NULL;
+> >>>  	struct sk_buff *nskb;
+> >>>
+> >>> -	skb_push(skb, -skb_network_offset(skb) + offset);
+> >>> +	skb_push(skb, doffset);
+> >>>
+> >>>  	skb_shinfo(skb)->frag_list = NULL;
+> >>>
+> >>> @@ -3675,7 +3676,7 @@ struct sk_buff *skb_segment_list(struct sk_buff *skb,
+> >>>  		delta_len += nskb->len;
+> >>>  		delta_truesize += nskb->truesize;
+> >>>
+> >>> -		skb_push(nskb, -skb_network_offset(nskb) + offset);
+> >>> +		skb_push(nskb, doffset);
+> >>>
+> >>>  		skb_release_head_state(nskb);
+> >>>  		 __copy_skb_header(nskb, skb);
+> >>> diff --git a/net/ipv4/udp_offload.c b/net/ipv4/udp_offload.c
+> >>> index ff39e94781bf..1181398378b8 100644
+> >>> --- a/net/ipv4/udp_offload.c
+> >>> +++ b/net/ipv4/udp_offload.c
+> >>> @@ -190,9 +190,22 @@ EXPORT_SYMBOL(skb_udp_tunnel_segment);
+> >>>  static struct sk_buff *__udp_gso_segment_list(struct sk_buff *skb,
+> >>>  					      netdev_features_t features)
+> >>>  {
+> >>> +	struct sk_buff *list_skb = skb_shinfo(skb)->frag_list;
+> >>>  	unsigned int mss = skb_shinfo(skb)->gso_size;
+> >>> +	unsigned int offset;
+> >>>
+> >>> -	skb = skb_segment_list(skb, features, skb_mac_header_len(skb));
+> >>> +	skb_headers_offset_update(list_skb, skb_headroom(list_skb) - skb_headroom(skb));
+> >>> +
+> >>> +	/* Check for header changes and copy the full header in that case. */
+> >>> +	if ((udp_hdr(skb)->dest == udp_hdr(list_skb)->dest) &&
+> >>> +	    (udp_hdr(skb)->source == udp_hdr(list_skb)->source) &&
+> >>> +	    (ip_hdr(skb)->daddr == ip_hdr(list_skb)->daddr) &&
+> >>> +	    (ip_hdr(skb)->saddr == ip_hdr(list_skb)->saddr))
+> >>> +		offset = skb_mac_header_len(skb);
+> >>> +	else
+> >>> +		offset = skb->data - skb_mac_header(skb);
+> >>> +
+> >>> +	skb = skb_segment_list(skb, features, offset);
+> >>>  	if (IS_ERR(skb))
+> >>>  		return skb;
+> >>>
+> >>>
+> >>> After that you can apply the CSUM magic in __udp_gso_segment_list().
+> 
+> I'll test and let you know if it works. If doesn't, I think I'll be
+> able to get a working one based on this.
+> 
+> >> Sorry, I don't know CSUM magic well. Is it used for checksum
+> >> incremental update too?
+> >
+> > With that I meant the checksum updating you did in your patch.
 
-[0]
+Ah, I see.
 
-lee@dell:~/projects/linux/kernel [net-next]$ gcp 0cea4b05acd57..924e1f46aba5e
-Auto-merging drivers/net/ethernet/smsc/smc91x.c
-[net-next 19811db3120a2] net: ethernet: smsc: smc91x: Fix function name in kernel-doc header
- Date: Mon Oct 19 12:47:11 2020 +0100
- 1 file changed, 1 insertion(+), 1 deletion(-)
-[net-next dc6f4490cb64e] net: xen-netback: xenbus: Demote nonconformant kernel-doc headers
- Date: Tue Oct 20 08:00:43 2020 +0100
- 1 file changed, 2 insertions(+), 2 deletions(-)
-[net-next a3363cb09ae59] net: ethernet: ti: am65-cpsw-qos: Demote non-conformant function header
- Date: Tue Oct 20 09:05:38 2020 +0100
- 1 file changed, 1 insertion(+), 1 deletion(-)
-[net-next 005462f886c3e] net: ethernet: ti: am65-cpts: Document am65_cpts_rx_enable()'s 'en' parameter
- Date: Tue Oct 20 09:06:57 2020 +0100
- 1 file changed, 1 insertion(+), 1 deletion(-)
-Auto-merging drivers/net/xen-netfront.c
-[net-next 9fcc32e395e09] net: ethernet: ibm: ibmvnic: Fix some kernel-doc misdemeanours
- Date: Tue Oct 20 09:42:19 2020 +0100
- 2 files changed, 16 insertions(+), 17 deletions(-)
-[net-next 15ba865fef481] net: ethernet: toshiba: ps3_gelic_net: Fix some kernel-doc misdemeanours
- Date: Tue Oct 20 10:10:14 2020 +0100
- 1 file changed, 5 insertions(+), 3 deletions(-)
-[net-next f815eb7cbd7f5] net: ethernet: toshiba: spider_net: Document a whole bunch of function parameters
- Date: Tue Oct 20 10:18:21 2020 +0100
- 1 file changed, 11 insertions(+), 7 deletions(-)
+> 
+> Thanks,
+> Al
 
--- 
-Lee Jones [李琼斯]
-Senior Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+
