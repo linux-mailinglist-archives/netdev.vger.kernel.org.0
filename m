@@ -2,115 +2,216 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5A9202F78EB
-	for <lists+netdev@lfdr.de>; Fri, 15 Jan 2021 13:30:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 26B4F2F78EF
+	for <lists+netdev@lfdr.de>; Fri, 15 Jan 2021 13:30:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728974AbhAOM3l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Jan 2021 07:29:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38204 "EHLO
+        id S1729736AbhAOM3r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Jan 2021 07:29:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728338AbhAOM3k (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jan 2021 07:29:40 -0500
-Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6DC6C061757
-        for <netdev@vger.kernel.org>; Fri, 15 Jan 2021 04:29:00 -0800 (PST)
-Received: by mail-io1-xd2d.google.com with SMTP id n2so580539iom.7
-        for <netdev@vger.kernel.org>; Fri, 15 Jan 2021 04:29:00 -0800 (PST)
+        with ESMTP id S1729399AbhAOM3q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jan 2021 07:29:46 -0500
+Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3EC3C061798
+        for <netdev@vger.kernel.org>; Fri, 15 Jan 2021 04:29:01 -0800 (PST)
+Received: by mail-io1-xd30.google.com with SMTP id e22so17719617iom.5
+        for <netdev@vger.kernel.org>; Fri, 15 Jan 2021 04:29:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Vc09DY2r3H1y9mxbKEtSIgPLT8cjCGScO9uOxFbsFz8=;
-        b=W8uDvDshnOankE0iaEopM58bGH79S1yK2wmxrIC7+A5LkBT2DE+JjlH4SMUbgrtNKV
-         j8vhbpQif7AepucBkDTaKNCWaguR5bRs3Rrb4FaUiNOqnUbiiIw0E4K5n1iWDvac21+W
-         uRP5wYmE46IZKdL5BzcrD01BO4QgsUl019WdWvZc/jusfaAo1lSaywBdCgNZb6jzkzG1
-         udJPGxMEABDQL15QBKSKair2l8xy5d8vmvU7Vytmvs1AUiZsrXNxg6XGyejQkz/40Esr
-         lpXis2uop0d4sNZPK0f7oFpriDslhnMpUdWf3IDeR24D6l9o53ZO9Q3EXj2Mfw1fHySr
-         Eogg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=jwWDVbn6E+W4cppTUQVOsz/FlYXh0zmRkUkc7xXhirw=;
+        b=uUa50cxxdkAT4+YajHkWcJZs4ZB09eqs7lIWjWlrYCSUWZltlvFwsgiDafDMYTlAEZ
+         5SifFOqkEOUWvOEKbjhjpMoAkaKio6lC0br+owkdI4eVIZHGIrhWZBPTVdBWxU4Kz846
+         f99caiqQorZL7I2QmHeLDLZ6n5iisdcb+7iVlaOpjcNkUto4zb4cOV1OlPnCEZKnBKzV
+         c8zu2/kD3K9KAdFChp3x87oPLe25Uxu3fM2TKMJxaZqEeWWZXuvrcY3xstvERo+EEIbi
+         JVtHXguistiKTcyAHxM5VTx93ucDYU+2sDAHz4KSexIPcjLTOizmluymRd362ZKFUwm9
+         sGQA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Vc09DY2r3H1y9mxbKEtSIgPLT8cjCGScO9uOxFbsFz8=;
-        b=PIsl8A9IY7s+6a72FCfYwAiJkdGKBipZhxes6vmah0oDKntaSSckNKq06GBbFIme52
-         t0g9s5WyXjUOEWQoEnxWBv6pmgLdSM2Z5jidRFoAiCK4r7Y7WET9SBgKotN7hcBWKjsc
-         Vscj+rUsufwGnVTXZ8fL/K5M0JLRPMcycE1S2e2kn0W9zwk4K+zjBbIRLF4SYTT2Fdgb
-         a9D+qQC96EMkCeJeAxNm8yCFZ0JxUEuGFXUfGMsOPOTLOCegNsH9uMCPJQgp2gcblCsd
-         seYFVw/ykDOmJaQue84auxX2/0g+217J4YujI5tTVUGBZ6VOwcX7oh98FFUeCLyLQw9I
-         OQxQ==
-X-Gm-Message-State: AOAM533J7aYRY++vkeYfWNkxLbbWUB6IF0rrUPCDrK8iwAWYzMin72L4
-        rE5MR3s/9/RroTIwvMZShqLYfQ==
-X-Google-Smtp-Source: ABdhPJxJ8D0/NMCx8evr3t9mxKbCWncCYnD55AjoQ6M4fuxAcG4eITrhWSrc1msB6iYZJYk9HnSTVA==
-X-Received: by 2002:a02:caac:: with SMTP id e12mr9845527jap.45.1610713740070;
-        Fri, 15 Jan 2021 04:29:00 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=jwWDVbn6E+W4cppTUQVOsz/FlYXh0zmRkUkc7xXhirw=;
+        b=k8LC2d4p+COtVSqoHetcP2p4rR03XoXIAC5kum/8BOkSgL9KpjpW4sP3l9SsIQLM3E
+         Fjt9JhIVdq/B3w7WzXvPfEnA/H4Rtw0HOfOXS73IRnYZssjE9ShlxbZIa6tKgTqxWf52
+         15uh+QnRYhlZp4fu/WXLSVcT4QAJ5HHcY/hhPFDQaeAIUgMhRFlxYpi9GV/37n2K2UCF
+         oc0t2ZU1YGNWmDs+jSgWE95UoiVCmEEk/415GtvFFFfCIkc1aHnHBSYZDblOORJIJepq
+         Y2xSD9QJtAXyp5ODOzPMIJXb5GC8Ql9v9QNhaBQG655xVZrG0weZ1Mn09xrNHIEPorQ/
+         /++w==
+X-Gm-Message-State: AOAM530Mfnd7fZLtcaYJTKvMr6qw6kSPPaBh34NgvLdMakdSPuzRVVUQ
+        yOLtrvqn0y+4vWRaglzWnWa9RCHB4i+tYQ==
+X-Google-Smtp-Source: ABdhPJwXvrsIPRR8Zh8LRgGS89k8hggFDX3apGd55wKHT0PnOGwxUSJAFc34ENjSWfRNPu98+Z7ihA==
+X-Received: by 2002:a05:6638:14d5:: with SMTP id l21mr10076836jak.54.1610713741247;
+        Fri, 15 Jan 2021 04:29:01 -0800 (PST)
 Received: from beast.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id a9sm3828509ion.53.2021.01.15.04.28.58
+        by smtp.gmail.com with ESMTPSA id a9sm3828509ion.53.2021.01.15.04.29.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 Jan 2021 04:28:59 -0800 (PST)
+        Fri, 15 Jan 2021 04:29:00 -0800 (PST)
 From:   Alex Elder <elder@linaro.org>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     evgreen@chromium.org, bjorn.andersson@linaro.org,
         cpratapa@codeaurora.org, subashab@codeaurora.org,
         robh+dt@kernel.org, rdunlap@infradead.org, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Subject: [PATCH v2 net-next 0/4] net: ipa: remove a build dependency
-Date:   Fri, 15 Jan 2021 06:28:51 -0600
-Message-Id: <20210115122855.19928-1-elder@linaro.org>
+Subject: [PATCH v2 net-next 1/4] net: ipa: remove a remoteproc dependency
+Date:   Fri, 15 Jan 2021 06:28:52 -0600
+Message-Id: <20210115122855.19928-2-elder@linaro.org>
 X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20210115122855.19928-1-elder@linaro.org>
+References: <20210115122855.19928-1-elder@linaro.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Rob, for some reason I can't find in my mailbox your report that
-the binding caused a problem.  I only discovered it when looking
-into why the series was not accepted yet.
+The IPA driver currently requires a DT property to be defined whose
+value is the phandle for the modem subsystem.  This was needed to
+look up a remoteproc structure pointer used when registering for
+notifications in the original IPA notification mechanism.
 
-Version 2 includes <.../arm-gic.h> rather than <.../irq.h> in the
-example section of the binding, to ensure GIC_SPI is defined.
-I verified this passes "make dt_bindings_check".
+Remoteproc provides a more generic SSR notifier system, and the IPA
+driver switched over to it last summer, but this remoteproc phandle
+dependency was not removed at that time.
 
-The rest of the series is unchanged.  Below is the original cover
-letter.
+Get rid of the IPA remoteproc pointer and stop requiring the phandle
+be specified.
 
+This avoids a link error (rproc_put() not defined) for certain
+configurations.
+
+Reported-by: Randy Dunlap <rdunlap@infradead.org>
+Fixes: 30eb3fbee3da7 ("net: ipa: new notification infrastructure")
+Signed-off-by: Alex Elder <elder@linaro.org>
 ---
+ drivers/net/ipa/ipa.h      |  2 --
+ drivers/net/ipa/ipa_main.c | 38 ++------------------------------------
+ 2 files changed, 2 insertions(+), 38 deletions(-)
 
-Unlike the original (temporary) IPA notification mechanism, the
-generic remoteproc SSR notification code does not require the IPA
-driver to maintain a pointer to the modem subsystem remoteproc
-structure.
-
-The IPA driver was converted to use the newer SSR notifiers, but the
-specification and use of a phandle for the modem subsystem was never
-removed.
-
-This series removes the lookup of the remoteproc pointer, and that
-removes the need for the modem DT property.  It also removes the
-reference to the "modem-remoteproc" property from the DT binding,
-and from the DT files that specified them.
-
-David/Jakub, please take these all through net-next if they are
-acceptable to you, once Rob has acked the binding and DT patches.
-
-Thanks.
-
-					-Alex
-
-
-Alex Elder (4):
-  net: ipa: remove a remoteproc dependency
-  dt-bindings: net: remove modem-remoteproc property
-  arm64: dts: qcom: sc7180: kill IPA modem-remoteproc property
-  arm64: dts: qcom: sdm845: kill IPA modem-remoteproc property
-
- .../devicetree/bindings/net/qcom,ipa.yaml     | 15 ++------
- arch/arm64/boot/dts/qcom/sc7180.dtsi          |  2 -
- arch/arm64/boot/dts/qcom/sdm845.dtsi          |  2 -
- drivers/net/ipa/ipa.h                         |  2 -
- drivers/net/ipa/ipa_main.c                    | 38 +------------------
- 5 files changed, 5 insertions(+), 54 deletions(-)
-
+diff --git a/drivers/net/ipa/ipa.h b/drivers/net/ipa/ipa.h
+index 6c2371084c55a..c6c6a7f6909c1 100644
+--- a/drivers/net/ipa/ipa.h
++++ b/drivers/net/ipa/ipa.h
+@@ -43,7 +43,6 @@ enum ipa_flag {
+  * @flags:		Boolean state flags
+  * @version:		IPA hardware version
+  * @pdev:		Platform device
+- * @modem_rproc:	Remoteproc handle for modem subsystem
+  * @smp2p:		SMP2P information
+  * @clock:		IPA clocking information
+  * @table_addr:		DMA address of filter/route table content
+@@ -83,7 +82,6 @@ struct ipa {
+ 	DECLARE_BITMAP(flags, IPA_FLAG_COUNT);
+ 	enum ipa_version version;
+ 	struct platform_device *pdev;
+-	struct rproc *modem_rproc;
+ 	struct notifier_block nb;
+ 	void *notifier;
+ 	struct ipa_smp2p *smp2p;
+diff --git a/drivers/net/ipa/ipa_main.c b/drivers/net/ipa/ipa_main.c
+index 84bb8ae927252..ab0fd5cb49277 100644
+--- a/drivers/net/ipa/ipa_main.c
++++ b/drivers/net/ipa/ipa_main.c
+@@ -15,7 +15,6 @@
+ #include <linux/of.h>
+ #include <linux/of_device.h>
+ #include <linux/of_address.h>
+-#include <linux/remoteproc.h>
+ #include <linux/qcom_scm.h>
+ #include <linux/soc/qcom/mdt_loader.h>
+ 
+@@ -729,19 +728,6 @@ static const struct of_device_id ipa_match[] = {
+ };
+ MODULE_DEVICE_TABLE(of, ipa_match);
+ 
+-static phandle of_property_read_phandle(const struct device_node *np,
+-					const char *name)
+-{
+-        struct property *prop;
+-        int len = 0;
+-
+-        prop = of_find_property(np, name, &len);
+-        if (!prop || len != sizeof(__be32))
+-                return 0;
+-
+-        return be32_to_cpup(prop->value);
+-}
+-
+ /* Check things that can be validated at build time.  This just
+  * groups these things BUILD_BUG_ON() calls don't clutter the rest
+  * of the code.
+@@ -807,10 +793,8 @@ static int ipa_probe(struct platform_device *pdev)
+ 	struct device *dev = &pdev->dev;
+ 	const struct ipa_data *data;
+ 	struct ipa_clock *clock;
+-	struct rproc *rproc;
+ 	bool modem_init;
+ 	struct ipa *ipa;
+-	phandle ph;
+ 	int ret;
+ 
+ 	ipa_validate_build();
+@@ -829,25 +813,12 @@ static int ipa_probe(struct platform_device *pdev)
+ 		if (!qcom_scm_is_available())
+ 			return -EPROBE_DEFER;
+ 
+-	/* We rely on remoteproc to tell us about modem state changes */
+-	ph = of_property_read_phandle(dev->of_node, "modem-remoteproc");
+-	if (!ph) {
+-		dev_err(dev, "DT missing \"modem-remoteproc\" property\n");
+-		return -EINVAL;
+-	}
+-
+-	rproc = rproc_get_by_phandle(ph);
+-	if (!rproc)
+-		return -EPROBE_DEFER;
+-
+ 	/* The clock and interconnects might not be ready when we're
+ 	 * probed, so might return -EPROBE_DEFER.
+ 	 */
+ 	clock = ipa_clock_init(dev, data->clock_data);
+-	if (IS_ERR(clock)) {
+-		ret = PTR_ERR(clock);
+-		goto err_rproc_put;
+-	}
++	if (IS_ERR(clock))
++		return PTR_ERR(clock);
+ 
+ 	/* No more EPROBE_DEFER.  Allocate and initialize the IPA structure */
+ 	ipa = kzalloc(sizeof(*ipa), GFP_KERNEL);
+@@ -858,7 +829,6 @@ static int ipa_probe(struct platform_device *pdev)
+ 
+ 	ipa->pdev = pdev;
+ 	dev_set_drvdata(dev, ipa);
+-	ipa->modem_rproc = rproc;
+ 	ipa->clock = clock;
+ 	ipa->version = data->version;
+ 
+@@ -935,8 +905,6 @@ static int ipa_probe(struct platform_device *pdev)
+ 	kfree(ipa);
+ err_clock_exit:
+ 	ipa_clock_exit(clock);
+-err_rproc_put:
+-	rproc_put(rproc);
+ 
+ 	return ret;
+ }
+@@ -944,7 +912,6 @@ static int ipa_probe(struct platform_device *pdev)
+ static int ipa_remove(struct platform_device *pdev)
+ {
+ 	struct ipa *ipa = dev_get_drvdata(&pdev->dev);
+-	struct rproc *rproc = ipa->modem_rproc;
+ 	struct ipa_clock *clock = ipa->clock;
+ 	int ret;
+ 
+@@ -970,7 +937,6 @@ static int ipa_remove(struct platform_device *pdev)
+ 	ipa_reg_exit(ipa);
+ 	kfree(ipa);
+ 	ipa_clock_exit(clock);
+-	rproc_put(rproc);
+ 
+ 	return 0;
+ }
 -- 
 2.20.1
 
