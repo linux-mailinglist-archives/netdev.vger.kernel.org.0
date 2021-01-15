@@ -2,267 +2,260 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 94EB72F712D
-	for <lists+netdev@lfdr.de>; Fri, 15 Jan 2021 04:52:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DE6412F7134
+	for <lists+netdev@lfdr.de>; Fri, 15 Jan 2021 04:52:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730922AbhAODvm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jan 2021 22:51:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40094 "EHLO
+        id S1732714AbhAODwB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jan 2021 22:52:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727116AbhAODvl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 22:51:41 -0500
-Received: from mail-qt1-x82b.google.com (mail-qt1-x82b.google.com [IPv6:2607:f8b0:4864:20::82b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E95CC061757
-        for <netdev@vger.kernel.org>; Thu, 14 Jan 2021 19:51:01 -0800 (PST)
-Received: by mail-qt1-x82b.google.com with SMTP id 2so5190708qtt.10
-        for <netdev@vger.kernel.org>; Thu, 14 Jan 2021 19:51:01 -0800 (PST)
+        with ESMTP id S1727116AbhAODv7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 22:51:59 -0500
+Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 623C8C0613C1;
+        Thu, 14 Jan 2021 19:51:19 -0800 (PST)
+Received: by mail-yb1-xb2a.google.com with SMTP id 18so3875730ybx.2;
+        Thu, 14 Jan 2021 19:51:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=gd5arU55eFy4mR+ko12IByJgXdFVu7Y6hozWm/XStQA=;
-        b=wVdRM4+k+0k37tocvVeYVw0rvL/m8dD9wfYoPFgfDbFr9hFlA2a/xCFwzvPimDBR2d
-         2xk37hX+E3nmKVmbSesGeoejxCmrXj1v7iFYmp2u8LAH8ZvDqAKCr70NAMjegXH5Gvbb
-         Dn3CiBviXEk2o/l28VvXBJqJUKBVER3PXbXOeH2RSlqgyh1EZ8SC0iAYYlhHXmV+op3j
-         MSDJ/xSJ6Iiir3a7hqLvcH+MOlRxCP6GGDSqqysLe/8O+we0f7FavNehNrdZqf9SiCEg
-         fYdym4INdW+olCoth0R6a4rnfh8EKyjHh9WruzpAvagrxdtqvZroqy0zohBwEaaTbGSR
-         CBHw==
+        bh=n7wLYiMjEaRKegDkzieWsj2zpam31LaW/eah8yAZLEU=;
+        b=ZiSpPgcggMO6tdSG0DvImE9bSXue3YfSQD2HUbQvxLXbiFxkIgYcTJ/i2ANgG09QE+
+         lbwfArAZLP54xYp8sQQLjz46sJaazuUw7/esyBmpdhKknLqLzfH191ThbRl/1yB9bP+j
+         jC/bfNnwwBUuQm1g6KTpHvnhIleruPV9vVhQ4TUyk4+QlvPrqPz7n2r+sHxtO784MN/r
+         iXrvtgbHf1Fs1k34bqtp9cltpqedTDnL2ikAU814gsvvlM0Xv1ZhL2/Ir/eoTTBOkNax
+         3S9Zo6AkrAWP1UxQ9LjyyOVFm46Dv1CJScoZpierC34DFS9wW6VwKkpkB/0YnEr9mZTN
+         PqRA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=gd5arU55eFy4mR+ko12IByJgXdFVu7Y6hozWm/XStQA=;
-        b=U9CXsVMgc3SfKK6YL2Cqopg7zTgb49E3U79TxkCp4EL+6qin0IN1eMXh72cnjaQacV
-         m1wdDbeAHgpxJElTbFjYgxaLcLH3C6P+Ma9YBx5+qOaX+lZVo02zPReR72tFRX0frP4y
-         0ANf1HdpnqBhO+LuZLVRFreLlhE9rmYz10Nq192Cg7YR0mBD3cWzuXjuJlFdrBZgxp7w
-         PCiDfxRBIpLkzsN/4Rie6edGdmdrHok8HxD/mG3TZav6G9xKSwJCq8qsKKGTaxu3ftbZ
-         XozHu1MEutyRkNgiv2Nfctlnv+TZSrdpFAUsT5LFzkIxVpzauZmK3tyhi7whwWFIhBwM
-         RqAA==
-X-Gm-Message-State: AOAM530EJehvIlBM7gkpmuUO6rkcI6kMk9+JH1S1S/IezhBh8el13VM7
-        lJo8A0yhTa91MZnToLUg7fYZzD+LzSsUJ7S1e8O57Q==
-X-Google-Smtp-Source: ABdhPJzM4/XU1xf1l/WUnhdrcHPHF9wwxMV8ivphpQ5EQxIHp0yBorKyzf644GmJhI55DZqrC3Vq5QcW8xaLOzQCGe8=
-X-Received: by 2002:ac8:41cf:: with SMTP id o15mr10158214qtm.98.1610682660402;
- Thu, 14 Jan 2021 19:51:00 -0800 (PST)
+        bh=n7wLYiMjEaRKegDkzieWsj2zpam31LaW/eah8yAZLEU=;
+        b=cuZBWxFu415pUa0y+LlsgZqr4+Em2gZmwM5zaLh0nSqnjL1DvBVa+7wxwZkDwZZFYZ
+         9L8p6FWYwBnu1qKxTMxiqPBEAlDht1Z9VHnUGFurw9sAk3tIB7lAy86pLU6EYQ+zLzzY
+         xaEhmvIOSvaD2fdYk3i0HSIzlx95BLTo7vjjEiUFFqy7RHfm9m8GWABfa6aD97f1TQOc
+         8SrTeIzYPQcxIWm0YcgoKBXi5mekVNznPt4gp094Opmfpi4homaemqxn5zH8fiaf7id6
+         ZcvuX5FT1YZDmFLvcZww4CE2KXX3LFl3XvRAR5UliZ2Ls2Njai1jyLD2M3V/hYe7Zdto
+         /tlQ==
+X-Gm-Message-State: AOAM531wnUaDMmv9L8QnKEoRDXeYL4ooVHp0e+eY6F69Mgi51xAaoWu/
+        lvq2FZLbP6hgVjA3nmKddRc5o9s27p3C3kq0U4E=
+X-Google-Smtp-Source: ABdhPJzWn7SdNcy4ucDm9CL7J6PG3lP/+7DykRDNmDqDA/H8CoHNlUyOx/gst3RksBLlBsFTrYw15ifbUfH/KVaG5o0=
+X-Received: by 2002:a25:4107:: with SMTP id o7mr14740119yba.459.1610682678580;
+ Thu, 14 Jan 2021 19:51:18 -0800 (PST)
 MIME-Version: 1.0
-References: <1627e0f688c7de7fe291b09c524c7fbb55cfe367.1610669653.git.sdf@google.com>
- <CAEf4BzZOt-VZPwHZ4uGxG_mZYb7NX3wJv1UiAnnt3+dOSkkqtA@mail.gmail.com>
-In-Reply-To: <CAEf4BzZOt-VZPwHZ4uGxG_mZYb7NX3wJv1UiAnnt3+dOSkkqtA@mail.gmail.com>
-From:   Stanislav Fomichev <sdf@google.com>
-Date:   Thu, 14 Jan 2021 19:50:49 -0800
-Message-ID: <CAKH8qBuvbRa0qSbYBqJ0cz5vcQ-8XQA8k6B4FS-TNE1QUEnH8Q@mail.gmail.com>
-Subject: Re: [RPC PATCH bpf-next] bpf: implement new BPF_CGROUP_INET_SOCK_POST_CONNECT
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
+References: <1610386373-24162-1-git-send-email-alan.maguire@oracle.com>
+ <1610386373-24162-2-git-send-email-alan.maguire@oracle.com>
+ <CAEf4BzZu2MuNYs8rpObLo5Z4gkodY4H+8sbraAGYXJwVZC9mfg@mail.gmail.com> <alpine.LRH.2.23.451.2101141426320.30025@localhost>
+In-Reply-To: <alpine.LRH.2.23.451.2101141426320.30025@localhost>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 14 Jan 2021 19:51:07 -0800
+Message-ID: <CAEf4BzZFTyAkMmz0+V_fcGHi+O1Cgunnwde=oqbyniE4rU3iYA@mail.gmail.com>
+Subject: Re: [RFC PATCH bpf-next 1/2] bpf: share BTF "show" implementation
+ between kernel and libbpf
+To:     Alan Maguire <alan.maguire@oracle.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        john fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        Ingo Molnar <mingo@redhat.com>, Hao Luo <haoluo@google.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>, Shuah Khan <shuah@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 14, 2021 at 6:38 PM Andrii Nakryiko
-<andrii.nakryiko@gmail.com> wrote:
+On Thu, Jan 14, 2021 at 7:37 AM Alan Maguire <alan.maguire@oracle.com> wrote:
 >
-> On Thu, Jan 14, 2021 at 4:19 PM Stanislav Fomichev <sdf@google.com> wrote:
-> >
-> > We are playing with doing hybrid conntrack where BPF generates
-> > connect/disconnect/etc events and puts them into perfbuf (or, later,
-> > new ringbuf). We can get most of the functionality out of
-> > existing hooks:
-> > - BPF_CGROUP_SOCK_OPS fully covers TCP
-> > - BPF_CGROUP_UDP4_SENDMSG covers unconnected UDP (with sampling, etc)
-> >
-> > The only missing bit is connected UDP where we can get some
-> > information from the existing BPF_CGROUP_INET{4,6}_CONNECT if the caller
-> > did explicit bind(); otherwise, in an autobind case, we get
-> > only destination addr/port and no source port because this hook
-> > triggers prior to that.
-> >
-> > We'd really like to avoid the cost of BPF_CGROUP_INET_EGRESS
-> > and filtering UDP (which covers both connected and unconnected UDP,
-> > but loses that connect/disconnect pseudo signal).
-> >
-> > The proposal is to add a new BPF_CGROUP_INET_SOCK_POST_CONNECT which
-> > triggers right before sys_connect exits in the AF_INET{,6} case.
-> > The context is bpf_sock which lets BPF examine the socket state.
-> > There is really no reason for it to trigger for all inet socks,
-> > I've considered adding BPF_CGROUP_UDP_POST_CONNECT, but decided
-> > that it might be better to have a generic inet case.
-> >
-> > New hook triggers right before sys_connect() returns and gives
-> > BPF an opportunity to explore source & destination addresses
-> > as well as ability to return EPERM to the user.
-> >
-> > This is somewhat analogous to the existing BPF_CGROUP_INET{4,6}_POST_BIND
-> > hooks with the intention to log the connection addresses (after autobind).
-> >
-> > Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> > Change-Id: I46d0122f93c58b17bfae5ba5040b0b0343908c19
-> > ---
-> >  include/linux/bpf-cgroup.h | 17 +++++++++++++++++
-> >  include/uapi/linux/bpf.h   |  1 +
-> >  kernel/bpf/syscall.c       |  3 +++
-> >  net/core/filter.c          |  4 ++++
-> >  net/ipv4/af_inet.c         |  7 ++++++-
-> >  5 files changed, 31 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/include/linux/bpf-cgroup.h b/include/linux/bpf-cgroup.h
-> > index 72e69a0e1e8c..f110935258b9 100644
-> > --- a/include/linux/bpf-cgroup.h
-> > +++ b/include/linux/bpf-cgroup.h
-> > @@ -213,12 +213,29 @@ int bpf_percpu_cgroup_storage_update(struct bpf_map *map, void *key,
-> >         __ret;                                                                 \
-> >  })
-> >
-> > +#define BPF_CGROUP_RUN_SK_PROG_LOCKED(sk, type)                                       \
-> > +({                                                                            \
-> > +       int __ret = 0;                                                         \
-> > +       if (cgroup_bpf_enabled) {                                              \
-> > +               lock_sock(sk);                                                 \
-> > +               __ret = __cgroup_bpf_run_filter_sk(sk, type);                  \
-> > +               release_sock(sk);                                              \
-> > +       }                                                                      \
-> > +       __ret;                                                                 \
-> > +})
-> > +
-> >  #define BPF_CGROUP_RUN_PROG_INET_SOCK(sk)                                     \
-> >         BPF_CGROUP_RUN_SK_PROG(sk, BPF_CGROUP_INET_SOCK_CREATE)
-> >
-> >  #define BPF_CGROUP_RUN_PROG_INET_SOCK_RELEASE(sk)                             \
-> >         BPF_CGROUP_RUN_SK_PROG(sk, BPF_CGROUP_INET_SOCK_RELEASE)
-> >
-> > +#define BPF_CGROUP_RUN_PROG_INET_SOCK_POST_CONNECT(sk)                        \
-> > +       BPF_CGROUP_RUN_SK_PROG(sk, BPF_CGROUP_INET_SOCK_POST_CONNECT)
-> > +
-> > +#define BPF_CGROUP_RUN_PROG_INET_SOCK_POST_CONNECT_LOCKED(sk)                 \
-> > +       BPF_CGROUP_RUN_SK_PROG_LOCKED(sk, BPF_CGROUP_INET_SOCK_POST_CONNECT)
-> > +
-> >  #define BPF_CGROUP_RUN_PROG_INET4_POST_BIND(sk)                                       \
-> >         BPF_CGROUP_RUN_SK_PROG(sk, BPF_CGROUP_INET4_POST_BIND)
-> >
-> > diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-> > index a1ad32456f89..3235f7bd131f 100644
-> > --- a/include/uapi/linux/bpf.h
-> > +++ b/include/uapi/linux/bpf.h
-> > @@ -241,6 +241,7 @@ enum bpf_attach_type {
-> >         BPF_XDP_CPUMAP,
-> >         BPF_SK_LOOKUP,
-> >         BPF_XDP,
-> > +       BPF_CGROUP_INET_SOCK_POST_CONNECT,
+> On Mon, 11 Jan 2021, Andrii Nakryiko wrote:
 >
-> Adding new bpf_attach_type enums keeps blowing up the size of struct
-> cgroup_bpf. Right now we have 38 different values, of which 15 values
-> are not related to cgroups (judging by their name). That results in 15
-> * (8 + 16 + 4) = 420 extra bytes wasted for each struct cgroup_bpf
-> (and thus struct cgroup). Probably not critical, but it would be nice
-> to not waste space unnecessarily.
+> > On Mon, Jan 11, 2021 at 9:34 AM Alan Maguire <alan.maguire@oracle.com> wrote:
+> > > Currently the only "show" function for userspace is to write the
+> > > representation of the typed data to a string via
+> > >
+> > > LIBBPF_API int
+> > > btf__snprintf(struct btf *btf, char *buf, int len, __u32 id, void *obj,
+> > >               __u64 flags);
+> > >
+> > > ...but other approaches could be pursued including printf()-based
+> > > show, or even a callback mechanism could be supported to allow
+> > > user-defined show functions.
+> > >
+> >
+> > It's strange that you saw btf_dump APIs, and yet decided to go with
+> > this API instead. snprintf() is not a natural "method" of struct btf.
+> > Using char buffer as an output is overly restrictive and inconvenient.
+> > It's appropriate for kernel and BPF program due to their restrictions,
+> > but there is no need to cripple libbpf APIs for that. I think it
+> > should follow btf_dump APIs with custom callback so that it's easy to
+> > just printf() everything, but also user can create whatever elaborate
+> > mechanism they need and that fits their use case.
+> >
+> > Code reuse is not the ultimate goal, it should facilitate
+> > maintainability, not harm it. There are times where sharing code
+> > introduces unnecessary coupling and maintainability issues. And I
+> > think this one is a very obvious case of that.
+> >
 >
-> Would anyone be interested in addressing this? Basically, instead of
-> using MAX_BPF_ATTACH_TYPE from enum bpf_attach_type, we'd need to have
-> cgroup-specific enumeration and mapping bpf_attach_type to that
-> bpf_cgroup_attach_type to compactly store information in struct
-> cgroup_bpf. Thoughts?
-Sure, I can get to that at some point if nobody beats me to it.
-Assuming we have 10k cgroups on the machine, it would save about 4mb,
-which doesn't look alarming.
+> Okay, so I've been exploring adding dumper API support.  The initial
+> approach I've been using is to provide an API like this:
+>
+> /* match show flags for bpf_show_snprintf() */
+> enum {
+>         BTF_DUMP_F_COMPACT      =       (1ULL << 0),
+>         BTF_DUMP_F_NONAME       =       (1ULL << 1),
+>         BTF_DUMP_F_ZERO         =       (1ULL << 3),
+> };
+>
 
-> >         __MAX_BPF_ATTACH_TYPE
-> >  };
-> >
-> > diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
-> > index c3bb03c8371f..7d6fd1e32d22 100644
-> > --- a/kernel/bpf/syscall.c
-> > +++ b/kernel/bpf/syscall.c
-> > @@ -1958,6 +1958,7 @@ bpf_prog_load_check_attach(enum bpf_prog_type prog_type,
-> >                 switch (expected_attach_type) {
-> >                 case BPF_CGROUP_INET_SOCK_CREATE:
-> >                 case BPF_CGROUP_INET_SOCK_RELEASE:
-> > +               case BPF_CGROUP_INET_SOCK_POST_CONNECT:
-> >                 case BPF_CGROUP_INET4_POST_BIND:
-> >                 case BPF_CGROUP_INET6_POST_BIND:
-> >                         return 0;
-> > @@ -2910,6 +2911,7 @@ attach_type_to_prog_type(enum bpf_attach_type attach_type)
-> >                 return BPF_PROG_TYPE_CGROUP_SKB;
-> >         case BPF_CGROUP_INET_SOCK_CREATE:
-> >         case BPF_CGROUP_INET_SOCK_RELEASE:
-> > +       case BPF_CGROUP_INET_SOCK_POST_CONNECT:
-> >         case BPF_CGROUP_INET4_POST_BIND:
-> >         case BPF_CGROUP_INET6_POST_BIND:
-> >                 return BPF_PROG_TYPE_CGROUP_SOCK;
-> > @@ -3063,6 +3065,7 @@ static int bpf_prog_query(const union bpf_attr *attr,
-> >         case BPF_CGROUP_INET_EGRESS:
-> >         case BPF_CGROUP_INET_SOCK_CREATE:
-> >         case BPF_CGROUP_INET_SOCK_RELEASE:
-> > +       case BPF_CGROUP_INET_SOCK_POST_CONNECT:
-> >         case BPF_CGROUP_INET4_BIND:
-> >         case BPF_CGROUP_INET6_BIND:
-> >         case BPF_CGROUP_INET4_POST_BIND:
-> > diff --git a/net/core/filter.c b/net/core/filter.c
-> > index 9ab94e90d660..d955321d3415 100644
-> > --- a/net/core/filter.c
-> > +++ b/net/core/filter.c
-> > @@ -7683,12 +7683,14 @@ static bool __sock_filter_check_attach_type(int off,
-> >                 switch (attach_type) {
-> >                 case BPF_CGROUP_INET_SOCK_CREATE:
-> >                 case BPF_CGROUP_INET_SOCK_RELEASE:
-> > +               case BPF_CGROUP_INET_SOCK_POST_CONNECT:
-> >                         goto full_access;
-> >                 default:
-> >                         return false;
-> >                 }
-> >         case bpf_ctx_range(struct bpf_sock, src_ip4):
-> >                 switch (attach_type) {
-> > +               case BPF_CGROUP_INET_SOCK_POST_CONNECT:
-> >                 case BPF_CGROUP_INET4_POST_BIND:
-> >                         goto read_only;
-> >                 default:
-> > @@ -7696,6 +7698,7 @@ static bool __sock_filter_check_attach_type(int off,
-> >                 }
-> >         case bpf_ctx_range_till(struct bpf_sock, src_ip6[0], src_ip6[3]):
-> >                 switch (attach_type) {
-> > +               case BPF_CGROUP_INET_SOCK_POST_CONNECT:
-> >                 case BPF_CGROUP_INET6_POST_BIND:
-> >                         goto read_only;
-> >                 default:
-> > @@ -7703,6 +7706,7 @@ static bool __sock_filter_check_attach_type(int off,
-> >                 }
-> >         case bpf_ctx_range(struct bpf_sock, src_port):
-> >                 switch (attach_type) {
-> > +               case BPF_CGROUP_INET_SOCK_POST_CONNECT:
-> >                 case BPF_CGROUP_INET4_POST_BIND:
-> >                 case BPF_CGROUP_INET6_POST_BIND:
-> >                         goto read_only;
-> > diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
-> > index b94fa8eb831b..568654cafa48 100644
-> > --- a/net/ipv4/af_inet.c
-> > +++ b/net/ipv4/af_inet.c
-> > @@ -574,7 +574,10 @@ int inet_dgram_connect(struct socket *sock, struct sockaddr *uaddr,
-> >
-> >         if (!inet_sk(sk)->inet_num && inet_autobind(sk))
-> >                 return -EAGAIN;
-> > -       return sk->sk_prot->connect(sk, uaddr, addr_len);
-> > +       err = sk->sk_prot->connect(sk, uaddr, addr_len);
-> > +       if (!err)
-> > +               err = BPF_CGROUP_RUN_PROG_INET_SOCK_POST_CONNECT_LOCKED(sk);
-> > +       return err;
-> >  }
-> >  EXPORT_SYMBOL(inet_dgram_connect);
-> >
+I'd use bool fields instead, we are not constrained with extensibility
+of this, no need for opaque "flags" field.
+
+> struct btf_dump_emit_type_data_opts {
+>         /* size of this struct, for forward/backward compatibility */
+>         size_t sz;
+>         void *data;
+
+data is not optional, so should be moved out and be a direct argument
+to btf_dump__emit_type_data()
+
+>         int indent_level;
+>         __u64 flags;
+> };
+> #define btf_dump_emit_type_data_opts__last_field flags
 >
-> Have you tried attaching the fexit program to inet_dgram_connect?
-> Doesn't it give all the information you need?
+> LIBBPF_API int
+> btf_dump__emit_type_data(struct btf_dump *d, __u32 id,
+>                          const struct btf_dump_emit_type_data_opts *opts);
 >
-> > @@ -723,6 +726,8 @@ int inet_stream_connect(struct socket *sock, struct sockaddr *uaddr,
-> >
-> >         lock_sock(sock->sk);
-> >         err = __inet_stream_connect(sock, uaddr, addr_len, flags, 0);
+
+yes, this is something more like what I had in mind
+
 >
-> Similarly here, attaching fexit to __inet_stream_connect would execute
-> your BPF program at exactly the same time (and then you can check for
-> err value).
+> ...so the opts play a similiar role to the struct btf_ptr + flags
+> in bpf_snprintf_btf.  I've got this working, but the current
+> implementation is tied to emitting the same C-based syntax as
+> bpf_snprintf_btf(); though of course the printf function is invoked.
+> So a use case looks something like this:
 >
-> Or the point here is to have a more "stable" BPF program type?
-Good suggestion, I can try to play with it, I think it should give me
-all the info I need (I only need sock).
-But yeah, I'd rather prefer a stable interface against stable
-__sk_buff, but maybe fexit will also work.
+>         struct btf_dump_emit_type_data_opts opts;
+>         char skbufmem[1024], skbufstr[8192];
+>         struct btf *btf = libbpf_find_kernel_btf();
+>         struct btf_dump *d;
+>         __s32 skbid;
+>         int indent = 0;
+>
+>         memset(skbufmem, 0xff, sizeof(skbufmem));
+>         opts.data = skbufmem;
+>         opts.sz = sizeof(opts);
+>         opts.indent_level = indent;
+>
+>         d = btf_dump__new(btf, NULL, NULL, printffn);
+>
+>         skbid = btf__find_by_name_kind(btf, "sk_buff", BTF_KIND_STRUCT);
+>         if (skbid < 0) {
+>                 fprintf(stderr, "no skbuff, err %d\n", skbid);
+>                 exit(1);
+>         }
+>
+>         btf_dump__emit_type_data(d, skbid, &opts);
+>
+>
+> ..and we get output of the form
+>
+> (struct sk_buff){
+>  (union){
+>   (struct){
+>    .next = (struct sk_buff *)0xffffffffffffffff,
+>    .prev = (struct sk_buff *)0xffffffffffffffff,
+>    (union){
+>     .dev = (struct net_device *)0xffffffffffffffff,
+>     .dev_scratch = (long unsigned int)18446744073709551615,
+>    },
+>   },
+> ...
+>
+> etc.  However it would be nice to find a way to help printf function
+> providers emit different formats such as JSON without having to
+> parse the data they are provided in the printf function.
+> That would remove the need for the output flags, since the printf
+> function provider could control display.
+
+I might have missed the stated goal for the work you are doing with
+these changes, but in my mind it's mostly debugging/information dump
+of some captured data, for human consumption. I'm very skeptical about
+trying to generalize it to support JSON and other "structured"
+formats. Humans won't be reading JSON when they have the ability to
+look at human-readable C-like syntax. For any other application where
+they'd want more structured representation (e.g., if they want to
+filter, aggregate, etc), it's not really hard to implement similar
+(but tailored to the application's needs) logic just given a raw data
+dump and BTF information. Luckily, BTF and C types are simple enough
+to do this quite effortlessly.
+
+So I'm all for doing a text dump APIs (similar to how BTF-to-C dumping
+API works), but against designing it for JSON and other formats.
+
+>
+> If we provided an option to provider a "kind" printf function,
+> and ensured that the BTF dumper sets a "kind" prior to each
+> _internal_ call to the printf function, we could use that info
+> to adapt output in various ways.  For example, consider the case
+> where we want to emit C-type output.  We can use the kind
+> info to control output for various scenarios:
+>
+> void c_dump_kind_printf(struct btf_dump *d, enum btf_dump_kind kind,
+>                         void *ctx, const char *fmt, va_list args)
+> {
+>         switch (kind) {
+>         case BTF_DUMP_KIND_TYPE_NAME:
+>                 /* For C, add brackets around the type name string ( ) */
+>                 btf_dump__printf(d, "(");
+>                 btf_dump__vprintf(d, fmt, args);
+>                 btf_dump__printf(d, ")");
+>                 break;
+>         case BTF_DUMP_KIND_MEMBER_NAME:
+>                 /* for C, prefix a "." to member name, suffix a "=" */
+>                 btf_dump__printf(d, ".");
+>                 btf_dump__vprintf(d, fmt, args);
+>                 btf_dump__printf(d, " = ");
+>                 break;
+>         ...
+
+Curious, when you are going to dump an array, you'll have separate
+enums for start of array, start of array element, end of array
+element, end of array, etc? It feels a bit like re-inventing
+high-level semantics of the C type system, which BTF is already doing
+(in a different way, of course). Which is why I'm saying having BTF
+and raw bytes dump seems to be a more appropriate approach for more
+sophisticated applications that need to understand data, not just
+pretty-print it.
+
+>
+> Whenever we internally call btf_dump_kind_printf() - and have
+> a kind printf function - it is invoked, and once it's added formatting
+> it invokes the printf function.  So there are two layers of callbacks
+>
+> - the kind callback determines what we print based on the kinds
+>   of objects provided (type names, member names, type data, etc); and
+> - the printf callback determines _how_ we print (e.g. to a file, stdout,
+>   etc).
+>
+> The above suggests we'd need to add btf_dump__*printf() functions.
+>
+> This might allow us to refactor bpftool such that the
+> type traversal code lived in libbpf, while the specifics of
+> how that info is to be dumped live in bpftool.  We'd probably
+> need to provide a C-style kind dumper out of the box in libbpf
+> as a default mechanism.
+>
+> What do you think?
+>
+> Alan
