@@ -2,79 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D63B62F7590
-	for <lists+netdev@lfdr.de>; Fri, 15 Jan 2021 10:37:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 58F692F7591
+	for <lists+netdev@lfdr.de>; Fri, 15 Jan 2021 10:37:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727812AbhAOJhV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Jan 2021 04:37:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57574 "EHLO
+        id S1728593AbhAOJh3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Jan 2021 04:37:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57604 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726484AbhAOJhU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jan 2021 04:37:20 -0500
-Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0EF9FC061757;
-        Fri, 15 Jan 2021 01:36:48 -0800 (PST)
-Received: by mail-pf1-x42a.google.com with SMTP id h10so5122750pfo.9;
-        Fri, 15 Jan 2021 01:36:48 -0800 (PST)
+        with ESMTP id S1726849AbhAOJh2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jan 2021 04:37:28 -0500
+Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53BD4C0613C1;
+        Fri, 15 Jan 2021 01:36:56 -0800 (PST)
+Received: by mail-pg1-x535.google.com with SMTP id p18so5634030pgm.11;
+        Fri, 15 Jan 2021 01:36:56 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=oQuCRraIOONShH3gahP+F3g5+Izjro2CjckT3O7EKOk=;
-        b=UTxOZnZ+Eu79NIc7PrSn+BlK+2312BNfCb/he0kwZyatS/4gLKczdAEepS5MnF+Nm7
-         ol9RuFlQI30jyokX3lrFQNFHw4JgneB22pjGM/kA4XY85q2qL7lRPCQ1MvSZmmRSScr8
-         d2ky8y2pL2Sdek0iSIZ11gxfyEHlArezKZETxKZ7G6gKfRrPqvqHQWFCGznJiG/PrIE9
-         +EeNbejgIdK+usHGG0lSxx998CkjMQdFn8Ezegq9sRL5sNmBIM5SHApmqaWpQo901F7X
-         BW2tFWQgl8bRQfB/iHpWbftjhWb6N87AIdmLdo2yGdkprijLbumGBHdvIafeHxh2SPj/
-         +zfw==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :in-reply-to:references;
+        bh=OTtsm6dyKrVJ0jbDg2f7EoVgwZ5It1gTjh6wfzgk4d0=;
+        b=ruZCSYW1oaH2ZJTusFo2uZ/K0IMbZDczPU59YHk6oizEtzQABrl5XR6MypzlQADjhb
+         WtQHqCEMQ+Vpyg2tE9zydMVaom0CRU1KQXcc3xSGVKKsvCiOP789sAQ0xSBFckK64kzi
+         BbYWThJg/NPdu70urKVQ+0//sHJhwZQTyrzgeTfrEh+2WYiIpo1jiBCwoJM7y6i6T4sK
+         lzw4m3hP2RMEndRGIFoPBmTmGlYF82xG1saJj9gE7+ZQkiPVSmfxvSB1hdVR8ybo6u5+
+         ZkW7I3LX1RmGcu0zWaEdZYA6zk+VhV8in8rIVOhdtxC+LgryjF8gelKUWxPBlv1NCBcR
+         Lceg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=oQuCRraIOONShH3gahP+F3g5+Izjro2CjckT3O7EKOk=;
-        b=F4EqxK4n7FzZp0mNzqME2pWHeJw980ItHiHtQD1Tb3+JG2Qtgl72k0tOgGYU7iD0eT
-         ZKoS713jqc+3IYEZWTbc1lQe2e++4KSYZ4Fo+BNHF4PEXRY9tXQNJ/bAOQPAA3/aVt3S
-         B6CK8kI4rDvswUFcbEmKUU33ri5IpWx531RyriF77JeatPH4wz7Zs9aDIdc4Ai0rY2w+
-         sO4fW8vxfZpy+vYalskzVTqHvl2XOrGFFJUvPuk+rwtc0p3OI2MpWi/dpl/imb8Hgpso
-         t1r4lI7HVkfIHSGJy8Cnl0NkOtVk1W9oz1uM4AKTirmTXlikFsh1z3yexdSSgRSuvg9+
-         Yc4Q==
-X-Gm-Message-State: AOAM530u1mEnP1wKloBFf9wLIdbVKophJjH++V01OTpucjnjVwUJgRH9
-        WmZzqxQL1ARY7RkZdGJeETlrq6QOYdVsIg==
-X-Google-Smtp-Source: ABdhPJyQ4bYoeVCq7tUu3FhK8vLK3g96Ji01h/Zii5PvzKXFb1KlgJVI/Lmne+dESvdGYDIcyIhxSA==
-X-Received: by 2002:a63:752:: with SMTP id 79mr11611413pgh.272.1610703407210;
-        Fri, 15 Jan 2021 01:36:47 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:in-reply-to:references;
+        bh=OTtsm6dyKrVJ0jbDg2f7EoVgwZ5It1gTjh6wfzgk4d0=;
+        b=jU3ehZmHG71ujNYB4alnq+s/1mdPQkmzHbcGKsfMa+uuYcTB7YjQgGaNOaW5PaNaMH
+         UvweSHZgSJIEglQfYWAEVESgXpjQoqCCtZuf7xwJMv6P/6FrwI1fkIU0XiID+5WVF59U
+         uI/oYje2lvUMsnX7PO66PsSIte/4B18HqDRN+jS3N00t6OpUJiX/q0e7AoP8nKmqrY27
+         ly1d9NUqNUVZzheT1mvXV3HSs4vi8n7fF/qgwO8f06PeJERFLrIAfd95uT3lxfzHnNr5
+         BwWgPSjDlI8vH3fICOaqu6Wp4ZTOubFu7/uymebYqxQhIletzEDoC0HobrWnhN/abZdg
+         gyXw==
+X-Gm-Message-State: AOAM530aU6C2c6YMN6HLtSdFIKjnE312zWSNsDYq0rEqQ+Pjr1NxIdzl
+        GFcuzCwkEouZAJ/Uq2//btg4Tg/YIvSZBw==
+X-Google-Smtp-Source: ABdhPJwPl2srwtVq1yf83n3skm/79nBDwiN9RbAJwUTcuWmGFlsxzZ3eXyoWlVZf3lkbJviIL9wcBQ==
+X-Received: by 2002:aa7:9055:0:b029:19e:4bf4:c6bc with SMTP id n21-20020aa790550000b029019e4bf4c6bcmr12002200pfo.58.1610703415627;
+        Fri, 15 Jan 2021 01:36:55 -0800 (PST)
 Received: from localhost ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id z15sm7331032pfn.34.2021.01.15.01.36.46
+        by smtp.gmail.com with ESMTPSA id o83sm259099pfd.158.2021.01.15.01.36.54
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 15 Jan 2021 01:36:46 -0800 (PST)
+        Fri, 15 Jan 2021 01:36:55 -0800 (PST)
 From:   Xin Long <lucien.xin@gmail.com>
 To:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org
 Cc:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
         Neil Horman <nhorman@tuxdriver.com>, davem@davemloft.net,
         Jakub Kicinski <kuba@kernel.org>,
         Alexander Duyck <alexander.duyck@gmail.com>
-Subject: [PATCHv3 net-next 0/2] net: fix the features flag in sctp_gso_segment
-Date:   Fri, 15 Jan 2021 17:36:37 +0800
-Message-Id: <cover.1610703289.git.lucien.xin@gmail.com>
+Subject: [PATCHv3 net-next 1/2] net: move the hsize check to the else block in skb_segment
+Date:   Fri, 15 Jan 2021 17:36:38 +0800
+Message-Id: <bfecc76748f5dc64eaddf501c258dca9efb92bdf.1610703289.git.lucien.xin@gmail.com>
 X-Mailer: git-send-email 2.1.0
+In-Reply-To: <cover.1610703289.git.lucien.xin@gmail.com>
+References: <cover.1610703289.git.lucien.xin@gmail.com>
+In-Reply-To: <cover.1610703289.git.lucien.xin@gmail.com>
+References: <cover.1610703289.git.lucien.xin@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Patch 1/2 is to improve the code in skb_segment(), and it is needed
-by Patch 2/2.
+After commit 89319d3801d1 ("net: Add frag_list support to skb_segment"),
+it goes to process frag_list when !hsize in skb_segment(). However, when
+using skb frag_list, sg normally should not be set. In this case, hsize
+will be set with len right before !hsize check, then it won't go to
+frag_list processing code.
+
+So the right thing to do is move the hsize check to the else block, so
+that it won't affect the !hsize check for frag_list processing.
 
 v1->v2:
-  - see Patch 1/2.
-v2->v3:
-  - change Patch 2/2 to the right patch.
+  - change to do "hsize <= 0" check instead of "!hsize", and also move
+    "hsize < 0" into else block, to save some cycles, as Alex suggested.
 
-Xin Long (2):
-  net: move the hsize check to the else block in skb_segment
-  sctp: remove the NETIF_F_SG flag before calling skb_segment
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
+---
+ net/core/skbuff.c | 11 ++++++-----
+ 1 file changed, 6 insertions(+), 5 deletions(-)
 
- net/core/skbuff.c  | 11 ++++++-----
- net/sctp/offload.c |  2 +-
- 2 files changed, 7 insertions(+), 6 deletions(-)
-
+diff --git a/net/core/skbuff.c b/net/core/skbuff.c
+index 6039069..e835193 100644
+--- a/net/core/skbuff.c
++++ b/net/core/skbuff.c
+@@ -3894,12 +3894,8 @@ struct sk_buff *skb_segment(struct sk_buff *head_skb,
+ 		}
+ 
+ 		hsize = skb_headlen(head_skb) - offset;
+-		if (hsize < 0)
+-			hsize = 0;
+-		if (hsize > len || !sg)
+-			hsize = len;
+ 
+-		if (!hsize && i >= nfrags && skb_headlen(list_skb) &&
++		if (hsize <= 0 && i >= nfrags && skb_headlen(list_skb) &&
+ 		    (skb_headlen(list_skb) == len || sg)) {
+ 			BUG_ON(skb_headlen(list_skb) > len);
+ 
+@@ -3942,6 +3938,11 @@ struct sk_buff *skb_segment(struct sk_buff *head_skb,
+ 			skb_release_head_state(nskb);
+ 			__skb_push(nskb, doffset);
+ 		} else {
++			if (hsize > len || !sg)
++				hsize = len;
++			else if (hsize < 0)
++				hsize = 0;
++
+ 			nskb = __alloc_skb(hsize + doffset + headroom,
+ 					   GFP_ATOMIC, skb_alloc_rx_flag(head_skb),
+ 					   NUMA_NO_NODE);
 -- 
 2.1.0
 
