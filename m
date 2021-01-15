@@ -2,96 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 216C22F710C
-	for <lists+netdev@lfdr.de>; Fri, 15 Jan 2021 04:40:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C13A92F710E
+	for <lists+netdev@lfdr.de>; Fri, 15 Jan 2021 04:41:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728940AbhAODjl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jan 2021 22:39:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37498 "EHLO
+        id S1732557AbhAODkp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jan 2021 22:40:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726311AbhAODjk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 22:39:40 -0500
-Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88A30C061575
-        for <netdev@vger.kernel.org>; Thu, 14 Jan 2021 19:39:00 -0800 (PST)
-Received: by mail-io1-xd30.google.com with SMTP id e22so15665926iom.5
-        for <netdev@vger.kernel.org>; Thu, 14 Jan 2021 19:39:00 -0800 (PST)
+        with ESMTP id S1732512AbhAODko (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 22:40:44 -0500
+Received: from mail-qk1-x730.google.com (mail-qk1-x730.google.com [IPv6:2607:f8b0:4864:20::730])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A680C061757
+        for <netdev@vger.kernel.org>; Thu, 14 Jan 2021 19:40:04 -0800 (PST)
+Received: by mail-qk1-x730.google.com with SMTP id v126so10515318qkd.11
+        for <netdev@vger.kernel.org>; Thu, 14 Jan 2021 19:40:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=ToUJsMwDBuaHsW9Gv8sF8Wp8m3cG4OGDxZ84C52QhTg=;
-        b=KvgZmNvYDisXkuSSUUTLi9XhFpXPFUBzQP94gBKHNsxjqdfyovIuBak325cfLGlxvM
-         dLv/2FlC9zcz+iHNNJRsbvndDGctlkImuZpDLIbQ4GyzgumC9RUJXN9e1LQsumkG82tH
-         xFiO5jcEqZEQbUKtJ6PQsAnpk6kuxqgyNgh4NILgYDi0bYlDoUWQaYRbAl0HEfLlBerT
-         0XXYVSarwv7hcGOsIse+4xEHFdeZiTQDC+tDzq05h8ElH3zsT+scOTm6k8MU3NQ1WYzD
-         1Ysuj4zeEL0EGRtXfzDfZGs5jkc9D7NVH2wbmCYi5IEpjqJAVz15elBmbewgptbI4VPW
-         +wdQ==
+        bh=rfrYO+PzQZa2QgXSwKBu/qFaywy+T6Io8dlHNEUX3yI=;
+        b=n4kETA0UJ2RPfhp5JNojIlpHVNNZficpwIcG6VF6OCwbB6kubdjLD2SR/BJ5DqMcJo
+         k/1ejG49tWV9zHJrLsLNUXWHCpgXUkkRYWqz0ieWz4c8robiPwzsMTVSJop0D0apfwGW
+         sCRApvTXm8DTS0jD126seaO0xdOYe93R5H/jlNo3YxhlboiooQ3T2bJPdgZZ9KPSzbYR
+         C7+HznQpPHl3hR/fP6O7b8Mis9U67mbXWriFKl+nx/KWFhK/ESxJUuJyhNnMEntSmSk4
+         Ws5UAuPVva/LjXZdChHAw6gVLwhrU88AudBfoFGqjQn+INB1jIBlzu/rVX/3hy53F4Sj
+         AZDQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=ToUJsMwDBuaHsW9Gv8sF8Wp8m3cG4OGDxZ84C52QhTg=;
-        b=gbtgtM8l8kq/S8k5a6Dfaa8KlUgXxk40GVOkf23pugsvg+qeL/95If6Lb5QMC4MqIL
-         C7+qqXtm1IAhq/sbtHwOlc4GswL2zcbpp9IyuXzO2F2f9NqFNQBP8QS5KGERuBl5iBq4
-         pU4tqTMx1g4dU59nGXBHTMqYGTsvp/oG5tiaIRXp30iyoKH3tJ/sCM6yL3FwQj4zh9Pd
-         SKGO3BNkyADFprc9n1unq7UgIjr8YP9fZXrsxkieo8zmFiKFk39GW8lXIdggmZkIj040
-         BD5Epqazl6SpOZtpDh8g50r0jhErXt1xJkjp3NssIzEHYud3UuanMm3S+LnHbxG9GTlk
-         8zkA==
-X-Gm-Message-State: AOAM531cnYVZqhy92W6J2P7yL5ihI3b+vBmHdcDh0Cs9M+EF9gb6D/zU
-        sod+4CUMXpDzWHcFhE2LRsXuk5wNK9vNiAVzXRg=
-X-Google-Smtp-Source: ABdhPJx/Bdwz7tTtP4cyJHfBEa/AYK5NdTPYk/LIz48SVXOhUT8T0ylHN1ynlFfwhE8DzIz+vfk5PgYKMCtLPeuAUl0=
-X-Received: by 2002:a92:d210:: with SMTP id y16mr9245356ily.97.1610681939931;
- Thu, 14 Jan 2021 19:38:59 -0800 (PST)
+        bh=rfrYO+PzQZa2QgXSwKBu/qFaywy+T6Io8dlHNEUX3yI=;
+        b=LxS0RgL93tbcgiuIjBjzVGou1KvfwtZuu/FMCb4UUfFMUMhMeQgUi4zTTsnf1KF6da
+         PBzuuZZDcWNrPVjBF1ThPF9EeRqrJCBWvGH7YM/griMIbUQdDjMa+aNX1dnzFKgVMJw9
+         WtwbY6ulP5mG4sXgd27tLWJKSRN29tPoDdp+pUFtiDKkJVsE7ZXN51nR4tXSn7b51/y+
+         /q4hxKC+GfSzgtmCU1E00R6ohuyt3x1U//z/MAsq4LNmtMsk5ktHovDw8EMBJWLA3D0V
+         /cX6o3wpPNxBxzRN0IldzrwOkSYGgB062X7H8a9MZTuzYHeztqVMYzo1lvs1UjD6x/CS
+         RGzQ==
+X-Gm-Message-State: AOAM531Vbv7ovRbjauxUsJefaYqSj6p36XcV26sDlUIHXuQfRiHUkM0W
+        cJ+91I76iNRHAPgE6vU9guS26jC/+aRTS93mcCs7peQfhSkBNA==
+X-Google-Smtp-Source: ABdhPJxXAHrb2NsmvMNmhQMUV91h9BRzJJOWXPngoYyejvZNF3LZUpmlGg9PJfyt2CNYzclJ9nOXtG5fDk8MxCb5GVc=
+X-Received: by 2002:a05:620a:b0f:: with SMTP id t15mr10667659qkg.485.1610682003281;
+ Thu, 14 Jan 2021 19:40:03 -0800 (PST)
 MIME-Version: 1.0
-References: <20210115003123.1254314-1-weiwan@google.com> <20210115003123.1254314-3-weiwan@google.com>
- <CAKgT0UdiBnLiGP=C0XKTpv-_Z-UTGSfkwtL-2QzHZS3AEkMbnA@mail.gmail.com>
-In-Reply-To: <CAKgT0UdiBnLiGP=C0XKTpv-_Z-UTGSfkwtL-2QzHZS3AEkMbnA@mail.gmail.com>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Thu, 14 Jan 2021 19:38:49 -0800
-Message-ID: <CAKgT0UeP2YWwim1QELj_6mp1R7HGPgtwcd_xruAZAmJk9ivR9A@mail.gmail.com>
-Subject: Re: [PATCH net-next v6 2/3] net: implement threaded-able napi poll
- loop support
-To:     Wei Wang <weiwan@google.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Netdev <netdev@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Hannes Frederic Sowa <hannes@stressinduktion.org>,
-        Felix Fietkau <nbd@nbd.name>
+References: <20210113213321.2832906-1-sdf@google.com> <20210113213321.2832906-2-sdf@google.com>
+ <CAADnVQLssJ4oStg7C4W-nafFKaka1H3-N0DhsBrB3FdmgyUC_A@mail.gmail.com>
+In-Reply-To: <CAADnVQLssJ4oStg7C4W-nafFKaka1H3-N0DhsBrB3FdmgyUC_A@mail.gmail.com>
+From:   Stanislav Fomichev <sdf@google.com>
+Date:   Thu, 14 Jan 2021 19:39:52 -0800
+Message-ID: <CAKH8qBsaZjOkvGZuNCtG=V2M9YfAJgtG+moAejwtBCB6kNJUwA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v8 1/3] bpf: remove extra lock_sock for TCP_ZEROCOPY_RECEIVE
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        Eric Dumazet <edumazet@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 14, 2021 at 7:14 PM Alexander Duyck
-<alexander.duyck@gmail.com> wrote:
+On Thu, Jan 14, 2021 at 7:27 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
 >
-> On Thu, Jan 14, 2021 at 4:33 PM Wei Wang <weiwan@google.com> wrote:
+> On Wed, Jan 13, 2021 at 1:33 PM Stanislav Fomichev <sdf@google.com> wrote:
 > >
-
-<snip>
-
-> > +void napi_enable(struct napi_struct *n)
-> > +{
-> > +       BUG_ON(!test_bit(NAPI_STATE_SCHED, &n->state));
-> > +       smp_mb__before_atomic();
-> > +       clear_bit(NAPI_STATE_SCHED, &n->state);
-> > +       clear_bit(NAPI_STATE_NPSVC, &n->state);
-> > +       WARN_ON(napi_set_threaded(n, n->dev->threaded));
+> > Add custom implementation of getsockopt hook for TCP_ZEROCOPY_RECEIVE.
+> > We skip generic hooks for TCP_ZEROCOPY_RECEIVE and have a custom
+> > call in do_tcp_getsockopt using the on-stack data. This removes
+> > 3% overhead for locking/unlocking the socket.
+> >
+> > Without this patch:
+> >      3.38%     0.07%  tcp_mmap  [kernel.kallsyms]  [k] __cgroup_bpf_run_filter_getsockopt
+> >             |
+> >              --3.30%--__cgroup_bpf_run_filter_getsockopt
+> >                        |
+> >                         --0.81%--__kmalloc
+> >
+> > With the patch applied:
+> >      0.52%     0.12%  tcp_mmap  [kernel.kallsyms]  [k] __cgroup_bpf_run_filter_getsockopt_kern
+> >
+> > Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> > Cc: Martin KaFai Lau <kafai@fb.com>
+> > Cc: Song Liu <songliubraving@fb.com>
+> > Cc: Eric Dumazet <edumazet@google.com>
+> > Acked-by: Martin KaFai Lau <kafai@fb.com>
 >
-> I am not sure what the point is in having a return value if you are
-> just using it to trigger a WARN_ON. It might make more sense to
-> actually set the WARN_ON inside of napi_set_threaded instead of having
-> it here as you could then identify the error much more easily. Or for
-> that matter you might be able to use something like pr_warn which
-> would allow you a more detailed message about the specific netdev that
-> experienced the failure.
-
-One additional change I would make here. The call to napi_set_threaded
-should be moved to before the smp_mb__before_atomic(). That way we can
-guarantee that the threaded flag and task_struct pointer are visible
-to all consumers before they can set NAPI_STATE_SCHED. Otherwise I
-think we run the risk of a race where a napi request could fire before
-we have finished configuring it.
+> Few issues in this patch and the patch 2 doesn't apply:
+> Switched to a new branch 'tmp'
+> Applying: bpf: Remove extra lock_sock for TCP_ZEROCOPY_RECEIVE
+> .git/rebase-apply/patch:295: trailing whitespace.
+> #endif
+> .git/rebase-apply/patch:306: trailing whitespace.
+> union tcp_word_hdr {
+> .git/rebase-apply/patch:309: trailing whitespace.
+> };
+> .git/rebase-apply/patch:311: trailing whitespace.
+> #define tcp_flag_word(tp) ( ((union tcp_word_hdr *)(tp))->words [3])
+> .git/rebase-apply/patch:313: trailing whitespace.
+> enum {
+> warning: squelched 1 whitespace error
+> warning: 6 lines add whitespace errors.
+> Applying: bpf: Try to avoid kzalloc in cgroup/{s,g}etsockopt
+> error: patch failed: kernel/bpf/cgroup.c:1390
+> error: kernel/bpf/cgroup.c: patch does not apply
+> Patch failed at 0002 bpf: Try to avoid kzalloc in cgroup/{s,g}etsockopt
+Sorry, I mentioned in the cover letter that the series requires
+4be34f3d0731 ("bpf: Don't leak memory in bpf getsockopt when optlen == 0")
+which is only in the bpf tree. No sure when bpf & bpf-next merge.
+Or are you trying to apply on top of that?
