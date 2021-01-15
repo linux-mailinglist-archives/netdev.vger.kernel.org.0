@@ -2,122 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 93D8F2F7E3D
-	for <lists+netdev@lfdr.de>; Fri, 15 Jan 2021 15:32:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 682A22F7E5B
+	for <lists+netdev@lfdr.de>; Fri, 15 Jan 2021 15:36:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732208AbhAOOb2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Jan 2021 09:31:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36404 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726030AbhAOOb2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jan 2021 09:31:28 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 778D6C0613D3
-        for <netdev@vger.kernel.org>; Fri, 15 Jan 2021 06:30:47 -0800 (PST)
-Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1l0Q7b-0002jd-LQ; Fri, 15 Jan 2021 15:30:39 +0100
-Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1l0Q7Z-00089T-K2; Fri, 15 Jan 2021 15:30:37 +0100
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     mkl@pengutronix.de, "David S. Miller" <davem@davemloft.net>,
+        id S1732572AbhAOOft (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Jan 2021 09:35:49 -0500
+Received: from mail-40134.protonmail.ch ([185.70.40.134]:39771 "EHLO
+        mail-40134.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732214AbhAOOfs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jan 2021 09:35:48 -0500
+Date:   Fri, 15 Jan 2021 14:34:56 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
+        t=1610721305; bh=TQQJqIAOl8U91/OpE5V91qeQpQLEEGZk67YCSZa+8Lo=;
+        h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
+        b=mffgRhhwcN97uCvyqIBv0S412R4INgXfk74WYkNomIF2o/yBP/5oH7pcKMWx0SqWH
+         N1Od6MyrojuRDXmUs6E6JUllsHLmTD5dHyLhm46gzWrc6lmJsbx2Ei3BHtrxkosfXc
+         tVuu8bzPBeEYVs4gFtaUk3YgteTwCHdFXWx34E7xQk/zILkM3DhRSWy709DpjQ46iy
+         kL7dtppXXgi5EcouJYniwZS/ZrOtj84TkyQ1yREPKKpcd4+emWxCygaUjm69cpwozt
+         yw/QAT+gJHrJE7MylyF8k+QrBvYVOTNATHCjriekzEPTI33P4G4nrtaUK5cKK3w2om
+         BraQVaNjLyKoQ==
+To:     Eric Dumazet <edumazet@google.com>
+From:   Alexander Lobakin <alobakin@pm.me>
+Cc:     Alexander Lobakin <alobakin@pm.me>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Oliver Hartkopp <socketcan@hartkopp.net>,
-        Robin van der Gracht <robin@protonic.nl>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
-        linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [RFC PATCH net 2/2] net: can: j1939: fix check for valid CAN devices
-Date:   Fri, 15 Jan 2021 15:30:36 +0100
-Message-Id: <20210115143036.31275-2-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.30.0
-In-Reply-To: <20210115143036.31275-1-o.rempel@pengutronix.de>
-References: <20210115143036.31275-1-o.rempel@pengutronix.de>
+        Willem de Bruijn <willemb@google.com>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Guillaume Nault <gnault@redhat.com>,
+        Yunsheng Lin <linyunsheng@huawei.com>,
+        Florian Westphal <fw@strlen.de>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Dongseok Yi <dseok.yi@samsung.com>,
+        Yadu Kishore <kyk.segfault@gmail.com>,
+        Al Viro <viro@zeniv.linux.org.uk>,
+        Marco Elver <elver@google.com>,
+        Alexander Duyck <alexanderduyck@fb.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Reply-To: Alexander Lobakin <alobakin@pm.me>
+Subject: Re: [PATCH net] skbuff: back tiny skbs with kmalloc() in __netdev_alloc_skb() too
+Message-ID: <20210115143424.83784-1-alobakin@pm.me>
+In-Reply-To: <CANn89iKi8jsBsCPqNvfQ9Wx6k6EZy5daL33c8YnAfkXZS+QWHw@mail.gmail.com>
+References: <20210114235423.232737-1-alobakin@pm.me> <CANn89iKi8jsBsCPqNvfQ9Wx6k6EZy5daL33c8YnAfkXZS+QWHw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.2 required=10.0 tests=ALL_TRUSTED,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF shortcircuit=no
+        autolearn=disabled version=3.4.4
+X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on
+        mailout.protonmail.ch
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With the last patch a dedicated struct can_ml pointer was added to the
-struct netdevice to store CAN stack related private data. The data is
-only allocated and the pointer is only set by CAN devices.
+From: Eric Dumazet <edumazet@google.com>
+Date: Fri, 15 Jan 2021 15:28:37 +0100
 
-Now we use a NULL pointer check on ndev->can to check for real CAN
-devices. Only checking the ARPHRD via ndev->type is not sufficient,
-since it can be set by user space to an arbitrary value for tun/tap
-devices.
+> On Fri, Jan 15, 2021 at 12:55 AM Alexander Lobakin <alobakin@pm.me> wrote=
+:
+>>
+>> Commit 3226b158e67c ("net: avoid 32 x truesize under-estimation for
+>> tiny skbs") ensured that skbs with data size lower than 1025 bytes
+>> will be kmalloc'ed to avoid excessive page cache fragmentation and
+>> memory consumption.
+>> However, the same issue can still be achieved manually via
+>> __netdev_alloc_skb(), where the check for size hasn't been changed.
+>> Mirror the condition from __napi_alloc_skb() to prevent from that.
+>>
+>> Fixes: 3226b158e67c ("net: avoid 32 x truesize under-estimation for tiny=
+ skbs")
+>
+> No, this tag is wrong, if you fix a bug, bug is much older than linux-5.1=
+1
+>
+> My fix was about GRO head and virtio_net heads, both using pre-sized
+> small buffers.
+>
+> You want to fix something else, and this is fine, because some drivers
+> are unfortunately
+> doing copy break ( at the cost of additional copy, even for packets
+> that might be consumed right away)
 
-Since the ndev->type and ndev->can are now checked early, this patch
-removes obsolete checks further down the call stacks.
+You're right, it's about copybreak. I thought about wrong "Fixes"
+right after sending, but... Sorry.
+Will send v2 soon.
 
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
----
- net/can/j1939/main.c   | 12 +++---------
- net/can/j1939/socket.c |  2 +-
- 2 files changed, 4 insertions(+), 10 deletions(-)
-
-diff --git a/net/can/j1939/main.c b/net/can/j1939/main.c
-index 62088074230d..fbc0d25046e2 100644
---- a/net/can/j1939/main.c
-+++ b/net/can/j1939/main.c
-@@ -213,9 +213,6 @@ static inline struct j1939_priv *j1939_ndev_to_priv(struct net_device *ndev)
- {
- 	struct can_ml_priv *can_ml_priv = ndev->can;
- 
--	if (!can_ml_priv)
--		return NULL;
--
- 	return can_ml_priv->j1939_priv;
- }
- 
-@@ -225,9 +222,6 @@ static struct j1939_priv *j1939_priv_get_by_ndev_locked(struct net_device *ndev)
- 
- 	lockdep_assert_held(&j1939_netdev_lock);
- 
--	if (ndev->type != ARPHRD_CAN)
--		return NULL;
--
- 	priv = j1939_ndev_to_priv(ndev);
- 	if (priv)
- 		j1939_priv_get(priv);
-@@ -350,13 +344,13 @@ static int j1939_netdev_notify(struct notifier_block *nb,
- 	struct net_device *ndev = netdev_notifier_info_to_dev(data);
- 	struct j1939_priv *priv;
- 
-+	if (ndev->type != ARPHRD_CAN || !ndev->can)
-+		goto notify_put;
-+
- 	priv = j1939_priv_get_by_ndev(ndev);
- 	if (!priv)
- 		goto notify_done;
- 
--	if (ndev->type != ARPHRD_CAN)
--		goto notify_put;
--
- 	switch (msg) {
- 	case NETDEV_DOWN:
- 		j1939_cancel_active_session(priv, NULL);
-diff --git a/net/can/j1939/socket.c b/net/can/j1939/socket.c
-index 8010fbc8bd29..61732e558980 100644
---- a/net/can/j1939/socket.c
-+++ b/net/can/j1939/socket.c
-@@ -461,7 +461,7 @@ static int j1939_sk_bind(struct socket *sock, struct sockaddr *uaddr, int len)
- 			goto out_release_sock;
- 		}
- 
--		if (ndev->type != ARPHRD_CAN) {
-+		if (ndev->type != ARPHRD_CAN || !ndev->can) {
- 			dev_put(ndev);
- 			ret = -ENODEV;
- 			goto out_release_sock;
--- 
-2.30.0
+Thanks,
+Al
 
