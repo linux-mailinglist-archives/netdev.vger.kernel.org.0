@@ -2,57 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 22F742F6FF8
-	for <lists+netdev@lfdr.de>; Fri, 15 Jan 2021 02:28:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C9632F6FFD
+	for <lists+netdev@lfdr.de>; Fri, 15 Jan 2021 02:31:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731491AbhAOB1R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jan 2021 20:27:17 -0500
-Received: from mail.kernel.org ([198.145.29.99]:58336 "EHLO mail.kernel.org"
+        id S1731541AbhAOBax (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jan 2021 20:30:53 -0500
+Received: from mail.kernel.org ([198.145.29.99]:58670 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725815AbhAOB1Q (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 14 Jan 2021 20:27:16 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E000423A56;
-        Fri, 15 Jan 2021 01:26:35 +0000 (UTC)
+        id S1731514AbhAOBaw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 14 Jan 2021 20:30:52 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id C176023A58;
+        Fri, 15 Jan 2021 01:30:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610673996;
-        bh=G4xO44jQQNM8390Gi1ejtIukH5AXdbCKSxCrRj6Yt0o=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=IOojx826GmBhMq56mwDTE0MfNlHDkwbmk451/SoyjTnNRUIIu4h1IPThNqljpRodA
-         eWkSEY5EJ7LkSEpYS64fn9q7GuMog4ms5YNQscHFgr+u83KGaGod4M/1QmntrQjL9g
-         Vatlm4yYLVe6YWb+EEKKUkU+1h0s2vdr89zhNaJR2kWaGUr7KryJYJqdaAYS1yC1dv
-         YQLyha8p1XmCl4/1+7zxkxZhWxalqdfPf0U9ORQCLOUhrl0IAP+QftJWKXg32HJqqh
-         yYGHyh8ZM28EzX4861AMGYLwv75psq34dbOw9koDMBbiMo380C603oSPslPQa4tDUC
-         a+ucuLPBKaxBw==
-Date:   Thu, 14 Jan 2021 17:26:35 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        linux-can@vger.kernel.org, kernel@pengutronix.de
-Subject: Re: pull-request: can-next 2021-01-14
-Message-ID: <20210114172635.06c00f4d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210114075617.1402597-1-mkl@pengutronix.de>
-References: <20210114075617.1402597-1-mkl@pengutronix.de>
+        s=k20201202; t=1610674211;
+        bh=jO/7VoBdnp153aZ/9GAuOHrCO2FXId9zyeMWEtwoWDE=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=DSMmtHXS44Lg/LVb8GgWRenx7My2LSDyIENZo2BGwMRXildhTkeYGkJj1MT7Ni5Kn
+         hmnHZvExZ9K3XBZauVpdYVcKEM4vf8QZdrxWg8YurbnbVhHfZgFxOPodbfLPJ5fDsj
+         iDJW+op0AX4FL925gf7TwIYxEZNTGSi3fQYRxvzcS9P+rmlKy05WdVV6d2uVHKM91M
+         xVS8gxXF3hlUvfGr8nuFlLW9MImDFx4Yj5VnBISxBbHylskIYfxp2gTtstSrMof1x2
+         EV18byyyfo6f7PROgOyd3Kr2kD39Tr7GDVn/oP+oc78eKszPa6P6QnEXyVYEL2nm2K
+         jgU2sPeNt5eqQ==
+Received: from pdx-korg-docbuild-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-1.ci.codeaurora.org (Postfix) with ESMTP id B165760593;
+        Fri, 15 Jan 2021 01:30:11 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v5 net-next 0/5] net: dsa: Link aggregation support
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161067421172.20666.7709387943269301612.git-patchwork-notify@kernel.org>
+Date:   Fri, 15 Jan 2021 01:30:11 +0000
+References: <20210113084255.22675-1-tobias@waldekranz.com>
+In-Reply-To: <20210113084255.22675-1-tobias@waldekranz.com>
+To:     Tobias Waldekranz <tobias@waldekranz.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com, olteanv@gmail.com,
+        j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
+        netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 14 Jan 2021 08:56:00 +0100 Marc Kleine-Budde wrote:
-> The first two patches update the MAINTAINERS file, Lukas Bulwahn's patch fixes
-> the files entry for the tcan4x5x driver, which was broken by me in net-next.
-> A patch by me adds the a missing header file to the CAN Networking Layer.
-> 
-> The next 5 patches are by me and split the the CAN driver related
-> infrastructure code into more files in a separate subdir. The next two patches
-> by me clean up the CAN length related code. This is followed by 6 patches by
-> Vincent Mailhol and me, they add helper code for for CAN frame length
-> calculation neede for BQL support.
-> 
-> A patch by Vincent Mailhol adds software TX timestamp support.
-> 
-> The last patch is by me, targets the tcan4x5x driver, and removes the unneeded
-> __packed attribute from the struct tcan4x5x_map_buf.
+Hello:
 
-Pulled, thanks1
+This series was applied to netdev/net-next.git (refs/heads/master):
+
+On Wed, 13 Jan 2021 09:42:50 +0100 you wrote:
+> Start of by adding an extra notification when adding a port to a bond,
+> this allows static LAGs to be offloaded using the bonding driver.
+> 
+> Then add the generic support required to offload link aggregates to
+> drivers built on top of the DSA subsystem.
+> 
+> Finally, implement offloading for the mv88e6xxx driver, i.e. Marvell's
+> LinkStreet family.
+> 
+> [...]
+
+Here is the summary with links:
+  - [v5,net-next,1/5] net: bonding: Notify ports about their initial state
+    https://git.kernel.org/netdev/net-next/c/32d4c5647aad
+  - [v5,net-next,2/5] net: dsa: Don't offload port attributes on standalone ports
+    https://git.kernel.org/netdev/net-next/c/5696c8aedfcc
+  - [v5,net-next,3/5] net: dsa: Link aggregation support
+    https://git.kernel.org/netdev/net-next/c/058102a6e9eb
+  - [v5,net-next,4/5] net: dsa: mv88e6xxx: Link aggregation support
+    https://git.kernel.org/netdev/net-next/c/57e661aae6a8
+  - [v5,net-next,5/5] net: dsa: tag_dsa: Support reception of packets from LAG devices
+    https://git.kernel.org/netdev/net-next/c/5b60dadb71db
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
