@@ -2,93 +2,146 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 978C92F7FD1
-	for <lists+netdev@lfdr.de>; Fri, 15 Jan 2021 16:40:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 451142F7FE9
+	for <lists+netdev@lfdr.de>; Fri, 15 Jan 2021 16:45:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732870AbhAOPjv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Jan 2021 10:39:51 -0500
-Received: from mail-ot1-f44.google.com ([209.85.210.44]:46303 "EHLO
-        mail-ot1-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726402AbhAOPju (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jan 2021 10:39:50 -0500
-Received: by mail-ot1-f44.google.com with SMTP id w3so8857407otp.13;
-        Fri, 15 Jan 2021 07:39:34 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=PTG4XjYK/jBh4H7zmaVSMljX5drX3ubXuh1HX7s1fYs=;
-        b=Mp5ugw9wZJYG4fAIz6nNn6qQKO2RcSzvnpiDg96KfHqgnAm5Ftv16PzFgTYq3XVSxN
-         psltgJrwBtsYGUxoidlxJ4HdMBm5GqWVG9zlrr2blmZ4d+Oer+dKsmy7TweazRMiOWDp
-         ViK5LaUmKx4JXcFvqtmK3FfSKOAto1I7mRYUE38ciKClo3+jLokNUZOwyqBuD5NmxwpO
-         OybpYS54nTvXxvK8t7bHeIbRxMiGXL8hhjbr9fzuBiJyyTlLxDHyQCLgOudY759Qv9aE
-         hxC4xDnUteC3gLp8mrQHlpE2WRaEb+pDP0vjk88bZ4Dqzy6VHF/9xVYsygUJgN1h2Kh8
-         3SIw==
-X-Gm-Message-State: AOAM531WOZUS3q8usXsk1C8Rlj0XUEJa66NTWSKLzOf2bE4NFUCJnBPX
-        pZO8tiA56Zjem0JI0y2dwQ==
-X-Google-Smtp-Source: ABdhPJwE0AownlDAn5tWiLxVCLov0JhqYkwwbYGHVgrXVQMvkITh29UivxojEnNjEQSUesJ3VTL/XA==
-X-Received: by 2002:a9d:1cae:: with SMTP id l46mr8486962ota.249.1610725149077;
-        Fri, 15 Jan 2021 07:39:09 -0800 (PST)
-Received: from robh.at.kernel.org (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id y84sm1766890oig.36.2021.01.15.07.39.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 Jan 2021 07:39:08 -0800 (PST)
-Received: (nullmailer pid 1311457 invoked by uid 1000);
-        Fri, 15 Jan 2021 15:39:04 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Steen Hegelund <steen.hegelund@microchip.com>
-Cc:     Device Tree List <devicetree@vger.kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        Russell King <linux@armlinux.org.uk>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Mark Einon <mark.einon@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-In-Reply-To: <20210115135339.3127198-2-steen.hegelund@microchip.com>
-References: <20210115135339.3127198-1-steen.hegelund@microchip.com> <20210115135339.3127198-2-steen.hegelund@microchip.com>
-Subject: Re: [RFC PATCH v3 1/8] dt-bindings: net: sparx5: Add sparx5-switch bindings
-Date:   Fri, 15 Jan 2021 09:39:04 -0600
-Message-Id: <1610725144.888233.1311456.nullmailer@robh.at.kernel.org>
+        id S1728338AbhAOPor (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Jan 2021 10:44:47 -0500
+Received: from out4-smtp.messagingengine.com ([66.111.4.28]:41635 "EHLO
+        out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727198AbhAOPor (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jan 2021 10:44:47 -0500
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id 02CFC5C01E9;
+        Fri, 15 Jan 2021 10:44:01 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Fri, 15 Jan 2021 10:44:01 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=f9YIVE
+        6NCOoCcCZtYt93p7Be1ZlVO7Tt8ZT5tMC2470=; b=XuLjh4hvM4RyO4XL2Xa7oY
+        +h3Ch0NhnlEQZBMRU3ITJZMSXkDjkjhNyCyXRrEPU/HzOwoNP3qHM4/5gqmFw8Qg
+        Rp3lOBF9KoVLF8RnWPLYkd5lpm3Rn8Nfjpv5YoIVrTecHY4r2jszJ03qvLEfWhLj
+        DN5siqdqOeeIHlDzme38M8LirHleGjv3yDJYFRuMXwOjet8f3Ou/lQVBlirxJKon
+        dKhqgtdeidofIDGVkE+SygdIo96XqudKcE8ambDzc0efizUL4ejQXdoYN9FuibVK
+        xcW1n33NQAsnYI8Ms0sKNvxAYu+7I5+mlpLKsTEpoHflss53cYDT+s6O8h9j2G+Q
+        ==
+X-ME-Sender: <xms:QLgBYL-9UjIRYpPJkP18IdqTgHxTK06vUY5PCBLrUJiRYIWFoOuZ5g>
+    <xme:QLgBYJvP6s0Gv_nlLP9l8b9Syi7mXPRbYcEDHVP-0DwF59EE_6mdNXDnHUKlHc2AD
+    mLVWKvk48gJy8Y>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrtddvgdehhecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcuufgt
+    hhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrthhtvg
+    hrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudehleet
+    necukfhppeekgedrvddvledrudehfedrgeegnecuvehluhhsthgvrhfuihiivgeptdenuc
+    frrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:QLgBYCYo2djT5HEHRZrmTMDITcchju2thrDaMLhneCmVI6IpGBqHtQ>
+    <xmx:QLgBYJoxtQbP_TwinYxkOn56S0qtZP2y9lYpcejvM0kYWX37bFtD8g>
+    <xmx:QLgBYH9nWa3hS2S0nUEYvgvm7IE7hCkynFbAI1yaVt4TGJFRvga9lw>
+    <xmx:QbgBYG6R8wfUQccLzhnwKfOuH_B4xEgowd_1wifqsz7N6uNu2d790A>
+Received: from localhost (igld-84-229-153-44.inter.net.il [84.229.153.44])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 0F0B3108005F;
+        Fri, 15 Jan 2021 10:43:59 -0500 (EST)
+Date:   Fri, 15 Jan 2021 17:43:57 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        jacob.e.keller@intel.com, roopa@nvidia.com, mlxsw@nvidia.com
+Subject: Re: [patch net-next RFC 00/10] introduce line card support for
+ modular switch
+Message-ID: <20210115154357.GA2064789@shredder.lan>
+References: <20210113121222.733517-1-jiri@resnulli.us>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210113121222.733517-1-jiri@resnulli.us>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 15 Jan 2021 14:53:32 +0100, Steen Hegelund wrote:
-> Document the Sparx5 switch device driver bindings
+On Wed, Jan 13, 2021 at 01:12:12PM +0100, Jiri Pirko wrote:
+> # Create a new netdevsim device, with no ports and 2 line cards:
+> $ echo "10 0 2" >/sys/bus/netdevsim/new_device
+> $ devlink port # No ports are listed
+> $ devlink lc
+> netdevsim/netdevsim10:
+>   lc 0 state unprovisioned
+>     supported_types:
+>        card1port card2ports card4ports
+>   lc 1 state unprovisioned
+>     supported_types:
+>        card1port card2ports card4ports
 > 
-> Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
-> Signed-off-by: Lars Povlsen <lars.povlsen@microchip.com>
-> ---
->  .../bindings/net/microchip,sparx5-switch.yaml | 211 ++++++++++++++++++
->  1 file changed, 211 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/net/microchip,sparx5-switch.yaml
+> # Note that driver advertizes supported line card types. In case of
+> # netdevsim, these are 3.
 > 
+> $ devlink lc provision netdevsim/netdevsim10 lc 0 type card4ports
 
-My bot found errors running 'make dt_binding_check' on your patch:
+Why do we need a separate command for that? You actually introduced
+'DEVLINK_CMD_LINECARD_SET' in patch #1, but it's never used.
 
-yamllint warnings/errors:
-./Documentation/devicetree/bindings/net/microchip,sparx5-switch.yaml:92:16: [warning] wrong indentation: expected 14 but found 15 (indentation)
+I prefer:
 
-dtschema/dtc warnings/errors:
+devlink lc set netdevsim/netdevsim10 index 0 state provision type card4ports
+devlink lc set netdevsim/netdevsim10 index 0 state unprovision
 
-See https://patchwork.ozlabs.org/patch/1427023
+It is consistent with the GET/SET/NEW/DEL pattern used by other
+commands.
 
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
-
+> $ devlink lc
+> netdevsim/netdevsim10:
+>   lc 0 state provisioned type card4ports
+>     supported_types:
+>        card1port card2ports card4ports
+>   lc 1 state unprovisioned
+>     supported_types:
+>        card1port card2ports card4ports
+> $ devlink port
+> netdevsim/netdevsim10/1000: type eth netdev eni10nl0p1 flavour physical lc 0 port 1 splittable false
+> netdevsim/netdevsim10/1001: type eth netdev eni10nl0p2 flavour physical lc 0 port 2 splittable false
+> netdevsim/netdevsim10/1002: type eth netdev eni10nl0p3 flavour physical lc 0 port 3 splittable false
+> netdevsim/netdevsim10/1003: type eth netdev eni10nl0p4 flavour physical lc 0 port 4 splittable false
+> #                                                 ^^                    ^^^^
+> #                                     netdev name adjusted          index of a line card this port belongs to
+> 
+> $ ip link set eni10nl0p1 up 
+> $ ip link show eni10nl0p1   
+> 165: eni10nl0p1: <NO-CARRIER,BROADCAST,NOARP,UP> mtu 1500 qdisc noqueue state DOWN mode DEFAULT group default qlen 1000
+>     link/ether 7e:2d:05:93:d3:d1 brd ff:ff:ff:ff:ff:ff
+> 
+> # Now activate the line card using debugfs. That emulates plug-in event
+> # on real hardware:
+> $ echo "Y"> /sys/kernel/debug/netdevsim/netdevsim10/linecards/0/active
+> $ ip link show eni10nl0p1
+> 165: eni10nl0p1: <BROADCAST,NOARP,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP mode DEFAULT group default qlen 1000
+>     link/ether 7e:2d:05:93:d3:d1 brd ff:ff:ff:ff:ff:ff
+> # The carrier is UP now.
+> 
+> Jiri Pirko (10):
+>   devlink: add support to create line card and expose to user
+>   devlink: implement line card provisioning
+>   devlink: implement line card active state
+>   devlink: append split port number to the port name
+>   devlink: add port to line card relationship set
+>   netdevsim: introduce line card support
+>   netdevsim: allow port objects to be linked with line cards
+>   netdevsim: create devlink line card object and implement provisioning
+>   netdevsim: implement line card activation
+>   selftests: add netdevsim devlink lc test
+> 
+>  drivers/net/netdevsim/bus.c                   |  21 +-
+>  drivers/net/netdevsim/dev.c                   | 370 ++++++++++++++-
+>  drivers/net/netdevsim/netdev.c                |   2 +
+>  drivers/net/netdevsim/netdevsim.h             |  23 +
+>  include/net/devlink.h                         |  44 ++
+>  include/uapi/linux/devlink.h                  |  25 +
+>  net/core/devlink.c                            | 443 +++++++++++++++++-
+>  .../drivers/net/netdevsim/devlink.sh          |  62 ++-
+>  8 files changed, 964 insertions(+), 26 deletions(-)
+> 
+> -- 
+> 2.26.2
+> 
