@@ -2,98 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0B9292F7EE8
-	for <lists+netdev@lfdr.de>; Fri, 15 Jan 2021 16:07:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 31D1B2F7EEF
+	for <lists+netdev@lfdr.de>; Fri, 15 Jan 2021 16:07:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732728AbhAOPFc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Jan 2021 10:05:32 -0500
-Received: from mail-40131.protonmail.ch ([185.70.40.131]:33531 "EHLO
-        mail-40131.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728020AbhAOPFb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jan 2021 10:05:31 -0500
-Date:   Fri, 15 Jan 2021 15:04:40 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
-        t=1610723089; bh=2oo8j0bPGH6PgdbONPcPCL6akNQMZOzVlG5AWg81tgk=;
-        h=Date:To:From:Cc:Reply-To:Subject:From;
-        b=OiMHZ41B2gEwXP7zksVL6ZWiLD7JE9eEaMjy5SRPNRNd+4lAn74xloZaOpVF5BGmy
-         cuus3rCgP739fKqxfgEJFUCP+nIgmukJRktNV7pBt2i57jyb//uRmYUurQT6fGn0Sk
-         oCx079r0SNkM1DezSGILFfLW542kOOimgSNh7ICMwYxev0iHPjmoCZ6zOBhbuy+SHW
-         nKr2ILfUgk7vKYEQktoWQAaQoP7NQfflCI52+m9Z1K8gpxOsJw8dztOhIvneGy/KHI
-         jqBGXKH14jrW34XZzpoPVP3SHKUjvgPNqhIEUA858KNFiD8rxciuWVYoftaty0VSmT
-         rHJh6i5d3Z/dg==
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-From:   Alexander Lobakin <alobakin@pm.me>
-Cc:     Willem de Bruijn <willemb@google.com>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Eric Dumazet <edumazet@google.com>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Florian Westphal <fw@strlen.de>,
-        Yunsheng Lin <linyunsheng@huawei.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Guillaume Nault <gnault@redhat.com>,
-        Dongseok Yi <dseok.yi@samsung.com>,
-        Yadu Kishore <kyk.segfault@gmail.com>,
-        Al Viro <viro@zeniv.linux.org.uk>,
-        Marco Elver <elver@google.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Reply-To: Alexander Lobakin <alobakin@pm.me>
-Subject: [PATCH v2 net] skbuff: back tiny skbs with kmalloc() in __netdev_alloc_skb() too
-Message-ID: <20210115150354.85967-1-alobakin@pm.me>
+        id S1731883AbhAOPGw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Jan 2021 10:06:52 -0500
+Received: from mail-out.m-online.net ([212.18.0.10]:56258 "EHLO
+        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725910AbhAOPGv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jan 2021 10:06:51 -0500
+Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
+        by mail-out.m-online.net (Postfix) with ESMTP id 4DHPdM4jVXz1rsY2;
+        Fri, 15 Jan 2021 16:05:59 +0100 (CET)
+Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
+        by mail.m-online.net (Postfix) with ESMTP id 4DHPdM4BkWz1tYWP;
+        Fri, 15 Jan 2021 16:05:59 +0100 (CET)
+X-Virus-Scanned: amavisd-new at mnet-online.de
+Received: from mail.mnet-online.de ([192.168.8.182])
+        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
+        with ESMTP id CR6tDLSs4S5X; Fri, 15 Jan 2021 16:05:58 +0100 (CET)
+X-Auth-Info: 1onHjol+H6khHdJuvdpIp+DUUczUrWb5IHdwjwwJ9/s=
+Received: from [IPv6:::1] (p578adb1c.dip0.t-ipconnect.de [87.138.219.28])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.mnet-online.de (Postfix) with ESMTPSA;
+        Fri, 15 Jan 2021 16:05:58 +0100 (CET)
+Subject: Re: [PATCH net-next] net: ks8851: Fix mixed module/builtin build
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev@vger.kernel.org, Heiner Kallweit <hkallweit1@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Lukas Wunner <lukas@wunner.de>
+References: <20210115134239.126152-1-marex@denx.de> <YAGuA8O0lr19l5lH@lunn.ch>
+From:   Marek Vasut <marex@denx.de>
+Message-ID: <e000a5f4-53bb-a4e4-f032-3dbe394d5ea3@denx.de>
+Date:   Fri, 15 Jan 2021 16:05:57 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.2 required=10.0 tests=ALL_TRUSTED,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF shortcircuit=no
-        autolearn=disabled version=3.4.4
-X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on
-        mailout.protonmail.ch
+In-Reply-To: <YAGuA8O0lr19l5lH@lunn.ch>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 3226b158e67c ("net: avoid 32 x truesize under-estimation for
-tiny skbs") ensured that skbs with data size lower than 1025 bytes
-will be kmalloc'ed to avoid excessive page cache fragmentation and
-memory consumption.
-However, the fix adressed only __napi_alloc_skb() (primarily for
-virtio_net and napi_get_frags()), but the issue can still be achieved
-through __netdev_alloc_skb(), which is still used by several drivers.
-Drivers often allocate a tiny skb for headers and place the rest of
-the frame to frags (so-called copybreak).
-Mirror the condition to __netdev_alloc_skb() to handle this case too.
+On 1/15/21 4:00 PM, Andrew Lunn wrote:
+> On Fri, Jan 15, 2021 at 02:42:39PM +0100, Marek Vasut wrote:
+>> When either the SPI or PAR variant is compiled as module AND the other
+>> variant is compiled as built-in, the following build error occurs:
+>>
+>> arm-linux-gnueabi-ld: drivers/net/ethernet/micrel/ks8851_common.o: in function `ks8851_probe_common':
+>> ks8851_common.c:(.text+0x1564): undefined reference to `__this_module'
+>>
+>> Fix this by including the ks8851_common.c in both ks8851_spi.c and
+>> ks8851_par.c. The DEBUG macro is defined in ks8851_common.c, so it
+>> does not have to be defined again.
+> 
+> DEBUG should not be defined for production code. So i would remove it
+> altogether.
+> 
+> There is kconfig'ury you can use to make them both the same. But i'm
+> not particularly good with it.
 
-Since v1 [0]:
- - fix "Fixes:" tag;
- - refine commit message (mention copybreak usecase).
-
-[0] https://lore.kernel.org/netdev/20210114235423.232737-1-alobakin@pm.me
-
-Fixes: a1c7fff7e18f ("net: netdev_alloc_skb() use build_skb()")
-Signed-off-by: Alexander Lobakin <alobakin@pm.me>
----
- net/core/skbuff.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
-
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index c1a6f262636a..785daff48030 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -437,7 +437,11 @@ struct sk_buff *__netdev_alloc_skb(struct net_device *=
-dev, unsigned int len,
-=20
- =09len +=3D NET_SKB_PAD;
-=20
--=09if ((len > SKB_WITH_OVERHEAD(PAGE_SIZE)) ||
-+=09/* If requested length is either too small or too big,
-+=09 * we use kmalloc() for skb->head allocation.
-+=09 */
-+=09if (len <=3D SKB_WITH_OVERHEAD(1024) ||
-+=09    len > SKB_WITH_OVERHEAD(PAGE_SIZE) ||
- =09    (gfp_mask & (__GFP_DIRECT_RECLAIM | GFP_DMA))) {
- =09=09skb =3D __alloc_skb(len, gfp_mask, SKB_ALLOC_RX, NUMA_NO_NODE);
- =09=09if (!skb)
---=20
-2.30.0
-
-
+We had discussion about this module/builtin topic in ks8851 before, so I 
+was hoping someone might provide a better suggestion.
