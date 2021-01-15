@@ -2,105 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 029FB2F803E
-	for <lists+netdev@lfdr.de>; Fri, 15 Jan 2021 17:07:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C6132F8048
+	for <lists+netdev@lfdr.de>; Fri, 15 Jan 2021 17:10:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731063AbhAOQG6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Jan 2021 11:06:58 -0500
-Received: from out4-smtp.messagingengine.com ([66.111.4.28]:52143 "EHLO
-        out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727288AbhAOQG6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jan 2021 11:06:58 -0500
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-        by mailout.nyi.internal (Postfix) with ESMTP id 3DDA35C005A;
-        Fri, 15 Jan 2021 11:06:12 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute1.internal (MEProxy); Fri, 15 Jan 2021 11:06:12 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=nK+4xh
-        e0jV0LtlEBRyneRImY0SFY58ZkjVw3dQu0JGM=; b=K8Ew5u+lyiiD3sxYu+qUqy
-        A23YfpmjpvFzSpPdO0i5mDztmjx1Dyn15HuJEXCAZg1NZ028Np9O76/Uzh/VEYx1
-        FLQxtuFP4RFw8EZ0+reKPcuFar9CXquKiBBocrXkwYLVdFOkp/0reX5KLzmXPk+6
-        EZ8XR4caqvfsJJ6+orbgUkEtis27QSYpbLie3EOdTzkIBPrFAp9xOFjqQ1zTi54V
-        sIyMyjudy+7LW73WdFXVTCRXaV2K5shRGLdp9GQiuH854JRUvAj4F8tOdn3JeskS
-        CZ4XnO+N/v+HBcKvXyE2XFdujjAIAYtSytUK+VtKwz7LbZWk5r1WmnKWDqVlwjBQ
-        ==
-X-ME-Sender: <xms:c70BYBtZwiG_tYausB7euzWctJkPu9VzyipVEqKcUp5kJehc9CUCZg>
-    <xme:c70BYPrA8LKvok-B1m6nVK4BD0nTUICTJeHnS0lnqlR7zXAaqRotzHtxhB0gPy3mq
-    5eK10korzoDCHo>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrtddvgdeitdcutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcuufgt
-    hhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrthhtvg
-    hrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudehleet
-    necukfhppeekgedrvddvledrudehfedrgeegnecuvehluhhsthgvrhfuihiivgeptdenuc
-    frrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:c70BYFrEEhE_VA8tL_cHGrIMug5YE9HhQuLjPm0ZVIGeha_gi0BkQQ>
-    <xmx:c70BYObGIbPgdQ3XEFP5rvMKXkNwsFJVvl0q8nbMFZVC21RJO-z50w>
-    <xmx:c70BYD800KAhIII4Mbyl1TR8v3LS8zrozb4ANz7OyBk0wRPFzF4E8g>
-    <xmx:dL0BYGWgC-PmtWy3qaodAE17wsgaG8wXH9IMqq4hWd_OJCbyMJLB5A>
-Received: from localhost (igld-84-229-153-44.inter.net.il [84.229.153.44])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 2AE1A1080063;
-        Fri, 15 Jan 2021 11:06:10 -0500 (EST)
-Date:   Fri, 15 Jan 2021 18:06:08 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        jacob.e.keller@intel.com, roopa@nvidia.com, mlxsw@nvidia.com
-Subject: Re: [patch net-next RFC 03/10] devlink: implement line card active
- state
-Message-ID: <20210115160608.GD2064789@shredder.lan>
-References: <20210113121222.733517-1-jiri@resnulli.us>
- <20210113121222.733517-4-jiri@resnulli.us>
+        id S1727383AbhAOQJy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Jan 2021 11:09:54 -0500
+Received: from mail-out.m-online.net ([212.18.0.9]:60138 "EHLO
+        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726046AbhAOQJy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jan 2021 11:09:54 -0500
+Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
+        by mail-out.m-online.net (Postfix) with ESMTP id 4DHR1p5Nhcz1qs0n;
+        Fri, 15 Jan 2021 17:08:46 +0100 (CET)
+Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
+        by mail.m-online.net (Postfix) with ESMTP id 4DHR1p4hG0z1tYWR;
+        Fri, 15 Jan 2021 17:08:46 +0100 (CET)
+X-Virus-Scanned: amavisd-new at mnet-online.de
+Received: from mail.mnet-online.de ([192.168.8.182])
+        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
+        with ESMTP id QNPUr3eO0jEg; Fri, 15 Jan 2021 17:08:45 +0100 (CET)
+X-Auth-Info: hSZ055UslPtZDYDf6Yi0KcXQHmnkTMWWZ9BW/ZHLqp0=
+Received: from [127.0.0.1] (p578adb1c.dip0.t-ipconnect.de [87.138.219.28])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.mnet-online.de (Postfix) with ESMTPSA;
+        Fri, 15 Jan 2021 17:08:45 +0100 (CET)
+Subject: Re: [PATCH net-next] net: ks8851: Fix mixed module/builtin build
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev@vger.kernel.org, Heiner Kallweit <hkallweit1@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Lukas Wunner <lukas@wunner.de>, Arnd Bergmann <arnd@arndb.de>
+References: <20210115134239.126152-1-marex@denx.de> <YAGuA8O0lr19l5lH@lunn.ch>
+ <e000a5f4-53bb-a4e4-f032-3dbe394d5ea3@denx.de> <YAG79tfQXTVWtPJX@lunn.ch>
+From:   Marek Vasut <marex@denx.de>
+Message-ID: <6c118e62-bd24-cc93-cde8-da632627f945@denx.de>
+Date:   Fri, 15 Jan 2021 17:08:44 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210113121222.733517-4-jiri@resnulli.us>
+In-Reply-To: <YAG79tfQXTVWtPJX@lunn.ch>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 13, 2021 at 01:12:15PM +0100, Jiri Pirko wrote:
-> +/**
-> + *	devlink_linecard_deactivate - Set linecard deactive
-
-Set linecard as inactive
-
-> + *
-> + *	@devlink_linecard: devlink linecard
-> + */
-> +void devlink_linecard_deactivate(struct devlink_linecard *linecard)
-> +{
-> +	mutex_lock(&linecard->devlink->lock);
-> +	WARN_ON(linecard->state != DEVLINK_LINECARD_STATE_ACTIVE);
-> +	linecard->state = DEVLINK_LINECARD_STATE_PROVISIONED;
-> +	devlink_linecard_notify(linecard, DEVLINK_CMD_LINECARD_NEW);
-> +	mutex_unlock(&linecard->devlink->lock);
-> +}
-> +EXPORT_SYMBOL_GPL(devlink_linecard_deactivate);
-> +
-> +/**
-> + *	devlink_linecard_is_active - Check if active
-> + *
-> + *	@devlink_linecard: devlink linecard
-> + */
-> +bool devlink_linecard_is_active(struct devlink_linecard *linecard)
-> +{
-> +	bool active;
-> +
-> +	mutex_lock(&linecard->devlink->lock);
-> +	active = linecard->state == DEVLINK_LINECARD_STATE_ACTIVE;
-> +	mutex_unlock(&linecard->devlink->lock);
-> +	return active;
-> +}
-> +EXPORT_SYMBOL_GPL(devlink_linecard_is_active);
-> +
->  int devlink_sb_register(struct devlink *devlink, unsigned int sb_index,
->  			u32 size, u16 ingress_pools_count,
->  			u16 egress_pools_count, u16 ingress_tc_count,
-> -- 
-> 2.26.2
+On 1/15/21 4:59 PM, Andrew Lunn wrote:
+> On Fri, Jan 15, 2021 at 04:05:57PM +0100, Marek Vasut wrote:
+>> On 1/15/21 4:00 PM, Andrew Lunn wrote:
+>>> On Fri, Jan 15, 2021 at 02:42:39PM +0100, Marek Vasut wrote:
+>>>> When either the SPI or PAR variant is compiled as module AND the other
+>>>> variant is compiled as built-in, the following build error occurs:
+>>>>
+>>>> arm-linux-gnueabi-ld: drivers/net/ethernet/micrel/ks8851_common.o: in function `ks8851_probe_common':
+>>>> ks8851_common.c:(.text+0x1564): undefined reference to `__this_module'
+>>>>
+>>>> Fix this by including the ks8851_common.c in both ks8851_spi.c and
+>>>> ks8851_par.c. The DEBUG macro is defined in ks8851_common.c, so it
+>>>> does not have to be defined again.
+>>>
+>>> DEBUG should not be defined for production code. So i would remove it
+>>> altogether.
+>>>
+>>> There is kconfig'ury you can use to make them both the same. But i'm
+>>> not particularly good with it.
+>>
+>> We had discussion about this module/builtin topic in ks8851 before, so I was
+>> hoping someone might provide a better suggestion.
 > 
+> Try Arnd Bergmann. He is good with this sort of thing.
+
+Adding to CC.
