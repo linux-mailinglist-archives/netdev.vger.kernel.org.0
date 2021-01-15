@@ -2,160 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E16B42F80F0
-	for <lists+netdev@lfdr.de>; Fri, 15 Jan 2021 17:38:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2998F2F80FD
+	for <lists+netdev@lfdr.de>; Fri, 15 Jan 2021 17:40:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728329AbhAOQiE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Jan 2021 11:38:04 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:31563 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726137AbhAOQiD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jan 2021 11:38:03 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1610728596;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=fOKUS7S2hYkjSxN1bA51IXrlqQyUlOoQEgDCV7xGvu8=;
-        b=ih7W8f/i74ImGUCHWBzxmT+ik35YMBrzB5BoVepD3+8ZFUQAd4P/WxCc8bhOtpWObKLrJS
-        YIrgXFWdFBqGNHv2od4UuPq+df+JnHUf4z72iYcyyaD19ia4liiqVPpMI0PXGceOZG0vq1
-        raKGHXnJDv5ieJZB4PLe8NqJtFvijEo=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-155-gFwPazXdOKye8lXf0xK5Ng-1; Fri, 15 Jan 2021 11:36:27 -0500
-X-MC-Unique: gFwPazXdOKye8lXf0xK5Ng-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 76C1C806661;
-        Fri, 15 Jan 2021 16:36:26 +0000 (UTC)
-Received: from [10.36.113.143] (ovpn-113-143.ams2.redhat.com [10.36.113.143])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 0DAB819C45;
-        Fri, 15 Jan 2021 16:36:24 +0000 (UTC)
-From:   "Eelco Chaudron" <echaudro@redhat.com>
-To:     "Maciej Fijalkowski" <maciej.fijalkowski@intel.com>,
-        "Alexei Starovoitov" <ast@kernel.org>,
-        "Daniel Borkmann" <daniel@iogearbox.net>
-Cc:     "Lorenzo Bianconi" <lorenzo@kernel.org>, bpf@vger.kernel.org,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH v5 bpf-next 13/14] bpf: add new frame_length field to the
- XDP ctx
-Date:   Fri, 15 Jan 2021 17:36:23 +0100
-Message-ID: <5A8FDDE5-3022-4FD7-BA71-9ACB4374BDB9@redhat.com>
-In-Reply-To: <54E66B9D-4677-436F-92A1-E70977E869FA@redhat.com>
-References: <cover.1607349924.git.lorenzo@kernel.org>
- <0547d6f752e325f56a8e5f6466b50e81ff29d65f.1607349924.git.lorenzo@kernel.org>
- <20201208221746.GA33399@ranger.igk.intel.com>
- <96C89134-A747-4E05-AA11-CB6EA1420900@redhat.com>
- <20201209111047.GB36812@ranger.igk.intel.com>
- <170BF39B-894D-495F-93E0-820EC7880328@redhat.com>
- <38C60760-4F8C-43AC-A5DE-7FAECB65C310@redhat.com>
- <20201215180638.GB23785@ranger.igk.intel.com>
- <54E66B9D-4677-436F-92A1-E70977E869FA@redhat.com>
+        id S1726920AbhAOQjy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Jan 2021 11:39:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35982 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726019AbhAOQjx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jan 2021 11:39:53 -0500
+Received: from mail-qv1-xf2c.google.com (mail-qv1-xf2c.google.com [IPv6:2607:f8b0:4864:20::f2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECA98C061793
+        for <netdev@vger.kernel.org>; Fri, 15 Jan 2021 08:39:12 -0800 (PST)
+Received: by mail-qv1-xf2c.google.com with SMTP id h1so4209825qvy.12
+        for <netdev@vger.kernel.org>; Fri, 15 Jan 2021 08:39:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=s+tkUYiTSMZ6aZ2SFhexaT+SsaeIWjTivEj+w6tLR3g=;
+        b=TB5NZE3Hxl8ljI7dGaiqKe3Xr5kVQhSvWat/VKetbaGOEzq81mqtlI7mTc4uOEFGLY
+         WNKbj/URwAYxLVNojc5ihCHBqcTpr5BLfuHAErztTgGOXLp/gu+TCrAZyWn3KxnFsCTa
+         kn75VTHudIHwbLqSzCDi0N0zESdgaT+fd6mg4bOLsXuJKndhNxjrpDGZdQokowK4ZjCG
+         dcPD6OUVGsSg1s8DdQC32qzlnBgRDIskrNHNI2q2OQju+wAAY/+UhA5460ofWLqe6PH6
+         2Qdqfki3MYLxhRxF4aK6VJVjc94B6uCnWXh1avsnldoKB4SUHiGlLpCi+5QzUwkG+yZp
+         dF3Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=s+tkUYiTSMZ6aZ2SFhexaT+SsaeIWjTivEj+w6tLR3g=;
+        b=SruF12IIDM88UYBb4zUq0mqZacE2vLD8rypYtziPmydVjlpPZXBZ6molcF4awGUTba
+         ribwxVo4IVcinTucWjVzJVTgo0HN/XddE+5Hmw14gtK0QcrAl+4w/GYlT8eWcnTLvQ/E
+         2KRvLJspFhAxkVakJuNADooa1nNJU0eCw38MMnpFBC3dVeSHIyMFEGf37Hd7xHkTwFDZ
+         Xa18v8JEU0BrYBemJjMqMYD5sQoqqweiyYVHNwTSdia/iLjA1FmGqWdpqdH4WkHusQGv
+         ki6fAmuG33BPNhcEBLyppe8NjhpHuaUYD1+0utia6HQW1BhCMRULo5LwIGdmYf92+a4J
+         CjGQ==
+X-Gm-Message-State: AOAM530tZUJK051Y5Q24VF2xWXGLDpY9cPWSDLsRrexAd3BrH5WfRG1X
+        VECPdzVRQDlAkD3z1WVbZD+9BZUW3ct1+1ksJ+difA==
+X-Google-Smtp-Source: ABdhPJy1Qtz6TjR5mJqiQ1mxDU1AgQiXDERUi9WuA2dypM2+OnO6K4m4y5ICpOwri14Hil3gSnpU1G2/ynvydUgowbo=
+X-Received: by 2002:a0c:b21e:: with SMTP id x30mr12889913qvd.21.1610728751775;
+ Fri, 15 Jan 2021 08:39:11 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+References: <1627e0f688c7de7fe291b09c524c7fbb55cfe367.1610669653.git.sdf@google.com>
+ <CAEf4BzZOt-VZPwHZ4uGxG_mZYb7NX3wJv1UiAnnt3+dOSkkqtA@mail.gmail.com>
+ <CAKH8qBuvbRa0qSbYBqJ0cz5vcQ-8XQA8k6B4FS-TNE1QUEnH8Q@mail.gmail.com>
+ <CAADnVQJwOteRbJuZXhbkexBYp2Sr2R9KxgTF4xEw16KmCuH1sQ@mail.gmail.com> <500e4d8b-6ed0-92a5-a5ef-9477766be3e4@fb.com>
+In-Reply-To: <500e4d8b-6ed0-92a5-a5ef-9477766be3e4@fb.com>
+From:   Stanislav Fomichev <sdf@google.com>
+Date:   Fri, 15 Jan 2021 08:39:00 -0800
+Message-ID: <CAKH8qBuZ0iLAiuqi=65RBiQ=Vhi3qkitPzj0b7U=XuiH_4TuLA@mail.gmail.com>
+Subject: Re: [RPC PATCH bpf-next] bpf: implement new BPF_CGROUP_INET_SOCK_POST_CONNECT
+To:     Yonghong Song <yhs@fb.com>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 16 Dec 2020, at 15:08, Eelco Chaudron wrote:
-
-> On 15 Dec 2020, at 19:06, Maciej Fijalkowski wrote:
+On Thu, Jan 14, 2021 at 8:27 PM Yonghong Song <yhs@fb.com> wrote:
 >
->> On Tue, Dec 15, 2020 at 02:28:39PM +0100, Eelco Chaudron wrote:
->>>
->>>
->>> On 9 Dec 2020, at 13:07, Eelco Chaudron wrote:
->>>
->>>> On 9 Dec 2020, at 12:10, Maciej Fijalkowski wrote:
->>>
->>> <SNIP>
->>>
->>>>>>>> +
->>>>>>>> +		ctx_reg = (si->src_reg == si->dst_reg) ? scratch_reg - 1 :
->>>>>>>> si->src_reg;
->>>>>>>> +		while (dst_reg == ctx_reg || scratch_reg == ctx_reg)
->>>>>>>> +			ctx_reg--;
->>>>>>>> +
->>>>>>>> +		/* Save scratch registers */
->>>>>>>> +		if (ctx_reg != si->src_reg) {
->>>>>>>> +			*insn++ = BPF_STX_MEM(BPF_DW, si->src_reg, ctx_reg,
->>>>>>>> +					      offsetof(struct xdp_buff,
->>>>>>>> +						       tmp_reg[1]));
->>>>>>>> +
->>>>>>>> +			*insn++ = BPF_MOV64_REG(ctx_reg, si->src_reg);
->>>>>>>> +		}
->>>>>>>> +
->>>>>>>> +		*insn++ = BPF_STX_MEM(BPF_DW, ctx_reg, scratch_reg,
->>>>>>>> +				      offsetof(struct xdp_buff, tmp_reg[0]));
->>>>>>>
->>>>>>> Why don't you push regs to stack, use it and then pop it
->>>>>>> back? That way
->>>>>>> I
->>>>>>> suppose you could avoid polluting xdp_buff with tmp_reg[2].
->>>>>>
->>>>>> There is no “real” stack in eBPF, only a read-only frame
->>>>>> pointer, and as we
->>>>>> are replacing a single instruction, we have no info on what we
->>>>>> can use as
->>>>>> scratch space.
->>>>>
->>>>> Uhm, what? You use R10 for stack operations. Verifier tracks the
->>>>> stack
->>>>> depth used by programs and then it is passed down to JIT so that
->>>>> native
->>>>> asm will create a properly sized stack frame.
->>>>>
->>>>> From the top of my head I would let know xdp_convert_ctx_access of 
->>>>> a
->>>>> current stack depth and use it for R10 stores, so your scratch 
->>>>> space
->>>>> would
->>>>> be R10 + (stack depth + 8), R10 + (stack_depth + 16).
->>>>
->>>> Other instances do exactly the same, i.e. put some scratch 
->>>> registers in
->>>> the underlying data structure, so I reused this approach. From the
->>>> current information in the callback, I was not able to determine 
->>>> the
->>>> current stack_depth. With "real" stack above, I meant having a 
->>>> pop/push
->>>> like instruction.
->>>>
->>>> I do not know the verifier code well enough, but are you suggesting 
->>>> I
->>>> can get the current stack_depth from the verifier in the
->>>> xdp_convert_ctx_access() callback? If so any pointers?
->>>
->>> Maciej any feedback on the above, i.e. getting the stack_depth in
->>> xdp_convert_ctx_access()?
->>
->> Sorry. I'll try to get my head around it. If i recall correctly stack
->> depth is tracked per subprogram whereas convert_ctx_accesses is 
->> iterating
->> through *all* insns (so a prog that is not chunked onto subprogs), 
->> but
->> maybe we could dig up the subprog based on insn idx.
->>
->> But at first, you mentioned that you took the approach from other
->> instances, can you point me to them?
 >
-> Quick search found the following two (sure there is one more with two 
-> regs):
 >
-> https://elixir.bootlin.com/linux/v5.10.1/source/kernel/bpf/cgroup.c#L1718
-> https://elixir.bootlin.com/linux/v5.10.1/source/net/core/filter.c#L8977
+> On 1/14/21 7:59 PM, Alexei Starovoitov wrote:
+> > On Thu, Jan 14, 2021 at 7:51 PM Stanislav Fomichev <sdf@google.com> wrote:
+> >>>>
+> >>>>          lock_sock(sock->sk);
+> >>>>          err = __inet_stream_connect(sock, uaddr, addr_len, flags, 0);
+> >>>
+> >>> Similarly here, attaching fexit to __inet_stream_connect would execute
+> >>> your BPF program at exactly the same time (and then you can check for
+> >>> err value).
+> >>>
+> >>> Or the point here is to have a more "stable" BPF program type?
+> >> Good suggestion, I can try to play with it, I think it should give me
+> >> all the info I need (I only need sock).
+> >> But yeah, I'd rather prefer a stable interface against stable
+> >> __sk_buff, but maybe fexit will also work.
+> >
+> > Maybe we can add an extension to fentry/fexit that are cgroup scoped?
+> > I think this will solve many such cases.
 >
->> I'd also like to hear from Daniel/Alexei/John and others their 
->> thoughts.
->
-> Please keep me in the loop…
+> Currently, google is pushing LTO build of the kernel. If this happens,
+> it is possible one global function in one file (say a.c) might be
+> inlined into another file (say b.c). So in this particular case,
+> if the global function is inlined, fentry/fexit approach might be
+> missing some cases? We could mark certain *special purpose* function
+> as non-inline, but not sure whether this is scalable or not.
+For this particular case I don't think it matters, right?
+I'd like to fexit ip4_datagram_connect which is exported symbol,
+it's accessed via proto->connect and there is no way it's
+gonna be inlined. Unless our indirect call macros give clang
+a hint :-/
 
-Any thoughts/update on the above so I can move this patchset forward?
-
-
+I'm in general a bit concerned about using tracing calls for stuff
+like that and depending on the non-uapi, but it's probably
+time to give it a try and see how co-re works :-)
