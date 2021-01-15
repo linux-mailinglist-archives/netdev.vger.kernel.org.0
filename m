@@ -2,129 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 70ECC2F714C
-	for <lists+netdev@lfdr.de>; Fri, 15 Jan 2021 04:58:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2279D2F7152
+	for <lists+netdev@lfdr.de>; Fri, 15 Jan 2021 05:01:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732789AbhAOD6I (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 14 Jan 2021 22:58:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41474 "EHLO
+        id S1732829AbhAOEAr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 14 Jan 2021 23:00:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42034 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731197AbhAOD6H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 22:58:07 -0500
-Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CD5DC061575;
-        Thu, 14 Jan 2021 19:57:27 -0800 (PST)
-Received: by mail-lf1-x12a.google.com with SMTP id o19so11276114lfo.1;
-        Thu, 14 Jan 2021 19:57:26 -0800 (PST)
+        with ESMTP id S1732822AbhAOEAq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 14 Jan 2021 23:00:46 -0500
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABF6BC061575;
+        Thu, 14 Jan 2021 20:00:05 -0800 (PST)
+Received: by mail-lf1-x130.google.com with SMTP id x20so11224033lfe.12;
+        Thu, 14 Jan 2021 20:00:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=8BXgLIQIhwnUMcmHx/ZoNEaxTwnIIHjSLCw+ghfFkKQ=;
-        b=UYCbxHG4TYY45AcIONEQVT+TbPQ7eCWCVwVZ/Y9xj/AqkYT1ogXqFCdh96nZf7vwi9
-         0OarqGg9xpRnGNMAsE685qQop4Y4qWJARyMVkxMJIUcEEy0IvR9JucS79MBPX6sLa0P3
-         B0PRGQ3a/cNgajuq/zhi9Z9trtvCRLYNNRsiBSp4mDCNzSRHTnEvSe27vs8cfd11BsWl
-         mBOc8kOjLZ1xbqOktFxTnxDj4NMzwKwYOuNeCroeN7b18kAjPR52wcgXBQy7QQvt9Na0
-         +1n6N0ZCXdfZCWvRW+M6z0soT3u/gal6s5LEbbU7aByZwwHfg3Tzg4QLKHXfuD99aw15
-         jbTQ==
+        bh=E0XjuZJ3EZHxNpAUlNb0DkG+6+sra0VhluL9Rzgb1ZY=;
+        b=PEXblVoHmtOn61RuXyD2H55L88JCeMRIXM/+xO7F74KbuZQYahM0FjvSDYzxTNBlzo
+         y/xxY4iRKWDgbjgHaGm8W8XunJOFJ+Wu8MhCGZ/74ZP4YT0VNFB6Zel66QmcguLTZUg9
+         XZX48JzZ7P28QPkI9ViYAmH7c7xslRSE9CbRISWm8vpmumK9dxGnHzfoYUG0Z34S4O9T
+         ERUij8LRj07w3dnj2bMeHSDVGdAbZ60Ci6IypRWfqvYJjxDATdeuE9SGqD9rgpmHbtJd
+         ngcrDeLfzHaFddzsS5NyxW867apVR7A4ZErEfy8j5tgSg/FHg4alnsBwuuPkSNC8SzCg
+         gjfQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=8BXgLIQIhwnUMcmHx/ZoNEaxTwnIIHjSLCw+ghfFkKQ=;
-        b=ZxTiQNJd3i98/2cZePl+bB3iPEJ1HjxHfZLI6ksPchM/oQGCI6UZlPIfhKwgbOUrMt
-         weUWV1k4tiyqNFgp6w/MDEzNaxoCqeqmiXIOG4M3XzKIza1r62lQupnNh7rSrzJXQC75
-         M6RXhWrdJ4khClQhE2kWIjmW/yUMjWPidPWiBFxT3rsKxPoKmAlVYbGvOrHaFw/vqYUS
-         Uppiuf7fR8aKKsZe+GSQ1+Id2RnsRcpR9OK26RZ3IA05IGHMGkVzqu2jyxoegmJ7wK4r
-         dAy00TKc+QFARSzZBFSRi+N3sl+hiCV9dlcu8t0gPOZzWg2NGz7Qd64TLDjE3dkvTqQb
-         AeBA==
-X-Gm-Message-State: AOAM531yiHJUQcbiFj/cnOP+NQYDkmbtmslY4gssbX9/R6CoouPi+3TH
-        5OBHW6J7WE5hFtv7V5uL/0jHza+GTSslqFHM/jc=
-X-Google-Smtp-Source: ABdhPJwK4Z2DENPIoy5Ov7eN5L6AY3Ox+jsMEWr8o2JH/nBKxj8dFdqqWucMWsYntvsRCIqBecpKu77BaMe/wsgbqkk=
-X-Received: by 2002:a19:acd:: with SMTP id 196mr4818583lfk.539.1610683045609;
- Thu, 14 Jan 2021 19:57:25 -0800 (PST)
+        bh=E0XjuZJ3EZHxNpAUlNb0DkG+6+sra0VhluL9Rzgb1ZY=;
+        b=iby/BsR+qp8ZpxX50XsBg7YfjQLtqRdg4qUHeJaT6BCXXeYrnBMHAszxQo7on6dLKg
+         cBAH6Pk8KABZXFkKc4G1stINcsDg7z1Lm4cBMXg9SAakuxle3+nJa4YvJgChqgfOGFts
+         hMjBVggeT3r7cqwZByqSqWt1FxKoE9rrJip03/h5kIocFN7dV4LvkWF5xCdq1VDY5qDW
+         RM83RoseOryGgAcDApTRfHHThXmKkOvJwCPqT7saTnFGOsKfEXxiBboqNgsvJhXOTl3Z
+         5NSzFBz2XBtCKG8k4Ng41gwzV5Jh/6CScD+XbpXkn/NryQfpdDlhCgnX6jLPv1GAs1eI
+         UOtQ==
+X-Gm-Message-State: AOAM533NjRvuvIIQM35TkeIBQBUTdjEJIf1+tiM1V/md/x7cf6f1LXrY
+        2eFm1UEwKKoCpzZGkhlLpZVO+UkOv0a//xb9dDmX1ZZj
+X-Google-Smtp-Source: ABdhPJzpEyZZ/lgeKI1oEBzNzLdeZoc1adKDMWn4l8m4Xu795BVXTRBXlxi9ZBELoJjIF0INjLqgz4M1TpQgXNA5KH4=
+X-Received: by 2002:a05:6512:34c5:: with SMTP id w5mr4826307lfr.214.1610683204044;
+ Thu, 14 Jan 2021 20:00:04 -0800 (PST)
 MIME-Version: 1.0
-References: <20210113213321.2832906-1-sdf@google.com> <20210113213321.2832906-2-sdf@google.com>
- <CAADnVQLssJ4oStg7C4W-nafFKaka1H3-N0DhsBrB3FdmgyUC_A@mail.gmail.com> <CAKH8qBsaZjOkvGZuNCtG=V2M9YfAJgtG+moAejwtBCB6kNJUwA@mail.gmail.com>
-In-Reply-To: <CAKH8qBsaZjOkvGZuNCtG=V2M9YfAJgtG+moAejwtBCB6kNJUwA@mail.gmail.com>
+References: <1627e0f688c7de7fe291b09c524c7fbb55cfe367.1610669653.git.sdf@google.com>
+ <CAEf4BzZOt-VZPwHZ4uGxG_mZYb7NX3wJv1UiAnnt3+dOSkkqtA@mail.gmail.com> <CAKH8qBuvbRa0qSbYBqJ0cz5vcQ-8XQA8k6B4FS-TNE1QUEnH8Q@mail.gmail.com>
+In-Reply-To: <CAKH8qBuvbRa0qSbYBqJ0cz5vcQ-8XQA8k6B4FS-TNE1QUEnH8Q@mail.gmail.com>
 From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Thu, 14 Jan 2021 19:57:14 -0800
-Message-ID: <CAADnVQ+2MDGVEKRZ+B-q+GcZ8CExN5VfSZpkvntg48dpww3diA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v8 1/3] bpf: remove extra lock_sock for TCP_ZEROCOPY_RECEIVE
+Date:   Thu, 14 Jan 2021 19:59:52 -0800
+Message-ID: <CAADnVQJwOteRbJuZXhbkexBYp2Sr2R9KxgTF4xEw16KmCuH1sQ@mail.gmail.com>
+Subject: Re: [RPC PATCH bpf-next] bpf: implement new BPF_CGROUP_INET_SOCK_POST_CONNECT
 To:     Stanislav Fomichev <sdf@google.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        Eric Dumazet <edumazet@google.com>
+Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 14, 2021 at 7:40 PM Stanislav Fomichev <sdf@google.com> wrote:
->
-> On Thu, Jan 14, 2021 at 7:27 PM Alexei Starovoitov
-> <alexei.starovoitov@gmail.com> wrote:
+On Thu, Jan 14, 2021 at 7:51 PM Stanislav Fomichev <sdf@google.com> wrote:
+> > >
+> > >         lock_sock(sock->sk);
+> > >         err = __inet_stream_connect(sock, uaddr, addr_len, flags, 0);
 > >
-> > On Wed, Jan 13, 2021 at 1:33 PM Stanislav Fomichev <sdf@google.com> wrote:
-> > >
-> > > Add custom implementation of getsockopt hook for TCP_ZEROCOPY_RECEIVE.
-> > > We skip generic hooks for TCP_ZEROCOPY_RECEIVE and have a custom
-> > > call in do_tcp_getsockopt using the on-stack data. This removes
-> > > 3% overhead for locking/unlocking the socket.
-> > >
-> > > Without this patch:
-> > >      3.38%     0.07%  tcp_mmap  [kernel.kallsyms]  [k] __cgroup_bpf_run_filter_getsockopt
-> > >             |
-> > >              --3.30%--__cgroup_bpf_run_filter_getsockopt
-> > >                        |
-> > >                         --0.81%--__kmalloc
-> > >
-> > > With the patch applied:
-> > >      0.52%     0.12%  tcp_mmap  [kernel.kallsyms]  [k] __cgroup_bpf_run_filter_getsockopt_kern
-> > >
-> > > Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> > > Cc: Martin KaFai Lau <kafai@fb.com>
-> > > Cc: Song Liu <songliubraving@fb.com>
-> > > Cc: Eric Dumazet <edumazet@google.com>
-> > > Acked-by: Martin KaFai Lau <kafai@fb.com>
+> > Similarly here, attaching fexit to __inet_stream_connect would execute
+> > your BPF program at exactly the same time (and then you can check for
+> > err value).
 > >
-> > Few issues in this patch and the patch 2 doesn't apply:
-> > Switched to a new branch 'tmp'
-> > Applying: bpf: Remove extra lock_sock for TCP_ZEROCOPY_RECEIVE
-> > .git/rebase-apply/patch:295: trailing whitespace.
-> > #endif
-> > .git/rebase-apply/patch:306: trailing whitespace.
-> > union tcp_word_hdr {
-> > .git/rebase-apply/patch:309: trailing whitespace.
-> > };
-> > .git/rebase-apply/patch:311: trailing whitespace.
-> > #define tcp_flag_word(tp) ( ((union tcp_word_hdr *)(tp))->words [3])
-> > .git/rebase-apply/patch:313: trailing whitespace.
-> > enum {
-> > warning: squelched 1 whitespace error
-> > warning: 6 lines add whitespace errors.
-> > Applying: bpf: Try to avoid kzalloc in cgroup/{s,g}etsockopt
-> > error: patch failed: kernel/bpf/cgroup.c:1390
-> > error: kernel/bpf/cgroup.c: patch does not apply
-> > Patch failed at 0002 bpf: Try to avoid kzalloc in cgroup/{s,g}etsockopt
-> Sorry, I mentioned in the cover letter that the series requires
-> 4be34f3d0731 ("bpf: Don't leak memory in bpf getsockopt when optlen == 0")
-> which is only in the bpf tree. No sure when bpf & bpf-next merge.
-> Or are you trying to apply on top of that?
+> > Or the point here is to have a more "stable" BPF program type?
+> Good suggestion, I can try to play with it, I think it should give me
+> all the info I need (I only need sock).
+> But yeah, I'd rather prefer a stable interface against stable
+> __sk_buff, but maybe fexit will also work.
 
-hmm. It will take a while to wait for the trees to converge.
-Ok. I've cherry-picked that bpf commit and applied 3 patches on top,
-but the test failed to build:
-
-progs/sockopt_sk.c:60:47: error: use of undeclared identifier
-'TCP_ZEROCOPY_RECEIVE'
-        if (ctx->level == SOL_TCP && ctx->optname == TCP_ZEROCOPY_RECEIVE) {
-                                                     ^
-progs/sockopt_sk.c:66:16: error: invalid application of 'sizeof' to an
-incomplete type 'struct tcp_zerocopy_receive'
-                if (optval + sizeof(struct tcp_zerocopy_receive) > optval_end)
-
-Looks like copied uapi/tcp.h into tools/ wasn't in the include path.
+Maybe we can add an extension to fentry/fexit that are cgroup scoped?
+I think this will solve many such cases.
