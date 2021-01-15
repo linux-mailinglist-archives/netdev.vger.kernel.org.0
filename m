@@ -2,61 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 072C12F7EA4
-	for <lists+netdev@lfdr.de>; Fri, 15 Jan 2021 15:55:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EF5A82F7ED5
+	for <lists+netdev@lfdr.de>; Fri, 15 Jan 2021 16:02:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727335AbhAOOzt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Jan 2021 09:55:49 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:42848 "EHLO vps0.lunn.ch"
+        id S1732937AbhAOPBC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Jan 2021 10:01:02 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:42858 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726801AbhAOOzs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 15 Jan 2021 09:55:48 -0500
+        id S1726105AbhAOPBC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 15 Jan 2021 10:01:02 -0500
 Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
         (envelope-from <andrew@lunn.ch>)
-        id 1l0QVG-000lNp-Gs; Fri, 15 Jan 2021 15:55:06 +0100
-Date:   Fri, 15 Jan 2021 15:55:06 +0100
+        id 1l0QaJ-000lPb-V0; Fri, 15 Jan 2021 16:00:19 +0100
+Date:   Fri, 15 Jan 2021 16:00:19 +0100
 From:   Andrew Lunn <andrew@lunn.ch>
 To:     Marek Vasut <marex@denx.de>
 Cc:     netdev@vger.kernel.org, Heiner Kallweit <hkallweit1@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
         Lukas Wunner <lukas@wunner.de>
-Subject: Re: [PATCH net-next] net: ks8851: Connect and start/stop the
- internal PHY
-Message-ID: <YAGsynozCNzyGfnI@lunn.ch>
-References: <20210111125337.36513-1-marex@denx.de>
- <X/xlDTUQTLgVoaUE@lunn.ch>
- <dd43881e-edff-74fd-dbcb-26c5ca5b6e72@denx.de>
- <YABNA+0aPI42lJLh@lunn.ch>
- <268090ca-06dd-d7e2-c06b-b9282f3cbe67@denx.de>
+Subject: Re: [PATCH net-next] net: ks8851: Fix mixed module/builtin build
+Message-ID: <YAGuA8O0lr19l5lH@lunn.ch>
+References: <20210115134239.126152-1-marex@denx.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <268090ca-06dd-d7e2-c06b-b9282f3cbe67@denx.de>
+In-Reply-To: <20210115134239.126152-1-marex@denx.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > > I noticed a couple of drivers implement both the mii and mdiobus options.
-> > 
-> > Which ones?
+On Fri, Jan 15, 2021 at 02:42:39PM +0100, Marek Vasut wrote:
+> When either the SPI or PAR variant is compiled as module AND the other
+> variant is compiled as built-in, the following build error occurs:
 > 
-> boardcom b44.c and bcm63xx_enet.c for example
-
-Thanks. I will take a look at those and maybe ask Florian.
-
-> > Simply getting the link status might be safe, but if
-> > set_link_ksettings() or get_link_ksettings() is used, phylib is going
-> > to get confused when the PHY is changed without it knowing.. So please
-> > do remove all the mii calls as part of the patchset.
+> arm-linux-gnueabi-ld: drivers/net/ethernet/micrel/ks8851_common.o: in function `ks8851_probe_common':
+> ks8851_common.c:(.text+0x1564): undefined reference to `__this_module'
 > 
-> Isn't that gonna break some ABI ?
+> Fix this by including the ks8851_common.c in both ks8851_spi.c and
+> ks8851_par.c. The DEBUG macro is defined in ks8851_common.c, so it
+> does not have to be defined again.
 
-I guess not, but i have no definitive answer. It should add more
-features, not take any away.
+DEBUG should not be defined for production code. So i would remove it
+altogether.
 
-> Also, is separate patch OK ?
+There is kconfig'ury you can use to make them both the same. But i'm
+not particularly good with it.
 
-It obviously works well enough that you have not run into issues. So i
-guess anybody doing a git bisect will be O.K. if they land on the
-state with both phydev and mii. So yes, a separate patch is O.K.
-
-      Andrew
+    Andrew
