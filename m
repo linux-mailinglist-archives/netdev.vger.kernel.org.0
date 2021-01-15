@@ -2,117 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AAD672F743D
-	for <lists+netdev@lfdr.de>; Fri, 15 Jan 2021 09:22:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8F08F2F743F
+	for <lists+netdev@lfdr.de>; Fri, 15 Jan 2021 09:22:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732562AbhAOIWK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Jan 2021 03:22:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41418 "EHLO
+        id S1732574AbhAOIWS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Jan 2021 03:22:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726375AbhAOIWJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jan 2021 03:22:09 -0500
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 894FBC061757;
-        Fri, 15 Jan 2021 00:21:29 -0800 (PST)
-Received: by mail-pj1-x102a.google.com with SMTP id y12so4648992pji.1;
-        Fri, 15 Jan 2021 00:21:29 -0800 (PST)
+        with ESMTP id S1726375AbhAOIWS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jan 2021 03:22:18 -0500
+Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E311BC0613C1;
+        Fri, 15 Jan 2021 00:21:37 -0800 (PST)
+Received: by mail-pg1-x529.google.com with SMTP id i7so5544073pgc.8;
+        Fri, 15 Jan 2021 00:21:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :in-reply-to:references;
-        bh=OTtsm6dyKrVJ0jbDg2f7EoVgwZ5It1gTjh6wfzgk4d0=;
-        b=ab09OwPQFc/dVOulO/JZZqI7Lt/7OaZS6W3Fs2pUlwzyCHyYr/g/CDyJtUPhKll2cT
-         6zhn6aePO31JSyh0VW5N3tP0b1wXmXa2TztetggvPaSngnLfrrLW+V2rk+V2kSkNlyG3
-         Xs0R+L2jDbuF37bP72DzeN5UMxf3iS66Re6wRhDe5DJ1Pq3RQbYGsUfYwbtL8Jb6eOed
-         Wbx4ut5bI5dLvtCvgOdXPFXM40a/vja9cRUohEsEBHlkfugjVa9T9TV2SZ3EDptt2LDm
-         VJ5uabWB4DvYgSiJDUbylz7UlLetNW3zxMIdybfd0nxTE3brMe3IYMQ5ZteY9NZ5EHbD
-         gEew==
+        bh=KUsV1bM5sIVlTpPanw1WlNTCb4EgouPn3IG0lHd1U10=;
+        b=Znrvfcwd859bNqV+w13Y22ZaRAbMaWObOP4zrYmIWA0Xce97UvI87ua8bJdn0hpgeV
+         VL9Me5dkYHH1BRw8pusf34bABLKR7/D/X7QkHN8MDM7edvXqqfWHIa/zy0mLiIZCrcCe
+         uBcBbHqBhjrz2Xj/escsHWCobl3PyCgpeC/NccRMfvphIOnWbK/FWJifn1MYvnRduYrN
+         6M3dGgrLS4jBJeF5k+oHb0bc9QEMrGiZe+wD2Rui64qg4/m4XKTD3MIOpwU5A3yRfVwp
+         ybc65INq8aJTC2lRzhrnaOgMqusV3PPUMhSbpxJ0wRsmqAvv8TwY+UbFdLFnw59zxBSa
+         238A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:in-reply-to:references;
-        bh=OTtsm6dyKrVJ0jbDg2f7EoVgwZ5It1gTjh6wfzgk4d0=;
-        b=tiHND1JkWSz0xv4FX8MTFAeHLW2Rlh89MRIOwIAs+sxCLvCEnVHgRs+TpFa9zJ2wDa
-         Jyxprnq7fmYWTQOqb2jaYuUFJLEVI7jgZk/dJmib3DhxLkC91Iz/WAQZLesX7V3eXlTK
-         gNc9LPT9lLdUBvRUntDRe2JULERaWGcvjo7/qn5MbmM3QM9wYiHnxx43lW3nY6XzXLC1
-         AdrF2pgolwB5yar3Pdn8OCBAN5L2R+dVpZ+cuzFd6D3yPPNDtmdM0OZtrOCvC/qBS17X
-         XmMazk/08LOD7AmKhPsYEFkUfO2Uzg6xCaXViAYoA/smD0zkZWAzo6bPPxg3jPE9vmLe
-         /skg==
-X-Gm-Message-State: AOAM530RtFptNM8JJmpEBsfhy8O59HLbfnO93CJ41GXZNta89J4XmZjf
-        Mv1xsKiD/c5+A0dI9Eyq4U0B170gRx2gYg==
-X-Google-Smtp-Source: ABdhPJyW/zECmfCcKhB8La+o3Arts78sxZ54HghKqDH16ovF8o5NZIeQ8YSqwn9eWS8+zNg1Lq6Mjg==
-X-Received: by 2002:a17:90b:1c0d:: with SMTP id oc13mr9678051pjb.156.1610698888874;
-        Fri, 15 Jan 2021 00:21:28 -0800 (PST)
+        bh=KUsV1bM5sIVlTpPanw1WlNTCb4EgouPn3IG0lHd1U10=;
+        b=Z5+9/naUxACG7+1x4KQHzEeXEKaboo0lBQAv/oqWLcknLZYkLdX637qcmPYRPgRI/2
+         r4yBQvWinJGCBVIvv0K0do5YnEVHtGZrFbIg/IUKfgqwcPnw5BX4216qp5VwxrVAuA96
+         C8DOvdwrdyPWYlXf/+DPz/rBvbvZ2bVXRTlJdVrc7gSYVY0+n1SF+tk1WUaUC4cQK6YQ
+         W40QF4nnEwKF4Vof+lr8Bhyp6Anqt96/4NHyiENySSoIziTJGEfVNc6KFQCfDHwxBrdx
+         mw8AwAynSBYM98jkC91orJuR4p8rYpx07RTehQgx01WaxYrrXazJ8ywjAQJg1DO9O4Lt
+         BAlA==
+X-Gm-Message-State: AOAM531rDDnEJtU8Kk5PcR1VRH5p33bhviA3Tl+PNKzLALhTZ/2WRrbw
+        BqgUlNV7bwRl2LxTU2U6/aB+JraJNqZNPQ==
+X-Google-Smtp-Source: ABdhPJzIMfjSOn1hpGTWvYZGEnAsCBBwR9uOOZHRqVMjw0AZDIlGlvjtdxd2gclMGSBHN5wmQS9JCw==
+X-Received: by 2002:a63:db08:: with SMTP id e8mr5989709pgg.261.1610698897237;
+        Fri, 15 Jan 2021 00:21:37 -0800 (PST)
 Received: from localhost ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id ay21sm7462635pjb.1.2021.01.15.00.21.27
+        by smtp.gmail.com with ESMTPSA id x28sm7189523pff.182.2021.01.15.00.21.36
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 15 Jan 2021 00:21:28 -0800 (PST)
+        Fri, 15 Jan 2021 00:21:36 -0800 (PST)
 From:   Xin Long <lucien.xin@gmail.com>
 To:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org
 Cc:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
         Neil Horman <nhorman@tuxdriver.com>, davem@davemloft.net,
         Jakub Kicinski <kuba@kernel.org>,
         Alexander Duyck <alexander.duyck@gmail.com>
-Subject: [PATCHv2 net-next 1/2] net: move the hsize check to the else block in skb_segment
-Date:   Fri, 15 Jan 2021 16:21:11 +0800
-Message-Id: <bfecc76748f5dc64eaddf501c258dca9efb92bdf.1610698811.git.lucien.xin@gmail.com>
+Subject: [PATCHv2 net-next 2/2] udp: remove CRC flag from dev features in __skb_udp_tunnel_segment
+Date:   Fri, 15 Jan 2021 16:21:12 +0800
+Message-Id: <fb2283b264aac66379356ec7a1f17243f02504a1.1610698811.git.lucien.xin@gmail.com>
 X-Mailer: git-send-email 2.1.0
-In-Reply-To: <cover.1610698811.git.lucien.xin@gmail.com>
+In-Reply-To: <bfecc76748f5dc64eaddf501c258dca9efb92bdf.1610698811.git.lucien.xin@gmail.com>
 References: <cover.1610698811.git.lucien.xin@gmail.com>
+ <bfecc76748f5dc64eaddf501c258dca9efb92bdf.1610698811.git.lucien.xin@gmail.com>
 In-Reply-To: <cover.1610698811.git.lucien.xin@gmail.com>
 References: <cover.1610698811.git.lucien.xin@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-After commit 89319d3801d1 ("net: Add frag_list support to skb_segment"),
-it goes to process frag_list when !hsize in skb_segment(). However, when
-using skb frag_list, sg normally should not be set. In this case, hsize
-will be set with len right before !hsize check, then it won't go to
-frag_list processing code.
-
-So the right thing to do is move the hsize check to the else block, so
-that it won't affect the !hsize check for frag_list processing.
-
-v1->v2:
-  - change to do "hsize <= 0" check instead of "!hsize", and also move
-    "hsize < 0" into else block, to save some cycles, as Alex suggested.
-
 Signed-off-by: Xin Long <lucien.xin@gmail.com>
 ---
- net/core/skbuff.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+ net/ipv4/udp_offload.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-index 6039069..e835193 100644
---- a/net/core/skbuff.c
-+++ b/net/core/skbuff.c
-@@ -3894,12 +3894,8 @@ struct sk_buff *skb_segment(struct sk_buff *head_skb,
- 		}
+diff --git a/net/ipv4/udp_offload.c b/net/ipv4/udp_offload.c
+index ff39e94..1168d18 100644
+--- a/net/ipv4/udp_offload.c
++++ b/net/ipv4/udp_offload.c
+@@ -68,8 +68,8 @@ static struct sk_buff *__skb_udp_tunnel_segment(struct sk_buff *skb,
+ 				      (NETIF_F_HW_CSUM | NETIF_F_IP_CSUM))));
  
- 		hsize = skb_headlen(head_skb) - offset;
--		if (hsize < 0)
--			hsize = 0;
--		if (hsize > len || !sg)
--			hsize = len;
+ 	features &= skb->dev->hw_enc_features;
+-	/* CRC checksum can't be handled by HW when it's a UDP tunneling packet. */
+-	features &= ~NETIF_F_SCTP_CRC;
++	if (need_csum)
++		features &= ~NETIF_F_SCTP_CRC;
  
--		if (!hsize && i >= nfrags && skb_headlen(list_skb) &&
-+		if (hsize <= 0 && i >= nfrags && skb_headlen(list_skb) &&
- 		    (skb_headlen(list_skb) == len || sg)) {
- 			BUG_ON(skb_headlen(list_skb) > len);
- 
-@@ -3942,6 +3938,11 @@ struct sk_buff *skb_segment(struct sk_buff *head_skb,
- 			skb_release_head_state(nskb);
- 			__skb_push(nskb, doffset);
- 		} else {
-+			if (hsize > len || !sg)
-+				hsize = len;
-+			else if (hsize < 0)
-+				hsize = 0;
-+
- 			nskb = __alloc_skb(hsize + doffset + headroom,
- 					   GFP_ATOMIC, skb_alloc_rx_flag(head_skb),
- 					   NUMA_NO_NODE);
+ 	/* The only checksum offload we care about from here on out is the
+ 	 * outer one so strip the existing checksum feature flags and
 -- 
 2.1.0
 
