@@ -2,100 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D6E52F8B44
-	for <lists+netdev@lfdr.de>; Sat, 16 Jan 2021 05:33:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 74E4A2F8B40
+	for <lists+netdev@lfdr.de>; Sat, 16 Jan 2021 05:33:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729848AbhAPEdq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Jan 2021 23:33:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48104 "EHLO
+        id S1729837AbhAPEdk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Jan 2021 23:33:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48074 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729787AbhAPEdq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jan 2021 23:33:46 -0500
-Received: from mail-pf1-x431.google.com (mail-pf1-x431.google.com [IPv6:2607:f8b0:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E962EC061799
-        for <netdev@vger.kernel.org>; Fri, 15 Jan 2021 20:32:33 -0800 (PST)
-Received: by mail-pf1-x431.google.com with SMTP id b3so6803273pft.3
-        for <netdev@vger.kernel.org>; Fri, 15 Jan 2021 20:32:33 -0800 (PST)
+        with ESMTP id S1729787AbhAPEdi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jan 2021 23:33:38 -0500
+Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09811C061798;
+        Fri, 15 Jan 2021 20:32:31 -0800 (PST)
+Received: by mail-io1-xd2d.google.com with SMTP id u17so22352321iow.1;
+        Fri, 15 Jan 2021 20:32:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :in-reply-to:references;
-        bh=T+vvNq3SP4PfyWRXUjIhXZR26GW6JmhhuUdKtR2t97I=;
-        b=SS9FmYqI0gisMywuYitzDHL1zFCbzAfaDUHOAQ78NZQCrfWhgpVgRfxUUAw0Owoea6
-         MkD2xEhFgGkHaZrpmJBw8RcDBtGF2L5mN2Y8wO/9XNYno1OCl9jLN6KfQ18CLnc6dqUM
-         AavrjEorVVvzAIBWr0NyrcKWEBPVdpPO7hy76fRiF1gwpklSTqgGqFrhY7w5KuDh2U1j
-         qQJTcj+pooOk+OTADx4ezx6YqIzyndFplj6L4ORR/hx/TG6GioJYHKxUhObmrGhvPAnh
-         +X2+lmcEmj86HMyZOyECFRjjuH9tAhWyOPvUWMg8s0LES5Wnh9jaUDOzbSgIhioIyzeQ
-         uXCw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=IJ2p9Ww5rd/yhMfWY5ZWGoQK8wMPRFoNHSmKhGOMcVI=;
+        b=kmlmIVagRPI+Qb/uDh4n7FNosnYBVV1ClrERDGx7EDOMJudxmJV1gq/N+9ZppOWgdp
+         dpySx0LARDT/HgIwDz0wlmTdLkYgIsU+9n2dyYu+ezM9uy5erP+3S0RogMtFvCdjj5Wj
+         6FU8F5ESDdQU2xrjnaMf/y3yngeXxqUCopZQgNG/yYw8b80SbSaocDhvhMx8sM63mi8L
+         qyMWcsJBV+vINF7XDSZiYqNEfy1CVpbRdcQBB0qceC+S9G0DSPG51pGMPzTrUFaSIcJr
+         3ZUYqdT85Yj95R2Wq4QNNNmxazPrxWFnqnHvPjmpaX1mPNbIl8cRKmyy6aLbW/sTwsCP
+         NgzQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:in-reply-to:references;
-        bh=T+vvNq3SP4PfyWRXUjIhXZR26GW6JmhhuUdKtR2t97I=;
-        b=Rt7ZgrOCPpQ5cYCB6OxCaNS/0ZzrGf2BPbpFW+uE1hezEtQMARV0Fp5eaGoqi7G3sU
-         uzOIGpAFieMZ0yrWgwFQ5fsx50lKjWJ1oVhm0NCC0b+RZZDu+35NaqEwkiduxC6iAesR
-         YL/7aj826/EmDuoRFlKa5jel4kg28cAlXVjvNnebcDc0gjZFswEdf88n7UFBiV2SuSAe
-         i+Vi33xdBwQyLhrN7dIZp/TN5kdljWj9QPe5Oeob6zbc7PPVKm2MmdZHjjOJ3+6bqLa0
-         TczT4w4rovAwY+mUbFlDZp3DebomsnAXlQqmTKuqPGBpStvVyiT6J//OMRZR2K/pIU2x
-         izUg==
-X-Gm-Message-State: AOAM5326NPcqwP73PF+baUCs0CxxAiahbCC9AZDb5jJfmhnr+pEps5lQ
-        p5e4KCcncsWqoiWQ3vkwesACxGKSkDjWAw==
-X-Google-Smtp-Source: ABdhPJyPO7Q+XD3OFaGzAu8KUizWzAF+cKAV5634EPy2DZOHaAppy6jRbAsKf4JW5f4019AWT3UBiA==
-X-Received: by 2002:a62:6d06:0:b029:1a8:4d3f:947a with SMTP id i6-20020a626d060000b02901a84d3f947amr16182261pfc.6.1610771553287;
-        Fri, 15 Jan 2021 20:32:33 -0800 (PST)
-Received: from localhost ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id s7sm9306748pgi.69.2021.01.15.20.32.32
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 15 Jan 2021 20:32:32 -0800 (PST)
-From:   Xin Long <lucien.xin@gmail.com>
-To:     network dev <netdev@vger.kernel.org>
-Cc:     davem@davemloft.net, Jakub Kicinski <kuba@kernel.org>,
-        pabeni@redhat.com, Willem de Bruijn <willemb@google.com>,
-        Martin Varghese <martin.varghese@nokia.com>
-Subject: [PATCHv3 net-next 2/2] Revert "bareudp: Fixed bareudp receive handling"
-Date:   Sat, 16 Jan 2021 12:32:08 +0800
-Message-Id: <ef2fdd7f2f102663461e8630ad1aad74bb1219a0.1610771509.git.lucien.xin@gmail.com>
-X-Mailer: git-send-email 2.1.0
-In-Reply-To: <0ba74e791c186444af53489ebc55664462a1caf6.1610771509.git.lucien.xin@gmail.com>
-References: <cover.1610771509.git.lucien.xin@gmail.com>
- <0ba74e791c186444af53489ebc55664462a1caf6.1610771509.git.lucien.xin@gmail.com>
-In-Reply-To: <cover.1610771509.git.lucien.xin@gmail.com>
-References: <cover.1610771509.git.lucien.xin@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=IJ2p9Ww5rd/yhMfWY5ZWGoQK8wMPRFoNHSmKhGOMcVI=;
+        b=EKLJWmI4psuIzU1I9WV3hIv1Lpfsuz4QIqNib2XUaunjkjl/H/YDly6oXx8XEfYIMG
+         sG6FQ5vyp3Xq967jekVlTh5WqguEaR4BHHv2qSI5RjnTvJCFMWiB8LCOG6CVQT3nwUok
+         7S9KTTu+oNKXJSdG5AXy9JZ/ZMBEHM/jenpVSphgFb0fMc1Q/VK5HuxqcVMJmCZnD41f
+         fr19TA2ct0Vxqfp6MQ1CO2WMEkYnhBu+ddo1+he/YjQP7MXCaRsDSboiwW5Nm7ewWU08
+         ZvH2aLXBiC6mX0zSnCQGslOpYT+ogTVPMlLtPeKojWJXa27fgL2k0uplKcdQ6I+CbM4Y
+         26TQ==
+X-Gm-Message-State: AOAM531qB7DFwyLLbQgShqoaUGnUrlLoOIlXZBN9lJddy+dU5BM5C3O8
+        z22HWtmX8KSAgMO4Kcfcv8ht5zcUekYoBEBrmi1RUVd8EXQ=
+X-Google-Smtp-Source: ABdhPJxb7fh0nwxA2y9YCqKrj+uTLePU8bhkb6SiUVarA5atGkrZzd0kohK6AyhZBseiryf2KchIX45Jn+h3Fc9BYZE=
+X-Received: by 2002:a02:b38f:: with SMTP id p15mr3632651jan.83.1610771550239;
+ Fri, 15 Jan 2021 20:32:30 -0800 (PST)
+MIME-Version: 1.0
+References: <20210114065024.GK4678@unreal> <CAKgT0UeTXMeH24L9=wsPc2oJ=ZJ5jSpJeOqiJvsB2J9TFRFzwQ@mail.gmail.com>
+ <20210114164857.GN4147@nvidia.com> <CAKgT0UcKqt=EgE+eitB8-u8LvxqHBDfF+u2ZSi5urP_Aj0Btvg@mail.gmail.com>
+ <20210114182945.GO4147@nvidia.com> <CAKgT0UcQW+nJjTircZAYs1_GWNrRud=hSTsphfVpsc=xaF7aRQ@mail.gmail.com>
+ <20210114200825.GR4147@nvidia.com> <CAKgT0UcaRgY4XnM0jgWRvwBLj+ufiabFzKPyrf3jkLrF1Z8zEg@mail.gmail.com>
+ <20210114162812.268d684a@omen.home.shazbot.org> <CAKgT0Ufe1w4PpZb3NXuSxug+OMcjm1RP3ZqVrJmQqBDt3ByOZQ@mail.gmail.com>
+ <20210115140619.GA4147@nvidia.com>
+In-Reply-To: <20210115140619.GA4147@nvidia.com>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Fri, 15 Jan 2021 20:32:19 -0800
+Message-ID: <CAKgT0UfAoGXQp9C0uL124GZfdhY6vvpk3NmCDqCpLET9dzAdRg@mail.gmail.com>
+Subject: Re: [PATCH mlx5-next v1 2/5] PCI: Add SR-IOV sysfs entry to read
+ number of MSI-X vectors
+To:     Jason Gunthorpe <jgg@nvidia.com>
+Cc:     Alex Williamson <alex.williamson@redhat.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-pci <linux-pci@vger.kernel.org>,
+        linux-rdma@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
+        Don Dutile <ddutile@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-As udp_encap_enable() is already called in udp_tunnel_encap_enable()
-since the last patch, and we don't need it any more. So remove it by
-reverting commit 81f954a44567567c7d74a97b1db78fb43afc253d.
+On Fri, Jan 15, 2021 at 6:06 AM Jason Gunthorpe <jgg@nvidia.com> wrote:
+>
+> On Thu, Jan 14, 2021 at 05:56:20PM -0800, Alexander Duyck wrote:
+>
+> > That said, it only works at the driver level. So if the firmware is
+> > the one that is having to do this it also occured to me that if this
+> > update happened on FLR that would probably be preferred.
+>
+> FLR is not free, I'd prefer not to require it just for some
+> philosophical reason.
 
-v1->v2:
- - no change.
-v2->v3:
- - add the missing signoff.
+It wasn't so much a philosophical thing as the fact that it can sort
+of take the place as a reload. Essentially with an FLR we are
+rewriting the configuration so if the driver were involved it would be
+a good time to pull in the MSI-X table update. However looking over
+the mlx5 code I don't see any handling of FLR in there so I am
+assuming that is handled by the firmware.
 
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
----
- drivers/net/bareudp.c | 6 ------
- 1 file changed, 6 deletions(-)
+> > Since the mlx5 already supports devlink I don't see any reason why the
+> > driver couldn't be extended to also support the devlink resource
+> > interface and apply it to interrupts.
+>
+> So you are OK with the PF changing the VF as long as it is devlink not
+> sysfs? Seems rather arbitary?
 
-diff --git a/drivers/net/bareudp.c b/drivers/net/bareudp.c
-index 0965d13..57dfaf4 100644
---- a/drivers/net/bareudp.c
-+++ b/drivers/net/bareudp.c
-@@ -240,12 +240,6 @@ static int bareudp_socket_create(struct bareudp_dev *bareudp, __be16 port)
- 	tunnel_cfg.encap_destroy = NULL;
- 	setup_udp_tunnel_sock(bareudp->net, sock, &tunnel_cfg);
- 
--	/* As the setup_udp_tunnel_sock does not call udp_encap_enable if the
--	 * socket type is v6 an explicit call to udp_encap_enable is needed.
--	 */
--	if (sock->sk->sk_family == AF_INET6)
--		udp_encap_enable();
--
- 	rcu_assign_pointer(bareudp->sock, sock);
- 	return 0;
- }
--- 
-2.1.0
+It is about the setup of things. The sysfs existing in the VF is kind
+of ugly since it is a child device calling up to the parent and
+telling it how it is supposed to be configured. I'm sure in theory we
+could probably even have the VF request something like that itself
+through some sort of mailbox and cut out the middle-man but that would
+be even uglier.
 
+If you take a look at the usage of pci_physfn it is usually in spots
+where the PF is being looked for in order to find the policy that is
+supposed to be applied to the VF. This is one of the first few cases
+where it is being used to set the policy for the VF.
+
+> Leon knows best, but if I recall devlink becomes wonky when the VF
+> driver doesn't provide a devlink instance. How does it do reload of a
+> VF then?
+
+In my mind it was the PF driver providing a devlink instance for the
+VF if a driver isn't loaded. Then if the mlx5 driver was loaded on the
+VF you would replace that instance with one supported by the VF itself
+in order to coordinate with the VF driver. That way if the mlx5 driver
+is loaded on the VF you can still change the settings instead of being
+blocked by your own driver.
+
+As far as a reload the non-driver loaded case would probably look a
+lot like how things are handled now with the taking of the device
+lock, verifying no driver is loaded, notifying the firmware, and
+releasing the lock when it is complete. If the mlx5 driver is loaded
+on the VF it could be a more complete setup that would probably look
+more like your standard driver reinit.
+
+> I think you end up with essentially the same logic as presented here
+> with sysfs.
+
+It is similar, however the big difference is how the control is setup.
+With the VF sysfs file running things it feels sort of like the tail
+wagging the dog. You are having to go through and verify that this is
+a VF, that the PF is present, that the PF supports this operation and
+so on. If the PF is in charge of managing the configuration it should
+be the one registering the interfaces, not the VF. That is my view on
+this anyway as I feel it simplifies this quite a bit as the interface
+won't be there if it isn't supported.:
+
+> > > It is possible for vfio to fake the MSI-X capability and limit what a
+> > > user can access, but I don't think that's what is being done here.
+> >
+> > Yeah, I am assuming that is what is being done here.
+>
+> Just to be really clear, that assumption is wrong
+
+I misspoke and meant to agree with Alex's comment. If you are saying I
+was wrong, then yes, I was wrong. I meant that I was assuming you were
+resizing the actual table in the MMIO region where the MSI-X table and
+PBA bits are present.
