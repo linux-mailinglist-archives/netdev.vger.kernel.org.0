@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CCA5D2F8EA7
-	for <lists+netdev@lfdr.de>; Sat, 16 Jan 2021 19:25:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DC0BE2F8EA4
+	for <lists+netdev@lfdr.de>; Sat, 16 Jan 2021 19:23:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727778AbhAPSWu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Jan 2021 13:22:50 -0500
-Received: from foss.arm.com ([217.140.110.172]:56640 "EHLO foss.arm.com"
+        id S1727868AbhAPSW5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Jan 2021 13:22:57 -0500
+Received: from foss.arm.com ([217.140.110.172]:56652 "EHLO foss.arm.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727407AbhAPSWu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 16 Jan 2021 13:22:50 -0500
+        id S1727867AbhAPSWw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 16 Jan 2021 13:22:52 -0500
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5C76BD6E;
-        Sat, 16 Jan 2021 10:22:04 -0800 (PST)
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 14F1AED1;
+        Sat, 16 Jan 2021 10:22:07 -0800 (PST)
 Received: from e107158-lin.cambridge.arm.com (e107158-lin.cambridge.arm.com [10.1.194.78])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 083B03F70D;
-        Sat, 16 Jan 2021 10:22:02 -0800 (PST)
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B9AC73F70D;
+        Sat, 16 Jan 2021 10:22:05 -0800 (PST)
 From:   Qais Yousef <qais.yousef@arm.com>
 To:     netdev@vger.kernel.org, bpf@vger.kernel.org
 Cc:     Alexei Starovoitov <ast@kernel.org>,
@@ -26,42 +26,100 @@ Cc:     Alexei Starovoitov <ast@kernel.org>,
         Steven Rostedt <rostedt@goodmis.org>,
         "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         linux-kernel@vger.kernel.org, Qais Yousef <qais.yousef@arm.com>
-Subject: [PATCH v2 bpf-next 0/2] Allow attaching to bare tracepoints
-Date:   Sat, 16 Jan 2021 18:21:31 +0000
-Message-Id: <20210116182133.2286884-1-qais.yousef@arm.com>
+Subject: [PATCH v2 bpf-next 1/2] trace: bpf: Allow bpf to attach to bare tracepoints
+Date:   Sat, 16 Jan 2021 18:21:32 +0000
+Message-Id: <20210116182133.2286884-2-qais.yousef@arm.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20210116182133.2286884-1-qais.yousef@arm.com>
+References: <20210116182133.2286884-1-qais.yousef@arm.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Changes in v2:
-	* Fix compilation error.
-	* Make the new test use write() instead of read()
+Some subsystems only have bare tracepoints (a tracepoint with no
+associated trace event) to avoid the problem of trace events being an
+ABI that can't be changed.
 
-Add some missing glue logic to teach bpf about bare tracepoints - tracepoints
-without any trace event associated with them.
+From bpf presepective, bare tracepoints are what it calls
+RAW_TRACEPOINT().
 
-Bare tracepoints are declare with DECLARE_TRACE(). Full tracepoints are declare
-with TRACE_EVENT().
+Since bpf assumed there's 1:1 mapping, it relied on hooking to
+DEFINE_EVENT() macro to create bpf mapping of the tracepoints. Since
+bare tracepoints use DECLARE_TRACE() to create the tracepoint, bpf had
+no knowledge about their existence.
 
-BPF can attach to these tracepoints as RAW_TRACEPOINT() only as there're no
-events in tracefs created with them.
+By teaching bpf_probe.h to parse DECLARE_TRACE() in a similar fashion to
+DEFINE_EVENT(), bpf can find and attach to the new raw tracepoints.
 
-Qais Yousef (2):
-  trace: bpf: Allow bpf to attach to bare tracepoints
-  selftests: bpf: Add a new test for bare tracepoints
+Enabling that comes with the contract that changes to raw tracepoints
+don't constitute a regression if they break existing bpf programs.
+We need the ability to continue to morph and modify these raw
+tracepoints without worrying about any ABI.
 
- Documentation/bpf/bpf_design_QA.rst           |  6 +++++
- include/trace/bpf_probe.h                     | 12 +++++++--
- .../bpf/bpf_testmod/bpf_testmod-events.h      |  6 +++++
- .../selftests/bpf/bpf_testmod/bpf_testmod.c   | 21 ++++++++++++++-
- .../selftests/bpf/bpf_testmod/bpf_testmod.h   |  6 +++++
- .../selftests/bpf/prog_tests/module_attach.c  | 27 +++++++++++++++++++
- .../selftests/bpf/progs/test_module_attach.c  | 10 +++++++
- 7 files changed, 85 insertions(+), 3 deletions(-)
+Update Documentation/bpf/bpf_design_QA.rst to document this contract.
 
+Signed-off-by: Qais Yousef <qais.yousef@arm.com>
+---
+ Documentation/bpf/bpf_design_QA.rst |  6 ++++++
+ include/trace/bpf_probe.h           | 12 ++++++++++--
+ 2 files changed, 16 insertions(+), 2 deletions(-)
+
+diff --git a/Documentation/bpf/bpf_design_QA.rst b/Documentation/bpf/bpf_design_QA.rst
+index 2df7b067ab93..0e15f9b05c9d 100644
+--- a/Documentation/bpf/bpf_design_QA.rst
++++ b/Documentation/bpf/bpf_design_QA.rst
+@@ -208,6 +208,12 @@ data structures and compile with kernel internal headers. Both of these
+ kernel internals are subject to change and can break with newer kernels
+ such that the program needs to be adapted accordingly.
+ 
++Q: Are tracepoints part of the stable ABI?
++------------------------------------------
++A: NO. Tracepoints are tied to internal implementation details hence they are
++subject to change and can break with newer kernels. BPF programs need to change
++accordingly when this happens.
++
+ Q: How much stack space a BPF program uses?
+ -------------------------------------------
+ A: Currently all program types are limited to 512 bytes of stack
+diff --git a/include/trace/bpf_probe.h b/include/trace/bpf_probe.h
+index cd74bffed5c6..a23be89119aa 100644
+--- a/include/trace/bpf_probe.h
++++ b/include/trace/bpf_probe.h
+@@ -55,8 +55,7 @@
+ /* tracepoints with more than 12 arguments will hit build error */
+ #define CAST_TO_U64(...) CONCATENATE(__CAST, COUNT_ARGS(__VA_ARGS__))(__VA_ARGS__)
+ 
+-#undef DECLARE_EVENT_CLASS
+-#define DECLARE_EVENT_CLASS(call, proto, args, tstruct, assign, print)	\
++#define __BPF_DECLARE_TRACE(call, proto, args)				\
+ static notrace void							\
+ __bpf_trace_##call(void *__data, proto)					\
+ {									\
+@@ -64,6 +63,10 @@ __bpf_trace_##call(void *__data, proto)					\
+ 	CONCATENATE(bpf_trace_run, COUNT_ARGS(args))(prog, CAST_TO_U64(args));	\
+ }
+ 
++#undef DECLARE_EVENT_CLASS
++#define DECLARE_EVENT_CLASS(call, proto, args, tstruct, assign, print)	\
++	__BPF_DECLARE_TRACE(call, PARAMS(proto), PARAMS(args))
++
+ /*
+  * This part is compiled out, it is only here as a build time check
+  * to make sure that if the tracepoint handling changes, the
+@@ -111,6 +114,11 @@ __DEFINE_EVENT(template, call, PARAMS(proto), PARAMS(args), size)
+ #define DEFINE_EVENT_PRINT(template, name, proto, args, print)	\
+ 	DEFINE_EVENT(template, name, PARAMS(proto), PARAMS(args))
+ 
++#undef DECLARE_TRACE
++#define DECLARE_TRACE(call, proto, args)				\
++	__BPF_DECLARE_TRACE(call, PARAMS(proto), PARAMS(args))		\
++	__DEFINE_EVENT(call, call, PARAMS(proto), PARAMS(args), 0)
++
+ #include TRACE_INCLUDE(TRACE_INCLUDE_FILE)
+ 
+ #undef DEFINE_EVENT_WRITABLE
 -- 
 2.25.1
 
