@@ -2,82 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 447432F8E7A
-	for <lists+netdev@lfdr.de>; Sat, 16 Jan 2021 18:55:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CCA5D2F8EA7
+	for <lists+netdev@lfdr.de>; Sat, 16 Jan 2021 19:25:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727704AbhAPRzP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Jan 2021 12:55:15 -0500
-Received: from mail-out.m-online.net ([212.18.0.9]:44757 "EHLO
-        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727328AbhAPRzP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 16 Jan 2021 12:55:15 -0500
-Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
-        by mail-out.m-online.net (Postfix) with ESMTP id 4DJ5KC2LfLz1qrf4;
-        Sat, 16 Jan 2021 18:54:23 +0100 (CET)
-Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
-        by mail.m-online.net (Postfix) with ESMTP id 4DJ5KC1X7Wz1tSQn;
-        Sat, 16 Jan 2021 18:54:23 +0100 (CET)
-X-Virus-Scanned: amavisd-new at mnet-online.de
-Received: from mail.mnet-online.de ([192.168.8.182])
-        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
-        with ESMTP id GTIdQNdWleqH; Sat, 16 Jan 2021 18:54:21 +0100 (CET)
-X-Auth-Info: q4PGtmWcEz+TJIq87TKtaqTAN+gpSdtTaxrSUrD/pTA=
-Received: from [IPv6:::1] (p578adb1c.dip0.t-ipconnect.de [87.138.219.28])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.mnet-online.de (Postfix) with ESMTPSA;
-        Sat, 16 Jan 2021 18:54:21 +0100 (CET)
-Subject: Re: [PATCH net-next V2] net: ks8851: Fix mixed module/builtin build
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     Networking <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Lukas Wunner <lukas@wunner.de>
-References: <20210116164828.40545-1-marex@denx.de>
- <CAK8P3a1iqXjsYERVh+nQs9Xz4x7FreW3aS7OQPSB8CWcntnL4A@mail.gmail.com>
-From:   Marek Vasut <marex@denx.de>
-Message-ID: <a660f328-19d9-1e97-3f83-533c1245622e@denx.de>
-Date:   Sat, 16 Jan 2021 18:54:21 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+        id S1727778AbhAPSWu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Jan 2021 13:22:50 -0500
+Received: from foss.arm.com ([217.140.110.172]:56640 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727407AbhAPSWu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 16 Jan 2021 13:22:50 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5C76BD6E;
+        Sat, 16 Jan 2021 10:22:04 -0800 (PST)
+Received: from e107158-lin.cambridge.arm.com (e107158-lin.cambridge.arm.com [10.1.194.78])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 083B03F70D;
+        Sat, 16 Jan 2021 10:22:02 -0800 (PST)
+From:   Qais Yousef <qais.yousef@arm.com>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Yonghong Song <yhs@fb.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        linux-kernel@vger.kernel.org, Qais Yousef <qais.yousef@arm.com>
+Subject: [PATCH v2 bpf-next 0/2] Allow attaching to bare tracepoints
+Date:   Sat, 16 Jan 2021 18:21:31 +0000
+Message-Id: <20210116182133.2286884-1-qais.yousef@arm.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <CAK8P3a1iqXjsYERVh+nQs9Xz4x7FreW3aS7OQPSB8CWcntnL4A@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/16/21 6:04 PM, Arnd Bergmann wrote:
-> On Sat, Jan 16, 2021 at 5:48 PM Marek Vasut <marex@denx.de> wrote:
->>
->> When either the SPI or PAR variant is compiled as module AND the other
->> variant is compiled as built-in, the following build error occurs:
->>
->> arm-linux-gnueabi-ld: drivers/net/ethernet/micrel/ks8851_common.o: in function `ks8851_probe_common':
->> ks8851_common.c:(.text+0x1564): undefined reference to `__this_module'
->>
->> Fix this by passing THIS_MODULE as argument to ks8851_probe_common(),
->> ks8851_register_mdiobus(), and ultimately __mdiobus_register() in the
->> ks8851_common.c.
->>
->> Fixes: ef3631220d2b ("net: ks8851: Register MDIO bus and the internal PHY")
->> Signed-off-by: Marek Vasut <marex@denx.de>
->> Cc: Andrew Lunn <andrew@lunn.ch>
->> Cc: Arnd Bergmann <arnd@arndb.de>
->> Cc: Heiner Kallweit <hkallweit1@gmail.com>
->> Cc: Jakub Kicinski <kuba@kernel.org>
->> Cc: Lukas Wunner <lukas@wunner.de>
-> 
-> I don't really like this version, as it does not actually solve the problem of
-> linking the same object file into both vmlinux and a loadable module, which
-> can have all kinds of side-effects besides that link failure you saw.
-> 
-> If you want to avoid exporting all those symbols, a simpler hack would
-> be to '#include "ks8851_common.c" from each of the two files, which
-> then always duplicates the contents (even when both are built-in), but
-> at least builds the file the correct way.
+Changes in v2:
+	* Fix compilation error.
+	* Make the new test use write() instead of read()
 
-That's the same as V1, isn't it ?
+Add some missing glue logic to teach bpf about bare tracepoints - tracepoints
+without any trace event associated with them.
+
+Bare tracepoints are declare with DECLARE_TRACE(). Full tracepoints are declare
+with TRACE_EVENT().
+
+BPF can attach to these tracepoints as RAW_TRACEPOINT() only as there're no
+events in tracefs created with them.
+
+Qais Yousef (2):
+  trace: bpf: Allow bpf to attach to bare tracepoints
+  selftests: bpf: Add a new test for bare tracepoints
+
+ Documentation/bpf/bpf_design_QA.rst           |  6 +++++
+ include/trace/bpf_probe.h                     | 12 +++++++--
+ .../bpf/bpf_testmod/bpf_testmod-events.h      |  6 +++++
+ .../selftests/bpf/bpf_testmod/bpf_testmod.c   | 21 ++++++++++++++-
+ .../selftests/bpf/bpf_testmod/bpf_testmod.h   |  6 +++++
+ .../selftests/bpf/prog_tests/module_attach.c  | 27 +++++++++++++++++++
+ .../selftests/bpf/progs/test_module_attach.c  | 10 +++++++
+ 7 files changed, 85 insertions(+), 3 deletions(-)
+
+-- 
+2.25.1
+
