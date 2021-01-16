@@ -2,181 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B496C2F8DDA
-	for <lists+netdev@lfdr.de>; Sat, 16 Jan 2021 18:12:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2B9122F8E11
+	for <lists+netdev@lfdr.de>; Sat, 16 Jan 2021 18:16:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728487AbhAPRKy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Jan 2021 12:10:54 -0500
-Received: from mail-41103.protonmail.ch ([185.70.41.103]:24658 "EHLO
-        mail-41103.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728413AbhAPRKu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 16 Jan 2021 12:10:50 -0500
-X-Greylist: delayed 1751 seconds by postgrey-1.27 at vger.kernel.org; Sat, 16 Jan 2021 12:10:49 EST
-Received: from mail-03.mail-europe.com (mail-03.mail-europe.com [91.134.188.129])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        id S1727888AbhAPROZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Jan 2021 12:14:25 -0500
+Received: from mail-out.m-online.net ([212.18.0.10]:33127 "EHLO
+        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728918AbhAPROJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 Jan 2021 12:14:09 -0500
+Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
+        by mail-out.m-online.net (Postfix) with ESMTP id 4DJ3sW3btxz1rvxj;
+        Sat, 16 Jan 2021 17:48:47 +0100 (CET)
+Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
+        by mail.m-online.net (Postfix) with ESMTP id 4DJ3sW2fRPz1qqkg;
+        Sat, 16 Jan 2021 17:48:47 +0100 (CET)
+X-Virus-Scanned: amavisd-new at mnet-online.de
+Received: from mail.mnet-online.de ([192.168.8.182])
+        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
+        with ESMTP id ddhxtQ8tENzH; Sat, 16 Jan 2021 17:48:46 +0100 (CET)
+X-Auth-Info: R75VtrxGbqFRNZBINekOw/+eDDIsV4Uw3GFvTMbZWNM=
+Received: from tr.lan (ip-89-176-112-137.net.upcbroadband.cz [89.176.112.137])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail-41103.protonmail.ch (Postfix) with ESMTPS id 792242000E1D
-        for <netdev@vger.kernel.org>; Sat, 16 Jan 2021 16:14:55 +0000 (UTC)
-Authentication-Results: mail-41103.protonmail.ch;
-        dkim=pass (2048-bit key) header.d=pm.me header.i=@pm.me header.b="P31Pw8GS"
-Date:   Sat, 16 Jan 2021 16:13:22 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
-        t=1610813609; bh=MHzz5FyKwn7i42NSMZN+CFQWUj4wNAT96aUlGXKrpkU=;
-        h=Date:To:From:Cc:Reply-To:Subject:From;
-        b=P31Pw8GS8uCTnDc06Sme0658TXm4qVC3TfBLj1M3KKBtrC3eBWgN1yeNFR83i1V5i
-         54nShNvAjODsiYCGQZXHravtehg57ou8GGXFcDjKVAKvzVmL84xi98ZPJI2hEltQTy
-         Sm0C37o2A5eh4CZDZSdCgtNfic/kpc3gHQb8vmYHJ0anfjjdr8AjI/oZqxlo8YDIjx
-         LrTuOwCxuZbunb/mN6+IAV65GESTTQCT8HeNZTXhQbQ/0x+5CqqnOj5mlACweU+qhe
-         OxV5bnB+4Jq5pzZ1L/Gh6WtyBypl9FxBJljslLDCZRImpyGOF4HVt3NzEt5C5RXBjq
-         vHSkflgoicWjQ==
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-From:   Alexander Lobakin <alobakin@pm.me>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
+        by mail.mnet-online.de (Postfix) with ESMTPSA;
+        Sat, 16 Jan 2021 17:48:45 +0100 (CET)
+From:   Marek Vasut <marex@denx.de>
+To:     netdev@vger.kernel.org
+Cc:     Marek Vasut <marex@denx.de>, Andrew Lunn <andrew@lunn.ch>,
+        Arnd Bergmann <arnd@arndb.de>,
         Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Alexander Lobakin <alobakin@pm.me>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Reply-To: Alexander Lobakin <alobakin@pm.me>
-Subject: [PATCH net-next] mdio, phy: fix -Wshadow warnings triggered by nested container_of()
-Message-ID: <20210116161246.67075-1-alobakin@pm.me>
+        Jakub Kicinski <kuba@kernel.org>,
+        Lukas Wunner <lukas@wunner.de>
+Subject: [PATCH net-next V2] net: ks8851: Fix mixed module/builtin build
+Date:   Sat, 16 Jan 2021 17:48:28 +0100
+Message-Id: <20210116164828.40545-1-marex@denx.de>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.2 required=10.0 tests=ALL_TRUSTED,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF shortcircuit=no
-        autolearn=disabled version=3.4.4
-X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on
-        mailout.protonmail.ch
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-container_of() macro hides a local variable '__mptr' inside. This
-becomes a problem when several container_of() are nested in each
-other within single line or plain macros.
-As C preprocessor doesn't support generating random variable names,
-the sole solution is to avoid defining macros that consist only of
-container_of() calls, or they will self-shadow '__mptr' each time:
+When either the SPI or PAR variant is compiled as module AND the other
+variant is compiled as built-in, the following build error occurs:
 
-In file included from ./include/linux/bitmap.h:10,
-                 from drivers/net/phy/phy_device.c:12:
-drivers/net/phy/phy_device.c: In function =E2=80=98phy_device_release=
-=E2=80=99:
-./include/linux/kernel.h:693:8: warning: declaration of =E2=80=98__mptr=
-=E2=80=99 shadows a previous local [-Wshadow]
-  693 |  void *__mptr =3D (void *)(ptr);     \
-      |        ^~~~~~
-./include/linux/phy.h:647:26: note: in expansion of macro =E2=80=98containe=
-r_of=E2=80=99
-  647 | #define to_phy_device(d) container_of(to_mdio_device(d), \
-      |                          ^~~~~~~~~~~~
-./include/linux/mdio.h:52:27: note: in expansion of macro =E2=80=98containe=
-r_of=E2=80=99
-   52 | #define to_mdio_device(d) container_of(d, struct mdio_device, dev)
-      |                           ^~~~~~~~~~~~
-./include/linux/phy.h:647:39: note: in expansion of macro =E2=80=98to_mdio_=
-device=E2=80=99
-  647 | #define to_phy_device(d) container_of(to_mdio_device(d), \
-      |                                       ^~~~~~~~~~~~~~
-drivers/net/phy/phy_device.c:217:8: note: in expansion of macro =E2=80=
-=98to_phy_device=E2=80=99
-  217 |  kfree(to_phy_device(dev));
-      |        ^~~~~~~~~~~~~
-./include/linux/kernel.h:693:8: note: shadowed declaration is here
-  693 |  void *__mptr =3D (void *)(ptr);     \
-      |        ^~~~~~
-./include/linux/phy.h:647:26: note: in expansion of macro =E2=80=98containe=
-r_of=E2=80=99
-  647 | #define to_phy_device(d) container_of(to_mdio_device(d), \
-      |                          ^~~~~~~~~~~~
-drivers/net/phy/phy_device.c:217:8: note: in expansion of macro =E2=80=
-=98to_phy_device=E2=80=99
-  217 |  kfree(to_phy_device(dev));
-      |        ^~~~~~~~~~~~~
+arm-linux-gnueabi-ld: drivers/net/ethernet/micrel/ks8851_common.o: in function `ks8851_probe_common':
+ks8851_common.c:(.text+0x1564): undefined reference to `__this_module'
 
-As they are declared in header files, these warnings are highly
-repetitive and very annoying (along with the one from linux/pci.h).
+Fix this by passing THIS_MODULE as argument to ks8851_probe_common(),
+ks8851_register_mdiobus(), and ultimately __mdiobus_register() in the
+ks8851_common.c.
 
-Convert the related macros from linux/{mdio,phy}.h to static inlines
-to avoid self-shadowing and potentially improve bug-catching.
-No functional changes implied.
-
-Signed-off-by: Alexander Lobakin <alobakin@pm.me>
+Fixes: ef3631220d2b ("net: ks8851: Register MDIO bus and the internal PHY")
+Signed-off-by: Marek Vasut <marex@denx.de>
+Cc: Andrew Lunn <andrew@lunn.ch>
+Cc: Arnd Bergmann <arnd@arndb.de>
+Cc: Heiner Kallweit <hkallweit1@gmail.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Lukas Wunner <lukas@wunner.de>
 ---
- include/linux/mdio.h | 23 ++++++++++++++++++-----
- include/linux/phy.h  |  7 +++++--
- 2 files changed, 23 insertions(+), 7 deletions(-)
+V2: Pass the THIS_MODULE into ks8851_common.c
+---
+ drivers/net/ethernet/micrel/ks8851.h        | 2 +-
+ drivers/net/ethernet/micrel/ks8851_common.c | 9 +++++----
+ drivers/net/ethernet/micrel/ks8851_par.c    | 2 +-
+ drivers/net/ethernet/micrel/ks8851_spi.c    | 2 +-
+ 4 files changed, 8 insertions(+), 7 deletions(-)
 
-diff --git a/include/linux/mdio.h b/include/linux/mdio.h
-index dbd69b3d170b..ffb787d5ebde 100644
---- a/include/linux/mdio.h
-+++ b/include/linux/mdio.h
-@@ -49,7 +49,11 @@ struct mdio_device {
- =09unsigned int reset_assert_delay;
- =09unsigned int reset_deassert_delay;
+diff --git a/drivers/net/ethernet/micrel/ks8851.h b/drivers/net/ethernet/micrel/ks8851.h
+index ef13929036cf..037138fc6cb4 100644
+--- a/drivers/net/ethernet/micrel/ks8851.h
++++ b/drivers/net/ethernet/micrel/ks8851.h
+@@ -428,7 +428,7 @@ struct ks8851_net {
  };
--#define to_mdio_device(d) container_of(d, struct mdio_device, dev)
-+
-+static inline struct mdio_device *to_mdio_device(const struct device *dev)
-+{
-+=09return container_of(dev, struct mdio_device, dev);
-+}
-=20
- /* struct mdio_driver_common: Common to all MDIO drivers */
- struct mdio_driver_common {
-@@ -57,8 +61,12 @@ struct mdio_driver_common {
- =09int flags;
- };
- #define MDIO_DEVICE_FLAG_PHY=09=091
--#define to_mdio_common_driver(d) \
--=09container_of(d, struct mdio_driver_common, driver)
-+
-+static inline struct mdio_driver_common *
-+to_mdio_common_driver(const struct device_driver *driver)
-+{
-+=09return container_of(driver, struct mdio_driver_common, driver);
-+}
-=20
- /* struct mdio_driver: Generic MDIO driver */
- struct mdio_driver {
-@@ -73,8 +81,13 @@ struct mdio_driver {
- =09/* Clears up any memory if needed */
- =09void (*remove)(struct mdio_device *mdiodev);
- };
--#define to_mdio_driver(d)=09=09=09=09=09=09\
--=09container_of(to_mdio_common_driver(d), struct mdio_driver, mdiodrv)
-+
-+static inline struct mdio_driver *
-+to_mdio_driver(const struct device_driver *driver)
-+{
-+=09return container_of(to_mdio_common_driver(driver), struct mdio_driver,
-+=09=09=09    mdiodrv);
-+}
-=20
- /* device driver data */
- static inline void mdiodev_set_drvdata(struct mdio_device *mdio, void *dat=
-a)
-diff --git a/include/linux/phy.h b/include/linux/phy.h
-index 24fcc6456a9e..bc323fbdd21e 100644
---- a/include/linux/phy.h
-+++ b/include/linux/phy.h
-@@ -648,8 +648,11 @@ struct phy_device {
- =09const struct macsec_ops *macsec_ops;
+ 
+ int ks8851_probe_common(struct net_device *netdev, struct device *dev,
+-			int msg_en);
++			int msg_en, struct module *owner);
+ int ks8851_remove_common(struct device *dev);
+ int ks8851_suspend(struct device *dev);
+ int ks8851_resume(struct device *dev);
+diff --git a/drivers/net/ethernet/micrel/ks8851_common.c b/drivers/net/ethernet/micrel/ks8851_common.c
+index f1996787bba5..88303ba4869d 100644
+--- a/drivers/net/ethernet/micrel/ks8851_common.c
++++ b/drivers/net/ethernet/micrel/ks8851_common.c
+@@ -1104,7 +1104,8 @@ int ks8851_resume(struct device *dev)
+ }
  #endif
- };
--#define to_phy_device(d) container_of(to_mdio_device(d), \
--=09=09=09=09      struct phy_device, mdio)
-+
-+static inline struct phy_device *to_phy_device(const struct device *dev)
-+{
-+=09return container_of(to_mdio_device(dev), struct phy_device, mdio);
-+}
-=20
- /**
-  * struct phy_tdr_config - Configuration of a TDR raw test
---=20
-2.30.0
-
+ 
+-static int ks8851_register_mdiobus(struct ks8851_net *ks, struct device *dev)
++static int ks8851_register_mdiobus(struct ks8851_net *ks, struct device *dev,
++				   struct module *owner)
+ {
+ 	struct phy_device *phy_dev;
+ 	struct mii_bus *mii_bus;
+@@ -1122,7 +1123,7 @@ static int ks8851_register_mdiobus(struct ks8851_net *ks, struct device *dev)
+ 	mii_bus->phy_mask = ~((u32)BIT(0));
+ 	snprintf(mii_bus->id, MII_BUS_ID_SIZE, "%s", dev_name(dev));
+ 
+-	ret = mdiobus_register(mii_bus);
++	ret = __mdiobus_register(mii_bus, owner);
+ 	if (ret)
+ 		goto err_mdiobus_register;
+ 
+@@ -1149,7 +1150,7 @@ static void ks8851_unregister_mdiobus(struct ks8851_net *ks)
+ }
+ 
+ int ks8851_probe_common(struct net_device *netdev, struct device *dev,
+-			int msg_en)
++			int msg_en, struct module *owner)
+ {
+ 	struct ks8851_net *ks = netdev_priv(netdev);
+ 	unsigned cider;
+@@ -1224,7 +1225,7 @@ int ks8851_probe_common(struct net_device *netdev, struct device *dev,
+ 
+ 	dev_info(dev, "message enable is %d\n", msg_en);
+ 
+-	ret = ks8851_register_mdiobus(ks, dev);
++	ret = ks8851_register_mdiobus(ks, dev, owner);
+ 	if (ret)
+ 		goto err_mdio;
+ 
+diff --git a/drivers/net/ethernet/micrel/ks8851_par.c b/drivers/net/ethernet/micrel/ks8851_par.c
+index 3bab0cb2b1a5..d6fc53d3efbb 100644
+--- a/drivers/net/ethernet/micrel/ks8851_par.c
++++ b/drivers/net/ethernet/micrel/ks8851_par.c
+@@ -324,7 +324,7 @@ static int ks8851_probe_par(struct platform_device *pdev)
+ 
+ 	netdev->irq = platform_get_irq(pdev, 0);
+ 
+-	return ks8851_probe_common(netdev, dev, msg_enable);
++	return ks8851_probe_common(netdev, dev, msg_enable, THIS_MODULE);
+ }
+ 
+ static int ks8851_remove_par(struct platform_device *pdev)
+diff --git a/drivers/net/ethernet/micrel/ks8851_spi.c b/drivers/net/ethernet/micrel/ks8851_spi.c
+index 4ec7f1615977..9fbb7a548580 100644
+--- a/drivers/net/ethernet/micrel/ks8851_spi.c
++++ b/drivers/net/ethernet/micrel/ks8851_spi.c
+@@ -451,7 +451,7 @@ static int ks8851_probe_spi(struct spi_device *spi)
+ 
+ 	netdev->irq = spi->irq;
+ 
+-	return ks8851_probe_common(netdev, dev, msg_enable);
++	return ks8851_probe_common(netdev, dev, msg_enable, THIS_MODULE);
+ }
+ 
+ static int ks8851_remove_spi(struct spi_device *spi)
+-- 
+2.29.2
 
