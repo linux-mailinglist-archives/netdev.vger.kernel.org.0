@@ -2,126 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 319E22F8E06
-	for <lists+netdev@lfdr.de>; Sat, 16 Jan 2021 18:16:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 087492F8DFF
+	for <lists+netdev@lfdr.de>; Sat, 16 Jan 2021 18:16:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728895AbhAPRNQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Jan 2021 12:13:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39198 "EHLO
+        id S1728330AbhAPRKd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Jan 2021 12:10:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728390AbhAPRKo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 16 Jan 2021 12:10:44 -0500
-Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD144C06179F
-        for <netdev@vger.kernel.org>; Sat, 16 Jan 2021 05:45:32 -0800 (PST)
-Received: by mail-wr1-x42a.google.com with SMTP id a9so8569670wrt.5
-        for <netdev@vger.kernel.org>; Sat, 16 Jan 2021 05:45:32 -0800 (PST)
+        with ESMTP id S1728256AbhAPRK0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 Jan 2021 12:10:26 -0500
+Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0024AC061388;
+        Sat, 16 Jan 2021 07:05:28 -0800 (PST)
+Received: by mail-wm1-x329.google.com with SMTP id g10so10098111wmh.2;
+        Sat, 16 Jan 2021 07:05:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=to:cc:from:subject:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=1zwgk9KjEr1hoio/pIKFu2r3UeQqskDclSUtmb+BJE0=;
-        b=pT+YYFmxxQCvqijAFNBepGofwqtpVcAG2XpBENQYGE5R2eHGKCLcnWjU/VR2PUFpAF
-         n3MNMQ1hUqdpDODIR961uL0ufWEhKCAbC6E/eY9fR8g1YGYUiPT9H7GVOLQNt1PLww91
-         2USkMTl2p35UU3PxvFJ/MEz01A7AAWC8nLKaXYyGoJdRGaVE2n/muKZtpHU81UMSPccX
-         /i8I3pNqge6sG6QPc5EkuQfuTe2n+7jcusRjGJD+BAuB+pVEmm3MJ/Jy42S+GKUsJcv/
-         IQN35J+92+5zrHMlSDBurJb31EK7wG3xipB9x5/F4ewVXCjEOc+RdV53+BVWJZVN0Mex
-         7YTQ==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=DZLVsLwB5k35ns7zYrJfmPC7wohrTEilCe/nrtCaIos=;
+        b=mdF7Lcv1Qsj0qki+yGN+ZMvZUIzeogvlFBN3jT3HMVH2P4zGfcp4NeVeiHp+HEZZ0D
+         IKjY9DelmAmuH6F3e7pBF+k8cNnWD8soPicZcMjHuN7/xPBsljHal9bsxYdIJZIIY/fG
+         HcpvylPeg2/DuY310EqRrfTK8EiPua3jLUromeIIxVfhmNFMxmneHM424bGLHF2El4qz
+         fU8YPbJvJrBI+qkEML2I997Ag1JKCG58QFYWCNGCtoxp93Q5ZL+NTs/LO81Lbpxcb20e
+         0isftoNA88QE+4XLjD3no8lKloHL8JUdhMuzU94atSxl/4nZNancrBE1i5QHDbnvpm69
+         ZOzw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:cc:from:subject:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=1zwgk9KjEr1hoio/pIKFu2r3UeQqskDclSUtmb+BJE0=;
-        b=pwViW4bM5t5AHx/VyHZzubRiBk9+QterY0mdJvfpT/iRZHm/uWvW8Aaeg6R21rulsQ
-         bGEm+epxALqvcv7Dg2KJTGfslUmOgybez8p4aAZfvDrUE0zOA+cs522FkBx8Wfm+cMpv
-         chhaXQePOCfkr2Gcs5hWLoPJ3TZKHmFOylM3EDdq62YSJxJAnPguo4vh6vsRzJ0F9xvV
-         KbeaYZv8+6B0MRjqX9TrMl4NBfx0qYvv0Lrvs8KHJIf6nlXjG3EUgex1Oqv69f6HV74s
-         w6EnLaC7HQPTW1rtjOKqO/olw+V0RoC37X+64W02F36XhJ3j8F55Q2LYUci1mh1Z9aUe
-         vC4A==
-X-Gm-Message-State: AOAM532SYLqtEgnu5wxirygPwH1tHZEmg5QCbDEBe6wK0H2kcAHYSTgI
-        8ahje+GHNNVraMOpk0+uniFK06V8pUI=
-X-Google-Smtp-Source: ABdhPJzjfHLZ6+48mGb0KtotHv9pe1ITOS/fuo5SvczuqKEOcDkpQS/KOC5llMqFEGb67xkniKA/rg==
-X-Received: by 2002:adf:e60f:: with SMTP id p15mr17808143wrm.60.1610804731331;
-        Sat, 16 Jan 2021 05:45:31 -0800 (PST)
-Received: from ?IPv6:2003:ea:8f06:5500:5d83:6110:837c:5dcc? (p200300ea8f0655005d836110837c5dcc.dip0.t-ipconnect.de. [2003:ea:8f06:5500:5d83:6110:837c:5dcc])
-        by smtp.googlemail.com with ESMTPSA id c18sm34479218wmk.0.2021.01.16.05.45.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 16 Jan 2021 05:45:30 -0800 (PST)
-To:     Raju Rangoju <rajur@chelsio.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH net-next] cxgb4: remove bogus CHELSIO_VPD_UNIQUE_ID constant
-Message-ID: <25339251-513a-75c6-e96e-c284d23eed0f@gmail.com>
-Date:   Sat, 16 Jan 2021 14:45:25 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=DZLVsLwB5k35ns7zYrJfmPC7wohrTEilCe/nrtCaIos=;
+        b=QeKBpU2xPzxVMRTz7zahw0GqpzfgC80UwxLH7Pbtpdo2mWANtJ3l9gf/z+XkGHw3/Y
+         ljw43KbI7kmNte/ru2BtjKD1EUU5xUn78zpcNS+KpeX3CyyyLidS57TSeuejP641ko2V
+         zMRq1xymkKm0kZATQB7t9gJXgTlvjljbKPGGilOqzpgTvAl5854CrnZL/MQAJ8uLH7v7
+         qI95I6EQjTDRW+JNcCayRVqs41NQAwTudiSl0h2TP0bOd133ZU6ZD8KalhaXoyRhzUp8
+         OnIYWF8HG+8emerHOF3xI445aYwCNokoalcx2JPdA529fKXjDCUhaD1C/bjNXcylDdB3
+         ot4Q==
+X-Gm-Message-State: AOAM530R4l3Ijmt+Cx9qy4mdY4H2yxd21s5x/wAQKyZZrSf/IMekc1P0
+        3LANsnf2th/4ws4KZsd9gy0=
+X-Google-Smtp-Source: ABdhPJxQAvj6kOWZC0WaVg5MqIG+8t3an335uYZ8IsA/Sff+21gUj42t5TDr7z/f6Ql38fca5Uixgw==
+X-Received: by 2002:a1c:24c4:: with SMTP id k187mr13816365wmk.14.1610809527727;
+        Sat, 16 Jan 2021 07:05:27 -0800 (PST)
+Received: from debian.vlc ([170.253.51.130])
+        by smtp.gmail.com with ESMTPSA id f68sm5494887wmf.6.2021.01.16.07.05.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 16 Jan 2021 07:05:27 -0800 (PST)
+From:   Alejandro Colomar <alx.manpages@gmail.com>
+To:     mtk.manpages@gmail.com
+Cc:     =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
+        linux-man@vger.kernel.org, netdev@vger.kernel.org,
+        Alejandro Colomar <alx.manpages@gmail.com>
+Subject: [PATCH] rtnetlink.7: Remove IPv4 from description
+Date:   Sat, 16 Jan 2021 16:04:35 +0100
+Message-Id: <20210116150434.7938-1-alx.manpages@gmail.com>
+X-Mailer: git-send-email 2.30.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The comment is quite weird, there is no such thing as a vendor-specific
-VPD id. 0x82 is the value of PCI_VPD_LRDT_ID_STRING. So what we are
-doing here is simply checking whether the byte at VPD address VPD_BASE
-is a valid string LRDT, same as what is done a few lines later in
-the code.
-LRDT = Large Resource Data Tag, see PCI 2.2 spec, VPD chapter
+From: Pali Rohár <pali@kernel.org>
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+rtnetlink is not only used for IPv4
+
+Signed-off-by: Pali Rohár <pali@kernel.org>
+Signed-off-by: Alejandro Colomar <alx.manpages@gmail.com>
 ---
- drivers/net/ethernet/chelsio/cxgb4/t4_hw.c | 16 +++++-----------
- 1 file changed, 5 insertions(+), 11 deletions(-)
+ man7/rtnetlink.7 | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c b/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
-index 2c80371f9..48f20a6a0 100644
---- a/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
-+++ b/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
-@@ -2689,7 +2689,6 @@ void t4_get_regs(struct adapter *adap, void *buf, size_t buf_size)
- #define VPD_BASE           0x400
- #define VPD_BASE_OLD       0
- #define VPD_LEN            1024
--#define CHELSIO_VPD_UNIQUE_ID 0x82
- 
- /**
-  * t4_eeprom_ptov - translate a physical EEPROM address to virtual
-@@ -2743,9 +2742,9 @@ int t4_seeprom_wp(struct adapter *adapter, bool enable)
-  */
- int t4_get_raw_vpd_params(struct adapter *adapter, struct vpd_params *p)
- {
--	int i, ret = 0, addr;
-+	int i, ret = 0, addr = VPD_BASE;
- 	int ec, sn, pn, na;
--	u8 *vpd, csum;
-+	u8 *vpd, csum, base_val = 0;
- 	unsigned int vpdr_len, kw_offset, id_len;
- 
- 	vpd = vmalloc(VPD_LEN);
-@@ -2755,17 +2754,12 @@ int t4_get_raw_vpd_params(struct adapter *adapter, struct vpd_params *p)
- 	/* Card information normally starts at VPD_BASE but early cards had
- 	 * it at 0.
- 	 */
--	ret = pci_read_vpd(adapter->pdev, VPD_BASE, sizeof(u32), vpd);
-+	ret = pci_read_vpd(adapter->pdev, VPD_BASE, 1, &base_val);
- 	if (ret < 0)
- 		goto out;
- 
--	/* The VPD shall have a unique identifier specified by the PCI SIG.
--	 * For chelsio adapters, the identifier is 0x82. The first byte of a VPD
--	 * shall be CHELSIO_VPD_UNIQUE_ID (0x82). The VPD programming software
--	 * is expected to automatically put this entry at the
--	 * beginning of the VPD.
--	 */
--	addr = *vpd == CHELSIO_VPD_UNIQUE_ID ? VPD_BASE : VPD_BASE_OLD;
-+	if (base_val != PCI_VPD_LRDT_ID_STRING)
-+		addr = VPD_BASE_OLD;
- 
- 	ret = pci_read_vpd(adapter->pdev, addr, VPD_LEN, vpd);
- 	if (ret < 0)
+diff --git a/man7/rtnetlink.7 b/man7/rtnetlink.7
+index cd6809320..aec005ff9 100644
+--- a/man7/rtnetlink.7
++++ b/man7/rtnetlink.7
+@@ -13,7 +13,7 @@
+ .\"
+ .TH RTNETLINK  7 2020-06-09 "Linux" "Linux Programmer's Manual"
+ .SH NAME
+-rtnetlink \- Linux IPv4 routing socket
++rtnetlink \- Linux routing socket
+ .SH SYNOPSIS
+ .nf
+ .B #include <asm/types.h>
 -- 
 2.30.0
 
