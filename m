@@ -2,69 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 166312F89B7
-	for <lists+netdev@lfdr.de>; Sat, 16 Jan 2021 01:03:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E06D2F89C3
+	for <lists+netdev@lfdr.de>; Sat, 16 Jan 2021 01:08:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727940AbhAPAAt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Jan 2021 19:00:49 -0500
-Received: from mail.kernel.org ([198.145.29.99]:44094 "EHLO mail.kernel.org"
+        id S1727954AbhAPAIG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Jan 2021 19:08:06 -0500
+Received: from mail.kernel.org ([198.145.29.99]:44606 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726282AbhAPAAs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 15 Jan 2021 19:00:48 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 6C5F723A5E;
-        Sat, 16 Jan 2021 00:00:08 +0000 (UTC)
+        id S1726176AbhAPAIF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 15 Jan 2021 19:08:05 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D20C923A01;
+        Sat, 16 Jan 2021 00:07:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610755208;
-        bh=KZeCc6R56vZJhc/fk3Kh/NyMLXaLdCg4gYA4YPGtMFo=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=KuRkCkc/ndl6XWeNAm4N0B+oilnBv5x6qu8zfkL9nLlKaLM5ddZfs7FjLHIUwqeX3
-         kTxW4LKih0SFx3k3/JNlzuvtnpjA0FMQyNQZyiiK01hkJe5GQ55FKWSQ9D+82Vc+oY
-         CJrBOwOrmrrVJN6PeNjoZZIZWMHDvhP8XlzFae07IXLfAk8UbE/LwOw9L2pFraClq5
-         AMYPS7/Tw/X0qhvie/VoPNscIwigcD7p4VPbYnKLdRpEVZ1Xex4SRio0Ov1l/eyi16
-         q3n0aGGsBEr0NEvXWdDQXgCoQaj+4vYIOcrawnmtCZ9+OP3C+1GcvJZGt0pR6fJIYQ
-         GK+Oe49ZAh0wg==
-Received: from pdx-korg-docbuild-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-1.ci.codeaurora.org (Postfix) with ESMTP id 5E77C605AB;
-        Sat, 16 Jan 2021 00:00:08 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1610755645;
+        bh=yYr2q7lNAq/q/Obg++NQkrKqBVKTH2282wttNpy5bM8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=OiR5cD0oCTw30+tm55FACqWBQc8Tq5JCFpac9JbwqQM/dgPzt34V+hCcsgCs1p9P5
+         BYiKibSThr8u+d5Ac6ViitpJjlqMsewFTcEhEycsGtXxP/Q34wm58tNrzBVlY4Y6Fa
+         oOjDJ+WT85Nn9Fnm4UWhufxz24HiXkTOwjAtc1csTNfyocrHqKY9yoazMuSqk1+xFD
+         VdRlN6h3tJcSHSsdh+auZ3GtzXOv4xwyttgDQt81KKo5vn3GyA1Tiap6NKTSJNXfcz
+         Mi7CnKxrNQUHv8FvsGeFYUpHBygUqgSoK+DKa1ZKNLPL74bgiS7nhnDdgfh0XGbrHL
+         xuxVZAN02rA0A==
+Date:   Fri, 15 Jan 2021 16:07:23 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     mkl@pengutronix.de, "David S. Miller" <davem@davemloft.net>,
+        Oliver Hartkopp <socketcan@hartkopp.net>,
+        Robin van der Gracht <robin@protonic.nl>,
+        syzbot+5138c4dd15a0401bec7b@syzkaller.appspotmail.com,
+        kernel@pengutronix.de, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [RFC PATCH net 1/2] net: introduce CAN specific pointer in the
+ struct net_device
+Message-ID: <20210115160723.7abd75ec@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210115143036.31275-1-o.rempel@pengutronix.de>
+References: <20210115143036.31275-1-o.rempel@pengutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [Patch net v4] cls_flower: call nla_ok() before nla_next()
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161075520838.15612.8489720419574863467.git-patchwork-notify@kernel.org>
-Date:   Sat, 16 Jan 2021 00:00:08 +0000
-References: <20210115185024.72298-1-xiyou.wangcong@gmail.com>
-In-Reply-To: <20210115185024.72298-1-xiyou.wangcong@gmail.com>
-To:     Cong Wang <xiyou.wangcong@gmail.com>
-Cc:     netdev@vger.kernel.org, cong.wang@bytedance.com,
-        syzbot+2624e3778b18fc497c92@syzkaller.appspotmail.com,
-        jhs@mojatatu.com, lucien.xin@gmail.com, jiri@resnulli.us,
-        kuba@kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (refs/heads/master):
-
-On Fri, 15 Jan 2021 10:50:24 -0800 you wrote:
-> From: Cong Wang <cong.wang@bytedance.com>
+On Fri, 15 Jan 2021 15:30:35 +0100 Oleksij Rempel wrote:
+> Since 20dd3850bcf8 ("can: Speed up CAN frame receiption by using
+> ml_priv") the CAN framework uses per device specific data in the AF_CAN
+> protocol. For this purpose the struct net_device->ml_priv is used. Later
+> the ml_priv usage in CAN was extended for other users, one of them being
+> CAN_J1939.
 > 
-> fl_set_enc_opt() simply checks if there are still bytes left to parse,
-> but this is not sufficent as syzbot seems to be able to generate
-> malformatted netlink messages. nla_ok() is more strict so should be
-> used to validate the next nlattr here.
+> Later in the kernel ml_priv was converted to an union, used by other
+> drivers. E.g. the tun driver started storing it's stats pointer.
 > 
-> [...]
+> Since tun devices can claim to be a CAN device, CAN specific protocols
+> will wrongly interpret this pointer, which will cause system crashes.
+> Mostly this issue is visible in the CAN_J1939 stack.
+> 
+> To fix this issue, we request a dedicated CAN pointer within the
+> net_device struct.
 
-Here is the summary with links:
-  - [net,v4] cls_flower: call nla_ok() before nla_next()
-    https://git.kernel.org/netdev/net/c/c96adff95619
+No strong objection, others already added their pointers, but 
+I wonder if we can't save those couple of bytes by adding a
+ml_priv_type, to check instead of dev->type? And leave it 0
+for drivers using stats?
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+That way other device types which are limited by all being 
+ARPHDR_ETHER can start using ml_priv as well?
 
+> +#if IS_ENABLED(CONFIG_CAN)
+> +	struct can_ml_priv	*can;
+> +#endif
 
+Perhaps put it next to all the _ptr fields?
