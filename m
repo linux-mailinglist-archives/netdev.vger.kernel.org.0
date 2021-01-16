@@ -2,66 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EB5A2F8B2D
-	for <lists+netdev@lfdr.de>; Sat, 16 Jan 2021 05:31:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C21F2F8B33
+	for <lists+netdev@lfdr.de>; Sat, 16 Jan 2021 05:31:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728965AbhAPEau (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Jan 2021 23:30:50 -0500
-Received: from mail.kernel.org ([198.145.29.99]:53872 "EHLO mail.kernel.org"
+        id S1729641AbhAPEbG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Jan 2021 23:31:06 -0500
+Received: from mail.kernel.org ([198.145.29.99]:54036 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725781AbhAPEat (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 15 Jan 2021 23:30:49 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id EB0CD23A75;
-        Sat, 16 Jan 2021 04:30:08 +0000 (UTC)
+        id S1725781AbhAPEbF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 15 Jan 2021 23:31:05 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C5DC523A5E;
+        Sat, 16 Jan 2021 04:30:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610771409;
-        bh=zxy10ZzNRp6NoJKDyYWFcyj/tqGU4pIU1p3JOj/Fxss=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Z1ylZT4XNTui+w9PxPZYMHqYHp6vQNGQAxjYZ5JFxCSLE0s/JVUjHMrfFa03RL7k2
-         L3QnQuamJvmbXTgpvIgB+VVeDt/P/TEi6MsgwNXrDqMss/FChq8rKWBJlBIOF+hRam
-         2rkDIba5qlbdpEfMBl1sPXq7KgY2V+xsWnC/A/KBZ+77PzK9pt16oBhqav3F+ZEKuX
-         n6GWkLQhT2LDaWZTNgVBQyCqVsAmpGs7UdMeTgqY2wDCIZ/+4+k86Lx1vbO2zf+k6r
-         Xs54QcbVjY1/2otevGLyD5eQAxPYj+xQ8XHvg7CmVaEx9oSp486Gqwk4D0SRh3wDpA
-         71SpUBsIL8zyg==
-Received: from pdx-korg-docbuild-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-1.ci.codeaurora.org (Postfix) with ESMTP id D9E4B60649;
-        Sat, 16 Jan 2021 04:30:08 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1610771424;
+        bh=qMDRWToLQ/4TptwuZSmDQQfMwSt3KS2cw2D//FPEt/Q=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=U+aAm1w9JU3pIsHh2sb7hGSuu9wVQm6okaSscvSxYfKm0mWeHJhWFJRY7HZwM+vVq
+         QplIQ0PKtWiPdU8PsItkoNpy16j2+1tgz9hJXdRrjIgU43XvyjaberM+5TDVhK/ONu
+         Hea+t3YU0cKLvliJegB2vjqSOr5ycVFk8A6HJOv6Q5owov2QLSyb+MUlSYCxmOdyNp
+         9LLJdqyMxMPxBb7gAXFXgizA/uWqe3OkC+y+mds80mjerWMk2roYiy4hj9nUCKofgm
+         2Xl7mn3c4Puve9F70YczTBXl+7+UVLLC5WZgjZo8deUGCpZEu6GxIBL7dKTsaGtz8N
+         4E2dUMRr4FOWQ==
+Date:   Fri, 15 Jan 2021 20:30:22 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     "Andrea Parri (Microsoft)" <parri.andrea@gmail.com>
+Cc:     linux-kernel@vger.kernel.org,
+        "K . Y . Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>,
+        Michael Kelley <mikelley@microsoft.com>,
+        Saruhan Karademir <skarade@microsoft.com>,
+        Juan Vazquez <juvazq@microsoft.com>,
+        linux-hyperv@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: Re: [PATCH v2] hv_netvsc: Add (more) validation for untrusted
+ Hyper-V values
+Message-ID: <20210115203022.7005e66a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210114202628.119541-1-parri.andrea@gmail.com>
+References: <20210114202628.119541-1-parri.andrea@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] tcp_cubic: use memset and offsetof init
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161077140888.29705.12549950075312268419.git-patchwork-notify@kernel.org>
-Date:   Sat, 16 Jan 2021 04:30:08 +0000
-References: <1610597696-128610-1-git-send-email-yejune.deng@gmail.com>
-In-Reply-To: <1610597696-128610-1-git-send-email-yejune.deng@gmail.com>
-To:     Yejune Deng <yejune.deng@gmail.com>
-Cc:     edumazet@google.com, davem@davemloft.net, kuznet@ms2.inr.ac.ru,
-        yoshfuji@linux-ipv6.org, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net-next.git (refs/heads/master):
-
-On Thu, 14 Jan 2021 12:14:56 +0800 you wrote:
-> In bictcp_reset(), use memset and offsetof instead of = 0.
+On Thu, 14 Jan 2021 21:26:28 +0100 Andrea Parri (Microsoft) wrote:
+> For additional robustness in the face of Hyper-V errors or malicious
+> behavior, validate all values that originate from packets that Hyper-V
+> has sent to the guest.  Ensure that invalid values cannot cause indexing
+> off the end of an array, or subvert an existing validation via integer
+> overflow.  Ensure that outgoing packets do not have any leftover guest
+> memory that has not been zeroed out.
 > 
-> Signed-off-by: Yejune Deng <yejune.deng@gmail.com>
+> Reported-by: Juan Vazquez <juvazq@microsoft.com>
+> Signed-off-by: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
+> Cc: "David S. Miller" <davem@davemloft.net>
+> Cc: Jakub Kicinski <kuba@kernel.org>
+> Cc: Alexei Starovoitov <ast@kernel.org>
+> Cc: Daniel Borkmann <daniel@iogearbox.net>
+> Cc: Andrii Nakryiko <andrii@kernel.org>
+> Cc: Martin KaFai Lau <kafai@fb.com>
+> Cc: Song Liu <songliubraving@fb.com>
+> Cc: Yonghong Song <yhs@fb.com>
+> Cc: John Fastabend <john.fastabend@gmail.com>
+> Cc: KP Singh <kpsingh@kernel.org>
+> Cc: netdev@vger.kernel.org
+> Cc: bpf@vger.kernel.org
 > ---
->  net/ipv4/tcp_cubic.c | 11 +----------
->  1 file changed, 1 insertion(+), 10 deletions(-)
+> Applies to 5.11-rc3 (and hyperv-next).
 
-Here is the summary with links:
-  - tcp_cubic: use memset and offsetof init
-    https://git.kernel.org/netdev/net-next/c/f4d133d86af7
+So this is for hyperv-next or should we take it via netdev trees?
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+> Changes since v1 (Juan Vazquez):
+>   - Improve validation in rndis_set_link_state() and rndis_get_ppi()
+>   - Remove memory/skb leak in netvsc_alloc_recv_skb()
