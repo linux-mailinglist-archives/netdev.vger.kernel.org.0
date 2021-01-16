@@ -2,220 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 430AD2F8E0F
-	for <lists+netdev@lfdr.de>; Sat, 16 Jan 2021 18:16:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 447432F8E7A
+	for <lists+netdev@lfdr.de>; Sat, 16 Jan 2021 18:55:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728956AbhAPROO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Jan 2021 12:14:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39952 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728926AbhAPROJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 16 Jan 2021 12:14:09 -0500
-Received: from mail-oi1-x229.google.com (mail-oi1-x229.google.com [IPv6:2607:f8b0:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC574C061574;
-        Sat, 16 Jan 2021 09:13:28 -0800 (PST)
-Received: by mail-oi1-x229.google.com with SMTP id l200so13097587oig.9;
-        Sat, 16 Jan 2021 09:13:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=JQYyHv7IM57vI890lYmuj/Cq36xklEeLDd0LywTovy4=;
-        b=HsEOU9LhTmrMY5umpjFUy7M6AbjxsR96TayaPN8poWvcJ5Q3dJTYkPfhrZaonIPVCI
-         N5ePDDkQ+4GEMV5Iz2AXnZZ0RLtTrSK01G9gBoVRgbRPmmj9E66JeGQWE5k02fcgpn8j
-         y0eQQRKTtcDTSxzAkIbleO0Ob8c8FMAHYWsMfjUVXQJYYtGGpFkoQak2jtmB/m5rRXCE
-         EsJB+f8ArwkmBStrUe13I2Wejh4scYfRYL5e1x/LCoIcG7+RLaMhtOvoSrfMa0SfWWR9
-         hQnyQkPJ1rBbcHPL6UpnrJrTiaC2WkfFbJP8yiRZKEG/zWSCxf9yuKDstCk8nUQh1+QO
-         f/cg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=JQYyHv7IM57vI890lYmuj/Cq36xklEeLDd0LywTovy4=;
-        b=KQLQROiS6bXrrTHpZCZROOnA+0vbvHgg1bhJBAUqdXnN+esdClHuZMozWlqumCRaua
-         6s3Mr8UQjDj2vdYeVZo0uzvbogHeM/IqRc/zgJIcIriySg9DYo6J2mOTKvDVBp+Lnigt
-         p0gVmJwoRED2h9TpMLusNKWAr+TzQJM6myNy1aOuoAWg9qZym5kA7zizpx9fU7FmRHeX
-         M2GjW+24g6QSCcYTGq97uij23FM/qHfi5X3/Cp64nX5z7TrhanAp0iSWqpeIY5nly5MS
-         199OFprnutdDjYzUg00kM8loSHkQVLMvpZC/an4n9qYwJyoQU7YpMdAu6Lu8W2KHh+qn
-         IyRg==
-X-Gm-Message-State: AOAM533SuSxg9LVsPzaHMgOZTYkJIJKZW2p8L3wc85k5D+IeKvREiIzG
-        pxl+Ojpo4pfkLe1bsrSJG9C50Mk2pxc=
-X-Google-Smtp-Source: ABdhPJz2gXjXbLk831qAfBJ4HlYyzfZWNHw7t4HR18bJNH4EQQPtAX7xI4w33xt8twSiUEl/gO/tzA==
-X-Received: by 2002:aca:5493:: with SMTP id i141mr9034379oib.82.1610817207734;
-        Sat, 16 Jan 2021 09:13:27 -0800 (PST)
-Received: from Davids-MacBook-Pro.local ([8.20.123.23])
-        by smtp.googlemail.com with ESMTPSA id t26sm2630620otm.17.2021.01.16.09.13.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 16 Jan 2021 09:13:26 -0800 (PST)
-Subject: Re: [PATCH v2 net-next 1/1] Allow user to set metric on default route
- learned via Router Advertisement.
-To:     Praveen Chaudhary <praveen5582@gmail.com>, davem@davemloft.net,
-        kuba@kernel.org, corbet@lwn.net, kuznet@ms2.inr.ac.ru,
-        yoshfuji@linux-ipv6.org, netdev@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Zhenggen Xu <zxu@linkedin.com>
-References: <20210115080203.8889-1-pchaudhary@linkedin.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <0f64942e-debd-81bd-b29c-7d2728a5bd4b@gmail.com>
-Date:   Sat, 16 Jan 2021 10:13:23 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
- Gecko/20100101 Thunderbird/78.6.1
+        id S1727704AbhAPRzP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Jan 2021 12:55:15 -0500
+Received: from mail-out.m-online.net ([212.18.0.9]:44757 "EHLO
+        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727328AbhAPRzP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 Jan 2021 12:55:15 -0500
+Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
+        by mail-out.m-online.net (Postfix) with ESMTP id 4DJ5KC2LfLz1qrf4;
+        Sat, 16 Jan 2021 18:54:23 +0100 (CET)
+Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
+        by mail.m-online.net (Postfix) with ESMTP id 4DJ5KC1X7Wz1tSQn;
+        Sat, 16 Jan 2021 18:54:23 +0100 (CET)
+X-Virus-Scanned: amavisd-new at mnet-online.de
+Received: from mail.mnet-online.de ([192.168.8.182])
+        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
+        with ESMTP id GTIdQNdWleqH; Sat, 16 Jan 2021 18:54:21 +0100 (CET)
+X-Auth-Info: q4PGtmWcEz+TJIq87TKtaqTAN+gpSdtTaxrSUrD/pTA=
+Received: from [IPv6:::1] (p578adb1c.dip0.t-ipconnect.de [87.138.219.28])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.mnet-online.de (Postfix) with ESMTPSA;
+        Sat, 16 Jan 2021 18:54:21 +0100 (CET)
+Subject: Re: [PATCH net-next V2] net: ks8851: Fix mixed module/builtin build
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     Networking <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Lukas Wunner <lukas@wunner.de>
+References: <20210116164828.40545-1-marex@denx.de>
+ <CAK8P3a1iqXjsYERVh+nQs9Xz4x7FreW3aS7OQPSB8CWcntnL4A@mail.gmail.com>
+From:   Marek Vasut <marex@denx.de>
+Message-ID: <a660f328-19d9-1e97-3f83-533c1245622e@denx.de>
+Date:   Sat, 16 Jan 2021 18:54:21 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-In-Reply-To: <20210115080203.8889-1-pchaudhary@linkedin.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <CAK8P3a1iqXjsYERVh+nQs9Xz4x7FreW3aS7OQPSB8CWcntnL4A@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/15/21 1:02 AM, Praveen Chaudhary wrote:
-> For IPv4, default route is learned via DHCPv4 and user is allowed to change
-> metric using config etc/network/interfaces. But for IPv6, default route can
-> be learned via RA, for which, currently a fixed metric value 1024 is used.
+On 1/16/21 6:04 PM, Arnd Bergmann wrote:
+> On Sat, Jan 16, 2021 at 5:48 PM Marek Vasut <marex@denx.de> wrote:
+>>
+>> When either the SPI or PAR variant is compiled as module AND the other
+>> variant is compiled as built-in, the following build error occurs:
+>>
+>> arm-linux-gnueabi-ld: drivers/net/ethernet/micrel/ks8851_common.o: in function `ks8851_probe_common':
+>> ks8851_common.c:(.text+0x1564): undefined reference to `__this_module'
+>>
+>> Fix this by passing THIS_MODULE as argument to ks8851_probe_common(),
+>> ks8851_register_mdiobus(), and ultimately __mdiobus_register() in the
+>> ks8851_common.c.
+>>
+>> Fixes: ef3631220d2b ("net: ks8851: Register MDIO bus and the internal PHY")
+>> Signed-off-by: Marek Vasut <marex@denx.de>
+>> Cc: Andrew Lunn <andrew@lunn.ch>
+>> Cc: Arnd Bergmann <arnd@arndb.de>
+>> Cc: Heiner Kallweit <hkallweit1@gmail.com>
+>> Cc: Jakub Kicinski <kuba@kernel.org>
+>> Cc: Lukas Wunner <lukas@wunner.de>
 > 
-> Ideally, user should be able to configure metric on default route for IPv6
-> similar to IPv4. This fix adds sysctl for the same.
+> I don't really like this version, as it does not actually solve the problem of
+> linking the same object file into both vmlinux and a loadable module, which
+> can have all kinds of side-effects besides that link failure you saw.
 > 
-> Signed-off-by: Praveen Chaudhary <pchaudhary@linkedin.com>
-> Signed-off-by: Zhenggen Xu <zxu@linkedin.com>
-> 
-> Changes in v1.
-> ---
+> If you want to avoid exporting all those symbols, a simpler hack would
+> be to '#include "ks8851_common.c" from each of the two files, which
+> then always duplicates the contents (even when both are built-in), but
+> at least builds the file the correct way.
 
-your trying to be too fancy in the log messages; everything after this
-first '---' is dropped. Just Remove all of the '---' lines and '```' tags.
-
-> 1.) Correct the call to rt6_add_dflt_router.
-> ---
-> 
-> Changes in v2.
-> [Refer: lkml.org/lkml/2021/1/14/1400]
-> ---
-> 1.) Replace accept_ra_defrtr_metric to ra_defrtr_metric.
-> 2.) Change Type to __u32 instead of __s32.
-> 3.) Change description in Documentation/networking/ip-sysctl.rst.
-> 4.) Use proc_douintvec instead of proc_dointvec.
-> 5.) Code style in ndisc_router_discovery().
-> 6.) Change Type to u32 instead of unsigned int.
-> ---
-> 
-> Logs:
-> ----------------------------------------------------------------
-> For IPv4:
-> ----------------------------------------------------------------
-> 
-> Config in etc/network/interfaces
-> ----------------------------------------------------------------
-> ```
-> auto eth0
-> iface eth0 inet dhcp
->     metric 4261413864
-
-how does that work for IPv4? Is the metric passed to the dhclient and it
-inserts the route with the given metric or is a dhclient script used to
-replace the route after insert?
-
-
-> diff --git a/Documentation/networking/ip-sysctl.rst b/Documentation/networking/ip-sysctl.rst
-> index dd2b12a32b73..c4b8d4b8d213 100644
-> --- a/Documentation/networking/ip-sysctl.rst
-> +++ b/Documentation/networking/ip-sysctl.rst
-> @@ -1871,6 +1871,18 @@ accept_ra_defrtr - BOOLEAN
->  		- enabled if accept_ra is enabled.
->  		- disabled if accept_ra is disabled.
->  
-> +ra_defrtr_metric - INTEGER
-> +	Route metric for default route learned in Router Advertisement. This value
-> +	will be assigned as metric for the default route learned via IPv6 Router
-> +	Advertisement. Takes affect only if accept_ra_defrtr' is enabled.
-
-stray ' after accept_ra_defrtr
-
-> +
-> +	Possible values are:
-> +		0:
-> +			default value will be used for route metric
-> +			i.e. IP6_RT_PRIO_USER 1024.
-> +		1 to 0xFFFFFFFF:
-> +			current value will be used for route metric.
-> +
->  accept_ra_from_local - BOOLEAN
->  	Accept RA with source-address that is found on local machine
->  	if the RA is otherwise proper and able to be accepted.
-
-
-
-> diff --git a/net/ipv6/addrconf.c b/net/ipv6/addrconf.c
-> index eff2cacd5209..b13d3213e58f 100644
-> --- a/net/ipv6/addrconf.c
-> +++ b/net/ipv6/addrconf.c
-> @@ -205,6 +205,7 @@ static struct ipv6_devconf ipv6_devconf __read_mostly = {
->  	.max_desync_factor	= MAX_DESYNC_FACTOR,
->  	.max_addresses		= IPV6_MAX_ADDRESSES,
->  	.accept_ra_defrtr	= 1,
-> +	.ra_defrtr_metric = 0,
-
-make the the '=' align column wise with the existing entries; seems like
-your new line is missing a tab
-
->  	.accept_ra_from_local	= 0,
->  	.accept_ra_min_hop_limit= 1,
->  	.accept_ra_pinfo	= 1,
-> @@ -260,6 +261,7 @@ static struct ipv6_devconf ipv6_devconf_dflt __read_mostly = {
->  	.max_desync_factor	= MAX_DESYNC_FACTOR,
->  	.max_addresses		= IPV6_MAX_ADDRESSES,
->  	.accept_ra_defrtr	= 1,
-> +	.ra_defrtr_metric = 0,
-
-same here
-
->  	.accept_ra_from_local	= 0,
->  	.accept_ra_min_hop_limit= 1,
->  	.accept_ra_pinfo	= 1,
-> @@ -5475,6 +5477,7 @@ static inline void ipv6_store_devconf(struct ipv6_devconf *cnf,
->  	array[DEVCONF_MAX_DESYNC_FACTOR] = cnf->max_desync_factor;
->  	array[DEVCONF_MAX_ADDRESSES] = cnf->max_addresses;
->  	array[DEVCONF_ACCEPT_RA_DEFRTR] = cnf->accept_ra_defrtr;
-> +	array[DEVCONF_RA_DEFRTR_METRIC] = cnf->ra_defrtr_metric;
->  	array[DEVCONF_ACCEPT_RA_MIN_HOP_LIMIT] = cnf->accept_ra_min_hop_limit;
->  	array[DEVCONF_ACCEPT_RA_PINFO] = cnf->accept_ra_pinfo;
->  #ifdef CONFIG_IPV6_ROUTER_PREF
-> @@ -6667,6 +6670,13 @@ static const struct ctl_table addrconf_sysctl[] = {
->  		.mode		= 0644,
->  		.proc_handler	= proc_dointvec,
->  	},
-> +	{
-> +		.procname	= "ra_defrtr_metric",
-> +		.data		= &ipv6_devconf.ra_defrtr_metric,
-> +		.maxlen		= sizeof(u32),
-> +		.mode		= 0644,
-> +		.proc_handler	= proc_douintvec,
-> +	},
->  	{
->  		.procname	= "accept_ra_min_hop_limit",
->  		.data		= &ipv6_devconf.accept_ra_min_hop_limit,
-> diff --git a/net/ipv6/ndisc.c b/net/ipv6/ndisc.c
-> index 76717478f173..2bffed49f5c0 100644
-> --- a/net/ipv6/ndisc.c
-> +++ b/net/ipv6/ndisc.c
-> @@ -1173,6 +1173,7 @@ static void ndisc_router_discovery(struct sk_buff *skb)
->  	struct neighbour *neigh = NULL;
->  	struct inet6_dev *in6_dev;
->  	struct fib6_info *rt = NULL;
-> +	u32 defrtr_usr_metric;
->  	struct net *net;
->  	int lifetime;
->  	struct ndisc_options ndopts;
-> @@ -1303,18 +1304,23 @@ static void ndisc_router_discovery(struct sk_buff *skb)
->  			return;
->  		}
->  	}
-> -	if (rt && lifetime == 0) {
-> +	/* Set default route metric if specified by user */
-> +	defrtr_usr_metric = in6_dev->cnf.accept_ra_defrtr_metric;
-
-this tells me you did not compile this version of the patch since the
-'accept_' has been dropped. Always compile and test every patch before
-sending.
+That's the same as V1, isn't it ?
