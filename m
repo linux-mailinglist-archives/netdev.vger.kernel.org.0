@@ -2,76 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 39BC22F8F43
-	for <lists+netdev@lfdr.de>; Sat, 16 Jan 2021 21:40:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F15D2F8F62
+	for <lists+netdev@lfdr.de>; Sat, 16 Jan 2021 22:13:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726980AbhAPUkb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Jan 2021 15:40:31 -0500
-Received: from bmailout2.hostsharing.net ([83.223.78.240]:56103 "EHLO
-        bmailout2.hostsharing.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726385AbhAPUk3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 16 Jan 2021 15:40:29 -0500
-Received: from h08.hostsharing.net (h08.hostsharing.net [IPv6:2a01:37:1000::53df:5f1c:0])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
-        by bmailout2.hostsharing.net (Postfix) with ESMTPS id 5A7432800B3E0;
-        Sat, 16 Jan 2021 21:39:45 +0100 (CET)
-Received: by h08.hostsharing.net (Postfix, from userid 100393)
-        id 4F65E1AF35; Sat, 16 Jan 2021 21:39:45 +0100 (CET)
-Date:   Sat, 16 Jan 2021 21:39:45 +0100
-From:   Lukas Wunner <lukas@wunner.de>
-To:     Arnd Bergmann <arnd@kernel.org>
-Cc:     Marek Vasut <marex@denx.de>, Networking <netdev@vger.kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: Re: [PATCH net-next V2] net: ks8851: Fix mixed module/builtin build
-Message-ID: <20210116203945.GA32445@wunner.de>
-References: <20210116164828.40545-1-marex@denx.de>
- <CAK8P3a1iqXjsYERVh+nQs9Xz4x7FreW3aS7OQPSB8CWcntnL4A@mail.gmail.com>
- <a660f328-19d9-1e97-3f83-533c1245622e@denx.de>
- <CAK8P3a3qtrmxMg+uva-s18f_zj7aNXJXcJCzorr2d-XxnqV1Hw@mail.gmail.com>
+        id S1726864AbhAPVNG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Jan 2021 16:13:06 -0500
+Received: from mx2.suse.de ([195.135.220.15]:35630 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726201AbhAPVNF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 16 Jan 2021 16:13:05 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id BE75BAC4F;
+        Sat, 16 Jan 2021 21:12:23 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id 52B6E60797; Sat, 16 Jan 2021 22:12:23 +0100 (CET)
+Date:   Sat, 16 Jan 2021 22:12:23 +0100
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     netdev@vger.kernel.org
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Edwin Peer <edwin.peer@broadcom.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Andrew Gospodarek <andrew.gospodarek@broadcom.com>,
+        Michael Chan <michael.chan@broadcom.com>
+Subject: Re: [PATCH iproute2] iplink: work around rtattr length limits for
+ IFLA_VFINFO_LIST
+Message-ID: <20210116211223.xhurmrb2tqlffr7z@lion.mk-sys.cz>
+References: <20210115225950.18762-1-edwin.peer@broadcom.com>
+ <20210115155325.7811b052@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAK8P3a3qtrmxMg+uva-s18f_zj7aNXJXcJCzorr2d-XxnqV1Hw@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20210115155325.7811b052@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jan 16, 2021 at 08:26:22PM +0100, Arnd Bergmann wrote:
-> On Sat, Jan 16, 2021 at 6:56 PM Marek Vasut <marex@denx.de> wrote:
-> > On 1/16/21 6:04 PM, Arnd Bergmann wrote:
-> > > On Sat, Jan 16, 2021 at 5:48 PM Marek Vasut <marex@denx.de> wrote:
-> >
-> > > I don't really like this version, as it does not actually solve the problem of
-> > > linking the same object file into both vmlinux and a loadable module, which
-> > > can have all kinds of side-effects besides that link failure you saw.
-> > >
-> > > If you want to avoid exporting all those symbols, a simpler hack would
-> > > be to '#include "ks8851_common.c" from each of the two files, which
-> > > then always duplicates the contents (even when both are built-in), but
-> > > at least builds the file the correct way.
-> >
-> > That's the same as V1, isn't it ?
+On Fri, Jan 15, 2021 at 03:53:25PM -0800, Jakub Kicinski wrote:
+> On Fri, 15 Jan 2021 14:59:50 -0800 Edwin Peer wrote:
+> > The maximum possible length of an RTNL attribute is 64KB, but the
+> > nested VFINFO list exceeds this for more than about 220 VFs (each VF
+> > consumes approximately 300 bytes, depending on alignment and optional
+> > fields). Exceeding the limit causes IFLA_VFINFO_LIST's length to wrap
+> > modulo 16 bits in the kernel's nla_nest_end().
 > 
-> Ah, I had not actually looked at the original submission, but yes, that
-> was slightly better than v2, provided you make all symbols static to
-> avoid the new link error.
-> 
-> I still think that having three modules and exporting the symbols from
-> the common part as Heiner Kallweit suggested would be the best
-> way to do it.
+> Let's add Michal to CC, my faulty memory tells me he was fighting with
+> this in the past.
 
-FWIW I'd prefer V1 (the #include approach) as it allows going back to
-using static inlines for register access.  That's what we had before
-7a552c850c45.
+I've been looking into this some time ago and even tried to open
+a discussion on this topic two or three times but there didn't seem
+sufficient interest.
 
-It seems unlikely that a system uses both, the parallel *and* the SPI
-variant of the ks8851.  So the additional memory necessary because of
-code duplication wouldn't matter in practice.
+My idea back then was to use a separate  query which would allow getting
+VF information using a dump request (one VF per message); the reply for
+RTM_GETLINK request would either list all VFs as now if possible or only
+as many as fit into a nested attribute and indicate that the information
+is incomplete (or maybe omit the VF information in such case as
+usefulness of the truncated list is questionable).
 
-Thanks,
+However, my take from the discussions was that most developers who took
+part rather thought that there is no need for such rtnetlink feature as
+there is a devlink interface which does not suffer from this limit and
+NICs with so many VFs that IFLA_VFINFO_LIST exceeds 65535 bytes can
+provide devlink interface to handle them.
 
-Lukas
+In any case, while the idea of handling the malformed messages composed
+by existing kernels makes sense, we should IMHO consider this a kernel
+bug which should be fixed so that kernel does not reply with malformed
+netlink messages (independently of whether this patch is applied to
+iproute2 or not).
+
+Michal
