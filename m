@@ -2,19 +2,19 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B13752F8AE7
-	for <lists+netdev@lfdr.de>; Sat, 16 Jan 2021 04:02:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9DF582F8AE9
+	for <lists+netdev@lfdr.de>; Sat, 16 Jan 2021 04:02:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729480AbhAPDBG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Jan 2021 22:01:06 -0500
-Received: from out30-57.freemail.mail.aliyun.com ([115.124.30.57]:44212 "EHLO
-        out30-57.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729184AbhAPDBG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jan 2021 22:01:06 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R601e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=19;SR=0;TI=SMTPD_---0ULr66-0_1610765969;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0ULr66-0_1610765969)
+        id S1729496AbhAPDBQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Jan 2021 22:01:16 -0500
+Received: from out30-45.freemail.mail.aliyun.com ([115.124.30.45]:50105 "EHLO
+        out30-45.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728644AbhAPDBQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jan 2021 22:01:16 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R131e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04394;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=19;SR=0;TI=SMTPD_---0ULrQCaD_1610765971;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0ULrQCaD_1610765971)
           by smtp.aliyun-inc.com(127.0.0.1);
-          Sat, 16 Jan 2021 10:59:30 +0800
+          Sat, 16 Jan 2021 10:59:31 +0800
 From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 To:     netdev@vger.kernel.org
 Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
@@ -33,9 +33,9 @@ Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         KP Singh <kpsingh@kernel.org>,
         virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
-Subject: [PATCH net-next v2 4/7] virtio-net, xsk: support xsk enable/disable
-Date:   Sat, 16 Jan 2021 10:59:25 +0800
-Message-Id: <bf265fef497a84ea7411b51e761228ac912d78b9.1610765285.git.xuanzhuo@linux.alibaba.com>
+Subject: [PATCH net-next v2 7/7] virtio-net, xsk: set xsk completed when packet sent done
+Date:   Sat, 16 Jan 2021 10:59:28 +0800
+Message-Id: <4949b7afe1420cfdedd890f77335fa9554f774cf.1610765285.git.xuanzhuo@linux.alibaba.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <cover.1610765285.git.xuanzhuo@linux.alibaba.com>
 References: <cover.1609837120.git.xuanzhuo@linux.alibaba.com>
@@ -46,155 +46,115 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When enable, a certain number of struct virtnet_xsk_hdr is allocated to
-save the information of each packet and virtio hdr.This number is the
-limit of the received module parameters.
+When recycling packets that have been sent, call xsk_tx_completed to
+inform xsk which packets have been sent.
 
-When struct virtnet_xsk_hdr is used up, or the sq->vq->num_free of
-virtio-net is too small, it will be considered that the device is busy.
-
-* xsk_num_max: the xsk.hdr max num
-* xsk_num_percent: the max hdr num be the percent of the virtio ring
-  size. The real xsk hdr num will the min of xsk_num_max and the percent
-  of the num of virtio ring
-* xsk_budget: the budget for xsk run
+If necessary, start napi to process the packets in the xsk queue.
 
 Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
 ---
- drivers/net/virtio_net.c | 97 ++++++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 97 insertions(+)
+ drivers/net/virtio_net.c | 49 ++++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 49 insertions(+)
 
 diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-index 9013328..a62d456 100644
+index e552c2d..d0d620b 100644
 --- a/drivers/net/virtio_net.c
 +++ b/drivers/net/virtio_net.c
-@@ -22,10 +22,19 @@
- #include <net/route.h>
- #include <net/xdp.h>
- #include <net/net_failover.h>
-+#include <net/xdp_sock_drv.h>
- 
- static int napi_weight = NAPI_POLL_WEIGHT;
- module_param(napi_weight, int, 0444);
- 
-+static int xsk_num_max     = 1024;
-+static int xsk_num_percent = 80;
-+static int xsk_budget      = 128;
-+
-+module_param(xsk_num_max,     int, 0644);
-+module_param(xsk_num_percent, int, 0644);
-+module_param(xsk_budget,      int, 0644);
-+
- static bool csum = true, gso = true, napi_tx = true;
- module_param(csum, bool, 0444);
- module_param(gso, bool, 0444);
-@@ -149,6 +158,15 @@ struct send_queue {
- 	struct virtnet_sq_stats stats;
- 
- 	struct napi_struct napi;
-+
-+	struct {
-+		struct xsk_buff_pool   __rcu *pool;
-+		struct virtnet_xsk_hdr __rcu *hdr;
-+
-+		u64                    hdr_con;
-+		u64                    hdr_pro;
-+		u64                    hdr_n;
-+	} xsk;
- };
- 
- /* Internal representation of a receive virtqueue */
-@@ -2540,11 +2558,90 @@ static int virtnet_xdp_set(struct net_device *dev, struct bpf_prog *prog,
- 	return err;
+@@ -1442,6 +1442,42 @@ static int virtnet_receive(struct receive_queue *rq, int budget,
+ 	return stats.packets;
  }
  
-+static int virtnet_xsk_pool_enable(struct net_device *dev,
-+				   struct xsk_buff_pool *pool,
-+				   u16 qid)
++static void virt_xsk_complete(struct send_queue *sq, u32 num, bool xsk_wakeup)
 +{
-+	struct virtnet_info *vi = netdev_priv(dev);
-+	struct send_queue *sq = &vi->sq[qid];
-+	struct virtnet_xsk_hdr *hdr;
-+	int n, ret = 0;
-+
-+	if (qid >= dev->real_num_rx_queues || qid >= dev->real_num_tx_queues)
-+		return -EINVAL;
-+
-+	if (qid >= vi->curr_queue_pairs)
-+		return -EINVAL;
++	struct xsk_buff_pool *pool;
++	struct virtnet_xsk_hdr *hdr = NULL;
++	int n;
 +
 +	rcu_read_lock();
 +
-+	ret = -EBUSY;
-+	if (rcu_dereference(sq->xsk.pool))
-+		goto end;
++	sq->xsk.hdr_pro += num;
 +
-+	/* check last xsk wait for hdr been free */
-+	if (rcu_dereference(sq->xsk.hdr))
-+		goto end;
++	pool = rcu_dereference(sq->xsk.pool);
++	if (!pool) {
++		if (sq->xsk.hdr_pro - sq->xsk.hdr_con == sq->xsk.hdr_n)
++			hdr = rcu_replace_pointer(sq->xsk.hdr, hdr, true);
 +
-+	n = virtqueue_get_vring_size(sq->vq);
-+	n = min(xsk_num_max, n * (xsk_num_percent % 100) / 100);
++		rcu_read_unlock();
 +
-+	ret = -ENOMEM;
-+	hdr = kcalloc(n, sizeof(struct virtnet_xsk_hdr), GFP_ATOMIC);
-+	if (!hdr)
-+		goto end;
++		kfree(hdr);
++		return;
++	}
 +
-+	memset(&sq->xsk, 0, sizeof(sq->xsk));
++	xsk_tx_completed(pool, num);
 +
-+	sq->xsk.hdr_pro = n;
-+	sq->xsk.hdr_n   = n;
-+
-+	rcu_assign_pointer(sq->xsk.pool, pool);
-+	rcu_assign_pointer(sq->xsk.hdr, hdr);
-+
-+	ret = 0;
-+end:
 +	rcu_read_unlock();
 +
-+	return ret;
++	if (!xsk_wakeup || !sq->xsk.wait_slot)
++		return;
++
++	n = sq->xsk.hdr_pro - sq->xsk.hdr_con;
++
++	if (n > sq->xsk.hdr_n / 2) {
++		sq->xsk.wait_slot = false;
++		virtqueue_napi_schedule(&sq->napi, sq->vq);
++	}
 +}
 +
-+static int virtnet_xsk_pool_disable(struct net_device *dev, u16 qid)
-+{
-+	struct virtnet_info *vi = netdev_priv(dev);
-+	struct send_queue *sq = &vi->sq[qid];
-+	struct virtnet_xsk_hdr *hdr = NULL;
-+
-+	if (qid >= dev->real_num_rx_queues || qid >= dev->real_num_tx_queues)
-+		return -EINVAL;
-+
-+	if (qid >= vi->curr_queue_pairs)
-+		return -EINVAL;
-+
-+	rcu_assign_pointer(sq->xsk.pool, NULL);
-+
-+	if (sq->xsk.hdr_pro - sq->xsk.hdr_con == sq->xsk.hdr_n)
-+		hdr = rcu_replace_pointer(sq->xsk.hdr, hdr, true);
-+
-+	synchronize_rcu(); /* Sync with the XSK wakeup and with NAPI. */
-+
-+	kfree(hdr);
-+
-+	return 0;
-+}
-+
- static int virtnet_xdp(struct net_device *dev, struct netdev_bpf *xdp)
- {
- 	switch (xdp->command) {
- 	case XDP_SETUP_PROG:
- 		return virtnet_xdp_set(dev, xdp->prog, xdp->extack);
-+	case XDP_SETUP_XSK_POOL:
-+		xdp->xsk.need_dma = false;
-+		if (xdp->xsk.pool)
-+			return virtnet_xsk_pool_enable(dev, xdp->xsk.pool,
-+						       xdp->xsk.queue_id);
-+		else
-+			return virtnet_xsk_pool_disable(dev, xdp->xsk.queue_id);
- 	default:
- 		return -EINVAL;
+ static void __free_old_xmit_ptr(struct send_queue *sq, bool in_napi,
+ 				bool xsk_wakeup,
+ 				unsigned int *_packets, unsigned int *_bytes)
+@@ -1449,6 +1485,7 @@ static void __free_old_xmit_ptr(struct send_queue *sq, bool in_napi,
+ 	unsigned int packets = 0;
+ 	unsigned int bytes = 0;
+ 	unsigned int len;
++	u64 xsknum = 0;
+ 	struct virtnet_xdp_type *xtype;
+ 	struct xdp_frame        *frame;
+ 	struct virtnet_xsk_hdr  *xskhdr;
+@@ -1469,6 +1506,7 @@ static void __free_old_xmit_ptr(struct send_queue *sq, bool in_napi,
+ 			if (xtype->type == XDP_TYPE_XSK) {
+ 				xskhdr = (struct virtnet_xsk_hdr *)xtype;
+ 				bytes += xskhdr->len;
++				xsknum += 1;
+ 			} else {
+ 				frame = xtype_get_ptr(xtype);
+ 				xdp_return_frame(frame);
+@@ -1478,6 +1516,9 @@ static void __free_old_xmit_ptr(struct send_queue *sq, bool in_napi,
+ 		packets++;
  	}
+ 
++	if (xsknum)
++		virt_xsk_complete(sq, xsknum, xsk_wakeup);
++
+ 	*_packets = packets;
+ 	*_bytes = bytes;
+ }
+@@ -3044,10 +3085,13 @@ static void free_receive_page_frags(struct virtnet_info *vi)
+ static void free_unused_bufs(struct virtnet_info *vi)
+ {
+ 	void *buf;
++	u32 n;
+ 	int i;
++	struct send_queue *sq;
+ 
+ 	for (i = 0; i < vi->max_queue_pairs; i++) {
+ 		struct virtqueue *vq = vi->sq[i].vq;
++		sq = vi->sq + i;
+ 		while ((buf = virtqueue_detach_unused_buf(vq)) != NULL) {
+ 			if (!is_xdp_frame(buf)) {
+ 				dev_kfree_skb(buf);
+@@ -3060,6 +3104,11 @@ static void free_unused_bufs(struct virtnet_info *vi)
+ 					xdp_return_frame(xtype_get_ptr(xtype));
+ 			}
+ 		}
++
++		n = sq->xsk.hdr_con + sq->xsk.hdr_n;
++		n -= sq->xsk.hdr_pro;
++		if (n)
++			virt_xsk_complete(sq, n, false);
+ 	}
+ 
+ 	for (i = 0; i < vi->max_queue_pairs; i++) {
 -- 
 1.8.3.1
 
