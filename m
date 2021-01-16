@@ -2,112 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4CFC22F8CBF
-	for <lists+netdev@lfdr.de>; Sat, 16 Jan 2021 10:56:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DF4D82F8D01
+	for <lists+netdev@lfdr.de>; Sat, 16 Jan 2021 11:46:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726753AbhAPJzy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Jan 2021 04:55:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60168 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726595AbhAPJzx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 16 Jan 2021 04:55:53 -0500
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83972C061757;
-        Sat, 16 Jan 2021 01:55:12 -0800 (PST)
-Received: by mail-lf1-x12e.google.com with SMTP id u25so16899631lfc.2;
-        Sat, 16 Jan 2021 01:55:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:organization:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=y28tRJhhoiCvoELiMGKRKxElE6yxaeeck1yAOz8t9W8=;
-        b=czdMl4/Ku/KwisqwYx7KcjKBaYlnKeThg912tzF/uIRJbOhIlk8/52MbhNjr9elSN7
-         09NNCpDQaxTfVRcB3Z929Xmd8PSTmFTGMbQqdd8yjImeVmPBk+OCM0PUrjpJDAzP0ISU
-         iKcInFIcLyVlwOV2yR/Fds5vU4uSHBhwUGFpUG4StXMviwtNrWwDzHfhd0FPXiCSHcUi
-         NN1dRTFSFC6/nE8sjsHKz+FnL1PEa5be29c8HZmfU0R7Y5Fm/4arFLNIONv4X4eGtagW
-         XTzKQKV4ak/C49rjC4oxWkU/TEzs+jz9Jpj3T6eBtPJGNCOazFzLMQr+9JoMM1gZCFXG
-         FpWg==
+        id S1726385AbhAPKpw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Jan 2021 05:45:52 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:54154 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725979AbhAPKpv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 Jan 2021 05:45:51 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1610793864;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type;
+        bh=+Y0Xj399Rzv5eZQdey8dpfuEebgTVvxEKp+NUUMhBME=;
+        b=eQ7medPoZRKpsfBBu5QK+M8CM46wuAwknVJxxOnRagpEm/ShDwKva9FkBDg4oaazs7/Ndx
+        ErrPwRVW3nzZH9DBy9VB5MV7uNBjHfm3Iwm8f0ChLpfVhtzHyB8Ukyf3XTDqKFb3nW2lwB
+        J/W9k8EgBBhM41RUh5eVuPMC20y2YcM=
+Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
+ [209.85.221.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-380-9uuapIFjMBmpt3INZJBQGw-1; Sat, 16 Jan 2021 05:44:23 -0500
+X-MC-Unique: 9uuapIFjMBmpt3INZJBQGw-1
+Received: by mail-wr1-f70.google.com with SMTP id j5so5428157wro.12
+        for <netdev@vger.kernel.org>; Sat, 16 Jan 2021 02:44:23 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:organization
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=y28tRJhhoiCvoELiMGKRKxElE6yxaeeck1yAOz8t9W8=;
-        b=hPfxlpFrs3Sj4w3meHUleaTRgiMwc1wKSzIWLu6HpoGRzELPyiz9/jHXnvv6MxR+et
-         4letNOBzzjx/8Mf/heCwaEpjh9BZd2+wxyeq8Zye280JS0bXSzLDZDWPGi5LuKyjIESW
-         oAIeub8wNRkr3okwno8NFkzvno2fRyW4fqZ0E0AcKkUu8q5noq9+M/29iIlusaOryvXO
-         US0jF85f+0xsIyAJg/K4Nakz8Z70bBEq2PxbTtzFV+5nNDCnKHouc/ZZ5qx3UMrVlizq
-         /rJy9KwQzsq2c0VcN4Wsnm0pJpjom9mXYgqfY8/L2AozlDAtCQayck32Ctdr5i8LZ16P
-         Tnrg==
-X-Gm-Message-State: AOAM530Vc6wi5PLEmfcPTrAOyaHV4tIWX0Wk6W9qpDzMjukDup0BfOQj
-        3vX5iRV7I5L1Op+nxGt8brFnqTteKWpbkA==
-X-Google-Smtp-Source: ABdhPJwcz8Y5CfHPAsfZekp4IqvI4xm/ySjeRI1I9E9GuyrBQw9Hi7qxJEQQc/8CGjp0LEs0BaXeeQ==
-X-Received: by 2002:a19:997:: with SMTP id 145mr8093829lfj.588.1610790910957;
-        Sat, 16 Jan 2021 01:55:10 -0800 (PST)
-Received: from [192.168.1.100] ([178.176.75.157])
-        by smtp.gmail.com with ESMTPSA id t17sm1221138lfr.5.2021.01.16.01.55.09
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 16 Jan 2021 01:55:10 -0800 (PST)
-Subject: Re: [PATCH V2 4/4] net: ethernet: ravb: Enable optional refclk
-To:     Adam Ford <aford173@gmail.com>, linux-renesas-soc@vger.kernel.org
-Cc:     aford@beaconembedded.com, "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Magnus Damm <magnus.damm@gmail.com>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20210115201953.443710-1-aford173@gmail.com>
- <20210115201953.443710-4-aford173@gmail.com>
-From:   Sergei Shtylyov <sergei.shtylyov@gmail.com>
-Organization: Brain-dead Software
-Message-ID: <ce35708b-34ee-cc0a-3cf7-ff955f14db2d@gmail.com>
-Date:   Sat, 16 Jan 2021 12:55:07 +0300
-User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=+Y0Xj399Rzv5eZQdey8dpfuEebgTVvxEKp+NUUMhBME=;
+        b=KMJXufwbzz82zRB7FhJzMwQPKFxs9fp06OKCiuTINlFw1cSyUVHs13wquvM2YGlHyZ
+         8hfqF9s72GDm1x/J2dxlmKmJQZhBzAa06PH+/j6adEPCXo3cfDDlbKXz7npEIBrFDHcz
+         SUsHzOhq2Fv1C1qDtdrAeZL5QWzpfQ+NmajzJdh8DJM1Y1n5HbpNuWJ3JIcQaqP9c3XC
+         hNH0SwLy0NC02Ii5kS8Md/rjlk0zPkKr+vgH7cmLshIV/JDCXqJnkQkjlXmwkYXX74lq
+         /JUqgpH6E0i03z+pWUvotgpAf8CKeLeKHaQ9aMn7Q50ohq8mUBNWRl/vPM5r15RGvERE
+         z74A==
+X-Gm-Message-State: AOAM533R+nmdqn5iAeHqzONp91/7lydCQc8UFirqmCF6OyWn+BhV7CTU
+        7iqxEnMmlz3XcE6YkmsRTHLN9tVoEwnRFEsIjwviMyZSV4+MwxMwaVTWFUYKPS+LPvxxHpThEJ+
+        M4jhIf0QB7tnxG9+H
+X-Received: by 2002:a1c:40d6:: with SMTP id n205mr12924990wma.0.1610793861798;
+        Sat, 16 Jan 2021 02:44:21 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxxGlYqNYAm8VEm9052Bj8vSbihxcupBb8ZhnZbvxiwFUez6OF+JvqmXjFAK8CQ5Gho5Z1xaQ==
+X-Received: by 2002:a1c:40d6:: with SMTP id n205mr12924979wma.0.1610793861624;
+        Sat, 16 Jan 2021 02:44:21 -0800 (PST)
+Received: from linux.home (2a01cb058918ce00dd1a5a4f9908f2d5.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:dd1a:5a4f:9908:f2d5])
+        by smtp.gmail.com with ESMTPSA id w8sm18210410wrl.91.2021.01.16.02.44.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 16 Jan 2021 02:44:20 -0800 (PST)
+Date:   Sat, 16 Jan 2021 11:44:18 +0100
+From:   Guillaume Nault <gnault@redhat.com>
+To:     David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>,
+        Florian Westphal <fw@strlen.de>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>
+Subject: [PATCH net 0/2] ipv4: Ensure ECN bits don't influence source address
+ validation
+Message-ID: <cover.1610790904.git.gnault@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <20210115201953.443710-4-aford173@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello!
+Functions that end up calling fib_table_lookup() should clear the ECN
+bits from the TOS, otherwise ECT(0) and ECT(1) packets can be treated
+differently.
 
-On 15.01.2021 23:19, Adam Ford wrote:
+Most functions already clear the ECN bits, but there are a few cases
+where this is not done. This series only fixes the ones related to
+source address validation.
 
-> For devices that use a programmable clock for the avb reference clock,
+Guillaume Nault (2):
+  udp: mask TOS bits in udp_v4_early_demux()
+  netfilter: rpfilter: mask ecn bits before fib lookup
 
-    AVB.
+ net/ipv4/netfilter/ipt_rpfilter.c | 2 +-
+ net/ipv4/udp.c                    | 3 ++-
+ 2 files changed, 3 insertions(+), 2 deletions(-)
 
-> the driver may need to enable them.  Add code to find the optional clock
-> and enable it when available.
-> 
-> Signed-off-by: Adam Ford <aford173@gmail.com>
-[...]
-> diff --git a/drivers/net/ethernet/renesas/ravb_main.c b/drivers/net/ethernet/renesas/ravb_main.c
-> index bd30505fbc57..739e30f45daa 100644
-> --- a/drivers/net/ethernet/renesas/ravb_main.c
-> +++ b/drivers/net/ethernet/renesas/ravb_main.c
-> @@ -2148,6 +2148,14 @@ static int ravb_probe(struct platform_device *pdev)
->   		goto out_release;
->   	}
->   
-> +	priv->refclk = devm_clk_get_optional(&pdev->dev, "refclk");
-> +	if (IS_ERR(priv->refclk)) {
-> +		error = PTR_ERR(priv->refclk);
-> +		goto out_release;
-> +	} else {
+-- 
+2.21.3
 
-    No need for *else* after *goto*.
-
-> +		(void)clk_prepare_enable(priv->refclk);
-
-    You can really omit (void)...
-    Also, I'm not seeing where do you call clk_disable_unprepare()...
-
-[...]
-
-MBR, Sergei
