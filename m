@@ -2,336 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 298932F8F70
-	for <lists+netdev@lfdr.de>; Sat, 16 Jan 2021 22:30:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3C26D2F8F6D
+	for <lists+netdev@lfdr.de>; Sat, 16 Jan 2021 22:27:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727137AbhAPV3r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Jan 2021 16:29:47 -0500
-Received: from fox.pavlix.cz ([185.8.165.163]:36888 "EHLO fox.pavlix.cz"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726385AbhAPV3p (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 16 Jan 2021 16:29:45 -0500
-X-Greylist: delayed 576 seconds by postgrey-1.27 at vger.kernel.org; Sat, 16 Jan 2021 16:29:44 EST
-Received: from zorg.lan (unknown [217.30.64.218])
-        by fox.pavlix.cz (Postfix) with ESMTPSA id 2A13AE61EC;
-        Sat, 16 Jan 2021 22:19:27 +0100 (CET)
-From:   =?UTF-8?q?Pavel=20=C5=A0imerda?= <code@simerda.eu>
-To:     netdev@vger.kernel.org
-Cc:     =?UTF-8?q?Pavel=20=C5=A0imerda?= <code@simerda.eu>
-Subject: [PATCH net-next] net: mdio: access c22 registers via debugfs
-Date:   Sat, 16 Jan 2021 22:19:16 +0100
-Message-Id: <20210116211916.8329-1-code@simerda.eu>
-X-Mailer: git-send-email 2.29.2
+        id S1727226AbhAPV0j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Jan 2021 16:26:39 -0500
+Received: from mail-out.m-online.net ([212.18.0.10]:52590 "EHLO
+        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726831AbhAPV0e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 Jan 2021 16:26:34 -0500
+Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
+        by mail-out.m-online.net (Postfix) with ESMTP id 4DJB0j2s4Sz1rt3g;
+        Sat, 16 Jan 2021 22:25:25 +0100 (CET)
+Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
+        by mail.m-online.net (Postfix) with ESMTP id 4DJB0j28FMz1tSR0;
+        Sat, 16 Jan 2021 22:25:25 +0100 (CET)
+X-Virus-Scanned: amavisd-new at mnet-online.de
+Received: from mail.mnet-online.de ([192.168.8.182])
+        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
+        with ESMTP id 4bfBtFBCBzQL; Sat, 16 Jan 2021 22:25:24 +0100 (CET)
+X-Auth-Info: FZzoLgP5NuoESY5jS/XAjWFkiNdV73IB1lXOtAw/rB4=
+Received: from [127.0.0.1] (p578adb1c.dip0.t-ipconnect.de [87.138.219.28])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.mnet-online.de (Postfix) with ESMTPSA;
+        Sat, 16 Jan 2021 22:25:23 +0100 (CET)
+Subject: Re: [PATCH net-next V2] net: ks8851: Fix mixed module/builtin build
+To:     Lukas Wunner <lukas@wunner.de>, Arnd Bergmann <arnd@kernel.org>
+Cc:     Networking <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>
+References: <20210116164828.40545-1-marex@denx.de>
+ <CAK8P3a1iqXjsYERVh+nQs9Xz4x7FreW3aS7OQPSB8CWcntnL4A@mail.gmail.com>
+ <a660f328-19d9-1e97-3f83-533c1245622e@denx.de>
+ <CAK8P3a3qtrmxMg+uva-s18f_zj7aNXJXcJCzorr2d-XxnqV1Hw@mail.gmail.com>
+ <20210116203945.GA32445@wunner.de>
+From:   Marek Vasut <marex@denx.de>
+Message-ID: <a6d74297-b29e-956e-5861-40cee359e892@denx.de>
+Date:   Sat, 16 Jan 2021 22:25:23 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210116203945.GA32445@wunner.de>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Provide a debugging interface to read and write MDIO registers directly
-without the need for a device driver.
+On 1/16/21 9:39 PM, Lukas Wunner wrote:
+> On Sat, Jan 16, 2021 at 08:26:22PM +0100, Arnd Bergmann wrote:
+>> On Sat, Jan 16, 2021 at 6:56 PM Marek Vasut <marex@denx.de> wrote:
+>>> On 1/16/21 6:04 PM, Arnd Bergmann wrote:
+>>>> On Sat, Jan 16, 2021 at 5:48 PM Marek Vasut <marex@denx.de> wrote:
+>>>
+>>>> I don't really like this version, as it does not actually solve the problem of
+>>>> linking the same object file into both vmlinux and a loadable module, which
+>>>> can have all kinds of side-effects besides that link failure you saw.
+>>>>
+>>>> If you want to avoid exporting all those symbols, a simpler hack would
+>>>> be to '#include "ks8851_common.c" from each of the two files, which
+>>>> then always duplicates the contents (even when both are built-in), but
+>>>> at least builds the file the correct way.
+>>>
+>>> That's the same as V1, isn't it ?
+>>
+>> Ah, I had not actually looked at the original submission, but yes, that
+>> was slightly better than v2, provided you make all symbols static to
+>> avoid the new link error.
+>>
+>> I still think that having three modules and exporting the symbols from
+>> the common part as Heiner Kallweit suggested would be the best
+>> way to do it.
+> 
+> FWIW I'd prefer V1 (the #include approach) as it allows going back to
+> using static inlines for register access.  That's what we had before
+> 7a552c850c45.
+> 
+> It seems unlikely that a system uses both, the parallel *and* the SPI
+> variant of the ks8851.  So the additional memory necessary because of
+> code duplication wouldn't matter in practice.
 
-This is extremely useful when debugging switch hardware and phy hardware
-issues. The interface provides proper locking for communication that
-consists of a sequence of MDIO read/write commands.
-
-The interface binds directly to the MDIO bus abstraction in order to
-provide support for all devices whether there's a hardware driver for
-them or not. Registers are written by writing address, offset, and
-value in hex, separated by colon. Registeres are read by writing only
-address and offset, then reading the value.
-
-It can be easily tested using `socat`:
-
-    # socat - /sys/kernel/debug/mdio/f802c000.ethernet-ffffffff/control
-
-Example: Reading address 0x00 offset 0x00, value is 0x3000
-
-    Input: 00:00
-    Output: 3000
-
-Example: Writing address 0x00 offset 0x00, value 0x2100
-
-    Input: 00:00:2100
-
-Signed-off-by: Pavel Šimerda <code@simerda.eu>
----
- drivers/net/phy/Makefile       |   1 +
- drivers/net/phy/mdio-debugfs.c | 196 +++++++++++++++++++++++++++++++++
- drivers/net/phy/mdio-debugfs.h |   2 +
- drivers/net/phy/mdio_bus.c     |   5 +
- include/linux/phy.h            |   3 +
- 5 files changed, 207 insertions(+)
- create mode 100644 drivers/net/phy/mdio-debugfs.c
- create mode 100644 drivers/net/phy/mdio-debugfs.h
-
-diff --git a/drivers/net/phy/Makefile b/drivers/net/phy/Makefile
-index a13e402074cf..4999cb97844b 100644
---- a/drivers/net/phy/Makefile
-+++ b/drivers/net/phy/Makefile
-@@ -17,6 +17,7 @@ libphy-y			+= $(mdio-bus-y)
- else
- obj-$(CONFIG_MDIO_DEVICE)	+= mdio-bus.o
- endif
-+obj-$(CONFIG_MDIO_DEVICE)	+= mdio-debugfs.o
- obj-$(CONFIG_MDIO_DEVRES)	+= mdio_devres.o
- libphy-$(CONFIG_SWPHY)		+= swphy.o
- libphy-$(CONFIG_LED_TRIGGER_PHY)	+= phy_led_triggers.o
-diff --git a/drivers/net/phy/mdio-debugfs.c b/drivers/net/phy/mdio-debugfs.c
-new file mode 100644
-index 000000000000..abed40052c20
---- /dev/null
-+++ b/drivers/net/phy/mdio-debugfs.c
-@@ -0,0 +1,196 @@
-+#include <linux/module.h>
-+#include <linux/debugfs.h>
-+#include <linux/phy.h>
-+#include <linux/poll.h>
-+
-+/*
-+ * TODO: May need locking implementation to avoid being susceptible to file
-+ * descriptor sharing concurrency issues
-+ */
-+struct mdio_debug {
-+	wait_queue_head_t queue;
-+	int value;
-+};
-+
-+static int mdio_debug_open(struct inode *inode, struct file *file)
-+{
-+	struct mii_bus *bus = file->f_inode->i_private;
-+	struct mdio_debug *data;
-+	int err;
-+
-+	data = kzalloc(sizeof *data, GFP_KERNEL);
-+	if (!data)
-+		return -ENOMEM;
-+
-+	err = mutex_lock_interruptible(&bus->mdio_lock);
-+	if (err) {
-+		kfree(data);
-+		return err;
-+	}
-+	dev_dbg(&bus->dev, "MDIO locked for user space program.\n");
-+
-+	init_waitqueue_head(&data->queue);
-+	data->value = -1;
-+	file->private_data = data;
-+
-+	return 0;
-+}
-+
-+static int mdio_debug_release(struct inode *inode, struct file *file)
-+{
-+	struct mii_bus *bus = file->f_inode->i_private;
-+	struct mdio_debug *data = file->private_data;
-+
-+	file->private_data = NULL;
-+
-+	mutex_unlock(&bus->mdio_lock);
-+	dev_dbg(&bus->dev, "MDIO unlocked.\n");
-+
-+	kfree(data);
-+
-+	return 0;
-+}
-+
-+static ssize_t mdio_debug_write(struct file *file, const char __user *buffer, size_t size, loff_t *off)
-+{
-+	struct mii_bus *bus = file->f_inode->i_private;
-+	struct mdio_debug *data = file->private_data;
-+	char str[64] = {};
-+	char *s = str;
-+	char *token;
-+	int addr;
-+	int offset;
-+	int value;
-+	int ret;
-+
-+	if (data->value != -1)
-+		return -EWOULDBLOCK;
-+
-+	if (size > sizeof str - 1)
-+		return -EINVAL;
-+
-+	ret = copy_from_user(str, buffer, size);
-+	if (ret)
-+		return -EFAULT;
-+
-+	if (str[size-1] == '\n')
-+		str[size-1] = '\0';
-+
-+	token = strsep(&s, ":");
-+	if (!token)
-+		return -EINVAL;
-+	ret = kstrtoint(token, 16, &addr);
-+	if (ret)
-+		return ret;
-+
-+	token = strsep(&s, ":");
-+	if (!token)
-+		return -EINVAL;
-+	ret = kstrtoint(token, 16, &offset);
-+	if (ret)
-+		return ret;
-+
-+	token = strsep(&s, ":");
-+
-+	if (token) {
-+		ret = kstrtoint(token, 16, &value);
-+		if (ret)
-+			return ret;
-+
-+		ret = __mdiobus_write(bus, addr, offset, value);
-+		if (ret)
-+			return ret;
-+
-+		dev_dbg(&bus->dev, "write: addr=0x%.2x offset=0x%.2x value=%.4x\n",
-+			addr, offset, value);
-+	} else {
-+		value = __mdiobus_read(bus, addr, offset);
-+		if (value < 0)
-+			return value;
-+
-+		dev_dbg(&bus->dev, "read: addr=0x%.2x offset=0x%.2x value=%.4x\n",
-+			addr, offset, value);
-+
-+		data->value = value;
-+		wake_up_all(&data->queue);
-+	}
-+
-+	return size;
-+}
-+
-+static ssize_t mdio_debug_read(struct file *file, char __user *buffer, size_t size, loff_t *off)
-+{
-+	struct mdio_debug *data = file->private_data;
-+	char str[6];
-+	int ret;
-+	ssize_t rsize;
-+
-+	if (data->value == -1)
-+		return -EWOULDBLOCK;
-+
-+	rsize = snprintf(str, sizeof str, "%04x\n", data->value);
-+	if (rsize > size)
-+		return -EINVAL;
-+
-+	ret = copy_to_user(buffer, str, rsize);
-+	if (ret)
-+		return -EFAULT;
-+
-+	data->value = -1;
-+	wake_up_all(&data->queue);
-+
-+	return rsize;
-+}
-+
-+static unsigned int mdio_debug_poll(struct file *file, poll_table *wait)
-+{
-+	struct mdio_debug *data = file->private_data;
-+
-+	poll_wait(file, &data->queue, wait);
-+
-+	return data->value == -1 ? POLLOUT : POLLIN;
-+}
-+
-+struct file_operations mdio_debug_fops = {
-+	.owner = THIS_MODULE,
-+	.open = mdio_debug_open,
-+	.release = mdio_debug_release,
-+	.write = mdio_debug_write,
-+	.read = mdio_debug_read,
-+	.poll = mdio_debug_poll,
-+};
-+
-+/*
-+ * TODO: This implementation doesn't support module load/unload and has no
-+ * error checking.
-+ */
-+
-+static struct dentry *mdio_debugfs_dentry;
-+
-+void mdio_debugfs_add(struct mii_bus *bus)
-+{
-+	bus->debugfs_dentry = debugfs_create_dir(dev_name(&bus->dev), mdio_debugfs_dentry);
-+	debugfs_create_file("control", 0600, bus->debugfs_dentry, bus, &mdio_debug_fops);
-+}
-+EXPORT_SYMBOL_GPL(mdio_debugfs_add);
-+
-+void mdio_debugfs_remove(struct mii_bus *bus)
-+{
-+	debugfs_remove(bus->debugfs_dentry);
-+	bus->debugfs_dentry = NULL;
-+}
-+EXPORT_SYMBOL_GPL(mdio_debugfs_remove);
-+
-+int __init mdio_debugfs_init(void)
-+{
-+	mdio_debugfs_dentry = debugfs_create_dir("mdio", NULL);
-+
-+	return PTR_ERR_OR_ZERO(mdio_debugfs_dentry);
-+}
-+module_init(mdio_debugfs_init);
-+
-+void __exit mdio_debugfs_exit(void)
-+{
-+	debugfs_remove(mdio_debugfs_dentry);
-+}
-+module_exit(mdio_debugfs_exit);
-diff --git a/drivers/net/phy/mdio-debugfs.h b/drivers/net/phy/mdio-debugfs.h
-new file mode 100644
-index 000000000000..fe98dcdfcacf
---- /dev/null
-+++ b/drivers/net/phy/mdio-debugfs.h
-@@ -0,0 +1,2 @@
-+void mdio_debugfs_add(struct mii_bus *bus);
-+void mdio_debugfs_remove(struct mii_bus *bus);
-diff --git a/drivers/net/phy/mdio_bus.c b/drivers/net/phy/mdio_bus.c
-index 040509b81f02..969cb8e1ebee 100644
---- a/drivers/net/phy/mdio_bus.c
-+++ b/drivers/net/phy/mdio_bus.c
-@@ -39,6 +39,7 @@
- #include <trace/events/mdio.h>
- 
- #include "mdio-boardinfo.h"
-+#include "mdio-debugfs.h"
- 
- static int mdiobus_register_gpiod(struct mdio_device *mdiodev)
- {
-@@ -581,6 +582,8 @@ int __mdiobus_register(struct mii_bus *bus, struct module *owner)
- 
- 	mdiobus_setup_mdiodev_from_board_info(bus, mdiobus_create_device);
- 
-+	mdio_debugfs_add(bus);
-+
- 	bus->state = MDIOBUS_REGISTERED;
- 	pr_info("%s: probed\n", bus->name);
- 	return 0;
-@@ -612,6 +615,8 @@ void mdiobus_unregister(struct mii_bus *bus)
- 	BUG_ON(bus->state != MDIOBUS_REGISTERED);
- 	bus->state = MDIOBUS_UNREGISTERED;
- 
-+	mdio_debugfs_remove(bus);
-+
- 	for (i = 0; i < PHY_MAX_ADDR; i++) {
- 		mdiodev = bus->mdio_map[i];
- 		if (!mdiodev)
-diff --git a/include/linux/phy.h b/include/linux/phy.h
-index 24fcc6456a9e..f4cc93c11006 100644
---- a/include/linux/phy.h
-+++ b/include/linux/phy.h
-@@ -371,6 +371,9 @@ struct mii_bus {
- 
- 	/** @shared: shared state across different PHYs */
- 	struct phy_package_shared *shared[PHY_MAX_ADDR];
-+
-+	/* debugfs file for MDIO access */
-+	struct dentry *debugfs_dentry;
- };
- #define to_mii_bus(d) container_of(d, struct mii_bus, dev)
- 
--- 
-2.29.2
-
+I have a board with both options populated on my desk, sorry.
