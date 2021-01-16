@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DC0BE2F8EA4
-	for <lists+netdev@lfdr.de>; Sat, 16 Jan 2021 19:23:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C1DB72F8EA6
+	for <lists+netdev@lfdr.de>; Sat, 16 Jan 2021 19:23:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727868AbhAPSW5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1727943AbhAPSW5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Sat, 16 Jan 2021 13:22:57 -0500
-Received: from foss.arm.com ([217.140.110.172]:56652 "EHLO foss.arm.com"
+Received: from foss.arm.com ([217.140.110.172]:56668 "EHLO foss.arm.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727867AbhAPSWw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 16 Jan 2021 13:22:52 -0500
+        id S1727868AbhAPSWz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 16 Jan 2021 13:22:55 -0500
 Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 14F1AED1;
-        Sat, 16 Jan 2021 10:22:07 -0800 (PST)
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 92A97101E;
+        Sat, 16 Jan 2021 10:22:09 -0800 (PST)
 Received: from e107158-lin.cambridge.arm.com (e107158-lin.cambridge.arm.com [10.1.194.78])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B9AC73F70D;
-        Sat, 16 Jan 2021 10:22:05 -0800 (PST)
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 4415C3F70D;
+        Sat, 16 Jan 2021 10:22:08 -0800 (PST)
 From:   Qais Yousef <qais.yousef@arm.com>
 To:     netdev@vger.kernel.org, bpf@vger.kernel.org
 Cc:     Alexei Starovoitov <ast@kernel.org>,
@@ -26,9 +26,9 @@ Cc:     Alexei Starovoitov <ast@kernel.org>,
         Steven Rostedt <rostedt@goodmis.org>,
         "Peter Zijlstra (Intel)" <peterz@infradead.org>,
         linux-kernel@vger.kernel.org, Qais Yousef <qais.yousef@arm.com>
-Subject: [PATCH v2 bpf-next 1/2] trace: bpf: Allow bpf to attach to bare tracepoints
-Date:   Sat, 16 Jan 2021 18:21:32 +0000
-Message-Id: <20210116182133.2286884-2-qais.yousef@arm.com>
+Subject: [PATCH v2 bpf-next 2/2] selftests: bpf: Add a new test for bare tracepoints
+Date:   Sat, 16 Jan 2021 18:21:33 +0000
+Message-Id: <20210116182133.2286884-3-qais.yousef@arm.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210116182133.2286884-1-qais.yousef@arm.com>
 References: <20210116182133.2286884-1-qais.yousef@arm.com>
@@ -38,88 +38,155 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some subsystems only have bare tracepoints (a tracepoint with no
-associated trace event) to avoid the problem of trace events being an
-ABI that can't be changed.
-
-From bpf presepective, bare tracepoints are what it calls
-RAW_TRACEPOINT().
-
-Since bpf assumed there's 1:1 mapping, it relied on hooking to
-DEFINE_EVENT() macro to create bpf mapping of the tracepoints. Since
-bare tracepoints use DECLARE_TRACE() to create the tracepoint, bpf had
-no knowledge about their existence.
-
-By teaching bpf_probe.h to parse DECLARE_TRACE() in a similar fashion to
-DEFINE_EVENT(), bpf can find and attach to the new raw tracepoints.
-
-Enabling that comes with the contract that changes to raw tracepoints
-don't constitute a regression if they break existing bpf programs.
-We need the ability to continue to morph and modify these raw
-tracepoints without worrying about any ABI.
-
-Update Documentation/bpf/bpf_design_QA.rst to document this contract.
+Reuse module_attach infrastructure to add a new bare tracepoint to check
+we can attach to it as a raw tracepoint.
 
 Signed-off-by: Qais Yousef <qais.yousef@arm.com>
 ---
- Documentation/bpf/bpf_design_QA.rst |  6 ++++++
- include/trace/bpf_probe.h           | 12 ++++++++++--
- 2 files changed, 16 insertions(+), 2 deletions(-)
+ .../bpf/bpf_testmod/bpf_testmod-events.h      |  6 +++++
+ .../selftests/bpf/bpf_testmod/bpf_testmod.c   | 21 ++++++++++++++-
+ .../selftests/bpf/bpf_testmod/bpf_testmod.h   |  6 +++++
+ .../selftests/bpf/prog_tests/module_attach.c  | 27 +++++++++++++++++++
+ .../selftests/bpf/progs/test_module_attach.c  | 10 +++++++
+ 5 files changed, 69 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/bpf/bpf_design_QA.rst b/Documentation/bpf/bpf_design_QA.rst
-index 2df7b067ab93..0e15f9b05c9d 100644
---- a/Documentation/bpf/bpf_design_QA.rst
-+++ b/Documentation/bpf/bpf_design_QA.rst
-@@ -208,6 +208,12 @@ data structures and compile with kernel internal headers. Both of these
- kernel internals are subject to change and can break with newer kernels
- such that the program needs to be adapted accordingly.
+diff --git a/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod-events.h b/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod-events.h
+index b83ea448bc79..89c6d58e5dd6 100644
+--- a/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod-events.h
++++ b/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod-events.h
+@@ -28,6 +28,12 @@ TRACE_EVENT(bpf_testmod_test_read,
+ 		  __entry->pid, __entry->comm, __entry->off, __entry->len)
+ );
  
-+Q: Are tracepoints part of the stable ABI?
-+------------------------------------------
-+A: NO. Tracepoints are tied to internal implementation details hence they are
-+subject to change and can break with newer kernels. BPF programs need to change
-+accordingly when this happens.
++/* A bare tracepoint with no event associated with it */
++DECLARE_TRACE(bpf_testmod_test_write_bare,
++	TP_PROTO(struct task_struct *task, struct bpf_testmod_test_write_ctx *ctx),
++	TP_ARGS(task, ctx)
++);
 +
- Q: How much stack space a BPF program uses?
- -------------------------------------------
- A: Currently all program types are limited to 512 bytes of stack
-diff --git a/include/trace/bpf_probe.h b/include/trace/bpf_probe.h
-index cd74bffed5c6..a23be89119aa 100644
---- a/include/trace/bpf_probe.h
-+++ b/include/trace/bpf_probe.h
-@@ -55,8 +55,7 @@
- /* tracepoints with more than 12 arguments will hit build error */
- #define CAST_TO_U64(...) CONCATENATE(__CAST, COUNT_ARGS(__VA_ARGS__))(__VA_ARGS__)
+ #endif /* _BPF_TESTMOD_EVENTS_H */
  
--#undef DECLARE_EVENT_CLASS
--#define DECLARE_EVENT_CLASS(call, proto, args, tstruct, assign, print)	\
-+#define __BPF_DECLARE_TRACE(call, proto, args)				\
- static notrace void							\
- __bpf_trace_##call(void *__data, proto)					\
- {									\
-@@ -64,6 +63,10 @@ __bpf_trace_##call(void *__data, proto)					\
- 	CONCATENATE(bpf_trace_run, COUNT_ARGS(args))(prog, CAST_TO_U64(args));	\
+ #undef TRACE_INCLUDE_PATH
+diff --git a/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.c b/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.c
+index 2df19d73ca49..e900adad2276 100644
+--- a/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.c
++++ b/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.c
+@@ -28,9 +28,28 @@ bpf_testmod_test_read(struct file *file, struct kobject *kobj,
+ EXPORT_SYMBOL(bpf_testmod_test_read);
+ ALLOW_ERROR_INJECTION(bpf_testmod_test_read, ERRNO);
+ 
++noinline ssize_t
++bpf_testmod_test_write(struct file *file, struct kobject *kobj,
++		      struct bin_attribute *bin_attr,
++		      char *buf, loff_t off, size_t len)
++{
++	struct bpf_testmod_test_write_ctx ctx = {
++		.buf = buf,
++		.off = off,
++		.len = len,
++	};
++
++	trace_bpf_testmod_test_write_bare(current, &ctx);
++
++	return -EIO; /* always fail */
++}
++EXPORT_SYMBOL(bpf_testmod_test_write);
++ALLOW_ERROR_INJECTION(bpf_testmod_test_write, ERRNO);
++
+ static struct bin_attribute bin_attr_bpf_testmod_file __ro_after_init = {
+-	.attr = { .name = "bpf_testmod", .mode = 0444, },
++	.attr = { .name = "bpf_testmod", .mode = 0666, },
+ 	.read = bpf_testmod_test_read,
++	.write = bpf_testmod_test_write,
+ };
+ 
+ static int bpf_testmod_init(void)
+diff --git a/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.h b/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.h
+index b81adfedb4f6..b3892dc40111 100644
+--- a/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.h
++++ b/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.h
+@@ -11,4 +11,10 @@ struct bpf_testmod_test_read_ctx {
+ 	size_t len;
+ };
+ 
++struct bpf_testmod_test_write_ctx {
++	char *buf;
++	loff_t off;
++	size_t len;
++};
++
+ #endif /* _BPF_TESTMOD_H */
+diff --git a/tools/testing/selftests/bpf/prog_tests/module_attach.c b/tools/testing/selftests/bpf/prog_tests/module_attach.c
+index 50796b651f72..e4605c0b5af1 100644
+--- a/tools/testing/selftests/bpf/prog_tests/module_attach.c
++++ b/tools/testing/selftests/bpf/prog_tests/module_attach.c
+@@ -21,9 +21,34 @@ static int trigger_module_test_read(int read_sz)
+ 	return 0;
  }
  
-+#undef DECLARE_EVENT_CLASS
-+#define DECLARE_EVENT_CLASS(call, proto, args, tstruct, assign, print)	\
-+	__BPF_DECLARE_TRACE(call, PARAMS(proto), PARAMS(args))
++static int trigger_module_test_write(int write_sz)
++{
++	int fd, err;
++	char *buf = malloc(write_sz);
 +
- /*
-  * This part is compiled out, it is only here as a build time check
-  * to make sure that if the tracepoint handling changes, the
-@@ -111,6 +114,11 @@ __DEFINE_EVENT(template, call, PARAMS(proto), PARAMS(args), size)
- #define DEFINE_EVENT_PRINT(template, name, proto, args, print)	\
- 	DEFINE_EVENT(template, name, PARAMS(proto), PARAMS(args))
- 
-+#undef DECLARE_TRACE
-+#define DECLARE_TRACE(call, proto, args)				\
-+	__BPF_DECLARE_TRACE(call, PARAMS(proto), PARAMS(args))		\
-+	__DEFINE_EVENT(call, call, PARAMS(proto), PARAMS(args), 0)
++	if (!buf)
++		return -ENOMEM;
 +
- #include TRACE_INCLUDE(TRACE_INCLUDE_FILE)
++	memset(buf, 'a', write_sz);
++	buf[write_sz-1] = '\0';
++
++	fd = open("/sys/kernel/bpf_testmod", O_WRONLY);
++	err = -errno;
++	if (CHECK(fd < 0, "testmod_file_open", "failed: %d\n", err))
++		goto out;
++
++	write(fd, buf, write_sz);
++	close(fd);
++out:
++	free(buf);
++
++	return 0;
++}
++
+ void test_module_attach(void)
+ {
+ 	const int READ_SZ = 456;
++	const int WRITE_SZ = 457;
+ 	struct test_module_attach* skel;
+ 	struct test_module_attach__bss *bss;
+ 	int err;
+@@ -48,8 +73,10 @@ void test_module_attach(void)
  
- #undef DEFINE_EVENT_WRITABLE
+ 	/* trigger tracepoint */
+ 	ASSERT_OK(trigger_module_test_read(READ_SZ), "trigger_read");
++	ASSERT_OK(trigger_module_test_write(WRITE_SZ), "trigger_write");
+ 
+ 	ASSERT_EQ(bss->raw_tp_read_sz, READ_SZ, "raw_tp");
++	ASSERT_EQ(bss->raw_tp_bare_write_sz, WRITE_SZ, "raw_tp_bare");
+ 	ASSERT_EQ(bss->tp_btf_read_sz, READ_SZ, "tp_btf");
+ 	ASSERT_EQ(bss->fentry_read_sz, READ_SZ, "fentry");
+ 	ASSERT_EQ(bss->fentry_manual_read_sz, READ_SZ, "fentry_manual");
+diff --git a/tools/testing/selftests/bpf/progs/test_module_attach.c b/tools/testing/selftests/bpf/progs/test_module_attach.c
+index efd1e287ac17..bd37ceec5587 100644
+--- a/tools/testing/selftests/bpf/progs/test_module_attach.c
++++ b/tools/testing/selftests/bpf/progs/test_module_attach.c
+@@ -17,6 +17,16 @@ int BPF_PROG(handle_raw_tp,
+ 	return 0;
+ }
+ 
++__u32 raw_tp_bare_write_sz = 0;
++
++SEC("raw_tp/bpf_testmod_test_write_bare")
++int BPF_PROG(handle_raw_tp_bare,
++	     struct task_struct *task, struct bpf_testmod_test_write_ctx *write_ctx)
++{
++	raw_tp_bare_write_sz = BPF_CORE_READ(write_ctx, len);
++	return 0;
++}
++
+ __u32 tp_btf_read_sz = 0;
+ 
+ SEC("tp_btf/bpf_testmod_test_read")
 -- 
 2.25.1
 
