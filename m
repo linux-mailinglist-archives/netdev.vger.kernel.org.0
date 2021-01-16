@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A6C6B2F8A2B
-	for <lists+netdev@lfdr.de>; Sat, 16 Jan 2021 02:02:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2985E2F8A2C
+	for <lists+netdev@lfdr.de>; Sat, 16 Jan 2021 02:02:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728694AbhAPBB5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Jan 2021 20:01:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59424 "EHLO
+        id S1728759AbhAPBB6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Jan 2021 20:01:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726236AbhAPBBz (ORCPT
+        with ESMTP id S1727798AbhAPBBz (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 15 Jan 2021 20:01:55 -0500
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10EA7C061799
-        for <netdev@vger.kernel.org>; Fri, 15 Jan 2021 17:00:42 -0800 (PST)
-Received: by mail-ed1-x531.google.com with SMTP id d22so498636edy.1
-        for <netdev@vger.kernel.org>; Fri, 15 Jan 2021 17:00:41 -0800 (PST)
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 469FAC06179A
+        for <netdev@vger.kernel.org>; Fri, 15 Jan 2021 17:00:43 -0800 (PST)
+Received: by mail-ed1-x52c.google.com with SMTP id p22so11489594edu.11
+        for <netdev@vger.kernel.org>; Fri, 15 Jan 2021 17:00:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=vYPOvC8LD5eCXYawgiYS1T39o/4TAiOe81TLJkBUT5I=;
-        b=XuW8tLy74tIFeHoYauzVm33WP5t9q/HEMmmcHE8A5kpI+EiF3yIehHJMJF56GdotpJ
-         VplT3WQgUgvakkp2c7PxTQXTLlMyQmBOATr1lWmNiO+Z+DqhpASbzTax/gO6ZDa3xUES
-         vjwocQ2gdiIk2xq7UhlBq6vYf8v0ULghGDo27GElgCB+uCjbBM6+J56hzooAun8aaZ0V
-         nP/WicdtxBVm/x1bY6f8w/MzOuRAxKeNuio/TQks7dd+nwbTq+Dt8VDw8leOmxrDaXqO
-         s1OwlOKT+wOwCbP0VnyLT2JRtIZ7i2uBy+eIo2WtGubAyn0Naqn0ptIX1dhG192Fl7n0
-         hd6Q==
+        bh=n5BibzNtUVWtkQIdfb1fd0X382vN/3t8GEzoEkNaObM=;
+        b=jeUL462tbWbqHVVxoNpbYrJKmeTaJc3rTQQp1sAt+YiVTKvExhVbM/f+LmK8mcQaqF
+         SibUZzCNjJOUmx5ONxQWijySw3Jgn9EifFcmi0HkIAz5CAVL5IqfCYupm+V46L+x8S5Y
+         oe3qiZulG438WEqw/pBY56lWK+E6ydeR87Rl2yVioCkPErVKjCuMOdRcSyD1b0bvOehz
+         lUtZcGKP4sE3o+1JzckHjM4mPosfg5ZFq3ER7F0bcKbYdlHLOWa9RjlcOSKMReAKKDFH
+         MeTDMUZFnj16H/KHUKB2Yvo52ve1lIF2lNIDlSVf0NKdgwx5+5cYoxa56XDY8NUZoMNT
+         iqUA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=vYPOvC8LD5eCXYawgiYS1T39o/4TAiOe81TLJkBUT5I=;
-        b=pAHd67dpZL7Dfx+Soxv7neLQhSc+fc/qyRsPnJuiPvuMWhlEJ3I11Om8OFa+/4UL8x
-         pXcwkQGjyd1smiiI9KfzgaU4WsS5Cj+vtQZPZaufNFAI6HLIckfUNr3uMbTmGeGIm3o0
-         mMhDHdOjB7t0k8ny3NMgSNJzIwsftYF/HAbiICTseYrQVHctRLGVNDKEWyfrCyUdRqCq
-         f3yFj359h+qTRJ9lPjJ8fkJl5FP/31cG6ju3zE0Tb44+pQatlCUNIn+dGMXEZSSuUMZ1
-         fuUryz2Zsi+EpkJbisxSkQCdBDKFvvBh89qsEVupvce0E6TNS1SZwdCWh0/EYC0RhjO8
-         h4Cw==
-X-Gm-Message-State: AOAM532LW89DZ4P1h4ufc4RgNeAGS85dH8QwUQuvIeIub9rEQBF3wEkL
-        5togwvcOQCjcb4MBa9w4kMQ=
-X-Google-Smtp-Source: ABdhPJzJTtQ5rhGAKP5L1jJGLsYRro8LsmsTlabyOCrcNcHmn4JHz2k+5cH6tmnzO7+jTk6ImVp+uA==
-X-Received: by 2002:a05:6402:1748:: with SMTP id v8mr11969137edx.136.1610758840838;
-        Fri, 15 Jan 2021 17:00:40 -0800 (PST)
+        bh=n5BibzNtUVWtkQIdfb1fd0X382vN/3t8GEzoEkNaObM=;
+        b=SZI0WcbCVYiS3wd6wYdZgWnNMebqxyGUPYzxAeYtpKHewYOUsPk9/P6ZAAxqXaKdLq
+         /PKyVM4gOa8VrZDnb7C8z3ItY8MnrXgd+zFJZkHzJvzRAUQR34r6iFbmSgw6n3AoK7d6
+         D/NyXmuecQrPi40gYb1Ci/wCNHkFbxsPjYzRzVVDEm1Fa9ysitNNv/Y/T5FD05cBTcUv
+         O7kwurN/zm3AwjLkkVZ+Nl+Xb/clh1UCgenN0daSNnm1PBtIjS5s3sG1CpTeQEIIuwtb
+         ZU8hv0xWXkO8pIHqDGLZyor96YYHPHDDOdSaXTabo1LVWoew25gGS0bVqn4Vyvn39bBJ
+         dBpg==
+X-Gm-Message-State: AOAM533a2ef4YFcmCbdr87zcs86pBukDZOFtNl37nC3g447Mrzn8lM8H
+        M3DENjSWpZUS+RvS6li2o5s=
+X-Google-Smtp-Source: ABdhPJzmSP5a1agOgZAfAOKuhXQ3wDuWvUaJ8Pn7vPxZhPUwWxijfoymMSUM/DH3PzBfRq+NVxgJIg==
+X-Received: by 2002:a50:b246:: with SMTP id o64mr11104151edd.132.1610758842032;
+        Fri, 15 Jan 2021 17:00:42 -0800 (PST)
 Received: from localhost.localdomain (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id k3sm5666655eds.87.2021.01.15.17.00.39
+        by smtp.gmail.com with ESMTPSA id k3sm5666655eds.87.2021.01.15.17.00.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 Jan 2021 17:00:40 -0800 (PST)
+        Fri, 15 Jan 2021 17:00:41 -0800 (PST)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -59,9 +59,9 @@ Cc:     netdev <netdev@vger.kernel.org>,
         Claudiu Manoil <claudiu.manoil@nxp.com>,
         Tobias Waldekranz <tobias@waldekranz.com>,
         Maxim Kochetkov <fido_max@inbox.ru>
-Subject: [PATCH v2 net-next 06/14] net: mscc: ocelot: set up the bonding mask in a way that avoids a net_device
-Date:   Sat, 16 Jan 2021 02:59:35 +0200
-Message-Id: <20210116005943.219479-7-olteanv@gmail.com>
+Subject: [PATCH v2 net-next 07/14] net: mscc: ocelot: avoid unneeded "lp" variable in LAG join
+Date:   Sat, 16 Jan 2021 02:59:36 +0200
+Message-Id: <20210116005943.219479-8-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210116005943.219479-1-olteanv@gmail.com>
 References: <20210116005943.219479-1-olteanv@gmail.com>
@@ -73,103 +73,87 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Since this code should be called from pure switchdev as well as from
-DSA, we must find a way to determine the bonding mask not by looking
-directly at the net_device lowers of the bonding interface, since those
-could have different private structures.
+The index of the LAG is equal to the logical port ID that all the
+physical port members have, which is further equal to the index of the
+first physical port that is a member of the LAG.
 
-We keep a pointer to the bonding upper interface, if present, in struct
-ocelot_port. Then the bonding mask becomes the bitwise OR of all ports
-that have the same bonding upper interface. This adds a duplication of
-functionality with the current "lags" array, but the duplication will be
-short-lived, since further patches will remove the latter completely.
+The code gets a bit carried away with logic like this:
+
+	if (a == b)
+		c = a;
+	else
+		c = b;
+
+which can be simplified, of course, into:
+
+	c = b;
+
+(with a being port, b being lp, c being lag)
+
+This further makes the "lp" variable redundant, since we can use "lag"
+everywhere where "lp" (logical port) was used. So instead of a "c = b"
+assignment, we can do a complete deletion of b. Only one comment here:
+
+		if (bond_mask) {
+			lp = __ffs(bond_mask);
+			ocelot->lags[lp] = 0;
+		}
+
+lp was clobbered before, because it was used as a temporary variable to
+hold the new smallest port ID from the bond. Now that we don't have "lp"
+any longer, we'll just avoid the temporary variable and zeroize the
+bonding mask directly.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 Reviewed-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
 ---
 Changes in v2:
-Adapted to the merged version of the DSA API for LAG offload (i.e.
-rejecting a bonding interface due to tx_type now done within the
-.port_lag_join callback, caller is supposed to handle -EOPNOTSUPP).
+None.
 
- drivers/net/ethernet/mscc/ocelot.c | 29 ++++++++++++++++++++++-------
- include/soc/mscc/ocelot.h          |  2 ++
- 2 files changed, 24 insertions(+), 7 deletions(-)
+ drivers/net/ethernet/mscc/ocelot.c | 16 ++++++----------
+ 1 file changed, 6 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
-index 2b542f286739..e2744b921a97 100644
+index e2744b921a97..ce52bf892f9b 100644
 --- a/drivers/net/ethernet/mscc/ocelot.c
 +++ b/drivers/net/ethernet/mscc/ocelot.c
-@@ -876,6 +876,24 @@ int ocelot_get_ts_info(struct ocelot *ocelot, int port,
- }
- EXPORT_SYMBOL(ocelot_get_ts_info);
- 
-+static u32 ocelot_get_bond_mask(struct ocelot *ocelot, struct net_device *bond)
-+{
-+	u32 bond_mask = 0;
-+	int port;
-+
-+	for (port = 0; port < ocelot->num_phys_ports; port++) {
-+		struct ocelot_port *ocelot_port = ocelot->ports[port];
-+
-+		if (!ocelot_port)
-+			continue;
-+
-+		if (ocelot_port->bond == bond)
-+			bond_mask |= BIT(port);
-+	}
-+
-+	return bond_mask;
-+}
-+
- void ocelot_bridge_stp_state_set(struct ocelot *ocelot, int port, u8 state)
- {
- 	u32 port_cfg;
-@@ -1254,20 +1272,15 @@ int ocelot_port_lag_join(struct ocelot *ocelot, int port,
- 			 struct net_device *bond,
+@@ -1273,7 +1273,7 @@ int ocelot_port_lag_join(struct ocelot *ocelot, int port,
  			 struct netdev_lag_upper_info *info)
  {
--	struct net_device *ndev;
  	u32 bond_mask = 0;
- 	int lag, lp;
+-	int lag, lp;
++	int lag;
  
  	if (info->tx_type != NETDEV_LAG_TX_TYPE_HASH)
  		return -EOPNOTSUPP;
+@@ -1282,22 +1282,18 @@ int ocelot_port_lag_join(struct ocelot *ocelot, int port,
  
--	rcu_read_lock();
--	for_each_netdev_in_bond_rcu(bond, ndev) {
--		struct ocelot_port_private *priv = netdev_priv(ndev);
-+	ocelot->ports[port]->bond = bond;
+ 	bond_mask = ocelot_get_bond_mask(ocelot, bond);
  
--		bond_mask |= BIT(priv->chip_port);
--	}
--	rcu_read_unlock();
-+	bond_mask = ocelot_get_bond_mask(ocelot, bond);
+-	lp = __ffs(bond_mask);
++	lag = __ffs(bond_mask);
  
- 	lp = __ffs(bond_mask);
+ 	/* If the new port is the lowest one, use it as the logical port from
+ 	 * now on
+ 	 */
+-	if (port == lp) {
+-		lag = port;
++	if (port == lag) {
+ 		ocelot->lags[port] = bond_mask;
+ 		bond_mask &= ~BIT(port);
+-		if (bond_mask) {
+-			lp = __ffs(bond_mask);
+-			ocelot->lags[lp] = 0;
+-		}
++		if (bond_mask)
++			ocelot->lags[__ffs(bond_mask)] = 0;
+ 	} else {
+-		lag = lp;
+-		ocelot->lags[lp] |= BIT(port);
++		ocelot->lags[lag] |= BIT(port);
+ 	}
  
-@@ -1300,6 +1313,8 @@ void ocelot_port_lag_leave(struct ocelot *ocelot, int port,
- 	u32 port_cfg;
- 	int i;
- 
-+	ocelot->ports[port]->bond = NULL;
-+
- 	/* Remove port from any lag */
- 	for (i = 0; i < ocelot->num_phys_ports; i++)
- 		ocelot->lags[i] &= ~BIT(port);
-diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
-index cdc33fa05660..d2c587f099c8 100644
---- a/include/soc/mscc/ocelot.h
-+++ b/include/soc/mscc/ocelot.h
-@@ -610,6 +610,8 @@ struct ocelot_port {
- 	phy_interface_t			phy_mode;
- 
- 	u8				*xmit_template;
-+
-+	struct net_device		*bond;
- };
- 
- struct ocelot {
+ 	ocelot_setup_lag(ocelot, lag);
 -- 
 2.25.1
 
