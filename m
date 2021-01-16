@@ -2,85 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C3DF82F89F4
-	for <lists+netdev@lfdr.de>; Sat, 16 Jan 2021 01:32:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4AC722F8A02
+	for <lists+netdev@lfdr.de>; Sat, 16 Jan 2021 01:42:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726751AbhAPAcA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Jan 2021 19:32:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53006 "EHLO
+        id S1726264AbhAPAmH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Jan 2021 19:42:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55150 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725815AbhAPAb7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jan 2021 19:31:59 -0500
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80530C061757
-        for <netdev@vger.kernel.org>; Fri, 15 Jan 2021 16:31:19 -0800 (PST)
-Received: by mail-ed1-x530.google.com with SMTP id dj23so8877481edb.13
-        for <netdev@vger.kernel.org>; Fri, 15 Jan 2021 16:31:19 -0800 (PST)
+        with ESMTP id S1725815AbhAPAmH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jan 2021 19:42:07 -0500
+Received: from mail-wm1-x332.google.com (mail-wm1-x332.google.com [IPv6:2a00:1450:4864:20::332])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E480BC061757;
+        Fri, 15 Jan 2021 16:41:26 -0800 (PST)
+Received: by mail-wm1-x332.google.com with SMTP id e15so2656408wme.0;
+        Fri, 15 Jan 2021 16:41:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=r6nq8+TQ7idAH4fEuNNsYAdF0PbqKKcc8L4hMnbveVQ=;
-        b=rYWCwu2KHr+gV0OmU6GHj/isTO0odV8yPC/1Ll5OuKJsEyMas3UJycx4eIgfd4c6K3
-         LJwCFaNhtrtjAnLoUs4eABBT0EmZErfNZN3A/EyFAtVoUBURNBpRTDc4Mdi4tA+W5UYX
-         IPXG2JGKwC60x/EX2axY/yQy2UrFKETFYjcWV1bQXdhLlt4gwekxFzWmYCYBH9m8O4St
-         y/6QKG0r6hoNIT1x6ztD0ny22IOl9Smp4nYaytn/IX2+zmSaxhmnXeQ+ZV6cIVNYK3O2
-         9wai+rA22iDjL2EJ09RwtfOz9y3xkTIVyWB8r+l3dmx+j/r8JFN+IZy1sZ9hNME1aMvF
-         oXvA==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=86ftdUay4YL8UzEpU/3CE7EjzVx94Q7v448ik7iohsk=;
+        b=lcR4SNPAwn6ZSiCPWxITBTZsXWBCd9EMdRWY9+zqEYOTwNYcbh0BZbVNgJBih0KyPO
+         Q5VOwN+soXapQ+JYEN9iUb3wilPhKXI6ByCzXpQrkJ3lZgAV1CxXG+g4dYYGe13brvsN
+         /GSjq8BR2qKii7xzdwEovHF3zv8dLWB/YLc3UYkJYLbjGNu79mB2IFo7EZ6qT5zaqu0T
+         nVisjv3rdq1aycLJeJtn1xYjmRDbdjCDupiOlwea5gX/HW8eZalBD1XonZvnFsiabeUs
+         0p17/EFaC/hENknPY7V1VqeSYvXCQOxFGRXsAzTF4NWrN9fcrH0Q4pSalkjev/FyFbTY
+         Ef6g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=r6nq8+TQ7idAH4fEuNNsYAdF0PbqKKcc8L4hMnbveVQ=;
-        b=ICpZthAYU6eLUWT2NI999pgRbBg//b3VQiqIkbK9VNndBsV8XqlRIUcPP2KjDR84Tr
-         al+PNdl4ccsl6/b8yiupg7SXIoVjZDCEzJJ9f0gR+fsZYlDAlGegEXt9F21pfSBxzcvx
-         fzTE48n5fIWudmo4jYkN6ori1ET0C2cIq9k3SGD5ywDZGmGOUO50tg7vyp2rDHg6wNvl
-         19j29PNXm5USmeq+5oVwviiS/tAvO++SbOX2xsZGh5PRVccL85TlkwisMArejJH+D0uO
-         3JnRSQCRQHO9Iv2kNzWoFuydb1d6pSocf+DoNB4pW5Uvwye/Te70ujMmvcx1RCoWMUdC
-         8BDQ==
-X-Gm-Message-State: AOAM532GwxyrbJ8yy6CeSUKW89Yg1r1KZ8CW4cME1Uw3exH/ET451kPS
-        /amy+4o8gt0lAXuJwOOSHWU=
-X-Google-Smtp-Source: ABdhPJxppFWyFsyl7JwbTqJWFAT1sKJJ8vICKBF61WGvTxhQoXaNVSkukGlodfiGf9m/jKs7lyxV7g==
-X-Received: by 2002:aa7:cb12:: with SMTP id s18mr11744020edt.125.1610757078260;
-        Fri, 15 Jan 2021 16:31:18 -0800 (PST)
-Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id e19sm5484125edr.61.2021.01.15.16.31.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 Jan 2021 16:31:17 -0800 (PST)
-Date:   Sat, 16 Jan 2021 02:31:16 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>
-Cc:     netdev@vger.kernel.org, pavana.sharma@digi.com,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com, kuba@kernel.org,
-        lkp@intel.com, davem@davemloft.net, ashkan.boldaji@digi.com,
-        andrew@lunn.ch, Chris Packham <chris.packham@alliedtelesis.co.nz>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Subject: Re: [PATCH net-next v16 2/6] net: phy: Add 5GBASER interface mode
-Message-ID: <20210116003116.4iajyx4i3in3fsut@skbuf>
-References: <20210114043331.4572-1-kabel@kernel.org>
- <20210114043331.4572-3-kabel@kernel.org>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=86ftdUay4YL8UzEpU/3CE7EjzVx94Q7v448ik7iohsk=;
+        b=ZGmvbJHAhILwQWpABNygkfKrGKpwMGhSv4Do/C5Y323Yjn2ki5tnN5H63NjTtva8X5
+         YUSkoAlGW9Of5UJX8oZMqUT901kW5Q2h9kxZw3eJreQ5Alp1FXWGBVrt4YhsOnx+2uAy
+         t64PrmUnlh2Cj23dq1kQY9g+h+/q6RXLda/qJzo9XfqJ7bjHoH8sTkPRX8xurLI6wiL4
+         hOowqXMD1PnoNrN9tlgE2xCaM1bs7vSjoeU95LMNu6pxTmNrpUodcGU8Kh82BpTQQQpV
+         Orv80RtJwGGt253wPMdtWR29k7QmbwMegWv4VN8lbUrRSecMr5k6DQxIXxyocSFMdR50
+         4yuQ==
+X-Gm-Message-State: AOAM533V36jZdS85qQGhJaISoFwRQtTDxC66gcFozwrqtvsKP/iuuv3Q
+        lWZUhNw7eloWf6wwI9NQ4M3o7GQcdVo=
+X-Google-Smtp-Source: ABdhPJxodeMhNSkIcJtr+tNNz4fVbUvHiijFYZHPfRJCSPi47R2WegtuXF3pSIOfpyasyL1JxGrTHQ==
+X-Received: by 2002:a1c:1f86:: with SMTP id f128mr10922630wmf.174.1610757685747;
+        Fri, 15 Jan 2021 16:41:25 -0800 (PST)
+Received: from [192.168.1.143] ([170.253.51.130])
+        by smtp.gmail.com with UTF8SMTPSA id d85sm9727579wmd.2.2021.01.15.16.41.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 15 Jan 2021 16:41:25 -0800 (PST)
+Subject: Re: [PATCH v2] netdevice.7: Update documentation for SIOCGIFADDR
+ SIOCSIFADDR SIOCDIFADDR
+To:     =?UTF-8?Q?Pali_Roh=c3=a1r?= <pali@kernel.org>
+Cc:     Michael Kerrisk <mtk.manpages@gmail.com>,
+        linux-man@vger.kernel.org, netdev@vger.kernel.org
+References: <20210102140254.16714-1-pali@kernel.org>
+ <20210102183952.4155-1-pali@kernel.org>
+ <20210110163824.awdrmf3etndlyuls@pali>
+ <16eaf3ce-3e76-5e34-5909-be065502abca@gmail.com>
+ <20210112192647.ainhrkwhruejke4v@pali>
+From:   "Alejandro Colomar (man-pages)" <alx.manpages@gmail.com>
+Message-ID: <8e09e975-3b79-a47c-527f-84b77563d6bf@gmail.com>
+Date:   Sat, 16 Jan 2021 01:41:24 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:84.0) Gecko/20100101
+ Thunderbird/84.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+In-Reply-To: <20210112192647.ainhrkwhruejke4v@pali>
+Content-Type: text/plain; charset=UTF-8
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210114043331.4572-3-kabel@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 14, 2021 at 05:33:27AM +0100, Marek Beh�n wrote:
-> From: Pavana Sharma <pavana.sharma@digi.com>
+On 1/12/21 8:26 PM, Pali Rohár wrote:
+> On Sunday 10 January 2021 20:57:50 Alejandro Colomar (man-pages) wrote:
+>> [ CC += netdev ]
+>>
+>> On 1/10/21 5:38 PM, Pali Rohár wrote:
+>>> On Saturday 02 January 2021 19:39:52 Pali Rohár wrote:
+>>>> Also add description for struct in6_ifreq which is used for IPv6 addresses.
+>>>>
+>>>> SIOCSIFADDR and SIOCDIFADDR can be used to add or delete IPv6 address and
+>>>> pppd is using these ioctls for a long time. Surprisingly SIOCDIFADDR cannot
+>>>> be used for deleting IPv4 address but only for IPv6 addresses.
+>>>>
+>>>> Signed-off-by: Pali Rohár <pali@kernel.org>
+>>>> ---
+>>>>  man7/netdevice.7 | 50 +++++++++++++++++++++++++++++++++++++++++-------
+>>>>  1 file changed, 43 insertions(+), 7 deletions(-)
+>>>
+>>> Hello! Is something else needed for this patch?
+>>
+>> Hello Pali,
+>>
+>> Sorry, I forgot to comment a few more formatting/wording issues: see
+>> below.  Apart from that, I'd prefer Michael to review this one.
+>>
+>> Thanks,
+>>
+>> Alex
 > 
-> Add 5GBASE-R phy interface mode
-> 
-> Signed-off-by: Pavana Sharma <pavana.sharma@digi.com>
-> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-> Signed-off-by: Marek Beh�n <kabel@kernel.org>
-> ---
+> Hello Alex! I will try to explain configuring IPv4 and IPv6 addresses on
+> network interfaces, so you probably could have better way how to improve
+> description in "official" manpage. I'm not native English speaker, so I
+> would follow any suggestions from you.
+[...]
 
-This patch now conflicts with commit b1ae3587d16a ("net: phy: Add 100
-base-x mode"). Could you resend and also carry over my review tags from
-the previous version?
-https://patchwork.kernel.org/project/netdevbpf/patch/20210112195405.12890-5-kabel@kernel.org/
+Hi Pali,
+
+Thanks for explaining the process to me.
+However, I don't feel that I understand it enough to help you co-writing
+the text.  I lack much background to understand your explanation.  I'd
+help you with the language happily, if it was only that :)
+
+Maybe someone from netdev@ can help?  Or Michael?
+
+Regards,
+
+Alex
+
+
+-- 
+Alejandro Colomar
+Linux man-pages comaintainer; https://www.kernel.org/doc/man-pages/
+http://www.alejandro-colomar.es/
