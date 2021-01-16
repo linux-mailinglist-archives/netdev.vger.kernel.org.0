@@ -2,83 +2,77 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EE7B82F8D47
-	for <lists+netdev@lfdr.de>; Sat, 16 Jan 2021 13:24:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8377E2F8D5D
+	for <lists+netdev@lfdr.de>; Sat, 16 Jan 2021 13:52:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726903AbhAPMXd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Jan 2021 07:23:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35106 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726125AbhAPMXc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 16 Jan 2021 07:23:32 -0500
-Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22825C061757
-        for <netdev@vger.kernel.org>; Sat, 16 Jan 2021 04:22:52 -0800 (PST)
-Received: by mail-lf1-x131.google.com with SMTP id u25so17218177lfc.2
-        for <netdev@vger.kernel.org>; Sat, 16 Jan 2021 04:22:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:in-reply-to:references:date:message-id
-         :mime-version;
-        bh=VZQgXJ3sozKQS+EOLjQhPRf8+tiITg33CWg9Ya6+elE=;
-        b=U15IpH/80IkVMuRVSTT+D0VqtAzhnCWcvJAoz99h0HDGz1vGpfRdtbEYL6h314gFpA
-         qnELWLtY7TZTqwHHB62CCnDscY/7nJ/e6V5uFYWEMZ0oazQrhXBmZNOV+OpCkNyjOhdf
-         myUMlzmpmPxEQ/LrASWVx4mTLlSvdL41zNRWQ0Ymxm6T/Nl8FBtMsGrFad3dyJWT1oV3
-         ApSIx00WDfK1lYw1/5R3nooLT/X1jtVtNES+yccSBl3tWbhEKmmodnbi9PDWGetSsJCz
-         LIsSSKq10FBFxy9G/eqLqlY+C2mQ5ooMANxTLs0xkH5hm0fNt9guDE6noTcfcezmsDw0
-         E2cA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=VZQgXJ3sozKQS+EOLjQhPRf8+tiITg33CWg9Ya6+elE=;
-        b=mtmlIFR3vsvl3H1ywAEt2XINd7uD6gtzZXpJ1JjOByam/9moIYzpem1MfIR08piA0+
-         /dxUogph8N+YjeuSRzDMX886ihC3MluPOz1qGymTrTb23dRJD3rsyVq03FVz/tB6xbft
-         psV8hy3rvrR54Vs92g/cj1VAy+NdA2uPPQlBcJcu4IjNwvT5BVfk5X4zfbSoQwiaLTyc
-         SA1CLanSYLlabDrHz/l2UVE/c4Om8eAY9dbZVdAASseiiLtEdTEkGNj0jXcVhSwZ9Ohs
-         CDEp7gOuXdEev5BffZsDohRyPlPDbcrQdVymVVThNglpWQ7R7eEm+oe1/0ywTE3GCWkE
-         79VQ==
-X-Gm-Message-State: AOAM531ggcXodikNFHvaWR2ianoHzNkeD0WiyGTgQRNsypHyEq8ZgT9A
-        9316TX/k/AXMJX/Fx6d+YEHEXA==
-X-Google-Smtp-Source: ABdhPJwv8yd2BfxvPK6uYIqrG/oujdKSdPPU+zoPhi+sLcdwy9JZFT/bcOkxu3d9QE+YTmHKCTL7gg==
-X-Received: by 2002:a19:3806:: with SMTP id f6mr8206820lfa.242.1610799770651;
-        Sat, 16 Jan 2021 04:22:50 -0800 (PST)
-Received: from wkz-x280 (h-236-82.A259.priv.bahnhof.se. [98.128.236.82])
-        by smtp.gmail.com with ESMTPSA id n20sm1252416lfh.133.2021.01.16.04.22.49
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 16 Jan 2021 04:22:50 -0800 (PST)
-From:   Tobias Waldekranz <tobias@waldekranz.com>
-To:     Rasmus Villemoes <rasmus.villemoes@prevas.dk>,
-        Andrew Lunn <andrew@lunn.ch>,
+        id S1726960AbhAPMuL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Jan 2021 07:50:11 -0500
+Received: from Galois.linutronix.de ([193.142.43.55]:45046 "EHLO
+        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725979AbhAPMuL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 Jan 2021 07:50:11 -0500
+From:   Kurt Kanzenbach <kurt@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1610801369;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=vx9AoQvn62Gkzabwau/eg+2bKejzKDeB4GD6k8uqjCg=;
+        b=VRa3lm8/NWVhMLFwsso5P2/QvvDYar3Wa5xtAFULcahfNWzvDz6YcJSrDCoFQsjABCMqom
+        NRSJxqsXmi1+YIp/8DobZajkw0xQ3yrwwWS0iHJtrDo/8HS7yXio5eXeyadr0VkyAleLOs
+        GW7RvmpnvEqW39NlzL+eY3O4Sj1vY/ecP6hQRpg3akdi5TfYbRdqM2rx0DYKQnuo0iOXFh
+        WyfdvrSsBUzK1LomOFsZtZ0ldTjEBnvzgWv79k5c1FOKUqRIQhnM+hrH9QsCDTv05lrVqk
+        w0X7tRUANFvTTmBKqSU3nvuxZSu/C8wvZZSKBsHOjMUrdFT3YF+TVxgsYLGEXw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1610801369;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=vx9AoQvn62Gkzabwau/eg+2bKejzKDeB4GD6k8uqjCg=;
+        b=81pa4BIejklwDHy+zbA84mAE55xvyXTgtauUFKatpe86kG5wAgf2Gw+JmEs1LiQE9l1bTh
+        Bcy0l57EXZLW7eAw==
+To:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Rasmus Villemoes <rasmus.villemoes@prevas.dk>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next 2/2] net: dsa: mv88e6xxx: use mv88e6185_g1_vtu_getnext() for the 6250
-In-Reply-To: <20210116023937.6225-3-rasmus.villemoes@prevas.dk>
-References: <20210116023937.6225-1-rasmus.villemoes@prevas.dk> <20210116023937.6225-3-rasmus.villemoes@prevas.dk>
-Date:   Sat, 16 Jan 2021 13:22:49 +0100
-Message-ID: <878s8tkr52.fsf@waldekranz.com>
+        Vladimir Oltean <olteanv@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        netdev@vger.kernel.org, Kurt Kanzenbach <kurt@linutronix.de>
+Subject: [PATCH v2 net-next 0/1] net: dsa: hellcreek: Add TAPRIO offloading
+Date:   Sat, 16 Jan 2021 13:49:21 +0100
+Message-Id: <20210116124922.32356-1-kurt@linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jan 16, 2021 at 03:39, Rasmus Villemoes <rasmus.villemoes@prevas.dk> wrote:
-> mv88e6250_g1_vtu_getnext is almost identical to
-> mv88e6185_g1_vtu_getnext, except for the 6250 only having 64 databases
-> instead of 256. We can reduce code duplication by simply masking off
-> the extra two garbage bits when assembling the fid from VTU op [3:0]
-> and [11:8].
->
-> Signed-off-by: Rasmus Villemoes <rasmus.villemoes@prevas.dk>
+Hi,
 
-We might also want to give mv88e6250_g1_vtu_loadpurge the same
-treatment.
+The switch has support for the 802.1Qbv Time Aware Shaper (TAS). Traffic
+schedules may be configured individually on each front port. Each port has eight
+egress queues. The traffic is mapped to a traffic class respectively via the PCP
+field of a VLAN tagged frame.
 
-Reviewed-by: Tobias Waldekranz <tobias@waldekranz.com>
-Tested-by: Tobias Waldekranz <tobias@waldekranz.com>
+Previous attempts:
+
+ * https://lkml.kernel.org/netdev/20201121115703.23221-1-kurt@linutronix.de/
+
+Changes since v1:
+
+ * Use taprio data structure
+ * Calculate base_time if in past
+ * Validate input parameters
+ * Minor things
+
+Kurt Kanzenbach (1):
+  net: dsa: hellcreek: Add TAPRIO offloading support
+
+ drivers/net/dsa/hirschmann/hellcreek.c | 298 ++++++++++++++++++++++++-
+ drivers/net/dsa/hirschmann/hellcreek.h |  11 +-
+ 2 files changed, 307 insertions(+), 2 deletions(-)
+
+-- 
+2.20.1
+
