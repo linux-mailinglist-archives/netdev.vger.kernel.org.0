@@ -2,60 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C47912F8D03
+	by mail.lfdr.de (Postfix) with ESMTP id 57D0D2F8D02
 	for <lists+netdev@lfdr.de>; Sat, 16 Jan 2021 11:46:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726849AbhAPKqA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        id S1726871AbhAPKqA (ORCPT <rfc822;lists+netdev@lfdr.de>);
         Sat, 16 Jan 2021 05:46:00 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:20910 "EHLO
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:35430 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725979AbhAPKp6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 16 Jan 2021 05:45:58 -0500
+        by vger.kernel.org with ESMTP id S1726513AbhAPKp7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 Jan 2021 05:45:59 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1610793871;
+        s=mimecast20190719; t=1610793873;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=tNOciZF/XtlQMzlzttmcPN56lbsPPPGp9MQouxHwNhw=;
-        b=ZNqfpUHb/OoMe9F3gob5Y1GaGB6RJvR5ROaA3goDzTTvcZDonbPMC4nDQtY20OEm668hpu
-        UBwaWV2Xs6e+yhOHCU5rvX/mtZ6u6bKVg5MOXukn7GfMEvrkLD5WJ9m+8H7ng1knPU5kha
-        +BZpvqs/6R8VGSn5OtW00AeRF9LxGk4=
+        bh=X3P58FzWAjIu2IDmPongSGOru5Zt1SOBsMLJaMpQ4Es=;
+        b=FNezWhq/NpqW3nDmgWecdmvvW6rZ5oEzc2dxiNwOV6ni63WjasB64NIhxvEmjXx4iSRFs4
+        8Vnel2ftcFIysqqTB4B4dxR0M86SWlxAqihcyOpMoMEzL4anW1zZKBLMbbJJkzWxJjoEU9
+        yZrrDH2bEu9a8uA8qSTrmWYc9/zwu1g=
 Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
  [209.85.221.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-111-fLLbFuyZNUSzbS_Rp3EAvg-1; Sat, 16 Jan 2021 05:44:26 -0500
-X-MC-Unique: fLLbFuyZNUSzbS_Rp3EAvg-1
-Received: by mail-wr1-f71.google.com with SMTP id e12so5440100wrp.10
-        for <netdev@vger.kernel.org>; Sat, 16 Jan 2021 02:44:26 -0800 (PST)
+ us-mta-165-bRNuCiAwMhun7GW7Jbtdww-1; Sat, 16 Jan 2021 05:44:30 -0500
+X-MC-Unique: bRNuCiAwMhun7GW7Jbtdww-1
+Received: by mail-wr1-f71.google.com with SMTP id i4so5436913wrm.21
+        for <netdev@vger.kernel.org>; Sat, 16 Jan 2021 02:44:30 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=tNOciZF/XtlQMzlzttmcPN56lbsPPPGp9MQouxHwNhw=;
-        b=bLmwiLsc81UmWzofVJeS34Xnio34wB6JQ6Nu2DIGIESzL3gKl8WOPeo821dGuLUvNs
-         QAlYw13+C1gmJdDeeLrLTGBk1tRZucLTV9yRgNuE9/awbvDLB3ODaiyfrwXzrozqoEd0
-         ylgt3/m+ok+e9vw0CVrvts0BnHliqzY1lSmvh6QytiSivyM9WUqT1XgIdxtac6gyHBcp
-         Q9uN9pV5OaOXTH08tO5CIpWgDHM15vuZ+DVs7QOTJ4oICDxz3a19oTemSmXfjp0IEFqy
-         lMXsst4zVQcZrIbUn5p9UJhDurxecGBPfHehlr5vSX/zFl21iKSJEDsYVwRS2TSvAJOp
-         VsZA==
-X-Gm-Message-State: AOAM532kr5W5AAZ8NLVr2blolFBeQSBMlfgfumshX5EFRXNKMrPbUnz6
-        iSPbneypVIwX9XqmYTBjpFo+aRz7FVMBdZ6gVqEDTAIbHPG/mIlccFwNbpgEhisD2WlmQGhORgM
-        2uY7niLq0612G8AoH
-X-Received: by 2002:a5d:4ece:: with SMTP id s14mr17108155wrv.427.1610793865580;
-        Sat, 16 Jan 2021 02:44:25 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwFLGc/Y5dSgAsKf067j9zGaLw3HwHfYgoZ/IpMGoKsyeAlWexMDj/wJ7036NNKQCQcucFguQ==
-X-Received: by 2002:a5d:4ece:: with SMTP id s14mr17108142wrv.427.1610793865440;
-        Sat, 16 Jan 2021 02:44:25 -0800 (PST)
+        bh=X3P58FzWAjIu2IDmPongSGOru5Zt1SOBsMLJaMpQ4Es=;
+        b=EEhY2J0veYsHHk6g3WC6br+rV/ii0EcknqFJv1Z05H0Rcq9YhZQ3xaKZWXHR09L3Yb
+         aGWX3lNvkONkGatYBOkB7MM0sdyvJba0wcHINAzFT1ubDd4hZ03UF883Ugv/0oxd3Rie
+         tGFAvVi8zje1xU6/FoIqguAQT5jVQdMBTRqOsNq2NN//JZNep3IQp3hsp3otpFbUkXbz
+         gEqqSv8xU8n8oyebEsg5iBs8OTQ96xzD3nIC1FJWtT6YvGMtSWxp+JdLyca3MgHojvnU
+         dQxTpL2HvWCMowypZxufwShv2W32587QqbgoJoSksQrVoUNH2XmideojG6QkdTl70Z+A
+         BBxw==
+X-Gm-Message-State: AOAM531WOb9MSPJdx2fQ8VSGY62mbWWPyFSnSKqcr9ejp6frzwbjCznQ
+        rx2LO50urIKlIYGy/gpLUXCTNXogXiv2IErKeAmFfy5CXSkIBh8FpxyyD9HRB9Fvfl7MDQa3mZR
+        QOQeapU3fXTRRLCl5
+X-Received: by 2002:adf:9467:: with SMTP id 94mr17817073wrq.235.1610793869139;
+        Sat, 16 Jan 2021 02:44:29 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwkG2nP8RP1LElkpfe6X3a3wWRvLfB+7Ed9kwP/lO6yJtUoAPExzUaiRhDGrdpDqALIgbmIDg==
+X-Received: by 2002:adf:9467:: with SMTP id 94mr17817063wrq.235.1610793868942;
+        Sat, 16 Jan 2021 02:44:28 -0800 (PST)
 Received: from linux.home (2a01cb058918ce00dd1a5a4f9908f2d5.ipv6.abo.wanadoo.fr. [2a01:cb05:8918:ce00:dd1a:5a4f:9908:f2d5])
-        by smtp.gmail.com with ESMTPSA id y13sm19062577wrl.63.2021.01.16.02.44.24
+        by smtp.gmail.com with ESMTPSA id d1sm6920142wru.73.2021.01.16.02.44.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 16 Jan 2021 02:44:24 -0800 (PST)
-Date:   Sat, 16 Jan 2021 11:44:22 +0100
+        Sat, 16 Jan 2021 02:44:28 -0800 (PST)
+Date:   Sat, 16 Jan 2021 11:44:26 +0100
 From:   Guillaume Nault <gnault@redhat.com>
 To:     David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Paolo Abeni <pabeni@redhat.com>
-Subject: [PATCH net 1/2] udp: mask TOS bits in udp_v4_early_demux()
-Message-ID: <34f99dc0d1d339a3ee7caa40597ebc8313e4774d.1610790904.git.gnault@redhat.com>
+Cc:     netdev@vger.kernel.org, Florian Westphal <fw@strlen.de>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>
+Subject: [PATCH net 2/2] netfilter: rpfilter: mask ecn bits before fib lookup
+Message-ID: <68bdd9383165b264dda2157cd4793d2b723d6438.1610790904.git.gnault@redhat.com>
 References: <cover.1610790904.git.gnault@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
@@ -65,84 +67,74 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-udp_v4_early_demux() is the only function that calls
-ip_mc_validate_source() with a TOS that hasn't been masked with
-IPTOS_RT_MASK.
-
-This results in different behaviours for incoming multicast UDPv4
-packets, depending on if ip_mc_validate_source() is called from the
-early-demux path (udp_v4_early_demux) or from the regular input path
-(ip_route_input_noref).
-
-ECN would normally not be used with UDP multicast packets, so the
-practical consequences should be limited on that side. However,
-IPTOS_RT_MASK is used to also masks the TOS' high order bits, to align
-with the non-early-demux path behaviour.
+RT_TOS() only masks one of the two ECN bits. Therefore rpfilter_mt()
+treats Not-ECT or ECT(1) packets in a different way than those with
+ECT(0) or CE.
 
 Reproducer:
 
-  Setup two netns, connected with veth:
+  Create two netns, connected with a veth:
   $ ip netns add ns0
   $ ip netns add ns1
-  $ ip -netns ns0 link set dev lo up
-  $ ip -netns ns1 link set dev lo up
   $ ip link add name veth01 netns ns0 type veth peer name veth10 netns ns1
   $ ip -netns ns0 link set dev veth01 up
   $ ip -netns ns1 link set dev veth10 up
-  $ ip -netns ns0 address add 192.0.2.10 peer 192.0.2.11/32 dev veth01
-  $ ip -netns ns1 address add 192.0.2.11 peer 192.0.2.10/32 dev veth10
+  $ ip -netns ns0 address add 192.0.2.10/32 dev veth01
+  $ ip -netns ns1 address add 192.0.2.11/32 dev veth10
 
-  In ns0, add route to multicast address 224.0.2.0/24 using source
-  address 198.51.100.10:
-  $ ip -netns ns0 address add 198.51.100.10/32 dev lo
-  $ ip -netns ns0 route add 224.0.2.0/24 dev veth01 src 198.51.100.10
+  Add a route to ns1 in ns0:
+  $ ip -netns ns0 route add 192.0.2.11/32 dev veth01
 
-  In ns1, define route to 198.51.100.10, only for packets with TOS 4:
-  $ ip -netns ns1 route add 198.51.100.10/32 tos 4 dev veth10
+  In ns1, only packets with TOS 4 can be routed to ns0:
+  $ ip -netns ns1 route add 192.0.2.10/32 tos 4 dev veth10
 
-  Also activate rp_filter in ns1, so that incoming packets not matching
-  the above route get dropped:
-  $ ip netns exec ns1 sysctl -wq net.ipv4.conf.veth10.rp_filter=1
+  Ping from ns0 to ns1 works regardless of the ECN bits, as long as TOS
+  is 4:
+  $ ip netns exec ns0 ping -Q 4 192.0.2.11   # TOS 4, Not-ECT
+    ... 0% packet loss ...
+  $ ip netns exec ns0 ping -Q 5 192.0.2.11   # TOS 4, ECT(1)
+    ... 0% packet loss ...
+  $ ip netns exec ns0 ping -Q 6 192.0.2.11   # TOS 4, ECT(0)
+    ... 0% packet loss ...
+  $ ip netns exec ns0 ping -Q 7 192.0.2.11   # TOS 4, CE
+    ... 0% packet loss ...
 
-  Now try to receive packets on 224.0.2.11:
-  $ ip netns exec ns1 socat UDP-RECVFROM:1111,ip-add-membership=224.0.2.11:veth10,ignoreeof -
+  Now use iptable's rpfilter module in ns1:
+  $ ip netns exec ns1 iptables-legacy -t raw -A PREROUTING -m rpfilter --invert -j DROP
 
-  In ns0, send packet to 224.0.2.11 with TOS 4 and ECT(0) (that is,
-  tos 6 for socat):
-  $ echo test0 | ip netns exec ns0 socat - UDP-DATAGRAM:224.0.2.11:1111,bind=:1111,tos=6
+  Not-ECT and ECT(1) packets still pass:
+  $ ip netns exec ns0 ping -Q 4 192.0.2.11   # TOS 4, Not-ECT
+    ... 0% packet loss ...
+  $ ip netns exec ns0 ping -Q 5 192.0.2.11   # TOS 4, ECT(1)
+    ... 0% packet loss ...
 
-  The "test0" message is properly received by socat in ns1, because
-  early-demux has no cached dst to use, so source address validation
-  is done by ip_route_input_mc(), which receives a TOS that has the
-  ECN bits masked.
+  But ECT(0) and ECN packets are dropped:
+  $ ip netns exec ns0 ping -Q 6 192.0.2.11   # TOS 4, ECT(0)
+    ... 100% packet loss ...
+  $ ip netns exec ns0 ping -Q 7 192.0.2.11   # TOS 4, CE
+    ... 100% packet loss ...
 
-  Now send another packet to 224.0.2.11, still with TOS 4 and ECT(0):
-  $ echo test1 | ip netns exec ns0 socat - UDP-DATAGRAM:224.0.2.11:1111,bind=:1111,tos=6
+After this patch, rpfilter doesn't drop ECT(0) and CE packets anymore.
 
-  The "test1" message isn't received by socat in ns1, because, now,
-  early-demux has a cached dst to use and calls ip_mc_validate_source()
-  immediately, without masking the ECN bits.
-
-Fixes: bc044e8db796 ("udp: perform source validation for mcast early demux")
+Fixes: 8f97339d3feb ("netfilter: add ipv4 reverse path filter match")
 Signed-off-by: Guillaume Nault <gnault@redhat.com>
 ---
- net/ipv4/udp.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ net/ipv4/netfilter/ipt_rpfilter.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-index 7103b0a89756..69ea76578abb 100644
---- a/net/ipv4/udp.c
-+++ b/net/ipv4/udp.c
-@@ -2555,7 +2555,8 @@ int udp_v4_early_demux(struct sk_buff *skb)
- 		 */
- 		if (!inet_sk(sk)->inet_daddr && in_dev)
- 			return ip_mc_validate_source(skb, iph->daddr,
--						     iph->saddr, iph->tos,
-+						     iph->saddr,
-+						     iph->tos & IPTOS_RT_MASK,
- 						     skb->dev, in_dev, &itag);
- 	}
- 	return 0;
+diff --git a/net/ipv4/netfilter/ipt_rpfilter.c b/net/ipv4/netfilter/ipt_rpfilter.c
+index cc23f1ce239c..8cd3224d913e 100644
+--- a/net/ipv4/netfilter/ipt_rpfilter.c
++++ b/net/ipv4/netfilter/ipt_rpfilter.c
+@@ -76,7 +76,7 @@ static bool rpfilter_mt(const struct sk_buff *skb, struct xt_action_param *par)
+ 	flow.daddr = iph->saddr;
+ 	flow.saddr = rpfilter_get_saddr(iph->daddr);
+ 	flow.flowi4_mark = info->flags & XT_RPFILTER_VALID_MARK ? skb->mark : 0;
+-	flow.flowi4_tos = RT_TOS(iph->tos);
++	flow.flowi4_tos = iph->tos & IPTOS_RT_MASK;
+ 	flow.flowi4_scope = RT_SCOPE_UNIVERSE;
+ 	flow.flowi4_oif = l3mdev_master_ifindex_rcu(xt_in(par));
+ 
 -- 
 2.21.3
 
