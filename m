@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 84EDD2F8A2F
-	for <lists+netdev@lfdr.de>; Sat, 16 Jan 2021 02:02:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 698162F8A31
+	for <lists+netdev@lfdr.de>; Sat, 16 Jan 2021 02:02:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728933AbhAPBCC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Jan 2021 20:02:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59450 "EHLO
+        id S1729035AbhAPBCE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Jan 2021 20:02:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728803AbhAPBB7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jan 2021 20:01:59 -0500
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06436C0617A1
-        for <netdev@vger.kernel.org>; Fri, 15 Jan 2021 17:00:51 -0800 (PST)
-Received: by mail-ej1-x631.google.com with SMTP id hs11so13505710ejc.1
-        for <netdev@vger.kernel.org>; Fri, 15 Jan 2021 17:00:50 -0800 (PST)
+        with ESMTP id S1728712AbhAPBCB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jan 2021 20:02:01 -0500
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F27BC0617A2
+        for <netdev@vger.kernel.org>; Fri, 15 Jan 2021 17:00:52 -0800 (PST)
+Received: by mail-ej1-x62e.google.com with SMTP id f4so15835418ejx.7
+        for <netdev@vger.kernel.org>; Fri, 15 Jan 2021 17:00:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=37LfDkexTqbGj/RF1ETXVQpjIqqqNvve6EvhfPw+lnQ=;
-        b=luryd/zG3KZN12C2MxZBUxIM5j3Naw8xalJl2WOSLdZVrgGuP5ZGGQLXs/fkt7NC3F
-         7b3W0A66S/dXD2RQxDk3s6eISMRxhgulgMiw/IAI/aEK5+8vX6rRDeuMiYxPseV1Jm9k
-         pAGFDE0BUMbl8pUvGuih5IQ0eKcRo8L11La8KNqT+38KLYOd6iwsdIl6iXID2Phb//YH
-         lxNe018FjK5+iTpuvRt55g+goMzf5OfcYgVeY0rBD8R+5JK7odzivWl42x9i0fjGXKgU
-         VIPe0D6NIXYdbJF5bngnsJFiCQG3PVgTXNyDrOuS1SFCtyVOsYhaNMROqIC0ukZxPqtO
-         qwAg==
+        bh=NjEAA2DJmjSD/q4DlZ6it26CzmdA3ef8cg3M5pyv52M=;
+        b=fm97Tnt5MwI9Wpmy85ICZGxAMA2zJ25cvTS1ydDeJgmN39PYAB3x2JxYqRhwQICKLT
+         2oLQvN3NoItEzEW2YAUO5dYKe3BEa6PzA4NC0QZlUZfVPnOIX3aT+4Ylj7f1GA2tdLIt
+         goVBrOlQNzXznds5ISbCVN3zzoFEoOpFaYlM4XWS/IW+zegyH3Cws6LD0C7V5jmGfRp2
+         D3lWzFpIZhKRqgs5zydF7YA9tKnmiY+iSkumZ3M+9umWBauZ63GyU2QG7C3bKwhYZTfB
+         EhVeMy55ISzGA1F0s/K3xTJUxQ62R973eaxjsQyrZbM6LoxOkifyS2JVwvgWeayoeivS
+         sueg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=37LfDkexTqbGj/RF1ETXVQpjIqqqNvve6EvhfPw+lnQ=;
-        b=R9wibvM1B2PWsVUxsnZMf3ZrpUfmZfKut7xMw1M6zAV61rOQPjqcZY5wm65tGgW0+Z
-         aSQtOihgA/O4MckRFjRV1wLAcFNcHuwt1t2+2f59jhXwx7HTsZSxT40uafLf+s/7dM4X
-         LMEZXGe62lwRNVnY6Du9+4DtqMHLUEdca7GSs2tqWeoYW+U0Y5kyW4w9h0xwJegBjQhy
-         voisYiqFFw64tqveXXUmgXtzTsgODN6Vn8MqC7eXxI/YyMo1s3iHAj8sGxEpSS2Q/35P
-         d4xiSkOg6ropyYsZGQDZj8TPRukxQxNb8BAlDBbOdYwJYqzSwpSLpwzMK9KjQSkyhNaz
-         A8Ng==
-X-Gm-Message-State: AOAM532/D+pE2gMlthOjUP87zcSvWQOUf6r84uJOcmy0hGV8gmHMxI7K
-        wJ5FSnLoDrLAS/Uq+Bb78tk=
-X-Google-Smtp-Source: ABdhPJy8GTR6wfRa+8JyrZZEojZV2Rq0wMT2l1fjCK50/Z0Zr2891r7xI+7KBoukFuWFm9TWz+OYAw==
-X-Received: by 2002:a17:907:3e04:: with SMTP id hp4mr7851569ejc.188.1610758849690;
-        Fri, 15 Jan 2021 17:00:49 -0800 (PST)
+        bh=NjEAA2DJmjSD/q4DlZ6it26CzmdA3ef8cg3M5pyv52M=;
+        b=Z4qi46V1mao34N6wNK3LA1bku0TkfGoZaLrCKDNXKHao1q8OOesUf9fAFE6V12qtlz
+         Ik2I8OQ0jsjNPrRE9GjG6jkkPk1KV1/Q5yEpCZx4+s/ZAa6FoxFhsN6gT4pFFMfWa/FU
+         Eo5rhEgvOGwlA/yyeCOKgHBTjDBHVzlxfz9Gg7PrLxD2gt6JO6/XBEzb0L8De3zJOdxu
+         JAo04wFELDdivHvIdQHoH2nfmd36K4OjTHW5VUaM3uT7B8SxhxsLExQvGen1JJNTdPpR
+         tWqGBGhVnqcO1fii+2PSZvjplCgzWX3SjnCRb8vuVb5w3rINGKrlb/IP3Gg/uP9Sfqav
+         G2Ng==
+X-Gm-Message-State: AOAM530JMcT2OXGy0l2SaDYw8vgF6fJxpnlyiaqbokzm8q8K7HfYWSCc
+        sXcwFl2kwflqXyN67FK4h9Q=
+X-Google-Smtp-Source: ABdhPJxymBwuNtKGeQMx2JHwgXbqh+Mx/qa1m28S2mkmkmVe/lddltlI9Wa/zvOl/ap0qhoteKGSBw==
+X-Received: by 2002:a17:906:65a:: with SMTP id t26mr10378870ejb.394.1610758850998;
+        Fri, 15 Jan 2021 17:00:50 -0800 (PST)
 Received: from localhost.localdomain (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id k3sm5666655eds.87.2021.01.15.17.00.48
+        by smtp.gmail.com with ESMTPSA id k3sm5666655eds.87.2021.01.15.17.00.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 Jan 2021 17:00:49 -0800 (PST)
+        Fri, 15 Jan 2021 17:00:50 -0800 (PST)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
@@ -59,9 +59,9 @@ Cc:     netdev <netdev@vger.kernel.org>,
         Claudiu Manoil <claudiu.manoil@nxp.com>,
         Tobias Waldekranz <tobias@waldekranz.com>,
         Maxim Kochetkov <fido_max@inbox.ru>
-Subject: [PATCH v2 net-next 13/14] net: mscc: ocelot: rebalance LAGs on link up/down events
-Date:   Sat, 16 Jan 2021 02:59:42 +0200
-Message-Id: <20210116005943.219479-14-olteanv@gmail.com>
+Subject: [PATCH v2 net-next 14/14] net: dsa: felix: propagate the LAG offload ops towards the ocelot lib
+Date:   Sat, 16 Jan 2021 02:59:43 +0200
+Message-Id: <20210116005943.219479-15-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210116005943.219479-1-olteanv@gmail.com>
 References: <20210116005943.219479-1-olteanv@gmail.com>
@@ -73,211 +73,118 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-At present there is an issue when ocelot is offloading a bonding
-interface, but one of the links of the physical ports goes down. Traffic
-keeps being hashed towards that destination, and of course gets dropped
-on egress.
+The ocelot switch has been supporting LAG offload since its initial
+commit, however felix could not make use of that, due to lack of a LAG
+abstraction in DSA. Now that we have that, let's forward DSA's calls
+towards the ocelot library, who will deal with setting up the bonding.
 
-Monitor the netdev notifier events emitted by the bonding driver for
-changes in the physical state of lower interfaces, to determine which
-ports are active and which ones are no longer.
-
-Then extend ocelot_get_bond_mask to return either the configured bonding
-interfaces, or the active ones, depending on a boolean argument. The
-code that does rebalancing only needs to do so among the active ports,
-whereas the bridge forwarding mask and the logical port IDs still need
-to look at the permanently bonded ports.
+Note that ocelot_port_lag_leave can return an error due to memory
+allocation but we are currently ignoring that, because the DSA method
+returns void.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
 Changes in v2:
-- Adapt to the merged version of the DSA API, which now passes just a
-  bool lag_tx_active in .port_lag_change instead of the full struct
-  netdev_lag_lower_state_info *info.
-- Renamed "just_active_ports" -> "only_active_ports"
+s/lag_dev/bond/g
 
- drivers/net/ethernet/mscc/ocelot.c     | 38 ++++++++++++++++++++------
- drivers/net/ethernet/mscc/ocelot.h     |  1 +
- drivers/net/ethernet/mscc/ocelot_net.c | 30 ++++++++++++++++++++
- include/soc/mscc/ocelot.h              |  1 +
- 4 files changed, 61 insertions(+), 9 deletions(-)
+ drivers/net/dsa/ocelot/felix.c     | 28 ++++++++++++++++++++++++++++
+ drivers/net/ethernet/mscc/ocelot.c |  1 +
+ drivers/net/ethernet/mscc/ocelot.h |  6 ------
+ include/soc/mscc/ocelot.h          |  6 ++++++
+ 4 files changed, 35 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
-index 78a468d39e9b..c31a63d9fe2a 100644
---- a/drivers/net/ethernet/mscc/ocelot.c
-+++ b/drivers/net/ethernet/mscc/ocelot.c
-@@ -876,7 +876,8 @@ int ocelot_get_ts_info(struct ocelot *ocelot, int port,
+diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
+index 2c6ac2b137ec..af867535f9eb 100644
+--- a/drivers/net/dsa/ocelot/felix.c
++++ b/drivers/net/dsa/ocelot/felix.c
+@@ -105,6 +105,31 @@ static void felix_bridge_leave(struct dsa_switch *ds, int port,
+ 	ocelot_port_bridge_leave(ocelot, port, br);
  }
- EXPORT_SYMBOL(ocelot_get_ts_info);
  
--static u32 ocelot_get_bond_mask(struct ocelot *ocelot, struct net_device *bond)
-+static u32 ocelot_get_bond_mask(struct ocelot *ocelot, struct net_device *bond,
-+				bool only_active_ports)
- {
- 	u32 bond_mask = 0;
- 	int port;
-@@ -887,8 +888,12 @@ static u32 ocelot_get_bond_mask(struct ocelot *ocelot, struct net_device *bond)
- 		if (!ocelot_port)
- 			continue;
- 
--		if (ocelot_port->bond == bond)
-+		if (ocelot_port->bond == bond) {
-+			if (only_active_ports && !ocelot_port->lag_tx_active)
-+				continue;
-+
- 			bond_mask |= BIT(port);
-+		}
- 	}
- 
- 	return bond_mask;
-@@ -914,7 +919,7 @@ static void ocelot_apply_bridge_fwd_mask(struct ocelot *ocelot)
- 			struct net_device *bond = ocelot_port->bond;
- 
- 			if (bond)
--				mask &= ~ocelot_get_bond_mask(ocelot, bond);
-+				mask &= ~ocelot_get_bond_mask(ocelot, bond, false);
- 
- 			ocelot_write_rix(ocelot, mask,
- 					 ANA_PGID_PGID, PGID_SRC + port);
-@@ -1242,22 +1247,22 @@ static int ocelot_set_aggr_pgids(struct ocelot *ocelot)
- 		bonds[port] = ocelot_port->bond;
- 	}
- 
--	/* Now, set PGIDs for each LAG */
-+	/* Now, set PGIDs for each active LAG */
- 	for (lag = 0; lag < ocelot->num_phys_ports; lag++) {
--		int num_ports_in_lag = 0;
-+		int num_active_ports = 0;
- 		unsigned long bond_mask;
- 		u8 aggr_idx[16];
- 
- 		if (!bonds[lag])
- 			continue;
- 
--		bond_mask = ocelot_get_bond_mask(ocelot, bonds[lag]);
-+		bond_mask = ocelot_get_bond_mask(ocelot, bonds[lag], true);
- 
- 		for_each_set_bit(port, &bond_mask, ocelot->num_phys_ports) {
- 			// Destination mask
- 			ocelot_write_rix(ocelot, bond_mask,
- 					 ANA_PGID_PGID, port);
--			aggr_idx[num_ports_in_lag++] = port;
-+			aggr_idx[num_active_ports++] = port;
- 		}
- 
- 		for_each_aggr_pgid(ocelot, i) {
-@@ -1265,7 +1270,11 @@ static int ocelot_set_aggr_pgids(struct ocelot *ocelot)
- 
- 			ac = ocelot_read_rix(ocelot, ANA_PGID_PGID, i);
- 			ac &= ~bond_mask;
--			ac |= BIT(aggr_idx[i % num_ports_in_lag]);
-+			/* Don't do division by zero if there was no active
-+			 * port. Just make all aggregation codes zero.
-+			 */
-+			if (num_active_ports)
-+				ac |= BIT(aggr_idx[i % num_active_ports]);
- 			ocelot_write_rix(ocelot, ac, ANA_PGID_PGID, i);
- 		}
- 
-@@ -1301,7 +1310,8 @@ static void ocelot_setup_logical_port_ids(struct ocelot *ocelot)
- 
- 		bond = ocelot_port->bond;
- 		if (bond) {
--			int lag = __ffs(ocelot_get_bond_mask(ocelot, bond));
-+			int lag = __ffs(ocelot_get_bond_mask(ocelot, bond,
-+							     false));
- 
- 			ocelot_rmw_gix(ocelot,
- 				       ANA_PORT_PORT_CFG_PORTID_VAL(lag),
-@@ -1342,6 +1352,16 @@ int ocelot_port_lag_leave(struct ocelot *ocelot, int port,
- }
- EXPORT_SYMBOL(ocelot_port_lag_leave);
- 
-+int ocelot_port_lag_change(struct ocelot *ocelot, int port, bool lag_tx_active)
++static int felix_lag_join(struct dsa_switch *ds, int port,
++			  struct net_device *bond,
++			  struct netdev_lag_upper_info *info)
 +{
-+	struct ocelot_port *ocelot_port = ocelot->ports[port];
++	struct ocelot *ocelot = ds->priv;
 +
-+	ocelot_port->lag_tx_active = lag_tx_active;
-+
-+	/* Rebalance the LAGs */
-+	return ocelot_set_aggr_pgids(ocelot);
++	return ocelot_port_lag_join(ocelot, port, bond, info);
 +}
 +
++static int felix_lag_leave(struct dsa_switch *ds, int port,
++			   struct net_device *bond)
++{
++	struct ocelot *ocelot = ds->priv;
++
++	return ocelot_port_lag_leave(ocelot, port, bond);
++}
++
++static int felix_lag_change(struct dsa_switch *ds, int port)
++{
++	struct dsa_port *dp = dsa_to_port(ds, port);
++	struct ocelot *ocelot = ds->priv;
++
++	return ocelot_port_lag_change(ocelot, port, dp->lag_tx_enabled);
++}
++
+ static int felix_vlan_prepare(struct dsa_switch *ds, int port,
+ 			      const struct switchdev_obj_port_vlan *vlan)
+ {
+@@ -881,6 +906,9 @@ const struct dsa_switch_ops felix_switch_ops = {
+ 	.port_mdb_del			= felix_mdb_del,
+ 	.port_bridge_join		= felix_bridge_join,
+ 	.port_bridge_leave		= felix_bridge_leave,
++	.port_lag_join			= felix_lag_join,
++	.port_lag_leave			= felix_lag_leave,
++	.port_lag_change		= felix_lag_change,
+ 	.port_stp_state_set		= felix_bridge_stp_state_set,
+ 	.port_vlan_filtering		= felix_vlan_filtering,
+ 	.port_vlan_add			= felix_vlan_add,
+diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
+index c31a63d9fe2a..b2fdee8a713c 100644
+--- a/drivers/net/ethernet/mscc/ocelot.c
++++ b/drivers/net/ethernet/mscc/ocelot.c
+@@ -1361,6 +1361,7 @@ int ocelot_port_lag_change(struct ocelot *ocelot, int port, bool lag_tx_active)
+ 	/* Rebalance the LAGs */
+ 	return ocelot_set_aggr_pgids(ocelot);
+ }
++EXPORT_SYMBOL(ocelot_port_lag_change);
+ 
  /* Configure the maximum SDU (L2 payload) on RX to the value specified in @sdu.
   * The length of VLAN tags is accounted for automatically via DEV_MAC_TAGS_CFG.
-  * In the special case that it's the NPI port that we're configuring, the
 diff --git a/drivers/net/ethernet/mscc/ocelot.h b/drivers/net/ethernet/mscc/ocelot.h
-index c018a54f4e49..fc055525fd88 100644
+index fc055525fd88..e3352ae7b11f 100644
 --- a/drivers/net/ethernet/mscc/ocelot.h
 +++ b/drivers/net/ethernet/mscc/ocelot.h
-@@ -114,6 +114,7 @@ int ocelot_port_lag_join(struct ocelot *ocelot, int port,
- 			 struct netdev_lag_upper_info *info);
- int ocelot_port_lag_leave(struct ocelot *ocelot, int port,
- 			  struct net_device *bond);
-+int ocelot_port_lag_change(struct ocelot *ocelot, int port, bool lag_tx_active);
+@@ -109,12 +109,6 @@ int ocelot_mact_learn(struct ocelot *ocelot, int port,
+ 		      unsigned int vid, enum macaccess_entry_type type);
+ int ocelot_mact_forget(struct ocelot *ocelot,
+ 		       const unsigned char mac[ETH_ALEN], unsigned int vid);
+-int ocelot_port_lag_join(struct ocelot *ocelot, int port,
+-			 struct net_device *bond,
+-			 struct netdev_lag_upper_info *info);
+-int ocelot_port_lag_leave(struct ocelot *ocelot, int port,
+-			  struct net_device *bond);
+-int ocelot_port_lag_change(struct ocelot *ocelot, int port, bool lag_tx_active);
  struct net_device *ocelot_port_to_netdev(struct ocelot *ocelot, int port);
  int ocelot_netdev_to_port(struct net_device *dev);
  
-diff --git a/drivers/net/ethernet/mscc/ocelot_net.c b/drivers/net/ethernet/mscc/ocelot_net.c
-index 871bfbaa8ff1..3cba1c2de6fe 100644
---- a/drivers/net/ethernet/mscc/ocelot_net.c
-+++ b/drivers/net/ethernet/mscc/ocelot_net.c
-@@ -1163,6 +1163,27 @@ ocelot_netdevice_lag_changeupper(struct net_device *dev,
- 	return NOTIFY_DONE;
- }
- 
-+static int
-+ocelot_netdevice_changelowerstate(struct net_device *dev,
-+				  struct netdev_lag_lower_state_info *info)
-+{
-+	struct ocelot_port_private *priv = netdev_priv(dev);
-+	bool is_active = info->link_up && info->tx_enabled;
-+	struct ocelot_port *ocelot_port = &priv->port;
-+	struct ocelot *ocelot = ocelot_port->ocelot;
-+	int port = priv->chip_port;
-+	int err;
-+
-+	if (!ocelot_port->bond)
-+		return NOTIFY_DONE;
-+
-+	if (ocelot_port->lag_tx_active == is_active)
-+		return 0;
-+
-+	err = ocelot_port_lag_change(ocelot, port, is_active);
-+	return notifier_from_errno(err);
-+}
-+
- static int ocelot_netdevice_event(struct notifier_block *unused,
- 				  unsigned long event, void *ptr)
- {
-@@ -1180,6 +1201,15 @@ static int ocelot_netdevice_event(struct notifier_block *unused,
- 
- 		break;
- 	}
-+	case NETDEV_CHANGELOWERSTATE: {
-+		struct netdev_notifier_changelowerstate_info *info = ptr;
-+
-+		if (!ocelot_netdevice_dev_check(dev))
-+			break;
-+
-+		return ocelot_netdevice_changelowerstate(dev,
-+							 info->lower_state_info);
-+	}
- 	default:
- 		break;
- 	}
 diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
-index 1bb16527f490..7bd7c58a7490 100644
+index 7bd7c58a7490..d9b5d31bb181 100644
 --- a/include/soc/mscc/ocelot.h
 +++ b/include/soc/mscc/ocelot.h
-@@ -612,6 +612,7 @@ struct ocelot_port {
- 	u8				*xmit_template;
+@@ -796,6 +796,12 @@ int ocelot_port_mdb_add(struct ocelot *ocelot, int port,
+ 			const struct switchdev_obj_port_mdb *mdb);
+ int ocelot_port_mdb_del(struct ocelot *ocelot, int port,
+ 			const struct switchdev_obj_port_mdb *mdb);
++int ocelot_port_lag_join(struct ocelot *ocelot, int port,
++			 struct net_device *bond,
++			 struct netdev_lag_upper_info *info);
++int ocelot_port_lag_leave(struct ocelot *ocelot, int port,
++			  struct net_device *bond);
++int ocelot_port_lag_change(struct ocelot *ocelot, int port, bool lag_tx_active);
  
- 	struct net_device		*bond;
-+	bool				lag_tx_active;
- };
- 
- struct ocelot {
+ int ocelot_devlink_sb_register(struct ocelot *ocelot);
+ void ocelot_devlink_sb_unregister(struct ocelot *ocelot);
 -- 
 2.25.1
 
