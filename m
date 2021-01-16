@@ -2,164 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 124B12F8BA9
-	for <lists+netdev@lfdr.de>; Sat, 16 Jan 2021 06:35:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 09CD82F8BC6
+	for <lists+netdev@lfdr.de>; Sat, 16 Jan 2021 07:00:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726581AbhAPF2Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Jan 2021 00:28:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59768 "EHLO
+        id S1726224AbhAPGAJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Jan 2021 01:00:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726458AbhAPF2K (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 16 Jan 2021 00:28:10 -0500
-Received: from mail-ot1-x336.google.com (mail-ot1-x336.google.com [IPv6:2607:f8b0:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73D1BC06179A
-        for <netdev@vger.kernel.org>; Fri, 15 Jan 2021 21:27:16 -0800 (PST)
-Received: by mail-ot1-x336.google.com with SMTP id r9so10751334otk.11
-        for <netdev@vger.kernel.org>; Fri, 15 Jan 2021 21:27:16 -0800 (PST)
+        with ESMTP id S1725797AbhAPGAI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 Jan 2021 01:00:08 -0500
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 62C3DC061757;
+        Fri, 15 Jan 2021 21:59:26 -0800 (PST)
+Received: by mail-pj1-x1036.google.com with SMTP id x20so1072625pjh.3;
+        Fri, 15 Jan 2021 21:59:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=MQG99hmEs+jm/LvVCjiZprhkiqjwfzt+Jg3xINgEKjM=;
-        b=LiZxsf4OcoSXehQoNzHnUlYjJxMgCQ+3xFvngfwsqKwT7lQizZj1IzW2M1345vvWCb
-         sI/JB1jG55Ntixm1svalk1mLKw4m8FFZGRnDpnXOzZD2WHk2i+Iw3L9eUILQzH93vfG3
-         OhP5nldvH311qffuxlpI2my3+06D+tvfKT020=
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=1VdsmithXQSYVVgov2ysn73EQq0eJMwp9npyuaEfZvU=;
+        b=LE2kg/3OYtWCgKN+i4fwOm7reksQzRXd48C1fGNrM2n+LvfhHTfcmANFb7+DgXTAd1
+         rDdwYke6HBakJS6nqat2NVFsICoydctsp5FXoL6Q6SvHG1X+zYHZDi1I4rNho7toM9qx
+         pk4ajIkb42u3hZ0CoHeD434tqH7Y4mfsRWsoIADBTfqZx5NmefTeQJGODB1JpVzba0F6
+         UMQClFNj79/IeNq77iEDHcY4kEK0XlyQpoKdWRtZzE+Iw+D0qv1T7bvYE5ZSzoOgsutg
+         XnFtLskbKo48mX7a+5CtwLh3mKm0miTqMZfogMudiAWb2GzPOvMwd8b7SejjZc1aRyXL
+         86/A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=MQG99hmEs+jm/LvVCjiZprhkiqjwfzt+Jg3xINgEKjM=;
-        b=F5bS176gCAD9BYIpR6wTwHrLcacPEnkWo/IwwslstA0mupr34EJJfTJd9RQN/9vteS
-         BXQ8TTZSeq/kJiy9awf6eKVkrmO1uNTYft+O3GVcwtw1nQcYFBLkaklAfJaVetj1oqXr
-         ePqEcYYYW9UjP8uL7mN1BklVMAqPopdmQKToHinBG5SRHEX+pzEREPSuTuZ028ytFjC8
-         Lx90PkPNQaEbEuRCZhPaFU9rAOVQX6mOVrP96Qx6UhJKS7yJVn7Mdj6NfzlVqvCFZA6c
-         PBM8DPb49MBUC08sqe+ktAAXkZt05ZGTS+uFQqOsXcHZH15hRtTAoCfZtkINCIDG7BAZ
-         XG4g==
-X-Gm-Message-State: AOAM5339K+LiQXt9kejLcD/4+TsQ/fH9/CEiRKiBgZXidXA1AZEbMeGQ
-        OLTcYH+2n9ylXXtmBSArYGzKJw==
-X-Google-Smtp-Source: ABdhPJxukKQ1dpghDQU4L5E3YI7oypsEzcF9dQOmplV8O2VC++cgA+TXNjwmeGXB4BlVVbqLoxMT8w==
-X-Received: by 2002:a05:6830:1605:: with SMTP id g5mr10750341otr.369.1610774834421;
-        Fri, 15 Jan 2021 21:27:14 -0800 (PST)
-Received: from grundler-glapstation.lan ([70.134.62.80])
-        by smtp.gmail.com with ESMTPSA id 94sm2359230otw.41.2021.01.15.21.27.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 Jan 2021 21:27:13 -0800 (PST)
-From:   Grant Grundler <grundler@chromium.org>
-To:     Oliver Neukum <oliver@neukum.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=1VdsmithXQSYVVgov2ysn73EQq0eJMwp9npyuaEfZvU=;
+        b=f/eqyaBV3saTCFoEVDGgut/4krNMQ0OGLkUxKKEKFu/R6b56sG50ioZ8Cg/XeNmv57
+         6yOd46xaHegF/RCbkPRSi+S/XjgmrmqPKJdkPwjt3COg/+eirtwKnVR5LdaujZJbXno6
+         O/doirOzhKT3Z9xegNL9BLaqgSWlgqiZXucoQhfDq34bPbtWmbm28v6v8ysZ0tQhhjEw
+         Rk/TGHunA+qAV9Akfp6ZAe7PQMhQfheAtejZfZUXssT8TLyLLOBlZrB4YdSFWFvPwuh0
+         ao/hj/Aqe6yWgSDecmnfgNfHoEzxRPnZIlvCcDf9oFVtTmKiqV3McL+9cwXEPbX0jkcQ
+         +rXg==
+X-Gm-Message-State: AOAM532rxPiFx7KW+7gX0fIm5XHcdBXQDRmaNTbDzqlnIZDcIZpkhpRc
+        i3p/u666VV28SpkxOVd7G+2EMEEBil7I0Q==
+X-Google-Smtp-Source: ABdhPJzju3eEm6MvLo7UNONF5YYLLboTZ2TKvDhyaG6VbkvZr26+YKZZG+MxodUn52pX4w/EwOCaxA==
+X-Received: by 2002:a17:902:7b98:b029:db:fab3:e74b with SMTP id w24-20020a1709027b98b02900dbfab3e74bmr16027065pll.27.1610776765566;
+        Fri, 15 Jan 2021 21:59:25 -0800 (PST)
+Received: from localhost ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id 68sm9582889pfe.33.2021.01.15.21.59.24
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 15 Jan 2021 21:59:24 -0800 (PST)
+From:   Xin Long <lucien.xin@gmail.com>
+To:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org
+Cc:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>, davem@davemloft.net,
         Jakub Kicinski <kuba@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Grant Grundler <grundler@chromium.org>
-Subject: [PATCH 3/3] net: usb: cdc_ncm: don't spew notifications
-Date:   Fri, 15 Jan 2021 21:26:23 -0800
-Message-Id: <20210116052623.3196274-3-grundler@chromium.org>
-X-Mailer: git-send-email 2.30.0.284.gd98b1dd5eaa7-goog
-In-Reply-To: <20210116052623.3196274-1-grundler@chromium.org>
-References: <20210116052623.3196274-1-grundler@chromium.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Alexander Duyck <alexander.duyck@gmail.com>
+Subject: [PATCH net-next] udp: not remove the CRC flag from dev features when need_csum is false
+Date:   Sat, 16 Jan 2021 13:59:17 +0800
+Message-Id: <1e81b700642498546eaa3f298e023fd7ad394f85.1610776757.git.lucien.xin@gmail.com>
+X-Mailer: git-send-email 2.1.0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RTL8156 sends notifications about every 32ms.
-Only display/log notifications when something changes.
+In __skb_udp_tunnel_segment(), when it's a SCTP over VxLAN/GENEVE
+packet and need_csum is false, which means the outer udp checksum
+doesn't need to be computed, csum_start and csum_offset could be
+used by the inner SCTP CRC CSUM for SCTP HW CRC offload.
 
-This issue has been reported by others:
-	https://bugs.launchpad.net/ubuntu/+source/linux/+bug/1832472
-	https://lkml.org/lkml/2020/8/27/1083
+So this patch is to not remove the CRC flag from dev features when
+need_csum is false.
 
-...
-[785962.779840] usb 1-1: new high-speed USB device number 5 using xhci_hcd
-[785962.929944] usb 1-1: New USB device found, idVendor=0bda, idProduct=8156, bcdDevice=30.00
-[785962.929949] usb 1-1: New USB device strings: Mfr=1, Product=2, SerialNumber=6
-[785962.929952] usb 1-1: Product: USB 10/100/1G/2.5G LAN
-[785962.929954] usb 1-1: Manufacturer: Realtek
-[785962.929956] usb 1-1: SerialNumber: 000000001
-[785962.991755] usbcore: registered new interface driver cdc_ether
-[785963.017068] cdc_ncm 1-1:2.0: MAC-Address: 00:24:27:88:08:15
-[785963.017072] cdc_ncm 1-1:2.0: setting rx_max = 16384
-[785963.017169] cdc_ncm 1-1:2.0: setting tx_max = 16384
-[785963.017682] cdc_ncm 1-1:2.0 usb0: register 'cdc_ncm' at usb-0000:00:14.0-1, CDC NCM, 00:24:27:88:08:15
-[785963.019211] usbcore: registered new interface driver cdc_ncm
-[785963.023856] usbcore: registered new interface driver cdc_wdm
-[785963.025461] usbcore: registered new interface driver cdc_mbim
-[785963.038824] cdc_ncm 1-1:2.0 enx002427880815: renamed from usb0
-[785963.089586] cdc_ncm 1-1:2.0 enx002427880815: network connection: disconnected
-[785963.121673] cdc_ncm 1-1:2.0 enx002427880815: network connection: disconnected
-[785963.153682] cdc_ncm 1-1:2.0 enx002427880815: network connection: disconnected
-...
-
-This is about 2KB per second and will overwrite all contents of a 1MB
-dmesg buffer in under 10 minutes rendering them useless for debugging
-many kernel problems.
-
-This is also an extra 180 MB/day in /var/logs (or 1GB per week) rendering
-the majority of those logs useless too.
-
-When the link is up (expected state), spew amount is >2x higher:
-...
-[786139.600992] cdc_ncm 2-1:2.0 enx002427880815: network connection: connected
-[786139.632997] cdc_ncm 2-1:2.0 enx002427880815: 2500 mbit/s downlink 2500 mbit/s uplink
-[786139.665097] cdc_ncm 2-1:2.0 enx002427880815: network connection: connected
-[786139.697100] cdc_ncm 2-1:2.0 enx002427880815: 2500 mbit/s downlink 2500 mbit/s uplink
-[786139.729094] cdc_ncm 2-1:2.0 enx002427880815: network connection: connected
-[786139.761108] cdc_ncm 2-1:2.0 enx002427880815: 2500 mbit/s downlink 2500 mbit/s uplink
-...
-
-Chrome OS cannot support RTL8156 until this is fixed.
-
-Signed-off-by: Grant Grundler <grundler@chromium.org>
+Signed-off-by: Xin Long <lucien.xin@gmail.com>
 ---
- drivers/net/usb/cdc_ncm.c  | 12 +++++++++++-
- include/linux/usb/usbnet.h |  2 ++
- 2 files changed, 13 insertions(+), 1 deletion(-)
+ net/ipv4/udp_offload.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/usb/cdc_ncm.c b/drivers/net/usb/cdc_ncm.c
-index 25498c311551..5de096545b86 100644
---- a/drivers/net/usb/cdc_ncm.c
-+++ b/drivers/net/usb/cdc_ncm.c
-@@ -1827,6 +1827,15 @@ cdc_ncm_speed_change(struct usbnet *dev,
- 	uint32_t rx_speed = le32_to_cpu(data->DLBitRRate);
- 	uint32_t tx_speed = le32_to_cpu(data->ULBitRate);
+diff --git a/net/ipv4/udp_offload.c b/net/ipv4/udp_offload.c
+index ff39e94..1168d18 100644
+--- a/net/ipv4/udp_offload.c
++++ b/net/ipv4/udp_offload.c
+@@ -68,8 +68,8 @@ static struct sk_buff *__skb_udp_tunnel_segment(struct sk_buff *skb,
+ 				      (NETIF_F_HW_CSUM | NETIF_F_IP_CSUM))));
  
-+	/* if the speed hasn't changed, don't report it.
-+	 * RTL8156 shipped before 2021 sends notification about every 32ms.
-+	 */
-+	if (dev->rx_speed == rx_speed && dev->tx_speed == tx_speed)
-+		return;
-+
-+	dev->rx_speed = rx_speed;
-+	dev->tx_speed = tx_speed;
-+
- 	/*
- 	 * Currently the USB-NET API does not support reporting the actual
- 	 * device speed. Do print it instead.
-@@ -1867,7 +1876,8 @@ static void cdc_ncm_status(struct usbnet *dev, struct urb *urb)
- 		 * USB_CDC_NOTIFY_NETWORK_CONNECTION notification shall be
- 		 * sent by device after USB_CDC_NOTIFY_SPEED_CHANGE.
- 		 */
--		usbnet_link_change(dev, !!event->wValue, 0);
-+		if (netif_carrier_ok(dev->net) != !!event->wValue)
-+			usbnet_link_change(dev, !!event->wValue, 0);
- 		break;
+ 	features &= skb->dev->hw_enc_features;
+-	/* CRC checksum can't be handled by HW when it's a UDP tunneling packet. */
+-	features &= ~NETIF_F_SCTP_CRC;
++	if (need_csum)
++		features &= ~NETIF_F_SCTP_CRC;
  
- 	case USB_CDC_NOTIFY_SPEED_CHANGE:
-diff --git a/include/linux/usb/usbnet.h b/include/linux/usb/usbnet.h
-index 88a7673894d5..cfbfd6fe01df 100644
---- a/include/linux/usb/usbnet.h
-+++ b/include/linux/usb/usbnet.h
-@@ -81,6 +81,8 @@ struct usbnet {
- #		define EVENT_LINK_CHANGE	11
- #		define EVENT_SET_RX_MODE	12
- #		define EVENT_NO_IP_ALIGN	13
-+	u32			rx_speed;	/* in bps - NOT Mbps */
-+	u32			tx_speed;	/* in bps - NOT Mbps */
- };
- 
- static inline struct usb_driver *driver_of(struct usb_interface *intf)
+ 	/* The only checksum offload we care about from here on out is the
+ 	 * outer one so strip the existing checksum feature flags and
 -- 
-2.29.2
+2.1.0
 
