@@ -2,127 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A54AE2F8C42
-	for <lists+netdev@lfdr.de>; Sat, 16 Jan 2021 09:38:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CB802F8C96
+	for <lists+netdev@lfdr.de>; Sat, 16 Jan 2021 10:17:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726395AbhAPIho (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Jan 2021 03:37:44 -0500
-Received: from mail.kernel.org ([198.145.29.99]:55528 "EHLO mail.kernel.org"
+        id S1726355AbhAPJNi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Jan 2021 04:13:38 -0500
+Received: from thoth.sbs.de ([192.35.17.2]:56821 "EHLO thoth.sbs.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725898AbhAPIho (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 16 Jan 2021 03:37:44 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 50D3323339;
-        Sat, 16 Jan 2021 08:37:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610786223;
-        bh=fUvGUa8buxclXkXy2ODilNx+gwyZaEszpeJx/QXoyOg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=GoFeK0uWk4BJEnorD8fa6slsAvhbOP/pVxsxaczQqnOnh9xtzhsYQV69eqwT/Pzb/
-         NBxfqhXaOOEn7C2UR+qIqcal2RsW3zctlZIdEnmxIXTe1DOAcv93cQqLy/73I80TEM
-         YYQsXJQ7C9jxI4lclMikQ1r/7d0E/K2P2SRuxPWfwmzOTTeP6TrxQzxoGoWn9ok/bq
-         PmQaQUYrHyYRFXo1j5gNa+WamZZMiGXGFfikYKvDGAwSYDyHCmi9nzyBBOU7xkJP7I
-         H/TZNNpwwlSu/Z9SmtL3m9odiVJ7vtHDUT8cESWGqpyLyvMxtIqf4x1zQ7xyDGRmuk
-         mxCcghA8K7yjQ==
-Date:   Sat, 16 Jan 2021 10:36:59 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Alex Williamson <alex.williamson@redhat.com>
-Cc:     Bjorn Helgaas <bhelgaas@google.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>, linux-pci@vger.kernel.org,
-        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-        Don Dutile <ddutile@redhat.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>
-Subject: Re: [PATCH mlx5-next v2 2/5] PCI: Add SR-IOV sysfs entry to read
- total number of dynamic MSI-X vectors
-Message-ID: <20210116083659.GM944463@unreal>
-References: <20210114103140.866141-1-leon@kernel.org>
- <20210114103140.866141-3-leon@kernel.org>
- <20210114170536.004601d1@omen.home.shazbot.org>
+        id S1725979AbhAPJNh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 16 Jan 2021 04:13:37 -0500
+Received: from mail2.sbs.de (mail2.sbs.de [192.129.41.66])
+        by thoth.sbs.de (8.15.2/8.15.2) with ESMTPS id 10G9CPm5022645
+        (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Sat, 16 Jan 2021 10:12:28 +0100
+Received: from [167.87.253.56] ([167.87.253.56])
+        by mail2.sbs.de (8.15.2/8.15.2) with ESMTP id 10G9CLSN015701;
+        Sat, 16 Jan 2021 10:12:22 +0100
+Subject: Re: [PATCH net-next 1/1] stmmac: intel: change all EHL/TGL to auto
+ detect phy addr
+To:     Wong Vee Khee <vee.khee.wong@intel.com>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Ong Boon Leong <boon.leong.ong@intel.com>,
+        Voon Wei Feng <weifeng.voon@intel.com>
+References: <20201106094341.4241-1-vee.khee.wong@intel.com>
+From:   Jan Kiszka <jan.kiszka@siemens.com>
+Message-ID: <bf5170d1-62a9-b2dc-cb5a-d568830c947a@siemens.com>
+Date:   Sat, 16 Jan 2021 10:12:21 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210114170536.004601d1@omen.home.shazbot.org>
+In-Reply-To: <20201106094341.4241-1-vee.khee.wong@intel.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 14, 2021 at 05:05:36PM -0700, Alex Williamson wrote:
-> On Thu, 14 Jan 2021 12:31:37 +0200
-> Leon Romanovsky <leon@kernel.org> wrote:
->
-> > From: Leon Romanovsky <leonro@nvidia.com>
-> >
-> > Some SR-IOV capable devices provide an ability to configure specific
-> > number of MSI-X vectors on their VF prior driver is probed on that VF.
-> >
-> > In order to make management easy, provide new read-only sysfs file that
-> > returns a total number of possible to configure MSI-X vectors.
-> >
-> > cat /sys/bus/pci/devices/.../sriov_vf_total_msix
-> >   = 0 - feature is not supported
-> >   > 0 - total number of MSI-X vectors to consume by the VFs
-> >
-> > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-> > ---
-> >  Documentation/ABI/testing/sysfs-bus-pci | 14 +++++++++++
-> >  drivers/pci/iov.c                       | 31 +++++++++++++++++++++++++
-> >  drivers/pci/pci.h                       |  3 +++
-> >  include/linux/pci.h                     |  2 ++
-> >  4 files changed, 50 insertions(+)
-> >
-> > diff --git a/Documentation/ABI/testing/sysfs-bus-pci b/Documentation/ABI/testing/sysfs-bus-pci
-> > index 34a8c6bcde70..530c249cc3da 100644
-> > --- a/Documentation/ABI/testing/sysfs-bus-pci
-> > +++ b/Documentation/ABI/testing/sysfs-bus-pci
-> > @@ -395,3 +395,17 @@ Description:
-> >  		The file is writable if the PF is bound to a driver that
-> >  		set sriov_vf_total_msix > 0 and there is no driver bound
-> >  		to the VF.
-> > +
-> > +What:		/sys/bus/pci/devices/.../sriov_vf_total_msix
-> > +Date:		January 2021
-> > +Contact:	Leon Romanovsky <leonro@nvidia.com>
-> > +Description:
-> > +		This file is associated with the SR-IOV PFs.
-> > +		It returns a total number of possible to configure MSI-X
-> > +		vectors on the enabled VFs.
-> > +
-> > +		The values returned are:
-> > +		 * > 0 - this will be total number possible to consume by VFs,
-> > +		 * = 0 - feature is not supported
->
-> As with previous, why expose it if not supported?
+On 06.11.20 10:43, Wong Vee Khee wrote:
+> From: Voon Weifeng <weifeng.voon@intel.com>
+> 
+> Set all EHL/TGL phy_addr to -1 so that the driver will automatically
+> detect it at run-time by probing all the possible 32 addresses.
+> 
+> Signed-off-by: Voon Weifeng <weifeng.voon@intel.com>
+> Signed-off-by: Wong Vee Khee <vee.khee.wong@intel.com>
+> ---
+>  drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c | 6 +-----
+>  1 file changed, 1 insertion(+), 5 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
+> index b6e5e3e36b63..7c1353f37247 100644
+> --- a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
+> +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
+> @@ -236,6 +236,7 @@ static int intel_mgbe_common_data(struct pci_dev *pdev,
+>  	int ret;
+>  	int i;
+>  
+> +	plat->phy_addr = -1;
+>  	plat->clk_csr = 5;
+>  	plat->has_gmac = 0;
+>  	plat->has_gmac4 = 1;
+> @@ -345,7 +346,6 @@ static int ehl_sgmii_data(struct pci_dev *pdev,
+>  			  struct plat_stmmacenet_data *plat)
+>  {
+>  	plat->bus_id = 1;
+> -	plat->phy_addr = 0;
+>  	plat->phy_interface = PHY_INTERFACE_MODE_SGMII;
+>  
+>  	plat->serdes_powerup = intel_serdes_powerup;
+> @@ -362,7 +362,6 @@ static int ehl_rgmii_data(struct pci_dev *pdev,
+>  			  struct plat_stmmacenet_data *plat)
+>  {
+>  	plat->bus_id = 1;
+> -	plat->phy_addr = 0;
+>  	plat->phy_interface = PHY_INTERFACE_MODE_RGMII;
+>  
+>  	return ehl_common_data(pdev, plat);
+> @@ -376,7 +375,6 @@ static int ehl_pse0_common_data(struct pci_dev *pdev,
+>  				struct plat_stmmacenet_data *plat)
+>  {
+>  	plat->bus_id = 2;
+> -	plat->phy_addr = 1;
+>  	return ehl_common_data(pdev, plat);
+>  }
+>  
+> @@ -408,7 +406,6 @@ static int ehl_pse1_common_data(struct pci_dev *pdev,
+>  				struct plat_stmmacenet_data *plat)
+>  {
+>  	plat->bus_id = 3;
+> -	plat->phy_addr = 1;
+>  	return ehl_common_data(pdev, plat);
+>  }
+>  
+> @@ -450,7 +447,6 @@ static int tgl_sgmii_data(struct pci_dev *pdev,
+>  			  struct plat_stmmacenet_data *plat)
+>  {
+>  	plat->bus_id = 1;
+> -	plat->phy_addr = 0;
+>  	plat->phy_interface = PHY_INTERFACE_MODE_SGMII;
+>  	plat->serdes_powerup = intel_serdes_powerup;
+>  	plat->serdes_powerdown = intel_serdes_powerdown;
+> 
 
-It is much simpler to the users implement logic that operates
-accordingly to this value instead of relying on exist/not-exist and
-anyway handle 0 to be on the safe side.
+This fixes PHY detection on one of our EHL-based boards. Can this also
+be applied to stable 5.10?
 
->
-> This seems pretty challenging for userspace to use; aiui they would
-> need to iterate all the VFs to learn how many vectors are already
-> allocated, subtract that number from this value, all while hoping they
-> aren't racing someone else doing the same.  Would it be more useful if
-> this reported the number of surplus vectors available?
+Thanks,
+Jan
 
-Only privileged users are allowed to do it, so it is unlikely that we
-will have more than one entity which manages PFs/VFs assignments.
-
-Users already count number of CPUs they give to the VMs, so counting
-resources is not new to them.
-
-I didn't count in the kernel because it will require from users to
-understand and treat "0" differently to understand that the pool is
-depleted. So they will need to count max size of the pool anyway.
-
-Unless we want to have two knobs, one of max and another for current,
-they will count. The thing is that users will count anyway and won't
-use the current value. It gives nothing.
-
->
-> How would a per VF limit be exposed?  Do we expect users to know the
-> absolutely MSI-X vector limit or the device specific limit?  Thanks,
-
-At this stage yes, we can discuss it later when the need will arise.
-
-Thanks
+-- 
+Siemens AG, T RDA IOT
+Corporate Competence Center Embedded Linux
