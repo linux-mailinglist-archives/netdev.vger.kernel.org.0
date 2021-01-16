@@ -2,90 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 087492F8DFF
-	for <lists+netdev@lfdr.de>; Sat, 16 Jan 2021 18:16:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 87EF62F8E09
+	for <lists+netdev@lfdr.de>; Sat, 16 Jan 2021 18:16:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728330AbhAPRKd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Jan 2021 12:10:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39128 "EHLO
+        id S1728407AbhAPRNi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Jan 2021 12:13:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728256AbhAPRK0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 16 Jan 2021 12:10:26 -0500
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0024AC061388;
-        Sat, 16 Jan 2021 07:05:28 -0800 (PST)
-Received: by mail-wm1-x329.google.com with SMTP id g10so10098111wmh.2;
-        Sat, 16 Jan 2021 07:05:28 -0800 (PST)
+        with ESMTP id S1728342AbhAPRKj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 Jan 2021 12:10:39 -0500
+Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A278FC061359;
+        Sat, 16 Jan 2021 07:39:26 -0800 (PST)
+Received: by mail-lj1-x22c.google.com with SMTP id u21so13657879lja.0;
+        Sat, 16 Jan 2021 07:39:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=DZLVsLwB5k35ns7zYrJfmPC7wohrTEilCe/nrtCaIos=;
-        b=mdF7Lcv1Qsj0qki+yGN+ZMvZUIzeogvlFBN3jT3HMVH2P4zGfcp4NeVeiHp+HEZZ0D
-         IKjY9DelmAmuH6F3e7pBF+k8cNnWD8soPicZcMjHuN7/xPBsljHal9bsxYdIJZIIY/fG
-         HcpvylPeg2/DuY310EqRrfTK8EiPua3jLUromeIIxVfhmNFMxmneHM424bGLHF2El4qz
-         fU8YPbJvJrBI+qkEML2I997Ag1JKCG58QFYWCNGCtoxp93Q5ZL+NTs/LO81Lbpxcb20e
-         0isftoNA88QE+4XLjD3no8lKloHL8JUdhMuzU94atSxl/4nZNancrBE1i5QHDbnvpm69
-         ZOzw==
+        h=from:to:subject:in-reply-to:references:date:message-id:mime-version;
+        bh=z4leNzWR0o9Do22EpCpfCpRtm41HhzuAfaYRCquNCR0=;
+        b=MCsW6wEKTxnKAuSRQO8c9OUoSTbZEBU5HojfvG84uvdpK1ANEYTa542H6s1mjmnJHn
+         q9ervHHEO0uI6GLw8vV2XJq40dLAaPQO37MRMXJ5fYhoVQlZ9ZRM2O2lLj+wYeUaCNzz
+         +QgiJ7DiPKuqFUOkkPNyPdKncBRC4gNPpxDqsEYT+hTS+h97HF/HNWZS8eq4nsaXk3DQ
+         VzJlHjCOA2g9zalXA8yuqZRfqPndj7f9lMg1obaho6juf4TjgkbSt57qTSycTQFJjQf8
+         yfAD3zCXL3vKLBPpxttr1ENT46a/sX4ObuMlXolAvBzTIEOZRqmt+Y4llaicDp+2k2fi
+         DTcQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=DZLVsLwB5k35ns7zYrJfmPC7wohrTEilCe/nrtCaIos=;
-        b=QeKBpU2xPzxVMRTz7zahw0GqpzfgC80UwxLH7Pbtpdo2mWANtJ3l9gf/z+XkGHw3/Y
-         ljw43KbI7kmNte/ru2BtjKD1EUU5xUn78zpcNS+KpeX3CyyyLidS57TSeuejP641ko2V
-         zMRq1xymkKm0kZATQB7t9gJXgTlvjljbKPGGilOqzpgTvAl5854CrnZL/MQAJ8uLH7v7
-         qI95I6EQjTDRW+JNcCayRVqs41NQAwTudiSl0h2TP0bOd133ZU6ZD8KalhaXoyRhzUp8
-         OnIYWF8HG+8emerHOF3xI445aYwCNokoalcx2JPdA529fKXjDCUhaD1C/bjNXcylDdB3
-         ot4Q==
-X-Gm-Message-State: AOAM530R4l3Ijmt+Cx9qy4mdY4H2yxd21s5x/wAQKyZZrSf/IMekc1P0
-        3LANsnf2th/4ws4KZsd9gy0=
-X-Google-Smtp-Source: ABdhPJxQAvj6kOWZC0WaVg5MqIG+8t3an335uYZ8IsA/Sff+21gUj42t5TDr7z/f6Ql38fca5Uixgw==
-X-Received: by 2002:a1c:24c4:: with SMTP id k187mr13816365wmk.14.1610809527727;
-        Sat, 16 Jan 2021 07:05:27 -0800 (PST)
-Received: from debian.vlc ([170.253.51.130])
-        by smtp.gmail.com with ESMTPSA id f68sm5494887wmf.6.2021.01.16.07.05.26
+        h=x-gm-message-state:from:to:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=z4leNzWR0o9Do22EpCpfCpRtm41HhzuAfaYRCquNCR0=;
+        b=cD9a49P1QKXxK1mKmiuC4rUziRv3VEUZnpCSZNukEoymUgtRu/MoZqfvc87Wkz27PD
+         mOCa0oTvbBccN5fniLuuDDr1fVwwHpY1chgb6GB8i00MjMmy9M60/U96rpM0N0SsBIXd
+         l8M9iCsBx2l2LEdvKueR+cFn2Moa7HTgT2IvmW+IZCUeIw0vasRcdTnejpl6UMsWIPdA
+         QJPAJ7Eym+DQO1Ou3P0iE7AqKfGGjkO7yVoUF2K+v4EPIm1BRgz9bwuGYdHPgolsXgxA
+         IdGRqG3NC5oz2reJe+QtfX6wfmgCVBY+WWI5b4o26bQriFesfzK5gbqDx2ujYPhvoAI4
+         uwlg==
+X-Gm-Message-State: AOAM530+ENwmH81iGfmvA4SLjzQ7DI83Z/bX0fyU1Y4lw68d+09sKwNJ
+        Bxy1vbE1CUTQG4HhUjkTOmQ=
+X-Google-Smtp-Source: ABdhPJxx1xzvcIFNiwWt0AzCy5JT5eeXxNuv9NvuyRx9/+Douelol9Omv6JDLentiHIJzcM7QBwS0w==
+X-Received: by 2002:a05:651c:1304:: with SMTP id u4mr7847774lja.146.1610811565188;
+        Sat, 16 Jan 2021 07:39:25 -0800 (PST)
+Received: from luthien (h-82-196-111-206.NA.cust.bahnhof.se. [82.196.111.206])
+        by smtp.gmail.com with ESMTPSA id g27sm1142499ljl.82.2021.01.16.07.39.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 16 Jan 2021 07:05:27 -0800 (PST)
-From:   Alejandro Colomar <alx.manpages@gmail.com>
-To:     mtk.manpages@gmail.com
-Cc:     =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>,
-        linux-man@vger.kernel.org, netdev@vger.kernel.org,
-        Alejandro Colomar <alx.manpages@gmail.com>
-Subject: [PATCH] rtnetlink.7: Remove IPv4 from description
-Date:   Sat, 16 Jan 2021 16:04:35 +0100
-Message-Id: <20210116150434.7938-1-alx.manpages@gmail.com>
-X-Mailer: git-send-email 2.30.0
+        Sat, 16 Jan 2021 07:39:24 -0800 (PST)
+From:   Joachim Wiberg <troglobit@gmail.com>
+To:     Nikolay Aleksandrov <nikolay@nvidia.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        davem@davemloft.net, kuba@kernel.org, roopa@nvidia.com,
+        allan.nielsen@microchip.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org
+Subject: Re: [RFC PATCH v2] net: bridge: igmp: Extend IGMP query to be per vlan
+In-Reply-To: <32bf6a72-6aff-5e36-fb02-333f3c450f49@nvidia.com>
+References: <20210112135903.3730765-1-horatiu.vultur@microchip.com> <32bf6a72-6aff-5e36-fb02-333f3c450f49@nvidia.com>
+Date:   Sat, 16 Jan 2021 16:39:24 +0100
+Message-ID: <8735z0zyab.fsf@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Pali Rohár <pali@kernel.org>
+On Wed, Jan 13, 2021 at 14:15, Nikolay Aleksandrov <nikolay@nvidia.com> wrote:
+> On 12/01/2021 15:59, Horatiu Vultur wrote:
+>> Based on the comments of the previous version, we started to work on a
+>> new version, so it would be possible to enable/disable queries per vlan.
+>> [snip]
+>> We were wondering if this what you had in mind when you proposed to have
+>> this per vlan? Or we are completely off? Or we should fix some of the
+>> issues that I mentioned, before you can see more clearly the direction?
+> No, unfortunately not even close. We already have per-port per-vlan and global per-vlan
+> contexts which are also linked together for each vlan, those must be used for any vlan
+> configuration and state. The problem is that you'd have to mix igmp and vlan code and
+> those two live under two different kconfig options, and worse rely on different locks, so
+> extra care must be taken.
+> [snip]
+> If you don't need this asap, I'll probably get to it in two months
+> after EHT and the new bridge flush api, even we are still carrying an out-of-tree patch
+> for this which someone (not from cumulus) tried to upstream a few years back, but it also has
+> wrong design in general. :)
 
-rtnetlink is not only used for IPv4
+Hi,
 
-Signed-off-by: Pali Rohár <pali@kernel.org>
-Signed-off-by: Alejandro Colomar <alx.manpages@gmail.com>
----
- man7/rtnetlink.7 | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+very interesting thread this!  I believe I may be the one who posted the
+patch[1] a few years ago, and I fully agree with Nik here.  We developed
+the basic concepts further at Westermo, but it's been really difficult
+to get it stable.
 
-diff --git a/man7/rtnetlink.7 b/man7/rtnetlink.7
-index cd6809320..aec005ff9 100644
---- a/man7/rtnetlink.7
-+++ b/man7/rtnetlink.7
-@@ -13,7 +13,7 @@
- .\"
- .TH RTNETLINK  7 2020-06-09 "Linux" "Linux Programmer's Manual"
- .SH NAME
--rtnetlink \- Linux IPv4 routing socket
-+rtnetlink \- Linux routing socket
- .SH SYNOPSIS
- .nf
- .B #include <asm/types.h>
--- 
-2.30.0
+We have discussed at length at work if an IGMP snooping implementation
+really belongs in the bridge, or if it's better suited as a user space
+daemon?  Similar to what was decided for RSTP/MSTP support, i.e., the
+bridge only has STP and RSTP/MSTP is handled by mstpd[2].
 
+Most of what's required for a user space implementation is available,
+but it would've been nice if a single AF_PACKET socket on br0 could be
+used to catch what brport (ifindex) a query or report comes in on.  As
+it is now that information is lost/replaced with the ifindex of br0.
+And then there's the issue of detecting and forwarding to a multicast
+routing daemon on top of br0.  That br0 is not a brport in the MDB, or
+that host_joined cannot be set/seen with iproute2 is quite limiting.
+These issues can of course be addressed, but are they of interest to
+the community at large?
+
+
+Best regards
+ /Joachim
+
+[1]: https://lore.kernel.org/netdev/20180418120713.GA10742@troglobit/
+[2]: https://github.com/mstpd/mstpd
