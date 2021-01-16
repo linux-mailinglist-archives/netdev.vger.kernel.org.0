@@ -2,182 +2,325 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 569AA2F8C37
-	for <lists+netdev@lfdr.de>; Sat, 16 Jan 2021 09:21:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3362C2F8C3A
+	for <lists+netdev@lfdr.de>; Sat, 16 Jan 2021 09:24:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726831AbhAPIVS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Jan 2021 03:21:18 -0500
-Received: from mail.kernel.org ([198.145.29.99]:46030 "EHLO mail.kernel.org"
+        id S1726507AbhAPIYR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Jan 2021 03:24:17 -0500
+Received: from mail.kernel.org ([198.145.29.99]:47076 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725767AbhAPIVR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 16 Jan 2021 03:21:17 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 742EA221E2;
-        Sat, 16 Jan 2021 08:20:35 +0000 (UTC)
+        id S1725832AbhAPIYQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 16 Jan 2021 03:24:16 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 522C5221E2;
+        Sat, 16 Jan 2021 08:23:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610785236;
-        bh=/OMqaqhP24E3ddcv7U8rMRBb7LkJzzz8NXuXj/8AUgc=;
+        s=k20201202; t=1610785415;
+        bh=K1zcB4rMjn2+8P4ZdMDNTk6C3ITEG5H+9xeG2Sn37j8=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=F9hLPMk05F2tOe3ofixPIFTdQYQ/LNk9nJY36XueQwUhtm7NlfC3ObIIfmdyTv8WG
-         jXRm8s1vWGjCR7fjWi8KOonR5Xxj2q7uRPpF+1pTwIc12KtbDt5kUd3CqLK8+bVwYO
-         Pk3bsuvmpkLpfNgg1fRACQDtyE6F8SirKz52XKMtCNMdUHLRMqquoBCzQyVT0xUGu/
-         +1mdz57+kHLgH7ybAKovtLX/E5sQLIZgwvbFVm025vxyq3xRDCml/3TlE5Hmr2epkh
-         6TgEGmOLd+NsUud/Q4rYEANrk2cQWg2lvdg6eltG/oI11fV3NUQNqjrP7pukIdGO6k
-         NKt4cMsm79VQA==
-Date:   Sat, 16 Jan 2021 10:20:31 +0200
+        b=uTDScZ6VGD2MZw8euIh7g2m8qgB+yNEnmddV4nih1gEMevO0bnnE45FuRbHWN8olN
+         in27Xfo750/qCgZjXoe2Xa2RIoDheVD4M71ZncZTkSXxCrgK4Z9zqHltALqZbKA86K
+         LMH8NSCtg40PMrCn+YEJbj39aEY/xiIjChsC31wjbZwwc+6NogtjoXKdU+MxihaiAy
+         KCmhSUoMWg7hfNwR8ZuazfJX/9mzmPJs79jzdJW3A5v2Mfsz4+mL36JGq96lkdpCyi
+         /MnFTjhyKiuh6jbhyfHBvb7Advd+yfH0nzzuzzi1CkFxm2XRAKwYnOWrPsGT4AfXjN
+         5CAeTPV2RYW3w==
+Date:   Sat, 16 Jan 2021 10:23:31 +0200
 From:   Leon Romanovsky <leon@kernel.org>
-To:     Alexander Duyck <alexander.duyck@gmail.com>
-Cc:     Jason Gunthorpe <jgg@nvidia.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
+To:     Alex Williamson <alex.williamson@redhat.com>
+Cc:     Bjorn Helgaas <bhelgaas@google.com>,
         Saeed Mahameed <saeedm@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-pci <linux-pci@vger.kernel.org>,
-        linux-rdma@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
-        Don Dutile <ddutile@redhat.com>
-Subject: Re: [PATCH mlx5-next v1 2/5] PCI: Add SR-IOV sysfs entry to read
- number of MSI-X vectors
-Message-ID: <20210116082031.GK944463@unreal>
-References: <CAKgT0UcKqt=EgE+eitB8-u8LvxqHBDfF+u2ZSi5urP_Aj0Btvg@mail.gmail.com>
- <20210114182945.GO4147@nvidia.com>
- <CAKgT0UcQW+nJjTircZAYs1_GWNrRud=hSTsphfVpsc=xaF7aRQ@mail.gmail.com>
- <20210114200825.GR4147@nvidia.com>
- <CAKgT0UcaRgY4XnM0jgWRvwBLj+ufiabFzKPyrf3jkLrF1Z8zEg@mail.gmail.com>
- <20210114162812.268d684a@omen.home.shazbot.org>
- <CAKgT0Ufe1w4PpZb3NXuSxug+OMcjm1RP3ZqVrJmQqBDt3ByOZQ@mail.gmail.com>
- <20210115140619.GA4147@nvidia.com>
- <20210115155315.GJ944463@unreal>
- <CAKgT0UdzCqbLwxSnDTtgha+PwTMW5iVb-3VXbwdMNiaAYXyWzQ@mail.gmail.com>
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>, linux-pci@vger.kernel.org,
+        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
+        Don Dutile <ddutile@redhat.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>
+Subject: Re: [PATCH mlx5-next v2 1/5] PCI: Add sysfs callback to allow MSI-X
+ table size change of SR-IOV VFs
+Message-ID: <20210116082331.GL944463@unreal>
+References: <20210114103140.866141-1-leon@kernel.org>
+ <20210114103140.866141-2-leon@kernel.org>
+ <20210114170543.143cce49@omen.home.shazbot.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAKgT0UdzCqbLwxSnDTtgha+PwTMW5iVb-3VXbwdMNiaAYXyWzQ@mail.gmail.com>
+In-Reply-To: <20210114170543.143cce49@omen.home.shazbot.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 15, 2021 at 05:48:59PM -0800, Alexander Duyck wrote:
-> On Fri, Jan 15, 2021 at 7:53 AM Leon Romanovsky <leon@kernel.org> wrote:
+On Thu, Jan 14, 2021 at 05:05:43PM -0700, Alex Williamson wrote:
+> On Thu, 14 Jan 2021 12:31:36 +0200
+> Leon Romanovsky <leon@kernel.org> wrote:
+>
+> > From: Leon Romanovsky <leonro@nvidia.com>
 > >
-> > On Fri, Jan 15, 2021 at 10:06:19AM -0400, Jason Gunthorpe wrote:
-> > > On Thu, Jan 14, 2021 at 05:56:20PM -0800, Alexander Duyck wrote:
-> > >
-> > > > That said, it only works at the driver level. So if the firmware is
-> > > > the one that is having to do this it also occured to me that if this
-> > > > update happened on FLR that would probably be preferred.
-> > >
-> > > FLR is not free, I'd prefer not to require it just for some
-> > > philosophical reason.
-> > >
-> > > > Since the mlx5 already supports devlink I don't see any reason why the
-> > > > driver couldn't be extended to also support the devlink resource
-> > > > interface and apply it to interrupts.
-> > >
-> > > So you are OK with the PF changing the VF as long as it is devlink not
-> > > sysfs? Seems rather arbitary?
-> > >
-> > > Leon knows best, but if I recall devlink becomes wonky when the VF
-> > > driver doesn't provide a devlink instance. How does it do reload of a
-> > > VF then?
-> > >
-> > > I think you end up with essentially the same logic as presented here
-> > > with sysfs.
+> > Extend PCI sysfs interface with a new callback that allows configure
+> > the number of MSI-X vectors for specific SR-IO VF. This is needed
+> > to optimize the performance of newly bound devices by allocating
+> > the number of vectors based on the administrator knowledge of targeted VM.
 > >
-> > The reasons why I decided to go with sysfs are:
-> > 1. This MSI-X table size change is applicable to ALL devices in the world,
-> > and not only netdev.
->
-> In the PCI world MSI-X table size is a read only value. That is why I
-> am pushing back on this as a PCI interface.
-
-And it stays read-only.
-
->
-> > 2. This is purely PCI field and apply equally with same logic to all
-> > subsystems and not to netdev only.
->
-> Again, calling this "purely PCI" is the sort of wording that has me
-> concerned. I would prefer it if we avoid that wording. There is much
-> more to this than just modifying the table size field. The firmware is
-> having to shift resources between devices and this potentially has an
-> effect on the entire part, not just one VF.
-
-It is internal to HW implementation, dumb device can solve it differently.
-
->
-> > 3. The sysfs interface is the standard way of configuring PCI/core, not
-> > devlink.
->
-> This isn't PCI core that is being configured. It is the firmware for
-> the device. You are working with resources that are shared between
-> multiple functions.
-
-I'm ensuring that "lspci -vv .." will work correctly after such change.
-It is PCI core responsibility.
-
->
-> > 4. This is how orchestration software provisioning VFs already. It fits
-> > real world usage of SR-IOV, not the artificial one that is proposed during
-> > the discussion.
->
-> What do you mean this is how they are doing it already? Do you have
-> something out-of-tree and that is why you are fighting to keep the
-> sysfs? If so that isn't a valid argument.
-
-I have Kubernetes and OpenStack, indeed they are not part of the kernel tree.
-They already use sriov_driver_autoprobe sysfs knob to disable autobind
-before even starting. They configure MACs and bind VFs through sysfs/netlink
-already. For them, the read/write of sysfs that is going to be bound to
-the already created VM with known CPU properties, fits perfectly.
-
->
-> > So the idea to use devlink just because mlx5 supports it, sound really
-> > wrong to me. If it was other driver from another subsystem without
-> > devlink support, the request to use devlink won't never come.
+> > This function is applicable for SR-IOV VF because such devices allocate
+> > their MSI-X table before they will run on the VMs and HW can't guess the
+> > right number of vectors, so the HW allocates them statically and equally.
 > >
-> > Thanks
+> > The newly added /sys/bus/pci/devices/.../sriov_vf_msix_count file will be seen
+> > for the VFs and it is writable as long as a driver is not bounded to the VF.
+> >
+> > The values accepted are:
+> >  * > 0 - this will be number reported by the VF's MSI-X capability
+> >  * < 0 - not valid
+> >  * = 0 - will reset to the device default value
+> >
+> > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
+> > ---
+> >  Documentation/ABI/testing/sysfs-bus-pci | 20 +++++++++
+> >  drivers/pci/iov.c                       | 58 +++++++++++++++++++++++++
+> >  drivers/pci/msi.c                       | 47 ++++++++++++++++++++
+> >  drivers/pci/pci-sysfs.c                 |  1 +
+> >  drivers/pci/pci.h                       |  2 +
+> >  include/linux/pci.h                     |  3 ++
+> >  6 files changed, 131 insertions(+)
+> >
+> > diff --git a/Documentation/ABI/testing/sysfs-bus-pci b/Documentation/ABI/testing/sysfs-bus-pci
+> > index 25c9c39770c6..34a8c6bcde70 100644
+> > --- a/Documentation/ABI/testing/sysfs-bus-pci
+> > +++ b/Documentation/ABI/testing/sysfs-bus-pci
+> > @@ -375,3 +375,23 @@ Description:
+> >  		The value comes from the PCI kernel device state and can be one
+> >  		of: "unknown", "error", "D0", D1", "D2", "D3hot", "D3cold".
+> >  		The file is read only.
+> > +
+> > +What:		/sys/bus/pci/devices/.../sriov_vf_msix_count
+> > +Date:		December 2020
+> > +Contact:	Leon Romanovsky <leonro@nvidia.com>
+> > +Description:
+> > +		This file is associated with the SR-IOV VFs.
+> > +		It allows configuration of the number of MSI-X vectors for
+> > +		the VF. This is needed to optimize performance of newly bound
+> > +		devices by allocating the number of vectors based on the
+> > +		administrator knowledge of targeted VM.
+> > +
+> > +		The values accepted are:
+> > +		 * > 0 - this will be number reported by the VF's MSI-X
+> > +			 capability
+> > +		 * < 0 - not valid
+> > +		 * = 0 - will reset to the device default value
+> > +
+> > +		The file is writable if the PF is bound to a driver that
+> > +		set sriov_vf_total_msix > 0 and there is no driver bound
+> > +		to the VF.
+> > diff --git a/drivers/pci/iov.c b/drivers/pci/iov.c
+> > index 4afd4ee4f7f0..5bc496f8ffa3 100644
+> > --- a/drivers/pci/iov.c
+> > +++ b/drivers/pci/iov.c
+> > @@ -31,6 +31,7 @@ int pci_iov_virtfn_devfn(struct pci_dev *dev, int vf_id)
+> >  	return (dev->devfn + dev->sriov->offset +
+> >  		dev->sriov->stride * vf_id) & 0xff;
+> >  }
+> > +EXPORT_SYMBOL(pci_iov_virtfn_devfn);
+> >
+> >  /*
+> >   * Per SR-IOV spec sec 3.3.10 and 3.3.11, First VF Offset and VF Stride may
+> > @@ -426,6 +427,63 @@ const struct attribute_group sriov_dev_attr_group = {
+> >  	.is_visible = sriov_attrs_are_visible,
+> >  };
+> >
+> > +#ifdef CONFIG_PCI_MSI
+> > +static ssize_t sriov_vf_msix_count_show(struct device *dev,
+> > +					struct device_attribute *attr,
+> > +					char *buf)
+> > +{
+> > +	struct pci_dev *pdev = to_pci_dev(dev);
+> > +	int count = pci_msix_vec_count(pdev);
+> > +
+> > +	if (count < 0)
+> > +		return count;
+> > +
+> > +	return sprintf(buf, "%d\n", count);
+> > +}
+> > +
+> > +static ssize_t sriov_vf_msix_count_store(struct device *dev,
+> > +					 struct device_attribute *attr,
+> > +					 const char *buf, size_t count)
+> > +{
+> > +	struct pci_dev *vf_dev = to_pci_dev(dev);
+> > +	int val, ret;
+> > +
+> > +	ret = kstrtoint(buf, 0, &val);
+> > +	if (ret)
+> > +		return ret;
+> > +
+> > +	ret = pci_set_msix_vec_count(vf_dev, val);
+> > +	if (ret)
+> > +		return ret;
+> > +
+> > +	return count;
+> > +}
+> > +static DEVICE_ATTR_RW(sriov_vf_msix_count);
+> > +#endif
+> > +
+> > +static struct attribute *sriov_vf_dev_attrs[] = {
+> > +#ifdef CONFIG_PCI_MSI
+> > +	&dev_attr_sriov_vf_msix_count.attr,
+> > +#endif
+> > +	NULL,
+> > +};
+> > +
+> > +static umode_t sriov_vf_attrs_are_visible(struct kobject *kobj,
+> > +					  struct attribute *a, int n)
+> > +{
+> > +	struct device *dev = kobj_to_dev(kobj);
+> > +
+> > +	if (dev_is_pf(dev))
+> > +		return 0;
 >
-> I am suggesting the devlink resources interface because it would be a
-> VERY good fit for something like this. By the definition of it:
-> ``devlink`` provides the ability for drivers to register resources, which
-> can allow administrators to see the device restrictions for a given
-> resource, as well as how much of the given resource is currently
-> in use. Additionally, these resources can optionally have configurable size.
-> This could enable the administrator to limit the number of resources that
-> are used.
+> Wouldn't it be cleaner to also hide this on VFs where
+> pci_msix_vec_count() returns an error or where the PF driver doesn't
+> implement .sriov_set_msix_vec_count()?  IOW, expose it only where it
+> could actually work.
 
-It is not resource, but HW objects. The devlink doesn't even see the VFs
-as long as they are not bound to the drivers.
-
-This is an example:
-
-[root@vm ~]# echo 0 > /sys/bus/pci/devices/0000\:01\:00.0/sriov_drivers_autoprobe
-[root@vm ~]# echo 0 > /sys/bus/pci/devices/0000\:01\:00.0/sriov_numvfs
-[ 2370.579711] mlx5_core 0000:01:00.0: E-Switch: Disable: mode(LEGACY), nvfs(2), active vports(3)
-[root@vm ~]# echo 2 > /sys/bus/pci/devices/0000\:01\:00.0/sriov_numvfs
-[ 2377.663666] mlx5_core 0000:01:00.0: E-Switch: Enable: mode(LEGACY), nvfs(2), active vports(3)
-[ 2377.777010] pci 0000:01:00.1: [15b3:101c] type 00 class 0x020000
-[ 2377.784903] pci 0000:01:00.2: [15b3:101c] type 00 class 0x020000
-[root@vm ~]# devlink dev
-pci/0000:01:00.0
-[root@vm ~]# lspci |grep nox
-01:00.0 Ethernet controller: Mellanox Technologies MT28908 Family [ConnectX-6]
-01:00.1 Ethernet controller: Mellanox Technologies MT28908 Family [ConnectX-6 Virtual Function]
-01:00.2 Ethernet controller: Mellanox Technologies MT28908 Family [ConnectX-6 Virtual Function]
-
-So despite us having 2 VFs ready to be given to VMs, administrator doesn't
-see them as devices.
+I wasn't sure about the policy in PCI/core, but sure will change.
 
 >
-> Even looking over the example usage I don't see there being much to
-> prevent you from applying it to this issue. In addition it has the
-> idea of handling changes that cannot be immediately applied already
-> included. Your current solution doesn't have a good way of handling
-> that and instead just aborts with an error.
+> > +
+> > +	return a->mode;
+> > +}
+> > +
+> > +const struct attribute_group sriov_vf_dev_attr_group = {
+> > +	.attrs = sriov_vf_dev_attrs,
+> > +	.is_visible = sriov_vf_attrs_are_visible,
+> > +};
+> > +
+> >  int __weak pcibios_sriov_enable(struct pci_dev *pdev, u16 num_vfs)
+> >  {
+> >  	return 0;
+> > diff --git a/drivers/pci/msi.c b/drivers/pci/msi.c
+> > index 3162f88fe940..5a40200343c9 100644
+> > --- a/drivers/pci/msi.c
+> > +++ b/drivers/pci/msi.c
+> > @@ -991,6 +991,53 @@ int pci_msix_vec_count(struct pci_dev *dev)
+> >  }
+> >  EXPORT_SYMBOL(pci_msix_vec_count);
+> >
+> > +/**
+> > + * pci_set_msix_vec_count - change the reported number of MSI-X vectors
+> > + * This function is applicable for SR-IOV VF because such devices allocate
+> > + * their MSI-X table before they will run on the VMs and HW can't guess the
+> > + * right number of vectors, so the HW allocates them statically and equally.
+>
+> Nit, this is an assumption of the VF usage and conjecture of the
+> implementation.
 
-Yes, because it is HW resource that should be applied immediately to
-make sure that it is honored, before it is committed to the users.
+This is one of the possible implementations.
 
-It is very tempting to use devlink everywhere, but it is really wrong
-tool for this scenario.
+>
+> > + * @dev: VF device that is going to be changed
+> > + * @count amount of MSI-X vectors
+> > + **/
+> > +int pci_set_msix_vec_count(struct pci_dev *dev, int count)
+>
+> pci_vf_set_msix_vec_count()?  Long, I know, but if it's limited to VFs
+> name it accordingly.  Thanks,
 
-Thanks
+I'll do.
+
+>
+> Alex
+>
+> > +{
+> > +	struct pci_dev *pdev = pci_physfn(dev);
+> > +	int ret;
+> > +
+> > +	if (!dev->msix_cap || !pdev->msix_cap || count < 0)
+> > +		/*
+> > +		 * We don't support negative numbers for now,
+> > +		 * but maybe in the future it will make sense.
+> > +		 */
+> > +		return -EINVAL;
+> > +
+> > +	device_lock(&pdev->dev);
+> > +	if (!pdev->driver || !pdev->driver->sriov_set_msix_vec_count) {
+> > +		ret = -EOPNOTSUPP;
+> > +		goto err_pdev;
+> > +	}
+> > +
+> > +	device_lock(&dev->dev);
+> > +	if (dev->driver) {
+> > +		/*
+> > +		 * Driver already probed this VF and configured itself
+> > +		 * based on previously configured (or default) MSI-X vector
+> > +		 * count. It is too late to change this field for this
+> > +		 * specific VF.
+> > +		 */
+> > +		ret = -EBUSY;
+> > +		goto err_dev;
+> > +	}
+> > +
+> > +	ret = pdev->driver->sriov_set_msix_vec_count(dev, count);
+> > +
+> > +err_dev:
+> > +	device_unlock(&dev->dev);
+> > +err_pdev:
+> > +	device_unlock(&pdev->dev);
+> > +	return ret;
+> > +}
+> > +
+> >  static int __pci_enable_msix(struct pci_dev *dev, struct msix_entry *entries,
+> >  			     int nvec, struct irq_affinity *affd, int flags)
+> >  {
+> > diff --git a/drivers/pci/pci-sysfs.c b/drivers/pci/pci-sysfs.c
+> > index fb072f4b3176..0af2222643c2 100644
+> > --- a/drivers/pci/pci-sysfs.c
+> > +++ b/drivers/pci/pci-sysfs.c
+> > @@ -1557,6 +1557,7 @@ static const struct attribute_group *pci_dev_attr_groups[] = {
+> >  	&pci_dev_hp_attr_group,
+> >  #ifdef CONFIG_PCI_IOV
+> >  	&sriov_dev_attr_group,
+> > +	&sriov_vf_dev_attr_group,
+> >  #endif
+> >  	&pci_bridge_attr_group,
+> >  	&pcie_dev_attr_group,
+> > diff --git a/drivers/pci/pci.h b/drivers/pci/pci.h
+> > index 5c59365092fa..dbbfa9e73ea8 100644
+> > --- a/drivers/pci/pci.h
+> > +++ b/drivers/pci/pci.h
+> > @@ -183,6 +183,7 @@ extern unsigned int pci_pm_d3hot_delay;
+> >
+> >  #ifdef CONFIG_PCI_MSI
+> >  void pci_no_msi(void);
+> > +int pci_set_msix_vec_count(struct pci_dev *dev, int count);
+> >  #else
+> >  static inline void pci_no_msi(void) { }
+> >  #endif
+> > @@ -502,6 +503,7 @@ resource_size_t pci_sriov_resource_alignment(struct pci_dev *dev, int resno);
+> >  void pci_restore_iov_state(struct pci_dev *dev);
+> >  int pci_iov_bus_range(struct pci_bus *bus);
+> >  extern const struct attribute_group sriov_dev_attr_group;
+> > +extern const struct attribute_group sriov_vf_dev_attr_group;
+> >  #else
+> >  static inline int pci_iov_init(struct pci_dev *dev)
+> >  {
+> > diff --git a/include/linux/pci.h b/include/linux/pci.h
+> > index b32126d26997..6be96d468eda 100644
+> > --- a/include/linux/pci.h
+> > +++ b/include/linux/pci.h
+> > @@ -856,6 +856,8 @@ struct module;
+> >   *		e.g. drivers/net/e100.c.
+> >   * @sriov_configure: Optional driver callback to allow configuration of
+> >   *		number of VFs to enable via sysfs "sriov_numvfs" file.
+> > + * @sriov_set_msix_vec_count: Driver callback to change number of MSI-X vectors
+> > + *              exposed by the sysfs "vf_msix_vec" entry.
+> >   * @err_handler: See Documentation/PCI/pci-error-recovery.rst
+> >   * @groups:	Sysfs attribute groups.
+> >   * @driver:	Driver model structure.
+> > @@ -871,6 +873,7 @@ struct pci_driver {
+> >  	int  (*resume)(struct pci_dev *dev);	/* Device woken up */
+> >  	void (*shutdown)(struct pci_dev *dev);
+> >  	int  (*sriov_configure)(struct pci_dev *dev, int num_vfs); /* On PF */
+> > +	int  (*sriov_set_msix_vec_count)(struct pci_dev *vf, int msix_vec_count); /* On PF */
+> >  	const struct pci_error_handlers *err_handler;
+> >  	const struct attribute_group **groups;
+> >  	struct device_driver	driver;
+> > --
+> > 2.29.2
+> >
+>
