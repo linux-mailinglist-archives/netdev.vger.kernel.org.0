@@ -2,17 +2,17 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B10DD2F8ADB
-	for <lists+netdev@lfdr.de>; Sat, 16 Jan 2021 04:00:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 989592F8ADD
+	for <lists+netdev@lfdr.de>; Sat, 16 Jan 2021 04:00:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729056AbhAPDAN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Jan 2021 22:00:13 -0500
-Received: from out30-42.freemail.mail.aliyun.com ([115.124.30.42]:51008 "EHLO
-        out30-42.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728493AbhAPDAM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jan 2021 22:00:12 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R781e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04420;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=19;SR=0;TI=SMTPD_---0ULrQCZk_1610765968;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0ULrQCZk_1610765968)
+        id S1729205AbhAPDAP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Jan 2021 22:00:15 -0500
+Received: from out30-43.freemail.mail.aliyun.com ([115.124.30.43]:45072 "EHLO
+        out30-43.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728644AbhAPDAN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jan 2021 22:00:13 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R411e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04423;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=19;SR=0;TI=SMTPD_---0ULrQCZp_1610765968;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0ULrQCZp_1610765968)
           by smtp.aliyun-inc.com(127.0.0.1);
           Sat, 16 Jan 2021 10:59:28 +0800
 From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
@@ -33,79 +33,121 @@ Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         KP Singh <kpsingh@kernel.org>,
         virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
-Subject: [PATCH net-next v2 0/7] virtio-net support xdp socket zero copy xmit
-Date:   Sat, 16 Jan 2021 10:59:21 +0800
-Message-Id: <cover.1610765285.git.xuanzhuo@linux.alibaba.com>
+Subject: [PATCH net-next v2 1/7] xsk: support get page for drv
+Date:   Sat, 16 Jan 2021 10:59:22 +0800
+Message-Id: <8df6697163e7074c59b0d9c6fbf8d07e820ae988.1610765285.git.xuanzhuo@linux.alibaba.com>
 X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <cover.1609837120.git.xuanzhuo@linux.alibaba.com>
+In-Reply-To: <cover.1610765285.git.xuanzhuo@linux.alibaba.com>
 References: <cover.1609837120.git.xuanzhuo@linux.alibaba.com>
+ <cover.1610765285.git.xuanzhuo@linux.alibaba.com>
+In-Reply-To: <cover.1610765285.git.xuanzhuo@linux.alibaba.com>
+References: <cover.1610765285.git.xuanzhuo@linux.alibaba.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-XDP socket is an excellent by pass kernel network transmission framework. The
-zero copy feature of xsk (XDP socket) needs to be supported by the driver. The
-performance of zero copy is very good. mlx5 and intel ixgbe already support this
-feature, This patch set allows virtio-net to support xsk's zerocopy xmit
-feature.
+For some drivers, such as virtio-net, we do not configure dma when
+binding xsk. We will get the page when sending.
 
-And xsk's zerocopy rx has made major changes to virtio-net, and I hope to submit
-it after this patch set are received.
+This patch participates in a field need_dma during the setup pool. If
+the device does not use dma, this value should be set to false.
 
-Compared with other drivers, virtio-net does not directly obtain the dma
-address, so I first obtain the xsk page, and then pass the page to virtio.
+And a function xsk_buff_raw_get_page is added to get the page based on
+addr in drv.
 
-When recycling the sent packets, we have to distinguish between skb and xdp.
-Now we have to distinguish between skb, xdp, xsk. So the second patch solves
-this problem first.
+Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+---
+ include/linux/netdevice.h   |  1 +
+ include/net/xdp_sock_drv.h  | 10 ++++++++++
+ include/net/xsk_buff_pool.h |  1 +
+ net/xdp/xsk_buff_pool.c     | 10 +++++++++-
+ 4 files changed, 21 insertions(+), 1 deletion(-)
 
-The last four patches are used to support xsk zerocopy in virtio-net:
-
- 1. support xsk enable/disable
- 2. realize the function of xsk packet sending
- 3. implement xsk wakeup callback
- 4. set xsk completed when packet sent done
-
-
----------------- Performance Testing ------------
-
-The udp package tool implemented by the interface of xsk vs sockperf(kernel udp)
-for performance testing:
-
-xsk zero copy in virtio-net:
-CPU        PPS         MSGSIZE
-28.7%      3833857     64
-38.5%      3689491     512
-38.9%      2787096     1456
-
-xsk without zero copy in virtio-net:
-CPU        PPS         MSGSIZE
-100%       1916747     64
-100%       1775988     512
-100%       1440054     1456
-
-sockperf:
-CPU        PPS         MSGSIZE
-100%       713274      64
-100%       701024      512
-100%       695832      1456
-
-Xuan Zhuo (7):
-  xsk: support get page for drv
-  virtio-net, xsk: distinguish XDP_TX and XSK XMIT ctx
-  xsk, virtio-net: prepare for support xsk zerocopy xmit
-  virtio-net, xsk: support xsk enable/disable
-  virtio-net, xsk: realize the function of xsk packet sending
-  virtio-net, xsk: implement xsk wakeup callback
-  virtio-net, xsk: set xsk completed when packet sent done
-
- drivers/net/virtio_net.c    | 559 +++++++++++++++++++++++++++++++++++++++-----
- include/linux/netdevice.h   |   1 +
- include/net/xdp_sock_drv.h  |  10 +
- include/net/xsk_buff_pool.h |   1 +
- net/xdp/xsk_buff_pool.c     |  10 +-
- 5 files changed, 523 insertions(+), 58 deletions(-)
-
---
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index 5b94907..b452ade 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -914,6 +914,7 @@ struct netdev_bpf {
+ 		struct {
+ 			struct xsk_buff_pool *pool;
+ 			u16 queue_id;
++			bool need_dma;
+ 		} xsk;
+ 	};
+ };
+diff --git a/include/net/xdp_sock_drv.h b/include/net/xdp_sock_drv.h
+index 4e295541..e9c7e25 100644
+--- a/include/net/xdp_sock_drv.h
++++ b/include/net/xdp_sock_drv.h
+@@ -100,6 +100,11 @@ static inline void *xsk_buff_raw_get_data(struct xsk_buff_pool *pool, u64 addr)
+ 	return xp_raw_get_data(pool, addr);
+ }
+ 
++static inline struct page *xsk_buff_raw_get_page(struct xsk_buff_pool *pool, u64 addr)
++{
++	return xp_raw_get_page(pool, addr);
++}
++
+ static inline void xsk_buff_dma_sync_for_cpu(struct xdp_buff *xdp, struct xsk_buff_pool *pool)
+ {
+ 	struct xdp_buff_xsk *xskb = container_of(xdp, struct xdp_buff_xsk, xdp);
+@@ -232,6 +237,11 @@ static inline void *xsk_buff_raw_get_data(struct xsk_buff_pool *pool, u64 addr)
+ 	return NULL;
+ }
+ 
++static inline struct page *xsk_buff_raw_get_page(struct xsk_buff_pool *pool, u64 addr)
++{
++	return NULL;
++}
++
+ static inline void xsk_buff_dma_sync_for_cpu(struct xdp_buff *xdp, struct xsk_buff_pool *pool)
+ {
+ }
+diff --git a/include/net/xsk_buff_pool.h b/include/net/xsk_buff_pool.h
+index eaa8386..2dcfa54 100644
+--- a/include/net/xsk_buff_pool.h
++++ b/include/net/xsk_buff_pool.h
+@@ -108,6 +108,7 @@ int xp_dma_map(struct xsk_buff_pool *pool, struct device *dev,
+ bool xp_can_alloc(struct xsk_buff_pool *pool, u32 count);
+ void *xp_raw_get_data(struct xsk_buff_pool *pool, u64 addr);
+ dma_addr_t xp_raw_get_dma(struct xsk_buff_pool *pool, u64 addr);
++struct page *xp_raw_get_page(struct xsk_buff_pool *pool, u64 addr);
+ static inline dma_addr_t xp_get_dma(struct xdp_buff_xsk *xskb)
+ {
+ 	return xskb->dma;
+diff --git a/net/xdp/xsk_buff_pool.c b/net/xdp/xsk_buff_pool.c
+index 20598ee..6d0cc9f 100644
+--- a/net/xdp/xsk_buff_pool.c
++++ b/net/xdp/xsk_buff_pool.c
+@@ -166,12 +166,13 @@ static int __xp_assign_dev(struct xsk_buff_pool *pool,
+ 	bpf.command = XDP_SETUP_XSK_POOL;
+ 	bpf.xsk.pool = pool;
+ 	bpf.xsk.queue_id = queue_id;
++	bpf.xsk.need_dma = true;
+ 
+ 	err = netdev->netdev_ops->ndo_bpf(netdev, &bpf);
+ 	if (err)
+ 		goto err_unreg_pool;
+ 
+-	if (!pool->dma_pages) {
++	if (bpf.xsk.need_dma && !pool->dma_pages) {
+ 		WARN(1, "Driver did not DMA map zero-copy buffers");
+ 		err = -EINVAL;
+ 		goto err_unreg_xsk;
+@@ -535,6 +536,13 @@ void *xp_raw_get_data(struct xsk_buff_pool *pool, u64 addr)
+ }
+ EXPORT_SYMBOL(xp_raw_get_data);
+ 
++struct page *xp_raw_get_page(struct xsk_buff_pool *pool, u64 addr)
++{
++	addr = pool->unaligned ? xp_unaligned_add_offset_to_addr(addr) : addr;
++	return pool->umem->pgs[addr >> PAGE_SHIFT];
++}
++EXPORT_SYMBOL(xp_raw_get_page);
++
+ dma_addr_t xp_raw_get_dma(struct xsk_buff_pool *pool, u64 addr)
+ {
+ 	addr = pool->unaligned ? xp_unaligned_add_offset_to_addr(addr) : addr;
+-- 
 1.8.3.1
 
