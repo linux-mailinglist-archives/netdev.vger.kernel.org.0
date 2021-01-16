@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5D6192F8BD6
-	for <lists+netdev@lfdr.de>; Sat, 16 Jan 2021 07:14:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 43FC52F8BD8
+	for <lists+netdev@lfdr.de>; Sat, 16 Jan 2021 07:14:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726395AbhAPGOl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Jan 2021 01:14:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41434 "EHLO
+        id S1726498AbhAPGOt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Jan 2021 01:14:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725781AbhAPGOl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 16 Jan 2021 01:14:41 -0500
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E111C0613D3;
-        Fri, 15 Jan 2021 22:14:00 -0800 (PST)
-Received: by mail-pl1-x632.google.com with SMTP id t6so5836829plq.1;
-        Fri, 15 Jan 2021 22:14:00 -0800 (PST)
+        with ESMTP id S1725781AbhAPGOs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 Jan 2021 01:14:48 -0500
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 698E1C061793;
+        Fri, 15 Jan 2021 22:14:08 -0800 (PST)
+Received: by mail-pj1-x1035.google.com with SMTP id v1so6293379pjr.2;
+        Fri, 15 Jan 2021 22:14:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :in-reply-to:references;
-        bh=I/5Du7qPUEoAkb/XhaPW7rJMvAwX/2S0SMJ5Ik87vvk=;
-        b=oTLLb3ze9CaFXpQP4trMv2SGZ0RnAMg+FrqP0ctLs0vr2/fTEEVxRTg9QYSzes1VRL
-         29r9Ql1o4LjHvX7BOIal8O+In4K2MaYV/vcwL+68tRRK7tsDQQzPsTAvDvWH48dsTAo6
-         3j7MvPCmY0php0/57U/7U02tSavISNC/NdyeIUGmh+jbKUYBaFKUOHK/Ox1hfxQf0tCY
-         n1issAJrv/DienryubwHhvlX5QFUazKSNGgwICQd9zVerwJya0WlUmj1bME7aJ3UEU3n
-         ypZNyX1R76M+Xr5Lmib0kTpytxr+lMA+VBGvhxIh3oIkta9eoYS35e9mRlOgRw247rqF
-         unfA==
+        bh=/iL/g7I8EapQ7hx/Ua42HZrRsvsGuh8TkarNGwQsIs8=;
+        b=gB937wVqSTEEqgO4ChtFvHK3VK3JSjkIepCYK5rBbNLDVN8uQ2ycZXkcxgJIPZ5lN+
+         oSPfWgjLRy47C0aKrjnoz3vsDKV4HPitJLVVZi3jJ+KbMHRZYrBYlN/z/nKnH3YE6rBG
+         khfL8WOCDNRbeSLjdVOjfaHuZRp8oczRC0nmVPO6wlgzWeTaaHr20/aXeovupBIGfzfY
+         zBKwotFTysy9nhmp0peXofo7arXQ1TIL3L/i/1ErTu4yxsfMHlR5jAAG20MXB1IIoA3k
+         BfCvT3cOPfwnBHwL9AabCLBsTfdDFS+E123bOTnZ7v0FRmzVJToef1LxFvziNZ/JrLdL
+         dGmQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:in-reply-to:references;
-        bh=I/5Du7qPUEoAkb/XhaPW7rJMvAwX/2S0SMJ5Ik87vvk=;
-        b=WoAkLmhzqbpBwy7Hqr0wzK2YlNr0gevP6tkx8SH2xiCC8vmWRlikRK5plEYb0bS/rI
-         UZ97IyZun6GJAQFWbIIY1+LuMNShwmSGPUaCdUxl9K2DqmFqyUoUPgxeXOU87CNL7nwV
-         SZXFww9pBOZuEARb2+hJgYWd1CkV7aXivx44xOETovHF4McMaEHJf0Rd0U9yKEHZPFQ9
-         5o5jPMLSrzXdbgYuGDaARL7Ef68MyA8+2QlDmej5Koju+9M/fwVdPpwSk+ep6oDnkn0R
-         lKD6VK9Bs7M3y+xI9MJ1GCu5u8sH9NiQN0ymJNYGPHN8ykGEuucNjmB+PfTMCLzpxsKG
-         mcEA==
-X-Gm-Message-State: AOAM532N6VEQkA/vhMMRcs1kwE0h8JwP/Z3kRJvXCx2Vp0gDVkVlpq8J
-        S3DQXTpOKK/Bi1bP0SgnMtbRYqtRASFULA==
-X-Google-Smtp-Source: ABdhPJwYE1rCasHJsP2JtEWgQWy0+8wznldbHOM8YUKDYBiZc7Pl4iJ8egKOwPwk3lKaTdt14uGQ3g==
-X-Received: by 2002:a17:90a:9ac:: with SMTP id 41mr14531399pjo.46.1610777639488;
-        Fri, 15 Jan 2021 22:13:59 -0800 (PST)
+        bh=/iL/g7I8EapQ7hx/Ua42HZrRsvsGuh8TkarNGwQsIs8=;
+        b=dg5t60s8ZM5OsnY2lcANdkUB1USeyfBTRAAUx34q9pk5DRukS+pTDKZ/supZ5GeR+5
+         sOxvuL5Q6X2Ntfc0JirwgQcxe3UF0xEWjovPFPNdNaXK9GLpQFMW1WmU0uPfmUht7a3g
+         1b4za3P4eaWhIOrbql+/4CNAV/WhmvEmc8GBs0RekwAk/vHTDc9MhULqI1sGJOlVosLI
+         +zhjQx54xUedYPclkVrYLYCVUyl5OwAXPmQKlYvIb4GU37y6VR93waFFun7iM2ooZIJc
+         k1R6y3kmgMH2QBzH1lA9uHzdqDWTEQa0rOtPu1x893FdNeD8GzjFgLufLAdP7c5lWslm
+         P4XA==
+X-Gm-Message-State: AOAM5338uFHfubxXLd+UzjbdmOXUHErtHvBLlR1AWoGSF0UcuiSWD6IV
+        hg0YB6ZnhXrWF3xxYCXewGWXOhhZFzaVTQ==
+X-Google-Smtp-Source: ABdhPJxLveKMeCpGPHjtVz4XEHzWNkVtXJXc6F6ZL4bY7V2ABEPcgX7nQoGKkKf27M9Tj8v6vzP9xA==
+X-Received: by 2002:a17:90b:305:: with SMTP id ay5mr14955006pjb.4.1610777647794;
+        Fri, 15 Jan 2021 22:14:07 -0800 (PST)
 Received: from localhost ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id t8sm10461353pjd.51.2021.01.15.22.13.58
+        by smtp.gmail.com with ESMTPSA id 19sm9658182pfn.133.2021.01.15.22.14.06
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 15 Jan 2021 22:13:58 -0800 (PST)
+        Fri, 15 Jan 2021 22:14:07 -0800 (PST)
 From:   Xin Long <lucien.xin@gmail.com>
 To:     network dev <netdev@vger.kernel.org>, linux-sctp@vger.kernel.org
 Cc:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
@@ -56,73 +56,64 @@ Cc:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
         Jesse Brandeburg <jesse.brandeburg@intel.com>,
         Tony Nguyen <anthony.l.nguyen@intel.com>,
         intel-wired-lan@lists.osuosl.org
-Subject: [PATCH net-next 1/6] net: add inline function skb_csum_is_sctp
-Date:   Sat, 16 Jan 2021 14:13:37 +0800
-Message-Id: <34c9f5b8c31610687925d9db1f151d5bc87deba7.1610777159.git.lucien.xin@gmail.com>
+Subject: [PATCH net-next 2/6] net: igb: use skb_csum_is_sctp instead of protocol check
+Date:   Sat, 16 Jan 2021 14:13:38 +0800
+Message-Id: <aa69157e286b0178bf115124f4b2da254e07a291.1610777159.git.lucien.xin@gmail.com>
 X-Mailer: git-send-email 2.1.0
-In-Reply-To: <cover.1610777159.git.lucien.xin@gmail.com>
+In-Reply-To: <34c9f5b8c31610687925d9db1f151d5bc87deba7.1610777159.git.lucien.xin@gmail.com>
 References: <cover.1610777159.git.lucien.xin@gmail.com>
+ <34c9f5b8c31610687925d9db1f151d5bc87deba7.1610777159.git.lucien.xin@gmail.com>
 In-Reply-To: <cover.1610777159.git.lucien.xin@gmail.com>
 References: <cover.1610777159.git.lucien.xin@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch is to define a inline function skb_csum_is_sctp(), and
-also replace all places where it checks if it's a SCTP CSUM skb.
-This function would be used later in many networking drivers in
-the following patches.
+Using skb_csum_is_sctp is a easier way to validate it's a SCTP
+CRC checksum offload packet, and there is no need to parse the
+packet to check its proto field, especially when it's a UDP or
+GRE encapped packet.
 
-Suggested-by: Alexander Duyck <alexander.duyck@gmail.com>
+So this patch also makes igb support SCTP CRC checksum offload
+for UDP and GRE encapped packets.
+
 Signed-off-by: Xin Long <lucien.xin@gmail.com>
 ---
- drivers/net/ethernet/pensando/ionic/ionic_txrx.c | 2 +-
- include/linux/skbuff.h                           | 5 +++++
- net/core/dev.c                                   | 2 +-
- 3 files changed, 7 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/intel/igb/igb_main.c | 14 +-------------
+ 1 file changed, 1 insertion(+), 13 deletions(-)
 
-diff --git a/drivers/net/ethernet/pensando/ionic/ionic_txrx.c b/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
-index ac4cd5d..162a1ff 100644
---- a/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
-+++ b/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
-@@ -979,7 +979,7 @@ static int ionic_tx_calc_csum(struct ionic_queue *q, struct sk_buff *skb)
- 		stats->vlan_inserted++;
- 	}
- 
--	if (skb->csum_not_inet)
-+	if (skb_csum_is_sctp(skb))
- 		stats->crc32_csum++;
- 	else
- 		stats->csum++;
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index c9568cf..46f901a 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -4621,6 +4621,11 @@ static inline void skb_reset_redirect(struct sk_buff *skb)
- #endif
+diff --git a/drivers/net/ethernet/intel/igb/igb_main.c b/drivers/net/ethernet/intel/igb/igb_main.c
+index 03f78fd..8757ad0 100644
+--- a/drivers/net/ethernet/intel/igb/igb_main.c
++++ b/drivers/net/ethernet/intel/igb/igb_main.c
+@@ -5959,15 +5959,6 @@ static int igb_tso(struct igb_ring *tx_ring,
+ 	return 1;
  }
  
-+static inline bool skb_csum_is_sctp(struct sk_buff *skb)
-+{
-+	return skb->csum_not_inet;
-+}
-+
- static inline void skb_set_kcov_handle(struct sk_buff *skb,
- 				       const u64 kcov_handle)
+-static inline bool igb_ipv6_csum_is_sctp(struct sk_buff *skb)
+-{
+-	unsigned int offset = 0;
+-
+-	ipv6_find_hdr(skb, &offset, IPPROTO_SCTP, NULL, NULL);
+-
+-	return offset == skb_checksum_start_offset(skb);
+-}
+-
+ static void igb_tx_csum(struct igb_ring *tx_ring, struct igb_tx_buffer *first)
  {
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 0a31d4e..bbd306f 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -3617,7 +3617,7 @@ static struct sk_buff *validate_xmit_vlan(struct sk_buff *skb,
- int skb_csum_hwoffload_help(struct sk_buff *skb,
- 			    const netdev_features_t features)
- {
--	if (unlikely(skb->csum_not_inet))
-+	if (unlikely(skb_csum_is_sctp(skb)))
- 		return !!(features & NETIF_F_SCTP_CRC) ? 0 :
- 			skb_crc32c_csum_help(skb);
- 
+ 	struct sk_buff *skb = first->skb;
+@@ -5990,10 +5981,7 @@ static void igb_tx_csum(struct igb_ring *tx_ring, struct igb_tx_buffer *first)
+ 		break;
+ 	case offsetof(struct sctphdr, checksum):
+ 		/* validate that this is actually an SCTP request */
+-		if (((first->protocol == htons(ETH_P_IP)) &&
+-		     (ip_hdr(skb)->protocol == IPPROTO_SCTP)) ||
+-		    ((first->protocol == htons(ETH_P_IPV6)) &&
+-		     igb_ipv6_csum_is_sctp(skb))) {
++		if (skb_csum_is_sctp(skb)) {
+ 			type_tucmd = E1000_ADVTXD_TUCMD_L4T_SCTP;
+ 			break;
+ 		}
 -- 
 2.1.0
 
