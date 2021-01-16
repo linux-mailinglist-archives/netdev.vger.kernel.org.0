@@ -2,191 +2,75 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C1DB72F8EA6
-	for <lists+netdev@lfdr.de>; Sat, 16 Jan 2021 19:23:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 667C42F8EE1
+	for <lists+netdev@lfdr.de>; Sat, 16 Jan 2021 20:27:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727943AbhAPSW5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Jan 2021 13:22:57 -0500
-Received: from foss.arm.com ([217.140.110.172]:56668 "EHLO foss.arm.com"
+        id S1726712AbhAPT1U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Jan 2021 14:27:20 -0500
+Received: from mail.kernel.org ([198.145.29.99]:37558 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727868AbhAPSWz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 16 Jan 2021 13:22:55 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 92A97101E;
-        Sat, 16 Jan 2021 10:22:09 -0800 (PST)
-Received: from e107158-lin.cambridge.arm.com (e107158-lin.cambridge.arm.com [10.1.194.78])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 4415C3F70D;
-        Sat, 16 Jan 2021 10:22:08 -0800 (PST)
-From:   Qais Yousef <qais.yousef@arm.com>
-To:     netdev@vger.kernel.org, bpf@vger.kernel.org
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Yonghong Song <yhs@fb.com>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        linux-kernel@vger.kernel.org, Qais Yousef <qais.yousef@arm.com>
-Subject: [PATCH v2 bpf-next 2/2] selftests: bpf: Add a new test for bare tracepoints
-Date:   Sat, 16 Jan 2021 18:21:33 +0000
-Message-Id: <20210116182133.2286884-3-qais.yousef@arm.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210116182133.2286884-1-qais.yousef@arm.com>
-References: <20210116182133.2286884-1-qais.yousef@arm.com>
+        id S1725979AbhAPT1U (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 16 Jan 2021 14:27:20 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 96E6D23117
+        for <netdev@vger.kernel.org>; Sat, 16 Jan 2021 19:26:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1610825199;
+        bh=nwZgsIwiQ3Bh2JMPc852BCxV2RwVJWZLd5IOB5wtvSk=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=Phv9slg/5SSRFRj/PpVpWx5TUgcqtDkTHA6YEdh1SZLd94/af2nN48E6QznGL59Dx
+         Z2Qvah0xfnP1vFNWiuPuImDHWTDQdGvincqfPk0bdydz3497Im/10t/d4omLBnGphO
+         yaLB8K4RT3CLYrc53qbH7+a4xBRpsj4EtI+L5VqaydSmgUPqFO9kiJUgemO35mWMR9
+         nn/7QB83wrRGfKmeVj6fkuKge7TqdL0unYX5cpBgtO/Q9Z+qBm+Z2sL3e66VCGzI9n
+         95dK0JLSD6UuAsXrzpANZ1TBsfybLWyaX5sEEytibzyoHRFn52KvNh3Dt/s19+uNmJ
+         c4R5fIoylxsCw==
+Received: by mail-oi1-f171.google.com with SMTP id f132so13343335oib.12
+        for <netdev@vger.kernel.org>; Sat, 16 Jan 2021 11:26:39 -0800 (PST)
+X-Gm-Message-State: AOAM532wQAVElUlohv6uXOE9baiOebADlSSvWWI4HbG71X5HUyBk6P//
+        IdjM2r3VhfNiiA2YjRElky8PO5OFHe3s/yV3y6k=
+X-Google-Smtp-Source: ABdhPJy2yWmQsThkgFJ46WST/2NDFnPg0ht4fZO6LsqFIgOkLy9gUU4zqLbpLhsYuwog41P7uq74Pq2dajHXFLut1Ew=
+X-Received: by 2002:aca:44d:: with SMTP id 74mr9446154oie.4.1610825198979;
+ Sat, 16 Jan 2021 11:26:38 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210116164828.40545-1-marex@denx.de> <CAK8P3a1iqXjsYERVh+nQs9Xz4x7FreW3aS7OQPSB8CWcntnL4A@mail.gmail.com>
+ <a660f328-19d9-1e97-3f83-533c1245622e@denx.de>
+In-Reply-To: <a660f328-19d9-1e97-3f83-533c1245622e@denx.de>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Sat, 16 Jan 2021 20:26:22 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a3qtrmxMg+uva-s18f_zj7aNXJXcJCzorr2d-XxnqV1Hw@mail.gmail.com>
+Message-ID: <CAK8P3a3qtrmxMg+uva-s18f_zj7aNXJXcJCzorr2d-XxnqV1Hw@mail.gmail.com>
+Subject: Re: [PATCH net-next V2] net: ks8851: Fix mixed module/builtin build
+To:     Marek Vasut <marex@denx.de>
+Cc:     Networking <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Lukas Wunner <lukas@wunner.de>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Reuse module_attach infrastructure to add a new bare tracepoint to check
-we can attach to it as a raw tracepoint.
+On Sat, Jan 16, 2021 at 6:56 PM Marek Vasut <marex@denx.de> wrote:
+> On 1/16/21 6:04 PM, Arnd Bergmann wrote:
+> > On Sat, Jan 16, 2021 at 5:48 PM Marek Vasut <marex@denx.de> wrote:
+>
+> > I don't really like this version, as it does not actually solve the problem of
+> > linking the same object file into both vmlinux and a loadable module, which
+> > can have all kinds of side-effects besides that link failure you saw.
+> >
+> > If you want to avoid exporting all those symbols, a simpler hack would
+> > be to '#include "ks8851_common.c" from each of the two files, which
+> > then always duplicates the contents (even when both are built-in), but
+> > at least builds the file the correct way.
+>
+> That's the same as V1, isn't it ?
 
-Signed-off-by: Qais Yousef <qais.yousef@arm.com>
----
- .../bpf/bpf_testmod/bpf_testmod-events.h      |  6 +++++
- .../selftests/bpf/bpf_testmod/bpf_testmod.c   | 21 ++++++++++++++-
- .../selftests/bpf/bpf_testmod/bpf_testmod.h   |  6 +++++
- .../selftests/bpf/prog_tests/module_attach.c  | 27 +++++++++++++++++++
- .../selftests/bpf/progs/test_module_attach.c  | 10 +++++++
- 5 files changed, 69 insertions(+), 1 deletion(-)
+Ah, I had not actually looked at the original submission, but yes, that
+was slightly better than v2, provided you make all symbols static to
+avoid the new link error.
 
-diff --git a/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod-events.h b/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod-events.h
-index b83ea448bc79..89c6d58e5dd6 100644
---- a/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod-events.h
-+++ b/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod-events.h
-@@ -28,6 +28,12 @@ TRACE_EVENT(bpf_testmod_test_read,
- 		  __entry->pid, __entry->comm, __entry->off, __entry->len)
- );
- 
-+/* A bare tracepoint with no event associated with it */
-+DECLARE_TRACE(bpf_testmod_test_write_bare,
-+	TP_PROTO(struct task_struct *task, struct bpf_testmod_test_write_ctx *ctx),
-+	TP_ARGS(task, ctx)
-+);
-+
- #endif /* _BPF_TESTMOD_EVENTS_H */
- 
- #undef TRACE_INCLUDE_PATH
-diff --git a/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.c b/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.c
-index 2df19d73ca49..e900adad2276 100644
---- a/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.c
-+++ b/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.c
-@@ -28,9 +28,28 @@ bpf_testmod_test_read(struct file *file, struct kobject *kobj,
- EXPORT_SYMBOL(bpf_testmod_test_read);
- ALLOW_ERROR_INJECTION(bpf_testmod_test_read, ERRNO);
- 
-+noinline ssize_t
-+bpf_testmod_test_write(struct file *file, struct kobject *kobj,
-+		      struct bin_attribute *bin_attr,
-+		      char *buf, loff_t off, size_t len)
-+{
-+	struct bpf_testmod_test_write_ctx ctx = {
-+		.buf = buf,
-+		.off = off,
-+		.len = len,
-+	};
-+
-+	trace_bpf_testmod_test_write_bare(current, &ctx);
-+
-+	return -EIO; /* always fail */
-+}
-+EXPORT_SYMBOL(bpf_testmod_test_write);
-+ALLOW_ERROR_INJECTION(bpf_testmod_test_write, ERRNO);
-+
- static struct bin_attribute bin_attr_bpf_testmod_file __ro_after_init = {
--	.attr = { .name = "bpf_testmod", .mode = 0444, },
-+	.attr = { .name = "bpf_testmod", .mode = 0666, },
- 	.read = bpf_testmod_test_read,
-+	.write = bpf_testmod_test_write,
- };
- 
- static int bpf_testmod_init(void)
-diff --git a/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.h b/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.h
-index b81adfedb4f6..b3892dc40111 100644
---- a/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.h
-+++ b/tools/testing/selftests/bpf/bpf_testmod/bpf_testmod.h
-@@ -11,4 +11,10 @@ struct bpf_testmod_test_read_ctx {
- 	size_t len;
- };
- 
-+struct bpf_testmod_test_write_ctx {
-+	char *buf;
-+	loff_t off;
-+	size_t len;
-+};
-+
- #endif /* _BPF_TESTMOD_H */
-diff --git a/tools/testing/selftests/bpf/prog_tests/module_attach.c b/tools/testing/selftests/bpf/prog_tests/module_attach.c
-index 50796b651f72..e4605c0b5af1 100644
---- a/tools/testing/selftests/bpf/prog_tests/module_attach.c
-+++ b/tools/testing/selftests/bpf/prog_tests/module_attach.c
-@@ -21,9 +21,34 @@ static int trigger_module_test_read(int read_sz)
- 	return 0;
- }
- 
-+static int trigger_module_test_write(int write_sz)
-+{
-+	int fd, err;
-+	char *buf = malloc(write_sz);
-+
-+	if (!buf)
-+		return -ENOMEM;
-+
-+	memset(buf, 'a', write_sz);
-+	buf[write_sz-1] = '\0';
-+
-+	fd = open("/sys/kernel/bpf_testmod", O_WRONLY);
-+	err = -errno;
-+	if (CHECK(fd < 0, "testmod_file_open", "failed: %d\n", err))
-+		goto out;
-+
-+	write(fd, buf, write_sz);
-+	close(fd);
-+out:
-+	free(buf);
-+
-+	return 0;
-+}
-+
- void test_module_attach(void)
- {
- 	const int READ_SZ = 456;
-+	const int WRITE_SZ = 457;
- 	struct test_module_attach* skel;
- 	struct test_module_attach__bss *bss;
- 	int err;
-@@ -48,8 +73,10 @@ void test_module_attach(void)
- 
- 	/* trigger tracepoint */
- 	ASSERT_OK(trigger_module_test_read(READ_SZ), "trigger_read");
-+	ASSERT_OK(trigger_module_test_write(WRITE_SZ), "trigger_write");
- 
- 	ASSERT_EQ(bss->raw_tp_read_sz, READ_SZ, "raw_tp");
-+	ASSERT_EQ(bss->raw_tp_bare_write_sz, WRITE_SZ, "raw_tp_bare");
- 	ASSERT_EQ(bss->tp_btf_read_sz, READ_SZ, "tp_btf");
- 	ASSERT_EQ(bss->fentry_read_sz, READ_SZ, "fentry");
- 	ASSERT_EQ(bss->fentry_manual_read_sz, READ_SZ, "fentry_manual");
-diff --git a/tools/testing/selftests/bpf/progs/test_module_attach.c b/tools/testing/selftests/bpf/progs/test_module_attach.c
-index efd1e287ac17..bd37ceec5587 100644
---- a/tools/testing/selftests/bpf/progs/test_module_attach.c
-+++ b/tools/testing/selftests/bpf/progs/test_module_attach.c
-@@ -17,6 +17,16 @@ int BPF_PROG(handle_raw_tp,
- 	return 0;
- }
- 
-+__u32 raw_tp_bare_write_sz = 0;
-+
-+SEC("raw_tp/bpf_testmod_test_write_bare")
-+int BPF_PROG(handle_raw_tp_bare,
-+	     struct task_struct *task, struct bpf_testmod_test_write_ctx *write_ctx)
-+{
-+	raw_tp_bare_write_sz = BPF_CORE_READ(write_ctx, len);
-+	return 0;
-+}
-+
- __u32 tp_btf_read_sz = 0;
- 
- SEC("tp_btf/bpf_testmod_test_read")
--- 
-2.25.1
+I still think that having three modules and exporting the symbols from
+the common part as Heiner Kallweit suggested would be the best
+way to do it.
 
+        Arnd
