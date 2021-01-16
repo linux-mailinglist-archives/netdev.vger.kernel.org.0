@@ -2,128 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A51C32F89DE
-	for <lists+netdev@lfdr.de>; Sat, 16 Jan 2021 01:23:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C3DF82F89F4
+	for <lists+netdev@lfdr.de>; Sat, 16 Jan 2021 01:32:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726754AbhAPAVK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 15 Jan 2021 19:21:10 -0500
-Received: from www62.your-server.de ([213.133.104.62]:51546 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725922AbhAPAVK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jan 2021 19:21:10 -0500
-Received: from 30.101.7.85.dynamic.wline.res.cust.swisscom.ch ([85.7.101.30] helo=localhost)
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1l0ZKM-0009Hd-I4; Sat, 16 Jan 2021 01:20:26 +0100
-From:   Daniel Borkmann <daniel@iogearbox.net>
-To:     davem@davemloft.net
-Cc:     kuba@kernel.org, daniel@iogearbox.net, ast@kernel.org,
-        andrii.nakryiko@gmail.com, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: pull-request: bpf 2021-01-16
-Date:   Sat, 16 Jan 2021 01:20:25 +0100
-Message-Id: <20210116002025.15706-1-daniel@iogearbox.net>
-X-Mailer: git-send-email 2.21.0
+        id S1726751AbhAPAcA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 15 Jan 2021 19:32:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53006 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725815AbhAPAb7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 15 Jan 2021 19:31:59 -0500
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80530C061757
+        for <netdev@vger.kernel.org>; Fri, 15 Jan 2021 16:31:19 -0800 (PST)
+Received: by mail-ed1-x530.google.com with SMTP id dj23so8877481edb.13
+        for <netdev@vger.kernel.org>; Fri, 15 Jan 2021 16:31:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=r6nq8+TQ7idAH4fEuNNsYAdF0PbqKKcc8L4hMnbveVQ=;
+        b=rYWCwu2KHr+gV0OmU6GHj/isTO0odV8yPC/1Ll5OuKJsEyMas3UJycx4eIgfd4c6K3
+         LJwCFaNhtrtjAnLoUs4eABBT0EmZErfNZN3A/EyFAtVoUBURNBpRTDc4Mdi4tA+W5UYX
+         IPXG2JGKwC60x/EX2axY/yQy2UrFKETFYjcWV1bQXdhLlt4gwekxFzWmYCYBH9m8O4St
+         y/6QKG0r6hoNIT1x6ztD0ny22IOl9Smp4nYaytn/IX2+zmSaxhmnXeQ+ZV6cIVNYK3O2
+         9wai+rA22iDjL2EJ09RwtfOz9y3xkTIVyWB8r+l3dmx+j/r8JFN+IZy1sZ9hNME1aMvF
+         oXvA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=r6nq8+TQ7idAH4fEuNNsYAdF0PbqKKcc8L4hMnbveVQ=;
+        b=ICpZthAYU6eLUWT2NI999pgRbBg//b3VQiqIkbK9VNndBsV8XqlRIUcPP2KjDR84Tr
+         al+PNdl4ccsl6/b8yiupg7SXIoVjZDCEzJJ9f0gR+fsZYlDAlGegEXt9F21pfSBxzcvx
+         fzTE48n5fIWudmo4jYkN6ori1ET0C2cIq9k3SGD5ywDZGmGOUO50tg7vyp2rDHg6wNvl
+         19j29PNXm5USmeq+5oVwviiS/tAvO++SbOX2xsZGh5PRVccL85TlkwisMArejJH+D0uO
+         3JnRSQCRQHO9Iv2kNzWoFuydb1d6pSocf+DoNB4pW5Uvwye/Te70ujMmvcx1RCoWMUdC
+         8BDQ==
+X-Gm-Message-State: AOAM532GwxyrbJ8yy6CeSUKW89Yg1r1KZ8CW4cME1Uw3exH/ET451kPS
+        /amy+4o8gt0lAXuJwOOSHWU=
+X-Google-Smtp-Source: ABdhPJxppFWyFsyl7JwbTqJWFAT1sKJJ8vICKBF61WGvTxhQoXaNVSkukGlodfiGf9m/jKs7lyxV7g==
+X-Received: by 2002:aa7:cb12:: with SMTP id s18mr11744020edt.125.1610757078260;
+        Fri, 15 Jan 2021 16:31:18 -0800 (PST)
+Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
+        by smtp.gmail.com with ESMTPSA id e19sm5484125edr.61.2021.01.15.16.31.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 15 Jan 2021 16:31:17 -0800 (PST)
+Date:   Sat, 16 Jan 2021 02:31:16 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Marek =?utf-8?B?QmVow7pu?= <kabel@kernel.org>
+Cc:     netdev@vger.kernel.org, pavana.sharma@digi.com,
+        vivien.didelot@gmail.com, f.fainelli@gmail.com, kuba@kernel.org,
+        lkp@intel.com, davem@davemloft.net, ashkan.boldaji@digi.com,
+        andrew@lunn.ch, Chris Packham <chris.packham@alliedtelesis.co.nz>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Subject: Re: [PATCH net-next v16 2/6] net: phy: Add 5GBASER interface mode
+Message-ID: <20210116003116.4iajyx4i3in3fsut@skbuf>
+References: <20210114043331.4572-1-kabel@kernel.org>
+ <20210114043331.4572-3-kabel@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.4/26050/Fri Jan 15 13:34:55 2021)
+In-Reply-To: <20210114043331.4572-3-kabel@kernel.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi David, hi Jakub,
+On Thu, Jan 14, 2021 at 05:33:27AM +0100, Marek Beh�n wrote:
+> From: Pavana Sharma <pavana.sharma@digi.com>
+> 
+> Add 5GBASE-R phy interface mode
+> 
+> Signed-off-by: Pavana Sharma <pavana.sharma@digi.com>
+> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+> Signed-off-by: Marek Beh�n <kabel@kernel.org>
+> ---
 
-The following pull-request contains BPF updates for your *net* tree.
-
-We've added 11 non-merge commits during the last 6 day(s) which contain
-a total of 14 files changed, 128 insertions(+), 115 deletions(-).
-
-The main changes are:
-
-1) Fix a double bpf_prog_put() for BPF_PROG_{TYPE_EXT,TYPE_TRACING} types in
-   link creation's error path causing a refcount underflow, from Jiri Olsa.
-
-2) Fix BTF validation errors for the case where kernel modules don't declare
-   any new types and end up with an empty BTF, from Andrii Nakryiko.
-
-3) Fix BPF local storage helpers to first check their {task,inode} owners for
-   being NULL before access, from KP Singh.
-
-4) Fix a memory leak in BPF setsockopt handling for the case where optlen is
-   zero and thus temporary optval buffer should be freed, from Stanislav Fomichev.
-
-5) Fix a syzbot memory allocation splat in BPF_PROG_TEST_RUN infra for
-   raw_tracepoint caused by too big ctx_size_in, from Song Liu.
-
-6) Fix LLVM code generation issues with verifier where PTR_TO_MEM{,_OR_NULL}
-   registers were spilled to stack but not recognized, from Gilad Reti.
-
-Please consider pulling these changes from:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git
-
-Thanks a lot!
-
-Also thanks to reporters, reviewers and testers of commits in this pull-request:
-
-Andrii Nakryiko, Christopher William Snowhill, Gilad Reti, KP Singh, 
-Martin KaFai Lau, Toke Høiland-Jørgensen, Yonghong Song
-
-----------------------------------------------------------------
-
-The following changes since commit f97844f9c518172f813b7ece18a9956b1f70c1bb:
-
-  dt-bindings: net: renesas,etheravb: RZ/G2H needs tx-internal-delay-ps (2021-01-09 19:12:21 -0800)
-
-are available in the Git repository at:
-
-  https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf.git 
-
-for you to fetch changes up to 235ecd36c7a93e4d6c73ac71137b8f1fa31148dd:
-
-  MAINTAINERS: Update my email address (2021-01-15 23:55:16 +0100)
-
-----------------------------------------------------------------
-Andrii Nakryiko (2):
-      bpf: Allow empty module BTFs
-      libbpf: Allow loading empty BTFs
-
-Björn Töpel (1):
-      MAINTAINERS: Update my email address
-
-Gilad Reti (2):
-      bpf: Support PTR_TO_MEM{,_OR_NULL} register spilling
-      selftests/bpf: Add verifier test for PTR_TO_MEM spill
-
-Jiri Olsa (1):
-      bpf: Prevent double bpf_prog_put call from bpf_tracing_prog_attach
-
-KP Singh (3):
-      bpf: Local storage helpers should check nullness of owner ptr passed
-      bpf: Fix typo in bpf_inode_storage.c
-      bpf: Update local storage test to check handling of null ptrs
-
-Song Liu (1):
-      bpf: Reject too big ctx_size_in for raw_tp test run
-
-Stanislav Fomichev (1):
-      bpf: Don't leak memory in bpf getsockopt when optlen == 0
-
- .mailmap                                           |  2 +
- MAINTAINERS                                        |  4 +-
- kernel/bpf/bpf_inode_storage.c                     |  9 +-
- kernel/bpf/bpf_task_storage.c                      |  5 +-
- kernel/bpf/btf.c                                   |  2 +-
- kernel/bpf/cgroup.c                                |  5 +-
- kernel/bpf/syscall.c                               |  6 +-
- kernel/bpf/verifier.c                              |  2 +
- net/bpf/test_run.c                                 |  3 +-
- tools/lib/bpf/btf.c                                |  5 --
- .../selftests/bpf/prog_tests/test_local_storage.c  | 96 ++++++----------------
- tools/testing/selftests/bpf/progs/local_storage.c  | 62 ++++++++------
- tools/testing/selftests/bpf/test_verifier.c        | 12 ++-
- tools/testing/selftests/bpf/verifier/spill_fill.c  | 30 +++++++
- 14 files changed, 128 insertions(+), 115 deletions(-)
+This patch now conflicts with commit b1ae3587d16a ("net: phy: Add 100
+base-x mode"). Could you resend and also carry over my review tags from
+the previous version?
+https://patchwork.kernel.org/project/netdevbpf/patch/20210112195405.12890-5-kabel@kernel.org/
