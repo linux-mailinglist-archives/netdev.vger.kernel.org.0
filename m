@@ -2,111 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 87EF62F8E09
-	for <lists+netdev@lfdr.de>; Sat, 16 Jan 2021 18:16:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CD07C2F8E1B
+	for <lists+netdev@lfdr.de>; Sat, 16 Jan 2021 18:16:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728407AbhAPRNi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Jan 2021 12:13:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39078 "EHLO
+        id S1727458AbhAPRGL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Jan 2021 12:06:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728342AbhAPRKj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 16 Jan 2021 12:10:39 -0500
-Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A278FC061359;
-        Sat, 16 Jan 2021 07:39:26 -0800 (PST)
-Received: by mail-lj1-x22c.google.com with SMTP id u21so13657879lja.0;
-        Sat, 16 Jan 2021 07:39:26 -0800 (PST)
+        with ESMTP id S1726385AbhAPQaJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 16 Jan 2021 11:30:09 -0500
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB357C06135B
+        for <netdev@vger.kernel.org>; Sat, 16 Jan 2021 07:51:06 -0800 (PST)
+Received: by mail-ed1-x532.google.com with SMTP id b2so12873756edm.3
+        for <netdev@vger.kernel.org>; Sat, 16 Jan 2021 07:51:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:subject:in-reply-to:references:date:message-id:mime-version;
-        bh=z4leNzWR0o9Do22EpCpfCpRtm41HhzuAfaYRCquNCR0=;
-        b=MCsW6wEKTxnKAuSRQO8c9OUoSTbZEBU5HojfvG84uvdpK1ANEYTa542H6s1mjmnJHn
-         q9ervHHEO0uI6GLw8vV2XJq40dLAaPQO37MRMXJ5fYhoVQlZ9ZRM2O2lLj+wYeUaCNzz
-         +QgiJ7DiPKuqFUOkkPNyPdKncBRC4gNPpxDqsEYT+hTS+h97HF/HNWZS8eq4nsaXk3DQ
-         VzJlHjCOA2g9zalXA8yuqZRfqPndj7f9lMg1obaho6juf4TjgkbSt57qTSycTQFJjQf8
-         yfAD3zCXL3vKLBPpxttr1ENT46a/sX4ObuMlXolAvBzTIEOZRqmt+Y4llaicDp+2k2fi
-         DTcQ==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=0CK16M5dkE+kf7pLhqQ0N5SRW0N9ktke7GLStL8eHM4=;
+        b=mZIXAGiy7YzzBOaSM+5kXUu2EUUb74apl4Dv1VCRQv9US2f3kLtNA06g5PlbRA0JVS
+         BEDTU9AdZG1zrD5HMBP7Mp/v1XLXWH2qkNQ3VjkUt3+L/zYFLXB6ReJf4fbqYW7VmUdx
+         +TvZmnTqEfKmVxd3qWnM6HiFCtstAujx3QWFpwXhLbPT6umZJju8Ja62kIH6/hPF0v/7
+         YqOGPg8blSTCtXZc4DywYjYxEygdO58jxAaXImnoOj0CDeunEhoMGbqgZPwIXDA2KLEH
+         6q1uxHuyHnB5eM/UkM8dQ3rnL+eFxujm70gqgCUiigktUebwSFo8wvuvViKm7naCnwvL
+         vtKA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=z4leNzWR0o9Do22EpCpfCpRtm41HhzuAfaYRCquNCR0=;
-        b=cD9a49P1QKXxK1mKmiuC4rUziRv3VEUZnpCSZNukEoymUgtRu/MoZqfvc87Wkz27PD
-         mOCa0oTvbBccN5fniLuuDDr1fVwwHpY1chgb6GB8i00MjMmy9M60/U96rpM0N0SsBIXd
-         l8M9iCsBx2l2LEdvKueR+cFn2Moa7HTgT2IvmW+IZCUeIw0vasRcdTnejpl6UMsWIPdA
-         QJPAJ7Eym+DQO1Ou3P0iE7AqKfGGjkO7yVoUF2K+v4EPIm1BRgz9bwuGYdHPgolsXgxA
-         IdGRqG3NC5oz2reJe+QtfX6wfmgCVBY+WWI5b4o26bQriFesfzK5gbqDx2ujYPhvoAI4
-         uwlg==
-X-Gm-Message-State: AOAM530+ENwmH81iGfmvA4SLjzQ7DI83Z/bX0fyU1Y4lw68d+09sKwNJ
-        Bxy1vbE1CUTQG4HhUjkTOmQ=
-X-Google-Smtp-Source: ABdhPJxx1xzvcIFNiwWt0AzCy5JT5eeXxNuv9NvuyRx9/+Douelol9Omv6JDLentiHIJzcM7QBwS0w==
-X-Received: by 2002:a05:651c:1304:: with SMTP id u4mr7847774lja.146.1610811565188;
-        Sat, 16 Jan 2021 07:39:25 -0800 (PST)
-Received: from luthien (h-82-196-111-206.NA.cust.bahnhof.se. [82.196.111.206])
-        by smtp.gmail.com with ESMTPSA id g27sm1142499ljl.82.2021.01.16.07.39.24
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=0CK16M5dkE+kf7pLhqQ0N5SRW0N9ktke7GLStL8eHM4=;
+        b=gpRpLdLSnn4+oJw+lzs/hscp8ne6Ynjhc5FXS/L/NFd6tBDbRjrg1izgIVw1VJ0EzL
+         CsXz4zhfMqJJTo62aZ8CKBjwM84EcBkkr1B2xh7O9RJGfpQpKemH2rqFeydB3nMKuFmH
+         OoWhHVKTfjg/RIma5x4V480qDoPNd9gJ2fpgbKh7Tg8ARt4ApWM+z46QQti6GJczIl8U
+         NJ4CKaWVtc4/fXC7OhLhP7Bb/adwWc/LStyh0399W2Fh53lqUN76adubrIG7LiHSpGea
+         bBMb/QfSX3iD0moR3WIdq86pUTYP79YLOqMP6JpVI+9PCAZC5oWgjzumXvrYA9RQNf07
+         YJBQ==
+X-Gm-Message-State: AOAM532oxfKbNkxwASYQ35DJdm6zQWlM1OLLrPyi8eC7G81CzAE0ys71
+        uNdJ9ZENrKuxRKj+GGAM7Zo=
+X-Google-Smtp-Source: ABdhPJzVDQ46Lq0zQqJ03JAq1liW8Ig6WfK3Usd3KIYISZWHmrAkJlAgMWE8Txdo0Sfw56pgYQC2HQ==
+X-Received: by 2002:a05:6402:8d5:: with SMTP id d21mr14014446edz.57.1610812265676;
+        Sat, 16 Jan 2021 07:51:05 -0800 (PST)
+Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
+        by smtp.gmail.com with ESMTPSA id t21sm4580315edv.82.2021.01.16.07.51.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 16 Jan 2021 07:39:24 -0800 (PST)
-From:   Joachim Wiberg <troglobit@gmail.com>
-To:     Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        davem@davemloft.net, kuba@kernel.org, roopa@nvidia.com,
-        allan.nielsen@microchip.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org
-Subject: Re: [RFC PATCH v2] net: bridge: igmp: Extend IGMP query to be per vlan
-In-Reply-To: <32bf6a72-6aff-5e36-fb02-333f3c450f49@nvidia.com>
-References: <20210112135903.3730765-1-horatiu.vultur@microchip.com> <32bf6a72-6aff-5e36-fb02-333f3c450f49@nvidia.com>
-Date:   Sat, 16 Jan 2021 16:39:24 +0100
-Message-ID: <8735z0zyab.fsf@gmail.com>
+        Sat, 16 Jan 2021 07:51:04 -0800 (PST)
+Date:   Sat, 16 Jan 2021 17:51:03 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Tobias Waldekranz <tobias@waldekranz.com>,
+        Maxim Kochetkov <fido_max@inbox.ru>
+Subject: Re: [PATCH v2 net-next 00/14] LAG offload for Ocelot DSA switches
+Message-ID: <20210116155103.eftu5m5ot7ntjqj5@skbuf>
+References: <20210116005943.219479-1-olteanv@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210116005943.219479-1-olteanv@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 13, 2021 at 14:15, Nikolay Aleksandrov <nikolay@nvidia.com> wrote:
-> On 12/01/2021 15:59, Horatiu Vultur wrote:
->> Based on the comments of the previous version, we started to work on a
->> new version, so it would be possible to enable/disable queries per vlan.
->> [snip]
->> We were wondering if this what you had in mind when you proposed to have
->> this per vlan? Or we are completely off? Or we should fix some of the
->> issues that I mentioned, before you can see more clearly the direction?
-> No, unfortunately not even close. We already have per-port per-vlan and global per-vlan
-> contexts which are also linked together for each vlan, those must be used for any vlan
-> configuration and state. The problem is that you'd have to mix igmp and vlan code and
-> those two live under two different kconfig options, and worse rely on different locks, so
-> extra care must be taken.
-> [snip]
-> If you don't need this asap, I'll probably get to it in two months
-> after EHT and the new bridge flush api, even we are still carrying an out-of-tree patch
-> for this which someone (not from cumulus) tried to upstream a few years back, but it also has
-> wrong design in general. :)
+On Sat, Jan 16, 2021 at 02:59:29AM +0200, Vladimir Oltean wrote:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> 
+> This patch series reworks the ocelot switchdev driver such that it could
+> share the same implementation for LAG offload as the felix DSA driver.
 
-Hi,
-
-very interesting thread this!  I believe I may be the one who posted the
-patch[1] a few years ago, and I fully agree with Nik here.  We developed
-the basic concepts further at Westermo, but it's been really difficult
-to get it stable.
-
-We have discussed at length at work if an IGMP snooping implementation
-really belongs in the bridge, or if it's better suited as a user space
-daemon?  Similar to what was decided for RSTP/MSTP support, i.e., the
-bridge only has STP and RSTP/MSTP is handled by mstpd[2].
-
-Most of what's required for a user space implementation is available,
-but it would've been nice if a single AF_PACKET socket on br0 could be
-used to catch what brport (ifindex) a query or report comes in on.  As
-it is now that information is lost/replaced with the ifindex of br0.
-And then there's the issue of detecting and forwarding to a multicast
-routing daemon on top of br0.  That br0 is not a brport in the MDB, or
-that host_joined cannot be set/seen with iproute2 is quite limiting.
-These issues can of course be addressed, but are they of interest to
-the community at large?
-
-
-Best regards
- /Joachim
-
-[1]: https://lore.kernel.org/netdev/20180418120713.GA10742@troglobit/
-[2]: https://github.com/mstpd/mstpd
+Jakub, I sent these patches a few hours early because I didn't want to
+wait for the devlink-sb series to get accepted. Now that it did, can you
+move the patches back from the RFC state into review, or do I need to
+resend them?
