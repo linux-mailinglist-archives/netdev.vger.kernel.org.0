@@ -2,299 +2,404 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FEF62F9174
-	for <lists+netdev@lfdr.de>; Sun, 17 Jan 2021 09:41:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 162B92F9177
+	for <lists+netdev@lfdr.de>; Sun, 17 Jan 2021 09:55:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728154AbhAQIJm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 17 Jan 2021 03:09:42 -0500
-Received: from wout1-smtp.messagingengine.com ([64.147.123.24]:38553 "EHLO
-        wout1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726785AbhAQIFJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 17 Jan 2021 03:05:09 -0500
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.west.internal (Postfix) with ESMTP id 0410D1850;
-        Sun, 17 Jan 2021 03:03:01 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Sun, 17 Jan 2021 03:03:02 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:date:from
-        :in-reply-to:message-id:mime-version:references:subject:to
-        :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; bh=dGR1xxBGDZBcCuvob6sHIdoulN6qQtnMiwurCzVCh5U=; b=HYl3waA1
-        XdSukq+cydbegyFIwlB1nOzqCSonPYBDqhB1iNbrrKKx785I4DJfZM10v5bRQJCC
-        okXjoy9DsNFBS7eoZ3C3El6F3RKM3ODD4UG9PJzNVvgyK2dh+qFCbutbtv1edi7M
-        djIas6buAkJXWLAfQOQqdv3H3sEbA3e24Bu6jKMZl6Wi2TuPA8E1zDy6o+fF7egM
-        d32qhUQRDNn9TIbEart6akV8hR8KklA8sZ3/PCdyK0XJafEbDSqD/dciA4Te6qsr
-        HvjtyCL5wYcnJaSA2p2ac7GetIsIiKAHdnTURZOd8YC0VGmYcs7MxwgZGa4cFMJ7
-        FeLKB7BTAmsL2Q==
-X-ME-Sender: <xms:Ne8DYOkPmK7anSzC4x3KGoR9MJd6XxA9KY1mBXxcU733LftLNTc8Bw>
-    <xme:Ne8DYF04zPUK3YDuCQtq7EcKBm4tYJc3hodpH7bwdlK5nb049Sdno0ZsU5BXlUYN_
-    MoMBBuMmR1S2Gw>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrtdehgdduudefucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucenucfjughrpefhvffufffkofgjfhgggfestdekre
-    dtredttdenucfhrhhomhepkfguohcuufgthhhimhhmvghluceoihguohhstghhsehiugho
-    shgthhdrohhrgheqnecuggftrfgrthhtvghrnhepudetieevffffveelkeeljeffkefhke
-    ehgfdtffethfelvdejgffghefgveejkefhnecukfhppeekgedrvddvledrudehfedrgeeg
-    necuvehluhhsthgvrhfuihiivgepfeenucfrrghrrghmpehmrghilhhfrhhomhepihguoh
-    hstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:Ne8DYMrls7Vr7Gk47E3lILv9OFTn2qPq7EP7CdAChx145d5098bkqA>
-    <xmx:Ne8DYCm_J0Vnie99m47YgETKPs5hw9u1LUA7F0b4VlfVjQFBD5vKRQ>
-    <xmx:Ne8DYM3-uisLy63CXmrrhqqsSUY4uvhZ0S7xggzu_mzEZI2ZcjqU_g>
-    <xmx:Ne8DYPSKVT57Z18EDOUI5LDLJAW1ZxrQbpqvpAA7Bn-bkD3Gb35n8A>
-Received: from shredder.mellanox.com (igld-84-229-153-44.inter.net.il [84.229.153.44])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 7F0BC24005C;
-        Sun, 17 Jan 2021 03:02:59 -0500 (EST)
-From:   Ido Schimmel <idosch@idosch.org>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, petrm@nvidia.com,
-        jiri@nvidia.com, amcohen@nvidia.com, mlxsw@nvidia.com,
-        Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 5/5] selftests: mlxsw: RED: Add selftests for the mark qevent
-Date:   Sun, 17 Jan 2021 10:02:23 +0200
-Message-Id: <20210117080223.2107288-6-idosch@idosch.org>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20210117080223.2107288-1-idosch@idosch.org>
-References: <20210117080223.2107288-1-idosch@idosch.org>
+        id S1728271AbhAQIxk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 17 Jan 2021 03:53:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60534 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728030AbhAQIJK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 17 Jan 2021 03:09:10 -0500
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C91F0C061573;
+        Sun, 17 Jan 2021 00:08:24 -0800 (PST)
+Received: by mail-pf1-x436.google.com with SMTP id m6so8330129pfk.1;
+        Sun, 17 Jan 2021 00:08:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=obnZR0NyV+B7lkaH0Nw+SIxRwBgzDZBrRGSyQNYyqF4=;
+        b=ejYLM1ndmWurwe076eG8EGGkdxWecZCUr2RbOqzLqnTM01YKGT1RYofleCAtF2+3ms
+         JVNerc58NRVu9W5SqOvRzi3sAxUqdqUqzpyfIze9ENNclGlKpZBA9sUilkmMxeNCkq8L
+         nHxJGp4lKbFDsbHpaI9HQq7xGjKHwxtZxO+DP8M3DItGOMfeB2VQ7mv/D58ClRADnwC2
+         Jy4TAZ8o0ClZSj42shXRF+wzNJJY34Rjznbu4lkz20bfnaT/K8f+0ECyGGXmt60XIMfd
+         3uEQORS+WDwTCrOlwmUjR/s9goxc6zTxeIXGEyHuEEyjPzwoTikUie5sxiZOext78nXC
+         2D8w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=obnZR0NyV+B7lkaH0Nw+SIxRwBgzDZBrRGSyQNYyqF4=;
+        b=OvFJhOKuUEGxAyZxDEPaL5srlHVa5PFHwNxKD2ja/ZWKk2gHN+1joxsFv6snISBC+j
+         43Dc9CDZpVFOa8mUbjPCSy/VbVsPfQFIchy5VzmBzCyRtgUFNA/yLmZv06LTXw0W41rm
+         fsMX9wyrPRz/KR9xxV3ebpDF4Yi3A/XhgVD4cC1rzMIOegncYX9HZxmjqhISrNOuLBdK
+         81sDWcuhVphjasI2v4FEjWjDTQNU/hLLxMO3B1g+fJN5pj+Ps9CPLgYvj4rVVQON3OdQ
+         iNK7EocQwj8hk56j3Ym/f2YHdHRzW/3HSSnVctfGTgUdDpZhHe0uB4xEtQS6I9iKFx0h
+         lUhw==
+X-Gm-Message-State: AOAM531ocjbozgy/wfvgZ0qsd/PHJFasseTbajUbmUvW1DK5eThegkfK
+        KKIhThik8kcU38/PeqTLv6X/dWzDogw=
+X-Google-Smtp-Source: ABdhPJxGv/KkGSl3zhNdF/S54a/Bxrdpg9qBPCsCcVnEbVy9rJvtCrKwuhhp/O+Ya/m1SlqW4Amf5Q==
+X-Received: by 2002:a62:e213:0:b029:19e:59d3:a76a with SMTP id a19-20020a62e2130000b029019e59d3a76amr20967860pfi.53.1610870904227;
+        Sun, 17 Jan 2021 00:08:24 -0800 (PST)
+Received: from shane-XPS-13-9380.hsd1.ca.comcast.net ([2601:646:8800:1c00:b827:9276:e0ac:7060])
+        by smtp.gmail.com with ESMTPSA id j17sm12145855pfh.183.2021.01.17.00.08.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 17 Jan 2021 00:08:23 -0800 (PST)
+From:   Xie He <xie.he.0141@gmail.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-x25@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Martin Schiller <ms@dev.tdt.de>
+Cc:     Xie He <xie.he.0141@gmail.com>
+Subject: [PATCH net] net: lapb: Add locking to the lapb module
+Date:   Sun, 17 Jan 2021 00:08:16 -0800
+Message-Id: <20210117080816.22475-1-xie.he.0141@gmail.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Petr Machata <petrm@nvidia.com>
+In the lapb module, the timers may run concurrently with other code in
+this module, and there is currently no locking to prevent the code from
+racing on "struct lapb_cb". This patch adds locking to prevent racing.
 
-Add do_mark_test(), which is to do_ecn_test() like do_drop_test() is to
-do_red_test(): meant to test that actions on the RED mark qevent block are
-offloaded, and executed on ECN-marked packets.
+1. Add "spinlock_t lock" to "struct lapb_cb"; Add "spin_lock_bh" and
+"spin_unlock_bh" to APIs, timer functions and notifier functions.
 
-Signed-off-by: Petr Machata <petrm@nvidia.com>
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
+2. Add "bool t1timer_stop, t2timer_stop" to "struct lapb_cb" to make us
+able to ask running timers to abort; Modify "lapb_stop_t1timer" and
+"lapb_stop_t2timer" to make them able to abort running timers;
+Modify "lapb_t2timer_expiry" and "lapb_t1timer_expiry" to make them
+abort after they are stopped by "lapb_stop_t1timer", "lapb_stop_t2timer",
+and "lapb_start_t1timer", "lapb_start_t2timer".
+
+3. In lapb_unregister, change "lapb_stop_t1timer" and "lapb_stop_t2timer"
+to "del_timer_sync" to make sure all running timers have exited.
+
+4. In lapb_device_event, replace the "lapb_disconnect_request" call with
+the content of "lapb_disconnect_request", to avoid trying to hold the
+lock twice. When doing this, "lapb_start_t1timer" is removed because
+I don't think it's necessary to start the timer when "NETDEV_GOING_DOWN".
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Cc: Martin Schiller <ms@dev.tdt.de>
+Signed-off-by: Xie He <xie.he.0141@gmail.com>
 ---
- .../drivers/net/mlxsw/sch_red_core.sh         | 82 +++++++++++++++++++
- .../drivers/net/mlxsw/sch_red_ets.sh          | 74 +++++++++++++++--
- 2 files changed, 151 insertions(+), 5 deletions(-)
+ include/net/lapb.h    |  2 ++
+ net/lapb/lapb_iface.c | 54 +++++++++++++++++++++++++++++++++++++++----
+ net/lapb/lapb_timer.c | 30 ++++++++++++++++++++----
+ 3 files changed, 78 insertions(+), 8 deletions(-)
 
-diff --git a/tools/testing/selftests/drivers/net/mlxsw/sch_red_core.sh b/tools/testing/selftests/drivers/net/mlxsw/sch_red_core.sh
-index d439ee0eaa8a..6c2ddf76b4b8 100644
---- a/tools/testing/selftests/drivers/net/mlxsw/sch_red_core.sh
-+++ b/tools/testing/selftests/drivers/net/mlxsw/sch_red_core.sh
-@@ -544,6 +544,51 @@ do_mc_backlog_test()
- 	log_test "TC $((vlan - 10)): Qdisc reports MC backlog"
+diff --git a/include/net/lapb.h b/include/net/lapb.h
+index ccc3d1f020b0..eee73442a1ba 100644
+--- a/include/net/lapb.h
++++ b/include/net/lapb.h
+@@ -92,6 +92,7 @@ struct lapb_cb {
+ 	unsigned short		n2, n2count;
+ 	unsigned short		t1, t2;
+ 	struct timer_list	t1timer, t2timer;
++	bool			t1timer_stop, t2timer_stop;
+ 
+ 	/* Internal control information */
+ 	struct sk_buff_head	write_queue;
+@@ -103,6 +104,7 @@ struct lapb_cb {
+ 	struct lapb_frame	frmr_data;
+ 	unsigned char		frmr_type;
+ 
++	spinlock_t		lock;
+ 	refcount_t		refcnt;
+ };
+ 
+diff --git a/net/lapb/lapb_iface.c b/net/lapb/lapb_iface.c
+index 40961889e9c0..ad6197381d05 100644
+--- a/net/lapb/lapb_iface.c
++++ b/net/lapb/lapb_iface.c
+@@ -122,6 +122,8 @@ static struct lapb_cb *lapb_create_cb(void)
+ 
+ 	timer_setup(&lapb->t1timer, NULL, 0);
+ 	timer_setup(&lapb->t2timer, NULL, 0);
++	lapb->t1timer_stop = true;
++	lapb->t2timer_stop = true;
+ 
+ 	lapb->t1      = LAPB_DEFAULT_T1;
+ 	lapb->t2      = LAPB_DEFAULT_T2;
+@@ -129,6 +131,8 @@ static struct lapb_cb *lapb_create_cb(void)
+ 	lapb->mode    = LAPB_DEFAULT_MODE;
+ 	lapb->window  = LAPB_DEFAULT_WINDOW;
+ 	lapb->state   = LAPB_STATE_0;
++
++	spin_lock_init(&lapb->lock);
+ 	refcount_set(&lapb->refcnt, 1);
+ out:
+ 	return lapb;
+@@ -178,8 +182,8 @@ int lapb_unregister(struct net_device *dev)
+ 		goto out;
+ 	lapb_put(lapb);
+ 
+-	lapb_stop_t1timer(lapb);
+-	lapb_stop_t2timer(lapb);
++	del_timer_sync(&lapb->t1timer);
++	del_timer_sync(&lapb->t2timer);
+ 
+ 	lapb_clear_queues(lapb);
+ 
+@@ -201,6 +205,8 @@ int lapb_getparms(struct net_device *dev, struct lapb_parms_struct *parms)
+ 	if (!lapb)
+ 		goto out;
+ 
++	spin_lock_bh(&lapb->lock);
++
+ 	parms->t1      = lapb->t1 / HZ;
+ 	parms->t2      = lapb->t2 / HZ;
+ 	parms->n2      = lapb->n2;
+@@ -219,6 +225,7 @@ int lapb_getparms(struct net_device *dev, struct lapb_parms_struct *parms)
+ 	else
+ 		parms->t2timer = (lapb->t2timer.expires - jiffies) / HZ;
+ 
++	spin_unlock_bh(&lapb->lock);
+ 	lapb_put(lapb);
+ 	rc = LAPB_OK;
+ out:
+@@ -234,6 +241,8 @@ int lapb_setparms(struct net_device *dev, struct lapb_parms_struct *parms)
+ 	if (!lapb)
+ 		goto out;
+ 
++	spin_lock_bh(&lapb->lock);
++
+ 	rc = LAPB_INVALUE;
+ 	if (parms->t1 < 1 || parms->t2 < 1 || parms->n2 < 1)
+ 		goto out_put;
+@@ -256,6 +265,7 @@ int lapb_setparms(struct net_device *dev, struct lapb_parms_struct *parms)
+ 
+ 	rc = LAPB_OK;
+ out_put:
++	spin_unlock_bh(&lapb->lock);
+ 	lapb_put(lapb);
+ out:
+ 	return rc;
+@@ -270,6 +280,8 @@ int lapb_connect_request(struct net_device *dev)
+ 	if (!lapb)
+ 		goto out;
+ 
++	spin_lock_bh(&lapb->lock);
++
+ 	rc = LAPB_OK;
+ 	if (lapb->state == LAPB_STATE_1)
+ 		goto out_put;
+@@ -285,6 +297,7 @@ int lapb_connect_request(struct net_device *dev)
+ 
+ 	rc = LAPB_OK;
+ out_put:
++	spin_unlock_bh(&lapb->lock);
+ 	lapb_put(lapb);
+ out:
+ 	return rc;
+@@ -299,6 +312,8 @@ int lapb_disconnect_request(struct net_device *dev)
+ 	if (!lapb)
+ 		goto out;
+ 
++	spin_lock_bh(&lapb->lock);
++
+ 	switch (lapb->state) {
+ 	case LAPB_STATE_0:
+ 		rc = LAPB_NOTCONNECTED;
+@@ -330,6 +345,7 @@ int lapb_disconnect_request(struct net_device *dev)
+ 
+ 	rc = LAPB_OK;
+ out_put:
++	spin_unlock_bh(&lapb->lock);
+ 	lapb_put(lapb);
+ out:
+ 	return rc;
+@@ -344,6 +360,8 @@ int lapb_data_request(struct net_device *dev, struct sk_buff *skb)
+ 	if (!lapb)
+ 		goto out;
+ 
++	spin_lock_bh(&lapb->lock);
++
+ 	rc = LAPB_NOTCONNECTED;
+ 	if (lapb->state != LAPB_STATE_3 && lapb->state != LAPB_STATE_4)
+ 		goto out_put;
+@@ -352,6 +370,7 @@ int lapb_data_request(struct net_device *dev, struct sk_buff *skb)
+ 	lapb_kick(lapb);
+ 	rc = LAPB_OK;
+ out_put:
++	spin_unlock_bh(&lapb->lock);
+ 	lapb_put(lapb);
+ out:
+ 	return rc;
+@@ -364,7 +383,9 @@ int lapb_data_received(struct net_device *dev, struct sk_buff *skb)
+ 	int rc = LAPB_BADTOKEN;
+ 
+ 	if (lapb) {
++		spin_lock_bh(&lapb->lock);
+ 		lapb_data_input(lapb, skb);
++		spin_unlock_bh(&lapb->lock);
+ 		lapb_put(lapb);
+ 		rc = LAPB_OK;
+ 	}
+@@ -435,6 +456,8 @@ static int lapb_device_event(struct notifier_block *this, unsigned long event,
+ 	if (!lapb)
+ 		return NOTIFY_DONE;
+ 
++	spin_lock_bh(&lapb->lock);
++
+ 	switch (event) {
+ 	case NETDEV_UP:
+ 		lapb_dbg(0, "(%p) Interface up: %s\n", dev, dev->name);
+@@ -453,8 +476,30 @@ static int lapb_device_event(struct notifier_block *this, unsigned long event,
+ 		}
+ 		break;
+ 	case NETDEV_GOING_DOWN:
+-		if (netif_carrier_ok(dev))
+-			lapb_disconnect_request(dev);
++		switch (lapb->state) {
++		case LAPB_STATE_0:
++			break;
++
++		case LAPB_STATE_1:
++			lapb_dbg(1, "(%p) S1 TX DISC(1)\n", lapb->dev);
++			lapb_dbg(0, "(%p) S1 -> S0\n", lapb->dev);
++			lapb_send_control(lapb, LAPB_DISC, LAPB_POLLON, LAPB_COMMAND);
++			lapb->state = LAPB_STATE_0;
++			break;
++
++		case LAPB_STATE_2:
++			break;
++
++		default:
++			lapb_clear_queues(lapb);
++			lapb->n2count = 0;
++			lapb_send_control(lapb, LAPB_DISC, LAPB_POLLON, LAPB_COMMAND);
++			lapb_stop_t2timer(lapb);
++			lapb->state = LAPB_STATE_2;
++			lapb_dbg(1, "(%p) S3 DISC(1)\n", lapb->dev);
++			lapb_dbg(0, "(%p) S3 -> S2\n", lapb->dev);
++		}
++
+ 		break;
+ 	case NETDEV_DOWN:
+ 		lapb_dbg(0, "(%p) Interface down: %s\n", dev, dev->name);
+@@ -489,6 +534,7 @@ static int lapb_device_event(struct notifier_block *this, unsigned long event,
+ 		break;
+ 	}
+ 
++	spin_unlock_bh(&lapb->lock);
+ 	lapb_put(lapb);
+ 	return NOTIFY_DONE;
+ }
+diff --git a/net/lapb/lapb_timer.c b/net/lapb/lapb_timer.c
+index baa247fe4ed0..0230b272b7d1 100644
+--- a/net/lapb/lapb_timer.c
++++ b/net/lapb/lapb_timer.c
+@@ -40,6 +40,7 @@ void lapb_start_t1timer(struct lapb_cb *lapb)
+ 	lapb->t1timer.function = lapb_t1timer_expiry;
+ 	lapb->t1timer.expires  = jiffies + lapb->t1;
+ 
++	lapb->t1timer_stop = false;
+ 	add_timer(&lapb->t1timer);
  }
  
-+do_mark_test()
-+{
-+	local vlan=$1; shift
-+	local limit=$1; shift
-+	local subtest=$1; shift
-+	local fetch_counter=$1; shift
-+	local should_fail=$1; shift
-+	local base
-+
-+	RET=0
-+
-+	start_tcp_traffic $h1.$vlan $(ipaddr 1 $vlan) $(ipaddr 3 $vlan) $h3_mac tos=0x01
-+
-+	# Create a bit of a backlog and observe no mirroring due to marks.
-+	qevent_rule_install_$subtest
-+
-+	build_backlog $vlan $((2 * limit / 3)) tcp tos=0x01 >/dev/null
-+
-+	base=$($fetch_counter)
-+	count=$(busywait 1100 until_counter_is ">= $((base + 1))" $fetch_counter)
-+	check_fail $? "Spurious packets ($base -> $count) observed without buffer pressure"
-+
-+	# Above limit, everything should be mirrored, we should see lots of
-+	# packets.
-+	build_backlog $vlan $((3 * limit / 2)) tcp tos=0x01 >/dev/null
-+	busywait_for_counter 1100 +10000 \
-+		 $fetch_counter > /dev/null
-+	check_err_fail "$should_fail" $? "ECN-marked packets $subtest'd"
-+
-+	# When the rule is uninstalled, there should be no mirroring.
-+	qevent_rule_uninstall_$subtest
-+	busywait_for_counter 1100 +10 \
-+		 $fetch_counter > /dev/null
-+	check_fail $? "Spurious packets observed after uninstall"
-+
-+	if ((should_fail)); then
-+		log_test "TC $((vlan - 10)): marked packets not $subtest'd"
-+	else
-+		log_test "TC $((vlan - 10)): marked packets $subtest'd"
-+	fi
-+
-+	stop_traffic
-+	sleep 1
-+}
-+
- do_drop_test()
+@@ -50,16 +51,19 @@ void lapb_start_t2timer(struct lapb_cb *lapb)
+ 	lapb->t2timer.function = lapb_t2timer_expiry;
+ 	lapb->t2timer.expires  = jiffies + lapb->t2;
+ 
++	lapb->t2timer_stop = false;
+ 	add_timer(&lapb->t2timer);
+ }
+ 
+ void lapb_stop_t1timer(struct lapb_cb *lapb)
  {
- 	local vlan=$1; shift
-@@ -626,6 +671,22 @@ do_drop_mirror_test()
- 	tc filter del dev $h2 ingress pref 1 handle 101 flower
++	lapb->t1timer_stop = true;
+ 	del_timer(&lapb->t1timer);
  }
  
-+do_mark_mirror_test()
-+{
-+	local vlan=$1; shift
-+	local limit=$1; shift
-+
-+	tc filter add dev $h2 ingress pref 1 handle 101 prot ip \
-+	   flower skip_sw ip_proto tcp \
-+	   action drop
-+
-+	do_mark_test "$vlan" "$limit" mirror \
-+		     qevent_counter_fetch_mirror \
-+		     $(: should_fail=)0
-+
-+	tc filter del dev $h2 ingress pref 1 handle 101 flower
-+}
-+
- qevent_rule_install_trap()
+ void lapb_stop_t2timer(struct lapb_cb *lapb)
  {
- 	tc filter add block 10 pref 1234 handle 102 matchall skip_sw \
-@@ -653,3 +714,24 @@ do_drop_trap_test()
- 	do_drop_test "$vlan" "$limit" "$trap_name" trap \
- 		     "qevent_counter_fetch_trap $trap_name"
++	lapb->t2timer_stop = true;
+ 	del_timer(&lapb->t2timer);
  }
-+
-+do_mark_trap_test()
-+{
-+	local vlan=$1; shift
-+	local limit=$1; shift
-+	local should_fail=$1; shift
-+
-+	do_mark_test "$vlan" "$limit" trap \
-+		     "qevent_counter_fetch_trap ecn_mark" \
-+		     "$should_fail"
-+}
-+
-+do_mark_trap_test_pass()
-+{
-+	do_mark_trap_test "$@" 0
-+}
-+
-+do_mark_trap_test_fail()
-+{
-+	do_mark_trap_test "$@" 1
-+}
-diff --git a/tools/testing/selftests/drivers/net/mlxsw/sch_red_ets.sh b/tools/testing/selftests/drivers/net/mlxsw/sch_red_ets.sh
-index 3f007c5f8361..566cad32f346 100755
---- a/tools/testing/selftests/drivers/net/mlxsw/sch_red_ets.sh
-+++ b/tools/testing/selftests/drivers/net/mlxsw/sch_red_ets.sh
-@@ -9,6 +9,8 @@ ALL_TESTS="
- 	mc_backlog_test
- 	red_mirror_test
- 	red_trap_test
-+	ecn_trap_test
-+	ecn_mirror_test
- "
- : ${QDISC:=ets}
- source sch_red_core.sh
-@@ -21,28 +23,60 @@ source sch_red_core.sh
- BACKLOG1=200000
- BACKLOG2=500000
  
--install_qdisc()
-+install_root_qdisc()
+@@ -72,16 +76,31 @@ static void lapb_t2timer_expiry(struct timer_list *t)
  {
--	local -a args=("$@")
--
- 	tc qdisc add dev $swp3 root handle 10: $QDISC \
- 	   bands 8 priomap 7 6 5 4 3 2 1 0
-+}
+ 	struct lapb_cb *lapb = from_timer(lapb, t, t2timer);
+ 
++	spin_lock_bh(&lapb->lock);
++	if (timer_pending(&lapb->t2timer)) /* A new timer has been set up */
++		goto out;
++	if (lapb->t2timer_stop) /* The timer has been stopped */
++		goto out;
 +
-+install_qdisc_tc0()
-+{
-+	local -a args=("$@")
+ 	if (lapb->condition & LAPB_ACK_PENDING_CONDITION) {
+ 		lapb->condition &= ~LAPB_ACK_PENDING_CONDITION;
+ 		lapb_timeout_response(lapb);
+ 	}
 +
- 	tc qdisc add dev $swp3 parent 10:8 handle 108: red \
- 	   limit 1000000 min $BACKLOG1 max $((BACKLOG1 + 1)) \
- 	   probability 1.0 avpkt 8000 burst 38 "${args[@]}"
-+}
-+
-+install_qdisc_tc1()
-+{
-+	local -a args=("$@")
-+
- 	tc qdisc add dev $swp3 parent 10:7 handle 107: red \
- 	   limit 1000000 min $BACKLOG2 max $((BACKLOG2 + 1)) \
- 	   probability 1.0 avpkt 8000 burst 63 "${args[@]}"
-+}
-+
-+install_qdisc()
-+{
-+	install_root_qdisc
-+	install_qdisc_tc0 "$@"
-+	install_qdisc_tc1 "$@"
- 	sleep 1
++out:
++	spin_unlock_bh(&lapb->lock);
  }
  
--uninstall_qdisc()
-+uninstall_qdisc_tc0()
+ static void lapb_t1timer_expiry(struct timer_list *t)
  {
--	tc qdisc del dev $swp3 parent 10:7
- 	tc qdisc del dev $swp3 parent 10:8
-+}
+ 	struct lapb_cb *lapb = from_timer(lapb, t, t1timer);
+ 
++	spin_lock_bh(&lapb->lock);
++	if (timer_pending(&lapb->t1timer)) /* A new timer has been set up */
++		goto out;
++	if (lapb->t1timer_stop) /* The timer has been stopped */
++		goto out;
 +
-+uninstall_qdisc_tc1()
-+{
-+	tc qdisc del dev $swp3 parent 10:7
-+}
+ 	switch (lapb->state) {
+ 
+ 		/*
+@@ -108,7 +127,7 @@ static void lapb_t1timer_expiry(struct timer_list *t)
+ 				lapb->state = LAPB_STATE_0;
+ 				lapb_disconnect_indication(lapb, LAPB_TIMEDOUT);
+ 				lapb_dbg(0, "(%p) S1 -> S0\n", lapb->dev);
+-				return;
++				goto out;
+ 			} else {
+ 				lapb->n2count++;
+ 				if (lapb->mode & LAPB_EXTENDED) {
+@@ -132,7 +151,7 @@ static void lapb_t1timer_expiry(struct timer_list *t)
+ 				lapb->state = LAPB_STATE_0;
+ 				lapb_disconnect_confirmation(lapb, LAPB_TIMEDOUT);
+ 				lapb_dbg(0, "(%p) S2 -> S0\n", lapb->dev);
+-				return;
++				goto out;
+ 			} else {
+ 				lapb->n2count++;
+ 				lapb_dbg(1, "(%p) S2 TX DISC(1)\n", lapb->dev);
+@@ -150,7 +169,7 @@ static void lapb_t1timer_expiry(struct timer_list *t)
+ 				lapb_stop_t2timer(lapb);
+ 				lapb_disconnect_indication(lapb, LAPB_TIMEDOUT);
+ 				lapb_dbg(0, "(%p) S3 -> S0\n", lapb->dev);
+-				return;
++				goto out;
+ 			} else {
+ 				lapb->n2count++;
+ 				lapb_requeue_frames(lapb);
+@@ -167,7 +186,7 @@ static void lapb_t1timer_expiry(struct timer_list *t)
+ 				lapb->state = LAPB_STATE_0;
+ 				lapb_disconnect_indication(lapb, LAPB_TIMEDOUT);
+ 				lapb_dbg(0, "(%p) S4 -> S0\n", lapb->dev);
+-				return;
++				goto out;
+ 			} else {
+ 				lapb->n2count++;
+ 				lapb_transmit_frmr(lapb);
+@@ -176,4 +195,7 @@ static void lapb_t1timer_expiry(struct timer_list *t)
+ 	}
+ 
+ 	lapb_start_t1timer(lapb);
 +
-+uninstall_root_qdisc()
-+{
- 	tc qdisc del dev $swp3 root
++out:
++	spin_unlock_bh(&lapb->lock);
  }
- 
-+uninstall_qdisc()
-+{
-+	uninstall_qdisc_tc0
-+	uninstall_qdisc_tc1
-+	uninstall_root_qdisc
-+}
-+
- ecn_test()
- {
- 	install_qdisc ecn
-@@ -105,6 +139,36 @@ red_trap_test()
- 	uninstall_qdisc
- }
- 
-+ecn_mirror_test()
-+{
-+	install_qdisc ecn qevent mark block 10
-+
-+	do_mark_mirror_test 10 $BACKLOG1
-+	do_mark_mirror_test 11 $BACKLOG2
-+
-+	uninstall_qdisc
-+}
-+
-+ecn_trap_test()
-+{
-+	install_root_qdisc
-+	install_qdisc_tc0 ecn qevent mark block 10
-+	install_qdisc_tc1 ecn
-+
-+	do_mark_trap_test_pass 10 $BACKLOG1
-+	do_mark_trap_test_fail 11 $BACKLOG2
-+
-+	uninstall_qdisc_tc1
-+	install_qdisc_tc1 ecn qevent mark block 10
-+
-+	do_mark_trap_test_pass 10 $BACKLOG1
-+	do_mark_trap_test_pass 11 $BACKLOG2
-+
-+	uninstall_qdisc_tc1
-+	uninstall_qdisc_tc0
-+	uninstall_root_qdisc
-+}
-+
- trap cleanup EXIT
- 
- setup_prepare
 -- 
-2.29.2
+2.27.0
 
