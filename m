@@ -2,108 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 134592F9544
-	for <lists+netdev@lfdr.de>; Sun, 17 Jan 2021 21:56:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D1C22F9564
+	for <lists+netdev@lfdr.de>; Sun, 17 Jan 2021 22:11:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729893AbhAQU4j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 17 Jan 2021 15:56:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54270 "EHLO
+        id S1730114AbhAQVJr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 17 Jan 2021 16:09:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728154AbhAQU4h (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 17 Jan 2021 15:56:37 -0500
-Received: from mail-qv1-xf2a.google.com (mail-qv1-xf2a.google.com [IPv6:2607:f8b0:4864:20::f2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFC0AC061574
-        for <netdev@vger.kernel.org>; Sun, 17 Jan 2021 12:55:56 -0800 (PST)
-Received: by mail-qv1-xf2a.google.com with SMTP id h1so6628619qvy.12
-        for <netdev@vger.kernel.org>; Sun, 17 Jan 2021 12:55:56 -0800 (PST)
+        with ESMTP id S1729248AbhAQVJm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 17 Jan 2021 16:09:42 -0500
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D65F1C061573;
+        Sun, 17 Jan 2021 13:09:00 -0800 (PST)
+Received: by mail-ej1-x62f.google.com with SMTP id w1so20899876ejf.11;
+        Sun, 17 Jan 2021 13:09:00 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=XZSg0GhfcuabgGcYekJuSH33gLk5HSnvLg8cbpP7Pdo=;
-        b=X3uJ+sHaPl4Wdx8DlR+KFoR+KgehxkTYqS7mrwC/sVvC0ugm9FAFsHXHUj1iRGC91p
-         gSkXXTa5xmY/2H612p6WSv+iiKA1mSF/mTMg0ESdUJ+0fK796E2Xdd6JlJaO1ZMYOrwc
-         OIlhSfLhMFVbbaneJaWE5VPLcWPBvqspEKhzlHnhx4s6eNxzUNAomLaO/SAFWHGenMV0
-         rpGNhmNXtbRD8kZAgpiMSnJOdHiKZ8fpuLYSG0mV660PHyD5zaH+PmOYiI6y9VwNJEOV
-         3eXQRDsEaRAvxqiFUcB9RrqLFz9mlfi2rFWzOKezABCeyo5Kk+bHyTFkfFZ7QG687U/g
-         xlaQ==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=42BoXCicoex6TQQF6Ij53CzsLLz+oD2qad6RLNHaXRc=;
+        b=jV1rnTkggvSuTP4wPeAGTs2dYEvyRBI95SlW2HSPELN46fd8FbvyZznpYG/Xbjoez2
+         F0ZptvtCXuHYSsW3dh/FNwlxqBTNxvNXCFSnls8CQcl1I+3mNyr4jg8GA2JYpv/Lbew3
+         DnzVElkU4VxbVZovbox0XDzKEUx2MV/39PNH9RFAjrFcW8CvTn4/Ymi9x9f8hPn3QjYN
+         Ze7QUvkoGCVXhMYRGl/Yj3rVCHvo8xL8wLZYfStwzhHnM5mSjZzoYob7EKB3HXyLGdVf
+         UC2Th9ZPOZN3A2FkFV7rOK9BYsvyaGYCUuO9fKpAQnWYZ4brA+IaqDycbm/K0XYkkIxZ
+         gBzg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=XZSg0GhfcuabgGcYekJuSH33gLk5HSnvLg8cbpP7Pdo=;
-        b=UmxestyGpzmje/pi/K6Y7jR0ACa+zDraEDdcei/k3SLkyOUkUTQjVgzUfzZr3PPQQr
-         HH7tPKgoaP3HEhdtZLSIcCaXQK1PZyHr/RbruyJxJdIBkIUw9zeG1xOHaqdbwFUbTkui
-         IyT7JA8mhzZxZtZwAZKSv1RDuwpCEceaXqKfz+eFoSTeKTutkc/Y5vvR8oZBdrKjPDc6
-         zS5Nszx06mZGwcLJ7ooyoudF0tZFLmyr7/cdtT3yoM4J0UoLdEdWIALGeG9JnMooHWfG
-         NhCMqN474F3zdG5N3mgFW4BSV8niNnh++Vw/R+1i9SQvC6IJ8TdRJcMoKhXSYE2K6lOz
-         +o7g==
-X-Gm-Message-State: AOAM532baiAI4ZNVSLGEU48tXSzMngaw3/dJYOKAu38X+qutrh8C6VqU
-        ECLfki0lx/QVu1B5s9p3O5GM/9MTnxaaQhYnN7U=
-X-Google-Smtp-Source: ABdhPJwJtxQHs0fpBheB92qrE58/ckNzaEPjjgYGqAV/TcisLhKxuveyzAiCqIJdVwweDA6rWvhXKE/1V/taorqQQq8=
-X-Received: by 2002:a0c:bf12:: with SMTP id m18mr21288684qvi.40.1610916956176;
- Sun, 17 Jan 2021 12:55:56 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=42BoXCicoex6TQQF6Ij53CzsLLz+oD2qad6RLNHaXRc=;
+        b=kVYZ4tfFIzC7Nube2+dCK4+so/8AfvDepdCDC/DiPh7EfLvRaacTfgtOcr2yJoJvSs
+         0OvcAvIO1EKv7f2ECbhwh7y8FXre0jhK81nHCYki37Zb+37ExLY3/PEnzcMHcMTPftmo
+         wgOMy0xWwWiGARgd2jdVUV/1ArXOCmYf1/amKnYzjAnhjlv8dTjnGLLL8a6DExz1HCqv
+         7GdttlGnYDcS13+eCudkEoyu9aOqmyrJ+N76gsjw2GZiNwV2rHGk5uC4ru72oPNy6prY
+         4TmDB7qj5XkedrtZLZvW+kifrxF7AlzklGdwvuCMK1ZHEwjrzygYhehaAQEVPIRpuL09
+         1uUQ==
+X-Gm-Message-State: AOAM530pkboxSjvZLZRbHBFti8yuD3H/BrRXjB19m71Ycz68gzfZD+bb
+        TaITdc/wgQm2/myLBVYuzv4=
+X-Google-Smtp-Source: ABdhPJxaF+v+fqDX/V50ECIncMO+Fb7aGgPiCTs3QtpJQiSVuE3csyE5D4/t5kgzf8wXYrYFBPnqNw==
+X-Received: by 2002:a17:906:1288:: with SMTP id k8mr15019921ejb.206.1610917739614;
+        Sun, 17 Jan 2021 13:08:59 -0800 (PST)
+Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
+        by smtp.gmail.com with ESMTPSA id u2sm6554766edp.12.2021.01.17.13.08.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 17 Jan 2021 13:08:59 -0800 (PST)
+Date:   Sun, 17 Jan 2021 23:08:58 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Rasmus Villemoes <rasmus.villemoes@prevas.dk>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Tobias Waldekranz <tobias@waldekranz.com>
+Subject: Re: [PATCH 0/2] net: dsa: mv88e6xxx: fix vlan filtering for 6250
+Message-ID: <20210117210858.276rk6svvqbfbfol@skbuf>
+References: <20210116023937.6225-1-rasmus.villemoes@prevas.dk>
 MIME-Version: 1.0
-References: <20210110070021.26822-1-pbshelar@fb.com> <20210116164642.4af4de8e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <8adc4450-c32d-625e-3c8c-70dbd7cbf052@norrbonn.se> <YARW4DN9qxOZ7b25@nataraja>
-In-Reply-To: <YARW4DN9qxOZ7b25@nataraja>
-From:   Pravin Shelar <pravin.ovn@gmail.com>
-Date:   Sun, 17 Jan 2021 12:55:45 -0800
-Message-ID: <CAOrHB_BQ1e5eV6qCNmHcQ7UPcrOuBwJC+hLpQ6sxa6+FUO9=Kw@mail.gmail.com>
-Subject: Re: [PATCH net-next v5] GTP: add support for flow based tunneling API
-To:     Harald Welte <laforge@gnumonks.org>
-Cc:     Jonas Bonn <jonas@norrbonn.se>, Jakub Kicinski <kuba@kernel.org>,
-        Pravin B Shelar <pbshelar@fb.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        Pablo Neira Ayuso <pablo@netfilter.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210116023937.6225-1-rasmus.villemoes@prevas.dk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jan 17, 2021 at 7:31 AM Harald Welte <laforge@gnumonks.org> wrote:
->
-> Hi Jonas, Jakub and others,
->
-> On Sun, Jan 17, 2021 at 02:23:52PM +0100, Jonas Bonn wrote:
-> > This patch hasn't received any ACK's from either the maintainers or anyone
-> > else providing review.  The following issues remain unaddressed after
-> > review:
->
-> [...]
->
-> Full ACK from my point of view.  The patch is so massive that I
-> as the original co-author and co-maintainer of the GTP kernel module
-> have problems understanding what it is doing at all.  Furthermore,
-> I am actually wondering if there is any commonality between the existing
-> use cases and whatever the modified gtp.ko is trying to achieve.  Up to
-> the point on whether or not it makes sense to have both functionalities
-> in the same driver/module at all
->
+Hi Rasmus,
 
-This is not modifying existing functionality. This patch is adding LWT
-tunneling API. Existing functionality remains the same. Let me know if
-you find any regression. I can fix it.
-LWT is a well known method to implement scalable tunneling which most
-of the tunneling modules (GENEVE, GRE, VxLAN etc..) in linux kernel
-already supports.
+On Sat, Jan 16, 2021 at 03:39:34AM +0100, Rasmus Villemoes wrote:
+> I finally managed to figure out why enabling VLAN filtering on the
+> 6250 broke all (ingressing) traffic,
+> cf. https://lore.kernel.org/netdev/6424c14e-bd25-2a06-cf0b-f1a07f9a3604@prevas.dk/
+> .
+> 
+> The first patch is the minimal fix and for net, while the second one
+> is a little cleanup for net-next.
+> 
+> Rasmus Villemoes (2):
+>   net: dsa: mv88e6xxx: also read STU state in mv88e6250_g1_vtu_getnext
+>   net: dsa: mv88e6xxx: use mv88e6185_g1_vtu_getnext() for the 6250
 
-If we separate out gtp.ko. from its LWT implementation, we will need
-to duplicate a bunch of existing code as well as code that Jonas is
-adding to improve performance using UDP tunnel offloading APIs. I
-don't think that is the right approach. Existing tunneling modules
-also use the unified module approach to implement traditional and LWT
-based tunnel devices.
-
-
-> > I'm not sure what the hurry is to get this patch into mainline.  Large and
-> > complicated patches like this take time to review; please revert this and
-> > allow that process to happen.
->
-> Also acknowledged and supported from my side.
->
-> --
-> - Harald Welte <laforge@gnumonks.org>           http://laforge.gnumonks.org/
-> ============================================================================
-> "Privacy in residential applications is a desirable marketing option."
->                                                   (ETSI EN 300 175-7 Ch. A6)
+It's strange to put a patch for net and one for net-next in the same
+series. Nobody will keep a note for you to apply the second patch after
+net has been merged back into net-next. So if you want to keep the
+two-patch approach, you'd have to send just the "net" patch now, and the
+"net-next" patch later.
+But is there any reason why you don't just apply the second patch to
+"net"?
