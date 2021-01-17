@@ -2,60 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 162B92F9177
-	for <lists+netdev@lfdr.de>; Sun, 17 Jan 2021 09:55:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EC55E2F9163
+	for <lists+netdev@lfdr.de>; Sun, 17 Jan 2021 09:35:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728271AbhAQIxk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 17 Jan 2021 03:53:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60534 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728030AbhAQIJK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 17 Jan 2021 03:09:10 -0500
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C91F0C061573;
-        Sun, 17 Jan 2021 00:08:24 -0800 (PST)
-Received: by mail-pf1-x436.google.com with SMTP id m6so8330129pfk.1;
-        Sun, 17 Jan 2021 00:08:24 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=obnZR0NyV+B7lkaH0Nw+SIxRwBgzDZBrRGSyQNYyqF4=;
-        b=ejYLM1ndmWurwe076eG8EGGkdxWecZCUr2RbOqzLqnTM01YKGT1RYofleCAtF2+3ms
-         JVNerc58NRVu9W5SqOvRzi3sAxUqdqUqzpyfIze9ENNclGlKpZBA9sUilkmMxeNCkq8L
-         nHxJGp4lKbFDsbHpaI9HQq7xGjKHwxtZxO+DP8M3DItGOMfeB2VQ7mv/D58ClRADnwC2
-         Jy4TAZ8o0ClZSj42shXRF+wzNJJY34Rjznbu4lkz20bfnaT/K8f+0ECyGGXmt60XIMfd
-         3uEQORS+WDwTCrOlwmUjR/s9goxc6zTxeIXGEyHuEEyjPzwoTikUie5sxiZOext78nXC
-         2D8w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=obnZR0NyV+B7lkaH0Nw+SIxRwBgzDZBrRGSyQNYyqF4=;
-        b=OvFJhOKuUEGxAyZxDEPaL5srlHVa5PFHwNxKD2ja/ZWKk2gHN+1joxsFv6snISBC+j
-         43Dc9CDZpVFOa8mUbjPCSy/VbVsPfQFIchy5VzmBzCyRtgUFNA/yLmZv06LTXw0W41rm
-         fsMX9wyrPRz/KR9xxV3ebpDF4Yi3A/XhgVD4cC1rzMIOegncYX9HZxmjqhISrNOuLBdK
-         81sDWcuhVphjasI2v4FEjWjDTQNU/hLLxMO3B1g+fJN5pj+Ps9CPLgYvj4rVVQON3OdQ
-         iNK7EocQwj8hk56j3Ym/f2YHdHRzW/3HSSnVctfGTgUdDpZhHe0uB4xEtQS6I9iKFx0h
-         lUhw==
-X-Gm-Message-State: AOAM531ocjbozgy/wfvgZ0qsd/PHJFasseTbajUbmUvW1DK5eThegkfK
-        KKIhThik8kcU38/PeqTLv6X/dWzDogw=
-X-Google-Smtp-Source: ABdhPJxGv/KkGSl3zhNdF/S54a/Bxrdpg9qBPCsCcVnEbVy9rJvtCrKwuhhp/O+Ya/m1SlqW4Amf5Q==
-X-Received: by 2002:a62:e213:0:b029:19e:59d3:a76a with SMTP id a19-20020a62e2130000b029019e59d3a76amr20967860pfi.53.1610870904227;
-        Sun, 17 Jan 2021 00:08:24 -0800 (PST)
-Received: from shane-XPS-13-9380.hsd1.ca.comcast.net ([2601:646:8800:1c00:b827:9276:e0ac:7060])
-        by smtp.gmail.com with ESMTPSA id j17sm12145855pfh.183.2021.01.17.00.08.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 17 Jan 2021 00:08:23 -0800 (PST)
-From:   Xie He <xie.he.0141@gmail.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-x25@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Martin Schiller <ms@dev.tdt.de>
-Cc:     Xie He <xie.he.0141@gmail.com>
-Subject: [PATCH net] net: lapb: Add locking to the lapb module
-Date:   Sun, 17 Jan 2021 00:08:16 -0800
-Message-Id: <20210117080816.22475-1-xie.he.0141@gmail.com>
+        id S1728383AbhAQIeN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 17 Jan 2021 03:34:13 -0500
+Received: from smtp13.smtpout.orange.fr ([80.12.242.135]:28586 "EHLO
+        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1728193AbhAQIRf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 17 Jan 2021 03:17:35 -0500
+Received: from localhost.localdomain ([92.131.99.25])
+        by mwinf5d76 with ME
+        id HkFi240040Ys01Y03kFiYE; Sun, 17 Jan 2021 09:15:48 +0100
+X-ME-Helo: localhost.localdomain
+X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
+X-ME-Date: Sun, 17 Jan 2021 09:15:48 +0100
+X-ME-IP: 92.131.99.25
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     GR-Linux-NIC-Dev@marvell.com, davem@davemloft.net, kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Subject: [PATCH] net/qla3xxx: switch from 'pci_' to 'dma_' API
+Date:   Sun, 17 Jan 2021 09:15:42 +0100
+Message-Id: <20210117081542.560021-1-christophe.jaillet@wanadoo.fr>
 X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -63,343 +33,559 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In the lapb module, the timers may run concurrently with other code in
-this module, and there is currently no locking to prevent the code from
-racing on "struct lapb_cb". This patch adds locking to prevent racing.
+The wrappers in include/linux/pci-dma-compat.h should go away.
 
-1. Add "spinlock_t lock" to "struct lapb_cb"; Add "spin_lock_bh" and
-"spin_unlock_bh" to APIs, timer functions and notifier functions.
+The patch has been generated with the coccinelle script below and has been
+hand modified to replace GFP_ with a correct flag.
+It has been compile tested.
 
-2. Add "bool t1timer_stop, t2timer_stop" to "struct lapb_cb" to make us
-able to ask running timers to abort; Modify "lapb_stop_t1timer" and
-"lapb_stop_t2timer" to make them able to abort running timers;
-Modify "lapb_t2timer_expiry" and "lapb_t1timer_expiry" to make them
-abort after they are stopped by "lapb_stop_t1timer", "lapb_stop_t2timer",
-and "lapb_start_t1timer", "lapb_start_t2timer".
+When memory is allocated in 'ql_alloc_net_req_rsp_queues()' GFP_KERNEL can
+be used because it is only called from 'ql_alloc_mem_resources()' which
+already calls 'ql_alloc_buffer_queues()' which uses GFP_KERNEL. (see below)
 
-3. In lapb_unregister, change "lapb_stop_t1timer" and "lapb_stop_t2timer"
-to "del_timer_sync" to make sure all running timers have exited.
+When memory is allocated in 'ql_alloc_buffer_queues()' GFP_KERNEL can be
+used because this flag is already used just a few line above.
 
-4. In lapb_device_event, replace the "lapb_disconnect_request" call with
-the content of "lapb_disconnect_request", to avoid trying to hold the
-lock twice. When doing this, "lapb_start_t1timer" is removed because
-I don't think it's necessary to start the timer when "NETDEV_GOING_DOWN".
+When memory is allocated in 'ql_alloc_small_buffers()' GFP_KERNEL can
+be used because it is only called from 'ql_alloc_mem_resources()' which
+already calls 'ql_alloc_buffer_queues()' which uses GFP_KERNEL. (see above)
 
-Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
-Cc: Martin Schiller <ms@dev.tdt.de>
-Signed-off-by: Xie He <xie.he.0141@gmail.com>
+When memory is allocated in 'ql_alloc_mem_resources()' GFP_KERNEL can be
+used because this function already calls 'ql_alloc_buffer_queues()' which
+uses GFP_KERNEL. (see above)
+
+
+While at it, use 'dma_set_mask_and_coherent()' instead of 'dma_set_mask()/
+dma_set_coherent_mask()' in order to slightly simplify code.
+
+
+@@
+@@
+-    PCI_DMA_BIDIRECTIONAL
++    DMA_BIDIRECTIONAL
+
+@@
+@@
+-    PCI_DMA_TODEVICE
++    DMA_TO_DEVICE
+
+@@
+@@
+-    PCI_DMA_FROMDEVICE
++    DMA_FROM_DEVICE
+
+@@
+@@
+-    PCI_DMA_NONE
++    DMA_NONE
+
+@@
+expression e1, e2, e3;
+@@
+-    pci_alloc_consistent(e1, e2, e3)
++    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
+
+@@
+expression e1, e2, e3;
+@@
+-    pci_zalloc_consistent(e1, e2, e3)
++    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_free_consistent(e1, e2, e3, e4)
++    dma_free_coherent(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_map_single(e1, e2, e3, e4)
++    dma_map_single(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_unmap_single(e1, e2, e3, e4)
++    dma_unmap_single(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4, e5;
+@@
+-    pci_map_page(e1, e2, e3, e4, e5)
++    dma_map_page(&e1->dev, e2, e3, e4, e5)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_unmap_page(e1, e2, e3, e4)
++    dma_unmap_page(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_map_sg(e1, e2, e3, e4)
++    dma_map_sg(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_unmap_sg(e1, e2, e3, e4)
++    dma_unmap_sg(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_single_for_cpu(e1, e2, e3, e4)
++    dma_sync_single_for_cpu(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_single_for_device(e1, e2, e3, e4)
++    dma_sync_single_for_device(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_sg_for_cpu(e1, e2, e3, e4)
++    dma_sync_sg_for_cpu(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2, e3, e4;
+@@
+-    pci_dma_sync_sg_for_device(e1, e2, e3, e4)
++    dma_sync_sg_for_device(&e1->dev, e2, e3, e4)
+
+@@
+expression e1, e2;
+@@
+-    pci_dma_mapping_error(e1, e2)
++    dma_mapping_error(&e1->dev, e2)
+
+@@
+expression e1, e2;
+@@
+-    pci_set_dma_mask(e1, e2)
++    dma_set_mask(&e1->dev, e2)
+
+@@
+expression e1, e2;
+@@
+-    pci_set_consistent_dma_mask(e1, e2)
++    dma_set_coherent_mask(&e1->dev, e2)
+
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
 ---
- include/net/lapb.h    |  2 ++
- net/lapb/lapb_iface.c | 54 +++++++++++++++++++++++++++++++++++++++----
- net/lapb/lapb_timer.c | 30 ++++++++++++++++++++----
- 3 files changed, 78 insertions(+), 8 deletions(-)
+If needed, see post from Christoph Hellwig on the kernel-janitors ML:
+   https://marc.info/?l=kernel-janitors&m=158745678307186&w=4
+---
+ drivers/net/ethernet/qlogic/qla3xxx.c | 196 ++++++++++++--------------
+ 1 file changed, 87 insertions(+), 109 deletions(-)
 
-diff --git a/include/net/lapb.h b/include/net/lapb.h
-index ccc3d1f020b0..eee73442a1ba 100644
---- a/include/net/lapb.h
-+++ b/include/net/lapb.h
-@@ -92,6 +92,7 @@ struct lapb_cb {
- 	unsigned short		n2, n2count;
- 	unsigned short		t1, t2;
- 	struct timer_list	t1timer, t2timer;
-+	bool			t1timer_stop, t2timer_stop;
+diff --git a/drivers/net/ethernet/qlogic/qla3xxx.c b/drivers/net/ethernet/qlogic/qla3xxx.c
+index 27740c027681..214e347097a7 100644
+--- a/drivers/net/ethernet/qlogic/qla3xxx.c
++++ b/drivers/net/ethernet/qlogic/qla3xxx.c
+@@ -315,12 +315,11 @@ static void ql_release_to_lrg_buf_free_list(struct ql3_adapter *qdev,
+ 			 * buffer
+ 			 */
+ 			skb_reserve(lrg_buf_cb->skb, QL_HEADER_SPACE);
+-			map = pci_map_single(qdev->pdev,
++			map = dma_map_single(&qdev->pdev->dev,
+ 					     lrg_buf_cb->skb->data,
+-					     qdev->lrg_buffer_len -
+-					     QL_HEADER_SPACE,
+-					     PCI_DMA_FROMDEVICE);
+-			err = pci_dma_mapping_error(qdev->pdev, map);
++					     qdev->lrg_buffer_len - QL_HEADER_SPACE,
++					     DMA_FROM_DEVICE);
++			err = dma_mapping_error(&qdev->pdev->dev, map);
+ 			if (err) {
+ 				netdev_err(qdev->ndev,
+ 					   "PCI mapping failed with error: %d\n",
+@@ -1802,13 +1801,12 @@ static int ql_populate_free_queue(struct ql3_adapter *qdev)
+ 				 * first buffer
+ 				 */
+ 				skb_reserve(lrg_buf_cb->skb, QL_HEADER_SPACE);
+-				map = pci_map_single(qdev->pdev,
++				map = dma_map_single(&qdev->pdev->dev,
+ 						     lrg_buf_cb->skb->data,
+-						     qdev->lrg_buffer_len -
+-						     QL_HEADER_SPACE,
+-						     PCI_DMA_FROMDEVICE);
++						     qdev->lrg_buffer_len - QL_HEADER_SPACE,
++						     DMA_FROM_DEVICE);
  
- 	/* Internal control information */
- 	struct sk_buff_head	write_queue;
-@@ -103,6 +104,7 @@ struct lapb_cb {
- 	struct lapb_frame	frmr_data;
- 	unsigned char		frmr_type;
- 
-+	spinlock_t		lock;
- 	refcount_t		refcnt;
- };
- 
-diff --git a/net/lapb/lapb_iface.c b/net/lapb/lapb_iface.c
-index 40961889e9c0..ad6197381d05 100644
---- a/net/lapb/lapb_iface.c
-+++ b/net/lapb/lapb_iface.c
-@@ -122,6 +122,8 @@ static struct lapb_cb *lapb_create_cb(void)
- 
- 	timer_setup(&lapb->t1timer, NULL, 0);
- 	timer_setup(&lapb->t2timer, NULL, 0);
-+	lapb->t1timer_stop = true;
-+	lapb->t2timer_stop = true;
- 
- 	lapb->t1      = LAPB_DEFAULT_T1;
- 	lapb->t2      = LAPB_DEFAULT_T2;
-@@ -129,6 +131,8 @@ static struct lapb_cb *lapb_create_cb(void)
- 	lapb->mode    = LAPB_DEFAULT_MODE;
- 	lapb->window  = LAPB_DEFAULT_WINDOW;
- 	lapb->state   = LAPB_STATE_0;
-+
-+	spin_lock_init(&lapb->lock);
- 	refcount_set(&lapb->refcnt, 1);
- out:
- 	return lapb;
-@@ -178,8 +182,8 @@ int lapb_unregister(struct net_device *dev)
- 		goto out;
- 	lapb_put(lapb);
- 
--	lapb_stop_t1timer(lapb);
--	lapb_stop_t2timer(lapb);
-+	del_timer_sync(&lapb->t1timer);
-+	del_timer_sync(&lapb->t2timer);
- 
- 	lapb_clear_queues(lapb);
- 
-@@ -201,6 +205,8 @@ int lapb_getparms(struct net_device *dev, struct lapb_parms_struct *parms)
- 	if (!lapb)
- 		goto out;
- 
-+	spin_lock_bh(&lapb->lock);
-+
- 	parms->t1      = lapb->t1 / HZ;
- 	parms->t2      = lapb->t2 / HZ;
- 	parms->n2      = lapb->n2;
-@@ -219,6 +225,7 @@ int lapb_getparms(struct net_device *dev, struct lapb_parms_struct *parms)
- 	else
- 		parms->t2timer = (lapb->t2timer.expires - jiffies) / HZ;
- 
-+	spin_unlock_bh(&lapb->lock);
- 	lapb_put(lapb);
- 	rc = LAPB_OK;
- out:
-@@ -234,6 +241,8 @@ int lapb_setparms(struct net_device *dev, struct lapb_parms_struct *parms)
- 	if (!lapb)
- 		goto out;
- 
-+	spin_lock_bh(&lapb->lock);
-+
- 	rc = LAPB_INVALUE;
- 	if (parms->t1 < 1 || parms->t2 < 1 || parms->n2 < 1)
- 		goto out_put;
-@@ -256,6 +265,7 @@ int lapb_setparms(struct net_device *dev, struct lapb_parms_struct *parms)
- 
- 	rc = LAPB_OK;
- out_put:
-+	spin_unlock_bh(&lapb->lock);
- 	lapb_put(lapb);
- out:
- 	return rc;
-@@ -270,6 +280,8 @@ int lapb_connect_request(struct net_device *dev)
- 	if (!lapb)
- 		goto out;
- 
-+	spin_lock_bh(&lapb->lock);
-+
- 	rc = LAPB_OK;
- 	if (lapb->state == LAPB_STATE_1)
- 		goto out_put;
-@@ -285,6 +297,7 @@ int lapb_connect_request(struct net_device *dev)
- 
- 	rc = LAPB_OK;
- out_put:
-+	spin_unlock_bh(&lapb->lock);
- 	lapb_put(lapb);
- out:
- 	return rc;
-@@ -299,6 +312,8 @@ int lapb_disconnect_request(struct net_device *dev)
- 	if (!lapb)
- 		goto out;
- 
-+	spin_lock_bh(&lapb->lock);
-+
- 	switch (lapb->state) {
- 	case LAPB_STATE_0:
- 		rc = LAPB_NOTCONNECTED;
-@@ -330,6 +345,7 @@ int lapb_disconnect_request(struct net_device *dev)
- 
- 	rc = LAPB_OK;
- out_put:
-+	spin_unlock_bh(&lapb->lock);
- 	lapb_put(lapb);
- out:
- 	return rc;
-@@ -344,6 +360,8 @@ int lapb_data_request(struct net_device *dev, struct sk_buff *skb)
- 	if (!lapb)
- 		goto out;
- 
-+	spin_lock_bh(&lapb->lock);
-+
- 	rc = LAPB_NOTCONNECTED;
- 	if (lapb->state != LAPB_STATE_3 && lapb->state != LAPB_STATE_4)
- 		goto out_put;
-@@ -352,6 +370,7 @@ int lapb_data_request(struct net_device *dev, struct sk_buff *skb)
- 	lapb_kick(lapb);
- 	rc = LAPB_OK;
- out_put:
-+	spin_unlock_bh(&lapb->lock);
- 	lapb_put(lapb);
- out:
- 	return rc;
-@@ -364,7 +383,9 @@ int lapb_data_received(struct net_device *dev, struct sk_buff *skb)
- 	int rc = LAPB_BADTOKEN;
- 
- 	if (lapb) {
-+		spin_lock_bh(&lapb->lock);
- 		lapb_data_input(lapb, skb);
-+		spin_unlock_bh(&lapb->lock);
- 		lapb_put(lapb);
- 		rc = LAPB_OK;
+-				err = pci_dma_mapping_error(qdev->pdev, map);
++				err = dma_mapping_error(&qdev->pdev->dev, map);
+ 				if (err) {
+ 					netdev_err(qdev->ndev,
+ 						   "PCI mapping failed with error: %d\n",
+@@ -1943,18 +1941,16 @@ static void ql_process_mac_tx_intr(struct ql3_adapter *qdev,
+ 		goto invalid_seg_count;
  	}
-@@ -435,6 +456,8 @@ static int lapb_device_event(struct notifier_block *this, unsigned long event,
- 	if (!lapb)
- 		return NOTIFY_DONE;
  
-+	spin_lock_bh(&lapb->lock);
-+
- 	switch (event) {
- 	case NETDEV_UP:
- 		lapb_dbg(0, "(%p) Interface up: %s\n", dev, dev->name);
-@@ -453,8 +476,30 @@ static int lapb_device_event(struct notifier_block *this, unsigned long event,
+-	pci_unmap_single(qdev->pdev,
++	dma_unmap_single(&qdev->pdev->dev,
+ 			 dma_unmap_addr(&tx_cb->map[0], mapaddr),
+-			 dma_unmap_len(&tx_cb->map[0], maplen),
+-			 PCI_DMA_TODEVICE);
++			 dma_unmap_len(&tx_cb->map[0], maplen), DMA_TO_DEVICE);
+ 	tx_cb->seg_count--;
+ 	if (tx_cb->seg_count) {
+ 		for (i = 1; i < tx_cb->seg_count; i++) {
+-			pci_unmap_page(qdev->pdev,
+-				       dma_unmap_addr(&tx_cb->map[i],
+-						      mapaddr),
++			dma_unmap_page(&qdev->pdev->dev,
++				       dma_unmap_addr(&tx_cb->map[i], mapaddr),
+ 				       dma_unmap_len(&tx_cb->map[i], maplen),
+-				       PCI_DMA_TODEVICE);
++				       DMA_TO_DEVICE);
  		}
- 		break;
- 	case NETDEV_GOING_DOWN:
--		if (netif_carrier_ok(dev))
--			lapb_disconnect_request(dev);
-+		switch (lapb->state) {
-+		case LAPB_STATE_0:
-+			break;
-+
-+		case LAPB_STATE_1:
-+			lapb_dbg(1, "(%p) S1 TX DISC(1)\n", lapb->dev);
-+			lapb_dbg(0, "(%p) S1 -> S0\n", lapb->dev);
-+			lapb_send_control(lapb, LAPB_DISC, LAPB_POLLON, LAPB_COMMAND);
-+			lapb->state = LAPB_STATE_0;
-+			break;
-+
-+		case LAPB_STATE_2:
-+			break;
-+
-+		default:
-+			lapb_clear_queues(lapb);
-+			lapb->n2count = 0;
-+			lapb_send_control(lapb, LAPB_DISC, LAPB_POLLON, LAPB_COMMAND);
-+			lapb_stop_t2timer(lapb);
-+			lapb->state = LAPB_STATE_2;
-+			lapb_dbg(1, "(%p) S3 DISC(1)\n", lapb->dev);
-+			lapb_dbg(0, "(%p) S3 -> S2\n", lapb->dev);
-+		}
-+
- 		break;
- 	case NETDEV_DOWN:
- 		lapb_dbg(0, "(%p) Interface down: %s\n", dev, dev->name);
-@@ -489,6 +534,7 @@ static int lapb_device_event(struct notifier_block *this, unsigned long event,
- 		break;
+ 	}
+ 	qdev->ndev->stats.tx_packets++;
+@@ -2021,10 +2017,9 @@ static void ql_process_mac_rx_intr(struct ql3_adapter *qdev,
+ 	qdev->ndev->stats.rx_bytes += length;
+ 
+ 	skb_put(skb, length);
+-	pci_unmap_single(qdev->pdev,
++	dma_unmap_single(&qdev->pdev->dev,
+ 			 dma_unmap_addr(lrg_buf_cb2, mapaddr),
+-			 dma_unmap_len(lrg_buf_cb2, maplen),
+-			 PCI_DMA_FROMDEVICE);
++			 dma_unmap_len(lrg_buf_cb2, maplen), DMA_FROM_DEVICE);
+ 	prefetch(skb->data);
+ 	skb_checksum_none_assert(skb);
+ 	skb->protocol = eth_type_trans(skb, qdev->ndev);
+@@ -2067,10 +2062,9 @@ static void ql_process_macip_rx_intr(struct ql3_adapter *qdev,
+ 	skb2 = lrg_buf_cb2->skb;
+ 
+ 	skb_put(skb2, length);	/* Just the second buffer length here. */
+-	pci_unmap_single(qdev->pdev,
++	dma_unmap_single(&qdev->pdev->dev,
+ 			 dma_unmap_addr(lrg_buf_cb2, mapaddr),
+-			 dma_unmap_len(lrg_buf_cb2, maplen),
+-			 PCI_DMA_FROMDEVICE);
++			 dma_unmap_len(lrg_buf_cb2, maplen), DMA_FROM_DEVICE);
+ 	prefetch(skb2->data);
+ 
+ 	skb_checksum_none_assert(skb2);
+@@ -2319,9 +2313,9 @@ static int ql_send_map(struct ql3_adapter *qdev,
+ 	/*
+ 	 * Map the skb buffer first.
+ 	 */
+-	map = pci_map_single(qdev->pdev, skb->data, len, PCI_DMA_TODEVICE);
++	map = dma_map_single(&qdev->pdev->dev, skb->data, len, DMA_TO_DEVICE);
+ 
+-	err = pci_dma_mapping_error(qdev->pdev, map);
++	err = dma_mapping_error(&qdev->pdev->dev, map);
+ 	if (err) {
+ 		netdev_err(qdev->ndev, "PCI mapping failed with error: %d\n",
+ 			   err);
+@@ -2357,11 +2351,11 @@ static int ql_send_map(struct ql3_adapter *qdev,
+ 		    (seg == 7 && seg_cnt > 8) ||
+ 		    (seg == 12 && seg_cnt > 13) ||
+ 		    (seg == 17 && seg_cnt > 18)) {
+-			map = pci_map_single(qdev->pdev, oal,
++			map = dma_map_single(&qdev->pdev->dev, oal,
+ 					     sizeof(struct oal),
+-					     PCI_DMA_TODEVICE);
++					     DMA_TO_DEVICE);
+ 
+-			err = pci_dma_mapping_error(qdev->pdev, map);
++			err = dma_mapping_error(&qdev->pdev->dev, map);
+ 			if (err) {
+ 				netdev_err(qdev->ndev,
+ 					   "PCI mapping outbound address list with error: %d\n",
+@@ -2423,24 +2417,24 @@ static int ql_send_map(struct ql3_adapter *qdev,
+ 		    (seg == 7 && seg_cnt > 8) ||
+ 		    (seg == 12 && seg_cnt > 13) ||
+ 		    (seg == 17 && seg_cnt > 18)) {
+-			pci_unmap_single(qdev->pdev,
+-				dma_unmap_addr(&tx_cb->map[seg], mapaddr),
+-				dma_unmap_len(&tx_cb->map[seg], maplen),
+-				 PCI_DMA_TODEVICE);
++			dma_unmap_single(&qdev->pdev->dev,
++					 dma_unmap_addr(&tx_cb->map[seg], mapaddr),
++					 dma_unmap_len(&tx_cb->map[seg], maplen),
++					 DMA_TO_DEVICE);
+ 			oal++;
+ 			seg++;
+ 		}
+ 
+-		pci_unmap_page(qdev->pdev,
++		dma_unmap_page(&qdev->pdev->dev,
+ 			       dma_unmap_addr(&tx_cb->map[seg], mapaddr),
+ 			       dma_unmap_len(&tx_cb->map[seg], maplen),
+-			       PCI_DMA_TODEVICE);
++			       DMA_TO_DEVICE);
  	}
  
-+	spin_unlock_bh(&lapb->lock);
- 	lapb_put(lapb);
- 	return NOTIFY_DONE;
- }
-diff --git a/net/lapb/lapb_timer.c b/net/lapb/lapb_timer.c
-index baa247fe4ed0..0230b272b7d1 100644
---- a/net/lapb/lapb_timer.c
-+++ b/net/lapb/lapb_timer.c
-@@ -40,6 +40,7 @@ void lapb_start_t1timer(struct lapb_cb *lapb)
- 	lapb->t1timer.function = lapb_t1timer_expiry;
- 	lapb->t1timer.expires  = jiffies + lapb->t1;
+-	pci_unmap_single(qdev->pdev,
++	dma_unmap_single(&qdev->pdev->dev,
+ 			 dma_unmap_addr(&tx_cb->map[0], mapaddr),
+ 			 dma_unmap_addr(&tx_cb->map[0], maplen),
+-			 PCI_DMA_TODEVICE);
++			 DMA_TO_DEVICE);
  
-+	lapb->t1timer_stop = false;
- 	add_timer(&lapb->t1timer);
- }
+ 	return NETDEV_TX_BUSY;
  
-@@ -50,16 +51,19 @@ void lapb_start_t2timer(struct lapb_cb *lapb)
- 	lapb->t2timer.function = lapb_t2timer_expiry;
- 	lapb->t2timer.expires  = jiffies + lapb->t2;
+@@ -2525,9 +2519,8 @@ static int ql_alloc_net_req_rsp_queues(struct ql3_adapter *qdev)
+ 	wmb();
  
-+	lapb->t2timer_stop = false;
- 	add_timer(&lapb->t2timer);
- }
+ 	qdev->req_q_virt_addr =
+-	    pci_alloc_consistent(qdev->pdev,
+-				 (size_t) qdev->req_q_size,
+-				 &qdev->req_q_phy_addr);
++	    dma_alloc_coherent(&qdev->pdev->dev, (size_t)qdev->req_q_size,
++			       &qdev->req_q_phy_addr, GFP_KERNEL);
  
- void lapb_stop_t1timer(struct lapb_cb *lapb)
- {
-+	lapb->t1timer_stop = true;
- 	del_timer(&lapb->t1timer);
- }
- 
- void lapb_stop_t2timer(struct lapb_cb *lapb)
- {
-+	lapb->t2timer_stop = true;
- 	del_timer(&lapb->t2timer);
- }
- 
-@@ -72,16 +76,31 @@ static void lapb_t2timer_expiry(struct timer_list *t)
- {
- 	struct lapb_cb *lapb = from_timer(lapb, t, t2timer);
- 
-+	spin_lock_bh(&lapb->lock);
-+	if (timer_pending(&lapb->t2timer)) /* A new timer has been set up */
-+		goto out;
-+	if (lapb->t2timer_stop) /* The timer has been stopped */
-+		goto out;
-+
- 	if (lapb->condition & LAPB_ACK_PENDING_CONDITION) {
- 		lapb->condition &= ~LAPB_ACK_PENDING_CONDITION;
- 		lapb_timeout_response(lapb);
- 	}
-+
-+out:
-+	spin_unlock_bh(&lapb->lock);
- }
- 
- static void lapb_t1timer_expiry(struct timer_list *t)
- {
- 	struct lapb_cb *lapb = from_timer(lapb, t, t1timer);
- 
-+	spin_lock_bh(&lapb->lock);
-+	if (timer_pending(&lapb->t1timer)) /* A new timer has been set up */
-+		goto out;
-+	if (lapb->t1timer_stop) /* The timer has been stopped */
-+		goto out;
-+
- 	switch (lapb->state) {
- 
- 		/*
-@@ -108,7 +127,7 @@ static void lapb_t1timer_expiry(struct timer_list *t)
- 				lapb->state = LAPB_STATE_0;
- 				lapb_disconnect_indication(lapb, LAPB_TIMEDOUT);
- 				lapb_dbg(0, "(%p) S1 -> S0\n", lapb->dev);
--				return;
-+				goto out;
- 			} else {
- 				lapb->n2count++;
- 				if (lapb->mode & LAPB_EXTENDED) {
-@@ -132,7 +151,7 @@ static void lapb_t1timer_expiry(struct timer_list *t)
- 				lapb->state = LAPB_STATE_0;
- 				lapb_disconnect_confirmation(lapb, LAPB_TIMEDOUT);
- 				lapb_dbg(0, "(%p) S2 -> S0\n", lapb->dev);
--				return;
-+				goto out;
- 			} else {
- 				lapb->n2count++;
- 				lapb_dbg(1, "(%p) S2 TX DISC(1)\n", lapb->dev);
-@@ -150,7 +169,7 @@ static void lapb_t1timer_expiry(struct timer_list *t)
- 				lapb_stop_t2timer(lapb);
- 				lapb_disconnect_indication(lapb, LAPB_TIMEDOUT);
- 				lapb_dbg(0, "(%p) S3 -> S0\n", lapb->dev);
--				return;
-+				goto out;
- 			} else {
- 				lapb->n2count++;
- 				lapb_requeue_frames(lapb);
-@@ -167,7 +186,7 @@ static void lapb_t1timer_expiry(struct timer_list *t)
- 				lapb->state = LAPB_STATE_0;
- 				lapb_disconnect_indication(lapb, LAPB_TIMEDOUT);
- 				lapb_dbg(0, "(%p) S4 -> S0\n", lapb->dev);
--				return;
-+				goto out;
- 			} else {
- 				lapb->n2count++;
- 				lapb_transmit_frmr(lapb);
-@@ -176,4 +195,7 @@ static void lapb_t1timer_expiry(struct timer_list *t)
+ 	if ((qdev->req_q_virt_addr == NULL) ||
+ 	    LS_64BITS(qdev->req_q_phy_addr) & (qdev->req_q_size - 1)) {
+@@ -2536,16 +2529,14 @@ static int ql_alloc_net_req_rsp_queues(struct ql3_adapter *qdev)
  	}
  
- 	lapb_start_t1timer(lapb);
-+
-+out:
-+	spin_unlock_bh(&lapb->lock);
+ 	qdev->rsp_q_virt_addr =
+-	    pci_alloc_consistent(qdev->pdev,
+-				 (size_t) qdev->rsp_q_size,
+-				 &qdev->rsp_q_phy_addr);
++	    dma_alloc_coherent(&qdev->pdev->dev, (size_t)qdev->rsp_q_size,
++			       &qdev->rsp_q_phy_addr, GFP_KERNEL);
+ 
+ 	if ((qdev->rsp_q_virt_addr == NULL) ||
+ 	    LS_64BITS(qdev->rsp_q_phy_addr) & (qdev->rsp_q_size - 1)) {
+ 		netdev_err(qdev->ndev, "rspQ allocation failed\n");
+-		pci_free_consistent(qdev->pdev, (size_t) qdev->req_q_size,
+-				    qdev->req_q_virt_addr,
+-				    qdev->req_q_phy_addr);
++		dma_free_coherent(&qdev->pdev->dev, (size_t)qdev->req_q_size,
++				  qdev->req_q_virt_addr, qdev->req_q_phy_addr);
+ 		return -ENOMEM;
+ 	}
+ 
+@@ -2561,15 +2552,13 @@ static void ql_free_net_req_rsp_queues(struct ql3_adapter *qdev)
+ 		return;
+ 	}
+ 
+-	pci_free_consistent(qdev->pdev,
+-			    qdev->req_q_size,
+-			    qdev->req_q_virt_addr, qdev->req_q_phy_addr);
++	dma_free_coherent(&qdev->pdev->dev, qdev->req_q_size,
++			  qdev->req_q_virt_addr, qdev->req_q_phy_addr);
+ 
+ 	qdev->req_q_virt_addr = NULL;
+ 
+-	pci_free_consistent(qdev->pdev,
+-			    qdev->rsp_q_size,
+-			    qdev->rsp_q_virt_addr, qdev->rsp_q_phy_addr);
++	dma_free_coherent(&qdev->pdev->dev, qdev->rsp_q_size,
++			  qdev->rsp_q_virt_addr, qdev->rsp_q_phy_addr);
+ 
+ 	qdev->rsp_q_virt_addr = NULL;
+ 
+@@ -2593,9 +2582,9 @@ static int ql_alloc_buffer_queues(struct ql3_adapter *qdev)
+ 		return -ENOMEM;
+ 
+ 	qdev->lrg_buf_q_alloc_virt_addr =
+-		pci_alloc_consistent(qdev->pdev,
+-				     qdev->lrg_buf_q_alloc_size,
+-				     &qdev->lrg_buf_q_alloc_phy_addr);
++		dma_alloc_coherent(&qdev->pdev->dev,
++				   qdev->lrg_buf_q_alloc_size,
++				   &qdev->lrg_buf_q_alloc_phy_addr, GFP_KERNEL);
+ 
+ 	if (qdev->lrg_buf_q_alloc_virt_addr == NULL) {
+ 		netdev_err(qdev->ndev, "lBufQ failed\n");
+@@ -2613,15 +2602,16 @@ static int ql_alloc_buffer_queues(struct ql3_adapter *qdev)
+ 		qdev->small_buf_q_alloc_size = qdev->small_buf_q_size * 2;
+ 
+ 	qdev->small_buf_q_alloc_virt_addr =
+-		pci_alloc_consistent(qdev->pdev,
+-				     qdev->small_buf_q_alloc_size,
+-				     &qdev->small_buf_q_alloc_phy_addr);
++		dma_alloc_coherent(&qdev->pdev->dev,
++				   qdev->small_buf_q_alloc_size,
++				   &qdev->small_buf_q_alloc_phy_addr, GFP_KERNEL);
+ 
+ 	if (qdev->small_buf_q_alloc_virt_addr == NULL) {
+ 		netdev_err(qdev->ndev, "Small Buffer Queue allocation failed\n");
+-		pci_free_consistent(qdev->pdev, qdev->lrg_buf_q_alloc_size,
+-				    qdev->lrg_buf_q_alloc_virt_addr,
+-				    qdev->lrg_buf_q_alloc_phy_addr);
++		dma_free_coherent(&qdev->pdev->dev,
++				  qdev->lrg_buf_q_alloc_size,
++				  qdev->lrg_buf_q_alloc_virt_addr,
++				  qdev->lrg_buf_q_alloc_phy_addr);
+ 		return -ENOMEM;
+ 	}
+ 
+@@ -2638,17 +2628,15 @@ static void ql_free_buffer_queues(struct ql3_adapter *qdev)
+ 		return;
+ 	}
+ 	kfree(qdev->lrg_buf);
+-	pci_free_consistent(qdev->pdev,
+-			    qdev->lrg_buf_q_alloc_size,
+-			    qdev->lrg_buf_q_alloc_virt_addr,
+-			    qdev->lrg_buf_q_alloc_phy_addr);
++	dma_free_coherent(&qdev->pdev->dev, qdev->lrg_buf_q_alloc_size,
++			  qdev->lrg_buf_q_alloc_virt_addr,
++			  qdev->lrg_buf_q_alloc_phy_addr);
+ 
+ 	qdev->lrg_buf_q_virt_addr = NULL;
+ 
+-	pci_free_consistent(qdev->pdev,
+-			    qdev->small_buf_q_alloc_size,
+-			    qdev->small_buf_q_alloc_virt_addr,
+-			    qdev->small_buf_q_alloc_phy_addr);
++	dma_free_coherent(&qdev->pdev->dev, qdev->small_buf_q_alloc_size,
++			  qdev->small_buf_q_alloc_virt_addr,
++			  qdev->small_buf_q_alloc_phy_addr);
+ 
+ 	qdev->small_buf_q_virt_addr = NULL;
+ 
+@@ -2666,9 +2654,9 @@ static int ql_alloc_small_buffers(struct ql3_adapter *qdev)
+ 		 QL_SMALL_BUFFER_SIZE);
+ 
+ 	qdev->small_buf_virt_addr =
+-		pci_alloc_consistent(qdev->pdev,
+-				     qdev->small_buf_total_size,
+-				     &qdev->small_buf_phy_addr);
++		dma_alloc_coherent(&qdev->pdev->dev,
++				   qdev->small_buf_total_size,
++				   &qdev->small_buf_phy_addr, GFP_KERNEL);
+ 
+ 	if (qdev->small_buf_virt_addr == NULL) {
+ 		netdev_err(qdev->ndev, "Failed to get small buffer memory\n");
+@@ -2701,10 +2689,10 @@ static void ql_free_small_buffers(struct ql3_adapter *qdev)
+ 		return;
+ 	}
+ 	if (qdev->small_buf_virt_addr != NULL) {
+-		pci_free_consistent(qdev->pdev,
+-				    qdev->small_buf_total_size,
+-				    qdev->small_buf_virt_addr,
+-				    qdev->small_buf_phy_addr);
++		dma_free_coherent(&qdev->pdev->dev,
++				  qdev->small_buf_total_size,
++				  qdev->small_buf_virt_addr,
++				  qdev->small_buf_phy_addr);
+ 
+ 		qdev->small_buf_virt_addr = NULL;
+ 	}
+@@ -2719,10 +2707,10 @@ static void ql_free_large_buffers(struct ql3_adapter *qdev)
+ 		lrg_buf_cb = &qdev->lrg_buf[i];
+ 		if (lrg_buf_cb->skb) {
+ 			dev_kfree_skb(lrg_buf_cb->skb);
+-			pci_unmap_single(qdev->pdev,
++			dma_unmap_single(&qdev->pdev->dev,
+ 					 dma_unmap_addr(lrg_buf_cb, mapaddr),
+ 					 dma_unmap_len(lrg_buf_cb, maplen),
+-					 PCI_DMA_FROMDEVICE);
++					 DMA_FROM_DEVICE);
+ 			memset(lrg_buf_cb, 0, sizeof(struct ql_rcv_buf_cb));
+ 		} else {
+ 			break;
+@@ -2774,13 +2762,11 @@ static int ql_alloc_large_buffers(struct ql3_adapter *qdev)
+ 			 * buffer
+ 			 */
+ 			skb_reserve(skb, QL_HEADER_SPACE);
+-			map = pci_map_single(qdev->pdev,
+-					     skb->data,
+-					     qdev->lrg_buffer_len -
+-					     QL_HEADER_SPACE,
+-					     PCI_DMA_FROMDEVICE);
++			map = dma_map_single(&qdev->pdev->dev, skb->data,
++					     qdev->lrg_buffer_len - QL_HEADER_SPACE,
++					     DMA_FROM_DEVICE);
+ 
+-			err = pci_dma_mapping_error(qdev->pdev, map);
++			err = dma_mapping_error(&qdev->pdev->dev, map);
+ 			if (err) {
+ 				netdev_err(qdev->ndev,
+ 					   "PCI mapping failed with error: %d\n",
+@@ -2865,8 +2851,8 @@ static int ql_alloc_mem_resources(struct ql3_adapter *qdev)
+ 	 * Network Completion Queue Producer Index Register
+ 	 */
+ 	qdev->shadow_reg_virt_addr =
+-		pci_alloc_consistent(qdev->pdev,
+-				     PAGE_SIZE, &qdev->shadow_reg_phy_addr);
++		dma_alloc_coherent(&qdev->pdev->dev, PAGE_SIZE,
++				   &qdev->shadow_reg_phy_addr, GFP_KERNEL);
+ 
+ 	if (qdev->shadow_reg_virt_addr != NULL) {
+ 		qdev->preq_consumer_index = qdev->shadow_reg_virt_addr;
+@@ -2921,10 +2907,9 @@ static int ql_alloc_mem_resources(struct ql3_adapter *qdev)
+ err_buffer_queues:
+ 	ql_free_net_req_rsp_queues(qdev);
+ err_req_rsp:
+-	pci_free_consistent(qdev->pdev,
+-			    PAGE_SIZE,
+-			    qdev->shadow_reg_virt_addr,
+-			    qdev->shadow_reg_phy_addr);
++	dma_free_coherent(&qdev->pdev->dev, PAGE_SIZE,
++			  qdev->shadow_reg_virt_addr,
++			  qdev->shadow_reg_phy_addr);
+ 
+ 	return -ENOMEM;
  }
+@@ -2937,10 +2922,9 @@ static void ql_free_mem_resources(struct ql3_adapter *qdev)
+ 	ql_free_buffer_queues(qdev);
+ 	ql_free_net_req_rsp_queues(qdev);
+ 	if (qdev->shadow_reg_virt_addr != NULL) {
+-		pci_free_consistent(qdev->pdev,
+-				    PAGE_SIZE,
+-				    qdev->shadow_reg_virt_addr,
+-				    qdev->shadow_reg_phy_addr);
++		dma_free_coherent(&qdev->pdev->dev, PAGE_SIZE,
++				  qdev->shadow_reg_virt_addr,
++				  qdev->shadow_reg_phy_addr);
+ 		qdev->shadow_reg_virt_addr = NULL;
+ 	}
+ }
+@@ -3641,18 +3625,15 @@ static void ql_reset_work(struct work_struct *work)
+ 			if (tx_cb->skb) {
+ 				netdev_printk(KERN_DEBUG, ndev,
+ 					      "Freeing lost SKB\n");
+-				pci_unmap_single(qdev->pdev,
+-					 dma_unmap_addr(&tx_cb->map[0],
+-							mapaddr),
+-					 dma_unmap_len(&tx_cb->map[0], maplen),
+-					 PCI_DMA_TODEVICE);
++				dma_unmap_single(&qdev->pdev->dev,
++						 dma_unmap_addr(&tx_cb->map[0], mapaddr),
++						 dma_unmap_len(&tx_cb->map[0], maplen),
++						 DMA_TO_DEVICE);
+ 				for (j = 1; j < tx_cb->seg_count; j++) {
+-					pci_unmap_page(qdev->pdev,
+-					       dma_unmap_addr(&tx_cb->map[j],
+-							      mapaddr),
+-					       dma_unmap_len(&tx_cb->map[j],
+-							     maplen),
+-					       PCI_DMA_TODEVICE);
++					dma_unmap_page(&qdev->pdev->dev,
++						       dma_unmap_addr(&tx_cb->map[j], mapaddr),
++						       dma_unmap_len(&tx_cb->map[j], maplen),
++						       DMA_TO_DEVICE);
+ 				}
+ 				dev_kfree_skb(tx_cb->skb);
+ 				tx_cb->skb = NULL;
+@@ -3784,13 +3765,10 @@ static int ql3xxx_probe(struct pci_dev *pdev,
+ 
+ 	pci_set_master(pdev);
+ 
+-	if (!pci_set_dma_mask(pdev, DMA_BIT_MASK(64))) {
++	if (!dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64)))
+ 		pci_using_dac = 1;
+-		err = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(64));
+-	} else if (!(err = pci_set_dma_mask(pdev, DMA_BIT_MASK(32)))) {
++	else if (!(err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32))))
+ 		pci_using_dac = 0;
+-		err = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(32));
+-	}
+ 
+ 	if (err) {
+ 		pr_err("%s no usable DMA configuration\n", pci_name(pdev));
 -- 
 2.27.0
 
