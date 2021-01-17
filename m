@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6881C2F95F4
-	for <lists+netdev@lfdr.de>; Sun, 17 Jan 2021 23:27:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CF08D2F95DE
+	for <lists+netdev@lfdr.de>; Sun, 17 Jan 2021 23:22:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729319AbhAQW0K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 17 Jan 2021 17:26:10 -0500
-Received: from userp2130.oracle.com ([156.151.31.86]:33016 "EHLO
-        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730277AbhAQWXa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 17 Jan 2021 17:23:30 -0500
-Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
-        by userp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 10HMMXWl189253;
-        Sun, 17 Jan 2021 22:22:33 GMT
+        id S1730363AbhAQWVo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 17 Jan 2021 17:21:44 -0500
+Received: from aserp2120.oracle.com ([141.146.126.78]:54944 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730253AbhAQWVf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 17 Jan 2021 17:21:35 -0500
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 10HMKbVc075239;
+        Sun, 17 Jan 2021 22:20:37 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references; s=corp-2020-01-29;
- bh=g6eUC0AZE2t/y3Z9jca9TL3vndYBoHLh6eAFxSYY+RE=;
- b=D1Z2nUzCOsjRjzmhGUSC9X7Y4hTV0nuSuYwaog2hZtfHNue5fuR5LW/mUWc84gQGWkvw
- mdBE/Pi3ORPKAms6bTkqbKrSkp0ZfcPDGXWeunIEdU4MrGo8N3n56TZb0ZTts8y+rQ7F
- 0ombTomkM2hcO+6cayTlNufjm/YaL9wYOFkiODZFGZ8wKnnaQrHPY7X208sSX7NZAoCh
- l/nZyyD293/FQSMe0ksXkT1JTpZmhVPLg5lO0+zQDYKRZHVM5Q3Xb4BRMJBlQG6WsIt1
- parmaH68NMyf2rKqWHYtZ1pDH9OAZ+jsAM9f/bb76iO2Z+7d6dj3wSFwii2BidgV1uMM uA== 
+ bh=bRmwOY57xXtZW86mDxjYm8OH2EnZFkmiALdzHfMFHjI=;
+ b=KGmfN8luvrVnLnk3tD8o13tEX7oW3oqP4jV2VsJINhiWz31/KoxQXi3cbJzvSfTItE8o
+ bgLOULuili2BI1F1zHuCubWQ0jtU+pUw7H92vndudrqF2s0k5gMpPlhvfagHAlhkJGFj
+ KmJMPg45W/c4qPVT6fc4dTQFebdZEUbPDx05n970/zaNpkyAx+d1pFUpA8VGjnvrTW6m
+ ozXFvOHy04obYPuGLteBK3zTBUoHsh+8vBDSIy7zMxpTzWkFO6TECHzgvfYEQRCxaqOt
+ OaehiTDNFJvEJijwAunjbjm82TKTO39rLFcOG74Uq54Ulok0/v2qAHwyOqHjAeLHCHCn rQ== 
 Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by userp2130.oracle.com with ESMTP id 363xyhj8g2-1
+        by aserp2120.oracle.com with ESMTP id 363r3kjvrf-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sun, 17 Jan 2021 22:22:33 +0000
+        Sun, 17 Jan 2021 22:20:37 +0000
 Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 10HMBJRt092429;
-        Sun, 17 Jan 2021 22:20:32 GMT
-Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
-        by userp3030.oracle.com with ESMTP id 364a2u5ytd-1
+        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 10HMBJIW092448;
+        Sun, 17 Jan 2021 22:20:36 GMT
+Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
+        by userp3030.oracle.com with ESMTP id 364a2u5yu6-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sun, 17 Jan 2021 22:20:32 +0000
+        Sun, 17 Jan 2021 22:20:36 +0000
 Received: from abhmp0003.oracle.com (abhmp0003.oracle.com [141.146.116.9])
-        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 10HMKVFb011654;
-        Sun, 17 Jan 2021 22:20:31 GMT
+        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 10HMKZ2u014917;
+        Sun, 17 Jan 2021 22:20:35 GMT
 Received: from localhost.localdomain (/95.45.14.174)
         by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Sun, 17 Jan 2021 14:20:30 -0800
+        with ESMTP ; Sun, 17 Jan 2021 14:20:34 -0800
 From:   Alan Maguire <alan.maguire@oracle.com>
 To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org
 Cc:     kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
@@ -46,9 +46,9 @@ Cc:     kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
         shuah@kernel.org, bpf@vger.kernel.org, netdev@vger.kernel.org,
         linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
         Alan Maguire <alan.maguire@oracle.com>
-Subject: [PATCH v2 bpf-next 1/4] libbpf: add btf_has_size() and btf_int() inlines
-Date:   Sun, 17 Jan 2021 22:16:01 +0000
-Message-Id: <1610921764-7526-2-git-send-email-alan.maguire@oracle.com>
+Subject: [PATCH v2 bpf-next 2/4] libbpf: make skip_mods_and_typedefs available internally in libbpf
+Date:   Sun, 17 Jan 2021 22:16:02 +0000
+Message-Id: <1610921764-7526-3-git-send-email-alan.maguire@oracle.com>
 X-Mailer: git-send-email 1.8.3.1
 In-Reply-To: <1610921764-7526-1-git-send-email-alan.maguire@oracle.com>
 References: <1610921764-7526-1-git-send-email-alan.maguire@oracle.com>
@@ -58,60 +58,58 @@ X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 spamscore=0 mlxsc
  classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
  definitions=main-2101170139
 X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9867 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 phishscore=0
- malwarescore=0 mlxlogscore=999 bulkscore=0 priorityscore=1501 spamscore=0
- mlxscore=0 impostorscore=0 lowpriorityscore=0 suspectscore=0 clxscore=1015
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 priorityscore=1501 mlxscore=0
+ malwarescore=0 phishscore=0 suspectscore=0 impostorscore=0 adultscore=0
  classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
  definitions=main-2101170140
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-BTF type data dumping will use them in later patches, and they
-are useful generally when handling BTF data.
+btf_dump.c will need it for type-based data display.
 
 Signed-off-by: Alan Maguire <alan.maguire@oracle.com>
 ---
- tools/lib/bpf/btf.h | 19 +++++++++++++++++++
- 1 file changed, 19 insertions(+)
+ tools/lib/bpf/libbpf.c          | 4 +---
+ tools/lib/bpf/libbpf_internal.h | 2 ++
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/tools/lib/bpf/btf.h b/tools/lib/bpf/btf.h
-index 1237bcd..0c48f2e 100644
---- a/tools/lib/bpf/btf.h
-+++ b/tools/lib/bpf/btf.h
-@@ -294,6 +294,20 @@ static inline bool btf_is_datasec(const struct btf_type *t)
- 	return btf_kind(t) == BTF_KIND_DATASEC;
+diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+index 2abbc38..4ef84e1 100644
+--- a/tools/lib/bpf/libbpf.c
++++ b/tools/lib/bpf/libbpf.c
+@@ -73,8 +73,6 @@
+ #define __printf(a, b)	__attribute__((format(printf, a, b)))
+ 
+ static struct bpf_map *bpf_object__add_map(struct bpf_object *obj);
+-static const struct btf_type *
+-skip_mods_and_typedefs(const struct btf *btf, __u32 id, __u32 *res_id);
+ 
+ static int __base_pr(enum libbpf_print_level level, const char *format,
+ 		     va_list args)
+@@ -1885,7 +1883,7 @@ static int bpf_object__init_user_maps(struct bpf_object *obj, bool strict)
+ 	return 0;
  }
  
-+static inline bool btf_has_size(const struct btf_type *t)
-+{
-+	switch (BTF_INFO_KIND(t->info)) {
-+	case BTF_KIND_INT:
-+	case BTF_KIND_STRUCT:
-+	case BTF_KIND_UNION:
-+	case BTF_KIND_ENUM:
-+	case BTF_KIND_DATASEC:
-+		return true;
-+	default:
-+		return false;
-+	}
-+}
-+
- static inline __u8 btf_int_encoding(const struct btf_type *t)
+-static const struct btf_type *
++const struct btf_type *
+ skip_mods_and_typedefs(const struct btf *btf, __u32 id, __u32 *res_id)
  {
- 	return BTF_INT_ENCODING(*(__u32 *)(t + 1));
-@@ -309,6 +323,11 @@ static inline __u8 btf_int_bits(const struct btf_type *t)
- 	return BTF_INT_BITS(*(__u32 *)(t + 1));
- }
+ 	const struct btf_type *t = btf__type_by_id(btf, id);
+diff --git a/tools/lib/bpf/libbpf_internal.h b/tools/lib/bpf/libbpf_internal.h
+index 969d0ac..c25d2df 100644
+--- a/tools/lib/bpf/libbpf_internal.h
++++ b/tools/lib/bpf/libbpf_internal.h
+@@ -108,6 +108,8 @@ static inline void *libbpf_reallocarray(void *ptr, size_t nmemb, size_t size)
+ void *btf_add_mem(void **data, size_t *cap_cnt, size_t elem_sz,
+ 		  size_t cur_cnt, size_t max_cnt, size_t add_cnt);
+ int btf_ensure_mem(void **data, size_t *cap_cnt, size_t elem_sz, size_t need_cnt);
++const struct btf_type *skip_mods_and_typedefs(const struct btf *btf, __u32 id,
++					      __u32 *res_id);
  
-+static inline __u32 btf_int(const struct btf_type *t)
-+{
-+	return *(__u32 *)(t + 1);
-+}
-+
- static inline struct btf_array *btf_array(const struct btf_type *t)
- {
- 	return (struct btf_array *)(t + 1);
+ static inline bool libbpf_validate_opts(const char *opts,
+ 					size_t opts_sz, size_t user_sz,
 -- 
 1.8.3.1
 
