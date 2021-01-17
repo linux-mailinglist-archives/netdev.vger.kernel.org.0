@@ -2,121 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E6A302F9069
-	for <lists+netdev@lfdr.de>; Sun, 17 Jan 2021 05:23:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D29792F9100
+	for <lists+netdev@lfdr.de>; Sun, 17 Jan 2021 06:47:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728042AbhAQEXh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Jan 2021 23:23:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40944 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727629AbhAQEXX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 16 Jan 2021 23:23:23 -0500
-Received: from mail-oi1-x230.google.com (mail-oi1-x230.google.com [IPv6:2607:f8b0:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99AB4C061757;
-        Sat, 16 Jan 2021 20:22:42 -0800 (PST)
-Received: by mail-oi1-x230.google.com with SMTP id d203so14205904oia.0;
-        Sat, 16 Jan 2021 20:22:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=6cUrGuJbAAzbmOZxLUmIXIAt0gGPRKf0H8ukS5QNZuo=;
-        b=Jd2EBia9tnghecfC5Dbu+OMDe9c8JNmsik+oPtczPwrpfvS8Dfhj2xkPzojPoAXlYv
-         ZoDP9AxxK3r7N/qX8VrHYJ7rFrIypWuI7/nLxovXDiTdTgn2JvYoDHgdPutTAxxdOe9m
-         02wPjrSeRYhqVYc6Aurt/ANHE5FOZv5/kvNhlQipqHHkbTIBlWgICXZo2aP5jcWuPCz+
-         EAA2CsIYYzBUTfx5oGVtg9wZMLoxwGUwPgxtSJ1pNUI2ZlbtBfc31CnN7HD6Dh8HIoqY
-         75fE1SQQKA2LPjXrFCYNI4U1RpKwZaVlitS9hY5K8OUy4FQKIZeayh8z8FkD697Q8YD0
-         kKPA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=6cUrGuJbAAzbmOZxLUmIXIAt0gGPRKf0H8ukS5QNZuo=;
-        b=DncPz+C2XTP14/wCA+GJU5i4pVV5xiDLRccfIQJ9YiJL/O0LfXL/SL2qkxC1kBzX3X
-         4ZTiVu3ieIA/IAhxlPebnnplTGUlRcFsgBDu/upk9jb6qoGVO/p1tfYQ7DT+lhVc4ITy
-         2wyoobP7Tjsel7CPtxgMAfhhyAkE+tXXHGgHPlJBcsZNNFbgsURQRVJpr+NWt24vYLG6
-         ASOrLe9+NOFg+u3Vf+IdI2oRntYq72vMAXLyxjnW7E4IAxRhcdz91brF6yrcUqfAm0IX
-         bzkotI4qSgXijbzzk3LsZNqhWqJkEeVBGxzoyj90tAt5X4PAOgfIcX8TeTSo4rwpcWml
-         a2MA==
-X-Gm-Message-State: AOAM532+CO4+nVaxc0QU6ZSpFG9tPEtAs+JUmwAd2ncwszihMhCjAtup
-        yWBpvJX3++qPD7rWnhygOrVMXsguYyECMA==
-X-Google-Smtp-Source: ABdhPJxkieVF8AWr9ff/GYSZamkS5xJ/OoIXpsYP/hMerLx95TLPHXfu2zkKsF2ursROiaA3J0NFBQ==
-X-Received: by 2002:aca:5f07:: with SMTP id t7mr9475748oib.39.1610857361782;
-        Sat, 16 Jan 2021 20:22:41 -0800 (PST)
-Received: from unknown.attlocal.net ([2600:1700:65a0:ab60:1c14:d05:b7d:917b])
-        by smtp.gmail.com with ESMTPSA id l8sm537444ota.9.2021.01.16.20.22.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 16 Jan 2021 20:22:41 -0800 (PST)
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     bpf@vger.kernel.org, Cong Wang <cong.wang@bytedance.com>,
-        Andrey Ignatov <rdna@fb.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Dongdong Wang <wangdongdong.6@bytedance.com>
-Subject: [Patch bpf-next v4 3/3] selftests/bpf: add timeout map check in map_ptr tests
-Date:   Sat, 16 Jan 2021 20:22:24 -0800
-Message-Id: <20210117042224.17839-4-xiyou.wangcong@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210117042224.17839-1-xiyou.wangcong@gmail.com>
-References: <20210117042224.17839-1-xiyou.wangcong@gmail.com>
+        id S1727480AbhAQFqy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 17 Jan 2021 00:46:54 -0500
+Received: from mail.kernel.org ([198.145.29.99]:47468 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726144AbhAQFoy (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 17 Jan 2021 00:44:54 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 942F223107;
+        Sun, 17 Jan 2021 05:44:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1610862253;
+        bh=t147Aw4VB3ANVuaNuXbIKiB3aS8IyLYJnfJNaTe2FZA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=UosgCwiP68BAEk14QB82cnV0dC0YvYJ0zWPBn4nKi1rkot42iM0PL2dfTosQxg+YV
+         Sv61mhLxu5se9usdtG2ZHxWYjdgJUZKwl4pX93pdcTILUyPWMXfluZKMmYAx253qGN
+         fSvFGDM2N2yg6mC5qwArONcxJ2eTjIQMU7eieOsSdfyNEH4WvqevIvM9EwTTajYfO7
+         Sp9swakhRnYovi7HoW3+3sXoqoN+EiHNLeFK+iEBdobNkO0h8nUDrqA+mPWMvE7xly
+         8FLJJkDNsrXU+d2lOEHaVIx15XcPfDhmgiq2F4Zg25Ig6VHnX5rp4eGT4QcStEpdW9
+         4H7B6Ptf2ah1w==
+Date:   Sun, 17 Jan 2021 07:44:09 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Bjorn Helgaas <bhelgaas@google.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>, linux-pci@vger.kernel.org,
+        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
+        Don Dutile <ddutile@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>
+Subject: Re: [PATCH mlx5-next v2 0/5] Dynamically assign MSI-X vectors count
+Message-ID: <20210117054409.GQ944463@unreal>
+References: <20210114103140.866141-1-leon@kernel.org>
+ <20210114095128.0f388f08@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210114095128.0f388f08@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Cong Wang <cong.wang@bytedance.com>
+On Thu, Jan 14, 2021 at 09:51:28AM -0800, Jakub Kicinski wrote:
+> On Thu, 14 Jan 2021 12:31:35 +0200 Leon Romanovsky wrote:
+> > The number of MSI-X vectors is PCI property visible through lspci, that
+> > field is read-only and configured by the device.
+> >
+> > The static assignment of an amount of MSI-X vectors doesn't allow utilize
+> > the newly created VF because it is not known to the device the future load
+> > and configuration where that VF will be used.
+> >
+> > The VFs are created on the hypervisor and forwarded to the VMs that have
+> > different properties (for example number of CPUs).
+> >
+> > To overcome the inefficiency in the spread of such MSI-X vectors, we
+> > allow the kernel to instruct the device with the needed number of such
+> > vectors, before VF is initialized and bounded to the driver.
+>
+>
+> Hi Leon!
+>
+> Looks like you got some missing kdoc here, check out the test in
+> patchwork so we don't need to worry about this later:
+>
+> https://patchwork.kernel.org/project/netdevbpf/list/?series=414497
 
-Similar to regular hashmap test.
+Thanks Jakub,
 
-Acked-by: Andrey Ignatov <rdna@fb.com>
-Cc: Alexei Starovoitov <ast@kernel.org>
-Cc: Daniel Borkmann <daniel@iogearbox.net>
-Cc: Dongdong Wang <wangdongdong.6@bytedance.com>
-Signed-off-by: Cong Wang <cong.wang@bytedance.com>
----
- .../selftests/bpf/progs/map_ptr_kern.c        | 20 +++++++++++++++++++
- 1 file changed, 20 insertions(+)
+I'll add kdocs to internal mlx5 functions.
+IMHO, they are useless.
 
-diff --git a/tools/testing/selftests/bpf/progs/map_ptr_kern.c b/tools/testing/selftests/bpf/progs/map_ptr_kern.c
-index d8850bc6a9f1..424a9e76c93f 100644
---- a/tools/testing/selftests/bpf/progs/map_ptr_kern.c
-+++ b/tools/testing/selftests/bpf/progs/map_ptr_kern.c
-@@ -648,6 +648,25 @@ static inline int check_ringbuf(void)
- 	return 1;
- }
- 
-+struct {
-+	__uint(type, BPF_MAP_TYPE_TIMEOUT_HASH);
-+	__uint(max_entries, MAX_ENTRIES);
-+	__type(key, __u32);
-+	__type(value, __u32);
-+} m_timeout SEC(".maps");
-+
-+static inline int check_timeout_hash(void)
-+{
-+	struct bpf_htab *timeout_hash = (struct bpf_htab *)&m_timeout;
-+	struct bpf_map *map = (struct bpf_map *)&m_timeout;
-+
-+	VERIFY(check_default(&timeout_hash->map, map));
-+	VERIFY(timeout_hash->n_buckets == MAX_ENTRIES);
-+	VERIFY(timeout_hash->elem_size == 64);
-+
-+	return 1;
-+}
-+
- SEC("cgroup_skb/egress")
- int cg_skb(void *ctx)
- {
-@@ -679,6 +698,7 @@ int cg_skb(void *ctx)
- 	VERIFY_TYPE(BPF_MAP_TYPE_SK_STORAGE, check_sk_storage);
- 	VERIFY_TYPE(BPF_MAP_TYPE_DEVMAP_HASH, check_devmap_hash);
- 	VERIFY_TYPE(BPF_MAP_TYPE_RINGBUF, check_ringbuf);
-+	VERIFY_TYPE(BPF_MAP_TYPE_TIMEOUT_HASH, check_timeout_hash);
- 
- 	return 1;
- }
--- 
-2.25.1
-
+Thanks
