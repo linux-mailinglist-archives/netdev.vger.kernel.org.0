@@ -2,90 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D58AD2F92EF
-	for <lists+netdev@lfdr.de>; Sun, 17 Jan 2021 15:30:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E6BB72F932D
+	for <lists+netdev@lfdr.de>; Sun, 17 Jan 2021 16:05:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729286AbhAQO3R (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 17 Jan 2021 09:29:17 -0500
-Received: from mail.kernel.org ([198.145.29.99]:42370 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729020AbhAQO3N (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 17 Jan 2021 09:29:13 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id C622620780;
-        Sun, 17 Jan 2021 14:28:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1610893712;
-        bh=/iaUtXukjseA0MPCRHEhZWtUgZwzUkRsfeEOpJOlCVc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=nUBmS2dk0WwuwCLSXdd9Eap9MY8buro+D29BEkMQp9ZLDYcrE+LnafbTlSDPEQYoj
-         6RGlIPP5r5POfvwtxUr5PZP51isArHJsElYi7keNS3/5nEXsQO3ULua3OT6WyKuRoB
-         nLWjId4Wk8bNMV/YBFGTPTXI/m0COaBf5NU3ZdDQ=
-Date:   Sun, 17 Jan 2021 15:28:29 +0100
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Jan Kiszka <jan.kiszka@siemens.com>,
-        Wong Vee Khee <vee.khee.wong@intel.com>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Ong Boon Leong <boon.leong.ong@intel.com>,
-        Voon Wei Feng <weifeng.voon@intel.com>,
-        stable@vger.kernel.org
-Subject: Re: [PATCH net-next 1/1] stmmac: intel: change all EHL/TGL to auto
- detect phy addr
-Message-ID: <YARJjWvNL2HOZx9Y@kroah.com>
-References: <20201106094341.4241-1-vee.khee.wong@intel.com>
- <bf5170d1-62a9-b2dc-cb5a-d568830c947a@siemens.com>
- <20210116165914.31b6ca5f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S1729328AbhAQPBW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 17 Jan 2021 10:01:22 -0500
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:45145 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1728664AbhAQPBG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 17 Jan 2021 10:01:06 -0500
+Received: from Internal Mail-Server by MTLPINE1 (envelope-from tariqt@nvidia.com)
+        with SMTP; 17 Jan 2021 17:00:15 +0200
+Received: from dev-l-vrt-206-005.mtl.labs.mlnx (dev-l-vrt-206-005.mtl.labs.mlnx [10.234.206.5])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 10HF0F7B029614;
+        Sun, 17 Jan 2021 17:00:15 +0200
+From:   Tariq Toukan <tariqt@nvidia.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Boris Pismenny <borisp@nvidia.com>, netdev@vger.kernel.org,
+        Tariq Toukan <ttoukan.linux@gmail.com>,
+        Moshe Shemesh <moshe@nvidia.com>,
+        Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jarod Wilson <jarod@redhat.com>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Tariq Toukan <tariqt@nvidia.com>
+Subject: [PATCH net-next V3 0/8] TLS device offload for Bond
+Date:   Sun, 17 Jan 2021 16:59:41 +0200
+Message-Id: <20210117145949.8632-1-tariqt@nvidia.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210116165914.31b6ca5f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jan 16, 2021 at 04:59:14PM -0800, Jakub Kicinski wrote:
-> On Sat, 16 Jan 2021 10:12:21 +0100 Jan Kiszka wrote:
-> > On 06.11.20 10:43, Wong Vee Khee wrote:
-> > > From: Voon Weifeng <weifeng.voon@intel.com>
-> > > 
-> > > Set all EHL/TGL phy_addr to -1 so that the driver will automatically
-> > > detect it at run-time by probing all the possible 32 addresses.
-> > > 
-> > > Signed-off-by: Voon Weifeng <weifeng.voon@intel.com>
-> > > Signed-off-by: Wong Vee Khee <vee.khee.wong@intel.com>
-> > 
-> > This fixes PHY detection on one of our EHL-based boards. Can this also
-> > be applied to stable 5.10?
-> 
-> Sure.
-> 
-> Greg, we'd like to request a backport of the following commit to 5.10.
-> 
-> commit bff6f1db91e330d7fba56f815cdbc412c75fe163
-> Author: Voon Weifeng <weifeng.voon@intel.com>
-> Date:   Fri Nov 6 17:43:41 2020 +0800
-> 
->     stmmac: intel: change all EHL/TGL to auto detect phy addr
->     
->     Set all EHL/TGL phy_addr to -1 so that the driver will automatically
->     detect it at run-time by probing all the possible 32 addresses.
->     
->     Signed-off-by: Voon Weifeng <weifeng.voon@intel.com>
->     Signed-off-by: Wong Vee Khee <vee.khee.wong@intel.com>
->     Link: https://lore.kernel.org/r/20201106094341.4241-1-vee.khee.wong@intel.com
->     Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-> 
-> 
-> It's relatively small, and Jan reports it makes his boards detect the
-> PHY. The change went in via -next and into Linus's tree during the 5.11
-> merge window.
+Hi,
 
-Now queued up, thanks.
+This series opens TX and RX TLS device offload for bond interfaces.
+This allows bond interfaces to benefit from capable lower devices.
 
-greg k-h
+We add a new ndo_sk_get_lower_dev() to be used to get the lower dev that
+corresponds to a given socket.
+The TLS module uses it to interact directly with the lowest device in
+chain, and invoke the control operations in tlsdev_ops. This means that the
+bond interface doesn't have his own struct tlsdev_ops instance and
+derived logic/callbacks.
+
+To keep simple track of the HW and SW TLS contexts, we bind each socket to
+a specific lower device for the socket's whole lifetime. This is logically
+valid (and similar to the SW kTLS behavior) in the following bond configuration,
+so we restrict the offload support to it:
+
+((mode == balance-xor) or (mode == 802.3ad))
+and xmit_hash_policy == layer3+4.
+
+In this design, TLS TX/RX offload feature flags of the bond device are
+independent from the lower devices. They reflect the current features state,
+but are not directly controllable.
+This is because the bond driver is bypassed by the call to
+ndo_sk_get_lower_dev(), without him knowing who the caller is.
+The bond TLS feature flags are set/cleared only according to the configuration
+of the mode and xmit_hash_policy.
+
+Bypass is true only for the control flow. Packets in fast path still go through
+the bond logic.
+
+The design here differs from the xfrm/ipsec offload, where the bond driver
+has his own copy of struct xfrmdev_ops and callbacks.
+
+Regards,
+Tariq
+
+V3:
+- Use "lower device" instead of "slave".
+- Make TLS TX/RX devie offload feature flags non-controllable [Fixed].
+
+V2:
+- Declare RX support.
+- Enhance the feature flags logic.
+- Slight modifications for bond_set_xfrm_features().
+- 
+
+RFC:
+- New design for the tlsdev_ops calls, introduce and use ndo_sk_get_slave()
+  to interact directly with the slave netdev.
+- Remove bond copy of tlsdev_ops callbacks.
+- In TLS module: Use netdev_sk_get_lowest_dev(), give exceptions to some checks
+  to allow bond support.
+
+
+Tariq Toukan (8):
+  net: netdevice: Add operation ndo_sk_get_lower_dev
+  net/bonding: Take IP hash logic into a helper
+  net/bonding: Implement ndo_sk_get_lower_dev
+  net/bonding: Take update_features call out of XFRM funciton
+  net/bonding: Implement TLS TX device offload
+  net/bonding: Declare TLS RX device offload support
+  net/tls: Device offload to use lowest netdevice in chain
+  net/tls: Except bond interface from some TLS checks
+
+ drivers/net/bonding/bond_main.c    | 138 +++++++++++++++++++++++++++--
+ drivers/net/bonding/bond_options.c |  42 +++++++--
+ include/linux/netdevice.h          |   4 +
+ include/net/bonding.h              |   4 +
+ net/core/dev.c                     |  33 +++++++
+ net/tls/tls_device.c               |   4 +-
+ net/tls/tls_device_fallback.c      |   2 +-
+ 7 files changed, 211 insertions(+), 16 deletions(-)
+
+-- 
+2.21.0
+
