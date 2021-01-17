@@ -2,126 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 03AC22F91AB
-	for <lists+netdev@lfdr.de>; Sun, 17 Jan 2021 11:16:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7EEF22F91B8
+	for <lists+netdev@lfdr.de>; Sun, 17 Jan 2021 11:23:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728275AbhAQKO2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 17 Jan 2021 05:14:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58812 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728368AbhAQKN5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 17 Jan 2021 05:13:57 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03122C061573
-        for <netdev@vger.kernel.org>; Sun, 17 Jan 2021 02:13:16 -0800 (PST)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1l153D-0002Ur-R1; Sun, 17 Jan 2021 11:12:51 +0100
-Received: from ukl by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1l1537-0004rN-6i; Sun, 17 Jan 2021 11:12:45 +0100
-Date:   Sun, 17 Jan 2021 11:12:42 +0100
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Dany Madden <drt@linux.ibm.com>, Lijun Pan <ljp@linux.ibm.com>,
-        Sukadev Bhattiprolu <sukadev@linux.ibm.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Juliet Kim <julietk@linux.vnet.ibm.com>
-Cc:     Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        kernel@pengutronix.de
-Subject: ibmvnic: Race condition in remove callback
-Message-ID: <20210117101242.dpwayq6wdgfdzirl@pengutronix.de>
+        id S1727930AbhAQKWv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 17 Jan 2021 05:22:51 -0500
+Received: from mail.kernel.org ([198.145.29.99]:48018 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726203AbhAQKWp (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 17 Jan 2021 05:22:45 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 8A0D820C56
+        for <netdev@vger.kernel.org>; Sun, 17 Jan 2021 10:22:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1610878924;
+        bh=d1xWKCG+gIUwVlwPRL7k/nVxtsMRdtAP6nnRmMxIfhE=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=b9atr8PVO4HbepX176u2GuWleXcnxW+uGbX60dfpzKPSOV7msoP8NsGY3Szl735AE
+         q5p79q4CiV+q+lL3Bx5TAugxOrmmmyhX+DLzW/e6wZWqBRCGqy43hPrA8ezFv+BWlS
+         jah7QLNSINZqYhr97lnwwAPkQ7MPqKGiz9IVJvZCQdo3VSk7oYxk8eFqcdKBgFk9/3
+         RPOt1sguSB7dtTpif8VCwcB7NazHIrUjxwbiZGBDjYGQ8jMr30cSjUWfesPUXo7e8F
+         uGqgnSqnG4KLIsae2hSz7TkNQSlkmGgbkt1BJTn5+ssvctxq0ZI6raLZF1q5ytbyAs
+         kQwSvmGbHqMWA==
+Received: by mail-ot1-f47.google.com with SMTP id n42so13335270ota.12
+        for <netdev@vger.kernel.org>; Sun, 17 Jan 2021 02:22:04 -0800 (PST)
+X-Gm-Message-State: AOAM532/brKkQxt1JoxL2fq7XgDQ2cAzB9Q2pxOKipdFeygA1OugMX0i
+        rPKLGhCU4vlP1TIKKEvZT7ThHHW0OhhedVwBbtQ=
+X-Google-Smtp-Source: ABdhPJyUkjW91BCUQ5+vPPy9Po8vwT5xQmikmD3WAWBFDa86YmDFBT7tLyCTqU7dAAuXZ/58fuDBXPh28KWiHwO38Kc=
+X-Received: by 2002:a9d:741a:: with SMTP id n26mr7029939otk.210.1610878923870;
+ Sun, 17 Jan 2021 02:22:03 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="5xx5owkdwvjrobm2"
-Content-Disposition: inline
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+References: <20210116164828.40545-1-marex@denx.de> <CAK8P3a1iqXjsYERVh+nQs9Xz4x7FreW3aS7OQPSB8CWcntnL4A@mail.gmail.com>
+ <a660f328-19d9-1e97-3f83-533c1245622e@denx.de> <CAK8P3a3qtrmxMg+uva-s18f_zj7aNXJXcJCzorr2d-XxnqV1Hw@mail.gmail.com>
+ <20210116203945.GA32445@wunner.de> <a6d74297-b29e-956e-5861-40cee359e892@denx.de>
+ <de224620-474d-0853-4ddc-a2f88f79fbcc@gmail.com>
+In-Reply-To: <de224620-474d-0853-4ddc-a2f88f79fbcc@gmail.com>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Sun, 17 Jan 2021 11:21:47 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a3bDRvsTqtqxNp782OUy3e6Lib3eN3OSjjRh25x5Lkbuw@mail.gmail.com>
+Message-ID: <CAK8P3a3bDRvsTqtqxNp782OUy3e6Lib3eN3OSjjRh25x5Lkbuw@mail.gmail.com>
+Subject: Re: [PATCH net-next V2] net: ks8851: Fix mixed module/builtin build
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Marek Vasut <marex@denx.de>, Lukas Wunner <lukas@wunner.de>,
+        Networking <netdev@vger.kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Sat, Jan 16, 2021 at 10:41 PM Heiner Kallweit <hkallweit1@gmail.com> wrote:
+> >>
+> >> It seems unlikely that a system uses both, the parallel *and* the SPI
+> >> variant of the ks8851.  So the additional memory necessary because of
+> >> code duplication wouldn't matter in practice.
+> >
+> > I have a board with both options populated on my desk, sorry.
+>
+> Making the common part a separate module shouldn't be that hard.
+> AFAICS it would just take:
+> - export 4 functions from common
+> - extend Kconfig
+> - extend Makefile
+> One similar configuration that comes to my mind and could be used as
+> template is SPI_FSL_LIB.
 
---5xx5owkdwvjrobm2
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+There is no need to even change Kconfig, just simplify the Makefile to
 
-Hello,
+obj-$(CONFIG_KS8851) += ks8851_common.o ks8851_spi.o
+obj-$(CONFIG_KS8851_MLL) += ks8851_common.o ks8851_par.o
 
-while working on some cleanup I stumbled over a problem in the ibmvnic's
-remove callback. Since commit
+This will do the right thing and build ks8851_common.ko into
+vmlinux if at least one of the two front-ends is built-in, and
+otherwise build it at a loadable module if there is another
+module using it.
 
-        7d7195a026ba ("ibmvnic: Do not process device remove during device =
-reset")
-
-there is the following code in the remove callback:
-
-        static int ibmvnic_remove(struct vio_dev *dev)
-        {
-                ...
-                spin_lock_irqsave(&adapter->state_lock, flags);
-                if (test_bit(0, &adapter->resetting)) {
-                        spin_unlock_irqrestore(&adapter->state_lock, flags);
-                        return -EBUSY;
-                }
-
-                adapter->state =3D VNIC_REMOVING;
-                spin_unlock_irqrestore(&adapter->state_lock, flags);
-
-                flush_work(&adapter->ibmvnic_reset);
-                flush_delayed_work(&adapter->ibmvnic_delayed_reset);
-                ...
-        }
-
-Unfortunately returning -EBUSY doesn't work as intended. That's because
-the return value of this function is ignored[1] and the device is
-considered unbound by the device core (shortly) after ibmvnic_remove()
-returns.
-
-While looking into fixing that I noticed a worse problem:
-
-If ibmvnic_reset() (e.g. called by the tx_timeout callback) calls
-schedule_work(&adapter->ibmvnic_reset); just after the work queue is
-flushed above the problem that 7d7195a026ba intends to fix will trigger
-resulting in a use-after-free.
-
-Also ibmvnic_reset() checks for adapter->state without holding the lock
-which might be racy, too.
-
-Best regards
-Uwe
-
-[1] vio_bus_remove (in arch/powerpc/platforms/pseries/vio.c) records the
-    return value and passes it on. But the driver core doesn't care for
-    the return value (see __device_release_driver() in drivers/base/dd.c
-    calling dev->bus->remove()).
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---5xx5owkdwvjrobm2
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmAEDZYACgkQwfwUeK3K
-7AkwBQf/c47PaHA1ggqrUFZW6gBFSWnb0WF0g1/68U3HbE+n0NneW5z6EzT9F+lF
-zCKvZ21hhpaCya0ELqrJsjaHPsafl+GwbUFZWDXgzTZz3sSIVFEoRqAErOuhkkU9
-qXo4hSOsz01PTwQLYd9UjzHnlAUGrhxSavJSuZkzFS/4h/f7pXjUiM0+R0Njz1ob
-7UweVmKM4px/6MBOybthxtBohmcZgtBUT2+y8OHfo2972u+FTCjMdaGciOQk2v/+
-8W3DjMHyWqgIiUnvRc/AZc2TiuEsthQtq/x1R/QO+dEX66l8oyqTYEWqs95Kk9kO
-X3Bes4bDpvxoAp1vAdXBorxocl/BQQ==
-=4xyH
------END PGP SIGNATURE-----
-
---5xx5owkdwvjrobm2--
+         Arnd
