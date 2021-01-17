@@ -2,104 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B6EBD2F942A
-	for <lists+netdev@lfdr.de>; Sun, 17 Jan 2021 18:32:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D3E122F9434
+	for <lists+netdev@lfdr.de>; Sun, 17 Jan 2021 18:42:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729877AbhAQR2A (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 17 Jan 2021 12:28:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38078 "EHLO
+        id S1729952AbhAQRmd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 17 Jan 2021 12:42:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41168 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728455AbhAQR15 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 17 Jan 2021 12:27:57 -0500
-Received: from canardo.mork.no (canardo.mork.no [IPv6:2001:4641::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A34CC061573
-        for <netdev@vger.kernel.org>; Sun, 17 Jan 2021 09:27:16 -0800 (PST)
-Received: from miraculix.mork.no (fwa136.mork.no [192.168.9.136])
-        (authenticated bits=0)
-        by canardo.mork.no (8.15.2/8.15.2) with ESMTPSA id 10HHQt5j003973
-        (version=TLSv1.3 cipher=TLS_AES_256_GCM_SHA384 bits=256 verify=NO);
-        Sun, 17 Jan 2021 18:26:55 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mork.no; s=b;
-        t=1610904416; bh=i47PqHy/XxOXMLZAW0NVDTePUMLKmi1DFXvfHx3nEJw=;
-        h=From:To:Cc:Subject:References:Date:Message-ID:From;
-        b=hCfQDsTjTh9vaPO6u7W3dOPTpWs5uyXaigI8ZrAkZrN6Q590Mt7oxfsZJBv7yLkNq
-         bzASp1mDUJpj7oL34VqgofCFh7m8uOX5Z/ptyiSTSYdaSh+X6RLF0MzgqjqRwdP5+N
-         l/Z9JNPDO1Zk6daq6A/Sxjp30cZ9SBgpzz3uNVs4=
-Received: from bjorn by miraculix.mork.no with local (Exim 4.94)
-        (envelope-from <bjorn@mork.no>)
-        id 1l1BpG-002NpQ-MU; Sun, 17 Jan 2021 18:26:54 +0100
-From:   =?utf-8?Q?Bj=C3=B8rn_Mork?= <bjorn@mork.no>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     M Chetan Kumar <m.chetan.kumar@intel.com>, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org, johannes@sipsolutions.net,
-        krishna.c.sudi@intel.com
-Subject: Re: [PATCH 17/18] net: iosm: readme file
-Organization: m
-References: <20210107170523.26531-1-m.chetan.kumar@intel.com>
-        <20210107170523.26531-18-m.chetan.kumar@intel.com>
-        <X/eJ/rl4U6edWr3i@lunn.ch>
-Date:   Sun, 17 Jan 2021 18:26:54 +0100
-In-Reply-To: <X/eJ/rl4U6edWr3i@lunn.ch> (Andrew Lunn's message of "Thu, 7 Jan
-        2021 23:23:58 +0100")
-Message-ID: <87turftqxt.fsf@miraculix.mork.no>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/27.1 (gnu/linux)
+        with ESMTP id S1728394AbhAQRma (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 17 Jan 2021 12:42:30 -0500
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22C82C061574;
+        Sun, 17 Jan 2021 09:41:50 -0800 (PST)
+Received: by mail-wr1-x42f.google.com with SMTP id a12so14261943wrv.8;
+        Sun, 17 Jan 2021 09:41:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=UYMoZ6+5O7rsbn3y945Q7rMiBcctyRNGeFXSZdUPqcs=;
+        b=I/sSYI4F2Pmb20bZxcC0CRjEleos3oPRgm5dd4K3TN6oMKBU38V56PtucYIAjAMEvh
+         MWf7hxuAZDpykvfcWoi42GS5U7gahLfJpzsgwDC9NCpGLrIXXrrITmEgwarO15eaB5UF
+         GwPpE0ZVb3oZqWCR25+Ucg9hASuzM/QhasSj3uKp8JoHDSsuGnM4tKjVcV9vjCv7CjVm
+         l/n418KhmZqHrYgKVLbdqbTm3FZln3Fq85dJ37bDdLi+0cChV0IMpFAW1t72Jc63TtIi
+         qc9adFyCCIfr8ArPc+HXBxvIjDNdlUEF4TwklrHJ2Xo0E17MykoTzkrjRKWplSslUdnG
+         pfLA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=UYMoZ6+5O7rsbn3y945Q7rMiBcctyRNGeFXSZdUPqcs=;
+        b=ZPW4eD1fgM2By7rwBWojnM2KDrwJ3xVSiT4rxOJBET2k+k2C3oEO+tNDD7bUsRHc8Y
+         tHAcY2ZMOzBHeKaIb1eOG5brTbcCSYfukkcsND6IJDXQEJtDIETNz4LAPvoe4JDtMxP4
+         so3i/Ax4Rg7qBI+svQaSiiN3eptkH2YNoeDa5HMdXiIkMrSCrufGoxYckRgTfp6oadpJ
+         otA+uPo3OD7myGh6N/pkRdpwpfkHhULw0AYkyW6Jl5iw9r6PsAdVjsmzvcWsGrULjwsS
+         EGfRY6KnyGviH3Q8C94joVkBJM2rF7hO73PmL8gnHcXQt8MdI9PhXZnq5tZ5/EeS8ZbS
+         N63A==
+X-Gm-Message-State: AOAM531ssdgJLFGEjqwYtxo+KQm+HO+5cxhwzUrqdVrjSFrhkuokxqwb
+        k4CO00TbkRdLgPHm2pyUK4Q=
+X-Google-Smtp-Source: ABdhPJwJVBfBsA66kQSBW/v1x/uB2Z0GRdEKBsxRxMM4Ho283uN3vxoR9hvi4njIPb01u9ma4n8BKw==
+X-Received: by 2002:adf:80d0:: with SMTP id 74mr22798592wrl.110.1610905308558;
+        Sun, 17 Jan 2021 09:41:48 -0800 (PST)
+Received: from anparri (host-79-50-177-118.retail.telecomitalia.it. [79.50.177.118])
+        by smtp.gmail.com with ESMTPSA id f7sm9524423wmg.43.2021.01.17.09.41.46
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 17 Jan 2021 09:41:47 -0800 (PST)
+Date:   Sun, 17 Jan 2021 18:41:39 +0100
+From:   Andrea Parri <parri.andrea@gmail.com>
+To:     Wei Liu <wei.liu@kernel.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org,
+        "K . Y . Srinivasan" <kys@microsoft.com>,
+        Haiyang Zhang <haiyangz@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Michael Kelley <mikelley@microsoft.com>,
+        Saruhan Karademir <skarade@microsoft.com>,
+        Juan Vazquez <juvazq@microsoft.com>,
+        linux-hyperv@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Subject: Re: [PATCH v2] hv_netvsc: Add (more) validation for untrusted
+ Hyper-V values
+Message-ID: <20210117174139.GA1703@anparri>
+References: <20210114202628.119541-1-parri.andrea@gmail.com>
+ <20210115203022.7005e66a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20210116130201.GA1579@anparri>
+ <20210117151032.sbhjryq2hs3ctnlx@liuwe-devbox-debian-v2>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Virus-Scanned: clamav-milter 0.102.4 at canardo
-X-Virus-Status: Clean
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210117151032.sbhjryq2hs3ctnlx@liuwe-devbox-debian-v2>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Sorry about being much too late into this discussion.  I'm not having
-the bandwidth to read netdev anymore, and just stumbled across this now.
+On Sun, Jan 17, 2021 at 03:10:32PM +0000, Wei Liu wrote:
+> On Sat, Jan 16, 2021 at 02:02:01PM +0100, Andrea Parri wrote:
+> > On Fri, Jan 15, 2021 at 08:30:22PM -0800, Jakub Kicinski wrote:
+> > > On Thu, 14 Jan 2021 21:26:28 +0100 Andrea Parri (Microsoft) wrote:
+> > > > For additional robustness in the face of Hyper-V errors or malicious
+> > > > behavior, validate all values that originate from packets that Hyper-V
+> > > > has sent to the guest.  Ensure that invalid values cannot cause indexing
+> > > > off the end of an array, or subvert an existing validation via integer
+> > > > overflow.  Ensure that outgoing packets do not have any leftover guest
+> > > > memory that has not been zeroed out.
+> > > > 
+> > > > Reported-by: Juan Vazquez <juvazq@microsoft.com>
+> > > > Signed-off-by: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
+> > > > Cc: "David S. Miller" <davem@davemloft.net>
+> > > > Cc: Jakub Kicinski <kuba@kernel.org>
+> > > > Cc: Alexei Starovoitov <ast@kernel.org>
+> > > > Cc: Daniel Borkmann <daniel@iogearbox.net>
+> > > > Cc: Andrii Nakryiko <andrii@kernel.org>
+> > > > Cc: Martin KaFai Lau <kafai@fb.com>
+> > > > Cc: Song Liu <songliubraving@fb.com>
+> > > > Cc: Yonghong Song <yhs@fb.com>
+> > > > Cc: John Fastabend <john.fastabend@gmail.com>
+> > > > Cc: KP Singh <kpsingh@kernel.org>
+> > > > Cc: netdev@vger.kernel.org
+> > > > Cc: bpf@vger.kernel.org
+> > > > ---
+> > > > Applies to 5.11-rc3 (and hyperv-next).
+> > > 
+> > > So this is for hyperv-next or should we take it via netdev trees?
+> > 
+> > No preference, either way is good for me.
+> 
+> To be clear: There is no dependency on any patch in hyperv-next, right?
+> 
+> That's my understanding, but I would like to confirm it.
 
-Andrew Lunn <andrew@lunn.ch> writes:
+Well, I wrote that this *applies* to hyperv-next... but that's indeed
+the only 'dependency' I can think of.
 
-> So, this is what all the Ethernet nonsense is all about. You have a
-> session ID you need to somehow represent to user space. And you
-> decided to use VLANs. But to use VLANs, you need an Ethernet
-> header. So you added a bogus Ethernet header.
+Hope this helps.
 
-Actually, the original reasoning was the other way around.
-
-The bogus ethernet header was added because I had seen the 3G modem
-vendors do that for a few years already, in the modem firmware.  And I
-didn't think enough about it to realize that it was a really bad idea,
-or even that it was something I could change.  Or should change.
-
-I cannot blame the MBIM sesison to VLAN mapping idea on anyone else.  As
-far as I can remember, that was just something that popped up in my head
-while working on the cdc_mbim driver. But it came as a consequence of
-already having the bogus ethernet header.  And I didn't really
-understand that I could define a new wwan subsystem with new device
-types. I thought I had to use whatever was there already.
-
-I was young and stupid. Now I'm not that young anymore ;-)
-
-Never ever imagined that this would be replicated in another driver,
-though.  That doesn't really make much sense.  We have learned by now,
-haven't we?  This subject has been discussed a few times in the past,
-and Johannes summary is my understanding as well:
-"I don't think anyone likes that"
-
-The DSS mapping sucks even more that the IPS mapping, BTW.  I don't
-think there are any real users?  Not that I know of, at least.  DSS is
-much better implmeneted as some per-session character device, as
-requested by numerous people for years.  Sorry for not listening. Looks
-like it is too late now.
-
-> Is any of this VLAN stuff required by MBIM?
-
-No.  It's my fault and mine alone.
-
-> I suggest you throw away the pretence this is an Ethernet device. It
-> is not.
-
-I completely agree.  I wish I had gone for simple raw-ip devices both in
-the qmi_wwan and cdc_mbim.  But qmi_wwan got them later, so there is
-already support for such things in wwan userspace.
-
-
-Bj=C3=B8rn
+Thanks,
+  Andrea
