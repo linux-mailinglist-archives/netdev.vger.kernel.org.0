@@ -2,85 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0EA562F948B
-	for <lists+netdev@lfdr.de>; Sun, 17 Jan 2021 19:28:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C12152F94D3
+	for <lists+netdev@lfdr.de>; Sun, 17 Jan 2021 20:16:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728956AbhAQS1r (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 17 Jan 2021 13:27:47 -0500
-Received: from smtprelay0251.hostedemail.com ([216.40.44.251]:33818 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726295AbhAQS1p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 17 Jan 2021 13:27:45 -0500
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay06.hostedemail.com (Postfix) with ESMTP id 595F81800CA7D;
-        Sun, 17 Jan 2021 18:27:03 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:152:355:379:599:800:960:973:988:989:1260:1261:1277:1311:1313:1314:1345:1359:1434:1437:1515:1516:1518:1534:1541:1593:1594:1711:1730:1747:1777:1792:2393:2553:2559:2562:3138:3139:3140:3141:3142:3352:3622:3865:3870:3871:3873:4250:4321:5007:7576:7652:9036:10004:10400:10848:11232:11658:11783:11914:12043:12048:12296:12297:12438:12555:12740:12895:12986:13069:13311:13357:13894:13972:14181:14659:14721:21060:21080:21324:21365:21433:21451:21627:30029:30054:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:15,LUA_SUMMARY:none
-X-HE-Tag: goat17_180d3b827542
-X-Filterd-Recvd-Size: 2401
-Received: from [192.168.1.159] (unknown [47.151.137.21])
-        (Authenticated sender: joe@perches.com)
-        by omf07.hostedemail.com (Postfix) with ESMTPA;
-        Sun, 17 Jan 2021 18:27:02 +0000 (UTC)
-Message-ID: <9fd72be8e628dba40fa83aeef65d80877ede86ca.camel@perches.com>
-Subject: Re: [PATCH] arcnet: fix macro name when DEBUG is defined
-From:   Joe Perches <joe@perches.com>
-To:     trix@redhat.com, m.grzeschik@pengutronix.de, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Date:   Sun, 17 Jan 2021 10:27:01 -0800
-In-Reply-To: <20210117181519.527625-1-trix@redhat.com>
-References: <20210117181519.527625-1-trix@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.1-1 
+        id S1729352AbhAQTO3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 17 Jan 2021 14:14:29 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:51540 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729455AbhAQTMa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 17 Jan 2021 14:12:30 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1610910662;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=Em1K8iGGVbZwKb6UxAnvYyfV+YtFYb9ZzMNgiaypdCM=;
+        b=GbtxJ4K9ABaaJ/swJ6UNmmU+hipoJLYpufDFh7Kp7RWuga3D4zHo39B0IQ0aTDOxH5w/LD
+        5lcqJ0/b3P1MrNBBelVbsstitRVEisNT6A6JWx4zK/sIQ1S5z50f/AsYPjJOtWSqdxr1H5
+        j2Xx3aN3d4+xKpPu3H00TCm8BfjGUwk=
+Received: from mail-qv1-f72.google.com (mail-qv1-f72.google.com
+ [209.85.219.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-346-sqV-e9syNh6iBYvwFTCHaQ-1; Sun, 17 Jan 2021 14:11:01 -0500
+X-MC-Unique: sqV-e9syNh6iBYvwFTCHaQ-1
+Received: by mail-qv1-f72.google.com with SMTP id l3so14225449qvr.10
+        for <netdev@vger.kernel.org>; Sun, 17 Jan 2021 11:11:00 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Em1K8iGGVbZwKb6UxAnvYyfV+YtFYb9ZzMNgiaypdCM=;
+        b=kSwxQfHvSHiSAP2dVRzeKIubOJIJ7qObd0jtX93TdjAYwRcIkokGf22axqwlMYD2Et
+         rrTSieayvtmkLs5/FJLCzlf50F09idEWzmzi60E/vaQXUbumKof9xXpo2pun3W+X2/QL
+         HiOVy+cZ5xicMD4LdPy/tLjimgAoQwmUUCRKqkAtHg16Rgo23MmetkliijVBq9Psm9q0
+         bOeRFV1GRFoTStlYkJ8oZiJtVgH8nJmliw832VB8R2p2svLEBie2sNLIxsTeDsQrNiI9
+         WE/s2UApo5uYfISPfbwXSJ+F0Lnm3LetfA9qGDQy6odsJzihbUS5Ux0IqfMSL53+C6BQ
+         ULog==
+X-Gm-Message-State: AOAM531J/bXf9RtmJS8oQagPVYWIwwRf2KcjuJJXM6uV6I+TNe0hSqic
+        W6Jp84dksebkecfkCF4NUTMw7R52NppPRPKI/Uc+vZb4gPWirel+yL6Uib0Yi3KLvgdpPP8n84V
+        xK9GDO6hRg4p88+Wv
+X-Received: by 2002:a0c:80ca:: with SMTP id 68mr20930341qvb.28.1610910660577;
+        Sun, 17 Jan 2021 11:11:00 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJys+5WmDdhQZSf7Bo92p1Zef8NtD8MJKSQLi9fdPdilJd0j8CLv5wMslW7B15+N4dr1hnGt3Q==
+X-Received: by 2002:a0c:80ca:: with SMTP id 68mr20930326qvb.28.1610910660403;
+        Sun, 17 Jan 2021 11:11:00 -0800 (PST)
+Received: from trix.remote.csb (075-142-250-213.res.spectrum.com. [75.142.250.213])
+        by smtp.gmail.com with ESMTPSA id u26sm9261854qkm.69.2021.01.17.11.10.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 17 Jan 2021 11:10:59 -0800 (PST)
+From:   trix@redhat.com
+To:     yisen.zhuang@huawei.com, salil.mehta@huawei.com,
+        davem@davemloft.net, kuba@kernel.org, timur@kernel.org,
+        hkallweit1@gmail.com, song.bao.hua@hisilicon.com,
+        tariqt@mellanox.com, wanghai38@huawei.com, Jason@zx2c4.com,
+        jesse.brandeburg@intel.com, dinghao.liu@zju.edu.cn,
+        liguozhu@huawei.com, huangdaode@hisilicon.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Tom Rix <trix@redhat.com>
+Subject: [PATCH] net: hns: fix variable used when DEBUG is defined
+Date:   Sun, 17 Jan 2021 11:10:44 -0800
+Message-Id: <20210117191044.533725-1-trix@redhat.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 2021-01-17 at 10:15 -0800, trix@redhat.com wrote:
-> From: Tom Rix <trix@redhat.com>
-> 
-> When DEBUG is defined this error occurs
-> 
-> drivers/net/arcnet/com20020_cs.c:70:15: error: ‘com20020_REG_W_ADDR_HI’
->   undeclared (first use in this function);
->   did you mean ‘COM20020_REG_W_ADDR_HI’?
->        ioaddr, com20020_REG_W_ADDR_HI);
->                ^~~~~~~~~~~~~~~~~~~~~~
-> 
-> From reviewing the context, the suggestion is what is meant.
-> 
-> Fixes: 0fec65130b9f ("arcnet: com20020: Use arcnet_<I/O> routines")
+From: Tom Rix <trix@redhat.com>
 
-Nice find thanks, especially seeing as how this hasn't been tested or
-compiled in 5+ years...
+When DEBUG is defined this error occurs
 
-	commit 0fec65130b9f11a73d74f47025491f97f82ba070
-	Author: Joe Perches <joe@perches.com>
-	Date:   Tue May 5 10:06:06 2015 -0700
+drivers/net/ethernet/hisilicon/hns/hns_enet.c:1505:36: error:
+  ‘struct net_device’ has no member named ‘ae_handle’;
+  did you mean ‘rx_handler’?
+  assert(skb->queue_mapping < ndev->ae_handle->q_num);
+                                    ^~~~~~~~~
 
-Acked-by: Joe Perches <joe@perches.com>
+ae_handle is an element of struct hns_nic_priv, so change
+ndev to priv.
 
-> Signed-off-by: Tom Rix <trix@redhat.com>
-> ---
->  drivers/net/arcnet/com20020_cs.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/arcnet/com20020_cs.c b/drivers/net/arcnet/com20020_cs.c
-> index cf607ffcf358..81223f6bebcc 100644
-> --- a/drivers/net/arcnet/com20020_cs.c
-> +++ b/drivers/net/arcnet/com20020_cs.c
-> @@ -67,7 +67,7 @@ static void regdump(struct net_device *dev)
->  	/* set up the address register */
->  	count = 0;
->  	arcnet_outb((count >> 8) | RDDATAflag | AUTOINCflag,
-> -		    ioaddr, com20020_REG_W_ADDR_HI);
-> +		    ioaddr, COM20020_REG_W_ADDR_HI);
->  	arcnet_outb(count & 0xff, ioaddr, COM20020_REG_W_ADDR_LO);
->  
-> 
->  	for (count = 0; count < 256 + 32; count++) {
+Fixes: b5996f11ea54 ("net: add Hisilicon Network Subsystem basic ethernet support")
+Signed-off-by: Tom Rix <trix@redhat.com>
+---
+ drivers/net/ethernet/hisilicon/hns/hns_enet.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/drivers/net/ethernet/hisilicon/hns/hns_enet.c b/drivers/net/ethernet/hisilicon/hns/hns_enet.c
+index 858cb293152a..5d7824d2b4d4 100644
+--- a/drivers/net/ethernet/hisilicon/hns/hns_enet.c
++++ b/drivers/net/ethernet/hisilicon/hns/hns_enet.c
+@@ -1502,7 +1502,7 @@ static netdev_tx_t hns_nic_net_xmit(struct sk_buff *skb,
+ {
+ 	struct hns_nic_priv *priv = netdev_priv(ndev);
+ 
+-	assert(skb->queue_mapping < ndev->ae_handle->q_num);
++	assert(skb->queue_mapping < priv->ae_handle->q_num);
+ 
+ 	return hns_nic_net_xmit_hw(ndev, skb,
+ 				   &tx_ring_data(priv, skb->queue_mapping));
+-- 
+2.27.0
 
