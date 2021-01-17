@@ -2,100 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9FD6C2F947A
-	for <lists+netdev@lfdr.de>; Sun, 17 Jan 2021 19:19:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0EA562F948B
+	for <lists+netdev@lfdr.de>; Sun, 17 Jan 2021 19:28:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730028AbhAQSRw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 17 Jan 2021 13:17:52 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:26031 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729632AbhAQSQ4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 17 Jan 2021 13:16:56 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1610907327;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=kLX4rjXMuZVOcW60dYfHUGcg3ri1M4DH6zvIU3aqXdA=;
-        b=cuSbrRmL2mwiTJLTmqlKQkehodaDT+I/zTdgbzOXCgehyUJ07j7q7Rl7Rab4PeY287Q9zK
-        kiTOT6PEORMeMDn4tov5sBdU5fz2aE1JyEN6ZkS267+8ZXaQifp1TNnjNzp2zZ8t21k6pR
-        OcBQJ5xILqMe43eH5zlIpmcN1DMaXi4=
-Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
- [209.85.219.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-548-aof-KPsCMdmHlZVeYs9yyw-1; Sun, 17 Jan 2021 13:15:25 -0500
-X-MC-Unique: aof-KPsCMdmHlZVeYs9yyw-1
-Received: by mail-qv1-f70.google.com with SMTP id j5so14062700qvu.22
-        for <netdev@vger.kernel.org>; Sun, 17 Jan 2021 10:15:25 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=kLX4rjXMuZVOcW60dYfHUGcg3ri1M4DH6zvIU3aqXdA=;
-        b=GSMF4oZunf7WOwLNqDYnPVp/UdkmN1vzC3yyEkdZXBme/JKXdY4Bnxw5xk4iby3Iw3
-         vqPu2ZyoMqA97NFE+ZBNaLWrsdWvHs7OYwJmCb8eKTTcecwc/yjHxHmyxYIsold+s47+
-         2BLSIv1CNVi/eSa3MIlvKr+su06IgoTqpk3p4ZftQ8ftEQW11xhptoZgWg16qQnwlKk+
-         RunMiXSg45AFmqHwgIRUTbg0RjAxrGGSOmhO61uBH1S0837h91Q6FqU73dDY2kz8YuBD
-         E3OUzrLqd6qiGRr/hZZ/GN4ZyKmBTIzAmL6kdpONMiiQwRSBHY2OUCnL1mB3Fx++vGKg
-         6qKw==
-X-Gm-Message-State: AOAM5313b5SsUcXaDSRn7bOySGvFT3eM+i7sc3xUe3bH092foIHMVR39
-        2DsU1T+Q61rESnuBILw1A0jY+Oi5GAj0CZ2EfCPKjiI2DMf/fMXXA4zUkgGYdre6BA0N/1NL0mu
-        7bOpzuK+c7jNJpb07
-X-Received: by 2002:ac8:5cd0:: with SMTP id s16mr19657119qta.309.1610907325209;
-        Sun, 17 Jan 2021 10:15:25 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxHA5Uu0gpa8XxDScZXYLEIxNiq80IwCQ7L2RmuyrJGlG8Qx5Pax5Bfhqa3+05laLR+7+KNtA==
-X-Received: by 2002:ac8:5cd0:: with SMTP id s16mr19657095qta.309.1610907325012;
-        Sun, 17 Jan 2021 10:15:25 -0800 (PST)
-Received: from trix.remote.csb (075-142-250-213.res.spectrum.com. [75.142.250.213])
-        by smtp.gmail.com with ESMTPSA id l191sm9315956qke.7.2021.01.17.10.15.23
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 17 Jan 2021 10:15:24 -0800 (PST)
-From:   trix@redhat.com
-To:     m.grzeschik@pengutronix.de, davem@davemloft.net, kuba@kernel.org,
-        joe@perches.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Tom Rix <trix@redhat.com>
-Subject: [PATCH] arcnet: fix macro name when DEBUG is defined
-Date:   Sun, 17 Jan 2021 10:15:19 -0800
-Message-Id: <20210117181519.527625-1-trix@redhat.com>
-X-Mailer: git-send-email 2.27.0
+        id S1728956AbhAQS1r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 17 Jan 2021 13:27:47 -0500
+Received: from smtprelay0251.hostedemail.com ([216.40.44.251]:33818 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726295AbhAQS1p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 17 Jan 2021 13:27:45 -0500
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay06.hostedemail.com (Postfix) with ESMTP id 595F81800CA7D;
+        Sun, 17 Jan 2021 18:27:03 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:152:355:379:599:800:960:973:988:989:1260:1261:1277:1311:1313:1314:1345:1359:1434:1437:1515:1516:1518:1534:1541:1593:1594:1711:1730:1747:1777:1792:2393:2553:2559:2562:3138:3139:3140:3141:3142:3352:3622:3865:3870:3871:3873:4250:4321:5007:7576:7652:9036:10004:10400:10848:11232:11658:11783:11914:12043:12048:12296:12297:12438:12555:12740:12895:12986:13069:13311:13357:13894:13972:14181:14659:14721:21060:21080:21324:21365:21433:21451:21627:30029:30054:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:15,LUA_SUMMARY:none
+X-HE-Tag: goat17_180d3b827542
+X-Filterd-Recvd-Size: 2401
+Received: from [192.168.1.159] (unknown [47.151.137.21])
+        (Authenticated sender: joe@perches.com)
+        by omf07.hostedemail.com (Postfix) with ESMTPA;
+        Sun, 17 Jan 2021 18:27:02 +0000 (UTC)
+Message-ID: <9fd72be8e628dba40fa83aeef65d80877ede86ca.camel@perches.com>
+Subject: Re: [PATCH] arcnet: fix macro name when DEBUG is defined
+From:   Joe Perches <joe@perches.com>
+To:     trix@redhat.com, m.grzeschik@pengutronix.de, davem@davemloft.net,
+        kuba@kernel.org
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Date:   Sun, 17 Jan 2021 10:27:01 -0800
+In-Reply-To: <20210117181519.527625-1-trix@redhat.com>
+References: <20210117181519.527625-1-trix@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.1-1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Tom Rix <trix@redhat.com>
+On Sun, 2021-01-17 at 10:15 -0800, trix@redhat.com wrote:
+> From: Tom Rix <trix@redhat.com>
+> 
+> When DEBUG is defined this error occurs
+> 
+> drivers/net/arcnet/com20020_cs.c:70:15: error: ‘com20020_REG_W_ADDR_HI’
+>   undeclared (first use in this function);
+>   did you mean ‘COM20020_REG_W_ADDR_HI’?
+>        ioaddr, com20020_REG_W_ADDR_HI);
+>                ^~~~~~~~~~~~~~~~~~~~~~
+> 
+> From reviewing the context, the suggestion is what is meant.
+> 
+> Fixes: 0fec65130b9f ("arcnet: com20020: Use arcnet_<I/O> routines")
 
-When DEBUG is defined this error occurs
+Nice find thanks, especially seeing as how this hasn't been tested or
+compiled in 5+ years...
 
-drivers/net/arcnet/com20020_cs.c:70:15: error: ‘com20020_REG_W_ADDR_HI’
-  undeclared (first use in this function);
-  did you mean ‘COM20020_REG_W_ADDR_HI’?
-       ioaddr, com20020_REG_W_ADDR_HI);
-               ^~~~~~~~~~~~~~~~~~~~~~
+	commit 0fec65130b9f11a73d74f47025491f97f82ba070
+	Author: Joe Perches <joe@perches.com>
+	Date:   Tue May 5 10:06:06 2015 -0700
 
-From reviewing the context, the suggestion is what is meant.
+Acked-by: Joe Perches <joe@perches.com>
 
-Fixes: 0fec65130b9f ("arcnet: com20020: Use arcnet_<I/O> routines")
-Signed-off-by: Tom Rix <trix@redhat.com>
----
- drivers/net/arcnet/com20020_cs.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> Signed-off-by: Tom Rix <trix@redhat.com>
+> ---
+>  drivers/net/arcnet/com20020_cs.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/net/arcnet/com20020_cs.c b/drivers/net/arcnet/com20020_cs.c
+> index cf607ffcf358..81223f6bebcc 100644
+> --- a/drivers/net/arcnet/com20020_cs.c
+> +++ b/drivers/net/arcnet/com20020_cs.c
+> @@ -67,7 +67,7 @@ static void regdump(struct net_device *dev)
+>  	/* set up the address register */
+>  	count = 0;
+>  	arcnet_outb((count >> 8) | RDDATAflag | AUTOINCflag,
+> -		    ioaddr, com20020_REG_W_ADDR_HI);
+> +		    ioaddr, COM20020_REG_W_ADDR_HI);
+>  	arcnet_outb(count & 0xff, ioaddr, COM20020_REG_W_ADDR_LO);
+>  
+> 
+>  	for (count = 0; count < 256 + 32; count++) {
 
-diff --git a/drivers/net/arcnet/com20020_cs.c b/drivers/net/arcnet/com20020_cs.c
-index cf607ffcf358..81223f6bebcc 100644
---- a/drivers/net/arcnet/com20020_cs.c
-+++ b/drivers/net/arcnet/com20020_cs.c
-@@ -67,7 +67,7 @@ static void regdump(struct net_device *dev)
- 	/* set up the address register */
- 	count = 0;
- 	arcnet_outb((count >> 8) | RDDATAflag | AUTOINCflag,
--		    ioaddr, com20020_REG_W_ADDR_HI);
-+		    ioaddr, COM20020_REG_W_ADDR_HI);
- 	arcnet_outb(count & 0xff, ioaddr, COM20020_REG_W_ADDR_LO);
- 
- 	for (count = 0; count < 256 + 32; count++) {
--- 
-2.27.0
 
