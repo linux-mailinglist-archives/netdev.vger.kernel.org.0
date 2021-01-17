@@ -2,590 +2,145 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EC55E2F9163
-	for <lists+netdev@lfdr.de>; Sun, 17 Jan 2021 09:35:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 16BB82F9172
+	for <lists+netdev@lfdr.de>; Sun, 17 Jan 2021 09:39:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728383AbhAQIeN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 17 Jan 2021 03:34:13 -0500
-Received: from smtp13.smtpout.orange.fr ([80.12.242.135]:28586 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1728193AbhAQIRf (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 17 Jan 2021 03:17:35 -0500
-Received: from localhost.localdomain ([92.131.99.25])
-        by mwinf5d76 with ME
-        id HkFi240040Ys01Y03kFiYE; Sun, 17 Jan 2021 09:15:48 +0100
-X-ME-Helo: localhost.localdomain
-X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Sun, 17 Jan 2021 09:15:48 +0100
-X-ME-IP: 92.131.99.25
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     GR-Linux-NIC-Dev@marvell.com, davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: [PATCH] net/qla3xxx: switch from 'pci_' to 'dma_' API
-Date:   Sun, 17 Jan 2021 09:15:42 +0100
-Message-Id: <20210117081542.560021-1-christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.27.0
+        id S1728294AbhAQIii (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 17 Jan 2021 03:38:38 -0500
+Received: from mail.kernel.org ([198.145.29.99]:52434 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728131AbhAQIRZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sun, 17 Jan 2021 03:17:25 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 549A022B37;
+        Sun, 17 Jan 2021 08:15:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1610871359;
+        bh=VS4qX458pk+ldAgpzDP2FwzoYLEQELSIbn2la/Jsoe4=;
+        h=From:To:Cc:Subject:Date:From;
+        b=L444ViER2DU8DIXOzIK8EJ4/+1Q8+N0GKbSb9GRSy3uLKIrLdh/RWQxR4A+81Kwf4
+         1RACNVDPsv8i0U4VK+QKN2m3TT2wxgg1dE3JgSbCYWZGYOaQ1aO9NKcgxekckdJdv2
+         pgYm58hC/mk0jr/G9o+KXIWZDg6TOu/0Fl7crVS8X9gXOmC7sg0CGSBIcfvphPnNJM
+         7yubAB0NIOXTv133aDgR8KU9CFO4IJaTn97S64bBCg+zaBKDNDB7kuHgivfoG7Z5LI
+         2E1udssGxojH4tQDpTjovPg7fTV6mWUBKXS4BBmpp9PrHcX9IBI+vm97erHv1Viqev
+         EQGRu28GWk1zw==
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Bjorn Helgaas <bhelgaas@google.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Cc:     Leon Romanovsky <leonro@nvidia.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>, linux-pci@vger.kernel.org,
+        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
+        Don Dutile <ddutile@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>
+Subject: [PATCH mlx5-next v3 0/5] Dynamically assign MSI-X vectors count
+Date:   Sun, 17 Jan 2021 10:15:43 +0200
+Message-Id: <20210117081548.1278992-1-leon@kernel.org>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The wrappers in include/linux/pci-dma-compat.h should go away.
+From: Leon Romanovsky <leonro@nvidia.com>
 
-The patch has been generated with the coccinelle script below and has been
-hand modified to replace GFP_ with a correct flag.
-It has been compile tested.
+Changelog
+v3:
+ * Renamed pci_set_msix_vec_count to be pci_vf_set_msix_vec_count.
+ * Added VF msix_cap check to hide sysfs entry if device doesn't support msix.
+ * Changed "-" to be ":" in the mlx5 patch to silence CI warnings about missing
+   kdoc description.
+ * Split differently error print in mlx5 driver to avoid checkpatch warning.
+v2: https://lore.kernel.org/linux-pci/20210114103140.866141-1-leon@kernel.org
+ * Patch 1:
+  * Renamed vf_msix_vec sysfs knob to be sriov_vf_msix_count
+  * Added PF and VF device locks during set MSI-X call to protect from parallel
+    driver bind/unbind operations.
+  * Removed extra checks when reading sriov_vf_msix, because users will
+    be able to distinguish between supported/not supported by looking on
+    sriov_vf_total_msix count.
+  * Changed all occurrences of "numb" to be "count"
+  * Changed returned error from EOPNOTSUPP to be EBUSY if user tries to set
+    MSI-X count after driver already bound to the VF.
+  * Added extra comment in pci_set_msix_vec_count() to emphasize that driver
+    should not be bound.
+ * Patch 2:
+  * Changed vf_total_msix from int to be u32 and updated function signatures
+    accordingly.
+  * Improved patch title
+v1: https://lore.kernel.org/linux-pci/20210110150727.1965295-1-leon@kernel.org
+ * Improved wording and commit messages of first PCI patch
+ * Added extra PCI patch to provide total number of MSI-X vectors
+ * Prohibited read of vf_msix_vec sysfs file if driver doesn't support write
+ * Removed extra function definition in pci.h
+v0: https://lore.kernel.org/linux-pci/20210103082440.34994-1-leon@kernel.org
 
-When memory is allocated in 'ql_alloc_net_req_rsp_queues()' GFP_KERNEL can
-be used because it is only called from 'ql_alloc_mem_resources()' which
-already calls 'ql_alloc_buffer_queues()' which uses GFP_KERNEL. (see below)
+--------------------------------------------------------------------
 
-When memory is allocated in 'ql_alloc_buffer_queues()' GFP_KERNEL can be
-used because this flag is already used just a few line above.
+Hi,
 
-When memory is allocated in 'ql_alloc_small_buffers()' GFP_KERNEL can
-be used because it is only called from 'ql_alloc_mem_resources()' which
-already calls 'ql_alloc_buffer_queues()' which uses GFP_KERNEL. (see above)
+The number of MSI-X vectors is PCI property visible through lspci, that
+field is read-only and configured by the device.
 
-When memory is allocated in 'ql_alloc_mem_resources()' GFP_KERNEL can be
-used because this function already calls 'ql_alloc_buffer_queues()' which
-uses GFP_KERNEL. (see above)
+The static assignment of an amount of MSI-X vectors doesn't allow utilize
+the newly created VF because it is not known to the device the future load
+and configuration where that VF will be used.
 
+The VFs are created on the hypervisor and forwarded to the VMs that have
+different properties (for example number of CPUs).
 
-While at it, use 'dma_set_mask_and_coherent()' instead of 'dma_set_mask()/
-dma_set_coherent_mask()' in order to slightly simplify code.
+To overcome the inefficiency in the spread of such MSI-X vectors, we
+allow the kernel to instruct the device with the needed number of such
+vectors, before VF is initialized and bounded to the driver.
 
+Before this series:
+[root@server ~]# lspci -vs 0000:08:00.2
+08:00.2 Ethernet controller: Mellanox Technologies MT27800 Family [ConnectX-5 Virtual Function]
+....
+        Capabilities: [9c] MSI-X: Enable- Count=12 Masked-
 
-@@
-@@
--    PCI_DMA_BIDIRECTIONAL
-+    DMA_BIDIRECTIONAL
+Configuration script:
+1. Start fresh
+echo 0 > /sys/bus/pci/devices/0000\:08\:00.0/sriov_numvfs
+modprobe -q -r mlx5_ib mlx5_core
+2. Ensure that driver doesn't run and it is safe to change MSI-X
+echo 0 > /sys/bus/pci/devices/0000\:08\:00.0/sriov_drivers_autoprobe
+3. Load driver for the PF
+modprobe mlx5_core
+4. Configure one of the VFs with new number
+echo 2 > /sys/bus/pci/devices/0000\:08\:00.0/sriov_numvfs
+echo 21 > /sys/bus/pci/devices/0000\:08\:00.2/sriov_vf_msix_count
 
-@@
-@@
--    PCI_DMA_TODEVICE
-+    DMA_TO_DEVICE
+After this series:
+[root@server ~]# lspci -vs 0000:08:00.2
+08:00.2 Ethernet controller: Mellanox Technologies MT27800 Family [ConnectX-5 Virtual Function]
+....
+        Capabilities: [9c] MSI-X: Enable- Count=21 Masked-
 
-@@
-@@
--    PCI_DMA_FROMDEVICE
-+    DMA_FROM_DEVICE
+Thanks
 
-@@
-@@
--    PCI_DMA_NONE
-+    DMA_NONE
+Leon Romanovsky (5):
+  PCI: Add sysfs callback to allow MSI-X table size change of SR-IOV VFs
+  PCI: Add SR-IOV sysfs entry to read total number of dynamic MSI-X
+    vectors
+  net/mlx5: Add dynamic MSI-X capabilities bits
+  net/mlx5: Dynamically assign MSI-X vectors count
+  net/mlx5: Allow to the users to configure number of MSI-X vectors
 
-@@
-expression e1, e2, e3;
-@@
--    pci_alloc_consistent(e1, e2, e3)
-+    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
+ Documentation/ABI/testing/sysfs-bus-pci       | 34 +++++++
+ .../net/ethernet/mellanox/mlx5/core/main.c    |  5 +
+ .../ethernet/mellanox/mlx5/core/mlx5_core.h   |  6 ++
+ .../net/ethernet/mellanox/mlx5/core/pci_irq.c | 72 ++++++++++++++
+ .../net/ethernet/mellanox/mlx5/core/sriov.c   | 51 +++++++++-
+ drivers/pci/iov.c                             | 94 +++++++++++++++++++
+ drivers/pci/msi.c                             | 47 ++++++++++
+ drivers/pci/pci-sysfs.c                       |  1 +
+ drivers/pci/pci.h                             |  5 +
+ include/linux/mlx5/mlx5_ifc.h                 | 11 ++-
+ include/linux/pci.h                           |  5 +
+ 11 files changed, 328 insertions(+), 3 deletions(-)
 
-@@
-expression e1, e2, e3;
-@@
--    pci_zalloc_consistent(e1, e2, e3)
-+    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_free_consistent(e1, e2, e3, e4)
-+    dma_free_coherent(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_map_single(e1, e2, e3, e4)
-+    dma_map_single(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_unmap_single(e1, e2, e3, e4)
-+    dma_unmap_single(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4, e5;
-@@
--    pci_map_page(e1, e2, e3, e4, e5)
-+    dma_map_page(&e1->dev, e2, e3, e4, e5)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_unmap_page(e1, e2, e3, e4)
-+    dma_unmap_page(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_map_sg(e1, e2, e3, e4)
-+    dma_map_sg(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_unmap_sg(e1, e2, e3, e4)
-+    dma_unmap_sg(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_single_for_cpu(e1, e2, e3, e4)
-+    dma_sync_single_for_cpu(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_single_for_device(e1, e2, e3, e4)
-+    dma_sync_single_for_device(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_sg_for_cpu(e1, e2, e3, e4)
-+    dma_sync_sg_for_cpu(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_sg_for_device(e1, e2, e3, e4)
-+    dma_sync_sg_for_device(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2;
-@@
--    pci_dma_mapping_error(e1, e2)
-+    dma_mapping_error(&e1->dev, e2)
-
-@@
-expression e1, e2;
-@@
--    pci_set_dma_mask(e1, e2)
-+    dma_set_mask(&e1->dev, e2)
-
-@@
-expression e1, e2;
-@@
--    pci_set_consistent_dma_mask(e1, e2)
-+    dma_set_coherent_mask(&e1->dev, e2)
-
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
----
-If needed, see post from Christoph Hellwig on the kernel-janitors ML:
-   https://marc.info/?l=kernel-janitors&m=158745678307186&w=4
----
- drivers/net/ethernet/qlogic/qla3xxx.c | 196 ++++++++++++--------------
- 1 file changed, 87 insertions(+), 109 deletions(-)
-
-diff --git a/drivers/net/ethernet/qlogic/qla3xxx.c b/drivers/net/ethernet/qlogic/qla3xxx.c
-index 27740c027681..214e347097a7 100644
---- a/drivers/net/ethernet/qlogic/qla3xxx.c
-+++ b/drivers/net/ethernet/qlogic/qla3xxx.c
-@@ -315,12 +315,11 @@ static void ql_release_to_lrg_buf_free_list(struct ql3_adapter *qdev,
- 			 * buffer
- 			 */
- 			skb_reserve(lrg_buf_cb->skb, QL_HEADER_SPACE);
--			map = pci_map_single(qdev->pdev,
-+			map = dma_map_single(&qdev->pdev->dev,
- 					     lrg_buf_cb->skb->data,
--					     qdev->lrg_buffer_len -
--					     QL_HEADER_SPACE,
--					     PCI_DMA_FROMDEVICE);
--			err = pci_dma_mapping_error(qdev->pdev, map);
-+					     qdev->lrg_buffer_len - QL_HEADER_SPACE,
-+					     DMA_FROM_DEVICE);
-+			err = dma_mapping_error(&qdev->pdev->dev, map);
- 			if (err) {
- 				netdev_err(qdev->ndev,
- 					   "PCI mapping failed with error: %d\n",
-@@ -1802,13 +1801,12 @@ static int ql_populate_free_queue(struct ql3_adapter *qdev)
- 				 * first buffer
- 				 */
- 				skb_reserve(lrg_buf_cb->skb, QL_HEADER_SPACE);
--				map = pci_map_single(qdev->pdev,
-+				map = dma_map_single(&qdev->pdev->dev,
- 						     lrg_buf_cb->skb->data,
--						     qdev->lrg_buffer_len -
--						     QL_HEADER_SPACE,
--						     PCI_DMA_FROMDEVICE);
-+						     qdev->lrg_buffer_len - QL_HEADER_SPACE,
-+						     DMA_FROM_DEVICE);
- 
--				err = pci_dma_mapping_error(qdev->pdev, map);
-+				err = dma_mapping_error(&qdev->pdev->dev, map);
- 				if (err) {
- 					netdev_err(qdev->ndev,
- 						   "PCI mapping failed with error: %d\n",
-@@ -1943,18 +1941,16 @@ static void ql_process_mac_tx_intr(struct ql3_adapter *qdev,
- 		goto invalid_seg_count;
- 	}
- 
--	pci_unmap_single(qdev->pdev,
-+	dma_unmap_single(&qdev->pdev->dev,
- 			 dma_unmap_addr(&tx_cb->map[0], mapaddr),
--			 dma_unmap_len(&tx_cb->map[0], maplen),
--			 PCI_DMA_TODEVICE);
-+			 dma_unmap_len(&tx_cb->map[0], maplen), DMA_TO_DEVICE);
- 	tx_cb->seg_count--;
- 	if (tx_cb->seg_count) {
- 		for (i = 1; i < tx_cb->seg_count; i++) {
--			pci_unmap_page(qdev->pdev,
--				       dma_unmap_addr(&tx_cb->map[i],
--						      mapaddr),
-+			dma_unmap_page(&qdev->pdev->dev,
-+				       dma_unmap_addr(&tx_cb->map[i], mapaddr),
- 				       dma_unmap_len(&tx_cb->map[i], maplen),
--				       PCI_DMA_TODEVICE);
-+				       DMA_TO_DEVICE);
- 		}
- 	}
- 	qdev->ndev->stats.tx_packets++;
-@@ -2021,10 +2017,9 @@ static void ql_process_mac_rx_intr(struct ql3_adapter *qdev,
- 	qdev->ndev->stats.rx_bytes += length;
- 
- 	skb_put(skb, length);
--	pci_unmap_single(qdev->pdev,
-+	dma_unmap_single(&qdev->pdev->dev,
- 			 dma_unmap_addr(lrg_buf_cb2, mapaddr),
--			 dma_unmap_len(lrg_buf_cb2, maplen),
--			 PCI_DMA_FROMDEVICE);
-+			 dma_unmap_len(lrg_buf_cb2, maplen), DMA_FROM_DEVICE);
- 	prefetch(skb->data);
- 	skb_checksum_none_assert(skb);
- 	skb->protocol = eth_type_trans(skb, qdev->ndev);
-@@ -2067,10 +2062,9 @@ static void ql_process_macip_rx_intr(struct ql3_adapter *qdev,
- 	skb2 = lrg_buf_cb2->skb;
- 
- 	skb_put(skb2, length);	/* Just the second buffer length here. */
--	pci_unmap_single(qdev->pdev,
-+	dma_unmap_single(&qdev->pdev->dev,
- 			 dma_unmap_addr(lrg_buf_cb2, mapaddr),
--			 dma_unmap_len(lrg_buf_cb2, maplen),
--			 PCI_DMA_FROMDEVICE);
-+			 dma_unmap_len(lrg_buf_cb2, maplen), DMA_FROM_DEVICE);
- 	prefetch(skb2->data);
- 
- 	skb_checksum_none_assert(skb2);
-@@ -2319,9 +2313,9 @@ static int ql_send_map(struct ql3_adapter *qdev,
- 	/*
- 	 * Map the skb buffer first.
- 	 */
--	map = pci_map_single(qdev->pdev, skb->data, len, PCI_DMA_TODEVICE);
-+	map = dma_map_single(&qdev->pdev->dev, skb->data, len, DMA_TO_DEVICE);
- 
--	err = pci_dma_mapping_error(qdev->pdev, map);
-+	err = dma_mapping_error(&qdev->pdev->dev, map);
- 	if (err) {
- 		netdev_err(qdev->ndev, "PCI mapping failed with error: %d\n",
- 			   err);
-@@ -2357,11 +2351,11 @@ static int ql_send_map(struct ql3_adapter *qdev,
- 		    (seg == 7 && seg_cnt > 8) ||
- 		    (seg == 12 && seg_cnt > 13) ||
- 		    (seg == 17 && seg_cnt > 18)) {
--			map = pci_map_single(qdev->pdev, oal,
-+			map = dma_map_single(&qdev->pdev->dev, oal,
- 					     sizeof(struct oal),
--					     PCI_DMA_TODEVICE);
-+					     DMA_TO_DEVICE);
- 
--			err = pci_dma_mapping_error(qdev->pdev, map);
-+			err = dma_mapping_error(&qdev->pdev->dev, map);
- 			if (err) {
- 				netdev_err(qdev->ndev,
- 					   "PCI mapping outbound address list with error: %d\n",
-@@ -2423,24 +2417,24 @@ static int ql_send_map(struct ql3_adapter *qdev,
- 		    (seg == 7 && seg_cnt > 8) ||
- 		    (seg == 12 && seg_cnt > 13) ||
- 		    (seg == 17 && seg_cnt > 18)) {
--			pci_unmap_single(qdev->pdev,
--				dma_unmap_addr(&tx_cb->map[seg], mapaddr),
--				dma_unmap_len(&tx_cb->map[seg], maplen),
--				 PCI_DMA_TODEVICE);
-+			dma_unmap_single(&qdev->pdev->dev,
-+					 dma_unmap_addr(&tx_cb->map[seg], mapaddr),
-+					 dma_unmap_len(&tx_cb->map[seg], maplen),
-+					 DMA_TO_DEVICE);
- 			oal++;
- 			seg++;
- 		}
- 
--		pci_unmap_page(qdev->pdev,
-+		dma_unmap_page(&qdev->pdev->dev,
- 			       dma_unmap_addr(&tx_cb->map[seg], mapaddr),
- 			       dma_unmap_len(&tx_cb->map[seg], maplen),
--			       PCI_DMA_TODEVICE);
-+			       DMA_TO_DEVICE);
- 	}
- 
--	pci_unmap_single(qdev->pdev,
-+	dma_unmap_single(&qdev->pdev->dev,
- 			 dma_unmap_addr(&tx_cb->map[0], mapaddr),
- 			 dma_unmap_addr(&tx_cb->map[0], maplen),
--			 PCI_DMA_TODEVICE);
-+			 DMA_TO_DEVICE);
- 
- 	return NETDEV_TX_BUSY;
- 
-@@ -2525,9 +2519,8 @@ static int ql_alloc_net_req_rsp_queues(struct ql3_adapter *qdev)
- 	wmb();
- 
- 	qdev->req_q_virt_addr =
--	    pci_alloc_consistent(qdev->pdev,
--				 (size_t) qdev->req_q_size,
--				 &qdev->req_q_phy_addr);
-+	    dma_alloc_coherent(&qdev->pdev->dev, (size_t)qdev->req_q_size,
-+			       &qdev->req_q_phy_addr, GFP_KERNEL);
- 
- 	if ((qdev->req_q_virt_addr == NULL) ||
- 	    LS_64BITS(qdev->req_q_phy_addr) & (qdev->req_q_size - 1)) {
-@@ -2536,16 +2529,14 @@ static int ql_alloc_net_req_rsp_queues(struct ql3_adapter *qdev)
- 	}
- 
- 	qdev->rsp_q_virt_addr =
--	    pci_alloc_consistent(qdev->pdev,
--				 (size_t) qdev->rsp_q_size,
--				 &qdev->rsp_q_phy_addr);
-+	    dma_alloc_coherent(&qdev->pdev->dev, (size_t)qdev->rsp_q_size,
-+			       &qdev->rsp_q_phy_addr, GFP_KERNEL);
- 
- 	if ((qdev->rsp_q_virt_addr == NULL) ||
- 	    LS_64BITS(qdev->rsp_q_phy_addr) & (qdev->rsp_q_size - 1)) {
- 		netdev_err(qdev->ndev, "rspQ allocation failed\n");
--		pci_free_consistent(qdev->pdev, (size_t) qdev->req_q_size,
--				    qdev->req_q_virt_addr,
--				    qdev->req_q_phy_addr);
-+		dma_free_coherent(&qdev->pdev->dev, (size_t)qdev->req_q_size,
-+				  qdev->req_q_virt_addr, qdev->req_q_phy_addr);
- 		return -ENOMEM;
- 	}
- 
-@@ -2561,15 +2552,13 @@ static void ql_free_net_req_rsp_queues(struct ql3_adapter *qdev)
- 		return;
- 	}
- 
--	pci_free_consistent(qdev->pdev,
--			    qdev->req_q_size,
--			    qdev->req_q_virt_addr, qdev->req_q_phy_addr);
-+	dma_free_coherent(&qdev->pdev->dev, qdev->req_q_size,
-+			  qdev->req_q_virt_addr, qdev->req_q_phy_addr);
- 
- 	qdev->req_q_virt_addr = NULL;
- 
--	pci_free_consistent(qdev->pdev,
--			    qdev->rsp_q_size,
--			    qdev->rsp_q_virt_addr, qdev->rsp_q_phy_addr);
-+	dma_free_coherent(&qdev->pdev->dev, qdev->rsp_q_size,
-+			  qdev->rsp_q_virt_addr, qdev->rsp_q_phy_addr);
- 
- 	qdev->rsp_q_virt_addr = NULL;
- 
-@@ -2593,9 +2582,9 @@ static int ql_alloc_buffer_queues(struct ql3_adapter *qdev)
- 		return -ENOMEM;
- 
- 	qdev->lrg_buf_q_alloc_virt_addr =
--		pci_alloc_consistent(qdev->pdev,
--				     qdev->lrg_buf_q_alloc_size,
--				     &qdev->lrg_buf_q_alloc_phy_addr);
-+		dma_alloc_coherent(&qdev->pdev->dev,
-+				   qdev->lrg_buf_q_alloc_size,
-+				   &qdev->lrg_buf_q_alloc_phy_addr, GFP_KERNEL);
- 
- 	if (qdev->lrg_buf_q_alloc_virt_addr == NULL) {
- 		netdev_err(qdev->ndev, "lBufQ failed\n");
-@@ -2613,15 +2602,16 @@ static int ql_alloc_buffer_queues(struct ql3_adapter *qdev)
- 		qdev->small_buf_q_alloc_size = qdev->small_buf_q_size * 2;
- 
- 	qdev->small_buf_q_alloc_virt_addr =
--		pci_alloc_consistent(qdev->pdev,
--				     qdev->small_buf_q_alloc_size,
--				     &qdev->small_buf_q_alloc_phy_addr);
-+		dma_alloc_coherent(&qdev->pdev->dev,
-+				   qdev->small_buf_q_alloc_size,
-+				   &qdev->small_buf_q_alloc_phy_addr, GFP_KERNEL);
- 
- 	if (qdev->small_buf_q_alloc_virt_addr == NULL) {
- 		netdev_err(qdev->ndev, "Small Buffer Queue allocation failed\n");
--		pci_free_consistent(qdev->pdev, qdev->lrg_buf_q_alloc_size,
--				    qdev->lrg_buf_q_alloc_virt_addr,
--				    qdev->lrg_buf_q_alloc_phy_addr);
-+		dma_free_coherent(&qdev->pdev->dev,
-+				  qdev->lrg_buf_q_alloc_size,
-+				  qdev->lrg_buf_q_alloc_virt_addr,
-+				  qdev->lrg_buf_q_alloc_phy_addr);
- 		return -ENOMEM;
- 	}
- 
-@@ -2638,17 +2628,15 @@ static void ql_free_buffer_queues(struct ql3_adapter *qdev)
- 		return;
- 	}
- 	kfree(qdev->lrg_buf);
--	pci_free_consistent(qdev->pdev,
--			    qdev->lrg_buf_q_alloc_size,
--			    qdev->lrg_buf_q_alloc_virt_addr,
--			    qdev->lrg_buf_q_alloc_phy_addr);
-+	dma_free_coherent(&qdev->pdev->dev, qdev->lrg_buf_q_alloc_size,
-+			  qdev->lrg_buf_q_alloc_virt_addr,
-+			  qdev->lrg_buf_q_alloc_phy_addr);
- 
- 	qdev->lrg_buf_q_virt_addr = NULL;
- 
--	pci_free_consistent(qdev->pdev,
--			    qdev->small_buf_q_alloc_size,
--			    qdev->small_buf_q_alloc_virt_addr,
--			    qdev->small_buf_q_alloc_phy_addr);
-+	dma_free_coherent(&qdev->pdev->dev, qdev->small_buf_q_alloc_size,
-+			  qdev->small_buf_q_alloc_virt_addr,
-+			  qdev->small_buf_q_alloc_phy_addr);
- 
- 	qdev->small_buf_q_virt_addr = NULL;
- 
-@@ -2666,9 +2654,9 @@ static int ql_alloc_small_buffers(struct ql3_adapter *qdev)
- 		 QL_SMALL_BUFFER_SIZE);
- 
- 	qdev->small_buf_virt_addr =
--		pci_alloc_consistent(qdev->pdev,
--				     qdev->small_buf_total_size,
--				     &qdev->small_buf_phy_addr);
-+		dma_alloc_coherent(&qdev->pdev->dev,
-+				   qdev->small_buf_total_size,
-+				   &qdev->small_buf_phy_addr, GFP_KERNEL);
- 
- 	if (qdev->small_buf_virt_addr == NULL) {
- 		netdev_err(qdev->ndev, "Failed to get small buffer memory\n");
-@@ -2701,10 +2689,10 @@ static void ql_free_small_buffers(struct ql3_adapter *qdev)
- 		return;
- 	}
- 	if (qdev->small_buf_virt_addr != NULL) {
--		pci_free_consistent(qdev->pdev,
--				    qdev->small_buf_total_size,
--				    qdev->small_buf_virt_addr,
--				    qdev->small_buf_phy_addr);
-+		dma_free_coherent(&qdev->pdev->dev,
-+				  qdev->small_buf_total_size,
-+				  qdev->small_buf_virt_addr,
-+				  qdev->small_buf_phy_addr);
- 
- 		qdev->small_buf_virt_addr = NULL;
- 	}
-@@ -2719,10 +2707,10 @@ static void ql_free_large_buffers(struct ql3_adapter *qdev)
- 		lrg_buf_cb = &qdev->lrg_buf[i];
- 		if (lrg_buf_cb->skb) {
- 			dev_kfree_skb(lrg_buf_cb->skb);
--			pci_unmap_single(qdev->pdev,
-+			dma_unmap_single(&qdev->pdev->dev,
- 					 dma_unmap_addr(lrg_buf_cb, mapaddr),
- 					 dma_unmap_len(lrg_buf_cb, maplen),
--					 PCI_DMA_FROMDEVICE);
-+					 DMA_FROM_DEVICE);
- 			memset(lrg_buf_cb, 0, sizeof(struct ql_rcv_buf_cb));
- 		} else {
- 			break;
-@@ -2774,13 +2762,11 @@ static int ql_alloc_large_buffers(struct ql3_adapter *qdev)
- 			 * buffer
- 			 */
- 			skb_reserve(skb, QL_HEADER_SPACE);
--			map = pci_map_single(qdev->pdev,
--					     skb->data,
--					     qdev->lrg_buffer_len -
--					     QL_HEADER_SPACE,
--					     PCI_DMA_FROMDEVICE);
-+			map = dma_map_single(&qdev->pdev->dev, skb->data,
-+					     qdev->lrg_buffer_len - QL_HEADER_SPACE,
-+					     DMA_FROM_DEVICE);
- 
--			err = pci_dma_mapping_error(qdev->pdev, map);
-+			err = dma_mapping_error(&qdev->pdev->dev, map);
- 			if (err) {
- 				netdev_err(qdev->ndev,
- 					   "PCI mapping failed with error: %d\n",
-@@ -2865,8 +2851,8 @@ static int ql_alloc_mem_resources(struct ql3_adapter *qdev)
- 	 * Network Completion Queue Producer Index Register
- 	 */
- 	qdev->shadow_reg_virt_addr =
--		pci_alloc_consistent(qdev->pdev,
--				     PAGE_SIZE, &qdev->shadow_reg_phy_addr);
-+		dma_alloc_coherent(&qdev->pdev->dev, PAGE_SIZE,
-+				   &qdev->shadow_reg_phy_addr, GFP_KERNEL);
- 
- 	if (qdev->shadow_reg_virt_addr != NULL) {
- 		qdev->preq_consumer_index = qdev->shadow_reg_virt_addr;
-@@ -2921,10 +2907,9 @@ static int ql_alloc_mem_resources(struct ql3_adapter *qdev)
- err_buffer_queues:
- 	ql_free_net_req_rsp_queues(qdev);
- err_req_rsp:
--	pci_free_consistent(qdev->pdev,
--			    PAGE_SIZE,
--			    qdev->shadow_reg_virt_addr,
--			    qdev->shadow_reg_phy_addr);
-+	dma_free_coherent(&qdev->pdev->dev, PAGE_SIZE,
-+			  qdev->shadow_reg_virt_addr,
-+			  qdev->shadow_reg_phy_addr);
- 
- 	return -ENOMEM;
- }
-@@ -2937,10 +2922,9 @@ static void ql_free_mem_resources(struct ql3_adapter *qdev)
- 	ql_free_buffer_queues(qdev);
- 	ql_free_net_req_rsp_queues(qdev);
- 	if (qdev->shadow_reg_virt_addr != NULL) {
--		pci_free_consistent(qdev->pdev,
--				    PAGE_SIZE,
--				    qdev->shadow_reg_virt_addr,
--				    qdev->shadow_reg_phy_addr);
-+		dma_free_coherent(&qdev->pdev->dev, PAGE_SIZE,
-+				  qdev->shadow_reg_virt_addr,
-+				  qdev->shadow_reg_phy_addr);
- 		qdev->shadow_reg_virt_addr = NULL;
- 	}
- }
-@@ -3641,18 +3625,15 @@ static void ql_reset_work(struct work_struct *work)
- 			if (tx_cb->skb) {
- 				netdev_printk(KERN_DEBUG, ndev,
- 					      "Freeing lost SKB\n");
--				pci_unmap_single(qdev->pdev,
--					 dma_unmap_addr(&tx_cb->map[0],
--							mapaddr),
--					 dma_unmap_len(&tx_cb->map[0], maplen),
--					 PCI_DMA_TODEVICE);
-+				dma_unmap_single(&qdev->pdev->dev,
-+						 dma_unmap_addr(&tx_cb->map[0], mapaddr),
-+						 dma_unmap_len(&tx_cb->map[0], maplen),
-+						 DMA_TO_DEVICE);
- 				for (j = 1; j < tx_cb->seg_count; j++) {
--					pci_unmap_page(qdev->pdev,
--					       dma_unmap_addr(&tx_cb->map[j],
--							      mapaddr),
--					       dma_unmap_len(&tx_cb->map[j],
--							     maplen),
--					       PCI_DMA_TODEVICE);
-+					dma_unmap_page(&qdev->pdev->dev,
-+						       dma_unmap_addr(&tx_cb->map[j], mapaddr),
-+						       dma_unmap_len(&tx_cb->map[j], maplen),
-+						       DMA_TO_DEVICE);
- 				}
- 				dev_kfree_skb(tx_cb->skb);
- 				tx_cb->skb = NULL;
-@@ -3784,13 +3765,10 @@ static int ql3xxx_probe(struct pci_dev *pdev,
- 
- 	pci_set_master(pdev);
- 
--	if (!pci_set_dma_mask(pdev, DMA_BIT_MASK(64))) {
-+	if (!dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64)))
- 		pci_using_dac = 1;
--		err = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(64));
--	} else if (!(err = pci_set_dma_mask(pdev, DMA_BIT_MASK(32)))) {
-+	else if (!(err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32))))
- 		pci_using_dac = 0;
--		err = pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(32));
--	}
- 
- 	if (err) {
- 		pr_err("%s no usable DMA configuration\n", pci_name(pdev));
--- 
-2.27.0
+--
+2.29.2
 
