@@ -2,329 +2,406 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F0FC22F95E2
-	for <lists+netdev@lfdr.de>; Sun, 17 Jan 2021 23:22:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E453C2F9602
+	for <lists+netdev@lfdr.de>; Sun, 17 Jan 2021 23:48:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730443AbhAQWWZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 17 Jan 2021 17:22:25 -0500
-Received: from aserp2120.oracle.com ([141.146.126.78]:55106 "EHLO
-        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730366AbhAQWVs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 17 Jan 2021 17:21:48 -0500
-Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
-        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 10HMKo8H075267;
-        Sun, 17 Jan 2021 22:20:50 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references; s=corp-2020-01-29;
- bh=aVLOHaoBygqp0kGdrn1OdqwsPVrpETXymT4FNLNKUF0=;
- b=pdXcSMkSNGmow881DUP6CJ7LIbt+03zQBA3dkJ5BbS7ML8spgf9+AF5q+imRg0ZH6CAD
- f/yQb9FGbCM44I3dOcSjLr53QIQ+XdaKekr++ryI839CdY7yXdS5wFtvhr01qykk3mpE
- kP43SM8hxd2JzpEKbOUCvJifR90vt7/nfDTjKTDChQY2hlTOHKUu0NbButQDHnYDx0Ov
- TSlrZKojtkjboaoZ/ghzHy8cM/H+eWb8+qM3ONXWKYqPt4uCDTDQFQoSePBMIUgBWRHd
- eqQ+fsd5ukB6IYgy6xBkB5+plqqlAfRqQGOWMcXI3fsyQECs0FlIt9JxjckPImcc8VXr kg== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-        by aserp2120.oracle.com with ESMTP id 363r3kjvrh-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sun, 17 Jan 2021 22:20:50 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
-        by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 10HMKnIc075485;
-        Sun, 17 Jan 2021 22:20:49 GMT
-Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
-        by userp3020.oracle.com with ESMTP id 3649wnyxuj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sun, 17 Jan 2021 22:20:49 +0000
-Received: from abhmp0003.oracle.com (abhmp0003.oracle.com [141.146.116.9])
-        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 10HMKgvM028303;
-        Sun, 17 Jan 2021 22:20:42 GMT
-Received: from localhost.localdomain (/95.45.14.174)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Sun, 17 Jan 2021 14:20:42 -0800
-From:   Alan Maguire <alan.maguire@oracle.com>
-To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org
-Cc:     kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org, morbo@google.com,
-        shuah@kernel.org, bpf@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kselftest@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Alan Maguire <alan.maguire@oracle.com>
-Subject: [PATCH v2 bpf-next 4/4] selftests/bpf: add dump type data tests to btf dump tests
-Date:   Sun, 17 Jan 2021 22:16:04 +0000
-Message-Id: <1610921764-7526-5-git-send-email-alan.maguire@oracle.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1610921764-7526-1-git-send-email-alan.maguire@oracle.com>
-References: <1610921764-7526-1-git-send-email-alan.maguire@oracle.com>
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9867 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 mlxlogscore=999 bulkscore=0
- spamscore=0 phishscore=0 malwarescore=0 adultscore=0 suspectscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2101170140
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9867 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxlogscore=999 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 priorityscore=1501 mlxscore=0
- malwarescore=0 phishscore=0 suspectscore=0 impostorscore=0 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2101170140
+        id S1729935AbhAQWsm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 17 Jan 2021 17:48:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49880 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726298AbhAQWsh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 17 Jan 2021 17:48:37 -0500
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE52DC061573;
+        Sun, 17 Jan 2021 14:47:56 -0800 (PST)
+Received: by mail-pj1-x1036.google.com with SMTP id g15so4220919pjd.2;
+        Sun, 17 Jan 2021 14:47:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=/2hbi2dKwVl31NeiC0aTSjst7es3pRpjrzEtDyhBGs4=;
+        b=tt++JfGFwId8s2GP2L4EAUAuYmqxzm1AEekBQB1+WZyFizrB5C7LV7pot+FLneUCnd
+         Xicp67fc4pT/EPYTNSwShPmUd37Daa1VWQyC3tIMoco0IcuYXQ8/Df5LUDn1tmet05Vu
+         hRKb1rKORQxhHl+pc7d5L7lR8f+IKpF5H3lWQMVdQgP8il263VjGIU6YN5NQNMlCvwJR
+         lN2AEQTFlgABN6kCQIb7WjGomX1cux+b0rYr/FAt5ocw64S45luWU6R3ppRojUNbw8FD
+         4icqk5Bc4Cj72ovwNbYCo/4kSi6PvA+xjsddmhdokZBHz/bvVCDOoCC7J4HHHaeFfsIh
+         4VKw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=/2hbi2dKwVl31NeiC0aTSjst7es3pRpjrzEtDyhBGs4=;
+        b=P/DHSYiXo/a3xTZIlzNhU882IECr1aFzRaEk1Oc1vtG3Myb5O/tzAGGrfA3OBx7oPX
+         EnZcB9LFa8ji+3U3gJzQoKKT+YjRi16qFTyNbFSJyQVS4k2sBdUCjuW5RT4RLB5kRlgW
+         PbT5SaZXPOlW+5AcURZSpadVLHKZY7KMdjArIUH7yZW4NHx880SfMzN12uVjC8LRdn5j
+         29x5Oz17ZE01kELih79dvizgL8GzFfoJmQs2kLO0RN1/WW36IOSVvQV24jqy6aPnWhcl
+         6gHXV4XMwo6Z9hH03K/UZ58w9wR1ZztSsPmq83ydkGs4aJKME5jZBN74VqUkcN+lc6fF
+         RJiA==
+X-Gm-Message-State: AOAM532pYrbaaEFdCaSTHocVpiyIgdVcMD8Kn6I0m9YJvm2gb+2jeMzO
+        LfRpGv1dO82pZ7Z79z8enDk=
+X-Google-Smtp-Source: ABdhPJzaIQ0RWrFBEtpJpWqdly5221YaZ8cLWBpB5oET8V4tX0Yb9AicinIt6cvyfCOeP7I6ug071Q==
+X-Received: by 2002:a17:902:e887:b029:de:7863:19b0 with SMTP id w7-20020a170902e887b02900de786319b0mr12604455plg.42.1610923676205;
+        Sun, 17 Jan 2021 14:47:56 -0800 (PST)
+Received: from shane-XPS-13-9380.hsd1.ca.comcast.net ([2601:646:8800:1c00:c3c5:f7f3:3393:2c9d])
+        by smtp.gmail.com with ESMTPSA id x15sm13593068pfa.80.2021.01.17.14.47.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 17 Jan 2021 14:47:55 -0800 (PST)
+From:   Xie He <xie.he.0141@gmail.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-x25@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Martin Schiller <ms@dev.tdt.de>
+Cc:     Xie He <xie.he.0141@gmail.com>
+Subject: [PATCH net v2] net: lapb: Add locking to the lapb module
+Date:   Sun, 17 Jan 2021 14:47:50 -0800
+Message-Id: <20210117224750.6572-1-xie.he.0141@gmail.com>
+X-Mailer: git-send-email 2.27.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Test various type data dumping operations by comparing expected
-format with the dumped string; an snprintf-style printf function
-is used to record the string dumped.
+In the lapb module, the timers may run concurrently with other code in
+this module, and there is currently no locking to prevent the code from
+racing on "struct lapb_cb". This patch adds locking to prevent racing.
 
-Signed-off-by: Alan Maguire <alan.maguire@oracle.com>
+1. Add "spinlock_t lock" to "struct lapb_cb"; Add "spin_lock_bh" and
+"spin_unlock_bh" to APIs, timer functions and notifier functions.
+
+2. Add "bool t1timer_stop, t2timer_stop" to "struct lapb_cb" to make us
+able to ask running timers to abort; Modify "lapb_stop_t1timer" and
+"lapb_stop_t2timer" to make them able to abort running timers;
+Modify "lapb_t2timer_expiry" and "lapb_t1timer_expiry" to make them
+abort after they are stopped by "lapb_stop_t1timer", "lapb_stop_t2timer",
+and "lapb_start_t1timer", "lapb_start_t2timer".
+
+3. In lapb_unregister, change "lapb_stop_t1timer" and "lapb_stop_t2timer"
+to "del_timer_sync" to make sure all running timers have exited.
+
+4. In lapb_device_event, replace the "lapb_disconnect_request" call with
+the content of "lapb_disconnect_request", to avoid trying to hold the
+lock twice. When I do this, I removed "lapb_start_t1timer" because I
+don't think it's necessary to start the timer when "NETDEV_GOING_DOWN".
+
+Fixes: 1da177e4c3f4 ("Linux-2.6.12-rc2")
+Cc: Martin Schiller <ms@dev.tdt.de>
+Signed-off-by: Xie He <xie.he.0141@gmail.com>
 ---
- tools/testing/selftests/bpf/prog_tests/btf_dump.c | 233 ++++++++++++++++++++++
- 1 file changed, 233 insertions(+)
+ include/net/lapb.h    |  2 ++
+ net/lapb/lapb_iface.c | 56 +++++++++++++++++++++++++++++++++++++++----
+ net/lapb/lapb_timer.c | 30 +++++++++++++++++++----
+ 3 files changed, 80 insertions(+), 8 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/btf_dump.c b/tools/testing/selftests/bpf/prog_tests/btf_dump.c
-index c60091e..262561f4 100644
---- a/tools/testing/selftests/bpf/prog_tests/btf_dump.c
-+++ b/tools/testing/selftests/bpf/prog_tests/btf_dump.c
-@@ -232,6 +232,237 @@ void test_btf_dump_incremental(void)
- 	btf__free(btf);
+diff --git a/include/net/lapb.h b/include/net/lapb.h
+index ccc3d1f020b0..eee73442a1ba 100644
+--- a/include/net/lapb.h
++++ b/include/net/lapb.h
+@@ -92,6 +92,7 @@ struct lapb_cb {
+ 	unsigned short		n2, n2count;
+ 	unsigned short		t1, t2;
+ 	struct timer_list	t1timer, t2timer;
++	bool			t1timer_stop, t2timer_stop;
+ 
+ 	/* Internal control information */
+ 	struct sk_buff_head	write_queue;
+@@ -103,6 +104,7 @@ struct lapb_cb {
+ 	struct lapb_frame	frmr_data;
+ 	unsigned char		frmr_type;
+ 
++	spinlock_t		lock;
+ 	refcount_t		refcnt;
+ };
+ 
+diff --git a/net/lapb/lapb_iface.c b/net/lapb/lapb_iface.c
+index 40961889e9c0..45f332607685 100644
+--- a/net/lapb/lapb_iface.c
++++ b/net/lapb/lapb_iface.c
+@@ -122,6 +122,8 @@ static struct lapb_cb *lapb_create_cb(void)
+ 
+ 	timer_setup(&lapb->t1timer, NULL, 0);
+ 	timer_setup(&lapb->t2timer, NULL, 0);
++	lapb->t1timer_stop = true;
++	lapb->t2timer_stop = true;
+ 
+ 	lapb->t1      = LAPB_DEFAULT_T1;
+ 	lapb->t2      = LAPB_DEFAULT_T2;
+@@ -129,6 +131,8 @@ static struct lapb_cb *lapb_create_cb(void)
+ 	lapb->mode    = LAPB_DEFAULT_MODE;
+ 	lapb->window  = LAPB_DEFAULT_WINDOW;
+ 	lapb->state   = LAPB_STATE_0;
++
++	spin_lock_init(&lapb->lock);
+ 	refcount_set(&lapb->refcnt, 1);
+ out:
+ 	return lapb;
+@@ -178,8 +182,8 @@ int lapb_unregister(struct net_device *dev)
+ 		goto out;
+ 	lapb_put(lapb);
+ 
+-	lapb_stop_t1timer(lapb);
+-	lapb_stop_t2timer(lapb);
++	del_timer_sync(&lapb->t1timer);
++	del_timer_sync(&lapb->t2timer);
+ 
+ 	lapb_clear_queues(lapb);
+ 
+@@ -201,6 +205,8 @@ int lapb_getparms(struct net_device *dev, struct lapb_parms_struct *parms)
+ 	if (!lapb)
+ 		goto out;
+ 
++	spin_lock_bh(&lapb->lock);
++
+ 	parms->t1      = lapb->t1 / HZ;
+ 	parms->t2      = lapb->t2 / HZ;
+ 	parms->n2      = lapb->n2;
+@@ -219,6 +225,7 @@ int lapb_getparms(struct net_device *dev, struct lapb_parms_struct *parms)
+ 	else
+ 		parms->t2timer = (lapb->t2timer.expires - jiffies) / HZ;
+ 
++	spin_unlock_bh(&lapb->lock);
+ 	lapb_put(lapb);
+ 	rc = LAPB_OK;
+ out:
+@@ -234,6 +241,8 @@ int lapb_setparms(struct net_device *dev, struct lapb_parms_struct *parms)
+ 	if (!lapb)
+ 		goto out;
+ 
++	spin_lock_bh(&lapb->lock);
++
+ 	rc = LAPB_INVALUE;
+ 	if (parms->t1 < 1 || parms->t2 < 1 || parms->n2 < 1)
+ 		goto out_put;
+@@ -256,6 +265,7 @@ int lapb_setparms(struct net_device *dev, struct lapb_parms_struct *parms)
+ 
+ 	rc = LAPB_OK;
+ out_put:
++	spin_unlock_bh(&lapb->lock);
+ 	lapb_put(lapb);
+ out:
+ 	return rc;
+@@ -270,6 +280,8 @@ int lapb_connect_request(struct net_device *dev)
+ 	if (!lapb)
+ 		goto out;
+ 
++	spin_lock_bh(&lapb->lock);
++
+ 	rc = LAPB_OK;
+ 	if (lapb->state == LAPB_STATE_1)
+ 		goto out_put;
+@@ -285,6 +297,7 @@ int lapb_connect_request(struct net_device *dev)
+ 
+ 	rc = LAPB_OK;
+ out_put:
++	spin_unlock_bh(&lapb->lock);
+ 	lapb_put(lapb);
+ out:
+ 	return rc;
+@@ -299,6 +312,8 @@ int lapb_disconnect_request(struct net_device *dev)
+ 	if (!lapb)
+ 		goto out;
+ 
++	spin_lock_bh(&lapb->lock);
++
+ 	switch (lapb->state) {
+ 	case LAPB_STATE_0:
+ 		rc = LAPB_NOTCONNECTED;
+@@ -330,6 +345,7 @@ int lapb_disconnect_request(struct net_device *dev)
+ 
+ 	rc = LAPB_OK;
+ out_put:
++	spin_unlock_bh(&lapb->lock);
+ 	lapb_put(lapb);
+ out:
+ 	return rc;
+@@ -344,6 +360,8 @@ int lapb_data_request(struct net_device *dev, struct sk_buff *skb)
+ 	if (!lapb)
+ 		goto out;
+ 
++	spin_lock_bh(&lapb->lock);
++
+ 	rc = LAPB_NOTCONNECTED;
+ 	if (lapb->state != LAPB_STATE_3 && lapb->state != LAPB_STATE_4)
+ 		goto out_put;
+@@ -352,6 +370,7 @@ int lapb_data_request(struct net_device *dev, struct sk_buff *skb)
+ 	lapb_kick(lapb);
+ 	rc = LAPB_OK;
+ out_put:
++	spin_unlock_bh(&lapb->lock);
+ 	lapb_put(lapb);
+ out:
+ 	return rc;
+@@ -364,7 +383,9 @@ int lapb_data_received(struct net_device *dev, struct sk_buff *skb)
+ 	int rc = LAPB_BADTOKEN;
+ 
+ 	if (lapb) {
++		spin_lock_bh(&lapb->lock);
+ 		lapb_data_input(lapb, skb);
++		spin_unlock_bh(&lapb->lock);
+ 		lapb_put(lapb);
+ 		rc = LAPB_OK;
+ 	}
+@@ -435,6 +456,8 @@ static int lapb_device_event(struct notifier_block *this, unsigned long event,
+ 	if (!lapb)
+ 		return NOTIFY_DONE;
+ 
++	spin_lock_bh(&lapb->lock);
++
+ 	switch (event) {
+ 	case NETDEV_UP:
+ 		lapb_dbg(0, "(%p) Interface up: %s\n", dev, dev->name);
+@@ -453,8 +476,32 @@ static int lapb_device_event(struct notifier_block *this, unsigned long event,
+ 		}
+ 		break;
+ 	case NETDEV_GOING_DOWN:
+-		if (netif_carrier_ok(dev))
+-			lapb_disconnect_request(dev);
++		switch (lapb->state) {
++		case LAPB_STATE_0:
++			break;
++
++		case LAPB_STATE_1:
++			lapb_dbg(1, "(%p) S1 TX DISC(1)\n", lapb->dev);
++			lapb_dbg(0, "(%p) S1 -> S0\n", lapb->dev);
++			lapb_send_control(lapb, LAPB_DISC, LAPB_POLLON,
++					  LAPB_COMMAND);
++			lapb->state = LAPB_STATE_0;
++			break;
++
++		case LAPB_STATE_2:
++			break;
++
++		default:
++			lapb_clear_queues(lapb);
++			lapb->n2count = 0;
++			lapb_send_control(lapb, LAPB_DISC, LAPB_POLLON,
++					  LAPB_COMMAND);
++			lapb_stop_t2timer(lapb);
++			lapb->state = LAPB_STATE_2;
++			lapb_dbg(1, "(%p) S3 DISC(1)\n", lapb->dev);
++			lapb_dbg(0, "(%p) S3 -> S2\n", lapb->dev);
++		}
++
+ 		break;
+ 	case NETDEV_DOWN:
+ 		lapb_dbg(0, "(%p) Interface down: %s\n", dev, dev->name);
+@@ -489,6 +536,7 @@ static int lapb_device_event(struct notifier_block *this, unsigned long event,
+ 		break;
+ 	}
+ 
++	spin_unlock_bh(&lapb->lock);
+ 	lapb_put(lapb);
+ 	return NOTIFY_DONE;
+ }
+diff --git a/net/lapb/lapb_timer.c b/net/lapb/lapb_timer.c
+index baa247fe4ed0..0230b272b7d1 100644
+--- a/net/lapb/lapb_timer.c
++++ b/net/lapb/lapb_timer.c
+@@ -40,6 +40,7 @@ void lapb_start_t1timer(struct lapb_cb *lapb)
+ 	lapb->t1timer.function = lapb_t1timer_expiry;
+ 	lapb->t1timer.expires  = jiffies + lapb->t1;
+ 
++	lapb->t1timer_stop = false;
+ 	add_timer(&lapb->t1timer);
  }
  
-+#define STRSIZE				2048
-+#define	EXPECTED_STRSIZE		256
-+
-+void btf_dump_snprintf(void *ctx, const char *fmt, va_list args)
-+{
-+	char *s = ctx, new[STRSIZE];
-+
-+	vsnprintf(new, STRSIZE, fmt, args);
-+	strncat(s, new, STRSIZE);
-+	vfprintf(ctx, fmt, args);
-+}
-+
-+/* skip "enum "/"struct " prefixes */
-+#define SKIP_PREFIX(_typestr, _prefix)					\
-+	do {								\
-+		if (strstr(_typestr, _prefix) == _typestr)		\
-+			_typestr += strlen(_prefix) + 1;		\
-+	} while (0)
-+
-+int btf_dump_data(struct btf *btf, struct btf_dump *d,
-+		  char *ptrtype, __u64 flags, void *ptr,
-+		  char *str, char *expectedval)
-+{
-+	struct btf_dump_emit_type_data_opts opts = { 0 };
-+	int ret = 0, cmp;
-+	__s32 type_id;
-+
-+	opts.sz = sizeof(opts);
-+	opts.compact = true;
-+	if (flags & BTF_F_NONAME)
-+		opts.noname = true;
-+	if (flags & BTF_F_ZERO)
-+		opts.zero = true;
-+	SKIP_PREFIX(ptrtype, "enum");
-+	SKIP_PREFIX(ptrtype, "struct");
-+	SKIP_PREFIX(ptrtype, "union");
-+	type_id = btf__find_by_name(btf, ptrtype);
-+	if (CHECK(type_id <= 0, "find type id",
-+		  "no '%s' in BTF: %d\n", ptrtype, type_id)) {
-+		ret = -ENOENT;
-+		goto err;
-+	}
-+	str[0] = '\0';
-+	ret = btf_dump__emit_type_data(d, type_id, &opts, ptr);
-+	if (CHECK(ret < 0, "btf_dump__emit_type_data",
-+		  "failed: %d\n", ret))
-+		goto err;
-+
-+	cmp = strncmp(str, expectedval, EXPECTED_STRSIZE);
-+	if (CHECK(cmp, "ensure expected/actual match",
-+		  "'%s' does not match expected '%s': %d\n",
-+		  str, expectedval, cmp))
-+		ret = -EFAULT;
-+
-+err:
-+	if (ret)
-+		btf_dump__free(d);
-+	return ret;
-+}
-+
-+#define TEST_BTF_DUMP_DATA(_b, _d, _str, _type, _flags, _expected, ...)	\
-+	do {								\
-+		char _expectedval[EXPECTED_STRSIZE] = _expected;	\
-+		char __ptrtype[64] = #_type;				\
-+		char *_ptrtype = (char *)__ptrtype;			\
-+		static _type _ptrdata = __VA_ARGS__;			\
-+		void *_ptr = &_ptrdata;					\
-+									\
-+		if (btf_dump_data(_b, _d, _ptrtype, _flags, _ptr,	\
-+				  _str, _expectedval))			\
-+			return;						\
-+	} while (0)
-+
-+/* Use where expected data string matches its stringified declaration */
-+#define TEST_BTF_DUMP_DATA_C(_b, _d, _str, _type, _opts, ...)		\
-+	TEST_BTF_DUMP_DATA(_b, _d, _str, _type, _opts,			\
-+			   "(" #_type ")" #__VA_ARGS__,	__VA_ARGS__)
-+
-+void test_btf_dump_data(void)
-+{
-+	struct btf *btf = libbpf_find_kernel_btf();
-+	char str[STRSIZE];
-+	struct btf_dump_opts opts = { .ctx = str };
-+	struct btf_dump *d;
-+
-+	if (CHECK(!btf, "get kernel BTF", "no kernel BTF found"))
-+		return;
-+
-+	d = btf_dump__new(btf, NULL, &opts, btf_dump_snprintf);
-+
-+	if (CHECK(!d, "new dump", "could not create BTF dump"))
-+		return;
-+
-+	/* Verify type display for various types. */
-+
-+	/* simple int */
-+	TEST_BTF_DUMP_DATA_C(btf, d, str, int, 0, 1234);
-+	TEST_BTF_DUMP_DATA(btf, d, str, int, BTF_F_NONAME, "1234", 1234);
-+
-+	/* zero value should be printed at toplevel */
-+	TEST_BTF_DUMP_DATA(btf, d, str, int, 0, "(int)0", 0);
-+	TEST_BTF_DUMP_DATA(btf, d, str, int, BTF_F_NONAME, "0", 0);
-+	TEST_BTF_DUMP_DATA(btf, d, str, int, BTF_F_ZERO, "(int)0", 0);
-+	TEST_BTF_DUMP_DATA(btf, d, str, int, BTF_F_NONAME | BTF_F_ZERO,
-+			   "0", 0);
-+	TEST_BTF_DUMP_DATA_C(btf, d, str, int, 0, -4567);
-+	TEST_BTF_DUMP_DATA(btf, d, str, int, BTF_F_NONAME, "-4567", -4567);
-+
-+	/* simple char */
-+	TEST_BTF_DUMP_DATA_C(btf, d, str, char, 0, 100);
-+	TEST_BTF_DUMP_DATA(btf, d, str, char, BTF_F_NONAME, "100", 100);
-+	/* zero value should be printed at toplevel */
-+	TEST_BTF_DUMP_DATA(btf, d, str, char, 0, "(char)0", 0);
-+	TEST_BTF_DUMP_DATA(btf, d, str, char, BTF_F_NONAME, "0", 0);
-+	TEST_BTF_DUMP_DATA(btf, d, str, char, BTF_F_ZERO, "(char)0", 0);
-+	TEST_BTF_DUMP_DATA(btf, d, str, char, BTF_F_NONAME | BTF_F_ZERO,
-+			   "0", 0);
-+
-+	/* simple typedef */
-+	TEST_BTF_DUMP_DATA_C(btf, d, str, uint64_t, 0, 100);
-+	TEST_BTF_DUMP_DATA(btf, d, str, u64, BTF_F_NONAME, "1", 1);
-+	/* zero value should be printed at toplevel */
-+	TEST_BTF_DUMP_DATA(btf, d, str, u64, 0, "(u64)0", 0);
-+	TEST_BTF_DUMP_DATA(btf, d, str, u64, BTF_F_NONAME, "0", 0);
-+	TEST_BTF_DUMP_DATA(btf, d, str, u64, BTF_F_ZERO, "(u64)0", 0);
-+	TEST_BTF_DUMP_DATA(btf, d, str, u64, BTF_F_NONAME | BTF_F_ZERO,
-+			   "0", 0);
-+
-+	/* typedef struct */
-+	TEST_BTF_DUMP_DATA_C(btf, d, str, atomic_t, 0, {.counter = (int)1,});
-+	TEST_BTF_DUMP_DATA(btf, d, str, atomic_t, BTF_F_NONAME, "{1,}",
-+			   {.counter = 1,});
-+	/* typedef with 0 value should be printed at toplevel */
-+	TEST_BTF_DUMP_DATA(btf, d, str, atomic_t, 0, "(atomic_t){}",
-+			   {.counter = 0,});
-+	TEST_BTF_DUMP_DATA(btf, d, str, atomic_t, BTF_F_NONAME, "{}",
-+			   {.counter = 0,});
-+	TEST_BTF_DUMP_DATA(btf, d, str, atomic_t, BTF_F_ZERO,
-+			   "(atomic_t){.counter = (int)0,}",
-+			   {.counter = 0,});
-+	TEST_BTF_DUMP_DATA(btf, d, str, atomic_t, BTF_F_NONAME | BTF_F_ZERO,
-+			   "{0,}", {.counter = 0,});
-+	/* enum where enum value does (and does not) exist */
-+	TEST_BTF_DUMP_DATA_C(btf, d, str, enum bpf_cmd, 0, BPF_MAP_CREATE);
-+	TEST_BTF_DUMP_DATA(btf, d, str, enum bpf_cmd, 0,
-+			   "(enum bpf_cmd)BPF_MAP_CREATE", 0);
-+	TEST_BTF_DUMP_DATA(btf, d, str, enum bpf_cmd, BTF_F_NONAME,
-+			   "BPF_MAP_CREATE",
-+			   BPF_MAP_CREATE);
-+	TEST_BTF_DUMP_DATA(btf, d, str, enum bpf_cmd,
-+			   BTF_F_NONAME | BTF_F_ZERO,
-+			   "BPF_MAP_CREATE", 0);
-+
-+	TEST_BTF_DUMP_DATA(btf, d, str, enum bpf_cmd, BTF_F_ZERO,
-+			   "(enum bpf_cmd)BPF_MAP_CREATE",
-+			   BPF_MAP_CREATE);
-+	TEST_BTF_DUMP_DATA(btf, d, str, enum bpf_cmd,
-+			   BTF_F_NONAME | BTF_F_ZERO,
-+			   "BPF_MAP_CREATE", BPF_MAP_CREATE);
-+	TEST_BTF_DUMP_DATA_C(btf, d, str, enum bpf_cmd, 0, 2000);
-+	TEST_BTF_DUMP_DATA(btf, d, str, enum bpf_cmd, BTF_F_NONAME,
-+			   "2000", 2000);
-+
-+	/* simple struct */
-+	TEST_BTF_DUMP_DATA_C(btf, d, str, struct btf_enum, 0,
-+			     {.name_off = (__u32)3,.val = (__s32)-1,});
-+	TEST_BTF_DUMP_DATA(btf, d, str, struct btf_enum, BTF_F_NONAME,
-+			   "{3,-1,}",
-+			   { .name_off = 3, .val = -1,});
-+	TEST_BTF_DUMP_DATA(btf, d, str, struct btf_enum, BTF_F_NONAME, "{-1,}",
-+			   { .name_off = 0, .val = -1,});
-+	TEST_BTF_DUMP_DATA(btf, d, str, struct btf_enum,
-+			   BTF_F_NONAME | BTF_F_ZERO,
-+			   "{0,-1,}",
-+			   { .name_off = 0, .val = -1,});
-+	/* empty struct should be printed */
-+	TEST_BTF_DUMP_DATA(btf, d, str, struct btf_enum, 0,
-+			   "(struct btf_enum){}",
-+			   { .name_off = 0, .val = 0,});
-+	TEST_BTF_DUMP_DATA(btf, d, str, struct btf_enum, BTF_F_NONAME, "{}",
-+			   { .name_off = 0, .val = 0,});
-+	TEST_BTF_DUMP_DATA(btf, d, str, struct btf_enum, BTF_F_ZERO,
-+			   "(struct btf_enum){.name_off = (__u32)0,.val = (__s32)0,}",
-+			   { .name_off = 0, .val = 0,});
-+
-+	/* struct with pointers */
-+	TEST_BTF_DUMP_DATA(btf, d, str, struct list_head, 0,
-+			   "(struct list_head){.next = (struct list_head *)0x1,}",
-+			   { .next = (struct list_head *)1 });
-+	/* NULL pointer should not be displayed */
-+	TEST_BTF_DUMP_DATA(btf, d, str, struct list_head, 0,
-+			   "(struct list_head){}",
-+			   { .next = (struct list_head *)0 });
-+	/* struct with char array */
-+	TEST_BTF_DUMP_DATA(btf, d, str, struct bpf_prog_info, 0,
-+			   "(struct bpf_prog_info){.name = (char[])['f','o','o',],}",
-+			   { .name = "foo",});
-+	TEST_BTF_DUMP_DATA(btf, d, str, struct bpf_prog_info, BTF_F_NONAME,
-+			   "{['f','o','o',],}",
-+			   {.name = "foo",});
-+	/* leading null char means do not display string */
-+	TEST_BTF_DUMP_DATA(btf, d, str, struct bpf_prog_info, 0,
-+			   "(struct bpf_prog_info){}",
-+			   {.name = {'\0', 'f', 'o', 'o'}});
-+	/* handle non-printable characters */
-+	TEST_BTF_DUMP_DATA(btf, d, str, struct bpf_prog_info, 0,
-+			   "(struct bpf_prog_info){.name = (char[])[1,2,3,],}",
-+			   { .name = {1, 2, 3, 0}});
-+
-+	/* struct with non-char array */
-+	TEST_BTF_DUMP_DATA(btf, d, str, struct __sk_buff, 0,
-+			   "(struct __sk_buff){.cb = (__u32[])[1,2,3,4,5,],}",
-+			   { .cb = {1, 2, 3, 4, 5,},});
-+	TEST_BTF_DUMP_DATA(btf, d, str, struct __sk_buff, BTF_F_NONAME,
-+			   "{[1,2,3,4,5,],}",
-+			   { .cb = { 1, 2, 3, 4, 5},});
-+	/* For non-char, arrays, show non-zero values only */
-+	TEST_BTF_DUMP_DATA(btf, d, str, struct __sk_buff, 0,
-+			   "(struct __sk_buff){.cb = (__u32[])[1,],}",
-+			   { .cb = { 0, 0, 1, 0, 0},});
-+
-+	/* struct with bitfields */
-+	TEST_BTF_DUMP_DATA_C(btf, d, str, struct bpf_insn, 0,
-+		{.code = (__u8)1,.dst_reg = (__u8)0x2,.src_reg = (__u8)0x3,.off = (__s16)4,.imm = (__s32)5,});
-+	TEST_BTF_DUMP_DATA(btf, d, str, struct bpf_insn, BTF_F_NONAME,
-+			   "{1,0x2,0x3,4,5,}",
-+			   { .code = 1, .dst_reg = 0x2, .src_reg = 0x3, .off = 4,
-+			     .imm = 5,});
-+}
-+
-+
- void test_btf_dump() {
- 	int i;
+@@ -50,16 +51,19 @@ void lapb_start_t2timer(struct lapb_cb *lapb)
+ 	lapb->t2timer.function = lapb_t2timer_expiry;
+ 	lapb->t2timer.expires  = jiffies + lapb->t2;
  
-@@ -245,4 +476,6 @@ void test_btf_dump() {
++	lapb->t2timer_stop = false;
+ 	add_timer(&lapb->t2timer);
+ }
+ 
+ void lapb_stop_t1timer(struct lapb_cb *lapb)
+ {
++	lapb->t1timer_stop = true;
+ 	del_timer(&lapb->t1timer);
+ }
+ 
+ void lapb_stop_t2timer(struct lapb_cb *lapb)
+ {
++	lapb->t2timer_stop = true;
+ 	del_timer(&lapb->t2timer);
+ }
+ 
+@@ -72,16 +76,31 @@ static void lapb_t2timer_expiry(struct timer_list *t)
+ {
+ 	struct lapb_cb *lapb = from_timer(lapb, t, t2timer);
+ 
++	spin_lock_bh(&lapb->lock);
++	if (timer_pending(&lapb->t2timer)) /* A new timer has been set up */
++		goto out;
++	if (lapb->t2timer_stop) /* The timer has been stopped */
++		goto out;
++
+ 	if (lapb->condition & LAPB_ACK_PENDING_CONDITION) {
+ 		lapb->condition &= ~LAPB_ACK_PENDING_CONDITION;
+ 		lapb_timeout_response(lapb);
  	}
- 	if (test__start_subtest("btf_dump: incremental"))
- 		test_btf_dump_incremental();
-+	if (test__start_subtest("btf_dump: data"))
-+		test_btf_dump_data();
++
++out:
++	spin_unlock_bh(&lapb->lock);
+ }
+ 
+ static void lapb_t1timer_expiry(struct timer_list *t)
+ {
+ 	struct lapb_cb *lapb = from_timer(lapb, t, t1timer);
+ 
++	spin_lock_bh(&lapb->lock);
++	if (timer_pending(&lapb->t1timer)) /* A new timer has been set up */
++		goto out;
++	if (lapb->t1timer_stop) /* The timer has been stopped */
++		goto out;
++
+ 	switch (lapb->state) {
+ 
+ 		/*
+@@ -108,7 +127,7 @@ static void lapb_t1timer_expiry(struct timer_list *t)
+ 				lapb->state = LAPB_STATE_0;
+ 				lapb_disconnect_indication(lapb, LAPB_TIMEDOUT);
+ 				lapb_dbg(0, "(%p) S1 -> S0\n", lapb->dev);
+-				return;
++				goto out;
+ 			} else {
+ 				lapb->n2count++;
+ 				if (lapb->mode & LAPB_EXTENDED) {
+@@ -132,7 +151,7 @@ static void lapb_t1timer_expiry(struct timer_list *t)
+ 				lapb->state = LAPB_STATE_0;
+ 				lapb_disconnect_confirmation(lapb, LAPB_TIMEDOUT);
+ 				lapb_dbg(0, "(%p) S2 -> S0\n", lapb->dev);
+-				return;
++				goto out;
+ 			} else {
+ 				lapb->n2count++;
+ 				lapb_dbg(1, "(%p) S2 TX DISC(1)\n", lapb->dev);
+@@ -150,7 +169,7 @@ static void lapb_t1timer_expiry(struct timer_list *t)
+ 				lapb_stop_t2timer(lapb);
+ 				lapb_disconnect_indication(lapb, LAPB_TIMEDOUT);
+ 				lapb_dbg(0, "(%p) S3 -> S0\n", lapb->dev);
+-				return;
++				goto out;
+ 			} else {
+ 				lapb->n2count++;
+ 				lapb_requeue_frames(lapb);
+@@ -167,7 +186,7 @@ static void lapb_t1timer_expiry(struct timer_list *t)
+ 				lapb->state = LAPB_STATE_0;
+ 				lapb_disconnect_indication(lapb, LAPB_TIMEDOUT);
+ 				lapb_dbg(0, "(%p) S4 -> S0\n", lapb->dev);
+-				return;
++				goto out;
+ 			} else {
+ 				lapb->n2count++;
+ 				lapb_transmit_frmr(lapb);
+@@ -176,4 +195,7 @@ static void lapb_t1timer_expiry(struct timer_list *t)
+ 	}
+ 
+ 	lapb_start_t1timer(lapb);
++
++out:
++	spin_unlock_bh(&lapb->lock);
  }
 -- 
-1.8.3.1
+2.27.0
 
