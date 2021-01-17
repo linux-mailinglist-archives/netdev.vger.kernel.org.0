@@ -2,126 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BB2042F925B
-	for <lists+netdev@lfdr.de>; Sun, 17 Jan 2021 13:38:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C9D032F9286
+	for <lists+netdev@lfdr.de>; Sun, 17 Jan 2021 14:25:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728552AbhAQMib (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 17 Jan 2021 07:38:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32992 "EHLO
+        id S1728868AbhAQNYq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 17 Jan 2021 08:24:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727480AbhAQMi2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 17 Jan 2021 07:38:28 -0500
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01551C061573
-        for <netdev@vger.kernel.org>; Sun, 17 Jan 2021 04:37:48 -0800 (PST)
-Received: by mail-ej1-x630.google.com with SMTP id ke15so12150805ejc.12
-        for <netdev@vger.kernel.org>; Sun, 17 Jan 2021 04:37:47 -0800 (PST)
+        with ESMTP id S1728131AbhAQNYg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 17 Jan 2021 08:24:36 -0500
+Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30B2EC061573
+        for <netdev@vger.kernel.org>; Sun, 17 Jan 2021 05:23:55 -0800 (PST)
+Received: by mail-lj1-x22f.google.com with SMTP id n11so15470597lji.5
+        for <netdev@vger.kernel.org>; Sun, 17 Jan 2021 05:23:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=ZqfusA1LBlIXqb1USIb4NJbU7meM8egTJ8cYgiq5HzA=;
-        b=CpR5yd9uEtEys9SHHRjv5WK5snsCmlVn9CLUJAFcb1GAx+yAmGZz7aJ9T9SF+yoJ5U
-         w+8Q/1Z+DG0r+LUy1b+squ06WWr+ftZs03qfGryi3dtYNygz9jp2L7k9zDjL8xzmajar
-         7ZCLVVWOnxOzRkqmXk1LMVZfQwm6YE3awbasFNtCymQ+oTAvEQbRPfQwYX9HY/QoSBFb
-         ehUPXXJmuJRrRxckRtp098Xq2z5kVUOB8Dc261uPaxMzPhMl6PTI+ICr8Lc11lX1Fgqq
-         AfXBfvjzilUbVZTFmNQNQhgxMhwil6SDmTwpc7RtflejZhkYvX3FaRPgsvLuzckDtyj9
-         RERw==
+        d=norrbonn-se.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=2npGEl46cus6vnu4tj9K9ViRUOt1heqnkXhDR8HDOJI=;
+        b=XYu2ZkuiGqcU4B0kqEUgzft2ReMKrjalYrOSvtCJRiC7QEY3EYke+vr6YdHcm/qZve
+         fOFedPDmK30b/dIKRP7VWJ/SIJ21afAINdxvrOrTjUDTiMlprsLJaadvHczyyZ3nHfl7
+         DLzl0oR+TA4Y27Bp1zapujmn657Igt6zLxzL3FYCWo/iXoD55FVknBKfEx0JtaCMrlvJ
+         vmFEpEcN+HDMqNh/Fmkqx5cdVlpc0F5XFnU+8jV1gY3XCzxCDAlxtkeG1BEAdRcxEHTK
+         YwfiZ9HYvgZCntzH4nFBYQBStuLu09TxEJqT4fmfVTZX+SgtdGAUT0zjbJSPDyFAmAD1
+         a8Mw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ZqfusA1LBlIXqb1USIb4NJbU7meM8egTJ8cYgiq5HzA=;
-        b=oZix4jxvDbGEFtURo41USccfaWeu/2jRnFOzIRnjttrUWge8zkpTJbGfAqQKgRen5+
-         QnvO13+w9GSzrGwBS0K1a/ljH1hIy2Uz81c6XvJAJ/2vSTm+ylu2docYXleJxhzV/CYd
-         q6VH99nlibGQa2+Y4z/m+rAQJP8Hhgi7m7ZwTQ3w9wMs94pWL6BZPwsV2oVRaecHgxv8
-         JpsaOsGzQRoUL0mPvzZR/2vpDGujFJtC/461nj9bEz/AMGZFaSUD7TkL+eFt/Ma5li5q
-         HdUu9VIuxRsdHtrjS94+yRgTX5idD1tBgqMMdaZ6KTrdbydhT6xBuau89e9uH+6HGK1T
-         AeoQ==
-X-Gm-Message-State: AOAM533iyCrZqf4BivaGdPfjHeOh7P8/NiGuQPYxep2DItKaGmJ4epEA
-        e9DyA1jnjFMwbwOXGlP0Us4=
-X-Google-Smtp-Source: ABdhPJyGdg+jq5Uk5+nyd/TJ6oOhsSfcrh4zokYY5RoOqprq/tNCkUycoqxYEumlkkV1y36hwkJzlw==
-X-Received: by 2002:a17:906:410e:: with SMTP id j14mr14426608ejk.253.1610887066612;
-        Sun, 17 Jan 2021 04:37:46 -0800 (PST)
-Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id v25sm8257159ejw.21.2021.01.17.04.37.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 17 Jan 2021 04:37:45 -0800 (PST)
-Date:   Sun, 17 Jan 2021 14:37:44 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        Maxim Kochetkov <fido_max@inbox.ru>
-Subject: Re: [PATCH v2 net-next 01/14] net: mscc: ocelot: allow offloading of
- bridge on top of LAG
-Message-ID: <20210117123744.erw2i34oap5xkapo@skbuf>
-References: <20210116005943.219479-1-olteanv@gmail.com>
- <20210116005943.219479-2-olteanv@gmail.com>
- <20210116172623.2277b86a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=2npGEl46cus6vnu4tj9K9ViRUOt1heqnkXhDR8HDOJI=;
+        b=TTDW5cpiurQQiXlktHAi6Fktqi14Txc89X43YInssPQsQcKtNUbeGpDP/ROvRJwbUo
+         PbqxliUoXfPagtz3lsbzFWXQHgC8WVaju9xH3pZupuFIyHXuc+wngp6AKWHX8aadlg3n
+         RGS7k6voGB1HHmgJqV70FoW9qeASoDnp4fN9CxKSxmYWR3UEIqh242/etpwcdGrSNZtS
+         L1gSKR2sHrr2jp6/oHi4pUUm0n5s3oeUcNYAF7Fk3AIqqAkVHvdGrdIbChPPjm2RSXyq
+         im4FzLPAznnJJWW+6OAwvCizz/mw5jfnFagt6GKj3KF+NO56A8zHn/A9XNGm5EBYmh/O
+         ekrg==
+X-Gm-Message-State: AOAM530Cvtp/1zSakqgRIzGuIJaBNLhvBw0Jt22dN9AAldAdaN2Y+qaK
+        P6ApVNFWG9ndMFUvs+2+XF60hA==
+X-Google-Smtp-Source: ABdhPJzkWtCR63BS7Yb/Y3ggFj1ibOgL7AkGKSr0C4EWplp4WngBAmIijTPAxCWZOMmSXEstn8v5AA==
+X-Received: by 2002:a2e:50b:: with SMTP id 11mr8595788ljf.484.1610889833720;
+        Sun, 17 Jan 2021 05:23:53 -0800 (PST)
+Received: from [192.168.1.157] (h-137-65.A159.priv.bahnhof.se. [81.170.137.65])
+        by smtp.gmail.com with ESMTPSA id j27sm1561189lfm.178.2021.01.17.05.23.52
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 17 Jan 2021 05:23:53 -0800 (PST)
+Subject: Re: [PATCH net-next v5] GTP: add support for flow based tunneling API
+To:     Jakub Kicinski <kuba@kernel.org>, Pravin B Shelar <pbshelar@fb.com>
+Cc:     netdev@vger.kernel.org, pablo@netfilter.org, laforge@gnumonks.org
+References: <20210110070021.26822-1-pbshelar@fb.com>
+ <20210116164642.4af4de8e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Jonas Bonn <jonas@norrbonn.se>
+Message-ID: <8adc4450-c32d-625e-3c8c-70dbd7cbf052@norrbonn.se>
+Date:   Sun, 17 Jan 2021 14:23:52 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210116172623.2277b86a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210116164642.4af4de8e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jan 16, 2021 at 05:26:23PM -0800, Jakub Kicinski wrote:
-> On Sat, 16 Jan 2021 02:59:30 +0200 Vladimir Oltean wrote:
-> > From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> >
-> > Commit 7afb3e575e5a ("net: mscc: ocelot: don't handle netdev events for
-> > other netdevs") was too aggressive, and it made ocelot_netdevice_event
-> > react only to network interface events emitted for the ocelot switch
-> > ports.
-> >
-> > In fact, only the PRECHANGEUPPER should have had that check.
-> >
-> > When we ignore all events that are not for us, we miss the fact that the
-> > upper of the LAG changes, and the bonding interface gets enslaved to a
-> > bridge. This is an operation we could offload under certain conditions.
->
-> I see the commit in question is in net, perhaps worth spelling out why
-> this is not a fix? Perhaps add some "in the future" to the last
-> sentence if it's the case that this will only matter with the following
-> patches applied?
+Hi Jakub,
 
-It is a fix. However, so is patch 13/14 "net: mscc: ocelot: rebalance
-LAGs on link up/down events", but I didn't see an easy way to backport
-that. Honestly the reasons why I did not attempt to split this series
-into a part for "net" and one for "net-next" are:
-(a) It would unnecessarily complicate my work for felix DSA, where this
-    is considered a new feature as opposed to ocelot switchdev where it
-    was supposedly already working (although.. not quite, due to the
-    lack of rebalancing, a link down would throw off the LAG).
-    I don't really think that anybody was seriously using LAG offload on
-    ocelot so far.
-(b) Even if I were to split this patch, it can only be trivially
-    backported as far as commit 9c90eea310f8 ("net: mscc: ocelot: move
-    net_device related functions to ocelot_net.c") from June 2020
-    anyway.
-(c) I cannot test the mscc_ocelot.ko switchdev driver with traffic,
-    since I don't have the hardware (I just have a local patch that
-    I keep rebasing on top of net-next which makes me able to at least
-    probe it and access its registers on a different switch revision,
-    but the traffic I/O procedure there is completely different). So I
-    can not really confirm what is the state I'm leaving the mscc_ocelot
-    driver in, for stable kernels. At least now, I've made the entry
-    points into the control code path very similar to those of DSA, and
-    I've exercised the switchdev driver in blind (without traffic), so I
-    have a bit more confidence that it should work.
-(d) Had the AUTOSEL guys picked up this patch, I would have probably had
-    no objection (since my belief is that there's nothing to break and
-    nothing to fix in stable kernels).
+On 17/01/2021 01:46, Jakub Kicinski wrote:
+> On Sat,  9 Jan 2021 23:00:21 -0800 Pravin B Shelar wrote:
+>> Following patch add support for flow based tunneling API
+>> to send and recv GTP tunnel packet over tunnel metadata API.
+>> This would allow this device integration with OVS or eBPF using
+>> flow based tunneling APIs.
+>>
+>> Signed-off-by: Pravin B Shelar <pbshelar@fb.com>
+> 
+> Applied, thanks!
+> 
 
-That being said, if we want to engage in a rigid demonstration of
-procedures, sure we can do that. I have other patches anyway to fill the
-pipeline until "net" is merged back into "net-next" :)
+This patch hasn't received any ACK's from either the maintainers or 
+anyone else providing review.  The following issues remain unaddressed 
+after review:
+
+i)  the patch contains several logically separate changes that would be 
+better served as smaller patches
+ii) functionality like the handling of end markers has been introduced 
+without further explanation
+iii) symmetry between the handling of GTPv0 and GTPv1 has been 
+unnecessarily broken
+iv) there are no available userspace tools to allow for testing this 
+functionality
+
+I have requested that this patch be reworked into a series of smaller 
+changes.  That would allow:
+
+i) reasonable review
+ii) the possibility to explain _why_ things are being done in the patch 
+comment where this isn't obvious (like the handling of end markers)
+iii) the chance to do a reasonable rebase of other ongoing work onto 
+this patch (series):  this one patch is invasive and difficult to rebase 
+onto
+
+I'm not sure what the hurry is to get this patch into mainline.  Large 
+and complicated patches like this take time to review; please revert 
+this and allow that process to happen.
+
+Thanks,
+Jonas
