@@ -2,78 +2,219 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EEF22F91B8
-	for <lists+netdev@lfdr.de>; Sun, 17 Jan 2021 11:23:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E5A862F91B9
+	for <lists+netdev@lfdr.de>; Sun, 17 Jan 2021 11:24:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727930AbhAQKWv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 17 Jan 2021 05:22:51 -0500
-Received: from mail.kernel.org ([198.145.29.99]:48018 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726203AbhAQKWp (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 17 Jan 2021 05:22:45 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 8A0D820C56
-        for <netdev@vger.kernel.org>; Sun, 17 Jan 2021 10:22:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610878924;
-        bh=d1xWKCG+gIUwVlwPRL7k/nVxtsMRdtAP6nnRmMxIfhE=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=b9atr8PVO4HbepX176u2GuWleXcnxW+uGbX60dfpzKPSOV7msoP8NsGY3Szl735AE
-         q5p79q4CiV+q+lL3Bx5TAugxOrmmmyhX+DLzW/e6wZWqBRCGqy43hPrA8ezFv+BWlS
-         jah7QLNSINZqYhr97lnwwAPkQ7MPqKGiz9IVJvZCQdo3VSk7oYxk8eFqcdKBgFk9/3
-         RPOt1sguSB7dtTpif8VCwcB7NazHIrUjxwbiZGBDjYGQ8jMr30cSjUWfesPUXo7e8F
-         uGqgnSqnG4KLIsae2hSz7TkNQSlkmGgbkt1BJTn5+ssvctxq0ZI6raLZF1q5ytbyAs
-         kQwSvmGbHqMWA==
-Received: by mail-ot1-f47.google.com with SMTP id n42so13335270ota.12
-        for <netdev@vger.kernel.org>; Sun, 17 Jan 2021 02:22:04 -0800 (PST)
-X-Gm-Message-State: AOAM532/brKkQxt1JoxL2fq7XgDQ2cAzB9Q2pxOKipdFeygA1OugMX0i
-        rPKLGhCU4vlP1TIKKEvZT7ThHHW0OhhedVwBbtQ=
-X-Google-Smtp-Source: ABdhPJyUkjW91BCUQ5+vPPy9Po8vwT5xQmikmD3WAWBFDa86YmDFBT7tLyCTqU7dAAuXZ/58fuDBXPh28KWiHwO38Kc=
-X-Received: by 2002:a9d:741a:: with SMTP id n26mr7029939otk.210.1610878923870;
- Sun, 17 Jan 2021 02:22:03 -0800 (PST)
+        id S1728246AbhAQKYX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 17 Jan 2021 05:24:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32790 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726203AbhAQKYP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 17 Jan 2021 05:24:15 -0500
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92829C061573;
+        Sun, 17 Jan 2021 02:23:35 -0800 (PST)
+Received: by mail-pf1-x442.google.com with SMTP id i63so1351603pfg.7;
+        Sun, 17 Jan 2021 02:23:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=+E4QJbI5ohbqhEdy8Ep8gmkZ7hLL7GgbwHKJKePuegA=;
+        b=YXu6zAPsIcJQjmoZ5rrfjFyB0os9Q6ATLb5gkb5xQj7J/WSpcIK76V5PsYyFgs227a
+         pvNkA9IIzIsfmxxsWHaZqKvL/1OSH/WHK4RAPBhu/UZ3sQUIfYbgSeZqiY24AINzWY7R
+         FwzFhdzh7RGs/UDsXOkQfGfAYY950nm25UWQ7tL4DBTnOGacha9fpsHbmBIPxQXIGzdQ
+         W4xHJxlCRIiGZtBHNriAMluRZsVn9Q2Fmd2ADGQqoU+Fd+coZWfdtDXi4El4aYmvu4I3
+         QQm6UI1vozWVRJ7DhdANrTjCl9F5prnnWiFMPCwAbSgYukg+nU7Gnr8MbPjnokdrsdtP
+         9seg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=+E4QJbI5ohbqhEdy8Ep8gmkZ7hLL7GgbwHKJKePuegA=;
+        b=QAqZwzR4MOdRyn4f4X09/bkoi562kZw6wHLhd69VvkvjZLHFH8kzcwfUVR84rVs7aI
+         jILKUQWnV32afcJIKWRO3QxzSUBy903MZUjPI613BgxaopJN+1vtnA3DAef9ov7BI9Oe
+         NyWKQABAlX8b+h/IW+8tyYlXh+sBDvNCHxz5eEUPxaR4gpxxFsAmrvo2e1tYMa+1OUc7
+         id7aMGJ+4/gBT1OFeI0E61Iv4rw5dox8DEQkfhu3gGY3W8BbK04IHtsvhdIo6O9Jnuyu
+         bpQ3vmzgye4QONab+hjlhiw9YaJEbJK0lCPz75cTSJhp9zoMj90EGvv1L9mrSlyqnUkG
+         bSdQ==
+X-Gm-Message-State: AOAM532fMy7xh2xI7Zi23LkpJngqndlFtXtDuD4a5gaKsptd6yZgG+OJ
+        mA6LZHLE16Fpk2Eymw9Jvvm3ZuJIUHE=
+X-Google-Smtp-Source: ABdhPJxO04dZ+FbJ0b9PEqhLexo+731nBggBj97OCieSmVMgrFDuqFtU9ElMu+wlzntyKOZdcEowyQ==
+X-Received: by 2002:a63:5b1a:: with SMTP id p26mr21376893pgb.76.1610879015027;
+        Sun, 17 Jan 2021 02:23:35 -0800 (PST)
+Received: from localhost ([178.236.46.205])
+        by smtp.gmail.com with ESMTPSA id 72sm13307892pfw.177.2021.01.17.02.23.33
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 17 Jan 2021 02:23:34 -0800 (PST)
+From:   menglong8.dong@gmail.com
+X-Google-Original-From: dong.menglong@zte.com.cn
+To:     kuba@kernel.org
+Cc:     davem@davemloft.net, yoshfuji@linux-ipv6.org,
+        dong.menglong@zte.com.cn, christian.brauner@ubuntu.com,
+        daniel@iogearbox.net, gnault@redhat.com, ast@kernel.org,
+        nicolas.dichtel@6wind.com, ap420073@gmail.com, edumazet@google.com,
+        pabeni@redhat.com, jakub@cloudflare.com, bjorn.topel@intel.com,
+        keescook@chromium.org, viro@zeniv.linux.org.uk, rdna@fb.com,
+        maheshb@google.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH net-next] net: core: Namespace-ify sysctl_wmem_default and sysctl_rmem_default
+Date:   Sun, 17 Jan 2021 18:23:19 +0800
+Message-Id: <20210117102319.193756-1-dong.menglong@zte.com.cn>
+X-Mailer: git-send-email 2.30.0
 MIME-Version: 1.0
-References: <20210116164828.40545-1-marex@denx.de> <CAK8P3a1iqXjsYERVh+nQs9Xz4x7FreW3aS7OQPSB8CWcntnL4A@mail.gmail.com>
- <a660f328-19d9-1e97-3f83-533c1245622e@denx.de> <CAK8P3a3qtrmxMg+uva-s18f_zj7aNXJXcJCzorr2d-XxnqV1Hw@mail.gmail.com>
- <20210116203945.GA32445@wunner.de> <a6d74297-b29e-956e-5861-40cee359e892@denx.de>
- <de224620-474d-0853-4ddc-a2f88f79fbcc@gmail.com>
-In-Reply-To: <de224620-474d-0853-4ddc-a2f88f79fbcc@gmail.com>
-From:   Arnd Bergmann <arnd@kernel.org>
-Date:   Sun, 17 Jan 2021 11:21:47 +0100
-X-Gmail-Original-Message-ID: <CAK8P3a3bDRvsTqtqxNp782OUy3e6Lib3eN3OSjjRh25x5Lkbuw@mail.gmail.com>
-Message-ID: <CAK8P3a3bDRvsTqtqxNp782OUy3e6Lib3eN3OSjjRh25x5Lkbuw@mail.gmail.com>
-Subject: Re: [PATCH net-next V2] net: ks8851: Fix mixed module/builtin build
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Marek Vasut <marex@denx.de>, Lukas Wunner <lukas@wunner.de>,
-        Networking <netdev@vger.kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jan 16, 2021 at 10:41 PM Heiner Kallweit <hkallweit1@gmail.com> wrote:
-> >>
-> >> It seems unlikely that a system uses both, the parallel *and* the SPI
-> >> variant of the ks8851.  So the additional memory necessary because of
-> >> code duplication wouldn't matter in practice.
-> >
-> > I have a board with both options populated on my desk, sorry.
->
-> Making the common part a separate module shouldn't be that hard.
-> AFAICS it would just take:
-> - export 4 functions from common
-> - extend Kconfig
-> - extend Makefile
-> One similar configuration that comes to my mind and could be used as
-> template is SPI_FSL_LIB.
+From: Menglong Dong <dong.menglong@zte.com.cn>
 
-There is no need to even change Kconfig, just simplify the Makefile to
+For now, sysctl_wmem_default and sysctl_rmem_default are globally
+unified. It's not convenient in some case. For example, when we
+use docker and try to control the default udp socket receive buffer
+for each container.
 
-obj-$(CONFIG_KS8851) += ks8851_common.o ks8851_spi.o
-obj-$(CONFIG_KS8851_MLL) += ks8851_common.o ks8851_par.o
+For that reason, make sysctl_wmem_default and sysctl_rmem_default
+per-namespace.
 
-This will do the right thing and build ks8851_common.ko into
-vmlinux if at least one of the two front-ends is built-in, and
-otherwise build it at a loadable module if there is another
-module using it.
+Signed-off-by: Menglong Dong <dong.menglong@zte.com.cn>
+---
+ include/net/netns/core.h   |  2 ++
+ include/net/sock.h         |  3 ---
+ net/core/net_namespace.c   |  2 ++
+ net/core/sock.c            |  6 ++----
+ net/core/sysctl_net_core.c | 32 ++++++++++++++++----------------
+ net/ipv4/ip_output.c       |  2 +-
+ 6 files changed, 23 insertions(+), 24 deletions(-)
 
-         Arnd
+diff --git a/include/net/netns/core.h b/include/net/netns/core.h
+index 36c2d998a43c..317b47df6d08 100644
+--- a/include/net/netns/core.h
++++ b/include/net/netns/core.h
+@@ -9,6 +9,8 @@ struct netns_core {
+ 	/* core sysctls */
+ 	struct ctl_table_header	*sysctl_hdr;
+ 
++	int sysctl_wmem_default;
++	int sysctl_rmem_default;
+ 	int	sysctl_somaxconn;
+ 
+ #ifdef CONFIG_PROC_FS
+diff --git a/include/net/sock.h b/include/net/sock.h
+index bdc4323ce53c..b846a6d24459 100644
+--- a/include/net/sock.h
++++ b/include/net/sock.h
+@@ -2653,9 +2653,6 @@ extern __u32 sysctl_rmem_max;
+ extern int sysctl_tstamp_allow_data;
+ extern int sysctl_optmem_max;
+ 
+-extern __u32 sysctl_wmem_default;
+-extern __u32 sysctl_rmem_default;
+-
+ DECLARE_STATIC_KEY_FALSE(net_high_order_alloc_disable_key);
+ 
+ static inline int sk_get_wmem0(const struct sock *sk, const struct proto *proto)
+diff --git a/net/core/net_namespace.c b/net/core/net_namespace.c
+index 2ef3b4557f40..eb4ea99131d6 100644
+--- a/net/core/net_namespace.c
++++ b/net/core/net_namespace.c
+@@ -374,6 +374,8 @@ static __net_init int setup_net(struct net *net, struct user_namespace *user_ns)
+ 
+ static int __net_init net_defaults_init_net(struct net *net)
+ {
++	net->core.sysctl_rmem_default = SK_RMEM_MAX;
++	net->core.sysctl_wmem_default = SK_WMEM_MAX;
+ 	net->core.sysctl_somaxconn = SOMAXCONN;
+ 	return 0;
+ }
+diff --git a/net/core/sock.c b/net/core/sock.c
+index bbcd4b97eddd..2421e4ea1915 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -270,8 +270,6 @@ __u32 sysctl_wmem_max __read_mostly = SK_WMEM_MAX;
+ EXPORT_SYMBOL(sysctl_wmem_max);
+ __u32 sysctl_rmem_max __read_mostly = SK_RMEM_MAX;
+ EXPORT_SYMBOL(sysctl_rmem_max);
+-__u32 sysctl_wmem_default __read_mostly = SK_WMEM_MAX;
+-__u32 sysctl_rmem_default __read_mostly = SK_RMEM_MAX;
+ 
+ /* Maximal space eaten by iovec or ancillary data plus some space */
+ int sysctl_optmem_max __read_mostly = sizeof(unsigned long)*(2*UIO_MAXIOV+512);
+@@ -2970,8 +2968,8 @@ void sock_init_data(struct socket *sock, struct sock *sk)
+ 	timer_setup(&sk->sk_timer, NULL, 0);
+ 
+ 	sk->sk_allocation	=	GFP_KERNEL;
+-	sk->sk_rcvbuf		=	sysctl_rmem_default;
+-	sk->sk_sndbuf		=	sysctl_wmem_default;
++	sk->sk_rcvbuf		=	sock_net(sk)->core.sysctl_rmem_default;
++	sk->sk_sndbuf		=	sock_net(sk)->core.sysctl_wmem_default;
+ 	sk->sk_state		=	TCP_CLOSE;
+ 	sk_set_socket(sk, sock);
+ 
+diff --git a/net/core/sysctl_net_core.c b/net/core/sysctl_net_core.c
+index 966d976dee84..5c1c75e42a09 100644
+--- a/net/core/sysctl_net_core.c
++++ b/net/core/sysctl_net_core.c
+@@ -326,22 +326,6 @@ static struct ctl_table net_core_table[] = {
+ 		.proc_handler	= proc_dointvec_minmax,
+ 		.extra1		= &min_rcvbuf,
+ 	},
+-	{
+-		.procname	= "wmem_default",
+-		.data		= &sysctl_wmem_default,
+-		.maxlen		= sizeof(int),
+-		.mode		= 0644,
+-		.proc_handler	= proc_dointvec_minmax,
+-		.extra1		= &min_sndbuf,
+-	},
+-	{
+-		.procname	= "rmem_default",
+-		.data		= &sysctl_rmem_default,
+-		.maxlen		= sizeof(int),
+-		.mode		= 0644,
+-		.proc_handler	= proc_dointvec_minmax,
+-		.extra1		= &min_rcvbuf,
+-	},
+ 	{
+ 		.procname	= "dev_weight",
+ 		.data		= &weight_p,
+@@ -584,6 +568,22 @@ static struct ctl_table netns_core_table[] = {
+ 		.extra1		= SYSCTL_ZERO,
+ 		.proc_handler	= proc_dointvec_minmax
+ 	},
++	{
++		.procname	= "wmem_default",
++		.data		= &init_net.core.sysctl_wmem_default,
++		.maxlen		= sizeof(int),
++		.mode		= 0644,
++		.proc_handler	= proc_dointvec_minmax,
++		.extra1		= &min_sndbuf,
++	},
++	{
++		.procname	= "rmem_default",
++		.data		= &init_net.core.sysctl_rmem_default,
++		.maxlen		= sizeof(int),
++		.mode		= 0644,
++		.proc_handler	= proc_dointvec_minmax,
++		.extra1		= &min_rcvbuf,
++	},
+ 	{ }
+ };
+ 
+diff --git a/net/ipv4/ip_output.c b/net/ipv4/ip_output.c
+index 2ed0b01f72f0..0fbdcda6f314 100644
+--- a/net/ipv4/ip_output.c
++++ b/net/ipv4/ip_output.c
+@@ -1709,7 +1709,7 @@ void ip_send_unicast_reply(struct sock *sk, struct sk_buff *skb,
+ 
+ 	sk->sk_protocol = ip_hdr(skb)->protocol;
+ 	sk->sk_bound_dev_if = arg->bound_dev_if;
+-	sk->sk_sndbuf = sysctl_wmem_default;
++	sk->sk_sndbuf = sock_net(sk)->core.sysctl_wmem_default;
+ 	ipc.sockc.mark = fl4.flowi4_mark;
+ 	err = ip_append_data(sk, &fl4, ip_reply_glue_bits, arg->iov->iov_base,
+ 			     len, 0, &ipc, &rt, MSG_DONTWAIT);
+-- 
+2.30.0
+
