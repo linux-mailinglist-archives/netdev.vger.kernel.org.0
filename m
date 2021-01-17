@@ -2,39 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A4ED2F9033
-	for <lists+netdev@lfdr.de>; Sun, 17 Jan 2021 03:24:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 28F202F9034
+	for <lists+netdev@lfdr.de>; Sun, 17 Jan 2021 03:27:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727884AbhAQCXv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 16 Jan 2021 21:23:51 -0500
-Received: from mail.kernel.org ([198.145.29.99]:42912 "EHLO mail.kernel.org"
+        id S1727900AbhAQC0u (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 16 Jan 2021 21:26:50 -0500
+Received: from mail.kernel.org ([198.145.29.99]:43044 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727838AbhAQCXs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 16 Jan 2021 21:23:48 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 548B7223E8;
-        Sun, 17 Jan 2021 02:23:07 +0000 (UTC)
+        id S1727786AbhAQC0s (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 16 Jan 2021 21:26:48 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 07F10223E8;
+        Sun, 17 Jan 2021 02:26:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610850187;
-        bh=/cncSyIVbzimtICUtPhNWKsdONNPlXVuXcAWD+mC0NY=;
+        s=k20201202; t=1610850368;
+        bh=OuU20mZMmyaPPJvgMYmx609RDPo40Y6wWDv8an6cmO0=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=SUAzcnIbkbiYNhVM6b/DBXP2vYK+DXMysIbw12zOlTCJNkugT87wgnjQnhZe1UcKa
-         phhqnq/PerpVHoaEjP+eM/10f12sa2wzdMtSx9WNIyFiF5tunfnv15ruqD/LSZaEln
-         bKchb+k3jPKHseaRqcolSs8HGY+hXtUDWHVr5+7glHlyFlNdE7xQ10OVhP9+cg6B8t
-         8EhElj1eimJKuMHsiWkHz9Rp6lkaaAeB2qCrEioipemn7Url7h2nGYo3o0PWKIMGH2
-         VVrILI6yfz3NRvS8J+eDyAj64uVi/hgAa3xzeDaEUMV6iIybbCzxtVCufDmMIzxLJo
-         yqbXztpVIr8nA==
-Date:   Sat, 16 Jan 2021 18:23:06 -0800
+        b=SLpm34yfnnKahbo0jHlkwwkvYKUl/xf29PFU6Ocx8az/EE96ckD+x1c4B1pSlU0pX
+         +2rCo9BuFTq7nlmCLvdfYQm19WLAncq0Xi1wUe6Ryr9lRKsGYgcHaLnD8teDhpMExe
+         zN3//PnzO8OIugbf1WyChoynP2Y0PjU0AWOSmOCKCbhvgKH255k9faD1N8CpbMUsra
+         63Ad8UAGcSyzxSymZore3K/zIt7YE/A0ROk9T8l0D7bZJbsASBIiQvOpRQU0ZNBZq2
+         sMkfXYSsFeFt+HT25vuLdejYx7boAKMas0NUTKhR52g5dtzQGt2oqLtL3HfcIG+Ux3
+         sTXvOQbb7LqyA==
+Date:   Sat, 16 Jan 2021 18:26:07 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Huazhong Tan <tanhuazhong@huawei.com>
-Cc:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
-        <huangdaode@huawei.com>, <linuxarm@openeuler.org>,
-        Guangbin Huang <huangguangbin2@huawei.com>
-Subject: Re: [PATCH net-next] net: hns3: debugfs add dump tm info of nodes,
- priority and qset
-Message-ID: <20210116182306.65a268a6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <1610694569-43099-1-git-send-email-tanhuazhong@huawei.com>
-References: <1610694569-43099-1-git-send-email-tanhuazhong@huawei.com>
+To:     Bhaskar Upadhaya <bupadhaya@marvell.com>
+Cc:     <netdev@vger.kernel.org>, <aelior@marvell.com>,
+        <irusskikh@marvell.com>
+Subject: Re: [PATCH  net-next 1/3] qede: add netpoll support for qede driver
+Message-ID: <20210116182607.01f26f15@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <1610701570-29496-2-git-send-email-bupadhaya@marvell.com>
+References: <1610701570-29496-1-git-send-email-bupadhaya@marvell.com>
+        <1610701570-29496-2-git-send-email-bupadhaya@marvell.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -42,29 +40,12 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 15 Jan 2021 15:09:29 +0800 Huazhong Tan wrote:
-> From: Guangbin Huang <huangguangbin2@huawei.com>
-> 
-> To increase methods to dump more tm info, adds three debugfs commands
-> to dump tm info of nodes, priority and qset. And a new tm file of debugfs
-> is created for only dumping tm info.
-> 
-> Unlike previous debugfs commands, to dump each tm information, user needs
-> to enter two commands now. The first command writes parameters to tm and
-> the second command reads info from tm. For examples, to dump tm info of
-> priority 0, user needs to enter follow two commands:
-> 1. echo dump priority 0 > tm
-> 2. cat tm
-> 
-> The reason for adding new tm file is because we accepted Jakub Kicinski's
-> opinion as link https://lkml.org/lkml/2020/9/29/2101. And in order to
-> avoid generating too many files, we implement write ops to allow user to
-> input parameters.
+On Fri, 15 Jan 2021 01:06:08 -0800 Bhaskar Upadhaya wrote:
+> Add net poll controller support to transmit kernel printks
+> over UDP
 
-Why are you trying to avoid generating too many files? How many files
-would it be? What's the size of each dump/file?
+Why do you need this patch? Couple years back netpoll was taught 
+how to pull NAPIs by itself, and all you do is schedule NAPIs.
 
-> However, If there are two or more users concurrently write parameters to
-> tm, parameters of the latest command will overwrite previous commands,
-> this concurrency problem will confuse users, but now there is no good
-> method to fix it.
+All the driver should do is to make sure that when napi is called 
+with budget of 0 it only processes Tx completions, not Rx traffic.
