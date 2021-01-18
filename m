@@ -2,144 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0704A2FA8A1
+	by mail.lfdr.de (Postfix) with ESMTP id DF8B62FA8A3
 	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 19:24:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2407538AbhARSWX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jan 2021 13:22:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47798 "EHLO
+        id S2407553AbhARSWd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jan 2021 13:22:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47804 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2436843AbhARSV4 (ORCPT
+        with ESMTP id S2436845AbhARSV4 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 18 Jan 2021 13:21:56 -0500
-Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0E2DC061574;
-        Mon, 18 Jan 2021 10:21:15 -0800 (PST)
-Received: by mail-io1-xd2e.google.com with SMTP id x21so16371276iog.10;
-        Mon, 18 Jan 2021 10:21:15 -0800 (PST)
+Received: from mail-qt1-x82b.google.com (mail-qt1-x82b.google.com [IPv6:2607:f8b0:4864:20::82b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AFCDC061575
+        for <netdev@vger.kernel.org>; Mon, 18 Jan 2021 10:21:16 -0800 (PST)
+Received: by mail-qt1-x82b.google.com with SMTP id e17so2791408qto.3
+        for <netdev@vger.kernel.org>; Mon, 18 Jan 2021 10:21:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Irdub0NzYRYZ97o/wX/g+f9roxLKhwr4Y5Mvi1eMFyk=;
-        b=Jyef1kdLU/P08Zp+KZ5SjmOiESfT8wy3HE4qG1IOAHczzkgGmm4AkRWjBSCg3rCXFV
-         Uwrcw/qNkuHzuD0I8R3jNwzICen8/Ey2rVmAaySXVZljwF6EpZ6zgXY8aM7uSlCL+IFa
-         m5ZlgWZBmTgbuGgUvKswmRKVsSE0qb4co4PwXCvKouio9nhIsoDdPu/Wq/Ms70WptC7B
-         uacfn07mQkRwTeSA836Hv3r4chdJjwhRyd/ZqfJ+phdZh/ydXhOz1sgQjSKFOTlKDsUn
-         LWwhH4kC9Ph77rlu3rKUuhXupB1UXlRxWO/qtaviGFRbvvfk+XSiczBf0dI11xIAZ4Rr
-         WltQ==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=PF5zvTMR972vChUQzfEzhOOt0/d4P0TcdoMqoMAx5wI=;
+        b=t9GVitlVpfse/19e+BZbJqU092Pq7hR3mmPP8pSZ/bNSMxtHxXeEipobvsutGgVwMR
+         Qfm14mO53MPs6TB3j+gBQ0cXI5vLD2B5NRpbq0lh1SNDCPW8d1Tm/01qDkTNbGfICMSD
+         Ne/QnNB+Zrt58TEufoSuJbD7X8zfS0QhNUATfbfGB6pPpuoCZ7ytWmZ0kn2x+6neGwNY
+         qV0eAJGt+FKjM8jL5JUqngAYsyp4hY4Ya+xdeKP0q3zDQNC4vEzbtg2r/PCvuoD07Wfk
+         x0R/jLFJWxpbjlfglthOVcptUgF2SX1eOzR7vVsBzV9vLkb1MzHCk9x1VhCY5Irheiv8
+         pASw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Irdub0NzYRYZ97o/wX/g+f9roxLKhwr4Y5Mvi1eMFyk=;
-        b=fsB/JeJXfSPRwzGJggQedNVIfmtBIMouq7LNZbcLRKKlIJI6jAnE7E1c2EA4BkYumU
-         MMlVpbbNIlyokE4o9yBEKqls3SCauqpTZ5jdS06ZQLaL0aTlUbvEBvhrnTeS64Ml86jE
-         UC4hEqiPmTvHV34Sn3fdhXIXwETYui/d6zhO/qkUdeTSl5VU63rHjhnGnIzivfsbWt9R
-         9UVdfDDpJ4JBJ7+U+7w6VINoIbcM3Bn4cWMUR5CqHKTT41K/R7SpuYgDlOW3yv15o5Yo
-         VM1/dUWRQpBlr9M3+DfnNKZwesPYPlqIMeAkI0gPyVzOt9cpIzAMAtkke1znMVm9vs4y
-         oFbQ==
-X-Gm-Message-State: AOAM530fENA/1KSNYewLu5jLOIqW1CeqpVxwhMEysWZPp+fk6OR7cCb0
-        /GOOsaa1rbMaIigxd44p8hHBlhVWQtXP1esOCKs=
-X-Google-Smtp-Source: ABdhPJwQ+OIZ65wo86uFlyfh9T7nx8PWb6XpeYNjx75pCM7/387XM6clHfLRN9wqhCju4GbYSlapZXaNJS3cxZDYg14=
-X-Received: by 2002:a92:cf04:: with SMTP id c4mr402883ilo.237.1610994075154;
- Mon, 18 Jan 2021 10:21:15 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=PF5zvTMR972vChUQzfEzhOOt0/d4P0TcdoMqoMAx5wI=;
+        b=Ujfi+QpCe69sDDqtI4kobVRjWitNfS7B5OWGCg2UeU/IaspZU3Gwkk3YiLetCf/Z6n
+         J4csGivFwKn9u7tQ7PudiuBWAtJtpDborizCcxKhWXwYUxu8DuIHChXVMtyE59C30e6K
+         AInERKPbWhpTxK9rvbV7ohvyTXl+1ExZqzR1/qo6gesiUZpEyEtYYGj5ktv2GrhI7scp
+         ts1M3WmYP+hpWmvVBOChkqAN5gjyLmLIdHRepDhXH2xdJqZME6l6kpWblERJNMi5eJtM
+         yELdTXNPconPIaddJRDoTEYCLURCHZnFnlBxazu3H8TnauAdei4mJItBoTPHUXTYkuUh
+         OQyw==
+X-Gm-Message-State: AOAM5337RzamNUi2uppKmG4kzecRXQmb//qeCyna+gHH4mG4ZpGb67AC
+        MIdQyPxLCuiDCdStqLA7wAE=
+X-Google-Smtp-Source: ABdhPJwupnRwiA7i1+JFOObP1nVXlGe188wD2adHX4T5tSiJMoPlrYujYQEE/pocSFka2EXhgQcchw==
+X-Received: by 2002:ac8:4e1c:: with SMTP id c28mr835348qtw.67.1610994075679;
+        Mon, 18 Jan 2021 10:21:15 -0800 (PST)
+Received: from horizon.localdomain ([177.220.172.93])
+        by smtp.gmail.com with ESMTPSA id y13sm11649961qkb.17.2021.01.18.10.21.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Jan 2021 10:21:14 -0800 (PST)
+Received: by horizon.localdomain (Postfix, from userid 1000)
+        id 54C59C0783; Mon, 18 Jan 2021 15:21:12 -0300 (-03)
+Date:   Mon, 18 Jan 2021 15:21:12 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     wenxu@ucloud.cn
+Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next] net/sched: cls_flower add CT_FLAGS_INVALID flag
+ support
+Message-ID: <20210118182112.GC2676@horizon.localdomain>
+References: <1610947127-4412-1-git-send-email-wenxu@ucloud.cn>
 MIME-Version: 1.0
-References: <20210114200825.GR4147@nvidia.com> <CAKgT0UcaRgY4XnM0jgWRvwBLj+ufiabFzKPyrf3jkLrF1Z8zEg@mail.gmail.com>
- <20210114162812.268d684a@omen.home.shazbot.org> <CAKgT0Ufe1w4PpZb3NXuSxug+OMcjm1RP3ZqVrJmQqBDt3ByOZQ@mail.gmail.com>
- <20210115140619.GA4147@nvidia.com> <20210115155315.GJ944463@unreal>
- <CAKgT0UdzCqbLwxSnDTtgha+PwTMW5iVb-3VXbwdMNiaAYXyWzQ@mail.gmail.com>
- <20210116082031.GK944463@unreal> <CAKgT0UeKiz=gh+djt83GRBGi8qQWTBzs-qxKj_78N+gx-KtkMQ@mail.gmail.com>
- <20210118072008.GA4843@unreal> <20210118132800.GA4835@unreal>
-In-Reply-To: <20210118132800.GA4835@unreal>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Mon, 18 Jan 2021 10:21:03 -0800
-Message-ID: <CAKgT0UeYb5xz8iehE1Y0s-cyFbsy46bjF83BkA7qWZMkAOLR-g@mail.gmail.com>
-Subject: Re: [PATCH mlx5-next v1 2/5] PCI: Add SR-IOV sysfs entry to read
- number of MSI-X vectors
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     Jason Gunthorpe <jgg@nvidia.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-pci <linux-pci@vger.kernel.org>,
-        linux-rdma@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
-        Don Dutile <ddutile@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1610947127-4412-1-git-send-email-wenxu@ucloud.cn>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 18, 2021 at 5:28 AM Leon Romanovsky <leon@kernel.org> wrote:
->
-> On Mon, Jan 18, 2021 at 09:20:08AM +0200, Leon Romanovsky wrote:
-> > On Sun, Jan 17, 2021 at 07:16:30PM -0800, Alexander Duyck wrote:
-> > > On Sat, Jan 16, 2021 at 12:20 AM Leon Romanovsky <leon@kernel.org> wrote:
-> > > >
-> > > > On Fri, Jan 15, 2021 at 05:48:59PM -0800, Alexander Duyck wrote:
-> > > > > On Fri, Jan 15, 2021 at 7:53 AM Leon Romanovsky <leon@kernel.org> wrote:
-> > > > > >
-> > > > > > On Fri, Jan 15, 2021 at 10:06:19AM -0400, Jason Gunthorpe wrote:
-> > > > > > > On Thu, Jan 14, 2021 at 05:56:20PM -0800, Alexander Duyck wrote:
->
-> <...>
->
-> > > If you want yet another compromise I would be much happier with the PF
-> > > registering the sysfs interfaces on the VFs rather than the VFs
-> > > registering the interface and hoping the PF supports it. At least with
-> > > that you are guaranteed the PF will respond to the interface when it
-> > > is registered.
-> >
-> > Thanks a lot, I appreciate it, will take a look now.
->
-> I found only two solutions to implement it in this way.
-> Option 1.
-> Allow multi entry write to some new sysfs knob that will receive BDF (or another VF
-> identification) and vector count. Something like this:
->
->  echo "0000:01:00.2 123" > sriov_vf_msix_count
->
-> From one side, that solution is unlikely to be welcomed by Greg KH and from another,
-> it will require a lot of boilerplate code to make it safe and correct.
+On Mon, Jan 18, 2021 at 01:18:47PM +0800, wenxu@ucloud.cn wrote:
+...
+> --- a/net/sched/cls_flower.c
+> +++ b/net/sched/cls_flower.c
+> @@ -305,6 +305,9 @@ static int fl_classify(struct sk_buff *skb, const struct tcf_proto *tp,
+>  	struct fl_flow_key skb_key;
+>  	struct fl_flow_mask *mask;
+>  	struct cls_fl_filter *f;
+> +	bool post_ct;
+> +
+> +	post_ct = qdisc_skb_cb(skb)->post_ct;
 
-You are overthinking this. I didn't say the sysfs had to be in the PF
-directory itself. My request was that the PF is what placed the sysfs
-file in the directory since indirectly it is responsible for spawning
-the VF anyway it shouldn't be too much of a lift to have the PF place
-sysfs files in the VF hierarchy.
+Patch-wise, only here I think you could initialize post_ct right on
+the declaration. No need for the extra line/block of lines here.
 
-The main piece I am not a fan of is the fact that the VF is blindly
-registering an interface and presenting it without knowing if it even
-works.
+But I'm missing the iproute2 changes for flower, with a man page
+update as well. Not sure if you planned to post them later on or not,
+but it's nice to always have them paired together.
 
-The secondary issue that I see as important, but I am willing to
-compromise on is that the interface makes it appear as though the VF
-configuration space is writable via this sysfs file. My preference
-would be to somehow make it transparent that the PF is providing this
-functionality. I thought it might be easier to do with devlink rather
-than with sysfs which is why I have been preferring devlink. However
-based on your pushback I am willing to give up on that, but I think we
-still need to restructure how the sysfs is being managed.
-
-> Option 2.
-> Create directory under PF device with files writable and organized by VF numbers.
-> It is doable, but will cause to code bloat with no gain at all. Cleaner than now,
-> it won't be.
->
-> Why the current approach with one file per-proper VF device is not good enough?
-
-Because it is muddying the waters in terms of what is control taking
-place from the VF versus the PF. In my mind the ideal solution if you
-insist on going with the VF sysfs route would be to look at spawning a
-directory inside the VF sysfs specifically for all of the instances
-that will be PF management controls. At least that would give some
-hint that this is a backdoor control and not actually interacting with
-the VF PCI device directly. Then if in the future you have to add more
-to this you have a spot already laid out and the controls won't be
-mistaken for standard PCI controls as they are PF management controls.
-
-In addition you could probably even create a directory on the PF with
-the new control you had added for getting the master count as well as
-look at adding symlinks to the VF files so that you could manage all
-of the resources in one spot. That would result in the controls being
-nicely organized and easy to use.
+Thanks,
+Marcelo
