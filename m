@@ -2,99 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 95F472FA23F
-	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 14:57:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B0F442FA23E
+	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 14:55:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392467AbhARNv1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jan 2021 08:51:27 -0500
-Received: from mailgw02.mediatek.com ([216.200.240.185]:33360 "EHLO
-        mailgw02.mediatek.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2392293AbhARNeJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jan 2021 08:34:09 -0500
-X-Greylist: delayed 313 seconds by postgrey-1.27 at vger.kernel.org; Mon, 18 Jan 2021 08:34:02 EST
-X-UUID: 729963f60f174358aa98c03c537ad45b-20210118
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mediatek.com; s=dk;
-        h=Content-Transfer-Encoding:MIME-Version:Content-Type:References:In-Reply-To:Date:CC:To:From:Subject:Message-ID; bh=blFPHC6W+BicL23dO3JcRIFtSRuQABtT0CWXjQpm7+s=;
-        b=jDwFmxgZ+ImMh3X+1xykj38+/SjWhMF7n4wRmzrunthPfwRjxMm1qwSh4Hh8MaDAfmHWZkAYHd26KIb2oDPFd0qcFTzTGN4niMZzih6RjV3mSS7CV+a0CbOLdR9gBYu1z9MeBW/Fxe27XX8/oh3NBjDtjA6rm4WCUn1KJ4dw9Ck=;
-X-UUID: 729963f60f174358aa98c03c537ad45b-20210118
-Received: from mtkcas67.mediatek.inc [(172.29.193.45)] by mailgw02.mediatek.com
-        (envelope-from <landen.chao@mediatek.com>)
-        (musrelay.mediatek.com ESMTP with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1934958909; Mon, 18 Jan 2021 05:28:00 -0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- MTKMBS62N2.mediatek.inc (172.29.193.42) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Mon, 18 Jan 2021 05:27:59 -0800
-Received: from [172.21.84.99] (172.21.84.99) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 18 Jan 2021 21:27:57 +0800
-Message-ID: <1610976477.24617.22.camel@mtksdccf07>
-Subject: Re: Registering IRQ for MT7530 internal PHYs
-From:   Landen Chao <landen.chao@mediatek.com>
-To:     DENG Qingfang <dqfext@gmail.com>
-CC:     Andrew Lunn <andrew@lunn.ch>, Marc Zyngier <maz@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S2392516AbhARNzY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jan 2021 08:55:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46028 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2392507AbhARNxF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jan 2021 08:53:05 -0500
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73CBDC061573
+        for <netdev@vger.kernel.org>; Mon, 18 Jan 2021 05:52:25 -0800 (PST)
+Received: by mail-ed1-x536.google.com with SMTP id p22so17636431edu.11
+        for <netdev@vger.kernel.org>; Mon, 18 Jan 2021 05:52:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=wvEVGNe84JT+aQuHL3u0gYPjwus4MCEwXYRveUk+Nfg=;
+        b=MzO4z4pO424doHmMN1omkXqJlguoCDbs3GxZPDh+oBQdGFcuXy9Se0ptot/F+b4pRC
+         FGC1IQC5oPzqOJK7QNqdl9MKxAD++6uushcoRbgkHo1bS9p7eS2rEH0W+b+EJz4FUwQT
+         zwDrIyZymWXbQ7eT6O4joN/ZUu5Hz+/f80/oWGC+z0BFsXVP3mvPFgkrFXG0C1PCAjNA
+         HjxkYxCgoXFCKjhymDxVvsgE2WtHM+ClZVBjeJAhpLg3OhY2QBAWdQdYc646YoGGzD3T
+         +3YohaVP60FFKe5ZQtjB0eU6sICj7Rc/YEj59U77DjCDQ9c12XSbNL4TL+5Qx1V1AzI6
+         SMOw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=wvEVGNe84JT+aQuHL3u0gYPjwus4MCEwXYRveUk+Nfg=;
+        b=n5DUmGXIg0Vu7JAUFX37GJRUGoF7uTf8q9VGueV9GxC64RSuTZ3AJ+PZf5UCbYMalQ
+         t74ppIXWMi7coCRhuVq1t0d2kb08cxOiocYFMzFs+tkfhXEF3R9HZPLSik6WYMGnL8zl
+         mbjQbGUEuMXR8G9r5z/ImwSfYf8BsDhkAIuxZ3v7nvAR2/2KSJpOSwsRrCI4433bwSFf
+         TTJ/UMItMBTSOEloXlg24hnwY5Jqg4DPwr1CA+dFqFM8ZVX4Pda3L+5mZ10aF3OEAt5o
+         OV6wYIOG2lRc0sv/Vu+H+C3RtnU9MBjygXjgP6QpHGBD189TQ27AW7l3GshGIfnyROm5
+         YScw==
+X-Gm-Message-State: AOAM530GnrlajOtcG+wdDWXKuEvXUvhO5/Qxb0XT3GNIqEgnSgXBkQ+9
+        LlDKgoItX+botiADgKiAc8mEdlYeVtU=
+X-Google-Smtp-Source: ABdhPJzehgF/PEqX9kg9QTHJ8EPKjLswzBiGNUVf7c1AYT1yq4GiazH//UDieDe0ouNzJa5fRX9QYw==
+X-Received: by 2002:aa7:db4e:: with SMTP id n14mr10627540edt.101.1610977944182;
+        Mon, 18 Jan 2021 05:52:24 -0800 (PST)
+Received: from localhost.localdomain (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
+        by smtp.gmail.com with ESMTPSA id i22sm4460142ejx.77.2021.01.18.05.52.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Jan 2021 05:52:23 -0800 (PST)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Russell King <linux@armlinux.org.uk>,
-        Sean Wang <Sean.Wang@mediatek.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        "Vivien Didelot" <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Weijie Gao =?UTF-8?Q?=28=E9=AB=98=E6=83=9F=E6=9D=B0=29?= 
-        <Weijie.Gao@mediatek.com>, Chuanhong Guo <gch981213@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        =?ISO-8859-1?Q?Ren=E9?= van Dorst <opensource@vdorst.com>
-Date:   Mon, 18 Jan 2021 21:27:57 +0800
-In-Reply-To: <CALW65ja33=+7TGQMYdr=Wztwy_simszSwO6saMvvSeqX3qWGxA@mail.gmail.com>
-References: <20201230042208.8997-1-dqfext@gmail.com>
-         <441a77e8c30927ce5bc24708e1ceed79@kernel.org> <X+ybeg4dvR5Vq8LY@lunn.ch>
-         <CALW65ja33=+7TGQMYdr=Wztwy_simszSwO6saMvvSeqX3qWGxA@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.2.3-0ubuntu6 
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>
+Subject: [PATCH net] net: mscc: ocelot: allow offloading of bridge on top of LAG
+Date:   Mon, 18 Jan 2021 15:52:10 +0200
+Message-Id: <20210118135210.2666246-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-X-MTK:  N
-Content-Transfer-Encoding: base64
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-SGkgUWluZ2ZhbmcsDQpPbiBXZWQsIDIwMjEtMDEtMDYgYXQgMTY6NTQgKzA4MDAsIERFTkcgUWlu
-Z2Zhbmcgd3JvdGU6DQo+IEhpIEFuZHJldywNCj4gDQo+IE9uIFdlZCwgRGVjIDMwLCAyMDIwIGF0
-IDExOjIzIFBNIEFuZHJldyBMdW5uIDxhbmRyZXdAbHVubi5jaD4gd3JvdGU6DQo+ID4NCj4gPiBP
-biBXZWQsIERlYyAzMCwgMjAyMCBhdCAwOTo0MjowOUFNICswMDAwLCBNYXJjIFp5bmdpZXIgd3Jv
-dGU6DQo+ID4gPiA+ICtzdGF0aWMgaXJxcmV0dXJuX3QNCj4gPiA+ID4gK210NzUzMF9pcnEoaW50
-IGlycSwgdm9pZCAqZGF0YSkNCj4gPiA+ID4gK3sNCj4gPiA+ID4gKyAgIHN0cnVjdCBtdDc1MzBf
-cHJpdiAqcHJpdiA9IGRhdGE7DQo+ID4gPiA+ICsgICBib29sIGhhbmRsZWQgPSBmYWxzZTsNCj4g
-PiA+ID4gKyAgIGludCBwaHk7DQo+ID4gPiA+ICsgICB1MzIgdmFsOw0KPiA+ID4gPiArDQo+ID4g
-PiA+ICsgICB2YWwgPSBtdDc1MzBfcmVhZChwcml2LCBNVDc1MzBfU1lTX0lOVF9TVFMpOw0KPiA+
-ID4gPiArICAgbXQ3NTMwX3dyaXRlKHByaXYsIE1UNzUzMF9TWVNfSU5UX1NUUywgdmFsKTsNCj4g
-PiA+DQo+ID4gPiBJZiB0aGF0IGlzIGFuIGFjayBvcGVyYXRpb24sIGl0IHNob3VsZCBiZSBkZWFs
-dCB3aXRoIGFzIHN1Y2ggaW4NCj4gPiA+IGFuIGlycWNoaXAgY2FsbGJhY2sgaW5zdGVhZCBvZiBi
-ZWluZyBvcGVuLWNvZGVkIGhlcmUuDQo+ID4NCj4gPiBIaSBRaW5nZmFuZw0KPiA+DQo+ID4gRG9l
-cyB0aGUgUEhZIGl0c2VsZiBoYXZlIGludGVycnVwdCBjb250cm9sIGFuZCBzdGF0dXMgcmVnaXN0
-ZXJzPw0KPiANCj4gTVQ3NTMxJ3MgaW50ZXJuYWwgUEhZIGhhcyBhbiBpbnRlcnJ1cHQgc3RhdHVz
-IHJlZ2lzdGVyLCBidXQgSSBkb24ndA0KPiBrbm93IGlmIHRoZSBzYW1lIGFwcGxpZXMgdG8gTVQ3
-NTMwLg0KSW50ZXJydXB0IHN0YXR1cy9tYXNrIHJlZ2lzdGVycyBvZiBNVDc1MzAgaW50ZXJuYWwg
-UEhZIGlzIHRoZSBzYW1lIGFzDQpNVDc1MzEuIFRoZSBzd2l0Y2ggaW50ZXJydXB0IHN0YXR1cyBy
-ZWdpc3RlciBNVDc1MzBfU1lTX0lOVF9TVFNbMTQ6OF0NCnJlZmxlY3RzIGludGVybmFsIFBIWSBp
-bnRlcnJ1cHQgc3RhdHVzLiBNVDc1MzBfU1lTX0lOVF9TVFNbNjowXSB3ZSB1c2VkDQpiZWZvcmUg
-ZG9lcyBub3QgcmVsYXRlZCB0byBpbnRlcm5hbCBQSFkgImludGVycnVwdCIuDQoNCkhvd2V2ZXIs
-IGJhc2Ugb24gTVQ3NTN4IGhhcmR3YXJlIGJlaGF2aW9yLCBhZnRlciByZWFkLWNsZWFyIGludGVy
-cnVwdA0Kc3RhdHVzIG9mIGludGVybmFsIHBoeSwgd2Ugc3RpbGwgbmVlZCB0byB3cml0ZS1jbGVh
-cg0KTVQ3NTMwX1NZU19JTlRfU1RTWzE0OjhdIHRvIGNsZWFyIHN3aXRjaCBpbnRlcnJ1cHQuDQoN
-CkxhbmRlbg0KPiANCj4gPg0KPiA+IE15IGV4cGVyaWVuY2Ugd2l0aCB0aGUgTWFydmVsbCBTd2l0
-Y2ggYW5kIGl0cyBlbWJlZGRlZCBQSFlzIGlzIHRoYXQNCj4gPiB0aGUgUEhZcyBhcmUganVzdCB0
-aGUgc2FtZSBhcyB0aGUgZGlzY3JldGUgUEhZcy4gVGhlcmUgYXJlIGJpdHMgdG8NCj4gPiBlbmFi
-bGUgZGlmZmVyZW50IGludGVycnVwdHMsIGFuZCB0aGVyZSBhcmUgc3RhdHVzIGJpdHMgaW5kaWNh
-dGluZyB3aGF0DQo+ID4gZXZlbnQgY2F1c2VkIHRoZSBpbnRlcnJ1cHQuIENsZWFyaW5nIHRoZSBp
-bnRlcnJ1cHQgaW4gdGhlIFBIWSBjbGVhcnMNCj4gPiB0aGUgaW50ZXJydXB0IGluIHRoZSBzd2l0
-Y2ggaW50ZXJydXB0IGNvbnRyb2xsZXIuIFNvIGluIHRoZSBtdjg4ZTZ4eHgNCj4gPiBpbnRlcnJ1
-cHQgY29kZSwgeW91IHNlZSBpIGRvIGEgcmVhZCBvZiB0aGUgc3dpdGNoIGludGVycnVwdCBjb250
-cm9sbGVyDQo+ID4gc3RhdHVzIHJlZ2lzdGVyLCBidXQgaSBkb24ndCB3cml0ZSB0byBpdCBhcyB5
-b3UgaGF2ZSBkb25lLg0KPiA+DQo+ID4gICAgICAgIEFuZHJldw0KDQo=
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
+
+The blamed commit was too aggressive, and it made ocelot_netdevice_event
+react only to network interface events emitted for the ocelot switch
+ports.
+
+In fact, only the PRECHANGEUPPER should have had that check.
+
+When we ignore all events that are not for us, we miss the fact that the
+upper of the LAG changes, and the bonding interface gets enslaved to a
+bridge. This is an operation we could offload under certain conditions.
+
+Fixes: 7afb3e575e5a ("net: mscc: ocelot: don't handle netdev events for other netdevs")
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Reviewed-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+---
+ drivers/net/ethernet/mscc/ocelot_net.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
+
+diff --git a/drivers/net/ethernet/mscc/ocelot_net.c b/drivers/net/ethernet/mscc/ocelot_net.c
+index 2bd2840d88bd..42230f92ca9c 100644
+--- a/drivers/net/ethernet/mscc/ocelot_net.c
++++ b/drivers/net/ethernet/mscc/ocelot_net.c
+@@ -1042,10 +1042,8 @@ static int ocelot_netdevice_event(struct notifier_block *unused,
+ 	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
+ 	int ret = 0;
+ 
+-	if (!ocelot_netdevice_dev_check(dev))
+-		return 0;
+-
+ 	if (event == NETDEV_PRECHANGEUPPER &&
++	    ocelot_netdevice_dev_check(dev) &&
+ 	    netif_is_lag_master(info->upper_dev)) {
+ 		struct netdev_lag_upper_info *lag_upper_info = info->upper_info;
+ 		struct netlink_ext_ack *extack;
+-- 
+2.25.1
 
