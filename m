@@ -2,147 +2,353 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 913122FA0A9
-	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 14:03:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 35CAA2FA0AC
+	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 14:04:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392076AbhARNCd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jan 2021 08:02:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34740 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2391972AbhARNA4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jan 2021 08:00:56 -0500
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3245CC061573
-        for <netdev@vger.kernel.org>; Mon, 18 Jan 2021 05:00:14 -0800 (PST)
-Received: by mail-wr1-x42b.google.com with SMTP id d26so16363832wrb.12
-        for <netdev@vger.kernel.org>; Mon, 18 Jan 2021 05:00:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=4qPAUXos/RFVlktxv/aD1QceJ4yoWahYlcZ36hAfgtY=;
-        b=ZbAaW3iarMkSzWxsa5oUIsBzwxb3iFZIeqpAnVqC++nNNjhwUjeR6sJvFUT0gEY67V
-         dIkfPnbCmPARJTI4ScWAM9mRF/XKYHfYqyanRx5VHHAxZTaTHAVxY/ehEJoj+ZA8Oftx
-         U5eqlcBcwtX+aE5ipWmspLjKYd18ZrnALIVicsgGADwjqLK6c3/zOpdA0Ih4rDgjkNk9
-         /CYoqd0QdZkVZhEkVC1Q4DWh3hYraqIL7NLCBxXaLapSoug8eCHSXd6ADYP5gSsNIvm6
-         vbTeYUNeNO1g6Wz/6YajALGyF9IdCJlBsf2w3154RMs+Jg7cdJy3eK2oidSg5xjZn/IC
-         i3rg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=4qPAUXos/RFVlktxv/aD1QceJ4yoWahYlcZ36hAfgtY=;
-        b=qTRRs/kX94lw0HIClDpxAIP4UrofLjspu8+ETL8h+sRZ0iAD/URdJXeRS06RPopu0r
-         BO8pBicJ2qMXoHIhHV+qaW7OSRMFSo9qAgahoDNEnXal/hwE92gb/vlzsudDDAxpHsi+
-         oTrDV3vzoVtCCg9JswaJTj4CqO/DKJMIGyySD4gA/qSJ4721thiBh0wI0YSBt9ZVvKFd
-         S+W9uaxGNADB6pPZ2COZPqGri/xyaiEj9yRtgU/+YPtSlnROa9GoRJCTtueNAO3pg2Am
-         GMRcfkMtFeOZMFZJssh2vHtruMQtBRj0OcQqOg5Xm3i4KkK2BhWPaNias0ksf/f3ONKo
-         BiHA==
-X-Gm-Message-State: AOAM530xkYxSaCImIrOaW6lST4GNXXpmZ+l/25uLk8cxk/fjj2rVaYIU
-        l3Dvtsksv7Un64R4aIeJBrZMlA==
-X-Google-Smtp-Source: ABdhPJzxOZaozYJ+eQGCyS2ZJQ24T0rOg6s+pR5uPrAJeXMwawBq/dapFX+hyHZInjZgJkkM19UnfQ==
-X-Received: by 2002:adf:e710:: with SMTP id c16mr25993307wrm.295.1610974812807;
-        Mon, 18 Jan 2021 05:00:12 -0800 (PST)
-Received: from localhost ([85.163.43.78])
-        by smtp.gmail.com with ESMTPSA id r126sm11768814wma.48.2021.01.18.05.00.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Jan 2021 05:00:12 -0800 (PST)
-Date:   Mon, 18 Jan 2021 14:00:09 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        jacob.e.keller@intel.com, roopa@nvidia.com, mlxsw@nvidia.com
-Subject: Re: [patch net-next RFC 00/10] introduce line card support for
- modular switch
-Message-ID: <20210118130009.GU3565223@nanopsycho.orion>
-References: <20210113121222.733517-1-jiri@resnulli.us>
- <20210113182716.2b2aa8fa@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20210114074804.GK3565223@nanopsycho.orion>
- <20210114153013.2ce357b0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20210115143906.GM3565223@nanopsycho.orion>
- <20210115112617.064deda8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S2392089AbhARNC4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jan 2021 08:02:56 -0500
+Received: from mail1.protonmail.ch ([185.70.40.18]:41936 "EHLO
+        mail1.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2391985AbhARNBZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jan 2021 08:01:25 -0500
+Date:   Mon, 18 Jan 2021 13:00:17 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
+        t=1610974820; bh=/NaeKoU4Q/v51eOBH7d6BpzM6okVuiuPHOFagTI+ZbM=;
+        h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
+        b=O4X6YWp+K5tAMwBPR1h6loJZm9y13TAg7xcV7N8Vd2DsUb9x3U4rBGvo5/sahYnV6
+         mk9Ob7BlYhVrrOGYJK2h6mEfW5vxUR48x6HlrTFWWC4olxd32uGXUYYIIMSYgEO0r9
+         uK1GuQG9gNc97EHtfMumy6C03omSaFo+D3KaG066lfJJBDWqcI3DzzKAhfKjn3BAa/
+         6Lc55u2bfo0SA2YrKT6wzBco3/D61SZ5jPATP+AV2ez1pxLWlgeXVnPa4KGr6xOuKc
+         WikyAXBfjLrTb/qhqRRR13yK0IF1Z9HxG0Iuyh5SL3fS1UhaO4jfEIEQ5VyDAgB7pc
+         IVrPWVx9aUocg==
+To:     Yunsheng Lin <linyunsheng@huawei.com>
+From:   Alexander Lobakin <alobakin@pm.me>
+Cc:     Alexander Lobakin <alobakin@pm.me>,
+        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, bjorn.topel@intel.com,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Antoine Tenart <atenart@kernel.org>,
+        Michal Kubecek <mkubecek@suse.cz>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Meir Lichtinger <meirl@mellanox.com>,
+        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Reply-To: Alexander Lobakin <alobakin@pm.me>
+Subject: Re: [PATCH bpf-next] xsk: build skb by page
+Message-ID: <20210118125937.4088-1-alobakin@pm.me>
+In-Reply-To: <4a4b475b-0e79-6cf6-44f5-44d45b5d85b5@huawei.com>
+References: <579fa463bba42ac71591540a1811dca41d725350.1610764948.git.xuanzhuo@linux.alibaba.com> <4a4b475b-0e79-6cf6-44f5-44d45b5d85b5@huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210115112617.064deda8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.2 required=10.0 tests=ALL_TRUSTED,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF shortcircuit=no
+        autolearn=disabled version=3.4.4
+X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on
+        mailout.protonmail.ch
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fri, Jan 15, 2021 at 08:26:17PM CET, kuba@kernel.org wrote:
->On Fri, 15 Jan 2021 15:39:06 +0100 Jiri Pirko wrote:
->> >I'm not a SFP experts so maybe someone will correct me but AFAIU
->> >the QSFP (for optics) is the same regardless of breakout. It's the
->> >passive optical strands that are either bundled or not. So there is 
->> >no way for the system to detect the cable type (AFAIK).  
->> 
->> For SFP module, you are able to detect those.
+From: Yunsheng Lin <linyunsheng@huawei.com>
+Date: Mon, 18 Jan 2021 20:40:52 +0800
+
+> On 2021/1/16 10:44, Xuan Zhuo wrote:
+>> This patch is used to construct skb based on page to save memory copy
+>> overhead.
+>>
+>> This has one problem:
+>>
+>> We construct the skb by fill the data page as a frag into the skb. In
+>> this way, the linear space is empty, and the header information is also
+>> in the frag, not in the linear space, which is not allowed for some
+>> network cards. For example, Mellanox Technologies MT27710 Family
+>> [ConnectX-4 Lx] will get the following error message:
+>>
+>>     mlx5_core 0000:3b:00.1 eth1: Error cqe on cqn 0x817, ci 0x8, qn 0x1d=
+bb, opcode 0xd, syndrome 0x1, vendor syndrome 0x68
+>>     00000000: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+>>     00000010: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+>>     00000020: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+>>     00000030: 00 00 00 00 60 10 68 01 0a 00 1d bb 00 0f 9f d2
+>>     WQE DUMP: WQ size 1024 WQ cur size 0, WQE index 0xf, len: 64
+>>     00000000: 00 00 0f 0a 00 1d bb 03 00 00 00 08 00 00 00 00
+>>     00000010: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+>>     00000020: 00 00 00 2b 00 08 00 00 00 00 00 05 9e e3 08 00
+>>     00000030: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+>>     mlx5_core 0000:3b:00.1 eth1: ERR CQE on SQ: 0x1dbb
+>>
+>> I also tried to use build_skb to construct skb, but because of the
+>> existence of skb_shinfo, it must be behind the linear space, so this
+>> method is not working. We can't put skb_shinfo on desc->addr, it will be
+>> exposed to users, this is not safe.
+>>
+>> Finally, I added a feature NETIF_F_SKB_NO_LINEAR to identify whether the
 >
->Not sure you understand what I'm saying. Maybe you're thinking about
->DACs? This is a optical cable for breakout:
->
->https://www.fs.com/products/68048.html
->
->There is no electronics in it to "detect" things AFAIU. Same QSFP can
->be used with this cable or a non-breakout.
+> Does it make sense to use ETHTOOL_TX_COPYBREAK tunable in ethtool to
+> configure if the data is copied or not?
 
-Ah, got you.
+As far as I can grep, only mlx4 supports this, and it has a different
+meaning in that driver.
+So I guess a new netdev_feature would be a better solution.
 
+>> network card supports the header information of the packet in the frag
+>> and not in the linear space.
+>>
+>> ---------------- Performance Testing ------------
+>>
+>> The test environment is Aliyun ECS server.
+>> Test cmd:
+>> ```
+>> xdpsock -i eth0 -t  -S -s <msg size>
+>> ```
+>>
+>> Test result data:
+>>
+>> size    64      512     1024    1500
+>> copy    1916747 1775988 1600203 1440054
+>> page    1974058 1953655 1945463 1904478
+>> percent 3.0%    10.0%   21.58%  32.3%
+>>
+>> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+>> Reviewed-by: Dust Li <dust.li@linux.alibaba.com>
+>> ---
+>>  drivers/net/virtio_net.c        |   2 +-
+>>  include/linux/netdev_features.h |   5 +-
+>>  net/ethtool/common.c            |   1 +
+>>  net/xdp/xsk.c                   | 108 +++++++++++++++++++++++++++++++++=
+-------
+>>  4 files changed, 97 insertions(+), 19 deletions(-)
+>>=20
+>> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+>> index 4ecccb8..841a331 100644
+>> --- a/drivers/net/virtio_net.c
+>> +++ b/drivers/net/virtio_net.c
+>> @@ -2985,7 +2985,7 @@ static int virtnet_probe(struct virtio_device *vde=
+v)
+>>  =09/* Set up network device as normal. */
+>>  =09dev->priv_flags |=3D IFF_UNICAST_FLT | IFF_LIVE_ADDR_CHANGE;
+>>  =09dev->netdev_ops =3D &virtnet_netdev;
+>> -=09dev->features =3D NETIF_F_HIGHDMA;
+>> +=09dev->features =3D NETIF_F_HIGHDMA | NETIF_F_SKB_NO_LINEAR;
+>> =20
+>>  =09dev->ethtool_ops =3D &virtnet_ethtool_ops;
+>>  =09SET_NETDEV_DEV(dev, &vdev->dev);
+>> diff --git a/include/linux/netdev_features.h b/include/linux/netdev_feat=
+ures.h
+>> index 934de56..8dd28e2 100644
+>> --- a/include/linux/netdev_features.h
+>> +++ b/include/linux/netdev_features.h
+>> @@ -85,9 +85,11 @@ enum {
+>> =20
+>>  =09NETIF_F_HW_MACSEC_BIT,=09=09/* Offload MACsec operations */
+>> =20
+>> +=09NETIF_F_SKB_NO_LINEAR_BIT,=09/* Allow skb linear is empty */
+>> +
+>>  =09/*
+>>  =09 * Add your fresh new feature above and remember to update
+>> -=09 * netdev_features_strings[] in net/core/ethtool.c and maybe
+>> +=09 * netdev_features_strings[] in net/ethtool/common.c and maybe
+>>  =09 * some feature mask #defines below. Please also describe it
+>>  =09 * in Documentation/networking/netdev-features.rst.
+>>  =09 */
+>> @@ -157,6 +159,7 @@ enum {
+>>  #define NETIF_F_GRO_FRAGLIST=09__NETIF_F(GRO_FRAGLIST)
+>>  #define NETIF_F_GSO_FRAGLIST=09__NETIF_F(GSO_FRAGLIST)
+>>  #define NETIF_F_HW_MACSEC=09__NETIF_F(HW_MACSEC)
+>> +#define NETIF_F_SKB_NO_LINEAR=09__NETIF_F(SKB_NO_LINEAR)
+>> =20
+>>  /* Finds the next feature with the highest number of the range of start=
+ till 0.
+>>   */
+>> diff --git a/net/ethtool/common.c b/net/ethtool/common.c
+>> index 24036e3..2f3d309 100644
+>> --- a/net/ethtool/common.c
+>> +++ b/net/ethtool/common.c
+>> @@ -68,6 +68,7 @@
+>>  =09[NETIF_F_HW_TLS_RX_BIT] =3D=09 "tls-hw-rx-offload",
+>>  =09[NETIF_F_GRO_FRAGLIST_BIT] =3D=09 "rx-gro-list",
+>>  =09[NETIF_F_HW_MACSEC_BIT] =3D=09 "macsec-hw-offload",
+>> +=09[NETIF_F_SKB_NO_LINEAR_BIT] =3D=09 "skb-no-linear",
 
->
->> >Or to put it differently IMO the netdev should be provisioned if the
->> >system has a port into which user can plug in a cable. When there is   
->> 
->> Not really. For slit cables, the ports are provisioned not matter which
->> cable is connected, slitter 1->2/1->4 or 1->1 cable.
->> 
->> 
->> >a line card-sized hole in the chassis, I'd be surprised to see ports.
->> >
->> >That said I never worked with real world routers so maybe that's what
->> >they do. Maybe some with a Cisco router in the basement can tell us? :)  
->> 
->> The need for provision/pre-configure splitter/linecard is that the
->> ports/netdevices do not disapper/reappear when you replace
->> splitter/linecard. Consider a faulty linecard with one port burned. You
->> just want to replace it with new one. And in that case, you really don't
->> want kernel to remove netdevices and possibly mess up routing for
->> example.
->
->Having a single burned port sounds like a relatively rare scenario.
+I completely forgot to add that you'd better to mention in both
+enumeration/feature and its Ethtool string that the feature applies
+to Tx path.
+Smth like:
 
-Hmm, rare in scale is common...
+NETIF_F_SKB_TX_NO_LINEAR{,_BIT}, "skb-tx-no-linear"
+or
+NETIF_F_TX_SKB_NO_LINEAR{,_BIT}, "tx-skb-no-linear"
 
+Otherwise, it may be confusing for users and developers.
 
->Reconfiguring routing is not the end of the world.
+>>  };
+>> =20
+>>  const char
+>> diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+>> index 8037b04..94d17dc 100644
+>> --- a/net/xdp/xsk.c
+>> +++ b/net/xdp/xsk.c
+>> @@ -430,6 +430,95 @@ static void xsk_destruct_skb(struct sk_buff *skb)
+>>  =09sock_wfree(skb);
+>>  }
+>> =20
+>> +static struct sk_buff *xsk_build_skb_zerocopy(struct xdp_sock *xs,
+>> +=09=09=09=09=09      struct xdp_desc *desc)
+>> +{
+>> +=09u32 len, offset, copy, copied;
+>> +=09struct sk_buff *skb;
+>> +=09struct page *page;
+>> +=09char *buffer;
+>> +=09int err, i;
+>> +=09u64 addr;
+>> +
+>> +=09skb =3D sock_alloc_send_skb(&xs->sk, 0, 1, &err);
+>> +=09if (unlikely(!skb))
+>> +=09=09return NULL;
+>> +
+>> +=09addr =3D desc->addr;
+>> +=09len =3D desc->len;
+>> +
+>> +=09buffer =3D xsk_buff_raw_get_data(xs->pool, addr);
+>> +=09offset =3D offset_in_page(buffer);
+>> +=09addr =3D buffer - (char *)xs->pool->addrs;
+>> +
+>> +=09for (copied =3D 0, i =3D 0; copied < len; ++i) {
+>> +=09=09page =3D xs->pool->umem->pgs[addr >> PAGE_SHIFT];
+>> +
+>> +=09=09get_page(page);
+>> +
+>> +=09=09copy =3D min((u32)(PAGE_SIZE - offset), len - copied);
+>> +
+>> +=09=09skb_fill_page_desc(skb, i, page, offset, copy);
+>> +
+>> +=09=09copied +=3D copy;
+>> +=09=09addr +=3D copy;
+>> +=09=09offset =3D 0;
+>> +=09}
+>> +
+>> +=09skb->len +=3D len;
+>> +=09skb->data_len +=3D len;
+>> +=09skb->truesize +=3D len;
+>> +
+>> +=09refcount_add(len, &xs->sk.sk_wmem_alloc);
+>> +
+>> +=09return skb;
+>> +}
+>> +
+>> +static struct sk_buff *xsk_build_skb(struct xdp_sock *xs,
+>> +=09=09=09=09     struct xdp_desc *desc, int *err)
+>> +{
+>> +=09struct sk_buff *skb;
+>> +
+>> +=09if (xs->dev->features & NETIF_F_SKB_NO_LINEAR) {
+>> +=09=09skb =3D xsk_build_skb_zerocopy(xs, desc);
+>> +=09=09if (unlikely(!skb)) {
+>> +=09=09=09*err =3D -ENOMEM;
+>> +=09=09=09return NULL;
+>> +=09=09}
+>> +=09} else {
+>> +=09=09char *buffer;
+>> +=09=09u64 addr;
+>> +=09=09u32 len;
+>> +=09=09int err;
+>> +
+>> +=09=09len =3D desc->len;
+>> +=09=09skb =3D sock_alloc_send_skb(&xs->sk, len, 1, &err);
+>> +=09=09if (unlikely(!skb)) {
+>> +=09=09=09*err =3D -ENOMEM;
+>> +=09=09=09return NULL;
+>> +=09=09}
+>> +
+>> +=09=09skb_put(skb, len);
+>> +=09=09addr =3D desc->addr;
+>> +=09=09buffer =3D xsk_buff_raw_get_data(xs->pool, desc->addr);
+>> +=09=09err =3D skb_store_bits(skb, 0, buffer, len);
+>> +
+>> +=09=09if (unlikely(err)) {
+>> +=09=09=09kfree_skb(skb);
+>> +=09=09=09*err =3D -EINVAL;
+>> +=09=09=09return NULL;
+>> +=09=09}
+>> +=09}
+>> +
+>> +=09skb->dev =3D xs->dev;
+>> +=09skb->priority =3D xs->sk.sk_priority;
+>> +=09skb->mark =3D xs->sk.sk_mark;
+>> +=09skb_shinfo(skb)->destructor_arg =3D (void *)(long)desc->addr;
+>> +=09skb->destructor =3D xsk_destruct_skb;
+>> +
+>> +=09return skb;
+>> +}
+>> +
+>>  static int xsk_generic_xmit(struct sock *sk)
+>>  {
+>>  =09struct xdp_sock *xs =3D xdp_sk(sk);
+>> @@ -446,43 +535,28 @@ static int xsk_generic_xmit(struct sock *sk)
+>>  =09=09goto out;
+>> =20
+>>  =09while (xskq_cons_peek_desc(xs->tx, &desc, xs->pool)) {
+>> -=09=09char *buffer;
+>> -=09=09u64 addr;
+>> -=09=09u32 len;
+>> -
+>>  =09=09if (max_batch-- =3D=3D 0) {
+>>  =09=09=09err =3D -EAGAIN;
+>>  =09=09=09goto out;
+>>  =09=09}
+>> =20
+>> -=09=09len =3D desc.len;
+>> -=09=09skb =3D sock_alloc_send_skb(sk, len, 1, &err);
+>> +=09=09skb =3D xsk_build_skb(xs, &desc, &err);
+>>  =09=09if (unlikely(!skb))
+>>  =09=09=09goto out;
+>> =20
+>> -=09=09skb_put(skb, len);
+>> -=09=09addr =3D desc.addr;
+>> -=09=09buffer =3D xsk_buff_raw_get_data(xs->pool, addr);
+>> -=09=09err =3D skb_store_bits(skb, 0, buffer, len);
+>>  =09=09/* This is the backpressure mechanism for the Tx path.
+>>  =09=09 * Reserve space in the completion queue and only proceed
+>>  =09=09 * if there is space in it. This avoids having to implement
+>>  =09=09 * any buffering in the Tx path.
+>>  =09=09 */
+>>  =09=09spin_lock_irqsave(&xs->pool->cq_lock, flags);
+>> -=09=09if (unlikely(err) || xskq_prod_reserve(xs->pool->cq)) {
+>> +=09=09if (xskq_prod_reserve(xs->pool->cq)) {
+>>  =09=09=09spin_unlock_irqrestore(&xs->pool->cq_lock, flags);
+>>  =09=09=09kfree_skb(skb);
+>>  =09=09=09goto out;
+>>  =09=09}
+>>  =09=09spin_unlock_irqrestore(&xs->pool->cq_lock, flags);
+>> =20
+>> -=09=09skb->dev =3D xs->dev;
+>> -=09=09skb->priority =3D sk->sk_priority;
+>> -=09=09skb->mark =3D sk->sk_mark;
+>> -=09=09skb_shinfo(skb)->destructor_arg =3D (void *)(long)desc.addr;
+>> -=09=09skb->destructor =3D xsk_destruct_skb;
+>> -
+>>  =09=09err =3D __dev_direct_xmit(skb, xs->queue_id);
+>>  =09=09if  (err =3D=3D NETDEV_TX_BUSY) {
+>>  =09=09=09/* Tell user-space to retry the send */
+>>=20
 
-Well, yes, but you don't really want netdevices to come and go then you
-plug in/out cables/modules. That's why we have split implemented as we
-do. I don't understand why do you think linecards are different.
-
-Plus, I'm not really sure that our hw can report the type, will check.
-One way or another, I think that both configuration flows have valid
-usecase. Some user may want pre-configuration, some user may want auto.
-Btw, it is possible to implement splitter cable in auto mode as well.
-
-
->
->> >If the device really needs this configuration / can't detect things
->> >automatically, then we gotta do something like what you have.
->> >The only question is do we still want to call it a line card.
->> >Sounds more like a front panel module. At Netronome we called 
->> >those phymods.  
->> 
->> Sure, the name is up to the discussion. We call it "linecard"
->> internally. I don't care about the name.
->
->Yeah, let's call it something more appropriate to indicate its
->breakout/retimer/gearbox nature, and we'll be good :)
-
-Well, it can contain much more. It can contain a smartnic/fpga/whatever
-for example. Not sure we can find something that fits to all cases.
-I was thinking about it in the past, I think that the linecard is quite
-appropriate. It connects with lines/lanes, and it does something,
-either phy/gearbox, or just interconnects the lanes using smartnic/fpga
-for example.
+Al
 
