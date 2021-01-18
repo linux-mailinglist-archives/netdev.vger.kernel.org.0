@@ -2,90 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9DF752F9A8C
-	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 08:32:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7433D2F9AE8
+	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 09:01:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732739AbhARHcR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jan 2021 02:32:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49004 "EHLO
+        id S2387453AbhARIBY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jan 2021 03:01:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55126 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732105AbhARHcO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jan 2021 02:32:14 -0500
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CA55C061757;
-        Sun, 17 Jan 2021 23:31:34 -0800 (PST)
-Received: by mail-pf1-x42b.google.com with SMTP id f63so1881265pfa.13;
-        Sun, 17 Jan 2021 23:31:34 -0800 (PST)
+        with ESMTP id S1733306AbhARIAy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jan 2021 03:00:54 -0500
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA944C061573;
+        Mon, 18 Jan 2021 00:00:13 -0800 (PST)
+Received: by mail-wr1-x42c.google.com with SMTP id 6so8170194wri.3;
+        Mon, 18 Jan 2021 00:00:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=uMxNPxAc5Cn9KFySg+fY1OeEicAZhM0J6k8NTwRGK+A=;
-        b=iaZzS8C3aXT2rIpu9BDwTtgQwNYsgOCzOvQDRtzptqNJcQ1WjV8yNGStDuo1Ak4rcL
-         ywzDfzx/r6vY6f3V/q4yAmYqEFoVUK4cS4vN06qjRFknPyaksz78sYIr9SW4ZN/aWn0x
-         iBoQ8JC8o3eSC3Tvjpi6T7COqH1Khrh88rGCAcUKtLntkWBdTg0ZqrzR4nIClItEL62e
-         bEbvoToX7ZZvP0+xCVgDBmGYiQnHZfyuv7PNhfWrsqZ4NXIj1qXllhrKPX3O+/5Mx3dz
-         NVWVesGTz5MdNRQV5ajQJEp1t03XT1JAjNeWNQ8zdj63XXJfWK29GBtH86YAbdW2HbRA
-         4vzQ==
+        h=from:to:cc:subject:date:message-id;
+        bh=QrqziBluAm2S7jXEhlyaBX23uYOu5nIn+17iqFzqPgc=;
+        b=PoKTj57akzrAzBOa8fvLRnZicOvuIP3BcIDUm6snh/3aqOytbhsto0hj+3DpxwZuWd
+         demfto64a5AT8fDUlK0KIIUq6VDCKBryqDLDW/I45kUexbFy+eyH7Dob5BrcgQAaPuA8
+         avdA0wzGnqgHFIJhdnaqQlGGf6NJ8SEsjTjLOIjg3mYfFK0N2sKxOuNyM/RBkFW1vIt0
+         niCgRTGRFSSlcSFARrgjI8cWKlGHlVZc3IuXAh6+vTp5jbruNdbTiRF0NxPK/zTER3cq
+         o0WrL30jI+l+1kWLRSmsE5Zf4IbVAalV7oW+GAHSONCPNu4LpL57WHJioU6Z22TimKmE
+         ayOg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=uMxNPxAc5Cn9KFySg+fY1OeEicAZhM0J6k8NTwRGK+A=;
-        b=AUIOiS6BzDojk4wjeatcKvAACih3Sh1QNSkZSGtuNXDqWCQjacXlMNXUZAMLXrZI75
-         58/w9U6iIDAfLrL7xuFYKuzmUgr57crxr50VHgRWJSZ1FoKArQxW/bV+PLPPOVLrCn2k
-         TqicskouiCME+0i8Qz/LHoVnZVEGAfLDjhPdBFXKufuH5XHaAe/8S/jzq1A3gJqBQXob
-         eNKzApf/ASmoobzqX0yp0ammNbgMO3Aupmk722wW4CPWoLpJmyffVYiTGGJz1oI5ntkP
-         /WhDo9m96APF2ujvjWcbu+y3cZWDn2Z66GlEns6BdTJ+l9pisFrP/Ca/AIG5Hd1sL5J8
-         Ge1Q==
-X-Gm-Message-State: AOAM531aXxs36DqjEzzHRqzqF08IvsJEeg92qrjF/TPElou7chf0F8eo
-        ny+z/p4xvdwUbPB70dBBbhQGDlKtQJX6St0CFsI=
-X-Google-Smtp-Source: ABdhPJxEtJGajVP4thclN6C/pO5f+COjssAshj2axTP4UepwJmqqj22e5d0d5dcx9ef2uoL6nqyNdqO6muZfhKhx51c=
-X-Received: by 2002:a62:2e86:0:b029:1a6:5f94:2cb with SMTP id
- u128-20020a622e860000b02901a65f9402cbmr25225451pfu.19.1610955093909; Sun, 17
- Jan 2021 23:31:33 -0800 (PST)
-MIME-Version: 1.0
-References: <20210114143318.2171-1-cristian.dumitrescu@intel.com>
-In-Reply-To: <20210114143318.2171-1-cristian.dumitrescu@intel.com>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Mon, 18 Jan 2021 08:31:23 +0100
-Message-ID: <CAJ8uoz3YSuPj6F+GHkk6yXHryUEOUhVSg2pDVEVrFA6b8Hgu6g@mail.gmail.com>
-Subject: Re: [PATCH net-next 0/4] i40e: small improvements on XDP path
-To:     Cristian Dumitrescu <cristian.dumitrescu@intel.com>
-Cc:     intel-wired-lan <intel-wired-lan@lists.osuosl.org>,
-        bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
-        edwin.verplanke@intel.com
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=QrqziBluAm2S7jXEhlyaBX23uYOu5nIn+17iqFzqPgc=;
+        b=VoaRpxXEvhVZaOhedZghmx+Q8PcfoET/cBnNqZeWFa6ZxcUKHBdj2RNmycyO1Gd6nz
+         YWzb0K9jtYQBSeyS3V9rCgpaePBGRw+TernZKBUVVDtfk8wnd3vaqmLJMAqUQDQNOc8k
+         ccs9TF6GKcN8mWi12KkrfaU3kou8RZjyQlu9hk2f2cb3hVM+Cbs0zNqBI8+gExSpBRfT
+         DgM51qyUfrqIOWADvVC8VTtF5/CiW3hpV+8j5pp9kX4y650wvFawYeU5L8MhGsGYlL3K
+         DzO8pgb2bK+G15asBwb233bMPlMwgdbpLmdtRlIJyYSrv+K0qr8k0FO90teDzunUqPnR
+         Q52g==
+X-Gm-Message-State: AOAM533I8/tWyt9bDIONao0jxyhn+s1n9ZvY4LNFo6PeP+pVKs63+MZa
+        2BZUQJlUnlk/zqgbton4av8=
+X-Google-Smtp-Source: ABdhPJxPXOD2LCsasbBNvZyD+MIQMWFrvrBqRcYhmt58KixPQUATj7Mv6o5OThbKodVhcZs9avJ0/A==
+X-Received: by 2002:adf:b359:: with SMTP id k25mr25033448wrd.98.1610956812441;
+        Mon, 18 Jan 2021 00:00:12 -0800 (PST)
+Received: from felia.fritz.box ([2001:16b8:2d3e:6800:ad77:727f:e0e1:17c4])
+        by smtp.gmail.com with ESMTPSA id i11sm23187419wmq.10.2021.01.18.00.00.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Jan 2021 00:00:11 -0800 (PST)
+From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
+To:     Brendan Jackman <jackmanb@google.com>,
+        Alexei Starovoitov <ast@kernel.org>, bpf@vger.kernel.org
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>,
+        netdev@vger.kernel.org,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        linux-doc@vger.kernel.org, kernel-janitors@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Subject: [PATCH for bpf-next] docs: bpf: add minimal markup to address doc warning
+Date:   Mon, 18 Jan 2021 09:00:04 +0100
+Message-Id: <20210118080004.6367-1-lukas.bulwahn@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 14, 2021 at 3:34 PM Cristian Dumitrescu
-<cristian.dumitrescu@intel.com> wrote:
->
-> This patchset introduces some small and straightforward improvements
-> to the Intel i40e driver XDP path. Each improvement is fully described
-> in its associated patch.
->
-> Cristian Dumitrescu (4):
->   i40e: remove unnecessary memory writes of the next to clean pointer
->   i40e: remove unnecessary cleaned_count updates
->   i40e: remove the redundant buffer info updates
->   i40: consolidate handling of XDP program actions
->
->  drivers/net/ethernet/intel/i40e/i40e_xsk.c | 149 +++++++++++----------
->  1 file changed, 79 insertions(+), 70 deletions(-)
->
-> --
-> 2.25.1
->
+Commit 91c960b00566 ("bpf: Rename BPF_XADD and prepare to encode other
+atomics in .imm") modified the BPF documentation, but missed some ReST
+markup.
 
-Thank you for these clean ups Cristian!
+Hence, make htmldocs warns on Documentation/networking/filter.rst:1053:
 
-For the series:
+  WARNING: Inline emphasis start-string without end-string.
 
-Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
+Add some minimal markup to address this warning.
+
+Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+---
+applies cleanly on next-20210118
+
+Brendan, please ack.
+
+Alexei, please pick this minor cleanup patch on your bpf-next.
+
+ Documentation/networking/filter.rst | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/Documentation/networking/filter.rst b/Documentation/networking/filter.rst
+index f6d8f90e9a56..45f6fde1776c 100644
+--- a/Documentation/networking/filter.rst
++++ b/Documentation/networking/filter.rst
+@@ -1048,12 +1048,12 @@ Unlike classic BPF instruction set, eBPF has generic load/store operations::
+ Where size is one of: BPF_B or BPF_H or BPF_W or BPF_DW.
+ 
+ It also includes atomic operations, which use the immediate field for extra
+-encoding.
++encoding::
+ 
+    .imm = BPF_ADD, .code = BPF_ATOMIC | BPF_W  | BPF_STX: lock xadd *(u32 *)(dst_reg + off16) += src_reg
+    .imm = BPF_ADD, .code = BPF_ATOMIC | BPF_DW | BPF_STX: lock xadd *(u64 *)(dst_reg + off16) += src_reg
+ 
+-The basic atomic operations supported are:
++The basic atomic operations supported are::
+ 
+     BPF_ADD
+     BPF_AND
+-- 
+2.17.1
+
