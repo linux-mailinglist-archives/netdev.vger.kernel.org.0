@@ -2,96 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 82CE12FAC4E
-	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 22:14:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AC7702FAC62
+	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 22:17:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2437949AbhARVLy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jan 2021 16:11:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55842 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388083AbhARVKb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jan 2021 16:10:31 -0500
-Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36420C0613CF
-        for <netdev@vger.kernel.org>; Mon, 18 Jan 2021 13:09:47 -0800 (PST)
-Received: by mail-pg1-x532.google.com with SMTP id n25so11709146pgb.0
-        for <netdev@vger.kernel.org>; Mon, 18 Jan 2021 13:09:47 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=RQfbZVp6OIgjf2TYGhscw0sRVXCovP/nXa/vEFcNt/w=;
-        b=HjSdlOYQyURi7cfM34YIWtghvLR21F5XJ1rC6BWrwnKVoiSniC69M9r5CKZ01T6cZb
-         cj0V2mYKpC8NXGJ4JHYjPdvSeylBFHFz6QmiNtYRWol79Mr5gIRpP/waFvoH4EcmCqzW
-         RE12hkHVuB/2WnZ4EynbP/YAhnYV8PcP2cnoby1ZUxpo/3AmZoKQSMMfAUonzvbBqotO
-         fkVa1UW7Rmo4yEQKIJJKY8K5VcBZdSY08E4W08ixx8xzJz6weAnol9DXDkI6yr+19G1L
-         0murtSIUugM/0teaYNrufU+/h125BBxpftKGxs3eEtwxdSnX2ItmHPd1Zvj3HAinSXeM
-         jojw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=RQfbZVp6OIgjf2TYGhscw0sRVXCovP/nXa/vEFcNt/w=;
-        b=eEmgTORvajRihugKrNB0cQ7pa5ebX7MhLYs6JZwz+8dc6do5f9K9xrQEImqD9IU0VJ
-         65noOJYbVX7+pmNnHFnswiFesqM+DklQhe42njqY21fECTHW6aRbAtWb8kcDHx1pG4j+
-         a00lqDI6UDwjbdMdv8vTNwHvbLylVCsmSOdaiPK9b0shds8q7uukkhd08MOLPq6+n2A8
-         18wLSq7x9Slep51AeWix4pzwB/mBK18sR/4geUTqUR7KdSq09suQHiFZKYgBvWISfAoU
-         B5uXKJdt62FC5ksw5vOofDD4I9ALRXcaSc9vzbjaP09mhjWL0WUl79FWS09ynSOwhOFO
-         YluA==
-X-Gm-Message-State: AOAM532Zbt6IaLuUmv1YQvdlt0qJrC+8WvvpQS1dE+CvdNxEZOZA3yZ4
-        mRHAgutF+EYG4vGDYniX2s0=
-X-Google-Smtp-Source: ABdhPJwerl/hFiPIc2mmAYJRRc1kGX/DAvJtBF1oCa9B+ZpQ0FLtsSzdBD0cW8kQffREdU8MDScC9Q==
-X-Received: by 2002:a65:5244:: with SMTP id q4mr1464840pgp.50.1611004186750;
-        Mon, 18 Jan 2021 13:09:46 -0800 (PST)
-Received: from [10.230.29.29] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id z3sm16341213pgs.61.2021.01.18.13.09.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 18 Jan 2021 13:09:45 -0800 (PST)
-Subject: Re: [PATCH v3 net-next 05/15] net: mscc: ocelot: stop returning
- IRQ_NONE in ocelot_xtr_irq_handler
-To:     Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-        Hongbo Wang <hongbo.wang@nxp.com>, Po Liu <po.liu@nxp.com>,
-        Yangbo Lu <yangbo.lu@nxp.com>,
-        Maxim Kochetkov <fido_max@inbox.ru>,
-        Eldar Gasanov <eldargasanov2@gmail.com>,
-        Andrey L <al@b4comtech.com>, UNGLinuxDriver@microchip.com
-References: <20210118161731.2837700-1-olteanv@gmail.com>
- <20210118161731.2837700-6-olteanv@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <ecec329a-6cbf-2fab-1dac-c2337b8b1327@gmail.com>
-Date:   Mon, 18 Jan 2021 13:09:42 -0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.6.1
+        id S2437677AbhARVQV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jan 2021 16:16:21 -0500
+Received: from mail.kernel.org ([198.145.29.99]:33906 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2437982AbhARVQK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 18 Jan 2021 16:16:10 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 5310A22CB1;
+        Mon, 18 Jan 2021 21:15:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1611004530;
+        bh=56i95D8vuhTOrNNXMbFEkyehpTTSktJh8vSW/Tx3g/Y=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=C81zKtKwwoGY9rzl97SVGpC/8nDfkA43/JWv+b4vC2VnnaCByyPv166Cx9SHLgncP
+         E01SFmWElw+ZlOlAs5PoGnUtaXhBVh5Zq7STJsHom/FtgFx86058HyEsmHUdtREKoX
+         eKu3NXPK2W1G2pZskkMulhwPIhDxdFJd5p4RPpHXVihXcAk4DWFvNaivlNOeilvy+K
+         aBiDePc9JsppaWh303JRofY1iGsJ7ox76VGWRuDkjkpiFHl3k6p+oGUr5fqCc09Or6
+         nS2R1nq9ar/vp/SqeCaHC95nSWJ4nknyjr0uG72zlzs4+zEbgsLE8NkuInIUnmpwhn
+         2whlSaPzZGlxQ==
+Date:   Mon, 18 Jan 2021 13:15:28 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Christian Brauner <christian.brauner@ubuntu.com>
+Cc:     menglong8.dong@gmail.com, davem@davemloft.net,
+        yoshfuji@linux-ipv6.org, dong.menglong@zte.com.cn,
+        daniel@iogearbox.net, gnault@redhat.com, ast@kernel.org,
+        nicolas.dichtel@6wind.com, ap420073@gmail.com, edumazet@google.com,
+        pabeni@redhat.com, jakub@cloudflare.com, bjorn.topel@intel.com,
+        keescook@chromium.org, viro@zeniv.linux.org.uk, rdna@fb.com,
+        maheshb@google.com, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next] net: core: Namespace-ify sysctl_wmem_default
+ and sysctl_rmem_default
+Message-ID: <20210118131528.72e194d6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210118111518.nsrtv52xsanf7q6d@wittgenstein>
+References: <20210117102319.193756-1-dong.menglong@zte.com.cn>
+        <20210118111518.nsrtv52xsanf7q6d@wittgenstein>
 MIME-Version: 1.0
-In-Reply-To: <20210118161731.2837700-6-olteanv@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 1/18/2021 8:17 AM, Vladimir Oltean wrote:
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+On Mon, 18 Jan 2021 12:15:18 +0100 Christian Brauner wrote:
+> On Sun, Jan 17, 2021 at 06:23:19PM +0800, menglong8.dong@gmail.com wrote:
+> > From: Menglong Dong <dong.menglong@zte.com.cn>
+> > 
+> > For now, sysctl_wmem_default and sysctl_rmem_default are globally
+> > unified. It's not convenient in some case. For example, when we
+> > use docker and try to control the default udp socket receive buffer
+> > for each container.
+> > 
+> > For that reason, make sysctl_wmem_default and sysctl_rmem_default
+> > per-namespace.
+> > 
+> > Signed-off-by: Menglong Dong <dong.menglong@zte.com.cn>
+> > ---  
 > 
-> Since the xtr (extraction) IRQ of the ocelot switch is not shared, then
-> if it fired, it means that some data must be present in the queues of
-> the CPU port module. So simplify the code.
+> Hey Menglong,
 > 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> I was about to review the two patches you sent:
+> 
+> 1. [PATCH net-next] net: core: Namespace-ify sysctl_rmem_max and sysctl_wmem_max
+>    https://lore.kernel.org/lkml/20210117104743.217194-1-dong.menglong@zte.com.cn
+> 2. [PATCH net-next] net: core: Namespace-ify sysctl_wmem_default and sysctl_rmem_default
+>    https://lore.kernel.org/lkml/20210117102319.193756-1-dong.menglong@zte.com.cn
 
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
--- 
-Florian
+And perhaps
+
+  0. [PATCH net-next] net: core: init every ctl_table in netns_core_table
+
+? 
+
+I'm dropping these three from patchwork please follow Christian
+suggestions on how to repost properly, thanks!
+
+> and I had to spend some time figuring out that 2. is dependent on 1. I
+> first thought I got the base wrong.
+> 
+> I'd suggest you resend both patches as a part of a single series with a
+> cover letter mentioning the goal and use-case for these changes and also
+> pass --base=<base-commit>
+> when creating the patch series which makes it way easier to figure out
+> what to apply it to when wanting to review a series in the larger
+> context of a tree.
+
