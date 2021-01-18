@@ -2,112 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E7852FA3CE
-	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 15:57:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EC9A82FA3EE
+	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 16:02:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405456AbhARO4v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jan 2021 09:56:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59672 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2405445AbhARO4X (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jan 2021 09:56:23 -0500
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48DB9C061574
-        for <netdev@vger.kernel.org>; Mon, 18 Jan 2021 06:55:43 -0800 (PST)
-Received: by mail-ed1-x532.google.com with SMTP id u19so17925225edx.2
-        for <netdev@vger.kernel.org>; Mon, 18 Jan 2021 06:55:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=09OWnlfXjcogYNVXeufU+daH3KK6SF0uozk3EDI2xc0=;
-        b=Ev4ise7mk+YfkUErtOqsnwcDFyrMpCScNp5Psyu6jm+IHZGb5AwxdoGBoXxuFX61mn
-         v2wNMdPzRA6DGQ8J8z4yP8QZBUdxpmSc05ndX3QWTS6XRi52tsQwLDjoAaMSXQn7zPLo
-         PsvzPQv221Crp/lfaRs//J6sa5jk4TF72mUxit1qwocnPg4B8nnuhf0d4TM0t7cDiQ0F
-         JcXBLfrE+G/mFv1ucW2UAxMuvZZbQWbewZ2DpHcPPDqqkxwgBbCEy2W4Wk+jD/4X+8xJ
-         ficH1ht6iUzOuUBsJ5itApxU1eCDRDbauNKd7+kNvcME5dJbo+1Odl9v0dDFzTN1mZy/
-         RBeQ==
+        id S2405193AbhARPBj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jan 2021 10:01:39 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:55427 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2405240AbhAROxd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jan 2021 09:53:33 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1610981525;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=bvHYXveaY1fYHKCh/4G0s4Eb72E980+xC2zhbE72Tuc=;
+        b=Eo7xIaWrpBf4arroqUcI24j4LTPNU470Qtd4KJcelOMnpIpOa6vApPlpjayRStsnNw9SZ6
+        bxc1etsJ5UBFW0+dRG11z6Zo9zTL7Sbdhu5hLTOkpjU3vIJK/TU94VRED+Mj6/XyDp2pmx
+        TbqFE/j8MuWUt7V19iGaqALXTZqvLR0=
+Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
+ [209.85.128.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-532-PNfQfeByOpmMxxxU1K9vBg-1; Mon, 18 Jan 2021 09:52:03 -0500
+X-MC-Unique: PNfQfeByOpmMxxxU1K9vBg-1
+Received: by mail-wm1-f72.google.com with SMTP id 14so2062831wmo.8
+        for <netdev@vger.kernel.org>; Mon, 18 Jan 2021 06:52:03 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=09OWnlfXjcogYNVXeufU+daH3KK6SF0uozk3EDI2xc0=;
-        b=NGe6Ti4c9U7yxZFhwyZHjNQM0DbPTSxqIQhtBOGuGemkJ/HLfHZt9v4DAh37i/FDJF
-         pJ1Az079ypFtyVZUnvYFmHb+O7VAPE4btpt8wh02WUdsdFQcksaNjGDjgthx7RrlN6Nb
-         x5KTXLsb68R7sepPSqz5LrK0E8dhsaLQTi/PDv7v6aAfkoyTGMSQHKxbXYriRxUZjTKL
-         PzouK3ih4YKZjO1+TGEYp5MNrUTkrgp3Q3BBojCLeR/9JOMHo5LwToKOaPq25D7bi+i5
-         PA5XjpfRZJLoD9PtBTszepHCOqUWctAJDn/+EA8LG9a78id8hvmDXb0d/QVGjNk7dhHI
-         n1SA==
-X-Gm-Message-State: AOAM531n8cAk3Dxp+1l1Pce5ARduPUXTGhdVejSz4O2vKdmqGqv5MG2/
-        xijJVZ8BbehnKSd7/WbaV2ADe7bNuWcjN2TdUtfMjg==
-X-Google-Smtp-Source: ABdhPJy+a9+KdfIbj4llUoSCWn/X0q20L19eACDpfVzZgzCAWDztQO7cPFmXXFG84iqiR4H9I/Tc4icao+FF/ozbz+k=
-X-Received: by 2002:a50:d6dc:: with SMTP id l28mr19968203edj.105.1610981741946;
- Mon, 18 Jan 2021 06:55:41 -0800 (PST)
-MIME-Version: 1.0
-References: <20210111054428.3273-1-dqfext@gmail.com> <20210111054428.3273-3-dqfext@gmail.com>
-In-Reply-To: <20210111054428.3273-3-dqfext@gmail.com>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Mon, 18 Jan 2021 15:55:30 +0100
-Message-ID: <CACRpkdYA2fWF_1K+2aYoZnBAsm9H3=VHpeT4ZDU5sCdrOUWx=w@mail.gmail.com>
-Subject: Re: [PATCH net-next 2/2] drivers: net: dsa: mt7530: MT7530 optional
- GPIO support
-To:     DENG Qingfang <dqfext@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=bvHYXveaY1fYHKCh/4G0s4Eb72E980+xC2zhbE72Tuc=;
+        b=QyGZfbD+WBybrpBJ0KOhG5iy4rNCQBoxjQovM6dz8aOsrrAokZXZjNCISTl4DMf8q1
+         D6Xvna7sobn8/mgA9CzGO8ClMZ9XOC5U83Tv9vrg1yfg04AzXeIrThQX/o85DqxAEN4M
+         +p/8aXksfTd1+QMoPUmSMx3mXhgumXO2+Z2GXSA3Sk0Rz31857GUHH1yMq9LKYd0fIUW
+         tWOkNc6Rq7myH5FsGfn7VJsO4v+AcYsuWERWzQBy5sWgtFAb9CFLFqezqe+QXWntCLyo
+         K5AQfvYaCY40GChj+KmDjXizzTmQuww7FJWCuhv9k6qri6pl+9OKaq9t84ZdeEKPKc3F
+         M74g==
+X-Gm-Message-State: AOAM533XKUpqeIfRB1wZ2i0mpmkGFM2h1ms/AtYHXxAUVCs3iUs6YvKs
+        rjS6akKGpc0iM9jlCeHKXljvlY5TZolt1eCnNKJ/ESt8zN5hyeBY3fTa6A7e2ShCjj1W9dYljwz
+        gH63RwYZhrIeYk/zq
+X-Received: by 2002:a5d:42d0:: with SMTP id t16mr26110654wrr.230.1610981522395;
+        Mon, 18 Jan 2021 06:52:02 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyLYqyNMVyFEoAlbSpKAd9WKw+ODMCj85rmyuhMgWAf133vbbFpPK94WXLLheaXzynpxdDRUg==
+X-Received: by 2002:a5d:42d0:: with SMTP id t16mr26110629wrr.230.1610981522214;
+        Mon, 18 Jan 2021 06:52:02 -0800 (PST)
+Received: from steredhat (host-79-34-249-199.business.telecomitalia.it. [79.34.249.199])
+        by smtp.gmail.com with ESMTPSA id x25sm1728972wmk.20.2021.01.18.06.52.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Jan 2021 06:52:01 -0800 (PST)
+Date:   Mon, 18 Jan 2021 15:51:58 +0100
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Arseny Krasnov <arseny.krasnov@kaspersky.com>
+Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>,
-        Russell King <linux@armlinux.org.uk>,
-        netdev <netdev@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        =?UTF-8?Q?Ren=C3=A9_van_Dorst?= <opensource@vdorst.com>,
-        Frank Wunderlich <frank-w@public-files.de>
-Content-Type: text/plain; charset="UTF-8"
+        Colin Ian King <colin.king@canonical.com>,
+        Andra Paraschiv <andraprs@amazon.com>,
+        Jeff Vander Stoep <jeffv@google.com>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, stsp2@yandex.ru, oxffffaa@gmail.com
+Subject: Re: [RFC PATCH v2 01/13] af_vsock: implement 'vsock_wait_data()'.
+Message-ID: <20210118145158.ufakay5mbezjex4v@steredhat>
+References: <20210115053553.1454517-1-arseny.krasnov@kaspersky.com>
+ <20210115054028.1455574-1-arseny.krasnov@kaspersky.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20210115054028.1455574-1-arseny.krasnov@kaspersky.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 11, 2021 at 6:46 AM DENG Qingfang <dqfext@gmail.com> wrote:
-
-> MT7530's LED controller can drive up to 15 LED/GPIOs.
+On Fri, Jan 15, 2021 at 08:40:25AM +0300, Arseny Krasnov wrote:
+>This adds 'vsock_wait_data()' function which is called from user's read
+>syscall and waits until new socket data is arrived. It was based on code
+>from stream dequeue logic and moved to separate function because it will
+>be called both from SOCK_STREAM and SOCK_SEQPACKET receive loops.
 >
-> Add support for GPIO control and allow users to use its GPIOs by
-> setting gpio-controller property in device tree.
+>Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
+>---
+> net/vmw_vsock/af_vsock.c | 47 ++++++++++++++++++++++++++++++++++++++++
+> 1 file changed, 47 insertions(+)
 >
-> Signed-off-by: DENG Qingfang <dqfext@gmail.com>
+>diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
+>index b12d3a322242..af716f5a93a4 100644
+>--- a/net/vmw_vsock/af_vsock.c
+>+++ b/net/vmw_vsock/af_vsock.c
+>@@ -1822,6 +1822,53 @@ static int vsock_stream_sendmsg(struct socket *sock, struct msghdr *msg,
+> 	return err;
+> }
+>
+>+static int vsock_wait_data(struct sock *sk, struct wait_queue_entry *wait,
+>+			   long timeout,
+>+			   struct vsock_transport_recv_notify_data *recv_data,
+>+			   size_t target)
+>+{
+>+	int err = 0;
+>+	struct vsock_sock *vsk;
+>+	const struct vsock_transport *transport;
 
-Double-check the initial output conditions as indicated by
-Russell, if you really want to be thorough, use an oscilloscope
-but check the specs at least.
+Please be sure that here and in all of the next patches, you follow the 
+"Reverse Christmas tree" rule followed in net/ for the local variable 
+declarations (order variable declaration lines longest to shortest).
 
-> +static u32
-> +mt7530_gpio_to_bit(unsigned int offset)
-> +{
-> +       return BIT(offset + offset / 3);
-> +}
+>+
+>+	vsk = vsock_sk(sk);
+>+	transport = vsk->transport;
+>+
+>+	if (sk->sk_err != 0 ||
+>+	    (sk->sk_shutdown & RCV_SHUTDOWN) ||
+>+	    (vsk->peer_shutdown & SEND_SHUTDOWN)) {
+>+		finish_wait(sk_sleep(sk), wait);
+>+		return -1;
+>+	}
+>+	/* Don't wait for non-blocking sockets. */
+>+	if (timeout == 0) {
+>+		err = -EAGAIN;
+>+		finish_wait(sk_sleep(sk), wait);
+>+		return err;
+>+	}
+>+
+>+	if (recv_data) {
+>+		err = transport->notify_recv_pre_block(vsk, target, recv_data);
+>+		if (err < 0) {
+>+			finish_wait(sk_sleep(sk), wait);
+>+			return err;
+>+		}
+>+	}
+>+
+>+	release_sock(sk);
+>+	timeout = schedule_timeout(timeout);
+>+	lock_sock(sk);
+>+
+>+	if (signal_pending(current)) {
+>+		err = sock_intr_errno(timeout);
+>+		finish_wait(sk_sleep(sk), wait);
+>+	} else if (timeout == 0) {
+>+		err = -EAGAIN;
+>+		finish_wait(sk_sleep(sk), wait);
+>+	}
+>+
 
-So for offset 0..14 this becomes bits
-0, 1, 2, 4, 5, 6, 8, 9, 10, 12  ... 18
+Since we are calling finish_wait() before return in all path, why not 
+doing somethig like this:
 
-What is the logic in this and is it what you intend?
-Please add a comment explaining what the offset is supposed
-to become for offsets 0..14 and why.
+out:
+	finish_wait(sk_sleep(sk), wait);
+>+	return err;
+>+}
 
-> +       gc->ngpio = 15;
+Then in the error paths you can do:
 
-And it really IS 15 not 16? Not that I know network equipment
-very well...
+	err = XXX;
+	goto out;
 
-Yours,
-Linus Walleij
+Thanks,
+Stefano
+
+>
+> static int
+> vsock_stream_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
+>-- 
+>2.25.1
+>
+
