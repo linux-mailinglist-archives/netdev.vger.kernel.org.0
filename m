@@ -2,125 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 02E0D2F99A1
-	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 07:02:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 277272F99EF
+	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 07:31:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730539AbhARGBe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jan 2021 01:01:34 -0500
-Received: from smtp-fw-33001.amazon.com ([207.171.190.10]:10993 "EHLO
-        smtp-fw-33001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731944AbhARGAa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jan 2021 01:00:30 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
-  s=amazon201209; t=1610949631; x=1642485631;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=ICr6OFk3wrAZC74Io67N6wL+Jy9kHRSLW2QyfIYX3og=;
-  b=jJDNpD6nCB56mU+hCFx+XrbX1H4DEc4e6DDMxkOtmI79jxP/Zg6GCkHe
-   vr449ukaP5jFvV+2EH5kVlI50/w5uAA2IDdikcnn4FNSHXmx9Nnnhieh0
-   15/IHQ0ldUwps5p6QIwIQlTGv2CF1VFR+yXTKsf4DmmD55FpA9vCJtTwf
-   s=;
-X-IronPort-AV: E=Sophos;i="5.79,355,1602547200"; 
-   d="scan'208";a="111557182"
-Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-1d-e69428c4.us-east-1.amazon.com) ([10.47.23.38])
-  by smtp-border-fw-out-33001.sea14.amazon.com with ESMTP; 18 Jan 2021 05:59:47 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan2.iad.amazon.com [10.40.163.34])
-        by email-inbound-relay-1d-e69428c4.us-east-1.amazon.com (Postfix) with ESMTPS id AE6F6C2028;
-        Mon, 18 Jan 2021 05:59:44 +0000 (UTC)
-Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Mon, 18 Jan 2021 05:59:43 +0000
-Received: from 38f9d3582de7.ant.amazon.com (10.43.161.203) by
- EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Mon, 18 Jan 2021 05:59:39 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-To:     Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        "Jakub Kicinski" <kuba@kernel.org>
-CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        "Kuniyuki Iwashima" <kuniyu@amazon.co.jp>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>,
-        Benjamin Herrenschmidt <benh@amazon.com>,
-        Ricardo Dias <rdias@singlestore.com>
-Subject: [PATCH net] tcp: Fix potential use-after-free due to double kfree().
-Date:   Mon, 18 Jan 2021 14:59:20 +0900
-Message-ID: <20210118055920.82516-1-kuniyu@amazon.co.jp>
-X-Mailer: git-send-email 2.17.2 (Apple Git-113)
+        id S1732453AbhARGan (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jan 2021 01:30:43 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:37650 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1732441AbhARGai (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jan 2021 01:30:38 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1610951342;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=IEXqRrmhe5TS1HeLniFVF/d1Z+5aM2lLZ+VPrEdE2SQ=;
+        b=KQgqqX1QWU66JF7IQyMYnkN4ykGEXxH/wDCas9J67OBMoqyx3OX7JTAR3m+bdcYJhfZ0ji
+        xy8TkgROaviTbeiR8TxIXDolM6Cw0TuIbRcyk4L4PSbCiRRg3LOXbhOKljE3rjEfyZqF5i
+        6dPqvD69RTCtH5T7IQWMhqlc0/WOYco=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-203-0UL6bPaDO5iHb8DFFTh7MA-1; Mon, 18 Jan 2021 01:28:58 -0500
+X-MC-Unique: 0UL6bPaDO5iHb8DFFTh7MA-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 67F32100F35D;
+        Mon, 18 Jan 2021 06:28:55 +0000 (UTC)
+Received: from [10.72.13.12] (ovpn-13-12.pek2.redhat.com [10.72.13.12])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 94C716D029;
+        Mon, 18 Jan 2021 06:28:44 +0000 (UTC)
+Subject: Re: [PATCH net-next v2 0/7] virtio-net support xdp socket zero copy
+ xmit
+To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>, netdev@vger.kernel.org
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>,
+        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
+References: <cover.1609837120.git.xuanzhuo@linux.alibaba.com>
+ <cover.1610765285.git.xuanzhuo@linux.alibaba.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <b41ab0f0-4537-74b5-d7c3-b20ce082bdd6@redhat.com>
+Date:   Mon, 18 Jan 2021 14:28:43 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.43.161.203]
-X-ClientProxiedBy: EX13D41UWB003.ant.amazon.com (10.43.161.243) To
- EX13D04ANC001.ant.amazon.com (10.43.157.89)
+In-Reply-To: <cover.1610765285.git.xuanzhuo@linux.alibaba.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Receiving ACK with a valid SYN cookie, cookie_v4_check() allocates struct
-request_sock and then can allocate inet_rsk(req)->ireq_opt. After that,
-tcp_v4_syn_recv_sock() allocates struct sock and copies ireq_opt to
-inet_sk(sk)->inet_opt. Normally, tcp_v4_syn_recv_sock() inserts the full
-socket into ehash and sets NULL to ireq_opt. Otherwise,
-tcp_v4_syn_recv_sock() has to reset inet_opt by NULL and free the full
-socket.
 
-The commit 01770a1661657 ("tcp: fix race condition when creating child
-sockets from syncookies") added a new path, in which more than one cores
-create full sockets for the same SYN cookie. Currently, the core which
-loses the race frees the full socket without resetting inet_opt, resulting
-in that both sock_put() and reqsk_put() call kfree() for the same memory:
+On 2021/1/16 上午10:59, Xuan Zhuo wrote:
+> XDP socket is an excellent by pass kernel network transmission framework. The
+> zero copy feature of xsk (XDP socket) needs to be supported by the driver. The
+> performance of zero copy is very good. mlx5 and intel ixgbe already support this
+> feature, This patch set allows virtio-net to support xsk's zerocopy xmit
+> feature.
+>
+> And xsk's zerocopy rx has made major changes to virtio-net, and I hope to submit
+> it after this patch set are received.
+>
+> Compared with other drivers, virtio-net does not directly obtain the dma
+> address, so I first obtain the xsk page, and then pass the page to virtio.
+>
+> When recycling the sent packets, we have to distinguish between skb and xdp.
+> Now we have to distinguish between skb, xdp, xsk. So the second patch solves
+> this problem first.
+>
+> The last four patches are used to support xsk zerocopy in virtio-net:
+>
+>   1. support xsk enable/disable
+>   2. realize the function of xsk packet sending
+>   3. implement xsk wakeup callback
+>   4. set xsk completed when packet sent done
+>
+>
+> ---------------- Performance Testing ------------
+>
+> The udp package tool implemented by the interface of xsk vs sockperf(kernel udp)
+> for performance testing:
+>
+> xsk zero copy in virtio-net:
+> CPU        PPS         MSGSIZE
+> 28.7%      3833857     64
+> 38.5%      3689491     512
+> 38.9%      2787096     1456
 
-  sock_put
-    sk_free
-      __sk_free
-        sk_destruct
-          __sk_destruct
-            sk->sk_destruct/inet_sock_destruct
-              kfree(rcu_dereference_protected(inet->inet_opt, 1));
 
-  reqsk_put
-    reqsk_free
-      __reqsk_free
-        req->rsk_ops->destructor/tcp_v4_reqsk_destructor
-          kfree(rcu_dereference_protected(inet_rsk(req)->ireq_opt, 1));
+Some questions on the results:
 
-Calling kmalloc() between the double kfree() can lead to use-after-free, so
-this patch fixes it by setting NULL to inet_opt before sock_put().
+1) What's the setup on the vhost?
+2) What's the setup of the mitigation in both host and guest?
+3) Any analyze on the possible bottleneck via perf or other tools?
 
-As a side note, this kind of issue does not happen for IPv6. This is
-because tcp_v6_syn_recv_sock() clones both ipv6_opt and pktopts which
-correspond to ireq_opt in IPv4.
+Thanks
 
-Fixes: 01770a166165 ("tcp: fix race condition when creating child sockets from syncookies")
-CC: Ricardo Dias <rdias@singlestore.com>
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-Reviewed-by: Benjamin Herrenschmidt <benh@amazon.com>
----
- net/ipv4/tcp_ipv4.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
-index 58207c7769d0..87eb614dab27 100644
---- a/net/ipv4/tcp_ipv4.c
-+++ b/net/ipv4/tcp_ipv4.c
-@@ -1595,6 +1595,8 @@ struct sock *tcp_v4_syn_recv_sock(const struct sock *sk, struct sk_buff *skb,
- 		tcp_move_syn(newtp, req);
- 		ireq->ireq_opt = NULL;
- 	} else {
-+		newinet->inet_opt = NULL;
-+
- 		if (!req_unhash && found_dup_sk) {
- 			/* This code path should only be executed in the
- 			 * syncookie case only
-@@ -1602,8 +1604,6 @@ struct sock *tcp_v4_syn_recv_sock(const struct sock *sk, struct sk_buff *skb,
- 			bh_unlock_sock(newsk);
- 			sock_put(newsk);
- 			newsk = NULL;
--		} else {
--			newinet->inet_opt = NULL;
- 		}
- 	}
- 	return newsk;
--- 
-2.17.2 (Apple Git-113)
+>
+> xsk without zero copy in virtio-net:
+> CPU        PPS         MSGSIZE
+> 100%       1916747     64
+> 100%       1775988     512
+> 100%       1440054     1456
+>
+> sockperf:
+> CPU        PPS         MSGSIZE
+> 100%       713274      64
+> 100%       701024      512
+> 100%       695832      1456
+>
+> Xuan Zhuo (7):
+>    xsk: support get page for drv
+>    virtio-net, xsk: distinguish XDP_TX and XSK XMIT ctx
+>    xsk, virtio-net: prepare for support xsk zerocopy xmit
+>    virtio-net, xsk: support xsk enable/disable
+>    virtio-net, xsk: realize the function of xsk packet sending
+>    virtio-net, xsk: implement xsk wakeup callback
+>    virtio-net, xsk: set xsk completed when packet sent done
+>
+>   drivers/net/virtio_net.c    | 559 +++++++++++++++++++++++++++++++++++++++-----
+>   include/linux/netdevice.h   |   1 +
+>   include/net/xdp_sock_drv.h  |  10 +
+>   include/net/xsk_buff_pool.h |   1 +
+>   net/xdp/xsk_buff_pool.c     |  10 +-
+>   5 files changed, 523 insertions(+), 58 deletions(-)
+>
+> --
+> 1.8.3.1
+>
 
