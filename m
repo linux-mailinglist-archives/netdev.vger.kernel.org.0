@@ -2,168 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EC9A82FA3EE
-	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 16:02:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AF71C2FA422
+	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 16:08:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405193AbhARPBj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jan 2021 10:01:39 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:55427 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2405240AbhAROxd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jan 2021 09:53:33 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1610981525;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=bvHYXveaY1fYHKCh/4G0s4Eb72E980+xC2zhbE72Tuc=;
-        b=Eo7xIaWrpBf4arroqUcI24j4LTPNU470Qtd4KJcelOMnpIpOa6vApPlpjayRStsnNw9SZ6
-        bxc1etsJ5UBFW0+dRG11z6Zo9zTL7Sbdhu5hLTOkpjU3vIJK/TU94VRED+Mj6/XyDp2pmx
-        TbqFE/j8MuWUt7V19iGaqALXTZqvLR0=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-532-PNfQfeByOpmMxxxU1K9vBg-1; Mon, 18 Jan 2021 09:52:03 -0500
-X-MC-Unique: PNfQfeByOpmMxxxU1K9vBg-1
-Received: by mail-wm1-f72.google.com with SMTP id 14so2062831wmo.8
-        for <netdev@vger.kernel.org>; Mon, 18 Jan 2021 06:52:03 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=bvHYXveaY1fYHKCh/4G0s4Eb72E980+xC2zhbE72Tuc=;
-        b=QyGZfbD+WBybrpBJ0KOhG5iy4rNCQBoxjQovM6dz8aOsrrAokZXZjNCISTl4DMf8q1
-         D6Xvna7sobn8/mgA9CzGO8ClMZ9XOC5U83Tv9vrg1yfg04AzXeIrThQX/o85DqxAEN4M
-         +p/8aXksfTd1+QMoPUmSMx3mXhgumXO2+Z2GXSA3Sk0Rz31857GUHH1yMq9LKYd0fIUW
-         tWOkNc6Rq7myH5FsGfn7VJsO4v+AcYsuWERWzQBy5sWgtFAb9CFLFqezqe+QXWntCLyo
-         K5AQfvYaCY40GChj+KmDjXizzTmQuww7FJWCuhv9k6qri6pl+9OKaq9t84ZdeEKPKc3F
-         M74g==
-X-Gm-Message-State: AOAM533XKUpqeIfRB1wZ2i0mpmkGFM2h1ms/AtYHXxAUVCs3iUs6YvKs
-        rjS6akKGpc0iM9jlCeHKXljvlY5TZolt1eCnNKJ/ESt8zN5hyeBY3fTa6A7e2ShCjj1W9dYljwz
-        gH63RwYZhrIeYk/zq
-X-Received: by 2002:a5d:42d0:: with SMTP id t16mr26110654wrr.230.1610981522395;
-        Mon, 18 Jan 2021 06:52:02 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyLYqyNMVyFEoAlbSpKAd9WKw+ODMCj85rmyuhMgWAf133vbbFpPK94WXLLheaXzynpxdDRUg==
-X-Received: by 2002:a5d:42d0:: with SMTP id t16mr26110629wrr.230.1610981522214;
-        Mon, 18 Jan 2021 06:52:02 -0800 (PST)
-Received: from steredhat (host-79-34-249-199.business.telecomitalia.it. [79.34.249.199])
-        by smtp.gmail.com with ESMTPSA id x25sm1728972wmk.20.2021.01.18.06.52.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Jan 2021 06:52:01 -0800 (PST)
-Date:   Mon, 18 Jan 2021 15:51:58 +0100
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Arseny Krasnov <arseny.krasnov@kaspersky.com>
-Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
+        id S2405575AbhARPHW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jan 2021 10:07:22 -0500
+Received: from mga03.intel.com ([134.134.136.65]:22113 "EHLO mga03.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2405394AbhARPGq (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 18 Jan 2021 10:06:46 -0500
+IronPort-SDR: XOmiFqWZ3Ggfh+sPXzHS4GKPPI8ojXOz97jXofcJWuw2Ij5WlsXkkST1u9jvczcO5ojw8qvnfH
+ a97TorIVYXOQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9867"; a="178900874"
+X-IronPort-AV: E=Sophos;i="5.79,356,1602572400"; 
+   d="scan'208";a="178900874"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jan 2021 07:05:48 -0800
+IronPort-SDR: 9/ySQoyKlhXlCh12UwUlnaoj3wQ/zMzk5aPrISj82IJE6UEnOp+vd3dfpB0+by0joauKbgArGt
+ rpF2dXDSaoYA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.79,356,1602572400"; 
+   d="scan'208";a="383600439"
+Received: from ranger.igk.intel.com ([10.102.21.164])
+  by orsmga008.jf.intel.com with ESMTP; 18 Jan 2021 07:05:44 -0800
+Date:   Mon, 18 Jan 2021 15:56:35 +0100
+From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        BPF-dev-list <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Colin Ian King <colin.king@canonical.com>,
-        Andra Paraschiv <andraprs@amazon.com>,
-        Jeff Vander Stoep <jeffv@google.com>, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, stsp2@yandex.ru, oxffffaa@gmail.com
-Subject: Re: [RFC PATCH v2 01/13] af_vsock: implement 'vsock_wait_data()'.
-Message-ID: <20210118145158.ufakay5mbezjex4v@steredhat>
-References: <20210115053553.1454517-1-arseny.krasnov@kaspersky.com>
- <20210115054028.1455574-1-arseny.krasnov@kaspersky.com>
+        Alexei Starovoitov <ast@kernel.org>,
+        Jesper Brouer <brouer@redhat.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Saeed Mahameed <saeed@kernel.org>
+Subject: Re: [PATCH v5 bpf-next 2/2] net: xdp: introduce xdp_prepare_buff
+ utility routine
+Message-ID: <20210118145635.GA11335@ranger.igk.intel.com>
+References: <cover.1608670965.git.lorenzo@kernel.org>
+ <45f46f12295972a97da8ca01990b3e71501e9d89.1608670965.git.lorenzo@kernel.org>
+ <63bcde67-4124-121d-e96a-066493542ca9@iogearbox.net>
+ <CAJ0CqmVsr=cv+0ndg3g4RDqVmKt=X6qQ7sbArNVrB+98e_3Sag@mail.gmail.com>
+ <b76a6fc5-55fa-1ca8-f2b9-ae0332450333@iogearbox.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210115054028.1455574-1-arseny.krasnov@kaspersky.com>
+In-Reply-To: <b76a6fc5-55fa-1ca8-f2b9-ae0332450333@iogearbox.net>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 15, 2021 at 08:40:25AM +0300, Arseny Krasnov wrote:
->This adds 'vsock_wait_data()' function which is called from user's read
->syscall and waits until new socket data is arrived. It was based on code
->from stream dequeue logic and moved to separate function because it will
->be called both from SOCK_STREAM and SOCK_SEQPACKET receive loops.
->
->Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
->---
-> net/vmw_vsock/af_vsock.c | 47 ++++++++++++++++++++++++++++++++++++++++
-> 1 file changed, 47 insertions(+)
->
->diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
->index b12d3a322242..af716f5a93a4 100644
->--- a/net/vmw_vsock/af_vsock.c
->+++ b/net/vmw_vsock/af_vsock.c
->@@ -1822,6 +1822,53 @@ static int vsock_stream_sendmsg(struct socket *sock, struct msghdr *msg,
-> 	return err;
-> }
->
->+static int vsock_wait_data(struct sock *sk, struct wait_queue_entry *wait,
->+			   long timeout,
->+			   struct vsock_transport_recv_notify_data *recv_data,
->+			   size_t target)
->+{
->+	int err = 0;
->+	struct vsock_sock *vsk;
->+	const struct vsock_transport *transport;
+On Thu, Dec 31, 2020 at 12:16:41AM +0100, Daniel Borkmann wrote:
+> On 12/29/20 7:09 PM, Lorenzo Bianconi wrote:
+> > > > +                     hard_start = page_address(rx_buffer->page) +
+> > > > +                                  rx_buffer->page_offset - offset;
+> > > > +                     xdp_prepare_buff(&xdp, hard_start, offset, size, true);
+> > > >    #if (PAGE_SIZE > 4096)
+> > > >                        /* At larger PAGE_SIZE, frame_sz depend on len size */
+> > > >                        xdp.frame_sz = ixgbevf_rx_frame_truesize(rx_ring, size);
+> > 
+> > Hi Daniel,
+> > 
+> > thx for the review.
+> > 
+> > > [...]
+> > > The design is very similar for most of the Intel drivers. Why the inconsistency on
+> > > ice driver compared to the rest, what's the rationale there to do it in one but not
+> > > the others? Generated code better there?
+> > 
+> > I applied the same logic for the ice driver but the code is just
+> > slightly different.
+> > 
+> > > Couldn't you even move the 'unsigned int offset = xyz_rx_offset(rx_ring)' out of the
+> > > while loop altogether for all of them? (You already use the xyz_rx_offset() implicitly
+> > > for most of them when setting xdp.frame_sz.)
+> > 
+> > We discussed moving "offset = xyz_rx_offset(rx_ring)" out of the while
+> > loop before but Saeed asked to address it in a dedicated series since
+> > it is a little bit out of the scope. I have no strong opinion on it,
+> > do you prefer to address it directly here?
+> 
+> Fair enough, I might have preferred it in this series as part of the overall cleanup,
+> but if you plan to follow up on this then this is also fine by me. Applied the v5 to
+> bpf-next in that case, thanks!
 
-Please be sure that here and in all of the next patches, you follow the 
-"Reverse Christmas tree" rule followed in net/ for the local variable 
-declarations (order variable declaration lines longest to shortest).
+I initially pointed out the fact that we could store the output of
+xyz_rx_offset(rx_ring) onto a variable rather than call it per each
+processed buffer because value returned by that func can not change
+throughout the napi execution. It is based on ethtool priv flag which if
+changed, resets the PF (so disables napi, frees irqs, loads different Rx
+mem model, etc).
 
->+
->+	vsk = vsock_sk(sk);
->+	transport = vsk->transport;
->+
->+	if (sk->sk_err != 0 ||
->+	    (sk->sk_shutdown & RCV_SHUTDOWN) ||
->+	    (vsk->peer_shutdown & SEND_SHUTDOWN)) {
->+		finish_wait(sk_sleep(sk), wait);
->+		return -1;
->+	}
->+	/* Don't wait for non-blocking sockets. */
->+	if (timeout == 0) {
->+		err = -EAGAIN;
->+		finish_wait(sk_sleep(sk), wait);
->+		return err;
->+	}
->+
->+	if (recv_data) {
->+		err = transport->notify_recv_pre_block(vsk, target, recv_data);
->+		if (err < 0) {
->+			finish_wait(sk_sleep(sk), wait);
->+			return err;
->+		}
->+	}
->+
->+	release_sock(sk);
->+	timeout = schedule_timeout(timeout);
->+	lock_sock(sk);
->+
->+	if (signal_pending(current)) {
->+		err = sock_intr_errno(timeout);
->+		finish_wait(sk_sleep(sk), wait);
->+	} else if (timeout == 0) {
->+		err = -EAGAIN;
->+		finish_wait(sk_sleep(sk), wait);
->+	}
->+
+I realised that there is yet another place where we have unnecessary call
+to xyz_rx_offset() in hot path which is xyz_alloc_mapped_page(), so I
+expanded the idea of this optimization and I store the offset directly
+onto Rx ring and refer to that value.
 
-Since we are calling finish_wait() before return in all path, why not 
-doing somethig like this:
-
-out:
-	finish_wait(sk_sleep(sk), wait);
->+	return err;
->+}
-
-Then in the error paths you can do:
-
-	err = XXX;
-	goto out;
-
-Thanks,
-Stefano
-
->
-> static int
-> vsock_stream_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
->-- 
->2.25.1
->
-
+I am including the patches that do what described above onto pending
+series of fixes that I had back in december '20 I suppose.
