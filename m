@@ -2,154 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CACDC2FAA2C
-	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 20:29:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A824F2FAA75
+	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 20:46:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2393991AbhART25 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jan 2021 14:28:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33834 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2393919AbhART2l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jan 2021 14:28:41 -0500
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6761EC061574
-        for <netdev@vger.kernel.org>; Mon, 18 Jan 2021 11:28:00 -0800 (PST)
-Received: by mail-ej1-x62e.google.com with SMTP id r12so13881379ejb.9
-        for <netdev@vger.kernel.org>; Mon, 18 Jan 2021 11:28:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=A67zwm66VO39Pc8GKi5HBAhdDGv5+urr58JWHCjCMxo=;
-        b=n48jHYV+54ZNvhy5//koB8eQEgppEzz03Vt0VM63bZSdM/aNV2LNY8SXklUuNprX+i
-         a4Elv03OqSh4dDkNOLeRBeLx+cSYrPwLEQnr92j+lEn6Drgi6eE91A5DdJymj5WLD+6I
-         nUcMge9EPcuMO08PzRD2CiqY5aetHHnmIh7EYcrXsY3G4E4iveMY5UZ2ubme9vbmNR4A
-         4sm+sNM1cyldMB6kEhfk8ave5nTB60Gs3+q5B7cAbP9/kzf/683Tyry6oamJREgdAXSk
-         1zUXzOIy7Nl3h04rmIilImxN97nCJSWQvW1BEXhOo2cnuADqHFwG/wtXxZI40vVgKV/6
-         jgRg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=A67zwm66VO39Pc8GKi5HBAhdDGv5+urr58JWHCjCMxo=;
-        b=ot2a70vwS2NJK067HiSot0eDMvVtp+dJZeC4N/2MRuR7NNKVReUBU6MygEo83DY4xR
-         /3GyQJHk6dBL9+Jpt/86kdHknwEtPXkEs7pPLCxW9cEkH9ycSW8SeMOisYWsVrSrYqra
-         +Syv5UV1emU2DODpGm5vhAy5Epx/nJxA+E2QG19RRRync8vWtqvEI9VqsEL/k+LMuCwD
-         6s+/YpnRXICrBVcwgUSWoYeu1H2GJxIM++01MFynu9Uw6TrnRvVFfdhfbYXR3p8BVjp0
-         ztR3/UnwpMZmh3tbvsfvwHN/lVfos0lWSr7anAxTyVcYS4O9sWwOI1417py0dEut7X7U
-         AIyg==
-X-Gm-Message-State: AOAM530bA9JIiYUeKNgHvMuJm2tL4ybu1IkitgF57sTZSBToHaocj4bK
-        CHle1fa3eK8Ixfgfl1kNrKI=
-X-Google-Smtp-Source: ABdhPJxujV+3oZ1jZoXr7Zjnj31eipl+Nh4aR7DP6sbHgtkhDkMbQ0IGg+dGXoo11Sc2Yz1UxsKRMw==
-X-Received: by 2002:a17:906:68d1:: with SMTP id y17mr737633ejr.293.1610998079122;
-        Mon, 18 Jan 2021 11:27:59 -0800 (PST)
-Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id bl13sm1688007ejb.64.2021.01.18.11.27.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Jan 2021 11:27:58 -0800 (PST)
-Date:   Mon, 18 Jan 2021 21:27:57 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Tobias Waldekranz <tobias@waldekranz.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com, roopa@nvidia.com,
-        nikolay@nvidia.com, netdev@vger.kernel.org, jiri@resnulli.us,
-        idosch@idosch.org, stephen@networkplumber.org
+        id S2437541AbhARTpj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jan 2021 14:45:39 -0500
+Received: from wnew4-smtp.messagingengine.com ([64.147.123.18]:47025 "EHLO
+        wnew4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2437168AbhARTaE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jan 2021 14:30:04 -0500
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailnew.west.internal (Postfix) with ESMTP id 8222B1952;
+        Mon, 18 Jan 2021 14:28:48 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Mon, 18 Jan 2021 14:28:49 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=Am1EzT
+        0lYy87Rf7z2SsJNrFfStwFrgALVONG5Hl9Ym8=; b=IMWbCZqgFV5vOAsDPBUPSl
+        86jyVm9ojDPTbXy+BKK0Yg5Y0JUSPMSZU72+ztcFbPkoCydhpYyLL3CH6pmK2Pfs
+        GgISh4Jm0d8WBhVW9Bl/Ku/8gwD0egm0rv0rGaO82LW0YQrppcOqnnjeEbJJgkJg
+        1E2EbP8aYfcB1XjjX4thPufd8PvUw6g+LK9ThDeYaUgsAhp4DiMOurIGJJLIHqUr
+        mM6DwPdeNGkYdZY5HoXwt8o6eu9UVagF+ebNVF6amyY0FmwlPvpLi159vTitC4DE
+        4fGzYSrxjBbvyhfrZlqWfdRQ81ptQ8ZLuXL2GAVGWJ365SBg6fhD+vDLv1Cyltew
+        ==
+X-ME-Sender: <xms:beEFYO2TOinGGlGyf9-4vz0-EfYQU1jduXKeBY-V6LDq853nRIQrdg>
+    <xme:beEFYBEGSlsC6BlhFRG6DDOHxuW857JMe--uh3aKE4kfCugcGsfYTmP94_UCVnoCJ
+    MVJFE9NHs0syBA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrtdekgdduvdeiucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
+    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
+    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
+    gvrhhnpedtffekkeefudffveegueejffejhfetgfeuuefgvedtieehudeuueekhfduheel
+    teenucfkphepkeegrddvvdelrdduheefrdeggeenucevlhhushhtvghrufhiiigvpedtne
+    curfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:beEFYG4zBK21xtCMCx45UEwyqv-W6sud019gHwRSXRkMlANqeJYRNg>
+    <xmx:beEFYP0lSoMEqlM_erXeDyMKdfWyVhRzi_2Qwt0mxFq9t3YGGJvv2w>
+    <xmx:beEFYBE_MyywoY_a3GhNm4g-9XEChk4PnDntIabio9oiKMlBHR6YNA>
+    <xmx:cOEFYHbT_rvTzNmPHu9nhuf1PxJ1p1b_agyBoqe2kwsw2j8fW1CKvDz57yw>
+Received: from localhost (igld-84-229-153-44.inter.net.il [84.229.153.44])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 31F8424005B;
+        Mon, 18 Jan 2021 14:28:45 -0500 (EST)
+Date:   Mon, 18 Jan 2021 21:28:42 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     Tobias Waldekranz <tobias@waldekranz.com>, davem@davemloft.net,
+        kuba@kernel.org, andrew@lunn.ch, vivien.didelot@gmail.com,
+        f.fainelli@gmail.com, roopa@nvidia.com, nikolay@nvidia.com,
+        netdev@vger.kernel.org, jiri@resnulli.us,
+        stephen@networkplumber.org
 Subject: Re: [RFC net-next 2/7] net: bridge: switchdev: Include local flag in
  FDB notifications
-Message-ID: <20210118192757.xpb4ad2af2xpetx3@skbuf>
+Message-ID: <20210118192842.GA2396253@shredder.lan>
 References: <20210116012515.3152-1-tobias@waldekranz.com>
  <20210116012515.3152-3-tobias@waldekranz.com>
  <20210117193009.io3nungdwuzmo5f7@skbuf>
- <87turejclo.fsf@waldekranz.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <87turejclo.fsf@waldekranz.com>
+In-Reply-To: <20210117193009.io3nungdwuzmo5f7@skbuf>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 18, 2021 at 07:58:59PM +0100, Tobias Waldekranz wrote:
-> Ah I see, no I was not aware of that. I just saw that the entry towards
-> the CPU was added to the ATU, which it would in both cases. I.e. from
-> the switch's POV, in this setup:
+On Sun, Jan 17, 2021 at 09:30:09PM +0200, Vladimir Oltean wrote:
+> Hi Tobias,
 > 
->    br0
->    / \ (A)
-> swp0 dummy0
->        (B)
+> On Sat, Jan 16, 2021 at 02:25:10AM +0100, Tobias Waldekranz wrote:
+> > Some switchdev drivers, notably DSA, ignore all dynamically learned
+> > address notifications (!added_by_user) as these are autonomously added
+> > by the switch. Previously, such a notification was indistinguishable
+> > from a local address notification. Include a local bit in the
+> > notification so that the two classes can be discriminated.
+> >
+> > This allows DSA-like devices to add local addresses to the hardware
+> > FDB (with the CPU as the destination), thereby avoiding flows towards
+> > the CPU being flooded by the switch as unknown unicast.
+> >
+> > Signed-off-by: Tobias Waldekranz <tobias@waldekranz.com>
+> > ---
 > 
-> A "local" entry like (A), or a "static" entry like (B) means the same
-> thing to the switch: "it is somewhere behind my CPU-port".
-
-Yes, except that if dummy0 was a real and non-switchdev interface, then
-the "local" entry would probably break your traffic if what you meant
-was "static".
-
-> > So I think there is a very real issue in that the FDB entries with the
-> > is_local bit was never specified to switchdev thus far, and now suddenly
-> > is. I'm sorry, but what you're saying in the commit message, that
-> > "!added_by_user has so far been indistinguishable from is_local" is
-> > simply false.
+> In an ideal world, the BR_FDB_LOCAL bit of an FDB entry is what you
+> would probably want to use as an indication that the packet must be
+> delivered upstream by the hardware, considering that this is what the
+> software data path does:
 > 
-> Alright, so how do you do it? Here is the struct:
+> br_handle_frame_finish:
+> 		if (test_bit(BR_FDB_LOCAL, &dst->flags))
+> 			return br_pass_frame_up(skb);
 > 
->     struct switchdev_notifier_fdb_info {
-> 	struct switchdev_notifier_info info; /* must be first */
-> 	const unsigned char *addr;
-> 	u16 vid;
-> 	u8 added_by_user:1,
-> 	   offloaded:1;
->     };
-> 
-> Which field separates a local address on swp0 from a dynamically learned
-> address on swp0?
+> However, we are not in an ideal world, but in a cacophony of nonsensical
+> flags that must be passed to the 'bridge fdb add' command. For example,
+> I noticed this usage pattern in your patch 6/7:
 
-None, that's the problem. Local addresses are already presented to
-switchdev without saying that they're local. Which is the entire reason
-that users are misled into thinking that the addresses are not local.
-
-I may have misread what you said, but to me, "!added_by_user has so far
-been indistinguishable from is_local" means that:
-- every struct switchdev_notifier_fdb_info with added_by_user == true
-  also had an implicit is_local == false
-- every struct switchdev_notifier_fdb_info with added_by_user == false
-  also had an implicit is_local == true
-It is _this_ that I deemed as clearly untrue.
-
-The is_local flag is not indistinguishable from !added_by_user, it is
-indistinguishable full stop. Which makes it hard to work with in a
-backwards-compatible way.
-
-> Ok, so just to see if I understand this correctly:
-> 
-> The situation today it that `bridge fdb add ADDR dev DEV master` results
-> in flows towards ADDR being sent to:
-> 
-> 1. DEV if DEV belongs to a DSA switch.
-> 2. To the host if DEV was a non-offloaded interface.
-
-Not quite. In the bridge software FDB, the entry is marked as is_local
-in both cases, doesn't matter if the interface is offloaded or not.
-Just that switchdev does not propagate the is_local flag, which makes
-the switchdev listeners think it is not local. The interpretation of
-that will probably vary among switchdev drivers.
-
-The subtlety is that for a non-offloading interface, the
-misconfiguration (when you mean static but use local) is easy to catch.
-Since only the entry from the software FDB will be hit, this means that
-the frame will never be forwarded, so traffic will break.
-But in the case of a switchdev offloading interface, the frames will hit
-the hardware FDB entry more often than the software FDB entry. So
-everything will work just fine and dandy even though it shouldn't.
-
-> With this series applied both would result in (2) which, while
-> idiosyncratic, is as intended. But this of course runs the risk of
-> breaking existing scripts which rely on the current behavior.
-
-Yes.
-
-My only hope is that we could just offload the entries pointing towards
-br0, and ignore the local ones. But for that I would need the bridge
-maintainers to clarify what is the difference between then, as I asked
-in your other patch.
+Thanks for adding me. Reflecting FDB flags is a very much needed change.
+I will take a look tomorrow or the day after.
