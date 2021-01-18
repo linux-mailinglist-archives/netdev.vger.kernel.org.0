@@ -2,67 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E1C5D2FA98D
-	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 20:03:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AE7002FA9A0
+	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 20:07:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2436944AbhARTCd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jan 2021 14:02:33 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:46572 "EHLO vps0.lunn.ch"
+        id S2436960AbhARTGw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jan 2021 14:06:52 -0500
+Received: from mail.kernel.org ([198.145.29.99]:42496 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2407907AbhARTB4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 18 Jan 2021 14:01:56 -0500
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1l1Zm4-001KVu-BB; Mon, 18 Jan 2021 20:01:12 +0100
-Date:   Mon, 18 Jan 2021 20:01:12 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Tobias Waldekranz <tobias@waldekranz.com>
-Cc:     Rasmus Villemoes <rasmus.villemoes@prevas.dk>,
-        Network Development <netdev@vger.kernel.org>,
+        id S2436982AbhARTFa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 18 Jan 2021 14:05:30 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id B536B206DB;
+        Mon, 18 Jan 2021 19:04:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1610996689;
+        bh=9+tgcAZWEmg70qzEITqMi1j45XpETACfGzVyxvR4OQI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=WcGz3zIPWgxUq6bck24uqrHjOOBFWq/YXm83upLH6W9pNOti0GJw1mJ9FKecze+L6
+         3Znw1bkHCnFDzP696q3JiraVUeECAuXN/+ldxDZsYzVKOAg+3nDYgHD11HGfZ4JbZ7
+         4DnVRzu+/64iLTWEnSRMrlkseW/DV/48ZWMocTJNnemxVFgsqMGzdtRsMibJRE3Tv7
+         8yYBfruZEAafMZ2JUx/tufmINveGOo8MERPduYkoWc/vaN8sEskBwzbY7WRgHBZhe5
+         mYY1kYMqCFJnIqUw7T9+VQu62U8fK8KUrKdWEYxl/7QTCWLHwC+0mL7KHu+d5HRV7w
+         VxQprxr3Yhryw==
+Date:   Mon, 18 Jan 2021 11:04:47 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         Vivien Didelot <vivien.didelot@gmail.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Vladimir Oltean <olteanv@gmail.com>
-Subject: Re: commit 4c7ea3c0791e (net: dsa: mv88e6xxx: disable SA learning
- for DSA and CPU ports)
-Message-ID: <YAXa+FkP3DHR9nlK@lunn.ch>
-References: <6106e3d5-31fc-388e-d4ac-c84ac0746a72@prevas.dk>
- <87h7nhlksr.fsf@waldekranz.com>
- <af05538b-7b64-e115-6960-0df8e503dde3@prevas.dk>
- <YAXKdWL9CdplNrtm@lunn.ch>
- <87v9bujdwm.fsf@waldekranz.com>
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Tobias Waldekranz <tobias@waldekranz.com>,
+        Maxim Kochetkov <fido_max@inbox.ru>
+Subject: Re: [PATCH v2 net-next 01/14] net: mscc: ocelot: allow offloading
+ of bridge on top of LAG
+Message-ID: <20210118110447.3c31521a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210117123744.erw2i34oap5xkapo@skbuf>
+References: <20210116005943.219479-1-olteanv@gmail.com>
+        <20210116005943.219479-2-olteanv@gmail.com>
+        <20210116172623.2277b86a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20210117123744.erw2i34oap5xkapo@skbuf>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <87v9bujdwm.fsf@waldekranz.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 18, 2021 at 07:30:49PM +0100, Tobias Waldekranz wrote:
-> On Mon, Jan 18, 2021 at 18:50, Andrew Lunn <andrew@lunn.ch> wrote:
-> >> I suppose the real solution is having userspace do some "bridge mdb add"
-> >> yoga, but since no code currently uses
-> >> MV88E6XXX_G1_ATU_DATA_STATE_MC_STATIC_DA_MGMT, I don't think there's any
-> >> way to actually achieve this. And I have no idea how to represent the
-> >> requirement that "frames with this multicast DA are only to be directed
-> >> at the CPU" in a hardware-agnostic way.
-> >
-> > The switchdev interface for this exists, because there can be
-> > multicast listeners on the bridge. When they join a group, they ask
-> > the switch to put in a HOST MDB, which should cause the traffic for
-> 
-> That is not quite the same thing as "management" though. Adding the
-> group to the host MDB will not allow it to pass through blocked (in the
-> STP sense) ports for example. With a management entry, the switch will
-> trap the packet with a TO_CPU tag, which means no ingress policy can get
-> in the way of it reaching the CPU.
+On Sun, 17 Jan 2021 14:37:44 +0200 Vladimir Oltean wrote:
+> That being said, if we want to engage in a rigid demonstration of
+> procedures, sure we can do that. I have other patches anyway to fill the
+> pipeline until "net" is merged back into "net-next" :)
 
-Ah, yes. I don't suppose the DA is part of the special group which the
-switch will recognise as management and pass it on?
-
-01:80:c2:00:00:00 - 01:80:c2:00:00:07
-01:80:c2:00:00:08 - 01:80:c2:00:00:0f
-01:80:c2:00:00:20 - 01:80:c2:00:00:27
-01:80:c2:00:00:28 - 01:80:c2:00:00:2f
-
-	Andrew
+If you don't mind I'd rather apply the fix to net, and the rest on
+Thu/Fri after the trees get merged.
