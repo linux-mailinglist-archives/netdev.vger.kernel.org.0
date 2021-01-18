@@ -2,149 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 277272F99EF
-	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 07:31:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7D4AD2F9A00
+	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 07:39:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732453AbhARGan (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jan 2021 01:30:43 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:37650 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1732441AbhARGai (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jan 2021 01:30:38 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1610951342;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=IEXqRrmhe5TS1HeLniFVF/d1Z+5aM2lLZ+VPrEdE2SQ=;
-        b=KQgqqX1QWU66JF7IQyMYnkN4ykGEXxH/wDCas9J67OBMoqyx3OX7JTAR3m+bdcYJhfZ0ji
-        xy8TkgROaviTbeiR8TxIXDolM6Cw0TuIbRcyk4L4PSbCiRRg3LOXbhOKljE3rjEfyZqF5i
-        6dPqvD69RTCtH5T7IQWMhqlc0/WOYco=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-203-0UL6bPaDO5iHb8DFFTh7MA-1; Mon, 18 Jan 2021 01:28:58 -0500
-X-MC-Unique: 0UL6bPaDO5iHb8DFFTh7MA-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S1731672AbhARGip (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jan 2021 01:38:45 -0500
+Received: from a.mx.secunet.com ([62.96.220.36]:36706 "EHLO a.mx.secunet.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726624AbhARGin (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 18 Jan 2021 01:38:43 -0500
+Received: from localhost (localhost [127.0.0.1])
+        by a.mx.secunet.com (Postfix) with ESMTP id C5993201D5;
+        Mon, 18 Jan 2021 07:38:01 +0100 (CET)
+X-Virus-Scanned: by secunet
+Received: from a.mx.secunet.com ([127.0.0.1])
+        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id fTVnJEMH7k3n; Mon, 18 Jan 2021 07:38:00 +0100 (CET)
+Received: from mail-essen-02.secunet.de (unknown [10.53.40.205])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 67F32100F35D;
-        Mon, 18 Jan 2021 06:28:55 +0000 (UTC)
-Received: from [10.72.13.12] (ovpn-13-12.pek2.redhat.com [10.72.13.12])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 94C716D029;
-        Mon, 18 Jan 2021 06:28:44 +0000 (UTC)
-Subject: Re: [PATCH net-next v2 0/7] virtio-net support xdp socket zero copy
- xmit
-To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>, netdev@vger.kernel.org
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        by a.mx.secunet.com (Postfix) with ESMTPS id EF58C200BC;
+        Mon, 18 Jan 2021 07:38:00 +0100 (CET)
+Received: from mbx-essen-01.secunet.de (10.53.40.197) by
+ mail-essen-02.secunet.de (10.53.40.205) with Microsoft SMTP Server (TLS) id
+ 14.3.487.0; Mon, 18 Jan 2021 07:38:00 +0100
+Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
+ (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2044.4; Mon, 18 Jan
+ 2021 07:38:00 +0100
+Received: by gauss2.secunet.de (Postfix, from userid 1000)      id B737C3182E9B;
+ Mon, 18 Jan 2021 07:37:59 +0100 (CET)
+Date:   Mon, 18 Jan 2021 07:37:59 +0100
+From:   Steffen Klassert <steffen.klassert@secunet.com>
+To:     Alexander Lobakin <alobakin@pm.me>
+CC:     Dongseok Yi <dseok.yi@samsung.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
-References: <cover.1609837120.git.xuanzhuo@linux.alibaba.com>
- <cover.1610765285.git.xuanzhuo@linux.alibaba.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <b41ab0f0-4537-74b5-d7c3-b20ce082bdd6@redhat.com>
-Date:   Mon, 18 Jan 2021 14:28:43 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        <namkyu78.kim@samsung.com>, Jakub Kicinski <kuba@kernel.org>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        "Willem de Bruijn" <willemb@google.com>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net v2] udp: ipv4: manipulate network header of NATed UDP
+ GRO fraglist
+Message-ID: <20210118063759.GK3576117@gauss3.secunet.de>
+References: <CGME20210115133200epcas2p1f52efe7bbc2826ed12da2fde4e03e3b2@epcas2p1.samsung.com>
+ <1610716836-140533-1-git-send-email-dseok.yi@samsung.com>
+ <20210115171203.175115-1-alobakin@pm.me>
 MIME-Version: 1.0
-In-Reply-To: <cover.1610765285.git.xuanzhuo@linux.alibaba.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20210115171203.175115-1-alobakin@pm.me>
+X-ClientProxiedBy: cas-essen-02.secunet.de (10.53.40.202) To
+ mbx-essen-01.secunet.de (10.53.40.197)
+X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Fri, Jan 15, 2021 at 05:12:33PM +0000, Alexander Lobakin wrote:
+> From: Dongseok Yi <dseok.yi@samsung.com>
+> Date: Fri, 15 Jan 2021 22:20:35 +0900
+> 
+> > UDP/IP header of UDP GROed frag_skbs are not updated even after NAT
+> > forwarding. Only the header of head_skb from ip_finish_output_gso ->
+> > skb_gso_segment is updated but following frag_skbs are not updated.
+> > 
+> > A call path skb_mac_gso_segment -> inet_gso_segment ->
+> > udp4_ufo_fragment -> __udp_gso_segment -> __udp_gso_segment_list
+> > does not try to update UDP/IP header of the segment list but copy
+> > only the MAC header.
+> > 
+> > Update dport, daddr and checksums of each skb of the segment list
+> > in __udp_gso_segment_list. It covers both SNAT and DNAT.
+> > 
+> > Fixes: 9fd1ff5d2ac7 (udp: Support UDP fraglist GRO/GSO.)
+> > Signed-off-by: Dongseok Yi <dseok.yi@samsung.com>
+> > ---
+> > v1:
+> > Steffen Klassert said, there could be 2 options.
+> > https://lore.kernel.org/patchwork/patch/1362257/
+> > I was trying to write a quick fix, but it was not easy to forward
+> > segmented list. Currently, assuming DNAT only.
+> > 
+> > v2:
+> > Per Steffen Klassert request, move the procedure from
+> > udp4_ufo_fragment to __udp_gso_segment_list and support SNAT.
+> > 
+> > To Alexander Lobakin, I've checked your email late. Just use this
+> > patch as a reference. It support SNAT too, but does not support IPv6
+> > yet. I cannot make IPv6 header changes in __udp_gso_segment_list due
+> > to the file is in IPv4 directory.
+> 
+> I used another approach, tried to make fraglist GRO closer to plain
+> in terms of checksummming, as it is confusing to me why GSO packet
+> should have CHECKSUM_UNNECESSARY.
 
-On 2021/1/16 上午10:59, Xuan Zhuo wrote:
-> XDP socket is an excellent by pass kernel network transmission framework. The
-> zero copy feature of xsk (XDP socket) needs to be supported by the driver. The
-> performance of zero copy is very good. mlx5 and intel ixgbe already support this
-> feature, This patch set allows virtio-net to support xsk's zerocopy xmit
-> feature.
->
-> And xsk's zerocopy rx has made major changes to virtio-net, and I hope to submit
-> it after this patch set are received.
->
-> Compared with other drivers, virtio-net does not directly obtain the dma
-> address, so I first obtain the xsk page, and then pass the page to virtio.
->
-> When recycling the sent packets, we have to distinguish between skb and xdp.
-> Now we have to distinguish between skb, xdp, xsk. So the second patch solves
-> this problem first.
->
-> The last four patches are used to support xsk zerocopy in virtio-net:
->
->   1. support xsk enable/disable
->   2. realize the function of xsk packet sending
->   3. implement xsk wakeup callback
->   4. set xsk completed when packet sent done
->
->
-> ---------------- Performance Testing ------------
->
-> The udp package tool implemented by the interface of xsk vs sockperf(kernel udp)
-> for performance testing:
->
-> xsk zero copy in virtio-net:
-> CPU        PPS         MSGSIZE
-> 28.7%      3833857     64
-> 38.5%      3689491     512
-> 38.9%      2787096     1456
+This is intentional. With fraglist GRO, we don't mangle packets
+in the standard (non NAT) case. So the checksum is still correct
+after segmentation. That is one reason why it has good forwarding
+performance when software segmentation is needed. Checksuming
+touches the whole packet and has a lot of overhead, so it is
+heplfull to avoid it whenever possible.
 
-
-Some questions on the results:
-
-1) What's the setup on the vhost?
-2) What's the setup of the mitigation in both host and guest?
-3) Any analyze on the possible bottleneck via perf or other tools?
-
-Thanks
-
-
->
-> xsk without zero copy in virtio-net:
-> CPU        PPS         MSGSIZE
-> 100%       1916747     64
-> 100%       1775988     512
-> 100%       1440054     1456
->
-> sockperf:
-> CPU        PPS         MSGSIZE
-> 100%       713274      64
-> 100%       701024      512
-> 100%       695832      1456
->
-> Xuan Zhuo (7):
->    xsk: support get page for drv
->    virtio-net, xsk: distinguish XDP_TX and XSK XMIT ctx
->    xsk, virtio-net: prepare for support xsk zerocopy xmit
->    virtio-net, xsk: support xsk enable/disable
->    virtio-net, xsk: realize the function of xsk packet sending
->    virtio-net, xsk: implement xsk wakeup callback
->    virtio-net, xsk: set xsk completed when packet sent done
->
->   drivers/net/virtio_net.c    | 559 +++++++++++++++++++++++++++++++++++++++-----
->   include/linux/netdevice.h   |   1 +
->   include/net/xdp_sock_drv.h  |  10 +
->   include/net/xsk_buff_pool.h |   1 +
->   net/xdp/xsk_buff_pool.c     |  10 +-
->   5 files changed, 523 insertions(+), 58 deletions(-)
->
-> --
-> 1.8.3.1
->
+We should find a way to do the checksum only when we really
+need it. I.e. only if the headers of the head skb changed.
 
