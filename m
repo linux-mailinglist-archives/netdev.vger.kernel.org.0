@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8634F2FA5F7
-	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 17:23:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C8892FA5F9
+	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 17:23:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406613AbhARQVG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jan 2021 11:21:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49398 "EHLO
+        id S2406643AbhARQVK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jan 2021 11:21:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49400 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2406307AbhARQTR (ORCPT
+        with ESMTP id S2406484AbhARQTR (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 18 Jan 2021 11:19:17 -0500
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34E0FC061793
-        for <netdev@vger.kernel.org>; Mon, 18 Jan 2021 08:17:57 -0800 (PST)
-Received: by mail-ej1-x634.google.com with SMTP id g12so24460724ejf.8
-        for <netdev@vger.kernel.org>; Mon, 18 Jan 2021 08:17:57 -0800 (PST)
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2950C061794
+        for <netdev@vger.kernel.org>; Mon, 18 Jan 2021 08:17:58 -0800 (PST)
+Received: by mail-ej1-x630.google.com with SMTP id rv9so5670855ejb.13
+        for <netdev@vger.kernel.org>; Mon, 18 Jan 2021 08:17:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=4TqlY3v8vEmT6h+/7pcpyeqPNHkaARMY3+DMnw0nKPY=;
-        b=rB3heaTmORLLFnJLl1RlsuQCJgUqlNPY5OMvsqbOHTYernFWnNfOrN2fpVSe9W3mBF
-         zCHb1tHEhL3BraJlarz6uIcwK7g8n3/7H3zPM3lM+cSpKlhzmPIsHAVWcAn4WfJMfUln
-         DfEhYf/eWKLEdVsPc0BBf89sDDksDouKgdeJtoZ5y7kAazA9DEGwWB5k41+HBMd/R4Gc
-         m7S3kUqrHoRtDaYe5mlXT3U/ESD4c8XTMGQPv9/QVQ6HXJkpeDN7jMuhA2K35Ni465lz
-         Ih5DSGmG7LaB+jyrtxiyTMzqUx7vUSELvx9IG3gd+9oB5Xz8CkZMgxpb7S4fIwWfQwXl
-         Ucqw==
+        bh=FgC+gJBzNrfOgZ38vxsWoSTCI98/LwIX2fEQMIekyAs=;
+        b=cHRodv2WCB2dAn+SvfM+X+A/Gmudte6vtrpjSreRIg/PMs16BABfS2yd7QpXslG0yO
+         0wek4nTCy1JF6Mq/JB9+pMVtv301iR1vsVHu9Kv3GqDMtqcBWhPv6KXJkobpHxuvcllr
+         FVYkzcvDtm6GTYoPX5T/AIDgQcl/oSVVn3m/RZz1mmu5cDLOdM8b1OB8xuIHyScgr1e+
+         Tll7FdpKnBzYW2o3v+1Lpfa6c8EMDUflQ6ovVIr1oQc9BInC+EpsK01zInshBtWjb3Js
+         eCGlrGrwTWx1PQvadc09hKmGNbS5NidSTkzZ+tha5b5ZRdSTIKB4afGAmeaAzu7prHYj
+         THDQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=4TqlY3v8vEmT6h+/7pcpyeqPNHkaARMY3+DMnw0nKPY=;
-        b=B/GycjLUF2hhzzYdb2I1LkhQZl52O/4J5O1TVe1gxlcClfU5ZZw7qnVqfsx/UaHWJY
-         UaomMXyqvmtTZIl0s3Tvi2ca40jpTGAMSEAWcSLQYKY6JEqOIta8UmdZLVCTH/uOcf+Z
-         O5gnJPhOAhsBNOvQusGucFHBL6exCK9bjxrWRhjiScYBTdLuVMVOq0YKvdCINw4V2ghM
-         U7fQQFaixxnlv2w+JQHv0tPs8EqZWGXDHSjcz5x8F8iuEgqKvlErPwofUo2+bXiunVIC
-         At3his/VokxStOGTpQEwVfx1VNNDdu0+mXgWXzRSW1nrvsDYFYXRUu+7/W6LKqxheDVV
-         y9ZA==
-X-Gm-Message-State: AOAM532NuaGquWsGGv8TgJoOtgcOmLEyYyDqgYC0i1fcCs51xllvTE7T
-        kD+AQrCLfHmIceC8pSYEGCQ=
-X-Google-Smtp-Source: ABdhPJxBN8oPk+fqlMnmRzb9tNqsR3u+V3AVme+K0aVhdy57ESjywfOuQ5D1qlGFq1+OQFwt2Dc3Ww==
-X-Received: by 2002:a17:906:478a:: with SMTP id cw10mr268151ejc.533.1610986675837;
-        Mon, 18 Jan 2021 08:17:55 -0800 (PST)
+        bh=FgC+gJBzNrfOgZ38vxsWoSTCI98/LwIX2fEQMIekyAs=;
+        b=qXU1p2+ZHbpvC9Z3o0hE9RngWZCIQiB/wVFd8nhtLXLa7gTwPBPWhAZGUXocwsjWkk
+         JDvpPbsHqX0vHQAGzBd87z6QmrW69xuLidZhtvXYqUPXOgL3qx0LTfGOwlRq54dCOZIP
+         cdC7G1iKVDtdKxw0qHPmgHi8p2VQhbm8E5FJrn2fEDJdgOmXIQkW6waLkuBgWXn+gY1A
+         fQ1z2+b0yzb51Epl2miXSAIdWZROMC5SmexRH4ydLq1jA7YsiZoHYIUtpC7WXbZuZ4tq
+         rxGbSYfTFzTth+9vGp1iUiUZ0OOEPjTplg7gWNkJd0+MtF2PKtT7o1oanOOuWl1PN32w
+         2auA==
+X-Gm-Message-State: AOAM530977lM84euhibSqAkp+c6GxMEmAqFaJh240QGTg56Ntk8JM+eu
+        Ls8YdD8Skf2lI4F+iZKRBrs=
+X-Google-Smtp-Source: ABdhPJzn5Qw+KoSDV7j5rAdvd32ENQ7ztpx/5sEUo4+EqRmiJTI5joBDiTbs7ZKA2+CI1gb7kkn0Cw==
+X-Received: by 2002:a17:906:934c:: with SMTP id p12mr281405ejw.269.1610986677409;
+        Mon, 18 Jan 2021 08:17:57 -0800 (PST)
 Received: from localhost.localdomain (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id u23sm6093781edt.78.2021.01.18.08.17.54
+        by smtp.gmail.com with ESMTPSA id u23sm6093781edt.78.2021.01.18.08.17.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Jan 2021 08:17:55 -0800 (PST)
+        Mon, 18 Jan 2021 08:17:56 -0800 (PST)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
@@ -63,9 +63,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Maxim Kochetkov <fido_max@inbox.ru>,
         Eldar Gasanov <eldargasanov2@gmail.com>,
         Andrey L <al@b4comtech.com>, UNGLinuxDriver@microchip.com
-Subject: [PATCH v3 net-next 10/15] net: mscc: ocelot: refactor ocelot_port_inject_frame out of ocelot_port_xmit
-Date:   Mon, 18 Jan 2021 18:17:26 +0200
-Message-Id: <20210118161731.2837700-11-olteanv@gmail.com>
+Subject: [PATCH v3 net-next 11/15] net: mscc: ocelot: export struct ocelot_frame_info
+Date:   Mon, 18 Jan 2021 18:17:27 +0200
+Message-Id: <20210118161731.2837700-12-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210118161731.2837700-1-olteanv@gmail.com>
 References: <20210118161731.2837700-1-olteanv@gmail.com>
@@ -77,9 +77,10 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-The felix DSA driver will inject some frames through register MMIO, same
-as ocelot switchdev currently does. So we need to be able to reuse the
-common code.
+Because felix DSA must now be able to extract a frame in 2 stages over
+MMIO (first the XFH then the frame data), it needs access to this
+internal ocelot structure that holds the unpacked information from the
+Extraction Frame Header.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
@@ -89,226 +90,99 @@ None.
 Changes in v2:
 Patch is new.
 
- drivers/net/ethernet/mscc/ocelot.c     | 78 +++++++++++++++++++++++++
- drivers/net/ethernet/mscc/ocelot.h     |  4 ++
- drivers/net/ethernet/mscc/ocelot_net.c | 81 +++-----------------------
- 3 files changed, 89 insertions(+), 74 deletions(-)
+ drivers/net/ethernet/mscc/ocelot.c         | 4 ++--
+ drivers/net/ethernet/mscc/ocelot.h         | 9 ---------
+ drivers/net/ethernet/mscc/ocelot_vsc7514.c | 4 ++--
+ include/soc/mscc/ocelot.h                  | 9 +++++++++
+ 4 files changed, 13 insertions(+), 13 deletions(-)
 
 diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
-index 895df050abba..7aba384fe6bf 100644
+index 7aba384fe6bf..e32a7f869faa 100644
 --- a/drivers/net/ethernet/mscc/ocelot.c
 +++ b/drivers/net/ethernet/mscc/ocelot.c
-@@ -561,6 +561,84 @@ void ocelot_get_txtstamp(struct ocelot *ocelot)
- }
- EXPORT_SYMBOL(ocelot_get_txtstamp);
- 
-+/* Generate the IFH for frame injection
-+ *
-+ * The IFH is a 128bit-value
-+ * bit 127: bypass the analyzer processing
-+ * bit 56-67: destination mask
-+ * bit 28-29: pop_cnt: 3 disables all rewriting of the frame
-+ * bit 20-27: cpu extraction queue mask
-+ * bit 16: tag type 0: C-tag, 1: S-tag
-+ * bit 0-11: VID
-+ */
-+static int ocelot_gen_ifh(u32 *ifh, struct frame_info *info)
-+{
-+	ifh[0] = IFH_INJ_BYPASS | ((0x1ff & info->rew_op) << 21);
-+	ifh[1] = (0xf00 & info->port) >> 8;
-+	ifh[2] = (0xff & info->port) << 24;
-+	ifh[3] = (info->tag_type << 16) | info->vid;
-+
-+	return 0;
-+}
-+
-+bool ocelot_can_inject(struct ocelot *ocelot, int grp)
-+{
-+	u32 val = ocelot_read(ocelot, QS_INJ_STATUS);
-+
-+	if (!(val & QS_INJ_STATUS_FIFO_RDY(BIT(grp))))
-+		return false;
-+	if (val & QS_INJ_STATUS_WMARK_REACHED(BIT(grp)))
-+		return false;
-+
-+	return true;
-+}
-+
-+void ocelot_port_inject_frame(struct ocelot *ocelot, int port, int grp,
-+			      u32 rew_op, struct sk_buff *skb)
-+{
-+	struct frame_info info = {};
-+	u32 ifh[OCELOT_TAG_LEN / 4];
-+	unsigned int i, count, last;
-+
-+	ocelot_write_rix(ocelot, QS_INJ_CTRL_GAP_SIZE(1) |
-+			 QS_INJ_CTRL_SOF, QS_INJ_CTRL, grp);
-+
-+	info.port = BIT(port);
-+	info.tag_type = IFH_TAG_TYPE_C;
-+	info.vid = skb_vlan_tag_get(skb);
-+	info.rew_op = rew_op;
-+
-+	ocelot_gen_ifh(ifh, &info);
-+
-+	for (i = 0; i < OCELOT_TAG_LEN / 4; i++)
-+		ocelot_write_rix(ocelot, (__force u32)cpu_to_be32(ifh[i]),
-+				 QS_INJ_WR, grp);
-+
-+	count = DIV_ROUND_UP(skb->len, 4);
-+	last = skb->len % 4;
-+	for (i = 0; i < count; i++)
-+		ocelot_write_rix(ocelot, ((u32 *)skb->data)[i], QS_INJ_WR, grp);
-+
-+	/* Add padding */
-+	while (i < (OCELOT_BUFFER_CELL_SZ / 4)) {
-+		ocelot_write_rix(ocelot, 0, QS_INJ_WR, grp);
-+		i++;
-+	}
-+
-+	/* Indicate EOF and valid bytes in last word */
-+	ocelot_write_rix(ocelot, QS_INJ_CTRL_GAP_SIZE(1) |
-+			 QS_INJ_CTRL_VLD_BYTES(skb->len < OCELOT_BUFFER_CELL_SZ ? 0 : last) |
-+			 QS_INJ_CTRL_EOF,
-+			 QS_INJ_CTRL, grp);
-+
-+	/* Add dummy CRC */
-+	ocelot_write_rix(ocelot, 0, QS_INJ_WR, grp);
-+	skb_tx_timestamp(skb);
-+
-+	skb->dev->stats.tx_packets++;
-+	skb->dev->stats.tx_bytes += skb->len;
-+}
-+
- int ocelot_fdb_add(struct ocelot *ocelot, int port,
- 		   const unsigned char *addr, u16 vid)
+@@ -571,7 +571,7 @@ EXPORT_SYMBOL(ocelot_get_txtstamp);
+  * bit 16: tag type 0: C-tag, 1: S-tag
+  * bit 0-11: VID
+  */
+-static int ocelot_gen_ifh(u32 *ifh, struct frame_info *info)
++static int ocelot_gen_ifh(u32 *ifh, struct ocelot_frame_info *info)
  {
+ 	ifh[0] = IFH_INJ_BYPASS | ((0x1ff & info->rew_op) << 21);
+ 	ifh[1] = (0xf00 & info->port) >> 8;
+@@ -596,7 +596,7 @@ bool ocelot_can_inject(struct ocelot *ocelot, int grp)
+ void ocelot_port_inject_frame(struct ocelot *ocelot, int port, int grp,
+ 			      u32 rew_op, struct sk_buff *skb)
+ {
+-	struct frame_info info = {};
++	struct ocelot_frame_info info = {};
+ 	u32 ifh[OCELOT_TAG_LEN / 4];
+ 	unsigned int i, count, last;
+ 
 diff --git a/drivers/net/ethernet/mscc/ocelot.h b/drivers/net/ethernet/mscc/ocelot.h
-index e8621dbc14f7..cf6493e55eab 100644
+index cf6493e55eab..5d80682e3b43 100644
 --- a/drivers/net/ethernet/mscc/ocelot.h
 +++ b/drivers/net/ethernet/mscc/ocelot.h
-@@ -127,6 +127,10 @@ int ocelot_port_devlink_init(struct ocelot *ocelot, int port,
- 			     enum devlink_port_flavour flavour);
- void ocelot_port_devlink_teardown(struct ocelot *ocelot, int port);
+@@ -32,15 +32,6 @@
  
-+bool ocelot_can_inject(struct ocelot *ocelot, int grp);
-+void ocelot_port_inject_frame(struct ocelot *ocelot, int port, int grp,
-+			      u32 rew_op, struct sk_buff *skb);
-+
- extern struct notifier_block ocelot_netdevice_nb;
- extern struct notifier_block ocelot_switchdev_nb;
- extern struct notifier_block ocelot_switchdev_blocking_nb;
-diff --git a/drivers/net/ethernet/mscc/ocelot_net.c b/drivers/net/ethernet/mscc/ocelot_net.c
-index 55847d2a83e1..9a29d7d3b0e2 100644
---- a/drivers/net/ethernet/mscc/ocelot_net.c
-+++ b/drivers/net/ethernet/mscc/ocelot_net.c
-@@ -488,53 +488,20 @@ static int ocelot_port_stop(struct net_device *dev)
+ #define OCELOT_PTP_QUEUE_SZ	128
+ 
+-struct frame_info {
+-	u32 len;
+-	u16 port;
+-	u16 vid;
+-	u8 tag_type;
+-	u16 rew_op;
+-	u32 timestamp;	/* rew_val */
+-};
+-
+ struct ocelot_port_tc {
+ 	bool block_shared;
+ 	unsigned long offload_cnt;
+diff --git a/drivers/net/ethernet/mscc/ocelot_vsc7514.c b/drivers/net/ethernet/mscc/ocelot_vsc7514.c
+index e5d0dfc0aec5..a34f0a025710 100644
+--- a/drivers/net/ethernet/mscc/ocelot_vsc7514.c
++++ b/drivers/net/ethernet/mscc/ocelot_vsc7514.c
+@@ -532,7 +532,7 @@ static int ocelot_chip_init(struct ocelot *ocelot, const struct ocelot_ops *ops)
  	return 0;
  }
  
--/* Generate the IFH for frame injection
-- *
-- * The IFH is a 128bit-value
-- * bit 127: bypass the analyzer processing
-- * bit 56-67: destination mask
-- * bit 28-29: pop_cnt: 3 disables all rewriting of the frame
-- * bit 20-27: cpu extraction queue mask
-- * bit 16: tag type 0: C-tag, 1: S-tag
-- * bit 0-11: VID
-- */
--static int ocelot_gen_ifh(u32 *ifh, struct frame_info *info)
--{
--	ifh[0] = IFH_INJ_BYPASS | ((0x1ff & info->rew_op) << 21);
--	ifh[1] = (0xf00 & info->port) >> 8;
--	ifh[2] = (0xff & info->port) << 24;
--	ifh[3] = (info->tag_type << 16) | info->vid;
--
--	return 0;
--}
--
--static int ocelot_port_xmit(struct sk_buff *skb, struct net_device *dev)
-+static netdev_tx_t ocelot_port_xmit(struct sk_buff *skb, struct net_device *dev)
+-static int ocelot_parse_ifh(u32 *_ifh, struct frame_info *info)
++static int ocelot_parse_ifh(u32 *_ifh, struct ocelot_frame_info *info)
  {
- 	struct ocelot_port_private *priv = netdev_priv(dev);
--	struct skb_shared_info *shinfo = skb_shinfo(skb);
- 	struct ocelot_port *ocelot_port = &priv->port;
- 	struct ocelot *ocelot = ocelot_port->ocelot;
--	u32 val, ifh[OCELOT_TAG_LEN / 4];
--	struct frame_info info = {};
--	u8 grp = 0; /* Send everything on CPU group 0 */
--	unsigned int i, count, last;
- 	int port = priv->chip_port;
-+	u32 rew_op = 0;
+ 	u8 llen, wlen;
+ 	u64 ifh[2];
+@@ -606,10 +606,10 @@ static irqreturn_t ocelot_xtr_irq_handler(int irq, void *arg)
  
--	val = ocelot_read(ocelot, QS_INJ_STATUS);
--	if (!(val & QS_INJ_STATUS_FIFO_RDY(BIT(grp))) ||
--	    (val & QS_INJ_STATUS_WMARK_REACHED(BIT(grp))))
-+	if (!ocelot_can_inject(ocelot, 0))
- 		return NETDEV_TX_BUSY;
+ 	while (ocelot_read(ocelot, QS_XTR_DATA_PRESENT) & BIT(grp)) {
+ 		struct skb_shared_hwtstamps *shhwtstamps;
++		struct ocelot_frame_info info = {};
+ 		struct ocelot_port_private *priv;
+ 		struct ocelot_port *ocelot_port;
+ 		u64 tod_in_ns, full_ts_in_ns;
+-		struct frame_info info = {};
+ 		struct net_device *dev;
+ 		u32 ifh[4], val, *buf;
+ 		struct timespec64 ts;
+diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
+index 360615c36ab9..ba803afcc55c 100644
+--- a/include/soc/mscc/ocelot.h
++++ b/include/soc/mscc/ocelot.h
+@@ -688,6 +688,15 @@ struct ocelot_policer {
+ 	u32 burst; /* bytes */
+ };
  
--	ocelot_write_rix(ocelot, QS_INJ_CTRL_GAP_SIZE(1) |
--			 QS_INJ_CTRL_SOF, QS_INJ_CTRL, grp);
--
--	info.port = BIT(port);
--	info.tag_type = IFH_TAG_TYPE_C;
--	info.vid = skb_vlan_tag_get(skb);
--
- 	/* Check if timestamping is needed */
--	if (ocelot->ptp && (shinfo->tx_flags & SKBTX_HW_TSTAMP)) {
--		info.rew_op = ocelot_port->ptp_cmd;
-+	if (ocelot->ptp && (skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP)) {
-+		rew_op = ocelot_port->ptp_cmd;
- 
- 		if (ocelot_port->ptp_cmd == IFH_REW_OP_TWO_STEP_PTP) {
- 			struct sk_buff *clone;
-@@ -547,45 +514,11 @@ static int ocelot_port_xmit(struct sk_buff *skb, struct net_device *dev)
- 
- 			ocelot_port_add_txtstamp_skb(ocelot, port, clone);
- 
--			info.rew_op |= clone->cb[0] << 3;
-+			rew_op |= clone->cb[0] << 3;
- 		}
- 	}
- 
--	if (ocelot->ptp && shinfo->tx_flags & SKBTX_HW_TSTAMP) {
--		info.rew_op = ocelot_port->ptp_cmd;
--		if (ocelot_port->ptp_cmd == IFH_REW_OP_TWO_STEP_PTP)
--			info.rew_op |= skb->cb[0] << 3;
--	}
--
--	ocelot_gen_ifh(ifh, &info);
--
--	for (i = 0; i < OCELOT_TAG_LEN / 4; i++)
--		ocelot_write_rix(ocelot, (__force u32)cpu_to_be32(ifh[i]),
--				 QS_INJ_WR, grp);
--
--	count = DIV_ROUND_UP(skb->len, 4);
--	last = skb->len % 4;
--	for (i = 0; i < count; i++)
--		ocelot_write_rix(ocelot, ((u32 *)skb->data)[i], QS_INJ_WR, grp);
--
--	/* Add padding */
--	while (i < (OCELOT_BUFFER_CELL_SZ / 4)) {
--		ocelot_write_rix(ocelot, 0, QS_INJ_WR, grp);
--		i++;
--	}
--
--	/* Indicate EOF and valid bytes in last word */
--	ocelot_write_rix(ocelot, QS_INJ_CTRL_GAP_SIZE(1) |
--			 QS_INJ_CTRL_VLD_BYTES(skb->len < OCELOT_BUFFER_CELL_SZ ? 0 : last) |
--			 QS_INJ_CTRL_EOF,
--			 QS_INJ_CTRL, grp);
--
--	/* Add dummy CRC */
--	ocelot_write_rix(ocelot, 0, QS_INJ_WR, grp);
--	skb_tx_timestamp(skb);
--
--	dev->stats.tx_packets++;
--	dev->stats.tx_bytes += skb->len;
-+	ocelot_port_inject_frame(ocelot, port, 0, rew_op, skb);
- 
- 	kfree_skb(skb);
- 
++struct ocelot_frame_info {
++	u32 len;
++	u16 port;
++	u16 vid;
++	u8 tag_type;
++	u16 rew_op;
++	u32 timestamp;	/* rew_val */
++};
++
+ #define ocelot_read_ix(ocelot, reg, gi, ri) __ocelot_read_ix(ocelot, reg, reg##_GSZ * (gi) + reg##_RSZ * (ri))
+ #define ocelot_read_gix(ocelot, reg, gi) __ocelot_read_ix(ocelot, reg, reg##_GSZ * (gi))
+ #define ocelot_read_rix(ocelot, reg, ri) __ocelot_read_ix(ocelot, reg, reg##_RSZ * (ri))
 -- 
 2.25.1
 
