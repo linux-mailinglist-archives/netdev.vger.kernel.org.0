@@ -2,288 +2,218 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F6E92FA945
-	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 19:51:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B3DDA2FA969
+	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 19:57:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2407809AbhARSuc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jan 2021 13:50:32 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:46810 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2407718AbhARSpo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jan 2021 13:45:44 -0500
-Received: from pps.filterd (m0001303.ppops.net [127.0.0.1])
-        by m0001303.ppops.net (8.16.0.43/8.16.0.43) with SMTP id 10IIbxR4001071;
-        Mon, 18 Jan 2021 10:44:43 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
- references : from : message-id : date : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=facebook;
- bh=zdcXkMI0brlHzakV3N18fHNxl2tGDD54ZYNpfJP0ZP8=;
- b=d32WlKOseYQ/IavGM4tJynbfpucRhPWQ3Ai9F1LsOYdIYZN43DklcHs4w0dZ8ZUWTuQf
- OSD751uFkCUTik844S2ZfjbbO2ezNK6nBO1OXDGhSVWCgNveYLS4B4ZM8SdEWd58iVfr
- 7nJC1zEWy0EJeV6tJm7IBS9RNWC+tTYeAoM= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by m0001303.ppops.net with ESMTP id 363vps0bqm-12
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Mon, 18 Jan 2021 10:44:42 -0800
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.35.172) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Mon, 18 Jan 2021 10:44:37 -0800
+        id S2407962AbhARS4e (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jan 2021 13:56:34 -0500
+Received: from mail-eopbgr60060.outbound.protection.outlook.com ([40.107.6.60]:55552
+        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S2407898AbhARSzv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 18 Jan 2021 13:55:51 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DiLGroO7cIx0nn5hocMssgKegjTjBJwvMBqd4kVbIxQpmSEcpDdMlTlFobjpDcnDK0dFoZ+I5qqb5xr2CvPFlKw2Y54SMNJaizxce0KccCwyT5x/onSFAv6fOACyYEzWKwi7QfaXAjsVoxE8HZ+O5dLE8cOFGOkBWwvgKlNtyTKW/ysS/N0W71anes10DNROXzek2di2nic8x9l6pjW2F0eu6B6YxFlSxfBe3rVbB73BuBkA94ch8gZAxoeZJZV9oKukBa4GUS9BWOLrGaeH3O9h+uGOGnLsrNTqhw7e0pXiyTBb9cekzo0eul7x8mIv5PbE2IxdVbfItjwiOZgd6w==
+ b=X8S4gV8P16Do2utLyM4vwk/skWCTA39+7wIDgNQ820RkPD8fivRekXR3vAUJfV5zNj3D+NqDrJgGUiUPDbSOu0r/m04/G0HbMGSSLoHF+5S/aLmY2G/MiL/+bo04WszLtfOyPrayv9LLb/KgXNyvG+a/np5HV3NZ+/zdcUhPkD/m1MAFItui1l5PZvse0ylUm6Gqd3irjNQ1KbIcjAq3JPIjKMdzUud9PxtCSGxWr95+R0/2ki2zJ7aPT1TH4B66gj4ILcd1wd6ef1g1+xtvq2zBKr8rYcMh+oVQBCHJf/lhSk6x8o2u78DhlM0uJURPI2bgOku3NR8lt1P4wtMUiw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=zdcXkMI0brlHzakV3N18fHNxl2tGDD54ZYNpfJP0ZP8=;
- b=dQcetQFuva/2WO3UlfkElMV6LwI4hHdeWa2t91t2m8XdpGQm3aAsOmU8rNBJO3Zp7cC/Hr4GGdGf5rEf/jmn58xlfQeuQPE/o54jmIM8tb9ftsCAfpd7U/Jb+l5x0TktwiKLK+sMO0Fc0piZmeaAFbqFgZTZzuP/TfSDoMfVU+YReScqUBMKSbpGXNdajvldaNzOBrUYgUHIgUNx2u+exAJ3SM+8Ct9OmG8RPho5TcRBZ09SNeHSHb5ynQxPiQ+ZcCA1HcMWUebuXTYDMaCRjpQHbe7C/Zq8kZOLKjruw/j5OPg5WXM6fiJ3gsTu3/sBlhuwDpr0qPkUjkJl2ySchA==
+ bh=zWSudLwQ1wk23uf0seOQefx1bzPO+ET9lJaSxnYXzGc=;
+ b=gnjRvaqVAQeo2fcdCkGesGzOVsx/yyUq90zmLGHzxPlUyY1RQzfBwSaCAAmhu7/LqWghQXA06Rr0Ws3Cg3t384BS2+b3c924qBN2mTOL6wh7pj+A+C0wlbxIzXCbXVIHRONqibVM+OUTsF9TtjQvCnK8RpwLbVEcOrOGc+CjHtoNhcQuTJNYhPz/SoJHqQDFrxMzm4JrCqhtWpx3D5gj0i779TjR/ffWLwX79Gg7sNnv/V0R3P8gPDIi/9E1v/hFD/RZj493sWCmZ6jNex6ud86UsCfRs+Tp5UqzmtRJJh991Emm6ft3/tBeZNjTRXBUXpIO0zc/TScr6B56Gl6Txw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=zdcXkMI0brlHzakV3N18fHNxl2tGDD54ZYNpfJP0ZP8=;
- b=BgaS+yAdEpKsUj6twiH+uVlMEMVVsV7g2TN2ojyouw05CAz/q7iKr7fSkSO76LngzSVi56P5f8H7wp/EDdVwMWYdVYYNlDUI98JYeDkDCnQhan6hmnrechodCTUCkkApSJNc6YcZKwSjazfZLOfvGyEJdYnJfYamJvsAUSVW77Y=
-Authentication-Results: loongson.cn; dkim=none (message not signed)
- header.d=none;loongson.cn; dmarc=none action=none header.from=fb.com;
-Received: from BYAPR15MB4088.namprd15.prod.outlook.com (2603:10b6:a02:c3::18)
- by BYAPR15MB2888.namprd15.prod.outlook.com (2603:10b6:a03:b5::15) with
+ bh=zWSudLwQ1wk23uf0seOQefx1bzPO+ET9lJaSxnYXzGc=;
+ b=NlVSSx++1F2I8HdhZgfxl5O90BtC6QHbZMWax/FsfdWaOzhPNmo18b7ox248q8p27Hlf/9pa3bktlwaA8u+cidAg4durYMDKvjPm/XPRgq6wy0ayGb8zLT0nb1QR1bt7rg6NAlAGyWAtDZSjXoU9jFDtJUVDxyZ/1nu8t6mNFFY=
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by VI1PR0402MB3711.eurprd04.prod.outlook.com (2603:10a6:803:18::31) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3763.14; Mon, 18 Jan
- 2021 18:44:36 +0000
-Received: from BYAPR15MB4088.namprd15.prod.outlook.com
- ([fe80::9ae:1628:daf9:4b03]) by BYAPR15MB4088.namprd15.prod.outlook.com
- ([fe80::9ae:1628:daf9:4b03%7]) with mapi id 15.20.3763.014; Mon, 18 Jan 2021
- 18:44:36 +0000
-Subject: Re: [PATCH bpf 1/2] samples/bpf: Set flag __SANE_USERSPACE_TYPES__
- for MIPS to fix build warnings
-To:     Tiezhu Yang <yangtiezhu@loongson.cn>,
-        Luc Van Oostenryck <luc.vanoostenryck@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Nathan Chancellor <natechancellor@gmail.com>,
-        Nick Desaulniers <ndesaulniers@google.com>
-CC:     <linux-sparse@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <bpf@vger.kernel.org>, <clang-built-linux@googlegroups.com>,
-        <linux-mips@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Xuefeng Li <lixuefeng@loongson.cn>
-References: <1610535453-2352-1-git-send-email-yangtiezhu@loongson.cn>
- <1610535453-2352-2-git-send-email-yangtiezhu@loongson.cn>
- <e3eb5919-4573-4576-e6aa-bd8ff56409ed@fb.com>
- <f077bcae-97be-fc7f-c3fa-c6026bfe25d2@loongson.cn>
-From:   Yonghong Song <yhs@fb.com>
-Message-ID: <313a7ed5-a34d-5eed-4715-06fed4a75c40@fb.com>
-Date:   Mon, 18 Jan 2021 10:44:34 -0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.6.1
-In-Reply-To: <f077bcae-97be-fc7f-c3fa-c6026bfe25d2@loongson.cn>
-Content-Type: text/plain; charset=utf-8; format=flowed
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3763.10; Mon, 18 Jan
+ 2021 18:55:02 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::2c43:e9c9:db64:fa57]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::2c43:e9c9:db64:fa57%5]) with mapi id 15.20.3763.013; Mon, 18 Jan 2021
+ 18:55:02 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     "Bedel, Alban" <alban.bedel@aerq.com>
+CC:     Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] net: mscc: ocelot: Fix multicast to the CPU port
+Thread-Topic: [PATCH] net: mscc: ocelot: Fix multicast to the CPU port
+Thread-Index: AQHW7bOA9fYvcfmYzUChcnWV1prsRqotu3KA
+Date:   Mon, 18 Jan 2021 18:55:01 +0000
+Message-ID: <20210118185501.6wejo4xwb2lidicm@skbuf>
+References: <20210118160317.554018-1-alban.bedel@aerq.com>
+In-Reply-To: <20210118160317.554018-1-alban.bedel@aerq.com>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [2620:10d:c090:400::5:4199]
-X-ClientProxiedBy: SJ0PR13CA0006.namprd13.prod.outlook.com
- (2603:10b6:a03:2c0::11) To BYAPR15MB4088.namprd15.prod.outlook.com
- (2603:10b6:a02:c3::18)
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: aerq.com; dkim=none (message not signed)
+ header.d=none;aerq.com; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [5.12.227.87]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 85e53ce7-e104-4f9c-8295-08d8bbe28fa8
+x-ms-traffictypediagnostic: VI1PR0402MB3711:
+x-ld-processed: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635,ExtAddr
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1PR0402MB3711CCB87C0290E2CBCEF5A2E0A40@VI1PR0402MB3711.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: Wmq1Y76bvgGsK8tJmaevz5Mfs+J9iOZg2xhzAftry1Y1t5POVDATbYvlUqRbWvnm017JFPyqGGZreiar7zRniKPO2Ou0zH+RaBlvNPL/aC5gMuOAxpSLjiex+bu2YEdEhtfIYi4cdGZJU7z4DZyY0a7mv7Zq5mUeXhZ9yBWTPCJLNrwUuWpC4IyPssibEpFijCFpoH3hk7z/lGiWeXGXaUO853H14xHLc8HPTJRcPi1o73PiSNu7GbkmZBQDArz2mylFCqIC5ECRRjqVb4zxS23oJJRFnPdLNa/Wxtx1Aq0ME7U5djY3KSKKCPfor1WFrBlkdqum/+KLlbnZ9llg7XxAj4AncSIG+J5IfT0cEdUSrySkDP47V2nkcpNR5KoR8JBqThZIl+Oxg/xfUNDoj8SUloWe5dfGVXV8CPIpbawk+R7FRZ/byWj2DtVk1dKLnThmMYnL+eYdlw9yifzFtw==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(4636009)(376002)(136003)(39860400002)(366004)(346002)(396003)(1076003)(186003)(71200400001)(6506007)(26005)(5660300002)(44832011)(83380400001)(76116006)(54906003)(316002)(66946007)(66476007)(66446008)(8676002)(86362001)(33716001)(6916009)(2906002)(66556008)(966005)(6486002)(478600001)(6512007)(8936002)(64756008)(4326008)(9686003);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?sR4bRZkH+4ekq+L9ZIkF44NptrdEuHgfynrus0Dyzgv8Ue2lAyihum4D8MT1?=
+ =?us-ascii?Q?SpUX8I9kSTEOtI5WFpbCBnvRJ/RxvlZjMEuSYHHMqf/wxPqp3Z2sgteTjMup?=
+ =?us-ascii?Q?GjIEghdgXUxWldxnO80vb71QV7ol11jTNbvGF3P7c/zQSwkTpA4GhKrV2aM0?=
+ =?us-ascii?Q?kd3m+E5C/CGUClMajyRVaQpwI/7Phz5XQbE43+xS5oC3w2U4Y6EIy7u8o7YS?=
+ =?us-ascii?Q?LGtZRztFiaFVd4E1hXGmWzFykSOY1gYa312A/gazMdC/bM6AeKNU19cLT7fP?=
+ =?us-ascii?Q?BnWxSp+LTmi+sb07z71m/1mAf4KgVxLptP8t+/t9Z/zS86yhXlCt2s+CM/RN?=
+ =?us-ascii?Q?6NyS0MAw+6cCQ1XVdDB8Mfe/KX31r3kRGYvetMG7ROGYpIbfawU+EvkLh5DQ?=
+ =?us-ascii?Q?44yc+/1OogWuRFuRMRv7utkTHohD0sjXAJgo38X2wfoVeKOMYkyU3WbaIRrd?=
+ =?us-ascii?Q?TfwUvUatKQLJE9ReBSNnqL+Vi3tUUqj8PDd32GcLi6u2lTAYy2JUqou2sUP0?=
+ =?us-ascii?Q?xk8p/xG6QL08rYvqTqpoouQWSxu54D9wSa4CMfd6rnhqVHa/aVRZ9Zm4Q2/z?=
+ =?us-ascii?Q?LunKo6U9M5SitI0NXJBdVII1sjz1cRNKV+4G9QIzZlPClO6n2Lw7AkXkUBB8?=
+ =?us-ascii?Q?tfj6EgU4ocONTNW3z5W0evCNcUggh23DVl1eG55F7yuCXHHivEeP7frFYnil?=
+ =?us-ascii?Q?l5itqaNLkxFxM3uynXOkZ5ZAk+e/0fKrosdQC37GfHBN6wr5cG42BkwyzoBr?=
+ =?us-ascii?Q?dVkb6e8DD5EPe7ANUSmNYIot5Z56O/3eXTlPRRUQTunZBUqbq7a/IGMDk1D0?=
+ =?us-ascii?Q?TvVNvjFdvHHc2oKoYeBC5sphbVzfkcQ3TlAntaDfHIp4tf5mzCVT3edLpKPF?=
+ =?us-ascii?Q?jJ+jZN1cf7EIuWYEQf4E0pfQQBVi/9Q4k5st5uVgzsiNFQsJ33Rre3mukJH1?=
+ =?us-ascii?Q?ZdsUOZFpZJsFLFwYrW83x8XEUOWQ67v3SqXfzXLsZOB4e5deFgD6h1MdHE+r?=
+ =?us-ascii?Q?w8YX?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <5825BCDFE6426548BECBBF83C7635D22@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [IPv6:2620:10d:c085:21d6::10cf] (2620:10d:c090:400::5:4199) by SJ0PR13CA0006.namprd13.prod.outlook.com (2603:10b6:a03:2c0::11) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3784.7 via Frontend Transport; Mon, 18 Jan 2021 18:44:35 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 052e3727-a8fd-4fa0-a296-08d8bbe11a8f
-X-MS-TrafficTypeDiagnostic: BYAPR15MB2888:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <BYAPR15MB28880DCF9FAB63F478618247D3A40@BYAPR15MB2888.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:1186;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: dT2+a9PcL+sp77zMLyZgZkySxD6KGeh/9ZRZGxOHYyiWRFHNJO4TN5O595yhLDFqoWx/PXRdgc6e9NEMbWlrLa0MsFu+9vVsABSNTh/3MEqMs6nfajY0azjX3iF3lfVeoEHQ6ZIhi/0fqnbnNyKxJc/PA8KuuJvsmjiEira3Tmn8rIW/QecDAoPVaZoxMboGTdC9919yHdrqie1slSso7mZL6q258j6AKcuYZMHGRIjm7Vw/U6Q0/vi0KCx1V8R2EU6Rgn6ZBOXwNDHJaCJz454REj9I0t+xUy2Jg3iwmy6Qeab5QZwIuRHajwKn13TnlaEDvo5fGBjtE/DL2H5Nx19177PlXXdeiE9/7DJOohlqJy9tx3gWv/QZo0AYlNS38EdWfgEedX0uQSzLSd2b4yNEqz/R6zBN2RFuP97LW+tjIG8t5ddrx2vlfEEVduNMsIHVRMPgQCVqus1QR7HX9VOgpC7edkj1dx9FscLjW6jZT0rcCOoqtZxdglnQIx8tcETZUuWGI5m73innRRyFTA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB4088.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(376002)(346002)(366004)(136003)(39860400002)(396003)(8676002)(66556008)(8936002)(31696002)(86362001)(66946007)(66476007)(2906002)(5660300002)(36756003)(921005)(31686004)(110136005)(478600001)(2616005)(52116002)(7416002)(316002)(186003)(83380400001)(6486002)(16526019)(4326008)(53546011)(3714002)(43740500002)(45980500001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?cnhzNTNkSnY2VzFuKzc5cjFISHV3c29TczZyU05BN3lZaEpkUEx0S2xaNUVW?=
- =?utf-8?B?RDZXV0hWQ0U5eDUvQmNMSGRnTTZ2djE2cEloQkhCdFcvMW11UzNqcTdpV1E2?=
- =?utf-8?B?QU1XRjF2cW1oWDRJRUNqRFh1bjRQWnY5UTgzalc2SXVpMGt6Z1dlM3d1NW84?=
- =?utf-8?B?NnRqWi90U3FuSVhnQ0ljZkhhdDlzRDNVekhMVnhKc1c5dEk1aXAwT0ZsaXBt?=
- =?utf-8?B?ZHBQOE9sU3VZUVlEejNTS2VoUXNNVHVvSEw4OFU2QTJPYzBkV284SmY1RDAy?=
- =?utf-8?B?ZWM3Tm5RUCtnZ0sxV1Voa1p1NC9YcG5zOVorbWlmT3lHb0REUUlJeEVsdGF1?=
- =?utf-8?B?aHRFZVdVRUFZd05jMHROUC9qd05kRUhGZnpuV3lFcnJ3TXlRbnpsZzBUZTM2?=
- =?utf-8?B?TldZWWZINGlZcTYvKzdFVzZ1NFhQRXI5R2QyQ2MrT2xDWGZkRDY2OE15QTg3?=
- =?utf-8?B?VE1TZE1tU0ZuaUtqQXkzVlM0Q0hRQmN4c1MwcUtPTjlZcGNKamlvcThEOVJ5?=
- =?utf-8?B?Z1RRZFVTZ1paaWpLY2hqT0FsT2NQSWIwYWI0blVXSnk0aUVENjFxUCtSSWpY?=
- =?utf-8?B?VTU2a0taTXcrT1ZsUjVXa1Y0dHN0TzBuZVIxNi9Wa240NTI4djV1Zlk5cldL?=
- =?utf-8?B?WWFqMW1iTWhIY3hBV0NCSWtyUktnNnF4NmdFU1N5amw4bW43ZzhNNGMwOWxI?=
- =?utf-8?B?UWZHaHZIemREVmhHeUhsRExnLzUyT3drS3JoRVFxb0tFbk9TanVjUjlxVE1T?=
- =?utf-8?B?K1BacFBlZmVUUStFeWhnMmRWbzVLNjh2aDJ2TlRNNTdBdmZMWnozZnRFcERO?=
- =?utf-8?B?MEdiSVN0V2QvNk94MXZmQldSV1dGVld1b1ZxYnRvVFZOK3BPSWZ0S29TL0Js?=
- =?utf-8?B?ZXNGVlh3RDhjOG9BZW1JMUZNMFpvcGZaQ1c1bVNLTjBsd0VxZFVZUWlnRGtD?=
- =?utf-8?B?NmlNbFB6a1lKUEhZY2VRZCtRbWFFZmVkblc3WVZaZFdvNnZKRmJRRlZkWmpG?=
- =?utf-8?B?ZFY1dVhEOUlVdGJudHVGbGl2bE9qV2tzVDVZMkk5UytYT3Y0UDBaUzRPNm5R?=
- =?utf-8?B?UWh4eVdLUnFzandEOTcrUjA4ZUxCaUpyVzVTMHJJOFR4aDdaRyt5L3FYTU95?=
- =?utf-8?B?cjNLMHhNdWdVVEE2OWYvaEJpMGZ3Z2FRSnpDMXBEQXprZStrU0NicTRWcENo?=
- =?utf-8?B?MEdpRTJHNHlKQ0M3UUJGRUJGM3NxTjlCeExyTndxdTl6cnIrc0llbFVQN2N6?=
- =?utf-8?B?VkFyajZ4cmVBamFjQ0xCSitpejVLQ3NVdzhLY0JkRzFNdmt3NDRNKzFWeVR3?=
- =?utf-8?B?TlZUK2pKVG0wdWZzNGcvRXZ2Yk9IbjhtRXI1a3JwS3QxYjBJb2VVcjRNYnFs?=
- =?utf-8?B?cE5JMzlqU3JLRVE9PQ==?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 052e3727-a8fd-4fa0-a296-08d8bbe11a8f
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR15MB4088.namprd15.prod.outlook.com
+X-OriginatorOrg: nxp.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Jan 2021 18:44:36.2630
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 85e53ce7-e104-4f9c-8295-08d8bbe28fa8
+X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Jan 2021 18:55:01.9134
  (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 0xuFn0UPomPSW5O/AmOkE8oykEtuhU9TZlTyAhjLWrwVvUOajGSKI3ApvlSOWCdK
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2888
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
- definitions=2021-01-18_14:2021-01-18,2021-01-18 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxlogscore=999
- spamscore=0 malwarescore=0 clxscore=1015 impostorscore=0 phishscore=0
- bulkscore=0 suspectscore=0 lowpriorityscore=0 adultscore=0 mlxscore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2101180112
-X-FB-Internal: deliver
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: mgnCRYiiHC/lZfcKuHLibJ4rhwgGK8EzuTz98heEd9xU/7BUqdT2ZwhZHFl8bO7OK0AVlfDyi+UXYLzkIrwlHA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3711
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi Alban,
+
+On Mon, Jan 18, 2021 at 05:03:17PM +0100, Alban Bedel wrote:
+> Multicast entries in the MAC table use the high bits of the MAC
+> address to encode the ports that should get the packets. But this port
+> mask does not work for the CPU port, to receive these packets on the
+> CPU port the MAC_CPU_COPY flag must be set.
+>=20
+> Because of this IPv6 was effectively not working because neighbor
+> solicitations were never received. This was not apparent before commit
+> 9403c158 (net: mscc: ocelot: support IPv4, IPv6 and plain Ethernet mdb
+> entries) as the IPv6 entries were broken so all incoming IPv6
+> multicast was then treated as unknown and flooded on all ports.
+>=20
+> To fix this problem add a new `flags` parameter to ocelot_mact_learn()
+> and set MAC_CPU_COPY when the CPU port is in the port set. We still
+> leave the CPU port in the bitfield as it doesn't seems to hurt.
+>=20
+> Signed-off-by: Alban Bedel <alban.bedel@aerq.com>
+> Fixes: 9403c158 (net: mscc: ocelot: support IPv4, IPv6 and plain Ethernet=
+ mdb entries)
+> ---
+
+Good catch, it seems that I really did not test that patch with
+multicast traffic received on the CPU (and not only that patch, but ever
+since, in fact), shame on me.
+
+What I don't like your patch is how it spills over the entire ocelot
+driver, yet still fails to compile. You missed a bunch of
+ocelot_mact_learn calls from ocelot_net.c (8 of them, in fact).
+I don't know which kernel tree you applied this patch to, but clearly
+not "net"/master:
+https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net.git
+
+I would prefer to see a more self-contained bug fix, such as potentially
+this one:
+
+-----------------------------[cut here]-----------------------------
+diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc=
+/ocelot.c
+index a560d6be2a44..4d7443b123bd 100644
+--- a/drivers/net/ethernet/mscc/ocelot.c
++++ b/drivers/net/ethernet/mscc/ocelot.c
+@@ -56,18 +56,46 @@ static void ocelot_mact_select(struct ocelot *ocelot,
+=20
+ }
+=20
++static unsigned long
++ocelot_decode_ports_from_mdb(const unsigned char *addr,
++			     enum macaccess_entry_type entry_type)
++{
++	unsigned long ports =3D 0;
++
++	if (entry_type =3D=3D ENTRYTYPE_MACv4) {
++		ports =3D addr[2];
++		ports |=3D addr[1] << 8;
++	} else if (entry_type =3D=3D ENTRYTYPE_MACv6) {
++		ports =3D addr[1];
++		ports |=3D addr[0] << 8;
++	}
++
++	return ports;
++}
++
+ int ocelot_mact_learn(struct ocelot *ocelot, int port,
+ 		      const unsigned char mac[ETH_ALEN],
+ 		      unsigned int vid, enum macaccess_entry_type type)
+ {
++	u32 flags =3D ANA_TABLES_MACACCESS_VALID |
++		    ANA_TABLES_MACACCESS_DEST_IDX(port) |
++		    ANA_TABLES_MACACCESS_ENTRYTYPE(type) |
++		    ANA_TABLES_MACACCESS_MAC_TABLE_CMD(MACACCESS_CMD_LEARN);
++
+ 	ocelot_mact_select(ocelot, mac, vid);
+=20
++	/* Little API trickery to make this function "just work" when the CPU
++	 * port module is included in the port mask for multicast IP entries.
++	 */
++	if (type =3D=3D ENTRYTYPE_MACv4 || type =3D=3D ENTRYTYPE_MACv6) {
++		unsigned long ports =3D ocelot_decode_ports_from_mdb(mac, type);
++
++		if (ports & BIT(ocelot->num_phys_ports))
++			flags |=3D ANA_TABLES_MACACCESS_MAC_CPU_COPY;
++	}
++
+ 	/* Issue a write command */
+-	ocelot_write(ocelot, ANA_TABLES_MACACCESS_VALID |
+-			     ANA_TABLES_MACACCESS_DEST_IDX(port) |
+-			     ANA_TABLES_MACACCESS_ENTRYTYPE(type) |
+-			     ANA_TABLES_MACACCESS_MAC_TABLE_CMD(MACACCESS_CMD_LEARN),
+-			     ANA_TABLES_MACACCESS);
++	ocelot_write(ocelot, flags, ANA_TABLES_MACACCESS);
+=20
+ 	return ocelot_mact_wait_for_completion(ocelot);
+ }
+-----------------------------[cut here]-----------------------------
+
+It has the advantage of actually compiling, plus it should be easier to
+backport because the changes are all in one place.
 
 
-On 1/17/21 7:22 PM, Tiezhu Yang wrote:
-> On 01/14/2021 01:12 AM, Yonghong Song wrote:
->>
->>
->> On 1/13/21 2:57 AM, Tiezhu Yang wrote:
->>> MIPS needs __SANE_USERSPACE_TYPES__ before <linux/types.h> to select
->>> 'int-ll64.h' in arch/mips/include/uapi/asm/types.h and avoid compile
->>> warnings when printing __u64 with %llu, %llx or %lld.
->>
->> could you mention which command produces the following warning?
-> 
-> make M=samples/bpf
-> 
->>
->>>
->>>      printf("0x%02x : %llu\n", key, value);
->>>                       ~~~^          ~~~~~
->>>                       %lu
->>>     printf("%s/%llx;", sym->name, addr);
->>>                ~~~^               ~~~~
->>>                %lx
->>>    printf(";%s %lld\n", key->waker, count);
->>>                ~~~^                 ~~~~~
->>>                %ld
->>>
->>> Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
->>> ---
->>>   samples/bpf/Makefile        | 4 ++++
->>>   tools/include/linux/types.h | 3 +++
->>>   2 files changed, 7 insertions(+)
->>>
->>> diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
->>> index 26fc96c..27de306 100644
->>> --- a/samples/bpf/Makefile
->>> +++ b/samples/bpf/Makefile
->>> @@ -183,6 +183,10 @@ BPF_EXTRA_CFLAGS := $(ARM_ARCH_SELECTOR)
->>>   TPROGS_CFLAGS += $(ARM_ARCH_SELECTOR)
->>>   endif
->>>   +ifeq ($(ARCH), mips)
->>> +TPROGS_CFLAGS += -D__SANE_USERSPACE_TYPES__
->>> +endif
->>> +
->>
->> This change looks okay based on description in
->> arch/mips/include/uapi/asm/types.h
->>
->> '''
->> /*
->>  * We don't use int-l64.h for the kernel anymore but still use it for
->>  * userspace to avoid code changes.
->>  *
->>  * However, some user programs (e.g. perf) may not want this. They can
->>  * flag __SANE_USERSPACE_TYPES__ to get int-ll64.h here.
->>  */
->> '''
->>
->>>   TPROGS_CFLAGS += -Wall -O2
->>>   TPROGS_CFLAGS += -Wmissing-prototypes
->>>   TPROGS_CFLAGS += -Wstrict-prototypes
->>> diff --git a/tools/include/linux/types.h b/tools/include/linux/types.h
->>> index 154eb4e..e9c5a21 100644
->>> --- a/tools/include/linux/types.h
->>> +++ b/tools/include/linux/types.h
->>> @@ -6,7 +6,10 @@
->>>   #include <stddef.h>
->>>   #include <stdint.h>
->>>   +#ifndef __SANE_USERSPACE_TYPES__
->>>   #define __SANE_USERSPACE_TYPES__    /* For PPC64, to get LL64 types */
->>> +#endif
->>
->> What problem this patch fixed?
-> 
-> If add "TPROGS_CFLAGS += -D__SANE_USERSPACE_TYPES__" in
-> samples/bpf/Makefile, it appears the following error:
-> 
-> Auto-detecting system features:
-> ...                        libelf: [ on  ]
-> ...                          zlib: [ on  ]
-> ...                           bpf: [ OFF ]
-> 
-> BPF API too old
-> make[3]: *** [Makefile:293: bpfdep] Error 1
-> make[2]: *** [Makefile:156: all] Error 2
-> 
-> With #ifndef __SANE_USERSPACE_TYPES__  in tools/include/linux/types.h,
-> the above error has gone.
-> 
->> If this header is used, you can just
->> change comment from "PPC64" to "PPC64/MIPS", right?
-> 
-> If include <linux/types.h> in the source files which have compile warnings
-> when printing __u64 with %llu, %llx or %lld, it has no effect due to 
-> actually
-> it includes usr/include/linux/types.h instead of 
-> tools/include/linux/types.h,
-> this is because the include-directories in samples/bpf/Makefile are 
-> searched
-> in the order, -I./usr/include is in the front of -I./tools/include.
-> 
-> So I think define __SANE_USERSPACE_TYPES__ for MIPS in samples/bpf/Makefile
-> is proper, at the same time, add #ifndef __SANE_USERSPACE_TYPES__ in
-> tools/include/linux/types.h can avoid build error and have no side effect.
-> 
-> I will send v2 later with mention in the commit message that this is
-> mips related.
-
-It would be good if you can add the above information to the commit
-message so people will know what the root cause of the issue.
-
-If I understand correctly, if we could have include path
-"tools/include" earlier than "usr/include", we might not have this 
-issue. The problem is that "usr/include" is preferred first (uapi)
-than "tools/include" (including kernel dev headers).
-
-I am wondering whether we could avoid changes in 
-tools/include/linux/types.h, e.g., by undef __SANE_USER_SPACE_TYPES 
-right before include
-path tools/include. But that sounds like a ugly hack and actually
-the change in tools/include/linux/types.h does not hurt other
-compilations.
-
-So your current change looks good to me, but please have better
-explanation of the problem and why for each change in the commit
-message.
-
-> 
-> Thanks,
-> Tiezhu
-> 
->>
->>> +
->>>   #include <asm/types.h>
->>>   #include <asm/posix_types.h>
->>>
-> 
+Please make sure to read:
+Documentation/process/submitting-patches.rst
+(this will tell you what is wrong with your Fixes: tag)
+Documentation/networking/netdev-FAQ.rst
+(this will tell you what is wrong with this patch's --subject-prefix,
+and why the patch does not build on the trees it is supposed to be
+applied to):
+https://patchwork.kernel.org/project/netdevbpf/patch/20210118160317.554018-=
+1-alban.bedel@aerq.com/=
