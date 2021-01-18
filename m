@@ -2,347 +2,214 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1071D2FA5F4
-	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 17:23:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 80CDF2FA670
+	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 17:40:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406567AbhARQUY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jan 2021 11:20:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49378 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2406561AbhARQTn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jan 2021 11:19:43 -0500
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5073C061799
-        for <netdev@vger.kernel.org>; Mon, 18 Jan 2021 08:18:04 -0800 (PST)
-Received: by mail-ed1-x532.google.com with SMTP id dj23so15630715edb.13
-        for <netdev@vger.kernel.org>; Mon, 18 Jan 2021 08:18:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Uj8jXqWCZiQk+sWkAgcKWwDbWNi1EYRCVWXGc966/Vo=;
-        b=ROCcFPDtRU7hkl5nyFmL/Q+EzhbU57MuWdsZ+96oGjZmPIUIfsnJvd+dWFDKUDdjO2
-         hHemYk4O5kPudMWRvEGa1E3tsnDGYsHU3hISOosBhjY5WT5YMQrfClLdb18tjGpzAQPO
-         9F0SEMrhCvbriRKZA2HdDru8SEAW84OyvSB0IcTY2WXDZTX01uPstlCl1Xlw55229msU
-         kuIpXBw+3S6Pz573Btvf9RMDJy6sipsn4MXMttf0zXE5Dcojts137aacoXSOUB04/dkq
-         YLfZuWg7vIHu+TC9rpWq3t9KzC5r72xCn0vln1JIhLFe1Ml608ZORYJ9tDNUc90XTkC9
-         7+Ow==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Uj8jXqWCZiQk+sWkAgcKWwDbWNi1EYRCVWXGc966/Vo=;
-        b=aMVb0pJIHqEICenh3AAtVUem6q7bHSp+W5Wv77nA6q5KuM5dwxlgfeI2jLddnY97w6
-         zJqGwZgFmmUyuFRQ6+VMUfrHJEjAlr0xoJ0SAVvoKpET4y92E5R8v/CKEtix/1X/Trun
-         55X/+ByVnPd3/KdZk68Sm6TxvgmPAby0DC8FFakyVNSDJlFzvJI03lM4+WPXcmgYEDl9
-         xW/37G8v+BTQqtwoHBgwvP6sLPYbIUE4LR1PtWUxruqc4eOZ3/L00ehTdEDrW2s+GdII
-         AHizgsrTnMX0h3yIMg2SX/6k5b9UFg8W8goKRsg2jQQ/H9/MBTVnynYZZrbQs7fUbZV2
-         n6IQ==
-X-Gm-Message-State: AOAM5312lrx0kxxlKqekHuMRsQw1PmRNhKo/o9mLccjEcaaNcu3Ob+W+
-        s0oa+QD1gXclRjjbImCIq0o=
-X-Google-Smtp-Source: ABdhPJzYndgDcc42rfREQi15vyuBEi7dyGoxPNmHZ8CZMA5wIAw0/F6/hlXsN2/P1lvUF3t3YFiKgg==
-X-Received: by 2002:a05:6402:1383:: with SMTP id b3mr194143edv.100.1610986683530;
-        Mon, 18 Jan 2021 08:18:03 -0800 (PST)
-Received: from localhost.localdomain (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id u23sm6093781edt.78.2021.01.18.08.18.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Jan 2021 08:18:03 -0800 (PST)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-        Hongbo Wang <hongbo.wang@nxp.com>, Po Liu <po.liu@nxp.com>,
-        Yangbo Lu <yangbo.lu@nxp.com>,
-        Maxim Kochetkov <fido_max@inbox.ru>,
-        Eldar Gasanov <eldargasanov2@gmail.com>,
-        Andrey L <al@b4comtech.com>, UNGLinuxDriver@microchip.com
-Subject: [PATCH v3 net-next 15/15] net: dsa: tag_ocelot_8021q: add support for PTP timestamping
-Date:   Mon, 18 Jan 2021 18:17:31 +0200
-Message-Id: <20210118161731.2837700-16-olteanv@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210118161731.2837700-1-olteanv@gmail.com>
-References: <20210118161731.2837700-1-olteanv@gmail.com>
+        id S2390440AbhARP45 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jan 2021 10:56:57 -0500
+Received: from mga02.intel.com ([134.134.136.20]:63478 "EHLO mga02.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2393439AbhARPY1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 18 Jan 2021 10:24:27 -0500
+IronPort-SDR: hjpcMJYM5GBmdA1NH2+694PKHe83Rz+tzxKbUV/wjUJh57i1XL5O8jsuK2dw97dYMuch5I6YGn
+ dlhteGPmFh4Q==
+X-IronPort-AV: E=McAfee;i="6000,8403,9867"; a="165905517"
+X-IronPort-AV: E=Sophos;i="5.79,356,1602572400"; 
+   d="scan'208";a="165905517"
+Received: from orsmga004.jf.intel.com ([10.7.209.38])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jan 2021 07:23:05 -0800
+IronPort-SDR: /AAtrNXx2qDpe/AQNzQfGXAB9gFIbrprRcUCIWb1eaBgCn3YBIaIkJHqcn0J3vWTaN5E46YxaL
+ 3Ymlu6PnsBMQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.79,356,1602572400"; 
+   d="scan'208";a="500676342"
+Received: from ranger.igk.intel.com ([10.102.21.164])
+  by orsmga004.jf.intel.com with ESMTP; 18 Jan 2021 07:23:03 -0800
+From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To:     intel-wired-lan@lists.osuosl.org
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        anthony.l.nguyen@intel.com, kuba@kernel.org, bjorn.topel@intel.com,
+        magnus.karlsson@intel.com,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Subject: [PATCH v3 net-next 05/11] ice: move skb pointer from rx_buf to rx_ring
+Date:   Mon, 18 Jan 2021 16:13:12 +0100
+Message-Id: <20210118151318.12324-6-maciej.fijalkowski@intel.com>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20210118151318.12324-1-maciej.fijalkowski@intel.com>
+References: <20210118151318.12324-1-maciej.fijalkowski@intel.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+Similar thing has been done in i40e, as there is no real need for having
+the sk_buff pointer in each rx_buf. Non-eop frames can be simply handled
+on that pointer moved upwards to rx_ring.
 
-On TX, use the result of the ptp_classify_raw() BPF classifier from
-dsa_skb_tx_timestamp() to divert some frames over to the MMIO-based
-injection registers.
-
-On RX, set up a VCAP IS2 rule that redirects the frames with an
-EtherType for 1588 to the CPU port module (for MMIO based extraction)
-and, if the "no XTR IRQ" workaround is in place, copies them to the
-dsa_8021q CPU port as well (for notification).
-
-There is a conflict between the VCAP IS2 trapping rule and the semantics
-of the BPF classifier. Namely, ptp_classify_raw() deems general messages
-as non-timestampable, but still, those are trapped to the CPU port
-module since they have an EtherType of ETH_P_1588. So, if the "no XTR
-IRQ" workaround is in place, we need to run another BPF classifier on
-the frames extracted over MMIO, to avoid duplicates being sent to the
-stack (once over Ethernet, once over MMIO). It doesn't look like it's
-possible to install VCAP IS2 rules based on keys extracted from the 1588
-frame headers.
-
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Reviewed-by: Björn Töpel <bjorn.topel@intel.com>
+Signed-off-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 ---
-Changes in v3:
-None.
+ drivers/net/ethernet/intel/ice/ice_txrx.c | 30 ++++++++++-------------
+ drivers/net/ethernet/intel/ice/ice_txrx.h |  2 +-
+ 2 files changed, 14 insertions(+), 18 deletions(-)
 
-Changes in v2:
-Patch is new.
-
- drivers/net/dsa/ocelot/felix.c           | 12 +++++
- drivers/net/dsa/ocelot/felix_tag_8021q.c | 61 ++++++++++++++++++++++++
- drivers/net/dsa/ocelot/felix_tag_8021q.h |  7 +++
- drivers/net/ethernet/mscc/ocelot.c       |  3 ++
- drivers/net/ethernet/mscc/ocelot.h       |  8 ----
- include/soc/mscc/ocelot.h                |  9 ++++
- net/dsa/tag_ocelot_8021q.c               | 24 ++++++++++
- 7 files changed, 116 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
-index 88ceed15e9cf..59757f29bcf8 100644
---- a/drivers/net/dsa/ocelot/felix.c
-+++ b/drivers/net/dsa/ocelot/felix.c
-@@ -733,6 +733,18 @@ static bool felix_rxtstamp(struct dsa_switch *ds, int port,
- 	struct timespec64 ts;
- 	u64 tstamp, val;
+diff --git a/drivers/net/ethernet/intel/ice/ice_txrx.c b/drivers/net/ethernet/intel/ice/ice_txrx.c
+index dc1ad45eac8d..50fbb77bab70 100644
+--- a/drivers/net/ethernet/intel/ice/ice_txrx.c
++++ b/drivers/net/ethernet/intel/ice/ice_txrx.c
+@@ -375,6 +375,11 @@ void ice_clean_rx_ring(struct ice_ring *rx_ring)
+ 	if (!rx_ring->rx_buf)
+ 		return;
  
-+	/* If the "no XTR IRQ" workaround is in use, tell DSA to defer this skb
-+	 * for RX timestamping. Then free it, and poll for its copy through
-+	 * MMIO in the CPU port module, and inject that into the stack from
-+	 * ocelot_xtr_poll().
-+	 * If the "no XTR IRQ" workaround isn't in use, this is a no-op and
-+	 * should be eliminated by the compiler as dead code.
-+	 */
-+	if (felix_check_xtr_pkt(ocelot, type)) {
-+		kfree_skb(skb);
-+		return true;
++	if (rx_ring->skb) {
++		dev_kfree_skb(rx_ring->skb);
++		rx_ring->skb = NULL;
 +	}
 +
- 	ocelot_ptp_gettime64(&ocelot->ptp_info, &ts);
- 	tstamp = ktime_set(ts.tv_sec, ts.tv_nsec);
+ 	if (rx_ring->xsk_pool) {
+ 		ice_xsk_clean_rx_ring(rx_ring);
+ 		goto rx_skip_free;
+@@ -384,10 +389,6 @@ void ice_clean_rx_ring(struct ice_ring *rx_ring)
+ 	for (i = 0; i < rx_ring->count; i++) {
+ 		struct ice_rx_buf *rx_buf = &rx_ring->rx_buf[i];
  
-diff --git a/drivers/net/dsa/ocelot/felix_tag_8021q.c b/drivers/net/dsa/ocelot/felix_tag_8021q.c
-index 84abfd2eb8a7..c7f7d7624bab 100644
---- a/drivers/net/dsa/ocelot/felix_tag_8021q.c
-+++ b/drivers/net/dsa/ocelot/felix_tag_8021q.c
-@@ -11,9 +11,70 @@
- #include <soc/mscc/ocelot_vcap.h>
- #include <linux/dsa/8021q.h>
- #include <linux/if_bridge.h>
-+#include <linux/ptp_classify.h>
- #include "felix.h"
- #include "felix_tag_8021q.h"
+-		if (rx_buf->skb) {
+-			dev_kfree_skb(rx_buf->skb);
+-			rx_buf->skb = NULL;
+-		}
+ 		if (!rx_buf->page)
+ 			continue;
  
-+bool felix_check_xtr_pkt(struct ocelot *ocelot, unsigned int ptp_type)
-+{
-+	struct felix *felix = ocelot_to_felix(ocelot);
-+	int err, grp = 0;
-+
-+	if (!felix->info->quirk_no_xtr_irq)
-+		return false;
-+
-+	if (ptp_type == PTP_CLASS_NONE)
-+		return false;
-+
-+	while (ocelot_read(ocelot, QS_XTR_DATA_PRESENT) & BIT(grp)) {
-+		struct ocelot_frame_info info = {};
-+		struct dsa_port *dp;
-+		struct sk_buff *skb;
-+		unsigned int type;
-+
-+		err = ocelot_xtr_poll_xfh(ocelot, grp, &info);
-+		if (err)
-+			break;
-+
-+		if (WARN_ON(info.port >= ocelot->num_phys_ports))
-+			goto out;
-+
-+		dp = dsa_to_port(felix->ds, info.port);
-+
-+		err = ocelot_xtr_poll_frame(ocelot, grp, dp->slave,
-+					    &info, &skb);
-+		if (err)
-+			break;
-+
-+		/* We trap to the CPU port module all PTP frames, but
-+		 * felix_rxtstamp() only gets called for event frames.
-+		 * So we need to avoid sending duplicate general
-+		 * message frames by running a second BPF classifier
-+		 * here and dropping those.
-+		 */
-+		__skb_push(skb, ETH_HLEN);
-+
-+		type = ptp_classify_raw(skb);
-+
-+		__skb_pull(skb, ETH_HLEN);
-+
-+		if (type == PTP_CLASS_NONE) {
-+			kfree_skb(skb);
-+			continue;
-+		}
-+
-+		netif_rx(skb);
-+	}
-+
-+out:
-+	if (err < 0) {
-+		ocelot_write(ocelot, QS_XTR_FLUSH, BIT(grp));
-+		ocelot_write(ocelot, QS_XTR_FLUSH, 0);
-+	}
-+
-+	return true;
-+}
-+
- static int felix_tag_8021q_rxvlan_add(struct felix *felix, int port, u16 vid,
- 				      bool pvid, bool untagged)
- {
-diff --git a/drivers/net/dsa/ocelot/felix_tag_8021q.h b/drivers/net/dsa/ocelot/felix_tag_8021q.h
-index a3501904e748..5080351cdb93 100644
---- a/drivers/net/dsa/ocelot/felix_tag_8021q.h
-+++ b/drivers/net/dsa/ocelot/felix_tag_8021q.h
-@@ -7,6 +7,7 @@
- #if IS_ENABLED(CONFIG_NET_DSA_TAG_OCELOT_8021Q)
- 
- int felix_setup_8021q_tagging(struct ocelot *ocelot);
-+bool felix_check_xtr_pkt(struct ocelot *ocelot, unsigned int ptp_type);
- 
- #else
- 
-@@ -15,6 +16,12 @@ static inline int felix_setup_8021q_tagging(struct ocelot *ocelot)
- 	return -EOPNOTSUPP;
- }
- 
-+static inline bool felix_check_xtr_pkt(struct ocelot *ocelot,
-+				       unsigned int ptp_type)
-+{
-+	return false;
-+}
-+
- #endif /* IS_ENABLED(CONFIG_NET_DSA_TAG_OCELOT_8021Q) */
- 
- #endif /* _MSCC_FELIX_TAG_8021Q_H */
-diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
-index ac6b9942052a..bb60382021e2 100644
---- a/drivers/net/ethernet/mscc/ocelot.c
-+++ b/drivers/net/ethernet/mscc/ocelot.c
-@@ -646,6 +646,7 @@ int ocelot_xtr_poll_xfh(struct ocelot *ocelot, int grp,
- 
- 	return 0;
- }
-+EXPORT_SYMBOL(ocelot_xtr_poll_xfh);
- 
- int ocelot_xtr_poll_frame(struct ocelot *ocelot, int grp,
- 			  struct net_device *dev,
-@@ -723,6 +724,7 @@ int ocelot_xtr_poll_frame(struct ocelot *ocelot, int grp,
- out:
- 	return err;
- }
-+EXPORT_SYMBOL(ocelot_xtr_poll_frame);
- 
- /* Generate the IFH for frame injection
+@@ -859,7 +860,6 @@ ice_reuse_rx_page(struct ice_ring *rx_ring, struct ice_rx_buf *old_buf)
+ /**
+  * ice_get_rx_buf - Fetch Rx buffer and synchronize data for use
+  * @rx_ring: Rx descriptor ring to transact packets on
+- * @skb: skb to be used
+  * @size: size of buffer to add to skb
+  * @rx_buf_pgcnt: rx_buf page refcount
   *
-@@ -801,6 +803,7 @@ void ocelot_port_inject_frame(struct ocelot *ocelot, int port, int grp,
- 	skb->dev->stats.tx_packets++;
- 	skb->dev->stats.tx_bytes += skb->len;
- }
-+EXPORT_SYMBOL(ocelot_port_inject_frame);
- 
- int ocelot_fdb_add(struct ocelot *ocelot, int port,
- 		   const unsigned char *addr, u16 vid)
-diff --git a/drivers/net/ethernet/mscc/ocelot.h b/drivers/net/ethernet/mscc/ocelot.h
-index 04d0ba1e385e..d42aa229239e 100644
---- a/drivers/net/ethernet/mscc/ocelot.h
-+++ b/drivers/net/ethernet/mscc/ocelot.h
-@@ -119,14 +119,6 @@ int ocelot_port_devlink_init(struct ocelot *ocelot, int port,
- void ocelot_port_devlink_teardown(struct ocelot *ocelot, int port);
- 
- bool ocelot_can_inject(struct ocelot *ocelot, int grp);
--void ocelot_port_inject_frame(struct ocelot *ocelot, int port, int grp,
--			      u32 rew_op, struct sk_buff *skb);
--int ocelot_xtr_poll_xfh(struct ocelot *ocelot, int grp,
--			struct ocelot_frame_info *info);
--int ocelot_xtr_poll_frame(struct ocelot *ocelot, int grp,
--			  struct net_device *dev,
--			  struct ocelot_frame_info *info,
--			  struct sk_buff **skb);
- 
- extern struct notifier_block ocelot_netdevice_nb;
- extern struct notifier_block ocelot_switchdev_nb;
-diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
-index ba803afcc55c..fa60ab5239d7 100644
---- a/include/soc/mscc/ocelot.h
-+++ b/include/soc/mscc/ocelot.h
-@@ -840,4 +840,13 @@ int ocelot_sb_occ_tc_port_bind_get(struct ocelot *ocelot, int port,
- 				   enum devlink_sb_pool_type pool_type,
- 				   u32 *p_cur, u32 *p_max);
- 
-+void ocelot_port_inject_frame(struct ocelot *ocelot, int port, int grp,
-+			      u32 rew_op, struct sk_buff *skb);
-+int ocelot_xtr_poll_xfh(struct ocelot *ocelot, int grp,
-+			struct ocelot_frame_info *info);
-+int ocelot_xtr_poll_frame(struct ocelot *ocelot, int grp,
-+			  struct net_device *dev,
-+			  struct ocelot_frame_info *info,
-+			  struct sk_buff **skb);
-+
- #endif
-diff --git a/net/dsa/tag_ocelot_8021q.c b/net/dsa/tag_ocelot_8021q.c
-index 430d77d0b8eb..a829d73d392b 100644
---- a/net/dsa/tag_ocelot_8021q.c
-+++ b/net/dsa/tag_ocelot_8021q.c
-@@ -2,6 +2,8 @@
- /* Copyright 2020-2021 NXP Semiconductors
+@@ -867,8 +867,8 @@ ice_reuse_rx_page(struct ice_ring *rx_ring, struct ice_rx_buf *old_buf)
+  * for use by the CPU.
   */
- #include <linux/dsa/8021q.h>
-+#include <soc/mscc/ocelot.h>
-+#include <soc/mscc/ocelot_ptp.h>
- #include "dsa_priv.h"
+ static struct ice_rx_buf *
+-ice_get_rx_buf(struct ice_ring *rx_ring, struct sk_buff **skb,
+-	       const unsigned int size, int *rx_buf_pgcnt)
++ice_get_rx_buf(struct ice_ring *rx_ring, const unsigned int size,
++	       int *rx_buf_pgcnt)
+ {
+ 	struct ice_rx_buf *rx_buf;
  
- static struct sk_buff *ocelot_xmit(struct sk_buff *skb,
-@@ -11,6 +13,28 @@ static struct sk_buff *ocelot_xmit(struct sk_buff *skb,
- 	u16 tx_vid = dsa_8021q_tx_vid(dp->ds, dp->index);
- 	u16 queue_mapping = skb_get_queue_mapping(skb);
- 	u8 pcp = netdev_txq_to_tc(netdev, queue_mapping);
-+	struct sk_buff *clone = DSA_SKB_CB(skb)->clone;
-+
-+	/* TX timestamping was requested, so inject through MMIO */
-+	if (clone) {
-+		struct ocelot *ocelot = dp->ds->priv;
-+		struct ocelot_port *ocelot_port;
-+		int port = dp->index;
-+		u32 rew_op;
-+
-+		ocelot_port = ocelot->ports[port];
-+		rew_op = ocelot_port->ptp_cmd;
-+
-+		/* Retrieve timestamp ID populated inside skb->cb[0] of the
-+		 * clone by ocelot_port_add_txtstamp_skb
-+		 */
-+		if (ocelot_port->ptp_cmd == IFH_REW_OP_TWO_STEP_PTP)
-+			rew_op |= clone->cb[0] << 3;
-+
-+		ocelot_port_inject_frame(ocelot, dp->index, 0, rew_op, skb);
-+
-+		return NULL;
-+	}
+@@ -880,7 +880,6 @@ ice_get_rx_buf(struct ice_ring *rx_ring, struct sk_buff **skb,
+ 		0;
+ #endif
+ 	prefetchw(rx_buf->page);
+-	*skb = rx_buf->skb;
  
- 	return dsa_8021q_xmit(skb, netdev, ETH_P_8021Q,
- 			      ((pcp << VLAN_PRIO_SHIFT) | tx_vid));
+ 	if (!size)
+ 		return rx_buf;
+@@ -1042,29 +1041,24 @@ ice_put_rx_buf(struct ice_ring *rx_ring, struct ice_rx_buf *rx_buf,
+ 
+ 	/* clear contents of buffer_info */
+ 	rx_buf->page = NULL;
+-	rx_buf->skb = NULL;
+ }
+ 
+ /**
+  * ice_is_non_eop - process handling of non-EOP buffers
+  * @rx_ring: Rx ring being processed
+  * @rx_desc: Rx descriptor for current buffer
+- * @skb: Current socket buffer containing buffer in progress
+  *
+  * If the buffer is an EOP buffer, this function exits returning false,
+  * otherwise return true indicating that this is in fact a non-EOP buffer.
+  */
+ static bool
+-ice_is_non_eop(struct ice_ring *rx_ring, union ice_32b_rx_flex_desc *rx_desc,
+-	       struct sk_buff *skb)
++ice_is_non_eop(struct ice_ring *rx_ring, union ice_32b_rx_flex_desc *rx_desc)
+ {
+ 	/* if we are the last buffer then there is nothing else to do */
+ #define ICE_RXD_EOF BIT(ICE_RX_FLEX_DESC_STATUS0_EOF_S)
+ 	if (likely(ice_test_staterr(rx_desc, ICE_RXD_EOF)))
+ 		return false;
+ 
+-	/* place skb in next buffer to be received */
+-	rx_ring->rx_buf[rx_ring->next_to_clean].skb = skb;
+ 	rx_ring->rx_stats.non_eop_descs++;
+ 
+ 	return true;
+@@ -1087,6 +1081,7 @@ int ice_clean_rx_irq(struct ice_ring *rx_ring, int budget)
+ 	unsigned int total_rx_bytes = 0, total_rx_pkts = 0, frame_sz = 0;
+ 	u16 cleaned_count = ICE_DESC_UNUSED(rx_ring);
+ 	unsigned int xdp_res, xdp_xmit = 0;
++	struct sk_buff *skb = rx_ring->skb;
+ 	struct bpf_prog *xdp_prog = NULL;
+ 	struct xdp_buff xdp;
+ 	bool failure;
+@@ -1103,7 +1098,6 @@ int ice_clean_rx_irq(struct ice_ring *rx_ring, int budget)
+ 		union ice_32b_rx_flex_desc *rx_desc;
+ 		struct ice_rx_buf *rx_buf;
+ 		unsigned char *hard_start;
+-		struct sk_buff *skb;
+ 		unsigned int size;
+ 		u16 stat_err_bits;
+ 		int rx_buf_pgcnt;
+@@ -1138,7 +1132,7 @@ int ice_clean_rx_irq(struct ice_ring *rx_ring, int budget)
+ 			ICE_RX_FLX_DESC_PKT_LEN_M;
+ 
+ 		/* retrieve a buffer from the ring */
+-		rx_buf = ice_get_rx_buf(rx_ring, &skb, size, &rx_buf_pgcnt);
++		rx_buf = ice_get_rx_buf(rx_ring, size, &rx_buf_pgcnt);
+ 
+ 		if (!size) {
+ 			xdp.data = NULL;
+@@ -1200,7 +1194,7 @@ int ice_clean_rx_irq(struct ice_ring *rx_ring, int budget)
+ 		cleaned_count++;
+ 
+ 		/* skip if it is NOP desc */
+-		if (ice_is_non_eop(rx_ring, rx_desc, skb))
++		if (ice_is_non_eop(rx_ring, rx_desc))
+ 			continue;
+ 
+ 		stat_err_bits = BIT(ICE_RX_FLEX_DESC_STATUS0_RXE_S);
+@@ -1230,6 +1224,7 @@ int ice_clean_rx_irq(struct ice_ring *rx_ring, int budget)
+ 
+ 		/* send completed skb up the stack */
+ 		ice_receive_skb(rx_ring, skb, vlan_tag);
++		skb = NULL;
+ 
+ 		/* update budget accounting */
+ 		total_rx_pkts++;
+@@ -1240,6 +1235,7 @@ int ice_clean_rx_irq(struct ice_ring *rx_ring, int budget)
+ 
+ 	if (xdp_prog)
+ 		ice_finalize_xdp_rx(rx_ring, xdp_xmit);
++	rx_ring->skb = skb;
+ 
+ 	ice_update_rx_ring_stats(rx_ring, total_rx_pkts, total_rx_bytes);
+ 
+diff --git a/drivers/net/ethernet/intel/ice/ice_txrx.h b/drivers/net/ethernet/intel/ice/ice_txrx.h
+index ff1a1cbd078e..c77dbbb760cd 100644
+--- a/drivers/net/ethernet/intel/ice/ice_txrx.h
++++ b/drivers/net/ethernet/intel/ice/ice_txrx.h
+@@ -165,7 +165,6 @@ struct ice_tx_offload_params {
+ struct ice_rx_buf {
+ 	union {
+ 		struct {
+-			struct sk_buff *skb;
+ 			dma_addr_t dma;
+ 			struct page *page;
+ 			unsigned int page_offset;
+@@ -298,6 +297,7 @@ struct ice_ring {
+ 	struct xsk_buff_pool *xsk_pool;
+ 	/* CL3 - 3rd cacheline starts here */
+ 	struct xdp_rxq_info xdp_rxq;
++	struct sk_buff *skb;
+ 	/* CLX - the below items are only accessed infrequently and should be
+ 	 * in their own cache line if possible
+ 	 */
 -- 
-2.25.1
+2.20.1
 
