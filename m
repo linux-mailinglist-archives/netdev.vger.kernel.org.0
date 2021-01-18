@@ -2,308 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 581172F9A65
-	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 08:21:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B61892F9A71
+	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 08:25:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732488AbhARHU4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jan 2021 02:20:56 -0500
-Received: from mail.kernel.org ([198.145.29.99]:42168 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726139AbhARHUx (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 18 Jan 2021 02:20:53 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 783C320759;
-        Mon, 18 Jan 2021 07:20:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610954412;
-        bh=1aGZEuzpoXB2TTOqTWM6jSnN6ey8qL8jQbSBWm3oaqY=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=pWmpaXT8XO3tOvly/fK5Dnc3Tw94LamhGYHf5nH9/dZgQaVuzxPxqXJylJIwrqD5i
-         TRBbzfZT4lzrQQeKNlb/BKENECFrXAfELNUQnx2Ow2cD29FvvN2gkCUn94Tg21UXmS
-         lnYobQxLF3O1av27S/lB1+YFFwELUmt3kKuY5UF5hKbbmoZgLHpHKYE1Np5yehF3TE
-         pWkjwtudvPhtwjw2u8QmqHXMFmpBw5zudTNrkWBvU1IjT4oMmkIlaJ2cQTdXNgtIW4
-         H8mqYBqVVPe6U5GdIqd1IwyKHXgI/kT6BWU9KmVxPiX3ASzyLoaugGy0gME5YB7XkZ
-         FVNeYpAsbIZuA==
-Date:   Mon, 18 Jan 2021 09:20:08 +0200
-From:   Leon Romanovsky <leon@kernel.org>
-To:     Alexander Duyck <alexander.duyck@gmail.com>
-Cc:     Jason Gunthorpe <jgg@nvidia.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-pci <linux-pci@vger.kernel.org>,
-        linux-rdma@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
-        Don Dutile <ddutile@redhat.com>
-Subject: Re: [PATCH mlx5-next v1 2/5] PCI: Add SR-IOV sysfs entry to read
- number of MSI-X vectors
-Message-ID: <20210118072008.GA4843@unreal>
-References: <CAKgT0UcQW+nJjTircZAYs1_GWNrRud=hSTsphfVpsc=xaF7aRQ@mail.gmail.com>
- <20210114200825.GR4147@nvidia.com>
- <CAKgT0UcaRgY4XnM0jgWRvwBLj+ufiabFzKPyrf3jkLrF1Z8zEg@mail.gmail.com>
- <20210114162812.268d684a@omen.home.shazbot.org>
- <CAKgT0Ufe1w4PpZb3NXuSxug+OMcjm1RP3ZqVrJmQqBDt3ByOZQ@mail.gmail.com>
- <20210115140619.GA4147@nvidia.com>
- <20210115155315.GJ944463@unreal>
- <CAKgT0UdzCqbLwxSnDTtgha+PwTMW5iVb-3VXbwdMNiaAYXyWzQ@mail.gmail.com>
- <20210116082031.GK944463@unreal>
- <CAKgT0UeKiz=gh+djt83GRBGi8qQWTBzs-qxKj_78N+gx-KtkMQ@mail.gmail.com>
+        id S1731971AbhARHYs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jan 2021 02:24:48 -0500
+Received: from mailout4.samsung.com ([203.254.224.34]:50655 "EHLO
+        mailout4.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725860AbhARHYo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jan 2021 02:24:44 -0500
+Received: from epcas2p4.samsung.com (unknown [182.195.41.56])
+        by mailout4.samsung.com (KnoxPortal) with ESMTP id 20210118072400epoutp0428228ee6d0034285b38e3ee4431253d9~bQrXRHQdj3272632726epoutp04R
+        for <netdev@vger.kernel.org>; Mon, 18 Jan 2021 07:24:00 +0000 (GMT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 mailout4.samsung.com 20210118072400epoutp0428228ee6d0034285b38e3ee4431253d9~bQrXRHQdj3272632726epoutp04R
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
+        s=mail20170921; t=1610954640;
+        bh=KUYnFrQQiLvM53tGvfI7wjeX9q4XPE9p+JGYahARuG8=;
+        h=From:To:Cc:In-Reply-To:Subject:Date:References:From;
+        b=emL74G6SFKAHIXUCrRsZvwXT0Cx8hv+w63dQ5XoUua9ruM2+oiyyVvnO0yHXsCEnC
+         idGw+E9NF7rykTBtKQooYc+K2BrV3Qa+cixiyLRVM6qKVI+1AJTQgsfYy+eZ1VVBqu
+         FUjfZ6E75ZbYvVeZDKezw01+lqdKVu1xCCS3FOGI=
+Received: from epsnrtp4.localdomain (unknown [182.195.42.165]) by
+        epcas2p2.samsung.com (KnoxPortal) with ESMTP id
+        20210118072359epcas2p20780fab8856ac7a7eca6d71fdfa73da3~bQrWy9hme2235322353epcas2p25;
+        Mon, 18 Jan 2021 07:23:59 +0000 (GMT)
+Received: from epsmges2p4.samsung.com (unknown [182.195.40.183]) by
+        epsnrtp4.localdomain (Postfix) with ESMTP id 4DK3Ds1474z4x9Pp; Mon, 18 Jan
+        2021 07:23:57 +0000 (GMT)
+Received: from epcas2p3.samsung.com ( [182.195.41.55]) by
+        epsmges2p4.samsung.com (Symantec Messaging Gateway) with SMTP id
+        8C.AF.52511.B8735006; Mon, 18 Jan 2021 16:23:55 +0900 (KST)
+Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
+        epcas2p4.samsung.com (KnoxPortal) with ESMTPA id
+        20210118072355epcas2p42644ef37dba3831f50a02c26f4b2661a~bQrSmpRt32759627596epcas2p4Q;
+        Mon, 18 Jan 2021 07:23:55 +0000 (GMT)
+Received: from epsmgms1p2.samsung.com (unknown [182.195.42.42]) by
+        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
+        20210118072355epsmtrp17a22cf9ed76f03265488a8d434cb43a4~bQrSljeJ_2562325623epsmtrp12;
+        Mon, 18 Jan 2021 07:23:55 +0000 (GMT)
+X-AuditID: b6c32a48-50fff7000000cd1f-a7-6005378be2a0
+Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
+        epsmgms1p2.samsung.com (Symantec Messaging Gateway) with SMTP id
+        78.C7.08745.B8735006; Mon, 18 Jan 2021 16:23:55 +0900 (KST)
+Received: from KORDO035731 (unknown [12.36.185.47]) by epsmtip1.samsung.com
+        (KnoxPortal) with ESMTPA id
+        20210118072355epsmtip1b1abf3caf3edfa5c0e96b840448cf23e~bQrSUiCyJ2579825798epsmtip12;
+        Mon, 18 Jan 2021 07:23:55 +0000 (GMT)
+From:   "Dongseok Yi" <dseok.yi@samsung.com>
+To:     "'Steffen Klassert'" <steffen.klassert@secunet.com>,
+        "'Alexander Lobakin'" <alobakin@pm.me>
+Cc:     "'David S. Miller'" <davem@davemloft.net>,
+        <namkyu78.kim@samsung.com>, "'Jakub Kicinski'" <kuba@kernel.org>,
+        "'Hideaki YOSHIFUJI'" <yoshfuji@linux-ipv6.org>,
+        "'Willem de Bruijn'" <willemb@google.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+In-Reply-To: <20210118063759.GK3576117@gauss3.secunet.de>
+Subject: RE: [PATCH net v2] udp: ipv4: manipulate network header of NATed
+ UDP GRO fraglist
+Date:   Mon, 18 Jan 2021 16:23:54 +0900
+Message-ID: <004c01d6ed6a$e0ff43b0$a2fdcb10$@samsung.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAKgT0UeKiz=gh+djt83GRBGi8qQWTBzs-qxKj_78N+gx-KtkMQ@mail.gmail.com>
+Content-Type: text/plain; charset="Windows-1252"
+Content-Transfer-Encoding: 7bit
+X-Mailer: Microsoft Outlook 16.0
+Thread-Index: AQJT4Rp7bAvF1bGeZTYGN+mZAmy16AFN1KutAf1qvD8BNDU5EqkPEZpQ
+Content-Language: ko
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrPJsWRmVeSWpSXmKPExsWy7bCmuW63OWuCwdnThharHm9nsZhzvoXF
+        4sK2PlaLy7vmsFk03Glmszi2QMxid+cPdot3W46wW3zd28XiwOmxZeVNJo8Fm0o9Nq3qZPNo
+        u7aKyePonnNsHn1bVjF6bGpdwurxeZNcAEdUjk1GamJKapFCal5yfkpmXrqtkndwvHO8qZmB
+        oa6hpYW5kkJeYm6qrZKLT4CuW2YO0HVKCmWJOaVAoYDE4mIlfTubovzSklSFjPziElul1IKU
+        nAJDwwK94sTc4tK8dL3k/FwrQwMDI1OgyoScjI+d+9kKfghXzP75n7GB8Tl/FyMnh4SAiUTn
+        2nOMXYxcHEICOxgl1t88zASSEBL4xCix8V4iROIzo8TxWS+YYToeNPayQiR2MUq8/LaJCcJ5
+        wShxcGc7C0gVm4CWxJtZ7awgtohAosSOR1/AipgFupkkdl+cC5bgFLCU2P18JzuILSwQI/F0
+        UicbiM0ioCrx6PZNsDgvUM3L5tUsELagxMmZT8BsZgEDiffn5jND2PIS29/OgTpPQeLn02VQ
+        i90k+h8/Y4WoEZGY3dkGVbODQ+LiFTEI20Vi7fQ2dghbWOLV8S1QtpTEy36QOAeQXS/R2h0D
+        cr+EQA+jxJV9EDdICBhLzHrWzghRoyxx5BbUaXwSHYf/QrXySnS0CUGYShITv8RDNEpIvDg5
+        mWUCo9IsJH/NQvLXLCR/zUJy/wJGllWMYqkFxbnpqcVGBSbIkb2JEZxytTx2MM5++0HvECMT
+        B+MhRgkOZiUR3tJ1TAlCvCmJlVWpRfnxRaU5qcWHGE2BQT2RWUo0OR+Y9PNK4g1NjczMDCxN
+        LUzNjCyUxHmLDB7ECwmkJ5akZqemFqQWwfQxcXBKNTAtes7U03Pt+eqLK9ObpznYX3i6K0Zq
+        sUhEm1wl2+7bCtxttXcVdBmq5ScJqV3SYlsr8PHzkVfF0n9m3hfvv6ibpcJxVTFq2fLH0Sdz
+        HvaeO3Rn3r/z19c1dDRuvSN84tNGw4owtapo77adRvddhZdbKBfPnrG28CLPdJktords85kC
+        nVYu23WIe4uNs8rDhrY/pW23LTK01PcHxDMtWPt91+/uMo8lZYvS7xe4V019wmTqY1QZsPKb
+        1pW/P26bfC7esX5GbvqedeW3ON7XOgf0lxb9/eXzt+K6Q2b7Yv0NzZZKGvXB6zbJffkX9TfD
+        8OVj9Wp/0fq4aznLJ04Jmss+d0HETbHEV1uLcicrP/mlxFKckWioxVxUnAgAJjPhr0IEAAA=
+X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprFIsWRmVeSWpSXmKPExsWy7bCSnG63OWuCwdwz3BarHm9nsZhzvoXF
+        4sK2PlaLy7vmsFk03Glmszi2QMxid+cPdot3W46wW3zd28XiwOmxZeVNJo8Fm0o9Nq3qZPNo
+        u7aKyePonnNsHn1bVjF6bGpdwurxeZNcAEcUl01Kak5mWWqRvl0CV8bHzv1sBT+EK2b//M/Y
+        wPicv4uRk0NCwETiQWMvK4gtJLCDUeLhfYcuRg6guITErs2uECXCEvdbjgCVcAGVPGOU6N+z
+        gRkkwSagJfFmVjtYr4hAosTt6SfYQIqYBSYySVx5uJARouMto8SjjfPBOjgFLCV2P9/JDmIL
+        C0RJ9La9A4uzCKhKPLp9EyzOC1Tzsnk1C4QtKHFy5hMwm1nASOLcof1sELa8xPa3c5ghzlOQ
+        +Pl0GdQVbhL9j5+xQtSISMzubGOewCg8C8moWUhGzUIyahaSlgWMLKsYJVMLinPTc4sNC4zy
+        Usv1ihNzi0vz0vWS83M3MYKjT0trB+OeVR/0DjEycTAeYpTgYFYS4S1dx5QgxJuSWFmVWpQf
+        X1Sak1p8iFGag0VJnPdC18l4IYH0xJLU7NTUgtQimCwTB6dUA5OV5btX7nGr1/+60TEjX6Fm
+        2o1/XTfCLYpcPm98uYEtZH6/odvGb9WhecdYT/T3vRW+lFk3k+10fIXc8m+d4gYNGRKK8THR
+        v0vD9GyUbsZWP1rXsdfxjJTksUsaUq4dNqK7ftQecmlbcn26vGuw2oOdgvw7PhrrfVQv3tby
+        OnD55Fghnywt9xdOX2bvKv31c/YlnTULJnWzX9HqWvJ+1sr0nSGlm1bcL5FNmKboaXhlxeSo
+        zD1MV+71P9UV2B8aaz/jmVyRd8rZ4++5X76a0nJLamL1U2eTHKfe6HVCD1VVwn8uWX5t2q4d
+        pQbnBGWT+3xftXIzrV1fsEbjf9rHTC4Nj8xPopW2J2JKpgX0NCuxFGckGmoxFxUnAgDg+KFz
+        LQMAAA==
+X-CMS-MailID: 20210118072355epcas2p42644ef37dba3831f50a02c26f4b2661a
+X-Msg-Generator: CA
+X-Sendblock-Type: AUTO_CONFIDENTIAL
+CMS-TYPE: 102P
+DLP-Filter: Pass
+X-CFilter-Loop: Reflected
+X-CMS-RootMailID: 20210115133200epcas2p1f52efe7bbc2826ed12da2fde4e03e3b2
+References: <CGME20210115133200epcas2p1f52efe7bbc2826ed12da2fde4e03e3b2@epcas2p1.samsung.com>
+        <1610716836-140533-1-git-send-email-dseok.yi@samsung.com>
+        <20210115171203.175115-1-alobakin@pm.me>
+        <20210118063759.GK3576117@gauss3.secunet.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jan 17, 2021 at 07:16:30PM -0800, Alexander Duyck wrote:
-> On Sat, Jan 16, 2021 at 12:20 AM Leon Romanovsky <leon@kernel.org> wrote:
+On 2021-01-18 15:37, Steffen Klassert wrote:
+> On Fri, Jan 15, 2021 at 05:12:33PM +0000, Alexander Lobakin wrote:
+> > From: Dongseok Yi <dseok.yi@samsung.com>
+> > Date: Fri, 15 Jan 2021 22:20:35 +0900
 > >
-> > On Fri, Jan 15, 2021 at 05:48:59PM -0800, Alexander Duyck wrote:
-> > > On Fri, Jan 15, 2021 at 7:53 AM Leon Romanovsky <leon@kernel.org> wrote:
-> > > >
-> > > > On Fri, Jan 15, 2021 at 10:06:19AM -0400, Jason Gunthorpe wrote:
-> > > > > On Thu, Jan 14, 2021 at 05:56:20PM -0800, Alexander Duyck wrote:
-> > > > >
-> > > > > > That said, it only works at the driver level. So if the firmware is
-> > > > > > the one that is having to do this it also occured to me that if this
-> > > > > > update happened on FLR that would probably be preferred.
-> > > > >
-> > > > > FLR is not free, I'd prefer not to require it just for some
-> > > > > philosophical reason.
-> > > > >
-> > > > > > Since the mlx5 already supports devlink I don't see any reason why the
-> > > > > > driver couldn't be extended to also support the devlink resource
-> > > > > > interface and apply it to interrupts.
-> > > > >
-> > > > > So you are OK with the PF changing the VF as long as it is devlink not
-> > > > > sysfs? Seems rather arbitary?
-> > > > >
-> > > > > Leon knows best, but if I recall devlink becomes wonky when the VF
-> > > > > driver doesn't provide a devlink instance. How does it do reload of a
-> > > > > VF then?
-> > > > >
-> > > > > I think you end up with essentially the same logic as presented here
-> > > > > with sysfs.
-> > > >
-> > > > The reasons why I decided to go with sysfs are:
-> > > > 1. This MSI-X table size change is applicable to ALL devices in the world,
-> > > > and not only netdev.
+> > > UDP/IP header of UDP GROed frag_skbs are not updated even after NAT
+> > > forwarding. Only the header of head_skb from ip_finish_output_gso ->
+> > > skb_gso_segment is updated but following frag_skbs are not updated.
 > > >
-> > > In the PCI world MSI-X table size is a read only value. That is why I
-> > > am pushing back on this as a PCI interface.
+> > > A call path skb_mac_gso_segment -> inet_gso_segment ->
+> > > udp4_ufo_fragment -> __udp_gso_segment -> __udp_gso_segment_list
+> > > does not try to update UDP/IP header of the segment list but copy
+> > > only the MAC header.
+> > >
+> > > Update dport, daddr and checksums of each skb of the segment list
+> > > in __udp_gso_segment_list. It covers both SNAT and DNAT.
+> > >
+> > > Fixes: 9fd1ff5d2ac7 (udp: Support UDP fraglist GRO/GSO.)
+> > > Signed-off-by: Dongseok Yi <dseok.yi@samsung.com>
+> > > ---
+> > > v1:
+> > > Steffen Klassert said, there could be 2 options.
+> > > https://lore.kernel.org/patchwork/patch/1362257/
+> > > I was trying to write a quick fix, but it was not easy to forward
+> > > segmented list. Currently, assuming DNAT only.
+> > >
+> > > v2:
+> > > Per Steffen Klassert request, move the procedure from
+> > > udp4_ufo_fragment to __udp_gso_segment_list and support SNAT.
+> > >
+> > > To Alexander Lobakin, I've checked your email late. Just use this
+> > > patch as a reference. It support SNAT too, but does not support IPv6
+> > > yet. I cannot make IPv6 header changes in __udp_gso_segment_list due
+> > > to the file is in IPv4 directory.
 > >
-> > And it stays read-only.
->
-> Only if you come at it directly. What this is adding is a back door
-> that is visible as a part of the VF sysfs.
->
-> > >
-> > > > 2. This is purely PCI field and apply equally with same logic to all
-> > > > subsystems and not to netdev only.
-> > >
-> > > Again, calling this "purely PCI" is the sort of wording that has me
-> > > concerned. I would prefer it if we avoid that wording. There is much
-> > > more to this than just modifying the table size field. The firmware is
-> > > having to shift resources between devices and this potentially has an
-> > > effect on the entire part, not just one VF.
-> >
-> > It is internal to HW implementation, dumb device can solve it differently.
->
-> That is my point. I am worried about "dumb devices" that may follow. I
-> would like to see the steps that should be taken to prevent these sort
-> of things called out specifically. Basically this isn't just modifying
-> the PCIe config space, it is actually resizing the PBA and MSI-X
-> table.
+> > I used another approach, tried to make fraglist GRO closer to plain
+> > in terms of checksummming, as it is confusing to me why GSO packet
+> > should have CHECKSUM_UNNECESSARY.
+> 
+> This is intentional. With fraglist GRO, we don't mangle packets
+> in the standard (non NAT) case. So the checksum is still correct
+> after segmentation. That is one reason why it has good forwarding
+> performance when software segmentation is needed. Checksuming
+> touches the whole packet and has a lot of overhead, so it is
+> heplfull to avoid it whenever possible.
+> 
+> We should find a way to do the checksum only when we really
+> need it. I.e. only if the headers of the head skb changed.
 
-Exactly the last line the dumb device can implement differently. The
-request is simple - configure MSI-X table size to be the new size.
+It would be not easy to detect if the skb is mangled by netfilter. I
+think v2 patch has little impact on the performance. Can you suggest
+an another version? If not, I can make v3 including 80 columns
+warning fix.
 
->
-> > >
-> > > > 3. The sysfs interface is the standard way of configuring PCI/core, not
-> > > > devlink.
-> > >
-> > > This isn't PCI core that is being configured. It is the firmware for
-> > > the device. You are working with resources that are shared between
-> > > multiple functions.
-> >
-> > I'm ensuring that "lspci -vv .." will work correctly after such change.
-> > It is PCI core responsibility.
->
-> The current code doesn't work on anything with a driver loaded on it.
-
-The problem that no one care about this case, because in opposite to
-other devices that usually operates in the hypervisor and probed during
-the boot, the VFs are used differently. They run in VMs, probed there
-and (usually) not needed in hypervisor.
-
-The driver reload would make sense if PF MSI-X table was changed.
-
-> In addition the messaging provided is fairly minimal which results in
-> an interface that will be difficult to understand when it doesn't
-> work.
-
-I'm fond of simple interfaces: 0, EBUSY and EINVAL are common way
-to inform user. We must remember that this interface is for low-level
-PCI property and is needed for expert users who needs to squeeze maximum
-for their VMs out of expensive high speed network card that supports SR-IOV.
-
-According to the ebay, the CX6 card costs between 1000 and 1700 USDs,
-not really home equipment.
-
-> In addition there is currently only one piece of hardware that
-> works with this interface which is the mlx5.
-
-It is not different from any other feature, someone should be first.
-This has very clear purpose, scoped well and understandable when and
-why it is needed.
-
-Kernel is full of devices and features that exist in one device only.
-
-> My concern is this is
-> adding overhead to all VFs that will not be used by most SR-IOV
-> capable devices. In my view it would make much more sense to have a
-> top-down approach instead of bottom-up where the PF is registering
-> interfaces for the VFs.
->
-> If you want yet another compromise I would be much happier with the PF
-> registering the sysfs interfaces on the VFs rather than the VFs
-> registering the interface and hoping the PF supports it. At least with
-> that you are guaranteed the PF will respond to the interface when it
-> is registered.
-
-Thanks a lot, I appreciate it, will take a look now.
-
->
-> > >
-> > > > 4. This is how orchestration software provisioning VFs already. It fits
-> > > > real world usage of SR-IOV, not the artificial one that is proposed during
-> > > > the discussion.
-> > >
-> > > What do you mean this is how they are doing it already? Do you have
-> > > something out-of-tree and that is why you are fighting to keep the
-> > > sysfs? If so that isn't a valid argument.
-> >
-> > I have Kubernetes and OpenStack, indeed they are not part of the kernel tree.
-> > They already use sriov_driver_autoprobe sysfs knob to disable autobind
-> > before even starting. They configure MACs and bind VFs through sysfs/netlink
-> > already. For them, the read/write of sysfs that is going to be bound to
-> > the already created VM with known CPU properties, fits perfectly.
->
-> By that argument the same could be said about netlink. What I don't
-> get is why it is okay to configure the MAC through netlink but
-> suddenly when we are talking about interrupts it is out of the
-> question.
-
-They belong to different subsystems, while MAC is applicable to the
-netdev (both PF and VFs), MSI-X is applicable to all devices.
-
-I'm not arguing about netlink vs. sysfs, just saying that devlink doesn't
-fit here.
-
-> As far as the binding that is the driver interface which is
-> more or less grandfathered in anyway as there aren't too many ways to
-> deal with them as there isn't an alternate interface for the drivers
-> to define support.
->
-> > >
-> > > > So the idea to use devlink just because mlx5 supports it, sound really
-> > > > wrong to me. If it was other driver from another subsystem without
-> > > > devlink support, the request to use devlink won't never come.
-> > > >
-> > > > Thanks
-> > >
-> > > I am suggesting the devlink resources interface because it would be a
-> > > VERY good fit for something like this. By the definition of it:
-> > > ``devlink`` provides the ability for drivers to register resources, which
-> > > can allow administrators to see the device restrictions for a given
-> > > resource, as well as how much of the given resource is currently
-> > > in use. Additionally, these resources can optionally have configurable size.
-> > > This could enable the administrator to limit the number of resources that
-> > > are used.
-> >
-> > It is not resource, but HW objects. The devlink doesn't even see the VFs
-> > as long as they are not bound to the drivers.
-> >
-> > This is an example:
-> >
-> > [root@vm ~]# echo 0 > /sys/bus/pci/devices/0000\:01\:00.0/sriov_drivers_autoprobe
-> > [root@vm ~]# echo 0 > /sys/bus/pci/devices/0000\:01\:00.0/sriov_numvfs
-> > [ 2370.579711] mlx5_core 0000:01:00.0: E-Switch: Disable: mode(LEGACY), nvfs(2), active vports(3)
-> > [root@vm ~]# echo 2 > /sys/bus/pci/devices/0000\:01\:00.0/sriov_numvfs
-> > [ 2377.663666] mlx5_core 0000:01:00.0: E-Switch: Enable: mode(LEGACY), nvfs(2), active vports(3)
-> > [ 2377.777010] pci 0000:01:00.1: [15b3:101c] type 00 class 0x020000
-> > [ 2377.784903] pci 0000:01:00.2: [15b3:101c] type 00 class 0x020000
-> > [root@vm ~]# devlink dev
-> > pci/0000:01:00.0
-> > [root@vm ~]# lspci |grep nox
-> > 01:00.0 Ethernet controller: Mellanox Technologies MT28908 Family [ConnectX-6]
-> > 01:00.1 Ethernet controller: Mellanox Technologies MT28908 Family [ConnectX-6 Virtual Function]
-> > 01:00.2 Ethernet controller: Mellanox Technologies MT28908 Family [ConnectX-6 Virtual Function]
-> >
-> > So despite us having 2 VFs ready to be given to VMs, administrator doesn't
-> > see them as devices.
->
-> The MSI-X vectors are a resource assigned to hardware objects. It just
-> depends on how you want to look at things. Right now you have the VFs
-> register an interface on behalf of the PF. I am arguing it would be
-> better to have the PF register an interface on behalf of the VFs.
-> Ultimately the PF is responsible for creating the VFs in the first
-> place. I don't see it as that much of a leap to have the
-> mlx5_sriov_enable call register interfaces for the VFs so that you can
-> configure the MSI-X vectors from the PF, and then tear them down
-> before it frees the VFs. Having the VFs do the work seems error prone
-> since it is assuming the interfaces are there on the PF when in all
-> cases but one (mlx5) it currently isn't.
-
-I'm not sure that I understood your last sentence correctly. If VF device
-is not on hypervisor, it will mean the device is already probed and
-change of MSI-X table is prohibited. I don't know how you can configure
-VF devices to be passthrough to the VMs without SR-IOV enable call first.
-
-I would say that all devices start their life at the same place where PF
-is located.
-
->
-> > >
-> > > Even looking over the example usage I don't see there being much to
-> > > prevent you from applying it to this issue. In addition it has the
-> > > idea of handling changes that cannot be immediately applied already
-> > > included. Your current solution doesn't have a good way of handling
-> > > that and instead just aborts with an error.
-> >
-> > Yes, because it is HW resource that should be applied immediately to
-> > make sure that it is honored, before it is committed to the users.
->
-> The problem is you cannot do that at all if the driver is already
-> loaded. One advantage of using something like devlink is that you
-> could potentially have the VF driver help to coordinate things so you
-> could have the case where the VF has the mlx5 driver loaded work
-> correctly where you would update the MSI-X vector count and then
-> trigger the driver reload via devlink.
-
-The thing is that it is not needed for VFs at all.
-
->
-> > It is very tempting to use devlink everywhere, but it is really wrong
-> > tool for this scenario.
->
-> We can agree to disagree there. I am not a fan of sysfs being applied
-> everywhere either. The problem is it is an easy goto when someone is
-> looking for a quick and dirty solution and often leads to more
-> problems later as it usually misses critical path locking issues and
-> the like.
-
-It is fun that you mentioned that devlink as an example of good locking scheme.
-Without going into to much details, right now Parav and myself are trying to fix
-devlink locking around reload functionality. It was close to DOA for me when I
-worked on auxiliary bus patches.
-
-So no, devlink is not better. It is another (good) tool that needs more love
-and care to be real PCI configuration utility. At lest, it should step out of
-netdev shadow.
-
-The block subsystem built whole stack around sysfs and they doesn't seem
-upset about it.
-
-Thanks
