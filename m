@@ -2,170 +2,206 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 156072FA840
-	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 19:05:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 05F312FA842
+	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 19:05:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2436784AbhARSDS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jan 2021 13:03:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43442 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2407362AbhARSCi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jan 2021 13:02:38 -0500
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C71DC061573
-        for <netdev@vger.kernel.org>; Mon, 18 Jan 2021 10:01:49 -0800 (PST)
-Received: by mail-lf1-x133.google.com with SMTP id o17so25327638lfg.4
-        for <netdev@vger.kernel.org>; Mon, 18 Jan 2021 10:01:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=hKfOUNvcAbiYubeGqAE5qD7IgUNtoxVEfisXkMeeiEI=;
-        b=QAYcNjlbM52E0ooESlNx4R9xFw/qhkVwMC9qaY4/bHhmR+WrlGu+42FdiHURFsl+Yq
-         ANgJlX7Zxdc0JMIPdf21YNh4SRgU9ROQpOss28tVt+G6X+JOi8Ld33slncOUutNpEAgj
-         aBeTHtDh0uyVW0aS6gBYhhFqvayREKUZV0hy0=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=hKfOUNvcAbiYubeGqAE5qD7IgUNtoxVEfisXkMeeiEI=;
-        b=qJFSbjOptcu83jD2+20Hu2F3dp9Tgxk5h0tIOMQjlMYXWYV8jtuuH6kR4Mud4ZfFqK
-         I6H1MpeJze/HAFu78L20A02e7gLuVGDkQbgfUgJi/YU2AajXzYzNW8oT4h4qUFOHvf7i
-         2w2kT9E2tmKqnGYZMEslGFoRluQ/k1pgfrMwV4Wu/raR9naVjvu3r52yAxWPTBxc0V4g
-         KvDsM9wumhyocR0067BhV/TwWZvenE2JIoHXSRMO/57g1Zrr2hXMTNHqnQWoH4j3AMqg
-         uFEUwNH5H7FPT9Y/27tIgdGAtPpN+opZNwb24uF0tX95KzqdjLtN956vjM89HwLWdlW4
-         dZZQ==
-X-Gm-Message-State: AOAM530fWLybTin0ycuDTvKXaL5+3sZMRh0qD7aOZBYDDROxrWHXYkTu
-        MAvSTkcgqPho0JUnZ0YPbg3XR6wi37HIcJLyGUVGaJYpVE4=
-X-Google-Smtp-Source: ABdhPJyqoU2R3jk3yOXmo8RsPXK3oejGrKGzXs4YMCQwoXOKPPNOp3tSmmgR9loHaVzHRUjjI1cH+3JYDa1+MwmW4Wc=
-X-Received: by 2002:a05:6512:33b5:: with SMTP id i21mr139804lfg.228.1610992908024;
- Mon, 18 Jan 2021 10:01:48 -0800 (PST)
+        id S2436769AbhARSDZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jan 2021 13:03:25 -0500
+Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:40222 "EHLO
+        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2436760AbhARSDK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jan 2021 13:03:10 -0500
+Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 10IHvfBs022123;
+        Mon, 18 Jan 2021 10:02:00 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
+ references : from : message-id : date : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=facebook;
+ bh=FEq52HPel9BpG23lRnmwJcB5YIHi9rL2XzlTIoPSDzI=;
+ b=alp4JoMfhVvQ7ezVBT1T9KE+M0xvYeMlbo9mzTHs1wXzZBnyIphe7ZGWJnsFBLIXQySX
+ gn9Cev1/9iRtVd3wx+zv+jWNt/k9QWb8yW0/uIHPf/8+o4hvNP3I3M8yRNtx9xAW1YtS
+ KB2USRGTUl+5wCrRRaFWeezXdWf1RVmU8N8= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 364h2cddnf-3
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Mon, 18 Jan 2021 10:01:59 -0800
+Received: from NAM10-DM6-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.35.173) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Mon, 18 Jan 2021 10:01:57 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=YICxPLQ47gel6+sMvfJcQP/It7W/+CQZ9IProREJu+Q32Gw6E0fLtqZkqelH+1krGVEOhc5vWW1+YGSuYEGg5+VgxI4xtc4NzF421aO8W3+w7WUnpLkKTZn2Hqvy9lG4P4cn4vTvwwUUFFZoalDU6nflwYDKAShDOujlReBmwDrWl1+3FyuEr//+C6RDAPvqezsSf1GVfNrR/aOxIhR8F0jvWhLlWwBlFfeKcR2ZyKtME0xAOAtoObFa/RiP8ApBqscU7qjm5m8FgNms4fQy7s3c/BQHxah3OC00Z1d3WUmujA4BZ8X5wcF9dc5H/0yKxVHqDHPbmnmrjPY9v0wuyw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Izi1qP2HcB0EsMidqMSyL3/H41mibuQLPJKJXt+LKh0=;
+ b=NLaadRBjFL1h9OP1SqqqfQA/tPXiw8UdwoCgnfq6b0b0XoFs0FieD4x6x9RN5itH8egUFWEwbU9aNPi3xnwly8VVErTBJDJQmk58GOJK8LtJv0qkgBjWKpohcV9Gm4C7NpGGMUJkC8jg4kuf2NPx4hSibazUcjqS1xB8CSh52TrlK+2N3QBPAg+fAxM4fHUUZtW63kQ8OX/1FmdobQkD5iPHYoCBhj/g79/ykx4nunnOw1YZeUc9BvFbPULJ1CR4OU890On8mYftDepwUNLTi85PjB8eTSAMSWDr5oMrtSZ/XrI2pm+C0Y9j+Xv7mf9pvt40zzYFMyTfUeX8Mm6L+Q==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Izi1qP2HcB0EsMidqMSyL3/H41mibuQLPJKJXt+LKh0=;
+ b=C9SpWDYLhudCwfBs6ghvyTXcTws5qdK3l6ZCYVGljJH+msPJlguWmti353SQIeBzmrOA9e7lP9GxTo9gcd7ferg89N2dNsrkg5a4EaE77xsZETBe8931TT+xiEQvXfiV7dpt7r7Gb9b2+QP4vAAWNH6f7lIeD3lSfObBmZsAEVM=
+Authentication-Results: loongson.cn; dkim=none (message not signed)
+ header.d=none;loongson.cn; dmarc=none action=none header.from=fb.com;
+Received: from BYAPR15MB4088.namprd15.prod.outlook.com (2603:10b6:a02:c3::18)
+ by BYAPR15MB2887.namprd15.prod.outlook.com (2603:10b6:a03:f9::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3763.14; Mon, 18 Jan
+ 2021 18:01:56 +0000
+Received: from BYAPR15MB4088.namprd15.prod.outlook.com
+ ([fe80::9ae:1628:daf9:4b03]) by BYAPR15MB4088.namprd15.prod.outlook.com
+ ([fe80::9ae:1628:daf9:4b03%7]) with mapi id 15.20.3763.014; Mon, 18 Jan 2021
+ 18:01:56 +0000
+Subject: Re: [PATCH bpf] samples/bpf: Update README.rst for manually compiling
+ LLVM and clang
+To:     Tiezhu Yang <yangtiezhu@loongson.cn>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Nathan Chancellor <natechancellor@gmail.com>,
+        Nick Desaulniers <ndesaulniers@google.com>
+CC:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>,
+        <clang-built-linux@googlegroups.com>,
+        <linux-kernel@vger.kernel.org>, Xuefeng Li <lixuefeng@loongson.cn>
+References: <1610959982-6420-1-git-send-email-yangtiezhu@loongson.cn>
+From:   Yonghong Song <yhs@fb.com>
+Message-ID: <6bd33baa-ba8c-b38d-7375-12b3775c630e@fb.com>
+Date:   Mon, 18 Jan 2021 10:01:53 -0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.6.1
+In-Reply-To: <1610959982-6420-1-git-send-email-yangtiezhu@loongson.cn>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+X-Originating-IP: [2620:10d:c090:400::5:4199]
+X-ClientProxiedBy: CO2PR04CA0144.namprd04.prod.outlook.com (2603:10b6:104::22)
+ To BYAPR15MB4088.namprd15.prod.outlook.com (2603:10b6:a02:c3::18)
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [IPv6:2620:10d:c085:21d6::10cf] (2620:10d:c090:400::5:4199) by CO2PR04CA0144.namprd04.prod.outlook.com (2603:10b6:104::22) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3763.9 via Frontend Transport; Mon, 18 Jan 2021 18:01:55 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 2e06b2f9-bcc8-40b0-21f5-08d8bbdb24ef
+X-MS-TrafficTypeDiagnostic: BYAPR15MB2887:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <BYAPR15MB2887679886D9F9B7363A90AAD3A40@BYAPR15MB2887.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:5797;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: avkYuOR9WgN4zsr/f5NKJ53V7nbF+wYnmAeZdnlbcLNkOSvn1Dm3izuZKAleWwW43GvglitT7uwyrv9LPgoy0qO4wyE/BLFtT2PcX3DkyGUplIQ1Q/GSdVLbPK2WB8iOJN5ymosxd5YjrnoQHAAJZkrjg16sicRRsi8OTj+vN0u4sRv74D76xR7nY66NRzQVQrL6RNpJnJjJ5fU5mQs1Ie01vbHBK139d+/OR2gcmht4rCtSccZY+ufkDeDeKRpdkUJqNIOuWISnl56aT8juFjLp7o37IjjGD6bjP7fuFuM4G037i6weMHj5F86O703Ve64fQYoyaqN8Fm9GckfjLTlED7b0FdrUki1SBCaKNqCLyMT6Hz4syEViLIC15UkXutrAMAlSHsMNd7k7H0B2QXN4Sigl2t7Xb2n+J3r7g/EoQTVMifqnZGZ74m+4SvWH7lat/0NvZGz+GvdbH23M7BN6WOgh/xLirKE2UT67lzZRyUXLOCYsZJZdIqBPvKqPVMkjL2yvcWq3oA1aqps1yZzfTc0x9f4Ym3j5FjLY37lWn3sIwqEj3hpWmW/0sfW3ruQRyu/FgGGf1a4wclMC+A==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB4088.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(346002)(376002)(136003)(366004)(39860400002)(396003)(316002)(53546011)(186003)(5660300002)(83380400001)(36756003)(31696002)(2906002)(66556008)(4326008)(66946007)(966005)(66476007)(16526019)(478600001)(31686004)(52116002)(110136005)(921005)(8676002)(7416002)(86362001)(6486002)(15650500001)(8936002)(2616005)(43740500002)(45980500001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?eWZRUytWQ3UxNzNZckZRZ2IyQ0VYREtMaUhINis2OW9teE4wanVwNm5wVjNh?=
+ =?utf-8?B?OTArbTFKWWE1dmRtcTNCOGpnZEJSWTFFYUhOamQwMVFQMDRFcGNkbU9IUFBS?=
+ =?utf-8?B?V1AwN0wwelcwZkQxSjlsUkp0bm1XMDVNVWE1eUhiam5JeElmWVdGcnNiRlBv?=
+ =?utf-8?B?ZXNuaG9EZTN0TVluZkxCczFyUHMvWkNMUTFIY0RkRFVpcld5UEtFWUJQWVhI?=
+ =?utf-8?B?K3d0djRzZnp0TVBnR1dwM0lGS0c0TysvMnNFRzJ1eU1NdDNhZXU4VTgxV2hy?=
+ =?utf-8?B?VWlKdFRFN1o0VWdzbGNqUGlNcFlOdk5DdUl0cittVGxLSUxEMXlmK0M3TDAx?=
+ =?utf-8?B?c05aL24zdEFhd0N2TTYrOTBRdmRLaUdXeDJxVWVwdHFpVFNVS090M3MxWVd2?=
+ =?utf-8?B?dzAzbmxOVCswUU1aMmx5VDF5YXBkejZHTTZGUUZ2Rlk4T3RCM3BNeEJPejBx?=
+ =?utf-8?B?eGVnQTFNK1oweFcyWVh6V0l4dUFaZnNUNFdWTUN6Vk93ZkM0aVcyZFN1WkRr?=
+ =?utf-8?B?S2hKUGNtYmlaNGF2bHNoOVRQeGdtcUEvWm5CMGIwc0U5cDlMaVB5THRZR2Yx?=
+ =?utf-8?B?em0wMGYxQ1VnNS9Ia1dPb0E4enpQTUs1dGhzd1N3RGJXMW5PcXV3NUZOSDBP?=
+ =?utf-8?B?NXA0enNETDNzdkY4NjlKVGpyWWZvN3ZCN29PcGdOZWdqVDduL25tQ2RYVFdx?=
+ =?utf-8?B?Nm9zd21TRHZQQlphMC9hY2JOeWdWVVEwZklOWHU5alNSbmRCN2FpdWNJU2Rr?=
+ =?utf-8?B?REVPdUcyVjNSOHEvZS9KSjRJaU5zVEdoRXNZVXZ1Q3J3MER4NHJJakRIUkpH?=
+ =?utf-8?B?b09obW14Q1pvNE11ZllxdENiYnhJeGZ6L2VVTnRlSWlzUnl6djRONFcyZitT?=
+ =?utf-8?B?R2Erd0p3ZlgyRUtSS1VUL0lva3R2dTdHZXlTUFNFcUNJRnI1VGcwenprOFpV?=
+ =?utf-8?B?SmdHMWRPcURKOGZJL1ROZU9ZcjZSTHZiRS9XMDloMHQ0TWNpdGpvU3lwaXpE?=
+ =?utf-8?B?RVVRdFRLYWlSaCtYdGtEa2UxNnYxS212dmRaSFZwWGI5YUFBRnZ0dS83Mllk?=
+ =?utf-8?B?WFNwbm1DMmZiZ1VkYW5EUlhZcWRkTTlJUFppcGZpMGpiQld5VStaMzVKazBO?=
+ =?utf-8?B?L1BlYzFMSjlsck5raDlJTXJJQTFVM29PLzdrcFFVZCtHQmp4Q1pzR2pzb2U4?=
+ =?utf-8?B?SEZseWpvZjRBQ3RacU5ZVjNCRCsvUmt0TktUMVRQSWs1MDZXc2RDU1kxMUV5?=
+ =?utf-8?B?ZjR0K1BYOXZkUmozZzBtaEVMejlCRG9nK0w0ZW9sTmwvTHZWUHoxSkJzV1JW?=
+ =?utf-8?B?bVZhY0JkSkl5VlpzMkxIVXF5QzF4Lzk3M1FXM0tjc1R2Q1dCMmZJU0ZHb01D?=
+ =?utf-8?B?cHJweXFZYWg5Rmc9PQ==?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2e06b2f9-bcc8-40b0-21f5-08d8bbdb24ef
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR15MB4088.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Jan 2021 18:01:56.6187
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: f44901l8YwrTbcy2nHqwMFRRGNoISv1eyQ6ZWwQkHllSn9yYgv/q2QmOL9Jqeahf
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2887
+X-OriginatorOrg: fb.com
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-UnRewURL: 7 URL's were un-rewritten
 MIME-Version: 1.0
-References: <20210113121222.733517-1-jiri@resnulli.us>
-In-Reply-To: <20210113121222.733517-1-jiri@resnulli.us>
-From:   Edwin Peer <edwin.peer@broadcom.com>
-Date:   Mon, 18 Jan 2021 10:01:11 -0800
-Message-ID: <CAKOOJTyWWsK0YgN+FVF8QgHaTbZrjpEYkG6Cfs4UVsB9Y8Mj9Q@mail.gmail.com>
-Subject: Re: [patch net-next RFC 00/10] introduce line card support for
- modular switch
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     netdev <netdev@vger.kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jacob Keller <jacob.e.keller@intel.com>, roopa@nvidia.com,
-        mlxsw <mlxsw@nvidia.com>
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000088ec505b93084a6"
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
+ definitions=2021-01-18_13:2021-01-18,2021-01-18 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxlogscore=999
+ lowpriorityscore=0 spamscore=0 phishscore=0 bulkscore=0 mlxscore=0
+ impostorscore=0 priorityscore=1501 malwarescore=0 suspectscore=0
+ clxscore=1015 adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2101180109
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000088ec505b93084a6
-Content-Type: text/plain; charset="UTF-8"
 
-On Wed, Jan 13, 2021 at 4:14 AM Jiri Pirko <jiri@resnulli.us> wrote:
 
-> To resolve this, a concept of "provisioning" is introduced.
-> The user may "provision" certain slot with a line card type.
-> Driver then creates all instances (devlink ports, netdevices, etc)
-> related to this line card type. The carrier of netdevices stays down.
-> Once the line card is inserted and activated, the carrier of the
-> related netdevices goes up.
+On 1/18/21 12:53 AM, Tiezhu Yang wrote:
+> In the current samples/bpf/README.rst, the url of llvm and clang git
+> may be out of date, they are unable to access:
+> 
+> $ git clone http://llvm.org/git/llvm.git
+> Cloning into 'llvm'...
+> fatal: unable to access 'http://llvm.org/git/llvm.git/ ': Maximum (20) redirects followed
+> $ git clone --depth 1 http://llvm.org/git/clang.git
+> Cloning into 'clang'...
+> fatal: unable to access 'http://llvm.org/git/clang.git/ ': Maximum (20) redirects followed
+> 
+> The Clang Getting Started page [1] might have more accurate information,
+> I verified the procedure and it is proved to be feasible, so we should
+> update it to reflect the reality.
+> 
+> [1] https://clang.llvm.org/get_started.html
+> 
+> Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
+> ---
+>   samples/bpf/README.rst | 8 +++-----
+>   1 file changed, 3 insertions(+), 5 deletions(-)
+> 
+> diff --git a/samples/bpf/README.rst b/samples/bpf/README.rst
+> index dd34b2d..f606c08 100644
+> --- a/samples/bpf/README.rst
+> +++ b/samples/bpf/README.rst
+> @@ -65,11 +65,9 @@ To generate a smaller llc binary one can use::
+>   Quick sniplet for manually compiling LLVM and clang
+>   (build dependencies are cmake and gcc-c++)::
+>   
+> - $ git clone http://llvm.org/git/llvm.git
+> - $ cd llvm/tools
+> - $ git clone --depth 1 http://llvm.org/git/clang.git
+> - $ cd ..; mkdir build; cd build
+> - $ cmake .. -DLLVM_TARGETS_TO_BUILD="BPF;X86"
+> + $ git clone https://github.com/llvm/llvm-project.git
+> + $ cd llvm-project; mkdir build; cd build
+> + $ cmake -DLLVM_ENABLE_PROJECTS=clang -DLLVM_TARGETS_TO_BUILD="BPF;X86" -G "Unix Makefiles" ../llvm
+>    $ make -j $(getconf _NPROCESSORS_ONLN)
 
-Do we need to start distinguishing different reasons for carrier down,
-or have some kind of device not ready state instead?
+Thanks for the patch. Indeed llvm.org/git/llvm has been deprecated. We 
+have recommended to use llvm-project at 
+kernel/Documentation/bpf/bpf_devel_QA.rst.
+ 
+https://github.com/torvalds/linux/blob/master/Documentation/bpf/bpf_devel_QA.rst#q-got-it-so-how-do-i-build-llvm-manually-anyway
 
-I'm facing a similar issue with NIC firmware that isn't yet ready by
-device open time, but have been resisting the urge to lie to the stack
-about the state of the device and use link state as the next gate.
-Sure, most things will just work most of the time, but the problems
-with this approach are manifold. Firstly, at least in the NIC case,
-the user may confuse this state for some kind of cable issue and go
-looking in the wrong place for a solution. But, there are also several
-ways the initialization can fail after this point and now the device
-is administratively UP, but can never be UP, with no sanctioned way to
-communicate the failure. Aren't the issues here similar?
+Could you use the same scripts in the above link here?
+There are different ways to build llvm/clang, I just want to be
+consistent between bpf_devel_QA.rst and there.
 
-Regards,
-Edwin Peer
+I am also thinking whether we should just provide a link here to
+bpf_devel_QA.rst. Looking at samples/bpf/README.rst, it all contains
+direct commands for people to build/test, so copy-pasting the llvm
+build scripts here should be fine.
 
---000000000000088ec505b93084a6
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
-
-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
-mbo++PCnVfHaIk6rK1M0CPodEV0uUttmi6Mp/Ha7XmNgWQeQE3qkFIwAlb/kPNmJAMECAwEAAaOC
-Ac4wggHKMA4GA1UdDwEB/wQEAwIFoDCBngYIKwYBBQUHAQEEgZEwgY4wTQYIKwYBBQUHMAKGQWh0
-dHA6Ly9zZWN1cmUuZ2xvYmFsc2lnbi5jb20vY2FjZXJ0L2dzcGVyc29uYWxzaWduMnNoYTJnM29j
-c3AuY3J0MD0GCCsGAQUFBzABhjFodHRwOi8vb2NzcDIuZ2xvYmFsc2lnbi5jb20vZ3NwZXJzb25h
-bHNpZ24yc2hhMmczME0GA1UdIARGMEQwQgYKKwYBBAGgMgEoCjA0MDIGCCsGAQUFBwIBFiZodHRw
-czovL3d3dy5nbG9iYWxzaWduLmNvbS9yZXBvc2l0b3J5LzAJBgNVHRMEAjAAMEQGA1UdHwQ9MDsw
-OaA3oDWGM2h0dHA6Ly9jcmwuZ2xvYmFsc2lnbi5jb20vZ3NwZXJzb25hbHNpZ24yc2hhMmczLmNy
-bDAiBgNVHREEGzAZgRdlZHdpbi5wZWVyQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcD
-BDAfBgNVHSMEGDAWgBRpcoJiMWeVRIV3kYDEBDZJnXsLYTAdBgNVHQ4EFgQU9IOrXBkaTFAmOmjl
-0nu9X2Lzo+0wDQYJKoZIhvcNAQELBQADggEBADL+5FenxoguXoMm8ZG+bsMvN0LibFO75wee8cJI
-3K8dcJ8y6rPc6yvMRqI7CNwjWV5kBT3aQPZCdqOlNLl/HnKJxBt3WJRWGePcE1s/ljK4Kg1rUQAo
-e3Fx6cKh9/q3gqElSPU5pBOsCEy8cbi6UGA+IVifQ2Mrm5tsvYqWSaZ1mKTGz8/z8vxG2kGJZI6W
-wL3owFiCmLmw5R8OH22wqf/7sQFMRpH5IQFLRYdU9uCUy5FlUAgiCEXegph8ytxvo8MgYyQcCOeg
-BMfFgFEHuM2IgsDQyFC6XUViX6BQny67nlrO8pqwNRJ9Bdd7ykLCzCLOuR1znBAc2wAL9OKQe0cx
-ggJvMIICawIBATBtMF0xCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTMw
-MQYDVQQDEypHbG9iYWxTaWduIFBlcnNvbmFsU2lnbiAyIENBIC0gU0hBMjU2IC0gRzMCDCXgDAeB
-YW0HGKjSdzANBglghkgBZQMEAgEFAKCB1DAvBgkqhkiG9w0BCQQxIgQgqdefaQ/sfol7S05I/DBg
-DRNaDougJaRwUj9RhHunMBgwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUx
-DxcNMjEwMTE4MTgwMTQ4WjBpBgkqhkiG9w0BCQ8xXDBaMAsGCWCGSAFlAwQBKjALBglghkgBZQME
-ARYwCwYJYIZIAWUDBAECMAoGCCqGSIb3DQMHMAsGCSqGSIb3DQEBCjALBgkqhkiG9w0BAQcwCwYJ
-YIZIAWUDBAIBMA0GCSqGSIb3DQEBAQUABIIBAIkHPqj4lkiTnKojZrHo41PW/QFvWc9gXpqBVpDV
-EYLLN/pT8NQ/WlMK+GItXjpupdlkgpTH2e58AQo0HMqhpVCeee272bW4uhI21WOtlrOXzjFCvOrj
-gGUb/bAfo1kbXPS4oPL3IrkKUM318GtRz95zjgQOfwIbobj9fBb8EpVVEDw3GpxxaiknnuaRdaBL
-tTf2HsTKk99dmx7p7lRZsUasafalLpZpvMi4n+wUKJ313Oe3liwpWKKAYV64I/sM4iNHjX+xgmXj
-xKHkqJIQUmUJpYeJyU0yk1bJByaCEN3GHxv2zuVeJu9W4FccTBzfGT/RcvfUCttOfeh1FBr3Rlw=
---000000000000088ec505b93084a6--
+>   
+>   It is also possible to point make to the newly compiled 'llc' or
+> 
