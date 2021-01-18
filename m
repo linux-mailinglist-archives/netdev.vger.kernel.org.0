@@ -2,111 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B32C2FA8FE
-	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 19:39:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F07042FA8E4
+	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 19:33:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405524AbhARSil (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jan 2021 13:38:41 -0500
-Received: from wout5-smtp.messagingengine.com ([64.147.123.21]:47791 "EHLO
-        wout5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2405569AbhARSaD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jan 2021 13:30:03 -0500
-Received: from compute1.internal (compute1.nyi.internal [10.202.2.41])
-        by mailout.west.internal (Postfix) with ESMTP id 948D3184D;
-        Mon, 18 Jan 2021 13:29:14 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute1.internal (MEProxy); Mon, 18 Jan 2021 13:29:15 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=Co/Fyp
-        WzxPWa5HbJGkpGwvIvXJcCzicqQuTSYLp7rRs=; b=aOLS20IQ+mvU35IEIds8FU
-        J3NZeVCgwz5c4GsHIhIOETqmtbZzxC8x2evGBfWhS9Z4M0TNK72B8RN+fuJH3+jD
-        oQ3JeMNNDp0rQe6OgSPGCVGMcB6Nk8tTIGz4VIbIIgCBCSYd6K+7KxASlAz0uNxV
-        yhK9uHTBUJ1/yJF/hDq4gw3v5ju+zUBsRJ60LZsHr0Kd7lhE6M8zz5DJ9xlccI5E
-        R+aC6BSar1xkcR4ckv2oTWOijnD8oqG4NTCZz0hIWmDeVoSu4whp0wsxLe983Q10
-        eI4GnONjGsbNIE8f/XrsOvyrPKyN3B2TMGmZZoLKWz2ayHFXIGpiKnLUimuyyv7w
-        ==
-X-ME-Sender: <xms:etMFYMY8fRoUJ0ojgSTRVkyiViObY9L5hvKzXJBMwbapnYQN1JzoHg>
-    <xme:etMFYI7uFQw2COlZwSH1f5Ki1JuOnQ1HqbHYKAaz1AzPBKKDD36OtUzEqbrdbrY33
-    yqNfuLeIxoN8MI>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrtdekgdduudegucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtuggjsehttdertddttddvnecuhfhrohhmpefkughoucfu
-    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
-    gvrhhnpedtffekkeefudffveegueejffejhfetgfeuuefgvedtieehudeuueekhfduheel
-    teenucfkphepkeegrddvvdelrdduheefrdeggeenucevlhhushhtvghrufhiiigvpedtne
-    curfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:etMFYHDjpx1w7gRCGMwMblJAMz8BEzhZ0VqFF3CvW2twwiMSTvCEEA>
-    <xmx:etMFYGfQDkZDmNXMS-Yuxqr5LdFECt3pLcFqUobvCbWwnzaPQ7Xsbw>
-    <xmx:etMFYOKNuOreNTragG4TCKDu_DjBcmYLz7bO4XDfBglpG2tSCwTWRQ>
-    <xmx:etMFYMczkU7Acqja-6dVJ7FvdzEPql9ILLrYnmlFndA1h93UpcKnqQ>
-Received: from localhost (igld-84-229-153-44.inter.net.il [84.229.153.44])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 9ED8E240066;
-        Mon, 18 Jan 2021 13:29:13 -0500 (EST)
-Date:   Mon, 18 Jan 2021 20:29:10 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Petr Machata <petrm@nvidia.com>, netdev@vger.kernel.org,
-        David Ahern <dsahern@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Ido Schimmel <idosch@nvidia.com>,
-        Petr Machata <petrm@nvidia.org>
-Subject: Re: [PATCH net-next 0/3] nexthop: More fine-grained policies for
- netlink message validation
-Message-ID: <20210118182910.GA2334694@shredder.lan>
-References: <cover.1610978306.git.petrm@nvidia.org>
- <f2ba918f-6781-3740-fe49-756fe4fb40c5@gmail.com>
+        id S2407437AbhARSb3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jan 2021 13:31:29 -0500
+Received: from mx2.suse.de ([195.135.220.15]:52378 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2436897AbhARSa6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 18 Jan 2021 13:30:58 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id 677C7B7C4;
+        Mon, 18 Jan 2021 18:30:16 +0000 (UTC)
+Received: by lion.mk-sys.cz (Postfix, from userid 1000)
+        id B2C79603EF; Mon, 18 Jan 2021 19:30:15 +0100 (CET)
+Date:   Mon, 18 Jan 2021 19:30:15 +0100
+From:   Michal Kubecek <mkubecek@suse.cz>
+To:     Edwin Peer <edwin.peer@broadcom.com>
+Cc:     David Ahern <dsahern@gmail.com>, Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Andrew Gospodarek <andrew.gospodarek@broadcom.com>,
+        Michael Chan <michael.chan@broadcom.com>
+Subject: Re: [PATCH iproute2] iplink: work around rtattr length limits for
+ IFLA_VFINFO_LIST
+Message-ID: <20210118183015.aelwbgfzrsctjek7@lion.mk-sys.cz>
+References: <20210115225950.18762-1-edwin.peer@broadcom.com>
+ <20210115155325.7811b052@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20210116211223.xhurmrb2tqlffr7z@lion.mk-sys.cz>
+ <20210116172119.2c68d4c2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <807bb557-6e0c-1567-026c-13becbaff9c2@gmail.com>
+ <CAKOOJTyD-et6psSo0v-zvycFpJCLLmdSCr792OQzx_cLM2SjLw@mail.gmail.com>
+ <fee064d8-f650-11b8-44b4-55316aec60d3@gmail.com>
+ <CAKOOJTwSc6TppMu5+2n5boh7bz8vwAC2d7zpODzn9-ZYJyyTyQ@mail.gmail.com>
+ <155ba7e5-2344-f868-73cf-f43169b841a9@gmail.com>
+ <CAKOOJTzGei6a0HUbs6wo5sHOwAAVzGLFmMzbJsR8QYpAwyYqfA@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <f2ba918f-6781-3740-fe49-756fe4fb40c5@gmail.com>
+In-Reply-To: <CAKOOJTzGei6a0HUbs6wo5sHOwAAVzGLFmMzbJsR8QYpAwyYqfA@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 18, 2021 at 10:43:22AM -0700, David Ahern wrote:
-> On 1/18/21 7:05 AM, Petr Machata wrote:
-> > From: Petr Machata <petrm@nvidia.org>
-> > 
-> > There is currently one policy that covers all attributes for next hop
-> > object management. Actual validation is then done in code, which makes it
-> > unobvious which attributes are acceptable when, and indeed that everything
-> > is rejected as necessary.
-> > 
-> > In this series, split rtm_nh_policy to several policies that cover various
-> > aspects of the next hop object configuration, and instead of open-coding
-> > the validation, defer to nlmsg_parse(). This should make extending the next
-> > hop code simpler as well, which will be relevant in near future for
-> > resilient hashing implementation.
-> > 
-> > This was tested by running tools/testing/selftests/net/fib_nexthops.sh.
-> > Additionally iproute2 was tweaked to issue "nexthop list id" as an
-> > RTM_GETNEXTHOP dump request, instead of a straight get to test that
-> > unexpected attributes are indeed rejected.
-> > 
-> > In patch #1, convert attribute validation in nh_valid_get_del_req().
-> > 
-> > In patch #2, convert nh_valid_dump_req().
-> > 
-> > In patch #3, rtm_nh_policy is cleaned up and renamed to rtm_nh_policy_new,
-> > because after the above two patches, that is the only context that it is
-> > used in.
-> > 
-> > Petr Machata (3):
-> >   nexthop: Use a dedicated policy for nh_valid_get_del_req()
-> >   nexthop: Use a dedicated policy for nh_valid_dump_req()
-> >   nexthop: Specialize rtm_nh_policy
-> > 
-> >  net/ipv4/nexthop.c | 85 +++++++++++++++++-----------------------------
-> >  1 file changed, 32 insertions(+), 53 deletions(-)
-> > 
+On Mon, Jan 18, 2021 at 10:20:35AM -0800, Edwin Peer wrote:
+> On Mon, Jan 18, 2021 at 9:49 AM David Ahern <dsahern@gmail.com> wrote:
 > 
-> good cleanup. thanks for doing this. Did you run fib_nexthops.sh
-> selftests on the change? Seems right, but always good to run that script
-> which has functional tests about valid attribute combinations.
+> > Different bug, different solution required. The networking stack hits
+> > these kind of scalability problems from time to time with original
+> > uapis, so workarounds are needed. One example is rtmsg which only allows
+> > 255 routing tables, so RTA_TABLE attribute was added as a u32. Once a
+> > solution is found for the VF problem, iproute2 can be enhanced to
+> > accommodate.
+> 
+> The problem is even worse, because user space already depends on the
+> broken behavior. Erroring out will cause the whole ip link show
+> command to fail, which works today. Even though the VF list is bust,
+> the rest of the netdevs are still dumped correctly. A hard fail would
+> break those too.
 
-"This was tested by running tools/testing/selftests/net/fib_nexthops.sh"
-:)
+We could cut the list just before overflowing and inform userspace that
+the list is incomplete. Not perfect but there is no perfect solution
+which would not require userspace changes to work properly for devices
+with "too many" VFs.
+
+Michal
