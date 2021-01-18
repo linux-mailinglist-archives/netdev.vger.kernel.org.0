@@ -2,179 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F027D2F9830
-	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 04:24:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 794062F985C
+	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 04:49:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731556AbhARDXT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 17 Jan 2021 22:23:19 -0500
-Received: from mail.loongson.cn ([114.242.206.163]:52398 "EHLO loongson.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728664AbhARDXR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sun, 17 Jan 2021 22:23:17 -0500
-Received: from [10.130.0.135] (unknown [113.200.148.30])
-        by mail.loongson.cn (Coremail) with SMTP id AQAAf9DxaL7s_gRgPYQGAA--.10491S3;
-        Mon, 18 Jan 2021 11:22:21 +0800 (CST)
-Subject: Re: [PATCH bpf 1/2] samples/bpf: Set flag __SANE_USERSPACE_TYPES__
- for MIPS to fix build warnings
-To:     Yonghong Song <yhs@fb.com>,
-        Luc Van Oostenryck <luc.vanoostenryck@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Nathan Chancellor <natechancellor@gmail.com>,
-        Nick Desaulniers <ndesaulniers@google.com>
-References: <1610535453-2352-1-git-send-email-yangtiezhu@loongson.cn>
- <1610535453-2352-2-git-send-email-yangtiezhu@loongson.cn>
- <e3eb5919-4573-4576-e6aa-bd8ff56409ed@fb.com>
-Cc:     linux-sparse@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, clang-built-linux@googlegroups.com,
-        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Xuefeng Li <lixuefeng@loongson.cn>
-From:   Tiezhu Yang <yangtiezhu@loongson.cn>
-Message-ID: <f077bcae-97be-fc7f-c3fa-c6026bfe25d2@loongson.cn>
-Date:   Mon, 18 Jan 2021 11:22:20 +0800
-User-Agent: Mozilla/5.0 (X11; Linux mips64; rv:45.0) Gecko/20100101
- Thunderbird/45.4.0
+        id S1730417AbhARDtF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 17 Jan 2021 22:49:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57660 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728799AbhARDtD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 17 Jan 2021 22:49:03 -0500
+Received: from mail-oo1-xc32.google.com (mail-oo1-xc32.google.com [IPv6:2607:f8b0:4864:20::c32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98FDCC061573
+        for <netdev@vger.kernel.org>; Sun, 17 Jan 2021 19:48:23 -0800 (PST)
+Received: by mail-oo1-xc32.google.com with SMTP id v19so3798716ooj.7
+        for <netdev@vger.kernel.org>; Sun, 17 Jan 2021 19:48:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=Bbjv2rwFeRzVeFSJbNccCOB3REl59JtHTHaK5PWxV3g=;
+        b=XoHJ9+/AMaUGHFUurBSqkhnd/NRUPyuivWSVPu5N8akE3Jrw1PP/uC8X9UKYY+Nlu1
+         dhEExSaq49HZ8af3czHlCc0vgdNLJ0r8DETuyZMtjU7bUHXzWhtDg6IC9y1L8hKP/j10
+         /H7QNCpIMEMrinKsL+ano5sZm8B6O5K3SK+/4FodEpXjdpjMCFFo8WEtWpC5Mb6Ki/dm
+         QBE5TI6JAOEmX3QFUdPpgw5KzAl05MzEEL8oCA0M10h5LpnJ/eqPlB9Sh/p09J2PQWor
+         mCM/kKdAdBRnTkKYDw4tBDdVjN0/4Y+a3QFfXxaDI7yvgvx407VaOURtMNgkO1NYJCuq
+         utnw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Bbjv2rwFeRzVeFSJbNccCOB3REl59JtHTHaK5PWxV3g=;
+        b=jqN7rO8vPZKRIUUsXGzH6tIwoMck1jqjQ6QpYuTnDnXKC7ykyucQrhJ5ZHkKW7WmIC
+         VtHSUu/8WA4uWLETG7dljn7Vwc3rsRPYsicy6PAdEj7hGw2klmqMUZh0DD6q9Xfjygcf
+         JXCfH+BFymJ6LxTcRp3pgEugkH9VTp5rmHrq0t8OI1fMJN2dxrad33suoCJ8ND1Cj+5G
+         szIAgYKw9zoRKqsG1iKjDVYaB68CvjuXPhaZ/I0mMNqV9lfcTnlmyiABI2zlQN8jS2xQ
+         h5VFBbRhfAgalxZbDb5PVjzHECZz7stoHQlWXBVy+iEusN8grvAR+0t97pGIW/zN7O7K
+         I4kQ==
+X-Gm-Message-State: AOAM532/62sD6WnbZy9OCEySwG7/mP6H1ezujarZHrwYRpmon3k+AwML
+        yVWan2v9WjHXW+jR+qxAvsM=
+X-Google-Smtp-Source: ABdhPJwZGb16LHp5sBpw+4MiZKXzMBAi1JDWWqMqICaDJ3r1Cyhnwey7fro23ub4LyOO5lcLVMUPVw==
+X-Received: by 2002:a4a:81d2:: with SMTP id s18mr15773873oog.76.1610941702561;
+        Sun, 17 Jan 2021 19:48:22 -0800 (PST)
+Received: from Davids-MacBook-Pro.local ([8.6.112.181])
+        by smtp.googlemail.com with ESMTPSA id q127sm3165752oia.18.2021.01.17.19.48.21
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 17 Jan 2021 19:48:21 -0800 (PST)
+Subject: Re: [PATCH iproute2] iplink: work around rtattr length limits for
+ IFLA_VFINFO_LIST
+To:     Jakub Kicinski <kuba@kernel.org>, Michal Kubecek <mkubecek@suse.cz>
+Cc:     netdev@vger.kernel.org, Edwin Peer <edwin.peer@broadcom.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Andrew Gospodarek <andrew.gospodarek@broadcom.com>,
+        Michael Chan <michael.chan@broadcom.com>
+References: <20210115225950.18762-1-edwin.peer@broadcom.com>
+ <20210115155325.7811b052@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20210116211223.xhurmrb2tqlffr7z@lion.mk-sys.cz>
+ <20210116172119.2c68d4c2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <807bb557-6e0c-1567-026c-13becbaff9c2@gmail.com>
+Date:   Sun, 17 Jan 2021 20:48:20 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
+ Gecko/20100101 Thunderbird/78.6.1
 MIME-Version: 1.0
-In-Reply-To: <e3eb5919-4573-4576-e6aa-bd8ff56409ed@fb.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <20210116172119.2c68d4c2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-CM-TRANSID: AQAAf9DxaL7s_gRgPYQGAA--.10491S3
-X-Coremail-Antispam: 1UD129KBjvJXoWxAFyfur4fWrW5KF1xZF1rCrg_yoW5uF47pa
-        1vkay8CF4DCry3GFW2yr12vr1fX3yfG34jgFykWryjyF1agas2qr4kGrWa9rn7ur4Iy3y2
-        9FyagFy5AFyrXrJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUBY14x267AKxVW5JVWrJwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-        1l84ACjcxK6xIIjxv20xvE14v26r4j6ryUM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26F4j
-        6r4UJwA2z4x0Y4vEx4A2jsIE14v26r4UJVWxJr1l84ACjcxK6I8E87Iv6xkF7I0E14v26F
-        4UJVW0owAS0I0E0xvYzxvE52x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv
-        7VC0I7IYx2IY67AKxVWUJVWUGwAv7VC2z280aVAFwI0_Gr0_Cr1lOx8S6xCaFVCjc4AY6r
-        1j6r4UM4x0Y48IcVAKI48JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwACI402YVCY1x02628v
-        n2kIc2xKxwCYjI0SjxkI62AI1cAE67vIY487MxkIecxEwVAFwVW8GwCF04k20xvY0x0EwI
-        xGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480
-        Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_GFv_WrylIxkGc2Ij64vIr41lIxAIcVC0I7
-        IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k2
-        6cxKx2IYs7xG6rW3Jr0E3s1lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x
-        0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VUUCeHPUUUUU==
-X-CM-SenderInfo: p1dqw3xlh2x3gn0dqz5rrqw2lrqou0/
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 01/14/2021 01:12 AM, Yonghong Song wrote:
->
->
-> On 1/13/21 2:57 AM, Tiezhu Yang wrote:
->> MIPS needs __SANE_USERSPACE_TYPES__ before <linux/types.h> to select
->> 'int-ll64.h' in arch/mips/include/uapi/asm/types.h and avoid compile
->> warnings when printing __u64 with %llu, %llx or %lld.
->
-> could you mention which command produces the following warning?
+On 1/16/21 6:21 PM, Jakub Kicinski wrote:
+> 
+> I wonder. There is something inherently risky about making
+> a precedent for user space depending on invalid kernel output.
+> 
+> _If_ we want to fix the kernel, IMO we should only fix the kernel.
+> 
 
-make M=samples/bpf
+IMHO this is a kernel bug that should be fixed. An easy fix to check the
+overflow in nla_nest_end and return an error. Sadly, nla_nest_end return
+code is ignored and backporting any change to fix that will be
+nightmare. A warning will identify places that need to be fixed.
 
->
->>
->>      printf("0x%02x : %llu\n", key, value);
->>                       ~~~^          ~~~~~
->>                       %lu
->>     printf("%s/%llx;", sym->name, addr);
->>                ~~~^               ~~~~
->>                %lx
->>    printf(";%s %lld\n", key->waker, count);
->>                ~~~^                 ~~~~~
->>                %ld
->>
->> Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
->> ---
->>   samples/bpf/Makefile        | 4 ++++
->>   tools/include/linux/types.h | 3 +++
->>   2 files changed, 7 insertions(+)
->>
->> diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
->> index 26fc96c..27de306 100644
->> --- a/samples/bpf/Makefile
->> +++ b/samples/bpf/Makefile
->> @@ -183,6 +183,10 @@ BPF_EXTRA_CFLAGS := $(ARM_ARCH_SELECTOR)
->>   TPROGS_CFLAGS += $(ARM_ARCH_SELECTOR)
->>   endif
->>   +ifeq ($(ARCH), mips)
->> +TPROGS_CFLAGS += -D__SANE_USERSPACE_TYPES__
->> +endif
->> +
->
-> This change looks okay based on description in
-> arch/mips/include/uapi/asm/types.h
->
-> '''
-> /*
->  * We don't use int-l64.h for the kernel anymore but still use it for
->  * userspace to avoid code changes.
->  *
->  * However, some user programs (e.g. perf) may not want this. They can
->  * flag __SANE_USERSPACE_TYPES__ to get int-ll64.h here.
->  */
-> '''
->
->>   TPROGS_CFLAGS += -Wall -O2
->>   TPROGS_CFLAGS += -Wmissing-prototypes
->>   TPROGS_CFLAGS += -Wstrict-prototypes
->> diff --git a/tools/include/linux/types.h b/tools/include/linux/types.h
->> index 154eb4e..e9c5a21 100644
->> --- a/tools/include/linux/types.h
->> +++ b/tools/include/linux/types.h
->> @@ -6,7 +6,10 @@
->>   #include <stddef.h>
->>   #include <stdint.h>
->>   +#ifndef __SANE_USERSPACE_TYPES__
->>   #define __SANE_USERSPACE_TYPES__    /* For PPC64, to get LL64 types */
->> +#endif
->
-> What problem this patch fixed?
-
-If add "TPROGS_CFLAGS += -D__SANE_USERSPACE_TYPES__" in
-samples/bpf/Makefile, it appears the following error:
-
-Auto-detecting system features:
-...                        libelf: [ on  ]
-...                          zlib: [ on  ]
-...                           bpf: [ OFF ]
-
-BPF API too old
-make[3]: *** [Makefile:293: bpfdep] Error 1
-make[2]: *** [Makefile:156: all] Error 2
-
-With #ifndef __SANE_USERSPACE_TYPES__  in tools/include/linux/types.h,
-the above error has gone.
-
-> If this header is used, you can just
-> change comment from "PPC64" to "PPC64/MIPS", right?
-
-If include <linux/types.h> in the source files which have compile warnings
-when printing __u64 with %llu, %llx or %lld, it has no effect due to 
-actually
-it includes usr/include/linux/types.h instead of 
-tools/include/linux/types.h,
-this is because the include-directories in samples/bpf/Makefile are searched
-in the order, -I./usr/include is in the front of -I./tools/include.
-
-So I think define __SANE_USERSPACE_TYPES__ for MIPS in samples/bpf/Makefile
-is proper, at the same time, add #ifndef __SANE_USERSPACE_TYPES__ in
-tools/include/linux/types.h can avoid build error and have no side effect.
-
-I will send v2 later with mention in the commit message that this is
-mips related.
-
-Thanks,
-Tiezhu
-
->
->> +
->>   #include <asm/types.h>
->>   #include <asm/posix_types.h>
->>
-
+We can at least catch and fix this overflow which is by far the primary
+known victim of the rollover.
