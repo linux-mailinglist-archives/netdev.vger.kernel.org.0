@@ -2,164 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BA1512FAD10
-	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 23:05:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 768AA2FAD13
+	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 23:08:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388062AbhARWDe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jan 2021 17:03:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39036 "EHLO
+        id S1728289AbhARWHW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jan 2021 17:07:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387897AbhARWD0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jan 2021 17:03:26 -0500
-Received: from mail-ua1-x92c.google.com (mail-ua1-x92c.google.com [IPv6:2607:f8b0:4864:20::92c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3643C0613CF
-        for <netdev@vger.kernel.org>; Mon, 18 Jan 2021 14:02:45 -0800 (PST)
-Received: by mail-ua1-x92c.google.com with SMTP id t43so5999855uad.7
-        for <netdev@vger.kernel.org>; Mon, 18 Jan 2021 14:02:45 -0800 (PST)
+        with ESMTP id S1726673AbhARWG7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jan 2021 17:06:59 -0500
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7CAFC061573
+        for <netdev@vger.kernel.org>; Mon, 18 Jan 2021 14:06:18 -0800 (PST)
+Received: by mail-ed1-x533.google.com with SMTP id f1so5131390edr.12
+        for <netdev@vger.kernel.org>; Mon, 18 Jan 2021 14:06:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=9BjWeKnLhtX9WXPmjSXlj5EkkOdetRobr1udf+4AmzQ=;
-        b=a+9n5eZgCWi/s4vOPejRYrhDUcnrW08Zt0Nbg4Vzc+dhj8SIke/Z96SUBtUSWulSz0
-         MUYd3MF5e44z88vDRzUNpWZOO6I4kZHXLwldldcl1xmRhrsd5lodyqaJtcLzk8P/6GoS
-         o4N+ejsO0uBBQ1QpQCXmiLNjYZGOd6qC954c0=
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=NpA9RihFjhvKbW/47lgjYirSmMFWRoPYWcif1Oj3zz8=;
+        b=l7EH8664Wg59NtjEuTYf1xJMC03A50axxK5T5KH0I/qGHEKkpIbyzIveHS1RFb88YR
+         K5CkBWFDnrjhp3D6DnrlwGr9Zxb6/GQL/u/hYCFaZr9QXk6VT7VonRCbF1rZxNypKhME
+         8hRAYisbGMzT4CbQ590pqK6xHjCCLudTuHCvs27drIwi/DE8Iyj80o4zBt4d1HotjlFG
+         h4UcdnN1sdx00d+MXK+bIotssATy8v/Y93AXRZtBPZ2OQFp7RbNwIzl7TTcT7wycf9UO
+         DnxmQx7gezrdwVFkcALIFyAR30x1zRXEuwKMoMhi41pliM+wj9Qx9CIznJiX+RkbXV9F
+         Q9RA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9BjWeKnLhtX9WXPmjSXlj5EkkOdetRobr1udf+4AmzQ=;
-        b=BKv7rIvHCJYl+iLdIMUe2h0sNlOXSUDor2XF6m4xJGcQ8X6dbtVq4noTgKV2ceRDK6
-         zz71Dd6GusQ+Z9dvW9StBSI+qXkWQxXbCBqumbtZJdCLx24h8P+zqm7+n0OGZ9cnSXu+
-         N8QsrJdsKvOGJoYqsY+gf1Lp1feGIOwNYy4WP6RahCPerZ+Bf0X7pqr3ZQr1XKUav0xR
-         JM0+t3zPflwyf9OLDIoGrLKU2wL6FbBr6BdWIymxk4JSH5zIllOeRcGtXePpXiapHMuT
-         2KsxD6HE3oaFUT7PHmABgRYGjxru4XXUP8jRo76sF0LA8zXX+Zit9meojvtZ5xgIkKa9
-         P0SA==
-X-Gm-Message-State: AOAM533F2A+eW8DaHrMsGbUzrljMI5fCCxDe9TXLxXk36cpzZ1Gh1+AO
-        E7XrCumEHcDKhqwU3o7gtJsSyYINBwyH+Ofk9iFceA==
-X-Google-Smtp-Source: ABdhPJwuKHEEKlq5+7w41SyHuZ4THOU/eaMaoFBLcg0lHoFbaTX6gWLt3qWUpjxuMdkGEK3o+Xzp/yffgED7H2sZRvU=
-X-Received: by 2002:ab0:cb:: with SMTP id 69mr821626uaj.10.1611007364845; Mon,
- 18 Jan 2021 14:02:44 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=NpA9RihFjhvKbW/47lgjYirSmMFWRoPYWcif1Oj3zz8=;
+        b=sck128sEyaBVUh7w9pyXGjoM0xJBotrVEknvxXkYuFELk6A5fm1xpcTru1TeMIxkkQ
+         4UVVY8vqUrdEg7GptUcY/p0bH/tZCnKgMRA1wizU9rvLGuDSPkZtHPd2v0eLwELqFnOE
+         FX99joPlBo08eUslz5Y1tvHzCvikyXXW1nuQ/ZNn15ExDOQAxrU6qLHojn2wCSOzz2Bw
+         utXoficEade6Z4UJFuKiIcCRk1p7I9BWVUO7J6J8w06QjZ5n9yyXllUEptwV1KxSvUq0
+         FA3bZutueYy9j/wmXge+P6znP55L7FFW8z/OkDtSc7B4TOYfL20r5drCcp7hBMyp9vax
+         KGCQ==
+X-Gm-Message-State: AOAM533/SlnQPJt0ZIe2sPYHSvXdTx4FlXBvCsbjq9FYVue0mWa/CnXn
+        3ZbD6q3yWqNzrFIizVt2DaY=
+X-Google-Smtp-Source: ABdhPJwZnOL1xsGHftAa5+kYJ5Rk39ErccE2Uf+nJJfyRPQG0tB8X+ttZOFpA58W+ene+Na982bDDg==
+X-Received: by 2002:aa7:d64b:: with SMTP id v11mr1085764edr.16.1611007577593;
+        Mon, 18 Jan 2021 14:06:17 -0800 (PST)
+Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
+        by smtp.gmail.com with ESMTPSA id m9sm11372640edd.18.2021.01.18.14.06.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Jan 2021 14:06:17 -0800 (PST)
+Date:   Tue, 19 Jan 2021 00:06:16 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Nikolay Aleksandrov <nikolay@nvidia.com>
+Cc:     Tobias Waldekranz <tobias@waldekranz.com>, davem@davemloft.net,
+        kuba@kernel.org, andrew@lunn.ch, vivien.didelot@gmail.com,
+        f.fainelli@gmail.com, roopa@nvidia.com, netdev@vger.kernel.org,
+        jiri@resnulli.us, idosch@idosch.org, stephen@networkplumber.org
+Subject: Re: [RFC net-next 2/7] net: bridge: switchdev: Include local flag in
+ FDB notifications
+Message-ID: <20210118220616.ql2i3uigyz6tiuhz@skbuf>
+References: <20210116012515.3152-3-tobias@waldekranz.com>
+ <20210117193009.io3nungdwuzmo5f7@skbuf>
+ <87turejclo.fsf@waldekranz.com>
+ <20210118192757.xpb4ad2af2xpetx3@skbuf>
+ <87o8hmj8w0.fsf@waldekranz.com>
+ <75ba13d0-bc14-f3b7-d842-cee2cd16d854@nvidia.com>
+ <b5e2e1f7-c8dc-550b-25ec-0dbc23813444@nvidia.com>
+ <ee159769-4359-86ce-3dca-78dff9d8366a@nvidia.com>
+ <20210118215009.jegmjjhlrooe2r2h@skbuf>
+ <4fb95388-9564-7555-06c0-3126f95c34b3@nvidia.com>
 MIME-Version: 1.0
-References: <20210116052623.3196274-1-grundler@chromium.org> <20210116052623.3196274-3-grundler@chromium.org>
-In-Reply-To: <20210116052623.3196274-3-grundler@chromium.org>
-From:   Grant Grundler <grundler@chromium.org>
-Date:   Mon, 18 Jan 2021 22:02:33 +0000
-Message-ID: <CANEJEGuDnZ6ujsRnn7xmO-y+SxxqxyaQCJXmHeV3XgfLsA8cDg@mail.gmail.com>
-Subject: Re: [PATCH 3/3] net: usb: cdc_ncm: don't spew notifications
-To:     Grant Grundler <grundler@chromium.org>,
-        nic_swsd <nic_swsd@realtek.com>
-Cc:     Oliver Neukum <oliver@neukum.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-usb@vger.kernel.org, netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <4fb95388-9564-7555-06c0-3126f95c34b3@nvidia.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-+nic_swsd [adding per Realtek developer team request]
+On Mon, Jan 18, 2021 at 11:53:18PM +0200, Nikolay Aleksandrov wrote:
+> On 18/01/2021 23:50, Vladimir Oltean wrote:
+> > On Mon, Jan 18, 2021 at 11:39:27PM +0200, Nikolay Aleksandrov wrote:
+> >> Apologies for the multiple emails, but wanted to leave an example:
+> >>
+> >> 00:11:22:33:44:55 dev ens16 master bridge permanent
+> >>
+> >> This must always exist and user-space must be able to create it, which
+> >> might be against what you want to achieve (no BR_FDB_LOCAL entries with
+> >> fdb->dst != NULL).
+> >
+> > Can you give me an example of why it would matter that fdb->dst in this
+> > case is set to ens16?
+> >
+>
+> Can you dump it as "dev ens16" without it? :)
+> Or alternatively can you send a notification with "dev ens16" without it?
+>
+> I'm in favor of removing it, but it is risky since some script somewhere might
+> be searching for it, or some user-space daemon might expect to see a notification
+> for such entries and react on it.
 
-On Sat, Jan 16, 2021 at 5:27 AM Grant Grundler <grundler@chromium.org> wrote:
->
-> RTL8156 sends notifications about every 32ms.
-> Only display/log notifications when something changes.
->
-> This issue has been reported by others:
->         https://bugs.launchpad.net/ubuntu/+source/linux/+bug/1832472
->         https://lkml.org/lkml/2020/8/27/1083
->
-> ...
-> [785962.779840] usb 1-1: new high-speed USB device number 5 using xhci_hcd
-> [785962.929944] usb 1-1: New USB device found, idVendor=0bda, idProduct=8156, bcdDevice=30.00
-> [785962.929949] usb 1-1: New USB device strings: Mfr=1, Product=2, SerialNumber=6
-> [785962.929952] usb 1-1: Product: USB 10/100/1G/2.5G LAN
-> [785962.929954] usb 1-1: Manufacturer: Realtek
-> [785962.929956] usb 1-1: SerialNumber: 000000001
-> [785962.991755] usbcore: registered new interface driver cdc_ether
-> [785963.017068] cdc_ncm 1-1:2.0: MAC-Address: 00:24:27:88:08:15
-> [785963.017072] cdc_ncm 1-1:2.0: setting rx_max = 16384
-> [785963.017169] cdc_ncm 1-1:2.0: setting tx_max = 16384
-> [785963.017682] cdc_ncm 1-1:2.0 usb0: register 'cdc_ncm' at usb-0000:00:14.0-1, CDC NCM, 00:24:27:88:08:15
-> [785963.019211] usbcore: registered new interface driver cdc_ncm
-> [785963.023856] usbcore: registered new interface driver cdc_wdm
-> [785963.025461] usbcore: registered new interface driver cdc_mbim
-> [785963.038824] cdc_ncm 1-1:2.0 enx002427880815: renamed from usb0
-> [785963.089586] cdc_ncm 1-1:2.0 enx002427880815: network connection: disconnected
-> [785963.121673] cdc_ncm 1-1:2.0 enx002427880815: network connection: disconnected
-> [785963.153682] cdc_ncm 1-1:2.0 enx002427880815: network connection: disconnected
-> ...
->
-> This is about 2KB per second and will overwrite all contents of a 1MB
-> dmesg buffer in under 10 minutes rendering them useless for debugging
-> many kernel problems.
->
-> This is also an extra 180 MB/day in /var/logs (or 1GB per week) rendering
-> the majority of those logs useless too.
->
-> When the link is up (expected state), spew amount is >2x higher:
-> ...
-> [786139.600992] cdc_ncm 2-1:2.0 enx002427880815: network connection: connected
-> [786139.632997] cdc_ncm 2-1:2.0 enx002427880815: 2500 mbit/s downlink 2500 mbit/s uplink
-> [786139.665097] cdc_ncm 2-1:2.0 enx002427880815: network connection: connected
-> [786139.697100] cdc_ncm 2-1:2.0 enx002427880815: 2500 mbit/s downlink 2500 mbit/s uplink
-> [786139.729094] cdc_ncm 2-1:2.0 enx002427880815: network connection: connected
-> [786139.761108] cdc_ncm 2-1:2.0 enx002427880815: 2500 mbit/s downlink 2500 mbit/s uplink
-> ...
->
-> Chrome OS cannot support RTL8156 until this is fixed.
->
-> Signed-off-by: Grant Grundler <grundler@chromium.org>
-> ---
->  drivers/net/usb/cdc_ncm.c  | 12 +++++++++++-
->  include/linux/usb/usbnet.h |  2 ++
->  2 files changed, 13 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/net/usb/cdc_ncm.c b/drivers/net/usb/cdc_ncm.c
-> index 25498c311551..5de096545b86 100644
-> --- a/drivers/net/usb/cdc_ncm.c
-> +++ b/drivers/net/usb/cdc_ncm.c
-> @@ -1827,6 +1827,15 @@ cdc_ncm_speed_change(struct usbnet *dev,
->         uint32_t rx_speed = le32_to_cpu(data->DLBitRRate);
->         uint32_t tx_speed = le32_to_cpu(data->ULBitRate);
->
-> +       /* if the speed hasn't changed, don't report it.
-> +        * RTL8156 shipped before 2021 sends notification about every 32ms.
-> +        */
-> +       if (dev->rx_speed == rx_speed && dev->tx_speed == tx_speed)
-> +               return;
-> +
-> +       dev->rx_speed = rx_speed;
-> +       dev->tx_speed = tx_speed;
-> +
->         /*
->          * Currently the USB-NET API does not support reporting the actual
->          * device speed. Do print it instead.
-> @@ -1867,7 +1876,8 @@ static void cdc_ncm_status(struct usbnet *dev, struct urb *urb)
->                  * USB_CDC_NOTIFY_NETWORK_CONNECTION notification shall be
->                  * sent by device after USB_CDC_NOTIFY_SPEED_CHANGE.
->                  */
-> -               usbnet_link_change(dev, !!event->wValue, 0);
-> +               if (netif_carrier_ok(dev->net) != !!event->wValue)
-> +                       usbnet_link_change(dev, !!event->wValue, 0);
->                 break;
->
->         case USB_CDC_NOTIFY_SPEED_CHANGE:
-> diff --git a/include/linux/usb/usbnet.h b/include/linux/usb/usbnet.h
-> index 88a7673894d5..cfbfd6fe01df 100644
-> --- a/include/linux/usb/usbnet.h
-> +++ b/include/linux/usb/usbnet.h
-> @@ -81,6 +81,8 @@ struct usbnet {
->  #              define EVENT_LINK_CHANGE        11
->  #              define EVENT_SET_RX_MODE        12
->  #              define EVENT_NO_IP_ALIGN        13
-> +       u32                     rx_speed;       /* in bps - NOT Mbps */
-> +       u32                     tx_speed;       /* in bps - NOT Mbps */
->  };
->
->  static inline struct usb_driver *driver_of(struct usb_interface *intf)
-> --
-> 2.29.2
->
+If "dev ens16" makes no difference to the forwarding and/or termination
+path of the bridge, just to user space reporting, then keeping
+appearances is a bit pointless.
+
+For example, DSA switch interfaces inherit by default the MAC address of
+the host interface. Having multiple net devices with the same MAC
+address works because either they are in different L2 domains (case in
+which the MAC addresses should still be unique per domain), or they are
+in the same L2 domain, under the same bridge (case in which it is the
+bridge who should do IP neighbour resolution etc).
+Having that said, let there be these commands:
+
+$ ip link add br0 type bridge
+$ ip link set swp0 master br0
+$ ip link set swp1 master br0
+$ ip link set swp2 master br0
+$ ip link set swp3 master br0
+$ bridge fdb | grep permanent
+00:04:9f:05:de:0a dev swp0 vlan 1 master br0 permanent
+00:04:9f:05:de:0a dev swp0 master br0 permanent
+
+And these:
+
+$ ip link add br0 type bridge
+$ ip link set swp3 master br0
+$ ip link set swp2 master br0
+$ ip link set swp1 master br0
+$ ip link set swp0 master br0
+$ bridge fdb | grep permanent
+00:04:9f:05:de:0a dev swp0 vlan 1 master br0 permanent
+00:04:9f:05:de:0a dev swp0 master br0 permanent
+00:04:9f:05:de:0a dev swp3 vlan 1 master br0 permanent
+00:04:9f:05:de:0a dev swp3 master br0 permanent
+
+Preserving the reporting for permanent/local FDB entries added by user
+is one thing. But do we need to also preserve this behavior (i.e. report
+the first unique MAC address of an interface that joins the bridge as a
+permanent/local address on that brport, but not on the others, and not
+on br0)? If yes, then I'm afraid there's nothing we can do.
