@@ -2,133 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C24B2FA971
-	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 19:59:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8DB892FA979
+	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 19:59:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2407913AbhARS55 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jan 2021 13:57:57 -0500
-Received: from esa.microchip.iphmx.com ([68.232.154.123]:44348 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2393759AbhARS5p (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jan 2021 13:57:45 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1610996264; x=1642532264;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=8xW+Ib1Q2UKnK0aGyXk2bqJxeinADOf0EJFfNV6Zz5k=;
-  b=OZ0RDIVGidp4ciskgVVwgu9F09U9HioiOAL/d0NxVi2WuHHPfNmJL80Q
-   rrs0ACgJnKMnZC2rH4gVbNbU9HfzqKYdQlECFVBsAJURmPobhpnfMDcXP
-   mxHD+aCONZAOVh24bYGcPxFZKatE4iV+6EA+2Y65BYTnDyQzMxpDQZrQZ
-   YfH9m/dGajtDl0zh50oHs0ottUyqAmGRVbXNcUcwy3NNEZVaHPs4pCtgk
-   yj1LOx9Wax2S0NM8ulWkrHEZj22kNQZ9CIHSpVJxMRvuxGILtYbqF01Tn
-   YRobik+FGDbWdiiT0dZwYOKB5+YoQQVGZnhgRwciEPZHF0xEbyffiPCT9
-   A==;
-IronPort-SDR: zkf4OhDYE5w4kAjlcSrjPOGaOeF3hskz86dXFAwfhAZReZa2lk5TRBnT7px5h33ot4wlz2bZxR
- d07l6EZYUMrhRNlu04pf9s99OzRPpGWwvV0ClKIIPu9DLPGRl6j6MjBNh3no1/lj2/L+x+DOVd
- GFuml9uCHTZW0NUHsg8hB99Mcyc97EDlFGI5E6w55eN+8meQccpPsrMMgbkEfkjPuaIhB4w0QF
- kNNTStimmQAIMQZgEdkbSV56zOIP1kCqoo6Pl63aa2KKP02DfraobMB//llKw2UZlwPLlVkNmB
- 9Dw=
-X-IronPort-AV: E=Sophos;i="5.79,357,1602572400"; 
-   d="scan'208";a="40840029"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 18 Jan 2021 11:56:20 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Mon, 18 Jan 2021 11:56:19 -0700
-Received: from localhost (10.10.115.15) by chn-vm-ex03.mchp-main.com
- (10.10.85.151) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
- Transport; Mon, 18 Jan 2021 11:56:19 -0700
-Date:   Mon, 18 Jan 2021 19:56:18 +0100
-From:   Horatiu Vultur <horatiu.vultur@microchip.com>
-To:     Rasmus Villemoes <rasmus.villemoes@prevas.dk>
-CC:     Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        <bridge@lists.linux-foundation.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net] net: mrp: use stp state as substitute for
- unimplemented mrp state
-Message-ID: <20210118185618.75h45rjf6qqberic@soft-dev3.localdomain>
-References: <20210118181319.25419-1-rasmus.villemoes@prevas.dk>
+        id S2407824AbhARS7Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jan 2021 13:59:25 -0500
+Received: from mail.kernel.org ([198.145.29.99]:41100 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2393762AbhARS5o (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 18 Jan 2021 13:57:44 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C9BBA206D4;
+        Mon, 18 Jan 2021 18:56:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1610996219;
+        bh=1vTCgBc1BfZgrY9vBQmTci420oqBaiYrPXOzp8GSXMs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=vGUV0zspjru7umtHIEWI/xL6U4S4sZMThQ6igSQNpE9rlOWjW3M5GVdQlolkpc8NK
+         V4y/lXTeajijAH0Q8Hi+EA1BStocThB/v7j415mblTWY8y/9OnGVXVjPQdEnwtP/S7
+         dS5fEJIghahrsP3ygdO4ZFKwfwSzfWkkqFuSSJ0Nn6LHHDFZkl1U+lr1MMyDEED14t
+         K2B+771d/DRLVgROy9oBdfJo9ZtFyvg9h1Pt9OOZ5gt1CkerkcmJCx2fNlZzjDcRZu
+         OhusiJgli/08WnmtnMRLrTJUBxyB6YlTQXrzoqdUZQ8+5+UEQL3yvZHz1PGjodULDM
+         dv3tEZraOIqMA==
+Date:   Mon, 18 Jan 2021 10:56:57 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jonas Bonn <jonas@norrbonn.se>
+Cc:     Pravin B Shelar <pbshelar@fb.com>, netdev@vger.kernel.org,
+        pablo@netfilter.org, laforge@gnumonks.org
+Subject: Re: [PATCH net-next v5] GTP: add support for flow based tunneling
+ API
+Message-ID: <20210118105657.72d9a6fe@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <fea30896-e296-5eb3-4202-05a6bf2c1e8e@norrbonn.se>
+References: <20210110070021.26822-1-pbshelar@fb.com>
+        <20210116164642.4af4de8e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <8adc4450-c32d-625e-3c8c-70dbd7cbf052@norrbonn.se>
+        <20210118092722.52c9d890@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <fea30896-e296-5eb3-4202-05a6bf2c1e8e@norrbonn.se>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <20210118181319.25419-1-rasmus.villemoes@prevas.dk>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The 01/18/2021 19:13, Rasmus Villemoes wrote:
+On Mon, 18 Jan 2021 19:27:53 +0100 Jonas Bonn wrote:
+> On 18/01/2021 18:27, Jakub Kicinski wrote:
+> > v5 itself was laying around on patchwork for almost a week, marked as
+> > "Needs Review/Ack".  
 > 
+> When new series show up just hours after review, it's hard to take them 
+> seriously.  It takes a fair amount of time to go through an elephant 
+> like this and to make sense of it; the time spent in response to review 
+> commentary shouldn't be less.
 
-Hi Rasmus,
+Agreed.
 
-> When using MRP with hardware that does understand the concept of
-> blocked or forwarding ports, but not the full MRP offload, we
-> currently fail to tell the hardware what state it should put the port
-> in when the ring is closed - resulting in a ring of forwarding ports
-> and all the trouble that comes with that.
-
-But why don't you implement the SWITCHDEV_ATTR_ID_MRP_PORT_STATE in your
-driver? if already the HW understands the concept of block or forwarding?
-
+> > Normally we try to merge patches within two days. If anything my
+> > lesson from this whole ordeal is in fact waiting longer makes
+> > absolutely no sense. The review didn't come in anyway, and we're
+> > just delaying whatever project Pravin needs this for :/  
 > 
-> Signed-off-by: Rasmus Villemoes <rasmus.villemoes@prevas.dk>
-> ---
-> 
-> I don't really understand why SWITCHDEV_ATTR_ID_MRP_PORT_STATE even
-> has to exist seperately from SWITCHDEV_ATTR_ID_PORT_STP_STATE, and
-> it's hard to tell what the difference might be since no kernel code
-> implements the former.
+> I think the expectation that everything gets review within two days is 
+> unrealistic. 
 
-The reason was to stay away from STP, because you can't run these two
-protocols at the same time. Even though in SW, we reuse port's state.
-In our driver(which is not upstreamed), we currently implement
-SWITCHDEV_ATTR_ID_MRP_PORT_STATE and just call the
-SWITCHDEV_ATTR_ID_PORT_STP_STATE.
+Right, it's perfectly fine to send an email saying "please wait, I'll
+review it on $date".
 
-> 
->  net/bridge/br_mrp_switchdev.c | 18 ++++++++++++++++++
->  1 file changed, 18 insertions(+)
-> 
-> diff --git a/net/bridge/br_mrp_switchdev.c b/net/bridge/br_mrp_switchdev.c
-> index ed547e03ace1..8a1c7953e57a 100644
-> --- a/net/bridge/br_mrp_switchdev.c
-> +++ b/net/bridge/br_mrp_switchdev.c
-> @@ -180,6 +180,24 @@ int br_mrp_port_switchdev_set_state(struct net_bridge_port *p,
->         int err;
-> 
->         err = switchdev_port_attr_set(p->dev, &attr);
-> +       if (err == -EOPNOTSUPP) {
-> +               attr.id = SWITCHDEV_ATTR_ID_PORT_STP_STATE;
-> +               switch (state) {
-> +               case BR_MRP_PORT_STATE_DISABLED:
-> +               case BR_MRP_PORT_STATE_NOT_CONNECTED:
-> +                       attr.u.stp_state = BR_STATE_DISABLED;
-> +                       break;
-> +               case BR_MRP_PORT_STATE_BLOCKED:
-> +                       attr.u.stp_state = BR_STATE_BLOCKING;
-> +                       break;
-> +               case BR_MRP_PORT_STATE_FORWARDING:
-> +                       attr.u.stp_state = BR_STATE_FORWARDING;
-> +                       break;
-> +               default:
-> +                       return err;
-> +               };
-> +               err = switchdev_port_attr_set(p->dev, &attr);
-> +       }
->         if (err && err != -EOPNOTSUPP)
->                 br_warn(p->br, "error setting offload MRP state on port %u(%s)\n",
->                         (unsigned int)p->port_no, p->dev->name);
-> --
-> 2.23.0
-> 
+> Worse though, is the insinuation that anything unreviewed 
+> gets blindly merged...  No, the two day target should be for the merging 
+> of ACK:ed patches.
 
--- 
-/Horatiu
+Well, certainly, the code has to be acceptable to the person merging it.
+
+Let's also remember that Pravin is quite a seasoned contributor.
+
+> > Do I disagree with you that the patch is "far from pretty"? Not at all,
+> > but I couldn't find any actual bug, and the experience of contributors
+> > matters to us, so we can't wait forever.
+> >   
+> >> The following issues remain unaddressed after review:
+> >>
+> >> i)  the patch contains several logically separate changes that would be
+> >> better served as smaller patches
+> >> ii) functionality like the handling of end markers has been introduced
+> >> without further explanation
+> >> iii) symmetry between the handling of GTPv0 and GTPv1 has been
+> >> unnecessarily broken
+> >> iv) there are no available userspace tools to allow for testing this
+> >> functionality  
+> > 
+> > I don't understand these points couldn't be stated on any of the last
+> > 3 versions / in the last month.  
+> 
+> I believe all of the above was stated in review of series v1 and v2.  v3 
+> was posted during the merge window so wasn't really relevant for review. 
+>   v4 didn't address the comments from v1 and v2.  v5 was posted 3 hours 
+> after receiving reverse christmas tree comments and addressed only 
+> those.  v5 received commentary within a week... hardly excessive for a 
+> lightly maintained module like this one.
+
+Sorry, a week is far too long for netdev. If we were to wait that long
+we'd have a queue of 300+ patches always hanging around.
+
+> >> I have requested that this patch be reworked into a series of smaller
+> >> changes.  That would allow:
+> >>
+> >> i) reasonable review
+> >> ii) the possibility to explain _why_ things are being done in the patch
+> >> comment where this isn't obvious (like the handling of end markers)
+> >> iii) the chance to do a reasonable rebase of other ongoing work onto
+> >> this patch (series):  this one patch is invasive and difficult to rebase
+> >> onto
+> >>
+> >> I'm not sure what the hurry is to get this patch into mainline.  Large
+> >> and complicated patches like this take time to review; please revert
+> >> this and allow that process to happen.  
+> > 
+> > You'd need to post a revert with the justification to the ML, so it can
+> > be reviewed on its merits. That said I think incremental changes may be
+> > a better direction.
+> 
+> I guess I'll have to do so, but that seems like setting the bar higher 
+> than for even getting the patch in in the first place.
+> 
+> I don't think it's tenable for patches to sneak in because they are so 
+> convoluted that the maintainers just can't find the energy to review 
+> them.  I'd say that the maintainers silence on this particular patch 
+> speaks volumes in itself.
+
+Sadly most maintainers are not particularly dependable, so we can't
+afford to make that the criteria.
+
+I have also pinged for reviews on v4 and nobody replied.
+
+> Sincerely frustrated because rebasing my IPv6 series on top of this mess 
+> will take days,
+
+I sympathize, perhaps we should document the expectations we have so
+less involved maintainers know the expectations :(
