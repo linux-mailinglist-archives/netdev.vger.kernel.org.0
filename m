@@ -2,306 +2,357 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E1A52F9675
-	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 00:56:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 07DEB2F9686
+	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 01:12:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730192AbhAQX40 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 17 Jan 2021 18:56:26 -0500
-Received: from mailout2.samsung.com ([203.254.224.25]:40735 "EHLO
-        mailout2.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729621AbhAQX4Q (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 17 Jan 2021 18:56:16 -0500
-Received: from epcas2p4.samsung.com (unknown [182.195.41.56])
-        by mailout2.samsung.com (KnoxPortal) with ESMTP id 20210117235532epoutp02dd5133b55ff1fd1247b8e933e27e6a72~bKjz0MKaZ1105911059epoutp02E
-        for <netdev@vger.kernel.org>; Sun, 17 Jan 2021 23:55:32 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.samsung.com 20210117235532epoutp02dd5133b55ff1fd1247b8e933e27e6a72~bKjz0MKaZ1105911059epoutp02E
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1610927733;
-        bh=qYM8peW2AjSGF9pUtcB20zc3RGH88e8d217Rrq3UYsA=;
-        h=From:To:Cc:In-Reply-To:Subject:Date:References:From;
-        b=dMyyXbSEEh3zM1Xz6Ab3tSKVkC5CUMDWh7BdlVQYhhFi9YJbQqU8VCaUoy4guAbPG
-         kw/iPEnJr7nUWcIOqoYyUpbUprUexi2hXoZC4jAGI80ud4k3a7h2m+oRInmb6vXpXN
-         sTZ6YGNwSfkXSE9V0DhSSh/d4+C/dZj3EnZPAo3U=
-Received: from epsnrtp4.localdomain (unknown [182.195.42.165]) by
-        epcas2p1.samsung.com (KnoxPortal) with ESMTP id
-        20210117235532epcas2p1775ca676498d3f1332d6db5e5357c34a~bKjzMHgs03144131441epcas2p1m;
-        Sun, 17 Jan 2021 23:55:32 +0000 (GMT)
-Received: from epsmges2p4.samsung.com (unknown [182.195.40.184]) by
-        epsnrtp4.localdomain (Postfix) with ESMTP id 4DJsHP48h0z4x9QB; Sun, 17 Jan
-        2021 23:55:29 +0000 (GMT)
-Received: from epcas2p2.samsung.com ( [182.195.41.54]) by
-        epsmges2p4.samsung.com (Symantec Messaging Gateway) with SMTP id
-        78.14.52511.07EC4006; Mon, 18 Jan 2021 08:55:28 +0900 (KST)
-Received: from epsmtrp1.samsung.com (unknown [182.195.40.13]) by
-        epcas2p3.samsung.com (KnoxPortal) with ESMTPA id
-        20210117235528epcas2p3d3db81d17c6c182b49afe808d7c142be~bKjvSedkd0572605726epcas2p3b;
-        Sun, 17 Jan 2021 23:55:28 +0000 (GMT)
-Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
-        epsmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20210117235528epsmtrp172f3791aca954ca2b38d17a169e8e102~bKjvRNohE0966309663epsmtrp1N;
-        Sun, 17 Jan 2021 23:55:28 +0000 (GMT)
-X-AuditID: b6c32a48-4f9ff7000000cd1f-d2-6004ce708f31
-Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
-        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        D4.9E.13470.F6EC4006; Mon, 18 Jan 2021 08:55:27 +0900 (KST)
-Received: from KORDO035731 (unknown [12.36.185.47]) by epsmtip1.samsung.com
-        (KnoxPortal) with ESMTPA id
-        20210117235527epsmtip171b2f31bfb14ec51c96e451fc33f6e48~bKjvB6qCu0339203392epsmtip1o;
-        Sun, 17 Jan 2021 23:55:27 +0000 (GMT)
-From:   "Dongseok Yi" <dseok.yi@samsung.com>
-To:     "'Alexander Lobakin'" <alobakin@pm.me>
-Cc:     "'David S. Miller'" <davem@davemloft.net>,
-        "'Steffen Klassert'" <steffen.klassert@secunet.com>,
-        <namkyu78.kim@samsung.com>, "'Jakub Kicinski'" <kuba@kernel.org>,
-        "'Hideaki YOSHIFUJI'" <yoshfuji@linux-ipv6.org>,
-        "'Willem de Bruijn'" <willemb@google.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-In-Reply-To: <20210115171203.175115-1-alobakin@pm.me>
-Subject: RE: [PATCH net v2] udp: ipv4: manipulate network header of NATed
- UDP GRO fraglist
-Date:   Mon, 18 Jan 2021 08:55:27 +0900
-Message-ID: <023201d6ed2c$3b0c8af0$b125a0d0$@samsung.com>
-MIME-Version: 1.0
+        id S1730186AbhARALf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 17 Jan 2021 19:11:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39378 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728042AbhARALb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 17 Jan 2021 19:11:31 -0500
+Received: from mail-io1-xd2f.google.com (mail-io1-xd2f.google.com [IPv6:2607:f8b0:4864:20::d2f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 002C6C061573;
+        Sun, 17 Jan 2021 16:10:50 -0800 (PST)
+Received: by mail-io1-xd2f.google.com with SMTP id y19so29654257iov.2;
+        Sun, 17 Jan 2021 16:10:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=FqsjQwQKA1gw4+j522YIQEQoxr3GnpyQrRbljAkYheY=;
+        b=Ij5YKx2YiEtaoNqOoN9HwTO4/F/28R2Af+4gkJW8eGhWqIyhnsBNOFST23yJr0cFh/
+         7fzRTgAaQc6Fe1S3bxyjzBmCRceKqjUogfztvlwx8uADPL4avY5W1Cgejem9hkj8AeaN
+         A7cJxl5UJjSfc4FRCLzH7QXpUX2GiXNyzUMeMXhfw+i+gn1zFfbNJIdcAShLXEJCn26D
+         17nS7i34wq+7J5b3cxY8+9NaMBYB0rzgbocaTgx7EWf3w76/+JnOAh3FMnYWntCBKloG
+         MOuuU6rBugjbVM1LwJdfppAJ3d9j9NJt4vdYkKvHqMO7BEmUXMeYSeNLtuH2JSu5eIuo
+         /vRw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=FqsjQwQKA1gw4+j522YIQEQoxr3GnpyQrRbljAkYheY=;
+        b=p1rQ8FKC46Xcu0QmDcYAy4cMAdOGAqLPMQ2GJKM6T/39Q2azKrIArW4QEuFfeG9r7n
+         P00NXKXTWbf76/oJEuTzxA9yB9Ln7HxrgIdijv/MvDD1GrS3T6wtO19PMNc0Wbkb3It1
+         4e4Qtq7WY5FCjDFezZrdvY2IH4zZlLYHVq99Qfr1Am1pGSeDTObQVtx7zQIVgMcds2L2
+         l5PfVV7wGT/oDJtTBGA56fkr2VxGF4ACGraJFfA6PqhyM0JCjWkr6s8hPrQ7RJrnHFrh
+         617p978XoJ9WMSwOfPYOI6AJbIDpviTGvKeAZKxN4uwOf+mSTh/JY8E4afW0RuxtEuL9
+         n+1w==
+X-Gm-Message-State: AOAM530DTrdBw72xc8NnyBza76KK1sK+iy/wLY9m+iwqr1N1N9d1FL+c
+        kJORjIrbIMS7FNHNUQeLRBI=
+X-Google-Smtp-Source: ABdhPJz9fb0PS7SNK4Jti7Ll6oLGm5wmSqWZ4NQhTIkP5BZ406WD5nkHN6XTuThp08sgmR8vhc+s4g==
+X-Received: by 2002:a92:1589:: with SMTP id 9mr18399403ilv.39.1610928650204;
+        Sun, 17 Jan 2021 16:10:50 -0800 (PST)
+Received: from localhost ([172.243.146.206])
+        by smtp.gmail.com with ESMTPSA id f80sm4544715ilg.8.2021.01.17.16.10.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 17 Jan 2021 16:10:49 -0800 (PST)
+Date:   Sun, 17 Jan 2021 16:10:40 -0800
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Hangbin Liu <liuhangbin@gmail.com>, bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Jiri Benc <jbenc@redhat.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        David Ahern <dsahern@gmail.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Hangbin Liu <liuhangbin@gmail.com>
+Message-ID: <6004d200d0d10_266420825@john-XPS-13-9370.notmuch>
+In-Reply-To: <20210114142321.2594697-4-liuhangbin@gmail.com>
+References: <20201221123505.1962185-1-liuhangbin@gmail.com>
+ <20210114142321.2594697-1-liuhangbin@gmail.com>
+ <20210114142321.2594697-4-liuhangbin@gmail.com>
+Subject: RE: [PATCHv14 bpf-next 3/6] xdp: add a new helper for dev map
+ multicast support
+Mime-Version: 1.0
+Content-Type: text/plain;
+ charset=utf-8
 Content-Transfer-Encoding: 7bit
-X-Mailer: Microsoft Outlook 16.0
-Thread-Index: AQJT4Rp7bAvF1bGeZTYGN+mZAmy16AFN1KutAf1qvD+pGDrwsA==
-Content-Language: ko
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFlrPJsWRmVeSWpSXmKPExsWy7bCmmW7BOZYEg/tXpCxWPd7OYjHnfAuL
-        xYVtfawWl3fNYbNouNPMZnFsgZjF7s4f7Bbvthxht/i6t4vFgdNjy8qbTB4LNpV6bFrVyebR
-        dm0Vk8fRPefYPPq2rGL02NS6hNXj8ya5AI6oHJuM1MSU1CKF1Lzk/JTMvHRbJe/geOd4UzMD
-        Q11DSwtzJYW8xNxUWyUXnwBdt8wcoOuUFMoSc0qBQgGJxcVK+nY2RfmlJakKGfnFJbZKqQUp
-        OQWGhgV6xYm5xaV56XrJ+blWhgYGRqZAlQk5Ga+29DEXzDSr+H34JksD4wrtLkZODgkBE4mt
-        Z5tZuhi5OIQEdjBKHN91hx3C+cQosfP1XqjMN0aJO90tzDAtT/98gKrayyhx/exXqKoXjBLz
-        P0xmB6liE9CSeDOrnRXEFgGyVx77zQhSxCxwiEli/+GbYEWcAqYSu3Z0gBUJC8RIPJ3UyQZi
-        swioSmy9fRjM5hWwlNizvY0JwhaUODnzCQuIzSwgL7H97RyokxQkfj5dBrXMSeLJ+oXMEDUi
-        ErM725hBFksI7OCQOPb9I1SDi8SxAwtYIWxhiVfHt7BD2FISL/vbgGwOILteorU7BqK3h1Hi
-        yj6IxRICxhKznrUzgtQwC2hKrN+lD1GuLHHkFtRpfBIdh/9CTeGV6GgTgjCVJCZ+iYeYISHx
-        4uRklgmMSrOQ/DULyV+zkNw/C2HVAkaWVYxiqQXFuempxUYFJsiRvYkRnHK1PHYwzn77Qe8Q
-        IxMH4yFGCQ5mJRHe0nVMCUK8KYmVValF+fFFpTmpxYcYTYEhPZFZSjQ5H5j080riDU2NzMwM
-        LE0tTM2MLJTEeYsMHsQLCaQnlqRmp6YWpBbB9DFxcEo1MCUe+5q1M3bmK/YbS78fbCuca/B7
-        S9BBsYMxMcl8hcfns1pXP6q5kbx4UtPZuEv7jX3ydfz1EqUZTGwkU85n3sozSrguoPKraY1j
-        7NHAna8sDPkyLwhH9qzWm8JcMmXz9c//FsW4FrbM2Sl1Pj3B2XaXtoBw3IGm2kk7P+5auibE
-        L8BNO8jh323brcJNQe9D9u/o/B6/yjol10Q6QNnJ+03+znpbr8BPTj/3l5qc2bXr/u4imZ2s
-        ga95+GNTrvUF83tkTuT6zW7N+6sm6vHBJxOqXQOd9GwfvVu58MG/EyZPtZLkygUMr83JrZK/
-        c7rp7sezyboNzsl9D2Wi6vN3FJ3saC3QWyDbo9Lx1eepEktxRqKhFnNRcSIANbGhi0IEAAA=
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprNIsWRmVeSWpSXmKPExsWy7bCSnG7+OZYEgyMzrS1WPd7OYjHnfAuL
-        xYVtfawWl3fNYbNouNPMZnFsgZjF7s4f7Bbvthxht/i6t4vFgdNjy8qbTB4LNpV6bFrVyebR
-        dm0Vk8fRPefYPPq2rGL02NS6hNXj8ya5AI4oLpuU1JzMstQifbsEroxXW/qYC2aaVfw+fJOl
-        gXGFdhcjJ4eEgInE0z8f2LsYuTiEBHYzSnw5OAfI4QBKSEjs2uwKUSMscb/lCCtEzTNGibld
-        rWwgCTYBLYk3s9pZQWwRIHvlsd+MIEXMAieYJL6+ec8C0XGAUeLk3WNgVZwCphK7dnSA2cIC
-        URK9be+YQWwWAVWJrbcPg03lFbCU2LO9jQnCFpQ4OfMJC4jNLKAt0fuwlRHClpfY/nYOM8R5
-        ChI/ny6DusJJ4sn6hcwQNSISszvbmCcwCs9CMmoWklGzkIyahaRlASPLKkbJ1ILi3PTcYsMC
-        w7zUcr3ixNzi0rx0veT83E2M4PjT0tzBuH3VB71DjEwcjIcYJTiYlUR4S9cxJQjxpiRWVqUW
-        5ccXleakFh9ilOZgURLnvdB1Ml5IID2xJDU7NbUgtQgmy8TBKdXAFCHkEXl83cac6Ob0usL9
-        KgzbVfRNUmpYe1YcmuthvNJaO9q56V9r+btWW93L8+W63I4miC2Nf2u/LmCdTdut745buy8+
-        3antnKe+zjawOXj+9ifq8i4Hs7sbxM8+5jU8V//szp9v9xffrr5iPG/jL5kv6y/kZXBN2ni/
-        Xvb76wNmpscfbAi9KxfwNmWS66ECAbOI/9GTr/CtvpPHk70vaZWP0uzyrfe1UxTfPc54/U/R
-        8IVSv6rl3cXcKhuV5PqzZypfE+fgz/GMPfmo+8MN7c79X0trNwtwLnrs8XEpd4epa3Py/8vH
-        4qz7piUe/653x0Bjf8Thrbm5RZ/M8/siE8O+OygGTz675MX2LPvbSizFGYmGWsxFxYkAnXI8
-        AS4DAAA=
-X-CMS-MailID: 20210117235528epcas2p3d3db81d17c6c182b49afe808d7c142be
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-Sendblock-Type: AUTO_CONFIDENTIAL
-CMS-TYPE: 102P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20210115133200epcas2p1f52efe7bbc2826ed12da2fde4e03e3b2
-References: <CGME20210115133200epcas2p1f52efe7bbc2826ed12da2fde4e03e3b2@epcas2p1.samsung.com>
-        <1610716836-140533-1-git-send-email-dseok.yi@samsung.com>
-        <20210115171203.175115-1-alobakin@pm.me>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021-01-16 02:12, Alexander Lobakin wrote:
-> From: Dongseok Yi <dseok.yi@samsung.com>
-> Date: Fri, 15 Jan 2021 22:20:35 +0900
+Hangbin Liu wrote:
+> This patch is for xdp multicast support. which has been discussed
+> before[0], The goal is to be able to implement an OVS-like data plane in
+> XDP, i.e., a software switch that can forward XDP frames to multiple ports.
 > 
-> > UDP/IP header of UDP GROed frag_skbs are not updated even after NAT
-> > forwarding. Only the header of head_skb from ip_finish_output_gso ->
-> > skb_gso_segment is updated but following frag_skbs are not updated.
-> >
-> > A call path skb_mac_gso_segment -> inet_gso_segment ->
-> > udp4_ufo_fragment -> __udp_gso_segment -> __udp_gso_segment_list
-> > does not try to update UDP/IP header of the segment list but copy
-> > only the MAC header.
-> >
-> > Update dport, daddr and checksums of each skb of the segment list
-> > in __udp_gso_segment_list. It covers both SNAT and DNAT.
-> >
-> > Fixes: 9fd1ff5d2ac7 (udp: Support UDP fraglist GRO/GSO.)
-> > Signed-off-by: Dongseok Yi <dseok.yi@samsung.com>
-> > ---
-> > v1:
-> > Steffen Klassert said, there could be 2 options.
-> > https://lore.kernel.org/patchwork/patch/1362257/
-> > I was trying to write a quick fix, but it was not easy to forward
-> > segmented list. Currently, assuming DNAT only.
-> >
-> > v2:
-> > Per Steffen Klassert request, move the procedure from
-> > udp4_ufo_fragment to __udp_gso_segment_list and support SNAT.
-> >
-> > To Alexander Lobakin, I've checked your email late. Just use this
-> > patch as a reference. It support SNAT too, but does not support IPv6
-> > yet. I cannot make IPv6 header changes in __udp_gso_segment_list due
-> > to the file is in IPv4 directory.
+> To achieve this, an application needs to specify a group of interfaces
+> to forward a packet to. It is also common to want to exclude one or more
+> physical interfaces from the forwarding operation - e.g., to forward a
+> packet to all interfaces in the multicast group except the interface it
+> arrived on. While this could be done simply by adding more groups, this
+> quickly leads to a combinatorial explosion in the number of groups an
+> application has to maintain.
 > 
-> I used another approach, tried to make fraglist GRO closer to plain
-> in terms of checksummming, as it is confusing to me why GSO packet
-> should have CHECKSUM_UNNECESSARY. Just let Netfilter do its mangling,
-> and then use classic UDP GSO magic at the end of segmentation.
-> I also see the idea of explicit comparing and editing of IP and UDP
-> headers right in __udp_gso_segment_list() rather unacceptable.
+> To avoid the combinatorial explosion, we propose to include the ability
+> to specify an "exclude group" as part of the forwarding operation. This
+> needs to be a group (instead of just a single port index), because a
+> physical interface can be part of a logical grouping, such as a bond
+> device.
+> 
+> Thus, the logical forwarding operation becomes a "set difference"
+> operation, i.e. "forward to all ports in group A that are not also in
+> group B". This series implements such an operation using device maps to
+> represent the groups. This means that the XDP program specifies two
+> device maps, one containing the list of netdevs to redirect to, and the
+> other containing the exclude list.
+> 
+> To achieve this, I re-implement a new helper bpf_redirect_map_multi()
+> to accept two maps, the forwarding map and exclude map. The forwarding
+> map could be DEVMAP or DEVMAP_HASH, but the exclude map *must* be
+> DEVMAP_HASH to get better performace. If user don't want to use exclude
+> map and just want simply stop redirecting back to ingress device, they
+> can use flag BPF_F_EXCLUDE_INGRESS.
+> 
+> As both bpf_xdp_redirect_map() and this new helpers are using struct
+> bpf_redirect_info, I add a new ex_map and set tgt_value to NULL in the
+> new helper to make a difference with bpf_xdp_redirect_map().
+> 
+> Also I keep the general data path in net/core/filter.c, the native data
+> path in kernel/bpf/devmap.c so we can use direct calls to get better
+> performace.
 
-If I understand UDP GRO fraglist correctly, it keeps the length of
-each skb of the fraglist. But your approach might change the lengths
-by gso_size. What if each skb of the fraglist had different lengths?
+[...]
 
-For CHECKSUM_UNNECESSARY, GROed head_skb might have an invalid
-checksum. But finally, the fraglist will be segmented to queue to
-sk_receive_queue with head_skb. We could pass the GROed head_skb with
-CHECKSUM_UNNECESSARY.
+> diff --git a/include/net/xdp.h b/include/net/xdp.h
+> index 0cf3976ce77c..0e6468cd0ab9 100644
+> --- a/include/net/xdp.h
+> +++ b/include/net/xdp.h
+> @@ -164,6 +164,7 @@ void xdp_warn(const char *msg, const char *func, const int line);
+>  #define XDP_WARN(msg) xdp_warn(msg, __func__, __LINE__)
+>  
+>  struct xdp_frame *xdp_convert_zc_to_xdp_frame(struct xdp_buff *xdp);
+> +struct xdp_frame *xdpf_clone(struct xdp_frame *xdpf);
+>  
+>  static inline
+>  void xdp_convert_frame_to_buff(struct xdp_frame *frame, struct xdp_buff *xdp)
+> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+> index a1ad32456f89..ecf5d117b96a 100644
+> --- a/include/uapi/linux/bpf.h
+> +++ b/include/uapi/linux/bpf.h
+> @@ -3830,6 +3830,27 @@ union bpf_attr {
+>   *	Return
+>   *		A pointer to a struct socket on success or NULL if the file is
+>   *		not a socket.
+> + *
+> + * long bpf_redirect_map_multi(struct bpf_map *map, struct bpf_map *ex_map, u64 flags)
+> + * 	Description
+> + * 		This is a multicast implementation for XDP redirect. It will
+> + * 		redirect the packet to ALL the interfaces in *map*, but
+> + * 		exclude the interfaces in *ex_map*.
+> + *
+> + * 		The forwarding *map* could be either BPF_MAP_TYPE_DEVMAP or
+> + * 		BPF_MAP_TYPE_DEVMAP_HASH. But the *ex_map* must be
+> + * 		BPF_MAP_TYPE_DEVMAP_HASH to get better performance.
 
-> 
-> Dongseok, Steffen, please test this WIP diff and tell if this one
-> works for you, so I could clean up the code and make a patch.
-> For me, it works now in any configurations, with and without
-> checksum/GSO/fraglist offload.
-> 
-> diff --git a/net/core/skbuff.c b/net/core/skbuff.c
-> index c1a6f262636a..646a42e88e83 100644
-> --- a/net/core/skbuff.c
-> +++ b/net/core/skbuff.c
-> @@ -3674,6 +3674,7 @@ struct sk_buff *skb_segment_list(struct sk_buff *skb,
->  				 unsigned int offset)
->  {
->  	struct sk_buff *list_skb = skb_shinfo(skb)->frag_list;
-> +	unsigned int doffset = skb->data - skb_mac_header(skb);
->  	unsigned int tnl_hlen = skb_tnl_header_len(skb);
->  	unsigned int delta_truesize = 0;
->  	unsigned int delta_len = 0;
-> @@ -3681,7 +3682,7 @@ struct sk_buff *skb_segment_list(struct sk_buff *skb,
->  	struct sk_buff *nskb, *tmp;
->  	int err;
-> 
-> -	skb_push(skb, -skb_network_offset(skb) + offset);
-> +	skb_push(skb, doffset);
-> 
->  	skb_shinfo(skb)->frag_list = NULL;
-> 
-> @@ -3716,12 +3717,11 @@ struct sk_buff *skb_segment_list(struct sk_buff *skb,
->  		delta_len += nskb->len;
->  		delta_truesize += nskb->truesize;
-> 
-> -		skb_push(nskb, -skb_network_offset(nskb) + offset);
-> +		skb_push(nskb, skb_headroom(nskb) - skb_headroom(skb));
-> 
->  		skb_release_head_state(nskb);
-> -		 __copy_skb_header(nskb, skb);
-> +		__copy_skb_header(nskb, skb);
-> 
-> -		skb_headers_offset_update(nskb, skb_headroom(nskb) - skb_headroom(skb));
->  		skb_copy_from_linear_data_offset(skb, -tnl_hlen,
->  						 nskb->data - tnl_hlen,
->  						 offset + tnl_hlen);
-> diff --git a/net/ipv4/udp_offload.c b/net/ipv4/udp_offload.c
-> index ff39e94781bf..61665fcd8c85 100644
-> --- a/net/ipv4/udp_offload.c
-> +++ b/net/ipv4/udp_offload.c
-> @@ -190,13 +190,58 @@ EXPORT_SYMBOL(skb_udp_tunnel_segment);
->  static struct sk_buff *__udp_gso_segment_list(struct sk_buff *skb,
->  					      netdev_features_t features)
->  {
-> -	unsigned int mss = skb_shinfo(skb)->gso_size;
-> +	struct sk_buff *seg;
-> +	struct udphdr *uh;
-> +	unsigned int mss;
-> +	__be16 newlen;
-> +	__sum16 check;
+Would be good to add a note ex_map _must_ be keyed by ifindex for the
+helper to work. Its the obvious way to key a hashmap, but not required
+iirc.
+
+> + *
+> + * 		Currently the *flags* only supports *BPF_F_EXCLUDE_INGRESS*,
+> + * 		which additionally excludes the current ingress device.
+> + *
+> + * 		See also bpf_redirect_map() as a unicast implementation,
+> + * 		which supports redirecting packet to a specific ifindex
+> + * 		in the map. As both helpers use struct bpf_redirect_info
+> + * 		to store the redirect info, we will use a a NULL tgt_value
+> + * 		to distinguish multicast and unicast redirecting.
+> + * 	Return
+> + * 		**XDP_REDIRECT** on success, or **XDP_ABORTED** on error.
+>   */
+
+[...]
+
 > +
-> +	mss = skb_shinfo(skb)->gso_size;
-> +	if (skb->len <= sizeof(*uh) + mss)
-> +		return ERR_PTR(-EINVAL);
-> 
-> -	skb = skb_segment_list(skb, features, skb_mac_header_len(skb));
-> +	skb_pull(skb, sizeof(*uh));
+> +int dev_map_enqueue_multi(struct xdp_buff *xdp, struct net_device *dev_rx,
+> +			  struct bpf_map *map, struct bpf_map *ex_map,
+> +			  u32 flags)
+> +{
+> +	struct bpf_dtab_netdev *obj = NULL, *next_obj = NULL;
+> +	struct xdp_frame *xdpf, *nxdpf;
+> +	bool last_one = false;
+> +	int ex_ifindex;
+> +	u32 key, next_key;
 > +
-> +	skb = skb_segment_list(skb, features, skb->data - skb_mac_header(skb));
->  	if (IS_ERR(skb))
->  		return skb;
-> 
-> -	udp_hdr(skb)->len = htons(sizeof(struct udphdr) + mss);
-> +	seg = skb;
-> +	uh = udp_hdr(seg);
+> +	ex_ifindex = flags & BPF_F_EXCLUDE_INGRESS ? dev_rx->ifindex : 0;
 > +
-> +	/* compute checksum adjustment based on old length versus new */
-> +	newlen = htons(sizeof(*uh) + mss);
-> +	check = csum16_add(csum16_sub(uh->check, uh->len), newlen);
+> +	/* Find first available obj */
+> +	obj = devmap_get_next_obj(xdp, map, ex_map, NULL, &key, ex_ifindex);
+> +	if (!obj)
+> +		return 0;
+> +
+> +	xdpf = xdp_convert_buff_to_frame(xdp);
+> +	if (unlikely(!xdpf))
+> +		return -EOVERFLOW;
 > +
 > +	for (;;) {
-> +		if (!seg->next)
-> +			break;
+> +		/* Check if we still have one more available obj */
+> +		next_obj = devmap_get_next_obj(xdp, map, ex_map, &key,
+> +					       &next_key, ex_ifindex);
+> +		if (!next_obj)
+> +			last_one = true;
 > +
-> +		uh->len = newlen;
-> +		uh->check = check;
+> +		if (last_one) {
+> +			bq_enqueue(obj->dev, xdpf, dev_rx, obj->xdp_prog);
+> +			return 0;
+> +		}
+
+Just collapse above to
+
+  if (!next_obj) {
+        bq_enqueue()
+        return
+  }
+
+'last_one' is a bit pointless here.
+
 > +
-> +		if (seg->ip_summed == CHECKSUM_PARTIAL)
-> +			gso_reset_checksum(seg, ~check);
-> +		else
-> +			uh->check = gso_make_checksum(seg, ~check) ? :
-> +				    CSUM_MANGLED_0;
+> +		nxdpf = xdpf_clone(xdpf);
+> +		if (unlikely(!nxdpf)) {
+> +			xdp_return_frame_rx_napi(xdpf);
+> +			return -ENOMEM;
+> +		}
 > +
-> +		seg = seg->next;
-> +		uh = udp_hdr(seg);
+> +		bq_enqueue(obj->dev, nxdpf, dev_rx, obj->xdp_prog);
+> +
+> +		/* Deal with next obj */
+> +		obj = next_obj;
+> +		key = next_key;
 > +	}
+> +}
 > +
-> +	/* last packet can be partial gso_size, account for that in checksum */
-> +	newlen = htons(skb_tail_pointer(seg) - skb_transport_header(seg) +
-> +		       seg->data_len);
-> +	check = csum16_add(csum16_sub(uh->check, uh->len), newlen);
-> +
-> +	uh->len = newlen;
-> +	uh->check = check;
-> +
-> +	if (seg->ip_summed == CHECKSUM_PARTIAL)
-> +		gso_reset_checksum(seg, ~check);
-> +	else
-> +		uh->check = gso_make_checksum(seg, ~check) ? : CSUM_MANGLED_0;
-> 
->  	return skb;
->  }
-> @@ -602,27 +647,13 @@ INDIRECT_CALLABLE_SCOPE int udp4_gro_complete(struct sk_buff *skb, int nhoff)
->  	const struct iphdr *iph = ip_hdr(skb);
->  	struct udphdr *uh = (struct udphdr *)(skb->data + nhoff);
-> 
-> -	if (NAPI_GRO_CB(skb)->is_flist) {
-> -		uh->len = htons(skb->len - nhoff);
-> -
-> -		skb_shinfo(skb)->gso_type |= (SKB_GSO_FRAGLIST|SKB_GSO_UDP_L4);
-> -		skb_shinfo(skb)->gso_segs = NAPI_GRO_CB(skb)->count;
-> -
-> -		if (skb->ip_summed == CHECKSUM_UNNECESSARY) {
-> -			if (skb->csum_level < SKB_MAX_CSUM_LEVEL)
-> -				skb->csum_level++;
-> -		} else {
-> -			skb->ip_summed = CHECKSUM_UNNECESSARY;
-> -			skb->csum_level = 0;
-> -		}
-> -
-> -		return 0;
-> -	}
-> -
->  	if (uh->check)
->  		uh->check = ~udp_v4_check(skb->len - nhoff, iph->saddr,
->  					  iph->daddr, 0);
-> 
-> +	if (NAPI_GRO_CB(skb)->is_flist)
-> +		skb_shinfo(skb)->gso_type |= SKB_GSO_FRAGLIST;
-> +
->  	return udp_gro_complete(skb, nhoff, udp4_lib_lookup_skb);
->  }
-> 
+>  int dev_map_generic_redirect(struct bpf_dtab_netdev *dst, struct sk_buff *skb,
+>  			     struct bpf_prog *xdp_prog)
+>  {
+> diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
+> index 3e4b5d9fce78..2139398057cf 100644
+> --- a/kernel/bpf/verifier.c
+> +++ b/kernel/bpf/verifier.c
+> @@ -4420,6 +4420,7 @@ static int check_map_func_compatibility(struct bpf_verifier_env *env,
+>  	case BPF_MAP_TYPE_DEVMAP:
+>  	case BPF_MAP_TYPE_DEVMAP_HASH:
+>  		if (func_id != BPF_FUNC_redirect_map &&
+> +		    func_id != BPF_FUNC_redirect_map_multi &&
+>  		    func_id != BPF_FUNC_map_lookup_elem)
+>  			goto error;
+>  		break;
+> @@ -4524,6 +4525,11 @@ static int check_map_func_compatibility(struct bpf_verifier_env *env,
+>  		    map->map_type != BPF_MAP_TYPE_XSKMAP)
+>  			goto error;
+>  		break;
+> +	case BPF_FUNC_redirect_map_multi:
+> +		if (map->map_type != BPF_MAP_TYPE_DEVMAP &&
+> +		    map->map_type != BPF_MAP_TYPE_DEVMAP_HASH)
+> +			goto error;
+> +		break;
+>  	case BPF_FUNC_sk_redirect_map:
+>  	case BPF_FUNC_msg_redirect_map:
+>  	case BPF_FUNC_sock_map_update:
+> diff --git a/net/core/filter.c b/net/core/filter.c
+> index 9ab94e90d660..123efaf4ab88 100644
+> --- a/net/core/filter.c
+> +++ b/net/core/filter.c
+> @@ -3924,12 +3924,19 @@ static const struct bpf_func_proto bpf_xdp_adjust_meta_proto = {
+>  };
+>  
+>  static int __bpf_tx_xdp_map(struct net_device *dev_rx, void *fwd,
+> -			    struct bpf_map *map, struct xdp_buff *xdp)
+> +			    struct bpf_map *map, struct xdp_buff *xdp,
+> +			    struct bpf_map *ex_map, u32 flags)
+>  {
+>  	switch (map->map_type) {
+>  	case BPF_MAP_TYPE_DEVMAP:
+>  	case BPF_MAP_TYPE_DEVMAP_HASH:
+> -		return dev_map_enqueue(fwd, xdp, dev_rx);
+> +		/* We use a NULL fwd value to distinguish multicast
+> +		 * and unicast forwarding
+> +		 */
+> +		if (fwd)
+> +			return dev_map_enqueue(fwd, xdp, dev_rx);
+> +		else
+> +			return dev_map_enqueue_multi(xdp, dev_rx, map, ex_map, flags);
+>  	case BPF_MAP_TYPE_CPUMAP:
+>  		return cpu_map_enqueue(fwd, xdp, dev_rx);
+>  	case BPF_MAP_TYPE_XSKMAP:
+> @@ -3986,12 +3993,14 @@ int xdp_do_redirect(struct net_device *dev, struct xdp_buff *xdp,
+>  {
+>  	struct bpf_redirect_info *ri = this_cpu_ptr(&bpf_redirect_info);
+>  	struct bpf_map *map = READ_ONCE(ri->map);
+> +	struct bpf_map *ex_map = ri->ex_map;
 
+READ_ONCE(ri->ex_map)?
 
+>  	u32 index = ri->tgt_index;
+>  	void *fwd = ri->tgt_value;
+>  	int err;
+>  
+>  	ri->tgt_index = 0;
+>  	ri->tgt_value = NULL;
+> +	ri->ex_map = NULL;
+
+WRITE_ONCE(ri->ex_map)?
+
+>  	WRITE_ONCE(ri->map, NULL);
+
+So we needed write_once, read_once pairs for ri->map do we also need them in
+the ex_map case?
+
+>  
+>  	if (unlikely(!map)) {
+> @@ -4003,7 +4012,7 @@ int xdp_do_redirect(struct net_device *dev, struct xdp_buff *xdp,
+>  
+>  		err = dev_xdp_enqueue(fwd, xdp, dev);
+>  	} else {
+> -		err = __bpf_tx_xdp_map(dev, fwd, map, xdp);
+> +		err = __bpf_tx_xdp_map(dev, fwd, map, xdp, ex_map, ri->flags);
+>  	}
+>  
+>  	if (unlikely(err))
+> @@ -4017,6 +4026,62 @@ int xdp_do_redirect(struct net_device *dev, struct xdp_buff *xdp,
+>  }
+>  EXPORT_SYMBOL_GPL(xdp_do_redirect);
+
+[...]
+
+> +BPF_CALL_3(bpf_xdp_redirect_map_multi, struct bpf_map *, map,
+> +	   struct bpf_map *, ex_map, u64, flags)
+> +{
+> +	struct bpf_redirect_info *ri = this_cpu_ptr(&bpf_redirect_info);
+> +
+> +	/* Limit ex_map type to DEVMAP_HASH to get better performance */
+> +	if (unlikely((ex_map && ex_map->map_type != BPF_MAP_TYPE_DEVMAP_HASH) ||
+> +		     flags & ~BPF_F_EXCLUDE_INGRESS))
+> +		return XDP_ABORTED;
+> +
+> +	ri->tgt_index = 0;
+> +	/* Set the tgt_value to NULL to distinguish with bpf_xdp_redirect_map */
+> +	ri->tgt_value = NULL;
+> +	ri->flags = flags;
+> +	ri->ex_map = ex_map;
+
+WRITE_ONCE?
+
+> +
+> +	WRITE_ONCE(ri->map, map);
+> +
+> +	return XDP_REDIRECT;
+> +}
+> +
+> +static const struct bpf_func_proto bpf_xdp_redirect_map_multi_proto = {
+> +	.func           = bpf_xdp_redirect_map_multi,
+> +	.gpl_only       = false,
+> +	.ret_type       = RET_INTEGER,
+> +	.arg1_type      = ARG_CONST_MAP_PTR,
+> +	.arg2_type      = ARG_CONST_MAP_PTR_OR_NULL,
+> +	.arg3_type      = ARG_ANYTHING,
+> +};
+> +
+
+Thanks,
+John
