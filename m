@@ -2,104 +2,337 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AF71C2FA422
-	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 16:08:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6D2542FA41D
+	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 16:08:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405575AbhARPHW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jan 2021 10:07:22 -0500
-Received: from mga03.intel.com ([134.134.136.65]:22113 "EHLO mga03.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2405394AbhARPGq (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 18 Jan 2021 10:06:46 -0500
-IronPort-SDR: XOmiFqWZ3Ggfh+sPXzHS4GKPPI8ojXOz97jXofcJWuw2Ij5WlsXkkST1u9jvczcO5ojw8qvnfH
- a97TorIVYXOQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9867"; a="178900874"
-X-IronPort-AV: E=Sophos;i="5.79,356,1602572400"; 
-   d="scan'208";a="178900874"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jan 2021 07:05:48 -0800
-IronPort-SDR: 9/ySQoyKlhXlCh12UwUlnaoj3wQ/zMzk5aPrISj82IJE6UEnOp+vd3dfpB0+by0joauKbgArGt
- rpF2dXDSaoYA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.79,356,1602572400"; 
-   d="scan'208";a="383600439"
-Received: from ranger.igk.intel.com ([10.102.21.164])
-  by orsmga008.jf.intel.com with ESMTP; 18 Jan 2021 07:05:44 -0800
-Date:   Mon, 18 Jan 2021 15:56:35 +0100
-From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        BPF-dev-list <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
+        id S2405543AbhARPG4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jan 2021 10:06:56 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:54430 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2405456AbhARPGI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jan 2021 10:06:08 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1610982281;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=SLOedUuUAetYBtp0/6k8K8pT2ynnPsFK+R3zYe7flUQ=;
+        b=FYoGhr9sXSsrWE7WX7LyS2JAxNkuKCF7tFyDefihAXpMJ+OXeyv12HVPs399vKk5O0OOFL
+        ufzSSbgZbyLxmdVXCWv1AL+DPY5Sd6VkHcLJtb6AAOUPbf8bIZpmRntjUCIWZkciQTtOct
+        7STJSzBJMmMlWpcGBrbUqy7xJ0gHGQY=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-581-iymZDVtOOj2d4YuTZ87VIA-1; Mon, 18 Jan 2021 10:04:39 -0500
+X-MC-Unique: iymZDVtOOj2d4YuTZ87VIA-1
+Received: by mail-wr1-f72.google.com with SMTP id v5so8417240wrr.0
+        for <netdev@vger.kernel.org>; Mon, 18 Jan 2021 07:04:39 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=SLOedUuUAetYBtp0/6k8K8pT2ynnPsFK+R3zYe7flUQ=;
+        b=aStQarmjFAh6IV108JNq1o2lFfYHC5XXI9IOt6Z36M7jTDYQ41i3Lfimfr2YQSZVmS
+         jAwkpOmvsb4jxWy4y3ozYYBiwvrq0rGSuMGwi4X0YzDGuBlRPZha9PWrCDXjShmsNEWo
+         KJqYnrs2uqyHvfeRQhtB2Mb+31XdAdR3Vwi8efzrOxqiCHiFqTHShpx9qjjmictmQmOd
+         ifLs5DQ8199Rv2WuVeg9s3QdX4KKOub4EXZDLJfKnlwexM41pimjX2me8I8cyghmzWDn
+         a2diT0u/8RUInOPjhhxbaiLP7W+iwEGbRxSHRBlFqyn61a9MKux9FNK/YkFr6MZhYwsu
+         RESw==
+X-Gm-Message-State: AOAM530soUBd0wKP+BL/Eb4VjIMp9WeiMndromZcyb5B/e+FoziA7Hl5
+        1OchzhDNWzhFfOLXcRA3aqVtoY4tEVZGvGNjkuSV+O8FYQ4mricDydh9Gt2CZS8kBw11g6R0yDh
+        ECNlsDorB3uISWexH
+X-Received: by 2002:a1c:68c5:: with SMTP id d188mr21765378wmc.64.1610982277977;
+        Mon, 18 Jan 2021 07:04:37 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzAocm4YOtLjCr5k37DjhAHDbUBhVkU09C7Q2qMpBxBR3X3zOVzn936ICMee7QrKjcDbvR50g==
+X-Received: by 2002:a1c:68c5:: with SMTP id d188mr21765236wmc.64.1610982276528;
+        Mon, 18 Jan 2021 07:04:36 -0800 (PST)
+Received: from steredhat (host-79-34-249-199.business.telecomitalia.it. [79.34.249.199])
+        by smtp.gmail.com with ESMTPSA id u205sm26786291wme.42.2021.01.18.07.04.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Jan 2021 07:04:35 -0800 (PST)
+Date:   Mon, 18 Jan 2021 16:04:33 +0100
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Arseny Krasnov <arseny.krasnov@kaspersky.com>
+Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Jesper Brouer <brouer@redhat.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Saeed Mahameed <saeed@kernel.org>
-Subject: Re: [PATCH v5 bpf-next 2/2] net: xdp: introduce xdp_prepare_buff
- utility routine
-Message-ID: <20210118145635.GA11335@ranger.igk.intel.com>
-References: <cover.1608670965.git.lorenzo@kernel.org>
- <45f46f12295972a97da8ca01990b3e71501e9d89.1608670965.git.lorenzo@kernel.org>
- <63bcde67-4124-121d-e96a-066493542ca9@iogearbox.net>
- <CAJ0CqmVsr=cv+0ndg3g4RDqVmKt=X6qQ7sbArNVrB+98e_3Sag@mail.gmail.com>
- <b76a6fc5-55fa-1ca8-f2b9-ae0332450333@iogearbox.net>
+        Jorgen Hansen <jhansen@vmware.com>,
+        Colin Ian King <colin.king@canonical.com>,
+        Andra Paraschiv <andraprs@amazon.com>,
+        Jeff Vander Stoep <jeffv@google.com>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, stsp2@yandex.ru, oxffffaa@gmail.com
+Subject: Re: [RFC PATCH v2 02/13] af_vsock: separate rx loops for
+ STREAM/SEQPACKET.
+Message-ID: <20210118150433.kj4wuoecddyng632@steredhat>
+References: <20210115053553.1454517-1-arseny.krasnov@kaspersky.com>
+ <20210115054054.1455729-1-arseny.krasnov@kaspersky.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=us-ascii; format=flowed
 Content-Disposition: inline
-In-Reply-To: <b76a6fc5-55fa-1ca8-f2b9-ae0332450333@iogearbox.net>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+In-Reply-To: <20210115054054.1455729-1-arseny.krasnov@kaspersky.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Dec 31, 2020 at 12:16:41AM +0100, Daniel Borkmann wrote:
-> On 12/29/20 7:09 PM, Lorenzo Bianconi wrote:
-> > > > +                     hard_start = page_address(rx_buffer->page) +
-> > > > +                                  rx_buffer->page_offset - offset;
-> > > > +                     xdp_prepare_buff(&xdp, hard_start, offset, size, true);
-> > > >    #if (PAGE_SIZE > 4096)
-> > > >                        /* At larger PAGE_SIZE, frame_sz depend on len size */
-> > > >                        xdp.frame_sz = ixgbevf_rx_frame_truesize(rx_ring, size);
-> > 
-> > Hi Daniel,
-> > 
-> > thx for the review.
-> > 
-> > > [...]
-> > > The design is very similar for most of the Intel drivers. Why the inconsistency on
-> > > ice driver compared to the rest, what's the rationale there to do it in one but not
-> > > the others? Generated code better there?
-> > 
-> > I applied the same logic for the ice driver but the code is just
-> > slightly different.
-> > 
-> > > Couldn't you even move the 'unsigned int offset = xyz_rx_offset(rx_ring)' out of the
-> > > while loop altogether for all of them? (You already use the xyz_rx_offset() implicitly
-> > > for most of them when setting xdp.frame_sz.)
-> > 
-> > We discussed moving "offset = xyz_rx_offset(rx_ring)" out of the while
-> > loop before but Saeed asked to address it in a dedicated series since
-> > it is a little bit out of the scope. I have no strong opinion on it,
-> > do you prefer to address it directly here?
-> 
-> Fair enough, I might have preferred it in this series as part of the overall cleanup,
-> but if you plan to follow up on this then this is also fine by me. Applied the v5 to
-> bpf-next in that case, thanks!
+On Fri, Jan 15, 2021 at 08:40:50AM +0300, Arseny Krasnov wrote:
+>This adds two receive loops: for SOCK_STREAM and SOCK_SEQPACKET. Both are
+>look like twins, but SEQPACKET is a little bit different from STREAM:
+>1) It doesn't call notify callbacks.
+>2) It doesn't care about 'SO_SNDLOWAT' and 'SO_RCVLOWAT' values, because
+>   there is no sense for these values in SEQPACKET case.
+>3) It waits until whole record is received or error is found during
+>   receiving.
+>4) It processes and sets 'MSG_TRUNC' flag.
+>
+>So to avoid extra conditions for two types of socket inside on loop, two
+>independent functions were created.
+>
+>Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
+>---
+> include/net/af_vsock.h   |   5 +
+> net/vmw_vsock/af_vsock.c | 202 +++++++++++++++++++++++++++++++++++++++
+> 2 files changed, 207 insertions(+)
+>
+>diff --git a/include/net/af_vsock.h b/include/net/af_vsock.h
+>index b1c717286993..46073842d489 100644
+>--- a/include/net/af_vsock.h
+>+++ b/include/net/af_vsock.h
+>@@ -135,6 +135,11 @@ struct vsock_transport {
+> 	bool (*stream_is_active)(struct vsock_sock *);
+> 	bool (*stream_allow)(u32 cid, u32 port);
+>
+>+	/* SEQ_PACKET. */
+>+	size_t (*seqpacket_seq_get_len)(struct vsock_sock *);
+>+	ssize_t (*seqpacket_dequeue)(struct vsock_sock *, struct msghdr *,
+>+				     size_t len, int flags);
+>+
+> 	/* Notification. */
+> 	int (*notify_poll_in)(struct vsock_sock *, size_t, bool *);
+> 	int (*notify_poll_out)(struct vsock_sock *, size_t, bool *);
+>diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
+>index af716f5a93a4..afacbe9f4231 100644
+>--- a/net/vmw_vsock/af_vsock.c
+>+++ b/net/vmw_vsock/af_vsock.c
+>@@ -1870,6 +1870,208 @@ static int vsock_wait_data(struct sock *sk, struct wait_queue_entry *wait,
+> 	return err;
+> }
+>
+>+static int __vsock_seqpacket_recvmsg(struct sock *sk, struct msghdr *msg,
+>+				     size_t len, int flags)
+>+{
+>+	int err = 0;
+>+	size_t record_len;
+>+	struct vsock_sock *vsk;
+>+	const struct vsock_transport *transport;
+>+	long timeout;
+>+	ssize_t dequeued_total = 0;
+>+	unsigned long orig_nr_segs;
+>+	const struct iovec *orig_iov;
+>+	DEFINE_WAIT(wait);
+>+
+>+	vsk = vsock_sk(sk);
+>+	transport = vsk->transport;
+>+
+>+	timeout = sock_rcvtimeo(sk, flags & MSG_DONTWAIT);
+>+	msg->msg_flags &= ~MSG_EOR;
+>+	orig_nr_segs = msg->msg_iter.nr_segs;
+>+	orig_iov = msg->msg_iter.iov;
+>+
+>+	while (1) {
+>+		s64 ready;
+>+
+>+		prepare_to_wait(sk_sleep(sk), &wait, TASK_INTERRUPTIBLE);
+>+		ready = vsock_stream_has_data(vsk);
+>+
+>+		if (ready == 0) {
+>+			if (vsock_wait_data(sk, &wait, timeout, NULL, 0)) {
+>+				/* In case of any loop break(timeout, signal
+>+				 * interrupt or shutdown), we report user that
+>+				 * nothing was copied.
+>+				 */
+>+				dequeued_total = 0;
+>+				break;
+>+			}
 
-I initially pointed out the fact that we could store the output of
-xyz_rx_offset(rx_ring) onto a variable rather than call it per each
-processed buffer because value returned by that func can not change
-throughout the napi execution. It is based on ethtool priv flag which if
-changed, resets the PF (so disables napi, frees irqs, loads different Rx
-mem model, etc).
+Maybe here we can do 'continue', remove the next line, and reduce the 
+indentation on the next block.
 
-I realised that there is yet another place where we have unnecessary call
-to xyz_rx_offset() in hot path which is xyz_alloc_mapped_page(), so I
-expanded the idea of this optimization and I store the offset directly
-onto Rx ring and refer to that value.
+>+		} else {
+>+			ssize_t dequeued;
+>+
+>+			finish_wait(sk_sleep(sk), &wait);
+>+
+>+			if (ready < 0) {
+>+				err = -ENOMEM;
+>+				goto out;
+>+			}
+>+
+>+			if (dequeued_total == 0) {
+>+				record_len =
+>+					transport->seqpacket_seq_get_len(vsk);
+>+
+>+				if (record_len == 0)
+>+					continue;
+>+			}
+>+
+>+			/* 'msg_iter.count' is number of unused bytes in iov.
+>+			 * On every copy to iov iterator it is decremented at
+>+			 * size of data.
+>+			 */
+>+			dequeued = transport->seqpacket_dequeue(vsk, msg,
+>+						msg->msg_iter.count, flags);
+>+
+>+			if (dequeued < 0) {
+>+				dequeued_total = 0;
+>+
+>+				if (dequeued == -EAGAIN) {
+>+					iov_iter_init(&msg->msg_iter, READ,
+>+						      orig_iov, orig_nr_segs,
+>+						      len);
+>+					msg->msg_flags &= ~MSG_EOR;
+>+					continue;
+>+				}
+>+
+>+				err = -ENOMEM;
+>+				break;
+>+			}
+>+
+>+			dequeued_total += dequeued;
+>+
+>+			if (dequeued_total >= record_len)
+>+				break;
+>+		}
+>+	}
+>+	if (sk->sk_err)
+>+		err = -sk->sk_err;
+>+	else if (sk->sk_shutdown & RCV_SHUTDOWN)
+>+		err = 0;
+>+
+>+	if (dequeued_total > 0) {
+>+		/* User sets MSG_TRUNC, so return real length of
+>+		 * packet.
+>+		 */
+>+		if (flags & MSG_TRUNC)
+>+			err = record_len;
+>+		else
+>+			err = len - msg->msg_iter.count;
+>+
+>+		/* Always set MSG_TRUNC if real length of packet is
+>+		 * bigger that user buffer.
+>+		 */
+>+		if (record_len > len)
+>+			msg->msg_flags |= MSG_TRUNC;
+>+	}
+>+out:
+>+	return err;
+>+}
+>+
+>+static int __vsock_stream_recvmsg(struct sock *sk, struct msghdr *msg,
+>+				  size_t len, int flags)
+>+{
+>+	int err;
+>+	const struct vsock_transport *transport;
+>+	struct vsock_sock *vsk;
+>+	size_t target;
+>+	struct vsock_transport_recv_notify_data recv_data;
+>+	long timeout;
+>+	ssize_t copied;
+>+
+>+	DEFINE_WAIT(wait);
+>+
+>+	vsk = vsock_sk(sk);
+>+	transport = vsk->transport;
+>+
+>+	/* We must not copy less than target bytes into the user's buffer
+>+	 * before returning successfully, so we wait for the consume queue to
+>+	 * have that much data to consume before dequeueing.  Note that this
+>+	 * makes it impossible to handle cases where target is greater than the
+>+	 * queue size.
+>+	 */
+>+	target = sock_rcvlowat(sk, flags & MSG_WAITALL, len);
+>+	if (target >= transport->stream_rcvhiwat(vsk)) {
+>+		err = -ENOMEM;
+>+		goto out;
+>+	}
+>+	timeout = sock_rcvtimeo(sk, flags & MSG_DONTWAIT);
+>+	copied = 0;
+>+
+>+	err = transport->notify_recv_init(vsk, target, &recv_data);
+>+	if (err < 0)
+>+		goto out;
+>+
+>+	while (1) {
+>+		s64 ready;
+>+
+>+		prepare_to_wait(sk_sleep(sk), &wait, TASK_INTERRUPTIBLE);
+>+		ready = vsock_stream_has_data(vsk);
+>+
+>+		if (ready == 0) {
+>+			if (vsock_wait_data(sk, &wait, timeout, 
+>&recv_data, target))
+>+				break;
 
-I am including the patches that do what described above onto pending
-series of fixes that I had back in december '20 I suppose.
+The same also here.
+
+>+		} else {
+>+			ssize_t read;
+>+
+>+			finish_wait(sk_sleep(sk), &wait);
+>+
+>+			if (ready < 0) {
+>+				/* Invalid queue pair content. XXX This should
+>+				 * be changed to a connection reset in a later
+>+				 * change.
+>+				 */
+>+
+>+				err = -ENOMEM;
+>+				goto out;
+>+			}
+>+
+>+			err = transport->notify_recv_pre_dequeue(vsk,
+>+						target, &recv_data);
+>+			if (err < 0)
+>+				break;
+>+			read = transport->stream_dequeue(vsk, msg, len - copied, flags);
+>+
+>+			if (read < 0) {
+>+				err = -ENOMEM;
+>+				break;
+>+			}
+>+
+>+			copied += read;
+>+
+>+			err = transport->notify_recv_post_dequeue(vsk,
+>+						target, read,
+>+						!(flags & MSG_PEEK), &recv_data);
+>+			if (err < 0)
+>+				goto out;
+>+
+>+			if (read >= target || flags & MSG_PEEK)
+>+				break;
+>+
+>+			target -= read;
+>+		}
+>+	}
+>+
+>+	if (sk->sk_err)
+>+		err = -sk->sk_err;
+>+	else if (sk->sk_shutdown & RCV_SHUTDOWN)
+>+		err = 0;
+>+	if (copied > 0)
+>+		err = copied;
+>+
+>+out:
+>+	release_sock(sk);
+>+	return err;
+>+}
+>+
+> static int
+> vsock_stream_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
+> 		     int flags)
+>-- 
+>2.25.1
+>
+
