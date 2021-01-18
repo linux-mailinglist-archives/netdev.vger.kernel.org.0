@@ -2,66 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 85EA32FAD91
-	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 23:52:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B80E2FAD9B
+	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 23:56:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390680AbhARWvK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jan 2021 17:51:10 -0500
-Received: from mail.kernel.org ([198.145.29.99]:42612 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732477AbhARWut (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 18 Jan 2021 17:50:49 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 20FBD2222A;
-        Mon, 18 Jan 2021 22:50:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611010209;
-        bh=zuWfpZ4hjw9/aPWqTVav9cTSi55/kKdgu1hpodVrMsQ=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=G5046WrjbqMb8EvKA8GAjn1qSUPYhHkLCOjXN0YirZ6Nh4y7Qd5NyT0nOvR2q2dRY
-         4moRr3Q2aNElk4wW+rRs/50LHd+7674btcx56qsFdFp+3rBypERMG5xsmhdmbqOuuj
-         8sB5lONBGBELEDJsU7ZfFQXtuAKEBUgWj28CeDX9riyky1wZ7Mxb3/MhvStt4auh8+
-         CRiCuZdF5P2FIxb+JqcIVvw9v3X04X+qwzUWjqsUvv1MWhP/4RyOY1QMP6fl0tFFRE
-         rVvZuTjQp5NGAZaHAlVFYvtYWxRkE3T/gMdovOw4m+/rZAXzB1KkAMILR5gCNv9LEB
-         olQZuLaRtORew==
-Received: from pdx-korg-docbuild-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-1.ci.codeaurora.org (Postfix) with ESMTP id 10F31602DA;
-        Mon, 18 Jan 2021 22:50:09 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S2390871AbhARW4c (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jan 2021 17:56:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50374 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390779AbhARW42 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jan 2021 17:56:28 -0500
+Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com [IPv6:2607:f8b0:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47EFFC061574
+        for <netdev@vger.kernel.org>; Mon, 18 Jan 2021 14:55:48 -0800 (PST)
+Received: by mail-oi1-x22e.google.com with SMTP id 15so19303394oix.8
+        for <netdev@vger.kernel.org>; Mon, 18 Jan 2021 14:55:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=++t0weJ0eGGG2lvfHIvbpFBaKhkeutcMrpKfJR3mZFc=;
+        b=ovzlwnTG9zusxi3X/BNn7x2smDBtnMWr1rrOi9gc7kMircqW8n0htXkuzCX6mQYa+I
+         o5t3PLMhOOawlTwTsNdTDMxBzq5c4cfmL1GT2JEUeoW7G8twcwRY1gIyUViAubR25r5g
+         9Is1LJ96F306wnhrl0jeVr1eifIUSfeqX3OUskSR5ZeYSX6rt5c/OEMv74HHssaraoIq
+         0OeDBOZYS/Cjk2f3Pbn+YvxgC5T3aexi7efRdhuwcPDwznLBDQfJel6k4JOJLtF61O4b
+         3XZcPeKbymYXNbXdC1KAnKGyTJZkbJQGzBsE6wXugdU/SpQWml+LjyF6V1XmytLE0jbN
+         6Aig==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=++t0weJ0eGGG2lvfHIvbpFBaKhkeutcMrpKfJR3mZFc=;
+        b=DrPLKECsJS+gcMRMs0enpbdpQDFad5QxlD5T84frfuaTz1n9yZ38awB1a6ke1nFLXB
+         moyAEmxavUr63M9Xcs6ShS4W0gN0lar5DOyVNhh9HOlDe8qIN9ZQ4fwkytnDtQ8eIxXK
+         0RFWJORvowLMJh8sbSL/dhm7sdSQ+8EJh3gHw5s+x78Jb6059dcJ5yK9PwX+2GzCM12i
+         bnOiFAiRnYRBX/XwDum48azfZdr6URJyBcQqQ/0Ga8diCunwKNms4GyBb/tuj5gxoGmi
+         5rn2MY7MYREsZtG6KR3KDHzZWAnHr9bGhIetdpKG8veU6WbTvjzxlAhCRlrBNYVGDNhO
+         XMHQ==
+X-Gm-Message-State: AOAM531hjAKVQZ2INXY4A26gqjywKd13M5vQk5SDHZj02VSnJkoYdASv
+        1854UYsWGEAHlDInfX3GMVE=
+X-Google-Smtp-Source: ABdhPJz6zSScR1Td7AEOw8NastCmzwGNTtxcLM09j/p4HiPohcSVSNUUYIG2YvIpTMQnf1UhO0+4eg==
+X-Received: by 2002:a05:6808:a90:: with SMTP id q16mr905405oij.107.1611010547739;
+        Mon, 18 Jan 2021 14:55:47 -0800 (PST)
+Received: from Davids-MacBook-Pro.local ([8.6.112.224])
+        by smtp.googlemail.com with ESMTPSA id s24sm3554609oij.20.2021.01.18.14.55.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 18 Jan 2021 14:55:47 -0800 (PST)
+Subject: Re: [patch net-next RFC 00/10] introduce line card support for
+ modular switch
+To:     Jiri Pirko <jiri@resnulli.us>, Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        jacob.e.keller@intel.com, roopa@nvidia.com, mlxsw@nvidia.com
+References: <20210113121222.733517-1-jiri@resnulli.us>
+ <20210113182716.2b2aa8fa@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20210114074804.GK3565223@nanopsycho.orion>
+ <20210114153013.2ce357b0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20210115143906.GM3565223@nanopsycho.orion>
+ <20210115112617.064deda8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20210118130009.GU3565223@nanopsycho.orion>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <2d9674de-9710-3172-3ff7-073634ad1068@gmail.com>
+Date:   Mon, 18 Jan 2021 15:55:45 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
+ Gecko/20100101 Thunderbird/78.6.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: pull-request: mac80211 2021-01-18.2
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161101020906.2232.13826999223880000897.git-patchwork-notify@kernel.org>
-Date:   Mon, 18 Jan 2021 22:50:09 +0000
-References: <20210118204750.7243-1-johannes@sipsolutions.net>
-In-Reply-To: <20210118204750.7243-1-johannes@sipsolutions.net>
-To:     Johannes Berg <johannes@sipsolutions.net>
-Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org
+In-Reply-To: <20210118130009.GU3565223@nanopsycho.orion>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This pull request was applied to netdev/net.git (refs/heads/master):
-
-On Mon, 18 Jan 2021 21:47:49 +0100 you wrote:
-> Hi,
+On 1/18/21 6:00 AM, Jiri Pirko wrote:
 > 
-> New try, dropped the 160 MHz CSA patch for now that has the sparse
-> issue since people are waiting for the kernel-doc fixes.
-> 
-> Please pull and let me know if there's any problem.
-> 
-> [...]
+>> Reconfiguring routing is not the end of the world.
+> Well, yes, but you don't really want netdevices to come and go then you
+> plug in/out cables/modules. That's why we have split implemented as we
 
-Here is the summary with links:
-  - pull-request: mac80211 2021-01-18.2
-    https://git.kernel.org/netdev/net/c/bde2c0af6141
+And you don't want a routing daemon to use netdevices which are not
+valid due to non-existence. Best case with what you want is carrier down
+on the LC's netdevices and that destroys routing.
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+> do. I don't understand why do you think linecards are different.
 
-
+I still don't get why you expect linecards to be different than any
+other hotplug device.
