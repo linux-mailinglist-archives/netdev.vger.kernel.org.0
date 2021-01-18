@@ -2,119 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F12762FAA69
-	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 20:44:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 756912FAA53
+	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 20:39:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2394116AbhARTmZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jan 2021 14:42:25 -0500
-Received: from mail-40134.protonmail.ch ([185.70.40.134]:29460 "EHLO
-        mail-40134.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2437399AbhARTeY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jan 2021 14:34:24 -0500
-Date:   Mon, 18 Jan 2021 19:33:17 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
-        t=1610998404; bh=C8ABwwYHkwQARcAAcxQdRAoNdGpuSuZgs01wmbrorcQ=;
-        h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
-        b=Q9N36UStJD0wddnkzstxJ6fT0Gb4cEX/rwY+UVjVcYuz8vBG54JfxmJYWzEEbMy+E
-         mhRwwHj7SZL65Orwdv7xcnTwk9RtwxQMexxDul5fTqxlftFGuwfbA5M+BqS/AKeskV
-         XtyuBbi660cLFXukPjWsPmkZsQXoqAku7ut5IgfYXp8RWZ4OiCWEg8U+FloftNruto
-         ruHlFQ/eiv7SxIjwG1+AJ8LgQxm2RsNIdmLQn20v/27IGzd14l1SAAh+reKITU3alJ
-         k2Io/awU6ndYfbBRPMBLLZB6Rpr2pyvC0c7/IgWFmV0t9F4nkguIe6kUBGwoCV9yzX
-         Md3D77KPBtsoA==
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-From:   Alexander Lobakin <alobakin@pm.me>
-Cc:     Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Willem de Bruijn <willemb@google.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Igor Russkikh <irusskikh@marvell.com>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Antoine Tenart <atenart@kernel.org>,
-        Michal Kubecek <mkubecek@suse.cz>,
+        id S2437426AbhARTiA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jan 2021 14:38:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35554 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2436985AbhARTgl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jan 2021 14:36:41 -0500
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E7BEC061574
+        for <netdev@vger.kernel.org>; Mon, 18 Jan 2021 11:36:00 -0800 (PST)
+Received: by mail-ej1-x62f.google.com with SMTP id rv9so6471684ejb.13
+        for <netdev@vger.kernel.org>; Mon, 18 Jan 2021 11:36:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=g5GN3vH4HSdjQiRrOkjF3rRgo4vaid8HPktGh+A6N28=;
+        b=XmvKz2N8Z/rESq8CtbVUZuaZXQoH4Qh8i0mvWloPYXG9O0l8huh/d9TYE6MjF/mQ7E
+         yO1iIjUg4npIZcOYvuptYBjrRK4IIFnf67IOXu9Sp0HPP3UTu1PBWMFZT4Qs+XFATaUq
+         UROQjH/xpoDfmckJZKTGwCYHzeJbo9Yln5RLli8a0kQslstws5q9DjwspMuI+AjVZuqu
+         zxTM/nQn8XeemTIhHY59fbakUtAaiKwjbqavDmha1drwiXswnansvYzwtJnyamd2yvCJ
+         NEd8mhXPS+h2RNs0KPOq9lG52c4Hw15kw9A/m7UfWfvEzASdnMY9Ob9ObmcArg4SyfPg
+         nCIQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=g5GN3vH4HSdjQiRrOkjF3rRgo4vaid8HPktGh+A6N28=;
+        b=fOZGlz6poNeF0WI5MGEDmMt3gvi1v/ceUgYqtW3YBZ6ouWugpNqFaaoqGKoS0+Iewk
+         k3/5mdy/CzYVLQdiBtZHFhQjpOJlWxcF7elH931lUdlUfcLBHiDTfxHTs1S086ZJXbne
+         Ce3kT4ofSOSbFtyeBF1iVqOeTLlz3m8R+lV1zUpUla9YsPMbEbD3GvySG/UiUG+i9ieN
+         //yXgLu/hBDtPW4wpdHEkZQwPn4/5DH8qZ6xOdJWgDY43gN3PpDuEOCyUfLXy0+bKPXS
+         e4D8E6urnGQqGU8cAjo3KIpmO/00Ua42Xp7mfRx4UPEHM13/8PM0y1nIxAIu1C1+0PdE
+         hd1Q==
+X-Gm-Message-State: AOAM5306GNROGOs8xgbnqADfmm5UKEkcopXfU4PZAtEMeFM84iiMxFwf
+        aZY4CqJr0nqlIm3aSNB0cDaj5pOOKs8=
+X-Google-Smtp-Source: ABdhPJzCWpz/2Oym8lZbEkAKXl7mPbmm5PzWlVaU2u/yg1Hkee7+Zgri69npuJSuGp3doLbSlfGgRg==
+X-Received: by 2002:a17:906:5285:: with SMTP id c5mr817742ejm.17.1610998559341;
+        Mon, 18 Jan 2021 11:35:59 -0800 (PST)
+Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
+        by smtp.gmail.com with ESMTPSA id dm1sm4567788edb.72.2021.01.18.11.35.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Jan 2021 11:35:58 -0800 (PST)
+Date:   Mon, 18 Jan 2021 21:35:57 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>,
+        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
         Andrew Lunn <andrew@lunn.ch>,
-        Meir Lichtinger <meirl@mellanox.com>,
-        Aya Levin <ayal@mellanox.com>,
         Florian Fainelli <f.fainelli@gmail.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Reply-To: Alexander Lobakin <alobakin@pm.me>
-Subject: [PATCH net-next 2/2] udp: allow forwarding of plain (non-fraglisted) UDP GRO packets
-Message-ID: <20210118193232.87583-2-alobakin@pm.me>
-In-Reply-To: <20210118193232.87583-1-alobakin@pm.me>
-References: <20210118193122.87271-1-alobakin@pm.me> <20210118193232.87583-1-alobakin@pm.me>
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Tobias Waldekranz <tobias@waldekranz.com>,
+        Maxim Kochetkov <fido_max@inbox.ru>
+Subject: Re: [PATCH v2 net-next 01/14] net: mscc: ocelot: allow offloading of
+ bridge on top of LAG
+Message-ID: <20210118193557.cwa4nvxdbuulldou@skbuf>
+References: <20210116005943.219479-1-olteanv@gmail.com>
+ <20210116005943.219479-2-olteanv@gmail.com>
+ <20210116172623.2277b86a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20210117123744.erw2i34oap5xkapo@skbuf>
+ <20210118110447.3c31521a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.2 required=10.0 tests=ALL_TRUSTED,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF shortcircuit=no
-        autolearn=disabled version=3.4.4
-X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on
-        mailout.protonmail.ch
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210118110447.3c31521a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 9fd1ff5d2ac7 ("udp: Support UDP fraglist GRO/GSO.") actually
-not only added a support for fraglisted UDP GRO, but also tweaked
-some logics the way that non-fraglisted UDP GRO started to work for
-forwarding too.
-Commit 2e4ef10f5850 ("net: add GSO UDP L4 and GSO fraglists to the
-list of software-backed types") added GSO UDP L4 to the list of
-software GSO to allow virtual netdevs to forward them as is up to
-the real drivers.
+On Mon, Jan 18, 2021 at 11:04:47AM -0800, Jakub Kicinski wrote:
+> On Sun, 17 Jan 2021 14:37:44 +0200 Vladimir Oltean wrote:
+> > That being said, if we want to engage in a rigid demonstration of
+> > procedures, sure we can do that. I have other patches anyway to fill the
+> > pipeline until "net" is merged back into "net-next" :)
+> 
+> If you don't mind I'd rather apply the fix to net, and the rest on
+> Thu/Fri after the trees get merged.
 
-Tests showed that currently forwarding and NATing of plain UDP GRO
-packets are performed fully correctly, regardless if the target
-netdevice has a support for hardware/driver GSO UDP L4 or not.
-Plain UDP GRO forwarding even shows better performance than fraglisted
-UDP GRO in some cases due to not wasting one skbuff_head per every
-segment.
-
-Add the last element and allow to form plain UDP GRO packets if
-there is no socket -> we are on forwarding path, and the new
-NETIF_F_GRO_UDP is enabled on a receiving netdevice.
-Note that fraglisted UDP GRO now also depends on this feature, as
-NETIF_F_GRO_FRAGLIST isn't tied to any particular L4 protocol.
-
-Signed-off-by: Alexander Lobakin <alobakin@pm.me>
----
- net/ipv4/udp_offload.c | 16 +++++++++++-----
- 1 file changed, 11 insertions(+), 5 deletions(-)
-
-diff --git a/net/ipv4/udp_offload.c b/net/ipv4/udp_offload.c
-index ff39e94781bf..781a035de5a9 100644
---- a/net/ipv4/udp_offload.c
-+++ b/net/ipv4/udp_offload.c
-@@ -454,13 +454,19 @@ struct sk_buff *udp_gro_receive(struct list_head *hea=
-d, struct sk_buff *skb,
- =09struct sk_buff *p;
- =09struct udphdr *uh2;
- =09unsigned int off =3D skb_gro_offset(skb);
--=09int flush =3D 1;
-+=09int flist =3D 0, flush =3D 1;
-+=09bool gro_by_feat =3D false;
-=20
--=09NAPI_GRO_CB(skb)->is_flist =3D 0;
--=09if (skb->dev->features & NETIF_F_GRO_FRAGLIST)
--=09=09NAPI_GRO_CB(skb)->is_flist =3D sk ? !udp_sk(sk)->gro_enabled: 1;
-+=09if (skb->dev->features & NETIF_F_GRO_UDP) {
-+=09=09if (skb->dev->features & NETIF_F_GRO_FRAGLIST)
-+=09=09=09flist =3D !sk || !udp_sk(sk)->gro_enabled;
-=20
--=09if ((sk && udp_sk(sk)->gro_enabled) || NAPI_GRO_CB(skb)->is_flist) {
-+=09=09gro_by_feat =3D !sk || flist;
-+=09}
-+
-+=09NAPI_GRO_CB(skb)->is_flist =3D flist;
-+
-+=09if (gro_by_feat || (sk && udp_sk(sk)->gro_enabled)) {
- =09=09pp =3D call_gro_receive(udp_gro_receive_segment, head, skb);
- =09=09return pp;
- =09}
---=20
-2.30.0
-
-
+Sure, I already split this patch and sent it to "net":
+https://patchwork.kernel.org/project/netdevbpf/patch/20210118135210.2666246-1-olteanv@gmail.com/
