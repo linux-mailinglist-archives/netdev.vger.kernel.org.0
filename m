@@ -2,96 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 746052FA09B
-	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 14:02:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 913122FA0A9
+	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 14:03:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391788AbhARM7l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jan 2021 07:59:41 -0500
-Received: from a.mx.secunet.com ([62.96.220.36]:60732 "EHLO a.mx.secunet.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2391719AbhARM7g (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 18 Jan 2021 07:59:36 -0500
-Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id 23CC3201E4;
-        Mon, 18 Jan 2021 13:58:16 +0100 (CET)
-X-Virus-Scanned: by secunet
-Received: from a.mx.secunet.com ([127.0.0.1])
-        by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id YVpkQoYFr9KA; Mon, 18 Jan 2021 13:58:15 +0100 (CET)
-Received: from mail-essen-02.secunet.de (unknown [10.53.40.205])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 9D0C4200BC;
-        Mon, 18 Jan 2021 13:58:15 +0100 (CET)
-Received: from mbx-essen-01.secunet.de (10.53.40.197) by
- mail-essen-02.secunet.de (10.53.40.205) with Microsoft SMTP Server (TLS) id
- 14.3.487.0; Mon, 18 Jan 2021 13:58:15 +0100
-Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
- (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2044.4; Mon, 18 Jan
- 2021 13:58:14 +0100
-Received: by gauss2.secunet.de (Postfix, from userid 1000)      id EF5813182E9B;
- Mon, 18 Jan 2021 13:58:14 +0100 (CET)
-Date:   Mon, 18 Jan 2021 13:58:14 +0100
-From:   Steffen Klassert <steffen.klassert@secunet.com>
-To:     Alexander Lobakin <alobakin@pm.me>
-CC:     Dongseok Yi <dseok.yi@samsung.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        <namkyu78.kim@samsung.com>, Jakub Kicinski <kuba@kernel.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        "Willem de Bruijn" <willemb@google.com>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net v2] udp: ipv4: manipulate network header of NATed UDP
- GRO fraglist
-Message-ID: <20210118125814.GL3576117@gauss3.secunet.de>
-References: <CGME20210115133200epcas2p1f52efe7bbc2826ed12da2fde4e03e3b2@epcas2p1.samsung.com>
- <1610716836-140533-1-git-send-email-dseok.yi@samsung.com>
- <20210115171203.175115-1-alobakin@pm.me>
- <20210118063759.GK3576117@gauss3.secunet.de>
- <20210118121707.2130-1-alobakin@pm.me>
+        id S2392076AbhARNCd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jan 2021 08:02:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34740 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2391972AbhARNA4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jan 2021 08:00:56 -0500
+Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3245CC061573
+        for <netdev@vger.kernel.org>; Mon, 18 Jan 2021 05:00:14 -0800 (PST)
+Received: by mail-wr1-x42b.google.com with SMTP id d26so16363832wrb.12
+        for <netdev@vger.kernel.org>; Mon, 18 Jan 2021 05:00:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=4qPAUXos/RFVlktxv/aD1QceJ4yoWahYlcZ36hAfgtY=;
+        b=ZbAaW3iarMkSzWxsa5oUIsBzwxb3iFZIeqpAnVqC++nNNjhwUjeR6sJvFUT0gEY67V
+         dIkfPnbCmPARJTI4ScWAM9mRF/XKYHfYqyanRx5VHHAxZTaTHAVxY/ehEJoj+ZA8Oftx
+         U5eqlcBcwtX+aE5ipWmspLjKYd18ZrnALIVicsgGADwjqLK6c3/zOpdA0Ih4rDgjkNk9
+         /CYoqd0QdZkVZhEkVC1Q4DWh3hYraqIL7NLCBxXaLapSoug8eCHSXd6ADYP5gSsNIvm6
+         vbTeYUNeNO1g6Wz/6YajALGyF9IdCJlBsf2w3154RMs+Jg7cdJy3eK2oidSg5xjZn/IC
+         i3rg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=4qPAUXos/RFVlktxv/aD1QceJ4yoWahYlcZ36hAfgtY=;
+        b=qTRRs/kX94lw0HIClDpxAIP4UrofLjspu8+ETL8h+sRZ0iAD/URdJXeRS06RPopu0r
+         BO8pBicJ2qMXoHIhHV+qaW7OSRMFSo9qAgahoDNEnXal/hwE92gb/vlzsudDDAxpHsi+
+         oTrDV3vzoVtCCg9JswaJTj4CqO/DKJMIGyySD4gA/qSJ4721thiBh0wI0YSBt9ZVvKFd
+         S+W9uaxGNADB6pPZ2COZPqGri/xyaiEj9yRtgU/+YPtSlnROa9GoRJCTtueNAO3pg2Am
+         GMRcfkMtFeOZMFZJssh2vHtruMQtBRj0OcQqOg5Xm3i4KkK2BhWPaNias0ksf/f3ONKo
+         BiHA==
+X-Gm-Message-State: AOAM530xkYxSaCImIrOaW6lST4GNXXpmZ+l/25uLk8cxk/fjj2rVaYIU
+        l3Dvtsksv7Un64R4aIeJBrZMlA==
+X-Google-Smtp-Source: ABdhPJzxOZaozYJ+eQGCyS2ZJQ24T0rOg6s+pR5uPrAJeXMwawBq/dapFX+hyHZInjZgJkkM19UnfQ==
+X-Received: by 2002:adf:e710:: with SMTP id c16mr25993307wrm.295.1610974812807;
+        Mon, 18 Jan 2021 05:00:12 -0800 (PST)
+Received: from localhost ([85.163.43.78])
+        by smtp.gmail.com with ESMTPSA id r126sm11768814wma.48.2021.01.18.05.00.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Jan 2021 05:00:12 -0800 (PST)
+Date:   Mon, 18 Jan 2021 14:00:09 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        jacob.e.keller@intel.com, roopa@nvidia.com, mlxsw@nvidia.com
+Subject: Re: [patch net-next RFC 00/10] introduce line card support for
+ modular switch
+Message-ID: <20210118130009.GU3565223@nanopsycho.orion>
+References: <20210113121222.733517-1-jiri@resnulli.us>
+ <20210113182716.2b2aa8fa@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20210114074804.GK3565223@nanopsycho.orion>
+ <20210114153013.2ce357b0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20210115143906.GM3565223@nanopsycho.orion>
+ <20210115112617.064deda8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210118121707.2130-1-alobakin@pm.me>
-X-ClientProxiedBy: cas-essen-01.secunet.de (10.53.40.201) To
- mbx-essen-01.secunet.de (10.53.40.197)
-X-EXCLAIMER-MD-CONFIG: 2c86f778-e09b-4440-8b15-867914633a10
+In-Reply-To: <20210115112617.064deda8@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 18, 2021 at 12:17:34PM +0000, Alexander Lobakin wrote:
-> > From: Steffen Klassert <steffen.klassert@secunet.com>
-> > Date: Mon, 18 Jan 2021 07:37:59 +0100
-> > On Fri, Jan 15, 2021 at 05:12:33PM +0000, Alexander Lobakin wrote:
-> >>
-> >> I used another approach, tried to make fraglist GRO closer to plain
-> >> in terms of checksummming, as it is confusing to me why GSO packet
-> >> should have CHECKSUM_UNNECESSARY.
-> >
-> > This is intentional. With fraglist GRO, we don't mangle packets
-> > in the standard (non NAT) case. So the checksum is still correct
-> > after segmentation. That is one reason why it has good forwarding
-> > performance when software segmentation is needed. Checksuming
-> > touches the whole packet and has a lot of overhead, so it is
-> > heplfull to avoid it whenever possible.
-> >
-> > We should find a way to do the checksum only when we really
-> > need it. I.e. only if the headers of the head skb changed.
-> 
-> I suggest to do memcmp() between skb_network_header(skb) and
-> skb_network_header(skb->frag_list) with the len of
-> skb->data - skb_network_header(skb). This way we will detect changes
-> in IPv4/IPv6 and UDP headers.
+Fri, Jan 15, 2021 at 08:26:17PM CET, kuba@kernel.org wrote:
+>On Fri, 15 Jan 2021 15:39:06 +0100 Jiri Pirko wrote:
+>> >I'm not a SFP experts so maybe someone will correct me but AFAIU
+>> >the QSFP (for optics) is the same regardless of breakout. It's the
+>> >passive optical strands that are either bundled or not. So there is 
+>> >no way for the system to detect the cable type (AFAIK).  
+>> 
+>> For SFP module, you are able to detect those.
+>
+>Not sure you understand what I'm saying. Maybe you're thinking about
+>DACs? This is a optical cable for breakout:
+>
+>https://www.fs.com/products/68048.html
+>
+>There is no electronics in it to "detect" things AFAIU. Same QSFP can
+>be used with this cable or a non-breakout.
 
-I thought about that too. Bbut with fraglist GRO, the length of
-the packets can vary. Unlike standard GRO, there is no requirement
-that the packets in the fraglist must be equal in length here. So
-we can't compare the full headers. I think we need to test for
-addresses and ports.
+Ah, got you.
 
-> If so, copy the full headers and fall back to the standard checksum,
-> recalculation, else use the current path.
 
-I agree that we should fallback to standard checksum recalculation
-if the addresses or ports changed.
+>
+>> >Or to put it differently IMO the netdev should be provisioned if the
+>> >system has a port into which user can plug in a cable. When there is   
+>> 
+>> Not really. For slit cables, the ports are provisioned not matter which
+>> cable is connected, slitter 1->2/1->4 or 1->1 cable.
+>> 
+>> 
+>> >a line card-sized hole in the chassis, I'd be surprised to see ports.
+>> >
+>> >That said I never worked with real world routers so maybe that's what
+>> >they do. Maybe some with a Cisco router in the basement can tell us? :)  
+>> 
+>> The need for provision/pre-configure splitter/linecard is that the
+>> ports/netdevices do not disapper/reappear when you replace
+>> splitter/linecard. Consider a faulty linecard with one port burned. You
+>> just want to replace it with new one. And in that case, you really don't
+>> want kernel to remove netdevices and possibly mess up routing for
+>> example.
+>
+>Having a single burned port sounds like a relatively rare scenario.
+
+Hmm, rare in scale is common...
+
+
+>Reconfiguring routing is not the end of the world.
+
+Well, yes, but you don't really want netdevices to come and go then you
+plug in/out cables/modules. That's why we have split implemented as we
+do. I don't understand why do you think linecards are different.
+
+Plus, I'm not really sure that our hw can report the type, will check.
+One way or another, I think that both configuration flows have valid
+usecase. Some user may want pre-configuration, some user may want auto.
+Btw, it is possible to implement splitter cable in auto mode as well.
+
+
+>
+>> >If the device really needs this configuration / can't detect things
+>> >automatically, then we gotta do something like what you have.
+>> >The only question is do we still want to call it a line card.
+>> >Sounds more like a front panel module. At Netronome we called 
+>> >those phymods.  
+>> 
+>> Sure, the name is up to the discussion. We call it "linecard"
+>> internally. I don't care about the name.
+>
+>Yeah, let's call it something more appropriate to indicate its
+>breakout/retimer/gearbox nature, and we'll be good :)
+
+Well, it can contain much more. It can contain a smartnic/fpga/whatever
+for example. Not sure we can find something that fits to all cases.
+I was thinking about it in the past, I think that the linecard is quite
+appropriate. It connects with lines/lanes, and it does something,
+either phy/gearbox, or just interconnects the lanes using smartnic/fpga
+for example.
+
