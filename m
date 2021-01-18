@@ -2,25 +2,25 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D8A622FAA6B
-	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 20:44:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F12762FAA69
+	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 20:44:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2437063AbhARTmk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jan 2021 14:42:40 -0500
-Received: from mail1.protonmail.ch ([185.70.40.18]:49746 "EHLO
-        mail1.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2437340AbhARTdr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jan 2021 14:33:47 -0500
-Date:   Mon, 18 Jan 2021 19:32:51 +0000
+        id S2394116AbhARTmZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jan 2021 14:42:25 -0500
+Received: from mail-40134.protonmail.ch ([185.70.40.134]:29460 "EHLO
+        mail-40134.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2437399AbhARTeY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jan 2021 14:34:24 -0500
+Date:   Mon, 18 Jan 2021 19:33:17 +0000
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
-        t=1610998379; bh=z2BgOHJQihEnZJluF+2PjwdFI80xZFFK5NdPVZjc2KU=;
+        t=1610998404; bh=C8ABwwYHkwQARcAAcxQdRAoNdGpuSuZgs01wmbrorcQ=;
         h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
-        b=RtXGISrjXU7lTSaAaDTkKXl/3TbgsmZk3CMUU+Y/Lv4b/vdC9DIOMcC9GiK0tMUVR
-         pclzQoZkmqRAczGjRuTKEgbg+L8HMcSBxS41Uyb3qbDsSVlc29Xk7pzunDBx0IbjW/
-         Uun5Ri1kLZrGZOpHWwnnQcvlWhuEcAloXEgWWNvrB3YSLUIwiDwzCFXPjUPsD0Lxjs
-         rtcZo1z+m+nIqfk5925u7dVy/1I1GYmWEgsCy2IBThOg7WlV5J4UF+3RwNsAUCUEQ6
-         mmdjqD3D8B+JQgvdZl3vPSvVY4Vb+VLPDsqcaPhCRHDJgpu/wW1GXg7MR7/gf/LCNO
-         d5FYEWbBU8/Cg==
+        b=Q9N36UStJD0wddnkzstxJ6fT0Gb4cEX/rwY+UVjVcYuz8vBG54JfxmJYWzEEbMy+E
+         mhRwwHj7SZL65Orwdv7xcnTwk9RtwxQMexxDul5fTqxlftFGuwfbA5M+BqS/AKeskV
+         XtyuBbi660cLFXukPjWsPmkZsQXoqAku7ut5IgfYXp8RWZ4OiCWEg8U+FloftNruto
+         ruHlFQ/eiv7SxIjwG1+AJ8LgQxm2RsNIdmLQn20v/27IGzd14l1SAAh+reKITU3alJ
+         k2Io/awU6ndYfbBRPMBLLZB6Rpr2pyvC0c7/IgWFmV0t9F4nkguIe6kUBGwoCV9yzX
+         Md3D77KPBtsoA==
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>
 From:   Alexander Lobakin <alobakin@pm.me>
@@ -41,10 +41,10 @@ Cc:     Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
         Florian Fainelli <f.fainelli@gmail.com>,
         linux-kernel@vger.kernel.org, netdev@vger.kernel.org
 Reply-To: Alexander Lobakin <alobakin@pm.me>
-Subject: [PATCH net-next 1/2] net: introduce UDP GRO netdev feature
-Message-ID: <20210118193232.87583-1-alobakin@pm.me>
-In-Reply-To: <20210118193122.87271-1-alobakin@pm.me>
-References: <20210118193122.87271-1-alobakin@pm.me>
+Subject: [PATCH net-next 2/2] udp: allow forwarding of plain (non-fraglisted) UDP GRO packets
+Message-ID: <20210118193232.87583-2-alobakin@pm.me>
+In-Reply-To: <20210118193232.87583-1-alobakin@pm.me>
+References: <20210118193122.87271-1-alobakin@pm.me> <20210118193232.87583-1-alobakin@pm.me>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
@@ -57,65 +57,63 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Introduce a new netdev_feature, NETIF_F_GRO_UDP, to allow user
-to turn UDP GRO on and off when there is no socket, e.g. when
-forwarding.
-Defaults to off to not change current datapath.
+Commit 9fd1ff5d2ac7 ("udp: Support UDP fraglist GRO/GSO.") actually
+not only added a support for fraglisted UDP GRO, but also tweaked
+some logics the way that non-fraglisted UDP GRO started to work for
+forwarding too.
+Commit 2e4ef10f5850 ("net: add GSO UDP L4 and GSO fraglists to the
+list of software-backed types") added GSO UDP L4 to the list of
+software GSO to allow virtual netdevs to forward them as is up to
+the real drivers.
 
-Suggested-by: Paolo Abeni <pabeni@redhat.com>
+Tests showed that currently forwarding and NATing of plain UDP GRO
+packets are performed fully correctly, regardless if the target
+netdevice has a support for hardware/driver GSO UDP L4 or not.
+Plain UDP GRO forwarding even shows better performance than fraglisted
+UDP GRO in some cases due to not wasting one skbuff_head per every
+segment.
+
+Add the last element and allow to form plain UDP GRO packets if
+there is no socket -> we are on forwarding path, and the new
+NETIF_F_GRO_UDP is enabled on a receiving netdevice.
+Note that fraglisted UDP GRO now also depends on this feature, as
+NETIF_F_GRO_FRAGLIST isn't tied to any particular L4 protocol.
+
 Signed-off-by: Alexander Lobakin <alobakin@pm.me>
 ---
- include/linux/netdev_features.h | 4 +++-
- net/ethtool/common.c            | 1 +
- 2 files changed, 4 insertions(+), 1 deletion(-)
+ net/ipv4/udp_offload.c | 16 +++++++++++-----
+ 1 file changed, 11 insertions(+), 5 deletions(-)
 
-diff --git a/include/linux/netdev_features.h b/include/linux/netdev_feature=
-s.h
-index 934de56644e7..c6526aa13684 100644
---- a/include/linux/netdev_features.h
-+++ b/include/linux/netdev_features.h
-@@ -84,6 +84,7 @@ enum {
- =09NETIF_F_GRO_FRAGLIST_BIT,=09/* Fraglist GRO */
+diff --git a/net/ipv4/udp_offload.c b/net/ipv4/udp_offload.c
+index ff39e94781bf..781a035de5a9 100644
+--- a/net/ipv4/udp_offload.c
++++ b/net/ipv4/udp_offload.c
+@@ -454,13 +454,19 @@ struct sk_buff *udp_gro_receive(struct list_head *hea=
+d, struct sk_buff *skb,
+ =09struct sk_buff *p;
+ =09struct udphdr *uh2;
+ =09unsigned int off =3D skb_gro_offset(skb);
+-=09int flush =3D 1;
++=09int flist =3D 0, flush =3D 1;
++=09bool gro_by_feat =3D false;
 =20
- =09NETIF_F_HW_MACSEC_BIT,=09=09/* Offload MACsec operations */
-+=09NETIF_F_GRO_UDP_BIT,=09=09/* Enable UDP GRO */
+-=09NAPI_GRO_CB(skb)->is_flist =3D 0;
+-=09if (skb->dev->features & NETIF_F_GRO_FRAGLIST)
+-=09=09NAPI_GRO_CB(skb)->is_flist =3D sk ? !udp_sk(sk)->gro_enabled: 1;
++=09if (skb->dev->features & NETIF_F_GRO_UDP) {
++=09=09if (skb->dev->features & NETIF_F_GRO_FRAGLIST)
++=09=09=09flist =3D !sk || !udp_sk(sk)->gro_enabled;
 =20
- =09/*
- =09 * Add your fresh new feature above and remember to update
-@@ -157,6 +158,7 @@ enum {
- #define NETIF_F_GRO_FRAGLIST=09__NETIF_F(GRO_FRAGLIST)
- #define NETIF_F_GSO_FRAGLIST=09__NETIF_F(GSO_FRAGLIST)
- #define NETIF_F_HW_MACSEC=09__NETIF_F(HW_MACSEC)
-+#define NETIF_F_GRO_UDP=09=09__NETIF_F(GRO_UDP)
-=20
- /* Finds the next feature with the highest number of the range of start ti=
-ll 0.
-  */
-@@ -234,7 +236,7 @@ static inline int find_next_netdev_feature(u64 feature,=
- unsigned long start)
- #define NETIF_F_SOFT_FEATURES=09(NETIF_F_GSO | NETIF_F_GRO)
-=20
- /* Changeable features with no special hardware requirements that defaults=
- to off. */
--#define NETIF_F_SOFT_FEATURES_OFF=09NETIF_F_GRO_FRAGLIST
-+#define NETIF_F_SOFT_FEATURES_OFF=09(NETIF_F_GRO_FRAGLIST | NETIF_F_GRO_UD=
-P)
-=20
- #define NETIF_F_VLAN_FEATURES=09(NETIF_F_HW_VLAN_CTAG_FILTER | \
- =09=09=09=09 NETIF_F_HW_VLAN_CTAG_RX | \
-diff --git a/net/ethtool/common.c b/net/ethtool/common.c
-index 24036e3055a1..e45128882372 100644
---- a/net/ethtool/common.c
-+++ b/net/ethtool/common.c
-@@ -68,6 +68,7 @@ const char netdev_features_strings[NETDEV_FEATURE_COUNT][=
-ETH_GSTRING_LEN] =3D {
- =09[NETIF_F_HW_TLS_RX_BIT] =3D=09 "tls-hw-rx-offload",
- =09[NETIF_F_GRO_FRAGLIST_BIT] =3D=09 "rx-gro-list",
- =09[NETIF_F_HW_MACSEC_BIT] =3D=09 "macsec-hw-offload",
-+=09[NETIF_F_GRO_UDP_BIT] =3D=09=09 "rx-gro-udp",
- };
-=20
- const char
+-=09if ((sk && udp_sk(sk)->gro_enabled) || NAPI_GRO_CB(skb)->is_flist) {
++=09=09gro_by_feat =3D !sk || flist;
++=09}
++
++=09NAPI_GRO_CB(skb)->is_flist =3D flist;
++
++=09if (gro_by_feat || (sk && udp_sk(sk)->gro_enabled)) {
+ =09=09pp =3D call_gro_receive(udp_gro_receive_segment, head, skb);
+ =09=09return pp;
+ =09}
 --=20
 2.30.0
 
