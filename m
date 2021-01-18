@@ -2,138 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B7B452F9B75
-	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 09:46:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A87E32F9B96
+	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 09:56:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387869AbhARIp6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jan 2021 03:45:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36486 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387771AbhARIps (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jan 2021 03:45:48 -0500
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F20C2C061573;
-        Mon, 18 Jan 2021 00:45:08 -0800 (PST)
-Received: by mail-pl1-x632.google.com with SMTP id d4so8264450plh.5;
-        Mon, 18 Jan 2021 00:45:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=Y3r2tP8YnX1X5B9QdeuzmBKL86ouGSFP82KEzONkD4Q=;
-        b=UXXWuhof0T4ppFAL/rZBcvNQVT+4DH0ZDWF5WB8H2JOyjRAYgchDSJDVzCOn/Cjfa8
-         dnpBCG8zUS4pV/NUC2qkZs1/qMOXN44W7ivPRATLpJlQ8qYpYKTbbQNBRb/AIcQBb59g
-         Z3WQQMQqDuoFg8iBleJIps+uaCdxmlQFdsatpwZ3iqtz9GA4y15TU/kKcpgdttbhchOv
-         yS8cGRurd1ye9VXC4dUBTrqnqedoD6NByyKDLs4MpQJriSvIXHS3UU9tlK5LHueAroCu
-         7QvHmY2ImaRfrkNYMDwWEXKK3+Sw1LtDgXg3YXgpsWrze6g7ZT9PYFSVTSdDcoqvm/35
-         lWIQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Y3r2tP8YnX1X5B9QdeuzmBKL86ouGSFP82KEzONkD4Q=;
-        b=Lpcmt9KL2Dwlzg9hzDcDdqmhU4enevVmLcz9SQCBDAAYuPmpnyNcYOLDV2sa7+Iass
-         18cWaQFzmTVP7qOTtwP4tpPrLCbB8hNtSfC8PZxK+43b9TwUmgEdOEubGxmyfdjiYnYU
-         +1RfEvIS8E0ksuOcy18A7Mib8A0PeQ7SDTUZryLuDkWYrYqyO7+oenh4JUk3Pg0UzKqd
-         0ySdHQTIv9PdYEwY+RFR2KD2tYaLiAKtAAZmXKuD2hVZwRRGY3tqz84V4ArGSfXxnvBf
-         8DKYbM1Tk29pNmZNH8l7SE14AgyH45gptQvibQapPT9cnn4YFCkFoaWETmy7jYDWrf25
-         PQnQ==
-X-Gm-Message-State: AOAM532b36Mzlt08/isQeMcs2oRCXxNJmtWnfNzYbUwIfgzThjHJl7mK
-        KQMKbbp5JIkOgxpb5nTgUIBFlrY4HqK8Xw==
-X-Google-Smtp-Source: ABdhPJzafb5yib/DuNopQnGd4bVTk9fO6r/FIXzPJDT8avH6F6tnLTMqp9ySV1qB+jEPTjCFAy7Oow==
-X-Received: by 2002:a17:902:b606:b029:da:c8ed:7c2e with SMTP id b6-20020a170902b606b02900dac8ed7c2emr25515112pls.5.1610959508606;
-        Mon, 18 Jan 2021 00:45:08 -0800 (PST)
-Received: from Leo-laptop-t470s ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id p15sm15478579pgl.19.2021.01.18.00.45.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Jan 2021 00:45:07 -0800 (PST)
-Date:   Mon, 18 Jan 2021 16:44:55 +0800
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     John Fastabend <john.fastabend@gmail.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
-        Jiri Benc <jbenc@redhat.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
+        id S2388084AbhARIyW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jan 2021 03:54:22 -0500
+Received: from mail.loongson.cn ([114.242.206.163]:37702 "EHLO loongson.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S2387937AbhARIyN (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 18 Jan 2021 03:54:13 -0500
+Received: from linux.localdomain (unknown [113.200.148.30])
+        by mail.loongson.cn (Coremail) with SMTP id AQAAf9Dx++RvTAVguaoGAA--.11215S2;
+        Mon, 18 Jan 2021 16:53:04 +0800 (CST)
+From:   Tiezhu Yang <yangtiezhu@loongson.cn>
+To:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
-        David Ahern <dsahern@gmail.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Subject: Re: [PATCHv14 bpf-next 3/6] xdp: add a new helper for dev map
- multicast support
-Message-ID: <20210118084455.GE1421720@Leo-laptop-t470s>
-References: <20201221123505.1962185-1-liuhangbin@gmail.com>
- <20210114142321.2594697-1-liuhangbin@gmail.com>
- <20210114142321.2594697-4-liuhangbin@gmail.com>
- <6004d200d0d10_266420825@john-XPS-13-9370.notmuch>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <6004d200d0d10_266420825@john-XPS-13-9370.notmuch>
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Nathan Chancellor <natechancellor@gmail.com>,
+        Nick Desaulniers <ndesaulniers@google.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        clang-built-linux@googlegroups.com, linux-kernel@vger.kernel.org,
+        Xuefeng Li <lixuefeng@loongson.cn>
+Subject: [PATCH bpf] samples/bpf: Update README.rst for manually compiling LLVM and clang
+Date:   Mon, 18 Jan 2021 16:53:02 +0800
+Message-Id: <1610959982-6420-1-git-send-email-yangtiezhu@loongson.cn>
+X-Mailer: git-send-email 2.1.0
+X-CM-TRANSID: AQAAf9Dx++RvTAVguaoGAA--.11215S2
+X-Coremail-Antispam: 1UD129KBjvJXoWxJr47Xw15WFWrtw4kXw1fJFb_yoW8Ar1rpF
+        4UXa4a9rZYgFy2vF9xGw48ZF4fXrZ8XFy5GFyxJry8Z3ZxAFn7tr42kayrXF48WrZ29r43
+        Ar1S9FWkAF1DZFJanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUvE14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26ryj6F1UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26F4j
+        6r4UJwA2z4x0Y4vEx4A2jsIE14v26F4UJVW0owA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gc
+        CE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
+        2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r4j6F4UMcvjeVCFs4IE7xkEbVWUJV
+        W8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lFIxGxcIEc7CjxVA2
+        Y2ka0xkIwI1lc2xSY4AK67AK6r43MxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r
+        1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CE
+        b7AF67AKxVWUtVW8ZwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0x
+        vE2Ix0cI8IcVCY1x0267AKxVW8JVWxJwCI42IY6xAIw20EY4v20xvaj40_WFyUJVCq3wCI
+        42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWI
+        evJa73UjIFyTuYvjfU8Z2-UUUUU
+X-CM-SenderInfo: p1dqw3xlh2x3gn0dqz5rrqw2lrqou0/
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi John,
+In the current samples/bpf/README.rst, the url of llvm and clang git
+may be out of date, they are unable to access:
 
-Thanks for the reviewing.
+$ git clone http://llvm.org/git/llvm.git
+Cloning into 'llvm'...
+fatal: unable to access 'http://llvm.org/git/llvm.git/': Maximum (20) redirects followed
+$ git clone --depth 1 http://llvm.org/git/clang.git
+Cloning into 'clang'...
+fatal: unable to access 'http://llvm.org/git/clang.git/': Maximum (20) redirects followed
 
-On Sun, Jan 17, 2021 at 04:10:40PM -0800, John Fastabend wrote:
-> > + * 		The forwarding *map* could be either BPF_MAP_TYPE_DEVMAP or
-> > + * 		BPF_MAP_TYPE_DEVMAP_HASH. But the *ex_map* must be
-> > + * 		BPF_MAP_TYPE_DEVMAP_HASH to get better performance.
-> 
-> Would be good to add a note ex_map _must_ be keyed by ifindex for the
-> helper to work. Its the obvious way to key a hashmap, but not required
-> iirc.
+The Clang Getting Started page [1] might have more accurate information,
+I verified the procedure and it is proved to be feasible, so we should
+update it to reflect the reality.
 
-OK, I will.
-> > +		if (!next_obj)
-> > +			last_one = true;
-> > +
-> > +		if (last_one) {
-> > +			bq_enqueue(obj->dev, xdpf, dev_rx, obj->xdp_prog);
-> > +			return 0;
-> > +		}
-> 
-> Just collapse above to
-> 
->   if (!next_obj) {
->         bq_enqueue()
->         return
->   }
-> 
-> 'last_one' is a bit pointless here.
+[1] https://clang.llvm.org/get_started.html
 
-Yes, thanks.
+Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
+---
+ samples/bpf/README.rst | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
-> > @@ -3986,12 +3993,14 @@ int xdp_do_redirect(struct net_device *dev, struct xdp_buff *xdp,
-> >  {
-> >  	struct bpf_redirect_info *ri = this_cpu_ptr(&bpf_redirect_info);
-> >  	struct bpf_map *map = READ_ONCE(ri->map);
-> > +	struct bpf_map *ex_map = ri->ex_map;
-> 
-> READ_ONCE(ri->ex_map)?
-> 
-> >  	u32 index = ri->tgt_index;
-> >  	void *fwd = ri->tgt_value;
-> >  	int err;
-> >  
-> >  	ri->tgt_index = 0;
-> >  	ri->tgt_value = NULL;
-> > +	ri->ex_map = NULL;
-> 
-> WRITE_ONCE(ri->ex_map)?
-> 
-> >  	WRITE_ONCE(ri->map, NULL);
-> 
-> So we needed write_once, read_once pairs for ri->map do we also need them in
-> the ex_map case?
+diff --git a/samples/bpf/README.rst b/samples/bpf/README.rst
+index dd34b2d..f606c08 100644
+--- a/samples/bpf/README.rst
++++ b/samples/bpf/README.rst
+@@ -65,11 +65,9 @@ To generate a smaller llc binary one can use::
+ Quick sniplet for manually compiling LLVM and clang
+ (build dependencies are cmake and gcc-c++)::
+ 
+- $ git clone http://llvm.org/git/llvm.git
+- $ cd llvm/tools
+- $ git clone --depth 1 http://llvm.org/git/clang.git
+- $ cd ..; mkdir build; cd build
+- $ cmake .. -DLLVM_TARGETS_TO_BUILD="BPF;X86"
++ $ git clone https://github.com/llvm/llvm-project.git
++ $ cd llvm-project; mkdir build; cd build
++ $ cmake -DLLVM_ENABLE_PROJECTS=clang -DLLVM_TARGETS_TO_BUILD="BPF;X86" -G "Unix Makefiles" ../llvm
+  $ make -j $(getconf _NPROCESSORS_ONLN)
+ 
+ It is also possible to point make to the newly compiled 'llc' or
+-- 
+2.1.0
 
-Toke said this is no need for this read/write_once as there is already one.
-
-https://lore.kernel.org/bpf/87r1wd2bqu.fsf@toke.dk/
-
-Thanks
-Hangbin
