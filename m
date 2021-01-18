@@ -2,108 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7433D2F9AE8
-	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 09:01:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 522242F9B02
+	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 09:11:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387453AbhARIBY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jan 2021 03:01:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55126 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1733306AbhARIAy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jan 2021 03:00:54 -0500
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA944C061573;
-        Mon, 18 Jan 2021 00:00:13 -0800 (PST)
-Received: by mail-wr1-x42c.google.com with SMTP id 6so8170194wri.3;
-        Mon, 18 Jan 2021 00:00:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=QrqziBluAm2S7jXEhlyaBX23uYOu5nIn+17iqFzqPgc=;
-        b=PoKTj57akzrAzBOa8fvLRnZicOvuIP3BcIDUm6snh/3aqOytbhsto0hj+3DpxwZuWd
-         demfto64a5AT8fDUlK0KIIUq6VDCKBryqDLDW/I45kUexbFy+eyH7Dob5BrcgQAaPuA8
-         avdA0wzGnqgHFIJhdnaqQlGGf6NJ8SEsjTjLOIjg3mYfFK0N2sKxOuNyM/RBkFW1vIt0
-         niCgRTGRFSSlcSFARrgjI8cWKlGHlVZc3IuXAh6+vTp5jbruNdbTiRF0NxPK/zTER3cq
-         o0WrL30jI+l+1kWLRSmsE5Zf4IbVAalV7oW+GAHSONCPNu4LpL57WHJioU6Z22TimKmE
-         ayOg==
+        id S2387543AbhARIKE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jan 2021 03:10:04 -0500
+Received: from mail-io1-f70.google.com ([209.85.166.70]:39583 "EHLO
+        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387430AbhARIJz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jan 2021 03:09:55 -0500
+Received: by mail-io1-f70.google.com with SMTP id i143so5246357ioa.6
+        for <netdev@vger.kernel.org>; Mon, 18 Jan 2021 00:09:39 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=QrqziBluAm2S7jXEhlyaBX23uYOu5nIn+17iqFzqPgc=;
-        b=VoaRpxXEvhVZaOhedZghmx+Q8PcfoET/cBnNqZeWFa6ZxcUKHBdj2RNmycyO1Gd6nz
-         YWzb0K9jtYQBSeyS3V9rCgpaePBGRw+TernZKBUVVDtfk8wnd3vaqmLJMAqUQDQNOc8k
-         ccs9TF6GKcN8mWi12KkrfaU3kou8RZjyQlu9hk2f2cb3hVM+Cbs0zNqBI8+gExSpBRfT
-         DgM51qyUfrqIOWADvVC8VTtF5/CiW3hpV+8j5pp9kX4y650wvFawYeU5L8MhGsGYlL3K
-         DzO8pgb2bK+G15asBwb233bMPlMwgdbpLmdtRlIJyYSrv+K0qr8k0FO90teDzunUqPnR
-         Q52g==
-X-Gm-Message-State: AOAM533I8/tWyt9bDIONao0jxyhn+s1n9ZvY4LNFo6PeP+pVKs63+MZa
-        2BZUQJlUnlk/zqgbton4av8=
-X-Google-Smtp-Source: ABdhPJxPXOD2LCsasbBNvZyD+MIQMWFrvrBqRcYhmt58KixPQUATj7Mv6o5OThbKodVhcZs9avJ0/A==
-X-Received: by 2002:adf:b359:: with SMTP id k25mr25033448wrd.98.1610956812441;
-        Mon, 18 Jan 2021 00:00:12 -0800 (PST)
-Received: from felia.fritz.box ([2001:16b8:2d3e:6800:ad77:727f:e0e1:17c4])
-        by smtp.gmail.com with ESMTPSA id i11sm23187419wmq.10.2021.01.18.00.00.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Jan 2021 00:00:11 -0800 (PST)
-From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
-To:     Brendan Jackman <jackmanb@google.com>,
-        Alexei Starovoitov <ast@kernel.org>, bpf@vger.kernel.org
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>,
-        netdev@vger.kernel.org,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        linux-doc@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Subject: [PATCH for bpf-next] docs: bpf: add minimal markup to address doc warning
-Date:   Mon, 18 Jan 2021 09:00:04 +0100
-Message-Id: <20210118080004.6367-1-lukas.bulwahn@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=wEiWUD1KoU2kz++HYBOdztSbeG+sfsDlGM9Lh98rKKM=;
+        b=h34SdnNB9RPKgX6Rt2LlXqJD0L1hF9bcFA2UhAf9r8InF1i7qtRp0U30DP1nsjWk/K
+         pKuukJKBRYs+usaxXEJic3IfdsnmXdjVe/cg39WRHzpslwyHs2E5nhZJNuKBJ6R0k7si
+         egXExm2x3kDACa/lOCHDcKS10cBM+DWKAmIq+EkidbivpG+ShkizryLc8xu9UslduMrm
+         PwKb5WGUOPEue1Gt/ZHp3RE+E1Dy19+x7P5NAaZVe9xVfrgq3PVQvlntLpaYzdGfhswE
+         uvdLRYnZ8Om4rjNx8Ou6di1Q5sBb4nKeySkVZtlYoOBeZ4fHnX+cAURSBZYO1lNUegOB
+         cjCw==
+X-Gm-Message-State: AOAM530du+WIIxNb1UkerjckOwclw2l6MO3qjBMzshGyySmSpFSyv3HW
+        gcuCG5YsJXEdk2TS1QRn3yFxrQGdVahDGP6uwaA1IOtKyeaN
+X-Google-Smtp-Source: ABdhPJy3DgoWHLFvzuYDkJzDwwA1JaPpvsFtlorUiuid/k905n8sJMZK4Xd3jj5HaJiA1RUHc/Jk2/sDAy2KQkj3cP16ie+7PFKI
+MIME-Version: 1.0
+X-Received: by 2002:a92:cccd:: with SMTP id u13mr20286819ilq.273.1610957353923;
+ Mon, 18 Jan 2021 00:09:13 -0800 (PST)
+Date:   Mon, 18 Jan 2021 00:09:13 -0800
+In-Reply-To: <000000000000f054d005b8f87274@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000d43c1305b9283c0a@google.com>
+Subject: Re: WARNING in io_disable_sqo_submit
+From:   syzbot <syzbot+2f5d1785dc624932da78@syzkaller.appspotmail.com>
+To:     asml.silence@gmail.com, axboe@kernel.dk, davem@davemloft.net,
+        hdanton@sina.com, io-uring@vger.kernel.org,
+        johannes.berg@intel.com, johannes@sipsolutions.net,
+        kuba@kernel.org, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com,
+        viro@zeniv.linux.org.uk
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Commit 91c960b00566 ("bpf: Rename BPF_XADD and prepare to encode other
-atomics in .imm") modified the BPF documentation, but missed some ReST
-markup.
+syzbot has bisected this issue to:
 
-Hence, make htmldocs warns on Documentation/networking/filter.rst:1053:
+commit dcd479e10a0510522a5d88b29b8f79ea3467d501
+Author: Johannes Berg <johannes.berg@intel.com>
+Date:   Fri Oct 9 12:17:11 2020 +0000
 
-  WARNING: Inline emphasis start-string without end-string.
+    mac80211: always wind down STA state
 
-Add some minimal markup to address this warning.
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=13b8b83b500000
+start commit:   a1339d63 Merge tag 'powerpc-5.11-4' of git://git.kernel.or..
+git tree:       upstream
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=1078b83b500000
+console output: https://syzkaller.appspot.com/x/log.txt?x=17b8b83b500000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=c60c9ff9cc916cbc
+dashboard link: https://syzkaller.appspot.com/bug?extid=2f5d1785dc624932da78
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=10f207c7500000
 
-Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
----
-applies cleanly on next-20210118
+Reported-by: syzbot+2f5d1785dc624932da78@syzkaller.appspotmail.com
+Fixes: dcd479e10a05 ("mac80211: always wind down STA state")
 
-Brendan, please ack.
-
-Alexei, please pick this minor cleanup patch on your bpf-next.
-
- Documentation/networking/filter.rst | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/Documentation/networking/filter.rst b/Documentation/networking/filter.rst
-index f6d8f90e9a56..45f6fde1776c 100644
---- a/Documentation/networking/filter.rst
-+++ b/Documentation/networking/filter.rst
-@@ -1048,12 +1048,12 @@ Unlike classic BPF instruction set, eBPF has generic load/store operations::
- Where size is one of: BPF_B or BPF_H or BPF_W or BPF_DW.
- 
- It also includes atomic operations, which use the immediate field for extra
--encoding.
-+encoding::
- 
-    .imm = BPF_ADD, .code = BPF_ATOMIC | BPF_W  | BPF_STX: lock xadd *(u32 *)(dst_reg + off16) += src_reg
-    .imm = BPF_ADD, .code = BPF_ATOMIC | BPF_DW | BPF_STX: lock xadd *(u64 *)(dst_reg + off16) += src_reg
- 
--The basic atomic operations supported are:
-+The basic atomic operations supported are::
- 
-     BPF_ADD
-     BPF_AND
--- 
-2.17.1
-
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
