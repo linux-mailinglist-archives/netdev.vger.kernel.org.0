@@ -2,166 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 271A62FA7AF
-	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 18:41:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3222C2FA7B7
+	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 18:43:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2407185AbhARRjd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jan 2021 12:39:33 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38302 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2407171AbhARRjW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jan 2021 12:39:22 -0500
-Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1BF6C061757
-        for <netdev@vger.kernel.org>; Mon, 18 Jan 2021 09:38:01 -0800 (PST)
-Received: by mail-lj1-x236.google.com with SMTP id x23so19043095lji.7
-        for <netdev@vger.kernel.org>; Mon, 18 Jan 2021 09:38:01 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=jzkoWXm8rwGOsZcPUHpdSKcg5HZTQnJXJjRZnONmF14=;
-        b=IOdP53cjuw9v8nba5u/yeZvcYRgr6xUI7e5S1viwzpEdvJqfN1/ZGDr+bAU2jRKYg6
-         dqHaimhxaMxbTr5fKd2eSxcrsLNYbX3VieC68Kh66309DUC6UnSyrk4jL+sOEavrvxr7
-         88ySX/lwSZtBOS6A8mZ7N/NgSmSM342/zyijU=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=jzkoWXm8rwGOsZcPUHpdSKcg5HZTQnJXJjRZnONmF14=;
-        b=eBDeG/H9JSVt2JVPmpNMekEZFaaNWhOuhuJyruajk5pMPPUFImFZdnujcEXCTrqZ0e
-         M3a4xe857kRiRpoaV1TsegqFN8+rWRxlmrPAeSuo5+OoKu1u2x7wNyc+MQldEtMkYUF/
-         v8W9EealAyumjgSQG6++lwlHaEwYa0ARlXhy+emQhChR6qkpzyZdscBo+0k5bNQJnx3J
-         qfGkBMrlgEInKSDbzeZ4xA2BmLUs79HGsPrazyxT34hj+wRu4RTTn/8ACLmtBKLns8Sn
-         7eL1eukr4uLsqH9mf4aU3zApPhadXMREM2A0R17Je5Jm3p+hc0AW2oNdc2+dvYq1QfGA
-         TOLA==
-X-Gm-Message-State: AOAM5323O2+H92z2Q3HERspwAsjFua93t0Dt5WC/UA9O/T3ccdCPmXTi
-        /MHo66R1WcrYl9DU+vB4fOj1XUJRdWAp3FEgGZBxOQJemjI=
-X-Google-Smtp-Source: ABdhPJyo8ejaU+ukjOyXddvlHVAsV/UyXaGk8IKrF14bQ6eQQYRa4BxjB2DHUfuUBy22kcns17ue4hSJ5ksG2Rt0YFE=
-X-Received: by 2002:a2e:89d9:: with SMTP id c25mr307331ljk.410.1610991480480;
- Mon, 18 Jan 2021 09:38:00 -0800 (PST)
+        id S2436627AbhARRlf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jan 2021 12:41:35 -0500
+Received: from mail-eopbgr30117.outbound.protection.outlook.com ([40.107.3.117]:57434
+        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S2436638AbhARRk7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 18 Jan 2021 12:40:59 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=SNmuzR50ga0E/h1Kup2XlI//mt9IqzsED9V4FLVoN1hLP5EaUjKeF923LWffuVMJ5LAjrJzs4Bims8UIlMlsiOpnskqpGD4bV5YBgtiAYA3S6BuW3sfswfZfa/07mybDMIKCKPmW3ztH29vumtxCrKu8IoCwlIfxDy0HZiIsj0MkZDvLpsv+lRMV7qsaeWKQb43Jm7/P9kH+EKqrW4hEXLeu9XIN7nlpC6DpPeiuLE9j+eNFina4Af8XY8eseaY61AGDQDca/DVPY0EMB/xbnH/0JYlRDpVltwjEoCziIFZ/AJHdfrTKysWcKBhp9XCX1FNPlH7EuLq7EipPMr99GQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=caNA/1L1RkSNF2od84JPQBsYywAfm0RNTq78lAKyVbY=;
+ b=IHdpgnDDBEBiL/7u+QK41D2JZIAjET+ISLvVlp3R4lslRKajjRa/dlFu0ly4yX1bbZt1V17wgjD99PihkBtDQ8raObIRaRtraggcXRF3gcK58glaWkQpeHyxpEbkn5lAwZp+hRjfXUQ0cEiQOaBeTswCMUQ6++I/X3N/xX2oHqDmrpAuLKya4DoKkJ14RUidnig0rTAH1CpfdUeWXSrQYN15aB0ihbcvcLIhp7PpXJ/P5Ghsm4+VPrnvR3+RxY32eDPpDgL3WRoXQMhodZuEKUmc16HlXFB/PG/da7P6PHxXQ9KHU5WRkSd5oltvuhFlUQKd8sPjY+h8eaaxhS3sZw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=plvision.eu; dmarc=pass action=none header.from=plvision.eu;
+ dkim=pass header.d=plvision.eu; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=caNA/1L1RkSNF2od84JPQBsYywAfm0RNTq78lAKyVbY=;
+ b=PGMg84UvK4shFPq47FrHNlzGl/k2OTcElkTOmQu59235uPN6iMY+r53NFVU8OXIHmby+lX3xBpeRVhZpfe5cDmc0//wphJa3A/rMSOHRCKl9FyG2qPZ6SBzAwKMcBouYHI71oxeZFdzxbJHiLeSac2zmVikDtABVW9L6xRsgg1E=
+Authentication-Results: nvidia.com; dkim=none (message not signed)
+ header.d=none;nvidia.com; dmarc=none action=none header.from=plvision.eu;
+Received: from HE1P190MB0539.EURP190.PROD.OUTLOOK.COM (2603:10a6:7:56::28) by
+ HE1P190MB0330.EURP190.PROD.OUTLOOK.COM (2603:10a6:7:61::15) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3763.13; Mon, 18 Jan 2021 17:40:08 +0000
+Received: from HE1P190MB0539.EURP190.PROD.OUTLOOK.COM
+ ([fe80::bc8b:6638:a839:2a8f]) by HE1P190MB0539.EURP190.PROD.OUTLOOK.COM
+ ([fe80::bc8b:6638:a839:2a8f%4]) with mapi id 15.20.3763.014; Mon, 18 Jan 2021
+ 17:40:08 +0000
+From:   Vadym Kochan <vadym.kochan@plvision.eu>
+To:     Jiri Pirko <jiri@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Cc:     Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
+        Vadym Kochan <vadym.kochan@plvision.eu>
+Subject: [RESEND PATCH] net: core: devlink: use right genl user_ptr when handling port param get/set
+Date:   Mon, 18 Jan 2021 19:39:54 +0200
+Message-Id: <20210118173954.17530-1-vadym.kochan@plvision.eu>
+X-Mailer: git-send-email 2.17.1
+Content-Type: text/plain
+X-Originating-IP: [217.20.186.93]
+X-ClientProxiedBy: AM7PR02CA0015.eurprd02.prod.outlook.com
+ (2603:10a6:20b:100::25) To HE1P190MB0539.EURP190.PROD.OUTLOOK.COM
+ (2603:10a6:7:56::28)
 MIME-Version: 1.0
-References: <20210115225950.18762-1-edwin.peer@broadcom.com>
- <20210115155325.7811b052@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <20210116211223.xhurmrb2tqlffr7z@lion.mk-sys.cz>
-In-Reply-To: <20210116211223.xhurmrb2tqlffr7z@lion.mk-sys.cz>
-From:   Edwin Peer <edwin.peer@broadcom.com>
-Date:   Mon, 18 Jan 2021 09:37:24 -0800
-Message-ID: <CAKOOJTzF=O+pdy=ZQ=hezjHjk7CKsBYiHg82pzGMA8UhCCRT4A@mail.gmail.com>
-Subject: Re: [PATCH iproute2] iplink: work around rtattr length limits for IFLA_VFINFO_LIST
-To:     Michal Kubecek <mkubecek@suse.cz>
-Cc:     netdev <netdev@vger.kernel.org>, Jakub Kicinski <kuba@kernel.org>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Andrew Gospodarek <andrew.gospodarek@broadcom.com>,
-        Michael Chan <michael.chan@broadcom.com>
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000f17b0c05b9302ede"
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from pc60716vkochan.x.ow.s (217.20.186.93) by AM7PR02CA0015.eurprd02.prod.outlook.com (2603:10a6:20b:100::25) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3763.10 via Frontend Transport; Mon, 18 Jan 2021 17:40:07 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: d490e5ba-2403-4278-6c15-08d8bbd81926
+X-MS-TrafficTypeDiagnostic: HE1P190MB0330:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <HE1P190MB0330BBAFB9EC60BFEB19476995A40@HE1P190MB0330.EURP190.PROD.OUTLOOK.COM>
+X-MS-Oob-TLC-OOBClassifiers: OLM:862;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 1qFeO0qA0ez6cSoGI78u94QNNBEEGn0cElysu1PdbOIFNicxLMR/p1prf/haQd+2KBCNQ90TzRag6pEVruy+oUSJBM4Ke29tLhT52tr/pF7d0GRO8cHI0PKM03hDs6pyQOdGy4BV3GOgEfkKdxXdsucsA4G/KjLW8k+ghaDoEjlPf8wvsjT1SaDAYUXvvsraE/ET8FPLEaMC0otwKu8nda5hapheQye5Sxw/L/8vZ6/iiI9/orubfH2Lf8ZbYFvMLXRRuYBLnoMtWmPnX5M983l1GwjfScz7w5mHtZs947ACEB8SEsHiZAduTuo2f6PvoOlf5PXFxtfT0gQDeVdovwHGDJLRjtDxomdPy/u78BPEiu3sFsDOz41e2F/lESV88o0Cdbb1l9qxOWfiGwBEgA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:HE1P190MB0539.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(366004)(39830400003)(376002)(346002)(136003)(396003)(66476007)(2616005)(52116002)(4326008)(6512007)(8936002)(54906003)(6666004)(186003)(1076003)(8676002)(16526019)(83380400001)(2906002)(44832011)(26005)(956004)(5660300002)(36756003)(6506007)(66946007)(107886003)(86362001)(478600001)(316002)(66556008)(110136005)(6486002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?ZqwnyCVZmDmtHtG66jfWFDNJgRum5xX5YC5qKFAejciGASwK6iiX+Sy/sNmm?=
+ =?us-ascii?Q?iQtUK+z1cml6iQ2xEAxTotrhLHCqtPO5BRH0kVp9oPrHAj8AKnXydkPmykhs?=
+ =?us-ascii?Q?ht4gkPMZj4jkUPG/mcp4hyeqrDX8x8caYPQ83kMV9LwFQQKy7OdQT2xAZHWf?=
+ =?us-ascii?Q?4rHRgz7M9eC0yjsVlAjWmncNi+8RlHs/8hGgJJcXGi3N/4FeMBE6NTOMiyBv?=
+ =?us-ascii?Q?d5hWpHhdXPiW77hAb0AfTHUbyhkvVObSjKqbVVsn0N6asf4vJNxTd4zgMHUy?=
+ =?us-ascii?Q?f+RSiV6p3IpJoUhS2XLABIr9gq/rQsJQRzlvhHbK5u3AePJlaFFLiNJ/vrad?=
+ =?us-ascii?Q?Xf23Uq88WuxcD/TpjDUC/jVNcFjE7eVpEWqG6onfP2UFtzFebxf5VMWSMWlG?=
+ =?us-ascii?Q?u+vyt6l609UnQA/oUm7Uu5fy/gFo2PDt2dp6zQEvWB61zOR1xcK1N8xR3J+9?=
+ =?us-ascii?Q?zl5SbVxMszZd/2XzWRlVA56pgRDOmb3gJQA+8RKEDI4habMjFBMhQOCXmFNi?=
+ =?us-ascii?Q?bnhA6TzeybntS1Zqa54JmmQ8bKzZuIQTlJGz7Ll2tAsSd00TrSaJ3ZoPoiYp?=
+ =?us-ascii?Q?/Wou2NOwppOVWsT/Ro9lcfQStXkQor7n3kFUFCQ5DXojLoH2L3M9VH7ouqh1?=
+ =?us-ascii?Q?Vp2MxcUnEt4tvxAgfDPPAp9WhhL6JFfvZ5dXSDUNmpy0kZhZLcR52sULv3DP?=
+ =?us-ascii?Q?N4eL77dT92SY+MxYePa4pew0rbmeiUlAxGUBpUKIIk5zlE3AecOUblrCm77Q?=
+ =?us-ascii?Q?2Y/Y3TQujehO9ZEbHqxvV7EaLUyLkGKWawUiZcto79xtPTp87b1/oG+hXmRw?=
+ =?us-ascii?Q?49LMWkkXv1akn1Pvw52ifDFA05M6DCkmrtu375SfgcMNrQtQyz9W1kVF4ARD?=
+ =?us-ascii?Q?CYIoyuG974rza/W2fXAKNqeiWMLG8HcHmrrtZKAyYX6kpdCoHPhjUexAJC4B?=
+ =?us-ascii?Q?Q0rzqZmLEsFvo9eOcY3sq3mtaiBQww8J/VvHxdW49NtaMjvwCJwIdWyCyo9q?=
+ =?us-ascii?Q?vQs6?=
+X-OriginatorOrg: plvision.eu
+X-MS-Exchange-CrossTenant-Network-Message-Id: d490e5ba-2403-4278-6c15-08d8bbd81926
+X-MS-Exchange-CrossTenant-AuthSource: HE1P190MB0539.EURP190.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Jan 2021 17:40:08.3752
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: A0NHJBes/XFZp2mbneWwlZmalfT/duy7CPQBmT0sZB7Pfe6m4BbT+vqaFS0ugpq9KzsTq6dFM9hpCY41EJ2yRsi6IVONPjbnZvmThKojLn4=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1P190MB0330
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000f17b0c05b9302ede
-Content-Type: text/plain; charset="UTF-8"
+From: Oleksandr Mazur <oleksandr.mazur@plvision.eu>
 
-On Sat, Jan 16, 2021 at 1:12 PM Michal Kubecek <mkubecek@suse.cz> wrote:
+Fix incorrect user_ptr dereferencing when handling port param get/set:
 
-> My idea back then was to use a separate  query which would allow getting
-> VF information using a dump request (one VF per message); the reply for
-> RTM_GETLINK request would either list all VFs as now if possible or only
-> as many as fit into a nested attribute and indicate that the information
-> is incomplete (or maybe omit the VF information in such case as
-> usefulness of the truncated list is questionable).
+    idx [0] stores the 'struct devlink' pointer;
+    idx [1] stores the 'struct devlink_port' pointer;
 
-Yip, that would probably be the right way to fix it if we can fix it
-(falls into the 3rd approach mentioned in the patch).
+Fixes: f4601dee25d5 ("devlink: Add port param get command")
+Signed-off-by: Oleksandr Mazur <oleksandr.mazur@plvision.eu>
+Signed-off-by: Vadym Kochan <vadym.kochan@plvision.eu>
+---
+1) Fixed plvision.com -> plvision.eu
 
-> However, my take from the discussions was that most developers who took
-> part rather thought that there is no need for such rtnetlink feature as
-> there is a devlink interface which does not suffer from this limit and
-> NICs with so many VFs that IFLA_VFINFO_LIST exceeds 65535 bytes can
-> provide devlink interface to handle them.
+ net/core/devlink.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Does that imply reworking ip link to use devlink interfaces as the fix?
+diff --git a/net/core/devlink.c b/net/core/devlink.c
+index ee828e4b1007..738d4344d679 100644
+--- a/net/core/devlink.c
++++ b/net/core/devlink.c
+@@ -4146,7 +4146,7 @@ static int devlink_nl_cmd_port_param_get_dumpit(struct sk_buff *msg,
+ static int devlink_nl_cmd_port_param_get_doit(struct sk_buff *skb,
+ 					      struct genl_info *info)
+ {
+-	struct devlink_port *devlink_port = info->user_ptr[0];
++	struct devlink_port *devlink_port = info->user_ptr[1];
+ 	struct devlink_param_item *param_item;
+ 	struct sk_buff *msg;
+ 	int err;
+@@ -4175,7 +4175,7 @@ static int devlink_nl_cmd_port_param_get_doit(struct sk_buff *skb,
+ static int devlink_nl_cmd_port_param_set_doit(struct sk_buff *skb,
+ 					      struct genl_info *info)
+ {
+-	struct devlink_port *devlink_port = info->user_ptr[0];
++	struct devlink_port *devlink_port = info->user_ptr[1];
+ 
+ 	return __devlink_nl_cmd_param_set_doit(devlink_port->devlink,
+ 					       devlink_port->index,
+-- 
+2.17.1
 
-Regards,
-Edwin Peer
-
---000000000000f17b0c05b9302ede
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
-
-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
-mbo++PCnVfHaIk6rK1M0CPodEV0uUttmi6Mp/Ha7XmNgWQeQE3qkFIwAlb/kPNmJAMECAwEAAaOC
-Ac4wggHKMA4GA1UdDwEB/wQEAwIFoDCBngYIKwYBBQUHAQEEgZEwgY4wTQYIKwYBBQUHMAKGQWh0
-dHA6Ly9zZWN1cmUuZ2xvYmFsc2lnbi5jb20vY2FjZXJ0L2dzcGVyc29uYWxzaWduMnNoYTJnM29j
-c3AuY3J0MD0GCCsGAQUFBzABhjFodHRwOi8vb2NzcDIuZ2xvYmFsc2lnbi5jb20vZ3NwZXJzb25h
-bHNpZ24yc2hhMmczME0GA1UdIARGMEQwQgYKKwYBBAGgMgEoCjA0MDIGCCsGAQUFBwIBFiZodHRw
-czovL3d3dy5nbG9iYWxzaWduLmNvbS9yZXBvc2l0b3J5LzAJBgNVHRMEAjAAMEQGA1UdHwQ9MDsw
-OaA3oDWGM2h0dHA6Ly9jcmwuZ2xvYmFsc2lnbi5jb20vZ3NwZXJzb25hbHNpZ24yc2hhMmczLmNy
-bDAiBgNVHREEGzAZgRdlZHdpbi5wZWVyQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcD
-BDAfBgNVHSMEGDAWgBRpcoJiMWeVRIV3kYDEBDZJnXsLYTAdBgNVHQ4EFgQU9IOrXBkaTFAmOmjl
-0nu9X2Lzo+0wDQYJKoZIhvcNAQELBQADggEBADL+5FenxoguXoMm8ZG+bsMvN0LibFO75wee8cJI
-3K8dcJ8y6rPc6yvMRqI7CNwjWV5kBT3aQPZCdqOlNLl/HnKJxBt3WJRWGePcE1s/ljK4Kg1rUQAo
-e3Fx6cKh9/q3gqElSPU5pBOsCEy8cbi6UGA+IVifQ2Mrm5tsvYqWSaZ1mKTGz8/z8vxG2kGJZI6W
-wL3owFiCmLmw5R8OH22wqf/7sQFMRpH5IQFLRYdU9uCUy5FlUAgiCEXegph8ytxvo8MgYyQcCOeg
-BMfFgFEHuM2IgsDQyFC6XUViX6BQny67nlrO8pqwNRJ9Bdd7ykLCzCLOuR1znBAc2wAL9OKQe0cx
-ggJvMIICawIBATBtMF0xCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTMw
-MQYDVQQDEypHbG9iYWxTaWduIFBlcnNvbmFsU2lnbiAyIENBIC0gU0hBMjU2IC0gRzMCDCXgDAeB
-YW0HGKjSdzANBglghkgBZQMEAgEFAKCB1DAvBgkqhkiG9w0BCQQxIgQgVoloXK0mXDXRfdE6G38d
-qwahcgWs2m4vhw82gssn7fAwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUx
-DxcNMjEwMTE4MTczODAwWjBpBgkqhkiG9w0BCQ8xXDBaMAsGCWCGSAFlAwQBKjALBglghkgBZQME
-ARYwCwYJYIZIAWUDBAECMAoGCCqGSIb3DQMHMAsGCSqGSIb3DQEBCjALBgkqhkiG9w0BAQcwCwYJ
-YIZIAWUDBAIBMA0GCSqGSIb3DQEBAQUABIIBAFGhHrzMtWj/cou1Qj5nJHa4ZYAaxTB4tgSS6QX0
-JxqAjD5BqKiac1ZjORXfZCcMjlDoWOpxdpcAunwIdS6QDbN62QIgStsC9WsWZiD2CVe3GyZrHpJZ
-Tk3BCjdQ+5szL4scsxQdX2w8CIizz+Pug23R5URmLN0ljy5Iax4WTV6fOgNVOFaSmW+6bw0MyiCk
-TK3WJzdEMHOsZpYuM0V5DniSNr6qLFO699r5/ISTN/vTZSqRtnTjhiFQ7hx2HR/8qhR3SFZLgU9g
-kG8j4DdgwilmygFzSYA2+reA9Lpc8Qri87IMZXxfxCGSfiI8Ph6fGcGfberk0tbXG5sSxK6ZmBE=
---000000000000f17b0c05b9302ede--
