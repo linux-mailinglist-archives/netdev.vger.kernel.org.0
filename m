@@ -2,68 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5153C2FA7BD
-	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 18:43:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2CB022FA7C1
+	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 18:43:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2407248AbhARRmv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jan 2021 12:42:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39098 "EHLO
+        id S2436645AbhARRnQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jan 2021 12:43:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2407243AbhARRmY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jan 2021 12:42:24 -0500
-Received: from mail-oo1-xc29.google.com (mail-oo1-xc29.google.com [IPv6:2607:f8b0:4864:20::c29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE367C061575
-        for <netdev@vger.kernel.org>; Mon, 18 Jan 2021 09:41:43 -0800 (PST)
-Received: by mail-oo1-xc29.google.com with SMTP id v19so4276916ooj.7
-        for <netdev@vger.kernel.org>; Mon, 18 Jan 2021 09:41:43 -0800 (PST)
+        with ESMTP id S2393214AbhARRmi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jan 2021 12:42:38 -0500
+Received: from mail-oi1-x22c.google.com (mail-oi1-x22c.google.com [IPv6:2607:f8b0:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0A68C061573
+        for <netdev@vger.kernel.org>; Mon, 18 Jan 2021 09:41:57 -0800 (PST)
+Received: by mail-oi1-x22c.google.com with SMTP id s2so18466647oij.2
+        for <netdev@vger.kernel.org>; Mon, 18 Jan 2021 09:41:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=6BjCsUjB+34z59FFJM6pqts8kRnU0zDorKLQzUCDKJs=;
-        b=C9+ZuYyCmFbtUCO/9J1Un432+HswCa6HDrrydoctvIi+eIiRElzqjJ1O7fEj6ejnrX
-         N/XPaiKwNRXuImOY5rF029D6tXwtfQS2YX9GoS6wjNaaaBci1DlkKqMLdn/haGwu/8cz
-         G+YewtlfRrokfpz65TmvV6OxlbGAQiH9iQs5lhyMnRvXlH/+oh22G8NzuxhFVNA6uImF
-         OdGeB/+V8HbPbh9KCbFKEPrl0eC2HHaP/fd+KE69gAR9ZKQdGqW0r0XNuGl+xs93WP4P
-         qiUGR+BBiS5IaJt/DV1fLV56RYQyMco+E2h4WCXoyBRz4SDXbJOPTZMx9dVsSIA6dUy7
-         SHig==
+        bh=yEW2I0gsD1vAgt7tarv/tDD8O3Fnrfnq/jUF4oIrxMA=;
+        b=F/UQUldJ8H1WNCJXWNfLbiOSfye4srSPXk7tvvP4yCroOTGQWrGkCFkDNpmp/I+OH7
+         B6kcyIHPiSEKg5Xq3mLhUTzo9896RwyBTmuDLJeD9tWT65gCCdBttr3CCeTrIKXwNBAj
+         Ukvmqo2QsHT6o0BwceytU6E3hxABIkjBHP2FFfC1i4BIEaqOCU0O0EmKVz4D+XiuqZ7E
+         5XA2P4c6fH+CyJAYrdtqTYhpMunULw47DnVB/7w1KBsSFQAhXtAhybay0Pp0U7srL1R7
+         20+K4DFFgOUy5ZWDxyy7svI9j9bkDOKroG6o4FlGreWsjJhpqeC9PhOGgKddPI111BXs
+         6sWQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=6BjCsUjB+34z59FFJM6pqts8kRnU0zDorKLQzUCDKJs=;
-        b=AAvMESvAhOGFiEgwMasc4qHqF4jtPNb2a/S6gs+PM7Q4uygYyVwuUnLqiOjJ9HV9kF
-         F4TNHm2Udh481q5gqHN26CgjLTMbj+XPlo/Xhhit2zj9Hx9gZa1P/9S8PnoMXnczdm52
-         otU5iTGyYuUmmD3JNYDUl0k02wNrcFKJuMP2VFGv4Qa3aX2+uIzA606g/yfxA1foQjii
-         Jdcra9Db04ihOS19en1osvaVph8wwkzL1v+E7gfJfgvJV9ZleEprbhzcjjMZnjyAlqES
-         TCWZu4VAN9bnMAelEmsUipaW6bjoB/tXu+WrGEHwRfK9S2MzbGaxQWw7tOs/j4zSdZGp
-         jujg==
-X-Gm-Message-State: AOAM530zy/4srJptN7bvPbYTIit0plM2upzGJVDOAwkY+5YMQ8a67nIC
-        D0kkJc9U3w6+MyirPbvdRJA=
-X-Google-Smtp-Source: ABdhPJzZL8leDtUp59MWZ7zEWUVi9nzEuEsDpxq+BdCGlE0gjWp1eaDXTt4Lp7BlXECTtZf2so3ksg==
-X-Received: by 2002:a05:6820:22c:: with SMTP id j12mr156483oob.65.1610991703310;
-        Mon, 18 Jan 2021 09:41:43 -0800 (PST)
-Received: from Davids-MacBook-Pro.local ([8.6.112.248])
-        by smtp.googlemail.com with ESMTPSA id k65sm2018123oia.19.2021.01.18.09.41.42
+        bh=yEW2I0gsD1vAgt7tarv/tDD8O3Fnrfnq/jUF4oIrxMA=;
+        b=fcThZUM2aYZi/M0uxYhTonvegDKyQ2ebhwooBbrMjHjgCJdC5KEdLctzn2CYrRVZMk
+         nA/t8cqFkbjsV47aw1A6G2Pnlb8FGW0EYe1g4yVJIoq1Ty+NVKC1snh9iuZhasCH7X5c
+         gY1x+jXErSp6BYCdRECMMe7uDgaMB+BE7FXv6TE/fYqkwNmc+5UqF+IsuSC2dmq+So/t
+         1QxJJcJsdO/e7obeuMSMqCR6aLei1x2q+ryb12fKNzojP+1gdnZElvQHlQoan9/fv+rQ
+         0FInlsTs5pHY4h3HaqkCXj+GW3Vdk2ln4e6jP+/MJelpVHC/Wq6m+4LcFGTio/SytmOF
+         v51A==
+X-Gm-Message-State: AOAM533NyKkToOd7IwWlWsmoRZTJ4yD9FU/WSySkHEAPq3iAk5Y/43sZ
+        9JBusxyD56L6aXAcvMV/jbU=
+X-Google-Smtp-Source: ABdhPJyrXVi0P5UxgE/3kvUP6JpZNUaqPLfP9vAXPZMSjmm7gx/9SFBE7VyOLcG1XoPDLpHBp89cyg==
+X-Received: by 2002:aca:f15:: with SMTP id 21mr271516oip.151.1610991717137;
+        Mon, 18 Jan 2021 09:41:57 -0800 (PST)
+Received: from Davids-MacBook-Pro.local ([8.6.112.8])
+        by smtp.googlemail.com with ESMTPSA id k3sm3693555oor.19.2021.01.18.09.41.56
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 18 Jan 2021 09:41:42 -0800 (PST)
-Subject: Re: [PATCH net-next 1/3] nexthop: Use a dedicated policy for
- nh_valid_get_del_req()
+        Mon, 18 Jan 2021 09:41:56 -0800 (PST)
+Subject: Re: [PATCH net-next 2/3] nexthop: Use a dedicated policy for
+ nh_valid_dump_req()
 To:     Petr Machata <petrm@nvidia.com>, netdev@vger.kernel.org
 Cc:     David Ahern <dsahern@kernel.org>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Ido Schimmel <idosch@nvidia.com>
 References: <cover.1610978306.git.petrm@nvidia.org>
- <ec93d227609126c98805e52ba3821b71f8bb338d.1610978306.git.petrm@nvidia.org>
+ <151e504b32f5005652c64cdde5186ef8f96303e5.1610978306.git.petrm@nvidia.org>
 From:   David Ahern <dsahern@gmail.com>
-Message-ID: <0abdd7bb-e618-e68c-7597-9de475cfb92e@gmail.com>
-Date:   Mon, 18 Jan 2021 10:41:41 -0700
+Message-ID: <8cf6b179-b870-f53f-6af0-f471f3f4c522@gmail.com>
+Date:   Mon, 18 Jan 2021 10:41:55 -0700
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
  Gecko/20100101 Thunderbird/78.6.1
 MIME-Version: 1.0
-In-Reply-To: <ec93d227609126c98805e52ba3821b71f8bb338d.1610978306.git.petrm@nvidia.org>
+In-Reply-To: <151e504b32f5005652c64cdde5186ef8f96303e5.1610978306.git.petrm@nvidia.org>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -72,15 +72,15 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 On 1/18/21 7:05 AM, Petr Machata wrote:
-> This function uses the global nexthop policy only to then bounce all
-> arguments except for NHA_ID. Instead, just create a new policy that
-> only includes the one allowed attribute.
+> This function uses the global nexthop policy, but only accepts four
+> particular attributes. Create a new policy that only includes the four
+> supported attributes, and use it. Convert the loop to a series of ifs.
 > 
 > Signed-off-by: Petr Machata <petrm@nvidia.com>
 > Reviewed-by: Ido Schimmel <idosch@nvidia.com>
 > ---
->  net/ipv4/nexthop.c | 21 ++++++---------------
->  1 file changed, 6 insertions(+), 15 deletions(-)
+>  net/ipv4/nexthop.c | 57 +++++++++++++++++++++-------------------------
+>  1 file changed, 26 insertions(+), 31 deletions(-)
 > 
 
 Reviewed-by: David Ahern <dsahern@kernel.org>
