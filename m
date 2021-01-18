@@ -2,206 +2,229 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9ADCB2FA4BF
-	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 16:32:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9831B2FA508
+	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 16:45:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405912AbhARPaL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jan 2021 10:30:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38582 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2405878AbhARP3N (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jan 2021 10:29:13 -0500
-Received: from mail-qv1-xf2d.google.com (mail-qv1-xf2d.google.com [IPv6:2607:f8b0:4864:20::f2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15FFCC061574
-        for <netdev@vger.kernel.org>; Mon, 18 Jan 2021 07:28:33 -0800 (PST)
-Received: by mail-qv1-xf2d.google.com with SMTP id d11so7632664qvo.11
-        for <netdev@vger.kernel.org>; Mon, 18 Jan 2021 07:28:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=F6KA9w3XTyDzR9a/eJiRfa89v7fUgs4kNlqtUAh2eRs=;
-        b=LIhPXBoQ0lqZVjwUYNyS926s6D2uM+E4QTstoVoyx4n/7hogHhwpwSIBj+IPlC8YRN
-         h3oF2QH8WoW7n66iWRccB6P28cnjAoaZFh9Ihuo4M2y2hnwgm269UEf0c7HlVrmhnE+9
-         KJYq1eh3iCo2cSAphPIo6nJjawFJTfFVbF/c7O13aAsmJxFnegxLSNNkU62oqpaWFTiB
-         V89AL0U1zhHAjVLfhYgFjt5j4ESe5y8dRSW3qJC3WKQ7QQ4pcRzH5pRi6LJUi78Ft/Ka
-         uIHf3k+LMjIxLol3HyKVPi8GWfs3cxxk1fX9BduFukj4m0ZBJOyjaKxOf48FB7EvZ4B5
-         EK+A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=F6KA9w3XTyDzR9a/eJiRfa89v7fUgs4kNlqtUAh2eRs=;
-        b=F/47XBnJDRowoDKsv/KHjCDit/o0UUlNvu2rITnr5OR8gugz2atjUGt4rGE7RrHKGf
-         mNIHff4/jkPr9vi36nTLwnPcKnfroAHmwrNk8TzWY0IP6fm43RM6KnOeuSTISWmv3E7F
-         X1+C9R9I78KUc1bf9qOc2xkV5T0ppZfk2yFdF4YZ/Ab4JvT4P3EVal6dAuiFruAQnzbt
-         mv3E7ZqGwNtDdP3CSvS7C8MF2ueYB3VQtkLz3pQPpbc15k0bCM0l+hyCttjinQ39BXaD
-         df0T9Gs4uSwmv1inAMgyoBTEW9F2TACKQl/Pwmo7zev9Wxf6YQHrqR9xDQdJY+e4b3dC
-         cb9A==
-X-Gm-Message-State: AOAM531g5sAKLfcvv691T4Ekv5Iy2AdMRPMtBN/IJH+0IUImx8qvptoS
-        maH/en8vQU3xwyRH6i9MoTs8iPAEYDk=
-X-Google-Smtp-Source: ABdhPJw1w4XQBnqjM9TuAlXWP4pyU6cOjyzFdY+RObzKZQ8dfjRJoUQWL5TMFZqnh+yBRPx7xmUGfg==
-X-Received: by 2002:a05:6214:1868:: with SMTP id eh8mr24603241qvb.50.1610983711979;
-        Mon, 18 Jan 2021 07:28:31 -0800 (PST)
-Received: from mail-yb1-f169.google.com (mail-yb1-f169.google.com. [209.85.219.169])
-        by smtp.gmail.com with ESMTPSA id w42sm7646771qtw.22.2021.01.18.07.28.31
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 18 Jan 2021 07:28:31 -0800 (PST)
-Received: by mail-yb1-f169.google.com with SMTP id k4so13000121ybp.6
-        for <netdev@vger.kernel.org>; Mon, 18 Jan 2021 07:28:31 -0800 (PST)
-X-Received: by 2002:ab0:7386:: with SMTP id l6mr17924882uap.141.1610983234282;
- Mon, 18 Jan 2021 07:20:34 -0800 (PST)
-MIME-Version: 1.0
-References: <20210112194143.1494-1-yuri.benditovich@daynix.com>
- <CAOEp5OejaX4ZETThrj4-n8_yZoeTZs56CBPHbQqNsR2oni8dWw@mail.gmail.com>
- <CAOEp5Oc5qif_krU8oC6qhq6X0xRW-9GpWrBzWgPw0WevyhT8Mg@mail.gmail.com>
- <CA+FuTSfhBZfEf8+LKNUJQpSxt8c5h1wMpARupekqFKuei6YBsA@mail.gmail.com>
- <78bbc518-4b73-4629-68fb-2713250f8967@redhat.com> <CA+FuTSfJJhEYr6gXmjpjjXzg6Xm5wWa-dL1SEV-Zt7RcPXGztg@mail.gmail.com>
- <8ea218a8-a068-1ed9-929d-67ad30111c3c@redhat.com> <CAOEp5OfyHz2rXHmOeojNNE2wvrHMn_z1egr5aGQborEq829TLw@mail.gmail.com>
- <65fe1a40-abc0-77ed-56df-3f0a70615016@redhat.com> <CAOEp5Oe4TcOukJa+OGj-ynfMMrZC=_YQDpzSC9_9p+UXSH7hmg@mail.gmail.com>
-In-Reply-To: <CAOEp5Oe4TcOukJa+OGj-ynfMMrZC=_YQDpzSC9_9p+UXSH7hmg@mail.gmail.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Mon, 18 Jan 2021 10:19:57 -0500
-X-Gmail-Original-Message-ID: <CA+FuTSfsFC0DTFhHDwT7dbtWXTmGOWjc=ozt8CgH_qDDn9gejg@mail.gmail.com>
-Message-ID: <CA+FuTSfsFC0DTFhHDwT7dbtWXTmGOWjc=ozt8CgH_qDDn9gejg@mail.gmail.com>
-Subject: Re: [RFC PATCH 0/7] Support for virtio-net hash reporting
-To:     Yuri Benditovich <yuri.benditovich@daynix.com>
-Cc:     Jason Wang <jasowang@redhat.com>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Michael S . Tsirkin" <mst@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        "Gustavo A . R . Silva" <gustavoars@kernel.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>, decui@microsoft.com,
-        cai@lca.pw, Jakub Sitnicki <jakub@cloudflare.com>,
-        Marco Elver <elver@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
+        id S2390787AbhARPoO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jan 2021 10:44:14 -0500
+Received: from mail-eopbgr70102.outbound.protection.outlook.com ([40.107.7.102]:45221
+        "EHLO EUR04-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S2393532AbhARPlz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 18 Jan 2021 10:41:55 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Yv2lkog4Yes2dX58ev/F6vLwkVCZCfqlNuJl7T7AvxaAFcj2q3u0UIi4Y74sKmON0q8BiNE96TykRK/ETagjGaZugip76vytnC02TYzwzoySCTccu6UQv+78js/RN1ja2A+/S+ODjgthdfE0KLpllVm+oV3yqymCgWjCe9p1Eb7Z18Y+XtVuhKWcnLE757/0l3K+7ZhwqTblIInMXihNvwtJ8RmUvFaVEzk/KZey+GUV1AN+4zcm7a5ZZiXxfvMjQ1UxqJi3hf/Q7KNtTwzXiGJcjyqDAxojNCDgFBvhjdrGZD91TIGmovRQ3g4mwlC6mnE7h7Y4K45DbnRHm87lCg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=kBKYolTSgMFWuDRVmUi97k7Of3Vb4YwqBeR6t00uO1o=;
+ b=dFlfc9cF3c9nkobUoFywAWXk41G2dCSq7Vrd0WH2k9m3FRTC7/EyNDlg6lXgvIEbm4mJzvwN8Uf+RL5KvuJYZdK7DLWrFRoyoYnauIXTraHBun4yavWfNgeOjAeBu4G8GUt6uJ8Gs9oqm8ZyPqZFv06anIjIaOKYxiAxy4IH39tTgHV4X7V9HoSGyBw5b+XZkv/bJm43tFBq4FezOXX0LhfwSOjKOpvaKKvdIe41/pjCog06FIJTzUe48ho0O+5ob29/Q9Qzs8r5VfrgWFmzQ2tZyA1uRgN/pPmSbcrgau3G6EwQlp8PjPXdzV8yKGCdjGtMy2g+GcFM+qcbJpJHMQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=prevas.dk; dmarc=pass action=none header.from=prevas.dk;
+ dkim=pass header.d=prevas.dk; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=prevas.dk;
+ s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=kBKYolTSgMFWuDRVmUi97k7Of3Vb4YwqBeR6t00uO1o=;
+ b=R3tNvHOLUpCyhM8HAY9m2rTui1ps2Z+jRz/0GMfljShXKZiVg4SkPR10Xi2/UeL0bXBLo0t2T+m82zFN79pUb1Cl7ivtgxzETPf94SvlKDj7hZ3MVa5WxKOobI+wtDz98FkKr9BfhjAx4YbsnN5gQV1F79R63q4w6PSPKQvfu3A=
+Authentication-Results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=prevas.dk;
+Received: from AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:208:3f::10)
+ by AM0PR10MB3492.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:158::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3763.12; Mon, 18 Jan
+ 2021 15:41:06 +0000
+Received: from AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::9068:c899:48f:a8e3]) by AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::9068:c899:48f:a8e3%6]) with mapi id 15.20.3763.014; Mon, 18 Jan 2021
+ 15:41:06 +0000
+Subject: Re: commit 4c7ea3c0791e (net: dsa: mv88e6xxx: disable SA learning for
+ DSA and CPU ports)
+To:     Tobias Waldekranz <tobias@waldekranz.com>,
+        Andrew Lunn <andrew@lunn.ch>,
         Network Development <netdev@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        bpf <bpf@vger.kernel.org>, Yan Vugenfirer <yan@daynix.com>
-Content-Type: text/plain; charset="UTF-8"
+        Vivien Didelot <vivien.didelot@gmail.com>
+Cc:     Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Vladimir Oltean <olteanv@gmail.com>
+References: <6106e3d5-31fc-388e-d4ac-c84ac0746a72@prevas.dk>
+ <87h7nhlksr.fsf@waldekranz.com>
+From:   Rasmus Villemoes <rasmus.villemoes@prevas.dk>
+Message-ID: <af05538b-7b64-e115-6960-0df8e503dde3@prevas.dk>
+Date:   Mon, 18 Jan 2021 16:41:04 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
+In-Reply-To: <87h7nhlksr.fsf@waldekranz.com>
+Content-Type: text/plain; charset=windows-1252
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [5.186.115.188]
+X-ClientProxiedBy: AM6PR04CA0003.eurprd04.prod.outlook.com
+ (2603:10a6:20b:92::16) To AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:208:3f::10)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [192.168.1.149] (5.186.115.188) by AM6PR04CA0003.eurprd04.prod.outlook.com (2603:10a6:20b:92::16) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3763.9 via Frontend Transport; Mon, 18 Jan 2021 15:41:05 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 18aa417b-805e-498c-ee6e-08d8bbc777f7
+X-MS-TrafficTypeDiagnostic: AM0PR10MB3492:
+X-Microsoft-Antispam-PRVS: <AM0PR10MB3492153656BBBDF51F8FF5D993A40@AM0PR10MB3492.EURPRD10.PROD.OUTLOOK.COM>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 2mtqkMarGCDMgdNblzdFmkAnKn4uYqEQn0b6MDErlTv6T7SbxK2VhO4mJ9WwQ61YU8MSjAr2LtncuVaQoYLGhba1a+P+4k9je28D2M4AH6OZ85kz8W90hHHjGYyeLgVPjIwacgVgVeN1rti+vHLS/JqAV4FqUk4JLs0ISdoiIGizC7ReRJA4Vw42gJ7rGZ8I+UivTOXT47d/7D+FNfoLDcV5o65aMEDrW8qx4fPo+mebsF2E+C1D0IZbpUFjTgG2sfqN77fW/AntcSyhebOXoZ+oS4B9sp7Gc1u/Gt1CdnbYQWfwhe+H3Pjt8FaDG1P7vF3YIEf7AdxbQWfbw0y/FCPsyRXGauYDJb4FGf8cJzCBurtSIUsxvEE5yrZfmJfHukrjsBz+AZjiI+UpJUfe2y6bWzH9YdGr+nOpNkcMEPJLHSUWdE5tJvIRrh4Rzgkzt1GNv8TCZDDQbQTKvrdkshTslxaEzWdvpHShhRQm3cl0dl2eY/YkCqI3glUSygbOT4vffwdkzAVqZrBwJlvg8Q1tncWDn89fTdKyq3tTplUpFFi4UFzpTgAeAKrewL+FtnakWj8RaODpkA8HIoRmfBse0n2H74JGyOL8EF74Wyi3mImQLtBZp4xWOxH/vkppF0iKIDgi309l2tcFQ3H+pHD+rGeA0wdcmjVFGGXrsiJbm7hkdmtCMK9QdzyqZUub
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(39830400003)(396003)(366004)(346002)(376002)(136003)(186003)(4326008)(83380400001)(6486002)(478600001)(53546011)(54906003)(52116002)(16526019)(110136005)(5660300002)(86362001)(316002)(966005)(2616005)(16576012)(26005)(956004)(8676002)(8976002)(8936002)(36756003)(2906002)(66476007)(66556008)(31696002)(66946007)(44832011)(31686004)(45980500001)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: =?Windows-1252?Q?XbQeLX+qDsV/QvDbMd3nmg3FI+meRAa6aetyMEi9UbYuR41IRbqG/gCW?=
+ =?Windows-1252?Q?4yNiHl2QWMhLXAzO7OIF7bUgoGZC64BXTXFZm49XLuibosXHV1+YAB+9?=
+ =?Windows-1252?Q?I8BdAC1w2F+pVdtV8brRWOUgLO/M7mBMBHa74Q9N2sF/oXL9dBxR3ZCz?=
+ =?Windows-1252?Q?xwxDGtSlAI92xvXlnjwc7rClWbs6ktj0PQPNZ9uPHQEQVHuUoonRWG1O?=
+ =?Windows-1252?Q?dGJpdedhwCQoKyFFko25DvlhDrwvt+Q/rjNZGAYsTtY/8/gs+vH5AGgh?=
+ =?Windows-1252?Q?XFsjIUYHk+lJy7wXPeiGXexnVWAsbEuaZubFFzaG/CgwKNzc8JrIwnRL?=
+ =?Windows-1252?Q?vbMP5BSIPqS239eOyjlNo2di0i8qWMCX31Rl0xpUcTWwHYacNzLIQ4cL?=
+ =?Windows-1252?Q?jcMIxSdRz6zRq4GHP8KrteIhNQ2jOZ6uTqbATE7mNY44VsPB4IueCmHv?=
+ =?Windows-1252?Q?HGcKK2kTGHQQ0F59RwkCBRNkg/kQ9g0TGhk22FjKSfxo0nvkUIgMTWIv?=
+ =?Windows-1252?Q?J5R5hxQpteKTpqjGlAYtCvlPavF4NnkKgoO+5/CMp3C181fNHh36F6Tq?=
+ =?Windows-1252?Q?70KuZKQcegewsUNUZLL7Z4fVeugVyAh+r9Bio07Ha9rYELrBUVkX9ef/?=
+ =?Windows-1252?Q?SXD/y4U7hNe4SspMBFU+sWgRWPSo0D7cRj7sEBum/QZFFtGuNyiHiyei?=
+ =?Windows-1252?Q?3xha6S5DIA1QBiTZOsNfNLvJnJBEZ/2S2bXiRTgQ3ReMlMFXon8iTGAM?=
+ =?Windows-1252?Q?GS58ycipmMZ7O7RSzRnrBfvxWK8kk0ArN4p41EmfDiQTukoslgvoYT6o?=
+ =?Windows-1252?Q?k2/DBCfocL6j66DDvIppaDk20F+33qKPN6klquy5zFMoW38EvGVlfovr?=
+ =?Windows-1252?Q?E4iFlehj3w8t16XD2/seiXeJmNVYiBizdsI0RpPtVyzIzXGgXFf9lRn9?=
+ =?Windows-1252?Q?leJq7uP/TLrGkHqHTli01nIm4X4641ga/mcVpO9JkCRQ1kUTLNr0xmgy?=
+ =?Windows-1252?Q?t79Vzp4fywiaSrCxrJ36jTbHruuBg7FtzA9oqhDno+wBO2L57EjeoTmD?=
+ =?Windows-1252?Q?6prm9hc3a2Fjyu3Q?=
+X-OriginatorOrg: prevas.dk
+X-MS-Exchange-CrossTenant-Network-Message-Id: 18aa417b-805e-498c-ee6e-08d8bbc777f7
+X-MS-Exchange-CrossTenant-AuthSource: AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Jan 2021 15:41:06.3565
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: d350cf71-778d-4780-88f5-071a4cb1ed61
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: pGad0VLPX06Oyt0SbfPEgSDm0a4YOqsJl+eSYp4LllRZdyMc1tdh5itMKQtlUBqdwh6/V11MglhuZkvZroUWPANoBPgO1FSe2UeGrz9PjN4=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR10MB3492
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> > >>>>> What it does not give is a type indication, such as
-> > >>>>> VIRTIO_NET_HASH_TYPE_TCPv6. I don't understand how this would be used.
-> > >>>>> In datapaths where the NIC has already computed the four-tuple hash
-> > >>>>> and stored it in skb->hash --the common case for servers--, That type
-> > >>>>> field is the only reason to have to compute again.
-> > >>>> The problem is there's no guarantee that the packet comes from the NIC,
-> > >>>> it could be a simple VM2VM or host2VM packet.
-> > >>>>
-> > >>>> And even if the packet is coming from the NIC that calculates the hash
-> > >>>> there's no guarantee that it's the has that guest want (guest may use
-> > >>>> different RSS keys).
-> > >>> Ah yes, of course.
-> > >>>
-> > >>> I would still revisit the need to store a detailed hash_type along with
-> > >>> the hash, as as far I can tell that conveys no actionable information
-> > >>> to the guest.
-> > >>
-> > >> Yes, need to figure out its usage. According to [1], it only mention
-> > >> that storing has type is a charge of driver. Maybe Yuri can answer this.
-> > >>
-> > > For the case of Windows VM we can't know how exactly the network stack
-> > > uses provided hash data (including hash type). But: different releases
-> > > of Windows
-> > > enable different hash types (for example UDP hash is enabled only on
-> > > Server 2016 and up).
-> > >
-> > > Indeed the Windows requires a little more from the network adapter/driver
-> > > than Linux does.
-> > >
-> > > The addition of RSS support to virtio specification takes in account
-> > > the widest set of
-> > > requirements (i.e. Windows one), our initial impression is that this
-> > > should be enough also for Linux.
-> > >
-> > > The NDIS specification in part of RSS is _mandatory_ and there are
-> > > certification tests
-> > > that check that the driver provides the hash data as expected. All the
-> > > high-performance
-> > > network adapters have such RSS functionality in the hardware.
+On 16/01/2021 02.42, Tobias Waldekranz wrote:
+> On Thu, Jan 14, 2021 at 14:49, Rasmus Villemoes <rasmus.villemoes@prevas.dk> wrote:
+>> Hi
+>>
+>> I've noticed something rather odd with my mv88e6250, which led me to the
+>> commit in the subject.
+>>
+>> First, the MAC address of the master device never seems to get learned
+>> (at least according to "mv88e6xxx_dump --atu"), so all packets destined
+>> for the machine gets flooded out all ports 
 
-Thanks for the context.
+[snip]
 
-If Windows requires the driver to pass the hash-type along with the
-hash data, then indeed this will be needed.
+>> the master device's address doesn't get learned (nor does some garbage
+>> address appear in the ATU), and the unicast packets are still forwarded
+>> out all ports. So I must be missing something else.
+> 
+> The thing you are missing is that all packets from the CPU are sent with
+> FROM_CPU tags. SA learning is not performed on these as it intended for
+> control traffic.
 
-If it only requires the device to support a subset of of the possible
-types, chosen at init, that would be different and it would be cheaper
-for the driver to pass this config to the device one time.
+Ah, yes, I do remember stumbling on the tagger using FROM_CPU and
+wondering about that at some point. And I didn't recall the somewhat
+subtle detail of those being treated as MGMT and thus not participating
+in SA learning.
 
-> > > With pre-RSS QEMU (i.e. where the virtio-net device does not indicate
-> > > the RSS support)
-> > > the virtio-net driver for Windows does all the job related to RSS:
-> > > - hash calculation
-> > > - hash/hash_type delivery
-> > > - reporting each packet on the correct CPU according to RSS settings
-> > >
-> > > With RSS support in QEMU all the packets always come on a proper CPU and
-> > > the driver never needs to reschedule them. The driver still need to
-> > > calculate the
-> > > hash and report it to Windows. In this case we do the same job twice: the device
-> > > (QEMU or eBPF) does calculate the hash and get proper queue/CPU to deliver
-> > > the packet. But the hash is not delivered by the device, so the driver needs to
-> > > recalculate it and report to the Windows.
-> > >
-> > > If we add HASH_REPORT support (current set of patches) and the device
-> > > indicates this
-> > > feature we can avoid hash recalculation in the driver assuming we
-> > > receive the correct hash
-> > > value and hash type. Otherwise the driver can't know which exactly
-> > > hash the device has calculated.
-> > >
-> > > Please let me know if I did not answer the question.
-> >
-> >
-> > I think I get you. The hash type is also a kind of classification (e.g
-> > TCP or UDP). Any possibility that it can be deduced from the driver? (Or
-> > it could be too expensive to do that).
-> >
-> The driver does it today (when the device does not offer any features)
-> and of course can continue doing it.
-> IMO if the device can't report the data according to the spec it
-> should not indicate support for the respective feature (or fallback to
-> vhost=off).
-> Again, IMO if Linux does not need the exact hash_type we can use (for
-> Linux) the way that Willem de Brujin suggested in his patchset:
-> - just add VIRTIO_NET_HASH_REPORT_L4 to the spec
-> - Linux can use MQ + hash delivery (and use VIRTIO_NET_HASH_REPORT_L4)
-> - Linux can use (if makes sense) RSS with VIRTIO_NET_HASH_REPORT_L4 and eBPF
-> - Windows gets what it needs + eBPF
-> So, everyone has what they need at the respective cost.
->
-> Regarding use of skb->cb for hash type:
-> Currently, if I'm not mistaken, there are 2 bytes at the end of skb->cb:
-> skb->cb is 48 bytes array
-> There is skb_gso_cb (14 bytes) at offset SKB_GSO_CB_OFFSET(32)
-> Is it possible to use one of these 2 bytes for hash_type?
-> If yes, shall we extend the skb_gso_cb and place the 1-bytes hash_type
-> in it or just emit compilation error if the skb_gso_cb grows beyond 15
-> bytes?
+> Ideally, bulk traffic would be sent with a FORWARD tag. But there is
+> currently no way for the DSA tagger to discriminate the bulk data from
+> control traffic. And changing that is no small task.
 
-Good catch on segmentation taking place between .ndo_select_queue and
-.ndo_start_xmit.
+Indeed.
 
-That also means that whatever field in the skb is used, has to be
-copied to all segments in skb_segment. Which happens for cb. But this
-feature is completely unrelated to the skb_gso_cb type. Perhaps
-another field with a real type is more clear. For instance, an
-extension to the union with napi_id and sender_cpu, as neither is used
-in this egress path with .ndo_select_queue?
+> In the mean time we could extend Vladimir's (added to CC) work on
+> assisted CPU port learning to include the local bridge addresses. You
+> pushed me to take a first stab at this :) Please have a look at this
+> series:
+> 
+> https://lore.kernel.org/netdev/20210116012515.3152-1-tobias@waldekranz.com/
+
+I'll try these out, thanks. FWIW, in an earlier BSP there were some
+horrible hacks to go behind the kernel's back and add the CPU's address
+as a static entry in the switch, which is why I haven't seen this
+before. And this was done for much the same reason as we will have to it
+now (it implemented ERPS, another ring redundancy protocol).
+
+>> Finally, I'm wondering how the tagging could get in the way of learning
+>> the right address, given that the tag is inserted after the DA and SA.
+> 
+> Yes, but the CPU port is configured in DSA mode, so the switch will use
+> the tag command (FROM_CPU) to determine if learning should be done or
+> not.
+
+Right, but that comment was directed at commit 4c7ea3c0791e; even if SA
+learning did happen, bytes 6-11 of the frame are the same with or
+without the tag added, so I don't understand how _corrupted_ addresses
+could get learned.
+
+>> What I'm _really_ trying to do is to get my mv88e6250 to participate in
+>> an MRP ring, which AFAICT will require that the master device's MAC gets
+>> added as a static entry in the ATU: Otherwise, when the ring goes from
+>> open to closed, I've seen the switch wrongly learn the node's own mac
+>> address as being in the direction of one of the normal ports, which
+>> obviously breaks all traffic.
+> 
+> Well the static entry for the bridge MAC should be installed with the
+> aforementioned series applied. So that should not be an issue.
+
+Yes, so there are several good reasons for adding that address
+statically to the hardware's database.
+
+> My guess is that MRP will still not work though, as you will probably
+> need the ability to trap certain groups to the CPU (management
+> entries). I.e. some MRP PDUs must be allowed to ingress on blocked
+> ports, no?
+
+Indeed, and I'm currently just using a not-for-mainline patch that
+hardcodes the two multicast addresses in the ATU.
+
+--- a/drivers/net/dsa/mv88e6xxx/chip.c
++++ b/drivers/net/dsa/mv88e6xxx/chip.c
+@@ -1911,6 +1911,24 @@ static int mv88e6xxx_broadcast_setup(struct
+mv88e6xxx_chip *chip, u16 vid)
+                err = mv88e6xxx_port_add_broadcast(chip, port, vid);
+                if (err)
+                        return err;
++
++               if (port != dsa_upstream_port(chip->ds, port))
++                       continue;
++               if (IS_ENABLED(CONFIG_BRIDGE_MRP)) {
++                       static const u8 mrp_dmac[][ETH_ALEN] = {
++                               { 0x1, 0x15, 0x4e, 0x0, 0x0, 0x1 },
++                               { 0x1, 0x15, 0x4e, 0x0, 0x0, 0x3 },
++                       };
++                       const u8 state =
+MV88E6XXX_G1_ATU_DATA_STATE_MC_STATIC_DA_MGMT;
++                       int i;
++
++                       for (i = 0; i < ARRAY_SIZE(mrp_dmac); ++i) {
++                               err = mv88e6xxx_port_db_load_purge(chip,
+port,
++
+mrp_dmac[i], vid, state);
++                               if (err)
++                                       return err;
++                       }
++               }
+        }
+
+        return 0;
+
+because yes, one needs to prevent those frames from being flooded out
+all ports automatically.
+
+I suppose the real solution is having userspace do some "bridge mdb add"
+yoga, but since no code currently uses
+MV88E6XXX_G1_ATU_DATA_STATE_MC_STATIC_DA_MGMT, I don't think there's any
+way to actually achieve this. And I have no idea how to represent the
+requirement that "frames with this multicast DA are only to be directed
+at the CPU" in a hardware-agnostic way.
+
+Rasmus
