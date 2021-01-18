@@ -2,44 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 657512FA42C
-	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 16:10:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5841C2FA431
+	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 16:11:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2393217AbhARPIx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jan 2021 10:08:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33908 "EHLO
+        id S2405380AbhARPJa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jan 2021 10:09:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2393180AbhARPHq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jan 2021 10:07:46 -0500
-Received: from laurent.telenet-ops.be (laurent.telenet-ops.be [IPv6:2a02:1800:110:4::f00:19])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BAF5C0613C1
-        for <netdev@vger.kernel.org>; Mon, 18 Jan 2021 07:07:03 -0800 (PST)
+        with ESMTP id S2405371AbhARPI5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jan 2021 10:08:57 -0500
+Received: from michel.telenet-ops.be (michel.telenet-ops.be [IPv6:2a02:1800:110:4::f00:18])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 44531C0613C1
+        for <netdev@vger.kernel.org>; Mon, 18 Jan 2021 07:08:17 -0800 (PST)
 Received: from ramsan.of.borg ([84.195.186.194])
-        by laurent.telenet-ops.be with bizsmtp
-        id JF6y240084C55Sk01F6y0M; Mon, 18 Jan 2021 16:07:02 +0100
+        by michel.telenet-ops.be with bizsmtp
+        id JF8E2400b4C55Sk06F8Es0; Mon, 18 Jan 2021 16:08:15 +0100
 Received: from rox.of.borg ([192.168.97.57])
         by ramsan.of.borg with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.93)
         (envelope-from <geert@linux-m68k.org>)
-        id 1l1W7O-004cpY-1A; Mon, 18 Jan 2021 16:06:58 +0100
+        id 1l1W8c-004cqS-8S; Mon, 18 Jan 2021 16:08:14 +0100
 Received: from geert by rox.of.borg with local (Exim 4.93)
         (envelope-from <geert@linux-m68k.org>)
-        id 1l1W7N-003LEv-JJ; Mon, 18 Jan 2021 16:06:57 +0100
+        id 1l1W8b-003LIE-FR; Mon, 18 Jan 2021 16:08:13 +0100
 From:   Geert Uytterhoeven <geert+renesas@glider.be>
 To:     Sergei Shtylyov <sergei.shtylyov@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>
+        Jakub Kicinski <kuba@kernel.org>,
+        Simon Horman <horms+renesas@verge.net.au>
 Cc:     netdev@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
         linux-kernel@vger.kernel.org,
         Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH net v2 0/2] sh_eth: Fix reboot crash
-Date:   Mon, 18 Jan 2021 16:06:54 +0100
-Message-Id: <20210118150656.796584-1-geert+renesas@glider.be>
+Subject: [PATCH] sh_eth: Fix power down vs. is_opened flag ordering
+Date:   Mon, 18 Jan 2021 16:08:12 +0100
+Message-Id: <20210118150812.796791-1-geert+renesas@glider.be>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -47,49 +43,36 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-	Hi,
+sh_eth_close() does a synchronous power down of the device before
+marking it closed.  Revert the order, to make sure the device is never
+marked opened while suspended.
 
-This patch fixes a regression v5.11-rc1, where rebooting while a sh_eth
-device is not opened will cause a crash.
+While at it, use pm_runtime_put() instead of pm_runtime_put_sync(), as
+there is no reason to do a synchronous power down.
 
-Changes compared to v1:
-  - Export mdiobb_{read,write}(),
-  - Call mdiobb_{read,write}() now they are exported,
-  - Use mii_bus.parent to avoid bb_info.dev copy,
-  - Drop RFC state.
+Fixes: 7fa2955ff70ce453 ("sh_eth: Fix sleeping function called from invalid context")
+Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+---
+ drivers/net/ethernet/renesas/sh_eth.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Alternatively, mdio-bitbang could provide Runtime PM-aware wrappers
-itself, and use them either manually (through a new parameter to
-alloc_mdio_bitbang(), or a new alloc_mdio_bitbang_*() function), or
-automatically (e.g. if pm_runtime_enabled() returns true).  Note that
-the latter requires a "struct device *" parameter to operate on.
-Currently there are only two drivers that call alloc_mdio_bitbang() and
-use Runtime PM: the Renesas sh_eth and ravb drivers.  This series fixes
-the former, while the latter is not affected (it keeps the device
-powered all the time between driver probe and driver unbind, and
-changing that seems to be non-trivial).
-
-Thanks for your comments!
-
-Geert Uytterhoeven (2):
-  net: mdio-bitbang: Export mdiobb_{read,write}()
-  sh_eth: Make PHY access aware of Runtime PM to fix reboot crash
-
- drivers/net/ethernet/renesas/sh_eth.c | 26 ++++++++++++++++++++++++++
- drivers/net/mdio/mdio-bitbang.c       |  6 ++++--
- include/linux/mdio-bitbang.h          |  3 +++
- 3 files changed, 33 insertions(+), 2 deletions(-)
-
+diff --git a/drivers/net/ethernet/renesas/sh_eth.c b/drivers/net/ethernet/renesas/sh_eth.c
+index 9b52d350e21a9f2b..590b088bc4c7f3e2 100644
+--- a/drivers/net/ethernet/renesas/sh_eth.c
++++ b/drivers/net/ethernet/renesas/sh_eth.c
+@@ -2606,10 +2606,10 @@ static int sh_eth_close(struct net_device *ndev)
+ 	/* Free all the skbuffs in the Rx queue and the DMA buffer. */
+ 	sh_eth_ring_free(ndev);
+ 
+-	pm_runtime_put_sync(&mdp->pdev->dev);
+-
+ 	mdp->is_opened = 0;
+ 
++	pm_runtime_put(&mdp->pdev->dev);
++
+ 	return 0;
+ }
+ 
 -- 
 2.25.1
 
-Gr{oetje,eeting}s,
-
-						Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-							    -- Linus Torvalds
