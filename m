@@ -2,300 +2,420 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 03D142FA6A7
-	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 17:50:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E44F2FA675
+	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 17:40:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405931AbhARQr7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jan 2021 11:47:59 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:59910 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2405597AbhARPRI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jan 2021 10:17:08 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1610982941;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=xcaqopXIlvlEXLRCW3l9OfviX/eFyfP/wopbLVj233M=;
-        b=CHJN1lWwx3j9+36/QougdnoqRJ30s7ZYBWXt9hFgKyJisYfsT0hI7ceNQn+W+5JMjUdcTA
-        w5VPnuLr+FU2z8PrUFz0bcqMfpBTN1h99BnqOtkpFOdXcgY12QtEPJCHd7fIvbyRCEXLKY
-        02jUdT1uqTdqsx0eSx9rIrs9uf5JKLU=
-Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
- [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-143-rNow4s20NmSnC1eEaeJbNA-1; Mon, 18 Jan 2021 10:15:39 -0500
-X-MC-Unique: rNow4s20NmSnC1eEaeJbNA-1
-Received: by mail-wr1-f72.google.com with SMTP id g17so8410359wrr.11
-        for <netdev@vger.kernel.org>; Mon, 18 Jan 2021 07:15:39 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=xcaqopXIlvlEXLRCW3l9OfviX/eFyfP/wopbLVj233M=;
-        b=LDjIk1bqyvuRgr4ECk7Vef6BXaMTyqkwgM8402NFVkpKqOtVuoCjh3BilfPuxDKz2D
-         tLi7oU2Jo6mDBz/trpXaNGe3bRbcDJh5GYW5gXDTMNBlkUkF6CAH4TwUvxn6aY4BL/Yr
-         u7wLnZM57BcEiwgjhQq8+Bf3Qn9yt78NxQiAV8sfU34O/qx+Vt2Ey12rBFfZjTa06Fxd
-         d5cdMqIgMnA9D8wWoLz2gc4V0OkwoyZkv80Bi04LLeoXQxlABhZMc/vetEPoRPx35iRT
-         rV4Q9poNaFQv8K9Nv6Y2rDRg9bQjakXUlFE2B+j77x9q+QNXOENWabefzUPDmclDB3Q+
-         cIgQ==
-X-Gm-Message-State: AOAM531HXrRywrJHLu21AibJkA/KxD9BkL8dNqC+3yKty/t61oXDzc9g
-        vlL0Cninw4wCwXKHBKl8pEUG1A4zNLtOAdmPnyVujmA/V0ucPWcB6NGapnQnqteWcVhcE6pL1nV
-        5xxgN8V36l99nUGdJ
-X-Received: by 2002:adf:8342:: with SMTP id 60mr26549270wrd.140.1610982938684;
-        Mon, 18 Jan 2021 07:15:38 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwc7QTOAkMvdn8bwe1eCaMlvVb/4VRCysRSLWf+/IRHgXNYr1i0nxD/bAnSmDlH1IG2U6GWxQ==
-X-Received: by 2002:adf:8342:: with SMTP id 60mr26549247wrd.140.1610982938516;
-        Mon, 18 Jan 2021 07:15:38 -0800 (PST)
-Received: from steredhat (host-79-34-249-199.business.telecomitalia.it. [79.34.249.199])
-        by smtp.gmail.com with ESMTPSA id h13sm29904915wrm.28.2021.01.18.07.15.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Jan 2021 07:15:37 -0800 (PST)
-Date:   Mon, 18 Jan 2021 16:15:35 +0100
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Arseny Krasnov <arseny.krasnov@kaspersky.com>
-Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
+        id S2406331AbhARQkF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jan 2021 11:40:05 -0500
+Received: from mail2.protonmail.ch ([185.70.40.22]:33400 "EHLO
+        mail2.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2405917AbhARQjt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jan 2021 11:39:49 -0500
+Date:   Mon, 18 Jan 2021 16:38:31 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
+        t=1610987915; bh=2MCt0pQ+rLxV5Y2LqOVu5B2auNoDbQUpH/AK3M3vQjI=;
+        h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
+        b=HZI80ZpLzCjI1Y9R+agx6ZXt9nNZyKpE9VCvk1GpR2tdtBrYMABhvdxPwRKCUvp60
+         +DWqyAnekSf7pNDXKBva2kPcqWLiko018vHPUck+y7kNtyRco2lWIs8zoe02R/YOd1
+         IAR6tcglSe+oxhAVq/TQmTW0whXYiUvzl0PKknL6odY+dByhyXS/NZnRdBFutUPWZV
+         jUCZsDei0oucXaXGOGYvIxeC9OhuEgmSEDHE52HT4z2PPhJJ6b4CsgeHmEy0P8RmEW
+         VtrmgSh6KCbTLhpiUaJEM49OOty80Ppcg86TJ8hUNkYgGmJlnoPKbfqWiapB3PVGf3
+         r2vWYyOmJjXpg==
+To:     Magnus Karlsson <magnus.karlsson@gmail.com>
+From:   Alexander Lobakin <alobakin@pm.me>
+Cc:     Alexander Lobakin <alobakin@pm.me>,
+        Yunsheng Lin <linyunsheng@huawei.com>,
+        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
         "Michael S. Tsirkin" <mst@redhat.com>,
         Jason Wang <jasowang@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jorgen Hansen <jhansen@vmware.com>,
-        Colin Ian King <colin.king@canonical.com>,
-        Andra Paraschiv <andraprs@amazon.com>,
-        Jeff Vander Stoep <jeffv@google.com>, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, stsp2@yandex.ru, oxffffaa@gmail.com
-Subject: Re: [RFC PATCH v2 11/13] virtio/vsock: rest of SOCK_SEQPACKET support
-Message-ID: <20210118151535.ugjshvej3lrpnp3d@steredhat>
-References: <20210115053553.1454517-1-arseny.krasnov@kaspersky.com>
- <20210115054426.1457041-1-arseny.krasnov@kaspersky.com>
+        Jakub Kicinski <kuba@kernel.org>, bjorn.topel@intel.com,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Antoine Tenart <atenart@kernel.org>,
+        Michal Kubecek <mkubecek@suse.cz>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Meir Lichtinger <meirl@mellanox.com>,
+        virtualization@lists.linux-foundation.org,
+        bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Reply-To: Alexander Lobakin <alobakin@pm.me>
+Subject: Re: [PATCH bpf-next] xsk: build skb by page
+Message-ID: <20210118163742.10364-1-alobakin@pm.me>
+In-Reply-To: <CAJ8uoz0tZNrB+g0Mw_K4n=VhQ36b6AHyZWM3TkkLBCxo_N1iRg@mail.gmail.com>
+References: <579fa463bba42ac71591540a1811dca41d725350.1610764948.git.xuanzhuo@linux.alibaba.com> <4a4b475b-0e79-6cf6-44f5-44d45b5d85b5@huawei.com> <20210118125937.4088-1-alobakin@pm.me> <20210118143948.8706-1-alobakin@pm.me> <CAJ8uoz0tZNrB+g0Mw_K4n=VhQ36b6AHyZWM3TkkLBCxo_N1iRg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20210115054426.1457041-1-arseny.krasnov@kaspersky.com>
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.2 required=10.0 tests=ALL_TRUSTED,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF shortcircuit=no
+        autolearn=disabled version=3.4.4
+X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on
+        mailout.protonmail.ch
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 15, 2021 at 08:44:22AM +0300, Arseny Krasnov wrote:
->This adds rest of logic for SEQPACKET:
->1) Shared functions for packet sending now set valid type of packet
->   according socket type.
->2) SEQPACKET specific function like SEQ_BEGIN send and data dequeue.
->3) Ops for virtio transport.
->4) TAP support for SEQPACKET is not so easy if it is necessary to send
->   whole record to TAP interface. This could be done by allocating
->   new packet when whole record is received, data of record must be
->   copied to TAP packet.
->
->Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
->---
-> include/linux/virtio_vsock.h            |  7 ++++
-> net/vmw_vsock/virtio_transport.c        |  4 ++
-> net/vmw_vsock/virtio_transport_common.c | 54 ++++++++++++++++++++++---
-> 3 files changed, 59 insertions(+), 6 deletions(-)
->
->diff --git a/include/linux/virtio_vsock.h b/include/linux/virtio_vsock.h
->index af8705ea8b95..ad9783df97c9 100644
->--- a/include/linux/virtio_vsock.h
->+++ b/include/linux/virtio_vsock.h
->@@ -84,7 +84,14 @@ virtio_transport_dgram_dequeue(struct vsock_sock *vsk,
-> 			       struct msghdr *msg,
-> 			       size_t len, int flags);
->
->+bool virtio_transport_seqpacket_seq_send_len(struct vsock_sock *vsk, size_t len);
-> size_t virtio_transport_seqpacket_seq_get_len(struct vsock_sock *vsk);
->+ssize_t
->+virtio_transport_seqpacket_dequeue(struct vsock_sock *vsk,
->+				   struct msghdr *msg,
->+				   size_t len,
->+				   int type);
->+
-> s64 virtio_transport_stream_has_data(struct vsock_sock *vsk);
-> s64 virtio_transport_stream_has_space(struct vsock_sock *vsk);
->
->diff --git a/net/vmw_vsock/virtio_transport.c b/net/vmw_vsock/virtio_transport.c
->index 2700a63ab095..5a7ab1befee8 100644
->--- a/net/vmw_vsock/virtio_transport.c
->+++ b/net/vmw_vsock/virtio_transport.c
->@@ -469,6 +469,10 @@ static struct virtio_transport virtio_transport = {
-> 		.stream_is_active         = virtio_transport_stream_is_active,
-> 		.stream_allow             = virtio_transport_stream_allow,
->
->+		.seqpacket_seq_send_len	  = virtio_transport_seqpacket_seq_send_len,
->+		.seqpacket_seq_get_len	  = virtio_transport_seqpacket_seq_get_len,
->+		.seqpacket_dequeue        = virtio_transport_seqpacket_dequeue,
->+
-> 		.notify_poll_in           = virtio_transport_notify_poll_in,
-> 		.notify_poll_out          = virtio_transport_notify_poll_out,
-> 		.notify_recv_init         = virtio_transport_notify_recv_init,
->diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
->index c3e07eb1c666..5fdf1adfdaab 100644
->--- a/net/vmw_vsock/virtio_transport_common.c
->+++ b/net/vmw_vsock/virtio_transport_common.c
->@@ -139,6 +139,7 @@ static struct sk_buff *virtio_transport_build_skb(void *opaque)
-> 		break;
-> 	case VIRTIO_VSOCK_OP_CREDIT_UPDATE:
-> 	case VIRTIO_VSOCK_OP_CREDIT_REQUEST:
->+	case VIRTIO_VSOCK_OP_SEQ_BEGIN:
-> 		hdr->op = cpu_to_le16(AF_VSOCK_OP_CONTROL);
-> 		break;
-> 	default:
->@@ -157,6 +158,10 @@ static struct sk_buff *virtio_transport_build_skb(void *opaque)
->
-> void virtio_transport_deliver_tap_pkt(struct virtio_vsock_pkt *pkt)
-> {
->+	/* TODO: implement tap support for SOCK_SEQPACKET. */
->+	if (le32_to_cpu(pkt->hdr.type) == VIRTIO_VSOCK_TYPE_SEQPACKET)
-             ^
-hdr.type is __le16, so please use le16_to_cpu()
+> From: Magnus Karlsson <magnus.karlsson@gmail.com>
+> Date: Mon, 18 Jan 2021 16:10:40 +0100
+>=20
+> On Mon, Jan 18, 2021 at 3:47 PM Alexander Lobakin <alobakin@pm.me> wrote:
+> >
+> > From: Alexander Lobakin <alobakin@pm.me>
+> > Date: Mon, 18 Jan 2021 13:00:17 +0000
+> >
+> > > From: Yunsheng Lin <linyunsheng@huawei.com>
+> > > Date: Mon, 18 Jan 2021 20:40:52 +0800
+> > >
+> > >> On 2021/1/16 10:44, Xuan Zhuo wrote:
+> > >>> This patch is used to construct skb based on page to save memory co=
+py
+> > >>> overhead.
+> > >>>
+> > >>> This has one problem:
+> > >>>
+> > >>> We construct the skb by fill the data page as a frag into the skb. =
+In
+> > >>> this way, the linear space is empty, and the header information is =
+also
+> > >>> in the frag, not in the linear space, which is not allowed for some
+> > >>> network cards. For example, Mellanox Technologies MT27710 Family
+> > >>> [ConnectX-4 Lx] will get the following error message:
+> > >>>
+> > >>>     mlx5_core 0000:3b:00.1 eth1: Error cqe on cqn 0x817, ci 0x8, qn=
+ 0x1dbb, opcode 0xd, syndrome 0x1, vendor syndrome 0x68
+> > >>>     00000000: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+> > >>>     00000010: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+> > >>>     00000020: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+> > >>>     00000030: 00 00 00 00 60 10 68 01 0a 00 1d bb 00 0f 9f d2
+> > >>>     WQE DUMP: WQ size 1024 WQ cur size 0, WQE index 0xf, len: 64
+> > >>>     00000000: 00 00 0f 0a 00 1d bb 03 00 00 00 08 00 00 00 00
+> > >>>     00000010: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+> > >>>     00000020: 00 00 00 2b 00 08 00 00 00 00 00 05 9e e3 08 00
+> > >>>     00000030: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+> > >>>     mlx5_core 0000:3b:00.1 eth1: ERR CQE on SQ: 0x1dbb
+> > >>>
+> > >>> I also tried to use build_skb to construct skb, but because of the
+> > >>> existence of skb_shinfo, it must be behind the linear space, so thi=
+s
+> > >>> method is not working. We can't put skb_shinfo on desc->addr, it wi=
+ll be
+> > >>> exposed to users, this is not safe.
+> > >>>
+> > >>> Finally, I added a feature NETIF_F_SKB_NO_LINEAR to identify whethe=
+r the
+> > >>
+> > >> Does it make sense to use ETHTOOL_TX_COPYBREAK tunable in ethtool to
+> > >> configure if the data is copied or not?
+> > >
+> > > As far as I can grep, only mlx4 supports this, and it has a different
+> > > meaning in that driver.
+> > > So I guess a new netdev_feature would be a better solution.
+> > >
+> > >>> network card supports the header information of the packet in the f=
+rag
+> > >>> and not in the linear space.
+> > >>>
+> > >>> ---------------- Performance Testing ------------
+> > >>>
+> > >>> The test environment is Aliyun ECS server.
+> > >>> Test cmd:
+> > >>> ```
+> > >>> xdpsock -i eth0 -t  -S -s <msg size>
+> > >>> ```
+> > >>>
+> > >>> Test result data:
+> > >>>
+> > >>> size    64      512     1024    1500
+> > >>> copy    1916747 1775988 1600203 1440054
+> > >>> page    1974058 1953655 1945463 1904478
+> > >>> percent 3.0%    10.0%   21.58%  32.3%
+> > >>>
+> > >>> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> > >>> Reviewed-by: Dust Li <dust.li@linux.alibaba.com>
+> > >>> ---
+> > >>>  drivers/net/virtio_net.c        |   2 +-
+> > >>>  include/linux/netdev_features.h |   5 +-
+> > >>>  net/ethtool/common.c            |   1 +
+> > >>>  net/xdp/xsk.c                   | 108 ++++++++++++++++++++++++++++=
++++++-------
+> > >>>  4 files changed, 97 insertions(+), 19 deletions(-)
+> > >>>
+> > >>> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> > >>> index 4ecccb8..841a331 100644
+> > >>> --- a/drivers/net/virtio_net.c
+> > >>> +++ b/drivers/net/virtio_net.c
+> > >>> @@ -2985,7 +2985,7 @@ static int virtnet_probe(struct virtio_device=
+ *vdev)
+> > >>>     /* Set up network device as normal. */
+> > >>>     dev->priv_flags |=3D IFF_UNICAST_FLT | IFF_LIVE_ADDR_CHANGE;
+> > >>>     dev->netdev_ops =3D &virtnet_netdev;
+> > >>> -   dev->features =3D NETIF_F_HIGHDMA;
+> > >>> +   dev->features =3D NETIF_F_HIGHDMA | NETIF_F_SKB_NO_LINEAR;
+> > >>>
+> > >>>     dev->ethtool_ops =3D &virtnet_ethtool_ops;
+> > >>>     SET_NETDEV_DEV(dev, &vdev->dev);
+> > >>> diff --git a/include/linux/netdev_features.h b/include/linux/netdev=
+_features.h
+> > >>> index 934de56..8dd28e2 100644
+> > >>> --- a/include/linux/netdev_features.h
+> > >>> +++ b/include/linux/netdev_features.h
+> > >>> @@ -85,9 +85,11 @@ enum {
+> > >>>
+> > >>>     NETIF_F_HW_MACSEC_BIT,          /* Offload MACsec operations */
+> > >>>
+> > >>> +   NETIF_F_SKB_NO_LINEAR_BIT,      /* Allow skb linear is empty */
+> > >>> +
+> > >>>     /*
+> > >>>      * Add your fresh new feature above and remember to update
+> > >>> -    * netdev_features_strings[] in net/core/ethtool.c and maybe
+> > >>> +    * netdev_features_strings[] in net/ethtool/common.c and maybe
+> > >>>      * some feature mask #defines below. Please also describe it
+> > >>>      * in Documentation/networking/netdev-features.rst.
+> > >>>      */
+> > >>> @@ -157,6 +159,7 @@ enum {
+> > >>>  #define NETIF_F_GRO_FRAGLIST       __NETIF_F(GRO_FRAGLIST)
+> > >>>  #define NETIF_F_GSO_FRAGLIST       __NETIF_F(GSO_FRAGLIST)
+> > >>>  #define NETIF_F_HW_MACSEC  __NETIF_F(HW_MACSEC)
+> > >>> +#define NETIF_F_SKB_NO_LINEAR      __NETIF_F(SKB_NO_LINEAR)
+> > >>>
+> > >>>  /* Finds the next feature with the highest number of the range of =
+start till 0.
+> > >>>   */
+> > >>> diff --git a/net/ethtool/common.c b/net/ethtool/common.c
+> > >>> index 24036e3..2f3d309 100644
+> > >>> --- a/net/ethtool/common.c
+> > >>> +++ b/net/ethtool/common.c
+> > >>> @@ -68,6 +68,7 @@
+> > >>>     [NETIF_F_HW_TLS_RX_BIT] =3D        "tls-hw-rx-offload",
+> > >>>     [NETIF_F_GRO_FRAGLIST_BIT] =3D     "rx-gro-list",
+> > >>>     [NETIF_F_HW_MACSEC_BIT] =3D        "macsec-hw-offload",
+> > >>> +   [NETIF_F_SKB_NO_LINEAR_BIT] =3D    "skb-no-linear",
+> > >
+> > > I completely forgot to add that you'd better to mention in both
+> > > enumeration/feature and its Ethtool string that the feature applies
+> > > to Tx path.
+> > > Smth like:
+> > >
+> > > NETIF_F_SKB_TX_NO_LINEAR{,_BIT}, "skb-tx-no-linear"
+> > > or
+> > > NETIF_F_TX_SKB_NO_LINEAR{,_BIT}, "tx-skb-no-linear"
+> > >
+> > > Otherwise, it may be confusing for users and developers.
+>=20
+> I prefer one of these names for the property as they clearly describe
+> a feature that the driver supports.
+>=20
+> > OR, I think we may tight the feature with the new approach to build
+> > skbs by page as it makes no sense for anything else.
+> > So, if we define something like:
+> >
+> > NETIF_F_XSK_TX_GENERIC_ZC{,_BIT}, "xsk-tx-generic-zerocopy",
+>=20
+> This one I misunderstood first. I thought: "this is not zerocopy", but
+> you are right it is. It is zero-copy implemented with skb:s. But in my
+> mind, the NO_LINEAR version that you suggested are clearer.
+>=20
+> > then user can toggle your new XSK Tx path on/off via Ethtool for
+> > drivers that will support it (don't forget to add it to hw_features
+> > for virtio_net then).
 
->+		return;
->+
-> 	if (pkt->tap_delivered)
-> 		return;
->
->@@ -405,6 +410,19 @@ static u16 virtio_transport_get_type(struct sock *sk)
-> 		return VIRTIO_VSOCK_TYPE_SEQPACKET;
-> }
->
->+bool virtio_transport_seqpacket_seq_send_len(struct vsock_sock *vsk, size_t len)
->+{
->+	struct virtio_vsock_pkt_info info = {
->+		.type = VIRTIO_VSOCK_TYPE_SEQPACKET,
->+		.op = VIRTIO_VSOCK_OP_SEQ_BEGIN,
->+		.vsk = vsk,
->+		.flags = len
->+	};
->+
->+	return virtio_transport_send_pkt_info(vsk, &info);
->+}
->+EXPORT_SYMBOL_GPL(virtio_transport_seqpacket_seq_send_len);
->+
-> static inline void virtio_transport_del_n_free_pkt(struct virtio_vsock_pkt *pkt)
-> {
-> 	list_del(&pkt->list);
->@@ -576,6 +594,18 @@ virtio_transport_stream_dequeue(struct vsock_sock *vsk,
-> }
-> EXPORT_SYMBOL_GPL(virtio_transport_stream_dequeue);
->
->+ssize_t
->+virtio_transport_seqpacket_dequeue(struct vsock_sock *vsk,
->+				   struct msghdr *msg,
->+				   size_t len, int flags)
->+{
->+	if (flags & MSG_PEEK)
->+		return -EOPNOTSUPP;
->+
->+	return virtio_transport_seqpacket_do_dequeue(vsk, msg, len);
->+}
->+EXPORT_SYMBOL_GPL(virtio_transport_seqpacket_dequeue);
->+
-> int
-> virtio_transport_dgram_dequeue(struct vsock_sock *vsk,
-> 			       struct msghdr *msg,
->@@ -659,13 +689,15 @@ EXPORT_SYMBOL_GPL(virtio_transport_do_socket_init);
-> void virtio_transport_notify_buffer_size(struct vsock_sock *vsk, u64 *val)
-> {
-> 	struct virtio_vsock_sock *vvs = vsk->trans;
->+	int type;
->
-> 	if (*val > VIRTIO_VSOCK_MAX_BUF_SIZE)
-> 		*val = VIRTIO_VSOCK_MAX_BUF_SIZE;
->
-> 	vvs->buf_alloc = *val;
->
->-	virtio_transport_send_credit_update(vsk, VIRTIO_VSOCK_TYPE_STREAM,
->+	type = virtio_transport_get_type(sk_vsock(vsk));
->+	virtio_transport_send_credit_update(vsk, type,
-> 					    NULL);
+User don't need to enable manually this, drivers usually enable most
+of their features on netdevice creation. This way we just could have
+an option to turn it off.
 
-With this change, you can move 'NULL' in the previous line.
+If the feature is not about to be exposed to user at all, only to
+indicate if a particular driver supports skbs with skb_headlen =3D=3D 0
+on its .ndo_start_xmit() path, then it might be better to introduce
+a private flag (netdev_priv_flags) instead of netdev_feature. Private
+flags are kernel-only and can't be toggled on/off after netdev is
+registered.
+E.g.
 
-> }
-> EXPORT_SYMBOL_GPL(virtio_transport_notify_buffer_size);
->@@ -793,10 +825,11 @@ int virtio_transport_connect(struct vsock_sock *vsk)
-> {
-> 	struct virtio_vsock_pkt_info info = {
-> 		.op = VIRTIO_VSOCK_OP_REQUEST,
->-		.type = VIRTIO_VSOCK_TYPE_STREAM,
-> 		.vsk = vsk,
-> 	};
+IFF_TX_SKB_NO_LINEAR
+
+and test it like
+
+if (dev->priv_flags & IFF_TX_SKB_NO_LINEAR) {
+=09/* new generic zerocopy path */
+} else {
+=09/* current code */
+}
+
+> > >>>  };
+> > >>>
+> > >>>  const char
+> > >>> diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+> > >>> index 8037b04..94d17dc 100644
+> > >>> --- a/net/xdp/xsk.c
+> > >>> +++ b/net/xdp/xsk.c
+> > >>> @@ -430,6 +430,95 @@ static void xsk_destruct_skb(struct sk_buff *s=
+kb)
+> > >>>     sock_wfree(skb);
+> > >>>  }
+> > >>>
+> > >>> +static struct sk_buff *xsk_build_skb_zerocopy(struct xdp_sock *xs,
+> > >>> +                                         struct xdp_desc *desc)
+> > >>> +{
+> > >>> +   u32 len, offset, copy, copied;
+> > >>> +   struct sk_buff *skb;
+> > >>> +   struct page *page;
+> > >>> +   char *buffer;
+> > >>> +   int err, i;
+> > >>> +   u64 addr;
+> > >>> +
+> > >>> +   skb =3D sock_alloc_send_skb(&xs->sk, 0, 1, &err);
+> > >>> +   if (unlikely(!skb))
+> > >>> +           return NULL;
+> > >>> +
+> > >>> +   addr =3D desc->addr;
+> > >>> +   len =3D desc->len;
+> > >>> +
+> > >>> +   buffer =3D xsk_buff_raw_get_data(xs->pool, addr);
+> > >>> +   offset =3D offset_in_page(buffer);
+> > >>> +   addr =3D buffer - (char *)xs->pool->addrs;
+> > >>> +
+> > >>> +   for (copied =3D 0, i =3D 0; copied < len; ++i) {
+> > >>> +           page =3D xs->pool->umem->pgs[addr >> PAGE_SHIFT];
+> > >>> +
+> > >>> +           get_page(page);
+> > >>> +
+> > >>> +           copy =3D min((u32)(PAGE_SIZE - offset), len - copied);
+> > >>> +
+> > >>> +           skb_fill_page_desc(skb, i, page, offset, copy);
+> > >>> +
+> > >>> +           copied +=3D copy;
+> > >>> +           addr +=3D copy;
+> > >>> +           offset =3D 0;
+> > >>> +   }
+> > >>> +
+> > >>> +   skb->len +=3D len;
+> > >>> +   skb->data_len +=3D len;
+> > >>> +   skb->truesize +=3D len;
+> > >>> +
+> > >>> +   refcount_add(len, &xs->sk.sk_wmem_alloc);
+> > >>> +
+> > >>> +   return skb;
+> > >>> +}
+> > >>> +
+> > >>> +static struct sk_buff *xsk_build_skb(struct xdp_sock *xs,
+> > >>> +                                struct xdp_desc *desc, int *err)
+> > >>> +{
+> > >>> +   struct sk_buff *skb;
+> > >>> +
+> > >>> +   if (xs->dev->features & NETIF_F_SKB_NO_LINEAR) {
+> > >>> +           skb =3D xsk_build_skb_zerocopy(xs, desc);
+> > >>> +           if (unlikely(!skb)) {
+> > >>> +                   *err =3D -ENOMEM;
+> > >>> +                   return NULL;
+> > >>> +           }
+> > >>> +   } else {
+> > >>> +           char *buffer;
+> > >>> +           u64 addr;
+> > >>> +           u32 len;
+> > >>> +           int err;
+> > >>> +
+> > >>> +           len =3D desc->len;
+> > >>> +           skb =3D sock_alloc_send_skb(&xs->sk, len, 1, &err);
+> > >>> +           if (unlikely(!skb)) {
+> > >>> +                   *err =3D -ENOMEM;
+> > >>> +                   return NULL;
+> > >>> +           }
+> > >>> +
+> > >>> +           skb_put(skb, len);
+> > >>> +           addr =3D desc->addr;
+> > >>> +           buffer =3D xsk_buff_raw_get_data(xs->pool, desc->addr);
+> > >>> +           err =3D skb_store_bits(skb, 0, buffer, len);
+> > >>> +
+> > >>> +           if (unlikely(err)) {
+> > >>> +                   kfree_skb(skb);
+> > >>> +                   *err =3D -EINVAL;
+> > >>> +                   return NULL;
+> > >>> +           }
+> > >>> +   }
+> > >>> +
+> > >>> +   skb->dev =3D xs->dev;
+> > >>> +   skb->priority =3D xs->sk.sk_priority;
+> > >>> +   skb->mark =3D xs->sk.sk_mark;
+> > >>> +   skb_shinfo(skb)->destructor_arg =3D (void *)(long)desc->addr;
+> > >>> +   skb->destructor =3D xsk_destruct_skb;
+> > >>> +
+> > >>> +   return skb;
+> > >>> +}
+> > >>> +
+> > >>>  static int xsk_generic_xmit(struct sock *sk)
+> > >>>  {
+> > >>>     struct xdp_sock *xs =3D xdp_sk(sk);
+> > >>> @@ -446,43 +535,28 @@ static int xsk_generic_xmit(struct sock *sk)
+> > >>>             goto out;
+> > >>>
+> > >>>     while (xskq_cons_peek_desc(xs->tx, &desc, xs->pool)) {
+> > >>> -           char *buffer;
+> > >>> -           u64 addr;
+> > >>> -           u32 len;
+> > >>> -
+> > >>>             if (max_batch-- =3D=3D 0) {
+> > >>>                     err =3D -EAGAIN;
+> > >>>                     goto out;
+> > >>>             }
+> > >>>
+> > >>> -           len =3D desc.len;
+> > >>> -           skb =3D sock_alloc_send_skb(sk, len, 1, &err);
+> > >>> +           skb =3D xsk_build_skb(xs, &desc, &err);
+> > >>>             if (unlikely(!skb))
+> > >>>                     goto out;
+> > >>>
+> > >>> -           skb_put(skb, len);
+> > >>> -           addr =3D desc.addr;
+> > >>> -           buffer =3D xsk_buff_raw_get_data(xs->pool, addr);
+> > >>> -           err =3D skb_store_bits(skb, 0, buffer, len);
+> > >>>             /* This is the backpressure mechanism for the Tx path.
+> > >>>              * Reserve space in the completion queue and only proce=
+ed
+> > >>>              * if there is space in it. This avoids having to imple=
+ment
+> > >>>              * any buffering in the Tx path.
+> > >>>              */
+> > >>>             spin_lock_irqsave(&xs->pool->cq_lock, flags);
+> > >>> -           if (unlikely(err) || xskq_prod_reserve(xs->pool->cq)) {
+> > >>> +           if (xskq_prod_reserve(xs->pool->cq)) {
+> > >>>                     spin_unlock_irqrestore(&xs->pool->cq_lock, flag=
+s);
+> > >>>                     kfree_skb(skb);
+> > >>>                     goto out;
+> > >>>             }
+> > >>>             spin_unlock_irqrestore(&xs->pool->cq_lock, flags);
+> > >>>
+> > >>> -           skb->dev =3D xs->dev;
+> > >>> -           skb->priority =3D sk->sk_priority;
+> > >>> -           skb->mark =3D sk->sk_mark;
+> > >>> -           skb_shinfo(skb)->destructor_arg =3D (void *)(long)desc.=
+addr;
+> > >>> -           skb->destructor =3D xsk_destruct_skb;
+> > >>> -
+> > >>>             err =3D __dev_direct_xmit(skb, xs->queue_id);
+> > >>>             if  (err =3D=3D NETDEV_TX_BUSY) {
+> > >>>                     /* Tell user-space to retry the send */
+> > >>>
+> > >
+> > > Al
+> >
+> > Al
 >
->+	info.type = virtio_transport_get_type(sk_vsock(vsk));
->+
-> 	return virtio_transport_send_pkt_info(vsk, &info);
-> }
-> EXPORT_SYMBOL_GPL(virtio_transport_connect);
->@@ -805,7 +838,6 @@ int virtio_transport_shutdown(struct vsock_sock *vsk, int mode)
-> {
-> 	struct virtio_vsock_pkt_info info = {
-> 		.op = VIRTIO_VSOCK_OP_SHUTDOWN,
->-		.type = VIRTIO_VSOCK_TYPE_STREAM,
-> 		.flags = (mode & RCV_SHUTDOWN ?
-> 			  VIRTIO_VSOCK_SHUTDOWN_RCV : 0) |
-> 			 (mode & SEND_SHUTDOWN ?
->@@ -813,6 +845,8 @@ int virtio_transport_shutdown(struct vsock_sock *vsk, int mode)
-> 		.vsk = vsk,
-> 	};
->
->+	info.type = virtio_transport_get_type(sk_vsock(vsk));
->+
-> 	return virtio_transport_send_pkt_info(vsk, &info);
-> }
-> EXPORT_SYMBOL_GPL(virtio_transport_shutdown);
->@@ -834,12 +868,18 @@ virtio_transport_stream_enqueue(struct vsock_sock *vsk,
-> {
-> 	struct virtio_vsock_pkt_info info = {
-> 		.op = VIRTIO_VSOCK_OP_RW,
->-		.type = VIRTIO_VSOCK_TYPE_STREAM,
-> 		.msg = msg,
-> 		.pkt_len = len,
-> 		.vsk = vsk,
->+		.flags = 0,
-> 	};
->
->+	info.type = virtio_transport_get_type(sk_vsock(vsk));
->+
->+	if (info.type == VIRTIO_VSOCK_TYPE_SEQPACKET &&
->+	    msg->msg_flags & MSG_EOR)
->+		info.flags |= VIRTIO_VSOCK_RW_EOR;
->+
-> 	return virtio_transport_send_pkt_info(vsk, &info);
-> }
-> EXPORT_SYMBOL_GPL(virtio_transport_stream_enqueue);
->@@ -857,7 +897,6 @@ static int virtio_transport_reset(struct vsock_sock *vsk,
-> {
-> 	struct virtio_vsock_pkt_info info = {
-> 		.op = VIRTIO_VSOCK_OP_RST,
->-		.type = VIRTIO_VSOCK_TYPE_STREAM,
-> 		.reply = !!pkt,
-> 		.vsk = vsk,
-> 	};
->@@ -866,6 +905,8 @@ static int virtio_transport_reset(struct vsock_sock *vsk,
-> 	if (pkt && le16_to_cpu(pkt->hdr.op) == VIRTIO_VSOCK_OP_RST)
-> 		return 0;
->
->+	info.type = virtio_transport_get_type(sk_vsock(vsk));
->+
-> 	return virtio_transport_send_pkt_info(vsk, &info);
-> }
->
->@@ -1177,13 +1218,14 @@ virtio_transport_send_response(struct vsock_sock *vsk,
-> {
-> 	struct virtio_vsock_pkt_info info = {
-> 		.op = VIRTIO_VSOCK_OP_RESPONSE,
->-		.type = VIRTIO_VSOCK_TYPE_STREAM,
-> 		.remote_cid = le64_to_cpu(pkt->hdr.src_cid),
-> 		.remote_port = le32_to_cpu(pkt->hdr.src_port),
-> 		.reply = true,
-> 		.vsk = vsk,
-> 	};
->
->+	info.type = virtio_transport_get_type(sk_vsock(vsk));
->+
-> 	return virtio_transport_send_pkt_info(vsk, &info);
-> }
->
->-- 
->2.25.1
->
+
+Al
 
