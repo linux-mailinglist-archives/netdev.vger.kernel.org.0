@@ -2,67 +2,67 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B87EA2FA6EA
-	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 18:01:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9937F2FA6F3
+	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 18:03:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406442AbhARRAX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jan 2021 12:00:23 -0500
-Received: from mail.eaton.com ([192.104.67.6]:10500 "EHLO mail.eaton.com"
+        id S2406481AbhARRBs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jan 2021 12:01:48 -0500
+Received: from mail2.eaton.com ([192.104.67.3]:10600 "EHLO mail2.eaton.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2406113AbhARRAL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 18 Jan 2021 12:00:11 -0500
-Received: from mail.eaton.com (simtcimsva03.etn.com [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id CCBB9A4160;
-        Mon, 18 Jan 2021 11:59:08 -0500 (EST)
+        id S2406113AbhARRAe (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 18 Jan 2021 12:00:34 -0500
+Received: from mail2.eaton.com (loutcimsva02.etn.com [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 0CF56F813D;
+        Mon, 18 Jan 2021 11:59:50 -0500 (EST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=eaton.com;
-        s=eaton-s2020-01; t=1610989148;
-        bh=50pzr3NvN1HqnbzNezMyFIC/UOWTZC8bu+LXS2XycGc=; h=From:To:Date;
-        b=Xxsh41nuhujIobxjfpPBwahau2NMhCSA+I3j+7ZBhApt18LL3h3pHVOOjJcD/E+Bx
-         bjjgFb7oL3ojrSfOOparl+uY8npBgq493bCDv6EwKbdV3e8zBka/HoXtsRMAatXidq
-         p4IB06eR21kwgE3dOgQF1U2NGZELc5bEbYPN+V2byEmCy0KQVnXk8Ka0Ia4JKZMhnK
-         O4vKA6W9G2/SESS7aa4BKuwpkEGo+8eWz7V91GD2AYm8PUVB66RBgeqWOsDJuCEZ/f
-         mhNnQfavyl9KprC4Mk583UTtZUo1VOrgTz9RQ9oStZE1idBQsqqgKXcCyp3Ppghbx7
-         NdFWU0DtEp/mQ==
-Received: from mail.eaton.com (simtcimsva03.etn.com [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id BD0E8A40EB;
-        Mon, 18 Jan 2021 11:59:08 -0500 (EST)
-Received: from LOUTCSGWY03.napa.ad.etn.com (loutcsgwy03.napa.ad.etn.com [151.110.126.89])
-        by mail.eaton.com (Postfix) with ESMTPS;
-        Mon, 18 Jan 2021 11:59:08 -0500 (EST)
-Received: from LOUTCSHUB03.napa.ad.etn.com (151.110.40.76) by
- LOUTCSGWY03.napa.ad.etn.com (151.110.126.89) with Microsoft SMTP Server (TLS)
- id 14.3.487.0; Mon, 18 Jan 2021 11:59:08 -0500
-Received: from USLTCSEXHET01.NAPA.AD.ETN.COM (151.110.240.151) by
- LOUTCSHUB03.napa.ad.etn.com (151.110.40.76) with Microsoft SMTP Server (TLS)
- id 14.3.487.0; Mon, 18 Jan 2021 11:59:07 -0500
-Received: from NAM04-BN8-obe.outbound.protection.outlook.com (104.47.74.49) by
- hybridmail.eaton.com (151.110.240.151) with Microsoft SMTP Server
+        s=eaton-s2020-01; t=1610989190;
+        bh=FR7u+5nV9XNuk8cwggzwN1PRWimaL55RRnOCijxG6jQ=; h=From:To:Date;
+        b=iX9PFj6DC9osudTgY58J95xoCfa9FEUXCFGq2w7NJh/QYWF4F/JXOXrTc20g02sTj
+         oCfggkmsNc4c62bg7YtLXxNlcQrqYNVzrQc4V9dydTaj1++qkTcSg3fdsIMe6ozO1X
+         ywyR+cUj8Np+0X3/6LgkScns8hIs9fNBOA0JaDlfXrSUK4sTHPHfCqDXfk3jwIhQOX
+         EvHQhGulYsKWHGqDI3G6GZdHbtConVerxSvjbq8CUImNEynIprmgXPqvQgtRGG4AJF
+         +GNjs3GSfT7IbQX1ufwRfRaUt7XHHV82PshwnDGOFy1JmZrNV+FTe4j5yjF62cylUo
+         dCUquEx2NeE+A==
+Received: from mail2.eaton.com (loutcimsva02.etn.com [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id E5A35F80EE;
+        Mon, 18 Jan 2021 11:59:49 -0500 (EST)
+Received: from LOUTCSGWY02.napa.ad.etn.com (loutcsgwy02.napa.ad.etn.com [151.110.126.85])
+        by mail2.eaton.com (Postfix) with ESMTPS;
+        Mon, 18 Jan 2021 11:59:49 -0500 (EST)
+Received: from SIMTCSHUB01.napa.ad.etn.com (151.110.40.174) by
+ LOUTCSGWY02.napa.ad.etn.com (151.110.126.85) with Microsoft SMTP Server (TLS)
+ id 14.3.487.0; Mon, 18 Jan 2021 11:59:49 -0500
+Received: from USSTCSEXHET02.NAPA.AD.ETN.COM (151.110.240.154) by
+ SIMTCSHUB01.napa.ad.etn.com (151.110.40.174) with Microsoft SMTP Server (TLS)
+ id 14.3.487.0; Mon, 18 Jan 2021 11:59:48 -0500
+Received: from NAM04-BN8-obe.outbound.protection.outlook.com (104.47.74.40) by
+ hybridmail.eaton.com (151.110.240.154) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.1591.10; Mon, 18 Jan 2021 11:58:50 -0500
+ 15.1.1591.10; Mon, 18 Jan 2021 11:59:28 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=k/fZhWrQic2NuDsXIhi3fRB3YthN/WlSs5wi9Q2ojQOOXsNo7kcNnRqHDIqzmgjvC7vAfCxD6jIjFSR8YllGiEkisjY0LQQllvn7UwQcmdly66eFc6vtO6BoacXuarAtlFOZktma3Op006BfSy3++JmIvZdQs2OZcyaGrpRh3pp4iYpbOV/Ug4WyJFaX5e7zGd9oey6hXO4IfVpuEKPmmPHuM7vLNxgGIOZ2SQUOxco0fE+BpJGMYUy60wruk5VAenlEKM6AmOjB+ALWjMtb1BLfvagArzKmSiFODNkKRUEfKXbTto0wqpgQySmXE/YIlRGAWFdZZPIuzJIJm32NTA==
+ b=ceJKKnKGUHFjPuGHpfo5ikanLW1Nec/0/fRmFk0M2+mZ4u4CAK/Dbko0YFHRRTFL2kbdqZU7TxHOYHJ6mcfRm13woUpc4Y/6btOHqTTx0GxxCl7BJ6ShS3Dta5ab4ezu0ClbZbEwMC6auAGY/SjE8dzmHlOTAMmN13aCgCwn1T2Uk721m7VDARsGpRF4f1MQjlGf/OC4TNtoUngd0JkmfYJSNW0MDfIzpxEgkBW6HDHZ6FVc5oFsk+Rh8JA9bO/6JCdxK09C27oG8zor0/de5n5QHgvsUy5sveqGaa7j5vKC78Th7TJlGWaAqPJcO1aadq8QU4j7Jp39RzJYAOGVtw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0vw1ky3cL40am8Sg3bzaeJwDR13AVD+F/8u3vYJcssA=;
- b=m/69Ygot0IezRSbA0Oopy6lESTUT5NhwTNnzwFGRWspL+/SfLATCLciC2bQ7JrbaeypTrnDSpEWd792uI7kNIF0oewB459FAevg6eILfdI35A4o9GRYDQzkIvnrtCs9iIuhA37GSY4qCYlT1ZI/Q94/3l3bRX2nqqKjffxAbI4FSGG/Qp3+LInd3LnhLN1Z2criIqYbPlCiz3z63ihn2TbRXtV4O7D2rAo9K3Yvh+zMwDTFGZBCE0t8VKM74MhBgRkV4c9C7gTCfsEV9TbhIVGShgOcJbDteftgVkHordEteiWa2suo1sqvo6LRDdol32qfEAeidNA20MNglgqWJyw==
+ bh=aUOqj+LGriRQgGl74HIaHWUdyEuiNStGskjuPVcp8V8=;
+ b=ZYtnwzjGEA7nrXnfncpsZvjw+fr57eDitK/lkReOfsqQBaLbotmaiqJ00SbosnbSXmGncXe/o4bnKgppTrI5oMCT3zB/h5Q8jmz8L6zeLeBcU3xfwzHMFGmBhz9RxZfE9S3S3BhASJYHMCGhrau2CiX6e/5y8qq6p569edIx9FgpMQFdWucH6qqmj4XTdij+V3sPNPNeP6JUQt5cClqY1Qz3r7vkNN/61xmxEqrUn4eGkTLvZiOhE5293FLQ7NO7PHxodGzxqKc0eu/nZIXNRfknc32lsmdnO62QZPDHq+uIJIaTIZQMEEtCQFRQZraxxy9YQlyuQIndl5E0edj4VA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=eaton.com; dmarc=pass action=none header.from=eaton.com;
  dkim=pass header.d=eaton.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=Eaton.onmicrosoft.com;
  s=selector1-Eaton-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=0vw1ky3cL40am8Sg3bzaeJwDR13AVD+F/8u3vYJcssA=;
- b=BOGtTjA/y4mE1v7qKjrjhlGKP0GCg6ToauJiVQ7bO7V/ndjiJWRCnU367HbXKLencKsHb8TRcGkkLc2UbbemKIe/Z9Etunw4KUgdaocW/uvdW8u96cGnRgjpn5CZW4j4ivPS6PH4ZgvxElMptdTEMQlL5pxENd9ic2MCJ8WSt+0=
+ bh=aUOqj+LGriRQgGl74HIaHWUdyEuiNStGskjuPVcp8V8=;
+ b=pW49fSVGd4U3jMekFFhODOfleafzX7ejsbFY5PhN+F12hHvZ4hJC00b0k62VOatyGN18/K4pzhNEFQ1Asb26y9+B7UYsBAWdLa+fR/asbIzNB6WOSDUfhr8uWANsWuI7SVbycyzw4sxBTqw8C8LGZUKYzBJ0R8ub4q3jza2sgFY=
 Received: from MW4PR17MB4243.namprd17.prod.outlook.com (2603:10b6:303:71::6)
  by MWHPR1701MB1743.namprd17.prod.outlook.com (2603:10b6:301:1b::18) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3763.11; Mon, 18 Jan
- 2021 16:59:06 +0000
+ 2021 16:59:47 +0000
 Received: from MW4PR17MB4243.namprd17.prod.outlook.com
  ([fe80::950b:b237:60e4:d30]) by MW4PR17MB4243.namprd17.prod.outlook.com
  ([fe80::950b:b237:60e4:d30%7]) with mapi id 15.20.3763.014; Mon, 18 Jan 2021
- 16:59:06 +0000
+ 16:59:47 +0000
 From:   "Badel, Laurent" <LaurentBadel@eaton.com>
 To:     "davem@davemloft.net" <davem@davemloft.net>,
         "m.felsch@pengutronix.de" <m.felsch@pengutronix.de>,
@@ -79,13 +79,11 @@ To:     "davem@davemloft.net" <davem@davemloft.net>,
         "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
         "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
         "marex@denx.de" <marex@denx.de>
-Subject: [PATCH v4 net-next 2/5] net: phy: Hold SMSC LAN87xx in reset after
- probe
-Thread-Topic: [PATCH v4 net-next 2/5] net: phy: Hold SMSC LAN87xx in reset
- after probe
-Thread-Index: AdbtuznPVsTwlPJmR16Sc0oUUdSmEg==
-Date:   Mon, 18 Jan 2021 16:59:06 +0000
-Message-ID: <MW4PR17MB42434377E041B7B429002679DFA40@MW4PR17MB4243.namprd17.prod.outlook.com>
+Subject: [PATCH v4 net-next 3/5] net: fec: Remove PHY reset in fec_main.c
+Thread-Topic: [PATCH v4 net-next 3/5] net: fec: Remove PHY reset in fec_main.c
+Thread-Index: Adbtu1HUKzFBiCQ/SEic7YuI/IEzAw==
+Date:   Mon, 18 Jan 2021 16:59:47 +0000
+Message-ID: <MW4PR17MB4243FEDFB099E8FDE59C57DBDFA40@MW4PR17MB4243.namprd17.prod.outlook.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
@@ -94,86 +92,159 @@ authentication-results: davemloft.net; dkim=none (message not signed)
  header.d=none;davemloft.net; dmarc=none action=none header.from=eaton.com;
 x-originating-ip: [89.217.230.232]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: bb658e68-712a-41c2-3628-08d8bbd25ddc
+x-ms-office365-filtering-correlation-id: 8397c8f9-d2e6-4937-9374-08d8bbd27662
 x-ms-traffictypediagnostic: MWHPR1701MB1743:
-x-microsoft-antispam-prvs: <MWHPR1701MB174369106A85724D7BFFD137DFA40@MWHPR1701MB1743.namprd17.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:5516;
+x-microsoft-antispam-prvs: <MWHPR1701MB1743052288C2C517C732CBEDDFA40@MWHPR1701MB1743.namprd17.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: fcaeJAYTd2R5u67L2v8Adus6ikUwAhjZcLnWnfRVl9LmpOrTBRnxHU9zE0PdugQtx5b1LGsWAYr8G4H56ZuU/2+SnS/sll5ZM66TWiRmMFUoDADwi7te0E+3wyEdv+huS4YLXQpkDcfLPAV79Eqt36Ugx94FQuRrzlLtCdlV4kk6M3Y2ph2bSvTlX9tf6wzq8YD1tD3nueuwZ7tSW0kXXPP3GUte+5kX2fmdrWRpKsMHJp1OcON7n9bKdkQLs0kG17XqY1H/FHckXiiZ37Ahi370PcVwY7KC1gQJE4sVmQhiOeBqBixH74vIWfT1fBhU00xN7r8aU4AVwNaaHMjrlmZx1Cgxfr2FDOsv+8jjiXTgh+SKylAVcMTnHr4vWZbcgDxTGp5PmR+JwiwofNn5BYX74qWD+qJDWh/u+C6TDDWGtMldlzi+licF9U95sMrkZOAzyPmjX03TTauQk/iQAKvh3RN43C7aWx7b6rJioL8/KCIwdGvi/3DfXDYT9tvQIPQpUPa+TM9ZvpEFSR29BJU23ziyEF3jtDwd3Ir1G4isHPq6wVXOFJigQFOuS9b5
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW4PR17MB4243.namprd17.prod.outlook.com;PTR:;CAT:NONE;SFS:(39860400002)(136003)(366004)(376002)(346002)(396003)(52536014)(478600001)(26005)(83380400001)(76116006)(316002)(6506007)(7416002)(66946007)(8936002)(64756008)(66446008)(86362001)(110136005)(7696005)(66556008)(2906002)(33656002)(4744005)(55016002)(8676002)(5660300002)(71200400001)(921005)(186003)(66476007)(9686003);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: =?us-ascii?Q?cYwQs7zigd0ndtQFHsYhjR5Rx0awpNqh8msBPnbQ0GpAqfCs2fu9KIaL/ifM?=
- =?us-ascii?Q?u9PmOn8HHQXg+730vPjqGGnP4G0Jy5B8ZPTIjoVUabbtNcevJMeSOIbSv2UW?=
- =?us-ascii?Q?v1ADyscdTSyX3KfLx6LpLfzajHXBsdfByRyme4JAAofPIqSuSuQ8t0Wj+tek?=
- =?us-ascii?Q?Kx/De8JSxlFCC1Mca6nGzohbjk9MkhP1Gb0sqR0kEVmi5/UqGjeyHvV3UW8R?=
- =?us-ascii?Q?KNlBKNbGXCzgZ946Yyjd2j8CT+eWTkSfpj7Sh8bvIv7TyWIsuzR9tEi1kdDU?=
- =?us-ascii?Q?kksh5PcWud1Z+NB+pnz65f9Uy/nm5m+0ZaxoKons/4OAuRt86C7Go+N78yQg?=
- =?us-ascii?Q?/0+AGUrWdR1JLOMitomVI3hJyvNw2RFBScM3pKpkewT+ZKROrV7II3YMr+up?=
- =?us-ascii?Q?6YgLMMfrBzIYlwLIxX71a51raRjhLQZLbHlDFdVLIP7h5fEHuWl8+AIJDEnu?=
- =?us-ascii?Q?JcGd5d3fXAWjp1VIwxzYdAE7yufVO8Q38mjpGW1y7khgByFBrjf1Oh3xSNAx?=
- =?us-ascii?Q?kX1Mq1De222QNCGxQKzzAn6qQjGR6U3cJq1arvwugFbyVUU1rPtB5UVNGxc4?=
- =?us-ascii?Q?i7IOE0WUA5Lud9Isnix9pgHQZbjpmtGjmNqyEwRfaYJknjo0o4FKp5SF9pds?=
- =?us-ascii?Q?41t+i1ocYA4RAL0RbFSKEBumEI5TjFOAvcIyP6AGO2k5afbRlK8Bdj7Jqbuk?=
- =?us-ascii?Q?sd7I0ohEXdEGraDvlaFkThhrt4ruYuqcB0NgDpMe1QtftMF/iFlu09gdOec9?=
- =?us-ascii?Q?1NAx79jcfufqqtIdQLhetnqEQjh8EPjuyCiANtPZLz/QKZrZtfxHlm9tJ+0g?=
- =?us-ascii?Q?aVAPcaa6Palykc/Xyex2dne9BNBpkIF7qrLFxs8ZBQw9ICOSaiLhSUrtYvTW?=
- =?us-ascii?Q?GVi87sd8mGfh1diOppYPgU/FP1zoWl0WD1bkJntWWPhfxeZitSoWDb5qZ4ZO?=
- =?us-ascii?Q?ENnLesWGyIr9A1ZHMDLTiAq2+ecXFXq3xet+bVei1wk=3D?=
+x-microsoft-antispam-message-info: IWf4d/hgrYBReAXis74sJbqInMoBUu548aA6xGq1K9eB6Voo3ZoqVAGnS5RN/np5SW3YM6xaFP4SPiOyFoEzYt9o2KZMi+aZmPbf4J9vPbfDueEbdTsxcn+y5d84pGZq2gR0lR5ap1QVKPp5qB7exZ6zA/FIz3Mty2x9QoL2ZuYsowEK92pdJ8Dfxo65i2b7cxANeRf+I2dR4MOdA1cZ/WpRenUD7PvKIUpxHqwoUxckCKoYZzsW2HJo/XbV6HNS6oLcuABz3rEByRq3ssyOEqa5sir23AGtMvmF6Gk8Lzuc1yOUVta+fkkWND/xzbqKkXfbgYFLg5/uJY6GxQ1Kp8bCFruuVwDcWVebfUieAWOtbt7v1j8W9GhwdjLE/Zx0/siZzidAfAfxrh8aeDdcMhM7MaKaMLMscnist/qCB49PGJIxewdiLJsws8BCZDWB4/cWszSDjeDwwv6PJ4GzjRblQRy3z4wluegcJ0B8Z5rNYi2yq6UT3BLcD/SU+XKd96VIJ3Q4xfI0h1SJ+jpM5RJSDImuQqWsSYZBS7r5tr1n4xRYmrW5FIcd3RFXAX9S
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MW4PR17MB4243.namprd17.prod.outlook.com;PTR:;CAT:NONE;SFS:(396003)(376002)(366004)(136003)(39860400002)(346002)(2906002)(33656002)(86362001)(110136005)(7696005)(66556008)(55016002)(186003)(921005)(9686003)(66476007)(8676002)(5660300002)(71200400001)(478600001)(26005)(83380400001)(52536014)(66946007)(6506007)(7416002)(64756008)(66446008)(8936002)(316002)(76116006);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?k3APiZORaMAiuhPkqGWpymVBLZeRLIJkisMQr/mxNJWYqlKeklySdNcYRZBZ?=
+ =?us-ascii?Q?/DlWdQj0mqLt8Gnxw6MpNBP/u2FTmEybNyMu361Og6VsDua09hQVTCmI0Nb9?=
+ =?us-ascii?Q?WtWR4RmTeoOyND41xplPhbsr7wYxAdaqUToihR3j+PC+kJWAEsapAS+ZbT2q?=
+ =?us-ascii?Q?ONjycu/bHEYoKZHcp22wA+X3zFAAgwBoKC5uCZnji+vDmBK3yg/ICkEzGYIX?=
+ =?us-ascii?Q?G+K7SHH0idYqqOdRa4VkdrigkkeL3lC9d41ev6Tubv1krTgPjhf4WAUYBjkU?=
+ =?us-ascii?Q?i1Jpvy4y/u49Rii2TTjw/Pb739Pit94yOTxw/b6qljMn2jhi4OFKGfnLlvn+?=
+ =?us-ascii?Q?NMFH5PsIr9s7Ty98NqdoTDayoiz49wJJR9DEheBoHs+8aglY8EgaRfzrcDXu?=
+ =?us-ascii?Q?DPEXPfd39+giZcXfOxmE1jRvrLoPvzZA8MvGOCwmMf99R3BRqTOhBgNe2OLV?=
+ =?us-ascii?Q?ZS8f/kYJtKpgEglfcrd2QTrheleCC1MztrWIqaIyvEDQ16zL9rxXIF7365cM?=
+ =?us-ascii?Q?hi2LKoS36sWnTsbr9L3iw2FEAqNNY7LLbtRtz8c+pF4xvrBEKUMPLlw7obvv?=
+ =?us-ascii?Q?Lrw+3yxL3qEFww3dxx9SwWEg+xiHWMXBV4zDp1rO8QNmuHXWrNUEfASm4wkh?=
+ =?us-ascii?Q?d7iPHxsZySES6jIl/csa3QC7jLey2/psUTVvzVH0X3enMjAcUlWbDEl8o7YT?=
+ =?us-ascii?Q?aRZ4LnKQ0lF4XJfhTwsYgn2UnBG0/CiD9eHhTzEF1jH+zKNmUzhwq8VXr9m6?=
+ =?us-ascii?Q?35efAqBnZ5DP9LHfaWhA3hgIV8A3xmvWrYCGaQQpevHJ57DTi6fSTA5OTn6e?=
+ =?us-ascii?Q?pIcORuZbmL3NpUwxxOoWlC3azPybU47mr7EzK1pItqUVN32biuk6a5qiT/S1?=
+ =?us-ascii?Q?qWAltwU6EzDCXD5UlD9ounMLvA66XG/T7ey9ucflaMNBgZOme+2vfIdBysQp?=
+ =?us-ascii?Q?0hSo3mWmy7Y002coSZwwo/C246q4V5tse/LlAoUipQY=3D?=
 x-ms-exchange-transport-forked: True
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
 X-MS-Exchange-CrossTenant-AuthAs: Internal
 X-MS-Exchange-CrossTenant-AuthSource: MW4PR17MB4243.namprd17.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: bb658e68-712a-41c2-3628-08d8bbd25ddc
-X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Jan 2021 16:59:06.4407
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8397c8f9-d2e6-4937-9374-08d8bbd27662
+X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Jan 2021 16:59:47.5040
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
 X-MS-Exchange-CrossTenant-id: d6525c95-b906-431a-b926-e9b51ba43cc4
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: wY0in9Hod0LhabXsW+BYzzqkw7ZpMogjW68AxTh3c22+C4VGeM0sNtXTiJrw+rIqalwI8XPqs3DAk122r3ve0g==
+X-MS-Exchange-CrossTenant-userprincipalname: j7+YxKGyink5KIFiIyQLyoBhmDsqyQbUeooHPMjYwK5pP8bK8gbxMrdLgmqOjj4GwO+jZPBnLfEDFghaIMOfQQ==
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR1701MB1743
-X-TM-SNTS-SMTP: DE6D9DE0C9D8760EDA636EEB9A7D654160CD0BEA871B6B5A44D07F538702B37C2002:8
+X-TM-SNTS-SMTP: 335BEC0248C2B30C37F4026611D43AE0BFB8CB4758FAAE72E2F1819B4DCAC3D92002:8
 X-OriginatorOrg: eaton.com
 X-EXCLAIMER-MD-CONFIG: 96b59d02-bc1a-4a40-8c96-611cac62bce9
 X-TM-AS-GCONF: 00
 X-TM-AS-Product-Ver: IMSVA-9.1.0.1988-8.6.0.1013-25920.001
-X-TM-AS-Result: No--0.010-7.0-31-10
-X-imss-scan-details: No--0.010-7.0-31-10
+X-TM-AS-Result: No-3.300-7.0-31-10
+X-imss-scan-details: No-3.300-7.0-31-10
 X-TMASE-Version: IMSVA-9.1.0.1988-8.6.1013-25920.001
-X-TMASE-Result: 10--0.009700-10.000000
-X-TMASE-MatchedRID: GHERv/ZpjLCYizZS4XBb39WxbZgaqhS0XGjQf7uckKvAJMh4mAwEG0/T
-        IrLQ9Peu+PIDJm8nMt1aoQEg7IZiKbVdhtJxXnUIfJy8LojR0khLXPA26IG0hN9RlPzeVuQQhqJ
-        xi9IzezKQ4SVxasmmgbBn8A2CciYo5UcZtwNsCrrQLWxBF9DMQcRB0bsfrpPInxMyeYT53Rlfao
-        i0dn8goZ2FenkioMKX44eVa6C0ZL+WD7iOR/+e63W7afUcWEvSZTySX+fwtHmRFiPtO8NyA6YyO
-        rYo4xNXNOHSYPHmjb3eloC7shIVXg6WpWKKS2rRYyaijWogO/2wdIS8KlDAH1Zca9RSYo/b
+X-TMASE-Result: 10-3.299700-10.000000
+X-TMASE-MatchedRID: tRtxWm8/OsGYizZS4XBb39WxbZgaqhS0SWg+u4ir2NNLxCuBTCXaKv1R
+        U7wjeDcU2w9WUtAsFzdYV++JgP70OLwVYOCFOHvZqJSK+HSPY+9lRzZAkKRGDXAal2A1DQmsQBz
+        oPKhLasiPqQJ9fQR1zkWeLerpe5E3tV2G0nFedQgHtOpEBhWiFk+crEA4+nhZ8jflxBKMkr4sta
+        G2wt1Mam0T4AfKq7lu9dCytzw2Ek5c+NzN6CaS/oS/TV9k6ppAprzcyrz2L10W6M2A15L1QNs8F
+        0VcKD1tvudrc9c6d41wRRhxqxsO8nL3NzSyDKLm9Ib/6w+1lWR6LoLL7h2v2qZwleT7xjO5CMkz
+        RYtEwm1WCSKTdQ2Ceb6hIaKfExp033fj+sMArfOajHJnNR8XJH/GeipxRzf0DmuAyfSfU3vh0C1
+        hzLwlv+QTG2mKTARW3ISi2pqKe8g1M5aSynbATzLgoH8ZRcJ8yetg4MSZLEgzsJHHHwer9R3Gm5
+        R2h/Q7LjnH09LU/owIi37pJqP4+7/Oj7BAzdYuNmmWtdq6DqdWXGvUUmKP2w==
 X-TMASE-SNAP-Result: 1.821001.0001-0-1-12:0,22:0,33:0,34:0-0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-=EF=BB=BFAssert PHY reset at the end of phy_probe(), for PHYs bearing the
-PHY_RST_AFTER_PROBE flag. For FEC-based devices this ensures that PHYs are
-always in reset or power-down whenever the REF_CLK is turned off.
+=EF=BB=BFPHY reset from the FEC driver is not needed if the PHY is kept in =
+reset
+after PHY driver probe, so remove phy_reset_after_clk_enable() and related
+code from fec_main.c.
 
 Signed-off-by: Laurent Badel <laurentbadel@eaton.com>
 ---
- drivers/net/phy/phy_device.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/ethernet/freescale/fec_main.c | 40 -----------------------
+ 1 file changed, 40 deletions(-)
 
-diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-index 8447e56ba572..bbf794f0935a 100644
---- a/drivers/net/phy/phy_device.c
-+++ b/drivers/net/phy/phy_device.c
-@@ -2926,7 +2926,7 @@ static int phy_probe(struct device *dev)
+diff --git a/drivers/net/ethernet/freescale/fec_main.c b/drivers/net/ethern=
+et/freescale/fec_main.c
+index 04f24c66cf36..c9401c758364 100644
+--- a/drivers/net/ethernet/freescale/fec_main.c
++++ b/drivers/net/ethernet/freescale/fec_main.c
+@@ -1911,27 +1911,6 @@ static int fec_enet_mdio_write(struct mii_bus *bus, =
+int mii_id, int regnum,
+ 	return ret;
+ }
 =20
- out:
- 	/* Assert the reset signal */
--	if (err)
-+	if (err || phydev->drv->flags & PHY_RST_AFTER_PROBE)
- 		phy_device_reset(phydev, 1);
+-static void fec_enet_phy_reset_after_clk_enable(struct net_device *ndev)
+-{
+-	struct fec_enet_private *fep =3D netdev_priv(ndev);
+-	struct phy_device *phy_dev =3D ndev->phydev;
+-
+-	if (phy_dev) {
+-		phy_reset_after_clk_enable(phy_dev);
+-	} else if (fep->phy_node) {
+-		/*
+-		 * If the PHY still is not bound to the MAC, but there is
+-		 * OF PHY node and a matching PHY device instance already,
+-		 * use the OF PHY node to obtain the PHY device instance,
+-		 * and then use that PHY device instance when triggering
+-		 * the PHY reset.
+-		 */
+-		phy_dev =3D of_phy_find_device(fep->phy_node);
+-		phy_reset_after_clk_enable(phy_dev);
+-		put_device(&phy_dev->mdio.dev);
+-	}
+-}
+-
+ static int fec_enet_clk_enable(struct net_device *ndev, bool enable)
+ {
+ 	struct fec_enet_private *fep =3D netdev_priv(ndev);
+@@ -1958,7 +1937,6 @@ static int fec_enet_clk_enable(struct net_device *nde=
+v, bool enable)
+ 		if (ret)
+ 			goto failed_clk_ref;
 =20
- 	mutex_unlock(&phydev->lock);
+-		fec_enet_phy_reset_after_clk_enable(ndev);
+ 	} else {
+ 		clk_disable_unprepare(fep->clk_enet_out);
+ 		if (fep->clk_ptp) {
+@@ -2972,7 +2950,6 @@ fec_enet_open(struct net_device *ndev)
+ {
+ 	struct fec_enet_private *fep =3D netdev_priv(ndev);
+ 	int ret;
+-	bool reset_again;
+=20
+ 	ret =3D pm_runtime_resume_and_get(&fep->pdev->dev);
+ 	if (ret < 0)
+@@ -2983,17 +2960,6 @@ fec_enet_open(struct net_device *ndev)
+ 	if (ret)
+ 		goto clk_enable;
+=20
+-	/* During the first fec_enet_open call the PHY isn't probed at this
+-	 * point. Therefore the phy_reset_after_clk_enable() call within
+-	 * fec_enet_clk_enable() fails. As we need this reset in order to be
+-	 * sure the PHY is working correctly we check if we need to reset again
+-	 * later when the PHY is probed
+-	 */
+-	if (ndev->phydev && ndev->phydev->drv)
+-		reset_again =3D false;
+-	else
+-		reset_again =3D true;
+-
+ 	/* I should reset the ring buffers here, but I don't yet know
+ 	 * a simple way to do that.
+ 	 */
+@@ -3005,12 +2971,6 @@ fec_enet_open(struct net_device *ndev)
+ 	/* Init MAC prior to mii bus probe */
+ 	fec_restart(ndev);
+=20
+-	/* Call phy_reset_after_clk_enable() again if it failed during
+-	 * phy_reset_after_clk_enable() before because the PHY wasn't probed.
+-	 */
+-	if (reset_again)
+-		fec_enet_phy_reset_after_clk_enable(ndev);
+-
+ 	/* Probe and connect to PHY when open the interface */
+ 	ret =3D fec_enet_mii_probe(ndev);
+ 	if (ret)
 --=20
 2.17.1
 
