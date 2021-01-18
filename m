@@ -2,361 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E93392F9EF0
-	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 13:00:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 14D212F9EEB
+	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 12:59:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2403837AbhARL7Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jan 2021 06:59:25 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:32795 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2391124AbhARL7U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jan 2021 06:59:20 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1610971070;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=LoqPxpfeYycDuUL/2cYOBhH9WdXmeOhkFIXWsmpTNSw=;
-        b=XRgks0I8+PAPoYHaGt3CUbJpvSi0gfbTbJ0nTn4y2og/NnsaohWjJ3TsVSpsRzjZ1yeSdw
-        RLaSNDTroL2lVpPzGSDxmDPFMmrg4Y0qDvIMt1xl5/turIc19UqaLkGuMLE6JKUQKqr2ms
-        nnV6OsfWbLeJieL5BMeAJHJtj4IjRJA=
-Received: from mail-wm1-f70.google.com (mail-wm1-f70.google.com
- [209.85.128.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-345-e96kB2fkNbi4dvnbwd9f9A-1; Mon, 18 Jan 2021 06:57:48 -0500
-X-MC-Unique: e96kB2fkNbi4dvnbwd9f9A-1
-Received: by mail-wm1-f70.google.com with SMTP id h21so4373334wmq.7
-        for <netdev@vger.kernel.org>; Mon, 18 Jan 2021 03:57:48 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=LoqPxpfeYycDuUL/2cYOBhH9WdXmeOhkFIXWsmpTNSw=;
-        b=bfZY5hGCFiSIwblXWw/EmT8giAqz4GYEW9dTTZaCxVs63cn/xAydKiI73fR7DhxaxU
-         2XByk1uOv7uUKuj8EumjUMFt04+exdA1ZM1iZPyQi0hq5aA+U1EeIJgoK5v4bNAtpjeI
-         51i6xi5TUgQ3wJ8XHicWLZx9wlt+l+VryRnGyW62tGcOaFPvvKlemgrafU/j6wJYo5bW
-         1jNmL60KIbee2ERogqE/20tYIN+TmCfb4AnasJH0q+5YPR9dwWY5i9Bi2lEzugQS0GPM
-         pNl+adskqKgnoIYT5m9NV9C6uzhLd3sm1nbwJ8RS8kyCn6tzmcJBZvk/82CTe4dC//WR
-         5MUA==
-X-Gm-Message-State: AOAM531ZB8ngh1WwQRKaZqf42QQbmUpPw3sn0ijSJAf72XL9yIyuH6WT
-        OkhN6Iaw2gq1E8NA6Wd6WWQQdQL0r5TrrJATW9ELZ8T5PsTpnwYEfm7Zoi9Ak8qBW6B7upndvAY
-        Mym3mS2SzXHsDw6k7
-X-Received: by 2002:adf:e705:: with SMTP id c5mr24925183wrm.303.1610971066989;
-        Mon, 18 Jan 2021 03:57:46 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyTh4vSeufaPJSnJVf3R7wVFsQj/rkTLW1VQyr3aMQQQsUAC4pwJ8IXd1eSkAL4NCaIVrJ8Iw==
-X-Received: by 2002:adf:e705:: with SMTP id c5mr24925168wrm.303.1610971066777;
-        Mon, 18 Jan 2021 03:57:46 -0800 (PST)
-Received: from redhat.com (bzq-79-177-39-148.red.bezeqint.net. [79.177.39.148])
-        by smtp.gmail.com with ESMTPSA id d2sm29288739wre.39.2021.01.18.03.57.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Jan 2021 03:57:46 -0800 (PST)
-Date:   Mon, 18 Jan 2021 06:57:41 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Cc:     netdev@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Alexander Lobakin <alobakin@pm.me>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Antoine Tenart <atenart@kernel.org>,
-        Michal Kubecek <mkubecek@suse.cz>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Meir Lichtinger <meirl@mellanox.com>,
-        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
-Subject: Re: [PATCH bpf-next] xsk: build skb by page
-Message-ID: <20210118065333-mutt-send-email-mst@kernel.org>
-References: <579fa463bba42ac71591540a1811dca41d725350.1610764948.git.xuanzhuo@linux.alibaba.com>
+        id S2391238AbhARL6y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jan 2021 06:58:54 -0500
+Received: from youngberry.canonical.com ([91.189.89.112]:41448 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2391186AbhARL6p (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jan 2021 06:58:45 -0500
+Received: from 1.general.cking.uk.vpn ([10.172.193.212])
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <colin.king@canonical.com>)
+        id 1l1TAY-0005Tt-2T; Mon, 18 Jan 2021 11:58:02 +0000
+To:     Pravin B Shelar <pbshelar@fb.com>
+Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Harald Welte <laforge@gnumonks.org>,
+        osmocom-net-gprs@lists.osmocom.org,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>
+From:   Colin Ian King <colin.king@canonical.com>
+Subject: re: GTP: add support for flow based tunneling API
+Message-ID: <de39dc1a-546b-d5a5-d9fc-de50e12fb74a@canonical.com>
+Date:   Mon, 18 Jan 2021 11:58:01 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <579fa463bba42ac71591540a1811dca41d725350.1610764948.git.xuanzhuo@linux.alibaba.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jan 16, 2021 at 10:44:53AM +0800, Xuan Zhuo wrote:
-> This patch is used to construct skb based on page to save memory copy
-> overhead.
-> 
-> This has one problem:
-> 
-> We construct the skb by fill the data page as a frag into the skb. In
-> this way, the linear space is empty, and the header information is also
-> in the frag, not in the linear space, which is not allowed for some
-> network cards. For example, Mellanox Technologies MT27710 Family
-> [ConnectX-4 Lx] will get the following error message:
-> 
->     mlx5_core 0000:3b:00.1 eth1: Error cqe on cqn 0x817, ci 0x8, qn 0x1dbb, opcode 0xd, syndrome 0x1, vendor syndrome 0x68
->     00000000: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
->     00000010: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
->     00000020: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
->     00000030: 00 00 00 00 60 10 68 01 0a 00 1d bb 00 0f 9f d2
->     WQE DUMP: WQ size 1024 WQ cur size 0, WQE index 0xf, len: 64
->     00000000: 00 00 0f 0a 00 1d bb 03 00 00 00 08 00 00 00 00
->     00000010: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
->     00000020: 00 00 00 2b 00 08 00 00 00 00 00 05 9e e3 08 00
->     00000030: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
->     mlx5_core 0000:3b:00.1 eth1: ERR CQE on SQ: 0x1dbb
-> 
-> I also tried to use build_skb to construct skb, but because of the
-> existence of skb_shinfo, it must be behind the linear space, so this
-> method is not working. We can't put skb_shinfo on desc->addr, it will be
-> exposed to users, this is not safe.
-> 
-> Finally, I added a feature NETIF_F_SKB_NO_LINEAR to identify whether the
-> network card supports the header information of the packet in the frag
-> and not in the linear space.
-> 
-> ---------------- Performance Testing ------------
-> 
-> The test environment is Aliyun ECS server.
-> Test cmd:
-> ```
-> xdpsock -i eth0 -t  -S -s <msg size>
-> ```
-> 
-> Test result data:
-> 
-> size    64      512     1024    1500
-> copy    1916747 1775988 1600203 1440054
-> page    1974058 1953655 1945463 1904478
-> percent 3.0%    10.0%   21.58%  32.3%
+Hi,
 
-Nice, but it looks like the patch presented wouldn't compile.
-It's worth retesting after you actually make it compile.
+Static analysis of today's linux-next using Coverity has found a
+potential memory leak issue in the following commit:
 
-> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> Reviewed-by: Dust Li <dust.li@linux.alibaba.com>
-> ---
->  drivers/net/virtio_net.c        |   2 +-
->  include/linux/netdev_features.h |   5 +-
->  net/ethtool/common.c            |   1 +
->  net/xdp/xsk.c                   | 108 +++++++++++++++++++++++++++++++++-------
->  4 files changed, 97 insertions(+), 19 deletions(-)
-> 
-> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
-> index 4ecccb8..841a331 100644
-> --- a/drivers/net/virtio_net.c
-> +++ b/drivers/net/virtio_net.c
-> @@ -2985,7 +2985,7 @@ static int virtnet_probe(struct virtio_device *vdev)
->  	/* Set up network device as normal. */
->  	dev->priv_flags |= IFF_UNICAST_FLT | IFF_LIVE_ADDR_CHANGE;
->  	dev->netdev_ops = &virtnet_netdev;
-> -	dev->features = NETIF_F_HIGHDMA;
-> +	dev->features = NETIF_F_HIGHDMA | NETIF_F_SKB_NO_LINEAR;
->  
->  	dev->ethtool_ops = &virtnet_ethtool_ops;
->  	SET_NETDEV_DEV(dev, &vdev->dev);
-> diff --git a/include/linux/netdev_features.h b/include/linux/netdev_features.h
-> index 934de56..8dd28e2 100644
-> --- a/include/linux/netdev_features.h
-> +++ b/include/linux/netdev_features.h
-> @@ -85,9 +85,11 @@ enum {
->  
->  	NETIF_F_HW_MACSEC_BIT,		/* Offload MACsec operations */
->  
-> +	NETIF_F_SKB_NO_LINEAR_BIT,	/* Allow skb linear is empty */
-> +
->  	/*
->  	 * Add your fresh new feature above and remember to update
-> -	 * netdev_features_strings[] in net/core/ethtool.c and maybe
-> +	 * netdev_features_strings[] in net/ethtool/common.c and maybe
->  	 * some feature mask #defines below. Please also describe it
->  	 * in Documentation/networking/netdev-features.rst.
->  	 */
-> @@ -157,6 +159,7 @@ enum {
->  #define NETIF_F_GRO_FRAGLIST	__NETIF_F(GRO_FRAGLIST)
->  #define NETIF_F_GSO_FRAGLIST	__NETIF_F(GSO_FRAGLIST)
->  #define NETIF_F_HW_MACSEC	__NETIF_F(HW_MACSEC)
-> +#define NETIF_F_SKB_NO_LINEAR	__NETIF_F(SKB_NO_LINEAR)
->  
->  /* Finds the next feature with the highest number of the range of start till 0.
->   */
-> diff --git a/net/ethtool/common.c b/net/ethtool/common.c
-> index 24036e3..2f3d309 100644
-> --- a/net/ethtool/common.c
-> +++ b/net/ethtool/common.c
-> @@ -68,6 +68,7 @@
->  	[NETIF_F_HW_TLS_RX_BIT] =	 "tls-hw-rx-offload",
->  	[NETIF_F_GRO_FRAGLIST_BIT] =	 "rx-gro-list",
->  	[NETIF_F_HW_MACSEC_BIT] =	 "macsec-hw-offload",
-> +	[NETIF_F_SKB_NO_LINEAR_BIT] =	 "skb-no-linear",
->  };
->  
->  const char
-> diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-> index 8037b04..94d17dc 100644
-> --- a/net/xdp/xsk.c
-> +++ b/net/xdp/xsk.c
-> @@ -430,6 +430,95 @@ static void xsk_destruct_skb(struct sk_buff *skb)
->  	sock_wfree(skb);
->  }
->  
-> +static struct sk_buff *xsk_build_skb_zerocopy(struct xdp_sock *xs,
-> +					      struct xdp_desc *desc)
-> +{
-> +	u32 len, offset, copy, copied;
-> +	struct sk_buff *skb;
-> +	struct page *page;
-> +	char *buffer;
-> +	int err, i;
-> +	u64 addr;
-> +
-> +	skb = sock_alloc_send_skb(&xs->sk, 0, 1, &err);
-> +	if (unlikely(!skb))
-> +		return NULL;
-> +
-> +	addr = desc->addr;
-> +	len = desc->len;
-> +
-> +	buffer = xsk_buff_raw_get_data(xs->pool, addr);
-> +	offset = offset_in_page(buffer);
-> +	addr = buffer - (char *)xs->pool->addrs;
-> +
-> +	for (copied = 0, i = 0; copied < len; ++i) {
-> +		page = xs->pool->umem->pgs[addr >> PAGE_SHIFT];
-> +
-> +		get_page(page);
-> +
-> +		copy = min((u32)(PAGE_SIZE - offset), len - copied);
-> +
-> +		skb_fill_page_desc(skb, i, page, offset, copy);
-> +
-> +		copied += copy;
-> +		addr += copy;
-> +		offset = 0;
-> +	}
-> +
-> +	skb->len += len;
-> +	skb->data_len += len;
-> +	skb->truesize += len;
-> +
-> +	refcount_add(len, &xs->sk.sk_wmem_alloc);
-> +
-> +	return skb;
-> +}
-> +
-> +static struct sk_buff *xsk_build_skb(struct xdp_sock *xs,
-> +				     struct xdp_desc *desc, int *err)
+commit 9ab7e76aefc97a9aa664accb59d6e8dc5e52514a
+Author: Pravin B Shelar <pbshelar@fb.com>
+Date:   Sat Jan 9 23:00:21 2021 -0800
 
-Rather than passing int *err, you can return PTR_ERR.
-Seems cleaner ...
+    GTP: add support for flow based tunneling API
 
-> +{
-> +	struct sk_buff *skb;
-> +
-> +	if (xs->dev->features & NETIF_F_SKB_NO_LINEAR) {
-> +		skb = xsk_build_skb_zerocopy(xs, desc);
-> +		if (unlikely(!skb)) {
-> +			*err = -ENOMEM;
-> +			return NULL;
-> +		}
-> +	} else {
-> +		char *buffer;
-> +		u64 addr;
-> +		u32 len;
-> +		int err;
+The analysis is as follows:
 
-So err is int here
+186 static int gtp_set_tun_dst(struct gtp_dev *gtp, struct sk_buff *skb,
+187                           unsigned int hdrlen, u8 gtp_version,
+188                           __be64 tid, u8 flags)
+189 {
+190        struct metadata_dst *tun_dst;
+191        int opts_len = 0;
+192
 
-> +
-> +		len = desc->len;
-> +		skb = sock_alloc_send_skb(&xs->sk, len, 1, &err);
-> +		if (unlikely(!skb)) {
-> +			*err = -ENOMEM;
+   1. Condition !!(flags & 7), taking true branch.
+   2. Condition !!(flags & 7), taking true branch.
 
-.. and you dereference it here
+193        if (unlikely(flags & GTP1_F_MASK))
+194                opts_len = sizeof(struct gtpu_metadata);
+195
 
-> +			return NULL;
-> +		}
-> +
-> +		skb_put(skb, len);
-> +		addr = desc->addr;
-> +		buffer = xsk_buff_raw_get_data(xs->pool, desc->addr);
-> +		err = skb_store_bits(skb, 0, buffer, len);
-> +
-> +		if (unlikely(err)) {
-> +			kfree_skb(skb);
-> +			*err = -EINVAL;
+   3. alloc_fn: Storage is returned from allocation function udp_tun_rx_dst.
+   4. var_assign: Assigning: tun_dst = storage returned from
+udp_tun_rx_dst(skb, gtp->sk1u->__sk_common.skc_family, 1024, tid, opts_len).
 
-Same thing here ... how does it compile?
+196        tun_dst = udp_tun_rx_dst(skb, gtp->sk1u->sk_family,
+TUNNEL_KEY, tid, opts_len);
 
-> +			return NULL;
-> +		}
-> +	}
-> +
-> +	skb->dev = xs->dev;
-> +	skb->priority = xs->sk.sk_priority;
-> +	skb->mark = xs->sk.sk_mark;
-> +	skb_shinfo(skb)->destructor_arg = (void *)(long)desc->addr;
-> +	skb->destructor = xsk_destruct_skb;
-> +
-> +	return skb;
-> +}
-> +
->  static int xsk_generic_xmit(struct sock *sk)
->  {
->  	struct xdp_sock *xs = xdp_sk(sk);
-> @@ -446,43 +535,28 @@ static int xsk_generic_xmit(struct sock *sk)
->  		goto out;
->  
->  	while (xskq_cons_peek_desc(xs->tx, &desc, xs->pool)) {
-> -		char *buffer;
-> -		u64 addr;
-> -		u32 len;
-> -
->  		if (max_batch-- == 0) {
->  			err = -EAGAIN;
->  			goto out;
->  		}
->  
-> -		len = desc.len;
-> -		skb = sock_alloc_send_skb(sk, len, 1, &err);
-> +		skb = xsk_build_skb(xs, &desc, &err);
->  		if (unlikely(!skb))
->  			goto out;
->  
-> -		skb_put(skb, len);
-> -		addr = desc.addr;
-> -		buffer = xsk_buff_raw_get_data(xs->pool, addr);
-> -		err = skb_store_bits(skb, 0, buffer, len);
->  		/* This is the backpressure mechanism for the Tx path.
->  		 * Reserve space in the completion queue and only proceed
->  		 * if there is space in it. This avoids having to implement
->  		 * any buffering in the Tx path.
->  		 */
->  		spin_lock_irqsave(&xs->pool->cq_lock, flags);
-> -		if (unlikely(err) || xskq_prod_reserve(xs->pool->cq)) {
-> +		if (xskq_prod_reserve(xs->pool->cq)) {
->  			spin_unlock_irqrestore(&xs->pool->cq_lock, flags);
->  			kfree_skb(skb);
->  			goto out;
->  		}
->  		spin_unlock_irqrestore(&xs->pool->cq_lock, flags);
->  
-> -		skb->dev = xs->dev;
-> -		skb->priority = sk->sk_priority;
-> -		skb->mark = sk->sk_mark;
-> -		skb_shinfo(skb)->destructor_arg = (void *)(long)desc.addr;
-> -		skb->destructor = xsk_destruct_skb;
-> -
->  		err = __dev_direct_xmit(skb, xs->queue_id);
->  		if  (err == NETDEV_TX_BUSY) {
->  			/* Tell user-space to retry the send */
-> -- 
-> 1.8.3.1
+   5. Condition !tun_dst, taking false branch.
 
+197        if (!tun_dst) {
+198                netdev_dbg(gtp->dev, "Failed to allocate tun_dst");
+199                goto err;
+200        }
+201
+
+   6. Condition 0 /* __builtin_types_compatible_p() */, taking false branch.
+   7. Condition 1 /* __builtin_types_compatible_p() */, taking true branch.
+   8. Falling through to end of if statement.
+   9. Condition !!branch, taking false branch.
+   10. Condition ({...; !!branch;}), taking false branch.
+
+202        netdev_dbg(gtp->dev, "attaching metadata_dst to skb, gtp ver
+%d hdrlen %d\n",
+203                   gtp_version, hdrlen);
+
+   11. Condition !!opts_len, taking true branch.
+   12. Condition !!opts_len, taking true branch.
+
+204        if (unlikely(opts_len)) {
+205                struct gtpu_metadata *opts;
+206                struct gtp1_header *gtp1;
+207
+208                opts = ip_tunnel_info_opts(&tun_dst->u.tun_info);
+209                gtp1 = (struct gtp1_header *)(skb->data +
+sizeof(struct udphdr));
+210                opts->ver = GTP_METADATA_V1;
+211                opts->flags = gtp1->flags;
+212                opts->type = gtp1->type;
+
+   13. Condition 0 /* __builtin_types_compatible_p() */, taking false
+branch.
+   14. Condition 1 /* __builtin_types_compatible_p() */, taking true branch.
+   15. Falling through to end of if statement.
+   16. Condition !!branch, taking false branch.
+   17. Condition ({...; !!branch;}), taking false branch.
+
+213                netdev_dbg(gtp->dev, "recved control pkt: flag %x
+type: %d\n",
+214                           opts->flags, opts->type);
+215                tun_dst->u.tun_info.key.tun_flags |= TUNNEL_GTPU_OPT;
+216                tun_dst->u.tun_info.options_len = opts_len;
+217                skb->protocol = htons(0xffff);         /* Unknown */
+218        }
+219        /* Get rid of the GTP + UDP headers. */
+
+   18. Condition !net_eq(sock_net(gtp->sk1u), dev_net(gtp->dev)), taking
+false branch.
+   19. Condition !net_eq(sock_net(gtp->sk1u), dev_net(gtp->dev)), taking
+false branch.
+   20. Condition iptunnel_pull_header(skb, hdrlen, skb->protocol,
+!net_eq(sock_net(gtp->sk1u), dev_net(gtp->dev))), taking true branch.
+
+220        if (iptunnel_pull_header(skb, hdrlen, skb->protocol,
+221                                 !net_eq(sock_net(gtp->sk1u),
+dev_net(gtp->dev)))) {
+222                gtp->dev->stats.rx_length_errors++;
+
+   21. Jumping to label err.
+
+223                goto err;
+224        }
+225
+226        skb_dst_set(skb, &tun_dst->dst);
+227        return 0;
+228 err:
+
+   Resource leak (RESOURCE_LEAK)
+   22. leaked_storage: Variable tun_dst going out of scope leaks the
+storage it points to.
+
+229        return -1;
+230 }
+
+The goto on line 223 is leaking tun_dst.  From what I can see, I believe
+a call to kfree(tun_dst) before the goto on line 223 looks like a
+pertinent fix, but I'm not 100% sure, so I'm flagging this up as an
+issue that need further investigation by folk who are more familiar with
+this code.
+
+Colin
