@@ -2,121 +2,353 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 930DD2F9D04
-	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 11:47:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 993B32F9D08
+	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 11:47:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389216AbhARKnJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jan 2021 05:43:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43606 "EHLO
+        id S2389384AbhARKnw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jan 2021 05:43:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48684 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388567AbhARJSn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jan 2021 04:18:43 -0500
-Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3429CC0613CF;
-        Mon, 18 Jan 2021 01:18:03 -0800 (PST)
-Received: by mail-lj1-x232.google.com with SMTP id f17so17390521ljg.12;
-        Mon, 18 Jan 2021 01:18:03 -0800 (PST)
+        with ESMTP id S2389045AbhARJm3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jan 2021 04:42:29 -0500
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CFE8C061574;
+        Mon, 18 Jan 2021 01:25:12 -0800 (PST)
+Received: by mail-pf1-x432.google.com with SMTP id f63so2038293pfa.13;
+        Mon, 18 Jan 2021 01:25:12 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=cWd8g5iVcYDr1/d29WZEwJSUfqGvaqUZK0TPBalRFYk=;
-        b=qp26NGkff4zxqdeJ57a8MHHIkyESMbNc47KxCMq8CqS5GyMT1oTVfYOKHRGWokT/Er
-         HLcw4kVAZk79J+KfEH56Z7ky0WO1WtMunmcHc1Vt1NM0NoQ4M2zDFnGmuI1J3FLKdiD/
-         DaEer3Mzp6coQQkkCNtXxOEqGhb8HXAjqP2h7OYL3xKs1qMbvlfoL20ghDlORxBR/a7H
-         8yVr9C0JyNrn1AXbUHClP2hMIjyotkO7cB9nQZ/4kwO669yKAu0tqVP6vxaa6lNzfYBB
-         0ZYepYnq2PIpi5gkSNh5YxRJwCRVFw/bQUcx21GGJcQzYKpz7mCvibSpQPeFUV3AiYZA
-         mJpg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=yJq8sqyWaB50Cy55CtV4P8uJOpwMrwJum8qabe8cu2Q=;
+        b=NyCwwLrDgrSjWayALA1YHj9Hk7bkJAvBnKKGBRSYZ7wF0pcJ3W6Bi9TjJhllwSuWHy
+         U4fIdh3uRPzuuiPZ+V8ZiKWA1E/0SoG3R161NOJtLRS51CGUjuXq67sPfLwQQI3P4cE7
+         d1SWCR41+00LvxFE+oOl5oU95B0A4u9powTNmbIw0SL13hNXqhU5QGhQuR6AsZbCGVIl
+         czFcNvInniR1t4+LXxRDHiGZhbsgc1XYN3KC1nR3AV5ULYGWLjO7AtoQTxwUUqjYU87c
+         kDOduC3MogyYoje3O16JCHvWDGGf7ZPukf/p88z7rnYAiWP+MPCU8P+KLji5r0obaMug
+         BmAw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=cWd8g5iVcYDr1/d29WZEwJSUfqGvaqUZK0TPBalRFYk=;
-        b=oG21bxAXK291Q1TIlnW02ThnuyUXF3y0BPshgw/NhmFEEfmvatZrc8Adao/mwsTSpu
-         0E2SZet51IKqejqP3hC7uWt+izxknvKZSXMWur83Hr9M3vh0bGPwrLqxZSmz0tUnhq8f
-         t6+5aR6zC0FPY6T6GzkJrLt+1T3q8KaQkNfNiUlxVoOD7w+puoCQrPlP145MkbZ2MYeM
-         ZI4jAYn5s7ihobHPorJKu5eWTpEvzPREesThA7ZemNK4H9VIkqo68hfqSsX1CeyLAFOS
-         hGGB1AOzgSZy118VR03XcOyB5Q2Uhjg4qmcGJUQTXtEWjusqUdubfHE5bTnpi6zXFQ8l
-         VSrQ==
-X-Gm-Message-State: AOAM531Aq12MdFOYIzVxsQqN3lUO/eZqWxAlduE2ffDX9cPl9mDN/QnD
-        +f44DMFU5JX505LFkO9Udxz+AFo/7k4/XA==
-X-Google-Smtp-Source: ABdhPJzc3unYISI98MBuo3an4DJeL57OjqfdD4gc0t58gojEKHL4NFayIHjXLKUJN8cX6zTCwS/4lw==
-X-Received: by 2002:a05:651c:1356:: with SMTP id j22mr10242027ljb.237.1610961481772;
-        Mon, 18 Jan 2021 01:18:01 -0800 (PST)
-Received: from btopel-mobl.ger.intel.com (c213-102-90-208.bredband.comhem.se. [213.102.90.208])
-        by smtp.gmail.com with ESMTPSA id v22sm1841514lfd.4.2021.01.18.01.18.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Jan 2021 01:18:00 -0800 (PST)
-From:   =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>
-To:     ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
-        magnus.karlsson@intel.com, jackmanb@google.com
-Subject: [PATCH bpf-next] samples/bpf: add BPF_ATOMIC_OP macro for BPF samples
-Date:   Mon, 18 Jan 2021 10:17:53 +0100
-Message-Id: <20210118091753.107572-1-bjorn.topel@gmail.com>
-X-Mailer: git-send-email 2.27.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=yJq8sqyWaB50Cy55CtV4P8uJOpwMrwJum8qabe8cu2Q=;
+        b=lPeIdW+xm+Y1RZvU8hfubPNiF7yFEYREnyQC7tmk9NJnDGM6fGRsq6Gb2Oj71DRY0W
+         touIsszd3bniiYVMn7k+aaD3riTesXJWpYhut+m+MATyMwPWNcQrYdqv0SJGwGZWuhi+
+         IA+ZWswHD5/zJEpcSOrfbkSDlk8dF54a0t7pkgYLkyjzkSQ6UB46I3l1teIOlsjMrb+P
+         FXvadcpcnyyIAxW6lnRQ5fpevoHjSEPhrUdIWODkRAf8vkhs8vpFO/xRxrXMQ7sGrsc4
+         IuyA7vVZ4w/lG63z/fiKcBVqSAP4PIoIRqxLEkFR/y23/uGjgHxuCHzbTf3k0/Rg+Ii1
+         Weqg==
+X-Gm-Message-State: AOAM533bu2GPJR6AAn3oXJuuSNgSSwKghAEmgGGhsNRBogPMA/GrTTRp
+        qElJmkBvth4qMCQkerLBa9rRhK6doOYs5zeBOYY=
+X-Google-Smtp-Source: ABdhPJz8ZOKZhtqLwEVPredCn4dOowe0VLqVHap5x14uUnIB20XZvwuKkRkGkbTcVGF+gwpPpMVLeu0xnLZLz/URYzE=
+X-Received: by 2002:a62:8895:0:b029:19e:92ec:6886 with SMTP id
+ l143-20020a6288950000b029019e92ec6886mr25172986pfd.12.1610961911989; Mon, 18
+ Jan 2021 01:25:11 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+References: <579fa463bba42ac71591540a1811dca41d725350.1610764948.git.xuanzhuo@linux.alibaba.com>
+In-Reply-To: <579fa463bba42ac71591540a1811dca41d725350.1610764948.git.xuanzhuo@linux.alibaba.com>
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+Date:   Mon, 18 Jan 2021 10:25:01 +0100
+Message-ID: <CAJ8uoz3sm+STbhTB+ga+wjeTYyjazzobW13V7m9izVzv0u5RRA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next] xsk: build skb by page
+To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Willem de Bruijn <willemb@google.com>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Alexander Lobakin <alobakin@pm.me>,
+        Miaohe Lin <linmiaohe@huawei.com>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Antoine Tenart <atenart@kernel.org>,
+        Michal Kubecek <mkubecek@suse.cz>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Meir Lichtinger <meirl@mellanox.com>,
+        virtualization@lists.linux-foundation.org,
+        bpf <bpf@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Björn Töpel <bjorn.topel@intel.com>
+On Sat, Jan 16, 2021 at 3:47 AM Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
+>
+> This patch is used to construct skb based on page to save memory copy
+> overhead.
+>
+> This has one problem:
+>
+> We construct the skb by fill the data page as a frag into the skb. In
+> this way, the linear space is empty, and the header information is also
+> in the frag, not in the linear space, which is not allowed for some
+> network cards. For example, Mellanox Technologies MT27710 Family
+> [ConnectX-4 Lx] will get the following error message:
+>
+>     mlx5_core 0000:3b:00.1 eth1: Error cqe on cqn 0x817, ci 0x8, qn 0x1dbb, opcode 0xd, syndrome 0x1, vendor syndrome 0x68
+>     00000000: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+>     00000010: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+>     00000020: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+>     00000030: 00 00 00 00 60 10 68 01 0a 00 1d bb 00 0f 9f d2
+>     WQE DUMP: WQ size 1024 WQ cur size 0, WQE index 0xf, len: 64
+>     00000000: 00 00 0f 0a 00 1d bb 03 00 00 00 08 00 00 00 00
+>     00000010: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+>     00000020: 00 00 00 2b 00 08 00 00 00 00 00 05 9e e3 08 00
+>     00000030: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+>     mlx5_core 0000:3b:00.1 eth1: ERR CQE on SQ: 0x1dbb
+>
+> I also tried to use build_skb to construct skb, but because of the
+> existence of skb_shinfo, it must be behind the linear space, so this
+> method is not working. We can't put skb_shinfo on desc->addr, it will be
+> exposed to users, this is not safe.
+>
+> Finally, I added a feature NETIF_F_SKB_NO_LINEAR to identify whether the
+> network card supports the header information of the packet in the frag
+> and not in the linear space.
 
-Brendan Jackman added extend atomic operations to the BPF instruction
-set in commit 7064a7341a0d ("Merge branch 'Atomics for eBPF'"), which
-introduces the BPF_ATOMIC_OP macro. However, that macro was missing
-for the BPF samples. Fix that by adding it into bpf_insn.h.
+Could you please break this new feature bit into its own patch and
+produce a patch set. Patch 1 being the NETIF_F_SKB_NO_LINEAR bit
+addition and patch 2 being the xsk part. I can then ack patch 2 since
+I am one of the maintainers of that, and then the owner of the netdev
+bits can ack that part (whoever that is?). The bit addition looks fine
+to me, but I am not the owner of those feature bits, so I would feel
+somewhat awkward to ack that.
 
-Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
----
- samples/bpf/bpf_insn.h | 24 ++++++++++++++++++++----
- 1 file changed, 20 insertions(+), 4 deletions(-)
+Otherwise, good performance boost. I like it. Thank you!
 
-diff --git a/samples/bpf/bpf_insn.h b/samples/bpf/bpf_insn.h
-index db67a2847395..aee04534483a 100644
---- a/samples/bpf/bpf_insn.h
-+++ b/samples/bpf/bpf_insn.h
-@@ -134,15 +134,31 @@ struct bpf_insn;
- 		.off   = OFF,					\
- 		.imm   = 0 })
- 
--/* Atomic memory add, *(uint *)(dst_reg + off16) += src_reg */
--
--#define BPF_STX_XADD(SIZE, DST, SRC, OFF)			\
-+/*
-+ * Atomic operations:
-+ *
-+ *   BPF_ADD                  *(uint *) (dst_reg + off16) += src_reg
-+ *   BPF_AND                  *(uint *) (dst_reg + off16) &= src_reg
-+ *   BPF_OR                   *(uint *) (dst_reg + off16) |= src_reg
-+ *   BPF_XOR                  *(uint *) (dst_reg + off16) ^= src_reg
-+ *   BPF_ADD | BPF_FETCH      src_reg = atomic_fetch_add(dst_reg + off16, src_reg);
-+ *   BPF_AND | BPF_FETCH      src_reg = atomic_fetch_and(dst_reg + off16, src_reg);
-+ *   BPF_OR | BPF_FETCH       src_reg = atomic_fetch_or(dst_reg + off16, src_reg);
-+ *   BPF_XOR | BPF_FETCH      src_reg = atomic_fetch_xor(dst_reg + off16, src_reg);
-+ *   BPF_XCHG                 src_reg = atomic_xchg(dst_reg + off16, src_reg)
-+ *   BPF_CMPXCHG              r0 = atomic_cmpxchg(dst_reg + off16, r0, src_reg)
-+ */
-+
-+#define BPF_ATOMIC_OP(SIZE, OP, DST, SRC, OFF)			\
- 	((struct bpf_insn) {					\
- 		.code  = BPF_STX | BPF_SIZE(SIZE) | BPF_ATOMIC,	\
- 		.dst_reg = DST,					\
- 		.src_reg = SRC,					\
- 		.off   = OFF,					\
--		.imm   = BPF_ADD })
-+		.imm   = OP })
-+
-+/* Legacy alias */
-+#define BPF_STX_XADD(SIZE, DST, SRC, OFF) BPF_ATOMIC_OP(SIZE, BPF_ADD, DST, SRC, OFF)
- 
- /* Memory store, *(uint *) (dst_reg + off16) = imm32 */
- 
-
-base-commit: 232164e041e925a920bfd28e63d5233cfad90b73
--- 
-2.27.0
-
+> ---------------- Performance Testing ------------
+>
+> The test environment is Aliyun ECS server.
+> Test cmd:
+> ```
+> xdpsock -i eth0 -t  -S -s <msg size>
+> ```
+>
+> Test result data:
+>
+> size    64      512     1024    1500
+> copy    1916747 1775988 1600203 1440054
+> page    1974058 1953655 1945463 1904478
+> percent 3.0%    10.0%   21.58%  32.3%
+>
+> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> Reviewed-by: Dust Li <dust.li@linux.alibaba.com>
+> ---
+>  drivers/net/virtio_net.c        |   2 +-
+>  include/linux/netdev_features.h |   5 +-
+>  net/ethtool/common.c            |   1 +
+>  net/xdp/xsk.c                   | 108 +++++++++++++++++++++++++++++++++-------
+>  4 files changed, 97 insertions(+), 19 deletions(-)
+>
+> diff --git a/drivers/net/virtio_net.c b/drivers/net/virtio_net.c
+> index 4ecccb8..841a331 100644
+> --- a/drivers/net/virtio_net.c
+> +++ b/drivers/net/virtio_net.c
+> @@ -2985,7 +2985,7 @@ static int virtnet_probe(struct virtio_device *vdev)
+>         /* Set up network device as normal. */
+>         dev->priv_flags |= IFF_UNICAST_FLT | IFF_LIVE_ADDR_CHANGE;
+>         dev->netdev_ops = &virtnet_netdev;
+> -       dev->features = NETIF_F_HIGHDMA;
+> +       dev->features = NETIF_F_HIGHDMA | NETIF_F_SKB_NO_LINEAR;
+>
+>         dev->ethtool_ops = &virtnet_ethtool_ops;
+>         SET_NETDEV_DEV(dev, &vdev->dev);
+> diff --git a/include/linux/netdev_features.h b/include/linux/netdev_features.h
+> index 934de56..8dd28e2 100644
+> --- a/include/linux/netdev_features.h
+> +++ b/include/linux/netdev_features.h
+> @@ -85,9 +85,11 @@ enum {
+>
+>         NETIF_F_HW_MACSEC_BIT,          /* Offload MACsec operations */
+>
+> +       NETIF_F_SKB_NO_LINEAR_BIT,      /* Allow skb linear is empty */
+> +
+>         /*
+>          * Add your fresh new feature above and remember to update
+> -        * netdev_features_strings[] in net/core/ethtool.c and maybe
+> +        * netdev_features_strings[] in net/ethtool/common.c and maybe
+>          * some feature mask #defines below. Please also describe it
+>          * in Documentation/networking/netdev-features.rst.
+>          */
+> @@ -157,6 +159,7 @@ enum {
+>  #define NETIF_F_GRO_FRAGLIST   __NETIF_F(GRO_FRAGLIST)
+>  #define NETIF_F_GSO_FRAGLIST   __NETIF_F(GSO_FRAGLIST)
+>  #define NETIF_F_HW_MACSEC      __NETIF_F(HW_MACSEC)
+> +#define NETIF_F_SKB_NO_LINEAR  __NETIF_F(SKB_NO_LINEAR)
+>
+>  /* Finds the next feature with the highest number of the range of start till 0.
+>   */
+> diff --git a/net/ethtool/common.c b/net/ethtool/common.c
+> index 24036e3..2f3d309 100644
+> --- a/net/ethtool/common.c
+> +++ b/net/ethtool/common.c
+> @@ -68,6 +68,7 @@
+>         [NETIF_F_HW_TLS_RX_BIT] =        "tls-hw-rx-offload",
+>         [NETIF_F_GRO_FRAGLIST_BIT] =     "rx-gro-list",
+>         [NETIF_F_HW_MACSEC_BIT] =        "macsec-hw-offload",
+> +       [NETIF_F_SKB_NO_LINEAR_BIT] =    "skb-no-linear",
+>  };
+>
+>  const char
+> diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+> index 8037b04..94d17dc 100644
+> --- a/net/xdp/xsk.c
+> +++ b/net/xdp/xsk.c
+> @@ -430,6 +430,95 @@ static void xsk_destruct_skb(struct sk_buff *skb)
+>         sock_wfree(skb);
+>  }
+>
+> +static struct sk_buff *xsk_build_skb_zerocopy(struct xdp_sock *xs,
+> +                                             struct xdp_desc *desc)
+> +{
+> +       u32 len, offset, copy, copied;
+> +       struct sk_buff *skb;
+> +       struct page *page;
+> +       char *buffer;
+> +       int err, i;
+> +       u64 addr;
+> +
+> +       skb = sock_alloc_send_skb(&xs->sk, 0, 1, &err);
+> +       if (unlikely(!skb))
+> +               return NULL;
+> +
+> +       addr = desc->addr;
+> +       len = desc->len;
+> +
+> +       buffer = xsk_buff_raw_get_data(xs->pool, addr);
+> +       offset = offset_in_page(buffer);
+> +       addr = buffer - (char *)xs->pool->addrs;
+> +
+> +       for (copied = 0, i = 0; copied < len; ++i) {
+> +               page = xs->pool->umem->pgs[addr >> PAGE_SHIFT];
+> +
+> +               get_page(page);
+> +
+> +               copy = min((u32)(PAGE_SIZE - offset), len - copied);
+> +
+> +               skb_fill_page_desc(skb, i, page, offset, copy);
+> +
+> +               copied += copy;
+> +               addr += copy;
+> +               offset = 0;
+> +       }
+> +
+> +       skb->len += len;
+> +       skb->data_len += len;
+> +       skb->truesize += len;
+> +
+> +       refcount_add(len, &xs->sk.sk_wmem_alloc);
+> +
+> +       return skb;
+> +}
+> +
+> +static struct sk_buff *xsk_build_skb(struct xdp_sock *xs,
+> +                                    struct xdp_desc *desc, int *err)
+> +{
+> +       struct sk_buff *skb;
+> +
+> +       if (xs->dev->features & NETIF_F_SKB_NO_LINEAR) {
+> +               skb = xsk_build_skb_zerocopy(xs, desc);
+> +               if (unlikely(!skb)) {
+> +                       *err = -ENOMEM;
+> +                       return NULL;
+> +               }
+> +       } else {
+> +               char *buffer;
+> +               u64 addr;
+> +               u32 len;
+> +               int err;
+> +
+> +               len = desc->len;
+> +               skb = sock_alloc_send_skb(&xs->sk, len, 1, &err);
+> +               if (unlikely(!skb)) {
+> +                       *err = -ENOMEM;
+> +                       return NULL;
+> +               }
+> +
+> +               skb_put(skb, len);
+> +               addr = desc->addr;
+> +               buffer = xsk_buff_raw_get_data(xs->pool, desc->addr);
+> +               err = skb_store_bits(skb, 0, buffer, len);
+> +
+> +               if (unlikely(err)) {
+> +                       kfree_skb(skb);
+> +                       *err = -EINVAL;
+> +                       return NULL;
+> +               }
+> +       }
+> +
+> +       skb->dev = xs->dev;
+> +       skb->priority = xs->sk.sk_priority;
+> +       skb->mark = xs->sk.sk_mark;
+> +       skb_shinfo(skb)->destructor_arg = (void *)(long)desc->addr;
+> +       skb->destructor = xsk_destruct_skb;
+> +
+> +       return skb;
+> +}
+> +
+>  static int xsk_generic_xmit(struct sock *sk)
+>  {
+>         struct xdp_sock *xs = xdp_sk(sk);
+> @@ -446,43 +535,28 @@ static int xsk_generic_xmit(struct sock *sk)
+>                 goto out;
+>
+>         while (xskq_cons_peek_desc(xs->tx, &desc, xs->pool)) {
+> -               char *buffer;
+> -               u64 addr;
+> -               u32 len;
+> -
+>                 if (max_batch-- == 0) {
+>                         err = -EAGAIN;
+>                         goto out;
+>                 }
+>
+> -               len = desc.len;
+> -               skb = sock_alloc_send_skb(sk, len, 1, &err);
+> +               skb = xsk_build_skb(xs, &desc, &err);
+>                 if (unlikely(!skb))
+>                         goto out;
+>
+> -               skb_put(skb, len);
+> -               addr = desc.addr;
+> -               buffer = xsk_buff_raw_get_data(xs->pool, addr);
+> -               err = skb_store_bits(skb, 0, buffer, len);
+>                 /* This is the backpressure mechanism for the Tx path.
+>                  * Reserve space in the completion queue and only proceed
+>                  * if there is space in it. This avoids having to implement
+>                  * any buffering in the Tx path.
+>                  */
+>                 spin_lock_irqsave(&xs->pool->cq_lock, flags);
+> -               if (unlikely(err) || xskq_prod_reserve(xs->pool->cq)) {
+> +               if (xskq_prod_reserve(xs->pool->cq)) {
+>                         spin_unlock_irqrestore(&xs->pool->cq_lock, flags);
+>                         kfree_skb(skb);
+>                         goto out;
+>                 }
+>                 spin_unlock_irqrestore(&xs->pool->cq_lock, flags);
+>
+> -               skb->dev = xs->dev;
+> -               skb->priority = sk->sk_priority;
+> -               skb->mark = sk->sk_mark;
+> -               skb_shinfo(skb)->destructor_arg = (void *)(long)desc.addr;
+> -               skb->destructor = xsk_destruct_skb;
+> -
+>                 err = __dev_direct_xmit(skb, xs->queue_id);
+>                 if  (err == NETDEV_TX_BUSY) {
+>                         /* Tell user-space to retry the send */
+> --
+> 1.8.3.1
+>
