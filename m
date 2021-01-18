@@ -2,149 +2,234 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E8492FA69C
-	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 17:47:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E0A4A2FA6A5
+	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 17:50:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405504AbhARPQk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jan 2021 10:16:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35662 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2393351AbhARPPr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jan 2021 10:15:47 -0500
-Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0CEDC0613C1;
-        Mon, 18 Jan 2021 07:15:06 -0800 (PST)
-Received: by mail-io1-xd2c.google.com with SMTP id q2so31723274iow.13;
-        Mon, 18 Jan 2021 07:15:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:message-id:in-reply-to:references:subject
-         :mime-version:content-transfer-encoding;
-        bh=Vy0h901KXJHx7zR+QSkwJyxuEtD9TesxvJvHthBNc6c=;
-        b=YeFB265CZOz6TnZub+7S8nMHNsDakM64UfeFP22hmRKcLOcCZKCPiDU3kSHFdab2Vv
-         ZuXC7AAvOi1w0JwFI1t/G5FpK+ckS+CKXoRNCrgpShPCYCakBg41d924KYQDY9GIIlTr
-         XR51YBEJkzijzd4dSDnGjvEjj1w4jLazjhWRW3MDyi7gUPtgkJfQL3Q17AGXumK6pJGd
-         TzMnv+cIn00RAM2+cpSVC+X/PJwUBgeqziSScwyUeULHBfc5n0uAf5ic9A4gFcJIFn/7
-         HaRYIRDKpt6whH+RkqaK/O9efLB/uuJ/J8i2cCGUoF/I333jdqj/45C+5n8tqQssINVV
-         pZOw==
+        id S2405658AbhARQre (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jan 2021 11:47:34 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:58909 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2405514AbhARPQq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jan 2021 10:16:46 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1610982918;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=CZbtDN5Gw+UFvSHReUfgycsMMjh1vfja1yrt3ww/R4I=;
+        b=QB+xN5SgPzjr8NcMr1WWQaSrDe+hTUslBwXR50DDMwoIfaFrFHpeRi19xCwkv36BBCjLT+
+        RdzX/LhvIKmhXrpjJqSzvVxOTvLUROElJ0GEMoOCX07L6jzIcFQH/HfMUnxyE/DPqlor+N
+        QJVlXFhcG+roTslTyL2mGW2osPEAJtI=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-533-xscxwLapOcqEnfX3Gmj-dA-1; Mon, 18 Jan 2021 10:15:17 -0500
+X-MC-Unique: xscxwLapOcqEnfX3Gmj-dA-1
+Received: by mail-wr1-f72.google.com with SMTP id q2so8438226wrp.4
+        for <netdev@vger.kernel.org>; Mon, 18 Jan 2021 07:15:17 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
-         :references:subject:mime-version:content-transfer-encoding;
-        bh=Vy0h901KXJHx7zR+QSkwJyxuEtD9TesxvJvHthBNc6c=;
-        b=Oe+FUVCmoEoWrI3/AdDOp54U9QMsHOHKIAwV2qelm3IstisPDlJF+wvxPjav4GQfkN
-         6Bn0rTw4OUGj8AcUAhA3h4Tbyxnjeo6PqnM5oYiq3oIiqET5K/LyUiufasc3S0Gxp3SZ
-         1rHS+P+5sBMCeeYZRNYQi1pQGbRokZJ0swnzNMJgUh96SNKqMuJQe/jJ6Ft44TVK6nFv
-         dVcIBYtpLxD/GW9y5Q4QxpCpZ6uMSnUrMLIYU6kQS5QpjK4/J4THscjgSHj5hjOFBjG3
-         h+7I/fDvQNuuf4iU7aHnF71NO7Rjem4Gz6r7zgkUB4lugneNqIaHpsPIO7F9pEWmfqSO
-         QWAQ==
-X-Gm-Message-State: AOAM531ih+x3ZTm1DHAT3LhDrnKo0VMO48TeOq0mIOz+iEb39gEyFAEF
-        mSXylGaRPTm21Jjw//94PR4z82Nff5pvGA==
-X-Google-Smtp-Source: ABdhPJzoxfcxpWgv+hquOXmJoRuWuIiW8VO2poB3RK52qpCQo1uTNJB+rmAzYEG21ORB8W7yGX26qA==
-X-Received: by 2002:a05:6e02:13ac:: with SMTP id h12mr21732890ilo.159.1610982906105;
-        Mon, 18 Jan 2021 07:15:06 -0800 (PST)
-Received: from localhost ([172.243.146.206])
-        by smtp.gmail.com with ESMTPSA id h14sm270557ilh.63.2021.01.18.07.15.02
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=CZbtDN5Gw+UFvSHReUfgycsMMjh1vfja1yrt3ww/R4I=;
+        b=Uvb0znmGW/O9j4Cnq+eeWddviZAV/Tfntow6uU9/Z6qebKX3Bg9z5qheHnhMfaHa/U
+         34ga8nVbHQjQWlXBwOCHT9KIlCEQsrNUDRvieWVQbxnT7tdHyb8SdSeHuAo4soSbz75G
+         bgdRokwcQHzj/y1yfLkUb8ovYApGQV/24ZB1pmYbasYLjeBrLxozdrK8C/yvULITNiIa
+         POoela+9xiR41OGJ0Nn20U6ol4KkrpAly+0tG6FBfiVVTB1vfoUEfzseQPJ8knZqL6r5
+         mNocvyImbRpzsJi2vQW8puS2tUa2i15q57dYiHN0JIOOs5aELZNnrbgL8+7LG9pQ+j+O
+         dqdw==
+X-Gm-Message-State: AOAM533mntOl13mvTAkBCPkzSX31sjxjPcjXRu2nsvip/5YSDS4IXn68
+        SHtNyplaQCPvl0Y3UWTeAbgqECmt5KyN/6OEKXm/mzurDzzdhrNbH8XTLCyAMTfiyFRBQzYhqdb
+        LD19lecLh4/ORcO4q
+X-Received: by 2002:adf:eb05:: with SMTP id s5mr26268595wrn.333.1610982916082;
+        Mon, 18 Jan 2021 07:15:16 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwG6Wf2v1m/zesVibhlEgiALKELloiSwEDJP2jloIZwFeL7u55HYCoufMZGrWWXUkziIqXroQ==
+X-Received: by 2002:adf:eb05:: with SMTP id s5mr26268581wrn.333.1610982915916;
+        Mon, 18 Jan 2021 07:15:15 -0800 (PST)
+Received: from steredhat (host-79-34-249-199.business.telecomitalia.it. [79.34.249.199])
+        by smtp.gmail.com with ESMTPSA id s1sm31095090wrv.97.2021.01.18.07.15.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Jan 2021 07:15:05 -0800 (PST)
-Date:   Mon, 18 Jan 2021 07:14:56 -0800
-From:   John Fastabend <john.fastabend@gmail.com>
-To:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
-        Hangbin Liu <liuhangbin@gmail.com>,
-        John Fastabend <john.fastabend@gmail.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Jiri Benc <jbenc@redhat.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
-        David Ahern <dsahern@gmail.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Message-ID: <6005a5f08de7a_23982089d@john-XPS-13-9370.notmuch>
-In-Reply-To: <871reir06y.fsf@toke.dk>
-References: <20201221123505.1962185-1-liuhangbin@gmail.com>
- <20210114142321.2594697-1-liuhangbin@gmail.com>
- <20210114142321.2594697-4-liuhangbin@gmail.com>
- <6004d200d0d10_266420825@john-XPS-13-9370.notmuch>
- <20210118084455.GE1421720@Leo-laptop-t470s>
- <871reir06y.fsf@toke.dk>
-Subject: Re: [PATCHv14 bpf-next 3/6] xdp: add a new helper for dev map
- multicast support
-Mime-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+        Mon, 18 Jan 2021 07:15:15 -0800 (PST)
+Date:   Mon, 18 Jan 2021 16:15:12 +0100
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Arseny Krasnov <arseny.krasnov@kaspersky.com>
+Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Andra Paraschiv <andraprs@amazon.com>,
+        Colin Ian King <colin.king@canonical.com>,
+        Jeff Vander Stoep <jeffv@google.com>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, stsp2@yandex.ru, oxffffaa@gmail.com
+Subject: Re: [RFC PATCH v2 10/13] virtio/vsock: update receive logic
+Message-ID: <20210118151512.itolt7axlxovj267@steredhat>
+References: <20210115053553.1454517-1-arseny.krasnov@kaspersky.com>
+ <20210115054410.1456928-1-arseny.krasnov@kaspersky.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20210115054410.1456928-1-arseny.krasnov@kaspersky.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Toke H=C3=B8iland-J=C3=B8rgensen wrote:
-> Hangbin Liu <liuhangbin@gmail.com> writes:
-> =
+On Fri, Jan 15, 2021 at 08:44:07AM +0300, Arseny Krasnov wrote:
+>This modifies current receive logic for SEQPACKET support:
+>1) Add 'SEQ_BEGIN' packet to socket's rx queue.
+>2) Add 'RW' packet to rx queue, but without merging inside buffer of last
+>   packet in queue.
+>3) Perform check for packet type and socket type on receive(if mismatch,
+>   then reset connection).
+>
+>Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
+>---
+> net/vmw_vsock/virtio_transport_common.c | 79 ++++++++++++++++++-------
+> 1 file changed, 58 insertions(+), 21 deletions(-)
+>
+>diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
+>index fe1272e74517..c3e07eb1c666 100644
+>--- a/net/vmw_vsock/virtio_transport_common.c
+>+++ b/net/vmw_vsock/virtio_transport_common.c
+>@@ -397,6 +397,14 @@ virtio_transport_stream_do_dequeue(struct vsock_sock *vsk,
+> 	return err;
+> }
+>
+>+static u16 virtio_transport_get_type(struct sock *sk)
+>+{
+>+	if (sk->sk_type == SOCK_STREAM)
+>+		return VIRTIO_VSOCK_TYPE_STREAM;
+>+	else
+>+		return VIRTIO_VSOCK_TYPE_SEQPACKET;
+>+}
+>+
+> static inline void virtio_transport_del_n_free_pkt(struct virtio_vsock_pkt *pkt)
+> {
+> 	list_del(&pkt->list);
+>@@ -1050,39 +1058,49 @@ virtio_transport_recv_enqueue(struct vsock_sock *vsk,
+> 			      struct virtio_vsock_pkt *pkt)
+> {
+> 	struct virtio_vsock_sock *vvs = vsk->trans;
+>-	bool can_enqueue, free_pkt = false;
+>+	bool free_pkt = false;
+>
+> 	pkt->len = le32_to_cpu(pkt->hdr.len);
+> 	pkt->off = 0;
+>
+> 	spin_lock_bh(&vvs->rx_lock);
+>
+>-	can_enqueue = virtio_transport_inc_rx_pkt(vvs, pkt);
+>-	if (!can_enqueue) {
+>+	if (!virtio_transport_inc_rx_pkt(vvs, pkt)) {
+> 		free_pkt = true;
+> 		goto out;
+> 	}
+>
+>-	/* Try to copy small packets into the buffer of last packet queued,
+>-	 * to avoid wasting memory queueing the entire buffer with a small
+>-	 * payload.
+>-	 */
+>-	if (pkt->len <= GOOD_COPY_LEN && !list_empty(&vvs->rx_queue)) {
+>-		struct virtio_vsock_pkt *last_pkt;
+>+	switch (le32_to_cpu(pkt->hdr.type)) {
+                 ^
+hdr.type is __le16, so please use le16_to_cpu()
 
-> > Hi John,
-> >
-> > Thanks for the reviewing.
-> >
-> > On Sun, Jan 17, 2021 at 04:10:40PM -0800, John Fastabend wrote:
-> >> > + * 		The forwarding *map* could be either BPF_MAP_TYPE_DEVMAP or
-> >> > + * 		BPF_MAP_TYPE_DEVMAP_HASH. But the *ex_map* must be
-> >> > + * 		BPF_MAP_TYPE_DEVMAP_HASH to get better performance.
-> >> =
+>+	case VIRTIO_VSOCK_TYPE_STREAM: {
+>+		/* Try to copy small packets into the buffer of last 
+>packet queued,
+>+		 * to avoid wasting memory queueing the entire buffer with a small
+>+		 * payload.
+>+		 */
+>+		if (pkt->len <= GOOD_COPY_LEN && !list_empty(&vvs->rx_queue)) {
+>+			struct virtio_vsock_pkt *last_pkt;
+>
+>-		last_pkt = list_last_entry(&vvs->rx_queue,
+>-					   struct virtio_vsock_pkt, list);
+>+			last_pkt = list_last_entry(&vvs->rx_queue,
+>+						   struct virtio_vsock_pkt, list);
+>
+>-		/* If there is space in the last packet queued, we copy the
+>-		 * new packet in its buffer.
+>-		 */
+>-		if (pkt->len <= last_pkt->buf_len - last_pkt->len) {
+>-			memcpy(last_pkt->buf + last_pkt->len, pkt->buf,
+>-			       pkt->len);
+>-			last_pkt->len += pkt->len;
+>-			free_pkt = true;
+>-			goto out;
+>+			/* If there is space in the last packet queued, we copy the
+>+			 * new packet in its buffer.
+>+			 */
+>+			if (pkt->len <= last_pkt->buf_len - last_pkt->len) {
+>+				memcpy(last_pkt->buf + last_pkt->len, pkt->buf,
+>+				       pkt->len);
+>+				last_pkt->len += pkt->len;
+>+				free_pkt = true;
+>+				goto out;
+>+			}
+> 		}
+>+
+>+		break;
+>+	}
+>+	case VIRTIO_VSOCK_TYPE_SEQPACKET: {
+>+		break;
+>+	}
+>+	default:
+>+		goto out;
+> 	}
+>
+> 	list_add_tail(&pkt->list, &vvs->rx_queue);
+>@@ -1101,6 +1119,14 @@ virtio_transport_recv_connected(struct sock *sk,
+> 	int err = 0;
+>
+> 	switch (le16_to_cpu(pkt->hdr.op)) {
+>+	case VIRTIO_VSOCK_OP_SEQ_BEGIN: {
+>+		struct virtio_vsock_sock *vvs = vsk->trans;
+>+
+>+		spin_lock_bh(&vvs->rx_lock);
+>+		list_add_tail(&pkt->list, &vvs->rx_queue);
+>+		spin_unlock_bh(&vvs->rx_lock);
+>+		return err;
+>+	}
+> 	case VIRTIO_VSOCK_OP_RW:
+> 		virtio_transport_recv_enqueue(vsk, pkt);
+> 		sk->sk_data_ready(sk);
+>@@ -1247,6 +1273,12 @@ virtio_transport_recv_listen(struct sock *sk, struct virtio_vsock_pkt *pkt,
+> 	return 0;
+> }
+>
+>+static bool virtio_transport_valid_type(u16 type)
+>+{
+>+	return (type == VIRTIO_VSOCK_TYPE_STREAM) ||
+>+	       (type == VIRTIO_VSOCK_TYPE_SEQPACKET);
+>+}
+>+
+> /* We are under the virtio-vsock's vsock->rx_lock or vhost-vsock's vq->mutex
+>  * lock.
+>  */
+>@@ -1272,7 +1304,7 @@ void virtio_transport_recv_pkt(struct virtio_transport *t,
+> 					le32_to_cpu(pkt->hdr.buf_alloc),
+> 					le32_to_cpu(pkt->hdr.fwd_cnt));
+>
+>-	if (le16_to_cpu(pkt->hdr.type) != VIRTIO_VSOCK_TYPE_STREAM) {
+>+	if (!virtio_transport_valid_type(le16_to_cpu(pkt->hdr.type))) {
+> 		(void)virtio_transport_reset_no_sock(t, pkt);
+> 		goto free_pkt;
+> 	}
+>@@ -1289,6 +1321,11 @@ void virtio_transport_recv_pkt(struct virtio_transport *t,
+> 		}
+> 	}
+>
+>+	if (virtio_transport_get_type(sk) != le16_to_cpu(pkt->hdr.type)) {
+>+		(void)virtio_transport_reset_no_sock(t, pkt);
+>+		goto free_pkt;
+>+	}
+>+
+> 	vsk = vsock_sk(sk);
+>
+> 	space_available = virtio_transport_space_update(sk, pkt);
+>-- 
+>2.25.1
+>
 
-> >> Would be good to add a note ex_map _must_ be keyed by ifindex for th=
-e
-> >> helper to work. Its the obvious way to key a hashmap, but not requir=
-ed
-> >> iirc.
-> >
-> > OK, I will.
-
-[...]
-
-> >> WRITE_ONCE(ri->ex_map)?
-> >> =
-
-> >> >  	WRITE_ONCE(ri->map, NULL);
-> >> =
-
-> >> So we needed write_once, read_once pairs for ri->map do we also need=
- them in
-> >> the ex_map case?
-> >
-> > Toke said this is no need for this read/write_once as there is alread=
-y one.
-> >
-> > https://lore.kernel.org/bpf/87r1wd2bqu.fsf@toke.dk/
-> =
-
-> And then I corrected that after I figured out the real reason :)
-> =
-
-> https://lore.kernel.org/bpf/878si2h3sb.fsf@toke.dk/ - Quote:
-> =
-
-> > The READ_ONCE() is not needed because the ex_map field is only ever r=
-ead
-> > from or written to by the CPU owning the per-cpu pointer. Whereas the=
-
-> > 'map' field is manipulated by remote CPUs in bpf_clear_redirect_map()=
-.
-> > So you need neither READ_ONCE() nor WRITE_ONCE() on ex_map, just like=
-
-> > there are none on tgt_index and tgt_value.
-> =
-
-> -Toke
-> =
-
-
-Hi Hangbin, please add a comment above that code block to remind us
-why the READ_ONCE/WRITE_ONCE is not needed or add it in the commit
-message so we don't lose it. It seems we've hashed it over already,
-but I forgot after the holidays/break so presumably I'll forget next
-time I read this code as well and commit-msg or comment will help.
-
-Thanks,
-John=
