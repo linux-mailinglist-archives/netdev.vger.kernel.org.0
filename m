@@ -2,120 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DDBC02FADA5
-	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 00:04:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 306812FADAB
+	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 00:10:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2403796AbhARXDn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jan 2021 18:03:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51912 "EHLO
+        id S1732751AbhARXJA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jan 2021 18:09:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53026 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732583AbhARXDl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jan 2021 18:03:41 -0500
-Received: from mail-ua1-x932.google.com (mail-ua1-x932.google.com [IPv6:2607:f8b0:4864:20::932])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43C8FC061573
-        for <netdev@vger.kernel.org>; Mon, 18 Jan 2021 15:03:01 -0800 (PST)
-Received: by mail-ua1-x932.google.com with SMTP id t15so6047838ual.6
-        for <netdev@vger.kernel.org>; Mon, 18 Jan 2021 15:03:01 -0800 (PST)
+        with ESMTP id S1731817AbhARXI6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jan 2021 18:08:58 -0500
+Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D51BC061574
+        for <netdev@vger.kernel.org>; Mon, 18 Jan 2021 15:08:14 -0800 (PST)
+Received: by mail-lj1-x22e.google.com with SMTP id e7so19900631ljg.10
+        for <netdev@vger.kernel.org>; Mon, 18 Jan 2021 15:08:14 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:sender:from:date:message-id:subject:to;
-        bh=L4X+YtX+ldaq20pvJeY/zMS/Kdlg6rXXuXxDuhyx4QU=;
-        b=rCApK4erfBRNa40pKaCfITEZX72RYDcZ7jFV5M/MnFohXi8oE/WdR4lo5WH600dNrp
-         +8c8T56c2bJ0cSX6x8wDRaoRNEv3MRmTB4588hM1Q/91XEUKv+nxMUi+pvbEldOHoqji
-         m3oq/X313xdrAB1hdwsqfBk1x9gSRmbPTkKC3GTV0IDgBxlXwDmrKsfuNEbvbHE8HlJm
-         Ws/I0W3SZokaRtJcUvcgM32M4uA2lG6w254a8MmkCBb4T+kq+lCTpjvvdlWbSRYZnDeF
-         uTC5i18C4h+MkRdLFpgbq1qgNq05sG2t7PoqIWETLBZBy15a4kMi1/9WcoTxjv9lWFFo
-         lrsA==
+        d=waldekranz-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:in-reply-to:references:date:message-id
+         :mime-version;
+        bh=YAZF+0rzTTaoA3ShRgxgRULM9HNzfXGfeF7VgwUC4c4=;
+        b=BYAYDrqD7o+6JkdfWR7m5GhHsYNLWWICQhApIUWpN6yJRI3TqksKv49pZe3mfGfWPW
+         Ak3+x8CqTf1UoZgEi8YMWaXbsVONlfMVYf7QDaFtcZnZxUbpQ6ZeKTmXmx1IwARhWNS0
+         s6yjGPNmfQ/XCjlhRyL4H32CjNvF32zLsb1rQpiHsyWpmmM9D1cNhD6U0flc+Mr5xEHk
+         o8Iy96yYp8TTEe1/K2CAu1tO+OIumYHn9Aqw5DBuSyMWdn30450CBSrzZ2G2+ZVJGIYy
+         KHpfzDj1M9Eo8qhwQUkIp0FKfq3CuoFLVOia7pa3/hVVrUrutn0JNKHWSeirsl995v/G
+         tQow==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
-         :to;
-        bh=L4X+YtX+ldaq20pvJeY/zMS/Kdlg6rXXuXxDuhyx4QU=;
-        b=HFVJQ9HVnGc7sf7xI/mM+FaST/1kVYArquZsKqqbxGOkwveYJLyZa9hgKcm29eiCpW
-         n3DO/t+hXdc5xuE3TAOcsL6oooEq8qXp6fwSx4YEZVNamWHiZSP+Pu8hhcenQwVffquI
-         gXHjz42L9KVMR+gRMhIsJPHRQf01PWHPSIqot9L1WBosPexIlHplLrHwY7fFjdz15eAR
-         wLPAvPCoy2rfKvm44xcDKO5lf6QTt5BUuoZAmTQMObPIHPVtimdGlJKQXAhyjrmCTLKY
-         Uy63+pPlEWZgP+XKJRMdhYxpSrYTrD/jjgAMsoCx7szoFnwui/ZgcGe1V/07+ejMdOks
-         q6dg==
-X-Gm-Message-State: AOAM532WvShbKfbmTGyKpxIB2xjnhZrmbqZGRYtwP6bKV9+IZ2jMdG9H
-        ATRbHusqjqebEo+z+QPT3i13BWnit0uEr0bdskk=
-X-Google-Smtp-Source: ABdhPJz8QSofHD+/VRwyal18NYx8fZWwQMu+uy2+ESxaLO0++4wEMc1FjWg/W1VZaf86zmAfMGyuLyOP4pDCZVKvpMA=
-X-Received: by 2002:ab0:7547:: with SMTP id k7mr886945uaq.47.1611010980342;
- Mon, 18 Jan 2021 15:03:00 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version;
+        bh=YAZF+0rzTTaoA3ShRgxgRULM9HNzfXGfeF7VgwUC4c4=;
+        b=HqYGp02eGJ74YjU+syaptaBBhg124jwNYpPUcsgrdQetiH5TvCR4rBxuZMDpwIXAwF
+         Mao2hjAIY38Rx8LQ1v8VIGZskFJO5GFOwSXUqRVlIcDvmVNZTfKRaSx0rmoa4f32+kQo
+         B7uPtPzgFA5R3H/NaLJwG6vZVac4HgRi14V4i2o0BPpg6jKukpSrccTFIkT4poaxoFGa
+         n7JYnXMIwjTQj8X2u0RApQcRVHSMHV+rhUUtotjPRFn51ETKpxJa7f/+C/x+QhXQ6AKf
+         YFm9hg4lMD7A41lidLaEnz6aT2XucoOmHrw3F2zMKHfEfNH+yJzD+L0yadj1zsKo4HEt
+         UX2w==
+X-Gm-Message-State: AOAM533yKIdwwMICpyoVtAl2bv07MV35fUqywVDmhbxMzMINGHEoTT/t
+        0RoP+o/ZNTp8JwXc7ZfyxqnBSg==
+X-Google-Smtp-Source: ABdhPJyLoBjv1L+nJ4zUK6QLZfbu2kvsnNippaFpqdnj4+fh/YQr5XgTtt3z1Z0doTmnba+23KzM/g==
+X-Received: by 2002:a2e:780a:: with SMTP id t10mr730206ljc.67.1611011292977;
+        Mon, 18 Jan 2021 15:08:12 -0800 (PST)
+Received: from wkz-x280 (h-236-82.A259.priv.bahnhof.se. [98.128.236.82])
+        by smtp.gmail.com with ESMTPSA id a24sm1800630ljn.85.2021.01.18.15.08.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Jan 2021 15:08:12 -0800 (PST)
+From:   Tobias Waldekranz <tobias@waldekranz.com>
+To:     Rasmus Villemoes <rasmus.villemoes@prevas.dk>,
+        Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Network Development <netdev@vger.kernel.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>
+Subject: Re: commit 4c7ea3c0791e (net: dsa: mv88e6xxx: disable SA learning for DSA and CPU ports)
+In-Reply-To: <5c5b243e-389d-cca8-cf3f-7e2833d24c29@prevas.dk>
+References: <6106e3d5-31fc-388e-d4ac-c84ac0746a72@prevas.dk> <87h7nhlksr.fsf@waldekranz.com> <20210118211924.u2bl6ynmo5kdyyff@skbuf> <5c5b243e-389d-cca8-cf3f-7e2833d24c29@prevas.dk>
+Date:   Tue, 19 Jan 2021 00:08:11 +0100
+Message-ID: <87k0s9kfms.fsf@waldekranz.com>
 MIME-Version: 1.0
-Sender: missalicewarlord@gmail.com
-Received: by 2002:ab0:15c6:0:0:0:0:0 with HTTP; Mon, 18 Jan 2021 15:02:59
- -0800 (PST)
-From:   "Mrs. Nadia Emaan" <mrsnadiaemaan50@gmail.com>
-Date:   Mon, 18 Jan 2021 23:02:59 +0000
-X-Google-Sender-Auth: EVgEk93ch8PJ9Vipzr_A0h9XSAc
-Message-ID: <CAPGg-FEf-bwuzp5T-x13Oifep8tE=nFG3Typnb1ee_9RGcchNg@mail.gmail.com>
-Subject: MAY THE PEACE OF GOD BE WITH YOU AND YOUR FAMILY,,
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-May God Bless you,
+On Mon, Jan 18, 2021 at 23:07, Rasmus Villemoes <rasmus.villemoes@prevas.dk> wrote:
+> On 18/01/2021 22.19, Vladimir Oltean wrote:
+>> On Sat, Jan 16, 2021 at 02:42:12AM +0100, Tobias Waldekranz wrote:
+>>>> What I'm _really_ trying to do is to get my mv88e6250 to participate in
+>>>> an MRP ring, which AFAICT will require that the master device's MAC gets
+>>>> added as a static entry in the ATU: Otherwise, when the ring goes from
+>>>> open to closed, I've seen the switch wrongly learn the node's own mac
+>>>> address as being in the direction of one of the normal ports, which
+>>>> obviously breaks all traffic. So if the topology is
+>>>>
+>>>>    M
+>>>>  /   \
+>>>> C1 *** C2
+>>>>
+>>>> with the link between C1 and C2 being broken, both M-C1 and M-C2 links
+>>>> are in forwarding (hence learning) state, so when the C1-C2 link gets
+>>>> reestablished, it will take at least one received test packet for M to
+>>>> decide to put one of the ports in blocking state - by which time the
+>>>> damage is done, and the ATU now has a broken entry for M's own mac address.
+>> 
+>> What hardware offload features do you need to use for MRP on mv88e6xxx?
+>> If none, then considering that Tobias's bridge series may stall, I think
+>> by far the easiest approach would be for DSA to detect that it can't
+>> offload the bridge+MRP configuration, and keep all ports as standalone.
+>> When in standalone mode, the ports don't offload any bridge flags, i.e.
+>> they don't do address learning, and the only forwarding destination
+>> allowed is the CPU. The only disadvantage is that this is software-based
+>> forwarding.
 
-I am contacting you through this means because I need your urgent
-assistance and also help me to carry a charity project in your
-country. I found your email address as a true child of God for past
-few days now that I have been praying to know if you are really the
-chosen one for this great charity project, according to God's
-direction, after all prayers I am convinced, and I have decided to
-contact you. Please, i want you use the funds for the Lord's work,
-with confidence, read and respond now.
+Just put some context around how these protocols are typically deployed:
+The ring is the backbone of the whole network and can span hundreds of
+switches. Applications range from low-bandwidth process automation to
+high-definition IPTV. But even when you can meet the throughput demands
+with a CPU, your latency will be off the charts, far beyond what is
+acceptable in most cases.
 
+> Which would be an unacceptable regression for my customer's use case. We
+> really need some ring redundancy protocol, while also having the switch
+> act as, well, a switch and do most forwarding in hardware. We used to
+> use ERPS with some gross out-of-tree patches to set up the switch as
+> required (much of the same stuff we're discussing here).
+>
+> Then when MRP got added to the kernel, and apparently some switches with
+> hardware support for that are in the pipeline somewhere, we decided to
+> try to switch to that - newer revisions of the hardware might include an
+> MRP-capable switch, but the existing hardware with the marvell switches
+> would (with a kernel and userspace upgrade) be able to coexist with that
+> newer hardware.
+>
+> I took it for granted that MRP had been tested with existing
+> switches/switchdev/DSA, but AFAICT (Horatiu, correct me if I'm wrong),
+> currently MRP only works with a software bridge and with some
+> out-of-tree driver for some not-yet-released hardware? I think I've
+> identified what is needed to make it work with mv88e6xxx (and likely
+> also other switchdev switches):
+>
+> (1) the port state as set on the software bridge must be
+> offloaded/synchronized to the switch.
+>
+> (2) the bridge's hardware address must be made a static entry in the
+> switch's database to avoid the switch accidentally learning a wrong port
+> for that when the ring becomes closed.
 
-My name is Mrs Faroul Nadia Emaan, a widow, but currently based in West
-Africa since my life with my late husband, who was a businessman in
-this country before dying some years ago. We were married to many
-years without a child. He died after a brief illness that lasted only
-six days and I myself have been suffering from an ovarian cancer
-disease. At this moment I am about to finish the race in this way
-because the disease has reached a very bad stage, without any family
-member and without children. I hope you do not expose or betray this
-trust and I am sure that I am about to trust you for the mutual
-benefit of orphans and the less privileged. I have some funds that I
-inherited from my late husband, the total sum of ($ 12,500,000.00)
-deposited at a bank here in Burkina Faso. After knowing my current
-state of health, I decided to trust you with this fund, believing that
-you will use it in the way I will instruct here.
+I do not know MRP well enough, but that sounds reasonable if the same SA
+is used for control packets sent through both ports.
 
+> (3) the cpu must be made the only recipient of frames with an MRP
+> multicast DA, 01:15:e4:...
 
-you will use this $12.5 Million for public benefit as follows;
+I would possibly add (4): MRP comes in different "profiles". Some of
+them require sending test packets at ridiculously high frequencies (more
+than 1kHz IIRC). I would guess that Microchip has a programmable packet
+generator that they can use for such things. We could potentially solve
+that on newer 6xxx chips with the built-in IMP, but that is perhaps a
+bit pie in the sky :)
 
-1. Establish An Orphanage Home To Help The Orphanages Children.
-2. Build A Hospital To Help The Poor.
-3. Build A Nursing Home For Elderly People Need Care & Meal.
+> For (1), I think the only thing we need is to agree on where in the
+> stack we translate from MRP to STP, because the like-named states in the
+> two protocols really do behave exactly the same, AFAICT. So it can be
+> done all the way up in MRP, perhaps even by getting completely rid of
+> the distinction, or anywhere down the notifier stack, towards the actual
+> switch driver.
 
-You will named them after my late husband.Therefore, I need you to
-help me and claim this money and use it for charities, for orphanages
-and provide justice and help to the poor, needy and to promote the
-words of God and the effort to maintain the house of God, according to
-the bible in the book of. Jeremiah 22: 15-16, not minding out
-different religions.
+You should search the archives. I distinctly remember somebody bringing
+up this point before MRP was merged. So there ought to be some reason
+for the existence of SWITCHDEV_ATTR_ID_MRP_PORT_STATE.
 
-It will be a pleasure to compensate with 40% percent of the total
-money for your effort in handling the transaction, while 60% of the
-money will go to charity project.
+> For (2), I still have to see how far Tobias' patches will get me, but at
+> least there's some reason independent of MRP to do that.
 
-All I need from you is sincerity and ability to complete the task of
-God without any failure. It will be my pleasure to see that the bank
-has finally released and transferred the fund to your bank account in
-the country, even before I die here in the hospital, due to my current
-state of health, everything must be processed as soon as possible.
-
-I am waiting for your immediate response, if you are only interested
-in obtaining more details about the transaction and execution of this
-humanitarian project for the glory and honor of God.
-
-Sorry if you received this letter in your spam, is due to recent
-connection/network error here in the country.
-
-Please I am waiting for your urgent reply now.
-
-May God Bless you,
-Mrs Faroul Nadia Emaan.
+Like Vladimir said, do not count on that implementation making
+it. Though something similar hopefully will.
