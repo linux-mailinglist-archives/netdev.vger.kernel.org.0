@@ -2,92 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AE9662FAA8E
-	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 20:50:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F6992FAAC6
+	for <lists+netdev@lfdr.de>; Mon, 18 Jan 2021 20:59:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2437656AbhARTtx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jan 2021 14:49:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38338 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2437642AbhARTtk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jan 2021 14:49:40 -0500
-Received: from ozlabs.org (ozlabs.org [IPv6:2401:3900:2:1::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86F70C061573;
-        Mon, 18 Jan 2021 11:49:00 -0800 (PST)
-Received: from authenticated.ozlabs.org (localhost [127.0.0.1])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mail.ozlabs.org (Postfix) with ESMTPSA id 4DKMmT6t6Dz9sWD;
-        Tue, 19 Jan 2021 06:48:57 +1100 (AEDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=canb.auug.org.au;
-        s=201702; t=1610999338;
-        bh=VPv5gujZJ8bdwkclRzMXbMfaHQf4lYksk1kUObCZnpU=;
-        h=Date:From:To:Cc:Subject:From;
-        b=kdgRReBlwbSDXZEuNVHJhcLnAWg4JStJLM3NIwFLsFNg3gKmo0QjKj0KLak1REWnK
-         SDooXE8OVZ6V+uFbbir3dmIc1bCZFT3jofjA1WZgd+oBO2wR0bSTinVisFCV4JY5mm
-         Ja0oD74QsTVUIMk27uLIHCwMsV7Ec5Wt575ITFBDNxwxvM8QN8F4giY14jUpX3/JYU
-         8kFHuL8xqb7PoG78xdyk0/DbuABsT9N1NEZ1b/ZE9JBGntxVSpEvW2CqEY6NFLr6MW
-         uWGtLAF0fCLvI33YjFgrO+3cs/mIwyaQhX5FUCwDyfmAwIdEZNLYQYUrwg/DuwrpoI
-         3VQIM4DPQdn/A==
-Date:   Tue, 19 Jan 2021 06:48:56 +1100
-From:   Stephen Rothwell <sfr@canb.auug.org.au>
-To:     David Miller <davem@davemloft.net>,
-        Networking <netdev@vger.kernel.org>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Brendan Jackman <jackmanb@google.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Subject: linux-next: build warning after merge of the net-next tree
-Message-ID: <20210119064856.1901fb96@canb.auug.org.au>
+        id S2394148AbhART73 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jan 2021 14:59:29 -0500
+Received: from www.zeus03.de ([194.117.254.33]:58626 "EHLO mail.zeus03.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2437718AbhART7E (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 18 Jan 2021 14:59:04 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
+        date:from:to:cc:subject:message-id:references:mime-version
+        :content-type:in-reply-to; s=k1; bh=hWC19t01slxsPcNvQ/0kN839uywX
+        RCagmir824zkmEQ=; b=2/YkoMLfdsytNzElpmppMLW9n/ojueRuAgpQHZo9BfoT
+        YaYAO1FC/wGsjj7QI9rQ9egMSpqx8bAv6vyaHPYy8ZjfwUoNQ9sKaMpzBrlJdXVx
+        rGn892+q1nFZD7RKGC5sIywmn4QMphydl51hRcqQBwbSd3eQNR1/hiXm6lRF+D4=
+Received: (qmail 828670 invoked from network); 18 Jan 2021 20:58:09 +0100
+Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 18 Jan 2021 20:58:09 +0100
+X-UD-Smtp-Session: l3s3148p1@1ZghJDK5BIkgAwDPXwacAOByz8F9Mgm1
+Date:   Mon, 18 Jan 2021 20:58:07 +0100
+From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
+To:     Geert Uytterhoeven <geert+renesas@glider.be>
+Cc:     Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>, netdev@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net v2 1/2] mdio-bitbang: Export mdiobb_{read,write}()
+Message-ID: <20210118195807.GA112457@ninjato>
+References: <20210118150656.796584-1-geert+renesas@glider.be>
+ <20210118150656.796584-2-geert+renesas@glider.be>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="Sig_/e4FZrHEkJV+2hftrubCBqUc";
- protocol="application/pgp-signature"; micalg=pgp-sha256
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="envbJBWh7q8WU6mo"
+Content-Disposition: inline
+In-Reply-To: <20210118150656.796584-2-geert+renesas@glider.be>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---Sig_/e4FZrHEkJV+2hftrubCBqUc
-Content-Type: text/plain; charset=US-ASCII
+
+--envbJBWh7q8WU6mo
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-Hi all,
+On Mon, Jan 18, 2021 at 04:06:55PM +0100, Geert Uytterhoeven wrote:
+> Export mdiobb_read() and mdiobb_write(), so Ethernet controller drivers
+> can call them from their MDIO read/write wrappers.
+>=20
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-After merging the net-next tree, yesterday's linux-next build (htmldocs)
-produced this warning:
+Tested-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
 
-Documentation/networking/filter.rst:1053: WARNING: Inline emphasis start-st=
-ring without end-string.
-Documentation/networking/filter.rst:1053: WARNING: Inline emphasis start-st=
-ring without end-string.
-Documentation/networking/filter.rst:1053: WARNING: Inline emphasis start-st=
-ring without end-string.
-Documentation/networking/filter.rst:1053: WARNING: Inline emphasis start-st=
-ring without end-string.
 
-Introduced by commit
-
-  91c960b00566 ("bpf: Rename BPF_XADD and prepare to encode other atomics i=
-n .imm")
-
---=20
-Cheers,
-Stephen Rothwell
-
---Sig_/e4FZrHEkJV+2hftrubCBqUc
-Content-Type: application/pgp-signature
-Content-Description: OpenPGP digital signature
+--envbJBWh7q8WU6mo
+Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQEzBAEBCAAdFiEENIC96giZ81tWdLgKAVBC80lX0GwFAmAF5igACgkQAVBC80lX
-0GzXWgf6A9u+bxS6wWfmcIydLme4SuUo/HMiBT5ukKFx8IHumVx88dVvL6iAYDwR
-bmVGyQbtK8o8/5ZlaMn8PrPHeC5+RmEPKAdm+I7lkG88TpUlhssMywhSYnH2CSww
-H9QNyaFpwlVdI6uDVgZGuGN4r2v9zx4ReBaKO4BwaFuOdH41lL+vKrNlBQchMFRb
-kvZW+1C27OqSzu4gSPMNX+jHb8otsgIzIuDgBqjuSwE9sDkB/99lONvfBeUtdTPW
-AQVO3vIKuLsyxqcKB1MHiXKHDdeNoPtqgnopFOdIiSRcpoCth1ThBq1BOPLfqc95
-c6ZbGUaZ7P4K61G3xeY54Nvi+glBbQ==
-=91V4
+iQIzBAABCgAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAmAF6EoACgkQFA3kzBSg
+Kbb6MQ/8DyjaZqaYekA2sZYyEPLPMI+AaqgnJY/ykPCdtDmBD+ESZ7Jvg6EJ4tKZ
+2KSNCHLUxko21/vBj7Le6UycRTxB2G5KfaYvrTq2MRRxaA6KThA2ZNyxW1RTUCbp
+Kcus8xuAT2XGw2x7SM7ko1vrEQLm6CwBlq/kzqJShXr56HniuZM7tnNNgz3ynUGW
+toAWvjyG76OyuBw4oBeu+NaXbUUdVSSwjbbXUwAUsXCGltgtFWFMdtrLQ1y+HolB
+Hm6fGhGG/lywH5gFywC/fl4RfZZgzz+GdtwljZmuPkHQk5jqCPS07a/oGcM/pgh0
+GGrwBzcy28vGj3vMT23yzIckCWdgk+4WUSpoOPGNmRg34WTgjjUcRXusY2Tmb6aS
+KDy++GH1I3Ch0CgJQg7pr2krYXc2LakfxMRr45775lDjXplQR9L+TNOPa454/Eph
++X13F7ns2ibL1lI5Q0BqxmJsvNz4f8fconEhr7l1MJaKY0HMCTF3tmnYXDXLjmPu
+X+ldBatXL71OPQ8sZj8GYDaeNe1BINzj1XV7C/zE1LvO32OQmiBjNMypTeh2apdd
+LU6U7YH8YMsEL8jJASJM2xoGMYlY8BwqjpKLBnMT3vMTuSptbyrmM01ZHA/ugDIE
+X9bw4pLJlj7xUysI14AZm60LzKD3j8lCy7CJtOsKH7oI0fvpFGM=
+=jJzh
 -----END PGP SIGNATURE-----
 
---Sig_/e4FZrHEkJV+2hftrubCBqUc--
+--envbJBWh7q8WU6mo--
