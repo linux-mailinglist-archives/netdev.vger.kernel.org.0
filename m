@@ -2,69 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 10A2D2FC06C
-	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 20:55:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 201CC2FC085
+	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 21:03:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730089AbhASTyn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jan 2021 14:54:43 -0500
-Received: from mail.kernel.org ([198.145.29.99]:51238 "EHLO mail.kernel.org"
+        id S1729519AbhASUBp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jan 2021 15:01:45 -0500
+Received: from mail.kernel.org ([198.145.29.99]:50976 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729969AbhASTus (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 19 Jan 2021 14:50:48 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id F099E2313C;
-        Tue, 19 Jan 2021 19:50:07 +0000 (UTC)
+        id S1729442AbhASTt3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 19 Jan 2021 14:49:29 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 5D00E23138;
+        Tue, 19 Jan 2021 19:48:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611085808;
-        bh=uWwjHlqPpTQEXKr3KGCDhOzI8WrlBz6mOBJFoqXr/ZI=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=svX3zaUNyGI7YD7KTRzv/5n2vN2jpsXRNoqzi1Zr71tRDmUA2qNxgcnq8N3dzf19n
-         Xobq9nU5L/65s/CdjEkAbplXkl5D5RklRsbkDTgtKRZMouNdCkAjMB9bXWBmbCUihL
-         SD/gsmKVZmym8tY82oElB0l9cQeuQntcZ9K0LUTsK0Kicn0+ciq0xrR+oeIGjc1hOP
-         TrDBfhDtVRByBSbC10HPTwEr0ExLh3ilu1RV+yqe0icELJA6TlXf+ZC2dktCbzeCqF
-         7s5ucMt7XTMPKoTzTL5HbtB2qJMiO4K9zkNzQ9mBTAiiU399UztqX97aEKuZ5Rlavk
-         ZElgYu3OSxI1w==
-Received: from pdx-korg-docbuild-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-1.ci.codeaurora.org (Postfix) with ESMTP id E55E3605D2;
-        Tue, 19 Jan 2021 19:50:07 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1611085727;
+        bh=x2G3h6gWeJttkZWzD3p/ebQvL5B00vXITXYElAWBRd4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=qzNO8wNvaKloH3Wx57QRIH5z5O9G4ae3PQD05C5mUdINm758bne2s2m7JJ60TflI1
+         Yn+lE6M18hrs3tT4DrmpYJXji8mnqWFPQJI3IUB+pT+gOF5E/e0aE831rVwlgs1Anh
+         4x8LNxssHMvdFnt0eQun92kuDtY2yFXjLXo7L8yuY5rhHKcI1bCrB0V1Z3lYq+OTyP
+         TmyG+W6ZO4TsINNhBF5ZIhplfB3S3uFcICTnhF+kmMKTlPR9nUX75GLD8wLHwKoFX/
+         p4N/Ryjhi2PdGxOccfQ03SCxNqbodG/PQXK2qswpZfc/XsCX+sjddhwRoxu7HxKxmQ
+         djbE0QpoUx73g==
+Date:   Tue, 19 Jan 2021 11:48:46 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Andrew Lunn <andrew@lunn.ch>, Alexander Lobakin <alobakin@pm.me>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next] mdio, phy: fix -Wshadow warnings triggered by
+ nested container_of()
+Message-ID: <20210119114846.20b844b2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <YAb4/7Nb1qaGiS0f@lunn.ch>
+References: <20210116161246.67075-1-alobakin@pm.me>
+        <YAb4/7Nb1qaGiS0f@lunn.ch>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH v2 net] net: core: devlink: use right genl user_ptr when
- handling port param get/set
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161108580793.4898.2655899092848313604.git-patchwork-notify@kernel.org>
-Date:   Tue, 19 Jan 2021 19:50:07 +0000
-References: <20210119085333.16833-1-vadym.kochan@plvision.eu>
-In-Reply-To: <20210119085333.16833-1-vadym.kochan@plvision.eu>
-To:     Vadym Kochan <vadym.kochan@plvision.eu>
-Cc:     jiri@nvidia.com, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, oleksandr.mazur@plvision.eu,
-        parav@mellanox.com
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Tue, 19 Jan 2021 16:21:35 +0100 Andrew Lunn wrote:
+> On Sat, Jan 16, 2021 at 04:13:22PM +0000, Alexander Lobakin wrote:
+> > container_of() macro hides a local variable '__mptr' inside. This
+> > becomes a problem when several container_of() are nested in each
+> > other within single line or plain macros.
+> > As C preprocessor doesn't support generating random variable names,
+> > the sole solution is to avoid defining macros that consist only of
+> > container_of() calls, or they will self-shadow '__mptr' each time:
+> >=20
+> > In file included from ./include/linux/bitmap.h:10,
+> >                  from drivers/net/phy/phy_device.c:12:
+> > drivers/net/phy/phy_device.c: In function =E2=80=98phy_device_release=
+=E2=80=99:
+> > ./include/linux/kernel.h:693:8: warning: declaration of =E2=80=98__mptr=
+=E2=80=99 shadows a previous local [-Wshadow]
+> >   693 |  void *__mptr =3D (void *)(ptr);     \
+> >       |        ^~~~~~
+> > ./include/linux/phy.h:647:26: note: in expansion of macro =E2=80=98cont=
+ainer_of=E2=80=99
+> >   647 | #define to_phy_device(d) container_of(to_mdio_device(d), \
+> >       |                          ^~~~~~~~~~~~
+> > ./include/linux/mdio.h:52:27: note: in expansion of macro =E2=80=98cont=
+ainer_of=E2=80=99
+> >    52 | #define to_mdio_device(d) container_of(d, struct mdio_device, d=
+ev)
+> >       |                           ^~~~~~~~~~~~
+> > ./include/linux/phy.h:647:39: note: in expansion of macro =E2=80=98to_m=
+dio_device=E2=80=99
+> >   647 | #define to_phy_device(d) container_of(to_mdio_device(d), \
+> >       |                                       ^~~~~~~~~~~~~~
+> > drivers/net/phy/phy_device.c:217:8: note: in expansion of macro =E2=80=
+=98to_phy_device=E2=80=99
+> >   217 |  kfree(to_phy_device(dev));
+> >       |        ^~~~~~~~~~~~~
+> > ./include/linux/kernel.h:693:8: note: shadowed declaration is here
+> >   693 |  void *__mptr =3D (void *)(ptr);     \
+> >       |        ^~~~~~
+> > ./include/linux/phy.h:647:26: note: in expansion of macro =E2=80=98cont=
+ainer_of=E2=80=99
+> >   647 | #define to_phy_device(d) container_of(to_mdio_device(d), \
+> >       |                          ^~~~~~~~~~~~
+> > drivers/net/phy/phy_device.c:217:8: note: in expansion of macro =E2=80=
+=98to_phy_device=E2=80=99
+> >   217 |  kfree(to_phy_device(dev));
+> >       |        ^~~~~~~~~~~~~
+> >=20
+> > As they are declared in header files, these warnings are highly
+> > repetitive and very annoying (along with the one from linux/pci.h).
+> >=20
+> > Convert the related macros from linux/{mdio,phy}.h to static inlines
+> > to avoid self-shadowing and potentially improve bug-catching.
+> > No functional changes implied.
+> >=20
+> > Signed-off-by: Alexander Lobakin <alobakin@pm.me> =20
+>=20
+> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
-This patch was applied to netdev/net.git (refs/heads/master):
-
-On Tue, 19 Jan 2021 10:53:33 +0200 you wrote:
-> From: Oleksandr Mazur <oleksandr.mazur@plvision.eu>
-> 
-> Fix incorrect user_ptr dereferencing when handling port param get/set:
-> 
->     idx [0] stores the 'struct devlink' pointer;
->     idx [1] stores the 'struct devlink_port' pointer;
-> 
-> [...]
-
-Here is the summary with links:
-  - [v2,net] net: core: devlink: use right genl user_ptr when handling port param get/set
-    https://git.kernel.org/netdev/net/c/7e238de8283a
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Applied, thanks!
