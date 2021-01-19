@@ -2,97 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C20332FBE1A
-	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 18:45:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AD5112FBE3F
+	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 18:56:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726449AbhASPKc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jan 2021 10:10:32 -0500
-Received: from userp2130.oracle.com ([156.151.31.86]:32896 "EHLO
-        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390743AbhASPIU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jan 2021 10:08:20 -0500
-Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
-        by userp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 10JF5TwT156765;
-        Tue, 19 Jan 2021 15:07:26 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : mime-version : content-type; s=corp-2020-01-29;
- bh=SW8RyFTl7bFQwFjQ7nQdX49WyrQr5v1lUUM68Sz/uz0=;
- b=AtTS33arZePZELPI4yQY+GAJY9/1qk29HkYMpXy2CMFZZ6BfuNg4AeLmAnkf9nlahCB+
- So2jnkpBHNJQuZ5Hk3QOExTar/Qv2PmqnMPV7zrR4vRkt22CW5CXWuiaNwNTSUrlvjj6
- H3OEgcLCIyTlkY6UcuzhyGyu+JfkkgRhAveYnKDNQyOM1BdSuS3Nr11JzLOz+cRtq26z
- s3nRGs+ELYA/jghmvVslMUIaBJ3kDs5I8MGMAsuhbsQd0OHELF8B/I2PmgqIiV5600Uk
- GGuaZlY2/jnH3uJU2Y/IzCi5d3L7mOxjOg8WczDyLQ4fzBoRnHc1vFusv2SZ2UlaYm8l Ag== 
-Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
-        by userp2130.oracle.com with ESMTP id 363xyhrth0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 19 Jan 2021 15:07:25 +0000
-Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
-        by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 10JF6tqT050272;
-        Tue, 19 Jan 2021 15:07:24 GMT
-Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
-        by aserp3030.oracle.com with ESMTP id 3649qpacvy-460
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 19 Jan 2021 15:07:24 +0000
-Received: from abhmp0008.oracle.com (abhmp0008.oracle.com [141.146.116.14])
-        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 10JEm9qJ015716;
-        Tue, 19 Jan 2021 14:48:10 GMT
-Received: from mwanda (/102.36.221.92)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Tue, 19 Jan 2021 06:48:09 -0800
-Date:   Tue, 19 Jan 2021 17:48:03 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-Subject: [PATCH net] net: dsa: b53: fix an off by one in checking "vlan->vid"
-Message-ID: <YAbxI97Dl/pmBy5V@mwanda>
+        id S2391496AbhASRsb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jan 2021 12:48:31 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:47790 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728793AbhASOwx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 19 Jan 2021 09:52:53 -0500
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1l1sMH-001Smm-U4; Tue, 19 Jan 2021 15:51:49 +0100
+Date:   Tue, 19 Jan 2021 15:51:49 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Jiri Pirko <jiri@resnulli.us>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        jacob.e.keller@intel.com, roopa@nvidia.com, mlxsw@nvidia.com
+Subject: Re: [patch net-next RFC 00/10] introduce line card support for
+ modular switch
+Message-ID: <YAbyBbEE7lbhpFkw@lunn.ch>
+References: <20210113121222.733517-1-jiri@resnulli.us>
+ <X/+nVtRrC2lconET@lunn.ch>
+ <20210119115610.GZ3565223@nanopsycho.orion>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-X-Mailer: git-send-email haha only kidding
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9868 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 mlxlogscore=999 adultscore=0
- malwarescore=0 bulkscore=0 spamscore=0 phishscore=0 suspectscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2101190092
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9868 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 phishscore=0
- malwarescore=0 mlxlogscore=999 bulkscore=0 priorityscore=1501 spamscore=0
- mlxscore=0 impostorscore=0 lowpriorityscore=0 suspectscore=0 clxscore=1011
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2101190092
+In-Reply-To: <20210119115610.GZ3565223@nanopsycho.orion>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The > comparison should be >= to prevent accessing one element beyond
-the end of the dev->vlans[] array in the caller function, b53_vlan_add().
-The "dev->vlans" array is allocated in the b53_switch_init() function
-and it has "dev->num_vlans" elements.
+On Tue, Jan 19, 2021 at 12:56:10PM +0100, Jiri Pirko wrote:
+> Thu, Jan 14, 2021 at 03:07:18AM CET, andrew@lunn.ch wrote:
+> >> $ devlink lc provision netdevsim/netdevsim10 lc 0 type card4ports
+> >> $ devlink lc
+> >> netdevsim/netdevsim10:
+> >>   lc 0 state provisioned type card4ports
+> >>     supported_types:
+> >>        card1port card2ports card4ports
+> >>   lc 1 state unprovisioned
+> >>     supported_types:
+> >>        card1port card2ports card4ports
+> >
+> >Hi Jiri
+> >
+> >> # Now activate the line card using debugfs. That emulates plug-in event
+> >> # on real hardware:
+> >> $ echo "Y"> /sys/kernel/debug/netdevsim/netdevsim10/linecards/0/active
+> >> $ ip link show eni10nl0p1
+> >> 165: eni10nl0p1: <BROADCAST,NOARP,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP mode DEFAULT group default qlen 1000
+> >>     link/ether 7e:2d:05:93:d3:d1 brd ff:ff:ff:ff:ff:ff
+> >> # The carrier is UP now.
+> >
+> >What is missing from the devlink lc view is what line card is actually
+> >in the slot. Say if i provision for a card4port, but actually insert a
+> >card2port. It would be nice to have something like:
+> 
+> I checked, our hw does not support that. Only provides info that
+> linecard activation was/wasn't successful.
 
-Fixes: a2482d2ce349 ("net: dsa: b53: Plug in VLAN support")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
----
- drivers/net/dsa/b53/b53_common.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Hi Jiri
 
-diff --git a/drivers/net/dsa/b53/b53_common.c b/drivers/net/dsa/b53/b53_common.c
-index 288b5a5c3e0d..95c7fa171e35 100644
---- a/drivers/net/dsa/b53/b53_common.c
-+++ b/drivers/net/dsa/b53/b53_common.c
-@@ -1404,7 +1404,7 @@ int b53_vlan_prepare(struct dsa_switch *ds, int port,
- 	    !(vlan->flags & BRIDGE_VLAN_INFO_UNTAGGED))
- 		return -EINVAL;
- 
--	if (vlan->vid_end > dev->num_vlans)
-+	if (vlan->vid_end >= dev->num_vlans)
- 		return -ERANGE;
- 
- 	b53_enable_vlan(dev, true, ds->vlan_filtering);
--- 
-2.29.2
+Is this a firmware limitation? There is no API to extract the
+information from the firmware to the host? The firmware itself knows
+there is a mismatch and refuses to configure the line card, and
+prevents the MAC going up?
 
+Even if you cannot do this now, it seems likely in future firmware
+versions you will be able to, so maybe at least define the netlink
+attributes now? As well as attributes indicating activation was
+successful.
+
+	Andrew
