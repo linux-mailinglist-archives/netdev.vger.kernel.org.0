@@ -2,113 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 399262FC2B6
-	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 22:50:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5F58B2FC2E4
+	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 23:00:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728578AbhASVrl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jan 2021 16:47:41 -0500
-Received: from mail.kernel.org ([198.145.29.99]:46294 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2389596AbhASVqk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 19 Jan 2021 16:46:40 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 3ABC222E01;
-        Tue, 19 Jan 2021 21:45:59 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611092759;
-        bh=kruhdxPqhzyBqegCl6kwbaI4zJnzo6UfMpl35chwUTE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=dVnUdrVRoybRE2url3sGJw/jBPjn4oeyw1lNmJ9DOO1/HH4AiW4mA4N4Jy7/W2zNr
-         sTmZuoWPEh/V0rRj6JRhcPpmunyiYPzSbHoTR7M92MYIJSUvbBcCBunPbxg2EjcJ1N
-         P01XODXIosk72N/Q2Zta2dOgG6BIB3CxD/CgfbHUScM12qlzgt0IuYZN0UrsepyJ/t
-         tAv5FFggYGTk1Ejd2bGZlWPxMzyl0PsuwzIHMrG40yQnlcDt2TU3ar74A0t9OuG0tp
-         vuiHGIkHaooNjquYXDiq58fylDuNxFjXkhMEAfdoLk406MMO8XGCDSxAzxXxD46MBt
-         MiX5VYsLMWCNw==
-Date:   Tue, 19 Jan 2021 13:45:58 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Grant Grundler <grundler@chromium.org>
-Cc:     Oliver Neukum <oliver@neukum.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/3] net: usb: cdc_ncm: don't spew notifications
-Message-ID: <20210119134558.5072a1cc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210116052623.3196274-3-grundler@chromium.org>
-References: <20210116052623.3196274-1-grundler@chromium.org>
-        <20210116052623.3196274-3-grundler@chromium.org>
+        id S1728707AbhASV7X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jan 2021 16:59:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36960 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728420AbhASV7C (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jan 2021 16:59:02 -0500
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6C29C061757
+        for <netdev@vger.kernel.org>; Tue, 19 Jan 2021 13:58:19 -0800 (PST)
+Received: by mail-pg1-x52b.google.com with SMTP id v19so13799640pgj.12
+        for <netdev@vger.kernel.org>; Tue, 19 Jan 2021 13:58:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=OFfub22SWSVkVrjpbdutuEU3cmHlEtcZeAWzURJZldA=;
+        b=byWAnMtOBUGykkl0kVkQ6CQf0S8r8iH9Dmayu8mQxBp+45awWTtaLWZK+sCctNvNi6
+         OQcM7YzgvoQP7vFoUOPAdHcq0Exc8A5qIltWrORr5GlbQu7OpEUlsRIIsRjOPMNEu8MM
+         KJkJ9h2pBNSl3gpKFS1mHwd4Yh8pSmhLhQ+xsdSRbNG79hRNaoSkn4x7kFpQa70zpOTD
+         2baF8bh7XZpGPB+vYEpB3YYp5CA8M37nZpiDjsHG2HM5Q0fM//zJbXVyQcJhoGFY2/US
+         z2kIqi+reocUHP+UQdZF0D/NV28zsna2hcDSgpI8gW4EXq2SmBmeLi6f+WraBCQVK6ZK
+         87OQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=OFfub22SWSVkVrjpbdutuEU3cmHlEtcZeAWzURJZldA=;
+        b=R00YLxPPrLLJjMmcTud/qC6dLrPPV0MoPdEhZTkqpKuLa9FKXF06I6r1feDD687AqC
+         6CtpDUMa/dFATELaUCLJhETbiKjc6yldTm5zIy8QgIGqPD21QcyyG1VUqBgI7N0NdFQi
+         qWJ0aEVFu8XQN/5AV8tT9/eo8ZU1qpBWIDZBEOCJcMFlDyKTB20AzDT2FCvkmScm0kP4
+         dZLhotkSOFPFnGqlFDpLy2XS103Dl/PY+RQ9D1GcvXjTanqouXZasTLImmEn9AeR29J6
+         kbj726yyDY83DsBcgiOEozp5SN1AuYN6Ain+ulDgQ/Wpp70M50WkbNwwDbnd5hDaRsRS
+         73uQ==
+X-Gm-Message-State: AOAM531SsfHXyfZYYEULGVVs7gjOzOb/p+5H10A7KQv9weZj8hhdbWL2
+        GIWGRKTBQH5GaFJDQvmRlzs1fA==
+X-Google-Smtp-Source: ABdhPJzExoHgzCqXecb1f0EjKl//W+yhWbxdATLzYoDeYSbylPsBXmpqSv8BG01cnkxtHt/nHoKAEw==
+X-Received: by 2002:a63:1f18:: with SMTP id f24mr6316123pgf.133.1611093499079;
+        Tue, 19 Jan 2021 13:58:19 -0800 (PST)
+Received: from google.com ([2620:15c:2ce:0:a6ae:11ff:fe11:4abb])
+        by smtp.gmail.com with ESMTPSA id z29sm91002pfk.67.2021.01.19.13.58.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Jan 2021 13:58:18 -0800 (PST)
+Date:   Tue, 19 Jan 2021 13:58:15 -0800
+From:   Fangrui Song <maskray@google.com>
+To:     Tiezhu Yang <yangtiezhu@loongson.cn>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Nathan Chancellor <natechancellor@gmail.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        clang-built-linux@googlegroups.com, linux-kernel@vger.kernel.org,
+        Xuefeng Li <lixuefeng@loongson.cn>
+Subject: Re: [PATCH bpf-next v2] samples/bpf: Update README.rst and Makefile
+ for manually compiling LLVM and clang
+Message-ID: <20210119215815.efyerbwwq5x2o26q@google.com>
+References: <1611042978-21473-1-git-send-email-yangtiezhu@loongson.cn>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <1611042978-21473-1-git-send-email-yangtiezhu@loongson.cn>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 15 Jan 2021 21:26:23 -0800 Grant Grundler wrote:
-> RTL8156 sends notifications about every 32ms.
-> Only display/log notifications when something changes.
-> 
-> This issue has been reported by others:
-> 	https://bugs.launchpad.net/ubuntu/+source/linux/+bug/1832472
-> 	https://lkml.org/lkml/2020/8/27/1083
-> 
-> ...
-> [785962.779840] usb 1-1: new high-speed USB device number 5 using xhci_hcd
-> [785962.929944] usb 1-1: New USB device found, idVendor=0bda, idProduct=8156, bcdDevice=30.00
-> [785962.929949] usb 1-1: New USB device strings: Mfr=1, Product=2, SerialNumber=6
-> [785962.929952] usb 1-1: Product: USB 10/100/1G/2.5G LAN
-> [785962.929954] usb 1-1: Manufacturer: Realtek
-> [785962.929956] usb 1-1: SerialNumber: 000000001
-> [785962.991755] usbcore: registered new interface driver cdc_ether
-> [785963.017068] cdc_ncm 1-1:2.0: MAC-Address: 00:24:27:88:08:15
-> [785963.017072] cdc_ncm 1-1:2.0: setting rx_max = 16384
-> [785963.017169] cdc_ncm 1-1:2.0: setting tx_max = 16384
-> [785963.017682] cdc_ncm 1-1:2.0 usb0: register 'cdc_ncm' at usb-0000:00:14.0-1, CDC NCM, 00:24:27:88:08:15
-> [785963.019211] usbcore: registered new interface driver cdc_ncm
-> [785963.023856] usbcore: registered new interface driver cdc_wdm
-> [785963.025461] usbcore: registered new interface driver cdc_mbim
-> [785963.038824] cdc_ncm 1-1:2.0 enx002427880815: renamed from usb0
-> [785963.089586] cdc_ncm 1-1:2.0 enx002427880815: network connection: disconnected
-> [785963.121673] cdc_ncm 1-1:2.0 enx002427880815: network connection: disconnected
-> [785963.153682] cdc_ncm 1-1:2.0 enx002427880815: network connection: disconnected
-> ...
-> 
-> This is about 2KB per second and will overwrite all contents of a 1MB
-> dmesg buffer in under 10 minutes rendering them useless for debugging
-> many kernel problems.
-> 
-> This is also an extra 180 MB/day in /var/logs (or 1GB per week) rendering
-> the majority of those logs useless too.
-> 
-> When the link is up (expected state), spew amount is >2x higher:
-> ...
-> [786139.600992] cdc_ncm 2-1:2.0 enx002427880815: network connection: connected
-> [786139.632997] cdc_ncm 2-1:2.0 enx002427880815: 2500 mbit/s downlink 2500 mbit/s uplink
-> [786139.665097] cdc_ncm 2-1:2.0 enx002427880815: network connection: connected
-> [786139.697100] cdc_ncm 2-1:2.0 enx002427880815: 2500 mbit/s downlink 2500 mbit/s uplink
-> [786139.729094] cdc_ncm 2-1:2.0 enx002427880815: network connection: connected
-> [786139.761108] cdc_ncm 2-1:2.0 enx002427880815: 2500 mbit/s downlink 2500 mbit/s uplink
-> ...
-> 
-> Chrome OS cannot support RTL8156 until this is fixed.
+On 2021-01-19, Tiezhu Yang wrote:
+>The current llvm/clang build procedure in samples/bpf/README.rst is
+>out of date. See below that the links are not accessible any more.
+>
+>$ git clone http://llvm.org/git/llvm.git
+>Cloning into 'llvm'...
+>fatal: unable to access 'http://llvm.org/git/llvm.git/': Maximum (20) redirects followed
+>$ git clone --depth 1 http://llvm.org/git/clang.git
+>Cloning into 'clang'...
+>fatal: unable to access 'http://llvm.org/git/clang.git/': Maximum (20) redirects followed
+>
+>The llvm community has adopted new ways to build the compiler. There are
+>different ways to build llvm/clang, the Clang Getting Started page [1] has
+>one way. As Yonghong said, it is better to just copy the build procedure
+>in Documentation/bpf/bpf_devel_QA.rst to keep consistent.
+>
+>I verified the procedure and it is proved to be feasible, so we should
+>update README.rst to reflect the reality. At the same time, update the
+>related comment in Makefile.
+>
+>[1] https://clang.llvm.org/get_started.html
+>
+>Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
+>Acked-by: Yonghong Song <yhs@fb.com>
+>---
+>
+>v2: Update the commit message suggested by Yonghong,
+>    thank you very much.
+>
+> samples/bpf/Makefile   |  2 +-
+> samples/bpf/README.rst | 17 ++++++++++-------
+> 2 files changed, 11 insertions(+), 8 deletions(-)
+>
+>diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
+>index 26fc96c..d061446 100644
+>--- a/samples/bpf/Makefile
+>+++ b/samples/bpf/Makefile
+>@@ -208,7 +208,7 @@ TPROGLDLIBS_xdpsock		+= -pthread -lcap
+> TPROGLDLIBS_xsk_fwd		+= -pthread
+>
+> # Allows pointing LLC/CLANG to a LLVM backend with bpf support, redefine on cmdline:
+>-#  make M=samples/bpf/ LLC=~/git/llvm/build/bin/llc CLANG=~/git/llvm/build/bin/clang
+>+# make M=samples/bpf LLC=~/git/llvm-project/llvm/build/bin/llc CLANG=~/git/llvm-project/llvm/build/bin/clang
+> LLC ?= llc
+> CLANG ?= clang
+> OPT ?= opt
+>diff --git a/samples/bpf/README.rst b/samples/bpf/README.rst
+>index dd34b2d..d1be438 100644
+>--- a/samples/bpf/README.rst
+>+++ b/samples/bpf/README.rst
+>@@ -65,17 +65,20 @@ To generate a smaller llc binary one can use::
+> Quick sniplet for manually compiling LLVM and clang
+> (build dependencies are cmake and gcc-c++)::
+>
+>- $ git clone http://llvm.org/git/llvm.git
+>- $ cd llvm/tools
+>- $ git clone --depth 1 http://llvm.org/git/clang.git
+>- $ cd ..; mkdir build; cd build
+>- $ cmake .. -DLLVM_TARGETS_TO_BUILD="BPF;X86"
+>- $ make -j $(getconf _NPROCESSORS_ONLN)
+>+ $ git clone https://github.com/llvm/llvm-project.git
+>+ $ mkdir -p llvm-project/llvm/build/install
 
-> @@ -1867,7 +1876,8 @@ static void cdc_ncm_status(struct usbnet *dev, struct urb *urb)
->  		 * USB_CDC_NOTIFY_NETWORK_CONNECTION notification shall be
->  		 * sent by device after USB_CDC_NOTIFY_SPEED_CHANGE.
->  		 */
-> -		usbnet_link_change(dev, !!event->wValue, 0);
-> +		if (netif_carrier_ok(dev->net) != !!event->wValue)
-> +			usbnet_link_change(dev, !!event->wValue, 0);
->  		break;
->  
->  	case USB_CDC_NOTIFY_SPEED_CHANGE:
+llvm-project/llvm/build/install is not used.
 
-Thanks for the patch, this looks like an improvement over:
+>+ $ cd llvm-project/llvm/build
+>+ $ cmake .. -G "Ninja" -DLLVM_TARGETS_TO_BUILD="BPF;X86" \
+>+            -DLLVM_ENABLE_PROJECTS="clang"    \
+>+            -DBUILD_SHARED_LIBS=OFF           \
 
-59b4a8fa27f5 ("CDC-NCM: remove "connected" log message")
+-DBUILD_SHARED_LIBS=OFF is the default. It can be omitted.
 
-right? Should we bring the "network connection: connected" message back?
+>+            -DCMAKE_BUILD_TYPE=Release        \
+>+            -DLLVM_BUILD_RUNTIME=OFF
 
+-DLLVM_BUILD_RUNTIME=OFF can be omitted if none of
+compiler-rt/libc++/libc++abi is built.
 
-Do you want all of these patches to be applied to 5.11 and backported?
-Feels to me like the last one is a fix and the rest can go into -next,
-WDYT?
+>+ $ ninja
+>
+> It is also possible to point make to the newly compiled 'llc' or
+> 'clang' command via redefining LLC or CLANG on the make command line::
+>
+>- make M=samples/bpf LLC=~/git/llvm/build/bin/llc CLANG=~/git/llvm/build/bin/clang
+>+ make M=samples/bpf LLC=~/git/llvm-project/llvm/build/bin/llc CLANG=~/git/llvm-project/llvm/build/bin/clang
+>
+> Cross compiling samples
+> -----------------------
+>-- 
+>2.1.0
+>
+>-- 
+>You received this message because you are subscribed to the Google Groups "Clang Built Linux" group.
+>To unsubscribe from this group and stop receiving emails from it, send an email to clang-built-linux+unsubscribe@googlegroups.com.
+>To view this discussion on the web visit https://groups.google.com/d/msgid/clang-built-linux/1611042978-21473-1-git-send-email-yangtiezhu%40loongson.cn.
