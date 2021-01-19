@@ -2,128 +2,266 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E45A92FBF70
-	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 19:52:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AA6F52FBFDD
+	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 20:18:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388210AbhASStL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jan 2021 13:49:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41528 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2391743AbhASR7j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jan 2021 12:59:39 -0500
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71DE6C061573;
-        Tue, 19 Jan 2021 09:58:59 -0800 (PST)
-Received: by mail-wm1-x336.google.com with SMTP id e15so581563wme.0;
-        Tue, 19 Jan 2021 09:58:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Ud39rUOwi9a+eDdinAxLAEakzSkS3TdE+RD/bhNorzQ=;
-        b=VXR7vmWGIj2jjxYIWeOws2Wl7U9SiEVahWjLU/e+0eN82PYKaoRniIiDIRK7msShQ0
-         TBfAjeteW6riRRxAoQrjol1Z6EUC/OjkammyFdgHunOCrZtHA2/S6gDYFPSGopFWjlWD
-         glIrEMHhg+sYx/tZy/MByl3pxJr2XDyca5U6qecQ1fxzE4VbsVInnwY68Cy3NeeBetN/
-         9o4sKysDN9draRqQv1uBTFPEB8XXm+9dllwXobePv0iuIlgVkSFYjY6Ds/ssTN7xfL/U
-         58ts6kr6GPaC4gKFgM5/Li01b/rMBs7Fkqrpp0/rQojH4NAGkbMsjrn9ZPgWSxc4g3yd
-         Rrwg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Ud39rUOwi9a+eDdinAxLAEakzSkS3TdE+RD/bhNorzQ=;
-        b=BW9amq7I1zUq+i6ZaJzxa6EtekYENN5TFsyYHbsvB0w3VeXHNKvqhBDIVBot9GfGzK
-         6WBwyCVxS6YcBFwsbolgry4SQuy9KUXhguTCFOCc6CeTZu1IoWhKzc4hfSDueNDyMgBH
-         wcaQQ/2mB2W3jdy6FdNnRqDSGGEDE47hgZulMBKz2thOsQg6RHoU5deDILyyW+1Rj5G8
-         22pgJ3Azj7EB28P0qyHoBZ17j3otdiZi8raA4YCuk7/c9cH8TJa4tURNVqAWFNvaksc7
-         9TjzzdKQPXBdY4ljmB9IcBR68duI0xdnXNyqKIeUXIT99W95VwYLE2iUmD1m8HiGP8ai
-         KZcA==
-X-Gm-Message-State: AOAM5336rHo/LXhbzlFLETMeW98zj5bkG1XO5Yxef33EeudffoavmtBn
-        0HYhHFTr36FMhdJtMZNte5hC6VIFA/OTPnva
-X-Google-Smtp-Source: ABdhPJxJX9Y5y3EIyEHi9aNLRaU90KBI2X7LlLhhRsr/PehD6xzCuAqiAzYfgdq2RgPg9LZ6ZsBpSg==
-X-Received: by 2002:a05:600c:3548:: with SMTP id i8mr747653wmq.104.1611079137762;
-        Tue, 19 Jan 2021 09:58:57 -0800 (PST)
-Received: from anparri.mshome.net (host-79-50-177-118.retail.telecomitalia.it. [79.50.177.118])
-        by smtp.gmail.com with ESMTPSA id h125sm5899312wmh.16.2021.01.19.09.58.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Jan 2021 09:58:57 -0800 (PST)
-From:   "Andrea Parri (Microsoft)" <parri.andrea@gmail.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     "K . Y . Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>,
-        Michael Kelley <mikelley@microsoft.com>,
-        Tianyu Lan <Tianyu.Lan@microsoft.com>,
-        Saruhan Karademir <skarade@microsoft.com>,
-        Juan Vazquez <juvazq@microsoft.com>,
-        linux-hyperv@vger.kernel.org,
-        "Andrea Parri (Microsoft)" <parri.andrea@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Ingo Molnar <mingo@redhat.com>, Borislav Petkov <bp@alien8.de>,
-        "H. Peter Anvin" <hpa@zytor.com>, Arnd Bergmann <arnd@arndb.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, x86@kernel.org,
-        linux-arch@vger.kernel.org, netdev@vger.kernel.org
-Subject: [PATCH 0/4] Drivers: hv: vmbus: Restrict devices and configurations on 'isolated' guests
-Date:   Tue, 19 Jan 2021 18:58:37 +0100
-Message-Id: <20210119175841.22248-1-parri.andrea@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        id S1727521AbhASTSl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jan 2021 14:18:41 -0500
+Received: from mail.kernel.org ([198.145.29.99]:40796 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2392247AbhASTMz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 19 Jan 2021 14:12:55 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 913C423104;
+        Tue, 19 Jan 2021 19:12:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1611083533;
+        bh=3/eW4H3tjjKxnfp2qh2frcEPs8tUd6lc34Qs1+xtguc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=BzOOoblDH+rl4uGsGhSGcTpuyiUGUEVnKbaiCQxCn/kcvSNIffVjZllIC1jMj2MIP
+         QP+V3MSHN8Qz5TLjzbT4qadIK6bT4v8p/fpDMbSZI5SIyZ6S1XYiLTvqxCeXwZoCjR
+         6bNLQON5tdxVZuuh9ixC7RCbS00Xi7GoXXloM6vgLrWCOEcU1j4AZWqj6VnZW4YkoJ
+         qxhSMZZL+HBfBSBEiqiGoarrt0p3QrFsHeJ18FBF7vWC4UOMzc5SdiPAV86w3CB/Wc
+         P7bsQOKq1nyXXRLIR9cANhkx2+XMjjYgQtevKj9id8R4lEaH8EPEwtQB+EXGQM+GMi
+         RM1fZrYRQSMvg==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net-next 3/4] net: move rollback_registered_many()
+Date:   Tue, 19 Jan 2021 11:11:57 -0800
+Message-Id: <20210119191158.3093099-4-kuba@kernel.org>
+X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20210119191158.3093099-1-kuba@kernel.org>
+References: <20210119191158.3093099-1-kuba@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi all,
+Move rollback_registered_many() and add a temporary
+forward declaration to make merging the code into
+unregister_netdevice_many() easier to review.
 
-To reduce the footprint of the code that will be exercised, and hence
-the exposure to bugs and vulnerabilities, restrict configurations and
-devices on 'isolated' VMs.
+No functional changes.
 
-Specs of the Isolation Configuration leaf (cf. patch #1) were derived
-from internal discussions with the Hyper-V team and, AFAICT, they are
-not publicly available yet.
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+---
+ net/core/dev.c | 188 +++++++++++++++++++++++++------------------------
+ 1 file changed, 95 insertions(+), 93 deletions(-)
 
-The series has some minor/naming conflict with on-going work aimed at
-enabling SNP VMs on Hyper-V[1]; such conflicts can be addressed later
-at the right time.
-
-Applies to hyperv-next.
-
-Thanks,
-  Andrea
-
-[1] https://github.com/lantianyu/linux # cvm
-
-Cc: Thomas Gleixner <tglx@linutronix.de>
-Cc: Ingo Molnar <mingo@redhat.com>
-Cc: Borislav Petkov <bp@alien8.de>
-Cc: "H. Peter Anvin" <hpa@zytor.com>
-Cc: Arnd Bergmann <arnd@arndb.de>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: x86@kernel.org
-Cc: linux-arch@vger.kernel.org
-Cc: netdev@vger.kernel.org
-
-Andrea Parri (Microsoft) (4):
-  x86/hyperv: Load/save the Isolation Configuration leaf
-  Drivers: hv: vmbus: Restrict vmbus_devices on isolated guests
-  Drivers: hv: vmbus: Enforce 'VMBus version >= 5.2' on isolated guests
-  hv_netvsc: Restrict configurations on isolated guests
-
- arch/x86/hyperv/hv_init.c          | 15 +++++++++++++
- arch/x86/include/asm/hyperv-tlfs.h | 15 +++++++++++++
- arch/x86/kernel/cpu/mshyperv.c     |  9 ++++++++
- drivers/hv/channel_mgmt.c          | 36 ++++++++++++++++++++++++++++++
- drivers/hv/connection.c            | 13 +++++++++++
- drivers/net/hyperv/netvsc.c        | 21 ++++++++++++++---
- include/asm-generic/hyperv-tlfs.h  |  1 +
- include/asm-generic/mshyperv.h     |  5 +++++
- include/linux/hyperv.h             |  1 +
- 9 files changed, 113 insertions(+), 3 deletions(-)
-
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 85e9d4b7ddf2..a7841d03c910 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -9459,99 +9459,6 @@ static void net_set_todo(struct net_device *dev)
+ 	dev_net(dev)->dev_unreg_count++;
+ }
+ 
+-static void rollback_registered_many(struct list_head *head)
+-{
+-	struct net_device *dev, *tmp;
+-	LIST_HEAD(close_head);
+-
+-	BUG_ON(dev_boot_phase);
+-	ASSERT_RTNL();
+-
+-	list_for_each_entry_safe(dev, tmp, head, unreg_list) {
+-		/* Some devices call without registering
+-		 * for initialization unwind. Remove those
+-		 * devices and proceed with the remaining.
+-		 */
+-		if (dev->reg_state == NETREG_UNINITIALIZED) {
+-			pr_debug("unregister_netdevice: device %s/%p never was registered\n",
+-				 dev->name, dev);
+-
+-			WARN_ON(1);
+-			list_del(&dev->unreg_list);
+-			continue;
+-		}
+-		dev->dismantle = true;
+-		BUG_ON(dev->reg_state != NETREG_REGISTERED);
+-	}
+-
+-	/* If device is running, close it first. */
+-	list_for_each_entry(dev, head, unreg_list)
+-		list_add_tail(&dev->close_list, &close_head);
+-	dev_close_many(&close_head, true);
+-
+-	list_for_each_entry(dev, head, unreg_list) {
+-		/* And unlink it from device chain. */
+-		unlist_netdevice(dev);
+-
+-		dev->reg_state = NETREG_UNREGISTERING;
+-	}
+-	flush_all_backlogs();
+-
+-	synchronize_net();
+-
+-	list_for_each_entry(dev, head, unreg_list) {
+-		struct sk_buff *skb = NULL;
+-
+-		/* Shutdown queueing discipline. */
+-		dev_shutdown(dev);
+-
+-		dev_xdp_uninstall(dev);
+-
+-		/* Notify protocols, that we are about to destroy
+-		 * this device. They should clean all the things.
+-		 */
+-		call_netdevice_notifiers(NETDEV_UNREGISTER, dev);
+-
+-		if (!dev->rtnl_link_ops ||
+-		    dev->rtnl_link_state == RTNL_LINK_INITIALIZED)
+-			skb = rtmsg_ifinfo_build_skb(RTM_DELLINK, dev, ~0U, 0,
+-						     GFP_KERNEL, NULL, 0);
+-
+-		/*
+-		 *	Flush the unicast and multicast chains
+-		 */
+-		dev_uc_flush(dev);
+-		dev_mc_flush(dev);
+-
+-		netdev_name_node_alt_flush(dev);
+-		netdev_name_node_free(dev->name_node);
+-
+-		if (dev->netdev_ops->ndo_uninit)
+-			dev->netdev_ops->ndo_uninit(dev);
+-
+-		if (skb)
+-			rtmsg_ifinfo_send(skb, dev, GFP_KERNEL);
+-
+-		/* Notifier chain MUST detach us all upper devices. */
+-		WARN_ON(netdev_has_any_upper_dev(dev));
+-		WARN_ON(netdev_has_any_lower_dev(dev));
+-
+-		/* Remove entries from kobject tree */
+-		netdev_unregister_kobject(dev);
+-#ifdef CONFIG_XPS
+-		/* Remove XPS queueing entries */
+-		netif_reset_xps_queues_gt(dev, 0);
+-#endif
+-	}
+-
+-	synchronize_net();
+-
+-	list_for_each_entry(dev, head, unreg_list) {
+-		dev_put(dev);
+-		net_set_todo(dev);
+-	}
+-}
+-
+ static netdev_features_t netdev_sync_upper_features(struct net_device *lower,
+ 	struct net_device *upper, netdev_features_t features)
+ {
+@@ -10698,6 +10605,8 @@ void synchronize_net(void)
+ }
+ EXPORT_SYMBOL(synchronize_net);
+ 
++static void rollback_registered_many(struct list_head *head);
++
+ /**
+  *	unregister_netdevice_queue - remove device from the kernel
+  *	@dev: device
+@@ -10743,6 +10652,99 @@ void unregister_netdevice_many(struct list_head *head)
+ }
+ EXPORT_SYMBOL(unregister_netdevice_many);
+ 
++static void rollback_registered_many(struct list_head *head)
++{
++	struct net_device *dev, *tmp;
++	LIST_HEAD(close_head);
++
++	BUG_ON(dev_boot_phase);
++	ASSERT_RTNL();
++
++	list_for_each_entry_safe(dev, tmp, head, unreg_list) {
++		/* Some devices call without registering
++		 * for initialization unwind. Remove those
++		 * devices and proceed with the remaining.
++		 */
++		if (dev->reg_state == NETREG_UNINITIALIZED) {
++			pr_debug("unregister_netdevice: device %s/%p never was registered\n",
++				 dev->name, dev);
++
++			WARN_ON(1);
++			list_del(&dev->unreg_list);
++			continue;
++		}
++		dev->dismantle = true;
++		BUG_ON(dev->reg_state != NETREG_REGISTERED);
++	}
++
++	/* If device is running, close it first. */
++	list_for_each_entry(dev, head, unreg_list)
++		list_add_tail(&dev->close_list, &close_head);
++	dev_close_many(&close_head, true);
++
++	list_for_each_entry(dev, head, unreg_list) {
++		/* And unlink it from device chain. */
++		unlist_netdevice(dev);
++
++		dev->reg_state = NETREG_UNREGISTERING;
++	}
++	flush_all_backlogs();
++
++	synchronize_net();
++
++	list_for_each_entry(dev, head, unreg_list) {
++		struct sk_buff *skb = NULL;
++
++		/* Shutdown queueing discipline. */
++		dev_shutdown(dev);
++
++		dev_xdp_uninstall(dev);
++
++		/* Notify protocols, that we are about to destroy
++		 * this device. They should clean all the things.
++		 */
++		call_netdevice_notifiers(NETDEV_UNREGISTER, dev);
++
++		if (!dev->rtnl_link_ops ||
++		    dev->rtnl_link_state == RTNL_LINK_INITIALIZED)
++			skb = rtmsg_ifinfo_build_skb(RTM_DELLINK, dev, ~0U, 0,
++						     GFP_KERNEL, NULL, 0);
++
++		/*
++		 *	Flush the unicast and multicast chains
++		 */
++		dev_uc_flush(dev);
++		dev_mc_flush(dev);
++
++		netdev_name_node_alt_flush(dev);
++		netdev_name_node_free(dev->name_node);
++
++		if (dev->netdev_ops->ndo_uninit)
++			dev->netdev_ops->ndo_uninit(dev);
++
++		if (skb)
++			rtmsg_ifinfo_send(skb, dev, GFP_KERNEL);
++
++		/* Notifier chain MUST detach us all upper devices. */
++		WARN_ON(netdev_has_any_upper_dev(dev));
++		WARN_ON(netdev_has_any_lower_dev(dev));
++
++		/* Remove entries from kobject tree */
++		netdev_unregister_kobject(dev);
++#ifdef CONFIG_XPS
++		/* Remove XPS queueing entries */
++		netif_reset_xps_queues_gt(dev, 0);
++#endif
++	}
++
++	synchronize_net();
++
++	list_for_each_entry(dev, head, unreg_list) {
++		dev_put(dev);
++		net_set_todo(dev);
++	}
++}
++
+ /**
+  *	unregister_netdev - remove device from the kernel
+  *	@dev: device
 -- 
-2.25.1
+2.26.2
 
