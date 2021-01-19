@@ -2,19 +2,19 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E0E82FB8F4
-	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 15:34:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6EE152FB8EE
+	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 15:34:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2395135AbhASOHD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jan 2021 09:07:03 -0500
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:40511 "EHLO
+        id S2390645AbhASODt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jan 2021 09:03:49 -0500
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:37590 "EHLO
         mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S2393784AbhASNJN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jan 2021 08:09:13 -0500
+        with ESMTP id S1732659AbhASMfz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jan 2021 07:35:55 -0500
 Received: from Internal Mail-Server by MTLPINE1 (envelope-from maximmi@mellanox.com)
         with SMTP; 19 Jan 2021 14:08:15 +0200
 Received: from dev-l-vrt-208.mtl.labs.mlnx (dev-l-vrt-208.mtl.labs.mlnx [10.234.208.1])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 10JC8FR2021916;
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 10JC8FR3021916;
         Tue, 19 Jan 2021 14:08:15 +0200
 From:   Maxim Mikityanskiy <maximmi@mellanox.com>
 To:     "David S. Miller" <davem@davemloft.net>,
@@ -28,9 +28,9 @@ Cc:     Saeed Mahameed <saeedm@nvidia.com>,
         Maxim Mikityanskiy <maximmi@nvidia.com>,
         Dan Carpenter <dan.carpenter@oracle.com>,
         netdev@vger.kernel.org
-Subject: [PATCH net-next v4 1/5] net: sched: Add multi-queue support to sch_tree_lock
-Date:   Tue, 19 Jan 2021 14:08:11 +0200
-Message-Id: <20210119120815.463334-2-maximmi@mellanox.com>
+Subject: [PATCH net-next v4 2/5] net: sched: Add extack to Qdisc_class_ops.delete
+Date:   Tue, 19 Jan 2021 14:08:12 +0200
+Message-Id: <20210119120815.463334-3-maximmi@mellanox.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210119120815.463334-1-maximmi@mellanox.com>
 References: <20210119120815.463334-1-maximmi@mellanox.com>
@@ -40,54 +40,184 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The existing qdiscs that set TCQ_F_MQROOT don't use sch_tree_lock.
-However, hardware-offloaded HTB will start setting this flag while also
-using sch_tree_lock.
-
-The current implementation of sch_tree_lock basically locks on
-qdisc->dev_queue->qdisc, and it works fine when the tree is attached to
-some queue. However, it's not the case for MQROOT qdiscs: such a qdisc
-is the root itself, and its dev_queue just points to queue 0, while not
-actually being used, because there are real per-queue qdiscs.
-
-This patch changes the logic of sch_tree_lock and sch_tree_unlock to
-lock the qdisc itself if it's the MQROOT.
+In a following commit, sch_htb will start using extack in the delete
+class operation to pass hardware errors in offload mode. This commit
+prepares for that by adding the extack parameter to this callback and
+converting usage of the existing qdiscs.
 
 Signed-off-by: Maxim Mikityanskiy <maximmi@mellanox.com>
 Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
 ---
- include/net/sch_generic.h | 14 ++++++++++----
- 1 file changed, 10 insertions(+), 4 deletions(-)
+ include/net/sch_generic.h | 3 ++-
+ net/sched/sch_api.c       | 7 ++++---
+ net/sched/sch_atm.c       | 3 ++-
+ net/sched/sch_cbq.c       | 3 ++-
+ net/sched/sch_drr.c       | 3 ++-
+ net/sched/sch_dsmark.c    | 3 ++-
+ net/sched/sch_hfsc.c      | 3 ++-
+ net/sched/sch_htb.c       | 3 ++-
+ net/sched/sch_qfq.c       | 3 ++-
+ net/sched/sch_sfb.c       | 3 ++-
+ 10 files changed, 22 insertions(+), 12 deletions(-)
 
 diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
-index 639e465a108f..9448e8cf1ee6 100644
+index 9448e8cf1ee6..2e94f2f5e895 100644
 --- a/include/net/sch_generic.h
 +++ b/include/net/sch_generic.h
-@@ -551,14 +551,20 @@ static inline struct net_device *qdisc_dev(const struct Qdisc *qdisc)
- 	return qdisc->dev_queue->dev;
- }
+@@ -210,7 +210,8 @@ struct Qdisc_class_ops {
+ 	int			(*change)(struct Qdisc *, u32, u32,
+ 					struct nlattr **, unsigned long *,
+ 					struct netlink_ext_ack *);
+-	int			(*delete)(struct Qdisc *, unsigned long);
++	int			(*delete)(struct Qdisc *, unsigned long,
++					  struct netlink_ext_ack *);
+ 	void			(*walk)(struct Qdisc *, struct qdisc_walker * arg);
  
--static inline void sch_tree_lock(const struct Qdisc *q)
-+static inline void sch_tree_lock(struct Qdisc *q)
+ 	/* Filter manipulation */
+diff --git a/net/sched/sch_api.c b/net/sched/sch_api.c
+index 51cb553e4317..433a4ec42b55 100644
+--- a/net/sched/sch_api.c
++++ b/net/sched/sch_api.c
+@@ -1865,7 +1865,8 @@ static int tclass_notify(struct net *net, struct sk_buff *oskb,
+ static int tclass_del_notify(struct net *net,
+ 			     const struct Qdisc_class_ops *cops,
+ 			     struct sk_buff *oskb, struct nlmsghdr *n,
+-			     struct Qdisc *q, unsigned long cl)
++			     struct Qdisc *q, unsigned long cl,
++			     struct netlink_ext_ack *extack)
  {
--	spin_lock_bh(qdisc_root_sleeping_lock(q));
-+	if (q->flags & TCQ_F_MQROOT)
-+		spin_lock_bh(qdisc_lock(q));
-+	else
-+		spin_lock_bh(qdisc_root_sleeping_lock(q));
+ 	u32 portid = oskb ? NETLINK_CB(oskb).portid : 0;
+ 	struct sk_buff *skb;
+@@ -1884,7 +1885,7 @@ static int tclass_del_notify(struct net *net,
+ 		return -EINVAL;
+ 	}
+ 
+-	err = cops->delete(q, cl);
++	err = cops->delete(q, cl, extack);
+ 	if (err) {
+ 		kfree_skb(skb);
+ 		return err;
+@@ -2087,7 +2088,7 @@ static int tc_ctl_tclass(struct sk_buff *skb, struct nlmsghdr *n,
+ 				goto out;
+ 			break;
+ 		case RTM_DELTCLASS:
+-			err = tclass_del_notify(net, cops, skb, n, q, cl);
++			err = tclass_del_notify(net, cops, skb, n, q, cl, extack);
+ 			/* Unbind the class with flilters with 0 */
+ 			tc_bind_tclass(q, portid, clid, 0);
+ 			goto out;
+diff --git a/net/sched/sch_atm.c b/net/sched/sch_atm.c
+index 007bd2d9f1ff..d0c9a57398fc 100644
+--- a/net/sched/sch_atm.c
++++ b/net/sched/sch_atm.c
+@@ -320,7 +320,8 @@ static int atm_tc_change(struct Qdisc *sch, u32 classid, u32 parent,
+ 	return error;
  }
  
--static inline void sch_tree_unlock(const struct Qdisc *q)
-+static inline void sch_tree_unlock(struct Qdisc *q)
+-static int atm_tc_delete(struct Qdisc *sch, unsigned long arg)
++static int atm_tc_delete(struct Qdisc *sch, unsigned long arg,
++			 struct netlink_ext_ack *extack)
  {
--	spin_unlock_bh(qdisc_root_sleeping_lock(q));
-+	if (q->flags & TCQ_F_MQROOT)
-+		spin_unlock_bh(qdisc_lock(q));
-+	else
-+		spin_unlock_bh(qdisc_root_sleeping_lock(q));
+ 	struct atm_qdisc_data *p = qdisc_priv(sch);
+ 	struct atm_flow_data *flow = (struct atm_flow_data *)arg;
+diff --git a/net/sched/sch_cbq.c b/net/sched/sch_cbq.c
+index 53d45e029c36..320b3d31fa97 100644
+--- a/net/sched/sch_cbq.c
++++ b/net/sched/sch_cbq.c
+@@ -1675,7 +1675,8 @@ cbq_change_class(struct Qdisc *sch, u32 classid, u32 parentid, struct nlattr **t
+ 	return err;
  }
  
- extern struct Qdisc noop_qdisc;
+-static int cbq_delete(struct Qdisc *sch, unsigned long arg)
++static int cbq_delete(struct Qdisc *sch, unsigned long arg,
++		      struct netlink_ext_ack *extack)
+ {
+ 	struct cbq_sched_data *q = qdisc_priv(sch);
+ 	struct cbq_class *cl = (struct cbq_class *)arg;
+diff --git a/net/sched/sch_drr.c b/net/sched/sch_drr.c
+index dde564670ad8..fc1e47069593 100644
+--- a/net/sched/sch_drr.c
++++ b/net/sched/sch_drr.c
+@@ -146,7 +146,8 @@ static void drr_destroy_class(struct Qdisc *sch, struct drr_class *cl)
+ 	kfree(cl);
+ }
+ 
+-static int drr_delete_class(struct Qdisc *sch, unsigned long arg)
++static int drr_delete_class(struct Qdisc *sch, unsigned long arg,
++			    struct netlink_ext_ack *extack)
+ {
+ 	struct drr_sched *q = qdisc_priv(sch);
+ 	struct drr_class *cl = (struct drr_class *)arg;
+diff --git a/net/sched/sch_dsmark.c b/net/sched/sch_dsmark.c
+index 2b88710994d7..cd2748e2d4a2 100644
+--- a/net/sched/sch_dsmark.c
++++ b/net/sched/sch_dsmark.c
+@@ -150,7 +150,8 @@ static int dsmark_change(struct Qdisc *sch, u32 classid, u32 parent,
+ 	return err;
+ }
+ 
+-static int dsmark_delete(struct Qdisc *sch, unsigned long arg)
++static int dsmark_delete(struct Qdisc *sch, unsigned long arg,
++			 struct netlink_ext_ack *extack)
+ {
+ 	struct dsmark_qdisc_data *p = qdisc_priv(sch);
+ 
+diff --git a/net/sched/sch_hfsc.c b/net/sched/sch_hfsc.c
+index d1902fca9844..bf0034c66e35 100644
+--- a/net/sched/sch_hfsc.c
++++ b/net/sched/sch_hfsc.c
+@@ -1090,7 +1090,8 @@ hfsc_destroy_class(struct Qdisc *sch, struct hfsc_class *cl)
+ }
+ 
+ static int
+-hfsc_delete_class(struct Qdisc *sch, unsigned long arg)
++hfsc_delete_class(struct Qdisc *sch, unsigned long arg,
++		  struct netlink_ext_ack *extack)
+ {
+ 	struct hfsc_sched *q = qdisc_priv(sch);
+ 	struct hfsc_class *cl = (struct hfsc_class *)arg;
+diff --git a/net/sched/sch_htb.c b/net/sched/sch_htb.c
+index cd70dbcbd72f..a8fc97b05bd8 100644
+--- a/net/sched/sch_htb.c
++++ b/net/sched/sch_htb.c
+@@ -1246,7 +1246,8 @@ static void htb_destroy(struct Qdisc *sch)
+ 	__qdisc_reset_queue(&q->direct_queue);
+ }
+ 
+-static int htb_delete(struct Qdisc *sch, unsigned long arg)
++static int htb_delete(struct Qdisc *sch, unsigned long arg,
++		      struct netlink_ext_ack *extack)
+ {
+ 	struct htb_sched *q = qdisc_priv(sch);
+ 	struct htb_class *cl = (struct htb_class *)arg;
+diff --git a/net/sched/sch_qfq.c b/net/sched/sch_qfq.c
+index 6335230a971e..1db9d4a2ef5e 100644
+--- a/net/sched/sch_qfq.c
++++ b/net/sched/sch_qfq.c
+@@ -529,7 +529,8 @@ static void qfq_destroy_class(struct Qdisc *sch, struct qfq_class *cl)
+ 	kfree(cl);
+ }
+ 
+-static int qfq_delete_class(struct Qdisc *sch, unsigned long arg)
++static int qfq_delete_class(struct Qdisc *sch, unsigned long arg,
++			    struct netlink_ext_ack *extack)
+ {
+ 	struct qfq_sched *q = qdisc_priv(sch);
+ 	struct qfq_class *cl = (struct qfq_class *)arg;
+diff --git a/net/sched/sch_sfb.c b/net/sched/sch_sfb.c
+index da047a37a3bf..dde829d4b9f8 100644
+--- a/net/sched/sch_sfb.c
++++ b/net/sched/sch_sfb.c
+@@ -649,7 +649,8 @@ static int sfb_change_class(struct Qdisc *sch, u32 classid, u32 parentid,
+ 	return -ENOSYS;
+ }
+ 
+-static int sfb_delete(struct Qdisc *sch, unsigned long cl)
++static int sfb_delete(struct Qdisc *sch, unsigned long cl,
++		      struct netlink_ext_ack *extack)
+ {
+ 	return -ENOSYS;
+ }
 -- 
 2.25.1
 
