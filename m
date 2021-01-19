@@ -2,43 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 746F22FB13A
-	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 07:25:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9860B2FB141
+	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 07:25:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726202AbhASGWO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jan 2021 01:22:14 -0500
-Received: from mail.kernel.org ([198.145.29.99]:60700 "EHLO mail.kernel.org"
+        id S1728349AbhASGXG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jan 2021 01:23:06 -0500
+Received: from mail.kernel.org ([198.145.29.99]:60710 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2404020AbhASFuv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S2404018AbhASFuv (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 19 Jan 2021 00:50:51 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 8B9B522B49;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 9671822C9D;
         Tue, 19 Jan 2021 05:50:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1611035410;
-        bh=iCqo0LyFJW91MjANA/HWsFegwHsFucrKPdtF/UumK5c=;
+        bh=PE5fOYF64qYdnIZ3SUdiCMhNLow+nhfFvkCNiJdpz6w=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=URci2OeBE3sEsAx8hJTbt5rzApAxMjORzsMy6noO9Rks4iw4KTpJ50cCIJcfQQ9un
-         dE8R01luyK0pXZJfB5aJnVhd6QLITIF7+1159DsfUokl/FtZuEr1hJYBe7kGAWsUTn
-         U6ILMWBDwKQTvITlahLFo6juXRHxN8o62GY51RX0cz79txz3BjMCeRBTqd1TXmiiQA
-         IcEVo2xSwcpjKmahMpEMPjHxwAp4crUnLllbgdPsWRuWOBHfatJ7rr5CmdqCwsPRQl
-         aq69aPA7jmXM2QGAdhkXoLrZNvAc6q/LLnu2aGw1uTxToYVU/rfczySXf2IOmQOIR3
-         FunvIg3WXyHCA==
+        b=Ba+gC0OeBXD+uOVOFEWLwZwxGWpRoAem6HVjrnyn0Fwwf3a9vzYRx1qW/glgzW3ge
+         XfDoRu6KzjWPuuNFvw9RvuS17B2Yd4HWANP5aR70xwxEwKmqbTYI1bxkQfHmJEovCN
+         gBvlgEi4ggrZ3Wt+zu3M0YPOh8U5HxnuyrK9Q80AXz6jhE24Cpks+H67J6OWBAeSDn
+         eXXeJMDUC6BioYxZm6mrwcX3463ot1Hc42roMCGLieV7u9TV/CtbSMAnWq+BrwYAoc
+         /JNPp4dADo4ww5AYtgryMl/uHhsXQEqS53+PwBOqENIRZBHWzFlRr6cf7QVMcUVxUh
+         iFn+x/zK0E04g==
 Received: from pdx-korg-docbuild-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-1.ci.codeaurora.org (Postfix) with ESMTP id 7E89D601A5;
+        by pdx-korg-docbuild-1.ci.codeaurora.org (Postfix) with ESMTP id 8AE53604FC;
         Tue, 19 Jan 2021 05:50:10 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] arcnet: fix macro name when DEBUG is defined
+Subject: Re: [PATCH] net: hns: fix variable used when DEBUG is defined
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161103541051.1484.16409203594027734802.git-patchwork-notify@kernel.org>
+Message-Id: <161103541056.1484.11203374342891862522.git-patchwork-notify@kernel.org>
 Date:   Tue, 19 Jan 2021 05:50:10 +0000
-References: <20210117181519.527625-1-trix@redhat.com>
-In-Reply-To: <20210117181519.527625-1-trix@redhat.com>
+References: <20210117191044.533725-1-trix@redhat.com>
+In-Reply-To: <20210117191044.533725-1-trix@redhat.com>
 To:     Tom Rix <trix@redhat.com>
-Cc:     m.grzeschik@pengutronix.de, davem@davemloft.net, kuba@kernel.org,
-        joe@perches.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+Cc:     yisen.zhuang@huawei.com, salil.mehta@huawei.com,
+        davem@davemloft.net, kuba@kernel.org, timur@kernel.org,
+        hkallweit1@gmail.com, song.bao.hua@hisilicon.com,
+        tariqt@mellanox.com, wanghai38@huawei.com, Jason@zx2c4.com,
+        jesse.brandeburg@intel.com, dinghao.liu@zju.edu.cn,
+        liguozhu@huawei.com, huangdaode@hisilicon.com,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -47,22 +51,22 @@ Hello:
 
 This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Sun, 17 Jan 2021 10:15:19 -0800 you wrote:
+On Sun, 17 Jan 2021 11:10:44 -0800 you wrote:
 > From: Tom Rix <trix@redhat.com>
 > 
 > When DEBUG is defined this error occurs
 > 
-> drivers/net/arcnet/com20020_cs.c:70:15: error: ‘com20020_REG_W_ADDR_HI’
->   undeclared (first use in this function);
->   did you mean ‘COM20020_REG_W_ADDR_HI’?
->        ioaddr, com20020_REG_W_ADDR_HI);
->                ^~~~~~~~~~~~~~~~~~~~~~
+> drivers/net/ethernet/hisilicon/hns/hns_enet.c:1505:36: error:
+>   ‘struct net_device’ has no member named ‘ae_handle’;
+>   did you mean ‘rx_handler’?
+>   assert(skb->queue_mapping < ndev->ae_handle->q_num);
+>                                     ^~~~~~~~~
 > 
 > [...]
 
 Here is the summary with links:
-  - arcnet: fix macro name when DEBUG is defined
-    https://git.kernel.org/netdev/net-next/c/7cfabe4f85a5
+  - net: hns: fix variable used when DEBUG is defined
+    https://git.kernel.org/netdev/net-next/c/99d518970c5a
 
 You are awesome, thank you!
 --
