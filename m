@@ -2,155 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8621E2FB8CB
+	by mail.lfdr.de (Postfix) with ESMTP id F2D152FB8CC
 	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 15:34:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2394699AbhASNsU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jan 2021 08:48:20 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:44614 "EHLO
+        id S2394725AbhASNsX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jan 2021 08:48:23 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:30432 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2389151AbhASJwN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jan 2021 04:52:13 -0500
+        by vger.kernel.org with ESMTP id S1731459AbhASJ5S (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jan 2021 04:57:18 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1611049842;
+        s=mimecast20190719; t=1611050134;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          in-reply-to:in-reply-to:references:references;
-        bh=MDToM82xeMKamVLIGfz7Nyf28zoLDtL7EisG0SsbIaw=;
-        b=eTTaAGFrJLiiQhfeRmF49wcpZ2GkSB/iEdQ2T5lOL5gvNPQ/+iycDSlDVeYmcWolcO8EoO
-        SKU+F6ts4R0JRFdfRkwL6q5tu05ip/gpMGBiDxnNtf9UBh6h1x1z21i3FULt6ySQtRPwNw
-        3KR5jQ0rnlcaPKVSk1Ek2/4JexjvDT0=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-459-EA9GZEGSOfmOouaWN05K9Q-1; Tue, 19 Jan 2021 04:50:38 -0500
-X-MC-Unique: EA9GZEGSOfmOouaWN05K9Q-1
-Received: by mail-wr1-f70.google.com with SMTP id n11so9629749wro.7
-        for <netdev@vger.kernel.org>; Tue, 19 Jan 2021 01:50:38 -0800 (PST)
+        bh=e5k+Bd6G3jBkGotE4e2JJUwLMC9njtVsJGU8frM5Op4=;
+        b=cCl2UF+SvCbVcLo53Xcru9dUIIeaYTzZIJQGi9J3xonVDnJw091iOqDXsUEcon+k1+QGra
+        b8Mr+4l90jfuzEn/7Oi3tab3GSuOQsPPFgJZW02KtJpN+UImNhny1epIGZ8hN37DgYooSZ
+        7VjBUSUP0c4JYW7tc3DjhhBD2s9OQjg=
+Received: from mail-wr1-f72.google.com (mail-wr1-f72.google.com
+ [209.85.221.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-56-al8kGxPCPbiVpa4HX4H7DQ-1; Tue, 19 Jan 2021 04:55:32 -0500
+X-MC-Unique: al8kGxPCPbiVpa4HX4H7DQ-1
+Received: by mail-wr1-f72.google.com with SMTP id o17so9648778wra.8
+        for <netdev@vger.kernel.org>; Tue, 19 Jan 2021 01:55:32 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=MDToM82xeMKamVLIGfz7Nyf28zoLDtL7EisG0SsbIaw=;
-        b=qpBhkSIo2l+1AESI66N/EpJEjpE3hde3dszmcDvbacDjXdzd12MJosvsZ+P2eT7mqK
-         QojmU/qsqd/WtrpkehKhDqsWcbzgS2YTsVbdAV7bGbVFSEFQj7brg5C/wrvB638u3eyx
-         evh9N+aF3wzEoCLfdcH0AuGCROEZUTl9xnCf7gjzI7ehCM/ewezSHy0vy9VLNJBcXMJw
-         XbPWUs2YaY4I1tpUbZmPsx4Ubd7w3vnlCizBSihBUeWueqtgOPMRsubqvgbO/ADzOcmk
-         2j22MAFQI3X5TMGMO9BErrjDSlwl5NpyqZQAnO+TLlPGPMIcwBPn1unCZtoPY/MAWCmW
-         o41g==
-X-Gm-Message-State: AOAM531oCEWYnm/J1yeXgtIaPUL/ePSDmSZH/vYdWncM9YyurhTpLQET
-        ftftrJ3lcGtjJigB4vvv12EtIr0imvui6XfqNYPyiy2pk9udBe0MO2yeCIrkA9dT1cD5/FNO2yD
-        729XGj22pxVKDpuea
-X-Received: by 2002:a5d:6749:: with SMTP id l9mr3480136wrw.395.1611049835236;
-        Tue, 19 Jan 2021 01:50:35 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxQA3wzZZMN3tnDPlscHS6t87wN39DxSkIQdglcuApSG944ZAiQro8EcY9yc+c5nyrHouGySA==
-X-Received: by 2002:a5d:6749:: with SMTP id l9mr3480112wrw.395.1611049834999;
-        Tue, 19 Jan 2021 01:50:34 -0800 (PST)
+        bh=e5k+Bd6G3jBkGotE4e2JJUwLMC9njtVsJGU8frM5Op4=;
+        b=YGZ6UvfFLntl13HLPd7QcbbO0Rzn3yAKzjJnKlNtKnctSzSi9uRtD9wk+AWMsddyn/
+         i1F/N/PrKNbPGp9lsiAnykVzn9isgiQKghEqX0h3Ab1vDdBNuyzicdtwdxyBS2FH6Tfb
+         vZpOuRSAYWmMzP0lRslRkEK5ftc25NM7XgiLZH+d0eh7Mhpl3a6znMnqfe5pJewKm0s3
+         tte4phMQplRB6w8PrP5uo8r/kmLjp0O8eIfq2OVwQMyjUsXrKPfdEcRaLwAELXxsKvb3
+         m8hAsNP2xXah54I1zNFth8ZDn+fgzDuc8NL2yxWtp0bdL4pi74AKNIHEiAcgqhPUwtzc
+         96lg==
+X-Gm-Message-State: AOAM533imlq7RzUf6w/0qw9DWLxkJzAXBTt7yjqR8Th4mBBtStyIXLMV
+        sT0NySlfxAiHsR/QLD78nod3rFupf4MsYEzNxs3lB6p8WQ36hl/dKwqs5xx/hENSy2/bjjwoaNU
+        fgBVErLgkZuxgIm2W
+X-Received: by 2002:a05:600c:21cb:: with SMTP id x11mr3323290wmj.29.1611050131103;
+        Tue, 19 Jan 2021 01:55:31 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJxKND6Zca35zFaKj21qvuworTdTNrBW2UVMdAEyN6/1tBZVNe5H5LJNjKLvAzdn+brbuTjaAw==
+X-Received: by 2002:a05:600c:21cb:: with SMTP id x11mr3323275wmj.29.1611050130907;
+        Tue, 19 Jan 2021 01:55:30 -0800 (PST)
 Received: from redhat.com (bzq-79-177-39-148.red.bezeqint.net. [79.177.39.148])
-        by smtp.gmail.com with ESMTPSA id s1sm35531280wrv.97.2021.01.19.01.50.32
+        by smtp.gmail.com with ESMTPSA id h14sm34416111wrx.37.2021.01.19.01.55.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Jan 2021 01:50:34 -0800 (PST)
-Date:   Tue, 19 Jan 2021 04:50:30 -0500
+        Tue, 19 Jan 2021 01:55:30 -0800 (PST)
+Date:   Tue, 19 Jan 2021 04:55:27 -0500
 From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Cc:     netdev@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
-Subject: Re: [PATCH bpf-next v2 0/3] xsk: build skb by page
-Message-ID: <20210119045004-mutt-send-email-mst@kernel.org>
-References: <cover.1611048724.git.xuanzhuo@linux.alibaba.com>
+To:     wangyunjian <wangyunjian@huawei.com>
+Cc:     netdev@vger.kernel.org, jasowang@redhat.com,
+        willemdebruijn.kernel@gmail.com,
+        virtualization@lists.linux-foundation.org,
+        jerry.lilijun@huawei.com, chenchanghu@huawei.com,
+        xudingke@huawei.com, brian.huangbin@huawei.com
+Subject: Re: [PATCH net-next v7] vhost_net: avoid tx queue stuck when sendmsg
+ fails
+Message-ID: <20210119045414-mutt-send-email-mst@kernel.org>
+References: <1610685980-38608-1-git-send-email-wangyunjian@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <cover.1611048724.git.xuanzhuo@linux.alibaba.com>
+In-Reply-To: <1610685980-38608-1-git-send-email-wangyunjian@huawei.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 19, 2021 at 05:45:09PM +0800, Xuan Zhuo wrote:
-> v2:
->     1. add priv_flags IFF_TX_SKB_NO_LINEAR instead of netdev_feature
->     2. split the patch to three:
->         a. add priv_flags IFF_TX_SKB_NO_LINEAR
->         b. virtio net add priv_flags IFF_TX_SKB_NO_LINEAR
->         c. When there is support this flag, construct skb without linear space
->     3. use ERR_PTR() and PTR_ERR() to handle the err
+On Fri, Jan 15, 2021 at 12:46:20PM +0800, wangyunjian wrote:
+> From: Yunjian Wang <wangyunjian@huawei.com>
 > 
+> Currently the driver doesn't drop a packet which can't be sent by tun
+> (e.g bad packet). In this case, the driver will always process the
+> same packet lead to the tx queue stuck.
 > 
-> v1 message log:
-> ---------------
+> To fix this issue:
+> 1. in the case of persistent failure (e.g bad packet), the driver
+>    can skip this descriptor by ignoring the error.
+> 2. in the case of transient failure (e.g -ENOBUFS, -EAGAIN and -ENOMEM),
+>    the driver schedules the worker to try again.
 > 
-> This patch is used to construct skb based on page to save memory copy
-> overhead.
-> 
-> This has one problem:
-> 
-> We construct the skb by fill the data page as a frag into the skb. In
-> this way, the linear space is empty, and the header information is also
-> in the frag, not in the linear space, which is not allowed for some
-> network cards. For example, Mellanox Technologies MT27710 Family
-> [ConnectX-4 Lx] will get the following error message:
-> 
->     mlx5_core 0000:3b:00.1 eth1: Error cqe on cqn 0x817, ci 0x8, qn 0x1dbb, opcode 0xd, syndrome 0x1, vendor syndrome 0x68
->     00000000: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
->     00000010: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
->     00000020: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
->     00000030: 00 00 00 00 60 10 68 01 0a 00 1d bb 00 0f 9f d2
->     WQE DUMP: WQ size 1024 WQ cur size 0, WQE index 0xf, len: 64
->     00000000: 00 00 0f 0a 00 1d bb 03 00 00 00 08 00 00 00 00
->     00000010: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
->     00000020: 00 00 00 2b 00 08 00 00 00 00 00 05 9e e3 08 00
->     00000030: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
->     mlx5_core 0000:3b:00.1 eth1: ERR CQE on SQ: 0x1dbb
-> 
-> I also tried to use build_skb to construct skb, but because of the
-> existence of skb_shinfo, it must be behind the linear space, so this
-> method is not working. We can't put skb_shinfo on desc->addr, it will be
-> exposed to users, this is not safe.
-> 
-> Finally, I added a feature NETIF_F_SKB_NO_LINEAR to identify whether the
-> network card supports the header information of the packet in the frag
-> and not in the linear space.
-> 
-> ---------------- Performance Testing ------------
-> 
-> The test environment is Aliyun ECS server.
-> Test cmd:
-> ```
-> xdpsock -i eth0 -t  -S -s <msg size>
-> ```
-> 
-> Test result data:
-> 
-> size    64      512     1024    1500
-> copy    1916747 1775988 1600203 1440054
-> page    1974058 1953655 1945463 1904478
-> percent 3.0%    10.0%   21.58%  32.3%
+> Signed-off-by: Yunjian Wang <wangyunjian@huawei.com>
 
-Just making sure, are these test results with v2?
+Acked-by: Michael S. Tsirkin <mst@redhat.com>
 
+> ---
+> v7:
+>    * code rebase
+> v6:
+>    * update code styles and commit log
+> ---
+>  drivers/vhost/net.c | 26 ++++++++++++++------------
+>  1 file changed, 14 insertions(+), 12 deletions(-)
 > 
-> Xuan Zhuo (3):
->   net: add priv_flags for allow tx skb without linear
->   virtio-net: support IFF_TX_SKB_NO_LINEAR
->   xsk: build skb by page
-> 
->  drivers/net/virtio_net.c  |   3 +-
->  include/linux/netdevice.h |   3 ++
->  net/xdp/xsk.c             | 112 ++++++++++++++++++++++++++++++++++++++--------
->  3 files changed, 99 insertions(+), 19 deletions(-)
-> 
-> --
-> 1.8.3.1
+> diff --git a/drivers/vhost/net.c b/drivers/vhost/net.c
+> index 3b744031ec8f..df82b124170e 100644
+> --- a/drivers/vhost/net.c
+> +++ b/drivers/vhost/net.c
+> @@ -828,14 +828,15 @@ static void handle_tx_copy(struct vhost_net *net, struct socket *sock)
+>  				msg.msg_flags &= ~MSG_MORE;
+>  		}
+>  
+> -		/* TODO: Check specific error and bomb out unless ENOBUFS? */
+>  		err = sock->ops->sendmsg(sock, &msg, len);
+>  		if (unlikely(err < 0)) {
+> -			vhost_discard_vq_desc(vq, 1);
+> -			vhost_net_enable_vq(net, vq);
+> -			break;
+> -		}
+> -		if (err != len)
+> +			if (err == -EAGAIN || err == -ENOMEM || err == -ENOBUFS) {
+> +				vhost_discard_vq_desc(vq, 1);
+> +				vhost_net_enable_vq(net, vq);
+> +				break;
+> +			}
+> +			pr_debug("Fail to send packet: err %d", err);
+> +		} else if (unlikely(err != len))
+>  			pr_debug("Truncated TX packet: len %d != %zd\n",
+>  				 err, len);
+>  done:
+> @@ -924,7 +925,6 @@ static void handle_tx_zerocopy(struct vhost_net *net, struct socket *sock)
+>  			msg.msg_flags &= ~MSG_MORE;
+>  		}
+>  
+> -		/* TODO: Check specific error and bomb out unless ENOBUFS? */
+>  		err = sock->ops->sendmsg(sock, &msg, len);
+>  		if (unlikely(err < 0)) {
+>  			if (zcopy_used) {
+> @@ -933,11 +933,13 @@ static void handle_tx_zerocopy(struct vhost_net *net, struct socket *sock)
+>  				nvq->upend_idx = ((unsigned)nvq->upend_idx - 1)
+>  					% UIO_MAXIOV;
+>  			}
+> -			vhost_discard_vq_desc(vq, 1);
+> -			vhost_net_enable_vq(net, vq);
+> -			break;
+> -		}
+> -		if (err != len)
+> +			if (err == -EAGAIN || err == -ENOMEM || err == -ENOBUFS) {
+> +				vhost_discard_vq_desc(vq, 1);
+> +				vhost_net_enable_vq(net, vq);
+> +				break;
+> +			}
+> +			pr_debug("Fail to send packet: err %d", err);
+> +		} else if (unlikely(err != len))
+>  			pr_debug("Truncated TX packet: "
+>  				 " len %d != %zd\n", err, len);
+>  		if (!zcopy_used)
+> -- 
+> 2.23.0
 
