@@ -2,89 +2,83 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 46EEF2FAE37
-	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 01:57:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 77C612FAE3F
+	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 02:07:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732958AbhASA4l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jan 2021 19:56:41 -0500
-Received: from fox.pavlix.cz ([185.8.165.163]:52174 "EHLO fox.pavlix.cz"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732238AbhASA4j (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 18 Jan 2021 19:56:39 -0500
-Received: from [172.16.63.206] (unknown [217.30.64.218])
-        by fox.pavlix.cz (Postfix) with ESMTPSA id 62832E8316;
-        Tue, 19 Jan 2021 01:55:56 +0100 (CET)
-Subject: Re: [PATCH net-next] net: mdio: access c22 registers via debugfs
-To:     Tobias Waldekranz <tobias@waldekranz.com>, netdev@vger.kernel.org
-References: <20210116211916.8329-1-code@simerda.eu>
- <87h7ndker7.fsf@waldekranz.com>
-From:   =?UTF-8?Q?Pavel_=c5=a0imerda?= <code@simerda.eu>
-Message-ID: <6eadc811-783d-2fc9-60c5-b765ecc87f5a@simerda.eu>
-Date:   Tue, 19 Jan 2021 01:55:56 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+        id S2391692AbhASBGN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jan 2021 20:06:13 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:26751 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729918AbhASBGJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jan 2021 20:06:09 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1611018276;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=saOK2rQZ8LvjXL+D11visYuXDiXxSd5YTYGDgVAQGHk=;
+        b=YRcOscQGp2DkqNg/sbo7Scw7kCq9Mul15qg1N4NFhob8yuHUqs9OnybFzqLJQWnO/mueKa
+        6xoP9kovQXjnaiG9TfvgnkXVISyBCftpazoxhEcNpCypDryd7fWggaYIxQwhLpiNHepF1s
+        zyrBRqOllMLauthSmo+uSJt1k1CKrqI=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-323-eF1HJRQnOjq782tDW6jN7Q-1; Mon, 18 Jan 2021 20:04:32 -0500
+X-MC-Unique: eF1HJRQnOjq782tDW6jN7Q-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 627F13E751;
+        Tue, 19 Jan 2021 01:04:30 +0000 (UTC)
+Received: from redhat.com (dhcp-17-185.bos.redhat.com [10.18.17.185])
+        by smtp.corp.redhat.com (Postfix) with ESMTPS id F24F210023AB;
+        Tue, 19 Jan 2021 01:04:28 +0000 (UTC)
+Date:   Mon, 18 Jan 2021 20:04:27 -0500
+From:   Jarod Wilson <jarod@redhat.com>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, Jay Vosburgh <j.vosburgh@gmail.com>,
+        Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Thomas Davis <tadavis@lbl.gov>, netdev@vger.kernel.org
+Subject: Re: [PATCH net-next v3] bonding: add a vlan+srcmac tx hashing option
+Message-ID: <20210119010427.GB1191409@redhat.com>
+References: <20210113223548.1171655-1-jarod@redhat.com>
+ <20210115192103.1179450-1-jarod@redhat.com>
+ <79af4145-48cc-0961-b341-c0e106beb14b@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <87h7ndker7.fsf@waldekranz.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <79af4145-48cc-0961-b341-c0e106beb14b@gmail.com>
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/19/21 12:27 AM, Tobias Waldekranz wrote:
-> On Sat, Jan 16, 2021 at 22:19, Pavel Šimerda <code@simerda.eu> wrote:
->> Provide a debugging interface to read and write MDIO registers directly
->> without the need for a device driver.
->>
->> This is extremely useful when debugging switch hardware and phy hardware
->> issues. The interface provides proper locking for communication that
->> consists of a sequence of MDIO read/write commands.
->>
->> The interface binds directly to the MDIO bus abstraction in order to
->> provide support for all devices whether there's a hardware driver for
->> them or not. Registers are written by writing address, offset, and
->> value in hex, separated by colon. Registeres are read by writing only
->> address and offset, then reading the value.
->>
->> It can be easily tested using `socat`:
->>
->>      # socat - /sys/kernel/debug/mdio/f802c000.ethernet-ffffffff/control
->>
->> Example: Reading address 0x00 offset 0x00, value is 0x3000
->>
->>      Input: 00:00
->>      Output: 3000
->>
->> Example: Writing address 0x00 offset 0x00, value 0x2100
->>
->>      Input: 00:00:2100
->>
->> Signed-off-by: Pavel Šimerda <code@simerda.eu>
+On Mon, Jan 18, 2021 at 04:10:38PM -0700, David Ahern wrote:
+> On 1/15/21 12:21 PM, Jarod Wilson wrote:
+> > diff --git a/Documentation/networking/bonding.rst b/Documentation/networking/bonding.rst
+> > index adc314639085..36562dcd3e1e 100644
+> > --- a/Documentation/networking/bonding.rst
+> > +++ b/Documentation/networking/bonding.rst
+> > @@ -951,6 +951,19 @@ xmit_hash_policy
+> >  		packets will be distributed according to the encapsulated
+> >  		flows.
+> >  
+> > +	vlan+srcmac
+> > +
+> > +		This policy uses a very rudimentary vland ID and source mac
 > 
-> Hi Pavel,
+> s/vland/vlan/
 > 
-> I also tried my luck at adding an MDIO debug interface to the kernel a
-> while back:
+> > +		ID hash to load-balance traffic per-vlan, with failover
 > 
-> https://lore.kernel.org/netdev/C42DZQLTPHM5.2THDSRK84BI3T@wkz-x280
+> drop ID on this line; just 'source mac'.
 
-Hey Tobias,
+Bah. Crap. Didn't test documentation, clearly. Or proof-read it. Will fix
+in v4. Hopefully, nothing else to change though...
 
-nice to meet you!
+-- 
+Jarod Wilson
+jarod@redhat.com
 
-> The conclusion was that, while nice to have, it makes it too easy for
-> shady vendors to write out-of-tree drivers.
-
-That was exactly what I was afraid of.
-
-> You might want to have a look at https://github.com/wkz/mdio-tools. It
-> solves the same issue that your debugfs interface does, and also some
-> other nice things like clause 45 addressing and atomic read/mask/write
-> operations.
-
-Thank you very much!
-
-Cheers,
-
-Pavel
