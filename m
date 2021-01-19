@@ -2,110 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D36572FC115
-	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 21:35:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 18D8F2FC10F
+	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 21:32:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726823AbhASU0w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jan 2021 15:26:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44974 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729966AbhASUZg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jan 2021 15:25:36 -0500
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 547BBC0613C1;
-        Tue, 19 Jan 2021 12:24:54 -0800 (PST)
-Received: by mail-ej1-x635.google.com with SMTP id b5so13941743ejv.4;
-        Tue, 19 Jan 2021 12:24:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=rFyr2V+Jzdi4YW1yffMaIUqKhZ3/Vi5CLcZD0g+G3W0=;
-        b=o+4RLf0mOmonrScZu/JxFwoEr0HqSw4KJX7HorYpAUIAC3Z4pFXORzdwqXx0ELKJQv
-         8jtosQrDAVVlwbeObGSkKXhJjIC6QWTdF9cRpQ7Eefmxi+gTLqvmRANRFHV0LuNNClqU
-         jgscy3xuF5QZVAPUnw/SS5ctnagl0/iKvOobiusKJA0uvujbONo7kMgpwXogk3a31d5A
-         i/yfg7+FSeBGtKzh9NMRxiOOe5nkCPrVLReLB+FoM0Lx1QSbSfNFSiRvRSB+jcqrsF3Q
-         kU+izgGu38oIpK+jBaKmDsng+8FLAp6oi88N10LwOacMLGiTnvtS7rhTYeABR3Ru3ZQB
-         Pfyg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=rFyr2V+Jzdi4YW1yffMaIUqKhZ3/Vi5CLcZD0g+G3W0=;
-        b=dPZsUsShAeFhfT5ryJp3NCpA2ddFgt2+F/mK37R9XaWO/M9k39EJxg7DX6FHF2UjP6
-         bI0NUFOi75+Tul4DB3PIBS253fPl17W81VOTS1ZFp5KwQmRb1oEt7e1onxNO0Rs2o81F
-         ZR9cy2p70CEqbs7V/4EYaUU3a8uiewqyfQx3LHhVU5GufXPqNWlNsI/grK4Ll11Cnyib
-         PBLVq0WvjkjnT+6Ugl45oL35Xb/Du/4SN+aNNB37FosbGsuej2Eak3pHG0aX27ynDEF/
-         aJgmv9VlOY7h/jR9GsnHgARcwHKIJ60C/TGxF46Lr8KqIVZjX/P5gp8dZLluaCHwdO4V
-         uzQQ==
-X-Gm-Message-State: AOAM533wh919+sfbbL/dok9O1YKc5AK8EcOA603cR5za6PO/H2l7VVF5
-        7u9sZeJhUX6d8eioC+qWEiM=
-X-Google-Smtp-Source: ABdhPJzgJWBS8Glb8O8e1TWNjzrEWbp0SXKsfSt9zOga9qYGgKUcy74g3uI6DG+n0NBnuIHe4x4Csw==
-X-Received: by 2002:a17:906:87c3:: with SMTP id zb3mr4123114ejb.244.1611087893049;
-        Tue, 19 Jan 2021 12:24:53 -0800 (PST)
-Received: from localhost.localdomain (p200300f1373d4700428d5cfffeb99db8.dip0.t-ipconnect.de. [2003:f1:373d:4700:428d:5cff:feb9:9db8])
-        by smtp.googlemail.com with ESMTPSA id g18sm12876367edt.2.2021.01.19.12.24.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Jan 2021 12:24:52 -0800 (PST)
-From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-To:     linux-amlogic@lists.infradead.org, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Martijn van Deventer <martijn@martijnvandeventer.nl>
-Subject: [PATCH] net: stmmac: dwmac-meson8b: fix the RX delay validation
-Date:   Tue, 19 Jan 2021 21:24:24 +0100
-Message-Id: <20210119202424.591349-1-martin.blumenstingl@googlemail.com>
-X-Mailer: git-send-email 2.30.0
+        id S1728779AbhASU1i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jan 2021 15:27:38 -0500
+Received: from mail.kernel.org ([198.145.29.99]:56982 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2391761AbhASU0F (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 19 Jan 2021 15:26:05 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 57E1823138;
+        Tue, 19 Jan 2021 20:25:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1611087924;
+        bh=T9Ergzt8UttH+ZgH2jkWyJf/CzIXN9QAzLK5kPx9jPk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=GSZCHNi5+o5MUUlr6e7T2zkZY80Eq168WJ/qTjU1ubMVQhZAkY5sGdVeveexzf6Kz
+         HBbMi4x1Aux1J3bsFtnkw7hP5m2BciUllRKtCzJiDM3phKP4IPWujPW9ejNlQgc224
+         e8spmWwvopOz5pUACW4/ZBM/nKzvnESWkQsFl4XlBVJr3ckilU8n5xeQhmvsqOkUFl
+         ru4os2PMlh/JqVl2PhORxicSx4BSAXWRAcJLmY/BlgZGcHzOnQsWoMcw7pyWeYzXVd
+         Nyfu8B1TfVO+KJHpwlQDnJMye6wrYc4c/nebQSkuWqYFAh/U/5rhksmrr0hJZbkNY7
+         sBOOj03NqczoQ==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net-next v2 1/4] net: move net_set_todo inside rollback_registered()
+Date:   Tue, 19 Jan 2021 12:25:18 -0800
+Message-Id: <20210119202521.3108236-2-kuba@kernel.org>
+X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20210119202521.3108236-1-kuba@kernel.org>
+References: <20210119202521.3108236-1-kuba@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When has_prg_eth1_rgmii_rx_delay is true then we support RX delays
-between 0ps and 3000ps in 200ps steps. Swap the validation of the RX
-delay based on the has_prg_eth1_rgmii_rx_delay flag so the 200ps check
-is now applied correctly on G12A SoCs (instead of only allow 0ps or
-2000ps on G12A, but 0..3000ps in 200ps steps on older SoCs which don't
-support that).
+Commit 93ee31f14f6f ("[NET]: Fix free_netdev on register_netdev
+failure.") moved net_set_todo() outside of rollback_registered()
+so that rollback_registered() can be used in the failure path of
+register_netdevice() but without risking a double free.
 
-Fixes: de94fc104d58ea ("net: stmmac: dwmac-meson8b: add support for the RGMII RX delay on G12A")
-Reported-by: Martijn van Deventer <martijn@martijnvandeventer.nl>
-Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Since commit cf124db566e6 ("net: Fix inconsistent teardown and
+release of private netdev state."), however, we have a better
+way of handling that condition, since destructors don't call
+free_netdev() directly.
+
+After the change in commit c269a24ce057 ("net: make free_netdev()
+more lenient with unregistering devices") we can now move
+net_set_todo() back.
+
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 ---
-Many thanks to Martijn for this excellent catch and for reporting this
-issue (off-list)!
+ net/core/dev.c | 11 +++--------
+ 1 file changed, 3 insertions(+), 8 deletions(-)
 
-
- drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c
-index 55152d7ba99a..848e5c37746b 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c
-@@ -443,16 +443,16 @@ static int meson8b_dwmac_probe(struct platform_device *pdev)
- 	}
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 6b90520a01b1..5f928b51c6b0 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -9546,8 +9546,10 @@ static void rollback_registered_many(struct list_head *head)
  
- 	if (dwmac->data->has_prg_eth1_rgmii_rx_delay) {
--		if (dwmac->rx_delay_ps != 0 && dwmac->rx_delay_ps != 2000) {
-+		if (dwmac->rx_delay_ps > 3000 || dwmac->rx_delay_ps % 200) {
- 			dev_err(dwmac->dev,
--				"The only allowed RGMII RX delays values are: 0ps, 2000ps");
-+				"The RGMII RX delay range is 0..3000ps in 200ps steps");
- 			ret = -EINVAL;
- 			goto err_remove_config_dt;
- 		}
+ 	synchronize_net();
+ 
+-	list_for_each_entry(dev, head, unreg_list)
++	list_for_each_entry(dev, head, unreg_list) {
+ 		dev_put(dev);
++		net_set_todo(dev);
++	}
+ }
+ 
+ static void rollback_registered(struct net_device *dev)
+@@ -10104,7 +10106,6 @@ int register_netdevice(struct net_device *dev)
+ 		/* Expect explicit free_netdev() on failure */
+ 		dev->needs_free_netdev = false;
+ 		rollback_registered(dev);
+-		net_set_todo(dev);
+ 		goto out;
+ 	}
+ 	/*
+@@ -10727,8 +10728,6 @@ void unregister_netdevice_queue(struct net_device *dev, struct list_head *head)
+ 		list_move_tail(&dev->unreg_list, head);
  	} else {
--		if (dwmac->rx_delay_ps > 3000 || dwmac->rx_delay_ps % 200) {
-+		if (dwmac->rx_delay_ps != 0 && dwmac->rx_delay_ps != 2000) {
- 			dev_err(dwmac->dev,
--				"The RGMII RX delay range is 0..3000ps in 200ps steps");
-+				"The only allowed RGMII RX delays values are: 0ps, 2000ps");
- 			ret = -EINVAL;
- 			goto err_remove_config_dt;
- 		}
+ 		rollback_registered(dev);
+-		/* Finish processing unregister after unlock */
+-		net_set_todo(dev);
+ 	}
+ }
+ EXPORT_SYMBOL(unregister_netdevice_queue);
+@@ -10742,12 +10741,8 @@ EXPORT_SYMBOL(unregister_netdevice_queue);
+  */
+ void unregister_netdevice_many(struct list_head *head)
+ {
+-	struct net_device *dev;
+-
+ 	if (!list_empty(head)) {
+ 		rollback_registered_many(head);
+-		list_for_each_entry(dev, head, unreg_list)
+-			net_set_todo(dev);
+ 		list_del(head);
+ 	}
+ }
 -- 
-2.30.0
+2.26.2
 
