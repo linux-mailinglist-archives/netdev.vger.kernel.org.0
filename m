@@ -2,70 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7F3472FAE9A
-	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 03:07:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F1F512FAEB5
+	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 03:21:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2393728AbhASCHP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jan 2021 21:07:15 -0500
-Received: from m12-18.163.com ([220.181.12.18]:60624 "EHLO m12-18.163.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387895AbhASCHO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 18 Jan 2021 21:07:14 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=vHix2
-        +n2QGovG//SAmKczG/2f6L1TM+9VB0Ed1N3GGs=; b=QNSjB7oGulC5j4n2SKI2T
-        dg6MelHn97ZuEtGJrWCoWrslsgYH8IVuAzIU6xkPtiMDrLBGgxmW1Yo3Lb86wp26
-        ymO9wOsX7ivSkd/7Z7H6B3+am/f5Cpc5a3MfsmYMjB66AuY7N8GX2EkSEyizAMro
-        xCg5FL2LbX5knJk5kt5Qrk=
-Received: from yangjunlin.ccdomain.com (unknown [119.137.52.160])
-        by smtp14 (Coremail) with SMTP id EsCowAAn7tYzPgZg4b59Pw--.4219S2;
-        Tue, 19 Jan 2021 10:04:37 +0800 (CST)
-From:   angkery <angkery@163.com>
-To:     mkl@pengutronix.de, manivannan.sadhasivam@linaro.org,
-        thomas.kopp@microchip.com, wg@grandegger.com, davem@davemloft.net,
-        kuba@kernel.org
-Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Junlin Yang <yangjunlin@yulong.com>
-Subject: [PATCH] can: mcp251xfd: mcp251xfd_handle_ivmif(): fix wrong NULL pointer check
-Date:   Tue, 19 Jan 2021 10:02:21 +0800
-Message-Id: <20210119020221.3713-1-angkery@163.com>
-X-Mailer: git-send-email 2.24.0.windows.2
+        id S2405809AbhASCVa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jan 2021 21:21:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37422 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2405608AbhASCV3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jan 2021 21:21:29 -0500
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 300C9C061573
+        for <netdev@vger.kernel.org>; Mon, 18 Jan 2021 18:20:48 -0800 (PST)
+Received: by mail-pl1-x636.google.com with SMTP id x12so9629700plr.10
+        for <netdev@vger.kernel.org>; Mon, 18 Jan 2021 18:20:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=/cwIO+WolBwS0/c4/AFhWb3AHfCE0CzYH8h0XaZ0qXw=;
+        b=BcwUhUiCZtyxCrdwC0M71uBIC7IO2Wb4OAgyilhuwCUsqOORSlKGMjCcb9YSczIU2a
+         JvFs6JKxsCb5BGyQBWuaR1w0Zf4xtXWR0G6yBM56a5QNbg4TKbftOmp+zNSGOMRyEIFz
+         O87U2wJ2OZeTdcaTxFJ5Tq/5y4T+kplPkiREanvDpT/xU8XMmxXJvBLR0+Q+vYSyXQpg
+         mjkl9MlzU0qDqy7d301nIUh/mLWglxYS+0wSgMV1Wc1J3HAuapmaNzfczNFDVeIZ0Dcc
+         +JHOuH8serQym7t/xeupCJnbhuMeLSFq62UcTtm5+v3N4qOJ3ykMOiwjL4yM9Y1e2EA8
+         wn1Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=/cwIO+WolBwS0/c4/AFhWb3AHfCE0CzYH8h0XaZ0qXw=;
+        b=ck4hKBM1Qg3rgpNKXwczjgxsEI5z7LjLT5fASP1845RR4DsWlQ8QF4S/8L7uDcJI+6
+         zkM7FMp1w0gnkhdsRCbP7G/XkjJapskUjMEB7Q4LYnueGePRU2XfOCsGm9rKB2Dj5xJO
+         2DN6dISzE30qNea6ZHwTBs3ILzDkd6UwO4vgcsBFbIRlmU0qP06tXv93sc+PB+sFFzdS
+         IEVycsGq/03EYXDCqmigPfkuHXbIsljjLyQbzgIv7KSoDNPZo1bGuF9CEYfMPapH3emn
+         JuGS1oEcWd9anwCFzqUCZhzNzOBL1l5m4XTVehjVe9uOhoknByEDW7xYl218dm9n5tUq
+         rcjQ==
+X-Gm-Message-State: AOAM532lXXCqqkympVbxXRybujQ6KZ3E2MkKD1PCrjcaRQjYyVqT41oJ
+        8qEDd5hv0RUlXYYKckwfUd1PaYSnNOG7nXpb
+X-Google-Smtp-Source: ABdhPJyQZp7EjEf2/NdLjrVcNyrUdhJCdeGmDYOwKEG/FCkE6nxdFihdIlSLDloIUs0JEA0I38fLkw==
+X-Received: by 2002:a17:90a:b28f:: with SMTP id c15mr2458467pjr.79.1611022847728;
+        Mon, 18 Jan 2021 18:20:47 -0800 (PST)
+Received: from hermes.local (76-14-222-244.or.wavecable.com. [76.14.222.244])
+        by smtp.gmail.com with ESMTPSA id f7sm655372pjs.25.2021.01.18.18.20.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Jan 2021 18:20:47 -0800 (PST)
+Date:   Mon, 18 Jan 2021 18:20:44 -0800
+From:   Stephen Hemminger <stephen@networkplumber.org>
+To:     Raju Rangoju <rajur@chelsio.com>
+Cc:     netdev@vger.kernel.org, hch@lst.de, rahul.lakkireddy@chelsio.com
+Subject: Re: how to determine if buffers are in user-space/kernel-space
+Message-ID: <20210118182044.26d59491@hermes.local>
+In-Reply-To: <20210118182636.GB15369@chelsio.com>
+References: <20210118182636.GB15369@chelsio.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: EsCowAAn7tYzPgZg4b59Pw--.4219S2
-X-Coremail-Antispam: 1Uf129KBjvdXoWrZF1ktr4rtr4DuFWxKFy3urg_yoW3Krb_Cw
-        nxAw17Wr18Aw1vk34IkF1avryYv3ZrXFs5ur9Fvry3JFWayr17GFZavry3G34UWry8ZF9x
-        Xay7Jwn2q34FqjkaLaAFLSUrUUUUjb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IUeEPfDUUUUU==
-X-Originating-IP: [119.137.52.160]
-X-CM-SenderInfo: 5dqjyvlu16il2tof0z/xtbCBg0fI13I0cYuQwAAsY
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Junlin Yang <yangjunlin@yulong.com>
+On Mon, 18 Jan 2021 23:56:37 +0530
+Raju Rangoju <rajur@chelsio.com> wrote:
 
-if alloc_can_err_skb() returns NULL, we should check skb instead of cf.
+> Hi,
+> 
+> We have an out-of-tree kernel module which was using
+> segment_eq(get_fs(), KERNEL_DS) to determine whether buffers are in
+> Kernel space vs User space. However, with the get_fs() and its friends
+> removed[1], we are out of ideas on how to determine if buffers are in
+> user space or kernel space. Can someone shed some light on how to
+> accomplish it?
+> 
 
-Signed-off-by: Junlin Yang <yangjunlin@yulong.com>
----
- drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c b/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c
-index f07e8b7..0af131c 100644
---- a/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c
-+++ b/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c
-@@ -1755,7 +1755,7 @@ static int mcp251xfd_handle_ivmif(struct mcp251xfd_priv *priv)
- 			cf->data[2] |= CAN_ERR_PROT_TX | CAN_ERR_PROT_BIT0;
- 	}
- 
--	if (!cf)
-+	if (!skb)
- 		return 0;
- 
- 	err = can_rx_offload_queue_sorted(&priv->offload, skb, timestamp);
--- 
-1.9.1
-
-
+Sorry, you are asking in the wrong place. Supporting any out of
+tree modules is completely your own problem to deal with.
