@@ -2,273 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4136F2FBABA
-	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 16:08:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E21102FBB1A
+	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 16:27:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726422AbhASPFW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jan 2021 10:05:22 -0500
-Received: from mail-40134.protonmail.ch ([185.70.40.134]:56469 "EHLO
-        mail-40134.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389227AbhASOoY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jan 2021 09:44:24 -0500
-Date:   Tue, 19 Jan 2021 14:43:27 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
-        t=1611067412; bh=hJU3t7jpshkUt0/KD2VNuTu6lnWUQ57cTz2pVJlktr8=;
-        h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
-        b=mmLUNun8OGpBm2R1gKPlGEENYpsNtND6YHumIdxf8Pf+X7Yjvv8PWzUXE9pS0Uu88
-         3kUJ9m1SK64g8zYQarxsP1j5mUswWl2qH8/RoBcpjaw7gb71I3G0d0FbLIyjanseiZ
-         TmA4ky5lrUeLEdP8DBm4BlPZLn4Ul87F8ETSFdtZlEbSM+EyHk0Unj3oRRWcXNpWAR
-         mWhztHtIX9KnuLx+VPMVMjt90ro0egINtFD1xV4LK9ovzISPQcgYa+fdahu2niG5Q1
-         Ngfskb1u+uVDM2PXxi9Ymh4RHrWTMBgHpkDocgac6NRc5rH53/YFjRklSZpVCRwECy
-         q0x2iENCQQfSw==
-To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-From:   Alexander Lobakin <alobakin@pm.me>
-Cc:     Alexander Lobakin <alobakin@pm.me>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
+        id S2391487AbhASPYy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jan 2021 10:24:54 -0500
+Received: from aserp2130.oracle.com ([141.146.126.79]:41118 "EHLO
+        aserp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389176AbhASPYe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jan 2021 10:24:34 -0500
+Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
+        by aserp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 10JFEOhi132159;
+        Tue, 19 Jan 2021 15:23:46 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : mime-version : content-type; s=corp-2020-01-29;
+ bh=BuOTiRYcdWRNuN55ywy8NIJkNTkiMNPEJVra2jqLaWs=;
+ b=ATBdtJS6yCI+5bEpEr+oI+BuGThINlWW7FEEiwYy4mdiSFExfU6JBRxlZrVXytf/zYSO
+ Kux++EKVbB+6KqM46la53mPQiB5uYp8CnVMS0PIibfD500+95Bioi4BMSN0iT7NJ8rYd
+ aMmGl51HZMKgyAFgt5ee9REbzv8tjyxiiJS0/WEgdegCfNFZ3KxWSeroapInViUDrc9r
+ JwNY3yyd/OQUZSQdsmop2MhsJ1yD0V8dLdIZXaMN5pz1as/F2s0tN7tD9UoNNVqkTy8V
+ qS5tGU/of4LViZfmtmvNfQJpXsY9s0DuFt4APhV2k50lHCVhLfhGdcr48g+G4sl1Vwib UA== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+        by aserp2130.oracle.com with ESMTP id 363nnahqv2-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 19 Jan 2021 15:23:46 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+        by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 10JFGZvj120612;
+        Tue, 19 Jan 2021 15:23:44 GMT
+Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
+        by aserp3030.oracle.com with ESMTP id 3649qpce47-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 19 Jan 2021 15:23:44 +0000
+Received: from abhmp0003.oracle.com (abhmp0003.oracle.com [141.146.116.9])
+        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 10JFNghG016525;
+        Tue, 19 Jan 2021 15:23:43 GMT
+Received: from mwanda (/102.36.221.92)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Tue, 19 Jan 2021 06:53:42 -0800
+Date:   Tue, 19 Jan 2021 17:53:35 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Florian Fainelli <f.fainelli@gmail.com>
+Cc:     "; Andrew Lunn" <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, bjorn.topel@intel.com,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Reply-To: Alexander Lobakin <alobakin@pm.me>
-Subject: Re: [PATCH bpf-next v2 3/3] xsk: build skb by page
-Message-ID: <20210119144253.5321-1-alobakin@pm.me>
-In-Reply-To: <017fdff4e061a7e0e779b7bc96ed3b45e07aa006.1611048724.git.xuanzhuo@linux.alibaba.com>
-References: <cover.1611048724.git.xuanzhuo@linux.alibaba.com> <017fdff4e061a7e0e779b7bc96ed3b45e07aa006.1611048724.git.xuanzhuo@linux.alibaba.com>
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Subject: [PATCH net-next] net: dsa: Fix off by one in dsa_loop_port_vlan_add()
+Message-ID: <YAbyb5kBJQlpYCs2@mwanda>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.2 required=10.0 tests=ALL_TRUSTED,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF shortcircuit=no
-        autolearn=disabled version=3.4.4
-X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on
-        mailout.protonmail.ch
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9868 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 mlxlogscore=999 adultscore=0
+ malwarescore=0 bulkscore=0 spamscore=0 phishscore=0 suspectscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2101190093
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9868 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 impostorscore=0 spamscore=0
+ mlxlogscore=999 clxscore=1015 bulkscore=0 adultscore=0 lowpriorityscore=0
+ suspectscore=0 phishscore=0 mlxscore=0 malwarescore=0 priorityscore=1501
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2101190093
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Date: Tue, 19 Jan 2021 17:45:12 +0800
+The > comparison is intended to be >= to prevent reading beyond the
+end of the ps->vlans[] array.  It doesn't affect run time though because
+the ps->vlans[] array has VLAN_N_VID (4096) elements and the vlan->vid
+cannot be > 4094 because it is checked earlier.
 
-> This patch is used to construct skb based on page to save memory copy
-> overhead.
->=20
-> This function is implemented based on IFF_TX_SKB_NO_LINEAR. Only the
-> network card priv_flags supports IFF_TX_SKB_NO_LINEAR will use page to
-> directly construct skb. If this feature is not supported, it is still
-> necessary to copy data to construct skb.
->=20
-> ---------------- Performance Testing ------------
->=20
-> The test environment is Aliyun ECS server.
-> Test cmd:
-> ```
-> xdpsock -i eth0 -t  -S -s <msg size>
-> ```
->=20
-> Test result data:
->=20
-> size    64      512     1024    1500
-> copy    1916747 1775988 1600203 1440054
-> page    1974058 1953655 1945463 1904478
-> percent 3.0%    10.0%   21.58%  32.3%
->=20
-> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> Reviewed-by: Dust Li <dust.li@linux.alibaba.com>
-> ---
->  net/xdp/xsk.c | 112 ++++++++++++++++++++++++++++++++++++++++++++++++----=
-------
->  1 file changed, 94 insertions(+), 18 deletions(-)
->=20
-> diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-> index 8037b04..8c291f8 100644
-> --- a/net/xdp/xsk.c
-> +++ b/net/xdp/xsk.c
-> @@ -430,6 +430,95 @@ static void xsk_destruct_skb(struct sk_buff *skb)
->  =09sock_wfree(skb);
->  }
-> =20
-> +static struct sk_buff *xsk_build_skb_zerocopy(struct xdp_sock *xs,
-> +=09=09=09=09=09      struct xdp_desc *desc)
-> +{
-> +=09u32 len, offset, copy, copied;
-> +=09struct sk_buff *skb;
-> +=09struct page *page;
-> +=09char *buffer;
-> +=09int err =3D 0, i;
-> +=09u64 addr;
-> +
-> +=09skb =3D sock_alloc_send_skb(&xs->sk, 0, 1, &err);
-> +=09if (unlikely(!skb))
-> +=09=09return NULL;
+Fixes: 98cd1552ea27 ("net: dsa: Mock-up driver")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+---
+I'm not 100% sure where this is checked but the other code has comments
+and assumptions that say that it is and Smatch says that it is.  If I
+had to guess, I would say that the check is in the nla policy.
 
-You can propagate err from here to the outer function:
+[NL80211_ATTR_VLAN_ID] = NLA_POLICY_RANGE(NLA_U16, 1, VLAN_N_VID - 2),
 
-=09if (unlikely(!skb))
-=09=09return ERR_PTR(err);
+This patch is against linux-next.  I could re-write it against net if
+you want.  Another option would be to just delete the sanity check.
 
-> +=09addr =3D desc->addr;
-> +=09len =3D desc->len;
-> +
-> +=09buffer =3D xsk_buff_raw_get_data(xs->pool, addr);
-> +=09offset =3D offset_in_page(buffer);
-> +=09addr =3D buffer - (char *)xs->pool->addrs;
-> +
-> +=09for (copied =3D 0, i =3D 0; copied < len; ++i) {
+ drivers/net/dsa/dsa_loop.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-i++ would be less confusing here. You build skb frags from frag 0
-anyway.
-
-> +=09=09page =3D xs->pool->umem->pgs[addr >> PAGE_SHIFT];
-> +
-> +=09=09get_page(page);
-> +
-> +=09=09copy =3D min((u32)(PAGE_SIZE - offset), len - copied);
-
-It's better to use min_t(u32, ...) instead of manual casting.
-
-> +
-> +=09=09skb_fill_page_desc(skb, i, page, offset, copy);
-> +
-> +=09=09copied +=3D copy;
-> +=09=09addr +=3D copy;
-> +=09=09offset =3D 0;
-> +=09}
-> +
-> +=09skb->len +=3D len;
-> +=09skb->data_len +=3D len;
-> +=09skb->truesize +=3D len;
-> +
-> +=09refcount_add(len, &xs->sk.sk_wmem_alloc);
-> +
-> +=09return skb;
-> +}
-> +
-> +static struct sk_buff *xsk_build_skb(struct xdp_sock *xs,
-> +=09=09=09=09     struct xdp_desc *desc)
-> +{
-> +=09struct sk_buff *skb =3D NULL;
-> +=09int err =3D -ENOMEM;
-> +
-> +=09if (xs->dev->priv_flags & IFF_TX_SKB_NO_LINEAR) {
-> +=09=09skb =3D xsk_build_skb_zerocopy(xs, desc);
-> +=09=09if (unlikely(!skb))
-> +=09=09=09goto err;
-
-1. You should'n use goto err here, as skb =3D=3D NULL, so kfree_skb(skb)
-   is redundant.
-2. If you would use ERR_PTR() in xsk_build_skb_zerocopy(),
-   the condition should look like:
-
-=09=09if (IS_ERR(skb))
-=09=09=09return PTR_ERR(skb);
-
-> +=09} else {
-> +=09=09char *buffer;
-> +=09=09u64 addr;
-> +=09=09u32 len;
-> +=09=09int err;
-> +
-> +=09=09len =3D desc->len;
-> +=09=09skb =3D sock_alloc_send_skb(&xs->sk, len, 1, &err);
-> +=09=09if (unlikely(!skb))
-> +=09=09=09goto err;
-
-Same here, if skb =3D=3D NULL, just return without calling kfree_skb().
-
-> +=09=09skb_put(skb, len);
-> +=09=09addr =3D desc->addr;
-> +=09=09buffer =3D xsk_buff_raw_get_data(xs->pool, desc->addr);
-> +=09=09err =3D skb_store_bits(skb, 0, buffer, len);
-> +
-> +=09=09if (unlikely(err)) {
-> +=09=09=09err =3D -EINVAL;
-
-You already have errno in err, no need to override it.
-
-> +=09=09=09goto err;
-> +=09=09}
-> +=09}
-> +
-> +=09skb->dev =3D xs->dev;
-> +=09skb->priority =3D xs->sk.sk_priority;
-> +=09skb->mark =3D xs->sk.sk_mark;
-> +=09skb_shinfo(skb)->destructor_arg =3D (void *)(long)desc->addr;
-> +=09skb->destructor =3D xsk_destruct_skb;
-> +
-> +=09return skb;
-> +
-> +err:
-> +=09kfree_skb(skb);
-> +=09return ERR_PTR(err);
-> +}
-> +
->  static int xsk_generic_xmit(struct sock *sk)
->  {
->  =09struct xdp_sock *xs =3D xdp_sk(sk);
-> @@ -446,43 +535,30 @@ static int xsk_generic_xmit(struct sock *sk)
->  =09=09goto out;
-> =20
->  =09while (xskq_cons_peek_desc(xs->tx, &desc, xs->pool)) {
-> -=09=09char *buffer;
-> -=09=09u64 addr;
-> -=09=09u32 len;
-> -
->  =09=09if (max_batch-- =3D=3D 0) {
->  =09=09=09err =3D -EAGAIN;
->  =09=09=09goto out;
->  =09=09}
-> =20
-> -=09=09len =3D desc.len;
-> -=09=09skb =3D sock_alloc_send_skb(sk, len, 1, &err);
-> -=09=09if (unlikely(!skb))
-> +=09=09skb =3D xsk_build_skb(xs, &desc);
-> +=09=09if (IS_ERR(skb)) {
-> +=09=09=09err =3D PTR_ERR(skb);
->  =09=09=09goto out;
-> +=09=09}
-> =20
-> -=09=09skb_put(skb, len);
-> -=09=09addr =3D desc.addr;
-> -=09=09buffer =3D xsk_buff_raw_get_data(xs->pool, addr);
-> -=09=09err =3D skb_store_bits(skb, 0, buffer, len);
->  =09=09/* This is the backpressure mechanism for the Tx path.
->  =09=09 * Reserve space in the completion queue and only proceed
->  =09=09 * if there is space in it. This avoids having to implement
->  =09=09 * any buffering in the Tx path.
->  =09=09 */
->  =09=09spin_lock_irqsave(&xs->pool->cq_lock, flags);
-> -=09=09if (unlikely(err) || xskq_prod_reserve(xs->pool->cq)) {
-> +=09=09if (xskq_prod_reserve(xs->pool->cq)) {
->  =09=09=09spin_unlock_irqrestore(&xs->pool->cq_lock, flags);
->  =09=09=09kfree_skb(skb);
->  =09=09=09goto out;
->  =09=09}
->  =09=09spin_unlock_irqrestore(&xs->pool->cq_lock, flags);
-> =20
-> -=09=09skb->dev =3D xs->dev;
-> -=09=09skb->priority =3D sk->sk_priority;
-> -=09=09skb->mark =3D sk->sk_mark;
-> -=09=09skb_shinfo(skb)->destructor_arg =3D (void *)(long)desc.addr;
-> -=09=09skb->destructor =3D xsk_destruct_skb;
-> -
->  =09=09err =3D __dev_direct_xmit(skb, xs->queue_id);
->  =09=09if  (err =3D=3D NETDEV_TX_BUSY) {
->  =09=09=09/* Tell user-space to retry the send */
-
-So please recheck the code and then retest it, especially error
-paths (you can inject errors manually here to ensure they work).
-
-Thanks,
-Al
+diff --git a/drivers/net/dsa/dsa_loop.c b/drivers/net/dsa/dsa_loop.c
+index 5f69216376fe..8c283f59158b 100644
+--- a/drivers/net/dsa/dsa_loop.c
++++ b/drivers/net/dsa/dsa_loop.c
+@@ -207,7 +207,7 @@ static int dsa_loop_port_vlan_add(struct dsa_switch *ds, int port,
+ 	struct mii_bus *bus = ps->bus;
+ 	struct dsa_loop_vlan *vl;
+ 
+-	if (vlan->vid > ARRAY_SIZE(ps->vlans))
++	if (vlan->vid >= ARRAY_SIZE(ps->vlans))
+ 		return -ERANGE;
+ 
+ 	/* Just do a sleeping operation to make lockdep checks effective */
+-- 
+2.29.2
 
