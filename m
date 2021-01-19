@@ -2,152 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 558972FC4AB
-	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 00:23:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4AC342FC4A5
+	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 00:19:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730648AbhASXTs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jan 2021 18:19:48 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:37715 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728221AbhASXTH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jan 2021 18:19:07 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1611098254;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=X2pcChHGftd9Kzu4vux4bBucIycf/Pi8Nee8dh6Osj0=;
-        b=T8CDMoUL33kS+GxCuR8k9+KKRN35ohSV4bKTBERESmwKNCbE3RBtElk3gwXy8ASEWyYXQd
-        8IMcDXfbcja8fUujkrd70FiXl4+c9PBtAKcrFKp0fsWqumOZ87kp/Mlv/2+HXsaaSVdDix
-        hz/KKTeamGqkYFo9HuqUrFXdZKKQ5h4=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-319-AvmReq3dM-mztp_ixXzDhw-1; Tue, 19 Jan 2021 18:17:30 -0500
-X-MC-Unique: AvmReq3dM-mztp_ixXzDhw-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 067ED15720;
-        Tue, 19 Jan 2021 23:17:28 +0000 (UTC)
-Received: from redhat.com (ovpn-112-133.rdu2.redhat.com [10.10.112.133])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 978266268F;
-        Tue, 19 Jan 2021 23:17:20 +0000 (UTC)
-Date:   Tue, 19 Jan 2021 18:17:18 -0500
-From:   Joe Lawrence <joe.lawrence@redhat.com>
-To:     Jiri Olsa <jolsa@kernel.org>
-Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>, dwarves@vger.kernel.org,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        Yonghong Song <yhs@fb.com>, Hao Luo <haoluo@google.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>, Mark Wielaard <mjw@redhat.com>
-Subject: Re: [PATCH 0/3] dwarves,libbpf: Add support to use optional extended
- section index table
-Message-ID: <20210119231718.GA3173@redhat.com>
-References: <20210119221220.1745061-1-jolsa@kernel.org>
+        id S1730581AbhASXSk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jan 2021 18:18:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54254 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730428AbhASXSW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jan 2021 18:18:22 -0500
+Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EFD3C0613C1
+        for <netdev@vger.kernel.org>; Tue, 19 Jan 2021 15:17:42 -0800 (PST)
+Received: by mail-pg1-x52c.google.com with SMTP id 15so13946487pgx.7
+        for <netdev@vger.kernel.org>; Tue, 19 Jan 2021 15:17:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=bS1EXwVf9++GgF5w+IZun5/4T2TdIFJKa7KEA0Lv/a0=;
+        b=hpJ1Iih2ZaQEskGl2DHiWyn7xFj/Lcyv7+Vmc8dg7UpM8J6zHqS55XGjX5lABSsUj7
+         betvSSBD/2tezHHac3ucSyYM2tGVQhGZJHcDF1Scn2efK3eBL1stepK7jDFiTgkU3xnm
+         KH6gfJHEaFnogsEFC+TvSQjtV77nNnkZSveERxnT83zPxBB+II4d0H6ZusGnCxKMTNEF
+         NvtZ5u33IE6a0L4wShAotvpgBnzrpF86s1V4rA24hU8Gj1w20VTOJrSPo/8zghmVoYVg
+         J9b1aA9mp9nsWfPoxwAYc/dtYC+Y8DV9ZRIwxNQeVWoKfSVEfX+1pO8I1qg6Rn6ByGzI
+         Drfg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=bS1EXwVf9++GgF5w+IZun5/4T2TdIFJKa7KEA0Lv/a0=;
+        b=Duiuum8M5i7glSAohy5swgekSMceU+I+Qa2a9JcizZVv/Njy25Gv8Kd0VV4EU1qLwu
+         3NhPvO9bBejI2BgZCfPyORJJ6Hqf1EzZn+6Jygrf9hEFK1MghkVlepCyFn1Ta5NZCiid
+         epYJ4GG2sCOZSnJGby4m1EBx3P3OzYusQ7MEqvi+PVOVZuEX0JrgXnjps4gKowaKHRzi
+         YxFZa5X+e57PLdQH+Jx2sNfRq8Q+HFe2nvPp8cYasC+bg3ZIyTNc69NoLEgGbYDM5Ua+
+         on7ouuI2xD9GRM8jkeoiMqH+bRt2wa+kM0YYBytb4hz1JzcPnWznobic9p4uG0sUwTm/
+         x2Ow==
+X-Gm-Message-State: AOAM530hOtnUNtUoTY2o+sfh7lwWPjmK7uPv2rV/Rvxu/oLibZgBE6Ag
+        kRFsT+MuEpPXmsAWjt+7j+o=
+X-Google-Smtp-Source: ABdhPJyFL6mbd3Li1/SfH8DdjGECbDytJ+kxzF2HBOs7sLl1SLKsrQDsJsnaAOa51gtU0ZhYPrMOfA==
+X-Received: by 2002:a63:5d10:: with SMTP id r16mr6493408pgb.406.1611098261910;
+        Tue, 19 Jan 2021 15:17:41 -0800 (PST)
+Received: from [10.230.29.29] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id p13sm64427pju.20.2021.01.19.15.17.39
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 19 Jan 2021 15:17:41 -0800 (PST)
+Subject: Re: [PATCH v4 net-next 13/16] net: mscc: ocelot: export struct
+ ocelot_frame_info
+To:     Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        Hongbo Wang <hongbo.wang@nxp.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Po Liu <po.liu@nxp.com>, Yangbo Lu <yangbo.lu@nxp.com>,
+        Maxim Kochetkov <fido_max@inbox.ru>,
+        Eldar Gasanov <eldargasanov2@gmail.com>,
+        Andrey L <al@b4comtech.com>, UNGLinuxDriver@microchip.com
+References: <20210119230749.1178874-1-olteanv@gmail.com>
+ <20210119230749.1178874-14-olteanv@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <36d77745-9b59-79ff-4f0b-9613149495b3@gmail.com>
+Date:   Tue, 19 Jan 2021 15:17:34 -0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210119221220.1745061-1-jolsa@kernel.org>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+In-Reply-To: <20210119230749.1178874-14-olteanv@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 19, 2021 at 11:12:17PM +0100, Jiri Olsa wrote:
-> hi,
-> kpatch guys hit an issue with pahole over their vmlinux, which
-> contains many (over 100000) sections, pahole crashes.
+
+
+On 1/19/2021 3:07 PM, Vladimir Oltean wrote:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
 > 
-
-FWIW this is probably only going to be problem when building the kernel
-with -f[function|data]-sections and tipping over 65536 sections.  We
-only use these option to determine code deltas, but other users
-(FG-ASLR, LTO?) may need to actually build runtime code.
-
-> With so many sections, ELF is using extended section index table,
-> which is used to hold values for some of the indexes and extra
-> code is needed to retrieve them.
+> Because felix DSA must now be able to extract a frame in 2 stages over
+> MMIO (first the XFH then the frame data), it needs access to this
+> internal ocelot structure that holds the unpacked information from the
+> Extraction Frame Header.
 > 
-> This patchset adds the support for pahole to properly read string
-> table index and symbol's section index, which are used in btf_encoder.
-> 
-> This patchset also adds support for libbpf to properly parse .BTF
-> section on such object.
-> 
-> This patchset based on previously posted fix [1].
-> 
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Hi Jiri,
-
-Thanks for posting a potential fix, here's what I saw when running it:
-
-1-Installed your scratch build:
-
-% rpm -q --whatprovides $(which pahole)
-dwarves-1.19-2.el8.x86_64
-
-
-2-From the kernel build:
-
-  LD      vmlinux.o
-  MODPOST vmlinux.o
-  BTF     .btf.vmlinux.bin.o
-scripts/link-vmlinux.sh: line 127: 1851330 Segmentation fault      (core dumped) LLVM_OBJCOPY=${OBJCOPY} ${PAHOLE} -J ${1}
-objcopy: --change-section-vma .BTF=0x0000000000000000 never used
-objcopy: --change-section-lma .BTF=0x0000000000000000 never used
-objcopy: error: the input file '.btf.vmlinux.bin' is empty
-Failed to generate BTF for vmlinux
-Try to disable CONFIG_DEBUG_INFO_BTF
-make: *** [Makefile:1050: vmlinux] Error 1
-
-
-3-coredump backtrace:
-...
-Core was generated by `pahole -J .tmp_vmlinux.btf'.
-...
-(gdb) bt
-#0  0x00007fc0e81e31c0 in __memcpy_ssse3 () from /lib64/libc.so.6
-#1  0x00007fc0e8b6700a in memcpy (__len=306248, __src=<optimized out>, __dest=0x7fc0e91a0010) at /usr/include/bits/string_fortified.h:34
-#2  get_vmlinux_addrs (btfe=<optimized out>, pcount=<synthetic pointer>, paddrs=<synthetic pointer>, fl=<synthetic pointer>)
-    at /usr/src/debug/dwarves-1.19-2.el8.x86_64/btf_encoder.c:167
-#3  setup_functions (fl=<synthetic pointer>, btfe=<optimized out>) at /usr/src/debug/dwarves-1.19-2.el8.x86_64/btf_encoder.c:251
-#4  collect_symbols (collect_percpu_vars=<optimized out>, btfe=<optimized out>)
-    at /usr/src/debug/dwarves-1.19-2.el8.x86_64/btf_encoder.c:645
-#5  cu__encode_btf (cu=<optimized out>, verbose=0, force=false, skip_encoding_vars=<optimized out>)
-    at /usr/src/debug/dwarves-1.19-2.el8.x86_64/btf_encoder.c:694
-#6  0x000055eb2e4b6cc5 in pahole_stealer (cu=0x55eb2ecbb920, conf_load=<optimized out>)
-    at /usr/src/debug/dwarves-1.19-2.el8.x86_64/pahole.c:2402
-#7  0x00007fc0e8b6d2db in finalize_cu_immediately (conf=0x55eb2e6bc0e0 <conf_load>, dcu=0x7ffd88fda9d0, cu=0x55eb2ecbb920, 
-    cus=0x55eb2ecbb5d0) at /usr/src/debug/dwarves-1.19-2.el8.x86_64/dwarf_loader.c:2477
-#8  cus__load_module (cus=cus@entry=0x55eb2ecbb5d0, conf=0x55eb2e6bc0e0 <conf_load>, mod=mod@entry=0x55eb2ecbb5f0, dw=0x55eb2ecbe6a0, 
-    elf=elf@entry=0x7fc0ad941010, filename=0x7ffd8905b98d ".tmp_vmlinux.btf")
-    at /usr/src/debug/dwarves-1.19-2.el8.x86_64/dwarf_loader.c:2477
-#9  0x00007fc0e8b6d5c5 in cus__process_dwflmod (dwflmod=0x55eb2ecbb5f0, userdata=<optimized out>, name=<optimized out>, 
-    base=<optimized out>, arg=0x7ffd8905ab00) at /usr/src/debug/dwarves-1.19-2.el8.x86_64/dwarf_loader.c:2522
-#10 0x00007fc0e88f9c71 in dwfl_getmodules () from /lib64/libdw.so.1
-#11 0x00007fc0e8b69cdc in cus__process_file (filename=<optimized out>, fd=5, conf=0x55eb2e6bc0e0 <conf_load>, cus=0x55eb2ecbb5d0)
-    at /usr/src/debug/dwarves-1.19-2.el8.x86_64/dwarf_loader.c:2575
-#12 dwarf__load_file (cus=0x55eb2ecbb5d0, conf=0x55eb2e6bc0e0 <conf_load>, filename=<optimized out>)
-    at /usr/src/debug/dwarves-1.19-2.el8.x86_64/dwarf_loader.c:2592
-#13 0x00007fc0e8b5cb82 in cus__load_file (cus=cus@entry=0x55eb2ecbb5d0, conf=conf@entry=0x55eb2e6bc0e0 <conf_load>, 
-    filename=0x7ffd8905b98d ".tmp_vmlinux.btf") at /usr/src/debug/dwarves-1.19-2.el8.x86_64/dwarves.c:1963
-#14 0x00007fc0e8b5ce29 in cus__load_files (cus=0x55eb2ecbb5d0, conf=0x55eb2e6bc0e0 <conf_load>, filenames=0x7ffd8905aea8)
-    at /usr/src/debug/dwarves-1.19-2.el8.x86_64/dwarves.c:2324
-#15 0x000055eb2e4b371e in main (argc=3, argv=0x7ffd8905ae98) at /usr/src/debug/dwarves-1.19-2.el8.x86_64/pahole.c:2760
-
-
-I uploaded a gzipped core file here:
-http://people.redhat.com/~jolawren/coredump.gz
-
-If it's easier to get you setup on a repro system, let me know and I can
-do that.
-
-Thanks,
-
--- Joe
-
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
