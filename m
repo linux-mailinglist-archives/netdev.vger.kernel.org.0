@@ -2,89 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E42852FB18B
-	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 07:37:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9F16A2FB17F
+	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 07:34:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728030AbhASGXW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jan 2021 01:23:22 -0500
-Received: from mail.kernel.org ([198.145.29.99]:60696 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2404019AbhASFuv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 19 Jan 2021 00:50:51 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 8074322ADF;
-        Tue, 19 Jan 2021 05:50:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611035410;
-        bh=9PCTtxdlnFAAROmo4v1rq+c//3T4U7DNx4CHZwyQ1wY=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=lsnZcpesrhrgDK0oBaQGxsiRZm2oObO6dqQ44SrHWC2b3Gqi1CC/UwLQPJvr//qNo
-         XyocfNrkNzGIVWJomZH+GoyjSYwbZhDyX/5RtbWafwMvJmo+EPbg2UGborJNTJs28V
-         uFm073Xz3jBlR3CcgxR/UOFnBv29XPZdVqoq6uxpf9clFlSwQi4QkF5xdw+Ds2EL+Y
-         0sbQfUBHhFJDp0A/LtEo2aE3kuyoluajsZbU8ZVXHcbPr4iG/CIUVDWI+3Qfi3BwpN
-         Lsun22Jv4shOmCNDTnDWl45JXksi8OnrKXjy5016opJ67NUTbzauY8qMLxKvOYemY4
-         59FvgE7XlyBcA==
-Received: from pdx-korg-docbuild-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-1.ci.codeaurora.org (Postfix) with ESMTP id 7008C60460;
-        Tue, 19 Jan 2021 05:50:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next V3 0/8] TLS device offload for Bond
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161103541045.1484.3865101885505297554.git-patchwork-notify@kernel.org>
-Date:   Tue, 19 Jan 2021 05:50:10 +0000
-References: <20210117145949.8632-1-tariqt@nvidia.com>
-In-Reply-To: <20210117145949.8632-1-tariqt@nvidia.com>
-To:     Tariq Toukan <tariqt@nvidia.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, borisp@nvidia.com,
-        netdev@vger.kernel.org, ttoukan.linux@gmail.com, moshe@nvidia.com,
-        j.vosburgh@gmail.com, vfalico@gmail.com, andy@greyhouse.net,
-        john.fastabend@gmail.com, daniel@iogearbox.net, jarod@redhat.com,
-        ivecera@redhat.com
+        id S1728756AbhASGdr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jan 2021 01:33:47 -0500
+Received: from out30-43.freemail.mail.aliyun.com ([115.124.30.43]:59595 "EHLO
+        out30-43.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727860AbhASGdi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jan 2021 01:33:38 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R351e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04357;MF=abaci-bugfix@linux.alibaba.com;NM=1;PH=DS;RN=10;SR=0;TI=SMTPD_---0UMDPCxf_1611037957;
+Received: from j63c13417.sqa.eu95.tbsite.net(mailfrom:abaci-bugfix@linux.alibaba.com fp:SMTPD_---0UMDPCxf_1611037957)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Tue, 19 Jan 2021 14:32:41 +0800
+From:   Jiapeng Zhong <abaci-bugfix@linux.alibaba.com>
+To:     pkshih@realtek.com
+Cc:     kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org,
+        Larry.Finger@lwfinger.net, chiu@endlessos.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Jiapeng Zhong <abaci-bugfix@linux.alibaba.com>
+Subject: [PATCH v2] rtlwifi: rtl8192se: Simplify bool comparison.
+Date:   Tue, 19 Jan 2021 14:32:35 +0800
+Message-Id: <1611037955-105333-1-git-send-email-abaci-bugfix@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+Fix the follow coccicheck warnings:
 
-This series was applied to netdev/net-next.git (refs/heads/master):
+./drivers/net/wireless/realtek/rtlwifi/rtl8192se/hw.c:2305:6-27:
+WARNING: Comparison of 0/1 to bool variable.
 
-On Sun, 17 Jan 2021 16:59:41 +0200 you wrote:
-> Hi,
-> 
-> This series opens TX and RX TLS device offload for bond interfaces.
-> This allows bond interfaces to benefit from capable lower devices.
-> 
-> We add a new ndo_sk_get_lower_dev() to be used to get the lower dev that
-> corresponds to a given socket.
-> The TLS module uses it to interact directly with the lowest device in
-> chain, and invoke the control operations in tlsdev_ops. This means that the
-> bond interface doesn't have his own struct tlsdev_ops instance and
-> derived logic/callbacks.
-> 
-> [...]
+./drivers/net/wireless/realtek/rtlwifi/rtl8192se/hw.c:1376:5-26:
+WARNING: Comparison of 0/1 to bool variable.
 
-Here is the summary with links:
-  - [net-next,V3,1/8] net: netdevice: Add operation ndo_sk_get_lower_dev
-    https://git.kernel.org/netdev/net-next/c/719a402cf603
-  - [net-next,V3,2/8] net/bonding: Take IP hash logic into a helper
-    https://git.kernel.org/netdev/net-next/c/5b99854540e3
-  - [net-next,V3,3/8] net/bonding: Implement ndo_sk_get_lower_dev
-    https://git.kernel.org/netdev/net-next/c/007feb87fb15
-  - [net-next,V3,4/8] net/bonding: Take update_features call out of XFRM funciton
-    https://git.kernel.org/netdev/net-next/c/f45583de361d
-  - [net-next,V3,5/8] net/bonding: Implement TLS TX device offload
-    https://git.kernel.org/netdev/net-next/c/89df6a810470
-  - [net-next,V3,6/8] net/bonding: Declare TLS RX device offload support
-    https://git.kernel.org/netdev/net-next/c/dc5809f9e2b6
-  - [net-next,V3,7/8] net/tls: Device offload to use lowest netdevice in chain
-    https://git.kernel.org/netdev/net-next/c/153cbd137f0a
-  - [net-next,V3,8/8] net/tls: Except bond interface from some TLS checks
-    https://git.kernel.org/netdev/net-next/c/4e5a73329051
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Signed-off-by: Jiapeng Zhong <abaci-bugfix@linux.alibaba.com>
+---
+Changes in v2:
+  -Modified subject.
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+ drivers/net/wireless/realtek/rtlwifi/rtl8192se/hw.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
+diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8192se/hw.c b/drivers/net/wireless/realtek/rtlwifi/rtl8192se/hw.c
+index 47fabce..aff8ab0 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/rtl8192se/hw.c
++++ b/drivers/net/wireless/realtek/rtlwifi/rtl8192se/hw.c
+@@ -1373,7 +1373,7 @@ static void _rtl92se_gen_refreshledstate(struct ieee80211_hw *hw)
+ 	struct rtl_pci *rtlpci = rtl_pcidev(rtl_pcipriv(hw));
+ 	struct rtl_led *pled0 = &rtlpriv->ledctl.sw_led0;
+ 
+-	if (rtlpci->up_first_time == 1)
++	if (rtlpci->up_first_time)
+ 		return;
+ 
+ 	if (rtlpriv->psc.rfoff_reason == RF_CHANGE_BY_IPS)
+@@ -2302,7 +2302,7 @@ bool rtl92se_gpio_radio_on_off_checking(struct ieee80211_hw *hw, u8 *valid)
+ 	bool turnonbypowerdomain = false;
+ 
+ 	/* just 8191se can check gpio before firstup, 92c/92d have fixed it */
+-	if ((rtlpci->up_first_time == 1) || (rtlpci->being_init_adapter))
++	if (rtlpci->up_first_time || rtlpci->being_init_adapter)
+ 		return false;
+ 
+ 	if (ppsc->swrf_processing)
+-- 
+1.8.3.1
 
