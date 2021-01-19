@@ -2,78 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F1F512FAEB5
-	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 03:21:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DDD2C2FAEC1
+	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 03:29:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405809AbhASCVa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jan 2021 21:21:30 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37422 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2405608AbhASCV3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jan 2021 21:21:29 -0500
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 300C9C061573
-        for <netdev@vger.kernel.org>; Mon, 18 Jan 2021 18:20:48 -0800 (PST)
-Received: by mail-pl1-x636.google.com with SMTP id x12so9629700plr.10
-        for <netdev@vger.kernel.org>; Mon, 18 Jan 2021 18:20:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=networkplumber-org.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=/cwIO+WolBwS0/c4/AFhWb3AHfCE0CzYH8h0XaZ0qXw=;
-        b=BcwUhUiCZtyxCrdwC0M71uBIC7IO2Wb4OAgyilhuwCUsqOORSlKGMjCcb9YSczIU2a
-         JvFs6JKxsCb5BGyQBWuaR1w0Zf4xtXWR0G6yBM56a5QNbg4TKbftOmp+zNSGOMRyEIFz
-         O87U2wJ2OZeTdcaTxFJ5Tq/5y4T+kplPkiREanvDpT/xU8XMmxXJvBLR0+Q+vYSyXQpg
-         mjkl9MlzU0qDqy7d301nIUh/mLWglxYS+0wSgMV1Wc1J3HAuapmaNzfczNFDVeIZ0Dcc
-         +JHOuH8serQym7t/xeupCJnbhuMeLSFq62UcTtm5+v3N4qOJ3ykMOiwjL4yM9Y1e2EA8
-         wn1Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=/cwIO+WolBwS0/c4/AFhWb3AHfCE0CzYH8h0XaZ0qXw=;
-        b=ck4hKBM1Qg3rgpNKXwczjgxsEI5z7LjLT5fASP1845RR4DsWlQ8QF4S/8L7uDcJI+6
-         zkM7FMp1w0gnkhdsRCbP7G/XkjJapskUjMEB7Q4LYnueGePRU2XfOCsGm9rKB2Dj5xJO
-         2DN6dISzE30qNea6ZHwTBs3ILzDkd6UwO4vgcsBFbIRlmU0qP06tXv93sc+PB+sFFzdS
-         IEVycsGq/03EYXDCqmigPfkuHXbIsljjLyQbzgIv7KSoDNPZo1bGuF9CEYfMPapH3emn
-         JuGS1oEcWd9anwCFzqUCZhzNzOBL1l5m4XTVehjVe9uOhoknByEDW7xYl218dm9n5tUq
-         rcjQ==
-X-Gm-Message-State: AOAM532lXXCqqkympVbxXRybujQ6KZ3E2MkKD1PCrjcaRQjYyVqT41oJ
-        8qEDd5hv0RUlXYYKckwfUd1PaYSnNOG7nXpb
-X-Google-Smtp-Source: ABdhPJyQZp7EjEf2/NdLjrVcNyrUdhJCdeGmDYOwKEG/FCkE6nxdFihdIlSLDloIUs0JEA0I38fLkw==
-X-Received: by 2002:a17:90a:b28f:: with SMTP id c15mr2458467pjr.79.1611022847728;
-        Mon, 18 Jan 2021 18:20:47 -0800 (PST)
-Received: from hermes.local (76-14-222-244.or.wavecable.com. [76.14.222.244])
-        by smtp.gmail.com with ESMTPSA id f7sm655372pjs.25.2021.01.18.18.20.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Jan 2021 18:20:47 -0800 (PST)
-Date:   Mon, 18 Jan 2021 18:20:44 -0800
-From:   Stephen Hemminger <stephen@networkplumber.org>
-To:     Raju Rangoju <rajur@chelsio.com>
-Cc:     netdev@vger.kernel.org, hch@lst.de, rahul.lakkireddy@chelsio.com
-Subject: Re: how to determine if buffers are in user-space/kernel-space
-Message-ID: <20210118182044.26d59491@hermes.local>
-In-Reply-To: <20210118182636.GB15369@chelsio.com>
-References: <20210118182636.GB15369@chelsio.com>
+        id S2436795AbhASC0v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jan 2021 21:26:51 -0500
+Received: from m9785.mail.qiye.163.com ([220.181.97.85]:44175 "EHLO
+        m9785.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2436741AbhASC0t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jan 2021 21:26:49 -0500
+Received: from [192.168.188.110] (unknown [106.75.220.2])
+        by m9785.mail.qiye.163.com (Hmail) with ESMTPA id 776E25C1CC1;
+        Tue, 19 Jan 2021 10:25:55 +0800 (CST)
+Subject: Re: [PATCH net-next] net/sched: cls_flower add CT_FLAGS_INVALID flag
+ support
+To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, netdev@vger.kernel.org
+References: <1610947127-4412-1-git-send-email-wenxu@ucloud.cn>
+ <20210118182112.GC2676@horizon.localdomain>
+From:   wenxu <wenxu@ucloud.cn>
+Message-ID: <677113f7-2dd5-393a-c160-ccffc94c08c0@ucloud.cn>
+Date:   Tue, 19 Jan 2021 10:25:52 +0800
+User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20210118182112.GC2676@horizon.localdomain>
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZS1VLWVdZKFlBSUI3V1ktWUFJV1kPCR
+        oVCBIfWUFZH0MZQktNGEpIGBpOVkpNSkpLSUhKTk1LSUNVGRETFhoSFyQUDg9ZV1kWGg8SFR0UWU
+        FZT0tIVUpKS0xKTVVLWQY+
+X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6Oi46NRw5LD06IhQ#ExRWESMd
+        NzAaFBZVSlVKTUpKS0lISk5NSUtOVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpLTVVM
+        TlVJSUtVSVlXWQgBWUFJSkhPNwY+
+X-HM-Tid: 0a771876824e2087kuqy776e25c1cc1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 18 Jan 2021 23:56:37 +0530
-Raju Rangoju <rajur@chelsio.com> wrote:
 
-> Hi,
-> 
-> We have an out-of-tree kernel module which was using
-> segment_eq(get_fs(), KERNEL_DS) to determine whether buffers are in
-> Kernel space vs User space. However, with the get_fs() and its friends
-> removed[1], we are out of ideas on how to determine if buffers are in
-> user space or kernel space. Can someone shed some light on how to
-> accomplish it?
-> 
-
-Sorry, you are asking in the wrong place. Supporting any out of
-tree modules is completely your own problem to deal with.
+On 1/19/2021 2:21 AM, Marcelo Ricardo Leitner wrote:
+> On Mon, Jan 18, 2021 at 01:18:47PM +0800, wenxu@ucloud.cn wrote:
+> ...
+>> --- a/net/sched/cls_flower.c
+>> +++ b/net/sched/cls_flower.c
+>> @@ -305,6 +305,9 @@ static int fl_classify(struct sk_buff *skb, const struct tcf_proto *tp,
+>>  	struct fl_flow_key skb_key;
+>>  	struct fl_flow_mask *mask;
+>>  	struct cls_fl_filter *f;
+>> +	bool post_ct;
+>> +
+>> +	post_ct = qdisc_skb_cb(skb)->post_ct;
+> Patch-wise, only here I think you could initialize post_ct right on
+> the declaration. No need for the extra line/block of lines here.
+>
+> But I'm missing the iproute2 changes for flower, with a man page
+> update as well. Not sure if you planned to post them later on or not,
+> but it's nice to always have them paired together.
+Will do . Thanks.
+>
+> Thanks,
+> Marcelo
+>
