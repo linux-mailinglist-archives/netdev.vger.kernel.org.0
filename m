@@ -2,343 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D4E42FAE2D
+	by mail.lfdr.de (Postfix) with ESMTP id DA7192FAE2E
 	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 01:43:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404336AbhASAmk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jan 2021 19:42:40 -0500
-Received: from mga09.intel.com ([134.134.136.24]:38531 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2391387AbhASAmL (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 18 Jan 2021 19:42:11 -0500
-IronPort-SDR: SoUbIHhLIHl/dscdJn2WFKTYj9cTL07tFwMvD22vO7KIVguGL0ea3a1uui7GSL5Gc/qR4hCEaV
- Xb9KmDEVNrxw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9868"; a="179011268"
-X-IronPort-AV: E=Sophos;i="5.79,357,1602572400"; 
-   d="scan'208";a="179011268"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jan 2021 16:40:56 -0800
-IronPort-SDR: rryoP86f2/jqERXEi9OD55lGJSKxjIRFGTsTkH1U72kUKNkb3LDBUEjK/xsNOBzYE9EINij16a
- 32INf1X6K+xQ==
-X-IronPort-AV: E=Sophos;i="5.79,357,1602572400"; 
-   d="scan'208";a="426285792"
-Received: from cemillan-mobl.amr.corp.intel.com (HELO localhost.localdomain) ([10.212.57.184])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jan 2021 16:40:55 -0800
-From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
-To:     netdev@vger.kernel.org
-Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com, jiri@resnulli.us, kuba@kernel.org,
-        m-karicheri2@ti.com, vladimir.oltean@nxp.com,
-        Jose.Abreu@synopsys.com, po.liu@nxp.com,
-        intel-wired-lan@lists.osuosl.org, anthony.l.nguyen@intel.com,
-        mkubecek@suse.cz
-Subject: [PATCH net-next v2 8/8] igc: Separate TSN configurations that can be updated
-Date:   Mon, 18 Jan 2021 16:40:28 -0800
-Message-Id: <20210119004028.2809425-9-vinicius.gomes@intel.com>
-X-Mailer: git-send-email 2.30.0
-In-Reply-To: <20210119004028.2809425-1-vinicius.gomes@intel.com>
-References: <20210119004028.2809425-1-vinicius.gomes@intel.com>
+        id S2404425AbhASAnA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jan 2021 19:43:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44728 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2404393AbhASAms (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jan 2021 19:42:48 -0500
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 548A2C061573
+        for <netdev@vger.kernel.org>; Mon, 18 Jan 2021 16:42:04 -0800 (PST)
+Received: by mail-ej1-x62c.google.com with SMTP id a10so9491137ejg.10
+        for <netdev@vger.kernel.org>; Mon, 18 Jan 2021 16:42:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=rtKyuBaH4bpBbe/YRAPdlL7NwIbp8grFREGPbCYV3lw=;
+        b=UTUhXVqJkXSKeCNOiXFCdtPqey46i1S0AAkrDDPEsPZ3rF6SAoV1/LpXIiCJiL6yTj
+         9ppVGhZzDafXnWegTga+PdCFELdMsk91Uk4ZD9lK4KSTavVHaKNPgJP72To4I2ZGMLKJ
+         fydhMXNey6XyQjzc0Jd7X9PzNdq/zPRwZdUTsyMx/YssC8HtdgEdmSwZgy6/xgj5rAJG
+         kDQYlGV8q0RpFgK/5Iwk1GkyGuebc9WiUQeoMq0r9ATw3RQlMb9QXDgjgFvm8Q+8GQVp
+         8BK+1umvcl0ClCmjrcAHnGXH7i+WHSBq7bWVrUFH3BJO8AnCoYpPpv7SM/p65qNaAzip
+         PNNA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=rtKyuBaH4bpBbe/YRAPdlL7NwIbp8grFREGPbCYV3lw=;
+        b=mQ0hcK3UGcqGZogZnWGKWeZP2RmiraZSAKdb6JDBP3JhXXTow23VrTcg3nsMSFVel3
+         fw/36oMORPWSMvtK3kxiK7BNuN90xim0YmmajR7mT2sxftLZji17sVlbFa+eANAqTFAQ
+         NB2NHSwnGYYE/ah7+YJWBXWg1kG0Y0Dfa4zBiQVwJvLN+DhUmXUVpTXPxKNXGVmXQVG0
+         UKM7WFm5NYt+D6neIKc1tpk25/kER0OLcfZZwkQXCXODYzzhdLEU5FLMMxKykfKJ/H8Q
+         rT8Mbyz3AGJjpO/fxMW/OpxRuVrDg9ynIfxqpeiW9yAJACDDuNq1TgutKq4TQxWKCkKP
+         +91Q==
+X-Gm-Message-State: AOAM530RmD9dOA3kchTYm/vTDxm646eUrWB0a2GvotN6pECuiylqOEjP
+        fRp62pbrOlh+EdaX0sY7Nx8=
+X-Google-Smtp-Source: ABdhPJzl3i6CWX7e06mDOZxTu54+ChvPVESI4Qtopjo3HTY9K3/d7cSWTD7NnCDhkX6O2w8HSR/bvA==
+X-Received: by 2002:a17:906:5254:: with SMTP id y20mr1358863ejm.174.1611016922876;
+        Mon, 18 Jan 2021 16:42:02 -0800 (PST)
+Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
+        by smtp.gmail.com with ESMTPSA id q2sm11546629edv.93.2021.01.18.16.42.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Jan 2021 16:42:02 -0800 (PST)
+Date:   Tue, 19 Jan 2021 02:42:00 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Nikolay Aleksandrov <nikolay@nvidia.com>
+Cc:     Tobias Waldekranz <tobias@waldekranz.com>, davem@davemloft.net,
+        kuba@kernel.org, andrew@lunn.ch, vivien.didelot@gmail.com,
+        f.fainelli@gmail.com, roopa@nvidia.com, netdev@vger.kernel.org,
+        jiri@resnulli.us, idosch@idosch.org, stephen@networkplumber.org
+Subject: Re: [RFC net-next 2/7] net: bridge: switchdev: Include local flag in
+ FDB notifications
+Message-ID: <20210119004200.eocv274y2qbemp63@skbuf>
+References: <87turejclo.fsf@waldekranz.com>
+ <20210118192757.xpb4ad2af2xpetx3@skbuf>
+ <87o8hmj8w0.fsf@waldekranz.com>
+ <75ba13d0-bc14-f3b7-d842-cee2cd16d854@nvidia.com>
+ <b5e2e1f7-c8dc-550b-25ec-0dbc23813444@nvidia.com>
+ <ee159769-4359-86ce-3dca-78dff9d8366a@nvidia.com>
+ <20210118215009.jegmjjhlrooe2r2h@skbuf>
+ <4fb95388-9564-7555-06c0-3126f95c34b3@nvidia.com>
+ <20210118220616.ql2i3uigyz6tiuhz@skbuf>
+ <32107e93-341f-aff8-a357-dd03e69d3839@nvidia.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <32107e93-341f-aff8-a357-dd03e69d3839@nvidia.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Some TSN features can be enabled during runtime, but most of the
-features need an adapter reset to be disabled.
+On Tue, Jan 19, 2021 at 12:42:04AM +0200, Nikolay Aleksandrov wrote:
+> No, it shouldn't be a problem to change that. We should be careful about the
+> way it's changed though because reporting it for all ports might become a scale
+> issue with 4k vlans, and also today you can't add the same mac for multiple ports.
+> Perhaps the best way is to report it for the bridge itself, while still allowing
+> such entries to be added/deleted by user-space.
 
-To better keep track of this, separate the process into an "_apply"
-and a "reset" functions, "_apply" will run with the adapter in
-potencially "dirty" state, and if necessary will request an adapter
-reset, so "_reset" always run with a "clean" adapter.
+I think what Tobias is trying to achieve is:
+(a) offload the locally terminated FDB addresses through switchdev, in a
+    way that is not "poisoned", i.e. the driver should not be forced to
+    recognize these entries based on the is_local flag. This includes
+    the ports MAC addresses which are currently notified as is_local and
+    with fdb->dst = source brport (not NULL).
+(b) remain compatible with the mistakes of the past, i.e. DSA and
+    probably other switchdev users will have to remain oblivious of the
+    is_local flag. So we will still have to accept "bridge fdb add
+    00:01:02:03:04:05 dev swp0 master local", and it will have to keep
+    incorrectly installing a front-facing static FDB entry on swp0
+    instead of a local/permanent one.
 
-The idea is to make the process easier to follow.
+In terms of implementation, this would mean that for added_by_user
+entries, we keep the existing notifications broken as they are.
+Whereas for !added_by_user, we replace them as much as possible with
+"fdb->dst == NULL" entries (i.e. for br0).
 
-Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
----
- drivers/net/ethernet/intel/igc/igc_main.c |  21 ++--
- drivers/net/ethernet/intel/igc/igc_tsn.c  | 139 +++++++++++++++-------
- drivers/net/ethernet/intel/igc/igc_tsn.h  |   1 +
- 3 files changed, 102 insertions(+), 59 deletions(-)
+I haven't looked closely at the code, and I hope that this will not
+happen, but maybe some of these addresses will inevitably have to be
+duplicated with is_local addresses that were previously notified. In
+that case I'm thinking there must be some hackery to always offload the
+addresses in this order: first the is_local address, then the br0
+address, to allow the bad entry to be overwritten with the good one.
 
-diff --git a/drivers/net/ethernet/intel/igc/igc_main.c b/drivers/net/ethernet/intel/igc/igc_main.c
-index 6a09f37ba7ed..8f94b53de2df 100644
---- a/drivers/net/ethernet/intel/igc/igc_main.c
-+++ b/drivers/net/ethernet/intel/igc/igc_main.c
-@@ -108,7 +108,7 @@ void igc_reset(struct igc_adapter *adapter)
- 	igc_ptp_reset(adapter);
- 
- 	/* Re-enable TSN offloading, where applicable. */
--	igc_tsn_offload_apply(adapter);
-+	igc_tsn_reset(adapter);
- 
- 	igc_get_phy_info(hw);
- }
-@@ -4824,6 +4824,11 @@ static int igc_save_frame_preemption(struct igc_adapter *adapter,
- 	u32 preempt;
- 	int i;
- 
-+	/* What we want here is just to save the configuration, so
-+	 * when frame preemption is enabled via ethtool, which queues
-+	 * are marked as preemptible is saved.
-+	 */
-+
- 	preempt = qopt->preemptible_queues;
- 
- 	for (i = 0; i < adapter->num_tx_queues; i++) {
-@@ -4851,18 +4856,6 @@ static int igc_tsn_enable_qbv_scheduling(struct igc_adapter *adapter,
- 	return igc_tsn_offload_apply(adapter);
- }
- 
--static int igc_tsn_enable_frame_preemption(struct igc_adapter *adapter,
--					   struct tc_preempt_qopt_offload *qopt)
--{
--	int err;
--
--	err = igc_save_frame_preemption(adapter, qopt);
--	if (err)
--		return err;
--
--	return igc_tsn_offload_apply(adapter);
--}
--
- static int igc_setup_tc(struct net_device *dev, enum tc_setup_type type,
- 			void *type_data)
- {
-@@ -4876,7 +4869,7 @@ static int igc_setup_tc(struct net_device *dev, enum tc_setup_type type,
- 		return igc_tsn_enable_launchtime(adapter, type_data);
- 
- 	case TC_SETUP_PREEMPT:
--		return igc_tsn_enable_frame_preemption(adapter, type_data);
-+		return igc_save_frame_preemption(adapter, type_data);
- 
- 	default:
- 		return -EOPNOTSUPP;
-diff --git a/drivers/net/ethernet/intel/igc/igc_tsn.c b/drivers/net/ethernet/intel/igc/igc_tsn.c
-index 31aa9eed3ae3..fdb472a80967 100644
---- a/drivers/net/ethernet/intel/igc/igc_tsn.c
-+++ b/drivers/net/ethernet/intel/igc/igc_tsn.c
-@@ -18,8 +18,24 @@ static bool is_any_launchtime(struct igc_adapter *adapter)
- 	return false;
- }
- 
-+static unsigned int igc_tsn_new_flags(struct igc_adapter *adapter)
-+{
-+	unsigned int new_flags = adapter->flags & ~IGC_FLAG_TSN_ANY_ENABLED;
-+
-+	if (adapter->base_time)
-+		new_flags |= IGC_FLAG_TSN_QBV_ENABLED;
-+
-+	if (is_any_launchtime(adapter))
-+		new_flags |= IGC_FLAG_TSN_QBV_ENABLED;
-+
-+	if (adapter->frame_preemption_active)
-+		new_flags |= IGC_FLAG_TSN_PREEMPT_ENABLED;
-+
-+	return new_flags;
-+}
-+
- /* Returns the TSN specific registers to their default values after
-- * TSN offloading is disabled.
-+ * the adapter is reset.
-  */
- static int igc_tsn_disable_offload(struct igc_adapter *adapter)
- {
-@@ -27,9 +43,6 @@ static int igc_tsn_disable_offload(struct igc_adapter *adapter)
- 	u32 tqavctrl, rxpbs;
- 	int i;
- 
--	if (!(adapter->flags & IGC_FLAG_TSN_QBV_ENABLED))
--		return 0;
--
- 	adapter->base_time = 0;
- 	adapter->cycle_time = 0;
- 	adapter->frame_preemption_active = false;
-@@ -65,38 +78,25 @@ static int igc_tsn_disable_offload(struct igc_adapter *adapter)
- 	wr32(IGC_QBVCYCLET_S, NSEC_PER_MSEC);
- 	wr32(IGC_QBVCYCLET, NSEC_PER_MSEC);
- 
--	adapter->flags &= ~IGC_FLAG_TSN_QBV_ENABLED;
-+	adapter->flags &= ~IGC_FLAG_TSN_ANY_ENABLED;
- 
- 	return 0;
- }
- 
--static int igc_tsn_enable_offload(struct igc_adapter *adapter)
-+static int igc_tsn_update_params(struct igc_adapter *adapter)
- {
- 	struct igc_hw *hw = &adapter->hw;
--	u32 tqavctrl, baset_l, baset_h;
--	u32 sec, nsec, cycle, rxpbs;
--	ktime_t base_time, systim;
-+	unsigned int flags;
- 	u8 frag_size_mult;
-+	u32 tqavctrl;
- 	int i;
- 
--	if (adapter->flags & IGC_FLAG_TSN_QBV_ENABLED)
-+	flags = igc_tsn_new_flags(adapter) & IGC_FLAG_TSN_ANY_ENABLED;
-+	if (!flags)
- 		return 0;
- 
--	cycle = adapter->cycle_time;
--	base_time = adapter->base_time;
--
--	wr32(IGC_TSAUXC, 0);
--	wr32(IGC_DTXMXPKTSZ, IGC_DTXMXPKTSZ_TSN);
--	wr32(IGC_TXPBS, IGC_TXPBSIZE_TSN);
--
--	rxpbs = rd32(IGC_RXPBS) & ~IGC_RXPBSIZE_SIZE_MASK;
--	rxpbs |= IGC_RXPBSIZE_TSN;
--
--	wr32(IGC_RXPBS, rxpbs);
--
- 	tqavctrl = rd32(IGC_TQAVCTRL) &
- 		~(IGC_TQAVCTRL_MIN_FRAG_MASK | IGC_TQAVCTRL_PREEMPT_ENA);
--	tqavctrl |= IGC_TQAVCTRL_TRANSMIT_MODE_TSN | IGC_TQAVCTRL_ENHANCED_QAV;
- 
- 	if (adapter->frame_preemption_active)
- 		tqavctrl |= IGC_TQAVCTRL_PREEMPT_ENA;
-@@ -107,9 +107,6 @@ static int igc_tsn_enable_offload(struct igc_adapter *adapter)
- 
- 	wr32(IGC_TQAVCTRL, tqavctrl);
- 
--	wr32(IGC_QBVCYCLET_S, cycle);
--	wr32(IGC_QBVCYCLET, cycle);
--
- 	for (i = 0; i < adapter->num_tx_queues; i++) {
- 		struct igc_ring *ring = adapter->tx_ring[i];
- 		u32 txqctl = 0;
-@@ -130,12 +127,47 @@ static int igc_tsn_enable_offload(struct igc_adapter *adapter)
- 		if (ring->launchtime_enable)
- 			txqctl |= IGC_TXQCTL_QUEUE_MODE_LAUNCHT;
- 
--		if (ring->preemptible)
-+		if (adapter->frame_preemption_active && ring->preemptible)
- 			txqctl |= IGC_TXQCTL_PREEMPTABLE;
- 
- 		wr32(IGC_TXQCTL(i), txqctl);
- 	}
- 
-+	adapter->flags = igc_tsn_new_flags(adapter);
-+
-+	return 0;
-+}
-+
-+static int igc_tsn_enable_offload(struct igc_adapter *adapter)
-+{
-+	struct igc_hw *hw = &adapter->hw;
-+	u32 baset_l, baset_h, tqavctrl;
-+	u32 sec, nsec, cycle, rxpbs;
-+	ktime_t base_time, systim;
-+
-+	tqavctrl = rd32(IGC_TQAVCTRL);
-+	tqavctrl |= IGC_TQAVCTRL_TRANSMIT_MODE_TSN | IGC_TQAVCTRL_ENHANCED_QAV;
-+
-+	wr32(IGC_TQAVCTRL, tqavctrl);
-+
-+	wr32(IGC_TSAUXC, 0);
-+	wr32(IGC_DTXMXPKTSZ, IGC_DTXMXPKTSZ_TSN);
-+	wr32(IGC_TXPBS, IGC_TXPBSIZE_TSN);
-+
-+	rxpbs = rd32(IGC_RXPBS) & ~IGC_RXPBSIZE_SIZE_MASK;
-+	rxpbs |= IGC_RXPBSIZE_TSN;
-+
-+	wr32(IGC_RXPBS, rxpbs);
-+
-+	if (!adapter->base_time)
-+		goto done;
-+
-+	cycle = adapter->cycle_time;
-+	base_time = adapter->base_time;
-+
-+	wr32(IGC_QBVCYCLET_S, cycle);
-+	wr32(IGC_QBVCYCLET, cycle);
-+
- 	nsec = rd32(IGC_SYSTIML);
- 	sec = rd32(IGC_SYSTIMH);
- 
-@@ -153,34 +185,51 @@ static int igc_tsn_enable_offload(struct igc_adapter *adapter)
- 	wr32(IGC_BASET_H, baset_h);
- 	wr32(IGC_BASET_L, baset_l);
- 
--	adapter->flags |= IGC_FLAG_TSN_QBV_ENABLED;
-+done:
-+	igc_tsn_update_params(adapter);
- 
- 	return 0;
- }
- 
-+int igc_tsn_reset(struct igc_adapter *adapter)
-+{
-+	unsigned int new_flags;
-+	int err = 0;
-+
-+	new_flags = igc_tsn_new_flags(adapter);
-+
-+	if (!(new_flags & IGC_FLAG_TSN_ANY_ENABLED))
-+		return igc_tsn_disable_offload(adapter);
-+
-+	err = igc_tsn_enable_offload(adapter);
-+	if (err < 0)
-+		return err;
-+
-+	adapter->flags = new_flags;
-+
-+	return err;
-+}
-+
- int igc_tsn_offload_apply(struct igc_adapter *adapter)
- {
--	bool is_any_enabled = adapter->base_time ||
--		is_any_launchtime(adapter) || adapter->frame_preemption_active;
-+	unsigned int new_flags, old_flags;
- 
--	if (!(adapter->flags & IGC_FLAG_TSN_QBV_ENABLED) && !is_any_enabled)
--		return 0;
-+	old_flags = adapter->flags;
-+	new_flags = igc_tsn_new_flags(adapter);
- 
--	if (!is_any_enabled) {
--		int err = igc_tsn_disable_offload(adapter);
-+	if (old_flags == new_flags)
-+		return igc_tsn_update_params(adapter);
- 
--		if (err < 0)
--			return err;
-+	/* Enabling features work without resetting the adapter */
-+	if (new_flags > old_flags)
-+		return igc_tsn_enable_offload(adapter);
- 
--		/* The BASET registers aren't cleared when writing
--		 * into them, force a reset if the interface is
--		 * running.
--		 */
--		if (netif_running(adapter->netdev))
--			schedule_work(&adapter->reset_task);
-+	adapter->flags = new_flags;
- 
--		return 0;
--	}
-+	if (!netif_running(adapter->netdev))
-+		return igc_tsn_enable_offload(adapter);
- 
--	return igc_tsn_enable_offload(adapter);
-+	schedule_work(&adapter->reset_task);
-+
-+	return 0;
- }
-diff --git a/drivers/net/ethernet/intel/igc/igc_tsn.h b/drivers/net/ethernet/intel/igc/igc_tsn.h
-index f76bc86ddccd..1512307f5a52 100644
---- a/drivers/net/ethernet/intel/igc/igc_tsn.h
-+++ b/drivers/net/ethernet/intel/igc/igc_tsn.h
-@@ -5,5 +5,6 @@
- #define _IGC_TSN_H_
- 
- int igc_tsn_offload_apply(struct igc_adapter *adapter);
-+int igc_tsn_reset(struct igc_adapter *adapter);
- 
- #endif /* _IGC_BASE_H */
--- 
-2.30.0
+Finally, we should modify the bridge manpage to say "we know that the
+local|permanent flag is added by default, but it's deprecated so pls
+don't use it anymore, just use fdb on br0".
 
+How does this sound?
