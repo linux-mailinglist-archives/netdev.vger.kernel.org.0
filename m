@@ -2,86 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2889F2FC4F4
-	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 00:42:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 731B82FC501
+	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 00:47:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730932AbhASXli (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jan 2021 18:41:38 -0500
-Received: from mail.kernel.org ([198.145.29.99]:60646 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730751AbhASXku (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 19 Jan 2021 18:40:50 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 1D83323104;
-        Tue, 19 Jan 2021 23:40:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611099609;
-        bh=MssI9+vwhZGCSP3/2VaSQwrblQaQ4nMnm3sP6p6ESjA=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=sJjxlJZNbTzHFKr5aZMdBcHqRPI0x6H3O+w+Ckn3a69NsLYEgEI3eVSMxs2e4exLh
-         j0myakPrLIjZwPjpO+TUMRLlZyoxB50et6SuJUGO1rFvVdh0yFuf16TBO+xFLSYtGU
-         FgprJw5zJ7vb78pLo5eribzPFF7gdL4ZMeYmbOR7ZNOf6U0/ajvJd0Ze8/Ze4VvF/y
-         4TZJwaf3w5yNo9PPJFoSpGNRjm39sFVeiVAvnwquAILIKfBRRO7OijpM+K4f0WDdQT
-         9uq3qqW91cwrwse4HUSPUqGo9n1QOY8zwNMbJSsgNBVhzKDAU00ezzj8IvbyyJyhZY
-         10GtUueOdoZZA==
-Received: from pdx-korg-docbuild-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-1.ci.codeaurora.org (Postfix) with ESMTP id 02C34604FC;
-        Tue, 19 Jan 2021 23:40:09 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S1730877AbhASXpS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jan 2021 18:45:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59940 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730649AbhASXoo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jan 2021 18:44:44 -0500
+Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3921FC061757
+        for <netdev@vger.kernel.org>; Tue, 19 Jan 2021 15:43:56 -0800 (PST)
+Received: by mail-lf1-x132.google.com with SMTP id u25so31625187lfc.2
+        for <netdev@vger.kernel.org>; Tue, 19 Jan 2021 15:43:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=cloudflare.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=D/G1m8PE0YTql3WtklqLcJoolwHbP1jsFDu8kUqAsjk=;
+        b=ElJArjScwx6VrNY8cu9sHOG+hiNtxsnqba7p4lx6dFH6orCd9GDBiEhH96Aq6cEBM3
+         o6gAA8i9eDCDdI1OYb9wrfKSIU6eP28xBrlScg4CYzkYpIzqGMV6kIsOT/VPoZZa9D04
+         Plw2hA6RvBQbDqA+6AlNWDro5DYmxEdSHG97Y=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=D/G1m8PE0YTql3WtklqLcJoolwHbP1jsFDu8kUqAsjk=;
+        b=hBfWteoaymzDntfa10yWtcswmB7v0p7TsMqHjKaa3W1QY6I3KBwL7ekSod8XZRNE8v
+         tMt2LiIpQx7jhtpIYCCWl/2p2v9TV3rf4SppV2dvh9RxVm5v0urIReVvv+vYu9hEyLf7
+         3gfwtwzEnxHLR+8ShD95XGi+lnDewSk3UhjRKg5/ERTmxWPgictoE6b4/+wwcW4sP3de
+         Jc661I02jE3Lu/CJbejcDbZsak7WP1Gtujz6RonPFrQrxhGN6vzSp+K/Qu/m2js6lBgQ
+         LDnkJf3p+tYXDYI4k3JK1smiPyOdpYggjmKTyORHYMEDUcwiG3TMyWNYt5KMSOo5xWll
+         BMow==
+X-Gm-Message-State: AOAM533D+zx4tbmBBUmeHDTS/jTQyHgEf4mxRYCtvE+VzJBBWcpzGQkP
+        36aNwREwEUfgW3/iTyNQToP++Q+kSMN+3W/1Ixqb0w==
+X-Google-Smtp-Source: ABdhPJxBqqb+KLSnajsT/DbeOl0sTZlet887nfewnnGWNGEGILFOn3Maz+HeHkgfvTYPc3HetkFys+AElxbiEqKvY5k=
+X-Received: by 2002:a19:670f:: with SMTP id b15mr2808464lfc.340.1611099834522;
+ Tue, 19 Jan 2021 15:43:54 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next 0/6] net: support SCTP CRC csum offload for tunneling
- packets in some drivers
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161109960900.4067.12876636834749313206.git-patchwork-notify@kernel.org>
-Date:   Tue, 19 Jan 2021 23:40:09 +0000
-References: <cover.1610777159.git.lucien.xin@gmail.com>
-In-Reply-To: <cover.1610777159.git.lucien.xin@gmail.com>
-To:     Xin Long <lucien.xin@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-sctp@vger.kernel.org,
-        marcelo.leitner@gmail.com, nhorman@tuxdriver.com,
-        davem@davemloft.net, kuba@kernel.org, alexander.duyck@gmail.com,
-        jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        intel-wired-lan@lists.osuosl.org
+References: <20201215012907.3062-1-ivan@cloudflare.com> <20201217101441.3d5085f3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20201217101441.3d5085f3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Ivan Babrou <ivan@cloudflare.com>
+Date:   Tue, 19 Jan 2021 15:43:43 -0800
+Message-ID: <CABWYdi21ntZzrfchif1XEjDZK-RiQKttxu8oT_yRTakNhYYciw@mail.gmail.com>
+Subject: Re: [PATCH net-next] sfc: reduce the number of requested xdp ev queues
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>, bpf@vger.kernel.org,
+        kernel-team <kernel-team@cloudflare.com>,
+        Edward Cree <ecree.xilinx@gmail.com>,
+        Martin Habets <habetsm.xilinx@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Thu, Dec 17, 2020 at 10:14 AM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Mon, 14 Dec 2020 17:29:06 -0800 Ivan Babrou wrote:
+> > Without this change the driver tries to allocate too many queues,
+> > breaching the number of available msi-x interrupts on machines
+> > with many logical cpus and default adapter settings:
+> >
+> > Insufficient resources for 12 XDP event queues (24 other channels, max 32)
+> >
+> > Which in turn triggers EINVAL on XDP processing:
+> >
+> > sfc 0000:86:00.0 ext0: XDP TX failed (-22)
+> >
+> > Signed-off-by: Ivan Babrou <ivan@cloudflare.com>
+>
+> Looks like the discussion may have concluded, but we don't take -next
+> patches during the merge window, so please repost when net-next reopens.
+>
+> Thanks!
+> --
+> # Form letter - net-next is closed
+>
+> We have already sent the networking pull request for 5.11 and therefore
+> net-next is closed for new drivers, features, code refactoring and
+> optimizations. We are currently accepting bug fixes only.
+>
+> Please repost when net-next reopens after 5.11-rc1 is cut.
 
-This series was applied to netdev/net-next.git (refs/heads/master):
+Should I resend my patch now that the window is open or is bumping
+this thread enough?
 
-On Sat, 16 Jan 2021 14:13:36 +0800 you wrote:
-> This patchset introduces inline function skb_csum_is_sctp(), and uses it
-> to validate it's a sctp CRC csum offload packet, to make SCTP CRC csum
-> offload for tunneling packets supported in some HW drivers.
-> 
-> Xin Long (6):
->   net: add inline function skb_csum_is_sctp
->   net: igb: use skb_csum_is_sctp instead of protocol check
->   net: igbvf: use skb_csum_is_sctp instead of protocol check
->   net: igc: use skb_csum_is_sctp instead of protocol check
->   net: ixgbe: use skb_csum_is_sctp instead of protocol check
->   net: ixgbevf: use skb_csum_is_sctp instead of protocol check
-> 
-> [...]
-
-Here is the summary with links:
-  - [net-next,1/6] net: add inline function skb_csum_is_sctp
-    https://git.kernel.org/netdev/net-next/c/fa8211701043
-  - [net-next,2/6] net: igb: use skb_csum_is_sctp instead of protocol check
-    https://git.kernel.org/netdev/net-next/c/8bcf02035bd5
-  - [net-next,3/6] net: igbvf: use skb_csum_is_sctp instead of protocol check
-    https://git.kernel.org/netdev/net-next/c/d2de44443caf
-  - [net-next,4/6] net: igc: use skb_csum_is_sctp instead of protocol check
-    https://git.kernel.org/netdev/net-next/c/609d29a9d242
-  - [net-next,5/6] net: ixgbe: use skb_csum_is_sctp instead of protocol check
-    https://git.kernel.org/netdev/net-next/c/f8c4b01d3a68
-  - [net-next,6/6] net: ixgbevf: use skb_csum_is_sctp instead of protocol check
-    https://git.kernel.org/netdev/net-next/c/fc186d0a4ef8
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+> Look out for the announcement on the mailing list or check:
+> http://vger.kernel.org/~davem/net-next.html
+>
+> RFC patches sent for review only are obviously welcome at any time.
