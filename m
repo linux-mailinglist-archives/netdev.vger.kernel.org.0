@@ -2,103 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6A3D72FC132
-	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 21:38:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D36572FC115
+	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 21:35:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730401AbhASUhJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jan 2021 15:37:09 -0500
-Received: from mail.kernel.org ([198.145.29.99]:56204 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729933AbhASUWQ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 19 Jan 2021 15:22:16 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 9E4DD23137;
-        Tue, 19 Jan 2021 20:20:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611087659;
-        bh=qxAMkTcvy7a03HNUrSCHfTmOJmHHhmfl7L9icGtloug=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Z5letdSC5mgmBS65iL+A0bmd8CrgN5P5NZp3pS01KNnsJUBqCi914T6aOrYnKAO8B
-         jibj99qd31oZQQanPdMz9kcLhQzGn9/ZArxA3fmLCDkXS2AGqbMRF789P3glCJERVK
-         oROPxRAUQ+ILZo+JRzy7SCktxiT9DRynxvo7fb88JHU4jO1pfxGLuthHoE6t956yca
-         Qp0xN3NPdFb7xiK4KWHUyT7t4nMO6HLPIKGnwlmBjanQtsfe/oRMLKm9jKmVNdClf2
-         3Z4jzi+dUYrEjdtK7di/iRQmjl7lirghP/590FPhMbkm6T2xr2+P1HrkA9G16ochhn
-         nigNg2CkHcTVg==
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     bpf@vger.kernel.org, netdev@vger.kernel.org
-Cc:     lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, shayagr@amazon.com,
-        john.fastabend@gmail.com, dsahern@kernel.org, brouer@redhat.com,
-        echaudro@redhat.com, jasowang@redhat.com,
-        alexander.duyck@gmail.com, saeed@kernel.org,
-        maciej.fijalkowski@intel.com, sameehj@amazon.com
-Subject: [PATCH v6 bpf-next 7/8] net: xdp: add multi-buff support to xdp_build_skb_from_fram
-Date:   Tue, 19 Jan 2021 21:20:13 +0100
-Message-Id: <ad7adf43a8f90fa4176497215be7ee2b2ebe60af.1611086134.git.lorenzo@kernel.org>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <cover.1611086134.git.lorenzo@kernel.org>
-References: <cover.1611086134.git.lorenzo@kernel.org>
+        id S1726823AbhASU0w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jan 2021 15:26:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44974 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729966AbhASUZg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jan 2021 15:25:36 -0500
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 547BBC0613C1;
+        Tue, 19 Jan 2021 12:24:54 -0800 (PST)
+Received: by mail-ej1-x635.google.com with SMTP id b5so13941743ejv.4;
+        Tue, 19 Jan 2021 12:24:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=googlemail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=rFyr2V+Jzdi4YW1yffMaIUqKhZ3/Vi5CLcZD0g+G3W0=;
+        b=o+4RLf0mOmonrScZu/JxFwoEr0HqSw4KJX7HorYpAUIAC3Z4pFXORzdwqXx0ELKJQv
+         8jtosQrDAVVlwbeObGSkKXhJjIC6QWTdF9cRpQ7Eefmxi+gTLqvmRANRFHV0LuNNClqU
+         jgscy3xuF5QZVAPUnw/SS5ctnagl0/iKvOobiusKJA0uvujbONo7kMgpwXogk3a31d5A
+         i/yfg7+FSeBGtKzh9NMRxiOOe5nkCPrVLReLB+FoM0Lx1QSbSfNFSiRvRSB+jcqrsF3Q
+         kU+izgGu38oIpK+jBaKmDsng+8FLAp6oi88N10LwOacMLGiTnvtS7rhTYeABR3Ru3ZQB
+         Pfyg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=rFyr2V+Jzdi4YW1yffMaIUqKhZ3/Vi5CLcZD0g+G3W0=;
+        b=dPZsUsShAeFhfT5ryJp3NCpA2ddFgt2+F/mK37R9XaWO/M9k39EJxg7DX6FHF2UjP6
+         bI0NUFOi75+Tul4DB3PIBS253fPl17W81VOTS1ZFp5KwQmRb1oEt7e1onxNO0Rs2o81F
+         ZR9cy2p70CEqbs7V/4EYaUU3a8uiewqyfQx3LHhVU5GufXPqNWlNsI/grK4Ll11Cnyib
+         PBLVq0WvjkjnT+6Ugl45oL35Xb/Du/4SN+aNNB37FosbGsuej2Eak3pHG0aX27ynDEF/
+         aJgmv9VlOY7h/jR9GsnHgARcwHKIJ60C/TGxF46Lr8KqIVZjX/P5gp8dZLluaCHwdO4V
+         uzQQ==
+X-Gm-Message-State: AOAM533wh919+sfbbL/dok9O1YKc5AK8EcOA603cR5za6PO/H2l7VVF5
+        7u9sZeJhUX6d8eioC+qWEiM=
+X-Google-Smtp-Source: ABdhPJzgJWBS8Glb8O8e1TWNjzrEWbp0SXKsfSt9zOga9qYGgKUcy74g3uI6DG+n0NBnuIHe4x4Csw==
+X-Received: by 2002:a17:906:87c3:: with SMTP id zb3mr4123114ejb.244.1611087893049;
+        Tue, 19 Jan 2021 12:24:53 -0800 (PST)
+Received: from localhost.localdomain (p200300f1373d4700428d5cfffeb99db8.dip0.t-ipconnect.de. [2003:f1:373d:4700:428d:5cff:feb9:9db8])
+        by smtp.googlemail.com with ESMTPSA id g18sm12876367edt.2.2021.01.19.12.24.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Jan 2021 12:24:52 -0800 (PST)
+From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+To:     linux-amlogic@lists.infradead.org, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Martijn van Deventer <martijn@martijnvandeventer.nl>
+Subject: [PATCH] net: stmmac: dwmac-meson8b: fix the RX delay validation
+Date:   Tue, 19 Jan 2021 21:24:24 +0100
+Message-Id: <20210119202424.591349-1-martin.blumenstingl@googlemail.com>
+X-Mailer: git-send-email 2.30.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Introduce xdp multi-buff support to
-__xdp_build_skb_from_frame/xdp_build_skb_from_fram utility
-routines.
+When has_prg_eth1_rgmii_rx_delay is true then we support RX delays
+between 0ps and 3000ps in 200ps steps. Swap the validation of the RX
+delay based on the has_prg_eth1_rgmii_rx_delay flag so the 200ps check
+is now applied correctly on G12A SoCs (instead of only allow 0ps or
+2000ps on G12A, but 0..3000ps in 200ps steps on older SoCs which don't
+support that).
 
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+Fixes: de94fc104d58ea ("net: stmmac: dwmac-meson8b: add support for the RGMII RX delay on G12A")
+Reported-by: Martijn van Deventer <martijn@martijnvandeventer.nl>
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 ---
- net/core/xdp.c | 26 ++++++++++++++++++++++++++
- 1 file changed, 26 insertions(+)
+Many thanks to Martijn for this excellent catch and for reporting this
+issue (off-list)!
 
-diff --git a/net/core/xdp.c b/net/core/xdp.c
-index af9b9c1194fc..a7cd1ffbab6b 100644
---- a/net/core/xdp.c
-+++ b/net/core/xdp.c
-@@ -592,9 +592,21 @@ struct sk_buff *__xdp_build_skb_from_frame(struct xdp_frame *xdpf,
- 					   struct sk_buff *skb,
- 					   struct net_device *dev)
- {
-+	skb_frag_t frag_list[MAX_SKB_FRAGS];
- 	unsigned int headroom, frame_size;
-+	int i, num_frags = 0;
- 	void *hard_start;
+
+ drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c
+index 55152d7ba99a..848e5c37746b 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-meson8b.c
+@@ -443,16 +443,16 @@ static int meson8b_dwmac_probe(struct platform_device *pdev)
+ 	}
  
-+	/* XDP multi-buff frame */
-+	if (unlikely(xdpf->mb)) {
-+		struct xdp_shared_info *xdp_sinfo;
-+
-+		xdp_sinfo = xdp_get_shared_info_from_frame(xdpf);
-+		num_frags = xdp_sinfo->nr_frags;
-+		memcpy(frag_list, xdp_sinfo->frags,
-+		       sizeof(skb_frag_t) * num_frags);
-+	}
-+
- 	/* Part of headroom was reserved to xdpf */
- 	headroom = sizeof(*xdpf) + xdpf->headroom;
- 
-@@ -613,6 +625,20 @@ struct sk_buff *__xdp_build_skb_from_frame(struct xdp_frame *xdpf,
- 	if (xdpf->metasize)
- 		skb_metadata_set(skb, xdpf->metasize);
- 
-+	/* Single-buff XDP frame */
-+	if (likely(!num_frags))
-+		goto out;
-+
-+	for (i = 0; i < num_frags; i++) {
-+		struct page *page = xdp_get_frag_page(&frag_list[i]);
-+
-+		skb_add_rx_frag(skb, skb_shinfo(skb)->nr_frags,
-+				page, xdp_get_frag_offset(&frag_list[i]),
-+				xdp_get_frag_size(&frag_list[i]),
-+				xdpf->frame_sz);
-+	}
-+
-+out:
- 	/* Essential SKB info: protocol and skb->dev */
- 	skb->protocol = eth_type_trans(skb, dev);
- 
+ 	if (dwmac->data->has_prg_eth1_rgmii_rx_delay) {
+-		if (dwmac->rx_delay_ps != 0 && dwmac->rx_delay_ps != 2000) {
++		if (dwmac->rx_delay_ps > 3000 || dwmac->rx_delay_ps % 200) {
+ 			dev_err(dwmac->dev,
+-				"The only allowed RGMII RX delays values are: 0ps, 2000ps");
++				"The RGMII RX delay range is 0..3000ps in 200ps steps");
+ 			ret = -EINVAL;
+ 			goto err_remove_config_dt;
+ 		}
+ 	} else {
+-		if (dwmac->rx_delay_ps > 3000 || dwmac->rx_delay_ps % 200) {
++		if (dwmac->rx_delay_ps != 0 && dwmac->rx_delay_ps != 2000) {
+ 			dev_err(dwmac->dev,
+-				"The RGMII RX delay range is 0..3000ps in 200ps steps");
++				"The only allowed RGMII RX delays values are: 0ps, 2000ps");
+ 			ret = -EINVAL;
+ 			goto err_remove_config_dt;
+ 		}
 -- 
-2.29.2
+2.30.0
 
