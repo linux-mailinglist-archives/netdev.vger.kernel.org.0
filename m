@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 10BF42FBB66
-	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 16:40:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 959C22FBB65
+	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 16:40:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2403806AbhASPjp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jan 2021 10:39:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39166 "EHLO
+        id S1725771AbhASPj3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jan 2021 10:39:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2391482AbhASPh6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jan 2021 10:37:58 -0500
-Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 071AAC061786;
-        Tue, 19 Jan 2021 07:37:18 -0800 (PST)
-Received: by mail-lf1-x131.google.com with SMTP id h205so29617064lfd.5;
-        Tue, 19 Jan 2021 07:37:17 -0800 (PST)
+        with ESMTP id S2391539AbhASPh7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jan 2021 10:37:59 -0500
+Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54836C061793;
+        Tue, 19 Jan 2021 07:37:19 -0800 (PST)
+Received: by mail-lf1-x132.google.com with SMTP id m25so29621723lfc.11;
+        Tue, 19 Jan 2021 07:37:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=rXtdonoT6z2Mk/wuvXU5Af4iSxQJt1+pwiGmRinI7sw=;
-        b=qRIv7JIkirHJdRcAWpGuGaN9AF/QwzHillhQDelsg+MdJxUdGCQtpjfFQyfraivpB/
-         rT0csC5/J5xVv20urpem6yD7g+ng+OPeBKuu1SJxlQvih6T3/Mp8C6NXJ4TOeQ+ADm8p
-         BXSGyN1qVJHCsjpVvXv0o9jxOx/SyuVhGL6hcld5Nv/paIQy4+haZirfw48Rl+GcN6+5
-         4oCJsSwn6XroCkAp3Iix97jgVyJlGOn7gf8amq3YX5uvljQUY9dnxZfWUrxF98TkvsxX
-         YU+4I/qyPPkrJNffDNFv4Ui6xz68wpa4QDDNZ4dPd+3KzRDmV6uLkwySLqZoLzEtMUfi
-         B0UQ==
+        bh=Mzur33W7H1Bgzwa0dFrLF2wAgaQwxYBaCzvYFoXPOHU=;
+        b=g410lA8FMwC6f+P2pwDXfImkiS+xpXRZb2lhTLCq4pwZNz5zqgaOJBmLdBJK8ihmYV
+         CsXAzUKB//54anGcEBLElRHiUgitWKot1t695762lgxjE8CeR2QYzBs8OR92R8pb/52x
+         uVoW+zv6sOam23MnxArZUIRWB+SBWdCBak0ZoSfyha0rDKwtt6wtPMJhZOlVpNAzS/8s
+         YzOADREppyUyhL1snNTF7tO/9d/ylVnnaR5HHepy79gszrrVTKDBkGJan3h+kFZjgLya
+         f/j2ugexxtyTK35OZkbI4kcRz/Qu6etC2qNXFzEpsouiDzpyzqDBZsHBfXRz7t49wOwE
+         WTfg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=rXtdonoT6z2Mk/wuvXU5Af4iSxQJt1+pwiGmRinI7sw=;
-        b=ZUBaBTG4NCWNsO8g0h3/zlwBtu1cp9STv2g/BoVTiPup/rpe8wMz2xGvuz46ic1Ov1
-         dhzqUyOYKbEcNDL+qeWKjTzaDNC5ajvqYLr2mXwe2XMgbNQcEGH6imM3Lmdp74g5T5eP
-         L7EwKjwgqDVLBIRDtq7Tckz5BE89Ko8Ni2lISdoyVO8ZAqvVQM4FsFCngqwe1yIZBnZ/
-         XwvsNlSYrGyzoMAefyQXQwWMPscGfeoSWqBZ1PFmcCMtMbad/pkRntQc7M5JLdWT/kek
-         6v/6O9KNt48Su49ALr8vmgYujVQbpvsdeHUg8vXzByszieYY2wb7IwPHKPTI5MrAxQS8
-         Ap+g==
-X-Gm-Message-State: AOAM533bIr4b7cbOMgZvarGRsKCnZbm/sNJ3ssZiXl3S8H9dJkilPz+x
-        WKRQCRFPN9IcsR0JJD4w3lw=
-X-Google-Smtp-Source: ABdhPJy1FQUrnRBMebvcPkh02XkOq8Y2OFZutHujM6kkZReWtsYl8C35xBYOmiI2YxOlRdLom2rQgw==
-X-Received: by 2002:ac2:46dc:: with SMTP id p28mr202828lfo.25.1611070636553;
-        Tue, 19 Jan 2021 07:37:16 -0800 (PST)
+        bh=Mzur33W7H1Bgzwa0dFrLF2wAgaQwxYBaCzvYFoXPOHU=;
+        b=MebriF7crs9yd8hodPVmcPpHtEjm2M5ZX0NnLe0s4sEEC61GGb2S/FPcSw39d5Y7bf
+         /ZX2j9nG55crr3NVjRovbmZC8e3nTVI3jR4qRJxbVOuzevxYY1X09hyNv78Wrch+EK9a
+         +mFNVGlltlJHaKtSo2oAp1aMLQsq1lTT13zSmuvQVBv2L/CC0oZk6PTZUJspyJhFOUVf
+         MHp/krGjoetwCjg8MdFuVR3HdVg3G/Tc3/3hqcpP2Gezo8ofh/fZ3Af43lrgNjhBsiTs
+         JLHS348bMyCGNQ0LhqdU6ZQSl3hrA6TaqQ56PbAG/VOaK0XXZZk63BBae4I1fzUeFASP
+         0hbw==
+X-Gm-Message-State: AOAM530AWsPZyJ0KJM+yi5I4GgAmEPIaOQDUCAFVoOzZtAW773va1xUL
+        7LHTEr4um+08DBbQq7IVKKk=
+X-Google-Smtp-Source: ABdhPJzWKTfZxuv5pAX/GcihOwSizk30yBJX2yvw+9fTHGiHVFYYt0ZA3fiH8hp6oz2qZENOm8NSUw==
+X-Received: by 2002:a19:7d2:: with SMTP id 201mr2003647lfh.518.1611070637880;
+        Tue, 19 Jan 2021 07:37:17 -0800 (PST)
 Received: from btopel-mobl.ger.intel.com (c213-102-90-208.bredband.comhem.se. [213.102.90.208])
-        by smtp.gmail.com with ESMTPSA id z2sm2309075lfd.142.2021.01.19.07.37.15
+        by smtp.gmail.com with ESMTPSA id z2sm2309075lfd.142.2021.01.19.07.37.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Jan 2021 07:37:15 -0800 (PST)
+        Tue, 19 Jan 2021 07:37:17 -0800 (PST)
 From:   =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>
 To:     ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org,
         bpf@vger.kernel.org
@@ -55,9 +55,9 @@ Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
         kuba@kernel.org, jonathan.lemon@gmail.com, maximmi@nvidia.com,
         davem@davemloft.net, hawk@kernel.org, john.fastabend@gmail.com,
         ciara.loftus@intel.com, weqaar.a.janjua@intel.com
-Subject: [PATCH bpf-next 6/8] libbpf, xsk: select bpf_redirect_xsk(), if supported
-Date:   Tue, 19 Jan 2021 16:36:53 +0100
-Message-Id: <20210119153655.153999-7-bjorn.topel@gmail.com>
+Subject: [PATCH bpf-next 7/8] selftest/bpf: add XDP socket tests for bpf_redirect_{xsk, map}()
+Date:   Tue, 19 Jan 2021 16:36:54 +0100
+Message-Id: <20210119153655.153999-8-bjorn.topel@gmail.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20210119153655.153999-1-bjorn.topel@gmail.com>
 References: <20210119153655.153999-1-bjorn.topel@gmail.com>
@@ -70,136 +70,256 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Björn Töpel <bjorn.topel@intel.com>
 
-Select bpf_redirect_xsk() as the default AF_XDP BPF program, if
-supported.
+Add support for externally loaded XDP programs to
+xdpxceiver/test_xsk.sh, so that bpf_redirect_xsk() and
+bpf_redirect_map() can be exercised.
 
-The bpf_redirect_xsk() helper does not require an XSKMAP, so make sure
-that no map is created/updated when using it.
-
-Reviewed-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
 ---
- tools/lib/bpf/xsk.c | 46 +++++++++++++++++++++++++++++++++++++++++----
- 1 file changed, 42 insertions(+), 4 deletions(-)
+ tools/testing/selftests/bpf/test_xsk.sh  | 48 +++++++++++++++
+ tools/testing/selftests/bpf/xdpxceiver.c | 77 ++++++++++++++++++++++--
+ tools/testing/selftests/bpf/xdpxceiver.h |  2 +
+ 3 files changed, 123 insertions(+), 4 deletions(-)
 
-diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
-index c8642c6cb5d6..27e36d6d92a6 100644
---- a/tools/lib/bpf/xsk.c
-+++ b/tools/lib/bpf/xsk.c
-@@ -47,9 +47,12 @@
-  #define PF_XDP AF_XDP
- #endif
+diff --git a/tools/testing/selftests/bpf/test_xsk.sh b/tools/testing/selftests/bpf/test_xsk.sh
+index 88a7483eaae4..3a3996edf527 100755
+--- a/tools/testing/selftests/bpf/test_xsk.sh
++++ b/tools/testing/selftests/bpf/test_xsk.sh
+@@ -245,6 +245,54 @@ retval=$?
+ test_status $retval "${TEST_NAME}"
+ statusList+=($retval)
  
-+#define XSKMAP_NOT_NEEDED -1
++### TEST 10
++TEST_NAME="SKB EXT BPF_REDIRECT_MAP"
 +
- enum xsk_prog {
- 	XSK_PROG_FALLBACK,
- 	XSK_PROG_REDIRECT_FLAGS,
-+	XSK_PROG_REDIRECT_XSK,
- };
++vethXDPgeneric ${VETH0} ${VETH1} ${NS1}
++
++params=("-S" "--ext-prog1")
++execxdpxceiver params
++
++retval=$?
++test_status $retval "${TEST_NAME}"
++statusList+=($retval)
++
++### TEST 11
++TEST_NAME="DRV EXT BPF_REDIRECT_MAP"
++
++vethXDPnative ${VETH0} ${VETH1} ${NS1}
++
++params=("-N" "--ext-prog1")
++execxdpxceiver params
++
++retval=$?
++test_status $retval "${TEST_NAME}"
++statusList+=($retval)
++
++### TEST 12
++TEST_NAME="SKB EXT BPF_REDIRECT_XSK"
++
++vethXDPgeneric ${VETH0} ${VETH1} ${NS1}
++
++params=("-S" "--ext-prog2")
++execxdpxceiver params
++
++retval=$?
++test_status $retval "${TEST_NAME}"
++statusList+=($retval)
++
++### TEST 13
++TEST_NAME="DRV EXT BPF_REDIRECT_XSK"
++
++vethXDPnative ${VETH0} ${VETH1} ${NS1}
++
++params=("-N" "--ext-prog2")
++execxdpxceiver params
++
++retval=$?
++test_status $retval "${TEST_NAME}"
++statusList+=($retval)
++
+ ## END TESTS
  
- struct xsk_umem {
-@@ -361,7 +364,11 @@ static enum xsk_prog get_xsk_prog(void)
- {
- 	__u32 kver = get_kernel_version();
+ cleanup_exit ${VETH0} ${VETH1} ${NS1}
+diff --git a/tools/testing/selftests/bpf/xdpxceiver.c b/tools/testing/selftests/bpf/xdpxceiver.c
+index 1e722ee76b1f..b88be91a6875 100644
+--- a/tools/testing/selftests/bpf/xdpxceiver.c
++++ b/tools/testing/selftests/bpf/xdpxceiver.c
+@@ -45,7 +45,7 @@
+  *    - Only copy mode is supported because veth does not currently support
+  *      zero-copy mode
+  *
+- * Total tests: 8
++ * Total tests: 13
+  *
+  * Flow:
+  * -----
+@@ -93,6 +93,7 @@ typedef __u16 __sum16;
+ #include <unistd.h>
+ #include <stdatomic.h>
+ #include <bpf/xsk.h>
++#include <bpf/bpf.h>
+ #include "xdpxceiver.h"
+ #include "../kselftest.h"
  
--	return kver < KERNEL_VERSION(5, 3, 0) ? XSK_PROG_FALLBACK : XSK_PROG_REDIRECT_FLAGS;
-+	if (kver < KERNEL_VERSION(5, 3, 0))
-+		return XSK_PROG_FALLBACK;
-+	if (kver < KERNEL_VERSION(5, 12, 0))
-+		return XSK_PROG_REDIRECT_FLAGS;
-+	return XSK_PROG_REDIRECT_XSK;
+@@ -296,6 +297,23 @@ static void xsk_populate_fill_ring(struct xsk_umem_info *umem)
+ 	xsk_ring_prod__submit(&umem->fq, XSK_RING_PROD__DEFAULT_NUM_DESCS);
  }
  
- static int xsk_load_xdp_prog(struct xsk_socket *xsk)
-@@ -445,10 +452,25 @@ static int xsk_load_xdp_prog(struct xsk_socket *xsk)
- 		BPF_EMIT_CALL(BPF_FUNC_redirect_map),
- 		BPF_EXIT_INSN(),
- 	};
++static int update_xskmap(struct bpf_object *obj, struct xsk_socket_info *xsk)
++{
++	int xskmap, fd, key = opt_queue;
++	struct bpf_map *map;
 +
-+	/* This is the post-5.12 kernel C-program:
-+	 * SEC("xdp_sock") int xdp_sock_prog(struct xdp_md *ctx)
-+	 * {
-+	 *     return bpf_redirect_xsk(ctx, XDP_PASS);
-+	 * }
-+	 */
-+	struct bpf_insn prog_redirect_xsk[] = {
-+		/* r2 = XDP_PASS */
-+		BPF_MOV64_IMM(BPF_REG_2, 2),
-+		/* call bpf_redirect_xsk */
-+		BPF_EMIT_CALL(BPF_FUNC_redirect_xsk),
-+		BPF_EXIT_INSN(),
-+	};
- 	size_t insns_cnt[] = {sizeof(prog) / sizeof(struct bpf_insn),
- 			      sizeof(prog_redirect_flags) / sizeof(struct bpf_insn),
-+			      sizeof(prog_redirect_xsk) / sizeof(struct bpf_insn),
- 	};
--	struct bpf_insn *progs[] = {prog, prog_redirect_flags};
-+	struct bpf_insn *progs[] = {prog, prog_redirect_flags, prog_redirect_xsk};
- 	enum xsk_prog option = get_xsk_prog();
++	map = bpf_object__find_map_by_name(obj, "xsks_map");
++	xskmap = bpf_map__fd(map);
++	if (xskmap < 0)
++		return 0;
++
++	fd = xsk_socket__fd(xsk->xsk);
++	if (bpf_map_update_elem(xskmap, &key, &fd, 0))
++		return -1;
++
++	return 0;
++}
++
+ static int xsk_configure_socket(struct ifobject *ifobject)
+ {
+ 	struct xsk_socket_config cfg;
+@@ -310,7 +328,7 @@ static int xsk_configure_socket(struct ifobject *ifobject)
+ 	ifobject->xsk->umem = ifobject->umem;
+ 	cfg.rx_size = XSK_RING_CONS__DEFAULT_NUM_DESCS;
+ 	cfg.tx_size = XSK_RING_PROD__DEFAULT_NUM_DESCS;
+-	cfg.libbpf_flags = 0;
++	cfg.libbpf_flags = ifobject->obj ? XSK_LIBBPF_FLAGS__INHIBIT_PROG_LOAD : 0;
+ 	cfg.xdp_flags = opt_xdp_flags;
+ 	cfg.bind_flags = opt_xdp_bind_flags;
  
- 	prog_fd = bpf_load_program(BPF_PROG_TYPE_XDP, progs[option], insns_cnt[option],
-@@ -508,12 +530,22 @@ static int xsk_get_max_queues(struct xsk_socket *xsk)
+@@ -328,6 +346,11 @@ static int xsk_configure_socket(struct ifobject *ifobject)
+ 	if (ret)
+ 		return 1;
+ 
++	if (ifobject->obj) {
++		if (update_xskmap(ifobject->obj, ifobject->xsk))
++			exit_with_error(errno);
++	}
++
+ 	return 0;
+ }
+ 
+@@ -342,6 +365,8 @@ static struct option long_options[] = {
+ 	{"bidi", optional_argument, 0, 'B'},
+ 	{"debug", optional_argument, 0, 'D'},
+ 	{"tx-pkt-count", optional_argument, 0, 'C'},
++	{"ext-prog1", no_argument, 0, 1},
++	{"ext-prog2", no_argument, 0, 1},
+ 	{0, 0, 0, 0}
+ };
+ 
+@@ -441,9 +466,30 @@ static int validate_interfaces(void)
  	return ret;
  }
  
-+static bool xskmap_required(void)
++static int load_xdp_program(char *argv0, struct bpf_object **obj, int ext_prog)
 +{
-+	return get_xsk_prog() != XSK_PROG_REDIRECT_XSK;
++	struct bpf_prog_load_attr prog_load_attr = {
++		.prog_type      = BPF_PROG_TYPE_XDP,
++	};
++	char xdp_filename[256];
++	int prog_fd;
++
++	snprintf(xdp_filename, sizeof(xdp_filename), "%s_ext%d.o", argv0, ext_prog);
++	prog_load_attr.file = xdp_filename;
++
++	if (bpf_prog_load_xattr(&prog_load_attr, obj, &prog_fd))
++		return -1;
++	return prog_fd;
 +}
 +
- static int xsk_create_bpf_maps(struct xsk_socket *xsk)
++static int attach_xdp_program(int ifindex, int prog_fd)
++{
++	return bpf_set_link_xdp_fd(ifindex, prog_fd, opt_xdp_flags);
++}
++
+ static void parse_command_line(int argc, char **argv)
  {
- 	struct xsk_ctx *ctx = xsk->ctx;
- 	int max_queues;
- 	int fd;
+-	int option_index, interface_index = 0, c;
++	int option_index = 0, interface_index = 0, ext_prog = 0, c;
  
-+	if (!xskmap_required()) {
-+		ctx->xsks_map_fd = XSKMAP_NOT_NEEDED;
-+		return 0;
+ 	opterr = 0;
+ 
+@@ -454,6 +500,9 @@ static void parse_command_line(int argc, char **argv)
+ 			break;
+ 
+ 		switch (c) {
++		case 1:
++			ext_prog = atoi(long_options[option_index].name + strlen("ext-prog"));
++			break;
+ 		case 'i':
+ 			if (interface_index == MAX_INTERFACES)
+ 				break;
+@@ -509,6 +558,22 @@ static void parse_command_line(int argc, char **argv)
+ 		usage(basename(argv[0]));
+ 		ksft_exit_xfail();
+ 	}
++
++	if (ext_prog) {
++		struct bpf_object *obj;
++		int prog_fd;
++
++		for (int i = 0; i < MAX_INTERFACES; i++) {
++			prog_fd = load_xdp_program(argv[0], &obj, ext_prog);
++			if (prog_fd < 0) {
++				ksft_test_result_fail("ERROR: could not load external XDP program\n");
++				ksft_exit_xfail();
++			}
++
++			ifdict[i]->prog_fd = prog_fd;
++			ifdict[i]->obj = obj;
++		}
 +	}
-+
- 	max_queues = xsk_get_max_queues(xsk);
- 	if (max_queues < 0)
- 		return max_queues;
-@@ -532,6 +564,9 @@ static void xsk_delete_bpf_maps(struct xsk_socket *xsk)
- {
- 	struct xsk_ctx *ctx = xsk->ctx;
- 
-+	if (ctx->xsks_map_fd == XSKMAP_NOT_NEEDED)
-+		return;
-+
- 	bpf_map_delete_elem(ctx->xsks_map_fd, &ctx->queue_id);
- 	close(ctx->xsks_map_fd);
  }
-@@ -563,7 +598,7 @@ static int xsk_lookup_bpf_maps(struct xsk_socket *xsk)
- 	if (err)
- 		goto out_map_ids;
  
--	ctx->xsks_map_fd = -1;
-+	ctx->xsks_map_fd = XSKMAP_NOT_NEEDED;
+ static void kick_tx(struct xsk_socket_info *xsk)
+@@ -818,6 +883,7 @@ static void *worker_testapp_validate(void *arg)
+ 	struct generic_data *data = (struct generic_data *)malloc(sizeof(struct generic_data));
+ 	struct iphdr *ip_hdr = (struct iphdr *)(pkt_data + sizeof(struct ethhdr));
+ 	struct ethhdr *eth_hdr = (struct ethhdr *)pkt_data;
++	struct ifobject *ifobject = (struct ifobject *)arg;
+ 	void *bufs = NULL;
  
- 	for (i = 0; i < prog_info.nr_map_ids; i++) {
- 		fd = bpf_map_get_fd_by_id(map_ids[i]);
-@@ -585,7 +620,7 @@ static int xsk_lookup_bpf_maps(struct xsk_socket *xsk)
+ 	pthread_attr_setstacksize(&attr, THREAD_STACK);
+@@ -830,6 +896,9 @@ static void *worker_testapp_validate(void *arg)
+ 
+ 		if (strcmp(((struct ifobject *)arg)->nsname, ""))
+ 			switch_namespace(((struct ifobject *)arg)->ifdict_index);
++
++		if (ifobject->obj && attach_xdp_program(ifobject->ifindex, ifobject->prog_fd) < 0)
++			exit_with_error(errno);
  	}
  
- 	err = 0;
--	if (ctx->xsks_map_fd == -1)
-+	if (ctx->xsks_map_fd == XSKMAP_NOT_NEEDED && xskmap_required())
- 		err = -ENOENT;
+ 	if (((struct ifobject *)arg)->fv.vector == tx) {
+@@ -1035,7 +1104,7 @@ int main(int argc, char **argv)
+ 	ifaceconfig->src_port = UDP_SRC_PORT;
  
- out_map_ids:
-@@ -597,6 +632,9 @@ static int xsk_set_bpf_maps(struct xsk_socket *xsk)
- {
- 	struct xsk_ctx *ctx = xsk->ctx;
+ 	for (int i = 0; i < MAX_INTERFACES; i++) {
+-		ifdict[i] = (struct ifobject *)malloc(sizeof(struct ifobject));
++		ifdict[i] = (struct ifobject *)calloc(1, sizeof(struct ifobject));
+ 		if (!ifdict[i])
+ 			exit_with_error(errno);
  
-+	if (ctx->xsks_map_fd == XSKMAP_NOT_NEEDED)
-+		return 0;
-+
- 	return bpf_map_update_elem(ctx->xsks_map_fd, &ctx->queue_id,
- 				   &xsk->fd, 0);
- }
+diff --git a/tools/testing/selftests/bpf/xdpxceiver.h b/tools/testing/selftests/bpf/xdpxceiver.h
+index 61f595b6f200..3c15c2e95026 100644
+--- a/tools/testing/selftests/bpf/xdpxceiver.h
++++ b/tools/testing/selftests/bpf/xdpxceiver.h
+@@ -124,6 +124,8 @@ struct ifobject {
+ 	u32 src_ip;
+ 	u16 src_port;
+ 	u16 dst_port;
++	int prog_fd;
++	struct bpf_object *obj;
+ };
+ 
+ static struct ifobject *ifdict[MAX_INTERFACES];
 -- 
 2.27.0
 
