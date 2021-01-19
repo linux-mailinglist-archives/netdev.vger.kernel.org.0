@@ -2,165 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8940C2FC52C
-	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 00:57:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C61E82FC517
+	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 00:51:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406192AbhASN5i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jan 2021 08:57:38 -0500
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:35119 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S2390645AbhASMJP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jan 2021 07:09:15 -0500
-Received: from Internal Mail-Server by MTLPINE1 (envelope-from maximmi@mellanox.com)
-        with SMTP; 19 Jan 2021 14:08:15 +0200
-Received: from dev-l-vrt-208.mtl.labs.mlnx (dev-l-vrt-208.mtl.labs.mlnx [10.234.208.1])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 10JC8FR5021916;
-        Tue, 19 Jan 2021 14:08:15 +0200
-From:   Maxim Mikityanskiy <maximmi@mellanox.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@resnulli.us>, David Ahern <dsahern@gmail.com>
-Cc:     Saeed Mahameed <saeedm@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Tariq Toukan <tariqt@nvidia.com>,
-        Yossi Kuperman <yossiku@nvidia.com>,
-        Maxim Mikityanskiy <maximmi@nvidia.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        netdev@vger.kernel.org
-Subject: [PATCH net-next v4 4/5] sch_htb: Stats for offloaded HTB
-Date:   Tue, 19 Jan 2021 14:08:14 +0200
-Message-Id: <20210119120815.463334-5-maximmi@mellanox.com>
+        id S2406514AbhASOAG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jan 2021 09:00:06 -0500
+Received: from foss.arm.com ([217.140.110.172]:54698 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2390826AbhASMX5 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 19 Jan 2021 07:23:57 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 952F611B3;
+        Tue, 19 Jan 2021 04:22:48 -0800 (PST)
+Received: from e107158-lin.cambridge.arm.com (unknown [10.1.194.78])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 466463F719;
+        Tue, 19 Jan 2021 04:22:47 -0800 (PST)
+From:   Qais Yousef <qais.yousef@arm.com>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Yonghong Song <yhs@fb.com>,
+        Steven Rostedt <rostedt@goodmis.org>,
+        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
+        linux-kernel@vger.kernel.org, Qais Yousef <qais.yousef@arm.com>
+Subject: [PATCH v3 bpf-next 1/2] trace: bpf: Allow bpf to attach to bare tracepoints
+Date:   Tue, 19 Jan 2021 12:22:36 +0000
+Message-Id: <20210119122237.2426878-2-qais.yousef@arm.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210119120815.463334-1-maximmi@mellanox.com>
-References: <20210119120815.463334-1-maximmi@mellanox.com>
+In-Reply-To: <20210119122237.2426878-1-qais.yousef@arm.com>
+References: <20210119122237.2426878-1-qais.yousef@arm.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This commit adds support for statistics of offloaded HTB. Bytes and
-packets counters for leaf and inner nodes are supported, the values are
-taken from per-queue qdiscs, and the numbers that the user sees should
-have the same behavior as the software (non-offloaded) HTB.
+Some subsystems only have bare tracepoints (a tracepoint with no
+associated trace event) to avoid the problem of trace events being an
+ABI that can't be changed.
 
-Signed-off-by: Maxim Mikityanskiy <maximmi@mellanox.com>
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+From bpf presepective, bare tracepoints are what it calls
+RAW_TRACEPOINT().
+
+Since bpf assumed there's 1:1 mapping, it relied on hooking to
+DEFINE_EVENT() macro to create bpf mapping of the tracepoints. Since
+bare tracepoints use DECLARE_TRACE() to create the tracepoint, bpf had
+no knowledge about their existence.
+
+By teaching bpf_probe.h to parse DECLARE_TRACE() in a similar fashion to
+DEFINE_EVENT(), bpf can find and attach to the new raw tracepoints.
+
+Enabling that comes with the contract that changes to raw tracepoints
+don't constitute a regression if they break existing bpf programs.
+We need the ability to continue to morph and modify these raw
+tracepoints without worrying about any ABI.
+
+Update Documentation/bpf/bpf_design_QA.rst to document this contract.
+
+Acked-by: Yonghong Song <yhs@fb.com>
+Signed-off-by: Qais Yousef <qais.yousef@arm.com>
 ---
- net/sched/sch_htb.c | 53 +++++++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 53 insertions(+)
+ Documentation/bpf/bpf_design_QA.rst |  6 ++++++
+ include/trace/bpf_probe.h           | 12 ++++++++++--
+ 2 files changed, 16 insertions(+), 2 deletions(-)
 
-diff --git a/net/sched/sch_htb.c b/net/sched/sch_htb.c
-index d1b60fe3d311..dff3adf5a915 100644
---- a/net/sched/sch_htb.c
-+++ b/net/sched/sch_htb.c
-@@ -114,6 +114,7 @@ struct htb_class {
- 	 * Written often fields
- 	 */
- 	struct gnet_stats_basic_packed bstats;
-+	struct gnet_stats_basic_packed bstats_bias;
- 	struct tc_htb_xstats	xstats;	/* our special stats */
+diff --git a/Documentation/bpf/bpf_design_QA.rst b/Documentation/bpf/bpf_design_QA.rst
+index 2df7b067ab93..0e15f9b05c9d 100644
+--- a/Documentation/bpf/bpf_design_QA.rst
++++ b/Documentation/bpf/bpf_design_QA.rst
+@@ -208,6 +208,12 @@ data structures and compile with kernel internal headers. Both of these
+ kernel internals are subject to change and can break with newer kernels
+ such that the program needs to be adapted accordingly.
  
- 	/* token bucket parameters */
-@@ -1220,6 +1221,7 @@ static int htb_dump_class(struct Qdisc *sch, unsigned long arg,
- 			  struct sk_buff *skb, struct tcmsg *tcm)
- {
- 	struct htb_class *cl = (struct htb_class *)arg;
-+	struct htb_sched *q = qdisc_priv(sch);
- 	struct nlattr *nest;
- 	struct tc_htb_opt opt;
++Q: Are tracepoints part of the stable ABI?
++------------------------------------------
++A: NO. Tracepoints are tied to internal implementation details hence they are
++subject to change and can break with newer kernels. BPF programs need to change
++accordingly when this happens.
++
+ Q: How much stack space a BPF program uses?
+ -------------------------------------------
+ A: Currently all program types are limited to 512 bytes of stack
+diff --git a/include/trace/bpf_probe.h b/include/trace/bpf_probe.h
+index cd74bffed5c6..a23be89119aa 100644
+--- a/include/trace/bpf_probe.h
++++ b/include/trace/bpf_probe.h
+@@ -55,8 +55,7 @@
+ /* tracepoints with more than 12 arguments will hit build error */
+ #define CAST_TO_U64(...) CONCATENATE(__CAST, COUNT_ARGS(__VA_ARGS__))(__VA_ARGS__)
  
-@@ -1246,6 +1248,8 @@ static int htb_dump_class(struct Qdisc *sch, unsigned long arg,
- 	opt.level = cl->level;
- 	if (nla_put(skb, TCA_HTB_PARMS, sizeof(opt), &opt))
- 		goto nla_put_failure;
-+	if (q->offload && nla_put_flag(skb, TCA_HTB_OFFLOAD))
-+		goto nla_put_failure;
- 	if ((cl->rate.rate_bytes_ps >= (1ULL << 32)) &&
- 	    nla_put_u64_64bit(skb, TCA_HTB_RATE64, cl->rate.rate_bytes_ps,
- 			      TCA_HTB_PAD))
-@@ -1262,10 +1266,39 @@ static int htb_dump_class(struct Qdisc *sch, unsigned long arg,
- 	return -1;
+-#undef DECLARE_EVENT_CLASS
+-#define DECLARE_EVENT_CLASS(call, proto, args, tstruct, assign, print)	\
++#define __BPF_DECLARE_TRACE(call, proto, args)				\
+ static notrace void							\
+ __bpf_trace_##call(void *__data, proto)					\
+ {									\
+@@ -64,6 +63,10 @@ __bpf_trace_##call(void *__data, proto)					\
+ 	CONCATENATE(bpf_trace_run, COUNT_ARGS(args))(prog, CAST_TO_U64(args));	\
  }
  
-+static void htb_offload_aggregate_stats(struct htb_sched *q,
-+					struct htb_class *cl)
-+{
-+	struct htb_class *c;
-+	unsigned int i;
++#undef DECLARE_EVENT_CLASS
++#define DECLARE_EVENT_CLASS(call, proto, args, tstruct, assign, print)	\
++	__BPF_DECLARE_TRACE(call, PARAMS(proto), PARAMS(args))
 +
-+	memset(&cl->bstats, 0, sizeof(cl->bstats));
-+
-+	for (i = 0; i < q->clhash.hashsize; i++) {
-+		hlist_for_each_entry(c, &q->clhash.hash[i], common.hnode) {
-+			struct htb_class *p = c;
-+
-+			while (p && p->level < cl->level)
-+				p = p->parent;
-+
-+			if (p != cl)
-+				continue;
-+
-+			cl->bstats.bytes += c->bstats_bias.bytes;
-+			cl->bstats.packets += c->bstats_bias.packets;
-+			if (c->level == 0) {
-+				cl->bstats.bytes += c->leaf.q->bstats.bytes;
-+				cl->bstats.packets += c->leaf.q->bstats.packets;
-+			}
-+		}
-+	}
-+}
-+
- static int
- htb_dump_class_stats(struct Qdisc *sch, unsigned long arg, struct gnet_dump *d)
- {
- 	struct htb_class *cl = (struct htb_class *)arg;
-+	struct htb_sched *q = qdisc_priv(sch);
- 	struct gnet_stats_queue qs = {
- 		.drops = cl->drops,
- 		.overlimits = cl->overlimits,
-@@ -1280,6 +1313,19 @@ htb_dump_class_stats(struct Qdisc *sch, unsigned long arg, struct gnet_dump *d)
- 	cl->xstats.ctokens = clamp_t(s64, PSCHED_NS2TICKS(cl->ctokens),
- 				     INT_MIN, INT_MAX);
+ /*
+  * This part is compiled out, it is only here as a build time check
+  * to make sure that if the tracepoint handling changes, the
+@@ -111,6 +114,11 @@ __DEFINE_EVENT(template, call, PARAMS(proto), PARAMS(args), size)
+ #define DEFINE_EVENT_PRINT(template, name, proto, args, print)	\
+ 	DEFINE_EVENT(template, name, PARAMS(proto), PARAMS(args))
  
-+	if (q->offload) {
-+		if (!cl->level) {
-+			if (cl->leaf.q)
-+				cl->bstats = cl->leaf.q->bstats;
-+			else
-+				memset(&cl->bstats, 0, sizeof(cl->bstats));
-+			cl->bstats.bytes += cl->bstats_bias.bytes;
-+			cl->bstats.packets += cl->bstats_bias.packets;
-+		} else {
-+			htb_offload_aggregate_stats(q, cl);
-+		}
-+	}
++#undef DECLARE_TRACE
++#define DECLARE_TRACE(call, proto, args)				\
++	__BPF_DECLARE_TRACE(call, PARAMS(proto), PARAMS(args))		\
++	__DEFINE_EVENT(call, call, PARAMS(proto), PARAMS(args), 0)
 +
- 	if (gnet_stats_copy_basic(qdisc_root_sleeping_running(sch),
- 				  d, NULL, &cl->bstats) < 0 ||
- 	    gnet_stats_copy_rate_est(d, &cl->rate_est) < 0 ||
-@@ -1464,6 +1510,11 @@ static int htb_destroy_class_offload(struct Qdisc *sch, struct htb_class *cl,
- 		WARN_ON(old != q);
- 	}
+ #include TRACE_INCLUDE(TRACE_INCLUDE_FILE)
  
-+	if (cl->parent) {
-+		cl->parent->bstats_bias.bytes += q->bstats.bytes;
-+		cl->parent->bstats_bias.packets += q->bstats.packets;
-+	}
-+
- 	offload_opt = (struct tc_htb_qopt_offload) {
- 		.command = !last_child ? TC_HTB_LEAF_DEL :
- 			   destroying ? TC_HTB_LEAF_DEL_LAST_FORCE :
-@@ -1803,6 +1854,8 @@ static int htb_change_class(struct Qdisc *sch, u32 classid,
- 				htb_graft_helper(dev_queue, old_q);
- 				goto err_kill_estimator;
- 			}
-+			parent->bstats_bias.bytes += old_q->bstats.bytes;
-+			parent->bstats_bias.packets += old_q->bstats.packets;
- 			qdisc_put(old_q);
- 		}
- 		new_q = qdisc_create_dflt(dev_queue, &pfifo_qdisc_ops,
+ #undef DEFINE_EVENT_WRITABLE
 -- 
 2.25.1
 
