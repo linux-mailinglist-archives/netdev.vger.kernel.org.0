@@ -2,71 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BD03A2FB3AA
-	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 09:05:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8376E2FB3C8
+	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 09:12:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728280AbhASICj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jan 2021 03:02:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54138 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731352AbhASIC0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jan 2021 03:02:26 -0500
-Received: from mail-qt1-x836.google.com (mail-qt1-x836.google.com [IPv6:2607:f8b0:4864:20::836])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 032F1C061573
-        for <netdev@vger.kernel.org>; Tue, 19 Jan 2021 00:01:46 -0800 (PST)
-Received: by mail-qt1-x836.google.com with SMTP id c12so7557920qtv.5
-        for <netdev@vger.kernel.org>; Tue, 19 Jan 2021 00:01:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:reply-to:sender:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=CseN3BiBpJYn6k+hUUx2TxuA3gS6VM1QHXLDLxQNUzc=;
-        b=UBvG6hkUyLZjWy0hsjvaYTphAmqRC+H2orazmP6uGcRmssQudFcx/Gs4CQLKj0sAzp
-         cV2h3Y7V9o7OkJKsXnbyDr9sa+7M5h72AD5Ezv90H/NoJjP9aEouqAD8aQcjxgqadasu
-         BSvQ/RYUVhHok16P9QPmap6cK/14aBCvqnQzUU4MKXX2GykKUyXJYW8n+3fdV9weOf5R
-         XG190147Bx2gdYJ0g8v9TBnaKl4xbYUvJgsEOPGDb97sRABBUi49f2sFZxdDkuQoRHk3
-         zPvWPWm9f6/fLxS+qGGIsUAsjMIyb8h7/+7UjLlWUbmQF/zjX8sm2H1p5xteG4QcVcav
-         XQkg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:reply-to:sender:from:date
-         :message-id:subject:to:content-transfer-encoding;
-        bh=CseN3BiBpJYn6k+hUUx2TxuA3gS6VM1QHXLDLxQNUzc=;
-        b=s8UCxuniA56Ot0ceLSQwg9a4pfsd2gb4XnW61Ys9qagt8rVbBX23ttHUMZDNSZt+cN
-         ybycgkIpMsaWnYfnwC72AQkZVMCGHUQe5ZyTl78UCO9L7we5ZAJ3MhlMLpDNCWYrQpJD
-         Bfuka1rW3tTB6QRcXRjudOhzyI5rgeKBr0ODgYWOkmEStbwd4moMiBng1lVitNvjSWpz
-         rCAx8ei4hM2IWwh9Srxi0pKwbK/sZYvWfta7s/3NPqYoqbcyzDvnRKGv0VGitsRIMYMJ
-         SdQAQqFpTf+8+c+sszis5qIQvKzCYYl/pntQPR5bF78IInJSJt0lA75+SOgDIdnab982
-         p2pw==
-X-Gm-Message-State: AOAM531y+SV1yb0agqGt2rqO6ymc2WX9XQBkek2qwFrnweq9gkdSZBo9
-        6Jorg1xDVXT0RNSWguE5XGAotw9yG87WkUUzQYw=
-X-Google-Smtp-Source: ABdhPJyU1bpl9sx+z8D2DtmM2guP5aUHtk0DgtP+zJPwEgUJFaYnnB2ELTY7jl0GhQ7cIJc1nRdGH/udjkDcCtOakLo=
-X-Received: by 2002:ac8:4c85:: with SMTP id j5mr3005251qtv.161.1611043305238;
- Tue, 19 Jan 2021 00:01:45 -0800 (PST)
+        id S1731482AbhASIKs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jan 2021 03:10:48 -0500
+Received: from m42-8.mailgun.net ([69.72.42.8]:23918 "EHLO m42-8.mailgun.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725983AbhASIK1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 19 Jan 2021 03:10:27 -0500
+X-Greylist: delayed 358 seconds by postgrey-1.27 at vger.kernel.org; Tue, 19 Jan 2021 03:10:27 EST
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1611043799; h=Content-Transfer-Encoding: Content-Type:
+ MIME-Version: Message-ID: In-Reply-To: Date: References: Subject: Cc:
+ To: From: Sender; bh=G6CrMrwkBlH/hAife+o1/KscQx/5H1OEZNAP7AT9sBg=; b=QhCDmWVYdqEcxQh/So1peytCDrkb2p+t7kZh2hCawsJKgQ70ekNeuufzFvZaoweU8SK1UvtA
+ EYpcXP+QbbVIxO6c6XhFjC575DQKf0L5j6bNp/t1XK+7MaaUQ/yxc83stY24qtiN92hUd3c6
+ CcRYUNnr1WL8d8w1VNECvJMlJ98=
+X-Mailgun-Sending-Ip: 69.72.42.8
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n05.prod.us-west-2.postgun.com with SMTP id
+ 6006925d75e5c01cba0b46ae (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 19 Jan 2021 08:03:41
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id D376FC43463; Tue, 19 Jan 2021 08:03:41 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
+        autolearn=no autolearn_force=no version=3.4.0
+Received: from x230.qca.qualcomm.com (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id A6F62C433CA;
+        Tue, 19 Jan 2021 08:03:38 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org A6F62C433CA
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     Pkshih <pkshih@realtek.com>
+Cc:     "abaci-bugfix\@linux.alibaba.com" <abaci-bugfix@linux.alibaba.com>,
+        "Larry.Finger\@lwfinger.net" <Larry.Finger@lwfinger.net>,
+        "linux-kernel\@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "chiu\@endlessos.org" <chiu@endlessos.org>,
+        "kuba\@kernel.org" <kuba@kernel.org>,
+        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem\@davemloft.net" <davem@davemloft.net>,
+        "linux-wireless\@vger.kernel.org" <linux-wireless@vger.kernel.org>
+Subject: Re: [PATCH v2] rtlwifi: rtl8192se: Simplify bool comparison.
+References: <1611037955-105333-1-git-send-email-abaci-bugfix@linux.alibaba.com>
+        <1611041680.9785.1.camel@realtek.com>
+Date:   Tue, 19 Jan 2021 10:03:36 +0200
+In-Reply-To: <1611041680.9785.1.camel@realtek.com> (pkshih@realtek.com's
+        message of "Tue, 19 Jan 2021 07:35:19 +0000")
+Message-ID: <87v9btqron.fsf@codeaurora.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
 MIME-Version: 1.0
-Reply-To: paulwagne7@gmail.com
-Sender: alimahdi687@gmail.com
-Received: by 2002:a0c:f9d0:0:0:0:0:0 with HTTP; Tue, 19 Jan 2021 00:01:44
- -0800 (PST)
-From:   Paul Wagner <pw9076424@gmail.com>
-Date:   Tue, 19 Jan 2021 09:01:44 +0100
-X-Google-Sender-Auth: AFtSmq4khbyz5DckuSEs2u6yDeU
-Message-ID: <CAJR5xJdphR5nRuNbxtT_t7sSTa03AUwocaJBG4FwZoHFcns=zQ@mail.gmail.com>
-Subject: =?UTF-8?B?U2Now7ZuZW4gVGFn?=
-To:     undisclosed-recipients:;
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hallo,
+Pkshih <pkshih@realtek.com> writes:
 
-Mein Name ist Paul Wagner, ein Familienanwalt des verstorbenen Herrn
-Thomas. Ich habe einen Vorschlag f=C3=BCr Sie bez=C3=BCglich meines verstor=
-benen
-Mandanten Thomas . Bitte schreiben Sie mir f=C3=BCr weitere Einzelheiten
-zur=C3=BCck.
+> On Tue, 2021-01-19 at 14:32 +0800, Jiapeng Zhong wrote:
+>> Fix the follow coccicheck warnings:
+>>=20
+>> ./drivers/net/wireless/realtek/rtlwifi/rtl8192se/hw.c:2305:6-27:
+>> WARNING: Comparison of 0/1 to bool variable.
+>>=20
+>> ./drivers/net/wireless/realtek/rtlwifi/rtl8192se/hw.c:1376:5-26:
+>> WARNING: Comparison of 0/1 to bool variable.
+>>=20
+>> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+>> Signed-off-by: Jiapeng Zhong <abaci-bugfix@linux.alibaba.com>
+>> ---
+>> Changes in v2:
+>> =C2=A0 -Modified subject.
+>>=20
+>
+> You forget to remove the period at the end of subject.
+> i.e.
+> "rtlwifi: rtl8192se: Simplify bool comparison"
 
-Gr=C3=BC=C3=9Fe
-Paul Wagner
+I can fix that during commit.
+
+--=20
+https://patchwork.kernel.org/project/linux-wireless/list/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatc=
+hes
