@@ -2,69 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 021C52FB3B7
-	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 09:08:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BD03A2FB3AA
+	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 09:05:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731347AbhASIGr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jan 2021 03:06:47 -0500
-Received: from smtp23.cstnet.cn ([159.226.251.23]:44652 "EHLO cstnet.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726023AbhASIBk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 19 Jan 2021 03:01:40 -0500
-Received: from localhost.localdomain (unknown [124.16.141.241])
-        by APP-03 (Coremail) with SMTP id rQCowABn0iiokQZg3xbUAA--.54909S2;
-        Tue, 19 Jan 2021 16:00:40 +0800 (CST)
-From:   Xu Wang <vulab@iscas.ac.cn>
-To:     sgoutham@marvell.com, lcherian@marvell.com, gakula@marvell.com,
-        jerinj@marvell.com, davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] octeontx2-af: rvu.c: Remove unneeded semicolon
-Date:   Tue, 19 Jan 2021 08:00:37 +0000
-Message-Id: <20210119080037.17931-1-vulab@iscas.ac.cn>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: rQCowABn0iiokQZg3xbUAA--.54909S2
-X-Coremail-Antispam: 1UD129KBjvdXoWrKF45CF1rKFy5CF48Jw1UKFg_yoW3uFcEkr
-        nFqF43Zan8KF90yw1jyrW3Ja4Fv3WkXrWvyF43K39YkFWxJw4fCr97Cr4xXrWxur40q3WD
-        Ar1ak3ySy3y2vjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUb2AYjsxI4VWkCwAYFVCjjxCrM7AC8VAFwI0_Gr0_Xr1l1xkIjI8I
-        6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM2
-        8CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVW7JVWDJwA2z4x0Y4vE2Ix0
-        cI8IcVCY1x0267AKxVWxJVW8Jr1l84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2z4x0Y4vEx4
-        A2jsIEc7CjxVAFwI0_GcCE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IE
-        w4CE5I8CrVC2j2WlYx0E2Ix0cI8IcVAFwI0_Jrv_JF1lYx0Ex4A2jsIE14v26r4UJVWxJr
-        1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcxkI7VAKI48JMxkIecxEwVAFwVW8ZwCF04k2
-        0xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI
-        8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41l
-        IxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIx
-        AIcVCF04k26cxKx2IYs7xG6rWUJVWrZr1UMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvE
-        x4A2jsIEc7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x07jYg4fUUUUU=
-X-Originating-IP: [124.16.141.241]
-X-CM-SenderInfo: pyxotu46lvutnvoduhdfq/1tbiBgcGA10Te7OtdwAAsY
+        id S1728280AbhASICj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jan 2021 03:02:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54138 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731352AbhASIC0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jan 2021 03:02:26 -0500
+Received: from mail-qt1-x836.google.com (mail-qt1-x836.google.com [IPv6:2607:f8b0:4864:20::836])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 032F1C061573
+        for <netdev@vger.kernel.org>; Tue, 19 Jan 2021 00:01:46 -0800 (PST)
+Received: by mail-qt1-x836.google.com with SMTP id c12so7557920qtv.5
+        for <netdev@vger.kernel.org>; Tue, 19 Jan 2021 00:01:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:sender:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=CseN3BiBpJYn6k+hUUx2TxuA3gS6VM1QHXLDLxQNUzc=;
+        b=UBvG6hkUyLZjWy0hsjvaYTphAmqRC+H2orazmP6uGcRmssQudFcx/Gs4CQLKj0sAzp
+         cV2h3Y7V9o7OkJKsXnbyDr9sa+7M5h72AD5Ezv90H/NoJjP9aEouqAD8aQcjxgqadasu
+         BSvQ/RYUVhHok16P9QPmap6cK/14aBCvqnQzUU4MKXX2GykKUyXJYW8n+3fdV9weOf5R
+         XG190147Bx2gdYJ0g8v9TBnaKl4xbYUvJgsEOPGDb97sRABBUi49f2sFZxdDkuQoRHk3
+         zPvWPWm9f6/fLxS+qGGIsUAsjMIyb8h7/+7UjLlWUbmQF/zjX8sm2H1p5xteG4QcVcav
+         XQkg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:sender:from:date
+         :message-id:subject:to:content-transfer-encoding;
+        bh=CseN3BiBpJYn6k+hUUx2TxuA3gS6VM1QHXLDLxQNUzc=;
+        b=s8UCxuniA56Ot0ceLSQwg9a4pfsd2gb4XnW61Ys9qagt8rVbBX23ttHUMZDNSZt+cN
+         ybycgkIpMsaWnYfnwC72AQkZVMCGHUQe5ZyTl78UCO9L7we5ZAJ3MhlMLpDNCWYrQpJD
+         Bfuka1rW3tTB6QRcXRjudOhzyI5rgeKBr0ODgYWOkmEStbwd4moMiBng1lVitNvjSWpz
+         rCAx8ei4hM2IWwh9Srxi0pKwbK/sZYvWfta7s/3NPqYoqbcyzDvnRKGv0VGitsRIMYMJ
+         SdQAQqFpTf+8+c+sszis5qIQvKzCYYl/pntQPR5bF78IInJSJt0lA75+SOgDIdnab982
+         p2pw==
+X-Gm-Message-State: AOAM531y+SV1yb0agqGt2rqO6ymc2WX9XQBkek2qwFrnweq9gkdSZBo9
+        6Jorg1xDVXT0RNSWguE5XGAotw9yG87WkUUzQYw=
+X-Google-Smtp-Source: ABdhPJyU1bpl9sx+z8D2DtmM2guP5aUHtk0DgtP+zJPwEgUJFaYnnB2ELTY7jl0GhQ7cIJc1nRdGH/udjkDcCtOakLo=
+X-Received: by 2002:ac8:4c85:: with SMTP id j5mr3005251qtv.161.1611043305238;
+ Tue, 19 Jan 2021 00:01:45 -0800 (PST)
+MIME-Version: 1.0
+Reply-To: paulwagne7@gmail.com
+Sender: alimahdi687@gmail.com
+Received: by 2002:a0c:f9d0:0:0:0:0:0 with HTTP; Tue, 19 Jan 2021 00:01:44
+ -0800 (PST)
+From:   Paul Wagner <pw9076424@gmail.com>
+Date:   Tue, 19 Jan 2021 09:01:44 +0100
+X-Google-Sender-Auth: AFtSmq4khbyz5DckuSEs2u6yDeU
+Message-ID: <CAJR5xJdphR5nRuNbxtT_t7sSTa03AUwocaJBG4FwZoHFcns=zQ@mail.gmail.com>
+Subject: =?UTF-8?B?U2Now7ZuZW4gVGFn?=
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-fix semicolon.cocci warnings:
-drivers/net/ethernet/marvell/octeontx2/af/rvu.c:1326:2-3: Unneeded semicolon
+Hallo,
 
-Signed-off-by: Xu Wang <vulab@iscas.ac.cn>
----
- drivers/net/ethernet/marvell/octeontx2/af/rvu.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Mein Name ist Paul Wagner, ein Familienanwalt des verstorbenen Herrn
+Thomas. Ich habe einen Vorschlag f=C3=BCr Sie bez=C3=BCglich meines verstor=
+benen
+Mandanten Thomas . Bitte schreiben Sie mir f=C3=BCr weitere Einzelheiten
+zur=C3=BCck.
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
-index e8fd712860a1..0b6bf9f0c6f0 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
-@@ -1323,7 +1323,7 @@ static int rvu_get_attach_blkaddr(struct rvu *rvu, int blktype,
- 		break;
- 	default:
- 		return rvu_get_blkaddr(rvu, blktype, 0);
--	};
-+	}
- 
- 	if (is_block_implemented(rvu->hw, blkaddr))
- 		return blkaddr;
--- 
-2.17.1
-
+Gr=C3=BC=C3=9Fe
+Paul Wagner
