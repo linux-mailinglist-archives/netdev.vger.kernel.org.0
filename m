@@ -2,194 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BE3662FC537
-	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 00:58:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 832D02FC580
+	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 01:17:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730906AbhASX6F (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jan 2021 18:58:05 -0500
-Received: from mail.kernel.org ([198.145.29.99]:36224 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730772AbhASX5v (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 19 Jan 2021 18:57:51 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 8FAEF20A8B;
-        Tue, 19 Jan 2021 23:57:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611100624;
-        bh=EzYqdUoRupYWLnotAGOXjuCTFNqltXcjQp1zzVAAx5Y=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=jAlaXuo7Ck5eSexPFYvTNcSqdMo/Aq4A1gM0x+JUFBJSc0o8xYVKtWf5DGStXmonP
-         GDiWzAW4tQ/ssPjOwnG5yt90nrQIiimr5gHTIxbitTtQFh6Ke2b4Mgrfee1oW9RJ5V
-         bGbG+rX4vOX7/PhWdUlNT85+8n1B3JDwRq6BCrBVx5xMAoG1rSu1ef3mQZ1MYJoFIt
-         wwuNPEnAnEWBf2jMK3MXhn4iQrwUAx1+l8GqvA6cEeVOhyP14IuM+GwaUlaQiMQ26y
-         47owk6FFaTWjKZfnJ7igVOiF37yZduGOJCw4AfA5PwMnZbEvkC2T/EADD/nDKMa2z5
-         pvzUlqMekJdFQ==
-Date:   Tue, 19 Jan 2021 15:57:03 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Kurt Kanzenbach <kurt@linutronix.de>,
-        Vladimir Oltean <olteanv@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
+        id S2394595AbhASNrs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jan 2021 08:47:48 -0500
+Received: from out30-132.freemail.mail.aliyun.com ([115.124.30.132]:46361 "EHLO
+        out30-132.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2388109AbhASJqE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jan 2021 04:46:04 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R121e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04357;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=19;SR=0;TI=SMTPD_---0UMEN45h_1611049512;
+Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0UMEN45h_1611049512)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Tue, 19 Jan 2021 17:45:12 +0800
+From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+To:     netdev@vger.kernel.org
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH v2 net-next 1/1] net: dsa: hellcreek: Add TAPRIO
- offloading support
-Message-ID: <20210119155703.7064800d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210116124922.32356-2-kurt@linutronix.de>
-References: <20210116124922.32356-1-kurt@linutronix.de>
-        <20210116124922.32356-2-kurt@linutronix.de>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        Jakub Kicinski <kuba@kernel.org>,
+        =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>,
+        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
+Subject: [PATCH bpf-next v2 0/3] xsk: build skb by page
+Date:   Tue, 19 Jan 2021 17:45:09 +0800
+Message-Id: <cover.1611048724.git.xuanzhuo@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 16 Jan 2021 13:49:22 +0100 Kurt Kanzenbach wrote:
-> The switch has support for the 802.1Qbv Time Aware Shaper (TAS). Traffic
-> schedules may be configured individually on each front port. Each port has eight
-> egress queues. The traffic is mapped to a traffic class respectively via the PCP
-> field of a VLAN tagged frame.
-> 
-> The TAPRIO Qdisc already implements that. Therefore, this interface can simply
-> be reused. Add .port_setup_tc() accordingly.
-> 
-> The activation of a schedule on a port is split into two parts:
-> 
->  * Programming the necessary gate control list (GCL)
->  * Setup delayed work for starting the schedule
-> 
-> The hardware supports starting a schedule up to eight seconds in the future. The
-> TAPRIO interface provides an absolute base time. Therefore, periodic delayed
-> work is leveraged to check whether a schedule may be started or not.
-> 
-> Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
+v2:
+    1. add priv_flags IFF_TX_SKB_NO_LINEAR instead of netdev_feature
+    2. split the patch to three:
+        a. add priv_flags IFF_TX_SKB_NO_LINEAR
+        b. virtio net add priv_flags IFF_TX_SKB_NO_LINEAR
+        c. When there is support this flag, construct skb without linear space
+    3. use ERR_PTR() and PTR_ERR() to handle the err
 
-> +static bool hellcreek_schedule_startable(struct hellcreek *hellcreek, int port)
-> +{
-> +	struct hellcreek_port *hellcreek_port = &hellcreek->ports[port];
-> +	s64 base_time_ns, current_ns;
-> +
-> +	/* The switch allows a schedule to be started only eight seconds within
-> +	 * the future. Therefore, check the current PTP time if the schedule is
-> +	 * startable or not.
-> +	 */
-> +
-> +	/* Use the "cached" time. That should be alright, as it's updated quite
-> +	 * frequently in the PTP code.
-> +	 */
-> +	mutex_lock(&hellcreek->ptp_lock);
-> +	current_ns = hellcreek->seconds * NSEC_PER_SEC + hellcreek->last_ts;
-> +	mutex_unlock(&hellcreek->ptp_lock);
-> +
-> +	/* Calculate difference to admin base time */
-> +	base_time_ns = ktime_to_ns(hellcreek_port->current_schedule->base_time);
-> +
-> +	if (base_time_ns - current_ns < (s64)8 * NSEC_PER_SEC)
-> +		return true;
-> +
-> +	return false;
 
-nit:
-	return base_time_ns - current_ns < (s64)8 * NSEC_PER_SEC;
+v1 message log:
+---------------
 
-> +static int hellcreek_port_set_schedule(struct dsa_switch *ds, int port,
-> +				       struct tc_taprio_qopt_offload *taprio)
-> +{
-> +	struct hellcreek *hellcreek = ds->priv;
-> +	struct hellcreek_port *hellcreek_port;
-> +	bool startable;
-> +	u16 ctrl;
-> +
-> +	hellcreek_port = &hellcreek->ports[port];
-> +
-> +	dev_dbg(hellcreek->dev, "Configure traffic schedule on port %d\n",
-> +		port);
-> +
-> +	/* First cancel delayed work */
-> +	cancel_delayed_work_sync(&hellcreek_port->schedule_work);
-> +
-> +	mutex_lock(&hellcreek->reg_lock);
-> +
-> +	if (hellcreek_port->current_schedule) {
-> +		taprio_offload_free(hellcreek_port->current_schedule);
-> +		hellcreek_port->current_schedule = NULL;
-> +	}
-> +	hellcreek_port->current_schedule = taprio_offload_get(taprio);
-> +
-> +	/* Then select port */
-> +	hellcreek_select_tgd(hellcreek, port);
-> +
-> +	/* Enable gating and keep defaults */
-> +	ctrl = (0xff << TR_TGDCTRL_ADMINGATESTATES_SHIFT) | TR_TGDCTRL_GATE_EN;
-> +	hellcreek_write(hellcreek, ctrl, TR_TGDCTRL);
-> +
-> +	/* Cancel pending schedule */
-> +	hellcreek_write(hellcreek, 0x00, TR_ESTCMD);
-> +
-> +	/* Setup a new schedule */
-> +	hellcreek_setup_gcl(hellcreek, port, hellcreek_port->current_schedule);
-> +
-> +	/* Configure cycle time */
-> +	hellcreek_set_cycle_time(hellcreek, hellcreek_port->current_schedule);
-> +
-> +	/* Check starting time */
-> +	startable = hellcreek_schedule_startable(hellcreek, port);
-> +	if (startable) {
-> +		hellcreek_start_schedule(hellcreek, port);
-> +		mutex_unlock(&hellcreek->reg_lock);
-> +		return 0;
-> +	}
-> +
-> +	mutex_unlock(&hellcreek->reg_lock);
-> +
-> +	/* Schedule periodic schedule check */
-> +	schedule_delayed_work(&hellcreek_port->schedule_work,
-> +			      HELLCREEK_SCHEDULE_PERIOD);
+This patch is used to construct skb based on page to save memory copy
+overhead.
 
-Why schedule this work every 2 seconds rather than scheduling it
-$start_time - 8 sec + epsilon?
+This has one problem:
 
-> +static bool hellcreek_validate_schedule(struct hellcreek *hellcreek,
-> +					struct tc_taprio_qopt_offload *schedule)
-> +{
-> +	/* Does this hellcreek version support Qbv in hardware? */
-> +	if (!hellcreek->pdata->qbv_support)
-> +		return false;
-> +
-> +	/* cycle time can only be 32bit */
-> +	if (schedule->cycle_time > (u32)-1)
-> +		return false;
-> +
-> +	/* cycle time extension is not supported */
-> +	if (schedule->cycle_time_extension)
-> +		return false;
+We construct the skb by fill the data page as a frag into the skb. In
+this way, the linear space is empty, and the header information is also
+in the frag, not in the linear space, which is not allowed for some
+network cards. For example, Mellanox Technologies MT27710 Family
+[ConnectX-4 Lx] will get the following error message:
 
-What's the story with entries[i].command? I see most drivers validate
-the command is what they expect.
+    mlx5_core 0000:3b:00.1 eth1: Error cqe on cqn 0x817, ci 0x8, qn 0x1dbb, opcode 0xd, syndrome 0x1, vendor syndrome 0x68
+    00000000: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+    00000010: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+    00000020: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+    00000030: 00 00 00 00 60 10 68 01 0a 00 1d bb 00 0f 9f d2
+    WQE DUMP: WQ size 1024 WQ cur size 0, WQE index 0xf, len: 64
+    00000000: 00 00 0f 0a 00 1d bb 03 00 00 00 08 00 00 00 00
+    00000010: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+    00000020: 00 00 00 2b 00 08 00 00 00 00 00 05 9e e3 08 00
+    00000030: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+    mlx5_core 0000:3b:00.1 eth1: ERR CQE on SQ: 0x1dbb
 
-> +	return true;
-> +}
-> +
-> +static int hellcreek_port_setup_tc(struct dsa_switch *ds, int port,
-> +				   enum tc_setup_type type, void *type_data)
-> +{
-> +	struct tc_taprio_qopt_offload *taprio = type_data;
-> +	struct hellcreek *hellcreek = ds->priv;
-> +
-> +	if (type != TC_SETUP_QDISC_TAPRIO)
-> +		return -EOPNOTSUPP;
-> +
-> +	if (!hellcreek_validate_schedule(hellcreek, taprio))
-> +		return -EOPNOTSUPP;
-> +
-> +	if (taprio->enable)
-> +		return hellcreek_port_set_schedule(ds, port, taprio);
-> +
-> +	return hellcreek_port_del_schedule(ds, port);
-> +}
-> +
->  static const struct dsa_switch_ops hellcreek_ds_ops = {
->  	.get_ethtool_stats   = hellcreek_get_ethtool_stats,
->  	.get_sset_count	     = hellcreek_get_sset_count,
+I also tried to use build_skb to construct skb, but because of the
+existence of skb_shinfo, it must be behind the linear space, so this
+method is not working. We can't put skb_shinfo on desc->addr, it will be
+exposed to users, this is not safe.
+
+Finally, I added a feature NETIF_F_SKB_NO_LINEAR to identify whether the
+network card supports the header information of the packet in the frag
+and not in the linear space.
+
+---------------- Performance Testing ------------
+
+The test environment is Aliyun ECS server.
+Test cmd:
+```
+xdpsock -i eth0 -t  -S -s <msg size>
+```
+
+Test result data:
+
+size    64      512     1024    1500
+copy    1916747 1775988 1600203 1440054
+page    1974058 1953655 1945463 1904478
+percent 3.0%    10.0%   21.58%  32.3%
+
+
+Xuan Zhuo (3):
+  net: add priv_flags for allow tx skb without linear
+  virtio-net: support IFF_TX_SKB_NO_LINEAR
+  xsk: build skb by page
+
+ drivers/net/virtio_net.c  |   3 +-
+ include/linux/netdevice.h |   3 ++
+ net/xdp/xsk.c             | 112 ++++++++++++++++++++++++++++++++++++++--------
+ 3 files changed, 99 insertions(+), 19 deletions(-)
+
+--
+1.8.3.1
+
