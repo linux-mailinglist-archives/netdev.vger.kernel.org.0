@@ -2,150 +2,184 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4F9072FBBA9
-	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 16:53:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EC0D92FBB83
+	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 16:46:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390756AbhASPv7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jan 2021 10:51:59 -0500
-Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:6468 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2391650AbhASPnW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jan 2021 10:43:22 -0500
-Received: from pps.filterd (m0089730.ppops.net [127.0.0.1])
-        by m0089730.ppops.net (8.16.0.43/8.16.0.43) with SMTP id 10JFZ2a0012317;
-        Tue, 19 Jan 2021 07:41:48 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=subject : to : cc :
- references : from : message-id : date : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=facebook;
- bh=NCc4AQpUeN2v+JWXNMTS6cjdIhZZxJSuxApWoR5Bwdc=;
- b=TFam8rB6jMF5cvQQELhfDCKFtrtooBaeR//eVOGP0a4BYYFD6+kGWp8VM2DYXVVd5SPA
- XXiN6hWibjb8JtH2aVzB1sqfKlm971x68h10oH8C6wkDeWv4QJDqEQpPKvnUdUCqjdX4
- /J0VywtPAbh7fgq5p8jVvNz2lPsihjp8u+8= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by m0089730.ppops.net with ESMTP id 363vh5ce0r-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Tue, 19 Jan 2021 07:41:48 -0800
-Received: from NAM02-CY1-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.35.173) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Tue, 19 Jan 2021 07:41:47 -0800
+        id S1731752AbhASPnk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jan 2021 10:43:40 -0500
+Received: from mail-eopbgr20092.outbound.protection.outlook.com ([40.107.2.92]:9071
+        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728709AbhASPnJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 19 Jan 2021 10:43:09 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=epRuFVpty/QaiuounCeMJfpxFGB4STIcrOHS62BvwxGWrtwxOPMmnMZdhb2nIur0Y7+Aa5ZfnYmKjnmo4Z4y+shekR/+j07ffELlZgZtqewryPo5XKUYPabMTZBj7sOlFnE6kLw2xmL5D1gq8VfHAT0RKFgUZ3yarTITIOcxq/7ZXMt27chv4KTPaavlrEFSq1y784QJkIpIPK1Ujig4EUmM7ZLoZE3s20smnn31BsWqYFu69cX1kRMUXxZT5AAUEVvOOj0+plPmKJrdIJRjtO0WlJ4b7FlWwCdLusNez8CxgjSRUgTLsUpPWC4pfX6IFVNGdLFUKzDzml7dPK9hTg==
+ b=V2/yI0jO4W85V4sXRx7cY1KPrlopwtOU4wQBpoZd6XTVa8Kfv7r0qEGihUshr7l9rXgPvMYdtlr2Mw+McQ81HmvJbkUNXdHaHFqnBoMA8Yk9Bk8y1mqlVD66eOTmmq/RbuZHzUhEafnH804IMUzENUbrpj+9A/9gRm1+Zhf0MnBwSN5CheIGY/sblL8thezaPGQ3ol0BNi1ss8ASDGHDawmb9Jqz23bT7oEB+uX4fFsdDrU96XgPwN79AS7xwrFHCY7hLnZhKofsQmnBn6MnhtSRhXcTfRenxJuX8QeBDQRSPffYfaah2yyABW+1cLViitccWV8AtHCBHKdDIew2eA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=NCc4AQpUeN2v+JWXNMTS6cjdIhZZxJSuxApWoR5Bwdc=;
- b=CthboVwu441duZgAcsrGJt3VrFnsd7e5qcPyFT+b3Q5KqWsxlnNslbyj7DJXkPy8tJDVgwLz1vN6hUveOi4TIlZLfRsEPSjYNeq7vRT+9lAkCdJwUuMzfM3vU0Ub9CdZB8AzTZqcpzTZb8DpeWqK+Ux0NIk+VOHwxrVdUX1iDLI7/NLDWNHkTPUmoBZMG3rHyd5G7n7s/lOgVMn6RS+/bV3iTRKuujGIDyblGr/JiG+Ihdmgrjz3YmuAaKwwIgwceEvoFyCtQmWRD7wDfxSm2v2xWdv7Oi2wsKeCnHXP9XrKK40hMI4d0cVmPkPVenyFOX4v6J0zWN6TkpqtOtvUKA==
+ bh=wfoFvAtC9hNbKr8JY2RrspmXycFnxOJV8Q6ebLn/6Vc=;
+ b=ecDz0kNklCaKz5xrt/Tu/+b2nMUHzsSWkbXRkWKUuK83rVM5pnqcXsxKekQuneF3rjUyM5RNZdYbh05PVJ6TjXSrfU1giSpmVdXy9rrfAh0LuaDuPACH2QXWCgsQSPGQUZSKzGankdrFGU8E3zThKFdyEcvCYRD781KnTOT/ylzvMJkZjJCWygbUDGyCyv8uHetWLd2Q0sVHqKIXboc4gGz70sz5QmVJDjzq2lr0p1PhZb4C2BOODXCGsR6AHa5CMjBY/PrewsAvIILeEkjYQEtErIBlnNQwHEoW7Ly/ykNIBqgqSjirFnhXSHVwynUwE3LQ9y0nJT+8453bztA15g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
+ smtp.mailfrom=prevas.dk; dmarc=pass action=none header.from=prevas.dk;
+ dkim=pass header.d=prevas.dk; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=prevas.dk;
+ s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=NCc4AQpUeN2v+JWXNMTS6cjdIhZZxJSuxApWoR5Bwdc=;
- b=fiu+jyVRVpwp8QK+7NUvHt5BOME6nVmrCqTat7xy84g/I9brWU71yg3TspYQysQ3IGR4t/NRwr8fp1vSA3j1bJhYyPyVSxREAJSB9f5UHQcfUy1hRsUHJnoVVnbK/MdWq8T1N9AaQZOKTwxdFWrp30dNFphNIc+tB9ZUxF4i7Z8=
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none header.from=fb.com;
-Received: from BYAPR15MB4088.namprd15.prod.outlook.com (2603:10b6:a02:c3::18)
- by BYAPR15MB2696.namprd15.prod.outlook.com (2603:10b6:a03:156::23) with
+ bh=wfoFvAtC9hNbKr8JY2RrspmXycFnxOJV8Q6ebLn/6Vc=;
+ b=ZIAbuyzHpcb52HjJSG/26fduLr/X04TUMSU3HXarY9zzyEGQvO86XgsCXEHvUz6CGS5XgSgxPmzYaNGXNzIFzbyIyNAyv7Jofc/8Z9Y3TBHDSuxTeQMrOS/YAPv06EUROKYSgxSk15Ew8UZeYGGkcAjEK1qroPttdETnQeWTB0c=
+Authentication-Results: davemloft.net; dkim=none (message not signed)
+ header.d=none;davemloft.net; dmarc=none action=none header.from=prevas.dk;
+Received: from AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:208:3f::10)
+ by AM0PR10MB3170.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:208:180::21) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3763.9; Tue, 19 Jan
- 2021 15:41:45 +0000
-Received: from BYAPR15MB4088.namprd15.prod.outlook.com
- ([fe80::9ae:1628:daf9:4b03]) by BYAPR15MB4088.namprd15.prod.outlook.com
- ([fe80::9ae:1628:daf9:4b03%7]) with mapi id 15.20.3763.014; Tue, 19 Jan 2021
- 15:41:45 +0000
-Subject: Re: [PATCH v3 bpf-next 2/2] selftests: bpf: Add a new test for bare
- tracepoints
-To:     Qais Yousef <qais.yousef@arm.com>, <netdev@vger.kernel.org>,
-        <bpf@vger.kernel.org>
-CC:     Alexei Starovoitov <ast@kernel.org>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Steven Rostedt <rostedt@goodmis.org>,
-        "Peter Zijlstra (Intel)" <peterz@infradead.org>,
-        <linux-kernel@vger.kernel.org>
-References: <20210119122237.2426878-1-qais.yousef@arm.com>
- <20210119122237.2426878-3-qais.yousef@arm.com>
-From:   Yonghong Song <yhs@fb.com>
-Message-ID: <7be38aec-882a-eecb-3c20-c5f6b4d0bcd3@fb.com>
-Date:   Tue, 19 Jan 2021 07:41:41 -0800
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
- Gecko/20100101 Thunderbird/78.6.1
-In-Reply-To: <20210119122237.2426878-3-qais.yousef@arm.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+ 2021 15:42:15 +0000
+Received: from AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::9068:c899:48f:a8e3]) by AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::9068:c899:48f:a8e3%6]) with mapi id 15.20.3763.014; Tue, 19 Jan 2021
+ 15:42:15 +0000
+Subject: Re: [PATCH net 1/2] net: mrp: fix definitions of MRP test packets
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>
+References: <20201223144533.4145-1-rasmus.villemoes@prevas.dk>
+ <20201223144533.4145-2-rasmus.villemoes@prevas.dk>
+ <20201228142411.1c752b2e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Rasmus Villemoes <rasmus.villemoes@prevas.dk>
+Message-ID: <50d2a1b0-c7b5-cd12-e288-977fbfdea104@prevas.dk>
+Date:   Tue, 19 Jan 2021 16:42:14 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
+In-Reply-To: <20201228142411.1c752b2e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=windows-1252
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [2620:10d:c090:400::5:5f35]
-X-ClientProxiedBy: MWHPR04CA0030.namprd04.prod.outlook.com
- (2603:10b6:300:ee::16) To BYAPR15MB4088.namprd15.prod.outlook.com
- (2603:10b6:a02:c3::18)
+X-Originating-IP: [5.186.115.188]
+X-ClientProxiedBy: AM7PR03CA0011.eurprd03.prod.outlook.com
+ (2603:10a6:20b:130::21) To AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:208:3f::10)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from [IPv6:2620:10d:c085:21cf::126d] (2620:10d:c090:400::5:5f35) by MWHPR04CA0030.namprd04.prod.outlook.com (2603:10b6:300:ee::16) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3784.11 via Frontend Transport; Tue, 19 Jan 2021 15:41:44 +0000
+Received: from [192.168.1.149] (5.186.115.188) by AM7PR03CA0011.eurprd03.prod.outlook.com (2603:10a6:20b:130::21) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3763.10 via Frontend Transport; Tue, 19 Jan 2021 15:42:15 +0000
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 81152a9e-1055-45cd-b518-08d8bc90b992
-X-MS-TrafficTypeDiagnostic: BYAPR15MB2696:
-X-Microsoft-Antispam-PRVS: <BYAPR15MB2696F1AB2F4C0D779ED3E0BBD3A30@BYAPR15MB2696.namprd15.prod.outlook.com>
-X-FB-Source: Internal
-X-MS-Oob-TLC-OOBClassifiers: OLM:416;
+X-MS-Office365-Filtering-Correlation-Id: e3cd7d35-297e-431c-8192-08d8bc90cbc3
+X-MS-TrafficTypeDiagnostic: AM0PR10MB3170:
+X-Microsoft-Antispam-PRVS: <AM0PR10MB3170CBDB3F073C37E2DAFE3B93A30@AM0PR10MB3170.EURPRD10.PROD.OUTLOOK.COM>
+X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 5hlfQ2FQmgYVDDF09gUMqNkFC9n3NhhEDq1DLKpMb5tyJqtgjgW7mk7FjAjFC+HXnlYInY5SMw3AMiT1iBuSpG+Q4QV1xmuteD3j21RsBRREJb/MZMUYuq9b1JlTtvYaWtoK7PlK8AIoyOnP13ahslN1gzJBefQCmaGXz0slkWLEeeSNUaPQs9WsPsRqssGyo7hmE5d/JfQGRvgqpUzfvfujCKlh2RwRlSbjq0rp4n8TfFZJXYLoO2gD3+zOQuwL2VFKbetXSxFS/hpHLfOueOjH+vJpgktF29sYi3y0CPiAxMzymMV+H7qScJTp6UGVJXARjVFyNWt/G72mcEVf2/UKVu2+hMjoGxVibIE8lct1ABYDM4nty+ZAwqZYvD6bCigOYFlSPO/DYJR4qg1R9mhpjKD+XPrScW89rDga2XZApiomUioQipwQdURljjUPjdqYBWI4uJt7KkBCYqUFepMu1+wsYxsQOHo+025gTLc=
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB4088.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(39860400002)(136003)(396003)(376002)(366004)(346002)(558084003)(31696002)(2906002)(66946007)(8676002)(316002)(6666004)(2616005)(54906003)(5660300002)(186003)(86362001)(6486002)(53546011)(31686004)(52116002)(16526019)(36756003)(478600001)(66476007)(4326008)(66556008)(8936002)(43740500002)(45980500001);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?ZC9jTlhYQWNIK0pYRmpQV2RaWlA0ZmFRTkdMRTJOSVlvRWVacVpZamRjNktF?=
- =?utf-8?B?eVp6cEFoSlRUbGt3N09uc0JzWFhjdFYxRndGSWgvOFVhOUZFNGI4SUs0azRn?=
- =?utf-8?B?d1NtMWwzNisrbjdJSDFXc2VqUFE4YnR2dzVmdVBHRm5SaVhuMGUxbjRXcDRU?=
- =?utf-8?B?djVVWXRyZ1JudHJmbzRCZTczd3A1dE5ZMnZOZWJRaUpIMFZYTHlmVDBYR0Qx?=
- =?utf-8?B?a1d5QVJ2UTd6bGhhUkRDREJEbm5rL3RXU2RSRzFaV3NsTVhza21oZkZ5VWMx?=
- =?utf-8?B?R3kybkZOdTFIV1YrSHMvL1FMVUlYVGN4a0ErS1J5cE9CaE1aL3E2SGZvRita?=
- =?utf-8?B?aXhhdTFwT3hGanNQSldzQnpGMHoyMm9wN0Fxa1crekhLUTk5MVMrRnJOVzZx?=
- =?utf-8?B?cFhMRTVoWmdMVW5Jb3IvU3pybTNXUjVjSFRWMldTMVUzNVNFSWFpOGxhaGEy?=
- =?utf-8?B?UTZrdjZTNlVmUTNLWVFMa2NzUGViVWdlT0s3eXJZVGJMcVVlRlRoMkVXRllm?=
- =?utf-8?B?K3J5b2FPS0p2U3BXcG04TVhFODhaV25DVDB2TFRiWXRoVTliTjRXUTRkR1Na?=
- =?utf-8?B?SHFOc3IybkZFTldWOWd4RHg0aTFzZWIrdWFaNHZFQ0JuOVV5bHc0MUZqYk5W?=
- =?utf-8?B?VEJQbWxjaERTbXFFeWV3NjlGaFRwMVZRTnlWTUkrMjBVQ29VdDMrSjNSRVM2?=
- =?utf-8?B?UWlKTVlzWEk3NXRwbG1ZKzNsdXZUbG9DRUVtUkJYUzEzM3VOYk41c3Q1TkJK?=
- =?utf-8?B?VUJST0taM0NpK2l2aWZzaittSjNTM29WMURVOXNOMWV5cHB4cGVndlAwZmpj?=
- =?utf-8?B?RGtwVGVwSVZ1MVEwWnJ3ek9KalFUVkJUaFJUS0FlbnpmODFNRzREVU9LNHhk?=
- =?utf-8?B?Rlg0aHNoODhTbHFTMzJ2bVB4eWJVdHczdWdSaDJXTGdjN2Y3QUUzeUsvR1dl?=
- =?utf-8?B?cDUxcDNaOExZM2R4U2owQ3BIWFlPZjJ0UjFwanVLZ2h1WWxURno4cm9icVZQ?=
- =?utf-8?B?SXpNcE5aV1JPNU5XSG8zUEk1SnYwZC94bWViMjZrMkZMSHpwcHQ1Wk5ZMUpK?=
- =?utf-8?B?cXR5bkpMekNteFZVR1FGVjR0dXhWMHFFclJPT052SysySHdyQ2dKL1N1dWZn?=
- =?utf-8?B?OUJWVDFRYWRKZUh2SzM0SS9WWFBIcnh4TFFUUzlPcHlRRVJJQ3ZjQm9YNTcx?=
- =?utf-8?B?b3lNVTB0NXB3RWRrbHZjQ3ZBNDM0WURxeUQraUhlelFtb0xwVUhUemhPVzFi?=
- =?utf-8?B?RmxJZE03aDBhRGU3OHM5aWJQajl4UndYdERBT2lER3dMb3NJa2dzRlFXcngx?=
- =?utf-8?B?UklaQ0U2cjhsVWc2VVN0TlBBdjN5bndhNVdSMDFxQ3FwV3NpK0lOeWk0eUF4?=
- =?utf-8?B?c3JBZndnRGJFeUE9PQ==?=
-X-MS-Exchange-CrossTenant-Network-Message-Id: 81152a9e-1055-45cd-b518-08d8bc90b992
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR15MB4088.namprd15.prod.outlook.com
+X-Microsoft-Antispam-Message-Info: K3VZTvoFbMqzcu8IKX3s5JoKd2+sQSH4YdaD+4/si0io2C4XE+UBzs4LMBcxekaIo5NXDPF8Dgohbtr9FG1gUJChIkSamEzbzbf1Cw6D2QQmhNl118mNmmvYdQiSVz7N/lxDjxSGHJ9EvTAun5xnDJN5u2GZF4t0dae1WkmSPrRJi9Wdc9AduSZNBJqCoEfGvqTEnyA8urhnTR4tw/7C13SUjhVykKNMxkfIvp+7dvEM81zfLmS1AruOcatTr0x04NlP5ymD8BQpBmWFcM4XhSCmau1cdOF7tkdBqtfSolK/BcUwMyXdkylVzhRxdsDYBhI9s7N6umyC25VJx4GmhNRhCNVkZ7O6HcFzCjINmceNbnOGdKVwrSFxCmadss4FfredYgBE78o66j4g4ESKVn15sUkWsi2ThO3JS50rhil7xbAhOcngXHQAHwm7rFzZioiH0ebNWVkWHpKJQ3peyl4tuy+QVuL1bwp6onVD4Zg1m3geuUoYx0IwV4bwmIKkINKlvF7HKP/lfDq7PR3PkVTXstIWxjm/l835jmM2KbaDEbJ50gPM+MphA50Fs/oo/+yX2pUfbKJBlyLMQNw+uQ==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(366004)(136003)(396003)(376002)(346002)(39850400004)(66556008)(4326008)(26005)(31686004)(16526019)(956004)(36756003)(31696002)(6916009)(15974865002)(186003)(6486002)(316002)(8676002)(2616005)(54906003)(52116002)(2906002)(83380400001)(66476007)(8976002)(8936002)(5660300002)(86362001)(478600001)(44832011)(16576012)(66946007)(43740500002)(45980500001)(18886075002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: =?Windows-1252?Q?YJfYcyU80GAmPuIsCCCM2pfdFRjJ/dZPDK7x4FI2B6qiKcPV3/yKN1w9?=
+ =?Windows-1252?Q?wZePHB2StlV3yhGhAdUvnIxwHsl3Htrhga/FLGYDriGcCsI6TVtnh34n?=
+ =?Windows-1252?Q?gJ60jKfRwFuSeAsjU8N5W36E1dSmHP5mtxk0JGJVxx5/w4j3KUdkcEP4?=
+ =?Windows-1252?Q?8IgM7dg97LFYmm+Dx0GptmOePR9/xKpjf4aJCamO3uHFUWhKNAmvRLX7?=
+ =?Windows-1252?Q?zaclsWt2lQVAN6HwTD+iqIX9t6GqRCNJi1IMF9mR0Nz8sD9bXA3XYis5?=
+ =?Windows-1252?Q?Szn1xSb07alNdEnHB2nk4QFAY9qlQP2K1akdZJhwk7q+IfC+dJtgGOjQ?=
+ =?Windows-1252?Q?oKr402RKX/6WI5OoLn24SwYyf4SMSEHzE0XrFi+GSb3Hu8T0DGLT388u?=
+ =?Windows-1252?Q?GH3s2VjX9p5Fjo1J0qKd4BCnoEUBgxZWKiqJGmEPK/Ww4N0YTe/U1t0D?=
+ =?Windows-1252?Q?yUme/gWok6AFDgUX1AIdCKVRgcAMnFlScRlKKmyf7RiV3kUYBoOXbhqN?=
+ =?Windows-1252?Q?tYW7nb5ytMAw9x4lCUsIgiY9/uIxhDhg2lWi9bLSxuqsYUxoL/F/GsmE?=
+ =?Windows-1252?Q?jfEEW2vGLWOv4+s4yQrzaLZ7qcXvOTsgG5EWEhDyMhs70gpP4NYqmOb8?=
+ =?Windows-1252?Q?pD3igBfsX9DAJyFnP0R/m9O+n2q3PqtYvRQj9HsU0wPETzBKEIc/V5vS?=
+ =?Windows-1252?Q?HpF6MdzFQgY2nBuYnF4KrfHf6VM4JgJ45dYbBi0ANDVEYX6Fm4VUYA40?=
+ =?Windows-1252?Q?TtbrOvRK0rsz+xhvCBFpfxFpXNSzHgo6TexvsFRtgkZSyuLLgT9wWDDN?=
+ =?Windows-1252?Q?v5VFfTF+fK0hULUwy0I/q6CgjPhllhTx8JEOzJ4BI4SbtbxTTe3KVNho?=
+ =?Windows-1252?Q?EvzrJ2+rO/teNa0ku3Tot1+2jqFn8k9SquWDprcRO+2sqUnkF9zz3M5W?=
+ =?Windows-1252?Q?kzhpcF1wb0sSgkTkEFDs/IyoVmLzwUUp9NlJjdWNixsEbjgg97ciQc/b?=
+ =?Windows-1252?Q?g9Juhvtl0s53rlMGK4iUSTzMtI/jcVVNoWdNGPLY3JicKYpqgYhOkJcb?=
+ =?Windows-1252?Q?gsyyOcydSpyO+T7R?=
+X-OriginatorOrg: prevas.dk
+X-MS-Exchange-CrossTenant-Network-Message-Id: e3cd7d35-297e-431c-8192-08d8bc90cbc3
+X-MS-Exchange-CrossTenant-AuthSource: AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Jan 2021 15:41:44.9895
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Jan 2021 15:42:15.4774
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-Id: d350cf71-778d-4780-88f5-071a4cb1ed61
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: gJZTNaUiy34zdrZ8jA0x/6iArspT2gBbxP9qSlHEI+fTEhIQxM5g+j52CNkphjta
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BYAPR15MB2696
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
- definitions=2021-01-19_05:2021-01-18,2021-01-19 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxlogscore=887
- lowpriorityscore=0 malwarescore=0 spamscore=0 suspectscore=0 clxscore=1015
- adultscore=0 bulkscore=0 mlxscore=0 phishscore=0 priorityscore=1501
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2101190094
-X-FB-Internal: deliver
+X-MS-Exchange-CrossTenant-UserPrincipalName: oM+zyujWkTpQeHMVMiEuxAiLQ/ztHJWD/XJr98GsuHyoIT/OkwMnaluD2OdJhiKeAVrlfDv91D7j4b4aHg4sfnsk5SUe0URtgPNDkNIlhMU=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR10MB3170
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 1/19/21 4:22 AM, Qais Yousef wrote:
-> Reuse module_attach infrastructure to add a new bare tracepoint to check
-> we can attach to it as a raw tracepoint.
+On 28/12/2020 23.24, Jakub Kicinski wrote:
+> On Wed, 23 Dec 2020 15:45:32 +0100 Rasmus Villemoes wrote:
+>> Wireshark says that the MRP test packets cannot be decoded - and the
+>> reason for that is that there's a two-byte hole filled with garbage
+>> between the "transitions" and "timestamp" members.
+>>
+>> So Wireshark decodes the two garbage bytes and the top two bytes of
+>> the timestamp written by the kernel as the timestamp value (which thus
+>> fluctuates wildly), and interprets the lower two bytes of the
+>> timestamp as a new (type, length) pair, which is of course broken.
+>>
+>> While my copy of the MRP standard is still under way [*], I cannot
+>> imagine the standard specifying a two-byte hole here, and whoever
+>> wrote the Wireshark decoding code seems to agree with that.
+>>
+>> The struct definitions live under include/uapi/, but they are not
+>> really part of any kernel<->userspace API/ABI, so fixing the
+>> definitions by adding the packed attribute should not cause any
+>> compatibility issues.
+>>
+>> The remaining on-the-wire packet formats likely also don't contain
+>> holes, but pahole and manual inspection says the current definitions
+>> suffice. So adding the packed attribute to those is not strictly
+>> needed, but might be done for good measure.
+>>
+>> [*] I will never understand how something hidden behind a +1000$
+>> paywall can be called a standard.
+>>
+>> Signed-off-by: Rasmus Villemoes <rasmus.villemoes@prevas.dk>
+>> ---
+>>  include/uapi/linux/mrp_bridge.h | 4 ++--
+>>  1 file changed, 2 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/include/uapi/linux/mrp_bridge.h b/include/uapi/linux/mrp_bridge.h
+>> index 6aeb13ef0b1e..d1d0cf65916d 100644
+>> --- a/include/uapi/linux/mrp_bridge.h
+>> +++ b/include/uapi/linux/mrp_bridge.h
+>> @@ -96,7 +96,7 @@ struct br_mrp_ring_test_hdr {
+>>  	__be16 state;
+>>  	__be16 transitions;
+>>  	__be32 timestamp;
+>> -};
+>> +} __attribute__((__packed__));
+>>  
+>>  struct br_mrp_ring_topo_hdr {
+>>  	__be16 prio;
+>> @@ -141,7 +141,7 @@ struct br_mrp_in_test_hdr {
+>>  	__be16 state;
+>>  	__be16 transitions;
+>>  	__be32 timestamp;
+>> -};
+>> +} __attribute__((__packed__));
+>>  
+>>  struct br_mrp_in_topo_hdr {
+>>  	__u8 sa[ETH_ALEN];
 > 
-> Signed-off-by: Qais Yousef <qais.yousef@arm.com>
+> Can we use this opportunity to move the definitions of these structures
+> out of the uAPI to a normal kernel header?
+> 
 
-Acked-by: Yonghong Song <yhs@fb.com>
+Jakub, can we apply this patch to net, then later move the definitions
+out of uapi (and deleting the unused ones in the process)?
+
+Thanks,
+Rasmus
+
+
+
+-- 
+Rasmus Villemoes
+Software Developer
+Prevas A/S
+Hedeager 3
+DK-8200 Aarhus N
++45 51210274
+rasmus.villemoes@prevas.dk
+www.prevas.dk
