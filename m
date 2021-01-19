@@ -2,120 +2,139 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BEB5F2FADE8
-	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 01:06:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 56AC42FAE25
+	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 01:41:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390871AbhASAFR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jan 2021 19:05:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36778 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732241AbhASAFL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jan 2021 19:05:11 -0500
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FB7DC061573
-        for <netdev@vger.kernel.org>; Mon, 18 Jan 2021 16:04:30 -0800 (PST)
-Received: by mail-ej1-x636.google.com with SMTP id a10so9406791ejg.10
-        for <netdev@vger.kernel.org>; Mon, 18 Jan 2021 16:04:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=R2oXVpB2Ii8XEJfOgd9+ImRNyuWGmvWzEyYrs7b0pZI=;
-        b=RQUx658w3RTT2dTdCdkN4UbZl5iBtJPdGLzylJ/1vInZEQFPeAsXmvQlA8t2AX6UJe
-         1TLR0oti2NAVdzeX+IEQMgCwnmfDjNh+bxpN24rdCa8CpKgOLaE1GNB/sBM6W6ticttI
-         gE8uZGi1lANBS2BKsuR4dBYbhMmQMVD8qZzFU+0a6NpkulbJ23rIltBE8xh9OFaOEkch
-         LyruOf4/Hdsk5H2xLvC+3UzC/eJT1/LA8N/S/WkRk0cIENd3+8Qx++R+OWVPZYQZan/W
-         9OHXiLosqDgyQqVIagYsvuwSYCEmrLecrBhAQEOiwlLTkoibSW540wliKwfbcqeEkgdu
-         pKEA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=R2oXVpB2Ii8XEJfOgd9+ImRNyuWGmvWzEyYrs7b0pZI=;
-        b=c1Y6NJzhbborabLIsOYb1fzgelKEwQedz5iCDWfb8hm4w6F0T6um/FTons1Z7a0C1r
-         lujKJzbPgjadfk9ep3E+Ibj8n7XPyoAYyfoqpe41fLBCd5cvMn6PeWqSAnubOJjsqBBf
-         8tONIyrKa2fO/x/VW89ggobPB8EKLF7WObHrTBL38KShGMU02niSSIfEHFfG8VwtMy67
-         6i7AwlRYJTuk1NoAtdg7gi711Wmi13EFw57j1XebkPo/xNubHeF0eIuy9WAMfMjuT+Rs
-         HboDroCKgT1CnKCYGzV6TwHjyKA1Snu49/tegRMu6MqkmBl6He5raSdKQObHepJ9nbx0
-         HH1Q==
-X-Gm-Message-State: AOAM533AJ7+ppXnCkgRHTG5hIjGR6lr10V0Jcc2f6zIANechbgNrh1zm
-        ajbiE5ckqFY8/8fCWUnpVekkN9LlQYA=
-X-Google-Smtp-Source: ABdhPJzxKc+AGHGD9RaaKlbsIhGyY4+dtEE2HSUmTiFaL/BQccwqssO7xR3yTijK9rA+5kX9w6ezDA==
-X-Received: by 2002:a17:906:da02:: with SMTP id fi2mr1256879ejb.230.1611014669209;
-        Mon, 18 Jan 2021 16:04:29 -0800 (PST)
-Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id l16sm2717275edw.10.2021.01.18.16.04.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Jan 2021 16:04:28 -0800 (PST)
-Date:   Tue, 19 Jan 2021 02:04:26 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-        Hongbo Wang <hongbo.wang@nxp.com>, Po Liu <po.liu@nxp.com>,
-        Yangbo Lu <yangbo.lu@nxp.com>,
-        Maxim Kochetkov <fido_max@inbox.ru>,
-        Eldar Gasanov <eldargasanov2@gmail.com>,
-        Andrey L <al@b4comtech.com>, UNGLinuxDriver@microchip.com
-Subject: Re: [PATCH v3 net-next 04/15] net: dsa: felix: add new VLAN-based
- tagger
-Message-ID: <20210119000426.sf42ecoefafhy6lh@skbuf>
-References: <20210118161731.2837700-1-olteanv@gmail.com>
- <20210118161731.2837700-5-olteanv@gmail.com>
+        id S1732176AbhASAld (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jan 2021 19:41:33 -0500
+Received: from mga09.intel.com ([134.134.136.24]:38525 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729933AbhASAlb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 18 Jan 2021 19:41:31 -0500
+IronPort-SDR: TCY2drA7nZnknuPdbURapQsxaixsleyiejOZKUkt9vFpYLrZm2mkGY2I3Bothw9fqQWWfSO+4z
+ yJOAnMMZEZjA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9868"; a="179011251"
+X-IronPort-AV: E=Sophos;i="5.79,357,1602572400"; 
+   d="scan'208";a="179011251"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jan 2021 16:40:49 -0800
+IronPort-SDR: 4hawrQJj2fpyw45PFJX567hqDcoEqwoOCDKSLDlraM+SazFR400XCZ1JL8NDwYvnev65Xcc4Fp
+ ToV0+ulebJCA==
+X-IronPort-AV: E=Sophos;i="5.79,357,1602572400"; 
+   d="scan'208";a="426285752"
+Received: from cemillan-mobl.amr.corp.intel.com (HELO localhost.localdomain) ([10.212.57.184])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Jan 2021 16:40:48 -0800
+From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
+To:     netdev@vger.kernel.org
+Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>, jhs@mojatatu.com,
+        xiyou.wangcong@gmail.com, jiri@resnulli.us, kuba@kernel.org,
+        m-karicheri2@ti.com, vladimir.oltean@nxp.com,
+        Jose.Abreu@synopsys.com, po.liu@nxp.com,
+        intel-wired-lan@lists.osuosl.org, anthony.l.nguyen@intel.com,
+        mkubecek@suse.cz
+Subject: [PATCH net-next v2 0/8] ethtool: Add support for frame preemption
+Date:   Mon, 18 Jan 2021 16:40:20 -0800
+Message-Id: <20210119004028.2809425-1-vinicius.gomes@intel.com>
+X-Mailer: git-send-email 2.30.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210118161731.2837700-5-olteanv@gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 18, 2021 at 06:17:20PM +0200, Vladimir Oltean wrote:
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> 
-> There are use cases for which the existing tagger, based on the NPI
-> (Node Processor Interface) functionality, is insufficient.
-> 
-> Namely:
-> - Frames injected through the NPI port bypass the frame analyzer, so no
->   source address learning is performed, no TSN stream classification,
->   etc.
-> - Flow control is not functional over an NPI port (PAUSE frames are
->   encapsulated in the same Extraction Frame Header as all other frames)
-> - There can be at most one NPI port configured for an Ocelot switch. But
->   in NXP LS1028A and T1040 there are two Ethernet CPU ports. The non-NPI
->   port is currently either disabled, or operated as a plain user port
->   (albeit an internally-facing one). Having the ability to configure the
->   two CPU ports symmetrically could pave the way for e.g. creating a LAG
->   between them, to increase bandwidth seamlessly for the system.
-> 
-> So, there is a desire to have an alternative to the NPI mode.
-> 
-> This patch brings an implementation of the software-defined tag_8021q.c
-> tagger format, which also preserves full functionality under a
-> vlan_filtering bridge (unlike sja1105, the only other user of
-> tag_8021q).
-> 
-> It does this by using the TCAM engines for:
-> - pushing the RX VLAN as a second, outer tag, on egress towards the CPU
->   port
-> - redirecting towards the correct front port based on TX VLAN and
->   popping that on egress
-> 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> ---
+Changes from v1:
+ - The minimum fragment size configuration was changed to be
+   configured in bytes to be more future proof, in case the standard
+   changes this (the previous definition was '(X + 1) * 64', X being
+   [0..3]) (Michal Kubecek);
+ - In taprio, frame preemption is now configured by traffic classes (was
+   done by queues) (Jakub Kicinski, Vladimir Oltean);
+ - Various netlink protocol validation improvements (Jakub Kicinski);
+ - Dropped the IGC register dump for frame preemption registers, until a
+   stardandized way of exposing that is agreed (Jakub Kicinski);
 
-Should both taggers be reported as DSA_TAG_PROTO_OCELOT as I am doing in
-the current patchset? Currently a kernel can only be built with one
-tagger or the other. But it is not possible to e.g. rmmod one tagger and
-insmod another one.
+Changes from RFC v2:
+ - Reorganised the offload enabling/disabling on the driver size;
+ - Added a few igc fixes;
 
-If we allow compilation of more than one tagger for the same hardware,
-how do we select between them if both are built into the same kernel?
+Changes from RFC v1:
+ - The per-queue preemptible/express setting is moved to applicable
+   qdiscs (Jakub Kicinski and others);
+ - "min-frag-size" now follows the 802.3br specification more closely,
+   it's expressed as X in '64(1 + X) + 4' (Joergen Andreasen);
+
+Another point that should be noted is the addition of the
+TC_SETUP_PREEMPT offload type, the idea behind this is to allow other
+qdiscs (was thinking of mqprio) to also configure which traffic
+classes should be marked as express/preemptible.
+
+Original cover letter:
+
+This is still an RFC because two main reasons, I want to confirm that
+this approach (per-queue settings via qdiscs, device settings via
+ethtool) looks good, even though there aren't much more options left ;-)
+The other reason is that while testing this I found some weirdness
+in the driver that I would need a bit more time to investigate.
+
+(In case these patches are not enough to give an idea of how things
+work, I can send the userspace patches, of course.)
+
+The idea of this "hybrid" approach is that applications/users would do
+the following steps to configure frame preemption:
+
+$ tc qdisc replace dev $IFACE parent root handle 100 taprio \
+      num_tc 3 \
+      map 2 2 1 0 2 2 2 2 2 2 2 2 2 2 2 2 \
+      queues 1@0 1@1 2@2 \
+      base-time $BASE_TIME \
+      sched-entry S 0f 10000000 \
+      preempt 1110 \
+      flags 0x2 
+
+The "preempt" parameter is the only difference, it configures which
+queues are marked as preemptible, in this example, queue 0 is marked
+as "not preemptible", so it is express, the rest of the four queues
+are preemptible.
+
+The next step, of this example, would be to enable frame preemption in
+the device, via ethtool, and set the minimum fragment size to 2:
+
+$ sudo ./ethtool --set-frame-preemption $IFACE fp on min-frag-size 2
+
+Cheers,
+
+Vinicius Costa Gomes (8):
+  ethtool: Add support for configuring frame preemption
+  taprio: Add support for frame preemption offload
+  igc: Set the RX packet buffer size for TSN mode
+  igc: Only dump registers if configured to dump HW information
+  igc: Avoid TX Hangs because long cycles
+  igc: Add support for tuning frame preemption via ethtool
+  igc: Add support for Frame Preemption offload
+  igc: Separate TSN configurations that can be updated
+
+ Documentation/networking/ethtool-netlink.rst |  38 +++++
+ drivers/net/ethernet/intel/igc/igc.h         |  12 ++
+ drivers/net/ethernet/intel/igc/igc_defines.h |   6 +
+ drivers/net/ethernet/intel/igc/igc_dump.c    |   3 +
+ drivers/net/ethernet/intel/igc/igc_ethtool.c |  53 ++++++
+ drivers/net/ethernet/intel/igc/igc_main.c    |  31 +++-
+ drivers/net/ethernet/intel/igc/igc_tsn.c     | 162 ++++++++++++++-----
+ drivers/net/ethernet/intel/igc/igc_tsn.h     |   1 +
+ include/linux/ethtool.h                      |  39 ++++-
+ include/linux/netdevice.h                    |   1 +
+ include/net/pkt_sched.h                      |   4 +
+ include/uapi/linux/ethtool_netlink.h         |  17 ++
+ include/uapi/linux/pkt_sched.h               |   1 +
+ net/ethtool/Makefile                         |   2 +-
+ net/ethtool/common.c                         |  10 ++
+ net/ethtool/netlink.c                        |  19 +++
+ net/ethtool/netlink.h                        |   4 +
+ net/ethtool/preempt.c                        | 146 +++++++++++++++++
+ net/sched/sch_taprio.c                       |  41 ++++-
+ 19 files changed, 539 insertions(+), 51 deletions(-)
+ create mode 100644 net/ethtool/preempt.c
+
+-- 
+2.30.0
+
