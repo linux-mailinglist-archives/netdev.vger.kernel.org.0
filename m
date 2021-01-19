@@ -2,127 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A99D62FC0FC
-	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 21:30:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 323572FC168
+	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 21:44:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391707AbhASU22 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jan 2021 15:28:28 -0500
-Received: from mail.kernel.org ([198.145.29.99]:56998 "EHLO mail.kernel.org"
+        id S2387545AbhASSuO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jan 2021 13:50:14 -0500
+Received: from mail.kernel.org ([198.145.29.99]:49906 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2391798AbhASU0G (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 19 Jan 2021 15:26:06 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 5810E23142;
-        Tue, 19 Jan 2021 20:25:25 +0000 (UTC)
+        id S1730665AbhASS22 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 19 Jan 2021 13:28:28 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 8C882233EA;
+        Tue, 19 Jan 2021 17:05:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611087925;
-        bh=mJ1AXD5yOyqGzpmFOoCAv9EAxBEeHkwGHfJvVMxBY6o=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GhBq0vDSCgVqv9Lpp61ItEm9irJr1wNGfcm8len8/59IfvhAUFiGyTRkLZRkn/kRW
-         O54AmxlrQFO4ft40yKNOcbgiec2MHrjY0r04hwodz/ah2GMlZiK8bEELTji4+bL4rt
-         +mNnY4y9zKMInAqsLCWrvYVD1n0uQ+SOtRFAQeh/FkEy8/NkfXPq97WaUhoJHOvI6S
-         QWkcdb42zJm2UQUUQkxRurVpxuRUWynaRspZSlFDsEtu/zUq0yl25dSErN1cvhd2L7
-         B+rH84OIy6m5BUuEV9fiVy8jf1FoVgUAmxVvjlg6vfCPnLFQGHgIECtFuZifzH7vON
-         Q8qN9zkPLxnNQ==
+        s=k20201202; t=1611075945;
+        bh=alaksRNTDQpckIDhtJpw9+7JcWoMBKls4G92axni+74=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ZMCarGbdc2i+CriApZz6bCYKwVVOzstDBSLdB7w0d7nuXvM9qkRcsikgOE40tw6JZ
+         V0/7d7V6T7JQTwtNd8mgLyVXGYomskDaUrA4KRVOV3PoQSFCsPgumXzGXaCsgzT6gz
+         9kSkIOU5P/TlDSpEM0MJhwjvlsbMGySvOlZSm67lRxIWiZupItSPlV0N0JaMNkFcYa
+         zjLbKbVlasAkaleaiDH+wY2spLBhiFCyNKeR/LOyiu1aCp4eWYfJMd5vv/BJAfgYc9
+         gkuNvTrkjqQacLuU/xuqja6UmlkptHhdvLPQmKLUpFmR7itoXVlFcMmtkZAqumQp9+
+         dhy8UjWTez6lA==
+Date:   Tue, 19 Jan 2021 09:05:39 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
-Subject: [PATCH net-next v2 4/4] net: inline rollback_registered_many()
-Date:   Tue, 19 Jan 2021 12:25:21 -0800
-Message-Id: <20210119202521.3108236-5-kuba@kernel.org>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20210119202521.3108236-1-kuba@kernel.org>
-References: <20210119202521.3108236-1-kuba@kernel.org>
+To:     Paul Menzel <pmenzel@molgen.mpg.de>
+Cc:     Greg KH <gregkh@linuxfoundation.org>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Jeffrey Townsend <jeffrey.townsend@bigswitch.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        John W Linville <linville@tuxdriver.com>
+Subject: Re: [PATCH 2/2] ethernet: igb: e1000_phy: Check for
+ ops.force_speed_duplex existence
+Message-ID: <20210119090539.22c3d29e@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <19eab284-b7b0-7053-1aa7-5fedcee04263@molgen.mpg.de>
+References: <20201102231307.13021-1-pmenzel@molgen.mpg.de>
+        <20201102231307.13021-3-pmenzel@molgen.mpg.de>
+        <20201102161943.343586b1@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        <36ce1f2e-843c-4995-8bb2-2c2676f01b9d@molgen.mpg.de>
+        <20201103103940.2ed27fa2@kicinski-fedora-PC1C0HJN.hsd1.ca.comcast.net>
+        <c1ad26c6-a4a6-d161-1b18-476b380f4e58@molgen.mpg.de>
+        <X/ShBVXp32Y+Jeds@kroah.com>
+        <19eab284-b7b0-7053-1aa7-5fedcee04263@molgen.mpg.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Similar to the change for rollback_registered() -
-rollback_registered_many() was a part of unregister_netdevice_many()
-minus the net_set_todo(), which is no longer needed.
+On Tue, 19 Jan 2021 07:55:19 +0100 Paul Menzel wrote:
+> Am 05.01.21 um 18:25 schrieb Greg KH:
+> > On Tue, Jan 05, 2021 at 06:16:59PM +0100, Paul Menzel wrote: =20
+> >> Am 03.11.20 um 19:39 schrieb Jakub Kicinski: =20
+> >>> On Tue, 3 Nov 2020 08:35:09 +0100 Paul Menzel wrote: =20
+> >>>> According to *Developer's Certificate of Origin 1.1* [3], it=E2=80=
+=99s my
+> >>>> understanding, that it is *not* required. The items (a), (b), and (c)
+> >>>> are connected by an *or*.
+> >>>> =20
+> >>>>>           (b) The contribution is based upon previous work that, to=
+ the best
+> >>>>>               of my knowledge, is covered under an appropriate open=
+ source
+> >>>>>               license and I have the right under that license to su=
+bmit that
+> >>>>>               work with modifications, whether created in whole or =
+in part
+> >>>>>               by me, under the same open source license (unless I am
+> >>>>>               permitted to submit under a different license), as in=
+dicated
+> >>>>>               in the file; or =20
+> >>>
+> >>> Ack, but then you need to put yourself as the author, because it's
+> >>> you certifying that the code falls under (b).
+> >>>
+> >>> At least that's my understanding. =20
+> >>
+> >> Greg, can you please clarify, if it=E2=80=99s fine, if I upstream a pa=
+tch authored
+> >> by somebody else and distributed under the GPLv2? I put them as the au=
+thor
+> >> and signed it off. =20
+> >=20
+> > You can't add someone else's signed-off-by, but you can add your own and
+> > keep them as the author, has happened lots of time in the past.
+> >=20
+> > Or, you can make the From: line be from you if the original author
+> > doesn't want their name/email in the changelog, we've done that as well,
+> > both are fine. =20
+>=20
+> Greg, thank you for the clarification.
+>=20
+> Jakub, with that out of the way, can you please take patch 2/2?
 
-Functionally this patch moves the list_empty() check back after:
-
-	BUG_ON(dev_boot_phase);
-	ASSERT_RTNL();
-
-but I can't find any reason why that would be an issue.
-
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
----
- net/core/dev.c | 22 ++++++++--------------
- 1 file changed, 8 insertions(+), 14 deletions(-)
-
-diff --git a/net/core/dev.c b/net/core/dev.c
-index a7841d03c910..dee6488f8a31 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -5709,7 +5709,7 @@ static void flush_all_backlogs(void)
- 	}
- 
- 	/* we can have in flight packet[s] on the cpus we are not flushing,
--	 * synchronize_net() in rollback_registered_many() will take care of
-+	 * synchronize_net() in unregister_netdevice_many() will take care of
- 	 * them
- 	 */
- 	for_each_cpu(cpu, &flush_cpus)
-@@ -10605,8 +10605,6 @@ void synchronize_net(void)
- }
- EXPORT_SYMBOL(synchronize_net);
- 
--static void rollback_registered_many(struct list_head *head);
--
- /**
-  *	unregister_netdevice_queue - remove device from the kernel
-  *	@dev: device
-@@ -10630,8 +10628,7 @@ void unregister_netdevice_queue(struct net_device *dev, struct list_head *head)
- 		LIST_HEAD(single);
- 
- 		list_add(&dev->unreg_list, &single);
--		rollback_registered_many(&single);
--		list_del(&single);
-+		unregister_netdevice_many(&single);
- 	}
- }
- EXPORT_SYMBOL(unregister_netdevice_queue);
-@@ -10644,15 +10641,6 @@ EXPORT_SYMBOL(unregister_netdevice_queue);
-  *  we force a list_del() to make sure stack wont be corrupted later.
-  */
- void unregister_netdevice_many(struct list_head *head)
--{
--	if (!list_empty(head)) {
--		rollback_registered_many(head);
--		list_del(head);
--	}
--}
--EXPORT_SYMBOL(unregister_netdevice_many);
--
--static void rollback_registered_many(struct list_head *head)
- {
- 	struct net_device *dev, *tmp;
- 	LIST_HEAD(close_head);
-@@ -10660,6 +10648,9 @@ static void rollback_registered_many(struct list_head *head)
- 	BUG_ON(dev_boot_phase);
- 	ASSERT_RTNL();
- 
-+	if (list_empty(head))
-+		return;
-+
- 	list_for_each_entry_safe(dev, tmp, head, unreg_list) {
- 		/* Some devices call without registering
- 		 * for initialization unwind. Remove those
-@@ -10743,7 +10734,10 @@ static void rollback_registered_many(struct list_head *head)
- 		dev_put(dev);
- 		net_set_todo(dev);
- 	}
-+
-+	list_del(head);
- }
-+EXPORT_SYMBOL(unregister_netdevice_many);
- 
- /**
-  *	unregister_netdev - remove device from the kernel
--- 
-2.26.2
-
+Please repost the patches, if you know how please add a lore link to
+this posting, thanks!
