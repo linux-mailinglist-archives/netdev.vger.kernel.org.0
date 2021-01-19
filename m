@@ -2,87 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4590D2FBC48
-	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 17:23:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1334E2FBC57
+	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 17:26:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729349AbhASQUz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jan 2021 11:20:55 -0500
-Received: from m42-8.mailgun.net ([69.72.42.8]:49805 "EHLO m42-8.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727185AbhASQUR (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 19 Jan 2021 11:20:17 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1611073177; h=Content-Type: MIME-Version: Message-ID:
- In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
- bh=iy/S8TWo4V1brHw5rkLeSCIVsbtOU9fUJpOaqjSNd/I=; b=HT1+Ulqe0/EbLVXohEng7PaT/4brS4CqZfqWryqbp3RMfTkeM3kRLPIAxw4QHYqe5QVduI88
- lrr5C0kGbko+fusvBlcq17w1wYgcWGVcjejEMF8BMFeoF5lQkrZ/5mEOmmF5NmBNvh7wAfNq
- Pg5d9tCWWYrOsTj+ErwGeF8n6d0=
-X-Mailgun-Sending-Ip: 69.72.42.8
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n05.prod.us-east-1.postgun.com with SMTP id
- 6007067f02b2f1cb1a0ff9dd (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 19 Jan 2021 16:19:11
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id D73DCC43463; Tue, 19 Jan 2021 16:19:10 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
-        autolearn=no autolearn_force=no version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 5CF45C433CA;
-        Tue, 19 Jan 2021 16:19:07 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 5CF45C433CA
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Thara Gopinath <thara.gopinath@linaro.org>
-Cc:     rui.zhang@intel.com, daniel.lezcano@linaro.org,
-        davem@davemloft.net, kuba@kernel.org, luciano.coelho@intel.com,
-        linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org, linux-pm@vger.kernel.org, amitk@kernel.org,
-        nathan.errera@intel.com
-Subject: Re: [PATCH 1/2] net: wireless: intel: iwlwifi: mvm: tt: Replace thermal_notify_framework
-References: <20210119140541.2453490-1-thara.gopinath@linaro.org>
-        <20210119140541.2453490-2-thara.gopinath@linaro.org>
-Date:   Tue, 19 Jan 2021 18:19:05 +0200
-In-Reply-To: <20210119140541.2453490-2-thara.gopinath@linaro.org> (Thara
-        Gopinath's message of "Tue, 19 Jan 2021 09:05:40 -0500")
-Message-ID: <87pn20garq.fsf@codeaurora.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
+        id S1732388AbhASQYe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jan 2021 11:24:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49062 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731925AbhASQYF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jan 2021 11:24:05 -0500
+Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com [IPv6:2607:f8b0:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79593C061573
+        for <netdev@vger.kernel.org>; Tue, 19 Jan 2021 08:23:22 -0800 (PST)
+Received: by mail-oi1-x22e.google.com with SMTP id q25so21713806oij.10
+        for <netdev@vger.kernel.org>; Tue, 19 Jan 2021 08:23:22 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=G55tkmNFXpWNF0G4kidv1LOhDwnRGHoYTqEZ1cY0Eqc=;
+        b=DhVfwyqBmc1AiBf/wD+FyjYytp4BUTH2VLlJDLkVixp3J7211eK/m6O3ZTfa3exXwP
+         prd3LWNj+mMSuxBVcYW4efmtcROLtTVuNAsEap/+SKMNSVBgjDX2qwlE86snW/oKz5PI
+         d0n3qZoQNbYNTIh7DNl7LxzqoELOTTGtWzJL/TFPf0DLGCaDeLYHtyaXe3xSZIIMet+S
+         h+NMMmcouT2HEZ5bq+V9iHLm+GZJxoVPizWltgrAZ3rAKPl1CZzq3rBiObHQwBr92wrD
+         +Ka0oEa2eHkhczqna9Ah90DzkRcta2og987gRp+s7ZiWdUX4axh3aw2qozOfHC9UNOY6
+         TomA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=G55tkmNFXpWNF0G4kidv1LOhDwnRGHoYTqEZ1cY0Eqc=;
+        b=bNSxudKdhmJUhrFHybiar//zg0SxMxEHKpx8s+O/nS4g1aqo3ORkTNhtuxlv5s1S1/
+         gYXv7OhEuN7Uum4ykPhYAaASraF3tROJDSL9+lIcgV5WbMF6tU9XhhkSqx1a4Y+aw+LL
+         9Us2x9n01myzNRE//laLH0m2kRbpUEdJD16NhWGJbsBeu54MR8PDPuRBU3UIfG4X0GUD
+         ZbvaAI8lMIpxwLzMqxZwwZJ8g0pE8KJ4B2bBOXqF33mV4G1MQvBh/td88hw34TLcw0jE
+         nI24+Jndyb+R8EypOTu2UWLXg2kqw2NYpLkj1QY9G3FeBbKJsGnpYJFh9dpE33E1+4ix
+         WMEQ==
+X-Gm-Message-State: AOAM530WqYMKPEJxf+dk2lKPna8K72PgF7x4Gy7GtzwgErL8ARA6Wcwc
+        eKM4J7WU52rwSCYgjCrrN3E=
+X-Google-Smtp-Source: ABdhPJw5hSD6Jz5T7k5je3VWnZ52lO+9wjAbRth7x79j5z5tMR6ohe2URim2HMvnLJGrcWEJ3sBnlA==
+X-Received: by 2002:aca:1a17:: with SMTP id a23mr294686oia.120.1611073401961;
+        Tue, 19 Jan 2021 08:23:21 -0800 (PST)
+Received: from Davids-MacBook-Pro.local ([8.6.112.213])
+        by smtp.googlemail.com with ESMTPSA id q6sm852300ota.44.2021.01.19.08.23.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 19 Jan 2021 08:23:21 -0800 (PST)
+Subject: Re: [patch net-next RFC 00/10] introduce line card support for
+ modular switch
+To:     Jiri Pirko <jiri@resnulli.us>, Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        jacob.e.keller@intel.com, roopa@nvidia.com, mlxsw@nvidia.com
+References: <20210113121222.733517-1-jiri@resnulli.us>
+ <X/+nVtRrC2lconET@lunn.ch> <20210119115610.GZ3565223@nanopsycho.orion>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <42b4c13b-7605-948e-a68c-dcb568680988@gmail.com>
+Date:   Tue, 19 Jan 2021 09:23:19 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
+ Gecko/20100101 Thunderbird/78.6.1
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <20210119115610.GZ3565223@nanopsycho.orion>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thara Gopinath <thara.gopinath@linaro.org> writes:
+On 1/19/21 4:56 AM, Jiri Pirko wrote:
+> Thu, Jan 14, 2021 at 03:07:18AM CET, andrew@lunn.ch wrote:
+>>> $ devlink lc provision netdevsim/netdevsim10 lc 0 type card4ports
+>>> $ devlink lc
+>>> netdevsim/netdevsim10:
+>>>   lc 0 state provisioned type card4ports
+>>>     supported_types:
+>>>        card1port card2ports card4ports
+>>>   lc 1 state unprovisioned
+>>>     supported_types:
+>>>        card1port card2ports card4ports
+>>
+>> Hi Jiri
+>>
+>>> # Now activate the line card using debugfs. That emulates plug-in event
+>>> # on real hardware:
+>>> $ echo "Y"> /sys/kernel/debug/netdevsim/netdevsim10/linecards/0/active
+>>> $ ip link show eni10nl0p1
+>>> 165: eni10nl0p1: <BROADCAST,NOARP,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP mode DEFAULT group default qlen 1000
+>>>     link/ether 7e:2d:05:93:d3:d1 brd ff:ff:ff:ff:ff:ff
+>>> # The carrier is UP now.
+>>
+>> What is missing from the devlink lc view is what line card is actually
+>> in the slot. Say if i provision for a card4port, but actually insert a
+>> card2port. It would be nice to have something like:
+> 
+> I checked, our hw does not support that. Only provides info that
+> linecard activation was/wasn't successful.
+> 
 
-> thermal_notify_framework just updates for a single trip point where as
-> thermal_zone_device_update does other bookkeeping like updating the
-> temperature of the thermal zone and setting the next trip point etc.
-> Replace thermal_notify_framework with thermal_zone_device_update as the
-> later is more thorough.
->
-> Signed-off-by: Thara Gopinath <thara.gopinath@linaro.org>
-
-The title could be just "iwlwifi: mvm: tt: Replace
-thermal_notify_framework".
-
-But via which tree is this going? I assume it's not
-wireless-drivers-next so:
-
-Acked-by: Kalle Valo <kvalo@codeaurora.org>
-
-
--- 
-https://patchwork.kernel.org/project/linux-wireless/list/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
+There is no way for the supervisor / management card to probe and see
+what card is actually inserted in a given slot? That seems like a
+serious design deficiency. What about some agent running on the line
+card talking to an agent on the supervisor to provide that information?
