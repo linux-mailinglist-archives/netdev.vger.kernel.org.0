@@ -2,188 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 24E412FBCA7
-	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 17:40:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C071A2FBCD5
+	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 17:48:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732922AbhASQiC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jan 2021 11:38:02 -0500
-Received: from mx0a-00082601.pphosted.com ([67.231.145.42]:64158 "EHLO
-        mx0a-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729544AbhASQhP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jan 2021 11:37:15 -0500
-Received: from pps.filterd (m0109334.ppops.net [127.0.0.1])
-        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 10JGXg8r016392;
-        Tue, 19 Jan 2021 08:35:51 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=from : to : cc : subject
- : date : message-id : references : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=facebook;
- bh=xUVRaTLXROqr7Kjt4FLsANbvwrpwjEi0ov0GEaI325k=;
- b=jSyUmbArnSYxKMjFUFhEDDVHAgSWbcBql/zevcz/r9LrvFTsAq3thTt8e1RdVS7RXjT7
- +qrpEWuHJXVKw1Wn1RHQQY63s/TdR0D1xQQLoNCowcpDdTTKPRdP9XUNHN8oLQO5ondw
- 93k2VwqiZUU3LimK24ZB+VrbCdQis5NiGVU= 
-Received: from maileast.thefacebook.com ([163.114.130.16])
-        by mx0a-00082601.pphosted.com with ESMTP id 364h2cj1f8-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Tue, 19 Jan 2021 08:35:51 -0800
-Received: from NAM12-DM6-obe.outbound.protection.outlook.com (100.104.31.183)
- by o365-in.thefacebook.com (100.104.36.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Tue, 19 Jan 2021 08:35:49 -0800
+        id S2388955AbhASQrI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jan 2021 11:47:08 -0500
+Received: from mail-eopbgr80089.outbound.protection.outlook.com ([40.107.8.89]:42562
+        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1731769AbhASQqw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 19 Jan 2021 11:46:52 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hesW0XXou8s7l/NDdQeAS0yL4FMuGZstX04ljCk3vYVoXgETb+6I92GTAkiRmDCjIByOQW2oMQLvNnMXGA7vnNLJn4V4DFENDiwab3Smg4XRVIsYlxj5hinEkQ7mRccKI2hYmA3EjPlMOttefJRqyUuYA2xpwq214u1j9veLb17EPxIyBYzhCo+Zu8UXqaW937yEiYNGeyPQB2E1FoW6kqdSRxPc+5RVMzg8SS5rDs1qT2+cpRO7bhl9mwZeD7uu4F2UKr6AVjKzIhgJ29CsQgY79rsVB/e73U63pb7e55yqrhLzRxo56FS5OYTWGYc9DbYt/FINKr9r5VpM83z3Ag==
+ b=i05HlaPHrs1czJu3aCo9yF2p+6ApnU8oQ4y0aTtdc80Ha86CoURukZMOspciGq2GF6f8FyD95kuQyXzSeHcF0zaGls6liMPbJ6k0hr8PhL5ZlEs+Pg9c/G1S5m5vhvbZPYRE0NL5+0Ke8x3L1kYugYP5LdkMZbMcflLgZ/eG8/V/Hrlv8r5G/Eyq2eXR9EFyeTsc4dEtvkiguks/GRhbbrs4r3/jZVQY3AAeKn327MQqJChbQoq28Uq576Nh3+FS6IO4lFtyQSFIXRwiVOxGePYpgPqfM4T4PvQSmU3so8z80cUi7tXKCJ7TWtlq/dyGYkjNpY6ev7KHKi7mbEGSoQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=xUVRaTLXROqr7Kjt4FLsANbvwrpwjEi0ov0GEaI325k=;
- b=fzBA4QVGryipr6bBE0psHz6/LAzPyf5LjpGz09GLnUUGN24anblPTx0ut84uXlThq6RKALMK3YtXzaOPbNFnX4nPPftlucgMrCT9ervdaN6Gd1fDVw1+IOxQVWBA+KAGShLOe5lRuB7yDK5Qu7l5ujFdkuqICl8DYyVXfHtvvUVycV7Fyb7KFQiPod8dig71NmNhr0KmuQ/I+9BX/Rpg7ONHntuj4UyxSdoNQsuclmuMbqurIp8ikhtbUWeWyBfjfH9oekgwmd4mi5t5ljchBq91xYM6geJt67gbp3sMP877Nw1gTQuEpJ2jZmLZSHT06YxSvVsBiP4cTgfOlSRWjA==
+ bh=10iwHlD7oZ5dA6uy/6nvfJd5fAJgrk0zCLY7/6loHw4=;
+ b=KWgB8lb4fJ6o1sSZKbmkUz6bZC8A+a2rCzTjItucEUllUgOQSjB31WLnAhoHQWVtRY2bTzVGa6sVmA3MWAVIpBryhJa94XVozPzQTNgJMB0Nno3EP0+RzX9y9Yu9E2J252x1vdXnBdxBIfie8pGGkDgv+jLbibngKnkQGpL0KWDv/ZpzFmsu09LTdUbcMBgPtTNX9nY2tPLTlIYVHXs3+FKC8EbeMmzKQbGIWRjNzCJ1VlDE6ulyF+m/OV9ct2GQyMoTWWqtjcsJ8N9ZtqoQ+qDZFEcPKjPzs06YF0mMTmry2lIORtaF1XLLa8WttqBszCvL4DN1Vk3jBpT/rFs8+g==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
- header.d=fb.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
- s=selector2-fb-onmicrosoft-com;
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=xUVRaTLXROqr7Kjt4FLsANbvwrpwjEi0ov0GEaI325k=;
- b=SYDMoeezlMW446oYpKxdj3RnQD5ZR7MC5k4lRY4b4AwXjHBSitInJJOa4bRiBz9udkWpWAkpMclwhcnYtXgFGECmhEJqYrN7UFzHw8yjLEMiZxiC8BkYNsmfwt9rKpNdmxQx3hzFAl/YQpw+FUbBDvKvjue4RB/9Pa9gZ3S7a/E=
-Received: from DM6PR15MB2793.namprd15.prod.outlook.com (2603:10b6:5:1aa::15)
- by DM6PR15MB3036.namprd15.prod.outlook.com (2603:10b6:5:141::13) with
+ bh=10iwHlD7oZ5dA6uy/6nvfJd5fAJgrk0zCLY7/6loHw4=;
+ b=OMSo0v5JRjKnasbcAU0eiJLw1YyifSEMyd4yHCTquNvqd4Zl5opxOPWwl3lL4iTDquabp8k0ljnxv/Jo4QsXS6lnm5EKVJesiSfw3U0WNlR8WbyCd/wMp3PBUKtjSCaMBxDC9uXBcMCy6Fj6PFmBHoC4Os3aE4y+793Fh9llWT0=
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by VE1PR04MB6701.eurprd04.prod.outlook.com (2603:10a6:803:124::17) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3784.11; Tue, 19 Jan
- 2021 16:35:49 +0000
-Received: from DM6PR15MB2793.namprd15.prod.outlook.com
- ([fe80::91c7:861f:744f:2401]) by DM6PR15MB2793.namprd15.prod.outlook.com
- ([fe80::91c7:861f:744f:2401%7]) with mapi id 15.20.3763.014; Tue, 19 Jan 2021
- 16:35:49 +0000
-From:   Alexander Duyck <alexanderduyck@fb.com>
-To:     Paolo Abeni <pabeni@redhat.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-CC:     "David S . Miller" <davem@davemloft.net>,
+ 2021 16:46:02 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::2c43:e9c9:db64:fa57]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::2c43:e9c9:db64:fa57%5]) with mapi id 15.20.3763.013; Tue, 19 Jan 2021
+ 16:46:01 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     "Bedel, Alban" <alban.bedel@aerq.com>
+CC:     Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Xin Long <lucien.xin@gmail.com>
-Subject: RE: [PATCH net-next] net: fix GSO for SG-enabled devices.
-Thread-Topic: [PATCH net-next] net: fix GSO for SG-enabled devices.
-Thread-Index: AQHW7l8KfVCqsvzg6Emy7mjA6jC5c6ovHdUg
-Date:   Tue, 19 Jan 2021 16:35:49 +0000
-Message-ID: <DM6PR15MB2793AC8087CB99E590C03B99BDA30@DM6PR15MB2793.namprd15.prod.outlook.com>
-References: <61306401471dcfc6219d5c001580769c2c67377a.1611059420.git.pabeni@redhat.com>
-In-Reply-To: <61306401471dcfc6219d5c001580769c2c67377a.1611059420.git.pabeni@redhat.com>
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net v2] net: mscc: ocelot: Fix multicast to the CPU port
+Thread-Topic: [PATCH net v2] net: mscc: ocelot: Fix multicast to the CPU port
+Thread-Index: AQHW7mxY7uaoYquUzEO/44xBBVvQwKovKEqA
+Date:   Tue, 19 Jan 2021 16:46:01 +0000
+Message-ID: <20210119164601.dplx4js4wzhnmw6r@skbuf>
+References: <20210119140638.203374-1-alban.bedel@aerq.com>
+In-Reply-To: <20210119140638.203374-1-alban.bedel@aerq.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
-authentication-results: redhat.com; dkim=none (message not signed)
- header.d=none;redhat.com; dmarc=none action=none header.from=fb.com;
-x-originating-ip: [50.39.189.65]
+authentication-results: aerq.com; dkim=none (message not signed)
+ header.d=none;aerq.com; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [5.12.227.87]
 x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: c3707f09-2bbc-4ae5-a557-08d8bc984764
-x-ms-traffictypediagnostic: DM6PR15MB3036:
-x-microsoft-antispam-prvs: <DM6PR15MB303619CBB258150864F467B5BDA39@DM6PR15MB3036.namprd15.prod.outlook.com>
-x-fb-source: Internal
-x-ms-oob-tlc-oobclassifiers: OLM:3383;
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 5c7465ba-c001-49c7-c666-08d8bc99b49e
+x-ms-traffictypediagnostic: VE1PR04MB6701:
+x-ld-processed: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635,ExtAddr
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VE1PR04MB6701F48187917B0C8414D485E0A30@VE1PR04MB6701.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:5236;
 x-ms-exchange-senderadcheck: 1
 x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: y2fduGGdqgvSSpd8e7qDjI2RGsjIOKyUlFAIIsprJ23qBsvungJldYcleh86fbzJqvtYZSJITDa8Jc0WXsQvUeBh3thEVxL9qWPPacuIBc2n8n0DkhxQAHD27n/bWOUyUbBW0HgwqxRB8+ly11AYHCdhy3DxPH39w43Y53jvGP4zSPGbMV6z2ihC4cLHOYTE2zlimDIg4yYfZks6LRjRH6gYBtD3SSigpzTR7QMxfTzesidGp+Vps/GkwKabrUspBY5MqidiJ/ru0qJH4q/mHzNBHJ1MMs7f/JSbq9Jzky9YwwYekCTztIvJ9Vau68m7mEIT51zqHBF5Q7a7OYekTZAB7G0jz08a4YyxXxhs0l97u9JcRLDSDlZq8hZde4DlF1bim4oIUeSjgW9Gsn+3YQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR15MB2793.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(396003)(366004)(39860400002)(376002)(136003)(346002)(2906002)(7696005)(316002)(110136005)(5660300002)(478600001)(54906003)(8676002)(71200400001)(4326008)(52536014)(186003)(76116006)(66556008)(55016002)(9686003)(64756008)(66446008)(26005)(86362001)(6506007)(8936002)(53546011)(66476007)(33656002)(83380400001)(66946007);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: =?us-ascii?Q?pSrObmqUihBDD7Xf6aEWRsV1x2qR+XyGay9Oc1eAWh2jMK5gyXM3LwNbRzT5?=
- =?us-ascii?Q?zdZvFIzEMyCf3wUwE8UCHqWC64conMWeUQYZMQwJm4LVJmcvE1Cz2mMGloe/?=
- =?us-ascii?Q?NyWGa2B32u5bcxe0pdbXdMnVLFLtyuSdGrdFNFFw/wJiZruKDsiiIZmGSsdv?=
- =?us-ascii?Q?7AULYdU10ipMMwP0V2G4zgpwCbTSMIH7umNJxuoUgL5Q7W4hi8AiPOP1iifQ?=
- =?us-ascii?Q?E9JtpTsIdfsGlN6Ux0ggZQYim51ZGBhMMMMEqRaeN7qhA9yp806pOZC44696?=
- =?us-ascii?Q?RydxZUKVArM1GkN9ACp8L6G+TQmmmyn0cqt4ak+PE0tT4G6PypJbP8Q3nMC9?=
- =?us-ascii?Q?uE/i3ipEMLflF+0KzlmOtrcHU1DsZnalQwtZmLUZEZi9sLNQXxt6jHoFLNEO?=
- =?us-ascii?Q?eQEsGVNE7VLrHnEvgpCmqk7sLfVkhIbMq+PtGp1WfLtjWevmobU2HOcwvpq4?=
- =?us-ascii?Q?Gcfjlt5lKYAYs1szjvC8vDJlSgdcQeb9/TJIVrUgQXuan1MQRXN4x2Ii6mVA?=
- =?us-ascii?Q?Gq6vlekLlIF9nhfaWwqHhF16T4ZdXL8BZsSpmDc5Z+P3/+mBy9vOuQcaQoJ9?=
- =?us-ascii?Q?7JrpBQjmIjuT7AePxpGP9Sdf5AtrX020X+ppWwz/mb+uYZpE9JVORShJjuu6?=
- =?us-ascii?Q?KKJ6x8+IDZKVokwJy+ad7MFR/ZYuFAQ8hH0k56UBeYpa3PD2NajSp3Qg9H0M?=
- =?us-ascii?Q?SEisw7azUwNZkhiooJvTIwJOsOJYw12rtFJ9enmKdPauSmiXFg938h0K4waE?=
- =?us-ascii?Q?RgHrciGG9pv5rfgEjJFRGeizZZxqHlXUBL8iS/9FFL8HuukV/jgA1ZRQKVAR?=
- =?us-ascii?Q?agbaheJTLuy1ezGOuulXvQ82zFGvbhGrVD3TajHoC3HWZw54QHywqsm4I239?=
- =?us-ascii?Q?CMSHxmbu2SP1rWI7FMNenIFzhCtbASPf1o8EfvRZF61mUgbS9NKkLs85X0Ji?=
- =?us-ascii?Q?tbnZ+G66X+iUvAi3JOfrKgJOpv9hYCvcc4ah/Pqut6k=3D?=
-x-ms-exchange-transport-forked: True
+x-microsoft-antispam-message-info: 0qVbfHRoeLPxIf4QS0KfPcB3jQmvEnwJhVT56Z32uTv49un1b9NlqjyvdMvLP39fH58aPrIg+x9HugY1vE1IEg1Mj408muz7C0PY6Nqx4xtGqMkkCdPnIIzBa+akpfq/tEXjvzJhVAdDArzN7k3XQh1HUgYzAw+6oRDDoR0INNWgXsQNUJgeXhuGWyBrwEpsBt9PyLf88Q7P6wC3c+kHQ9fvokuBczMtMDQNVWN/cLFkzxhNneeGTIrppD3bW2MbiXBSymjphrILodCLejYgRIp5dVOE1cDjb6x3SiKaIC+NfEK8DxtJFnCNv9aHMQYwb36vOKrkKz+gtPyYZLgEm28ah4VJm0ySERzhMO5sXfQAMejsx9uKnOzRoazbC65ubznWrLrn+LEe5/ps4GdqhQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(4636009)(376002)(346002)(396003)(39850400004)(136003)(366004)(6916009)(1076003)(2906002)(6486002)(44832011)(316002)(5660300002)(478600001)(54906003)(8676002)(71200400001)(4326008)(66946007)(186003)(76116006)(66556008)(9686003)(6512007)(64756008)(66446008)(26005)(6506007)(8936002)(66476007)(33716001)(86362001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?0J7sl+rObeoRLq7TZpaZKra4e+dsiDQtwoFPHshtU2fZLUkqc68pdsEtuBSv?=
+ =?us-ascii?Q?g2SGDZpMfDT/HkLSH+GLx6opZo9U3/e44edznFXavEBYrGeIBlLCGcZV+t2u?=
+ =?us-ascii?Q?6o56uCwZsCyQzI6DYIH9UMoDtGrfapj+Xt9dpiZdCQSoFXpWjA0ppx1h7WVH?=
+ =?us-ascii?Q?L+Icio6C2FRVwZB+qejxG4Tbx3h5hYbc9L8qTVWgcERu8c6gthEhfww4WSbx?=
+ =?us-ascii?Q?j53EQG9BUOHaAt/ggOblDGBGy6AdLNUW84TGWJYk2MuGaP4uFzedxdcu1doP?=
+ =?us-ascii?Q?UtwfTY+w1XtKrkamnJbV0aETT7129kyWg7LD3O0MbWj4jVuqG9E3zWm3KcMZ?=
+ =?us-ascii?Q?VbOvqkzochrYXHfcOMegWzyq5/iRBjN0m3XwLFG3Vahx2RO+XJf8t7LIdMz1?=
+ =?us-ascii?Q?eBoCynvxeCPjJGtHxjdPWopf+ZzhsEsRTa54u6DLZ8rTTsa3bLR5xcpa7frM?=
+ =?us-ascii?Q?k50OKqDSMqB+ZAmmek+dLiVRJQcbLRZ1MtV+O+rWYuTVyQ9xZ+77/RwJCBDE?=
+ =?us-ascii?Q?ol3EQvAhr2WhEBdPOuTOvyZQ3N7R0uyEHeZFCM9EDeWDBB7FbTrLvswyJUIo?=
+ =?us-ascii?Q?xfR0zxWXJb1Z+TFIGrcEVPdZOtERZw7wRjRgWUn7Bsm5n6/kPWjDxjkIdghL?=
+ =?us-ascii?Q?KAEPnscGI4+yOwKc86bFxHnjPdi9XOqgwiqeZUOZ0hCdWTH2CEkOPAkCB+nY?=
+ =?us-ascii?Q?Pa8JN2mUMubC6703DzwsjdA0dX8aj2mCfI1EdjMHB4KlNZVzmdiIonSGQOTd?=
+ =?us-ascii?Q?PJSeFz4LyDwC08kmbygUdld/TaaEeqh9wzH5Y1654Ua9AHCu6hu/60rsUd8j?=
+ =?us-ascii?Q?ZhSIaI4HczUfq6v+slsrxPm01iVrFrSzk4d3cV2p0NAnkZEQwD3zyp2+NKr/?=
+ =?us-ascii?Q?E+7HaSrP/0MzX6CAUHmnkV5uXN2qpvyeu2JKCrJ8mMdelLgxzm48GE4MMU6o?=
+ =?us-ascii?Q?z5jyWr69EkLg7xSvKGhYRy7jb+L39P88mej2PhodDm/1mw25wbrOrIwPOzgR?=
+ =?us-ascii?Q?Mv7d?=
 Content-Type: text/plain; charset="us-ascii"
+Content-ID: <EFA47A8F6B01E145B71C8F1672496301@eurprd04.prod.outlook.com>
 Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR15MB2793.namprd15.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c3707f09-2bbc-4ae5-a557-08d8bc984764
-X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Jan 2021 16:35:49.1224
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5c7465ba-c001-49c7-c666-08d8bc99b49e
+X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Jan 2021 16:46:01.8278
  (UTC)
 X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
 X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 6RT1smZ944VjnJ6sUjcKbs/AVyE1gPvQeXnv2f4ovrirKvbSzd2XooF4BXiBLR4cP7D1ZGZSlZAGGHfbjLPPKQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR15MB3036
-X-OriginatorOrg: fb.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
- definitions=2021-01-19_05:2021-01-18,2021-01-19 signatures=0
-X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 mlxlogscore=999
- lowpriorityscore=0 spamscore=0 phishscore=0 bulkscore=0 mlxscore=0
- impostorscore=0 priorityscore=1501 malwarescore=0 suspectscore=0
- clxscore=1011 adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2101190096
-X-FB-Internal: deliver
+X-MS-Exchange-CrossTenant-userprincipalname: Yl4zNiBDpH7OmR5Cu2gFEmkO10hewzhHeMW+3qnCETfpejF8Aez9x10wZwPPmCr3AFU11QKggvJQYx7oUiYeRw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB6701
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> -----Original Message-----
-> From: Paolo Abeni <pabeni@redhat.com>
-> Sent: Tuesday, January 19, 2021 4:31 AM
-> To: netdev@vger.kernel.org
-> Cc: David S . Miller <davem@davemloft.net>; Jakub Kicinski
-> <kuba@kernel.org>; Alexander Duyck <alexanderduyck@fb.com>; Xin Long
-> <lucien.xin@gmail.com>
-> Subject: [PATCH net-next] net: fix GSO for SG-enabled devices.
+On Tue, Jan 19, 2021 at 03:06:38PM +0100, Alban Bedel wrote:
+> Multicast entries in the MAC table use the high bits of the MAC
+> address to encode the ports that should get the packets. But this port
+> mask does not work for the CPU port, to receive these packets on the
+> CPU port the MAC_CPU_COPY flag must be set.
 >=20
-> The commit dbd50f238dec ("net: move the hsize check to the else block in
-> skb_segment") introduced a data corruption for devices supporting scatter=
--
-> gather.
+> Because of this IPv6 was effectively not working because neighbor
+> solicitations were never received. This was not apparent before commit
+> 9403c158 (net: mscc: ocelot: support IPv4, IPv6 and plain Ethernet mdb
+> entries) as the IPv6 entries were broken so all incoming IPv6
+> multicast was then treated as unknown and flooded on all ports.
 >=20
-> The problem boils down to signed/unsigned comparison given unexpected
-> results: if signed 'hsize' is negative, it will be considered greater tha=
-n a
-> positive 'len', which is unsigned.
+> To fix this problem rework the ocelot_mact_learn() to set the
+> MAC_CPU_COPY flag when a multicast entry that target the CPU port is
+> added. For this we have to read back the ports endcoded in the pseudo
+> MAC address by the caller. It is not a very nice design but that avoid
+> changing the callers and should make backporting easier.
 >=20
-> This commit addresses the issue explicitly casting 'len' to a signed inte=
-ger, so
-> that the comparison gives the correct result.
+> Signed-off-by: Alban Bedel <alban.bedel@aerq.com>
+> Fixes: 9403c158b872 ("net: mscc: ocelot: support IPv4, IPv6 and plain Eth=
+ernet mdb entries")
 >=20
-> Bisected-by: Matthieu Baerts <matthieu.baerts@tessares.net>
-> Fixes: dbd50f238dec ("net: move the hsize check to the else block in
-> skb_segment")
-> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
 > ---
-> note: a possible more readable alternative would be moving the
-> 	if (hsize < 0)
->=20
-> before 'if (hsize > len)', but that was explicitly discouraged in a previ=
-ous
-> iteration of the blamed commit to save a comparison, so I opted to preser=
-ve
-> that optimization.
 
-I would say it is probably better to just moving the "hsize < 0" check. Wha=
-t I had suggested was a minor optimization and it hadn't occurred to me tha=
-t this is a signed vs unsigned comparison.
+Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Tested-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-> ---
->  net/core/skbuff.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->=20
-> diff --git a/net/core/skbuff.c b/net/core/skbuff.c index
-> e835193cabcc3..27f69c0bd8393 100644
-> --- a/net/core/skbuff.c
-> +++ b/net/core/skbuff.c
-> @@ -3938,7 +3938,7 @@ struct sk_buff *skb_segment(struct sk_buff
-> *head_skb,
->  			skb_release_head_state(nskb);
->  			__skb_push(nskb, doffset);
->  		} else {
-> -			if (hsize > len || !sg)
-> +			if (hsize > (int)len || !sg)
->  				hsize =3D len;
->  			else if (hsize < 0)
->  				hsize =3D 0;
-
+Thanks!=
