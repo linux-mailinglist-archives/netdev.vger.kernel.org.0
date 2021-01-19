@@ -2,102 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 201CC2FC085
-	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 21:03:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 213602FC094
+	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 21:07:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729519AbhASUBp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jan 2021 15:01:45 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50976 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729442AbhASTt3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 19 Jan 2021 14:49:29 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 5D00E23138;
-        Tue, 19 Jan 2021 19:48:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611085727;
-        bh=x2G3h6gWeJttkZWzD3p/ebQvL5B00vXITXYElAWBRd4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=qzNO8wNvaKloH3Wx57QRIH5z5O9G4ae3PQD05C5mUdINm758bne2s2m7JJ60TflI1
-         Yn+lE6M18hrs3tT4DrmpYJXji8mnqWFPQJI3IUB+pT+gOF5E/e0aE831rVwlgs1Anh
-         4x8LNxssHMvdFnt0eQun92kuDtY2yFXjLXo7L8yuY5rhHKcI1bCrB0V1Z3lYq+OTyP
-         TmyG+W6ZO4TsINNhBF5ZIhplfB3S3uFcICTnhF+kmMKTlPR9nUX75GLD8wLHwKoFX/
-         p4N/Ryjhi2PdGxOccfQ03SCxNqbodG/PQXK2qswpZfc/XsCX+sjddhwRoxu7HxKxmQ
-         djbE0QpoUx73g==
-Date:   Tue, 19 Jan 2021 11:48:46 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Andrew Lunn <andrew@lunn.ch>, Alexander Lobakin <alobakin@pm.me>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next] mdio, phy: fix -Wshadow warnings triggered by
- nested container_of()
-Message-ID: <20210119114846.20b844b2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <YAb4/7Nb1qaGiS0f@lunn.ch>
-References: <20210116161246.67075-1-alobakin@pm.me>
-        <YAb4/7Nb1qaGiS0f@lunn.ch>
+        id S2387946AbhASUFI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jan 2021 15:05:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40340 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729133AbhASUEK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jan 2021 15:04:10 -0500
+Received: from mail-qv1-xf32.google.com (mail-qv1-xf32.google.com [IPv6:2607:f8b0:4864:20::f32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EF1BC061573
+        for <netdev@vger.kernel.org>; Tue, 19 Jan 2021 12:03:27 -0800 (PST)
+Received: by mail-qv1-xf32.google.com with SMTP id j18so9782550qvu.3
+        for <netdev@vger.kernel.org>; Tue, 19 Jan 2021 12:03:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Dhx0TaUXqCshsw7OQHzx0ooIDhf18aOQuk4magRFIdk=;
+        b=ZXM6sbHIrE4NrlCkx6/cXbRyPOb7X8cdF8vKlmpVYZkGWfg7XEltoe7VXo5xbRHW7s
+         WxgjYa2AcuKrJaDqhVDM+ElO4wIBSOfB3k5dM5VpPYE6XwiMSC4rp+bVcNSdylfuOcXe
+         0UHfyqVclIYt0x6pmFRPvRdVf5Ji3NA45Ko5wvzAL49at4XWVBiYiwWrH4GkvTtSqcZ6
+         fGv03N2bGCGw7SCh6LFLwa3TiTTINr3RFrF/bdTCc8YUSs+mx+m5sVmNtAdR43gnReYs
+         sW8e/mcJQRtW9WqsZEvSnMC8DGprO/SgWlKdjk+ijbMAAl6eem0IBpV4ycDOrZ91vpFc
+         fp3g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Dhx0TaUXqCshsw7OQHzx0ooIDhf18aOQuk4magRFIdk=;
+        b=BfN8b2NqDoXjXguZqEJYc8hI+0E0RlAOC9Wbmu9duv+2Zt+ds2jFJpONOijAYyuuM0
+         kCV8QGnXpzHpzTD4QTBbtE8SVLRrYCDeH1nzYp77S0wT1QtKyLM7/e118A1hW/TkyQWq
+         yXo4D3DoqAaHZxl5n2welTjWJLy0lAz+N1G8+rcji0WW+IjY3dl2nFhOIzaLGnnL2WqN
+         G3OdsP26k1aIdqakgaFO+qo9vFccEeok7I1+/kqBYbgncYvEM895nJVPy0BblVnEX/U+
+         M1wtdX2e1Rqn6OdrfcqCzMFxTorYGt+s12n84+A/CHGSj80+kDKS8yCV1uClxCPUuDn2
+         trXg==
+X-Gm-Message-State: AOAM532o/hMKzkybgmN78VTtMOJpxTW/X0RgmkzUESCSMXi2VcjW9MC8
+        CaDX9kFUBTzZDlTSL5/G+N4=
+X-Google-Smtp-Source: ABdhPJy1e4kf+OqGCRHJ4u0U6iOd8hoA46Sdu3PuxdHZGYV7lVscVHA7W6lrNEq/1AlqsnZHz3aXkg==
+X-Received: by 2002:ad4:5a53:: with SMTP id ej19mr6159003qvb.61.1611086606555;
+        Tue, 19 Jan 2021 12:03:26 -0800 (PST)
+Received: from horizon.localdomain ([2001:1284:f016:4ecb:865e:1ab1:c1d6:3650])
+        by smtp.gmail.com with ESMTPSA id 134sm13710247qkh.62.2021.01.19.12.03.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Jan 2021 12:03:25 -0800 (PST)
+Received: by horizon.localdomain (Postfix, from userid 1000)
+        id 30508C2CDA; Tue, 19 Jan 2021 17:03:23 -0300 (-03)
+Date:   Tue, 19 Jan 2021 17:03:23 -0300
+From:   Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
+To:     wenxu@ucloud.cn
+Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, netdev@vger.kernel.org
+Subject: Re: [PATCH v2 net-next ] net/sched: cls_flower add CT_FLAGS_INVALID
+ flag support
+Message-ID: <20210119200323.GA3961@horizon.localdomain>
+References: <1611045110-682-1-git-send-email-wenxu@ucloud.cn>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1611045110-682-1-git-send-email-wenxu@ucloud.cn>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 19 Jan 2021 16:21:35 +0100 Andrew Lunn wrote:
-> On Sat, Jan 16, 2021 at 04:13:22PM +0000, Alexander Lobakin wrote:
-> > container_of() macro hides a local variable '__mptr' inside. This
-> > becomes a problem when several container_of() are nested in each
-> > other within single line or plain macros.
-> > As C preprocessor doesn't support generating random variable names,
-> > the sole solution is to avoid defining macros that consist only of
-> > container_of() calls, or they will self-shadow '__mptr' each time:
-> >=20
-> > In file included from ./include/linux/bitmap.h:10,
-> >                  from drivers/net/phy/phy_device.c:12:
-> > drivers/net/phy/phy_device.c: In function =E2=80=98phy_device_release=
-=E2=80=99:
-> > ./include/linux/kernel.h:693:8: warning: declaration of =E2=80=98__mptr=
-=E2=80=99 shadows a previous local [-Wshadow]
-> >   693 |  void *__mptr =3D (void *)(ptr);     \
-> >       |        ^~~~~~
-> > ./include/linux/phy.h:647:26: note: in expansion of macro =E2=80=98cont=
-ainer_of=E2=80=99
-> >   647 | #define to_phy_device(d) container_of(to_mdio_device(d), \
-> >       |                          ^~~~~~~~~~~~
-> > ./include/linux/mdio.h:52:27: note: in expansion of macro =E2=80=98cont=
-ainer_of=E2=80=99
-> >    52 | #define to_mdio_device(d) container_of(d, struct mdio_device, d=
-ev)
-> >       |                           ^~~~~~~~~~~~
-> > ./include/linux/phy.h:647:39: note: in expansion of macro =E2=80=98to_m=
-dio_device=E2=80=99
-> >   647 | #define to_phy_device(d) container_of(to_mdio_device(d), \
-> >       |                                       ^~~~~~~~~~~~~~
-> > drivers/net/phy/phy_device.c:217:8: note: in expansion of macro =E2=80=
-=98to_phy_device=E2=80=99
-> >   217 |  kfree(to_phy_device(dev));
-> >       |        ^~~~~~~~~~~~~
-> > ./include/linux/kernel.h:693:8: note: shadowed declaration is here
-> >   693 |  void *__mptr =3D (void *)(ptr);     \
-> >       |        ^~~~~~
-> > ./include/linux/phy.h:647:26: note: in expansion of macro =E2=80=98cont=
-ainer_of=E2=80=99
-> >   647 | #define to_phy_device(d) container_of(to_mdio_device(d), \
-> >       |                          ^~~~~~~~~~~~
-> > drivers/net/phy/phy_device.c:217:8: note: in expansion of macro =E2=80=
-=98to_phy_device=E2=80=99
-> >   217 |  kfree(to_phy_device(dev));
-> >       |        ^~~~~~~~~~~~~
-> >=20
-> > As they are declared in header files, these warnings are highly
-> > repetitive and very annoying (along with the one from linux/pci.h).
-> >=20
-> > Convert the related macros from linux/{mdio,phy}.h to static inlines
-> > to avoid self-shadowing and potentially improve bug-catching.
-> > No functional changes implied.
-> >=20
-> > Signed-off-by: Alexander Lobakin <alobakin@pm.me> =20
->=20
-> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+Acked-by: Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
 
-Applied, thanks!
+The patch looks good to me, just some side comments below.
+
+On Tue, Jan 19, 2021 at 04:31:50PM +0800, wenxu@ucloud.cn wrote:
+> --- a/net/core/dev.c
+> +++ b/net/core/dev.c
+> @@ -3878,6 +3878,7 @@ int dev_loopback_xmit(struct net *net, struct sock *sk, struct sk_buff *skb)
+
+I don't know why, but your patches often have function names here that
+are not accurate. 
+
+>  
+>  	/* qdisc_skb_cb(skb)->pkt_len was already set by the caller. */
+>  	qdisc_skb_cb(skb)->mru = 0;
+> +	qdisc_skb_cb(skb)->post_ct = false;
+>  	mini_qdisc_bstats_cpu_update(miniq, skb);
+>  
+>  	switch (tcf_classify(skb, miniq->filter_list, &cl_res, false)) {
+> @@ -4960,6 +4961,7 @@ static __latent_entropy void net_tx_action(struct softirq_action *h)
+
+Here as well.
+
+>  
+>  	qdisc_skb_cb(skb)->pkt_len = skb->len;
+>  	qdisc_skb_cb(skb)->mru = 0;
+> +	qdisc_skb_cb(skb)->post_ct = false;
+>  	skb->tc_at_ingress = 1;
+>  	mini_qdisc_bstats_cpu_update(miniq, skb);
+>  
+> diff --git a/net/core/flow_dissector.c b/net/core/flow_dissector.c
+> index 2d70ded..c565c7a 100644
+> --- a/net/core/flow_dissector.c
+> +++ b/net/core/flow_dissector.c
+> @@ -237,9 +237,8 @@ void skb_flow_dissect_meta(const struct sk_buff *skb,
+
+Here, I would expect to see a label/function name just before the
+skb_flow_dissect_ct definition. But that's
+skb_flow_dissect_set_enc_addr_type. skb_flow_dissect_meta is still one
+other function up.
+
+>  void
+>  skb_flow_dissect_ct(const struct sk_buff *skb,
+>  		    struct flow_dissector *flow_dissector,
+> -		    void *target_container,
+> -		    u16 *ctinfo_map,
+> -		    size_t mapsize)
+> +		    void *target_container, u16 *ctinfo_map,
+> +		    size_t mapsize, bool post_ct)
+>  {
+>  #if IS_ENABLED(CONFIG_NF_CONNTRACK)
+>  	struct flow_dissector_key_ct *key;
