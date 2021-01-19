@@ -2,73 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9F16A2FB17F
-	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 07:34:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C7272FB2AA
+	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 08:19:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728756AbhASGdr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jan 2021 01:33:47 -0500
-Received: from out30-43.freemail.mail.aliyun.com ([115.124.30.43]:59595 "EHLO
-        out30-43.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727860AbhASGdi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jan 2021 01:33:38 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R351e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04357;MF=abaci-bugfix@linux.alibaba.com;NM=1;PH=DS;RN=10;SR=0;TI=SMTPD_---0UMDPCxf_1611037957;
-Received: from j63c13417.sqa.eu95.tbsite.net(mailfrom:abaci-bugfix@linux.alibaba.com fp:SMTPD_---0UMDPCxf_1611037957)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Tue, 19 Jan 2021 14:32:41 +0800
-From:   Jiapeng Zhong <abaci-bugfix@linux.alibaba.com>
-To:     pkshih@realtek.com
-Cc:     kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org,
-        Larry.Finger@lwfinger.net, chiu@endlessos.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Jiapeng Zhong <abaci-bugfix@linux.alibaba.com>
-Subject: [PATCH v2] rtlwifi: rtl8192se: Simplify bool comparison.
-Date:   Tue, 19 Jan 2021 14:32:35 +0800
-Message-Id: <1611037955-105333-1-git-send-email-abaci-bugfix@linux.alibaba.com>
-X-Mailer: git-send-email 1.8.3.1
+        id S2389955AbhASF0L (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jan 2021 00:26:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45270 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388935AbhASFKX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jan 2021 00:10:23 -0500
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A970DC061786
+        for <netdev@vger.kernel.org>; Mon, 18 Jan 2021 21:08:28 -0800 (PST)
+Received: by mail-pj1-x1036.google.com with SMTP id u4so11361703pjn.4
+        for <netdev@vger.kernel.org>; Mon, 18 Jan 2021 21:08:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=t3cY7CxP1IBzVsJGjcj8blqMZcQjokVEop4ReGoC7JE=;
+        b=TEg+IOYZST+7tYQUg1/prfYMdgJIbYGfE5jH4E7BZIml0/hSPCz3KbwjSxXpiQsRZl
+         Q8l81z+hVG6Xt72wYh15Fo9jMa24fzcmQCqN0jO7hAIdtR0TT33wJSAbVOWl9nN8CbeH
+         wthbRRKu8tL9b6om9Gse2Y+8qcuWq6CPO464iUnoiGhSclGpRl6VRQRui7JsBJKTiryh
+         nT2XiZjYh14ExYSPwYhUXBdjgi2iXgBRnrc8XAJ6hUI7UtJJEdnVGAiHrblWDqwaLew/
+         +hAHfdNaVBy4QKfKFunM1DoBJJsowjZWgC/OW7bwcXDqwZCi3+nYNwcXHJCSeBVyWGXo
+         T6bg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=t3cY7CxP1IBzVsJGjcj8blqMZcQjokVEop4ReGoC7JE=;
+        b=ZhEYP6qBxcfI9LRRGKmfxLE/+9YMxmxWlhPep3XOzXwBjTriAGJ0q50/IwnmwAZdiC
+         dB8lnnLHgjU/OU9ePKeI90pxBlmrSoCiUptLBeRsWFMPI4LonvhWBoruYW1e1gJd9dBf
+         WuMgZZmHXkozea5wNdglLCPokURiwt42tJ4PMAjAa8ll3t5VrZC2JJ2PlnY5VZmobivg
+         8ucJhEtEnq2fpFtU/HfkAjHx29K21tlPt6QXYzIagA4qKPZqDbo0bnUT9M35wpFwZ2WZ
+         zNI4LMIVXBelk0OPmdw+MO2Mr+/Tr9mauBPEJcaUSXMMvF4Vt0L8Q/eYFFimJ+AbbgtK
+         QzfA==
+X-Gm-Message-State: AOAM5326ug8NKatnURUsM7OMyMdHzNIpD7Vxly/lBvTA10qiDLvwGP2O
+        +eOeq14A9HKmyXSzTLWWUbv2
+X-Google-Smtp-Source: ABdhPJzuUPBsbXsliQWe6YeR9pV9Pcl1Qlp+OOESCFCSFdZxLsSlgkaLNNMDIGMzQUlolElY5qtofw==
+X-Received: by 2002:a17:903:230b:b029:dd:7cf1:8c33 with SMTP id d11-20020a170903230bb02900dd7cf18c33mr2894021plh.31.1611032908304;
+        Mon, 18 Jan 2021 21:08:28 -0800 (PST)
+Received: from localhost ([139.177.225.243])
+        by smtp.gmail.com with ESMTPSA id i2sm1125169pjd.21.2021.01.18.21.08.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Jan 2021 21:08:27 -0800 (PST)
+From:   Xie Yongji <xieyongji@bytedance.com>
+To:     mst@redhat.com, jasowang@redhat.com, stefanha@redhat.com,
+        sgarzare@redhat.com, parav@nvidia.com, bob.liu@oracle.com,
+        hch@infradead.org, rdunlap@infradead.org, willy@infradead.org,
+        viro@zeniv.linux.org.uk, axboe@kernel.dk, bcrl@kvack.org,
+        corbet@lwn.net
+Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org, linux-aio@kvack.org,
+        linux-fsdevel@vger.kernel.org
+Subject: [RFC v3 10/11] vduse: grab the module's references until there is no vduse device
+Date:   Tue, 19 Jan 2021 13:07:55 +0800
+Message-Id: <20210119050756.600-4-xieyongji@bytedance.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20210119050756.600-1-xieyongji@bytedance.com>
+References: <20210119045920.447-1-xieyongji@bytedance.com>
+ <20210119050756.600-1-xieyongji@bytedance.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Fix the follow coccicheck warnings:
+The module should not be unloaded if any vduse device exists.
+So increase the module's reference count when creating vduse
+device. And the reference count is kept until the device is
+destroyed.
 
-./drivers/net/wireless/realtek/rtlwifi/rtl8192se/hw.c:2305:6-27:
-WARNING: Comparison of 0/1 to bool variable.
-
-./drivers/net/wireless/realtek/rtlwifi/rtl8192se/hw.c:1376:5-26:
-WARNING: Comparison of 0/1 to bool variable.
-
-Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-Signed-off-by: Jiapeng Zhong <abaci-bugfix@linux.alibaba.com>
+Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
 ---
-Changes in v2:
-  -Modified subject.
+ drivers/vdpa/vdpa_user/vduse_dev.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
- drivers/net/wireless/realtek/rtlwifi/rtl8192se/hw.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/wireless/realtek/rtlwifi/rtl8192se/hw.c b/drivers/net/wireless/realtek/rtlwifi/rtl8192se/hw.c
-index 47fabce..aff8ab0 100644
---- a/drivers/net/wireless/realtek/rtlwifi/rtl8192se/hw.c
-+++ b/drivers/net/wireless/realtek/rtlwifi/rtl8192se/hw.c
-@@ -1373,7 +1373,7 @@ static void _rtl92se_gen_refreshledstate(struct ieee80211_hw *hw)
- 	struct rtl_pci *rtlpci = rtl_pcidev(rtl_pcipriv(hw));
- 	struct rtl_led *pled0 = &rtlpriv->ledctl.sw_led0;
+diff --git a/drivers/vdpa/vdpa_user/vduse_dev.c b/drivers/vdpa/vdpa_user/vduse_dev.c
+index 4d21203da5b6..003aeb281bce 100644
+--- a/drivers/vdpa/vdpa_user/vduse_dev.c
++++ b/drivers/vdpa/vdpa_user/vduse_dev.c
+@@ -978,6 +978,7 @@ static int vduse_destroy_dev(u32 id)
+ 	kfree(dev->vqs);
+ 	vduse_domain_destroy(dev->domain);
+ 	vduse_dev_destroy(dev);
++	module_put(THIS_MODULE);
  
--	if (rtlpci->up_first_time == 1)
-+	if (rtlpci->up_first_time)
- 		return;
+ 	return 0;
+ }
+@@ -1022,6 +1023,7 @@ static int vduse_create_dev(struct vduse_dev_config *config)
  
- 	if (rtlpriv->psc.rfoff_reason == RF_CHANGE_BY_IPS)
-@@ -2302,7 +2302,7 @@ bool rtl92se_gpio_radio_on_off_checking(struct ieee80211_hw *hw, u8 *valid)
- 	bool turnonbypowerdomain = false;
+ 	dev->connected = true;
+ 	list_add(&dev->list, &vduse_devs);
++	__module_get(THIS_MODULE);
  
- 	/* just 8191se can check gpio before firstup, 92c/92d have fixed it */
--	if ((rtlpci->up_first_time == 1) || (rtlpci->being_init_adapter))
-+	if (rtlpci->up_first_time || rtlpci->being_init_adapter)
- 		return false;
- 
- 	if (ppsc->swrf_processing)
+ 	return fd;
+ err_fd:
 -- 
-1.8.3.1
+2.11.0
 
