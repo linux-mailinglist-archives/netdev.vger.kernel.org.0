@@ -2,84 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 06ED42FBBB7
-	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 16:54:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4590D2FBC48
+	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 17:23:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391635AbhASPxz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jan 2021 10:53:55 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:48008 "EHLO vps0.lunn.ch"
+        id S1729349AbhASQUz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jan 2021 11:20:55 -0500
+Received: from m42-8.mailgun.net ([69.72.42.8]:49805 "EHLO m42-8.mailgun.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2390924AbhASPxM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 19 Jan 2021 10:53:12 -0500
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1l1tIX-001TEb-B5; Tue, 19 Jan 2021 16:52:01 +0100
-Date:   Tue, 19 Jan 2021 16:52:01 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Horatiu Vultur <horatiu.vultur@microchip.com>
-Cc:     Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Rasmus Villemoes <rasmus.villemoes@prevas.dk>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "bridge@lists.linux-foundation.org" 
-        <bridge@lists.linux-foundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net] net: mrp: use stp state as substitute for
- unimplemented mrp state
-Message-ID: <YAcAIcwfp8za9JUo@lunn.ch>
-References: <20210118181319.25419-1-rasmus.villemoes@prevas.dk>
- <20210118185618.75h45rjf6qqberic@soft-dev3.localdomain>
- <20210118194632.zn5yucjfibguemjq@skbuf>
- <20210118202036.wk2fuwa3hysg4dmj@soft-dev3.localdomain>
- <20210118212735.okoov5ndybszd6m5@skbuf>
- <20210119083240.37cxv3lxi25hwduj@soft-dev3.localdomain>
+        id S1727185AbhASQUR (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 19 Jan 2021 11:20:17 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1611073177; h=Content-Type: MIME-Version: Message-ID:
+ In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
+ bh=iy/S8TWo4V1brHw5rkLeSCIVsbtOU9fUJpOaqjSNd/I=; b=HT1+Ulqe0/EbLVXohEng7PaT/4brS4CqZfqWryqbp3RMfTkeM3kRLPIAxw4QHYqe5QVduI88
+ lrr5C0kGbko+fusvBlcq17w1wYgcWGVcjejEMF8BMFeoF5lQkrZ/5mEOmmF5NmBNvh7wAfNq
+ Pg5d9tCWWYrOsTj+ErwGeF8n6d0=
+X-Mailgun-Sending-Ip: 69.72.42.8
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n05.prod.us-east-1.postgun.com with SMTP id
+ 6007067f02b2f1cb1a0ff9dd (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 19 Jan 2021 16:19:11
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id D73DCC43463; Tue, 19 Jan 2021 16:19:10 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
+        autolearn=no autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 5CF45C433CA;
+        Tue, 19 Jan 2021 16:19:07 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 5CF45C433CA
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     Thara Gopinath <thara.gopinath@linaro.org>
+Cc:     rui.zhang@intel.com, daniel.lezcano@linaro.org,
+        davem@davemloft.net, kuba@kernel.org, luciano.coelho@intel.com,
+        linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, linux-pm@vger.kernel.org, amitk@kernel.org,
+        nathan.errera@intel.com
+Subject: Re: [PATCH 1/2] net: wireless: intel: iwlwifi: mvm: tt: Replace thermal_notify_framework
+References: <20210119140541.2453490-1-thara.gopinath@linaro.org>
+        <20210119140541.2453490-2-thara.gopinath@linaro.org>
+Date:   Tue, 19 Jan 2021 18:19:05 +0200
+In-Reply-To: <20210119140541.2453490-2-thara.gopinath@linaro.org> (Thara
+        Gopinath's message of "Tue, 19 Jan 2021 09:05:40 -0500")
+Message-ID: <87pn20garq.fsf@codeaurora.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210119083240.37cxv3lxi25hwduj@soft-dev3.localdomain>
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 19, 2021 at 09:32:40AM +0100, Horatiu Vultur wrote:
-> The 01/18/2021 21:27, Vladimir Oltean wrote:
-> > EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
-> > 
-> > On Mon, Jan 18, 2021 at 09:20:36PM +0100, Horatiu Vultur wrote:
-> > > The 01/18/2021 19:46, Vladimir Oltean wrote:
-> > > >
-> > > > On Mon, Jan 18, 2021 at 07:56:18PM +0100, Horatiu Vultur wrote:
-> > > > > The reason was to stay away from STP, because you can't run these two
-> > > > > protocols at the same time. Even though in SW, we reuse port's state.
-> > > > > In our driver(which is not upstreamed), we currently implement
-> > > > > SWITCHDEV_ATTR_ID_MRP_PORT_STATE and just call the
-> > > > > SWITCHDEV_ATTR_ID_PORT_STP_STATE.
-> > > >
-> > > > And isn't Rasmus's approach reasonable, in that it allows unmodified
-> > > > switchdev drivers to offload MRP port states without creating
-> > > > unnecessary code churn?
-> > >
-> > > I am sorry but I don't see this as the correct solution. In my opinion,
-> > > I would prefer to have 3 extra lines in the driver and have a better
-> > > view of what is happening. Than having 2 calls in the driver for
-> > > different protocols.
-> > 
-> > I think the question boils down to: is a MRP-unaware driver expected to
-> > work with the current bridge MRP code?
-> 
-> If the driver has switchdev support, then is not expected to work with
-> the current bridge MRP code.
+Thara Gopinath <thara.gopinath@linaro.org> writes:
 
-> 
-> For example, the Ocelot driver, it has switchdev support but no MRP
-> support so this is not expected to work.
+> thermal_notify_framework just updates for a single trip point where as
+> thermal_zone_device_update does other bookkeeping like updating the
+> temperature of the thermal zone and setting the next trip point etc.
+> Replace thermal_notify_framework with thermal_zone_device_update as the
+> later is more thorough.
+>
+> Signed-off-by: Thara Gopinath <thara.gopinath@linaro.org>
 
-Then ideally, we need switchdev core to be testing for the needed ops
-and returning an error which prevents MRP being configured when it
-cannot work.
+The title could be just "iwlwifi: mvm: tt: Replace
+thermal_notify_framework".
 
-       Andrew
+But via which tree is this going? I assume it's not
+wireless-drivers-next so:
+
+Acked-by: Kalle Valo <kvalo@codeaurora.org>
+
+
+-- 
+https://patchwork.kernel.org/project/linux-wireless/list/
+
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
