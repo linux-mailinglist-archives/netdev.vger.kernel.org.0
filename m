@@ -2,87 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4024F2FBB78
-	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 16:43:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D128B2FBB5F
+	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 16:40:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390765AbhASPm3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jan 2021 10:42:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39034 "EHLO
+        id S2391562AbhASPiT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jan 2021 10:38:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390457AbhASPhY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jan 2021 10:37:24 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4E25C0613D6
-        for <netdev@vger.kernel.org>; Tue, 19 Jan 2021 07:36:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Date:Sender:Message-Id:Content-Type:
-        Content-Transfer-Encoding:MIME-Version:Subject:Cc:To:From:References:
-        In-Reply-To:Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=xiUw7WPcQ49fQsnFrltCMsYbO37iQiMI564Mw+zru0I=; b=H/sOtaK+Aw1TVmzkAlmYyuX7ZF
-        4Oo0aGMoOoQeuRVYHYzvGmsFA3bHSHDk57ZBDOv0VRRJsvi79UkuLVQHA9AGD7kczG3QJx16jgG2+
-        me1OFbefIsi3b1fM7zSgX1s+rDRdWi2mls5ZMGhFl0jfmIDPzRPU9ndkNUPdlLBPQNE/7OhJv7XIf
-        CEt7yplm34O1MPNj6wKlNem3ZEA8CnmNbUnil+gtGaygs7svXzPdbyaQvQs4dkSU+QLFf2Z7NRffR
-        1sc3NH5WJE9gdVO+qn+Xyy3rXAEcLoRDyoRoAmCaHHLHgRD9Tukc1nqSSCdvCunZmwxDI//a27dx8
-        qkyS3AQw==;
-Received: from e0022681537dd.dyn.armlinux.org.uk ([fd8f:7570:feb6:1:222:68ff:fe15:37dd]:38346 helo=rmk-PC.armlinux.org.uk)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1l1t3B-0007cg-8z; Tue, 19 Jan 2021 15:36:09 +0000
-Received: from rmk by rmk-PC.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <rmk@armlinux.org.uk>)
-        id 1l1t3B-0005Vn-2N; Tue, 19 Jan 2021 15:36:09 +0000
-In-Reply-To: <20210119153545.GK1551@shell.armlinux.org.uk>
-References: <20210119153545.GK1551@shell.armlinux.org.uk>
-From:   Russell King <rmk+kernel@armlinux.org.uk>
-To:     Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Ioana Radulescu <ruxandra.radulescu@nxp.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH net-next 3/3] net: dpaa2-mac: add backplane link mode support
+        with ESMTP id S2389232AbhASPhs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jan 2021 10:37:48 -0500
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67CB4C061573;
+        Tue, 19 Jan 2021 07:37:08 -0800 (PST)
+Received: by mail-lf1-x12e.google.com with SMTP id v24so23029076lfr.7;
+        Tue, 19 Jan 2021 07:37:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=7aqjyg0T+I67x5AOe2DmPGa7n0A0pLyQlK9d3r+MkR0=;
+        b=eEw44TLhlXQJiJVQEZU355mQf/5f2itKalxC2qIbhercdLLCPtpufBQyWUT70eHIEy
+         plNwHdZY7cegfPd3rWIHAzrzDyFV3W54WzU7TWq+9SoihoREvL2/NqXtmaJ0LSP0brza
+         Q0SK6BxfASnzpF8vc0e/KmrsFoAlLDudAu/ffiH0mrt9Wk1GtxU0v4h63CirkfYZKkwK
+         g0yA55U8jayMMKSAaApsXuMq8lT2C+CCSKoDPd5TSUKP4RW9b/I0ZFSNwhme8rHaqWgM
+         DEQZz4HYD761PJvNJJzOnoT51wGrzYfjHCkhX6UluaY6Z44BJs1b0zTQ3g318+RZqtkH
+         fEDg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=7aqjyg0T+I67x5AOe2DmPGa7n0A0pLyQlK9d3r+MkR0=;
+        b=IW5BPGwjOUvhwN2n9nd9hVw6QGr5f9x7ocvNJW7XVJq5SGCFKRY2WzuwmcfyU8cO9U
+         IctwU7J7pBPXgRCYiINWv4LHAy7IIi7D832N24YZYFj0psnQVkFPHIhkIGfRZ6sQSaZA
+         JvmTYV1Z2DqBFWjw+vFRKcww8OcYBTEb+UkcXiS1Wx0OEIT2vEoUt8ABON9vah1TbmIM
+         L1Am1tmgQIgCxDSBGYdxzVTlN+XbXCFtHRP5OBUjVRIJPEogb1pHPrVTQRl3igASr6TW
+         UB53CM5B2dasJ5yesxsahlUQoSGE0U+Tx3ZlIR/vJZH48iH154v2l4M41I6CM4Uc00RC
+         0YnQ==
+X-Gm-Message-State: AOAM5322oW27YDb2RRNYWs+nmMxfgPD6z1ou4u55FE2pt5oSIJDiUCbH
+        P3YkKaPHnpSwvep7shJHwEg=
+X-Google-Smtp-Source: ABdhPJxFZul59sFpnb/MGyYZI7tsieyKq/+vlS76qJA1pEQSjXKekykw2G3FLVXNdcbVjkfYdn0wnA==
+X-Received: by 2002:a19:644b:: with SMTP id b11mr2081699lfj.358.1611070626977;
+        Tue, 19 Jan 2021 07:37:06 -0800 (PST)
+Received: from btopel-mobl.ger.intel.com (c213-102-90-208.bredband.comhem.se. [213.102.90.208])
+        by smtp.gmail.com with ESMTPSA id z2sm2309075lfd.142.2021.01.19.07.37.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Jan 2021 07:37:06 -0800 (PST)
+From:   =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>
+To:     ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>,
+        bjorn.topel@intel.com, magnus.karlsson@intel.com,
+        maciej.fijalkowski@intel.com, kuba@kernel.org,
+        jonathan.lemon@gmail.com, maximmi@nvidia.com, davem@davemloft.net,
+        hawk@kernel.org, john.fastabend@gmail.com, ciara.loftus@intel.com,
+        weqaar.a.janjua@intel.com
+Subject: [PATCH bpf-next 0/8] Introduce bpf_redirect_xsk() helper
+Date:   Tue, 19 Jan 2021 16:36:47 +0100
+Message-Id: <20210119153655.153999-1-bjorn.topel@gmail.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain; charset="utf-8"
-Message-Id: <E1l1t3B-0005Vn-2N@rmk-PC.armlinux.org.uk>
-Sender: Russell King <rmk@armlinux.org.uk>
-Date:   Tue, 19 Jan 2021 15:36:09 +0000
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add support for backplane link mode, which is, according to discussions
-with NXP earlier in the year, is a mode where the OS (Linux) is able to
-manage the PCS and Serdes itself.
+This series extends bind() for XDP sockets, so that the bound socket
+is added to the netdev_rx_queue _rx array in the netdevice. We call
+this to register the socket. To redirect packets to the registered
+socket, a new BPF helper is used: bpf_redirect_xsk().
 
-This commit prepares the ground work for allowing 1G fiber connections
-to be used with DPAA2 on the SolidRun CEX7 platforms.
+For shared XDP sockets, only the first bound socket is
+registered. Users that need more complex setup has to use XSKMAP and
+bpf_redirect_map().
 
-Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
----
- drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+Now, why would one use bpf_redirect_xsk() over the regular
+bpf_redirect_map() helper?
 
-diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
-index 3ddfb40eb5e4..ccaf7e35abeb 100644
---- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
-+++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
-@@ -315,8 +315,9 @@ int dpaa2_mac_connect(struct dpaa2_mac *mac)
- 		goto err_put_node;
- 	}
- 
--	if (mac->attr.link_type == DPMAC_LINK_TYPE_PHY &&
--	    mac->attr.eth_if != DPMAC_ETH_IF_RGMII) {
-+	if ((mac->attr.link_type == DPMAC_LINK_TYPE_PHY &&
-+	     mac->attr.eth_if != DPMAC_ETH_IF_RGMII) ||
-+	    mac->attr.link_type == DPMAC_LINK_TYPE_BACKPLANE) {
- 		err = dpaa2_pcs_create(mac, dpmac_node, mac->attr.id);
- 		if (err)
- 			goto err_put_node;
+* Better performance!
+* Convenience; Most user use one socket per queue. This scenario is
+  what registered sockets support. There is no need to create an
+  XSKMAP. This can also reduce complexity from containerized setups,
+  where users might what to use XDP sockets without CAP_SYS_ADMIN
+  capabilities.
+
+The first patch restructures xdp_do_redirect() a bit, to make it
+easier to add the new helper. This restructure also give us a slight
+performance benefit. The following three patches extends bind() and
+adds the new helper. After that, two libbpf patches that selects XDP
+program based on what kernel is running. Finally, selftests for the new
+functionality is added.
+
+Note that the libbpf "auto-selection" is based on kernel version, so
+it is hard coded to the "-next" version (5.12). If you would like to
+try this is out, you will need to change the libbpf patch locally!
+
+Thanks to Maciej and Magnus for the internal review/comments!
+
+Performance (rxdrop, zero-copy)
+
+Baseline
+Two cores:                   21.3 Mpps
+One core:                    24.5 Mpps
+
+Patched
+Two cores, bpf_redirect_map: 21.7 Mpps + 2%
+One core, bpf_redirect_map:  24.9 Mpps + 2%
+
+Two cores, bpf_redirect_xsk: 24.0 Mpps +13%
+One core, bpf_redirect_xsk:  25.5 Mpps + 4%
+
+Thanks!
+Björn
+
+
+Björn Töpel (8):
+  xdp: restructure redirect actions
+  xsk: remove explicit_free parameter from __xsk_rcv()
+  xsk: fold xp_assign_dev and __xp_assign_dev
+  xsk: register XDP sockets at bind(), and add new AF_XDP BPF helper
+  libbpf, xsk: select AF_XDP BPF program based on kernel version
+  libbpf, xsk: select bpf_redirect_xsk(), if supported
+  selftest/bpf: add XDP socket tests for bpf_redirect_{xsk, map}()
+  selftest/bpf: remove a lot of ifobject casting in xdpxceiver
+
+ include/linux/filter.h                   |  10 ++
+ include/linux/netdevice.h                |   1 +
+ include/net/xdp_sock.h                   |  12 ++
+ include/net/xsk_buff_pool.h              |   2 +-
+ include/trace/events/xdp.h               |  46 +++--
+ include/uapi/linux/bpf.h                 |   7 +
+ net/core/filter.c                        | 205 +++++++++++++----------
+ net/xdp/xsk.c                            | 112 +++++++++++--
+ net/xdp/xsk_buff_pool.c                  |  12 +-
+ tools/include/uapi/linux/bpf.h           |   7 +
+ tools/lib/bpf/libbpf.c                   |   2 +-
+ tools/lib/bpf/libbpf_internal.h          |   2 +
+ tools/lib/bpf/libbpf_probes.c            |  16 --
+ tools/lib/bpf/xsk.c                      |  83 ++++++++-
+ tools/testing/selftests/bpf/test_xsk.sh  |  48 ++++++
+ tools/testing/selftests/bpf/xdpxceiver.c | 164 ++++++++++++------
+ tools/testing/selftests/bpf/xdpxceiver.h |   2 +
+ 17 files changed, 530 insertions(+), 201 deletions(-)
+
+
+base-commit: 95204c9bfa48d2f4d3bab7df55c1cc823957ff81
 -- 
-2.20.1
+2.27.0
 
