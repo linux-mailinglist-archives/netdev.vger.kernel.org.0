@@ -2,102 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DD4742FBE30
-	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 18:47:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0B6072FBEAF
+	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 19:16:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727388AbhASRrY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jan 2021 12:47:24 -0500
-Received: from mail-io1-f69.google.com ([209.85.166.69]:44530 "EHLO
-        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2391647AbhASRk4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jan 2021 12:40:56 -0500
-Received: by mail-io1-f69.google.com with SMTP id e12so12668186ioh.11
-        for <netdev@vger.kernel.org>; Tue, 19 Jan 2021 09:40:40 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=cz+TyUAdSvRaaR7wt0B3euj1+FtE/JPqehIJ2K4wFxI=;
-        b=Y5faQOKKr28oX0LaR0MEj/fqVKiDUs4crwVQXVceYgU3gQxe8o+4mXZNwQAm7oi001
-         lQMu+1W45qfXiVLN9DHSqJ0qKIIY2Iaz8HeoL7O2akfIf1mO3J7s7+a7Yl714uh3hAdq
-         Hc1GdBZ8nXxUwIu5/LBNS60gmuyB6zC/JcMX97Z8Zz2h3hHHAWY33eqM5HXWGr0tvVqU
-         OePdFe/sw30QaMOsNggMoSI8+UEvfyApQYELXIo7bifVwqDdX+i26J0I2rU2c0Vwxg9e
-         Kp1RU4b63xeKU7oHGRnQod9NINBHz/FNbG3zwf8+6mHDxEvDW/rBxLeFHQ/xgIKhdaHW
-         CtZw==
-X-Gm-Message-State: AOAM531WTac2n69Q4x6SXA5bagRmUIHf18TF9yDDJh5i7WM17QH+eNQl
-        G//usOWM/HEfYDExjHEOsL0Cbdyz2ngdQ6NwKue16sRi1Ku3
-X-Google-Smtp-Source: ABdhPJwlc+pZ9ZKO5apRJCpOHaEETxebGPE+1ywptP03q7TAFkDD2MsfFXq3OJiJKgmCn346FiZgeNF7pFQ6Mw8wNF7tnjaJ8vul
+        id S2392104AbhASSQW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jan 2021 13:16:22 -0500
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:52784 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S2392433AbhASSPq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jan 2021 13:15:46 -0500
+Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 10JI2AjH191920;
+        Tue, 19 Jan 2021 13:14:29 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=mime-version :
+ content-type : content-transfer-encoding : date : from : to : cc : subject
+ : in-reply-to : references : message-id; s=pp1;
+ bh=+jRQ4MLeCEyfxgyBDiWRUBdmyqZZjWjMFGyfxcSxzqo=;
+ b=Cp+o6tyLMeYzyUd83MTdy9uKFkAP1y0DOSJK4rZiqo0zjbjdzZrRpPXDmDQw0pM/Vzvn
+ 9UmwzLDX5jlljUywLp4XsilBgCF0udhya3yc3fsTiCHTVDySYJAnjtgOHSB+fKTmWvqK
+ /zo3wWOr6Z8xtWXS0dL4e8I2HASQeWr3yMk13g9Ik7n7tvXw+uBRBwLNTtHURkcPC8MM
+ KY30VeUYBBQWWaeae7Mt56VkxKPWfguEyRd2YshrOkDVgxC7VTljLoWnTulYuCT1qJct
+ 6mG5/AEj6EbFd3n+HU7SpOkmfs015kaFO4j+8D9ew5eeiGf4L/ijZ2UkHIxReLxL0uAd KQ== 
+Received: from ppma01wdc.us.ibm.com (fd.55.37a9.ip4.static.sl-reverse.com [169.55.85.253])
+        by mx0b-001b2d01.pphosted.com with ESMTP id 3664780mjr-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 19 Jan 2021 13:14:29 -0500
+Received: from pps.filterd (ppma01wdc.us.ibm.com [127.0.0.1])
+        by ppma01wdc.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 10JIELbG007164;
+        Tue, 19 Jan 2021 18:14:28 GMT
+Received: from b03cxnp08028.gho.boulder.ibm.com (b03cxnp08028.gho.boulder.ibm.com [9.17.130.20])
+        by ppma01wdc.us.ibm.com with ESMTP id 363qs904qb-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 19 Jan 2021 18:14:28 +0000
+Received: from b03ledav004.gho.boulder.ibm.com (b03ledav004.gho.boulder.ibm.com [9.17.130.235])
+        by b03cxnp08028.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 10JIERWG26870260
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 19 Jan 2021 18:14:27 GMT
+Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 145787805E;
+        Tue, 19 Jan 2021 18:14:27 +0000 (GMT)
+Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 487AE7805C;
+        Tue, 19 Jan 2021 18:14:26 +0000 (GMT)
+Received: from ltc.linux.ibm.com (unknown [9.10.229.42])
+        by b03ledav004.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Tue, 19 Jan 2021 18:14:26 +0000 (GMT)
 MIME-Version: 1.0
-X-Received: by 2002:a92:b503:: with SMTP id f3mr4214202ile.123.1611078015449;
- Tue, 19 Jan 2021 09:40:15 -0800 (PST)
-Date:   Tue, 19 Jan 2021 09:40:15 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <000000000000d1018c05b944543e@google.com>
-Subject: WARNING in cfg80211_bss_update
-From:   syzbot <syzbot+95c52e652a2fac1fcdf5@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, johannes@sipsolutions.net, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
+Content-Transfer-Encoding: 8bit
+Date:   Tue, 19 Jan 2021 10:14:25 -0800
+From:   Dany Madden <drt@linux.ibm.com>
+To:     =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+Cc:     Lijun Pan <ljp@linux.ibm.com>,
+        Sukadev Bhattiprolu <sukadev@linux.ibm.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Juliet Kim <julietk@linux.vnet.ibm.com>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        kernel@pengutronix.de
+Subject: Re: ibmvnic: Race condition in remove callback
+In-Reply-To: <20210117101242.dpwayq6wdgfdzirl@pengutronix.de>
+References: <20210117101242.dpwayq6wdgfdzirl@pengutronix.de>
+Message-ID: <b725079b34031595887b019d1d2f6fc7@imap.linux.ibm.com>
+X-Sender: drt@linux.ibm.com
+User-Agent: Roundcube Webmail/1.1.12
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
+ definitions=2021-01-19_07:2021-01-18,2021-01-19 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011
+ lowpriorityscore=0 impostorscore=0 priorityscore=1501 bulkscore=0
+ mlxlogscore=873 mlxscore=0 malwarescore=0 phishscore=0 adultscore=0
+ spamscore=0 suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2101190099
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+On 2021-01-17 02:12, Uwe Kleine-König wrote:
+> Hello,
+> 
+> while working on some cleanup I stumbled over a problem in the 
+> ibmvnic's
+> remove callback. Since commit
+> 
+>         7d7195a026ba ("ibmvnic: Do not process device remove during
+> device reset")
+> 
+> there is the following code in the remove callback:
+> 
+>         static int ibmvnic_remove(struct vio_dev *dev)
+>         {
+>                 ...
+>                 spin_lock_irqsave(&adapter->state_lock, flags);
+>                 if (test_bit(0, &adapter->resetting)) {
+>                         spin_unlock_irqrestore(&adapter->state_lock, 
+> flags);
+>                         return -EBUSY;
+>                 }
+> 
+>                 adapter->state = VNIC_REMOVING;
+>                 spin_unlock_irqrestore(&adapter->state_lock, flags);
+> 
+>                 flush_work(&adapter->ibmvnic_reset);
+>                 flush_delayed_work(&adapter->ibmvnic_delayed_reset);
+>                 ...
+>         }
+> 
+> Unfortunately returning -EBUSY doesn't work as intended. That's because
+> the return value of this function is ignored[1] and the device is
+> considered unbound by the device core (shortly) after ibmvnic_remove()
+> returns.
 
-syzbot found the following issue on:
+Oh! I was not aware of this. In our code review, a question on whether 
+or not device reset should have a higher precedence over device remove 
+was raised before. So, now it is clear that this driver has to take care 
+of remove over reset.
 
-HEAD commit:    66c55602 skbuff: back tiny skbs with kmalloc() in __netdev..
-git tree:       net
-console output: https://syzkaller.appspot.com/x/log.txt?x=121bf89f500000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=c60c9ff9cc916cbc
-dashboard link: https://syzkaller.appspot.com/bug?extid=95c52e652a2fac1fcdf5
-compiler:       gcc (GCC) 10.1.0-syz 20200507
+> 
+> While looking into fixing that I noticed a worse problem:
+> 
+> If ibmvnic_reset() (e.g. called by the tx_timeout callback) calls
+> schedule_work(&adapter->ibmvnic_reset); just after the work queue is
+> flushed above the problem that 7d7195a026ba intends to fix will trigger
+> resulting in a use-after-free.
 
-Unfortunately, I don't have any reproducer for this issue yet.
+It was proposed that when coming into ibmvnic_remove() we lock down the 
+workqueue to prevent future access, flush, cleanup, then unregister the 
+device. Your thought on this?
 
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+95c52e652a2fac1fcdf5@syzkaller.appspotmail.com
+> 
+> Also ibmvnic_reset() checks for adapter->state without holding the lock
+> which might be racy, too.
+> 
+Suka started addressing consistent locking with this patch series:
+https://lists.openwall.net/netdev/2021/01/08/89
 
-------------[ cut here ]------------
-WARNING: CPU: 1 PID: 25700 at net/wireless/scan.c:1565 cfg80211_combine_bsses net/wireless/scan.c:1565 [inline]
-WARNING: CPU: 1 PID: 25700 at net/wireless/scan.c:1565 cfg80211_bss_update+0x16cd/0x1c60 net/wireless/scan.c:1746
-Modules linked in:
-CPU: 1 PID: 25700 Comm: kworker/u4:15 Not tainted 5.11.0-rc3-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Workqueue: phy12 ieee80211_iface_work
-RIP: 0010:cfg80211_combine_bsses net/wireless/scan.c:1565 [inline]
-RIP: 0010:cfg80211_bss_update+0x16cd/0x1c60 net/wireless/scan.c:1746
-Code: 00 48 c7 c7 20 8c 61 8a c6 05 88 7d b9 04 01 e8 a7 15 83 00 e9 27 ff ff ff e8 8f f0 3c f9 0f 0b e9 c2 f4 ff ff e8 83 f0 3c f9 <0f> 0b 4c 89 f7 e8 89 be 8c fb 31 ff 89 c6 88 44 24 70 e8 ec f6 3c
-RSP: 0000:ffffc90002e46f50 EFLAGS: 00010212
-RAX: 00000000000026ce RBX: 0000000000000001 RCX: ffffc90015d60000
-RDX: 0000000000040000 RSI: ffffffff8835d93d RDI: 0000000000000003
-RBP: ffff88802f58fc00 R08: 0000000000000000 R09: 0000000000000000
-R10: ffffffff8835d08d R11: 0000000000000000 R12: ffff888022182c68
-R13: 0000000000000005 R14: ffff88802f58fc10 R15: ffff888022182c00
-FS:  0000000000000000(0000) GS:ffff8880b9f00000(0000) knlGS:0000000000000000
-CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-CR2: 0000001b2ee27000 CR3: 00000000144e2000 CR4: 00000000001506e0
-DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-Call Trace:
- cfg80211_inform_single_bss_frame_data+0x6e2/0xe90 net/wireless/scan.c:2400
- cfg80211_inform_bss_frame_data+0xa7/0xb10 net/wireless/scan.c:2433
- ieee80211_bss_info_update+0x3ce/0xb20 net/mac80211/scan.c:190
- ieee80211_rx_bss_info net/mac80211/ibss.c:1126 [inline]
- ieee80211_rx_mgmt_probe_beacon+0xccd/0x16b0 net/mac80211/ibss.c:1615
- ieee80211_ibss_rx_queued_mgmt+0xe3e/0x1870 net/mac80211/ibss.c:1642
- ieee80211_iface_work+0x761/0x9e0 net/mac80211/iface.c:1423
- process_one_work+0x98d/0x15f0 kernel/workqueue.c:2275
- worker_thread+0x64c/0x1120 kernel/workqueue.c:2421
- kthread+0x3b1/0x4a0 kernel/kthread.c:292
- ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
+He is reworking this.
 
+> Best regards
+> Uwe
 
----
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+Thank you for taking the time to review this driver, Uwe. This is very 
+helpful for us.
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+Best Regards,
+Dany
+
+> 
+> [1] vio_bus_remove (in arch/powerpc/platforms/pseries/vio.c) records 
+> the
+>     return value and passes it on. But the driver core doesn't care for
+>     the return value (see __device_release_driver() in 
+> drivers/base/dd.c
+>     calling dev->bus->remove()).
