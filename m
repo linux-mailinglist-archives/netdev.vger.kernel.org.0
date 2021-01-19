@@ -2,136 +2,173 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C071A2FBCD5
-	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 17:48:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B34632FBCE7
+	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 17:51:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388955AbhASQrI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jan 2021 11:47:08 -0500
-Received: from mail-eopbgr80089.outbound.protection.outlook.com ([40.107.8.89]:42562
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1731769AbhASQqw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 19 Jan 2021 11:46:52 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=i05HlaPHrs1czJu3aCo9yF2p+6ApnU8oQ4y0aTtdc80Ha86CoURukZMOspciGq2GF6f8FyD95kuQyXzSeHcF0zaGls6liMPbJ6k0hr8PhL5ZlEs+Pg9c/G1S5m5vhvbZPYRE0NL5+0Ke8x3L1kYugYP5LdkMZbMcflLgZ/eG8/V/Hrlv8r5G/Eyq2eXR9EFyeTsc4dEtvkiguks/GRhbbrs4r3/jZVQY3AAeKn327MQqJChbQoq28Uq576Nh3+FS6IO4lFtyQSFIXRwiVOxGePYpgPqfM4T4PvQSmU3so8z80cUi7tXKCJ7TWtlq/dyGYkjNpY6ev7KHKi7mbEGSoQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=10iwHlD7oZ5dA6uy/6nvfJd5fAJgrk0zCLY7/6loHw4=;
- b=KWgB8lb4fJ6o1sSZKbmkUz6bZC8A+a2rCzTjItucEUllUgOQSjB31WLnAhoHQWVtRY2bTzVGa6sVmA3MWAVIpBryhJa94XVozPzQTNgJMB0Nno3EP0+RzX9y9Yu9E2J252x1vdXnBdxBIfie8pGGkDgv+jLbibngKnkQGpL0KWDv/ZpzFmsu09LTdUbcMBgPtTNX9nY2tPLTlIYVHXs3+FKC8EbeMmzKQbGIWRjNzCJ1VlDE6ulyF+m/OV9ct2GQyMoTWWqtjcsJ8N9ZtqoQ+qDZFEcPKjPzs06YF0mMTmry2lIORtaF1XLLa8WttqBszCvL4DN1Vk3jBpT/rFs8+g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=10iwHlD7oZ5dA6uy/6nvfJd5fAJgrk0zCLY7/6loHw4=;
- b=OMSo0v5JRjKnasbcAU0eiJLw1YyifSEMyd4yHCTquNvqd4Zl5opxOPWwl3lL4iTDquabp8k0ljnxv/Jo4QsXS6lnm5EKVJesiSfw3U0WNlR8WbyCd/wMp3PBUKtjSCaMBxDC9uXBcMCy6Fj6PFmBHoC4Os3aE4y+793Fh9llWT0=
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
- by VE1PR04MB6701.eurprd04.prod.outlook.com (2603:10a6:803:124::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3784.11; Tue, 19 Jan
- 2021 16:46:02 +0000
-Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::2c43:e9c9:db64:fa57]) by VI1PR04MB5136.eurprd04.prod.outlook.com
- ([fe80::2c43:e9c9:db64:fa57%5]) with mapi id 15.20.3763.013; Tue, 19 Jan 2021
- 16:46:01 +0000
-From:   Vladimir Oltean <vladimir.oltean@nxp.com>
-To:     "Bedel, Alban" <alban.bedel@aerq.com>
-CC:     Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net v2] net: mscc: ocelot: Fix multicast to the CPU port
-Thread-Topic: [PATCH net v2] net: mscc: ocelot: Fix multicast to the CPU port
-Thread-Index: AQHW7mxY7uaoYquUzEO/44xBBVvQwKovKEqA
-Date:   Tue, 19 Jan 2021 16:46:01 +0000
-Message-ID: <20210119164601.dplx4js4wzhnmw6r@skbuf>
-References: <20210119140638.203374-1-alban.bedel@aerq.com>
-In-Reply-To: <20210119140638.203374-1-alban.bedel@aerq.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: aerq.com; dkim=none (message not signed)
- header.d=none;aerq.com; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [5.12.227.87]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 5c7465ba-c001-49c7-c666-08d8bc99b49e
-x-ms-traffictypediagnostic: VE1PR04MB6701:
-x-ld-processed: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635,ExtAddr
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VE1PR04MB6701F48187917B0C8414D485E0A30@VE1PR04MB6701.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:5236;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 0qVbfHRoeLPxIf4QS0KfPcB3jQmvEnwJhVT56Z32uTv49un1b9NlqjyvdMvLP39fH58aPrIg+x9HugY1vE1IEg1Mj408muz7C0PY6Nqx4xtGqMkkCdPnIIzBa+akpfq/tEXjvzJhVAdDArzN7k3XQh1HUgYzAw+6oRDDoR0INNWgXsQNUJgeXhuGWyBrwEpsBt9PyLf88Q7P6wC3c+kHQ9fvokuBczMtMDQNVWN/cLFkzxhNneeGTIrppD3bW2MbiXBSymjphrILodCLejYgRIp5dVOE1cDjb6x3SiKaIC+NfEK8DxtJFnCNv9aHMQYwb36vOKrkKz+gtPyYZLgEm28ah4VJm0ySERzhMO5sXfQAMejsx9uKnOzRoazbC65ubznWrLrn+LEe5/ps4GdqhQ==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(4636009)(376002)(346002)(396003)(39850400004)(136003)(366004)(6916009)(1076003)(2906002)(6486002)(44832011)(316002)(5660300002)(478600001)(54906003)(8676002)(71200400001)(4326008)(66946007)(186003)(76116006)(66556008)(9686003)(6512007)(64756008)(66446008)(26005)(6506007)(8936002)(66476007)(33716001)(86362001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: =?us-ascii?Q?0J7sl+rObeoRLq7TZpaZKra4e+dsiDQtwoFPHshtU2fZLUkqc68pdsEtuBSv?=
- =?us-ascii?Q?g2SGDZpMfDT/HkLSH+GLx6opZo9U3/e44edznFXavEBYrGeIBlLCGcZV+t2u?=
- =?us-ascii?Q?6o56uCwZsCyQzI6DYIH9UMoDtGrfapj+Xt9dpiZdCQSoFXpWjA0ppx1h7WVH?=
- =?us-ascii?Q?L+Icio6C2FRVwZB+qejxG4Tbx3h5hYbc9L8qTVWgcERu8c6gthEhfww4WSbx?=
- =?us-ascii?Q?j53EQG9BUOHaAt/ggOblDGBGy6AdLNUW84TGWJYk2MuGaP4uFzedxdcu1doP?=
- =?us-ascii?Q?UtwfTY+w1XtKrkamnJbV0aETT7129kyWg7LD3O0MbWj4jVuqG9E3zWm3KcMZ?=
- =?us-ascii?Q?VbOvqkzochrYXHfcOMegWzyq5/iRBjN0m3XwLFG3Vahx2RO+XJf8t7LIdMz1?=
- =?us-ascii?Q?eBoCynvxeCPjJGtHxjdPWopf+ZzhsEsRTa54u6DLZ8rTTsa3bLR5xcpa7frM?=
- =?us-ascii?Q?k50OKqDSMqB+ZAmmek+dLiVRJQcbLRZ1MtV+O+rWYuTVyQ9xZ+77/RwJCBDE?=
- =?us-ascii?Q?ol3EQvAhr2WhEBdPOuTOvyZQ3N7R0uyEHeZFCM9EDeWDBB7FbTrLvswyJUIo?=
- =?us-ascii?Q?xfR0zxWXJb1Z+TFIGrcEVPdZOtERZw7wRjRgWUn7Bsm5n6/kPWjDxjkIdghL?=
- =?us-ascii?Q?KAEPnscGI4+yOwKc86bFxHnjPdi9XOqgwiqeZUOZ0hCdWTH2CEkOPAkCB+nY?=
- =?us-ascii?Q?Pa8JN2mUMubC6703DzwsjdA0dX8aj2mCfI1EdjMHB4KlNZVzmdiIonSGQOTd?=
- =?us-ascii?Q?PJSeFz4LyDwC08kmbygUdld/TaaEeqh9wzH5Y1654Ua9AHCu6hu/60rsUd8j?=
- =?us-ascii?Q?ZhSIaI4HczUfq6v+slsrxPm01iVrFrSzk4d3cV2p0NAnkZEQwD3zyp2+NKr/?=
- =?us-ascii?Q?E+7HaSrP/0MzX6CAUHmnkV5uXN2qpvyeu2JKCrJ8mMdelLgxzm48GE4MMU6o?=
- =?us-ascii?Q?z5jyWr69EkLg7xSvKGhYRy7jb+L39P88mej2PhodDm/1mw25wbrOrIwPOzgR?=
- =?us-ascii?Q?Mv7d?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <EFA47A8F6B01E145B71C8F1672496301@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S2390097AbhASQuE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jan 2021 11:50:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54622 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389604AbhASQtq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jan 2021 11:49:46 -0500
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0661DC061573
+        for <netdev@vger.kernel.org>; Tue, 19 Jan 2021 08:49:06 -0800 (PST)
+Received: by mail-pj1-x1034.google.com with SMTP id b5so252383pjl.0
+        for <netdev@vger.kernel.org>; Tue, 19 Jan 2021 08:49:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=tW10kjvl17JnoXQo757FysJOAvIL2JAo5asqJu9kN+I=;
+        b=XAvrvxBcUF0EoQTKMFjOO9MiXmgRw8tiBLha9k8WhioNCOp0e5L7/7OX0w37rWdKw4
+         5Iumq6Pizu4zPs3EN8E3lhE53z6WgsUQv3vnvfNw4Q+7v+fn5DYYVmUcwOUd/2QJknFw
+         11T6+z2FwfjZKlp45E8D1i8NWHo2X7/b7JqDSinF5izz+RQbqSfFn5aaR3EMfuarviva
+         SAOZ3QVmvwL5sl3BFUS0tlLnfakfh8V1upi+fKIqf9qLD61sSfjYu6nzaaHHxPHs2gHB
+         JvSDhkg71BzrFBiqgOiEiFQM99beviBVJp4yMF6apTwrw+MMixM12noaVLYp1pM2+FV2
+         tNuQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=tW10kjvl17JnoXQo757FysJOAvIL2JAo5asqJu9kN+I=;
+        b=qxW7q45S5Qk4ylLvJ9NhZrE+Uc6og+93RaXLxbdBUQGbJJHsvUFRWHy5Uyl9rdsyL7
+         PW3KxGT6Xl7Lsc6PRLfWrvCvq2tt8xW5bYOLIUfaXzQXPpsEY55Id783ziHDR3B9Xk8x
+         3Y+pVnA3w4UXa6TDbIeI/u5Z24Z3eAGri0qTj8P70SVBVZ9NwE64ZNF/Is4AEKbS1EIZ
+         cSHWLgmS6swArE/YHQnFnYb5Zr7jVwDU0SNUlb39kWhhI44TXAplmGtUtBt8FWvzwA5I
+         +v60iR5+17lWT43wMIoAaE2kvvWXddTo6aP2QAJR7EKCQzVQYphEJ27hn5ZcznoJfPi5
+         ENsg==
+X-Gm-Message-State: AOAM532O9Z/OdUfmxP7d9Q+Rv/BCmGnu5HfBaazxYxTYgJf1MCfhvbUv
+        ecEvWRU/UNCV3Pr+Q9APaI4=
+X-Google-Smtp-Source: ABdhPJwDYyNWGKtT9sCVvNMt26PuU2Mt5kjYhvzlk7qMPOQIDp+VGGqCPauPuDyZsqq1A4uvKlgcrw==
+X-Received: by 2002:a17:90a:f309:: with SMTP id ca9mr590011pjb.11.1611074945615;
+        Tue, 19 Jan 2021 08:49:05 -0800 (PST)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:7220:84ff:fe09:1424])
+        by smtp.gmail.com with ESMTPSA id b5sm19152871pfi.1.2021.01.19.08.49.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Jan 2021 08:49:04 -0800 (PST)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Juerg Haefliger <juergh@canonical.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Subject: [PATCH net] tcp: do not mess with cloned skbs in tcp_add_backlog()
+Date:   Tue, 19 Jan 2021 08:49:00 -0800
+Message-Id: <20210119164900.766957-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.30.0.296.g2bfb1c46d8-goog
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5c7465ba-c001-49c7-c666-08d8bc99b49e
-X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Jan 2021 16:46:01.8278
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Yl4zNiBDpH7OmR5Cu2gFEmkO10hewzhHeMW+3qnCETfpejF8Aez9x10wZwPPmCr3AFU11QKggvJQYx7oUiYeRw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB6701
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 19, 2021 at 03:06:38PM +0100, Alban Bedel wrote:
-> Multicast entries in the MAC table use the high bits of the MAC
-> address to encode the ports that should get the packets. But this port
-> mask does not work for the CPU port, to receive these packets on the
-> CPU port the MAC_CPU_COPY flag must be set.
->=20
-> Because of this IPv6 was effectively not working because neighbor
-> solicitations were never received. This was not apparent before commit
-> 9403c158 (net: mscc: ocelot: support IPv4, IPv6 and plain Ethernet mdb
-> entries) as the IPv6 entries were broken so all incoming IPv6
-> multicast was then treated as unknown and flooded on all ports.
->=20
-> To fix this problem rework the ocelot_mact_learn() to set the
-> MAC_CPU_COPY flag when a multicast entry that target the CPU port is
-> added. For this we have to read back the ports endcoded in the pseudo
-> MAC address by the caller. It is not a very nice design but that avoid
-> changing the callers and should make backporting easier.
->=20
-> Signed-off-by: Alban Bedel <alban.bedel@aerq.com>
-> Fixes: 9403c158b872 ("net: mscc: ocelot: support IPv4, IPv6 and plain Eth=
-ernet mdb entries")
->=20
-> ---
+From: Eric Dumazet <edumazet@google.com>
 
-Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Tested-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Heiner Kallweit reported that some skbs were sent with
+the following invalid GSO properties :
+- gso_size > 0
+- gso_type == 0
 
-Thanks!=
+This was triggerring a WARN_ON_ONCE() in rtl8169_tso_csum_v2.
+
+Juerg Haefliger was able to reproduce a similar issue using
+a lan78xx NIC and a workload mixing TCP incoming traffic
+and forwarded packets.
+
+The problem is that tcp_add_backlog() is writing
+over gso_segs and gso_size even if the incoming packet will not
+be coalesced to the backlog tail packet.
+
+While skb_try_coalesce() would bail out if tail packet is cloned,
+this overwriting would lead to corruptions of other packets
+cooked by lan78xx, sharing a common super-packet.
+
+The strategy used by lan78xx is to use a big skb, and split
+it into all received packets using skb_clone() to avoid copies.
+The drawback of this strategy is that all the small skb share a common
+struct skb_shared_info.
+
+This patch rewrites TCP gso_size/gso_segs handling to only
+happen on the tail skb, since skb_try_coalesce() made sure
+it was not cloned.
+
+Fixes: 4f693b55c3d2 ("tcp: implement coalescing on backlog queue")
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+Bisected-by: Juerg Haefliger <juergh@canonical.com>
+Tested-by: Juerg Haefliger <juergh@canonical.com>
+Reported-by: Heiner Kallweit <hkallweit1@gmail.com>
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=209423
+---
+ net/ipv4/tcp_ipv4.c | 25 +++++++++++++------------
+ 1 file changed, 13 insertions(+), 12 deletions(-)
+
+diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+index 58207c7769d05693b650e3c93e4ef405a5d4b23a..4e82745d336fc3fb0d9ce8c92aaeb39702f64b8a 100644
+--- a/net/ipv4/tcp_ipv4.c
++++ b/net/ipv4/tcp_ipv4.c
+@@ -1760,6 +1760,7 @@ int tcp_v4_early_demux(struct sk_buff *skb)
+ bool tcp_add_backlog(struct sock *sk, struct sk_buff *skb)
+ {
+ 	u32 limit = READ_ONCE(sk->sk_rcvbuf) + READ_ONCE(sk->sk_sndbuf);
++	u32 tail_gso_size, tail_gso_segs;
+ 	struct skb_shared_info *shinfo;
+ 	const struct tcphdr *th;
+ 	struct tcphdr *thtail;
+@@ -1767,6 +1768,7 @@ bool tcp_add_backlog(struct sock *sk, struct sk_buff *skb)
+ 	unsigned int hdrlen;
+ 	bool fragstolen;
+ 	u32 gso_segs;
++	u32 gso_size;
+ 	int delta;
+ 
+ 	/* In case all data was pulled from skb frags (in __pskb_pull_tail()),
+@@ -1792,13 +1794,6 @@ bool tcp_add_backlog(struct sock *sk, struct sk_buff *skb)
+ 	 */
+ 	th = (const struct tcphdr *)skb->data;
+ 	hdrlen = th->doff * 4;
+-	shinfo = skb_shinfo(skb);
+-
+-	if (!shinfo->gso_size)
+-		shinfo->gso_size = skb->len - hdrlen;
+-
+-	if (!shinfo->gso_segs)
+-		shinfo->gso_segs = 1;
+ 
+ 	tail = sk->sk_backlog.tail;
+ 	if (!tail)
+@@ -1821,6 +1816,15 @@ bool tcp_add_backlog(struct sock *sk, struct sk_buff *skb)
+ 		goto no_coalesce;
+ 
+ 	__skb_pull(skb, hdrlen);
++
++	shinfo = skb_shinfo(skb);
++	gso_size = shinfo->gso_size ?: skb->len;
++	gso_segs = shinfo->gso_segs ?: 1;
++
++	shinfo = skb_shinfo(tail);
++	tail_gso_size = shinfo->gso_size ?: (tail->len - hdrlen);
++	tail_gso_segs = shinfo->gso_segs ?: 1;
++
+ 	if (skb_try_coalesce(tail, skb, &fragstolen, &delta)) {
+ 		TCP_SKB_CB(tail)->end_seq = TCP_SKB_CB(skb)->end_seq;
+ 
+@@ -1847,11 +1851,8 @@ bool tcp_add_backlog(struct sock *sk, struct sk_buff *skb)
+ 		}
+ 
+ 		/* Not as strict as GRO. We only need to carry mss max value */
+-		skb_shinfo(tail)->gso_size = max(shinfo->gso_size,
+-						 skb_shinfo(tail)->gso_size);
+-
+-		gso_segs = skb_shinfo(tail)->gso_segs + shinfo->gso_segs;
+-		skb_shinfo(tail)->gso_segs = min_t(u32, gso_segs, 0xFFFF);
++		shinfo->gso_size = max(gso_size, tail_gso_size);
++		shinfo->gso_segs = min_t(u32, gso_segs + tail_gso_segs, 0xFFFF);
+ 
+ 		sk->sk_backlog.len += delta;
+ 		__NET_INC_STATS(sock_net(sk),
+-- 
+2.30.0.296.g2bfb1c46d8-goog
+
