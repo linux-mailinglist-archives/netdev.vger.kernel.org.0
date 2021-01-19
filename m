@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C827B2FBDDA
-	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 18:39:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 73D932FBDBA
+	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 18:35:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729250AbhASRhg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jan 2021 12:37:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42032 "EHLO
+        id S2391648AbhASQKI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jan 2021 11:10:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2391622AbhASPvV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jan 2021 10:51:21 -0500
-Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB32AC0613D3;
-        Tue, 19 Jan 2021 07:50:30 -0800 (PST)
-Received: by mail-lf1-x12f.google.com with SMTP id o17so29743252lfg.4;
-        Tue, 19 Jan 2021 07:50:30 -0800 (PST)
+        with ESMTP id S2391305AbhASPvs (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jan 2021 10:51:48 -0500
+Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13645C0613ED;
+        Tue, 19 Jan 2021 07:50:34 -0800 (PST)
+Received: by mail-lj1-x235.google.com with SMTP id u11so22401359ljo.13;
+        Tue, 19 Jan 2021 07:50:33 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=hKHQ7CC2Aqb3EGPtFGFCct7hw0qM/zuO1T/NQ4/vMXM=;
-        b=bctHuevH8gUN0BQqPPeUq/oMWjlG2o1mvDQ5atklWjlwjJW8mYEowuGtNIF2T92Fd3
-         PrLHTQy7BySbioNa+n6ovjDnYXAvYw8A4H1g/yxNwjQ7aG4FKL3+6F1qGUiTjYthH/Wm
-         zx7vRjESusft/59enedRoKErQ8x8iG7+eaJDxLOIGkGDk8mtNebKeiuy7bG9euHX9NgT
-         VmJO3gwmh5E8yHTIM+YwsaPEFIUPG/L4Xpd918FZTwhwvUAOr+9W1YhzVnEzT86sRqvA
-         2NkhmSr0JuFWTqiXDg7ChLk6P4tN7CyO+hvhiwcCJJOXLUe5haDyE+7OYzk/aSe3U0uF
-         +1aA==
+        bh=rXtdonoT6z2Mk/wuvXU5Af4iSxQJt1+pwiGmRinI7sw=;
+        b=bdICjUBBA4dVZbd0hhiKShUfTjFCf0E6iFRssb7bZOJWDYmHTyYPZbplVF1nfCapL7
+         z/F+SE2yXMGkJbAvHt8zm2Rq7xdv9dzjT2noTJsg2uG2C4I62HLzOOZHq/kyaB3GhhXS
+         Gjbhq+/0LGDKdf8VGn/puy7D7nRjvFJ1UWbNkq8K7VF1pvm9uUQ8ABpA551H72gRKyIT
+         rlLONxmHCl4FdrDytlEE/oWO22XIVwKJR5tmiJEASIKPqZLFruWAs56Yx4QTGOFMRl64
+         jw6E+YgzyEi7+7xmHFS+BgUpPNB887KnACm/JM7iaGU5dpymV3H5oIpNK/6ND2PfpTDp
+         Si6Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=hKHQ7CC2Aqb3EGPtFGFCct7hw0qM/zuO1T/NQ4/vMXM=;
-        b=JKnGZFswL6eH35N3TAvloC0NKKnf6EUj9sj+2wEzmh1qd6HZAhEWShKziMBebRZA2T
-         HjtzulwGhDYQinNdecSvdakNMPHOSB0NFURYNyD9sqwiotbMUeJ6FGsyMbMeK7NtFXwQ
-         shpX1kjIB0qRzYf046eM0ulxsWwJR2yjqb4GcYhlQd7bn4KOWww//uqAOo6NdgyPLaXJ
-         fiqPPJ68+AFUmSHEoMSVCrHvoMToPOrnq+od+VXYjkmrOIClR011c/12hs9IbwzHfIsE
-         LO1aCzytxY2IK8sZ/IzfADbmiXiekG1LG/2vDFXEEUQb5kPSup800RcglkzKi2kwpYKR
-         M/JA==
-X-Gm-Message-State: AOAM532qVJcQLTD78QLtNgJi7qT3UWs9kIbEVo0T5EQGQh3MW7F96kKe
-        oinRcoBxsWAJcmSnBJlgcMY=
-X-Google-Smtp-Source: ABdhPJymBc7l6mHQ0lEaBbu7NGORJJTVn2Og+jCm1ENusvSyhID6TuNqwGTXJ3ocaRdXqEBa7adaaw==
-X-Received: by 2002:a05:6512:34c8:: with SMTP id w8mr2061563lfr.571.1611071429143;
-        Tue, 19 Jan 2021 07:50:29 -0800 (PST)
+        bh=rXtdonoT6z2Mk/wuvXU5Af4iSxQJt1+pwiGmRinI7sw=;
+        b=U5Ld/+5XXBN1d/ZtrjIex3nWPROvcBaUtcSmf7k0Q2aOwooVRo6JQcPP/nucPgap8j
+         wdynfv3fUnV2gujwpJv5SMQDCGihPpgCGxTUEkEUwnRApdnMFKxp7Bo+VwsVWfStRF7p
+         9EuiWnTbXL0k2IGKEoG72yYnE0U3jC5maTqu+DW0V1zodvNLAYgSMsLWE0m4G5mUilCJ
+         O1bylCsIXDaFyZvjwd25XHx9XX5IRK7XfW+JfOC+zjHJxVnrjIK82+61t38FRZ88pQa6
+         KLFpp7OO8JPMnZQibliSbf2NXHCIMfXR7mz9XojxY7+XWX3vApuIYMFS1IXiYQJ6HBok
+         gMog==
+X-Gm-Message-State: AOAM530zIablpxSEzMp3zDd+BZZLf1H27cJGkCJt5L98lWWsxPEv27aS
+        or44j4ZTDk+zpVjbTY9QIs4=
+X-Google-Smtp-Source: ABdhPJwP28Hgjquhg9jSWYGkjhjoW+HsaBf0D4OFGJJmwnY+Jg4RlvLAPfR4yftSSam7Euk0YOuINg==
+X-Received: by 2002:a2e:9d85:: with SMTP id c5mr2279760ljj.80.1611071432635;
+        Tue, 19 Jan 2021 07:50:32 -0800 (PST)
 Received: from btopel-mobl.ger.intel.com (c213-102-90-208.bredband.comhem.se. [213.102.90.208])
-        by smtp.gmail.com with ESMTPSA id h20sm2309249lfc.239.2021.01.19.07.50.27
+        by smtp.gmail.com with ESMTPSA id h20sm2309249lfc.239.2021.01.19.07.50.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Jan 2021 07:50:28 -0800 (PST)
+        Tue, 19 Jan 2021 07:50:31 -0800 (PST)
 From:   =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>
 To:     ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org,
         bpf@vger.kernel.org
@@ -55,9 +55,9 @@ Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
         kuba@kernel.org, jonathan.lemon@gmail.com, maximmi@nvidia.com,
         davem@davemloft.net, hawk@kernel.org, john.fastabend@gmail.com,
         ciara.loftus@intel.com, weqaar.a.janjua@intel.com
-Subject: [PATCH bpf-next v2 4/8] xsk: register XDP sockets at bind(), and add new AF_XDP BPF helper
-Date:   Tue, 19 Jan 2021 16:50:09 +0100
-Message-Id: <20210119155013.154808-5-bjorn.topel@gmail.com>
+Subject: [PATCH bpf-next v2 6/8] libbpf, xsk: select bpf_redirect_xsk(), if supported
+Date:   Tue, 19 Jan 2021 16:50:11 +0100
+Message-Id: <20210119155013.154808-7-bjorn.topel@gmail.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20210119155013.154808-1-bjorn.topel@gmail.com>
 References: <20210119155013.154808-1-bjorn.topel@gmail.com>
@@ -70,443 +70,136 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Björn Töpel <bjorn.topel@intel.com>
 
-Extend bind() for XDP sockets, so that the bound socket is added to
-the netdev_rx_queue _rx array in the netdevice. We call this to
-register an XDP socket. To redirect packets to a registered socket, a
-new BPF helper is used: bpf_redirect_xsk().
+Select bpf_redirect_xsk() as the default AF_XDP BPF program, if
+supported.
 
-For shared XDP sockets, only the first bound socket is
-registered. Users that require more advanced setups, continue to the
-XSKMAP and bpf_redirect_map().
-
-Now, why would one use bpf_redirect_xsk() over the regular
-bpf_redirect_map() helper? First: Slightly better performance. Second:
-Convenience. Most user use one socket per queue. This scenario is what
-registered sockets support. There is no need to create an XSKMAP. This
-can also reduce complexity from containerized setups, where users
-might what to use XDP sockets without CAP_SYS_ADMIN capabilities.
+The bpf_redirect_xsk() helper does not require an XSKMAP, so make sure
+that no map is created/updated when using it.
 
 Reviewed-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
 ---
- include/linux/filter.h         |  1 +
- include/linux/netdevice.h      |  1 +
- include/net/xdp_sock.h         | 12 +++++
- include/net/xsk_buff_pool.h    |  2 +-
- include/uapi/linux/bpf.h       |  7 +++
- net/core/filter.c              | 49 ++++++++++++++++--
- net/xdp/xsk.c                  | 93 ++++++++++++++++++++++++++++------
- net/xdp/xsk_buff_pool.c        |  4 +-
- tools/include/uapi/linux/bpf.h |  7 +++
- 9 files changed, 153 insertions(+), 23 deletions(-)
+ tools/lib/bpf/xsk.c | 46 +++++++++++++++++++++++++++++++++++++++++----
+ 1 file changed, 42 insertions(+), 4 deletions(-)
 
-diff --git a/include/linux/filter.h b/include/linux/filter.h
-index 5fc336a271c2..3f9efbd08cba 100644
---- a/include/linux/filter.h
-+++ b/include/linux/filter.h
-@@ -648,6 +648,7 @@ enum xdp_redirect_type {
- 	XDP_REDIR_DEV_MAP,
- 	XDP_REDIR_CPU_MAP,
- 	XDP_REDIR_XSK_MAP,
-+	XDP_REDIR_XSK,
+diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
+index c8642c6cb5d6..27e36d6d92a6 100644
+--- a/tools/lib/bpf/xsk.c
++++ b/tools/lib/bpf/xsk.c
+@@ -47,9 +47,12 @@
+  #define PF_XDP AF_XDP
+ #endif
+ 
++#define XSKMAP_NOT_NEEDED -1
++
+ enum xsk_prog {
+ 	XSK_PROG_FALLBACK,
+ 	XSK_PROG_REDIRECT_FLAGS,
++	XSK_PROG_REDIRECT_XSK,
  };
  
- DECLARE_PER_CPU(struct bpf_redirect_info, bpf_redirect_info);
-diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
-index 5b949076ed23..cb0e215e981c 100644
---- a/include/linux/netdevice.h
-+++ b/include/linux/netdevice.h
-@@ -749,6 +749,7 @@ struct netdev_rx_queue {
- 	struct xdp_rxq_info		xdp_rxq;
- #ifdef CONFIG_XDP_SOCKETS
- 	struct xsk_buff_pool            *pool;
-+	struct xdp_sock			*xsk;
- #endif
- } ____cacheline_aligned_in_smp;
- 
-diff --git a/include/net/xdp_sock.h b/include/net/xdp_sock.h
-index cc17bc957548..97b21c483baf 100644
---- a/include/net/xdp_sock.h
-+++ b/include/net/xdp_sock.h
-@@ -77,8 +77,10 @@ struct xdp_sock {
- #ifdef CONFIG_XDP_SOCKETS
- 
- int xsk_generic_rcv(struct xdp_sock *xs, struct xdp_buff *xdp);
-+int xsk_generic_redirect(struct net_device *dev, struct xdp_buff *xdp);
- int __xsk_map_redirect(struct xdp_sock *xs, struct xdp_buff *xdp);
- void __xsk_map_flush(void);
-+int xsk_redirect(struct xdp_sock *xs, struct xdp_buff *xdp);
- 
- static inline struct xdp_sock *__xsk_map_lookup_elem(struct bpf_map *map,
- 						     u32 key)
-@@ -100,6 +102,11 @@ static inline int xsk_generic_rcv(struct xdp_sock *xs, struct xdp_buff *xdp)
- 	return -ENOTSUPP;
- }
- 
-+static inline int xsk_generic_redirect(struct net_device *dev, struct xdp_buff *xdp)
-+{
-+	return -EOPNOTSUPP;
-+}
-+
- static inline int __xsk_map_redirect(struct xdp_sock *xs, struct xdp_buff *xdp)
+ struct xsk_umem {
+@@ -361,7 +364,11 @@ static enum xsk_prog get_xsk_prog(void)
  {
- 	return -EOPNOTSUPP;
-@@ -115,6 +122,11 @@ static inline struct xdp_sock *__xsk_map_lookup_elem(struct bpf_map *map,
- 	return NULL;
+ 	__u32 kver = get_kernel_version();
+ 
+-	return kver < KERNEL_VERSION(5, 3, 0) ? XSK_PROG_FALLBACK : XSK_PROG_REDIRECT_FLAGS;
++	if (kver < KERNEL_VERSION(5, 3, 0))
++		return XSK_PROG_FALLBACK;
++	if (kver < KERNEL_VERSION(5, 12, 0))
++		return XSK_PROG_REDIRECT_FLAGS;
++	return XSK_PROG_REDIRECT_XSK;
  }
  
-+static inline int xsk_redirect(struct net_device *dev, struct xdp_buff *xdp)
-+{
-+	return -EOPNOTSUPP;
-+}
+ static int xsk_load_xdp_prog(struct xsk_socket *xsk)
+@@ -445,10 +452,25 @@ static int xsk_load_xdp_prog(struct xsk_socket *xsk)
+ 		BPF_EMIT_CALL(BPF_FUNC_redirect_map),
+ 		BPF_EXIT_INSN(),
+ 	};
 +
- #endif /* CONFIG_XDP_SOCKETS */
++	/* This is the post-5.12 kernel C-program:
++	 * SEC("xdp_sock") int xdp_sock_prog(struct xdp_md *ctx)
++	 * {
++	 *     return bpf_redirect_xsk(ctx, XDP_PASS);
++	 * }
++	 */
++	struct bpf_insn prog_redirect_xsk[] = {
++		/* r2 = XDP_PASS */
++		BPF_MOV64_IMM(BPF_REG_2, 2),
++		/* call bpf_redirect_xsk */
++		BPF_EMIT_CALL(BPF_FUNC_redirect_xsk),
++		BPF_EXIT_INSN(),
++	};
+ 	size_t insns_cnt[] = {sizeof(prog) / sizeof(struct bpf_insn),
+ 			      sizeof(prog_redirect_flags) / sizeof(struct bpf_insn),
++			      sizeof(prog_redirect_xsk) / sizeof(struct bpf_insn),
+ 	};
+-	struct bpf_insn *progs[] = {prog, prog_redirect_flags};
++	struct bpf_insn *progs[] = {prog, prog_redirect_flags, prog_redirect_xsk};
+ 	enum xsk_prog option = get_xsk_prog();
  
- #endif /* _LINUX_XDP_SOCK_H */
-diff --git a/include/net/xsk_buff_pool.h b/include/net/xsk_buff_pool.h
-index eaa8386dbc63..bd531d561c60 100644
---- a/include/net/xsk_buff_pool.h
-+++ b/include/net/xsk_buff_pool.h
-@@ -84,7 +84,7 @@ struct xsk_buff_pool {
- /* AF_XDP core. */
- struct xsk_buff_pool *xp_create_and_assign_umem(struct xdp_sock *xs,
- 						struct xdp_umem *umem);
--int xp_assign_dev(struct xsk_buff_pool *pool, struct net_device *dev,
-+int xp_assign_dev(struct xdp_sock *xs, struct xsk_buff_pool *pool, struct net_device *dev,
- 		  u16 queue_id, u16 flags);
- int xp_assign_dev_shared(struct xsk_buff_pool *pool, struct xdp_umem *umem,
- 			 struct net_device *dev, u16 queue_id);
-diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
-index c001766adcbc..bbc7d9a57262 100644
---- a/include/uapi/linux/bpf.h
-+++ b/include/uapi/linux/bpf.h
-@@ -3836,6 +3836,12 @@ union bpf_attr {
-  *	Return
-  *		A pointer to a struct socket on success or NULL if the file is
-  *		not a socket.
-+ *
-+ * long bpf_redirect_xsk(struct xdp_buff *xdp_md, u64 action)
-+ *	Description
-+ *		Redirect to the registered AF_XDP socket.
-+ *	Return
-+ *		**XDP_REDIRECT** on success, otherwise the action parameter is returned.
-  */
- #define __BPF_FUNC_MAPPER(FN)		\
- 	FN(unspec),			\
-@@ -4001,6 +4007,7 @@ union bpf_attr {
- 	FN(ktime_get_coarse_ns),	\
- 	FN(ima_inode_hash),		\
- 	FN(sock_from_file),		\
-+	FN(redirect_xsk),		\
- 	/* */
- 
- /* integer value in 'imm' field of BPF_CALL instruction selects which helper
-diff --git a/net/core/filter.c b/net/core/filter.c
-index 5f31e21be531..b457c83fba70 100644
---- a/net/core/filter.c
-+++ b/net/core/filter.c
-@@ -3977,6 +3977,9 @@ int xdp_do_redirect(struct net_device *dev, struct xdp_buff *xdp,
- 	case XDP_REDIR_XSK_MAP:
- 		err = __xsk_map_redirect(fwd, xdp);
- 		break;
-+	case XDP_REDIR_XSK:
-+		err = xsk_redirect(fwd, xdp);
-+		break;
- 	default:
- 		err = -EBADRQC;
- 	}
-@@ -4044,25 +4047,33 @@ int xdp_do_generic_redirect(struct net_device *dev, struct sk_buff *skb,
- 	ri->tgt_type = XDP_REDIR_UNSET;
- 	ri->tgt_value = NULL;
- 
--	if (type == XDP_REDIR_DEV_IFINDEX) {
-+	switch (type) {
-+	case XDP_REDIR_DEV_IFINDEX: {
- 		fwd = dev_get_by_index_rcu(dev_net(dev), (u32)(long)fwd);
- 		if (unlikely(!fwd)) {
- 			err = -EINVAL;
--			goto err;
-+			break;
- 		}
- 
- 		err = xdp_ok_fwd_dev(fwd, skb->len);
- 		if (unlikely(err))
--			goto err;
-+			break;
- 
- 		skb->dev = fwd;
- 		_trace_xdp_redirect(dev, xdp_prog, index);
- 		generic_xdp_tx(skb, xdp_prog);
- 		return 0;
- 	}
-+	case XDP_REDIR_XSK:
-+		err = xsk_generic_redirect(dev, xdp);
-+		if (err)
-+			break;
-+		consume_skb(skb);
-+		break;
-+	default:
-+		return xdp_do_generic_redirect_map(dev, skb, xdp, xdp_prog, fwd, type);
-+	}
- 
--	return xdp_do_generic_redirect_map(dev, skb, xdp, xdp_prog, fwd, type);
--err:
- 	_trace_xdp_redirect_err(dev, xdp_prog, index, err);
- 	return err;
+ 	prog_fd = bpf_load_program(BPF_PROG_TYPE_XDP, progs[option], insns_cnt[option],
+@@ -508,12 +530,22 @@ static int xsk_get_max_queues(struct xsk_socket *xsk)
+ 	return ret;
  }
-@@ -4144,6 +4155,32 @@ static const struct bpf_func_proto bpf_xdp_redirect_map_proto = {
- 	.arg3_type      = ARG_ANYTHING,
- };
  
-+BPF_CALL_2(bpf_xdp_redirect_xsk, struct xdp_buff *, xdp, u64, action)
++static bool xskmap_required(void)
 +{
-+	struct net_device *dev = xdp->rxq->dev;
-+	u32 queue_id = xdp->rxq->queue_index;
-+	struct bpf_redirect_info *ri;
-+	struct xdp_sock *xs;
-+
-+	xs = READ_ONCE(dev->_rx[queue_id].xsk);
-+	if (!xs)
-+		return action;
-+
-+	ri = this_cpu_ptr(&bpf_redirect_info);
-+	ri->tgt_type = XDP_REDIR_XSK;
-+	ri->tgt_value = xs;
-+
-+	return XDP_REDIRECT;
++	return get_xsk_prog() != XSK_PROG_REDIRECT_XSK;
 +}
 +
-+static const struct bpf_func_proto bpf_xdp_redirect_xsk_proto = {
-+	.func           = bpf_xdp_redirect_xsk,
-+	.gpl_only       = false,
-+	.ret_type       = RET_INTEGER,
-+	.arg1_type	= ARG_PTR_TO_CTX,
-+	.arg2_type	= ARG_ANYTHING,
-+};
-+
- static unsigned long bpf_skb_copy(void *dst_buff, const void *skb,
- 				  unsigned long off, unsigned long len)
+ static int xsk_create_bpf_maps(struct xsk_socket *xsk)
  {
-@@ -7260,6 +7297,8 @@ xdp_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
- 	case BPF_FUNC_tcp_gen_syncookie:
- 		return &bpf_tcp_gen_syncookie_proto;
- #endif
-+	case BPF_FUNC_redirect_xsk:
-+		return &bpf_xdp_redirect_xsk_proto;
- 	default:
- 		return bpf_sk_base_func_proto(func_id);
- 	}
-diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-index 5820de65060b..79f1492e71e2 100644
---- a/net/xdp/xsk.c
-+++ b/net/xdp/xsk.c
-@@ -134,6 +134,28 @@ int xsk_reg_pool_at_qid(struct net_device *dev, struct xsk_buff_pool *pool,
- 	return 0;
- }
+ 	struct xsk_ctx *ctx = xsk->ctx;
+ 	int max_queues;
+ 	int fd;
  
-+static struct xdp_sock *xsk_get_at_qid(struct net_device *dev, u16 queue_id)
-+{
-+	return READ_ONCE(dev->_rx[queue_id].xsk);
-+}
-+
-+static void xsk_clear(struct xdp_sock *xs)
-+{
-+	struct net_device *dev = xs->dev;
-+	u16 queue_id = xs->queue_id;
-+
-+	if (queue_id < dev->num_rx_queues)
-+		WRITE_ONCE(dev->_rx[queue_id].xsk, NULL);
-+}
-+
-+static void xsk_reg(struct xdp_sock *xs)
-+{
-+	struct net_device *dev = xs->dev;
-+	u16 queue_id = xs->queue_id;
-+
-+	WRITE_ONCE(dev->_rx[queue_id].xsk, xs);
-+}
-+
- void xp_release(struct xdp_buff_xsk *xskb)
- {
- 	xskb->pool->free_heads[xskb->pool->free_heads_cnt++] = xskb;
-@@ -184,7 +206,7 @@ static void xsk_copy_xdp(struct xdp_buff *to, struct xdp_buff *from, u32 len)
- 	memcpy(to_buf, from_buf, len + metalen);
- }
- 
--static int __xsk_rcv(struct xdp_sock *xs, struct xdp_buff *xdp)
-+static int ____xsk_rcv(struct xdp_sock *xs, struct xdp_buff *xdp)
- {
- 	struct xdp_buff *xsk_xdp;
- 	int err;
-@@ -211,6 +233,22 @@ static int __xsk_rcv(struct xdp_sock *xs, struct xdp_buff *xdp)
- 	return 0;
- }
- 
-+static int __xsk_rcv(struct xdp_sock *xs, struct xdp_buff *xdp)
-+{
-+	int err;
-+	u32 len;
-+
-+	if (likely(xdp->rxq->mem.type == MEM_TYPE_XSK_BUFF_POOL)) {
-+		len = xdp->data_end - xdp->data;
-+		return __xsk_rcv_zc(xs, xdp, len);
++	if (!xskmap_required()) {
++		ctx->xsks_map_fd = XSKMAP_NOT_NEEDED;
++		return 0;
 +	}
 +
-+	err = ____xsk_rcv(xs, xdp);
-+	if (!err)
-+		xdp_return_buff(xdp);
-+	return err;
-+}
-+
- static bool xsk_tx_writeable(struct xdp_sock *xs)
+ 	max_queues = xsk_get_max_queues(xsk);
+ 	if (max_queues < 0)
+ 		return max_queues;
+@@ -532,6 +564,9 @@ static void xsk_delete_bpf_maps(struct xsk_socket *xsk)
  {
- 	if (xskq_cons_present_entries(xs->tx) > xs->tx->nentries / 2)
-@@ -248,6 +286,39 @@ static void xsk_flush(struct xdp_sock *xs)
- 	sock_def_readable(&xs->sk);
+ 	struct xsk_ctx *ctx = xsk->ctx;
+ 
++	if (ctx->xsks_map_fd == XSKMAP_NOT_NEEDED)
++		return;
++
+ 	bpf_map_delete_elem(ctx->xsks_map_fd, &ctx->queue_id);
+ 	close(ctx->xsks_map_fd);
  }
- 
-+int xsk_redirect(struct xdp_sock *xs, struct xdp_buff *xdp)
-+{
-+	struct list_head *flush_list = this_cpu_ptr(&xskmap_flush_list);
-+	int err;
-+
-+	sk_mark_napi_id_once_xdp(&xs->sk, xdp);
-+	err = __xsk_rcv(xs, xdp);
-+	if (err)
-+		return err;
-+
-+	if (!xs->flush_node.prev)
-+		list_add(&xs->flush_node, flush_list);
-+	return 0;
-+}
-+
-+int xsk_generic_redirect(struct net_device *dev, struct xdp_buff *xdp)
-+{
-+	struct xdp_sock *xs;
-+	u32 queue_id;
-+	int err;
-+
-+	queue_id = xdp->rxq->queue_index;
-+	xs = xsk_get_at_qid(dev, queue_id);
-+	if (!xs)
-+		return -EINVAL;
-+
-+	spin_lock_bh(&xs->rx_lock);
-+	err = ____xsk_rcv(xs, xdp);
-+	xsk_flush(xs);
-+	spin_unlock_bh(&xs->rx_lock);
-+	return err;
-+}
-+
- int xsk_generic_rcv(struct xdp_sock *xs, struct xdp_buff *xdp)
- {
- 	int err;
-@@ -255,7 +326,7 @@ int xsk_generic_rcv(struct xdp_sock *xs, struct xdp_buff *xdp)
- 	spin_lock_bh(&xs->rx_lock);
- 	err = xsk_rcv_check(xs, xdp);
- 	if (!err) {
--		err = __xsk_rcv(xs, xdp);
-+		err = ____xsk_rcv(xs, xdp);
- 		xsk_flush(xs);
- 	}
- 	spin_unlock_bh(&xs->rx_lock);
-@@ -264,22 +335,12 @@ int xsk_generic_rcv(struct xdp_sock *xs, struct xdp_buff *xdp)
- 
- static int xsk_rcv(struct xdp_sock *xs, struct xdp_buff *xdp)
- {
--	int err;
--	u32 len;
-+	int err = xsk_rcv_check(xs, xdp);
- 
--	err = xsk_rcv_check(xs, xdp);
+@@ -563,7 +598,7 @@ static int xsk_lookup_bpf_maps(struct xsk_socket *xsk)
  	if (err)
- 		return err;
+ 		goto out_map_ids;
  
--	if (xdp->rxq->mem.type == MEM_TYPE_XSK_BUFF_POOL) {
--		len = xdp->data_end - xdp->data;
--		return __xsk_rcv_zc(xs, xdp, len);
--	}
--
--	err = __xsk_rcv(xs, xdp);
--	if (!err)
--		xdp_return_buff(xdp);
--	return err;
-+	return __xsk_rcv(xs, xdp);
- }
+-	ctx->xsks_map_fd = -1;
++	ctx->xsks_map_fd = XSKMAP_NOT_NEEDED;
  
- int __xsk_map_redirect(struct xdp_sock *xs, struct xdp_buff *xdp)
-@@ -661,6 +722,7 @@ static void xsk_unbind_dev(struct xdp_sock *xs)
- 
- 	if (xs->state != XSK_BOUND)
- 		return;
-+	xsk_clear(xs);
- 	WRITE_ONCE(xs->state, XSK_UNBOUND);
- 
- 	/* Wait for driver to stop using the xdp socket. */
-@@ -892,7 +954,7 @@ static int xsk_bind(struct socket *sock, struct sockaddr *addr, int addr_len)
- 			goto out_unlock;
- 		}
- 
--		err = xp_assign_dev(xs->pool, dev, qid, flags);
-+		err = xp_assign_dev(xs, xs->pool, dev, qid, flags);
- 		if (err) {
- 			xp_destroy(xs->pool);
- 			xs->pool = NULL;
-@@ -918,6 +980,7 @@ static int xsk_bind(struct socket *sock, struct sockaddr *addr, int addr_len)
- 		 */
- 		smp_wmb();
- 		WRITE_ONCE(xs->state, XSK_BOUND);
-+		xsk_reg(xs);
+ 	for (i = 0; i < prog_info.nr_map_ids; i++) {
+ 		fd = bpf_map_get_fd_by_id(map_ids[i]);
+@@ -585,7 +620,7 @@ static int xsk_lookup_bpf_maps(struct xsk_socket *xsk)
  	}
- out_release:
- 	mutex_unlock(&xs->mutex);
-diff --git a/net/xdp/xsk_buff_pool.c b/net/xdp/xsk_buff_pool.c
-index 8de01aaac4a0..af02a69d0bf7 100644
---- a/net/xdp/xsk_buff_pool.c
-+++ b/net/xdp/xsk_buff_pool.c
-@@ -119,7 +119,7 @@ static void xp_disable_drv_zc(struct xsk_buff_pool *pool)
- 	}
- }
  
--int xp_assign_dev(struct xsk_buff_pool *pool,
-+int xp_assign_dev(struct xdp_sock *xs, struct xsk_buff_pool *pool,
- 		  struct net_device *netdev, u16 queue_id, u16 flags)
+ 	err = 0;
+-	if (ctx->xsks_map_fd == -1)
++	if (ctx->xsks_map_fd == XSKMAP_NOT_NEEDED && xskmap_required())
+ 		err = -ENOENT;
+ 
+ out_map_ids:
+@@ -597,6 +632,9 @@ static int xsk_set_bpf_maps(struct xsk_socket *xsk)
  {
- 	bool force_zc, force_copy;
-@@ -204,7 +204,7 @@ int xp_assign_dev_shared(struct xsk_buff_pool *pool, struct xdp_umem *umem,
- 	if (pool->uses_need_wakeup)
- 		flags |= XDP_USE_NEED_WAKEUP;
+ 	struct xsk_ctx *ctx = xsk->ctx;
  
--	return xp_assign_dev(pool, dev, queue_id, flags);
-+	return xp_assign_dev(NULL, pool, dev, queue_id, flags);
++	if (ctx->xsks_map_fd == XSKMAP_NOT_NEEDED)
++		return 0;
++
+ 	return bpf_map_update_elem(ctx->xsks_map_fd, &ctx->queue_id,
+ 				   &xsk->fd, 0);
  }
- 
- void xp_clear_dev(struct xsk_buff_pool *pool)
-diff --git a/tools/include/uapi/linux/bpf.h b/tools/include/uapi/linux/bpf.h
-index c001766adcbc..bbc7d9a57262 100644
---- a/tools/include/uapi/linux/bpf.h
-+++ b/tools/include/uapi/linux/bpf.h
-@@ -3836,6 +3836,12 @@ union bpf_attr {
-  *	Return
-  *		A pointer to a struct socket on success or NULL if the file is
-  *		not a socket.
-+ *
-+ * long bpf_redirect_xsk(struct xdp_buff *xdp_md, u64 action)
-+ *	Description
-+ *		Redirect to the registered AF_XDP socket.
-+ *	Return
-+ *		**XDP_REDIRECT** on success, otherwise the action parameter is returned.
-  */
- #define __BPF_FUNC_MAPPER(FN)		\
- 	FN(unspec),			\
-@@ -4001,6 +4007,7 @@ union bpf_attr {
- 	FN(ktime_get_coarse_ns),	\
- 	FN(ima_inode_hash),		\
- 	FN(sock_from_file),		\
-+	FN(redirect_xsk),		\
- 	/* */
- 
- /* integer value in 'imm' field of BPF_CALL instruction selects which helper
 -- 
 2.27.0
 
