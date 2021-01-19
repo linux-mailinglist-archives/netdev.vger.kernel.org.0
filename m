@@ -2,94 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 252112FC4ED
+	by mail.lfdr.de (Postfix) with ESMTP id 9B77D2FC4EE
 	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 00:42:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730510AbhASXj1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jan 2021 18:39:27 -0500
-Received: from mga06.intel.com ([134.134.136.31]:61596 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2395146AbhASOJ4 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 19 Jan 2021 09:09:56 -0500
-IronPort-SDR: PRrq64u5T/J+sEyVruVhrkb3gshANF/zIkm0Or6lWZN75dsEqgPA+K8dx+wtYhh9Iw5GsNj4BS
- f2BtNdReLHMA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9868"; a="240469094"
-X-IronPort-AV: E=Sophos;i="5.79,359,1602572400"; 
-   d="scan'208";a="240469094"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2021 06:08:43 -0800
-IronPort-SDR: rDpRA46Rqj29+hf5uzt/WaB8xXHn37IaC2pTgWqLFw1osJe/smetDhIUa9gVMPNPNSnjWmWQfu
- NURWhViT4b+w==
-X-IronPort-AV: E=Sophos;i="5.79,359,1602572400"; 
-   d="scan'208";a="355623586"
-Received: from lgomesba-mobl1.ger.corp.intel.com (HELO btopel-mobl.ger.intel.com) ([10.252.43.79])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2021 06:08:40 -0800
-Subject: Re: [PATCH bpf] xsk: Clear pool even for inactive queues
-To:     Maxim Mikityanskiy <maximmi@mellanox.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>
-Cc:     Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S. Miller" <davem@davemloft.net>,
+        id S1730574AbhASXjr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jan 2021 18:39:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58080 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729135AbhASXf7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jan 2021 18:35:59 -0500
+Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E706C061573
+        for <netdev@vger.kernel.org>; Tue, 19 Jan 2021 15:35:17 -0800 (PST)
+Received: by mail-pg1-x529.google.com with SMTP id z21so13981537pgj.4
+        for <netdev@vger.kernel.org>; Tue, 19 Jan 2021 15:35:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=pensando.io; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-transfer-encoding:content-language;
+        bh=9yriIeABzvRqPZwPZE8XoIm4dyyxjjIHmDtEXdOpziw=;
+        b=cur2Aed8J4yCDTk/+N0YzCwCVAY6hcegD67X5rDVs18VgUKnjKiGNZ9VB7QHFWSbvI
+         Jbs4tfOEZ8vaORnJW9XcH9ATiS9uudOAbNM1hLNeeyKUUojvg4cim0UqRtlnq4K8xmHz
+         NUNsXe77SmOBKF4j05FItX7B31YWI4tv4eSDy+SHgiYzhOd1LfJ/d6j1euUQisEvheKY
+         XXqMRV1Yh/DG2q4jZpgzbTeQzO2u5fuQQootsvaINDPIrbsUifUYeqt2YYV9cMKi4cFn
+         FPQLaCVr8IJSSYROeKbd6tUBM/sedZueQJd7CYda4cGeoUEVyyE6O/A630f/tgDKUiXh
+         gQaw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=9yriIeABzvRqPZwPZE8XoIm4dyyxjjIHmDtEXdOpziw=;
+        b=R2/JCDG2WGFdTZATyIqA3ijXBIw7rJP9yohI5w2Vte93QYkh9sRViBbvdIGWia6ie6
+         YAgxs1+K74Z8MTYvzRPUgT3tyVs1dF4TSZCZJQZuiObfkioImB08tZKlNBW8vZM0kgia
+         CM4bJPHU/kRDJ01aEmA4p5k/67XHFmsUPLsmGkZ652i9oxWhpVkESCo3fm/sq9CR689a
+         NSVqryQVoOuTB+tyTTuu573BWKISfWtWe88CmcD4a93E14y7i+dWmYHJtioUzB4U1fUZ
+         pbWHOgVbq8UDNUycalB1tqC/XoS+DDvOf+82nzmKJBwlR/GzMx1an/dwlYp4ef27A/qM
+         1Hzw==
+X-Gm-Message-State: AOAM530v3t+YQvoqoZqXkzzYLLeys1NuTVhfz4BIbD6nh/Xt9HDbSqVF
+        QLZ1XWVN2V3pV/pb8rIs2UBdKw==
+X-Google-Smtp-Source: ABdhPJyDzrwOtXs5Wusab1hOr+Eh43N5vPEpEsZc19ka8zosde4Nvw3kWB4Za/eFHuhU/o/9XSlXXg==
+X-Received: by 2002:a62:cd49:0:b029:1b5:4e48:6f1a with SMTP id o70-20020a62cd490000b02901b54e486f1amr6169328pfg.14.1611099317116;
+        Tue, 19 Jan 2021 15:35:17 -0800 (PST)
+Received: from Shannons-MacBook-Pro.local ([50.53.47.17])
+        by smtp.gmail.com with ESMTPSA id w20sm161131pga.90.2021.01.19.15.35.15
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 19 Jan 2021 15:35:16 -0800 (PST)
+Subject: Re: [PATCH net-next 1/6] net: add inline function skb_csum_is_sctp
+To:     Alexander Duyck <alexander.duyck@gmail.com>,
+        Xin Long <lucien.xin@gmail.com>
+Cc:     network dev <netdev@vger.kernel.org>,
+        "linux-sctp @ vger . kernel . org" <linux-sctp@vger.kernel.org>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org
-References: <20210118160333.333439-1-maximmi@mellanox.com>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
-Message-ID: <9236949b-df13-9505-8ada-69ad26e03a89@intel.com>
-Date:   Tue, 19 Jan 2021 15:08:36 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.0
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        intel-wired-lan <intel-wired-lan@lists.osuosl.org>
+References: <cover.1610777159.git.lucien.xin@gmail.com>
+ <34c9f5b8c31610687925d9db1f151d5bc87deba7.1610777159.git.lucien.xin@gmail.com>
+ <CAKgT0UduX4M-N1Kyo-M2=05EO_rAs2c_CDrUwWMKk2oDOgxd2Q@mail.gmail.com>
+From:   Shannon Nelson <snelson@pensando.io>
+Message-ID: <41658acb-6607-8b4c-d29d-f71892434e0b@pensando.io>
+Date:   Tue, 19 Jan 2021 15:35:14 -0800
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.15; rv:78.0)
+ Gecko/20100101 Thunderbird/78.6.1
 MIME-Version: 1.0
-In-Reply-To: <20210118160333.333439-1-maximmi@mellanox.com>
+In-Reply-To: <CAKgT0UduX4M-N1Kyo-M2=05EO_rAs2c_CDrUwWMKk2oDOgxd2Q@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021-01-18 17:03, Maxim Mikityanskiy wrote:
-> The number of queues can change by other means, rather than ethtool. For
-> example, attaching an mqprio qdisc with num_tc > 1 leads to creating
-> multiple sets of TX queues, which may be then destroyed when mqprio is
-> deleted. If an AF_XDP socket is created while mqprio is active,
-> dev->_tx[queue_id].pool will be filled, but then real_num_tx_queues may
-> decrease with deletion of mqprio, which will mean that the pool won't be
-> NULLed, and a further increase of the number of TX queues may expose a
-> dangling pointer.
-> 
-> To avoid any potential misbehavior, this commit clears pool for RX and
-> TX queues, regardless of real_num_*_queues, still taking into
-> consideration num_*_queues to avoid overflows.
-> 
-> Fixes: 1c1efc2af158 ("xsk: Create and free buffer pool independently from umem")
-> Fixes: a41b4f3c58dd ("xsk: simplify xdp_clear_umem_at_qid implementation")
-> Signed-off-by: Maxim Mikityanskiy <maximmi@mellanox.com>
+On 1/19/21 2:23 PM, Alexander Duyck wrote:
+> On Fri, Jan 15, 2021 at 10:13 PM Xin Long <lucien.xin@gmail.com> wrote:
+>> This patch is to define a inline function skb_csum_is_sctp(), and
+>> also replace all places where it checks if it's a SCTP CSUM skb.
+>> This function would be used later in many networking drivers in
+>> the following patches.
+>>
+>> Suggested-by: Alexander Duyck <alexander.duyck@gmail.com>
+>> Signed-off-by: Xin Long <lucien.xin@gmail.com>
+> One minor nit. If you had to resubmit this I might move the ionic
+> driver code into a separate patch. However It can probably be accepted
+> as is.
+>
+> Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
 
-Thanks, Maxim!
+Alex has a good point - if you repost, please split out the ionic bits 
+to a separate patch.
 
-Acked-by: Björn Töpel <bjorn.topel@intel.com>
+Either way, for ionic:
+Acked-by: Shannon Nelson <snelson@pensando.io>
 
-> ---
->   net/xdp/xsk.c | 4 ++--
->   1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-> index 8037b04a9edd..4a83117507f5 100644
-> --- a/net/xdp/xsk.c
-> +++ b/net/xdp/xsk.c
-> @@ -108,9 +108,9 @@ EXPORT_SYMBOL(xsk_get_pool_from_qid);
->   
->   void xsk_clear_pool_at_qid(struct net_device *dev, u16 queue_id)
->   {
-> -	if (queue_id < dev->real_num_rx_queues)
-> +	if (queue_id < dev->num_rx_queues)
->   		dev->_rx[queue_id].pool = NULL;
-> -	if (queue_id < dev->real_num_tx_queues)
-> +	if (queue_id < dev->num_tx_queues)
->   		dev->_tx[queue_id].pool = NULL;
->   }
->   
-> 
+
+>> ---
+>>   drivers/net/ethernet/pensando/ionic/ionic_txrx.c | 2 +-
+>>   include/linux/skbuff.h                           | 5 +++++
+>>   net/core/dev.c                                   | 2 +-
+>>   3 files changed, 7 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_txrx.c b/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
+>> index ac4cd5d..162a1ff 100644
+>> --- a/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
+>> +++ b/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
+>> @@ -979,7 +979,7 @@ static int ionic_tx_calc_csum(struct ionic_queue *q, struct sk_buff *skb)
+>>                  stats->vlan_inserted++;
+>>          }
+>>
+>> -       if (skb->csum_not_inet)
+>> +       if (skb_csum_is_sctp(skb))
+>>                  stats->crc32_csum++;
+>>          else
+>>                  stats->csum++;
+>> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+>> index c9568cf..46f901a 100644
+>> --- a/include/linux/skbuff.h
+>> +++ b/include/linux/skbuff.h
+>> @@ -4621,6 +4621,11 @@ static inline void skb_reset_redirect(struct sk_buff *skb)
+>>   #endif
+>>   }
+>>
+>> +static inline bool skb_csum_is_sctp(struct sk_buff *skb)
+>> +{
+>> +       return skb->csum_not_inet;
+>> +}
+>> +
+>>   static inline void skb_set_kcov_handle(struct sk_buff *skb,
+>>                                         const u64 kcov_handle)
+>>   {
+>> diff --git a/net/core/dev.c b/net/core/dev.c
+>> index 0a31d4e..bbd306f 100644
+>> --- a/net/core/dev.c
+>> +++ b/net/core/dev.c
+>> @@ -3617,7 +3617,7 @@ static struct sk_buff *validate_xmit_vlan(struct sk_buff *skb,
+>>   int skb_csum_hwoffload_help(struct sk_buff *skb,
+>>                              const netdev_features_t features)
+>>   {
+>> -       if (unlikely(skb->csum_not_inet))
+>> +       if (unlikely(skb_csum_is_sctp(skb)))
+>>                  return !!(features & NETIF_F_SCTP_CRC) ? 0 :
+>>                          skb_crc32c_csum_help(skb);
+>>
+>> --
+>> 2.1.0
+>>
+
