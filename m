@@ -2,98 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8376E2FB3C8
-	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 09:12:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 877412FB3C6
+	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 09:12:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731482AbhASIKs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jan 2021 03:10:48 -0500
-Received: from m42-8.mailgun.net ([69.72.42.8]:23918 "EHLO m42-8.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725983AbhASIK1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 19 Jan 2021 03:10:27 -0500
-X-Greylist: delayed 358 seconds by postgrey-1.27 at vger.kernel.org; Tue, 19 Jan 2021 03:10:27 EST
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1611043799; h=Content-Transfer-Encoding: Content-Type:
- MIME-Version: Message-ID: In-Reply-To: Date: References: Subject: Cc:
- To: From: Sender; bh=G6CrMrwkBlH/hAife+o1/KscQx/5H1OEZNAP7AT9sBg=; b=QhCDmWVYdqEcxQh/So1peytCDrkb2p+t7kZh2hCawsJKgQ70ekNeuufzFvZaoweU8SK1UvtA
- EYpcXP+QbbVIxO6c6XhFjC575DQKf0L5j6bNp/t1XK+7MaaUQ/yxc83stY24qtiN92hUd3c6
- CcRYUNnr1WL8d8w1VNECvJMlJ98=
-X-Mailgun-Sending-Ip: 69.72.42.8
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n05.prod.us-west-2.postgun.com with SMTP id
- 6006925d75e5c01cba0b46ae (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 19 Jan 2021 08:03:41
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id D376FC43463; Tue, 19 Jan 2021 08:03:41 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
-        autolearn=no autolearn_force=no version=3.4.0
-Received: from x230.qca.qualcomm.com (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id A6F62C433CA;
-        Tue, 19 Jan 2021 08:03:38 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org A6F62C433CA
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-From:   Kalle Valo <kvalo@codeaurora.org>
-To:     Pkshih <pkshih@realtek.com>
-Cc:     "abaci-bugfix\@linux.alibaba.com" <abaci-bugfix@linux.alibaba.com>,
-        "Larry.Finger\@lwfinger.net" <Larry.Finger@lwfinger.net>,
-        "linux-kernel\@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "chiu\@endlessos.org" <chiu@endlessos.org>,
-        "kuba\@kernel.org" <kuba@kernel.org>,
-        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem\@davemloft.net" <davem@davemloft.net>,
-        "linux-wireless\@vger.kernel.org" <linux-wireless@vger.kernel.org>
-Subject: Re: [PATCH v2] rtlwifi: rtl8192se: Simplify bool comparison.
-References: <1611037955-105333-1-git-send-email-abaci-bugfix@linux.alibaba.com>
-        <1611041680.9785.1.camel@realtek.com>
-Date:   Tue, 19 Jan 2021 10:03:36 +0200
-In-Reply-To: <1611041680.9785.1.camel@realtek.com> (pkshih@realtek.com's
-        message of "Tue, 19 Jan 2021 07:35:19 +0000")
-Message-ID: <87v9btqron.fsf@codeaurora.org>
-User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+        id S1731364AbhASIJy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jan 2021 03:09:54 -0500
+Received: from smtp23.cstnet.cn ([159.226.251.23]:50956 "EHLO cstnet.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728812AbhASIJZ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 19 Jan 2021 03:09:25 -0500
+Received: from localhost.localdomain (unknown [124.16.141.241])
+        by APP-03 (Coremail) with SMTP id rQCowADHqfpokwZgsmXUAA--.58238S2;
+        Tue, 19 Jan 2021 16:08:10 +0800 (CST)
+From:   Xu Wang <vulab@iscas.ac.cn>
+To:     nbd@nbd.name, lorenzo.bianconi83@gmail.com, ryder.lee@mediatek.com,
+        kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org,
+        matthias.bgg@gmail.com, shayne.chen@mediatek.com
+Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] mt76: mt7915: Remove unneeded semicolon
+Date:   Tue, 19 Jan 2021 08:08:05 +0000
+Message-Id: <20210119080805.18191-1-vulab@iscas.ac.cn>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: rQCowADHqfpokwZgsmXUAA--.58238S2
+X-Coremail-Antispam: 1UD129KBjvdXoW7Xw1UAryxJr1rKFWfuF1DAwb_yoW3ZFc_Wr
+        4vgFn3Wr1UGw1DKr429FW7C3y0y395CF18GFW3trWY93y7AFW7Gr9Ivry7JrsrCrs29r13
+        Jrn8XFyFqanIqjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUbVxYjsxI4VWkCwAYFVCjjxCrM7AC8VAFwI0_Gr0_Xr1l1xkIjI8I
+        6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AEw4v_Jr0_Jr4l8cAvFVAK0II2c7xJM2
+        8CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVW7JVWDJwA2z4x0Y4vE2Ix0
+        cI8IcVCY1x0267AKxVW8Jr0_Cr1UM28EF7xvwVC2z280aVAFwI0_GcCE3s1l84ACjcxK6I
+        8E87Iv6xkF7I0E14v26rxl6s0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI
+        64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r126r1DMcIj6I8E87Iv67AKxVW8Jr0_Cr
+        1UMcvjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvY0x0EwIxGrwACI402YVCY1x02628vn2kI
+        c2xKxwCY02Avz4vE14v_GFyl42xK82IYc2Ij64vIr41l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr
+        1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE
+        14v26r1q6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7
+        IYx2IY6xkF7I0E14v26r4j6F4UMIIF0xvE42xK8VAvwI8IcIk0rVWrJr0_WFyUJwCI42IY
+        6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa
+        73UjIFyTuYvjxUcqXHDUUUU
+X-Originating-IP: [124.16.141.241]
+X-CM-SenderInfo: pyxotu46lvutnvoduhdfq/1tbiCQoGA102Z4O8+wAAsO
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Pkshih <pkshih@realtek.com> writes:
+fix semicolon.cocci warnings:
+drivers/net/wireless/mediatek/mt76/mt7915/mac.c:1694:2-3: Unneeded semicolon
 
-> On Tue, 2021-01-19 at 14:32 +0800, Jiapeng Zhong wrote:
->> Fix the follow coccicheck warnings:
->>=20
->> ./drivers/net/wireless/realtek/rtlwifi/rtl8192se/hw.c:2305:6-27:
->> WARNING: Comparison of 0/1 to bool variable.
->>=20
->> ./drivers/net/wireless/realtek/rtlwifi/rtl8192se/hw.c:1376:5-26:
->> WARNING: Comparison of 0/1 to bool variable.
->>=20
->> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
->> Signed-off-by: Jiapeng Zhong <abaci-bugfix@linux.alibaba.com>
->> ---
->> Changes in v2:
->> =C2=A0 -Modified subject.
->>=20
->
-> You forget to remove the period at the end of subject.
-> i.e.
-> "rtlwifi: rtl8192se: Simplify bool comparison"
+Signed-off-by: Xu Wang <vulab@iscas.ac.cn>
+---
+ drivers/net/wireless/mediatek/mt76/mt7915/mac.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-I can fix that during commit.
+diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/mac.c b/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
+index f504eeb221f9..a24d5b792a26 100644
+--- a/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
++++ b/drivers/net/wireless/mediatek/mt76/mt7915/mac.c
+@@ -1691,7 +1691,7 @@ void mt7915_mac_work(struct work_struct *work)
+ 	if (++phy->sta_work_count == 10) {
+ 		phy->sta_work_count = 0;
+ 		mt7915_mac_sta_stats_work(phy);
+-	};
++	}
+ 
+ 	mutex_unlock(&mdev->mutex);
+ 
+-- 
+2.17.1
 
---=20
-https://patchwork.kernel.org/project/linux-wireless/list/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatc=
-hes
