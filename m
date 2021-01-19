@@ -2,70 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 38F352FAEEB
-	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 03:56:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0514D2FAEFD
+	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 04:00:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2394590AbhASCzq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jan 2021 21:55:46 -0500
-Received: from rtits2.realtek.com ([211.75.126.72]:58610 "EHLO
-        rtits2.realtek.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387973AbhASCzn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jan 2021 21:55:43 -0500
-Authenticated-By: 
-X-SpamFilter-By: ArmorX SpamTrap 5.73 with qID 10J2ndZfB028686, This message is accepted by code: ctloc85258
-Received: from mail.realtek.com (rtexmbs02.realtek.com.tw[172.21.6.95])
-        by rtits2.realtek.com.tw (8.15.2/2.70/5.88) with ESMTPS id 10J2ndZfB028686
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
-        Tue, 19 Jan 2021 10:49:40 +0800
-Received: from RTEXMB06.realtek.com.tw (172.21.6.99) by
- RTEXMBS02.realtek.com.tw (172.21.6.95) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Tue, 19 Jan 2021 10:49:39 +0800
-Received: from RTEXMBS04.realtek.com.tw (172.21.6.97) by
- RTEXMB06.realtek.com.tw (172.21.6.99) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2044.4; Tue, 19 Jan 2021 10:49:39 +0800
-Received: from RTEXMBS04.realtek.com.tw ([fe80::ecca:80ca:53:e833]) by
- RTEXMBS04.realtek.com.tw ([fe80::ecca:80ca:53:e833%12]) with mapi id
- 15.01.2106.006; Tue, 19 Jan 2021 10:49:39 +0800
-From:   Pkshih <pkshih@realtek.com>
-To:     "abaci-bugfix@linux.alibaba.com" <abaci-bugfix@linux.alibaba.com>
-CC:     "Larry.Finger@lwfinger.net" <Larry.Finger@lwfinger.net>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "chiu@endlessos.org" <chiu@endlessos.org>,
-        "kvalo@codeaurora.org" <kvalo@codeaurora.org>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>
-Subject: Re: [PATCH] rtlwifi/rtl8192se: Simplify bool comparison.
-Thread-Topic: [PATCH] rtlwifi/rtl8192se: Simplify bool comparison.
-Thread-Index: AQHW6yYrXCXV5MKbPkiauKRwxxOMyaotvt4A
-Date:   Tue, 19 Jan 2021 02:49:39 +0000
-Message-ID: <1611024540.7826.1.camel@realtek.com>
-References: <1610705211-22865-1-git-send-email-abaci-bugfix@linux.alibaba.com>
-In-Reply-To: <1610705211-22865-1-git-send-email-abaci-bugfix@linux.alibaba.com>
-Accept-Language: en-US, zh-TW
-Content-Language: zh-TW
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.21.69.213]
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <F522E4DD82B3AC4FA1FB9B384752CE80@realtek.com>
-Content-Transfer-Encoding: base64
+        id S2389212AbhASDAb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jan 2021 22:00:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45716 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728406AbhASDA2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 18 Jan 2021 22:00:28 -0500
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92399C061573
+        for <netdev@vger.kernel.org>; Mon, 18 Jan 2021 18:59:48 -0800 (PST)
+Received: by mail-pl1-x62c.google.com with SMTP id s15so9686057plr.9
+        for <netdev@vger.kernel.org>; Mon, 18 Jan 2021 18:59:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=zAKzKif+/uAmocR3T9193/p6+wZWI3rzljpH0XZ3nGY=;
+        b=FKZijKz9g9fC1rwh2AXuGUrdB1HA/bxlcj6mwl6vyVc+HmZmBHhakQv0/FWHELooO3
+         JPoZYRUjlvfqOkBJgg0/S1pbHhj5eR3x4hHomSY1avhV91nWdEn+G/Aj9200erm7aIej
+         qqxMn9uThfnyZ65E3Jp/E4rpCBE9EDCfU2Ve16Toab4HBSbUtssUxbVT/npG6bTN9G5g
+         GDzBxaQ4ywIjj0vFehedSdmlee6Vhc53QBhwy6ZWWl2rSzYqk9LkL62V54KFGfQIxKvA
+         EQuBLSriT+FUHApLoBEhrcCEJ3RIt4qH49NIrlh1tAulDmzZ0+Z7TFlqiJWZes/a0Ja/
+         d9Yg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=zAKzKif+/uAmocR3T9193/p6+wZWI3rzljpH0XZ3nGY=;
+        b=nHWODwrGIEWpZeviPKaC4EqLvGSbWZUU2lo4Pm785AvF6Hqs6zawKEeM7u03577vTN
+         kVc9RAxI6m/CH9BIJHaDOq6vOLm3pfQcY0a765a/JpgqV7p0qY+vRvmipRBDmPewCMm8
+         X7ET+IHWmqhFdPJPfC91dy5H1PZ4xdFLlz720AFcM9hHSUHDydtg+y80Ovg5l7fFAoBd
+         IWrozoH7Mw9UcCGUmHFT448GUzucLisF5r5gkVqt9hlUPp7t0VDCKYKn38HS78tztWO1
+         Byimuhpg9BMGwTFDVS0QGn2AnPu2mti9Dh8FbGkqLCNl6T2KniZobJYd24u1qisonUVW
+         EFpQ==
+X-Gm-Message-State: AOAM5332rEdPfN/xstCOEQWjhze4H8xqfvBAuFa1F48Odb2Gzvluc6I4
+        bql3i9jwiqxzikCO5b6NdbqXSXrkvdyRSA==
+X-Google-Smtp-Source: ABdhPJzx3MROHoJtTccpoxXmZeOwD18F2GxTtcely5k+c/mW4dgzV6oQYkdenRtbaVGXT3lnyMdI0w==
+X-Received: by 2002:a17:90a:5b06:: with SMTP id o6mr2700293pji.49.1611025187925;
+        Mon, 18 Jan 2021 18:59:47 -0800 (PST)
+Received: from Leo-laptop-t470s.redhat.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id d8sm709602pjm.30.2021.01.18.18.59.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 18 Jan 2021 18:59:47 -0800 (PST)
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     David Ahern <dsahern@gmail.com>,
+        Hangbin Liu <liuhangbin@gmail.com>,
+        Antoine Tenart <atenart@redhat.com>
+Subject: [PATCH net] selftests/net/fib_tests: remove duplicate log test
+Date:   Tue, 19 Jan 2021 10:59:30 +0800
+Message-Id: <20210119025930.2810532-1-liuhangbin@gmail.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-T24gRnJpLCAyMDIxLTAxLTE1IGF0IDEwOjA2ICswMDAwLCBKaWFwZW5nIFpob25nIHdyb3RlOg0K
-PiBGaXggdGhlIGZvbGxvdyBjb2NjaWNoZWNrIHdhcm5pbmdzOg0KPiANCj4gLi9kcml2ZXJzL25l
-dC93aXJlbGVzcy9yZWFsdGVrL3J0bHdpZmkvcnRsODE5MnNlL2h3LmM6MjMwNTo2LTI3Og0KPiBX
-QVJOSU5HOiBDb21wYXJpc29uIG9mIDAvMSB0byBib29sIHZhcmlhYmxlLg0KPiANCj4gLi9kcml2
-ZXJzL25ldC93aXJlbGVzcy9yZWFsdGVrL3J0bHdpZmkvcnRsODE5MnNlL2h3LmM6MTM3Njo1LTI2
-Og0KPiBXQVJOSU5HOiBDb21wYXJpc29uIG9mIDAvMSB0byBib29sIHZhcmlhYmxlLg0KPiANCj4g
-UmVwb3J0ZWQtYnk6IEFiYWNpIFJvYm90IDxhYmFjaUBsaW51eC5hbGliYWJhLmNvbT4NCj4gU2ln
-bmVkLW9mZi1ieTogSmlhcGVuZyBaaG9uZyA8YWJhY2ktYnVnZml4QGxpbnV4LmFsaWJhYmEuY29t
-Pg0KPiANCg0KW3NuaXBdDQoNClRoZSBzdWJqZWN0IHNob3VsZCBiZSAicnRsd2lmaTogcnRsODE5
-MnNlOiBTaW1wbGlmeSBib29sIGNvbXBhcmlzb24iLg0KKE5vIHBlcmlvZCBhdCB0aGUgZW5kIG9m
-IHN1YmplY3QpDQoNCk90aGVycyBsb29rIGdvb2QgdG8gbWUuDQoNCi0tLQ0KUGluZy1LZQ0KDQo=
+The previous test added an address with a specified metric and check if
+correspond route was created. I somehow added two logs for the same
+test. Remove the duplicated one.
+
+Reported-by: Antoine Tenart <atenart@redhat.com>
+Fixes: 0d29169a708b ("selftests/net/fib_tests: update addr_metric_test for peer route testing")
+Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+---
+ tools/testing/selftests/net/fib_tests.sh | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/tools/testing/selftests/net/fib_tests.sh b/tools/testing/selftests/net/fib_tests.sh
+index 84205c3a55eb..2b5707738609 100755
+--- a/tools/testing/selftests/net/fib_tests.sh
++++ b/tools/testing/selftests/net/fib_tests.sh
+@@ -1055,7 +1055,6 @@ ipv6_addr_metric_test()
+ 
+ 	check_route6 "2001:db8:104::1 dev dummy2 proto kernel metric 260"
+ 	log_test $? 0 "Set metric with peer route on local side"
+-	log_test $? 0 "User specified metric on local address"
+ 	check_route6 "2001:db8:104::2 dev dummy2 proto kernel metric 260"
+ 	log_test $? 0 "Set metric with peer route on peer side"
+ 
+-- 
+2.26.2
+
