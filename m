@@ -2,116 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8EF812FB138
-	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 07:25:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 078BA2FB139
+	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 07:25:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727140AbhASGVR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jan 2021 01:21:17 -0500
-Received: from mail.kernel.org ([198.145.29.99]:56650 "EHLO mail.kernel.org"
+        id S1728092AbhASGWD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jan 2021 01:22:03 -0500
+Received: from mail.kernel.org ([198.145.29.99]:58266 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728956AbhASFi5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 19 Jan 2021 00:38:57 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 7D9C0207B1;
-        Tue, 19 Jan 2021 05:38:10 +0000 (UTC)
+        id S1731911AbhASFob (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 19 Jan 2021 00:44:31 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 0A50420707;
+        Tue, 19 Jan 2021 05:43:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611034691;
-        bh=icZxTvui0uXyecHvXQypSINhhAwhfI8fl7Y6Gu74ZsU=;
+        s=k20201202; t=1611035030;
+        bh=ARoB+UWuVqmI6HBQVjLPKm6Lz3T27r5zvxMQw3PNPH0=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=kqhF4JpoZe9r41AtsGL8PsbiLn37goEt/RLJHT0Yzu3GEL/SwoN4l1KPjk9uMKnxF
-         CdTrhvzs1kF/TS/cT4vvlqs+fSyCPHTDWXHIB/gwRN17UpwQmNSnAs/Yeoh8kxSjJI
-         3BedgcLkUiff1yGjcQffaOS2/Cuwsr39CUvZNCdA3MFA0a6fNPCBX0FQITAebvxfk6
-         Fp0G7va5qGTQfRGN/aGafoGOLr9JkRJwilxVoHky480VAb3gTXbtgC8ZzTZiE1GaJp
-         cZU1kZ0FteJqGXkXwRGrvPbvkS9vBdh5W4Zj8+fdwAB7itJejXlCSblgsH3MJGI1kx
-         kw5qIP1QCpnVA==
-Date:   Tue, 19 Jan 2021 07:38:07 +0200
+        b=TTpW4hvXm+IFVIW9dl8WNqoeNjIGEUumWZR0/gXNjhwW8Dvd3gqVLPF1ZBJCbJA9X
+         BDi5qJhhlbJ1ZmVDoRPzSk/aEMnI4arRljiMdKscGlvENdHoSap+RMXiEbGjJIUKo9
+         ZDvBgxWsE0tGFErVuaSJTKwHuBBWfFtg291lx5nuC63rpEnqLAZDgsHyoVnfWRbECw
+         19q6uFVz52tkiIepIwqWLgz4KAXl2LpPd2sslP/ghmXAdZXZN6mPMW8BpEGmJZgND9
+         GWvdOarmW5kBFldXfvUflBx4rygRmNvMHPMCs2tMXjuILIB+1DwpmAIdjb+5b83fJr
+         HQlPWtlY3dMhQ==
+Date:   Tue, 19 Jan 2021 07:43:46 +0200
 From:   Leon Romanovsky <leon@kernel.org>
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Bjorn Helgaas <bhelgaas@google.com>,
+To:     Alexander Duyck <alexander.duyck@gmail.com>
+Cc:     Jason Gunthorpe <jgg@nvidia.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Bjorn Helgaas <bhelgaas@google.com>,
         Saeed Mahameed <saeedm@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Jakub Kicinski <kuba@kernel.org>, linux-pci@vger.kernel.org,
-        linux-rdma@vger.kernel.org, netdev@vger.kernel.org,
-        Don Dutile <ddutile@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-pci <linux-pci@vger.kernel.org>,
+        linux-rdma@vger.kernel.org, Netdev <netdev@vger.kernel.org>,
+        Don Dutile <ddutile@redhat.com>
 Subject: Re: [PATCH mlx5-next v1 2/5] PCI: Add SR-IOV sysfs entry to read
  number of MSI-X vectors
-Message-ID: <20210119053807.GB21258@unreal>
-References: <20210110150727.1965295-1-leon@kernel.org>
- <20210110150727.1965295-3-leon@kernel.org>
- <YAW/Wtr0thScxvK/@kroah.com>
+Message-ID: <20210119054346.GD21258@unreal>
+References: <20210114162812.268d684a@omen.home.shazbot.org>
+ <CAKgT0Ufe1w4PpZb3NXuSxug+OMcjm1RP3ZqVrJmQqBDt3ByOZQ@mail.gmail.com>
+ <20210115140619.GA4147@nvidia.com>
+ <20210115155315.GJ944463@unreal>
+ <CAKgT0UdzCqbLwxSnDTtgha+PwTMW5iVb-3VXbwdMNiaAYXyWzQ@mail.gmail.com>
+ <20210116082031.GK944463@unreal>
+ <CAKgT0UeKiz=gh+djt83GRBGi8qQWTBzs-qxKj_78N+gx-KtkMQ@mail.gmail.com>
+ <20210118072008.GA4843@unreal>
+ <20210118132800.GA4835@unreal>
+ <CAKgT0UeYb5xz8iehE1Y0s-cyFbsy46bjF83BkA7qWZMkAOLR-g@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YAW/Wtr0thScxvK/@kroah.com>
+In-Reply-To: <CAKgT0UeYb5xz8iehE1Y0s-cyFbsy46bjF83BkA7qWZMkAOLR-g@mail.gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 18, 2021 at 06:03:22PM +0100, Greg KH wrote:
-> On Sun, Jan 10, 2021 at 05:07:24PM +0200, Leon Romanovsky wrote:
-> > From: Leon Romanovsky <leonro@nvidia.com>
+On Mon, Jan 18, 2021 at 10:21:03AM -0800, Alexander Duyck wrote:
+> On Mon, Jan 18, 2021 at 5:28 AM Leon Romanovsky <leon@kernel.org> wrote:
 > >
-> > Some SR-IOV capable devices provide an ability to configure specific
-> > number of MSI-X vectors on their VF prior driver is probed on that VF.
+> > On Mon, Jan 18, 2021 at 09:20:08AM +0200, Leon Romanovsky wrote:
+> > > On Sun, Jan 17, 2021 at 07:16:30PM -0800, Alexander Duyck wrote:
+> > > > On Sat, Jan 16, 2021 at 12:20 AM Leon Romanovsky <leon@kernel.org> wrote:
+> > > > >
+> > > > > On Fri, Jan 15, 2021 at 05:48:59PM -0800, Alexander Duyck wrote:
+> > > > > > On Fri, Jan 15, 2021 at 7:53 AM Leon Romanovsky <leon@kernel.org> wrote:
+> > > > > > >
+> > > > > > > On Fri, Jan 15, 2021 at 10:06:19AM -0400, Jason Gunthorpe wrote:
+> > > > > > > > On Thu, Jan 14, 2021 at 05:56:20PM -0800, Alexander Duyck wrote:
 > >
-> > In order to make management easy, provide new read-only sysfs file that
-> > returns a total number of possible to configure MSI-X vectors.
+> > <...>
 > >
-> > cat /sys/bus/pci/devices/.../sriov_vf_total_msix
-> >   = 0 - feature is not supported
-> >   > 0 - total number of MSI-X vectors to consume by the VFs
+> > > > If you want yet another compromise I would be much happier with the PF
+> > > > registering the sysfs interfaces on the VFs rather than the VFs
+> > > > registering the interface and hoping the PF supports it. At least with
+> > > > that you are guaranteed the PF will respond to the interface when it
+> > > > is registered.
+> > >
+> > > Thanks a lot, I appreciate it, will take a look now.
 > >
-> > Signed-off-by: Leon Romanovsky <leonro@nvidia.com>
-> > ---
-> >  Documentation/ABI/testing/sysfs-bus-pci | 14 +++++++++++
-> >  drivers/pci/iov.c                       | 31 +++++++++++++++++++++++++
-> >  drivers/pci/pci.h                       |  3 +++
-> >  include/linux/pci.h                     |  2 ++
-> >  4 files changed, 50 insertions(+)
+> > I found only two solutions to implement it in this way.
+> > Option 1.
+> > Allow multi entry write to some new sysfs knob that will receive BDF (or another VF
+> > identification) and vector count. Something like this:
 > >
-> > diff --git a/Documentation/ABI/testing/sysfs-bus-pci b/Documentation/ABI/testing/sysfs-bus-pci
-> > index 05e26e5da54e..64e9b700acc9 100644
-> > --- a/Documentation/ABI/testing/sysfs-bus-pci
-> > +++ b/Documentation/ABI/testing/sysfs-bus-pci
-> > @@ -395,3 +395,17 @@ Description:
-> >  		The file is writable if the PF is bound to a driver that
-> >  		supports the ->sriov_set_msix_vec_count() callback and there
-> >  		is no driver bound to the VF.
-> > +
-> > +What:		/sys/bus/pci/devices/.../sriov_vf_total_msix
-> > +Date:		January 2021
-> > +Contact:	Leon Romanovsky <leonro@nvidia.com>
-> > +Description:
-> > +		This file is associated with the SR-IOV PFs.
-> > +		It returns a total number of possible to configure MSI-X
-> > +		vectors on the enabled VFs.
-> > +
-> > +		The values returned are:
-> > +		 * > 0 - this will be total number possible to consume by VFs,
-> > +		 * = 0 - feature is not supported
-> > +
-> > +		If no SR-IOV VFs are enabled, this value will return 0.
-> > diff --git a/drivers/pci/iov.c b/drivers/pci/iov.c
-> > index 42c0df4158d1..0a6ddf3230fd 100644
-> > --- a/drivers/pci/iov.c
-> > +++ b/drivers/pci/iov.c
-> > @@ -394,12 +394,22 @@ static ssize_t sriov_drivers_autoprobe_store(struct device *dev,
-> >  	return count;
-> >  }
+> >  echo "0000:01:00.2 123" > sriov_vf_msix_count
 > >
-> > +static ssize_t sriov_vf_total_msix_show(struct device *dev,
-> > +					struct device_attribute *attr,
-> > +					char *buf)
-> > +{
-> > +	struct pci_dev *pdev = to_pci_dev(dev);
-> > +
-> > +	return sprintf(buf, "%d\n", pdev->sriov->vf_total_msix);
+> > From one side, that solution is unlikely to be welcomed by Greg KH and from another,
+> > it will require a lot of boilerplate code to make it safe and correct.
 >
-> Nit, please use sysfs_emit() for new sysfs files.
+> You are overthinking this. I didn't say the sysfs had to be in the PF
+> directory itself. My request was that the PF is what placed the sysfs
+> file in the directory since indirectly it is responsible for spawning
+> the VF anyway it shouldn't be too much of a lift to have the PF place
+> sysfs files in the VF hierarchy.
+>
+> The main piece I am not a fan of is the fact that the VF is blindly
+> registering an interface and presenting it without knowing if it even
+> works.
+>
+> The secondary issue that I see as important, but I am willing to
+> compromise on is that the interface makes it appear as though the VF
+> configuration space is writable via this sysfs file. My preference
+> would be to somehow make it transparent that the PF is providing this
+> functionality. I thought it might be easier to do with devlink rather
+> than with sysfs which is why I have been preferring devlink. However
+> based on your pushback I am willing to give up on that, but I think we
+> still need to restructure how the sysfs is being managed.
+>
+> > Option 2.
+> > Create directory under PF device with files writable and organized by VF numbers.
+> > It is doable, but will cause to code bloat with no gain at all. Cleaner than now,
+> > it won't be.
+> >
+> > Why the current approach with one file per-proper VF device is not good enough?
+>
+> Because it is muddying the waters in terms of what is control taking
+> place from the VF versus the PF. In my mind the ideal solution if you
+> insist on going with the VF sysfs route would be to look at spawning a
+> directory inside the VF sysfs specifically for all of the instances
+> that will be PF management controls. At least that would give some
+> hint that this is a backdoor control and not actually interacting with
+> the VF PCI device directly. Then if in the future you have to add more
+> to this you have a spot already laid out and the controls won't be
+> mistaken for standard PCI controls as they are PF management controls.
+>
+> In addition you could probably even create a directory on the PF with
+> the new control you had added for getting the master count as well as
+> look at adding symlinks to the VF files so that you could manage all
+> of the resources in one spot. That would result in the controls being
+> nicely organized and easy to use.
 
-I'll do, thanks.
+Thanks, for you inputs.
 
->
-> thanks,
->
-> greg k-h
+I'll try offline different variants and will post v4 soon.
