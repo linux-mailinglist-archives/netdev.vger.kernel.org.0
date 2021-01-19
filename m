@@ -2,109 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AF0602FC2F1
-	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 23:05:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4DC372FC321
+	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 23:17:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728522AbhASWE7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jan 2021 17:04:59 -0500
-Received: from mail.kernel.org ([198.145.29.99]:48454 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728175AbhASWDU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 19 Jan 2021 17:03:20 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 25BD322E01;
-        Tue, 19 Jan 2021 22:02:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611093749;
-        bh=7Rk0PFh/5HZvbzLnLFR/dkR1egA2UTGSFBA8EhntEfM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=on3iu4M7VJq7F/A9CT2wA7C5T4LpQa/fTlaV7jGY8B256SXGhUul8jgb/Uy/YQ19t
-         DZNqZqAFkNvdOJzE8nvkM5o6NW1JxMNLOisugjVPMUQg099LyYuMMkJU9KMepE/xKU
-         CNc1yljhwmOqPLsVlxHI9MoYRzOzfQQhlGWjBmq5HC7jubOCRP8OpOUfIP8wab+Xxg
-         6Bo7fw6vxdUN4BbiIxSg6dFMTvKH4kk/CxwoYcQdXqm0mwMaZvocFZ/DKxR4obpxPS
-         A9JhDYG8i5VvmNPd3UvLV2HYxff0vsW2OwJ587/D9nIx7zhcFbmYdinPoExZuJb1fb
-         TxMW43zqsevuA==
-Date:   Tue, 19 Jan 2021 14:02:28 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Raju Rangoju <rajur@chelsio.com>,
-        David Miller <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next] cxgb4: remove bogus CHELSIO_VPD_UNIQUE_ID
- constant
-Message-ID: <20210119140228.1f210886@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <25339251-513a-75c6-e96e-c284d23eed0f@gmail.com>
-References: <25339251-513a-75c6-e96e-c284d23eed0f@gmail.com>
+        id S1729417AbhASWNm convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Tue, 19 Jan 2021 17:13:42 -0500
+Received: from us-smtp-delivery-44.mimecast.com ([207.211.30.44]:41409 "EHLO
+        us-smtp-delivery-44.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2388912AbhASWNc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jan 2021 17:13:32 -0500
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-27-JceK2w91Pa22KtoG8Tv88g-1; Tue, 19 Jan 2021 17:12:32 -0500
+X-MC-Unique: JceK2w91Pa22KtoG8Tv88g-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9D894806661;
+        Tue, 19 Jan 2021 22:12:30 +0000 (UTC)
+Received: from krava.redhat.com (unknown [10.40.195.212])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 526F7722C1;
+        Tue, 19 Jan 2021 22:12:21 +0000 (UTC)
+From:   Jiri Olsa <jolsa@kernel.org>
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>
+Cc:     dwarves@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Yonghong Song <yhs@fb.com>,
+        Hao Luo <haoluo@google.com>, Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        Mark Wielaard <mjw@redhat.com>
+Subject: [PATCH 0/3] dwarves,libbpf: Add support to use optional extended section index table
+Date:   Tue, 19 Jan 2021 23:12:17 +0100
+Message-Id: <20210119221220.1745061-1-jolsa@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: kernel.org
+Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=WINDOWS-1252
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 16 Jan 2021 14:45:25 +0100 Heiner Kallweit wrote:
-> The comment is quite weird, there is no such thing as a vendor-specific
-> VPD id. 0x82 is the value of PCI_VPD_LRDT_ID_STRING. So what we are
-> doing here is simply checking whether the byte at VPD address VPD_BASE
-> is a valid string LRDT, same as what is done a few lines later in
-> the code.
-> LRDT = Large Resource Data Tag, see PCI 2.2 spec, VPD chapter
-> 
-> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+hi,
+kpatch guys hit an issue with pahole over their vmlinux, which
+contains many (over 100000) sections, pahole crashes.
 
-Did you find this by code inspection?
+With so many sections, ELF is using extended section index table,
+which is used to hold values for some of the indexes and extra
+code is needed to retrieve them.
 
-> diff --git a/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c b/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
-> index 2c80371f9..48f20a6a0 100644
-> --- a/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
-> +++ b/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
-> @@ -2689,7 +2689,6 @@ void t4_get_regs(struct adapter *adap, void *buf, size_t buf_size)
->  #define VPD_BASE           0x400
->  #define VPD_BASE_OLD       0
->  #define VPD_LEN            1024
-> -#define CHELSIO_VPD_UNIQUE_ID 0x82
->  
->  /**
->   * t4_eeprom_ptov - translate a physical EEPROM address to virtual
-> @@ -2743,9 +2742,9 @@ int t4_seeprom_wp(struct adapter *adapter, bool enable)
->   */
->  int t4_get_raw_vpd_params(struct adapter *adapter, struct vpd_params *p)
->  {
-> -	int i, ret = 0, addr;
-> +	int i, ret = 0, addr = VPD_BASE;
+This patchset adds the support for pahole to properly read string
+table index and symbol's section index, which are used in btf_encoder.
 
-IMHO it's more readable if the addr is set to BASE or BASE_OLD in one
-place rather than having a default value at variable init which may be
-overwritten.
+This patchset also adds support for libbpf to properly parse .BTF
+section on such object.
 
->  	int ec, sn, pn, na;
-> -	u8 *vpd, csum;
-> +	u8 *vpd, csum, base_val = 0;
->  	unsigned int vpdr_len, kw_offset, id_len;
->  
->  	vpd = vmalloc(VPD_LEN);
-> @@ -2755,17 +2754,12 @@ int t4_get_raw_vpd_params(struct adapter *adapter, struct vpd_params *p)
->  	/* Card information normally starts at VPD_BASE but early cards had
->  	 * it at 0.
->  	 */
-> -	ret = pci_read_vpd(adapter->pdev, VPD_BASE, sizeof(u32), vpd);
-> +	ret = pci_read_vpd(adapter->pdev, VPD_BASE, 1, &base_val);
+This patchset based on previously posted fix [1].
 
-Are we sure this works? I've seen silicon out there which has problems
-with small PCI accesses (granted those were not VPD accesses).
+thanks,
+jirka
 
->  	if (ret < 0)
->  		goto out;
->  
-> -	/* The VPD shall have a unique identifier specified by the PCI SIG.
-> -	 * For chelsio adapters, the identifier is 0x82. The first byte of a VPD
-> -	 * shall be CHELSIO_VPD_UNIQUE_ID (0x82). The VPD programming software
-> -	 * is expected to automatically put this entry at the
-> -	 * beginning of the VPD.
-> -	 */
-> -	addr = *vpd == CHELSIO_VPD_UNIQUE_ID ? VPD_BASE : VPD_BASE_OLD;
-> +	if (base_val != PCI_VPD_LRDT_ID_STRING)
-> +		addr = VPD_BASE_OLD;
->  
->  	ret = pci_read_vpd(adapter->pdev, addr, VPD_LEN, vpd);
->  	if (ret < 0)
+
+[1] https://lore.kernel.org/bpf/20210113102509.1338601-1-jolsa@kernel.org/
+---
+dwarves:
+
+Jiri Olsa (2):
+      elf_symtab: Add support for SHN_XINDEX index to elf_section_by_name
+      bpf_encoder: Translate SHN_XINDEX in symbol's st_shndx values
+
+ btf_encoder.c | 18 ++++++++++++++++++
+ dutil.c       |  8 ++++++--
+ elf_symtab.c  | 31 ++++++++++++++++++++++++++++++-
+ elf_symtab.h  |  1 +
+ 4 files changed, 55 insertions(+), 3 deletions(-)
+
+
+libbpf:
+
+Jiri Olsa (1):
+      libbpf: Use string table index from index table if needed
+
+ tools/lib/bpf/btf.c | 14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
 
