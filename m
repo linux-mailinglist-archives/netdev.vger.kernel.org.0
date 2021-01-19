@@ -2,129 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E1AD42FAF40
-	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 04:55:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 867902FAF4A
+	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 05:05:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729343AbhASDyW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 18 Jan 2021 22:54:22 -0500
-Received: from mail.loongson.cn ([114.242.206.163]:49828 "EHLO loongson.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728722AbhASDyM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 18 Jan 2021 22:54:12 -0500
-Received: from linux.localdomain (unknown [113.200.148.30])
-        by mail.loongson.cn (Coremail) with SMTP id AQAAf9AxZb2qVwZg1CwHAA--.8737S2;
-        Tue, 19 Jan 2021 11:53:14 +0800 (CST)
-From:   Tiezhu Yang <yangtiezhu@loongson.cn>
-To:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Nathan Chancellor <natechancellor@gmail.com>,
-        Nick Desaulniers <ndesaulniers@google.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        clang-built-linux@googlegroups.com, linux-kernel@vger.kernel.org,
-        Xuefeng Li <lixuefeng@loongson.cn>
-Subject: [PATCH bpf] samples/bpf: Update README.rst and Makefile for manually compiling LLVM and clang
-Date:   Tue, 19 Jan 2021 11:53:05 +0800
-Message-Id: <1611028385-32702-1-git-send-email-yangtiezhu@loongson.cn>
-X-Mailer: git-send-email 2.1.0
-X-CM-TRANSID: AQAAf9AxZb2qVwZg1CwHAA--.8737S2
-X-Coremail-Antispam: 1UD129KBjvJXoWxXr1UXryrXry5Cry3JF48tFb_yoW5Cr4Upr
-        4aga4SqrZ2qry3XFyxGr48XF4fZrZ8Xa4UCa4xJry8Z3WDZrn7Gr43t3yfWFW3Wr92vr43
-        Ar1fKFWDGF1DXaDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUU9j14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
-        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
-        1l84ACjcxK6xIIjxv20xvE14v26r4j6ryUM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26F4j
-        6r4UJwA2z4x0Y4vEx4A2jsIE14v26r4UJVWxJr1l84ACjcxK6I8E87Iv6xkF7I0E14v26r
-        xl6s0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj
-        6xIIjxv20xvE14v26r1Y6r17McIj6I8E87Iv67AKxVW8JVWxJwAm72CE4IkC6x0Yz7v_Jr
-        0_Gr1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7M4IIrI8v6xkF7I0E
-        8cxan2IY04v7MxkIecxEwVAFwVW8GwCF04k20xvY0x0EwIxGrwCFx2IqxVCFs4IE7xkEbV
-        WUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF
-        67kF1VAFwI0_Jw0_GFylIxkGc2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42
-        IY6xIIjxv20xvEc7CjxVAFwI0_Gr0_Cr1lIxAIcVCF04k26cxKx2IYs7xG6rW3Jr0E3s1l
-        IxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvf
-        C2KfnxnUUI43ZEXa7VUj5l1PUUUUU==
-X-CM-SenderInfo: p1dqw3xlh2x3gn0dqz5rrqw2lrqou0/
+        id S1729459AbhASEBK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 18 Jan 2021 23:01:10 -0500
+Received: from mail.kernel.org ([198.145.29.99]:60246 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728639AbhASEA6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 18 Jan 2021 23:00:58 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id C9D1120DD4;
+        Tue, 19 Jan 2021 04:00:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1611028808;
+        bh=ay7kbvjUBwnpdN7mplj+CYdGA7Vr5h/rNg0vwgKu/E4=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=PCNeHy5pztls0YNUxVSaxZHplX9qZU3TK/pjKtLrBCAdYPUJ177qelSunK37mCRIA
+         o7XE+XSOxQqL4/CUeQaHBjOwoqt6+ocUNRpdkXTTgwXiW07K079KpY9jPvbhr1Ond1
+         g/kxiL6IP/RgjUPK3PARCiaktdgjOBL2xN44FF5UwrC1eyI72bytbMKf8LqIdShcHF
+         vxhZWVNjZ/4mb5WME4xEV4vtyrF66ULQ5xD+D6QOFIIsDyiH2+RTgsCI+64YWG1c05
+         Hsn2VH6Bfpm00tEmOHa9+JqAtK9jNuEGo5gJQxC+r4T3VKZ+LLbT16ak831vnuQmf2
+         N9ExKDssxGQ8A==
+Received: from pdx-korg-docbuild-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-1.ci.codeaurora.org (Postfix) with ESMTP id BDA3F6036C;
+        Tue, 19 Jan 2021 04:00:08 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net 0/2] ipv6: fixes for the multicast routes
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161102880877.24762.7105009788756297504.git-patchwork-notify@kernel.org>
+Date:   Tue, 19 Jan 2021 04:00:08 +0000
+References: <20210115184209.78611-1-mcroce@linux.microsoft.com>
+In-Reply-To: <20210115184209.78611-1-mcroce@linux.microsoft.com>
+To:     Matteo Croce <mcroce@linux.microsoft.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        davem@davemloft.net, yoshfuji@linux-ipv6.org, kuba@kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In the current samples/bpf/README.rst, the url of llvm and clang git
-may be out of date, they are unable to access:
+Hello:
 
-$ git clone http://llvm.org/git/llvm.git
-Cloning into 'llvm'...
-fatal: unable to access 'http://llvm.org/git/llvm.git/': Maximum (20) redirects followed
-$ git clone --depth 1 http://llvm.org/git/clang.git
-Cloning into 'clang'...
-fatal: unable to access 'http://llvm.org/git/clang.git/': Maximum (20) redirects followed
+This series was applied to netdev/net.git (refs/heads/master):
 
-There are different ways to build llvm/clang, I find the Clang Getting
-Started page [1] has one way, as Yonghong said, it is better to just
-copy the build procedure in Documentation/bpf/bpf_devel_QA.rst to keep
-consistent.
+On Fri, 15 Jan 2021 19:42:07 +0100 you wrote:
+> From: Matteo Croce <mcroce@microsoft.com>
+> 
+> Fix two wrong flags in the IPv6 multicast routes created
+> by the autoconf code.
+> 
+> Matteo Croce (2):
+>   ipv6: create multicast route with RTPROT_KERNEL
+>   ipv6: set multicast flag on the multicast route
+> 
+> [...]
 
-I verified the procedure and it is proved to be feasible, so we should
-update README.rst to reflect the reality. At the same time, update the
-related comment in Makefile.
+Here is the summary with links:
+  - [net,1/2] ipv6: create multicast route with RTPROT_KERNEL
+    https://git.kernel.org/netdev/net/c/a826b04303a4
+  - [net,2/2] ipv6: set multicast flag on the multicast route
+    https://git.kernel.org/netdev/net/c/ceed9038b278
 
-[1] https://clang.llvm.org/get_started.html
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
----
- samples/bpf/Makefile   |  2 +-
- samples/bpf/README.rst | 17 ++++++++++-------
- 2 files changed, 11 insertions(+), 8 deletions(-)
-
-diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
-index 26fc96c..d061446 100644
---- a/samples/bpf/Makefile
-+++ b/samples/bpf/Makefile
-@@ -208,7 +208,7 @@ TPROGLDLIBS_xdpsock		+= -pthread -lcap
- TPROGLDLIBS_xsk_fwd		+= -pthread
- 
- # Allows pointing LLC/CLANG to a LLVM backend with bpf support, redefine on cmdline:
--#  make M=samples/bpf/ LLC=~/git/llvm/build/bin/llc CLANG=~/git/llvm/build/bin/clang
-+# make M=samples/bpf LLC=~/git/llvm-project/llvm/build/bin/llc CLANG=~/git/llvm-project/llvm/build/bin/clang
- LLC ?= llc
- CLANG ?= clang
- OPT ?= opt
-diff --git a/samples/bpf/README.rst b/samples/bpf/README.rst
-index dd34b2d..d1be438 100644
---- a/samples/bpf/README.rst
-+++ b/samples/bpf/README.rst
-@@ -65,17 +65,20 @@ To generate a smaller llc binary one can use::
- Quick sniplet for manually compiling LLVM and clang
- (build dependencies are cmake and gcc-c++)::
- 
-- $ git clone http://llvm.org/git/llvm.git
-- $ cd llvm/tools
-- $ git clone --depth 1 http://llvm.org/git/clang.git
-- $ cd ..; mkdir build; cd build
-- $ cmake .. -DLLVM_TARGETS_TO_BUILD="BPF;X86"
-- $ make -j $(getconf _NPROCESSORS_ONLN)
-+ $ git clone https://github.com/llvm/llvm-project.git
-+ $ mkdir -p llvm-project/llvm/build/install
-+ $ cd llvm-project/llvm/build
-+ $ cmake .. -G "Ninja" -DLLVM_TARGETS_TO_BUILD="BPF;X86" \
-+            -DLLVM_ENABLE_PROJECTS="clang"    \
-+            -DBUILD_SHARED_LIBS=OFF           \
-+            -DCMAKE_BUILD_TYPE=Release        \
-+            -DLLVM_BUILD_RUNTIME=OFF
-+ $ ninja
- 
- It is also possible to point make to the newly compiled 'llc' or
- 'clang' command via redefining LLC or CLANG on the make command line::
- 
-- make M=samples/bpf LLC=~/git/llvm/build/bin/llc CLANG=~/git/llvm/build/bin/clang
-+ make M=samples/bpf LLC=~/git/llvm-project/llvm/build/bin/llc CLANG=~/git/llvm-project/llvm/build/bin/clang
- 
- Cross compiling samples
- -----------------------
--- 
-2.1.0
 
