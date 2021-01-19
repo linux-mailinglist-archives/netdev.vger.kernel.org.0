@@ -2,76 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B2FCE2FC10A
-	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 21:32:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 550822FC1AC
+	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 21:57:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391761AbhASUbT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jan 2021 15:31:19 -0500
-Received: from mail.kernel.org ([198.145.29.99]:57788 "EHLO mail.kernel.org"
+        id S2390355AbhASU4U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jan 2021 15:56:20 -0500
+Received: from mail.kernel.org ([198.145.29.99]:38150 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2392007AbhASUaw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 19 Jan 2021 15:30:52 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id CFD2B2310C;
-        Tue, 19 Jan 2021 20:30:08 +0000 (UTC)
+        id S2391385AbhASU4A (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 19 Jan 2021 15:56:00 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E2615206EC;
+        Tue, 19 Jan 2021 20:55:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611088208;
-        bh=xG+S8MDMuq0xv/+0m2nQZ2WBgtvVs1jiDabl7J+xEMA=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=lT1A9WHydcMwmUZGt4H0eeKxQ0ug48I75BdiWCKd5FnJCRfFdQLOEE/QqsIUuDJfj
-         tbAcVp/vnTJQ5pVB+PssEQWOfGXhnY+IFKDrudzbFd7ZD+GWvnbm3KVbnuoImsEqH/
-         LkizVdyGn6h7dkif8YSqjxFxiFC8JRss+s70/yvmsqKUbQyNSLKg3317JKgDccsLjU
-         Lk5+SDILl0FBo8czqJSJQLmxnmTqmyogvh/Jd88NjReEqhpr+vjo+AdRj/WayiOJjO
-         buTKKbsY5vM563ls4Q0GVWE9G3/mKYrYwCniFn8HHFoHVPEE4CcJCOEFd2lDJFCRya
-         WlgCUULil7Ohg==
-Received: from pdx-korg-docbuild-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-1.ci.codeaurora.org (Postfix) with ESMTP id D8B6460591;
-        Tue, 19 Jan 2021 20:30:08 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1611089705;
+        bh=WsJPl0LENyM732Oy+DV/4TTqxaQKklWL/vLDOAZ1pRc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Z9CVgJoiqBT62V23S0GHafVhOFq02ACYE8RKtG7M64wBaXfbRcydUpaxGUVj7VXVS
+         YrNOD2GHB16Hr1z2j1R3cwQCiIyeJEQhF4MSuviKX5ezpNBjDyyrEHUR9TtSMomkBx
+         cn7Jtyao7v6owRBQyQZp9UzkP6+Ti6TwjNRmy9/7FklbURBnRkyShd0+g2uT8W+f2I
+         hH0Tq249CNtoTM5yUwsd7aMFaiUqKGWQkIpKuENQaTCrN9JYN41Cm/P0ZtEA2bM4yX
+         3E0yc2OR0k1xRa7YXbcMpEdNTudqzruk6VZA0LAk1ScrTQsOHa9Cl8XKEUzpSB/Edq
+         7J2jB3QX2BQEQ==
+Date:   Tue, 19 Jan 2021 12:55:04 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Petr Machata <petrm@nvidia.com>
+Cc:     <netdev@vger.kernel.org>, David Ahern <dsahern@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: Re: [PATCH net-next 1/3] nexthop: Use a dedicated policy for
+ nh_valid_get_del_req()
+Message-ID: <20210119125504.0b306d97@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <ec93d227609126c98805e52ba3821b71f8bb338d.1610978306.git.petrm@nvidia.org>
+References: <cover.1610978306.git.petrm@nvidia.org>
+        <ec93d227609126c98805e52ba3821b71f8bb338d.1610978306.git.petrm@nvidia.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net v2 0/2] sh_eth: Fix reboot crash
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161108820888.22632.1269769286087994374.git-patchwork-notify@kernel.org>
-Date:   Tue, 19 Jan 2021 20:30:08 +0000
-References: <20210118150656.796584-1-geert+renesas@glider.be>
-In-Reply-To: <20210118150656.796584-1-geert+renesas@glider.be>
-To:     Geert Uytterhoeven <geert+renesas@glider.be>
-Cc:     sergei.shtylyov@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        andrew@lunn.ch, hkallweit1@gmail.com, f.fainelli@gmail.com,
-        linux@armlinux.org.uk, ioana.ciornei@nxp.com,
-        wsa+renesas@sang-engineering.com, netdev@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net.git (refs/heads/master):
-
-On Mon, 18 Jan 2021 16:06:54 +0100 you wrote:
-> Hi,
+On Mon, 18 Jan 2021 15:05:23 +0100 Petr Machata wrote:
+> This function uses the global nexthop policy only to then bounce all
+> arguments except for NHA_ID. Instead, just create a new policy that
+> only includes the one allowed attribute.
 > 
-> This patch fixes a regression v5.11-rc1, where rebooting while a sh_eth
-> device is not opened will cause a crash.
+> Signed-off-by: Petr Machata <petrm@nvidia.com>
+> Reviewed-by: Ido Schimmel <idosch@nvidia.com>
+> ---
+>  net/ipv4/nexthop.c | 21 ++++++---------------
+>  1 file changed, 6 insertions(+), 15 deletions(-)
 > 
-> Changes compared to v1:
->   - Export mdiobb_{read,write}(),
->   - Call mdiobb_{read,write}() now they are exported,
->   - Use mii_bus.parent to avoid bb_info.dev copy,
->   - Drop RFC state.
-> 
-> [...]
+> diff --git a/net/ipv4/nexthop.c b/net/ipv4/nexthop.c
+> index e53e43aef785..d5d88f7c5c11 100644
+> --- a/net/ipv4/nexthop.c
+> +++ b/net/ipv4/nexthop.c
+> @@ -36,6 +36,10 @@ static const struct nla_policy rtm_nh_policy[NHA_MAX + 1] = {
+>  	[NHA_FDB]		= { .type = NLA_FLAG },
+>  };
+>  
+> +static const struct nla_policy rtm_nh_policy_get[NHA_MAX + 1] = {
 
-Here is the summary with links:
-  - [net,v2,1/2] mdio-bitbang: Export mdiobb_{read,write}()
-    https://git.kernel.org/netdev/net/c/8eed01b5ca9c
-  - [net,v2,2/2] sh_eth: Make PHY access aware of Runtime PM to fix reboot crash
-    https://git.kernel.org/netdev/net/c/02cae02a7de1
+This is an unnecessary waste of memory if you ask me.
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+NHA_ID is 1, so we're creating an array of 10 extra NULL elements.
 
+Can you leave the size to the compiler and use ARRAY_SIZE() below?
+
+> +	[NHA_ID]		= { .type = NLA_U32 },
+> +};
+> +
+>  static bool nexthop_notifiers_is_empty(struct net *net)
+>  {
+>  	return !net->nexthop.notifier_chain.head;
+> @@ -1843,27 +1847,14 @@ static int nh_valid_get_del_req(struct nlmsghdr *nlh, u32 *id,
+>  {
+>  	struct nhmsg *nhm = nlmsg_data(nlh);
+>  	struct nlattr *tb[NHA_MAX + 1];
+> -	int err, i;
+> +	int err;
+>  
+> -	err = nlmsg_parse(nlh, sizeof(*nhm), tb, NHA_MAX, rtm_nh_policy,
+> +	err = nlmsg_parse(nlh, sizeof(*nhm), tb, NHA_MAX, rtm_nh_policy_get,
+>  			  extack);
+>  	if (err < 0)
+>  		return err;
+>  
+>  	err = -EINVAL;
+> -	for (i = 0; i < __NHA_MAX; ++i) {
+> -		if (!tb[i])
+> -			continue;
+> -
+> -		switch (i) {
+> -		case NHA_ID:
+> -			break;
+> -		default:
+> -			NL_SET_ERR_MSG_ATTR(extack, tb[i],
+> -					    "Unexpected attribute in request");
+> -			goto out;
+> -		}
+> -	}
+>  	if (nhm->nh_protocol || nhm->resvd || nhm->nh_scope || nhm->nh_flags) {
+>  		NL_SET_ERR_MSG(extack, "Invalid values in header");
+>  		goto out;
 
