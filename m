@@ -2,69 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 19D802FBF68
-	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 19:52:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 931282FBF6D
+	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 19:52:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729718AbhASSsC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jan 2021 13:48:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39140 "EHLO
+        id S1732602AbhASSs6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jan 2021 13:48:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39986 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2391773AbhASRw4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jan 2021 12:52:56 -0500
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31829C0612ED;
-        Tue, 19 Jan 2021 09:47:42 -0800 (PST)
-Received: by mail-pl1-x631.google.com with SMTP id r4so10914643pls.11;
-        Tue, 19 Jan 2021 09:47:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Vj3d/y6C6DOgbXzf2RttFBmm8LEeclj0ROf8HeKiY8g=;
-        b=Gza4yrKvypPVvC2wkKL9etDjldp+9bnLdLXbFgYamGwpBhn7ArAwoylghM23j+yHj7
-         rYme0rAafT0rqHv+SPbuNogLo/MHU4xq9qijpgZQBBIr8sdwK8od135MLwnehdx6Q8k+
-         h+nOuaS2oWzRn1hqVt+DyRcw6h0PjFMA0bQNsF09qBy32Qn0C7QvuA6BrAiJEi2/mSOJ
-         yln3f99grwA0E5tXHo5SmH5rvumiq2PdDYZ/GUzG1I5P1D+pscNonjfSPA3NRRfHlcGu
-         EGiFCBqGCwQUwHqJbUc7ZPy+YphQgkBH9U5n6ebS63iSZvsW1xxPO0DpTHh6dUZV5Drn
-         +LFQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Vj3d/y6C6DOgbXzf2RttFBmm8LEeclj0ROf8HeKiY8g=;
-        b=WVp/JZGmILqilyBphnBrkMxRfWvXLIL77Iw2dWUPQfy7+b+BKR98nOIt7soawHkVwc
-         T3CNaLkwjIDUcJcij4C6aR3b8eO8zwQcIE+9mafGEVA91Cfr1xY2PBhrg1ffKkDI8qPu
-         P1ZnAA1ZP4/N2V8vz5U/ZoyF7zdq02MIY5Tgg+x6054rqZVehmIAk9o4iC3ffjE38Fld
-         vf/cHDRNtSqwhPFAMIZ9lo3fLV4aWNrZalxPjPTL3+en2cMDN9Q3uSmxNuSsYKcyT1g8
-         aEYjRP1DW1wgo7bm4ajSqdAIJH5CbD0If0ZhJ0e6aYwFHXpFwS47sIFgL64APHePO7ca
-         cPTA==
-X-Gm-Message-State: AOAM532vXo3ME5WnK3jMc4jLxdlXSoKtiNFAXwLNhfOdyJhe5ja4MYMG
-        N3ABJH5/eLtv/uRE/B3YXR9weJSZKSo=
-X-Google-Smtp-Source: ABdhPJxgoYwtpZyHVG7nHZ48lLA7Ax7OrR16pA6VPKzJj98xFIQn662Hh8HrG3XMB0Lgo51MW8X6rw==
-X-Received: by 2002:a17:90b:11cd:: with SMTP id gv13mr864755pjb.21.1611078461270;
-        Tue, 19 Jan 2021 09:47:41 -0800 (PST)
-Received: from [10.230.29.29] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id a189sm2785265pfd.117.2021.01.19.09.47.39
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 19 Jan 2021 09:47:40 -0800 (PST)
-Subject: Re: [PATCH net-next] net: dsa: Fix off by one in
- dsa_loop_port_vlan_add()
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     ", Andrew Lunn" <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-References: <YAbyb5kBJQlpYCs2@mwanda>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <dd234f6a-7b30-09a8-df14-e0243d2e9304@gmail.com>
-Date:   Tue, 19 Jan 2021 09:47:38 -0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.6.1
+        with ESMTP id S2392227AbhASR4j (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jan 2021 12:56:39 -0500
+Received: from merlin.infradead.org (merlin.infradead.org [IPv6:2001:8b0:10b:1231::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB0E1C061388;
+        Tue, 19 Jan 2021 09:54:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=merlin.20170209; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
+        :Reply-To:Content-ID:Content-Description;
+        bh=bem/4M8L62Jn47zv1wRCWw9J4rfbubNfeTQT1T3mqyg=; b=QvmCgohUW026YsJwX313hXd8Jr
+        x7vvDHWSJjtQLA3V95OFuAyAYNMBfNbcNaSYAKsknQTQydAjdn9htC3xIaF8QXf/eofbkuUOPRnEe
+        9gaJ698oMxw9WSiPyC9FaQKsnBQkMdkdFUEGtUGcdCCgUeuB+x7QAZHtFU4Mx2o5+R9dy4TGDVxkT
+        owoSf4FZa6ieBgfyMW9q18FJRdhQ+3B74KHEFf7Xck3H+YIPUunSzUYHizgHW75sb+VGBYjjBLbV9
+        aqrNQm6Ehz6PWM3dKR4J/ILgyzls/a2xwA/tSrS5Kz/efsuUuit8GnM+NvDDsSFNxUiaQrW3thId0
+        QE0ymqEg==;
+Received: from [2601:1c0:6280:3f0::9abc]
+        by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
+        id 1l1vCd-00029A-NS; Tue, 19 Jan 2021 17:54:04 +0000
+Subject: Re: [RFC v3 08/11] vduse: Introduce VDUSE - vDPA Device in Userspace
+To:     Xie Yongji <xieyongji@bytedance.com>, mst@redhat.com,
+        jasowang@redhat.com, stefanha@redhat.com, sgarzare@redhat.com,
+        parav@nvidia.com, bob.liu@oracle.com, hch@infradead.org,
+        willy@infradead.org, viro@zeniv.linux.org.uk, axboe@kernel.dk,
+        bcrl@kvack.org, corbet@lwn.net
+Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org, linux-aio@kvack.org,
+        linux-fsdevel@vger.kernel.org
+References: <20210119045920.447-1-xieyongji@bytedance.com>
+ <20210119050756.600-1-xieyongji@bytedance.com>
+ <20210119050756.600-2-xieyongji@bytedance.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+Message-ID: <cfdc418c-7559-c6b1-6d8d-8f3a91a24f2b@infradead.org>
+Date:   Tue, 19 Jan 2021 09:53:55 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.4.0
 MIME-Version: 1.0
-In-Reply-To: <YAbyb5kBJQlpYCs2@mwanda>
+In-Reply-To: <20210119050756.600-2-xieyongji@bytedance.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -72,17 +53,119 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi,
 
+Documentation comments only:
 
-On 1/19/2021 6:53 AM, Dan Carpenter wrote:
-> The > comparison is intended to be >= to prevent reading beyond the
-> end of the ps->vlans[] array.  It doesn't affect run time though because
-> the ps->vlans[] array has VLAN_N_VID (4096) elements and the vlan->vid
-> cannot be > 4094 because it is checked earlier.
+On 1/18/21 9:07 PM, Xie Yongji wrote:
 > 
-> Fixes: 98cd1552ea27 ("net: dsa: Mock-up driver")
-> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+> Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
+> ---
+>  Documentation/driver-api/vduse.rst                 |   85 ++
+> 
+> diff --git a/Documentation/driver-api/vduse.rst b/Documentation/driver-api/vduse.rst
+> new file mode 100644
+> index 000000000000..9418a7f6646b
+> --- /dev/null
+> +++ b/Documentation/driver-api/vduse.rst
+> @@ -0,0 +1,85 @@
+> +==================================
+> +VDUSE - "vDPA Device in Userspace"
+> +==================================
+> +
+> +vDPA (virtio data path acceleration) device is a device that uses a
+> +datapath which complies with the virtio specifications with vendor
+> +specific control path. vDPA devices can be both physically located on
+> +the hardware or emulated by software. VDUSE is a framework that makes it
+> +possible to implement software-emulated vDPA devices in userspace.
+> +
+> +How VDUSE works
+> +------------
+> +Each userspace vDPA device is created by the VDUSE_CREATE_DEV ioctl on
+> +the VDUSE character device (/dev/vduse). Then a file descriptor pointing
+> +to the new resources will be returned, which can be used to implement the
+> +userspace vDPA device's control path and data path.
+> +
+> +To implement control path, the read/write operations to the file descriptor
+> +will be used to receive/reply the control messages from/to VDUSE driver.
+> +Those control messages are mostly based on the vdpa_config_ops which defines
+> +a unified interface to control different types of vDPA device.
+> +
+> +The following types of messages are provided by the VDUSE framework now:
+> +
+> +- VDUSE_SET_VQ_ADDR: Set the addresses of the different aspects of virtqueue.
+> +
+> +- VDUSE_SET_VQ_NUM: Set the size of virtqueue
+> +
+> +- VDUSE_SET_VQ_READY: Set ready status of virtqueue
+> +
+> +- VDUSE_GET_VQ_READY: Get ready status of virtqueue
+> +
+> +- VDUSE_SET_VQ_STATE: Set the state (last_avail_idx) for virtqueue
+> +
+> +- VDUSE_GET_VQ_STATE: Get the state (last_avail_idx) for virtqueue
+> +
+> +- VDUSE_SET_FEATURES: Set virtio features supported by the driver
+> +
+> +- VDUSE_GET_FEATURES: Get virtio features supported by the device
+> +
+> +- VDUSE_SET_STATUS: Set the device status
+> +
+> +- VDUSE_GET_STATUS: Get the device status
+> +
+> +- VDUSE_SET_CONFIG: Write to device specific configuration space
+> +
+> +- VDUSE_GET_CONFIG: Read from device specific configuration space
+> +
+> +- VDUSE_UPDATE_IOTLB: Notify userspace to update the memory mapping in device IOTLB
+> +
+> +Please see include/linux/vdpa.h for details.
+> +
+> +In the data path, vDPA device's iova regions will be mapped into userspace with
+> +the help of VDUSE_IOTLB_GET_FD ioctl on the userspace vDPA device fd:
+> +
+> +- VDUSE_IOTLB_GET_FD: get the file descriptor to iova region. Userspace can
+> +  access this iova region by passing the fd to mmap(2).
+> +
+> +Besides, the eventfd mechanism is used to trigger interrupt callbacks and
+> +receive virtqueue kicks in userspace. The following ioctls on the userspace
+> +vDPA device fd are provided to support that:
+> +
+> +- VDUSE_VQ_SETUP_KICKFD: set the kickfd for virtqueue, this eventfd is used
+> +  by VDUSE driver to notify userspace to consume the vring.
+> +
+> +- VDUSE_VQ_SETUP_IRQFD: set the irqfd for virtqueue, this eventfd is used
+> +  by userspace to notify VDUSE driver to trigger interrupt callbacks.
+> +
+> +MMU-based IOMMU Driver
+> +----------------------
+> +In virtio-vdpa case, VDUSE framework implements a MMU-based on-chip IOMMU
 
-Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+                                                   an MMU-based
+
+> +driver to support mapping the kernel dma buffer into the userspace iova
+
+                                        DMA
+
+> +region dynamically.
+> +
+> +The basic idea behind this driver is treating MMU (VA->PA) as IOMMU (IOVA->PA).
+> +The driver will set up MMU mapping instead of IOMMU mapping for the DMA transfer
+> +so that the userspace process is able to use its virtual address to access
+> +the dma buffer in kernel.
+
+       DMA
+
+> +
+> +And to avoid security issue, a bounce-buffering mechanism is introduced to
+> +prevent userspace accessing the original buffer directly which may contain other
+> +kernel data. During the mapping, unmapping, the driver will copy the data from
+> +the original buffer to the bounce buffer and back, depending on the direction of
+> +the transfer. And the bounce-buffer addresses will be mapped into the user address
+> +space instead of the original one.
+
+
+thanks.
 -- 
-Florian
+~Randy
+
