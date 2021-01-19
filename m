@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4AC342FC4A5
-	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 00:19:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2FB242FC4A7
+	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 00:19:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730581AbhASXSk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jan 2021 18:18:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54254 "EHLO
+        id S1727929AbhASXTU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jan 2021 18:19:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730428AbhASXSW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jan 2021 18:18:22 -0500
-Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EFD3C0613C1
-        for <netdev@vger.kernel.org>; Tue, 19 Jan 2021 15:17:42 -0800 (PST)
-Received: by mail-pg1-x52c.google.com with SMTP id 15so13946487pgx.7
-        for <netdev@vger.kernel.org>; Tue, 19 Jan 2021 15:17:42 -0800 (PST)
+        with ESMTP id S1730593AbhASXSt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jan 2021 18:18:49 -0500
+Received: from mail-pg1-x531.google.com (mail-pg1-x531.google.com [IPv6:2607:f8b0:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4F73C061575
+        for <netdev@vger.kernel.org>; Tue, 19 Jan 2021 15:18:08 -0800 (PST)
+Received: by mail-pg1-x531.google.com with SMTP id n25so13970439pgb.0
+        for <netdev@vger.kernel.org>; Tue, 19 Jan 2021 15:18:08 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=bS1EXwVf9++GgF5w+IZun5/4T2TdIFJKa7KEA0Lv/a0=;
-        b=hpJ1Iih2ZaQEskGl2DHiWyn7xFj/Lcyv7+Vmc8dg7UpM8J6zHqS55XGjX5lABSsUj7
-         betvSSBD/2tezHHac3ucSyYM2tGVQhGZJHcDF1Scn2efK3eBL1stepK7jDFiTgkU3xnm
-         KH6gfJHEaFnogsEFC+TvSQjtV77nNnkZSveERxnT83zPxBB+II4d0H6ZusGnCxKMTNEF
-         NvtZ5u33IE6a0L4wShAotvpgBnzrpF86s1V4rA24hU8Gj1w20VTOJrSPo/8zghmVoYVg
-         J9b1aA9mp9nsWfPoxwAYc/dtYC+Y8DV9ZRIwxNQeVWoKfSVEfX+1pO8I1qg6Rn6ByGzI
-         Drfg==
+        bh=e6G2MprNwF9r7GUQPrF6tArileQuM3+nGIN0yDq0N2E=;
+        b=JblzFTP9OW2hovquyk2CjS1xq1noKLXTIPii4DgHfyGIno3ClytM2OObkfrzz1boyZ
+         gVgsVn3QDxXd9Ofsco0SKFCcOKyJZhw3vGL0ANHgJzJ2udqd+yfPi2RthMBb6jgpBXZz
+         1c14zXHkPAcNwd5DJSShbF1w81Q/1iCSPsmV5x67u/+beMbMAI+Ly1qdB4naNeZqGdC0
+         YTWTSDB2IK0coG5Ms3NRdbWNf4v8s8+5KbduuCJLi5nI6JI4KlNhQ2Rlj00sbJMl/0Wh
+         l/R9b70xwnzYJ/tndfbB6RoQOprdlLlHx54N8M1oaisGiRlBmw3TMYhL6n7fdP1uKNcg
+         LrQA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=bS1EXwVf9++GgF5w+IZun5/4T2TdIFJKa7KEA0Lv/a0=;
-        b=Duiuum8M5i7glSAohy5swgekSMceU+I+Qa2a9JcizZVv/Njy25Gv8Kd0VV4EU1qLwu
-         3NhPvO9bBejI2BgZCfPyORJJ6Hqf1EzZn+6Jygrf9hEFK1MghkVlepCyFn1Ta5NZCiid
-         epYJ4GG2sCOZSnJGby4m1EBx3P3OzYusQ7MEqvi+PVOVZuEX0JrgXnjps4gKowaKHRzi
-         YxFZa5X+e57PLdQH+Jx2sNfRq8Q+HFe2nvPp8cYasC+bg3ZIyTNc69NoLEgGbYDM5Ua+
-         on7ouuI2xD9GRM8jkeoiMqH+bRt2wa+kM0YYBytb4hz1JzcPnWznobic9p4uG0sUwTm/
-         x2Ow==
-X-Gm-Message-State: AOAM530hOtnUNtUoTY2o+sfh7lwWPjmK7uPv2rV/Rvxu/oLibZgBE6Ag
-        kRFsT+MuEpPXmsAWjt+7j+o=
-X-Google-Smtp-Source: ABdhPJyFL6mbd3Li1/SfH8DdjGECbDytJ+kxzF2HBOs7sLl1SLKsrQDsJsnaAOa51gtU0ZhYPrMOfA==
-X-Received: by 2002:a63:5d10:: with SMTP id r16mr6493408pgb.406.1611098261910;
-        Tue, 19 Jan 2021 15:17:41 -0800 (PST)
+        bh=e6G2MprNwF9r7GUQPrF6tArileQuM3+nGIN0yDq0N2E=;
+        b=qZuXDxiCEMSQ5jYIYKbXG4hv7cy4kfn2GunZaxqk+0k2l8517bBFMpKLCl3m9ZtK1A
+         G99uPNGNq3+jsvcpOaVaf+tH8Z4GjZD9ZRNLxYr045HZebLEpq7JXpWsSv3vLv80X+Si
+         ckbA35ARLPnxYykQTmz5dWvbwfVOfFiTTNND5c2Cl3oh3GJLOQtlFtVu1kVgHfCwy4Yl
+         212zIXWC2pvQrZFjZmmLybgASLrOqICAygU+fqRIozChXFUqPsWrN+SSsNpjupug9Uou
+         3HKs+P+neKtpQ2qi3LN48D0hlY41Cm5tT76aFyvHJ/vfzoXMBT1K3qYUxkRWASA4RK/L
+         QPZA==
+X-Gm-Message-State: AOAM530QH6M5WIYchadau50yms/s7d1YlhAsX03rawj6IQF4S7DcQ8+0
+        ddpVwbzkdFt/m6Q3l6i2MYg=
+X-Google-Smtp-Source: ABdhPJyK6kipBsMpgqHPfW75UcspSN4hShKAncurT4HeTIrRU4qsP66zSabQl1QaYm9kvqCNgAhlPw==
+X-Received: by 2002:a63:e1b:: with SMTP id d27mr6611142pgl.441.1611098288257;
+        Tue, 19 Jan 2021 15:18:08 -0800 (PST)
 Received: from [10.230.29.29] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id p13sm64427pju.20.2021.01.19.15.17.39
+        by smtp.gmail.com with ESMTPSA id e21sm139085pgv.74.2021.01.19.15.18.05
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 19 Jan 2021 15:17:41 -0800 (PST)
-Subject: Re: [PATCH v4 net-next 13/16] net: mscc: ocelot: export struct
- ocelot_frame_info
+        Tue, 19 Jan 2021 15:18:07 -0800 (PST)
+Subject: Re: [PATCH v4 net-next 11/16] net: mscc: ocelot: use DIV_ROUND_UP
+ helper in ocelot_port_inject_frame
 To:     Vladimir Oltean <olteanv@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
@@ -67,14 +67,14 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Eldar Gasanov <eldargasanov2@gmail.com>,
         Andrey L <al@b4comtech.com>, UNGLinuxDriver@microchip.com
 References: <20210119230749.1178874-1-olteanv@gmail.com>
- <20210119230749.1178874-14-olteanv@gmail.com>
+ <20210119230749.1178874-12-olteanv@gmail.com>
 From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <36d77745-9b59-79ff-4f0b-9613149495b3@gmail.com>
-Date:   Tue, 19 Jan 2021 15:17:34 -0800
+Message-ID: <5208ef79-609a-5890-9c03-3c0249364004@gmail.com>
+Date:   Tue, 19 Jan 2021 15:18:02 -0800
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
  Firefox/78.0 Thunderbird/78.6.1
 MIME-Version: 1.0
-In-Reply-To: <20210119230749.1178874-14-olteanv@gmail.com>
+In-Reply-To: <20210119230749.1178874-12-olteanv@gmail.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -87,10 +87,7 @@ X-Mailing-List: netdev@vger.kernel.org
 On 1/19/2021 3:07 PM, Vladimir Oltean wrote:
 > From: Vladimir Oltean <vladimir.oltean@nxp.com>
 > 
-> Because felix DSA must now be able to extract a frame in 2 stages over
-> MMIO (first the XFH then the frame data), it needs access to this
-> internal ocelot structure that holds the unpacked information from the
-> Extraction Frame Header.
+> This looks a bit nicer than the open-coded "(x + 3) % 4" idiom.
 > 
 > Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
