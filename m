@@ -2,122 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2043F2FB8DC
-	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 15:34:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9AE2A2FB8E3
+	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 15:34:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2395009AbhASNzM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jan 2021 08:55:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47948 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2392006AbhASL4x (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jan 2021 06:56:53 -0500
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CDBCC061574
-        for <netdev@vger.kernel.org>; Tue, 19 Jan 2021 03:56:12 -0800 (PST)
-Received: by mail-wr1-x430.google.com with SMTP id 6so12170527wri.3
-        for <netdev@vger.kernel.org>; Tue, 19 Jan 2021 03:56:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=dTev6Jut5EwvEBVedaHAvH07h4moUecc8bEA4soj/18=;
-        b=fOFWuQZF0kwzB33sDtQac/bfxEOE+0OG1lMF0pAICw7eIPTjjh7U9srRQlaI81ueQM
-         9abby61/Bzcx/dtsshvPjggPLJTlLGsZOEBj5QGA7KY03wB67JvLgQCuYV0V6/CwFpD5
-         4dhgbpi0Jvd49ud1T/ZaUFo4GF2k/eSwhoB5DkjvHCA+8dFkJ4sZ4bnRXIjYnr9F37fU
-         ttBLcWkHYVisTuLcszcnNwfFBHZseU70UB27zSzHSMrpIp2ZN/CygzmKdo1dVnQt2epN
-         WuJbqoHfXIBRFTPlMBtEan9wGRvtSvZnyd5Y6TmlkuS/QbNCv6ZlxJWRINSebYqvXx4T
-         Q6sg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=dTev6Jut5EwvEBVedaHAvH07h4moUecc8bEA4soj/18=;
-        b=MHZWCbd0ilCmVmRb3JPA8KMb01ZbEy6yDXUBNyBW3DsDuc0gklrGHbZqXe8Yktd0dk
-         iTXHvlrWyJvJf9Go1N79PV4eI/ql/EuaYqX1FImwWa2vy3dAOSlYDjH9K2fGgHV6jAm6
-         WzsgmUVW3U6wNjLqGmlrchtPrk137ody3Edh4sFrbnZ2qQBPEnLY14CtGTDQgRvdt7A1
-         2XWXShzzkbxNlR1edE+2ADHZQbr7noPVBS8tUz84Wld2SCWR4ixf1ozr8BYlxM0KGUbc
-         OkEMDciq+GCItdYYG/cGFJfhXWoUPcpIFLfNVkI+1uQ43F8+4KBI+CA7YdT4zrLosZbr
-         L9fg==
-X-Gm-Message-State: AOAM530mizIxSlPPBs8aH8voIXZoXaDHLT5DJZG0hC+FPrx0wSuNr160
-        H0PeLZwx1cC8FLRIldyVO6Vn1A==
-X-Google-Smtp-Source: ABdhPJzyyqzI7l2Qg0rUVdztlA0cJ5jqgZHZG2L3AT25cGSwnGgE7snGNnkKEY8P8MRVvJmA2rNqrg==
-X-Received: by 2002:adf:ef8b:: with SMTP id d11mr4124063wro.156.1611057371172;
-        Tue, 19 Jan 2021 03:56:11 -0800 (PST)
-Received: from localhost ([86.61.181.4])
-        by smtp.gmail.com with ESMTPSA id l12sm4382411wmj.9.2021.01.19.03.56.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Jan 2021 03:56:10 -0800 (PST)
-Date:   Tue, 19 Jan 2021 12:56:10 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        jacob.e.keller@intel.com, roopa@nvidia.com, mlxsw@nvidia.com
-Subject: Re: [patch net-next RFC 00/10] introduce line card support for
- modular switch
-Message-ID: <20210119115610.GZ3565223@nanopsycho.orion>
-References: <20210113121222.733517-1-jiri@resnulli.us>
- <X/+nVtRrC2lconET@lunn.ch>
+        id S2406306AbhASN6g (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jan 2021 08:58:36 -0500
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:35678 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S2391080AbhASMPw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jan 2021 07:15:52 -0500
+Received: from Internal Mail-Server by MTLPINE1 (envelope-from maximmi@mellanox.com)
+        with SMTP; 19 Jan 2021 14:08:15 +0200
+Received: from dev-l-vrt-208.mtl.labs.mlnx (dev-l-vrt-208.mtl.labs.mlnx [10.234.208.1])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 10JC8FR1021916;
+        Tue, 19 Jan 2021 14:08:15 +0200
+From:   Maxim Mikityanskiy <maximmi@mellanox.com>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@resnulli.us>, David Ahern <dsahern@gmail.com>
+Cc:     Saeed Mahameed <saeedm@nvidia.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Tariq Toukan <tariqt@nvidia.com>,
+        Yossi Kuperman <yossiku@nvidia.com>,
+        Maxim Mikityanskiy <maximmi@nvidia.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        netdev@vger.kernel.org
+Subject: [PATCH net-next v4 0/5] HTB offload
+Date:   Tue, 19 Jan 2021 14:08:10 +0200
+Message-Id: <20210119120815.463334-1-maximmi@mellanox.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <X/+nVtRrC2lconET@lunn.ch>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Thu, Jan 14, 2021 at 03:07:18AM CET, andrew@lunn.ch wrote:
->> $ devlink lc provision netdevsim/netdevsim10 lc 0 type card4ports
->> $ devlink lc
->> netdevsim/netdevsim10:
->>   lc 0 state provisioned type card4ports
->>     supported_types:
->>        card1port card2ports card4ports
->>   lc 1 state unprovisioned
->>     supported_types:
->>        card1port card2ports card4ports
->
->Hi Jiri
->
->> # Now activate the line card using debugfs. That emulates plug-in event
->> # on real hardware:
->> $ echo "Y"> /sys/kernel/debug/netdevsim/netdevsim10/linecards/0/active
->> $ ip link show eni10nl0p1
->> 165: eni10nl0p1: <BROADCAST,NOARP,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP mode DEFAULT group default qlen 1000
->>     link/ether 7e:2d:05:93:d3:d1 brd ff:ff:ff:ff:ff:ff
->> # The carrier is UP now.
->
->What is missing from the devlink lc view is what line card is actually
->in the slot. Say if i provision for a card4port, but actually insert a
->card2port. It would be nice to have something like:
+This series adds support for HTB offload to the HTB qdisc, and adds
+usage to mlx5 driver.
 
-I checked, our hw does not support that. Only provides info that
-linecard activation was/wasn't successful.
+The previous RFCs are available at [1], [2].
 
+The feature is intended to solve the performance bottleneck caused by
+the single lock of the HTB qdisc, which prevents it from scaling well.
+The HTB algorithm itself is offloaded to the device, eliminating the
+need to take the root lock of HTB on every packet. Classification part
+is done in clsact (still in software) to avoid acquiring the lock, which
+imposes a limitation that filters can target only leaf classes.
 
->
-> $ devlink lc
-> netdevsim/netdevsim10:
->   lc 0 state provisioned type card4ports
->     supported_types:
->        card1port card2ports card4ports
->     inserted_type:
->        card2ports;
->   lc 1 state unprovisioned
->     supported_types:
->        card1port card2ports card4ports
->     inserted_type:
->        None
->
->I assume if i prevision for card4ports but actually install a
->card2ports, all the interfaces stay down?
->
->Maybe
->
->> $ echo "Y"> /sys/kernel/debug/netdevsim/netdevsim10/linecards/0/active
->
->should actually be
->    echo "card2ports" > /sys/kernel/debug/netdevsim/netdevsim10/linecards/0/active
->
->so you can emulate somebody putting the wrong card in the slot?
->
->    Andrew
+The speedup on Mellanox ConnectX-6 Dx was 14.2 times in the UDP
+multi-stream test, compared to software HTB implementation (more details
+in the mlx5 patch).
+
+[1]: https://www.spinics.net/lists/netdev/msg628422.html
+[2]: https://www.spinics.net/lists/netdev/msg663548.html
+
+v2 changes:
+
+Fixed sparse and smatch warnings. Formatted HTB patches to 80 chars per
+line.
+
+v3 changes:
+
+Fixed the CI failure on parisc with 16-bit xchg by replacing it with
+WRITE_ONCE. Fixed the capability bits in mlx5_ifc.h and the value of
+MLX5E_QOS_MAX_LEAF_NODES.
+
+v4 changes:
+
+Check if HTB is root when offloading. Add extack for hardware errors.
+Rephrase explanations of how it works in the commit message. Remove %hu
+from format strings. Add resiliency when leaf_del_last fails to create a
+new leaf node.
+
+Maxim Mikityanskiy (5):
+  net: sched: Add multi-queue support to sch_tree_lock
+  net: sched: Add extack to Qdisc_class_ops.delete
+  sch_htb: Hierarchical QoS hardware offload
+  sch_htb: Stats for offloaded HTB
+  net/mlx5e: Support HTB offload
+
+ .../net/ethernet/mellanox/mlx5/core/Makefile  |   6 +-
+ drivers/net/ethernet/mellanox/mlx5/core/en.h  |  27 +-
+ .../ethernet/mellanox/mlx5/core/en/params.h   |   2 +
+ .../net/ethernet/mellanox/mlx5/core/en/ptp.c  |   2 +-
+ .../net/ethernet/mellanox/mlx5/core/en/qos.c  | 984 ++++++++++++++++++
+ .../net/ethernet/mellanox/mlx5/core/en/qos.h  |  44 +
+ .../ethernet/mellanox/mlx5/core/en_ethtool.c  |  21 +
+ .../net/ethernet/mellanox/mlx5/core/en_main.c | 176 +++-
+ .../ethernet/mellanox/mlx5/core/en_stats.c    | 100 ++
+ .../ethernet/mellanox/mlx5/core/en_stats.h    |   2 +
+ .../net/ethernet/mellanox/mlx5/core/en_tx.c   |  47 +-
+ .../net/ethernet/mellanox/mlx5/core/en_txrx.c |  26 +
+ drivers/net/ethernet/mellanox/mlx5/core/qos.c |  85 ++
+ drivers/net/ethernet/mellanox/mlx5/core/qos.h |  30 +
+ include/linux/mlx5/mlx5_ifc.h                 |  13 +-
+ include/linux/netdevice.h                     |   1 +
+ include/net/pkt_cls.h                         |  36 +
+ include/net/sch_generic.h                     |  17 +-
+ include/uapi/linux/pkt_sched.h                |   1 +
+ net/sched/sch_api.c                           |   7 +-
+ net/sched/sch_atm.c                           |   3 +-
+ net/sched/sch_cbq.c                           |   3 +-
+ net/sched/sch_drr.c                           |   3 +-
+ net/sched/sch_dsmark.c                        |   3 +-
+ net/sched/sch_hfsc.c                          |   3 +-
+ net/sched/sch_htb.c                           | 557 +++++++++-
+ net/sched/sch_qfq.c                           |   3 +-
+ net/sched/sch_sfb.c                           |   3 +-
+ tools/include/uapi/linux/pkt_sched.h          |   1 +
+ 29 files changed, 2113 insertions(+), 93 deletions(-)
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/qos.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/en/qos.h
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/qos.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/qos.h
+
+-- 
+2.25.1
+
