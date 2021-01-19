@@ -2,169 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 43C652FB8D9
-	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 15:34:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B1AD2FB8DA
+	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 15:34:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406054AbhASNtN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jan 2021 08:49:13 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:27330 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2405145AbhASLEJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jan 2021 06:04:09 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1611054156;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=kiLt994IXzu+B0F7u6tIkfDBkyxqYHQz7CiZ5/RLVUY=;
-        b=i1Z2Qt0iHD3SdVLvWMAPrAQNaqpjSIxHwfkN6nMSBWadiJuYPFqs8W/ixmPgWpJW8hckD/
-        EEu7MF/vKDsLeGYTGysoND3dZiVj+pX/dV2Bs0IcY9I5K1DEQ7M+xNfNh6npj/2lSlwcoY
-        mV6C4uAnnVe+4NTmVQAIdn0BY6usoBE=
-Received: from mail-wm1-f71.google.com (mail-wm1-f71.google.com
- [209.85.128.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-425-2GvGq-lWN9qVWhx64uA4Ew-1; Tue, 19 Jan 2021 06:02:35 -0500
-X-MC-Unique: 2GvGq-lWN9qVWhx64uA4Ew-1
-Received: by mail-wm1-f71.google.com with SMTP id s24so3276178wmj.3
-        for <netdev@vger.kernel.org>; Tue, 19 Jan 2021 03:02:34 -0800 (PST)
+        id S2392005AbhASNv3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jan 2021 08:51:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41268 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2391329AbhASLZf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jan 2021 06:25:35 -0500
+Received: from mail-wr1-x42e.google.com (mail-wr1-x42e.google.com [IPv6:2a00:1450:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6099FC061574
+        for <netdev@vger.kernel.org>; Tue, 19 Jan 2021 03:24:55 -0800 (PST)
+Received: by mail-wr1-x42e.google.com with SMTP id d13so19314015wrc.13
+        for <netdev@vger.kernel.org>; Tue, 19 Jan 2021 03:24:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-powerpc-org.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id;
+        bh=fRRtmk5vKXIeEN5ATtqc9YeRhxKswlmBLafIT7BvxWc=;
+        b=PtbtBUP1F7ioONriSFLzgDhOQQyQzwamRQ6YQ2UbgR9P1SJpmma0iVYnWFjvIuO5hs
+         ksnpOXqA28p8iwOY/1B6tn7vEn9gBx4qbL4h6iySSoHEjHUyCKJ1ii7quO+XkkSM7IuX
+         c9Xyv2m9MqNdyeo8InunBPVm05D0AsCqUJUKiIpeRBmGxLdKTHnvq6aVy4YOisuCYTWz
+         nArr8f2AtTjuGUSgC1p1smZKcFl8QKR0mwY0K7B2KWmTGXPUnhP8DdW/RuMAyDXAm9Rc
+         RMGA6pT17njTS6TCCt3DqGvHXigDRcUjLAych5aN9V9XxIC4COCafEe+ev23FRErM9aI
+         Ancw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=kiLt994IXzu+B0F7u6tIkfDBkyxqYHQz7CiZ5/RLVUY=;
-        b=kKJNKxFebvxzeC/l8ZiFtcQLinCBFwVKeMuektkF7uUmH+JMN881RoDsHcLQVwvEHh
-         XVKo6+j1VZ1FkVuU/06P6DIjcjAhryb5weungUjzI35NXjqyFePY2acdnGIwMhVowQd+
-         HlroeCU4w/eeeY5IczG9PfTGlEtQwMbnoRCCj/EResjTsilOfHBfQwHfgD8/A2D0zPWN
-         7FIHuSd1prtNNc4CXGKJKpDhAmmu0qZR4ByQdHH2qU3EGhXmQ1fY8wsGgBHxVC219YGS
-         hyymHBNfW9VNs+pJf+vV9VYD7H//MNB26V6CYmB/9LwLfSxiSJNTgFLOu8Aj4qBGyin7
-         Cdow==
-X-Gm-Message-State: AOAM531lQNnE73x0B39M2OzF2j+GerESTEOZW7l0sCye71YjAs1BgYXS
-        NF1Kjmzt9UPCmdpXwNGqOvYKMP9iDaU07yagjzYGAjmg+y8oo3fIsL+J/NjNqOrawmCRh1l4DM/
-        U5hdIdmgtUjRoGee7
-X-Received: by 2002:a5d:4d8b:: with SMTP id b11mr3766969wru.215.1611054153256;
-        Tue, 19 Jan 2021 03:02:33 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxsn0QhhwxM0iUt4w960LJvOY9PG5C4qB5nxwYI6dFa+qrhGOvysE4HQc58/mKABJu2FbKe7Q==
-X-Received: by 2002:a5d:4d8b:: with SMTP id b11mr3766950wru.215.1611054153065;
-        Tue, 19 Jan 2021 03:02:33 -0800 (PST)
-Received: from redhat.com (bzq-79-177-39-148.red.bezeqint.net. [79.177.39.148])
-        by smtp.gmail.com with ESMTPSA id p12sm4133067wmi.3.2021.01.19.03.02.30
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Jan 2021 03:02:32 -0800 (PST)
-Date:   Tue, 19 Jan 2021 06:02:29 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Cc:     netdev@vger.kernel.org, Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
-Subject: Re: [PATCH bpf-next v2 0/3] xsk: build skb by page
-Message-ID: <20210119060140-mutt-send-email-mst@kernel.org>
-References: <20210119045004-mutt-send-email-mst@kernel.org>
- <1611053609.502882-1-xuanzhuo@linux.alibaba.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1611053609.502882-1-xuanzhuo@linux.alibaba.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=fRRtmk5vKXIeEN5ATtqc9YeRhxKswlmBLafIT7BvxWc=;
+        b=tJD3B6hNNRdQ3LtK9kB9/GE5kXtGtmILtNDnGBpOti5a5qhx9J7l2KtiQvpBKnC7s1
+         NcGOb6RjLXSnhu8n0RZIpYv1CP+tK+yqVoGa4kQRlUa9eQ+YZNH6BKoeoTDvSrai82Zp
+         c6JkZem82jisVZjLxl0Ohz2GjU+7Wcg4mk93WXxxKDIZiGv+TX4kVLMmd8UW+gjWgOku
+         5I3yWWdH5tffToBWzaQQXCShjhMIxBgX8TyeP9fPlhbb7z6Zdc21HN1m7NYRciaLci3e
+         HAWaUmWxACtwbkw4GuJGC98GcBT1KBmPE45/ZkyTnEwnFDBrDdRI2vMQ3arvWLooB4j3
+         EFhA==
+X-Gm-Message-State: AOAM533RbhwJT3f+Hlpc/N0Rf7FsCeWvtwFogSheaAlcx7UZv82qMPMb
+        0jjQhzpVLJig/dAc5KTLvVpDZojtogpVg9xc96U=
+X-Google-Smtp-Source: ABdhPJzfsZ2biPon/ZVFVD8TZGyjILmNsThNXGf81zPtu9Lq0ZYnDjE4+3JWzRKEO8tDCa2h0u4+AA==
+X-Received: by 2002:a5d:5146:: with SMTP id u6mr3938749wrt.46.1611055493958;
+        Tue, 19 Jan 2021 03:24:53 -0800 (PST)
+Received: from localhost.localdomain ([5.35.34.67])
+        by smtp.gmail.com with ESMTPSA id n8sm35828230wrs.34.2021.01.19.03.24.53
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 19 Jan 2021 03:24:53 -0800 (PST)
+From:   Denis Kirjanov <kda@linux-powerpc.org>
+To:     netdev@vger.kernel.org
+Cc:     kuba@kernel.org
+Subject: [PATCH v5] net/af_unix: don't create a path for a bound socket
+Date:   Tue, 19 Jan 2021 14:24:46 +0300
+Message-Id: <20210119112446.21180-1-kda@linux-powerpc.org>
+X-Mailer: git-send-email 2.16.4
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 19, 2021 at 06:53:29PM +0800, Xuan Zhuo wrote:
-> On Tue, 19 Jan 2021 04:50:30 -0500, Michael S. Tsirkin <mst@redhat.com> wrote:
-> > On Tue, Jan 19, 2021 at 05:45:09PM +0800, Xuan Zhuo wrote:
-> > > v2:
-> > >     1. add priv_flags IFF_TX_SKB_NO_LINEAR instead of netdev_feature
-> > >     2. split the patch to three:
-> > >         a. add priv_flags IFF_TX_SKB_NO_LINEAR
-> > >         b. virtio net add priv_flags IFF_TX_SKB_NO_LINEAR
-> > >         c. When there is support this flag, construct skb without linear space
-> > >     3. use ERR_PTR() and PTR_ERR() to handle the err
-> > >
-> > >
-> > > v1 message log:
-> > > ---------------
-> > >
-> > > This patch is used to construct skb based on page to save memory copy
-> > > overhead.
-> > >
-> > > This has one problem:
-> > >
-> > > We construct the skb by fill the data page as a frag into the skb. In
-> > > this way, the linear space is empty, and the header information is also
-> > > in the frag, not in the linear space, which is not allowed for some
-> > > network cards. For example, Mellanox Technologies MT27710 Family
-> > > [ConnectX-4 Lx] will get the following error message:
-> > >
-> > >     mlx5_core 0000:3b:00.1 eth1: Error cqe on cqn 0x817, ci 0x8, qn 0x1dbb, opcode 0xd, syndrome 0x1, vendor syndrome 0x68
-> > >     00000000: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-> > >     00000010: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-> > >     00000020: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-> > >     00000030: 00 00 00 00 60 10 68 01 0a 00 1d bb 00 0f 9f d2
-> > >     WQE DUMP: WQ size 1024 WQ cur size 0, WQE index 0xf, len: 64
-> > >     00000000: 00 00 0f 0a 00 1d bb 03 00 00 00 08 00 00 00 00
-> > >     00000010: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-> > >     00000020: 00 00 00 2b 00 08 00 00 00 00 00 05 9e e3 08 00
-> > >     00000030: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
-> > >     mlx5_core 0000:3b:00.1 eth1: ERR CQE on SQ: 0x1dbb
-> > >
-> > > I also tried to use build_skb to construct skb, but because of the
-> > > existence of skb_shinfo, it must be behind the linear space, so this
-> > > method is not working. We can't put skb_shinfo on desc->addr, it will be
-> > > exposed to users, this is not safe.
-> > >
-> > > Finally, I added a feature NETIF_F_SKB_NO_LINEAR to identify whether the
-> > > network card supports the header information of the packet in the frag
-> > > and not in the linear space.
-> > >
-> > > ---------------- Performance Testing ------------
-> > >
-> > > The test environment is Aliyun ECS server.
-> > > Test cmd:
-> > > ```
-> > > xdpsock -i eth0 -t  -S -s <msg size>
-> > > ```
-> > >
-> > > Test result data:
-> > >
-> > > size    64      512     1024    1500
-> > > copy    1916747 1775988 1600203 1440054
-> > > page    1974058 1953655 1945463 1904478
-> > > percent 3.0%    10.0%   21.58%  32.3%
-> >
-> > Just making sure, are these test results with v2?
-> 
-> The data was tested at v1,
-> but v2 did not modify the performance-related code.
-> 
-> Thanks.
+In the case of a socket which is already bound to an adress
+there is no sense to create a path in the next attempts
 
-Looks like v1 wouldn't even build, or did I miss anything?
-It would be nicer if you retested it ...
+here is a program that shows the issue:
 
-> 
-> >
-> > >
-> > > Xuan Zhuo (3):
-> > >   net: add priv_flags for allow tx skb without linear
-> > >   virtio-net: support IFF_TX_SKB_NO_LINEAR
-> > >   xsk: build skb by page
-> > >
-> > >  drivers/net/virtio_net.c  |   3 +-
-> > >  include/linux/netdevice.h |   3 ++
-> > >  net/xdp/xsk.c             | 112 ++++++++++++++++++++++++++++++++++++++--------
-> > >  3 files changed, 99 insertions(+), 19 deletions(-)
-> > >
-> > > --
-> > > 1.8.3.1
-> >
+int main()
+{
+    int s;
+    struct sockaddr_un a;
+
+    s = socket(AF_UNIX, SOCK_STREAM, 0);
+    if (s<0)
+        perror("socket() failed\n");
+
+    printf("First bind()\n");
+
+    memset(&a, 0, sizeof(a));
+    a.sun_family = AF_UNIX;
+    strncpy(a.sun_path, "/tmp/.first_bind", sizeof(a.sun_path));
+
+    if ((bind(s, (const struct sockaddr*) &a, sizeof(a))) == -1)
+        perror("bind() failed\n");
+
+    printf("Second bind()\n");
+
+    memset(&a, 0, sizeof(a));
+    a.sun_family = AF_UNIX;
+    strncpy(a.sun_path, "/tmp/.first_bind_failed", sizeof(a.sun_path));
+
+    if ((bind(s, (const struct sockaddr*) &a, sizeof(a))) == -1)
+        perror("bind() failed\n");
+}
+
+kda@SLES15-SP2:~> ./test
+First bind()
+Second bind()
+bind() failed
+: Invalid argument
+
+kda@SLES15-SP2:~> ls -la /tmp/.first_bind
+.first_bind         .first_bind_failed
+
+Signed-off-by: Denis Kirjanov <kda@linux-powerpc.org>
+---
+ net/unix/af_unix.c | 17 ++++++++++++++++-
+ 1 file changed, 16 insertions(+), 1 deletion(-)
+
+diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
+index 41c3303c3357..d8b1cfd872a3 100644
+--- a/net/unix/af_unix.c
++++ b/net/unix/af_unix.c
+@@ -1091,8 +1091,23 @@ static int unix_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len)
+ out_up:
+ 	mutex_unlock(&u->bindlock);
+ out_put:
+-	if (err)
++	if (err) {
++		struct path parent = { };
++		struct dentry *dentry;
++		int ret;
++
++		dentry = kern_path_locked(sun_path, &parent);
++		if (IS_ERR(dentry))
++			return PTR_ERR(dentry);
++
++		ret = vfs_unlink(d_inode(parent.dentry), path.dentry, NULL);
++		if (ret)
++			err = ret;
++		dput(path.dentry);
++		inode_unlock(d_inode(parent.dentry));
++		path_put(&parent);
+ 		path_put(&path);
++	}
+ out:
+ 	return err;
+ }
+-- 
+2.16.4
 
