@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C8B342FBB77
-	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 16:43:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 10BF42FBB66
+	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 16:40:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391689AbhASPmQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jan 2021 10:42:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39038 "EHLO
+        id S2403806AbhASPjp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jan 2021 10:39:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390660AbhASPhd (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jan 2021 10:37:33 -0500
-Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81BBAC0613ED;
-        Tue, 19 Jan 2021 07:37:16 -0800 (PST)
-Received: by mail-lf1-x136.google.com with SMTP id o13so29680110lfr.3;
-        Tue, 19 Jan 2021 07:37:16 -0800 (PST)
+        with ESMTP id S2391482AbhASPh6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jan 2021 10:37:58 -0500
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 071AAC061786;
+        Tue, 19 Jan 2021 07:37:18 -0800 (PST)
+Received: by mail-lf1-x131.google.com with SMTP id h205so29617064lfd.5;
+        Tue, 19 Jan 2021 07:37:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=/A8qSxg6mjQyW3rVEfH/72JcIK5m3UMA6EDeCF6zH2o=;
-        b=a9+sJbO58jlhdcDYj/6WhFSwdgMZw3d1bu4Z5IOzn7x+hxlcTdKtkTshuYr4YR0sQB
-         Y0bO9g8Ju88kT2ChMvkYC8SKrAFbmzFeN73cGFCM8S9Mt1GN8SIgQhxC0dATQ8wu1J5m
-         Y2GhAc04bjp+Rb0Trlir4Jwr/bIbyPZHNlux7eze2zyehBJvX4bFk40zN7fgJYL/+cZh
-         mQ45OS9rTQzQEwfeZbesVdMb4gPGn/K/yj1ojbJRF/26YtCFIg6biSFkP3/BTNHi4GlR
-         kjiPy+WNl9Li95YlKL+mYmolOyvoJfo9yeP9QoWjRyUTfL6zjliVeIYKqU0WJzHFmh+T
-         +J/A==
+        bh=rXtdonoT6z2Mk/wuvXU5Af4iSxQJt1+pwiGmRinI7sw=;
+        b=qRIv7JIkirHJdRcAWpGuGaN9AF/QwzHillhQDelsg+MdJxUdGCQtpjfFQyfraivpB/
+         rT0csC5/J5xVv20urpem6yD7g+ng+OPeBKuu1SJxlQvih6T3/Mp8C6NXJ4TOeQ+ADm8p
+         BXSGyN1qVJHCsjpVvXv0o9jxOx/SyuVhGL6hcld5Nv/paIQy4+haZirfw48Rl+GcN6+5
+         4oCJsSwn6XroCkAp3Iix97jgVyJlGOn7gf8amq3YX5uvljQUY9dnxZfWUrxF98TkvsxX
+         YU+4I/qyPPkrJNffDNFv4Ui6xz68wpa4QDDNZ4dPd+3KzRDmV6uLkwySLqZoLzEtMUfi
+         B0UQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=/A8qSxg6mjQyW3rVEfH/72JcIK5m3UMA6EDeCF6zH2o=;
-        b=VRYszSGojOhGmJIKuJBmy/kJbYNKjXj8rmkKZnIkC99G1X8uqjud3L0JcAyNTAJt5r
-         KqGtUXrGQr37qXvMiu/2s9/5nBGEZTy/O02+Ei5+aEPZ3g8uNhjx6JhwqkSLCcMjt2X9
-         4p5cz/09D36xDgow+dKRf6ANOMjb4TG6J1XR5wGOnSCykrYk/LB5ctDzFcAze2VFuCp6
-         AQluG5dRBx15KKf6jnxY3/tWU5fBQYGgqKVypWnCkWScbocja/55lM0rjcUiHEwFpy6l
-         BKxis82L0pQLEPBNN3kPI01vE1mbujNi/CMeU9yIiW3XoX8aRit/dYzioSz1d6QjKBrf
-         s4bA==
-X-Gm-Message-State: AOAM530anAlU4pN4a/FhuVNjKnquCxRLez6qs+95W7jgFuh7Q/xZuWB+
-        Or/jf/X8ODUgYPmuHUxzd/E=
-X-Google-Smtp-Source: ABdhPJwM+lS45bj5hNo9KN/pO4S49aGEz+iBRNP0Bm74IFSe1KWkkw9ryeD4y3ySS+UCcJQJT4KazA==
-X-Received: by 2002:a19:6d0b:: with SMTP id i11mr1599898lfc.332.1611070635075;
-        Tue, 19 Jan 2021 07:37:15 -0800 (PST)
+        bh=rXtdonoT6z2Mk/wuvXU5Af4iSxQJt1+pwiGmRinI7sw=;
+        b=ZUBaBTG4NCWNsO8g0h3/zlwBtu1cp9STv2g/BoVTiPup/rpe8wMz2xGvuz46ic1Ov1
+         dhzqUyOYKbEcNDL+qeWKjTzaDNC5ajvqYLr2mXwe2XMgbNQcEGH6imM3Lmdp74g5T5eP
+         L7EwKjwgqDVLBIRDtq7Tckz5BE89Ko8Ni2lISdoyVO8ZAqvVQM4FsFCngqwe1yIZBnZ/
+         XwvsNlSYrGyzoMAefyQXQwWMPscGfeoSWqBZ1PFmcCMtMbad/pkRntQc7M5JLdWT/kek
+         6v/6O9KNt48Su49ALr8vmgYujVQbpvsdeHUg8vXzByszieYY2wb7IwPHKPTI5MrAxQS8
+         Ap+g==
+X-Gm-Message-State: AOAM533bIr4b7cbOMgZvarGRsKCnZbm/sNJ3ssZiXl3S8H9dJkilPz+x
+        WKRQCRFPN9IcsR0JJD4w3lw=
+X-Google-Smtp-Source: ABdhPJy1FQUrnRBMebvcPkh02XkOq8Y2OFZutHujM6kkZReWtsYl8C35xBYOmiI2YxOlRdLom2rQgw==
+X-Received: by 2002:ac2:46dc:: with SMTP id p28mr202828lfo.25.1611070636553;
+        Tue, 19 Jan 2021 07:37:16 -0800 (PST)
 Received: from btopel-mobl.ger.intel.com (c213-102-90-208.bredband.comhem.se. [213.102.90.208])
-        by smtp.gmail.com with ESMTPSA id z2sm2309075lfd.142.2021.01.19.07.37.13
+        by smtp.gmail.com with ESMTPSA id z2sm2309075lfd.142.2021.01.19.07.37.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Jan 2021 07:37:14 -0800 (PST)
+        Tue, 19 Jan 2021 07:37:15 -0800 (PST)
 From:   =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>
 To:     ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org,
         bpf@vger.kernel.org
@@ -54,11 +54,10 @@ Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
         magnus.karlsson@intel.com, maciej.fijalkowski@intel.com,
         kuba@kernel.org, jonathan.lemon@gmail.com, maximmi@nvidia.com,
         davem@davemloft.net, hawk@kernel.org, john.fastabend@gmail.com,
-        ciara.loftus@intel.com, weqaar.a.janjua@intel.com,
-        Marek Majtyka <alardam@gmail.com>
-Subject: [PATCH bpf-next 5/8] libbpf, xsk: select AF_XDP BPF program based on kernel version
-Date:   Tue, 19 Jan 2021 16:36:52 +0100
-Message-Id: <20210119153655.153999-6-bjorn.topel@gmail.com>
+        ciara.loftus@intel.com, weqaar.a.janjua@intel.com
+Subject: [PATCH bpf-next 6/8] libbpf, xsk: select bpf_redirect_xsk(), if supported
+Date:   Tue, 19 Jan 2021 16:36:53 +0100
+Message-Id: <20210119153655.153999-7-bjorn.topel@gmail.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20210119153655.153999-1-bjorn.topel@gmail.com>
 References: <20210119153655.153999-1-bjorn.topel@gmail.com>
@@ -71,153 +70,136 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Björn Töpel <bjorn.topel@intel.com>
 
-Add detection for kernel version, and adapt the BPF program based on
-kernel support. This way, users will get the best possible performance
-from the BPF program.
+Select bpf_redirect_xsk() as the default AF_XDP BPF program, if
+supported.
+
+The bpf_redirect_xsk() helper does not require an XSKMAP, so make sure
+that no map is created/updated when using it.
 
 Reviewed-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Acked-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
 Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
-Signed-off-by: Marek Majtyka  <alardam@gmail.com>
 ---
- tools/lib/bpf/libbpf.c          |  2 +-
- tools/lib/bpf/libbpf_internal.h |  2 ++
- tools/lib/bpf/libbpf_probes.c   | 16 -------------
- tools/lib/bpf/xsk.c             | 41 ++++++++++++++++++++++++++++++---
- 4 files changed, 41 insertions(+), 20 deletions(-)
+ tools/lib/bpf/xsk.c | 46 +++++++++++++++++++++++++++++++++++++++++----
+ 1 file changed, 42 insertions(+), 4 deletions(-)
 
-diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-index 2abbc3800568..6a53adf14a9c 100644
---- a/tools/lib/bpf/libbpf.c
-+++ b/tools/lib/bpf/libbpf.c
-@@ -693,7 +693,7 @@ bpf_object__add_programs(struct bpf_object *obj, Elf_Data *sec_data,
- 	return 0;
- }
- 
--static __u32 get_kernel_version(void)
-+__u32 get_kernel_version(void)
- {
- 	__u32 major, minor, patch;
- 	struct utsname info;
-diff --git a/tools/lib/bpf/libbpf_internal.h b/tools/lib/bpf/libbpf_internal.h
-index 969d0ac592ba..dafb780e2dd2 100644
---- a/tools/lib/bpf/libbpf_internal.h
-+++ b/tools/lib/bpf/libbpf_internal.h
-@@ -349,4 +349,6 @@ struct bpf_core_relo {
- 	enum bpf_core_relo_kind kind;
- };
- 
-+__u32 get_kernel_version(void);
-+
- #endif /* __LIBBPF_LIBBPF_INTERNAL_H */
-diff --git a/tools/lib/bpf/libbpf_probes.c b/tools/lib/bpf/libbpf_probes.c
-index ecaae2927ab8..aae0231371d0 100644
---- a/tools/lib/bpf/libbpf_probes.c
-+++ b/tools/lib/bpf/libbpf_probes.c
-@@ -48,22 +48,6 @@ static int get_vendor_id(int ifindex)
- 	return strtol(buf, NULL, 0);
- }
- 
--static int get_kernel_version(void)
--{
--	int version, subversion, patchlevel;
--	struct utsname utsn;
--
--	/* Return 0 on failure, and attempt to probe with empty kversion */
--	if (uname(&utsn))
--		return 0;
--
--	if (sscanf(utsn.release, "%d.%d.%d",
--		   &version, &subversion, &patchlevel) != 3)
--		return 0;
--
--	return (version << 16) + (subversion << 8) + patchlevel;
--}
--
- static void
- probe_load(enum bpf_prog_type prog_type, const struct bpf_insn *insns,
- 	   size_t insns_cnt, char *buf, size_t buf_len, __u32 ifindex)
 diff --git a/tools/lib/bpf/xsk.c b/tools/lib/bpf/xsk.c
-index e3e41ceeb1bc..c8642c6cb5d6 100644
+index c8642c6cb5d6..27e36d6d92a6 100644
 --- a/tools/lib/bpf/xsk.c
 +++ b/tools/lib/bpf/xsk.c
-@@ -23,6 +23,7 @@
- #include <linux/kernel.h>
- #include <linux/list.h>
- #include <linux/sockios.h>
-+#include <linux/version.h>
- #include <net/if.h>
- #include <sys/ioctl.h>
- #include <sys/mman.h>
-@@ -46,6 +47,11 @@
+@@ -47,9 +47,12 @@
   #define PF_XDP AF_XDP
  #endif
  
-+enum xsk_prog {
-+	XSK_PROG_FALLBACK,
-+	XSK_PROG_REDIRECT_FLAGS,
-+};
++#define XSKMAP_NOT_NEEDED -1
 +
+ enum xsk_prog {
+ 	XSK_PROG_FALLBACK,
+ 	XSK_PROG_REDIRECT_FLAGS,
++	XSK_PROG_REDIRECT_XSK,
+ };
+ 
  struct xsk_umem {
- 	struct xsk_ring_prod *fill_save;
- 	struct xsk_ring_cons *comp_save;
-@@ -351,6 +357,13 @@ int xsk_umem__create_v0_0_2(struct xsk_umem **umem_ptr, void *umem_area,
- COMPAT_VERSION(xsk_umem__create_v0_0_2, xsk_umem__create, LIBBPF_0.0.2)
- DEFAULT_VERSION(xsk_umem__create_v0_0_4, xsk_umem__create, LIBBPF_0.0.4)
- 
-+static enum xsk_prog get_xsk_prog(void)
-+{
-+	__u32 kver = get_kernel_version();
-+
-+	return kver < KERNEL_VERSION(5, 3, 0) ? XSK_PROG_FALLBACK : XSK_PROG_REDIRECT_FLAGS;
-+}
-+
- static int xsk_load_xdp_prog(struct xsk_socket *xsk)
+@@ -361,7 +364,11 @@ static enum xsk_prog get_xsk_prog(void)
  {
- 	static const int log_buf_size = 16 * 1024;
-@@ -358,7 +371,7 @@ static int xsk_load_xdp_prog(struct xsk_socket *xsk)
- 	char log_buf[log_buf_size];
- 	int err, prog_fd;
+ 	__u32 kver = get_kernel_version();
  
--	/* This is the C-program:
-+	/* This is the fallback C-program:
- 	 * SEC("xdp_sock") int xdp_sock_prog(struct xdp_md *ctx)
- 	 * {
- 	 *     int ret, index = ctx->rx_queue_index;
-@@ -414,9 +427,31 @@ static int xsk_load_xdp_prog(struct xsk_socket *xsk)
- 		/* The jumps are to this instruction */
+-	return kver < KERNEL_VERSION(5, 3, 0) ? XSK_PROG_FALLBACK : XSK_PROG_REDIRECT_FLAGS;
++	if (kver < KERNEL_VERSION(5, 3, 0))
++		return XSK_PROG_FALLBACK;
++	if (kver < KERNEL_VERSION(5, 12, 0))
++		return XSK_PROG_REDIRECT_FLAGS;
++	return XSK_PROG_REDIRECT_XSK;
+ }
+ 
+ static int xsk_load_xdp_prog(struct xsk_socket *xsk)
+@@ -445,10 +452,25 @@ static int xsk_load_xdp_prog(struct xsk_socket *xsk)
+ 		BPF_EMIT_CALL(BPF_FUNC_redirect_map),
  		BPF_EXIT_INSN(),
  	};
--	size_t insns_cnt = sizeof(prog) / sizeof(struct bpf_insn);
- 
--	prog_fd = bpf_load_program(BPF_PROG_TYPE_XDP, prog, insns_cnt,
-+	/* This is the post-5.3 kernel C-program:
++
++	/* This is the post-5.12 kernel C-program:
 +	 * SEC("xdp_sock") int xdp_sock_prog(struct xdp_md *ctx)
 +	 * {
-+	 *     return bpf_redirect_map(&xsks_map, ctx->rx_queue_index, XDP_PASS);
++	 *     return bpf_redirect_xsk(ctx, XDP_PASS);
 +	 * }
 +	 */
-+	struct bpf_insn prog_redirect_flags[] = {
-+		/* r2 = *(u32 *)(r1 + 16) */
-+		BPF_LDX_MEM(BPF_W, BPF_REG_2, BPF_REG_1, 16),
-+		/* r1 = xskmap[] */
-+		BPF_LD_MAP_FD(BPF_REG_1, ctx->xsks_map_fd),
-+		/* r3 = XDP_PASS */
-+		BPF_MOV64_IMM(BPF_REG_3, 2),
-+		/* call bpf_redirect_map */
-+		BPF_EMIT_CALL(BPF_FUNC_redirect_map),
++	struct bpf_insn prog_redirect_xsk[] = {
++		/* r2 = XDP_PASS */
++		BPF_MOV64_IMM(BPF_REG_2, 2),
++		/* call bpf_redirect_xsk */
++		BPF_EMIT_CALL(BPF_FUNC_redirect_xsk),
 +		BPF_EXIT_INSN(),
 +	};
-+	size_t insns_cnt[] = {sizeof(prog) / sizeof(struct bpf_insn),
-+			      sizeof(prog_redirect_flags) / sizeof(struct bpf_insn),
-+	};
-+	struct bpf_insn *progs[] = {prog, prog_redirect_flags};
-+	enum xsk_prog option = get_xsk_prog();
+ 	size_t insns_cnt[] = {sizeof(prog) / sizeof(struct bpf_insn),
+ 			      sizeof(prog_redirect_flags) / sizeof(struct bpf_insn),
++			      sizeof(prog_redirect_xsk) / sizeof(struct bpf_insn),
+ 	};
+-	struct bpf_insn *progs[] = {prog, prog_redirect_flags};
++	struct bpf_insn *progs[] = {prog, prog_redirect_flags, prog_redirect_xsk};
+ 	enum xsk_prog option = get_xsk_prog();
+ 
+ 	prog_fd = bpf_load_program(BPF_PROG_TYPE_XDP, progs[option], insns_cnt[option],
+@@ -508,12 +530,22 @@ static int xsk_get_max_queues(struct xsk_socket *xsk)
+ 	return ret;
+ }
+ 
++static bool xskmap_required(void)
++{
++	return get_xsk_prog() != XSK_PROG_REDIRECT_XSK;
++}
 +
-+	prog_fd = bpf_load_program(BPF_PROG_TYPE_XDP, progs[option], insns_cnt[option],
- 				   "LGPL-2.1 or BSD-2-Clause", 0, log_buf,
- 				   log_buf_size);
- 	if (prog_fd < 0) {
+ static int xsk_create_bpf_maps(struct xsk_socket *xsk)
+ {
+ 	struct xsk_ctx *ctx = xsk->ctx;
+ 	int max_queues;
+ 	int fd;
+ 
++	if (!xskmap_required()) {
++		ctx->xsks_map_fd = XSKMAP_NOT_NEEDED;
++		return 0;
++	}
++
+ 	max_queues = xsk_get_max_queues(xsk);
+ 	if (max_queues < 0)
+ 		return max_queues;
+@@ -532,6 +564,9 @@ static void xsk_delete_bpf_maps(struct xsk_socket *xsk)
+ {
+ 	struct xsk_ctx *ctx = xsk->ctx;
+ 
++	if (ctx->xsks_map_fd == XSKMAP_NOT_NEEDED)
++		return;
++
+ 	bpf_map_delete_elem(ctx->xsks_map_fd, &ctx->queue_id);
+ 	close(ctx->xsks_map_fd);
+ }
+@@ -563,7 +598,7 @@ static int xsk_lookup_bpf_maps(struct xsk_socket *xsk)
+ 	if (err)
+ 		goto out_map_ids;
+ 
+-	ctx->xsks_map_fd = -1;
++	ctx->xsks_map_fd = XSKMAP_NOT_NEEDED;
+ 
+ 	for (i = 0; i < prog_info.nr_map_ids; i++) {
+ 		fd = bpf_map_get_fd_by_id(map_ids[i]);
+@@ -585,7 +620,7 @@ static int xsk_lookup_bpf_maps(struct xsk_socket *xsk)
+ 	}
+ 
+ 	err = 0;
+-	if (ctx->xsks_map_fd == -1)
++	if (ctx->xsks_map_fd == XSKMAP_NOT_NEEDED && xskmap_required())
+ 		err = -ENOENT;
+ 
+ out_map_ids:
+@@ -597,6 +632,9 @@ static int xsk_set_bpf_maps(struct xsk_socket *xsk)
+ {
+ 	struct xsk_ctx *ctx = xsk->ctx;
+ 
++	if (ctx->xsks_map_fd == XSKMAP_NOT_NEEDED)
++		return 0;
++
+ 	return bpf_map_update_elem(ctx->xsks_map_fd, &ctx->queue_id,
+ 				   &xsk->fd, 0);
+ }
 -- 
 2.27.0
 
