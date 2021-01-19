@@ -2,158 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B7972FC1D9
-	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 22:08:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 019FC2FC254
+	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 22:30:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389184AbhASSt4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jan 2021 13:49:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41718 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404335AbhASSAy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jan 2021 13:00:54 -0500
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD92DC0613CF;
-        Tue, 19 Jan 2021 09:59:21 -0800 (PST)
-Received: by mail-wr1-x435.google.com with SMTP id 6so13349322wri.3;
-        Tue, 19 Jan 2021 09:59:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=k7/hoLcnw6l2pu/nWsn638Uybn8/h44erkd3cqMs75g=;
-        b=hG/Z8cxwdJfUwuWkI4Gn1KKKrYD3QFQ+PSFlvjzWIMltM0fCLG8e/J0EaDG1kUGSii
-         8SmAp1J8GtCIHJ1fnghHPx/49CqSRr4rfX1DPrFm0vs62k4cK9PyVEoB91tui0dOf7Ab
-         I5gRq4YR58iffU7QkMv9KaBsDuxVCYNkk7eNz/KzYbmrGgbD6mfACxjGmO8jRYdFKKDc
-         NofAT1EmrOZ+PDzNnhdNtMLu/VVLxLXc1HkhY5C26sTIHYPXz6BW/1V8k5qv+3nY+LOe
-         4ucTrw27Lxeypp0luIMOhrXX07ZATMIbEXOJoeZHbKmCbD11TTI7SK4O+q7zX+IdGRkl
-         0p7Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=k7/hoLcnw6l2pu/nWsn638Uybn8/h44erkd3cqMs75g=;
-        b=YyX0XaElJs94mk2o/MAG7ihZWHEBa35kEKESseIIOIB5oXsyLvdl7VqCSOrwnoYiZi
-         yWV9axwTyEXtfuWgxkBqp1yQuedvIUZvqFkqvySSan2WYMU0aSOr19X1X1qxd1HhHpVq
-         /jQWh7P2jBgh3/C/7bxMCQy7WsKC4O9tV9wR/wOuvgsg2KtlA6/dmH+jGhFCGWXtZeOP
-         fk1ToAmsC1ySCK5SKsY4GiU0deyiZvUNohITCRFDAi6YGknF3Ccjv+VREoLvNfhfJmA6
-         ZJFdJTfVbddCU+eycNn8ALgXNhLmbxeNiUen0HAq06jfF4oiggEEg1J6RHkq6GxS9PCq
-         2XEQ==
-X-Gm-Message-State: AOAM531hrSpWL5d+Y56SawuksP1/jmaTQVnMUoZbmKIv/QpWf4OjQPc6
-        ewXPMmLMVd2NUZpvS1Ip5OsJVAH3ew6QgK2E
-X-Google-Smtp-Source: ABdhPJwsTE2uhK37bOtWS6R13mPLJGFm6cEvjrlojQ7dXlEEfTIXWa8v3KW/2mwnUYWKOq+eb35O6Q==
-X-Received: by 2002:adf:d238:: with SMTP id k24mr5440011wrh.414.1611079160233;
-        Tue, 19 Jan 2021 09:59:20 -0800 (PST)
-Received: from anparri.mshome.net (host-79-50-177-118.retail.telecomitalia.it. [79.50.177.118])
-        by smtp.gmail.com with ESMTPSA id h125sm5899312wmh.16.2021.01.19.09.59.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Jan 2021 09:59:19 -0800 (PST)
-From:   "Andrea Parri (Microsoft)" <parri.andrea@gmail.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     "K . Y . Srinivasan" <kys@microsoft.com>,
-        Haiyang Zhang <haiyangz@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>,
-        Michael Kelley <mikelley@microsoft.com>,
-        Tianyu Lan <Tianyu.Lan@microsoft.com>,
-        Saruhan Karademir <skarade@microsoft.com>,
-        Juan Vazquez <juvazq@microsoft.com>,
-        linux-hyperv@vger.kernel.org,
-        "Andrea Parri (Microsoft)" <parri.andrea@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: [PATCH 4/4] hv_netvsc: Restrict configurations on isolated guests
-Date:   Tue, 19 Jan 2021 18:58:41 +0100
-Message-Id: <20210119175841.22248-5-parri.andrea@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210119175841.22248-1-parri.andrea@gmail.com>
-References: <20210119175841.22248-1-parri.andrea@gmail.com>
+        id S1728098AbhASV2P (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jan 2021 16:28:15 -0500
+Received: from mail-db8eur05on2061.outbound.protection.outlook.com ([40.107.20.61]:35297
+        "EHLO EUR05-DB8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727414AbhASSnV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 19 Jan 2021 13:43:21 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=R+wus6BqVRIUJzhVrhZBjFKC/hpu6OzgCZFS3sNSVhJq8yVS21DXd4haXEM/Wuv8rbjQ4uZ6zFWXylwyS/W8jU30njf6gL79K+tMzBNXiA8FR97vh/qbMi0OviPb5Q6/GMGrcXP4UK8QIjXxZiSPkpjPCpaSHsWkKDYCb2ZDgadj8tjh6c9ASDq2aoO4TuCPkqCQCWI7tre04xmZC1cqvGScDDnNet3Q/JEeWrs82PVMd0m7GrpIifob4AonWVZnKdH/iUueHN05CnFqgG37tvMPUnRhPmvlVjxohYrXJj00xkAqOibsyrFlGbQpitgTS8yWXLF9FVrHSHMvk+T+Rw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Ms2j7uklyI5rgqr0jDLyDPAqCu2Me5Qa/W/GzRP6LL0=;
+ b=a+MZND/qxPOmL8+Ap1N3laZIqPUodVoR3NpU34IVDgYIN3h5RVyzN/McHAbhTO0+oJQmF7bipvTgfemqL/VtMbgfMLMIATw3VOgzbGttRxpDd3coI7fxJBOUh+0mQjH/utjZl2Jd2pCLwK6prtyIcNQUhjDrWyvi+V2r80LS+cF80TQMm0Ss0q3VHcmCozZHgn/yCJZMo7qjf37ED42a9Z8h2fEdmVwotSsks4nuRSSGcSwxxVuPDy+V8hBOVZxwWv83Uxf6AVuQHZqRuSWTRRGet+yZXwj56KYYxNDFZ6a4D5ddbW0ta4mdU+nDiD1758dk237kMMZ+zc4lG8VhLQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Ms2j7uklyI5rgqr0jDLyDPAqCu2Me5Qa/W/GzRP6LL0=;
+ b=hD48a5JnB4iiPWXxjSZ++rp1xjqqCdNDLo07vYwQDF2HkIzVqFWv6SoX/kBEVEaSUD3YoKYxKzyw44gbZq3Dv93nwFBzVHv9tDcBxo5mX+BJMz3COwY7iysa0vET3iGLbuISY8WYTeJCbEXRzOF3Gs6uCWz4MWNk8RnpaIferKk=
+Received: from VE1PR04MB6687.eurprd04.prod.outlook.com (2603:10a6:803:121::30)
+ by VE1PR04MB6736.eurprd04.prod.outlook.com (2603:10a6:803:128::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3763.9; Tue, 19 Jan
+ 2021 18:42:23 +0000
+Received: from VE1PR04MB6687.eurprd04.prod.outlook.com
+ ([fe80::e9ab:4d78:5b38:aa3c]) by VE1PR04MB6687.eurprd04.prod.outlook.com
+ ([fe80::e9ab:4d78:5b38:aa3c%7]) with mapi id 15.20.3763.014; Tue, 19 Jan 2021
+ 18:42:23 +0000
+From:   Leo Li <leoyang.li@nxp.com>
+To:     Rasmus Villemoes <rasmus.villemoes@prevas.dk>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+CC:     "David S . Miller" <davem@davemloft.net>,
+        Qiang Zhao <qiang.zhao@nxp.com>, Andrew Lunn <andrew@lunn.ch>,
+        Christophe Leroy <christophe.leroy@csgroup.eu>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "jocke@infinera.com" <joakim.tjernlund@infinera.com>
+Subject: RE: [PATCH net-next v2 02/17] soc: fsl: qe: make cpm_muram_offset
+ take a const void* argument
+Thread-Topic: [PATCH net-next v2 02/17] soc: fsl: qe: make cpm_muram_offset
+ take a const void* argument
+Thread-Index: AQHW7nUH/5V4T85zIkmig9wR3lhPUqovP1UQ
+Date:   Tue, 19 Jan 2021 18:42:23 +0000
+Message-ID: <VE1PR04MB6687BE7DFB68D458E3E6106A8FA30@VE1PR04MB6687.eurprd04.prod.outlook.com>
+References: <20210119150802.19997-1-rasmus.villemoes@prevas.dk>
+ <20210119150802.19997-3-rasmus.villemoes@prevas.dk>
+In-Reply-To: <20210119150802.19997-3-rasmus.villemoes@prevas.dk>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: prevas.dk; dkim=none (message not signed)
+ header.d=none;prevas.dk; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [136.49.1.200]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: b5012412-8651-4891-93eb-08d8bca9f60b
+x-ms-traffictypediagnostic: VE1PR04MB6736:
+x-ld-processed: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635,ExtAddr
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VE1PR04MB67363C99DBDCF1ADEB9806E08FA30@VE1PR04MB6736.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:741;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: Ropi4jh0wxAuGyWFHoVQMl6OZWM3InZ0ISsp97CcENcLs6kOCGTYORKbKBTUwYd//whhZA3NbLT83QYYT15y4/lIKMy2W75jbXpNoFC8XWoUUYip5TbO7oAL5S+TKRky9DNNNrVUL+uopo+UQ5FPr8uaT9CCntKu3T4A5JnyvBqJOzKh7hehgrZaKAlqNYC+TWVHxxBBTyg1WB0qz6Vtq250ltX7TqjxTJ52dq1qSo+j3lWuDjGwO0+6AzxhL8fixow+V20/IDkEucyjYAX7ttMhu4CAd1LIjTwyNCP/7jo730KdpeIR8EMp/joO8H7D7xZYoZTnywFARSv4BAX7TFDHadT7D73S81lRPFFk38+FO1uORn9IBgItIkc4leqkURmYuKW/gpP8BSyiGoQk7ZkDJrWD/leAjbAYfpRS4UmZuCXVzm7YcZ9Qj9Zwru0u0KgHZ5t+vZZSZNoY246ZjckEOYY6UBWCGbd2kaWOQ44MBdBskllCLFYAm4WwwoRMRiMboKyf9GtLCz5ScmtwJA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VE1PR04MB6687.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(346002)(376002)(396003)(39860400002)(136003)(33656002)(52536014)(76116006)(66476007)(66946007)(71200400001)(66556008)(64756008)(83380400001)(186003)(478600001)(54906003)(110136005)(26005)(8676002)(86362001)(2906002)(5660300002)(8936002)(6506007)(9686003)(55016002)(66446008)(316002)(4326008)(7696005)(53546011);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?3wGpr5OUrAgUqa5jiizBNS3s4Z6w8SQjqzsrMWRN5vwopIqWz6yyrpyIvSgS?=
+ =?us-ascii?Q?imavzPT3UlsX5KY+9+RMQ9L9BC15oJ5zSvRpUTL01gp5Zxh1u2CZoB9ekzXY?=
+ =?us-ascii?Q?pT09U7eEA7AiWRY/wSGuAkuC8EvlqfCbpMULTAQXgFnPTIESUGkxF5VRXYb6?=
+ =?us-ascii?Q?i8craZd7st1SIMyb0YjHUXKwznUpilWDFaJDh0wJM+t4Nfyc03XpNKeLvEXb?=
+ =?us-ascii?Q?i9OkhQvpCZNGKIGcWaXQrNpmr8CAnIrYO38y0j6g0cWfxtInEijMRyNiRWi4?=
+ =?us-ascii?Q?QAmXn5tx+1OtBRoAJ5Z1m6ylCT+iiEuk0PlQkEY7SaMXFP/f8vksf1UXHWoY?=
+ =?us-ascii?Q?L2Kg5VK2f4pzPTEOLnnzyHmCTymf2YP0rpXObmVEzSu67nVzDPQEOvD/Ol4Z?=
+ =?us-ascii?Q?M/KwVGN6tsrW1WwuQTeFjsz9RvBL0qsH60B4wa69gFx1CBibD/csAVICUv43?=
+ =?us-ascii?Q?Exu/Eg91XdGakpEF+5eNm36/C8NJOKGZSd2vKahrA98UvDi+3FpiP4S/ZVS5?=
+ =?us-ascii?Q?klrQtRWwU+9EB2XZTK5Ij15GWm6XOz0x3XOgwumcmlkiaUI1Q8VGlIYgRxGD?=
+ =?us-ascii?Q?h4ehojg1qNfiEoape/wSVTey2W/75RbcJfEN0Z7OpKolK4b1UW5ThpoqLrsT?=
+ =?us-ascii?Q?h+C9tQP03L9meC7OZAQDjesSZ6jtZY99bYUfdg7ncK3urXjzjPenQIQ5lcx5?=
+ =?us-ascii?Q?D7jQGF8VjQVXvPPNkrMLNtIPQsggFaZHE5+rZwbUB1VWvc4WZqc8swfwL8jH?=
+ =?us-ascii?Q?j8/6XV7ocrpvWRMGRKRCYwjZxIFu2sRw2xOK3g61iAWOd9medXkMu6sJf/QZ?=
+ =?us-ascii?Q?9iaP8NCBOZ6wgE+WmyTovRxngpFM6OqsLGu0AbLTTF2KE7NMnizJ/9ahQ9/r?=
+ =?us-ascii?Q?UvVjzsetPA8JMtHv1H7mnJ0CAyqvVW/Fs2VTAlckg8ZEPnUO8PvaZmoW99VP?=
+ =?us-ascii?Q?80doF9/FJKSmPQqZWTF6zXkf68s1aQKNizXMZMe+W6U=3D?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VE1PR04MB6687.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: b5012412-8651-4891-93eb-08d8bca9f60b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 19 Jan 2021 18:42:23.4964
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: eomliKgPMRzDW+vfufTxUmwVxYdVDRs9QOl1208zbOyQLFTxWSJMEEg9SwxbnwbcwvU6H1jjen2///Q9O8QOWQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB6736
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Restrict the NVSP protocol version(s) that will be negotiated with the
-host to be NVSP_PROTOCOL_VERSION_61 or greater if the guest is running
-isolated.  Moreover, do not advertise the SR-IOV capability and ignore
-NVSP_MSG_4_TYPE_SEND_VF_ASSOCIATION messages in isolated guests, which
-are not supposed to support SR-IOV.  This reduces the footprint of the
-code that will be exercised by Confidential VMs and hence the exposure
-to bugs and vulnerabilities.
 
-Signed-off-by: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
-Cc: "David S. Miller" <davem@davemloft.net>
-Cc: Jakub Kicinski <kuba@kernel.org>
-Cc: netdev@vger.kernel.org
----
- drivers/net/hyperv/netvsc.c | 21 ++++++++++++++++++---
- 1 file changed, 18 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/hyperv/netvsc.c b/drivers/net/hyperv/netvsc.c
-index 1510a236aa341..8027d553cb67d 100644
---- a/drivers/net/hyperv/netvsc.c
-+++ b/drivers/net/hyperv/netvsc.c
-@@ -22,6 +22,7 @@
- #include <linux/prefetch.h>
- 
- #include <asm/sync_bitops.h>
-+#include <asm/mshyperv.h>
- 
- #include "hyperv_net.h"
- #include "netvsc_trace.h"
-@@ -544,7 +545,8 @@ static int negotiate_nvsp_ver(struct hv_device *device,
- 	init_packet->msg.v2_msg.send_ndis_config.capability.ieee8021q = 1;
- 
- 	if (nvsp_ver >= NVSP_PROTOCOL_VERSION_5) {
--		init_packet->msg.v2_msg.send_ndis_config.capability.sriov = 1;
-+		if (!hv_is_isolation_supported())
-+			init_packet->msg.v2_msg.send_ndis_config.capability.sriov = 1;
- 
- 		/* Teaming bit is needed to receive link speed updates */
- 		init_packet->msg.v2_msg.send_ndis_config.capability.teaming = 1;
-@@ -563,6 +565,13 @@ static int negotiate_nvsp_ver(struct hv_device *device,
- 	return ret;
- }
- 
-+static bool nvsp_is_valid_version(u32 version)
-+{
-+       if (hv_is_isolation_supported())
-+               return version >= NVSP_PROTOCOL_VERSION_61;
-+       return true;
-+}
-+
- static int netvsc_connect_vsp(struct hv_device *device,
- 			      struct netvsc_device *net_device,
- 			      const struct netvsc_device_info *device_info)
-@@ -579,12 +588,17 @@ static int netvsc_connect_vsp(struct hv_device *device,
- 	init_packet = &net_device->channel_init_pkt;
- 
- 	/* Negotiate the latest NVSP protocol supported */
--	for (i = ARRAY_SIZE(ver_list) - 1; i >= 0; i--)
-+	for (i = ARRAY_SIZE(ver_list) - 1; i >= 0; i--) {
-+		if (!nvsp_is_valid_version(ver_list[i])) {
-+			ret = -EPROTO;
-+			goto cleanup;
-+		}
- 		if (negotiate_nvsp_ver(device, net_device, init_packet,
- 				       ver_list[i])  == 0) {
- 			net_device->nvsp_version = ver_list[i];
- 			break;
- 		}
-+	}
- 
- 	if (i < 0) {
- 		ret = -EPROTO;
-@@ -1357,7 +1371,8 @@ static void netvsc_receive_inband(struct net_device *ndev,
- 		break;
- 
- 	case NVSP_MSG4_TYPE_SEND_VF_ASSOCIATION:
--		netvsc_send_vf(ndev, nvmsg, msglen);
-+		if (!hv_is_isolation_supported())
-+			netvsc_send_vf(ndev, nvmsg, msglen);
- 		break;
- 	}
- }
--- 
-2.25.1
+> -----Original Message-----
+> From: Rasmus Villemoes <rasmus.villemoes@prevas.dk>
+> Sent: Tuesday, January 19, 2021 9:08 AM
+> To: netdev@vger.kernel.org
+> Cc: Leo Li <leoyang.li@nxp.com>; David S . Miller <davem@davemloft.net>;
+> Qiang Zhao <qiang.zhao@nxp.com>; Andrew Lunn <andrew@lunn.ch>;
+> Christophe Leroy <christophe.leroy@csgroup.eu>; Jakub Kicinski
+> <kuba@kernel.org>; jocke@infinera.com <joakim.tjernlund@infinera.com>;
+> Rasmus Villemoes <rasmus.villemoes@prevas.dk>
+> Subject: [PATCH net-next v2 02/17] soc: fsl: qe: make cpm_muram_offset
+> take a const void* argument
+>=20
+> Allow passing const-qualified pointers without requiring a cast in the
+> caller.
+
+Acked-by: Li Yang <leoyang.li@nxp.com>
+
+>=20
+> Signed-off-by: Rasmus Villemoes <rasmus.villemoes@prevas.dk>
+> ---
+>  drivers/soc/fsl/qe/qe_common.c | 2 +-
+>  include/soc/fsl/qe/qe.h        | 4 ++--
+>  2 files changed, 3 insertions(+), 3 deletions(-)
+>=20
+> diff --git a/drivers/soc/fsl/qe/qe_common.c
+> b/drivers/soc/fsl/qe/qe_common.c
+> index 75075591f630..0fbdc965c4cb 100644
+> --- a/drivers/soc/fsl/qe/qe_common.c
+> +++ b/drivers/soc/fsl/qe/qe_common.c
+> @@ -223,7 +223,7 @@ void __iomem *cpm_muram_addr(unsigned long
+> offset)
+>  }
+>  EXPORT_SYMBOL(cpm_muram_addr);
+>=20
+> -unsigned long cpm_muram_offset(void __iomem *addr)
+> +unsigned long cpm_muram_offset(const void __iomem *addr)
+>  {
+>  	return addr - (void __iomem *)muram_vbase;
+>  }
+> diff --git a/include/soc/fsl/qe/qe.h b/include/soc/fsl/qe/qe.h
+> index 3feddfec9f87..8ee3747433c0 100644
+> --- a/include/soc/fsl/qe/qe.h
+> +++ b/include/soc/fsl/qe/qe.h
+> @@ -102,7 +102,7 @@ s32 cpm_muram_alloc(unsigned long size, unsigned
+> long align);
+>  void cpm_muram_free(s32 offset);
+>  s32 cpm_muram_alloc_fixed(unsigned long offset, unsigned long size);
+>  void __iomem *cpm_muram_addr(unsigned long offset);
+> -unsigned long cpm_muram_offset(void __iomem *addr);
+> +unsigned long cpm_muram_offset(const void __iomem *addr);
+>  dma_addr_t cpm_muram_dma(void __iomem *addr);
+>  #else
+>  static inline s32 cpm_muram_alloc(unsigned long size,
+> @@ -126,7 +126,7 @@ static inline void __iomem
+> *cpm_muram_addr(unsigned long offset)
+>  	return NULL;
+>  }
+>=20
+> -static inline unsigned long cpm_muram_offset(void __iomem *addr)
+> +static inline unsigned long cpm_muram_offset(const void __iomem *addr)
+>  {
+>  	return -ENOSYS;
+>  }
+> --
+> 2.23.0
 
