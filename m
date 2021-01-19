@@ -2,72 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A6B6A2FC2EB
-	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 23:03:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AF0602FC2F1
+	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 23:05:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727117AbhASWCA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jan 2021 17:02:00 -0500
-Received: from mail.kernel.org ([198.145.29.99]:48222 "EHLO mail.kernel.org"
+        id S1728522AbhASWE7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jan 2021 17:04:59 -0500
+Received: from mail.kernel.org ([198.145.29.99]:48454 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728980AbhASWAs (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 19 Jan 2021 17:00:48 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 03224230FE;
-        Tue, 19 Jan 2021 22:00:08 +0000 (UTC)
+        id S1728175AbhASWDU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 19 Jan 2021 17:03:20 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 25BD322E01;
+        Tue, 19 Jan 2021 22:02:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611093608;
-        bh=vwzqmV+/JrI+lZ0C0St5fU/gOE1dmzOlc9Y/V0+Q0Q8=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=IYRPZ+riiTpisTvAuU5S0j2reSlPiRcmNWY/n8+7OuOzsa/Gzflc/UhydOkfTBv94
-         QkXIoJ/J+9iGP/wG8aEfLuWiCP3Y43QP5ILs9/hN63iwecr6MxFoKh38qDs49pZq61
-         mmtkVJCR/tXQe4cf6ub8VgP6rZ3K/LMiWV5j4lFGw+kGu04/pGc2HOFtuMWLgcFWjL
-         xrfHI9njG5WR9rI9pNtYqiEqn1x8/1G+ztDUWgIna1W4FgSPm6s2qGowjivwXLcnDo
-         gKB1SJAe5wg87r8YuKtCmpnIXEUk82V7k2XWhVVozOOn28uJLVBRlNOtCZC1aNVjiq
-         9vI6GW/inYOtA==
-Received: from pdx-korg-docbuild-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-1.ci.codeaurora.org (Postfix) with ESMTP id DC15A604FC;
-        Tue, 19 Jan 2021 22:00:07 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1611093749;
+        bh=7Rk0PFh/5HZvbzLnLFR/dkR1egA2UTGSFBA8EhntEfM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=on3iu4M7VJq7F/A9CT2wA7C5T4LpQa/fTlaV7jGY8B256SXGhUul8jgb/Uy/YQ19t
+         DZNqZqAFkNvdOJzE8nvkM5o6NW1JxMNLOisugjVPMUQg099LyYuMMkJU9KMepE/xKU
+         CNc1yljhwmOqPLsVlxHI9MoYRzOzfQQhlGWjBmq5HC7jubOCRP8OpOUfIP8wab+Xxg
+         6Bo7fw6vxdUN4BbiIxSg6dFMTvKH4kk/CxwoYcQdXqm0mwMaZvocFZ/DKxR4obpxPS
+         A9JhDYG8i5VvmNPd3UvLV2HYxff0vsW2OwJ587/D9nIx7zhcFbmYdinPoExZuJb1fb
+         TxMW43zqsevuA==
+Date:   Tue, 19 Jan 2021 14:02:28 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     Raju Rangoju <rajur@chelsio.com>,
+        David Miller <davem@davemloft.net>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next] cxgb4: remove bogus CHELSIO_VPD_UNIQUE_ID
+ constant
+Message-ID: <20210119140228.1f210886@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <25339251-513a-75c6-e96e-c284d23eed0f@gmail.com>
+References: <25339251-513a-75c6-e96e-c284d23eed0f@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH bpf] xsk: Clear pool even for inactive queues
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161109360789.28449.15236558642649089733.git-patchwork-notify@kernel.org>
-Date:   Tue, 19 Jan 2021 22:00:07 +0000
-References: <20210118160333.333439-1-maximmi@mellanox.com>
-In-Reply-To: <20210118160333.333439-1-maximmi@mellanox.com>
-To:     Maxim Mikityanskiy <maximmi@mellanox.com>
-Cc:     magnus.karlsson@intel.com, bjorn.topel@intel.com,
-        jonathan.lemon@gmail.com, ast@kernel.org, daniel@iogearbox.net,
-        davem@davemloft.net, kuba@kernel.org, hawk@kernel.org,
-        john.fastabend@gmail.com, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to bpf/bpf.git (refs/heads/master):
-
-On Mon, 18 Jan 2021 18:03:33 +0200 you wrote:
-> The number of queues can change by other means, rather than ethtool. For
-> example, attaching an mqprio qdisc with num_tc > 1 leads to creating
-> multiple sets of TX queues, which may be then destroyed when mqprio is
-> deleted. If an AF_XDP socket is created while mqprio is active,
-> dev->_tx[queue_id].pool will be filled, but then real_num_tx_queues may
-> decrease with deletion of mqprio, which will mean that the pool won't be
-> NULLed, and a further increase of the number of TX queues may expose a
-> dangling pointer.
+On Sat, 16 Jan 2021 14:45:25 +0100 Heiner Kallweit wrote:
+> The comment is quite weird, there is no such thing as a vendor-specific
+> VPD id. 0x82 is the value of PCI_VPD_LRDT_ID_STRING. So what we are
+> doing here is simply checking whether the byte at VPD address VPD_BASE
+> is a valid string LRDT, same as what is done a few lines later in
+> the code.
+> LRDT = Large Resource Data Tag, see PCI 2.2 spec, VPD chapter
 > 
-> [...]
+> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 
-Here is the summary with links:
-  - [bpf] xsk: Clear pool even for inactive queues
-    https://git.kernel.org/bpf/bpf/c/b425e24a934e
+Did you find this by code inspection?
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+> diff --git a/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c b/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
+> index 2c80371f9..48f20a6a0 100644
+> --- a/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
+> +++ b/drivers/net/ethernet/chelsio/cxgb4/t4_hw.c
+> @@ -2689,7 +2689,6 @@ void t4_get_regs(struct adapter *adap, void *buf, size_t buf_size)
+>  #define VPD_BASE           0x400
+>  #define VPD_BASE_OLD       0
+>  #define VPD_LEN            1024
+> -#define CHELSIO_VPD_UNIQUE_ID 0x82
+>  
+>  /**
+>   * t4_eeprom_ptov - translate a physical EEPROM address to virtual
+> @@ -2743,9 +2742,9 @@ int t4_seeprom_wp(struct adapter *adapter, bool enable)
+>   */
+>  int t4_get_raw_vpd_params(struct adapter *adapter, struct vpd_params *p)
+>  {
+> -	int i, ret = 0, addr;
+> +	int i, ret = 0, addr = VPD_BASE;
 
+IMHO it's more readable if the addr is set to BASE or BASE_OLD in one
+place rather than having a default value at variable init which may be
+overwritten.
+
+>  	int ec, sn, pn, na;
+> -	u8 *vpd, csum;
+> +	u8 *vpd, csum, base_val = 0;
+>  	unsigned int vpdr_len, kw_offset, id_len;
+>  
+>  	vpd = vmalloc(VPD_LEN);
+> @@ -2755,17 +2754,12 @@ int t4_get_raw_vpd_params(struct adapter *adapter, struct vpd_params *p)
+>  	/* Card information normally starts at VPD_BASE but early cards had
+>  	 * it at 0.
+>  	 */
+> -	ret = pci_read_vpd(adapter->pdev, VPD_BASE, sizeof(u32), vpd);
+> +	ret = pci_read_vpd(adapter->pdev, VPD_BASE, 1, &base_val);
+
+Are we sure this works? I've seen silicon out there which has problems
+with small PCI accesses (granted those were not VPD accesses).
+
+>  	if (ret < 0)
+>  		goto out;
+>  
+> -	/* The VPD shall have a unique identifier specified by the PCI SIG.
+> -	 * For chelsio adapters, the identifier is 0x82. The first byte of a VPD
+> -	 * shall be CHELSIO_VPD_UNIQUE_ID (0x82). The VPD programming software
+> -	 * is expected to automatically put this entry at the
+> -	 * beginning of the VPD.
+> -	 */
+> -	addr = *vpd == CHELSIO_VPD_UNIQUE_ID ? VPD_BASE : VPD_BASE_OLD;
+> +	if (base_val != PCI_VPD_LRDT_ID_STRING)
+> +		addr = VPD_BASE_OLD;
+>  
+>  	ret = pci_read_vpd(adapter->pdev, addr, VPD_LEN, vpd);
+>  	if (ret < 0)
 
