@@ -2,80 +2,133 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DE1302FC350
-	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 23:25:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F1322FC353
+	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 23:25:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729484AbhASWXv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jan 2021 17:23:51 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50916 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729409AbhASWXh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 19 Jan 2021 17:23:37 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 520D322E01;
-        Tue, 19 Jan 2021 22:22:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611094976;
-        bh=niDRueobfQSw7qRh3wm0hADAEsU9O4M6jpKIPzKJr38=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ZLeTn6Afeg0srzQzcNn0I9Nm5ZObyawYnbUwJCLPc7ZUBCTIl1q6w4Q2m3J1nEUYG
-         QBG/hXYp7KRGZSKRIdc8oBCfps/FMPZPYuOzrZXmOOIUEj2RcHHPhVUT8duL+c+gNk
-         oW4sAyfUxS3ILNT8RfJ6BpKIwblMdwMY+ubqlIybQYKP7eRMiPGM0tbA0Mq9RZiut7
-         GdNsVJFGyxEBGtdYvjLKsEUJHELwbJm0fRpqh5r1xNANMP33PYQkLnbCZw1YcPWMfk
-         11En8+Vgwg8w0YIZSucad67vZpQf/spdyBm0GnpZeb6RDUuQ2u6cGyfXVdk9An7r31
-         lr86SD3TkZXTQ==
-Date:   Tue, 19 Jan 2021 14:22:55 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, petrm@nvidia.com,
-        jiri@nvidia.com, amcohen@nvidia.com, mlxsw@nvidia.com,
-        Ido Schimmel <idosch@nvidia.com>
-Subject: Re: [PATCH net-next 0/5] mlxsw: Add support for RED qevent "mark"
-Message-ID: <20210119142255.1caca7fb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210117080223.2107288-1-idosch@idosch.org>
-References: <20210117080223.2107288-1-idosch@idosch.org>
+        id S1729605AbhASWYp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jan 2021 17:24:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42440 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728883AbhASWYY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jan 2021 17:24:24 -0500
+Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4114AC061575;
+        Tue, 19 Jan 2021 14:23:43 -0800 (PST)
+Received: by mail-io1-xd35.google.com with SMTP id p72so18211526iod.12;
+        Tue, 19 Jan 2021 14:23:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=WMd4G6Vw+iokzlycIBszbMWea4hqYJQXqXCw+KiiIAo=;
+        b=vONKQuqSeYLNbI0hx++5jXZ9CVRE4w+KkUnZYocBO8H0WtHln+qkHIzoY+EDJ0ck1P
+         SO1GdgosqsPYY6kejJkbnFKYDuMwJmVGUOXtwjkiU8Xt9x2bPX0C0hOZabO5jJoB2Qim
+         n85Qd2XJHrmEGFAgHjsOEQcT6RiydxnJ7uzSNjDn2O7DoRdAbRA7l9du4ueWlCkK+1Cb
+         mTkPz4YYAC6B/bFqnPAfd7f4DHiesxoTy9sVQqxME137nxLS5Ug+EoKAuMP7i9hU2bOu
+         YpzWeWS8JA21ZUrscWb0YogjsRanzFXc08DlNpRpQ0kcU8uqpj2f8QPyB9iQwLlmK2ZP
+         Rahg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=WMd4G6Vw+iokzlycIBszbMWea4hqYJQXqXCw+KiiIAo=;
+        b=nVBzf/ZYO8cExPWaiet+Oj9g8KL4bmiysIMXv0Cc4gTOcVe+SgYLFmR+dfNGdIeeqf
+         pLAjZRiywfD7rFAHjBr3PWJrEZzwEnwedAWKsmGJYJOz+g+GDHgKeIwlsZtSmgQ9JQBg
+         2SLdS49pA2xAOKcXvhinkXU3JWX7lsXhHp1N+uHUVkdmD/lWos5k8k6VHucBF9jq/Ded
+         UQnFUUJ8MbW6grOkVqn6hfWG/PBwc28nIC5PxIGSaKze//cwCeK3NGFuR1cadnYEjLzo
+         Dm06a3FWEytyTQUsqAo01zGlSZcJfj1YEzo0PZmN+6gGTgsCjDoLzxkR+5tSG9ublYEe
+         LF+g==
+X-Gm-Message-State: AOAM532Ial1P07FhnYSYjnsYfyWQAy8DHy0yQgOKGHUze0dfjpEM84Cz
+        CQGXjPM9OxEB1cbEntlsWZBKfhd4rrmDahoyz/4=
+X-Google-Smtp-Source: ABdhPJwQqyhnQXHUQZu0t9aXfZLVUu9i99yt3aQohHcdEu+bmP71nZHwmE+1DwfmULPKfKxtFsUpF3mGkdFdXl3dcao=
+X-Received: by 2002:a05:6e02:929:: with SMTP id o9mr5146752ilt.42.1611095022624;
+ Tue, 19 Jan 2021 14:23:42 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <cover.1610777159.git.lucien.xin@gmail.com> <34c9f5b8c31610687925d9db1f151d5bc87deba7.1610777159.git.lucien.xin@gmail.com>
+In-Reply-To: <34c9f5b8c31610687925d9db1f151d5bc87deba7.1610777159.git.lucien.xin@gmail.com>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Tue, 19 Jan 2021 14:23:31 -0800
+Message-ID: <CAKgT0UduX4M-N1Kyo-M2=05EO_rAs2c_CDrUwWMKk2oDOgxd2Q@mail.gmail.com>
+Subject: Re: [PATCH net-next 1/6] net: add inline function skb_csum_is_sctp
+To:     Xin Long <lucien.xin@gmail.com>
+Cc:     network dev <netdev@vger.kernel.org>,
+        "linux-sctp @ vger . kernel . org" <linux-sctp@vger.kernel.org>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Neil Horman <nhorman@tuxdriver.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        intel-wired-lan <intel-wired-lan@lists.osuosl.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 17 Jan 2021 10:02:18 +0200 Ido Schimmel wrote:
-> From: Ido Schimmel <idosch@nvidia.com>
-> 
-> The RED qdisc currently supports two qevents: "early_drop" and "mark". The
-> filters added to the block bound to the "early_drop" qevent are executed on
-> packets for which the RED algorithm decides that they should be
-> early-dropped. The "mark" filters are similarly executed on ECT packets
-> that are marked as ECN-CE (Congestion Encountered).
-> 
-> A previous patchset has offloaded "early_drop" filters on Spectrum-2 and
-> later, provided that the classifier used is "matchall", that the action
-> used is either "trap" or "mirred", and a handful or further limitations.
+On Fri, Jan 15, 2021 at 10:13 PM Xin Long <lucien.xin@gmail.com> wrote:
+>
+> This patch is to define a inline function skb_csum_is_sctp(), and
+> also replace all places where it checks if it's a SCTP CSUM skb.
+> This function would be used later in many networking drivers in
+> the following patches.
+>
+> Suggested-by: Alexander Duyck <alexander.duyck@gmail.com>
+> Signed-off-by: Xin Long <lucien.xin@gmail.com>
 
-For early_drop trap or mirred makes obvious sense, no explanation
-needed.
+One minor nit. If you had to resubmit this I might move the ionic
+driver code into a separate patch. However It can probably be accepted
+as is.
 
-But for marked as a user I'd like to see a _copy_ of the packet, 
-while the original continues on its marry way to the destination.
-I'd venture to say that e.g. for a DCTCP deployment mark+trap is
-unusable, at least for tracing, because it distorts the operation 
-by effectively dropping instead of marking.
+Reviewed-by: Alexander Duyck <alexanderduyck@fb.com>
 
-Am I reading this right?
-
-If that is the case and you really want to keep the mark+trap
-functionality - I feel like at least better documentation is needed.
-The current two liner should also be rewritten, quoting from patch 1:
-
-> * - ``ecn_mark``
->   - ``drop``
->   - Traps ECN-capable packets that were marked with CE (Congestion
->     Encountered) code point by RED algorithm instead of being dropped
-
-That needs to say that the trap is for datagrams trapped by a qevent.
-Otherwise "Traps ... instead of being dropped" is too much of a
-thought-shortcut, marked packets are not dropped.
-
-(I'd also think that trap is better documented next to early_drop,
-let's look at it from the reader's perspective)
+> ---
+>  drivers/net/ethernet/pensando/ionic/ionic_txrx.c | 2 +-
+>  include/linux/skbuff.h                           | 5 +++++
+>  net/core/dev.c                                   | 2 +-
+>  3 files changed, 7 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/net/ethernet/pensando/ionic/ionic_txrx.c b/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
+> index ac4cd5d..162a1ff 100644
+> --- a/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
+> +++ b/drivers/net/ethernet/pensando/ionic/ionic_txrx.c
+> @@ -979,7 +979,7 @@ static int ionic_tx_calc_csum(struct ionic_queue *q, struct sk_buff *skb)
+>                 stats->vlan_inserted++;
+>         }
+>
+> -       if (skb->csum_not_inet)
+> +       if (skb_csum_is_sctp(skb))
+>                 stats->crc32_csum++;
+>         else
+>                 stats->csum++;
+> diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+> index c9568cf..46f901a 100644
+> --- a/include/linux/skbuff.h
+> +++ b/include/linux/skbuff.h
+> @@ -4621,6 +4621,11 @@ static inline void skb_reset_redirect(struct sk_buff *skb)
+>  #endif
+>  }
+>
+> +static inline bool skb_csum_is_sctp(struct sk_buff *skb)
+> +{
+> +       return skb->csum_not_inet;
+> +}
+> +
+>  static inline void skb_set_kcov_handle(struct sk_buff *skb,
+>                                        const u64 kcov_handle)
+>  {
+> diff --git a/net/core/dev.c b/net/core/dev.c
+> index 0a31d4e..bbd306f 100644
+> --- a/net/core/dev.c
+> +++ b/net/core/dev.c
+> @@ -3617,7 +3617,7 @@ static struct sk_buff *validate_xmit_vlan(struct sk_buff *skb,
+>  int skb_csum_hwoffload_help(struct sk_buff *skb,
+>                             const netdev_features_t features)
+>  {
+> -       if (unlikely(skb->csum_not_inet))
+> +       if (unlikely(skb_csum_is_sctp(skb)))
+>                 return !!(features & NETIF_F_SCTP_CRC) ? 0 :
+>                         skb_crc32c_csum_help(skb);
+>
+> --
+> 2.1.0
+>
