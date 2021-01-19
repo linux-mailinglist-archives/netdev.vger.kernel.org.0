@@ -2,185 +2,121 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B27832FB429
-	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 09:37:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F7C52FB42C
+	for <lists+netdev@lfdr.de>; Tue, 19 Jan 2021 09:37:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729977AbhASIdJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jan 2021 03:33:09 -0500
-Received: from m9785.mail.qiye.163.com ([220.181.97.85]:27415 "EHLO
-        m9785.mail.qiye.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730122AbhASIco (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jan 2021 03:32:44 -0500
-Received: from localhost.localdomain (unknown [123.59.132.129])
-        by m9785.mail.qiye.163.com (Hmail) with ESMTPA id DAEA45C15EE;
-        Tue, 19 Jan 2021 16:31:50 +0800 (CST)
-From:   wenxu@ucloud.cn
-To:     marcelo.leitner@gmail.com, jhs@mojatatu.com,
-        xiyou.wangcong@gmail.com
-Cc:     netdev@vger.kernel.org
-Subject: [PATCH v2 net-next ] net/sched: cls_flower add CT_FLAGS_INVALID flag support
-Date:   Tue, 19 Jan 2021 16:31:50 +0800
-Message-Id: <1611045110-682-1-git-send-email-wenxu@ucloud.cn>
-X-Mailer: git-send-email 1.8.3.1
-X-HM-Spam-Status: e1kfGhgUHx5ZQUtXWQgYFAkeWUFZS1VLWVdZKFlBSUI3V1ktWUFJV1kPCR
-        oVCBIfWUFZS01PQktDGE5NTEoZVkpNSkpLT05KSkpLS0lVGRETFhoSFyQUDg9ZV1kWGg8SFR0UWU
-        FZT0tIVUpKS0hKTFVLWQY+
-X-HM-Sender-Digest: e1kMHhlZQR0aFwgeV1kSHx4VD1lBWUc6PzI6Hxw6Qj0wNhQyVhoSExwS
-        FzxPCglVSlVKTUpKS09OSkpKSUpIVTMWGhIXVQweFQMOOw4YFxQOH1UYFUVZV1kSC1lBWUpJSFVO
-        QlVKSElVSklCWVdZCAFZQU1LSko3Bg++
-X-HM-Tid: 0a7719c584872087kuqydaea45c15ee
+        id S1728030AbhASIfN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jan 2021 03:35:13 -0500
+Received: from esa.microchip.iphmx.com ([68.232.153.233]:16976 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731539AbhASIeB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jan 2021 03:34:01 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1611045241; x=1642581241;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=G/hEWC13mj/YXusXRb4k4j+VoxZpRlinQbs39jyecbo=;
+  b=H5fNZMl1U0CHpaZn/zRfzyJveD4GvPqY0kUF8qY2pLZq6XV03M6TAWMc
+   iGzhBEATUxEdeYUx8Fm6mpx3vPLIOv6qMDydykimHdsLrcbLLuNCN7ujX
+   kf8sthwT30VZYc6R5c3VRxd6FJjzw9qONTHLsXlwB2cW0G5r0lKjoNvNw
+   wJEzpDiCnKruN4MrxiFUvX4f+/YHw8Zdh0mBeg6PY7fejU/W4IVkso9jz
+   38fOL8+KGC1EvGtzp3sV0Z7WhZjKO46blaZC/4ekUW86ruA59/PH9erky
+   FiJb6fWVYU67nWDwxSxW8QhpXcC8SlNgf047S7jYj+wEumWL9iII5UREe
+   A==;
+IronPort-SDR: p7oGKG8TfOdMTUpWfkOx0LsUBlfGU5DXvGbIi2EwXfKHgXesHa3s7j6AwGfHGfvDYiwzyatgsL
+ Sg3E5yTMzf3y2NVmTtL1WWLXE77iwPqfEFinrC4uYGaNQGDwFw1DqDcp7YWSj2u0oR2kuNbub4
+ T1mIdHDD5Z+Uh7TC0HjgEDNtnIpuNTdmdkOKjbzRFBM9kZkihU62+IKuLaLO2EBNnchLXP41o9
+ QHLLT/HrP6nG81e/XMi+B7sDMR9TQ1T5oy14i9wC00RjKrP2xD3SJ5DOe1wLs1E16ui3QogvWF
+ 8rw=
+X-IronPort-AV: E=Sophos;i="5.79,358,1602572400"; 
+   d="scan'208";a="106452824"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 19 Jan 2021 01:32:42 -0700
+Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Tue, 19 Jan 2021 01:32:41 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex04.mchp-main.com
+ (10.10.85.152) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
+ Transport; Tue, 19 Jan 2021 01:32:41 -0700
+Date:   Tue, 19 Jan 2021 09:32:40 +0100
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+CC:     Rasmus Villemoes <rasmus.villemoes@prevas.dk>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        "bridge@lists.linux-foundation.org" 
+        <bridge@lists.linux-foundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net] net: mrp: use stp state as substitute for
+ unimplemented mrp state
+Message-ID: <20210119083240.37cxv3lxi25hwduj@soft-dev3.localdomain>
+References: <20210118181319.25419-1-rasmus.villemoes@prevas.dk>
+ <20210118185618.75h45rjf6qqberic@soft-dev3.localdomain>
+ <20210118194632.zn5yucjfibguemjq@skbuf>
+ <20210118202036.wk2fuwa3hysg4dmj@soft-dev3.localdomain>
+ <20210118212735.okoov5ndybszd6m5@skbuf>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <20210118212735.okoov5ndybszd6m5@skbuf>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: wenxu <wenxu@ucloud.cn>
+The 01/18/2021 21:27, Vladimir Oltean wrote:
+> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
+> 
+> On Mon, Jan 18, 2021 at 09:20:36PM +0100, Horatiu Vultur wrote:
+> > The 01/18/2021 19:46, Vladimir Oltean wrote:
+> > >
+> > > On Mon, Jan 18, 2021 at 07:56:18PM +0100, Horatiu Vultur wrote:
+> > > > The reason was to stay away from STP, because you can't run these two
+> > > > protocols at the same time. Even though in SW, we reuse port's state.
+> > > > In our driver(which is not upstreamed), we currently implement
+> > > > SWITCHDEV_ATTR_ID_MRP_PORT_STATE and just call the
+> > > > SWITCHDEV_ATTR_ID_PORT_STP_STATE.
+> > >
+> > > And isn't Rasmus's approach reasonable, in that it allows unmodified
+> > > switchdev drivers to offload MRP port states without creating
+> > > unnecessary code churn?
+> >
+> > I am sorry but I don't see this as the correct solution. In my opinion,
+> > I would prefer to have 3 extra lines in the driver and have a better
+> > view of what is happening. Than having 2 calls in the driver for
+> > different protocols.
+> 
+> I think the question boils down to: is a MRP-unaware driver expected to
+> work with the current bridge MRP code?
 
-This patch add the TCA_FLOWER_KEY_CT_FLAGS_INVALID flag to
-match the ct_state with invalid for conntrack.
+If the driver has switchdev support, then is not expected to work with
+the current bridge MRP code.
 
-Signed-off-by: wenxu <wenxu@ucloud.cn>
----
-v2:  initialize post_ct right on the declaration
+For example, the Ocelot driver, it has switchdev support but no MRP
+support so this is not expected to work.  The main reason is that MRP is
+using as DMAC 01:15:4E:00:00:0x(where x is between 1-4) so then when
+these frames will arrive to HW then they will just be flooded which is
+the wrong behavior.
 
- include/linux/skbuff.h       |  4 ++--
- include/net/sch_generic.h    |  1 +
- include/uapi/linux/pkt_cls.h |  1 +
- net/core/dev.c               |  2 ++
- net/core/flow_dissector.c    | 13 +++++++++----
- net/sched/act_ct.c           |  1 +
- net/sched/cls_flower.c       |  4 +++-
- 7 files changed, 19 insertions(+), 7 deletions(-)
+But, the Ocelot which is not MRP aware, it can behave as MRP node if the
+callbacks are implemented. For example, in MRP you have a notion of MRC
+(Client) which needs to forward MRP Test frames between 2 ports and copy
+to CPU MRP TopologyChange frames and forward these frames between 2
+ports. Then using some TCAM rules(match on DMAC and source port) you can
+implement this because you can differentiate between Test and Topology
+frames by using the last byte of the DMAC.
 
-diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-index c9568cf..e22ccf0 100644
---- a/include/linux/skbuff.h
-+++ b/include/linux/skbuff.h
-@@ -1353,8 +1353,8 @@ void skb_flow_dissect_meta(const struct sk_buff *skb,
- skb_flow_dissect_ct(const struct sk_buff *skb,
- 		    struct flow_dissector *flow_dissector,
- 		    void *target_container,
--		    u16 *ctinfo_map,
--		    size_t mapsize);
-+		    u16 *ctinfo_map, size_t mapsize,
-+		    bool post_ct);
- void
- skb_flow_dissect_tunnel_info(const struct sk_buff *skb,
- 			     struct flow_dissector *flow_dissector,
-diff --git a/include/net/sch_generic.h b/include/net/sch_generic.h
-index 639e465..e7bee99 100644
---- a/include/net/sch_generic.h
-+++ b/include/net/sch_generic.h
-@@ -388,6 +388,7 @@ struct qdisc_skb_cb {
- #define QDISC_CB_PRIV_LEN 20
- 	unsigned char		data[QDISC_CB_PRIV_LEN];
- 	u16			mru;
-+	bool			post_ct;
- };
- 
- typedef void tcf_chain_head_change_t(struct tcf_proto *tp_head, void *priv);
-diff --git a/include/uapi/linux/pkt_cls.h b/include/uapi/linux/pkt_cls.h
-index ee95f42..709668e 100644
---- a/include/uapi/linux/pkt_cls.h
-+++ b/include/uapi/linux/pkt_cls.h
-@@ -591,6 +591,7 @@ enum {
- 	TCA_FLOWER_KEY_CT_FLAGS_ESTABLISHED = 1 << 1, /* Part of an existing connection. */
- 	TCA_FLOWER_KEY_CT_FLAGS_RELATED = 1 << 2, /* Related to an established connection. */
- 	TCA_FLOWER_KEY_CT_FLAGS_TRACKED = 1 << 3, /* Conntrack has occurred. */
-+	TCA_FLOWER_KEY_CT_FLAGS_INVALID = 1 << 4, /* Conntrack is invalid. */
- };
- 
- enum {
-diff --git a/net/core/dev.c b/net/core/dev.c
-index bae35c1..9dce3f7 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -3878,6 +3878,7 @@ int dev_loopback_xmit(struct net *net, struct sock *sk, struct sk_buff *skb)
- 
- 	/* qdisc_skb_cb(skb)->pkt_len was already set by the caller. */
- 	qdisc_skb_cb(skb)->mru = 0;
-+	qdisc_skb_cb(skb)->post_ct = false;
- 	mini_qdisc_bstats_cpu_update(miniq, skb);
- 
- 	switch (tcf_classify(skb, miniq->filter_list, &cl_res, false)) {
-@@ -4960,6 +4961,7 @@ static __latent_entropy void net_tx_action(struct softirq_action *h)
- 
- 	qdisc_skb_cb(skb)->pkt_len = skb->len;
- 	qdisc_skb_cb(skb)->mru = 0;
-+	qdisc_skb_cb(skb)->post_ct = false;
- 	skb->tc_at_ingress = 1;
- 	mini_qdisc_bstats_cpu_update(miniq, skb);
- 
-diff --git a/net/core/flow_dissector.c b/net/core/flow_dissector.c
-index 2d70ded..c565c7a 100644
---- a/net/core/flow_dissector.c
-+++ b/net/core/flow_dissector.c
-@@ -237,9 +237,8 @@ void skb_flow_dissect_meta(const struct sk_buff *skb,
- void
- skb_flow_dissect_ct(const struct sk_buff *skb,
- 		    struct flow_dissector *flow_dissector,
--		    void *target_container,
--		    u16 *ctinfo_map,
--		    size_t mapsize)
-+		    void *target_container, u16 *ctinfo_map,
-+		    size_t mapsize, bool post_ct)
- {
- #if IS_ENABLED(CONFIG_NF_CONNTRACK)
- 	struct flow_dissector_key_ct *key;
-@@ -251,13 +250,19 @@ void skb_flow_dissect_meta(const struct sk_buff *skb,
- 		return;
- 
- 	ct = nf_ct_get(skb, &ctinfo);
--	if (!ct)
-+	if (!ct && !post_ct)
- 		return;
- 
- 	key = skb_flow_dissector_target(flow_dissector,
- 					FLOW_DISSECTOR_KEY_CT,
- 					target_container);
- 
-+	if (!ct) {
-+		key->ct_state = TCA_FLOWER_KEY_CT_FLAGS_TRACKED |
-+				TCA_FLOWER_KEY_CT_FLAGS_INVALID;
-+		return;
-+	}
-+
- 	if (ctinfo < mapsize)
- 		key->ct_state = ctinfo_map[ctinfo];
- #if IS_ENABLED(CONFIG_NF_CONNTRACK_ZONES)
-diff --git a/net/sched/act_ct.c b/net/sched/act_ct.c
-index 83a5c67..b344207 100644
---- a/net/sched/act_ct.c
-+++ b/net/sched/act_ct.c
-@@ -1030,6 +1030,7 @@ static int tcf_ct_act(struct sk_buff *skb, const struct tc_action *a,
- 
- out:
- 	tcf_action_update_bstats(&c->common, skb);
-+	qdisc_skb_cb(skb)->post_ct = true;
- 	if (defrag)
- 		qdisc_skb_cb(skb)->pkt_len = skb->len;
- 	return retval;
-diff --git a/net/sched/cls_flower.c b/net/sched/cls_flower.c
-index 1319986..0dcb5a0 100644
---- a/net/sched/cls_flower.c
-+++ b/net/sched/cls_flower.c
-@@ -302,6 +302,7 @@ static int fl_classify(struct sk_buff *skb, const struct tcf_proto *tp,
- 		       struct tcf_result *res)
- {
- 	struct cls_fl_head *head = rcu_dereference_bh(tp->root);
-+	bool post_ct = qdisc_skb_cb(skb)->post_ct;
- 	struct fl_flow_key skb_key;
- 	struct fl_flow_mask *mask;
- 	struct cls_fl_filter *f;
-@@ -318,7 +319,8 @@ static int fl_classify(struct sk_buff *skb, const struct tcf_proto *tp,
- 		skb_flow_dissect_tunnel_info(skb, &mask->dissector, &skb_key);
- 		skb_flow_dissect_ct(skb, &mask->dissector, &skb_key,
- 				    fl_ct_info_to_flower_map,
--				    ARRAY_SIZE(fl_ct_info_to_flower_map));
-+				    ARRAY_SIZE(fl_ct_info_to_flower_map),
-+				    post_ct);
- 		skb_flow_dissect_hash(skb, &mask->dissector, &skb_key);
- 		skb_flow_dissect(skb, &mask->dissector, &skb_key, 0);
- 
+> 
+> > If it is not a problem to have STP calls when you configure the MRP,
+> > then why not just remove SWITCHDEV_ATTR_ID_MRP_PORT_STATE?
+> 
+> Good question, why not?
+
 -- 
-1.8.3.1
-
+/Horatiu
