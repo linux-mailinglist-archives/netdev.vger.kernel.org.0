@@ -2,154 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EDF322FD841
-	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 19:32:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 51F522FD843
+	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 19:32:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404437AbhATS3q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jan 2021 13:29:46 -0500
-Received: from mga01.intel.com ([192.55.52.88]:27741 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2404511AbhATSXW (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 20 Jan 2021 13:23:22 -0500
-IronPort-SDR: L9JpmDE4+luqpQRsxe+ManDEgp5OJ1nwHyTeaBh8ce4scZm7LFiOdiGAeVGSkcBN4DWDlabCF7
- eVSIasAySHtw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9870"; a="197885122"
-X-IronPort-AV: E=Sophos;i="5.79,361,1602572400"; 
-   d="scan'208";a="197885122"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jan 2021 10:22:40 -0800
-IronPort-SDR: Rw3uvpsEE+ay4sZqOKXOadvruh64iM56/DnqDGPdU28Gs3S1wE3k+hxHjoIhPSWf3oloWD2/2g
- 6V2zBOubrIsQ==
-X-IronPort-AV: E=Sophos;i="5.79,361,1602572400"; 
-   d="scan'208";a="384961621"
-Received: from myegin-mobl1.ger.corp.intel.com (HELO btopel-mobl.ger.intel.com) ([10.249.42.133])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jan 2021 10:22:34 -0800
-Subject: Re: [PATCH bpf-next v2 4/8] xsk: register XDP sockets at bind(), and
- add new AF_XDP BPF helper
-To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
-        ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Cc:     magnus.karlsson@intel.com, maciej.fijalkowski@intel.com,
-        kuba@kernel.org, jonathan.lemon@gmail.com, maximmi@nvidia.com,
-        davem@davemloft.net, hawk@kernel.org, john.fastabend@gmail.com,
-        ciara.loftus@intel.com, weqaar.a.janjua@intel.com
-References: <20210119155013.154808-1-bjorn.topel@gmail.com>
- <20210119155013.154808-5-bjorn.topel@gmail.com> <878s8neprj.fsf@toke.dk>
- <46162f5f-5b3c-903b-8b8d-7c1afc74cb05@intel.com> <87k0s74q1a.fsf@toke.dk>
- <3c6feb0d-6a64-2251-3cac-c79cff29d85c@intel.com> <8735yv4iv1.fsf@toke.dk>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
-Message-ID: <ca8cbe21-f020-e5c0-5f09-19260e95839f@intel.com>
-Date:   Wed, 20 Jan 2021 19:22:30 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
+        id S1728649AbhATSaQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jan 2021 13:30:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47670 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2404668AbhATS0e (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 13:26:34 -0500
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8396BC061575;
+        Wed, 20 Jan 2021 10:25:53 -0800 (PST)
+Received: by mail-lf1-x134.google.com with SMTP id o10so35381227lfl.13;
+        Wed, 20 Jan 2021 10:25:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=bUKZ5BdNuXPwc8JBYX62se5lkjjXXlegt5r2v6pGujs=;
+        b=KRKLju2pVx/375rqf/GkBTTo8/nLC/kAc3nObqSY4Yi6AY5nmqqEcMWKqiAYs3pqTC
+         LGrnQoZnVIAHleDV65Bq7iMndVeDAsQep0hZeVjtOZsk1rPZkbIEYFZdCZshbbKrD7If
+         GvYgVyk+aFwMsBnM04BG5PSAooQnnqbJw0rkjIMAYJMYeJyf7kzWcW/qOZjbWFFWZTyY
+         Uzql9STwWdLqJRa0RL4jsAJ5O1L3D1+uzQsqi7PLYwsp62eTS/sDdoAA9C7JQ6sUNMR8
+         FWsqGxKwpcibxZkCkz0a0aytzYJ3z+/lOy5V1KNQ3tZ+3Yzv4rdL/jHBRj1pJfbIjLWp
+         IcjQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=bUKZ5BdNuXPwc8JBYX62se5lkjjXXlegt5r2v6pGujs=;
+        b=kITC5VaZDbDOZTweWzF+rt88Lg0UfuctAUKoE5fNEZpg5J+9GXaoYu74ouwMv6GYJM
+         8aroKRQHjqqNjVTEiHFCg8AdFTmcsOG4bPnt0ax/YFcXBzn5dmdl3oKjXcSv7FmlMY74
+         RfInvAF7gfu7Kzs1Y9N3b7/JOmgOKakbWpnsM5VHaKB9/opICD2UK2ckiBq3UyYT4GH9
+         uYOsTMeimYN9orcugmLoPHK0rR8AnOYOfTQi8QoZ4v6fKnj3CeLzq22WR8vpo/qqrkE7
+         FexyxVocvWTBrck+gYrlPXJgTGg0u6HJek+badpi6I5/qCIBKHDWv4RIStTk9owiQKA3
+         8TQA==
+X-Gm-Message-State: AOAM531swNGe9LLJmznSWSonNzk8rFo/0HS6GL8MdNG+5H37OYIQUxxr
+        hFkARZy/mttif6+6pxgcPWaiqmWSPLVcIUeS3lc=
+X-Google-Smtp-Source: ABdhPJxt3nUdxzr3WSDZVvNE9diZlmRIVDsz9F62MQtv97WfMKW8wUwVNq1EXsa1f0bPVNQk3ud38CtcU1b2cgHdRYA=
+X-Received: by 2002:a05:6512:34c5:: with SMTP id w5mr4875982lfr.214.1611167151940;
+ Wed, 20 Jan 2021 10:25:51 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <8735yv4iv1.fsf@toke.dk>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <20210119155013.154808-1-bjorn.topel@gmail.com>
+ <20210119155013.154808-6-bjorn.topel@gmail.com> <875z3repng.fsf@toke.dk>
+ <6c7da700-700d-c7f6-fe0a-c42e55e81c8a@intel.com> <6cda7383-663e-ed92-45dd-bbf87ca45eef@intel.com>
+ <87eeif4p96.fsf@toke.dk> <2751bcd9-b3af-0366-32ee-a52d5919246c@intel.com>
+In-Reply-To: <2751bcd9-b3af-0366-32ee-a52d5919246c@intel.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Wed, 20 Jan 2021 10:25:40 -0800
+Message-ID: <CAADnVQK1vL307SmmUZyuEAmy9S_A2fJwyHryCHBavQ-QDNyxww@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v2 5/8] libbpf, xsk: select AF_XDP BPF program
+ based on kernel version
+To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Andrii Nakryiko <andrii@kernel.org>
+Cc:     =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>,
+        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
+        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>, maximmi@nvidia.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Ciara Loftus <ciara.loftus@intel.com>,
+        weqaar.a.janjua@intel.com, Marek Majtyka <alardam@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021-01-20 18:29, Toke Høiland-Jørgensen wrote:
-> Björn Töpel <bjorn.topel@intel.com> writes:
-> 
->> On 2021-01-20 15:54, Toke Høiland-Jørgensen wrote:
->>> Björn Töpel <bjorn.topel@intel.com> writes:
->>>
->>>> On 2021-01-20 13:50, Toke Høiland-Jørgensen wrote:
->>>>> Björn Töpel <bjorn.topel@gmail.com> writes:
->>>>>
->>>>>> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
->>>>>> index c001766adcbc..bbc7d9a57262 100644
->>>>>> --- a/include/uapi/linux/bpf.h
->>>>>> +++ b/include/uapi/linux/bpf.h
->>>>>> @@ -3836,6 +3836,12 @@ union bpf_attr {
->>>>>>      *	Return
->>>>>>      *		A pointer to a struct socket on success or NULL if the file is
->>>>>>      *		not a socket.
->>>>>> + *
->>>>>> + * long bpf_redirect_xsk(struct xdp_buff *xdp_md, u64 action)
->>>>>> + *	Description
->>>>>> + *		Redirect to the registered AF_XDP socket.
->>>>>> + *	Return
->>>>>> + *		**XDP_REDIRECT** on success, otherwise the action parameter is returned.
->>>>>>      */
->>>>>
->>>>> I think it would be better to make the second argument a 'flags'
->>>>> argument and make values > XDP_TX invalid (like we do in
->>>>> bpf_xdp_redirect_map() now). By allowing any value as return you lose
->>>>> the ability to turn it into a flags argument later...
->>>>>
->>>>
->>>> Yes, but that adds a run-time check. I prefer this non-checked version,
->>>> even though it is a bit less futureproof.
->>>
->>> That...seems a bit short-sighted? :)
->>> Can you actually see a difference in your performance numbers?
->>>
->>
->> I would rather add an additional helper *if* we see the need for flags,
->> instead of paying for that upfront. For me, BPF is about being able to
->> specialize, and not having one call with tons of checks.
-> 
-> I get that, I'm just pushing back because omitting a 'flags' argument is
-> literally among the most frequent reasons for having to replace a
-> syscall (see e.g., [0]) instead of extending it. And yeah, I do realise
-> that the performance implications are different for XDP than for
-> syscalls, but maintainability of the API is also important; it's all a
-> tradeoff. This will be the third redirect helper variant for XDP and I'd
-> hate for the fourth one to have to be bpf_redirect_xsk_flags() because
-> it did turn out to be needed...
-> 
-> (One potential concrete reason for this: I believe Magnus was talking
-> about an API that would allow a BPF program to redirect a packet into
-> more than one socket (cloning it in the process), or to redirect to a
-> socket+another target. How would you do that with this new helper?)
-> 
-> [0] https://lwn.net/Articles/585415/
+On Wed, Jan 20, 2021 at 7:27 AM Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.co=
+m> wrote:
 >
-
-I have a bit of different view. One of the really nice parts about BPF
-is exactly specialization. A user can tailor the kernel do a specific
-thing. I *don't* see an issue with yet another helper, if that is needed
-in the future. I think that is better than bloated helpers trying to
-cope for all scenarios. I don't mean we should just add helpers all over
-the place, but I do see more lightly on adding helpers, than adding
-syscalls.
-
-Elaborating a bit on this: many device drivers try to handle all the
-things in the fast-path. I see BPF as one way forward to moving away
-from that. Setup what you need, and only run what you currently need,
-instead of the current "Is bleh on, then baz? Is this on, then that."
-
-So, I would like to avoid "future proofing" the helpers, if that makes
-sense. Use what you need. That's why BPF is so good (one of the things)!
-
-As for bpf_redirect_xsk() it's a leaner version of bpf_redirect_map().
-You want flags/shared sockets/...? Well go use bpf_redirect_map() and
-XSKMAP. bpf_redirect_xsk() is not for you.
-
-A lot of back-and-forth for *one* if-statement, but it's kind of a
-design thing for me. ;-)
-
-
-Björn
-
-
->> (Related; Going forward, the growing switch() for redirect targets in
->> xdp_do_redirect() is a concern for me...)
->>
->> And yes, even with all those fancy branch predictors, less instructions
->> is still less. :-) (It shows in my ubenchs.)
-> 
-> Right, I do agree that the run-time performance hit of checking the flag
-> sucks (along with being hard to check for, cf. our parallel discussion
-> about version checks). So ideally this would be fixed by having the
-> verifier enforce the argument ranges instead; but if we merge this
-> without the runtime check now we can't add that later without
-> potentially breaking programs... :(
+> >> Would it make sense with some kind of BPF-specific "supported
+> >> features" mechanism? Something else with a bigger scope (whole
+> >> kernel)?
+> >
+> > Heh, in my opinion, yeah. Seems like we'll finally get it for XDP, but
+> > for BPF in general the approach has always been probing AFAICT.
+> >
+> > For the particular case of arguments to helpers, I suppose the verifier
+> > could technically validate value ranges for flags arguments, say. That
+> > would be nice as an early reject anyway, but I'm not sure if it is
+> > possible to add after-the-fact without breaking existing programs
+> > because the verifier can't prove the argument is within the valid range=
+.
+> > And of course it doesn't help you with compatibility with
+> > already-released kernels.
+> >
 >
-> -Toke
-> 
+> Hmm, think I have a way forward. I'll use BPF_PROG_TEST_RUN.
+>
+> If the load fail for the new helper, fallback to bpf_redirect_map(). Use
+> BPF_PROG_TEST_RUN to make sure that "action via flags" passes.
+
++1 to Toke's point. No version checks please.
+One way to detect is to try prog_load. Search for FEAT_* in libbpf.
+Another approach is to scan vmlinux BTF for necessary helpers.
+Currently libbpf is relying on the former.
+I think going forward would be good to detect features via BTF.
+It's going to be much faster and won't create noise for audit that
+could be looking at prog_load calls.
