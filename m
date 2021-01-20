@@ -2,145 +2,154 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 493872FD82A
-	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 19:32:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EDF322FD841
+	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 19:32:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404349AbhATSTy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jan 2021 13:19:54 -0500
-Received: from mail-ot1-f50.google.com ([209.85.210.50]:39512 "EHLO
-        mail-ot1-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2391964AbhATSSo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 13:18:44 -0500
-Received: by mail-ot1-f50.google.com with SMTP id i30so11348535ota.6;
-        Wed, 20 Jan 2021 10:18:27 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=IgWDE0PErg3ORn5MUSyThw1N3Ecrc6Z8pCtsc577ahI=;
-        b=ojM9r7PCtlxNYXItFNuFj/iw6hmuaeCLkNxVczASwTCTvtBngMAekwLoUvvd6etJaI
-         ybFnwSmuTOkJoyBjly/xRwbNLWye/NhawA2DdPwZRVj/ilBSIhz5Eo7crOy2+itv0nNV
-         CVcL7Tsw77M7BMHNUNHT3u/vQOlMggZ8R77Fl2P0wfSyzjuFrAvDQuFe5AZDM2sTKUxE
-         yJSK1lErEmX26ucnQWobUn2fJ32RYt5FYhrlWU+jLaHSWABujrBDC5nZod/Jlx1JOMjZ
-         P7B/LQPO1JeBtWjEkwgI/+b06V5MWh8DoJrkiWvy5Lpq27Ii0kQ8mgg6OWZMhhuBvo7e
-         6a0Q==
-X-Gm-Message-State: AOAM5319XFPLIJwgtWTE35qCnVYCoOV0ZimRJ132nvoFjO4vSDacAFK4
-        vDHXGKIyblYZqlCEhS0v3Ikp3kcOQLjtnVeNQHs=
-X-Google-Smtp-Source: ABdhPJwN77JI0VoJPEv4UVgKZFKkiy2aKaFZpzEAoON0ded46fj5YtH3TNGxm9cmcPfHk60ojzmuOupUQn33CroVRy0=
-X-Received: by 2002:a05:6830:138f:: with SMTP id d15mr1588674otq.321.1611166682565;
- Wed, 20 Jan 2021 10:18:02 -0800 (PST)
+        id S2404437AbhATS3q (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jan 2021 13:29:46 -0500
+Received: from mga01.intel.com ([192.55.52.88]:27741 "EHLO mga01.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2404511AbhATSXW (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 20 Jan 2021 13:23:22 -0500
+IronPort-SDR: L9JpmDE4+luqpQRsxe+ManDEgp5OJ1nwHyTeaBh8ce4scZm7LFiOdiGAeVGSkcBN4DWDlabCF7
+ eVSIasAySHtw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9870"; a="197885122"
+X-IronPort-AV: E=Sophos;i="5.79,361,1602572400"; 
+   d="scan'208";a="197885122"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jan 2021 10:22:40 -0800
+IronPort-SDR: Rw3uvpsEE+ay4sZqOKXOadvruh64iM56/DnqDGPdU28Gs3S1wE3k+hxHjoIhPSWf3oloWD2/2g
+ 6V2zBOubrIsQ==
+X-IronPort-AV: E=Sophos;i="5.79,361,1602572400"; 
+   d="scan'208";a="384961621"
+Received: from myegin-mobl1.ger.corp.intel.com (HELO btopel-mobl.ger.intel.com) ([10.249.42.133])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jan 2021 10:22:34 -0800
+Subject: Re: [PATCH bpf-next v2 4/8] xsk: register XDP sockets at bind(), and
+ add new AF_XDP BPF helper
+To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
+        ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Cc:     magnus.karlsson@intel.com, maciej.fijalkowski@intel.com,
+        kuba@kernel.org, jonathan.lemon@gmail.com, maximmi@nvidia.com,
+        davem@davemloft.net, hawk@kernel.org, john.fastabend@gmail.com,
+        ciara.loftus@intel.com, weqaar.a.janjua@intel.com
+References: <20210119155013.154808-1-bjorn.topel@gmail.com>
+ <20210119155013.154808-5-bjorn.topel@gmail.com> <878s8neprj.fsf@toke.dk>
+ <46162f5f-5b3c-903b-8b8d-7c1afc74cb05@intel.com> <87k0s74q1a.fsf@toke.dk>
+ <3c6feb0d-6a64-2251-3cac-c79cff29d85c@intel.com> <8735yv4iv1.fsf@toke.dk>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
+Message-ID: <ca8cbe21-f020-e5c0-5f09-19260e95839f@intel.com>
+Date:   Wed, 20 Jan 2021 19:22:30 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.1
 MIME-Version: 1.0
-References: <20210112134054.342-1-calvin.johnson@oss.nxp.com>
- <20210112134054.342-10-calvin.johnson@oss.nxp.com> <CAHp75VdyPWD-cM5Q_9k8yRAutMSjm-3kwE0pQT3+ztKGwcU+4A@mail.gmail.com>
-In-Reply-To: <CAHp75VdyPWD-cM5Q_9k8yRAutMSjm-3kwE0pQT3+ztKGwcU+4A@mail.gmail.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Wed, 20 Jan 2021 19:17:51 +0100
-Message-ID: <CAJZ5v0hic-Yf74Rn06kui4z+KZBES_uiH-pRmmRcFcYjuDZ=CA@mail.gmail.com>
-Subject: Re: [net-next PATCH v3 09/15] device property: Introduce fwnode_get_id()
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Calvin Johnson <calvin.johnson@oss.nxp.com>,
-        Grant Likely <grant.likely@arm.com>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Jeremy Linton <jeremy.linton@arm.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
-        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Pieter Jansen Van Vuuren <pieter.jansenvv@bamboosystems.io>,
-        Jon <jon@solid-run.com>,
-        Diana Madalina Craciun <diana.craciun@nxp.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        "linux.cj" <linux.cj@gmail.com>,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Saravana Kannan <saravanak@google.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <8735yv4iv1.fsf@toke.dk>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 12, 2021 at 4:47 PM Andy Shevchenko
-<andy.shevchenko@gmail.com> wrote:
+On 2021-01-20 18:29, Toke Høiland-Jørgensen wrote:
+> Björn Töpel <bjorn.topel@intel.com> writes:
+> 
+>> On 2021-01-20 15:54, Toke Høiland-Jørgensen wrote:
+>>> Björn Töpel <bjorn.topel@intel.com> writes:
+>>>
+>>>> On 2021-01-20 13:50, Toke Høiland-Jørgensen wrote:
+>>>>> Björn Töpel <bjorn.topel@gmail.com> writes:
+>>>>>
+>>>>>> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+>>>>>> index c001766adcbc..bbc7d9a57262 100644
+>>>>>> --- a/include/uapi/linux/bpf.h
+>>>>>> +++ b/include/uapi/linux/bpf.h
+>>>>>> @@ -3836,6 +3836,12 @@ union bpf_attr {
+>>>>>>      *	Return
+>>>>>>      *		A pointer to a struct socket on success or NULL if the file is
+>>>>>>      *		not a socket.
+>>>>>> + *
+>>>>>> + * long bpf_redirect_xsk(struct xdp_buff *xdp_md, u64 action)
+>>>>>> + *	Description
+>>>>>> + *		Redirect to the registered AF_XDP socket.
+>>>>>> + *	Return
+>>>>>> + *		**XDP_REDIRECT** on success, otherwise the action parameter is returned.
+>>>>>>      */
+>>>>>
+>>>>> I think it would be better to make the second argument a 'flags'
+>>>>> argument and make values > XDP_TX invalid (like we do in
+>>>>> bpf_xdp_redirect_map() now). By allowing any value as return you lose
+>>>>> the ability to turn it into a flags argument later...
+>>>>>
+>>>>
+>>>> Yes, but that adds a run-time check. I prefer this non-checked version,
+>>>> even though it is a bit less futureproof.
+>>>
+>>> That...seems a bit short-sighted? :)
+>>> Can you actually see a difference in your performance numbers?
+>>>
+>>
+>> I would rather add an additional helper *if* we see the need for flags,
+>> instead of paying for that upfront. For me, BPF is about being able to
+>> specialize, and not having one call with tons of checks.
+> 
+> I get that, I'm just pushing back because omitting a 'flags' argument is
+> literally among the most frequent reasons for having to replace a
+> syscall (see e.g., [0]) instead of extending it. And yeah, I do realise
+> that the performance implications are different for XDP than for
+> syscalls, but maintainability of the API is also important; it's all a
+> tradeoff. This will be the third redirect helper variant for XDP and I'd
+> hate for the fourth one to have to be bpf_redirect_xsk_flags() because
+> it did turn out to be needed...
+> 
+> (One potential concrete reason for this: I believe Magnus was talking
+> about an API that would allow a BPF program to redirect a packet into
+> more than one socket (cloning it in the process), or to redirect to a
+> socket+another target. How would you do that with this new helper?)
+> 
+> [0] https://lwn.net/Articles/585415/
 >
-> On Tue, Jan 12, 2021 at 3:42 PM Calvin Johnson
-> <calvin.johnson@oss.nxp.com> wrote:
-> >
-> > Using fwnode_get_id(), get the reg property value for DT node
-> > or get the _ADR object value for ACPI node.
-> >
-> > Signed-off-by: Calvin Johnson <calvin.johnson@oss.nxp.com>
-> > ---
-> >
-> > Changes in v3:
-> > - Modified to retrieve reg property value for ACPI as well
-> > - Resolved compilation issue with CONFIG_ACPI = n
-> > - Added more info into documentation
-> >
-> > Changes in v2: None
-> >
-> >  drivers/base/property.c  | 33 +++++++++++++++++++++++++++++++++
-> >  include/linux/property.h |  1 +
-> >  2 files changed, 34 insertions(+)
-> >
-> > diff --git a/drivers/base/property.c b/drivers/base/property.c
-> > index 35b95c6ac0c6..2d51108cb936 100644
-> > --- a/drivers/base/property.c
-> > +++ b/drivers/base/property.c
-> > @@ -580,6 +580,39 @@ const char *fwnode_get_name_prefix(const struct fwnode_handle *fwnode)
-> >         return fwnode_call_ptr_op(fwnode, get_name_prefix);
-> >  }
-> >
-> > +/**
-> > + * fwnode_get_id - Get the id of a fwnode.
-> > + * @fwnode: firmware node
-> > + * @id: id of the fwnode
-> > + *
-> > + * This function provides the id of a fwnode which can be either
-> > + * DT or ACPI node. For ACPI, "reg" property value, if present will
-> > + * be provided or else _ADR value will be provided.
-> > + * Returns 0 on success or a negative errno.
-> > + */
-> > +int fwnode_get_id(struct fwnode_handle *fwnode, u32 *id)
-> > +{
-> > +#ifdef CONFIG_ACPI
-> > +       unsigned long long adr;
-> > +       acpi_status status;
-> > +#endif
-> > +       int ret;
-> > +
-> > +       ret = fwnode_property_read_u32(fwnode, "reg", id);
-> > +       if (!(ret && is_acpi_node(fwnode)))
-> > +               return ret;
-> > +
-> > +#ifdef CONFIG_ACPI
-> > +       status = acpi_evaluate_integer(ACPI_HANDLE_FWNODE(fwnode),
-> > +                                      METHOD_NAME__ADR, NULL, &adr);
-> > +       if (ACPI_FAILURE(status))
-> > +               return -EINVAL;
-> > +       *id = (u32)adr;
->
-> Shouldn't be
->
->        return 0;
-> #else
->        return -EINVAL;
-> #endif
->
-> ?
->
-> Yes, it's a theoretical case when is_acpi_node() returns true when
-> CONFIG_ACPI=n.
 
-How so?  is_acpi_node() is defined as a static inline returning false then.
+I have a bit of different view. One of the really nice parts about BPF
+is exactly specialization. A user can tailor the kernel do a specific
+thing. I *don't* see an issue with yet another helper, if that is needed
+in the future. I think that is better than bloated helpers trying to
+cope for all scenarios. I don't mean we should just add helpers all over
+the place, but I do see more lightly on adding helpers, than adding
+syscalls.
+
+Elaborating a bit on this: many device drivers try to handle all the
+things in the fast-path. I see BPF as one way forward to moving away
+from that. Setup what you need, and only run what you currently need,
+instead of the current "Is bleh on, then baz? Is this on, then that."
+
+So, I would like to avoid "future proofing" the helpers, if that makes
+sense. Use what you need. That's why BPF is so good (one of the things)!
+
+As for bpf_redirect_xsk() it's a leaner version of bpf_redirect_map().
+You want flags/shared sockets/...? Well go use bpf_redirect_map() and
+XSKMAP. bpf_redirect_xsk() is not for you.
+
+A lot of back-and-forth for *one* if-statement, but it's kind of a
+design thing for me. ;-)
+
+
+Björn
+
+
+>> (Related; Going forward, the growing switch() for redirect targets in
+>> xdp_do_redirect() is a concern for me...)
+>>
+>> And yes, even with all those fancy branch predictors, less instructions
+>> is still less. :-) (It shows in my ubenchs.)
+> 
+> Right, I do agree that the run-time performance hit of checking the flag
+> sucks (along with being hard to check for, cf. our parallel discussion
+> about version checks). So ideally this would be fixed by having the
+> verifier enforce the argument ranges instead; but if we merge this
+> without the runtime check now we can't add that later without
+> potentially breaking programs... :(
+>
+> -Toke
+> 
