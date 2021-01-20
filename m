@@ -2,173 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 65DD92FD0B8
-	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 13:59:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ECB102FD0B7
+	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 13:59:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725950AbhATMuj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jan 2021 07:50:39 -0500
-Received: from esa19.fujitsucc.c3s2.iphmx.com ([216.71.158.62]:11111 "EHLO
-        esa19.fujitsucc.c3s2.iphmx.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2388142AbhATLnX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 06:43:23 -0500
-X-Greylist: delayed 477 seconds by postgrey-1.27 at vger.kernel.org; Wed, 20 Jan 2021 06:43:20 EST
-IronPort-SDR: 3vOmwnfqYghykBEl0QPALWkkECE3KncNKTqTEC8tAcKGPSYtzmsKGvHhs4eG5vxIpx4VdBvNnA
- raHUaE4NXAFQSROdu8R3bp0QUa297P+A9tsJ/EAiN2Mn0BvHRdS0y86vwU4OuKOR/MCrEzVIL8
- QhnxAnPH9/+tM+FgqlxHRawWcKzTxpzEHx5CXO1x57F6+vWYhgKfriKoG4tE5bCVAb1vX66iQE
- QoqZdUARsiP0l7bXACYIkEhiKpjxiLWDZvbXgY/38PIxqbmvmXTnJV7bBr5PSxRwLUfWkHC1rv
- dQc=
-X-IronPort-AV: E=McAfee;i="6000,8403,9869"; a="24462664"
-X-IronPort-AV: E=Sophos;i="5.79,361,1602514800"; 
-   d="scan'208";a="24462664"
-Received: from mail-os2jpn01lp2054.outbound.protection.outlook.com (HELO JPN01-OS2-obe.outbound.protection.outlook.com) ([104.47.92.54])
-  by ob1.fujitsucc.c3s2.iphmx.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jan 2021 20:33:02 +0900
+        id S1727040AbhATMuR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jan 2021 07:50:17 -0500
+Received: from mail-eopbgr150133.outbound.protection.outlook.com ([40.107.15.133]:19521
+        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728864AbhATLeX (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 20 Jan 2021 06:34:23 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=XaG0hqIzL7oDHzL621Xod9lVBsypC7rLOiVByEozyqs/3Hboh4uWCSR3jLFHOV0bV4XAN1pzOCkX3462bqCzkoVq9CFFXG6TkU9vPzSQIbdU103UE37QaV07Rl95I5TGtfMDYZ5ugHmdiVqfE8RWvwrD23hMjj4lxGm4DDH54WhAvFyWBb0M52IQRuXtZjyd9kzaWeOgefGngLqB9ihGwoXBsggdPcxbBZuWovdQh4gYKkv2kmpZF5bpiXrn8g3a/jUimu+PzQbU9t93z7/JqYSZCGi3eKsYnHp3CGiMBxrMnzAKuKCcOkM4zakZ8vRE+IitSWRmnEBrLAyHU+ZDZA==
+ b=gYxCSOMpgSkVWaLMsK7xVh4WlQgBvY51kSdV3A3SIUNdYRjpEMh/0kw5gsPFeFhMgzl/DB5DEBfVewPJBYhC/oldwoVF0a0Ni12a4yb0lk/2qRt5jtQOjfe6MCbgeKCX19eTFgChCe/xf0TO70EAnQ7x5X8p8GO7LWA412wFiHvHC1RV/GZkds0YqcLVQfJgK2yLKBPEA0ANl71BDAOZudvxSyQFDxZIpr85E69aF9+KvzYje88SJZmtze+SkcOnCLme5QNfSJsLBtIY4fYuDeJFjvABwePcy1UQZaw8Qe5Xos37i+8t9h/kEiml8FVNjXTPJlE6RL1agdjTerPBPQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=NuDNAG2SNID/Gf32oFDZgOSRSGbBMbJaWl6GU4k6etE=;
- b=VqV4QFPSIuWusYuGvfuoLSAVBM8H9lfEFd3Z8irbLT4KN9xc02fYlAPfauCX5UzMdXgzTAMPBwDOH+3DY1PIakw72QFtViBTGEJ7XiOQwyI+sxBExrBmNHdliGa/BjAwZd5QmWUO2Dfuwss5JnVsMpH3NvVwC/u5A5R3785cRYDYH0rZ5BOXI6HI7H8LmP3NoYmxGhfdlBC9ukkNVD6h7EzLbUYLph4RVQYFdtWE91F+kC9hISFDmxL/Ke7nEqG6rOBsq8ItgETa9DSEGgAuHEFb5D11K8FSspR/qxdyRWyml5XaSB7yRvxckjWezV3AKEBIQinJufudIAvaAhd+EA==
+ bh=ew4duM2f5oNHXi5ncXyGbFFqbpEHWVStla0dT2hSoNc=;
+ b=UfTK4v4xCUtxOc1zLVRrkPwfKTA8hPybQG5epSt/+U9g8CCNLYaeO/Ew/DLLEaVxDdDLHEoKDIUo6prk9ILE12RayUlNqSlsJ6JV8+ub1XorqbrTO47utN+tkWBhKsa/1J2BX68SiTelv252a9yyGplc4R1cTRzDGFrUCvZpK9dd31Z4cuZdOrLRuTCC3UyEsndKNPVslEKSsxakCh29j3LfM2gtbYgZ7ylBGx4rmPaj3uZpaXh35V7MrAMeRW7GlB639ja1A3hWhFjY6XRZUDs90TDpZxPg3K+NFhAj9Ue1mgCE57ECQalA2TZYfRMd1FMcxkMgzzK1RHe1bGBM9w==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=fujitsu.com; dmarc=pass action=none header.from=fujitsu.com;
- dkim=pass header.d=fujitsu.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=fujitsu.onmicrosoft.com; s=selector2-fujitsu-onmicrosoft-com;
+ smtp.mailfrom=prevas.dk; dmarc=pass action=none header.from=prevas.dk;
+ dkim=pass header.d=prevas.dk; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=prevas.dk;
+ s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=NuDNAG2SNID/Gf32oFDZgOSRSGbBMbJaWl6GU4k6etE=;
- b=VY0YZz6KZdgWJKVHBzs+yPLbXieAO8JgPu98wYv1d73NhXz2sJbNJQJ2VXYK8b+nYCdpE/g4Z5+yWZu/XP4f4QgjgzStyNdOjxXFR4bDZwxAKB+JAKuqzXZ6U0IquzHjc56QbqxNMnZpNqzwQwK6hBfH0ET6LDTrV66xkS4OniI=
-Received: from OSAPR01MB3844.jpnprd01.prod.outlook.com (2603:1096:604:5d::13)
- by OSAPR01MB3842.jpnprd01.prod.outlook.com (2603:1096:604:52::15) with
+ bh=ew4duM2f5oNHXi5ncXyGbFFqbpEHWVStla0dT2hSoNc=;
+ b=EcHYw15KoVzSC9kcroBtwUAbVwEiM+yZa0xykZw1+Dwlem2m881nTCZ80DaTVEJD9YdAkBAcidote6DZc5qmP13oFgKXQEsikFebtNZ/FUCHuiGMgGIzNbycXXcnSoOt1JmQ+nw2rge2U36JvN0LcJNdIIGAOm4295WQiklG8uo=
+Authentication-Results: infinera.com; dkim=none (message not signed)
+ header.d=none;infinera.com; dmarc=none action=none header.from=prevas.dk;
+Received: from AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:208:3f::10)
+ by AM0PR10MB2113.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:208:4b::21) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3763.10; Wed, 20 Jan
- 2021 11:32:59 +0000
-Received: from OSAPR01MB3844.jpnprd01.prod.outlook.com
- ([fe80::a555:499e:e445:e0dd]) by OSAPR01MB3844.jpnprd01.prod.outlook.com
- ([fe80::a555:499e:e445:e0dd%3]) with mapi id 15.20.3784.012; Wed, 20 Jan 2021
- 11:32:59 +0000
-From:   "ashiduka@fujitsu.com" <ashiduka@fujitsu.com>
-To:     'Andrew Lunn' <andrew@lunn.ch>
-CC:     "hkallweit1@gmail.com" <hkallweit1@gmail.com>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "torii.ken1@fujitsu.com" <torii.ken1@fujitsu.com>
-Subject: RE: [PATCH v2] net: phy: realtek: Add support for RTL9000AA/AN
-Thread-Topic: [PATCH v2] net: phy: realtek: Add support for RTL9000AA/AN
-Thread-Index: AQHW5y31ARgi0NV/wE25+9nETrMkFKohCyYAgAXFg4CAAPQjgIAADo6QgAdSwACAAUiG4A==
-Date:   Wed, 20 Jan 2021 11:32:59 +0000
-Message-ID: <OSAPR01MB3844ECB7B38EBDFF6F27E9FCDFA20@OSAPR01MB3844.jpnprd01.prod.outlook.com>
-References: <20210110085221.5881-1-ashiduka@fujitsu.com>
- <X/sptqSqUS7T5XWR@lunn.ch>
- <OSAPR01MB38441EE1695CCAD1FE3476DEDFA80@OSAPR01MB3844.jpnprd01.prod.outlook.com>
- <YADN77NvrpnZYUVo@lunn.ch>
- <OSAPR01MB3844F07254AB8B1164086D7FDFA40@OSAPR01MB3844.jpnprd01.prod.outlook.com>
- <YAb+zI71+d67mlwz@lunn.ch>
-In-Reply-To: <YAb+zI71+d67mlwz@lunn.ch>
-Accept-Language: ja-JP, en-US
-Content-Language: ja-JP
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-securitypolicycheck: OK by SHieldMailChecker v2.6.2
-x-shieldmailcheckerpolicyversion: FJ-ISEC-20181130-VDI-enc
-x-shieldmailcheckermailid: 539223316d37414fa5b07729036270ca
-authentication-results: lunn.ch; dkim=none (message not signed)
- header.d=none;lunn.ch; dmarc=none action=none header.from=fujitsu.com;
-x-originating-ip: [218.44.52.175]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: f56dcc54-ab8d-4934-709f-08d8bd3723d3
-x-ms-traffictypediagnostic: OSAPR01MB3842:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <OSAPR01MB38428CB81AD6F54816E5EB3EDFA20@OSAPR01MB3842.jpnprd01.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:913;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: o+7bndWIvrN6VX7BLVO3TdNTKzMEa2aca3GaP06p8j+oi7jgab/aJSML7w/G0wWcz/ivu84gm7anFyOB7Jyqyuzn4jOTp4R+c8/zACRS2WDYEz7UvgNxarVR2JpnqhLVN9kWi42jH7L9A8NpQuyWXs4OnEw4DdAOdvCGKxBjkZwNp6AFQqEWtXftmxCkN9krJBn1I6E1SQ6AJrNO6jVIh07oT4rZvzrqoqbxdbZg11TgrGj2k7gU6BG5FB8mVLOJF/Aqfk3vfwNL4bGmZT7EeQY/OPVv6fEzXwrEaqR7abUzMlv0on5H1n4tnS5oeCjrX3FeWMX/bEoWF8U4p/GjO5AnihiBMPt8V++obCrreoQf4vQMzpiPsaS1UeTw1LkgGJvNQHenMTPxEAcPh7hFHRF/Fs+CGyowXK/BA25fDtG/CI6i4DvDPk4yydIdn+S4/nYpJGV9PYVa6ZaxwYIeRdIB8pIxdUCTfeLQ/m2Ti39pUEXYrAWFBwDJzjpQbvpV8Rndmh1Mq6WrztEJLpfoKoq+/O1yRKOMcH2GaQIp+ZMUcmC0LCEmVB+bZgfoabY+UQk18TusAAAsvYA3yRWQlw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:OSAPR01MB3844.jpnprd01.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(39860400002)(136003)(346002)(366004)(376002)(64756008)(52536014)(478600001)(76116006)(6916009)(86362001)(8936002)(6506007)(55016002)(71200400001)(4326008)(7696005)(316002)(66476007)(66446008)(186003)(66946007)(5660300002)(9686003)(107886003)(85182001)(26005)(54906003)(2906002)(33656002)(8676002)(66556008)(777600001);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: =?iso-2022-jp?B?ZXI4WTNreGxVWHdWRXhFTnczU2tPL2lSTjV2NDA2ZGF2amczWmMzdXRN?=
- =?iso-2022-jp?B?Z0VzMHdTaWw2cGpRUEgxNWpIL2tNeXJlT1RhWG00ZVRwKythdWxqQk94?=
- =?iso-2022-jp?B?dFNmdlJoMzErYkpPRXNsWTY1R2sxNHhkRzRoY2NvWGJWRWdiaS90dS9Y?=
- =?iso-2022-jp?B?TlZEcGRlK1RhRCtSZ1NTOEdYdjAzbGg5bmd3aWs0eDJEcWpoUkRvZS9F?=
- =?iso-2022-jp?B?b2xlaUdUREFQZ0hBRkREUFFHUXU3b1ljKzRqN01XTUlJWDZFWkFxTHRB?=
- =?iso-2022-jp?B?SmhxSkJDeXpvTXJMSnEyak9FY2hJYXFkZVF6bXBIS2FtUWJSUXRreTZO?=
- =?iso-2022-jp?B?c3JzYVY4bmVHV1d5Kyt2MzZaUk1RWFplNGorYmRHVzBGR0FwMnpNYTRr?=
- =?iso-2022-jp?B?Y1BvT3ZSOVV0NzVvaENqYUNyRXJiS0FCUGM1ODlEZ1NNN0FiVTZLS2da?=
- =?iso-2022-jp?B?bTh3U1dJOXV0Ukg1S0ZiTXJsa1VCd1UxZmpmMmxiUXZYaFIxU3RnMUhB?=
- =?iso-2022-jp?B?TitqanZyQytSR3piS21DaWFIWndmeUhOdUVYVk9NOXVyWTM3T0Y3TTl1?=
- =?iso-2022-jp?B?ZUhyZkpXZURNM0VGQ2QyUzJyQ1ovVkR4ckhhYkl1aVgyY3BOTzA0cnI2?=
- =?iso-2022-jp?B?SmtrSlBMWVpMV0FyTTN1aG50Um9pMlJkbWhmTHg1eTF3U1FPNXNZVFdH?=
- =?iso-2022-jp?B?YlFiMWxXVWVsYXF1d0V2ZU9QZWExclJsYzk1ZXZRdXE0b0EzbU53a2l1?=
- =?iso-2022-jp?B?d0FRWHc4ejRDWERSbkp3a2M2R1BuWlRHQkxtd21FQXdLOTQyTjRVYkpL?=
- =?iso-2022-jp?B?TEdTSzVQS0RaY0RVZ0Y2bWx2S1dZNXMxWHZtR1YyblVlNDQzeVVKcTFG?=
- =?iso-2022-jp?B?NG1yQVRjNVhobWk0b3NMN3A3bFg0RmhpNThGSHliMHJ1Rk1jaW1mbnp5?=
- =?iso-2022-jp?B?dDkxdTRGL05HYjdWZUx0T2dpai9mSGNsdm40Q0dqUnhaMDRkVnpvemJn?=
- =?iso-2022-jp?B?dnJPeXBjb1A4MVNCZ2JDRjlqaUQvVnhQWkIxV0J1Nkl3bXNyaTNmWDYw?=
- =?iso-2022-jp?B?Zjc5YnlLbG1RN2g3MHhpT1k0Q3E4WmxCNFc4ekY1aE4zN1B1M2svNHhV?=
- =?iso-2022-jp?B?QzNJYUNOcnVTZ29VQUdaeENCQitzblFwN0d0UlBRdHk2YjltMlhEa01y?=
- =?iso-2022-jp?B?c21hTHFwdWxRb2hhLzhSVTVOdWR3aVJ4a0lFdk9pZ2dNaExRN1hrODll?=
- =?iso-2022-jp?B?WllpVm9rT2lsWmRkWEtHLzlEWDJvby9aaDZxczNWOGwreXFqWG9QNlBm?=
- =?iso-2022-jp?B?ZXRJSVBteUN4ZGtuUVY1ZllRMDlEbEZkSUNiMUtvRStWZ1E5N0lEaW41?=
- =?iso-2022-jp?B?alIwaG5oUnBoaTVwTk1hNzMxQS9KQ3lML3dwQXZGNjkrZ1J0cz0=?=
-Content-Type: text/plain; charset="iso-2022-jp"
-Content-Transfer-Encoding: quoted-printable
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3784.12; Wed, 20 Jan
+ 2021 11:33:34 +0000
+Received: from AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::9068:c899:48f:a8e3]) by AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::9068:c899:48f:a8e3%6]) with mapi id 15.20.3763.014; Wed, 20 Jan 2021
+ 11:33:34 +0000
+Subject: Re: [PATCH net-next v2 13/17] ethernet: ucc_geth: remove bd_mem_part
+ and all associated code
+To:     Christophe Leroy <christophe.leroy@csgroup.eu>,
+        netdev@vger.kernel.org
+Cc:     Li Yang <leoyang.li@nxp.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Zhao Qiang <qiang.zhao@nxp.com>, Andrew Lunn <andrew@lunn.ch>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Joakim Tjernlund <Joakim.Tjernlund@infinera.com>
+References: <20210119150802.19997-1-rasmus.villemoes@prevas.dk>
+ <20210119150802.19997-14-rasmus.villemoes@prevas.dk>
+ <58e13bb0-11fa-95e7-e9d9-acc649af4df7@csgroup.eu>
+From:   Rasmus Villemoes <rasmus.villemoes@prevas.dk>
+Message-ID: <8c31cc00-b1bc-cefa-8ea8-5907b8fbe6ef@prevas.dk>
+Date:   Wed, 20 Jan 2021 12:33:33 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
+In-Reply-To: <58e13bb0-11fa-95e7-e9d9-acc649af4df7@csgroup.eu>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [5.186.115.188]
+X-ClientProxiedBy: AM6P193CA0085.EURP193.PROD.OUTLOOK.COM
+ (2603:10a6:209:88::26) To AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM
+ (2603:10a6:208:3f::10)
 MIME-Version: 1.0
-X-OriginatorOrg: fujitsu.com
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [192.168.1.149] (5.186.115.188) by AM6P193CA0085.EURP193.PROD.OUTLOOK.COM (2603:10a6:209:88::26) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3763.10 via Frontend Transport; Wed, 20 Jan 2021 11:33:34 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 7f554ec0-53ec-4e3a-9515-08d8bd3738bd
+X-MS-TrafficTypeDiagnostic: AM0PR10MB2113:
+X-Microsoft-Antispam-PRVS: <AM0PR10MB2113B3CD9088E63842BB396D93A20@AM0PR10MB2113.EURPRD10.PROD.OUTLOOK.COM>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: PhPAigk73VaT2BBwmDERxI23WMoN2I9KrrF+4vtmPgIW3VEjkomg7fAIibSbiuJ/qQXYt7kzSwcIHFa3AnfQ2rTmjnv9HCA9+2xdmeHIPCK233iKoPCqnk6xSCuOW3d1ijty0lw1MjnQBORckSgD+8rctkwIWztHRx871x3H/wJO3m/94htfLrh/KXf0rTUgzc49nHA7dXM6zG47fH1J90C3R2tpydyoj4q5JxceWI2d0Mgk8uMAsYzflkm6nGi8SYoZi9/8iiqeX99Jul7ZPtAR57SJ80uFM83h5Wx2HQImDY21onAgiwf7nbUc+l5oG7kcnwCCMxt8m/wKjOs9ExrVWRWkl1i4d1V4Osgz/0WSU0BbJXUBsGOsq3LNVYfaYB9h662Q5DNV1lNTKk+Rva/DxV2N1En+L/s6wX6vIQ1tQ4gC5trnPRT/mYcIIL/Rg4NZdTyqFxAeMycxDLtpNkRHXifqRFu4M5LaPatj6kY=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(366004)(376002)(136003)(39840400004)(396003)(346002)(52116002)(8676002)(4326008)(956004)(54906003)(2616005)(44832011)(83380400001)(66574015)(31696002)(5660300002)(6486002)(186003)(16526019)(8976002)(31686004)(8936002)(26005)(16576012)(316002)(478600001)(66556008)(66476007)(2906002)(36756003)(66946007)(86362001)(45980500001)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?VStoSUo3YllaRG83bWQ1LzlxYmZBVXRJTTBYc01jajN0OWpNOGo4K1BZK2lT?=
+ =?utf-8?B?YXpwb3p2akpKNXdoM3RKbDNIQ0NGa2ZUb3JKZmo2NytyQktBWC9qWHdCdGoz?=
+ =?utf-8?B?eWk3VEtiN3A0YzZSRUl5NjlKdGdacjJjTlBGWDZBR2ltcjZzbUdFbXdEc3BB?=
+ =?utf-8?B?YXNScDdDeHVnT2p2Vm4zR3h4Y05pNTBpWUcrN3NOamNtRTQzNlFSazZWWHBL?=
+ =?utf-8?B?Y0E1dDJ2K3ljdzdlRUN2R0FWY1pSemErVFdGRjJSWlpSdGN3M1ZXQnM5dzUx?=
+ =?utf-8?B?RGozOU9WbTlCYmdTa0Z5WWNkMnAvMDJOckwrMmFFd2JSTEd6MGcxSTNlSWY2?=
+ =?utf-8?B?WGQyZ2ozZ2x5RHF6Zkdnc2xCNWxzdG55UmFkOXVIRG1YZitya1B5QWNTTkdw?=
+ =?utf-8?B?WXBib05VSmRkWE83Yzh4RUFmbjNKWnplYnFUNTdPTnZmYjJ3cHBBNGE3Wjls?=
+ =?utf-8?B?YnRNd2o2amFRWG9ZbXp0OWhVREZ6R1RRWjFKekZkVk5xNjF4aThOdmY1THdn?=
+ =?utf-8?B?RWt1QUdNeUdGN0NublIrNHpaRC94OGcySUxBRmgrdnJVUWNzY1RadFY1YS9H?=
+ =?utf-8?B?QmowSUttTUZNdm9IYjN0QzZ3VmVKRngwdGN5UmY3R2dNWS80OWtsd0NLaUZR?=
+ =?utf-8?B?Y3dpSDVyYncrTmExTEUrQ0crbHd3WVVha2J4dDFaU0tPVVlyOG1yNmVwMTZL?=
+ =?utf-8?B?WnkxSTRvTDk1UGV6Ykg4SFYxajBYWDVFRjdZR3BhaitBUHRpU0NkYVEzNXVr?=
+ =?utf-8?B?SURibHJaekdlRFV2RkxCdGpQYXlHYnAxNGNxWnpPa2F5by82cjA1UUMwQUNJ?=
+ =?utf-8?B?d2xwa2tOQmgrMTkzdnRQbEd0dDQvKzU4aXRZQkJCVFUycUlYdFpsVFphUFll?=
+ =?utf-8?B?VGVYd21qVnUrUHlNekhpUU9wYnVZU21lS2xRUzJNdWM4MGRDQ1p0ZFJHZi85?=
+ =?utf-8?B?Z1dzc2gzZ0RyL2xWZnQ3K3BpSnBGQzRlRmM5bUV0dkJoc0xsdGJsd3VlaGtP?=
+ =?utf-8?B?QjI5dHZ2UTFQTVdYaFd0L3RiSGVFVmt6SnJnUFMxNS9mZGlCMnI0dzZ6dFA4?=
+ =?utf-8?B?ajZpeXdRdW1zd0tLT1BJT0sxbXJLTzE5R0U3RlczTWVibWw0S2JSQ1BDMGNt?=
+ =?utf-8?B?eXJmSkxRRldCSW1NQzNlQjZVdVBVTEJ4Y1VuQnFhcFI3c0NBOFRyaWVmakpF?=
+ =?utf-8?B?KzBIMTZQcDkwL2puSW8wbE01SzViUWUxMjRIZkVydkExRG05Y2lXNHN1dm1T?=
+ =?utf-8?B?M1ZjeGwvZFN5ZGhFWUs1SXFKSUgrUG5nVElCZUhoWWsxTG94cFh2S21kcUx2?=
+ =?utf-8?Q?YpcplEZoSwbL21nQbkcYeImKh0Thy7R7j9?=
+X-OriginatorOrg: prevas.dk
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7f554ec0-53ec-4e3a-9515-08d8bd3738bd
+X-MS-Exchange-CrossTenant-AuthSource: AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM
 X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: OSAPR01MB3844.jpnprd01.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f56dcc54-ab8d-4934-709f-08d8bd3723d3
-X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Jan 2021 11:32:59.4415
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Jan 2021 11:33:34.8842
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: a19f121d-81e1-4858-a9d8-736e267fd4c7
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: iZRv4Y0Tdf5UwID3NxDp5hl4njYye9Jp1kVGX14buCC6wXJ1saN941i0Rj/5H7KInwIUmxZALq9Zsl06XrfTOQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: OSAPR01MB3842
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: d350cf71-778d-4780-88f5-071a4cb1ed61
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: WjdKaFPBFYOP4HMO1rLH1wFZYXHHNk4NsnvN0oR/B4PvCjj2+gfzXQnmdqXfD/JbAVX7aul4wNIP3HBcDezpogGV/TBOsFnqBqqeF1V/4Rs=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR10MB2113
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Andrew
+On 20/01/2021 08.17, Christophe Leroy wrote:
+> 
+> Le 19/01/2021 à 16:07, Rasmus Villemoes a écrit :
+>> The bd_mem_part member of ucc_geth_info always has the value
+>> MEM_PART_SYSTEM, and AFAICT, there has never been any code setting it
+>> to any other value. Moreover, muram is a somewhat precious resource,
+>> so there's no point using that when normal memory serves just as well.
+>>
+>> Apart from removing a lot of dead code, this is also motivated by
+>> wanting to clean up the "store result from kmalloc() in a u32" mess.
+>>
+>> @@ -2195,25 +2179,15 @@ static int ucc_geth_alloc_tx(struct
+>> ucc_geth_private *ugeth)
+>>           if ((ug_info->bdRingLenTx[j] * sizeof(struct qe_bd)) %
+>>               UCC_GETH_TX_BD_RING_SIZE_MEMORY_ALIGNMENT)
+>>               length += UCC_GETH_TX_BD_RING_SIZE_MEMORY_ALIGNMENT;
+>> -        }
+>> +
+>> +        ugeth->tx_bd_ring_offset[j] =
+>> +            (u32) kmalloc((u32) (length + align), GFP_KERNEL);
+> 
+> Can't this fit on a single ? Nowadays, max allowed line length is 100
+> chars.
+> 
+>> +
+>> +        if (ugeth->tx_bd_ring_offset[j] != 0)
+>> +            ugeth->p_tx_bd_ring[j] =
+>> +                (u8 __iomem *)((ugeth->tx_bd_ring_offset[j] +
+>> +                        align) & ~(align - 1));
+> 
+> Can we get the above fit on only 2 lines ?
+> 
+>> +
+>> -        }
+>> +        ugeth->rx_bd_ring_offset[j] =
+>> +            (u32) kmalloc((u32) (length + align), GFP_KERNEL);
+> 
+> Same.
 
-> The parameter is called 'forced-slave'. See the man page:
+This is all deliberate: Verifying that this patch merely removes the
+dead branch (and thus outdenting the always-taken branch) is easily done
+by using "git show -w". That shows hunks like
 
-Umm...
-# ./ethtool --help
-        ethtool [ FLAGS ] -s|--change DEVNAME   Change generic options
-                [ speed %d ]
-                [ duplex half|full ]
-                [ port tp|aui|bnc|mii|fibre|da ]
-                [ mdix auto|on|off ]
-                [ autoneg on|off ]
-                [ advertise %x[/%x] | mode on|off ... [--] ]
-                [ phyad %d ]
-                [ xcvr internal|external ]
-                [ wol %d[/%d] | p|u|m|b|a|g|s|f|d... ]
-                [ sopass %x:%x:%x:%x:%x:%x ]
-                [ msglvl %d[/%d] | type on|off ... [--] ]
-                [ master-slave master-preferred|slave-preferred|master-forc=
-e|slave-force ]
-                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^=
-^^^^^^^^^^^^^^
-The help for the ethtool command seems to be wrong...
+@@ -2554,20 +2519,11 @@ static int ucc_geth_startup(struct
+ucc_geth_private *ugeth)
+                endOfRing =
+                    ugeth->p_tx_bd_ring[i] + (ug_info->bdRingLenTx[i] -
+                                              1) * sizeof(struct qe_bd);
+-               if (ugeth->ug_info->uf_info.bd_mem_part ==
+MEM_PART_SYSTEM) {
+                out_be32(&ugeth->p_send_q_mem_reg->sqqd[i].bd_ring_base,
+                         (u32) virt_to_phys(ugeth->p_tx_bd_ring[i]));
+                out_be32(&ugeth->p_send_q_mem_reg->sqqd[i].
+                         last_bd_completed_address,
+                         (u32) virt_to_phys(endOfRing));
+-               } else if (ugeth->ug_info->uf_info.bd_mem_part ==
+-                          MEM_PART_MURAM) {
+-
+out_be32(&ugeth->p_send_q_mem_reg->sqqd[i].bd_ring_base,
+-                                (u32)qe_muram_dma(ugeth->p_tx_bd_ring[i]));
+-                       out_be32(&ugeth->p_send_q_mem_reg->sqqd[i].
+-                                last_bd_completed_address,
+-                                (u32)qe_muram_dma(endOfRing));
+-               }
+        }
 
-> sudo ethtool -s eth10 master-slave forced-master
-> netlink error: master/slave configuration not supported by device
-> (offset 36)
-> netlink error: Operation not supported
+So I didn't want to rewrap any of the lines.
 
-It seems to work. Thanks!
-
-# ./ethtool -s eth1 master-slave forced-slave
-[36173.937680] rtl9000a_config_aneg: master_slave_set=3D5
-[36173.942891] rtl9000a_config_aneg: phy_modify_changed()=3D1
-[36174.008502] libphy: genphy_setup_forced: speed=3D100, duplex=3D1
-[36174.014283] rtl9000a_config_aneg: ret=3D0
-[36174.018513] rtl9000a_read_status: PHYCR=3D0x0000
-[36174.023074] rtl9000a_read_status: PHYSR1=3D0x0000
-[36174.027653] ravb e6800000.ethernet eth1: Link is Down
-[36174.033116] rtl9000a_read_status: PHYCR=3D0x0000
-[36174.037702] rtl9000a_read_status: PHYSR1=3D0x0000
-
-I will test it for a while, and if there is no problem, I will post the 3rd=
- patch.
+Rasmus
