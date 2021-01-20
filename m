@@ -2,148 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4420E2FDF0D
-	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 02:57:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7DB1D2FDF32
+	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 03:18:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392868AbhAUBvk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jan 2021 20:51:40 -0500
-Received: from szxga08-in.huawei.com ([45.249.212.255]:2793 "EHLO
-        szxga08-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2392187AbhAUBlg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 20:41:36 -0500
-Received: from dggeme714-chm.china.huawei.com (unknown [172.30.72.57])
-        by szxga08-in.huawei.com (SkyGuard) with ESMTP id 4DLlR21Dn7z13jld;
-        Thu, 21 Jan 2021 09:38:38 +0800 (CST)
-Received: from [127.0.0.1] (10.69.26.252) by dggeme714-chm.china.huawei.com
- (10.1.199.110) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2106.2; Thu, 21
- Jan 2021 09:40:27 +0800
-Subject: Re: [PATCH net-next] net: hns3: debugfs add dump tm info of nodes,
- priority and qset
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     <davem@davemloft.net>, <netdev@vger.kernel.org>,
-        <salil.mehta@huawei.com>, <yisen.zhuang@huawei.com>,
-        <huangdaode@huawei.com>, <linuxarm@openeuler.org>,
-        Guangbin Huang <huangguangbin2@huawei.com>
-References: <1610694569-43099-1-git-send-email-tanhuazhong@huawei.com>
- <20210116182306.65a268a6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <d2fc48f6-aa2f-081a-dbce-312b869b8e04@huawei.com>
- <20210118114820.4e40a6ae@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <970b8526-6470-ffe1-5bb9-58693ac54582@huawei.com>
- <20210118194328.36d1e8c2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Huazhong Tan <tanhuazhong@huawei.com>
-Message-ID: <94855f6a-c286-272d-7c0b-29228700ce4f@huawei.com>
-Date:   Thu, 21 Jan 2021 09:40:27 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.1
+        id S2404575AbhATXz3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jan 2021 18:55:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54166 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2403926AbhATXVi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 18:21:38 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45D73C061798
+        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 14:36:11 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=LK344BKhFxBCjto3A67yC1MJSrqRz9QtKcLEHfAkUSU=; b=h1IXcRLG4XDL+sEWWF4LWpkaF
+        jOVCLO3EPWzcsZ6sthFkfJ6QDS1KPd2oyFW20t1JSYYMOGhPeaQrKWm6IjLlNmP9qUIGC6PBSigHI
+        kTrOkAW701pnbIcKd6KK4p6ysWtkSuLpbEsRnUaRwgVh9Q3hdvQAtjl+GzHWHiBZl9oIfLxsinUFK
+        FYzjDzC1N49Vy8Ve3yk+uXtXD+YTEO+QLw7cUY95UEWObhFsPFe/MDDqdBrfhekkp796rSnvtu7wQ
+        yQLf7u3krI1/n2LISnOm35skNKkJGWrAOYvABGShk94YExP+h41gowu7PzrCbDlzSOjvQuTC/sn+7
+        EQZch3gZQ==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:50570)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1l2M52-0000gv-Cm; Wed, 20 Jan 2021 22:36:01 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1l2M50-0006Pg-RK; Wed, 20 Jan 2021 22:35:58 +0000
+Date:   Wed, 20 Jan 2021 22:35:58 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Ioana Ciornei <ioana.ciornei@nxp.com>
+Cc:     Ioana Ciocoi Radulescu <ruxandra.radulescu@nxp.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next 3/3] net: dpaa2-mac: add backplane link mode
+ support
+Message-ID: <20210120223558.GM1551@shell.armlinux.org.uk>
+References: <20210119153545.GK1551@shell.armlinux.org.uk>
+ <E1l1t3B-0005Vn-2N@rmk-PC.armlinux.org.uk>
+ <20210120221900.i6esmk6uadgqpdtu@skbuf>
 MIME-Version: 1.0
-In-Reply-To: <20210118194328.36d1e8c2@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Originating-IP: [10.69.26.252]
-X-ClientProxiedBy: dggeme718-chm.china.huawei.com (10.1.199.114) To
- dggeme714-chm.china.huawei.com (10.1.199.110)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210120221900.i6esmk6uadgqpdtu@skbuf>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Wed, Jan 20, 2021 at 10:19:01PM +0000, Ioana Ciornei wrote:
+> On Tue, Jan 19, 2021 at 03:36:09PM +0000, Russell King wrote:
+> > Add support for backplane link mode, which is, according to discussions
+> > with NXP earlier in the year, is a mode where the OS (Linux) is able to
+> > manage the PCS and Serdes itself.
+> 
+> Indeed, DPMACs in TYPE_BACKPLANE can have both their PCS and SerDes managed
+> by Linux (since the firmware is not touching these).
+> That being said, DPMACs in TYPE_PHY (the type that is already supported
+> in dpaa2-mac) can also have their PCS managed by Linux (no interraction
+> from the firmware's part with the PCS, just the SerDes).
 
-On 2021/1/19 11:43, Jakub Kicinski wrote:
-> On Tue, 19 Jan 2021 11:14:51 +0800 Huazhong Tan wrote:
->> On 2021/1/19 3:48, Jakub Kicinski wrote:
->>> On Mon, 18 Jan 2021 19:20:23 +0800 Huazhong Tan wrote:
->>>> On 2021/1/17 10:23, Jakub Kicinski wrote:
->>>>> On Fri, 15 Jan 2021 15:09:29 +0800 Huazhong Tan wrote:
->>>>>> From: Guangbin Huang <huangguangbin2@huawei.com>
->>>>>>
->>>>>> To increase methods to dump more tm info, adds three debugfs commands
->>>>>> to dump tm info of nodes, priority and qset. And a new tm file of debugfs
->>>>>> is created for only dumping tm info.
->>>>>>
->>>>>> Unlike previous debugfs commands, to dump each tm information, user needs
->>>>>> to enter two commands now. The first command writes parameters to tm and
->>>>>> the second command reads info from tm. For examples, to dump tm info of
->>>>>> priority 0, user needs to enter follow two commands:
->>>>>> 1. echo dump priority 0 > tm
->>>>>> 2. cat tm
->>>>>>
->>>>>> The reason for adding new tm file is because we accepted Jakub Kicinski's
->>>>>> opinion as link https://lkml.org/lkml/2020/9/29/2101. And in order to
->>>>>> avoid generating too many files, we implement write ops to allow user to
->>>>>> input parameters.
->>>>> Why are you trying to avoid generating too many files? How many files
->>>>> would it be? What's the size of each dump/file?
->>>> The maximum number of tm node, priority and qset are 8, 256,
->>>> 1280, if we create a file for each one, then there are 8 node
->>>> files, 256 priority files, 1280 qset files. It seems a little
->>>> bit hard for using as well.
->>> Would the information not fit in one file per type with multiple rows?
->> What you means is as below ?
->>
->> estuary:/debugfs/hns3/0000:7d:00.0$ cat qset
->>
->> qset id: 0
->> QS map pri id: 0
->> QS map link_vld: 1
->> QS schedule mode: dwrr
->> QS dwrr: 100
->>
->> qset id: 1
->> QS map pri id: 0
->> QS map link_vld: 0
->> QS schedule mode: sp
->> QS dwrr: 0
->>
->> ...
-> I was thinking more like:
->
-> ID	PRI	LINK_VLD	MODE	DWRR
-> 0	0	1		dwrr	0
-> 1	0	0		sp	0
-> ...
->
->
-> but the exact format is up to you.
+This is not what was discussed last year. It clearly shows in the
+slides that Bogdan sent in April 2020 "PCS Representation in Linux.pptx"
+page 4 that the firmware manages the PCS in TYPE_PHY and TYPE_FIXED
+mode.
 
+It was explained during the call that Linux must not access the internal
+MDIO nor touch the PCS _except_ when using TYPE_BACKPLANE mode. Touching
+the internal MDIO was stated as unsupported in other modes as the MC
+firmware will be performing MDIO accesses.
 
-It looks better.
+> Also, with just the changes from this patch, a interface connected to a
+> DPMAC in TYPE_BACKPLANE is not even creating a phylink instance. It's
+> mainly because of this check from dpaa2-eth:
+> 
+> 	if (dpaa2_eth_is_type_phy(priv)) {
+> 		err = dpaa2_mac_connect(mac);
+> 
+> 
+> I would suggest just dropping this patch.
 
+That is a recent change in net-next, but is not in my tree...
 
->> For example, user want to query qset 1, then all qset info will be output,
-> I hope you don't mean end user when you say _user_.  This is debugfs,
-> it's intended for developers to debug issues and system dump to gather
-> info at customer site.
+In any case, if NXP have changed it such that, when in TYPE_PHY, the
+MC firmware no longer accesses the PCS and it is now safe to perform
+MDIO accesses, then we _still_ need this patch for older firmwares.
 
+In short, what you've put in your email does not tie up with the
+position that was discussed last year, and seems to me to be a total
+U-turn over what was being said.
 
-yes
-
-
->> there are too many useless info.
->>
->> So we add an interface to designage the specified id for node, priority
->> or qset.
->>
->>> Can you show example outputs?
->>
->> here is the output of this patch.
->>
->> estuary:/debugfs/hns3/0000:7d:00.0$ echo dump qset 0 > tm
->> estuary:/debugfs/hns3/0000:7d:00.0$ cat tm
->> qset id: 0
->> QS map pri id: 0
->> QS map link_vld: 1
->> QS schedule mode: dwrr
->> QS dwrr: 100
-> Thanks. Not that much info per entry, as expected. Single file should
-> do nicely.
-
-Ok.
-
-Will send V2 to do that.
-
-Thanks.
-
-> .
-
+-- 
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
