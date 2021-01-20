@@ -2,105 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7DB1D2FDF32
-	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 03:18:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 84FDE2FDF27
+	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 03:18:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404575AbhATXz3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jan 2021 18:55:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54166 "EHLO
+        id S2404549AbhATXzM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jan 2021 18:55:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2403926AbhATXVi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 18:21:38 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45D73C061798
-        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 14:36:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=LK344BKhFxBCjto3A67yC1MJSrqRz9QtKcLEHfAkUSU=; b=h1IXcRLG4XDL+sEWWF4LWpkaF
-        jOVCLO3EPWzcsZ6sthFkfJ6QDS1KPd2oyFW20t1JSYYMOGhPeaQrKWm6IjLlNmP9qUIGC6PBSigHI
-        kTrOkAW701pnbIcKd6KK4p6ysWtkSuLpbEsRnUaRwgVh9Q3hdvQAtjl+GzHWHiBZl9oIfLxsinUFK
-        FYzjDzC1N49Vy8Ve3yk+uXtXD+YTEO+QLw7cUY95UEWObhFsPFe/MDDqdBrfhekkp796rSnvtu7wQ
-        yQLf7u3krI1/n2LISnOm35skNKkJGWrAOYvABGShk94YExP+h41gowu7PzrCbDlzSOjvQuTC/sn+7
-        EQZch3gZQ==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:50570)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1l2M52-0000gv-Cm; Wed, 20 Jan 2021 22:36:01 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1l2M50-0006Pg-RK; Wed, 20 Jan 2021 22:35:58 +0000
-Date:   Wed, 20 Jan 2021 22:35:58 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Ioana Ciornei <ioana.ciornei@nxp.com>
-Cc:     Ioana Ciocoi Radulescu <ruxandra.radulescu@nxp.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next 3/3] net: dpaa2-mac: add backplane link mode
- support
-Message-ID: <20210120223558.GM1551@shell.armlinux.org.uk>
-References: <20210119153545.GK1551@shell.armlinux.org.uk>
- <E1l1t3B-0005Vn-2N@rmk-PC.armlinux.org.uk>
- <20210120221900.i6esmk6uadgqpdtu@skbuf>
+        with ESMTP id S2403902AbhATXV2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 18:21:28 -0500
+Received: from mail-io1-xd47.google.com (mail-io1-xd47.google.com [IPv6:2607:f8b0:4864:20::d47])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02762C061344
+        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 15:09:24 -0800 (PST)
+Received: by mail-io1-xd47.google.com with SMTP id g7so306849ion.21
+        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 15:09:24 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=R7f0wyeTmA8SuzS7SzFRcl7d6pcYrpva5Er826cs0mk=;
+        b=jCSr/3HcJ/ZWX3kKHB84eoibrMvqEBGVlsIynWzuoWK5opf9z43drCBvPehC4ij060
+         HLy+x5BnKPkGO/zZqrbkYLKByaNbeoWVsAHg4hXyd4ib7DP8BfaNaRP1bfTuWRLttCiI
+         AJjVJlLGw90wOW4/PlShNGVxBDIfugEwfi1UGPKH2c9zDD0kSVAmrjT7Ywi/HXztmyde
+         0cHsZiN++vHdRcGkRU82TVmm7Sl5J0NQR6sm5TqTxuTiOWDjNlG+ykVbQTBi0PTMVefG
+         m7GJpGwQj3AR0WtT39+dIXJHrh31j1qJnjiPxA13j52GI2BSG6VccHDRJ25+ulwlf/G8
+         oWyA==
+X-Gm-Message-State: AOAM532uXxkGBWafsPvETDeTtLul8KPVU6VF8fiW5ubXrZ6bAYIVN5+x
+        20bAMVqUnEgkGv1w4cMMZ7xQyDDGBfalDiIFmYwStHSj5Wa3
+X-Google-Smtp-Source: ABdhPJxx2Xjf/dKON/ViEpmZc8PUt27XQ8dLVFZm99Cd4bahkiaTQz/OYrK11/5lcTf3YlyNrJDROGRVOWMdRKnpf8k2rzjcSkae
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210120221900.i6esmk6uadgqpdtu@skbuf>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
+X-Received: by 2002:a92:c986:: with SMTP id y6mr10047061iln.125.1611184164069;
+ Wed, 20 Jan 2021 15:09:24 -0800 (PST)
+Date:   Wed, 20 Jan 2021 15:09:24 -0800
+In-Reply-To: <000000000000c8dd4a05b828d04c@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000c464f805b95d0bb2@google.com>
+Subject: Re: KASAN: vmalloc-out-of-bounds Read in bpf_trace_run7
+From:   syzbot <syzbot+fad5d91c7158ce568634@syzkaller.appspotmail.com>
+To:     andrii@kernel.org, ast@kernel.org, bpf@vger.kernel.org,
+        daniel@iogearbox.net, davem@davemloft.net, hawk@kernel.org,
+        john.fastabend@gmail.com, kafai@fb.com, kpsingh@kernel.org,
+        kuba@kernel.org, linux-kernel@vger.kernel.org, mingo@redhat.com,
+        netdev@vger.kernel.org, rostedt@goodmis.org, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, yhs@fb.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 20, 2021 at 10:19:01PM +0000, Ioana Ciornei wrote:
-> On Tue, Jan 19, 2021 at 03:36:09PM +0000, Russell King wrote:
-> > Add support for backplane link mode, which is, according to discussions
-> > with NXP earlier in the year, is a mode where the OS (Linux) is able to
-> > manage the PCS and Serdes itself.
-> 
-> Indeed, DPMACs in TYPE_BACKPLANE can have both their PCS and SerDes managed
-> by Linux (since the firmware is not touching these).
-> That being said, DPMACs in TYPE_PHY (the type that is already supported
-> in dpaa2-mac) can also have their PCS managed by Linux (no interraction
-> from the firmware's part with the PCS, just the SerDes).
+syzbot has found a reproducer for the following issue on:
 
-This is not what was discussed last year. It clearly shows in the
-slides that Bogdan sent in April 2020 "PCS Representation in Linux.pptx"
-page 4 that the firmware manages the PCS in TYPE_PHY and TYPE_FIXED
-mode.
+HEAD commit:    7d68e382 bpf: Permit size-0 datasec
+git tree:       bpf-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=1418c3c7500000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=e0c7843b8af99dff
+dashboard link: https://syzkaller.appspot.com/bug?extid=fad5d91c7158ce568634
+compiler:       gcc (GCC) 10.1.0-syz 20200507
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1224daa4d00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13dfabd0d00000
 
-It was explained during the call that Linux must not access the internal
-MDIO nor touch the PCS _except_ when using TYPE_BACKPLANE mode. Touching
-the internal MDIO was stated as unsupported in other modes as the MC
-firmware will be performing MDIO accesses.
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+fad5d91c7158ce568634@syzkaller.appspotmail.com
 
-> Also, with just the changes from this patch, a interface connected to a
-> DPMAC in TYPE_BACKPLANE is not even creating a phylink instance. It's
-> mainly because of this check from dpaa2-eth:
-> 
-> 	if (dpaa2_eth_is_type_phy(priv)) {
-> 		err = dpaa2_mac_connect(mac);
-> 
-> 
-> I would suggest just dropping this patch.
+==================================================================
+BUG: KASAN: vmalloc-out-of-bounds in __bpf_trace_run kernel/trace/bpf_trace.c:2088 [inline]
+BUG: KASAN: vmalloc-out-of-bounds in bpf_trace_run7+0x411/0x420 kernel/trace/bpf_trace.c:2130
+Read of size 8 at addr ffffc90000e5c030 by task syz-executor460/8508
 
-That is a recent change in net-next, but is not in my tree...
+CPU: 1 PID: 8508 Comm: syz-executor460 Not tainted 5.11.0-rc3-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:79 [inline]
+ dump_stack+0x107/0x163 lib/dump_stack.c:120
+ print_address_description.constprop.0.cold+0x5/0x2f8 mm/kasan/report.c:230
+ __kasan_report mm/kasan/report.c:396 [inline]
+ kasan_report.cold+0x79/0xd5 mm/kasan/report.c:413
+ __bpf_trace_run kernel/trace/bpf_trace.c:2088 [inline]
+ bpf_trace_run7+0x411/0x420 kernel/trace/bpf_trace.c:2130
+ __bpf_trace_percpu_alloc_percpu+0x1dc/0x220 include/trace/events/percpu.h:10
+ __traceiter_percpu_alloc_percpu+0x97/0xf0 include/trace/events/percpu.h:10
+ trace_percpu_alloc_percpu include/trace/events/percpu.h:10 [inline]
+ pcpu_alloc+0xba6/0x16f0 mm/percpu.c:1844
+ bpf_prog_alloc+0x78/0x250 kernel/bpf/core.c:117
+ bpf_prog_load+0x656/0x1f40 kernel/bpf/syscall.c:2152
+ __do_sys_bpf+0x1251/0x4f00 kernel/bpf/syscall.c:4380
+ do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x441659
+Code: e8 ac e8 ff ff 48 83 c4 18 c3 0f 1f 80 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 8b 09 fc ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007ffebad746f8 EFLAGS: 00000246 ORIG_RAX: 0000000000000141
+RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 0000000000441659
+RDX: 0000000000000078 RSI: 0000000020000200 RDI: 0000000000000005
+RBP: 000000000001191b R08: 0000000000000000 R09: 0000000000000000
+R10: 0000000000000000 R11: 0000000000000246 R12: 0000000000402470
+R13: 0000000000402500 R14: 0000000000000000 R15: 0000000000000000
 
-In any case, if NXP have changed it such that, when in TYPE_PHY, the
-MC firmware no longer accesses the PCS and it is now safe to perform
-MDIO accesses, then we _still_ need this patch for older firmwares.
 
-In short, what you've put in your email does not tie up with the
-position that was discussed last year, and seems to me to be a total
-U-turn over what was being said.
+Memory state around the buggy address:
+ ffffc90000e5bf00: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
+ ffffc90000e5bf80: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
+>ffffc90000e5c000: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
+                                     ^
+ ffffc90000e5c080: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
+ ffffc90000e5c100: f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8 f8
+==================================================================
 
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
