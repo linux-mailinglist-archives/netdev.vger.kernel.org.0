@@ -2,169 +2,280 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0165B2FCAC7
-	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 06:37:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D1CCF2FCAE5
+	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 07:04:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725779AbhATFhl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jan 2021 00:37:41 -0500
-Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:16331 "EHLO
-        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726155AbhATFhF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 00:37:05 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B6007c1590000>; Tue, 19 Jan 2021 21:36:25 -0800
-Received: from mtl-vdi-166.wap.labs.mlnx (172.20.145.6) by
- HQMAIL107.nvidia.com (172.20.187.13) with Microsoft SMTP Server (TLS) id
- 15.0.1473.3; Wed, 20 Jan 2021 05:36:23 +0000
-Date:   Wed, 20 Jan 2021 07:36:19 +0200
-From:   Eli Cohen <elic@nvidia.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>
-CC:     <mst@redhat.com>, <virtualization@lists.linux-foundation.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <lulu@redhat.com>
-Subject: Re: [PATCH v1] vdpa/mlx5: Fix memory key MTT population
-Message-ID: <20210120053619.GA126435@mtl-vdi-166.wap.labs.mlnx>
-References: <20210107071845.GA224876@mtl-vdi-166.wap.labs.mlnx>
- <07d336a3-7fc2-5e4a-667a-495b5bb755da@redhat.com>
+        id S1726334AbhATF5v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jan 2021 00:57:51 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:30388 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726594AbhATF51 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 00:57:27 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1611122158;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=q8SbE5PdHAcpmt+ukP9VF3z2TekafV+3DGaZfD9WNrk=;
+        b=fVdpwYirtKmS41wJPS8r5or5Pqb7h29ESFQJJ94vhhuw+VFq6oi5JVQMZ/86sDVX+tEttG
+        YMQiWch6LbcdzR/yxXE1Ld2sOqRJmAYTRvQYOniH/sts2JwmoVnkfN6SHqcDdUBHZlwI7Y
+        5D+imnxQ2WiWu0nOGK7sdrK36z3jNWY=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-266-IKneJktcMtWVGUomDOwycg-1; Wed, 20 Jan 2021 00:55:54 -0500
+X-MC-Unique: IKneJktcMtWVGUomDOwycg-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A40711005504;
+        Wed, 20 Jan 2021 05:55:51 +0000 (UTC)
+Received: from [10.72.13.124] (ovpn-13-124.pek2.redhat.com [10.72.13.124])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 9489960C0F;
+        Wed, 20 Jan 2021 05:55:37 +0000 (UTC)
+Subject: Re: [RFC v3 05/11] vdpa: shared virtual addressing support
+To:     Xie Yongji <xieyongji@bytedance.com>, mst@redhat.com,
+        stefanha@redhat.com, sgarzare@redhat.com, parav@nvidia.com,
+        bob.liu@oracle.com, hch@infradead.org, rdunlap@infradead.org,
+        willy@infradead.org, viro@zeniv.linux.org.uk, axboe@kernel.dk,
+        bcrl@kvack.org, corbet@lwn.net
+Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org, linux-aio@kvack.org,
+        linux-fsdevel@vger.kernel.org
+References: <20210119045920.447-1-xieyongji@bytedance.com>
+ <20210119045920.447-6-xieyongji@bytedance.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <3d58d50c-935a-a827-e261-59282f4c8577@redhat.com>
+Date:   Wed, 20 Jan 2021 13:55:35 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <07d336a3-7fc2-5e4a-667a-495b5bb755da@redhat.com>
-User-Agent: Mutt/1.9.5 (bf161cf53efb) (2018-04-13)
-X-Originating-IP: [172.20.145.6]
-X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
- HQMAIL107.nvidia.com (172.20.187.13)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1611120985; bh=az/GvfNGCDzf8VgYLksXW/TwCFI4flvkd4SNhWpdtJA=;
-        h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-         Content-Type:Content-Disposition:Content-Transfer-Encoding:
-         In-Reply-To:User-Agent:X-Originating-IP:X-ClientProxiedBy;
-        b=ZxxebaZGkizFVUDKbndYJmRBniNv5kJCwckcfSwpzBh0yplDzhlgWuOqLDJ2HXZAV
-         3NctYnmLwXb1DjBIiVN+ZFDUVg7b/wVkopRqHaqZW2IrlsLOJexOvFbld6LA18mQxX
-         88Pfdcs1jpkhcBxDzr8ITlJjfhuyJMV/Twl9E2JqmyG4FdWpxD4xbCXGOQTA2v1W3n
-         ofSEztha3OkfwA8GFf6ljN4IFNKDcVm/wekW2OAMBDJiaDXDIlqKoffVdtxPUxi3Jz
-         HhLxt65+dhzlUmHfdpKcw240FDnAQPNDQvyUph9fmaGVT+H+DQpROUYVbxzdJap29I
-         GnBc9xkXywMGg==
+In-Reply-To: <20210119045920.447-6-xieyongji@bytedance.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 08, 2021 at 04:38:55PM +0800, Jason Wang wrote:
 
-Hi Michael,
-this patch is a fix. Are you going to merge it?
+On 2021/1/19 下午12:59, Xie Yongji wrote:
+> This patches introduces SVA (Shared Virtual Addressing)
+> support for vDPA device. During vDPA device allocation,
+> vDPA device driver needs to indicate whether SVA is
+> supported by the device. Then vhost-vdpa bus driver
+> will not pin user page and transfer userspace virtual
+> address instead of physical address during DMA mapping.
+>
+> Suggested-by: Jason Wang <jasowang@redhat.com>
+> Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
+> ---
+>   drivers/vdpa/ifcvf/ifcvf_main.c   |  2 +-
+>   drivers/vdpa/mlx5/net/mlx5_vnet.c |  2 +-
+>   drivers/vdpa/vdpa.c               |  5 ++++-
+>   drivers/vdpa/vdpa_sim/vdpa_sim.c  |  3 ++-
+>   drivers/vhost/vdpa.c              | 35 +++++++++++++++++++++++------------
+>   include/linux/vdpa.h              | 10 +++++++---
+>   6 files changed, 38 insertions(+), 19 deletions(-)
+>
+> diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c b/drivers/vdpa/ifcvf/ifcvf_main.c
+> index 23474af7da40..95c4601f82f5 100644
+> --- a/drivers/vdpa/ifcvf/ifcvf_main.c
+> +++ b/drivers/vdpa/ifcvf/ifcvf_main.c
+> @@ -439,7 +439,7 @@ static int ifcvf_probe(struct pci_dev *pdev, const struct pci_device_id *id)
+>   
+>   	adapter = vdpa_alloc_device(struct ifcvf_adapter, vdpa,
+>   				    dev, &ifc_vdpa_ops,
+> -				    IFCVF_MAX_QUEUE_PAIRS * 2, NULL);
+> +				    IFCVF_MAX_QUEUE_PAIRS * 2, NULL, false);
+>   	if (adapter == NULL) {
+>   		IFCVF_ERR(pdev, "Failed to allocate vDPA structure");
+>   		return -ENOMEM;
+> diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> index 77595c81488d..05988d6907f2 100644
+> --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
+> @@ -1959,7 +1959,7 @@ static int mlx5v_probe(struct auxiliary_device *adev,
+>   	max_vqs = min_t(u32, max_vqs, MLX5_MAX_SUPPORTED_VQS);
+>   
+>   	ndev = vdpa_alloc_device(struct mlx5_vdpa_net, mvdev.vdev, mdev->device, &mlx5_vdpa_ops,
+> -				 2 * mlx5_vdpa_max_qps(max_vqs), NULL);
+> +				 2 * mlx5_vdpa_max_qps(max_vqs), NULL, false);
+>   	if (IS_ERR(ndev))
+>   		return PTR_ERR(ndev);
+>   
+> diff --git a/drivers/vdpa/vdpa.c b/drivers/vdpa/vdpa.c
+> index 32bd48baffab..50cab930b2e5 100644
+> --- a/drivers/vdpa/vdpa.c
+> +++ b/drivers/vdpa/vdpa.c
+> @@ -72,6 +72,7 @@ static void vdpa_release_dev(struct device *d)
+>    * @nvqs: number of virtqueues supported by this device
+>    * @size: size of the parent structure that contains private data
+>    * @name: name of the vdpa device; optional.
+> + * @sva: indicate whether SVA (Shared Virtual Addressing) is supported
+>    *
+>    * Driver should use vdpa_alloc_device() wrapper macro instead of
+>    * using this directly.
+> @@ -81,7 +82,8 @@ static void vdpa_release_dev(struct device *d)
+>    */
+>   struct vdpa_device *__vdpa_alloc_device(struct device *parent,
+>   					const struct vdpa_config_ops *config,
+> -					int nvqs, size_t size, const char *name)
+> +					int nvqs, size_t size, const char *name,
+> +					bool sva)
+>   {
+>   	struct vdpa_device *vdev;
+>   	int err = -EINVAL;
+> @@ -108,6 +110,7 @@ struct vdpa_device *__vdpa_alloc_device(struct device *parent,
+>   	vdev->config = config;
+>   	vdev->features_valid = false;
+>   	vdev->nvqs = nvqs;
+> +	vdev->sva = sva;
+>   
+>   	if (name)
+>   		err = dev_set_name(&vdev->dev, "%s", name);
+> diff --git a/drivers/vdpa/vdpa_sim/vdpa_sim.c b/drivers/vdpa/vdpa_sim/vdpa_sim.c
+> index 85776e4e6749..03c796873a6b 100644
+> --- a/drivers/vdpa/vdpa_sim/vdpa_sim.c
+> +++ b/drivers/vdpa/vdpa_sim/vdpa_sim.c
+> @@ -367,7 +367,8 @@ static struct vdpasim *vdpasim_create(const char *name)
+>   	else
+>   		ops = &vdpasim_net_config_ops;
+>   
+> -	vdpasim = vdpa_alloc_device(struct vdpasim, vdpa, NULL, ops, VDPASIM_VQ_NUM, name);
+> +	vdpasim = vdpa_alloc_device(struct vdpasim, vdpa, NULL, ops,
+> +				VDPASIM_VQ_NUM, name, false);
+>   	if (!vdpasim)
+>   		goto err_alloc;
+>   
+> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
+> index 4a241d380c40..36b6950ba37f 100644
+> --- a/drivers/vhost/vdpa.c
+> +++ b/drivers/vhost/vdpa.c
+> @@ -486,21 +486,25 @@ static long vhost_vdpa_unlocked_ioctl(struct file *filep,
+>   static void vhost_vdpa_iotlb_unmap(struct vhost_vdpa *v, u64 start, u64 last)
+>   {
+>   	struct vhost_dev *dev = &v->vdev;
+> +	struct vdpa_device *vdpa = v->vdpa;
+>   	struct vhost_iotlb *iotlb = dev->iotlb;
+>   	struct vhost_iotlb_map *map;
+>   	struct page *page;
+>   	unsigned long pfn, pinned;
+>   
+>   	while ((map = vhost_iotlb_itree_first(iotlb, start, last)) != NULL) {
+> -		pinned = map->size >> PAGE_SHIFT;
+> -		for (pfn = map->addr >> PAGE_SHIFT;
+> -		     pinned > 0; pfn++, pinned--) {
+> -			page = pfn_to_page(pfn);
+> -			if (map->perm & VHOST_ACCESS_WO)
+> -				set_page_dirty_lock(page);
+> -			unpin_user_page(page);
+> +		if (!vdpa->sva) {
+> +			pinned = map->size >> PAGE_SHIFT;
+> +			for (pfn = map->addr >> PAGE_SHIFT;
+> +			     pinned > 0; pfn++, pinned--) {
+> +				page = pfn_to_page(pfn);
+> +				if (map->perm & VHOST_ACCESS_WO)
+> +					set_page_dirty_lock(page);
+> +				unpin_user_page(page);
+> +			}
+> +			atomic64_sub(map->size >> PAGE_SHIFT,
+> +					&dev->mm->pinned_vm);
+>   		}
+> -		atomic64_sub(map->size >> PAGE_SHIFT, &dev->mm->pinned_vm);
+>   		vhost_iotlb_map_free(iotlb, map);
+>   	}
+>   }
+> @@ -558,13 +562,15 @@ static int vhost_vdpa_map(struct vhost_vdpa *v,
+>   		r = iommu_map(v->domain, iova, pa, size,
+>   			      perm_to_iommu_flags(perm));
+>   	}
+> -
+> -	if (r)
+> +	if (r) {
+>   		vhost_iotlb_del_range(dev->iotlb, iova, iova + size - 1);
+> -	else
+> +		return r;
+> +	}
+> +
+> +	if (!vdpa->sva)
+>   		atomic64_add(size >> PAGE_SHIFT, &dev->mm->pinned_vm);
+>   
+> -	return r;
+> +	return 0;
+>   }
+>   
+>   static void vhost_vdpa_unmap(struct vhost_vdpa *v, u64 iova, u64 size)
+> @@ -589,6 +595,7 @@ static int vhost_vdpa_process_iotlb_update(struct vhost_vdpa *v,
+>   					   struct vhost_iotlb_msg *msg)
+>   {
+>   	struct vhost_dev *dev = &v->vdev;
+> +	struct vdpa_device *vdpa = v->vdpa;
+>   	struct vhost_iotlb *iotlb = dev->iotlb;
+>   	struct page **page_list;
+>   	unsigned long list_size = PAGE_SIZE / sizeof(struct page *);
+> @@ -607,6 +614,10 @@ static int vhost_vdpa_process_iotlb_update(struct vhost_vdpa *v,
+>   				    msg->iova + msg->size - 1))
+>   		return -EEXIST;
+>   
+> +	if (vdpa->sva)
+> +		return vhost_vdpa_map(v, msg->iova, msg->size,
+> +				      msg->uaddr, msg->perm);
+> +
+>   	/* Limit the use of memory for bookkeeping */
+>   	page_list = (struct page **) __get_free_page(GFP_KERNEL);
+>   	if (!page_list)
+> diff --git a/include/linux/vdpa.h b/include/linux/vdpa.h
+> index cb5a3d847af3..f86869651614 100644
+> --- a/include/linux/vdpa.h
+> +++ b/include/linux/vdpa.h
+> @@ -44,6 +44,7 @@ struct vdpa_parent_dev;
+>    * @config: the configuration ops for this device.
+>    * @index: device index
+>    * @features_valid: were features initialized? for legacy guests
+> + * @sva: indicate whether SVA (Shared Virtual Addressing) is supported
 
->=20
-> On 2021/1/7 =E4=B8=8B=E5=8D=883:18, Eli Cohen wrote:
-> > map_direct_mr() assumed that the number of scatter/gather entries
-> > returned by dma_map_sg_attrs() was equal to the number of segments in
-> > the sgl list. This led to wrong population of the mkey object. Fix this
-> > by properly referring to the returned value.
-> >=20
-> > The hardware expects each MTT entry to contain the DMA address of a
-> > contiguous block of memory of size (1 << mr->log_size) bytes.
-> > dma_map_sg_attrs() can coalesce several sg entries into a single
-> > scatter/gather entry of contiguous DMA range so we need to scan the lis=
-t
-> > and refer to the size of each s/g entry.
-> >=20
-> > In addition, get rid of fill_sg() which effect is overwritten by
-> > populate_mtts().
-> >=20
-> > Fixes: 94abbccdf291 ("vdpa/mlx5: Add shared memory registration code")
-> > Signed-off-by: Eli Cohen <elic@nvidia.com>
-> > ---
-> > V0->V1:
-> > 1. Fix typos
-> > 2. Improve changelog
->=20
->=20
-> Acked-by: Jason Wang <jasowang@redhat.com>
->=20
->=20
-> >=20
-> >   drivers/vdpa/mlx5/core/mlx5_vdpa.h |  1 +
-> >   drivers/vdpa/mlx5/core/mr.c        | 28 ++++++++++++----------------
-> >   2 files changed, 13 insertions(+), 16 deletions(-)
-> >=20
-> > diff --git a/drivers/vdpa/mlx5/core/mlx5_vdpa.h b/drivers/vdpa/mlx5/cor=
-e/mlx5_vdpa.h
-> > index 5c92a576edae..08f742fd2409 100644
-> > --- a/drivers/vdpa/mlx5/core/mlx5_vdpa.h
-> > +++ b/drivers/vdpa/mlx5/core/mlx5_vdpa.h
-> > @@ -15,6 +15,7 @@ struct mlx5_vdpa_direct_mr {
-> >   	struct sg_table sg_head;
-> >   	int log_size;
-> >   	int nsg;
-> > +	int nent;
-> >   	struct list_head list;
-> >   	u64 offset;
-> >   };
-> > diff --git a/drivers/vdpa/mlx5/core/mr.c b/drivers/vdpa/mlx5/core/mr.c
-> > index 4b6195666c58..d300f799efcd 100644
-> > --- a/drivers/vdpa/mlx5/core/mr.c
-> > +++ b/drivers/vdpa/mlx5/core/mr.c
-> > @@ -25,17 +25,6 @@ static int get_octo_len(u64 len, int page_shift)
-> >   	return (npages + 1) / 2;
-> >   }
-> > -static void fill_sg(struct mlx5_vdpa_direct_mr *mr, void *in)
-> > -{
-> > -	struct scatterlist *sg;
-> > -	__be64 *pas;
-> > -	int i;
-> > -
-> > -	pas =3D MLX5_ADDR_OF(create_mkey_in, in, klm_pas_mtt);
-> > -	for_each_sg(mr->sg_head.sgl, sg, mr->nsg, i)
-> > -		(*pas) =3D cpu_to_be64(sg_dma_address(sg));
-> > -}
-> > -
-> >   static void mlx5_set_access_mode(void *mkc, int mode)
-> >   {
-> >   	MLX5_SET(mkc, mkc, access_mode_1_0, mode & 0x3);
-> > @@ -45,10 +34,18 @@ static void mlx5_set_access_mode(void *mkc, int mod=
-e)
-> >   static void populate_mtts(struct mlx5_vdpa_direct_mr *mr, __be64 *mtt=
-)
-> >   {
-> >   	struct scatterlist *sg;
-> > +	int nsg =3D mr->nsg;
-> > +	u64 dma_addr;
-> > +	u64 dma_len;
-> > +	int j =3D 0;
-> >   	int i;
-> > -	for_each_sg(mr->sg_head.sgl, sg, mr->nsg, i)
-> > -		mtt[i] =3D cpu_to_be64(sg_dma_address(sg));
-> > +	for_each_sg(mr->sg_head.sgl, sg, mr->nent, i) {
-> > +		for (dma_addr =3D sg_dma_address(sg), dma_len =3D sg_dma_len(sg);
-> > +		     nsg && dma_len;
-> > +		     nsg--, dma_addr +=3D BIT(mr->log_size), dma_len -=3D BIT(mr->lo=
-g_size))
-> > +			mtt[j++] =3D cpu_to_be64(dma_addr);
-> > +	}
-> >   }
-> >   static int create_direct_mr(struct mlx5_vdpa_dev *mvdev, struct mlx5_=
-vdpa_direct_mr *mr)
-> > @@ -64,7 +61,6 @@ static int create_direct_mr(struct mlx5_vdpa_dev *mvd=
-ev, struct mlx5_vdpa_direct
-> >   		return -ENOMEM;
-> >   	MLX5_SET(create_mkey_in, in, uid, mvdev->res.uid);
-> > -	fill_sg(mr, in);
-> >   	mkc =3D MLX5_ADDR_OF(create_mkey_in, in, memory_key_mkey_entry);
-> >   	MLX5_SET(mkc, mkc, lw, !!(mr->perm & VHOST_MAP_WO));
-> >   	MLX5_SET(mkc, mkc, lr, !!(mr->perm & VHOST_MAP_RO));
-> > @@ -276,8 +272,8 @@ static int map_direct_mr(struct mlx5_vdpa_dev *mvde=
-v, struct mlx5_vdpa_direct_mr
-> >   done:
-> >   	mr->log_size =3D log_entity_size;
-> >   	mr->nsg =3D nsg;
-> > -	err =3D dma_map_sg_attrs(dma, mr->sg_head.sgl, mr->nsg, DMA_BIDIRECTI=
-ONAL, 0);
-> > -	if (!err)
-> > +	mr->nent =3D dma_map_sg_attrs(dma, mr->sg_head.sgl, mr->nsg, DMA_BIDI=
-RECTIONAL, 0);
-> > +	if (!mr->nent)
-> >   		goto err_map;
-> >   	err =3D create_direct_mr(mvdev, mr);
->=20
+
+Rethink about this. I think we probably need a better name other than 
+"sva" since kernel already use that for shared virtual address space. 
+But actually we don't the whole virtual address space.
+
+And I guess this can not work for the device that use platform IOMMU, so 
+we should check and fail if sva && !(dma_map || set_map).
+
+Thanks
+
+
+>    * @nvqs: maximum number of supported virtqueues
+>    * @pdev: parent device pointer; caller must setup when registering device as part
+>    *	  of dev_add() parentdev ops callback before invoking _vdpa_register_device().
+> @@ -54,6 +55,7 @@ struct vdpa_device {
+>   	const struct vdpa_config_ops *config;
+>   	unsigned int index;
+>   	bool features_valid;
+> +	bool sva;
+>   	int nvqs;
+>   	struct vdpa_parent_dev *pdev;
+>   };
+> @@ -250,14 +252,16 @@ struct vdpa_config_ops {
+>   
+>   struct vdpa_device *__vdpa_alloc_device(struct device *parent,
+>   					const struct vdpa_config_ops *config,
+> -					int nvqs, size_t size, const char *name);
+> +					int nvqs, size_t size,
+> +					const char *name, bool sva);
+>   
+> -#define vdpa_alloc_device(dev_struct, member, parent, config, nvqs, name)   \
+> +#define vdpa_alloc_device(dev_struct, member, parent, config, \
+> +			  nvqs, name, sva) \
+>   			  container_of(__vdpa_alloc_device( \
+>   				       parent, config, nvqs, \
+>   				       sizeof(dev_struct) + \
+>   				       BUILD_BUG_ON_ZERO(offsetof( \
+> -				       dev_struct, member)), name), \
+> +				       dev_struct, member)), name, sva), \
+>   				       dev_struct, member)
+>   
+>   int vdpa_register_device(struct vdpa_device *vdev);
+
