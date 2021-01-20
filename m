@@ -2,49 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D3212FC7C3
-	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 03:27:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C515F2FC7FE
+	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 03:34:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731166AbhATCYu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jan 2021 21:24:50 -0500
-Received: from mail.kernel.org ([198.145.29.99]:58482 "EHLO mail.kernel.org"
+        id S1728231AbhATCam (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jan 2021 21:30:42 -0500
+Received: from mail.kernel.org ([198.145.29.99]:46598 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730603AbhATCYf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 19 Jan 2021 21:24:35 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id B55452251D;
-        Wed, 20 Jan 2021 02:23:53 +0000 (UTC)
+        id S1730757AbhATB30 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 19 Jan 2021 20:29:26 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id CE6F9235F7;
+        Wed, 20 Jan 2021 01:27:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611109434;
-        bh=JIngvo/gLL0np8/0GdMsYcplKvOBUvSZQ6TQAwbmqik=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Ulq9oBEFLABNxyLpx4OC2BvM5iMkVgxvDCjF+A6jopPjnYsvqAJgQRl6qHYEiqyQB
-         rXuY9rkUMQE3lWXdBoCo155flsKyuYoKZpFIS5hXtpXOqT2GWYv0oPcZMNip5LtFqm
-         uniA8gje2cmCgC6vO+sonTxh8DGuAFalH2vrQPAZpcbIh4VtFMXQpj/cRAvO4MpHkR
-         fFPHT0HtQQe28zZBd65lHIPRf32S1VF0kdFwa/znUITTrYQ0lajjgdUKnENNjc2NMw
-         P8z43vxodkzeo2fRp7+BZJAFsjTBFPmw2YVv6FsKh6LpK1QA0+SBv1koxUrtD7orQs
-         ZYuNBXPMJv+Hg==
-Date:   Tue, 19 Jan 2021 18:23:52 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>
-Cc:     netdev@vger.kernel.org, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
-        jiri@resnulli.us, m-karicheri2@ti.com, vladimir.oltean@nxp.com,
-        Jose.Abreu@synopsys.com, po.liu@nxp.com,
-        intel-wired-lan@lists.osuosl.org, anthony.l.nguyen@intel.com,
-        mkubecek@suse.cz
-Subject: Re: [PATCH net-next v2 6/8] igc: Add support for tuning frame
- preemption via ethtool
-Message-ID: <20210119182352.17635829@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210119004028.2809425-7-vinicius.gomes@intel.com>
-References: <20210119004028.2809425-1-vinicius.gomes@intel.com>
-        <20210119004028.2809425-7-vinicius.gomes@intel.com>
+        s=k20201202; t=1611106072;
+        bh=cnG4EevPMQ5wdQrVdmeUaste3PQ3JI/UHM0IQqzufKw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=hfzogQOgiXPwfxbb+fVQKp0+oZbk7gau7DfanJcWrvnMQABx9qzFGZAFwQy3LQmoW
+         kSKsgp7+zBl1REwgZxcO/1wlgsu386kbxWvZAOCb1AHurANqHSlaus28fl7v11FOHd
+         hsscwtUZkFSXJWGhuSzNhGYuYP6TDwJjiwSi1Min86Y+vXG/k6+W7ZJntmzrz7xYts
+         cOCwJKfXhKyaA/YU/Dg9uOT0GKMsDG1r5ND64/f83hrnzmXIUfYCEVHoOhfIefvKjn
+         A0b/HVClWJ23dRA3nNaQcGFNI7c9+fCc8OIZsCfbD4RqZRWfh5M576X5LRcAlOemM+
+         SVQmu6WC4CrAw==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Leon Schuermann <leon@is.currently.online>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 08/15] r8152: Add Lenovo Powered USB-C Travel Hub
+Date:   Tue, 19 Jan 2021 20:27:33 -0500
+Message-Id: <20210120012740.770354-8-sashal@kernel.org>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20210120012740.770354-1-sashal@kernel.org>
+References: <20210120012740.770354-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 18 Jan 2021 16:40:26 -0800 Vinicius Costa Gomes wrote:
-> +		NL_SET_ERR_MSG(extack, "Invalid value for add-frag-size");
+From: Leon Schuermann <leon@is.currently.online>
 
-NL_SET_ERR_MSG_MOD
+[ Upstream commit cb82a54904a99df9e8f9e9d282046055dae5a730 ]
+
+This USB-C Hub (17ef:721e) based on the Realtek RTL8153B chip used to
+use the cdc_ether driver. However, using this driver, with the system
+suspended the device constantly sends pause-frames as soon as the
+receive buffer fills up. This causes issues with other devices, where
+some Ethernet switches stop forwarding packets altogether.
+
+Using the Realtek driver (r8152) fixes this issue. Pause frames are no
+longer sent while the host system is suspended.
+
+Signed-off-by: Leon Schuermann <leon@is.currently.online>
+Tested-by: Leon Schuermann <leon@is.currently.online>
+Link: https://lore.kernel.org/r/20210111190312.12589-2-leon@is.currently.online
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/usb/cdc_ether.c | 7 +++++++
+ drivers/net/usb/r8152.c     | 1 +
+ 2 files changed, 8 insertions(+)
+
+diff --git a/drivers/net/usb/cdc_ether.c b/drivers/net/usb/cdc_ether.c
+index 1de97b69ce4e2..529c8fac15314 100644
+--- a/drivers/net/usb/cdc_ether.c
++++ b/drivers/net/usb/cdc_ether.c
+@@ -800,6 +800,13 @@ static const struct usb_device_id	products[] = {
+ 	.driver_info = 0,
+ },
+ 
++/* Lenovo Powered USB-C Travel Hub (4X90S92381, based on Realtek RTL8153) */
++{
++	USB_DEVICE_AND_INTERFACE_INFO(LENOVO_VENDOR_ID, 0x721e, USB_CLASS_COMM,
++			USB_CDC_SUBCLASS_ETHERNET, USB_CDC_PROTO_NONE),
++	.driver_info = 0,
++},
++
+ /* ThinkPad USB-C Dock Gen 2 (based on Realtek RTL8153) */
+ {
+ 	USB_DEVICE_AND_INTERFACE_INFO(LENOVO_VENDOR_ID, 0xa387, USB_CLASS_COMM,
+diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
+index 1b1ec41978300..7dc6055855354 100644
+--- a/drivers/net/usb/r8152.c
++++ b/drivers/net/usb/r8152.c
+@@ -5352,6 +5352,7 @@ static const struct usb_device_id rtl8152_table[] = {
+ 	{REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x7205)},
+ 	{REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x720c)},
+ 	{REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x7214)},
++	{REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x721e)},
+ 	{REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0xa387)},
+ 	{REALTEK_USB_DEVICE(VENDOR_ID_LINKSYS, 0x0041)},
+ 	{REALTEK_USB_DEVICE(VENDOR_ID_NVIDIA,  0x09ff)},
+-- 
+2.27.0
+
