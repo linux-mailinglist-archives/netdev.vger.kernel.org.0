@@ -2,122 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BE9722FD6EC
-	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 18:33:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 91E472FD6FC
+	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 18:33:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390154AbhATOHE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jan 2021 09:07:04 -0500
-Received: from mga07.intel.com ([134.134.136.100]:29664 "EHLO mga07.intel.com"
+        id S2388116AbhATOsV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jan 2021 09:48:21 -0500
+Received: from mail.kernel.org ([198.145.29.99]:39950 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2390142AbhATNlC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 20 Jan 2021 08:41:02 -0500
-IronPort-SDR: 5UASwqYBA9HVYSZGvY+SpQO5upsCij8ITaS2f0GsD6GAc21CQT4HrPnz/o9JMAAPEbDYiOBYmq
- oEWAaIQuDwHw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9869"; a="243174738"
-X-IronPort-AV: E=Sophos;i="5.79,361,1602572400"; 
-   d="scan'208";a="243174738"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jan 2021 05:40:21 -0800
-IronPort-SDR: RHQWWJnEWBlPQEehNKqeTuhA5Kz8UaTA4D+WhDobTFUhO1iwg21Y3CTOaG4B2p98otlW39NktQ
- mjBLltqGsaBQ==
-X-IronPort-AV: E=Sophos;i="5.79,361,1602572400"; 
-   d="scan'208";a="384838084"
-Received: from myegin-mobl1.ger.corp.intel.com (HELO btopel-mobl.ger.intel.com) ([10.249.42.133])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jan 2021 05:40:16 -0800
-Subject: Re: [PATCH bpf-next v2 1/8] xdp: restructure redirect actions
-To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
-        ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Cc:     magnus.karlsson@intel.com, maciej.fijalkowski@intel.com,
-        kuba@kernel.org, jonathan.lemon@gmail.com, maximmi@nvidia.com,
-        davem@davemloft.net, hawk@kernel.org, john.fastabend@gmail.com,
-        ciara.loftus@intel.com, weqaar.a.janjua@intel.com
-References: <20210119155013.154808-1-bjorn.topel@gmail.com>
- <20210119155013.154808-2-bjorn.topel@gmail.com> <87bldjeq1j.fsf@toke.dk>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
-Message-ID: <996f1ff7-5891-fd4a-ee3e-fefd7e93879d@intel.com>
-Date:   Wed, 20 Jan 2021 14:40:12 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
+        id S1726278AbhATO1l (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 20 Jan 2021 09:27:41 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 826062336D;
+        Wed, 20 Jan 2021 14:27:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1611152820;
+        bh=DSvaDm4XhrGo3TRVwU920cVaThyOHtM52UGaxj6lzG8=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=asZRWy2LQeD3p9pnCwJMVoE2tk+lUdWhaMha6sb6wpIaR0+yUhRRLp9cvMHR6Ibx4
+         0E+mFHl4rcQc1NnlgHMVIIRy68M0zJtFD4GXM31M3xvX5FabIWzw2GGI+/lHf9+SYY
+         M0/bhQFr4fdx9l/ww8K0dbr5DpIcV4kWDcAsIWbjLBKDxbmwp1kiJQfZIKVZVgOuNX
+         I4vACTktGjyioDWRdsXxu2S6g0X8a+629+4WKr7V9ifq87Bjx/r0xKcnR6g595na+0
+         a7d38+Vt6fYZkjZlfKidL6KUWXyiS4ZMZ2Od2eRbihtcW3BA8h7BJVm/ZCic9dYQ2C
+         0nwn87Xszi6BA==
+Date:   Wed, 20 Jan 2021 09:26:59 -0500
+From:   Sasha Levin <sashal@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        David Wu <david.wu@rock-chips.com>, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH AUTOSEL 5.10 28/45] net: stmmac: Fixed mtu channged by
+ cache aligned
+Message-ID: <20210120142659.GC4035784@sasha-vm>
+References: <20210120012602.769683-1-sashal@kernel.org>
+ <20210120012602.769683-28-sashal@kernel.org>
+ <20210119220815.039ac330@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-In-Reply-To: <87bldjeq1j.fsf@toke.dk>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20210119220815.039ac330@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 2021-01-20 13:44, Toke Høiland-Jørgensen wrote:
-> Björn Töpel <bjorn.topel@gmail.com> writes:
-> 
->> From: Björn Töpel <bjorn.topel@intel.com>
+On Tue, Jan 19, 2021 at 10:08:15PM -0800, Jakub Kicinski wrote:
+>On Tue, 19 Jan 2021 20:25:45 -0500 Sasha Levin wrote:
+>> From: David Wu <david.wu@rock-chips.com>
 >>
->> The XDP_REDIRECT implementations for maps and non-maps are fairly
->> similar, but obviously need to take different code paths depending on
->> if the target is using a map or not. Today, the redirect targets for
->> XDP either uses a map, or is based on ifindex.
+>> [ Upstream commit 5b55299eed78538cc4746e50ee97103a1643249c ]
 >>
->> Future commits will introduce yet another redirect target via the a
->> new helper, bpf_redirect_xsk(). To pave the way for that, we introduce
->> an explicit redirect type to bpf_redirect_info. This makes the code
->> easier to follow, and makes it easier to add new redirect targets.
+>> Since the original mtu is not used when the mtu is updated,
+>> the mtu is aligned with cache, this will get an incorrect.
+>> For example, if you want to configure the mtu to be 1500,
+>> but mtu 1536 is configured in fact.
 >>
->> Further, using an explicit type in bpf_redirect_info has a slight
->> positive performance impact by avoiding a pointer indirection for the
->> map type lookup, and instead use the hot cacheline for
->> bpf_redirect_info.
->>
->> The bpf_redirect_info flags member is not used by XDP, and not
->> read/written any more. The map member is only written to when
->> required/used, and not unconditionally.
-> 
-> I like the simplification. However, the handling of map clearing becomes
-> a bit murky with this change:
-> 
-> You're not changing anything in bpf_clear_redirect_map(), and you're
-> removing most of the reads and writes of ri->map. Instead,
-> bpf_xdp_redirect_map() will store the bpf_dtab_netdev pointer in
-> ri->tgt_value, which xdp_do_redirect() will just read and use without
-> checking. But if the map element (or the entire map) has been freed in
-> the meantime that will be a dangling pointer. I *think* the RCU callback
-> in dev_map_delete_elem() and the rcu_barrier() in dev_map_free()
-> protects against this, but that is by no means obvious. So confirming
-> this, and explaining it in a comment would be good.
+>> Fixed: eaf4fac478077 ("net: stmmac: Do not accept invalid MTU values")
+>> Signed-off-by: David Wu <david.wu@rock-chips.com>
+>> Link: https://lore.kernel.org/r/20210113034109.27865-1-david.wu@rock-chips.com
+>> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+>> Signed-off-by: Sasha Levin <sashal@kernel.org>
 >
+>This was applied 6 days ago, I thought you said you wait two weeks.
+>What am I missing?
 
-Yes, *most* of the READ_ONCE(ri->map) are removed, it's pretty much only 
-the bpf_redirect_map(), and as you write, the tracepoints.
+The "AUTOSEL" review cycle is an additional hurdle automatically
+selected patches need to clear before being queued up. There are 7 days
+between the day I sent the review for these and the first day I might
+queue them up.
 
-The content/element of the map is RCU protected, and actually even the
-map will be around until the XDP processing is complete. Note the
-synchronize_rcu() followed after all bpf_clear_redirect_map() calls.
+This mail isn't an indication that the patch has been added to the
+queue, it's just an extra step to give folks time to object.
 
-I'll try to make it clearer in the commit message! Thanks for pointing 
-that out!
+If you add up all the days you'll get >14 :)
 
-> Also, as far as I can tell after this, ri->map is only used for the
-> tracepoint. So how about just storing the map ID and getting rid of the
-> READ/WRITE_ONCE() entirely?
->
-
-...and the bpf_redirect_map() helper. Don't you think the current
-READ_ONCE(ri->map) scheme is more obvious/clear?
-
-
-> (Oh, and related to this I think this patch set will conflict with
-> Hangbin's multi-redirect series, so maybe you two ought to coordinate? :))
->
-
-Yeah, good idea! I would guess Hangbin's would go in before this, so I
-would need to adapt.
-
-
-Thanks for taking of look at the series, Toke! Much appreciated!
-
-
-Björn
-
+-- 
+Thanks,
+Sasha
