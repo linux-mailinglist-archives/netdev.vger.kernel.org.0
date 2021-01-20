@@ -2,85 +2,122 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CDFC52FD6EA
-	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 18:33:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BE9722FD6EC
+	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 18:33:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390120AbhATOHC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jan 2021 09:07:02 -0500
-Received: from mail-yb1-f179.google.com ([209.85.219.179]:35529 "EHLO
-        mail-yb1-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388004AbhATNbQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 08:31:16 -0500
-Received: by mail-yb1-f179.google.com with SMTP id k132so12320553ybf.2;
-        Wed, 20 Jan 2021 05:31:00 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=TDkQlUwx2SnbfI3bo/dvPQ9TYvp5Pg19eP3Xh9x9QQA=;
-        b=akR9tPgogBqDO1N0u69Dvan6xv8axu2t+ZJDkrnxmr5MppVTxF69kV1bTdEFl45tZN
-         lgsmSMMFrIlPxGXcLHn4PeanH0Gf+OR+MmVytcax6kQLzyy7bzbxNwB4CRTNT1c3si6k
-         9+zdQfVMn8zBjnCW/2fzmMz/YbxPMJAyBnZgVGkyybyiOOqMFk78aMd9pvRbLbBrpgsX
-         l2IwLknmetULmhrxNchL8zbGEP6KLmH6qbcRe9b1zFyXWqXjdR7u4XbZRmRQtwjUg31v
-         vQcACGexPMbvJr7dz9kr4NJ5Kc9Tk5ftyPnzbLiIM/Yr/GhRNIEYMkeJy8x1VurjIlWc
-         KMKw==
-X-Gm-Message-State: AOAM532ixOsN0M9ZZhp9AXIQhoVXfUCM2vnGHbLrEkyDObqlD1RxQ0Je
-        78Lft7fAFN3V6kOlHd0ryGOoXSXm82njPboTUsY=
-X-Google-Smtp-Source: ABdhPJyXniBHr/mjEIYxXgrcej64wZm2Dv4s6R/ANXLhIvvrZaLeby7h0bBliGh4tZh4wy6V/MqgDH3HRBfMB5BfZYI=
-X-Received: by 2002:a25:5583:: with SMTP id j125mr12566111ybb.307.1611149434990;
- Wed, 20 Jan 2021 05:30:34 -0800 (PST)
+        id S2390154AbhATOHE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jan 2021 09:07:04 -0500
+Received: from mga07.intel.com ([134.134.136.100]:29664 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2390142AbhATNlC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 20 Jan 2021 08:41:02 -0500
+IronPort-SDR: 5UASwqYBA9HVYSZGvY+SpQO5upsCij8ITaS2f0GsD6GAc21CQT4HrPnz/o9JMAAPEbDYiOBYmq
+ oEWAaIQuDwHw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9869"; a="243174738"
+X-IronPort-AV: E=Sophos;i="5.79,361,1602572400"; 
+   d="scan'208";a="243174738"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jan 2021 05:40:21 -0800
+IronPort-SDR: RHQWWJnEWBlPQEehNKqeTuhA5Kz8UaTA4D+WhDobTFUhO1iwg21Y3CTOaG4B2p98otlW39NktQ
+ mjBLltqGsaBQ==
+X-IronPort-AV: E=Sophos;i="5.79,361,1602572400"; 
+   d="scan'208";a="384838084"
+Received: from myegin-mobl1.ger.corp.intel.com (HELO btopel-mobl.ger.intel.com) ([10.249.42.133])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jan 2021 05:40:16 -0800
+Subject: Re: [PATCH bpf-next v2 1/8] xdp: restructure redirect actions
+To:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
+        ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Cc:     magnus.karlsson@intel.com, maciej.fijalkowski@intel.com,
+        kuba@kernel.org, jonathan.lemon@gmail.com, maximmi@nvidia.com,
+        davem@davemloft.net, hawk@kernel.org, john.fastabend@gmail.com,
+        ciara.loftus@intel.com, weqaar.a.janjua@intel.com
+References: <20210119155013.154808-1-bjorn.topel@gmail.com>
+ <20210119155013.154808-2-bjorn.topel@gmail.com> <87bldjeq1j.fsf@toke.dk>
+From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
+Message-ID: <996f1ff7-5891-fd4a-ee3e-fefd7e93879d@intel.com>
+Date:   Wed, 20 Jan 2021 14:40:12 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.1
 MIME-Version: 1.0
-References: <20210120114137.200019-1-mailhol.vincent@wanadoo.fr>
- <20210120114137.200019-2-mailhol.vincent@wanadoo.fr> <994ac0a3-afd9-eca7-9640-e001f5a43d65@pengutronix.de>
-In-Reply-To: <994ac0a3-afd9-eca7-9640-e001f5a43d65@pengutronix.de>
-From:   Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
-Date:   Wed, 20 Jan 2021 22:30:24 +0900
-Message-ID: <CAMZ6RqL46r5FnD7WQqFa5Z715id7r3qrdh2nR=gVFesLDdrCQA@mail.gmail.com>
-Subject: Re: [PATCH v4 1/3] can: dev: can_restart: fix use after free bug
-To:     Marc Kleine-Budde <mkl@pengutronix.de>
-Cc:     Oliver Hartkopp <socketcan@hartkopp.net>,
-        linux-can <linux-can@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Stephane Grosjean <s.grosjean@peak-system.com>,
-        Loris Fauster <loris.fauster@ttcontrol.com>,
-        Alejandro Concepcion Rodriguez <alejandro@acoro.eu>,
-        Dan Carpenter <dan.carpenter@oracle.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <87bldjeq1j.fsf@toke.dk>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed. 20 janv. 2021 at 21:53, Marc Kleine-Budde <mkl@pengutronix.de> wrote:
-> On 1/20/21 12:41 PM, Vincent Mailhol wrote:
-> > After calling netif_rx_ni(skb), dereferencing skb is unsafe.
-> > Especially, the can_frame cf which aliases skb memory is accessed
-> > after the netif_rx_ni() in:
-> >       stats->rx_bytes += cf->len;
-> >
-> > Reordering the lines solves the issue.
-> >
-> > Fixes: 39549eef3587 ("can: CAN Network device driver and Netlink interface")
-> > Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-> > ---
-> > *Remark for upstream*
-> > drivers/net/can/dev.c has been moved to drivers/net/can/dev/dev.c in
-> > below commit, please carry the patch forward.
-> > Reference: 3e77f70e7345 ("can: dev: move driver related infrastructure
-> > into separate subdir")
->
-> I've send a pull request to Jakub and David. Let's see what happens :)
 
-Thanks!
 
-Yours sincerely,
-Vincent
+On 2021-01-20 13:44, Toke Høiland-Jørgensen wrote:
+> Björn Töpel <bjorn.topel@gmail.com> writes:
+> 
+>> From: Björn Töpel <bjorn.topel@intel.com>
+>>
+>> The XDP_REDIRECT implementations for maps and non-maps are fairly
+>> similar, but obviously need to take different code paths depending on
+>> if the target is using a map or not. Today, the redirect targets for
+>> XDP either uses a map, or is based on ifindex.
+>>
+>> Future commits will introduce yet another redirect target via the a
+>> new helper, bpf_redirect_xsk(). To pave the way for that, we introduce
+>> an explicit redirect type to bpf_redirect_info. This makes the code
+>> easier to follow, and makes it easier to add new redirect targets.
+>>
+>> Further, using an explicit type in bpf_redirect_info has a slight
+>> positive performance impact by avoiding a pointer indirection for the
+>> map type lookup, and instead use the hot cacheline for
+>> bpf_redirect_info.
+>>
+>> The bpf_redirect_info flags member is not used by XDP, and not
+>> read/written any more. The map member is only written to when
+>> required/used, and not unconditionally.
+> 
+> I like the simplification. However, the handling of map clearing becomes
+> a bit murky with this change:
+> 
+> You're not changing anything in bpf_clear_redirect_map(), and you're
+> removing most of the reads and writes of ri->map. Instead,
+> bpf_xdp_redirect_map() will store the bpf_dtab_netdev pointer in
+> ri->tgt_value, which xdp_do_redirect() will just read and use without
+> checking. But if the map element (or the entire map) has been freed in
+> the meantime that will be a dangling pointer. I *think* the RCU callback
+> in dev_map_delete_elem() and the rcu_barrier() in dev_map_free()
+> protects against this, but that is by no means obvious. So confirming
+> this, and explaining it in a comment would be good.
+>
 
-> Marc
+Yes, *most* of the READ_ONCE(ri->map) are removed, it's pretty much only 
+the bpf_redirect_map(), and as you write, the tracepoints.
+
+The content/element of the map is RCU protected, and actually even the
+map will be around until the XDP processing is complete. Note the
+synchronize_rcu() followed after all bpf_clear_redirect_map() calls.
+
+I'll try to make it clearer in the commit message! Thanks for pointing 
+that out!
+
+> Also, as far as I can tell after this, ri->map is only used for the
+> tracepoint. So how about just storing the map ID and getting rid of the
+> READ/WRITE_ONCE() entirely?
 >
-> --
-> Pengutronix e.K.                 | Marc Kleine-Budde           |
-> Embedded Linux                   | https://www.pengutronix.de  |
-> Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-> Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+...and the bpf_redirect_map() helper. Don't you think the current
+READ_ONCE(ri->map) scheme is more obvious/clear?
+
+
+> (Oh, and related to this I think this patch set will conflict with
+> Hangbin's multi-redirect series, so maybe you two ought to coordinate? :))
 >
+
+Yeah, good idea! I would guess Hangbin's would go in before this, so I
+would need to adapt.
+
+
+Thanks for taking of look at the series, Toke! Much appreciated!
+
+
+Björn
+
