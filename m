@@ -2,117 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 858A32FC892
-	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 04:16:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4ECEF2FC86E
+	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 04:07:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387582AbhATDOY convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Tue, 19 Jan 2021 22:14:24 -0500
-Received: from mga07.intel.com ([134.134.136.100]:41730 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2389369AbhATC50 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 19 Jan 2021 21:57:26 -0500
-IronPort-SDR: +tqYSUAvJq2j8vQm2vJgum2crtz0M/pklOwucfGKg7ih7nrOs9QRC9/7D7j5h94/cUacFnrgrn
- hT7FDvFvbzXg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9869"; a="243105324"
-X-IronPort-AV: E=Sophos;i="5.79,359,1602572400"; 
-   d="scan'208";a="243105324"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2021 18:56:44 -0800
-IronPort-SDR: 054cMV2fPfs4AHEfqJpd/TJx0x16OrndzTfihhHekhg2rmlre7gU7G+iSitMyDSqR97RmMfkVl
- S2Tu2yhsswNQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.79,359,1602572400"; 
-   d="scan'208";a="402589859"
-Received: from fmsmsx605.amr.corp.intel.com ([10.18.126.85])
-  by fmsmga002.fm.intel.com with ESMTP; 19 Jan 2021 18:56:44 -0800
-Received: from shsmsx602.ccr.corp.intel.com (10.109.6.142) by
- fmsmsx605.amr.corp.intel.com (10.18.126.85) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Tue, 19 Jan 2021 18:56:43 -0800
-Received: from shsmsx603.ccr.corp.intel.com (10.109.6.143) by
- SHSMSX602.ccr.corp.intel.com (10.109.6.142) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Wed, 20 Jan 2021 10:56:41 +0800
-Received: from shsmsx603.ccr.corp.intel.com ([10.109.6.143]) by
- SHSMSX603.ccr.corp.intel.com ([10.109.6.143]) with mapi id 15.01.1713.004;
- Wed, 20 Jan 2021 10:56:41 +0800
-From:   "Zhang, Rui" <rui.zhang@intel.com>
-To:     Thara Gopinath <thara.gopinath@linaro.org>,
-        "daniel.lezcano@linaro.org" <daniel.lezcano@linaro.org>,
-        "kvalo@codeaurora.org" <kvalo@codeaurora.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "Coelho, Luciano" <luciano.coelho@intel.com>
-CC:     "linux-wireless@vger.kernel.org" <linux-wireless@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
-        "amitk@kernel.org" <amitk@kernel.org>,
-        "Errera, Nathan" <nathan.errera@intel.com>
-Subject: RE: [PATCH 0/2] thermal: Replace thermal_notify_framework with
- thermal_zone_device_update
-Thread-Topic: [PATCH 0/2] thermal: Replace thermal_notify_framework with
- thermal_zone_device_update
-Thread-Index: AQHW7myNyN+HFidWAkieGDM5y8leBqov0QOw
-Date:   Wed, 20 Jan 2021 02:56:41 +0000
-Message-ID: <fb5571b452f7495eb76396795eeec096@intel.com>
-References: <20210119140541.2453490-1-thara.gopinath@linaro.org>
-In-Reply-To: <20210119140541.2453490-1-thara.gopinath@linaro.org>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-reaction: no-action
-dlp-version: 11.5.1.3
-x-originating-ip: [10.239.127.36]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S2389396AbhATDEC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jan 2021 22:04:02 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:51458 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2388061AbhATDDI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jan 2021 22:03:08 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1611111702;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ZodmnXn4xAMstumzC/OBLSYq3RcxDLukButfIEIAT2Y=;
+        b=R6jhdz8kjMaMI3az+PxEM7iYoGTja6Gc8GezHQqUnv2BWWB7XIYiCZzbhBa7zReqnd0A1E
+        1D7NDmULhVSzD0Gxg1auFqCjEyGD89dnGP8zhf20jxUIZIsP6KJDj+18/MqMG/vetWC6Md
+        uspBVY1y+sbuoq3oPHahEW6u2YHYY0w=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-155-RfqNDkrNMjyVLRuQG31F_g-1; Tue, 19 Jan 2021 22:01:37 -0500
+X-MC-Unique: RfqNDkrNMjyVLRuQG31F_g-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 105C0E743;
+        Wed, 20 Jan 2021 03:01:35 +0000 (UTC)
+Received: from [10.72.13.124] (ovpn-13-124.pek2.redhat.com [10.72.13.124])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 02EC172171;
+        Wed, 20 Jan 2021 03:01:25 +0000 (UTC)
+Subject: Re: [PATCH bpf-next v2 1/3] net: add priv_flags for allow tx skb
+ without linear
+To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>, netdev@vger.kernel.org
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>,
+        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org
+References: <cover.1611048724.git.xuanzhuo@linux.alibaba.com>
+ <30ae1c94b5c26919bd90bb251761c526edfbaf56.1611048724.git.xuanzhuo@linux.alibaba.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <13d2ceda-16d1-488c-d131-55cca813b224@redhat.com>
+Date:   Wed, 20 Jan 2021 11:01:24 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
+In-Reply-To: <30ae1c94b5c26919bd90bb251761c526edfbaf56.1611048724.git.xuanzhuo@linux.alibaba.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi, Thara,
 
-Thanks for the cleanup. I've proposed similar patches previously.
-https://patchwork.kernel.org/project/linux-pm/patch/20200430063229.6182-2-rui.zhang@intel.com/
-https://patchwork.kernel.org/project/linux-pm/patch/20200430063229.6182-3-rui.zhang@intel.com/
-can you please also address the comments in the previous discussion, like doc cleanup?
+On 2021/1/19 下午5:45, Xuan Zhuo wrote:
+> In some cases, we hope to construct skb directly based on the existing
+> memory without copying data. In this case, the page will be placed
+> directly in the skb, and the linear space of skb is empty. But
+> unfortunately, many the network card does not support this operation.
+> For example Mellanox Technologies MT27710 Family [ConnectX-4 Lx] will
+> get the following error message:
+>
+>      mlx5_core 0000:3b:00.1 eth1: Error cqe on cqn 0x817, ci 0x8, qn 0x1dbb, opcode 0xd, syndrome 0x1, vendor syndrome 0x68
+>      00000000: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+>      00000010: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+>      00000020: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+>      00000030: 00 00 00 00 60 10 68 01 0a 00 1d bb 00 0f 9f d2
+>      WQE DUMP: WQ size 1024 WQ cur size 0, WQE index 0xf, len: 64
+>      00000000: 00 00 0f 0a 00 1d bb 03 00 00 00 08 00 00 00 00
+>      00000010: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+>      00000020: 00 00 00 2b 00 08 00 00 00 00 00 05 9e e3 08 00
+>      00000030: 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
+>      mlx5_core 0000:3b:00.1 eth1: ERR CQE on SQ: 0x1dbb
+>
+> So a priv_flag is added here to indicate whether the network card
+> supports this feature.
 
-Thanks,
-rui
 
-> -----Original Message-----
-> From: Thara Gopinath <thara.gopinath@linaro.org>
-> Sent: Tuesday, January 19, 2021 10:06 PM
-> To: Zhang, Rui <rui.zhang@intel.com>; daniel.lezcano@linaro.org;
-> kvalo@codeaurora.org; davem@davemloft.net; kuba@kernel.org; Coelho,
-> Luciano <luciano.coelho@intel.com>
-> Cc: linux-wireless@vger.kernel.org; linux-kernel@vger.kernel.org;
-> netdev@vger.kernel.org; linux-pm@vger.kernel.org; amitk@kernel.org;
-> Errera, Nathan <nathan.errera@intel.com>
-> Subject: [PATCH 0/2] thermal: Replace thermal_notify_framework with
-> thermal_zone_device_update
-> Importance: High
-> 
-> thermal_notify_framework just updates for a single trip point where as
-> thermal_zone_device_update does other bookkeeping like updating the
-> temperature of the thermal zone, running through the list of trip points and
-> setting the next trip point etc. Since  the later is a more thorough version of
-> former, replace thermal_notify_framework with
-> thermal_zone_device_update.
-> 
-> Thara Gopinath (2):
->   net: wireless: intel: iwlwifi: mvm: tt: Replace
->     thermal_notify_framework
->   drivers: thermal: Remove thermal_notify_framework
-> 
->  drivers/net/wireless/intel/iwlwifi/mvm/tt.c |  4 ++--
->  drivers/thermal/thermal_core.c              | 18 ------------------
->  include/linux/thermal.h                     |  4 ----
->  3 files changed, 2 insertions(+), 24 deletions(-)
-> 
-> --
-> 2.25.1
+I don't see Mellanox engineers are copied. I wonder if we need their 
+confirmation on whether it's a bug or hardware limitation.
+
+Thanks
 
