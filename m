@@ -2,87 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ED5712FC6D2
-	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 02:32:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 475F32FC736
+	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 02:56:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726000AbhATBaN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jan 2021 20:30:13 -0500
-Received: from mail.kernel.org ([198.145.29.99]:47302 "EHLO mail.kernel.org"
+        id S1730841AbhATBwg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jan 2021 20:52:36 -0500
+Received: from mail.kernel.org ([198.145.29.99]:53126 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730769AbhATB30 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 19 Jan 2021 20:29:26 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id DB04123433;
-        Wed, 20 Jan 2021 01:27:54 +0000 (UTC)
+        id S1731102AbhATBuv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 19 Jan 2021 20:50:51 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id 63C3422472;
+        Wed, 20 Jan 2021 01:50:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611106075;
-        bh=0oC4UvFQ7gr34BsUtHy/rcWoiAez/qEhFP6ph1HMd3o=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pHXFPN4Rcr0c8iwY69HudjE/QLNwsQW1h+CWYxjYEMYQiKJDyGTO/p/m0kiyFViDJ
-         r5evtFDroWwjFU8vEcUVaVd1UC841fgWi9ICWyt2cZg/AIQ6vHjBO9FdLJ/vvFZO1T
-         tE1Ad0wGrft1Iy7nowt7dbMhvTuS0sr7cgT1XOFYKK9T+W6tEsHz8KOa6XjP0n83NH
-         oDH7zzQ7iaAl0lZO5gzdGhe57jpapEfj/aEQBBZl4cIPYXyE6CXTuYn6MRln8ePw3U
-         iTvyN91tkdO33JqFwnswa4pRB0IYhEJYmJtuNXV6V75GpEdfOSMo99lbwYWDsJHQe0
-         PeOxV2uK5uf7w==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     David Wu <david.wu@rock-chips.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 4.19 10/15] net: stmmac: Fixed mtu channged by cache aligned
-Date:   Tue, 19 Jan 2021 20:27:35 -0500
-Message-Id: <20210120012740.770354-10-sashal@kernel.org>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20210120012740.770354-1-sashal@kernel.org>
-References: <20210120012740.770354-1-sashal@kernel.org>
+        s=k20201202; t=1611107410;
+        bh=fYVhz0Utn/IH6+2xkAXvc2UhddhAnB+A/q8GU/7LXZ8=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=o36XoS0e9yW42WCIpWPxbEeA55yu+dzjXtl7opTY0GK2l5hLBNcOjCR0iv8UqZygY
+         w6TYwDPsP+cxPhFuwCK0MyXOojwuespJs0wShCsjlh38PjmsCqeP3Jr8u+urS7Yl3N
+         ZqmDgaxpnw/hn2ZJoygYEIanHk0jn0KXwgfJSKTiR2/6/1kBZH5YVWWwtvqHsjMcBP
+         Pq2fmFtqgmsr+DGQZ8Lxy8gIXJm8Tk2NcH0rLZwE5Vs+8mL1mkcq952dQhJJ+NM+eD
+         tRwwww+xNERk/l7zkhJTfnniz++AmzAhTt+3jmacoujRgHubP5FOo9wOZ1jgLKlpGJ
+         4XWyU1JyYENAA==
+Received: from pdx-korg-docbuild-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-1.ci.codeaurora.org (Postfix) with ESMTP id 5C6AB604FC;
+        Wed, 20 Jan 2021 01:50:10 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
+Subject: Re: [net-next 0/6] net: ethernet: ti: am65-cpsw-nuss: introduce support
+ for am64x cpsw3g
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161110741037.23772.5269078969682153495.git-patchwork-notify@kernel.org>
+Date:   Wed, 20 Jan 2021 01:50:10 +0000
+References: <20210115192853.5469-1-grygorii.strashko@ti.com>
+In-Reply-To: <20210115192853.5469-1-grygorii.strashko@ti.com>
+To:     Grygorii Strashko <grygorii.strashko@ti.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
+        peter.ujfalusi@gmail.com, vigneshr@ti.com, robh+dt@kernel.org,
+        linux-kernel@vger.kernel.org, nsekhar@ti.com,
+        devicetree@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Wu <david.wu@rock-chips.com>
+Hello:
 
-[ Upstream commit 5b55299eed78538cc4746e50ee97103a1643249c ]
+This series was applied to netdev/net-next.git (refs/heads/master):
 
-Since the original mtu is not used when the mtu is updated,
-the mtu is aligned with cache, this will get an incorrect.
-For example, if you want to configure the mtu to be 1500,
-but mtu 1536 is configured in fact.
+On Fri, 15 Jan 2021 21:28:47 +0200 you wrote:
+> Hi
+> 
+> This series introduces basic support for recently introduced TI K3 AM642x SoC [1]
+> which contains 3 port (2 external ports) CPSW3g module. The CPSW3g integrated
+> in MAIN domain and can be configured in multi port or switch modes.
+> In this series only multi port mode is enabled. The initial version of switchdev
+> support was introduced by Vignesh Raghavendra [2] and work is in progress.
+> 
+> [...]
 
-Fixed: eaf4fac478077 ("net: stmmac: Do not accept invalid MTU values")
-Signed-off-by: David Wu <david.wu@rock-chips.com>
-Link: https://lore.kernel.org/r/20210113034109.27865-1-david.wu@rock-chips.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+Here is the summary with links:
+  - [net-next,1/6] dt-binding: ti: am65x-cpts: add assigned-clock and power-domains props
+    https://git.kernel.org/netdev/net-next/c/b3228c74e0d2
+  - [net-next,2/6] dt-binding: net: ti: k3-am654-cpsw-nuss: update bindings for am64x cpsw3g
+    https://git.kernel.org/netdev/net-next/c/19d9a846d9fc
+  - [net-next,3/6] net: ethernet: ti: am65-cpsw-nuss: Use DMA device for DMA API
+    https://git.kernel.org/netdev/net-next/c/ed569ed9b30a
+  - [net-next,4/6] net: ethernet: ti: am65-cpsw-nuss: Support for transparent ASEL handling
+    https://git.kernel.org/netdev/net-next/c/39fd0547ee66
+  - [net-next,5/6] net: ti: cpsw_ale: add driver data for AM64 CPSW3g
+    https://git.kernel.org/netdev/net-next/c/1dd3841033b3
+  - [net-next,6/6] net: ethernet: ti: am65-cpsw: add support for am64x cpsw3g
+    https://git.kernel.org/netdev/net-next/c/4f7cce272403
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index 4ac507b4d1019..76d4b8e6ac3e8 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -3596,6 +3596,7 @@ static int stmmac_change_mtu(struct net_device *dev, int new_mtu)
- {
- 	struct stmmac_priv *priv = netdev_priv(dev);
- 	int txfifosz = priv->plat->tx_fifo_size;
-+	const int mtu = new_mtu;
- 
- 	if (txfifosz == 0)
- 		txfifosz = priv->dma_cap.tx_fifo_size;
-@@ -3613,7 +3614,7 @@ static int stmmac_change_mtu(struct net_device *dev, int new_mtu)
- 	if ((txfifosz < new_mtu) || (new_mtu > BUF_SIZE_16KiB))
- 		return -EINVAL;
- 
--	dev->mtu = new_mtu;
-+	dev->mtu = mtu;
- 
- 	netdev_update_features(dev);
- 
--- 
-2.27.0
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
