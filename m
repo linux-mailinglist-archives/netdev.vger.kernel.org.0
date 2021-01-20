@@ -2,297 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 275732FCB63
+	by mail.lfdr.de (Postfix) with ESMTP id 93DE92FCB64
 	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 08:19:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728425AbhATHSe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jan 2021 02:18:34 -0500
-Received: from pegase1.c-s.fr ([93.17.236.30]:5530 "EHLO pegase1.c-s.fr"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727744AbhATHS2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 20 Jan 2021 02:18:28 -0500
-Received: from localhost (mailhub1-int [192.168.12.234])
-        by localhost (Postfix) with ESMTP id 4DLH0R61MKz9tyLS;
-        Wed, 20 Jan 2021 08:17:27 +0100 (CET)
-X-Virus-Scanned: Debian amavisd-new at c-s.fr
-Received: from pegase1.c-s.fr ([192.168.12.234])
-        by localhost (pegase1.c-s.fr [192.168.12.234]) (amavisd-new, port 10024)
-        with ESMTP id VD5vHr_64NrK; Wed, 20 Jan 2021 08:17:27 +0100 (CET)
-Received: from messagerie.si.c-s.fr (messagerie.si.c-s.fr [192.168.25.192])
-        by pegase1.c-s.fr (Postfix) with ESMTP id 4DLH0R516yz9tyLR;
-        Wed, 20 Jan 2021 08:17:27 +0100 (CET)
-Received: from localhost (localhost [127.0.0.1])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 9F2D08B7DF;
-        Wed, 20 Jan 2021 08:17:28 +0100 (CET)
-X-Virus-Scanned: amavisd-new at c-s.fr
-Received: from messagerie.si.c-s.fr ([127.0.0.1])
-        by localhost (messagerie.si.c-s.fr [127.0.0.1]) (amavisd-new, port 10023)
-        with ESMTP id w27xf3pu5l72; Wed, 20 Jan 2021 08:17:28 +0100 (CET)
-Received: from [172.25.230.103] (po15451.idsi0.si.c-s.fr [172.25.230.103])
-        by messagerie.si.c-s.fr (Postfix) with ESMTP id 365558B75F;
-        Wed, 20 Jan 2021 08:17:28 +0100 (CET)
-Subject: Re: [PATCH net-next v2 13/17] ethernet: ucc_geth: remove bd_mem_part
- and all associated code
-To:     Rasmus Villemoes <rasmus.villemoes@prevas.dk>,
+        id S1728489AbhATHTM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jan 2021 02:19:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45280 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727482AbhATHTI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 02:19:08 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71EA3C061575
+        for <netdev@vger.kernel.org>; Tue, 19 Jan 2021 23:18:28 -0800 (PST)
+From:   Kurt Kanzenbach <kurt@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1611127106;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=MiSK9muvkYaLWdLJPs5L/uq12BAhJoYtL9uzVwOpQgc=;
+        b=K9tC/JE/8MZKka4RAzkXjEvyOaajKsHG5Uwviqp6geo8QDbwTu8zn2wbG2U5WCg7l1lIJD
+        /+XZllZrpSPXH5wF57ZMVrEGmnCITwBJgSfdLgkgIMDwL3T6mUe19ZXf3JQqvVlOsODIL9
+        ylgalwn278u6GJCN2nsbiASLDcRMN2k1cJaxmlNp9RHPxvHFqX8z/fRpWjMBMANkH65tbm
+        W1VbXbmk4a/NEGzNC94i9Uo0j+O4cVwfO5CeA3IZ7vkXLLtxvpF79/wdUaruy5d9diUV7g
+        sOhMuplXmyZP2A0FX8hPT1i/ZeelWwOXLdX9cueBXbTOuAYpmY6JvbHrPP3dsQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1611127106;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=MiSK9muvkYaLWdLJPs5L/uq12BAhJoYtL9uzVwOpQgc=;
+        b=qmz08gCqUPlC5qt2WiIj7LdHBRCt/cDtlr39PGf9rg6pQvC/K1ApVtE9wHMdkGQ1Ihu/BB
+        UjW1KzX/sFVAUZDg==
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Vladimir Oltean <olteanv@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
         netdev@vger.kernel.org
-Cc:     Li Yang <leoyang.li@nxp.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Zhao Qiang <qiang.zhao@nxp.com>, Andrew Lunn <andrew@lunn.ch>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Joakim Tjernlund <Joakim.Tjernlund@infinera.com>
-References: <20210119150802.19997-1-rasmus.villemoes@prevas.dk>
- <20210119150802.19997-14-rasmus.villemoes@prevas.dk>
-From:   Christophe Leroy <christophe.leroy@csgroup.eu>
-Message-ID: <58e13bb0-11fa-95e7-e9d9-acc649af4df7@csgroup.eu>
-Date:   Wed, 20 Jan 2021 08:17:24 +0100
-User-Agent: Mozilla/5.0 (Windows NT 6.1; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
+Subject: Re: [PATCH v2 net-next 1/1] net: dsa: hellcreek: Add TAPRIO offloading support
+In-Reply-To: <20210119155703.7064800d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20210116124922.32356-1-kurt@linutronix.de> <20210116124922.32356-2-kurt@linutronix.de> <20210119155703.7064800d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Date:   Wed, 20 Jan 2021 08:18:15 +0100
+Message-ID: <87turc2i14.fsf@kurt>
 MIME-Version: 1.0
-In-Reply-To: <20210119150802.19997-14-rasmus.villemoes@prevas.dk>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: fr
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; boundary="=-=-=";
+        micalg=pgp-sha512; protocol="application/pgp-signature"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+--=-=-=
+Content-Type: text/plain
+Content-Transfer-Encoding: quoted-printable
 
+On Tue Jan 19 2021, Jakub Kicinski wrote:
+> On Sat, 16 Jan 2021 13:49:22 +0100 Kurt Kanzenbach wrote:
+>> +	if (base_time_ns - current_ns < (s64)8 * NSEC_PER_SEC)
+>> +		return true;
+>> +
+>> +	return false;
+>
+> nit:
+> 	return base_time_ns - current_ns < (s64)8 * NSEC_PER_SEC;
 
-Le 19/01/2021 à 16:07, Rasmus Villemoes a écrit :
-> The bd_mem_part member of ucc_geth_info always has the value
-> MEM_PART_SYSTEM, and AFAICT, there has never been any code setting it
-> to any other value. Moreover, muram is a somewhat precious resource,
-> so there's no point using that when normal memory serves just as well.
-> 
-> Apart from removing a lot of dead code, this is also motivated by
-> wanting to clean up the "store result from kmalloc() in a u32" mess.
-> 
-> Signed-off-by: Rasmus Villemoes <rasmus.villemoes@prevas.dk>
-> ---
->   drivers/net/ethernet/freescale/ucc_geth.c | 108 ++++++----------------
->   include/soc/fsl/qe/qe.h                   |   6 --
->   include/soc/fsl/qe/ucc_fast.h             |   1 -
->   3 files changed, 29 insertions(+), 86 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/freescale/ucc_geth.c b/drivers/net/ethernet/freescale/ucc_geth.c
-> index 2369a5ede680..1e9d2f3f47a3 100644
-> --- a/drivers/net/ethernet/freescale/ucc_geth.c
-> +++ b/drivers/net/ethernet/freescale/ucc_geth.c
-> @@ -72,7 +72,6 @@ MODULE_PARM_DESC(debug, "Debug verbosity level (0=none, ..., 0xffff=all)");
->   
->   static const struct ucc_geth_info ugeth_primary_info = {
->   	.uf_info = {
-> -		    .bd_mem_part = MEM_PART_SYSTEM,
->   		    .rtsm = UCC_FAST_SEND_IDLES_BETWEEN_FRAMES,
->   		    .max_rx_buf_length = 1536,
->   		    /* adjusted at startup if max-speed 1000 */
-> @@ -1854,12 +1853,7 @@ static void ucc_geth_free_rx(struct ucc_geth_private *ugeth)
->   
->   			kfree(ugeth->rx_skbuff[i]);
->   
-> -			if (ugeth->ug_info->uf_info.bd_mem_part ==
-> -			    MEM_PART_SYSTEM)
-> -				kfree((void *)ugeth->rx_bd_ring_offset[i]);
-> -			else if (ugeth->ug_info->uf_info.bd_mem_part ==
-> -				 MEM_PART_MURAM)
-> -				qe_muram_free(ugeth->rx_bd_ring_offset[i]);
-> +			kfree((void *)ugeth->rx_bd_ring_offset[i]);
->   			ugeth->p_rx_bd_ring[i] = NULL;
->   		}
->   	}
-> @@ -1897,12 +1891,7 @@ static void ucc_geth_free_tx(struct ucc_geth_private *ugeth)
->   		kfree(ugeth->tx_skbuff[i]);
->   
->   		if (ugeth->p_tx_bd_ring[i]) {
-> -			if (ugeth->ug_info->uf_info.bd_mem_part ==
-> -			    MEM_PART_SYSTEM)
-> -				kfree((void *)ugeth->tx_bd_ring_offset[i]);
-> -			else if (ugeth->ug_info->uf_info.bd_mem_part ==
-> -				 MEM_PART_MURAM)
-> -				qe_muram_free(ugeth->tx_bd_ring_offset[i]);
-> +			kfree((void *)ugeth->tx_bd_ring_offset[i]);
->   			ugeth->p_tx_bd_ring[i] = NULL;
->   		}
->   	}
-> @@ -2060,13 +2049,6 @@ static int ucc_struct_init(struct ucc_geth_private *ugeth)
->   	ug_info = ugeth->ug_info;
->   	uf_info = &ug_info->uf_info;
->   
-> -	if (!((uf_info->bd_mem_part == MEM_PART_SYSTEM) ||
-> -	      (uf_info->bd_mem_part == MEM_PART_MURAM))) {
-> -		if (netif_msg_probe(ugeth))
-> -			pr_err("Bad memory partition value\n");
-> -		return -EINVAL;
-> -	}
-> -
->   	/* Rx BD lengths */
->   	for (i = 0; i < ug_info->numQueuesRx; i++) {
->   		if ((ug_info->bdRingLenRx[i] < UCC_GETH_RX_BD_RING_SIZE_MIN) ||
-> @@ -2186,6 +2168,8 @@ static int ucc_geth_alloc_tx(struct ucc_geth_private *ugeth)
->   
->   	/* Allocate Tx bds */
->   	for (j = 0; j < ug_info->numQueuesTx; j++) {
-> +		u32 align = UCC_GETH_TX_BD_RING_ALIGNMENT;
-> +
->   		/* Allocate in multiple of
->   		   UCC_GETH_TX_BD_RING_SIZE_MEMORY_ALIGNMENT,
->   		   according to spec */
-> @@ -2195,25 +2179,15 @@ static int ucc_geth_alloc_tx(struct ucc_geth_private *ugeth)
->   		if ((ug_info->bdRingLenTx[j] * sizeof(struct qe_bd)) %
->   		    UCC_GETH_TX_BD_RING_SIZE_MEMORY_ALIGNMENT)
->   			length += UCC_GETH_TX_BD_RING_SIZE_MEMORY_ALIGNMENT;
-> -		if (uf_info->bd_mem_part == MEM_PART_SYSTEM) {
-> -			u32 align = UCC_GETH_TX_BD_RING_ALIGNMENT;
-> -
-> -			ugeth->tx_bd_ring_offset[j] =
-> -				(u32) kmalloc((u32) (length + align), GFP_KERNEL);
-> -
-> -			if (ugeth->tx_bd_ring_offset[j] != 0)
-> -				ugeth->p_tx_bd_ring[j] =
-> -					(u8 __iomem *)((ugeth->tx_bd_ring_offset[j] +
-> -					align) & ~(align - 1));
-> -		} else if (uf_info->bd_mem_part == MEM_PART_MURAM) {
-> -			ugeth->tx_bd_ring_offset[j] =
-> -			    qe_muram_alloc(length,
-> -					   UCC_GETH_TX_BD_RING_ALIGNMENT);
-> -			if (!IS_ERR_VALUE(ugeth->tx_bd_ring_offset[j]))
-> -				ugeth->p_tx_bd_ring[j] =
-> -				    (u8 __iomem *) qe_muram_addr(ugeth->
-> -							 tx_bd_ring_offset[j]);
-> -		}
-> +
-> +		ugeth->tx_bd_ring_offset[j] =
-> +			(u32) kmalloc((u32) (length + align), GFP_KERNEL);
+Sure.
 
-Can't this fit on a single ? Nowadays, max allowed line length is 100 chars.
+>> +	/* Schedule periodic schedule check */
+>> +	schedule_delayed_work(&hellcreek_port->schedule_work,
+>> +			      HELLCREEK_SCHEDULE_PERIOD);
+>
+> Why schedule this work every 2 seconds rather than scheduling it
+> $start_time - 8 sec + epsilon?
 
-> +
-> +		if (ugeth->tx_bd_ring_offset[j] != 0)
-> +			ugeth->p_tx_bd_ring[j] =
-> +				(u8 __iomem *)((ugeth->tx_bd_ring_offset[j] +
-> +						align) & ~(align - 1));
+The two seconds are taken from the programming guide. That's why I used
+it.
 
-Can we get the above fit on only 2 lines ?
+The PTP frequency starts to matter for large deltas. In theory the
+rescheduling period can be increased [1]. Should I adjust it?=20
 
-> +
->   		if (!ugeth->p_tx_bd_ring[j]) {
->   			if (netif_msg_ifup(ugeth))
->   				pr_err("Can not allocate memory for Tx bd rings\n");
-> @@ -2271,25 +2245,16 @@ static int ucc_geth_alloc_rx(struct ucc_geth_private *ugeth)
->   
->   	/* Allocate Rx bds */
->   	for (j = 0; j < ug_info->numQueuesRx; j++) {
-> +		u32 align = UCC_GETH_RX_BD_RING_ALIGNMENT;
-> +
->   		length = ug_info->bdRingLenRx[j] * sizeof(struct qe_bd);
-> -		if (uf_info->bd_mem_part == MEM_PART_SYSTEM) {
-> -			u32 align = UCC_GETH_RX_BD_RING_ALIGNMENT;
-> -
-> -			ugeth->rx_bd_ring_offset[j] =
-> -				(u32) kmalloc((u32) (length + align), GFP_KERNEL);
-> -			if (ugeth->rx_bd_ring_offset[j] != 0)
-> -				ugeth->p_rx_bd_ring[j] =
-> -					(u8 __iomem *)((ugeth->rx_bd_ring_offset[j] +
-> -					align) & ~(align - 1));
-> -		} else if (uf_info->bd_mem_part == MEM_PART_MURAM) {
-> -			ugeth->rx_bd_ring_offset[j] =
-> -			    qe_muram_alloc(length,
-> -					   UCC_GETH_RX_BD_RING_ALIGNMENT);
-> -			if (!IS_ERR_VALUE(ugeth->rx_bd_ring_offset[j]))
-> -				ugeth->p_rx_bd_ring[j] =
-> -				    (u8 __iomem *) qe_muram_addr(ugeth->
-> -							 rx_bd_ring_offset[j]);
-> -		}
-> +		ugeth->rx_bd_ring_offset[j] =
-> +			(u32) kmalloc((u32) (length + align), GFP_KERNEL);
+>
+>> +static bool hellcreek_validate_schedule(struct hellcreek *hellcreek,
+>> +					struct tc_taprio_qopt_offload *schedule)
+>> +{
+>> +	/* Does this hellcreek version support Qbv in hardware? */
+>> +	if (!hellcreek->pdata->qbv_support)
+>> +		return false;
+>> +
+>> +	/* cycle time can only be 32bit */
+>> +	if (schedule->cycle_time > (u32)-1)
+>> +		return false;
+>> +
+>> +	/* cycle time extension is not supported */
+>> +	if (schedule->cycle_time_extension)
+>> +		return false;
+>
+> What's the story with entries[i].command? I see most drivers validate
+> the command is what they expect.
+>
 
-Same.
+Good catch! I'll add the validation.
 
-> +		if (ugeth->rx_bd_ring_offset[j] != 0)
-> +			ugeth->p_rx_bd_ring[j] =
-> +				(u8 __iomem *)((ugeth->rx_bd_ring_offset[j] +
-> +						align) & ~(align - 1));
+Thanks,
+Kurt
 
-Same.
+[1] - https://lkml.kernel.org/netdev/20200901144755.jd2wnmweywwvkwvl@skbuf/
 
-> +
->   		if (!ugeth->p_rx_bd_ring[j]) {
->   			if (netif_msg_ifup(ugeth))
->   				pr_err("Can not allocate memory for Rx bd rings\n");
-> @@ -2554,20 +2519,11 @@ static int ucc_geth_startup(struct ucc_geth_private *ugeth)
->   		endOfRing =
->   		    ugeth->p_tx_bd_ring[i] + (ug_info->bdRingLenTx[i] -
->   					      1) * sizeof(struct qe_bd);
-> -		if (ugeth->ug_info->uf_info.bd_mem_part == MEM_PART_SYSTEM) {
-> -			out_be32(&ugeth->p_send_q_mem_reg->sqqd[i].bd_ring_base,
-> -				 (u32) virt_to_phys(ugeth->p_tx_bd_ring[i]));
-> -			out_be32(&ugeth->p_send_q_mem_reg->sqqd[i].
-> -				 last_bd_completed_address,
-> -				 (u32) virt_to_phys(endOfRing));
-> -		} else if (ugeth->ug_info->uf_info.bd_mem_part ==
-> -			   MEM_PART_MURAM) {
-> -			out_be32(&ugeth->p_send_q_mem_reg->sqqd[i].bd_ring_base,
-> -				 (u32)qe_muram_dma(ugeth->p_tx_bd_ring[i]));
-> -			out_be32(&ugeth->p_send_q_mem_reg->sqqd[i].
-> -				 last_bd_completed_address,
-> -				 (u32)qe_muram_dma(endOfRing));
-> -		}
-> +		out_be32(&ugeth->p_send_q_mem_reg->sqqd[i].bd_ring_base,
-> +			 (u32) virt_to_phys(ugeth->p_tx_bd_ring[i]));
-> +		out_be32(&ugeth->p_send_q_mem_reg->sqqd[i].
-> +			 last_bd_completed_address,
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Same.
+-----BEGIN PGP SIGNATURE-----
 
-
-> +			 (u32) virt_to_phys(endOfRing));
->   	}
->   
->   	/* schedulerbasepointer */
-> @@ -2786,14 +2742,8 @@ static int ucc_geth_startup(struct ucc_geth_private *ugeth)
->   	/* Setup the table */
->   	/* Assume BD rings are already established */
->   	for (i = 0; i < ug_info->numQueuesRx; i++) {
-> -		if (ugeth->ug_info->uf_info.bd_mem_part == MEM_PART_SYSTEM) {
-> -			out_be32(&ugeth->p_rx_bd_qs_tbl[i].externalbdbaseptr,
-> -				 (u32) virt_to_phys(ugeth->p_rx_bd_ring[i]));
-> -		} else if (ugeth->ug_info->uf_info.bd_mem_part ==
-> -			   MEM_PART_MURAM) {
-> -			out_be32(&ugeth->p_rx_bd_qs_tbl[i].externalbdbaseptr,
-> -				 (u32)qe_muram_dma(ugeth->p_rx_bd_ring[i]));
-> -		}
-> +		out_be32(&ugeth->p_rx_bd_qs_tbl[i].externalbdbaseptr,
-> +			 (u32) virt_to_phys(ugeth->p_rx_bd_ring[i]));
->   		/* rest of fields handled by QE */
->   	}
->   
-> diff --git a/include/soc/fsl/qe/qe.h b/include/soc/fsl/qe/qe.h
-> index 66f1afc393d1..4925a1b59dc9 100644
-> --- a/include/soc/fsl/qe/qe.h
-> +++ b/include/soc/fsl/qe/qe.h
-> @@ -27,12 +27,6 @@
->   #define QE_NUM_OF_BRGS	16
->   #define QE_NUM_OF_PORTS	1024
->   
-> -/* Memory partitions
-> -*/
-> -#define MEM_PART_SYSTEM		0
-> -#define MEM_PART_SECONDARY	1
-> -#define MEM_PART_MURAM		2
-> -
->   /* Clocks and BRGs */
->   enum qe_clock {
->   	QE_CLK_NONE = 0,
-> diff --git a/include/soc/fsl/qe/ucc_fast.h b/include/soc/fsl/qe/ucc_fast.h
-> index dc4e79468094..9696a5b9b5d1 100644
-> --- a/include/soc/fsl/qe/ucc_fast.h
-> +++ b/include/soc/fsl/qe/ucc_fast.h
-> @@ -146,7 +146,6 @@ struct ucc_fast_info {
->   	resource_size_t regs;
->   	int irq;
->   	u32 uccm_mask;
-> -	int bd_mem_part;
->   	int brkpt_support;
->   	int grant_support;
->   	int tsa;
-> 
+iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAmAH2TcACgkQeSpbgcuY
+8Ka2aQ/+Ni7jwyEmoJ80/b/+hehBXkvi6ucX8hR/hfheAP5B6J2FRs6UqrTAEwDZ
+4paVsQss5KlLjod3qeZ3xJET96ckHl0gIzajDdDMkFgGQbDWeRKp6p+tJALyz5Rp
+ALJeWdDVivYL65gjm0cy+ohgbw1+t95nmofr9yn4q9SuisI8+vpJo/10zjbkIz2L
+t2xNgdL9j289uqRxHRnFA28mQFa1CCTZCCkSEqIQacPI82Iq3i0wPQfYChCoxJOE
+o5M9fyrvkEvujUvwGpbpGGa7ykP356rbHXakUwmgt1jGs0hh2KyME2xq1JBnJPKU
+nDDlgCSz0UZtcs9xDGYmupSOlZhSrxTdqFf7P2udiYCQJLyV/922/mmkI0Cuuc7h
+6CQfvhGLLNT6dundotX4yEXDqbrm/rmI0jh5KECSXmhdHpbKl3HXVdxiyEfPn6VR
+y4hOsXhzIsWeQxUBQ1g3FM+2rKtmJEQJCdC76NWazvaVPNPZLVh93sCeazbmS7YI
+/r399OyBAZX340bVYXpYC7FnyAXS90p6VnuqCGpNNK12k9VPrtSgHS9xSQ8wC1kC
+GeC8vE6oNOJDEb39FgyE8tkK5feaHCNkPOf2llOoELAoHA5/1QjiUIzSeir5dmZn
+nbadn3bZH8MRKUOpkC7XqQuFF+KB6z9sFWgriiOv2jao4l7ppxQ=
+=gQNg
+-----END PGP SIGNATURE-----
+--=-=-=--
