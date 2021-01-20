@@ -2,183 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 395512FDBD1
+	by mail.lfdr.de (Postfix) with ESMTP id A5C622FDBD2
 	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 22:27:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732704AbhATVKr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jan 2021 16:10:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53408 "EHLO
+        id S2387457AbhATVK7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jan 2021 16:10:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2436715AbhATVEh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 16:04:37 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECC2EC0613C1
-        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 13:03:56 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1l2Kds-0007dO-1t; Wed, 20 Jan 2021 22:03:52 +0100
-Received: from [IPv6:2a03:f580:87bc:d400:8b6a:ccbc:bf87:f822] (unknown [IPv6:2a03:f580:87bc:d400:8b6a:ccbc:bf87:f822])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
-         client-signature RSA-PSS (4096 bits))
-        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
-        (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 93EB65C91CE;
-        Wed, 20 Jan 2021 21:03:50 +0000 (UTC)
-Subject: Re: pull-request: can 2021-01-20
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kernel@pengutronix.de,
-        linux-can@vger.kernel.org
-References: <20210120125202.2187358-1-mkl@pengutronix.de>
- <20210120091955.54a52e09@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <410e7552-a6bd-d48c-6530-e4b5154687d2@pengutronix.de>
- <20210120123600.3e2a4356@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
- 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
-Message-ID: <8dd62cce-7cdc-705c-4fcf-d6c383e82f39@pengutronix.de>
-Date:   Wed, 20 Jan 2021 22:03:47 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        with ESMTP id S1729280AbhATVHO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 16:07:14 -0500
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2A43C061575;
+        Wed, 20 Jan 2021 13:06:33 -0800 (PST)
+Received: by mail-lf1-x131.google.com with SMTP id o19so36066392lfo.1;
+        Wed, 20 Jan 2021 13:06:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=bD0Y2/R9ILpESAFdsBEs4WGwWlwfFTXpzZ+PoX1/gaA=;
+        b=s7hwLd/8t0d+W5hiqnmCy3pBNiytoBhaptMNf0qmjq3rTfoTkjbJ3t+dIrHji26XSV
+         IetAugs+aV5iIwODDEC/p9tZBWXj0a239Lqi/Yp1F3X/isXfXsKZLP2DeHlYNJyhpKqj
+         4PvLhrtmU7Jp/nuy5agwmRTg0D13gXE3XN1LljyZVLXjIf1qzk/AeVOq6qd6tzmSCDXP
+         jrzzy8rfwI0Q1Ieq8+4tOVQOnq63VPj7ohG+ua+CIFp3ak/ERFk8lkplK7V/h7p47J7J
+         lO9rtka3QBd2ty80ZFcll7bwGV2PO+1A0SnswBvkRauwsnWghziwTxReP3059nRRvUSu
+         RP1A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=bD0Y2/R9ILpESAFdsBEs4WGwWlwfFTXpzZ+PoX1/gaA=;
+        b=k4n1GzyIDeYl84IWCGl7pbAB2NSAS2N8KQE47E0082upgR3vj9gQ8+iiuoexdiWC2a
+         pfap92KbGkB8hV4vhSmT9mjl/VLvLMSt3Xe34ONsCmLYf0Y4DNlAGyP/UIFbXqWqSCs0
+         hI6XO9avcdyEVylwBymrVV3Q9P4difmi/B6MOhTVyKVZaU/GDUVQUt86Ur5wmvxesty8
+         97XNxf6/VwPNZChA+qpCLh4rR+lOwoinXio2farDKvHbfJIyhgWKYR7fkyDztazmesj/
+         ao4E/AfWPFYnOMrM05oDp9SnP270iePSRRgXt5LPkPl0ngUnhwup+/T17pa1j2iQtVqD
+         B7Lg==
+X-Gm-Message-State: AOAM531PC8OUbYGMY5CBTwqfgqTnn1H89+X3RLGjv5eE0dLT8bM2AapO
+        KChaqQhJihw6lXaIl8XTfu9dOlZ+ZwwhpngyCCxdDYZP
+X-Google-Smtp-Source: ABdhPJyjAKnCebQ1r+HQXfjxSLhMk7pLVtTkwnbB1FyFFj9ExhPUPzWIenr6O/zz7eo299M7bOGbNStpIuAVgoYnzPA=
+X-Received: by 2002:a19:8447:: with SMTP id g68mr3228482lfd.539.1611176792193;
+ Wed, 20 Jan 2021 13:06:32 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20210120123600.3e2a4356@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="YBos5LFNIYhMw4nceNRLxz3hTgPzhjvTy"
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+References: <afb4e544-d081-eee8-e792-a480364a6572@mildred.fr>
+In-Reply-To: <afb4e544-d081-eee8-e792-a480364a6572@mildred.fr>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Wed, 20 Jan 2021 13:06:21 -0800
+Message-ID: <CAADnVQJnX-+9u--px_VnhrMTPB=O9Y0LH9T7RJbqzfLchbUFvg@mail.gmail.com>
+Subject: Re: More flexible BPF socket inet_lookup hooking after listening
+ sockets are dispatched
+To:     =?UTF-8?Q?Shanti_Lombard_n=C3=A9e_Bouchez=2DMongard=C3=A9?= 
+        <shanti20210120@mildred.fr>
+Cc:     bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Martin KaFai Lau <kafai@fb.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---YBos5LFNIYhMw4nceNRLxz3hTgPzhjvTy
-Content-Type: multipart/mixed; boundary="BhlgznWyS9bcuTJmflVBWcuD5FgGIR99t";
- protected-headers="v1"
-From: Marc Kleine-Budde <mkl@pengutronix.de>
-To: Jakub Kicinski <kuba@kernel.org>
-Cc: netdev@vger.kernel.org, davem@davemloft.net, kernel@pengutronix.de,
- linux-can@vger.kernel.org
-Message-ID: <8dd62cce-7cdc-705c-4fcf-d6c383e82f39@pengutronix.de>
-Subject: Re: pull-request: can 2021-01-20
-References: <20210120125202.2187358-1-mkl@pengutronix.de>
- <20210120091955.54a52e09@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <410e7552-a6bd-d48c-6530-e4b5154687d2@pengutronix.de>
- <20210120123600.3e2a4356@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210120123600.3e2a4356@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+cc-ing the right folks
 
---BhlgznWyS9bcuTJmflVBWcuD5FgGIR99t
-Content-Type: text/plain; charset=utf-8
-Content-Language: de-DE
-Content-Transfer-Encoding: quoted-printable
-
-On 1/20/21 9:36 PM, Jakub Kicinski wrote:
->>>> Note: Patch 1/3 touches "drivers/net/can/dev.c". In net-next/master =
-this file
->>>> has been moved to drivers/net/can/dev/dev.c [1] and parts of it have=
- been
->>>> transfered into separate files. This may result in a merge conflict.=
- Please
->>>> carry this patch forward, the change is rather simple. Drop us a not=
-e if
->>>> needed. Are any actions needed with regards to linux-next? =20
->>>
->>> Thanks for the note, I'm sending the PR to Linus now, so I think
->>> linux-next may never see the the conflict. =20
->=20
-> The merge has been done now, could you double check?
-
-Looks good!
-
-Thanks,
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
-
---BhlgznWyS9bcuTJmflVBWcuD5FgGIR99t--
-
---YBos5LFNIYhMw4nceNRLxz3hTgPzhjvTy
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmAImrMACgkQqclaivrt
-76leWwf+K2zhcKL+z2tkqBtZ1zzWbypB0sP3332CHWsDlKb/tC4lKmXkpMVWT0ca
-LvtPRacfAEW3EX8Qxs5iGfORJuwstPivWUgOT3LUyF/wCAGAj+viHPNFAAc1Sha0
-tqeVn4R8iaW1CKCStWKhW9Y89Vorzl42YN1F2NvGE1Mx/KkVmZFvx33XzX011RGx
-6aYq+F2q612AXxxzPl9DUmPLTPCRntHteiUOz6DUyo2NJLcadmZanmPhU3IZV/Yh
-FjOfJr4Dzb8qGw+raHXcNk0s5AcLrAdu6ayKgZpa0EAJ/xwRSCcHQxVX58+YbL27
-rh7QUv4DnrotevN+9xPO7RUp2d9uiA==
-=7++5
------END PGP SIGNATURE-----
-
---YBos5LFNIYhMw4nceNRLxz3hTgPzhjvTy--
+On Wed, Jan 20, 2021 at 12:30 PM Shanti Lombard n=C3=A9e Bouchez-Mongard=C3=
+=A9
+<shanti20210120@mildred.fr> wrote:
+>
+> Hello,
+>
+> I believe this is my first time here, so please excuse me for mistakes.
+> Also, please Cc me on answers.
+>
+> Background : I am currently investigating putting network services on a
+> machine without using network namespace but still keep them isolated. To
+> do that, I allocated a separate IP address (127.0.0.0/8 for IPv4 and ULA
+> prefix below fd00::/8 for IPv6) and those services are forced to listen
+> to this IP address only. For some, I use seccomp with a small utility I
+> wrote at <https://github.com/mildred/force-bind-seccomp>. Now, I still
+> want a few selected services (reverse proxies) to listed for public
+> address but they can't necessarily listen with INADDR_ANY because some
+> other services might listen on the same port on their private IP. It
+> seems SO_REUSEADDR can be used to circumvent this on BSD but not on
+> Linux. After much research, I found Cloudflare recent contribution
+> (explained here <https://blog.cloudflare.com/its-crowded-in-here/>)
+> about inet_lookup BPF programs that could replace INADDR_ANY listening.
+>
+> The inet_lookup BPF programs are hooking up in socket selection code for
+> incoming packets after connected packets are dispatched to their
+> respective sockets but before any new connection is dispatched to a
+> listening socket. This is well explained in the blog post.
+>
+> However, I believe that being able to hook up later in the process could
+> have great use cases. With its current position, the BPF program can
+> override any listening socket too easily. It can also be surprising for
+> administrators used to the socket API not understanding why their
+> listening socket does not receives any packet.
+>
+> Socket selection process (in net/ipv4/inet_hashtables.c function
+> __inet_lookup_listener):
+>
+> - A: look for already connected sockets (before __inet_lookup_listener)
+> - B: look for inet_lookup BPF programs
+> - C: look for listening sockets specifying address and port
+> - D: here, provide another inet_lookup BPF hook
+> - E: look for sockets listening using INADDR_ANY
+> - F: here, provide another inet_lookup BPF hook
+>
+> In position D, a BPF program could implement socket listening like
+> INADDR_ANY listening would do but without the limitation that the port
+> must not be listened on by another IP address
+>
+> In position F, a BPF program could redirect new connection attempts to a
+> socket of its choice, allowing any connection attempt to be intercepted
+> if not catched before by an already listening socket.
+>
+> The suggestion above would work for my use case, but there is another
+> possibility to make the same use cases possible : implement in BPF (or
+> allow BPF to call) the C and E steps above so the BPF program can
+> supplant the kernel behavior. I find this solution less elegant and it
+> might not work well in case there are multiple inet_lookup BPF programs
+> installed.
+>
+> With this e-mail I wanted to spawn a discussion around that and possibly
+> take on the implementation. I never did any kernel development before
+> but you must start by something, and I believe this is a rather simple
+> improvement (duplicate already existing hooking, just a little bit lower
+> in the function). I might not be able to deliver this very quickly
+> either because I have limited time for this and I need to learn kernel
+> development but I'm ready to take on this task.
+>
+> Thank you for your time
+>
+> Shanti
+>
+>
