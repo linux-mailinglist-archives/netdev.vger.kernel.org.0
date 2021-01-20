@@ -2,39 +2,36 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CA0F22FD69D
-	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 18:15:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 245D72FD6D2
+	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 18:22:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391002AbhATRM4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jan 2021 12:12:56 -0500
-Received: from mail.kernel.org ([198.145.29.99]:59636 "EHLO mail.kernel.org"
+        id S2404114AbhATRVP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jan 2021 12:21:15 -0500
+Received: from mail.kernel.org ([198.145.29.99]:33762 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2391806AbhATRKH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 20 Jan 2021 12:10:07 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 86CBE2242A;
-        Wed, 20 Jan 2021 17:09:26 +0000 (UTC)
+        id S2390947AbhATRUi (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 20 Jan 2021 12:20:38 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 0D05822CE3;
+        Wed, 20 Jan 2021 17:19:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611162566;
-        bh=26/MeIDWZppPspshO91YBEvUcO5p41dFfZ13wYEOjqg=;
+        s=k20201202; t=1611163196;
+        bh=f9NjFTR2vJgUfpqeCtF+sXxDu7N4LTV5PQEfjR1od4Y=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=a8naZ8F3OQ2QoBkIx84tQFWaxx36APOYxnPKAOr1xV47uDLoo+AgyD1fpxtTa52Tv
-         ZZDUqYPC0Af+KaR7hUYfDd9xKnljHqRzbaW+Gz5SozDNTlo1gB6rPHC+4/D7EvBaxM
-         GN5QitubveIk3ePjFH6+d0J5Ep+hbd3Ckd7p6xsylN9AN99iyTXwBXZXp2hsgEwVLE
-         Es//oH9OmHEN04CzZu++gmLGU/ggC0IZFGy6VBStTcgY/mi/O6HsFEsAq25ueT74/I
-         LaANloLGPnVANJzqm3YcrJAX0t/3PtE8BcjkkiK7+YgujW6p/kNHk6Ze9D4EEXvvxm
-         wkUUgxX2euWcQ==
-Date:   Wed, 20 Jan 2021 09:09:25 -0800
+        b=Xkl/AwNYXYuEEaNYRJHeeZ9Ssl60aEZCMol7iRmgu2XKxN40uXHGVSgyqnEMRWzrI
+         TslyLawgLPhLKxKpXTbX+xUQ97y266JEtdRtcAv/uwTAEwlgqHKTmIkcCmxK4FSjce
+         lRJMGefeo/8wqkj2hs2ITJ68k3sTaH2qkBEufDh4oKHejkFO3Hn772mjsY+DYfR69/
+         bpTJlG/PDJVai72tqGeblqO0rg/GY/B2S9vAje4JTz5dnvKLEw/c1AbGhnl7bOVBnY
+         yYjshtFMhdyi/AmlooQXfRsc9yQXuKHmSGtSsdSe22yhlTRptGwDdLpzG0FBiPYSkH
+         lzoyZkZtm+RJw==
+Date:   Wed, 20 Jan 2021 09:19:55 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Pan Bian <bianpan2016@163.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        bcm-kernel-feedback-list@broadcom.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] net: systemport: free dev before on error path
-Message-ID: <20210120090925.69b3347b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <c291aebe-4cb4-9fe7-0635-5b518d92c311@gmail.com>
-References: <20210120044423.1704-1-bianpan2016@163.com>
-        <c291aebe-4cb4-9fe7-0635-5b518d92c311@gmail.com>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net,
+        linux-can@vger.kernel.org, kernel@pengutronix.de
+Subject: Re: pull-request: can 2021-01-20
+Message-ID: <20210120091955.54a52e09@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210120125202.2187358-1-mkl@pengutronix.de>
+References: <20210120125202.2187358-1-mkl@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -42,18 +39,26 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 19 Jan 2021 21:07:10 -0800 Florian Fainelli wrote:
-> On 1/19/2021 8:44 PM, Pan Bian wrote:
-> > On the error path, it should goto the error handling label to free
-> > allocated memory rather than directly return.
-> > 
-> > Fixes: 6328a126896e ("net: systemport: Manage Wake-on-LAN clock")
-> > Signed-off-by: Pan Bian <bianpan2016@163.com>  
+On Wed, 20 Jan 2021 13:51:59 +0100 Marc Kleine-Budde wrote:
+> Hello Jakub, hello David,
 > 
-> The change is correct, but not the Fixes tag, it should be:
+> this is a pull request of 3 patches for net/master.
 > 
-> Fixes: 31bc72d97656 ("net: systemport: fetch and use clock resources")
-> 
-> Acked-by: Florian Fainelli <f.fainelli@gmail.com>
+> All three patches are by Vincent Mailhol and fix a potential use after free bug
+> in the CAN device infrastructure, the vxcan driver, and the peak_usk driver. In
+> the TX-path the skb is used to read from after it was passed to the networking
+> stack with netif_rx_ni().
 
-Applied, thank you!
+Pulled, thanks.
+
+Seems like the PR didn't show up in patchwork at all :S Hopefully I can
+still pull reight manually without the scripts :)
+
+> Note: Patch 1/3 touches "drivers/net/can/dev.c". In net-next/master this file
+> has been moved to drivers/net/can/dev/dev.c [1] and parts of it have been
+> transfered into separate files. This may result in a merge conflict. Please
+> carry this patch forward, the change is rather simple. Drop us a note if
+> needed. Are any actions needed with regards to linux-next?
+
+Thanks for the note, I'm sending the PR to Linus now, so I think
+linux-next may never see the the conflict.
