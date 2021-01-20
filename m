@@ -2,29 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4EFC82FCEF1
+	by mail.lfdr.de (Postfix) with ESMTP id BC3ED2FCEF2
 	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 12:20:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388974AbhATLO3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jan 2021 06:14:29 -0500
-Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:18101 "EHLO
+        id S1729910AbhATLOi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jan 2021 06:14:38 -0500
+Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:18106 "EHLO
         hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731544AbhATJil (ORCPT
+        with ESMTP id S1731546AbhATJil (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 04:38:41 -0500
 Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B6007f9e40000>; Wed, 20 Jan 2021 01:37:40 -0800
+        id <B6007f9e60000>; Wed, 20 Jan 2021 01:37:43 -0800
 Received: from dev-r-vrt-156.mtr.labs.mlnx (172.20.145.6) by
  HQMAIL107.nvidia.com (172.20.187.13) with Microsoft SMTP Server (TLS) id
- 15.0.1473.3; Wed, 20 Jan 2021 09:37:37 +0000
+ 15.0.1473.3; Wed, 20 Jan 2021 09:37:40 +0000
 From:   Danielle Ratson <danieller@nvidia.com>
 To:     <netdev@vger.kernel.org>
 CC:     <davem@davemloft.net>, <kuba@kernel.org>, <jiri@nvidia.com>,
         <andrew@lunn.ch>, <f.fainelli@gmail.com>, <mkubecek@suse.cz>,
         <mlxsw@nvidia.com>, <idosch@nvidia.com>,
         Danielle Ratson <danieller@nvidia.com>
-Subject: [PATCH net-next v3 4/7] mlxsw: ethtool: Remove max lanes filtering
-Date:   Wed, 20 Jan 2021 11:37:10 +0200
-Message-ID: <20210120093713.4000363-5-danieller@nvidia.com>
+Subject: [PATCH net-next v3 5/7] mlxsw: ethtool: Add support for setting lanes when autoneg is off
+Date:   Wed, 20 Jan 2021 11:37:11 +0200
+Message-ID: <20210120093713.4000363-6-danieller@nvidia.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20210120093713.4000363-1-danieller@nvidia.com>
 References: <20210120093713.4000363-1-danieller@nvidia.com>
@@ -35,195 +35,357 @@ X-Originating-IP: [172.20.145.6]
 X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
  HQMAIL107.nvidia.com (172.20.187.13)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1611135460; bh=L57M6JieDqsPW1h6jc90uuqXy7tgZ6ZwimGLR5QYdi8=;
+        t=1611135463; bh=Qyox3gLn/ZbtJH3LHOCo2sfTpKM8HOFc2rflD0zYQLE=;
         h=From:To:CC:Subject:Date:Message-ID:X-Mailer:In-Reply-To:
          References:MIME-Version:Content-Transfer-Encoding:Content-Type:
          X-Originating-IP:X-ClientProxiedBy;
-        b=SsnFJJeawgH3372Em71fUt4ZMF3l8IdifV6Yj/WXcEhUvpVxm/xT3gPM2HqhUvdTo
-         /F+tMxb2csnKEr5OmNcfGJG/K1ofNoU7jGNabacODFhfPCsNy46vbhefeKW5NwSYNp
-         f6DmS8vTx8aItyWplnymXp+naqBtmplHvOeWtx+QUrhqEjDkfO4OrXmYDp2VxMNT+q
-         m5xHx9nqGjSPKZ1wjM8n4pJg9JcqqFRWaEs5ZHqxqPMNrhCV7i2K/aUoXtchwPzRHm
-         tp1c05Ycu8d8j5otGjOflwEFobqUS4z6TruqpFet0/rUbgQQmizGQiX1ObyfC52RlK
-         pJRTjA19jVhWg==
+        b=neDCiAONJQTGNx1hA7tHf9uCpnWaBhLiPzH8JlYLlEF/CeAEfAAYuSCFY0boWJ22L
+         mWjUvbajAxmZJQL+ghARwWIAWso/F2a4sKleAmGeNjr1N4jXqm6hgbOexqBfhzny4b
+         ntV00eei4cQFpLu/mTUl3nwJ7ztvCPzoV7bSP6UVj6q4xN0pw7Z5oLn8g69Q9FFXSK
+         ieCl5qg4OEluSPeJqJ6mtRS5x66C5F48nZwpz+yesg47zEc5iGH2MZE8svg4ACEywN
+         UnXFEKpYQzR1Y3QGWvrGnNKlHA4216B+fV2P0VxH0B85OxYvMbRI/UZuR1EwjO3T8s
+         ekqWmXC8fAXAA==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently, when a speed can be supported by different number of lanes,
-the supported link modes bitmask contains only link modes with a single
-number of lanes.
+Currently, when auto negotiation is set to off, the user can force a
+specific speed or both speed and duplex. The user cannot influence the
+number of lanes that will be forced.
 
-This was done in order to prevent auto negotiation on number of
-lanes after 50G-1-lane and 100G-2-lanes link modes were introduced.
+Add support for setting speed along with lanes so one would be able
+to choose how many lanes will be forced.
 
-For example, if a port's max width is 4, only link modes with 4 lanes
-will be presented as supported by that port, so 100G is always achieved by
-4 lanes of 25G.
-
-After the previous patches that allow selection of the number of lanes,
-auto negotiation on number of lanes becomes practical.
-
-Remove that filtering of the maximum number of lanes supported link modes,
-so indeed all the supported and advertised link modes will be shown.
+When lanes parameter is passed from user space, choose the link mode
+that its actual width equals to it.
+Otherwise, the default link mode will be the one that supports the width
+of the port.
 
 Signed-off-by: Danielle Ratson <danieller@nvidia.com>
-Reviewed-by: Jiri Pirko <jiri@nvidia.com>
-Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 ---
- .../net/ethernet/mellanox/mlxsw/spectrum.h    |  4 +--
- .../mellanox/mlxsw/spectrum_ethtool.c         | 33 ++++++++-----------
- 2 files changed, 15 insertions(+), 22 deletions(-)
+
+Notes:
+    v3:
+    	* Re-set the bitfield of supporting lanes in the driver to 'true'.
+   =20
+    v2:
+    	* Reword commit message.
+    	* Add an actual width field for Spectrum-2 link modes, and change
+    	  accordingly the conditions for choosing a link mode bit.
+
+ .../net/ethernet/mellanox/mlxsw/spectrum.h    |   3 +-
+ .../mellanox/mlxsw/spectrum_ethtool.c         | 116 ++++++++++++------
+ 2 files changed, 78 insertions(+), 41 deletions(-)
 
 diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h b/drivers/net/e=
 thernet/mellanox/mlxsw/spectrum.h
-index b1b593076a76..cc4aeb3cdd10 100644
+index cc4aeb3cdd10..0ad6b8a581d5 100644
 --- a/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
 +++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum.h
-@@ -329,13 +329,13 @@ struct mlxsw_sp_port_type_speed_ops {
- 					 u32 ptys_eth_proto,
- 					 struct ethtool_link_ksettings *cmd);
- 	void (*from_ptys_link)(struct mlxsw_sp *mlxsw_sp, u32 ptys_eth_proto,
--			       u8 width, unsigned long *mode);
-+			       unsigned long *mode);
- 	u32 (*from_ptys_speed)(struct mlxsw_sp *mlxsw_sp, u32 ptys_eth_proto);
- 	void (*from_ptys_speed_duplex)(struct mlxsw_sp *mlxsw_sp,
- 				       bool carrier_ok, u32 ptys_eth_proto,
- 				       struct ethtool_link_ksettings *cmd);
+@@ -337,7 +337,8 @@ struct mlxsw_sp_port_type_speed_ops {
  	int (*ptys_max_speed)(struct mlxsw_sp_port *mlxsw_sp_port, u32 *p_max_spe=
 ed);
--	u32 (*to_ptys_advert_link)(struct mlxsw_sp *mlxsw_sp, u8 width,
-+	u32 (*to_ptys_advert_link)(struct mlxsw_sp *mlxsw_sp,
+ 	u32 (*to_ptys_advert_link)(struct mlxsw_sp *mlxsw_sp,
  				   const struct ethtool_link_ksettings *cmd);
- 	u32 (*to_ptys_speed)(struct mlxsw_sp *mlxsw_sp, u8 width, u32 speed);
+-	u32 (*to_ptys_speed)(struct mlxsw_sp *mlxsw_sp, u8 width, u32 speed);
++	u32 (*to_ptys_speed_lanes)(struct mlxsw_sp *mlxsw_sp, u8 width,
++				   const struct ethtool_link_ksettings *cmd);
  	void (*reg_ptys_eth_pack)(struct mlxsw_sp *mlxsw_sp, char *payload,
+ 				  u8 local_port, u32 proto_admin, bool autoneg);
+ 	void (*reg_ptys_eth_unpack)(struct mlxsw_sp *mlxsw_sp, char *payload,
 diff --git a/drivers/net/ethernet/mellanox/mlxsw/spectrum_ethtool.c b/drive=
 rs/net/ethernet/mellanox/mlxsw/spectrum_ethtool.c
-index 41288144852d..aa13af0f33f0 100644
+index aa13af0f33f0..a3c006fb0fdf 100644
 --- a/drivers/net/ethernet/mellanox/mlxsw/spectrum_ethtool.c
 +++ b/drivers/net/ethernet/mellanox/mlxsw/spectrum_ethtool.c
-@@ -858,7 +858,7 @@ static int mlxsw_sp_port_get_sset_count(struct net_devi=
-ce *dev, int sset)
-=20
- static void
- mlxsw_sp_port_get_link_supported(struct mlxsw_sp *mlxsw_sp, u32 eth_proto_=
-cap,
--				 u8 width, struct ethtool_link_ksettings *cmd)
-+				 struct ethtool_link_ksettings *cmd)
- {
- 	const struct mlxsw_sp_port_type_speed_ops *ops;
-=20
-@@ -869,13 +869,13 @@ mlxsw_sp_port_get_link_supported(struct mlxsw_sp *mlx=
-sw_sp, u32 eth_proto_cap,
- 	ethtool_link_ksettings_add_link_mode(cmd, supported, Pause);
-=20
- 	ops->from_ptys_supported_port(mlxsw_sp, eth_proto_cap, cmd);
--	ops->from_ptys_link(mlxsw_sp, eth_proto_cap, width,
-+	ops->from_ptys_link(mlxsw_sp, eth_proto_cap,
- 			    cmd->link_modes.supported);
- }
-=20
- static void
- mlxsw_sp_port_get_link_advertise(struct mlxsw_sp *mlxsw_sp,
--				 u32 eth_proto_admin, bool autoneg, u8 width,
-+				 u32 eth_proto_admin, bool autoneg,
- 				 struct ethtool_link_ksettings *cmd)
- {
- 	const struct mlxsw_sp_port_type_speed_ops *ops;
-@@ -886,7 +886,7 @@ mlxsw_sp_port_get_link_advertise(struct mlxsw_sp *mlxsw=
-_sp,
- 		return;
-=20
- 	ethtool_link_ksettings_add_link_mode(cmd, advertising, Autoneg);
--	ops->from_ptys_link(mlxsw_sp, eth_proto_admin, width,
-+	ops->from_ptys_link(mlxsw_sp, eth_proto_admin,
- 			    cmd->link_modes.advertising);
- }
-=20
-@@ -960,11 +960,9 @@ static int mlxsw_sp_port_get_link_ksettings(struct net=
-_device *dev,
- 	ops =3D mlxsw_sp->port_type_speed_ops;
- 	autoneg =3D mlxsw_sp_port->link.autoneg;
-=20
--	mlxsw_sp_port_get_link_supported(mlxsw_sp, eth_proto_cap,
--					 mlxsw_sp_port->mapping.width, cmd);
-+	mlxsw_sp_port_get_link_supported(mlxsw_sp, eth_proto_cap, cmd);
-=20
--	mlxsw_sp_port_get_link_advertise(mlxsw_sp, eth_proto_admin, autoneg,
--					 mlxsw_sp_port->mapping.width, cmd);
-+	mlxsw_sp_port_get_link_advertise(mlxsw_sp, eth_proto_admin, autoneg, cmd)=
-;
-=20
- 	cmd->base.autoneg =3D autoneg ? AUTONEG_ENABLE : AUTONEG_DISABLE;
- 	cmd->base.port =3D mlxsw_sp_port_connector_port(connector_type);
-@@ -997,8 +995,7 @@ mlxsw_sp_port_set_link_ksettings(struct net_device *dev=
-,
-=20
+@@ -996,12 +996,12 @@ mlxsw_sp_port_set_link_ksettings(struct net_device *d=
+ev,
  	autoneg =3D cmd->base.autoneg =3D=3D AUTONEG_ENABLE;
  	eth_proto_new =3D autoneg ?
--		ops->to_ptys_advert_link(mlxsw_sp, mlxsw_sp_port->mapping.width,
--					 cmd) :
-+		ops->to_ptys_advert_link(mlxsw_sp, cmd) :
- 		ops->to_ptys_speed(mlxsw_sp, mlxsw_sp_port->mapping.width,
- 				   cmd->base.speed);
+ 		ops->to_ptys_advert_link(mlxsw_sp, cmd) :
+-		ops->to_ptys_speed(mlxsw_sp, mlxsw_sp_port->mapping.width,
+-				   cmd->base.speed);
++		ops->to_ptys_speed_lanes(mlxsw_sp, mlxsw_sp_port->mapping.width,
++					 cmd);
 =20
-@@ -1200,7 +1197,7 @@ mlxsw_sp1_from_ptys_supported_port(struct mlxsw_sp *m=
-lxsw_sp,
+ 	eth_proto_new =3D eth_proto_new & eth_proto_cap;
+ 	if (!eth_proto_new) {
+-		netdev_err(dev, "No supported speed requested\n");
++		netdev_err(dev, "No supported speed or lanes requested\n");
+ 		return -EINVAL;
+ 	}
 =20
- static void
- mlxsw_sp1_from_ptys_link(struct mlxsw_sp *mlxsw_sp, u32 ptys_eth_proto,
--			 u8 width, unsigned long *mode)
-+			 unsigned long *mode)
- {
- 	int i;
-=20
-@@ -1262,7 +1259,7 @@ static int mlxsw_sp1_ptys_max_speed(struct mlxsw_sp_p=
-ort *mlxsw_sp_port, u32 *p_
+@@ -1062,20 +1062,21 @@ mlxsw_sp_get_ts_info(struct net_device *netdev, str=
+uct ethtool_ts_info *info)
  }
 =20
- static u32
--mlxsw_sp1_to_ptys_advert_link(struct mlxsw_sp *mlxsw_sp, u8 width,
-+mlxsw_sp1_to_ptys_advert_link(struct mlxsw_sp *mlxsw_sp,
- 			      const struct ethtool_link_ksettings *cmd)
+ const struct ethtool_ops mlxsw_sp_port_ethtool_ops =3D {
+-	.get_drvinfo		=3D mlxsw_sp_port_get_drvinfo,
+-	.get_link		=3D ethtool_op_get_link,
+-	.get_link_ext_state	=3D mlxsw_sp_port_get_link_ext_state,
+-	.get_pauseparam		=3D mlxsw_sp_port_get_pauseparam,
+-	.set_pauseparam		=3D mlxsw_sp_port_set_pauseparam,
+-	.get_strings		=3D mlxsw_sp_port_get_strings,
+-	.set_phys_id		=3D mlxsw_sp_port_set_phys_id,
+-	.get_ethtool_stats	=3D mlxsw_sp_port_get_stats,
+-	.get_sset_count		=3D mlxsw_sp_port_get_sset_count,
+-	.get_link_ksettings	=3D mlxsw_sp_port_get_link_ksettings,
+-	.set_link_ksettings	=3D mlxsw_sp_port_set_link_ksettings,
+-	.get_module_info	=3D mlxsw_sp_get_module_info,
+-	.get_module_eeprom	=3D mlxsw_sp_get_module_eeprom,
+-	.get_ts_info		=3D mlxsw_sp_get_ts_info,
++	.cap_link_lanes_supported	=3D true,
++	.get_drvinfo			=3D mlxsw_sp_port_get_drvinfo,
++	.get_link			=3D ethtool_op_get_link,
++	.get_link_ext_state		=3D mlxsw_sp_port_get_link_ext_state,
++	.get_pauseparam			=3D mlxsw_sp_port_get_pauseparam,
++	.set_pauseparam			=3D mlxsw_sp_port_set_pauseparam,
++	.get_strings			=3D mlxsw_sp_port_get_strings,
++	.set_phys_id			=3D mlxsw_sp_port_set_phys_id,
++	.get_ethtool_stats		=3D mlxsw_sp_port_get_stats,
++	.get_sset_count			=3D mlxsw_sp_port_get_sset_count,
++	.get_link_ksettings		=3D mlxsw_sp_port_get_link_ksettings,
++	.set_link_ksettings		=3D mlxsw_sp_port_set_link_ksettings,
++	.get_module_info		=3D mlxsw_sp_get_module_info,
++	.get_module_eeprom		=3D mlxsw_sp_get_module_eeprom,
++	.get_ts_info			=3D mlxsw_sp_get_ts_info,
+ };
+=20
+ struct mlxsw_sp1_port_link_mode {
+@@ -1273,14 +1274,17 @@ mlxsw_sp1_to_ptys_advert_link(struct mlxsw_sp *mlxs=
+w_sp,
+ 	return ptys_proto;
+ }
+=20
+-static u32 mlxsw_sp1_to_ptys_speed(struct mlxsw_sp *mlxsw_sp, u8 width,
+-				   u32 speed)
++static u32 mlxsw_sp1_to_ptys_speed_lanes(struct mlxsw_sp *mlxsw_sp, u8 wid=
+th,
++					 const struct ethtool_link_ksettings *cmd)
  {
  	u32 ptys_proto =3D 0;
-@@ -1621,14 +1618,12 @@ mlxsw_sp2_set_bit_ethtool(const struct mlxsw_sp2_po=
-rt_link_mode *link_mode,
-=20
- static void
- mlxsw_sp2_from_ptys_link(struct mlxsw_sp *mlxsw_sp, u32 ptys_eth_proto,
--			 u8 width, unsigned long *mode)
-+			 unsigned long *mode)
- {
--	u8 mask_width =3D mlxsw_sp_port_mask_width_get(width);
  	int i;
 =20
++	if (cmd->lanes > width)
++		return ptys_proto;
++
+ 	for (i =3D 0; i < MLXSW_SP1_PORT_LINK_MODE_LEN; i++) {
+-		if (speed =3D=3D mlxsw_sp1_port_link_mode[i].speed)
++		if (cmd->base.speed =3D=3D mlxsw_sp1_port_link_mode[i].speed)
+ 			ptys_proto |=3D mlxsw_sp1_port_link_mode[i].mask;
+ 	}
+ 	return ptys_proto;
+@@ -1323,7 +1327,7 @@ const struct mlxsw_sp_port_type_speed_ops mlxsw_sp1_p=
+ort_type_speed_ops =3D {
+ 	.from_ptys_speed_duplex		=3D mlxsw_sp1_from_ptys_speed_duplex,
+ 	.ptys_max_speed			=3D mlxsw_sp1_ptys_max_speed,
+ 	.to_ptys_advert_link		=3D mlxsw_sp1_to_ptys_advert_link,
+-	.to_ptys_speed			=3D mlxsw_sp1_to_ptys_speed,
++	.to_ptys_speed_lanes		=3D mlxsw_sp1_to_ptys_speed_lanes,
+ 	.reg_ptys_eth_pack		=3D mlxsw_sp1_reg_ptys_eth_pack,
+ 	.reg_ptys_eth_unpack		=3D mlxsw_sp1_reg_ptys_eth_unpack,
+ 	.ptys_proto_cap_masked_get	=3D mlxsw_sp1_ptys_proto_cap_masked_get,
+@@ -1485,7 +1489,8 @@ struct mlxsw_sp2_port_link_mode {
+ 	int m_ethtool_len;
+ 	u32 mask;
+ 	u32 speed;
+-	u8 mask_width;
++	u32 width;
++	u8 mask_sup_width;
+ };
+=20
+ static const struct mlxsw_sp2_port_link_mode mlxsw_sp2_port_link_mode[] =
+=3D {
+@@ -1493,105 +1498,117 @@ static const struct mlxsw_sp2_port_link_mode mlxs=
+w_sp2_port_link_mode[] =3D {
+ 		.mask		=3D MLXSW_REG_PTYS_EXT_ETH_SPEED_SGMII_100M,
+ 		.mask_ethtool	=3D mlxsw_sp2_mask_ethtool_sgmii_100m,
+ 		.m_ethtool_len	=3D MLXSW_SP2_MASK_ETHTOOL_SGMII_100M_LEN,
+-		.mask_width	=3D MLXSW_SP_PORT_MASK_WIDTH_1X |
++		.mask_sup_width	=3D MLXSW_SP_PORT_MASK_WIDTH_1X |
+ 				  MLXSW_SP_PORT_MASK_WIDTH_2X |
+ 				  MLXSW_SP_PORT_MASK_WIDTH_4X |
+ 				  MLXSW_SP_PORT_MASK_WIDTH_8X,
+ 		.speed		=3D SPEED_100,
++		.width		=3D 1,
+ 	},
+ 	{
+ 		.mask		=3D MLXSW_REG_PTYS_EXT_ETH_SPEED_1000BASE_X_SGMII,
+ 		.mask_ethtool	=3D mlxsw_sp2_mask_ethtool_1000base_x_sgmii,
+ 		.m_ethtool_len	=3D MLXSW_SP2_MASK_ETHTOOL_1000BASE_X_SGMII_LEN,
+-		.mask_width	=3D MLXSW_SP_PORT_MASK_WIDTH_1X |
++		.mask_sup_width	=3D MLXSW_SP_PORT_MASK_WIDTH_1X |
+ 				  MLXSW_SP_PORT_MASK_WIDTH_2X |
+ 				  MLXSW_SP_PORT_MASK_WIDTH_4X |
+ 				  MLXSW_SP_PORT_MASK_WIDTH_8X,
+ 		.speed		=3D SPEED_1000,
++		.width		=3D 1,
+ 	},
+ 	{
+ 		.mask		=3D MLXSW_REG_PTYS_EXT_ETH_SPEED_5GBASE_R,
+ 		.mask_ethtool	=3D mlxsw_sp2_mask_ethtool_5gbase_r,
+ 		.m_ethtool_len	=3D MLXSW_SP2_MASK_ETHTOOL_5GBASE_R_LEN,
+-		.mask_width	=3D MLXSW_SP_PORT_MASK_WIDTH_1X |
++		.mask_sup_width	=3D MLXSW_SP_PORT_MASK_WIDTH_1X |
+ 				  MLXSW_SP_PORT_MASK_WIDTH_2X |
+ 				  MLXSW_SP_PORT_MASK_WIDTH_4X |
+ 				  MLXSW_SP_PORT_MASK_WIDTH_8X,
+ 		.speed		=3D SPEED_5000,
++		.width		=3D 1,
+ 	},
+ 	{
+ 		.mask		=3D MLXSW_REG_PTYS_EXT_ETH_SPEED_XFI_XAUI_1_10G,
+ 		.mask_ethtool	=3D mlxsw_sp2_mask_ethtool_xfi_xaui_1_10g,
+ 		.m_ethtool_len	=3D MLXSW_SP2_MASK_ETHTOOL_XFI_XAUI_1_10G_LEN,
+-		.mask_width	=3D MLXSW_SP_PORT_MASK_WIDTH_1X |
++		.mask_sup_width	=3D MLXSW_SP_PORT_MASK_WIDTH_1X |
+ 				  MLXSW_SP_PORT_MASK_WIDTH_2X |
+ 				  MLXSW_SP_PORT_MASK_WIDTH_4X |
+ 				  MLXSW_SP_PORT_MASK_WIDTH_8X,
+ 		.speed		=3D SPEED_10000,
++		.width		=3D 1,
+ 	},
+ 	{
+ 		.mask		=3D MLXSW_REG_PTYS_EXT_ETH_SPEED_XLAUI_4_XLPPI_4_40G,
+ 		.mask_ethtool	=3D mlxsw_sp2_mask_ethtool_xlaui_4_xlppi_4_40g,
+ 		.m_ethtool_len	=3D MLXSW_SP2_MASK_ETHTOOL_XLAUI_4_XLPPI_4_40G_LEN,
+-		.mask_width	=3D MLXSW_SP_PORT_MASK_WIDTH_4X |
++		.mask_sup_width	=3D MLXSW_SP_PORT_MASK_WIDTH_4X |
+ 				  MLXSW_SP_PORT_MASK_WIDTH_8X,
+ 		.speed		=3D SPEED_40000,
++		.width		=3D 4,
+ 	},
+ 	{
+ 		.mask		=3D MLXSW_REG_PTYS_EXT_ETH_SPEED_25GAUI_1_25GBASE_CR_KR,
+ 		.mask_ethtool	=3D mlxsw_sp2_mask_ethtool_25gaui_1_25gbase_cr_kr,
+ 		.m_ethtool_len	=3D MLXSW_SP2_MASK_ETHTOOL_25GAUI_1_25GBASE_CR_KR_LEN,
+-		.mask_width	=3D MLXSW_SP_PORT_MASK_WIDTH_1X |
++		.mask_sup_width	=3D MLXSW_SP_PORT_MASK_WIDTH_1X |
+ 				  MLXSW_SP_PORT_MASK_WIDTH_2X |
+ 				  MLXSW_SP_PORT_MASK_WIDTH_4X |
+ 				  MLXSW_SP_PORT_MASK_WIDTH_8X,
+ 		.speed		=3D SPEED_25000,
++		.width		=3D 1,
+ 	},
+ 	{
+ 		.mask		=3D MLXSW_REG_PTYS_EXT_ETH_SPEED_50GAUI_2_LAUI_2_50GBASE_CR2_KR2,
+ 		.mask_ethtool	=3D mlxsw_sp2_mask_ethtool_50gaui_2_laui_2_50gbase_cr2_kr2=
+,
+ 		.m_ethtool_len	=3D MLXSW_SP2_MASK_ETHTOOL_50GAUI_2_LAUI_2_50GBASE_CR2_KR=
+2_LEN,
+-		.mask_width	=3D MLXSW_SP_PORT_MASK_WIDTH_2X |
++		.mask_sup_width	=3D MLXSW_SP_PORT_MASK_WIDTH_2X |
+ 				  MLXSW_SP_PORT_MASK_WIDTH_4X |
+ 				  MLXSW_SP_PORT_MASK_WIDTH_8X,
+ 		.speed		=3D SPEED_50000,
++		.width		=3D 2,
+ 	},
+ 	{
+ 		.mask		=3D MLXSW_REG_PTYS_EXT_ETH_SPEED_50GAUI_1_LAUI_1_50GBASE_CR_KR,
+ 		.mask_ethtool	=3D mlxsw_sp2_mask_ethtool_50gaui_1_laui_1_50gbase_cr_kr,
+ 		.m_ethtool_len	=3D MLXSW_SP2_MASK_ETHTOOL_50GAUI_1_LAUI_1_50GBASE_CR_KR_=
+LEN,
+-		.mask_width	=3D MLXSW_SP_PORT_MASK_WIDTH_1X,
++		.mask_sup_width	=3D MLXSW_SP_PORT_MASK_WIDTH_1X,
+ 		.speed		=3D SPEED_50000,
++		.width		=3D 1,
+ 	},
+ 	{
+ 		.mask		=3D MLXSW_REG_PTYS_EXT_ETH_SPEED_CAUI_4_100GBASE_CR4_KR4,
+ 		.mask_ethtool	=3D mlxsw_sp2_mask_ethtool_caui_4_100gbase_cr4_kr4,
+ 		.m_ethtool_len	=3D MLXSW_SP2_MASK_ETHTOOL_CAUI_4_100GBASE_CR4_KR4_LEN,
+-		.mask_width	=3D MLXSW_SP_PORT_MASK_WIDTH_4X |
++		.mask_sup_width	=3D MLXSW_SP_PORT_MASK_WIDTH_4X |
+ 				  MLXSW_SP_PORT_MASK_WIDTH_8X,
+ 		.speed		=3D SPEED_100000,
++		.width		=3D 4,
+ 	},
+ 	{
+ 		.mask		=3D MLXSW_REG_PTYS_EXT_ETH_SPEED_100GAUI_2_100GBASE_CR2_KR2,
+ 		.mask_ethtool	=3D mlxsw_sp2_mask_ethtool_100gaui_2_100gbase_cr2_kr2,
+ 		.m_ethtool_len	=3D MLXSW_SP2_MASK_ETHTOOL_100GAUI_2_100GBASE_CR2_KR2_LEN=
+,
+-		.mask_width	=3D MLXSW_SP_PORT_MASK_WIDTH_2X,
++		.mask_sup_width	=3D MLXSW_SP_PORT_MASK_WIDTH_2X,
+ 		.speed		=3D SPEED_100000,
++		.width		=3D 2,
+ 	},
+ 	{
+ 		.mask		=3D MLXSW_REG_PTYS_EXT_ETH_SPEED_200GAUI_4_200GBASE_CR4_KR4,
+ 		.mask_ethtool	=3D mlxsw_sp2_mask_ethtool_200gaui_4_200gbase_cr4_kr4,
+ 		.m_ethtool_len	=3D MLXSW_SP2_MASK_ETHTOOL_200GAUI_4_200GBASE_CR4_KR4_LEN=
+,
+-		.mask_width	=3D MLXSW_SP_PORT_MASK_WIDTH_4X |
++		.mask_sup_width	=3D MLXSW_SP_PORT_MASK_WIDTH_4X |
+ 				  MLXSW_SP_PORT_MASK_WIDTH_8X,
+ 		.speed		=3D SPEED_200000,
++		.width		=3D 4,
+ 	},
+ 	{
+ 		.mask		=3D MLXSW_REG_PTYS_EXT_ETH_SPEED_400GAUI_8,
+ 		.mask_ethtool	=3D mlxsw_sp2_mask_ethtool_400gaui_8,
+ 		.m_ethtool_len	=3D MLXSW_SP2_MASK_ETHTOOL_400GAUI_8_LEN,
+-		.mask_width	=3D MLXSW_SP_PORT_MASK_WIDTH_8X,
++		.mask_sup_width	=3D MLXSW_SP_PORT_MASK_WIDTH_8X,
+ 		.speed		=3D SPEED_400000,
++		.width		=3D 8,
+ 	},
+ };
+=20
+@@ -1709,17 +1726,36 @@ mlxsw_sp2_to_ptys_advert_link(struct mlxsw_sp *mlxs=
+w_sp,
+ 	return ptys_proto;
+ }
+=20
+-static u32 mlxsw_sp2_to_ptys_speed(struct mlxsw_sp *mlxsw_sp,
+-				   u8 width, u32 speed)
++static u32 mlxsw_sp2_to_ptys_speed_lanes(struct mlxsw_sp *mlxsw_sp, u8 wid=
+th,
++					 const struct ethtool_link_ksettings *cmd)
+ {
+ 	u8 mask_width =3D mlxsw_sp_port_mask_width_get(width);
++	struct mlxsw_sp2_port_link_mode link_mode;
+ 	u32 ptys_proto =3D 0;
+ 	int i;
+=20
++	if (cmd->lanes > width)
++		return ptys_proto;
++
  	for (i =3D 0; i < MLXSW_SP2_PORT_LINK_MODE_LEN; i++) {
--		if ((ptys_eth_proto & mlxsw_sp2_port_link_mode[i].mask) &&
+-		if ((speed =3D=3D mlxsw_sp2_port_link_mode[i].speed) &&
 -		    (mask_width & mlxsw_sp2_port_link_mode[i].mask_width))
-+		if (ptys_eth_proto & mlxsw_sp2_port_link_mode[i].mask)
- 			mlxsw_sp2_set_bit_ethtool(&mlxsw_sp2_port_link_mode[i],
- 						  mode);
+-			ptys_proto |=3D mlxsw_sp2_port_link_mode[i].mask;
++		if (cmd->base.speed =3D=3D mlxsw_sp2_port_link_mode[i].speed) {
++			link_mode =3D mlxsw_sp2_port_link_mode[i];
++
++			if (cmd->lanes =3D=3D ETHTOOL_LANES_UNKNOWN) {
++				/* If number of lanes was not set by user space,
++				 * choose the link mode that supports the width
++				 * of the port.
++				 */
++				if (mask_width & link_mode.mask_sup_width)
++					ptys_proto |=3D link_mode.mask;
++			} else if (cmd->lanes =3D=3D link_mode.width) {
++				/* Else if the number of lanes was set, choose
++				 * the link mode that its actual width equals to
++				 * it.
++				 */
++				ptys_proto |=3D link_mode.mask;
++			}
++		}
  	}
-@@ -1700,16 +1695,14 @@ mlxsw_sp2_test_bit_ethtool(const struct mlxsw_sp2_p=
-ort_link_mode *link_mode,
+ 	return ptys_proto;
  }
-=20
- static u32
--mlxsw_sp2_to_ptys_advert_link(struct mlxsw_sp *mlxsw_sp, u8 width,
-+mlxsw_sp2_to_ptys_advert_link(struct mlxsw_sp *mlxsw_sp,
- 			      const struct ethtool_link_ksettings *cmd)
- {
--	u8 mask_width =3D mlxsw_sp_port_mask_width_get(width);
- 	u32 ptys_proto =3D 0;
- 	int i;
-=20
- 	for (i =3D 0; i < MLXSW_SP2_PORT_LINK_MODE_LEN; i++) {
--		if ((mask_width & mlxsw_sp2_port_link_mode[i].mask_width) &&
--		    mlxsw_sp2_test_bit_ethtool(&mlxsw_sp2_port_link_mode[i],
-+		if (mlxsw_sp2_test_bit_ethtool(&mlxsw_sp2_port_link_mode[i],
- 					       cmd->link_modes.advertising))
- 			ptys_proto |=3D mlxsw_sp2_port_link_mode[i].mask;
- 	}
+@@ -1762,7 +1798,7 @@ const struct mlxsw_sp_port_type_speed_ops mlxsw_sp2_p=
+ort_type_speed_ops =3D {
+ 	.from_ptys_speed_duplex		=3D mlxsw_sp2_from_ptys_speed_duplex,
+ 	.ptys_max_speed			=3D mlxsw_sp2_ptys_max_speed,
+ 	.to_ptys_advert_link		=3D mlxsw_sp2_to_ptys_advert_link,
+-	.to_ptys_speed			=3D mlxsw_sp2_to_ptys_speed,
++	.to_ptys_speed_lanes		=3D mlxsw_sp2_to_ptys_speed_lanes,
+ 	.reg_ptys_eth_pack		=3D mlxsw_sp2_reg_ptys_eth_pack,
+ 	.reg_ptys_eth_unpack		=3D mlxsw_sp2_reg_ptys_eth_unpack,
+ 	.ptys_proto_cap_masked_get	=3D mlxsw_sp2_ptys_proto_cap_masked_get,
 --=20
 2.26.2
 
