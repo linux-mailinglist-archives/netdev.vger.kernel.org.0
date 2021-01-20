@@ -2,101 +2,147 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8EE1E2FD85F
-	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 19:34:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D9C2C2FD98A
+	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 20:26:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733283AbhATSeX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jan 2021 13:34:23 -0500
-Received: from mga06.intel.com ([134.134.136.31]:19371 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2404610AbhATSbM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 20 Jan 2021 13:31:12 -0500
-IronPort-SDR: jYERuX7VYTBSpjRp7G0rXFc8mlcULJ26afa4vf5nfs6J0aj96SAQjp5PjtPALcZqzOpRyHQJ+9
- Vy0CAnwGPW1w==
-X-IronPort-AV: E=McAfee;i="6000,8403,9870"; a="240697048"
-X-IronPort-AV: E=Sophos;i="5.79,361,1602572400"; 
-   d="scan'208";a="240697048"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jan 2021 10:30:23 -0800
-IronPort-SDR: xquYD5VDyQRiT5Qr5GXXTRCCPRt48zoJz91ZmNb3/88G9m+jiWj83NIW77d55bh/yrBb4tEeK7
- JfAsp64yFMMA==
-X-IronPort-AV: E=Sophos;i="5.79,361,1602572400"; 
-   d="scan'208";a="384963935"
-Received: from myegin-mobl1.ger.corp.intel.com (HELO btopel-mobl.ger.intel.com) ([10.249.42.133])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jan 2021 10:30:16 -0800
-Subject: Re: [PATCH bpf-next v2 5/8] libbpf, xsk: select AF_XDP BPF program
- based on kernel version
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>
-Cc:     =?UTF-8?Q?Toke_H=c3=b8iland-J=c3=b8rgensen?= <toke@redhat.com>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
+        id S2390115AbhATTYI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jan 2021 14:24:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51828 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389903AbhATSpz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 13:45:55 -0500
+Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09A44C061575;
+        Wed, 20 Jan 2021 10:45:11 -0800 (PST)
+Received: by mail-lf1-x12b.google.com with SMTP id o17so35520168lfg.4;
+        Wed, 20 Jan 2021 10:45:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=zrMNRZvlEESWdG6jggtCoB+4numwazy+fXWH/nTPU9U=;
+        b=GbiCYI2AOS9Mde7ZZGAB8iKTEaPVyUk3NJn7BsJ4aNMPDW3bfjjQOlDjJVeyI01LfK
+         yGrcSPsCfKcKMod8xBD3FRFhA2PKjb0+UA9u+c+PLBc6ucvOs4H76CCyWbj5qRgGzSxL
+         YYeBDYP7YKSgdZ2tcOGzhxRWs+uk1fru9f/FsIBpFq4b3uFMzw/dOgkhsRnbJz85JTGD
+         OFp28kiITVDeZNpIvktOImEsP9FYI+HUZ15TQ4xgjNS0A45AjvFeCkc/hiGkbKW6oV51
+         UkYN9KTEvNSswvk+NvyWRYiqpqIG5SqjCPISQdicL2egTc1jJYF1v01KBc8Pl6R7uTGn
+         P/AA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=zrMNRZvlEESWdG6jggtCoB+4numwazy+fXWH/nTPU9U=;
+        b=BQqb9xHzS3Q3cW/HfiF08HssFRa7X4tkKto4CQaRFNYQQzYdTk832/+3VIv6E8x+EK
+         EaMwg/9gLe9eEeJwrdYBqFN8Xblu8mO7MPFMSuSv5lNCL+jizh/6khQd/7X5Ki3y4Rbc
+         YsAN91msjEOo9Nytsqb2qp32kRvO1w2WLdMG/y0/eeAwijR+K2H1cPJKBtGzUcxOJdC+
+         Zp0d22MRKB4wqwGV3XbaNhxQQNwGJX9QyGu3rM/BDJ1zCXLauh6PBsmxyQlTTeGoS6yR
+         nIqJlkvgxC3hrlecfsCho6C5SDv4b8u8fnj5rwOChyrc03c1hYFCI5TwH/N+DJnKRHEF
+         8NQQ==
+X-Gm-Message-State: AOAM532QOqGUBY9ruwM2TTcc8NDIkXf+Lq/IztatkLw4Meff+hL4RCDV
+        IUCK24Vi5NiTJRjtUHFWiZOIeBAwz0CJB2CFVuE=
+X-Google-Smtp-Source: ABdhPJysfNizrzDQUVINGOhhgWus7azEpICiAnwV+p4EXlvDkyaX1pVlGFfbUwglU72IpLHWW5TDXiNALg3A++evFDI=
+X-Received: by 2002:a05:6512:34c5:: with SMTP id w5mr4908698lfr.214.1611168309505;
+ Wed, 20 Jan 2021 10:45:09 -0800 (PST)
+MIME-Version: 1.0
+References: <20210112194143.1494-1-yuri.benditovich@daynix.com>
+ <20210112194143.1494-4-yuri.benditovich@daynix.com> <CAOEp5Ocz-xGq5=e=WY0aipEYHEhN-wxekNaAiqAS+HsOF8TcDQ@mail.gmail.com>
+ <CAOEp5OevYR5FWVMfQ_esmWTKtz9_ddTupbe7FtBFQ=sv2kEt2w@mail.gmail.com>
+In-Reply-To: <CAOEp5OevYR5FWVMfQ_esmWTKtz9_ddTupbe7FtBFQ=sv2kEt2w@mail.gmail.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Wed, 20 Jan 2021 10:44:58 -0800
+Message-ID: <CAADnVQJLN0sFyKdAmc6Pikv8Ww9OocnK_VXMG=ZLSMONHkqe4Q@mail.gmail.com>
+Subject: Re: [RFC PATCH 3/7] tun: allow use of BPF_PROG_TYPE_SCHED_CLS program type
+To:     Yuri Benditovich <yuri.benditovich@daynix.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
         Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>, maximmi@nvidia.com,
-        "David S. Miller" <davem@davemloft.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
         John Fastabend <john.fastabend@gmail.com>,
-        Ciara Loftus <ciara.loftus@intel.com>,
-        weqaar.a.janjua@intel.com, Marek Majtyka <alardam@gmail.com>
-References: <20210119155013.154808-1-bjorn.topel@gmail.com>
- <20210119155013.154808-6-bjorn.topel@gmail.com> <875z3repng.fsf@toke.dk>
- <6c7da700-700d-c7f6-fe0a-c42e55e81c8a@intel.com>
- <6cda7383-663e-ed92-45dd-bbf87ca45eef@intel.com> <87eeif4p96.fsf@toke.dk>
- <2751bcd9-b3af-0366-32ee-a52d5919246c@intel.com>
- <CAADnVQK1vL307SmmUZyuEAmy9S_A2fJwyHryCHBavQ-QDNyxww@mail.gmail.com>
-From:   =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>
-Message-ID: <9a624fee-6b49-9f00-3c21-d8ec3026a5a5@intel.com>
-Date:   Wed, 20 Jan 2021 19:30:12 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
-MIME-Version: 1.0
-In-Reply-To: <CAADnVQK1vL307SmmUZyuEAmy9S_A2fJwyHryCHBavQ-QDNyxww@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+        KP Singh <kpsingh@kernel.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Willem de Bruijn <willemb@google.com>, gustavoars@kernel.org,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Steffen Klassert <steffen.klassert@secunet.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>, decui@microsoft.com,
+        cai@lca.pw, Jakub Sitnicki <jakub@cloudflare.com>,
+        Marco Elver <elver@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Network Development <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org,
+        bpf <bpf@vger.kernel.org>, Yan Vugenfirer <yan@daynix.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021-01-20 19:25, Alexei Starovoitov wrote:
-> On Wed, Jan 20, 2021 at 7:27 AM Björn Töpel <bjorn.topel@intel.com> wrote:
->>
->>>> Would it make sense with some kind of BPF-specific "supported
->>>> features" mechanism? Something else with a bigger scope (whole
->>>> kernel)?
->>>
->>> Heh, in my opinion, yeah. Seems like we'll finally get it for XDP, but
->>> for BPF in general the approach has always been probing AFAICT.
->>>
->>> For the particular case of arguments to helpers, I suppose the verifier
->>> could technically validate value ranges for flags arguments, say. That
->>> would be nice as an early reject anyway, but I'm not sure if it is
->>> possible to add after-the-fact without breaking existing programs
->>> because the verifier can't prove the argument is within the valid range.
->>> And of course it doesn't help you with compatibility with
->>> already-released kernels.
->>>
->>
->> Hmm, think I have a way forward. I'll use BPF_PROG_TEST_RUN.
->>
->> If the load fail for the new helper, fallback to bpf_redirect_map(). Use
->> BPF_PROG_TEST_RUN to make sure that "action via flags" passes.
-> 
-> +1 to Toke's point. No version checks please.
-> One way to detect is to try prog_load. Search for FEAT_* in libbpf.
-> Another approach is to scan vmlinux BTF for necessary helpers.
-> Currently libbpf is relying on the former.
-> I think going forward would be good to detect features via BTF.
-> It's going to be much faster and won't create noise for audit that
-> could be looking at prog_load calls.
-> 
+On Tue, Jan 12, 2021 at 12:55 PM Yuri Benditovich
+<yuri.benditovich@daynix.com> wrote:
+>
+> On Tue, Jan 12, 2021 at 10:40 PM Yuri Benditovich
+> <yuri.benditovich@daynix.com> wrote:
+> >
+> > On Tue, Jan 12, 2021 at 9:42 PM Yuri Benditovich
+> > <yuri.benditovich@daynix.com> wrote:
+> > >
+> > > This program type can set skb hash value. It will be useful
+> > > when the tun will support hash reporting feature if virtio-net.
+> > >
+> > > Signed-off-by: Yuri Benditovich <yuri.benditovich@daynix.com>
+> > > ---
+> > >  drivers/net/tun.c | 2 ++
+> > >  1 file changed, 2 insertions(+)
+> > >
+> > > diff --git a/drivers/net/tun.c b/drivers/net/tun.c
+> > > index 7959b5c2d11f..455f7afc1f36 100644
+> > > --- a/drivers/net/tun.c
+> > > +++ b/drivers/net/tun.c
+> > > @@ -2981,6 +2981,8 @@ static int tun_set_ebpf(struct tun_struct *tun, struct tun_prog __rcu **prog_p,
+> > >                 prog = NULL;
+> > >         } else {
+> > >                 prog = bpf_prog_get_type(fd, BPF_PROG_TYPE_SOCKET_FILTER);
+> > > +               if (IS_ERR(prog))
+> > > +                       prog = bpf_prog_get_type(fd, BPF_PROG_TYPE_SCHED_CLS);
+> > >                 if (IS_ERR(prog))
+> > >                         return PTR_ERR(prog);
+> > >         }
+> >
+> > Comment from Alexei Starovoitov:
+> > Patches 1 and 2 are missing for me, so I couldn't review properly,
+> > but this diff looks odd.
+> > It allows sched_cls prog type to attach to tun.
+> > That means everything that sched_cls progs can do will be done from tun hook?
+>
+> We do not have an intention to modify the packet in this steering eBPF.
 
-Thanks Alexei. I'll explore both options for the next spin!
+The intent is irrelevant. Using SCHED_CLS here will let users modify the packet
+and some users will do so. Hence the tun code has to support it.
 
+> There is just one function that unavailable for BPF_PROG_TYPE_SOCKET_FILTER
+> that the eBPF needs to make possible to deliver the hash to the guest
+> VM - it is 'bpf_set_hash'
+>
+> Does it mean that we need to define a new eBPF type for socket filter
+> operations + set_hash?
+>
+> Our problem is that the eBPF calculates 32-bit hash, 16-bit queue
+> index and 8-bit of hash type.
+> But it is able to return only 32-bit integer, so in this set of
+> patches the eBPF returns
+> queue index and hash type and saves the hash in skb->hash using bpf_set_hash().
 
-Björn
+bpf prog can only return a 32-bit integer. That's true.
+But the prog can use helpers to set any number of bits and variables.
+bpf_set_hash_v2() with hash, queue and index arguments could fit this purpose,
+but if you allow it for SCHED_CLS type,
+tc side of the code should be ready to deal with that too and this extended
+helper should be meaningful for both tc and tun.
+
+In general if the purpose of the prog is to compute three values they better be
+grouped together. Returned two of them via ORed 32-bit integer and
+returning 32-bit via bpf_set_hash is an awkward api.
