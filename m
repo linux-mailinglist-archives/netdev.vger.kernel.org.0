@@ -2,63 +2,71 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 756232FD9C5
-	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 20:38:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E9F662FD9F2
+	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 20:47:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392617AbhATTfm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jan 2021 14:35:42 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:50784 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2392596AbhATTff (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 20 Jan 2021 14:35:35 -0500
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1l2JFj-001hDA-As; Wed, 20 Jan 2021 20:34:51 +0100
-Date:   Wed, 20 Jan 2021 20:34:51 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     =?iso-8859-1?Q?Bj=F8rn?= Mork <bjorn@mork.no>
-Cc:     M Chetan Kumar <m.chetan.kumar@intel.com>, netdev@vger.kernel.org,
-        linux-wireless@vger.kernel.org, johannes@sipsolutions.net,
-        krishna.c.sudi@intel.com
-Subject: Re: [PATCH 17/18] net: iosm: readme file
-Message-ID: <YAiF2/lMGZ0mPUSK@lunn.ch>
-References: <20210107170523.26531-1-m.chetan.kumar@intel.com>
- <20210107170523.26531-18-m.chetan.kumar@intel.com>
- <X/eJ/rl4U6edWr3i@lunn.ch>
- <87turftqxt.fsf@miraculix.mork.no>
+        id S2392474AbhATTok (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jan 2021 14:44:40 -0500
+Received: from ssl.serverraum.org ([176.9.125.105]:33439 "EHLO
+        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388379AbhATTn4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 14:43:56 -0500
+Received: from mwalle01.fritz.box (unknown [IPv6:2a02:810c:c200:2e91:fa59:71ff:fe9b:b851])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 654E522727;
+        Wed, 20 Jan 2021 20:43:13 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1611171794;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=wECjIsfiv6b1vpeE3rC46GdUz/M0EaI99XImGOrJhB8=;
+        b=p0vxJUwjuuGDnpiAaCkylxe/ifGBH5IUDfHHuDB4WXRGLKmH26+SGO9sPHK6b3aIzyY1qV
+        gbko9UzORdaieMFvuwy220g9dvnaPe8WHH8PLuORhinlgm59nCpWHNdzWnDoKk979q4qzW
+        3huCfM1jgKWOmToRTsq4HkpM0FHaeh0=
+From:   Michael Walle <michael@walle.cc>
+To:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Michael Walle <michael@walle.cc>
+Subject: [PATCH] net: macb: ignore tx_clk if MII is used
+Date:   Wed, 20 Jan 2021 20:43:03 +0100
+Message-Id: <20210120194303.28268-1-michael@walle.cc>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <87turftqxt.fsf@miraculix.mork.no>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jan 17, 2021 at 06:26:54PM +0100, Bjørn Mork wrote:
-> I was young and stupid. Now I'm not that young anymore ;-)
+If the MII interface is used, the PHY is the clock master, thus don't
+set the clock rate. On Zynq-7000, this will prevent the following
+warning:
+  macb e000b000.ethernet eth0: unable to generate target frequency: 25000000 Hz
 
-We all make mistakes, when we don't have the knowledge there are other
-ways. That is partially what code review is about.
+Signed-off-by: Michael Walle <michael@walle.cc>
+---
+ drivers/net/ethernet/cadence/macb_main.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-> Never ever imagined that this would be replicated in another driver,
-> though.  That doesn't really make much sense.  We have learned by now,
-> haven't we?  This subject has been discussed a few times in the past,
-> and Johannes summary is my understanding as well:
-> "I don't think anyone likes that"
+diff --git a/drivers/net/ethernet/cadence/macb_main.c b/drivers/net/ethernet/cadence/macb_main.c
+index 814a5b10141d..472bf8f220bc 100644
+--- a/drivers/net/ethernet/cadence/macb_main.c
++++ b/drivers/net/ethernet/cadence/macb_main.c
+@@ -470,6 +470,10 @@ static void macb_set_tx_clk(struct macb *bp, int speed)
+ 	if (!bp->tx_clk || (bp->caps & MACB_CAPS_CLK_HW_CHG))
+ 		return;
+ 
++	/* In case of MII the PHY is the clock master */
++	if (bp->phy_interface == PHY_INTERFACE_MODE_MII)
++		return;
++
+ 	switch (speed) {
+ 	case SPEED_10:
+ 		rate = 2500000;
+-- 
+2.20.1
 
-So there seems to be agreement there. But what is not clear, is
-anybody willing to do the work to fix this, and is there enough ROI.
-
-Do we expect more devices like this? Will 6G, 7G modems look very
-different? Be real network devices and not need any of this odd stuff?
-Or will they be just be incrementally better but mostly the same?
-
-I went into the review thinking it was an Ethernet driver, and kept
-having WTF moments. Now i know it is not an Ethernet driver, i can say
-it is not my domain, i don't know the field well enough to say if all
-these hacks are acceptable or not.
-
-It probably needs David and Jakub to set the direction to be followed.
-
-   Andrew
