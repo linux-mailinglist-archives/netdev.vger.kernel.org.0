@@ -2,361 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E92172FD36C
-	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 16:08:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1FE9D2FD37E
+	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 16:08:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390184AbhATOz1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jan 2021 09:55:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58216 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389307AbhATOxq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 09:53:46 -0500
-Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D3E8C061795
-        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 06:53:06 -0800 (PST)
-Received: by mail-ed1-x52d.google.com with SMTP id j13so1796926edp.2
-        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 06:53:06 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=blackwall-org.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=5meUOsqn6rFxtS082gYNXWGOhWLdybj6w8SYeCtUUiQ=;
-        b=Qb8oMj3izsyX+ItXzJoXT2ueJ/0rCXb2J6dpLuRyOK20JAfjoCY1r58b3PcBZV6+Qf
-         GBIj78/uow/L7PvCh++NPl5L4zdFzkT/IPXCc68FkDhPzwfC+eSt7F2H/OIw7tTa7Bf/
-         RouhcksvUHWwlCUBgWo+ALvFonTqSOCU30LLmUk9U8Q5fxihDj0PgTxzh5suW9mHy+Oi
-         4n/lvbse88dLiis0x/juvFE/h7ns5yUgknc3wBKQfCrZ5lEIOnIzJOi2u60K6dG9ivU3
-         V9nwtZXMG3oww5lbDlwu9u0kLEmRss6QfX0d8oxGOCduHZdwLwq8irpZ8+yWyOzPiW7i
-         +5Kw==
+        id S2390086AbhATPAv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jan 2021 10:00:51 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:30536 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2390189AbhATO63 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 09:58:29 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1611154623;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=fwvMFPt1WboLcOoH23UIfhd2xo9KC7W2tNFuZGnH5tg=;
+        b=LuAN7x0ZV57AWkU+pMrVnXFbb8SjIbUZJvxr1rATfEJ+0q1bB42C3l5P9b7UqObHbuo0wg
+        yXkqxX7xow/cKvAXaNRl12gr4zMMpyfkRHaf8hVcoxCS8thkVM78ezlXKSQ95/M7Nr75a2
+        Nuk/krXbHiMpvMup1Le62uFSqqJNqmA=
+Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
+ [209.85.218.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-345-UXz-kkMyOjyv8M43K_Ovxw-1; Wed, 20 Jan 2021 09:56:59 -0500
+X-MC-Unique: UXz-kkMyOjyv8M43K_Ovxw-1
+Received: by mail-ej1-f72.google.com with SMTP id dc21so5882001ejb.19
+        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 06:56:59 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=5meUOsqn6rFxtS082gYNXWGOhWLdybj6w8SYeCtUUiQ=;
-        b=pJ9RKXeJLdZ1LQSPnG5vCslrhgdXduJlKEQIEGtMplw4ZL+gZ9VpkpmmLpR7lhQ0wb
-         mhiYGCgYbvW9kV5b/6Vdh88EhN82OA5tmenyBcX8bSkWzN8BBeSEaFbOyXUVxfbBEfbu
-         jg3Ze9lpKv6r3boRMlkD+R8TLrYVNG4hjckrQXFgcM4u/c9swkGyMzmHNK0dpcWb/1tD
-         /WbSzySkxoWkHCn11E6YxNGQ33FdBjO6+38oFq7Abi5HdjkE8VrtqwJJBmiio1ZfrDMK
-         SMZRXZNwHY++lPNvBJTihGkcorOB9vfjJwLclMPzOY7XhzL6RenJ9L+pkUpplJn0HQv7
-         Fm/g==
-X-Gm-Message-State: AOAM5306IpRIg/Bt16XmMXzngGlGdn9Mqie1Yc39UxuhvQ8oKk6VFlZj
-        P+ud3ay8Cwn8l3aMUp+gJNSIFJQuuUS6w7ifUto=
-X-Google-Smtp-Source: ABdhPJzHBOxDaf954Huf+JNnDN0sG+dxHsqIAoAUDr29UwbGd221CG9vi+uJlEdDbn/RfEVy0PbZWg==
-X-Received: by 2002:aa7:d60f:: with SMTP id c15mr7455152edr.232.1611154384661;
-        Wed, 20 Jan 2021 06:53:04 -0800 (PST)
-Received: from debil.vdiclient.nvidia.com (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id x17sm1239349edq.77.2021.01.20.06.53.03
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=fwvMFPt1WboLcOoH23UIfhd2xo9KC7W2tNFuZGnH5tg=;
+        b=sG5N5eTz4vJONoxuBK3GiEc4GrFKLbW3Y7yhkl5LtUsaXKPoVb4Wx+HHM0Eym6Gtxz
+         jJYx1Q3N1M66ROmhx4w3d9zHBtboGGXzjjTlN3QOORsEORFEWXc4kjnjOIbqpWfT+tSz
+         zHb2slkwvStzfuELyV0c32XP0DMXGI37y0dVjyl37r7Q8B6s3u0g9iOVcneLfcao6kf/
+         a4gSJAsukzI6hfhnRutrtCpd2cozmHN8RVnG4SDafkP0Z/IuQKlgswucjI+iOzNjcUDI
+         fr68SVlZh3cSdY7J+3DNm07t9diwZyxy09ZcXZaPpJ2A0jHyaepJui748ev1ZjvRYxLp
+         VUIA==
+X-Gm-Message-State: AOAM532Hvho7k5HhecOWG7zPLj67ldQ2TI8hrO3GN9p27TDcC0VnzkFQ
+        uzk07HXEQp4S6Pv4PQdyCZz+vLLyc55bC0dxaHG1VM2ignjb5u8Z4pABrwGY4tb3PU3c1J4S1Pl
+        tQBdouR+Kbmod0oFN
+X-Received: by 2002:aa7:d2d4:: with SMTP id k20mr7518632edr.361.1611154618201;
+        Wed, 20 Jan 2021 06:56:58 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJy99WUOs30PTEEP3IzAalAndtcfLMV0Alj0wITXpTucPw6kGqbpjitK+lVUsQrpGBXLVfgbTg==
+X-Received: by 2002:aa7:d2d4:: with SMTP id k20mr7518623edr.361.1611154617989;
+        Wed, 20 Jan 2021 06:56:57 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id w16sm1313993edv.4.2021.01.20.06.56.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Jan 2021 06:53:04 -0800 (PST)
-From:   Nikolay Aleksandrov <razor@blackwall.org>
-To:     netdev@vger.kernel.org
-Cc:     roopa@nvidia.com, bridge@lists.linux-foundation.org,
-        kuba@kernel.org, davem@davemloft.net,
-        Nikolay Aleksandrov <nikolay@nvidia.com>
-Subject: [PATCH net-next 02/14] net: bridge: multicast: pass host src address to IGMPv3/MLDv2 functions
-Date:   Wed, 20 Jan 2021 16:51:51 +0200
-Message-Id: <20210120145203.1109140-3-razor@blackwall.org>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20210120145203.1109140-1-razor@blackwall.org>
-References: <20210120145203.1109140-1-razor@blackwall.org>
+        Wed, 20 Jan 2021 06:56:57 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 378D5180331; Wed, 20 Jan 2021 15:56:57 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
+        ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Cc:     magnus.karlsson@intel.com, maciej.fijalkowski@intel.com,
+        kuba@kernel.org, jonathan.lemon@gmail.com, maximmi@nvidia.com,
+        davem@davemloft.net, hawk@kernel.org, john.fastabend@gmail.com,
+        ciara.loftus@intel.com, weqaar.a.janjua@intel.com,
+        Marek Majtyka <alardam@gmail.com>
+Subject: Re: [PATCH bpf-next v2 5/8] libbpf, xsk: select AF_XDP BPF program
+ based on kernel version
+In-Reply-To: <6c7da700-700d-c7f6-fe0a-c42e55e81c8a@intel.com>
+References: <20210119155013.154808-1-bjorn.topel@gmail.com>
+ <20210119155013.154808-6-bjorn.topel@gmail.com> <875z3repng.fsf@toke.dk>
+ <6c7da700-700d-c7f6-fe0a-c42e55e81c8a@intel.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Wed, 20 Jan 2021 15:56:57 +0100
+Message-ID: <87h7nb4pxi.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Nikolay Aleksandrov <nikolay@nvidia.com>
+Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com> writes:
 
-We need to pass the host address so later it can be used for explicit
-host tracking. No functional change.
+> On 2021-01-20 13:52, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+>> Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com> writes:
+>>=20
+>>> From: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
+>>>
+>>> Add detection for kernel version, and adapt the BPF program based on
+>>> kernel support. This way, users will get the best possible performance
+>>> from the BPF program.
+>>=20
+>> Please do explicit feature detection instead of relying on the kernel
+>> version number; some distro kernels are known to have a creative notion
+>> of their own version, which is not really related to the features they
+>> actually support (I'm sure you know which one I'm referring to ;)).
+>>
+>
+> Right. For a *new* helper, like bpf_redirect_xsk, we rely on rejection
+> from the verifier to detect support. What about "bpf_redirect_map() now
+> supports passing return value as flags"? Any ideas how to do that in a
+> robust, non-version number-based scheme?
 
-Signed-off-by: Nikolay Aleksandrov <nikolay@nvidia.com>
----
- net/bridge/br_multicast.c | 90 +++++++++++++++++++++------------------
- 1 file changed, 49 insertions(+), 41 deletions(-)
+Well, having a BPF program pass in a flag of '1' with an invalid lookup
+and checking if it returns 1 or 0. But how to do that from libbpf, hmm,
+good question. BPF_PROG_RUN()?
 
-diff --git a/net/bridge/br_multicast.c b/net/bridge/br_multicast.c
-index 3ae2cef6f7ec..861545094d67 100644
---- a/net/bridge/br_multicast.c
-+++ b/net/bridge/br_multicast.c
-@@ -1799,7 +1799,7 @@ static void __grp_send_query_and_rexmit(struct net_bridge_port_group *pg)
-  * INCLUDE (A)    ALLOW (B)     INCLUDE (A+B)            (B)=GMI
-  * EXCLUDE (X,Y)  ALLOW (A)     EXCLUDE (X+A,Y-A)        (A)=GMI
-  */
--static bool br_multicast_isinc_allow(struct net_bridge_port_group *pg,
-+static bool br_multicast_isinc_allow(struct net_bridge_port_group *pg, void *h_addr,
- 				     void *srcs, u32 nsrcs, size_t addr_size)
- {
- 	struct net_bridge *br = pg->key.port->br;
-@@ -1833,7 +1833,7 @@ static bool br_multicast_isinc_allow(struct net_bridge_port_group *pg,
-  *                                                       Delete (A-B)
-  *                                                       Group Timer=GMI
-  */
--static void __grp_src_isexc_incl(struct net_bridge_port_group *pg,
-+static void __grp_src_isexc_incl(struct net_bridge_port_group *pg, void *h_addr,
- 				 void *srcs, u32 nsrcs, size_t addr_size)
- {
- 	struct net_bridge_group_src *ent;
-@@ -1866,7 +1866,7 @@ static void __grp_src_isexc_incl(struct net_bridge_port_group *pg,
-  *                                                       Delete (Y-A)
-  *                                                       Group Timer=GMI
-  */
--static bool __grp_src_isexc_excl(struct net_bridge_port_group *pg,
-+static bool __grp_src_isexc_excl(struct net_bridge_port_group *pg, void *h_addr,
- 				 void *srcs, u32 nsrcs, size_t addr_size)
- {
- 	struct net_bridge *br = pg->key.port->br;
-@@ -1903,7 +1903,7 @@ static bool __grp_src_isexc_excl(struct net_bridge_port_group *pg,
- 	return changed;
- }
- 
--static bool br_multicast_isexc(struct net_bridge_port_group *pg,
-+static bool br_multicast_isexc(struct net_bridge_port_group *pg, void *h_addr,
- 			       void *srcs, u32 nsrcs, size_t addr_size)
- {
- 	struct net_bridge *br = pg->key.port->br;
-@@ -1911,12 +1911,12 @@ static bool br_multicast_isexc(struct net_bridge_port_group *pg,
- 
- 	switch (pg->filter_mode) {
- 	case MCAST_INCLUDE:
--		__grp_src_isexc_incl(pg, srcs, nsrcs, addr_size);
-+		__grp_src_isexc_incl(pg, h_addr, srcs, nsrcs, addr_size);
- 		br_multicast_star_g_handle_mode(pg, MCAST_EXCLUDE);
- 		changed = true;
- 		break;
- 	case MCAST_EXCLUDE:
--		changed = __grp_src_isexc_excl(pg, srcs, nsrcs, addr_size);
-+		changed = __grp_src_isexc_excl(pg, h_addr, srcs, nsrcs, addr_size);
- 		break;
- 	}
- 
-@@ -1930,7 +1930,7 @@ static bool br_multicast_isexc(struct net_bridge_port_group *pg,
-  * INCLUDE (A)    TO_IN (B)     INCLUDE (A+B)            (B)=GMI
-  *                                                       Send Q(G,A-B)
-  */
--static bool __grp_src_toin_incl(struct net_bridge_port_group *pg,
-+static bool __grp_src_toin_incl(struct net_bridge_port_group *pg, void *h_addr,
- 				void *srcs, u32 nsrcs, size_t addr_size)
- {
- 	struct net_bridge *br = pg->key.port->br;
-@@ -1972,7 +1972,7 @@ static bool __grp_src_toin_incl(struct net_bridge_port_group *pg,
-  *                                                       Send Q(G,X-A)
-  *                                                       Send Q(G)
-  */
--static bool __grp_src_toin_excl(struct net_bridge_port_group *pg,
-+static bool __grp_src_toin_excl(struct net_bridge_port_group *pg, void *h_addr,
- 				void *srcs, u32 nsrcs, size_t addr_size)
- {
- 	struct net_bridge *br = pg->key.port->br;
-@@ -2014,17 +2014,17 @@ static bool __grp_src_toin_excl(struct net_bridge_port_group *pg,
- 	return changed;
- }
- 
--static bool br_multicast_toin(struct net_bridge_port_group *pg,
-+static bool br_multicast_toin(struct net_bridge_port_group *pg, void *h_addr,
- 			      void *srcs, u32 nsrcs, size_t addr_size)
- {
- 	bool changed = false;
- 
- 	switch (pg->filter_mode) {
- 	case MCAST_INCLUDE:
--		changed = __grp_src_toin_incl(pg, srcs, nsrcs, addr_size);
-+		changed = __grp_src_toin_incl(pg, h_addr, srcs, nsrcs, addr_size);
- 		break;
- 	case MCAST_EXCLUDE:
--		changed = __grp_src_toin_excl(pg, srcs, nsrcs, addr_size);
-+		changed = __grp_src_toin_excl(pg, h_addr, srcs, nsrcs, addr_size);
- 		break;
- 	}
- 
-@@ -2037,7 +2037,7 @@ static bool br_multicast_toin(struct net_bridge_port_group *pg,
-  *                                                       Send Q(G,A*B)
-  *                                                       Group Timer=GMI
-  */
--static void __grp_src_toex_incl(struct net_bridge_port_group *pg,
-+static void __grp_src_toex_incl(struct net_bridge_port_group *pg, void *h_addr,
- 				void *srcs, u32 nsrcs, size_t addr_size)
- {
- 	struct net_bridge_group_src *ent;
-@@ -2076,7 +2076,7 @@ static void __grp_src_toex_incl(struct net_bridge_port_group *pg,
-  *                                                       Send Q(G,A-Y)
-  *                                                       Group Timer=GMI
-  */
--static bool __grp_src_toex_excl(struct net_bridge_port_group *pg,
-+static bool __grp_src_toex_excl(struct net_bridge_port_group *pg, void *h_addr,
- 				void *srcs, u32 nsrcs, size_t addr_size)
- {
- 	struct net_bridge_group_src *ent;
-@@ -2116,7 +2116,7 @@ static bool __grp_src_toex_excl(struct net_bridge_port_group *pg,
- 	return changed;
- }
- 
--static bool br_multicast_toex(struct net_bridge_port_group *pg,
-+static bool br_multicast_toex(struct net_bridge_port_group *pg, void *h_addr,
- 			      void *srcs, u32 nsrcs, size_t addr_size)
- {
- 	struct net_bridge *br = pg->key.port->br;
-@@ -2124,12 +2124,12 @@ static bool br_multicast_toex(struct net_bridge_port_group *pg,
- 
- 	switch (pg->filter_mode) {
- 	case MCAST_INCLUDE:
--		__grp_src_toex_incl(pg, srcs, nsrcs, addr_size);
-+		__grp_src_toex_incl(pg, h_addr, srcs, nsrcs, addr_size);
- 		br_multicast_star_g_handle_mode(pg, MCAST_EXCLUDE);
- 		changed = true;
- 		break;
- 	case MCAST_EXCLUDE:
--		changed = __grp_src_toex_excl(pg, srcs, nsrcs, addr_size);
-+		changed = __grp_src_toex_excl(pg, h_addr, srcs, nsrcs, addr_size);
- 		break;
- 	}
- 
-@@ -2142,7 +2142,7 @@ static bool br_multicast_toex(struct net_bridge_port_group *pg,
- /* State          Msg type      New state                Actions
-  * INCLUDE (A)    BLOCK (B)     INCLUDE (A)              Send Q(G,A*B)
-  */
--static void __grp_src_block_incl(struct net_bridge_port_group *pg,
-+static void __grp_src_block_incl(struct net_bridge_port_group *pg, void *h_addr,
- 				 void *srcs, u32 nsrcs, size_t addr_size)
- {
- 	struct net_bridge_group_src *ent;
-@@ -2175,7 +2175,7 @@ static void __grp_src_block_incl(struct net_bridge_port_group *pg,
-  * EXCLUDE (X,Y)  BLOCK (A)     EXCLUDE (X+(A-Y),Y)      (A-X-Y)=Group Timer
-  *                                                       Send Q(G,A-Y)
-  */
--static bool __grp_src_block_excl(struct net_bridge_port_group *pg,
-+static bool __grp_src_block_excl(struct net_bridge_port_group *pg, void *h_addr,
- 				 void *srcs, u32 nsrcs, size_t addr_size)
- {
- 	struct net_bridge_group_src *ent;
-@@ -2211,17 +2211,17 @@ static bool __grp_src_block_excl(struct net_bridge_port_group *pg,
- 	return changed;
- }
- 
--static bool br_multicast_block(struct net_bridge_port_group *pg,
-+static bool br_multicast_block(struct net_bridge_port_group *pg, void *h_addr,
- 			       void *srcs, u32 nsrcs, size_t addr_size)
- {
- 	bool changed = false;
- 
- 	switch (pg->filter_mode) {
- 	case MCAST_INCLUDE:
--		__grp_src_block_incl(pg, srcs, nsrcs, addr_size);
-+		__grp_src_block_incl(pg, h_addr, srcs, nsrcs, addr_size);
- 		break;
- 	case MCAST_EXCLUDE:
--		changed = __grp_src_block_excl(pg, srcs, nsrcs, addr_size);
-+		changed = __grp_src_block_excl(pg, h_addr, srcs, nsrcs, addr_size);
- 		break;
- 	}
- 
-@@ -2257,8 +2257,8 @@ static int br_ip4_multicast_igmp3_report(struct net_bridge *br,
- 	struct igmpv3_report *ih;
- 	struct igmpv3_grec *grec;
- 	int i, len, num, type;
-+	__be32 group, *h_addr;
- 	bool changed = false;
--	__be32 group;
- 	int err = 0;
- 	u16 nsrcs;
- 
-@@ -2318,32 +2318,33 @@ static int br_ip4_multicast_igmp3_report(struct net_bridge *br,
- 		pg = br_multicast_find_port(mdst, port, src);
- 		if (!pg || (pg->flags & MDB_PG_FLAGS_PERMANENT))
- 			goto unlock_continue;
--		/* reload grec */
-+		/* reload grec and host addr */
- 		grec = (void *)(skb->data + len - sizeof(*grec) - (nsrcs * 4));
-+		h_addr = &ip_hdr(skb)->saddr;
- 		switch (type) {
- 		case IGMPV3_ALLOW_NEW_SOURCES:
--			changed = br_multicast_isinc_allow(pg, grec->grec_src,
-+			changed = br_multicast_isinc_allow(pg, h_addr, grec->grec_src,
- 							   nsrcs, sizeof(__be32));
- 			break;
- 		case IGMPV3_MODE_IS_INCLUDE:
--			changed = br_multicast_isinc_allow(pg, grec->grec_src, nsrcs,
--							   sizeof(__be32));
-+			changed = br_multicast_isinc_allow(pg, h_addr, grec->grec_src,
-+							   nsrcs, sizeof(__be32));
- 			break;
- 		case IGMPV3_MODE_IS_EXCLUDE:
--			changed = br_multicast_isexc(pg, grec->grec_src, nsrcs,
--						     sizeof(__be32));
-+			changed = br_multicast_isexc(pg, h_addr, grec->grec_src,
-+						     nsrcs, sizeof(__be32));
- 			break;
- 		case IGMPV3_CHANGE_TO_INCLUDE:
--			changed = br_multicast_toin(pg, grec->grec_src, nsrcs,
--						    sizeof(__be32));
-+			changed = br_multicast_toin(pg, h_addr, grec->grec_src,
-+						    nsrcs, sizeof(__be32));
- 			break;
- 		case IGMPV3_CHANGE_TO_EXCLUDE:
--			changed = br_multicast_toex(pg, grec->grec_src, nsrcs,
--						    sizeof(__be32));
-+			changed = br_multicast_toex(pg, h_addr, grec->grec_src,
-+						    nsrcs, sizeof(__be32));
- 			break;
- 		case IGMPV3_BLOCK_OLD_SOURCES:
--			changed = br_multicast_block(pg, grec->grec_src, nsrcs,
--						     sizeof(__be32));
-+			changed = br_multicast_block(pg, h_addr, grec->grec_src,
-+						     nsrcs, sizeof(__be32));
- 			break;
- 		}
- 		if (changed)
-@@ -2367,6 +2368,7 @@ static int br_ip6_multicast_mld2_report(struct net_bridge *br,
- 	unsigned int nsrcs_offset;
- 	const unsigned char *src;
- 	struct icmp6hdr *icmp6h;
-+	struct in6_addr *h_addr;
- 	struct mld2_grec *grec;
- 	unsigned int grec_len;
- 	bool changed = false;
-@@ -2445,30 +2447,36 @@ static int br_ip6_multicast_mld2_report(struct net_bridge *br,
- 		pg = br_multicast_find_port(mdst, port, src);
- 		if (!pg || (pg->flags & MDB_PG_FLAGS_PERMANENT))
- 			goto unlock_continue;
-+		h_addr = &ipv6_hdr(skb)->saddr;
- 		switch (grec->grec_type) {
- 		case MLD2_ALLOW_NEW_SOURCES:
--			changed = br_multicast_isinc_allow(pg, grec->grec_src,
--							   nsrcs,
-+			changed = br_multicast_isinc_allow(pg, h_addr,
-+							   grec->grec_src, nsrcs,
- 							   sizeof(struct in6_addr));
- 			break;
- 		case MLD2_MODE_IS_INCLUDE:
--			changed = br_multicast_isinc_allow(pg, grec->grec_src, nsrcs,
-+			changed = br_multicast_isinc_allow(pg, h_addr,
-+							   grec->grec_src, nsrcs,
- 							   sizeof(struct in6_addr));
- 			break;
- 		case MLD2_MODE_IS_EXCLUDE:
--			changed = br_multicast_isexc(pg, grec->grec_src, nsrcs,
-+			changed = br_multicast_isexc(pg, h_addr,
-+						     grec->grec_src, nsrcs,
- 						     sizeof(struct in6_addr));
- 			break;
- 		case MLD2_CHANGE_TO_INCLUDE:
--			changed = br_multicast_toin(pg, grec->grec_src, nsrcs,
-+			changed = br_multicast_toin(pg, h_addr,
-+						    grec->grec_src, nsrcs,
- 						    sizeof(struct in6_addr));
- 			break;
- 		case MLD2_CHANGE_TO_EXCLUDE:
--			changed = br_multicast_toex(pg, grec->grec_src, nsrcs,
-+			changed = br_multicast_toex(pg, h_addr,
-+						    grec->grec_src, nsrcs,
- 						    sizeof(struct in6_addr));
- 			break;
- 		case MLD2_BLOCK_OLD_SOURCES:
--			changed = br_multicast_block(pg, grec->grec_src, nsrcs,
-+			changed = br_multicast_block(pg, h_addr,
-+						     grec->grec_src, nsrcs,
- 						     sizeof(struct in6_addr));
- 			break;
- 		}
--- 
-2.29.2
+An alternative could be to default to a program that will handle both
+cases in the BPF code, and make it opt-in to use the optimised versions
+if the user knows their kernel supports it?
+
+-Toke
 
