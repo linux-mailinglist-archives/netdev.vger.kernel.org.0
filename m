@@ -2,170 +2,182 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 34C962FC82F
-	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 03:45:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 169AB2FC857
+	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 03:58:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387658AbhATCom (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jan 2021 21:44:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42432 "EHLO
+        id S2389563AbhATC5d (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jan 2021 21:57:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732622AbhATCoa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jan 2021 21:44:30 -0500
-Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70103C0613CF
-        for <netdev@vger.kernel.org>; Tue, 19 Jan 2021 18:43:49 -0800 (PST)
-Received: by mail-pf1-x432.google.com with SMTP id w18so2294448pfu.9
-        for <netdev@vger.kernel.org>; Tue, 19 Jan 2021 18:43:49 -0800 (PST)
+        with ESMTP id S2389711AbhATC40 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jan 2021 21:56:26 -0500
+Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97F96C061757
+        for <netdev@vger.kernel.org>; Tue, 19 Jan 2021 18:55:45 -0800 (PST)
+Received: by mail-wr1-x436.google.com with SMTP id g10so3256840wrx.1
+        for <netdev@vger.kernel.org>; Tue, 19 Jan 2021 18:55:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=IoAS2iYBLHsRua0ToD9jNwcwJKOxvef2a5weUgRGbk0=;
-        b=payUoMdP99ddV95PcEbXHC19WExfJT6yZ/S4Ppoq/PLGAFbIoNn7Ocr9I+rvAyWbCp
-         vl8P28OthlrC8/YP790veImXuigRJQ+FCsfMuvuUXkcuWlHIm3ORZYgnSOfFBWVqwrsx
-         etQUHaMuNXSZiBSaJug8IAPdQ9Y3kmvOKMD0epVjkDWIzoTugBJ/UJsLq6QRvOCAMGks
-         52gEg7tfjfjS/5IPrbkLmpMxaXgQ8LA6lTT+oUp4pmz1yte+4ljxAX1G0rCyimsvXUrJ
-         kSRn7OSiizNM1UAmaUFSCvMIBFfNTpucrCHH8toBTyzLLoxOk4H4/MXbBVrxQMm75Y9g
-         le8w==
+        bh=uAYJP4auVBg35JykE1t2Rfor4ZjxrxJAHg1d1oLkhKs=;
+        b=XakfUtoMHLnUhXE/d+tbmyMdWn1igsskibWQxjQ8cM+vijzd/HzpTCRB9t2vMZ0oS7
+         Cw29F69QOhgjo5oLEi5vN/EGWANTnoj/sYufwI5x5VEpaxPrKdXibbuJgsKesi+fMeZt
+         L26xY+zQik40trCtYb46GM1+KBlgnzFOIbDwr64alb2UuzJlF82OEGC99F584xxcaRly
+         JNINBSe363B4uX1gNgLngjVidk+0WPN4D2xlmIn+CKMWAjQTiWHB0XE9dHGM5e+6krV6
+         RhkTpTtUwMtcKcL7qMr/N5qA1+7hNFFU3i/j7NHpcfwIO8ONG0VRWU4WXjzpTqGL2Gtz
+         uTCA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=IoAS2iYBLHsRua0ToD9jNwcwJKOxvef2a5weUgRGbk0=;
-        b=RXmpk40f/JLUH+YWn43HJAnN8XC3/u+xhnlp8Qf455ry5hv1u3otZPjNK1NpvASBHB
-         icrwmvUtX2uTH+Q1fAJ6CDGHN0HUytc+vaZkxvc/rtj56RI5kqw5zRoQL8hg3KBnrdw6
-         etFLUFL44PZGVD2h73GGDgOG2XrZEDe14uM8ZhorTDLPeKlkA/PXGKuU7PquJU55XmEn
-         NocXv4BhkjH+UcPvdGSbH+XbVvPHTLUmk+yNPPq4Qk1+ib//zWv2EbveKNBiWp0LJTA+
-         HBtfl1r3ajSWqPHA602j9UbcqLjmqRxm0NtkSmIkUSzXgyEajc0+4u16DmMvdKkNxrpk
-         rS6Q==
-X-Gm-Message-State: AOAM5304n/SJK8wIVHdtNOHgvc994f50f0yiVFqgQcP4L0hG1dHtYYrh
-        +r1h8vme8ufkomKUoKctHx/8jI2EunxzN0RPymFLrw==
-X-Google-Smtp-Source: ABdhPJyP9xx5n3cq0nmNCglbjFT0ogHH0SdoaQC66nze3RSq1u6CYmEK3xfrrNQ97XJvAtKZ+TGeZvsQyiie386D8S0=
-X-Received: by 2002:a63:1f47:: with SMTP id q7mr7252992pgm.10.1611110628633;
- Tue, 19 Jan 2021 18:43:48 -0800 (PST)
+        bh=uAYJP4auVBg35JykE1t2Rfor4ZjxrxJAHg1d1oLkhKs=;
+        b=S6Pcwi/HLAmAUYX+GWN3oTaf6pg5zCU+w0+RiRklpzUspNadayNLzVmJzQlJFQiGA7
+         31i7hf5ARMskjkFGsTh8gPCPRTCosoO/5e36yRrN7IXPLOQaxbYE0g6Ywu2it752i2bX
+         PTgKOnsRzPKyxKsCZa0Tsz+hfMuGIUiyDJ2fBZvL+TvNVYqhjjwq3hfjgvr6q7x3nhJM
+         muKWrdrErEWr3r/pNWvJ8VpRbmz/e8n+WLb3PWe1KO8K9M3OTNCJ4Z7XroNcAuHCbpkx
+         qOh5pr6lPbanKRMsWsgJzR8phd79D1XbdKfN2DScjPnMDUDLevDxQxjrre3+ZRxIvMd+
+         kM7A==
+X-Gm-Message-State: AOAM533dHikjhtzImkPJjOup/foKuQ61pmDNc9uCqTy9zDca02IMRklc
+        xebaoolDk9MfsS6+ZwbJSEcg3qkxx75KQyjHE8k=
+X-Google-Smtp-Source: ABdhPJwgqwMPQcHBplqFkf1XqroKCTAWcyYKpGsOCcymJc8VCv7D3yHDW2W8mxMX2qS5Y9cO9rr6NbpEdXuxiOlj21I=
+X-Received: by 2002:adf:9d82:: with SMTP id p2mr7035251wre.330.1611111344339;
+ Tue, 19 Jan 2021 18:55:44 -0800 (PST)
 MIME-Version: 1.0
-References: <1611042978-21473-1-git-send-email-yangtiezhu@loongson.cn>
-In-Reply-To: <1611042978-21473-1-git-send-email-yangtiezhu@loongson.cn>
-From:   Nick Desaulniers <ndesaulniers@google.com>
-Date:   Tue, 19 Jan 2021 18:43:36 -0800
-Message-ID: <CAKwvOdkXGx-WogH0o5iuNnEe07sqRfxMpOg5fEEnTWcOfBrbAQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2] samples/bpf: Update README.rst and Makefile
- for manually compiling LLVM and clang
-To:     Tiezhu Yang <yangtiezhu@loongson.cn>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Nathan Chancellor <natechancellor@gmail.com>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        clang-built-linux <clang-built-linux@googlegroups.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Xuefeng Li <lixuefeng@loongson.cn>
+References: <cover.1610771509.git.lucien.xin@gmail.com> <0ba74e791c186444af53489ebc55664462a1caf6.1610771509.git.lucien.xin@gmail.com>
+ <CAKgT0Ud+mjksk1HWpLUSWziGUq9ZQLO33GiVHQtJhoCOpM0zUQ@mail.gmail.com>
+In-Reply-To: <CAKgT0Ud+mjksk1HWpLUSWziGUq9ZQLO33GiVHQtJhoCOpM0zUQ@mail.gmail.com>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Wed, 20 Jan 2021 10:55:32 +0800
+Message-ID: <CADvbK_dKYB_n72RzY-QQoAocmtyBaxW51kDxFpDHRg24psQNVQ@mail.gmail.com>
+Subject: Re: [PATCHv3 net-next 1/2] udp: call udp_encap_enable for v6 sockets
+ when enabling encap
+To:     Alexander Duyck <alexander.duyck@gmail.com>
+Cc:     network dev <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Martin Varghese <martin.varghese@nokia.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 18, 2021 at 11:56 PM Tiezhu Yang <yangtiezhu@loongson.cn> wrote:
+On Wed, Jan 20, 2021 at 6:17 AM Alexander Duyck
+<alexander.duyck@gmail.com> wrote:
 >
-> The current llvm/clang build procedure in samples/bpf/README.rst is
-> out of date. See below that the links are not accessible any more.
+> On Fri, Jan 15, 2021 at 8:34 PM Xin Long <lucien.xin@gmail.com> wrote:
+> >
+> > When enabling encap for a ipv6 socket without udp_encap_needed_key
+> > increased, UDP GRO won't work for v4 mapped v6 address packets as
+> > sk will be NULL in udp4_gro_receive().
+> >
+> > This patch is to enable it by increasing udp_encap_needed_key for
+> > v6 sockets in udp_tunnel_encap_enable(), and correspondingly
+> > decrease udp_encap_needed_key in udpv6_destroy_sock().
+> >
+> > v1->v2:
+> >   - add udp_encap_disable() and export it.
+> >
+> > Signed-off-by: Xin Long <lucien.xin@gmail.com>
+> > ---
+> >  include/net/udp.h        | 1 +
+> >  include/net/udp_tunnel.h | 3 +--
+> >  net/ipv4/udp.c           | 6 ++++++
+> >  net/ipv6/udp.c           | 4 +++-
+> >  4 files changed, 11 insertions(+), 3 deletions(-)
+> >
+> > diff --git a/include/net/udp.h b/include/net/udp.h
+> > index 877832b..1e7b6cd 100644
+> > --- a/include/net/udp.h
+> > +++ b/include/net/udp.h
+> > @@ -467,6 +467,7 @@ void udp_init(void);
+> >
+> >  DECLARE_STATIC_KEY_FALSE(udp_encap_needed_key);
+> >  void udp_encap_enable(void);
+> > +void udp_encap_disable(void);
+> >  #if IS_ENABLED(CONFIG_IPV6)
+> >  DECLARE_STATIC_KEY_FALSE(udpv6_encap_needed_key);
+> >  void udpv6_encap_enable(void);
+> > diff --git a/include/net/udp_tunnel.h b/include/net/udp_tunnel.h
+> > index 282d10e..afc7ce7 100644
+> > --- a/include/net/udp_tunnel.h
+> > +++ b/include/net/udp_tunnel.h
+> > @@ -181,9 +181,8 @@ static inline void udp_tunnel_encap_enable(struct socket *sock)
+> >  #if IS_ENABLED(CONFIG_IPV6)
+> >         if (sock->sk->sk_family == PF_INET6)
+> >                 ipv6_stub->udpv6_encap_enable();
+> > -       else
+> >  #endif
+> > -               udp_encap_enable();
+> > +       udp_encap_enable();
+> >  }
+> >
+> >  #define UDP_TUNNEL_NIC_MAX_TABLES      4
+> > diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
+> > index 7103b0a..28bfe60 100644
+> > --- a/net/ipv4/udp.c
+> > +++ b/net/ipv4/udp.c
+> > @@ -596,6 +596,12 @@ void udp_encap_enable(void)
+> >  }
+> >  EXPORT_SYMBOL(udp_encap_enable);
+> >
+> > +void udp_encap_disable(void)
+> > +{
+> > +       static_branch_dec(&udp_encap_needed_key);
+> > +}
+> > +EXPORT_SYMBOL(udp_encap_disable);
+> > +
+> >  /* Handler for tunnels with arbitrary destination ports: no socket lookup, go
+> >   * through error handlers in encapsulations looking for a match.
+> >   */
 >
-> $ git clone http://llvm.org/git/llvm.git
-> Cloning into 'llvm'...
-> fatal: unable to access 'http://llvm.org/git/llvm.git/': Maximum (20) redirects followed
-> $ git clone --depth 1 http://llvm.org/git/clang.git
-> Cloning into 'clang'...
-> fatal: unable to access 'http://llvm.org/git/clang.git/': Maximum (20) redirects followed
->
-> The llvm community has adopted new ways to build the compiler. There are
-> different ways to build llvm/clang, the Clang Getting Started page [1] has
-> one way. As Yonghong said, it is better to just copy the build procedure
-> in Documentation/bpf/bpf_devel_QA.rst to keep consistent.
->
-> I verified the procedure and it is proved to be feasible, so we should
-> update README.rst to reflect the reality. At the same time, update the
-> related comment in Makefile.
->
-> [1] https://clang.llvm.org/get_started.html
+> So this seems unbalanced to me. We are adding/modifying one spot where
+> we are calling the enable function, but the other callers don't call
+> the disable function? Specifically I am curious about how to deal with
+> the rxrpc_open_socket usage.
+as long as it's a UDP sock, when it's being destroyed,
+udp(v6)_destroy_sock will be called, where the key(s) get decreased.
 
-There's also https://www.kernel.org/doc/html/latest/kbuild/llvm.html#getting-llvm
-(could cross link in rst/sphinx).
+Sorry, I missed there's a call to udp_encap_enable() in rxrpc, the issue is
+the similar to the one in bareudp, it should be:
+
+-       udp_encap_enable();
+ #if IS_ENABLED(CONFIG_AF_RXRPC_IPV6)
+        if (local->srx.transport.family == AF_INET6)
+                udpv6_encap_enable();
++       else
+ #endif
++       udp_encap_enable();
++
+
+I will get all these into one patch and repost.
+
+Interesting it doesn't use udp_tunnel APIs here, I will check.
+
+Thanks.
 
 >
-> Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
-> Acked-by: Yonghong Song <yhs@fb.com>
-> ---
+> If we don't balance out all the callers I am not sure adding the
+> udp_encap_disable makes much sense.
 >
-> v2: Update the commit message suggested by Yonghong,
->     thank you very much.
->
->  samples/bpf/Makefile   |  2 +-
->  samples/bpf/README.rst | 17 ++++++++++-------
->  2 files changed, 11 insertions(+), 8 deletions(-)
->
-> diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
-> index 26fc96c..d061446 100644
-> --- a/samples/bpf/Makefile
-> +++ b/samples/bpf/Makefile
-> @@ -208,7 +208,7 @@ TPROGLDLIBS_xdpsock         += -pthread -lcap
->  TPROGLDLIBS_xsk_fwd            += -pthread
->
->  # Allows pointing LLC/CLANG to a LLVM backend with bpf support, redefine on cmdline:
-> -#  make M=samples/bpf/ LLC=~/git/llvm/build/bin/llc CLANG=~/git/llvm/build/bin/clang
-> +# make M=samples/bpf LLC=~/git/llvm-project/llvm/build/bin/llc CLANG=~/git/llvm-project/llvm/build/bin/clang
->  LLC ?= llc
->  CLANG ?= clang
->  OPT ?= opt
-> diff --git a/samples/bpf/README.rst b/samples/bpf/README.rst
-> index dd34b2d..d1be438 100644
-> --- a/samples/bpf/README.rst
-> +++ b/samples/bpf/README.rst
-> @@ -65,17 +65,20 @@ To generate a smaller llc binary one can use::
->  Quick sniplet for manually compiling LLVM and clang
->  (build dependencies are cmake and gcc-c++)::
->
-> - $ git clone http://llvm.org/git/llvm.git
-> - $ cd llvm/tools
-> - $ git clone --depth 1 http://llvm.org/git/clang.git
-> - $ cd ..; mkdir build; cd build
-> - $ cmake .. -DLLVM_TARGETS_TO_BUILD="BPF;X86"
-
-Is the BPF target not yet on by default?  I frown upon disabling other backends.
-
-> - $ make -j $(getconf _NPROCESSORS_ONLN)
-> + $ git clone https://github.com/llvm/llvm-project.git
-> + $ mkdir -p llvm-project/llvm/build/install
-> + $ cd llvm-project/llvm/build
-> + $ cmake .. -G "Ninja" -DLLVM_TARGETS_TO_BUILD="BPF;X86" \
-> +            -DLLVM_ENABLE_PROJECTS="clang"    \
-> +            -DBUILD_SHARED_LIBS=OFF           \
-> +            -DCMAKE_BUILD_TYPE=Release        \
-> +            -DLLVM_BUILD_RUNTIME=OFF
-> + $ ninja
->
->  It is also possible to point make to the newly compiled 'llc' or
->  'clang' command via redefining LLC or CLANG on the make command line::
->
-> - make M=samples/bpf LLC=~/git/llvm/build/bin/llc CLANG=~/git/llvm/build/bin/clang
-> + make M=samples/bpf LLC=~/git/llvm-project/llvm/build/bin/llc CLANG=~/git/llvm-project/llvm/build/bin/clang
->
->  Cross compiling samples
->  -----------------------
-> --
-> 2.1.0
->
-> --
-> You received this message because you are subscribed to the Google Groups "Clang Built Linux" group.
-> To unsubscribe from this group and stop receiving emails from it, send an email to clang-built-linux+unsubscribe@googlegroups.com.
-> To view this discussion on the web visit https://groups.google.com/d/msgid/clang-built-linux/1611042978-21473-1-git-send-email-yangtiezhu%40loongson.cn.
-
-
-
--- 
-Thanks,
-~Nick Desaulniers
+> > diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
+> > index b9f3dfd..d754292 100644
+> > --- a/net/ipv6/udp.c
+> > +++ b/net/ipv6/udp.c
+> > @@ -1608,8 +1608,10 @@ void udpv6_destroy_sock(struct sock *sk)
+> >                         if (encap_destroy)
+> >                                 encap_destroy(sk);
+> >                 }
+> > -               if (up->encap_enabled)
+> > +               if (up->encap_enabled) {
+> >                         static_branch_dec(&udpv6_encap_needed_key);
+> > +                       udp_encap_disable();
+> > +               }
+> >         }
+> >
+> >         inet6_destroy_sock(sk);
+> > --
+> > 2.1.0
+> >
