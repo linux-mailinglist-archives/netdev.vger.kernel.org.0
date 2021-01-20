@@ -2,178 +2,395 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CDB182FDD75
-	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 00:56:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3DE9B2FDD71
+	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 00:56:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391557AbhATXww (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jan 2021 18:52:52 -0500
-Received: from mail-am6eur05on2059.outbound.protection.outlook.com ([40.107.22.59]:21792
-        "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1731814AbhATWYt (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 20 Jan 2021 17:24:49 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LhAvHn3fLFjsLXbMHI73Jwg5JQlLzTkjXBHuLJi7T4/noEvHlYaQ12jnudoe9SGFgF4WjeZNvfhaZhLab9vm1mFm1RzXodddsjipCNvZ3YMFKkDczmiqTuhnQT+TjTlA+2mU/gQxbg+fv8+tL2bY1l+Im4MRQiU65EoR0rTsmiCgzyDGAHC8dY6F2oBYx1QmhfWlIXwzN5i/rS0cv/fxxh563pmB4jGQIV0D6FnOSSAeEEFqhC9gRKTgiI9pfHRV413+HsqTJZZoA27t+pAIIzGZHCZyWjTsNic57PQFeD4XextUwHY9CxLcPRtu2wpAxmbNebb5Zi3Qge8GdQe8Hg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=PgyBLEar9txfegs2X4zhHUPL1eOJ+QHM+vxqTHCcwGk=;
- b=Y4vpf/gCq2ftBBbaxS0ZqE9IMLbKElZMYlMECnZgJXhKiRXs0YO5zv/VL+SdmLCsr7FnMOxbZvmS173BUyXCk9EgkpRY9uXu/roGp3pGoLOFL6AwlRYx9rQeZTu9wTZ3JQa5Ie55KOfGbGx7vQj1jFOeNq1T9QDl0NJENdC6I7d/qZVMSRfYxy67cOqTUi8He7A6cQ1RdcWydKGVRBUGbKKprbwfQ+7KeyE98tqlcIHldlUY+1bZkTq9YrbI/Ey0Wjg6XM5w4T6wGGj2vadFJWq0Msohodq4egoJbDjqSNBGYF4NtKQrNiyz0Esub/M+h1EB9VRGFQMKu7VnHdj9EA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
- header.d=nxp.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=PgyBLEar9txfegs2X4zhHUPL1eOJ+QHM+vxqTHCcwGk=;
- b=f9LuXZ3JQ8AFTpqrqj26pHdvfImdEG6q69PCYTYAig9nVlI+ej2PIpsN3ui4np7n7IQ9Lrl5HkQZ+iSdIKMIejR8ID4ykX0ll8eQYBCbEY29xy5kpuMormBa2cElGZrEapxmIC8dNABbg7HnjrRjS/g7qnC5RWyrSe7xYKH6YAU=
-Received: from VI1PR0402MB3871.eurprd04.prod.outlook.com
- (2603:10a6:803:16::14) by VE1PR04MB6591.eurprd04.prod.outlook.com
- (2603:10a6:803:123::11) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3784.11; Wed, 20 Jan
- 2021 22:23:57 +0000
-Received: from VI1PR0402MB3871.eurprd04.prod.outlook.com
- ([fe80::b0d0:3a81:c999:e88]) by VI1PR0402MB3871.eurprd04.prod.outlook.com
- ([fe80::b0d0:3a81:c999:e88%3]) with mapi id 15.20.3763.013; Wed, 20 Jan 2021
- 22:23:57 +0000
-From:   Ioana Ciornei <ioana.ciornei@nxp.com>
-To:     Russell King <rmk+kernel@armlinux.org.uk>
-CC:     Ioana Ciocoi Radulescu <ruxandra.radulescu@nxp.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH net-next 2/3] net: dpaa2-mac: add 1000BASE-X support
-Thread-Topic: [PATCH net-next 2/3] net: dpaa2-mac: add 1000BASE-X support
-Thread-Index: AQHW7njPt5Sgd33Uj0+I9nW3owG2jqoxGO6A
-Date:   Wed, 20 Jan 2021 22:23:56 +0000
-Message-ID: <20210120222355.gnbekhsudjjyar4x@skbuf>
-References: <20210119153545.GK1551@shell.armlinux.org.uk>
- <E1l1t35-0005VX-Uj@rmk-PC.armlinux.org.uk>
-In-Reply-To: <E1l1t35-0005VX-Uj@rmk-PC.armlinux.org.uk>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: armlinux.org.uk; dkim=none (message not signed)
- header.d=none;armlinux.org.uk; dmarc=none action=none header.from=nxp.com;
-x-originating-ip: [5.12.227.87]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: fe5fd2af-14fb-4544-ab05-08d8bd9213ed
-x-ms-traffictypediagnostic: VE1PR04MB6591:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <VE1PR04MB6591CAD17FACB57D8477678DE0A20@VE1PR04MB6591.eurprd04.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:1468;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 9qtrzVdk+R46mqVmJO2jOllfLB1qYprRF8l4MfffPiMsAx1PLNHbp0fvWXCAvVGTri0DMJDY3cfVWP2g5enRJ2hYc65eJuctidbMxLLknKTUk+vCphSo3TIdfdrX3IclTZvsxdNgg7I6UxngRaSMxxaogfwYzRmHwcJ6twxuRPJRWoq9rPgItBucSEc42UWujxcUWUZz3I3pozf2kfdlhbsRaVojkLOrftFIUC79NrmY4J11wuMdgY4X7L0FcfwSzlxUXfzKWtC6JvkTZQSTrggQAs5i1UUuA4Cz5P0A9sF2ynV+fTu2etrVR/cBbEmMTpHvK4ak951/l6WNhnSaBCVnDY8Zhu8y+enoyRxfRlhh4d9pcYuUnkgxQhS6bDKtPAN8q78ANVq8uwetNIOKew==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR0402MB3871.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(7916004)(346002)(376002)(39850400004)(396003)(366004)(136003)(2906002)(8676002)(6486002)(71200400001)(66446008)(66556008)(5660300002)(9686003)(64756008)(6506007)(26005)(478600001)(4326008)(6512007)(33716001)(316002)(54906003)(66476007)(66946007)(86362001)(76116006)(91956017)(83380400001)(186003)(1076003)(8936002)(44832011);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: =?us-ascii?Q?kRVRSB3JCHCxpQ5d0tZn96XMqqaPi5URPJQTv0Gr6M3ZGpJo47QnSTeu55l3?=
- =?us-ascii?Q?vwAHVXm06kuMzuLdtH8XXt2qGrV0gn+VwlBf9mMfN0KiK4pZJ5e4kGZRCEjo?=
- =?us-ascii?Q?VQVjmMLop3JZTXEjC8goO9Uvq/qs4+UOpxTVyZ0h/ms1ReEtQE6lig3A3YEi?=
- =?us-ascii?Q?yQK6DLye0NQ2gmtLmFBAvP5PEenfyL7eYz/EMS9wcULyQdwm3H+9GQqB0PsC?=
- =?us-ascii?Q?9hbkly2MpFepWvyL9XNB9WDiHVgNedurJ7ngRTv/S8AAMgatN53L8F/f0xVm?=
- =?us-ascii?Q?s9ttGLZoAN4MFAvnal5IeMOvALkIksEJuyvTPnI4NgoCY4F8M8aVLTV8KzaK?=
- =?us-ascii?Q?6q0oLCuZsXyfCsnXI+/pOfaGQZ3V8VYr7ZX4P1OP+ARaPcN6TjOY267JBGhI?=
- =?us-ascii?Q?mli0uF0g57rTlFQEYYwogY+MK84zBc5ipSKyTVVjtoLXyg6QtuaD5y6I0W0D?=
- =?us-ascii?Q?0S+03P0JVDYdvU7Lov3jSVMQfwWibkY3bnBl/63uUmo596VOCJl82m/tPXZj?=
- =?us-ascii?Q?ennzds/DVF5bTeamQ3QgqUG9c+Xl0chVTrLvkeAx87JhXIroLUBZ87KOF4Zu?=
- =?us-ascii?Q?kv88gMwlQ4ZBvvFEuhqPCryb5dMptIPv9YkPxTOwXekXfdLcLdxkXvKjTc+K?=
- =?us-ascii?Q?f8NY9j3AkOKPZ+R0NQF2GwbZcSa4ank0i79LZqM5gLl/wv5VKwKcPqIiVtHZ?=
- =?us-ascii?Q?P4Nc+pBgHuclEKf18x2HKrhZQr0zXZEhz3NOviO9xFL377TxupZnjVxdj4bs?=
- =?us-ascii?Q?m+pU1BQO/GsFaxt1af+fp8OkYqqCzJJbLPEWgPAL6CeiZREJRD+mQR7cDQbK?=
- =?us-ascii?Q?eCnMw39qXzudivkLR8003lVMpmXnI9F1HlTHCFEMfoHApcQ1BqTgRRqxCs1H?=
- =?us-ascii?Q?s/o5zGXqiyv/rBIbumZOrtQj69ya8Z6psDYVGG2ZF2eKYmKGPcjSx5MVl7BZ?=
- =?us-ascii?Q?DcSGe/ajOuccpiLNxpIorEf2uoRIJ7ZKFqxH9zBd5aiwinUAsIDotDE0zy+T?=
- =?us-ascii?Q?Mn9LXI199tuzG+7z8alrq9/cfYPVRLJ5a/2ygAYYY7/WCdw9PiLZiP1/K5GD?=
- =?us-ascii?Q?ICLD1s0y?=
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <9E1D2A8633D7804E90FA1080A79F8708@eurprd04.prod.outlook.com>
-Content-Transfer-Encoding: quoted-printable
+        id S2404358AbhATXyY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jan 2021 18:54:24 -0500
+Received: from mga18.intel.com ([134.134.136.126]:26979 "EHLO mga18.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2390712AbhATWwv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 20 Jan 2021 17:52:51 -0500
+IronPort-SDR: at+eF0PjGuFu1z4lhjUXEqmgHM4w4WVwWOVR9rISUmHaSXeZEvCtopgSC5PDFqBpDVppn0oAqU
+ FVPcN/pcdTAg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9870"; a="166850855"
+X-IronPort-AV: E=Sophos;i="5.79,362,1602572400"; 
+   d="scan'208";a="166850855"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Jan 2021 14:52:09 -0800
+IronPort-SDR: F3MiKiYZD0Um/NsCGtzziKJ65tcRZe+76Vim3bFtoNF9gTlEZCNL447qW5PFsgH5bX3MaksAVg
+ GWLGN0Lne1yA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.79,362,1602572400"; 
+   d="scan'208";a="427068285"
+Received: from ranger.igk.intel.com ([10.102.21.164])
+  by orsmga001.jf.intel.com with ESMTP; 20 Jan 2021 14:52:05 -0800
+Date:   Wed, 20 Jan 2021 23:42:38 +0100
+From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
+        Jiri Benc <jbenc@redhat.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        David Ahern <dsahern@gmail.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Subject: Re: [PATCHv15 bpf-next 1/6] bpf: run devmap xdp_prog on flush
+ instead of bulk enqueue
+Message-ID: <20210120224238.GA33532@ranger.igk.intel.com>
+References: <20210114142321.2594697-1-liuhangbin@gmail.com>
+ <20210120022514.2862872-1-liuhangbin@gmail.com>
+ <20210120022514.2862872-2-liuhangbin@gmail.com>
 MIME-Version: 1.0
-X-OriginatorOrg: nxp.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR0402MB3871.eurprd04.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: fe5fd2af-14fb-4544-ab05-08d8bd9213ed
-X-MS-Exchange-CrossTenant-originalarrivaltime: 20 Jan 2021 22:23:56.9133
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: UtglQIpx9URAfFW8yk+IQxtUYf6oizCtzzq9+BJJgBJ51EbqU36/w49VjtWKqzwegsKaQy8u9v3iWjkxIn8mWg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VE1PR04MB6591
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210120022514.2862872-2-liuhangbin@gmail.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 19, 2021 at 03:36:03PM +0000, Russell King wrote:
-> Now that pcs-lynx supports 1000BASE-X, add support for this interface
-> mode to dpaa2-mac. pcs-lynx can be switched at runtime between SGMII
-> and 1000BASE-X mode, so allow dpaa2-mac to switch between these as
-> well.
->=20
-> This commit prepares the ground work for allowing 1G fiber connections
-> to be used with DPAA2 on the SolidRun CEX7 platforms.
->=20
-> Signed-off-by: Russell King <rmk+kernel@armlinux.org.uk>
+On Wed, Jan 20, 2021 at 10:25:09AM +0800, Hangbin Liu wrote:
+> From: Jesper Dangaard Brouer <brouer@redhat.com>
+> 
+> This changes the devmap XDP program support to run the program when the
+> bulk queue is flushed instead of before the frame is enqueued. This has
+> a couple of benefits:
+> 
+> - It "sorts" the packets by destination devmap entry, and then runs the
+>   same BPF program on all the packets in sequence. This ensures that we
+>   keep the XDP program and destination device properties hot in I-cache.
+> 
+> - It makes the multicast implementation simpler because it can just
+>   enqueue packets using bq_enqueue() without having to deal with the
+>   devmap program at all.
+> 
+> The drawback is that if the devmap program drops the packet, the enqueue
+> step is redundant. However, arguably this is mostly visible in a
+> micro-benchmark, and with more mixed traffic the I-cache benefit should
+> win out. The performance impact of just this patch is as follows:
+> 
+> Using xdp_redirect_map(with a 2nd xdp_prog patch[1]) in sample/bpf and send
+> pkts via pktgen cmd:
+> ./pktgen_sample03_burst_single_flow.sh -i eno1 -d $dst_ip -m $dst_mac -t 10 -s 64
+> 
+> There are about +/- 0.1M deviation for native testing, the performance
+> improved for the base-case, but some drop back with xdp devmap prog attached.
+> 
+> Version          | Test                           | Generic | Native | Native + 2nd xdp_prog
+> 5.10 rc6         | xdp_redirect_map   i40e->i40e  |    2.0M |   9.1M |  8.0M
+> 5.10 rc6         | xdp_redirect_map   i40e->veth  |    1.7M |  11.0M |  9.7M
+> 5.10 rc6 + patch | xdp_redirect_map   i40e->i40e  |    2.0M |   9.5M |  7.5M
+> 5.10 rc6 + patch | xdp_redirect_map   i40e->veth  |    1.7M |  11.6M |  9.1M
+> 
+> [1] https://patchwork.ozlabs.org/project/netdev/patch/20201208120159.2278277-1-liuhangbin@gmail.com/
 
-Reviewed-by: Ioana Ciornei <ioana.ciornei@nxp.com>
+nit: probably would be good to update the link to patch, I see it's v8
+already whereas link refers to v4.
 
-
+> 
+> Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+> 
 > ---
->  .../net/ethernet/freescale/dpaa2/dpaa2-mac.c  | 20 ++++++++++++++++---
->  1 file changed, 17 insertions(+), 3 deletions(-)
->=20
-> diff --git a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c b/drivers/n=
-et/ethernet/freescale/dpaa2/dpaa2-mac.c
-> index 69ad869446cf..3ddfb40eb5e4 100644
-> --- a/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
-> +++ b/drivers/net/ethernet/freescale/dpaa2/dpaa2-mac.c
-> @@ -79,10 +79,20 @@ static bool dpaa2_mac_phy_mode_mismatch(struct dpaa2_=
-mac *mac,
->  					phy_interface_t interface)
->  {
->  	switch (interface) {
-> +	/* We can switch between SGMII and 1000BASE-X at runtime with
-> +	 * pcs-lynx
-> +	 */
-> +	case PHY_INTERFACE_MODE_SGMII:
-> +	case PHY_INTERFACE_MODE_1000BASEX:
-> +		if (mac->pcs &&
-> +		    (mac->if_mode =3D=3D PHY_INTERFACE_MODE_SGMII ||
-> +		     mac->if_mode =3D=3D PHY_INTERFACE_MODE_1000BASEX))
-> +			return false;
-> +		return interface !=3D mac->if_mode;
+> v15:
+> a) do not use unlikely when checking bq->xdp_prog
+> b) return sent frames for dev_map_bpf_prog_run()
+> 
+> v14: no update, only rebase the code
+> v13: pass in xdp_prog through __xdp_enqueue()
+> v2-v12: no this patch
+> ---
+>  kernel/bpf/devmap.c | 116 +++++++++++++++++++++++++++-----------------
+>  1 file changed, 71 insertions(+), 45 deletions(-)
+> 
+> diff --git a/kernel/bpf/devmap.c b/kernel/bpf/devmap.c
+> index f6e9c68afdd4..13ed68c24aad 100644
+> --- a/kernel/bpf/devmap.c
+> +++ b/kernel/bpf/devmap.c
+> @@ -57,6 +57,7 @@ struct xdp_dev_bulk_queue {
+>  	struct list_head flush_node;
+>  	struct net_device *dev;
+>  	struct net_device *dev_rx;
+> +	struct bpf_prog *xdp_prog;
+>  	unsigned int count;
+>  };
+>  
+> @@ -327,44 +328,93 @@ bool dev_map_can_have_prog(struct bpf_map *map)
+>  	return false;
+>  }
+>  
+> +static int dev_map_bpf_prog_run(struct bpf_prog *xdp_prog,
+> +				struct xdp_frame **frames, int n,
+> +				struct net_device *dev)
+> +{
+> +	struct xdp_txq_info txq = { .dev = dev };
+> +	struct xdp_buff xdp;
+> +	int i, nframes = 0;
 > +
->  	case PHY_INTERFACE_MODE_10GBASER:
->  	case PHY_INTERFACE_MODE_USXGMII:
->  	case PHY_INTERFACE_MODE_QSGMII:
-> -	case PHY_INTERFACE_MODE_SGMII:
->  	case PHY_INTERFACE_MODE_RGMII:
->  	case PHY_INTERFACE_MODE_RGMII_ID:
->  	case PHY_INTERFACE_MODE_RGMII_RXID:
-> @@ -122,13 +132,17 @@ static void dpaa2_mac_validate(struct phylink_confi=
-g *config,
->  		fallthrough;
->  	case PHY_INTERFACE_MODE_SGMII:
->  	case PHY_INTERFACE_MODE_QSGMII:
-> +	case PHY_INTERFACE_MODE_1000BASEX:
->  	case PHY_INTERFACE_MODE_RGMII:
->  	case PHY_INTERFACE_MODE_RGMII_ID:
->  	case PHY_INTERFACE_MODE_RGMII_RXID:
->  	case PHY_INTERFACE_MODE_RGMII_TXID:
-> -		phylink_set(mask, 10baseT_Full);
-> -		phylink_set(mask, 100baseT_Full);
-> +		phylink_set(mask, 1000baseX_Full);
->  		phylink_set(mask, 1000baseT_Full);
-> +		if (state->interface =3D=3D PHY_INTERFACE_MODE_1000BASEX)
+> +	for (i = 0; i < n; i++) {
+> +		struct xdp_frame *xdpf = frames[i];
+> +		u32 act;
+> +		int err;
+> +
+> +		xdp_convert_frame_to_buff(xdpf, &xdp);
+> +		xdp.txq = &txq;
+> +
+> +		act = bpf_prog_run_xdp(xdp_prog, &xdp);
+> +		switch (act) {
+> +		case XDP_PASS:
+> +			err = xdp_update_frame_from_buff(&xdp, xdpf);
+
+Bump on John's question.
+
+> +			if (unlikely(err < 0))
+> +				xdp_return_frame_rx_napi(xdpf);
+> +			else
+> +				frames[nframes++] = xdpf;
 > +			break;
-> +		phylink_set(mask, 100baseT_Full);
-> +		phylink_set(mask, 10baseT_Full);
->  		break;
->  	default:
->  		goto empty_set;
-> --=20
-> 2.20.1
-> =
+> +		default:
+> +			bpf_warn_invalid_xdp_action(act);
+> +			fallthrough;
+> +		case XDP_ABORTED:
+> +			trace_xdp_exception(dev, xdp_prog, act);
+> +			fallthrough;
+> +		case XDP_DROP:
+> +			xdp_return_frame_rx_napi(xdpf);
+> +			break;
+> +		}
+> +	}
+> +	return nframes; /* sent frames count */
+> +}
+> +
+>  static void bq_xmit_all(struct xdp_dev_bulk_queue *bq, u32 flags)
+>  {
+>  	struct net_device *dev = bq->dev;
+>  	int sent = 0, drops = 0, err = 0;
+
+if sent is inited below, the assignment above is useless.
+Couldn't we do sent = cnt at the declaration over here?
+
+> +	unsigned int cnt = bq->count;
+>  	int i;
+>  
+> -	if (unlikely(!bq->count))
+> +	if (unlikely(!cnt))
+>  		return;
+>  
+> -	for (i = 0; i < bq->count; i++) {
+> +	for (i = 0; i < cnt; i++) {
+>  		struct xdp_frame *xdpf = bq->q[i];
+>  
+>  		prefetch(xdpf);
+>  	}
+>  
+> -	sent = dev->netdev_ops->ndo_xdp_xmit(dev, bq->count, bq->q, flags);
+> +	/* Init sent to cnt in case there is no xdp_prog */
+> +	sent = cnt;
+> +	if (bq->xdp_prog) {
+> +		sent = dev_map_bpf_prog_run(bq->xdp_prog, bq->q, cnt, dev);
+> +		if (!sent)
+> +			goto out;
+
+Sorry, but 'sent' is a bit confusing to me, actual sending happens below
+via ndo_xdp_xmit, right? This hook will not actually send frames.
+Can we do a subtle change to have it in separate variable 'to_send' ?
+
+> +	}
+> +
+> +	/* Backup drops value before xmit as we may need it in error label */
+> +	drops = cnt - sent;
+> +	sent = dev->netdev_ops->ndo_xdp_xmit(dev, sent, bq->q, flags);
+>  	if (sent < 0) {
+>  		err = sent;
+>  		sent = 0;
+>  		goto error;
+>  	}
+> -	drops = bq->count - sent;
+>  out:
+> +	drops = cnt - sent;
+>  	bq->count = 0;
+>  
+>  	trace_xdp_devmap_xmit(bq->dev_rx, dev, sent, drops, err);
+>  	bq->dev_rx = NULL;
+> +	bq->xdp_prog = NULL;
+>  	__list_del_clearprev(&bq->flush_node);
+>  	return;
+>  error:
+>  	/* If ndo_xdp_xmit fails with an errno, no frames have been
+>  	 * xmit'ed and it's our responsibility to them free all.
+>  	 */
+> -	for (i = 0; i < bq->count; i++) {
+> +	for (i = 0; i < cnt - drops; i++) {
+>  		struct xdp_frame *xdpf = bq->q[i];
+> -
+>  		xdp_return_frame_rx_napi(xdpf);
+> -		drops++;
+>  	}
+>  	goto out;
+
+Although I'm a huge goto advocate, I feel like this particular usage could
+be simplified. Not sure why we had that in first place.
+
+I gave a shot at rewriting/refactoring whole bq_xmit_all and I feel like
+it's more readable. I introduced 'to_send' variable and got rid of 'error'
+label.
+
+Thoughts?
+
+I might have missed something, though.
+
+static void bq_xmit_all(struct xdp_dev_bulk_queue *bq, u32 flags)
+{
+	struct net_device *dev = bq->dev;
+	unsigned int cnt = bq->count;
+	int drops = 0, err = 0;
+	int to_send = 0;
+	int sent = cnt;
+	int i;
+
+	if (unlikely(!cnt))
+		return;
+
+	for (i = 0; i < cnt; i++) {
+		struct xdp_frame *xdpf = bq->q[i];
+
+		prefetch(xdpf);
+	}
+
+	if (bq->xdp_prog) {
+		to_send = dev_map_bpf_prog_run(bq->xdp_prog, bq->q, cnt, dev);
+		if (!to_send) {
+			sent = 0;
+			goto out;
+		}
+	}
+
+	drops = cnt - to_send;
+	sent = dev->netdev_ops->ndo_xdp_xmit(dev, to_send, bq->q, flags);
+	if (sent < 0) {
+		err = sent;
+		sent = 0;
+
+		/* If ndo_xdp_xmit fails with an errno, no frames have been
+		 * xmit'ed and it's our responsibility to them free all.
+		 */
+		for (i = 0; i < cnt - drops; i++) {
+			struct xdp_frame *xdpf = bq->q[i];
+
+			xdp_return_frame_rx_napi(xdpf);
+		}
+	}
+out:
+	drops = cnt - sent;
+	bq->count = 0;
+
+	trace_xdp_devmap_xmit(bq->dev_rx, dev, sent, drops, err);
+	bq->dev_rx = NULL;
+	bq->xdp_prog = NULL;
+	__list_del_clearprev(&bq->flush_node);
+
+	return;
+}
+
+>  }
+> @@ -408,7 +458,7 @@ struct bpf_dtab_netdev *__dev_map_lookup_elem(struct bpf_map *map, u32 key)
+>   * Thus, safe percpu variable access.
+>   */
+>  static void bq_enqueue(struct net_device *dev, struct xdp_frame *xdpf,
+> -		       struct net_device *dev_rx)
+> +		       struct net_device *dev_rx, struct bpf_prog *xdp_prog)
+>  {
+>  	struct list_head *flush_list = this_cpu_ptr(&dev_flush_list);
+>  	struct xdp_dev_bulk_queue *bq = this_cpu_ptr(dev->xdp_bulkq);
+> @@ -423,6 +473,14 @@ static void bq_enqueue(struct net_device *dev, struct xdp_frame *xdpf,
+>  	if (!bq->dev_rx)
+>  		bq->dev_rx = dev_rx;
+>  
+> +	/* Store (potential) xdp_prog that run before egress to dev as
+> +	 * part of bulk_queue.  This will be same xdp_prog for all
+> +	 * xdp_frame's in bulk_queue, because this per-CPU store must
+> +	 * be flushed from net_device drivers NAPI func end.
+> +	 */
+> +	if (!bq->xdp_prog)
+> +		bq->xdp_prog = xdp_prog;
+> +
+>  	bq->q[bq->count++] = xdpf;
+>  
+>  	if (!bq->flush_node.prev)
+> @@ -430,7 +488,8 @@ static void bq_enqueue(struct net_device *dev, struct xdp_frame *xdpf,
+>  }
+>  
+>  static inline int __xdp_enqueue(struct net_device *dev, struct xdp_buff *xdp,
+> -			       struct net_device *dev_rx)
+> +				struct net_device *dev_rx,
+> +				struct bpf_prog *xdp_prog)
+>  {
+>  	struct xdp_frame *xdpf;
+>  	int err;
+> @@ -446,42 +505,14 @@ static inline int __xdp_enqueue(struct net_device *dev, struct xdp_buff *xdp,
+>  	if (unlikely(!xdpf))
+>  		return -EOVERFLOW;
+>  
+> -	bq_enqueue(dev, xdpf, dev_rx);
+> +	bq_enqueue(dev, xdpf, dev_rx, xdp_prog);
+>  	return 0;
+>  }
+>  
+> -static struct xdp_buff *dev_map_run_prog(struct net_device *dev,
+> -					 struct xdp_buff *xdp,
+> -					 struct bpf_prog *xdp_prog)
+> -{
+> -	struct xdp_txq_info txq = { .dev = dev };
+> -	u32 act;
+> -
+> -	xdp_set_data_meta_invalid(xdp);
+> -	xdp->txq = &txq;
+> -
+> -	act = bpf_prog_run_xdp(xdp_prog, xdp);
+> -	switch (act) {
+> -	case XDP_PASS:
+> -		return xdp;
+> -	case XDP_DROP:
+> -		break;
+> -	default:
+> -		bpf_warn_invalid_xdp_action(act);
+> -		fallthrough;
+> -	case XDP_ABORTED:
+> -		trace_xdp_exception(dev, xdp_prog, act);
+> -		break;
+> -	}
+> -
+> -	xdp_return_buff(xdp);
+> -	return NULL;
+> -}
+> -
+>  int dev_xdp_enqueue(struct net_device *dev, struct xdp_buff *xdp,
+>  		    struct net_device *dev_rx)
+>  {
+> -	return __xdp_enqueue(dev, xdp, dev_rx);
+> +	return __xdp_enqueue(dev, xdp, dev_rx, NULL);
+>  }
+>  
+>  int dev_map_enqueue(struct bpf_dtab_netdev *dst, struct xdp_buff *xdp,
+> @@ -489,12 +520,7 @@ int dev_map_enqueue(struct bpf_dtab_netdev *dst, struct xdp_buff *xdp,
+>  {
+>  	struct net_device *dev = dst->dev;
+>  
+> -	if (dst->xdp_prog) {
+> -		xdp = dev_map_run_prog(dev, xdp, dst->xdp_prog);
+> -		if (!xdp)
+> -			return 0;
+> -	}
+> -	return __xdp_enqueue(dev, xdp, dev_rx);
+> +	return __xdp_enqueue(dev, xdp, dev_rx, dst->xdp_prog);
+>  }
+>  
+>  int dev_map_generic_redirect(struct bpf_dtab_netdev *dst, struct sk_buff *skb,
+> -- 
+> 2.26.2
+> 
