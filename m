@@ -2,133 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A60782FD0CA
-	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 13:59:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D948F2FD13B
+	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 14:19:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731714AbhATMwY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jan 2021 07:52:24 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:38098 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1733288AbhATM2b (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 07:28:31 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1611145623;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=RVtx5OM9lrNbMwajYs+XPwUc9ia/t8QLsSQbiLfcync=;
-        b=Byi/47FITHQJHVutreZyzhpzjq72MrPubk4tDeOATKh4tmpWx6MSvwTTMZrqD3hFyPa4HZ
-        NYsEvaW/cqx3vB3gX/gNkLAcy2m/blVbv5NKWoGXxbfbyQzOLyx51EZBO70TVXoBDwBatv
-        xUSmoh+8GeYz5GztSkyUoDeAMSx2TuQ=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-216-sHXGSNbeM1yDDOqFGH6ofQ-1; Wed, 20 Jan 2021 07:26:59 -0500
-X-MC-Unique: sHXGSNbeM1yDDOqFGH6ofQ-1
-Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 1D2D8180A093;
-        Wed, 20 Jan 2021 12:26:57 +0000 (UTC)
-Received: from krava (unknown [10.40.194.35])
-        by smtp.corp.redhat.com (Postfix) with SMTP id 15411614FF;
-        Wed, 20 Jan 2021 12:26:46 +0000 (UTC)
-Date:   Wed, 20 Jan 2021 13:26:46 +0100
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Jiri Olsa <jolsa@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>, dwarves@vger.kernel.org,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Yonghong Song <yhs@fb.com>, Hao Luo <haoluo@google.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Joe Lawrence <joe.lawrence@redhat.com>,
-        Mark Wielaard <mjw@redhat.com>
-Subject: Re: [PATCH bpf-next 3/3] libbpf: Use string table index from index
- table if needed
-Message-ID: <20210120122646.GC1760208@krava>
-References: <20210119221220.1745061-1-jolsa@kernel.org>
- <20210119221220.1745061-4-jolsa@kernel.org>
- <CAEf4BzZNPJZBfz7Ga9MGvGGYge4MCP1O16JVuFjdzu-bCEQFLQ@mail.gmail.com>
+        id S1726981AbhATNSv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jan 2021 08:18:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35482 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732665AbhATNI2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 08:08:28 -0500
+Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A213C061575
+        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 05:07:48 -0800 (PST)
+Received: by mail-io1-xd33.google.com with SMTP id n2so29516436iom.7
+        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 05:07:48 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=TxVlKu1fTmmCpX79Lm0VHrpC5j04Mcyz1Kh6xWJDeqo=;
+        b=J1YZxyHV2scGRU7022bnASDjf5zU28bwzCuezhWalOeXKl4ayTLsUok6SRLnNDJSg5
+         Y1B6qIzL6cdTZPUcadl6OGtiA+BpTnpFfwMtw/iTjtI8BDpAiDHX5/NhFRHEHKBMQDfz
+         G04raxx8XqxUzrrORUO6/mLzUW8adETQCbCfOviT4/z8slA6Jp6KyZ5XhEWCIL3RhPyi
+         v+NE/OOvRzzgBNBu75VKWvbiyKNO8HGLIqQRDFC5va+0di2TtJUEpuahSuWcWsuQxyTM
+         FyEiuhYG7w1bGRTCKNA9Nvr30BH5dNq89obTwc8BI/EU1iXC+6OcQkOhWRbgEKWx5p1p
+         Wunw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=TxVlKu1fTmmCpX79Lm0VHrpC5j04Mcyz1Kh6xWJDeqo=;
+        b=mEl6swHWXPgQ5OIXUS75EKm8TUideyt4+K94cIWNHmPBMieO6D3Y7N3mK/30lUyUn3
+         xDjhH4QmlfZ65dIcIJs6FPWaJ5AVKs3BjF2f7mUAFfWZZzla08GwXLnSj+dJAJF+VlDx
+         eLWV+pcoy5G9MOgcp5ga/ii2q1Tz/tbpTbqaPWrElC8UYE3ZH7VmHbV77xqNQobp82uQ
+         OCc1df4juOv9LGcerENlY7chYmgnmHh5MlAGcRHOYFLDmpqMEPgsdTbmfuGDslBDAMHe
+         YdI462useM1JDJhrVx31QH38OPmmCtRIm8eBiGii72nIkV5cUjNtBoAr6y72ITAEb3fe
+         9t9A==
+X-Gm-Message-State: AOAM532yvpTuFIkGVGtI+lvncyIdgFOiSy/fFdxql0jQY/Z6tsh3Pp88
+        UGVNVYKzMDzKaqoO3zmcE1EFw0pjV1s+fjOgo+8XvU6tQ+Y=
+X-Google-Smtp-Source: ABdhPJxHPhZ9TlTjpGTKFjBUKrRX241UEm6YS/DL50CgsqyeWkdAjprwTxKAUeZKGELEOmwi28nllQz+iClJLL8dCTU=
+X-Received: by 2002:a5d:8a02:: with SMTP id w2mr6955472iod.157.1611148067266;
+ Wed, 20 Jan 2021 05:07:47 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEf4BzZNPJZBfz7Ga9MGvGGYge4MCP1O16JVuFjdzu-bCEQFLQ@mail.gmail.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
+References: <20210118055920.82516-1-kuniyu@amazon.co.jp> <20210119171745.6840e3a5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210119171745.6840e3a5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Wed, 20 Jan 2021 14:07:35 +0100
+Message-ID: <CANn89iLF4SA_En=sLzEdXByA=m93+EoWKngSZtb4SfeE=8uO9A@mail.gmail.com>
+Subject: Re: [PATCH net] tcp: Fix potential use-after-free due to double kfree().
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
+        "David S . Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Kuniyuki Iwashima <kuni1840@gmail.com>,
+        Benjamin Herrenschmidt <benh@amazon.com>,
+        Ricardo Dias <rdias@singlestore.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 19, 2021 at 05:22:08PM -0800, Andrii Nakryiko wrote:
-> On Tue, Jan 19, 2021 at 2:15 PM Jiri Olsa <jolsa@kernel.org> wrote:
+On Wed, Jan 20, 2021 at 2:17 AM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Mon, 18 Jan 2021 14:59:20 +0900 Kuniyuki Iwashima wrote:
+> > Receiving ACK with a valid SYN cookie, cookie_v4_check() allocates struct
+> > request_sock and then can allocate inet_rsk(req)->ireq_opt. After that,
+> > tcp_v4_syn_recv_sock() allocates struct sock and copies ireq_opt to
+> > inet_sk(sk)->inet_opt. Normally, tcp_v4_syn_recv_sock() inserts the full
+> > socket into ehash and sets NULL to ireq_opt. Otherwise,
+> > tcp_v4_syn_recv_sock() has to reset inet_opt by NULL and free the full
+> > socket.
 > >
-> > For very large ELF objects (with many sections), we could
-> > get special value SHN_XINDEX (65535) for elf object's string
-> > table index - e_shstrndx.
+> > The commit 01770a1661657 ("tcp: fix race condition when creating child
+> > sockets from syncookies") added a new path, in which more than one cores
+> > create full sockets for the same SYN cookie. Currently, the core which
+> > loses the race frees the full socket without resetting inet_opt, resulting
+> > in that both sock_put() and reqsk_put() call kfree() for the same memory:
 > >
-> > In such case we need to call elf_getshdrstrndx to get the
-> > proper string table index.
+> >   sock_put
+> >     sk_free
+> >       __sk_free
+> >         sk_destruct
+> >           __sk_destruct
+> >             sk->sk_destruct/inet_sock_destruct
+> >               kfree(rcu_dereference_protected(inet->inet_opt, 1));
 > >
-> > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> > ---
-> >  tools/lib/bpf/btf.c | 14 ++++++++++++--
-> >  1 file changed, 12 insertions(+), 2 deletions(-)
+> >   reqsk_put
+> >     reqsk_free
+> >       __reqsk_free
+> >         req->rsk_ops->destructor/tcp_v4_reqsk_destructor
+> >           kfree(rcu_dereference_protected(inet_rsk(req)->ireq_opt, 1));
 > >
-> > diff --git a/tools/lib/bpf/btf.c b/tools/lib/bpf/btf.c
-> > index 3c3f2bc6c652..4fe987846bc0 100644
-> > --- a/tools/lib/bpf/btf.c
-> > +++ b/tools/lib/bpf/btf.c
-> > @@ -863,6 +863,7 @@ static struct btf *btf_parse_elf(const char *path, struct btf *base_btf,
-> >         Elf_Scn *scn = NULL;
-> >         Elf *elf = NULL;
-> >         GElf_Ehdr ehdr;
-> > +       size_t shstrndx;
+> > Calling kmalloc() between the double kfree() can lead to use-after-free, so
+> > this patch fixes it by setting NULL to inet_opt before sock_put().
 > >
-> >         if (elf_version(EV_CURRENT) == EV_NONE) {
-> >                 pr_warn("failed to init libelf for %s\n", path);
-> > @@ -887,7 +888,16 @@ static struct btf *btf_parse_elf(const char *path, struct btf *base_btf,
-> >                 pr_warn("failed to get EHDR from %s\n", path);
-> >                 goto done;
-> >         }
-> > -       if (!elf_rawdata(elf_getscn(elf, ehdr.e_shstrndx), NULL)) {
-> > +
-> > +       /*
-> > +        * Get string table index from extended section index
-> > +        * table if needed.
-> > +        */
-> > +       shstrndx = ehdr.e_shstrndx;
-> > +       if (shstrndx == SHN_XINDEX && elf_getshdrstrndx(elf, &shstrndx))
-> > +               goto done;
-> 
-> just use elf_getshdrstrndx() unconditionally, it works for extended
-> and non-extended numbering (see libbpf.c).
+> > As a side note, this kind of issue does not happen for IPv6. This is
+> > because tcp_v6_syn_recv_sock() clones both ipv6_opt and pktopts which
+> > correspond to ireq_opt in IPv4.
+> >
+> > Fixes: 01770a166165 ("tcp: fix race condition when creating child sockets from syncookies")
+> > CC: Ricardo Dias <rdias@singlestore.com>
+> > Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+> > Reviewed-by: Benjamin Herrenschmidt <benh@amazon.com>
+>
+> Ricardo, Eric, any reason this was written this way?
 
-I did not see that, ok
+Well, I guess that was a plain bug.
 
-thanks,
-jirka
+IPv4 options are not used often I think.
 
-> 
-> > +
-> > +       if (!elf_rawdata(elf_getscn(elf, shstrndx), NULL)) {
-> >                 pr_warn("failed to get e_shstrndx from %s\n", path);
-> >                 goto done;
-> >         }
-> > @@ -902,7 +912,7 @@ static struct btf *btf_parse_elf(const char *path, struct btf *base_btf,
-> >                                 idx, path);
-> >                         goto done;
-> >                 }
-> > -               name = elf_strptr(elf, ehdr.e_shstrndx, sh.sh_name);
-> > +               name = elf_strptr(elf, shstrndx, sh.sh_name);
-> >                 if (!name) {
-> >                         pr_warn("failed to get section(%d) name from %s\n",
-> >                                 idx, path);
-> > --
-> > 2.27.0
-> >
-> 
-
+Reviewed-by: Eric Dumazet <edumazet@google.com>
