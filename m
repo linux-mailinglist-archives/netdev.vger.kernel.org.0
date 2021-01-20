@@ -2,69 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F205B2FDB0F
-	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 21:44:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A948C2FDB1A
+	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 21:47:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388729AbhATUnC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jan 2021 15:43:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48144 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388535AbhATUkO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 15:40:14 -0500
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 430CFC0613C1;
-        Wed, 20 Jan 2021 12:39:34 -0800 (PST)
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.94)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1l2KGJ-009HTe-2E; Wed, 20 Jan 2021 21:39:31 +0100
-Message-ID: <16d5ca0467273e2d6f3830a161fe84de104447a6.camel@sipsolutions.net>
-Subject: Re: pull-request: mac80211 2021-01-18.2
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org
-Date:   Wed, 20 Jan 2021 21:39:29 +0100
-In-Reply-To: <20210120123752.636659d1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <20210118204750.7243-1-johannes@sipsolutions.net>
-         <161101020906.2232.13826999223880000897.git-patchwork-notify@kernel.org>
-         <c066813abc5830eb094ae0c343a71e88b775b441.camel@sipsolutions.net>
-         <20210120123752.636659d1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+        id S2388787AbhATUoB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jan 2021 15:44:01 -0500
+Received: from mail.kernel.org ([198.145.29.99]:45372 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2388782AbhATUlB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 20 Jan 2021 15:41:01 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id AD403235DD;
+        Wed, 20 Jan 2021 20:40:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1611175219;
+        bh=J9gJsDe4PT7BikWljJQxv0oXaAShLH+MI1eVrEhcyKU=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=GaT1G6JfBOX6/Mn0nhcSNTLbi43lRqbQeE0V4QXDPNCu6WGwy7LnSI8Gh7pll0nvU
+         lj/sVzsBPl2RRCcs2ne5VKlbgUxSMZnrZo8/+FmfRvmKJF25JfLw8BiPHYjBvzcuat
+         SsryyJD+zY6JZbslLSDyFCWeQ4YnG+9LN7CtjRJbsqJxK107lIo/vEsrLhCRvI2v1R
+         TjH4qR4LEN54UD3iPhZwuAn5L+j33ytxamX7J5uxISQJ4+9D6J5pAy0NaiVMz6LgtC
+         Wd3qr+lJ97XBduCcKx69S+EnDKy/6F5YdwEzOjMG3iX+o7LPH0X2WhiLqO4qCYKUk7
+         q5dUEArIMXG2w==
+Received: from pdx-korg-docbuild-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-1.ci.codeaurora.org (Postfix) with ESMTP id A1F2960192;
+        Wed, 20 Jan 2021 20:40:19 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-malware-bazaar: not-scanned
+Content-Transfer-Encoding: 8bit
+Subject: Re: [net 1/3] can: dev: can_restart: fix use after free bug
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161117521965.21178.935318491555433677.git-patchwork-notify@kernel.org>
+Date:   Wed, 20 Jan 2021 20:40:19 +0000
+References: <20210120125202.2187358-2-mkl@pengutronix.de>
+In-Reply-To: <20210120125202.2187358-2-mkl@pengutronix.de>
+To:     Marc Kleine-Budde <mkl@pengutronix.de>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        linux-can@vger.kernel.org, kernel@pengutronix.de,
+        mailhol.vincent@wanadoo.fr
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 2021-01-20 at 12:37 -0800, Jakub Kicinski wrote:
-> On Wed, 20 Jan 2021 18:59:21 +0100 Johannes Berg wrote:
-> > Hi Jakub,
-> > 
-> > > This pull request was applied to netdev/net.git (refs/heads/master):  
-> > 
-> > Since you pulled this now, question:
-> > 
-> > I have some pending content for mac80211-next/net-next that either
-> > conflicts with or requires a fix from here, or such.
-> > 
-> > Could you pull net into net-next, so I can get it into mac80211-next? Or
-> > do you prefer another approach here? I could also double-apply the
-> > single patch, or pull myself but then we'd get a lot of net content into
-> > net-next only via mac80211-next which seems odd.
+Hello:
+
+This series was applied to netdev/net-next.git (refs/heads/master):
+
+On Wed, 20 Jan 2021 13:52:00 +0100 you wrote:
+> From: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 > 
-> Just merged net -> net-next, you can do your thing :)
+> After calling netif_rx_ni(skb), dereferencing skb is unsafe.
+> Especially, the can_frame cf which aliases skb memory is accessed
+> after the netif_rx_ni() in:
+>       stats->rx_bytes += cf->len;
+> 
+> [...]
 
-Ok cool, thanks.
+Here is the summary with links:
+  - [net,1/3] can: dev: can_restart: fix use after free bug
+    https://git.kernel.org/netdev/net-next/c/03f16c5075b2
+  - [net,2/3] can: vxcan: vxcan_xmit: fix use after free bug
+    https://git.kernel.org/netdev/net-next/c/75854cad5d80
+  - [net,3/3] can: peak_usb: fix use after free bugs
+    https://git.kernel.org/netdev/net-next/c/50aca891d7a5
 
-> Out of curiosity are you going to rebase mac80211-next or send a PR,
-> fast forward and then apply the conflicting patches?
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-Normally I'd send a PR for it and then fast-forward.
-
-However, it's actually empty at the moment, so I'm just going to fast-
-forward it to net-next before I apply the next patches :-)
-
-johannes
 
