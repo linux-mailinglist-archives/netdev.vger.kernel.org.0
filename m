@@ -2,145 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 52E872FDF45
-	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 03:31:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 879292FDFBD
+	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 03:57:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404431AbhATXyw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jan 2021 18:54:52 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:49246 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2390742AbhATWye (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 17:54:34 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1611183187;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=LP0iiQuizg9LomNFlz79SVokUpxYY8lm5HUjpUc5rfc=;
-        b=MG8tT2WdJ4OTMTVBc3knZE91TSWT984EozJjN9wCjK77V+IVZtf+dxF4uZat1fYkMicOHZ
-        fQzwtt5ml90JtmwdzMBMDqE+6Nw+5XIRuFz4YEqZpB+4pkEfgNRJLVEEXalOrYtZ1YPshQ
-        Jfke08VmFZWgh/Ij+TyvWX1GWouSe0E=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-111-Ox147a_8MbCpG6Q2Jqcg1w-1; Wed, 20 Jan 2021 17:36:04 -0500
-X-MC-Unique: Ox147a_8MbCpG6Q2Jqcg1w-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A9C51AFAA1;
-        Wed, 20 Jan 2021 22:35:58 +0000 (UTC)
-Received: from krava (unknown [10.40.194.35])
-        by smtp.corp.redhat.com (Postfix) with SMTP id 351176A8E6;
-        Wed, 20 Jan 2021 22:35:47 +0000 (UTC)
-Date:   Wed, 20 Jan 2021 23:35:46 +0100
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Sedat Dilek <sedat.dilek@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@redhat.com>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Namhyung Kim <namhyung@kernel.org>,
-        Shuah Khan <shuah@kernel.org>,
-        Nathan Chancellor <natechancellor@gmail.com>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Quentin Monnet <quentin@isovalent.com>,
-        Jean-Philippe Brucker <jean-philippe@linaro.org>,
-        Tobias Klauser <tklauser@distanz.ch>,
-        Ilya Leoshkevich <iii@linux.ibm.com>,
-        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
-        Yulia Kartseva <hex@fb.com>, Andrey Ignatov <rdna@fb.com>,
-        Thomas Hebb <tommyhebb@gmail.com>,
-        Stephane Eranian <eranian@google.com>,
-        "Frank Ch. Eigler" <fche@redhat.com>,
-        Masami Hiramatsu <mhiramat@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Davide Caratti <dcaratti@redhat.com>,
-        Briana Oursler <briana.oursler@gmail.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        clang-built-linux@googlegroups.com
-Subject: Re: [PATCH RFC] tools: Factor Clang, LLC and LLVM utils definitions
-Message-ID: <20210120223546.GF1798087@krava>
-References: <20210116095413.72820-1-sedat.dilek@gmail.com>
+        id S2404650AbhATXzr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jan 2021 18:55:47 -0500
+Received: from mail.kernel.org ([198.145.29.99]:47970 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2404189AbhATXdl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 20 Jan 2021 18:33:41 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E5A8122B2A;
+        Wed, 20 Jan 2021 23:32:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1611185580;
+        bh=t2Zln7DBJVyoGoKcei8JH3sZLU0upaVxfgzcLoCEak4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=IzFlscfenbfXq3lZ44nay0YFMe3UwqmavlsSN6E94KeAJamdbc6Xc1cJiB3HERtgE
+         0WBwCVJdOO+nfa4vxRDGvV6vK8R+H2+5xoFDT5BIOmNSkGF1nsLWWbzDaUV5GkbtjN
+         wox04NN9fc0tEX/akjnaJgktQGG0Z+srQbXojsz/bDKCa3e1gm50c4O7hNnotLXH/B
+         RjUryg38Slzs+lJwdSB5p2FZNodS64mqnMJoeuLBomclL4labcgVwxbVlcYDN30Z5s
+         rwkaCnva15hu2Dr3tLFKTIMoRwvegZsP7YOVsnXaMo24etbpai46WrjjJogFZW9FbA
+         1lXsiY4NcOjNA==
+Date:   Wed, 20 Jan 2021 15:32:55 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     =?UTF-8?B?QmrDuHJu?= Mork <bjorn@mork.no>,
+        M Chetan Kumar <m.chetan.kumar@intel.com>,
+        netdev@vger.kernel.org, linux-wireless@vger.kernel.org,
+        johannes@sipsolutions.net, krishna.c.sudi@intel.com
+Subject: Re: [PATCH 17/18] net: iosm: readme file
+Message-ID: <20210120153255.4fcf7e32@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <YAiF2/lMGZ0mPUSK@lunn.ch>
+References: <20210107170523.26531-1-m.chetan.kumar@intel.com>
+        <20210107170523.26531-18-m.chetan.kumar@intel.com>
+        <X/eJ/rl4U6edWr3i@lunn.ch>
+        <87turftqxt.fsf@miraculix.mork.no>
+        <YAiF2/lMGZ0mPUSK@lunn.ch>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210116095413.72820-1-sedat.dilek@gmail.com>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jan 16, 2021 at 10:54:04AM +0100, Sedat Dilek wrote:
-> When dealing with BPF/BTF/pahole and DWARF v5 I wanted to build bpftool.
-> 
-> While looking into the source code I found duplicate assignments
-> in misc tools for the LLVM eco system, e.g. clang and llvm-objcopy.
-> 
-> Move the Clang, LLC and/or LLVM utils definitions to
-> tools/scripts/Makefile.include file and add missing
-> includes where needed.
-> Honestly, I was inspired by commit c8a950d0d3b9
-> ("tools: Factor HOSTCC, HOSTLD, HOSTAR definitions").
-> 
-> I tested with bpftool and perf on Debian/testing AMD64 and
-> LLVM/Clang v11.1.0-rc1.
-> 
-> Build instructions:
-> 
-> [ make and make-options ]
-> MAKE="make V=1"
-> MAKE_OPTS="HOSTCC=clang HOSTCXX=clang++ HOSTLD=ld.lld CC=clang LD=ld.lld LLVM=1 LLVM_IAS=1"
-> MAKE_OPTS="$MAKE_OPTS PAHOLE=/opt/pahole/bin/pahole"
-> 
-> [ clean-up ]
-> $MAKE $MAKE_OPTS -C tools/ clean
-> 
-> [ bpftool ]
-> $MAKE $MAKE_OPTS -C tools/bpf/bpftool/
-> 
-> [ perf ]
-> PYTHON=python3 $MAKE $MAKE_OPTS -C tools/perf/
-> 
-> I was careful with respecting the user's wish to override custom compiler,
-> linker, GNU/binutils and/or LLVM utils settings.
-> 
-> Some personal notes:
-> 1. I have NOT tested with cross-toolchain for other archs (cross compiler/linker etc.).
-> 2. This patch is on top of Linux v5.11-rc3.
-> 
-> I hope to get some feedback from especially Linux-bpf folks.
-> 
-> Signed-off-by: Sedat Dilek <sedat.dilek@gmail.com>
-> ---
->  tools/bpf/bpftool/Makefile                  | 2 --
->  tools/bpf/runqslower/Makefile               | 3 ---
->  tools/build/feature/Makefile                | 4 ++--
->  tools/perf/Makefile.perf                    | 1 -
+On Wed, 20 Jan 2021 20:34:51 +0100 Andrew Lunn wrote:
+> On Sun, Jan 17, 2021 at 06:26:54PM +0100, Bj=C3=B8rn Mork wrote:
+> > I was young and stupid. Now I'm not that young anymore ;-) =20
+>=20
+> We all make mistakes, when we don't have the knowledge there are other
+> ways. That is partially what code review is about.
+>=20
+> > Never ever imagined that this would be replicated in another driver,
+> > though.  That doesn't really make much sense.  We have learned by now,
+> > haven't we?  This subject has been discussed a few times in the past,
+> > and Johannes summary is my understanding as well:
+> > "I don't think anyone likes that" =20
+>=20
+> So there seems to be agreement there. But what is not clear, is
+> anybody willing to do the work to fix this, and is there enough ROI.
+>=20
+> Do we expect more devices like this? Will 6G, 7G modems look very
+> different?=20
 
-for tools/build and tools/perf
+Didn't Intel sell its 5G stuff off to Apple?
 
-Acked-by: Jiri Olsa <jolsa@redhat.com>
+> Be real network devices and not need any of this odd stuff?
+> Or will they be just be incrementally better but mostly the same?
+>=20
+> I went into the review thinking it was an Ethernet driver, and kept
+> having WTF moments. Now i know it is not an Ethernet driver, i can say
+> it is not my domain, i don't know the field well enough to say if all
+> these hacks are acceptable or not.
+>=20
+> It probably needs David and Jakub to set the direction to be followed.
 
-jirka
-
->  tools/scripts/Makefile.include              | 7 +++++++
->  tools/testing/selftests/bpf/Makefile        | 3 +--
->  tools/testing/selftests/tc-testing/Makefile | 3 +--
->  7 files changed, 11 insertions(+), 12 deletions(-)
-> 
-> diff --git a/tools/bpf/bpftool/Makefile b/tools/bpf/bpftool/Makefile
-> index f897cb5fb12d..71c14efa6e91 100644
-> --- a/tools/bpf/bpftool/Makefile
-> +++ b/tools/bpf/bpftool/Makefile
-
-SNIP
-
+AFAIU all those cellar modems are relatively slow and FW-heavy, so the
+ideal solution IMO is not even a common kernel interface but actually
+a common device interface, like NVMe (or virtio for lack of better
+examples).
