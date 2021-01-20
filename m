@@ -2,102 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 65AC92FDC92
-	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 23:29:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E34CA2FDD03
+	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 00:40:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728093AbhATWVY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jan 2021 17:21:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38372 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732565AbhATWFw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 17:05:52 -0500
-Received: from mail-io1-xd2f.google.com (mail-io1-xd2f.google.com [IPv6:2607:f8b0:4864:20::d2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08E5BC061796
-        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 14:04:11 -0800 (PST)
-Received: by mail-io1-xd2f.google.com with SMTP id n2so70843iom.7
-        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 14:04:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=GEkZShmIoWIOHRSj/dMYdcTQJIFBlR5LmZuBGxQqt0o=;
-        b=KGqxBRhWG0wQED0/oG28azKJHeU2ExraE2jLPSU6GHG05vMtlgk4Gmn2w8JmfNqATL
-         gvmiDftAv2x5Si3uR/G9iHV7tXuEfPzG5EJEg8T9S5Iu4MJlUk0VfXCcmt4/V+bSMeGI
-         NG3IAmA67S5jo3tKSp43Hf5+hsp4uyZ42jLQSR4x7wSECOXHqE78ZwOVUydn/BT/g0YS
-         QJplMcQrQjW4Q1r1+A2r5D3KLeqZlpUriBZGJE3jAZbm0g3OQwR1HMg6ZTl32cjIpuwn
-         28sdghpNDr1JpHHybKBPBwgm2ka36SPFxXA5xA0dYfSpA5snWcaY0yOPIvV7XvX92p/7
-         6YtQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=GEkZShmIoWIOHRSj/dMYdcTQJIFBlR5LmZuBGxQqt0o=;
-        b=RRJudVeBjfKf+zBfA+uAENAQeGc0Z7bqL0Ngj79zXQyOYAMZ9ywPg7OaoKUupiF1b3
-         ocfwmejVR5lpT9vGeR9vxWn348zu+nllFcwelfPi9anFVIYqkgnnWYTkxInoqQ/dwilV
-         2EVcpCGX4t5+IKHfewoOc1+/V8YForAyVuOuA3gMeOF7+JKww2v1v2CLxOqLl7K/ULCw
-         nNFnxsnRPiiswSmqq/wmS4xLsxLFyLmTEjWyhVoarjGixDoWvz9BCs5Ruf0EIM3FefCS
-         qjDP9b7swSZFgXxRGNInYaR80mucRe8JDMPA2Nh9DlLaOoemk6X76cpYnvhzXNMeO4bz
-         PEKg==
-X-Gm-Message-State: AOAM531bGc+acK9aGr9bZoYxfd2BqQfI9oPNBMF4+egtQDQOAXI81l9Z
-        4B/czRg873rlhTfI6xmriN9Vcg==
-X-Google-Smtp-Source: ABdhPJz2u+wj/uWyrtTZvNr4EsCAVe4GjHDztu5zONdati2xLCvfuJvsMzikKq8P6MFM2wNiFuQSmw==
-X-Received: by 2002:a05:6638:164c:: with SMTP id a12mr9475468jat.128.1611180250424;
-        Wed, 20 Jan 2021 14:04:10 -0800 (PST)
-Received: from beast.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id e5sm1651712ilu.27.2021.01.20.14.04.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Jan 2021 14:04:09 -0800 (PST)
-From:   Alex Elder <elder@linaro.org>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     elder@kernel.org, evgreen@chromium.org, bjorn.andersson@linaro.org,
-        cpratapa@codeaurora.org, subashab@codeaurora.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next 5/5] net: ipa: disable IEOB interrupts before clearing
-Date:   Wed, 20 Jan 2021 16:04:01 -0600
-Message-Id: <20210120220401.10713-6-elder@linaro.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20210120220401.10713-1-elder@linaro.org>
-References: <20210120220401.10713-1-elder@linaro.org>
+        id S1732795AbhATWLy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jan 2021 17:11:54 -0500
+Received: from mail.kernel.org ([198.145.29.99]:51122 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2387591AbhATVLS (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 20 Jan 2021 16:11:18 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E3A8C235FF
+        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 21:10:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1611177037;
+        bh=FdjJoQjlwlPK5YeYe9dhzVIDHP27es9c4+ZmKd/gF8c=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=JTVYDh5zoSaxansiwcolBVdoVFJOmHopFrvLTluv5dsQK0S27YASPL17iXikx+QFS
+         ISRSio64Kd9SuPniJgNOei+BV04cDz6ZCwUyZzr16M1/ApLJAVBqh30NE0e96Vu9PY
+         kp1Gz38wYwHRaTwiIqJcqrzwlx+ZY9TTVlh6DTSQVaqSn5K/+3l39y/V1A0mYM+k+U
+         ebXmrtd0PHMHuwHvTGjC40UhLVFtJcdRPOzlV5t6xR14RUa/CqIGjM7BhJfOzNVNL6
+         NVvNoBx2hHhjBqFJBJAtzL7RFaf8ttXcSnJ7RURaEbZd/W+e1B9rWc6lW72naYPuQe
+         4F64l/OLP8gjg==
+Received: by mail-lj1-f182.google.com with SMTP id u11so54747ljo.13
+        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 13:10:36 -0800 (PST)
+X-Gm-Message-State: AOAM532T4Yjcx5VlKTnMDyhpeR3fJPNSXldgzZG+K3rQ/qcrbbZ/sNxs
+        PHvXJVeJSD480fZGqMFArd4cfpnmRqpkvHNIVH9+gQ==
+X-Google-Smtp-Source: ABdhPJzMaH9gaeKVcdbZyNCCSDkKeb84hwunkUzNtm9RVgiEVmMah1g76Zay0YS2b0I/93QAfuyG0alUSve0BmsdbA8=
+X-Received: by 2002:a2e:a377:: with SMTP id i23mr5652583ljn.103.1611177035079;
+ Wed, 20 Jan 2021 13:10:35 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210119114624.60400-1-bianpan2016@163.com> <CAADnVQJr0idctwt53eD3dFmbZ_upLT6_7jc4raD825aPi640sA@mail.gmail.com>
+In-Reply-To: <CAADnVQJr0idctwt53eD3dFmbZ_upLT6_7jc4raD825aPi640sA@mail.gmail.com>
+From:   KP Singh <kpsingh@kernel.org>
+Date:   Wed, 20 Jan 2021 22:10:24 +0100
+X-Gmail-Original-Message-ID: <CACYkzJ4=q6_VtLp4iuf0DCc1vD=v9NbH3WDypH8phFTm5JMDgw@mail.gmail.com>
+Message-ID: <CACYkzJ4=q6_VtLp4iuf0DCc1vD=v9NbH3WDypH8phFTm5JMDgw@mail.gmail.com>
+Subject: Re: [PATCH] bpf: put file handler if no storage found
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Cc:     Pan Bian <bianpan2016@163.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Currently in gsi_isr_ieob(), event ring IEOB interrupts are disabled
-one at a time.  The loop disables the IEOB interrupt for all event
-rings represented in the event mask.  Instead, just disable them all
-at once.
+On Wed, Jan 20, 2021 at 8:23 PM Alexei Starovoitov
+<alexei.starovoitov@gmail.com> wrote:
+>
+> On Tue, Jan 19, 2021 at 4:03 AM Pan Bian <bianpan2016@163.com> wrote:
+> >
+> > Put file f if inode_storage_ptr() returns NULL.
+> >
+> > Signed-off-by: Pan Bian <bianpan2016@163.com>
 
-Disable them all *before* clearing the interrupt condition.  This
-guarantees we'll schedule NAPI for each event once, before another
-IEOB interrupt could be signaled.
+Thanks for fixing this! (You can add my ack with the fixes tag when
+you resubmit)
 
-Signed-off-by: Alex Elder <elder@linaro.org>
----
- drivers/net/ipa/gsi.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Fixes: 8ea636848aca ("bpf: Implement bpf_local_storage for inodes")
+Acked-by: KP Singh <kpsingh@kernel.org>
 
-diff --git a/drivers/net/ipa/gsi.c b/drivers/net/ipa/gsi.c
-index 59fc22347a257..8498326c43f40 100644
---- a/drivers/net/ipa/gsi.c
-+++ b/drivers/net/ipa/gsi.c
-@@ -1205,6 +1205,7 @@ static void gsi_isr_ieob(struct gsi *gsi)
- 	u32 event_mask;
- 
- 	event_mask = ioread32(gsi->virt + GSI_CNTXT_SRC_IEOB_IRQ_OFFSET);
-+	gsi_irq_ieob_disable(gsi, event_mask);
- 	iowrite32(event_mask, gsi->virt + GSI_CNTXT_SRC_IEOB_IRQ_CLR_OFFSET);
- 
- 	while (event_mask) {
-@@ -1212,7 +1213,6 @@ static void gsi_isr_ieob(struct gsi *gsi)
- 
- 		event_mask ^= BIT(evt_ring_id);
- 
--		gsi_irq_ieob_disable_one(gsi, evt_ring_id);
- 		napi_schedule(&gsi->evt_ring[evt_ring_id].channel->napi);
- 	}
- }
--- 
-2.20.1
-
+> > ---
+> >  kernel/bpf/bpf_inode_storage.c | 6 +++++-
+> >  1 file changed, 5 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/kernel/bpf/bpf_inode_storage.c b/kernel/bpf/bpf_inode_storage.c
+> > index 6edff97ad594..089d5071d4fc 100644
+> > --- a/kernel/bpf/bpf_inode_storage.c
+> > +++ b/kernel/bpf/bpf_inode_storage.c
+> > @@ -125,8 +125,12 @@ static int bpf_fd_inode_storage_update_elem(struct bpf_map *map, void *key,
+> >
+> >         fd = *(int *)key;
+> >         f = fget_raw(fd);
+> > -       if (!f || !inode_storage_ptr(f->f_inode))
+> > +       if (!f)
+> > +               return -EBADF;
+> > +       if (!inode_storage_ptr(f->f_inode)) {
+> > +               fput(f);
+> >                 return -EBADF;
+> > +       }
+>
+> Good catch.
+> Somehow the patch is not in patchwork.
+> Could you please resubmit with Fixes tag and reduce cc list?
+> I guess it's hitting some spam filters in vger.
