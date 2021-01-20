@@ -2,132 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3ACF82FCDB0
-	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 10:59:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 473912FCED4
+	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 12:12:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729814AbhATJXd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jan 2021 04:23:33 -0500
-Received: from out1-smtp.messagingengine.com ([66.111.4.25]:53515 "EHLO
-        out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730495AbhATJPx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 04:15:53 -0500
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 737185C00D0;
-        Wed, 20 Jan 2021 04:14:41 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Wed, 20 Jan 2021 04:14:41 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=uIH4wy
-        PjOm/CaxTAI6CY9qlQfNYFT5GrpNvNSdqxucg=; b=rCkBb2f1by+mKc+iUbf1aM
-        wnqSCWWDvox9c4tzj5JOX8RPOWHSjv6wUDOmH9YQ+5zzjRhlOlhcc+Aba+Zer+VU
-        SEjoOTz8j0RLPPZ97O/AXk4v8ah+xL1OAS09WppfTb1U4KnyGo+ApwnxR3YFyNMv
-        Fsiks77x8uadUy+XkZTw6iBfeouu4A6KSQDJ/c9sBq9hlTl77Gxyvbz31aTy1V9t
-        kkWoxcWhw/iQeGrZqjMMiSikVZbK2MZeuDEA6B361v0U2CnS9VYZSuCT6bZmU75X
-        AI2cA4R0febEXH0rRKhmorq1suakIcOwOyAwZZxO6OtzHmQFoCtN3a7NBDbDtbYQ
-        ==
-X-ME-Sender: <xms:gfQHYEb4M1ommoy5hbuhBYNeHWR9K-wAW_eRXXTO9jEmcQc3kkyMwA>
-    <xme:gfQHYPa1rfU3f70ZkF_hdKONM3vVOxZFiUgt3mdt11oxstc3hl66VJxld-2yX4l3S
-    S3KrgRJHva9sk4>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledruddvgddtfecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecunecujfgurhepfffhvffukfhfgggtuggjsehttdertd
-    dttddvnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhs
-    tghhrdhorhhgqeenucggtffrrghtthgvrhhnpedtffekkeefudffveegueejffejhfetgf
-    euuefgvedtieehudeuueekhfduheelteenucfkphepkeegrddvvdelrdduheefrdeggeen
-    ucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughosh
-    gthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:gfQHYO_Vmbae7raGZCWULueByw0zqYXK_agMz3IcqgTv721yCtsm1Q>
-    <xmx:gfQHYOo87LRRXD2djZpK7sFoE0GS5_YvlYYdjv0GjI50Uh7stX4IUw>
-    <xmx:gfQHYPrvS5dqFdYK04Zytywz4uDOfTOQpp5S9I3Z_RtI1ej2t4k09w>
-    <xmx:gfQHYAmSjt1-h3NwvhFVh43vxWXf_gwdoSDNGpTXrDlG964kbg6v_A>
-Received: from localhost (igld-84-229-153-44.inter.net.il [84.229.153.44])
-        by mail.messagingengine.com (Postfix) with ESMTPA id BACD0108005B;
-        Wed, 20 Jan 2021 04:14:40 -0500 (EST)
-Date:   Wed, 20 Jan 2021 11:14:37 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, petrm@nvidia.com,
-        jiri@nvidia.com, amcohen@nvidia.com, mlxsw@nvidia.com,
-        Ido Schimmel <idosch@nvidia.com>
-Subject: Re: [PATCH net-next 0/5] mlxsw: Add support for RED qevent "mark"
-Message-ID: <20210120091437.GA2591869@shredder.lan>
-References: <20210117080223.2107288-1-idosch@idosch.org>
- <20210119142255.1caca7fb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S1730346AbhATLJO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jan 2021 06:09:14 -0500
+Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:18047 "EHLO
+        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731533AbhATJiJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 04:38:09 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B6007f9d80000>; Wed, 20 Jan 2021 01:37:28 -0800
+Received: from dev-r-vrt-156.mtr.labs.mlnx (172.20.145.6) by
+ HQMAIL107.nvidia.com (172.20.187.13) with Microsoft SMTP Server (TLS) id
+ 15.0.1473.3; Wed, 20 Jan 2021 09:37:25 +0000
+From:   Danielle Ratson <danieller@nvidia.com>
+To:     <netdev@vger.kernel.org>
+CC:     <davem@davemloft.net>, <kuba@kernel.org>, <jiri@nvidia.com>,
+        <andrew@lunn.ch>, <f.fainelli@gmail.com>, <mkubecek@suse.cz>,
+        <mlxsw@nvidia.com>, <idosch@nvidia.com>,
+        Danielle Ratson <danieller@nvidia.com>
+Subject: [PATCH net-next v3 0/7] Support setting lanes via ethtool
+Date:   Wed, 20 Jan 2021 11:37:06 +0200
+Message-ID: <20210120093713.4000363-1-danieller@nvidia.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210119142255.1caca7fb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
+X-Originating-IP: [172.20.145.6]
+X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1611135448; bh=Vdpd6/Xia9xow9mF96nY3CfNrbb2FXETyM8EzE7yLj4=;
+        h=From:To:CC:Subject:Date:Message-ID:X-Mailer:MIME-Version:
+         Content-Transfer-Encoding:Content-Type:X-Originating-IP:
+         X-ClientProxiedBy;
+        b=q8SImyKSGY+7YmmzNOmaXFT3kygczZ+YjAXbyf5noEn+e9XCdhjnyfSZ/f3ajb2hj
+         uNlYn3B1xMp+VUdus8l8bVin4nIqG/1ZHYNFNSh6En78dez0fqxO9RNP3ZzaCEC8C0
+         iQhOC+rW/odU8GKIUijlEhYPnVDGNbneNmYZA0Xzi4+8tGihdi9AMlRtBV5vEPd6NX
+         9I6Sl9lw7qACqxi+sM+m5YvbTrSM6t3TrysfsXeVw+W+yUInFGqkWi68ZaCa45ONri
+         2g/7EKLO50wezUHeVQcocf4iAVhzTotum2HYk3RFGZtTDfS92ySK7lA22OyTasI7Vu
+         q9oSUiOL87z8g==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 19, 2021 at 02:22:55PM -0800, Jakub Kicinski wrote:
-> On Sun, 17 Jan 2021 10:02:18 +0200 Ido Schimmel wrote:
-> > From: Ido Schimmel <idosch@nvidia.com>
-> > 
-> > The RED qdisc currently supports two qevents: "early_drop" and "mark". The
-> > filters added to the block bound to the "early_drop" qevent are executed on
-> > packets for which the RED algorithm decides that they should be
-> > early-dropped. The "mark" filters are similarly executed on ECT packets
-> > that are marked as ECN-CE (Congestion Encountered).
-> > 
-> > A previous patchset has offloaded "early_drop" filters on Spectrum-2 and
-> > later, provided that the classifier used is "matchall", that the action
-> > used is either "trap" or "mirred", and a handful or further limitations.
-> 
-> For early_drop trap or mirred makes obvious sense, no explanation
-> needed.
-> 
-> But for marked as a user I'd like to see a _copy_ of the packet, 
-> while the original continues on its marry way to the destination.
-> I'd venture to say that e.g. for a DCTCP deployment mark+trap is
-> unusable, at least for tracing, because it distorts the operation 
-> by effectively dropping instead of marking.
-> 
-> Am I reading this right?
+Some speeds can be achieved with different number of lanes. For example,
+100Gbps can be achieved using two lanes of 50Gbps or four lanes of
+25Gbps. This patchset adds a new selector that allows ethtool to
+advertise link modes according to their number of lanes and also force a
+specific number of lanes when autonegotiation is off.
 
-You get a copy of the packet as otherwise it will create a lot of
-problems (like you wrote).
+Advertising all link modes with a speed of 100Gbps that use two lanes:
 
-> 
-> If that is the case and you really want to keep the mark+trap
-> functionality - I feel like at least better documentation is needed.
-> The current two liner should also be rewritten, quoting from patch 1:
-> 
-> > * - ``ecn_mark``
-> >   - ``drop``
-> >   - Traps ECN-capable packets that were marked with CE (Congestion
-> >     Encountered) code point by RED algorithm instead of being dropped
-> 
-> That needs to say that the trap is for datagrams trapped by a qevent.
-> Otherwise "Traps ... instead of being dropped" is too much of a
-> thought-shortcut, marked packets are not dropped.
-> 
-> (I'd also think that trap is better documented next to early_drop,
-> let's look at it from the reader's perspective)
+$ ethtool -s swp1 speed 100000 lanes 2 autoneg on
 
-How about:
+Forcing a speed of 100Gbps using four lanes:
 
-"Traps a copy of ECN-capable packets that were marked with CE
-(Congestion Encountered) code point by RED algorithm instead of being
-dropped. The trap is enabled by attaching a filter with action 'trap' to
-the 'mark' qevent of the RED qdisc."
+$ ethtool -s swp1 speed 100000 lanes 4 autoneg off
 
-In addition, this output:
+Patchset overview:
 
-$ devlink trap show pci/0000:06:00.0 trap ecn_mark 
-pci/0000:06:00.0:
-  name ecn_mark type drop generic true action trap group buffer_drops
+Patch #1 allows user space to configure the desired number of lanes.
 
-Can be converted to:
+Patch #2-#3 adjusts ethtool to dump to user space the number of lanes
+currently in use.
 
-$ devlink trap show pci/0000:06:00.0 trap ecn_mark 
-pci/0000:06:00.0:
-  name ecn_mark type drop generic true action mirror group buffer_drops
+Patches #4-#6 add support for lanes configuration in mlxsw.
 
-"mirror: The packet is forwarded by the underlying device and a copy is sent to
-the CPU."
+Patch #7 adds a selftest.
 
-In this case the action is static and you cannot change it.
+v3:
+	* Patch #1: Change ethtool_ops.capabilities to be a bitfield,
+	  and set min and max for the lanes policy.
+	* Patch #2: Remove LINK_MODE_UNKNOWN and move the speed, duplex
+	  and lanes derivation to the wrapper
+	  __ethtool_get_link_ksettings().
+	* Patch #5: Set the bitfield of supporting lanes in the driver to 'true'.
+	* Patch #7: Move the test to drivers/net/mlxsw.
+
+v2:
+	* Patch #1: Remove ETHTOOL_LANES defines and simply use a number
+	  instead.
+	* Patches #2,#6: Pass link mode from driver to ethtool instead
+	* of the parameters themselves.
+	* Patch #5: Add an actual width field for spectrum-2 link modes
+	  in order to set the suitable link mode when lanes parameter is
+	  passed.
+	* Patch #6: Changed lanes to be unsigned in
+	  'struct link_mode_info'.
+	* Patch #7: Remove the test for recieving max_width when lanes
+	* is not set by user. When not setting lanes, we don't promise
+	  anything regarding what number of lanes will be chosen.
+
+Danielle Ratson (7):
+  ethtool: Extend link modes settings uAPI with lanes
+  ethtool: Get link mode in use instead of speed and duplex parameters
+  ethtool: Expose the number of lanes in use
+  mlxsw: ethtool: Remove max lanes filtering
+  mlxsw: ethtool: Add support for setting lanes when autoneg is off
+  mlxsw: ethtool: Pass link mode in use to ethtool
+  net: selftests: Add lanes setting test
+
+ Documentation/networking/ethtool-netlink.rst  |  11 +-
+ .../net/ethernet/mellanox/mlxsw/spectrum.h    |  13 +-
+ .../mellanox/mlxsw/spectrum_ethtool.c         | 196 +++++++++++-------
+ include/linux/ethtool.h                       |   5 +
+ include/uapi/linux/ethtool.h                  |   2 +
+ include/uapi/linux/ethtool_netlink.h          |   1 +
+ net/ethtool/common.c                          | 114 ++++++++++
+ net/ethtool/common.h                          |   7 +
+ net/ethtool/ioctl.c                           |  18 +-
+ net/ethtool/linkmodes.c                       | 179 +++++-----------
+ net/ethtool/netlink.h                         |   2 +-
+ .../drivers/net/mlxsw/ethtool_lanes.sh        | 188 +++++++++++++++++
+ .../selftests/net/forwarding/ethtool_lib.sh   |  34 +++
+ tools/testing/selftests/net/forwarding/lib.sh |  28 +++
+ 14 files changed, 576 insertions(+), 222 deletions(-)
+ create mode 100755 tools/testing/selftests/drivers/net/mlxsw/ethtool_lanes=
+.sh
+
+--=20
+2.26.2
+
