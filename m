@@ -2,87 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 392A02FC7A1
-	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 03:18:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 645C12FC75C
+	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 03:02:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727424AbhATCR1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jan 2021 21:17:27 -0500
-Received: from mail.kernel.org ([198.145.29.99]:48236 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730845AbhATB3o (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 19 Jan 2021 20:29:44 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 03C9A23602;
-        Wed, 20 Jan 2021 01:28:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611106091;
-        bh=N8kZanpn/GiXqno4kNSqiehgnZB79d0jgWhD+24tOA0=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LBWMYvYuAXdnRlWgiv6v1v9mt/5fCzERnAe6HKwOXisZKUSyQvYdk1MIq80j3HxzP
-         ZDGvUqGfFQBRFEtMGNTmxS5fIO0mg1j3UlB04ibfJKJlst+Jbsk9KKK8OQTGIfrbw0
-         mIV7pUW44PyI3fUsPmCy0h2aMeEgUX7p+iureCpmr6NeAkSn+p+rb/3UrduIuzKCE4
-         WmkB4Cz1CQdicADE6noKleoXuUq6dI5IP2AxOyHzYu9t/O7c8/UcR8vCf+E1tl8092
-         la7EFq8DdLP/2wR56eOtt5Q6n70N6aaJE0JdYSy7iihL5M6iSJ62z+wBePzvodZ6T1
-         Z6lw93UGTTE3A==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     David Wu <david.wu@rock-chips.com>,
+        id S1731186AbhATCCX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jan 2021 21:02:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33324 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730808AbhATCCR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jan 2021 21:02:17 -0500
+Received: from mail-out.m-online.net (mail-out.m-online.net [IPv6:2001:a60:0:28:0:1:25:1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3072C0613CF
+        for <netdev@vger.kernel.org>; Tue, 19 Jan 2021 18:01:32 -0800 (PST)
+Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
+        by mail-out.m-online.net (Postfix) with ESMTP id 4DL7zt6NTJz1rsMZ;
+        Wed, 20 Jan 2021 03:01:30 +0100 (CET)
+Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
+        by mail.m-online.net (Postfix) with ESMTP id 4DL7zt5jn4z1qrQG;
+        Wed, 20 Jan 2021 03:01:30 +0100 (CET)
+X-Virus-Scanned: amavisd-new at mnet-online.de
+Received: from mail.mnet-online.de ([192.168.8.182])
+        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
+        with ESMTP id YvcG2Hlr_CFW; Wed, 20 Jan 2021 03:01:29 +0100 (CET)
+X-Auth-Info: Zm29SqeVxIM+6OHdJZE8KdM4cf0xlNI/BcF8ECwBumA=
+Received: from tr.lan (ip-89-176-112-137.net.upcbroadband.cz [89.176.112.137])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.mnet-online.de (Postfix) with ESMTPSA;
+        Wed, 20 Jan 2021 03:01:29 +0100 (CET)
+From:   Marek Vasut <marex@denx.de>
+To:     netdev@vger.kernel.org
+Cc:     Marek Vasut <marex@denx.de>, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH AUTOSEL 4.14 6/9] net: stmmac: Fixed mtu channged by cache aligned
-Date:   Tue, 19 Jan 2021 20:27:59 -0500
-Message-Id: <20210120012802.770525-6-sashal@kernel.org>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20210120012802.770525-1-sashal@kernel.org>
-References: <20210120012802.770525-1-sashal@kernel.org>
+        Michael Grzeschik <m.grzeschik@pengutronix.de>,
+        Paul Barker <pbarker@konsulko.com>
+Subject: [PATCH net-next] net: dsa: microchip: Adjust reset release timing to match reference reset circuit
+Date:   Wed, 20 Jan 2021 03:01:16 +0100
+Message-Id: <20210120020116.576669-1-marex@denx.de>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Wu <david.wu@rock-chips.com>
+KSZ8794CNX datasheet section 8.0 RESET CIRCUIT describes recommended
+circuit for interfacing with CPU/FPGA reset consisting of 10k pullup
+resistor and 10uF capacitor to ground. This circuit takes ~100 mS to
+rise enough to release the reset.
 
-[ Upstream commit 5b55299eed78538cc4746e50ee97103a1643249c ]
+For maximum supply voltage VDDIO=3.3V VIH=2.0V R=10kR C=10uF that is
+                    VDDIO - VIH
+  t = R * C * -ln( ------------- ) = 10000*0.00001*-(-0.93)=0.093 S
+                       VDDIO
+so we need ~95 mS for the reset to really de-assert, and then the
+original 100uS for the switch itself to come out of reset. Simply
+msleep() for 100 mS which fits the constraint with a bit of extra
+space.
 
-Since the original mtu is not used when the mtu is updated,
-the mtu is aligned with cache, this will get an incorrect.
-For example, if you want to configure the mtu to be 1500,
-but mtu 1536 is configured in fact.
-
-Fixed: eaf4fac478077 ("net: stmmac: Do not accept invalid MTU values")
-Signed-off-by: David Wu <david.wu@rock-chips.com>
-Link: https://lore.kernel.org/r/20210113034109.27865-1-david.wu@rock-chips.com
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
+Fixes: 5b797980908a ("net: dsa: microchip: Implement recommended reset timing")
+Signed-off-by: Marek Vasut <marex@denx.de>
+Cc: Andrew Lunn <andrew@lunn.ch>
+Cc: Florian Fainelli <f.fainelli@gmail.com>
+Cc: Jakub Kicinski <kuba@kernel.org>
+Cc: Michael Grzeschik <m.grzeschik@pengutronix.de>
+Cc: Paul Barker <pbarker@konsulko.com>
 ---
- drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/net/dsa/microchip/ksz_common.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-index d5ebaf62d12fe..a7b30f0605362 100644
---- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-@@ -3613,6 +3613,7 @@ static int stmmac_change_mtu(struct net_device *dev, int new_mtu)
- {
- 	struct stmmac_priv *priv = netdev_priv(dev);
- 	int txfifosz = priv->plat->tx_fifo_size;
-+	const int mtu = new_mtu;
+diff --git a/drivers/net/dsa/microchip/ksz_common.c b/drivers/net/dsa/microchip/ksz_common.c
+index 489963664443..389abfd27770 100644
+--- a/drivers/net/dsa/microchip/ksz_common.c
++++ b/drivers/net/dsa/microchip/ksz_common.c
+@@ -400,7 +400,7 @@ int ksz_switch_register(struct ksz_device *dev,
+ 		gpiod_set_value_cansleep(dev->reset_gpio, 1);
+ 		usleep_range(10000, 12000);
+ 		gpiod_set_value_cansleep(dev->reset_gpio, 0);
+-		usleep_range(100, 1000);
++		msleep(100);
+ 	}
  
- 	if (txfifosz == 0)
- 		txfifosz = priv->dma_cap.tx_fifo_size;
-@@ -3630,7 +3631,7 @@ static int stmmac_change_mtu(struct net_device *dev, int new_mtu)
- 	if ((txfifosz < new_mtu) || (new_mtu > BUF_SIZE_16KiB))
- 		return -EINVAL;
- 
--	dev->mtu = new_mtu;
-+	dev->mtu = mtu;
- 
- 	netdev_update_features(dev);
- 
+ 	mutex_init(&dev->dev_mutex);
 -- 
-2.27.0
+2.29.2
 
