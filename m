@@ -2,147 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D9C2C2FD98A
-	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 20:26:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3AF7E2FD94C
+	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 20:18:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390115AbhATTYI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jan 2021 14:24:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51828 "EHLO
+        id S2391213AbhATTQs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jan 2021 14:16:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389903AbhATSpz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 13:45:55 -0500
-Received: from mail-lf1-x12b.google.com (mail-lf1-x12b.google.com [IPv6:2a00:1450:4864:20::12b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09A44C061575;
-        Wed, 20 Jan 2021 10:45:11 -0800 (PST)
-Received: by mail-lf1-x12b.google.com with SMTP id o17so35520168lfg.4;
-        Wed, 20 Jan 2021 10:45:10 -0800 (PST)
+        with ESMTP id S2392251AbhATSvy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 13:51:54 -0500
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAB99C061575;
+        Wed, 20 Jan 2021 10:51:13 -0800 (PST)
+Received: by mail-pj1-x1036.google.com with SMTP id x20so2766122pjh.3;
+        Wed, 20 Jan 2021 10:51:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=zrMNRZvlEESWdG6jggtCoB+4numwazy+fXWH/nTPU9U=;
-        b=GbiCYI2AOS9Mde7ZZGAB8iKTEaPVyUk3NJn7BsJ4aNMPDW3bfjjQOlDjJVeyI01LfK
-         yGrcSPsCfKcKMod8xBD3FRFhA2PKjb0+UA9u+c+PLBc6ucvOs4H76CCyWbj5qRgGzSxL
-         YYeBDYP7YKSgdZ2tcOGzhxRWs+uk1fru9f/FsIBpFq4b3uFMzw/dOgkhsRnbJz85JTGD
-         OFp28kiITVDeZNpIvktOImEsP9FYI+HUZ15TQ4xgjNS0A45AjvFeCkc/hiGkbKW6oV51
-         UkYN9KTEvNSswvk+NvyWRYiqpqIG5SqjCPISQdicL2egTc1jJYF1v01KBc8Pl6R7uTGn
-         P/AA==
+        bh=8Hs2DcL35t0kl1yCFHjjFssW9wT5FyIR7wKEzzsdbpo=;
+        b=dRav0suxujHDPp6A8CK2JWKAEtKakYb5QGn9YEZzwzGCtYrYK14SCri4gnR5bxb+Us
+         lGUMCX39l82e11zEbX5HZOfIXR715YY8bU84qeW0W9tmRDo2fT36BlvGcsZry0L3ZPBz
+         H4mlxJ0cKy97A6D2uqaBkhs0t4ujUmNSbDvXRAq/VCVNWZtC+tc5lS8ROvv/AW/ZW5Y2
+         U4nVx2BBEcO4UBbPiSaPA/DX6cb7UWpZEtVfghF8oqMRhWlmF4C3xdwOjc/snLriUl7X
+         rrugv/vNvJGyOnM6ZxNhGyWOLtguohjdDIRgkQY3Vd83pX81q+UP3VjPY9k4wjNCQCoP
+         NNhg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=zrMNRZvlEESWdG6jggtCoB+4numwazy+fXWH/nTPU9U=;
-        b=BQqb9xHzS3Q3cW/HfiF08HssFRa7X4tkKto4CQaRFNYQQzYdTk832/+3VIv6E8x+EK
-         EaMwg/9gLe9eEeJwrdYBqFN8Xblu8mO7MPFMSuSv5lNCL+jizh/6khQd/7X5Ki3y4Rbc
-         YsAN91msjEOo9Nytsqb2qp32kRvO1w2WLdMG/y0/eeAwijR+K2H1cPJKBtGzUcxOJdC+
-         Zp0d22MRKB4wqwGV3XbaNhxQQNwGJX9QyGu3rM/BDJ1zCXLauh6PBsmxyQlTTeGoS6yR
-         nIqJlkvgxC3hrlecfsCho6C5SDv4b8u8fnj5rwOChyrc03c1hYFCI5TwH/N+DJnKRHEF
-         8NQQ==
-X-Gm-Message-State: AOAM532QOqGUBY9ruwM2TTcc8NDIkXf+Lq/IztatkLw4Meff+hL4RCDV
-        IUCK24Vi5NiTJRjtUHFWiZOIeBAwz0CJB2CFVuE=
-X-Google-Smtp-Source: ABdhPJysfNizrzDQUVINGOhhgWus7azEpICiAnwV+p4EXlvDkyaX1pVlGFfbUwglU72IpLHWW5TDXiNALg3A++evFDI=
-X-Received: by 2002:a05:6512:34c5:: with SMTP id w5mr4908698lfr.214.1611168309505;
- Wed, 20 Jan 2021 10:45:09 -0800 (PST)
+        bh=8Hs2DcL35t0kl1yCFHjjFssW9wT5FyIR7wKEzzsdbpo=;
+        b=TaBDbpB7dJx4r5B7Iq4+h67SXokBvbm8DiECJSqWo4cJPz9+ksybw5qHNi8R3btaIn
+         hoX6WX8WJXyc9boPAglN01IoIwOiV8RfX1WqEgps0I4d9lHB+sEsoF/O4b1SSDWBHiTr
+         FDNDSOcLACdYpdMBJt5dJVw5hPMPAuW6ZkJkWmytZ/Ic6hqkxb8N3N7TbLUeB6bMMBhq
+         5a57E6UAldL0MGuWpspVzX4b+50ZXRKLRqzwGttUj5ewgVxviFVDKGpRyynnle15QnfZ
+         XjG9o+LQvouiXVtQ/s+GAADt/EWzHwGc6kx+UuuV8R2T5cHcP0zbfZaeHid1QF+khyRT
+         AuKA==
+X-Gm-Message-State: AOAM530nOjNIV2a9G9Pp6pSlUIDZfvLyLIlhcztA2CT+/qFIK1DH2X/9
+        hXYycWh3mK+6KtGj3riU931MXC2h1xmePtVVdqQ=
+X-Google-Smtp-Source: ABdhPJzv8KOKKxqz3FzB3J06cEYWD65UwnYAnvtnchLHoC0Fyy3OdQsBe2nstf01pUlHCsnd7GvQhp0Qu1G3Y8TFe/4=
+X-Received: by 2002:a17:90a:1050:: with SMTP id y16mr7368838pjd.181.1611168673398;
+ Wed, 20 Jan 2021 10:51:13 -0800 (PST)
 MIME-Version: 1.0
-References: <20210112194143.1494-1-yuri.benditovich@daynix.com>
- <20210112194143.1494-4-yuri.benditovich@daynix.com> <CAOEp5Ocz-xGq5=e=WY0aipEYHEhN-wxekNaAiqAS+HsOF8TcDQ@mail.gmail.com>
- <CAOEp5OevYR5FWVMfQ_esmWTKtz9_ddTupbe7FtBFQ=sv2kEt2w@mail.gmail.com>
-In-Reply-To: <CAOEp5OevYR5FWVMfQ_esmWTKtz9_ddTupbe7FtBFQ=sv2kEt2w@mail.gmail.com>
-From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Date:   Wed, 20 Jan 2021 10:44:58 -0800
-Message-ID: <CAADnVQJLN0sFyKdAmc6Pikv8Ww9OocnK_VXMG=ZLSMONHkqe4Q@mail.gmail.com>
-Subject: Re: [RFC PATCH 3/7] tun: allow use of BPF_PROG_TYPE_SCHED_CLS program type
-To:     Yuri Benditovich <yuri.benditovich@daynix.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Michael S . Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Willem de Bruijn <willemb@google.com>, gustavoars@kernel.org,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>, decui@microsoft.com,
-        cai@lca.pw, Jakub Sitnicki <jakub@cloudflare.com>,
-        Marco Elver <elver@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Network Development <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        bpf <bpf@vger.kernel.org>, Yan Vugenfirer <yan@daynix.com>
+References: <20210112134054.342-1-calvin.johnson@oss.nxp.com>
+ <20210112134054.342-10-calvin.johnson@oss.nxp.com> <CAGETcx-7JVz=QLCMWicHqoagWYjeBXdFJmSv1v6MQhtPt2RS=Q@mail.gmail.com>
+ <20210112180343.GI4077@smile.fi.intel.com> <CAJZ5v0iW0jJUcXtiQtLOakkSejZCJD=hTFLL4mvoAN3ZTB+1Tw@mail.gmail.com>
+In-Reply-To: <CAJZ5v0iW0jJUcXtiQtLOakkSejZCJD=hTFLL4mvoAN3ZTB+1Tw@mail.gmail.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Wed, 20 Jan 2021 20:52:02 +0200
+Message-ID: <CAHp75VcJS10KMA5amUc36PFgj0FLddj1fXD4dUtuAchrVhhzPg@mail.gmail.com>
+Subject: Re: [net-next PATCH v3 09/15] device property: Introduce fwnode_get_id()
+To:     "Rafael J. Wysocki" <rafael@kernel.org>
+Cc:     Saravana Kannan <saravanak@google.com>,
+        Calvin Johnson <calvin.johnson@oss.nxp.com>,
+        Grant Likely <grant.likely@arm.com>,
+        Jeremy Linton <jeremy.linton@arm.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
+        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Marcin Wojtas <mw@semihalf.com>,
+        Pieter Jansen Van Vuuren <pieter.jansenvv@bamboosystems.io>,
+        Jon <jon@solid-run.com>,
+        Diana Madalina Craciun <diana.craciun@nxp.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        "linux.cj" <linux.cj@gmail.com>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
+        Randy Dunlap <rdunlap@infradead.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 12, 2021 at 12:55 PM Yuri Benditovich
-<yuri.benditovich@daynix.com> wrote:
->
-> On Tue, Jan 12, 2021 at 10:40 PM Yuri Benditovich
-> <yuri.benditovich@daynix.com> wrote:
+On Wed, Jan 20, 2021 at 8:18 PM Rafael J. Wysocki <rafael@kernel.org> wrote:
+> On Tue, Jan 12, 2021 at 7:02 PM Andy Shevchenko
+> <andy.shevchenko@gmail.com> wrote:
+> > On Tue, Jan 12, 2021 at 09:30:31AM -0800, Saravana Kannan wrote:
+> > > On Tue, Jan 12, 2021 at 5:42 AM Calvin Johnson
+> > > <calvin.johnson@oss.nxp.com> wrote:
+
+...
+
+> > > > +       ret = fwnode_property_read_u32(fwnode, "reg", id);
+> > > > +       if (!(ret && is_acpi_node(fwnode)))
+> > > > +               return ret;
+> > > > +
+> > > > +#ifdef CONFIG_ACPI
+> > > > +       status = acpi_evaluate_integer(ACPI_HANDLE_FWNODE(fwnode),
+> > > > +                                      METHOD_NAME__ADR, NULL, &adr);
+> > > > +       if (ACPI_FAILURE(status))
+> > > > +               return -EINVAL;
+> > > > +       *id = (u32)adr;
+> > > > +#endif
+> > > > +       return 0;
+
+> > > Also ACPI and DT
+> > > aren't mutually exclusive if I'm not mistaken.
 > >
-> > On Tue, Jan 12, 2021 at 9:42 PM Yuri Benditovich
-> > <yuri.benditovich@daynix.com> wrote:
-> > >
-> > > This program type can set skb hash value. It will be useful
-> > > when the tun will support hash reporting feature if virtio-net.
-> > >
-> > > Signed-off-by: Yuri Benditovich <yuri.benditovich@daynix.com>
-> > > ---
-> > >  drivers/net/tun.c | 2 ++
-> > >  1 file changed, 2 insertions(+)
-> > >
-> > > diff --git a/drivers/net/tun.c b/drivers/net/tun.c
-> > > index 7959b5c2d11f..455f7afc1f36 100644
-> > > --- a/drivers/net/tun.c
-> > > +++ b/drivers/net/tun.c
-> > > @@ -2981,6 +2981,8 @@ static int tun_set_ebpf(struct tun_struct *tun, struct tun_prog __rcu **prog_p,
-> > >                 prog = NULL;
-> > >         } else {
-> > >                 prog = bpf_prog_get_type(fd, BPF_PROG_TYPE_SOCKET_FILTER);
-> > > +               if (IS_ERR(prog))
-> > > +                       prog = bpf_prog_get_type(fd, BPF_PROG_TYPE_SCHED_CLS);
-> > >                 if (IS_ERR(prog))
-> > >                         return PTR_ERR(prog);
-> > >         }
+> > That's why we try 'reg' property for both cases first.
 > >
-> > Comment from Alexei Starovoitov:
-> > Patches 1 and 2 are missing for me, so I couldn't review properly,
-> > but this diff looks odd.
-> > It allows sched_cls prog type to attach to tun.
-> > That means everything that sched_cls progs can do will be done from tun hook?
+> > is_acpi_fwnode() conditional is that what I don't like though.
 >
-> We do not have an intention to modify the packet in this steering eBPF.
+> I'm not sure what you mean here, care to elaborate?
 
-The intent is irrelevant. Using SCHED_CLS here will let users modify the packet
-and some users will do so. Hence the tun code has to support it.
+I meant is_acpi_node(fwnode) in the conditional.
 
-> There is just one function that unavailable for BPF_PROG_TYPE_SOCKET_FILTER
-> that the eBPF needs to make possible to deliver the hash to the guest
-> VM - it is 'bpf_set_hash'
->
-> Does it mean that we need to define a new eBPF type for socket filter
-> operations + set_hash?
->
-> Our problem is that the eBPF calculates 32-bit hash, 16-bit queue
-> index and 8-bit of hash type.
-> But it is able to return only 32-bit integer, so in this set of
-> patches the eBPF returns
-> queue index and hash type and saves the hash in skb->hash using bpf_set_hash().
+I think it's redundant and we can simple do something like this:
 
-bpf prog can only return a 32-bit integer. That's true.
-But the prog can use helpers to set any number of bits and variables.
-bpf_set_hash_v2() with hash, queue and index arguments could fit this purpose,
-but if you allow it for SCHED_CLS type,
-tc side of the code should be ready to deal with that too and this extended
-helper should be meaningful for both tc and tun.
+  if (ret) {
+#ifdef ACPI
+    ...
+#else
+    return ret;
+#endif
+  }
+  return 0;
 
-In general if the purpose of the prog is to compute three values they better be
-grouped together. Returned two of them via ORed 32-bit integer and
-returning 32-bit via bpf_set_hash is an awkward api.
+-- 
+With Best Regards,
+Andy Shevchenko
