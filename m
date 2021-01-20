@@ -2,102 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F37DF2FD74B
-	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 18:43:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 898DA2FD745
+	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 18:42:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727899AbhATRg6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jan 2021 12:36:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35354 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731303AbhATR3l (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 12:29:41 -0500
-Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9952C061575
-        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 09:28:57 -0800 (PST)
-Received: by mail-pf1-x42f.google.com with SMTP id m6so14919000pfm.6
-        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 09:28:57 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=9Mkmpv9PFAxMnPKm8GBmEbqnKuQLLkGr4QOfMfIpd7w=;
-        b=Sq7hBEVFTJF2AoShRevlABx7wRgNe5Zh5YXd9KmvhRag1mVa3w1lV3cy7Io4MGr2VB
-         S3unvRLaiDksAh8crs/vVbmQvQ3WVHtmjSLe0cm0eu9rEXh6z5mwXEsQqVKnpQ6DHCVR
-         49MAvilbud69tiWXx9r52zRx3kKpOawYqkYHQ6XydgupjMS0GdkJ17XbkRgowp+IoD3b
-         urvDo3ILP7T7jyW3OcUpL15aQWZfY/+Y8Ut5y8+LFEf1No6eJzMM9B+gZ/qcoXUHn9Kr
-         WCSAYwMAKj/ubDkzFMHFX83YyAypN/EqyW6xwSdNJtc4eZW3kW1l5Sc4OkfVhas0wfm8
-         0nsw==
+        id S1731759AbhATRgB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jan 2021 12:36:01 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:51963 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2387459AbhATRbK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 12:31:10 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1611163784;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Ib3A1b3X/veF7PE4d9KVB5tdoRYIUP6N9GcGtTCFbLs=;
+        b=V3FrxwJF0tO3DlLugCVrz7+G0KWA5K5OC6SEtIPhNDcOy7GLHq5NO8pBc3EHYqDQSoQTRA
+        7xYKnvVPWgpV87CJLnJlv4+/6bXgBNkdMyXg04UX7tu7sCEDNAvzWOQfuVlLnngSlBTd7M
+        y19EvJ/xN69KtcbkM99v5/+/XkfhsNs=
+Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
+ [209.85.218.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-55-GraMCBE3NwiMBQJ-IP0QQg-1; Wed, 20 Jan 2021 12:29:41 -0500
+X-MC-Unique: GraMCBE3NwiMBQJ-IP0QQg-1
+Received: by mail-ej1-f72.google.com with SMTP id x22so7732218ejb.10
+        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 09:29:41 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=9Mkmpv9PFAxMnPKm8GBmEbqnKuQLLkGr4QOfMfIpd7w=;
-        b=dlfKcibvBAWLGjsmG4d0dPEMcrBdsAzWebl294jE8ef2C4rV2lcD094pphHZKD/BUz
-         KgAjOJZaYcZ3CFwhYLNNAnqH5wqk4ZEJI2fM1duUT9BQePPiuIwoCpO1Up73xjAKODjo
-         OkBeSc42G2wh6YvJhwt/SKV6QamKYjZfma05L+oouvM2n1vWG+ba3v/Tm8m/EUpHGe9Q
-         0oM+HfK9ctYW8Z9QuuTg4dqpDq743b/8i0MuJWHSnVGKq3+B47DHLVLUknqfq8RaUeXC
-         Ze/im9foLcJCK+fpJgKavaAaqKH8gQw3+ZXUqdapNE9AtWf/XKHidsJJaqZRBeiY9460
-         cUxQ==
-X-Gm-Message-State: AOAM532ovCs4vE2nAGBWd4WByKQh/jUGWG9rFMQbeCCJABz7GgOCbncJ
-        jgwzb5zeqIzunUkXhP5TECY=
-X-Google-Smtp-Source: ABdhPJyv/oY1Crowy9wSnQEOglqFtaMH0u2gG+n1/Be+HjmvUZy1eqodyE1Uad+R/ZCKc2q0ULpPMQ==
-X-Received: by 2002:a63:ea4b:: with SMTP id l11mr10268105pgk.61.1611163737326;
-        Wed, 20 Jan 2021 09:28:57 -0800 (PST)
-Received: from [10.230.29.29] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id 14sm2692221pfi.131.2021.01.20.09.28.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 20 Jan 2021 09:28:56 -0800 (PST)
-Subject: Re: [PATCH net-next v7 3/3] net: add sysfs attribute to control napi
- threaded mode
-To:     Wei Wang <weiwan@google.com>, David Miller <davem@davemloft.net>,
-        netdev@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Hannes Frederic Sowa <hannes@stressinduktion.org>,
-        Felix Fietkau <nbd@nbd.name>,
-        Alexander Duyck <alexander.duyck@gmail.com>
-References: <20210120033455.4034611-1-weiwan@google.com>
- <20210120033455.4034611-4-weiwan@google.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <e5714161-d8ca-d5dd-f12c-a6b206558cf9@gmail.com>
-Date:   Wed, 20 Jan 2021 09:28:54 -0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.6.1
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=Ib3A1b3X/veF7PE4d9KVB5tdoRYIUP6N9GcGtTCFbLs=;
+        b=cio5W+0hz1a+deUmsZZAusBKkcOTzOluo3eNvxggySRvb2b/t2YVK0JPf7HexDGqkt
+         46FtBAPJgNjPNtfiMLHREdsjs2zQwCm6JQQjg+ttGnCMkF8QnjAMODepIqUZyr/kjSP/
+         jKVJ0HK5OP3h52kd7WZPY16RNgAZL7nJ7Z56EGU+OBGHl2qUsx1lNahspr/60v3B4LT8
+         6J1+/zhVc6CCUtvzANKFyYASmYwpQ3hbHqzvrNnx1C7vjBGXgFecxLi69pnjTsfz4pY+
+         fjbsJ3/OLxTg+q4zQWAT6oU7VDc3RsOdAyoafRgEEQkN/O47MR2LuVgt15fvJYuCRA4x
+         pkBw==
+X-Gm-Message-State: AOAM533iSTLjpeaWKoyK3CoX5luTp6rhX+DtE3k6iVeoSi1OZCUzKdaD
+        PW7PCzbS8GUpbC9nbv7KDN4Ia0dcMaqE/FcHRq2dkG+GHTquz8bejwtVGCVuVsKelKZcv2w3rvc
+        LQQWY/42MRazyeWr6
+X-Received: by 2002:a17:906:1348:: with SMTP id x8mr6613715ejb.81.1611163780320;
+        Wed, 20 Jan 2021 09:29:40 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJyO+bRzvpM47Of011EuhJYdd3Cu5d6G2A7lU2oCiieRE4GNhhH/x1NjaLAjpqBLB+PUpSPLYw==
+X-Received: by 2002:a17:906:1348:: with SMTP id x8mr6613689ejb.81.1611163779990;
+        Wed, 20 Jan 2021 09:29:39 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id k22sm1135282eji.101.2021.01.20.09.29.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 Jan 2021 09:29:39 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id E025C180331; Wed, 20 Jan 2021 18:29:38 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
+        ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Cc:     magnus.karlsson@intel.com, maciej.fijalkowski@intel.com,
+        kuba@kernel.org, jonathan.lemon@gmail.com, maximmi@nvidia.com,
+        davem@davemloft.net, hawk@kernel.org, john.fastabend@gmail.com,
+        ciara.loftus@intel.com, weqaar.a.janjua@intel.com
+Subject: Re: [PATCH bpf-next v2 4/8] xsk: register XDP sockets at bind(),
+ and add new AF_XDP BPF helper
+In-Reply-To: <3c6feb0d-6a64-2251-3cac-c79cff29d85c@intel.com>
+References: <20210119155013.154808-1-bjorn.topel@gmail.com>
+ <20210119155013.154808-5-bjorn.topel@gmail.com> <878s8neprj.fsf@toke.dk>
+ <46162f5f-5b3c-903b-8b8d-7c1afc74cb05@intel.com> <87k0s74q1a.fsf@toke.dk>
+ <3c6feb0d-6a64-2251-3cac-c79cff29d85c@intel.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Wed, 20 Jan 2021 18:29:38 +0100
+Message-ID: <8735yv4iv1.fsf@toke.dk>
 MIME-Version: 1.0
-In-Reply-To: <20210120033455.4034611-4-weiwan@google.com>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com> writes:
 
+> On 2021-01-20 15:54, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+>> Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com> writes:
+>>=20
+>>> On 2021-01-20 13:50, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
+>>>> Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com> writes:
+>>>>
+>>>>> diff --git a/include/uapi/linux/bpf.h b/include/uapi/linux/bpf.h
+>>>>> index c001766adcbc..bbc7d9a57262 100644
+>>>>> --- a/include/uapi/linux/bpf.h
+>>>>> +++ b/include/uapi/linux/bpf.h
+>>>>> @@ -3836,6 +3836,12 @@ union bpf_attr {
+>>>>>     *	Return
+>>>>>     *		A pointer to a struct socket on success or NULL if the file is
+>>>>>     *		not a socket.
+>>>>> + *
+>>>>> + * long bpf_redirect_xsk(struct xdp_buff *xdp_md, u64 action)
+>>>>> + *	Description
+>>>>> + *		Redirect to the registered AF_XDP socket.
+>>>>> + *	Return
+>>>>> + *		**XDP_REDIRECT** on success, otherwise the action parameter is r=
+eturned.
+>>>>>     */
+>>>>
+>>>> I think it would be better to make the second argument a 'flags'
+>>>> argument and make values > XDP_TX invalid (like we do in
+>>>> bpf_xdp_redirect_map() now). By allowing any value as return you lose
+>>>> the ability to turn it into a flags argument later...
+>>>>
+>>>
+>>> Yes, but that adds a run-time check. I prefer this non-checked version,
+>>> even though it is a bit less futureproof.
+>>=20
+>> That...seems a bit short-sighted? :)
+>> Can you actually see a difference in your performance numbers?
+>>
+>
+> I would rather add an additional helper *if* we see the need for flags,
+> instead of paying for that upfront. For me, BPF is about being able to
+> specialize, and not having one call with tons of checks.
 
-On 1/19/2021 7:34 PM, Wei Wang wrote:
-> This patch adds a new sysfs attribute to the network device class.
-> Said attribute provides a per-device control to enable/disable the
-> threaded mode for all the napi instances of the given network device.
-> User sets it to 1 or 0 to enable or disable threaded mode per device.
-> However, when user reads from this sysfs entry, it could return:
->   1: means all napi instances belonging to this device have threaded
-> mode enabled.
->   0: means all napi instances belonging to this device have threaded
-> mode disabled.
->   -1: means the system fails to enable threaded mode for certain napi
-> instances when user requests to enable threaded mode. This happens
-> when the kthread fails to be created for certain napi instances.
-> 
-> Co-developed-by: Paolo Abeni <pabeni@redhat.com>
-> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
-> Co-developed-by: Hannes Frederic Sowa <hannes@stressinduktion.org>
-> Signed-off-by: Hannes Frederic Sowa <hannes@stressinduktion.org>
-> Co-developed-by: Felix Fietkau <nbd@nbd.name>
-> Signed-off-by: Felix Fietkau <nbd@nbd.name>
-> Signed-off-by: Wei Wang <weiwan@google.com>
+I get that, I'm just pushing back because omitting a 'flags' argument is
+literally among the most frequent reasons for having to replace a
+syscall (see e.g., [0]) instead of extending it. And yeah, I do realise
+that the performance implications are different for XDP than for
+syscalls, but maintainability of the API is also important; it's all a
+tradeoff. This will be the third redirect helper variant for XDP and I'd
+hate for the fourth one to have to be bpf_redirect_xsk_flags() because
+it did turn out to be needed...
 
-Can you document the new threaded sysfs attribute under
-Documentation/ABI/testing/sysfs-class-net?
--- 
-Florian
+(One potential concrete reason for this: I believe Magnus was talking
+about an API that would allow a BPF program to redirect a packet into
+more than one socket (cloning it in the process), or to redirect to a
+socket+another target. How would you do that with this new helper?)
+
+[0] https://lwn.net/Articles/585415/
+
+> (Related; Going forward, the growing switch() for redirect targets in
+> xdp_do_redirect() is a concern for me...)
+>
+> And yes, even with all those fancy branch predictors, less instructions
+> is still less. :-) (It shows in my ubenchs.)
+
+Right, I do agree that the run-time performance hit of checking the flag
+sucks (along with being hard to check for, cf. our parallel discussion
+about version checks). So ideally this would be fixed by having the
+verifier enforce the argument ranges instead; but if we merge this
+without the runtime check now we can't add that later without
+potentially breaking programs... :(
+
+-Toke
+
