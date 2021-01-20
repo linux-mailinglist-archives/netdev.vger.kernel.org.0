@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7B1EC2FCDA6
+	by mail.lfdr.de (Postfix) with ESMTP id E71F52FCDA7
 	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 10:58:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730367AbhATJOk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jan 2021 04:14:40 -0500
-Received: from mail.kernel.org ([198.145.29.99]:32984 "EHLO mail.kernel.org"
+        id S1729511AbhATJOu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jan 2021 04:14:50 -0500
+Received: from mail.kernel.org ([198.145.29.99]:32986 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729861AbhATJHz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1729853AbhATJHz (ORCPT <rfc822;netdev@vger.kernel.org>);
         Wed, 20 Jan 2021 04:07:55 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 78D552332A;
-        Wed, 20 Jan 2021 09:06:18 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 80FE223332;
+        Wed, 20 Jan 2021 09:06:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611133579;
-        bh=7WN477BPYAzTSueLtGJZRT7nKNxKJE0Y8qw7HXxgpLM=;
+        s=k20201202; t=1611133580;
+        bh=1/OkBEeVRnJGXA+NaqwKTgjw4sa5OO6eacs1KTvvueY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=S8Eja/KOhx1g4XjxSUpJFSvFCB8MhAxRzBq3U85v/jUJjk0sdsGwawgqdXw/BJJjd
-         0dqbRj7+QJDE8JPWUGmnRGlcdkZRbG0aQ8/WwD3p4qZrqsXlSwduW2T1qJn55Kz+hK
-         XsGKXDHLzMupR3UBmZ1kJYFZOyk6zZZP4jhbrh0zxnEtb1MuDPj+H4cPFjU9pAWoJQ
-         83s9p/p4suGuiWBmZyN+HaOORFydLbBjUykpAs9WLgH50mx7ZebXUYvHmD3d8Gjflh
-         TsHcn9p3h8QQUqF8u5u84KgrfhF0/tea5E1dmJxaThE/MOzVFitrj+mDqGGQWmM+uj
-         lhYzg2UYAlWwQ==
+        b=dJq+iYw6Vz1OztLtZocNasAW7OE+JMl/NjhU7oN10lAJM8NDyKhfJOhcTTpSknCRV
+         Mq7+HCdSZI/NqUjh+fW8DVwJT1T0NFZbn1DxsfQ6KAfXzyLTA+2I9WmScxcxCg1dGg
+         poT+Ki3SR3lBaXQFSzdYBDM8t9jJ6FLB3ni4txMAfrLVLS0YBv+jjlM1leZgouzr1h
+         +hzhhj0mS6SjcjqrQSXbdu7f1KMCgubUqKQbElz5AUzN5HdDMH4SsjG5WvUC1aNukc
+         QbCeWKBMW4ZkdfLJq4Haz8N7xl1OaTJAcwKD+9lU1FhEtGS6NPJa/vtjSkCkZX6Vzx
+         NnhTObFgLsAVw==
 From:   Saeed Mahameed <saeed@kernel.org>
 To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
@@ -31,12 +31,12 @@ Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
         alexander.duyck@gmail.com, sridhar.samudrala@intel.com,
         edwin.peer@broadcom.com, dsahern@kernel.org, kiran.patil@intel.com,
         jacob.e.keller@intel.com, david.m.ertman@intel.com,
-        dan.j.williams@intel.com, Parav Pandit <parav@nvidia.com>,
-        Vu Pham <vuhuong@nvidia.com>,
+        dan.j.williams@intel.com, Vu Pham <vuhuong@nvidia.com>,
+        Parav Pandit <parav@nvidia.com>, Roi Dayan <roid@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next V8 07/14] net/mlx5: SF, Add auxiliary device driver
-Date:   Wed, 20 Jan 2021 01:05:24 -0800
-Message-Id: <20210120090531.49553-8-saeed@kernel.org>
+Subject: [net-next V8 08/14] net/mlx5: E-switch, Prepare eswitch to handle SF vport
+Date:   Wed, 20 Jan 2021 01:05:25 -0800
+Message-Id: <20210120090531.49553-9-saeed@kernel.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20210120090531.49553-1-saeed@kernel.org>
 References: <20210120090531.49553-1-saeed@kernel.org>
@@ -46,459 +46,220 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Parav Pandit <parav@nvidia.com>
+From: Vu Pham <vuhuong@nvidia.com>
 
-Add auxiliary device driver for mlx5 subfunction auxiliary device.
+Prepare eswitch to handle SF vport during
+(a) querying eswitch functions
+(b) egress ACL creation
+(c) account for SF vports in total vports calculation
 
-A mlx5 subfunction is similar to PCI PF and VF. For a subfunction
-an auxiliary device is created.
+Assign a dedicated placeholder for SFs vports and their representors.
+They are placed after VFs vports and before ECPF vports as below:
+[PF,VF0,...,VFn,SF0,...SFm,ECPF,UPLINK].
 
-As a result, when mlx5 SF auxiliary device binds to the driver,
-its netdev and rdma device are created, they appear as
+Change functions to map SF's vport numbers to indices when
+accessing the vports or representors arrays, and vice versa.
 
-$ ls -l /sys/bus/auxiliary/devices/
-mlx5_core.sf.4 -> ../../../devices/pci0000:00/0000:00:03.0/0000:06:00.0/mlx5_core.sf.4
-
-$ ls -l /sys/class/net/eth1/device
-/sys/class/net/eth1/device -> ../../../mlx5_core.sf.4
-
-$ cat /sys/bus/auxiliary/devices/mlx5_core.sf.4/sfnum
-88
-
-$ devlink dev show
-pci/0000:06:00.0
-auxiliary/mlx5_core.sf.4
-
-$ devlink port show auxiliary/mlx5_core.sf.4/1
-auxiliary/mlx5_core.sf.4/1: type eth netdev p0sf88 flavour virtual port 0 splittable false
-
-$ rdma link show mlx5_0/1
-link mlx5_0/1 state ACTIVE physical_state LINK_UP netdev p0sf88
-
-$ rdma dev show
-8: rocep6s0f1: node_type ca fw 16.29.0550 node_guid 248a:0703:00b3:d113 sys_image_guid 248a:0703:00b3:d112
-13: mlx5_0: node_type ca fw 16.29.0550 node_guid 0000:00ff:fe00:8888 sys_image_guid 248a:0703:00b3:d112
-
-In future, devlink device instance name will adapt to have sfnum
-annotation using either an alias or as devlink instance name described
-in RFC [1].
-
-[1] https://lore.kernel.org/netdev/20200519092258.GF4655@nanopsycho/
-
+Signed-off-by: Vu Pham <vuhuong@nvidia.com>
 Signed-off-by: Parav Pandit <parav@nvidia.com>
-Reviewed-by: Vu Pham <vuhuong@nvidia.com>
+Reviewed-by: Roi Dayan <roid@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../net/ethernet/mellanox/mlx5/core/Makefile  |   2 +-
- .../net/ethernet/mellanox/mlx5/core/devlink.c |  12 +++
- drivers/net/ethernet/mellanox/mlx5/core/eq.c  |   2 +-
- .../net/ethernet/mellanox/mlx5/core/main.c    |  12 ++-
- .../ethernet/mellanox/mlx5/core/mlx5_core.h   |  10 ++
- .../net/ethernet/mellanox/mlx5/core/pci_irq.c |  20 ++++
- .../ethernet/mellanox/mlx5/core/sf/dev/dev.c  |  10 ++
- .../ethernet/mellanox/mlx5/core/sf/dev/dev.h  |  20 ++++
- .../mellanox/mlx5/core/sf/dev/driver.c        | 101 ++++++++++++++++++
- include/linux/mlx5/driver.h                   |   4 +-
- 10 files changed, 187 insertions(+), 6 deletions(-)
- create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/sf/dev/driver.c
+ .../mellanox/mlx5/core/esw/acl/egress_ofld.c  |  2 +-
+ .../net/ethernet/mellanox/mlx5/core/eswitch.c | 11 +++-
+ .../net/ethernet/mellanox/mlx5/core/eswitch.h | 50 +++++++++++++++++++
+ .../mellanox/mlx5/core/eswitch_offloads.c     | 11 ++++
+ .../net/ethernet/mellanox/mlx5/core/vport.c   |  3 +-
+ 5 files changed, 73 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/Makefile b/drivers/net/ethernet/mellanox/mlx5/core/Makefile
-index f5b2e9101348..43fa5efd403c 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/Makefile
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/Makefile
-@@ -89,4 +89,4 @@ mlx5_core-$(CONFIG_MLX5_SW_STEERING) += steering/dr_domain.o steering/dr_table.o
- #
- # SF device
- #
--mlx5_core-$(CONFIG_MLX5_SF) += sf/vhca_event.o sf/dev/dev.o
-+mlx5_core-$(CONFIG_MLX5_SF) += sf/vhca_event.o sf/dev/dev.o sf/dev/driver.o
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
-index 3261d0dc1104..9afe918c5827 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
-@@ -7,6 +7,7 @@
- #include "fw_reset.h"
- #include "fs_core.h"
- #include "eswitch.h"
-+#include "sf/dev/dev.h"
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/esw/acl/egress_ofld.c b/drivers/net/ethernet/mellanox/mlx5/core/esw/acl/egress_ofld.c
+index 4c74e2690d57..26b37a0f8762 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/esw/acl/egress_ofld.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/esw/acl/egress_ofld.c
+@@ -150,7 +150,7 @@ static void esw_acl_egress_ofld_groups_destroy(struct mlx5_vport *vport)
  
- static int mlx5_devlink_flash_update(struct devlink *devlink,
- 				     struct devlink_flash_update_params *params,
-@@ -127,6 +128,17 @@ static int mlx5_devlink_reload_down(struct devlink *devlink, bool netns_change,
- 				    struct netlink_ext_ack *extack)
+ static bool esw_acl_egress_needed(const struct mlx5_eswitch *esw, u16 vport_num)
  {
- 	struct mlx5_core_dev *dev = devlink_priv(devlink);
-+	bool sf_dev_allocated;
-+
-+	sf_dev_allocated = mlx5_sf_dev_allocated(dev);
-+	if (sf_dev_allocated) {
-+		/* Reload results in deleting SF device which further results in
-+		 * unregistering devlink instance while holding devlink_mutext.
-+		 * Hence, do not support reload.
-+		 */
-+		NL_SET_ERR_MSG_MOD(extack, "reload is unsupported when SFs are allocated\n");
-+		return -EOPNOTSUPP;
-+	}
- 
- 	switch (action) {
- 	case DEVLINK_RELOAD_ACTION_DRIVER_REINIT:
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eq.c b/drivers/net/ethernet/mellanox/mlx5/core/eq.c
-index 421febebc658..174dfbc996c6 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/eq.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/eq.c
-@@ -467,7 +467,7 @@ int mlx5_eq_table_init(struct mlx5_core_dev *dev)
- 	for (i = 0; i < MLX5_EVENT_TYPE_MAX; i++)
- 		ATOMIC_INIT_NOTIFIER_HEAD(&eq_table->nh[i]);
- 
--	eq_table->irq_table = dev->priv.irq_table;
-+	eq_table->irq_table = mlx5_irq_table_get(dev);
- 	return 0;
+-	return mlx5_eswitch_is_vf_vport(esw, vport_num);
++	return mlx5_eswitch_is_vf_vport(esw, vport_num) || mlx5_esw_is_sf_vport(esw, vport_num);
  }
  
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-index 26b5502712a6..ab68320e5516 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-@@ -84,7 +84,6 @@ unsigned int mlx5_core_debug_mask;
- module_param_named(debug_mask, mlx5_core_debug_mask, uint, 0644);
- MODULE_PARM_DESC(debug_mask, "debug mask: 1 = dump cmd data, 2 = dump cmd exec time, 3 = both. Default=0");
- 
--#define MLX5_DEFAULT_PROF	2
- static unsigned int prof_sel = MLX5_DEFAULT_PROF;
- module_param_named(prof_sel, prof_sel, uint, 0444);
- MODULE_PARM_DESC(prof_sel, "profile selector. Valid range 0 - 2");
-@@ -1303,7 +1302,7 @@ void mlx5_unload_one(struct mlx5_core_dev *dev, bool cleanup)
- 	mutex_unlock(&dev->intf_state_mutex);
- }
- 
--static int mlx5_mdev_init(struct mlx5_core_dev *dev, int profile_idx)
-+int mlx5_mdev_init(struct mlx5_core_dev *dev, int profile_idx)
+ int esw_acl_egress_ofld_setup(struct mlx5_eswitch *esw, struct mlx5_vport *vport)
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
+index 876e6449edb3..55ebd9474d97 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.c
+@@ -1365,9 +1365,15 @@ const u32 *mlx5_esw_query_functions(struct mlx5_core_dev *dev)
  {
- 	struct mlx5_priv *priv = &dev->priv;
+ 	int outlen = MLX5_ST_SZ_BYTES(query_esw_functions_out);
+ 	u32 in[MLX5_ST_SZ_DW(query_esw_functions_in)] = {};
++	u16 max_sf_vports;
+ 	u32 *out;
  	int err;
-@@ -1353,7 +1352,7 @@ static int mlx5_mdev_init(struct mlx5_core_dev *dev, int profile_idx)
- 	return err;
- }
  
--static void mlx5_mdev_uninit(struct mlx5_core_dev *dev)
-+void mlx5_mdev_uninit(struct mlx5_core_dev *dev)
++	max_sf_vports = mlx5_sf_max_functions(dev);
++	/* Device interface is array of 64-bits */
++	if (max_sf_vports)
++		outlen += DIV_ROUND_UP(max_sf_vports, BITS_PER_TYPE(__be64)) * sizeof(__be64);
++
+ 	out = kvzalloc(outlen, GFP_KERNEL);
+ 	if (!out)
+ 		return ERR_PTR(-ENOMEM);
+@@ -1375,7 +1381,7 @@ const u32 *mlx5_esw_query_functions(struct mlx5_core_dev *dev)
+ 	MLX5_SET(query_esw_functions_in, in, opcode,
+ 		 MLX5_CMD_OP_QUERY_ESW_FUNCTIONS);
+ 
+-	err = mlx5_cmd_exec_inout(dev, query_esw_functions, in, out);
++	err = mlx5_cmd_exec(dev, in, sizeof(in), out, outlen);
+ 	if (!err)
+ 		return out;
+ 
+@@ -1898,7 +1904,8 @@ static bool
+ is_port_function_supported(const struct mlx5_eswitch *esw, u16 vport_num)
  {
- 	struct mlx5_priv *priv = &dev->priv;
- 
-@@ -1696,6 +1695,10 @@ static int __init init(void)
- 	if (err)
- 		goto err_debug;
- 
-+	err = mlx5_sf_driver_register();
-+	if (err)
-+		goto err_sf;
-+
- #ifdef CONFIG_MLX5_CORE_EN
- 	err = mlx5e_init();
- 	if (err) {
-@@ -1706,6 +1709,8 @@ static int __init init(void)
- 
- 	return 0;
- 
-+err_sf:
-+	pci_unregister_driver(&mlx5_core_driver);
- err_debug:
- 	mlx5_unregister_debugfs();
- 	return err;
-@@ -1716,6 +1721,7 @@ static void __exit cleanup(void)
- #ifdef CONFIG_MLX5_CORE_EN
- 	mlx5e_cleanup();
- #endif
-+	mlx5_sf_driver_unregister();
- 	pci_unregister_driver(&mlx5_core_driver);
- 	mlx5_unregister_debugfs();
+ 	return vport_num == MLX5_VPORT_PF ||
+-	       mlx5_eswitch_is_vf_vport(esw, vport_num);
++	       mlx5_eswitch_is_vf_vport(esw, vport_num) ||
++	       mlx5_esw_is_sf_vport(esw, vport_num);
  }
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h b/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
-index a33b7496d748..3754ef98554f 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/mlx5_core.h
-@@ -117,6 +117,8 @@ enum mlx5_semaphore_space_address {
- 	MLX5_SEMAPHORE_SW_RESET         = 0x20,
- };
  
-+#define MLX5_DEFAULT_PROF       2
-+
- int mlx5_query_hca_caps(struct mlx5_core_dev *dev);
- int mlx5_query_board_id(struct mlx5_core_dev *dev);
- int mlx5_cmd_init(struct mlx5_core_dev *dev);
-@@ -176,6 +178,7 @@ struct cpumask *
- mlx5_irq_get_affinity_mask(struct mlx5_irq_table *irq_table, int vecidx);
- struct cpu_rmap *mlx5_irq_get_rmap(struct mlx5_irq_table *table);
- int mlx5_irq_get_num_comp(struct mlx5_irq_table *table);
-+struct mlx5_irq_table *mlx5_irq_table_get(struct mlx5_core_dev *dev);
+ int mlx5_devlink_port_function_hw_addr_get(struct devlink *devlink,
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
+index cf87de94418f..4e3ed878ff03 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch.h
+@@ -43,6 +43,7 @@
+ #include <linux/mlx5/fs.h>
+ #include "lib/mpfs.h"
+ #include "lib/fs_chains.h"
++#include "sf/sf.h"
+ #include "en/tc_ct.h"
  
- int mlx5_events_init(struct mlx5_core_dev *dev);
- void mlx5_events_cleanup(struct mlx5_core_dev *dev);
-@@ -257,6 +260,13 @@ enum {
- u8 mlx5_get_nic_state(struct mlx5_core_dev *dev);
- void mlx5_set_nic_state(struct mlx5_core_dev *dev, u8 state);
+ #ifdef CONFIG_MLX5_ESWITCH
+@@ -499,6 +500,40 @@ static inline u16 mlx5_eswitch_first_host_vport_num(struct mlx5_core_dev *dev)
+ 		MLX5_VPORT_PF : MLX5_VPORT_FIRST_VF;
+ }
  
-+static inline bool mlx5_core_is_sf(const struct mlx5_core_dev *dev)
++static inline int mlx5_esw_sf_start_idx(const struct mlx5_eswitch *esw)
 +{
-+	return dev->coredev_type == MLX5_COREDEV_SF;
++	/* PF and VF vports indices start from 0 to max_vfs */
++	return MLX5_VPORT_PF_PLACEHOLDER + mlx5_core_max_vfs(esw->dev);
 +}
 +
-+int mlx5_mdev_init(struct mlx5_core_dev *dev, int profile_idx);
-+void mlx5_mdev_uninit(struct mlx5_core_dev *dev);
- void mlx5_unload_one(struct mlx5_core_dev *dev, bool cleanup);
- int mlx5_load_one(struct mlx5_core_dev *dev, bool boot);
- 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c b/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c
-index 6fd974920394..a61e09aff152 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c
-@@ -30,6 +30,9 @@ int mlx5_irq_table_init(struct mlx5_core_dev *dev)
- {
- 	struct mlx5_irq_table *irq_table;
- 
-+	if (mlx5_core_is_sf(dev))
-+		return 0;
++static inline int mlx5_esw_sf_end_idx(const struct mlx5_eswitch *esw)
++{
++	return mlx5_esw_sf_start_idx(esw) + mlx5_sf_max_functions(esw->dev);
++}
 +
- 	irq_table = kvzalloc(sizeof(*irq_table), GFP_KERNEL);
- 	if (!irq_table)
- 		return -ENOMEM;
-@@ -40,6 +43,9 @@ int mlx5_irq_table_init(struct mlx5_core_dev *dev)
- 
- void mlx5_irq_table_cleanup(struct mlx5_core_dev *dev)
- {
-+	if (mlx5_core_is_sf(dev))
-+		return;
++static inline int
++mlx5_esw_sf_vport_num_to_index(const struct mlx5_eswitch *esw, u16 vport_num)
++{
++	return vport_num - mlx5_sf_start_function_id(esw->dev) +
++	       MLX5_VPORT_PF_PLACEHOLDER + mlx5_core_max_vfs(esw->dev);
++}
 +
- 	kvfree(dev->priv.irq_table);
++static inline u16
++mlx5_esw_sf_vport_index_to_num(const struct mlx5_eswitch *esw, int idx)
++{
++	return mlx5_sf_start_function_id(esw->dev) + idx -
++	       (MLX5_VPORT_PF_PLACEHOLDER + mlx5_core_max_vfs(esw->dev));
++}
++
++static inline bool
++mlx5_esw_is_sf_vport(const struct mlx5_eswitch *esw, u16 vport_num)
++{
++	return mlx5_sf_supported(esw->dev) &&
++	       vport_num >= mlx5_sf_start_function_id(esw->dev) &&
++	       (vport_num < (mlx5_sf_start_function_id(esw->dev) +
++			     mlx5_sf_max_functions(esw->dev)));
++}
++
+ static inline bool mlx5_eswitch_is_funcs_handler(const struct mlx5_core_dev *dev)
+ {
+ 	return mlx5_core_is_ecpf_esw_manager(dev);
+@@ -527,6 +562,10 @@ static inline int mlx5_eswitch_vport_num_to_index(struct mlx5_eswitch *esw,
+ 	if (vport_num == MLX5_VPORT_UPLINK)
+ 		return mlx5_eswitch_uplink_idx(esw);
+ 
++	if (mlx5_esw_is_sf_vport(esw, vport_num))
++		return mlx5_esw_sf_vport_num_to_index(esw, vport_num);
++
++	/* PF and VF vports start from 0 to max_vfs */
+ 	return vport_num;
  }
  
-@@ -268,6 +274,9 @@ int mlx5_irq_table_create(struct mlx5_core_dev *dev)
- 	int nvec;
- 	int err;
+@@ -540,6 +579,12 @@ static inline u16 mlx5_eswitch_index_to_vport_num(struct mlx5_eswitch *esw,
+ 	if (index == mlx5_eswitch_uplink_idx(esw))
+ 		return MLX5_VPORT_UPLINK;
  
-+	if (mlx5_core_is_sf(dev))
-+		return 0;
++	/* SF vports indices are after VFs and before ECPF */
++	if (mlx5_sf_supported(esw->dev) &&
++	    index > mlx5_core_max_vfs(esw->dev))
++		return mlx5_esw_sf_vport_index_to_num(esw, index);
 +
- 	nvec = MLX5_CAP_GEN(dev, num_ports) * num_online_cpus() +
- 	       MLX5_IRQ_VEC_COMP_BASE;
- 	nvec = min_t(int, nvec, num_eqs);
-@@ -319,6 +328,9 @@ void mlx5_irq_table_destroy(struct mlx5_core_dev *dev)
- 	struct mlx5_irq_table *table = dev->priv.irq_table;
++	/* PF and VF vports start from 0 to max_vfs */
+ 	return index;
+ }
+ 
+@@ -625,6 +670,11 @@ void mlx5e_tc_clean_fdb_peer_flows(struct mlx5_eswitch *esw);
+ 	for ((vport) = (nvfs);						\
+ 	     (vport) >= (esw)->first_host_vport; (vport)--)
+ 
++#define mlx5_esw_for_each_sf_rep(esw, i, rep)		\
++	for ((i) = mlx5_esw_sf_start_idx(esw);		\
++	     (rep) = &(esw)->offloads.vport_reps[(i)],	\
++	     (i) < mlx5_esw_sf_end_idx(esw); (i++))
++
+ struct mlx5_eswitch *mlx5_devlink_eswitch_get(struct devlink *devlink);
+ struct mlx5_vport *__must_check
+ mlx5_eswitch_get_vport(struct mlx5_eswitch *esw, u16 vport_num);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+index 2f6a0ae20650..2d241f7351b5 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/eswitch_offloads.c
+@@ -1800,11 +1800,22 @@ static void __esw_offloads_unload_rep(struct mlx5_eswitch *esw,
+ 		esw->offloads.rep_ops[rep_type]->unload(rep);
+ }
+ 
++static void __unload_reps_sf_vport(struct mlx5_eswitch *esw, u8 rep_type)
++{
++	struct mlx5_eswitch_rep *rep;
++	int i;
++
++	mlx5_esw_for_each_sf_rep(esw, i, rep)
++		__esw_offloads_unload_rep(esw, rep, rep_type);
++}
++
+ static void __unload_reps_all_vport(struct mlx5_eswitch *esw, u8 rep_type)
+ {
+ 	struct mlx5_eswitch_rep *rep;
  	int i;
  
-+	if (mlx5_core_is_sf(dev))
-+		return;
++	__unload_reps_sf_vport(esw, rep_type);
 +
- 	/* free_irq requires that affinity and rmap will be cleared
- 	 * before calling it. This is why there is asymmetry with set_rmap
- 	 * which should be called after alloc_irq but before request_irq.
-@@ -332,3 +344,11 @@ void mlx5_irq_table_destroy(struct mlx5_core_dev *dev)
- 	kfree(table->irq);
- }
+ 	mlx5_esw_for_each_vf_rep_reverse(esw, i, rep, esw->esw_funcs.num_vfs)
+ 		__esw_offloads_unload_rep(esw, rep, rep_type);
  
-+struct mlx5_irq_table *mlx5_irq_table_get(struct mlx5_core_dev *dev)
-+{
-+#ifdef CONFIG_MLX5_SF
-+	if (mlx5_core_is_sf(dev))
-+		return dev->priv.parent_mdev->priv.irq_table;
-+#endif
-+	return dev->priv.irq_table;
-+}
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/sf/dev/dev.c b/drivers/net/ethernet/mellanox/mlx5/core/sf/dev/dev.c
-index 4a8eeb7c853e..b265f27b2166 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/sf/dev/dev.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/sf/dev/dev.c
-@@ -24,6 +24,16 @@ static bool mlx5_sf_dev_supported(const struct mlx5_core_dev *dev)
- 	return MLX5_CAP_GEN(dev, sf) && mlx5_vhca_event_supported(dev);
- }
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/vport.c b/drivers/net/ethernet/mellanox/mlx5/core/vport.c
+index bdafc85fd874..ba78e0660523 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/vport.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/vport.c
+@@ -36,6 +36,7 @@
+ #include <linux/mlx5/vport.h>
+ #include <linux/mlx5/eswitch.h>
+ #include "mlx5_core.h"
++#include "sf/sf.h"
  
-+bool mlx5_sf_dev_allocated(const struct mlx5_core_dev *dev)
-+{
-+	struct mlx5_sf_dev_table *table = dev->priv.sf_dev_table;
-+
-+	if (!mlx5_sf_dev_supported(dev))
-+		return false;
-+
-+	return !xa_empty(&table->devices);
-+}
-+
- static ssize_t sfnum_show(struct device *dev, struct device_attribute *attr, char *buf)
+ /* Mutex to hold while enabling or disabling RoCE */
+ static DEFINE_MUTEX(mlx5_roce_en_lock);
+@@ -1160,6 +1161,6 @@ EXPORT_SYMBOL_GPL(mlx5_query_nic_system_image_guid);
+  */
+ u16 mlx5_eswitch_get_total_vports(const struct mlx5_core_dev *dev)
  {
- 	struct auxiliary_device *adev = container_of(dev, struct auxiliary_device, dev);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/sf/dev/dev.h b/drivers/net/ethernet/mellanox/mlx5/core/sf/dev/dev.h
-index a6fb7289ba2c..4de02902aef1 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/sf/dev/dev.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/sf/dev/dev.h
-@@ -13,6 +13,7 @@
- struct mlx5_sf_dev {
- 	struct auxiliary_device adev;
- 	struct mlx5_core_dev *parent_mdev;
-+	struct mlx5_core_dev *mdev;
- 	phys_addr_t bar_base_addr;
- 	u32 sfnum;
- };
-@@ -20,6 +21,11 @@ struct mlx5_sf_dev {
- void mlx5_sf_dev_table_create(struct mlx5_core_dev *dev);
- void mlx5_sf_dev_table_destroy(struct mlx5_core_dev *dev);
- 
-+int mlx5_sf_driver_register(void);
-+void mlx5_sf_driver_unregister(void);
-+
-+bool mlx5_sf_dev_allocated(const struct mlx5_core_dev *dev);
-+
- #else
- 
- static inline void mlx5_sf_dev_table_create(struct mlx5_core_dev *dev)
-@@ -30,6 +36,20 @@ static inline void mlx5_sf_dev_table_destroy(struct mlx5_core_dev *dev)
- {
+-	return MLX5_SPECIAL_VPORTS(dev) + mlx5_core_max_vfs(dev);
++	return MLX5_SPECIAL_VPORTS(dev) + mlx5_core_max_vfs(dev) + mlx5_sf_max_functions(dev);
  }
- 
-+static inline int mlx5_sf_driver_register(void)
-+{
-+	return 0;
-+}
-+
-+static inline void mlx5_sf_driver_unregister(void)
-+{
-+}
-+
-+static inline bool mlx5_sf_dev_allocated(const struct mlx5_core_dev *dev)
-+{
-+	return 0;
-+}
-+
- #endif
- 
- #endif
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/sf/dev/driver.c b/drivers/net/ethernet/mellanox/mlx5/core/sf/dev/driver.c
-new file mode 100644
-index 000000000000..daf63a8115e0
---- /dev/null
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/sf/dev/driver.c
-@@ -0,0 +1,101 @@
-+// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-+/* Copyright (c) 2020 Mellanox Technologies Ltd */
-+
-+#include <linux/mlx5/driver.h>
-+#include <linux/mlx5/device.h>
-+#include "mlx5_core.h"
-+#include "dev.h"
-+#include "devlink.h"
-+
-+static int mlx5_sf_dev_probe(struct auxiliary_device *adev, const struct auxiliary_device_id *id)
-+{
-+	struct mlx5_sf_dev *sf_dev = container_of(adev, struct mlx5_sf_dev, adev);
-+	struct mlx5_core_dev *mdev;
-+	struct devlink *devlink;
-+	int err;
-+
-+	devlink = mlx5_devlink_alloc();
-+	if (!devlink)
-+		return -ENOMEM;
-+
-+	mdev = devlink_priv(devlink);
-+	mdev->device = &adev->dev;
-+	mdev->pdev = sf_dev->parent_mdev->pdev;
-+	mdev->bar_addr = sf_dev->bar_base_addr;
-+	mdev->iseg_base = sf_dev->bar_base_addr;
-+	mdev->coredev_type = MLX5_COREDEV_SF;
-+	mdev->priv.parent_mdev = sf_dev->parent_mdev;
-+	mdev->priv.adev_idx = adev->id;
-+	sf_dev->mdev = mdev;
-+
-+	err = mlx5_mdev_init(mdev, MLX5_DEFAULT_PROF);
-+	if (err) {
-+		mlx5_core_warn(mdev, "mlx5_mdev_init on err=%d\n", err);
-+		goto mdev_err;
-+	}
-+
-+	mdev->iseg = ioremap(mdev->iseg_base, sizeof(*mdev->iseg));
-+	if (!mdev->iseg) {
-+		mlx5_core_warn(mdev, "remap error\n");
-+		goto remap_err;
-+	}
-+
-+	err = mlx5_load_one(mdev, true);
-+	if (err) {
-+		mlx5_core_warn(mdev, "mlx5_load_one err=%d\n", err);
-+		goto load_one_err;
-+	}
-+	return 0;
-+
-+load_one_err:
-+	iounmap(mdev->iseg);
-+remap_err:
-+	mlx5_mdev_uninit(mdev);
-+mdev_err:
-+	mlx5_devlink_free(devlink);
-+	return err;
-+}
-+
-+static void mlx5_sf_dev_remove(struct auxiliary_device *adev)
-+{
-+	struct mlx5_sf_dev *sf_dev = container_of(adev, struct mlx5_sf_dev, adev);
-+	struct devlink *devlink;
-+
-+	devlink = priv_to_devlink(sf_dev->mdev);
-+	mlx5_unload_one(sf_dev->mdev, true);
-+	iounmap(sf_dev->mdev->iseg);
-+	mlx5_mdev_uninit(sf_dev->mdev);
-+	mlx5_devlink_free(devlink);
-+}
-+
-+static void mlx5_sf_dev_shutdown(struct auxiliary_device *adev)
-+{
-+	struct mlx5_sf_dev *sf_dev = container_of(adev, struct mlx5_sf_dev, adev);
-+
-+	mlx5_unload_one(sf_dev->mdev, false);
-+}
-+
-+static const struct auxiliary_device_id mlx5_sf_dev_id_table[] = {
-+	{ .name = MLX5_ADEV_NAME "." MLX5_SF_DEV_ID_NAME, },
-+	{ },
-+};
-+
-+MODULE_DEVICE_TABLE(auxiliary, mlx5_sf_dev_id_table);
-+
-+static struct auxiliary_driver mlx5_sf_driver = {
-+	.name = MLX5_SF_DEV_ID_NAME,
-+	.probe = mlx5_sf_dev_probe,
-+	.remove = mlx5_sf_dev_remove,
-+	.shutdown = mlx5_sf_dev_shutdown,
-+	.id_table = mlx5_sf_dev_id_table,
-+};
-+
-+int mlx5_sf_driver_register(void)
-+{
-+	return auxiliary_driver_register(&mlx5_sf_driver);
-+}
-+
-+void mlx5_sf_driver_unregister(void)
-+{
-+	auxiliary_driver_unregister(&mlx5_sf_driver);
-+}
-diff --git a/include/linux/mlx5/driver.h b/include/linux/mlx5/driver.h
-index 08e5fbe97df0..48e3638b1185 100644
---- a/include/linux/mlx5/driver.h
-+++ b/include/linux/mlx5/driver.h
-@@ -193,7 +193,8 @@ enum port_state_policy {
- 
- enum mlx5_coredev_type {
- 	MLX5_COREDEV_PF,
--	MLX5_COREDEV_VF
-+	MLX5_COREDEV_VF,
-+	MLX5_COREDEV_SF,
- };
- 
- struct mlx5_field_desc {
-@@ -608,6 +609,7 @@ struct mlx5_priv {
- #ifdef CONFIG_MLX5_SF
- 	struct mlx5_vhca_state_notifier *vhca_state_notifier;
- 	struct mlx5_sf_dev_table *sf_dev_table;
-+	struct mlx5_core_dev *parent_mdev;
- #endif
- };
- 
+ EXPORT_SYMBOL_GPL(mlx5_eswitch_get_total_vports);
 -- 
 2.26.2
 
