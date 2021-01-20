@@ -2,38 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F2E402FC7CC
-	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 03:29:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 321842FC7AF
+	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 03:23:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729358AbhATB1a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jan 2021 20:27:30 -0500
-Received: from mail.kernel.org ([198.145.29.99]:46128 "EHLO mail.kernel.org"
+        id S1728567AbhATCU0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jan 2021 21:20:26 -0500
+Received: from mail.kernel.org ([198.145.29.99]:48240 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727333AbhATB0r (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 19 Jan 2021 20:26:47 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id DB96D2312B;
-        Wed, 20 Jan 2021 01:26:05 +0000 (UTC)
+        id S1730829AbhATB3o (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 19 Jan 2021 20:29:44 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 042B823730;
+        Wed, 20 Jan 2021 01:28:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611105966;
-        bh=fkcstxxU/HilblDrOzN3mkgJzNpErfSb4xMpwRpTRCI=;
+        s=k20201202; t=1611106088;
+        bh=5yK5Fi0PTZ04fL2md8C6mizLSxtI95KJPCXu9GfAxsM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XUEBTxZ/VAVQeNTBS/9qobw42MwBL+hSCI+xgR+8Nc9rmTLqryE+hZIcpf4Oa7zWo
-         OpuDGjkdtjaxf16U5/kjeeB8YyzsJyvMNmR2NRTAyUrCI1Mmjody1UnUbrpkqrKcRv
-         0pFTr72WDRRq0RggIzcctpegy0ULuTwPxrofswrEYw+saTTigwfET1BktUOyvOus1m
-         JytNimsK1jBIEkSkoEEjZbStm8C2+0flQyhwWwFRvIPtBaJPM4s00EUxTwkCRBCQmq
-         XsXeHAACHwTxT/4cZXtDCKAYiNzb1vMh5RK/OY0o5YDZWcrLrgI6LKi7YAgnWMOAEv
-         SH49Q3djwckVA==
+        b=X7vJ6QoPCRPrBIvPwh+ZYiOCcoYHYqyAJuwMO2lFeUOLexYSqOgc9c4O5OjvZ6LO1
+         UXEARl25V7zQF3SVBa2Z+B5k0kjVhBQs7/jPzPIADs33P7I/rm0ERKAtOWnGD8WhHi
+         YG5Pmmeu4jCghydHJ3UC18agpKLqRvfPL2SLKjG/psHkfm6CttXfdD6hDF508h4h7L
+         X5mCZrhDoM7T4kwbPguG981lQ2l6uagwxB1pc59EzPyV/OCH1zBS7oHpOit0Et/Iv0
+         pCKOwfup660pe2NjhCDTZBF1uDys/HhFVIJrX0Fs/nlj6nSlS4Z0wHM6yyDyRi+ZEJ
+         Uy9cIyrdCH7AQ==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Chuck Lever <chuck.lever@oracle.com>, Daire Byrne <daire@dneg.com>,
-        Sasha Levin <sashal@kernel.org>, linux-nfs@vger.kernel.org,
+Cc:     Leon Schuermann <leon@is.currently.online>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, linux-usb@vger.kernel.org,
         netdev@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.10 03/45] SUNRPC: Handle TCP socket sends with kernel_sendpage() again
-Date:   Tue, 19 Jan 2021 20:25:20 -0500
-Message-Id: <20210120012602.769683-3-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.14 4/9] r8152: Add Lenovo Powered USB-C Travel Hub
+Date:   Tue, 19 Jan 2021 20:27:57 -0500
+Message-Id: <20210120012802.770525-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20210120012602.769683-1-sashal@kernel.org>
-References: <20210120012602.769683-1-sashal@kernel.org>
+In-Reply-To: <20210120012802.770525-1-sashal@kernel.org>
+References: <20210120012802.770525-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -42,138 +43,59 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Chuck Lever <chuck.lever@oracle.com>
+From: Leon Schuermann <leon@is.currently.online>
 
-[ Upstream commit 4a85a6a3320b4a622315d2e0ea91a1d2b013bce4 ]
+[ Upstream commit cb82a54904a99df9e8f9e9d282046055dae5a730 ]
 
-Daire Byrne reports a ~50% aggregrate throughput regression on his
-Linux NFS server after commit da1661b93bf4 ("SUNRPC: Teach server to
-use xprt_sock_sendmsg for socket sends"), which replaced
-kernel_send_page() calls in NFSD's socket send path with calls to
-sock_sendmsg() using iov_iter.
+This USB-C Hub (17ef:721e) based on the Realtek RTL8153B chip used to
+use the cdc_ether driver. However, using this driver, with the system
+suspended the device constantly sends pause-frames as soon as the
+receive buffer fills up. This causes issues with other devices, where
+some Ethernet switches stop forwarding packets altogether.
 
-Investigation showed that tcp_sendmsg() was not using zero-copy to
-send the xdr_buf's bvec pages, but instead was relying on memcpy.
-This means copying every byte of a large NFS READ payload.
+Using the Realtek driver (r8152) fixes this issue. Pause frames are no
+longer sent while the host system is suspended.
 
-It looks like TLS sockets do indeed support a ->sendpage method,
-so it's really not necessary to use xprt_sock_sendmsg() to support
-TLS fully on the server. A mechanical reversion of da1661b93bf4 is
-not possible at this point, but we can re-implement the server's
-TCP socket sendmsg path using kernel_sendpage().
-
-Reported-by: Daire Byrne <daire@dneg.com>
-BugLink: https://bugzilla.kernel.org/show_bug.cgi?id=209439
-Signed-off-by: Chuck Lever <chuck.lever@oracle.com>
+Signed-off-by: Leon Schuermann <leon@is.currently.online>
+Tested-by: Leon Schuermann <leon@is.currently.online>
+Link: https://lore.kernel.org/r/20210111190312.12589-2-leon@is.currently.online
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- net/sunrpc/svcsock.c | 86 +++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 85 insertions(+), 1 deletion(-)
+ drivers/net/usb/cdc_ether.c | 7 +++++++
+ drivers/net/usb/r8152.c     | 1 +
+ 2 files changed, 8 insertions(+)
 
-diff --git a/net/sunrpc/svcsock.c b/net/sunrpc/svcsock.c
-index c2752e2b9ce34..4404c491eb388 100644
---- a/net/sunrpc/svcsock.c
-+++ b/net/sunrpc/svcsock.c
-@@ -1062,6 +1062,90 @@ static int svc_tcp_recvfrom(struct svc_rqst *rqstp)
- 	return 0;	/* record not complete */
- }
+diff --git a/drivers/net/usb/cdc_ether.c b/drivers/net/usb/cdc_ether.c
+index f3def96d35d42..8c9eae5f30722 100644
+--- a/drivers/net/usb/cdc_ether.c
++++ b/drivers/net/usb/cdc_ether.c
+@@ -800,6 +800,13 @@ static const struct usb_device_id	products[] = {
+ 	.driver_info = 0,
+ },
  
-+static int svc_tcp_send_kvec(struct socket *sock, const struct kvec *vec,
-+			      int flags)
++/* Lenovo Powered USB-C Travel Hub (4X90S92381, based on Realtek RTL8153) */
 +{
-+	return kernel_sendpage(sock, virt_to_page(vec->iov_base),
-+			       offset_in_page(vec->iov_base),
-+			       vec->iov_len, flags);
-+}
++	USB_DEVICE_AND_INTERFACE_INFO(LENOVO_VENDOR_ID, 0x721e, USB_CLASS_COMM,
++			USB_CDC_SUBCLASS_ETHERNET, USB_CDC_PROTO_NONE),
++	.driver_info = 0,
++},
 +
-+/*
-+ * kernel_sendpage() is used exclusively to reduce the number of
-+ * copy operations in this path. Therefore the caller must ensure
-+ * that the pages backing @xdr are unchanging.
-+ *
-+ * In addition, the logic assumes that * .bv_len is never larger
-+ * than PAGE_SIZE.
-+ */
-+static int svc_tcp_sendmsg(struct socket *sock, struct msghdr *msg,
-+			   struct xdr_buf *xdr, rpc_fraghdr marker,
-+			   unsigned int *sentp)
-+{
-+	const struct kvec *head = xdr->head;
-+	const struct kvec *tail = xdr->tail;
-+	struct kvec rm = {
-+		.iov_base	= &marker,
-+		.iov_len	= sizeof(marker),
-+	};
-+	int flags, ret;
-+
-+	*sentp = 0;
-+	xdr_alloc_bvec(xdr, GFP_KERNEL);
-+
-+	msg->msg_flags = MSG_MORE;
-+	ret = kernel_sendmsg(sock, msg, &rm, 1, rm.iov_len);
-+	if (ret < 0)
-+		return ret;
-+	*sentp += ret;
-+	if (ret != rm.iov_len)
-+		return -EAGAIN;
-+
-+	flags = head->iov_len < xdr->len ? MSG_MORE | MSG_SENDPAGE_NOTLAST : 0;
-+	ret = svc_tcp_send_kvec(sock, head, flags);
-+	if (ret < 0)
-+		return ret;
-+	*sentp += ret;
-+	if (ret != head->iov_len)
-+		goto out;
-+
-+	if (xdr->page_len) {
-+		unsigned int offset, len, remaining;
-+		struct bio_vec *bvec;
-+
-+		bvec = xdr->bvec;
-+		offset = xdr->page_base;
-+		remaining = xdr->page_len;
-+		flags = MSG_MORE | MSG_SENDPAGE_NOTLAST;
-+		while (remaining > 0) {
-+			if (remaining <= PAGE_SIZE && tail->iov_len == 0)
-+				flags = 0;
-+			len = min(remaining, bvec->bv_len);
-+			ret = kernel_sendpage(sock, bvec->bv_page,
-+					      bvec->bv_offset + offset,
-+					      len, flags);
-+			if (ret < 0)
-+				return ret;
-+			*sentp += ret;
-+			if (ret != len)
-+				goto out;
-+			remaining -= len;
-+			offset = 0;
-+			bvec++;
-+		}
-+	}
-+
-+	if (tail->iov_len) {
-+		ret = svc_tcp_send_kvec(sock, tail, 0);
-+		if (ret < 0)
-+			return ret;
-+		*sentp += ret;
-+	}
-+
-+out:
-+	return 0;
-+}
-+
- /**
-  * svc_tcp_sendto - Send out a reply on a TCP socket
-  * @rqstp: completed svc_rqst
-@@ -1089,7 +1173,7 @@ static int svc_tcp_sendto(struct svc_rqst *rqstp)
- 	mutex_lock(&xprt->xpt_mutex);
- 	if (svc_xprt_is_dead(xprt))
- 		goto out_notconn;
--	err = xprt_sock_sendmsg(svsk->sk_sock, &msg, xdr, 0, marker, &sent);
-+	err = svc_tcp_sendmsg(svsk->sk_sock, &msg, xdr, marker, &sent);
- 	xdr_free_bvec(xdr);
- 	trace_svcsock_tcp_send(xprt, err < 0 ? err : sent);
- 	if (err < 0 || sent != (xdr->len + sizeof(marker)))
+ /* ThinkPad USB-C Dock Gen 2 (based on Realtek RTL8153) */
+ {
+ 	USB_DEVICE_AND_INTERFACE_INFO(LENOVO_VENDOR_ID, 0xa387, USB_CLASS_COMM,
+diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
+index e30792380812a..bd91d4bad49b2 100644
+--- a/drivers/net/usb/r8152.c
++++ b/drivers/net/usb/r8152.c
+@@ -5337,6 +5337,7 @@ static const struct usb_device_id rtl8152_table[] = {
+ 	{REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x7205)},
+ 	{REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x720c)},
+ 	{REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x7214)},
++	{REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x721e)},
+ 	{REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0xa387)},
+ 	{REALTEK_USB_DEVICE(VENDOR_ID_LINKSYS, 0x0041)},
+ 	{REALTEK_USB_DEVICE(VENDOR_ID_NVIDIA,  0x09ff)},
 -- 
 2.27.0
 
