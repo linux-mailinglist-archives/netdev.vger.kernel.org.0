@@ -2,270 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 095D92FCC85
-	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 09:17:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 94FA72FCC80
+	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 09:17:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730769AbhATIOi (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jan 2021 03:14:38 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:53487 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730437AbhATIN1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 03:13:27 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1611130320;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=SgoON6JCbiRoEe3MsxmL7+i8CTj6HRhH96NwSvSwXcc=;
-        b=W5VvnZPPTNXyseReGbsJiWrDLKquynG3QR4UJPJ4UCVoUaxmXSdj+m0gYBCuvVUp1N82fb
-        khotffMened5jjWTsy/D+1NjoK786QFF2BBvdJKiJ1SEekOqVMcEImmYp81dVmiYzXFCJ8
-        hnobXFIZvHGwQpSJRx75OBC9vDVH9c8=
-Received: from mail-wm1-f72.google.com (mail-wm1-f72.google.com
- [209.85.128.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-58-zSpJJh83MM-Vw2PxZjphGw-1; Wed, 20 Jan 2021 03:11:58 -0500
-X-MC-Unique: zSpJJh83MM-Vw2PxZjphGw-1
-Received: by mail-wm1-f72.google.com with SMTP id 184so325509wmb.4
-        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 00:11:58 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=SgoON6JCbiRoEe3MsxmL7+i8CTj6HRhH96NwSvSwXcc=;
-        b=cXpYZbVFoxLiSL0EzmcCsiAqJJ/9ul20dArv4t5OKQE4tilYBL5srwQ47lKyCW+NOB
-         ZKa6JLxaOIH1IPqpBRJDHETWOJcRa+iOe4LsnkA91iNORUMOcgM+CvSjhdE8vUpe2HLo
-         5lZW/D8CL7LnUdTZkEhoi0tu4IIL8L0p1XIQxOMs2BcWm44LnMUdi3EB7bAnwCDsE/3D
-         kzkzs382hehfTi5POs7QNw26f1kIut+vgmBk9rzvgQN7iZ2A2IwVMItEsJzwIDIwMWhK
-         MdcYgb4bHvBOZyNHAUFGqqKo8hGdzIO5ZKPaG3VCHiVBjOIEk12dPuoTek47Eo342zid
-         G48w==
-X-Gm-Message-State: AOAM531s9vTygfJpyZraan+LgHqfQNUKZm3U2Q3Pvv8SaeoEyNRZGeUh
-        AK4c9mIi7oM7N8eP47CUfaUDTSJPdzrTAhqgjv6DOYWzomSHvMreex2w8+VV0E3U5si/qqfW3iH
-        4g7sGxteIWLzHdXbW
-X-Received: by 2002:a05:6000:11c1:: with SMTP id i1mr8130833wrx.16.1611130317170;
-        Wed, 20 Jan 2021 00:11:57 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJy+qxq/9yALfuQf8DHvIqACZWEbB+C15hwmEqydGIBZ5tMlhik23jRChzHH2VZSQ71fjPH6aw==
-X-Received: by 2002:a05:6000:11c1:: with SMTP id i1mr8130807wrx.16.1611130316948;
-        Wed, 20 Jan 2021 00:11:56 -0800 (PST)
-Received: from redhat.com (bzq-79-177-39-148.red.bezeqint.net. [79.177.39.148])
-        by smtp.gmail.com with ESMTPSA id h9sm2367974wre.24.2021.01.20.00.11.54
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Jan 2021 00:11:56 -0800 (PST)
-Date:   Wed, 20 Jan 2021 03:11:52 -0500
-From:   "Michael S. Tsirkin" <mst@redhat.com>
-To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Cc:     Alexander Lobakin <alobakin@pm.me>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, bjorn.topel@intel.com,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next v2 3/3] xsk: build skb by page
-Message-ID: <20210120031130-mutt-send-email-mst@kernel.org>
-References: <cover.1611128806.git.xuanzhuo@linux.alibaba.com>
- <6787e9a100eba47efbff81939e21e97fef492d07.1611128806.git.xuanzhuo@linux.alibaba.com>
- <20210120030418-mutt-send-email-mst@kernel.org>
+        id S1730628AbhATINe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jan 2021 03:13:34 -0500
+Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:16222 "EHLO
+        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730421AbhATIMk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 03:12:40 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B6007e5d00000>; Wed, 20 Jan 2021 00:12:00 -0800
+Received: from mtl-vdi-166.wap.labs.mlnx (172.20.145.6) by
+ HQMAIL107.nvidia.com (172.20.187.13) with Microsoft SMTP Server (TLS) id
+ 15.0.1473.3; Wed, 20 Jan 2021 08:11:58 +0000
+Date:   Wed, 20 Jan 2021 10:11:54 +0200
+From:   Eli Cohen <elic@nvidia.com>
+To:     "Michael S. Tsirkin" <mst@redhat.com>
+CC:     Jason Wang <jasowang@redhat.com>,
+        <virtualization@lists.linux-foundation.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <lulu@redhat.com>
+Subject: Re: [PATCH v1] vdpa/mlx5: Fix memory key MTT population
+Message-ID: <20210120081154.GA132136@mtl-vdi-166.wap.labs.mlnx>
+References: <20210107071845.GA224876@mtl-vdi-166.wap.labs.mlnx>
+ <07d336a3-7fc2-5e4a-667a-495b5bb755da@redhat.com>
+ <20210120053619.GA126435@mtl-vdi-166.wap.labs.mlnx>
+ <20210120025651-mutt-send-email-mst@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset="utf-8"
 Content-Disposition: inline
-In-Reply-To: <20210120030418-mutt-send-email-mst@kernel.org>
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20210120025651-mutt-send-email-mst@kernel.org>
+User-Agent: Mutt/1.9.5 (bf161cf53efb) (2018-04-13)
+X-Originating-IP: [172.20.145.6]
+X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1611130320; bh=MVk+azMlkit5BNEnIYzuX/Z7yw0qeR4a9+6r4m/MV+Q=;
+        h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+         Content-Type:Content-Disposition:Content-Transfer-Encoding:
+         In-Reply-To:User-Agent:X-Originating-IP:X-ClientProxiedBy;
+        b=b5LhqIADVb8tj+wzPULi6LXHqkISBQNqhucSSxTaTaPkT9t0F9WhwqLH7kYjavYpP
+         TzFhnOisgZXW7ZbNwJfyBmqcUd+Gg74TXngfzckRI+W1rmAb4JVk7YB1ZWVIDmuEEf
+         UmolAxD55NjVYwbMpEQwvSRMaWD3UpIyb8c8ThrL5dJq3YN7ikjeuLWXvfpLxmIOKM
+         Np03E/vMj++Yq53lzDav0hlmp9anysEWtPTbgtMZ9063mHFYsE/FbTGL5q/GbYfrKv
+         zNXqFK6PgpYcI2/dzn2XXv7znstS2lhMfgKduia7e4yua2aj2BBcRjj8dl9vkLMY1g
+         Y0Lq8BIXZLJqQ==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 20, 2021 at 03:11:04AM -0500, Michael S. Tsirkin wrote:
-> On Wed, Jan 20, 2021 at 03:50:01PM +0800, Xuan Zhuo wrote:
-> > This patch is used to construct skb based on page to save memory copy
-> > overhead.
-> > 
-> > This function is implemented based on IFF_TX_SKB_NO_LINEAR. Only the
-> > network card priv_flags supports IFF_TX_SKB_NO_LINEAR will use page to
-> > directly construct skb. If this feature is not supported, it is still
-> > necessary to copy data to construct skb.
-> > 
-> > ---------------- Performance Testing ------------
-> > 
-> > The test environment is Aliyun ECS server.
-> > Test cmd:
-> > ```
-> > xdpsock -i eth0 -t  -S -s <msg size>
-> > ```
-> > 
-> > Test result data:
-> > 
-> > size    64      512     1024    1500
-> > copy    1916747 1775988 1600203 1440054
-> > page    1974058 1953655 1945463 1904478
-> > percent 3.0%    10.0%   21.58%  32.3%
-> > 
-> > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> > Reviewed-by: Dust Li <dust.li@linux.alibaba.com>
-> 
-> I can't see the cover letter or 1/3 in this series - was probably
-> threaded incorrectly?
+On Wed, Jan 20, 2021 at 02:57:05AM -0500, Michael S. Tsirkin wrote:
+> On Wed, Jan 20, 2021 at 07:36:19AM +0200, Eli Cohen wrote:
+> > On Fri, Jan 08, 2021 at 04:38:55PM +0800, Jason Wang wrote:
+> >=20
+> > Hi Michael,
+> > this patch is a fix. Are you going to merge it?
+>=20
+> yes - in the next pull request.
+>=20
 
+Great thanks.
+Can you send the path to your git tree where you keep the patches you
+intend to merge?
 
-Hmm looked again and now I do see them. My mistake pls ignore.
-
-> 
-> > ---
-> >  net/xdp/xsk.c | 104 ++++++++++++++++++++++++++++++++++++++++++++++++----------
-> >  1 file changed, 86 insertions(+), 18 deletions(-)
-> > 
-> > diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-> > index 8037b04..817a3a5 100644
-> > --- a/net/xdp/xsk.c
-> > +++ b/net/xdp/xsk.c
-> > @@ -430,6 +430,87 @@ static void xsk_destruct_skb(struct sk_buff *skb)
-> >  	sock_wfree(skb);
-> >  }
-> >  
-> > +static struct sk_buff *xsk_build_skb_zerocopy(struct xdp_sock *xs,
-> > +					      struct xdp_desc *desc)
-> > +{
-> > +	u32 len, offset, copy, copied;
-> > +	struct sk_buff *skb;
-> > +	struct page *page;
-> > +	char *buffer;
-> 
-> Actually, make this void *, this way you will not need
-> casts down the road. I know this is from xsk_generic_xmit -
-> I don't know why it's char * there, either.
-> 
-> > +	int err, i;
-> > +	u64 addr;
-> > +
-> > +	skb = sock_alloc_send_skb(&xs->sk, 0, 1, &err);
-> > +	if (unlikely(!skb))
-> > +		return ERR_PTR(err);
-> > +
-> > +	addr = desc->addr;
-> > +	len = desc->len;
-> > +
-> > +	buffer = xsk_buff_raw_get_data(xs->pool, addr);
-> > +	offset = offset_in_page(buffer);
-> > +	addr = buffer - (char *)xs->pool->addrs;
-> > +
-> > +	for (copied = 0, i = 0; copied < len; i++) {
-> > +		page = xs->pool->umem->pgs[addr >> PAGE_SHIFT];
-> > +
-> > +		get_page(page);
-> > +
-> > +		copy = min_t(u32, PAGE_SIZE - offset, len - copied);
-> > +
-> > +		skb_fill_page_desc(skb, i, page, offset, copy);
-> > +
-> > +		copied += copy;
-> > +		addr += copy;
-> > +		offset = 0;
-> > +	}
-> > +
-> > +	skb->len += len;
-> > +	skb->data_len += len;
-> > +	skb->truesize += len;
-> > +
-> > +	refcount_add(len, &xs->sk.sk_wmem_alloc);
-> > +
-> > +	return skb;
-> > +}
-> > +
-> > +static struct sk_buff *xsk_build_skb(struct xdp_sock *xs,
-> > +				     struct xdp_desc *desc)
-> > +{
-> > +	struct sk_buff *skb = NULL;
-> > +
-> > +	if (xs->dev->priv_flags & IFF_TX_SKB_NO_LINEAR) {
-> > +		skb = xsk_build_skb_zerocopy(xs, desc);
-> > +		if (IS_ERR(skb))
-> > +			return skb;
-> > +	} else {
-> > +		char *buffer;
-> > +		u32 len;
-> > +		int err;
-> > +
-> > +		len = desc->len;
-> > +		skb = sock_alloc_send_skb(&xs->sk, len, 1, &err);
-> > +		if (unlikely(!skb))
-> > +			return ERR_PTR(err);
-> > +
-> > +		skb_put(skb, len);
-> > +		buffer = xsk_buff_raw_get_data(xs->pool, desc->addr);
-> > +		err = skb_store_bits(skb, 0, buffer, len);
-> > +		if (unlikely(err)) {
-> > +			kfree_skb(skb);
-> > +			return ERR_PTR(err);
-> > +		}
-> > +	}
-> > +
-> > +	skb->dev = xs->dev;
-> > +	skb->priority = xs->sk.sk_priority;
-> > +	skb->mark = xs->sk.sk_mark;
-> > +	skb_shinfo(skb)->destructor_arg = (void *)(long)desc->addr;
-> > +	skb->destructor = xsk_destruct_skb;
-> > +
-> > +	return skb;
-> > +}
-> > +
-> >  static int xsk_generic_xmit(struct sock *sk)
-> >  {
-> >  	struct xdp_sock *xs = xdp_sk(sk);
-> > @@ -446,43 +527,30 @@ static int xsk_generic_xmit(struct sock *sk)
-> >  		goto out;
-> >  
-> >  	while (xskq_cons_peek_desc(xs->tx, &desc, xs->pool)) {
-> > -		char *buffer;
-> > -		u64 addr;
-> > -		u32 len;
-> > -
-> >  		if (max_batch-- == 0) {
-> >  			err = -EAGAIN;
-> >  			goto out;
-> >  		}
-> >  
-> > -		len = desc.len;
-> > -		skb = sock_alloc_send_skb(sk, len, 1, &err);
-> > -		if (unlikely(!skb))
-> > +		skb = xsk_build_skb(xs, &desc);
-> > +		if (IS_ERR(skb)) {
-> > +			err = PTR_ERR(skb);
-> >  			goto out;
-> > +		}
-> >  
-> > -		skb_put(skb, len);
-> > -		addr = desc.addr;
-> > -		buffer = xsk_buff_raw_get_data(xs->pool, addr);
-> > -		err = skb_store_bits(skb, 0, buffer, len);
-> >  		/* This is the backpressure mechanism for the Tx path.
-> >  		 * Reserve space in the completion queue and only proceed
-> >  		 * if there is space in it. This avoids having to implement
-> >  		 * any buffering in the Tx path.
-> >  		 */
-> >  		spin_lock_irqsave(&xs->pool->cq_lock, flags);
-> > -		if (unlikely(err) || xskq_prod_reserve(xs->pool->cq)) {
-> > +		if (xskq_prod_reserve(xs->pool->cq)) {
-> >  			spin_unlock_irqrestore(&xs->pool->cq_lock, flags);
-> >  			kfree_skb(skb);
-> >  			goto out;
-> >  		}
-> >  		spin_unlock_irqrestore(&xs->pool->cq_lock, flags);
-> >  
-> > -		skb->dev = xs->dev;
-> > -		skb->priority = sk->sk_priority;
-> > -		skb->mark = sk->sk_mark;
-> > -		skb_shinfo(skb)->destructor_arg = (void *)(long)desc.addr;
-> > -		skb->destructor = xsk_destruct_skb;
-> > -
-> >  		err = __dev_direct_xmit(skb, xs->queue_id);
-> >  		if  (err == NETDEV_TX_BUSY) {
-> >  			/* Tell user-space to retry the send */
-> > -- 
-> > 1.8.3.1
-
+> > >=20
+> > > On 2021/1/7 =E4=B8=8B=E5=8D=883:18, Eli Cohen wrote:
+> > > > map_direct_mr() assumed that the number of scatter/gather entries
+> > > > returned by dma_map_sg_attrs() was equal to the number of segments =
+in
+> > > > the sgl list. This led to wrong population of the mkey object. Fix =
+this
+> > > > by properly referring to the returned value.
+> > > >=20
+> > > > The hardware expects each MTT entry to contain the DMA address of a
+> > > > contiguous block of memory of size (1 << mr->log_size) bytes.
+> > > > dma_map_sg_attrs() can coalesce several sg entries into a single
+> > > > scatter/gather entry of contiguous DMA range so we need to scan the=
+ list
+> > > > and refer to the size of each s/g entry.
+> > > >=20
+> > > > In addition, get rid of fill_sg() which effect is overwritten by
+> > > > populate_mtts().
+> > > >=20
+> > > > Fixes: 94abbccdf291 ("vdpa/mlx5: Add shared memory registration cod=
+e")
+> > > > Signed-off-by: Eli Cohen <elic@nvidia.com>
+> > > > ---
+> > > > V0->V1:
+> > > > 1. Fix typos
+> > > > 2. Improve changelog
+> > >=20
+> > >=20
+> > > Acked-by: Jason Wang <jasowang@redhat.com>
+> > >=20
+> > >=20
+> > > >=20
+> > > >   drivers/vdpa/mlx5/core/mlx5_vdpa.h |  1 +
+> > > >   drivers/vdpa/mlx5/core/mr.c        | 28 ++++++++++++-------------=
+---
+> > > >   2 files changed, 13 insertions(+), 16 deletions(-)
+> > > >=20
+> > > > diff --git a/drivers/vdpa/mlx5/core/mlx5_vdpa.h b/drivers/vdpa/mlx5=
+/core/mlx5_vdpa.h
+> > > > index 5c92a576edae..08f742fd2409 100644
+> > > > --- a/drivers/vdpa/mlx5/core/mlx5_vdpa.h
+> > > > +++ b/drivers/vdpa/mlx5/core/mlx5_vdpa.h
+> > > > @@ -15,6 +15,7 @@ struct mlx5_vdpa_direct_mr {
+> > > >   	struct sg_table sg_head;
+> > > >   	int log_size;
+> > > >   	int nsg;
+> > > > +	int nent;
+> > > >   	struct list_head list;
+> > > >   	u64 offset;
+> > > >   };
+> > > > diff --git a/drivers/vdpa/mlx5/core/mr.c b/drivers/vdpa/mlx5/core/m=
+r.c
+> > > > index 4b6195666c58..d300f799efcd 100644
+> > > > --- a/drivers/vdpa/mlx5/core/mr.c
+> > > > +++ b/drivers/vdpa/mlx5/core/mr.c
+> > > > @@ -25,17 +25,6 @@ static int get_octo_len(u64 len, int page_shift)
+> > > >   	return (npages + 1) / 2;
+> > > >   }
+> > > > -static void fill_sg(struct mlx5_vdpa_direct_mr *mr, void *in)
+> > > > -{
+> > > > -	struct scatterlist *sg;
+> > > > -	__be64 *pas;
+> > > > -	int i;
+> > > > -
+> > > > -	pas =3D MLX5_ADDR_OF(create_mkey_in, in, klm_pas_mtt);
+> > > > -	for_each_sg(mr->sg_head.sgl, sg, mr->nsg, i)
+> > > > -		(*pas) =3D cpu_to_be64(sg_dma_address(sg));
+> > > > -}
+> > > > -
+> > > >   static void mlx5_set_access_mode(void *mkc, int mode)
+> > > >   {
+> > > >   	MLX5_SET(mkc, mkc, access_mode_1_0, mode & 0x3);
+> > > > @@ -45,10 +34,18 @@ static void mlx5_set_access_mode(void *mkc, int=
+ mode)
+> > > >   static void populate_mtts(struct mlx5_vdpa_direct_mr *mr, __be64 =
+*mtt)
+> > > >   {
+> > > >   	struct scatterlist *sg;
+> > > > +	int nsg =3D mr->nsg;
+> > > > +	u64 dma_addr;
+> > > > +	u64 dma_len;
+> > > > +	int j =3D 0;
+> > > >   	int i;
+> > > > -	for_each_sg(mr->sg_head.sgl, sg, mr->nsg, i)
+> > > > -		mtt[i] =3D cpu_to_be64(sg_dma_address(sg));
+> > > > +	for_each_sg(mr->sg_head.sgl, sg, mr->nent, i) {
+> > > > +		for (dma_addr =3D sg_dma_address(sg), dma_len =3D sg_dma_len(sg)=
+;
+> > > > +		     nsg && dma_len;
+> > > > +		     nsg--, dma_addr +=3D BIT(mr->log_size), dma_len -=3D BIT(mr=
+->log_size))
+> > > > +			mtt[j++] =3D cpu_to_be64(dma_addr);
+> > > > +	}
+> > > >   }
+> > > >   static int create_direct_mr(struct mlx5_vdpa_dev *mvdev, struct m=
+lx5_vdpa_direct_mr *mr)
+> > > > @@ -64,7 +61,6 @@ static int create_direct_mr(struct mlx5_vdpa_dev =
+*mvdev, struct mlx5_vdpa_direct
+> > > >   		return -ENOMEM;
+> > > >   	MLX5_SET(create_mkey_in, in, uid, mvdev->res.uid);
+> > > > -	fill_sg(mr, in);
+> > > >   	mkc =3D MLX5_ADDR_OF(create_mkey_in, in, memory_key_mkey_entry);
+> > > >   	MLX5_SET(mkc, mkc, lw, !!(mr->perm & VHOST_MAP_WO));
+> > > >   	MLX5_SET(mkc, mkc, lr, !!(mr->perm & VHOST_MAP_RO));
+> > > > @@ -276,8 +272,8 @@ static int map_direct_mr(struct mlx5_vdpa_dev *=
+mvdev, struct mlx5_vdpa_direct_mr
+> > > >   done:
+> > > >   	mr->log_size =3D log_entity_size;
+> > > >   	mr->nsg =3D nsg;
+> > > > -	err =3D dma_map_sg_attrs(dma, mr->sg_head.sgl, mr->nsg, DMA_BIDIR=
+ECTIONAL, 0);
+> > > > -	if (!err)
+> > > > +	mr->nent =3D dma_map_sg_attrs(dma, mr->sg_head.sgl, mr->nsg, DMA_=
+BIDIRECTIONAL, 0);
+> > > > +	if (!mr->nent)
+> > > >   		goto err_map;
+> > > >   	err =3D create_direct_mr(mvdev, mr);
+> > >=20
+>=20
