@@ -2,134 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 075872FC925
-	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 04:38:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4757E2FC8F0
+	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 04:31:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730110AbhATDfx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jan 2021 22:35:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39186 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731830AbhATC30 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jan 2021 21:29:26 -0500
-Received: from mail-ot1-x336.google.com (mail-ot1-x336.google.com [IPv6:2607:f8b0:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21475C0613C1
-        for <netdev@vger.kernel.org>; Tue, 19 Jan 2021 18:28:43 -0800 (PST)
-Received: by mail-ot1-x336.google.com with SMTP id 36so10431018otp.2
-        for <netdev@vger.kernel.org>; Tue, 19 Jan 2021 18:28:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=JIB/ou9F3Q9Bjm2JkXJgbj3HotfhqjfPfmPXsoPA6b0=;
-        b=XZ8iO1DS1jMU3JmjU4qWHYCrqgsT9QAkjVGxCGL1kxqQaXNGXgMf6vmVyl1KPeixlB
-         gmmm+NSKxiYksyMWr6AElrbPm9P1F+6z8OFtsbfC1hqzJQfQrytdOC8hwTYXx12ZKoCA
-         quyOegIGc9H5rp8i2cbWiWSCaFCQqUwYbbIlQHXC3oRXb8vPcENIFmOP/g50BLGJkBIc
-         3GPO95y25P4N8XD0pg3D/WVl7C2cDZcFUJec5+SIpLg8T/pQzWq/VDJSEtmW/z9SP+Nu
-         bK+n0xvHQu7xUq7fl1PLIMnK62u433RV+RxwZXmc3icLicF50+pcU6K58oXAm2RBDRos
-         gLYA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=JIB/ou9F3Q9Bjm2JkXJgbj3HotfhqjfPfmPXsoPA6b0=;
-        b=qNmTRy5toqY/BxXwaE6IwufRKmhO5N1TM/V0eQVBZVNLTZvneDjISKCJJ1ZhRXDsIe
-         QnCOSD69s/M+rhkQE1hR71vZi+3ev2zu0Ml5ECqK3iP09OGNglUFJogPxKUUbk2qoqYV
-         P4Bl4CiH/jsQ5QRja+y0mrmxxCnSnrCYIIa0M34v0EQF7xN+oMY57ok0EtRgBNxq0uX+
-         Tr5JLW3+caJQCt8eqvOo8MPbiTRSwFlPP7l1rCp8lcWdSaZcWk3PCnf46Nq29yf31MXl
-         g86uc8kTf7cG5gCujtC/fUrlH1QksVA5BtiAl3HVozwN/pYjZ+bPHp3XL1GwDaYZhkr3
-         UTvg==
-X-Gm-Message-State: AOAM530Kc+RhIXsNyDmZXfRAf1HBNoNVR6EK4K3NNUX7oG5JkFkR/BD9
-        NGV3I78bnVC/M2YWJTbkd/I=
-X-Google-Smtp-Source: ABdhPJx+rlG0GghgO/QDkxeklRHxLD3SNOfm95z7ltAKK8JBjweG1bcZzppaWAPZRD74xa8SDuM0Mg==
-X-Received: by 2002:a9d:d6b:: with SMTP id 98mr5522318oti.227.1611109722554;
-        Tue, 19 Jan 2021 18:28:42 -0800 (PST)
-Received: from Davids-MacBook-Pro.local ([8.6.112.237])
-        by smtp.googlemail.com with ESMTPSA id z3sm130832otq.22.2021.01.19.18.28.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 19 Jan 2021 18:28:41 -0800 (PST)
-Subject: Re: [PATCH net-next 1/3] nexthop: Use a dedicated policy for
- nh_valid_get_del_req()
-To:     Jakub Kicinski <kuba@kernel.org>, Petr Machata <petrm@nvidia.com>
-Cc:     netdev@vger.kernel.org, David Ahern <dsahern@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Ido Schimmel <idosch@nvidia.com>
-References: <cover.1610978306.git.petrm@nvidia.org>
- <ec93d227609126c98805e52ba3821b71f8bb338d.1610978306.git.petrm@nvidia.org>
- <20210119125504.0b306d97@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <74bb53b9-1bda-ba42-ceeb-9e85c8c2ea27@gmail.com>
-Date:   Tue, 19 Jan 2021 19:28:40 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
- Gecko/20100101 Thunderbird/78.6.1
+        id S1726588AbhATD3N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jan 2021 22:29:13 -0500
+Received: from mail.kernel.org ([198.145.29.99]:59092 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1732103AbhATCaE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 19 Jan 2021 21:30:04 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 3680022509;
+        Wed, 20 Jan 2021 02:29:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1611109763;
+        bh=2n16C3EtnBZL2OrSWrwcP8YI7DSzFQRsfF9JKN2ItzI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=bbzBnhU3FglN+pDAyTYj97tCyzygoCXjIwJD6rwDD1dWM9DYvcdUoHTf44GXGsLcT
+         tj9/IW1UVNFX7TxhJ4Y7vwVK9/HBrwM+78YvyUgfLSPANWrvP2TNtJr32hP57ZviLT
+         Ka1z7nJgAwfRGLlXNbWZuBQZz2A/6HWtg8+WKH1zxOhK1k5ZgEKHJ4D79sh4axMZAe
+         dBy4aASQbHzJtSjpxTQx/qQtmlosJyfwWOuFeXnEx7WHgpvkMuOcdyRJDr1OkmPlkH
+         TV2fFBC6xr8PJs/hsLc+u/UKZjg/k/j+wlsvipJjIF0DvfEdiHe4RlkDxnHEcvK3im
+         IGFSNEytmG2IQ==
+Date:   Tue, 19 Jan 2021 18:29:22 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     "Venkataramanan, Anirudh" <anirudh.venkataramanan@intel.com>
+Cc:     "Brelinski, TonyX" <tonyx.brelinski@intel.com>,
+        "sassmann@redhat.com" <sassmann@redhat.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "Creeley, Brett" <brett.creeley@intel.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next 1/1] ice: Improve MSI-X vector enablement
+ fallback logic
+Message-ID: <20210119182922.1102ca91@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <910a50d7ae84913e140d14aed11675f751254eb1.camel@intel.com>
+References: <20210113234226.3638426-1-anthony.l.nguyen@intel.com>
+        <20210114164252.74c1cf18@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <7272d1b6e6c447989cae07e7519422ab80518ca1.camel@intel.com>
+        <20210119164147.36a77cf5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <910a50d7ae84913e140d14aed11675f751254eb1.camel@intel.com>
 MIME-Version: 1.0
-In-Reply-To: <20210119125504.0b306d97@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/19/21 1:55 PM, Jakub Kicinski wrote:
->> diff --git a/net/ipv4/nexthop.c b/net/ipv4/nexthop.c
->> index e53e43aef785..d5d88f7c5c11 100644
->> --- a/net/ipv4/nexthop.c
->> +++ b/net/ipv4/nexthop.c
->> @@ -36,6 +36,10 @@ static const struct nla_policy rtm_nh_policy[NHA_MAX + 1] = {
->>  	[NHA_FDB]		= { .type = NLA_FLAG },
->>  };
->>  
->> +static const struct nla_policy rtm_nh_policy_get[NHA_MAX + 1] = {
+On Wed, 20 Jan 2021 02:13:36 +0000 Venkataramanan, Anirudh wrote:
+> > > As per the current logic, if the driver does not get the number of
+> > > MSI-
+> > > X vectors it needs, it will immediately drop to "Do I have at least
+> > > two
+> > > (ICE_MIN_LAN_VECS) MSI-X vectors?". If yes, the driver will enable
+> > > a
+> > > single Tx/Rx traffic queue pair, bound to one of the two MSI-X
+> > > vectors.
+> > > 
+> > > This is a bit of an all-or-nothing type approach. There's a mid-
+> > > ground
+> > > that can allow more queues to be enabled (ex. driver asked for 300
+> > > vectors, but got 68 vectors, so enabled 64 data queues) and this
+> > > patch
+> > > implements the mid-ground logic. 
+> > > 
+> > > This mid-ground logic can also be implemented based on the return
+> > > value
+> > > of pci_enable_msix_range() but IMHO the implementation in this
+> > > patch
+> > > using pci_enable_msix_exact is better because it's always only
+> > > enabling/reserving as many MSI-X vectors as required, not more, not
+> > > less.  
+> > 
+> > What do you mean by "required" in the last sentence?   
 > 
-> This is an unnecessary waste of memory if you ask me.
+> .. as "required" in that particular iteration of the loop.
 > 
-> NHA_ID is 1, so we're creating an array of 10 extra NULL elements.
+> > The driver
+> > requests num_online_cpus()-worth of IRQs, so it must work with any
+> > number of IRQs. Why is num_cpus() / 1,2,4,8 "required"?  
 > 
-> Can you leave the size to the compiler and use ARRAY_SIZE() below?
-
-interesting suggestion in general for netlink attributes.
-
+> Let me back up a bit here. 
 > 
->> +	[NHA_ID]		= { .type = NLA_U32 },
->> +};
->> +
->>  static bool nexthop_notifiers_is_empty(struct net *net)
->>  {
->>  	return !net->nexthop.notifier_chain.head;
->> @@ -1843,27 +1847,14 @@ static int nh_valid_get_del_req(struct nlmsghdr *nlh, u32 *id,
->>  {
->>  	struct nhmsg *nhm = nlmsg_data(nlh);
->>  	struct nlattr *tb[NHA_MAX + 1];
-
-This tb array too could be sized to just the highest indexed expected -
-NHA_ID in this case.
-
->> -	int err, i;
->> +	int err;
->>  
->> -	err = nlmsg_parse(nlh, sizeof(*nhm), tb, NHA_MAX, rtm_nh_policy,
->> +	err = nlmsg_parse(nlh, sizeof(*nhm), tb, NHA_MAX, rtm_nh_policy_get,
->>  			  extack);
->>  	if (err < 0)
->>  		return err;
->>  
->>  	err = -EINVAL;
->> -	for (i = 0; i < __NHA_MAX; ++i) {
->> -		if (!tb[i])
->> -			continue;
->> -
->> -		switch (i) {
->> -		case NHA_ID:
->> -			break;
->> -		default:
->> -			NL_SET_ERR_MSG_ATTR(extack, tb[i],
->> -					    "Unexpected attribute in request");
->> -			goto out;
->> -		}
->> -	}
->>  	if (nhm->nh_protocol || nhm->resvd || nhm->nh_scope || nhm->nh_flags) {
->>  		NL_SET_ERR_MSG(extack, "Invalid values in header");
->>  		goto out;
+> Ultimately, the issue we are trying to solve here is "what happens when
+> the driver doesn't get as many MSI-X vectors as it needs, and how it's
+> interpreted by the end user"
 > 
+> Let's say there are these two systems, each with 256 cores but the
+> response to pci_enable_msix_range() is different:
+> 
+> System 1: 256 cores, pci_enable_msix_range returns 75 vectors
+> System 2: 256 cores, pci_enable_msix_range returns 220 vectors 
+> 
+> In this case, the number of queues the user would see enabled on each
+> of these systems would be very different (73 on system 1 and 218 on
+> system 2). This variabilty makes it difficult to define what the
+> expected behavior should be, because it's not exactly obvious to the
+> user how many free MSI-X vectors a given system has. Instead, if the
+> driver reduced it's demand for vectors in a well defined manner
+> (num_cpus() / 1,2,4,8), the user visible difference between the two
+> systems wouldn't be so drastic.
+> 
+> If this is plain wrong or if there's a preferred approach, I'd be happy
+> to discuss further.
 
+Let's stick to the standard Linux way of handling IRQ exhaustion, and
+rely on pci_enable_msix_range() to pick the number. If the current
+behavior of pci_enable_msix_range() is now what users want we can
+change it. Each driver creating its own heuristic is worst of all
+choices as most brownfield deployments will have a mix of NICs.
