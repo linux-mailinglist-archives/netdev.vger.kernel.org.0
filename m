@@ -2,123 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CCDB52FD94E
-	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 20:18:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D5752FD988
+	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 20:25:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392244AbhATTQu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jan 2021 14:16:50 -0500
-Received: from mail-wr1-f42.google.com ([209.85.221.42]:42693 "EHLO
-        mail-wr1-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2392477AbhATTQ1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 14:16:27 -0500
-Received: by mail-wr1-f42.google.com with SMTP id m4so24132955wrx.9;
-        Wed, 20 Jan 2021 11:16:07 -0800 (PST)
+        id S2392112AbhATTYv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jan 2021 14:24:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60088 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2392088AbhATTYU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 14:24:20 -0500
+Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2CCFFC061757;
+        Wed, 20 Jan 2021 11:23:40 -0800 (PST)
+Received: by mail-lf1-x132.google.com with SMTP id h205so35618256lfd.5;
+        Wed, 20 Jan 2021 11:23:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=FB9rCEvUKKLUEE3zDbbNHWd1Ms8+O71NKBDL0wI3PRE=;
+        b=ps5alcIMVpBMxN05bXhD0FFEmNIACfekcJyE8TgUCjMhUrOzsr32oHcHFZjqqjVBzU
+         T59rlG+opjxX3+JnutUYZmv7mz5NYgPDYG3oZtdR+VD5F2p1CbzlatTg2XAVxJ39baoz
+         /BzTaX0MUwog4ymAGp4Ak97lbRFHbetd/xAmj4HWhTxXzrPrgZ6ReHE6OW+UuGXzm6DV
+         ci7GpkMoEa5QIJMs8e2/fHRiKS3xwvRp3zaCTenaxKWDqOt2VnjlSoJxDaJqqzz35mDY
+         55QrwejvWxwThNrkHbCLv6ZP2tHv3PeLX3kRB4dAcVLppuiHIjC1KkZdvN8gSxlcNsNC
+         iUmA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=lHHjUnuoF9CRFeUi11DuMAFbrNISTZnauEeaO/iF4Jo=;
-        b=gydQBAMjjbyyqKKDl48HIROuG5msARAyfNgGuuLgrRw1je8qxy5j7qp8I7H+vjt3z3
-         B4CeHfbox6JOPOkPyMc9PRL9TnIfuXaBuilT9nVrsIO4fDDYKYT2hIWDxm0f46Mwuvpq
-         9qEM0jv70FDCE5TV7ZJSrSoNmucN9AaRpR7EN+4hRaIeffIFELYgYYoXPMQ6RIDEz5z3
-         HTXzvQ2vfy3W9F719uCEECVUw/hAtQJXCgecZWXaTYW6CRqa8iG9L6ke0lkXqvsx3KNq
-         zeUAxtub+t8LXvbFA+ZhJGIYpb2W/zQS6Fry87RE8Z6YKZWMlS6kRpak1Iy7+J4IaqnN
-         1YzA==
-X-Gm-Message-State: AOAM530aBsTGj7Q/Nb8E1GE0uaNrbiVMGn2ANh9BTOyVOYjfiUMZS20R
-        j1y4qDUjE31/sO594uEB3tMQWTy0f2U6T+jrac8=
-X-Google-Smtp-Source: ABdhPJyexTqRRTbwmp5/VB7u2r9ewojCoOLJc1IwN0xo2pOgQvUAZjYUoeFY1P2UQebC0YljtpVYXf80ZqCQK1BVKYU=
-X-Received: by 2002:adf:ce84:: with SMTP id r4mr10662902wrn.91.1611170141586;
- Wed, 20 Jan 2021 11:15:41 -0800 (PST)
+        bh=FB9rCEvUKKLUEE3zDbbNHWd1Ms8+O71NKBDL0wI3PRE=;
+        b=ox6B8QLtTcsM8dAPSYghMoCTjFFTioabs9zzIGLJFL9Xuhjq8jRe3bLxMF66WtlzIO
+         oNe4QHvZL6E+uvwC3cSkVbCIMiCQZa0+541c5lZ4zKRH3SDGb7cLXNV5UWoOk3fH9b2+
+         VWunIJKfgto4y+LXVAKAfyfuA9CF5nX1MbAJKBmwBbpTeJs4uLMI2/bVSQ5UpSZsVTus
+         A2W5Bye+oPNTeEFrswNa74rlzaw6yyK6eIhxv0/4HqGZDI0IUHXi+S4BCRufCmMd2tEH
+         VwyQNniQS/4ShOU5Vqx8e+itHWXW1ciYB4TCFbO9mOcLNtk3kf2sVfKFyFt4Dm7X9hpf
+         BY+g==
+X-Gm-Message-State: AOAM5312N6RUtg9JGhBexPmiXJ3Y/SbKAS0vBDrT4EtsXfUbGPf2bPM/
+        VrOZcG2x10E2de3o9WEXf0mQSBu4qjc+76mbS+Q=
+X-Google-Smtp-Source: ABdhPJwhrYUxdKjAh1i9WyZDqPgsq/8sEaSggDumv1OtuzGfyXnhLwa61GVUp6rmLs04sbMCDL4mQsNFqz3d8uIb1D8=
+X-Received: by 2002:a19:8983:: with SMTP id l125mr4672224lfd.182.1611170618663;
+ Wed, 20 Jan 2021 11:23:38 -0800 (PST)
 MIME-Version: 1.0
-References: <20210112134054.342-1-calvin.johnson@oss.nxp.com>
- <20210112134054.342-10-calvin.johnson@oss.nxp.com> <CAGETcx-7JVz=QLCMWicHqoagWYjeBXdFJmSv1v6MQhtPt2RS=Q@mail.gmail.com>
- <20210112180343.GI4077@smile.fi.intel.com> <CAJZ5v0iW0jJUcXtiQtLOakkSejZCJD=hTFLL4mvoAN3ZTB+1Tw@mail.gmail.com>
- <CAHp75VcJS10KMA5amUc36PFgj0FLddj1fXD4dUtuAchrVhhzPg@mail.gmail.com>
-In-Reply-To: <CAHp75VcJS10KMA5amUc36PFgj0FLddj1fXD4dUtuAchrVhhzPg@mail.gmail.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Wed, 20 Jan 2021 20:15:30 +0100
-Message-ID: <CAJZ5v0ga5RqwFzbBqSChJ7=gBBM-7dWNQPz6bqvqsNAkWZJ=vQ@mail.gmail.com>
-Subject: Re: [net-next PATCH v3 09/15] device property: Introduce fwnode_get_id()
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Saravana Kannan <saravanak@google.com>,
-        Calvin Johnson <calvin.johnson@oss.nxp.com>,
-        Grant Likely <grant.likely@arm.com>,
-        Jeremy Linton <jeremy.linton@arm.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
-        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Pieter Jansen Van Vuuren <pieter.jansenvv@bamboosystems.io>,
-        Jon <jon@solid-run.com>,
-        Diana Madalina Craciun <diana.craciun@nxp.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        "linux.cj" <linux.cj@gmail.com>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
-        Randy Dunlap <rdunlap@infradead.org>
+References: <20210119114624.60400-1-bianpan2016@163.com>
+In-Reply-To: <20210119114624.60400-1-bianpan2016@163.com>
+From:   Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Date:   Wed, 20 Jan 2021 11:23:27 -0800
+Message-ID: <CAADnVQJr0idctwt53eD3dFmbZ_upLT6_7jc4raD825aPi640sA@mail.gmail.com>
+Subject: Re: [PATCH] bpf: put file handler if no storage found
+To:     Pan Bian <bianpan2016@163.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 20, 2021 at 7:51 PM Andy Shevchenko
-<andy.shevchenko@gmail.com> wrote:
+On Tue, Jan 19, 2021 at 4:03 AM Pan Bian <bianpan2016@163.com> wrote:
 >
-> On Wed, Jan 20, 2021 at 8:18 PM Rafael J. Wysocki <rafael@kernel.org> wrote:
-> > On Tue, Jan 12, 2021 at 7:02 PM Andy Shevchenko
-> > <andy.shevchenko@gmail.com> wrote:
-> > > On Tue, Jan 12, 2021 at 09:30:31AM -0800, Saravana Kannan wrote:
-> > > > On Tue, Jan 12, 2021 at 5:42 AM Calvin Johnson
-> > > > <calvin.johnson@oss.nxp.com> wrote:
+> Put file f if inode_storage_ptr() returns NULL.
 >
-> ...
+> Signed-off-by: Pan Bian <bianpan2016@163.com>
+> ---
+>  kernel/bpf/bpf_inode_storage.c | 6 +++++-
+>  1 file changed, 5 insertions(+), 1 deletion(-)
 >
-> > > > > +       ret = fwnode_property_read_u32(fwnode, "reg", id);
-> > > > > +       if (!(ret && is_acpi_node(fwnode)))
-> > > > > +               return ret;
-> > > > > +
-> > > > > +#ifdef CONFIG_ACPI
-> > > > > +       status = acpi_evaluate_integer(ACPI_HANDLE_FWNODE(fwnode),
-> > > > > +                                      METHOD_NAME__ADR, NULL, &adr);
-> > > > > +       if (ACPI_FAILURE(status))
-> > > > > +               return -EINVAL;
-> > > > > +       *id = (u32)adr;
-> > > > > +#endif
-> > > > > +       return 0;
+> diff --git a/kernel/bpf/bpf_inode_storage.c b/kernel/bpf/bpf_inode_storage.c
+> index 6edff97ad594..089d5071d4fc 100644
+> --- a/kernel/bpf/bpf_inode_storage.c
+> +++ b/kernel/bpf/bpf_inode_storage.c
+> @@ -125,8 +125,12 @@ static int bpf_fd_inode_storage_update_elem(struct bpf_map *map, void *key,
 >
-> > > > Also ACPI and DT
-> > > > aren't mutually exclusive if I'm not mistaken.
-> > >
-> > > That's why we try 'reg' property for both cases first.
-> > >
-> > > is_acpi_fwnode() conditional is that what I don't like though.
-> >
-> > I'm not sure what you mean here, care to elaborate?
->
-> I meant is_acpi_node(fwnode) in the conditional.
->
-> I think it's redundant and we can simple do something like this:
->
->   if (ret) {
-> #ifdef ACPI
->     ...
-> #else
->     return ret;
-> #endif
->   }
->   return 0;
->
-> --
+>         fd = *(int *)key;
+>         f = fget_raw(fd);
+> -       if (!f || !inode_storage_ptr(f->f_inode))
+> +       if (!f)
+> +               return -EBADF;
+> +       if (!inode_storage_ptr(f->f_inode)) {
+> +               fput(f);
+>                 return -EBADF;
+> +       }
 
-Right, that should work.  And I'd prefer it too.
+Good catch.
+Somehow the patch is not in patchwork.
+Could you please resubmit with Fixes tag and reduce cc list?
+I guess it's hitting some spam filters in vger.
