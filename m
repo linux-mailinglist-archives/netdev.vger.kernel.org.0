@@ -2,101 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AFBA82FC653
-	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 02:18:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F64C2FC656
+	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 02:19:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729934AbhATBRS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jan 2021 20:17:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51378 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730274AbhATBPv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jan 2021 20:15:51 -0500
-Received: from mail-vk1-xa36.google.com (mail-vk1-xa36.google.com [IPv6:2607:f8b0:4864:20::a36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2633C061575
-        for <netdev@vger.kernel.org>; Tue, 19 Jan 2021 17:15:07 -0800 (PST)
-Received: by mail-vk1-xa36.google.com with SMTP id j67so3828163vkh.11
-        for <netdev@vger.kernel.org>; Tue, 19 Jan 2021 17:15:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Brf3WO950D1Q6AZvZIOD9DGe8ISGSWxrv8pGr/tlzMU=;
-        b=EtQvUWk7uKUBuqxqWiTn1+cdCMqvcZrSNSg8dh7GOx17/dg+ptQEJHeRtha9a92jku
-         Sn4hT0kwZn4e12PMw3rDhCetZBM8MM8v7kohIMohZhkW/CdymAyhbCA0f52O1Ks4nr/a
-         Oc9MtFvU5z1xziTTFDR9wDfpEybEbAsofBCBU=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Brf3WO950D1Q6AZvZIOD9DGe8ISGSWxrv8pGr/tlzMU=;
-        b=WqcPZhKrZJJLCrihJkmqHIE2uI4zlPwj6MLcUbYFg5PiCiH23ZVXjGCuUTiKPiXpn7
-         auatWwq6KFCK2IwxdfkfmM3g5zB1EIwFt4R2EY9qc64ekPsvjFnarCA5gg+2XxsGIl6o
-         vYxm3kMrfnc07a7yBQSlYydeIS8OEp9PDiwfIlflWJLjDW2oc8DVOuQHdgCR748JsLXK
-         kHvyNVLazJzghtVfBQoPdcq8HD94votqstgw0Rt1g4IbAG1b1x3g6IQRmP3tu4ChhUy+
-         0eVLanCX71uhAAISkS1A/ZEp7D3htZtpKoQnlVHv57xhvrAdJeuGmfx954RFl2iBmT5J
-         xIQQ==
-X-Gm-Message-State: AOAM5307IcjQwpppcS11Qz4/OvNOZ6sLb0MWAyrMQKp1FwZ3u24POX1A
-        wzgmaHJXxMgiP6BqQaMH+ZrDmDeBYflCgzMxtXr4fg==
-X-Google-Smtp-Source: ABdhPJxzzWtdGxD8t0BxB6bMkRuGxNx8eneoxGE+jzu/u6mGGowOJfIQW7qV2QQ0cP//HwTe3jP7meGJRcmxG+Rw7eU=
-X-Received: by 2002:a1f:1c4c:: with SMTP id c73mr5018609vkc.22.1611105306635;
- Tue, 19 Jan 2021 17:15:06 -0800 (PST)
+        id S1727949AbhATBSj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jan 2021 20:18:39 -0500
+Received: from mail.kernel.org ([198.145.29.99]:45406 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727153AbhATBS1 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 19 Jan 2021 20:18:27 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D5C8A2222F;
+        Wed, 20 Jan 2021 01:17:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1611105466;
+        bh=VmiiaN59dtlkV7VII3Ql1mpneNdQ+iOs3bHxUtyHAwY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=sczpxoMfS/qKFWt+jj6uIYBhEPNQim4fkDqmANtBPpVJ+UZhG54ueNWuTWpplZ+WR
+         IGaiYPhAr/2YFeVy+Uk4AxT4xb0zXUiWVgYXGir95iS9O4iSgwVoiRdOQFVBVPPmqK
+         w6k4E6tcYHgqgNZiimfkclLzvSYNhQkxmv2YmTyHCysXg/VNwuziwNOkoC4Z9X6lzH
+         /B0lBUWdRGSqJMVydAZrYayO17Nlu4BUBIugHWbH2rCRj/Gd1yjqHu61vL/Oz6RvZx
+         BkVdjGJUw0pTduVjvB1Sj0DGnrvTIOnvpLh/v328lJQDsts5Xda59C9TEep1tBMzbO
+         LTZRI+ccZLkQg==
+Date:   Tue, 19 Jan 2021 17:17:45 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Kuniyuki Iwashima <kuni1840@gmail.com>,
+        Benjamin Herrenschmidt <benh@amazon.com>,
+        Ricardo Dias <rdias@singlestore.com>
+Subject: Re: [PATCH net] tcp: Fix potential use-after-free due to double
+ kfree().
+Message-ID: <20210119171745.6840e3a5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210118055920.82516-1-kuniyu@amazon.co.jp>
+References: <20210118055920.82516-1-kuniyu@amazon.co.jp>
 MIME-Version: 1.0
-References: <20210116052623.3196274-1-grundler@chromium.org>
- <20210116052623.3196274-3-grundler@chromium.org> <20210119134558.5072a1cc@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <CANEJEGsd8c1RYnKXsWOhLFDOh89EXAUtLUPMrbWf+2+yin5kHw@mail.gmail.com>
- <CANEJEGvoSWDWN19PnYJB9ubKgfyEvX4g=rvi9ezEJ9n+NUevbA@mail.gmail.com> <20210119170546.189e12d1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210119170546.189e12d1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Grant Grundler <grundler@chromium.org>
-Date:   Wed, 20 Jan 2021 01:14:55 +0000
-Message-ID: <CANEJEGu0LVdFN3caZ9ya1h4MWAQrMWw9gzdjJZ+t+9Y8mB2NRw@mail.gmail.com>
-Subject: Re: [PATCH 3/3] net: usb: cdc_ncm: don't spew notifications
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Grant Grundler <grundler@chromium.org>,
-        Oliver Neukum <oliver@neukum.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-usb@vger.kernel.org, netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 20, 2021 at 1:05 AM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> On Wed, 20 Jan 2021 00:59:17 +0000 Grant Grundler wrote:
-> > > > Thanks for the patch, this looks like an improvement over:
-> > > >
-> > > > 59b4a8fa27f5 ("CDC-NCM: remove "connected" log message")
-> > > >
-> > > > right? Should we bring the "network connection: connected" message back?
-> > >
-> > > Yes, we can revert Roland's patch. I didn't see that one.
-> > >
-> > > > Do you want all of these patches to be applied to 5.11 and backported?
-> > >
-> > > Yes to 5.11. Only the 3rd one really needs to be applied to stable kernels.
-> >
-> > Sorry - I was thinking 5.11 was -next (and that's incorrect).
-> >
-> > As you suggested below, only the 3rd one really needs to be applied to
-> > 5.11 and other stable kernels.
->
-> Cool, would you mind reposting just the 3rd patch separately, and
-> tagged as [PATCH net] so that CI can give it a shaking?
+On Mon, 18 Jan 2021 14:59:20 +0900 Kuniyuki Iwashima wrote:
+> Receiving ACK with a valid SYN cookie, cookie_v4_check() allocates struct
+> request_sock and then can allocate inet_rsk(req)->ireq_opt. After that,
+> tcp_v4_syn_recv_sock() allocates struct sock and copies ireq_opt to
+> inet_sk(sk)->inet_opt. Normally, tcp_v4_syn_recv_sock() inserts the full
+> socket into ehash and sets NULL to ireq_opt. Otherwise,
+> tcp_v4_syn_recv_sock() has to reset inet_opt by NULL and free the full
+> socket.
+> 
+> The commit 01770a1661657 ("tcp: fix race condition when creating child
+> sockets from syncookies") added a new path, in which more than one cores
+> create full sockets for the same SYN cookie. Currently, the core which
+> loses the race frees the full socket without resetting inet_opt, resulting
+> in that both sock_put() and reqsk_put() call kfree() for the same memory:
+> 
+>   sock_put
+>     sk_free
+>       __sk_free
+>         sk_destruct
+>           __sk_destruct
+>             sk->sk_destruct/inet_sock_destruct
+>               kfree(rcu_dereference_protected(inet->inet_opt, 1));
+> 
+>   reqsk_put
+>     reqsk_free
+>       __reqsk_free
+>         req->rsk_ops->destructor/tcp_v4_reqsk_destructor
+>           kfree(rcu_dereference_protected(inet_rsk(req)->ireq_opt, 1));
+> 
+> Calling kmalloc() between the double kfree() can lead to use-after-free, so
+> this patch fixes it by setting NULL to inet_opt before sock_put().
+> 
+> As a side note, this kind of issue does not happen for IPv6. This is
+> because tcp_v6_syn_recv_sock() clones both ipv6_opt and pktopts which
+> correspond to ireq_opt in IPv4.
+> 
+> Fixes: 01770a166165 ("tcp: fix race condition when creating child sockets from syncookies")
+> CC: Ricardo Dias <rdias@singlestore.com>
+> Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+> Reviewed-by: Benjamin Herrenschmidt <benh@amazon.com>
 
-Done :)
+Ricardo, Eric, any reason this was written this way?
 
-> We'll go from there with the rest.
+> diff --git a/net/ipv4/tcp_ipv4.c b/net/ipv4/tcp_ipv4.c
+> index 58207c7769d0..87eb614dab27 100644
+> --- a/net/ipv4/tcp_ipv4.c
+> +++ b/net/ipv4/tcp_ipv4.c
+> @@ -1595,6 +1595,8 @@ struct sock *tcp_v4_syn_recv_sock(const struct sock *sk, struct sk_buff *skb,
+>  		tcp_move_syn(newtp, req);
+>  		ireq->ireq_opt = NULL;
+>  	} else {
+> +		newinet->inet_opt = NULL;
+> +
+>  		if (!req_unhash && found_dup_sk) {
+>  			/* This code path should only be executed in the
+>  			 * syncookie case only
+> @@ -1602,8 +1604,6 @@ struct sock *tcp_v4_syn_recv_sock(const struct sock *sk, struct sk_buff *skb,
+>  			bh_unlock_sock(newsk);
+>  			sock_put(newsk);
+>  			newsk = NULL;
+> -		} else {
+> -			newinet->inet_opt = NULL;
+>  		}
+>  	}
+>  	return newsk;
 
-Awesome - thank you!
-
-cheers,
-grant
-
->
-> > >
-> > > > Feels to me like the last one is a fix and the rest can go into -next,
-> > > > WDYT?
-> > >
-> > > Exactly.
