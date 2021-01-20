@@ -2,103 +2,55 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A04902FD748
-	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 18:42:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 999A82FD7A8
+	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 19:01:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733230AbhATRgI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jan 2021 12:36:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36186 "EHLO
+        id S1732855AbhATSAa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jan 2021 13:00:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730315AbhATRd1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 12:33:27 -0500
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43DC3C0613C1
-        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 09:32:45 -0800 (PST)
-Received: by mail-ed1-x531.google.com with SMTP id s11so19432639edd.5
-        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 09:32:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=QTMVQgDq2jKhh9J1ZTlbgInAmy4fkP7up3eyTXl09OY=;
-        b=UfRn/mMsTk9xYRR0DnQ8fh1MXodJTjG8/SPFA7HbvH+2lgYqueQS+1j41e0vm+dIT6
-         kIsmprUb7MGlBoFkvkuO0SYRSbE5xNt3tOHktVGCnn8sDiiwidr60eILa89/pUr3EXN7
-         M98moJPOXQr2DGHerkunXaNNGnXB2K09/8d8mjmDNyJAX0/vKOc2rfB5gtIE5M05KkzX
-         qqYR8iE4KDzyqt0QN8AodUNqKvHOrGnWPM1at2+8HMYekJZTEZx/aAdHbJnI5XT0S/oR
-         wxvGxl8+JLG1WYqFjZ2rUX2hSjCEMDLl9v6Hu7X18GURRWWf9rWLU4tqyBpT6bWBe9lX
-         gHIA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=QTMVQgDq2jKhh9J1ZTlbgInAmy4fkP7up3eyTXl09OY=;
-        b=T7lXoiWpKCPrGCeIT4v9BzF9bWAxiGJ01k6WVuwIb0r6/eOfNflFukg7osqXQYcrTE
-         qWg7YnsrLYy/RdciMZBf1saBBpcqr20zwdnIEu6cfefm8KjX4BgEz50CGIPRn5pRXeW8
-         5E0h/LJfhTCK0O6uBTvIuDp0DXUIgvUargAJp0nL9HtigmpFuemFZOmhCDRvYZS/zrk7
-         xtzjuvOGUUo+g+SoeJNd5JbW18UU9MalxXqLiNdVNi0VRKSuHCdz6ly3etbzp8wufpC9
-         Mb7i/12ld8TTD+QKDcJYfWydp4LJ1olcuSfCNrUAfmj2er+mZhrS6x3hT75yo1mjKdP1
-         IIrg==
-X-Gm-Message-State: AOAM5326ve4OSusEuqPLq5OYUxuBx119gElXdbHCpcFN5Re8MNJuRVr0
-        Y0qcCHC70gf9vPPlXRu/laM=
-X-Google-Smtp-Source: ABdhPJyfGWl5H4tISYzdefkRrp2U3d2hJt3ag1vJNcu0x6Rv4E/jJszlJoDqJPky4sQw+fecrEtYBg==
-X-Received: by 2002:a05:6402:757:: with SMTP id p23mr8314560edy.245.1611163963953;
-        Wed, 20 Jan 2021 09:32:43 -0800 (PST)
-Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id k6sm1153898ejb.84.2021.01.20.09.32.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Jan 2021 09:32:43 -0800 (PST)
-Date:   Wed, 20 Jan 2021 19:32:41 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
+        with ESMTP id S2390641AbhATSAE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 13:00:04 -0500
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD06EC0613D3;
+        Wed, 20 Jan 2021 09:59:23 -0800 (PST)
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.94)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1l2HlK-009EYH-5o; Wed, 20 Jan 2021 18:59:22 +0100
+Message-ID: <c066813abc5830eb094ae0c343a71e88b775b441.camel@sipsolutions.net>
+Subject: Re: pull-request: mac80211 2021-01-18.2
+From:   Johannes Berg <johannes@sipsolutions.net>
 To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-        Hongbo Wang <hongbo.wang@nxp.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Po Liu <po.liu@nxp.com>, Yangbo Lu <yangbo.lu@nxp.com>,
-        Maxim Kochetkov <fido_max@inbox.ru>,
-        Eldar Gasanov <eldargasanov2@gmail.com>,
-        Andrey L <al@b4comtech.com>, UNGLinuxDriver@microchip.com
-Subject: Re: [PATCH v4 net-next 15/16] net: dsa: felix: setup MMIO filtering
- rules for PTP when using tag_8021q
-Message-ID: <20210120173241.4jfqhsm725wqeqic@skbuf>
-References: <20210119230749.1178874-1-olteanv@gmail.com>
- <20210119230749.1178874-16-olteanv@gmail.com>
- <20210120084042.4d37dadb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Cc:     netdev@vger.kernel.org, linux-wireless@vger.kernel.org
+Date:   Wed, 20 Jan 2021 18:59:21 +0100
+In-Reply-To: <161101020906.2232.13826999223880000897.git-patchwork-notify@kernel.org> (sfid-20210118_235212_406535_B618B30A)
+References: <20210118204750.7243-1-johannes@sipsolutions.net>
+         <161101020906.2232.13826999223880000897.git-patchwork-notify@kernel.org>
+         (sfid-20210118_235212_406535_B618B30A)
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210120084042.4d37dadb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Transfer-Encoding: 7bit
+X-malware-bazaar: not-scanned
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 20, 2021 at 08:40:42AM -0800, Jakub Kicinski wrote:
-> drivers/net/dsa/ocelot/felix.c:464:12: warning: variable ‘err’ set but not used [-Wunused-but-set-variable]
->   464 |  int port, err;
->       |            ^~~
-> drivers/net/dsa/ocelot/felix.c:265:53: warning: incorrect type in assignment (different base types)
-> drivers/net/dsa/ocelot/felix.c:265:53:    expected unsigned short [usertype]
-> drivers/net/dsa/ocelot/felix.c:265:53:    got restricted __be16 [usertype]
->
->
-> Please build test the patches locally, the patchwork testing thing is
-> not keeping up with the volume, and it's running on the largest VM
-> available thru the provider already :/
+Hi Jakub,
 
-I updated my compiler now, so that W=1 C=1 builds would not fail.
-That should hopefully prevent this from happening in the future.
+> This pull request was applied to netdev/net.git (refs/heads/master):
 
-> I need to add this "don't post your patches to get them build tested
-> or you'll make Kuba very angry" to the netdev FAQ.
+Since you pulled this now, question:
 
-Since I definitely don't want to upset Kuba, how bad is it to exceed the
-15 patches per series limit? Do I need to do something about it?
+I have some pending content for mac80211-next/net-next that either
+conflicts with or requires a fix from here, or such.
+
+Could you pull net into net-next, so I can get it into mac80211-next? Or
+do you prefer another approach here? I could also double-apply the
+single patch, or pull myself but then we'd get a lot of net content into
+net-next only via mac80211-next which seems odd.
+
+Thanks,
+johannes
+
