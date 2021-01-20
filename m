@@ -2,69 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5E0652FC72C
-	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 02:52:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E804B2FC732
+	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 02:54:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731385AbhATBvh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jan 2021 20:51:37 -0500
-Received: from mail.kernel.org ([198.145.29.99]:53144 "EHLO mail.kernel.org"
+        id S1731104AbhATBxD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jan 2021 20:53:03 -0500
+Received: from mail.kernel.org ([198.145.29.99]:53820 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731104AbhATBuv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 19 Jan 2021 20:50:51 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 7B2AD2251D;
-        Wed, 20 Jan 2021 01:50:10 +0000 (UTC)
+        id S1731434AbhATBvu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 19 Jan 2021 20:51:50 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 61D7E22472;
+        Wed, 20 Jan 2021 01:51:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611107410;
-        bh=GNj2MIJf8RtOcX7Wh6NXVAF3Lf0JF12Jnse9VPAkcDs=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Rb2mol4m5NZ+U3dN4EUK7Go5NCK9xRzM18VU/O7lvnqeyRglvo+5AMTf3dF1VYRLM
-         oqVjiotUxbyoYR6XElxxHl5hqwFTOFUWcRfvsu6VO3A/3QQpipu4ebsuZEun6RYS0A
-         yyZC9wfHWYunKxx35lx8lZXGVHCzDiRuzWz1bbXt1FlUSYGt07zAzmDJElmOHm180C
-         ChsIcTvqK23IyNdvUvaolBBipNoaYr0jvJ6SamutLzpegUXt2ZTiDzwjnH5NVDLDGs
-         o2T9qtV0wfiXDG8RRsHEdUCmXBGMl35SwQpnoWes/+EM1A6HgVDaxKurHOL5GQDngw
-         QMV7WLaHiZaBw==
-Received: from pdx-korg-docbuild-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-1.ci.codeaurora.org (Postfix) with ESMTP id 74C9760584;
-        Wed, 20 Jan 2021 01:50:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1611107469;
+        bh=XqhusBcw27JMCulRlNAFfujkKFBBkbJwSXc71mtVzqs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=S+3TUSJU1wfkTrRW5jshGGLjtJaH0mdVg3buZfta+tDBSaqtEti878PvWUV+Dc9aV
+         obVZXozwTIEEq9uYkX752iA0dUHHuzOFSJJsAl/rCiZlSOO829JHCVDTixXbS/uFRP
+         1vyWwpM1oTNcuGViyqNkfpvaUBQ6NbvBpvvegKU9KT3PMlctM3p+7abmqP0UYjYMPZ
+         5cNouezYF1WrnZ0Bl6jwYC0GtQcpQo54JuqqT9Ta4B6avHwM7O3H35ALlLMu+LQXCM
+         jBGFjErUbPGK+Uu1+t9D5/mEgEdItKlCtnOsMGWRjcAgSJ/5dyuAyEDicnO6W/UBI8
+         QaXs+0RW9f/5g==
+Date:   Tue, 19 Jan 2021 17:51:08 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Xu Wang <vulab@iscas.ac.cn>
+Cc:     sgoutham@marvell.com, lcherian@marvell.com, gakula@marvell.com,
+        jerinj@marvell.com, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] octeontx2-af: Remove unneeded semicolon
+Message-ID: <20210119175108.5b95a7a7@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210119075059.17493-1-vulab@iscas.ac.cn>
+References: <20210119075059.17493-1-vulab@iscas.ac.cn>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH][next] selftests: forwarding: Fix spelling mistake "succeded"
- -> "succeeded"
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161110741047.23772.11114014464496090991.git-patchwork-notify@kernel.org>
-Date:   Wed, 20 Jan 2021 01:50:10 +0000
-References: <20210118111902.71096-1-colin.king@canonical.com>
-In-Reply-To: <20210118111902.71096-1-colin.king@canonical.com>
-To:     Colin King <colin.king@canonical.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, shuah@kernel.org,
-        netdev@vger.kernel.org, linux-kselftest@vger.kernel.org,
-        kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net-next.git (refs/heads/master):
-
-On Mon, 18 Jan 2021 11:19:02 +0000 you wrote:
-> From: Colin Ian King <colin.king@canonical.com>
+On Tue, 19 Jan 2021 07:50:59 +0000 Xu Wang wrote:
+> fix semicolon.cocci warnings:
+> ./drivers/net/ethernet/marvell/octeontx2/af/rvu_npc_fs.c:272:2-3: Unneeded semicolon
 > 
-> There are two spelling mistakes in check_fail messages. Fix them.
-> 
-> Signed-off-by: Colin Ian King <colin.king@canonical.com>
-> ---
->  tools/testing/selftests/net/forwarding/tc_chains.sh | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+> Signed-off-by: Xu Wang <vulab@iscas.ac.cn>
 
-Here is the summary with links:
-  - [next] selftests: forwarding: Fix spelling mistake "succeded" -> "succeeded"
-    https://git.kernel.org/netdev/net-next/c/eaaf61122865
+I squashed your 3 patches for octeontx2-af and applied them to net-next.
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Thanks.
