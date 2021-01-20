@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6D8B82FD460
-	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 16:48:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 003A52FD45F
+	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 16:48:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390847AbhATPl6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jan 2021 10:41:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58558 "EHLO
+        id S2390518AbhATPly (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jan 2021 10:41:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390089AbhATOzW (ORCPT
+        with ESMTP id S2390115AbhATOzW (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 09:55:22 -0500
-Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40C21C0617A0
-        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 06:53:19 -0800 (PST)
-Received: by mail-ed1-x531.google.com with SMTP id d22so15073454edy.1
-        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 06:53:19 -0800 (PST)
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5910FC0617A2
+        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 06:53:20 -0800 (PST)
+Received: by mail-ej1-x62b.google.com with SMTP id hs11so31578182ejc.1
+        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 06:53:20 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=blackwall-org.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=p5jQkPW1oWI+QtE/SUX8LB8Nxke3Xa1Ja5TR15s8XBM=;
-        b=VSto+BBrYtccrmzfvgYqjDw9lTCwY0paFkZ1TEzTvkPzpIYFTGfGGX5zTXZUuApSg4
-         yaEdm+2EOjXox5cfKTbZH8v6dCmVtBeKFcwjNHnerEdXmCWOfSMd/t6jNo/g67fJ3MSI
-         L0J1xJVOPZX5qrQ3YPCq8aTGyfoMdSj/6WwbFm0kPbq7hKm3VqOamo5R7GN9fQX/GGCX
-         qYyoM7cD1zWlkZvnClNbT32r1mv7eG+UOBjsKtLAtuozUl6+RAor8tGMFYqLFRs9DnnR
-         DzRPjBH0sZqVwUN7soCQfZORcd4ga/h7G4ZXabOM47ExgHKiI7lBVKq+xd9jiI2kV8Zh
-         OGyA==
+        bh=+STi29hPfYbEluynEPrqxJhUnb3kYXkKj59XvyzIrkI=;
+        b=gw9hqq9f8UYLKQ3/frZqRj4yGcT5JoTx8h+qZZcPdKSkwV7UG1blZ6v6s95U31wjMD
+         D3nvR0HHMk10aDQU4O1uGCPPnraNsucZKBazqdIM0p/eIo102Qs/KB8BbrVyXLTZGXYS
+         sl2H9hjhFRSD/qA1AZpsseHL70luzmKwG46sfASteXAx0jxfOgymGpBXJP45uTi1BOWr
+         LkMxckcqkWAEB9+8dtbRoGN0q/v+/9oCG889oic+n3rtCaLXBVYkTN5b2Qyw1bQLU1vI
+         e86r6ca6F8g6z3GV/yLX+pvF/sTMT0daUvY6Q/LDTcRLJXrZxemw0fiKYU9NbkRO64Zg
+         BtQg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=p5jQkPW1oWI+QtE/SUX8LB8Nxke3Xa1Ja5TR15s8XBM=;
-        b=ato4jK93a18nAfyyYXrCSRWiydg8OCFaw+0nnL+ez5l+nUcPkDpxw0XL6jaXBr0y0B
-         /dC/gRhpVSZfe9OmU+Pob6+nCCfHu4q3f1LtIWSyOYVIb9g9nB3N5YQN+sCZr5czRRj+
-         BklrvJ/SiGZYi1lLTAa9FYYSDAgwOCSuzEkw5wy0K1YjBjnCAtXWCq4BuczucWLXioGR
-         wKMCXpHcZArhlChjnPHaiIepHHqFCmSQYOP2r19K6derlv1Oqu6iB6JjQLht4TGIF2HV
-         NTB9LBFl4sIbRCVKrHN3rZoKZggj82zZygvqdqjKAOGxlqWScuQcTNH6zjrXMekn/4ng
-         UJXA==
-X-Gm-Message-State: AOAM531fMh/TAjl7YXUQ31iC/D4dxP9W/GWewOZW2VobGhMsMes2Rbnj
-        9SeUTKyyxApSemlKkcCvlFj1vqZNaKNjxgKWRSo=
-X-Google-Smtp-Source: ABdhPJwWYuSkeufkkxgl3OhlY6Gt0lgqtw4di+Me457/QoYJ1pAAyH1apGh4YZzbbhk4V9H2LBlMEA==
-X-Received: by 2002:a50:c94c:: with SMTP id p12mr1607780edh.154.1611154397707;
-        Wed, 20 Jan 2021 06:53:17 -0800 (PST)
+        bh=+STi29hPfYbEluynEPrqxJhUnb3kYXkKj59XvyzIrkI=;
+        b=e/DLc8jFHd6rOP6gocDS49uq8YO1Vxu0ExngHLO6UK/oniA9mxBIDLthX4dWYfOZ0u
+         9AXlMKQzQNg0rf2zb9Nk9g4T7vPuMz2dPsvoqY9kW5ad77Re6PMonp04XTr2mgAQAxxP
+         8wzQSGiUuZpPZRjQcX2CKBWTCUJKy2iT4Y021A5K1pn5PoyTq2ORQ7Wt/6W0IrXFhR8h
+         wTUfxWYwP5UeQjwChOwyqu7IHF5Wn9y+BVUUu0tF+p/E55HznKFeNXPZ/gjxHEwYS5nT
+         vtU1zQYTcrPn+OCr+8hCywvxn0/AhzN4AkkpBDxmZycsURmTILF56HnZgM6Fgotvw2RZ
+         UWKg==
+X-Gm-Message-State: AOAM530aI4URI1mvhLkpNLh9wg+2oIPdiTmTqNxTYqqU9lgxOJD5bi9c
+        yHK84yqg2qbNS0TypyFjCmahNIusetkT1Ms8thM=
+X-Google-Smtp-Source: ABdhPJwNtyWiw0FL1Y1kbo0rl7cQJUgOb0Q+BLoXSJ5tnW4c0HGzLS7VkLST5WGs2BfvAb9ETwgqKA==
+X-Received: by 2002:a17:906:52c1:: with SMTP id w1mr6617040ejn.214.1611154398809;
+        Wed, 20 Jan 2021 06:53:18 -0800 (PST)
 Received: from debil.vdiclient.nvidia.com (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
-        by smtp.gmail.com with ESMTPSA id x17sm1239349edq.77.2021.01.20.06.53.16
+        by smtp.gmail.com with ESMTPSA id x17sm1239349edq.77.2021.01.20.06.53.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Jan 2021 06:53:16 -0800 (PST)
+        Wed, 20 Jan 2021 06:53:18 -0800 (PST)
 From:   Nikolay Aleksandrov <razor@blackwall.org>
 To:     netdev@vger.kernel.org
 Cc:     roopa@nvidia.com, bridge@lists.linux-foundation.org,
         kuba@kernel.org, davem@davemloft.net,
         Nikolay Aleksandrov <nikolay@nvidia.com>
-Subject: [PATCH net-next 12/14] net: bridge: multicast: add EHT host filter_mode handling
-Date:   Wed, 20 Jan 2021 16:52:01 +0200
-Message-Id: <20210120145203.1109140-13-razor@blackwall.org>
+Subject: [PATCH net-next 13/14] net: bridge: multicast: handle block pg delete for all cases
+Date:   Wed, 20 Jan 2021 16:52:02 +0200
+Message-Id: <20210120145203.1109140-14-razor@blackwall.org>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20210120145203.1109140-1-razor@blackwall.org>
 References: <20210120145203.1109140-1-razor@blackwall.org>
@@ -66,85 +66,51 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Nikolay Aleksandrov <nikolay@nvidia.com>
 
-We should be able to handle host filter mode changing. For exclude mode
-we must create a zero-src entry so the group will be kept even without
-any S,G entries (non-zero source sets). That entry doesn't count to the
-entry limit and can always be created, its timer is refreshed on new
-exclude reports and if we change the host filter mode to include then it
-gets removed and we rely only on the non-zero source sets.
+A block report can result in empty source and host sets for both include
+and exclude groups so if there are no hosts left we can safely remove
+the group. Pull the block group handling so it can cover both cases and
+add a check if EHT requires the delete.
 
 Signed-off-by: Nikolay Aleksandrov <nikolay@nvidia.com>
 ---
- net/bridge/br_multicast_eht.c | 42 +++++++++++++++++++++++++++++++----
- 1 file changed, 38 insertions(+), 4 deletions(-)
+ net/bridge/br_multicast.c | 17 +++++++++--------
+ 1 file changed, 9 insertions(+), 8 deletions(-)
 
-diff --git a/net/bridge/br_multicast_eht.c b/net/bridge/br_multicast_eht.c
-index fee3060d0495..64ccbd4ae9d9 100644
---- a/net/bridge/br_multicast_eht.c
-+++ b/net/bridge/br_multicast_eht.c
-@@ -381,6 +381,30 @@ static void br_multicast_ip_src_to_eht_addr(const struct br_ip *src,
+diff --git a/net/bridge/br_multicast.c b/net/bridge/br_multicast.c
+index 9cfc004312ab..47afb1e11daf 100644
+--- a/net/bridge/br_multicast.c
++++ b/net/bridge/br_multicast.c
+@@ -2210,14 +2210,6 @@ static bool __grp_src_block_incl(struct net_bridge_port_group *pg, void *h_addr,
+ 	if (to_send)
+ 		__grp_src_query_marked_and_rexmit(pg);
+ 
+-	if (pg->filter_mode == MCAST_INCLUDE && hlist_empty(&pg->src_list)) {
+-		br_multicast_find_del_pg(pg->key.port->br, pg);
+-		/* a notification has already been sent and we shouldn't access
+-		 * pg after the delete thus we have to return false
+-		 */
+-		changed = false;
+-	}
+-
+ 	return changed;
+ }
+ 
+@@ -2279,6 +2271,15 @@ static bool br_multicast_block(struct net_bridge_port_group *pg, void *h_addr,
+ 		break;
  	}
- }
  
-+static void br_eht_convert_host_filter_mode(struct net_bridge_port_group *pg,
-+					    union net_bridge_eht_addr *h_addr,
-+					    int filter_mode)
-+{
-+	struct net_bridge_group_eht_host *eht_host;
-+	union net_bridge_eht_addr zero_addr;
-+
-+	eht_host = br_multicast_eht_host_lookup(pg, h_addr);
-+	if (eht_host)
-+		eht_host->filter_mode = filter_mode;
-+
-+	memset(&zero_addr, 0, sizeof(zero_addr));
-+	switch (filter_mode) {
-+	case MCAST_INCLUDE:
-+		br_multicast_del_eht_set_entry(pg, &zero_addr, h_addr);
-+		break;
-+	case MCAST_EXCLUDE:
-+		br_multicast_create_eht_set_entry(pg, &zero_addr, h_addr,
-+						  MCAST_EXCLUDE,
-+						  true);
-+		break;
++	if ((pg->filter_mode == MCAST_INCLUDE && hlist_empty(&pg->src_list)) ||
++	    br_multicast_eht_should_del_pg(pg)) {
++		br_multicast_find_del_pg(pg->key.port->br, pg);
++		/* a notification has already been sent and we shouldn't
++		 * access pg after the delete so we have to return false
++		 */
++		changed = false;
 +	}
-+}
 +
- static void br_multicast_create_eht_set_entry(struct net_bridge_port_group *pg,
- 					      union net_bridge_eht_addr *src_addr,
- 					      union net_bridge_eht_addr *h_addr,
-@@ -701,8 +725,13 @@ static bool br_multicast_eht_inc(struct net_bridge_port_group *pg,
- 				 size_t addr_size,
- 				 bool to_report)
- {
--	return __eht_inc_exc(pg, h_addr, srcs, nsrcs, addr_size, MCAST_INCLUDE,
--			     to_report);
-+	bool changed;
-+
-+	changed = __eht_inc_exc(pg, h_addr, srcs, nsrcs, addr_size,
-+				MCAST_INCLUDE, to_report);
-+	br_eht_convert_host_filter_mode(pg, h_addr, MCAST_INCLUDE);
-+
-+	return changed;
+ 	return changed;
  }
  
- static bool br_multicast_eht_exc(struct net_bridge_port_group *pg,
-@@ -712,8 +741,13 @@ static bool br_multicast_eht_exc(struct net_bridge_port_group *pg,
- 				 size_t addr_size,
- 				 bool to_report)
- {
--	return __eht_inc_exc(pg, h_addr, srcs, nsrcs, addr_size, MCAST_EXCLUDE,
--			     to_report);
-+	bool changed;
-+
-+	changed = __eht_inc_exc(pg, h_addr, srcs, nsrcs, addr_size,
-+				MCAST_EXCLUDE, to_report);
-+	br_eht_convert_host_filter_mode(pg, h_addr, MCAST_EXCLUDE);
-+
-+	return changed;
- }
- 
- static bool __eht_ip4_handle(struct net_bridge_port_group *pg,
 -- 
 2.29.2
 
