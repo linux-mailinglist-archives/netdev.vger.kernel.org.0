@@ -2,473 +2,159 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 789182FD31E
-	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 15:53:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B44BF2FD36A
+	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 16:08:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390886AbhATOoX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jan 2021 09:44:23 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:41169 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2390762AbhATOlR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 09:41:17 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1611153587;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=d0TSEsxaCrWr4PNbs4KTDbSG4DOQ8eQUa/eakh1R+GQ=;
-        b=HPik2JgA+WbATBnXMpcQHE67uqg5uLBN3yHSM60ZAKAmv+8H4bFZk602Kam0M7NXyNOB7o
-        mPy340IlywHRxnznalB2xz4uXJyxUSW7PwcJD4891xmUypSHg5LOwl6AhUZS1YaGRhFFZh
-        XZq1+/MWivrsFwgS0dKlOiAYUALNxKw=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-487-AvuYzv7CPEu1XdReFKutAg-1; Wed, 20 Jan 2021 09:39:43 -0500
-X-MC-Unique: AvuYzv7CPEu1XdReFKutAg-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E7B641005504;
-        Wed, 20 Jan 2021 14:39:37 +0000 (UTC)
-Received: from gerbillo.redhat.com (ovpn-115-164.ams2.redhat.com [10.36.115.164])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 9CBDA5D9C2;
-        Wed, 20 Jan 2021 14:39:36 +0000 (UTC)
-From:   Paolo Abeni <pabeni@redhat.com>
+        id S1732475AbhATOzR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jan 2021 09:55:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58206 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389223AbhATOxo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 09:53:44 -0500
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DC1CC061793
+        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 06:53:04 -0800 (PST)
+Received: by mail-ej1-x632.google.com with SMTP id rv9so15132273ejb.13
+        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 06:53:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=blackwall-org.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=wPcMQBvMi4L81CqXqUNlL27DFtJJ6AUlR/ZpxbIsss0=;
+        b=d9dH+MgL/izcQtHIuCFBChiqwBlYNEApffYHF+cLXlOytooAGXYMxtjmA20xwvdEkB
+         lusAqKqxHmUi59bUm2kcQUXp6oTBfC45O61JXeWJ7KAKNF2ErwcpkwBO73DchKAkBRot
+         zXIxH15FOSngpnEBaEWzasfNfb+8zt1oEMte8caWGtKtjVjCRXpWgJFjlc09Kas3zYt9
+         WfN/Rb8574+kfRuebMYntF2awBevyY+httkbxKrlLaqUiwSdQ3KOBon8tcqGM77A0A8/
+         SSldHu6xC/rZBwtmqj1OQu0Te7m+1i4cOqzzu5CXWSSCZb4xysXtVqgREfR8Qi4a7Q0y
+         vgrQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=wPcMQBvMi4L81CqXqUNlL27DFtJJ6AUlR/ZpxbIsss0=;
+        b=pAvb42Cb02OrJFSIV39Xry2Xxi6MHiti8aYStYWEvXLwJzMp2WYSH0BDTefr2AwccJ
+         AjBbkJyFK9obAW8n9V2d1wmI0A4XWSBCbcb37DFbWhb43XA9ddODIEB+Gv3BVklAMhsB
+         PLEJbMbKYXQhdbq2Psm8TSV7cDsaWWxOImP/YAmwcLvXNNCjzrIl6vL080mF6E4cTvbm
+         TYXdIuJI2omphIyo8VyTJ5nv68Fzvdfaza4PDXwktwxeTfCTIm/MxCoQ1VsDuS7Nk2dY
+         80XLlqzPw2Rx5JileOvJidgXrTgFGzJu+d+hyQhp57f7gsXL1Flg5nv9NFezSFuWJpOU
+         Bb0g==
+X-Gm-Message-State: AOAM5300Z2DYJZ+GWieY1WArC4Sm0gcZXvRjPi4X0RrzDsYNmNXKGe0y
+        skFdU74H5YQJ3e+qzlc+NiucvXe6sEAwBvwTVt4=
+X-Google-Smtp-Source: ABdhPJwfnuWxdwtTZSD4VbwPBqdodewMrp9L977O+krdOkQCNs75p1aDh7VM2tT7lT5gsRdVz6IGEw==
+X-Received: by 2002:a17:906:4d19:: with SMTP id r25mr6166680eju.148.1611154382405;
+        Wed, 20 Jan 2021 06:53:02 -0800 (PST)
+Received: from debil.vdiclient.nvidia.com (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
+        by smtp.gmail.com with ESMTPSA id x17sm1239349edq.77.2021.01.20.06.53.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 Jan 2021 06:53:01 -0800 (PST)
+From:   Nikolay Aleksandrov <razor@blackwall.org>
 To:     netdev@vger.kernel.org
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, mptcp@lists.01.org
-Subject: [PATCH v2 net-next 5/5] mptcp: implement delegated actions
-Date:   Wed, 20 Jan 2021 15:39:14 +0100
-Message-Id: <fbae7709d333eb2afcc79e69a8db3d952292564f.1611153172.git.pabeni@redhat.com>
-In-Reply-To: <cover.1611153172.git.pabeni@redhat.com>
-References: <cover.1611153172.git.pabeni@redhat.com>
+Cc:     roopa@nvidia.com, bridge@lists.linux-foundation.org,
+        kuba@kernel.org, davem@davemloft.net,
+        Nikolay Aleksandrov <nikolay@nvidia.com>
+Subject: [PATCH net-next 00/14] net: bridge: multicast: add initial EHT support
+Date:   Wed, 20 Jan 2021 16:51:49 +0200
+Message-Id: <20210120145203.1109140-1-razor@blackwall.org>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On MPTCP-level ack reception, the packet scheduler
-may select a subflow other then the current one.
+From: Nikolay Aleksandrov <nikolay@nvidia.com>
 
-Prior to this commit we rely on the workqueue to trigger
-action on such subflow.
+Hi,
+This set adds explicit host tracking support for IGMPv3/MLDv2. The
+already present per-port fast leave flag is used to enable it since that
+is the primary goal of EHT, to track a group and its S,Gs usage per-host
+and when left without any interested hosts delete them before the standard
+timers. The EHT code is pretty self-contained and not enabled by default.
+There is no new uAPI added, all of the functionality is currently hidden
+behind the fast leave flag. In the future that will change (more below).
+The host tracking uses two new sets per port group: one having an entry for
+each host which contains that host's view of the group (source list and
+filter mode), and one set which contains an entry for each source having
+an internal set which contains an entry for each host that has reported
+an interest for that source. RB trees are used for all sets so they're
+compact when not used and fast when we need to do lookups.
+To illustrate it:
+ [ bridge port group ]
+  ` [ host set (rb) ]
+   ` [ host entry with a list of sources and filter mode ]
+  ` [ source set (rb) ]
+   ` [ source entry ]
+    ` [ source host set (rb) ]
+     ` [ source host entry with a timer ]
 
-This changeset introduces an infrastructure that allows
-any MPTCP subflow to schedule actions (MPTCP xmit) on
-others subflows without resorting to (multiple) process
-reschedule.
+The number of tracked sources per host is limited to the maximum total
+number of S,G entries per port group - PG_SRC_ENT_LIMIT (currently 32).
+The number of hosts is unlimited, I think the argument that a local
+attacker can exhaust the memory/cause high CPU usage can be applied to
+fdb entries as well which are unlimited. In the future if needed we can
+add an option to limit these, but I don't think it's necessary for a
+start. All of the new sets are protected by the bridge's multicast lock.
+I'm pretty sure we'll be changing the cases and improving the
+convergence time in the future, but this seems like a good start.
 
-A dummy NAPI instance is used instead. When MPTCP needs to
-trigger action an a different subflow, it enqueues the target
-subflow on the NAPI backlog and schedule such instance as needed.
+I'll post self-tests as a separate patch-set.
 
-The dummy NAPI poll method walks the sockets backlog and tries
-to acquire the (BH) socket lock on each of them. If the socket
-is owned by the user space, the action will be completed by
-the sock release cb, otherwise push is started.
+Patch breakdown:
+ patch 1 -  4: minor cleanups and preparations for EHT
+ patch      5: adds the new structures which will be used in the
+               following patches
+ patch      6: adds support to create, destroy and lookup host entries
+ patch      7: adds support to create, delete and lokup source set entries
+ patch      8: adds a host "delete" function which is just a host's
+               source list flush since that would automatically delete
+               the host
+ patch 9 - 10: add support for handling all IGMPv3/MLDv2 report types
+               more information can be found in the individual patches
+ patch     11: optmizes a specific TO_INCLUDE use-case with host timeouts
+ patch     12: handles per-host filter mode changing (include <-> exclude)
+ patch     13: pulls out block group deletion since now it can be
+               deleted in both filter modes
+ patch     14: marks deletions done due to fast leave
 
-This change leverages the delegated action infrastructure
-to avoid invoking the MPTCP worker to spool the pending data,
-when the packet scheduler picks a subflow other then the one
-currently processing the incoming MPTCP-level ack.
+Future plans:
+ - export host information
+ - add an option to reduce queries
+ - add an option to limit the number of host entries
+ - tune more fast leave cases for quicker convergence
 
-Additionally we further refine the subflow selection
-invoking the packet scheduler for each chunk of data
-even inside __mptcp_subflow_push_pending().
+By the way I think this is the first open-source EHT implementation, I
+couldn't find any while researching it. :)
 
-v1 -> v2:
- - fix possible UaF at shutdown time, resetting sock ops
-   after removing the ulp context
+Thanks,
+ Nik
 
-Reviewed-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
-Signed-off-by: Paolo Abeni <pabeni@redhat.com>
----
- net/mptcp/protocol.c | 86 +++++++++++++++++++++++++++++++++++++++++---
- net/mptcp/protocol.h | 67 ++++++++++++++++++++++++++++++++++
- net/mptcp/subflow.c  | 45 +++++++++++++++++++++++
- 3 files changed, 194 insertions(+), 4 deletions(-)
 
-diff --git a/net/mptcp/protocol.c b/net/mptcp/protocol.c
-index 8cb582eee2862..a033bf9c26ee1 100644
---- a/net/mptcp/protocol.c
-+++ b/net/mptcp/protocol.c
-@@ -45,6 +45,9 @@ static struct percpu_counter mptcp_sockets_allocated;
- static void __mptcp_destroy_sock(struct sock *sk);
- static void __mptcp_check_send_data_fin(struct sock *sk);
- 
-+DEFINE_PER_CPU(struct mptcp_delegated_action, mptcp_delegated_actions);
-+static struct net_device mptcp_napi_dev;
-+
- /* If msk has an initial subflow socket, and the MP_CAPABLE handshake has not
-  * completed yet or has failed, return the subflow socket.
-  * Otherwise return NULL.
-@@ -1506,7 +1509,9 @@ static void __mptcp_subflow_push_pending(struct sock *sk, struct sock *ssk)
- 	struct mptcp_sock *msk = mptcp_sk(sk);
- 	struct mptcp_sendmsg_info info;
- 	struct mptcp_data_frag *dfrag;
-+	struct sock *xmit_ssk;
- 	int len, copied = 0;
-+	bool first = true;
- 
- 	info.flags = 0;
- 	while ((dfrag = mptcp_send_head(sk))) {
-@@ -1516,6 +1521,18 @@ static void __mptcp_subflow_push_pending(struct sock *sk, struct sock *ssk)
- 		while (len > 0) {
- 			int ret = 0;
- 
-+			/* the caller already invoked the packet scheduler,
-+			 * check for a different subflow usage only after
-+			 * spooling the first chunk of data
-+			 */
-+			xmit_ssk = first ? ssk : mptcp_subflow_get_send(mptcp_sk(sk));
-+			if (!xmit_ssk)
-+				goto out;
-+			if (xmit_ssk != ssk) {
-+				mptcp_subflow_delegate(mptcp_subflow_ctx(xmit_ssk));
-+				goto out;
-+			}
-+
- 			if (unlikely(mptcp_must_reclaim_memory(sk, ssk))) {
- 				__mptcp_update_wmem(sk);
- 				sk_mem_reclaim_partial(sk);
-@@ -1534,6 +1551,7 @@ static void __mptcp_subflow_push_pending(struct sock *sk, struct sock *ssk)
- 			msk->tx_pending_data -= ret;
- 			copied += ret;
- 			len -= ret;
-+			first = false;
- 		}
- 		WRITE_ONCE(msk->first_pending, mptcp_send_next(sk));
- 	}
-@@ -2242,7 +2260,6 @@ static void mptcp_worker(struct work_struct *work)
- 	if (unlikely(state == TCP_CLOSE))
- 		goto unlock;
- 
--	mptcp_push_pending(sk, 0);
- 	mptcp_check_data_fin_ack(sk);
- 	__mptcp_flush_join_list(msk);
- 
-@@ -2901,10 +2918,12 @@ void __mptcp_check_push(struct sock *sk, struct sock *ssk)
- 		return;
- 
- 	if (!sock_owned_by_user(sk)) {
--		if (mptcp_subflow_get_send(mptcp_sk(sk)) == ssk)
-+		struct sock *xmit_ssk = mptcp_subflow_get_send(mptcp_sk(sk));
-+
-+		if (xmit_ssk == ssk)
- 			__mptcp_subflow_push_pending(sk, ssk);
--		else
--			mptcp_schedule_work(sk);
-+		else if (xmit_ssk)
-+			mptcp_subflow_delegate(mptcp_subflow_ctx(xmit_ssk));
- 	} else {
- 		set_bit(MPTCP_PUSH_PENDING, &mptcp_sk(sk)->flags);
- 	}
-@@ -2955,6 +2974,20 @@ static void mptcp_release_cb(struct sock *sk)
- 	}
- }
- 
-+void mptcp_subflow_process_delegated(struct sock *ssk)
-+{
-+	struct mptcp_subflow_context *subflow = mptcp_subflow_ctx(ssk);
-+	struct sock *sk = subflow->conn;
-+
-+	mptcp_data_lock(sk);
-+	if (!sock_owned_by_user(sk))
-+		__mptcp_subflow_push_pending(sk, ssk);
-+	else
-+		set_bit(MPTCP_PUSH_PENDING, &mptcp_sk(sk)->flags);
-+	mptcp_data_unlock(sk);
-+	mptcp_subflow_delegated_done(subflow);
-+}
-+
- static int mptcp_hash(struct sock *sk)
- {
- 	/* should never be called,
-@@ -3365,13 +3398,58 @@ static struct inet_protosw mptcp_protosw = {
- 	.flags		= INET_PROTOSW_ICSK,
- };
- 
-+static int mptcp_napi_poll(struct napi_struct *napi, int budget)
-+{
-+	struct mptcp_delegated_action *delegated;
-+	struct mptcp_subflow_context *subflow;
-+	int work_done = 0;
-+
-+	delegated = container_of(napi, struct mptcp_delegated_action, napi);
-+	while ((subflow = mptcp_subflow_delegated_next(delegated)) != NULL) {
-+		struct sock *ssk = mptcp_subflow_tcp_sock(subflow);
-+
-+		bh_lock_sock_nested(ssk);
-+		if (!sock_owned_by_user(ssk) &&
-+		    mptcp_subflow_has_delegated_action(subflow))
-+			mptcp_subflow_process_delegated(ssk);
-+		/* ... elsewhere tcp_release_cb_override already processed
-+		 * the action or will do at next release_sock().
-+		 * In both case must dequeue the subflow here - on the same
-+		 * CPU that scheduled it.
-+		 */
-+		bh_unlock_sock(ssk);
-+		sock_put(ssk);
-+
-+		if (++work_done == budget)
-+			return budget;
-+	}
-+
-+	/* always provide a 0 'work_done' argument, so that napi_complete_done
-+	 * will not try accessing the NULL napi->dev ptr
-+	 */
-+	napi_complete_done(napi, 0);
-+	return work_done;
-+}
-+
- void __init mptcp_proto_init(void)
- {
-+	struct mptcp_delegated_action *delegated;
-+	int cpu;
-+
- 	mptcp_prot.h.hashinfo = tcp_prot.h.hashinfo;
- 
- 	if (percpu_counter_init(&mptcp_sockets_allocated, 0, GFP_KERNEL))
- 		panic("Failed to allocate MPTCP pcpu counter\n");
- 
-+	init_dummy_netdev(&mptcp_napi_dev);
-+	for_each_possible_cpu(cpu) {
-+		delegated = per_cpu_ptr(&mptcp_delegated_actions, cpu);
-+		INIT_LIST_HEAD(&delegated->head);
-+		netif_tx_napi_add(&mptcp_napi_dev, &delegated->napi, mptcp_napi_poll,
-+				  NAPI_POLL_WEIGHT);
-+		napi_enable(&delegated->napi);
-+	}
-+
- 	mptcp_subflow_init();
- 	mptcp_pm_init();
- 	mptcp_token_init();
-diff --git a/net/mptcp/protocol.h b/net/mptcp/protocol.h
-index 871534df6140f..1460705aaad05 100644
---- a/net/mptcp/protocol.h
-+++ b/net/mptcp/protocol.h
-@@ -378,6 +378,15 @@ enum mptcp_data_avail {
- 	MPTCP_SUBFLOW_OOO_DATA
- };
- 
-+struct mptcp_delegated_action {
-+	struct napi_struct napi;
-+	struct list_head head;
-+};
-+
-+DECLARE_PER_CPU(struct mptcp_delegated_action, mptcp_delegated_actions);
-+
-+#define MPTCP_DELEGATE_SEND		0
-+
- /* MPTCP subflow context */
- struct mptcp_subflow_context {
- 	struct	list_head node;/* conn_list of subflows */
-@@ -415,6 +424,9 @@ struct mptcp_subflow_context {
- 	u8	local_id;
- 	u8	remote_id;
- 
-+	long	delegated_status;
-+	struct	list_head delegated_node;   /* link into delegated_action, protected by local BH */
-+
- 	struct	sock *tcp_sock;	    /* tcp sk backpointer */
- 	struct	sock *conn;	    /* parent mptcp_sock */
- 	const	struct inet_connection_sock_af_ops *icsk_af_ops;
-@@ -463,6 +475,61 @@ static inline void mptcp_add_pending_subflow(struct mptcp_sock *msk,
- 	spin_unlock_bh(&msk->join_list_lock);
- }
- 
-+void mptcp_subflow_process_delegated(struct sock *ssk);
-+
-+static inline void mptcp_subflow_delegate(struct mptcp_subflow_context *subflow)
-+{
-+	struct mptcp_delegated_action *delegated;
-+	bool schedule;
-+
-+	/* The implied barrier pairs with mptcp_subflow_delegated_done(), and
-+	 * ensures the below list check sees list updates done prior to status
-+	 * bit changes
-+	 */
-+	if (!test_and_set_bit(MPTCP_DELEGATE_SEND, &subflow->delegated_status)) {
-+		/* still on delegated list from previous scheduling */
-+		if (!list_empty(&subflow->delegated_node))
-+			return;
-+
-+		/* the caller held the subflow bh socket lock */
-+		lockdep_assert_in_softirq();
-+
-+		delegated = this_cpu_ptr(&mptcp_delegated_actions);
-+		schedule = list_empty(&delegated->head);
-+		list_add_tail(&subflow->delegated_node, &delegated->head);
-+		sock_hold(mptcp_subflow_tcp_sock(subflow));
-+		if (schedule)
-+			napi_schedule(&delegated->napi);
-+	}
-+}
-+
-+static inline struct mptcp_subflow_context *
-+mptcp_subflow_delegated_next(struct mptcp_delegated_action *delegated)
-+{
-+	struct mptcp_subflow_context *ret;
-+
-+	if (list_empty(&delegated->head))
-+		return NULL;
-+
-+	ret = list_first_entry(&delegated->head, struct mptcp_subflow_context, delegated_node);
-+	list_del_init(&ret->delegated_node);
-+	return ret;
-+}
-+
-+static inline bool mptcp_subflow_has_delegated_action(const struct mptcp_subflow_context *subflow)
-+{
-+	return test_bit(MPTCP_DELEGATE_SEND, &subflow->delegated_status);
-+}
-+
-+static inline void mptcp_subflow_delegated_done(struct mptcp_subflow_context *subflow)
-+{
-+	/* pairs with mptcp_subflow_delegate, ensures delegate_node is updated before
-+	 * touching the status bit
-+	 */
-+	smp_wmb();
-+	clear_bit(MPTCP_DELEGATE_SEND, &subflow->delegated_status);
-+}
-+
- int mptcp_is_enabled(struct net *net);
- unsigned int mptcp_get_add_addr_timeout(struct net *net);
- void mptcp_subflow_fully_established(struct mptcp_subflow_context *subflow,
-diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
-index 1ca0c82b0dbde..721059916c968 100644
---- a/net/mptcp/subflow.c
-+++ b/net/mptcp/subflow.c
-@@ -18,12 +18,15 @@
- #include <net/tcp.h>
- #if IS_ENABLED(CONFIG_MPTCP_IPV6)
- #include <net/ip6_route.h>
-+#include <net/transp_v6.h>
- #endif
- #include <net/mptcp.h>
- #include <uapi/linux/mptcp.h>
- #include "protocol.h"
- #include "mib.h"
- 
-+static void mptcp_subflow_ops_undo_override(struct sock *ssk);
-+
- static void SUBFLOW_REQ_INC_STATS(struct request_sock *req,
- 				  enum linux_mptcp_mib_field field)
- {
-@@ -428,6 +431,7 @@ static int subflow_v4_conn_request(struct sock *sk, struct sk_buff *skb)
- static struct tcp_request_sock_ops subflow_request_sock_ipv6_ops;
- static struct inet_connection_sock_af_ops subflow_v6_specific;
- static struct inet_connection_sock_af_ops subflow_v6m_specific;
-+static struct proto tcpv6_prot_override;
- 
- static int subflow_v6_conn_request(struct sock *sk, struct sk_buff *skb)
- {
-@@ -509,6 +513,8 @@ static void subflow_ulp_fallback(struct sock *sk,
- 	icsk->icsk_ulp_ops = NULL;
- 	rcu_assign_pointer(icsk->icsk_ulp_data, NULL);
- 	tcp_sk(sk)->is_mptcp = 0;
-+
-+	mptcp_subflow_ops_undo_override(sk);
- }
- 
- static void subflow_drop_ctx(struct sock *ssk)
-@@ -682,6 +688,7 @@ static struct sock *subflow_syn_recv_sock(const struct sock *sk,
- }
- 
- static struct inet_connection_sock_af_ops subflow_specific;
-+static struct proto tcp_prot_override;
- 
- enum mapping_status {
- 	MAPPING_OK,
-@@ -1203,6 +1210,25 @@ static void mptcp_attach_cgroup(struct sock *parent, struct sock *child)
- #endif /* CONFIG_SOCK_CGROUP_DATA */
- }
- 
-+static void mptcp_subflow_ops_override(struct sock *ssk)
-+{
-+#if IS_ENABLED(CONFIG_MPTCP_IPV6)
-+	if (ssk->sk_prot == &tcpv6_prot)
-+		ssk->sk_prot = &tcpv6_prot_override;
-+	else
-+#endif
-+		ssk->sk_prot = &tcp_prot_override;
-+}
-+
-+static void mptcp_subflow_ops_undo_override(struct sock *ssk)
-+{
-+#if IS_ENABLED(CONFIG_MPTCP_IPV6)
-+	if (ssk->sk_prot == &tcpv6_prot_override)
-+		ssk->sk_prot = &tcpv6_prot;
-+	else
-+#endif
-+		ssk->sk_prot = &tcp_prot;
-+}
- int mptcp_subflow_create_socket(struct sock *sk, struct socket **new_sock)
- {
- 	struct mptcp_subflow_context *subflow;
-@@ -1258,6 +1284,7 @@ int mptcp_subflow_create_socket(struct sock *sk, struct socket **new_sock)
- 	*new_sock = sf;
- 	sock_hold(sk);
- 	subflow->conn = sk;
-+	mptcp_subflow_ops_override(sf->sk);
- 
- 	return 0;
- }
-@@ -1274,6 +1301,7 @@ static struct mptcp_subflow_context *subflow_create_ctx(struct sock *sk,
- 
- 	rcu_assign_pointer(icsk->icsk_ulp_data, ctx);
- 	INIT_LIST_HEAD(&ctx->node);
-+	INIT_LIST_HEAD(&ctx->delegated_node);
- 
- 	pr_debug("subflow=%p", ctx);
- 
-@@ -1386,6 +1414,7 @@ static void subflow_ulp_release(struct sock *ssk)
- 		sock_put(sk);
- 	}
- 
-+	mptcp_subflow_ops_undo_override(ssk);
- 	if (release)
- 		kfree_rcu(ctx, rcu);
- }
-@@ -1439,6 +1468,16 @@ static void subflow_ulp_clone(const struct request_sock *req,
- 	}
- }
- 
-+static void tcp_release_cb_override(struct sock *ssk)
-+{
-+	struct mptcp_subflow_context *subflow = mptcp_subflow_ctx(ssk);
-+
-+	if (mptcp_subflow_has_delegated_action(subflow))
-+		mptcp_subflow_process_delegated(ssk);
-+
-+	tcp_release_cb(ssk);
-+}
-+
- static struct tcp_ulp_ops subflow_ulp_ops __read_mostly = {
- 	.name		= "mptcp",
- 	.owner		= THIS_MODULE,
-@@ -1479,6 +1518,9 @@ void __init mptcp_subflow_init(void)
- 	subflow_specific.syn_recv_sock = subflow_syn_recv_sock;
- 	subflow_specific.sk_rx_dst_set = subflow_finish_connect;
- 
-+	tcp_prot_override = tcp_prot;
-+	tcp_prot_override.release_cb = tcp_release_cb_override;
-+
- #if IS_ENABLED(CONFIG_MPTCP_IPV6)
- 	subflow_request_sock_ipv6_ops = tcp_request_sock_ipv6_ops;
- 	subflow_request_sock_ipv6_ops.route_req = subflow_v6_route_req;
-@@ -1494,6 +1536,9 @@ void __init mptcp_subflow_init(void)
- 	subflow_v6m_specific.net_header_len = ipv4_specific.net_header_len;
- 	subflow_v6m_specific.mtu_reduced = ipv4_specific.mtu_reduced;
- 	subflow_v6m_specific.net_frag_header_len = 0;
-+
-+	tcpv6_prot_override = tcpv6_prot;
-+	tcpv6_prot_override.release_cb = tcp_release_cb_override;
- #endif
- 
- 	mptcp_diag_subflow_init(&subflow_ulp_ops);
+Nikolay Aleksandrov (14):
+  net: bridge: multicast: rename src_size to addr_size
+  net: bridge: multicast: pass host src address to IGMPv3/MLDv2
+    functions
+  net: bridge: multicast: __grp_src_block_incl can modify pg
+  net: bridge: multicast: calculate idx position without changing ptr
+  net: bridge: multicast: add EHT structures and definitions
+  net: bridge: multicast: add EHT host handling functions
+  net: bridge: multicast: add EHT source set handling functions
+  net: bridge: multicast: add EHT host delete function
+  net: bridge: multicast: add EHT allow/block handling
+  net: bridge: multicast: add EHT include and exclude handling
+  net: bridge: multicast: optimize TO_INCLUDE EHT timeouts
+  net: bridge: multicast: add EHT host filter_mode handling
+  net: bridge: multicast: handle block pg delete for all cases
+  net: bridge: multicast: mark IGMPv3/MLDv2 fast-leave deletes
+
+ net/bridge/Makefile               |   2 +-
+ net/bridge/br_multicast.c         | 254 +++++----
+ net/bridge/br_multicast_eht.c     | 856 ++++++++++++++++++++++++++++++
+ net/bridge/br_private.h           |   6 +
+ net/bridge/br_private_mcast_eht.h |  65 +++
+ 5 files changed, 1093 insertions(+), 90 deletions(-)
+ create mode 100644 net/bridge/br_multicast_eht.c
+ create mode 100644 net/bridge/br_private_mcast_eht.h
+
 -- 
-2.26.2
+2.29.2
 
