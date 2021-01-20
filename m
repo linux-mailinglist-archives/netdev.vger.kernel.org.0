@@ -2,195 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C64D2FC7B3
-	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 03:23:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DE5082FC7B7
+	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 03:23:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730839AbhATCVY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jan 2021 21:21:24 -0500
-Received: from ex13-edg-ou-001.vmware.com ([208.91.0.189]:30262 "EHLO
-        EX13-EDG-OU-001.vmware.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1731076AbhATCUu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jan 2021 21:20:50 -0500
-X-Greylist: delayed 511 seconds by postgrey-1.27 at vger.kernel.org; Tue, 19 Jan 2021 21:20:46 EST
-Received: from sc9-mailhost3.vmware.com (10.113.161.73) by
- EX13-EDG-OU-001.vmware.com (10.113.208.155) with Microsoft SMTP Server id
- 15.0.1156.6; Tue, 19 Jan 2021 18:19:51 -0800
-Received: from htb-1n-eng-dhcp122.eng.vmware.com (unknown [10.20.114.3])
-        by sc9-mailhost3.vmware.com (Postfix) with ESMTP id A8352201E9;
-        Tue, 19 Jan 2021 18:19:55 -0800 (PST)
-Received: by htb-1n-eng-dhcp122.eng.vmware.com (Postfix, from userid 0)
-        id 9CB6BA9F9F; Tue, 19 Jan 2021 18:19:55 -0800 (PST)
-From:   Ronak Doshi <doshir@vmware.com>
-To:     <netdev@vger.kernel.org>
-CC:     Ronak Doshi <doshir@vmware.com>, Petr Vandrovec <petr@vmware.com>,
-        "maintainer:VMWARE VMXNET3 ETHERNET DRIVER" <pv-drivers@vmware.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: [PATCH net-next] vmxnet3: Remove buf_info from device accessible structures
-Date:   Tue, 19 Jan 2021 18:19:40 -0800
-Message-ID: <20210120021941.9655-1-doshir@vmware.com>
-X-Mailer: git-send-email 2.11.0
+        id S1727566AbhATCXL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jan 2021 21:23:11 -0500
+Received: from mail.kernel.org ([198.145.29.99]:58222 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730859AbhATCWQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 19 Jan 2021 21:22:16 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 3DF442250E;
+        Wed, 20 Jan 2021 02:21:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1611109294;
+        bh=nTEA1hudbJuhjpINDw8b4H/QEvZXPFEUU1gq/ihM7Zw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=XuqZGlvSojrA7vrwI3bzByi/vC+BugX6DWrQ41pbIWybNi4FmokQKMcSGmW0tBXJP
+         tldWiRdLaueqX4Y7l+r27+7EN5+JUtf3M9KGTi5LuHEEJL9UzXix4FGZT4iBh/45Zf
+         fU58TEj++sigEQFxTh58K/KHOc/Glf9fivgiP7Ko3J7wvJYBk3b8fdAUEKzzyd2dza
+         +Wr8iR7dUdVQnLo60H3rtHAPXmWIM6jfzmMb4Yp3pC7NqhIfytK0hnOjVTJAj/cPbv
+         PVmlYK/p8ANQrwPTqrnYCbE3gp22kytX8DoPwJb7oqpIpGiuef+OX8WWjZP8iBDUPl
+         yjH/iCHZW6cXw==
+Date:   Tue, 19 Jan 2021 18:21:33 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>
+Cc:     netdev@vger.kernel.org, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
+        jiri@resnulli.us, m-karicheri2@ti.com, vladimir.oltean@nxp.com,
+        Jose.Abreu@synopsys.com, po.liu@nxp.com,
+        intel-wired-lan@lists.osuosl.org, anthony.l.nguyen@intel.com,
+        mkubecek@suse.cz
+Subject: Re: [PATCH net-next v2 2/8] taprio: Add support for frame
+ preemption offload
+Message-ID: <20210119182133.038fbfc3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210119004028.2809425-3-vinicius.gomes@intel.com>
+References: <20210119004028.2809425-1-vinicius.gomes@intel.com>
+        <20210119004028.2809425-3-vinicius.gomes@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-Received-SPF: None (EX13-EDG-OU-001.vmware.com: doshir@vmware.com does not
- designate permitted sender hosts)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Petr Vandrovec <petr@vmware.com>
+On Mon, 18 Jan 2021 16:40:22 -0800 Vinicius Costa Gomes wrote:
+> Adds a way to configure which traffic classes are marked as
+> preemptible and which are marked as express.
+> 
+> Even if frame preemption is not a "real" offload, because it can't be
+> executed purely in software, having this information near where the
+> mapping of traffic classes to queues is specified, makes it,
+> hopefully, easier to use.
+> 
+> taprio will receive the information of which traffic classes are
+> marked as express/preemptible, and when offloading frame preemption to
+> the driver will convert the information, so the driver receives which
+> queues are marked as express/preemptible.
+> 
+> Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
 
-vmxnet3: Remove buf_info from device accessible structures
+> @@ -1286,13 +1289,15 @@ static int taprio_disable_offload(struct net_device *dev,
+>  	offload->enable = 0;
+>  
+>  	err = ops->ndo_setup_tc(dev, TC_SETUP_QDISC_TAPRIO, offload);
+> -	if (err < 0) {
+> +	if (err < 0)
+> +		NL_SET_ERR_MSG(extack,
+> +			       "Device failed to disable offload");
+> +
+> +	err = ops->ndo_setup_tc(dev, TC_SETUP_PREEMPT, &preempt);
+> +	if (err < 0)
+>  		NL_SET_ERR_MSG(extack,
+>  			       "Device failed to disable offload");
 
-buf_info structures in RX & TX queues are private driver data that
-do not need to be visible to the device.  Although there is physical
-address and length in the queue descriptor that points to these
-structures, their layout is not standardized, and device never looks
-at them.
+This was meant to say something else?
 
-So lets allocate these structures in non-DMA-able memory, and fill
-physical address as all-ones and length as zero in the queue
-descriptor.
-
-That should alleviate worries brought by Martin Radev in
-https://lists.osuosl.org/pipermail/intel-wired-lan/Week-of-Mon-20210104/022829.html
-that malicious vmxnet3 device could subvert SVM/TDX guarantees.
-
-Signed-off-by: Petr Vandrovec <petr@vmware.com>
-Signed-off-by: Ronak Doshi <doshir@vmware.com>
----
- drivers/net/vmxnet3/vmxnet3_drv.c | 45 ++++++++++++++++-----------------------
- drivers/net/vmxnet3/vmxnet3_int.h |  2 --
- 2 files changed, 18 insertions(+), 29 deletions(-)
-
-diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
-index 336504b7531d..8f5e1e363598 100644
---- a/drivers/net/vmxnet3/vmxnet3_drv.c
-+++ b/drivers/net/vmxnet3/vmxnet3_drv.c
-@@ -452,9 +452,7 @@ vmxnet3_tq_destroy(struct vmxnet3_tx_queue *tq,
- 		tq->comp_ring.base = NULL;
- 	}
- 	if (tq->buf_info) {
--		dma_free_coherent(&adapter->pdev->dev,
--				  tq->tx_ring.size * sizeof(tq->buf_info[0]),
--				  tq->buf_info, tq->buf_info_pa);
-+		kfree(tq->buf_info);
- 		tq->buf_info = NULL;
- 	}
- }
-@@ -505,8 +503,6 @@ static int
- vmxnet3_tq_create(struct vmxnet3_tx_queue *tq,
- 		  struct vmxnet3_adapter *adapter)
- {
--	size_t sz;
--
- 	BUG_ON(tq->tx_ring.base || tq->data_ring.base ||
- 	       tq->comp_ring.base || tq->buf_info);
- 
-@@ -534,11 +530,13 @@ vmxnet3_tq_create(struct vmxnet3_tx_queue *tq,
- 		goto err;
- 	}
- 
--	sz = tq->tx_ring.size * sizeof(tq->buf_info[0]);
--	tq->buf_info = dma_alloc_coherent(&adapter->pdev->dev, sz,
--					  &tq->buf_info_pa, GFP_KERNEL);
--	if (!tq->buf_info)
-+	tq->buf_info = kmalloc_array_node(tq->tx_ring.size, sizeof(tq->buf_info[0]),
-+					  GFP_KERNEL | __GFP_ZERO,
-+					  dev_to_node(&adapter->pdev->dev));
-+	if (!tq->buf_info) {
-+		netdev_err(adapter->netdev, "failed to allocate tx buffer info\n");
- 		goto err;
-+	}
- 
- 	return 0;
- 
-@@ -1738,10 +1736,7 @@ static void vmxnet3_rq_destroy(struct vmxnet3_rx_queue *rq,
- 	}
- 
- 	if (rq->buf_info[0]) {
--		size_t sz = sizeof(struct vmxnet3_rx_buf_info) *
--			(rq->rx_ring[0].size + rq->rx_ring[1].size);
--		dma_free_coherent(&adapter->pdev->dev, sz, rq->buf_info[0],
--				  rq->buf_info_pa);
-+		kfree(rq->buf_info[0]);
- 		rq->buf_info[0] = rq->buf_info[1] = NULL;
- 	}
- }
-@@ -1883,12 +1878,13 @@ vmxnet3_rq_create(struct vmxnet3_rx_queue *rq, struct vmxnet3_adapter *adapter)
- 		goto err;
- 	}
- 
--	sz = sizeof(struct vmxnet3_rx_buf_info) * (rq->rx_ring[0].size +
--						   rq->rx_ring[1].size);
--	bi = dma_alloc_coherent(&adapter->pdev->dev, sz, &rq->buf_info_pa,
--				GFP_KERNEL);
--	if (!bi)
-+	bi = kmalloc_array_node(rq->rx_ring[0].size + rq->rx_ring[1].size,
-+				sizeof(rq->buf_info[0][0]), GFP_KERNEL | __GFP_ZERO,
-+				dev_to_node(&adapter->pdev->dev));
-+	if (!bi) {
-+		netdev_err(adapter->netdev, "failed to allocate rx buffer info\n");
- 		goto err;
-+	}
- 
- 	rq->buf_info[0] = bi;
- 	rq->buf_info[1] = bi + rq->rx_ring[0].size;
-@@ -2522,14 +2518,12 @@ vmxnet3_setup_driver_shared(struct vmxnet3_adapter *adapter)
- 		tqc->txRingBasePA   = cpu_to_le64(tq->tx_ring.basePA);
- 		tqc->dataRingBasePA = cpu_to_le64(tq->data_ring.basePA);
- 		tqc->compRingBasePA = cpu_to_le64(tq->comp_ring.basePA);
--		tqc->ddPA           = cpu_to_le64(tq->buf_info_pa);
-+		tqc->ddPA           = cpu_to_le64(~0ULL);
- 		tqc->txRingSize     = cpu_to_le32(tq->tx_ring.size);
- 		tqc->dataRingSize   = cpu_to_le32(tq->data_ring.size);
- 		tqc->txDataRingDescSize = cpu_to_le32(tq->txdata_desc_size);
- 		tqc->compRingSize   = cpu_to_le32(tq->comp_ring.size);
--		tqc->ddLen          = cpu_to_le32(
--					sizeof(struct vmxnet3_tx_buf_info) *
--					tqc->txRingSize);
-+		tqc->ddLen          = cpu_to_le32(0);
- 		tqc->intrIdx        = tq->comp_ring.intr_idx;
- 	}
- 
-@@ -2541,14 +2535,11 @@ vmxnet3_setup_driver_shared(struct vmxnet3_adapter *adapter)
- 		rqc->rxRingBasePA[0] = cpu_to_le64(rq->rx_ring[0].basePA);
- 		rqc->rxRingBasePA[1] = cpu_to_le64(rq->rx_ring[1].basePA);
- 		rqc->compRingBasePA  = cpu_to_le64(rq->comp_ring.basePA);
--		rqc->ddPA            = cpu_to_le64(rq->buf_info_pa);
-+		rqc->ddPA            = cpu_to_le64(~0ULL);
- 		rqc->rxRingSize[0]   = cpu_to_le32(rq->rx_ring[0].size);
- 		rqc->rxRingSize[1]   = cpu_to_le32(rq->rx_ring[1].size);
- 		rqc->compRingSize    = cpu_to_le32(rq->comp_ring.size);
--		rqc->ddLen           = cpu_to_le32(
--					sizeof(struct vmxnet3_rx_buf_info) *
--					(rqc->rxRingSize[0] +
--					 rqc->rxRingSize[1]));
-+		rqc->ddLen           = cpu_to_le32(0);
- 		rqc->intrIdx         = rq->comp_ring.intr_idx;
- 		if (VMXNET3_VERSION_GE_3(adapter)) {
- 			rqc->rxDataRingBasePA =
-diff --git a/drivers/net/vmxnet3/vmxnet3_int.h b/drivers/net/vmxnet3/vmxnet3_int.h
-index d958b92c9429..e910596b79cf 100644
---- a/drivers/net/vmxnet3/vmxnet3_int.h
-+++ b/drivers/net/vmxnet3/vmxnet3_int.h
-@@ -240,7 +240,6 @@ struct vmxnet3_tx_queue {
- 	spinlock_t                      tx_lock;
- 	struct vmxnet3_cmd_ring         tx_ring;
- 	struct vmxnet3_tx_buf_info      *buf_info;
--	dma_addr_t                       buf_info_pa;
- 	struct vmxnet3_tx_data_ring     data_ring;
- 	struct vmxnet3_comp_ring        comp_ring;
- 	struct Vmxnet3_TxQueueCtrl      *shared;
-@@ -298,7 +297,6 @@ struct vmxnet3_rx_queue {
- 	u32 qid2;           /* rqID in RCD for buffer from 2nd ring */
- 	u32 dataRingQid;    /* rqID in RCD for buffer from data ring */
- 	struct vmxnet3_rx_buf_info     *buf_info[2];
--	dma_addr_t                      buf_info_pa;
- 	struct Vmxnet3_RxQueueCtrl            *shared;
- 	struct vmxnet3_rq_driver_stats  stats;
- } __attribute__((__aligned__(SMP_CACHE_BYTES)));
--- 
-2.11.0
-
+> -		goto out;
+> -	}
+>  
+> -out:
+>  	taprio_offload_free(offload);
+>  
+>  	return err;
