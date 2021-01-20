@@ -2,87 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EA77D2FDB1D
-	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 21:47:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CEB632FDB74
+	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 22:26:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388847AbhATUoe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jan 2021 15:44:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48768 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731842AbhATUnJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 15:43:09 -0500
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BF13C061757;
-        Wed, 20 Jan 2021 12:42:29 -0800 (PST)
-Received: by mail-pj1-x1032.google.com with SMTP id my11so3674935pjb.1;
-        Wed, 20 Jan 2021 12:42:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to;
-        bh=l4bZ7k3MLtL4D33E1D9YrozkMl3wQeHdeBeC/C0ogfE=;
-        b=EMmI/yHTTV1Mpux7tKIPYfLFSTGkfH72QLHU1dgIqX1Y4igOtMYt0XoxjV37/m82QB
-         BWmN+pKbES/bkyzb6tgjhZtElcy1O2JUH/FXnURIcZnrbc+u0sO3jN89LikTF0dg54ro
-         IXp8PYLEGDRd1mZHqP109ZYQU7qAltNfcx11QCF5MqLt8Wt9h47lqxB9V/yGzS+WSNFv
-         rMAMUGQ8UmnpaZLdwYW7YfsWwZxNSgZ3J0hUcoI9wKvdAOXngrq7kds/abp8Xnud15sZ
-         FtjSm1uI/Yp5CIEEifMZLc3dxnHJGZlv8fjXGEe8632+cDpo6bcFSTlAhAURM29vrgu4
-         L1rA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to;
-        bh=l4bZ7k3MLtL4D33E1D9YrozkMl3wQeHdeBeC/C0ogfE=;
-        b=Xk/g9PsTEZYBA1xBx7p0hBPVPM8bsbFMhwOseub0Ijj6aWCigkkVzvlf1wp3gb/xA8
-         Erx7qppX/1+OAL4m+7OXPI9NgrdG1TCMl6s1sc0KwyqmfZCHdLbWx81XDOB83UPFDGv/
-         B72paKzRVNIPciDZGMBnbIGep+gprlPStNBBHC2vxiLzFCh4bw5LuWhMMbF+JduNKQLH
-         x9M+YyMZtDWrRhR4jMYK5tHM0fwzFjZiInE7ksK25vxcvqReY02Q5w+N6Wv1WzzrVFQc
-         lKRMBmP7G5q9KdctliS90nfATQmzYPfdgKezqjGHDjCl7dDXAD+kBkSAVFdLkDsgCIdw
-         +iEg==
-X-Gm-Message-State: AOAM533oFha7aB4zLRfvuXjm47nmAoeyy0MAXXgrcZmLX/XUSeoGumIc
-        jNTUYiSTL/LQF3AVCaSaeVor6NUwF4Drl/AGju4=
-X-Google-Smtp-Source: ABdhPJzaqLEL+yFKxUornhh6qyddcR3bLRrY+ZgaujIQH1JiMZiV74ZO0uBj1hEqq12lAkMy9dKvFnwcece33ostbI8=
-X-Received: by 2002:a17:902:9894:b029:da:5698:7f7b with SMTP id
- s20-20020a1709029894b02900da56987f7bmr11554332plp.78.1611175348636; Wed, 20
- Jan 2021 12:42:28 -0800 (PST)
-MIME-Version: 1.0
-References: <20210120102837.23663-1-xie.he.0141@gmail.com>
-In-Reply-To: <20210120102837.23663-1-xie.he.0141@gmail.com>
-From:   Xie He <xie.he.0141@gmail.com>
-Date:   Wed, 20 Jan 2021 12:42:17 -0800
-Message-ID: <CAJht_EOdpq5wQfcFROpx587kCZ9dGRz6kesyPVhgZyKdoqS8Cg@mail.gmail.com>
-Subject: Re: [PATCH net v4] net: lapb: Add locking to the lapb module
-To:     "David S. Miller" <davem@davemloft.net>,
+        id S1731218AbhATUzz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jan 2021 15:55:55 -0500
+Received: from m12-18.163.com ([220.181.12.18]:55758 "EHLO m12-18.163.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2388187AbhATNtk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 20 Jan 2021 08:49:40 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id; bh=1gsABYDfG5RbJRuW+5
+        LcmE2LNHNvGErZzNpRw38meiQ=; b=c/Zp9QqjSTB/yeLxkozcmiAbVhQhKDoTMp
+        RLn0+jUWSuLBWVO/fGCGoUEwqLYj9VdcjS/BzZZ3BbHqhCJDEZwjV1xvn88Q1Nbw
+        Uq+qDIVfYNK93qoSRz72zWvZVyGOMtFyeTVorxKJ0fpNhv0Eb2HCTwyDgPyJFWOz
+        BPog6bz+M=
+Received: from localhost.localdomain (unknown [119.3.119.20])
+        by smtp14 (Coremail) with SMTP id EsCowAAnOBgSDwhgjCFyQA--.58652S4;
+        Wed, 20 Jan 2021 19:08:06 +0800 (CST)
+From:   Pan Bian <bianpan2016@163.com>
+To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Linux X25 <linux-x25@vger.kernel.org>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Martin Schiller <ms@dev.tdt.de>
-Content-Type: text/plain; charset="UTF-8"
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        "Vineetha G. Jaya Kumaran" <vineetha.g.jaya.kumaran@intel.com>,
+        Rusaimi Amira Ruslan <rusaimi.amira.rusaimi@intel.com>
+Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Pan Bian <bianpan2016@163.com>
+Subject: [PATCH] net: stmmac: dwmac-intel-plat: remove config data on error
+Date:   Wed, 20 Jan 2021 03:07:44 -0800
+Message-Id: <20210120110745.36412-1-bianpan2016@163.com>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: EsCowAAnOBgSDwhgjCFyQA--.58652S4
+X-Coremail-Antispam: 1Uf129KBjvdXoWrZrW7ZrW5GrWrAF4ktr43KFg_yoWDZFc_uF
+        1fZF9YqFW5Crs0yrW2vw43Z34F9F1qqr1SgFWkKaySvr9rWwn0qr97ZrnrXr4ku3yFyF9r
+        Gr1xt3yxA34fKjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IU5CksPUUUUU==
+X-Originating-IP: [119.3.119.20]
+X-CM-SenderInfo: held01tdqsiiqw6rljoofrz/xtbBZBYgclQHMDV47AAAsi
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-With this patch, there is still a problem that lapb_unregister may run
-concurrently with other LAPB API functions (such as
-lapb_data_received). This other LAPB API function can get the
-lapb->lock after lapb->lock is released by lapb_unregister, and
-continue to do its work. This is not correct.
+Remove the config data when rate setting fails.
 
-We can fix this problem by adding a new field "bool stop" to "struct
-lapb_cb" (just like "bool t1timer_stop, t2timer_stop"), and make every
-API function abort whenever it sees lapb->stop == true after getting
-the lock.
+Fixes: 9efc9b2b04c7 ("net: stmmac: Add dwmac-intel-plat for GBE driver")
+Signed-off-by: Pan Bian <bianpan2016@163.com>
+---
+ drivers/net/ethernet/stmicro/stmmac/dwmac-intel-plat.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Alternatively we can also require the callers (the LAPB drivers) to
-never call lapb_unregister concurrently with other LAPB APIs. They
-should make sure all LAPB API functions are only called after
-lapb_register ends and before lapb_unregister starts. This is a
-reasonable requirement, because if they don't follow this requirement,
-even if we do the fix in the LAPB module (as said above), the LAPB
-driver will still get the "LAPB_BADTOKEN" error from the LAPB module.
-This is not desirable and I think LAPB drivers should avoid this from
-happening.
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel-plat.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel-plat.c
+index 82b1c7a5a7a9..ba0e4d2b256a 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel-plat.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel-plat.c
+@@ -129,7 +129,7 @@ static int intel_eth_plat_probe(struct platform_device *pdev)
+ 				if (ret) {
+ 					dev_err(&pdev->dev,
+ 						"Failed to set tx_clk\n");
+-					return ret;
++					goto err_remove_config_dt;
+ 				}
+ 			}
+ 		}
+@@ -143,7 +143,7 @@ static int intel_eth_plat_probe(struct platform_device *pdev)
+ 			if (ret) {
+ 				dev_err(&pdev->dev,
+ 					"Failed to set clk_ptp_ref\n");
+-				return ret;
++				goto err_remove_config_dt;
+ 			}
+ 		}
+ 	}
+-- 
+2.17.1
 
-So I think this problem may not need to be fixed here in the LAPB
-module because the LAPB drivers should deal with this problem anyway.
 
-Please feel free to share your comment. Thanks!
