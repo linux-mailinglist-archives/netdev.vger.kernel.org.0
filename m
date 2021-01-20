@@ -2,429 +2,446 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 08D3A2FCB1F
+	by mail.lfdr.de (Postfix) with ESMTP id 9CA5D2FCB20
 	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 07:44:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726889AbhATGjW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jan 2021 01:39:22 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:29853 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729648AbhATG01 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 01:26:27 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1611123898;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=CDA4xwYeepwFlkHJwgrw6oW3JHghWeOFqqsJlNpUR/Q=;
-        b=NDrSmWMDX/BkbaL382GPXqFkI487NGZNoJdT5rFonLsTBNbj2v7Om/ct4DJLddzGPXxCon
-        QQ4w6Ki3eCIULvb1ENVFIulbA3Ol8qJcfKRXI5J4Tn4UM9/U7CBC47aP/Ti6sYYGBzKlmb
-        k4Z6XU9lBpMM08JnWZtcfQEx4j9Xwzc=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-491-wjWc5C-GNYGX9unYD_fSZg-1; Wed, 20 Jan 2021 01:24:54 -0500
-X-MC-Unique: wjWc5C-GNYGX9unYD_fSZg-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 198978015C6;
-        Wed, 20 Jan 2021 06:24:52 +0000 (UTC)
-Received: from [10.72.13.124] (ovpn-13-124.pek2.redhat.com [10.72.13.124])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 79BE25D9DD;
-        Wed, 20 Jan 2021 06:24:40 +0000 (UTC)
-Subject: Re: [RFC v3 06/11] vhost-vdpa: Add an opaque pointer for vhost IOTLB
-To:     Xie Yongji <xieyongji@bytedance.com>, mst@redhat.com,
-        stefanha@redhat.com, sgarzare@redhat.com, parav@nvidia.com,
-        bob.liu@oracle.com, hch@infradead.org, rdunlap@infradead.org,
-        willy@infradead.org, viro@zeniv.linux.org.uk, axboe@kernel.dk,
-        bcrl@kvack.org, corbet@lwn.net
-Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org, linux-aio@kvack.org,
-        linux-fsdevel@vger.kernel.org
-References: <20210119045920.447-1-xieyongji@bytedance.com>
- <20210119045920.447-7-xieyongji@bytedance.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <455fe36a-23a2-5720-a721-8ae46515186b@redhat.com>
-Date:   Wed, 20 Jan 2021 14:24:38 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1727105AbhATGj5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jan 2021 01:39:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35112 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729013AbhATGbo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 01:31:44 -0500
+Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 84933C061575;
+        Tue, 19 Jan 2021 22:31:01 -0800 (PST)
+Received: by mail-lj1-x22d.google.com with SMTP id m13so24708549ljo.11;
+        Tue, 19 Jan 2021 22:31:01 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=5xyhkMLv7lsuxUA/qMUHS/r8sCgAc6g5ImcxTeO7P6g=;
+        b=GEdP9KjKNA6p8Gp1rSGwFkuhxiQVOlIqWcfjr/dhHk76qQZ6Shiwo25J073DNdWYYT
+         ZAuxUwFwgUA+bBFZvaijyK9FuIcxc+L7YzPhgv7TXkVHUOtR4HDC01NV3CX9+6foAFwq
+         XXEDCtnRgwNrZZrESaKSuFUI/jvivRIjt7oEEZxefPmMy5mgSkMZJElI2ipwnhOgoY9X
+         DjeNIdqF3YpRmtdItEuVDfv/hIxgPUR++jvmcc/VuJSqqhLDLM2f3HryoXY1k6uwJNp6
+         FHKhcBAWbuNuk6dcjXD3QEUgzWKEU8feyu2cVJKst1SZiKCmJ6ajL/CGJLSiJDiYLj7g
+         SPww==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=5xyhkMLv7lsuxUA/qMUHS/r8sCgAc6g5ImcxTeO7P6g=;
+        b=rDEI94sJ1+wgWJh/dRQMCAjJFhn6HJ/uufBouG1RTZeWvoQBYydCu5YRmBM6vtYi8z
+         ydapqjCwJxnS9t8Wyb37pujA3+kB8SEAmBWbaqXqmruRaY8KtPTR6TOpW8EY3Tm/Gp/V
+         pVPv7c1begeg4CZswvUpg6WhOi/18Bk6W2cQvqQkZ9JHjObVGXCA1UZHL6hYf/aDDQT9
+         PfR7EjDByY2ryrzJ4ISuQPQWzDtynFUseXNym/rGPeWsjdF/X2IOcwfyOIoMoXvJRF0Z
+         2EN3sg27VSiZxsBZ7vFdqCNffzAAlzlyfVaX1ZgY+jd5iMubIcwxX/G1Q3NNzNSyMtg/
+         aMAA==
+X-Gm-Message-State: AOAM531tbhLvJEHzdxSZkKSHV0Mhcg1wQFNTxdr92961kRu3EYCAF1Go
+        eFO+IlBRCsJirhishcRglYmkzNdO6K9+Jg==
+X-Google-Smtp-Source: ABdhPJxFgZ454pqzOlMbnZ6uDB7UarLAB6hG+phtZE/EzIDdIatT/6fBjpJ0Gd0+15Uu+O7iFIkvag==
+X-Received: by 2002:a2e:9847:: with SMTP id e7mr3625692ljj.388.1611124259585;
+        Tue, 19 Jan 2021 22:30:59 -0800 (PST)
+Received: from localhost.localdomain ([185.188.71.122])
+        by smtp.gmail.com with ESMTPSA id l3sm109371lfd.119.2021.01.19.22.30.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Jan 2021 22:30:58 -0800 (PST)
+From:   Pawel Dembicki <paweldembicki@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     Linus Wallej <linus.walleij@linaro.org>,
+        Pawel Dembicki <paweldembicki@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org
+Subject: [PATCH] dsa: vsc73xx: add support for vlan filtering
+Date:   Wed, 20 Jan 2021 07:30:18 +0100
+Message-Id: <20210120063019.1989081-1-paweldembicki@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <20210119045920.447-7-xieyongji@bytedance.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This patch adds support for vlan filtering in vsc73xx driver.
 
-On 2021/1/19 下午12:59, Xie Yongji wrote:
-> Add an opaque pointer for vhost IOTLB to store the
-> corresponding vma->vm_file and offset on the DMA mapping.
+After vlan filtering enable, CPU_PORT is configured as trunk, without
+non-tagged frames. This allows to avoid problems with transmit untagged
+frames because vsc73xx is DSA_TAG_PROTO_NONE.
 
+Signed-off-by: Pawel Dembicki <paweldembicki@gmail.com>
+---
+ drivers/net/dsa/vitesse-vsc73xx-core.c | 311 ++++++++++++++++++++++++-
+ 1 file changed, 310 insertions(+), 1 deletion(-)
 
-Let's split the patch into two.
-
-1) opaque pointer
-2) vma stuffs
-
-
->
-> It will be used in VDUSE case later.
->
-> Suggested-by: Jason Wang <jasowang@redhat.com>
-> Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
-> ---
->   drivers/vdpa/vdpa_sim/vdpa_sim.c | 11 ++++---
->   drivers/vhost/iotlb.c            |  5 ++-
->   drivers/vhost/vdpa.c             | 66 +++++++++++++++++++++++++++++++++++-----
->   drivers/vhost/vhost.c            |  4 +--
->   include/linux/vdpa.h             |  3 +-
->   include/linux/vhost_iotlb.h      |  8 ++++-
->   6 files changed, 79 insertions(+), 18 deletions(-)
->
-> diff --git a/drivers/vdpa/vdpa_sim/vdpa_sim.c b/drivers/vdpa/vdpa_sim/vdpa_sim.c
-> index 03c796873a6b..1ffcef67954f 100644
-> --- a/drivers/vdpa/vdpa_sim/vdpa_sim.c
-> +++ b/drivers/vdpa/vdpa_sim/vdpa_sim.c
-> @@ -279,7 +279,7 @@ static dma_addr_t vdpasim_map_page(struct device *dev, struct page *page,
->   	 */
->   	spin_lock(&vdpasim->iommu_lock);
->   	ret = vhost_iotlb_add_range(iommu, pa, pa + size - 1,
-> -				    pa, dir_to_perm(dir));
-> +				    pa, dir_to_perm(dir), NULL);
-
-
-Maybe its better to introduce
-
-vhost_iotlb_add_range_ctx() which can accepts the opaque (context). And 
-let vhost_iotlb_add_range() just call that.
-
-
->   	spin_unlock(&vdpasim->iommu_lock);
->   	if (ret)
->   		return DMA_MAPPING_ERROR;
-> @@ -317,7 +317,7 @@ static void *vdpasim_alloc_coherent(struct device *dev, size_t size,
->   
->   		ret = vhost_iotlb_add_range(iommu, (u64)pa,
->   					    (u64)pa + size - 1,
-> -					    pa, VHOST_MAP_RW);
-> +					    pa, VHOST_MAP_RW, NULL);
->   		if (ret) {
->   			*dma_addr = DMA_MAPPING_ERROR;
->   			kfree(addr);
-> @@ -625,7 +625,8 @@ static int vdpasim_set_map(struct vdpa_device *vdpa,
->   	for (map = vhost_iotlb_itree_first(iotlb, start, last); map;
->   	     map = vhost_iotlb_itree_next(map, start, last)) {
->   		ret = vhost_iotlb_add_range(vdpasim->iommu, map->start,
-> -					    map->last, map->addr, map->perm);
-> +					    map->last, map->addr,
-> +					    map->perm, NULL);
->   		if (ret)
->   			goto err;
->   	}
-> @@ -639,14 +640,14 @@ static int vdpasim_set_map(struct vdpa_device *vdpa,
->   }
->   
->   static int vdpasim_dma_map(struct vdpa_device *vdpa, u64 iova, u64 size,
-> -			   u64 pa, u32 perm)
-> +			   u64 pa, u32 perm, void *opaque)
->   {
->   	struct vdpasim *vdpasim = vdpa_to_sim(vdpa);
->   	int ret;
->   
->   	spin_lock(&vdpasim->iommu_lock);
->   	ret = vhost_iotlb_add_range(vdpasim->iommu, iova, iova + size - 1, pa,
-> -				    perm);
-> +				    perm, NULL);
->   	spin_unlock(&vdpasim->iommu_lock);
->   
->   	return ret;
-> diff --git a/drivers/vhost/iotlb.c b/drivers/vhost/iotlb.c
-> index 0fd3f87e913c..3bd5bd06cdbc 100644
-> --- a/drivers/vhost/iotlb.c
-> +++ b/drivers/vhost/iotlb.c
-> @@ -42,13 +42,15 @@ EXPORT_SYMBOL_GPL(vhost_iotlb_map_free);
->    * @last: last of IOVA range
->    * @addr: the address that is mapped to @start
->    * @perm: access permission of this range
-> + * @opaque: the opaque pointer for the IOTLB mapping
->    *
->    * Returns an error last is smaller than start or memory allocation
->    * fails
->    */
->   int vhost_iotlb_add_range(struct vhost_iotlb *iotlb,
->   			  u64 start, u64 last,
-> -			  u64 addr, unsigned int perm)
-> +			  u64 addr, unsigned int perm,
-> +			  void *opaque)
->   {
->   	struct vhost_iotlb_map *map;
->   
-> @@ -71,6 +73,7 @@ int vhost_iotlb_add_range(struct vhost_iotlb *iotlb,
->   	map->last = last;
->   	map->addr = addr;
->   	map->perm = perm;
-> +	map->opaque = opaque;
->   
->   	iotlb->nmaps++;
->   	vhost_iotlb_itree_insert(map, &iotlb->root);
-> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-> index 36b6950ba37f..e83e5be7cec8 100644
-> --- a/drivers/vhost/vdpa.c
-> +++ b/drivers/vhost/vdpa.c
-> @@ -488,6 +488,7 @@ static void vhost_vdpa_iotlb_unmap(struct vhost_vdpa *v, u64 start, u64 last)
->   	struct vhost_dev *dev = &v->vdev;
->   	struct vdpa_device *vdpa = v->vdpa;
->   	struct vhost_iotlb *iotlb = dev->iotlb;
-> +	struct vhost_iotlb_file *iotlb_file;
->   	struct vhost_iotlb_map *map;
->   	struct page *page;
->   	unsigned long pfn, pinned;
-> @@ -504,6 +505,10 @@ static void vhost_vdpa_iotlb_unmap(struct vhost_vdpa *v, u64 start, u64 last)
->   			}
->   			atomic64_sub(map->size >> PAGE_SHIFT,
->   					&dev->mm->pinned_vm);
-> +		} else if (map->opaque) {
-> +			iotlb_file = (struct vhost_iotlb_file *)map->opaque;
-> +			fput(iotlb_file->file);
-> +			kfree(iotlb_file);
->   		}
->   		vhost_iotlb_map_free(iotlb, map);
->   	}
-> @@ -540,8 +545,8 @@ static int perm_to_iommu_flags(u32 perm)
->   	return flags | IOMMU_CACHE;
->   }
->   
-> -static int vhost_vdpa_map(struct vhost_vdpa *v,
-> -			  u64 iova, u64 size, u64 pa, u32 perm)
-> +static int vhost_vdpa_map(struct vhost_vdpa *v, u64 iova,
-> +			  u64 size, u64 pa, u32 perm, void *opaque)
->   {
->   	struct vhost_dev *dev = &v->vdev;
->   	struct vdpa_device *vdpa = v->vdpa;
-> @@ -549,12 +554,12 @@ static int vhost_vdpa_map(struct vhost_vdpa *v,
->   	int r = 0;
->   
->   	r = vhost_iotlb_add_range(dev->iotlb, iova, iova + size - 1,
-> -				  pa, perm);
-> +				  pa, perm, opaque);
->   	if (r)
->   		return r;
->   
->   	if (ops->dma_map) {
-> -		r = ops->dma_map(vdpa, iova, size, pa, perm);
-> +		r = ops->dma_map(vdpa, iova, size, pa, perm, opaque);
->   	} else if (ops->set_map) {
->   		if (!v->in_batch)
->   			r = ops->set_map(vdpa, dev->iotlb);
-> @@ -591,6 +596,51 @@ static void vhost_vdpa_unmap(struct vhost_vdpa *v, u64 iova, u64 size)
->   	}
->   }
->   
-> +static int vhost_vdpa_sva_map(struct vhost_vdpa *v,
-> +			      u64 iova, u64 size, u64 uaddr, u32 perm)
-> +{
-> +	u64 offset, map_size, map_iova = iova;
-> +	struct vhost_iotlb_file *iotlb_file;
-> +	struct vm_area_struct *vma;
-> +	int ret;
-
-
-Lacking mmap_read_lock().
-
-
-> +
-> +	while (size) {
-> +		vma = find_vma(current->mm, uaddr);
-> +		if (!vma) {
-> +			ret = -EINVAL;
-> +			goto err;
-> +		}
-> +		map_size = min(size, vma->vm_end - uaddr);
-> +		offset = (vma->vm_pgoff << PAGE_SHIFT) + uaddr - vma->vm_start;
-> +		iotlb_file = NULL;
-> +		if (vma->vm_file && (vma->vm_flags & VM_SHARED)) {
-
-
-I wonder if we need more strict check here. When developing vhost-vdpa, 
-I try hard to make sure the map can only work for user pages.
-
-So the question is: do we need to exclude MMIO area or only allow shmem 
-to work here?
-
-
-
-> +			iotlb_file = kmalloc(sizeof(*iotlb_file), GFP_KERNEL);
-> +			if (!iotlb_file) {
-> +				ret = -ENOMEM;
-> +				goto err;
-> +			}
-> +			iotlb_file->file = get_file(vma->vm_file);
-> +			iotlb_file->offset = offset;
-> +		}
-
-
-I wonder if it's better to allocate iotlb_file and make iotlb_file->file 
-= NULL && iotlb_file->offset = 0. This can force a consistent code for 
-the vDPA parents.
-
-Or we can simply fail the map without a file as backend.
-
-
-> +		ret = vhost_vdpa_map(v, map_iova, map_size, uaddr,
-> +					perm, iotlb_file);
-> +		if (ret) {
-> +			if (iotlb_file) {
-> +				fput(iotlb_file->file);
-> +				kfree(iotlb_file);
-> +			}
-> +			goto err;
-> +		}
-> +		size -= map_size;
-> +		uaddr += map_size;
-> +		map_iova += map_size;
-> +	}
-> +	return 0;
-> +err:
-> +	vhost_vdpa_unmap(v, iova, map_iova - iova);
-> +	return ret;
-> +}
-> +
->   static int vhost_vdpa_process_iotlb_update(struct vhost_vdpa *v,
->   					   struct vhost_iotlb_msg *msg)
->   {
-> @@ -615,8 +665,8 @@ static int vhost_vdpa_process_iotlb_update(struct vhost_vdpa *v,
->   		return -EEXIST;
->   
->   	if (vdpa->sva)
-> -		return vhost_vdpa_map(v, msg->iova, msg->size,
-> -				      msg->uaddr, msg->perm);
-> +		return vhost_vdpa_sva_map(v, msg->iova, msg->size,
-> +					  msg->uaddr, msg->perm);
-
-
-So I think it's better squash vhost_vdpa_sva_map() and related changes 
-into previous patch.
-
-
->   
->   	/* Limit the use of memory for bookkeeping */
->   	page_list = (struct page **) __get_free_page(GFP_KERNEL);
-> @@ -671,7 +721,7 @@ static int vhost_vdpa_process_iotlb_update(struct vhost_vdpa *v,
->   				csize = (last_pfn - map_pfn + 1) << PAGE_SHIFT;
->   				ret = vhost_vdpa_map(v, iova, csize,
->   						     map_pfn << PAGE_SHIFT,
-> -						     msg->perm);
-> +						     msg->perm, NULL);
->   				if (ret) {
->   					/*
->   					 * Unpin the pages that are left unmapped
-> @@ -700,7 +750,7 @@ static int vhost_vdpa_process_iotlb_update(struct vhost_vdpa *v,
->   
->   	/* Pin the rest chunk */
->   	ret = vhost_vdpa_map(v, iova, (last_pfn - map_pfn + 1) << PAGE_SHIFT,
-> -			     map_pfn << PAGE_SHIFT, msg->perm);
-> +			     map_pfn << PAGE_SHIFT, msg->perm, NULL);
->   out:
->   	if (ret) {
->   		if (nchunks) {
-> diff --git a/drivers/vhost/vhost.c b/drivers/vhost/vhost.c
-> index a262e12c6dc2..120dd5b3c119 100644
-> --- a/drivers/vhost/vhost.c
-> +++ b/drivers/vhost/vhost.c
-> @@ -1104,7 +1104,7 @@ static int vhost_process_iotlb_msg(struct vhost_dev *dev,
->   		vhost_vq_meta_reset(dev);
->   		if (vhost_iotlb_add_range(dev->iotlb, msg->iova,
->   					  msg->iova + msg->size - 1,
-> -					  msg->uaddr, msg->perm)) {
-> +					  msg->uaddr, msg->perm, NULL)) {
->   			ret = -ENOMEM;
->   			break;
->   		}
-> @@ -1450,7 +1450,7 @@ static long vhost_set_memory(struct vhost_dev *d, struct vhost_memory __user *m)
->   					  region->guest_phys_addr +
->   					  region->memory_size - 1,
->   					  region->userspace_addr,
-> -					  VHOST_MAP_RW))
-> +					  VHOST_MAP_RW, NULL))
->   			goto err;
->   	}
->   
-> diff --git a/include/linux/vdpa.h b/include/linux/vdpa.h
-> index f86869651614..b264c627e94b 100644
-> --- a/include/linux/vdpa.h
-> +++ b/include/linux/vdpa.h
-> @@ -189,6 +189,7 @@ struct vdpa_iova_range {
->    *				@size: size of the area
->    *				@pa: physical address for the map
->    *				@perm: device access permission (VHOST_MAP_XX)
-> + *				@opaque: the opaque pointer for the mapping
->    *				Returns integer: success (0) or error (< 0)
->    * @dma_unmap:			Unmap an area of IOVA (optional but
->    *				must be implemented with dma_map)
-> @@ -243,7 +244,7 @@ struct vdpa_config_ops {
->   	/* DMA ops */
->   	int (*set_map)(struct vdpa_device *vdev, struct vhost_iotlb *iotlb);
->   	int (*dma_map)(struct vdpa_device *vdev, u64 iova, u64 size,
-> -		       u64 pa, u32 perm);
-> +		       u64 pa, u32 perm, void *opaque);
->   	int (*dma_unmap)(struct vdpa_device *vdev, u64 iova, u64 size);
->   
->   	/* Free device resources */
-> diff --git a/include/linux/vhost_iotlb.h b/include/linux/vhost_iotlb.h
-> index 6b09b786a762..66a50c11c8ca 100644
-> --- a/include/linux/vhost_iotlb.h
-> +++ b/include/linux/vhost_iotlb.h
-> @@ -4,6 +4,11 @@
->   
->   #include <linux/interval_tree_generic.h>
->   
-> +struct vhost_iotlb_file {
-> +	struct file *file;
-> +	u64 offset;
-> +};
-
-
-I think we'd better either:
-
-1) simply use struct vhost_iotlb_file * instead of void *opaque for 
-vhost_iotlb_map
-
-or
-
-2)rename and move the vhost_iotlb_file to vdpa
-
-2) looks better since we want to let vhost iotlb to carry any type of 
-context (opaque pointer)
-
-And if we do this, the modification of vdpa_config_ops deserves a 
-separate patch.
-
-Thanks
-
-
-> +
->   struct vhost_iotlb_map {
->   	struct rb_node rb;
->   	struct list_head link;
-> @@ -17,6 +22,7 @@ struct vhost_iotlb_map {
->   	u32 perm;
->   	u32 flags_padding;
->   	u64 __subtree_last;
-> +	void *opaque;
->   };
->   
->   #define VHOST_IOTLB_FLAG_RETIRE 0x1
-> @@ -30,7 +36,7 @@ struct vhost_iotlb {
->   };
->   
->   int vhost_iotlb_add_range(struct vhost_iotlb *iotlb, u64 start, u64 last,
-> -			  u64 addr, unsigned int perm);
-> +			  u64 addr, unsigned int perm, void *opaque);
->   void vhost_iotlb_del_range(struct vhost_iotlb *iotlb, u64 start, u64 last);
->   
->   struct vhost_iotlb *vhost_iotlb_alloc(unsigned int limit, unsigned int flags);
+diff --git a/drivers/net/dsa/vitesse-vsc73xx-core.c b/drivers/net/dsa/vitesse-vsc73xx-core.c
+index 19ce4aa0973b..bf805eb9d3a6 100644
+--- a/drivers/net/dsa/vitesse-vsc73xx-core.c
++++ b/drivers/net/dsa/vitesse-vsc73xx-core.c
+@@ -39,6 +39,7 @@
+ #define VSC73XX_BLOCK_SYSTEM	0x7 /* Only subblock 0 */
+ 
+ #define CPU_PORT	6 /* CPU port */
++#define VLAN_TABLE_ATTEMPTS	10
+ 
+ /* MAC Block registers */
+ #define VSC73XX_MAC_CFG		0x00
+@@ -62,6 +63,8 @@
+ #define VSC73XX_CAT_DROP	0x6e
+ #define VSC73XX_CAT_PR_MISC_L2	0x6f
+ #define VSC73XX_CAT_PR_USR_PRIO	0x75
++#define VSC73XX_CAT_VLAN_MISC	0x79
++#define VSC73XX_CAT_PORT_VLAN	0x7a
+ #define VSC73XX_Q_MISC_CONF	0xdf
+ 
+ /* MAC_CFG register bits */
+@@ -122,6 +125,17 @@
+ #define VSC73XX_ADVPORTM_IO_LOOPBACK	BIT(1)
+ #define VSC73XX_ADVPORTM_HOST_LOOPBACK	BIT(0)
+ 
++/* TXUPDCFG transmit modify setup bits */
++#define VSC73XX_TXUPDCFG_DSCP_REWR_MODE		GENMASK(20, 19)
++#define VSC73XX_TXUPDCFG_DSCP_REWR_ENA		BIT(18)
++#define VSC73XX_TXUPDCFG_TX_INT_TO_USRPRIO_ENA	BIT(17)
++#define VSC73XX_TXUPDCFG_TX_UNTAGGED_VID	GENMASK(15, 4)
++#define VSC73XX_TXUPDCFG_TX_UNTAGGED_VID_ENA	BIT(3)
++#define VSC73XX_TXUPDCFG_TX_UPDATE_CRC_CPU_ENA	BIT(1)
++#define VSC73XX_TXUPDCFG_TX_INSERT_TAG		BIT(0)
++
++#define VSC73XX_TXUPDCFG_TX_UNTAGGED_VID_SHIFT	4
++
+ /* CAT_DROP categorizer frame dropping register bits */
+ #define VSC73XX_CAT_DROP_DROP_MC_SMAC_ENA	BIT(6)
+ #define VSC73XX_CAT_DROP_FWD_CTRL_ENA		BIT(4)
+@@ -135,6 +149,15 @@
+ #define VSC73XX_Q_MISC_CONF_EARLY_TX_512	(1 << 1)
+ #define VSC73XX_Q_MISC_CONF_MAC_PAUSE_MODE	BIT(0)
+ 
++/* CAT_VLAN_MISC categorizer VLAN miscellaneous bits*/
++#define VSC73XX_CAT_VLAN_MISC_VLAN_TCI_IGNORE_ENA	BIT(8)
++#define VSC73XX_CAT_VLAN_MISC_VLAN_KEEP_TAG_ENA		BIT(7)
++
++/* CAT_PORT_VLAN categorizer port VLAN*/
++#define VSC73XX_CAT_PORT_VLAN_VLAN_CFI		BIT(15)
++#define VSC73XX_CAT_PORT_VLAN_VLAN_USR_PRIO	GENMASK(14, 12)
++#define VSC73XX_CAT_PORT_VLAN_VLAN_VID		GENMASK(11, 0)
++
+ /* Frame analyzer block 2 registers */
+ #define VSC73XX_STORMLIMIT	0x02
+ #define VSC73XX_ADVLEARN	0x03
+@@ -185,7 +208,8 @@
+ #define VSC73XX_VLANACCESS_VLAN_MIRROR		BIT(29)
+ #define VSC73XX_VLANACCESS_VLAN_SRC_CHECK	BIT(28)
+ #define VSC73XX_VLANACCESS_VLAN_PORT_MASK	GENMASK(9, 2)
+-#define VSC73XX_VLANACCESS_VLAN_TBL_CMD_MASK	GENMASK(2, 0)
++#define VSC73XX_VLANACCESS_VLAN_PORT_MASK_SHIFT	2
++#define VSC73XX_VLANACCESS_VLAN_TBL_CMD_MASK	GENMASK(1, 0)
+ #define VSC73XX_VLANACCESS_VLAN_TBL_CMD_IDLE	0
+ #define VSC73XX_VLANACCESS_VLAN_TBL_CMD_READ_ENTRY	1
+ #define VSC73XX_VLANACCESS_VLAN_TBL_CMD_WRITE_ENTRY	2
+@@ -557,6 +581,287 @@ static enum dsa_tag_protocol vsc73xx_get_tag_protocol(struct dsa_switch *ds,
+ 	return DSA_TAG_PROTO_NONE;
+ }
+ 
++static int
++vsc73xx_port_wait_for_vlan_table_cmd(struct vsc73xx *vsc, int attempts)
++{
++	u32 val;
++	int i;
++
++	for (i = 0; i <= attempts; i++) {
++		vsc73xx_read(vsc, VSC73XX_BLOCK_ANALYZER, 0, VSC73XX_VLANACCESS,
++			     &val);
++		if ((val & VSC73XX_VLANACCESS_VLAN_TBL_CMD_MASK) ==
++		    VSC73XX_VLANACCESS_VLAN_TBL_CMD_IDLE)
++			return 0;
++	}
++	return -EBUSY;
++}
++
++static int
++vsc73xx_port_read_vlan_table_entry(struct dsa_switch *ds, u16 vid, u8 *portmap)
++{
++	struct vsc73xx *vsc = ds->priv;
++	u32 val;
++	int ret;
++
++	if (vid > 4095)
++		return -EPERM;
++	vsc73xx_write(vsc, VSC73XX_BLOCK_ANALYZER, 0, VSC73XX_VLANTIDX, vid);
++	ret = vsc73xx_port_wait_for_vlan_table_cmd(vsc, VLAN_TABLE_ATTEMPTS);
++	if (ret)
++		return ret;
++	vsc73xx_update_bits(vsc, VSC73XX_BLOCK_ANALYZER, 0, VSC73XX_VLANACCESS,
++			    VSC73XX_VLANACCESS_VLAN_TBL_CMD_MASK,
++			    VSC73XX_VLANACCESS_VLAN_TBL_CMD_READ_ENTRY);
++	ret = vsc73xx_port_wait_for_vlan_table_cmd(vsc, VLAN_TABLE_ATTEMPTS);
++	if (ret)
++		return ret;
++	vsc73xx_read(vsc, VSC73XX_BLOCK_ANALYZER, 0, VSC73XX_VLANACCESS, &val);
++	*portmap =
++	    (val & VSC73XX_VLANACCESS_VLAN_PORT_MASK) >>
++	    VSC73XX_VLANACCESS_VLAN_PORT_MASK_SHIFT;
++	return 0;
++}
++
++static int
++vsc73xx_port_write_vlan_table_entry(struct dsa_switch *ds, u16 vid, u8 portmap)
++{
++	struct vsc73xx *vsc = ds->priv;
++	int ret;
++
++	if (vid > 4095)
++		return -EPERM;
++	vsc73xx_write(vsc, VSC73XX_BLOCK_ANALYZER, 0, VSC73XX_VLANTIDX, vid);
++	ret = vsc73xx_port_wait_for_vlan_table_cmd(vsc, VLAN_TABLE_ATTEMPTS);
++	if (ret)
++		return ret;
++	vsc73xx_update_bits(vsc, VSC73XX_BLOCK_ANALYZER, 0, VSC73XX_VLANACCESS,
++			    VSC73XX_VLANACCESS_VLAN_SRC_CHECK |
++			    VSC73XX_VLANACCESS_VLAN_TBL_CMD_MASK |
++			    VSC73XX_VLANACCESS_VLAN_PORT_MASK,
++			    VSC73XX_VLANACCESS_VLAN_SRC_CHECK |
++			    VSC73XX_VLANACCESS_VLAN_TBL_CMD_WRITE_ENTRY |
++			    (portmap <<
++			     VSC73XX_VLANACCESS_VLAN_PORT_MASK_SHIFT));
++	ret = vsc73xx_port_wait_for_vlan_table_cmd(vsc, VLAN_TABLE_ATTEMPTS);
++	if (ret)
++		return ret;
++	return 0;
++}
++
++static int
++vsc73xx_port_update_vlan_table(struct dsa_switch *ds, int port, u16 vid_begin,
++			       u16 vid_end, bool set)
++{
++	u8 portmap;
++	int ret;
++	u16 i;
++
++	if (vid_begin > 4095 || vid_end > 4095 || vid_begin > vid_end)
++		return -EPERM;
++
++	for (i = vid_begin; i <= vid_end; i++) {
++		ret = vsc73xx_port_read_vlan_table_entry(ds, i, &portmap);
++		if (ret)
++			return ret;
++		if (set)
++			portmap |= BIT(port);
++		else
++			portmap &= ~BIT(port);
++
++		ret = vsc73xx_port_write_vlan_table_entry(ds, i, portmap);
++		if (ret)
++			return ret;
++	}
++	return 0;
++}
++
++static int vsc73xx_port_set_vlan_unaware(struct dsa_switch *ds, int port)
++{
++	struct vsc73xx *vsc = ds->priv;
++	int ret;
++
++	vsc73xx_update_bits(vsc, VSC73XX_BLOCK_MAC, port, VSC73XX_MAC_CFG,
++			    VSC73XX_MAC_CFG_VLAN_AWR,
++			    ~VSC73XX_MAC_CFG_VLAN_AWR);
++	vsc73xx_update_bits(vsc, VSC73XX_BLOCK_MAC, port, VSC73XX_MAC_CFG,
++			    VSC73XX_MAC_CFG_VLAN_DBLAWR,
++			    ~VSC73XX_MAC_CFG_VLAN_DBLAWR);
++	vsc73xx_update_bits(vsc, VSC73XX_BLOCK_MAC, port, VSC73XX_CAT_VLAN_MISC,
++			    VSC73XX_CAT_VLAN_MISC_VLAN_TCI_IGNORE_ENA,
++			    VSC73XX_CAT_VLAN_MISC_VLAN_TCI_IGNORE_ENA);
++	vsc73xx_update_bits(vsc, VSC73XX_BLOCK_MAC, port, VSC73XX_CAT_VLAN_MISC,
++			    VSC73XX_CAT_VLAN_MISC_VLAN_KEEP_TAG_ENA,
++			    VSC73XX_CAT_VLAN_MISC_VLAN_KEEP_TAG_ENA);
++	vsc73xx_update_bits(vsc, VSC73XX_BLOCK_MAC, port, VSC73XX_CAT_DROP,
++			    VSC73XX_CAT_DROP_TAGGED_ENA,
++			    ~VSC73XX_CAT_DROP_TAGGED_ENA);
++	vsc73xx_update_bits(vsc, VSC73XX_BLOCK_MAC, port, VSC73XX_CAT_DROP,
++			    VSC73XX_CAT_DROP_UNTAGGED_ENA,
++			    ~VSC73XX_CAT_DROP_UNTAGGED_ENA);
++
++	ret = vsc73xx_port_update_vlan_table(ds, port, 0, 4095, 0);
++	return ret;
++}
++
++static int vsc73xx_port_set_vlan_aware(struct dsa_switch *ds, int port)
++{
++	struct vsc73xx *vsc = ds->priv;
++	int ret;
++
++	vsc73xx_update_bits(vsc, VSC73XX_BLOCK_MAC, port, VSC73XX_MAC_CFG,
++			    VSC73XX_MAC_CFG_VLAN_AWR, VSC73XX_MAC_CFG_VLAN_AWR);
++	vsc73xx_update_bits(vsc, VSC73XX_BLOCK_MAC, port, VSC73XX_MAC_CFG,
++			    VSC73XX_MAC_CFG_VLAN_DBLAWR,
++			    ~VSC73XX_MAC_CFG_VLAN_DBLAWR);
++	vsc73xx_update_bits(vsc, VSC73XX_BLOCK_MAC, port, VSC73XX_CAT_VLAN_MISC,
++			    VSC73XX_CAT_VLAN_MISC_VLAN_TCI_IGNORE_ENA,
++			    ~VSC73XX_CAT_VLAN_MISC_VLAN_TCI_IGNORE_ENA);
++	vsc73xx_update_bits(vsc, VSC73XX_BLOCK_MAC, port, VSC73XX_CAT_VLAN_MISC,
++			    VSC73XX_CAT_VLAN_MISC_VLAN_KEEP_TAG_ENA,
++			    ~VSC73XX_CAT_VLAN_MISC_VLAN_KEEP_TAG_ENA);
++	vsc73xx_update_bits(vsc, VSC73XX_BLOCK_MAC, port, VSC73XX_CAT_DROP,
++			    VSC73XX_CAT_DROP_TAGGED_ENA,
++			    ~VSC73XX_CAT_DROP_TAGGED_ENA);
++	vsc73xx_update_bits(vsc, VSC73XX_BLOCK_MAC, port, VSC73XX_CAT_DROP,
++			    VSC73XX_CAT_DROP_UNTAGGED_ENA,
++			    VSC73XX_CAT_DROP_UNTAGGED_ENA);
++	vsc73xx_update_bits(vsc, VSC73XX_BLOCK_MAC, port, VSC73XX_TXUPDCFG,
++			    VSC73XX_TXUPDCFG_TX_INSERT_TAG,
++			    VSC73XX_TXUPDCFG_TX_INSERT_TAG);
++	vsc73xx_update_bits(vsc, VSC73XX_BLOCK_MAC, port, VSC73XX_TXUPDCFG,
++			    VSC73XX_TXUPDCFG_TX_UNTAGGED_VID_ENA,
++			    ~VSC73XX_TXUPDCFG_TX_UNTAGGED_VID_ENA);
++
++	if (port == CPU_PORT)
++		ret = vsc73xx_port_update_vlan_table(ds, port, 0, 4095, 1);
++	else
++		ret = vsc73xx_port_update_vlan_table(ds, port, 0, 4095, 0);
++	return ret;
++}
++
++static int
++vsc73xx_port_vlan_filtering(struct dsa_switch *ds, int port,
++			    bool vlan_filtering, struct switchdev_trans *trans)
++{
++	int ret;
++
++	if (switchdev_trans_ph_prepare(trans))
++		return 0;
++
++	if (vlan_filtering) {
++		ret = vsc73xx_port_set_vlan_aware(ds, port);
++		if (ret)
++			return ret;
++		ret = vsc73xx_port_set_vlan_aware(ds, CPU_PORT);
++	} else {
++		ret = vsc73xx_port_set_vlan_unaware(ds, port);
++	}
++	return ret;
++}
++
++static int vsc73xx_port_vlan_prepare(struct dsa_switch *ds, int port,
++				     const struct switchdev_obj_port_vlan *vlan)
++{
++	/* nothing needed */
++	return 0;
++}
++
++static void vsc73xx_port_vlan_add(struct dsa_switch *ds, int port,
++				  const struct switchdev_obj_port_vlan *vlan)
++{
++	bool untagged = vlan->flags & BRIDGE_VLAN_INFO_UNTAGGED;
++	bool pvid = vlan->flags & BRIDGE_VLAN_INFO_PVID;
++	struct vsc73xx *vsc = ds->priv;
++	int ret;
++	u32 tmp;
++
++	if (!dsa_port_is_vlan_filtering(dsa_to_port(ds, port)))
++		return;
++
++	ret = vsc73xx_port_update_vlan_table(ds, port, vlan->vid_begin,
++					     vlan->vid_end, 1);
++	if (ret)
++		return;
++
++	if (untagged && port != CPU_PORT) {
++		/* VSC73xx can have only one untagged vid per port. */
++		vsc73xx_read(vsc, VSC73XX_BLOCK_MAC, port,
++			     VSC73XX_TXUPDCFG, &tmp);
++
++		if (tmp & VSC73XX_TXUPDCFG_TX_UNTAGGED_VID_ENA)
++			dev_warn(vsc->dev,
++				 "Chip support only one untagged VID per port. Overwriting...\n");
++
++		vsc73xx_update_bits(vsc, VSC73XX_BLOCK_MAC, port,
++				    VSC73XX_TXUPDCFG,
++				    VSC73XX_TXUPDCFG_TX_UNTAGGED_VID,
++				    (vlan->vid_end <<
++				    VSC73XX_TXUPDCFG_TX_UNTAGGED_VID_SHIFT) &
++				    VSC73XX_TXUPDCFG_TX_UNTAGGED_VID);
++		vsc73xx_update_bits(vsc, VSC73XX_BLOCK_MAC, port,
++				    VSC73XX_TXUPDCFG,
++				    VSC73XX_TXUPDCFG_TX_UNTAGGED_VID_ENA,
++				    VSC73XX_TXUPDCFG_TX_UNTAGGED_VID_ENA);
++	}
++	if (pvid && port != CPU_PORT) {
++		vsc73xx_update_bits(vsc, VSC73XX_BLOCK_MAC, port,
++				    VSC73XX_CAT_DROP,
++				    VSC73XX_CAT_DROP_UNTAGGED_ENA,
++				    ~VSC73XX_CAT_DROP_UNTAGGED_ENA);
++		vsc73xx_update_bits(vsc, VSC73XX_BLOCK_MAC, port,
++				    VSC73XX_CAT_PORT_VLAN,
++				    VSC73XX_CAT_PORT_VLAN_VLAN_VID,
++				    vlan->vid_end &
++				    VSC73XX_CAT_PORT_VLAN_VLAN_VID);
++	}
++}
++
++static int vsc73xx_port_vlan_del(struct dsa_switch *ds, int port,
++				 const struct switchdev_obj_port_vlan *vlan)
++{
++	bool untagged = vlan->flags & BRIDGE_VLAN_INFO_UNTAGGED;
++	bool pvid = vlan->flags & BRIDGE_VLAN_INFO_PVID;
++	struct vsc73xx *vsc = ds->priv;
++	u32 tmp, untagged_vid;
++	int ret;
++
++	if (!dsa_port_is_vlan_filtering(dsa_to_port(ds, port)))
++		return -EINVAL;
++
++	ret =
++	    vsc73xx_port_update_vlan_table(ds, port, vlan->vid_begin,
++					   vlan->vid_end, 0);
++	if (ret)
++		return ret;
++
++	/* VSC73xx can have only one untagged vid per port. Check if match. */
++	vsc73xx_read(vsc, VSC73XX_BLOCK_MAC, port,
++		     VSC73XX_TXUPDCFG, &tmp);
++	untagged_vid = (tmp & VSC73XX_TXUPDCFG_TX_UNTAGGED_VID)
++		      >> VSC73XX_TXUPDCFG_TX_UNTAGGED_VID_SHIFT;
++
++	if (untagged && untagged_vid == vlan->vid_end) {
++		vsc73xx_update_bits(vsc, VSC73XX_BLOCK_MAC, port,
++				    VSC73XX_TXUPDCFG,
++				    VSC73XX_TXUPDCFG_TX_UNTAGGED_VID_ENA,
++				    ~VSC73XX_TXUPDCFG_TX_UNTAGGED_VID_ENA);
++		vsc73xx_update_bits(vsc, VSC73XX_BLOCK_MAC, port,
++				    VSC73XX_TXUPDCFG,
++				    VSC73XX_TXUPDCFG_TX_UNTAGGED_VID, 0);
++	}
++	if (pvid) {
++		vsc73xx_update_bits(vsc, VSC73XX_BLOCK_MAC, port,
++				    VSC73XX_CAT_DROP,
++				    VSC73XX_CAT_DROP_UNTAGGED_ENA,
++				    VSC73XX_CAT_DROP_UNTAGGED_ENA);
++		vsc73xx_update_bits(vsc, VSC73XX_BLOCK_MAC, port,
++				    VSC73XX_CAT_PORT_VLAN,
++				    VSC73XX_CAT_PORT_VLAN_VLAN_VID, 0);
++	}
++	return 0;
++}
++
+ static int vsc73xx_setup(struct dsa_switch *ds)
+ {
+ 	struct vsc73xx *vsc = ds->priv;
+@@ -1051,6 +1356,10 @@ static const struct dsa_switch_ops vsc73xx_ds_ops = {
+ 	.port_disable = vsc73xx_port_disable,
+ 	.port_change_mtu = vsc73xx_change_mtu,
+ 	.port_max_mtu = vsc73xx_get_max_mtu,
++	.port_vlan_filtering = vsc73xx_port_vlan_filtering,
++	.port_vlan_prepare = vsc73xx_port_vlan_prepare,
++	.port_vlan_add = vsc73xx_port_vlan_add,
++	.port_vlan_del = vsc73xx_port_vlan_del,
+ };
+ 
+ static int vsc73xx_gpio_get(struct gpio_chip *chip, unsigned int offset)
+-- 
+2.25.1
 
