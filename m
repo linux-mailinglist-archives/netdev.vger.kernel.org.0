@@ -2,280 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D1CCF2FCAE5
-	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 07:04:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B2242FCAEC
+	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 07:09:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726334AbhATF5v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jan 2021 00:57:51 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:30388 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726594AbhATF51 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 00:57:27 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1611122158;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=q8SbE5PdHAcpmt+ukP9VF3z2TekafV+3DGaZfD9WNrk=;
-        b=fVdpwYirtKmS41wJPS8r5or5Pqb7h29ESFQJJ94vhhuw+VFq6oi5JVQMZ/86sDVX+tEttG
-        YMQiWch6LbcdzR/yxXE1Ld2sOqRJmAYTRvQYOniH/sts2JwmoVnkfN6SHqcDdUBHZlwI7Y
-        5D+imnxQ2WiWu0nOGK7sdrK36z3jNWY=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-266-IKneJktcMtWVGUomDOwycg-1; Wed, 20 Jan 2021 00:55:54 -0500
-X-MC-Unique: IKneJktcMtWVGUomDOwycg-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A40711005504;
-        Wed, 20 Jan 2021 05:55:51 +0000 (UTC)
-Received: from [10.72.13.124] (ovpn-13-124.pek2.redhat.com [10.72.13.124])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 9489960C0F;
-        Wed, 20 Jan 2021 05:55:37 +0000 (UTC)
-Subject: Re: [RFC v3 05/11] vdpa: shared virtual addressing support
-To:     Xie Yongji <xieyongji@bytedance.com>, mst@redhat.com,
-        stefanha@redhat.com, sgarzare@redhat.com, parav@nvidia.com,
-        bob.liu@oracle.com, hch@infradead.org, rdunlap@infradead.org,
-        willy@infradead.org, viro@zeniv.linux.org.uk, axboe@kernel.dk,
-        bcrl@kvack.org, corbet@lwn.net
-Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org, linux-aio@kvack.org,
-        linux-fsdevel@vger.kernel.org
-References: <20210119045920.447-1-xieyongji@bytedance.com>
- <20210119045920.447-6-xieyongji@bytedance.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <3d58d50c-935a-a827-e261-59282f4c8577@redhat.com>
-Date:   Wed, 20 Jan 2021 13:55:35 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1727415AbhATGJE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jan 2021 01:09:04 -0500
+Received: from mail.kernel.org ([198.145.29.99]:42904 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726044AbhATGI6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 20 Jan 2021 01:08:58 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C44C6217BA;
+        Wed, 20 Jan 2021 06:08:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1611122897;
+        bh=RR54Qs4HyvFncXLjeeZ8ZNoWbpER2eGQN67MAA65J8g=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=n8ZMmcVpD1uURQ5NGIAawLGiLgoRL2IAUVgy9CnCdUSYva1zb9C/4vq4IQ4uIJ7EM
+         HGTqKG7/BNZL4PfOqcKP3WNISw6EtYR1OrQaf/ea19W3qq8JLPmfrwkdWXwOH5qQk2
+         q9U+gthlT1Pz61jqJBZR2LNKJ8OPL7aAMeg2UFJJaFrNJB/4dHuLljKNc2s12Tqki+
+         SqiWM0xJNMLD1oIZPU6ay0Mh1AitLYMB6UCbBVKVrYm7jji9KAke9dlTjN+azi7ufg
+         2yp5Xo9bYxFK6y+BhMS1cNATbYAiH39s4auOZJ7lz9TlsRiLBo3rsH+HRRR8nWE2hx
+         zD5LenpclqHHQ==
+Date:   Tue, 19 Jan 2021 22:08:15 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Sasha Levin <sashal@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, stable@vger.kernel.org,
+        David Wu <david.wu@rock-chips.com>, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH AUTOSEL 5.10 28/45] net: stmmac: Fixed mtu channged by
+ cache aligned
+Message-ID: <20210119220815.039ac330@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210120012602.769683-28-sashal@kernel.org>
+References: <20210120012602.769683-1-sashal@kernel.org>
+        <20210120012602.769683-28-sashal@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <20210119045920.447-6-xieyongji@bytedance.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, 19 Jan 2021 20:25:45 -0500 Sasha Levin wrote:
+> From: David Wu <david.wu@rock-chips.com>
+> 
+> [ Upstream commit 5b55299eed78538cc4746e50ee97103a1643249c ]
+> 
+> Since the original mtu is not used when the mtu is updated,
+> the mtu is aligned with cache, this will get an incorrect.
+> For example, if you want to configure the mtu to be 1500,
+> but mtu 1536 is configured in fact.
+> 
+> Fixed: eaf4fac478077 ("net: stmmac: Do not accept invalid MTU values")
+> Signed-off-by: David Wu <david.wu@rock-chips.com>
+> Link: https://lore.kernel.org/r/20210113034109.27865-1-david.wu@rock-chips.com
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> Signed-off-by: Sasha Levin <sashal@kernel.org>
 
-On 2021/1/19 下午12:59, Xie Yongji wrote:
-> This patches introduces SVA (Shared Virtual Addressing)
-> support for vDPA device. During vDPA device allocation,
-> vDPA device driver needs to indicate whether SVA is
-> supported by the device. Then vhost-vdpa bus driver
-> will not pin user page and transfer userspace virtual
-> address instead of physical address during DMA mapping.
->
-> Suggested-by: Jason Wang <jasowang@redhat.com>
-> Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
-> ---
->   drivers/vdpa/ifcvf/ifcvf_main.c   |  2 +-
->   drivers/vdpa/mlx5/net/mlx5_vnet.c |  2 +-
->   drivers/vdpa/vdpa.c               |  5 ++++-
->   drivers/vdpa/vdpa_sim/vdpa_sim.c  |  3 ++-
->   drivers/vhost/vdpa.c              | 35 +++++++++++++++++++++++------------
->   include/linux/vdpa.h              | 10 +++++++---
->   6 files changed, 38 insertions(+), 19 deletions(-)
->
-> diff --git a/drivers/vdpa/ifcvf/ifcvf_main.c b/drivers/vdpa/ifcvf/ifcvf_main.c
-> index 23474af7da40..95c4601f82f5 100644
-> --- a/drivers/vdpa/ifcvf/ifcvf_main.c
-> +++ b/drivers/vdpa/ifcvf/ifcvf_main.c
-> @@ -439,7 +439,7 @@ static int ifcvf_probe(struct pci_dev *pdev, const struct pci_device_id *id)
->   
->   	adapter = vdpa_alloc_device(struct ifcvf_adapter, vdpa,
->   				    dev, &ifc_vdpa_ops,
-> -				    IFCVF_MAX_QUEUE_PAIRS * 2, NULL);
-> +				    IFCVF_MAX_QUEUE_PAIRS * 2, NULL, false);
->   	if (adapter == NULL) {
->   		IFCVF_ERR(pdev, "Failed to allocate vDPA structure");
->   		return -ENOMEM;
-> diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> index 77595c81488d..05988d6907f2 100644
-> --- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> +++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-> @@ -1959,7 +1959,7 @@ static int mlx5v_probe(struct auxiliary_device *adev,
->   	max_vqs = min_t(u32, max_vqs, MLX5_MAX_SUPPORTED_VQS);
->   
->   	ndev = vdpa_alloc_device(struct mlx5_vdpa_net, mvdev.vdev, mdev->device, &mlx5_vdpa_ops,
-> -				 2 * mlx5_vdpa_max_qps(max_vqs), NULL);
-> +				 2 * mlx5_vdpa_max_qps(max_vqs), NULL, false);
->   	if (IS_ERR(ndev))
->   		return PTR_ERR(ndev);
->   
-> diff --git a/drivers/vdpa/vdpa.c b/drivers/vdpa/vdpa.c
-> index 32bd48baffab..50cab930b2e5 100644
-> --- a/drivers/vdpa/vdpa.c
-> +++ b/drivers/vdpa/vdpa.c
-> @@ -72,6 +72,7 @@ static void vdpa_release_dev(struct device *d)
->    * @nvqs: number of virtqueues supported by this device
->    * @size: size of the parent structure that contains private data
->    * @name: name of the vdpa device; optional.
-> + * @sva: indicate whether SVA (Shared Virtual Addressing) is supported
->    *
->    * Driver should use vdpa_alloc_device() wrapper macro instead of
->    * using this directly.
-> @@ -81,7 +82,8 @@ static void vdpa_release_dev(struct device *d)
->    */
->   struct vdpa_device *__vdpa_alloc_device(struct device *parent,
->   					const struct vdpa_config_ops *config,
-> -					int nvqs, size_t size, const char *name)
-> +					int nvqs, size_t size, const char *name,
-> +					bool sva)
->   {
->   	struct vdpa_device *vdev;
->   	int err = -EINVAL;
-> @@ -108,6 +110,7 @@ struct vdpa_device *__vdpa_alloc_device(struct device *parent,
->   	vdev->config = config;
->   	vdev->features_valid = false;
->   	vdev->nvqs = nvqs;
-> +	vdev->sva = sva;
->   
->   	if (name)
->   		err = dev_set_name(&vdev->dev, "%s", name);
-> diff --git a/drivers/vdpa/vdpa_sim/vdpa_sim.c b/drivers/vdpa/vdpa_sim/vdpa_sim.c
-> index 85776e4e6749..03c796873a6b 100644
-> --- a/drivers/vdpa/vdpa_sim/vdpa_sim.c
-> +++ b/drivers/vdpa/vdpa_sim/vdpa_sim.c
-> @@ -367,7 +367,8 @@ static struct vdpasim *vdpasim_create(const char *name)
->   	else
->   		ops = &vdpasim_net_config_ops;
->   
-> -	vdpasim = vdpa_alloc_device(struct vdpasim, vdpa, NULL, ops, VDPASIM_VQ_NUM, name);
-> +	vdpasim = vdpa_alloc_device(struct vdpasim, vdpa, NULL, ops,
-> +				VDPASIM_VQ_NUM, name, false);
->   	if (!vdpasim)
->   		goto err_alloc;
->   
-> diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-> index 4a241d380c40..36b6950ba37f 100644
-> --- a/drivers/vhost/vdpa.c
-> +++ b/drivers/vhost/vdpa.c
-> @@ -486,21 +486,25 @@ static long vhost_vdpa_unlocked_ioctl(struct file *filep,
->   static void vhost_vdpa_iotlb_unmap(struct vhost_vdpa *v, u64 start, u64 last)
->   {
->   	struct vhost_dev *dev = &v->vdev;
-> +	struct vdpa_device *vdpa = v->vdpa;
->   	struct vhost_iotlb *iotlb = dev->iotlb;
->   	struct vhost_iotlb_map *map;
->   	struct page *page;
->   	unsigned long pfn, pinned;
->   
->   	while ((map = vhost_iotlb_itree_first(iotlb, start, last)) != NULL) {
-> -		pinned = map->size >> PAGE_SHIFT;
-> -		for (pfn = map->addr >> PAGE_SHIFT;
-> -		     pinned > 0; pfn++, pinned--) {
-> -			page = pfn_to_page(pfn);
-> -			if (map->perm & VHOST_ACCESS_WO)
-> -				set_page_dirty_lock(page);
-> -			unpin_user_page(page);
-> +		if (!vdpa->sva) {
-> +			pinned = map->size >> PAGE_SHIFT;
-> +			for (pfn = map->addr >> PAGE_SHIFT;
-> +			     pinned > 0; pfn++, pinned--) {
-> +				page = pfn_to_page(pfn);
-> +				if (map->perm & VHOST_ACCESS_WO)
-> +					set_page_dirty_lock(page);
-> +				unpin_user_page(page);
-> +			}
-> +			atomic64_sub(map->size >> PAGE_SHIFT,
-> +					&dev->mm->pinned_vm);
->   		}
-> -		atomic64_sub(map->size >> PAGE_SHIFT, &dev->mm->pinned_vm);
->   		vhost_iotlb_map_free(iotlb, map);
->   	}
->   }
-> @@ -558,13 +562,15 @@ static int vhost_vdpa_map(struct vhost_vdpa *v,
->   		r = iommu_map(v->domain, iova, pa, size,
->   			      perm_to_iommu_flags(perm));
->   	}
-> -
-> -	if (r)
-> +	if (r) {
->   		vhost_iotlb_del_range(dev->iotlb, iova, iova + size - 1);
-> -	else
-> +		return r;
-> +	}
-> +
-> +	if (!vdpa->sva)
->   		atomic64_add(size >> PAGE_SHIFT, &dev->mm->pinned_vm);
->   
-> -	return r;
-> +	return 0;
->   }
->   
->   static void vhost_vdpa_unmap(struct vhost_vdpa *v, u64 iova, u64 size)
-> @@ -589,6 +595,7 @@ static int vhost_vdpa_process_iotlb_update(struct vhost_vdpa *v,
->   					   struct vhost_iotlb_msg *msg)
->   {
->   	struct vhost_dev *dev = &v->vdev;
-> +	struct vdpa_device *vdpa = v->vdpa;
->   	struct vhost_iotlb *iotlb = dev->iotlb;
->   	struct page **page_list;
->   	unsigned long list_size = PAGE_SIZE / sizeof(struct page *);
-> @@ -607,6 +614,10 @@ static int vhost_vdpa_process_iotlb_update(struct vhost_vdpa *v,
->   				    msg->iova + msg->size - 1))
->   		return -EEXIST;
->   
-> +	if (vdpa->sva)
-> +		return vhost_vdpa_map(v, msg->iova, msg->size,
-> +				      msg->uaddr, msg->perm);
-> +
->   	/* Limit the use of memory for bookkeeping */
->   	page_list = (struct page **) __get_free_page(GFP_KERNEL);
->   	if (!page_list)
-> diff --git a/include/linux/vdpa.h b/include/linux/vdpa.h
-> index cb5a3d847af3..f86869651614 100644
-> --- a/include/linux/vdpa.h
-> +++ b/include/linux/vdpa.h
-> @@ -44,6 +44,7 @@ struct vdpa_parent_dev;
->    * @config: the configuration ops for this device.
->    * @index: device index
->    * @features_valid: were features initialized? for legacy guests
-> + * @sva: indicate whether SVA (Shared Virtual Addressing) is supported
-
-
-Rethink about this. I think we probably need a better name other than 
-"sva" since kernel already use that for shared virtual address space. 
-But actually we don't the whole virtual address space.
-
-And I guess this can not work for the device that use platform IOMMU, so 
-we should check and fail if sva && !(dma_map || set_map).
-
-Thanks
-
-
->    * @nvqs: maximum number of supported virtqueues
->    * @pdev: parent device pointer; caller must setup when registering device as part
->    *	  of dev_add() parentdev ops callback before invoking _vdpa_register_device().
-> @@ -54,6 +55,7 @@ struct vdpa_device {
->   	const struct vdpa_config_ops *config;
->   	unsigned int index;
->   	bool features_valid;
-> +	bool sva;
->   	int nvqs;
->   	struct vdpa_parent_dev *pdev;
->   };
-> @@ -250,14 +252,16 @@ struct vdpa_config_ops {
->   
->   struct vdpa_device *__vdpa_alloc_device(struct device *parent,
->   					const struct vdpa_config_ops *config,
-> -					int nvqs, size_t size, const char *name);
-> +					int nvqs, size_t size,
-> +					const char *name, bool sva);
->   
-> -#define vdpa_alloc_device(dev_struct, member, parent, config, nvqs, name)   \
-> +#define vdpa_alloc_device(dev_struct, member, parent, config, \
-> +			  nvqs, name, sva) \
->   			  container_of(__vdpa_alloc_device( \
->   				       parent, config, nvqs, \
->   				       sizeof(dev_struct) + \
->   				       BUILD_BUG_ON_ZERO(offsetof( \
-> -				       dev_struct, member)), name), \
-> +				       dev_struct, member)), name, sva), \
->   				       dev_struct, member)
->   
->   int vdpa_register_device(struct vdpa_device *vdev);
-
+This was applied 6 days ago, I thought you said you wait two weeks.
+What am I missing?
