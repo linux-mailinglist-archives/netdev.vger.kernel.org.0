@@ -2,111 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1FE9D2FD37E
+	by mail.lfdr.de (Postfix) with ESMTP id 9703A2FD37F
 	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 16:08:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390086AbhATPAv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jan 2021 10:00:51 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:30536 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2390189AbhATO63 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 09:58:29 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1611154623;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=fwvMFPt1WboLcOoH23UIfhd2xo9KC7W2tNFuZGnH5tg=;
-        b=LuAN7x0ZV57AWkU+pMrVnXFbb8SjIbUZJvxr1rATfEJ+0q1bB42C3l5P9b7UqObHbuo0wg
-        yXkqxX7xow/cKvAXaNRl12gr4zMMpyfkRHaf8hVcoxCS8thkVM78ezlXKSQ95/M7Nr75a2
-        Nuk/krXbHiMpvMup1Le62uFSqqJNqmA=
-Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
- [209.85.218.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-345-UXz-kkMyOjyv8M43K_Ovxw-1; Wed, 20 Jan 2021 09:56:59 -0500
-X-MC-Unique: UXz-kkMyOjyv8M43K_Ovxw-1
-Received: by mail-ej1-f72.google.com with SMTP id dc21so5882001ejb.19
-        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 06:56:59 -0800 (PST)
+        id S1732207AbhATPGi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jan 2021 10:06:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59618 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729781AbhATPAH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 10:00:07 -0500
+Received: from mail-vk1-xa33.google.com (mail-vk1-xa33.google.com [IPv6:2607:f8b0:4864:20::a33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 80438C0613ED
+        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 06:59:18 -0800 (PST)
+Received: by mail-vk1-xa33.google.com with SMTP id a6so5715603vkb.8
+        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 06:59:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=92voY08IZADF8VSAe7mUUscjgvBNlKl56LSDAGOlq8k=;
+        b=fUPgu0M1djjMHfbjR1KGgxHeM5Wnu5WCJUWA89Vr5+oY1q5ZNEoMRzw1NccnlR1/E3
+         btHHFBlNuu1k5F41eofJrleULnxC5X2v7QKgRJXudyFK1FbrXmKq2osq2p4ZqxyZ7ups
+         W9v0yvRZdTaCQ/8/cUqXV2NQ+gXKL8Q7P5IOu9/SG80SeB1/ECScHBjkMrwzfnu2CPIL
+         i6M94YDGZtGqZhvDI+Ku2W1cHCKmIoIgHHNijPKlJbeHk8s8vZx1mpYOy9Q/Ob5Rr9/M
+         uMTfop3yCDaSpIP38hGG+WRRtun2LufX55NmHaBUB3TGBQfKUr0x2zdhk/Qx3zTQATsB
+         vQXA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=fwvMFPt1WboLcOoH23UIfhd2xo9KC7W2tNFuZGnH5tg=;
-        b=sG5N5eTz4vJONoxuBK3GiEc4GrFKLbW3Y7yhkl5LtUsaXKPoVb4Wx+HHM0Eym6Gtxz
-         jJYx1Q3N1M66ROmhx4w3d9zHBtboGGXzjjTlN3QOORsEORFEWXc4kjnjOIbqpWfT+tSz
-         zHb2slkwvStzfuELyV0c32XP0DMXGI37y0dVjyl37r7Q8B6s3u0g9iOVcneLfcao6kf/
-         a4gSJAsukzI6hfhnRutrtCpd2cozmHN8RVnG4SDafkP0Z/IuQKlgswucjI+iOzNjcUDI
-         fr68SVlZh3cSdY7J+3DNm07t9diwZyxy09ZcXZaPpJ2A0jHyaepJui748ev1ZjvRYxLp
-         VUIA==
-X-Gm-Message-State: AOAM532Hvho7k5HhecOWG7zPLj67ldQ2TI8hrO3GN9p27TDcC0VnzkFQ
-        uzk07HXEQp4S6Pv4PQdyCZz+vLLyc55bC0dxaHG1VM2ignjb5u8Z4pABrwGY4tb3PU3c1J4S1Pl
-        tQBdouR+Kbmod0oFN
-X-Received: by 2002:aa7:d2d4:: with SMTP id k20mr7518632edr.361.1611154618201;
-        Wed, 20 Jan 2021 06:56:58 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJy99WUOs30PTEEP3IzAalAndtcfLMV0Alj0wITXpTucPw6kGqbpjitK+lVUsQrpGBXLVfgbTg==
-X-Received: by 2002:aa7:d2d4:: with SMTP id k20mr7518623edr.361.1611154617989;
-        Wed, 20 Jan 2021 06:56:57 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id w16sm1313993edv.4.2021.01.20.06.56.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Jan 2021 06:56:57 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 378D5180331; Wed, 20 Jan 2021 15:56:57 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
-        ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Cc:     magnus.karlsson@intel.com, maciej.fijalkowski@intel.com,
-        kuba@kernel.org, jonathan.lemon@gmail.com, maximmi@nvidia.com,
-        davem@davemloft.net, hawk@kernel.org, john.fastabend@gmail.com,
-        ciara.loftus@intel.com, weqaar.a.janjua@intel.com,
-        Marek Majtyka <alardam@gmail.com>
-Subject: Re: [PATCH bpf-next v2 5/8] libbpf, xsk: select AF_XDP BPF program
- based on kernel version
-In-Reply-To: <6c7da700-700d-c7f6-fe0a-c42e55e81c8a@intel.com>
-References: <20210119155013.154808-1-bjorn.topel@gmail.com>
- <20210119155013.154808-6-bjorn.topel@gmail.com> <875z3repng.fsf@toke.dk>
- <6c7da700-700d-c7f6-fe0a-c42e55e81c8a@intel.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Wed, 20 Jan 2021 15:56:57 +0100
-Message-ID: <87h7nb4pxi.fsf@toke.dk>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=92voY08IZADF8VSAe7mUUscjgvBNlKl56LSDAGOlq8k=;
+        b=sQCaSbHPUI67VuulApKHXg450Ti110Ui0bpNCwy/TICFbeUrBPyznSoTytzrZpyq1S
+         +i0MerErGSOHMKHH6gSua6JWFN1WcRaoSOlWTyU3Vp7Q4hIW9PT9R3eErx+Mu6OOxYhK
+         NNS5tu+61KYoosZ4ptZ97LYZsdwupG+NMVizvRot8KdiU9CE6aDxLcnDXo8jhn83Rb27
+         IOpvNDHMkENc9H/xjOvxuB3GzzLdx/OYvZ1AGXlOGTF/VBRaxOzzZ1BedbYRQTOyJXJc
+         L17dwpSTKs5R2mNxV3ZXP6FEB83gzccIOksoKkp+9B9FH3cZ/ZXGAgfvGVKz2PGopNon
+         GlzA==
+X-Gm-Message-State: AOAM530Soe2jmzLLCD4kKima/ZrSXwWti0rPUOGxIOZkKC6ifyEDPwIX
+        lHN6rKwOfRxZ+ajK81HH6SPR55KwmMcrXwkbsFKlGg==
+X-Google-Smtp-Source: ABdhPJzRIVlXBio4aZCBzLI54flkkLws1wi8y7ngVZ28U2LaBrAIMeKq508t1AynCEZJerqTMCT3twVVlrsrQMp9b5k=
+X-Received: by 2002:a1f:f44d:: with SMTP id s74mr7292980vkh.14.1611154757469;
+ Wed, 20 Jan 2021 06:59:17 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+References: <1611139794-11254-1-git-send-email-yangpc@wangsu.com>
+In-Reply-To: <1611139794-11254-1-git-send-email-yangpc@wangsu.com>
+From:   Neal Cardwell <ncardwell@google.com>
+Date:   Wed, 20 Jan 2021 09:59:00 -0500
+Message-ID: <CADVnQykgYGc4_U+eyXU72fky2C5tDQKuOuQ=BdfqfROTG++w7Q@mail.gmail.com>
+Subject: Re: tcp: rearm RTO timer does not comply with RFC6298
+To:     Pengcheng Yang <yangpc@wangsu.com>
+Cc:     Yuchung Cheng <ycheng@google.com>, Netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com> writes:
-
-> On 2021-01-20 13:52, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
->> Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com> writes:
->>=20
->>> From: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
->>>
->>> Add detection for kernel version, and adapt the BPF program based on
->>> kernel support. This way, users will get the best possible performance
->>> from the BPF program.
->>=20
->> Please do explicit feature detection instead of relying on the kernel
->> version number; some distro kernels are known to have a creative notion
->> of their own version, which is not really related to the features they
->> actually support (I'm sure you know which one I'm referring to ;)).
->>
+On Wed, Jan 20, 2021 at 5:50 AM Pengcheng Yang <yangpc@wangsu.com> wrote:
 >
-> Right. For a *new* helper, like bpf_redirect_xsk, we rely on rejection
-> from the verifier to detect support. What about "bpf_redirect_map() now
-> supports passing return value as flags"? Any ideas how to do that in a
-> robust, non-version number-based scheme?
+> hi,
+>
+> I have a doubt about tcp_rearm_rto().
+>
+> Early TCP always rearm the RTO timer to NOW+RTO when it receives
+> an ACK that acknowledges new data.
+>
+> Referring to RFC6298 SECTION 5.3: "When an ACK is received that
+> acknowledges new data, restart the retransmission timer so that
+> it will expire after RTO seconds (for the current value of RTO)."
+>
+> After ER and TLP, we rearm the RTO timer to *tstamp_of_head+RTO*
+> when switching from ER/TLP/RACK to original RTO in tcp_rearm_rto(),
+> in this case the RTO timer is triggered earlier than described in
+> RFC6298, otherwise the same.
+>
+> Is this planned? Or can we always rearm the RTO timer to
+> tstamp_of_head+RTO?
+>
+> Thanks.
+>
 
-Well, having a BPF program pass in a flag of '1' with an invalid lookup
-and checking if it returns 1 or 0. But how to do that from libbpf, hmm,
-good question. BPF_PROG_RUN()?
+This is a good question. As far as I can tell, this difference in
+behavior would only come into play in a few corner cases, like:
 
-An alternative could be to default to a program that will handle both
-cases in the BPF code, and make it opt-in to use the optimised versions
-if the user knows their kernel supports it?
+(1) The TLP timer fires and the connection is unable to transmit a TLP
+probe packet. This could happen due to memory allocation failure  or
+the local qdisc being full.
 
--Toke
+(2) The RACK reorder timer fires but the connection does not take the
+normal course of action and mark some packets lost and retransmit at
+least one of them. I'm not sure how this would happen. Maybe someone
+can think of a case.
 
+My sense would be that given how relatively rare (1)/(2) are, it is
+probably not worth changing the current behavior, given that it seems
+it would require extra state (an extra u32 snd_una_advanced_tstamp? )
+to save the time at which snd_una advanced (a cumulative ACK covered
+some data) in order to rearm the RTO timer for snd_una_advanced_tstamp
++ rto.
+
+neal
