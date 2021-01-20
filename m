@@ -2,89 +2,91 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A033D2FDF25
-	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 03:18:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1CFEF2FDFA4
+	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 03:45:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390544AbhAUB6Q (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jan 2021 20:58:16 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50526 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2392622AbhAUBrm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 20 Jan 2021 20:47:42 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id F368823787;
-        Thu, 21 Jan 2021 01:46:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611193617;
-        bh=W5/3AC2yfn2lCVsrQNd2AD2k8/PUywVCig9YUj8JQ2k=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=cx1ARenUGXcl6f18n/kFsvHLLK2Xm814LWXInoskTW8xbMbs0+Cg7PVaxHwcoIOCp
-         X4MDY+8PUDr1sJsyzv950iyLLKOF6rXt2K9nnpUucB8bF37X9XCWDlkwZ/WOuj2GKg
-         YdoJ05E10KrXQz703nlsiqCyA7pO+0LF/uV1c0eFAENofzHntiOOJ/GWz2d/t+YFtz
-         iSPkslw1EAHYo9iPlg81bHnbNANfwSUJ1qFZdGmGGnl4Cai3LW3paZR5H3H4Y7feKg
-         7CJExF4/eXFNTq/TJ1ZBYg+Mx2Ecig7TJkEFyRdOKlKca1oyaw1PGvqgWzFBR0bP3L
-         Xj58noUuL5++Q==
-Date:   Wed, 20 Jan 2021 17:46:51 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     Hangbin Liu <liuhangbin@gmail.com>,
-        Ido Schimmel <idosch@nvidia.com>, netdev@vger.kernel.org,
-        Jiri Pirko <jiri@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        "David S . Miller" <davem@davemloft.net>
-Subject: Re: [PATCH net] selftests/net: set link down before enslave
-Message-ID: <20210120174644.083de7fa@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210120194328.GA2628348@shredder.lan>
-References: <20210120102947.2887543-1-liuhangbin@gmail.com>
-        <20210120104210.GA2602142@shredder.lan>
-        <20210120143847.GI1421720@Leo-laptop-t470s>
-        <20210120194328.GA2628348@shredder.lan>
+        id S2388079AbhATXrg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jan 2021 18:47:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59068 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732006AbhATVao (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 16:30:44 -0500
+Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63E32C06179E
+        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 13:26:16 -0800 (PST)
+Received: by mail-io1-xd35.google.com with SMTP id p72so25060198iod.12
+        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 13:26:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=ZgcJCeO5IRSICza2r6GEj0/QJ8rNtZfDDcOXMnAT21Y=;
+        b=laOq+sY8LdhQ82MV1OE2k34/xvmxGGN8PYlZcP/QlnQd36aPaJL0QwY6yrkwtxZsCG
+         AxO8a7SKnSFX6L3IDCUyZSeU29af28mcRdXZeBaDanpsvywcLg6uhJuFs1SCEmm7pDq/
+         PmlZuq+fvsBCSSMfV0Lqzk+P6TDZrGHWm6/rHAVtxwicLhPHz1ts5+Ln3upe9F/eTJoR
+         l8xNILxBwBTJYQH7gLYUCNlu4ENvip5fBJGVt34ijeCSf7IhrSynpli/uhfWVZ3FrqVE
+         7wMylBzj2Yg3sliX8JK0g3RSsBklNNot5FgTptKsiKbcZWWmp09TgTYsohXaHQgUJj6V
+         LvYg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=ZgcJCeO5IRSICza2r6GEj0/QJ8rNtZfDDcOXMnAT21Y=;
+        b=pDf5SuzmqgEfzAsk7O8gxSg4vA9nCwyKvjUN3Y8U1NTBMd8zH4ex0AXdAa2bJg94UE
+         ZZCDYsvXLajBuCfptPyKRDDtxFWUX/KVBdmlTr4viJbyP3eG0kKZalaaK8DqOswKQyRJ
+         V31h7iyKbpA6WQPQKZlzW8d56V8G7+06QWygltYhOfRehOoJ1Ovsm01VADlPgrCnRWof
+         D87G0uIWSaEgb1OsHF/qFrMDnbLIHapwKFmDOZQJ1kg2CScrWGErAg3H9pshzvm01JOS
+         qjKn7d3rI7LQzxGoHDz9gUneso5OGXz3VZePRYOCaahb7kLqbEfyPeJJXcC34DwGx29c
+         7VwA==
+X-Gm-Message-State: AOAM532Hi8AZf3fV8B2g2kGplblqO8FkVC5ldmdZ/hPLNGJHHe3teuIk
+        sRObfmGdzGf7WCpacZNX0sbFMQ==
+X-Google-Smtp-Source: ABdhPJxJj4nC6zIao/ax3tDl6ctcokGZcYWqetq/RRwKiBH/F8BiV38BeQQYHbVK6AY3DnZtx2DY3w==
+X-Received: by 2002:a92:5e11:: with SMTP id s17mr9482916ilb.23.1611177975159;
+        Wed, 20 Jan 2021 13:26:15 -0800 (PST)
+Received: from beast.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.gmail.com with ESMTPSA id q196sm1335687iod.27.2021.01.20.13.26.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 Jan 2021 13:26:14 -0800 (PST)
+From:   Alex Elder <elder@linaro.org>
+To:     davem@davemloft.net, kuba@kernel.org, bjorn.andersson@linaro.org,
+        agross@kernel.org
+Cc:     robh+dt@kernel.org, evgreen@chromium.org, cpratapa@codeaurora.org,
+        subashab@codeaurora.org, rdunlap@infradead.org,
+        netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+Subject: [PATCH v3 net-next 3/4] arm64: dts: qcom: sc7180: kill IPA modem-remoteproc property
+Date:   Wed, 20 Jan 2021 15:26:05 -0600
+Message-Id: <20210120212606.12556-4-elder@linaro.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20210120212606.12556-1-elder@linaro.org>
+References: <20210120212606.12556-1-elder@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 20 Jan 2021 21:43:28 +0200 Ido Schimmel wrote:
-> On Wed, Jan 20, 2021 at 10:38:47PM +0800, Hangbin Liu wrote:
-> > Hi Ido,
-> > 
-> > On Wed, Jan 20, 2021 at 12:42:10PM +0200, Ido Schimmel wrote:  
-> > > > diff --git a/tools/testing/selftests/net/rtnetlink.sh b/tools/testing/selftests/net/rtnetlink.sh
-> > > > index c9ce3dfa42ee..a26fddc63992 100755
-> > > > --- a/tools/testing/selftests/net/rtnetlink.sh
-> > > > +++ b/tools/testing/selftests/net/rtnetlink.sh
-> > > > @@ -1205,6 +1205,8 @@ kci_test_bridge_parent_id()
-> > > >  	dev20=`ls ${sysfsnet}20/net/`
-> > > >  
-> > > >  	ip link add name test-bond0 type bond mode 802.3ad
-> > > > +	ip link set dev $dev10 down
-> > > > +	ip link set dev $dev20 down  
-> > > 
-> > > But these netdevs are created with their administrative state set to
-> > > 'DOWN'. Who is setting them to up?  
-> > 
-> > Would you please point me where we set the state to 'DOWN'? Cause on my
-> > host it is init as UP:
-> > 
-> > ++ ls /sys/bus/netdevsim/devices/netdevsim10/net/
-> > + dev10=eth3
-> > ++ ls /sys/bus/netdevsim/devices/netdevsim20/net/
-> > + dev20=eth4
-> > + ip link add name test-bond0 type bond mode 802.3ad
-> > + ip link show eth3
-> > 66: eth3: <BROADCAST,NOARP,UP,LOWER_UP> mtu 1500 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
-> >     link/ether 1e:52:27:5f:a5:3c brd ff:ff:ff:ff:ff:ff  
-> 
-> I didn't have time to look into this today, but I suspect the problem is
-> either:
-> 
-> 1. Some interface manager on your end that is setting these interfaces
-> up after they are created
+The "modem-remoteproc" property is no longer required for the IPA
+driver, so get rid of it.
 
-This must be the case, the kernel doesn't open/up devices by itself.
+Signed-off-by: Alex Elder <elder@linaro.org>
+---
+ arch/arm64/boot/dts/qcom/sc7180.dtsi | 2 --
+ 1 file changed, 2 deletions(-)
 
-> 2. A bug in netdevsim that does not initialize the carrier to off.
-> Maybe try with this patch (didn't test):
+diff --git a/arch/arm64/boot/dts/qcom/sc7180.dtsi b/arch/arm64/boot/dts/qcom/sc7180.dtsi
+index 22b832fc62e3d..003309f0d3e18 100644
+--- a/arch/arm64/boot/dts/qcom/sc7180.dtsi
++++ b/arch/arm64/boot/dts/qcom/sc7180.dtsi
+@@ -1434,8 +1434,6 @@
+ 			qcom,smem-state-names = "ipa-clock-enabled-valid",
+ 						"ipa-clock-enabled";
+ 
+-			modem-remoteproc = <&remoteproc_mpss>;
+-
+ 			status = "disabled";
+ 		};
+ 
+-- 
+2.20.1
 
-Yeah, but that's fine, SW devices don't have to manage carrier state.
