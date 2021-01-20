@@ -2,100 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CF5B92FDA89
-	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 21:13:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8637E2FDA79
+	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 21:13:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389228AbhATOCm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jan 2021 09:02:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60310 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732691AbhATMwt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 07:52:49 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2690C0613CF
-        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 04:52:08 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1l2Cxz-00054Z-F5
-        for netdev@vger.kernel.org; Wed, 20 Jan 2021 13:52:07 +0100
-Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id F264C5C8B0C
-        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 12:52:04 +0000 (UTC)
-Received: from hardanger.blackshift.org (unknown [172.20.34.65])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id ED0215C8AFC;
-        Wed, 20 Jan 2021 12:52:03 +0000 (UTC)
-Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 5cf185b5;
-        Wed, 20 Jan 2021 12:52:03 +0000 (UTC)
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        kernel@pengutronix.de
-Subject: pull-request: can 2021-01-20
-Date:   Wed, 20 Jan 2021 13:51:59 +0100
-Message-Id: <20210120125202.2187358-1-mkl@pengutronix.de>
-X-Mailer: git-send-email 2.29.2
+        id S1729636AbhATODw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jan 2021 09:03:52 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:51146 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1733219AbhATMyd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 07:54:33 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1611147175;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Taj+EswQldqKUIFQmaJPXclMJabya3UPoVORBovNqEA=;
+        b=Jvznwj2PV+giN4VDESCkS3Enzyf3e665LzGWQufG1NOG/FVQuHcTDPK36E9HU/YMTnWUQO
+        dVEWbZwzlCIslVzK85f02biiv3JGf3xE9+2ANqxxsE75jyM/DMhnkCRWWpPkcRaSuHghXL
+        kVO9PgLnR2j2ehMtfTN+mrnfGs2RrYU=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-508-hHFw7x_1Nd2Kr4a9P3W6Sw-1; Wed, 20 Jan 2021 07:52:54 -0500
+X-MC-Unique: hHFw7x_1Nd2Kr4a9P3W6Sw-1
+Received: by mail-ed1-f71.google.com with SMTP id g6so11014298edw.13
+        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 04:52:53 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=Taj+EswQldqKUIFQmaJPXclMJabya3UPoVORBovNqEA=;
+        b=J5GoUpkuN5euvW5MMNS0QvKQa1gFbfH5ppWqAGDOlkm6oWfZYEg39rV9i+tGetLq6y
+         UlIXZltgCnKFv+Smx+d6K+wH/RLLWE3dP6L8ggSkJ8RKaTaaEwfeMoSzx7k/iuvaC0Fw
+         KbQpbCY1FekCPJf4fR+kVJNhWDXHtXnccei0NynzgQjfz/nkn4ZT7RS/NfnrpkCIbcGi
+         cJpbFGvuNsiKk9qwXvMpf725NZrIqup490/cW3t8NtFGmmLPfWKS+oHTnGRYVv+pGJk5
+         z9LwfAl83BH8IyiWNIBJTzsILLqio9RmSk1qWD+/cu0VfRuTsjRU3IT9eT++DYqFyCBo
+         JufQ==
+X-Gm-Message-State: AOAM531JTxPN8752VCj9G4jDshNm7DZMh1tbqMpY7yAnzu+LNJu2j1fu
+        MpHGtwGbEX6WAS5DaQZydiHmRStKhwnf38zaZNDVij0q5mEV55HHmjNDOeTdDNthJLH65hcJvLB
+        XJJMRmmYi3OjyyUPo
+X-Received: by 2002:aa7:ce87:: with SMTP id y7mr7283820edv.211.1611147172869;
+        Wed, 20 Jan 2021 04:52:52 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJy9go95uH5akXQC+KBEihJbMv6KtIQM8A+/MZ1aH+Ky6Rn6XfXLrNt1ly2FZiJLGIP6BMj6cw==
+X-Received: by 2002:aa7:ce87:: with SMTP id y7mr7283808edv.211.1611147172749;
+        Wed, 20 Jan 2021 04:52:52 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
+        by smtp.gmail.com with ESMTPSA id m24sm861822ejo.52.2021.01.20.04.52.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 Jan 2021 04:52:52 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id EB048180331; Wed, 20 Jan 2021 13:52:51 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
+        ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org,
+        bpf@vger.kernel.org
+Cc:     =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        magnus.karlsson@intel.com, maciej.fijalkowski@intel.com,
+        kuba@kernel.org, jonathan.lemon@gmail.com, maximmi@nvidia.com,
+        davem@davemloft.net, hawk@kernel.org, john.fastabend@gmail.com,
+        ciara.loftus@intel.com, weqaar.a.janjua@intel.com,
+        Marek Majtyka <alardam@gmail.com>
+Subject: Re: [PATCH bpf-next v2 5/8] libbpf, xsk: select AF_XDP BPF program
+ based on kernel version
+In-Reply-To: <20210119155013.154808-6-bjorn.topel@gmail.com>
+References: <20210119155013.154808-1-bjorn.topel@gmail.com>
+ <20210119155013.154808-6-bjorn.topel@gmail.com>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Wed, 20 Jan 2021 13:52:51 +0100
+Message-ID: <875z3repng.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello Jakub, hello David,
+Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com> writes:
 
-this is a pull request of 3 patches for net/master.
+> From: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
+>
+> Add detection for kernel version, and adapt the BPF program based on
+> kernel support. This way, users will get the best possible performance
+> from the BPF program.
 
-All three patches are by Vincent Mailhol and fix a potential use after free bug
-in the CAN device infrastructure, the vxcan driver, and the peak_usk driver. In
-the TX-path the skb is used to read from after it was passed to the networking
-stack with netif_rx_ni().
+Please do explicit feature detection instead of relying on the kernel
+version number; some distro kernels are known to have a creative notion
+of their own version, which is not really related to the features they
+actually support (I'm sure you know which one I'm referring to ;)).
 
-Note: Patch 1/3 touches "drivers/net/can/dev.c". In net-next/master this file
-has been moved to drivers/net/can/dev/dev.c [1] and parts of it have been
-transfered into separate files. This may result in a merge conflict. Please
-carry this patch forward, the change is rather simple. Drop us a note if
-needed. Are any actions needed with regards to linux-next?
-
-[1] 3e77f70e7345 can: dev: move driver related infrastructure into separate subdir
-
-regards,
-Marc
-
----
-
-The following changes since commit 9c30ae8398b0813e237bde387d67a7f74ab2db2d:
-
-  tcp: fix TCP socket rehash stats mis-accounting (2021-01-19 19:47:20 -0800)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/mkl/linux-can.git tags/linux-can-fixes-for-5.11-20210120
-
-for you to fetch changes up to 50aca891d7a554db0901b245167cd653d73aaa71:
-
-  can: peak_usb: fix use after free bugs (2021-01-20 13:33:28 +0100)
-
-----------------------------------------------------------------
-linux-can-fixes-for-5.11-20210120
-
-----------------------------------------------------------------
-Vincent Mailhol (3):
-      can: dev: can_restart: fix use after free bug
-      can: vxcan: vxcan_xmit: fix use after free bug
-      can: peak_usb: fix use after free bugs
-
- drivers/net/can/dev.c                      | 4 ++--
- drivers/net/can/usb/peak_usb/pcan_usb_fd.c | 8 ++++----
- drivers/net/can/vxcan.c                    | 6 ++++--
- 3 files changed, 10 insertions(+), 8 deletions(-)
-
+-Toke
 
