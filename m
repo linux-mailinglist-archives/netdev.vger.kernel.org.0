@@ -2,219 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B7372FCCCF
-	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 09:40:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1995D2FCCDB
+	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 09:40:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730965AbhATIfR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jan 2021 03:35:17 -0500
-Received: from out30-42.freemail.mail.aliyun.com ([115.124.30.42]:33308 "EHLO
-        out30-42.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730099AbhATIcW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 03:32:22 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R101e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e04400;MF=xuanzhuo@linux.alibaba.com;NM=1;PH=DS;RN=21;SR=0;TI=SMTPD_---0UMJxDD3_1611131456;
-Received: from localhost(mailfrom:xuanzhuo@linux.alibaba.com fp:SMTPD_---0UMJxDD3_1611131456)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 20 Jan 2021 16:30:56 +0800
-From:   Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-To:     "Michael S. Tsirkin" <mst@redhat.com>
-Cc:     Alexander Lobakin <alobakin@pm.me>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, bjorn.topel@intel.com,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v2 3/3] xsk: build skb by page
-Date:   Wed, 20 Jan 2021 16:30:56 +0800
-Message-Id: <0461512be1925bece9bcda1b4924b09eaa4edd87.1611131344.git.xuanzhuo@linux.alibaba.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <20210120030418-mutt-send-email-mst@kernel.org>
-References: <20210120030418-mutt-send-email-mst@kernel.org>
-In-Reply-To: <cover.1611131344.git.xuanzhuo@linux.alibaba.com>
-References: <cover.1611131344.git.xuanzhuo@linux.alibaba.com>
+        id S1731008AbhATIin (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jan 2021 03:38:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33678 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730679AbhATIhe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 03:37:34 -0500
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2012C061575
+        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 00:36:08 -0800 (PST)
+Received: by mail-ej1-x62d.google.com with SMTP id by1so25938663ejc.0
+        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 00:36:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=c+j24Mm9EDc0Nm1u1SfM0jRPOO22Iok7+TXDeLGyYd0=;
+        b=BBf8iIgovgix29pKobAJuDzFMBvwBn8zWN4oobdstADWLTIVIdo1kwCWx19l82dVVP
+         Qrs2UvXomdBeLuaqsqsLNkiupavrdW4ZGnhlRQCbnHefjkRYLaqXM3bWMuyH8Gjpc1uK
+         /Q2itYz2Gu26Ss1+uxrSlRid0nca4zLOCRuqaRHINf8/Md++JPjXF3jSRgMXjAvsteQC
+         zqh0T0zRc/tHCTmER4TGuN9upSnaY3YHsAn5QzPgEQo5BNAlj7tzJJDIMkiJfJDhh6Ey
+         8ziL13vNuqsKanD1GEhurwpSiPomoKKxQvDCH/kgZsDeEg+XEXI8Xbu2yqYkc79iOkVe
+         KL0g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=c+j24Mm9EDc0Nm1u1SfM0jRPOO22Iok7+TXDeLGyYd0=;
+        b=Rr2oKZcIPXeIgf22ZFjA7OfyqGWArrX8Ix8jDQORyUMSyQtjaWWxFy64rguUGHJclL
+         bMa12YVpjo6lH4HFGywkCsVDkfD5Y1p1A96LlAG9ZaHrdgppwy1wlWQ8LeByqURFJKVw
+         m0mjp2CwB1DgPrHYMmT3ljb8CEUhyB/8EcD541cLZqMPgISh0EUaRqCYQ/LAcmgnFygS
+         8XrDmcKBQQMvILjdP4eBN5+9TrPKIlAMTeM9iWD88glAd/LzhwSPC36RebjrdSRHDnmX
+         njLzs1MNP9Go/Whflq9xRsrweUj2mE+I2MqJ+z7vJalY10wRzAYXWg1KAevuiSB2Fvgf
+         S+MQ==
+X-Gm-Message-State: AOAM531O1sepq0fiRHTN5tAOmNJCSJeOPccH0NGRG9hb71qCETnliQRz
+        RpfDeek19bRb1Yf9oQOcZ2LqtA==
+X-Google-Smtp-Source: ABdhPJz6OcWlMX0pb5efNje9TedSSBBmEsUD/1eD5YXDzhM78xCQ/OXYUZUTcJCOw1aQnOx9JD5X2w==
+X-Received: by 2002:a17:906:19c3:: with SMTP id h3mr5389107ejd.429.1611131767639;
+        Wed, 20 Jan 2021 00:36:07 -0800 (PST)
+Received: from localhost (mail.chocen-mesto.cz. [85.163.43.2])
+        by smtp.gmail.com with ESMTPSA id s1sm577722ejx.25.2021.01.20.00.36.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 Jan 2021 00:36:07 -0800 (PST)
+Date:   Wed, 20 Jan 2021 09:36:05 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        jacob.e.keller@intel.com, roopa@nvidia.com, mlxsw@nvidia.com
+Subject: Re: [patch net-next RFC 00/10] introduce line card support for
+ modular switch
+Message-ID: <20210120083605.GB3565223@nanopsycho.orion>
+References: <20210113121222.733517-1-jiri@resnulli.us>
+ <X/+nVtRrC2lconET@lunn.ch>
+ <20210119115610.GZ3565223@nanopsycho.orion>
+ <YAbyBbEE7lbhpFkw@lunn.ch>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <YAbyBbEE7lbhpFkw@lunn.ch>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch is used to construct skb based on page to save memory copy
-overhead.
+Tue, Jan 19, 2021 at 03:51:49PM CET, andrew@lunn.ch wrote:
+>On Tue, Jan 19, 2021 at 12:56:10PM +0100, Jiri Pirko wrote:
+>> Thu, Jan 14, 2021 at 03:07:18AM CET, andrew@lunn.ch wrote:
+>> >> $ devlink lc provision netdevsim/netdevsim10 lc 0 type card4ports
+>> >> $ devlink lc
+>> >> netdevsim/netdevsim10:
+>> >>   lc 0 state provisioned type card4ports
+>> >>     supported_types:
+>> >>        card1port card2ports card4ports
+>> >>   lc 1 state unprovisioned
+>> >>     supported_types:
+>> >>        card1port card2ports card4ports
+>> >
+>> >Hi Jiri
+>> >
+>> >> # Now activate the line card using debugfs. That emulates plug-in event
+>> >> # on real hardware:
+>> >> $ echo "Y"> /sys/kernel/debug/netdevsim/netdevsim10/linecards/0/active
+>> >> $ ip link show eni10nl0p1
+>> >> 165: eni10nl0p1: <BROADCAST,NOARP,UP,LOWER_UP> mtu 1500 qdisc noqueue state UP mode DEFAULT group default qlen 1000
+>> >>     link/ether 7e:2d:05:93:d3:d1 brd ff:ff:ff:ff:ff:ff
+>> >> # The carrier is UP now.
+>> >
+>> >What is missing from the devlink lc view is what line card is actually
+>> >in the slot. Say if i provision for a card4port, but actually insert a
+>> >card2port. It would be nice to have something like:
+>> 
+>> I checked, our hw does not support that. Only provides info that
+>> linecard activation was/wasn't successful.
+>
+>Hi Jiri
+>
+>Is this a firmware limitation? There is no API to extract the
+>information from the firmware to the host? The firmware itself knows
+>there is a mismatch and refuses to configure the line card, and
+>prevents the MAC going up?
 
-This function is implemented based on IFF_TX_SKB_NO_LINEAR. Only the
-network card priv_flags supports IFF_TX_SKB_NO_LINEAR will use page to
-directly construct skb. If this feature is not supported, it is still
-necessary to copy data to construct skb.
+No, the FW does not know. The ASIC is not physically able to get the
+linecard type. Yes, it is odd, I agree. The linecard type is known to
+the driver which operates on i2c. This driver takes care of power
+management of the linecard, among other tasks.
 
----------------- Performance Testing ------------
 
-The test environment is Aliyun ECS server.
-Test cmd:
-```
-xdpsock -i eth0 -t  -S -s <msg size>
-```
+>
+>Even if you cannot do this now, it seems likely in future firmware
+>versions you will be able to, so maybe at least define the netlink
 
-Test result data:
+Sure, for netdevsim that is not problem. Our current hw does not support
+it, the future may.
 
-size    64      512     1024    1500
-copy    1916747 1775988 1600203 1440054
-page    1974058 1953655 1945463 1904478
-percent 3.0%    10.0%   21.58%  32.3%
 
-Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Reviewed-by: Dust Li <dust.li@linux.alibaba.com>
----
- net/xdp/xsk.c | 104 ++++++++++++++++++++++++++++++++++++++++++++++++----------
- 1 file changed, 86 insertions(+), 18 deletions(-)
+>attributes now? As well as attributes indicating activation was
+>successful.
 
-diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-index 8037b04..40bac11 100644
---- a/net/xdp/xsk.c
-+++ b/net/xdp/xsk.c
-@@ -430,6 +430,87 @@ static void xsk_destruct_skb(struct sk_buff *skb)
- 	sock_wfree(skb);
- }
- 
-+static struct sk_buff *xsk_build_skb_zerocopy(struct xdp_sock *xs,
-+					      struct xdp_desc *desc)
-+{
-+	u32 len, offset, copy, copied;
-+	struct sk_buff *skb;
-+	struct page *page;
-+	void *buffer;
-+	int err, i;
-+	u64 addr;
-+
-+	skb = sock_alloc_send_skb(&xs->sk, 0, 1, &err);
-+	if (unlikely(!skb))
-+		return ERR_PTR(err);
-+
-+	addr = desc->addr;
-+	len = desc->len;
-+
-+	buffer = xsk_buff_raw_get_data(xs->pool, addr);
-+	offset = offset_in_page(buffer);
-+	addr = buffer - xs->pool->addrs;
-+
-+	for (copied = 0, i = 0; copied < len; i++) {
-+		page = xs->pool->umem->pgs[addr >> PAGE_SHIFT];
-+
-+		get_page(page);
-+
-+		copy = min_t(u32, PAGE_SIZE - offset, len - copied);
-+
-+		skb_fill_page_desc(skb, i, page, offset, copy);
-+
-+		copied += copy;
-+		addr += copy;
-+		offset = 0;
-+	}
-+
-+	skb->len += len;
-+	skb->data_len += len;
-+	skb->truesize += len;
-+
-+	refcount_add(len, &xs->sk.sk_wmem_alloc);
-+
-+	return skb;
-+}
-+
-+static struct sk_buff *xsk_build_skb(struct xdp_sock *xs,
-+				     struct xdp_desc *desc)
-+{
-+	struct sk_buff *skb = NULL;
-+
-+	if (xs->dev->priv_flags & IFF_TX_SKB_NO_LINEAR) {
-+		skb = xsk_build_skb_zerocopy(xs, desc);
-+		if (IS_ERR(skb))
-+			return skb;
-+	} else {
-+		void *buffer;
-+		u32 len;
-+		int err;
-+
-+		len = desc->len;
-+		skb = sock_alloc_send_skb(&xs->sk, len, 1, &err);
-+		if (unlikely(!skb))
-+			return ERR_PTR(err);
-+
-+		skb_put(skb, len);
-+		buffer = xsk_buff_raw_get_data(xs->pool, desc->addr);
-+		err = skb_store_bits(skb, 0, buffer, len);
-+		if (unlikely(err)) {
-+			kfree_skb(skb);
-+			return ERR_PTR(err);
-+		}
-+	}
-+
-+	skb->dev = xs->dev;
-+	skb->priority = xs->sk.sk_priority;
-+	skb->mark = xs->sk.sk_mark;
-+	skb_shinfo(skb)->destructor_arg = (void *)(long)desc->addr;
-+	skb->destructor = xsk_destruct_skb;
-+
-+	return skb;
-+}
-+
- static int xsk_generic_xmit(struct sock *sk)
- {
- 	struct xdp_sock *xs = xdp_sk(sk);
-@@ -446,43 +527,30 @@ static int xsk_generic_xmit(struct sock *sk)
- 		goto out;
- 
- 	while (xskq_cons_peek_desc(xs->tx, &desc, xs->pool)) {
--		char *buffer;
--		u64 addr;
--		u32 len;
--
- 		if (max_batch-- == 0) {
- 			err = -EAGAIN;
- 			goto out;
- 		}
- 
--		len = desc.len;
--		skb = sock_alloc_send_skb(sk, len, 1, &err);
--		if (unlikely(!skb))
-+		skb = xsk_build_skb(xs, &desc);
-+		if (IS_ERR(skb)) {
-+			err = PTR_ERR(skb);
- 			goto out;
-+		}
- 
--		skb_put(skb, len);
--		addr = desc.addr;
--		buffer = xsk_buff_raw_get_data(xs->pool, addr);
--		err = skb_store_bits(skb, 0, buffer, len);
- 		/* This is the backpressure mechanism for the Tx path.
- 		 * Reserve space in the completion queue and only proceed
- 		 * if there is space in it. This avoids having to implement
- 		 * any buffering in the Tx path.
- 		 */
- 		spin_lock_irqsave(&xs->pool->cq_lock, flags);
--		if (unlikely(err) || xskq_prod_reserve(xs->pool->cq)) {
-+		if (xskq_prod_reserve(xs->pool->cq)) {
- 			spin_unlock_irqrestore(&xs->pool->cq_lock, flags);
- 			kfree_skb(skb);
- 			goto out;
- 		}
- 		spin_unlock_irqrestore(&xs->pool->cq_lock, flags);
- 
--		skb->dev = xs->dev;
--		skb->priority = sk->sk_priority;
--		skb->mark = sk->sk_mark;
--		skb_shinfo(skb)->destructor_arg = (void *)(long)desc.addr;
--		skb->destructor = xsk_destruct_skb;
--
- 		err = __dev_direct_xmit(skb, xs->queue_id);
- 		if  (err == NETDEV_TX_BUSY) {
- 			/* Tell user-space to retry the send */
--- 
-1.8.3.1
+State "ACTIVATED" is that indication. It is in this RFC.
 
+
+>
+>	Andrew
