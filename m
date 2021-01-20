@@ -2,21 +2,21 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 72DF12FCEF8
+	by mail.lfdr.de (Postfix) with ESMTP id EA9442FCEF9
 	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 12:20:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389026AbhATLPr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jan 2021 06:15:47 -0500
-Received: from smtp13.smtpout.orange.fr ([80.12.242.135]:42385 "EHLO
+        id S2389035AbhATLPy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jan 2021 06:15:54 -0500
+Received: from smtp13.smtpout.orange.fr ([80.12.242.135]:26881 "EHLO
         smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1730784AbhATK12 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 05:27:28 -0500
+        with ESMTP id S1730989AbhATK1n (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 05:27:43 -0500
 Received: from localhost.localdomain ([153.202.107.157])
         by mwinf5d76 with ME
-        id JyQo2400G3PnFJp03yRgn8; Wed, 20 Jan 2021 11:25:46 +0100
+        id JyRu2400L3PnFJp03yRxpf; Wed, 20 Jan 2021 11:26:01 +0100
 X-ME-Helo: localhost.localdomain
 X-ME-Auth: bWFpbGhvbC52aW5jZW50QHdhbmFkb28uZnI=
-X-ME-Date: Wed, 20 Jan 2021 11:25:46 +0100
+X-ME-Date: Wed, 20 Jan 2021 11:26:01 +0100
 X-ME-IP: 153.202.107.157
 From:   Vincent Mailhol <mailhol.vincent@wanadoo.fr>
 To:     Marc Kleine-Budde <mkl@pengutronix.de>,
@@ -28,55 +28,55 @@ Cc:     netdev@vger.kernel.org, Wolfgang Grandegger <wg@grandegger.com>,
         Alejandro Concepcion Rodriguez <alejandro@acoro.eu>,
         Dan Carpenter <dan.carpenter@oracle.com>,
         Vincent Mailhol <mailhol.vincent@wanadoo.fr>
-Subject: [PATCH v3 0/3] Fix several use after free bugs
-Date:   Wed, 20 Jan 2021 19:24:40 +0900
-Message-Id: <20210120102443.198143-1-mailhol.vincent@wanadoo.fr>
+Subject: [PATCH v3 1/3] can: dev: can_restart: fix use after free bug
+Date:   Wed, 20 Jan 2021 19:24:41 +0900
+Message-Id: <20210120102443.198143-2-mailhol.vincent@wanadoo.fr>
 X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20210120102443.198143-1-mailhol.vincent@wanadoo.fr>
+References: <20210120102443.198143-1-mailhol.vincent@wanadoo.fr>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This series fix three bugs which all have the same root cause.
+After calling netif_rx_ni(skb), dereferencing skb is unsafe.
+Especially, the can_frame cf which aliases skb memory is accessed
+after the netif_rx_ni() in:
+      stats->rx_bytes += cf->len;
 
-When calling netif_rx(skb) and its variants, the skb will eventually
-get consumed (or freed) and thus it is unsafe to dereference it after
-the call returns.
+Reordering the lines solves the issue.
 
-This remark especially applies to any variable with aliases the skb
-memory which is the case of the can(fd)_frame.
+*Remark for upstream*
+drivers/net/can/dev.c has been moved to drivers/net/can/dev/dev.c in
+below commit, please carry the patch forward.
+Reference: 3e77f70e7345 ("can: dev: move driver related infrastructure
+into separate subdir")
 
-The pattern is as this:
-    skb = alloc_can_skb(dev, &cf);
-    /* Do stuff */
-    netif_rx(skb);
-    stats->rx_bytes += cf->len;
+Fixes: 39549eef3587 ("can: CAN Network device driver and Netlink interface")
+Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+---
+ drivers/net/can/dev.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Increasing the stats should be done *before* the call to netif_rx()
-while the skb is still safe to use.
-
-Changes since v2:
-  - rebase on net/master
-  - Added a comment towards upstream in patch 1/3 to inform about a
-    conflict which will occur when net-next and net are merged
-Ref: https://lore.kernel.org/linux-can/20210120085356.m7nabbw5zhy7prpo@hardanger.blackshift.org/
-
-Changes since v1:
-  - fix a silly typo in patch 2/3 (variable len was declared twice...)
-
-Vincent Mailhol (3):
-  can: dev: can_restart: fix use after free bug
-  can: vxcan: vxcan_xmit: fix use after free bug
-  can: peak_usb: fix use after free bugs
-
- drivers/net/can/dev.c                      | 4 ++--
- drivers/net/can/usb/peak_usb/pcan_usb_fd.c | 8 ++++----
- drivers/net/can/vxcan.c                    | 6 ++++--
- 3 files changed, 10 insertions(+), 8 deletions(-)
-
-
-base-commit: 9c30ae8398b0813e237bde387d67a7f74ab2db2d
+diff --git a/drivers/net/can/dev.c b/drivers/net/can/dev.c
+index 3486704c8a95..8b1ae023cb21 100644
+--- a/drivers/net/can/dev.c
++++ b/drivers/net/can/dev.c
+@@ -592,11 +592,11 @@ static void can_restart(struct net_device *dev)
+ 
+ 	cf->can_id |= CAN_ERR_RESTARTED;
+ 
+-	netif_rx_ni(skb);
+-
+ 	stats->rx_packets++;
+ 	stats->rx_bytes += cf->len;
+ 
++	netif_rx_ni(skb);
++
+ restart:
+ 	netdev_dbg(dev, "restarted\n");
+ 	priv->can_stats.restarts++;
 -- 
 2.26.2
 
