@@ -2,111 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2ADD72FC663
-	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 02:24:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ED5712FC6D2
+	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 02:32:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726292AbhATBYM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jan 2021 20:24:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53142 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725968AbhATBXv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 19 Jan 2021 20:23:51 -0500
-Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66CD2C061573;
-        Tue, 19 Jan 2021 17:23:11 -0800 (PST)
-Received: by mail-yb1-xb2e.google.com with SMTP id p185so6732798ybg.8;
-        Tue, 19 Jan 2021 17:23:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=aB5Or3lI/qRSS51C0pnoSQ5oKzBYbujWPgstkZELdzc=;
-        b=nUo0RPzs4UZN3xplRgxSRNcEG4O2fOa+m3P0tm6toHW/drXs6XA9kQ2F9OhEhEQfQS
-         71bIJkWG2A9Nyv1ZqdsI9fiKGEiL5QZH6d+cU96DMUlCKra6+Wd0lqlRc8M0SLf3Zx9J
-         XrxL0K8lTYsvZRVwlGXeMf7dWzjst0rC1TM7H9pQwe2IxThCjtGIqUPcQqxgQxQgYlzf
-         h3M1NmSC5Q55o1gC4vo3pfixMngLsbWIBNX2AiHvnwnAUYREYj0bZqjMbSV7rVytC9gC
-         pCZS+PYPihvTa8Ce4r+Ui/20GFmt+KIucSCpp1Lzt0i+fqnJgfkkQ8+NVO3BD9iCc3XI
-         /Tqg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=aB5Or3lI/qRSS51C0pnoSQ5oKzBYbujWPgstkZELdzc=;
-        b=AR9scsC41kTTNdIT2Iu9KzRQ+EBR2QjFY5zHYnIjAYUNQm5j+awda5fkgslwMJXo9s
-         RHbjv6vM3tJXmXs1rfhb4uGgqaqhIOdgWrRtudtWu3THDKjY4mK0JUUH0yldOnuYlzp1
-         lOZ6j3p6f8ZLNcufm4ciWnmLyKQKfw5/UABaA8vPgqo7Cwnck2HcQwdXAjV4XirYreON
-         JSKn/2wNkv3HyDwbHFEte1w3l/AHZ5iTgL/OTHP7qj0IpfWCnzQ7dt/sX98b8SLgeUud
-         c5MBDrAmka+e4ZgimTCNPPUSCEYnlhkVM+bABqv3+sT3Iu3mPnKl1/BFbi/Ybx2Srr9l
-         2B7A==
-X-Gm-Message-State: AOAM532yyqd8B7OcoQPlZR6HFBxuEmBKbusaryqzHY6Q6n9sxIjVhbQ4
-        dLTSAjASWr1OB45I5eQ5NxJert59Tl8jubeGGEc=
-X-Google-Smtp-Source: ABdhPJyip/5H2uffx15cFVwjuNyjEmFH1RNGvII/8jaSthBZ1cgbXvygTsqcrsluYwIoAaH179cExlx8SzTBIvAKK9s=
-X-Received: by 2002:a25:9882:: with SMTP id l2mr9371267ybo.425.1611105790757;
- Tue, 19 Jan 2021 17:23:10 -0800 (PST)
+        id S1726000AbhATBaN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jan 2021 20:30:13 -0500
+Received: from mail.kernel.org ([198.145.29.99]:47302 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730769AbhATB30 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 19 Jan 2021 20:29:26 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id DB04123433;
+        Wed, 20 Jan 2021 01:27:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1611106075;
+        bh=0oC4UvFQ7gr34BsUtHy/rcWoiAez/qEhFP6ph1HMd3o=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=pHXFPN4Rcr0c8iwY69HudjE/QLNwsQW1h+CWYxjYEMYQiKJDyGTO/p/m0kiyFViDJ
+         r5evtFDroWwjFU8vEcUVaVd1UC841fgWi9ICWyt2cZg/AIQ6vHjBO9FdLJ/vvFZO1T
+         tE1Ad0wGrft1Iy7nowt7dbMhvTuS0sr7cgT1XOFYKK9T+W6tEsHz8KOa6XjP0n83NH
+         oDH7zzQ7iaAl0lZO5gzdGhe57jpapEfj/aEQBBZl4cIPYXyE6CXTuYn6MRln8ePw3U
+         iTvyN91tkdO33JqFwnswa4pRB0IYhEJYmJtuNXV6V75GpEdfOSMo99lbwYWDsJHQe0
+         PeOxV2uK5uf7w==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     David Wu <david.wu@rock-chips.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH AUTOSEL 4.19 10/15] net: stmmac: Fixed mtu channged by cache aligned
+Date:   Tue, 19 Jan 2021 20:27:35 -0500
+Message-Id: <20210120012740.770354-10-sashal@kernel.org>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20210120012740.770354-1-sashal@kernel.org>
+References: <20210120012740.770354-1-sashal@kernel.org>
 MIME-Version: 1.0
-References: <20210119221220.1745061-1-jolsa@kernel.org> <20210119221220.1745061-2-jolsa@kernel.org>
-In-Reply-To: <20210119221220.1745061-2-jolsa@kernel.org>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Tue, 19 Jan 2021 17:23:00 -0800
-Message-ID: <CAEf4BzYjTu-NbEQcgCXmKormPuQUQip+Qr4Qzr3X3VXPSwreBQ@mail.gmail.com>
-Subject: Re: [PATCH 1/3] elf_symtab: Add support for SHN_XINDEX index to elf_section_by_name
-To:     Jiri Olsa <jolsa@kernel.org>
-Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>, dwarves@vger.kernel.org,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Yonghong Song <yhs@fb.com>, Hao Luo <haoluo@google.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Joe Lawrence <joe.lawrence@redhat.com>,
-        Mark Wielaard <mjw@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 19, 2021 at 2:16 PM Jiri Olsa <jolsa@kernel.org> wrote:
->
-> In case the elf's header e_shstrndx contains SHN_XINDEX,
-> we need to call elf_getshdrstrndx to get the proper
-> string table index.
->
-> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> ---
->  dutil.c | 8 ++++++--
->  1 file changed, 6 insertions(+), 2 deletions(-)
->
-> diff --git a/dutil.c b/dutil.c
-> index 7b667647420f..321f4be6669e 100644
-> --- a/dutil.c
-> +++ b/dutil.c
-> @@ -179,13 +179,17 @@ Elf_Scn *elf_section_by_name(Elf *elf, GElf_Ehdr *ep,
->  {
->         Elf_Scn *sec = NULL;
->         size_t cnt = 1;
-> +       size_t shstrndx = ep->e_shstrndx;
-> +
-> +       if (shstrndx == SHN_XINDEX && elf_getshdrstrndx(elf, &shstrndx))
-> +               return NULL;
->
+From: David Wu <david.wu@rock-chips.com>
 
-see comment for patch #3, no need for SHN_XINDEX checks,
-elf_getshdrstrndx() handles this transparently
+[ Upstream commit 5b55299eed78538cc4746e50ee97103a1643249c ]
 
->         while ((sec = elf_nextscn(elf, sec)) != NULL) {
->                 char *str;
->
->                 gelf_getshdr(sec, shp);
-> -               str = elf_strptr(elf, ep->e_shstrndx, shp->sh_name);
-> -               if (!strcmp(name, str)) {
-> +               str = elf_strptr(elf, shstrndx, shp->sh_name);
-> +               if (str && !strcmp(name, str)) {
->                         if (index)
->                                 *index = cnt;
->                         break;
-> --
-> 2.27.0
->
+Since the original mtu is not used when the mtu is updated,
+the mtu is aligned with cache, this will get an incorrect.
+For example, if you want to configure the mtu to be 1500,
+but mtu 1536 is configured in fact.
+
+Fixed: eaf4fac478077 ("net: stmmac: Do not accept invalid MTU values")
+Signed-off-by: David Wu <david.wu@rock-chips.com>
+Link: https://lore.kernel.org/r/20210113034109.27865-1-david.wu@rock-chips.com
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+index 4ac507b4d1019..76d4b8e6ac3e8 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
++++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+@@ -3596,6 +3596,7 @@ static int stmmac_change_mtu(struct net_device *dev, int new_mtu)
+ {
+ 	struct stmmac_priv *priv = netdev_priv(dev);
+ 	int txfifosz = priv->plat->tx_fifo_size;
++	const int mtu = new_mtu;
+ 
+ 	if (txfifosz == 0)
+ 		txfifosz = priv->dma_cap.tx_fifo_size;
+@@ -3613,7 +3614,7 @@ static int stmmac_change_mtu(struct net_device *dev, int new_mtu)
+ 	if ((txfifosz < new_mtu) || (new_mtu > BUF_SIZE_16KiB))
+ 		return -EINVAL;
+ 
+-	dev->mtu = new_mtu;
++	dev->mtu = mtu;
+ 
+ 	netdev_update_features(dev);
+ 
+-- 
+2.27.0
+
