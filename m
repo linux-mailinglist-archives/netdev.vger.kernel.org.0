@@ -2,77 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 475F32FC736
-	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 02:56:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 244E12FC72A
+	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 02:52:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730841AbhATBwg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jan 2021 20:52:36 -0500
-Received: from mail.kernel.org ([198.145.29.99]:53126 "EHLO mail.kernel.org"
+        id S1731337AbhATBvO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jan 2021 20:51:14 -0500
+Received: from mail.kernel.org ([198.145.29.99]:53138 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731102AbhATBuv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1731080AbhATBuv (ORCPT <rfc822;netdev@vger.kernel.org>);
         Tue, 19 Jan 2021 20:50:51 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 63C3422472;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 73714224B1;
         Wed, 20 Jan 2021 01:50:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1611107410;
-        bh=fYVhz0Utn/IH6+2xkAXvc2UhddhAnB+A/q8GU/7LXZ8=;
+        bh=QvXDt3LEXKwztqUdMgdHJQOZvbdsHauUw1+45qXWZ1c=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=o36XoS0e9yW42WCIpWPxbEeA55yu+dzjXtl7opTY0GK2l5hLBNcOjCR0iv8UqZygY
-         w6TYwDPsP+cxPhFuwCK0MyXOojwuespJs0wShCsjlh38PjmsCqeP3Jr8u+urS7Yl3N
-         ZqmDgaxpnw/hn2ZJoygYEIanHk0jn0KXwgfJSKTiR2/6/1kBZH5YVWWwtvqHsjMcBP
-         Pq2fmFtqgmsr+DGQZ8Lxy8gIXJm8Tk2NcH0rLZwE5Vs+8mL1mkcq952dQhJJ+NM+eD
-         tRwwww+xNERk/l7zkhJTfnniz++AmzAhTt+3jmacoujRgHubP5FOo9wOZ1jgLKlpGJ
-         4XWyU1JyYENAA==
+        b=tg2RriRlmwazptzesO8jNlH4TO7qxJdiyNnlPkkwk9hx79S3iOnnGZAgTCbTCiDxR
+         Z9u3D1O0MV5IIDT2ATQN1Aa4EsF9c/YRjuYzM5C7kCUgQeo7Y5s6j87IynJgQUICvE
+         wH/tCldNGH3k3ix9uLzhJ6SsPHC7Olvt7D3LRGF0UUSCjB0WgHOCCeRN18ATVMgAC3
+         9TeQ1GJaDTQV/m98TIG7HPCm3XvIjNhWR7xGF+LKNWKqnYyC4jvUG0gLqXzd+T6dSn
+         TXMxxC3LD7Ss2Y8Pka0FQycTKQRCQf6PHaLcALKDLlPJZSiwb2UuN/NnL56PGCCgsR
+         wF/hOl0/w5wRA==
 Received: from pdx-korg-docbuild-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-1.ci.codeaurora.org (Postfix) with ESMTP id 5C6AB604FC;
+        by pdx-korg-docbuild-1.ci.codeaurora.org (Postfix) with ESMTP id 68FEF60591;
         Wed, 20 Jan 2021 01:50:10 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [net-next 0/6] net: ethernet: ti: am65-cpsw-nuss: introduce support
- for am64x cpsw3g
+Subject: Re: [PATCH] taprio: boolean values to a bool variable
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161110741037.23772.5269078969682153495.git-patchwork-notify@kernel.org>
+Message-Id: <161110741042.23772.15208009210857088847.git-patchwork-notify@kernel.org>
 Date:   Wed, 20 Jan 2021 01:50:10 +0000
-References: <20210115192853.5469-1-grygorii.strashko@ti.com>
-In-Reply-To: <20210115192853.5469-1-grygorii.strashko@ti.com>
-To:     Grygorii Strashko <grygorii.strashko@ti.com>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org,
-        peter.ujfalusi@gmail.com, vigneshr@ti.com, robh+dt@kernel.org,
-        linux-kernel@vger.kernel.org, nsekhar@ti.com,
-        devicetree@vger.kernel.org
+References: <1610958662-71166-1-git-send-email-abaci-bugfix@linux.alibaba.com>
+In-Reply-To: <1610958662-71166-1-git-send-email-abaci-bugfix@linux.alibaba.com>
+To:     Jiapeng Zhong <abaci-bugfix@linux.alibaba.com>
+Cc:     jhs@mojatatu.com, xiyou.wangcong@gmail.com, jiri@resnulli.us,
+        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 Hello:
 
-This series was applied to netdev/net-next.git (refs/heads/master):
+This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On Fri, 15 Jan 2021 21:28:47 +0200 you wrote:
-> Hi
+On Mon, 18 Jan 2021 16:31:02 +0800 you wrote:
+> Fix the following coccicheck warnings:
 > 
-> This series introduces basic support for recently introduced TI K3 AM642x SoC [1]
-> which contains 3 port (2 external ports) CPSW3g module. The CPSW3g integrated
-> in MAIN domain and can be configured in multi port or switch modes.
-> In this series only multi port mode is enabled. The initial version of switchdev
-> support was introduced by Vignesh Raghavendra [2] and work is in progress.
+> ./net/sched/sch_taprio.c:393:3-16: WARNING: Assignment of 0/1 to bool
+> variable.
+> 
+> ./net/sched/sch_taprio.c:375:2-15: WARNING: Assignment of 0/1 to bool
+> variable.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,1/6] dt-binding: ti: am65x-cpts: add assigned-clock and power-domains props
-    https://git.kernel.org/netdev/net-next/c/b3228c74e0d2
-  - [net-next,2/6] dt-binding: net: ti: k3-am654-cpsw-nuss: update bindings for am64x cpsw3g
-    https://git.kernel.org/netdev/net-next/c/19d9a846d9fc
-  - [net-next,3/6] net: ethernet: ti: am65-cpsw-nuss: Use DMA device for DMA API
-    https://git.kernel.org/netdev/net-next/c/ed569ed9b30a
-  - [net-next,4/6] net: ethernet: ti: am65-cpsw-nuss: Support for transparent ASEL handling
-    https://git.kernel.org/netdev/net-next/c/39fd0547ee66
-  - [net-next,5/6] net: ti: cpsw_ale: add driver data for AM64 CPSW3g
-    https://git.kernel.org/netdev/net-next/c/1dd3841033b3
-  - [net-next,6/6] net: ethernet: ti: am65-cpsw: add support for am64x cpsw3g
-    https://git.kernel.org/netdev/net-next/c/4f7cce272403
+  - taprio: boolean values to a bool variable
+    https://git.kernel.org/netdev/net-next/c/0deee7aa23a5
 
 You are awesome, thank you!
 --
