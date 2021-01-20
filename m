@@ -2,97 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 287B42FC8E4
-	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 04:30:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 73E622FC988
+	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 04:55:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728632AbhATD2f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 19 Jan 2021 22:28:35 -0500
-Received: from mail.kernel.org ([198.145.29.99]:41078 "EHLO mail.kernel.org"
+        id S1730916AbhATC2o (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 19 Jan 2021 21:28:44 -0500
+Received: from mail.kernel.org ([198.145.29.99]:47348 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730611AbhATD2W (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 19 Jan 2021 22:28:22 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 228F3207CF;
-        Wed, 20 Jan 2021 03:27:41 +0000 (UTC)
+        id S1729984AbhATB2N (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 19 Jan 2021 20:28:13 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 6E27523331;
+        Wed, 20 Jan 2021 01:26:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611113261;
-        bh=qwEcfH8ALpqHY4QLfXxIVBaWUbQ0T6hlJaiVM7mRZdU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=VyN5nSoXEFapU3Jg30vfsvoVbFxqnjgMOSPghyhGOoJxvWb1QZwmYkiRY4qKK7EHL
-         kgsnI89IxEpOR1vadSvmo54StSfs2IK9WhOQkNMGEHj7oPhVe1RezCxh4ogl3vIZi0
-         n8cVI2LfrHpGToBy5JUupb8i6/uJIzez5MIWMqK3h09EXLMpfBYW0qp2zk7gKP3OlQ
-         g+XcwK5PwrujswPdKhFLy55BCDzdSD7p5cw5/MdWvk4gd/GQswywHkvfJ+KHA9FxfH
-         66Wh3Lkna+5CB6irWR2hEs91EvxE7fK9f+rcoyG2tQAQdHz7LzNzZ9pE4lJkKTddpM
-         SNqluNAMET8gw==
-Date:   Tue, 19 Jan 2021 19:27:39 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Saeed Mahameed <saeed@kernel.org>, Parav Pandit <parav@nvidia.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jason Gunthorpe <jgg@nvidia.com>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, Vu Pham <vuhuong@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: Re: [net-next V7 03/14] devlink: Support add and delete devlink
- port
-Message-ID: <20210119192739.0b3d8cf4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210118201231.363126-4-saeed@kernel.org>
-References: <20210118201231.363126-1-saeed@kernel.org>
-        <20210118201231.363126-4-saeed@kernel.org>
+        s=k20201202; t=1611105990;
+        bh=7IpY0UwZe9ppe5KB7Y5C665xMW42lX2p9h6Dq1MNHvE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=K1C9l5/jeqE88BsrnN6KvIkR5lZymu02lfbWOdJfI8M4yyMcI1Yup1GL9K7hwJ2uk
+         lr/5hJprPbaNumciq9/NTp/FXFm25P6ccYlS3OsqmmGAh6LarDGHn0B9tMALrnGOrY
+         vqn5jfIg3mGWyBi9JfVfMkonX+qcHFBu/Vl5h5gvHlYlu6bZ2AI3Jgf9cIa2T3EnI3
+         IHGHiKXrhh7q616suzGic7yA+RMQspuqEhwgIgYipB1g1Z3GqhYz4mGYgusJCa0C9B
+         2ndXGAEPJ063KnCQ7fazoGRawV91B3HuOFJAXTJ86RCscmGUS4BBVukcwQe5wuDEhl
+         BEDWF5iyJyFUg==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Leon Schuermann <leon@is.currently.online>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Sasha Levin <sashal@kernel.org>, linux-usb@vger.kernel.org,
+        netdev@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.10 21/45] r8152: Add Lenovo Powered USB-C Travel Hub
+Date:   Tue, 19 Jan 2021 20:25:38 -0500
+Message-Id: <20210120012602.769683-21-sashal@kernel.org>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20210120012602.769683-1-sashal@kernel.org>
+References: <20210120012602.769683-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 18 Jan 2021 12:12:20 -0800 Saeed Mahameed wrote:
-> From: Parav Pandit <parav@nvidia.com>
+From: Leon Schuermann <leon@is.currently.online>
 
-Saeed, this is closed to being merged - when you post the next version
-please make sure to CC appropriate folks, in particular anyone who ever
-commented on previous versions. Alex, DSA, Edwin, at a quick look but
-maybe more.
+[ Upstream commit cb82a54904a99df9e8f9e9d282046055dae5a730 ]
 
-> @@ -1362,6 +1373,33 @@ struct devlink_ops {
->  	int (*port_function_hw_addr_set)(struct devlink *devlink, struct devlink_port *port,
->  					 const u8 *hw_addr, int hw_addr_len,
->  					 struct netlink_ext_ack *extack);
-> +	/**
-> +	 * @port_new: Port add function.
-> +	 *
-> +	 * Should be used by device driver to let caller add new port of a
-> +	 * specified flavour with optional attributes.
+This USB-C Hub (17ef:721e) based on the Realtek RTL8153B chip used to
+use the cdc_ether driver. However, using this driver, with the system
+suspended the device constantly sends pause-frames as soon as the
+receive buffer fills up. This causes issues with other devices, where
+some Ethernet switches stop forwarding packets altogether.
 
-I think you missed my suggestion from v5, please replace this sentence
-with:
+Using the Realtek driver (r8152) fixes this issue. Pause frames are no
+longer sent while the host system is suspended.
 
-	Add a new port of a specified flavor with optional attributes.
+Signed-off-by: Leon Schuermann <leon@is.currently.online>
+Tested-by: Leon Schuermann <leon@is.currently.online>
+Link: https://lore.kernel.org/r/20210111190312.12589-2-leon@is.currently.online
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/net/usb/cdc_ether.c | 7 +++++++
+ drivers/net/usb/r8152.c     | 1 +
+ 2 files changed, 8 insertions(+)
 
-Saying that the callback is used by the callee doesn't sound right.
+diff --git a/drivers/net/usb/cdc_ether.c b/drivers/net/usb/cdc_ether.c
+index 8c1d61c2cbacb..6aaa0675c28a3 100644
+--- a/drivers/net/usb/cdc_ether.c
++++ b/drivers/net/usb/cdc_ether.c
+@@ -793,6 +793,13 @@ static const struct usb_device_id	products[] = {
+ 	.driver_info = 0,
+ },
+ 
++/* Lenovo Powered USB-C Travel Hub (4X90S92381, based on Realtek RTL8153) */
++{
++	USB_DEVICE_AND_INTERFACE_INFO(LENOVO_VENDOR_ID, 0x721e, USB_CLASS_COMM,
++			USB_CDC_SUBCLASS_ETHERNET, USB_CDC_PROTO_NONE),
++	.driver_info = 0,
++},
++
+ /* ThinkPad USB-C Dock Gen 2 (based on Realtek RTL8153) */
+ {
+ 	USB_DEVICE_AND_INTERFACE_INFO(LENOVO_VENDOR_ID, 0xa387, USB_CLASS_COMM,
+diff --git a/drivers/net/usb/r8152.c b/drivers/net/usb/r8152.c
+index b1770489aca51..88f177aca342e 100644
+--- a/drivers/net/usb/r8152.c
++++ b/drivers/net/usb/r8152.c
+@@ -6893,6 +6893,7 @@ static const struct usb_device_id rtl8152_table[] = {
+ 	{REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x7205)},
+ 	{REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x720c)},
+ 	{REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x7214)},
++	{REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0x721e)},
+ 	{REALTEK_USB_DEVICE(VENDOR_ID_LENOVO,  0xa387)},
+ 	{REALTEK_USB_DEVICE(VENDOR_ID_LINKSYS, 0x0041)},
+ 	{REALTEK_USB_DEVICE(VENDOR_ID_NVIDIA,  0x09ff)},
+-- 
+2.27.0
 
-Same below, and also in patch 4.
-
-> +	 * Driver must return -EOPNOTSUPP if it doesn't support port addition
-> +	 * of a specified flavour or specified attributes. Driver should set
-> +	 * extack error message in case of failure. Driver callback is called
-> +	 * without holding the devlink instance lock. Driver must ensure
-> +	 * synchronization when adding or deleting a port. Driver must register
-> +	 * a port with devlink core.
-> +	 */
-> +	int (*port_new)(struct devlink *devlink,
-> +			const struct devlink_port_new_attrs *attrs,
-> +			struct netlink_ext_ack *extack,
-> +			unsigned int *new_port_index);
-> +	/**
-> +	 * @port_del: Port delete function.
-> +	 *
-> +	 * Should be used by device driver to let caller delete port which was
-> +	 * previously created using port_new() callback.
-
-ditto
-
-> +	 * Driver must return -EOPNOTSUPP if it doesn't support port deletion.
-> +	 * Driver should set extack error message in case of failure. Driver
-> +	 * callback is called without holding the devlink instance lock.
-> +	 */
-> +	int (*port_del)(struct devlink *devlink, unsigned int port_index,
-> +			struct netlink_ext_ack *extack);
->  };
