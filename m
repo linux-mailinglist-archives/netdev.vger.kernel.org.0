@@ -2,91 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1CFEF2FDFA4
-	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 03:45:50 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4E0F02FDF67
+	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 03:34:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388079AbhATXrg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jan 2021 18:47:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59068 "EHLO
+        id S1731791AbhATXta (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jan 2021 18:49:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732006AbhATVao (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 16:30:44 -0500
-Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63E32C06179E
-        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 13:26:16 -0800 (PST)
-Received: by mail-io1-xd35.google.com with SMTP id p72so25060198iod.12
-        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 13:26:16 -0800 (PST)
+        with ESMTP id S2388238AbhATVdR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 16:33:17 -0500
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F775C061387
+        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 13:28:03 -0800 (PST)
+Received: by mail-pf1-x436.google.com with SMTP id j12so8181488pfj.12
+        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 13:28:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ZgcJCeO5IRSICza2r6GEj0/QJ8rNtZfDDcOXMnAT21Y=;
-        b=laOq+sY8LdhQ82MV1OE2k34/xvmxGGN8PYlZcP/QlnQd36aPaJL0QwY6yrkwtxZsCG
-         AxO8a7SKnSFX6L3IDCUyZSeU29af28mcRdXZeBaDanpsvywcLg6uhJuFs1SCEmm7pDq/
-         PmlZuq+fvsBCSSMfV0Lqzk+P6TDZrGHWm6/rHAVtxwicLhPHz1ts5+Ln3upe9F/eTJoR
-         l8xNILxBwBTJYQH7gLYUCNlu4ENvip5fBJGVt34ijeCSf7IhrSynpli/uhfWVZ3FrqVE
-         7wMylBzj2Yg3sliX8JK0g3RSsBklNNot5FgTptKsiKbcZWWmp09TgTYsohXaHQgUJj6V
-         LvYg==
+        d=cloudflare.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=GxBZCxQsCUdkzL0jmb2W+BSX0fHFGApzy9UYWSaFsfA=;
+        b=OhlY4GugbFiYhJiu50/CtP/Z4AhcGkhphYKSdJZ2/86gZKj5DgbP0xh8gPW72Hu1A6
+         DdtuijJY97h56PMwDPtGJzrnccfMPqlK/eP0gdY6cZdZZMn4B9DGYTUZorFHmJ1+G8Xr
+         NL/TlrWm7blrSkHJaT1S9y0qoscP5XVa4ICtQ=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ZgcJCeO5IRSICza2r6GEj0/QJ8rNtZfDDcOXMnAT21Y=;
-        b=pDf5SuzmqgEfzAsk7O8gxSg4vA9nCwyKvjUN3Y8U1NTBMd8zH4ex0AXdAa2bJg94UE
-         ZZCDYsvXLajBuCfptPyKRDDtxFWUX/KVBdmlTr4viJbyP3eG0kKZalaaK8DqOswKQyRJ
-         V31h7iyKbpA6WQPQKZlzW8d56V8G7+06QWygltYhOfRehOoJ1Ovsm01VADlPgrCnRWof
-         D87G0uIWSaEgb1OsHF/qFrMDnbLIHapwKFmDOZQJ1kg2CScrWGErAg3H9pshzvm01JOS
-         qjKn7d3rI7LQzxGoHDz9gUneso5OGXz3VZePRYOCaahb7kLqbEfyPeJJXcC34DwGx29c
-         7VwA==
-X-Gm-Message-State: AOAM532Hi8AZf3fV8B2g2kGplblqO8FkVC5ldmdZ/hPLNGJHHe3teuIk
-        sRObfmGdzGf7WCpacZNX0sbFMQ==
-X-Google-Smtp-Source: ABdhPJxJj4nC6zIao/ax3tDl6ctcokGZcYWqetq/RRwKiBH/F8BiV38BeQQYHbVK6AY3DnZtx2DY3w==
-X-Received: by 2002:a92:5e11:: with SMTP id s17mr9482916ilb.23.1611177975159;
-        Wed, 20 Jan 2021 13:26:15 -0800 (PST)
-Received: from beast.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id q196sm1335687iod.27.2021.01.20.13.26.13
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=GxBZCxQsCUdkzL0jmb2W+BSX0fHFGApzy9UYWSaFsfA=;
+        b=pP4JGcIAj+vl6mWhue6FvuPXtRnnJPUItULVhgKNoj+qEndkev13yz/GsptwQPkcSh
+         2uFe1YfS21jQtS2Jewa6C65iH8ynATFl3+qXZ5UbPS+J3c4vrOG1R0oJ21IrvmNbvYMJ
+         E7NdN6Eks3uYSp7b8ct0Fs6E4QM/PeKSlB1YOYl5SJ/b2uwvOkUODiZwU7g/KYu9iKOi
+         QSDhLC9J27TFgK5kLWeyUqN4pZJ+FMKbGlUPm5JADp40/Q8ZoZ94LEYyKYf+PIJDc5+I
+         Zz4sMQSJSd/0PMT+fM3aKfSKqlWeoaAlWQaqnoYlXoE26j5EnvIVRWX2N84CEvHmlM7G
+         RjBA==
+X-Gm-Message-State: AOAM5303Mqh0hbrw0F43cOIPUMll/EQlzYvvggskZMN7DPE9jDTknj9j
+        xpk/drez0pr8z0Qe3ZxGC4mcNG0MwiTEcMhO
+X-Google-Smtp-Source: ABdhPJxb7pqkpkXuCPIl0IM+TI3xg276y5qgR0X0JvSQHkz1P/VfETOx1bM+4MTqcRozXgRQX2iOiA==
+X-Received: by 2002:a63:f255:: with SMTP id d21mr4170608pgk.149.1611178082371;
+        Wed, 20 Jan 2021 13:28:02 -0800 (PST)
+Received: from localhost ([2604:5500:c29c:d401:f404:1a29:5dd:89c3])
+        by smtp.gmail.com with ESMTPSA id 14sm2974952pfi.131.2021.01.20.13.28.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Jan 2021 13:26:14 -0800 (PST)
-From:   Alex Elder <elder@linaro.org>
-To:     davem@davemloft.net, kuba@kernel.org, bjorn.andersson@linaro.org,
-        agross@kernel.org
-Cc:     robh+dt@kernel.org, evgreen@chromium.org, cpratapa@codeaurora.org,
-        subashab@codeaurora.org, rdunlap@infradead.org,
-        netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Subject: [PATCH v3 net-next 3/4] arm64: dts: qcom: sc7180: kill IPA modem-remoteproc property
-Date:   Wed, 20 Jan 2021 15:26:05 -0600
-Message-Id: <20210120212606.12556-4-elder@linaro.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20210120212606.12556-1-elder@linaro.org>
-References: <20210120212606.12556-1-elder@linaro.org>
+        Wed, 20 Jan 2021 13:28:01 -0800 (PST)
+From:   Ivan Babrou <ivan@cloudflare.com>
+To:     netdev@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
+        kernel-team@cloudflare.com, Ivan Babrou <ivan@cloudflare.com>,
+        Edward Cree <ecree.xilinx@gmail.com>,
+        Martin Habets <habetsm.xilinx@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>
+Subject: [PATCH net-next] sfc: reduce the number of requested xdp ev queues
+Date:   Wed, 20 Jan 2021 13:27:59 -0800
+Message-Id: <20210120212759.81548-1-ivan@cloudflare.com>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The "modem-remoteproc" property is no longer required for the IPA
-driver, so get rid of it.
+Without this change the driver tries to allocate too many queues,
+breaching the number of available msi-x interrupts on machines
+with many logical cpus and default adapter settings:
 
-Signed-off-by: Alex Elder <elder@linaro.org>
+Insufficient resources for 12 XDP event queues (24 other channels, max 32)
+
+Which in turn triggers EINVAL on XDP processing:
+
+sfc 0000:86:00.0 ext0: XDP TX failed (-22)
+
+Signed-off-by: Ivan Babrou <ivan@cloudflare.com>
 ---
- arch/arm64/boot/dts/qcom/sc7180.dtsi | 2 --
- 1 file changed, 2 deletions(-)
+ drivers/net/ethernet/sfc/efx_channels.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/sc7180.dtsi b/arch/arm64/boot/dts/qcom/sc7180.dtsi
-index 22b832fc62e3d..003309f0d3e18 100644
---- a/arch/arm64/boot/dts/qcom/sc7180.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sc7180.dtsi
-@@ -1434,8 +1434,6 @@
- 			qcom,smem-state-names = "ipa-clock-enabled-valid",
- 						"ipa-clock-enabled";
+diff --git a/drivers/net/ethernet/sfc/efx_channels.c b/drivers/net/ethernet/sfc/efx_channels.c
+index a4a626e9cd9a..1bfeee283ea9 100644
+--- a/drivers/net/ethernet/sfc/efx_channels.c
++++ b/drivers/net/ethernet/sfc/efx_channels.c
+@@ -17,6 +17,7 @@
+ #include "rx_common.h"
+ #include "nic.h"
+ #include "sriov.h"
++#include "workarounds.h"
  
--			modem-remoteproc = <&remoteproc_mpss>;
+ /* This is the first interrupt mode to try out of:
+  * 0 => MSI-X
+@@ -137,6 +138,7 @@ static int efx_allocate_msix_channels(struct efx_nic *efx,
+ {
+ 	unsigned int n_channels = parallelism;
+ 	int vec_count;
++	int tx_per_ev;
+ 	int n_xdp_tx;
+ 	int n_xdp_ev;
+ 
+@@ -149,9 +151,9 @@ static int efx_allocate_msix_channels(struct efx_nic *efx,
+ 	 * multiple tx queues, assuming tx and ev queues are both
+ 	 * maximum size.
+ 	 */
 -
- 			status = "disabled";
- 		};
++	tx_per_ev = EFX_MAX_EVQ_SIZE / EFX_TXQ_MAX_ENT(efx);
+ 	n_xdp_tx = num_possible_cpus();
+-	n_xdp_ev = DIV_ROUND_UP(n_xdp_tx, EFX_MAX_TXQ_PER_CHANNEL);
++	n_xdp_ev = DIV_ROUND_UP(n_xdp_tx, tx_per_ev);
  
+ 	vec_count = pci_msix_vec_count(efx->pci_dev);
+ 	if (vec_count < 0)
 -- 
-2.20.1
+2.29.2
 
