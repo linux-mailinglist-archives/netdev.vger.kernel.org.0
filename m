@@ -2,281 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C49552FD524
-	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 17:14:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 04EEA2FD533
+	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 17:14:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726439AbhATQLr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jan 2021 11:11:47 -0500
-Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:16008 "EHLO
-        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732749AbhATQKw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 11:10:52 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B600855d20000>; Wed, 20 Jan 2021 08:09:54 -0800
-Received: from [172.27.0.253] (172.20.145.6) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Wed, 20 Jan
- 2021 16:09:51 +0000
-Subject: Re: [net-next 08/15] net/mlx5e: CT: Preparation for offloading
- +trk+new ct rules
-To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>
-CC:     Roi Dayan <roid@nvidia.com>, Saeed Mahameed <saeed@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        Paul Blakey <paulb@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-References: <20210108053054.660499-1-saeed@kernel.org>
- <20210108053054.660499-9-saeed@kernel.org>
- <20210108214812.GB3678@horizon.localdomain>
- <c11867d2-6fda-d77c-6b52-f4093c751379@nvidia.com>
- <218258b2-3a86-2d87-dfc6-8b3c1e274b26@nvidia.com>
- <20210111235116.GA2595@horizon.localdomain>
- <f25eee28-4c4a-9036-8c3d-d84b15a8b5e7@nvidia.com>
- <20210114130238.GA2676@horizon.localdomain>
- <d1b5b862-8c30-efb6-1a2f-4f9f0d49ef15@nvidia.com>
- <20210114215052.GB2676@horizon.localdomain>
-From:   Oz Shlomo <ozsh@nvidia.com>
-Message-ID: <009bd8cf-df39-5346-b892-4e68a042c4b4@nvidia.com>
-Date:   Wed, 20 Jan 2021 18:09:48 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
+        id S2391294AbhATQOf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jan 2021 11:14:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47248 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2391338AbhATQNo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 11:13:44 -0500
+Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0637C061575
+        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 08:13:03 -0800 (PST)
+Received: by mail-io1-xd33.google.com with SMTP id p72so23134025iod.12
+        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 08:13:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=pWOxMTP51ISi4PRYG2+h1trMlNivuZ+0gVNmY3W4pJM=;
+        b=fn5jqCvuxkxNb0MNHKrZzi1mBb4R2EF2Awll07gVgMHB70kg+vpErkZicAMRDLXZfa
+         IYlAdZuEsMYBYPV27AjsaN76VvAnn3+OAye5+2v4AmP831Fum8tyzaDUSm2QAlcd6tv6
+         zNbMp9zWaLJsPqNT+Q8gEUMK75zkdwkDG4hQM5HFsJYSnzOeEjlp/7Wg/VE0tCk8hBVS
+         Iami4MyHAYOW+rYpwB5eFKdPWKzPPlHxtcJrThyf04IZsER7Cl5TOv/DSplMWBjZekhG
+         ICtGk7LNjmKNCGpx0VBlwjtMVSjCFJAmTYG8yPDg0wHzQJSqM/WSxYvNMTG1k3s5sz1W
+         Ix/Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=pWOxMTP51ISi4PRYG2+h1trMlNivuZ+0gVNmY3W4pJM=;
+        b=fhL4Lo5M87eiC6mYZHPvw2LHEjwNZpcbphEVE60iM+nK4cTsJfGeVKs7ITKr6OAoGz
+         pwfRbRlInVYkUem9osnXcgE+dklxFMf/5qycNz4bage15btJ/h1kcXSrcaNgX4/AWXbC
+         uBqlWdqjYeEaCv8AGEI2dstljW5IAqGh6gwcXm0thYldVBmwcd9Fa78IdmOIPUfUA4Mt
+         1Wya0gRiwOTtX3VTZxwbZVigqHJf48udtAyqOSEfUSH40KtsbplAeAaqAjVo6VLlWUql
+         O5ZMhshW7nsngwF2Nt15n0UHLbcpMTz05S3+U/NV9ESRAUdpM7/0nk9Q+Hw7ikGrW4oa
+         OYLw==
+X-Gm-Message-State: AOAM532M2UE88hluhjx4IQQr4LwQjQs6pR0JjFC2GU90D7F3pt10e4q4
+        yIqH2FkMrlVbag7+JABKwsH1blUGBhlRAtCyfQo=
+X-Google-Smtp-Source: ABdhPJyE/wGX4Xup02vHUcTeAIwo6mrCB78FtnHwf53qUb1GmHo6wBIpD3nP6MYjlLJLbeyxLKWAh8J+jZjW0yarYcQ=
+X-Received: by 2002:a6b:d007:: with SMTP id x7mr7427773ioa.88.1611159183095;
+ Wed, 20 Jan 2021 08:13:03 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20210114215052.GB2676@horizon.localdomain>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: quoted-printable
-X-Originating-IP: [172.20.145.6]
-X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
- HQMAIL107.nvidia.com (172.20.187.13)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1611158994; bh=KtvcxdUVYJj2Vk2noaQdHd+Vebf+mMuA7VWF5EwDe5I=;
-        h=Subject:To:CC:References:From:Message-ID:Date:User-Agent:
-         MIME-Version:In-Reply-To:Content-Type:Content-Language:
-         Content-Transfer-Encoding:X-Originating-IP:X-ClientProxiedBy;
-        b=OPhYBgqraY3ljut+PZI+Hj1JOhSAKibaFQ+EoGYqOdo5poBy02Jc1+rDbil/j7Rji
-         mi3wATLfOrgF4MG5W9d1ISzqcAffwqq74XcDlEJRfIEXujwA0qmKbGCnNwEZYYPyYN
-         dop3Fudi7gBlhavLDqp8cG1QjlvnNEaEPtc0oqAm6933xhUhNoE87cC6Nrn1yp5ula
-         dgXg3jCQcMSE6gyrBMHaU7BFqCbbX6clCYzN1z2lsuIRHyIUP8gWE9FgznKVZ9Tr4v
-         vZCzy02xuD2PBaYjSHPLihk3O1LNoQOrfOEviBpQyyeTTJhEfLdBTR36NEqr0vkh+f
-         75HjSKs9ppdCw==
+References: <20210120033455.4034611-1-weiwan@google.com> <20210120033455.4034611-4-weiwan@google.com>
+In-Reply-To: <20210120033455.4034611-4-weiwan@google.com>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Wed, 20 Jan 2021 08:12:51 -0800
+Message-ID: <CAKgT0UdKXjPM7sf2qKntEZQWgmDq0yfTOtcfevkZFY11kVK4Qg@mail.gmail.com>
+Subject: Re: [PATCH net-next v7 3/3] net: add sysfs attribute to control napi
+ threaded mode
+To:     Wei Wang <weiwan@google.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Netdev <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Hannes Frederic Sowa <hannes@stressinduktion.org>,
+        Felix Fietkau <nbd@nbd.name>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Tue, Jan 19, 2021 at 7:35 PM Wei Wang <weiwan@google.com> wrote:
+>
+> This patch adds a new sysfs attribute to the network device class.
+> Said attribute provides a per-device control to enable/disable the
+> threaded mode for all the napi instances of the given network device.
+> User sets it to 1 or 0 to enable or disable threaded mode per device.
+> However, when user reads from this sysfs entry, it could return:
+>   1: means all napi instances belonging to this device have threaded
+> mode enabled.
+>   0: means all napi instances belonging to this device have threaded
+> mode disabled.
+>   -1: means the system fails to enable threaded mode for certain napi
+> instances when user requests to enable threaded mode. This happens
+> when the kthread fails to be created for certain napi instances.
+>
+> Co-developed-by: Paolo Abeni <pabeni@redhat.com>
+> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+> Co-developed-by: Hannes Frederic Sowa <hannes@stressinduktion.org>
+> Signed-off-by: Hannes Frederic Sowa <hannes@stressinduktion.org>
+> Co-developed-by: Felix Fietkau <nbd@nbd.name>
+> Signed-off-by: Felix Fietkau <nbd@nbd.name>
+> Signed-off-by: Wei Wang <weiwan@google.com>
+> ---
+>  include/linux/netdevice.h |  2 ++
+>  net/core/dev.c            | 28 ++++++++++++++++
+>  net/core/net-sysfs.c      | 68 +++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 98 insertions(+)
+>
+> diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+> index 8cb8d43ea5fa..26c3e8cf4c01 100644
+> --- a/include/linux/netdevice.h
+> +++ b/include/linux/netdevice.h
+> @@ -497,6 +497,8 @@ static inline bool napi_complete(struct napi_struct *n)
+>         return napi_complete_done(n, 0);
+>  }
+>
+> +int dev_set_threaded(struct net_device *dev, bool threaded);
+> +
+>  /**
+>   *     napi_disable - prevent NAPI from scheduling
+>   *     @n: NAPI context
+> diff --git a/net/core/dev.c b/net/core/dev.c
+> index 7ffa91475856..e71c2fd91595 100644
+> --- a/net/core/dev.c
+> +++ b/net/core/dev.c
+> @@ -6767,6 +6767,34 @@ static int napi_set_threaded(struct napi_struct *n, bool threaded)
+>         return 0;
+>  }
+>
+> +static void dev_disable_threaded_all(struct net_device *dev)
+> +{
+> +       struct napi_struct *napi;
+> +
+> +       list_for_each_entry(napi, &dev->napi_list, dev_list)
+> +               napi_set_threaded(napi, false);
+> +}
+> +
+> +int dev_set_threaded(struct net_device *dev, bool threaded)
+> +{
+> +       struct napi_struct *napi;
+> +       int ret;
+> +
+> +       dev->threaded = threaded;
+> +       list_for_each_entry(napi, &dev->napi_list, dev_list) {
+> +               ret = napi_set_threaded(napi, threaded);
+> +               if (ret) {
+> +                       /* Error occurred on one of the napi,
+> +                        * reset threaded mode on all napi.
+> +                        */
+> +                       dev_disable_threaded_all(dev);
+> +                       break;
+> +               }
+> +       }
+> +
+> +       return ret;
+> +}
+> +
 
+So I have a question about this function. Is there any reason why
+napi_set_threaded couldn't be broken into two pieces and handled in
+two passes with the first allocating the kthread and the second
+setting the threaded bit assuming the allocations all succeeded? The
+setting or clearing of the bit shouldn't need any return value since
+it is void and the allocation of the kthread is the piece that can
+fail. So it seems like it would make sense to see if you can allocate
+all of the kthreads first before you go through and attempt to enable
+threaded NAPI.
 
-On 1/14/2021 11:50 PM, Marcelo Ricardo Leitner wrote:
-> On Thu, Jan 14, 2021 at 04:03:43PM +0200, Oz Shlomo wrote:
->>
->>
->> On 1/14/2021 3:02 PM, Marcelo Ricardo Leitner wrote:
->>> On Tue, Jan 12, 2021 at 11:27:04AM +0200, Oz Shlomo wrote:
->>>>
->>>>
->>>> On 1/12/2021 1:51 AM, Marcelo Ricardo Leitner wrote:
->>>>> On Sun, Jan 10, 2021 at 09:52:55AM +0200, Roi Dayan wrote:
->>>>>>
->>>>>>
->>>>>> On 2021-01-10 9:45 AM, Roi Dayan wrote:
->>>>>>>
->>>>>>>
->>>>>>> On 2021-01-08 11:48 PM, Marcelo Ricardo Leitner wrote:
->>>>>>>> Hi,
->>>>>>>>
->>>>>>>> On Thu, Jan 07, 2021 at 09:30:47PM -0800, Saeed Mahameed wrote:
->>>>>>>>> From: Roi Dayan <roid@nvidia.com>
->>>>>>>>>
->>>>>>>>> Connection tracking associates the connection state per packet. T=
-he
->>>>>>>>> first packet of a connection is assigned with the +trk+new state.=
- The
->>>>>>>>> connection enters the established state once a packet is seen on =
-the
->>>>>>>>> other direction.
->>>>>>>>>
->>>>>>>>> Currently we offload only the established flows. However, UDP tra=
-ffic
->>>>>>>>> using source port entropy (e.g. vxlan, RoCE) will never enter the
->>>>>>>>> established state. Such protocols do not require stateful process=
-ing,
->>>>>>>>> and therefore could be offloaded.
->>>>>>>>
->>>>>>>> If it doesn't require stateful processing, please enlight me on wh=
-y
->>>>>>>> conntrack is being used in the first place. What's the use case he=
-re?
->>>>>>>>
->>>>>>>
->>>>>>> The use case for example is when we have vxlan traffic but we do
->>>>>>> conntrack on the inner packet (rules on the physical port) so
->>>>>>> we never get established but on miss we can still offload as normal
->>>>>>> vxlan traffic.
->>>>>>>
->>>>>>
->>>>>> my mistake about "inner packet". we do CT on the underlay network, i=
-.e.
->>>>>> the outer header.
->>>>>
->>>>> I miss why the CT match is being used there then. Isn't it a config
->>>>> issue/waste of resources? What is CT adding to the matches/actions
->>>>> being done on these flows?
->>>>>
->>>>
->>>> Consider a use case where the network port receives both east-west
->>>> encapsulated traffic and north-south non-encapsulated traffic that req=
-uires
->>>> NAT.
->>>>
->>>> One possible configuration is to first apply the CT-NAT action.
->>>> Established north-south connections will successfully execute the nat =
-action
->>>> and will set the +est ct state.
->>>> However, the +new state may apply either for valid east-west traffic (=
-e.g.
->>>> vxlan) due to source port entropy, or to insecure north-south traffic =
-that
->>>> the fw should block. The user may distinguish between the two cases, f=
-or
->>>> example, by matching on the dest udp port.
->>>
->>> Sorry but I still don't see the big picture. :-]
->>>
->>> What do you consider as east-west and north-south traffic? My initial
->>> understanding of east-west is traffic between VFs and north-south
->>> would be in and out to the wire. You mentioned that north-south is
->>> insecure, it would match, but then, non-encapsulated?
->>>
->>> So it seems you referred to the datacenter. East-west is traffic
->>> between hosts on the same datacenter, and north-south is traffic that
->>> goes out of it. This seems to match.
->>
->> Right.
->>
->>>
->>> Assuming it's the latter, then it seems that the idea is to work
->>> around a config simplification that was done by the user.  As
->>> mentioned on the changelog, such protocols do not require stateful
->>> processing, and AFAICU this patch twists conntrack so that the user
->>> can have simplified rules. Why can't the user have specific rules for
->>> the tunnels, and other for dealing with north-south traffic? The fw
->>> would still be able to block unwanted traffic.
->>
->> We cannot control what the user is doing.
->=20
-> Right, but we can educate and point them towards better configs. With
-> non-optimal configs it's fair to expect non-optimal effects.
->=20
->> This is a valid tc configuration and would work using tc software datapa=
-th.
->> However, in such configurations vxlan packets would not be processed in
->> hardware because they are marked as new connections.
->=20
-> Makes sense.
->=20
->>
->>>
->>> My main problems with this is this, that it is making conntrack do
->>> stuff that the user may not be expecting it to do, and that packets
->>> may get matched (maybe even unintentionally) and the system won't have
->>> visibility on them. Maybe I'm just missing something?
->>>
->>
->> This is why we restricted this feature to udp protocols that will never
->> enter established state due to source port entropy.
->> Do you see a problematic use case that can arise?
->=20
-> For use case, the only one I see is if someone wants to use this
-> feature for another application/dstport. It's hardcoded to tunnels
-> ones.
+Then you should only need to make a change to netif_napi_add that will
+allocate the kthread if adding a new instance on a device that is
+running in threaded mode and if a thread allocation fails you could
+clear dev->threaded so that when napi_enable is called we don't bother
+enabling any threaded setups since some of the threads are
+non-functional.
 
-It's a hardware offload optimization feature.
-This is why we chose to support specific protocols that explicitly define s=
-ource port entropy.
-
->=20
-> It feels that the problem is not being solved at the right place. It
-> will work well for hardware processing, while for software it will
-> work while having a ton of conntrack entries. Different behaviors that
-> can lead to people wasting time. Like, trying to debug on why srcport
-> is not getting randomized when offloaded, while in fact they are, it's
-> just masked.
-
-The SW and HW offload are functionally identical.
-You are correct that with this patch the UNREPLIED CT entries will not be v=
-isible to the user=20
-through /proc/net/nf_conntrack
-
->=20
-> As this is a fallback (iow, search is done in 2 levels at least), I
-> wonder what other approaches were considered. I'm thinking two for
-> now. One is to add a flag to conntrack entries that allow them to be
-> this generic. Finding the right conntrack entry probably gets harder,
-> but when the user dumps /proc/net/nf_conntrack, it says something. On
-> how/when to add this flag, maybe act_ct can do it if dstport matches
-> something and/or a sysctl specifying a port list.
->=20
-> The other one may sound an overkill, but is to work with conntrack
-> expectations somehow.
->=20
-> The first one is closer to the current proposal. It basically makes
-> the port list configurable and move the "do it" decision to outside
-> the driver, where the admin can have more control. If conntrack itself
-> can also leverage it and avoid having tons of entries, even better, as
-> then we have both behaviors in sync.
-
-IIUC you propose a mechanism for avoiding CT processing of packets with a c=
-ertain mask (e.g. based=20
-on dst udp port). Configured by admin and enforced by act_ct or even conntr=
-ack itself.
-
-If so, this seems like a fundamental change to nf conntrack requiring it to=
- add packet=20
-classification engines.
-
->=20
-> Thoughts?
->=20
-
-I wonder if we should develop a generic mechanism to optimize CT software f=
-or a use case that is=20
-faulty by design.
-This has limited value for software as it would only reduce the conntrack t=
-able size (packet=20
-classification is still required).
-However, this feature may have a big impact on hardware offload.
-Normally hardware offload relies on software to handle new connections. Cau=
-sing all new connections=20
-to be processed by software.
-With this patch the hardware may autonomously set the +new connection state=
- for the relevant=20
-connections.
-
-
-
->>
->>>>
->>>>
->>>>>>
->>>>>>>>>
->>>>>>>>> The change in the model is that a miss on the CT table will be fo=
-rwarded
->>>>>>>>> to a new +trk+new ct table and a miss there will be forwarded to
->>>>>>>>> the slow
->>>>>>>>> path table.
->>>>>>>>
->>>>>>>> AFAICU this new +trk+new ct table is a wildcard match on sport wit=
-h
->>>>>>>> specific dports. Also AFAICU, such entries will not be visible to =
-the
->>>>>>>> userspace then. Is this right?
->>>>>>>>
->>>>>>>>    =C2=A0=C2=A0 Marcelo
->>>>>>>>
->>>>>>>
->>>>>>> right.
->>>>>
->>>>> Thanks,
->>>>> Marcelo
->>>>>
->>>>
->>
+Doing so would guarantee all-or-nothing behavior and you could then
+just use the dev->threaded to signal if the device is running threaded
+or not as you could just clear it if the kthread allocation fails.
