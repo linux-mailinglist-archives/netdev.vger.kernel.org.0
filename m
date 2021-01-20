@@ -2,89 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8C4EA2FCEF6
-	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 12:20:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0585C2FCEF7
+	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 12:20:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729375AbhATLPZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jan 2021 06:15:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50534 "EHLO
+        id S2389018AbhATLPa (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jan 2021 06:15:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729818AbhATJzK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 04:55:10 -0500
-Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CCAFC061575;
-        Wed, 20 Jan 2021 01:54:30 -0800 (PST)
-Received: by mail-lj1-x22d.google.com with SMTP id i17so189767ljn.1;
-        Wed, 20 Jan 2021 01:54:30 -0800 (PST)
+        with ESMTP id S1731697AbhATKPa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 05:15:30 -0500
+Received: from mail-oo1-xc31.google.com (mail-oo1-xc31.google.com [IPv6:2607:f8b0:4864:20::c31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 378C2C061757
+        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 02:14:50 -0800 (PST)
+Received: by mail-oo1-xc31.google.com with SMTP id v19so5658012ooj.7
+        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 02:14:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=konsulko.com; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=1Dzgt9eOErv7DRncKnAq6YJRbBsHovoN+K2WQNL3Z+8=;
-        b=i4L+8exRf8lZaHTBzZPCPFSzSc+e00vaZuS4BnMHCc5zLodWr1iZ3wAYs11U8kBWDx
-         Ql6TFIOJbwSFm2uj9IBHnVmfV+wN94OZ2XezIkgDorrGD43fsxSJUUMQFhwHtM6zM670
-         RBcCKg8s964NGEL+12NSQamZqWozbLnwsJmNTUrpm4HTrvgt29zioadEOhGUgScFoxI6
-         XI8YR1CgfbPAxLAmq43FmO/1nkYF/Ycm3m+EkiKvV8mjlveoDtrBZqzoF5kSEdMYbooG
-         xoypAOB2q3SaksfogjIGkMoLn0Ym0MkofVA2IqCZB6MEfHfKi8ynpRDAZNt6oK1fbLeQ
-         J+dw==
+        bh=R9idl7djP/gcI8ZRUI+MwR5AMr2tzGw5NapcssCm1Rg=;
+        b=TKhbts8e8cd00QY6PS+y8hDHsMmA9IzKZTKBwRsNhAfa10jseWGltBvLM3xMiGrG9M
+         wM3xzExSL2RYGgpLnVRfk46oGIlYv2jmWD2tp2mj3xrJQpqkYBhPTN3QsGppio6R3TIy
+         zvNiJ0LQQQzQ/GB/CVCkG2dqhZl7fwCRIaccw=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=1Dzgt9eOErv7DRncKnAq6YJRbBsHovoN+K2WQNL3Z+8=;
-        b=SC1Kqe9fBk1AXgIUNNJEqWhuYs6aTV+wPeRvtZgNvEYKfv/FLO1UhkBWii3q+xm741
-         0tcFgEaI7kGRy7OD5REs3toMN6bzCxjkVtXN1i27+q+Ivt+YImcUDNGDoD00efAmeQn2
-         wWFOGjSCLHSzIJI5jYY0xX1shIaFc52Fo+jtN5k0bVkQHMKDyniHoHKrd6eOe7XMi/Sp
-         FsRtj71zRFPv1Rh9SGC+tJgVqEtoVXuMCyJCf1vCoflXeOCitBzJFLedQr5ypAMXyOS+
-         +ATFoc9g5+X9CLfVrOGdsJTe51YYS+3EQdaaCl86ZIT2HHqan9UaF/G8dtN7/xvIb4zQ
-         Evig==
-X-Gm-Message-State: AOAM532iRM3xLJW+Wphb/i8DSJXikPMdHSTwRZfaSMjXStdqaM16H14I
-        eLNBT0MgA879+EFS8iFKvB6Z6A4oJxh/BYl00sw=
-X-Google-Smtp-Source: ABdhPJwvMiO84gkALjBZYV/Z8117B5Fi5UzzquECd8v/xmJfuxLrV4PrxacoLeKawiqrEkSVrrKWWYw6Pxw4PasRCAU=
-X-Received: by 2002:a2e:bc1e:: with SMTP id b30mr4263478ljf.18.1611136468818;
- Wed, 20 Jan 2021 01:54:28 -0800 (PST)
+        bh=R9idl7djP/gcI8ZRUI+MwR5AMr2tzGw5NapcssCm1Rg=;
+        b=VvO/athviDAgnXDl25gRN2fwewa/KUqgQMSwZP7sPGDKPdc8YFzkqR18+hTQFNf5oU
+         bAkoRZxosgnFkY98UXH+uQ1YtWoX3mxV4bkJS0WfM/WnL3udmqyZ3JoU/i4JE0uoY0JB
+         rzbtd3GUPAn0u5ilmquRbWeCkuJCD4mZM5EuHLchbVmeD7NzIiK8i+/cDfzW3NWepIuN
+         WJ8eH/A0qkQYRFqtJbzWD5qiSgBHrLkN0IkOKVoDVvDoHGtbT+Fq98AZEp7OAWxQZ9Y7
+         gBu/EcKOZqsU8e4vOiqBnV0VLap/us7rlA6lUokJ9kl1Q2mcHhmqKIK9BDU/aExSaeuG
+         3xjg==
+X-Gm-Message-State: AOAM5321pKtxRuNCmQ7zgo+983RFRQehjha87gnA9hh+m1yElWTFem50
+        B+8LDWzC8j02FLOb5Mi/Q837PbfW4CDnFqG7nthHtw==
+X-Google-Smtp-Source: ABdhPJwuOe+XYU4kFMWEkXZOeE1U7B1ket2TemK2p5GwmQD2tBc5oAh4mJjqvg6ivlHpO7gzbE6TQs1AdNgEZs0T6D0=
+X-Received: by 2002:a4a:e9f2:: with SMTP id w18mr4805688ooc.88.1611137689604;
+ Wed, 20 Jan 2021 02:14:49 -0800 (PST)
 MIME-Version: 1.0
-References: <20210118205522.317087-1-bongsu.jeon@samsung.com> <161110440860.4771.13780876306648585886.git-patchwork-notify@kernel.org>
-In-Reply-To: <161110440860.4771.13780876306648585886.git-patchwork-notify@kernel.org>
-From:   Bongsu Jeon <bongsu.jeon2@gmail.com>
-Date:   Wed, 20 Jan 2021 18:54:17 +0900
-Message-ID: <CACwDmQBZ-LVursCYmtngyv3yFCQ9_Jkip03VZ8cd1auNu86V8A@mail.gmail.com>
-Subject: Re: [PATCH net] net: nfc: nci: fix the wrong NCI_CORE_INIT parameters
-To:     patchwork-bot+netdevbpf@kernel.org
-Cc:     davem@davemloft.net, Jakub Kicinski <kuba@kernel.org>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-nfc@lists.01.org, Bongsu Jeon <bongsu.jeon@samsung.com>
+References: <20210120030502.617185-1-marex@denx.de>
+In-Reply-To: <20210120030502.617185-1-marex@denx.de>
+From:   Paul Barker <pbarker@konsulko.com>
+Date:   Wed, 20 Jan 2021 10:14:40 +0000
+Message-ID: <CAM9ZRVtWpc-VV7Or_sQXufq5c0-0ZfV1Tf2EYRLgo0Hc0digaA@mail.gmail.com>
+Subject: Re: [PATCH net-next V2] net: dsa: microchip: Adjust reset release
+ timing to match reference reset circuit
+To:     Marek Vasut <marex@denx.de>
+Cc:     Networking <netdev@vger.kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>, Jakub Kicinski <kuba@kernel.org>,
+        Michael Grzeschik <m.grzeschik@pengutronix.de>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 20, 2021 at 10:00 AM <patchwork-bot+netdevbpf@kernel.org> wrote:
+On Wed, 20 Jan 2021 at 03:05, Marek Vasut <marex@denx.de> wrote:
 >
-> Hello:
+> KSZ8794CNX datasheet section 8.0 RESET CIRCUIT describes recommended
+> circuit for interfacing with CPU/FPGA reset consisting of 10k pullup
+> resistor and 10uF capacitor to ground. This circuit takes ~100 ms to
+> rise enough to release the reset.
 >
-> This patch was applied to netdev/net.git (refs/heads/master):
->
-> On Tue, 19 Jan 2021 05:55:22 +0900 you wrote:
-> > From: Bongsu Jeon <bongsu.jeon@samsung.com>
-> >
-> > Fix the code because NCI_CORE_INIT_CMD includes two parameters in NCI2.0
-> > but there is no parameters in NCI1.x.
-> >
-> > Signed-off-by: Bongsu Jeon <bongsu.jeon@samsung.com>
-> >
-> > [...]
->
-> Here is the summary with links:
->   - [net] net: nfc: nci: fix the wrong NCI_CORE_INIT parameters
->     https://git.kernel.org/netdev/net/c/4964e5a1e080
->
-> You are awesome, thank you!
-> --
-> Deet-doot-dot, I am a bot.
-> https://korg.docs.kernel.org/patchwork/pwbot.html
->
->
+> For maximum supply voltage VDDIO=3.3V VIH=2.0V R=10kR C=10uF that is
+>                     VDDIO - VIH
+>   t = R * C * -ln( ------------- ) = 10000*0.00001*-(-0.93)=0.093 s
+>                        VDDIO
+> so we need ~95 ms for the reset to really de-assert, and then the
+> original 100us for the switch itself to come out of reset. Simply
+> msleep() for 100 ms which fits the constraint with a bit of extra
+> space.
 
-Could you merge this patch to net-next repo??
-NCI selftest that i will send will fail if this patch isn't merged.
+This makes sense if someone is using that device and following the
+reference circuit exactly. Working with the ksz9477 I can tell you
+that the reference reset circuit in figure 7.2 of the datasheet
+doesn't work with a VDDIO of 1.8V. And hardware engineers like to take
+some liberties anyway...
+
+But 100ms is reasonable in general. It will allow for the expected
+rise time of a wide range of possible reset circuit designs and isn't
+so long that it will have a major impact on start-up time.
+
+So it looks good to me.
+
+Reviewed-by: Paul Barker <pbarker@konsulko.com>
+
+-- 
+Paul Barker
+Konsulko Group
