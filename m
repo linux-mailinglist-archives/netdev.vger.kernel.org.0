@@ -2,97 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7EAD52FDB98
-	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 22:26:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DC6E02FDBCE
+	for <lists+netdev@lfdr.de>; Wed, 20 Jan 2021 22:26:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733003AbhATU4n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jan 2021 15:56:43 -0500
-Received: from mail.kernel.org ([198.145.29.99]:46762 "EHLO mail.kernel.org"
+        id S1730708AbhATVKI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jan 2021 16:10:08 -0500
+Received: from mail.kernel.org ([198.145.29.99]:47906 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2389788AbhATUxB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 20 Jan 2021 15:53:01 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 10B9A233FC;
-        Wed, 20 Jan 2021 20:52:18 +0000 (UTC)
+        id S2436554AbhATU64 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 20 Jan 2021 15:58:56 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 7CB1F233FC;
+        Wed, 20 Jan 2021 20:58:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611175938;
-        bh=8jBF67VISxuT/xu2rcoO5YE2FU88OFticdYf54+neO8=;
+        s=k20201202; t=1611176295;
+        bh=iXj+0YnbrTVWd4deThBsWxk0qAvBLKD2iMdUjP4T6No=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=N5+QPs/+DlLJt3MClwur9O+wbKTIHuhCZO1VVEg8KCi0KUGwZU0XaVmJBd/K8SOdz
-         cEzlwRbPCzeRUL92LOaLG3+3089C3zNhwSfg9YkO9sJ70ZNsc3OXJjUzdq6Cv+skzI
-         uQ+DIRkP//QC6bZTLNu6zeypikx0R1XyPDBuKUmj7JfObyOYNU2C5ebQ5Aoa7GYsPg
-         07E5RfDaVTnJIS3588nJV65f3gpv3VlcZ+3ItM3EcpYFKZReSNI8z9r19FnQwTFCJp
-         p8VUIwhGYO2M00l1IuVVUkLQXOCs80dksUXtNmGbDSIgYqCI5cgFQNfisGIh2UQfND
-         5oJ72HvNobAzg==
-Date:   Wed, 20 Jan 2021 12:52:17 -0800
+        b=rvuZBPtFORQKZpLtBK71+ILeEDdGuOc0qFnc4/B/9yzEvaqXQWL/DP75HEkla8/d8
+         RohwA76wVMRI5j0b0N7tQjZUCDE3YHk6YYRLNCMl0WcFP0X8sw02UsfXr9bOnG3s8i
+         dl0SM3oetsua7yoZVifsmV0TFN3Pv/dL/4SAsKIqyk78HFdOoRVreRO4MX3E0QAnUI
+         62DL4kF0U1s2KvifCCwCn1oRv/t5sS9SJdxRgzZTndJr8rtcs+FVnuVjKetEwFkIm9
+         dSzKF/FyvgHHVKjM52ovOCEmPr+X7SgynYWWrLA7xTK/CuLNJPIp1+gkZx35Vfn9N4
+         v8pp5QGN+DnBg==
+Date:   Wed, 20 Jan 2021 12:58:13 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Lukasz Stelmach <l.stelmach@samsung.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>, jim.cromie@gmail.com,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Kukjin Kim <kgene@kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Russell King <linux@armlinux.org.uk>, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org,
-        =?UTF-8?B?QmFydMWCb21pZWogxbtvbG5pZXJr?= =?UTF-8?B?aWV3aWN6?= 
-        <b.zolnierkie@samsung.com>,
-        Marek Szyprowski <m.szyprowski@samsung.com>
-Subject: Re: [PATCH v10 3/3] net: ax88796c: ASIX AX88796C SPI Ethernet
- Adapter Driver
-Message-ID: <20210120125217.6394e6a4@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <dleftj8s8nwgmx.fsf%l.stelmach@samsung.com>
-References: <20210115172722.516468bb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <CGME20210120193032eucas1p26566e957da7a75bc0818fe08e055bec8@eucas1p2.samsung.com>
-        <dleftj8s8nwgmx.fsf%l.stelmach@samsung.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        Hongbo Wang <hongbo.wang@nxp.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Po Liu <po.liu@nxp.com>, Yangbo Lu <yangbo.lu@nxp.com>,
+        Maxim Kochetkov <fido_max@inbox.ru>,
+        Eldar Gasanov <eldargasanov2@gmail.com>,
+        Andrey L <al@b4comtech.com>, UNGLinuxDriver@microchip.com
+Subject: Re: [PATCH v4 net-next 15/16] net: dsa: felix: setup MMIO filtering
+ rules for PTP when using tag_8021q
+Message-ID: <20210120125813.3e04e132@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210120173241.4jfqhsm725wqeqic@skbuf>
+References: <20210119230749.1178874-1-olteanv@gmail.com>
+        <20210119230749.1178874-16-olteanv@gmail.com>
+        <20210120084042.4d37dadb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20210120173241.4jfqhsm725wqeqic@skbuf>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 20 Jan 2021 20:30:14 +0100 Lukasz Stelmach wrote:
-> > You need to use 64 bit stats, like struct rtnl_link_stats64.
-> > On a 32bit system at 100Mbps ulong can wrap in minutes.
-> >  
-> 
-> Let me see. At first glance
-> 
-> git grep -l ndo_get_stats\\\> drivers/net/ethernet/  | xargs grep -li SPEED_100\\\>
-> 
-> quite a number of Fast Ethernet drivers use net_device_stats. Let me
-> calculate.
-> 
-> - bytes
->   100Mbps is ~10MiB/s
->   sending 4GiB at 10MiB/s takes 27 minutes
-> 
-> - packets
->   minimum frame size is 84 bytes (840 bits on the wire) on 100Mbps means
->   119048 pps at this speed it takse 10 hours to transmit 2^32 packets
-> 
-> Anyway, I switched to rtnl_link_stats64. Tell me, is it OK to just
-> memcpy() in .ndo_get_stats64?
-
-Yup, you can just memcpy() your local copy over the one you get as an
-argument of ndo_get_stats64
-
-> >> +	struct work_struct	ax_work;  
+On Wed, 20 Jan 2021 19:32:41 +0200 Vladimir Oltean wrote:
+> On Wed, Jan 20, 2021 at 08:40:42AM -0800, Jakub Kicinski wrote:
+> > drivers/net/dsa/ocelot/felix.c:464:12: warning: variable =E2=80=98err=
+=E2=80=99 set but not used [-Wunused-but-set-variable]
+> >   464 |  int port, err;
+> >       |            ^~~
+> > drivers/net/dsa/ocelot/felix.c:265:53: warning: incorrect type in assig=
+nment (different base types)
+> > drivers/net/dsa/ocelot/felix.c:265:53:    expected unsigned short [user=
+type]
+> > drivers/net/dsa/ocelot/felix.c:265:53:    got restricted __be16 [userty=
+pe]
 > >
-> > I don't see you ever canceling / flushing this work.
-> > You should do that at least on driver remove if not close.  
-> 
-> Done.
-> 
-> Does it mean most drivers do it wrong?
-> 
->     git grep INIT_WORK drivers/net/ethernet/ | \
->     sed -e 's/\(^[^:]*\):[^>]*->\([^,]*\),.*/\1        \2/' | \
->     while read file var; do \
->         grep -H $var $file;
->     done | grep INIT_WORK\\\|cancel_work
+> >
+> > Please build test the patches locally, the patchwork testing thing is
+> > not keeping up with the volume, and it's running on the largest VM
+> > available thru the provider already :/ =20
+>=20
+> I updated my compiler now, so that W=3D1 C=3D1 builds would not fail.
+> That should hopefully prevent this from happening in the future.
 
-Some may use flush, but I wouldn't be surprised if there were bugs like
-this out there.
+Thanks.
+
+> > I need to add this "don't post your patches to get them build tested
+> > or you'll make Kuba very angry" to the netdev FAQ. =20
+>=20
+> Since I definitely don't want to upset Kuba,
+
+:)
+
+> how bad is it to exceed the 15 patches per series limit? Do I need to
+> do something about it?
+
+It's not a hard rule IIUC, if you have 16, 17 patches as an atomic
+series which is hard to split, I'd think that's acceptable from time=20
+to time. Especially if the patches themselves are not huge.
+If you're already splitting a larger effort, keeping it < 15 is best.
+In general if you can split a smaller logically contained series out
+that's always preferred. The point is if the series is too large
+reviewers are likely to postpone reviewing it until they can allocate
+sufficiently large continuous block of time, which may be never.
+It's all about efficient code review.
+
+At least that's my recollection / understanding. There may be more
+reasons, we'd have to ask Dave.
