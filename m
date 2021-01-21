@@ -2,194 +2,215 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 850F02FE1DC
-	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 06:39:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F3D32FE25C
+	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 07:12:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727152AbhAUFiH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jan 2021 00:38:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50576 "EHLO
+        id S1725765AbhAUGMV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jan 2021 01:12:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42046 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726176AbhAUFhL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jan 2021 00:37:11 -0500
-Received: from mail-qv1-xf34.google.com (mail-qv1-xf34.google.com [IPv6:2607:f8b0:4864:20::f34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ECA7C061575;
-        Wed, 20 Jan 2021 21:36:31 -0800 (PST)
-Received: by mail-qv1-xf34.google.com with SMTP id 2so411868qvd.0;
-        Wed, 20 Jan 2021 21:36:31 -0800 (PST)
+        with ESMTP id S1727116AbhAUCpu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 21:45:50 -0500
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A9E4C0613ED
+        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 18:36:35 -0800 (PST)
+Received: by mail-ed1-x52a.google.com with SMTP id f1so653963edr.12
+        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 18:36:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=YRumJLD36i/i0I1RZRrB7ojtk55MHsfJgYolCaTHYUM=;
-        b=D4q9HrglSGGYD73X9szs+mKvlVLAdxnG1mS/YF+ZHg5KKX7cHDORZSbPfA18BMpsYe
-         CNmXdMwAvhczLcF8vJVqE6xao9K5t/lGWKnFtkt1LojdN/YOjd8AR+iYrDtwW6Cd8uwh
-         iug5lnkEHc9nPpDucvSHLGIcDDF/NPOqTeppnhqRjn1rNzmEMxYYSyfDPXgeh9gI4qH4
-         hoJP70Q4dVbUzeLxX+ejnPry5qZF0t3JZjk/wCyoc66DZs94JF4NcNT7e3RGXLMTLXta
-         8itkrO2GNes/Y7c7BjiTHq3K9MszGwMAlB1tn0D00zLFrp0PZoiW48UvuBTxfGd3cBpv
-         IHTQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=AV5AopmJTZy5UgTYwqJnn3sRN5+Xm8MDysDSL1VkM8k=;
+        b=JTknrN7lOrDq8u41aOQRmdSiPzhsJl79XgmhX+A6P4FrftoFNVxWRvRF39TiXi9tvU
+         jK+Ua7vN/duovxG98aHOJZ8hbbny/uHJK+j4E25mtHt6GfNGb+lu3a7u7XDNRFFE8Lk0
+         IOLjYFEfGSuK8hm/dLsTqudDfcP3ePVsQTvYo8mSpPp8dD/DvhvcPG7rrFr+DP36OXLt
+         O5Gbzu2HSkZQKtwGAypDehpIHnYWaCrjRegVUpMRq94rxKSIne4f+QjAHFeyfDnzzEtP
+         avs+Be3+12VZp4d+d1ME2ZFuM4g4GpZgj6Fd9eQOT74amF4Q4Joi4up24zOiqbhaxvvD
+         8Hfg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=YRumJLD36i/i0I1RZRrB7ojtk55MHsfJgYolCaTHYUM=;
-        b=AyGehEmgQf+adxl/S+6gEusjcLKvJnhhTNPIJxEYIaCuv8fhS9t2I60YaubKmASKvX
-         74vbyPkKcyqjvGUrO8yELqAa3QWShfP4PTo4foR0880rq1N8kpjRHlSVngyBTibz3Wb8
-         IBQ9UQlajzT2gJiJ2RXAwvXltd4ect5YX/iEx/Um+l32Ivw0SAbk2ZEv4vZCrR13fY9T
-         hBbAP6/6lK+Wy8gLAe7eKqKR82gjDliSvod0ds3XZdd/cppyYLttyY4kCWXYreTk7JHM
-         XabPPyD6qXSM2ekN2nU5IRqZLvcs+iOwZfP0KAYBr/oVH3rG/ooqEWOYTJvgiRsAx6s3
-         OvrQ==
-X-Gm-Message-State: AOAM533/+BEqR7g39v7VNZyYHZvLE63eGMYp9GFbDbCYWTye5jmalFTq
-        xnPP2ahqtrLjttvZReXmmgM=
-X-Google-Smtp-Source: ABdhPJzWJDvmwpq8g9YwRKYQM2T1d9jbCuu+tQR+JC4UyTO9am54518roaqlEoqfrxPWtLEr8DlDGQ==
-X-Received: by 2002:ad4:452f:: with SMTP id l15mr13110024qvu.49.1611207390223;
-        Wed, 20 Jan 2021 21:36:30 -0800 (PST)
-Received: from ubuntu-m3-large-x86 ([2604:1380:45f1:1d00::1])
-        by smtp.gmail.com with ESMTPSA id a206sm3003810qkc.30.2021.01.20.21.36.28
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=AV5AopmJTZy5UgTYwqJnn3sRN5+Xm8MDysDSL1VkM8k=;
+        b=kU6UGRqiQw0JlHm6RhpO2gXQ3/7S4p5Okzg7pSVVP0eqwoYj0VHxtiGzTOWdZoHgHO
+         EdxZhF1PIV5tnBpaiKhkbOs9Hj7dI+/KBXmGe3XfgPJMZ5khdWv2+YWK3momPjhzdron
+         nxgyP+tI30So+PH303seuOI2fUzGsQCB+VhigFGHmmDQ+9zkZ2xNkAuDh7UgXcpIf9ri
+         //f9LvBIrJel+Icw9ynSfPWF2DnewAkBLWCfD608/6ak9IfZFDo7ieBCCeJMaLyDtZhG
+         r7eKB2zroSVo/zTxUT2wCpoK4nZfCXUIxVQux7SDYQcgy36syaUjX2+YwQQixpuJZBZW
+         sn2Q==
+X-Gm-Message-State: AOAM530oQqLfgf1Itj7yPCPCXTEgzKydcRISiKAFydjAO44HsAmW6m2F
+        c+Wi217MOWYWmrJ2tLCozOQ=
+X-Google-Smtp-Source: ABdhPJwKCBQp6xOZhukBb8BQpeWF1RvnzmZ4BtzMPnbvIdI5HLF1eDUYRfnwV4Iyyd1Nz1UWRbKabA==
+X-Received: by 2002:a50:8b61:: with SMTP id l88mr9681886edl.250.1611196593863;
+        Wed, 20 Jan 2021 18:36:33 -0800 (PST)
+Received: from localhost.localdomain (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
+        by smtp.gmail.com with ESMTPSA id k22sm2025787edv.33.2021.01.20.18.36.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Jan 2021 21:36:29 -0800 (PST)
-Date:   Wed, 20 Jan 2021 22:36:27 -0700
-From:   Nathan Chancellor <natechancellor@gmail.com>
-To:     Tiezhu Yang <yangtiezhu@loongson.cn>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        netdev@vger.kernel.org, bpf@vger.kernel.org,
-        clang-built-linux@googlegroups.com, linux-kernel@vger.kernel.org,
-        Xuefeng Li <lixuefeng@loongson.cn>,
-        Fangrui Song <maskray@google.com>
-Subject: Re: [PATCH bpf-next v3] samples/bpf: Update build procedure for
- manually compiling LLVM and Clang
-Message-ID: <20210121053627.GA1680146@ubuntu-m3-large-x86>
-References: <1611206855-22555-1-git-send-email-yangtiezhu@loongson.cn>
+        Wed, 20 Jan 2021 18:36:33 -0800 (PST)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        Hongbo Wang <hongbo.wang@nxp.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Po Liu <po.liu@nxp.com>, Yangbo Lu <yangbo.lu@nxp.com>,
+        Maxim Kochetkov <fido_max@inbox.ru>,
+        Eldar Gasanov <eldargasanov2@gmail.com>,
+        Andrey L <al@b4comtech.com>,
+        Tobias Waldekranz <tobias@waldekranz.com>,
+        UNGLinuxDriver@microchip.com
+Subject: [PATCH v5 net-next 05/10] net: mscc: ocelot: don't use NPI tag prefix for the CPU port module
+Date:   Thu, 21 Jan 2021 04:36:11 +0200
+Message-Id: <20210121023616.1696021-6-olteanv@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20210121023616.1696021-1-olteanv@gmail.com>
+References: <20210121023616.1696021-1-olteanv@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1611206855-22555-1-git-send-email-yangtiezhu@loongson.cn>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 21, 2021 at 01:27:35PM +0800, Tiezhu Yang wrote:
-> The current LLVM and Clang build procedure in samples/bpf/README.rst is
-> out of date. See below that the links are not accessible any more.
-> 
-> $ git clone http://llvm.org/git/llvm.git
-> Cloning into 'llvm'...
-> fatal: unable to access 'http://llvm.org/git/llvm.git/': Maximum (20) redirects followed
-> $ git clone --depth 1 http://llvm.org/git/clang.git
-> Cloning into 'clang'...
-> fatal: unable to access 'http://llvm.org/git/clang.git/': Maximum (20) redirects followed
-> 
-> The LLVM community has adopted new ways to build the compiler. There are
-> different ways to build LLVM and Clang, the Clang Getting Started page [1]
-> has one way. As Yonghong said, it is better to copy the build procedure
-> in Documentation/bpf/bpf_devel_QA.rst to keep consistent.
-> 
-> I verified the procedure and it is proved to be feasible, so we should
-> update README.rst to reflect the reality. At the same time, update the
-> related comment in Makefile.
-> 
-> Additionally, as Fangrui said, the dir llvm-project/llvm/build/install is
-> not used, BUILD_SHARED_LIBS=OFF is the default option [2], so also change
-> Documentation/bpf/bpf_devel_QA.rst together.
-> 
-> [1] https://clang.llvm.org/get_started.html
-> [2] https://www.llvm.org/docs/CMake.html
-> 
-> Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
-> Acked-by: Yonghong Song <yhs@fb.com>
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Reviewed-by: Nathan Chancellor <natechancellor@gmail.com>
+Context: Ocelot switches put the injection/extraction frame header in
+front of the Ethernet header. When used in NPI mode, a DSA master would
+see junk instead of the destination MAC address, and it would most
+likely drop the packets. So the Ocelot frame header can have an optional
+prefix, which is just "ff:ff:ff:ff:ff:fe > ff:ff:ff:ff:ff:ff" padding
+put before the actual tag (still before the real Ethernet header) such
+that the DSA master thinks it's looking at a broadcast frame with a
+strange EtherType.
 
-Small comment below.
+Unfortunately, a lesson learned in commit 69df578c5f4b ("net: mscc:
+ocelot: eliminate confusion between CPU and NPI port") seems to have
+been forgotten in the meanwhile.
 
-> ---
-> 
-> v2: Update the commit message suggested by Yonghong,
->     thank you very much.
-> 
-> v3: Remove the default option BUILD_SHARED_LIBS=OFF
->     and just mkdir llvm-project/llvm/build suggested
->     by Fangrui.
-> 
->  Documentation/bpf/bpf_devel_QA.rst |  3 +--
->  samples/bpf/Makefile               |  2 +-
->  samples/bpf/README.rst             | 16 +++++++++-------
->  3 files changed, 11 insertions(+), 10 deletions(-)
-> 
-> diff --git a/Documentation/bpf/bpf_devel_QA.rst b/Documentation/bpf/bpf_devel_QA.rst
-> index 5b613d2..18788bb 100644
-> --- a/Documentation/bpf/bpf_devel_QA.rst
-> +++ b/Documentation/bpf/bpf_devel_QA.rst
-> @@ -506,11 +506,10 @@ that set up, proceed with building the latest LLVM and clang version
->  from the git repositories::
->  
->       $ git clone https://github.com/llvm/llvm-project.git
-> -     $ mkdir -p llvm-project/llvm/build/install
-> +     $ mkdir -p llvm-project/llvm/build
->       $ cd llvm-project/llvm/build
->       $ cmake .. -G "Ninja" -DLLVM_TARGETS_TO_BUILD="BPF;X86" \
->                  -DLLVM_ENABLE_PROJECTS="clang"    \
-> -                -DBUILD_SHARED_LIBS=OFF           \
->                  -DCMAKE_BUILD_TYPE=Release        \
->                  -DLLVM_BUILD_RUNTIME=OFF
->       $ ninja
-> diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
-> index 26fc96c..d061446 100644
-> --- a/samples/bpf/Makefile
-> +++ b/samples/bpf/Makefile
-> @@ -208,7 +208,7 @@ TPROGLDLIBS_xdpsock		+= -pthread -lcap
->  TPROGLDLIBS_xsk_fwd		+= -pthread
->  
->  # Allows pointing LLC/CLANG to a LLVM backend with bpf support, redefine on cmdline:
-> -#  make M=samples/bpf/ LLC=~/git/llvm/build/bin/llc CLANG=~/git/llvm/build/bin/clang
-> +# make M=samples/bpf LLC=~/git/llvm-project/llvm/build/bin/llc CLANG=~/git/llvm-project/llvm/build/bin/clang
->  LLC ?= llc
->  CLANG ?= clang
->  OPT ?= opt
-> diff --git a/samples/bpf/README.rst b/samples/bpf/README.rst
-> index dd34b2d..23006cb 100644
-> --- a/samples/bpf/README.rst
-> +++ b/samples/bpf/README.rst
-> @@ -65,17 +65,19 @@ To generate a smaller llc binary one can use::
->  Quick sniplet for manually compiling LLVM and clang
->  (build dependencies are cmake and gcc-c++)::
+The CPU port module and the NPI port have independent settings for the
+length of the tag prefix. However, the driver is using the same variable
+to program both of them.
 
-Technically, ninja is now a build dependency as well, it might be worth
-mentioning that here (usually the package is ninja or ninja-build).
+There is no reason really to use any tag prefix with the CPU port
+module, since that is not connected to any Ethernet port. So this patch
+makes the inj_prefix and xtr_prefix variables apply only to the NPI
+port (which the switchdev ocelot_vsc7514 driver does not use).
 
-Regardless of whether that is addressed or not (because it is small),
-feel free to carry forward my tag in any future revisions unless they
-drastically change.
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+---
+Changes in v5:
+Patch is new.
 
-> - $ git clone http://llvm.org/git/llvm.git
-> - $ cd llvm/tools
-> - $ git clone --depth 1 http://llvm.org/git/clang.git
-> - $ cd ..; mkdir build; cd build
-> - $ cmake .. -DLLVM_TARGETS_TO_BUILD="BPF;X86"
-> - $ make -j $(getconf _NPROCESSORS_ONLN)
-> + $ git clone https://github.com/llvm/llvm-project.git
-> + $ mkdir -p llvm-project/llvm/build
-> + $ cd llvm-project/llvm/build
-> + $ cmake .. -G "Ninja" -DLLVM_TARGETS_TO_BUILD="BPF;X86" \
-> +            -DLLVM_ENABLE_PROJECTS="clang"    \
-> +            -DCMAKE_BUILD_TYPE=Release        \
-> +            -DLLVM_BUILD_RUNTIME=OFF
-> + $ ninja
->  
->  It is also possible to point make to the newly compiled 'llc' or
->  'clang' command via redefining LLC or CLANG on the make command line::
->  
-> - make M=samples/bpf LLC=~/git/llvm/build/bin/llc CLANG=~/git/llvm/build/bin/clang
-> + make M=samples/bpf LLC=~/git/llvm-project/llvm/build/bin/llc CLANG=~/git/llvm-project/llvm/build/bin/clang
->  
->  Cross compiling samples
->  -----------------------
-> -- 
-> 2.1.0
-> 
+Changes in v4:
+Patch is new.
+
+ drivers/net/dsa/ocelot/felix.c             |  8 ++++----
+ drivers/net/ethernet/mscc/ocelot.c         | 12 ++++++------
+ drivers/net/ethernet/mscc/ocelot_vsc7514.c |  2 --
+ include/soc/mscc/ocelot.h                  |  4 ++--
+ 4 files changed, 12 insertions(+), 14 deletions(-)
+
+diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
+index 767cbdccdb3e..054e57dd4383 100644
+--- a/drivers/net/dsa/ocelot/felix.c
++++ b/drivers/net/dsa/ocelot/felix.c
+@@ -425,8 +425,8 @@ static int felix_init_structs(struct felix *felix, int num_phys_ports)
+ 	ocelot->num_mact_rows	= felix->info->num_mact_rows;
+ 	ocelot->vcap		= felix->info->vcap;
+ 	ocelot->ops		= felix->info->ops;
+-	ocelot->inj_prefix	= OCELOT_TAG_PREFIX_SHORT;
+-	ocelot->xtr_prefix	= OCELOT_TAG_PREFIX_SHORT;
++	ocelot->npi_inj_prefix	= OCELOT_TAG_PREFIX_SHORT;
++	ocelot->npi_xtr_prefix	= OCELOT_TAG_PREFIX_SHORT;
+ 	ocelot->devlink		= felix->ds->devlink;
+ 
+ 	port_phy_modes = kcalloc(num_phys_ports, sizeof(phy_interface_t),
+@@ -541,9 +541,9 @@ static void felix_npi_port_init(struct ocelot *ocelot, int port)
+ 
+ 	/* NPI port Injection/Extraction configuration */
+ 	ocelot_fields_write(ocelot, port, SYS_PORT_MODE_INCL_XTR_HDR,
+-			    ocelot->xtr_prefix);
++			    ocelot->npi_xtr_prefix);
+ 	ocelot_fields_write(ocelot, port, SYS_PORT_MODE_INCL_INJ_HDR,
+-			    ocelot->inj_prefix);
++			    ocelot->npi_inj_prefix);
+ 
+ 	/* Disable transmission of pause frames */
+ 	ocelot_fields_write(ocelot, port, SYS_PAUSE_CFG_PAUSE_ENA, 0);
+diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
+index 42d92a5b475d..acf7ef00e56b 100644
+--- a/drivers/net/ethernet/mscc/ocelot.c
++++ b/drivers/net/ethernet/mscc/ocelot.c
+@@ -1346,9 +1346,9 @@ void ocelot_port_set_maxlen(struct ocelot *ocelot, int port, size_t sdu)
+ 	if (port == ocelot->npi) {
+ 		maxlen += OCELOT_TAG_LEN;
+ 
+-		if (ocelot->inj_prefix == OCELOT_TAG_PREFIX_SHORT)
++		if (ocelot->npi_inj_prefix == OCELOT_TAG_PREFIX_SHORT)
+ 			maxlen += OCELOT_SHORT_PREFIX_LEN;
+-		else if (ocelot->inj_prefix == OCELOT_TAG_PREFIX_LONG)
++		else if (ocelot->npi_inj_prefix == OCELOT_TAG_PREFIX_LONG)
+ 			maxlen += OCELOT_LONG_PREFIX_LEN;
+ 	}
+ 
+@@ -1378,9 +1378,9 @@ int ocelot_get_max_mtu(struct ocelot *ocelot, int port)
+ 	if (port == ocelot->npi) {
+ 		max_mtu -= OCELOT_TAG_LEN;
+ 
+-		if (ocelot->inj_prefix == OCELOT_TAG_PREFIX_SHORT)
++		if (ocelot->npi_inj_prefix == OCELOT_TAG_PREFIX_SHORT)
+ 			max_mtu -= OCELOT_SHORT_PREFIX_LEN;
+-		else if (ocelot->inj_prefix == OCELOT_TAG_PREFIX_LONG)
++		else if (ocelot->npi_inj_prefix == OCELOT_TAG_PREFIX_LONG)
+ 			max_mtu -= OCELOT_LONG_PREFIX_LEN;
+ 	}
+ 
+@@ -1465,9 +1465,9 @@ static void ocelot_cpu_port_init(struct ocelot *ocelot)
+ 	ocelot_fields_write(ocelot, cpu, QSYS_SWITCH_PORT_MODE_PORT_ENA, 1);
+ 	/* CPU port Injection/Extraction configuration */
+ 	ocelot_fields_write(ocelot, cpu, SYS_PORT_MODE_INCL_XTR_HDR,
+-			    ocelot->xtr_prefix);
++			    OCELOT_TAG_PREFIX_NONE);
+ 	ocelot_fields_write(ocelot, cpu, SYS_PORT_MODE_INCL_INJ_HDR,
+-			    ocelot->inj_prefix);
++			    OCELOT_TAG_PREFIX_NONE);
+ 
+ 	/* Configure the CPU port to be VLAN aware */
+ 	ocelot_write_gix(ocelot, ANA_PORT_VLAN_CFG_VLAN_VID(0) |
+diff --git a/drivers/net/ethernet/mscc/ocelot_vsc7514.c b/drivers/net/ethernet/mscc/ocelot_vsc7514.c
+index 30a38df08a21..407244fe5b17 100644
+--- a/drivers/net/ethernet/mscc/ocelot_vsc7514.c
++++ b/drivers/net/ethernet/mscc/ocelot_vsc7514.c
+@@ -1347,8 +1347,6 @@ static int mscc_ocelot_probe(struct platform_device *pdev)
+ 	ocelot->num_flooding_pgids = 1;
+ 
+ 	ocelot->vcap = vsc7514_vcap_props;
+-	ocelot->inj_prefix = OCELOT_TAG_PREFIX_NONE;
+-	ocelot->xtr_prefix = OCELOT_TAG_PREFIX_NONE;
+ 	ocelot->npi = -1;
+ 
+ 	err = ocelot_init(ocelot);
+diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
+index cdc33fa05660..93c22627dedd 100644
+--- a/include/soc/mscc/ocelot.h
++++ b/include/soc/mscc/ocelot.h
+@@ -651,8 +651,8 @@ struct ocelot {
+ 
+ 	int				npi;
+ 
+-	enum ocelot_tag_prefix		inj_prefix;
+-	enum ocelot_tag_prefix		xtr_prefix;
++	enum ocelot_tag_prefix		npi_inj_prefix;
++	enum ocelot_tag_prefix		npi_xtr_prefix;
+ 
+ 	u32				*lags;
+ 
+-- 
+2.25.1
+
