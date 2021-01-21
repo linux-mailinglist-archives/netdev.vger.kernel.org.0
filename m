@@ -2,123 +2,263 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4214E2FE824
-	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 11:55:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4B6062FE837
+	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 11:58:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729853AbhAUKyH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jan 2021 05:54:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33938 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729770AbhAUKxn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jan 2021 05:53:43 -0500
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72698C061575;
-        Thu, 21 Jan 2021 02:53:03 -0800 (PST)
-Received: by mail-pj1-x102f.google.com with SMTP id e6so1422438pjj.1;
-        Thu, 21 Jan 2021 02:53:03 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=sXqWKoPlu1jYTrtC0qymG93dIZpDOfjvB7EF1G9KMn8=;
-        b=cGK7qU0PCTi2Kd4/IyeTKNAlCRGe6UNqfxj/BeKqlxWZkpa+/Vj09u1nZFiWGoULy7
-         p8TVMKHztsP5QgF5h0wkNeS79LIytawsCQEpR/yQWW0vybv4TDVfCLgdvrQa3RmYBqZ+
-         M2CAjecDt9bp7Bqmpkha+T5CoikvRHoRNW+wzfUDolW2oVarXBCFptKMjHdkccsqu+9Y
-         H41GasmHjAjhRg+TsSbGkdgqS1iXb1qrnffZ/88eou1yYeP7a2PQ5g4G5oZROpmHLkUn
-         k9vr2TAm/+LE5vCrJOq5Vo/KgkxPAJUKpyF4pMyVW60W6nKaH/tE/V9yTuLflTYoLTQV
-         QRZQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=sXqWKoPlu1jYTrtC0qymG93dIZpDOfjvB7EF1G9KMn8=;
-        b=D6FgCiE/+TIkDpESNVN5hMo+Zr5ZO5bcPe9HJAK77lTxnxa4vYinwCi3gxLeUdURQD
-         jYflODv8shsxbVa3ok8H9Rs+cKJ5rleI/+lhmsgTiXpRi/X4kIEvcSqfrPT13Zm7xSxM
-         ScPJpD/1o8HHZ82ZHPEvMMd09TcOW5QshM2BgHZb3KtI6IVVFBr9OsJTg1QjXa+VXD+s
-         oDWKVivJnSiAlAkrHmeXhOqdEwASZu/OJxnmcNQRnF1hxmLISwGFzs8XuYkQy9i6/BER
-         nXjIAE7dFY7HsihmwRjctzHxZ4+ifMVXRwk+9Di/MQnLMQqVMEL3S24aOFgQyBgHWY4F
-         7TAA==
-X-Gm-Message-State: AOAM530u9IQx5bS9P9pEeOBQrbaKBue3Lx1l3iugYmBhONDl3sviLAn+
-        6d6w5ABYSlogTioEERd8p0w=
-X-Google-Smtp-Source: ABdhPJxK1/TL355nnK0SiPqwI9ZoDzRpL4U8xMBcTCwfQbKwJTiN+y1ErDXisKwqybXiXznGLagZcw==
-X-Received: by 2002:a17:90a:4598:: with SMTP id v24mr11103928pjg.135.1611226382897;
-        Thu, 21 Jan 2021 02:53:02 -0800 (PST)
-Received: from localhost.localdomain ([45.135.186.69])
-        by smtp.gmail.com with ESMTPSA id jx15sm5577353pjb.17.2021.01.21.02.52.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Jan 2021 02:53:02 -0800 (PST)
-From:   Dongliang Mu <mudongliangabcd@gmail.com>
-To:     davem@davemloft.net, helmut.schaa@googlemail.com,
-        kvalo@codeaurora.org, gregkh@linuxfoundation.org
-Cc:     linux-kernel@vger.kernel.org, linux-wireless@vger.kernel.org,
-        netdev@vger.kernel.org, sgruszka@redhat.com,
-        Dongliang Mu <mudongliangabcd@gmail.com>
-Subject: [PATCH] rt2x00: reset reg earlier in rt2500usb_register_read
-Date:   Thu, 21 Jan 2021 18:52:46 +0800
-Message-Id: <20210121105246.3262768-1-mudongliangabcd@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        id S1729952AbhAUK5z (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jan 2021 05:57:55 -0500
+Received: from szxga06-in.huawei.com ([45.249.212.32]:11422 "EHLO
+        szxga06-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729612AbhAUKzX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jan 2021 05:55:23 -0500
+Received: from DGGEMS409-HUB.china.huawei.com (unknown [172.30.72.59])
+        by szxga06-in.huawei.com (SkyGuard) with ESMTP id 4DLzlK6H6wzj9Nx;
+        Thu, 21 Jan 2021 18:53:33 +0800 (CST)
+Received: from [127.0.0.1] (10.69.30.204) by DGGEMS409-HUB.china.huawei.com
+ (10.3.19.209) with Microsoft SMTP Server id 14.3.498.0; Thu, 21 Jan 2021
+ 18:54:25 +0800
+Subject: Re: [PATCH net-next v2 3/3] xsk: build skb by page
+To:     Magnus Karlsson <magnus.karlsson@gmail.com>,
+        Alexander Lobakin <alobakin@pm.me>
+CC:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        "Martin KaFai Lau" <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>,
+        <virtualization@lists.linux-foundation.org>,
+        bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+References: <0461512be1925bece9bcda1b4924b09eaa4edd87.1611131344.git.xuanzhuo@linux.alibaba.com>
+ <20210120135537.5184-1-alobakin@pm.me>
+ <CAJ8uoz0=7UmJpqKGeb9BQp9qv_c6ioyxhtU4+B+j-Z01pc-BhQ@mail.gmail.com>
+From:   Yunsheng Lin <linyunsheng@huawei.com>
+Message-ID: <07aa9fdf-5074-37be-926c-e8e2e6a55665@huawei.com>
+Date:   Thu, 21 Jan 2021 18:54:25 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:52.0) Gecko/20100101
+ Thunderbird/52.2.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAJ8uoz0=7UmJpqKGeb9BQp9qv_c6ioyxhtU4+B+j-Z01pc-BhQ@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.69.30.204]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In the function rt2500usb_register_read(_lock), reg is uninitialized
-in some situation. Then KMSAN reports uninit-value at its first memory
-access. To fix this issue, initialize reg with zero in the function
-rt2500usb_register_read and rt2500usb_register_read_lock
+On 2021/1/21 15:41, Magnus Karlsson wrote:
+> On Wed, Jan 20, 2021 at 9:29 PM Alexander Lobakin <alobakin@pm.me> wrote:
+>>
+>> From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+>> Date: Wed, 20 Jan 2021 16:30:56 +0800
+>>
+>>> This patch is used to construct skb based on page to save memory copy
+>>> overhead.
+>>>
+>>> This function is implemented based on IFF_TX_SKB_NO_LINEAR. Only the
+>>> network card priv_flags supports IFF_TX_SKB_NO_LINEAR will use page to
+>>> directly construct skb. If this feature is not supported, it is still
+>>> necessary to copy data to construct skb.
+>>>
+>>> ---------------- Performance Testing ------------
+>>>
+>>> The test environment is Aliyun ECS server.
+>>> Test cmd:
+>>> ```
+>>> xdpsock -i eth0 -t  -S -s <msg size>
+>>> ```
+>>>
+>>> Test result data:
+>>>
+>>> size    64      512     1024    1500
+>>> copy    1916747 1775988 1600203 1440054
+>>> page    1974058 1953655 1945463 1904478
+>>> percent 3.0%    10.0%   21.58%  32.3%
+>>>
+>>> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+>>> Reviewed-by: Dust Li <dust.li@linux.alibaba.com>
+>>> ---
+>>>  net/xdp/xsk.c | 104 ++++++++++++++++++++++++++++++++++++++++++++++++----------
+>>>  1 file changed, 86 insertions(+), 18 deletions(-)
+>>
+>> Now I like the result, thanks!
+>>
+>> But Patchwork still display your series incorrectly (messages 0 and 1
+>> are missing). I'm concerning maintainers may not take this in such
+>> form. Try to pass the folder's name, not folder/*.patch to
+>> git send-email when sending, and don't use --in-reply-to when sending
+>> a new iteration.
+> 
+> Xuan,
+> 
+> Please make the new submission of the patch set a v3 even though you
+> did not change the code. Just so we can clearly see it is the new
+> submission.
+> 
+>>> diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+>>> index 8037b04..40bac11 100644
+>>> --- a/net/xdp/xsk.c
+>>> +++ b/net/xdp/xsk.c
+>>> @@ -430,6 +430,87 @@ static void xsk_destruct_skb(struct sk_buff *skb)
+>>>       sock_wfree(skb);
+>>>  }
+>>>
+>>> +static struct sk_buff *xsk_build_skb_zerocopy(struct xdp_sock *xs,
+>>> +                                           struct xdp_desc *desc)
+>>> +{
+>>> +     u32 len, offset, copy, copied;
+>>> +     struct sk_buff *skb;
+>>> +     struct page *page;
+>>> +     void *buffer;
+>>> +     int err, i;
+>>> +     u64 addr;
+>>> +
+>>> +     skb = sock_alloc_send_skb(&xs->sk, 0, 1, &err);
+>>> +     if (unlikely(!skb))
+>>> +             return ERR_PTR(err);
+>>> +
+>>> +     addr = desc->addr;
+>>> +     len = desc->len;
+>>> +
+>>> +     buffer = xsk_buff_raw_get_data(xs->pool, addr);
+>>> +     offset = offset_in_page(buffer);
+>>> +     addr = buffer - xs->pool->addrs;
+>>> +
+>>> +     for (copied = 0, i = 0; copied < len; i++) {
+>>> +             page = xs->pool->umem->pgs[addr >> PAGE_SHIFT];
+>>> +
+>>> +             get_page(page);
+>>> +
+>>> +             copy = min_t(u32, PAGE_SIZE - offset, len - copied);
+>>> +
+>>> +             skb_fill_page_desc(skb, i, page, offset, copy);
+>>> +
+>>> +             copied += copy;
+>>> +             addr += copy;
+>>> +             offset = 0;
+>>> +     }
+>>> +
+>>> +     skb->len += len;
+>>> +     skb->data_len += len;
+>>> +     skb->truesize += len;
+>>> +
+>>> +     refcount_add(len, &xs->sk.sk_wmem_alloc);
+>>> +
+>>> +     return skb;
+>>> +}
+>>> +
+>>> +static struct sk_buff *xsk_build_skb(struct xdp_sock *xs,
+>>> +                                  struct xdp_desc *desc)
+>>> +{
+>>> +     struct sk_buff *skb = NULL;
 
-BUG: KMSAN: uninit-value in rt2500usb_init_eeprom rt2500usb.c:1443 [inline]
-BUG: KMSAN: uninit-value in rt2500usb_probe_hw+0xb5e/0x22a0 rt2500usb.c:1757
-CPU: 0 PID: 3369 Comm: kworker/0:2 Not tainted 5.3.0-rc7+ #0
-Hardware name: Google Compute Engine
-Workqueue: usb_hub_wq hub_event
-Call Trace:
- __dump_stack lib/dump_stack.c:77 [inline]
- dump_stack+0x191/0x1f0 lib/dump_stack.c:113
- kmsan_report+0x162/0x2d0 mm/kmsan/kmsan_report.c:109
- __msan_warning+0x75/0xe0 mm/kmsan/kmsan_instr.c:294
- rt2500usb_init_eeprom wireless/ralink/rt2x00/rt2500usb.c:1443 [inline]
- rt2500usb_probe_hw+0xb5e/0x22a0 wireless/ralink/rt2x00/rt2500usb.c:1757
- rt2x00lib_probe_dev+0xba9/0x3260 wireless/ralink/rt2x00/rt2x00dev.c:1427
- rt2x00usb_probe+0x7ae/0xf60 wireless/ralink/rt2x00/rt2x00usb.c:842
- rt2500usb_probe+0x50/0x60 wireless/ralink/rt2x00/rt2500usb.c:1966
- ......
+It seems the above init is unnecessary, for the skb is always
+set before being used.
 
-Local variable description: ----reg.i.i@rt2500usb_probe_hw
-Variable was created at:
- rt2500usb_register_read wireless/ralink/rt2x00/rt2500usb.c:51 [inline]
- rt2500usb_init_eeprom wireless/ralink/rt2x00/rt2500usb.c:1440 [inline]
- rt2500usb_probe_hw+0x774/0x22a0 wireless/ralink/rt2x00/rt2500usb.c:1757
- rt2x00lib_probe_dev+0xba9/0x3260 wireless/ralink/rt2x00/rt2x00dev.c:1427
-
-Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
----
- drivers/net/wireless/ralink/rt2x00/rt2500usb.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/wireless/ralink/rt2x00/rt2500usb.c b/drivers/net/wireless/ralink/rt2x00/rt2500usb.c
-index fce05fc88aaf..98567dc96415 100644
---- a/drivers/net/wireless/ralink/rt2x00/rt2500usb.c
-+++ b/drivers/net/wireless/ralink/rt2x00/rt2500usb.c
-@@ -47,7 +47,7 @@ MODULE_PARM_DESC(nohwcrypt, "Disable hardware encryption.");
- static u16 rt2500usb_register_read(struct rt2x00_dev *rt2x00dev,
- 				   const unsigned int offset)
- {
--	__le16 reg;
-+	__le16 reg = 0;
- 	rt2x00usb_vendor_request_buff(rt2x00dev, USB_MULTI_READ,
- 				      USB_VENDOR_REQUEST_IN, offset,
- 				      &reg, sizeof(reg));
-@@ -57,7 +57,7 @@ static u16 rt2500usb_register_read(struct rt2x00_dev *rt2x00dev,
- static u16 rt2500usb_register_read_lock(struct rt2x00_dev *rt2x00dev,
- 					const unsigned int offset)
- {
--	__le16 reg;
-+	__le16 reg = 0;
- 	rt2x00usb_vendor_req_buff_lock(rt2x00dev, USB_MULTI_READ,
- 				       USB_VENDOR_REQUEST_IN, offset,
- 				       &reg, sizeof(reg), REGISTER_TIMEOUT);
--- 
-2.25.1
+>>> +
+>>> +     if (xs->dev->priv_flags & IFF_TX_SKB_NO_LINEAR) {
+>>> +             skb = xsk_build_skb_zerocopy(xs, desc);
+>>> +             if (IS_ERR(skb))
+>>> +                     return skb;
+>>> +     } else {
+>>> +             void *buffer;
+>>> +             u32 len;
+>>> +             int err;
+>>> +
+>>> +             len = desc->len;
+>>> +             skb = sock_alloc_send_skb(&xs->sk, len, 1, &err);
+>>> +             if (unlikely(!skb))
+>>> +                     return ERR_PTR(err);
+>>> +
+>>> +             skb_put(skb, len);
+>>> +             buffer = xsk_buff_raw_get_data(xs->pool, desc->addr);
+>>> +             err = skb_store_bits(skb, 0, buffer, len);
+>>> +             if (unlikely(err)) {
+>>> +                     kfree_skb(skb);
+>>> +                     return ERR_PTR(err);
+>>> +             }
+>>> +     }
+>>> +
+>>> +     skb->dev = xs->dev;
+>>> +     skb->priority = xs->sk.sk_priority;
+>>> +     skb->mark = xs->sk.sk_mark;
+>>> +     skb_shinfo(skb)->destructor_arg = (void *)(long)desc->addr;
+>>> +     skb->destructor = xsk_destruct_skb;
+>>> +
+>>> +     return skb;
+>>> +}
+>>> +
+>>>  static int xsk_generic_xmit(struct sock *sk)
+>>>  {
+>>>       struct xdp_sock *xs = xdp_sk(sk);
+>>> @@ -446,43 +527,30 @@ static int xsk_generic_xmit(struct sock *sk)
+>>>               goto out;
+>>>
+>>>       while (xskq_cons_peek_desc(xs->tx, &desc, xs->pool)) {
+>>> -             char *buffer;
+>>> -             u64 addr;
+>>> -             u32 len;
+>>> -
+>>>               if (max_batch-- == 0) {
+>>>                       err = -EAGAIN;
+>>>                       goto out;
+>>>               }
+>>>
+>>> -             len = desc.len;
+>>> -             skb = sock_alloc_send_skb(sk, len, 1, &err);
+>>> -             if (unlikely(!skb))
+>>> +             skb = xsk_build_skb(xs, &desc);
+>>> +             if (IS_ERR(skb)) {
+>>> +                     err = PTR_ERR(skb);
+>>>                       goto out;
+>>> +             }
+>>>
+>>> -             skb_put(skb, len);
+>>> -             addr = desc.addr;
+>>> -             buffer = xsk_buff_raw_get_data(xs->pool, addr);
+>>> -             err = skb_store_bits(skb, 0, buffer, len);
+>>>               /* This is the backpressure mechanism for the Tx path.
+>>>                * Reserve space in the completion queue and only proceed
+>>>                * if there is space in it. This avoids having to implement
+>>>                * any buffering in the Tx path.
+>>>                */
+>>>               spin_lock_irqsave(&xs->pool->cq_lock, flags);
+>>> -             if (unlikely(err) || xskq_prod_reserve(xs->pool->cq)) {
+>>> +             if (xskq_prod_reserve(xs->pool->cq)) {
+>>>                       spin_unlock_irqrestore(&xs->pool->cq_lock, flags);
+>>>                       kfree_skb(skb);
+>>>                       goto out;
+>>>               }
+>>>               spin_unlock_irqrestore(&xs->pool->cq_lock, flags);
+>>>
+>>> -             skb->dev = xs->dev;
+>>> -             skb->priority = sk->sk_priority;
+>>> -             skb->mark = sk->sk_mark;
+>>> -             skb_shinfo(skb)->destructor_arg = (void *)(long)desc.addr;
+>>> -             skb->destructor = xsk_destruct_skb;
+>>> -
+>>>               err = __dev_direct_xmit(skb, xs->queue_id);
+>>>               if  (err == NETDEV_TX_BUSY) {
+>>>                       /* Tell user-space to retry the send */
+>>> --
+>>> 1.8.3.1
+>>
+>> Al
+>>
+> 
+> .
+> 
 
