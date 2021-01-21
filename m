@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1F3D32FE25C
-	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 07:12:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 24A9D2FE25A
+	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 07:12:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725765AbhAUGMV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jan 2021 01:12:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42046 "EHLO
+        id S1726208AbhAUGL4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jan 2021 01:11:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727116AbhAUCpu (ORCPT
+        with ESMTP id S1726310AbhAUCpu (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 21:45:50 -0500
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A9E4C0613ED
-        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 18:36:35 -0800 (PST)
-Received: by mail-ed1-x52a.google.com with SMTP id f1so653963edr.12
-        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 18:36:35 -0800 (PST)
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFA71C061786
+        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 18:36:36 -0800 (PST)
+Received: by mail-ej1-x634.google.com with SMTP id 6so516899ejz.5
+        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 18:36:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=AV5AopmJTZy5UgTYwqJnn3sRN5+Xm8MDysDSL1VkM8k=;
-        b=JTknrN7lOrDq8u41aOQRmdSiPzhsJl79XgmhX+A6P4FrftoFNVxWRvRF39TiXi9tvU
-         jK+Ua7vN/duovxG98aHOJZ8hbbny/uHJK+j4E25mtHt6GfNGb+lu3a7u7XDNRFFE8Lk0
-         IOLjYFEfGSuK8hm/dLsTqudDfcP3ePVsQTvYo8mSpPp8dD/DvhvcPG7rrFr+DP36OXLt
-         O5Gbzu2HSkZQKtwGAypDehpIHnYWaCrjRegVUpMRq94rxKSIne4f+QjAHFeyfDnzzEtP
-         avs+Be3+12VZp4d+d1ME2ZFuM4g4GpZgj6Fd9eQOT74amF4Q4Joi4up24zOiqbhaxvvD
-         8Hfg==
+        bh=D75mTe+LjZ1hczQ8JVJiFluJINJ3eH+8ioO5cMn4/eo=;
+        b=a36FMurlweU5S1Ww2mwuOq7k1poz0KZhttRN+qf4mrW/0V+9GjNZV6Evmp/nwVTXym
+         OVxmN0IdXpayX+oHA+Y6bel6J82UvYtkG5VaXMh2jaamByYeVjuqSlc96nfLhJvJjIeL
+         0SwcjMRAcBmK2ZUWT7IIFc9ERByZ9dFfG8seTzuuqmN77zdgv5s9mhAqvJjphZCB7FxO
+         ojCFgHjOX01nn/igTSiM6N3pQoPWJ2zew8M+gvlmze24sE/EiESgOObuPLjEIXD4xIYK
+         WSS76ONg+PHOz0H59ReX0s0YkDqA8k++DM5rm2HvZ3HkyZ/C/Om3q2VDLEgqHTN9vDhc
+         rb6Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=AV5AopmJTZy5UgTYwqJnn3sRN5+Xm8MDysDSL1VkM8k=;
-        b=kU6UGRqiQw0JlHm6RhpO2gXQ3/7S4p5Okzg7pSVVP0eqwoYj0VHxtiGzTOWdZoHgHO
-         EdxZhF1PIV5tnBpaiKhkbOs9Hj7dI+/KBXmGe3XfgPJMZ5khdWv2+YWK3momPjhzdron
-         nxgyP+tI30So+PH303seuOI2fUzGsQCB+VhigFGHmmDQ+9zkZ2xNkAuDh7UgXcpIf9ri
-         //f9LvBIrJel+Icw9ynSfPWF2DnewAkBLWCfD608/6ak9IfZFDo7ieBCCeJMaLyDtZhG
-         r7eKB2zroSVo/zTxUT2wCpoK4nZfCXUIxVQux7SDYQcgy36syaUjX2+YwQQixpuJZBZW
-         sn2Q==
-X-Gm-Message-State: AOAM530oQqLfgf1Itj7yPCPCXTEgzKydcRISiKAFydjAO44HsAmW6m2F
-        c+Wi217MOWYWmrJ2tLCozOQ=
-X-Google-Smtp-Source: ABdhPJwKCBQp6xOZhukBb8BQpeWF1RvnzmZ4BtzMPnbvIdI5HLF1eDUYRfnwV4Iyyd1Nz1UWRbKabA==
-X-Received: by 2002:a50:8b61:: with SMTP id l88mr9681886edl.250.1611196593863;
-        Wed, 20 Jan 2021 18:36:33 -0800 (PST)
+        bh=D75mTe+LjZ1hczQ8JVJiFluJINJ3eH+8ioO5cMn4/eo=;
+        b=qShwWNHF8rXheEByuV3e65HpdNp6rc1ekwnGKKPsGO2akHKvauVc0hiEaPojgGQLn/
+         pZWkXmN0gMK0ExhOytKFPbY7iV6he0RcXZt+DCKlyr5nrdONbhuTHXPBOOa6WG74YA9p
+         2HhpHaYbSIub7fZ7sQXIzSslsrCcvoI8oAJpGi1Kwnk2Y9zCsWLDM8BCsmeKeEei8N8S
+         umyM4EV7TR6KfEnZ+dVgpE2R7Lo/3m3lwQvi+X6tZ+AdWAbml3X/ZhWKx6nrhXUf8atP
+         qYoGFKpShelocoL54/txQCSr8Hw6IPesgMzoE5RIvQrOuUGp5+w1GQv6+P8in08AzS8d
+         7KWw==
+X-Gm-Message-State: AOAM533A/ipXyVCc4Lj2W1rjkojHGb04+svkJ+4Uo7T6g7iKlrU4RX0s
+        UR39s23R/uxMr4zra23ZdWw=
+X-Google-Smtp-Source: ABdhPJwRv/FlTG/zbSSPof5i4wyvgsgVmKUw4OcA2X6CQwMWrNy0PpOJhrxZrll/UqPeldJpddrl/w==
+X-Received: by 2002:a17:906:2087:: with SMTP id 7mr8100248ejq.232.1611196595400;
+        Wed, 20 Jan 2021 18:36:35 -0800 (PST)
 Received: from localhost.localdomain (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id k22sm2025787edv.33.2021.01.20.18.36.32
+        by smtp.gmail.com with ESMTPSA id k22sm2025787edv.33.2021.01.20.18.36.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Jan 2021 18:36:33 -0800 (PST)
+        Wed, 20 Jan 2021 18:36:34 -0800 (PST)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
@@ -66,9 +66,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Andrey L <al@b4comtech.com>,
         Tobias Waldekranz <tobias@waldekranz.com>,
         UNGLinuxDriver@microchip.com
-Subject: [PATCH v5 net-next 05/10] net: mscc: ocelot: don't use NPI tag prefix for the CPU port module
-Date:   Thu, 21 Jan 2021 04:36:11 +0200
-Message-Id: <20210121023616.1696021-6-olteanv@gmail.com>
+Subject: [PATCH v5 net-next 06/10] net: dsa: document the existing switch tree notifiers and add a new one
+Date:   Thu, 21 Jan 2021 04:36:12 +0200
+Message-Id: <20210121023616.1696021-7-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210121023616.1696021-1-olteanv@gmail.com>
 References: <20210121023616.1696021-1-olteanv@gmail.com>
@@ -80,137 +80,146 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Context: Ocelot switches put the injection/extraction frame header in
-front of the Ethernet header. When used in NPI mode, a DSA master would
-see junk instead of the destination MAC address, and it would most
-likely drop the packets. So the Ocelot frame header can have an optional
-prefix, which is just "ff:ff:ff:ff:ff:fe > ff:ff:ff:ff:ff:ff" padding
-put before the actual tag (still before the real Ethernet header) such
-that the DSA master thinks it's looking at a broadcast frame with a
-strange EtherType.
+The existence of dsa_broadcast has generated some confusion in the past:
+https://www.mail-archive.com/netdev@vger.kernel.org/msg365042.html
 
-Unfortunately, a lesson learned in commit 69df578c5f4b ("net: mscc:
-ocelot: eliminate confusion between CPU and NPI port") seems to have
-been forgotten in the meanwhile.
+So let's document the existing dsa_port_notify and dsa_broadcast
+functions and explain when each of them should be used.
 
-The CPU port module and the NPI port have independent settings for the
-length of the tag prefix. However, the driver is using the same variable
-to program both of them.
+Also, in fact, the in-between function has always been there but was
+lacking a name, and is the main reason for this patch: dsa_tree_notify.
+Refactor dsa_broadcast to use it.
 
-There is no reason really to use any tag prefix with the CPU port
-module, since that is not connected to any Ethernet port. So this patch
-makes the inj_prefix and xtr_prefix variables apply only to the NPI
-port (which the switchdev ocelot_vsc7514 driver does not use).
+This patch also moves dsa_broadcast (a top-level function) to dsa2.c,
+where it really belonged in the first place, but had no companion so it
+stood with dsa_port_notify.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
 Changes in v5:
 Patch is new.
 
-Changes in v4:
-Patch is new.
+ net/dsa/dsa2.c     | 43 +++++++++++++++++++++++++++++++++++++++++++
+ net/dsa/dsa_priv.h |  2 ++
+ net/dsa/port.c     | 36 +++++++++++++-----------------------
+ 3 files changed, 58 insertions(+), 23 deletions(-)
 
- drivers/net/dsa/ocelot/felix.c             |  8 ++++----
- drivers/net/ethernet/mscc/ocelot.c         | 12 ++++++------
- drivers/net/ethernet/mscc/ocelot_vsc7514.c |  2 --
- include/soc/mscc/ocelot.h                  |  4 ++--
- 4 files changed, 12 insertions(+), 14 deletions(-)
-
-diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
-index 767cbdccdb3e..054e57dd4383 100644
---- a/drivers/net/dsa/ocelot/felix.c
-+++ b/drivers/net/dsa/ocelot/felix.c
-@@ -425,8 +425,8 @@ static int felix_init_structs(struct felix *felix, int num_phys_ports)
- 	ocelot->num_mact_rows	= felix->info->num_mact_rows;
- 	ocelot->vcap		= felix->info->vcap;
- 	ocelot->ops		= felix->info->ops;
--	ocelot->inj_prefix	= OCELOT_TAG_PREFIX_SHORT;
--	ocelot->xtr_prefix	= OCELOT_TAG_PREFIX_SHORT;
-+	ocelot->npi_inj_prefix	= OCELOT_TAG_PREFIX_SHORT;
-+	ocelot->npi_xtr_prefix	= OCELOT_TAG_PREFIX_SHORT;
- 	ocelot->devlink		= felix->ds->devlink;
+diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
+index cc13549120e5..2953d0c1c7bc 100644
+--- a/net/dsa/dsa2.c
++++ b/net/dsa/dsa2.c
+@@ -21,6 +21,49 @@
+ static DEFINE_MUTEX(dsa2_mutex);
+ LIST_HEAD(dsa_tree_list);
  
- 	port_phy_modes = kcalloc(num_phys_ports, sizeof(phy_interface_t),
-@@ -541,9 +541,9 @@ static void felix_npi_port_init(struct ocelot *ocelot, int port)
++/**
++ * dsa_tree_notify - Execute code for all switches in a DSA switch tree.
++ * @dst: collection of struct dsa_switch devices to notify.
++ * @e: event, must be of type DSA_NOTIFIER_*
++ * @v: event-specific value.
++ *
++ * Given a struct dsa_switch_tree, this can be used to run a function once for
++ * each member DSA switch. The other alternative of traversing the tree is only
++ * through its ports list, which does not uniquely list the switches.
++ */
++int dsa_tree_notify(struct dsa_switch_tree *dst, unsigned long e, void *v)
++{
++	struct raw_notifier_head *nh = &dst->nh;
++	int err;
++
++	err = raw_notifier_call_chain(nh, e, v);
++
++	return notifier_to_errno(err);
++}
++
++/**
++ * dsa_broadcast - Notify all DSA trees in the system.
++ * @e: event, must be of type DSA_NOTIFIER_*
++ * @v: event-specific value.
++ *
++ * Can be used to notify the switching fabric of events such as cross-chip
++ * bridging between disjoint trees (such as islands of tagger-compatible
++ * switches bridged by an incompatible middle switch).
++ */
++int dsa_broadcast(unsigned long e, void *v)
++{
++	struct dsa_switch_tree *dst;
++	int err = 0;
++
++	list_for_each_entry(dst, &dsa_tree_list, list) {
++		err = dsa_tree_notify(dst, e, v);
++		if (err)
++			break;
++	}
++
++	return err;
++}
++
+ /**
+  * dsa_lag_map() - Map LAG netdev to a linear LAG ID
+  * @dst: Tree in which to record the mapping.
+diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
+index 2ce46bb87703..3cc1e6d76e3a 100644
+--- a/net/dsa/dsa_priv.h
++++ b/net/dsa/dsa_priv.h
+@@ -283,6 +283,8 @@ void dsa_switch_unregister_notifier(struct dsa_switch *ds);
+ /* dsa2.c */
+ void dsa_lag_map(struct dsa_switch_tree *dst, struct net_device *lag);
+ void dsa_lag_unmap(struct dsa_switch_tree *dst, struct net_device *lag);
++int dsa_tree_notify(struct dsa_switch_tree *dst, unsigned long e, void *v);
++int dsa_broadcast(unsigned long e, void *v);
  
- 	/* NPI port Injection/Extraction configuration */
- 	ocelot_fields_write(ocelot, port, SYS_PORT_MODE_INCL_XTR_HDR,
--			    ocelot->xtr_prefix);
-+			    ocelot->npi_xtr_prefix);
- 	ocelot_fields_write(ocelot, port, SYS_PORT_MODE_INCL_INJ_HDR,
--			    ocelot->inj_prefix);
-+			    ocelot->npi_inj_prefix);
+ extern struct list_head dsa_tree_list;
  
- 	/* Disable transmission of pause frames */
- 	ocelot_fields_write(ocelot, port, SYS_PAUSE_CFG_PAUSE_ENA, 0);
-diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
-index 42d92a5b475d..acf7ef00e56b 100644
---- a/drivers/net/ethernet/mscc/ocelot.c
-+++ b/drivers/net/ethernet/mscc/ocelot.c
-@@ -1346,9 +1346,9 @@ void ocelot_port_set_maxlen(struct ocelot *ocelot, int port, size_t sdu)
- 	if (port == ocelot->npi) {
- 		maxlen += OCELOT_TAG_LEN;
+diff --git a/net/dsa/port.c b/net/dsa/port.c
+index f5b0f72ee7cd..a8886cf40160 100644
+--- a/net/dsa/port.c
++++ b/net/dsa/port.c
+@@ -13,31 +13,21 @@
  
--		if (ocelot->inj_prefix == OCELOT_TAG_PREFIX_SHORT)
-+		if (ocelot->npi_inj_prefix == OCELOT_TAG_PREFIX_SHORT)
- 			maxlen += OCELOT_SHORT_PREFIX_LEN;
--		else if (ocelot->inj_prefix == OCELOT_TAG_PREFIX_LONG)
-+		else if (ocelot->npi_inj_prefix == OCELOT_TAG_PREFIX_LONG)
- 			maxlen += OCELOT_LONG_PREFIX_LEN;
- 	}
+ #include "dsa_priv.h"
  
-@@ -1378,9 +1378,9 @@ int ocelot_get_max_mtu(struct ocelot *ocelot, int port)
- 	if (port == ocelot->npi) {
- 		max_mtu -= OCELOT_TAG_LEN;
+-static int dsa_broadcast(unsigned long e, void *v)
+-{
+-	struct dsa_switch_tree *dst;
+-	int err = 0;
+-
+-	list_for_each_entry(dst, &dsa_tree_list, list) {
+-		struct raw_notifier_head *nh = &dst->nh;
+-
+-		err = raw_notifier_call_chain(nh, e, v);
+-		err = notifier_to_errno(err);
+-		if (err)
+-			break;
+-	}
+-
+-	return err;
+-}
+-
++/**
++ * dsa_port_notify - Notify the switching fabric of changes to a port
++ * @dp: port on which change occurred
++ * @e: event, must be of type DSA_NOTIFIER_*
++ * @v: event-specific value.
++ *
++ * Notify all switches in the DSA tree that this port's switch belongs to,
++ * including this switch itself, of an event. Allows the other switches to
++ * reconfigure themselves for cross-chip operations. Can also be used to
++ * reconfigure ports without net_devices (CPU ports, DSA links) whenever
++ * a user port's state changes.
++ */
+ static int dsa_port_notify(const struct dsa_port *dp, unsigned long e, void *v)
+ {
+-	struct raw_notifier_head *nh = &dp->ds->dst->nh;
+-	int err;
+-
+-	err = raw_notifier_call_chain(nh, e, v);
+-
+-	return notifier_to_errno(err);
++	return dsa_tree_notify(dp->ds->dst, e, v);
+ }
  
--		if (ocelot->inj_prefix == OCELOT_TAG_PREFIX_SHORT)
-+		if (ocelot->npi_inj_prefix == OCELOT_TAG_PREFIX_SHORT)
- 			max_mtu -= OCELOT_SHORT_PREFIX_LEN;
--		else if (ocelot->inj_prefix == OCELOT_TAG_PREFIX_LONG)
-+		else if (ocelot->npi_inj_prefix == OCELOT_TAG_PREFIX_LONG)
- 			max_mtu -= OCELOT_LONG_PREFIX_LEN;
- 	}
- 
-@@ -1465,9 +1465,9 @@ static void ocelot_cpu_port_init(struct ocelot *ocelot)
- 	ocelot_fields_write(ocelot, cpu, QSYS_SWITCH_PORT_MODE_PORT_ENA, 1);
- 	/* CPU port Injection/Extraction configuration */
- 	ocelot_fields_write(ocelot, cpu, SYS_PORT_MODE_INCL_XTR_HDR,
--			    ocelot->xtr_prefix);
-+			    OCELOT_TAG_PREFIX_NONE);
- 	ocelot_fields_write(ocelot, cpu, SYS_PORT_MODE_INCL_INJ_HDR,
--			    ocelot->inj_prefix);
-+			    OCELOT_TAG_PREFIX_NONE);
- 
- 	/* Configure the CPU port to be VLAN aware */
- 	ocelot_write_gix(ocelot, ANA_PORT_VLAN_CFG_VLAN_VID(0) |
-diff --git a/drivers/net/ethernet/mscc/ocelot_vsc7514.c b/drivers/net/ethernet/mscc/ocelot_vsc7514.c
-index 30a38df08a21..407244fe5b17 100644
---- a/drivers/net/ethernet/mscc/ocelot_vsc7514.c
-+++ b/drivers/net/ethernet/mscc/ocelot_vsc7514.c
-@@ -1347,8 +1347,6 @@ static int mscc_ocelot_probe(struct platform_device *pdev)
- 	ocelot->num_flooding_pgids = 1;
- 
- 	ocelot->vcap = vsc7514_vcap_props;
--	ocelot->inj_prefix = OCELOT_TAG_PREFIX_NONE;
--	ocelot->xtr_prefix = OCELOT_TAG_PREFIX_NONE;
- 	ocelot->npi = -1;
- 
- 	err = ocelot_init(ocelot);
-diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
-index cdc33fa05660..93c22627dedd 100644
---- a/include/soc/mscc/ocelot.h
-+++ b/include/soc/mscc/ocelot.h
-@@ -651,8 +651,8 @@ struct ocelot {
- 
- 	int				npi;
- 
--	enum ocelot_tag_prefix		inj_prefix;
--	enum ocelot_tag_prefix		xtr_prefix;
-+	enum ocelot_tag_prefix		npi_inj_prefix;
-+	enum ocelot_tag_prefix		npi_xtr_prefix;
- 
- 	u32				*lags;
- 
+ int dsa_port_set_state(struct dsa_port *dp, u8 state)
 -- 
 2.25.1
 
