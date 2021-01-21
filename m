@@ -2,71 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A8BA2FF7AA
-	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 23:00:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C7CD2FF7C2
+	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 23:12:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725950AbhAUV61 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jan 2021 16:58:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36332 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725283AbhAUV6E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jan 2021 16:58:04 -0500
-Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C2B7C06174A
-        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 13:57:23 -0800 (PST)
-Received: by mail-ej1-x636.google.com with SMTP id kg20so4323359ejc.4
-        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 13:57:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=lBl8QeCxL2+lDoN1uhV69WCu5HFrXcaUez0p+kY5Otg=;
-        b=ou579rIQecZAlyZa6nQQDQ19Hz8lgRSZzxDA0qz2up8C2enUOrA3W9lFaYBvtHXM0A
-         UtyiWTAHTkXQq1Np9MbyvK8jc7+XSxX3xYG+pqccrpPlDzugb+yPpKARufM/udDqInwv
-         zyec3Rvx2H2OPlCJEpQvET7EM38JXkOAxElFCA4C+YghNpktxJKR9E6/zxT6Wddqp3/e
-         Wbi5eH9hKTZJ42Q4IhvCuSFZ1nopPu0/kHaVFTGtRwYGEZt+QxdXywfvLQInX7XhEPIc
-         vUPgxUHv1gAvQvdRoylQcoilSghjBduV4INxj4DHb7f9ixkppQiWC36DhITTs8yQ3clm
-         cI7g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=lBl8QeCxL2+lDoN1uhV69WCu5HFrXcaUez0p+kY5Otg=;
-        b=XhisCBgIbGNlxKclvk2sq/6j+R2uB6pz+hIsCbeGhJkC1iPyZEbVISJ87QDBX6HIvj
-         jE9F2nAg7HC7Fk7tFQfLoO0MCkQEDIIulF0P5CA8kGeAhuDKQt5fXlUdApJOCIy5jwq+
-         8Z7AsjeowAULKCLdwcbsg1MhBm/B89Z3FixXzqNfXmeKa/KcXIQmiY4Zx4PqJXf9/47l
-         cj5ljOpyI767vQHCOBZHpuKHFj6hoPsHhJ+otDkeNa48C99vN80i8v4lgndikKGUE1eG
-         F9jy6TPyOSdGsI/i9LZ1O9Nw1K5aFO1pLIsbSg0OVS6KCv0aKBJXFYPkE1tz0d9STqFa
-         yTdw==
-X-Gm-Message-State: AOAM530lYfEGUdGdOGxQq1NPpY4xgpQ9abm4mmA2llAPSjRn9wTYGpdA
-        p4QYE5rCfDHJ3YUU4e/mI2L4i2N8wnE=
-X-Google-Smtp-Source: ABdhPJy04MFqTZEHTBEpkhuJdDH2C7jhhAUukaTTNqt8FXPbkbvFdsQs8pGZtEWkxO3a/sZsva2yeg==
-X-Received: by 2002:a17:906:e106:: with SMTP id gj6mr944615ejb.337.1611266241943;
-        Thu, 21 Jan 2021 13:57:21 -0800 (PST)
-Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id da26sm3531545edb.36.2021.01.21.13.57.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Jan 2021 13:57:21 -0800 (PST)
-Date:   Thu, 21 Jan 2021 23:57:19 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     David Ahern <dsahern@gmail.com>, netdev@vger.kernel.org
-Cc:     Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Vedang Patel <vedang.patel@intel.com>
-Subject: Re: [PATCH iproute2] man: tc-taprio.8: document the full offload
- feature
-Message-ID: <20210121215719.fimgnp5j6ngckjkl@skbuf>
-References: <20210121214708.2477352-1-olteanv@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210121214708.2477352-1-olteanv@gmail.com>
+        id S1726939AbhAUWLO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jan 2021 17:11:14 -0500
+Received: from serv108.segi.ulg.ac.be ([139.165.32.111]:44807 "EHLO
+        serv108.segi.ulg.ac.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726242AbhAUWLM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jan 2021 17:11:12 -0500
+Received: from localhost.localdomain (38.25-200-80.adsl-dyn.isp.belgacom.be [80.200.25.38])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by serv108.segi.ulg.ac.be (Postfix) with ESMTPSA id 1A3CE200F4A1;
+        Thu, 21 Jan 2021 23:00:54 +0100 (CET)
+DKIM-Filter: OpenDKIM Filter v2.11.0 serv108.segi.ulg.ac.be 1A3CE200F4A1
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uliege.be;
+        s=ulg20190529; t=1611266454;
+        bh=6+yZKpJf66+aalgw6xgutFJ20DIvRlOLHwaFUDUgmZ8=;
+        h=From:To:Cc:Subject:Date:From;
+        b=PUs1K3YuZUXDJCsGUnTi5ORZjWJ8sK9HfgEayhf7w1+tkpGaewwc2GNHVeJ9yG8Ca
+         Ce0nqStXdlh2JajyNK1z6qVEsZnuutJY7RaH6Jj/Ix8cpK2+X2FMXgCeMOcUgfe+tz
+         BzecxiXbgsty1TfiG3b12WQjNqt/xr5+kt9WVPsNlrfyBCalyHSO6noq8b6bnWiv6g
+         a03lVzd3EpuJ4lK+ooxH5Jf3tspzNDVqx4El65yIsltWl9HFh5xbsQwyI1M24yojY5
+         ONu0JZIg5/mURL2a+gQpIqLTkS9eskJ5SUM1SwglRzSwCLBMflr1+tsrBikoJveDnU
+         Vify2M9b4HeSg==
+From:   Justin Iurman <justin.iurman@uliege.be>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, alex.aring@gmail.com,
+        Justin Iurman <justin.iurman@uliege.be>
+Subject: [PATCH net 0/1] Fix big endian definition of ipv6_rpl_sr_hdr
+Date:   Thu, 21 Jan 2021 23:00:43 +0100
+Message-Id: <20210121220044.22361-1-justin.iurman@uliege.be>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 21, 2021 at 11:47:08PM +0200, Vladimir Oltean wrote:
-> +Enables the full-offload feature. In this mode, taprio will pass the gate
-> +control list to the NIC which will execute cyclically it in hardware.
+Following RFC 6554 [1], the current order of fields is wrong for big
+endian definition. Indeed, here is how the header looks like:
 
-Ugh, I meant "execute it cyclically" not "execute cyclically it".
-David, could you fix this up or do I need to resend?
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|  Next Header  |  Hdr Ext Len  | Routing Type  | Segments Left |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+| CmprI | CmprE |  Pad  |               Reserved                |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+This patch reorders fields so that big endian definition is now correct.
+
+  [1] https://tools.ietf.org/html/rfc6554#section-3
+
+
+Justin Iurman (1):
+  uapi: fix big endian definition of ipv6_rpl_sr_hdr
+
+ include/uapi/linux/rpl.h | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+-- 
+2.17.1
+
