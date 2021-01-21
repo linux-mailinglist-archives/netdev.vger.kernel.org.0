@@ -2,127 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0580D2FEF83
-	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 16:55:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 23D182FF04E
+	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 17:30:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728156AbhAUPwg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jan 2021 10:52:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42176 "EHLO
+        id S2387933AbhAUQaW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jan 2021 11:30:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731165AbhAUPvu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jan 2021 10:51:50 -0500
-Received: from mail-ua1-x92b.google.com (mail-ua1-x92b.google.com [IPv6:2607:f8b0:4864:20::92b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55FD8C06174A
-        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 07:51:10 -0800 (PST)
-Received: by mail-ua1-x92b.google.com with SMTP id a31so798585uae.11
-        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 07:51:10 -0800 (PST)
+        with ESMTP id S2387603AbhAUQDD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jan 2021 11:03:03 -0500
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42019C061756
+        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 08:02:23 -0800 (PST)
+Received: by mail-ej1-x62a.google.com with SMTP id kg20so2842991ejc.4
+        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 08:02:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Ne+dbRTh0RCBJExU0F/HHyjnuTlluZPqXNtK9D1d2Gg=;
-        b=Cd0q3gjsb56e0PkOwqKUxmnt7fjEYOVl6dAvwDtMZ3xi4XtdsvAWbwev+/nwsJbCtS
-         04YTO708G89nX6Xe7gsvK6yXoyOqB5GJuCk46yBSY4GCgM11FQUGY4MXkywsOB1se1GS
-         swmIjr9cACDqTqVut/wHoTjtStd2dlemjqGdBA8+0hVrg7y+2Gzf8GKmgld2CO/rGScp
-         OAedoDv4N4S6Y8XIbTUtML3/1zkZDlXpPm0qjlio7guJu7lGmCNEMft2/ppQF1XSvio6
-         S7ZWi5HqR7N2qTWrh0K0xl+y/VA/VGTdCYbZMSNqPLFLKVcsvBlt9h8eAuXsiBMSh2f5
-         H/Qg==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=w7P1tLFexVDYB6k5zrT1PxDldYYnJoQE5NuUjASNLGw=;
+        b=LFmlLtt+Acxh/qwT73ObWB1useEO3WuD7DZY5hr+3hrwC+sosbwgGWIeMLVar93Wdt
+         ELXegr1NGc4C1tAn4vzg/RSQoo/9gvT33ylTfYWNbWSPS4RDmi/Qu0jwjc31hG5HIiWY
+         /mYhL0AOD8RSthuW7FVq6pniz18d4BLbvN+eMApNT9qS7iPBPTzNYjtxcqg6ngTvML2z
+         /InQQRRfeKvAaV+UBKUisD1LAuCdd9EyVlkfRLnHRQN6C7XdIP2FzZxoi3QPF8HAxffF
+         YolNrFfbLVTcD7Ioh2s0ANpOaFQxfVe2Y7U0wRj8KN0qfqK9HysQ1RVEbzcmmq31/NKI
+         +tkQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Ne+dbRTh0RCBJExU0F/HHyjnuTlluZPqXNtK9D1d2Gg=;
-        b=H4fSd4KKsiFA6OGSUDX/uve9gM0usauC0nE5buki0ewCPPnlr6Yap64Xk5/cV8KLtx
-         nJXsci3BVoON0vSj6QH2yZJIu5lmgSaaHGB5hF31iFjHxW+XObU1mNZAic5Dz1vHwpIo
-         +AeYdIUP9Eeksgwnh6bDmuLJAl1WN9e1rtRx9rVHgsGu1gSrRD5fZgSynplM04boLabm
-         sBo7dmcbvB5ShsdGS2G0jL7IobOUeNMef7qB0hojppYx9YQUJvKI9SWcijg6FziMH9Tz
-         0OLC76FF/z3hPgSQqxKgKZF9uipmP87pzmrgG1HmlFdOI1E4fq2fGq2wzwgN2/i7N+S6
-         BRag==
-X-Gm-Message-State: AOAM530zx+ZEx3dpKXOoQ9OnJpeq3RUqW8XSOhk3+ZTZylJFujw5zqjq
-        mOveJCRcx4WAjTkBidrzAL0whsMuKH+tvYSOMHRI3w==
-X-Google-Smtp-Source: ABdhPJzI8jX+tee5y+Ym1mKEpiDtBZCs1sMP99XjSeJiv6YvwnmkV0YAyqd0AnOSbjFd9YzLImGSgRuvA6V75Rij7ww=
-X-Received: by 2002:ab0:2b94:: with SMTP id q20mr381654uar.46.1611244269278;
- Thu, 21 Jan 2021 07:51:09 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=w7P1tLFexVDYB6k5zrT1PxDldYYnJoQE5NuUjASNLGw=;
+        b=jobGi1+Zlrb/4PZ1Dg+Iwj/AfmQTi74fxAYDdRDp6XTpmBhAlcjur1zNcR2ijTDao4
+         JvojOffYwiiAL2zFSrgydQm3rTJH6tRfUzBuAYgljU0JcT7dhZiOhXCuTLsu0rkHqIbD
+         6tVBRmEbVqKj+HBsjBiG14749iHUnbv25VPUOKPkXR3NKyJF0Rx48khy6eWYf4PL93cN
+         wDGsasY6VPjh5kIha0qevgfEJ98FkuEwHKcfgfRj8LMlipS6FVfkxmYEMOBlAYNj5aj9
+         0HcImuwFC4CI4o43QprHZlepU9hFcQwaCxV4Wir9NrFe5IyMO08e3yZUFIcqsx3N/x7K
+         FgjA==
+X-Gm-Message-State: AOAM530xVzGuQtKXhiPzBfs8ugLranx01JIE80LEtwlGiG/WWsJeaxga
+        zvQhCnjMdHrOklMTXg3znaE=
+X-Google-Smtp-Source: ABdhPJwpPohXvaTBXG3seySv2XWVJhLTsrp7ScSiJ4L6MCR5anN3H5P3OFSY8CzxEqg7RmJ5us5Ozg==
+X-Received: by 2002:a17:906:3401:: with SMTP id c1mr126504ejb.156.1611244942037;
+        Thu, 21 Jan 2021 08:02:22 -0800 (PST)
+Received: from localhost.localdomain (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
+        by smtp.gmail.com with ESMTPSA id zk10sm2419973ejb.10.2021.01.21.08.02.20
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 Jan 2021 08:02:21 -0800 (PST)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        Hongbo Wang <hongbo.wang@nxp.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Po Liu <po.liu@nxp.com>, Yangbo Lu <yangbo.lu@nxp.com>,
+        Maxim Kochetkov <fido_max@inbox.ru>,
+        Eldar Gasanov <eldargasanov2@gmail.com>,
+        Andrey L <al@b4comtech.com>,
+        Tobias Waldekranz <tobias@waldekranz.com>,
+        UNGLinuxDriver@microchip.com
+Subject: [PATCH v6 net-next 01/10] net: dsa: tag_8021q: add helpers to deduce whether a VLAN ID is RX or TX VLAN
+Date:   Thu, 21 Jan 2021 18:01:22 +0200
+Message-Id: <20210121160131.2364236-2-olteanv@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20210121160131.2364236-1-olteanv@gmail.com>
+References: <20210121160131.2364236-1-olteanv@gmail.com>
 MIME-Version: 1.0
-References: <1611139794-11254-1-git-send-email-yangpc@wangsu.com>
- <CADVnQykgYGc4_U+eyXU72fky2C5tDQKuOuQ=BdfqfROTG++w7Q@mail.gmail.com>
- <CAK6E8=e1sdqntpLzeaGKhFB_DhhcNrJmPBQ3u9M44fSqdNTg_Q@mail.gmail.com> <022d01d6effc$0ccd0c50$266724f0$@wangsu.com>
-In-Reply-To: <022d01d6effc$0ccd0c50$266724f0$@wangsu.com>
-From:   Neal Cardwell <ncardwell@google.com>
-Date:   Thu, 21 Jan 2021 10:50:52 -0500
-Message-ID: <CADVnQy=jwBHg_Pf+puzxTCOCKxZJU2uThAuXU9CtkWFxtqU69w@mail.gmail.com>
-Subject: Re: tcp: rearm RTO timer does not comply with RFC6298
-To:     Pengcheng Yang <yangpc@wangsu.com>
-Cc:     Yuchung Cheng <ycheng@google.com>, Netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 21, 2021 at 9:05 AM Pengcheng Yang <yangpc@wangsu.com> wrote:
->
-> On Thu, Jan 21, 2021 at 2:59 AM Yuchung Cheng <ycheng@google.com> wrote:
-> >
-> > On Wed, Jan 20, 2021 at 6:59 AM Neal Cardwell <ncardwell@google.com> wrote:
-> > >
-> > > On Wed, Jan 20, 2021 at 5:50 AM Pengcheng Yang <yangpc@wangsu.com> wrote:
-> > > >
-> > > > hi,
-> > > >
-> > > > I have a doubt about tcp_rearm_rto().
-> > > >
-> > > > Early TCP always rearm the RTO timer to NOW+RTO when it receives
-> > > > an ACK that acknowledges new data.
-> > > >
-> > > > Referring to RFC6298 SECTION 5.3: "When an ACK is received that
-> > > > acknowledges new data, restart the retransmission timer so that
-> > > > it will expire after RTO seconds (for the current value of RTO)."
-> > > >
-> > > > After ER and TLP, we rearm the RTO timer to *tstamp_of_head+RTO*
-> > > > when switching from ER/TLP/RACK to original RTO in tcp_rearm_rto(),
-> > > > in this case the RTO timer is triggered earlier than described in
-> > > > RFC6298, otherwise the same.
-> > > >
-> > > > Is this planned? Or can we always rearm the RTO timer to
-> > > > tstamp_of_head+RTO?
-> > > >
-> > > > Thanks.
-> > > >
-> > >
-> > > This is a good question. As far as I can tell, this difference in
-> > > behavior would only come into play in a few corner cases, like:
-> > >
-> > > (1) The TLP timer fires and the connection is unable to transmit a TLP
-> > > probe packet. This could happen due to memory allocation failure  or
-> > > the local qdisc being full.
-> > >
-> > > (2) The RACK reorder timer fires but the connection does not take the
-> > > normal course of action and mark some packets lost and retransmit at
-> > > least one of them. I'm not sure how this would happen. Maybe someone
-> > > can think of a case.
->
-> Yes, and it also happens when an ACK (a cumulative ACK covered out-of-order data)
-> is received that makes ca_state change from DISORDER to OPEN, by calling tcp_set_xmit_timer().
-> Because TLP is not triggered under DISORDER and tcp_rearm_rto() is called before the
-> ca_state changes.
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Hmm, that sounds like a good catch, and potentially a significant bug.
-Re-reading the code, it seems that you correctly identify that on an
-ACK when reordering is resolved (ca_state change from DISORDER to
-OPEN) we will not set a TLP timer for now+TLP_interval, but instead
-will set an RTO timer for rtx_head_tx_time+RTO (which could be very
-soon indeed, if RTTVAR is very low). Seems like that could cause
-spurious RTOs with connections that experience reordering with low RTT
-variance.
+The sja1105 implementation can be blind about this, but the felix driver
+doesn't do exactly what it's being told, so it needs to know whether it
+is a TX or an RX VLAN, so it can install the appropriate type of TCAM
+rule.
 
-It seems like we should try to fix this. Perhaps by calling
-tcp_set_xmit_timer() only after we have settled on a final ca_state
-implied by this ACK (in this case, to allow DISORDER to be resolved to
-OPEN). Though that would require some careful surgery, since that
-would move the tcp_set_xmit_timer() call *after* the point at which
-the RACK reorder timer would be set.
+Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+---
+Changes in v6:
+None.
 
-Other thoughts?
+Changes in v5:
+None.
 
-neal
+Changes in v4:
+None.
+
+Changes in v3:
+None.
+
+Changes in v2:
+None.
+
+ include/linux/dsa/8021q.h | 14 ++++++++++++++
+ net/dsa/tag_8021q.c       | 15 +++++++++++++--
+ 2 files changed, 27 insertions(+), 2 deletions(-)
+
+diff --git a/include/linux/dsa/8021q.h b/include/linux/dsa/8021q.h
+index 88cd72dfa4e0..b12b05f1c8b4 100644
+--- a/include/linux/dsa/8021q.h
++++ b/include/linux/dsa/8021q.h
+@@ -64,6 +64,10 @@ int dsa_8021q_rx_source_port(u16 vid);
+ 
+ u16 dsa_8021q_rx_subvlan(u16 vid);
+ 
++bool vid_is_dsa_8021q_rxvlan(u16 vid);
++
++bool vid_is_dsa_8021q_txvlan(u16 vid);
++
+ bool vid_is_dsa_8021q(u16 vid);
+ 
+ #else
+@@ -123,6 +127,16 @@ u16 dsa_8021q_rx_subvlan(u16 vid)
+ 	return 0;
+ }
+ 
++bool vid_is_dsa_8021q_rxvlan(u16 vid)
++{
++	return false;
++}
++
++bool vid_is_dsa_8021q_txvlan(u16 vid)
++{
++	return false;
++}
++
+ bool vid_is_dsa_8021q(u16 vid)
+ {
+ 	return false;
+diff --git a/net/dsa/tag_8021q.c b/net/dsa/tag_8021q.c
+index 8e3e8a5b8559..008c1ec6e20c 100644
+--- a/net/dsa/tag_8021q.c
++++ b/net/dsa/tag_8021q.c
+@@ -133,10 +133,21 @@ u16 dsa_8021q_rx_subvlan(u16 vid)
+ }
+ EXPORT_SYMBOL_GPL(dsa_8021q_rx_subvlan);
+ 
++bool vid_is_dsa_8021q_rxvlan(u16 vid)
++{
++	return (vid & DSA_8021Q_DIR_MASK) == DSA_8021Q_DIR_RX;
++}
++EXPORT_SYMBOL_GPL(vid_is_dsa_8021q_rxvlan);
++
++bool vid_is_dsa_8021q_txvlan(u16 vid)
++{
++	return (vid & DSA_8021Q_DIR_MASK) == DSA_8021Q_DIR_TX;
++}
++EXPORT_SYMBOL_GPL(vid_is_dsa_8021q_txvlan);
++
+ bool vid_is_dsa_8021q(u16 vid)
+ {
+-	return ((vid & DSA_8021Q_DIR_MASK) == DSA_8021Q_DIR_RX ||
+-		(vid & DSA_8021Q_DIR_MASK) == DSA_8021Q_DIR_TX);
++	return vid_is_dsa_8021q_rxvlan(vid) || vid_is_dsa_8021q_txvlan(vid);
+ }
+ EXPORT_SYMBOL_GPL(vid_is_dsa_8021q);
+ 
+-- 
+2.25.1
+
