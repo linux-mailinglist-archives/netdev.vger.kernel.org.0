@@ -2,82 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B1B102FF499
-	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 20:33:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E22AB2FF516
+	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 20:50:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727380AbhAUTdl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jan 2021 14:33:41 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:53110 "EHLO vps0.lunn.ch"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725956AbhAUTco (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 21 Jan 2021 14:32:44 -0500
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1l2f7G-001sMI-Tt; Thu, 21 Jan 2021 19:55:34 +0100
-Date:   Thu, 21 Jan 2021 19:55:34 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Richard Cochran <richardcochran@gmail.com>
-Cc:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] net: ethtool: allow MAC drivers to override
- ethtool get_ts_info
-Message-ID: <YAnOJhG1Eh4gjglr@lunn.ch>
-References: <20210114132217.GR1551@shell.armlinux.org.uk>
- <20210114133235.GP1605@shell.armlinux.org.uk>
- <20210114172712.GA13644@hoboy.vegasvil.org>
- <20210114173111.GX1551@shell.armlinux.org.uk>
- <20210114223800.GR1605@shell.armlinux.org.uk>
- <20210121040451.GB14465@hoboy.vegasvil.org>
- <20210121102738.GN1551@shell.armlinux.org.uk>
- <20210121150611.GA20321@hoboy.vegasvil.org>
- <YAmqTUdMXOmd/rYI@lunn.ch>
- <20210121170347.GA22517@hoboy.vegasvil.org>
+        id S1727635AbhAUTti (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jan 2021 14:49:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36946 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727659AbhAUTtS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jan 2021 14:49:18 -0500
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7099FC061756
+        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 11:48:37 -0800 (PST)
+Received: by mail-wm1-x32e.google.com with SMTP id c124so2485080wma.5
+        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 11:48:37 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=6d/aDVOFLX7raDkP7Gxi9miozA9uxs1+XCWygDlWrkY=;
+        b=QIElR3BisQdC5WSJ1TT45S+jd3A6SD3Ni17JqCCYSVxcMoEAnzYUf3TQeUlrBhUbkU
+         COZXX6Sni0gHt5WRzV3MkNBwJPx/QHtQr+gu4DcXGlHpiUboZ3TNPoZnF1gXasyvk3jg
+         mGV7WFMyjZ/8umM+4P7UKc72nBV6Mi6abhJR+7TdU3pB2znnT6UhcdEpyw9jFc0tDSO/
+         WcZuvrx69mjyzAEKdqPkl8BEsa4hqsR3PV/L4Xk/rx1uAVZT1E/cWksa30t4cA0v1NG6
+         SkjXpk8WfDnIq6ilmYZWa+/qqcHWaULx+H46ODIZHgjbe97087cd3+E2sI/TUv1MURhC
+         qaoQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=6d/aDVOFLX7raDkP7Gxi9miozA9uxs1+XCWygDlWrkY=;
+        b=Rq6lZvKILGbIhZqE7iQaU/FNO2ZAfg4aAXUuxmPL78VHRmQe2M3Th/eCOgZo3Z3f1O
+         yQyzql8YuKm+kBbJN7RUcCBYYSNi0kqwK37wMq69IZeT3hQP168YyH4gS5AK1Y8ar0pG
+         4GKGBKiM8njVIR/pf22hvgWdZs6h2rq1fmrjd4A9qbKBRbyExH6jrr9ipE4GNs5qSFs3
+         3pNx5dwnH9UlV9QGI8FNrZi6d3cqRuN/ZRKfuiH370OBh/hDQZ+MgJO5jiZq6P5nersv
+         TpmlwpnmpjbXMw2TOjWWL33OW4N89NCo2ytZufxshWPYXk0fTMQ44DPs3rzq46RgqZ7k
+         bLlA==
+X-Gm-Message-State: AOAM531rP0zTB8Xlfy050Ilg1WeJ4S6rrBfU8025j+i3Hz3ya52Qdzqt
+        0tBolrnoqhhLQ+HjWQZHgHlWFYEPtdajZOlfGML1uBHNDsQ=
+X-Google-Smtp-Source: ABdhPJz7GXTgChcUTZatL94Uoivs3xg0oY3saLXHN7wlMaBGesprFDERru7aUEGwD20593xhjbAqHHYrAqeqHI47avY=
+X-Received: by 2002:a1c:1b83:: with SMTP id b125mr892997wmb.8.1611258516286;
+ Thu, 21 Jan 2021 11:48:36 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210121170347.GA22517@hoboy.vegasvil.org>
+References: <20210121062005.53271-1-ljp@linux.ibm.com> <c34816a13d857b7f5d1a25991b58ec63@imap.linux.ibm.com>
+In-Reply-To: <c34816a13d857b7f5d1a25991b58ec63@imap.linux.ibm.com>
+From:   Lijun Pan <lijunp213@gmail.com>
+Date:   Thu, 21 Jan 2021 13:48:25 -0600
+Message-ID: <CAOhMmr78mzJpfPBSwp9JWmE+KwLxd6JtqpwaA9tmqxU5fCjcgg@mail.gmail.com>
+Subject: Re: [PATCH net] ibmvnic: device remove has higher precedence over reset
+To:     Dany Madden <drt@linux.ibm.com>
+Cc:     Lijun Pan <ljp@linux.ibm.com>, netdev@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, sukadev@linux.ibm.com,
+        mpe@ellerman.id.au, julietk@linux.vnet.ibm.com,
+        benh@kernel.crashing.org, paulus@samba.org, davem@davemloft.net,
+        Jakub Kicinski <kuba@kernel.org>, gregkh@linuxfoundation.org,
+        kernel@pengutronix.de,
+        =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 21, 2021 at 09:03:47AM -0800, Richard Cochran wrote:
-> On Thu, Jan 21, 2021 at 05:22:37PM +0100, Andrew Lunn wrote:
-> 
-> > There is a growing interesting in PTP, the number of drivers keeps
-> > going up. The likelihood of MAC/PHY combination having two
-> > timestamping sources is growing all the time. So the stack needs to
-> > change to support the selection of the timestamp source.
-> 
-> Fine, but How should the support look like?
-> 
-> - New/extended time stamping API that delivers multiple time stamps?
-> 
-> - sysctl to select MAC/PHY preference at run time globally?
-> 
-> - per-interface ethtool control?
-> 
-> - per-socket control?  (probably not feasible, but heh)
-> 
-> Back of the napkin design ideas appreciated!
+> > diff --git a/drivers/net/ethernet/ibm/ibmvnic.c
+> > b/drivers/net/ethernet/ibm/ibmvnic.c
+> > index aed985e08e8a..11f28fd03057 100644
+> > --- a/drivers/net/ethernet/ibm/ibmvnic.c
+> > +++ b/drivers/net/ethernet/ibm/ibmvnic.c
+> > @@ -2235,8 +2235,7 @@ static void __ibmvnic_reset(struct work_struct
+> > *work)
+> >       while (rwi) {
+> >               spin_lock_irqsave(&adapter->state_lock, flags);
+> >
+> > -             if (adapter->state == VNIC_REMOVING ||
+> > -                 adapter->state == VNIC_REMOVED) {
+> > +             if (adapter->state == VNIC_REMOVED) {
+>
+> If we do get here, we would crash because ibmvnic_remove() happened. It
+> frees the adapter struct already.
 
-Do you know of any realistic uses cases for using two time stampers
-for the same netdev? If we can eliminate that, then it is down to
-selecting which one to use. And i would say, the selection needs to be
-per netdev.
+Not exactly. viodev is gone; netdev is gone; ibmvnic_adapter is still there.
 
-I don't know the ptp subsystem very well, but it seems like
-ptp_clock_register() does not know which netdev the device is being
-registered against. Is it guaranteed that parent is actual a MAC?
-Seems like adding a netdev member to that call could be good, so the
-core knows what stampers are available per netdev. It then becomes
-possible to enumerate the stampers associated to a netdev, and to
-select one to be used.
-
-get_ts_info() is a problem because the MAC directly implements it. It
-seems like you need all kAPI calls to go into the ptp core. It can
-then call into the selected driver. So ptp_clock_info might need
-additional methods, get_ts_info() for example.
-
-	   Andrew
+Lijun
