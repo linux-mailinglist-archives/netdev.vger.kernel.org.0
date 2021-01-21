@@ -2,175 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E391D2FEF3E
-	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 16:44:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0580D2FEF83
+	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 16:55:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733237AbhAUPm5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jan 2021 10:42:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40110 "EHLO
+        id S1728156AbhAUPwg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jan 2021 10:52:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42176 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1733008AbhAUPmS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jan 2021 10:42:18 -0500
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBA38C061756;
-        Thu, 21 Jan 2021 07:41:37 -0800 (PST)
-Received: by mail-wm1-x331.google.com with SMTP id c128so1922320wme.2;
-        Thu, 21 Jan 2021 07:41:37 -0800 (PST)
+        with ESMTP id S1731165AbhAUPvu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jan 2021 10:51:50 -0500
+Received: from mail-ua1-x92b.google.com (mail-ua1-x92b.google.com [IPv6:2607:f8b0:4864:20::92b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55FD8C06174A
+        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 07:51:10 -0800 (PST)
+Received: by mail-ua1-x92b.google.com with SMTP id a31so798585uae.11
+        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 07:51:10 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=klestWo2PrKy4XdpOkRsUnFJCmCxs6ZGgiiFSXp8mGQ=;
-        b=mU4IBbICRoLVDsuNxMDJFuEkpp9tbf4k8j3PtFt2VR35nz4BZs3UaU90Fh+axknRnT
-         L3Q+FwtIv/Ab+PfwyfcpGz1aUcYibXm+TtvpF4zmjQRQRQYbPa0eSmBz1CkVVR5fNkGf
-         kmtxemTIos+nJNF1AIthX9pI6XV2Upa+r78jrQmvYfuI91V/561+7aHc7dVcA2L++5iC
-         PM4pu7+lk++zVjq40dveVN6WgiLynkHhtrpUZClReXbfKX6LG2q0I+z/tfA72rFk8O3f
-         /Wp3bthwzixQRmkKDOond1m422rCSb3KUxV2SeaDsHc5ZRcqPAkRwNeLYRjbUJE61I7J
-         YFDA==
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Ne+dbRTh0RCBJExU0F/HHyjnuTlluZPqXNtK9D1d2Gg=;
+        b=Cd0q3gjsb56e0PkOwqKUxmnt7fjEYOVl6dAvwDtMZ3xi4XtdsvAWbwev+/nwsJbCtS
+         04YTO708G89nX6Xe7gsvK6yXoyOqB5GJuCk46yBSY4GCgM11FQUGY4MXkywsOB1se1GS
+         swmIjr9cACDqTqVut/wHoTjtStd2dlemjqGdBA8+0hVrg7y+2Gzf8GKmgld2CO/rGScp
+         OAedoDv4N4S6Y8XIbTUtML3/1zkZDlXpPm0qjlio7guJu7lGmCNEMft2/ppQF1XSvio6
+         S7ZWi5HqR7N2qTWrh0K0xl+y/VA/VGTdCYbZMSNqPLFLKVcsvBlt9h8eAuXsiBMSh2f5
+         H/Qg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=klestWo2PrKy4XdpOkRsUnFJCmCxs6ZGgiiFSXp8mGQ=;
-        b=jNOhY8eP921dwu3aO6DDyAEa69akwYhPj3prOh6jcRvmfn1KDtN8kf4lG5PYwZp9LT
-         c0yfZv+PK433Sv9PZ1Pz8Xjh+OHee7/TlgRXhNi+2B3/LYkhVwg2LMQ/k1jmMQUV3qs6
-         Ec1c42vogD+YrAsrgx0W4QOh0qnFRrQyH+xr/bV2+yxkkZOsfLYqYcXooyMI43/cQtIG
-         XdPr9hYYbRs8BmG2N93y9/omJ7XED5uwYqbcbWS6TpmaCPcJZWwJuk7S43VHBTaEYDUh
-         TNU8UrjTEkQMrXJtplELce7gnQ7/qSTY8IdnzLn0U90PWo7a0U+4CwoQkBsLuJX86r+l
-         luNA==
-X-Gm-Message-State: AOAM530xqavxr66o/Fdv+WDnx2o+VoKbsQrVAhHg0Cd7It3FN0OxMt8e
-        fQUZQo6/UfQQXi3PF/p49Lf2TdaYu4M=
-X-Google-Smtp-Source: ABdhPJxP00z10/zywWz/crjSBdXq0t5+AHIDngQEQAu1TF/ApaslqqbKVD698mBRmijbupfBA3lWMQ==
-X-Received: by 2002:a1c:e2d7:: with SMTP id z206mr7370319wmg.99.1611243696441;
-        Thu, 21 Jan 2021 07:41:36 -0800 (PST)
-Received: from [192.168.1.101] ([37.171.116.45])
-        by smtp.gmail.com with ESMTPSA id h23sm8311369wmi.26.2021.01.21.07.41.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 21 Jan 2021 07:41:35 -0800 (PST)
-Subject: Re: [PATCH bpf-next v3 3/3] xsk: build skb by page
-To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>, bpf@vger.kernel.org
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org
-References: <cover.1611236588.git.xuanzhuo@linux.alibaba.com>
- <340f1dfa40416dd966a56e08507daba82d633088.1611236588.git.xuanzhuo@linux.alibaba.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <dcee4592-9fa9-adbb-55ca-58a962076e7a@gmail.com>
-Date:   Thu, 21 Jan 2021 16:41:33 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Ne+dbRTh0RCBJExU0F/HHyjnuTlluZPqXNtK9D1d2Gg=;
+        b=H4fSd4KKsiFA6OGSUDX/uve9gM0usauC0nE5buki0ewCPPnlr6Yap64Xk5/cV8KLtx
+         nJXsci3BVoON0vSj6QH2yZJIu5lmgSaaHGB5hF31iFjHxW+XObU1mNZAic5Dz1vHwpIo
+         +AeYdIUP9Eeksgwnh6bDmuLJAl1WN9e1rtRx9rVHgsGu1gSrRD5fZgSynplM04boLabm
+         sBo7dmcbvB5ShsdGS2G0jL7IobOUeNMef7qB0hojppYx9YQUJvKI9SWcijg6FziMH9Tz
+         0OLC76FF/z3hPgSQqxKgKZF9uipmP87pzmrgG1HmlFdOI1E4fq2fGq2wzwgN2/i7N+S6
+         BRag==
+X-Gm-Message-State: AOAM530zx+ZEx3dpKXOoQ9OnJpeq3RUqW8XSOhk3+ZTZylJFujw5zqjq
+        mOveJCRcx4WAjTkBidrzAL0whsMuKH+tvYSOMHRI3w==
+X-Google-Smtp-Source: ABdhPJzI8jX+tee5y+Ym1mKEpiDtBZCs1sMP99XjSeJiv6YvwnmkV0YAyqd0AnOSbjFd9YzLImGSgRuvA6V75Rij7ww=
+X-Received: by 2002:ab0:2b94:: with SMTP id q20mr381654uar.46.1611244269278;
+ Thu, 21 Jan 2021 07:51:09 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <340f1dfa40416dd966a56e08507daba82d633088.1611236588.git.xuanzhuo@linux.alibaba.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <1611139794-11254-1-git-send-email-yangpc@wangsu.com>
+ <CADVnQykgYGc4_U+eyXU72fky2C5tDQKuOuQ=BdfqfROTG++w7Q@mail.gmail.com>
+ <CAK6E8=e1sdqntpLzeaGKhFB_DhhcNrJmPBQ3u9M44fSqdNTg_Q@mail.gmail.com> <022d01d6effc$0ccd0c50$266724f0$@wangsu.com>
+In-Reply-To: <022d01d6effc$0ccd0c50$266724f0$@wangsu.com>
+From:   Neal Cardwell <ncardwell@google.com>
+Date:   Thu, 21 Jan 2021 10:50:52 -0500
+Message-ID: <CADVnQy=jwBHg_Pf+puzxTCOCKxZJU2uThAuXU9CtkWFxtqU69w@mail.gmail.com>
+Subject: Re: tcp: rearm RTO timer does not comply with RFC6298
+To:     Pengcheng Yang <yangpc@wangsu.com>
+Cc:     Yuchung Cheng <ycheng@google.com>, Netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Thu, Jan 21, 2021 at 9:05 AM Pengcheng Yang <yangpc@wangsu.com> wrote:
+>
+> On Thu, Jan 21, 2021 at 2:59 AM Yuchung Cheng <ycheng@google.com> wrote:
+> >
+> > On Wed, Jan 20, 2021 at 6:59 AM Neal Cardwell <ncardwell@google.com> wrote:
+> > >
+> > > On Wed, Jan 20, 2021 at 5:50 AM Pengcheng Yang <yangpc@wangsu.com> wrote:
+> > > >
+> > > > hi,
+> > > >
+> > > > I have a doubt about tcp_rearm_rto().
+> > > >
+> > > > Early TCP always rearm the RTO timer to NOW+RTO when it receives
+> > > > an ACK that acknowledges new data.
+> > > >
+> > > > Referring to RFC6298 SECTION 5.3: "When an ACK is received that
+> > > > acknowledges new data, restart the retransmission timer so that
+> > > > it will expire after RTO seconds (for the current value of RTO)."
+> > > >
+> > > > After ER and TLP, we rearm the RTO timer to *tstamp_of_head+RTO*
+> > > > when switching from ER/TLP/RACK to original RTO in tcp_rearm_rto(),
+> > > > in this case the RTO timer is triggered earlier than described in
+> > > > RFC6298, otherwise the same.
+> > > >
+> > > > Is this planned? Or can we always rearm the RTO timer to
+> > > > tstamp_of_head+RTO?
+> > > >
+> > > > Thanks.
+> > > >
+> > >
+> > > This is a good question. As far as I can tell, this difference in
+> > > behavior would only come into play in a few corner cases, like:
+> > >
+> > > (1) The TLP timer fires and the connection is unable to transmit a TLP
+> > > probe packet. This could happen due to memory allocation failure  or
+> > > the local qdisc being full.
+> > >
+> > > (2) The RACK reorder timer fires but the connection does not take the
+> > > normal course of action and mark some packets lost and retransmit at
+> > > least one of them. I'm not sure how this would happen. Maybe someone
+> > > can think of a case.
+>
+> Yes, and it also happens when an ACK (a cumulative ACK covered out-of-order data)
+> is received that makes ca_state change from DISORDER to OPEN, by calling tcp_set_xmit_timer().
+> Because TLP is not triggered under DISORDER and tcp_rearm_rto() is called before the
+> ca_state changes.
 
+Hmm, that sounds like a good catch, and potentially a significant bug.
+Re-reading the code, it seems that you correctly identify that on an
+ACK when reordering is resolved (ca_state change from DISORDER to
+OPEN) we will not set a TLP timer for now+TLP_interval, but instead
+will set an RTO timer for rtx_head_tx_time+RTO (which could be very
+soon indeed, if RTTVAR is very low). Seems like that could cause
+spurious RTOs with connections that experience reordering with low RTT
+variance.
 
-On 1/21/21 2:47 PM, Xuan Zhuo wrote:
-> This patch is used to construct skb based on page to save memory copy
-> overhead.
-> 
-> This function is implemented based on IFF_TX_SKB_NO_LINEAR. Only the
-> network card priv_flags supports IFF_TX_SKB_NO_LINEAR will use page to
-> directly construct skb. If this feature is not supported, it is still
-> necessary to copy data to construct skb.
-> 
-> ---------------- Performance Testing ------------
-> 
-> The test environment is Aliyun ECS server.
-> Test cmd:
-> ```
-> xdpsock -i eth0 -t  -S -s <msg size>
-> ```
-> 
-> Test result data:
-> 
-> size    64      512     1024    1500
-> copy    1916747 1775988 1600203 1440054
-> page    1974058 1953655 1945463 1904478
-> percent 3.0%    10.0%   21.58%  32.3%
-> 
-> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> Reviewed-by: Dust Li <dust.li@linux.alibaba.com>
-> ---
->  net/xdp/xsk.c | 104 ++++++++++++++++++++++++++++++++++++++++++++++++----------
->  1 file changed, 86 insertions(+), 18 deletions(-)
-> 
-> diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-> index 4a83117..38af7f1 100644
-> --- a/net/xdp/xsk.c
-> +++ b/net/xdp/xsk.c
-> @@ -430,6 +430,87 @@ static void xsk_destruct_skb(struct sk_buff *skb)
->  	sock_wfree(skb);
->  }
->  
-> +static struct sk_buff *xsk_build_skb_zerocopy(struct xdp_sock *xs,
-> +					      struct xdp_desc *desc)
-> +{
-> +	u32 len, offset, copy, copied;
-> +	struct sk_buff *skb;
-> +	struct page *page;
-> +	void *buffer;
-> +	int err, i;
-> +	u64 addr;
-> +
-> +	skb = sock_alloc_send_skb(&xs->sk, 0, 1, &err);
-> +	if (unlikely(!skb))
-> +		return ERR_PTR(err);
-> +
-> +	addr = desc->addr;
-> +	len = desc->len;
-> +
-> +	buffer = xsk_buff_raw_get_data(xs->pool, addr);
-> +	offset = offset_in_page(buffer);
-> +	addr = buffer - xs->pool->addrs;
-> +
-> +	for (copied = 0, i = 0; copied < len; i++) {
-> +		page = xs->pool->umem->pgs[addr >> PAGE_SHIFT];
-> +
-> +		get_page(page);
-> +
-> +		copy = min_t(u32, PAGE_SIZE - offset, len - copied);
-> +
-> +		skb_fill_page_desc(skb, i, page, offset, copy);
-> +
-> +		copied += copy;
-> +		addr += copy;
-> +		offset = 0;
-> +	}
-> +
-> +	skb->len += len;
-> +	skb->data_len += len;
+It seems like we should try to fix this. Perhaps by calling
+tcp_set_xmit_timer() only after we have settled on a final ca_state
+implied by this ACK (in this case, to allow DISORDER to be resolved to
+OPEN). Though that would require some careful surgery, since that
+would move the tcp_set_xmit_timer() call *after* the point at which
+the RACK reorder timer would be set.
 
-> +	skb->truesize += len;
+Other thoughts?
 
-This is not the truesize, unfortunately.
-
-We need to account for the number of pages, not number of bytes.
-
-> +
-> +	refcount_add(len, &xs->sk.sk_wmem_alloc);
-> +
-> +	return skb;
-> +}
-> +
-
-
+neal
