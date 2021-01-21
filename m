@@ -2,123 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C394F2FE0B8
+	by mail.lfdr.de (Postfix) with ESMTP id 562FC2FE0B7
 	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 05:31:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732716AbhAUEbD (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jan 2021 23:31:03 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32780 "EHLO
+        id S1732475AbhAUEa5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jan 2021 23:30:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36172 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726599AbhAUEOY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 23:14:24 -0500
-Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A9C2C061757;
-        Wed, 20 Jan 2021 20:13:41 -0800 (PST)
-Received: by mail-yb1-xb2c.google.com with SMTP id k4so806133ybp.6;
-        Wed, 20 Jan 2021 20:13:41 -0800 (PST)
+        with ESMTP id S1732150AbhAUEaU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 23:30:20 -0500
+Received: from mail-oi1-x231.google.com (mail-oi1-x231.google.com [IPv6:2607:f8b0:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A70BC061575
+        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 20:29:28 -0800 (PST)
+Received: by mail-oi1-x231.google.com with SMTP id g69so68989oib.12
+        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 20:29:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=qdYGbaNQ6RXEEqSgvnErn9aTL2ruB523HmhLn4769P0=;
-        b=Y/wjnmDnqQEicOrIEn5igWesvc6VvkLe6H9gn0MNXrK8Od0OitS4GowYF4fZBPPYQU
-         aw0yU20PJVRA8tRoevm8VV1ZbEtrxk6Zy07mJdq9//Rq1/ub6dOFDxCxo3hEgCA4hOte
-         KP/8aLcT9f5NbXSKYIXEIe31sGI/yzcYnesDXp27vM1RLObprjK5syz6KZ7mtXQ5GrtF
-         XoHnNU+CcQRGdj8I7/F9UDwS9ibTJfJcwFDc5pBC2nn+LtJQ8ByNM1w37YKH1Tvqsoo8
-         VkRL8yFmGOdzvLdAR+SUHLcEd6aUFTvh3eInfHRyXS7mC6ailuxwU3oTpZOONIV6XwXJ
-         umvA==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=35jDEwyAOn6EXcsqc3zljtTA3F7CvH6/tVllcXMwmgs=;
+        b=ugNd4a1gXDlrwbm0pz46csZ6C3VffAsO+uRgk4OasHCYCJCZXmuo8zTSn1t5wbMsvb
+         YvCzghDcyVLIX2kIjPS0mtqXuIG2KsBisWa3Mf8vEaxlp8wF2W17thZGbPGP8SQpEoPD
+         hdJhPdVAGEqkDB6wyzyHsdZpI8icuGYRFDt4xobBokd/lQ0dT+BBmWTeNtd4GMjWi19p
+         b6mm1pRQs8D0d/ljjElKOfsZmNizetxPBSOdgSE9pasB77brsl0K0wj86ChsyD9wV6Yh
+         tTfE5fi9VRsG+2byQIcngAYBJ4kbgtTgqSI9WiaSjNl1VhI7kGM9NudG6GhZySNupd/j
+         m3qQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=qdYGbaNQ6RXEEqSgvnErn9aTL2ruB523HmhLn4769P0=;
-        b=a/p+AMFuKBF2yCuOnbaLzuXQdmA6oJ/qPvzOLk8QI1gEc+aMXEZFCVM+T0OTmIkSVa
-         vQLO9GyI04l1H63Mq+Y/3YLNDKBo/mwWRSPDT7njmOPhJjPLP1IcP7WR4onJiKkLTGk1
-         c/zokrL4UHuUZ1yg4L96HykdnWKg/l7RIAU80vElKfLgslbKvePl2BPjiQOBjRmtkEvR
-         RtJyUEdoctoUNwjcr3zWHFC/J+pyK27ydvGBiGaGOjROhC/LeNRs3oJ5uBLWX220Ncrp
-         xcCqpt4YJWnP5mGBMlHb4Nm+VfYZLLexPtoRPEI+G7SdLQuXOut9H1sUv3ZDgMQevCDr
-         7b9g==
-X-Gm-Message-State: AOAM530gO+WhPdJZQAPH8APCPWKX5ZCNN98XIbhRcN5dYTyt0xIyj71R
-        U4iLBUYV+Ex06jybOMFivy3+90gdhPjIY70ldRQ=
-X-Google-Smtp-Source: ABdhPJyw6udgxJBFQX0Vwqra1a/DaIb34pvGjg38qbZt2xv9lkediK7L08qo1hXvj7SN4BasIaTVpqghIM8fjo3C5sQ=
-X-Received: by 2002:a25:4b86:: with SMTP id y128mr3828051yba.403.1611202420666;
- Wed, 20 Jan 2021 20:13:40 -0800 (PST)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=35jDEwyAOn6EXcsqc3zljtTA3F7CvH6/tVllcXMwmgs=;
+        b=DT6fbd+LmZYACi7UQ5xvllNUzf4W188Hb/jIHhrBz561vprPlhrzM8wlker5nIEjGg
+         Q6p2XPOJnHVZB2y8WQLpv3PQ6UwZPL6H6xdEncvWcaMp1dgpGZJe2nh4OCe54WhYBMa3
+         u8vxH6v9qwTQOLVhbeytzydENHqnxotwvDahhYU0AUnJjtBJnuWa60K6Pa2r+09vEtJI
+         vatdvHFEB9YEwcN1nWEOKmXr/49XdPD6x9JiAZewffiYoqY+8Asitb81SKfmcnlTIaCN
+         xQqiXjpGhdICqd38fCqz2NM40+mmniSTCMhcGOtyF2RLYHWCTdYuqkjt79FTbUdcO5Wg
+         6JUg==
+X-Gm-Message-State: AOAM532o6kE3uooBEL3p9k0jI1EL+2O3a2Au4O+BLe0dyIE2GvcQ8/Te
+        UqQIzjKgprAsHvb+TED0OGA=
+X-Google-Smtp-Source: ABdhPJzH4CfDeS7M+obaJLQIA6BIyCvK/D0bmiEfcNLw6zpQNwlPy9S/jXtV5jHxrRuUTtXiNN0RIA==
+X-Received: by 2002:aca:3404:: with SMTP id b4mr4963695oia.77.1611203367688;
+        Wed, 20 Jan 2021 20:29:27 -0800 (PST)
+Received: from Davids-MacBook-Pro.local ([8.48.134.50])
+        by smtp.googlemail.com with ESMTPSA id p25sm859856oip.14.2021.01.20.20.29.26
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 20 Jan 2021 20:29:27 -0800 (PST)
+Subject: Re: [PATCH net-next v2 3/3] nexthop: Specialize rtm_nh_policy
+To:     Petr Machata <petrm@nvidia.com>, netdev@vger.kernel.org
+Cc:     David Ahern <dsahern@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Ido Schimmel <idosch@nvidia.com>
+References: <cover.1611156111.git.petrm@nvidia.com>
+ <2d81065f0ea682aa00dd4f32c52f219d6f2e7022.1611156111.git.petrm@nvidia.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <73839ca0-6e9b-de8f-bac5-96d94369c282@gmail.com>
+Date:   Wed, 20 Jan 2021 21:29:26 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
+ Gecko/20100101 Thunderbird/78.6.1
 MIME-Version: 1.0
-References: <1610921764-7526-1-git-send-email-alan.maguire@oracle.com> <1610921764-7526-3-git-send-email-alan.maguire@oracle.com>
-In-Reply-To: <1610921764-7526-3-git-send-email-alan.maguire@oracle.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 20 Jan 2021 20:13:29 -0800
-Message-ID: <CAEf4BzYZNUsdLH=fVqO_zXh2gwK6g325pQ7UeyH1NTK8kxSFmA@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next 2/4] libbpf: make skip_mods_and_typedefs
- available internally in libbpf
-To:     Alan Maguire <alan.maguire@oracle.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, morbo@google.com,
-        Shuah Khan <shuah@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <2d81065f0ea682aa00dd4f32c52f219d6f2e7022.1611156111.git.petrm@nvidia.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jan 17, 2021 at 2:20 PM Alan Maguire <alan.maguire@oracle.com> wrote:
->
-> btf_dump.c will need it for type-based data display.
->
-> Signed-off-by: Alan Maguire <alan.maguire@oracle.com>
+On 1/20/21 8:44 AM, Petr Machata wrote:
+> This policy is currently only used for creation of new next hops and new
+> next hop groups. Rename it accordingly and remove the two attributes that
+> are not valid in that context: NHA_GROUPS and NHA_MASTER.
+> 
+> For consistency with other policies, do not mention policy array size in
+> the declarator, and replace NHA_MAX for ARRAY_SIZE as appropriate.
+> 
+> Note that with this commit, NHA_MAX and __NHA_MAX are not used anymore.
+> Leave them in purely as a user API.
+> 
+> Signed-off-by: Petr Machata <petrm@nvidia.com>
 > ---
+> 
+> Notes:
+>     v2:
+>     - Do not specify size of the policy array. Use ARRAY_SIZE instead
+>       of NHA_MAX
+> 
+>  net/ipv4/nexthop.c | 23 +++++++++--------------
+>  1 file changed, 9 insertions(+), 14 deletions(-)
+> 
 
-Given we make it into an internal API, let's call it
-btf_skip_mods_and_typedefs()? Otherwise all ok.
+Reviewed-by: David Ahern <dsahern@kernel.org>
 
-Acked-by: Andrii Nakryiko <andrii@kernel.org>
 
->  tools/lib/bpf/libbpf.c          | 4 +---
->  tools/lib/bpf/libbpf_internal.h | 2 ++
->  2 files changed, 3 insertions(+), 3 deletions(-)
->
-> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
-> index 2abbc38..4ef84e1 100644
-> --- a/tools/lib/bpf/libbpf.c
-> +++ b/tools/lib/bpf/libbpf.c
-> @@ -73,8 +73,6 @@
->  #define __printf(a, b) __attribute__((format(printf, a, b)))
->
->  static struct bpf_map *bpf_object__add_map(struct bpf_object *obj);
-> -static const struct btf_type *
-> -skip_mods_and_typedefs(const struct btf *btf, __u32 id, __u32 *res_id);
->
->  static int __base_pr(enum libbpf_print_level level, const char *format,
->                      va_list args)
-> @@ -1885,7 +1883,7 @@ static int bpf_object__init_user_maps(struct bpf_object *obj, bool strict)
->         return 0;
->  }
->
-> -static const struct btf_type *
-> +const struct btf_type *
->  skip_mods_and_typedefs(const struct btf *btf, __u32 id, __u32 *res_id)
->  {
->         const struct btf_type *t = btf__type_by_id(btf, id);
-> diff --git a/tools/lib/bpf/libbpf_internal.h b/tools/lib/bpf/libbpf_internal.h
-> index 969d0ac..c25d2df 100644
-> --- a/tools/lib/bpf/libbpf_internal.h
-> +++ b/tools/lib/bpf/libbpf_internal.h
-> @@ -108,6 +108,8 @@ static inline void *libbpf_reallocarray(void *ptr, size_t nmemb, size_t size)
->  void *btf_add_mem(void **data, size_t *cap_cnt, size_t elem_sz,
->                   size_t cur_cnt, size_t max_cnt, size_t add_cnt);
->  int btf_ensure_mem(void **data, size_t *cap_cnt, size_t elem_sz, size_t need_cnt);
-> +const struct btf_type *skip_mods_and_typedefs(const struct btf *btf, __u32 id,
-> +                                             __u32 *res_id);
->
->  static inline bool libbpf_validate_opts(const char *opts,
->                                         size_t opts_sz, size_t user_sz,
-> --
-> 1.8.3.1
->
