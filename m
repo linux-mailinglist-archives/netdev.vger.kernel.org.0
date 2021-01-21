@@ -2,128 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 39E842FDEE0
-	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 02:41:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 54BA62FDEDE
+	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 02:41:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387719AbhAUA6b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jan 2021 19:58:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43898 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729055AbhAUAmi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 19:42:38 -0500
-Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3EF1C061757
-        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 16:41:58 -0800 (PST)
-Received: by mail-pg1-x52c.google.com with SMTP id p18so112854pgm.11
-        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 16:41:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=tIG+7sNMOvHVi0UngzbEgibZomTCjpwqfmxfWQUZQ6k=;
-        b=Mf8P8woqYbkIh+3DL8+AxevSOwSoaNIOwn48WBAmd3P8ubBbjzqVZAmfE+TTVYde6E
-         llNi/AU7jfKmBl5QZvGGOg1eisTjMKISidqt0ufe6PvSgOsIrv4adOERByGliL6GXe6r
-         wNc6frb+NPkL3ih3+nJ2Ika46xR2aYbidkUNkWyXa5spnBqIzwxW7gktJgTY8BSKHQnQ
-         7L3RGIojwptKdNYDHpzdkIzR7r6l3//kLq1QrC21Y/+Gc5VOFUOnS+MlwzjGYUd9VR6G
-         64AYCCv3aKEoxsvRDA7IBx7ah149yNklGK+5BMfPlyZH3TPLWunsa7t55iNv3qfJFd+2
-         Q6YQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=tIG+7sNMOvHVi0UngzbEgibZomTCjpwqfmxfWQUZQ6k=;
-        b=N2WQBU+vLgHnNiob109WwIlDjtWBizM1fhJE+uJ1kQiTOvnr2J+d3BTlHyDHOBKhT5
-         hjSwhyHQh7AxAiNQ1nzzFw7rdHshPdEwaep49OjfkRHd4mwE46bWPwUHphwxpm755JKc
-         L/AVQwT0L2OluD4XYadhCCHo/YbqQEvgjPUxKrJ8bNhPBUgquIuTykP1dY2aBjomtbtF
-         vdlg/ANYf6/ePcBVCbrBe8xDVbEYPWdR7wN1Bqm+cyIGML4Lk6NWdjTAs+xvahxWyO6z
-         X+dAs0kN9WiMxgEPDrFCUyeSXT7C77EOQpG4iqHkLv/BIfWwInipAhHjP/HLECJJWtVz
-         VO1A==
-X-Gm-Message-State: AOAM532z6zdY4xwMH3xEByvzOLgSpMCyUcl0lT7XGZn4NBBf4gngg1gH
-        3CWJOOrR4/2/VpV4GzMXung=
-X-Google-Smtp-Source: ABdhPJxGYQYYiQn1L5IeSuJpwlxkMfGLOlDTp5naTUW5AKINDWTmyWqSZJdyjZqfwUdY5+YNhc9zLg==
-X-Received: by 2002:a65:4781:: with SMTP id e1mr3291025pgs.30.1611189718223;
-        Wed, 20 Jan 2021 16:41:58 -0800 (PST)
-Received: from phantasmagoria.svl.corp.google.com ([2620:15c:2c4:201:f693:9fff:feea:f0b9])
-        by smtp.gmail.com with ESMTPSA id a37sm2874646pgm.79.2021.01.20.16.41.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Jan 2021 16:41:57 -0800 (PST)
-From:   Arjun Roy <arjunroy.kdev@gmail.com>
-To:     davem@davemloft.net, netdev@vger.kernel.org
-Cc:     arjunroy@google.com, edumazet@google.com, soheil@google.com,
-        kuba@kernel.org
-Subject: [net-next v2 1/2] tcp: Remove CMSG magic numbers for tcp_recvmsg().
-Date:   Wed, 20 Jan 2021 16:41:47 -0800
-Message-Id: <20210121004148.2340206-2-arjunroy.kdev@gmail.com>
-X-Mailer: git-send-email 2.30.0.284.gd98b1dd5eaa7-goog
-In-Reply-To: <20210121004148.2340206-1-arjunroy.kdev@gmail.com>
-References: <20210121004148.2340206-1-arjunroy.kdev@gmail.com>
+        id S2388555AbhAUA6p (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jan 2021 19:58:45 -0500
+Received: from mail.kernel.org ([198.145.29.99]:38656 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1733140AbhAUApu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 20 Jan 2021 19:45:50 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 3D73D235E4;
+        Thu, 21 Jan 2021 00:45:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1611189909;
+        bh=+SfUVv11yOSTuIe6NDeK+522cCVG1zqxwKOEBkQ/esA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=i/k7GJDr1zfIPn+C4A2JV88amzrv7zC5Bah5Q57o5oJLCdkxTuTgujc0UrNyyH2sh
+         8P5hNp8AU1bA+iBGtHSeep16gOtGNIngLRBjnGv1cR9zRdvM9/wQLqIPRiJb/OZslK
+         t5a3LsbnW8Ic5zgQS3ZaR1ChKZdJla0WmTQK95ILLqvOnu8Rki4fKA+cg4WsazYPPi
+         51T4zciI5OGv1J7C+sLt91TS2h7vYmA06ROBiCW61oiT6wU89EottdLMeMjUlfe41S
+         1QmZDNqH+8aHizr2dvOe/hAgIgHmIksBc4k4EAlPuRAIdepFqnnbtVDwP0i0j0ss5w
+         Wg70xYhBt1LRA==
+Date:   Wed, 20 Jan 2021 16:45:08 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Ido Schimmel <idosch@idosch.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, petrm@nvidia.com,
+        jiri@nvidia.com, amcohen@nvidia.com, mlxsw@nvidia.com,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: Re: [PATCH net-next 0/5] mlxsw: Add support for RED qevent "mark"
+Message-ID: <20210120164508.6009dbbd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210120091437.GA2591869@shredder.lan>
+References: <20210117080223.2107288-1-idosch@idosch.org>
+        <20210119142255.1caca7fb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20210120091437.GA2591869@shredder.lan>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arjun Roy <arjunroy@google.com>
+On Wed, 20 Jan 2021 11:14:37 +0200 Ido Schimmel wrote:
+> On Tue, Jan 19, 2021 at 02:22:55PM -0800, Jakub Kicinski wrote:
+> > On Sun, 17 Jan 2021 10:02:18 +0200 Ido Schimmel wrote:  
+> > > From: Ido Schimmel <idosch@nvidia.com>
+> > > 
+> > > The RED qdisc currently supports two qevents: "early_drop" and "mark". The
+> > > filters added to the block bound to the "early_drop" qevent are executed on
+> > > packets for which the RED algorithm decides that they should be
+> > > early-dropped. The "mark" filters are similarly executed on ECT packets
+> > > that are marked as ECN-CE (Congestion Encountered).
+> > > 
+> > > A previous patchset has offloaded "early_drop" filters on Spectrum-2 and
+> > > later, provided that the classifier used is "matchall", that the action
+> > > used is either "trap" or "mirred", and a handful or further limitations.  
+> > 
+> > For early_drop trap or mirred makes obvious sense, no explanation
+> > needed.
+> > 
+> > But for marked as a user I'd like to see a _copy_ of the packet, 
+> > while the original continues on its marry way to the destination.
+> > I'd venture to say that e.g. for a DCTCP deployment mark+trap is
+> > unusable, at least for tracing, because it distorts the operation 
+> > by effectively dropping instead of marking.
+> > 
+> > Am I reading this right?  
+> 
+> You get a copy of the packet as otherwise it will create a lot of
+> problems (like you wrote).
 
-At present, tcp_recvmsg() uses flags to track if any CMSGs are pending
-and what those CMSGs are. These flags are currently magic numbers,
-used only within tcp_recvmsg().
+Hm, so am I missing some background on semantics on TC_ACT_TRAP?
+Or perhaps you use a different action code?
 
-To prepare for receive timestamp support in tcp receive zerocopy,
-gently refactor these magic numbers into enums.
+AFAICT the code in the kernel is:
 
-Signed-off-by: Arjun Roy <arjunroy@google.com>
----
- net/ipv4/tcp.c | 14 ++++++++++----
- 1 file changed, 10 insertions(+), 4 deletions(-)
+struct sk_buff *tcf_qevent_handle(...
 
-diff --git a/net/ipv4/tcp.c b/net/ipv4/tcp.c
-index 856ae516ac18..28ca6a024f63 100644
---- a/net/ipv4/tcp.c
-+++ b/net/ipv4/tcp.c
-@@ -280,6 +280,12 @@
- #include <asm/ioctls.h>
- #include <net/busy_poll.h>
- 
-+/* Track pending CMSGs. */
-+enum {
-+	TCP_CMSG_INQ = 1,
-+	TCP_CMSG_TS = 2
-+};
-+
- struct percpu_counter tcp_orphan_count;
- EXPORT_SYMBOL_GPL(tcp_orphan_count);
- 
-@@ -2272,7 +2278,7 @@ static int tcp_recvmsg_locked(struct sock *sk, struct msghdr *msg, size_t len,
- 		goto out;
- 
- 	if (tp->recvmsg_inq)
--		*cmsg_flags = 1;
-+		*cmsg_flags = TCP_CMSG_INQ;
- 	timeo = sock_rcvtimeo(sk, nonblock);
- 
- 	/* Urgent data needs to be handled specially. */
-@@ -2453,7 +2459,7 @@ static int tcp_recvmsg_locked(struct sock *sk, struct msghdr *msg, size_t len,
- 
- 		if (TCP_SKB_CB(skb)->has_rxtstamp) {
- 			tcp_update_recv_tstamps(skb, tss);
--			*cmsg_flags |= 2;
-+			*cmsg_flags |= TCP_CMSG_TS;
- 		}
- 
- 		if (used + offset < skb->len)
-@@ -2513,9 +2519,9 @@ int tcp_recvmsg(struct sock *sk, struct msghdr *msg, size_t len, int nonblock,
- 	release_sock(sk);
- 
- 	if (cmsg_flags && ret >= 0) {
--		if (cmsg_flags & 2)
-+		if (cmsg_flags & TCP_CMSG_TS)
- 			tcp_recv_timestamp(msg, sk, &tss);
--		if (cmsg_flags & 1) {
-+		if (cmsg_flags & TCP_CMSG_INQ) {
- 			inq = tcp_inq_hint(sk);
- 			put_cmsg(msg, SOL_TCP, TCP_CM_INQ, sizeof(inq), &inq);
- 		}
--- 
-2.30.0.284.gd98b1dd5eaa7-goog
+	case TC_ACT_STOLEN:
+	case TC_ACT_QUEUED:
+	case TC_ACT_TRAP:
+		__qdisc_drop(skb, to_free);
+		*ret = __NET_XMIT_STOLEN;
+		return NULL;
 
+Having TRAP mean DROP makes sense for filters, but in case of qevents
+shouldn't they be a no-op?
+
+Looking at sch_red looks like TRAP being a no-op would actually give us
+the expected behavior.
+
+> > If that is the case and you really want to keep the mark+trap
+> > functionality - I feel like at least better documentation is needed.
+> > The current two liner should also be rewritten, quoting from patch 1:
+> >   
+> > > * - ``ecn_mark``
+> > >   - ``drop``
+> > >   - Traps ECN-capable packets that were marked with CE (Congestion
+> > >     Encountered) code point by RED algorithm instead of being dropped  
+> > 
+> > That needs to say that the trap is for datagrams trapped by a qevent.
+> > Otherwise "Traps ... instead of being dropped" is too much of a
+> > thought-shortcut, marked packets are not dropped.
+> > 
+> > (I'd also think that trap is better documented next to early_drop,
+> > let's look at it from the reader's perspective)  
+> 
+> How about:
+> 
+> "Traps a copy of ECN-capable packets that were marked with CE
+
+I think "Traps copies" or "Traps the copy of .. packet"?
+I'm not a native speaker but there seems to be a grammatical mix here.
+
+> (Congestion Encountered) code point by RED algorithm instead of being
+> dropped. The trap is enabled by attaching a filter with action 'trap' to
+
+... instead of those copies being dropped.
+
+> the 'mark' qevent of the RED qdisc."
+>
+> In addition, this output:
+> 
+> $ devlink trap show pci/0000:06:00.0 trap ecn_mark 
+> pci/0000:06:00.0:
+>   name ecn_mark type drop generic true action trap group buffer_drops
+> 
+> Can be converted to:
+> 
+> $ devlink trap show pci/0000:06:00.0 trap ecn_mark 
+> pci/0000:06:00.0:
+>   name ecn_mark type drop generic true action mirror group buffer_drops
+> 
+> "mirror: The packet is forwarded by the underlying device and a copy is sent to
+> the CPU."
+> 
+> In this case the action is static and you cannot change it.
+
+Oh yes, that's nice, I thought mirror in traps means mirror to another
+port. Are there already traps which implement the mirroring / trapping
+a clone? Quick grep yields nothing of substance.
