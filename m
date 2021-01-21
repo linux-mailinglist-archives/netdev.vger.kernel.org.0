@@ -2,50 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 943A82FF58E
-	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 21:12:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 68EC42FF5A2
+	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 21:17:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727885AbhAUHz3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jan 2021 02:55:29 -0500
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:61320 "EHLO
+        id S1727060AbhAUUP2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jan 2021 15:15:28 -0500
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:55284 "EHLO
         mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727783AbhAUHy6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jan 2021 02:54:58 -0500
+        by vger.kernel.org with ESMTP id S1726824AbhAUHzK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jan 2021 02:55:10 -0500
 Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 10L7eZji000475;
-        Wed, 20 Jan 2021 23:54:13 -0800
+        by mx0a-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 10L7fQmS000874;
+        Wed, 20 Jan 2021 23:54:25 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0220; bh=hG0e+orCMjxGnL1YctIUSWC3Zf1R3gU8mGWm7pq2K+w=;
- b=b7S79BalwzzxoDK6i7jfC0fSU4C2n8WjrhRUdVRBjUmgjKz8x/XT859phHalkMhuZ6w0
- NPQR96pRgLo2jRQq9bO0jqU0dFmTgbYNBAmhupyqCTfgtNmYw5HwWWdvcggdoGPiCtaz
- ZErv6KWUS5BLN5f3aFaSuQcF3a9RZfxPM1t4Y0lL//WGdUps+twyQYqAC1bV1Z2Csd4L
- /x0ICV+HYrJKRK1uhWS72flseLYmGFYiPki/OuSQpyEzBwqO0wmDLUUhiU8TRmxF+fd2
- F124CC8oUjoFJE7oi6VaCdGWalasd8PdrXnJ/y0sXFuYqVxqUZP0NxONWcXkdKGTyl3C lQ== 
+ content-type; s=pfpt0220; bh=EmHT70Grd0vJOG6FYp+M89Vki3xDCemhKGK1B0fNE9E=;
+ b=L2H+pyLh5q6rvW5gdU92g2VUa2PIpDbbWsey75jT+coOex+caY98YzPt5RgPUuorr9dF
+ 4c/4zeOZxhqqgNxjcSLgazHnViPHnfOy0B/xPNcz4eXtca6Srd+0FN7aqstpOd2RSPc1
+ JIv/0O9Hhff4XMi6awpTVz4bdSHT+xjZBjyRdmQaIit7ffLr0p+grV6VWG0JTlafc6D2
+ DRrMqomSaYz3oR8Vj05lxWcfcSUly29WqtHC9vlxpBp30LADAN5wDP9wVManFXsLfs5B
+ isjpXudZv8uSfaEJx7D+rRXKsy+epQMvKOeY3AEcwgxbsKu+bl+/F4KIVB+X+qQQclwm wg== 
 Received: from dc5-exch02.marvell.com ([199.233.59.182])
-        by mx0a-0016f401.pphosted.com with ESMTP id 3668p2weyb-1
+        by mx0a-0016f401.pphosted.com with ESMTP id 3668p2weyn-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Wed, 20 Jan 2021 23:54:13 -0800
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH02.marvell.com
+        Wed, 20 Jan 2021 23:54:25 -0800
+Received: from SC-EXCH04.marvell.com (10.93.176.84) by DC5-EXCH02.marvell.com
  (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 20 Jan
- 2021 23:54:12 -0800
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Wed, 20 Jan 2021 23:54:12 -0800
+ 2021 23:54:24 -0800
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH04.marvell.com
+ (10.93.176.84) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 20 Jan
+ 2021 23:54:23 -0800
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Wed, 20 Jan 2021 23:54:23 -0800
 Received: from hyd1soter2.marvell.com (unknown [10.29.37.45])
-        by maili.marvell.com (Postfix) with ESMTP id 5985A3F703F;
-        Wed, 20 Jan 2021 23:54:08 -0800 (PST)
+        by maili.marvell.com (Postfix) with ESMTP id 2342B3F703F;
+        Wed, 20 Jan 2021 23:54:19 -0800 (PST)
 From:   Hariprasad Kelam <hkelam@marvell.com>
 To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
 CC:     <davem@davemloft.net>, <kuba@kernel.org>, <sgoutham@marvell.com>,
         <lcherian@marvell.com>, <gakula@marvell.com>, <jerinj@marvell.com>,
-        <sbhatta@marvell.com>, Felix Manlunas <fmanlunas@marvell.com>,
-        "Christina Jacob" <cjacob@marvell.com>,
-        Sunil Kovvuri Goutham <Sunil.Goutham@cavium.com>,
+        <sbhatta@marvell.com>, Christina Jacob <cjacob@marvell.com>,
         Hariprasad Kelam <hkelam@marvell.com>
-Subject: [net-next PATCH 2/7] octeontx2-af: Add new CGX_CMD to get PHY FEC statistics
-Date:   Thu, 21 Jan 2021 13:23:24 +0530
-Message-ID: <1611215609-92301-3-git-send-email-hkelam@marvell.com>
+Subject: [net-next PATCH 4/7] octeontx2-af: Physical link configuration support
+Date:   Thu, 21 Jan 2021 13:23:26 +0530
+Message-ID: <1611215609-92301-5-git-send-email-hkelam@marvell.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1611215609-92301-1-git-send-email-hkelam@marvell.com>
 References: <1611215609-92301-1-git-send-email-hkelam@marvell.com>
@@ -57,200 +58,256 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Felix Manlunas <fmanlunas@marvell.com>
+From: Christina Jacob <cjacob@marvell.com>
 
-This patch adds support to fetch fec stats from PHY. The stats are
-put in the shared data struct fwdata.  A PHY driver indicates
-that it has FEC stats by setting the flag fwdata.phy.misc.has_fec_stats
+CGX LMAC, the physical interface support link configuration parameters
+like speed, auto negotiation, duplex  etc. Firmware saves these into
+memory region shared between firmware and this driver.
 
-Besides CGX_CMD_GET_PHY_FEC_STATS, also add CGX_CMD_PRBS and
-CGX_CMD_DISPLAY_EYE to enum cgx_cmd_id so that Linux's enum list is in sync
-with firmware's enum list.
+This patch adds mailbox handler set_link_mode, fw_data_get to
+configure and read these parameters.
 
-Signed-off-by: Felix Manlunas <fmanlunas@marvell.com>
 Signed-off-by: Christina Jacob <cjacob@marvell.com>
-Signed-off-by: Sunil Kovvuri Goutham <Sunil.Goutham@cavium.com>
+Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
 Signed-off-by: Hariprasad Kelam <hkelam@marvell.com>
 ---
- drivers/net/ethernet/marvell/octeontx2/af/cgx.c    | 12 ++++++
- drivers/net/ethernet/marvell/octeontx2/af/cgx.h    |  1 +
- .../net/ethernet/marvell/octeontx2/af/cgx_fw_if.h  |  5 +++
- drivers/net/ethernet/marvell/octeontx2/af/mbox.h   | 43 ++++++++++++++++++++++
- drivers/net/ethernet/marvell/octeontx2/af/rvu.h    |  4 ++
- .../net/ethernet/marvell/octeontx2/af/rvu_cgx.c    | 32 ++++++++++++++++
- 6 files changed, 97 insertions(+)
+ drivers/net/ethernet/marvell/octeontx2/af/cgx.c    | 60 +++++++++++++++++++++-
+ drivers/net/ethernet/marvell/octeontx2/af/cgx.h    |  2 +
+ .../net/ethernet/marvell/octeontx2/af/cgx_fw_if.h  | 18 ++++++-
+ drivers/net/ethernet/marvell/octeontx2/af/mbox.h   | 21 ++++++++
+ .../net/ethernet/marvell/octeontx2/af/rvu_cgx.c    | 19 +++++++
+ 5 files changed, 117 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/net/ethernet/marvell/octeontx2/af/cgx.c b/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
-index 5489dab..b3ae84c 100644
+index b3ae84c..42ee67e 100644
 --- a/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
 +++ b/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
-@@ -859,6 +859,18 @@ int cgx_set_fec(u64 fec, int cgx_id, int lmac_id)
+@@ -658,6 +658,39 @@ static inline void cgx_link_usertable_init(void)
+ 	cgx_lmactype_string[LMAC_MODE_USXGMII] = "USXGMII";
+ }
+ 
++static inline int cgx_link_usertable_index_map(int speed)
++{
++	switch (speed) {
++	case SPEED_10:
++		return CGX_LINK_10M;
++	case SPEED_100:
++		return CGX_LINK_100M;
++	case SPEED_1000:
++		return CGX_LINK_1G;
++	case SPEED_2500:
++		return CGX_LINK_2HG;
++	case SPEED_5000:
++		return CGX_LINK_5G;
++	case SPEED_10000:
++		return CGX_LINK_10G;
++	case SPEED_20000:
++		return CGX_LINK_20G;
++	case SPEED_25000:
++		return CGX_LINK_25G;
++	case SPEED_40000:
++		return CGX_LINK_40G;
++	case SPEED_50000:
++		return CGX_LINK_50G;
++	case 80000:
++		return CGX_LINK_80G;
++	case SPEED_100000:
++		return CGX_LINK_100G;
++	case SPEED_UNKNOWN:
++		return CGX_LINK_NONE;
++	}
++	return CGX_LINK_NONE;
++}
++
+ static inline void link_status_user_format(u64 lstat,
+ 					   struct cgx_link_user_info *linfo,
+ 					   struct cgx *cgx, u8 lmac_id)
+@@ -667,6 +700,7 @@ static inline void link_status_user_format(u64 lstat,
+ 	linfo->link_up = FIELD_GET(RESP_LINKSTAT_UP, lstat);
+ 	linfo->full_duplex = FIELD_GET(RESP_LINKSTAT_FDUPLEX, lstat);
+ 	linfo->speed = cgx_speed_mbps[FIELD_GET(RESP_LINKSTAT_SPEED, lstat)];
++	linfo->an = FIELD_GET(RESP_LINKSTAT_AN, lstat);
+ 	linfo->fec = FIELD_GET(RESP_LINKSTAT_FEC, lstat);
+ 	linfo->lmac_type_id = cgx_get_lmac_type(cgx, lmac_id);
+ 	lmac_string = cgx_lmactype_string[linfo->lmac_type_id];
+@@ -695,6 +729,9 @@ static inline void cgx_link_change_handler(u64 lstat,
+ 	lmac->link_info = event.link_uinfo;
+ 	linfo = &lmac->link_info;
+ 
++	if (err_type == CGX_ERR_SPEED_CHANGE_INVALID)
++		return;
++
+ 	/* Ensure callback doesn't get unregistered until we finish it */
+ 	spin_lock(&lmac->event_cb_lock);
+ 
+@@ -723,7 +760,8 @@ static inline bool cgx_cmdresp_is_linkevent(u64 event)
+ 
+ 	id = FIELD_GET(EVTREG_ID, event);
+ 	if (id == CGX_CMD_LINK_BRING_UP ||
+-	    id == CGX_CMD_LINK_BRING_DOWN)
++	    id == CGX_CMD_LINK_BRING_DOWN ||
++	    id == CGX_CMD_MODE_CHANGE)
+ 		return true;
+ 	else
+ 		return false;
+@@ -838,6 +876,26 @@ int cgx_get_fwdata_base(u64 *base)
  	return err;
  }
  
-+int cgx_get_phy_fec_stats(void *cgxd, int lmac_id)
++int cgx_set_link_mode(void *cgxd, struct cgx_set_link_mode_args args,
++		      int cgx_id, int lmac_id)
 +{
 +	struct cgx *cgx = cgxd;
 +	u64 req = 0, resp;
++	int err = 0;
 +
 +	if (!cgx)
 +		return -ENODEV;
 +
-+	req = FIELD_SET(CMDREG_ID, CGX_CMD_GET_PHY_FEC_STATS, req);
-+	return cgx_fwi_cmd_generic(req, &resp, cgx, lmac_id);
++	req = FIELD_SET(CMDREG_ID, CGX_CMD_MODE_CHANGE, req);
++	req = FIELD_SET(CMDMODECHANGE_SPEED,
++			cgx_link_usertable_index_map(args.speed), req);
++	req = FIELD_SET(CMDMODECHANGE_DUPLEX, args.duplex, req);
++	req = FIELD_SET(CMDMODECHANGE_AN, args.an, req);
++	req = FIELD_SET(CMDMODECHANGE_PORT, args.ports, req);
++	req = FIELD_SET(CMDMODECHANGE_FLAGS, args.flags, req);
++	err = cgx_fwi_cmd_generic(req, &resp, cgx, lmac_id);
++	return err;
 +}
-+
- static int cgx_fwi_link_change(struct cgx *cgx, int lmac_id, bool enable)
+ int cgx_set_fec(u64 fec, int cgx_id, int lmac_id)
  {
- 	u64 req = 0;
+ 	u64 req = 0, resp;
 diff --git a/drivers/net/ethernet/marvell/octeontx2/af/cgx.h b/drivers/net/ethernet/marvell/octeontx2/af/cgx.h
-index 1824e95..c5294b7 100644
+index c5294b7..b458ad0 100644
 --- a/drivers/net/ethernet/marvell/octeontx2/af/cgx.h
 +++ b/drivers/net/ethernet/marvell/octeontx2/af/cgx.h
-@@ -154,5 +154,6 @@ void cgx_lmac_ptp_config(void *cgxd, int lmac_id, bool enable);
- u8 cgx_lmac_get_p2x(int cgx_id, int lmac_id);
+@@ -155,5 +155,7 @@ u8 cgx_lmac_get_p2x(int cgx_id, int lmac_id);
  int cgx_set_fec(u64 fec, int cgx_id, int lmac_id);
  int cgx_get_fec_stats(void *cgxd, int lmac_id, struct cgx_fec_stats_rsp *rsp);
-+int cgx_get_phy_fec_stats(void *cgxd, int lmac_id);
+ int cgx_get_phy_fec_stats(void *cgxd, int lmac_id);
++int cgx_set_link_mode(void *cgxd, struct cgx_set_link_mode_args args,
++		      int cgx_id, int lmac_id);
  
  #endif /* CGX_H */
 diff --git a/drivers/net/ethernet/marvell/octeontx2/af/cgx_fw_if.h b/drivers/net/ethernet/marvell/octeontx2/af/cgx_fw_if.h
-index 3485596..65f832a 100644
+index 65f832a..70610e7 100644
 --- a/drivers/net/ethernet/marvell/octeontx2/af/cgx_fw_if.h
 +++ b/drivers/net/ethernet/marvell/octeontx2/af/cgx_fw_if.h
-@@ -89,6 +89,11 @@ enum cgx_cmd_id {
- 	CGX_CMD_SET_AN,
- 	CGX_CMD_GET_ADV_LINK_MODES,
- 	CGX_CMD_GET_ADV_FEC,
-+	CGX_CMD_GET_PHY_MOD_TYPE, /* line-side modulation type: NRZ or PAM4 */
-+	CGX_CMD_SET_PHY_MOD_TYPE,
-+	CGX_CMD_PRBS,
-+	CGX_CMD_DISPLAY_EYE,
-+	CGX_CMD_GET_PHY_FEC_STATS,
+@@ -43,7 +43,13 @@ enum cgx_error_type {
+ 	CGX_ERR_TRAINING_FAIL,
+ 	CGX_ERR_RX_EQU_FAIL,
+ 	CGX_ERR_SPUX_BER_FAIL,
+-	CGX_ERR_SPUX_RSFEC_ALGN_FAIL,   /* = 22 */
++	CGX_ERR_SPUX_RSFEC_ALGN_FAIL,
++	CGX_ERR_SPUX_MARKER_LOCK_FAIL,
++	CGX_ERR_SET_FEC_INVALID,
++	CGX_ERR_SET_FEC_FAIL,
++	CGX_ERR_MODULE_INVALID,
++	CGX_ERR_MODULE_NOT_PRESENT,
++	CGX_ERR_SPEED_CHANGE_INVALID,
  };
  
- /* async event ids */
+ /* LINK speed types */
+@@ -59,6 +65,7 @@ enum cgx_link_speed {
+ 	CGX_LINK_25G,
+ 	CGX_LINK_40G,
+ 	CGX_LINK_50G,
++	CGX_LINK_80G,
+ 	CGX_LINK_100G,
+ 	CGX_LINK_SPEED_MAX,
+ };
+@@ -75,7 +82,7 @@ enum cgx_cmd_id {
+ 	CGX_CMD_INTERNAL_LBK,
+ 	CGX_CMD_EXTERNAL_LBK,
+ 	CGX_CMD_HIGIG,
+-	CGX_CMD_LINK_STATE_CHANGE,
++	CGX_CMD_LINK_STAT_CHANGE,
+ 	CGX_CMD_MODE_CHANGE,		/* hot plug support */
+ 	CGX_CMD_INTF_SHUTDOWN,
+ 	CGX_CMD_GET_MKEX_PRFL_SIZE,
+@@ -219,4 +226,11 @@ struct cgx_lnk_sts {
+ #define CMDLINKCHANGE_SPEED	GENMASK_ULL(13, 10)
+ 
+ #define CMDSETFEC			GENMASK_ULL(9, 8)
++/* command argument to be passed for cmd ID - CGX_CMD_MODE_CHANGE */
++#define CMDMODECHANGE_SPEED		GENMASK_ULL(11, 8)
++#define CMDMODECHANGE_DUPLEX		GENMASK_ULL(12, 12)
++#define CMDMODECHANGE_AN		GENMASK_ULL(13, 13)
++#define CMDMODECHANGE_PORT		GENMASK_ULL(21, 14)
++#define CMDMODECHANGE_FLAGS		GENMASK_ULL(29, 22)
++
+ #endif /* __CGX_FW_INTF_H__ */
 diff --git a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-index 088ccd1..c17e374 100644
+index c17e374..7a90989 100644
 --- a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
 +++ b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-@@ -151,6 +151,8 @@ M(CGX_CFG_PAUSE_FRM,	0x20E, cgx_cfg_pause_frm, cgx_pause_frm_cfg,	\
- 			       cgx_pause_frm_cfg)			\
- M(CGX_FEC_SET,		0x210, cgx_set_fec_param, fec_mode, fec_mode)   \
+@@ -153,6 +153,8 @@ M(CGX_FEC_SET,		0x210, cgx_set_fec_param, fec_mode, fec_mode)   \
  M(CGX_FEC_STATS,	0x211, cgx_fec_stats, msg_req, cgx_fec_stats_rsp) \
-+M(CGX_GET_PHY_FEC_STATS, 0x212, cgx_get_phy_fec_stats, msg_req, msg_rsp) \
-+M(CGX_FW_DATA_GET,	0x213, cgx_get_aux_link_info, msg_req, cgx_fw_data) \
+ M(CGX_GET_PHY_FEC_STATS, 0x212, cgx_get_phy_fec_stats, msg_req, msg_rsp) \
+ M(CGX_FW_DATA_GET,	0x213, cgx_get_aux_link_info, msg_req, cgx_fw_data) \
++M(CGX_SET_LINK_MODE,	0x214, cgx_set_link_mode, cgx_set_link_mode_req,\
++			       cgx_set_link_mode_rsp)	\
   /* NPA mbox IDs (range 0x400 - 0x5FF) */				\
  /* NPA mbox IDs (range 0x400 - 0x5FF) */				\
  M(NPA_LF_ALLOC,		0x400, npa_lf_alloc,				\
-@@ -411,6 +413,47 @@ struct fec_mode {
- 	int fec;
+@@ -383,6 +385,7 @@ struct cgx_link_user_info {
+ 	uint64_t full_duplex:1;
+ 	uint64_t lmac_type_id:4;
+ 	uint64_t speed:20; /* speed in Mbps */
++	uint64_t an:1;		/* AN supported or not */
+ 	uint64_t fec:2;	 /* FEC type if enabled else 0 */
+ #define LMACTYPE_STR_LEN 16
+ 	char lmac_type[LMACTYPE_STR_LEN];
+@@ -454,6 +457,24 @@ struct cgx_fw_data {
+ 	struct cgx_lmac_fwdata_s fwdata;
  };
  
-+struct sfp_eeprom_s {
-+#define SFP_EEPROM_SIZE 256
-+	u16 sff_id;
-+	u8 buf[SFP_EEPROM_SIZE];
-+	u64 reserved;
++struct cgx_set_link_mode_args {
++	u32 speed;
++	u8 duplex;
++	u8 an;
++	u8 ports;
++	u8 flags;
 +};
 +
-+struct phy_s {
-+	struct {
-+		u64 can_change_mod_type : 1;
-+		u64 mod_type            : 1;
-+		u64 has_fec_stats       : 1;
-+	} misc;
-+	struct fec_stats_s {
-+		u32 rsfec_corr_cws;
-+		u32 rsfec_uncorr_cws;
-+		u32 brfec_corr_blks;
-+		u32 brfec_uncorr_blks;
-+	} fec_stats;
-+};
-+
-+struct cgx_lmac_fwdata_s {
-+	u16 rw_valid;
-+	u64 supported_fec;
-+	u64 supported_an;
-+	u64 supported_link_modes;
-+	/* only applicable if AN is supported */
-+	u64 advertised_fec;
-+	u64 advertised_link_modes;
-+	/* Only applicable if SFP/QSFP slot is present */
-+	struct sfp_eeprom_s sfp_eeprom;
-+	struct phy_s phy;
-+#define LMAC_FWDATA_RESERVED_MEM 1021
-+	u64 reserved[LMAC_FWDATA_RESERVED_MEM];
-+};
-+
-+struct cgx_fw_data {
++struct cgx_set_link_mode_req {
 +	struct mbox_msghdr hdr;
-+	struct cgx_lmac_fwdata_s fwdata;
++	struct cgx_set_link_mode_args args;
++};
++
++struct cgx_set_link_mode_rsp {
++	struct mbox_msghdr hdr;
++	int status;
 +};
 +
  /* NPA mbox message formats */
  
  /* NPA mailbox error codes
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
-index b1a6ecf..c824f1e 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
-@@ -350,6 +350,10 @@ struct rvu_fwdata {
- 	u64 msixtr_base;
- #define FWDATA_RESERVED_MEM 1023
- 	u64 reserved[FWDATA_RESERVED_MEM];
-+	/* Do not add new fields below this line */
-+#define CGX_MAX         5
-+#define CGX_LMACS_MAX   4
-+	struct cgx_lmac_fwdata_s cgx_fw_data[CGX_MAX][CGX_LMACS_MAX];
- };
- 
- struct ptp;
 diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
-index 9285e6f..9a9d5f4 100644
+index 9a9d5f4..9672afc 100644
 --- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
 +++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
-@@ -688,6 +688,19 @@ int rvu_mbox_handler_cgx_cfg_pause_frm(struct rvu *rvu,
- 	return 0;
- }
- 
-+int rvu_mbox_handler_cgx_get_phy_fec_stats(struct rvu *rvu, struct msg_req *req,
-+					   struct msg_rsp *rsp)
-+{
-+	int pf = rvu_get_pf(req->hdr.pcifunc);
-+	u8 cgx_id, lmac_id;
-+
-+	if (!is_pf_cgxmapped(rvu, pf))
-+		return -EPERM;
-+
-+	rvu_get_cgx_lmac_id(rvu->pf2cgxlmac_map[pf], &cgx_id, &lmac_id);
-+	return cgx_get_phy_fec_stats(rvu_cgx_pdata(cgx_id, rvu), lmac_id);
-+}
-+
- /* Finds cumulative status of NIX rx/tx counters from LF of a PF and those
-  * from its VFs as well. ie. NIX rx/tx counters at the CGX port level
-  */
-@@ -794,3 +807,22 @@ int rvu_mbox_handler_cgx_set_fec_param(struct rvu *rvu,
- 	rsp->fec = cgx_set_fec(req->fec, cgx_id, lmac_id);
+@@ -826,3 +826,22 @@ int rvu_mbox_handler_cgx_get_aux_link_info(struct rvu *rvu, struct msg_req *req,
+ 	       sizeof(struct cgx_lmac_fwdata_s));
  	return 0;
  }
 +
-+int rvu_mbox_handler_cgx_get_aux_link_info(struct rvu *rvu, struct msg_req *req,
-+					   struct cgx_fw_data *rsp)
++int rvu_mbox_handler_cgx_set_link_mode(struct rvu *rvu,
++				       struct cgx_set_link_mode_req *req,
++				       struct cgx_set_link_mode_rsp *rsp)
 +{
 +	int pf = rvu_get_pf(req->hdr.pcifunc);
-+	u8 cgx_id, lmac_id;
++	u8 cgx_idx, lmac;
++	void *cgxd;
 +
-+	if (!rvu->fwdata)
-+		return -ENXIO;
-+
-+	if (!is_pf_cgxmapped(rvu, pf))
++	if (!is_cgx_config_permitted(rvu, req->hdr.pcifunc))
 +		return -EPERM;
 +
-+	rvu_get_cgx_lmac_id(rvu->pf2cgxlmac_map[pf], &cgx_id, &lmac_id);
++	rvu_get_cgx_lmac_id(rvu->pf2cgxlmac_map[pf], &cgx_idx, &lmac);
 +
-+	memcpy(&rsp->fwdata, &rvu->fwdata->cgx_fw_data[cgx_id][lmac_id],
-+	       sizeof(struct cgx_lmac_fwdata_s));
++	cgxd = rvu_cgx_pdata(cgx_idx, rvu);
++
++	rsp->status =  cgx_set_link_mode(cgxd, req->args, cgx_idx, lmac);
 +	return 0;
 +}
 -- 
