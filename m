@@ -2,65 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A8C22FE1CC
-	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 06:37:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 20DA02FE1D1
+	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 06:37:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726881AbhAUFf7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jan 2021 00:35:59 -0500
-Received: from mail.kernel.org ([198.145.29.99]:49288 "EHLO mail.kernel.org"
+        id S1727482AbhAUFhW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jan 2021 00:37:22 -0500
+Received: from mail.kernel.org ([198.145.29.99]:49488 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726159AbhAUFec (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 21 Jan 2021 00:34:32 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 372C72389A;
-        Thu, 21 Jan 2021 05:33:49 +0000 (UTC)
+        id S1727378AbhAUFgE (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 21 Jan 2021 00:36:04 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 836F02389E;
+        Thu, 21 Jan 2021 05:35:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611207229;
-        bh=2UnEvdUH9QbaaFTzFTLIMRUSYEpBIP7F70hOldBeH0c=;
+        s=k20201202; t=1611207324;
+        bh=g5JUIUEnhugmhrR446EIGWsLAMR8sWf8n/Y9fvKh0ck=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=XiYjkSKrSNZ6rKQO2RBKyYOfa3JnsxvYFc+UjqaJuNNr7yyGPvws0/1m/cTO45y8w
-         4P0knwYi0H5EvHqELc5xHsr0g//g+3WoDVQaPjO8MqTBC1NauHfNB6KueRf/UBJpGT
-         qImcaJxqjv5cHdAKmzWGydoXnrPRaiD+eQ3rEn6OZ7I3CbD/mBsXke+8V5+Xe1GllD
-         N1mrJn2qqcmXEwcsjV1+IIIPWyEeG8FPIseF/XhS5J3PvWDLdj88LPLUNsakKh8RrC
-         n+38DZF+h1Taws4MHXy4R5JkT5HCNolRjbEfExVNbaiPQfCR7SoNOJE/qSiYdkQ0X3
-         yauI0khmuNhpA==
-Date:   Wed, 20 Jan 2021 21:33:48 -0800
+        b=sHe9v/OgHedayeZEwaPvSpRF7qJveMTdWDheeiDbJwd+fTTJ2xW5DE+KGSZYYxxSH
+         F8bEvVla9smGdpsaZpNYk0JIB2hekgjWtpSBY25h2s2EMBuXPDgelchvPzLjFSF4D8
+         plmdQ/lTjwijgO3tWVHREaG9Am7JqpqwYcTQI3py6K74Bp7vwEwTauVt0Y4egXDcsT
+         DpwAJ/6Tqhde3+ErY98IolSAdgVR05R1bwj0M6njCxvjGJDBL8MeqywHuZeYo+IYnX
+         ub8kgALBNrG2gELEnJ2C6dUTC4Zf73iraVqBHayl7VgQ1EeZfKJcUlOinkUwEK2bnB
+         U/IunzOVVDHxA==
+Date:   Wed, 20 Jan 2021 21:35:22 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
 To:     Alex Elder <elder@linaro.org>
-Cc:     davem@davemloft.net, elder@kernel.org, bjorn.andersson@linaro.org,
-        agross@kernel.org, evgreen@chromium.org, cpratapa@codeaurora.org,
-        subashab@codeaurora.org, robh+dt@kernel.org, rdunlap@infradead.org,
-        netdev@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH v3 net-next 0/4] net: ipa: remove a build dependency
-Message-ID: <20210120213348.75ca1a16@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210120212606.12556-1-elder@linaro.org>
-References: <20210120212606.12556-1-elder@linaro.org>
+Cc:     davem@davemloft.net, elder@kernel.org, evgreen@chromium.org,
+        bjorn.andersson@linaro.org, cpratapa@codeaurora.org,
+        subashab@codeaurora.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 3/5] net: ipa: have gsi_channel_update() return
+ a value
+Message-ID: <20210120213522.4042c051@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210120220401.10713-4-elder@linaro.org>
+References: <20210120220401.10713-1-elder@linaro.org>
+        <20210120220401.10713-4-elder@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 20 Jan 2021 15:26:02 -0600 Alex Elder wrote:
-> (David/Jakub, please take these all through net-next if they are
-> acceptable to you, once Rob has acked the binding.  Rob, please ack
-> if the binding looks OK to you.)
-> 
-> Version 3 removes the "Fixes" tag from the first patch, and updates
-> the addressee list to include some people I apparently missed.
-> 
-> Version 2 includes <.../arm-gic.h> rather than <.../irq.h> in the
-> example section of the DT binding, to ensure GIC_SPI is defined.
-> I verified this passes "make dt_bindings_check".
-> 
-> The rest of the series is unchanged.  Below is the original cover
-> letter.
+On Wed, 20 Jan 2021 16:03:59 -0600 Alex Elder wrote:
+> Have gsi_channel_update() return the first transaction in the
+> updated completed transaction list, or NULL if no new transactions
+> have been added.
+>=20
+> Signed-off-by: Alex Elder <elder@linaro.org>
 
-Hi!
+> @@ -1452,7 +1452,7 @@ void gsi_channel_doorbell(struct gsi_channel *chann=
+el)
+>  }
+> =20
+>  /* Consult hardware, move any newly completed transactions to completed =
+list */
+> -static void gsi_channel_update(struct gsi_channel *channel)
+> +struct gsi_trans *gsi_channel_update(struct gsi_channel *channel)
 
-Looks like this series has been impacted by vger's flakiness [1], if 
-it doesn't get through and have patchwork checks run within 24 hours,
-could you repost?
+Why did it lose the 'static'?
 
-[1] https://patchwork.kernel.org/project/netdevbpf/list/?series=418685
+drivers/net/ipa/gsi.c:1455:19: warning: no previous prototype for =E2=80=98=
+gsi_channel_update=E2=80=99 [-Wmissing-prototypes]
+ 1455 | struct gsi_trans *gsi_channel_update(struct gsi_channel *channel)
+      |                   ^~~~~~~~~~~~~~~~~~
