@@ -2,130 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4E67A2FE076
-	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 05:15:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0CF8E2FE077
+	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 05:15:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729191AbhAUEPI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jan 2021 23:15:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60534 "EHLO
+        id S1726499AbhAUEPS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jan 2021 23:15:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727367AbhAUEMJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 23:12:09 -0500
-Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40337C0613C1;
-        Wed, 20 Jan 2021 20:11:29 -0800 (PST)
-Received: by mail-yb1-xb32.google.com with SMTP id y4so818758ybn.3;
-        Wed, 20 Jan 2021 20:11:29 -0800 (PST)
+        with ESMTP id S1727121AbhAUENE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 23:13:04 -0500
+Received: from mail-yb1-xb29.google.com (mail-yb1-xb29.google.com [IPv6:2607:f8b0:4864:20::b29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 592DDC0613CF;
+        Wed, 20 Jan 2021 20:12:22 -0800 (PST)
+Received: by mail-yb1-xb29.google.com with SMTP id w24so795821ybi.7;
+        Wed, 20 Jan 2021 20:12:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=qu3/Zdh2BNKct5hYooah1p1b6g8ncNuNlKHamiSiivA=;
-        b=g1GDQ0/2al2sF4aWAkymdbAOYl7xXJT9cS080xkUl2BLzz4WAflrgOdR9Ojm2yyihp
-         +/2j5bPtR3kI6MDbS1UBXWQknA+PjJxtmtSL0IrGqd8jjbtLYqLua7bgJFLlSD/5NdSO
-         ob+0I1vujlrPSvbyDDsM5YGUZkEUPmmu+eFeG4nN8H9gRtKvLlu3a314psxwaJGExRKt
-         El2oKC32NDPolLz8s+n/hgAlQAsVgZv7Dn2joEGFXA648OXggdgKoOHq9N3oyK8ph/o9
-         oYQl10t7H6B3aiXNX07rmuS/22JNKBdl0g35Hm00uC8tJyXIyT70jh3XfU+kvW0g0XF1
-         ZOYg==
+        h=mime-version:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=jRWL8RMQmOb+NK0KxjY4VJa2Y3woZ+g4NcmUpul4cuY=;
+        b=FVFFSomFFdZOotqwqujg6k7iPgR5/A7DOzndp5HTnKP7sF7Xljgyk2Hzajc3ogDukj
+         EscElBIorsCCnJt3ObCJPPG44OkmsyNJZDgb9/NqqZIPcajIUls6MIclI5BbFlIfCFD4
+         MJimW7eKEQOy4NRnnoWlPTk407ewkAbiTiQIML0Y47qjL37Ju/v5kxZf3J0t8/TvOave
+         CsdYCc3s9GaW53f9/lYWj+E6V2ufc2I4EJRjHwdbcLm0KyHaw95M75JchN2VOVEObpFD
+         JJe/Wg/z0+X+3Ys9nnbp5eb319Mnq6s2UQRawE2MKL9cclGNploSGQFsz9aUjSt56Xuo
+         sTDQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=qu3/Zdh2BNKct5hYooah1p1b6g8ncNuNlKHamiSiivA=;
-        b=c4wHGn0x3aLzt/mXOFGHJFkVOo7Xz42pXlhy7uTOsoZQNiIg9u3z+T2LoJSpcD7h8d
-         MTtRX21jXnsR7ygGMuXs0lTmChodWWRCriBK1v6SD2PudONPL5Yl2rqiBu9TzODzLb5E
-         x+YzAwcCpQovQ6g6tXBx1VE+4SWWvICZmUpbH95Ycn6R3fhhmXcZKv866h6yyBkMnE0c
-         et73H2TnHnqdv39wCR8+o2oenRqhK4mP2PFNr5cZ+Y8NpY+WwmJ9ORe0Dw+JG9GMFqTE
-         8kSh0uH36gSLMDjzCWp3fYuWNHZm0W+c59BLrxiwahI9ksV/v0ZqoYVTXdIqAMrqQBfI
-         jwvg==
-X-Gm-Message-State: AOAM533hRfHNo2+XYl5pqEl91qEuAlcRWNp9aJ8N5eCQBoWQQVVQuECI
-        KhuXVv4vb2FA49o5AJwvXQ5hCsXDPPcgIMlVjnc=
-X-Google-Smtp-Source: ABdhPJyxFuBO0yyPvtF2m38+Pza5hBaaFi/2NaRzY0gNKkmdle6tpnDcpYQwquLeBzDnAk+uYOMOqOY7XTzGP2g34QQ=
-X-Received: by 2002:a25:854a:: with SMTP id f10mr16748389ybn.510.1611202288424;
- Wed, 20 Jan 2021 20:11:28 -0800 (PST)
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=jRWL8RMQmOb+NK0KxjY4VJa2Y3woZ+g4NcmUpul4cuY=;
+        b=isq7afb8wuiUgfFrZpVSTElk8SbydBIP1oT9L9gz3EzsqkaBZT830abZf6J6RGxxXe
+         trHl1ZzcIkWOJo4XNN0fnvdLQiIeYrxHZ4nP+Yv6OCDFwXFsGwEtQVK9GWHK4/ks4TlN
+         jUUGZm85iDZ+FQTX8KFnOrnChJlhs9l+KGuS40Yl3UBwww5TpFmcFMjeVT48I0TUQ72C
+         eUVzHYA0o17vdPcMVB16Ve1ODh2mot8BF0qrAOO/6EliEXbQJdJMwGycZWw3qYPSTy1B
+         oEF4Q3qnbb/yumd98XtxoN65y0i772Ze/hddS3e/mQTdSyh5duTnYAZAbkyEvr8aP2V8
+         YDVQ==
+X-Gm-Message-State: AOAM530FLJvEzOiQwMqw79shlo+Y+dC4N6fa8mhHO/tVJgDCsgAo3MHW
+        7bYknpYD0sCz4c61csAZHfybSdVQlWt7NyB78Za1vCui9rzpoA==
+X-Google-Smtp-Source: ABdhPJyoULoeLJHGxuoJKsAUCfelHmBHl/UCgPfOLXHYIgLzWIdKD6gFzo9sFMkfFxkFp5uOG5/VCU0DgfRCeuEo+Og=
+X-Received: by 2002:a25:ea53:: with SMTP id o19mr7554881ybe.94.1611202341626;
+ Wed, 20 Jan 2021 20:12:21 -0800 (PST)
 MIME-Version: 1.0
-References: <1610921764-7526-1-git-send-email-alan.maguire@oracle.com> <1610921764-7526-2-git-send-email-alan.maguire@oracle.com>
-In-Reply-To: <1610921764-7526-2-git-send-email-alan.maguire@oracle.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 20 Jan 2021 20:11:17 -0800
-Message-ID: <CAEf4BzYvPiWnJYfVjg5qXaefYOsR1QHHzMfB6XFUSVeOA9W8Rg@mail.gmail.com>
-Subject: Re: [PATCH v2 bpf-next 1/4] libbpf: add btf_has_size() and btf_int() inlines
-To:     Alan Maguire <alan.maguire@oracle.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        john fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>, morbo@google.com,
-        Shuah Khan <shuah@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
+From:   =?UTF-8?B?5oWV5Yas5Lqu?= <mudongliangabcd@gmail.com>
+Date:   Thu, 21 Jan 2021 12:11:55 +0800
+Message-ID: <CAD-N9QUK-wHnXaWkUiwOLFaQH_P+aHCC79UkB7Zs9OuB93dxfg@mail.gmail.com>
+Subject: "WARNING: refcount bug in qrtr_node_lookup" and "WARNING: refcount
+ bug in qrtr_recvmsg" should share the same root cause
+To:     bjorn.andersson@linaro.org, davem@davemloft.net, kuba@kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        manivannan.sadhasivam@linaro.org, netdev@vger.kernel.org,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jan 17, 2021 at 2:22 PM Alan Maguire <alan.maguire@oracle.com> wrote:
->
-> BTF type data dumping will use them in later patches, and they
-> are useful generally when handling BTF data.
->
-> Signed-off-by: Alan Maguire <alan.maguire@oracle.com>
-> ---
->  tools/lib/bpf/btf.h | 19 +++++++++++++++++++
->  1 file changed, 19 insertions(+)
->
-> diff --git a/tools/lib/bpf/btf.h b/tools/lib/bpf/btf.h
-> index 1237bcd..0c48f2e 100644
-> --- a/tools/lib/bpf/btf.h
-> +++ b/tools/lib/bpf/btf.h
-> @@ -294,6 +294,20 @@ static inline bool btf_is_datasec(const struct btf_type *t)
->         return btf_kind(t) == BTF_KIND_DATASEC;
->  }
->
-> +static inline bool btf_has_size(const struct btf_type *t)
-> +{
-> +       switch (BTF_INFO_KIND(t->info)) {
-> +       case BTF_KIND_INT:
-> +       case BTF_KIND_STRUCT:
-> +       case BTF_KIND_UNION:
-> +       case BTF_KIND_ENUM:
-> +       case BTF_KIND_DATASEC:
-> +               return true;
-> +       default:
-> +               return false;
-> +       }
-> +}
+Dear kernel developers,
 
-it's not clear what "has_size" means, actually. E.g., array type
-definitely has size, it's not just as readily available. And you are
-actually misusing this in your algorithm, I'll point it out in the
-respective patch. Please remove this, or if absolutely necessary move
-into btf_dump.c as an inner static function.
+I found that on the syzbot dashboard, =E2=80=9CWARNING: refcount bug in
+qrtr_node_lookup=E2=80=9D[1] and "WARNING: refcount bug in qrtr_recvmsg"[2]
+should share the same root cause.
 
-> +
->  static inline __u8 btf_int_encoding(const struct btf_type *t)
->  {
->         return BTF_INT_ENCODING(*(__u32 *)(t + 1));
-> @@ -309,6 +323,11 @@ static inline __u8 btf_int_bits(const struct btf_type *t)
->         return BTF_INT_BITS(*(__u32 *)(t + 1));
->  }
->
-> +static inline __u32 btf_int(const struct btf_type *t)
-> +{
-> +       return *(__u32 *)(t + 1);
-> +}
-> +
+The reasons for the above statement:
+1) the stack trace is the same, and this title difference is due to
+the inline property of "qrtr_node_lookup";
+2) their PoCs are the same as each other;
 
-there is btf_int_encoding(), btf_ind_offset() and btf_int_bits() that
-properly decompose what btf_int() above returns. I'm not convinced
-btf_int() has to be exposed as a public API.
+If you can have any issues with this statement or our information is
+useful to you, please let us know. Thanks very much.
 
->  static inline struct btf_array *btf_array(const struct btf_type *t)
->  {
->         return (struct btf_array *)(t + 1);
-> --
-> 1.8.3.1
->
+[1] =E2=80=9CWARNING: refcount bug in qrtr_node_lookup=E2=80=9D -
+https://syzkaller.appspot.com/bug?id=3De10e2fe9023e90256a35bfd34c181910bf7a=
+874d
+
+[2] =E2=80=9CWARNING: refcount bug in qrtr_recvmsg=E2=80=9D -
+https://syzkaller.appspot.com/bug?id=3D6532173a22405c4e16c79f35609b71a0e19e=
+29ae
+
+--
+My best regards to you.
+
+     No System Is Safe!
+     Dongliang Mu
