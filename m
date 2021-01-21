@@ -2,120 +2,180 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 51D9D2FF81B
-	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 23:41:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 769DA2FF82B
+	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 23:46:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727098AbhAUWjy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jan 2021 17:39:54 -0500
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:17310 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726575AbhAUWje (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jan 2021 17:39:34 -0500
-Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 10LMWc8N150608;
-        Thu, 21 Jan 2021 17:38:16 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : references : mime-version : content-type :
- in-reply-to; s=pp1; bh=V9pkF9N+hZpa0Vz2hTWbrqRBmqHOHgaZE8NC6FKusVA=;
- b=QuQNZ9BnMVrIlIv8QxhCd+IpImdRK2fV55FxflmKsPjqifEzNgTVomYq5G6DjY5j7LhV
- nk9d7INzVVV+1DcTnU8MX0mAd+bMDizjSnvWD8vMy7SX7MyKUN4GRVXmZvlgZgGCA8LH
- SN0SssSJc98NUxer32Fhz8nMGhUG1AhLWZT1cJCxlRJFZeIaSq7553rKeqyDIW2oMi9A
- fX9USi30dKKF1nQ5jR5w8jEtv97cEkXzQAvkSC9tmO/p7ZQEg9MGsHUnGlKhAKbHJaPn
- le/dj9XOIDgiECd9xBMLH25vcedr4Ad60mO4OS1DcrNos5Jhk2QJbT2ZUEFWXt5Zsomp qQ== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 367j5w0h8k-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 21 Jan 2021 17:38:16 -0500
-Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 10LMXYx4157432;
-        Thu, 21 Jan 2021 17:38:15 -0500
-Received: from ppma03wdc.us.ibm.com (ba.79.3fa9.ip4.static.sl-reverse.com [169.63.121.186])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 367j5w0h82-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 21 Jan 2021 17:38:15 -0500
-Received: from pps.filterd (ppma03wdc.us.ibm.com [127.0.0.1])
-        by ppma03wdc.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 10LMVaRE014495;
-        Thu, 21 Jan 2021 22:38:13 GMT
-Received: from b01cxnp22035.gho.pok.ibm.com (b01cxnp22035.gho.pok.ibm.com [9.57.198.25])
-        by ppma03wdc.us.ibm.com with ESMTP id 3668pc7fk7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 21 Jan 2021 22:38:13 +0000
-Received: from b01ledav002.gho.pok.ibm.com (b01ledav002.gho.pok.ibm.com [9.57.199.107])
-        by b01cxnp22035.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 10LMcDR228443046
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 21 Jan 2021 22:38:13 GMT
-Received: from b01ledav002.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 59D7812407D;
-        Thu, 21 Jan 2021 22:38:13 +0000 (GMT)
-Received: from b01ledav002.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 3507912407F;
-        Thu, 21 Jan 2021 22:38:13 +0000 (GMT)
-Received: from suka-w540.localdomain (unknown [9.85.147.100])
-        by b01ledav002.gho.pok.ibm.com (Postfix) with ESMTP;
-        Thu, 21 Jan 2021 22:38:13 +0000 (GMT)
-Received: by suka-w540.localdomain (Postfix, from userid 1000)
-        id 65DA72E2718; Thu, 21 Jan 2021 14:38:10 -0800 (PST)
-Date:   Thu, 21 Jan 2021 14:38:10 -0800
-From:   Sukadev Bhattiprolu <sukadev@linux.ibm.com>
-To:     Lijun Pan <lijunp213@gmail.com>
-Cc:     Dany Madden <drt@linux.ibm.com>, Lijun Pan <ljp@linux.ibm.com>,
-        netdev@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        mpe@ellerman.id.au, julietk@linux.vnet.ibm.com,
-        benh@kernel.crashing.org, paulus@samba.org, davem@davemloft.net,
-        Jakub Kicinski <kuba@kernel.org>, gregkh@linuxfoundation.org,
-        kernel@pengutronix.de,
-        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH net] ibmvnic: device remove has higher precedence over
- reset
-Message-ID: <20210121223810.GA374395@us.ibm.com>
-References: <20210121062005.53271-1-ljp@linux.ibm.com>
- <c34816a13d857b7f5d1a25991b58ec63@imap.linux.ibm.com>
- <CAOhMmr78mzJpfPBSwp9JWmE+KwLxd6JtqpwaA9tmqxU5fCjcgg@mail.gmail.com>
+        id S1726799AbhAUWqJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jan 2021 17:46:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46594 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725805AbhAUWpt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jan 2021 17:45:49 -0500
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD696C061756;
+        Thu, 21 Jan 2021 14:45:08 -0800 (PST)
+Received: by mail-ed1-x52b.google.com with SMTP id f1so4388738edr.12;
+        Thu, 21 Jan 2021 14:45:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=js608cf7+b6uuSx4xSNXkCTdpGlQyO53l8ri6uI5Ugk=;
+        b=OQ13GQFV3ZKMP2IsaYeS9IbNflRAvsauNeh1LiK6cY1iUbq+8h9tcm190yB2Y2cs9Z
+         oo7YZxmWNtaAQoxDsMpl+WTlS3p8Wn+/HUoDI/lTY9kF2ha0KR9knHP38zbQtxLF4UQf
+         oOn6twWZ1MEkgO1xJYJlPRHVdOA1sGybDrskKcm28EOl0RPytu/GLA0SnWpVTv3FAA+5
+         BKdqo1dgkld0OE6+Z0h1wmGHbkOSR+hauscyqc4RFE1H7/HizN6MlYxPtHGOTHrWGM3d
+         dJ12iOiQBd4uDN+r2xcRp36uuJ40snZXNtThkoXekqZlfI9eArVlww3XJARmlVZfIFJv
+         40tg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=js608cf7+b6uuSx4xSNXkCTdpGlQyO53l8ri6uI5Ugk=;
+        b=XB6Ye/umNKIYkPLFospwDXGSowBJgdhY9NJjQfjV7c2PqdyAHrI8W6hYfEuAAH8feC
+         jLBtODPqiZwi414+jQslK9juR2yOmTIoR5pmck1PInlSAfQz3YNf7FudskJRpwxEVmNe
+         ISZvjg/MYVAmJ+n2CggFK9V8+tTCZeOLXmsQw0pzY/wb0nr4LugaT6POgK84EKaj4JPO
+         X2iPSgbQUBts++8zyzlwKFs79MB3ND1atC9M1ENSu+ylC9hoAFUqjJ7/cFSZI8MB1Ylp
+         eDv5qOJQBSlJYCp7sY7dIX5eq+C4gtfnEyLabj38EThPUwVamb4UafYr2xn2NePa9rXv
+         XA7A==
+X-Gm-Message-State: AOAM533bLUiwhlJTtopicenHrPCduvUnt/7th6lLat1nDJabtU/0d2+X
+        kMvQ8D20BseHCSH6YqKGc7c=
+X-Google-Smtp-Source: ABdhPJzdsAmZeMTtJofoH0OpmfOghYFNG5Mw7eCThZjIa7BwAAu43KDhcre/+DiKEUAE2RebrWMEpA==
+X-Received: by 2002:aa7:d8c6:: with SMTP id k6mr1042147eds.265.1611269107502;
+        Thu, 21 Jan 2021 14:45:07 -0800 (PST)
+Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
+        by smtp.gmail.com with ESMTPSA id t21sm3595648edv.82.2021.01.21.14.45.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 Jan 2021 14:45:06 -0800 (PST)
+Date:   Fri, 22 Jan 2021 00:45:05 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Pawel Dembicki <paweldembicki@gmail.com>
+Cc:     netdev@vger.kernel.org, Linus Wallej <linus.walleij@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] dsa: vsc73xx: add support for vlan filtering
+Message-ID: <20210121224505.nwfipzncw2h5d3rw@skbuf>
+References: <20210120063019.1989081-1-paweldembicki@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAOhMmr78mzJpfPBSwp9JWmE+KwLxd6JtqpwaA9tmqxU5fCjcgg@mail.gmail.com>
-X-Operating-System: Linux 2.0.32 on an i486
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
- definitions=2021-01-21_10:2021-01-21,2021-01-21 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999 phishscore=0
- adultscore=0 malwarescore=0 priorityscore=1501 suspectscore=0
- impostorscore=0 bulkscore=0 spamscore=0 mlxscore=0 clxscore=1011
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2101210115
+In-Reply-To: <20210120063019.1989081-1-paweldembicki@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Lijun Pan [lijunp213@gmail.com] wrote:
-> > > diff --git a/drivers/net/ethernet/ibm/ibmvnic.c
-> > > b/drivers/net/ethernet/ibm/ibmvnic.c
-> > > index aed985e08e8a..11f28fd03057 100644
-> > > --- a/drivers/net/ethernet/ibm/ibmvnic.c
-> > > +++ b/drivers/net/ethernet/ibm/ibmvnic.c
-> > > @@ -2235,8 +2235,7 @@ static void __ibmvnic_reset(struct work_struct
-> > > *work)
-> > >       while (rwi) {
-> > >               spin_lock_irqsave(&adapter->state_lock, flags);
-> > >
-> > > -             if (adapter->state == VNIC_REMOVING ||
-> > > -                 adapter->state == VNIC_REMOVED) {
-> > > +             if (adapter->state == VNIC_REMOVED) {
+Hi Pawel,
 
-If the adapter is in REMOVING state, there is no point going
-through the reset process. We could just bail out here. We
-should also drain any other resets in the queue (something
-my other patch set was addressing).
-
-Sukadev
-
-> >
-> > If we do get here, we would crash because ibmvnic_remove() happened. It
-> > frees the adapter struct already.
+On Wed, Jan 20, 2021 at 07:30:18AM +0100, Pawel Dembicki wrote:
+> This patch adds support for vlan filtering in vsc73xx driver.
 > 
-> Not exactly. viodev is gone; netdev is gone; ibmvnic_adapter is still there.
+> After vlan filtering enable, CPU_PORT is configured as trunk, without
+> non-tagged frames. This allows to avoid problems with transmit untagged
+> frames because vsc73xx is DSA_TAG_PROTO_NONE.
 > 
-> Lijun
+> Signed-off-by: Pawel Dembicki <paweldembicki@gmail.com>
 
+What are the issues that are preventing you from getting rid of
+DSA_TAG_PROTO_NONE? Not saying that making the driver VLAN aware is a
+bad idea, but maybe also adding a tagging driver should really be the
+path going forward. If there are hardware issues surrounding the native
+tagging support, then DSA can make use of your VLAN features by
+transforming them into a software-defined tagger, see
+net/dsa/tag_8021q.c. But using a trunk CPU port with 8021q uppers on top
+of the DSA master is a poor job of achieving that.
+
+> ---
+> +static int
+> +vsc73xx_port_read_vlan_table_entry(struct dsa_switch *ds, u16 vid, u8 *portmap)
+> +{
+> +	struct vsc73xx *vsc = ds->priv;
+> +	u32 val;
+> +	int ret;
+> +
+> +	if (vid > 4095)
+> +		return -EPERM;
+
+This is a paranoid check and should be removed (not only here but
+everywhere).
+
+> +static int vsc73xx_port_vlan_prepare(struct dsa_switch *ds, int port,
+> +				     const struct switchdev_obj_port_vlan *vlan)
+> +{
+> +	/* nothing needed */
+> +	return 0;
+> +}
+
+Can you please rebase your work on top of the net-next/master branch?
+You will see that the API has changed.
+https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git
+
+> +
+> +static void vsc73xx_port_vlan_add(struct dsa_switch *ds, int port,
+> +				  const struct switchdev_obj_port_vlan *vlan)
+> +{
+> +	bool untagged = vlan->flags & BRIDGE_VLAN_INFO_UNTAGGED;
+> +	bool pvid = vlan->flags & BRIDGE_VLAN_INFO_PVID;
+> +	struct vsc73xx *vsc = ds->priv;
+> +	int ret;
+> +	u32 tmp;
+> +
+> +	if (!dsa_port_is_vlan_filtering(dsa_to_port(ds, port)))
+> +		return;
+
+Sorry, but no. You need to support the case where the bridge (or 8021q
+module) adds a VLAN even when the port is not enforcing VLAN filtering.
+See commit:
+https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/commit/?id=0ee2af4ebbe3c4364429859acd571018ebfb3424
+
+> +
+> +	ret = vsc73xx_port_update_vlan_table(ds, port, vlan->vid_begin,
+> +					     vlan->vid_end, 1);
+> +	if (ret)
+> +		return;
+> +
+> +	if (untagged && port != CPU_PORT) {
+> +		/* VSC73xx can have only one untagged vid per port. */
+> +		vsc73xx_read(vsc, VSC73XX_BLOCK_MAC, port,
+> +			     VSC73XX_TXUPDCFG, &tmp);
+> +
+> +		if (tmp & VSC73XX_TXUPDCFG_TX_UNTAGGED_VID_ENA)
+> +			dev_warn(vsc->dev,
+> +				 "Chip support only one untagged VID per port. Overwriting...\n");
+
+Just return an error, don't overwrite, this leaves the bridge VLAN
+information out of sync with the hardware otherwise, which is not a
+great idea.
+
+FWIW the drivers/net/dsa/ocelot/felix.c and drivers/net/mscc/ocelot.c
+files support switching chips from the same vendor. The VSC73XX family
+is much older, but some of the limitations apply to both architectures
+nonetheless (like this one), you can surely borrow some ideas from
+ocelot - in this case search for ocelot_vlan_prepare.
+
+> +
+> +		vsc73xx_update_bits(vsc, VSC73XX_BLOCK_MAC, port,
+> +				    VSC73XX_TXUPDCFG,
+> +				    VSC73XX_TXUPDCFG_TX_UNTAGGED_VID,
+> +				    (vlan->vid_end <<
+> +				    VSC73XX_TXUPDCFG_TX_UNTAGGED_VID_SHIFT) &
+> +				    VSC73XX_TXUPDCFG_TX_UNTAGGED_VID);
+> +		vsc73xx_update_bits(vsc, VSC73XX_BLOCK_MAC, port,
+> +				    VSC73XX_TXUPDCFG,
+> +				    VSC73XX_TXUPDCFG_TX_UNTAGGED_VID_ENA,
+> +				    VSC73XX_TXUPDCFG_TX_UNTAGGED_VID_ENA);
+> +	}
+> +	if (pvid && port != CPU_PORT) {
+> +		vsc73xx_update_bits(vsc, VSC73XX_BLOCK_MAC, port,
+> +				    VSC73XX_CAT_DROP,
+> +				    VSC73XX_CAT_DROP_UNTAGGED_ENA,
+> +				    ~VSC73XX_CAT_DROP_UNTAGGED_ENA);
+> +		vsc73xx_update_bits(vsc, VSC73XX_BLOCK_MAC, port,
+> +				    VSC73XX_CAT_PORT_VLAN,
+> +				    VSC73XX_CAT_PORT_VLAN_VLAN_VID,
+> +				    vlan->vid_end &
+> +				    VSC73XX_CAT_PORT_VLAN_VLAN_VID);
+> +	}
+> +}
