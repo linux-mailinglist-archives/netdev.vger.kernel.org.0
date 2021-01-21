@@ -2,35 +2,35 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8E4C32FE9CF
-	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 13:19:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 63F942FE9C5
+	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 13:18:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730551AbhAUMTF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jan 2021 07:19:05 -0500
-Received: from a.mx.secunet.com ([62.96.220.36]:54612 "EHLO a.mx.secunet.com"
+        id S1730872AbhAUMRH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jan 2021 07:17:07 -0500
+Received: from a.mx.secunet.com ([62.96.220.36]:54592 "EHLO a.mx.secunet.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730832AbhAUMQu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1730850AbhAUMQu (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 21 Jan 2021 07:16:50 -0500
 Received: from localhost (localhost [127.0.0.1])
-        by a.mx.secunet.com (Postfix) with ESMTP id 7F6B02027C;
-        Thu, 21 Jan 2021 13:16:03 +0100 (CET)
+        by a.mx.secunet.com (Postfix) with ESMTP id DEDE720491;
+        Thu, 21 Jan 2021 13:16:02 +0100 (CET)
 X-Virus-Scanned: by secunet
 Received: from a.mx.secunet.com ([127.0.0.1])
         by localhost (a.mx.secunet.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id ncZpjEadUzLw; Thu, 21 Jan 2021 13:16:02 +0100 (CET)
+        with ESMTP id vvN7hErchJP8; Thu, 21 Jan 2021 13:16:02 +0100 (CET)
 Received: from mail-essen-01.secunet.de (unknown [10.53.40.204])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
         (No client certificate requested)
-        by a.mx.secunet.com (Postfix) with ESMTPS id 9216720322;
+        by a.mx.secunet.com (Postfix) with ESMTPS id 63001201D5;
         Thu, 21 Jan 2021 13:16:02 +0100 (CET)
 Received: from mbx-essen-01.secunet.de (10.53.40.197) by
  mail-essen-01.secunet.de (10.53.40.204) with Microsoft SMTP Server (TLS) id
- 14.3.487.0; Thu, 21 Jan 2021 13:16:02 +0100
+ 14.3.487.0; Thu, 21 Jan 2021 13:16:01 +0100
 Received: from gauss2.secunet.de (10.182.7.193) by mbx-essen-01.secunet.de
  (10.53.40.197) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2044.4; Thu, 21 Jan
  2021 13:16:02 +0100
-Received: by gauss2.secunet.de (Postfix, from userid 1000)      id 9BE353182BAE;
+Received: by gauss2.secunet.de (Postfix, from userid 1000)      id A13443181CAC;
  Thu, 21 Jan 2021 13:16:01 +0100 (CET)
 From:   Steffen Klassert <steffen.klassert@secunet.com>
 To:     David Miller <davem@davemloft.net>,
@@ -38,9 +38,9 @@ To:     David Miller <davem@davemloft.net>,
 CC:     Herbert Xu <herbert@gondor.apana.org.au>,
         Steffen Klassert <steffen.klassert@secunet.com>,
         <netdev@vger.kernel.org>
-Subject: [PATCH 1/5] xfrm: Fix oops in xfrm_replay_advance_bmp
-Date:   Thu, 21 Jan 2021 13:15:54 +0100
-Message-ID: <20210121121558.621339-2-steffen.klassert@secunet.com>
+Subject: [PATCH 2/5] xfrm: fix disable_xfrm sysctl when used on xfrm interfaces
+Date:   Thu, 21 Jan 2021 13:15:55 +0100
+Message-ID: <20210121121558.621339-3-steffen.klassert@secunet.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210121121558.621339-1-steffen.klassert@secunet.com>
 References: <20210121121558.621339-1-steffen.klassert@secunet.com>
@@ -54,87 +54,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Shmulik Ladkani <shmulik@metanetworks.com>
+From: Eyal Birger <eyal.birger@gmail.com>
 
-When setting xfrm replay_window to values higher than 32, a rare
-page-fault occurs in xfrm_replay_advance_bmp:
+The disable_xfrm flag signals that xfrm should not be performed during
+routing towards a device before reaching device xmit.
 
-  BUG: unable to handle page fault for address: ffff8af350ad7920
-  #PF: supervisor write access in kernel mode
-  #PF: error_code(0x0002) - not-present page
-  PGD ad001067 P4D ad001067 PUD 0
-  Oops: 0002 [#1] SMP PTI
-  CPU: 3 PID: 30 Comm: ksoftirqd/3 Kdump: loaded Not tainted 5.4.52-050452-generic #202007160732
-  Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.11.0-2.el7 04/01/2014
-  RIP: 0010:xfrm_replay_advance_bmp+0xbb/0x130
-  RSP: 0018:ffffa1304013ba40 EFLAGS: 00010206
-  RAX: 000000000000010d RBX: 0000000000000002 RCX: 00000000ffffff4b
-  RDX: 0000000000000018 RSI: 00000000004c234c RDI: 00000000ffb3dbff
-  RBP: ffffa1304013ba50 R08: ffff8af330ad7920 R09: 0000000007fffffa
-  R10: 0000000000000800 R11: 0000000000000010 R12: ffff8af29d6258c0
-  R13: ffff8af28b95c700 R14: 0000000000000000 R15: ffff8af29d6258fc
-  FS:  0000000000000000(0000) GS:ffff8af339ac0000(0000) knlGS:0000000000000000
-  CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-  CR2: ffff8af350ad7920 CR3: 0000000015ee4000 CR4: 00000000001406e0
-  Call Trace:
-   xfrm_input+0x4e5/0xa10
-   xfrm4_rcv_encap+0xb5/0xe0
-   xfrm4_udp_encap_rcv+0x140/0x1c0
+For xfrm interfaces this is usually desired as they perform the outbound
+policy lookup as part of their xmit using their if_id.
 
-Analysis revealed offending code is when accessing:
+Before this change enabling this flag on xfrm interfaces prevented them
+from xmitting as xfrm_lookup_with_ifid() would not perform a policy lookup
+in case the original dst had the DST_NOXFRM flag.
 
-	replay_esn->bmp[nr] |= (1U << bitnr);
+This optimization is incorrect when the lookup is done by the xfrm
+interface xmit logic.
 
-with 'nr' being 0x07fffffa.
+Fix by performing policy lookup when invoked by xfrmi as if_id != 0.
 
-This happened in an SMP system when reordering of packets was present;
-A packet arrived with a "too old" sequence number (outside the window,
-i.e 'diff > replay_window'), and therefore the following calculation:
+Similarly it's unlikely for the 'no policy exists on net' check to yield
+any performance benefits when invoked from xfrmi.
 
-			bitnr = replay_esn->replay_window - (diff - pos);
-
-yields a negative result, but since bitnr is u32 we get a large unsigned
-quantity (in crash dump above: 0xffffff4b seen in ecx).
-
-This was supposed to be protected by xfrm_input()'s former call to:
-
-		if (x->repl->check(x, skb, seq)) {
-
-However, the state's spinlock x->lock is *released* after '->check()'
-is performed, and gets re-acquired before '->advance()' - which gives a
-chance for a different core to update the xfrm state, e.g. by advancing
-'replay_esn->seq' when it encounters more packets - leading to a
-'diff > replay_window' situation when original core continues to
-xfrm_replay_advance_bmp().
-
-An attempt to fix this issue was suggested in commit bcf66bf54aab
-("xfrm: Perform a replay check after return from async codepaths"),
-by calling 'x->repl->recheck()' after lock is re-acquired, but fix
-applied only to asyncronous crypto algorithms.
-
-Augment the fix, by *always* calling 'recheck()' - irrespective if we're
-using async crypto.
-
-Fixes: 0ebea8ef3559 ("[IPSEC]: Move state lock into x->type->input")
-Signed-off-by: Shmulik Ladkani <shmulik.ladkani@gmail.com>
+Fixes: f203b76d7809 ("xfrm: Add virtual xfrm interfaces")
+Signed-off-by: Eyal Birger <eyal.birger@gmail.com>
 Signed-off-by: Steffen Klassert <steffen.klassert@secunet.com>
 ---
- net/xfrm/xfrm_input.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ net/xfrm/xfrm_policy.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/net/xfrm/xfrm_input.c b/net/xfrm/xfrm_input.c
-index 37456d022cfa..61e6220ddd5a 100644
---- a/net/xfrm/xfrm_input.c
-+++ b/net/xfrm/xfrm_input.c
-@@ -660,7 +660,7 @@ int xfrm_input(struct sk_buff *skb, int nexthdr, __be32 spi, int encap_type)
- 		/* only the first xfrm gets the encap type */
- 		encap_type = 0;
+diff --git a/net/xfrm/xfrm_policy.c b/net/xfrm/xfrm_policy.c
+index d622c2548d22..2f84136af48a 100644
+--- a/net/xfrm/xfrm_policy.c
++++ b/net/xfrm/xfrm_policy.c
+@@ -3078,8 +3078,8 @@ struct dst_entry *xfrm_lookup_with_ifid(struct net *net,
+ 		xflo.flags = flags;
  
--		if (async && x->repl->recheck(x, skb, seq)) {
-+		if (x->repl->recheck(x, skb, seq)) {
- 			XFRM_INC_STATS(net, LINUX_MIB_XFRMINSTATESEQERROR);
- 			goto drop_unlock;
- 		}
+ 		/* To accelerate a bit...  */
+-		if ((dst_orig->flags & DST_NOXFRM) ||
+-		    !net->xfrm.policy_count[XFRM_POLICY_OUT])
++		if (!if_id && ((dst_orig->flags & DST_NOXFRM) ||
++			       !net->xfrm.policy_count[XFRM_POLICY_OUT]))
+ 			goto nopol;
+ 
+ 		xdst = xfrm_bundle_lookup(net, fl, family, dir, &xflo, if_id);
 -- 
 2.25.1
 
