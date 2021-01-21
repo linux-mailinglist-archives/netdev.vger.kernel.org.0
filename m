@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5EE502FF019
-	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 17:23:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CC55E2FEFC0
+	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 17:05:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733152AbhAUQXC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jan 2021 11:23:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44688 "EHLO
+        id S1728162AbhAUQEk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jan 2021 11:04:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731930AbhAUQDH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jan 2021 11:03:07 -0500
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AAAAC0613ED
-        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 08:02:27 -0800 (PST)
-Received: by mail-ej1-x62d.google.com with SMTP id ox12so3354763ejb.2
-        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 08:02:26 -0800 (PST)
+        with ESMTP id S1731852AbhAUQDK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jan 2021 11:03:10 -0500
+Received: from mail-ej1-x636.google.com (mail-ej1-x636.google.com [IPv6:2a00:1450:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B4D9C061786
+        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 08:02:30 -0800 (PST)
+Received: by mail-ej1-x636.google.com with SMTP id g3so3317433ejb.6
+        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 08:02:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=8ysl7nHiAwv3zqkW8Dx/QEQ7jBdDypCC4p3O11RZ6ow=;
-        b=DlgKP8g4W40kxwuk6jN3QKeicBln15G3DdiEjMfqid3NPblIpQwWXs7315SAWLx+CO
-         SE9ERfh+kIZ4s5lVOAmVhhLLKZTn7bvcm5X+l7jCrradrFHDR95EpolysdmuSksa8UME
-         CK0Fn4o5dCvk0HAx3tAROeldi9BJU00wh40nB8ieG0bsBasG5cP0kPmPz+kIaOLsDiON
-         LCnLDI1IM17VFa1kQHGHUC+dUmw3c7XekCP5XzDDQcwXymAuTGZfFmsAxaMjIVYg9DNK
-         /Y4jZDXEM4S68CDOFhSk2uk9/HIu0/mk/IVU91ZZxUgY2J+FRDaU4RKtGtskWkhFGocx
-         mLaw==
+        bh=Ohla8RW9X5hOAtkri6reXxURsKt2qhYCgBML7GU10yo=;
+        b=rRdNJEO3rtDOCcFALhoYLPMXZSClmcIPkiPwU6n1mteT4iDTWR38YBhrrH6tp9KCED
+         uWWVs1gZcomAEb4f3Ra+yARgqCL0oDxiRaKLUEWdhuvl6uaI+hqbbLTVMYcNqvBvr4Si
+         B0nQ8B31mfs0lE5rjhWbGWbR6Mpo6TDFwC5zrwXOXwfxbORNOTKOg3P0XmBrXHA4qJJ0
+         CVtCfAB7AdNEKERmZd/at3sT/6QeQRt9Uejfr9IZsMszlLSUHTB1ZnrkI0PZs4N+z2w/
+         NaUtZoziiVlsps8OU4FjJXDvEcUuNjmhYrH5UniDTTIAFw0XPzbtlqVMJsNxYChoU+yU
+         jpPg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=8ysl7nHiAwv3zqkW8Dx/QEQ7jBdDypCC4p3O11RZ6ow=;
-        b=hSHXpMeTe8S55mbFsw2EEMaXXBz1huSj6nmiS+G1B0ripU4rIdbr/2+B+z53ElJO41
-         pDE61J+pLaNtlAHtcBoWVKTDxHO7aLBKoplF4yRXBU0dzYqkEx7BTDfGesX+GH7FoETW
-         hWbxMdOlJObXa73X82tR8ON3PNuTnvWK5zzf21ZjVt/4hB/lIFI4dl53RHqHePGVgIbA
-         HSkSYdEi7LD5ba10L03NcCyDiej4kTWvgkjA8+6t5l4SV7IW9QwqVqmGmcIGUg4W5mAX
-         +3uUm9bppFISbnZyYAmnhJGj6ioNDJn1SXMJojgKHYNNDLm6D0zHtGQyr+ellVH2PjMS
-         CjoQ==
-X-Gm-Message-State: AOAM533KKxHhtqKw+rnnsiijPaashj2nvhWp2tut24meWYWPBO4sv+ZO
-        isgOn09pdFCk/awoLOkrEN0=
-X-Google-Smtp-Source: ABdhPJxJ9Rz/vknWnw4CryLFkqdyZNQ1EjiKV22pvi4zYT5O9bUWccKmKFrvde4HWJKWo8hBzFd96Q==
-X-Received: by 2002:a17:906:110a:: with SMTP id h10mr125375eja.190.1611244945720;
-        Thu, 21 Jan 2021 08:02:25 -0800 (PST)
+        bh=Ohla8RW9X5hOAtkri6reXxURsKt2qhYCgBML7GU10yo=;
+        b=ZfgJOHWp1y116PzHFDL0aYtSwkp/EMiwgnVk0TJ1fs+lGxghZfMQjZ0P37Voiqyeau
+         k9HYMK7FThZ8lVXcZIA/0ZblpQepzwGYM2wRj47eHHNWRRl8EaYXLAfu2I1z7Wyppccs
+         hXI+8nQKqJt0bhT95EB2+i3rb/ilipG/E7ptJyHoobNJ/z1dmDQYWmLPEqZCZf+zJUNR
+         mTCwwPBqkgISA9hCY0/99NHdPaPqh2ZvqIppOFXhNN6Zu9aoyI046V/oixy4Fpi0JdQK
+         Udw5g1/sEwDYJyhaJqPuL1IbGLfUhyLyz8v+qg/26Ze987nUudPXI8KtVQCczAZik+gm
+         ltdQ==
+X-Gm-Message-State: AOAM533Fx4FhF8D+aGn9+UlqQ7xhRuGzG1QxbZjZPE+n09H5MQQXj7OP
+        OuEVpbgeOHVxS9NhMc6CgGw=
+X-Google-Smtp-Source: ABdhPJxgtPtDONUT1EwtmWF1RismmczmjFaKl8P5jGOuNuotZ/LmLDlyPonNJqaUks7h7Gayx6tDBw==
+X-Received: by 2002:a17:907:2851:: with SMTP id el17mr78790ejc.405.1611244948963;
+        Thu, 21 Jan 2021 08:02:28 -0800 (PST)
 Received: from localhost.localdomain (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id zk10sm2419973ejb.10.2021.01.21.08.02.23
+        by smtp.gmail.com with ESMTPSA id zk10sm2419973ejb.10.2021.01.21.08.02.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Jan 2021 08:02:25 -0800 (PST)
+        Thu, 21 Jan 2021 08:02:28 -0800 (PST)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
@@ -66,9 +66,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Andrey L <al@b4comtech.com>,
         Tobias Waldekranz <tobias@waldekranz.com>,
         UNGLinuxDriver@microchip.com
-Subject: [PATCH v6 net-next 03/10] net: mscc: ocelot: store a namespaced VCAP filter ID
-Date:   Thu, 21 Jan 2021 18:01:24 +0200
-Message-Id: <20210121160131.2364236-4-olteanv@gmail.com>
+Subject: [PATCH v6 net-next 04/10] net: mscc: ocelot: reapply bridge forwarding mask on bonding join/leave
+Date:   Thu, 21 Jan 2021 18:01:25 +0200
+Message-Id: <20210121160131.2364236-5-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210121160131.2364236-1-olteanv@gmail.com>
 References: <20210121160131.2364236-1-olteanv@gmail.com>
@@ -80,166 +80,138 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-We will be adding some private VCAP filters that should not interfere in
-any way with the filters added using tc-flower. So we need to allocate
-some IDs which will not be used by tc.
+Applying the bridge forwarding mask currently is done only on the STP
+state changes for any port. But it depends on both STP state changes,
+and bonding interface state changes. Export the bit that recalculates
+the forwarding mask so that it could be reused, and call it when a port
+starts and stops offloading a bonding interface.
 
-Currently ocelot uses an u32 id derived from the flow cookie, which in
-itself is an unsigned long. This is a problem in itself, since on 64 bit
-systems, sizeof(unsigned long)=8, so the driver is already truncating
-these.
-
-Create a struct ocelot_vcap_id which contains the full unsigned long
-cookie from tc, as well as a boolean that is supposed to namespace the
-filters added by tc with the ones that aren't.
+Now that the logic is split into a separate function, we can rename "p"
+into "port", since the "port" variable was already taken in
+ocelot_bridge_stp_state_set. Also, we can rename "i" into "lag", to make
+it more clear what is it that we're iterating through.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Reviewed-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
 Changes in v6:
 None.
+Jakub, just FYI: ./scripts/get_maintainer.pl parses the "bpf" string
+from the patchwork instance name, and wants me to CC the BPF maintainers
+because of that.
 
 Changes in v5:
 None.
 
 Changes in v4:
-None.
+Patch is carried over from the "LAG offload for Ocelot DSA switches"
+series:
+https://patchwork.kernel.org/project/netdevbpf/patch/20210116005943.219479-10-olteanv@gmail.com/
+I need it here because it refactors ocelot_apply_bridge_fwd_mask into a
+separate function which I also need to call from felix now.
 
-Changes in v3:
-None.
+ drivers/net/ethernet/mscc/ocelot.c | 63 +++++++++++++++++-------------
+ 1 file changed, 36 insertions(+), 27 deletions(-)
 
-Changes in v2:
-Patch is new.
-
- drivers/net/ethernet/mscc/ocelot_flower.c |  7 ++++---
- drivers/net/ethernet/mscc/ocelot_vcap.c   | 16 ++++++++++++----
- drivers/net/ethernet/mscc/ocelot_vcap.h   |  3 ++-
- include/soc/mscc/ocelot_vcap.h            |  7 ++++++-
- 4 files changed, 24 insertions(+), 9 deletions(-)
-
-diff --git a/drivers/net/ethernet/mscc/ocelot_flower.c b/drivers/net/ethernet/mscc/ocelot_flower.c
-index 729495a1a77e..c3ac026f6aea 100644
---- a/drivers/net/ethernet/mscc/ocelot_flower.c
-+++ b/drivers/net/ethernet/mscc/ocelot_flower.c
-@@ -622,7 +622,8 @@ static int ocelot_flower_parse(struct ocelot *ocelot, int port, bool ingress,
- 	int ret;
- 
- 	filter->prio = f->common.prio;
--	filter->id = f->cookie;
-+	filter->id.cookie = f->cookie;
-+	filter->id.tc_offload = true;
- 
- 	ret = ocelot_flower_parse_action(ocelot, port, ingress, f, filter);
- 	if (ret)
-@@ -717,7 +718,7 @@ int ocelot_cls_flower_destroy(struct ocelot *ocelot, int port,
- 
- 	block = &ocelot->block[block_id];
- 
--	filter = ocelot_vcap_block_find_filter_by_id(block, f->cookie);
-+	filter = ocelot_vcap_block_find_filter_by_id(block, f->cookie, true);
- 	if (!filter)
- 		return 0;
- 
-@@ -741,7 +742,7 @@ int ocelot_cls_flower_stats(struct ocelot *ocelot, int port,
- 
- 	block = &ocelot->block[block_id];
- 
--	filter = ocelot_vcap_block_find_filter_by_id(block, f->cookie);
-+	filter = ocelot_vcap_block_find_filter_by_id(block, f->cookie, true);
- 	if (!filter || filter->type == OCELOT_VCAP_FILTER_DUMMY)
- 		return 0;
- 
-diff --git a/drivers/net/ethernet/mscc/ocelot_vcap.c b/drivers/net/ethernet/mscc/ocelot_vcap.c
-index 489bf16362a7..b82fd4103a68 100644
---- a/drivers/net/ethernet/mscc/ocelot_vcap.c
-+++ b/drivers/net/ethernet/mscc/ocelot_vcap.c
-@@ -959,6 +959,12 @@ static void ocelot_vcap_filter_add_to_block(struct ocelot *ocelot,
- 	list_add(&filter->list, pos->prev);
+diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
+index 5b2c0cea49ea..7352f58f9bc2 100644
+--- a/drivers/net/ethernet/mscc/ocelot.c
++++ b/drivers/net/ethernet/mscc/ocelot.c
+@@ -889,10 +889,42 @@ int ocelot_get_ts_info(struct ocelot *ocelot, int port,
  }
+ EXPORT_SYMBOL(ocelot_get_ts_info);
  
-+static bool ocelot_vcap_filter_equal(const struct ocelot_vcap_filter *a,
-+				     const struct ocelot_vcap_filter *b)
++static void ocelot_apply_bridge_fwd_mask(struct ocelot *ocelot)
 +{
-+	return !memcmp(&a->id, &b->id, sizeof(struct ocelot_vcap_id));
++	int port;
++
++	/* Apply FWD mask. The loop is needed to add/remove the current port as
++	 * a source for the other ports.
++	 */
++	for (port = 0; port < ocelot->num_phys_ports; port++) {
++		if (ocelot->bridge_fwd_mask & BIT(port)) {
++			unsigned long mask = ocelot->bridge_fwd_mask & ~BIT(port);
++			int lag;
++
++			for (lag = 0; lag < ocelot->num_phys_ports; lag++) {
++				unsigned long bond_mask = ocelot->lags[lag];
++
++				if (!bond_mask)
++					continue;
++
++				if (bond_mask & BIT(port)) {
++					mask &= ~bond_mask;
++					break;
++				}
++			}
++
++			ocelot_write_rix(ocelot, mask,
++					 ANA_PGID_PGID, PGID_SRC + port);
++		} else {
++			ocelot_write_rix(ocelot, 0,
++					 ANA_PGID_PGID, PGID_SRC + port);
++		}
++	}
 +}
 +
- static int ocelot_vcap_block_get_filter_index(struct ocelot_vcap_block *block,
- 					      struct ocelot_vcap_filter *filter)
+ void ocelot_bridge_stp_state_set(struct ocelot *ocelot, int port, u8 state)
  {
-@@ -966,7 +972,7 @@ static int ocelot_vcap_block_get_filter_index(struct ocelot_vcap_block *block,
- 	int index = 0;
+ 	u32 port_cfg;
+-	int p, i;
  
- 	list_for_each_entry(tmp, &block->rules, list) {
--		if (filter->id == tmp->id)
-+		if (ocelot_vcap_filter_equal(filter, tmp))
- 			return index;
- 		index++;
- 	}
-@@ -991,12 +997,14 @@ ocelot_vcap_block_find_filter_by_index(struct ocelot_vcap_block *block,
+ 	if (!(BIT(port) & ocelot->bridge_mask))
+ 		return;
+@@ -915,32 +947,7 @@ void ocelot_bridge_stp_state_set(struct ocelot *ocelot, int port, u8 state)
+ 
+ 	ocelot_write_gix(ocelot, port_cfg, ANA_PORT_PORT_CFG, port);
+ 
+-	/* Apply FWD mask. The loop is needed to add/remove the current port as
+-	 * a source for the other ports.
+-	 */
+-	for (p = 0; p < ocelot->num_phys_ports; p++) {
+-		if (ocelot->bridge_fwd_mask & BIT(p)) {
+-			unsigned long mask = ocelot->bridge_fwd_mask & ~BIT(p);
+-
+-			for (i = 0; i < ocelot->num_phys_ports; i++) {
+-				unsigned long bond_mask = ocelot->lags[i];
+-
+-				if (!bond_mask)
+-					continue;
+-
+-				if (bond_mask & BIT(p)) {
+-					mask &= ~bond_mask;
+-					break;
+-				}
+-			}
+-
+-			ocelot_write_rix(ocelot, mask,
+-					 ANA_PGID_PGID, PGID_SRC + p);
+-		} else {
+-			ocelot_write_rix(ocelot, 0,
+-					 ANA_PGID_PGID, PGID_SRC + p);
+-		}
+-	}
++	ocelot_apply_bridge_fwd_mask(ocelot);
  }
+ EXPORT_SYMBOL(ocelot_bridge_stp_state_set);
  
- struct ocelot_vcap_filter *
--ocelot_vcap_block_find_filter_by_id(struct ocelot_vcap_block *block, int id)
-+ocelot_vcap_block_find_filter_by_id(struct ocelot_vcap_block *block, int cookie,
-+				    bool tc_offload)
- {
- 	struct ocelot_vcap_filter *filter;
+@@ -1297,6 +1304,7 @@ int ocelot_port_lag_join(struct ocelot *ocelot, int port,
+ 	}
  
- 	list_for_each_entry(filter, &block->rules, list)
--		if (filter->id == id)
-+		if (filter->id.tc_offload == tc_offload &&
-+		    filter->id.cookie == cookie)
- 			return filter;
+ 	ocelot_setup_lag(ocelot, lag);
++	ocelot_apply_bridge_fwd_mask(ocelot);
+ 	ocelot_set_aggr_pgids(ocelot);
  
- 	return NULL;
-@@ -1161,7 +1169,7 @@ static void ocelot_vcap_block_remove_filter(struct ocelot *ocelot,
+ 	return 0;
+@@ -1330,6 +1338,7 @@ void ocelot_port_lag_leave(struct ocelot *ocelot, int port,
+ 	ocelot_write_gix(ocelot, port_cfg | ANA_PORT_PORT_CFG_PORTID_VAL(port),
+ 			 ANA_PORT_PORT_CFG, port);
  
- 	list_for_each_safe(pos, q, &block->rules) {
- 		tmp = list_entry(pos, struct ocelot_vcap_filter, list);
--		if (tmp->id == filter->id) {
-+		if (ocelot_vcap_filter_equal(filter, tmp)) {
- 			if (tmp->block_id == VCAP_IS2 &&
- 			    tmp->action.police_ena)
- 				ocelot_vcap_policer_del(ocelot, block,
-diff --git a/drivers/net/ethernet/mscc/ocelot_vcap.h b/drivers/net/ethernet/mscc/ocelot_vcap.h
-index cfc8b976d1de..3b0c7916056e 100644
---- a/drivers/net/ethernet/mscc/ocelot_vcap.h
-+++ b/drivers/net/ethernet/mscc/ocelot_vcap.h
-@@ -15,7 +15,8 @@
- int ocelot_vcap_filter_stats_update(struct ocelot *ocelot,
- 				    struct ocelot_vcap_filter *rule);
- struct ocelot_vcap_filter *
--ocelot_vcap_block_find_filter_by_id(struct ocelot_vcap_block *block, int id);
-+ocelot_vcap_block_find_filter_by_id(struct ocelot_vcap_block *block, int id,
-+				    bool tc_offload);
- 
- void ocelot_detect_vcap_constants(struct ocelot *ocelot);
- int ocelot_vcap_init(struct ocelot *ocelot);
-diff --git a/include/soc/mscc/ocelot_vcap.h b/include/soc/mscc/ocelot_vcap.h
-index 7f1b82fba63c..76e01c927e17 100644
---- a/include/soc/mscc/ocelot_vcap.h
-+++ b/include/soc/mscc/ocelot_vcap.h
-@@ -648,6 +648,11 @@ enum ocelot_vcap_filter_type {
- 	OCELOT_VCAP_FILTER_OFFLOAD,
- };
- 
-+struct ocelot_vcap_id {
-+	unsigned long cookie;
-+	bool tc_offload;
-+};
-+
- struct ocelot_vcap_filter {
- 	struct list_head list;
- 
-@@ -657,7 +662,7 @@ struct ocelot_vcap_filter {
- 	int lookup;
- 	u8 pag;
- 	u16 prio;
--	u32 id;
-+	struct ocelot_vcap_id id;
- 
- 	struct ocelot_vcap_action action;
- 	struct ocelot_vcap_stats stats;
++	ocelot_apply_bridge_fwd_mask(ocelot);
+ 	ocelot_set_aggr_pgids(ocelot);
+ }
+ EXPORT_SYMBOL(ocelot_port_lag_leave);
 -- 
 2.25.1
 
