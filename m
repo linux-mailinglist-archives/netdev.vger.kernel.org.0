@@ -2,103 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D0BFA2FE0D3
-	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 05:38:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C394F2FE0B8
+	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 05:31:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728972AbhAUEf3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jan 2021 23:35:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59546 "EHLO
+        id S1732716AbhAUEbD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jan 2021 23:31:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32780 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727177AbhAUEHc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 23:07:32 -0500
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39301C061794;
-        Wed, 20 Jan 2021 20:06:15 -0800 (PST)
-Received: by mail-pj1-x1036.google.com with SMTP id y12so763237pji.1;
-        Wed, 20 Jan 2021 20:06:15 -0800 (PST)
+        with ESMTP id S1726599AbhAUEOY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 23:14:24 -0500
+Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A9C2C061757;
+        Wed, 20 Jan 2021 20:13:41 -0800 (PST)
+Received: by mail-yb1-xb2c.google.com with SMTP id k4so806133ybp.6;
+        Wed, 20 Jan 2021 20:13:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=T1lR9J6QgLZahbnNwIjHLkVhPfyi5cP1iF5z5/zhv44=;
-        b=WShgxGiqKKgRX/tsaAWZQuXtMDaIZg+6mX51WXozVo+F3mGn4fn9KSKrzM2nIG36b+
-         jC2CcR8fCSoKjOq+S5pwSQoU8j2ABHbrk07/Hpe6YIDA2DmUbHsdl/M6J+B3mvY/aWO7
-         CBPcUkZSOqPfzKNg2IpQ9hKWQW1j6UO9I0MmnOzwOehv2ZnLTHHo0ZCkeDpfCMLwFeMV
-         /s+Sngv8KHInN+L6TDgIDVhWc5i0icfDNjA2H+cgxyaD+lVL51aitHmljkIDuyU0NfBa
-         NAb6Fs/yNKNAvplJ62eEq0sBcBXu8TeH+2KFabRTcqzQjnpUVTGuNNrVeCt4V5es9TXO
-         H6aA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=qdYGbaNQ6RXEEqSgvnErn9aTL2ruB523HmhLn4769P0=;
+        b=Y/wjnmDnqQEicOrIEn5igWesvc6VvkLe6H9gn0MNXrK8Od0OitS4GowYF4fZBPPYQU
+         aw0yU20PJVRA8tRoevm8VV1ZbEtrxk6Zy07mJdq9//Rq1/ub6dOFDxCxo3hEgCA4hOte
+         KP/8aLcT9f5NbXSKYIXEIe31sGI/yzcYnesDXp27vM1RLObprjK5syz6KZ7mtXQ5GrtF
+         XoHnNU+CcQRGdj8I7/F9UDwS9ibTJfJcwFDc5pBC2nn+LtJQ8ByNM1w37YKH1Tvqsoo8
+         VkRL8yFmGOdzvLdAR+SUHLcEd6aUFTvh3eInfHRyXS7mC6ailuxwU3oTpZOONIV6XwXJ
+         umvA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=T1lR9J6QgLZahbnNwIjHLkVhPfyi5cP1iF5z5/zhv44=;
-        b=KGLL/yEw7Nt++yP4FxpevwmTQxtvSBuRK7rbuHHO631rGoRJeecwZR7K+KIgBaOs5/
-         dBzPoB+P6JRVpr8t+C317iBtL4+xFTQLOq8Ga1VF5ohRzvvdt/2b7+Gp1wIKg1kZ5vT2
-         d4iT/h/E6btq2WuhlVh886utbvwR778kfl5cu8fy3IafhjlE9TWTQIsjVaU70fI98Ck+
-         2f1RAOy/WAhZFJYktl6LEkxelyblps6p2Fvjn676KnXVRaBYPLCMKbCQ1I0nfd4Rr8J9
-         DQgxGLxYOCDvEi4sp0thBe09sQJOyYOCf5cjPz+YXuOGvHWwi2B5LVGyAEnQqxGeDwU0
-         gQTQ==
-X-Gm-Message-State: AOAM533nOaWNqva1WcLddRDR8s4Ocqn/JqOnTweMk6iD2NSyXf0y9VUl
-        oPz8s7aZVi0OnBTs/9jE4aLGidDGkY4=
-X-Google-Smtp-Source: ABdhPJxrBCNPQBSj+7f1m9h/3zgOky2M6hR+CS5mldmQKBb2jI9OFYySmwnnBpDynFQiItrBu4PSyw==
-X-Received: by 2002:a17:902:c509:b029:de:c3c7:9433 with SMTP id o9-20020a170902c509b02900dec3c79433mr12657230plx.71.1611201974488;
-        Wed, 20 Jan 2021 20:06:14 -0800 (PST)
-Received: from localhost.localdomain (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
-        by smtp.gmail.com with ESMTPSA id f24sm3808567pjj.5.2021.01.20.20.06.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Jan 2021 20:06:13 -0800 (PST)
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Brandon Streiff <brandon.streiff@ni.com>,
-        Dinh Nguyen <dinguyen@kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Marc Zyngier <maz@kernel.org>, Olof Johansson <olof@lixom.net>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net 4/4] ARM: axm55xx_defconfig: Disable PHY time stamping by default.
-Date:   Wed, 20 Jan 2021 20:06:03 -0800
-Message-Id: <ffccb79afa227b0c61f4588a30b04dae21561434.1611198584.git.richardcochran@gmail.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <cover.1611198584.git.richardcochran@gmail.com>
-References: <cover.1611198584.git.richardcochran@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=qdYGbaNQ6RXEEqSgvnErn9aTL2ruB523HmhLn4769P0=;
+        b=a/p+AMFuKBF2yCuOnbaLzuXQdmA6oJ/qPvzOLk8QI1gEc+aMXEZFCVM+T0OTmIkSVa
+         vQLO9GyI04l1H63Mq+Y/3YLNDKBo/mwWRSPDT7njmOPhJjPLP1IcP7WR4onJiKkLTGk1
+         c/zokrL4UHuUZ1yg4L96HykdnWKg/l7RIAU80vElKfLgslbKvePl2BPjiQOBjRmtkEvR
+         RtJyUEdoctoUNwjcr3zWHFC/J+pyK27ydvGBiGaGOjROhC/LeNRs3oJ5uBLWX220Ncrp
+         xcCqpt4YJWnP5mGBMlHb4Nm+VfYZLLexPtoRPEI+G7SdLQuXOut9H1sUv3ZDgMQevCDr
+         7b9g==
+X-Gm-Message-State: AOAM530gO+WhPdJZQAPH8APCPWKX5ZCNN98XIbhRcN5dYTyt0xIyj71R
+        U4iLBUYV+Ex06jybOMFivy3+90gdhPjIY70ldRQ=
+X-Google-Smtp-Source: ABdhPJyw6udgxJBFQX0Vwqra1a/DaIb34pvGjg38qbZt2xv9lkediK7L08qo1hXvj7SN4BasIaTVpqghIM8fjo3C5sQ=
+X-Received: by 2002:a25:4b86:: with SMTP id y128mr3828051yba.403.1611202420666;
+ Wed, 20 Jan 2021 20:13:40 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <1610921764-7526-1-git-send-email-alan.maguire@oracle.com> <1610921764-7526-3-git-send-email-alan.maguire@oracle.com>
+In-Reply-To: <1610921764-7526-3-git-send-email-alan.maguire@oracle.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 20 Jan 2021 20:13:29 -0800
+Message-ID: <CAEf4BzYZNUsdLH=fVqO_zXh2gwK6g325pQ7UeyH1NTK8kxSFmA@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 2/4] libbpf: make skip_mods_and_typedefs
+ available internally in libbpf
+To:     Alan Maguire <alan.maguire@oracle.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        john fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>, morbo@google.com,
+        Shuah Khan <shuah@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The NETWORK_PHY_TIMESTAMPING configuration option adds overhead into
-the networking stack.  When enabled, all transmitted and received
-frames are subjected to extra tests to determine whether they just
-might be PTP frames to be presented to esoteric PHY time stamping
-drivers.
+On Sun, Jan 17, 2021 at 2:20 PM Alan Maguire <alan.maguire@oracle.com> wrote:
+>
+> btf_dump.c will need it for type-based data display.
+>
+> Signed-off-by: Alan Maguire <alan.maguire@oracle.com>
+> ---
 
-However, no System on Chip, least ways not the axm55xx SoC, includes
-such a PHY time stamping device.  Disable the unneeded option by
-default.
+Given we make it into an internal API, let's call it
+btf_skip_mods_and_typedefs()? Otherwise all ok.
 
-Signed-off-by: Richard Cochran <richardcochran@gmail.com>
----
- arch/arm/configs/axm55xx_defconfig | 1 -
- 1 file changed, 1 deletion(-)
+Acked-by: Andrii Nakryiko <andrii@kernel.org>
 
-diff --git a/arch/arm/configs/axm55xx_defconfig b/arch/arm/configs/axm55xx_defconfig
-index 46075216ee6d..2d1a45066649 100644
---- a/arch/arm/configs/axm55xx_defconfig
-+++ b/arch/arm/configs/axm55xx_defconfig
-@@ -73,7 +73,6 @@ CONFIG_INET_AH=y
- CONFIG_INET_ESP=y
- CONFIG_INET_IPCOMP=y
- # CONFIG_IPV6 is not set
--CONFIG_NETWORK_PHY_TIMESTAMPING=y
- CONFIG_BRIDGE=y
- # CONFIG_WIRELESS is not set
- CONFIG_DEVTMPFS=y
--- 
-2.20.1
-
+>  tools/lib/bpf/libbpf.c          | 4 +---
+>  tools/lib/bpf/libbpf_internal.h | 2 ++
+>  2 files changed, 3 insertions(+), 3 deletions(-)
+>
+> diff --git a/tools/lib/bpf/libbpf.c b/tools/lib/bpf/libbpf.c
+> index 2abbc38..4ef84e1 100644
+> --- a/tools/lib/bpf/libbpf.c
+> +++ b/tools/lib/bpf/libbpf.c
+> @@ -73,8 +73,6 @@
+>  #define __printf(a, b) __attribute__((format(printf, a, b)))
+>
+>  static struct bpf_map *bpf_object__add_map(struct bpf_object *obj);
+> -static const struct btf_type *
+> -skip_mods_and_typedefs(const struct btf *btf, __u32 id, __u32 *res_id);
+>
+>  static int __base_pr(enum libbpf_print_level level, const char *format,
+>                      va_list args)
+> @@ -1885,7 +1883,7 @@ static int bpf_object__init_user_maps(struct bpf_object *obj, bool strict)
+>         return 0;
+>  }
+>
+> -static const struct btf_type *
+> +const struct btf_type *
+>  skip_mods_and_typedefs(const struct btf *btf, __u32 id, __u32 *res_id)
+>  {
+>         const struct btf_type *t = btf__type_by_id(btf, id);
+> diff --git a/tools/lib/bpf/libbpf_internal.h b/tools/lib/bpf/libbpf_internal.h
+> index 969d0ac..c25d2df 100644
+> --- a/tools/lib/bpf/libbpf_internal.h
+> +++ b/tools/lib/bpf/libbpf_internal.h
+> @@ -108,6 +108,8 @@ static inline void *libbpf_reallocarray(void *ptr, size_t nmemb, size_t size)
+>  void *btf_add_mem(void **data, size_t *cap_cnt, size_t elem_sz,
+>                   size_t cur_cnt, size_t max_cnt, size_t add_cnt);
+>  int btf_ensure_mem(void **data, size_t *cap_cnt, size_t elem_sz, size_t need_cnt);
+> +const struct btf_type *skip_mods_and_typedefs(const struct btf *btf, __u32 id,
+> +                                             __u32 *res_id);
+>
+>  static inline bool libbpf_validate_opts(const char *opts,
+>                                         size_t opts_sz, size_t user_sz,
+> --
+> 1.8.3.1
+>
