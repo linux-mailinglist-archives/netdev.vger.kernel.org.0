@@ -2,224 +2,198 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 03E0F2FE4A1
-	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 09:09:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 576332FE4AA
+	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 09:11:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727990AbhAUIF7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jan 2021 03:05:59 -0500
-Received: from esa4.hc1455-7.c3s2.iphmx.com ([68.232.139.117]:63406 "EHLO
-        esa4.hc1455-7.c3s2.iphmx.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726889AbhAUIFb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jan 2021 03:05:31 -0500
-IronPort-SDR: KfWOJS+7p7kS+GNoShMuMFRuyc/4m00oomVullZdUfRA5QBLoO+W1aA2yN4z+6xyCS1XL09VB0
- KlBPg0IeLf4uYSiUM9UzACmo6zxo4ctMu8ZVMglD828aBvWhT/ioEb93r5ooU279ytaNfdkzEV
- yuY+qRa9azh5IayAFlLKA9aHLFw48mbXvMjN6gNPers5F/v3P+FmsSlc/fjkhF4mrYQ8LiMJlz
- TZC8t0ekhuzlqG9vg0aomrOpuHABX7ICS8YxRdZBqfVPU1O4KEjRYoDby9jTxRy5cN5uQdBwQ/
- t5o=
-X-IronPort-AV: E=McAfee;i="6000,8403,9870"; a="15951723"
-X-IronPort-AV: E=Sophos;i="5.79,363,1602514800"; 
-   d="scan'208";a="15951723"
-Received: from unknown (HELO yto-r2.gw.nic.fujitsu.com) ([218.44.52.218])
-  by esa4.hc1455-7.c3s2.iphmx.com with ESMTP; 21 Jan 2021 17:03:00 +0900
-Received: from yto-m1.gw.nic.fujitsu.com (yto-nat-yto-m1.gw.nic.fujitsu.com [192.168.83.64])
-        by yto-r2.gw.nic.fujitsu.com (Postfix) with ESMTP id DE611147F0
-        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 17:02:58 +0900 (JST)
-Received: from durio.utsfd.cs.fujitsu.co.jp (durio.utsfd.cs.fujitsu.co.jp [10.24.20.112])
-        by yto-m1.gw.nic.fujitsu.com (Postfix) with ESMTP id 21C5FC9CFF
-        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 17:02:58 +0900 (JST)
-Received: by durio.utsfd.cs.fujitsu.co.jp (Postfix, from userid 1006)
-        id BE2F21FF206; Thu, 21 Jan 2021 17:02:57 +0900 (JST)
-From:   Yuusuke Ashizuka <ashiduka@fujitsu.com>
-To:     andrew@lunn.ch, hkallweit1@gmail.com, linux@armlinux.org.uk,
-        davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, ashiduka@fujitsu.com,
-        torii.ken1@fujitsu.com
-Subject: [PATCH v3] net: phy: realtek: Add support for RTL9000AA/AN
-Date:   Thu, 21 Jan 2021 17:02:54 +0900
-Message-Id: <20210121080254.21286-1-ashiduka@fujitsu.com>
-X-Mailer: git-send-email 2.17.1
-X-TM-AS-GCONF: 00
+        id S1726242AbhAUIKA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jan 2021 03:10:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55010 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726540AbhAUIJX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jan 2021 03:09:23 -0500
+Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE8F3C061575;
+        Thu, 21 Jan 2021 00:08:42 -0800 (PST)
+Received: by mail-yb1-xb2b.google.com with SMTP id y4so1249026ybn.3;
+        Thu, 21 Jan 2021 00:08:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=oobkTWZTECnkORfzKz+9DkXYOma+YaOrTTEwIwnDNH8=;
+        b=i68+xYFE4asEvnU0olUlCe9tm+PQeJevoOK4wTwadHBtORItM9WdTOu3uY3Bq7VHqv
+         dA7npENVOBzKBYblDVhbIZshaWW517HKXnRNYSo+0qDYCuuzci3PCUNAnNDaUyNXLhGy
+         900VrPprFcyGvqkf30hguRWP7jzA6p97etS34BxEKlDZihKgvjuTIxMycXpnQAVp7Z0J
+         8H0kQdakt7vAwP/MVSocmyPzpQe25pTKe6F2vBpJkcasQu9NqoFX9AyTJZFFSesThba1
+         G84Uf0HoL3ZQE1s13G1OVpBEqrQXNOHpGZnPzu3wy8JukWjWIp3Q3ClcEPZ1BT7EzV5c
+         8tBg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=oobkTWZTECnkORfzKz+9DkXYOma+YaOrTTEwIwnDNH8=;
+        b=PI2tF0luH2xyiElgtPJikueG/slWIqicgT4EOEIggi6QLcEuzP9S3Rwjep3cKq686h
+         lhTAROPxwAfmCz611IptZ3tORL/fOcRv+Jzxi+Q3+5rqlT+JPd7PtbeCVDY9nFaQ5keY
+         UoTWRRCaasA7Xi2REHN5aKhjGlCbIgKyOu9fUyD6AAv+zDQz8RkOb1aT8FKnFr12Kayz
+         djQ5X7eT8Vc4dbTTibAMTppE5689Ub3AfCwX3wNu5EtaXkw+eAvK/S2qjMKB/nchnMY3
+         sRaAzDTGOIkV9j7beaA6A6iFoADoVP3DXtPlUjw9LQKTAn1uO92m3Df8uLODghC/oyde
+         u8PA==
+X-Gm-Message-State: AOAM533VWjZBYMAtXFq4Vh90Uqp5ZwEmVj31ILy2xc3IEsone+Cm5j2Y
+        3aGm4gisbPcItAg0oKx6NMK/MuTVORTQs0o0HZs=
+X-Google-Smtp-Source: ABdhPJxG8Bi2XnJu4M8KQmv8sjAuegcaeBsgG0qbt4gbRNdj6iO5SpOSyz7xInQJefus+Y7leeCfTIfV0h5Sv6CDamg=
+X-Received: by 2002:a25:854a:: with SMTP id f10mr17694912ybn.510.1611216522128;
+ Thu, 21 Jan 2021 00:08:42 -0800 (PST)
+MIME-Version: 1.0
+References: <1611206855-22555-1-git-send-email-yangtiezhu@loongson.cn> <20210121053627.GA1680146@ubuntu-m3-large-x86>
+In-Reply-To: <20210121053627.GA1680146@ubuntu-m3-large-x86>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Thu, 21 Jan 2021 00:08:31 -0800
+Message-ID: <CAEf4BzbZxuy8LRmngRzLZ3VTnrDw=Rf70Ghkbu1a5+fNpQud5Q@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3] samples/bpf: Update build procedure for
+ manually compiling LLVM and Clang
+To:     Nathan Chancellor <natechancellor@gmail.com>
+Cc:     Tiezhu Yang <yangtiezhu@loongson.cn>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        clang-built-linux <clang-built-linux@googlegroups.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        Xuefeng Li <lixuefeng@loongson.cn>,
+        Fangrui Song <maskray@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RTL9000AA/AN as 100BASE-T1 is following:
-- 100 Mbps
-- Full duplex
-- Link Status Change Interrupt
-- Master/Slave configuration
+On Wed, Jan 20, 2021 at 9:36 PM Nathan Chancellor
+<natechancellor@gmail.com> wrote:
+>
+> On Thu, Jan 21, 2021 at 01:27:35PM +0800, Tiezhu Yang wrote:
+> > The current LLVM and Clang build procedure in samples/bpf/README.rst is
+> > out of date. See below that the links are not accessible any more.
+> >
+> > $ git clone http://llvm.org/git/llvm.git
+> > Cloning into 'llvm'...
+> > fatal: unable to access 'http://llvm.org/git/llvm.git/': Maximum (20) redirects followed
+> > $ git clone --depth 1 http://llvm.org/git/clang.git
+> > Cloning into 'clang'...
+> > fatal: unable to access 'http://llvm.org/git/clang.git/': Maximum (20) redirects followed
+> >
+> > The LLVM community has adopted new ways to build the compiler. There are
+> > different ways to build LLVM and Clang, the Clang Getting Started page [1]
+> > has one way. As Yonghong said, it is better to copy the build procedure
+> > in Documentation/bpf/bpf_devel_QA.rst to keep consistent.
+> >
+> > I verified the procedure and it is proved to be feasible, so we should
+> > update README.rst to reflect the reality. At the same time, update the
+> > related comment in Makefile.
+> >
+> > Additionally, as Fangrui said, the dir llvm-project/llvm/build/install is
+> > not used, BUILD_SHARED_LIBS=OFF is the default option [2], so also change
+> > Documentation/bpf/bpf_devel_QA.rst together.
+> >
+> > [1] https://clang.llvm.org/get_started.html
+> > [2] https://www.llvm.org/docs/CMake.html
+> >
+> > Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
+> > Acked-by: Yonghong Song <yhs@fb.com>
+>
+> Reviewed-by: Nathan Chancellor <natechancellor@gmail.com>
+>
+> Small comment below.
+>
+> > ---
+> >
+> > v2: Update the commit message suggested by Yonghong,
+> >     thank you very much.
+> >
+> > v3: Remove the default option BUILD_SHARED_LIBS=OFF
+> >     and just mkdir llvm-project/llvm/build suggested
+> >     by Fangrui.
+> >
+> >  Documentation/bpf/bpf_devel_QA.rst |  3 +--
+> >  samples/bpf/Makefile               |  2 +-
+> >  samples/bpf/README.rst             | 16 +++++++++-------
+> >  3 files changed, 11 insertions(+), 10 deletions(-)
+> >
+> > diff --git a/Documentation/bpf/bpf_devel_QA.rst b/Documentation/bpf/bpf_devel_QA.rst
+> > index 5b613d2..18788bb 100644
+> > --- a/Documentation/bpf/bpf_devel_QA.rst
+> > +++ b/Documentation/bpf/bpf_devel_QA.rst
+> > @@ -506,11 +506,10 @@ that set up, proceed with building the latest LLVM and clang version
+> >  from the git repositories::
+> >
+> >       $ git clone https://github.com/llvm/llvm-project.git
+> > -     $ mkdir -p llvm-project/llvm/build/install
+> > +     $ mkdir -p llvm-project/llvm/build
+> >       $ cd llvm-project/llvm/build
+> >       $ cmake .. -G "Ninja" -DLLVM_TARGETS_TO_BUILD="BPF;X86" \
+> >                  -DLLVM_ENABLE_PROJECTS="clang"    \
+> > -                -DBUILD_SHARED_LIBS=OFF           \
+> >                  -DCMAKE_BUILD_TYPE=Release        \
+> >                  -DLLVM_BUILD_RUNTIME=OFF
+> >       $ ninja
+> > diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
+> > index 26fc96c..d061446 100644
+> > --- a/samples/bpf/Makefile
+> > +++ b/samples/bpf/Makefile
+> > @@ -208,7 +208,7 @@ TPROGLDLIBS_xdpsock               += -pthread -lcap
+> >  TPROGLDLIBS_xsk_fwd          += -pthread
+> >
+> >  # Allows pointing LLC/CLANG to a LLVM backend with bpf support, redefine on cmdline:
+> > -#  make M=samples/bpf/ LLC=~/git/llvm/build/bin/llc CLANG=~/git/llvm/build/bin/clang
+> > +# make M=samples/bpf LLC=~/git/llvm-project/llvm/build/bin/llc CLANG=~/git/llvm-project/llvm/build/bin/clang
+> >  LLC ?= llc
+> >  CLANG ?= clang
+> >  OPT ?= opt
+> > diff --git a/samples/bpf/README.rst b/samples/bpf/README.rst
+> > index dd34b2d..23006cb 100644
+> > --- a/samples/bpf/README.rst
+> > +++ b/samples/bpf/README.rst
+> > @@ -65,17 +65,19 @@ To generate a smaller llc binary one can use::
+> >  Quick sniplet for manually compiling LLVM and clang
+> >  (build dependencies are cmake and gcc-c++)::
+>
+> Technically, ninja is now a build dependency as well, it might be worth
+> mentioning that here (usually the package is ninja or ninja-build).
 
-Signed-off-by: Yuusuke Ashizuka <ashiduka@fujitsu.com>
-Signed-off-by: Torii Kenichi <torii.ken1@fujitsu.com>
----
-v3:
--  Support for master-slave configuration
+it's possible to generate Makefile by passing `-g "Unix Makefiles"`,
+which would avoid dependency on ninja, no?
 
-v2:
-- Remove the use of .ack_interrupt()
-- Implement .handle_interrupt() callback
-- Remove the slash from driver name
----
- drivers/net/phy/realtek.c | 132 ++++++++++++++++++++++++++++++++++++++
- 1 file changed, 132 insertions(+)
-
-diff --git a/drivers/net/phy/realtek.c b/drivers/net/phy/realtek.c
-index 99ecd6c4c15a..821e85a97367 100644
---- a/drivers/net/phy/realtek.c
-+++ b/drivers/net/phy/realtek.c
-@@ -60,6 +60,9 @@
- #define RTL_LPADV_5000FULL			BIT(6)
- #define RTL_LPADV_2500FULL			BIT(5)
- 
-+#define RTL9000A_GINMR				0x14
-+#define RTL9000A_GINMR_LINK_STATUS		BIT(4)
-+
- #define RTLGEN_SPEED_MASK			0x0630
- 
- #define RTL_GENERIC_PHYID			0x001cc800
-@@ -655,6 +658,122 @@ static int rtlgen_resume(struct phy_device *phydev)
- 	return ret;
- }
- 
-+static int rtl9000a_config_init(struct phy_device *phydev)
-+{
-+	phydev->autoneg = AUTONEG_DISABLE;
-+	phydev->speed = SPEED_100;
-+	phydev->duplex = DUPLEX_FULL;
-+
-+	return 0;
-+}
-+
-+static int rtl9000a_config_aneg(struct phy_device *phydev)
-+{
-+	int ret;
-+	u16 ctl = 0;
-+
-+	switch (phydev->master_slave_set) {
-+	case MASTER_SLAVE_CFG_MASTER_FORCE:
-+		ctl |= CTL1000_AS_MASTER;
-+		break;
-+	case MASTER_SLAVE_CFG_SLAVE_FORCE:
-+		break;
-+	case MASTER_SLAVE_CFG_UNKNOWN:
-+	case MASTER_SLAVE_CFG_UNSUPPORTED:
-+		return 0;
-+	default:
-+		phydev_warn(phydev, "Unsupported Master/Slave mode\n");
-+		return -EOPNOTSUPP;
-+	}
-+
-+	ret = phy_modify_changed(phydev, MII_CTRL1000, CTL1000_AS_MASTER, ctl);
-+	if (ret == 1)
-+		ret = genphy_soft_reset(phydev);
-+
-+	return ret;
-+}
-+
-+static int rtl9000a_read_status(struct phy_device *phydev)
-+{
-+	int ret;
-+
-+	phydev->master_slave_get = MASTER_SLAVE_CFG_UNKNOWN;
-+	phydev->master_slave_state = MASTER_SLAVE_STATE_UNKNOWN;
-+
-+	ret = genphy_update_link(phydev);
-+	if (ret)
-+		return ret;
-+
-+	ret = phy_read(phydev, MII_CTRL1000);
-+	if (ret < 0)
-+		return ret;
-+	if (ret & CTL1000_AS_MASTER)
-+		phydev->master_slave_get = MASTER_SLAVE_CFG_MASTER_FORCE;
-+	else
-+		phydev->master_slave_get = MASTER_SLAVE_CFG_SLAVE_FORCE;
-+
-+	ret = phy_read(phydev, MII_STAT1000);
-+	if (ret < 0)
-+		return ret;
-+	if (ret & LPA_1000MSRES)
-+		phydev->master_slave_state = MASTER_SLAVE_STATE_MASTER;
-+	else
-+		phydev->master_slave_state = MASTER_SLAVE_STATE_SLAVE;
-+
-+	return 0;
-+}
-+
-+static int rtl9000a_ack_interrupt(struct phy_device *phydev)
-+{
-+	int err;
-+
-+	err = phy_read(phydev, RTL8211F_INSR);
-+
-+	return (err < 0) ? err : 0;
-+}
-+
-+static int rtl9000a_config_intr(struct phy_device *phydev)
-+{
-+	u16 val;
-+	int err;
-+
-+	if (phydev->interrupts == PHY_INTERRUPT_ENABLED) {
-+		err = rtl9000a_ack_interrupt(phydev);
-+		if (err)
-+			return err;
-+
-+		val = (u16)~RTL9000A_GINMR_LINK_STATUS;
-+		err = phy_write_paged(phydev, 0xa42, RTL9000A_GINMR, val);
-+	} else {
-+		val = ~0;
-+		err = phy_write_paged(phydev, 0xa42, RTL9000A_GINMR, val);
-+		if (err)
-+			return err;
-+
-+		err = rtl9000a_ack_interrupt(phydev);
-+	}
-+
-+	return phy_write_paged(phydev, 0xa42, RTL9000A_GINMR, val);
-+}
-+
-+static irqreturn_t rtl9000a_handle_interrupt(struct phy_device *phydev)
-+{
-+	int irq_status;
-+
-+	irq_status = phy_read(phydev, RTL8211F_INSR);
-+	if (irq_status < 0) {
-+		phy_error(phydev);
-+		return IRQ_NONE;
-+	}
-+
-+	if (!(irq_status & RTL8211F_INER_LINK_STATUS))
-+		return IRQ_NONE;
-+
-+	phy_trigger_machine(phydev);
-+
-+	return IRQ_HANDLED;
-+}
-+
- static struct phy_driver realtek_drvs[] = {
- 	{
- 		PHY_ID_MATCH_EXACT(0x00008201),
-@@ -823,6 +942,19 @@ static struct phy_driver realtek_drvs[] = {
- 		.handle_interrupt = genphy_handle_interrupt_no_ack,
- 		.suspend	= genphy_suspend,
- 		.resume		= genphy_resume,
-+	}, {
-+		PHY_ID_MATCH_EXACT(0x001ccb00),
-+		.name		= "RTL9000AA_RTL9000AN Ethernet",
-+		.features       = PHY_BASIC_T1_FEATURES,
-+		.config_init	= rtl9000a_config_init,
-+		.config_aneg	= rtl9000a_config_aneg,
-+		.read_status	= rtl9000a_read_status,
-+		.config_intr	= rtl9000a_config_intr,
-+		.handle_interrupt = rtl9000a_handle_interrupt,
-+		.suspend	= genphy_suspend,
-+		.resume		= genphy_resume,
-+		.read_page	= rtl821x_read_page,
-+		.write_page	= rtl821x_write_page,
- 	},
- };
- 
--- 
-2.29.2
-
+>
+> Regardless of whether that is addressed or not (because it is small),
+> feel free to carry forward my tag in any future revisions unless they
+> drastically change.
+>
+> > - $ git clone http://llvm.org/git/llvm.git
+> > - $ cd llvm/tools
+> > - $ git clone --depth 1 http://llvm.org/git/clang.git
+> > - $ cd ..; mkdir build; cd build
+> > - $ cmake .. -DLLVM_TARGETS_TO_BUILD="BPF;X86"
+> > - $ make -j $(getconf _NPROCESSORS_ONLN)
+> > + $ git clone https://github.com/llvm/llvm-project.git
+> > + $ mkdir -p llvm-project/llvm/build
+> > + $ cd llvm-project/llvm/build
+> > + $ cmake .. -G "Ninja" -DLLVM_TARGETS_TO_BUILD="BPF;X86" \
+> > +            -DLLVM_ENABLE_PROJECTS="clang"    \
+> > +            -DCMAKE_BUILD_TYPE=Release        \
+> > +            -DLLVM_BUILD_RUNTIME=OFF
+> > + $ ninja
+> >
+> >  It is also possible to point make to the newly compiled 'llc' or
+> >  'clang' command via redefining LLC or CLANG on the make command line::
+> >
+> > - make M=samples/bpf LLC=~/git/llvm/build/bin/llc CLANG=~/git/llvm/build/bin/clang
+> > + make M=samples/bpf LLC=~/git/llvm-project/llvm/build/bin/llc CLANG=~/git/llvm-project/llvm/build/bin/clang
+> >
+> >  Cross compiling samples
+> >  -----------------------
+> > --
+> > 2.1.0
+> >
