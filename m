@@ -2,259 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E59FF2FEE4E
-	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 16:19:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B0332FEEFF
+	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 16:37:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732621AbhAUPSs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jan 2021 10:18:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34886 "EHLO
+        id S1733096AbhAUPgY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jan 2021 10:36:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732786AbhAUPSR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jan 2021 10:18:17 -0500
-Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C914C06174A;
-        Thu, 21 Jan 2021 07:17:37 -0800 (PST)
-Received: by mail-pg1-x536.google.com with SMTP id c132so1555168pga.3;
-        Thu, 21 Jan 2021 07:17:37 -0800 (PST)
+        with ESMTP id S1733063AbhAUPeH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jan 2021 10:34:07 -0500
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8923C061788
+        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 07:32:26 -0800 (PST)
+Received: by mail-ej1-x632.google.com with SMTP id l9so3197196ejx.3
+        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 07:32:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/I1Zhdd/U+jLdwa3STjnnyFZ+KY+ruNgfzMF7rpwK/g=;
-        b=R1Xc+JZazzcIW8vfo7gz8dl1xtvXO13s+o35txwIaOh1XpncgwONX8Lk4VjiVVzYpu
-         QxmQPhTiWYP5NjRFDcQTyezUpVnAgnZuhmT6S/6ULKzFbJJcCesAZeF1NlfQu+6J8gt5
-         oGkkXkSmVihI0TzPrIvuPqPWbUardSEXK52KRFs4JoT6/6epEVhySvDfyu74yAF3VDim
-         7HbNgse6iakf40TUr4T6sqrZPG47jXP1NCvnLI8Ymx16Mp/5Mie45eokjzYBO6Ot0BcD
-         H8HY6zmLfRZZ5nXYQNpN5CVmLXWHTXkat6DwkPfJR5hY4YDjo5vrkzx82p1UdnkqvwTC
-         W+FA==
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=sHNbXPxata53f3vdfOMRm5qAa62hPF704O/9xB9VcCs=;
+        b=Sj4PdSErx4mLI+LXKSbwZpCi9C9SoGjH8KYHHZuKOodoQgweknZoXBj05IP5OFiNDQ
+         p+uWVKzFuRah7H6DV4rFd90eElqxOT8y8sMoRmZq8KMe7e9vJROKoBcbbP0g0xL+vv4J
+         Lb5XhDKOkFz//aYSvgdqn5cb1y/gTLDHyNwYnI33udQMhr1OtcOlOlZG4favlNTZbLdk
+         IQXQiL4O+ojUnAcoMARmoOntyodbn/NgGcOx1HC4EiHUnnBwgWJYa0b/kwd/0v5mT9Nb
+         0B8rY3FHvSrHIpJQ/6jqzubs81K7nLc74olZCDBqE/ekc1QjQ3YtdpQzsi1OB1k5wX4b
+         G3pQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/I1Zhdd/U+jLdwa3STjnnyFZ+KY+ruNgfzMF7rpwK/g=;
-        b=UcERMUlN+XAh8nJxyCjAJX7mjG8muhx0b8hkZ/ulXhXwxyrphVV5O6ZcySae6PBkEy
-         1J+j6YwyWvkgMTOnhD1FEftmA/O9JRATwyMA3SPq0NuxrstJF8H9a+KLs5odDq7i9Upd
-         hsoMYRu+4aJ1OBTIl9UFtHzHOl+6xX64eyZHbyvpG1oA64HraQ3TvGjxfRcLbBUMDRR5
-         xAgyf8dGARui2h0TC31Rvrz7uvemxXDD9/P8GIivwjfPmUS5E/+gC/+3LQ8rLlwPGi6e
-         ahpZ2NUtpRaMqDoX4iH6v470UzqQnWjO+DVt7at9/4cN94dIlPSCSIfqH3qg/xkYeWEB
-         8DEg==
-X-Gm-Message-State: AOAM530aYkEKtaKjpKDgBHcCMIc4VT9GwIXXhg75Zqx6V90Xd7QFwZRb
-        PZurCHw0hxJO6JaOuRw6b2ebRU0rtYj2juIn4jk=
-X-Google-Smtp-Source: ABdhPJz/hIA8fF9ZvzLcXP+MpzgyDw4ysTB7w+5XA4bVkvGBuFo5ELyO3FEIPw8UjeHavLQwTqNQEKhfr3C11pzy1Ow=
-X-Received: by 2002:a63:d917:: with SMTP id r23mr15178280pgg.126.1611242256796;
- Thu, 21 Jan 2021 07:17:36 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=sHNbXPxata53f3vdfOMRm5qAa62hPF704O/9xB9VcCs=;
+        b=IfoDvPg7EtqkXBmVxRxidOmTWaMrrQfIJu0ZpEf1C930q6MhQXS+Lh4vEgB2clBYHS
+         ZhBk+er3TIEf8HIQcKfkJgFyELO9/iCVTcoomd5XUHUR7RTJx2F5zppyFTox8nCfEPlN
+         wDhE6zq1wn7Ede6Oh8DsIeRuuSLGVa+JBDeKH66A2wwCt8gCcBSPWrAHEmwCmTnZxjrq
+         xdaVKFwZDg5CbYRpOnE0KE25CR3v1cnwrJ7LipxTFB4yM7oDoJuDxcmhy0z+sc8rV9V4
+         5iOL7oavp0DX4VqQNGOB9Uei+WhSp5hsbTLncp0tDewT1rXL9gxZxBaKDbOLJQG0h5gv
+         SIdw==
+X-Gm-Message-State: AOAM530OXG7TOKawP1H7burz4Yj6xYVBm/MiFooL/D6pCAn0LhnCLiSL
+        mFmYXJuzfBJrQJrYKRDAArayMUI6FKgnYP0b7sc=
+X-Google-Smtp-Source: ABdhPJwWiXMc4Q947mHh91I7BYKtAcy9tVMwlm0kpcugLy23MHpy3RJGgh+cWGjJXisQKwzSqBJ3pQ==
+X-Received: by 2002:a17:906:4690:: with SMTP id a16mr25339ejr.442.1611243145733;
+        Thu, 21 Jan 2021 07:32:25 -0800 (PST)
+Received: from localhost ([86.61.181.4])
+        by smtp.gmail.com with ESMTPSA id x6sm2368542ejw.69.2021.01.21.07.32.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 Jan 2021 07:32:25 -0800 (PST)
+Date:   Thu, 21 Jan 2021 16:32:24 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
+        davem@davemloft.net, jacob.e.keller@intel.com, roopa@nvidia.com,
+        mlxsw@nvidia.com
+Subject: Re: [patch net-next RFC 00/10] introduce line card support for
+ modular switch
+Message-ID: <20210121153224.GE3565223@nanopsycho.orion>
+References: <20210113121222.733517-1-jiri@resnulli.us>
+ <X/+nVtRrC2lconET@lunn.ch>
+ <20210119115610.GZ3565223@nanopsycho.orion>
+ <YAbyBbEE7lbhpFkw@lunn.ch>
+ <20210120083605.GB3565223@nanopsycho.orion>
+ <YAg2ngUQIty8U36l@lunn.ch>
+ <20210120154158.206b8752@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-References: <cover.1611236588.git.xuanzhuo@linux.alibaba.com> <340f1dfa40416dd966a56e08507daba82d633088.1611236588.git.xuanzhuo@linux.alibaba.com>
-In-Reply-To: <340f1dfa40416dd966a56e08507daba82d633088.1611236588.git.xuanzhuo@linux.alibaba.com>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Thu, 21 Jan 2021 16:17:24 +0100
-Message-ID: <CAJ8uoz3eOG+Fn8EUe9_f9SxcAj+0vetg3Y=oxtR9nXCc30wA0A@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3 3/3] xsk: build skb by page
-To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Cc:     bpf <bpf@vger.kernel.org>, "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        virtualization@lists.linux-foundation.org,
-        Network Development <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210120154158.206b8752@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 21, 2021 at 2:51 PM Xuan Zhuo <xuanzhuo@linux.alibaba.com> wrote:
+Thu, Jan 21, 2021 at 12:41:58AM CET, kuba@kernel.org wrote:
+>On Wed, 20 Jan 2021 14:56:46 +0100 Andrew Lunn wrote:
+>> > No, the FW does not know. The ASIC is not physically able to get the
+>> > linecard type. Yes, it is odd, I agree. The linecard type is known to
+>> > the driver which operates on i2c. This driver takes care of power
+>> > management of the linecard, among other tasks.  
+>> 
+>> So what does activated actually mean for your hardware? It seems to
+>> mean something like: Some random card has been plugged in, we have no
+>> idea what, but it has power, and we have enabled the MACs as
+>> provisioned, which if you are lucky might match the hardware?
+>> 
+>> The foundations of this feature seems dubious.
 >
-> This patch is used to construct skb based on page to save memory copy
-> overhead.
->
-> This function is implemented based on IFF_TX_SKB_NO_LINEAR. Only the
-> network card priv_flags supports IFF_TX_SKB_NO_LINEAR will use page to
-> directly construct skb. If this feature is not supported, it is still
-> necessary to copy data to construct skb.
->
-> ---------------- Performance Testing ------------
->
-> The test environment is Aliyun ECS server.
-> Test cmd:
-> ```
-> xdpsock -i eth0 -t  -S -s <msg size>
-> ```
->
-> Test result data:
->
-> size    64      512     1024    1500
-> copy    1916747 1775988 1600203 1440054
-> page    1974058 1953655 1945463 1904478
-> percent 3.0%    10.0%   21.58%  32.3%
->
-> Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> Reviewed-by: Dust Li <dust.li@linux.alibaba.com>
-> ---
->  net/xdp/xsk.c | 104 ++++++++++++++++++++++++++++++++++++++++++++++++----------
->  1 file changed, 86 insertions(+), 18 deletions(-)
+>But Jiri also says "The linecard type is known to the driver which
+>operates on i2c." which sounds like there is some i2c driver (in user
+>space?) which talks to the card and _does_ have the info? Maybe I'm
+>misreading it. What's the i2c driver?
 
-Applied, compiled and tried it out on my NIC that does not support
-IFF_TX_SKB_NO_LINEAR and it works fine. Thank you Xuan for all your
-efforts. Appreciated.
-
-Now it would be nice if we could get some physical NIC drivers to
-support this too. Some probably already do and can just set the bit,
-while others need some modifications to support this.
-
-Acked-by: Magnus Karlsson <magnus.karlsson@intel.com>
-
-> diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-> index 4a83117..38af7f1 100644
-> --- a/net/xdp/xsk.c
-> +++ b/net/xdp/xsk.c
-> @@ -430,6 +430,87 @@ static void xsk_destruct_skb(struct sk_buff *skb)
->         sock_wfree(skb);
->  }
->
-> +static struct sk_buff *xsk_build_skb_zerocopy(struct xdp_sock *xs,
-> +                                             struct xdp_desc *desc)
-> +{
-> +       u32 len, offset, copy, copied;
-> +       struct sk_buff *skb;
-> +       struct page *page;
-> +       void *buffer;
-> +       int err, i;
-> +       u64 addr;
-> +
-> +       skb = sock_alloc_send_skb(&xs->sk, 0, 1, &err);
-> +       if (unlikely(!skb))
-> +               return ERR_PTR(err);
-> +
-> +       addr = desc->addr;
-> +       len = desc->len;
-> +
-> +       buffer = xsk_buff_raw_get_data(xs->pool, addr);
-> +       offset = offset_in_page(buffer);
-> +       addr = buffer - xs->pool->addrs;
-> +
-> +       for (copied = 0, i = 0; copied < len; i++) {
-> +               page = xs->pool->umem->pgs[addr >> PAGE_SHIFT];
-> +
-> +               get_page(page);
-> +
-> +               copy = min_t(u32, PAGE_SIZE - offset, len - copied);
-> +
-> +               skb_fill_page_desc(skb, i, page, offset, copy);
-> +
-> +               copied += copy;
-> +               addr += copy;
-> +               offset = 0;
-> +       }
-> +
-> +       skb->len += len;
-> +       skb->data_len += len;
-> +       skb->truesize += len;
-> +
-> +       refcount_add(len, &xs->sk.sk_wmem_alloc);
-> +
-> +       return skb;
-> +}
-> +
-> +static struct sk_buff *xsk_build_skb(struct xdp_sock *xs,
-> +                                    struct xdp_desc *desc)
-> +{
-> +       struct sk_buff *skb;
-> +
-> +       if (xs->dev->priv_flags & IFF_TX_SKB_NO_LINEAR) {
-> +               skb = xsk_build_skb_zerocopy(xs, desc);
-> +               if (IS_ERR(skb))
-> +                       return skb;
-> +       } else {
-> +               void *buffer;
-> +               u32 len;
-> +               int err;
-> +
-> +               len = desc->len;
-> +               skb = sock_alloc_send_skb(&xs->sk, len, 1, &err);
-> +               if (unlikely(!skb))
-> +                       return ERR_PTR(err);
-> +
-> +               skb_put(skb, len);
-> +               buffer = xsk_buff_raw_get_data(xs->pool, desc->addr);
-> +               err = skb_store_bits(skb, 0, buffer, len);
-> +               if (unlikely(err)) {
-> +                       kfree_skb(skb);
-> +                       return ERR_PTR(err);
-> +               }
-> +       }
-> +
-> +       skb->dev = xs->dev;
-> +       skb->priority = xs->sk.sk_priority;
-> +       skb->mark = xs->sk.sk_mark;
-> +       skb_shinfo(skb)->destructor_arg = (void *)(long)desc->addr;
-> +       skb->destructor = xsk_destruct_skb;
-> +
-> +       return skb;
-> +}
-> +
->  static int xsk_generic_xmit(struct sock *sk)
->  {
->         struct xdp_sock *xs = xdp_sk(sk);
-> @@ -446,43 +527,30 @@ static int xsk_generic_xmit(struct sock *sk)
->                 goto out;
->
->         while (xskq_cons_peek_desc(xs->tx, &desc, xs->pool)) {
-> -               char *buffer;
-> -               u64 addr;
-> -               u32 len;
-> -
->                 if (max_batch-- == 0) {
->                         err = -EAGAIN;
->                         goto out;
->                 }
->
-> -               len = desc.len;
-> -               skb = sock_alloc_send_skb(sk, len, 1, &err);
-> -               if (unlikely(!skb))
-> +               skb = xsk_build_skb(xs, &desc);
-> +               if (IS_ERR(skb)) {
-> +                       err = PTR_ERR(skb);
->                         goto out;
-> +               }
->
-> -               skb_put(skb, len);
-> -               addr = desc.addr;
-> -               buffer = xsk_buff_raw_get_data(xs->pool, addr);
-> -               err = skb_store_bits(skb, 0, buffer, len);
->                 /* This is the backpressure mechanism for the Tx path.
->                  * Reserve space in the completion queue and only proceed
->                  * if there is space in it. This avoids having to implement
->                  * any buffering in the Tx path.
->                  */
->                 spin_lock_irqsave(&xs->pool->cq_lock, flags);
-> -               if (unlikely(err) || xskq_prod_reserve(xs->pool->cq)) {
-> +               if (xskq_prod_reserve(xs->pool->cq)) {
->                         spin_unlock_irqrestore(&xs->pool->cq_lock, flags);
->                         kfree_skb(skb);
->                         goto out;
->                 }
->                 spin_unlock_irqrestore(&xs->pool->cq_lock, flags);
->
-> -               skb->dev = xs->dev;
-> -               skb->priority = sk->sk_priority;
-> -               skb->mark = sk->sk_mark;
-> -               skb_shinfo(skb)->destructor_arg = (void *)(long)desc.addr;
-> -               skb->destructor = xsk_destruct_skb;
-> -
->                 err = __dev_direct_xmit(skb, xs->queue_id);
->                 if  (err == NETDEV_TX_BUSY) {
->                         /* Tell user-space to retry the send */
-> --
-> 1.8.3.1
->
+That is Vadim's i2c kernel driver, this is going to upstream.
