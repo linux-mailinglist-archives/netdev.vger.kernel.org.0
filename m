@@ -2,105 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C25BD2FE6EB
-	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 11:00:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B0E802FE72B
+	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 11:10:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728652AbhAUJ6n convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 21 Jan 2021 04:58:43 -0500
-Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:47605 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728834AbhAUJ5m (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jan 2021 04:57:42 -0500
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-50-BiZH3I-eOfKtG3gChttRXQ-1; Thu, 21 Jan 2021 09:53:10 +0000
-X-MC-Unique: BiZH3I-eOfKtG3gChttRXQ-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
- Server (TLS) id 15.0.1347.2; Thu, 21 Jan 2021 09:53:08 +0000
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Thu, 21 Jan 2021 09:53:08 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Kevin Hao' <haokexin@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
+        id S1728923AbhAUKJ4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jan 2021 05:09:56 -0500
+Received: from www.zeus03.de ([194.117.254.33]:48376 "EHLO mail.zeus03.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728896AbhAUKH2 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 21 Jan 2021 05:07:28 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple; d=sang-engineering.com; h=
+        from:to:cc:subject:date:message-id:in-reply-to:references
+        :mime-version:content-transfer-encoding; s=k1; bh=h70BkSbftDHvdg
+        OoDJAZ1FmD9GbR4klNFsNkdC9yb5k=; b=rMKG5roFmmlvaRsoNjab/CY1aFkN1n
+        8ou4zB4K5DDN8KmG+nrOv83aDITF07t1czBkmZ54SiRSRnlcuHBtstCeFE7xEG1H
+        S/xh6VnGhOGyKLjzIubNQy5F2GLpFkJft95MKuANu4UVBbwJXJWiA0eoQGx9gWPX
+        3yG0evTMDJ4QQ=
+Received: (qmail 1790393 invoked from network); 21 Jan 2021 11:06:26 +0100
+Received: by mail.zeus03.de with ESMTPSA (TLS_AES_256_GCM_SHA384 encrypted, authenticated); 21 Jan 2021 11:06:26 +0100
+X-UD-Smtp-Session: l3s3148p1@mhNxOWa5sr4gAwDPXyX1ACWcscxtZ2TX
+From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
+To:     linux-renesas-soc@vger.kernel.org
+Cc:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Rob Herring <robh@kernel.org>,
+        Sergei Shtylyov <sergei.shtylyov@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Subbaraya Sundeep <sbhatta@marvell.com>
-CC:     Sunil Goutham <sgoutham@marvell.com>,
-        Geetha sowjanya <gakula@marvell.com>,
-        hariprasad <hkelam@marvell.com>
-Subject: RE: [PATCH] net: octeontx2: Make sure the buffer is 128 byte aligned
-Thread-Topic: [PATCH] net: octeontx2: Make sure the buffer is 128 byte aligned
-Thread-Index: AQHW78WQsJtm4aM3QESXw4OsFIZftKox1iqw
-Date:   Thu, 21 Jan 2021 09:53:08 +0000
-Message-ID: <8a9fdef33fd54340a9b36182fd8dc88e@AcuMS.aculab.com>
-References: <20210121070906.25380-1-haokexin@gmail.com>
-In-Reply-To: <20210121070906.25380-1-haokexin@gmail.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        Rob Herring <robh+dt@kernel.org>, netdev@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2 1/5] dt-bindings: net: renesas,etheravb: Add r8a779a0 support
+Date:   Thu, 21 Jan 2021 11:06:15 +0100
+Message-Id: <20210121100619.5653-2-wsa+renesas@sang-engineering.com>
+X-Mailer: git-send-email 2.29.2
+In-Reply-To: <20210121100619.5653-1-wsa+renesas@sang-engineering.com>
+References: <20210121100619.5653-1-wsa+renesas@sang-engineering.com>
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Kevin Hao
-> Sent: 21 January 2021 07:09
-> 
-> The octeontx2 hardware needs the buffer to be 128 byte aligned.
-> But in the current implementation of napi_alloc_frag(), it can't
-> guarantee the return address is 128 byte aligned even the request size
-> is a multiple of 128 bytes, so we have to request an extra 128 bytes and
-> use the PTR_ALIGN() to make sure that the buffer is aligned correctly.
-> 
-> Fixes: 7a36e4918e30 ("octeontx2-pf: Use the napi_alloc_frag() to alloc the pool buffers")
-> Reported-by: Subbaraya Sundeep <sbhatta@marvell.com>
-> Signed-off-by: Kevin Hao <haokexin@gmail.com>
-> ---
->  drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-> b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-> index bdfa2e293531..5ddedc3b754d 100644
-> --- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-> +++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-> @@ -488,10 +488,11 @@ dma_addr_t __otx2_alloc_rbuf(struct otx2_nic *pfvf, struct otx2_pool *pool)
->  	dma_addr_t iova;
->  	u8 *buf;
-> 
-> -	buf = napi_alloc_frag(pool->rbsize);
-> +	buf = napi_alloc_frag(pool->rbsize + OTX2_ALIGN);
->  	if (unlikely(!buf))
->  		return -ENOMEM;
-> 
-> +	buf = PTR_ALIGN(buf, OTX2_ALIGN);
->  	iova = dma_map_single_attrs(pfvf->dev, buf, pool->rbsize,
->  				    DMA_FROM_DEVICE, DMA_ATTR_SKIP_CPU_SYNC);
->  	if (unlikely(dma_mapping_error(pfvf->dev, iova))) {
-> --
-> 2.29.2
+Document the compatible value for the RAVB block in the Renesas R-Car
+V3U (R8A779A0) SoC. This variant has no stream buffer, so we only need
+to add the new compatible and add it to the TX delay block.
 
-Doesn't that break the 'free' code ?
-Surely it needs the original pointer.
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Acked-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+---
 
-It isn't obvious that page_frag_free() it correct when the
-allocator is napi_alloc_frag() either.
-I'd have thought it ought to be returned to the pool.
+Please apply via netdev tree.
 
-	David
+Change since v1:
+* add entry to TX delay block
+* added tags
 
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+ Documentation/devicetree/bindings/net/renesas,etheravb.yaml | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/net/renesas,etheravb.yaml b/Documentation/devicetree/bindings/net/renesas,etheravb.yaml
+index 244befb6402a..c4c441c493ff 100644
+--- a/Documentation/devicetree/bindings/net/renesas,etheravb.yaml
++++ b/Documentation/devicetree/bindings/net/renesas,etheravb.yaml
+@@ -40,6 +40,7 @@ properties:
+               - renesas,etheravb-r8a77980     # R-Car V3H
+               - renesas,etheravb-r8a77990     # R-Car E3
+               - renesas,etheravb-r8a77995     # R-Car D3
++              - renesas,etheravb-r8a779a0     # R-Car V3U
+           - const: renesas,etheravb-rcar-gen3 # R-Car Gen3 and RZ/G2
+ 
+   reg: true
+@@ -169,6 +170,7 @@ allOf:
+               - renesas,etheravb-r8a77965
+               - renesas,etheravb-r8a77970
+               - renesas,etheravb-r8a77980
++              - renesas,etheravb-r8a779a0
+     then:
+       required:
+         - tx-internal-delay-ps
+-- 
+2.29.2
 
