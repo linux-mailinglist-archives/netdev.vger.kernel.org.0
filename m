@@ -2,105 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CB8FF2FE8E8
-	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 12:36:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A1702FE921
+	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 12:46:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730541AbhAULfo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jan 2021 06:35:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42892 "EHLO
+        id S1728544AbhAULpR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jan 2021 06:45:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44798 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728019AbhAULf0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jan 2021 06:35:26 -0500
-Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C4C1C061757
-        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 03:34:45 -0800 (PST)
-Received: by mail-io1-xd2d.google.com with SMTP id y19so3319365iov.2
-        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 03:34:45 -0800 (PST)
+        with ESMTP id S1730346AbhAULoP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jan 2021 06:44:15 -0500
+Received: from mail-qv1-xf29.google.com (mail-qv1-xf29.google.com [IPv6:2607:f8b0:4864:20::f29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 365A7C061575
+        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 03:43:35 -0800 (PST)
+Received: by mail-qv1-xf29.google.com with SMTP id d11so715290qvo.11
+        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 03:43:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=AOfcfp/MhGMtT1440C10QG9fDR6wkqPv5o4JL4EA7co=;
-        b=wSrkzHPbhhTDQdj9vvmzKkYBxOKlad62tbZD1hjt4DnQzceyvJE1xkZsYNhYItAhII
-         0+QKJy4xWp0Fe+ff2w/p3CgFoDz0rX0Fs9rA3jji+TFAIP7t1DKrrZRUCcdhDOi6eJFf
-         kRIwFenuMYVQiT//r2yNhrg4tmaUyltF4zHbm5yVuAB0P9xNTPg5GlnkGywYGjlrcsl2
-         NcNLpHSGfZG6tMtOzLNUwHgkQ9InyQfzW9yWmPOo4r76bZzFOBOCwIWapFr674ZhuHuB
-         +te8jOoL+KP0b1/C2m62tZiDKrYUuTmxuOF4P6aUpTYVBFeFfX4logJNU6+Y7wXVfxWo
-         LKpA==
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=aCjSAh7Sqd9Ie5L1ZvZp4JlE7R5YtYv0Lu+9NGOz7K8=;
+        b=fsQUnnp2Q4dWEIppqJc3L7MSpYpFZDL9w+o5zIPGh1rbnKnNx8S8ALtHWKgE4CCOdg
+         s8LcV9VsK6bFlevJupw+JOo3dKF3L8VTnVmEjxPhkF+M/QszvXsUH/X5YYLdVgYAxjLq
+         TeaswaAHCNhRcexvYry8cAeSJ8EloSEO84PB+B4WTdrIrfiQF4w4onOPFckf/J09m0ZR
+         XVb1522aGJSxa2Hbo0/Hgf7HmftrKHmZK9Ga47u3IF98Lx2aY7yND9/MKWaKTo6TOkHZ
+         IsMCbr30bs4TuSgveGfCvUo3M6KBL15A7j7KH4JJhw1VyvSFmVxXKz/+n5VOYWMh7zPI
+         p5fg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=AOfcfp/MhGMtT1440C10QG9fDR6wkqPv5o4JL4EA7co=;
-        b=NMDlVC8Nzlz2dCuvNk7Q44nEwqT+lVoCWJlqf8YPK57tS40OaPwt9oHMQFgVevjJqI
-         mv1ecHoMgXBuabWkw7PHSLm0tQwqnURXHBm2vOssOwHOWrqFlNiLhfehE/ezU+AP/R0s
-         hn7g6+AjnYrj4XZ/wEU+FN80sQX7Vx60zqw0DtmkuKrlQgRrhujaCHgjrJrJTEnh0HvC
-         BK8b5fCGXdAyo+T1tLQNGP8jJyMyc/aUFzKoeb0QRY0729PKkseV3MTIfMis3mQU55SW
-         ZHU3RZkV6wF6jwSEODt7m6/uOhTYc/CQZMqvB6hjlNCc9f15yhAIMTfzevFB7HniceqI
-         hNBQ==
-X-Gm-Message-State: AOAM5309jqI7wTP90sBeNrD412FmZm7IOcei3Vf0LDM/XnGnuk/xwm12
-        KkNunyWucWggVqnEeE11oWy0ig51tq1Tew==
-X-Google-Smtp-Source: ABdhPJwaXyJg7Jg6GECx87VVw8d8MQqZF0XkKhvwzoH/EZiVQh7tYkcQ+7UTAPtp8XnbRpqM4Qq9ig==
-X-Received: by 2002:a6b:fa13:: with SMTP id p19mr10168117ioh.119.1611228884514;
-        Thu, 21 Jan 2021 03:34:44 -0800 (PST)
-Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.googlemail.com with ESMTPSA id l20sm2344182ioh.49.2021.01.21.03.34.43
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 21 Jan 2021 03:34:43 -0800 (PST)
-Subject: Re: [PATCH net-next 3/5] net: ipa: have gsi_channel_update() return a
- value
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, elder@kernel.org, evgreen@chromium.org,
-        bjorn.andersson@linaro.org, cpratapa@codeaurora.org,
-        subashab@codeaurora.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20210120220401.10713-1-elder@linaro.org>
- <20210120220401.10713-4-elder@linaro.org>
- <20210120213522.4042c051@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Alex Elder <elder@linaro.org>
-Message-ID: <ebc067ba-224c-6d3e-822a-2e578f0c7d25@linaro.org>
-Date:   Thu, 21 Jan 2021 05:34:42 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.0
+        h=x-gm-message-state:mime-version:reply-to:from:date:message-id
+         :subject:to:content-transfer-encoding;
+        bh=aCjSAh7Sqd9Ie5L1ZvZp4JlE7R5YtYv0Lu+9NGOz7K8=;
+        b=WA9KdvjqnghZcQdDY8d9PwK3GD9c279Y9dEGn2To2sH2+xEnmWbk5KyaaphhaNIHgy
+         w6nPoS+QXsRywTzguSmHtD8mL8XiAZ6iWm3R5Y2XTPPnta6+BS6VPydv6jXKIPsLH738
+         Xgklv+ZYDXtL3tzQjFlLi0ksmYL2ClSbS3TgrTpBYNlu6Y2hLsswuyZ5Twt5KO3yv82s
+         ibjiltFqynjM7MZ1+QQJE+l6G2pvMEJS+QwQbmzANgug9lQ8QzUHop7bPC5F0mSdIg6d
+         hC192EYLNRIVq1MAUkeJAEYlsYfjiSmULDGztm92PMsaG/lek1hi7DmxHGDB60MzsiXA
+         5zgA==
+X-Gm-Message-State: AOAM531xSMUoeZe+tViwelRm5+eQOYvM+bYjMLhaLK8siKcl/X5SOV+H
+        +9D9WXZo/cS+a4AU/VfwxduTHvI44UihYyTgwmc=
+X-Google-Smtp-Source: ABdhPJxnBEK0skD44TMWSQ/PQBIOvaCOWErJXBfc+YMG8sACy2AZjUG/5z4UJ8OiymkNBcQnRMYlCtytJBPMjslMbiY=
+X-Received: by 2002:a0c:9e5a:: with SMTP id z26mr14049357qve.2.1611229414118;
+ Thu, 21 Jan 2021 03:43:34 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20210120213522.4042c051@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Received: by 2002:ac8:488a:0:0:0:0:0 with HTTP; Thu, 21 Jan 2021 03:43:32
+ -0800 (PST)
+Reply-To: mauricejulius0@gmail.com
+From:   Maurice Julius <mousseomar16@gmail.com>
+Date:   Thu, 21 Jan 2021 04:43:32 -0700
+Message-ID: <CA+qn3qtBL2fx5k-pt_Z_h+_L=D1a7iYHNyzfAR6WQEoNE2bJuQ@mail.gmail.com>
+Subject: I need your full cooperation,
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/20/21 11:35 PM, Jakub Kicinski wrote:
-> On Wed, 20 Jan 2021 16:03:59 -0600 Alex Elder wrote:
->> Have gsi_channel_update() return the first transaction in the
->> updated completed transaction list, or NULL if no new transactions
->> have been added.
->>
->> Signed-off-by: Alex Elder <elder@linaro.org>
-> 
->> @@ -1452,7 +1452,7 @@ void gsi_channel_doorbell(struct gsi_channel *channel)
->>   }
->>   
->>   /* Consult hardware, move any newly completed transactions to completed list */
->> -static void gsi_channel_update(struct gsi_channel *channel)
->> +struct gsi_trans *gsi_channel_update(struct gsi_channel *channel)
-> 
-> Why did it lose the 'static'?
+DEAR FRIEND,
+Am Mr. Maurice Julius ,Audit/Accounting officer of  Central Bank Of
+Burkina-Faso (BCEAO)I would like to know if this proposal will be
+worthwhile for your acceptance, I have a Foreign Customer from
+Indonesia,
 
-It should not have.
+ An Investor, a supplier of agricultural equipment in West Africa and
+a Contractor,
 
-My aarch64 build environment did not flag that, but I now built
-for x86 and it does.  I guess I should make a habit of checking
-with that, though it's a bit time-consuming.
+He died of brain stroke  in mid-March 2011, leaving a closing balance
+of $ 5.5 million Dollars,
 
-I'll send v2 out shortly.  Thank you.
+In one of his private Account that was been managed by me as his
+customer=E2=80=99s Account Officer, Based on my security report,
 
-					-Alex
 
-> drivers/net/ipa/gsi.c:1455:19: warning: no previous prototype for ‘gsi_channel_update’ [-Wmissing-prototypes]
->   1455 | struct gsi_trans *gsi_channel_update(struct gsi_channel *channel)
->        |                   ^~~~~~~~~~~~~~~~~~
-> 
+These funds can be claimed without any hitches as no one is aware of
+the funds and it's closing balance except me and the customer who is
+(Now Deceased),
 
+Therefore, I want you to act as the relative or a business partner to the
+deceased person, And we will work out the modalities for the claiming
+of the funds in accordance with the law.
+
+Now, if you are interested and really sure of your trustworthy,
+accountability and confidentiality on this transaction without
+disappointment, Reply me immediately for further details,
+
+I wish to point out that I want 10% of this money to be shared among
+respectable charity organizations and destitute homes around the
+world, While the remaining 90% of the fund will be shared equally
+between you, and I,
+
+ I will take 45% and you will also take 45%, Note/ kindly reply me
+through my private email address for security reasons
+(mauricejulius0@gmail.com) am waiting to hear from you,
+
+
+
+Best regards,
+Thanks for your anticipated co-operation.
+Mr. Maurice Julius,
