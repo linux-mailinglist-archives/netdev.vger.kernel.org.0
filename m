@@ -2,70 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0ABBB2FF6EE
-	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 22:14:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B5892FF6D2
+	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 22:09:48 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726755AbhAUVOJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jan 2021 16:14:09 -0500
-Received: from mail-m975.mail.163.com ([123.126.97.5]:51076 "EHLO
-        mail-m975.mail.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727518AbhAUVIg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jan 2021 16:08:36 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id; bh=Td2FrwxlzULpmp25Sf
-        Fj2Pt01rYJ+34xjhJsW3465cI=; b=Y9zA2YuMp1ruzZD9m7CVbQc5FfqsoHe4bu
-        yty2kHs3SaPh4MHX7aj9Hgiqn9yZqS8rTU/7GZUWGtT/pe3jPgxmHs9/Ssj55KC6
-        KLUnQq6bVH6aBpvrkIsocnUxC2TZRLNZPe1tzq1qE0CvZaNqcMP5GloKhFzKMeZF
-        52Mij8nkg=
-Received: from localhost.localdomain (unknown [111.201.134.89])
-        by smtp5 (Coremail) with SMTP id HdxpCgBHFfx2nQlgWwyuAw--.1252S4;
-        Thu, 21 Jan 2021 23:27:54 +0800 (CST)
-From:   Pan Bian <bianpan2016@163.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
+        id S1727520AbhAUVJ1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jan 2021 16:09:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51718 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727453AbhAUU6P (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jan 2021 15:58:15 -0500
+X-Greylist: delayed 485 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 21 Jan 2021 12:57:22 PST
+Received: from antares.kleine-koenig.org (antares.kleine-koenig.org [IPv6:2a01:4f8:c0c:3a97::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD63EC06174A;
+        Thu, 21 Jan 2021 12:57:22 -0800 (PST)
+Received: by antares.kleine-koenig.org (Postfix, from userid 1000)
+        id 4F281AD8EB0; Thu, 21 Jan 2021 21:48:22 +0100 (CET)
+From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <uwe@kleine-koenig.org>
+To:     Wim Van Sebroeck <wim@linux-watchdog.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        William Breathitt Gray <vilhelm.gray@gmail.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Pau Oliva Fora <pof@eslack.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Wolfgang Grandegger <wg@grandegger.com>,
         Marc Kleine-Budde <mkl@pengutronix.de>,
-        Qingyu Li <ieatmuttonchuan@gmail.com>,
-        Samuel Ortiz <sameo@linux.intel.com>,
-        "John W. Linville" <linville@tuxdriver.com>
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Pan Bian <bianpan2016@163.com>
-Subject: [PATCH] NFC: fix resource leak when target index is invalid
-Date:   Thu, 21 Jan 2021 07:27:48 -0800
-Message-Id: <20210121152748.98409-1-bianpan2016@163.com>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: HdxpCgBHFfx2nQlgWwyuAw--.1252S4
-X-Coremail-Antispam: 1Uf129KBjvdXoW7JFy7KF1UXryDAFWfAF1UJrb_yoW3tFXE9F
-        4Ivws7WF45WwsxCayUur18tFyxtw1UXr1xXFWfJFZYv34rWF1UCrs8WF1fAr129ryxCFy7
-        CF9aqF18WwnxtjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IUUwSdPUUUUU==
-X-Originating-IP: [111.201.134.89]
-X-CM-SenderInfo: held01tdqsiiqw6rljoofrz/xtbBZxohclet1hciOgAAsN
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Matthew Wilcox <willy@infradead.org>,
+        Hannes Reinecke <hare@suse.com>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Finn Thain <fthain@telegraphics.com.au>,
+        Michael Schmitz <schmitzmic@gmail.com>,
+        Jaroslav Kysela <perex@perex.cz>, Takashi Iwai <tiwai@suse.com>
+Cc:     linux-watchdog@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-i2c@vger.kernel.org, linux-input@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, linux-scsi@vger.kernel.org,
+        alsa-devel@alsa-project.org
+Subject: [PATCH v1 0/2] isa: Make the remove callback for isa drivers return void
+Date:   Thu, 21 Jan 2021 21:48:10 +0100
+Message-Id: <20210121204812.402589-1-uwe@kleine-koenig.org>
+X-Mailer: git-send-email 2.29.2
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Goto to the label put_dev instead of the label error to fix potential
-resource leak on path that the target index is invalid.
+Hello,
 
-Fixes: c4fbb6515a4d ("NFC: The core part should generate the target index")
-Signed-off-by: Pan Bian <bianpan2016@163.com>
----
- net/nfc/rawsock.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+as described in the commit log of the 2nd patch returning an error code
+from a bus' remove callback doesn't make any difference as the driver
+core ignores it and still considers the device removed.
 
-diff --git a/net/nfc/rawsock.c b/net/nfc/rawsock.c
-index 955c195ae14b..9c7eb8455ba8 100644
---- a/net/nfc/rawsock.c
-+++ b/net/nfc/rawsock.c
-@@ -105,7 +105,7 @@ static int rawsock_connect(struct socket *sock, struct sockaddr *_addr,
- 	if (addr->target_idx > dev->target_next_idx - 1 ||
- 	    addr->target_idx < dev->target_next_idx - dev->n_targets) {
- 		rc = -EINVAL;
--		goto error;
-+		goto put_dev;
- 	}
- 
- 	rc = nfc_activate_target(dev, addr->target_idx, addr->nfc_protocol);
+So change the remove callback to return void to not give driver authors
+an incentive to believe they could return an error.
+
+There is only a single isa driver in the tree (assuming I didn't miss
+any) that has a remove callback that can return a non zero return code.
+This is "fixed" in the first patch, to make the second patch more
+obviously correct.
+
+Best regards
+Uwe
+
+Uwe Kleine-König (2):
+  watchdog: pcwd: drop always-false if from remove callback
+  isa: Make the remove callback for isa drivers return void
+
+ drivers/base/isa.c                   | 2 +-
+ drivers/i2c/busses/i2c-elektor.c     | 4 +---
+ drivers/i2c/busses/i2c-pca-isa.c     | 4 +---
+ drivers/input/touchscreen/htcpen.c   | 4 +---
+ drivers/media/radio/radio-sf16fmr2.c | 4 +---
+ drivers/net/can/sja1000/tscan1.c     | 4 +---
+ drivers/net/ethernet/3com/3c509.c    | 3 +--
+ drivers/scsi/advansys.c              | 3 +--
+ drivers/scsi/aha1542.c               | 3 +--
+ drivers/scsi/fdomain_isa.c           | 3 +--
+ drivers/scsi/g_NCR5380.c             | 3 +--
+ drivers/watchdog/pcwd.c              | 7 +------
+ include/linux/isa.h                  | 2 +-
+ sound/isa/ad1848/ad1848.c            | 3 +--
+ sound/isa/adlib.c                    | 3 +--
+ sound/isa/cmi8328.c                  | 3 +--
+ sound/isa/cmi8330.c                  | 3 +--
+ sound/isa/cs423x/cs4231.c            | 3 +--
+ sound/isa/cs423x/cs4236.c            | 3 +--
+ sound/isa/es1688/es1688.c            | 3 +--
+ sound/isa/es18xx.c                   | 3 +--
+ sound/isa/galaxy/galaxy.c            | 3 +--
+ sound/isa/gus/gusclassic.c           | 3 +--
+ sound/isa/gus/gusextreme.c           | 3 +--
+ sound/isa/gus/gusmax.c               | 3 +--
+ sound/isa/gus/interwave.c            | 3 +--
+ sound/isa/msnd/msnd_pinnacle.c       | 3 +--
+ sound/isa/opl3sa2.c                  | 3 +--
+ sound/isa/opti9xx/miro.c             | 3 +--
+ sound/isa/opti9xx/opti92x-ad1848.c   | 3 +--
+ sound/isa/sb/jazz16.c                | 3 +--
+ sound/isa/sb/sb16.c                  | 3 +--
+ sound/isa/sb/sb8.c                   | 3 +--
+ sound/isa/sc6000.c                   | 3 +--
+ sound/isa/sscape.c                   | 3 +--
+ sound/isa/wavefront/wavefront.c      | 3 +--
+ 36 files changed, 36 insertions(+), 79 deletions(-)
+
+
+base-commit: 5a158981aafa7f29709034b17bd007b15cb29983
 -- 
-2.17.1
-
+2.29.2
