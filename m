@@ -2,288 +2,215 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EE1C12FE5A8
-	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 09:56:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 87F922FE5B3
+	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 10:02:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728176AbhAUI4l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jan 2021 03:56:41 -0500
-Received: from mail.kernel.org ([198.145.29.99]:33800 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728330AbhAUIzG (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 21 Jan 2021 03:55:06 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id DA48123A1C;
-        Thu, 21 Jan 2021 08:53:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611219182;
-        bh=FZUTy6l6DtkXWDUvMlBb593cpHNCaucfYeLH7pkK/KA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cJJuLc4+9pNiVz6Lb1YeJWhUQTN2f0d0sIbsHePdI5Jk6xd8DgtwwhiQRyiTCutc1
-         +/MhUsyP6EiqS7tfjXfzKA23RG3yum9tREdrmADJC/CoLMDnebXkKd7IR8FWE86uEK
-         3PPNOyV4nJR5wN39fZiHc4xDnzG2TClO8MCYRGgoNyF2Rt9sRpNq9XSMgOxAcM/jRB
-         09ftDCV6vOFY6XBWCaeMj7AoZ5IOuYezHmH2ePKidXT0otsauzLyUjFSuTwwRDrwer
-         c708+hDKQvPLifzIGe2Cj1z21ioqhG25LOGbHWptuKT0XV9jVYWGrhhGrdoCCl3Sem
-         lq/xp1owG7UPA==
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jason Gunthorpe <jgg@nvidia.com>
-Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        alexander.duyck@gmail.com, sridhar.samudrala@intel.com,
-        edwin.peer@broadcom.com, dsahern@kernel.org, kiran.patil@intel.com,
-        jacob.e.keller@intel.com, david.m.ertman@intel.com,
-        dan.j.williams@intel.com, Parav Pandit <parav@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next V9 14/14] net/mlx5: Add devlink subfunction port documentation
-Date:   Thu, 21 Jan 2021 00:52:37 -0800
-Message-Id: <20210121085237.137919-15-saeed@kernel.org>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20210121085237.137919-1-saeed@kernel.org>
-References: <20210121085237.137919-1-saeed@kernel.org>
+        id S1728219AbhAUI44 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jan 2021 03:56:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36826 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728256AbhAUI4Z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jan 2021 03:56:25 -0500
+Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82E54C061757;
+        Thu, 21 Jan 2021 00:55:32 -0800 (PST)
+Received: by mail-io1-xd34.google.com with SMTP id h11so2477717ioh.11;
+        Thu, 21 Jan 2021 00:55:32 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:reply-to:from:date:message-id
+         :subject:to:cc;
+        bh=1W5ctKqJEh15657vCDtsaXBORxGKTTf2ebPpWs4xoy8=;
+        b=ED1aFQMSum6yeY8qkzzGJ3WnKanouDr1DC/viKrXY+D9RAs9X+P189vkC900O7XuTe
+         Ob5NDiukGoGXnBM8y/FSE/CVMLcAPmYmUu6Apq2k6GloLz6yj7mhXi5Uqco/3+wxDbpd
+         rIy6gKxAK2BL7hoKwhlgQaUDICbL4ryEZVIFXgNg0xAFBHqDbXZ8MmMBhbcj3OP7AcPl
+         CfpjBBZ6HBek5j4tylrOEfQ67KxRdDEqOAQ7Duezbjm1uNc5pDRey2rBrKyR/TcdrU2q
+         7dQ2sRd53CqHw6MtFgT4immwOJDEHUl0ZWu26/i8pVwbkitqPpWDba64tmN55soU5Co0
+         k6gQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:reply-to
+         :from:date:message-id:subject:to:cc;
+        bh=1W5ctKqJEh15657vCDtsaXBORxGKTTf2ebPpWs4xoy8=;
+        b=REeEZ+oT3ipUQe436XOY6KyTTBcJzQAvNblCvEDEpaYD5IJY//YcVpVNbXyJ975xNx
+         2LVZ7zA5iYHX/lyIdI053MY4NqYAZpS1CmgU+KUFIDDNqSUpq5tMCSBtftGxt0LLcoGR
+         g20OcOUi9U64oPf2BKjMx3FY09CeoajM5n72oKlCzPorFJbDXzjdkx8kBeK+bGyXx+2/
+         kp5Ghy4grbLio+e/AyxmdocaAt6g3+bCIO1BvQo+Agoj7nKsP8K3WFLAQ5AVJ974hTC/
+         Zh8N0UruVwI7aw/fkshjmKwWK2ElpY8aYD+IsY4xKX0JJvV9UUm79LASE2vWmLPHjHSw
+         tHmA==
+X-Gm-Message-State: AOAM533wIPH3GjpcXkESn7uoYLHbaTOywfyMBxIaGIqN3wvlqefQhIx2
+        l9TZ/fE2Xlbe6woReeB3XozoF1W199GoVKNomWQ=
+X-Google-Smtp-Source: ABdhPJzohOPe9CXB7Wl5N+uCE8ZsLSdvZeIUL3eB0kFqz0DNcE8LR0B3Cnmp49TpCOXWPJx2b23RvCsoNS1FX70YTlU=
+X-Received: by 2002:a6b:6a0e:: with SMTP id x14mr9605695iog.57.1611219331865;
+ Thu, 21 Jan 2021 00:55:31 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <1611206855-22555-1-git-send-email-yangtiezhu@loongson.cn>
+ <20210121053627.GA1680146@ubuntu-m3-large-x86> <CAEf4BzbZxuy8LRmngRzLZ3VTnrDw=Rf70Ghkbu1a5+fNpQud5Q@mail.gmail.com>
+In-Reply-To: <CAEf4BzbZxuy8LRmngRzLZ3VTnrDw=Rf70Ghkbu1a5+fNpQud5Q@mail.gmail.com>
+Reply-To: sedat.dilek@gmail.com
+From:   Sedat Dilek <sedat.dilek@gmail.com>
+Date:   Thu, 21 Jan 2021 09:55:20 +0100
+Message-ID: <CA+icZUWNu1JaS+m+Ne1ZB+tCARRUaiVh2KbqarnGEtM46PD1NA@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v3] samples/bpf: Update build procedure for
+ manually compiling LLVM and Clang
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Nathan Chancellor <natechancellor@gmail.com>,
+        Tiezhu Yang <yangtiezhu@loongson.cn>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        clang-built-linux <clang-built-linux@googlegroups.com>,
+        open list <linux-kernel@vger.kernel.org>,
+        Xuefeng Li <lixuefeng@loongson.cn>,
+        Fangrui Song <maskray@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Parav Pandit <parav@nvidia.com>
+On Thu, Jan 21, 2021 at 9:08 AM Andrii Nakryiko
+<andrii.nakryiko@gmail.com> wrote:
+>
+> On Wed, Jan 20, 2021 at 9:36 PM Nathan Chancellor
+> <natechancellor@gmail.com> wrote:
+> >
+> > On Thu, Jan 21, 2021 at 01:27:35PM +0800, Tiezhu Yang wrote:
+> > > The current LLVM and Clang build procedure in samples/bpf/README.rst is
+> > > out of date. See below that the links are not accessible any more.
+> > >
+> > > $ git clone http://llvm.org/git/llvm.git
+> > > Cloning into 'llvm'...
+> > > fatal: unable to access 'http://llvm.org/git/llvm.git/': Maximum (20) redirects followed
+> > > $ git clone --depth 1 http://llvm.org/git/clang.git
+> > > Cloning into 'clang'...
+> > > fatal: unable to access 'http://llvm.org/git/clang.git/': Maximum (20) redirects followed
+> > >
+> > > The LLVM community has adopted new ways to build the compiler. There are
+> > > different ways to build LLVM and Clang, the Clang Getting Started page [1]
+> > > has one way. As Yonghong said, it is better to copy the build procedure
+> > > in Documentation/bpf/bpf_devel_QA.rst to keep consistent.
+> > >
+> > > I verified the procedure and it is proved to be feasible, so we should
+> > > update README.rst to reflect the reality. At the same time, update the
+> > > related comment in Makefile.
+> > >
+> > > Additionally, as Fangrui said, the dir llvm-project/llvm/build/install is
+> > > not used, BUILD_SHARED_LIBS=OFF is the default option [2], so also change
+> > > Documentation/bpf/bpf_devel_QA.rst together.
+> > >
+> > > [1] https://clang.llvm.org/get_started.html
+> > > [2] https://www.llvm.org/docs/CMake.html
+> > >
+> > > Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
+> > > Acked-by: Yonghong Song <yhs@fb.com>
+> >
+> > Reviewed-by: Nathan Chancellor <natechancellor@gmail.com>
+> >
+> > Small comment below.
+> >
+> > > ---
+> > >
+> > > v2: Update the commit message suggested by Yonghong,
+> > >     thank you very much.
+> > >
+> > > v3: Remove the default option BUILD_SHARED_LIBS=OFF
+> > >     and just mkdir llvm-project/llvm/build suggested
+> > >     by Fangrui.
+> > >
+> > >  Documentation/bpf/bpf_devel_QA.rst |  3 +--
+> > >  samples/bpf/Makefile               |  2 +-
+> > >  samples/bpf/README.rst             | 16 +++++++++-------
+> > >  3 files changed, 11 insertions(+), 10 deletions(-)
+> > >
+> > > diff --git a/Documentation/bpf/bpf_devel_QA.rst b/Documentation/bpf/bpf_devel_QA.rst
+> > > index 5b613d2..18788bb 100644
+> > > --- a/Documentation/bpf/bpf_devel_QA.rst
+> > > +++ b/Documentation/bpf/bpf_devel_QA.rst
+> > > @@ -506,11 +506,10 @@ that set up, proceed with building the latest LLVM and clang version
+> > >  from the git repositories::
+> > >
+> > >       $ git clone https://github.com/llvm/llvm-project.git
+> > > -     $ mkdir -p llvm-project/llvm/build/install
+> > > +     $ mkdir -p llvm-project/llvm/build
+> > >       $ cd llvm-project/llvm/build
+> > >       $ cmake .. -G "Ninja" -DLLVM_TARGETS_TO_BUILD="BPF;X86" \
+> > >                  -DLLVM_ENABLE_PROJECTS="clang"    \
+> > > -                -DBUILD_SHARED_LIBS=OFF           \
+> > >                  -DCMAKE_BUILD_TYPE=Release        \
+> > >                  -DLLVM_BUILD_RUNTIME=OFF
+> > >       $ ninja
+> > > diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
+> > > index 26fc96c..d061446 100644
+> > > --- a/samples/bpf/Makefile
+> > > +++ b/samples/bpf/Makefile
+> > > @@ -208,7 +208,7 @@ TPROGLDLIBS_xdpsock               += -pthread -lcap
+> > >  TPROGLDLIBS_xsk_fwd          += -pthread
+> > >
+> > >  # Allows pointing LLC/CLANG to a LLVM backend with bpf support, redefine on cmdline:
+> > > -#  make M=samples/bpf/ LLC=~/git/llvm/build/bin/llc CLANG=~/git/llvm/build/bin/clang
+> > > +# make M=samples/bpf LLC=~/git/llvm-project/llvm/build/bin/llc CLANG=~/git/llvm-project/llvm/build/bin/clang
+> > >  LLC ?= llc
+> > >  CLANG ?= clang
+> > >  OPT ?= opt
+> > > diff --git a/samples/bpf/README.rst b/samples/bpf/README.rst
+> > > index dd34b2d..23006cb 100644
+> > > --- a/samples/bpf/README.rst
+> > > +++ b/samples/bpf/README.rst
+> > > @@ -65,17 +65,19 @@ To generate a smaller llc binary one can use::
+> > >  Quick sniplet for manually compiling LLVM and clang
+> > >  (build dependencies are cmake and gcc-c++)::
+> >
+> > Technically, ninja is now a build dependency as well, it might be worth
+> > mentioning that here (usually the package is ninja or ninja-build).
+>
+> it's possible to generate Makefile by passing `-g "Unix Makefiles"`,
+> which would avoid dependency on ninja, no?
+>
 
-Add documentation for subfunction management using devlink
-port.
+AFAICS, cmake is now the default and "Unix Makefiles" deprecated with
+newer versions of LLVM/Clang.
 
-Signed-off-by: Parav Pandit <parav@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
----
- .../device_drivers/ethernet/mellanox/mlx5.rst | 210 ++++++++++++++++++
- 1 file changed, 210 insertions(+)
+- Sedat -
 
-diff --git a/Documentation/networking/device_drivers/ethernet/mellanox/mlx5.rst b/Documentation/networking/device_drivers/ethernet/mellanox/mlx5.rst
-index a5eb22793bb9..a1b32fcd0d76 100644
---- a/Documentation/networking/device_drivers/ethernet/mellanox/mlx5.rst
-+++ b/Documentation/networking/device_drivers/ethernet/mellanox/mlx5.rst
-@@ -12,6 +12,8 @@ Contents
- - `Enabling the driver and kconfig options`_
- - `Devlink info`_
- - `Devlink parameters`_
-+- `mlx5 subfunction`_
-+- `mlx5 port function`_
- - `Devlink health reporters`_
- - `mlx5 tracepoints`_
- 
-@@ -181,6 +183,214 @@ User command examples:
-       values:
-          cmode driverinit value true
- 
-+mlx5 subfunction
-+================
-+mlx5 supports subfunction management using devlink port (see :ref:`Documentation/networking/devlink/devlink-port.rst <devlink_port>`) interface.
-+
-+A Subfunction has its own function capabilities and its own resources. This
-+means a subfunction has its own dedicated queues (txq, rxq, cq, eq). These
-+queues are neither shared nor stolen from the parent PCI function.
-+
-+When a subfunction is RDMA capable, it has its own QP1, GID table and rdma
-+resources neither shared nor stolen from the parent PCI function.
-+
-+A subfunction has a dedicated window in PCI BAR space that is not shared
-+with ther other subfunctions or the parent PCI function. This ensures that all
-+devices (netdev, rdma, vdpa etc.) of the subfunction accesses only assigned
-+PCI BAR space.
-+
-+A Subfunction supports eswitch representation through which it supports tc
-+offloads. The user configures eswitch to send/receive packets from/to
-+the subfunction port.
-+
-+Subfunctions share PCI level resources such as PCI MSI-X IRQs with
-+other subfunctions and/or with its parent PCI function.
-+
-+Example mlx5 software, system and device view::
-+
-+       _______
-+      | admin |
-+      | user  |----------
-+      |_______|         |
-+          |             |
-+      ____|____       __|______            _________________
-+     |         |     |         |          |                 |
-+     | devlink |     | tc tool |          |    user         |
-+     | tool    |     |_________|          | applications    |
-+     |_________|         |                |_________________|
-+           |             |                   |          |
-+           |             |                   |          |         Userspace
-+ +---------|-------------|-------------------|----------|--------------------+
-+           |             |           +----------+   +----------+   Kernel
-+           |             |           |  netdev  |   | rdma dev |
-+           |             |           +----------+   +----------+
-+   (devlink port add/del |              ^               ^
-+    port function set)   |              |               |
-+           |             |              +---------------|
-+      _____|___          |              |        _______|_______
-+     |         |         |              |       | mlx5 class    |
-+     | devlink |   +------------+       |       |   drivers     |
-+     | kernel  |   | rep netdev |       |       |(mlx5_core,ib) |
-+     |_________|   +------------+       |       |_______________|
-+           |             |              |               ^
-+   (devlink ops)         |              |          (probe/remove)
-+  _________|________     |              |           ____|________
-+ | subfunction      |    |     +---------------+   | subfunction |
-+ | management driver|-----     | subfunction   |---|  driver     |
-+ | (mlx5_core)      |          | auxiliary dev |   | (mlx5_core) |
-+ |__________________|          +---------------+   |_____________|
-+           |                                            ^
-+  (sf add/del, vhca events)                             |
-+           |                                      (device add/del)
-+      _____|____                                    ____|________
-+     |          |                                  | subfunction |
-+     |  PCI NIC |---- activate/deactive events---->| host driver |
-+     |__________|                                  | (mlx5_core) |
-+                                                   |_____________|
-+
-+Subfunction is created using devlink port interface.
-+
-+- Change device to switchdev mode::
-+
-+    $ devlink dev eswitch set pci/0000:06:00.0 mode switchdev
-+
-+- Add a devlink port of subfunction flaovur::
-+
-+    $ devlink port add pci/0000:06:00.0 flavour pcisf pfnum 0 sfnum 88
-+    pci/0000:06:00.0/32768: type eth netdev eth6 flavour pcisf controller 0 pfnum 0 sfnum 88 external false splittable false
-+      function:
-+        hw_addr 00:00:00:00:00:00 state inactive opstate detached
-+
-+- Show a devlink port of the subfunction::
-+
-+    $ devlink port show pci/0000:06:00.0/32768
-+    pci/0000:06:00.0/32768: type eth netdev enp6s0pf0sf88 flavour pcisf pfnum 0 sfnum 88
-+      function:
-+        hw_addr 00:00:00:00:00:00 state inactive opstate detached
-+
-+- Delete a devlink port of subfunction after use::
-+
-+    $ devlink port del pci/0000:06:00.0/32768
-+
-+mlx5 function attributes
-+========================
-+The mlx5 driver provides a mechanism to setup PCI VF/SF function attributes in
-+a unified way for SmartNIC and non-SmartNIC.
-+
-+This is supported only when the eswitch mode is set to switchdev. Port function
-+configuration of the PCI VF/SF is supported through devlink eswitch port.
-+
-+Port function attributes should be set before PCI VF/SF is enumerated by the
-+driver.
-+
-+MAC address setup
-+-----------------
-+mlx5 driver provides mechanism to setup the MAC address of the PCI VF/SF.
-+
-+The configured MAC address of the PCI VF/SF will be used by netdevice and rdma
-+device created for the PCI VF/SF.
-+
-+- Get the MAC address of the VF identified by its unique devlink port index::
-+
-+    $ devlink port show pci/0000:06:00.0/2
-+    pci/0000:06:00.0/2: type eth netdev enp6s0pf0vf1 flavour pcivf pfnum 0 vfnum 1
-+      function:
-+        hw_addr 00:00:00:00:00:00
-+
-+- Set the MAC address of the VF identified by its unique devlink port index::
-+
-+    $ devlink port function set pci/0000:06:00.0/2 hw_addr 00:11:22:33:44:55
-+
-+    $ devlink port show pci/0000:06:00.0/2
-+    pci/0000:06:00.0/2: type eth netdev enp6s0pf0vf1 flavour pcivf pfnum 0 vfnum 1
-+      function:
-+        hw_addr 00:11:22:33:44:55
-+
-+- Get the MAC address of the SF identified by its unique devlink port index::
-+
-+    $ devlink port show pci/0000:06:00.0/32768
-+    pci/0000:06:00.0/32768: type eth netdev enp6s0pf0sf88 flavour pcisf pfnum 0 sfnum 88
-+      function:
-+        hw_addr 00:00:00:00:00:00
-+
-+- Set the MAC address of the VF identified by its unique devlink port index::
-+
-+    $ devlink port function set pci/0000:06:00.0/32768 hw_addr 00:00:00:00:88:88
-+
-+    $ devlink port show pci/0000:06:00.0/32768
-+    pci/0000:06:00.0/32768: type eth netdev enp6s0pf0sf88 flavour pcivf pfnum 0 sfnum 88
-+      function:
-+        hw_addr 00:00:00:00:88:88
-+
-+SF state setup
-+--------------
-+To use the SF, the user must active the SF using the SF function state
-+attribute.
-+
-+- Get the state of the SF identified by its unique devlink port index::
-+
-+   $ devlink port show ens2f0npf0sf88
-+   pci/0000:06:00.0/32768: type eth netdev ens2f0npf0sf88 flavour pcisf controller 0 pfnum 0 sfnum 88 external false splittable false
-+     function:
-+       hw_addr 00:00:00:00:88:88 state inactive opstate detached
-+
-+- Activate the function and verify its state is active::
-+
-+   $ devlink port function set ens2f0npf0sf88 state active
-+
-+   $ devlink port show ens2f0npf0sf88
-+   pci/0000:06:00.0/32768: type eth netdev ens2f0npf0sf88 flavour pcisf controller 0 pfnum 0 sfnum 88 external false splittable false
-+     function:
-+       hw_addr 00:00:00:00:88:88 state active opstate detached
-+
-+Upon function activation, the PF driver instance gets the event from the device
-+that a particular SF was activated. It's the cue to put the device on bus, probe
-+it and instantiate the devlink instance and class specific auxiliary devices
-+for it.
-+
-+- Show the auxiliary device and port of the subfunction::
-+
-+    $ devlink dev show
-+    devlink dev show auxiliary/mlx5_core.sf.4
-+
-+    $ devlink port show auxiliary/mlx5_core.sf.4/1
-+    auxiliary/mlx5_core.sf.4/1: type eth netdev p0sf88 flavour virtual port 0 splittable false
-+
-+    $ rdma link show mlx5_0/1
-+    link mlx5_0/1 state ACTIVE physical_state LINK_UP netdev p0sf88
-+
-+    $ rdma dev show
-+    8: rocep6s0f1: node_type ca fw 16.29.0550 node_guid 248a:0703:00b3:d113 sys_image_guid 248a:0703:00b3:d112
-+    13: mlx5_0: node_type ca fw 16.29.0550 node_guid 0000:00ff:fe00:8888 sys_image_guid 248a:0703:00b3:d112
-+
-+- Subfunction auxiliary device and class device hierarchy::
-+
-+                 mlx5_core.sf.4
-+          (subfunction auxiliary device)
-+                       /\
-+                      /  \
-+                     /    \
-+                    /      \
-+                   /        \
-+      mlx5_core.eth.4     mlx5_core.rdma.4
-+     (sf eth aux dev)     (sf rdma aux dev)
-+         |                      |
-+         |                      |
-+      p0sf88                  mlx5_0
-+     (sf netdev)          (sf rdma device)
-+
-+Additionally, the SF port also gets the event when the driver attaches to the
-+auxiliary device of the subfunction. This results in changing the operational
-+state of the function. This provides visiblity to the user to decide when is it
-+safe to delete the SF port for graceful termination of the subfunction.
-+
-+- Show the SF port operational state::
-+
-+    $ devlink port show ens2f0npf0sf88
-+    pci/0000:06:00.0/32768: type eth netdev ens2f0npf0sf88 flavour pcisf controller 0 pfnum 0 sfnum 88 external false splittable false
-+      function:
-+        hw_addr 00:00:00:00:88:88 state active opstate attached
-+
- Devlink health reporters
- ========================
- 
--- 
-2.26.2
-
+> >
+> > Regardless of whether that is addressed or not (because it is small),
+> > feel free to carry forward my tag in any future revisions unless they
+> > drastically change.
+> >
+> > > - $ git clone http://llvm.org/git/llvm.git
+> > > - $ cd llvm/tools
+> > > - $ git clone --depth 1 http://llvm.org/git/clang.git
+> > > - $ cd ..; mkdir build; cd build
+> > > - $ cmake .. -DLLVM_TARGETS_TO_BUILD="BPF;X86"
+> > > - $ make -j $(getconf _NPROCESSORS_ONLN)
+> > > + $ git clone https://github.com/llvm/llvm-project.git
+> > > + $ mkdir -p llvm-project/llvm/build
+> > > + $ cd llvm-project/llvm/build
+> > > + $ cmake .. -G "Ninja" -DLLVM_TARGETS_TO_BUILD="BPF;X86" \
+> > > +            -DLLVM_ENABLE_PROJECTS="clang"    \
+> > > +            -DCMAKE_BUILD_TYPE=Release        \
+> > > +            -DLLVM_BUILD_RUNTIME=OFF
+> > > + $ ninja
+> > >
+> > >  It is also possible to point make to the newly compiled 'llc' or
+> > >  'clang' command via redefining LLC or CLANG on the make command line::
+> > >
+> > > - make M=samples/bpf LLC=~/git/llvm/build/bin/llc CLANG=~/git/llvm/build/bin/clang
+> > > + make M=samples/bpf LLC=~/git/llvm-project/llvm/build/bin/llc CLANG=~/git/llvm-project/llvm/build/bin/clang
+> > >
+> > >  Cross compiling samples
+> > >  -----------------------
+> > > --
+> > > 2.1.0
+> > >
+>
+> --
+> You received this message because you are subscribed to the Google Groups "Clang Built Linux" group.
+> To unsubscribe from this group and stop receiving emails from it, send an email to clang-built-linux+unsubscribe@googlegroups.com.
+> To view this discussion on the web visit https://groups.google.com/d/msgid/clang-built-linux/CAEf4BzbZxuy8LRmngRzLZ3VTnrDw%3DRf70Ghkbu1a5%2BfNpQud5Q%40mail.gmail.com.
