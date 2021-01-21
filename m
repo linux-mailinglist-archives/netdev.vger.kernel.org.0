@@ -2,90 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B18D32FEFDE
-	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 17:13:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 21F952FEFFE
+	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 17:17:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387576AbhAUQMH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jan 2021 11:12:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46550 "EHLO
+        id S2387397AbhAUQRp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jan 2021 11:17:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732884AbhAUQLo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jan 2021 11:11:44 -0500
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C226C0613D6;
-        Thu, 21 Jan 2021 08:11:02 -0800 (PST)
-Received: by mail-wr1-x429.google.com with SMTP id c12so2286648wrc.7;
-        Thu, 21 Jan 2021 08:11:02 -0800 (PST)
+        with ESMTP id S1732178AbhAUQRb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jan 2021 11:17:31 -0500
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1646DC0613ED
+        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 08:16:51 -0800 (PST)
+Received: by mail-lf1-x12e.google.com with SMTP id o17so3312521lfg.4
+        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 08:16:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=3fk+Ltd/WJun2rMhD/0B1TRdBjEBWKb5kM3nBcZ4ddo=;
-        b=lyedh99Ckt5+2Zdw9xnwKh8S2EIazsc1QHLioysl5Nmgf3VlQMG6C2iQvkJNY3dUEl
-         HbFNskw5fruTXnGPHku1SiUDsF6z//OJm7Md/VHA0yHH/Ekg1BsW6vht0s9BnVMWoua8
-         edBAKsQ6uCWONCPOC4WkD/ErQT+PPieYPxfygLD/ldPTPDl1kZwss7spmq6yqARmcdO+
-         pf/i9xli3pq8s77/9PP8cYd4wpS72CnHfexqcQtgXpedr5BhfWBe4J/bOt3HWZTjg6h/
-         JFNISt2uaW8vdEjwbC5G5IfmVFs03oMvInAJXC1+kqtBqfFFSMFT4nLp0zcPUhcyt/Od
-         IfRA==
+        h=mime-version:sender:from:date:message-id:subject:to;
+        bh=AkEGqYMvDXfdqXGtEQVGA6u/vJOunFX3Hhi5b2/4cJY=;
+        b=SR/Opu+3gIQVPBAYD554AnciuA+nX9dMgUWDFVzDPRxuWoBImtSYKEJLKInnOwaK1c
+         OQ/vOnqOPBKFhwlQiaxPJSEABQ1394oFL3yGbmQKas49VQdaNHey2LgfdaOdaGlm1rvp
+         4hG6k3WJT0N0uKJp0jMWaC6ZpOkzK8bz2Ld/nmI4aa3vIY/V3dpOOkc8IoxKj4bnI0Lg
+         FXl6lT8+LSDjvT+23j7FXmvOMsa1RkBEt4/7leiwm2tfiXWOeQBdWy4kxyF2Id0pEsd5
+         BFxx5usNYVcHcfcgUNL3GWdM2eDQi5voCwrLfYz38h8FKuFdOfV9F+u9YVNF2xzPdf1k
+         Lf4Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=3fk+Ltd/WJun2rMhD/0B1TRdBjEBWKb5kM3nBcZ4ddo=;
-        b=skCiQl9vDCfCj0TCzuR2XihopG58CXZYqDt2AnDwwQZjm8v8RcXq5DfAuoOG1Abhmu
-         hhrittQPSvzul11DtZngfd9W8pPd200fKpOxLKDbv2E2VWFnYaYikAGTQBiuOS4v7tlk
-         fzJIwsv7T/4pv3qOfgU3IVhxPOG08yRC8oarghnCPGbYDHTozma3ManeIBhaozZfTyLF
-         egpOkdtgrHROv829lXtHd3srhYIIDoZofsgMmxAlxEL0D39vHaYb10RJTap+v/prk1TX
-         OKneXY1ZBj3Z0O11XQq5WxQ1WAxjm7jC0maClQqlX8U8+WAkafi2Y9EqE2AJsaipacsO
-         u5UQ==
-X-Gm-Message-State: AOAM532lbvRg6abG3BFBzm7UGoxTMNd0JmcGO5asKZ3UrMaKf9C0Tl+r
-        R2qzhvhdfPfu4A2CeJq29aU=
-X-Google-Smtp-Source: ABdhPJxWQdlgzYligRW+q9HCSyXSEChFX5mO2uWlk6p7GRWbht/G/Er4S6YAzwNQrk633Q3qHi8ckw==
-X-Received: by 2002:a5d:4d4f:: with SMTP id a15mr148527wru.315.1611245461008;
-        Thu, 21 Jan 2021 08:11:01 -0800 (PST)
-Received: from [192.168.1.122] (cpc159425-cmbg20-2-0-cust403.5-4.cable.virginm.net. [86.7.189.148])
-        by smtp.gmail.com with ESMTPSA id g194sm8582133wme.39.2021.01.21.08.10.59
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 21 Jan 2021 08:11:00 -0800 (PST)
-Subject: Re: [PATCH net-next] sfc: reduce the number of requested xdp ev
- queues
-To:     Ivan Babrou <ivan@cloudflare.com>, netdev@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, bpf@vger.kernel.org,
-        kernel-team@cloudflare.com,
-        Martin Habets <habetsm.xilinx@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>
-References: <20210120212759.81548-1-ivan@cloudflare.com>
-From:   Edward Cree <ecree.xilinx@gmail.com>
-Message-ID: <201b4e33-eec5-efcd-808b-1f15a979d998@gmail.com>
-Date:   Thu, 21 Jan 2021 16:10:59 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.0
+        h=x-gm-message-state:mime-version:sender:from:date:message-id:subject
+         :to;
+        bh=AkEGqYMvDXfdqXGtEQVGA6u/vJOunFX3Hhi5b2/4cJY=;
+        b=OtPU24oiXmr3JGw0QNCfNsI4NhPMgJFODWfpptnhId2pGdLwzVLlRsJzuphOoWQnyc
+         TnFXPnNu1vXA8Qygerct8oSV42Lj/d+0D4qeFl3dCZSFMD7oHrsOwzvqiMJ2ig5zAE6y
+         fmO5FPb8X0fuqsesA4i3Pmb1rT7hPotoDtjyMe8ekwGWQHauiqPUoQU9JiP3fZ5hmOdZ
+         Q2RKOl0t8JJUOwN8qvToIO+65MZA/gXPE4TUHZeI5qHvoht3UTNxEvPZOoM8ORDrII/e
+         7pmVkg8IRlCORdMYGgxwwIo8WfXETpFne4B+GFXCwa7P9Lx+xSxg0R1catHDUz0mvbcd
+         zpew==
+X-Gm-Message-State: AOAM530glon7uFkNutXOptfbWTbw+TyMkHw+RBVCXVzQc/33Pk/9sjQ5
+        6NLlt7SJheHGdVxwVPjZ099fSlxfNV8leGX3Myo=
+X-Google-Smtp-Source: ABdhPJyPDlzzdL9LtO34/AYON59ZAAPtK20jn/5mwJz4/mHgUepH2NQwXG57+12khVuKIVRWzSOYsxK3YFA0Th8h01Y=
+X-Received: by 2002:ac2:5b1a:: with SMTP id v26mr256786lfn.286.1611245809339;
+ Thu, 21 Jan 2021 08:16:49 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20210120212759.81548-1-ivan@cloudflare.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
+Sender: abubamusa160@gmail.com
+Received: by 2002:a9a:7eda:0:b029:ba:667c:35d3 with HTTP; Thu, 21 Jan 2021
+ 08:16:48 -0800 (PST)
+From:   hauck man <hauckpristman@gmail.com>
+Date:   Thu, 21 Jan 2021 08:16:48 -0800
+X-Google-Sender-Auth: O8wg-2OLKM-pfkTHVn8LwXyvLdM
+Message-ID: <CAPOgmma6Ha80HgxbKupCd6vsABfF1COVePAgDz0=Ajno+qRZLQ@mail.gmail.com>
+Subject: URGENT RESPONSE
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 20/01/2021 21:27, Ivan Babrou wrote:
-> Without this change the driver tries to allocate too many queues,
-> breaching the number of available msi-x interrupts on machines
-> with many logical cpus and default adapter settings:
-> 
-> Insufficient resources for 12 XDP event queues (24 other channels, max 32)
-> 
-> Which in turn triggers EINVAL on XDP processing:
-> 
-> sfc 0000:86:00.0 ext0: XDP TX failed (-22)
-> 
-> Signed-off-by: Ivan Babrou <ivan@cloudflare.com>
+-- 
+ Sir / Madam,
 
-Acked-by: Edward Cree <ecree.xilinx@gmail.com>
+Hi Friend I am the auditing director of the International Finance Bank
+Plc bf I want to transfer an abandoned sum of 10.5 millions USD  to
+your account.50% will be for you.
+No risk involved. Contact me for more details.
+Kindly reply me back to my alternative email address (hauckpristman@gmail.com)
+Thanks
+Mr Hauck Pristman.
