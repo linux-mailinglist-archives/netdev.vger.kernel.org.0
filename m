@@ -2,642 +2,265 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D59DB2FF008
-	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 17:20:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 86C542FF04D
+	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 17:30:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732160AbhAUQTt (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jan 2021 11:19:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44908 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731507AbhAUQEF (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jan 2021 11:04:05 -0500
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B761C0617A9
-        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 08:02:42 -0800 (PST)
-Received: by mail-ej1-x631.google.com with SMTP id hs11so3355600ejc.1
-        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 08:02:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Bm9qBC8ap96BR+8NABDb1wab8/vNSBiRP15yEdYFMis=;
-        b=qar2ZveDllm3oSVbp1hB/GAUqXeNcl8DbqHTTXwVaC9XCSl5lh8S/G75at1iRNZqOo
-         OPbtJXXPTK+7HRjjcn/cQixUUFbOv6qXybFBsZYsU7IXqSp07ECeW30wscpGNohQI6kP
-         RXZuH9nVX6oS6/t5H706B03onB5e1PzGWrDcB/lBZiKud2qCaa36AzWn+MBUSqQL7S7F
-         7n1HRgStysWvVdjF3G46PZfijEp9N4Lkn5moPiGVCEz/RbBBLCJxEJIdzzCeDMell33V
-         RQUzZFn1HUz1IIy+oWFtJ3nxGG1qIWcPdOvj3da42ycV5IK5zZXrbrmHf4d4QScHNulI
-         qDLA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Bm9qBC8ap96BR+8NABDb1wab8/vNSBiRP15yEdYFMis=;
-        b=S9XeJLXoUPpQN7Cse9gHWv+ownSPm+2PCi3a6sXqFN/nTb+TNbP1KSKl5gkCtj6e73
-         N8C/O2sRK2NnD5JueE4N6ZsVYNlh/PyrzZ+XmnCa0/i2TRfMEP7/0J6lGTS+LA6OAd06
-         nj3HRt7WBJdgfNZbVfy6Pox2BXK4pY/JT9c/BR3xIn2YuUUlsBKCPp8YG80XRwqd9svt
-         Hi9fWB6DMy/30I8opP/y2Lkl8r8Rey6M0CvUKXuj5SBA0P6+/8CiaKnedNjGz9AJJhFV
-         C/DK/LSYkI5kqeombANhvX06GRpJt0YEXrBEFHEl7Fe+4GCWTCoeBvm0LJP3VJ3Ms6rg
-         /p9A==
-X-Gm-Message-State: AOAM5313TLxTP5EJZOElL93jBeqEJTPMPkSItLT/a2N8S5K9R9C7LXS+
-        BoTatYKfO5TkYj3u+n/aM2I=
-X-Google-Smtp-Source: ABdhPJz8JuXr8GktSCUEwg3AcSFn+Jq9d+1NIcRx/4gJamfx+GXTdiPGxIJ8V3CTJEH+/aeQABi6tA==
-X-Received: by 2002:a17:906:3b0b:: with SMTP id g11mr92321ejf.169.1611244960825;
-        Thu, 21 Jan 2021 08:02:40 -0800 (PST)
-Received: from localhost.localdomain (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id zk10sm2419973ejb.10.2021.01.21.08.02.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Jan 2021 08:02:40 -0800 (PST)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-        Hongbo Wang <hongbo.wang@nxp.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Po Liu <po.liu@nxp.com>, Yangbo Lu <yangbo.lu@nxp.com>,
-        Maxim Kochetkov <fido_max@inbox.ru>,
-        Eldar Gasanov <eldargasanov2@gmail.com>,
-        Andrey L <al@b4comtech.com>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        UNGLinuxDriver@microchip.com
-Subject: [PATCH v6 net-next 10/10] net: dsa: felix: perform switch setup for tag_8021q
-Date:   Thu, 21 Jan 2021 18:01:31 +0200
-Message-Id: <20210121160131.2364236-11-olteanv@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210121160131.2364236-1-olteanv@gmail.com>
-References: <20210121160131.2364236-1-olteanv@gmail.com>
+        id S2387640AbhAUQ37 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jan 2021 11:29:59 -0500
+Received: from mail-dm6nam11on2100.outbound.protection.outlook.com ([40.107.223.100]:40024
+        "EHLO NAM11-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S2387607AbhAUQDF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 21 Jan 2021 11:03:05 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=KR5fE5fW68qskEGgwMUccUjqcUvsTXTZpkUwWSyeY8YxY5GtzjHE6pJGyzmSuG9LokEf1WmJTOLdihq9lYYhuneQ9QhplCdeN9+r/9qgn7dhunaremJpyV6Qhk0TBEaZ+iHIDeEn/RYVxdzVkqM3R5Rl/z2YEqFHmqa1hT9BEU+HMd/C3iPO3CHm1I4ynw0/HFbrTt9GYtx9vouA/ymtkkTfm/CQIPfqg5sp8HUk1rePoxXzohgEFwgk9hHC9tX+r4SwgX2kJAd0aPHAh/Ca+4Muq7eSIDG3dCMEM9e3HvKqPW2G6238LTwqaTCyEt/tT1RBosz/+sjdqhdRXfyoSw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=xHBt7kRea/PdS3JGFUFtoB8vopUCxYnyVcO6pXPhchg=;
+ b=GhnwH3HeGMpufJO76FpGvO5LKRs7mjm46GQjaeLb7Rvavwvm6R/ZAr29Kz+vez1qyST988OEBwXdQXVndrHlI4V6k3mlhPSlUAOWcGeMGj5KWMpdYBU808v3S+N1peN56drrkxE09tcJOgyJSrL9gxJGjTHExhibB+DqkQBSTCV1tciHBbL8MHzPmEgFacIbWjWMtfAMsvuLlRYsHo/LZsEPDHJGYnxqQ5coFef+Fc3DYrSZ4DiN4ARBeHCRJj/Y+JzIVND+nvkrdqrxIhKxdllOy3fNFfuB8BvU0SK4d6lDR6BbiuIuL1CsUA1WdWB0UP0ngr6cKL9sGJNsGnRu3g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microsoft.com; dmarc=pass action=none
+ header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=xHBt7kRea/PdS3JGFUFtoB8vopUCxYnyVcO6pXPhchg=;
+ b=F1tfjlZTe7YBMmWJoBB+VXj//zXr7fgBegEs4SBl0oNx0agndNoF+OBzr3uKWM94J+qD+wDepT8foBBLD1Ph5ohATgfvUnN3i/BMxFLuRpfQ96bUwVsN9SjQdTlMHJ9wxBbMW5Vnbf9VPLLZvJb9Njvsa8vHsHxqW5lqo2P/JWA=
+Received: from (2603:10b6:207:30::18) by
+ BL0PR2101MB1092.namprd21.prod.outlook.com (2603:10b6:207:37::26) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3805.1; Thu, 21 Jan
+ 2021 16:02:17 +0000
+Received: from BL0PR2101MB0930.namprd21.prod.outlook.com
+ ([fe80::5148:e9c:f912:a799]) by BL0PR2101MB0930.namprd21.prod.outlook.com
+ ([fe80::5148:e9c:f912:a799%3]) with mapi id 15.20.3805.006; Thu, 21 Jan 2021
+ 16:02:16 +0000
+From:   Haiyang Zhang <haiyangz@microsoft.com>
+To:     Andrea Parri <parri.andrea@gmail.com>
+CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        KY Srinivasan <kys@microsoft.com>,
+        Stephen Hemminger <sthemmin@microsoft.com>,
+        Wei Liu <wei.liu@kernel.org>,
+        Michael Kelley <mikelley@microsoft.com>,
+        Tianyu Lan <Tianyu.Lan@microsoft.com>,
+        Saruhan Karademir <skarade@microsoft.com>,
+        Juan Vazquez <juvazq@microsoft.com>,
+        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: RE: [PATCH 4/4] hv_netvsc: Restrict configurations on isolated guests
+Thread-Topic: [PATCH 4/4] hv_netvsc: Restrict configurations on isolated
+ guests
+Thread-Index: AQHW7ozTJyADPmDtnEe0lsr5e3G6Fqow4pmAgACVmQCAAMDHoA==
+Date:   Thu, 21 Jan 2021 16:02:16 +0000
+Message-ID: <BL0PR2101MB0930698DBF66828F4EE4CDA8CAA19@BL0PR2101MB0930.namprd21.prod.outlook.com>
+References: <20210119175841.22248-1-parri.andrea@gmail.com>
+ <20210119175841.22248-5-parri.andrea@gmail.com>
+ <BL0PR2101MB0930CF4297121B1BB904AA7DCAA29@BL0PR2101MB0930.namprd21.prod.outlook.com>
+ <20210121040526.GA264889@anparri>
+In-Reply-To: <20210121040526.GA264889@anparri>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=1a21c132-8c28-4486-aec6-897eecaca316;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2021-01-21T15:35:25Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
+authentication-results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=microsoft.com;
+x-originating-ip: [75.100.88.238]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: a8a897cf-6fe7-472a-efea-08d8be25ecdb
+x-ms-traffictypediagnostic: BL0PR2101MB1092:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BL0PR2101MB10923758620B14D464525370CAA19@BL0PR2101MB1092.namprd21.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: 0s+ov1Xg49V6Yrxq4TmutU99MSbDAavB+PdpjYtEPaZhp4m2lpuxODjg+xZ4Kr7UOOVBBryncw4CI8PS+mfwFcsQqJP4vUV4YvpQBtWyXKamHuLYQXJsyD5KB/SZI0hKKMxIhfpkQOA17kA8CtLOvK20TDX9p6tJPqdJWKBcLftdpq4XMDoDcsvKAI/ykWDiAHvIAcY5G2kUMnWrd1NIyTc5qV1G/BgJWhwX8hDx9BkNavy3ac0oj9k4Se+n1BLwaWvSxcc1GfHW/wuMFVFP/grH95Z3gSorHyD8QVpBQjP/Vte+mL/snFJNsjDXtmaeebBtYQwiHBQjYianhkBdexDSNxMYsRV370vfSIiDpYiIvrLMx1y3r+iEDfqegmDfhKUilyQnv656eAHHVQPgdqzSkO0WP9fOT2ZOzMhYk18ZJKa17nIp3UwvV6cz5LMx+V+Bv0tqximQwa3V+ieHK1JVLTfzEyB8k/KGIVYnMpcKYBkaPfhjOAknnhlx/3pXmWcAsVhRqkqbcW22/1SRJA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL0PR2101MB0930.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(396003)(366004)(39860400002)(376002)(136003)(346002)(71200400001)(82950400001)(83380400001)(64756008)(6916009)(76116006)(54906003)(86362001)(53546011)(66476007)(66556008)(6506007)(66446008)(7696005)(8676002)(186003)(33656002)(478600001)(10290500003)(26005)(82960400001)(2906002)(8936002)(66946007)(55016002)(316002)(4326008)(52536014)(9686003)(5660300002)(8990500004);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?JzvOEI95b5SNVZHWK4NkWN97AyhsYpeTt/mQt4i/JFF/5VJAPrVK554Q17tV?=
+ =?us-ascii?Q?LLu4B+Tgo9pcdAkej/wmLEEkeeo5Sqtu6PTZL4/Wfl9OoqZ3lAMrMp0djbJK?=
+ =?us-ascii?Q?hFESqFJgOhDZi2ArfKWk6QiF1Ut7y1q5XBZ0sFKLWXaDdUcoI3sh648pqRId?=
+ =?us-ascii?Q?PTQR0eLOgMJ4sJnB0bDa7iu5LVMILAP84y56oCg7I9lGtGUH8t/gJAJwTlWI?=
+ =?us-ascii?Q?d0khuJs2JqN17cTsvaOnMc8u8keZXP5OXNJoMBiu6iRRNWPYmQvccqfmUrzR?=
+ =?us-ascii?Q?XOHYRn4aQtx28505Sy+ytj74otXtdgGCWxzzwYjwZlsb8BwDF1SELRNpWf0L?=
+ =?us-ascii?Q?70ru85U0pE8Mlnd0NcY6mxPYuY9LBEAewqx06eM8PRjMRtdN//8kXbGoL1EH?=
+ =?us-ascii?Q?++NTso+kPYEnYjxwLvwR+FAbPLpqN75xH+TDE2BgC3I4DRvHfNT3YfoJCs83?=
+ =?us-ascii?Q?e52CeUZEs0aWNt+KWaBwC+EwdaNQvZsN4W1IOz8CKIEfqqgDSBJqXl3OSo0S?=
+ =?us-ascii?Q?h9yna8X60sS6jjpCY3ic4sbrsSlHhTZ5jbM/BHFuu8YtNIqJRXQQ5IU7j6ag?=
+ =?us-ascii?Q?pBTolvbp4ojOsNB8QR3WKOUAOvMr32s/mzLdd1VjENxWZFBT1knJLJ+HYwhY?=
+ =?us-ascii?Q?hDMSz7S8xfe4ud/5G9nKr4/cpZ7pvI4PQnHoOg9sokm3Pmy8+shwH+VF0xe5?=
+ =?us-ascii?Q?XeT44O0iznM8ecs2J3v6gx0FtTaVz+phYQE53zPNDT/vzwfzApVgTstMUzts?=
+ =?us-ascii?Q?yjdmcLfuhZBCn57FUz2l0Yicsl+JAQYARw+DZyihPDITxPNX+jOl4Oq6H3B7?=
+ =?us-ascii?Q?KKuUrtbS2a8t35XQA2W5xlsfi/NNBLHxJlBv+o78/cYuirv31wqRUgH7HgAB?=
+ =?us-ascii?Q?eKvSj3loqQ8sBlNJcWq78UxpLQ4LpkONSvlqhaN+4sfYxKGWUEndaCUyMzMM?=
+ =?us-ascii?Q?d/k+JLccTJTJyBmcuJW3aASVNqu6yWKGCr5OMC+r4LHbkm/p/obeDtb5WEVb?=
+ =?us-ascii?Q?jrSE4+d3wGgHV8R793AXKtiM3/l3WrIIFHciGEGf+wGSldRU8pjOeTXMjzVe?=
+ =?us-ascii?Q?r+a/bhto?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: microsoft.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BL0PR2101MB0930.namprd21.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a8a897cf-6fe7-472a-efea-08d8be25ecdb
+X-MS-Exchange-CrossTenant-originalarrivaltime: 21 Jan 2021 16:02:16.9269
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 0ZUI57baqJg1KmA4bzBRtNrVwVWhLtGOl6G+sZA5cFG7e8EHFIZpa6DJ4uW3uXXj9ZH/QLeohweGRmkOPmS22Q==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR2101MB1092
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Unlike sja1105, the only other user of the software-defined tag_8021q.c
-tagger format, the implementation we choose for the Felix DSA switch
-driver preserves full functionality under a vlan_filtering bridge
-(i.e. IP termination works through the DSA user ports under all
-circumstances).
 
-The tag_8021q protocol just wants:
-- Identifying the ingress switch port based on the RX VLAN ID, as seen
-  by the CPU. We achieve this by using the TCAM engines (which are also
-  used for tc-flower offload) to push the RX VLAN as a second, outer
-  tag, on egress towards the CPU port.
-- Steering traffic injected into the switch from the network stack
-  towards the correct front port based on the TX VLAN, and consuming
-  (popping) that header on the switch's egress.
+> -----Original Message-----
+> From: Andrea Parri <parri.andrea@gmail.com>
+> Sent: Wednesday, January 20, 2021 11:05 PM
+> To: Haiyang Zhang <haiyangz@microsoft.com>
+> Cc: linux-kernel@vger.kernel.org; KY Srinivasan <kys@microsoft.com>;
+> Stephen Hemminger <sthemmin@microsoft.com>; Wei Liu
+> <wei.liu@kernel.org>; Michael Kelley <mikelley@microsoft.com>; Tianyu Lan
+> <Tianyu.Lan@microsoft.com>; Saruhan Karademir
+> <skarade@microsoft.com>; Juan Vazquez <juvazq@microsoft.com>; linux-
+> hyperv@vger.kernel.org; David S. Miller <davem@davemloft.net>; Jakub
+> Kicinski <kuba@kernel.org>; netdev@vger.kernel.org
+> Subject: Re: [PATCH 4/4] hv_netvsc: Restrict configurations on isolated
+> guests
+>=20
+> > > @@ -544,7 +545,8 @@ static int negotiate_nvsp_ver(struct hv_device
+> > > *device,
+> > >  	init_packet->msg.v2_msg.send_ndis_config.capability.ieee8021q =3D 1=
+;
+> > >
+> > >  	if (nvsp_ver >=3D NVSP_PROTOCOL_VERSION_5) {
+> > > -		init_packet->msg.v2_msg.send_ndis_config.capability.sriov =3D
+> > > 1;
+> > > +		if (!hv_is_isolation_supported())
+> > > +			init_packet-
+> > > >msg.v2_msg.send_ndis_config.capability.sriov =3D 1;
+> >
+> > Please also add a log there stating we don't support sriov in this case=
+.
+> Otherwise,
+> > customers will ask why vf not showing up.
+>=20
+> IIUC, you're suggesting that I append something like:
+>=20
+> +		else
+> +			netdev_info(ndev, "SR-IOV not advertised: isolation
+> supported\n");
+>=20
+> I've added this locally; please let me know if you had something else
+> /better in mind.
 
-A tc-flower pseudocode of the static configuration done by the driver
-would look like this:
+This message explains the failure reason better:
+  "SR-IOV not advertised by guests on the host supporting isolation"
 
-$ tc qdisc add dev <cpu-port> clsact
-$ for eth in swp0 swp1 swp2 swp3; do \
-	tc filter add dev <cpu-port> egress flower indev ${eth} \
-		action vlan push id <rxvlan> protocol 802.1ad; \
-	tc filter add dev <cpu-port> ingress protocol 802.1Q flower
-		vlan_id <txvlan> action vlan pop \
-		action mirred egress redirect dev ${eth}; \
-done
+>=20
+>=20
+> > > @@ -563,6 +565,13 @@ static int negotiate_nvsp_ver(struct hv_device
+> > > *device,
+> > >  	return ret;
+> > >  }
+> > >
+> > > +static bool nvsp_is_valid_version(u32 version)
+> > > +{
+> > > +       if (hv_is_isolation_supported())
+> > > +               return version >=3D NVSP_PROTOCOL_VERSION_61;
+> > > +       return true;
+> > Hosts support isolation should run nvsp 6.1+. This error is not expecte=
+d.
+> > Instead of fail silently, we should log an error to explain why it's fa=
+iled, and
+> the current version and expected version.
+>=20
+> Please see my next comment below.
+>=20
+>=20
+> > > +}
+> > > +
+> > >  static int netvsc_connect_vsp(struct hv_device *device,
+> > >  			      struct netvsc_device *net_device,
+> > >  			      const struct netvsc_device_info *device_info)
+> > > @@ -579,12 +588,17 @@ static int netvsc_connect_vsp(struct hv_device
+> > > *device,
+> > >  	init_packet =3D &net_device->channel_init_pkt;
+> > >
+> > >  	/* Negotiate the latest NVSP protocol supported */
+> > > -	for (i =3D ARRAY_SIZE(ver_list) - 1; i >=3D 0; i--)
+> > > +	for (i =3D ARRAY_SIZE(ver_list) - 1; i >=3D 0; i--) {
+> > > +		if (!nvsp_is_valid_version(ver_list[i])) {
+> > > +			ret =3D -EPROTO;
+> > > +			goto cleanup;
+> > > +		}
+> >
+> > This code can catch the invalid, but cannot get the current host nvsp
+> version.
+> > I'd suggest move this check after version negotiation is done. So we ca=
+n log
+> what's
+> > the current host nvsp version, and why we fail it (the expected nvsp ve=
+r).
+>=20
+> Mmh, invalid versions are not negotiated.  How about I simply add the
+> following logging right before the above 'ret =3D -EPROTO' say?
+>=20
+> +			netdev_err(ndev, "Invalid NVSP version %x
+> (expected >=3D %x): isolation supported\n",
+> +				   ver_list[i], NVSP_PROTOCOL_VERSION_61);
+>=20
+> (or something along these lines)
 
-but of course since DSA does not register network interfaces for the CPU
-port, this configuration would be impossible for the user to do. Also,
-due to the same reason, it is impossible for the user to inadvertently
-delete these rules using tc. These rules do not collide in any way with
-tc-flower, they just consume some TCAM space, which is something we can
-live with.
+The negotiation process runs from the latest to oldest. If the host is 5, y=
+our code=20
+will fail before trying v6.0, and log:
+	"Invalid NVSP version 60000  (expected >=3D 60001): isolation supported"
+This will make user think the NVSP version is 6.0.
 
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
----
-Changes in v6:
-None.
+Since you will let the NIC fail and cleanup, there is no harm to check the =
+version=20
+after negotiation. And this case is unexpected from a "normal" host. So I s=
+uggest=20
+move the check after negotiation is done, then we know the actual host nvsp=
+=20
+version that causing this issue. And we can bring the accurate info to host=
+ team=20
+for better diagnosability.
 
-Changes in v5:
-Path is split from previous monolithic patch "net: dsa: felix: add new
-VLAN-based tagger".
+Please point out this invalid version is caused by the host side, like this=
+:
+	"Invalid NVSP version 0x50000  (expected >=3D 0x60001) from the host with =
+isolation support"
+Also please use "0x%x" for hexadecimal numbers.
 
-Changes in v4:
-- Support simultaneous compilation of tag_ocelot.c and
-  tag_ocelot_8021q.c.
-- Support runtime switchover between these two taggers.
-- We are now actually performing cleanup instead of just probe-time
-  setup, which is required for supporting tagger switchover.
+>=20
+>=20
+> > > @@ -1357,7 +1371,8 @@ static void netvsc_receive_inband(struct
+> > > net_device *ndev,
+> > >  		break;
+> > >
+> > >  	case NVSP_MSG4_TYPE_SEND_VF_ASSOCIATION:
+> > > -		netvsc_send_vf(ndev, nvmsg, msglen);
+> > > +		if (!hv_is_isolation_supported())
+> > > +			netvsc_send_vf(ndev, nvmsg, msglen);
+> >
+> > When the driver doesn't advertise SRIOV, this message is not expected.
+> > Instead of ignore silently, we should log an error.
+>=20
+> I've appended:
+>=20
+> +		else
+> +			netdev_err(ndev, "Unexpected VF message:
+> isolation supported\n");
 
-Changes in v3:
-- Use a per-port bool is_dsa_8021q_cpu instead of a single dsa_8021q_cpu
-  variable, to be compatible with future work where there may be
-  potentially multiple tag_8021q CPU ports in a LAG.
-- Initialize ocelot->npi = -1 in felix_8021q_cpu_port_init to ensure we
-  don't mistakenly trigger NPI-specific code in ocelot.
+Please log the msg type:
+  "Ignore VF_ASSOCIATION msg from the host supporting isolation"
 
-Changes in v2:
-Clean up the hardcoding of random VCAP filter IDs and the inclusion of a
-private ocelot header.
-
- drivers/net/dsa/ocelot/felix.c          | 332 ++++++++++++++++++++++++
- drivers/net/dsa/ocelot/felix.h          |   1 +
- drivers/net/ethernet/mscc/ocelot.c      |  33 ++-
- drivers/net/ethernet/mscc/ocelot_vcap.c |   1 +
- drivers/net/ethernet/mscc/ocelot_vcap.h |   3 -
- include/soc/mscc/ocelot.h               |   1 +
- include/soc/mscc/ocelot_vcap.h          |   3 +
- 7 files changed, 363 insertions(+), 11 deletions(-)
-
-diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
-index f45dfb800bcb..7096b5985199 100644
---- a/drivers/net/dsa/ocelot/felix.c
-+++ b/drivers/net/dsa/ocelot/felix.c
-@@ -13,6 +13,7 @@
- #include <soc/mscc/ocelot_ana.h>
- #include <soc/mscc/ocelot_ptp.h>
- #include <soc/mscc/ocelot.h>
-+#include <linux/dsa/8021q.h>
- #include <linux/platform_device.h>
- #include <linux/packing.h>
- #include <linux/module.h>
-@@ -24,6 +25,331 @@
- #include <net/dsa.h>
- #include "felix.h"
- 
-+static int felix_tag_8021q_rxvlan_add(struct felix *felix, int port, u16 vid,
-+				      bool pvid, bool untagged)
-+{
-+	struct ocelot_vcap_filter *outer_tagging_rule;
-+	struct ocelot *ocelot = &felix->ocelot;
-+	struct dsa_switch *ds = felix->ds;
-+	int key_length, upstream, err;
-+
-+	/* We don't need to install the rxvlan into the other ports' filtering
-+	 * tables, because we're just pushing the rxvlan when sending towards
-+	 * the CPU
-+	 */
-+	if (!pvid)
-+		return 0;
-+
-+	key_length = ocelot->vcap[VCAP_ES0].keys[VCAP_ES0_IGR_PORT].length;
-+	upstream = dsa_upstream_port(ds, port);
-+
-+	outer_tagging_rule = kzalloc(sizeof(struct ocelot_vcap_filter),
-+				     GFP_KERNEL);
-+	if (!outer_tagging_rule)
-+		return -ENOMEM;
-+
-+	outer_tagging_rule->key_type = OCELOT_VCAP_KEY_ANY;
-+	outer_tagging_rule->prio = 1;
-+	outer_tagging_rule->id.cookie = port;
-+	outer_tagging_rule->id.tc_offload = false;
-+	outer_tagging_rule->block_id = VCAP_ES0;
-+	outer_tagging_rule->type = OCELOT_VCAP_FILTER_OFFLOAD;
-+	outer_tagging_rule->lookup = 0;
-+	outer_tagging_rule->ingress_port.value = port;
-+	outer_tagging_rule->ingress_port.mask = GENMASK(key_length - 1, 0);
-+	outer_tagging_rule->egress_port.value = upstream;
-+	outer_tagging_rule->egress_port.mask = GENMASK(key_length - 1, 0);
-+	outer_tagging_rule->action.push_outer_tag = OCELOT_ES0_TAG;
-+	outer_tagging_rule->action.tag_a_tpid_sel = OCELOT_TAG_TPID_SEL_8021AD;
-+	outer_tagging_rule->action.tag_a_vid_sel = 1;
-+	outer_tagging_rule->action.vid_a_val = vid;
-+
-+	err = ocelot_vcap_filter_add(ocelot, outer_tagging_rule, NULL);
-+	if (err)
-+		kfree(outer_tagging_rule);
-+
-+	return err;
-+}
-+
-+static int felix_tag_8021q_txvlan_add(struct felix *felix, int port, u16 vid,
-+				      bool pvid, bool untagged)
-+{
-+	struct ocelot_vcap_filter *untagging_rule, *redirect_rule;
-+	struct ocelot *ocelot = &felix->ocelot;
-+	struct dsa_switch *ds = felix->ds;
-+	int upstream, err;
-+
-+	/* tag_8021q.c assumes we are implementing this via port VLAN
-+	 * membership, which we aren't. So we don't need to add any VCAP filter
-+	 * for the CPU port.
-+	 */
-+	if (ocelot->ports[port]->is_dsa_8021q_cpu)
-+		return 0;
-+
-+	untagging_rule = kzalloc(sizeof(struct ocelot_vcap_filter), GFP_KERNEL);
-+	if (!untagging_rule)
-+		return -ENOMEM;
-+
-+	redirect_rule = kzalloc(sizeof(struct ocelot_vcap_filter), GFP_KERNEL);
-+	if (!redirect_rule) {
-+		kfree(untagging_rule);
-+		return -ENOMEM;
-+	}
-+
-+	upstream = dsa_upstream_port(ds, port);
-+
-+	untagging_rule->key_type = OCELOT_VCAP_KEY_ANY;
-+	untagging_rule->ingress_port_mask = BIT(upstream);
-+	untagging_rule->vlan.vid.value = vid;
-+	untagging_rule->vlan.vid.mask = VLAN_VID_MASK;
-+	untagging_rule->prio = 1;
-+	untagging_rule->id.cookie = port;
-+	untagging_rule->id.tc_offload = false;
-+	untagging_rule->block_id = VCAP_IS1;
-+	untagging_rule->type = OCELOT_VCAP_FILTER_OFFLOAD;
-+	untagging_rule->lookup = 0;
-+	untagging_rule->action.vlan_pop_cnt_ena = true;
-+	untagging_rule->action.vlan_pop_cnt = 1;
-+	untagging_rule->action.pag_override_mask = 0xff;
-+	untagging_rule->action.pag_val = port;
-+
-+	err = ocelot_vcap_filter_add(ocelot, untagging_rule, NULL);
-+	if (err) {
-+		kfree(untagging_rule);
-+		kfree(redirect_rule);
-+		return err;
-+	}
-+
-+	redirect_rule->key_type = OCELOT_VCAP_KEY_ANY;
-+	redirect_rule->ingress_port_mask = BIT(upstream);
-+	redirect_rule->pag = port;
-+	redirect_rule->prio = 1;
-+	redirect_rule->id.cookie = port;
-+	redirect_rule->id.tc_offload = false;
-+	redirect_rule->block_id = VCAP_IS2;
-+	redirect_rule->type = OCELOT_VCAP_FILTER_OFFLOAD;
-+	redirect_rule->lookup = 0;
-+	redirect_rule->action.mask_mode = OCELOT_MASK_MODE_REDIRECT;
-+	redirect_rule->action.port_mask = BIT(port);
-+
-+	err = ocelot_vcap_filter_add(ocelot, redirect_rule, NULL);
-+	if (err) {
-+		ocelot_vcap_filter_del(ocelot, untagging_rule);
-+		kfree(redirect_rule);
-+		return err;
-+	}
-+
-+	return 0;
-+}
-+
-+static int felix_tag_8021q_vlan_add(struct dsa_switch *ds, int port, u16 vid,
-+				    u16 flags)
-+{
-+	bool untagged = flags & BRIDGE_VLAN_INFO_UNTAGGED;
-+	bool pvid = flags & BRIDGE_VLAN_INFO_PVID;
-+	struct ocelot *ocelot = ds->priv;
-+
-+	if (vid_is_dsa_8021q_rxvlan(vid))
-+		return felix_tag_8021q_rxvlan_add(ocelot_to_felix(ocelot),
-+						  port, vid, pvid, untagged);
-+
-+	if (vid_is_dsa_8021q_txvlan(vid))
-+		return felix_tag_8021q_txvlan_add(ocelot_to_felix(ocelot),
-+						  port, vid, pvid, untagged);
-+
-+	return 0;
-+}
-+
-+static int felix_tag_8021q_rxvlan_del(struct felix *felix, int port, u16 vid)
-+{
-+	struct ocelot_vcap_filter *outer_tagging_rule;
-+	struct ocelot_vcap_block *block_vcap_es0;
-+	struct ocelot *ocelot = &felix->ocelot;
-+
-+	block_vcap_es0 = &ocelot->block[VCAP_ES0];
-+
-+	outer_tagging_rule = ocelot_vcap_block_find_filter_by_id(block_vcap_es0,
-+								 port, false);
-+	/* In rxvlan_add, we had the "if (!pvid) return 0" logic to avoid
-+	 * installing outer tagging ES0 rules where they weren't needed.
-+	 * But in rxvlan_del, the API doesn't give us the "flags" anymore,
-+	 * so that forces us to be slightly sloppy here, and just assume that
-+	 * if we didn't find an outer_tagging_rule it means that there was
-+	 * none in the first place, i.e. rxvlan_del is called on a non-pvid
-+	 * port. This is most probably true though.
-+	 */
-+	if (!outer_tagging_rule)
-+		return 0;
-+
-+	return ocelot_vcap_filter_del(ocelot, outer_tagging_rule);
-+}
-+
-+static int felix_tag_8021q_txvlan_del(struct felix *felix, int port, u16 vid)
-+{
-+	struct ocelot_vcap_filter *untagging_rule, *redirect_rule;
-+	struct ocelot_vcap_block *block_vcap_is1;
-+	struct ocelot_vcap_block *block_vcap_is2;
-+	struct ocelot *ocelot = &felix->ocelot;
-+	int err;
-+
-+	if (ocelot->ports[port]->is_dsa_8021q_cpu)
-+		return 0;
-+
-+	block_vcap_is1 = &ocelot->block[VCAP_IS1];
-+	block_vcap_is2 = &ocelot->block[VCAP_IS2];
-+
-+	untagging_rule = ocelot_vcap_block_find_filter_by_id(block_vcap_is1,
-+							     port, false);
-+	if (!untagging_rule)
-+		return 0;
-+
-+	err = ocelot_vcap_filter_del(ocelot, untagging_rule);
-+	if (err)
-+		return err;
-+
-+	redirect_rule = ocelot_vcap_block_find_filter_by_id(block_vcap_is2,
-+							    port, false);
-+	if (!redirect_rule)
-+		return 0;
-+
-+	return ocelot_vcap_filter_del(ocelot, redirect_rule);
-+}
-+
-+static int felix_tag_8021q_vlan_del(struct dsa_switch *ds, int port, u16 vid)
-+{
-+	struct ocelot *ocelot = ds->priv;
-+
-+	if (vid_is_dsa_8021q_rxvlan(vid))
-+		return felix_tag_8021q_rxvlan_del(ocelot_to_felix(ocelot),
-+						  port, vid);
-+
-+	if (vid_is_dsa_8021q_txvlan(vid))
-+		return felix_tag_8021q_txvlan_del(ocelot_to_felix(ocelot),
-+						  port, vid);
-+
-+	return 0;
-+}
-+
-+static const struct dsa_8021q_ops felix_tag_8021q_ops = {
-+	.vlan_add	= felix_tag_8021q_vlan_add,
-+	.vlan_del	= felix_tag_8021q_vlan_del,
-+};
-+
-+/* Alternatively to using the NPI functionality, that same hardware MAC
-+ * connected internally to the enetc or fman DSA master can be configured to
-+ * use the software-defined tag_8021q frame format. As far as the hardware is
-+ * concerned, it thinks it is a "dumb switch" - the queues of the CPU port
-+ * module are now disconnected from it, but can still be accessed through
-+ * register-based MMIO.
-+ */
-+static void felix_8021q_cpu_port_init(struct ocelot *ocelot, int port)
-+{
-+	ocelot->ports[port]->is_dsa_8021q_cpu = true;
-+	ocelot->npi = -1;
-+
-+	/* Overwrite PGID_CPU with the non-tagging port */
-+	ocelot_write_rix(ocelot, BIT(port), ANA_PGID_PGID, PGID_CPU);
-+}
-+
-+static void felix_8021q_cpu_port_deinit(struct ocelot *ocelot, int port)
-+{
-+	ocelot->ports[port]->is_dsa_8021q_cpu = false;
-+
-+	/* Restore PGID_CPU */
-+	ocelot_write_rix(ocelot, BIT(ocelot->num_phys_ports), ANA_PGID_PGID,
-+			 PGID_CPU);
-+}
-+
-+static int felix_setup_tag_8021q(struct dsa_switch *ds, int cpu)
-+{
-+	struct ocelot *ocelot = ds->priv;
-+	struct felix *felix = ocelot_to_felix(ocelot);
-+	unsigned long cpu_flood;
-+	int port, err;
-+
-+	felix_8021q_cpu_port_init(ocelot, cpu);
-+
-+	for (port = 0; port < ds->num_ports; port++) {
-+		if (dsa_is_unused_port(ds, port))
-+			continue;
-+
-+		/* This overwrites ocelot_init():
-+		 * Do not forward BPDU frames to the CPU port module,
-+		 * for 2 reasons:
-+		 * - When these packets are injected from the tag_8021q
-+		 *   CPU port, we want them to go out, not loop back
-+		 *   into the system.
-+		 * - STP traffic ingressing on a user port should go to
-+		 *   the tag_8021q CPU port, not to the hardware CPU
-+		 *   port module.
-+		 */
-+		ocelot_write_gix(ocelot,
-+				 ANA_PORT_CPU_FWD_BPDU_CFG_BPDU_REDIR_ENA(0),
-+				 ANA_PORT_CPU_FWD_BPDU_CFG, port);
-+	}
-+
-+	/* In tag_8021q mode, the CPU port module is unused. So we
-+	 * want to disable flooding of any kind to the CPU port module,
-+	 * since packets going there will end in a black hole.
-+	 */
-+	cpu_flood = ANA_PGID_PGID_PGID(BIT(ocelot->num_phys_ports));
-+	ocelot_rmw_rix(ocelot, 0, cpu_flood, ANA_PGID_PGID, PGID_UC);
-+	ocelot_rmw_rix(ocelot, 0, cpu_flood, ANA_PGID_PGID, PGID_MC);
-+
-+	ocelot_apply_bridge_fwd_mask(ocelot);
-+
-+	felix->dsa_8021q_ctx = kzalloc(sizeof(*felix->dsa_8021q_ctx),
-+				       GFP_KERNEL);
-+	if (!felix->dsa_8021q_ctx)
-+		return -ENOMEM;
-+
-+	felix->dsa_8021q_ctx->ops = &felix_tag_8021q_ops;
-+	felix->dsa_8021q_ctx->proto = htons(ETH_P_8021AD);
-+	felix->dsa_8021q_ctx->ds = ds;
-+
-+	rtnl_lock();
-+	err = dsa_8021q_setup(felix->dsa_8021q_ctx, true);
-+	rtnl_unlock();
-+	if (err)
-+		goto out_free_dsa_8021_ctx;
-+
-+	return 0;
-+
-+out_free_dsa_8021_ctx:
-+	kfree(felix->dsa_8021q_ctx);
-+	return err;
-+}
-+
-+static void felix_teardown_tag_8021q(struct dsa_switch *ds, int cpu)
-+{
-+	struct ocelot *ocelot = ds->priv;
-+	struct felix *felix = ocelot_to_felix(ocelot);
-+	int err, port;
-+
-+	rtnl_lock();
-+	err = dsa_8021q_setup(felix->dsa_8021q_ctx, false);
-+	rtnl_unlock();
-+	if (err)
-+		dev_err(ds->dev, "dsa_8021q_setup returned %d", err);
-+
-+	kfree(felix->dsa_8021q_ctx);
-+
-+	for (port = 0; port < ds->num_ports; port++) {
-+		if (dsa_is_unused_port(ds, port))
-+			continue;
-+
-+		/* Restore the logic from ocelot_init:
-+		 * do not forward BPDU frames to the front ports.
-+		 */
-+		ocelot_write_gix(ocelot,
-+				 ANA_PORT_CPU_FWD_BPDU_CFG_BPDU_REDIR_ENA(0xffff),
-+				 ANA_PORT_CPU_FWD_BPDU_CFG,
-+				 port);
-+	}
-+
-+	felix_8021q_cpu_port_deinit(ocelot, cpu);
-+}
-+
- /* The CPU port module is connected to the Node Processor Interface (NPI). This
-  * is the mode through which frames can be injected from and extracted to an
-  * external CPU, over Ethernet. In NXP SoCs, the "external CPU" is the ARM CPU
-@@ -119,6 +445,9 @@ static int felix_set_tag_protocol(struct dsa_switch *ds, int cpu,
- 	case DSA_TAG_PROTO_OCELOT:
- 		err = felix_setup_tag_npi(ds, cpu);
- 		break;
-+	case DSA_TAG_PROTO_OCELOT_8021Q:
-+		err = felix_setup_tag_8021q(ds, cpu);
-+		break;
- 	default:
- 		err = -EOPNOTSUPP;
- 	}
-@@ -133,6 +462,9 @@ static void felix_del_tag_protocol(struct dsa_switch *ds, int cpu,
- 	case DSA_TAG_PROTO_OCELOT:
- 		felix_teardown_tag_npi(ds, cpu);
- 		break;
-+	case DSA_TAG_PROTO_OCELOT_8021Q:
-+		felix_teardown_tag_8021q(ds, cpu);
-+		break;
- 	default:
- 		break;
- 	}
-diff --git a/drivers/net/dsa/ocelot/felix.h b/drivers/net/dsa/ocelot/felix.h
-index 264b3bbdc4d1..9d4459f2fffb 100644
---- a/drivers/net/dsa/ocelot/felix.h
-+++ b/drivers/net/dsa/ocelot/felix.h
-@@ -48,6 +48,7 @@ struct felix {
- 	struct lynx_pcs			**pcs;
- 	resource_size_t			switch_base;
- 	resource_size_t			imdio_base;
-+	struct dsa_8021q_context	*dsa_8021q_ctx;
- 	enum dsa_tag_protocol		tag_proto;
- };
- 
-diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
-index ebc797a08506..4217d5e18689 100644
---- a/drivers/net/ethernet/mscc/ocelot.c
-+++ b/drivers/net/ethernet/mscc/ocelot.c
-@@ -891,16 +891,37 @@ EXPORT_SYMBOL(ocelot_get_ts_info);
- 
- void ocelot_apply_bridge_fwd_mask(struct ocelot *ocelot)
- {
-+	unsigned long cpu_fwd_mask = 0;
- 	int port;
- 
-+	/* If a DSA tag_8021q CPU exists, it needs to be unconditionally
-+	 * (i.e. regardless of whether the port is bridged or standalone)
-+	 * included in the regular forwarding path, as opposed to the
-+	 * hardware-based CPU port module which can be a destination for
-+	 * packets even if it isn't part of PGID_SRC.
-+	 */
-+	for (port = 0; port < ocelot->num_phys_ports; port++)
-+		if (ocelot->ports[port]->is_dsa_8021q_cpu)
-+			cpu_fwd_mask |= BIT(port);
-+
- 	/* Apply FWD mask. The loop is needed to add/remove the current port as
- 	 * a source for the other ports.
- 	 */
- 	for (port = 0; port < ocelot->num_phys_ports; port++) {
--		if (ocelot->bridge_fwd_mask & BIT(port)) {
--			unsigned long mask = ocelot->bridge_fwd_mask & ~BIT(port);
-+		/* Standalone ports forward only to DSA tag_8021q CPU ports */
-+		unsigned long mask = cpu_fwd_mask;
-+
-+		/* The DSA tag_8021q CPU ports need to be able to forward
-+		 * packets to all other ports except for themselves
-+		 */
-+		if (ocelot->ports[port]->is_dsa_8021q_cpu) {
-+			mask = GENMASK(ocelot->num_phys_ports - 1, 0);
-+			mask &= ~cpu_fwd_mask;
-+		} else if (ocelot->bridge_fwd_mask & BIT(port)) {
- 			int lag;
- 
-+			mask |= ocelot->bridge_fwd_mask & ~BIT(port);
-+
- 			for (lag = 0; lag < ocelot->num_phys_ports; lag++) {
- 				unsigned long bond_mask = ocelot->lags[lag];
- 
-@@ -912,13 +933,9 @@ void ocelot_apply_bridge_fwd_mask(struct ocelot *ocelot)
- 					break;
- 				}
- 			}
--
--			ocelot_write_rix(ocelot, mask,
--					 ANA_PGID_PGID, PGID_SRC + port);
--		} else {
--			ocelot_write_rix(ocelot, 0,
--					 ANA_PGID_PGID, PGID_SRC + port);
- 		}
-+
-+		ocelot_write_rix(ocelot, mask, ANA_PGID_PGID, PGID_SRC + port);
- 	}
- }
- EXPORT_SYMBOL(ocelot_apply_bridge_fwd_mask);
-diff --git a/drivers/net/ethernet/mscc/ocelot_vcap.c b/drivers/net/ethernet/mscc/ocelot_vcap.c
-index b82fd4103a68..37a232911395 100644
---- a/drivers/net/ethernet/mscc/ocelot_vcap.c
-+++ b/drivers/net/ethernet/mscc/ocelot_vcap.c
-@@ -1009,6 +1009,7 @@ ocelot_vcap_block_find_filter_by_id(struct ocelot_vcap_block *block, int cookie,
- 
- 	return NULL;
- }
-+EXPORT_SYMBOL(ocelot_vcap_block_find_filter_by_id);
- 
- /* If @on=false, then SNAP, ARP, IP and OAM frames will not match on keys based
-  * on destination and source MAC addresses, but only on higher-level protocol
-diff --git a/drivers/net/ethernet/mscc/ocelot_vcap.h b/drivers/net/ethernet/mscc/ocelot_vcap.h
-index 3b0c7916056e..523611ccc48f 100644
---- a/drivers/net/ethernet/mscc/ocelot_vcap.h
-+++ b/drivers/net/ethernet/mscc/ocelot_vcap.h
-@@ -14,9 +14,6 @@
- 
- int ocelot_vcap_filter_stats_update(struct ocelot *ocelot,
- 				    struct ocelot_vcap_filter *rule);
--struct ocelot_vcap_filter *
--ocelot_vcap_block_find_filter_by_id(struct ocelot_vcap_block *block, int id,
--				    bool tc_offload);
- 
- void ocelot_detect_vcap_constants(struct ocelot *ocelot);
- int ocelot_vcap_init(struct ocelot *ocelot);
-diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
-index fba24a0327d4..6a61c499a30d 100644
---- a/include/soc/mscc/ocelot.h
-+++ b/include/soc/mscc/ocelot.h
-@@ -610,6 +610,7 @@ struct ocelot_port {
- 	phy_interface_t			phy_mode;
- 
- 	u8				*xmit_template;
-+	bool				is_dsa_8021q_cpu;
- };
- 
- struct ocelot {
-diff --git a/include/soc/mscc/ocelot_vcap.h b/include/soc/mscc/ocelot_vcap.h
-index 76e01c927e17..25fd525aaf92 100644
---- a/include/soc/mscc/ocelot_vcap.h
-+++ b/include/soc/mscc/ocelot_vcap.h
-@@ -693,5 +693,8 @@ int ocelot_vcap_filter_add(struct ocelot *ocelot,
- 			   struct netlink_ext_ack *extack);
- int ocelot_vcap_filter_del(struct ocelot *ocelot,
- 			   struct ocelot_vcap_filter *rule);
-+struct ocelot_vcap_filter *
-+ocelot_vcap_block_find_filter_by_id(struct ocelot_vcap_block *block, int id,
-+				    bool tc_offload);
- 
- #endif /* _OCELOT_VCAP_H_ */
--- 
-2.25.1
-
+Thanks,
+- Haiyang
