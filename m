@@ -2,139 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C31E22FE519
-	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 09:36:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8A3822FE554
+	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 09:47:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726633AbhAUIf1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jan 2021 03:35:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60468 "EHLO
+        id S1728038AbhAUIq7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jan 2021 03:46:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727653AbhAUIfD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jan 2021 03:35:03 -0500
-Received: from mail-qt1-x82e.google.com (mail-qt1-x82e.google.com [IPv6:2607:f8b0:4864:20::82e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E2BAC061575;
-        Thu, 21 Jan 2021 00:34:17 -0800 (PST)
-Received: by mail-qt1-x82e.google.com with SMTP id o18so976612qtp.10;
-        Thu, 21 Jan 2021 00:34:17 -0800 (PST)
+        with ESMTP id S1727909AbhAUIq3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jan 2021 03:46:29 -0500
+Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95DCEC061757
+        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 00:45:49 -0800 (PST)
+Received: by mail-pg1-x52c.google.com with SMTP id i7so922544pgc.8
+        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 00:45:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=hMOAJyfPO68mVIjv580xYZQF8xaJ8E997+OoMF8/OQI=;
-        b=m6v+CB1tAJROh1IfPBd3d0qoHGG9tXhZJgICBYrpTkiUHcqor0trYUvUjERJX3duTX
-         b5ah/EJjECkOvsZpG82MOxLYWCjDT4ILuovxZWCwqC8RIc9XZBC/SQQSqO7MuPpsxFqb
-         i1t3aQlyLYA+vu5GqiWvwFVVGdSf2Wa8v4x4ymosLFDl+mRPx9Eq/cCQJlovfG1lSLzh
-         UtJB2FPExquH5rhjeXsRtlT73xw7UUWArgap6isYreLCrQvYDtuwWJrZ9fCtnNRLpr5+
-         eQcqbLE3XCMl680j/PdcFymDPLU7veM86EGO1R2jjJAzIrRLTBdQt8OBl47TB+TkGhr8
-         Siwg==
+        h=from:to:cc:subject:date:message-id;
+        bh=JwNVM6Vm2ZdYJE8goVZmFtD6mPgc8Vosgi0G6vc/CaM=;
+        b=hdulwPh8aVGtzmzQrPezmfQfO7Irc8Mme57rknb1nu+tXRSdUMb3wK6LY42O5rc6XG
+         c7Lyxy8e7mhhVkswGs8dVmBtzP6jFvPGEBplHkarikprJUsCJg0HKyT6HBdBsXJCgp2v
+         65S0fVXdGdK4iiHsZJB0tSQ9t0RU11pUSdtox6I0HpHgJXkxNnS8sHJXcGXcCl0fpiKD
+         ezdjnCsDhMLVEDfio92Ghy2cYS0k4rslQQpw5W3EQ4LBXKvup7qFqCK+6Vj+5QhK8/X/
+         MLoHmcJKHk5/Mqythx4ZyRtVG+OxkjoSYi81SCMihelW41cPMbDBQ0J9G9TRs/mUvv4I
+         y9NQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=hMOAJyfPO68mVIjv580xYZQF8xaJ8E997+OoMF8/OQI=;
-        b=CtzSMYsj+tCIUps06/kc7aNDr22VQnEvfLj3ZQU86GBsdeggPAEamusZ9BHFEwWkl5
-         +XAVT+jqCA2MdT5VUs1+UkS58ScBM6ehODCLXKBTKmGaF6TU6LTI/smpxJtg/BqbaLGe
-         WmDwjzrP4y0lxNiLFVciQasN6n/VOpotBZkYd4RZPGoGNAc/Bl8+H+9bRE6DrbhQXGxp
-         IGWBLlB/wTXZnKQs8MfSB7Sqt6tWuxbaKFsk+zG8BmIfqL6CqQBhLq0kzdOVjDkwF69o
-         atd81R6Q6iqXSlJl8v5eBHYfEo8dbqOLnE9oneCbvzIL70fooM6hEQVT1rkG78/hahQ9
-         RQBg==
-X-Gm-Message-State: AOAM532gVa8uW06ACaxQLExWabcsEsol3vLvvUJbP6FHFPFbx2vvec3H
-        pnnvvqv4KvdT2GyZgyk4guo=
-X-Google-Smtp-Source: ABdhPJwNQQUh5RWU6qcVZEFDjxxzztzm7rOUWZ9CI1Oz0N+6tyLmkA2oEWaBnkJ8c93skU7BAFnlmA==
-X-Received: by 2002:ac8:4f43:: with SMTP id i3mr9092551qtw.140.1611218056570;
-        Thu, 21 Jan 2021 00:34:16 -0800 (PST)
-Received: from localhost.localdomain ([45.32.7.59])
-        by smtp.gmail.com with ESMTPSA id e185sm2343003qkb.127.2021.01.21.00.34.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Jan 2021 00:34:15 -0800 (PST)
-From:   Su Yanjun <suyanjun218@gmail.com>
-To:     mkl@pengutronix.de, manivannan.sadhasivam@linaro.org,
-        thomas.kopp@microchip.com, wg@grandegger.com, davem@davemloft.net,
-        kuba@kernel.org, lgirdwood@gmail.com, broonie@kernel.org
-Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Su Yanjun <suyanjun218@gmail.com>
-Subject: [PATCH v1] can: mcp251xfd: replace sizeof(u32) with val_bytes in regmap
-Date:   Thu, 21 Jan 2021 16:33:13 +0800
-Message-Id: <20210121083313.71296-1-suyanjun218@gmail.com>
-X-Mailer: git-send-email 2.25.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=JwNVM6Vm2ZdYJE8goVZmFtD6mPgc8Vosgi0G6vc/CaM=;
+        b=gWhBUAs2FDG+wyGZ5PtUU174lgPyAzIWlPCnDIEU8rxIiYvjqQdvLN/HKvPeXse5hW
+         4/ke9RQVbNSTW3YCCdFB88sDomV13/prwrYDSIXICqEP5DR9i12YS0cQ1v4Bg+V/U6Ja
+         i1y9XMgls9+TUsAxgzUdBo/5PFOMK63UEFrgYFTrptRyjoxvYvCj0bN3aI+aiLd9Ix2z
+         SMzrXuiNnSL3jKi0R5079a1x0Ou402Uj2N6E4Pe+zw1bM0Nr0bbGdJ44zD+XrPZX5bSQ
+         X5NIUzWszeSlylvYltgnd1N4Ux15BqzhXTwfy237aaKrb2pYjgFhbZcZ29MPfPCiyjaI
+         CZXQ==
+X-Gm-Message-State: AOAM533zSF33BAkCMTlMfaz9B2k6PNA8d500DNxBCywnf/QibUJbitZf
+        8q0KWk8fApUGxld5RustseSkj5PYDaU=
+X-Google-Smtp-Source: ABdhPJyCKRk7DdPd26qB3FyMwlq/zdRI7j4NrP9LgYMHSlwF+WA9t821aNcU+jgKhN/A5hhVtfcWDg==
+X-Received: by 2002:a63:2fc5:: with SMTP id v188mr13208918pgv.243.1611218748810;
+        Thu, 21 Jan 2021 00:45:48 -0800 (PST)
+Received: from localhost ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id bk18sm5218966pjb.41.2021.01.21.00.45.47
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 21 Jan 2021 00:45:48 -0800 (PST)
+From:   Xin Long <lucien.xin@gmail.com>
+To:     network dev <netdev@vger.kernel.org>
+Cc:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Davide Caratti <dcaratti@redhat.com>, davem@davemloft.net,
+        Jakub Kicinski <kuba@kernel.org>,
+        Alexander Duyck <alexander.duyck@gmail.com>
+Subject: [PATCH net-next 0/3] net: add support for ip generic checksum offload for gre
+Date:   Thu, 21 Jan 2021 16:45:35 +0800
+Message-Id: <cover.1611218673.git.lucien.xin@gmail.com>
+X-Mailer: git-send-email 2.1.0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-No functional effect.
+NETIF_F_IP(V6)_CSUM is only for TCP and UDP checksum offload, and
+NETIF_F_HW_CSUM is not only for TCP and UDP's, but also for all
+other kinds of 1's complement checksums offload, like GRE's. This
+patchset is to support it for GRE.
 
-Signed-off-by: Su Yanjun <suyanjun218@gmail.com>
----
- drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c | 15 ++++++++++++---
- 1 file changed, 12 insertions(+), 3 deletions(-)
+To support GRE checksum offload, this patchset is to extend the
+csum_not_inet/csum_type of sk_buff in Patch 1/3, and define new
+type of CSUM_T_IP_GENERIC to get ip generic checksum processed
+in skb_csum_hwoffload_help() in Patch 2/3, then implement it on
+TX path and GSO path in Patch 3/3.
 
-diff --git a/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c b/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c
-index f07e8b737d31..cc48ccee4694 100644
---- a/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c
-+++ b/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c
-@@ -181,6 +181,12 @@ static int mcp251xfd_clks_and_vdd_disable(const struct mcp251xfd_priv *priv)
- 	return 0;
- }
- 
-+static inline int
-+mcp251xfd_get_val_bytes(const struct mcp251xfd_priv *priv)
-+{
-+	return priv->map_reg->format.val_bytes;
-+}
-+
- static inline u8
- mcp251xfd_cmd_prepare_write_reg(const struct mcp251xfd_priv *priv,
- 				union mcp251xfd_write_reg_buf *write_reg_buf,
-@@ -1308,6 +1314,7 @@ mcp251xfd_tef_obj_read(const struct mcp251xfd_priv *priv,
- 		       const u8 offset, const u8 len)
- {
- 	const struct mcp251xfd_tx_ring *tx_ring = priv->tx;
-+	int val_bytes = mcp251xfd_get_val_bytes(priv);
- 
- 	if (IS_ENABLED(CONFIG_CAN_MCP251XFD_SANITY) &&
- 	    (offset > tx_ring->obj_num ||
-@@ -1322,7 +1329,7 @@ mcp251xfd_tef_obj_read(const struct mcp251xfd_priv *priv,
- 	return regmap_bulk_read(priv->map_rx,
- 				mcp251xfd_get_tef_obj_addr(offset),
- 				hw_tef_obj,
--				sizeof(*hw_tef_obj) / sizeof(u32) * len);
-+				sizeof(*hw_tef_obj) / val_bytes * len);
- }
- 
- static int mcp251xfd_handle_tefif(struct mcp251xfd_priv *priv)
-@@ -1511,11 +1518,12 @@ mcp251xfd_rx_obj_read(const struct mcp251xfd_priv *priv,
- 		      const u8 offset, const u8 len)
- {
- 	int err;
-+	int val_bytes = mcp251xfd_get_val_bytes(priv);
- 
- 	err = regmap_bulk_read(priv->map_rx,
- 			       mcp251xfd_get_rx_obj_addr(ring, offset),
- 			       hw_rx_obj,
--			       len * ring->obj_size / sizeof(u32));
-+			       len * ring->obj_size / val_bytes);
- 
- 	return err;
- }
-@@ -2139,6 +2147,7 @@ static irqreturn_t mcp251xfd_irq(int irq, void *dev_id)
- 	struct mcp251xfd_priv *priv = dev_id;
- 	irqreturn_t handled = IRQ_NONE;
- 	int err;
-+	int val_bytes = mcp251xfd_get_val_bytes(priv);
- 
- 	if (priv->rx_int)
- 		do {
-@@ -2162,7 +2171,7 @@ static irqreturn_t mcp251xfd_irq(int irq, void *dev_id)
- 		err = regmap_bulk_read(priv->map_reg, MCP251XFD_REG_INT,
- 				       &priv->regs_status,
- 				       sizeof(priv->regs_status) /
--				       sizeof(u32));
-+				       val_bytes);
- 		if (err)
- 			goto out_fail;
- 
+Xin Long (3):
+  net: rename csum_not_inet to csum_type
+  net: add CSUM_T_IP_GENERIC csum_type
+  ip_gre: add csum offload support for gre header
+
+ include/linux/skbuff.h | 22 +++++++++++++---------
+ include/net/gre.h      | 20 ++++++++------------
+ net/core/dev.c         | 19 ++++++++++++++-----
+ net/ipv4/gre_offload.c | 16 ++++++++++++++--
+ net/sched/act_csum.c   |  2 +-
+ net/sctp/offload.c     |  2 +-
+ net/sctp/output.c      |  3 ++-
+ 7 files changed, 53 insertions(+), 31 deletions(-)
+
 -- 
-2.25.1
+2.1.0
 
