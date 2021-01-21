@@ -2,190 +2,307 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 343B42FF38E
-	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 19:50:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AF34E2FF369
+	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 19:47:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726661AbhAUSuV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jan 2021 13:50:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34826 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728060AbhAUIrK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jan 2021 03:47:10 -0500
-Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E715C061575
-        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 00:46:14 -0800 (PST)
-Received: by mail-pg1-x535.google.com with SMTP id z21so935914pgj.4
-        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 00:46:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :in-reply-to:references;
-        bh=bfYcNjs9yLyzTbVMgIgcdJUR93FtgJul/qWPg+jtbPg=;
-        b=W6g/Teqo2Dag7nCWOwvqFBQmUIpLr/igIqzICtiVMjYoTmSYD7+frx3wJlDwfsz2kP
-         FzaDSAVmYyXbqfvBH1Q935JK/esCdVTO/wCjZwIRRmasXMHwpsZ77oOncWCHJ7pGtM7u
-         V9vW6Sge8fwHJQyJkOljuuvDiYj1xhEt708MEIxNzuwCuRYCF5HRuS1cWnMocwsvvyW7
-         XtgP21b9+HefbGM+ZwIS5i2J224YahXyoahjsZhVllEk4Ld2zrMR+fL30UDRVU1tcavA
-         KDXd4OVviC5aO21xSu/iV1dQPeJrDC1giVBsxQL4XwW0lEBNTwYLiWrlv+eH0sFRo5+Z
-         y1Yw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:in-reply-to:references;
-        bh=bfYcNjs9yLyzTbVMgIgcdJUR93FtgJul/qWPg+jtbPg=;
-        b=pWccSE9o7WxKaoB8vOFmTP4Krvkd34zSNdmg036R9z8U14k/nYeMDFqY4V+2Zyph8D
-         wBlXPOYkPPXgI1K9ReJzU9b48Vv5Esp8c3yslDEiqfiZh05K0BKIIX/wdCbemvbiTtFa
-         zB+V7QDx0f6CFxK1jIC8dFvmGmhV1cStanhXM7EhGYC2NqmH1flNGAmdgZMtypcUP74E
-         YiIJl3TXZcueXR++kfTA7GdTz65CHMSGr9fUw+dytpnF6g5Gs2Vl5rLRH3g1sXvJIaa3
-         qA/WxWxYwSy7jSd21xO1cU8ISe/lo1iKn9PSIFp4ScOON4IIDsdnzEmERwFsIOn0rfHN
-         kqbg==
-X-Gm-Message-State: AOAM531+Bgmlh543i1QDnaABE8Tm8V76immxlv4a+3U17p0D4pP2ftwr
-        EcNEclz+xRewMUPCZL7o0FCAftWXepM=
-X-Google-Smtp-Source: ABdhPJxVMP03LD0qNluuRf9LVpUeCMScTB9hBPbJsRkhc1K0DXmb8AIs8VyXDwnW+GtRxyQBDKZpQQ==
-X-Received: by 2002:a62:6585:0:b029:1b9:d8d9:1af2 with SMTP id z127-20020a6265850000b02901b9d8d91af2mr10632809pfb.17.1611218773876;
-        Thu, 21 Jan 2021 00:46:13 -0800 (PST)
-Received: from localhost ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id e63sm4808202pfe.216.2021.01.21.00.46.12
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 21 Jan 2021 00:46:13 -0800 (PST)
-From:   Xin Long <lucien.xin@gmail.com>
-To:     network dev <netdev@vger.kernel.org>
-Cc:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Davide Caratti <dcaratti@redhat.com>, davem@davemloft.net,
+        id S1728278AbhAUIyS (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jan 2021 03:54:18 -0500
+Received: from mail.kernel.org ([198.145.29.99]:33050 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728261AbhAUIx3 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 21 Jan 2021 03:53:29 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 50AB1239A1;
+        Thu, 21 Jan 2021 08:52:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1611219168;
+        bh=+773sWkWa637cY2wBYfU007qaF4xdbrHVMZuSls1UZQ=;
+        h=From:To:Cc:Subject:Date:From;
+        b=bjkf9YjW3DbUBw9EsCwmLW0B56HqonIv5PVtKkoh4Ih4w4te7upNsyjewvgVut/42
+         sUfZBvL3zLUil3/t9fNo3VObhffB9RPZHDIKw8/5BuhteHfQs/TZXFc8AR8VNHNTRf
+         qaHkIYDX83/cYAJh8GroXboOqSDjLzJtiLsrM8S6nSDn2IMygyzN7mmpotgDDzY2cy
+         aWjjnP+uadqOYSgzRnBGG75I/5PA46j5NOi8tTXK2HqAsknYxeYcjV+1QrBvuphYLa
+         mpPI9CvzfA6tPOd8Qt2xN+m0zlXvx3Nek9l/9J0keW3eRYIchTQHw8Iwg33/P9GA/G
+         4S9cvu89bYLAA==
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Alexander Duyck <alexander.duyck@gmail.com>
-Subject: [PATCH net-next 3/3] ip_gre: add csum offload support for gre header
-Date:   Thu, 21 Jan 2021 16:45:38 +0800
-Message-Id: <2f662d55a698ef6d7af2b549f39b72d5b3a4f815.1611218673.git.lucien.xin@gmail.com>
-X-Mailer: git-send-email 2.1.0
-In-Reply-To: <bb59ed7c9c438bf076da3a956bb24fddf80978f7.1611218673.git.lucien.xin@gmail.com>
-References: <cover.1611218673.git.lucien.xin@gmail.com>
- <0fa4f7f04222e0c4e7bd27cbd86ffe22148f6476.1611218673.git.lucien.xin@gmail.com>
- <bb59ed7c9c438bf076da3a956bb24fddf80978f7.1611218673.git.lucien.xin@gmail.com>
-In-Reply-To: <cover.1611218673.git.lucien.xin@gmail.com>
-References: <cover.1611218673.git.lucien.xin@gmail.com>
+        Jason Gunthorpe <jgg@nvidia.com>
+Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        alexander.duyck@gmail.com, sridhar.samudrala@intel.com,
+        edwin.peer@broadcom.com, dsahern@kernel.org, kiran.patil@intel.com,
+        jacob.e.keller@intel.com, david.m.ertman@intel.com,
+        dan.j.williams@intel.com, Saeed Mahameed <saeedm@nvidia.com>
+Subject: [pull request][net-next V9 00/14] Add mlx5 subfunction support
+Date:   Thu, 21 Jan 2021 00:52:23 -0800
+Message-Id: <20210121085237.137919-1-saeed@kernel.org>
+X-Mailer: git-send-email 2.26.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch is to add csum offload support for gre header:
+From: Saeed Mahameed <saeedm@nvidia.com>
 
-On the TX path in gre_build_header(), when CHECKSUM_PARTIAL's set
-for inner proto, it will calculate the csum for outer proto, and
-inner csum will be offloaded later. Otherwise, CHECKSUM_PARTIAL
-and csum_start/offset will be set for outer proto, and the outer
-csum will be offloaded later.
+Hi Dave, Jakub, Jason,
 
-On the GSO path in gre_gso_segment(), when CHECKSUM_PARTIAL is
-not set for inner proto and the hardware supports csum offload,
-CHECKSUM_PARTIAL and csum_start/offset will be set for outer
-proto, and outer csum will be offloaded later. Otherwise, it
-will do csum for outer proto by calling gso_make_checksum().
+This series form Parav was the theme of this mlx5 release cycle,
+we've been waiting anxiously for the auxbus infrastructure to make it into
+the kernel, and now as the auxbus is in and all the stars are aligned, I
+can finally submit this patchset of the devlink and mlx5 subfunction support.
 
-Note that SCTP has to do the csum by itself for non GSO path in
-sctp_packet_pack(), as gre_build_header() can't handle the csum
-with CHECKSUM_PARTIAL set for SCTP CRC csum offload.
+For more detailed information about subfunctions please see detailed tag
+log below.
 
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
+Please pull and let me know if there's any problem.
+
+Thanks,
+Saeed.
+
 ---
- include/net/gre.h      | 20 ++++++++------------
- net/ipv4/gre_offload.c | 16 ++++++++++++++--
- net/sctp/output.c      |  1 +
- 3 files changed, 23 insertions(+), 14 deletions(-)
+Changelog:
+v8->v9:
+ - Use proper functions doc in patches #3,#4
 
-diff --git a/include/net/gre.h b/include/net/gre.h
-index b60f212..250b2fb 100644
---- a/include/net/gre.h
-+++ b/include/net/gre.h
-@@ -106,17 +106,6 @@ static inline __be16 gre_tnl_flags_to_gre_flags(__be16 tflags)
- 	return flags;
- }
- 
--static inline __sum16 gre_checksum(struct sk_buff *skb)
--{
--	__wsum csum;
--
--	if (skb->ip_summed == CHECKSUM_PARTIAL)
--		csum = lco_csum(skb);
--	else
--		csum = skb_checksum(skb, 0, skb->len, 0);
--	return csum_fold(csum);
--}
--
- static inline void gre_build_header(struct sk_buff *skb, int hdr_len,
- 				    __be16 flags, __be16 proto,
- 				    __be32 key, __be32 seq)
-@@ -146,7 +135,14 @@ static inline void gre_build_header(struct sk_buff *skb, int hdr_len,
- 		    !(skb_shinfo(skb)->gso_type &
- 		      (SKB_GSO_GRE | SKB_GSO_GRE_CSUM))) {
- 			*ptr = 0;
--			*(__sum16 *)ptr = gre_checksum(skb);
-+			if (skb->ip_summed == CHECKSUM_PARTIAL) {
-+				*(__sum16 *)ptr = csum_fold(lco_csum(skb));
-+			} else {
-+				skb->csum_type = CSUM_T_IP_GENERIC;
-+				skb->ip_summed = CHECKSUM_PARTIAL;
-+				skb->csum_start = skb_transport_header(skb) - skb->head;
-+				skb->csum_offset = sizeof(*greh);
-+			}
- 		}
- 	}
- }
-diff --git a/net/ipv4/gre_offload.c b/net/ipv4/gre_offload.c
-index 10bc49b..12d6996 100644
---- a/net/ipv4/gre_offload.c
-+++ b/net/ipv4/gre_offload.c
-@@ -15,10 +15,10 @@ static struct sk_buff *gre_gso_segment(struct sk_buff *skb,
- 				       netdev_features_t features)
- {
- 	int tnl_hlen = skb_inner_mac_header(skb) - skb_transport_header(skb);
-+	bool need_csum, offload_csum, gso_partial, need_ipsec;
- 	struct sk_buff *segs = ERR_PTR(-EINVAL);
- 	u16 mac_offset = skb->mac_header;
- 	__be16 protocol = skb->protocol;
--	bool need_csum, gso_partial;
- 	u16 mac_len = skb->mac_len;
- 	int gre_offset, outer_hlen;
- 
-@@ -47,6 +47,11 @@ static struct sk_buff *gre_gso_segment(struct sk_buff *skb,
- 	if (need_csum)
- 		features &= ~NETIF_F_SCTP_CRC;
- 
-+	need_ipsec = skb_dst(skb) && dst_xfrm(skb_dst(skb));
-+	/* Try to offload checksum if possible */
-+	offload_csum = !!(need_csum && !need_ipsec &&
-+			  (skb->dev->features & NETIF_F_HW_CSUM));
-+
- 	/* segment inner packet. */
- 	segs = skb_mac_gso_segment(skb, features);
- 	if (IS_ERR_OR_NULL(segs)) {
-@@ -100,7 +105,14 @@ static struct sk_buff *gre_gso_segment(struct sk_buff *skb,
- 		}
- 
- 		*(pcsum + 1) = 0;
--		*pcsum = gso_make_checksum(skb, 0);
-+		if (skb->encapsulation || !offload_csum) {
-+			*pcsum = gso_make_checksum(skb, 0);
-+		} else {
-+			skb->csum_type = CSUM_T_IP_GENERIC;
-+			skb->ip_summed = CHECKSUM_PARTIAL;
-+			skb->csum_start = skb_transport_header(skb) - skb->head;
-+			skb->csum_offset = sizeof(*greh);
-+		}
- 	} while ((skb = skb->next));
- out:
- 	return segs;
-diff --git a/net/sctp/output.c b/net/sctp/output.c
-index a8cf0191..52e12df 100644
---- a/net/sctp/output.c
-+++ b/net/sctp/output.c
-@@ -515,6 +515,7 @@ static int sctp_packet_pack(struct sctp_packet *packet,
- 		return 1;
- 
- 	if (!(tp->dst->dev->features & NETIF_F_SCTP_CRC) ||
-+	    tp->dst->dev->type == ARPHRD_IPGRE ||
- 	    dst_xfrm(tp->dst) || packet->ipfragok || tp->encap_port) {
- 		struct sctphdr *sh =
- 			(struct sctphdr *)skb_transport_header(head);
--- 
-2.1.0
+v7->v8:
+ - Address documentation related comments missed on v5, Jakub.
 
+v6-v7:
+ - Resolve new kdoc warning
+
+v5->v6:
+ - update docs and corrected spellings and typos according to previous
+   review
+ - use of shorted macro names
+ - using updated callback to return port index
+ - updated commit message example for add command return fields
+ - driver name suffix corrected from 'mlx5_core' to 'sf'
+ - using MLX5_ADEV_NAME prefix to match with other mlx5 auxiliary devices
+ - fixed sf allocated condition
+ - using 80 characters alignment
+ - shorten the enum type names and enum values from
+   PORT_FUNCTION to PORT_FN
+ - return port attributes of newly created port
+ - moved port add and delete callbacks pointer check before preparing
+   attributes for driver
+ - added comment to clarify that about desired port index during add
+   callback
+ - place SF number attribute only when port flavour is SF
+ - packed the sf attribute structure
+ - removed external flag for sf for initial patchset
+
+v4->v5:
+ - Fix some typos in the documentation
+ 
+v3->v4:
+ - Fix 32bit compilation issue
+
+v2->v3:
+ - added header file sf/priv.h to cmd.c to avoid missing prototype warning
+ - made mlx5_sf_table_disable as static function as its used only in one file
+
+v1->v2:
+ - added documentation for subfunction and its mlx5 implementation
+ - add MLX5_SF config option documentation
+ - rebased
+ - dropped devlink global lock improvement patch as mlx5 doesn't support
+   reload while SFs are allocated
+ - dropped devlink reload lock patch as mlx5 doesn't support reload
+   when SFs are allocated
+ - using updated vhca event from device to add remove auxiliary device
+ - split sf devlink port allocation and sf hardware context allocation
+
+
+Thanks,
+Saeed.
+
+---
+The following changes since commit 7b8fc0103bb51d1d3e1fb5fd67958612e709f883:
+
+  bonding: add a vlan+srcmac tx hashing option (2021-01-19 19:30:32 -0800)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/saeed/linux.git tags/mlx5-updates-2021-01-13
+
+for you to fetch changes up to 008536927ab1443b4ea2d40b8a9bb4e077903884:
+
+  net/mlx5: Add devlink subfunction port documentation (2021-01-21 00:33:01 -0800)
+
+----------------------------------------------------------------
+mlx5 subfunction support
+
+Parav Pandit Says:
+=================
+
+This patchset introduces support for mlx5 subfunction (SF).
+
+A subfunction is a lightweight function that has a parent PCI function on
+which it is deployed. mlx5 subfunction has its own function capabilities
+and its own resources. This means a subfunction has its own dedicated
+queues(txq, rxq, cq, eq). These queues are neither shared nor stolen from
+the parent PCI function.
+
+When subfunction is RDMA capable, it has its own QP1, GID table and rdma
+resources neither shared nor stolen from the parent PCI function.
+
+A subfunction has dedicated window in PCI BAR space that is not shared
+with the other subfunctions or parent PCI function. This ensures that all
+class devices of the subfunction accesses only assigned PCI BAR space.
+
+A Subfunction supports eswitch representation through which it supports tc
+offloads. User must configure eswitch to send/receive packets from/to
+subfunction port.
+
+Subfunctions share PCI level resources such as PCI MSI-X IRQs with
+their other subfunctions and/or with its parent PCI function.
+
+Patch summary:
+--------------
+Patch 1 to 4 prepares devlink
+patch 5 to 7 mlx5 adds SF device support
+Patch 8 to 11 mlx5 adds SF devlink port support
+Patch 12 and 14 adds documentation
+
+Patch-1 prepares code to handle multiple port function attributes
+Patch-2 introduces devlink pcisf port flavour similar to pcipf and pcivf
+Patch-3 adds port add and delete driver callbacks
+Patch-4 adds port function state get and set callbacks
+Patch-5 mlx5 vhca event notifier support to distribute subfunction
+        state change notification
+Patch-6 adds SF auxiliary device
+Patch-7 adds SF auxiliary driver
+Patch-8 prepares eswitch to handler SF vport
+Patch-9 adds eswitch helpers to add/remove SF vport
+Patch-10 implements devlink port add/del callbacks
+Patch-11 implements devlink port function get/set callbacks
+Patch-12 to 14 adds documentation
+Patch-12 added mlx5 port function documentation
+Patch-13 adds subfunction documentation
+Patch-14 adds mlx5 subfunction documentation
+
+Subfunction support is discussed in detail in RFC [1] and [2].
+RFC [1] and extension [2] describes requirements, design and proposed
+plumbing using devlink, auxiliary bus and sysfs for systemd/udev
+support. Functionality of this patchset is best explained using real
+examples further below.
+
+overview:
+--------
+A subfunction can be created and deleted by a user using devlink port
+add/delete interface.
+
+A subfunction can be configured using devlink port function attribute
+before its activated.
+
+When a subfunction is activated, it results in an auxiliary device on
+the host PCI device where it is deployed. A driver binds to the
+auxiliary device that further creates supported class devices.
+
+example subfunction usage sequence:
+-----------------------------------
+Change device to switchdev mode:
+$ devlink dev eswitch set pci/0000:06:00.0 mode switchdev
+
+Add a devlink port of subfunction flavour:
+$ devlink port add pci/0000:06:00.0 flavour pcisf pfnum 0 sfnum 88
+
+Configure mac address of the port function:
+$ devlink port function set ens2f0npf0sf88 hw_addr 00:00:00:00:88:88
+
+Now activate the function:
+$ devlink port function set ens2f0npf0sf88 state active
+
+Now use the auxiliary device and class devices:
+$ devlink dev show
+pci/0000:06:00.0
+auxiliary/mlx5_core.sf.4
+
+$ ip link show
+127: ens2f0np0: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether 24:8a:07:b3:d1:12 brd ff:ff:ff:ff:ff:ff
+    altname enp6s0f0np0
+129: p0sf88: <BROADCAST,MULTICAST> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
+    link/ether 00:00:00:00:88:88 brd ff:ff:ff:ff:ff:ff
+
+$ rdma dev show
+43: rdmap6s0f0: node_type ca fw 16.29.0550 node_guid 248a:0703:00b3:d112 sys_image_guid 248a:0703:00b3:d112
+44: mlx5_0: node_type ca fw 16.29.0550 node_guid 0000:00ff:fe00:8888 sys_image_guid 248a:0703:00b3:d112
+
+After use inactivate the function:
+$ devlink port function set ens2f0npf0sf88 state inactive
+
+Now delete the subfunction port:
+$ devlink port del ens2f0npf0sf88
+
+[1] https://lore.kernel.org/netdev/20200519092258.GF4655@nanopsycho/
+[2] https://marc.info/?l=linux-netdev&m=158555928517777&w=2
+
+=================
+
+----------------------------------------------------------------
+Parav Pandit (13):
+      devlink: Prepare code to fill multiple port function attributes
+      devlink: Introduce PCI SF port flavour and port attribute
+      devlink: Support add and delete devlink port
+      devlink: Support get and set state of port function
+      net/mlx5: Introduce vhca state event notifier
+      net/mlx5: SF, Add auxiliary device support
+      net/mlx5: SF, Add auxiliary device driver
+      net/mlx5: E-switch, Add eswitch helpers for SF vport
+      net/mlx5: SF, Add port add delete functionality
+      net/mlx5: SF, Port function state change support
+      devlink: Add devlink port documentation
+      devlink: Extend devlink port documentation for subfunctions
+      net/mlx5: Add devlink subfunction port documentation
+
+Vu Pham (1):
+      net/mlx5: E-switch, Prepare eswitch to handle SF vport
+
+ Documentation/driver-api/auxiliary_bus.rst         |   2 +
+ .../device_drivers/ethernet/mellanox/mlx5.rst      | 215 ++++++++
+ Documentation/networking/devlink/devlink-port.rst  | 199 ++++++++
+ Documentation/networking/devlink/index.rst         |   1 +
+ drivers/net/ethernet/mellanox/mlx5/core/Kconfig    |  19 +
+ drivers/net/ethernet/mellanox/mlx5/core/Makefile   |   9 +
+ drivers/net/ethernet/mellanox/mlx5/core/cmd.c      |   8 +
+ drivers/net/ethernet/mellanox/mlx5/core/devlink.c  |  19 +
+ drivers/net/ethernet/mellanox/mlx5/core/eq.c       |   5 +-
+ .../mellanox/mlx5/core/esw/acl/egress_ofld.c       |   2 +-
+ .../ethernet/mellanox/mlx5/core/esw/devlink_port.c |  41 ++
+ drivers/net/ethernet/mellanox/mlx5/core/eswitch.c  |  48 +-
+ drivers/net/ethernet/mellanox/mlx5/core/eswitch.h  |  78 +++
+ .../ethernet/mellanox/mlx5/core/eswitch_offloads.c |  47 +-
+ drivers/net/ethernet/mellanox/mlx5/core/events.c   |   7 +
+ drivers/net/ethernet/mellanox/mlx5/core/main.c     |  60 ++-
+ .../net/ethernet/mellanox/mlx5/core/mlx5_core.h    |  12 +
+ drivers/net/ethernet/mellanox/mlx5/core/pci_irq.c  |  20 +
+ drivers/net/ethernet/mellanox/mlx5/core/sf/cmd.c   |  49 ++
+ .../net/ethernet/mellanox/mlx5/core/sf/dev/dev.c   | 275 ++++++++++
+ .../net/ethernet/mellanox/mlx5/core/sf/dev/dev.h   |  55 ++
+ .../ethernet/mellanox/mlx5/core/sf/dev/driver.c    | 101 ++++
+ .../net/ethernet/mellanox/mlx5/core/sf/devlink.c   | 556 +++++++++++++++++++++
+ .../net/ethernet/mellanox/mlx5/core/sf/hw_table.c  | 233 +++++++++
+ .../mellanox/mlx5/core/sf/mlx5_ifc_vhca_event.h    |  82 +++
+ drivers/net/ethernet/mellanox/mlx5/core/sf/priv.h  |  21 +
+ drivers/net/ethernet/mellanox/mlx5/core/sf/sf.h    | 100 ++++
+ .../ethernet/mellanox/mlx5/core/sf/vhca_event.c    | 189 +++++++
+ .../ethernet/mellanox/mlx5/core/sf/vhca_event.h    |  57 +++
+ drivers/net/ethernet/mellanox/mlx5/core/vport.c    |   3 +-
+ include/linux/mlx5/driver.h                        |  16 +-
+ include/net/devlink.h                              | 100 ++++
+ include/uapi/linux/devlink.h                       |  25 +
+ net/core/devlink.c                                 | 310 ++++++++++--
+ 34 files changed, 2917 insertions(+), 47 deletions(-)
+ create mode 100644 Documentation/networking/devlink/devlink-port.rst
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/sf/cmd.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/sf/dev/dev.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/sf/dev/dev.h
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/sf/dev/driver.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/sf/devlink.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/sf/hw_table.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/sf/mlx5_ifc_vhca_event.h
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/sf/priv.h
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/sf/sf.h
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/sf/vhca_event.c
+ create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/sf/vhca_event.h
