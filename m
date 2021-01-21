@@ -2,86 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7417B2FF06A
-	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 17:34:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 58AEF2FF0BF
+	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 17:45:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732696AbhAUQdk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jan 2021 11:33:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51222 "EHLO
+        id S1731936AbhAUQot (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jan 2021 11:44:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732729AbhAUQdU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jan 2021 11:33:20 -0500
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9747CC06174A
-        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 08:32:39 -0800 (PST)
-Received: by mail-wr1-x429.google.com with SMTP id b5so2345096wrr.10
-        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 08:32:39 -0800 (PST)
+        with ESMTP id S1733194AbhAUQj0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jan 2021 11:39:26 -0500
+Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com [IPv6:2607:f8b0:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0970C061756
+        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 08:38:43 -0800 (PST)
+Received: by mail-oi1-x235.google.com with SMTP id q205so2713769oig.13
+        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 08:38:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=H+szwTA5G5vkMl7YJyc2szpaFu+bCxb3hBATz7epH70=;
-        b=Rm/xU1dp29hLjENfrzG4oHG8uqwT3FpE47SifkSjLmyJHLU0Q/dNJPloZB3+9d9MFO
-         TEvLiVWkFOpgI/bDpgnYegI9K1uOpTrJNkX1fW0auOZJGHxChOumdZbGES1U6bwBplcp
-         8XvPgjHnqou3C4ONtjQJkRi0d6u+8Hr/xXygRL1Ek2949Q2RiW2Gr0LlLqFlLJYxg4k2
-         ZhCJe+UuPZia95Kcxc9KlUJg8tue29BcojewJJqurRDuNhysXDvprZM+D6oczrvhlDBO
-         SqOriqKvHm7GPQBZKANhnOohsj7nXOoCcAM4FsWYiiRTMqPAHXdvTJpau3Q5yFD7dirh
-         RY/A==
+        bh=vgJVNcBk/J2Fk5eOL9Xgg6j8k4zlRMwcU+kChAqOVec=;
+        b=CqmRrTUd1Yfr2hf7RTFpKP0/fuWiO4yDOaBFuNdz/AVpQcG78QSXI6TCJ0P/36FoO/
+         AKMC/FSBYQH+HCR30tI6JdMdqfuedcUaFVyOujDomQ6HoMukpuh0X1rYVzQTEL6nzYSh
+         GkAnuExWVIRy30WK+0Pi2YJb0HMyDkdMf27A5Lv/VIeCODGfXAEjOKavsPti5t0QbEu3
+         Vau1ygrqlKrfptANJwE9PekrtazQVlwN0xV4xjsFEFX1VPBk3AGQfm1yDRR6hY9PpdAQ
+         kwAMjkFtbNOonVpgywVc56RY7qiLrjsiHsdOsaE+je2IxOf3pPIzkyN228AgbLFN5KOb
+         v0ag==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=H+szwTA5G5vkMl7YJyc2szpaFu+bCxb3hBATz7epH70=;
-        b=W3Ibq7mFh2fN4sb6X60dTV5ecFXBcc1DnkA+EFA/QsINEyooIOkl1hBtuWZama2l1H
-         LPZa3lRhxc/f11+ELHL4l+Mok6P8KIMLeItNELlLuBRL/aIKfR5ThRAhWVC7qIHvhh9h
-         26M3XM6susjKoxEfnGf2GX8L6GfuYmF2unwAvJnnHfR+inOoI7FeIWS+g4Lq8Ov55aWL
-         eeZkVZcK+LR6qcyr+zdZdeiSwykltmRGxMtO6PsdYrsHg4MKge/ux4WCR8LXynGRoJ65
-         RQZNVYckvbig8VCb1uGMx8DP5mo7p7WvaSuILtLS+Qcojvb/4rlUB8/+S1WsCqTOqlcQ
-         5pkA==
-X-Gm-Message-State: AOAM531swVOrKELHB/R7vVqEucTBJi1wBPAbhWGJq0lgRDvcoVp8PR7N
-        5pWTsYzK8Nl/vQ66IcBdVGs=
-X-Google-Smtp-Source: ABdhPJyoBXO3yzaSoQJfrWEhiGjwi4T6/qTEpdhJyXtPHATZhnAMMg+kQX0lAalBDTxPYRnZTbX6zw==
-X-Received: by 2002:a5d:4b44:: with SMTP id w4mr259751wrs.155.1611246758387;
-        Thu, 21 Jan 2021 08:32:38 -0800 (PST)
-Received: from [192.168.1.122] (cpc159425-cmbg20-2-0-cust403.5-4.cable.virginm.net. [86.7.189.148])
-        by smtp.gmail.com with ESMTPSA id s13sm9040779wra.53.2021.01.21.08.32.37
+        bh=vgJVNcBk/J2Fk5eOL9Xgg6j8k4zlRMwcU+kChAqOVec=;
+        b=GRD9WpYBXh6KzHKASCnrgqWLZVLwYqahxJkohvpr7qe1bBtpW6NOJ2J3E9LGamZiVx
+         bpCGSLvlT3KX10nOv+y+EeaKPcp05e0nsYDxXEGDP5HeLhye25GI/DLdjNr7FQ9zv/w8
+         jzlkqR6X8iabBLMnxpEJn2jqsyaIyRoJfpmQKnRg5K1jaTYLgMENniIy4p8BwiszcbvQ
+         /kSRSLWdk0V4fCvVhORp8KMn4fZ8CgPOX9RBHefTiJmMyvhYzn5Hprw7+FRFdVfJzRws
+         lNHrhjJ7bQLRd929o5kdCH2pBLw9S8mn6x5Iw+N76ayJa+qiAKp/bjvBhKvFoMVYvSR5
+         lmlQ==
+X-Gm-Message-State: AOAM533Wh+RXIQx39YR6uLHn6UOew+I32lFYnBrluadgGll4riOpxvFw
+        K9YZb4ueryaRcYELxQnPfTo=
+X-Google-Smtp-Source: ABdhPJyH2VGRtIp//DNPTAyzDHXeKdsAp24fg8H82wWDbEDvDEQup2f2eTICBNYCRj1HvtglFjcZOg==
+X-Received: by 2002:a05:6808:69a:: with SMTP id k26mr265418oig.115.1611247123140;
+        Thu, 21 Jan 2021 08:38:43 -0800 (PST)
+Received: from Davids-MacBook-Pro.local ([8.48.134.50])
+        by smtp.googlemail.com with ESMTPSA id e205sm1130564oia.16.2021.01.21.08.38.41
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 21 Jan 2021 08:32:37 -0800 (PST)
-Subject: Re: Observed increased rate of non-linear UDP skb on 5.10 sfc driver
-To:     Mark Pashmfouroush <mpashmfouroush@cloudflare.com>,
-        netdev@vger.kernel.org
-Cc:     habetsm.xilinx@gmail.com, lmb@cloudflare.com
-References: <b418fa92-fa1e-b53c-ce19-8e02b05e68f0@cloudflare.com>
-From:   Edward Cree <ecree.xilinx@gmail.com>
-Message-ID: <b2227f5d-5d87-57a6-d01a-4ee078617252@gmail.com>
-Date:   Thu, 21 Jan 2021 16:32:37 +0000
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.0
+        Thu, 21 Jan 2021 08:38:42 -0800 (PST)
+Subject: Re: [patch net-next RFC 00/10] introduce line card support for
+ modular switch
+To:     Jiri Pirko <jiri@resnulli.us>, Jakub Kicinski <kuba@kernel.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
+        davem@davemloft.net, jacob.e.keller@intel.com, roopa@nvidia.com,
+        mlxsw@nvidia.com
+References: <20210113121222.733517-1-jiri@resnulli.us>
+ <X/+nVtRrC2lconET@lunn.ch> <20210119115610.GZ3565223@nanopsycho.orion>
+ <YAbyBbEE7lbhpFkw@lunn.ch> <20210120083605.GB3565223@nanopsycho.orion>
+ <YAg2ngUQIty8U36l@lunn.ch>
+ <20210120154158.206b8752@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20210121153224.GE3565223@nanopsycho.orion>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <971e9eff-0b71-8ff9-d72c-aebe73cab599@gmail.com>
+Date:   Thu, 21 Jan 2021 09:38:40 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
+ Gecko/20100101 Thunderbird/78.6.1
 MIME-Version: 1.0
-In-Reply-To: <b418fa92-fa1e-b53c-ce19-8e02b05e68f0@cloudflare.com>
+In-Reply-To: <20210121153224.GE3565223@nanopsycho.orion>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 21/01/2021 13:04, Mark Pashmfouroush wrote:
-> My question is, what can cause a fragmented/non-linear UDP skb to be> allocated by the sfc driver, and why has this frequency increased since
-> transitioning to the in-tree driver?
-By default sfc doesn't RX things as linear; we get one or more RX buffers
- from the hardware and then we attach them as frags to an skb; see
- efx_rx_mk_skb().  We then pull 'hdr_len' bytes from the first frag into
- the linear area; if the total packet length happens to be <= hdr_len then
- the resulting skb will be linear.
-hdr_len comes from the caller, efx_rx_deliver().  In-tree we pass
- EFX_SKB_HEADERS, #defined as 128; out-of-tree it's a module parameter
- 'rx_copybreak' (internally rx_cb_size) which defaults to 192.  That's
- probably what's causing your difference: some of your packets are between
- 128 and 192 bytes in length.
-You could verify this theory by seeing what happens if you set rx_copybreak
- to 128 on the out-of-tree driver; you should get the same behaviour as
- with in-tree.
+On 1/21/21 8:32 AM, Jiri Pirko wrote:
+> Thu, Jan 21, 2021 at 12:41:58AM CET, kuba@kernel.org wrote:
+>> On Wed, 20 Jan 2021 14:56:46 +0100 Andrew Lunn wrote:
+>>>> No, the FW does not know. The ASIC is not physically able to get the
+>>>> linecard type. Yes, it is odd, I agree. The linecard type is known to
+>>>> the driver which operates on i2c. This driver takes care of power
+>>>> management of the linecard, among other tasks.  
+>>>
+>>> So what does activated actually mean for your hardware? It seems to
+>>> mean something like: Some random card has been plugged in, we have no
+>>> idea what, but it has power, and we have enabled the MACs as
+>>> provisioned, which if you are lucky might match the hardware?
+>>>
+>>> The foundations of this feature seems dubious.
+>>
+>> But Jiri also says "The linecard type is known to the driver which
+>> operates on i2c." which sounds like there is some i2c driver (in user
+>> space?) which talks to the card and _does_ have the info? Maybe I'm
+>> misreading it. What's the i2c driver?
+> 
+> That is Vadim's i2c kernel driver, this is going to upstream.
+> 
 
--ed
+This pre-provisioning concept makes a fragile design to work around h/w
+shortcomings. You really need a way for the management card to know
+exactly what was plugged in to a slot so the control plane S/W can
+respond accordingly. Surely there is a way for processes on the LC to
+communicate with a process on the management card - even if it is inband
+packets with special headers.
