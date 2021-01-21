@@ -2,44 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9E2AE2FDF94
-	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 03:45:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 834E92FDF96
+	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 03:45:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388379AbhAUCVn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jan 2021 21:21:43 -0500
-Received: from mail.kernel.org ([198.145.29.99]:40644 "EHLO mail.kernel.org"
+        id S1727367AbhAUCUY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jan 2021 21:20:24 -0500
+Received: from mail.kernel.org ([198.145.29.99]:49668 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727662AbhAUAwI (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 20 Jan 2021 19:52:08 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 947F023602;
-        Thu, 21 Jan 2021 00:50:40 +0000 (UTC)
+        id S2387887AbhAUBmY (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 20 Jan 2021 20:42:24 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 7DCF623716;
+        Thu, 21 Jan 2021 01:31:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611190241;
-        bh=87wGMhsXUrsr3OJlQSSHfERoYkWmFHAB+rp1mZXf4eM=;
+        s=k20201202; t=1611192688;
+        bh=mlASetvi2SErMvcnyFzqkMLjtpL5rtgpEkhTo09zKlw=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=N62MTHKejFTJ91VreEJyH/SsWFmuvTIajfyM6UtXgWNSASz2i1qHKqUAIge+AmNtA
-         4XS31j31rIPwZwWV0NEzOgcaqGaKZA2oKA9EKYMlt54nSVYofDdq1NravCKE+xMemr
-         79DuRPQ5ep2XAJlh5Y7neJng1hG9YSnQhvfeyXMNoafSCvcaDc360WUN7VoQTy3g0k
-         Bi2Fs5FhfhPzow6lQznDaDFGYb8B5sdJtsi4V7DTIUg02goEM9L38b6kILP0yLBBHv
-         H1MHp5vSnV9JiuelqwuC0vUAp4BCNMmRR41LLOrMUbMWH3sQvK0jFbSKrEWqoSYRek
-         ozmEI1KnVcf5A==
-Date:   Wed, 20 Jan 2021 16:50:39 -0800
+        b=NkBexMVr7sme4S++71Hi486MvlK5D3UKf2SVPJvechF0R6SRbeFbkVwGGuhGq7nQj
+         dw2ni4mxqgwtiEY4hO7LVPGlytU51IghgPqtQPPsSPsLvbt+cMJrnLB4D4/fUGEVEQ
+         Mk1v73lx29yjIoSNfatyyBdOxfS5kNaadRl0MABctfGMKBHNOTdxj2Q20kNtZkuslO
+         CYEZnGbDT+3HTw0O9GqXDq0zAx3BMfDX0e6hI8MRwkyQgOCVTHiQJlvzn6h7hh096j
+         qcjpFAH7GGsyBrzrFhDxvwLbXCrxjDKpVtRc0p1RGT8/jWF3cn4lBkrmHV6zL2XrxD
+         EZFZgShw84eMA==
+Date:   Wed, 20 Jan 2021 17:31:27 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Kurt Kanzenbach <kurt@linutronix.de>
-Cc:     Vladimir Oltean <olteanv@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH v2 net-next 1/1] net: dsa: hellcreek: Add TAPRIO
- offloading support
-Message-ID: <20210120165039.2867de26@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <87turc2i14.fsf@kurt>
-References: <20210116124922.32356-1-kurt@linutronix.de>
-        <20210116124922.32356-2-kurt@linutronix.de>
-        <20210119155703.7064800d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <87turc2i14.fsf@kurt>
+To:     Marek Vasut <marex@denx.de>
+Cc:     netdev@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Michael Grzeschik <m.grzeschik@pengutronix.de>,
+        Paul Barker <pbarker@konsulko.com>
+Subject: Re: [PATCH net-next V2] net: dsa: microchip: Adjust reset release
+ timing to match reference reset circuit
+Message-ID: <20210120173127.58445e6c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210120030502.617185-1-marex@denx.de>
+References: <20210120030502.617185-1-marex@denx.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -47,20 +42,27 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 20 Jan 2021 08:18:15 +0100 Kurt Kanzenbach wrote:
-> >> +	/* Schedule periodic schedule check */
-> >> +	schedule_delayed_work(&hellcreek_port->schedule_work,
-> >> +			      HELLCREEK_SCHEDULE_PERIOD);  
-> >
-> > Why schedule this work every 2 seconds rather than scheduling it
-> > $start_time - 8 sec + epsilon?  
+On Wed, 20 Jan 2021 04:05:02 +0100 Marek Vasut wrote:
+> KSZ8794CNX datasheet section 8.0 RESET CIRCUIT describes recommended
+> circuit for interfacing with CPU/FPGA reset consisting of 10k pullup
+> resistor and 10uF capacitor to ground. This circuit takes ~100 ms to
+> rise enough to release the reset.
 > 
-> The two seconds are taken from the programming guide. That's why I used
-> it.
+> For maximum supply voltage VDDIO=3.3V VIH=2.0V R=10kR C=10uF that is
+>                     VDDIO - VIH
+>   t = R * C * -ln( ------------- ) = 10000*0.00001*-(-0.93)=0.093 s
+>                        VDDIO
+> so we need ~95 ms for the reset to really de-assert, and then the
+> original 100us for the switch itself to come out of reset. Simply
+> msleep() for 100 ms which fits the constraint with a bit of extra
+> space.
 > 
-> The PTP frequency starts to matter for large deltas. In theory the
-> rescheduling period can be increased [1]. Should I adjust it? 
+> Fixes: 5b797980908a ("net: dsa: microchip: Implement recommended reset timing")
+> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+> Signed-off-by: Marek Vasut <marex@denx.de>
 
-I see, makes sense. You can leave it as is, please just add a comment
-next to the definition saying that the exact value is not important we
-just want it to be low enough to no suffer from clock freq error.
+I'm slightly confused whether this is just future proofing or you
+actually have a board where this matters. The tree is tagged as
+net-next but there is a Fixes tag which normally indicates net+stable.
+
+Please advise.
