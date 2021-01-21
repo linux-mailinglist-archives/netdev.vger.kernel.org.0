@@ -2,135 +2,85 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D1FD2FE244
-	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 07:07:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C32C2FE290
+	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 07:18:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726413AbhAUGF5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jan 2021 01:05:57 -0500
-Received: from m12-17.163.com ([220.181.12.17]:49474 "EHLO m12-17.163.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726197AbhAUGFA (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 21 Jan 2021 01:05:00 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
-        s=s110527; h=From:Subject:Date:Message-Id:MIME-Version; bh=KtEXc
-        ox0mT+oOokFE25ZYZEgpVo5HBdz4Th5NXAN7i8=; b=RsZEw0g021xQbcMXHC2HD
-        widS1/cS1RwEsPkOZe2yizrz0S3jAfcU/J1ESDGKqb/DvqaMLxOHwozPPfPTKegn
-        l5gfoBlD9UlALmklWBa4leTIibCKH+n9P4pLYKrAF44IjCa5Qf1D9LTsrsOg4aRl
-        +qpcVZE78CFLGxYwVqkA4I=
-Received: from COOL-20201222LC.ccdomain.com (unknown [218.94.48.178])
-        by smtp13 (Coremail) with SMTP id EcCowABXCkIwGQlgfh6Mgw--.52708S2;
-        Thu, 21 Jan 2021 14:03:31 +0800 (CST)
-From:   dingsenjie@163.com
-To:     linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org
-Cc:     linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, dingsenjie <dingsenjie@yulong.com>
-Subject: [PATCH] mt7915: Convert to DEFINE_SHOW_ATTRIBUTE
-Date:   Thu, 21 Jan 2021 14:03:24 +0800
-Message-Id: <20210121060324.21124-1-dingsenjie@163.com>
-X-Mailer: git-send-email 2.21.0.windows.1
+        id S1726867AbhAUGSR (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jan 2021 01:18:17 -0500
+Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:41920 "EHLO
+        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726810AbhAUGR4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jan 2021 01:17:56 -0500
+Received: from pps.filterd (m0098409.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 10L5xVji044576
+        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 01:17:14 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding; s=pp1;
+ bh=FYbmJCmc4XYphRF5j9ymHK5CEw7IRee4REkaudCb/OE=;
+ b=D0Nq26yIgQrZCNpCBRcsX4i/dG8rL51vjfsqXPciMwNgS+5nxN+8+xwSI5hd/d0Z5VNo
+ ukp6QHUpvy6ZUQPOnnGcdjK8h0TvD1cYkRA1SGlmDJJmHX9+muP1eDzTvLSoeKA2AtFj
+ dPOyhsWbEjX+b1IcP0a16/jPqvijULGFoDMb/OgkAZ3K3vGtYgLzHQE8RcU/+aZ0OWuh
+ jnayzQHLpGu26os8/et+bAEgq0iaQv7bOrKVcdmRjVUnSQVe2TC0KKVsJG3f5nHjrrCY
+ thDml929d1kpewnSE0S/5FkR70M8d35NRBJI87RhRt4E/sb+RSyeG6Cjc62AQvD+5sD3 VA== 
+Received: from ppma03wdc.us.ibm.com (ba.79.3fa9.ip4.static.sl-reverse.com [169.63.121.186])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3673xy8kpc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 01:17:13 -0500
+Received: from pps.filterd (ppma03wdc.us.ibm.com [127.0.0.1])
+        by ppma03wdc.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 10L6DVdY009142
+        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 06:17:12 GMT
+Received: from b03cxnp07028.gho.boulder.ibm.com (b03cxnp07028.gho.boulder.ibm.com [9.17.130.15])
+        by ppma03wdc.us.ibm.com with ESMTP id 3668pc1w29-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
+        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 06:17:12 +0000
+Received: from b03ledav004.gho.boulder.ibm.com (b03ledav004.gho.boulder.ibm.com [9.17.130.235])
+        by b03cxnp07028.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 10L6HBw98323384
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 21 Jan 2021 06:17:11 GMT
+Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 90B8F78063;
+        Thu, 21 Jan 2021 06:17:11 +0000 (GMT)
+Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 181E47805E;
+        Thu, 21 Jan 2021 06:17:10 +0000 (GMT)
+Received: from pompom.ibm.com (unknown [9.85.137.249])
+        by b03ledav004.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Thu, 21 Jan 2021 06:17:10 +0000 (GMT)
+From:   Lijun Pan <ljp@linux.ibm.com>
+To:     netdev@vger.kernel.org
+Cc:     Lijun Pan <ljp@linux.ibm.com>
+Subject: [PATCH net 0/3] fixes the memory barrier for SCRQ/CRQ entry 
+Date:   Thu, 21 Jan 2021 00:17:07 -0600
+Message-Id: <20210121061710.53217-1-ljp@linux.ibm.com>
+X-Mailer: git-send-email 2.22.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-CM-TRANSID: EcCowABXCkIwGQlgfh6Mgw--.52708S2
-X-Coremail-Antispam: 1Uf129KBjvJXoWxZrWrXw45Zw1rXw48AryftFb_yoW5ZF1fpa
-        95uayjvr48Jr1kKrZ5JFWUZ3yrGanaq34UZr92934rCF4vqFn5tF4UGFWSvrW0y3y8Cr17
-        X3W5Kry3J3yYvr7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07jZEfOUUUUU=
-X-Originating-IP: [218.94.48.178]
-X-CM-SenderInfo: 5glqw25hqmxvi6rwjhhfrp/xtbBRRMhyFPAJqObPgAAsM
+X-TM-AS-GCONF: 00
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
+ definitions=2021-01-21_02:2021-01-20,2021-01-21 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 adultscore=0
+ clxscore=1015 priorityscore=1501 lowpriorityscore=0 impostorscore=0
+ phishscore=0 mlxlogscore=742 spamscore=0 mlxscore=0 bulkscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2101210027
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: dingsenjie <dingsenjie@yulong.com>
+This series rework/fix the memory barrier for SCRQ (Sub-Command-Response
+Queue) and CRQ (Command-Response Queue) entries.
 
-Use DEFINE_SHOW_ATTRIBUTE macro to simplify the code.
+This series does not have merge conflict with Suka's 
+https://lists.openwall.net/netdev/2021/01/08/89
 
-Signed-off-by: dingsenjie <dingsenjie@yulong.com>
----
- .../net/wireless/mediatek/mt76/mt7915/debugfs.c    | 36 ++++------------------
- 1 file changed, 6 insertions(+), 30 deletions(-)
+Lijun Pan (3):
+  ibmvnic: rework to ensure SCRQ entry reads are properly ordered
+  ibmvnic: remove unnecessary rmb() inside ibmvnic_poll
+  ibmvnic: Ensure that CRQ entry read/write are correctly ordered
 
-diff --git a/drivers/net/wireless/mediatek/mt76/mt7915/debugfs.c b/drivers/net/wireless/mediatek/mt76/mt7915/debugfs.c
-index 7d810fb..fa5ce4e 100644
---- a/drivers/net/wireless/mediatek/mt76/mt7915/debugfs.c
-+++ b/drivers/net/wireless/mediatek/mt76/mt7915/debugfs.c
-@@ -166,7 +166,7 @@ static int mt7915_ser_trigger_set(void *data, u64 val)
- }
- 
- static int
--mt7915_tx_stats_read(struct seq_file *file, void *data)
-+mt7915_tx_stats_show(struct seq_file *file, void *data)
- {
- 	struct mt7915_dev *dev = file->private;
- 	int stat[8], i, n;
-@@ -196,19 +196,7 @@ static int mt7915_ser_trigger_set(void *data, u64 val)
- 	return 0;
- }
- 
--static int
--mt7915_tx_stats_open(struct inode *inode, struct file *f)
--{
--	return single_open(f, mt7915_tx_stats_read, inode->i_private);
--}
--
--static const struct file_operations fops_tx_stats = {
--	.open = mt7915_tx_stats_open,
--	.read = seq_read,
--	.llseek = seq_lseek,
--	.release = single_release,
--	.owner = THIS_MODULE,
--};
-+DEFINE_SHOW_ATTRIBUTE(mt7915_tx_stats);
- 
- static int mt7915_read_temperature(struct seq_file *s, void *data)
- {
-@@ -353,7 +341,7 @@ int mt7915_init_debugfs(struct mt7915_dev *dev)
- 				    mt7915_queues_read);
- 	debugfs_create_devm_seqfile(dev->mt76.dev, "acq", dir,
- 				    mt7915_queues_acq);
--	debugfs_create_file("tx_stats", 0400, dir, dev, &fops_tx_stats);
-+	debugfs_create_file("tx_stats", 0400, dir, dev, &mt7915_tx_stats_fops);
- 	debugfs_create_file("fw_debug", 0600, dir, dev, &fops_fw_debug);
- 	debugfs_create_u32("dfs_hw_pattern", 0400, dir, &dev->hw_pattern);
- 	/* test knobs */
-@@ -384,7 +372,7 @@ static int mt7915_sta_fixed_rate_set(void *data, u64 rate)
- 			 mt7915_sta_fixed_rate_set, "%llx\n");
- 
- static int
--mt7915_sta_stats_read(struct seq_file *s, void *data)
-+mt7915_sta_stats_show(struct seq_file *s, void *data)
- {
- 	struct ieee80211_sta *sta = s->private;
- 	struct mt7915_sta *msta = (struct mt7915_sta *)sta->drv_priv;
-@@ -427,24 +415,12 @@ static int mt7915_sta_fixed_rate_set(void *data, u64 rate)
- 	return 0;
- }
- 
--static int
--mt7915_sta_stats_open(struct inode *inode, struct file *f)
--{
--	return single_open(f, mt7915_sta_stats_read, inode->i_private);
--}
--
--static const struct file_operations fops_sta_stats = {
--	.open = mt7915_sta_stats_open,
--	.read = seq_read,
--	.llseek = seq_lseek,
--	.release = single_release,
--	.owner = THIS_MODULE,
--};
-+DEFINE_SHOW_ATTRIBUTE(mt7915_sta_stats);
- 
- void mt7915_sta_add_debugfs(struct ieee80211_hw *hw, struct ieee80211_vif *vif,
- 			    struct ieee80211_sta *sta, struct dentry *dir)
- {
- 	debugfs_create_file("fixed_rate", 0600, dir, sta, &fops_fixed_rate);
--	debugfs_create_file("stats", 0400, dir, sta, &fops_sta_stats);
-+	debugfs_create_file("stats", 0400, dir, sta, &mt7915_sta_stats_fops);
- }
- #endif
+ drivers/net/ethernet/ibm/ibmvnic.c | 54 ++++++++++++++++++++----------
+ 1 file changed, 36 insertions(+), 18 deletions(-)
+
 -- 
-1.9.1
-
+2.23.0
 
