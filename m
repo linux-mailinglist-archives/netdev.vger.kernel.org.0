@@ -2,98 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2BEA22FE062
-	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 05:09:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CFE142FE080
+	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 05:19:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727695AbhAUEHj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jan 2021 23:07:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59392 "EHLO
+        id S1726945AbhAUEOm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jan 2021 23:14:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726641AbhAUEGu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 23:06:50 -0500
-Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4EAB4C0613ED;
-        Wed, 20 Jan 2021 20:06:09 -0800 (PST)
-Received: by mail-pf1-x42a.google.com with SMTP id 11so734644pfu.4;
-        Wed, 20 Jan 2021 20:06:09 -0800 (PST)
+        with ESMTP id S1732107AbhAUEKw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 23:10:52 -0500
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0C20C061575
+        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 20:10:11 -0800 (PST)
+Received: by mail-pj1-x102b.google.com with SMTP id b5so786274pjl.0
+        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 20:10:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=EGNpPEaAZpjchbtN5ftgX7ECKSLHxDYAbQnFlmBO7DQ=;
-        b=pRLpnkc4pCp6AUbIuLnk/e6ZgTkOMu9hiOPtGua5lQx75J73QaspjkAu1+BM/Ec4FH
-         bUn1o+w5/N9HXPERSsgORFBPkw1l8dq/EvST3SD1T1AqBEovxkI10wH58qHRV55DvpeZ
-         LAB15ulXkvMPmsUnJ93E9nHkBXwxjBU+QhCnLOF2nzQvQntKZgVMKY3SZtOmtDvYB1br
-         LLRb3dX7TAuA2qO52ptTeaS8TZgKd1TPxHI6Eo838qeBOhHEUqnLGF5qM7ohWFQUrlvP
-         aQ7YCYEmK1GUY0oj+wRVoIJU80OTG2+2scnj5r5PZrfXF3TTiXAVjhk5II4f7PgpbBwV
-         y4MQ==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=nym2FNZsKI6bzdnD8xWBI+z7a4zlO5DRya94UNFOEzU=;
+        b=a4YToo0F2P51G6NfbEyShr67ZdeeWDoLS0AqW6+rAyA/ep6rRn6AtvHF3Ph3wlqodk
+         3LhdBG4WIujZluUBXIKif735ELcwGk+w56sCXz5gsBs9Arcka/0Ylz7ld8pKigxXZr8V
+         +zRIbIWoMLoLxpRofs4+olKks9IbyBJVGGJMTcigRkbJDPoa4HbPRs7yxGWtFXmxeIXF
+         DGoRQ8rd5GBN/+anuLs+BUUNLDGynQWxM/7BVnOBU4XGO0k5d/AOiCmxikURT1cOqWb9
+         cn17Kd+23pwymYcRJHAe8x1RV4TwaQbDZeVw0FnjTXTPg8Lx3Y3j7YfsKo9m0oW44+zW
+         tDBQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=EGNpPEaAZpjchbtN5ftgX7ECKSLHxDYAbQnFlmBO7DQ=;
-        b=ks0VSNh4u+x0zJx1OOD5TwKN4alftlxWEiCl9YMECh585wKUACTfsxpC77sIj5cY2D
-         o/DmkEveYLoxr8NRuJ+QsOxNiLRhFNv8O+L+sSPeuoOU6bhKC3s7ZZv7Zp8ft0cEGtAB
-         LkmVjwRaiDZdimAQe+eaUglC3jKcMR24480YuYfjxlnTI3PHbTXlbZCTsW9T8sBn2kEv
-         t8qe5FdPWNxhambh0FvWFqr0WiUeT7rkGoedDTvXOQwF5wWOYjMjh2tD3BZOKg+EEQcK
-         qXH5IraEWmmrkZCCBZW1/qqFxc9RY4PlE+7wV9bS7KWAu1iPFy83Ih4u13LQimeTk1YZ
-         Gm7g==
-X-Gm-Message-State: AOAM531U+NKSMKAgjoFiJyOif+skHXUt5i3HVQ6dyPYueTlAqRJL3dpS
-        +s3UjlHFi21AyciAfY038U/JdLpEMLI=
-X-Google-Smtp-Source: ABdhPJyQgPx5ZJ6Di8EYfs8mILdeTZuCwz0GgsxYtOZnz/I17TifScmq0qOlOYux9x+b572n1c5JRw==
-X-Received: by 2002:a62:35c6:0:b029:1ba:e795:d20e with SMTP id c189-20020a6235c60000b02901bae795d20emr5774210pfa.37.1611201968564;
-        Wed, 20 Jan 2021 20:06:08 -0800 (PST)
-Received: from localhost.localdomain (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
-        by smtp.gmail.com with ESMTPSA id f24sm3808567pjj.5.2021.01.20.20.06.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Jan 2021 20:06:07 -0800 (PST)
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Brandon Streiff <brandon.streiff@ni.com>,
-        Dinh Nguyen <dinguyen@kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Marc Zyngier <maz@kernel.org>, Olof Johansson <olof@lixom.net>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=nym2FNZsKI6bzdnD8xWBI+z7a4zlO5DRya94UNFOEzU=;
+        b=QEZOtxp8gko5uDHPSRoQ2GmI9e/CLmjeOzRrz+ve9wpSzVNuKU2AN0c0zjGujFr+pS
+         cHBur4rR1xKjOYp2W2H2tTVMzv3EuAH95L110foA953ahuAfHFvrtyfRUsshv/Um/XRz
+         1zMXECLclskyrkcp7P9XMmzM8fPIFBcAXXUqvA6VSO5yWX61Bp0WtONe9QD4G7au4zUi
+         bmA0zGTIT7mxydeEpPpkX8BJeEFO6h0U0WMXw5NS++1jp5TkVg4iT1C6nifieAUUchn1
+         GdzRZ/s3F7ZuLHKbZ7+GE+PR7L41lC1KBC2qG4osCubxBwvCBr6KQJkFWBtan+fPXlZa
+         p0JA==
+X-Gm-Message-State: AOAM533EbAtL1iBQOMv60Ggz679rIze7sxprlpJO9eEpfaZNBlcfeThP
+        oGpeV6jLrFTeSOgL/+NrlT8=
+X-Google-Smtp-Source: ABdhPJyfL1yxxuTw34UrDS6c9i/OPSubdGni5m6E/hXGLRgct68WyAxWfgtvbaBr+IGoE+8hUfinLA==
+X-Received: by 2002:a17:902:d702:b029:de:7ae2:8e6e with SMTP id w2-20020a170902d702b02900de7ae28e6emr12988300ply.42.1611202211016;
+        Wed, 20 Jan 2021 20:10:11 -0800 (PST)
+Received: from [10.230.29.30] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id 3sm4059206pgk.81.2021.01.20.20.10.08
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 20 Jan 2021 20:10:10 -0800 (PST)
+Subject: Re: [PATCH v5 net-next 10/10] net: dsa: felix: perform switch setup
+ for tag_8021q
+To:     Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
         Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net 1/4] net: dsa: mv88e6xxx: Remove bogus Kconfig dependency.
-Date:   Wed, 20 Jan 2021 20:06:00 -0800
-Message-Id: <ad52391dba15c5365e197aea54781037a1c223c7.1611198584.git.richardcochran@gmail.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <cover.1611198584.git.richardcochran@gmail.com>
-References: <cover.1611198584.git.richardcochran@gmail.com>
+        Richard Cochran <richardcochran@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        Hongbo Wang <hongbo.wang@nxp.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Po Liu <po.liu@nxp.com>, Yangbo Lu <yangbo.lu@nxp.com>,
+        Maxim Kochetkov <fido_max@inbox.ru>,
+        Eldar Gasanov <eldargasanov2@gmail.com>,
+        Andrey L <al@b4comtech.com>,
+        Tobias Waldekranz <tobias@waldekranz.com>,
+        UNGLinuxDriver@microchip.com
+References: <20210121023616.1696021-1-olteanv@gmail.com>
+ <20210121023616.1696021-11-olteanv@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <bad1e172-a7b7-b578-91c6-afa34cfbfb61@gmail.com>
+Date:   Wed, 20 Jan 2021 20:10:07 -0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.6.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210121023616.1696021-11-olteanv@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The mv88e6xxx is a DSA driver, and it implements DSA style time
-stamping of PTP frames.  It has no need of the expensive option to
-enable PHY time stamping.  Remove the bogus dependency.
 
-Signed-off-by: Richard Cochran <richardcochran@gmail.com>
-Fixes: 2fa8d3af4bad ("net: dsa: mv88e6xxx: expose switch time as a PTP hardware clock")
----
- drivers/net/dsa/mv88e6xxx/Kconfig | 1 -
- 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/net/dsa/mv88e6xxx/Kconfig b/drivers/net/dsa/mv88e6xxx/Kconfig
-index 51185e4d7d15..b17540926c11 100644
---- a/drivers/net/dsa/mv88e6xxx/Kconfig
-+++ b/drivers/net/dsa/mv88e6xxx/Kconfig
-@@ -25,7 +25,6 @@ config NET_DSA_MV88E6XXX_PTP
- 	default n
- 	depends on NET_DSA_MV88E6XXX_GLOBAL2
- 	depends on PTP_1588_CLOCK
--	imply NETWORK_PHY_TIMESTAMPING
- 	help
- 	  Say Y to enable PTP hardware timestamping on Marvell 88E6xxx switch
- 	  chips that support it.
+On 1/20/2021 6:36 PM, Vladimir Oltean wrote:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> 
+> Unlike sja1105, the only other user of the software-defined tag_8021q.c
+> tagger format, the implementation we choose for the Felix DSA switch
+> driver preserves full functionality under a vlan_filtering bridge
+> (i.e. IP termination works through the DSA user ports under all
+> circumstances).
+> 
+> The tag_8021q protocol just wants:
+> - Identifying the ingress switch port based on the RX VLAN ID, as seen
+>   by the CPU. We achieve this by using the TCAM engines (which are also
+>   used for tc-flower offload) to push the RX VLAN as a second, outer
+>   tag, on egress towards the CPU port.
+> - Steering traffic injected into the switch from the network stack
+>   towards the correct front port based on the TX VLAN, and consuming
+>   (popping) that header on the switch's egress.
+> 
+> A tc-flower pseudocode of the static configuration done by the driver
+> would look like this:
+> 
+> $ tc qdisc add dev <cpu-port> clsact
+> $ for eth in swp0 swp1 swp2 swp3; do \
+> 	tc filter add dev <cpu-port> egress flower indev ${eth} \
+> 		action vlan push id <rxvlan> protocol 802.1ad; \
+> 	tc filter add dev <cpu-port> ingress protocol 802.1Q flower
+> 		vlan_id <txvlan> action vlan pop \
+> 		action mirred egress redirect dev ${eth}; \
+> done
+> 
+> but of course since DSA does not register network interfaces for the CPU
+> port, this configuration would be impossible for the user to do. Also,
+> due to the same reason, it is impossible for the user to inadvertently
+> delete these rules using tc. These rules do not collide in any way with
+> tc-flower, they just consume some TCAM space, which is something we can
+> live with.
+> 
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+
+Quite an interesting read.
 -- 
-2.20.1
-
+Florian
