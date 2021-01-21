@@ -2,106 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 153FC2FF5CC
-	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 21:26:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 365E22FF5E3
+	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 21:31:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726817AbhAUUZM convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Thu, 21 Jan 2021 15:25:12 -0500
-Received: from us-smtp-delivery-44.mimecast.com ([205.139.111.44]:44801 "EHLO
-        us-smtp-delivery-44.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727312AbhAUUXg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jan 2021 15:23:36 -0500
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-130-349FNIZ9NPWCxBresCrdnA-1; Thu, 21 Jan 2021 15:22:42 -0500
-X-MC-Unique: 349FNIZ9NPWCxBresCrdnA-1
-Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 1EB64802B40;
-        Thu, 21 Jan 2021 20:22:40 +0000 (UTC)
-Received: from krava.redhat.com (unknown [10.40.192.46])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 2916A61F55;
-        Thu, 21 Jan 2021 20:22:31 +0000 (UTC)
-From:   Jiri Olsa <jolsa@kernel.org>
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>
-Cc:     dwarves@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Yonghong Song <yhs@fb.com>,
-        Hao Luo <haoluo@google.com>, Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Joe Lawrence <joe.lawrence@redhat.com>,
-        Mark Wielaard <mjw@redhat.com>
-Subject: [PATCH bpf-next 3/3] libbpf: Use string table index from index table if needed
-Date:   Thu, 21 Jan 2021 21:22:03 +0100
-Message-Id: <20210121202203.9346-4-jolsa@kernel.org>
-In-Reply-To: <20210121202203.9346-1-jolsa@kernel.org>
-References: <20210121202203.9346-1-jolsa@kernel.org>
+        id S1727136AbhAUUbM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jan 2021 15:31:12 -0500
+Received: from mail.kernel.org ([198.145.29.99]:54940 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726057AbhAUUaz (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 21 Jan 2021 15:30:55 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id 2895023A56;
+        Thu, 21 Jan 2021 20:30:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1611261011;
+        bh=HG62kbJ/UUQBZl/MQ85MSr+TpY35yfIDBQELjZofos0=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=L/shCvqcz49UmLfABUtzw78AT2Ight5jJLo8CrWV1rRBkPGd0kI36MV5BGLL79rNH
+         hPG53a2TaBIX34csX1waequ+DzhPBJtDcWh2iOHbIoINOzejzd+7OgyeykkJqeF7x5
+         3/nyxnf1MCKi6PkRjpYZbsOa1F/ezt67Kgj++O2DHHr4KzgPOIppsE9zY5aFjBsuDO
+         L9OuHnVFUMnS3tO6+fn/BH/foXz1kJXRSFRgZX6RYH47tF1fXQY1SjQVpHzG5Ii4v9
+         q1774HbfUmLLBfoAIYXHP2Cy+O6JVlVc6CXFXS0TdyorEV+4wlS2ci1TH3r9TFNm4D
+         ED4+JOdgPTREw==
+Received: from pdx-korg-docbuild-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-1.ci.codeaurora.org (Postfix) with ESMTP id 1880460591;
+        Thu, 21 Jan 2021 20:30:11 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=jolsa@kernel.org
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: kernel.org
-Content-Transfer-Encoding: 8BIT
-Content-Type: text/plain; charset=WINDOWS-1252
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next v2 00/17] ucc_geth improvements
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161126101109.19518.320974250703012868.git-patchwork-notify@kernel.org>
+Date:   Thu, 21 Jan 2021 20:30:11 +0000
+References: <20210119150802.19997-1-rasmus.villemoes@prevas.dk>
+In-Reply-To: <20210119150802.19997-1-rasmus.villemoes@prevas.dk>
+To:     Rasmus Villemoes <rasmus.villemoes@prevas.dk>
+Cc:     netdev@vger.kernel.org, leoyang.li@nxp.com, davem@davemloft.net,
+        qiang.zhao@nxp.com, andrew@lunn.ch, christophe.leroy@csgroup.eu,
+        kuba@kernel.org, Joakim.Tjernlund@infinera.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For very large ELF objects (with many sections), we could
-get special value SHN_XINDEX (65535) for elf object's string
-table index - e_shstrndx.
+Hello:
 
-Call elf_getshdrstrndx to get the proper string table index,
-instead of reading it directly from ELF header.
+This series was applied to netdev/net-next.git (refs/heads/master):
 
-Signed-off-by: Jiri Olsa <jolsa@kernel.org>
----
- tools/lib/bpf/btf.c | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
+On Tue, 19 Jan 2021 16:07:45 +0100 you wrote:
+> This is a resend of some improvements to the ucc_geth driver that was
+> previously sent together with bug fixes, which have by now been
+> applied.
+> 
+> Li Yang, if you don't speak up, I'm going to assume you're fine with
+> 2,3,4 being taken through the net tree?
+> 
+> [...]
 
-diff --git a/tools/lib/bpf/btf.c b/tools/lib/bpf/btf.c
-index 9970a288dda5..d9c10830d749 100644
---- a/tools/lib/bpf/btf.c
-+++ b/tools/lib/bpf/btf.c
-@@ -858,6 +858,7 @@ static struct btf *btf_parse_elf(const char *path, struct btf *base_btf,
- 	Elf_Scn *scn = NULL;
- 	Elf *elf = NULL;
- 	GElf_Ehdr ehdr;
-+	size_t shstrndx;
- 
- 	if (elf_version(EV_CURRENT) == EV_NONE) {
- 		pr_warn("failed to init libelf for %s\n", path);
-@@ -882,7 +883,14 @@ static struct btf *btf_parse_elf(const char *path, struct btf *base_btf,
- 		pr_warn("failed to get EHDR from %s\n", path);
- 		goto done;
- 	}
--	if (!elf_rawdata(elf_getscn(elf, ehdr.e_shstrndx), NULL)) {
-+
-+	if (elf_getshdrstrndx(elf, &shstrndx)) {
-+		pr_warn("failed to get section names section index for %s\n",
-+			path);
-+		goto done;
-+	}
-+
-+	if (!elf_rawdata(elf_getscn(elf, shstrndx), NULL)) {
- 		pr_warn("failed to get e_shstrndx from %s\n", path);
- 		goto done;
- 	}
-@@ -897,7 +905,7 @@ static struct btf *btf_parse_elf(const char *path, struct btf *base_btf,
- 				idx, path);
- 			goto done;
- 		}
--		name = elf_strptr(elf, ehdr.e_shstrndx, sh.sh_name);
-+		name = elf_strptr(elf, shstrndx, sh.sh_name);
- 		if (!name) {
- 			pr_warn("failed to get section(%d) name from %s\n",
- 				idx, path);
--- 
-2.27.0
+Here is the summary with links:
+  - [net-next,v2,01/17] ethernet: ucc_geth: remove unused read of temoder field
+    https://git.kernel.org/netdev/net-next/c/0a950ce029c8
+  - [net-next,v2,02/17] soc: fsl: qe: make cpm_muram_offset take a const void* argument
+    https://git.kernel.org/netdev/net-next/c/e8e507a8ac90
+  - [net-next,v2,03/17] soc: fsl: qe: store muram_vbase as a void pointer instead of u8
+    https://git.kernel.org/netdev/net-next/c/155ea0dc8dcb
+  - [net-next,v2,04/17] soc: fsl: qe: add cpm_muram_free_addr() helper
+    https://git.kernel.org/netdev/net-next/c/186b8daffb4e
+  - [net-next,v2,05/17] ethernet: ucc_geth: use qe_muram_free_addr()
+    https://git.kernel.org/netdev/net-next/c/03588e92c07f
+  - [net-next,v2,06/17] ethernet: ucc_geth: remove unnecessary memset_io() calls
+    https://git.kernel.org/netdev/net-next/c/0a71c415297f
+  - [net-next,v2,07/17] ethernet: ucc_geth: replace kmalloc+memset by kzalloc
+    https://git.kernel.org/netdev/net-next/c/830c8ddc66df
+  - [net-next,v2,08/17] ethernet: ucc_geth: remove {rx,tx}_glbl_pram_offset from struct ucc_geth_private
+    https://git.kernel.org/netdev/net-next/c/7d9fe90036f7
+  - [net-next,v2,09/17] ethernet: ucc_geth: factor out parsing of {rx,tx}-clock{,-name} properties
+    https://git.kernel.org/netdev/net-next/c/632e3f2d9922
+  - [net-next,v2,10/17] ethernet: ucc_geth: constify ugeth_primary_info
+    https://git.kernel.org/netdev/net-next/c/b0292e086bee
+  - [net-next,v2,11/17] ethernet: ucc_geth: don't statically allocate eight ucc_geth_info
+    https://git.kernel.org/netdev/net-next/c/baff4311c40d
+  - [net-next,v2,12/17] ethernet: ucc_geth: use UCC_GETH_{RX,TX}_BD_RING_ALIGNMENT macros directly
+    https://git.kernel.org/netdev/net-next/c/b29fafd3570b
+  - [net-next,v2,13/17] ethernet: ucc_geth: remove bd_mem_part and all associated code
+    https://git.kernel.org/netdev/net-next/c/64a99fe596f9
+  - [net-next,v2,14/17] ethernet: ucc_geth: replace kmalloc_array()+for loop by kcalloc()
+    https://git.kernel.org/netdev/net-next/c/33deb13c87e5
+  - [net-next,v2,15/17] ethernet: ucc_geth: add helper to replace repeated switch statements
+    https://git.kernel.org/netdev/net-next/c/634b5bd73187
+  - [net-next,v2,16/17] ethernet: ucc_geth: inform the compiler that numQueues is always 1
+    https://git.kernel.org/netdev/net-next/c/53f49d86ea21
+  - [net-next,v2,17/17] ethernet: ucc_geth: simplify rx/tx allocations
+    https://git.kernel.org/netdev/net-next/c/9b0dfef47553
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
