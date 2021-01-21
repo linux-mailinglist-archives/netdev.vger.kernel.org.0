@@ -2,85 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0011E2FE695
-	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 10:43:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D1C7B2FE6A4
+	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 10:47:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728803AbhAUJmn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jan 2021 04:42:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46714 "EHLO
+        id S1728367AbhAUJpk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jan 2021 04:45:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728708AbhAUJmJ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jan 2021 04:42:09 -0500
-Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0336C061757;
-        Thu, 21 Jan 2021 01:41:28 -0800 (PST)
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id A0A4A22F99;
-        Thu, 21 Jan 2021 10:41:26 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1611222086;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=NAI4d5E5IrpOA+2Fee0JWaMo5gtggjAam42jIHHHqBY=;
-        b=anJb+frYYEwtl/9Poa+3LMZp4un6EwNIczpFjFWTZmKRlsOVL0GcfBOWegWsTBm+zD6Z1x
-        EtlAtIbhIOLc9Gfisb3mDzfcs9L5PHHA86I7S5Q3BE6YxTql3/QMWVj7szmTCYiM90RCxq
-        ljpPKCVwwbJ8O2sOnntn4XNVZZCWafE=
+        with ESMTP id S1728781AbhAUJpO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jan 2021 04:45:14 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10E9EC0613C1
+        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 01:44:34 -0800 (PST)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1l2WVt-0007QS-Bo; Thu, 21 Jan 2021 10:44:25 +0100
+Received: from hardanger.blackshift.org (unknown [IPv6:2a03:f580:87bc:d400:37fb:eadb:47a3:78d5])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 634405C98FE;
+        Thu, 21 Jan 2021 09:44:23 +0000 (UTC)
+Date:   Thu, 21 Jan 2021 10:44:22 +0100
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Su <suyanjun218@gmail.com>
+Cc:     manivannan.sadhasivam@linaro.org, thomas.kopp@microchip.com,
+        wg@grandegger.com, davem@davemloft.net, kuba@kernel.org,
+        lgirdwood@gmail.com, broonie@kernel.org, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] can: mcp251xfd: replace sizeof(u32) with val_bytes in
+ regmap
+Message-ID: <20210121094422.h5tjjyhsn7gvhlrm@hardanger.blackshift.org>
+References: <20210121091005.74417-1-suyanjun218@gmail.com>
+ <20210121092115.dasphwfzfkthcy64@hardanger.blackshift.org>
+ <5ed3d488-3ea6-cc07-a04d-73a6678d772a@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Thu, 21 Jan 2021 10:41:26 +0100
-From:   Michael Walle <michael@walle.cc>
-To:     Claudiu.Beznea@microchip.com
-Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Nicolas.Ferre@microchip.com, davem@davemloft.net
-Subject: Re: [PATCH] net: macb: ignore tx_clk if MII is used
-In-Reply-To: <38734f00-e672-e694-1344-35f4dd68c90c@microchip.com>
-References: <20210120194303.28268-1-michael@walle.cc>
- <38734f00-e672-e694-1344-35f4dd68c90c@microchip.com>
-User-Agent: Roundcube Webmail/1.4.10
-Message-ID: <bd029c647db42e05bf1a54d43d601861@walle.cc>
-X-Sender: michael@walle.cc
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="zrug2yvgvouevx6t"
+Content-Disposition: inline
+In-Reply-To: <5ed3d488-3ea6-cc07-a04d-73a6678d772a@gmail.com>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Claudiu,
 
-Am 2021-01-21 10:19, schrieb Claudiu.Beznea@microchip.com:
-> On 20.01.2021 21:43, Michael Walle wrote:
->> EXTERNAL EMAIL: Do not click links or open attachments unless you know 
->> the content is safe
->> 
->> If the MII interface is used, the PHY is the clock master, thus don't
->> set the clock rate. On Zynq-7000, this will prevent the following
->> warning:
->>   macb e000b000.ethernet eth0: unable to generate target frequency: 
->> 25000000 Hz
->> 
-> 
-> Since in this case the PHY provides the TX clock and it provides the 
-> proper
-> rate based on link speed, the MACB driver should not handle the 
-> bp->tx_clk
-> at all (MACB driver uses this clock only for setting the proper rate on 
-> it
-> based on link speed). So, I believe the proper fix would be to not pass 
-> the
-> tx_clk at all in device tree. This clock is optional for MACB driver.
+--zrug2yvgvouevx6t
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Thanks for looking into this.
+On Thu, Jan 21, 2021 at 05:33:40PM +0800, Su wrote:
+> The sizeof(u32) is hardcoded. IMO it's better to use the config value in
+> regmap.
 
-I had the same thought. But shouldn't the driver handle this case 
-gracefully?
-I mean it does know that the clock isn't needed at all. Ususually that 
-clock
-is defined in a device tree include. So you'd have to redefine that node 
-in
-an actual board file which means duplicating the other clocks.
+I got why you want to change this. Please update the patch description, com=
+ment
+on the increase of the object size and address the other issues I pointed o=
+ut.
+I think it makes no sense to have the function mcp251xfd_get_val_bytes() as=
+ you
+have to use several regmaps anyways.
 
--michael
+> > > No functional effect.
+> > Not quite:
+> >=20
+> > scripts/bloat-o-meter shows:
+> >=20
+> > add/remove: 0/0 grow/shrink: 3/0 up/down: 104/0 (104)
+> > Function                                     old     new   delta
+> > mcp251xfd_handle_tefif                       980    1028     +48
+> > mcp251xfd_irq                               3716    3756     +40
+> > mcp251xfd_handle_rxif_ring                   964     980     +16
+> > Total: Before=3D20832, After=3D20936, chg +0.50%
+
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+--zrug2yvgvouevx6t
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmAJTPQACgkQqclaivrt
+76kmLAf/Yexh9D+O2IOdOK2R9xP9k0PGIxsk6HhUz2wMqvIP8HBRd/Tuqj+5hFQU
+NO17xotVj9XVvvYHSI4mp8zfMyLVz7rylzimdLuxrGDaKmeMA+txcEU6BASpkXpy
+OadMbHTaor2CZt4blUVeeQcTGKhwH35cSIaRfXLcDr5dZADwwQcz5l1TkNe4dxEw
+9qFaWENDjwoqnkwFVjQGVCM04kthvcQA8kRtwq0ne3VpoiyY1phSbzYO784CO3+F
++uj0zJUNqUwpa5zA2HG6zby4h4af2hca8mdZQNlAmgyJzTCmQ9rjpPGHKiBuSZ+A
+PPN08M3HNARYwFYda7Qwhs9XW2t36Q==
+=stZm
+-----END PGP SIGNATURE-----
+
+--zrug2yvgvouevx6t--
