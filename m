@@ -2,213 +2,173 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 248F32FF4AA
-	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 20:37:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E63F2FF492
+	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 20:33:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726693AbhAUSuz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jan 2021 13:50:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35216 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727933AbhAUIsq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jan 2021 03:48:46 -0500
-Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C667CC061575;
-        Thu, 21 Jan 2021 00:48:04 -0800 (PST)
-Received: by mail-yb1-xb36.google.com with SMTP id r32so1321640ybd.5;
-        Thu, 21 Jan 2021 00:48:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to:cc
-         :content-transfer-encoding;
-        bh=DAKzWfI+WV1BtESP96vgOG0X+j7cbNfQKOeLD/qtt8U=;
-        b=lC6IYS6CEA7T4L4rYYL//fUkY+d5BaIrd211d0i1qE+tLBumvZQUotP+9mIkSLAsnw
-         8VSxPArB0v9HuV1mg/TpSkI07D1D/1mYYSiiVMX7JmvyIXXT6jwJt+ClBhIfgdJOZ2xi
-         VQv2ceD0d1n5OoGDEURtBVW1mkhAYuY/IZR3bUsR9vIM5B+8eLnTCozsQQ8gqF3abEgK
-         TGjzlpYjsXTTts8WZ/ntb/eegvKs4m7EjkD/ugOSdlv3hj74+2salZmDB0ai+LA/Y3S1
-         FR8LBxhqZU1M6buyjafevU99ogljIev/r/+02i6E/4pV8IqndQ91NPKvpJKvLavFGLFf
-         CsRw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc
-         :content-transfer-encoding;
-        bh=DAKzWfI+WV1BtESP96vgOG0X+j7cbNfQKOeLD/qtt8U=;
-        b=RV3pfCRTIZFgeQDEbWUQEXwicA9RcVB3kESsl4HfNuHMnTQThLBicpisYUckHQMQ8z
-         wmV76k+VR5DZ/fWjuE0KYhn4uNTJsrDoIWYf2TbHDI01AOzXNpkvRuuy4iw14+MlJgK8
-         J9S9DlZ/kaCUQbyQ5a42+qnaXKSDk7cta0Cx3ClLbtLBHREvlhogESTBlKSx8gaX9rx3
-         iMsTfRTjxiZ1OXwDUSJ/E1OBk/3+jop0wsSrGPZ8fLoUH9A4ZcYkt1R54tOvUOISLH5o
-         rJSdLQVLTd034+NI4Yl+nNxh+IIsLDwU+kSU1gZlmxeuUkDFDSqzvl51JLZzk7XUzHb+
-         vZ2Q==
-X-Gm-Message-State: AOAM533F7sFjaHjc/yFGIl8NmeiZZJpsr9oZ9s/mVzQq3hwR2eJrQoH9
-        iWZAlGaFIBOpAJsnTOez29zZQWPZ0uXhJszEDDQ=
-X-Google-Smtp-Source: ABdhPJwVmB+bKPx06kt5BW+qCLKDzoIkZ7EZSXZVsxhLo71ZQjSmY1j3ZeSYR5zLwT5Jvz3rbpyiDJ2tG6FFdoRxa9k=
-X-Received: by 2002:a25:3457:: with SMTP id b84mr18603418yba.167.1611218883982;
- Thu, 21 Jan 2021 00:48:03 -0800 (PST)
+        id S1726430AbhAUSwI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jan 2021 13:52:08 -0500
+Received: from mail.kernel.org ([198.145.29.99]:33074 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728262AbhAUIxa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 21 Jan 2021 03:53:30 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 48271239EE;
+        Thu, 21 Jan 2021 08:52:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1611219169;
+        bh=v3Gx10vzekBNEUkpryaCWXDAuDR+azPfFBHOx1ikn2o=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=uxMrESE4/V77hX7eDcL9Sf97MvS8nX33mKWqotVEgwOnck/8RrwWPClCqUXyb4oi9
+         x410KrP322N79PfZPDyl+61c+UDH2LO1PkgsXQVs/lQlrhwfccfQCmtM7sqF/yRoL/
+         FcOMsLA5YwEkS/b71iZg0AVjRuEYKLn20vxkfGAp0U1yVgJ2HOKUVcv1PJG4QlyMO3
+         63HziwmnC830EX+pJB1dl+/JsAbSuMSV/NFqfIQDAHBpa3q8J4iwfkpoAftkXo/QXi
+         jCBrw5pkSbqHkKUFRhzDwPCLkbxN2ZrJztxr6Y6esDVvdDNlaaOwUEIvTILCKX84+2
+         itVKpSqSpubUg==
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jason Gunthorpe <jgg@nvidia.com>
+Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        alexander.duyck@gmail.com, sridhar.samudrala@intel.com,
+        edwin.peer@broadcom.com, dsahern@kernel.org, kiran.patil@intel.com,
+        jacob.e.keller@intel.com, david.m.ertman@intel.com,
+        dan.j.williams@intel.com, Parav Pandit <parav@nvidia.com>,
+        Jiri Pirko <jiri@nvidia.com>, Vu Pham <vuhuong@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: [net-next V9 01/14] devlink: Prepare code to fill multiple port function attributes
+Date:   Thu, 21 Jan 2021 00:52:24 -0800
+Message-Id: <20210121085237.137919-2-saeed@kernel.org>
+X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20210121085237.137919-1-saeed@kernel.org>
+References: <20210121085237.137919-1-saeed@kernel.org>
 MIME-Version: 1.0
-From:   =?UTF-8?B?5oWV5Yas5Lqu?= <mudongliangabcd@gmail.com>
-Date:   Thu, 21 Jan 2021 16:47:37 +0800
-Message-ID: <CAD-N9QX=vVdiSf5UkuoYovamfw5a0e5RQJA0dQMOKmCbs-Gyiw@mail.gmail.com>
-Subject: "KMSAN: uninit-value in rt2500usb_bbp_read" and "KMSAN: uninit-value
- in rt2500usb_probe_hw" should be duplicate crash reports
-To:     davem@davemloft.net, helmut.schaa@googlemail.com, kuba@kernel.org,
-        kvalo@codeaurora.org, linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        stf_xl@wp.pl, Greg KH <greg@kroah.com>
-Cc:     syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        syzkaller <syzkaller@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear kernel developers,
+From: Parav Pandit <parav@nvidia.com>
 
-I found that on the syzbot dashboard, =E2=80=9CKMSAN: uninit-value in
-rt2500usb_bbp_read=E2=80=9D [1] and "KMSAN: uninit-value in
-rt2500usb_probe_hw" [2] should share the same root cause.
+Prepare code to fill zero or more port function optional attributes.
+Subsequent patch makes use of this to fill more port function
+attributes.
 
-## Duplication
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+Reviewed-by: Vu Pham <vuhuong@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+---
+ net/core/devlink.c | 64 ++++++++++++++++++++++++----------------------
+ 1 file changed, 33 insertions(+), 31 deletions(-)
 
-The reasons for the above statement:
-1) The PoCs are exactly the same with each other;
-2) The stack trace is almost the same except for the top 2 functions;
+diff --git a/net/core/devlink.c b/net/core/devlink.c
+index ee828e4b1007..c39496311b71 100644
+--- a/net/core/devlink.c
++++ b/net/core/devlink.c
+@@ -712,6 +712,31 @@ static int devlink_nl_port_attrs_put(struct sk_buff *msg,
+ 	return 0;
+ }
+ 
++static int
++devlink_port_fn_hw_addr_fill(struct devlink *devlink, const struct devlink_ops *ops,
++			     struct devlink_port *port, struct sk_buff *msg,
++			     struct netlink_ext_ack *extack, bool *msg_updated)
++{
++	u8 hw_addr[MAX_ADDR_LEN];
++	int hw_addr_len;
++	int err;
++
++	if (!ops->port_function_hw_addr_get)
++		return 0;
++
++	err = ops->port_function_hw_addr_get(devlink, port, hw_addr, &hw_addr_len, extack);
++	if (err) {
++		if (err == -EOPNOTSUPP)
++			return 0;
++		return err;
++	}
++	err = nla_put(msg, DEVLINK_PORT_FUNCTION_ATTR_HW_ADDR, hw_addr_len, hw_addr);
++	if (err)
++		return err;
++	*msg_updated = true;
++	return 0;
++}
++
+ static int
+ devlink_nl_port_function_attrs_put(struct sk_buff *msg, struct devlink_port *port,
+ 				   struct netlink_ext_ack *extack)
+@@ -719,36 +744,17 @@ devlink_nl_port_function_attrs_put(struct sk_buff *msg, struct devlink_port *por
+ 	struct devlink *devlink = port->devlink;
+ 	const struct devlink_ops *ops;
+ 	struct nlattr *function_attr;
+-	bool empty_nest = true;
+-	int err = 0;
++	bool msg_updated = false;
++	int err;
+ 
+ 	function_attr = nla_nest_start_noflag(msg, DEVLINK_ATTR_PORT_FUNCTION);
+ 	if (!function_attr)
+ 		return -EMSGSIZE;
+ 
+ 	ops = devlink->ops;
+-	if (ops->port_function_hw_addr_get) {
+-		int hw_addr_len;
+-		u8 hw_addr[MAX_ADDR_LEN];
+-
+-		err = ops->port_function_hw_addr_get(devlink, port, hw_addr, &hw_addr_len, extack);
+-		if (err == -EOPNOTSUPP) {
+-			/* Port function attributes are optional for a port. If port doesn't
+-			 * support function attribute, returning -EOPNOTSUPP is not an error.
+-			 */
+-			err = 0;
+-			goto out;
+-		} else if (err) {
+-			goto out;
+-		}
+-		err = nla_put(msg, DEVLINK_PORT_FUNCTION_ATTR_HW_ADDR, hw_addr_len, hw_addr);
+-		if (err)
+-			goto out;
+-		empty_nest = false;
+-	}
+-
+-out:
+-	if (err || empty_nest)
++	err = devlink_port_fn_hw_addr_fill(devlink, ops, port, msg,
++					   extack, &msg_updated);
++	if (err || !msg_updated)
+ 		nla_nest_cancel(msg, function_attr);
+ 	else
+ 		nla_nest_end(msg, function_attr);
+@@ -986,7 +992,6 @@ devlink_port_function_hw_addr_set(struct devlink *devlink, struct devlink_port *
+ 	const struct devlink_ops *ops;
+ 	const u8 *hw_addr;
+ 	int hw_addr_len;
+-	int err;
+ 
+ 	hw_addr = nla_data(attr);
+ 	hw_addr_len = nla_len(attr);
+@@ -1011,12 +1016,7 @@ devlink_port_function_hw_addr_set(struct devlink *devlink, struct devlink_port *
+ 		return -EOPNOTSUPP;
+ 	}
+ 
+-	err = ops->port_function_hw_addr_set(devlink, port, hw_addr, hw_addr_len, extack);
+-	if (err)
+-		return err;
+-
+-	devlink_port_notify(port, DEVLINK_CMD_PORT_NEW);
+-	return 0;
++	return ops->port_function_hw_addr_set(devlink, port, hw_addr, hw_addr_len, extack);
+ }
+ 
+ static int
+@@ -1037,6 +1037,8 @@ devlink_port_function_set(struct devlink *devlink, struct devlink_port *port,
+ 	if (attr)
+ 		err = devlink_port_function_hw_addr_set(devlink, port, attr, extack);
+ 
++	if (!err)
++		devlink_port_notify(port, DEVLINK_CMD_PORT_NEW);
+ 	return err;
+ }
+ 
+-- 
+2.26.2
 
-## Root Cause Analysis
-
-After looking at the difference between the two stack traces, we found
-they diverge at the function - rt2500usb_probe_hw.
----------------------------------------------------------------------------=
----------------------------------------------
-static int rt2500usb_probe_hw(struct rt2x00_dev *rt2x00dev)
-{
-        ......
-        // rt2500usb_validate_eeprom->rt2500usb_bbp_read->rt2500usb_regbusy=
-_read->rt2500usb_register_read_lock
-from KMSAN
-        retval =3D rt2500usb_validate_eeprom(rt2x00dev);
-        if (retval)
-                return retval;
-        // rt2500usb_init_eeprom-> rt2500usb_register_read from KMSAN
-        retval =3D rt2500usb_init_eeprom(rt2x00dev);
-        if (retval)
-                return retval;
----------------------------------------------------------------------------=
----------------------------------------------
-From the implementation of rt2500usb_register_read and
-rt2500usb_register_read_lock, we know that, in some situation, reg is
-not initialized in the function invocation
-(rt2x00usb_vendor_request_buff/rt2x00usb_vendor_req_buff_lock), and
-KMSAN reports uninit-value at its first memory access.
----------------------------------------------------------------------------=
----------------------------------------------
-static u16 rt2500usb_register_read(struct rt2x00_dev *rt2x00dev,
-                                   const unsigned int offset)
-{
-        __le16 reg;
-        // reg is not initialized during the following function all
-        rt2x00usb_vendor_request_buff(rt2x00dev, USB_MULTI_READ,
-                                      USB_VENDOR_REQUEST_IN, offset,
-                                      &reg, sizeof(reg));
-        return le16_to_cpu(reg);
-}
-static u16 rt2500usb_register_read_lock(struct rt2x00_dev *rt2x00dev,
-                                        const unsigned int offset)
-{
-        __le16 reg;
-        // reg is not initialized during the following function all
-        rt2x00usb_vendor_req_buff_lock(rt2x00dev, USB_MULTI_READ,
-                                       USB_VENDOR_REQUEST_IN, offset,
-                                       &reg, sizeof(reg), REGISTER_TIMEOUT)=
-;
-        return le16_to_cpu(reg);
-}
----------------------------------------------------------------------------=
----------------------------------------------
-Take rt2x00usb_vendor_req_buff_lock as an example, let me illustrate
-the issue when the "reg" variable is uninitialized. No matter the CSR
-cache is unavailable or the status is not right, the buffer or reg
-will be not initialized.
-And all those issues are probabilistic events. If they occur in
-rt2500usb_register_read, KMSAN reports "uninit-value in
-rt2500usb_probe_hw"; Otherwise, it reports "uninit-value in
-rt2500usb_bbp_read".
----------------------------------------------------------------------------=
----------------------------------------------
-int rt2x00usb_vendor_req_buff_lock(struct rt2x00_dev *rt2x00dev,
-                                   const u8 request, const u8 requesttype,
-                                   const u16 offset, void *buffer,
-                                   const u16 buffer_length, const int timeo=
-ut)
-{
-        if (unlikely(!rt2x00dev->csr.cache || buffer_length > CSR_CACHE_SIZ=
-E)) {
-                rt2x00_err(rt2x00dev, "CSR cache not available\n");
-                return -ENOMEM;
-        }
-
-        if (requesttype =3D=3D USB_VENDOR_REQUEST_OUT)
-                memcpy(rt2x00dev->csr.cache, buffer, buffer_length);
-
-        status =3D rt2x00usb_vendor_request(rt2x00dev, request, requesttype=
-,
-                                          offset, 0, rt2x00dev->csr.cache,
-                                          buffer_length, timeout);
-
-        if (!status && requesttype =3D=3D USB_VENDOR_REQUEST_IN)
-                memcpy(buffer, rt2x00dev->csr.cache, buffer_length);
-
-        return status;
-}
----------------------------------------------------------------------------=
----------------------------------------------
-
-## Patch
-
-I propose to memset reg variable before invoking
-rt2x00usb_vendor_req_buff_lock/rt2x00usb_vendor_request_buff.
-
----------------------------------------------------------------------------=
----------------------------------------------
-diff --git a/drivers/net/wireless/ralink/rt2x00/rt2500usb.c
-b/drivers/net/wireless/ralink/rt2x00/rt2500usb.c
-index fce05fc88aaf..f6c93a25b18c 100644
---- a/drivers/net/wireless/ralink/rt2x00/rt2500usb.c
-+++ b/drivers/net/wireless/ralink/rt2x00/rt2500usb.c
-@@ -48,6 +48,7 @@ static u16 rt2500usb_register_read(struct rt2x00_dev
-*rt2x00dev,
-                                   const unsigned int offset)
- {
-        __le16 reg;
-+       memset(&reg, 0, sizeof(reg));
-        rt2x00usb_vendor_request_buff(rt2x00dev, USB_MULTI_READ,
-                                      USB_VENDOR_REQUEST_IN, offset,
-                                      &reg, sizeof(reg));
-@@ -58,6 +59,7 @@ static u16 rt2500usb_register_read_lock(struct
-rt2x00_dev *rt2x00dev,
-                                        const unsigned int offset)
- {
-        __le16 reg;
-+       memset(&reg, 0, sizeof(reg));
-        rt2x00usb_vendor_req_buff_lock(rt2x00dev, USB_MULTI_READ,
-                                       USB_VENDOR_REQUEST_IN, offset,
-                                       &reg, sizeof(reg), REGISTER_TIMEOUT)=
-;
----------------------------------------------------------------------------=
----------------------------------------------
-
-If you can have any issues with this statement or our information is
-useful to you, please let us know. Thanks very much.
-
-[1] =E2=80=9CKMSAN: uninit-value in rt2500usb_bbp_read=E2=80=9D -
-https://syzkaller.appspot.com/bug?id=3Df35d123de7d393019c1ed4d4e60dc66596ed=
-62cd
-[2] =E2=80=9CKMSAN: uninit-value in rt2500usb_probe_hw=E2=80=9D -
-https://syzkaller.appspot.com/bug?id=3D5402df7259c74e15a12992e739b5ac54c9b8=
-a4ce
-
-
---
-My best regards to you.
-
-     No System Is Safe!
-     Dongliang Mu
