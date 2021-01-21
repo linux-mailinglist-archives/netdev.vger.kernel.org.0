@@ -2,201 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7A1752FEC76
-	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 14:58:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D583D2FEC79
+	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 14:58:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729662AbhAUN6G (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jan 2021 08:58:06 -0500
-Received: from mga01.intel.com ([192.55.52.88]:14150 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725933AbhAUNqM (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 21 Jan 2021 08:46:12 -0500
-IronPort-SDR: WJpd9lMuNW8Uyv8t3KCunDYlvXYQIEoGfm4sDjQeG3pvet+YN1VliaipPXBxoRN0YASHkRxxPb
- 09xR1zGbU+nQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9870"; a="198006144"
-X-IronPort-AV: E=Sophos;i="5.79,364,1602572400"; 
-   d="scan'208";a="198006144"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Jan 2021 05:45:13 -0800
-IronPort-SDR: XRAujAvTTM7ZXgiv33dUPK0lz+XqJ9dlDDZVQkyRGWoDUuqjZkQTbxIGoQaIxSqcwmf2iuS/WR
- qLNQ8kVeClkw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.79,364,1602572400"; 
-   d="scan'208";a="385313196"
-Received: from ranger.igk.intel.com ([10.102.21.164])
-  by orsmga008.jf.intel.com with ESMTP; 21 Jan 2021 05:45:09 -0800
-Date:   Thu, 21 Jan 2021 14:35:38 +0100
-From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     Hangbin Liu <liuhangbin@gmail.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>,
-        Jiri Benc <jbenc@redhat.com>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
-        David Ahern <dsahern@gmail.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        John Fastabend <john.fastabend@gmail.com>
-Subject: Re: [PATCHv15 bpf-next 1/6] bpf: run devmap xdp_prog on flush
- instead of bulk enqueue
-Message-ID: <20210121133538.GA41935@ranger.igk.intel.com>
-References: <20210114142321.2594697-1-liuhangbin@gmail.com>
- <20210120022514.2862872-1-liuhangbin@gmail.com>
- <20210120022514.2862872-2-liuhangbin@gmail.com>
- <20210120224238.GA33532@ranger.igk.intel.com>
- <20210121035424.GK1421720@Leo-laptop-t470s>
+        id S1728492AbhAUNkT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jan 2021 08:40:19 -0500
+Received: from mail-pf1-f170.google.com ([209.85.210.170]:34900 "EHLO
+        mail-pf1-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727114AbhAUNh5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jan 2021 08:37:57 -0500
+Received: by mail-pf1-f170.google.com with SMTP id w14so1516014pfi.2;
+        Thu, 21 Jan 2021 05:37:21 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:to:from:subject:cc:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=UUiCXFOSqjAdUvC0wdNT72TPUZ0us785diWKGNau67U=;
+        b=adl9o12y/CgGMozjQrScnzyDArrOBpch+XzKVCE5zuSJ4ox39Kw7mp6ozBLrYG28+c
+         i36ubnze3YsUclaEEloh7yqjTMvAaWrg8qu9I34KaLaBYfJ1YaNocm31W0UaTTQGaYhx
+         Pfj5HRiLKDVMPm/IpZhaFJpEJx+1zDCrJsyE2nGB9BI3KZmsJCxSPKH7+YN/fKc08Xzs
+         8IYekaofdrbvcK4vyJ8eutmQqEnNALh4MwVvD/7dNnBY2kfrRa0/1Wr+WNVFbcCubyfM
+         qQ0ZjFLC23Kcw0OicuHjSMhE5Olam6U/pD92c6fTSMQLpp8QNBtaR1cdQMdhSclgdjUd
+         nZWw==
+X-Gm-Message-State: AOAM530qt/ZqpEQkNeQGqI5u1R7hrpFL8CQ7u+kYOSW6clWuVG/COmjM
+        y20HpXOpioZTKSIepnmun0Y=
+X-Google-Smtp-Source: ABdhPJwJtZ3kQCTWB3UcwNNL4F5Dgg+OSEw3EyBIYjfB6PBauVbsf8bu80Dphfic1UGjQfQipMeypw==
+X-Received: by 2002:a63:f109:: with SMTP id f9mr14587480pgi.390.1611236216077;
+        Thu, 21 Jan 2021 05:36:56 -0800 (PST)
+Received: from [10.101.46.154] (61-220-137-37.HINET-IP.hinet.net. [61.220.137.37])
+        by smtp.gmail.com with ESMTPSA id w186sm1795614pfc.182.2021.01.21.05.36.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 21 Jan 2021 05:36:54 -0800 (PST)
+To:     Luca Coelho <luciano.coelho@intel.com>,
+        Ihab Zhaika <ihab.zhaika@intel.com>
+From:   You-Sheng Yang <vicamo.yang@canonical.com>
+Subject: iwlwifi may wrongly cast a iwl_cfg_trans_params to iwl_cfg
+Cc:     "David S. Miller\"" <davem@davemloft.net>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
+        You-Sheng Yang <vicamo@gmail.com>
+Message-ID: <c651c75d-e1f4-ac7b-aa8f-b0a2035cbf4f@canonical.com>
+Date:   Thu, 21 Jan 2021 21:36:48 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210121035424.GK1421720@Leo-laptop-t470s>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 21, 2021 at 11:54:24AM +0800, Hangbin Liu wrote:
-> Hi Maciej,
-> On Wed, Jan 20, 2021 at 11:42:38PM +0100, Maciej Fijalkowski wrote:
-> > > +static int dev_map_bpf_prog_run(struct bpf_prog *xdp_prog,
-> > > +				struct xdp_frame **frames, int n,
-> > > +				struct net_device *dev)
-> > > +{
-> > > +	struct xdp_txq_info txq = { .dev = dev };
-> > > +	struct xdp_buff xdp;
-> > > +	int i, nframes = 0;
-> > > +
-> > > +	for (i = 0; i < n; i++) {
-> > > +		struct xdp_frame *xdpf = frames[i];
-> > > +		u32 act;
-> > > +		int err;
-> > > +
-> > > +		xdp_convert_frame_to_buff(xdpf, &xdp);
-> > > +		xdp.txq = &txq;
-> > > +
-> > > +		act = bpf_prog_run_xdp(xdp_prog, &xdp);
-> > > +		switch (act) {
-> > > +		case XDP_PASS:
-> > > +			err = xdp_update_frame_from_buff(&xdp, xdpf);
-> > 
-> > Bump on John's question.
-> 
-> Hi Jesper, would you please help answer John's question?
-> > >  
-> > > -	sent = dev->netdev_ops->ndo_xdp_xmit(dev, bq->count, bq->q, flags);
-> > > +	/* Init sent to cnt in case there is no xdp_prog */
-> > > +	sent = cnt;
-> > > +	if (bq->xdp_prog) {
-> > > +		sent = dev_map_bpf_prog_run(bq->xdp_prog, bq->q, cnt, dev);
-> > > +		if (!sent)
-> > > +			goto out;
-> > 
-> > Sorry, but 'sent' is a bit confusing to me, actual sending happens below
-> > via ndo_xdp_xmit, right? This hook will not actually send frames.
-> > Can we do a subtle change to have it in separate variable 'to_send' ?
-> 
-> Makes sense to me.
-> > 
-> > Although I'm a huge goto advocate, I feel like this particular usage could
-> > be simplified. Not sure why we had that in first place.
-> > 
-> > I gave a shot at rewriting/refactoring whole bq_xmit_all and I feel like
-> > it's more readable. I introduced 'to_send' variable and got rid of 'error'
-> > label.
-> > 
-> > Thoughts?
-> > 
-> > I might have missed something, though.
-> > 
-> > static void bq_xmit_all(struct xdp_dev_bulk_queue *bq, u32 flags)
-> > {
-> > 	struct net_device *dev = bq->dev;
-> > 	unsigned int cnt = bq->count;
-> > 	int drops = 0, err = 0;
-> > 	int to_send = 0;
-> 
-> The to_send also need to init to cnt.
+Hi,
 
-So I missed something indeed :P you're correct
+With an Intel AX201 Wi-Fi [8086:43f0] subsystem [1a56:1652] pcie card,
+device fails to load firmware with following error messages:
 
-> 
-> > 	int sent = cnt;
-> > 	int i;
-> > 
-> > 	if (unlikely(!cnt))
-> > 		return;
-> > 
-> > 	for (i = 0; i < cnt; i++) {
-> > 		struct xdp_frame *xdpf = bq->q[i];
-> > 
-> > 		prefetch(xdpf);
-> > 	}
-> > 
-> > 	if (bq->xdp_prog) {
-> > 		to_send = dev_map_bpf_prog_run(bq->xdp_prog, bq->q, cnt, dev);
-> > 		if (!to_send) {
-> > 			sent = 0;
-> > 			goto out;
-> > 		}
-> > 	}
-> > 
-> > 	drops = cnt - to_send;
-> 
-> This line could move in to the xdp_prog brackets to save time when no xdp_prog.
+  Intel(R) Wireless WiFi driver for Linux
+  iwlwifi 0000:00:14.3: enabling device (0000 -> 0002)
+  iwlwifi 0000:00:14.3: Direct firmware load for (efault)128.ucode
+failed with error -2
+  iwlwifi 0000:00:14.3: Direct firmware load for (efault)127.ucode
+failed with error -2
+  ...
+  iwlwifi 0000:00:14.3: Direct firmware load for (efault)0.ucode failed
+with error -2
+  iwlwifi 0000:00:14.3: no suitable firmware found!
+  iwlwifi 0000:00:14.3: minimum version required: (efault)0
+  iwlwifi 0000:00:14.3: maximum version supported: (efault)128
 
-Hmm, looks like we can do it.
-For scenario where there was no bq->xdp_prog and failure of ndo_xdp_xmit,
-we didn't alter the count of frames to be sent, so we would basically free
-all of the frames (as drops is 0, cnt = bq->count). After that we
-recalculate drops and correct value will be reported in tracepoint.
+This is also reported on some public forums:
 
-(needed to explain it to myself)
+*
+https://askubuntu.com/questions/1297311/ubuntu-20-04-wireless-not-working-for-intel-ax1650i-lenovo-thinkpad
+*
+https://www.reddit.com/r/pop_os/comments/jxmnre/wifi_and_bluetooth_issues_in_2010/
 
-> 
-> 	if (bq->xdp_prog) {
-> 		to_send = ...
-> 		if (!to_send) {
-> 			...
-> 		}
-> 		drops = cnt - to_send;
-> 	}
-> 
-> > 	sent = dev->netdev_ops->ndo_xdp_xmit(dev, to_send, bq->q, flags);
-> 
-> If we don't have xdp_prog, the to_send should be cnt.
+In drivers/net/wireless/intel/iwlwifi/pcie/drv.c:
 
-Yes, we should init to_send to cnt as you're suggesting above.
+  static const struct pci_device_id iwl_hw_card_ids[] = {
+    {IWL_PCI_DEVICE(0x4232, 0x1201, iwl5100_agn_cfg)},
+    ...
+    {IWL_PCI_DEVICE(0x43F0, PCI_ANY_ID, iwl_qu_long_latency_trans_cfg)},
+    ...
+  };
 
-> 
-> > 	if (sent < 0) {
-> > 		err = sent;
-> > 		sent = 0;
-> > 
-> > 		/* If ndo_xdp_xmit fails with an errno, no frames have been
-> > 		 * xmit'ed and it's our responsibility to them free all.
-> > 		 */
-> > 		for (i = 0; i < cnt - drops; i++) {
-> > 			struct xdp_frame *xdpf = bq->q[i];
-> > 
-> > 			xdp_return_frame_rx_napi(xdpf);
-> > 		}
-> > 	}
-> > out:
-> > 	drops = cnt - sent;
-> > 	bq->count = 0;
-> > 
-> > 	trace_xdp_devmap_xmit(bq->dev_rx, dev, sent, drops, err);
-> > 	bq->dev_rx = NULL;
-> > 	bq->xdp_prog = NULL;
-> > 	__list_del_clearprev(&bq->flush_node);
-> > 
-> > 	return;
-> > }
-> 
-> Thanks for your code, looks much clear now.
+The third argument to IWL_PCI_DEVICE macro will be assigned to
+driver_data field of struct pci_device_id. However, iwl5100_agn_cfg has
+type struct iwl_cfg, and yet iwl_qu_long_latency_trans_cfg is typed
+struct iwl_cfg_trans_params.
 
-Good to hear! I agree on your points as well.
+  struct iwl_cfg_trans_params {
+    ...
+  };
 
-> 
-> Hangbin
+  struct iwl_cfg {
+    struct iwl_cfg_trans_params trans;
+    const char *name;
+    const char *fw_name_pre;
+    ...
+  };
+
+It's fine to cast a pointer to struct iwl_cfg, but it's not always valid
+to cast a struct iwl_cfg_trans_params to struct iwl_cfg.
+
+In function iwl_pci_probe, it tries to find an alternative cfg by
+iterating throughout iwl_dev_info_table, but in our case, [8086:43f0]
+subsystem [1a56:1652], there will be no match in all of the candidates,
+and iwl_qu_long_latency_trans_cfg will be assigned as the ultimate
+struct iwl_cfg, which will be certainly wrong when you're trying to
+dereference anything beyond sizeof(struct iwl_cfg_trans_params), e.g.
+cfg->fw_name_pre.
+
+In this case, ((struct
+iwl_cfg_trans_params*)&iwl_qu_long_latency_trans_cfg)->name will be "'",
+and ((struct
+iwl_cfg_trans_params*)&iwl_qu_long_latency_trans_cfg)->fw_name_pre gives
+"(efault)", pure garbage data.
+
+So is there something missed in the iwl_dev_info_table, or better, just
+find another solid safe way to handle such trans/cfg mix?
+
+Regards,
+You-Sheng Yang
