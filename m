@@ -2,181 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D8512FF1B4
-	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 18:22:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4CE152FF1CE
+	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 18:26:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388079AbhAURVb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jan 2021 12:21:31 -0500
-Received: from mail.kernel.org ([198.145.29.99]:43610 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1733152AbhAURUZ (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 21 Jan 2021 12:20:25 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id A1DC723A57;
-        Thu, 21 Jan 2021 17:19:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611249582;
-        bh=PRDt65K0FyMCDkD7HNrPd80/eR14+l2DWuRlaNUUcAE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Z4eChmYLZJzJEpWPikRW6QN2Ne12/woeC5P182IUPq0dCrjMjGuivi5KFoyLv0QX3
-         AMfcHFwvOsSZrmg9m4KdqKjoQhR84jomC6ztt3SevFSUzjuu3Qx6G5GF5nF63OROVK
-         2nIsmZtUOH9J9Kp6injIQzzgckdzJMNrLPNfU3nDa/Jw0sfD0Z5kpfjLyTXCgtKpY3
-         ewGDMinrEmtWQIu0w/5zM+JcgmfyXeXIR4gnq93uJu8xzKpe3wZx7Jf8HFYx0rvkWn
-         NbI0fHxuPQe/pbvyJ6VO62/Rg/QJg5y2VEqKNSLMx6t7QB03AMS+WWKkvH8kpNA/uC
-         YMbk88QihY3bQ==
-Date:   Thu, 21 Jan 2021 09:19:40 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, petrm@nvidia.com,
-        jiri@nvidia.com, amcohen@nvidia.com, mlxsw@nvidia.com,
-        Ido Schimmel <idosch@nvidia.com>
-Subject: Re: [PATCH net-next 0/5] mlxsw: Add support for RED qevent "mark"
-Message-ID: <20210121091940.5101388a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210121102318.GA2637214@shredder.lan>
-References: <20210117080223.2107288-1-idosch@idosch.org>
-        <20210119142255.1caca7fb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20210120091437.GA2591869@shredder.lan>
-        <20210120164508.6009dbbd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <20210121102318.GA2637214@shredder.lan>
+        id S2388689AbhAURZv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jan 2021 12:25:51 -0500
+Received: from mail-io1-f69.google.com ([209.85.166.69]:55062 "EHLO
+        mail-io1-f69.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388526AbhAURZN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jan 2021 12:25:13 -0500
+Received: by mail-io1-f69.google.com with SMTP id g7so4483648ion.21
+        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 09:24:58 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=78ZaQKe6zAPg2gzOxVKmlEzg1IJiNYJcU6afzCCeGLU=;
+        b=LYAqBSopK5Oq5leD/eoyHu0Ga2paoB8Kx8RgQUtEFEmXIu4x8YH60eChZnTa+rSx/+
+         xNH5uI7A2RqP7hbApHy7VcfqklS58ZnJVyjRkFROrH+3zBqImMtcQVA2PhIh4QRzkVSG
+         v2i1AO3vIqKUqKk4xzqsYx4pxRjMwdMPrI9ar8Wk22HInx4jQgcr+u7+SRmk8q0sJ1jR
+         XTNyv0huRLURR2i5C5zO0zwZu/PErsVuCl+r/My7wrCjfEZ2+9f563minaASKWH34lWo
+         jHdFnaSHEGYXzb6gdw5zvbDpHfdYQTsReQuUbs00LbP7zhb6tZd5S+lIumjGlnzXyB0O
+         blMQ==
+X-Gm-Message-State: AOAM532xpsjvc9vl2gXtxDe7kAmuTBRH3qHYadE3rpUoPHnj/UFn91gm
+        XfeeVRMlDEYlvhygKWyDOMWfqzc5FKv/4zplxylrukD+Z/fL
+X-Google-Smtp-Source: ABdhPJxHlp9KzUVXcvQaW1Pz/zSNjoqk+vUle0gJqOlWKcH75q0VnpDY/mL99A5LNIW4Yod4bj5HF+ufU2wUH0fwOJKfHpBtP4lk
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-Received: by 2002:a92:58c2:: with SMTP id z63mr663764ilf.53.1611249872571;
+ Thu, 21 Jan 2021 09:24:32 -0800 (PST)
+Date:   Thu, 21 Jan 2021 09:24:32 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000004c9e3505b96c58eb@google.com>
+Subject: UBSAN: array-index-out-of-bounds in decode_data
+From:   syzbot <syzbot+70ba6cae2f44c82dcb76@syzkaller.appspotmail.com>
+To:     ajk@comnets.uni-bremen.de, davem@davemloft.net, kuba@kernel.org,
+        linux-hams@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 21 Jan 2021 12:23:18 +0200 Ido Schimmel wrote:
-> On Wed, Jan 20, 2021 at 04:45:08PM -0800, Jakub Kicinski wrote:
-> > On Wed, 20 Jan 2021 11:14:37 +0200 Ido Schimmel wrote:  
-> > > On Tue, Jan 19, 2021 at 02:22:55PM -0800, Jakub Kicinski wrote:  
-> > > > On Sun, 17 Jan 2021 10:02:18 +0200 Ido Schimmel wrote:    
-> > > > > From: Ido Schimmel <idosch@nvidia.com>
-> > > > > 
-> > > > > The RED qdisc currently supports two qevents: "early_drop" and "mark". The
-> > > > > filters added to the block bound to the "early_drop" qevent are executed on
-> > > > > packets for which the RED algorithm decides that they should be
-> > > > > early-dropped. The "mark" filters are similarly executed on ECT packets
-> > > > > that are marked as ECN-CE (Congestion Encountered).
-> > > > > 
-> > > > > A previous patchset has offloaded "early_drop" filters on Spectrum-2 and
-> > > > > later, provided that the classifier used is "matchall", that the action
-> > > > > used is either "trap" or "mirred", and a handful or further limitations.    
-> > > > 
-> > > > For early_drop trap or mirred makes obvious sense, no explanation
-> > > > needed.
-> > > > 
-> > > > But for marked as a user I'd like to see a _copy_ of the packet, 
-> > > > while the original continues on its marry way to the destination.
-> > > > I'd venture to say that e.g. for a DCTCP deployment mark+trap is
-> > > > unusable, at least for tracing, because it distorts the operation 
-> > > > by effectively dropping instead of marking.
-> > > > 
-> > > > Am I reading this right?    
-> > > 
-> > > You get a copy of the packet as otherwise it will create a lot of
-> > > problems (like you wrote).  
-> > 
-> > Hm, so am I missing some background on semantics on TC_ACT_TRAP?
-> > Or perhaps you use a different action code?  
-> 
-> Well, to make it really clear, we can add TC_ACT_TRAP_MIRROR.
-> 
-> TC_ACT_TRAP: Sole copy goes to the CPU
-> TC_ACT_TRAP_MIRROR: The packet is forwarded by the underlying device and
-> a copy is sent to the CPU
-> 
-> And only allow (in mlxsw) attaching filters with TC_ACT_TRAP_MIRROR to
-> the "mark" qevent.
-> 
-> > 
-> > AFAICT the code in the kernel is:
-> > 
-> > struct sk_buff *tcf_qevent_handle(...
-> > 
-> > 	case TC_ACT_STOLEN:
-> > 	case TC_ACT_QUEUED:
-> > 	case TC_ACT_TRAP:
-> > 		__qdisc_drop(skb, to_free);
-> > 		*ret = __NET_XMIT_STOLEN;
-> > 		return NULL;
-> > 
-> > Having TRAP mean DROP makes sense for filters, but in case of qevents
-> > shouldn't they be a no-op?
-> > 
-> > Looking at sch_red looks like TRAP being a no-op would actually give us
-> > the expected behavior.  
-> 
-> I'm not sure it makes sense to try to interpret these actions in
-> software (I expect they will be used with "skip_sw" filters), but
-> TC_ACT_TRAP_MIRROR can be a no-op like you suggested.
+Hello,
 
-Well our paradigm is SW defines the behavior, we can't have HW forward
-and copy, while the SW drops the frame. Some engineer will try to
-implement this some day in their switch driver, look at the SW behavior
-and scratch their head.
+syzbot found the following issue on:
 
-> > > the 'mark' qevent of the RED qdisc."
-> > >
-> > > In addition, this output:
-> > > 
-> > > $ devlink trap show pci/0000:06:00.0 trap ecn_mark 
-> > > pci/0000:06:00.0:
-> > >   name ecn_mark type drop generic true action trap group buffer_drops
-> > > 
-> > > Can be converted to:
-> > > 
-> > > $ devlink trap show pci/0000:06:00.0 trap ecn_mark 
-> > > pci/0000:06:00.0:
-> > >   name ecn_mark type drop generic true action mirror group buffer_drops
-> > > 
-> > > "mirror: The packet is forwarded by the underlying device and a copy is sent to
-> > > the CPU."
-> > > 
-> > > In this case the action is static and you cannot change it.  
-> > 
-> > Oh yes, that's nice, I thought mirror in traps means mirror to another
-> > port. Are there already traps which implement the mirroring / trapping
-> > a clone? Quick grep yields nothing of substance.  
-> 
-> Yes. That's why we have the 'offload_fwd_mark' and 'offload_l3_fwd_mark'
-> bits in the skb. For example, we let the hardware flood ARP requests
-> ('arp_request'), but also send a copy to the CPU in case it needs to
-> update its neighbour table. The trapping happens at L2, so we only set
-> the 'offload_fwd_mark' bit. It will tell the bridge driver to not flood
-> the packet again.
-> 
-> The 'offload_l3_fwd_mark' bit is mainly used to support one-armed router
-> use cases where a packet is forwarded through the same interface through
-> which it was received ('uc_loopback'). We do the forwarding in hardware,
-> but also send a copy to the CPU to give the kernel the chance to
-> generate an ICMP redirect if it was not disabled by the user. See more
-> info in commit 55827458e058 ("Merge branch
-> 'mlxsw-Add-one-armed-router-support'").
+HEAD commit:    9791581c Merge tag 'for-5.11-rc4-tag' of git://git.kernel...
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=11970b20d00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=39701af622f054a9
+dashboard link: https://syzkaller.appspot.com/bug?extid=70ba6cae2f44c82dcb76
+compiler:       gcc (GCC) 10.1.0-syz 20200507
 
-I see, thanks for the example, but just to be clear those are "internal
-traps", they don't have any impact on the devlink trap uAPI (in case we
-want to change the definition of MIRRED since nothing is using it).
+Unfortunately, I don't have any reproducer for this issue yet.
 
-> I also want to explain how the qevent stuff works in hardware to make
-> sure it is all clear. We have the ability to bind different triggers to
-> a mirroring (SPAN) agent. The agent can point to a physical port /
-> virtual interface (e.g., gretap for ERSPAN) or to the CPU port. The
-> first is programmed via the mirred action and the second using the trap
-> action.
-> 
-> The triggers can be simple such as Rx/Tx packet (matchall + mirred) or
-> policy engine (flower + mirred). The more advanced triggers are various
-> buffer events such as early drops ('early_drop' qevent) and ECN marking
-> ('mark' qevent). Currently, it is only possible to bind these triggers
-> to a mirroring agent which is why we only support (in mlxsw) attaching
-> matchall filters to these qevents. In the future we might be able to
-> bind ACLs to these triggers in which case we will allow attaching flower
-> filters. devlink-trap is really only a read-only interface in this case,
-> meant to tell you why you go the packet from the hardware datapath. The
-> enablement / disablement is done by tc which gives us feature parity
-> with the software datapath.
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+70ba6cae2f44c82dcb76@syzkaller.appspotmail.com
 
-Thanks for the explanation. I feel more and more convinced now that
-we should have TC_ACT_TRAP_MIRROR and the devlink trap should only 
-be on/off :S Current model of "if ACT_TRAP consult devlink for trap
-configuration" is impossible to model in SW since it doesn't have a
-equivalent of devlink traps. Or we need that equivalent..
+UBSAN: array-index-out-of-bounds in drivers/net/hamradio/6pack.c:845:16
+index 400 is out of range for type 'unsigned char [400]'
+CPU: 0 PID: 24 Comm: kworker/u4:1 Not tainted 5.11.0-rc4-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: events_unbound flush_to_ldisc
+Call Trace:
+ __dump_stack lib/dump_stack.c:79 [inline]
+ dump_stack+0x107/0x163 lib/dump_stack.c:120
+ ubsan_epilogue+0xb/0x5a lib/ubsan.c:148
+ __ubsan_handle_out_of_bounds.cold+0x62/0x6c lib/ubsan.c:356
+ decode_data.part.0+0x2c8/0x2e0 drivers/net/hamradio/6pack.c:845
+ decode_data drivers/net/hamradio/6pack.c:965 [inline]
+ sixpack_decode drivers/net/hamradio/6pack.c:968 [inline]
+ sixpack_receive_buf drivers/net/hamradio/6pack.c:458 [inline]
+ sixpack_receive_buf+0xd8c/0x1320 drivers/net/hamradio/6pack.c:435
+ tty_ldisc_receive_buf+0x14a/0x190 drivers/tty/tty_buffer.c:465
+ tty_port_default_receive_buf+0x6e/0xa0 drivers/tty/tty_port.c:38
+ receive_buf drivers/tty/tty_buffer.c:481 [inline]
+ flush_to_ldisc+0x20d/0x380 drivers/tty/tty_buffer.c:533
+ process_one_work+0x98d/0x15f0 kernel/workqueue.c:2275
+ worker_thread+0x64c/0x1120 kernel/workqueue.c:2421
+ kthread+0x3b1/0x4a0 kernel/kthread.c:292
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
+================================================================================
+Kernel panic - not syncing: panic_on_warn set ...
+CPU: 0 PID: 24 Comm: kworker/u4:1 Not tainted 5.11.0-rc4-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: events_unbound flush_to_ldisc
+Call Trace:
+ __dump_stack lib/dump_stack.c:79 [inline]
+ dump_stack+0x107/0x163 lib/dump_stack.c:120
+ panic+0x306/0x73d kernel/panic.c:231
+ ubsan_epilogue+0x54/0x5a lib/ubsan.c:162
+ __ubsan_handle_out_of_bounds.cold+0x62/0x6c lib/ubsan.c:356
+ decode_data.part.0+0x2c8/0x2e0 drivers/net/hamradio/6pack.c:845
+ decode_data drivers/net/hamradio/6pack.c:965 [inline]
+ sixpack_decode drivers/net/hamradio/6pack.c:968 [inline]
+ sixpack_receive_buf drivers/net/hamradio/6pack.c:458 [inline]
+ sixpack_receive_buf+0xd8c/0x1320 drivers/net/hamradio/6pack.c:435
+ tty_ldisc_receive_buf+0x14a/0x190 drivers/tty/tty_buffer.c:465
+ tty_port_default_receive_buf+0x6e/0xa0 drivers/tty/tty_port.c:38
+ receive_buf drivers/tty/tty_buffer.c:481 [inline]
+ flush_to_ldisc+0x20d/0x380 drivers/tty/tty_buffer.c:533
+ process_one_work+0x98d/0x15f0 kernel/workqueue.c:2275
+ worker_thread+0x64c/0x1120 kernel/workqueue.c:2421
+ kthread+0x3b1/0x4a0 kernel/kthread.c:292
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
+Kernel Offset: disabled
+Rebooting in 86400 seconds..
+
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
