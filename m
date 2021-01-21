@@ -2,118 +2,84 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CCAAC2FDE4A
-	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 02:00:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7A4D42FDE4B
+	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 02:00:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733145AbhAUA6W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jan 2021 19:58:22 -0500
-Received: from mail.kernel.org ([198.145.29.99]:32920 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2391502AbhAUAaC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 20 Jan 2021 19:30:02 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 2A78E23718;
-        Thu, 21 Jan 2021 00:29:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611188942;
-        bh=YviS6wcD8qodEVL7bcQvnfWIRloA0ZO1RwusiRPlszI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=at9Gl7Duyq6qDuy9SYM34EL334Nab8vvyKn6y2t/lQI85AIw0CWblxPwby/AiBmLR
-         H0ghZFZgCaqG3m5gcTI0ovxqPJUfsAk/fh561O6rviqpn7pYVtJL8Qg7EzBXnfwOMZ
-         M/VImkOrnl12MMbXc7kA6O3AkVUnsAlofcm7fc3/5dyZM3uo+U1aNQbLaj1NvI8d5B
-         Fo3rIl4az8DSnZgcwupdhDq/xcofqCmmJrnOiWN3tMNofebeewSevItfn4h6nG0xPN
-         MR/kXIm9lafi0mmWB6UVwDNzjBk42iRhIF2ltEfsUCirhAizwp0/fI8uL5qzDRWaR7
-         YTUv8jHxeViUg==
-Date:   Wed, 20 Jan 2021 16:29:01 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Giacinto Cifelli <gciofono@gmail.com>
-Cc:     =?UTF-8?B?QmrDuHJu?= Mork <bjorn@mork.no>,
-        Reinhard Speyerer <rspmn@t-online.de>, netdev@vger.kernel.org,
-        rspmn@arcor.de
-Subject: Re: [PATCH] net: usb: qmi_wwan: added support for Thales Cinterion
- PLSx3 modem family
-Message-ID: <20210120162901.694388de@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CAKSBH7ENRJCbkuq2HviDc-RiH8qh9u+oU5c=uNWoNKofCgs95A@mail.gmail.com>
-References: <20210118054611.15439-1-gciofono@gmail.com>
-        <20210118115250.GA1428@t-online.de>
-        <87a6t6j6vn.fsf@miraculix.mork.no>
-        <CAKSBH7HbaVxyZJRuZPv+t2uBipZAkAYTcyJwRDy-UTB_sD4SJA@mail.gmail.com>
-        <87mtx3agza.fsf@miraculix.mork.no>
-        <CAKSBH7ENRJCbkuq2HviDc-RiH8qh9u+oU5c=uNWoNKofCgs95A@mail.gmail.com>
+        id S2387395AbhAUA62 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jan 2021 19:58:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43890 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728972AbhAUAmi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 19:42:38 -0500
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42BD8C061575
+        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 16:41:56 -0800 (PST)
+Received: by mail-pl1-x632.google.com with SMTP id b8so244438plx.0
+        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 16:41:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=UDKaEKVC4WoMYfHNX2TuibQYNft0Bj2Dkxf7RkZ+7EQ=;
+        b=N81jt8+ZR4eIfK+aMu52TNlojBf5yTrbFIxVHq3EHA2ndvpcAyojlPYkpFQSBnqU1z
+         v0PvPFVehJYUu95VBnPmIvGlW696fgwKUdJbsO4RXgvMwLzZnZLbOkQRmWd2GaP2BEjf
+         c9Vs9oi2HlvviTVF7S95vgenRmn7io7ibtvzHeyVCa9JC88zReJn3RMoa9ZdrmZoLZ5R
+         9dJv1npNmYhZyofE7r/axsBZZCCXOaB2t49bv5yhDPmB2L8icgEEWuXxkMhybcUkNd1D
+         01XQzmV4EuWjJFqRcZiVHetfbnn1ppXF6Te1Bd3cEwCZmjRypUnHOgD/Txy/Jj1MoHps
+         jDaw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=UDKaEKVC4WoMYfHNX2TuibQYNft0Bj2Dkxf7RkZ+7EQ=;
+        b=dTbFee90yURvjwkU3MCcZ9UPdJq8h710TcRqeFZ4hHt+4fxFdj1KUSfMsLulJGvio8
+         cHOB1GwcU0It0w9EzQEG9HHXjbxUu0d4nRP43093JRSCpcuM7ydZdOvnvjQ5glh5JDKx
+         qOYMQopMvG+/GiMypv9gLJhhzn3gxeyejM+aXwkDq+x+YDQ5apTMhxeWkl1ooWm8eQNe
+         PDXn+LzjS/D4KqvHR1jHoa9SlW62WlTiStdemWElSMdqbNuvpZc+/DEQJmGvt4M8INdv
+         tZBZrAUckrFPWNQG9WukE1QwxCjLCqb/P8oBAOgnVByOyEs43Ji09kxdzh/uFoBKjIQZ
+         OVUQ==
+X-Gm-Message-State: AOAM533hoS3kbkdB+Y23F7Xizjj9FVmurqkIv9+mWjgAiu9C/F5tAujN
+        f9YUejca/Fk8i7FLQhCTJ3Y=
+X-Google-Smtp-Source: ABdhPJw/kks18SEPjctb2xadBsu511cToAGBegjqzkI6LlhU8nmmx+1TugxosLm0Fi18dfsI4HFmMA==
+X-Received: by 2002:a17:902:c509:b029:de:c3c7:9433 with SMTP id o9-20020a170902c509b02900dec3c79433mr11961697plx.71.1611189715720;
+        Wed, 20 Jan 2021 16:41:55 -0800 (PST)
+Received: from phantasmagoria.svl.corp.google.com ([2620:15c:2c4:201:f693:9fff:feea:f0b9])
+        by smtp.gmail.com with ESMTPSA id a37sm2874646pgm.79.2021.01.20.16.41.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 20 Jan 2021 16:41:55 -0800 (PST)
+From:   Arjun Roy <arjunroy.kdev@gmail.com>
+To:     davem@davemloft.net, netdev@vger.kernel.org
+Cc:     arjunroy@google.com, edumazet@google.com, soheil@google.com,
+        kuba@kernel.org
+Subject: [net-next v2 0/2] tcp: add CMSG+rx timestamps to rx. zerocopy
+Date:   Wed, 20 Jan 2021 16:41:46 -0800
+Message-Id: <20210121004148.2340206-1-arjunroy.kdev@gmail.com>
+X-Mailer: git-send-email 2.30.0.284.gd98b1dd5eaa7-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 20 Jan 2021 15:37:59 +0100 Giacinto Cifelli wrote:
-> On Wed, Jan 20, 2021 at 2:13 PM Bj=C3=B8rn Mork <bjorn@mork.no> wrote:
-> > Giacinto Cifelli <gciofono@gmail.com> writes:
-> > > Hi Bj=C3=B8rn,
-> > > I have fixed and resent, but from your comment I might not have
-> > > selected the right line from maintaner.pl?
-> > > what I have is this:
-> > > $ ./scripts/get_maintainer.pl --file drivers/net/usb/qmi_wwan.c
+From: Arjun Roy <arjunroy@google.com>
 
-I always run it on the patch file formatted by git format-patch.
-That way it will also make sure to list people relevant to Fixes=20
-tags etc.
+Provide CMSG and receive timestamp support to TCP
+receive zerocopy. Patch 1 refactors CMSG pending state for
+tcp_recvmsg() to avoid the use of magic numbers; patch 2 implements
+receive timestamp via CMSG support for receive zerocopy, and uses the
+constants added in patch 1.
 
-> > > "Bj=C3=B8rn Mork" <bjorn@mork.no> (maintainer:USB QMI WWAN NETWORK DR=
-IVER)
-> > > "David S. Miller" <davem@davemloft.net> (maintainer:NETWORKING DRIVER=
-S)
-> > > Jakub Kicinski <kuba@kernel.org> (maintainer:NETWORKING DRIVERS)
-> > > netdev@vger.kernel.org (open list:USB QMI WWAN NETWORK DRIVER)
-> > > <<<< this seems the right one
-> > > linux-usb@vger.kernel.org (open list:USB NETWORKING DRIVERS)
-> > > linux-kernel@vger.kernel.org (open list)
-> > >
-> > > I have at the same time sent a patch for another enumeration of the
-> > > same product, for cdc_ether.  In that case, I have picked the
-> > > following line, which also looked the best fit:
-> > >   linux-usb@vger.kernel.org (open list:USB CDC ETHERNET DRIVER)
-> > >
-> > > Did I misinterpret the results of the script? =20
-> >
-> > Yes, but I'll be the first to admit that it isn't easy.
-> >
-> > netdev is definitely correct, and the most important one.
-> >
-> > But in theory you are supposed to use all the listed addresses.  Except
-> > that I don't think you need to CC David (and Jakub?) since they probably
-> > read everything in netdev anyway. =20
+v2: Fixes various stylistic comments and introduces a helper method
+to reduce indentation.
 
-That's fair, I've even said in the past that folks can skip CCing me.
-That said with vger being flaky lately maybe it's not a bad idea after
-all to CC maintainers - in case someone objects to the patch, and we
-don't see it because some email deity decided to hold onto the message..
+Arjun Roy (2):
+  tcp: Remove CMSG magic numbers for tcp_recvmsg().
+  tcp: Add receive timestamp support for receive zerocopy.
 
-> > And I believe many (most?) people
-> > leave out the linux-kernel catch-all, since it doesn't provide any extra
-> > coverage for networking. At least I do.
+ include/uapi/linux/tcp.h |   4 ++
+ net/ipv4/tcp.c           | 130 ++++++++++++++++++++++++++++-----------
+ 2 files changed, 98 insertions(+), 36 deletions(-)
 
-Same, I wish get_maintainers didn't list it :/
-
-> > Then there's the two remaining addresses.  The linux-usb list is
-> > traditionally CCed on patches touching USB drivers, since the USB
-> > experts are there and not necessarily in netdev.  And I'd like a copy
-> > because that's the only way I'll be able to catch these patches.  I
-> > don't read any of the lists regularily.
-> >
-> > This is my interpretation only.  I am sure there are other opinions. But
-> > as usual, you cannot do anything wrong. The worst that can ever happen
-> > is that you have to resend a patch or miss my review of it ;-)
-> > =20
->=20
-> looks like "welcome to the maze" :D
->=20
-> So, the letter of the instructions would be send all, but up to you to
-> leave some of them out.
-> Got it.
-> I am going to wait a couple of days on the off chance that my patches
-> are reviewed, then I will resend.
->=20
-> Thank you and regards,
-> Giacinto
+-- 
+2.30.0.284.gd98b1dd5eaa7-goog
 
