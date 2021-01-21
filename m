@@ -2,180 +2,232 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 769DA2FF82B
-	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 23:46:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 528F82FF850
+	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 00:00:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726799AbhAUWqJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jan 2021 17:46:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46594 "EHLO
+        id S1726462AbhAUW7W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jan 2021 17:59:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725805AbhAUWpt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jan 2021 17:45:49 -0500
-Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD696C061756;
-        Thu, 21 Jan 2021 14:45:08 -0800 (PST)
-Received: by mail-ed1-x52b.google.com with SMTP id f1so4388738edr.12;
-        Thu, 21 Jan 2021 14:45:08 -0800 (PST)
+        with ESMTP id S1727098AbhAUW6t (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jan 2021 17:58:49 -0500
+Received: from mail-qt1-x849.google.com (mail-qt1-x849.google.com [IPv6:2607:f8b0:4864:20::849])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7BE9C061794
+        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 14:57:46 -0800 (PST)
+Received: by mail-qt1-x849.google.com with SMTP id w5so2477559qts.9
+        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 14:57:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=js608cf7+b6uuSx4xSNXkCTdpGlQyO53l8ri6uI5Ugk=;
-        b=OQ13GQFV3ZKMP2IsaYeS9IbNflRAvsauNeh1LiK6cY1iUbq+8h9tcm190yB2Y2cs9Z
-         oo7YZxmWNtaAQoxDsMpl+WTlS3p8Wn+/HUoDI/lTY9kF2ha0KR9knHP38zbQtxLF4UQf
-         oOn6twWZ1MEkgO1xJYJlPRHVdOA1sGybDrskKcm28EOl0RPytu/GLA0SnWpVTv3FAA+5
-         BKdqo1dgkld0OE6+Z0h1wmGHbkOSR+hauscyqc4RFE1H7/HizN6MlYxPtHGOTHrWGM3d
-         dJ12iOiQBd4uDN+r2xcRp36uuJ40snZXNtThkoXekqZlfI9eArVlww3XJARmlVZfIFJv
-         40tg==
+        d=google.com; s=20161025;
+        h=sender:date:in-reply-to:message-id:mime-version:references:subject
+         :from:to:cc;
+        bh=rEs8+RjNlPMDkUBf1H7i/FQ61Cs6J/f8dFWTg7YHb34=;
+        b=N26WO7H/zjK7LmKo9gNIltRKUFFdv8GjmFcwDmtNIEB2bP4tqxfWEsaeb3BoldBcjM
+         mAx8HX7rCovDL8HzBFMdxq6eKlBVej6EScBKxt19AK+PhRfq4k4d/vOfr5sVT67cRaJH
+         AhTpwino5wTh5JTQ9LsVp05VqYC3CK6mzuWImx147MzjWtbBvCRiHXvr7PksfNt6qFB+
+         +Xz6AnDEj3gTwF1ntiyiGKr3jjnMsJ0dikH+ufGo1jnTRpVej7b3tVd69VGM1mRAHiDO
+         CL3ectFMGKwP9fpkE2FiBFOTX8DKJ6pkfd4qxLWS8ddmIEsVS2ZkceBajHFikgCTLiNQ
+         lI6A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=js608cf7+b6uuSx4xSNXkCTdpGlQyO53l8ri6uI5Ugk=;
-        b=XB6Ye/umNKIYkPLFospwDXGSowBJgdhY9NJjQfjV7c2PqdyAHrI8W6hYfEuAAH8feC
-         jLBtODPqiZwi414+jQslK9juR2yOmTIoR5pmck1PInlSAfQz3YNf7FudskJRpwxEVmNe
-         ISZvjg/MYVAmJ+n2CggFK9V8+tTCZeOLXmsQw0pzY/wb0nr4LugaT6POgK84EKaj4JPO
-         X2iPSgbQUBts++8zyzlwKFs79MB3ND1atC9M1ENSu+ylC9hoAFUqjJ7/cFSZI8MB1Ylp
-         eDv5qOJQBSlJYCp7sY7dIX5eq+C4gtfnEyLabj38EThPUwVamb4UafYr2xn2NePa9rXv
-         XA7A==
-X-Gm-Message-State: AOAM533bLUiwhlJTtopicenHrPCduvUnt/7th6lLat1nDJabtU/0d2+X
-        kMvQ8D20BseHCSH6YqKGc7c=
-X-Google-Smtp-Source: ABdhPJzdsAmZeMTtJofoH0OpmfOghYFNG5Mw7eCThZjIa7BwAAu43KDhcre/+DiKEUAE2RebrWMEpA==
-X-Received: by 2002:aa7:d8c6:: with SMTP id k6mr1042147eds.265.1611269107502;
-        Thu, 21 Jan 2021 14:45:07 -0800 (PST)
-Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id t21sm3595648edv.82.2021.01.21.14.45.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Jan 2021 14:45:06 -0800 (PST)
-Date:   Fri, 22 Jan 2021 00:45:05 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Pawel Dembicki <paweldembicki@gmail.com>
-Cc:     netdev@vger.kernel.org, Linus Wallej <linus.walleij@linaro.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] dsa: vsc73xx: add support for vlan filtering
-Message-ID: <20210121224505.nwfipzncw2h5d3rw@skbuf>
-References: <20210120063019.1989081-1-paweldembicki@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210120063019.1989081-1-paweldembicki@gmail.com>
+        h=x-gm-message-state:sender:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=rEs8+RjNlPMDkUBf1H7i/FQ61Cs6J/f8dFWTg7YHb34=;
+        b=R86aADAryaLwkVvPt772pc6EEVAGysIZ4OH++BwBIt0O+D1rE1tg6LJ25SuL5npO5L
+         GxiW2nFll6rdx1kPLBvmaZstDGZG2ckUPxlc4+dXGrKxiVAXRlMfQhEA/ehnZRL5tZ2X
+         xldgKzut0+jCFO0VHkUS1hFG/otYtFxutuMUc+MQGYJzAozZBnq0PGI+C6lZF7t+0kxw
+         W4/L1c2JaSnfYWQSCx5889RRbCH7EQnIvucA/T8mNgK10rb0FZGGwVDiC92nuUPdKRq9
+         oDbKuul1JHWMcmUOZYhhziyY5ZZmZrcysE4pf4h1/AW3nKfXgGSTXqt8dMUoxwngZCOt
+         xKnA==
+X-Gm-Message-State: AOAM533CN8iKFbnvMT6uUO3klUpzr9Ab60+MNJNhT1JDJgJWJ2IDJN/C
+        mBh0Bsy1tV9iUkbp3RcW/gyvYaY=
+X-Google-Smtp-Source: ABdhPJzIkOwKG42KcXxS834I4A3iJwjvPiTo9oGyr0xAgKozY4O/+6Ipn2VjvUyT3PtRxe5nKqjhrH8=
+Sender: "sdf via sendgmr" <sdf@sdf2.svl.corp.google.com>
+X-Received: from sdf2.svl.corp.google.com ([2620:15c:2c4:1:7220:84ff:fe09:7732])
+ (user=sdf job=sendgmr) by 2002:ad4:57ab:: with SMTP id g11mr1917054qvx.38.1611269865897;
+ Thu, 21 Jan 2021 14:57:45 -0800 (PST)
+Date:   Thu, 21 Jan 2021 14:57:44 -0800
+In-Reply-To: <20210121223330.pyk4ljtjirm2zlay@kafai-mbp>
+Message-Id: <YAoG6K37QtRZGJGy@google.com>
+Mime-Version: 1.0
+References: <20210121012241.2109147-1-sdf@google.com> <20210121012241.2109147-2-sdf@google.com>
+ <20210121223330.pyk4ljtjirm2zlay@kafai-mbp>
+Subject: Re: [PATCH bpf-next 2/2] selftests/bpf: verify that rebinding to port
+ < 1024 from BPF works
+From:   sdf@google.com
+To:     Martin KaFai Lau <kafai@fb.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, ast@kernel.org,
+        daniel@iogearbox.net
+Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Pawel,
+On 01/21, Martin KaFai Lau wrote:
+> On Wed, Jan 20, 2021 at 05:22:41PM -0800, Stanislav Fomichev wrote:
+> > BPF rewrites from 111 to 111, but it still should mark the port as
+> > "changed".
+> > We also verify that if port isn't touched by BPF, it's still prohibited.
+> >
+> > Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> > ---
+> >  .../selftests/bpf/prog_tests/bind_perm.c      | 88 +++++++++++++++++++
+> >  tools/testing/selftests/bpf/progs/bind_perm.c | 36 ++++++++
+> >  2 files changed, 124 insertions(+)
+> >  create mode 100644 tools/testing/selftests/bpf/prog_tests/bind_perm.c
+> >  create mode 100644 tools/testing/selftests/bpf/progs/bind_perm.c
+> >
+> > diff --git a/tools/testing/selftests/bpf/prog_tests/bind_perm.c  
+> b/tools/testing/selftests/bpf/prog_tests/bind_perm.c
+> > new file mode 100644
+> > index 000000000000..840a04ac9042
+> > --- /dev/null
+> > +++ b/tools/testing/selftests/bpf/prog_tests/bind_perm.c
+> > @@ -0,0 +1,88 @@
+> > +// SPDX-License-Identifier: GPL-2.0
+> > +#include <test_progs.h>
+> > +#include "bind_perm.skel.h"
+> > +
+> > +#include <sys/types.h>
+> > +#include <sys/socket.h>
+> > +#include <sys/capability.h>
+> > +
+> > +static int duration;
+> > +
+> > +void try_bind(int port, int expected_errno)
+> > +{
+> > +	struct sockaddr_in sin = {};
+> > +	int fd = -1;
+> > +
+> > +	fd = socket(AF_INET, SOCK_STREAM, 0);
+> > +	if (CHECK(fd < 0, "fd", "errno %d", errno))
+> > +		goto close_socket;
+> > +
+> > +	sin.sin_family = AF_INET;
+> > +	sin.sin_port = htons(port);
+> > +
+> > +	errno = 0;
+> > +	bind(fd, (struct sockaddr *)&sin, sizeof(sin));
+> > +	CHECK(errno != expected_errno, "bind", "errno %d, expected %d",
+> > +	      errno, expected_errno);
+> > +
+> > +close_socket:
+> > +	if (fd >= 0)
+> > +		close(fd);
+> > +}
+> > +
+> > +void cap_net_bind_service(cap_flag_value_t flag)
+> > +{
+> > +	const cap_value_t cap_net_bind_service = CAP_NET_BIND_SERVICE;
+> > +	cap_t caps;
+> > +
+> > +	caps = cap_get_proc();
+> > +	if (CHECK(!caps, "cap_get_proc", "errno %d", errno))
+> > +		goto free_caps;
+> > +
+> > +	if (CHECK(cap_set_flag(caps, CAP_EFFECTIVE, 1, &cap_net_bind_service,
+> > +			       CAP_CLEAR),
+> > +		  "cap_set_flag", "errno %d", errno))
+> > +		goto free_caps;
+> > +
+> > +	if (CHECK(cap_set_flag(caps, CAP_EFFECTIVE, 1, &cap_net_bind_service,
+> > +			       CAP_CLEAR),
+> > +		  "cap_set_flag", "errno %d", errno))
+> > +		goto free_caps;
+> > +
+> > +	if (CHECK(cap_set_proc(caps), "cap_set_proc", "errno %d", errno))
+> > +		goto free_caps;
+> > +
+> > +free_caps:
+> > +	if (CHECK(cap_free(caps), "cap_free", "errno %d", errno))
+> > +		goto free_caps;
+> > +}
+> > +
+> > +void test_bind_perm(void)
+> > +{
+> > +	struct bind_perm *skel;
+> > +	int cgroup_fd;
+> > +
+> > +	cgroup_fd = test__join_cgroup("/bind_perm");
+> > +	if (CHECK(cgroup_fd < 0, "cg-join", "errno %d", errno))
+> > +		return;
+> > +
+> > +	skel = bind_perm__open_and_load();
+> > +	if (CHECK(!skel, "skel-load", "errno %d", errno))
+> > +		goto close_cgroup_fd;
+> > +
+> > +	skel->links.bind_v4_prog =  
+> bpf_program__attach_cgroup(skel->progs.bind_v4_prog, cgroup_fd);
+> > +	if (CHECK(IS_ERR(skel->links.bind_v4_prog),
+> > +		  "cg-attach", "bind4 %ld",
+> > +		  PTR_ERR(skel->links.bind_v4_prog)))
+> > +		goto close_skeleton;
+> > +
+> > +	cap_net_bind_service(CAP_CLEAR);
+> > +	try_bind(110, EACCES);
+> > +	try_bind(111, 0);
+> > +	cap_net_bind_service(CAP_SET);
+> > +
+> > +close_skeleton:
+> > +	bind_perm__destroy(skel);
+> > +close_cgroup_fd:
+> > +	close(cgroup_fd);
+> > +}
+> > diff --git a/tools/testing/selftests/bpf/progs/bind_perm.c  
+> b/tools/testing/selftests/bpf/progs/bind_perm.c
+> > new file mode 100644
+> > index 000000000000..2194587ec806
+> > --- /dev/null
+> > +++ b/tools/testing/selftests/bpf/progs/bind_perm.c
+> > @@ -0,0 +1,36 @@
+> > +// SPDX-License-Identifier: GPL-2.0
+> > +
+> > +#include <linux/stddef.h>
+> > +#include <linux/bpf.h>
+> > +#include <sys/types.h>
+> > +#include <sys/socket.h>
+> > +#include <bpf/bpf_helpers.h>
+> > +#include <bpf/bpf_endian.h>
+> > +
+> > +SEC("cgroup/bind4")
+> > +int bind_v4_prog(struct bpf_sock_addr *ctx)
+> > +{
+> > +	struct bpf_sock *sk;
+> > +	__u32 user_ip4;
+> > +	__u16 user_port;
+> > +
+> > +	sk = ctx->sk;
+> > +	if (!sk)
+> > +		return 0;
+> > +
+> > +	if (sk->family != AF_INET)
+> > +		return 0;
+> > +
+> > +	if (ctx->type != SOCK_STREAM)
+> > +		return 0;
+> > +
+> > +	/* Rewriting to the same value should still cause
+> > +	 * permission check to be bypassed.
+> > +	 */
+> > +	if (ctx->user_port == bpf_htons(111))
+> > +		ctx->user_port = bpf_htons(111);
+> iiuc, this overwrite is essentially the way to ensure the bind
+> will succeed (override CAP_NET_BIND_SERVICE in this particular case?).
+Correct. The alternative might be to export ignore_perm_check
+via bpf_sock_addr and make it explicit.
 
-On Wed, Jan 20, 2021 at 07:30:18AM +0100, Pawel Dembicki wrote:
-> This patch adds support for vlan filtering in vsc73xx driver.
-> 
-> After vlan filtering enable, CPU_PORT is configured as trunk, without
-> non-tagged frames. This allows to avoid problems with transmit untagged
-> frames because vsc73xx is DSA_TAG_PROTO_NONE.
-> 
-> Signed-off-by: Pawel Dembicki <paweldembicki@gmail.com>
+> It seems to be okay if we consider most of the use cases is rewriting
+> to a different port.
 
-What are the issues that are preventing you from getting rid of
-DSA_TAG_PROTO_NONE? Not saying that making the driver VLAN aware is a
-bad idea, but maybe also adding a tagging driver should really be the
-path going forward. If there are hardware issues surrounding the native
-tagging support, then DSA can make use of your VLAN features by
-transforming them into a software-defined tagger, see
-net/dsa/tag_8021q.c. But using a trunk CPU port with 8021q uppers on top
-of the DSA master is a poor job of achieving that.
+> However, it is quite un-intuitive to the bpf prog to overwrite with
+> the same user_port just to ensure this port can be binded successfully
+> later.
+I'm testing a corner case here when the address is rewritten to the same
+value, but the intention is to rewrite X to Y < 1024.
 
-> ---
-> +static int
-> +vsc73xx_port_read_vlan_table_entry(struct dsa_switch *ds, u16 vid, u8 *portmap)
-> +{
-> +	struct vsc73xx *vsc = ds->priv;
-> +	u32 val;
-> +	int ret;
-> +
-> +	if (vid > 4095)
-> +		return -EPERM;
+> Is user_port the only case? How about other fields in bpf_sock_addr?
+Good question. For our use case only the port matters because
+we rewrite both port and address (and never only address).
 
-This is a paranoid check and should be removed (not only here but
-everywhere).
-
-> +static int vsc73xx_port_vlan_prepare(struct dsa_switch *ds, int port,
-> +				     const struct switchdev_obj_port_vlan *vlan)
-> +{
-> +	/* nothing needed */
-> +	return 0;
-> +}
-
-Can you please rebase your work on top of the net-next/master branch?
-You will see that the API has changed.
-https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git
-
-> +
-> +static void vsc73xx_port_vlan_add(struct dsa_switch *ds, int port,
-> +				  const struct switchdev_obj_port_vlan *vlan)
-> +{
-> +	bool untagged = vlan->flags & BRIDGE_VLAN_INFO_UNTAGGED;
-> +	bool pvid = vlan->flags & BRIDGE_VLAN_INFO_PVID;
-> +	struct vsc73xx *vsc = ds->priv;
-> +	int ret;
-> +	u32 tmp;
-> +
-> +	if (!dsa_port_is_vlan_filtering(dsa_to_port(ds, port)))
-> +		return;
-
-Sorry, but no. You need to support the case where the bridge (or 8021q
-module) adds a VLAN even when the port is not enforcing VLAN filtering.
-See commit:
-https://git.kernel.org/pub/scm/linux/kernel/git/netdev/net-next.git/commit/?id=0ee2af4ebbe3c4364429859acd571018ebfb3424
-
-> +
-> +	ret = vsc73xx_port_update_vlan_table(ds, port, vlan->vid_begin,
-> +					     vlan->vid_end, 1);
-> +	if (ret)
-> +		return;
-> +
-> +	if (untagged && port != CPU_PORT) {
-> +		/* VSC73xx can have only one untagged vid per port. */
-> +		vsc73xx_read(vsc, VSC73XX_BLOCK_MAC, port,
-> +			     VSC73XX_TXUPDCFG, &tmp);
-> +
-> +		if (tmp & VSC73XX_TXUPDCFG_TX_UNTAGGED_VID_ENA)
-> +			dev_warn(vsc->dev,
-> +				 "Chip support only one untagged VID per port. Overwriting...\n");
-
-Just return an error, don't overwrite, this leaves the bridge VLAN
-information out of sync with the hardware otherwise, which is not a
-great idea.
-
-FWIW the drivers/net/dsa/ocelot/felix.c and drivers/net/mscc/ocelot.c
-files support switching chips from the same vendor. The VSC73XX family
-is much older, but some of the limitations apply to both architectures
-nonetheless (like this one), you can surely borrow some ideas from
-ocelot - in this case search for ocelot_vlan_prepare.
-
-> +
-> +		vsc73xx_update_bits(vsc, VSC73XX_BLOCK_MAC, port,
-> +				    VSC73XX_TXUPDCFG,
-> +				    VSC73XX_TXUPDCFG_TX_UNTAGGED_VID,
-> +				    (vlan->vid_end <<
-> +				    VSC73XX_TXUPDCFG_TX_UNTAGGED_VID_SHIFT) &
-> +				    VSC73XX_TXUPDCFG_TX_UNTAGGED_VID);
-> +		vsc73xx_update_bits(vsc, VSC73XX_BLOCK_MAC, port,
-> +				    VSC73XX_TXUPDCFG,
-> +				    VSC73XX_TXUPDCFG_TX_UNTAGGED_VID_ENA,
-> +				    VSC73XX_TXUPDCFG_TX_UNTAGGED_VID_ENA);
-> +	}
-> +	if (pvid && port != CPU_PORT) {
-> +		vsc73xx_update_bits(vsc, VSC73XX_BLOCK_MAC, port,
-> +				    VSC73XX_CAT_DROP,
-> +				    VSC73XX_CAT_DROP_UNTAGGED_ENA,
-> +				    ~VSC73XX_CAT_DROP_UNTAGGED_ENA);
-> +		vsc73xx_update_bits(vsc, VSC73XX_BLOCK_MAC, port,
-> +				    VSC73XX_CAT_PORT_VLAN,
-> +				    VSC73XX_CAT_PORT_VLAN_VLAN_VID,
-> +				    vlan->vid_end &
-> +				    VSC73XX_CAT_PORT_VLAN_VLAN_VID);
-> +	}
-> +}
+It does feel like it should also work when BPF rewrites address only
+(and port happens to be in the privileged range). I guess I can
+apply the same logic to the user_ip4 and user_ip6?
