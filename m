@@ -2,101 +2,242 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 762EA2FE563
-	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 09:52:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8EC902FE59D
+	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 09:54:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728150AbhAUIwO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jan 2021 03:52:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35916 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728151AbhAUIwB (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jan 2021 03:52:01 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AE25C0613C1
-        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 00:51:19 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1l2VgK-0000y7-3Z; Thu, 21 Jan 2021 09:51:08 +0100
-Received: from hardanger.blackshift.org (unknown [IPv6:2a03:f580:87bc:d400:37fb:eadb:47a3:78d5])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (Client did not present a certificate)
-        (Authenticated sender: mkl-all@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 3AA0D5C9852;
-        Thu, 21 Jan 2021 08:51:05 +0000 (UTC)
-Date:   Thu, 21 Jan 2021 09:51:04 +0100
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-To:     Su Yanjun <suyanjun218@gmail.com>
-Cc:     manivannan.sadhasivam@linaro.org, thomas.kopp@microchip.com,
-        wg@grandegger.com, davem@davemloft.net, kuba@kernel.org,
-        lgirdwood@gmail.com, broonie@kernel.org, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v1] can: mcp251xfd: replace sizeof(u32) with val_bytes in
- regmap
-Message-ID: <20210121085104.kp5qkllzyfu6ybtj@hardanger.blackshift.org>
-References: <20210121083313.71296-1-suyanjun218@gmail.com>
+        id S1727345AbhAUIyK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jan 2021 03:54:10 -0500
+Received: from mail.kernel.org ([198.145.29.99]:33102 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728263AbhAUIxb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 21 Jan 2021 03:53:31 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 5FDDA239EF;
+        Thu, 21 Jan 2021 08:52:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1611219170;
+        bh=eSYLmvCypJgMnlM449jFAOgQeum1+s5F1uGrryXaYDQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=RDYiP18Dbc9JHEqThgWW4je5brb8nEnoyamQ3OWTXwaa/hkePj1HZvFYjejdey1aA
+         EpRj0AEYWj+rTr2z0dLUGaAutJLt74wWrLdBxEPba2aj3Jw0cuKjp8UuyOuZiavsAM
+         z1mvce9/ZL7xXJuEYjs8d2Wp09Aunw36Niby5/S0SgdGY8XEpc3IdCFIgmF9cfBVKk
+         XCaw6JnLf+cnNGeQDyTNKNkq5RCh6Jqmc9SHjxXkJkL+fyDFk/98s9F6ggkF3tasP3
+         RV7S2Op25efl2z9xHtl1RuqsBP3klPtXEKmWoDBE+7lOoOyO7m46UNMG0LeW2Ele3i
+         peMR5pLVLmVLg==
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jason Gunthorpe <jgg@nvidia.com>
+Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
+        alexander.duyck@gmail.com, sridhar.samudrala@intel.com,
+        edwin.peer@broadcom.com, dsahern@kernel.org, kiran.patil@intel.com,
+        jacob.e.keller@intel.com, david.m.ertman@intel.com,
+        dan.j.williams@intel.com, Parav Pandit <parav@nvidia.com>,
+        Jiri Pirko <jiri@nvidia.com>, Vu Pham <vuhuong@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: [net-next V9 02/14] devlink: Introduce PCI SF port flavour and port attribute
+Date:   Thu, 21 Jan 2021 00:52:25 -0800
+Message-Id: <20210121085237.137919-3-saeed@kernel.org>
+X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20210121085237.137919-1-saeed@kernel.org>
+References: <20210121085237.137919-1-saeed@kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="uvdzd62yprqygzpz"
-Content-Disposition: inline
-In-Reply-To: <20210121083313.71296-1-suyanjun218@gmail.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+From: Parav Pandit <parav@nvidia.com>
 
---uvdzd62yprqygzpz
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+A PCI sub-function (SF) represents a portion of the device similar
+to PCI VF.
 
-On Thu, Jan 21, 2021 at 04:33:13PM +0800, Su Yanjun wrote:
-> No functional effect.
->=20
-> Signed-off-by: Su Yanjun <suyanjun218@gmail.com>
+In an eswitch, PCI SF may have port which is normally represented
+using a representor netdevice.
+To have better visibility of eswitch port, its association with SF,
+and its representor netdevice, introduce a PCI SF port flavour.
 
-Fails to build from source:
+When devlink port flavour is PCI SF, fill up PCI SF attributes of the
+port.
 
-  CC [M]  drivers/net/can/spi/mcp251xfd/mcp251xfd-core.o
-drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c: In function =E2=80=98mcp251=
-xfd_get_val_bytes=E2=80=99:
-drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c:187:22: error: invalid use o=
-f undefined type =E2=80=98struct regmap=E2=80=99
-  187 |  return priv->map_reg->format.val_bytes;
-      |                      ^~
-rivers/net/can/spi/mcp251xfd/mcp251xfd-core.c:188:1: error: control reaches=
- end of non-void function [-Werror=3Dreturn-type]
-  188 | }
-      | ^
-cc1: some warnings being treated as errors
+Extend port name creation using PCI PF and SF number scheme on best
+effort basis, so that vendor drivers can skip defining their own
+scheme.
+This is done as cApfNSfM, where A, N and M are controller, PCI PF and
+PCI SF number respectively.
+This is similar to existing naming for PCI PF and PCI VF ports.
 
-Marc
+An example view of a PCI SF port:
 
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+$ devlink port show pci/0000:06:00.0/32768
+pci/0000:06:00.0/32768: type eth netdev ens2f0npf0sf88 flavour pcisf controller 0 pfnum 0 sfnum 88 external false splittable false
+  function:
+    hw_addr 00:00:00:00:88:88 state active opstate attached
 
---uvdzd62yprqygzpz
-Content-Type: application/pgp-signature; name="signature.asc"
+$ devlink port show pci/0000:06:00.0/32768 -jp
+{
+    "port": {
+        "pci/0000:06:00.0/32768": {
+            "type": "eth",
+            "netdev": "ens2f0npf0sf88",
+            "flavour": "pcisf",
+            "controller": 0,
+            "pfnum": 0,
+            "sfnum": 88,
+            "splittable": false,
+            "function": {
+                "hw_addr": "00:00:00:00:88:88",
+                "state": "active",
+                "opstate": "attached"
+            }
+        }
+    }
+}
 
------BEGIN PGP SIGNATURE-----
+Signed-off-by: Parav Pandit <parav@nvidia.com>
+Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+Reviewed-by: Vu Pham <vuhuong@nvidia.com>
+Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+---
+ include/net/devlink.h        | 16 +++++++++++++++
+ include/uapi/linux/devlink.h |  5 +++++
+ net/core/devlink.c           | 39 ++++++++++++++++++++++++++++++++++++
+ 3 files changed, 60 insertions(+)
 
-iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmAJQHUACgkQqclaivrt
-76kgAwgAoJfEY57+qt577cXwMuAWcpN2BrXymJSzb3emTslNlwY0SQNVl/Y0aEmy
-5ffMoyK3TyA28ztLxOCdvvSssNS2DqnjvLgOIL1xmVBAatwBnzdAPFICvKpumvsZ
-OdyDrh4ZZUT55W6X7I+370f8KFSBN7XPReOHkUykZvZj1qg4S1g1DPjFVEDDTgyW
-hGcTFTg2Is5V4Lwt2LXmlfCnF/l+khF6ZakDZ1A99w0KSMTD9Vua5Gx4sqEEGYRp
-ap917/egq2nQkEMNqRVN0uDkS398m1mobCYvP7wf20M4fI8NyLPAM0hPgS357TBz
-GPiDvWHoTR4Y2iWZUcnOnjE2slMq5g==
-=VcRg
------END PGP SIGNATURE-----
+diff --git a/include/net/devlink.h b/include/net/devlink.h
+index f466819cc477..dc3bf8000082 100644
+--- a/include/net/devlink.h
++++ b/include/net/devlink.h
+@@ -93,6 +93,18 @@ struct devlink_port_pci_vf_attrs {
+ 	u8 external:1;
+ };
+ 
++/**
++ * struct devlink_port_pci_sf_attrs - devlink port's PCI SF attributes
++ * @controller: Associated controller number
++ * @sf: Associated PCI SF for of the PCI PF for this port.
++ * @pf: Associated PCI PF number for this port.
++ */
++struct devlink_port_pci_sf_attrs {
++	u32 controller;
++	u32 sf;
++	u16 pf;
++};
++
+ /**
+  * struct devlink_port_attrs - devlink port object
+  * @flavour: flavour of the port
+@@ -103,6 +115,7 @@ struct devlink_port_pci_vf_attrs {
+  * @phys: physical port attributes
+  * @pci_pf: PCI PF port attributes
+  * @pci_vf: PCI VF port attributes
++ * @pci_sf: PCI SF port attributes
+  */
+ struct devlink_port_attrs {
+ 	u8 split:1,
+@@ -114,6 +127,7 @@ struct devlink_port_attrs {
+ 		struct devlink_port_phys_attrs phys;
+ 		struct devlink_port_pci_pf_attrs pci_pf;
+ 		struct devlink_port_pci_vf_attrs pci_vf;
++		struct devlink_port_pci_sf_attrs pci_sf;
+ 	};
+ };
+ 
+@@ -1404,6 +1418,8 @@ void devlink_port_attrs_pci_pf_set(struct devlink_port *devlink_port, u32 contro
+ 				   u16 pf, bool external);
+ void devlink_port_attrs_pci_vf_set(struct devlink_port *devlink_port, u32 controller,
+ 				   u16 pf, u16 vf, bool external);
++void devlink_port_attrs_pci_sf_set(struct devlink_port *devlink_port,
++				   u32 controller, u16 pf, u32 sf);
+ int devlink_sb_register(struct devlink *devlink, unsigned int sb_index,
+ 			u32 size, u16 ingress_pools_count,
+ 			u16 egress_pools_count, u16 ingress_tc_count,
+diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
+index cf89c318f2ac..1a241b09a7f8 100644
+--- a/include/uapi/linux/devlink.h
++++ b/include/uapi/linux/devlink.h
+@@ -200,6 +200,10 @@ enum devlink_port_flavour {
+ 	DEVLINK_PORT_FLAVOUR_UNUSED, /* Port which exists in the switch, but
+ 				      * is not used in any way.
+ 				      */
++	DEVLINK_PORT_FLAVOUR_PCI_SF, /* Represents eswitch port
++				      * for the PCI SF. It is an internal
++				      * port that faces the PCI SF.
++				      */
+ };
+ 
+ enum devlink_param_cmode {
+@@ -529,6 +533,7 @@ enum devlink_attr {
+ 	DEVLINK_ATTR_RELOAD_ACTION_INFO,        /* nested */
+ 	DEVLINK_ATTR_RELOAD_ACTION_STATS,       /* nested */
+ 
++	DEVLINK_ATTR_PORT_PCI_SF_NUMBER,	/* u32 */
+ 	/* add new attributes above here, update the policy in devlink.c */
+ 
+ 	__DEVLINK_ATTR_MAX,
+diff --git a/net/core/devlink.c b/net/core/devlink.c
+index c39496311b71..4cbc02fb602d 100644
+--- a/net/core/devlink.c
++++ b/net/core/devlink.c
+@@ -690,6 +690,15 @@ static int devlink_nl_port_attrs_put(struct sk_buff *msg,
+ 		if (nla_put_u8(msg, DEVLINK_ATTR_PORT_EXTERNAL, attrs->pci_vf.external))
+ 			return -EMSGSIZE;
+ 		break;
++	case DEVLINK_PORT_FLAVOUR_PCI_SF:
++		if (nla_put_u32(msg, DEVLINK_ATTR_PORT_CONTROLLER_NUMBER,
++				attrs->pci_sf.controller) ||
++		    nla_put_u16(msg, DEVLINK_ATTR_PORT_PCI_PF_NUMBER,
++				attrs->pci_sf.pf) ||
++		    nla_put_u32(msg, DEVLINK_ATTR_PORT_PCI_SF_NUMBER,
++				attrs->pci_sf.sf))
++			return -EMSGSIZE;
++		break;
+ 	case DEVLINK_PORT_FLAVOUR_PHYSICAL:
+ 	case DEVLINK_PORT_FLAVOUR_CPU:
+ 	case DEVLINK_PORT_FLAVOUR_DSA:
+@@ -8374,6 +8383,32 @@ void devlink_port_attrs_pci_vf_set(struct devlink_port *devlink_port, u32 contro
+ }
+ EXPORT_SYMBOL_GPL(devlink_port_attrs_pci_vf_set);
+ 
++/**
++ *	devlink_port_attrs_pci_sf_set - Set PCI SF port attributes
++ *
++ *	@devlink_port: devlink port
++ *	@controller: associated controller number for the devlink port instance
++ *	@pf: associated PF for the devlink port instance
++ *	@sf: associated SF of a PF for the devlink port instance
++ */
++void devlink_port_attrs_pci_sf_set(struct devlink_port *devlink_port, u32 controller,
++				   u16 pf, u32 sf)
++{
++	struct devlink_port_attrs *attrs = &devlink_port->attrs;
++	int ret;
++
++	if (WARN_ON(devlink_port->registered))
++		return;
++	ret = __devlink_port_attrs_set(devlink_port,
++				       DEVLINK_PORT_FLAVOUR_PCI_SF);
++	if (ret)
++		return;
++	attrs->pci_sf.controller = controller;
++	attrs->pci_sf.pf = pf;
++	attrs->pci_sf.sf = sf;
++}
++EXPORT_SYMBOL_GPL(devlink_port_attrs_pci_sf_set);
++
+ static int __devlink_port_phys_port_name_get(struct devlink_port *devlink_port,
+ 					     char *name, size_t len)
+ {
+@@ -8422,6 +8457,10 @@ static int __devlink_port_phys_port_name_get(struct devlink_port *devlink_port,
+ 		n = snprintf(name, len, "pf%uvf%u",
+ 			     attrs->pci_vf.pf, attrs->pci_vf.vf);
+ 		break;
++	case DEVLINK_PORT_FLAVOUR_PCI_SF:
++		n = snprintf(name, len, "pf%usf%u", attrs->pci_sf.pf,
++			     attrs->pci_sf.sf);
++		break;
+ 	}
+ 
+ 	if (n >= len)
+-- 
+2.26.2
 
---uvdzd62yprqygzpz--
