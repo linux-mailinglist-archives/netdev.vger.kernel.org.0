@@ -2,97 +2,90 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 562FC2FE0B7
-	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 05:31:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9B3F32FE135
+	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 05:57:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732475AbhAUEa5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jan 2021 23:30:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36172 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732150AbhAUEaU (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 23:30:20 -0500
-Received: from mail-oi1-x231.google.com (mail-oi1-x231.google.com [IPv6:2607:f8b0:4864:20::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A70BC061575
-        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 20:29:28 -0800 (PST)
-Received: by mail-oi1-x231.google.com with SMTP id g69so68989oib.12
-        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 20:29:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=35jDEwyAOn6EXcsqc3zljtTA3F7CvH6/tVllcXMwmgs=;
-        b=ugNd4a1gXDlrwbm0pz46csZ6C3VffAsO+uRgk4OasHCYCJCZXmuo8zTSn1t5wbMsvb
-         YvCzghDcyVLIX2kIjPS0mtqXuIG2KsBisWa3Mf8vEaxlp8wF2W17thZGbPGP8SQpEoPD
-         hdJhPdVAGEqkDB6wyzyHsdZpI8icuGYRFDt4xobBokd/lQ0dT+BBmWTeNtd4GMjWi19p
-         b6mm1pRQs8D0d/ljjElKOfsZmNizetxPBSOdgSE9pasB77brsl0K0wj86ChsyD9wV6Yh
-         tTfE5fi9VRsG+2byQIcngAYBJ4kbgtTgqSI9WiaSjNl1VhI7kGM9NudG6GhZySNupd/j
-         m3qQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=35jDEwyAOn6EXcsqc3zljtTA3F7CvH6/tVllcXMwmgs=;
-        b=DT6fbd+LmZYACi7UQ5xvllNUzf4W188Hb/jIHhrBz561vprPlhrzM8wlker5nIEjGg
-         Q6p2XPOJnHVZB2y8WQLpv3PQ6UwZPL6H6xdEncvWcaMp1dgpGZJe2nh4OCe54WhYBMa3
-         u8vxH6v9qwTQOLVhbeytzydENHqnxotwvDahhYU0AUnJjtBJnuWa60K6Pa2r+09vEtJI
-         vatdvHFEB9YEwcN1nWEOKmXr/49XdPD6x9JiAZewffiYoqY+8Asitb81SKfmcnlTIaCN
-         xQqiXjpGhdICqd38fCqz2NM40+mmniSTCMhcGOtyF2RLYHWCTdYuqkjt79FTbUdcO5Wg
-         6JUg==
-X-Gm-Message-State: AOAM532o6kE3uooBEL3p9k0jI1EL+2O3a2Au4O+BLe0dyIE2GvcQ8/Te
-        UqQIzjKgprAsHvb+TED0OGA=
-X-Google-Smtp-Source: ABdhPJzH4CfDeS7M+obaJLQIA6BIyCvK/D0bmiEfcNLw6zpQNwlPy9S/jXtV5jHxrRuUTtXiNN0RIA==
-X-Received: by 2002:aca:3404:: with SMTP id b4mr4963695oia.77.1611203367688;
-        Wed, 20 Jan 2021 20:29:27 -0800 (PST)
-Received: from Davids-MacBook-Pro.local ([8.48.134.50])
-        by smtp.googlemail.com with ESMTPSA id p25sm859856oip.14.2021.01.20.20.29.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 20 Jan 2021 20:29:27 -0800 (PST)
-Subject: Re: [PATCH net-next v2 3/3] nexthop: Specialize rtm_nh_policy
-To:     Petr Machata <petrm@nvidia.com>, netdev@vger.kernel.org
-Cc:     David Ahern <dsahern@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Ido Schimmel <idosch@nvidia.com>
-References: <cover.1611156111.git.petrm@nvidia.com>
- <2d81065f0ea682aa00dd4f32c52f219d6f2e7022.1611156111.git.petrm@nvidia.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <73839ca0-6e9b-de8f-bac5-96d94369c282@gmail.com>
-Date:   Wed, 20 Jan 2021 21:29:26 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
- Gecko/20100101 Thunderbird/78.6.1
+        id S1727009AbhAUE4j (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jan 2021 23:56:39 -0500
+Received: from mail.kernel.org ([198.145.29.99]:44816 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726848AbhAUEz7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 20 Jan 2021 23:55:59 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 90D63238E8;
+        Thu, 21 Jan 2021 04:55:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1611204911;
+        bh=arP/KrUOMem4z2Wvf/y2jWGe9Nv/ZZfor37SphLwbLw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=kY1gJCvmHjsvKUvZq9UlyurNQqmmyzAnv0ZnO42OUU6TKyqywqd3cRV6G7er1I2ns
+         IRXoVY0JHX21I5afthVgyJkwDTbjvksIfVPxLWwKZA4c5xkOs5h35e7k1x6YPvpvPk
+         m+GgTvpH67I9xZKwGdUkbeLSBCoipiEXA0bRMKJkZWceddY3Sl6HoTUnJOw3d8Ij5s
+         Y5IwnNNMyfPIm/TAnH4LNPhstcgeW5TGFcPWPi7LPkBjvylE4Smz+pbM84+DQVzJZu
+         hfZyv4dEPpr+nI/7RTdAcB8YzE7+xuS06eyCqjqHA8oITunVqZ7I9yR4hbQMb92gAg
+         xrOBXNhFs3KIg==
+Date:   Wed, 20 Jan 2021 20:55:10 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Florian Fainelli <f.fainelli@gmail.com>,
+        Marek Vasut <marex@denx.de>, Andrew Lunn <andrew@lunn.ch>,
+        Paul Barker <pbarker@konsulko.com>
+Cc:     netdev@vger.kernel.org,
+        Michael Grzeschik <m.grzeschik@pengutronix.de>
+Subject: Re: [PATCH net-next V2] net: dsa: microchip: Adjust reset release
+ timing to match reference reset circuit
+Message-ID: <20210120205510.4642c92d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <cdc34d4b-b384-2f2c-0b8d-070d54edf3c9@gmail.com>
+References: <20210120030502.617185-1-marex@denx.de>
+        <20210120173127.58445e6c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <9dd12956-4ddc-b641-185e-a36c7d4d81a9@denx.de>
+        <cdc34d4b-b384-2f2c-0b8d-070d54edf3c9@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <2d81065f0ea682aa00dd4f32c52f219d6f2e7022.1611156111.git.petrm@nvidia.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/20/21 8:44 AM, Petr Machata wrote:
-> This policy is currently only used for creation of new next hops and new
-> next hop groups. Rename it accordingly and remove the two attributes that
-> are not valid in that context: NHA_GROUPS and NHA_MASTER.
-> 
-> For consistency with other policies, do not mention policy array size in
-> the declarator, and replace NHA_MAX for ARRAY_SIZE as appropriate.
-> 
-> Note that with this commit, NHA_MAX and __NHA_MAX are not used anymore.
-> Leave them in purely as a user API.
-> 
-> Signed-off-by: Petr Machata <petrm@nvidia.com>
-> ---
-> 
-> Notes:
->     v2:
->     - Do not specify size of the policy array. Use ARRAY_SIZE instead
->       of NHA_MAX
-> 
->  net/ipv4/nexthop.c | 23 +++++++++--------------
->  1 file changed, 9 insertions(+), 14 deletions(-)
-> 
+On Wed, 20 Jan 2021 18:10:59 -0800 Florian Fainelli wrote:
+> On 1/20/2021 5:51 PM, Marek Vasut wrote:
+> > On 1/21/21 2:31 AM, Jakub Kicinski wrote: =20
+> >> On Wed, 20 Jan 2021 04:05:02 +0100 Marek Vasut wrote: =20
+> >>> KSZ8794CNX datasheet section 8.0 RESET CIRCUIT describes recommended
+> >>> circuit for interfacing with CPU/FPGA reset consisting of 10k pullup
+> >>> resistor and 10uF capacitor to ground. This circuit takes ~100 ms to
+> >>> rise enough to release the reset.
+> >>>
+> >>> For maximum supply voltage VDDIO=3D3.3V VIH=3D2.0V R=3D10kR C=3D10uF =
+that is
+> >>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 VDDIO - VIH
+> >>> =C2=A0=C2=A0 t =3D R * C * -ln( ------------- ) =3D 10000*0.00001*-(-=
+0.93)=3D0.093 s
+> >>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 VDDIO
+> >>> so we need ~95 ms for the reset to really de-assert, and then the
+> >>> original 100us for the switch itself to come out of reset. Simply
+> >>> msleep() for 100 ms which fits the constraint with a bit of extra
+> >>> space.
+> >>>
+> >>> Fixes: 5b797980908a ("net: dsa: microchip: Implement recommended
+> >>> reset timing")
+> >>> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+> >>> Signed-off-by: Marek Vasut <marex@denx.de> =20
+> >>
+> >> I'm slightly confused whether this is just future proofing or you
+> >> actually have a board where this matters. The tree is tagged as
+> >> net-next but there is a Fixes tag which normally indicates net+stable.=
+ =20
+> >=20
+> > I have a board where I trigger this problem, that's how I found it. It
+> > should be passed to stable too. So the correct tree / tag is "net" ? =20
+>=20
+> If this is a bug fix for a commit that is not only in 'net-next', then
+> yes, targeting 'net' is more appropriate:
+>=20
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/D=
+ocumentation/networking/netdev-FAQ.rst#n28
 
-Reviewed-by: David Ahern <dsahern@kernel.org>
+Yup, in that case applied this one and the port map fix to net.
 
-
+Thanks everyone!
