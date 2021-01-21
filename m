@@ -2,132 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D60892FE853
-	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 12:05:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 379432FE88B
+	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 12:19:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730076AbhAULEy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jan 2021 06:04:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35336 "EHLO
+        id S1728426AbhAULRE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jan 2021 06:17:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38554 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729699AbhAULAS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jan 2021 06:00:18 -0500
-Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 133D5C061757;
-        Thu, 21 Jan 2021 02:59:35 -0800 (PST)
-Received: by mail-yb1-xb2c.google.com with SMTP id k4so1632937ybp.6;
-        Thu, 21 Jan 2021 02:59:35 -0800 (PST)
+        with ESMTP id S1729925AbhAULPd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jan 2021 06:15:33 -0500
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5398C061575
+        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 03:14:37 -0800 (PST)
+Received: by mail-ej1-x62d.google.com with SMTP id g3so2037317ejb.6
+        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 03:14:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=D4r2Cm5wi36MAtNGLmZUx5fSiHgdYZQwfc9/LYxhsaU=;
-        b=qYkwSaxnNSKrsVWlgQCyKxX0qbplVfayR48rlv5/QdlKbn+gvUVdUT0QyJgBiwow6t
-         S8LRk6G+1TTwxdzxQZIIVaEUcfdQljBqzI1Znm1NHe3lRkUI4RMcdtYaU+R6Cd5sGoqe
-         45K6IefVFenpMV+1rMU6JT3UL6lWAnFtUgPCXZxKGCQGn5H5Rc3M6uhsFjnWfCPqSFfp
-         +4M8WUF7ssR4HUIAX7o+BAOx0/ohPr75wODhO1xW2r6ZYWSj+lhTBNV2X+IdGvxBFH1y
-         fK+5ZN/VvlM9QQdbVjpR/NIwY+8AMCdxIVrtg0XzZJfkND5JxGCfEx2RKKAaqwk04G6+
-         2AoA==
+        d=cloudflare.com; s=google;
+        h=references:user-agent:from:to:cc:subject:in-reply-to:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=nBP2VfV4oa1iJyfM51a4xj6vNn8XwpiH4pVkXS0RoXQ=;
+        b=vpwAMIrSjYdRvxVQWmTm9HbTiDVfGQsfzNDdZ4Bg7xI+evoRc24MEFJu/FJQK0IcX8
+         Q1l2f+5+n62a5UJIdkYDpTHhI22lPuQQY8SuHVFmmHdpeV/vC45zL2mD8U7Q54ThCAbk
+         OvuogOjgfWAZv06wUCeOh7LqVjDqqzwOp4Fpg=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=D4r2Cm5wi36MAtNGLmZUx5fSiHgdYZQwfc9/LYxhsaU=;
-        b=MaB2B56baYTz8AxHqMz1ZrrJ4UTjcmYQ5TvLXdwiadnDrXGbdcMg2tIYL/p1rQ6Vfk
-         1X8uLH86H1QeUqUWRBuhLJSkDL2kaR2+kdy14GlHnut+6Ox8V+6cohvU/EwsCDbgmZ2i
-         XEJW4El0F+BRr09QSRxyV26u1hxmqeVf5t4cMNahRiYDJkxOiH3cEfqnl0DgyijmWgOn
-         L33KX+yiY3nxbeMm65cpqqFRKmWnBOzq4zjatUJKOKw5EmqLEtr0IY+Espd/Mmf/eP8d
-         T0zVmKnJLMJt/WaeN0thAlH/A+3UxHsqCFOb+OXIF21fwBhSz1sReaZMpQLvcTTLR62d
-         S87Q==
-X-Gm-Message-State: AOAM531A5JBLMyW5jRY/HlhEmx96OYLRq3kn69BUVhvZNpE9msoSa64D
-        9L0KnvnY6GNH1ASXBrBDCWFTKtZt32DqoNmrjj8=
-X-Google-Smtp-Source: ABdhPJzFhppfyjoyfvL1dN7Z6XOVKf8ajHI6Pa8b5iQytTEu8cPPhacLIYMFjE9aNhGmY3WK5UkKVvt4UREhWDfRwcY=
-X-Received: by 2002:a25:688c:: with SMTP id d134mr20599838ybc.477.1611226774349;
- Thu, 21 Jan 2021 02:59:34 -0800 (PST)
+        h=x-gm-message-state:references:user-agent:from:to:cc:subject
+         :in-reply-to:date:message-id:mime-version:content-transfer-encoding;
+        bh=nBP2VfV4oa1iJyfM51a4xj6vNn8XwpiH4pVkXS0RoXQ=;
+        b=Y9BEvyVzaX+Pzu50wtK5pZBEXYMG5ZJ9lATB0rQe1BHZqnzYmdLBS/7pHOH7/7kaOe
+         /W3p2gR3p6JcngYeReYmppJF8vpVy9UrK6rjQWobKHcqwjmEtaPtL+glnYlgljaGvNjE
+         9FI2BBICwIP9j5DKYMkQ4DyQFZOgpE+Njm5WvwBJnBK266SbjYR6K6s1HwV6iPuqWpUV
+         VmQr0aQQYCuJWgY8JMipiJNeQHYgSCPdAPe0zcDxdquo/UHJRX33dnXEJxr4G3zNP/5A
+         RJD73LhNjEETHDFDrvqNovM85sogoAIQDNuDcJaZ27WVEr8usP6a1owbc2n40s/tOlk6
+         Qodg==
+X-Gm-Message-State: AOAM53193wSksh3dz8EsadDh2F61+wFzV3qhh7WnPngyFdMkPXTM44hF
+        fYa46ox0JZMaDoAhpCqKn9Zq2Q==
+X-Google-Smtp-Source: ABdhPJydRY8ZoGgatPHI1EQSkuLDcDXfldj8WxypqW3YPCpegsaeG8IVlBQF9dqGCtW2q7a9VdusTw==
+X-Received: by 2002:a17:906:110a:: with SMTP id h10mr4539949eja.190.1611227676443;
+        Thu, 21 Jan 2021 03:14:36 -0800 (PST)
+Received: from cloudflare.com (83.24.5.113.ipv4.supernova.orange.pl. [83.24.5.113])
+        by smtp.gmail.com with ESMTPSA id j25sm2637309edy.13.2021.01.21.03.14.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 Jan 2021 03:14:35 -0800 (PST)
+References: <afb4e544-d081-eee8-e792-a480364a6572@mildred.fr>
+ <CAADnVQJnX-+9u--px_VnhrMTPB=O9Y0LH9T7RJbqzfLchbUFvg@mail.gmail.com>
+User-agent: mu4e 1.1.0; emacs 27.1
+From:   Jakub Sitnicki <jakub@cloudflare.com>
+To:     Shanti Lombard =?utf-8?Q?n=C3=A9e_Bouchez-Mongard=C3=A9?= 
+        <shanti20210120@mildred.fr>
+Cc:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>
+Subject: Re: More flexible BPF socket inet_lookup hooking after listening
+ sockets are dispatched
+In-reply-to: <CAADnVQJnX-+9u--px_VnhrMTPB=O9Y0LH9T7RJbqzfLchbUFvg@mail.gmail.com>
+Date:   Thu, 21 Jan 2021 12:14:34 +0100
+Message-ID: <87r1me4k4l.fsf@cloudflare.com>
 MIME-Version: 1.0
-References: <20210121092026.3261412-1-mudongliangabcd@gmail.com> <YAlORNKQ4y7bzYeZ@kroah.com>
-In-Reply-To: <YAlORNKQ4y7bzYeZ@kroah.com>
-From:   =?UTF-8?B?5oWV5Yas5Lqu?= <mudongliangabcd@gmail.com>
-Date:   Thu, 21 Jan 2021 18:59:08 +0800
-Message-ID: <CAD-N9QXhD48-6GbpCUYuxPKEbkzGgGTaFKQ8TAaQ93WfD_sT2A@mail.gmail.com>
-Subject: Re: [PATCH] rt2x00: reset reg earlier in rt2500usb_register_read
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     davem@davemloft.net, helmut.schaa@googlemail.com,
-        kvalo@codeaurora.org, linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        sgruszka@redhat.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 21, 2021 at 5:49 PM Greg KH <gregkh@linuxfoundation.org> wrote:
+On Wed, Jan 20, 2021 at 10:06 PM CET, Alexei Starovoitov wrote:
+> cc-ing the right folks
 >
-> On Thu, Jan 21, 2021 at 05:20:26PM +0800, Dongliang Mu wrote:
-> > In the function rt2500usb_register_read(_lock), reg is uninitialized
-> > in some situation. Then KMSAN reports uninit-value at its first memory
-> > access. To fix this issue, add one reg initialization in the function
-> > rt2500usb_register_read and rt2500usb_register_read_lock
-> >
-> > BUG: KMSAN: uninit-value in rt2500usb_init_eeprom rt2500usb.c:1443 [inline]
-> > BUG: KMSAN: uninit-value in rt2500usb_probe_hw+0xb5e/0x22a0 rt2500usb.c:1757
-> > CPU: 0 PID: 3369 Comm: kworker/0:2 Not tainted 5.3.0-rc7+ #0
-> > Hardware name: Google Compute Engine
-> > Workqueue: usb_hub_wq hub_event
-> > Call Trace:
-> >  __dump_stack lib/dump_stack.c:77 [inline]
-> >  dump_stack+0x191/0x1f0 lib/dump_stack.c:113
-> >  kmsan_report+0x162/0x2d0 mm/kmsan/kmsan_report.c:109
-> >  __msan_warning+0x75/0xe0 mm/kmsan/kmsan_instr.c:294
-> >  rt2500usb_init_eeprom wireless/ralink/rt2x00/rt2500usb.c:1443 [inline]
-> >  rt2500usb_probe_hw+0xb5e/0x22a0 wireless/ralink/rt2x00/rt2500usb.c:1757
-> >  rt2x00lib_probe_dev+0xba9/0x3260 wireless/ralink/rt2x00/rt2x00dev.c:1427
-> >  rt2x00usb_probe+0x7ae/0xf60 wireless/ralink/rt2x00/rt2x00usb.c:842
-> >  rt2500usb_probe+0x50/0x60 wireless/ralink/rt2x00/rt2500usb.c:1966
-> >  ......
-> >
-> > Local variable description: ----reg.i.i@rt2500usb_probe_hw
-> > Variable was created at:
-> >  rt2500usb_register_read wireless/ralink/rt2x00/rt2500usb.c:51 [inline]
-> >  rt2500usb_init_eeprom wireless/ralink/rt2x00/rt2500usb.c:1440 [inline]
-> >  rt2500usb_probe_hw+0x774/0x22a0 wireless/ralink/rt2x00/rt2500usb.c:1757
-> >  rt2x00lib_probe_dev+0xba9/0x3260 wireless/ralink/rt2x00/rt2x00dev.c:1427
-> >
-> > Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
-> > ---
-> >  drivers/net/wireless/ralink/rt2x00/rt2500usb.c | 2 ++
-> >  1 file changed, 2 insertions(+)
-> >
-> > diff --git a/drivers/net/wireless/ralink/rt2x00/rt2500usb.c b/drivers/net/wireless/ralink/rt2x00/rt2500usb.c
-> > index fce05fc88aaf..f6c93a25b18c 100644
-> > --- a/drivers/net/wireless/ralink/rt2x00/rt2500usb.c
-> > +++ b/drivers/net/wireless/ralink/rt2x00/rt2500usb.c
-> > @@ -48,6 +48,7 @@ static u16 rt2500usb_register_read(struct rt2x00_dev *rt2x00dev,
-> >                                  const unsigned int offset)
-> >  {
-> >       __le16 reg;
-> > +     memset(&reg, 0, sizeof(reg));
->
-> As was pointed out, just set reg = 0 on the line above please.
+> On Wed, Jan 20, 2021 at 12:30 PM Shanti Lombard n=C3=A9e Bouchez-Mongard=
+=C3=A9
+> <shanti20210120@mildred.fr> wrote:
+>>
+>> Hello,
+>>
+>> I believe this is my first time here, so please excuse me for mistakes.
+>> Also, please Cc me on answers.
+>>
+>> Background : I am currently investigating putting network services on a
+>> machine without using network namespace but still keep them isolated. To
+>> do that, I allocated a separate IP address (127.0.0.0/8 for IPv4 and ULA
+>> prefix below fd00::/8 for IPv6) and those services are forced to listen
+>> to this IP address only. For some, I use seccomp with a small utility I
+>> wrote at <https://github.com/mildred/force-bind-seccomp>. Now, I still
+>> want a few selected services (reverse proxies) to listed for public
+>> address but they can't necessarily listen with INADDR_ANY because some
+>> other services might listen on the same port on their private IP. It
+>> seems SO_REUSEADDR can be used to circumvent this on BSD but not on
+>> Linux. After much research, I found Cloudflare recent contribution
+>> (explained here <https://blog.cloudflare.com/its-crowded-in-here/>)
+>> about inet_lookup BPF programs that could replace INADDR_ANY listening.
 
-I've sent another patch.
+There is also documentation in the kernel:
 
-BTW, I set "--subject-prefix="PATCH v2" in my git-send-mail command.
-But it does not show "v2" in the subject of the new email.
+https://www.kernel.org/doc/html/latest/bpf/prog_sk_lookup.html
 
->
-> >       rt2x00usb_vendor_request_buff(rt2x00dev, USB_MULTI_READ,
-> >                                     USB_VENDOR_REQUEST_IN, offset,
-> >                                     &reg, sizeof(reg));
->
-> Are you sure this is valid to call this function with a variable on the
-> stack like this?  How did you test this change?
+>> The inet_lookup BPF programs are hooking up in socket selection code for
+>> incoming packets after connected packets are dispatched to their
+>> respective sockets but before any new connection is dispatched to a
+>> listening socket. This is well explained in the blog post.
+>>
+>> However, I believe that being able to hook up later in the process could
+>> have great use cases. With its current position, the BPF program can
+>> override any listening socket too easily. It can also be surprising for
+>> administrators used to the socket API not understanding why their
+>> listening socket does not receives any packet.
+>>
+>> Socket selection process (in net/ipv4/inet_hashtables.c function
+>> __inet_lookup_listener):
+>>
+>> - A: look for already connected sockets (before __inet_lookup_listener)
+>> - B: look for inet_lookup BPF programs
+>> - C: look for listening sockets specifying address and port
+>> - D: here, provide another inet_lookup BPF hook
+>> - E: look for sockets listening using INADDR_ANY
+>> - F: here, provide another inet_lookup BPF hook
+>>
+>> In position D, a BPF program could implement socket listening like
+>> INADDR_ANY listening would do but without the limitation that the port
+>> must not be listened on by another IP address
+>>
+>> In position F, a BPF program could redirect new connection attempts to a
+>> socket of its choice, allowing any connection attempt to be intercepted
+>> if not catched before by an already listening socket.
 
-First, I did not do any changes to this call. Second, the programming
-style to pass the pointer of stack variable as arguments is not really
-good. Third, I check this same code file, there are many code snippets
-with such programming style. :(
+Existing hook is placed before regular listening/unconnected socket
+lookup to prevent port hijacking on the unprivileged range.
 
->
-> thanks,
->
-> greg k-h
+>> The suggestion above would work for my use case, but there is another
+>> possibility to make the same use cases possible : implement in BPF (or
+>> allow BPF to call) the C and E steps above so the BPF program can
+>> supplant the kernel behavior. I find this solution less elegant and it
+>> might not work well in case there are multiple inet_lookup BPF programs
+>> installed.
+
+Having a BPF helper available to BPF sk_lookup programs that looks up a
+socket by packet 4-tuple and netns ID in tcp/udp hashtables sounds
+reasonable to me. You gain the flexibility that you describe without
+adding code on the hot path.
+
+[...]
