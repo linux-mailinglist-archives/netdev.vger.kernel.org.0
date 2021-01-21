@@ -2,112 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 376802FE0E1
-	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 05:40:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1691E2FE0D6
+	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 05:39:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727108AbhAUEjK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jan 2021 23:39:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59120 "EHLO
+        id S1727327AbhAUEhm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jan 2021 23:37:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727139AbhAUEFw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 23:05:52 -0500
-Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 74503C0613C1
-        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 20:04:55 -0800 (PST)
-Received: by mail-pg1-x52b.google.com with SMTP id 15so522612pgx.7
-        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 20:04:55 -0800 (PST)
+        with ESMTP id S1727336AbhAUEGF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 23:06:05 -0500
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4337C0613D6
+        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 20:05:15 -0800 (PST)
+Received: by mail-pj1-x1034.google.com with SMTP id m5so751560pjv.5
+        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 20:05:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=Z4961jt1yqYw+6AjM3/ZcftAy8KN1wVKDXeUsQv84XQ=;
-        b=hLW9aUbDZEMnDt3hhOer9sdZ5cKF/ujjVMVDEOFGYSmLhjsDRdIwRF6SEatQhag+lQ
-         T/w8Dki/GX0+Yo8sE7cSTBC4ak7lo+pt3SAKo5Ts0Px3Dqst1gaqt7FAKsEfN0UPYPED
-         0sb82DYS1tSnMK+QHDXTa4NAw6eoWimoTsSIse9EL26rSIkj9pPk6ktksFKkQ2GyeuR6
-         orzO6Vi1mz66spsl0ZfpQZE/ePMi9N99kPXFFwgSQpDgGgKLeoxi8gMHjCEb1MtauZ5w
-         IQg5iLg4EVIFpXuHLm4fc3DekKUrduXJPRxOFFjFjMT5ERuf5x2NGuysw4l/vNi6EDDg
-         sikA==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=PrXnwIzdiZa8p1+4jAjt67vrk+owSCcZ6LP6GOg/4/w=;
+        b=eGvGVu3njic6ihiPEjxSrRSu8hu2AjrfGdH++NeguybDMGDX9u/JSBos27eVmzLs96
+         wPeX1ggVV23xi/PhzjU4LNrcKREqZIm2I5Emwbj50aLOtfStj3OGDnZgEgd4G23LUaqY
+         rsYygbQ76b5FYodOF5Gy/4ln0WAlYzn3lLBONp8GttPpHC21PddwEg2cqFU1DaHwOjd5
+         g35jQ6k8A9GtWEuzJeOtNCE9cjyDFrUb1jYMhWyVyMLAAYu2kGylisxpknKMZkNpciHT
+         WtjPmHZc+ug2w+DEI4vK/NfRMe4D87EhL5xLlA27Nn4QpL+nXojQS0SuHky2cX8wy0vS
+         g3KA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=Z4961jt1yqYw+6AjM3/ZcftAy8KN1wVKDXeUsQv84XQ=;
-        b=kBBRqz8y0KAiGAfzHMMwMNODdr9o3ByoIuFOnHTcR63S9I4HbMVIYsFK1OZEVYIDjF
-         LF975pGbF15YzSLqRRJsPyTjbSIb/6vVLBrcFzsNQ8py9ktRoj2oyYCS10VZC32D+JjD
-         PBWVPhfcjhEvvbccx3HWo8SpG9s805YERvpHvYso0cH3pOOlfakkC3zrQ7XMhZ1g8BG5
-         33F0vi2vO7I15SJl/UHlia3v0X3L4HHQllFrDkXR4F/oaNsm+RERJjrzz+rUq5Z8rg9d
-         7Y4oKMlLPYkjs9icblFv6ZrSk9UxBExHTfRf1IHFo9vHK4CTwH/BX0pCYH3M9ZzJoPJ8
-         Mtow==
-X-Gm-Message-State: AOAM533r+ZZ16ovXzMJWdKZT6qOLc2orLAj3d7hy9TVS9JfwvJbIT0ts
-        GCqGg8320yn4EPJaBoo1zCY=
-X-Google-Smtp-Source: ABdhPJz8FZmBmeWwQjzgEE9fIQXCaZkLesnOHFCYwp5jy8a8K1V+bC1sLZEjfLd4j9qWGeoYCoIN2g==
-X-Received: by 2002:a62:c301:0:b029:1b6:74fb:696e with SMTP id v1-20020a62c3010000b02901b674fb696emr12242531pfg.59.1611201894990;
-        Wed, 20 Jan 2021 20:04:54 -0800 (PST)
-Received: from hoboy.vegasvil.org (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
-        by smtp.gmail.com with ESMTPSA id x19sm3851924pfp.207.2021.01.20.20.04.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Jan 2021 20:04:54 -0800 (PST)
-Date:   Wed, 20 Jan 2021 20:04:51 -0800
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=PrXnwIzdiZa8p1+4jAjt67vrk+owSCcZ6LP6GOg/4/w=;
+        b=BQ8ZuA+Hevc31PR+AwSG5xQ4c0cZnOP6VjqU5IriF9zWJFMac6VC9jSGKn0KLZDdGK
+         qdel7k2yBySdfSmVSefh5pRugbBthQDSUopY+1y6D8kOBClcJ73Y4+Cu/iA3ejlhfLyC
+         uc/v02AC/vEXLyy3IcfGdMJlhAscla34ZaiNmxE4b/icZsRajbj9CFyRRYPL77d5OPad
+         a/W9onE+c9mfpRCZUr8iFzhPavtOv/RftYBrK+rdkvXVbe0ZDTAE2Hy2j3NgAHQLs3DZ
+         RQ962z4U29IblrWQ+Dx3dp6zBsZvPKioDIf5zyyJL6pX01R3xRfImoGGk3zmPBUj7s57
+         M9qQ==
+X-Gm-Message-State: AOAM531obK6zdoOV/b3OR5uAdU+ElUGNqF9me7f3ONJEOqu+Bd+JB2fe
+        Qr/9rwIg+9SJmrNcFTvVLsg=
+X-Google-Smtp-Source: ABdhPJzF7AnY4vIk02VAnmwc/MVZPiov4GvGMGA/ggo7+jDktn/uBxiYcTz+SjElgCYdciuDq5JtPw==
+X-Received: by 2002:a17:90b:11d8:: with SMTP id gv24mr9322536pjb.232.1611201915268;
+        Wed, 20 Jan 2021 20:05:15 -0800 (PST)
+Received: from [10.230.29.30] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id i67sm3902207pfc.153.2021.01.20.20.05.11
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 20 Jan 2021 20:05:14 -0800 (PST)
+Subject: Re: [PATCH v5 net-next 09/10] net: dsa: add a second tagger for
+ Ocelot switches based on tag_8021q
+To:     Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Subject: Re: [PATCH net-next] net: ethtool: allow MAC drivers to override
- ethtool get_ts_info
-Message-ID: <20210121040451.GB14465@hoboy.vegasvil.org>
-References: <E1kyYfI-0004wl-Tf@rmk-PC.armlinux.org.uk>
- <20210114125506.GC3154@hoboy.vegasvil.org>
- <20210114132217.GR1551@shell.armlinux.org.uk>
- <20210114133235.GP1605@shell.armlinux.org.uk>
- <20210114172712.GA13644@hoboy.vegasvil.org>
- <20210114173111.GX1551@shell.armlinux.org.uk>
- <20210114223800.GR1605@shell.armlinux.org.uk>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        Hongbo Wang <hongbo.wang@nxp.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Po Liu <po.liu@nxp.com>, Yangbo Lu <yangbo.lu@nxp.com>,
+        Maxim Kochetkov <fido_max@inbox.ru>,
+        Eldar Gasanov <eldargasanov2@gmail.com>,
+        Andrey L <al@b4comtech.com>,
+        Tobias Waldekranz <tobias@waldekranz.com>,
+        UNGLinuxDriver@microchip.com
+References: <20210121023616.1696021-1-olteanv@gmail.com>
+ <20210121023616.1696021-10-olteanv@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <7cd5d30d-e93a-9651-61f1-9f406d7f11a1@gmail.com>
+Date:   Wed, 20 Jan 2021 20:05:10 -0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210114223800.GR1605@shell.armlinux.org.uk>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20210121023616.1696021-10-olteanv@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 14, 2021 at 10:38:00PM +0000, Russell King - ARM Linux admin wrote:
 
-> So, I think the only way to prevent a regression with the code as
-> it is today is that we _never_ support PTP on Marvell PHYs - because
-> doing so _will_ break the existing MVPP2 driver's implementation and
-> cause a regression.
 
-The situation isn't as bad as it seems.
-
-For one thing, mvpp2 incorrectly selects NETWORK_PHY_TIMESTAMPING.
-It really shouldn't.  I'm submitting a fix soon.
-
-As long as the new PHY driver (or at least the PTP bit) depends on
-NETWORK_PHY_TIMESTAMPING, then that allows users who _really_ want
-that to enable the option at compile time.  This option adds extra
-checks into the networking hot path, and almost everyone should avoid
-enabling it.
-
-> Right now, there is no option: if a PHY supports PTP, then the only
-> option is to use the PHYs PTP. Which is utterly rediculous.
+On 1/20/2021 6:36 PM, Vladimir Oltean wrote:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
 > 
-> Unless you can see a way around it. Because I can't.
+> There are use cases for which the existing tagger, based on the NPI
+> (Node Processor Interface) functionality, is insufficient.
+> 
+> Namely:
+> - Frames injected through the NPI port bypass the frame analyzer, so no
+>   source address learning is performed, no TSN stream classification,
+>   etc.
+> - Flow control is not functional over an NPI port (PAUSE frames are
+>   encapsulated in the same Extraction Frame Header as all other frames)
+> - There can be at most one NPI port configured for an Ocelot switch. But
+>   in NXP LS1028A and T1040 there are two Ethernet CPU ports. The non-NPI
+>   port is currently either disabled, or operated as a plain user port
+>   (albeit an internally-facing one). Having the ability to configure the
+>   two CPU ports symmetrically could pave the way for e.g. creating a LAG
+>   between them, to increase bandwidth seamlessly for the system.
+> 
+> So there is a desire to have an alternative to the NPI mode. This change
+> keeps the default tagger for the Seville and Felix switches as "ocelot",
+> but it can be changed via the following device attribute:
+> 
+> echo ocelot-8021q > /sys/class/<dsa-master>/dsa/tagging
+> 
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-I still think the original and best method is to hide the two (and
-with your new driver, three) esoteric PHY time stamping drivers behind
-a Kconfig option, and structure the code to favor PHY devices.
-
-The idea to favor the MACs, from back in July, doesn't really change
-the fundamental limitations that
-
-- MAC and PHY time stamping cannot work simultaneously, and
-
-- Users of PHY devices (representing a tiny minority) must enable the
-  otherwise uninteresting NETWORK_PHY_TIMESTAMPING option at compile
-  time.
-
-Thanks,
-Richard
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
