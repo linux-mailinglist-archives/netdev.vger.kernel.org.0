@@ -2,224 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 24A9D2FE25A
-	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 07:12:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 098632FE236
+	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 07:03:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726208AbhAUGL4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jan 2021 01:11:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42044 "EHLO
+        id S1726282AbhAUGCi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jan 2021 01:02:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726310AbhAUCpu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 21:45:50 -0500
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFA71C061786
-        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 18:36:36 -0800 (PST)
-Received: by mail-ej1-x634.google.com with SMTP id 6so516899ejz.5
-        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 18:36:36 -0800 (PST)
+        with ESMTP id S1728422AbhAUDDl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 22:03:41 -0500
+Received: from mail-pl1-x62c.google.com (mail-pl1-x62c.google.com [IPv6:2607:f8b0:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43C09C0613C1
+        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 19:02:55 -0800 (PST)
+Received: by mail-pl1-x62c.google.com with SMTP id r4so455601pls.11
+        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 19:02:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=D75mTe+LjZ1hczQ8JVJiFluJINJ3eH+8ioO5cMn4/eo=;
-        b=a36FMurlweU5S1Ww2mwuOq7k1poz0KZhttRN+qf4mrW/0V+9GjNZV6Evmp/nwVTXym
-         OVxmN0IdXpayX+oHA+Y6bel6J82UvYtkG5VaXMh2jaamByYeVjuqSlc96nfLhJvJjIeL
-         0SwcjMRAcBmK2ZUWT7IIFc9ERByZ9dFfG8seTzuuqmN77zdgv5s9mhAqvJjphZCB7FxO
-         ojCFgHjOX01nn/igTSiM6N3pQoPWJ2zew8M+gvlmze24sE/EiESgOObuPLjEIXD4xIYK
-         WSS76ONg+PHOz0H59ReX0s0YkDqA8k++DM5rm2HvZ3HkyZ/C/Om3q2VDLEgqHTN9vDhc
-         rb6Q==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=wh2a2Xn39GYNgJZezJYHOvMLBQHaR5tyeVnHT5TJGCg=;
+        b=MOcwkFzPtHDo1ypGdKhVB4HH1iW8wtq5gwit7Y6DQ+C31PgihJZh7k52Via1AFsre9
+         Cz6YYgpzRO0CTpSzbIdw5zTdQnFDz3eRBbFZ0lKZufNROV0ab3Ew23xU8oJGxCB1HzaC
+         If+XeAE/3sOtIHfmNE0N98LSH+6C6EnRrPqYh9lYSLo9KvvnQnw2PQSOa3kCO/gfyA4v
+         Hupk5j6cJsu0KPkJQ5luKmGj0H0puPIpiZDQ9qHXnjktMlrJ13R4uIJXa6izDXelBMeo
+         P6E3NVYoIvKx3g6qBmiVtcBVnbOZEyQGWzeePmWXtpQdDfFB7JHoTYzT0i5v32xC+XeE
+         Tr5g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=D75mTe+LjZ1hczQ8JVJiFluJINJ3eH+8ioO5cMn4/eo=;
-        b=qShwWNHF8rXheEByuV3e65HpdNp6rc1ekwnGKKPsGO2akHKvauVc0hiEaPojgGQLn/
-         pZWkXmN0gMK0ExhOytKFPbY7iV6he0RcXZt+DCKlyr5nrdONbhuTHXPBOOa6WG74YA9p
-         2HhpHaYbSIub7fZ7sQXIzSslsrCcvoI8oAJpGi1Kwnk2Y9zCsWLDM8BCsmeKeEei8N8S
-         umyM4EV7TR6KfEnZ+dVgpE2R7Lo/3m3lwQvi+X6tZ+AdWAbml3X/ZhWKx6nrhXUf8atP
-         qYoGFKpShelocoL54/txQCSr8Hw6IPesgMzoE5RIvQrOuUGp5+w1GQv6+P8in08AzS8d
-         7KWw==
-X-Gm-Message-State: AOAM533A/ipXyVCc4Lj2W1rjkojHGb04+svkJ+4Uo7T6g7iKlrU4RX0s
-        UR39s23R/uxMr4zra23ZdWw=
-X-Google-Smtp-Source: ABdhPJwRv/FlTG/zbSSPof5i4wyvgsgVmKUw4OcA2X6CQwMWrNy0PpOJhrxZrll/UqPeldJpddrl/w==
-X-Received: by 2002:a17:906:2087:: with SMTP id 7mr8100248ejq.232.1611196595400;
-        Wed, 20 Jan 2021 18:36:35 -0800 (PST)
-Received: from localhost.localdomain (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id k22sm2025787edv.33.2021.01.20.18.36.33
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=wh2a2Xn39GYNgJZezJYHOvMLBQHaR5tyeVnHT5TJGCg=;
+        b=X9RJlK4CfuqESpJpS222y/AAe8jhNdB/z44O/cqGLyXGe5x9kOSO4RyrlUA9qqF1Z0
+         PUnVGYw2XDLkfTXuvknGhSqbtElavpp4bZrlfP7q9JCaIWwrpF8sCxyADS+VLgg4hojF
+         oecd4SKn+ZhOqLk6N3fr7ido2Q2dbwg3AUkaoHw/ePDf7wK4MU8KjKZwGki8R0x8ydyL
+         6Mqnwcs9D7MpsKGGyUoxvIcP92pQ/MVgf2N3+DnyMYHhtWD8Q3hgyiworrrH7lNR5EEi
+         HlGHy9/hWuErvGfdyvK2rPVF+nYrIXv9IPrh17AFbjFV2HtuG5Vq1CR9krZ7eE7pyHfK
+         4/eg==
+X-Gm-Message-State: AOAM530vOdlYvd2ZP4yxKp/hYCamL9nAlXVRkLolQgTeLb3FRpMWXcmz
+        KFbEQHtndk3otH6cQvD5t8k=
+X-Google-Smtp-Source: ABdhPJxpKfaArfxzrLDnN2HyPBG2AYn5mTAKfUNsJnE3BG9pg8GeiRTko3guy04ZAhIVHGZqDAlLZA==
+X-Received: by 2002:a17:90a:d990:: with SMTP id d16mr9075177pjv.16.1611198174737;
+        Wed, 20 Jan 2021 19:02:54 -0800 (PST)
+Received: from Leo-laptop-t470s ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id o190sm3642617pga.2.2021.01.20.19.02.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Jan 2021 18:36:34 -0800 (PST)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-        Hongbo Wang <hongbo.wang@nxp.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Po Liu <po.liu@nxp.com>, Yangbo Lu <yangbo.lu@nxp.com>,
-        Maxim Kochetkov <fido_max@inbox.ru>,
-        Eldar Gasanov <eldargasanov2@gmail.com>,
-        Andrey L <al@b4comtech.com>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        UNGLinuxDriver@microchip.com
-Subject: [PATCH v5 net-next 06/10] net: dsa: document the existing switch tree notifiers and add a new one
-Date:   Thu, 21 Jan 2021 04:36:12 +0200
-Message-Id: <20210121023616.1696021-7-olteanv@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210121023616.1696021-1-olteanv@gmail.com>
-References: <20210121023616.1696021-1-olteanv@gmail.com>
+        Wed, 20 Jan 2021 19:02:54 -0800 (PST)
+Date:   Thu, 21 Jan 2021 11:02:43 +0800
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Ido Schimmel <idosch@idosch.org>, Ido Schimmel <idosch@nvidia.com>,
+        netdev@vger.kernel.org, Jiri Pirko <jiri@nvidia.com>,
+        Nikolay Aleksandrov <nikolay@nvidia.com>,
+        "David S . Miller" <davem@davemloft.net>
+Subject: Re: [PATCH net] selftests/net: set link down before enslave
+Message-ID: <20210121030243.GJ1421720@Leo-laptop-t470s>
+References: <20210120102947.2887543-1-liuhangbin@gmail.com>
+ <20210120104210.GA2602142@shredder.lan>
+ <20210120143847.GI1421720@Leo-laptop-t470s>
+ <20210120194328.GA2628348@shredder.lan>
+ <20210120174644.083de7fa@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210120174644.083de7fa@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+On Wed, Jan 20, 2021 at 05:46:51PM -0800, Jakub Kicinski wrote:
+> On Wed, 20 Jan 2021 21:43:28 +0200 Ido Schimmel wrote:
+> > On Wed, Jan 20, 2021 at 10:38:47PM +0800, Hangbin Liu wrote:
+> > > Hi Ido,
+> > > 
+> > > On Wed, Jan 20, 2021 at 12:42:10PM +0200, Ido Schimmel wrote:  
+> > > > > diff --git a/tools/testing/selftests/net/rtnetlink.sh b/tools/testing/selftests/net/rtnetlink.sh
+> > > > > index c9ce3dfa42ee..a26fddc63992 100755
+> > > > > --- a/tools/testing/selftests/net/rtnetlink.sh
+> > > > > +++ b/tools/testing/selftests/net/rtnetlink.sh
+> > > > > @@ -1205,6 +1205,8 @@ kci_test_bridge_parent_id()
+> > > > >  	dev20=`ls ${sysfsnet}20/net/`
+> > > > >  
+> > > > >  	ip link add name test-bond0 type bond mode 802.3ad
+> > > > > +	ip link set dev $dev10 down
+> > > > > +	ip link set dev $dev20 down  
+> > > > 
+> > > > But these netdevs are created with their administrative state set to
+> > > > 'DOWN'. Who is setting them to up?  
+> > > 
+> > > Would you please point me where we set the state to 'DOWN'? Cause on my
+> > > host it is init as UP:
+> > > 
+> > > ++ ls /sys/bus/netdevsim/devices/netdevsim10/net/
+> > > + dev10=eth3
+> > > ++ ls /sys/bus/netdevsim/devices/netdevsim20/net/
+> > > + dev20=eth4
+> > > + ip link add name test-bond0 type bond mode 802.3ad
+> > > + ip link show eth3
+> > > 66: eth3: <BROADCAST,NOARP,UP,LOWER_UP> mtu 1500 qdisc noqueue state UNKNOWN mode DEFAULT group default qlen 1000
+> > >     link/ether 1e:52:27:5f:a5:3c brd ff:ff:ff:ff:ff:ff  
+> > 
+> > I didn't have time to look into this today, but I suspect the problem is
+> > either:
+> > 
+> > 1. Some interface manager on your end that is setting these interfaces
+> > up after they are created
+> 
+> This must be the case, the kernel doesn't open/up devices by itself.
 
-The existence of dsa_broadcast has generated some confusion in the past:
-https://www.mail-archive.com/netdev@vger.kernel.org/msg365042.html
+Ah, yes, My bad. I found NetworkManager enabled it by default.
 
-So let's document the existing dsa_port_notify and dsa_broadcast
-functions and explain when each of them should be used.
-
-Also, in fact, the in-between function has always been there but was
-lacking a name, and is the main reason for this patch: dsa_tree_notify.
-Refactor dsa_broadcast to use it.
-
-This patch also moves dsa_broadcast (a top-level function) to dsa2.c,
-where it really belonged in the first place, but had no companion so it
-stood with dsa_port_notify.
-
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
-Changes in v5:
-Patch is new.
-
- net/dsa/dsa2.c     | 43 +++++++++++++++++++++++++++++++++++++++++++
- net/dsa/dsa_priv.h |  2 ++
- net/dsa/port.c     | 36 +++++++++++++-----------------------
- 3 files changed, 58 insertions(+), 23 deletions(-)
-
-diff --git a/net/dsa/dsa2.c b/net/dsa/dsa2.c
-index cc13549120e5..2953d0c1c7bc 100644
---- a/net/dsa/dsa2.c
-+++ b/net/dsa/dsa2.c
-@@ -21,6 +21,49 @@
- static DEFINE_MUTEX(dsa2_mutex);
- LIST_HEAD(dsa_tree_list);
- 
-+/**
-+ * dsa_tree_notify - Execute code for all switches in a DSA switch tree.
-+ * @dst: collection of struct dsa_switch devices to notify.
-+ * @e: event, must be of type DSA_NOTIFIER_*
-+ * @v: event-specific value.
-+ *
-+ * Given a struct dsa_switch_tree, this can be used to run a function once for
-+ * each member DSA switch. The other alternative of traversing the tree is only
-+ * through its ports list, which does not uniquely list the switches.
-+ */
-+int dsa_tree_notify(struct dsa_switch_tree *dst, unsigned long e, void *v)
-+{
-+	struct raw_notifier_head *nh = &dst->nh;
-+	int err;
-+
-+	err = raw_notifier_call_chain(nh, e, v);
-+
-+	return notifier_to_errno(err);
-+}
-+
-+/**
-+ * dsa_broadcast - Notify all DSA trees in the system.
-+ * @e: event, must be of type DSA_NOTIFIER_*
-+ * @v: event-specific value.
-+ *
-+ * Can be used to notify the switching fabric of events such as cross-chip
-+ * bridging between disjoint trees (such as islands of tagger-compatible
-+ * switches bridged by an incompatible middle switch).
-+ */
-+int dsa_broadcast(unsigned long e, void *v)
-+{
-+	struct dsa_switch_tree *dst;
-+	int err = 0;
-+
-+	list_for_each_entry(dst, &dsa_tree_list, list) {
-+		err = dsa_tree_notify(dst, e, v);
-+		if (err)
-+			break;
-+	}
-+
-+	return err;
-+}
-+
- /**
-  * dsa_lag_map() - Map LAG netdev to a linear LAG ID
-  * @dst: Tree in which to record the mapping.
-diff --git a/net/dsa/dsa_priv.h b/net/dsa/dsa_priv.h
-index 2ce46bb87703..3cc1e6d76e3a 100644
---- a/net/dsa/dsa_priv.h
-+++ b/net/dsa/dsa_priv.h
-@@ -283,6 +283,8 @@ void dsa_switch_unregister_notifier(struct dsa_switch *ds);
- /* dsa2.c */
- void dsa_lag_map(struct dsa_switch_tree *dst, struct net_device *lag);
- void dsa_lag_unmap(struct dsa_switch_tree *dst, struct net_device *lag);
-+int dsa_tree_notify(struct dsa_switch_tree *dst, unsigned long e, void *v);
-+int dsa_broadcast(unsigned long e, void *v);
- 
- extern struct list_head dsa_tree_list;
- 
-diff --git a/net/dsa/port.c b/net/dsa/port.c
-index f5b0f72ee7cd..a8886cf40160 100644
---- a/net/dsa/port.c
-+++ b/net/dsa/port.c
-@@ -13,31 +13,21 @@
- 
- #include "dsa_priv.h"
- 
--static int dsa_broadcast(unsigned long e, void *v)
--{
--	struct dsa_switch_tree *dst;
--	int err = 0;
--
--	list_for_each_entry(dst, &dsa_tree_list, list) {
--		struct raw_notifier_head *nh = &dst->nh;
--
--		err = raw_notifier_call_chain(nh, e, v);
--		err = notifier_to_errno(err);
--		if (err)
--			break;
--	}
--
--	return err;
--}
--
-+/**
-+ * dsa_port_notify - Notify the switching fabric of changes to a port
-+ * @dp: port on which change occurred
-+ * @e: event, must be of type DSA_NOTIFIER_*
-+ * @v: event-specific value.
-+ *
-+ * Notify all switches in the DSA tree that this port's switch belongs to,
-+ * including this switch itself, of an event. Allows the other switches to
-+ * reconfigure themselves for cross-chip operations. Can also be used to
-+ * reconfigure ports without net_devices (CPU ports, DSA links) whenever
-+ * a user port's state changes.
-+ */
- static int dsa_port_notify(const struct dsa_port *dp, unsigned long e, void *v)
- {
--	struct raw_notifier_head *nh = &dp->ds->dst->nh;
--	int err;
--
--	err = raw_notifier_call_chain(nh, e, v);
--
--	return notifier_to_errno(err);
-+	return dsa_tree_notify(dp->ds->dst, e, v);
- }
- 
- int dsa_port_set_state(struct dsa_port *dp, u8 state)
--- 
-2.25.1
-
+Thanks
+Hangbin
