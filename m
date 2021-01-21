@@ -2,92 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B33A72FE8EA
-	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 12:36:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CB8FF2FE8E8
+	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 12:36:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730285AbhAULfH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jan 2021 06:35:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42694 "EHLO
+        id S1730541AbhAULfo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jan 2021 06:35:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42892 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728019AbhAULeh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jan 2021 06:34:37 -0500
-Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C34B4C061575;
-        Thu, 21 Jan 2021 03:33:49 -0800 (PST)
-Received: by mail-yb1-xb30.google.com with SMTP id f6so1683034ybq.13;
-        Thu, 21 Jan 2021 03:33:49 -0800 (PST)
+        with ESMTP id S1728019AbhAULf0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jan 2021 06:35:26 -0500
+Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C4C1C061757
+        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 03:34:45 -0800 (PST)
+Received: by mail-io1-xd2d.google.com with SMTP id y19so3319365iov.2
+        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 03:34:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to:cc
-         :content-transfer-encoding;
-        bh=I+cG4Vp0KOKN+ozIhgZ8d42ujiCT1czKBVqBGfsh21E=;
-        b=QjcSscZscimEm9YXE5dIYpYuqYcpiIxJB+SPAUkEjYLDPYGtuYJyR1e/+YCFiR0qlC
-         pDFpMw5HFKmXcyWysd1FhVkkiwiw7v2DpYdv5H8Un0R46SL6yVpM67dXd67OIZFvtDXY
-         dpW0qo3HPREc7uTvFBrV2HliAUzJOjyhbXreHkpZ5NZFYN9Csb2Q44ryDKdkBdzsyg2Q
-         VoumBKLrxmHUMCdVBuY/16Za7bqRWVO3VlUPwEvpVv0UDSxxSDwErL3NRwzBqW76e0s+
-         zuu9JC1a8X6Oy6MTQX4f5jonI9y7EqxIF9LQv0q6d2eNgRwvrVEBR8JqQdMw10JJcxBZ
-         8o1g==
+        d=linaro.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=AOfcfp/MhGMtT1440C10QG9fDR6wkqPv5o4JL4EA7co=;
+        b=wSrkzHPbhhTDQdj9vvmzKkYBxOKlad62tbZD1hjt4DnQzceyvJE1xkZsYNhYItAhII
+         0+QKJy4xWp0Fe+ff2w/p3CgFoDz0rX0Fs9rA3jji+TFAIP7t1DKrrZRUCcdhDOi6eJFf
+         kRIwFenuMYVQiT//r2yNhrg4tmaUyltF4zHbm5yVuAB0P9xNTPg5GlnkGywYGjlrcsl2
+         NcNLpHSGfZG6tMtOzLNUwHgkQ9InyQfzW9yWmPOo4r76bZzFOBOCwIWapFr674ZhuHuB
+         +te8jOoL+KP0b1/C2m62tZiDKrYUuTmxuOF4P6aUpTYVBFeFfX4logJNU6+Y7wXVfxWo
+         LKpA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=I+cG4Vp0KOKN+ozIhgZ8d42ujiCT1czKBVqBGfsh21E=;
-        b=gPNofxltzAEugMNKrOdXE7iawBLU6dHZdTeRcHC+88MnZXjXEmrOh2E8hlwl/fIzqr
-         XUzW0qan3zp9gVtw7KyIy/iLGkX9k+eXtaHJdygoNuMo8ZN4zHA6Hm04e1WMSe0oI297
-         6vlg1rQImp/mXMbxY6RewVihd+y33WAFYv6Zv0YlzaqoBaWz6uYFX5I59ToOKmesXG3W
-         8PvCEQDaBZEXzrOR5SS61nbvoCBfYOe/V1KbRx9ab5HRGPM01l853ZKEZFdpvHz+AfbE
-         sIlwvE2lpj6gq6Yv3i93ZkKY94oM0dC+Qcy75UAQ9rysj7uUKF+Klpehi+CJd6DRZ6U6
-         Ppeg==
-X-Gm-Message-State: AOAM532QcwkZXtM1C5+jou0L2SMAH0oZETSJ7ZYkLoAqlLqYmdIGfFJH
-        +kwiUlUMVOqa3L7BzbNZeb9GzDx4OeKzzL43xkQ=
-X-Google-Smtp-Source: ABdhPJx7CE06Ajx6zuXEJea156D0wq36xdLyL4K/2sS9pM1SZo8RtkpQgK8SOVM4JSKPoJSwnb6ypisyz8pGTv5Q+jY=
-X-Received: by 2002:a25:688c:: with SMTP id d134mr20778186ybc.477.1611228829127;
- Thu, 21 Jan 2021 03:33:49 -0800 (PST)
+        bh=AOfcfp/MhGMtT1440C10QG9fDR6wkqPv5o4JL4EA7co=;
+        b=NMDlVC8Nzlz2dCuvNk7Q44nEwqT+lVoCWJlqf8YPK57tS40OaPwt9oHMQFgVevjJqI
+         mv1ecHoMgXBuabWkw7PHSLm0tQwqnURXHBm2vOssOwHOWrqFlNiLhfehE/ezU+AP/R0s
+         hn7g6+AjnYrj4XZ/wEU+FN80sQX7Vx60zqw0DtmkuKrlQgRrhujaCHgjrJrJTEnh0HvC
+         BK8b5fCGXdAyo+T1tLQNGP8jJyMyc/aUFzKoeb0QRY0729PKkseV3MTIfMis3mQU55SW
+         ZHU3RZkV6wF6jwSEODt7m6/uOhTYc/CQZMqvB6hjlNCc9f15yhAIMTfzevFB7HniceqI
+         hNBQ==
+X-Gm-Message-State: AOAM5309jqI7wTP90sBeNrD412FmZm7IOcei3Vf0LDM/XnGnuk/xwm12
+        KkNunyWucWggVqnEeE11oWy0ig51tq1Tew==
+X-Google-Smtp-Source: ABdhPJwaXyJg7Jg6GECx87VVw8d8MQqZF0XkKhvwzoH/EZiVQh7tYkcQ+7UTAPtp8XnbRpqM4Qq9ig==
+X-Received: by 2002:a6b:fa13:: with SMTP id p19mr10168117ioh.119.1611228884514;
+        Thu, 21 Jan 2021 03:34:44 -0800 (PST)
+Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.googlemail.com with ESMTPSA id l20sm2344182ioh.49.2021.01.21.03.34.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 21 Jan 2021 03:34:43 -0800 (PST)
+Subject: Re: [PATCH net-next 3/5] net: ipa: have gsi_channel_update() return a
+ value
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, elder@kernel.org, evgreen@chromium.org,
+        bjorn.andersson@linaro.org, cpratapa@codeaurora.org,
+        subashab@codeaurora.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20210120220401.10713-1-elder@linaro.org>
+ <20210120220401.10713-4-elder@linaro.org>
+ <20210120213522.4042c051@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Alex Elder <elder@linaro.org>
+Message-ID: <ebc067ba-224c-6d3e-822a-2e578f0c7d25@linaro.org>
+Date:   Thu, 21 Jan 2021 05:34:42 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.0
 MIME-Version: 1.0
-From:   =?UTF-8?B?5oWV5Yas5Lqu?= <mudongliangabcd@gmail.com>
-Date:   Thu, 21 Jan 2021 19:33:23 +0800
-Message-ID: <CAD-N9QW6VGmAFPtJDcHahO=OQ=0Cy06-zaQf72mYL0=L_MEc_g@mail.gmail.com>
-Subject: "WARNING in cgroup_finalize_control" and "WARNING in
- cgroup_apply_control_disable" should be duplicate crash reports
-To:     andriin@fb.com, ast@kernel.org, bpf@vger.kernel.org,
-        cgroups@vger.kernel.org, christian@brauner.io,
-        Daniel Borkmann <daniel@iogearbox.net>, hannes@cmpxchg.org,
-        john.fastabend@gmail.com, kafai@fb.com, kpsingh@chromium.org,
-        linux-kernel <linux-kernel@vger.kernel.org>, lizefan@huawei.com,
-        netdev@vger.kernel.org, songliubraving@fb.com, tj@kernel.org,
-        yhs@fb.com
-Cc:     syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        syzkaller <syzkaller@googlegroups.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20210120213522.4042c051@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear kernel developers,
+On 1/20/21 11:35 PM, Jakub Kicinski wrote:
+> On Wed, 20 Jan 2021 16:03:59 -0600 Alex Elder wrote:
+>> Have gsi_channel_update() return the first transaction in the
+>> updated completed transaction list, or NULL if no new transactions
+>> have been added.
+>>
+>> Signed-off-by: Alex Elder <elder@linaro.org>
+> 
+>> @@ -1452,7 +1452,7 @@ void gsi_channel_doorbell(struct gsi_channel *channel)
+>>   }
+>>   
+>>   /* Consult hardware, move any newly completed transactions to completed list */
+>> -static void gsi_channel_update(struct gsi_channel *channel)
+>> +struct gsi_trans *gsi_channel_update(struct gsi_channel *channel)
+> 
+> Why did it lose the 'static'?
 
-I found that on the syzbot dashboard, =E2=80=9CWARNING in
-cgroup_finalize_control=E2=80=9D [1] and "WARNING in
-cgroup_apply_control_disable" [2] should share the same root cause.
+It should not have.
 
-The reasons for the above statement:
-1) the stack trace is the same, and this title difference is due to
-the inline property of "cgroup_apply_control_disable";
-2) their PoCs are the same as each other;
+My aarch64 build environment did not flag that, but I now built
+for x86 and it does.  I guess I should make a habit of checking
+with that, though it's a bit time-consuming.
 
-If you can have any issues with this statement or our information is
-useful to you, please let us know. Thanks very much.
+I'll send v2 out shortly.  Thank you.
 
-[1] =E2=80=9CWARNING in cgroup_finalize_control=E2=80=9D -
-https://syzkaller.appspot.com/bug?id=3Dfe2fee189f1f8babd95615dcbb57871d6d18=
-920a
+					-Alex
 
-[2] =E2=80=9CWARNING in cgroup_apply_control_disable=E2=80=9D -
-https://syzkaller.appspot.com/bug?id=3Dba5a3ed954137643a9337f90782c90e90ba3=
-02ed
+> drivers/net/ipa/gsi.c:1455:19: warning: no previous prototype for ‘gsi_channel_update’ [-Wmissing-prototypes]
+>   1455 | struct gsi_trans *gsi_channel_update(struct gsi_channel *channel)
+>        |                   ^~~~~~~~~~~~~~~~~~
+> 
 
---
-My best regards to you.
-
-     No System Is Safe!
-     Dongliang Mu
