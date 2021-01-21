@@ -2,78 +2,109 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B018E2FED0F
-	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 15:39:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 365342FED0A
+	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 15:39:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728446AbhAUOiN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jan 2021 09:38:13 -0500
-Received: from mail.wangsu.com ([123.103.51.227]:59303 "EHLO wangsu.com"
-        rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1731359AbhAUOdj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 21 Jan 2021 09:33:39 -0500
-Received: from 137.localdomain (unknown [59.61.78.232])
-        by app2 (Coremail) with SMTP id 4zNnewAHD69VkAlgh4cAAA--.27S2;
-        Thu, 21 Jan 2021 22:31:50 +0800 (CST)
-From:   Pengcheng Yang <yangpc@wangsu.com>
-To:     edumazet@google.com, ycheng@google.com, ncardwell@google.com,
-        davem@davemloft.net
-Cc:     netdev@vger.kernel.org, Pengcheng Yang <yangpc@wangsu.com>
-Subject: [PATCH net-next] tcp: remove unused ICSK_TIME_EARLY_RETRANS
-Date:   Thu, 21 Jan 2021 22:31:13 +0800
-Message-Id: <1611239473-27304-1-git-send-email-yangpc@wangsu.com>
-X-Mailer: git-send-email 1.8.3.1
-X-CM-TRANSID: 4zNnewAHD69VkAlgh4cAAA--.27S2
-X-Coremail-Antispam: 1UD129KBjvJXoW7Kryruw4xuw1rZw43CrW5Awb_yoW8Xr1UpF
-        WftrZ2gFWDJF4UCFy5Ja1kAFyxJw1UXrW8CFW2vwsIk3W2vws5XF4rXwn8tF17ArZ2kr4x
-        XFZ7WrZ3Cry5Cw7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUyC1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l8cAvFVAK
-        0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVWDJVCq3wA2z4
-        x0Y4vE2Ix0cI8IcVCY1x0267AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28E
-        F7xvwVC2z280aVCY1x0267AKxVW0oVCq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F4
-        0EFcxC0VAKzVAqx4xG6I80ewAv7VCjz48v1sIEY20_Gr4lYx0Ec7CjxVAajcxG14v26r1j
-        6r4UMcvjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI
-        8I648v4I1lc2xSY4AK67AK6ry5MxAIw28IcxkI7VAKI48JMxAIw28IcVCjz48v1sIEY20_
-        Gr4l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8Gjc
-        xK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r126r1DMIIYrxkI7VAKI48JMIIF0xvE2Ix0
-        cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r1j6r4UMIIF0xvE42xK8V
-        AvwI8IcIk0rVWrJr0_WFyUJwCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF
-        7I0E14v26r1j6r4UYxBIdaVFxhVjvjDU0xZFpf9x0Jj4sjbUUUUU=
-X-CM-SenderInfo: p1dqw1nf6zt0xjvxhudrp/
+        id S1731413AbhAUOfk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jan 2021 09:35:40 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:44645 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1731281AbhAUOfY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jan 2021 09:35:24 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1611239638;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=srskRK3C1cQychsxFrYDRzsB8wxgSiF9DG6BTtAqebM=;
+        b=LRLlT5hVrIh+0b8w0VZ0V6Abj0NYzgNWCWcToV1jUBJnaR6AHYAkzfzUKNkkiw2/u3toKJ
+        ofbQrWjVkaTxtjsiiciZ/m42bPYveq+mkI+lwZhCjl7lhO1mntbIdu8ZYdw5Nw2+hbaUJa
+        3Kd51/3Yr7vX4u5RDKw5dTLYpIn/SMk=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-596-v8YB5K79NAm--wR9SIWusA-1; Thu, 21 Jan 2021 09:33:56 -0500
+X-MC-Unique: v8YB5K79NAm--wR9SIWusA-1
+Received: from smtp.corp.redhat.com (int-mx05.intmail.prod.int.phx2.redhat.com [10.5.11.15])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id CEB9CCE64B;
+        Thu, 21 Jan 2021 14:33:54 +0000 (UTC)
+Received: from carbon (unknown [10.36.110.4])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 7E21D6B540;
+        Thu, 21 Jan 2021 14:33:39 +0000 (UTC)
+Date:   Thu, 21 Jan 2021 15:33:38 +0100
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     John Fastabend <john.fastabend@gmail.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org,
+        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
+        Jiri Benc <jbenc@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        David Ahern <dsahern@gmail.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        brouer@redhat.com
+Subject: Re: [PATCHv14 bpf-next 1/6] bpf: run devmap xdp_prog on flush
+ instead of bulk enqueue
+Message-ID: <20210121153338.187a8fcd@carbon>
+In-Reply-To: <20210118100717.GF1421720@Leo-laptop-t470s>
+References: <20201221123505.1962185-1-liuhangbin@gmail.com>
+        <20210114142321.2594697-1-liuhangbin@gmail.com>
+        <20210114142321.2594697-2-liuhangbin@gmail.com>
+        <6004c0be660fd_2664208e8@john-XPS-13-9370.notmuch>
+        <20210118100717.GF1421720@Leo-laptop-t470s>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.15
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Since the early retransmit has been removed by
-commit bec41a11dd3d ("tcp: remove early retransmit"),
-we also remove the unused ICSK_TIME_EARLY_RETRANS macro.
+On Mon, 18 Jan 2021 18:07:17 +0800
+Hangbin Liu <liuhangbin@gmail.com> wrote:
 
-Signed-off-by: Pengcheng Yang <yangpc@wangsu.com>
----
- include/net/inet_connection_sock.h | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+> On Sun, Jan 17, 2021 at 02:57:02PM -0800, John Fastabend wrote:
+> [...]
+> > It looks like we could embed xdp_buff in xdp_frame and then keep the metadata
+> > at the end.
+> > 
+> > Because you are working performance here wdyt? <- @Jesper as well.  
+> 
+> Leave this question to Jesper.
 
-diff --git a/include/net/inet_connection_sock.h b/include/net/inet_connection_sock.h
-index 7338b38..e9490ef 100644
---- a/include/net/inet_connection_sock.h
-+++ b/include/net/inet_connection_sock.h
-@@ -138,7 +138,6 @@ struct inet_connection_sock {
- #define ICSK_TIME_RETRANS	1	/* Retransmit timer */
- #define ICSK_TIME_DACK		2	/* Delayed ack timer */
- #define ICSK_TIME_PROBE0	3	/* Zero window probe timer */
--#define ICSK_TIME_EARLY_RETRANS 4	/* Early retransmit timer */
- #define ICSK_TIME_LOSS_PROBE	5	/* Tail loss probe timer */
- #define ICSK_TIME_REO_TIMEOUT	6	/* Reordering timer */
- 
-@@ -224,8 +223,7 @@ static inline void inet_csk_reset_xmit_timer(struct sock *sk, const int what,
- 	}
- 
- 	if (what == ICSK_TIME_RETRANS || what == ICSK_TIME_PROBE0 ||
--	    what == ICSK_TIME_EARLY_RETRANS || what == ICSK_TIME_LOSS_PROBE ||
--	    what == ICSK_TIME_REO_TIMEOUT) {
-+	    what == ICSK_TIME_LOSS_PROBE || what == ICSK_TIME_REO_TIMEOUT) {
- 		icsk->icsk_pending = what;
- 		icsk->icsk_timeout = jiffies + when;
- 		sk_reset_timer(sk, &icsk->icsk_retransmit_timer, icsk->icsk_timeout);
+The struct xdp_buff is larger than struct xdp_frame.  The size of
+xdp_frame matters. It is a reserved areas in top of the frame.
+An XDP BPF-program cannot access this area (and limit headroom grow).
+This is why this code works, as afterwards xdp_frame is still valid.
+Looking at the code xdp_update_frame_from_buff() we do seem to update
+more fields than actually needed.
+
+
+> > >  
+> > > -	sent = dev->netdev_ops->ndo_xdp_xmit(dev, bq->count, bq->q, flags);
+> > > +	if (unlikely(bq->xdp_prog)) {  
+> > 
+> > Whats the rational for making above unlikely()? Seems for users its not
+> > unlikely. Can you measure a performance increase/decrease here? I think
+> > its probably fine to just let compiler/prefetcher do its thing here. Or
+> > I'm not reading this right, but seems users of bq->xdp_prog would disagree
+> > on unlikely case?
+> > 
+> > Either way a comment might be nice to give us some insight in 6 months
+> > why we decided this is unlikely.  
+> 
+> I agree that there is no need to use unlikely() here.
+
+I added the unlikely() to preserve the baseline performance when not
+having the 2nd prog loaded.  But I'm fine with removing that.
+
 -- 
-1.8.3.1
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
