@@ -2,173 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E4A172FE9FB
-	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 13:28:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B08CE2FE9FF
+	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 13:28:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730741AbhAUM0g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jan 2021 07:26:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53320 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728760AbhAUMYG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jan 2021 07:24:06 -0500
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DFE0C0613C1
-        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 04:23:18 -0800 (PST)
-Received: by mail-ej1-x635.google.com with SMTP id g12so2293950ejf.8
-        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 04:23:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=S8N7yhX1dINgXYzahMjyuEMkUcPg6hu16xnSBBDmAJQ=;
-        b=uBZSO3n8umYpk0VOfoeaCwa77KtExQBCLzc9ES/H60K8ItCBvwrFqB/QBzZiS9ykua
-         pHMWGKbdEp0lV9UazNRpaZ+wiBiRgZqgGrvEwHSUAKR4PQAtiE+rUi78aCxCR7BvFrM/
-         PuCBxtq8QntC0bVfXNfLOcp0vHzKB5RnU7n/nE6urScFB62EhNM+k20hbD7X7fEcNa3a
-         BQPztqwH9K3qYKnnak6nKBcU8DssRjc2Fru5WSN2MknCH+1rIGMLqUcXs/3D3JQvXs7b
-         OHjVpApy4pd9QkPWFY8JxA4V1DUfKkYbLzawZwJvLOKqN8Bv4eFwipVvAlnkHEXjCmoN
-         /OpA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=S8N7yhX1dINgXYzahMjyuEMkUcPg6hu16xnSBBDmAJQ=;
-        b=GzERviC/NsYlfejb5uvlgNZIc/2xo7UCqWwTC8Xh6Wqs85yd9FdekCbp8jib3YJYFp
-         6kQRuUYhpSUzrCyoxAPdlg1M+E3mRc6F87fru5LWm5V0BZ6ZGQ5ZhwrAlcadyz5oVmn0
-         PXpinqGOBVyuaojB3KlqEj7uuv8xBAL+fqGn+HZtESDziPjJ3zuM94i48plzYWMu4hgZ
-         aeGLhTdWV19twuOnB3Qo+EP6OuKvwg9pvsiikWHufPQxH1zDJnen6pcBQYM5VfNmn3+q
-         WoXZwmOPkuNw7lr3BffGs1BbyVza0Hlnp0YXLLmMXN9YNUiVUZbpIe9ucSxEYT98pMIW
-         P/gA==
-X-Gm-Message-State: AOAM531TkMCTrLTn7Pr8bg4juD74OFNd9M+tPF4YdJipNb50ptqvnsF4
-        CBPFKiTXWA5Olth7mhY+y7yrqedteOk=
-X-Google-Smtp-Source: ABdhPJxFbK8Uo9DctZW/krtbRebqyxplLB1nPmsisCFPGkvCwmb5346ABGGpGxV7NkaiBzJKvbvZ1w==
-X-Received: by 2002:a17:906:7d4f:: with SMTP id l15mr1566949ejp.95.1611231796773;
-        Thu, 21 Jan 2021 04:23:16 -0800 (PST)
-Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id a10sm2158713ejk.75.2021.01.21.04.23.14
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Jan 2021 04:23:15 -0800 (PST)
-Date:   Thu, 21 Jan 2021 14:23:14 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-        Hongbo Wang <hongbo.wang@nxp.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Po Liu <po.liu@nxp.com>, Yangbo Lu <yangbo.lu@nxp.com>,
-        Maxim Kochetkov <fido_max@inbox.ru>,
-        Eldar Gasanov <eldargasanov2@gmail.com>,
-        Andrey L <al@b4comtech.com>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        UNGLinuxDriver@microchip.com
-Subject: Re: [PATCH v5 net-next 07/10] net: dsa: allow changing the tag
- protocol via the "tagging" device attribute
-Message-ID: <20210121122314.2jfxuwu2cpokx3w5@skbuf>
-References: <20210121023616.1696021-1-olteanv@gmail.com>
- <20210121023616.1696021-8-olteanv@gmail.com>
- <9c5f179b-056b-f513-6500-eb36f9f8df0e@gmail.com>
+        id S1731044AbhAUM0s (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jan 2021 07:26:48 -0500
+Received: from out4-smtp.messagingengine.com ([66.111.4.28]:38907 "EHLO
+        out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1730616AbhAUM0c (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jan 2021 07:26:32 -0500
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id B4AAB5C011A;
+        Thu, 21 Jan 2021 07:25:37 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Thu, 21 Jan 2021 07:25:37 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=DSGIPE
+        wviBJva3VGDzbXmz78MH5d3GMIAYRhq7Tqha4=; b=H1arxmeRvS6xH8cEwdztZi
+        ICCNESdiJvMS52DWR2LRY+EOzaiXSCFp4KEFTSsdKvn+AiZq0sGTFUrbr+9j7Hn0
+        DnxZluq0FKuV/z/TJ0BxOSBqas/MV80hc2a/80PwtqBnS5AmlJvG03mT75NW8ZbD
+        VQvDXFtwow5hDOFgbYJKvSm/EQDxzEfjTkWLh+oVlS+b7Bd6w6hGXPsOriY4LrQ3
+        omtGU7KnIpf3K9DM5Y93P5HsrKJzqlgloMq6X9E+OMEJtkZD19mU7Un6rOzXDbpV
+        ctCF7I6HIXSPxhuxYzdhVvS2kbsHXqgeomXbwslVlgmUFqcKI9RvfUmcLVif7J8A
+        ==
+X-ME-Sender: <xms:wXIJYBiKNzVMkpNR-yokHZEzLPQ9iCyQbkJDXbFUJNl7YRNk3H-VdQ>
+    <xme:wXIJYGB4zfRCzkE9pp9EmWSxL7SLjUkKO4Eva0BM_50kif4JkFlV3mqPlRIXiORmJ
+    LBm7NTHKhpUHy8>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrudeggdegvdcutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcuufgt
+    hhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrthhtvg
+    hrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudehleet
+    necukfhppeekgedrvddvledrudehfedrgeegnecuvehluhhsthgvrhfuihiivgeptdenuc
+    frrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:wXIJYBHZggVk5e78sYppc5JofDvsP2DERqFiWMsgU2eZlNCghTCxkg>
+    <xmx:wXIJYGQeSwYiL_KDLcfyOdDrNJPKpVdUbAzlmPwRgqku2uGqgLW5og>
+    <xmx:wXIJYOyMvSNvru9UtF1lpH_P9X5z2eyOkePVBr6zFHowsprxRHbTPQ>
+    <xmx:wXIJYJ_L3ARElEocYDqdr_ZSKUNrqAqNMjwyDk2C4iDOea3091zTKA>
+Received: from localhost (igld-84-229-153-44.inter.net.il [84.229.153.44])
+        by mail.messagingengine.com (Postfix) with ESMTPA id CC4FB24005B;
+        Thu, 21 Jan 2021 07:25:36 -0500 (EST)
+Date:   Thu, 21 Jan 2021 14:25:34 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Oleksandr Mazur <oleksandr.mazur@plvision.eu>
+Cc:     netdev@vger.kernel.org, jiri@nvidia.com, davem@davemloft.net,
+        linux-kernel@vger.kernel.org, kuba@kernel.org
+Subject: Re: [PATCH iproute2-next] devlink: add support for HARD_DROP trap
+ action
+Message-ID: <20210121122534.GB2647590@shredder.lan>
+References: <20210121112954.31039-1-oleksandr.mazur@plvision.eu>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <9c5f179b-056b-f513-6500-eb36f9f8df0e@gmail.com>
+In-Reply-To: <20210121112954.31039-1-oleksandr.mazur@plvision.eu>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Florian,
+On Thu, Jan 21, 2021 at 01:29:54PM +0200, Oleksandr Mazur wrote:
+> Add support for new HARD_DROP action, which is used for
+> trap hard drop statistics retrival. It's used whenever
+> device is unable to report trapped packet to the devlink
+> subsystem, and thus device could only state how many
+> packets have been dropped, without passing a packet
+> to the devlink subsystem to get track of traffic statistics.
 
-On Wed, Jan 20, 2021 at 07:53:41PM -0800, Florian Fainelli wrote:
-> > +static int dsa_switch_tag_proto_del(struct dsa_switch *ds,
-> > +				    struct dsa_notifier_tag_proto_info *info)
-> > +{
-> > +	int err = 0, port;
-> > +
-> > +	for (port = 0; port < ds->num_ports; port++) {
-> > +		if (!dsa_switch_tag_proto_match(ds, port, info))
-> > +			continue;
-> > +
-> > +		/* Check early if we can replace it, so we don't delete it
-> > +		 * for nothing and leave the switch dangling.
-> > +		 */
-> > +		if (!ds->ops->set_tag_protocol) {
-> > +			err = -EOPNOTSUPP;
-> > +			break;
-> > +		}
+This patch should also be marked as "RFC".
+
 > 
-> This can be moved out of the loop.
+> Signed-off-by: Oleksandr Mazur <oleksandr.mazur@plvision.eu>
+> ---
+>  devlink/devlink.c            | 4 ++++
+>  include/uapi/linux/devlink.h | 4 ++++
 
-Thanks a lot for reviewing.
-Yes, you are right, this can be moved out. It is a left-over from using
-dsa_broadcast in the previous version. It is not the only left-over: the
-info->tree_index is now redundant because we are notifying within a
-single DSA switch tree.
+Missing man page and bash completion extensions:
 
-> > +
-> > +		/* The delete method is optional, just the setter
-> > +		 * is mandatory
-> > +		 */
-> > +		if (ds->ops->del_tag_protocol)
-> > +			ds->ops->del_tag_protocol(ds, port,
-> > +						  info->tag_ops->proto);
-> > +	}
-> > +
-> > +	return err;
-> > +}
-> > +
-> > +static int dsa_switch_tag_proto_set(struct dsa_switch *ds,
-> > +				    struct dsa_notifier_tag_proto_info *info)
-> > +{
-> > +	bool proto_changed = false;
-> > +	int port, err;
-> > +
-> > +	for (port = 0; port < ds->num_ports; port++) {
-> > +		struct dsa_port *cpu_dp = dsa_to_port(ds, port);
-> > +
-> > +		if (!dsa_switch_tag_proto_match(ds, port, info))
-> > +			continue;
-> > +
-> > +		err = ds->ops->set_tag_protocol(ds, cpu_dp->index,
-> > +						info->tag_ops->proto);
-> > +		if (err)
-> > +			return err;
+man/man8/devlink-trap.8
+bash-completion/devlink
+
+>  2 files changed, 8 insertions(+)
 > 
-> Don't you need to test for ds->ops->set_tag_protocol to be implemented
-> before calling it? Similar comment to earlier, can we do an early check
-> for the operation being supported outside of the loop?
-
-My assumption was that I had already added the check in tag_proto_del.
-There are no code paths that call one but not the other. I can add the
-check here too.
-
-There's one more thing I would change: the dsa_switch_tag_proto_match.
-Right now I am matching only on the CPU port, but if I take a look at
-the mv88e6xxx driver:
-
-static int mv88e6xxx_setup_port_mode(struct mv88e6xxx_chip *chip, int port)
-{
-	if (dsa_is_dsa_port(chip->ds, port))
-		return mv88e6xxx_set_port_mode_dsa(chip, port);
-
-	if (dsa_is_user_port(chip->ds, port))
-		return mv88e6xxx_set_port_mode_normal(chip, port);
-
-	/* Setup CPU port mode depending on its supported tag format */
-	if (chip->info->tag_protocol == DSA_TAG_PROTO_DSA)
-		return mv88e6xxx_set_port_mode_dsa(chip, port);
-
-	if (chip->info->tag_protocol == DSA_TAG_PROTO_EDSA)
-		return mv88e6xxx_set_port_mode_edsa(chip, port);
-
-	return -EINVAL;
-}
-
-DSA links call the same function as CPU ports configured for
-DSA_TAG_PROTO_DSA. So to cater to Marvell switches too, and to ease a
-potential conversion to this API, I could add dsa_is_dsa_port to the
-matching function too.
+> diff --git a/devlink/devlink.c b/devlink/devlink.c
+> index a2e06644..77185f7c 100644
+> --- a/devlink/devlink.c
+> +++ b/devlink/devlink.c
+> @@ -1335,6 +1335,8 @@ static int trap_action_get(const char *actionstr,
+>  {
+>  	if (strcmp(actionstr, "drop") == 0) {
+>  		*p_action = DEVLINK_TRAP_ACTION_DROP;
+> +	} else if (strcmp(actionstr, "hard_drop") == 0) {
+> +		*p_action = DEVLINK_TRAP_ACTION_HARD_DROP;
+>  	} else if (strcmp(actionstr, "trap") == 0) {
+>  		*p_action = DEVLINK_TRAP_ACTION_TRAP;
+>  	} else if (strcmp(actionstr, "mirror") == 0) {
+> @@ -7726,6 +7728,8 @@ static const char *trap_action_name(uint8_t action)
+>  	switch (action) {
+>  	case DEVLINK_TRAP_ACTION_DROP:
+>  		return "drop";
+> +	case DEVLINK_TRAP_ACTION_HARD_DROP:
+> +		return "hard_drop";
+>  	case DEVLINK_TRAP_ACTION_TRAP:
+>  		return "trap";
+>  	case DEVLINK_TRAP_ACTION_MIRROR:
+> diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
+> index 1414acee..ecee2541 100644
+> --- a/include/uapi/linux/devlink.h
+> +++ b/include/uapi/linux/devlink.h
+> @@ -261,12 +261,16 @@ enum {
+>   * enum devlink_trap_action - Packet trap action.
+>   * @DEVLINK_TRAP_ACTION_DROP: Packet is dropped by the device and a copy is not
+>   *                            sent to the CPU.
+> + * @DEVLINK_TRAP_ACTION_HARD_DROP: Packet was dropped by the underlying device,
+> + *                                 and device cannot report packet to devlink
+> + *                                 (or inject it into the kernel RX path).
+>   * @DEVLINK_TRAP_ACTION_TRAP: The sole copy of the packet is sent to the CPU.
+>   * @DEVLINK_TRAP_ACTION_MIRROR: Packet is forwarded by the device and a copy is
+>   *                              sent to the CPU.
+>   */
+>  enum devlink_trap_action {
+>  	DEVLINK_TRAP_ACTION_DROP,
+> +	DEVLINK_TRAP_ACTION_HARD_DROP,
+>  	DEVLINK_TRAP_ACTION_TRAP,
+>  	DEVLINK_TRAP_ACTION_MIRROR,
+>  };
+> -- 
+> 2.17.1
+> 
