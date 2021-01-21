@@ -2,90 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9B3F32FE135
-	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 05:57:01 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C44172FE15D
+	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 06:05:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727009AbhAUE4j (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jan 2021 23:56:39 -0500
-Received: from mail.kernel.org ([198.145.29.99]:44816 "EHLO mail.kernel.org"
+        id S1726646AbhAUFCp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jan 2021 00:02:45 -0500
+Received: from mail.kernel.org ([198.145.29.99]:45534 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726848AbhAUEz7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 20 Jan 2021 23:55:59 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 90D63238E8;
-        Thu, 21 Jan 2021 04:55:11 +0000 (UTC)
+        id S1726919AbhAUFA0 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 21 Jan 2021 00:00:26 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 169AF2396F;
+        Thu, 21 Jan 2021 04:59:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611204911;
-        bh=arP/KrUOMem4z2Wvf/y2jWGe9Nv/ZZfor37SphLwbLw=;
+        s=k20201202; t=1611205155;
+        bh=WLURNc/ARPVwxvKMO/4EToViSWS6r6Z3ONvX9RicN10=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=kY1gJCvmHjsvKUvZq9UlyurNQqmmyzAnv0ZnO42OUU6TKyqywqd3cRV6G7er1I2ns
-         IRXoVY0JHX21I5afthVgyJkwDTbjvksIfVPxLWwKZA4c5xkOs5h35e7k1x6YPvpvPk
-         m+GgTvpH67I9xZKwGdUkbeLSBCoipiEXA0bRMKJkZWceddY3Sl6HoTUnJOw3d8Ij5s
-         Y5IwnNNMyfPIm/TAnH4LNPhstcgeW5TGFcPWPi7LPkBjvylE4Smz+pbM84+DQVzJZu
-         hfZyv4dEPpr+nI/7RTdAcB8YzE7+xuS06eyCqjqHA8oITunVqZ7I9yR4hbQMb92gAg
-         xrOBXNhFs3KIg==
-Date:   Wed, 20 Jan 2021 20:55:10 -0800
+        b=rwnQz64KxEKHVwpx0spDQlD3futFxDMtUoA2f+Q5nAyH8dDtU9hv405Xz9sBdQfmq
+         nG4vLc6LoVnHrGJvv1ttwwnRJ9jWMuZOWqGHVBdB8Mb1uYc5zW3sicYaqpIPJXZYlf
+         KPuN1gDpglsc6tW9kH+FCjY2ILk+uHxoAPKBxzAyeLwjnmrvgkdYPP/1FfxQ8Yy75s
+         BYNYJXoQvyhmSX0NRokTko7E6ljzAKRKuXF59VE/2o+KfZCQRMNNlKgwTBEVgFwo7G
+         h8lu36d9SAXlwywt5QWqPgLoV8jWFVDNBxUwdBKNw6v9CJRA9uWP3EqEDaG/LeIM1w
+         IpwG7/fpymSQA==
+Date:   Wed, 20 Jan 2021 20:59:14 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Florian Fainelli <f.fainelli@gmail.com>,
-        Marek Vasut <marex@denx.de>, Andrew Lunn <andrew@lunn.ch>,
-        Paul Barker <pbarker@konsulko.com>
-Cc:     netdev@vger.kernel.org,
-        Michael Grzeschik <m.grzeschik@pengutronix.de>
-Subject: Re: [PATCH net-next V2] net: dsa: microchip: Adjust reset release
- timing to match reference reset circuit
-Message-ID: <20210120205510.4642c92d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <cdc34d4b-b384-2f2c-0b8d-070d54edf3c9@gmail.com>
-References: <20210120030502.617185-1-marex@denx.de>
-        <20210120173127.58445e6c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <9dd12956-4ddc-b641-185e-a36c7d4d81a9@denx.de>
-        <cdc34d4b-b384-2f2c-0b8d-070d54edf3c9@gmail.com>
+To:     Kevin Hao <haokexin@gmail.com>
+Cc:     sundeep.lkml@gmail.com, davem@davemloft.net,
+        netdev@vger.kernel.org, gakula@marvell.com, hkelam@marvell.com,
+        Subbaraya Sundeep <sbhatta@marvell.com>,
+        Sunil Goutham <sgoutham@marvell.com>
+Subject: Re: [PATCH] Revert "octeontx2-pf: Use the napi_alloc_frag() to
+ alloc the pool buffers"
+Message-ID: <20210120205914.4d382e23@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210121042035.GA442272@pek-khao-d2.corp.ad.wrs.com>
+References: <1611118955-13146-1-git-send-email-sundeep.lkml@gmail.com>
+        <20210121042035.GA442272@pek-khao-d2.corp.ad.wrs.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 20 Jan 2021 18:10:59 -0800 Florian Fainelli wrote:
-> On 1/20/2021 5:51 PM, Marek Vasut wrote:
-> > On 1/21/21 2:31 AM, Jakub Kicinski wrote: =20
-> >> On Wed, 20 Jan 2021 04:05:02 +0100 Marek Vasut wrote: =20
-> >>> KSZ8794CNX datasheet section 8.0 RESET CIRCUIT describes recommended
-> >>> circuit for interfacing with CPU/FPGA reset consisting of 10k pullup
-> >>> resistor and 10uF capacitor to ground. This circuit takes ~100 ms to
-> >>> rise enough to release the reset.
-> >>>
-> >>> For maximum supply voltage VDDIO=3D3.3V VIH=3D2.0V R=3D10kR C=3D10uF =
-that is
-> >>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 VDDIO - VIH
-> >>> =C2=A0=C2=A0 t =3D R * C * -ln( ------------- ) =3D 10000*0.00001*-(-=
-0.93)=3D0.093 s
-> >>> =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
-=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 VDDIO
-> >>> so we need ~95 ms for the reset to really de-assert, and then the
-> >>> original 100us for the switch itself to come out of reset. Simply
-> >>> msleep() for 100 ms which fits the constraint with a bit of extra
-> >>> space.
-> >>>
-> >>> Fixes: 5b797980908a ("net: dsa: microchip: Implement recommended
-> >>> reset timing")
-> >>> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
-> >>> Signed-off-by: Marek Vasut <marex@denx.de> =20
-> >>
-> >> I'm slightly confused whether this is just future proofing or you
-> >> actually have a board where this matters. The tree is tagged as
-> >> net-next but there is a Fixes tag which normally indicates net+stable.=
- =20
-> >=20
-> > I have a board where I trigger this problem, that's how I found it. It
-> > should be passed to stable too. So the correct tree / tag is "net" ? =20
->=20
-> If this is a bug fix for a commit that is not only in 'net-next', then
-> yes, targeting 'net' is more appropriate:
->=20
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/D=
-ocumentation/networking/netdev-FAQ.rst#n28
+On Thu, 21 Jan 2021 12:20:35 +0800 Kevin Hao wrote:
+> Hmm, why not?
+>   buf = napi_alloc_frag(pool->rbsize + 128);
+>   buf = PTR_ALIGN(buf, 128);
 
-Yup, in that case applied this one and the port map fix to net.
-
-Thanks everyone!
+I'd keep the aligning in the driver until there are more users
+needing this but yes, I agree, aligning the page frag buffers 
+seems like a much better fix.
