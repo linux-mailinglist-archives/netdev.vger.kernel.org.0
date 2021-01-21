@@ -2,293 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0681A2FDFDC
-	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 04:03:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 256772FDFDB
+	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 04:03:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392932AbhAUCuN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jan 2021 21:50:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40542 "EHLO
+        id S2393240AbhAUCvc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jan 2021 21:51:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728852AbhAUCjW (ORCPT
+        with ESMTP id S1728833AbhAUCjW (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 21:39:22 -0500
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68DB6C061796
-        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 18:36:41 -0800 (PST)
-Received: by mail-ed1-x530.google.com with SMTP id s11so696521edd.5
-        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 18:36:41 -0800 (PST)
+Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E66A7C061795;
+        Wed, 20 Jan 2021 18:36:39 -0800 (PST)
+Received: by mail-io1-xd2d.google.com with SMTP id y19so1196351iov.2;
+        Wed, 20 Jan 2021 18:36:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=bJRFeWSKXa/HwHIOv2knUSM2rJZlTGkvY8pKAbByy7o=;
-        b=CrCvO0SdKdvFvbl7227bjKo8GhET3TAGCW3QvKxekFo5vYJ92fG/ird83qu/IkMWTu
-         IDx1XYgSikAt70O2fl0zqm7mnfBuGPqbIjzUZ4VNqlhYrL5uXOn0Rd43lv/6908Pxf9G
-         dIQR/UlmbUG9HlClLEFWoUqOOrT4F7VOk5QvzDIL+fz/YEI1ZKH8OpHZhd9sVZuoMsOk
-         ffXYJAAUSiZQeRbWB71usb2Wx0hBFZAAg8F4Xk0pwVBds9YJDMM6NhG3muk98tNQn+5L
-         MgufS2gurQrVPuhhfjOCNS2zwKbKZEqX3jIwE6pgrecmLI46jPRwvF2w95kdZaFCldSX
-         nE9g==
+        h=mime-version:references:in-reply-to:reply-to:from:date:message-id
+         :subject:to:cc;
+        bh=g72wU/e2+tUMN8rrYgJKmfgNJZa+U65gluRGUeFny/w=;
+        b=NnQsZ32aK4Wsq9BJ1UAOChepviWpvo0EVt8Is3i8V+zU2wHuYXhkRKVqTDkqtvYAcX
+         irS/zZgFuI37mfKLJvazJCnWyePPqkztbleSxE0MHV8UNHpeJy45JYdT1NONTAGrUWZ3
+         PmvopvnlEXIauSzpGxEYJC50R79rLhHpyvTgRrYvTcFum6wY6n3Kp4liA0C6m13z1obA
+         QGLJETolj3MKF18oBaGUcsqZ1AuwXyaKpKzYK2FwLEBxt3mAcvg3/OOtLvWZh7o44XKP
+         TB39za4cRBzPp5hKNBeueMWfgwJQpoKgooP90up4umA/w3bRib6hlD41BUA2hN+RlhRj
+         h65Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=bJRFeWSKXa/HwHIOv2knUSM2rJZlTGkvY8pKAbByy7o=;
-        b=ojclLgG6Ya2Hc1l1TKgduGCBxsJLxexfygHStgy7idK8J8qoiSzrL4wFnsq9cP8AQ8
-         voxEm6nltdo0azCkisK10c31X4XKdIyfEWRGCXmVLOrm9VQARXFfFSNODnGyiHtRlvFN
-         w1jQtOpmJxMP8q4OV4n48Pw9CJ6ZJa1SGjVc5KYi2ev69h9ezWzHYYYrecPJgFaNQi0d
-         uXSE7HuG3ITq8xL/3aooKSd/tHu50UW21OaJLiM1VSBPnLpBzvKKToEthJnaP6waD9To
-         NoHzzFTkZVbMrgx/u/jq21rmZ/ZkcUcNs7KDQhPxwIsXVG6he09dqWnrchYi5vJ0t+I8
-         WZ8Q==
-X-Gm-Message-State: AOAM5305QXqSKglDYgqCXUU/sty3MmxN7X/o12x45o1Txx1FWiDvAj49
-        u9EFw7ZlqWlTcJRQo974r2XtMfQER9I=
-X-Google-Smtp-Source: ABdhPJwNI7fI0VT0gS5Z912yN/aK5GnnxEGYCoUTOkF5mXXps6l5Kf6fPbliFWw0wlDJuwiADDh0yw==
-X-Received: by 2002:a05:6402:402:: with SMTP id q2mr9528899edv.116.1611196600180;
-        Wed, 20 Jan 2021 18:36:40 -0800 (PST)
-Received: from localhost.localdomain (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id k22sm2025787edv.33.2021.01.20.18.36.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Jan 2021 18:36:39 -0800 (PST)
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandru Marginean <alexandru.marginean@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
-        Hongbo Wang <hongbo.wang@nxp.com>,
-        Vladimir Oltean <vladimir.oltean@nxp.com>,
-        Po Liu <po.liu@nxp.com>, Yangbo Lu <yangbo.lu@nxp.com>,
-        Maxim Kochetkov <fido_max@inbox.ru>,
-        Eldar Gasanov <eldargasanov2@gmail.com>,
-        Andrey L <al@b4comtech.com>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        UNGLinuxDriver@microchip.com
-Subject: [PATCH v5 net-next 09/10] net: dsa: add a second tagger for Ocelot switches based on tag_8021q
-Date:   Thu, 21 Jan 2021 04:36:15 +0200
-Message-Id: <20210121023616.1696021-10-olteanv@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210121023616.1696021-1-olteanv@gmail.com>
-References: <20210121023616.1696021-1-olteanv@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:reply-to
+         :from:date:message-id:subject:to:cc;
+        bh=g72wU/e2+tUMN8rrYgJKmfgNJZa+U65gluRGUeFny/w=;
+        b=qPtuSUHjn1Vk9WD4K13w0anJlsUI8/joC/xV0JDZ66Q+ZUynwiThW7/g1atxOEktvH
+         aXn7Ifl8jQtIM20gMJCFpiiqF3QYicvNsHsYTCpCtWKD9FXcjTK0t7lrUV6iMlTFIofx
+         tbWbv/0cFg+XrJl9JteexLnJpfx6jWJJFBLN2uXeu3OcceshVwHds2zyTavNe/GVUNmx
+         xSNi8vXA2k97cQdvpsZ2zubFssNIroAmtSW2zsPHJTETXOB+igOGYm0amW9s/QEvjMEO
+         llBhFTeiLIJd+Qqx6QBeBhUJT7Rw3U9YS4jIhz9O2wkIrotPIHYtlFqNvI+OmL3BZ7gN
+         umKA==
+X-Gm-Message-State: AOAM530+yfNrGeyXcQXoenNQ0XXnvYlfZjGCriulSd5vtiOnDqaD2J77
+        b7e7udqqjrWKtHVtadQD2XxHSmeDI3j7tKcE098=
+X-Google-Smtp-Source: ABdhPJzTja6a9DNn3K26Qf91jp1IMxAppFM3Kbkqi/Z7/kVG3gtk23ypo2ANcj04gHF12/kjuEe3JfV6RWr0FAUKfgg=
+X-Received: by 2002:a6b:90c4:: with SMTP id s187mr8980048iod.75.1611196599235;
+ Wed, 20 Jan 2021 18:36:39 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210116095413.72820-1-sedat.dilek@gmail.com> <20210120223546.GF1798087@krava>
+In-Reply-To: <20210120223546.GF1798087@krava>
+Reply-To: sedat.dilek@gmail.com
+From:   Sedat Dilek <sedat.dilek@gmail.com>
+Date:   Thu, 21 Jan 2021 03:36:28 +0100
+Message-ID: <CA+icZUU=nVxcQpfVR6s9fGomY0zEx22a8Ge4Uw8rL84JNu+0oA@mail.gmail.com>
+Subject: Re: [PATCH RFC] tools: Factor Clang, LLC and LLVM utils definitions
+To:     Jiri Olsa <jolsa@redhat.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Nathan Chancellor <natechancellor@gmail.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Quentin Monnet <quentin@isovalent.com>,
+        Jean-Philippe Brucker <jean-philippe@linaro.org>,
+        Tobias Klauser <tklauser@distanz.ch>,
+        Ilya Leoshkevich <iii@linux.ibm.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Yulia Kartseva <hex@fb.com>, Andrey Ignatov <rdna@fb.com>,
+        Thomas Hebb <tommyhebb@gmail.com>,
+        Stephane Eranian <eranian@google.com>,
+        "Frank Ch. Eigler" <fche@redhat.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Davide Caratti <dcaratti@redhat.com>,
+        Briana Oursler <briana.oursler@gmail.com>,
+        netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-kselftest@vger.kernel.org,
+        Clang-Built-Linux ML <clang-built-linux@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vladimir Oltean <vladimir.oltean@nxp.com>
+On Wed, Jan 20, 2021 at 11:36 PM Jiri Olsa <jolsa@redhat.com> wrote:
+>
+> On Sat, Jan 16, 2021 at 10:54:04AM +0100, Sedat Dilek wrote:
+> > When dealing with BPF/BTF/pahole and DWARF v5 I wanted to build bpftool.
+> >
+> > While looking into the source code I found duplicate assignments
+> > in misc tools for the LLVM eco system, e.g. clang and llvm-objcopy.
+> >
+> > Move the Clang, LLC and/or LLVM utils definitions to
+> > tools/scripts/Makefile.include file and add missing
+> > includes where needed.
+> > Honestly, I was inspired by commit c8a950d0d3b9
+> > ("tools: Factor HOSTCC, HOSTLD, HOSTAR definitions").
+> >
+> > I tested with bpftool and perf on Debian/testing AMD64 and
+> > LLVM/Clang v11.1.0-rc1.
+> >
+> > Build instructions:
+> >
+> > [ make and make-options ]
+> > MAKE="make V=1"
+> > MAKE_OPTS="HOSTCC=clang HOSTCXX=clang++ HOSTLD=ld.lld CC=clang LD=ld.lld LLVM=1 LLVM_IAS=1"
+> > MAKE_OPTS="$MAKE_OPTS PAHOLE=/opt/pahole/bin/pahole"
+> >
+> > [ clean-up ]
+> > $MAKE $MAKE_OPTS -C tools/ clean
+> >
+> > [ bpftool ]
+> > $MAKE $MAKE_OPTS -C tools/bpf/bpftool/
+> >
+> > [ perf ]
+> > PYTHON=python3 $MAKE $MAKE_OPTS -C tools/perf/
+> >
+> > I was careful with respecting the user's wish to override custom compiler,
+> > linker, GNU/binutils and/or LLVM utils settings.
+> >
+> > Some personal notes:
+> > 1. I have NOT tested with cross-toolchain for other archs (cross compiler/linker etc.).
+> > 2. This patch is on top of Linux v5.11-rc3.
+> >
+> > I hope to get some feedback from especially Linux-bpf folks.
+> >
+> > Signed-off-by: Sedat Dilek <sedat.dilek@gmail.com>
+> > ---
+> >  tools/bpf/bpftool/Makefile                  | 2 --
+> >  tools/bpf/runqslower/Makefile               | 3 ---
+> >  tools/build/feature/Makefile                | 4 ++--
+> >  tools/perf/Makefile.perf                    | 1 -
+>
+> for tools/build and tools/perf
+>
+> Acked-by: Jiri Olsa <jolsa@redhat.com>
+>
 
-There are use cases for which the existing tagger, based on the NPI
-(Node Processor Interface) functionality, is insufficient.
+Thanks Jiri for your feedback and ACK.
 
-Namely:
-- Frames injected through the NPI port bypass the frame analyzer, so no
-  source address learning is performed, no TSN stream classification,
-  etc.
-- Flow control is not functional over an NPI port (PAUSE frames are
-  encapsulated in the same Extraction Frame Header as all other frames)
-- There can be at most one NPI port configured for an Ocelot switch. But
-  in NXP LS1028A and T1040 there are two Ethernet CPU ports. The non-NPI
-  port is currently either disabled, or operated as a plain user port
-  (albeit an internally-facing one). Having the ability to configure the
-  two CPU ports symmetrically could pave the way for e.g. creating a LAG
-  between them, to increase bandwidth seamlessly for the system.
+- Sedat -
 
-So there is a desire to have an alternative to the NPI mode. This change
-keeps the default tagger for the Seville and Felix switches as "ocelot",
-but it can be changed via the following device attribute:
-
-echo ocelot-8021q > /sys/class/<dsa-master>/dsa/tagging
-
-Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
----
-Changes in v5:
-Path is split from previous monolithic patch "net: dsa: felix: add new
-VLAN-based tagger".
-
- MAINTAINERS                    |  1 +
- drivers/net/dsa/ocelot/Kconfig |  2 +
- include/net/dsa.h              |  2 +
- net/dsa/Kconfig                | 21 +++++++++--
- net/dsa/Makefile               |  1 +
- net/dsa/tag_ocelot_8021q.c     | 68 ++++++++++++++++++++++++++++++++++
- 6 files changed, 92 insertions(+), 3 deletions(-)
- create mode 100644 net/dsa/tag_ocelot_8021q.c
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 096b584e7fed..ae793658e6a5 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -12842,6 +12842,7 @@ F:	drivers/net/dsa/ocelot/*
- F:	drivers/net/ethernet/mscc/
- F:	include/soc/mscc/ocelot*
- F:	net/dsa/tag_ocelot.c
-+F:	net/dsa/tag_ocelot_8021q.c
- F:	tools/testing/selftests/drivers/net/ocelot/*
- 
- OCXL (Open Coherent Accelerator Processor Interface OpenCAPI) DRIVER
-diff --git a/drivers/net/dsa/ocelot/Kconfig b/drivers/net/dsa/ocelot/Kconfig
-index c110e82a7973..932b6b6fe817 100644
---- a/drivers/net/dsa/ocelot/Kconfig
-+++ b/drivers/net/dsa/ocelot/Kconfig
-@@ -6,6 +6,7 @@ config NET_DSA_MSCC_FELIX
- 	depends on NET_VENDOR_FREESCALE
- 	depends on HAS_IOMEM
- 	select MSCC_OCELOT_SWITCH_LIB
-+	select NET_DSA_TAG_OCELOT_8021Q
- 	select NET_DSA_TAG_OCELOT
- 	select FSL_ENETC_MDIO
- 	select PCS_LYNX
-@@ -19,6 +20,7 @@ config NET_DSA_MSCC_SEVILLE
- 	depends on NET_VENDOR_MICROSEMI
- 	depends on HAS_IOMEM
- 	select MSCC_OCELOT_SWITCH_LIB
-+	select NET_DSA_TAG_OCELOT_8021Q
- 	select NET_DSA_TAG_OCELOT
- 	select PCS_LYNX
- 	help
-diff --git a/include/net/dsa.h b/include/net/dsa.h
-index be77a7c0a22d..6cbd06c6c61c 100644
---- a/include/net/dsa.h
-+++ b/include/net/dsa.h
-@@ -47,6 +47,7 @@ struct phylink_link_state;
- #define DSA_TAG_PROTO_RTL4_A_VALUE		17
- #define DSA_TAG_PROTO_HELLCREEK_VALUE		18
- #define DSA_TAG_PROTO_XRS700X_VALUE		19
-+#define DSA_TAG_PROTO_OCELOT_8021Q_VALUE	20
- 
- enum dsa_tag_protocol {
- 	DSA_TAG_PROTO_NONE		= DSA_TAG_PROTO_NONE_VALUE,
-@@ -69,6 +70,7 @@ enum dsa_tag_protocol {
- 	DSA_TAG_PROTO_RTL4_A		= DSA_TAG_PROTO_RTL4_A_VALUE,
- 	DSA_TAG_PROTO_HELLCREEK		= DSA_TAG_PROTO_HELLCREEK_VALUE,
- 	DSA_TAG_PROTO_XRS700X		= DSA_TAG_PROTO_XRS700X_VALUE,
-+	DSA_TAG_PROTO_OCELOT_8021Q	= DSA_TAG_PROTO_OCELOT_8021Q_VALUE,
- };
- 
- struct packet_type;
-diff --git a/net/dsa/Kconfig b/net/dsa/Kconfig
-index 2d226a5c085f..a45572cfb71a 100644
---- a/net/dsa/Kconfig
-+++ b/net/dsa/Kconfig
-@@ -105,11 +105,26 @@ config NET_DSA_TAG_RTL4_A
- 	  the Realtek RTL8366RB.
- 
- config NET_DSA_TAG_OCELOT
--	tristate "Tag driver for Ocelot family of switches"
-+	tristate "Tag driver for Ocelot family of switches, using NPI port"
- 	select PACKING
- 	help
--	  Say Y or M if you want to enable support for tagging frames for the
--	  Ocelot switches (VSC7511, VSC7512, VSC7513, VSC7514, VSC9959).
-+	  Say Y or M if you want to enable NPI tagging for the Ocelot switches
-+	  (VSC7511, VSC7512, VSC7513, VSC7514, VSC9953, VSC9959). In this mode,
-+	  the frames over the Ethernet CPU port are prepended with a
-+	  hardware-defined injection/extraction frame header.  Flow control
-+	  (PAUSE frames) over the CPU port is not supported when operating in
-+	  this mode.
-+
-+config NET_DSA_TAG_OCELOT_8021Q
-+	tristate "Tag driver for Ocelot family of switches, using VLAN"
-+	select NET_DSA_TAG_8021Q
-+	help
-+	  Say Y or M if you want to enable support for tagging frames with a
-+	  custom VLAN-based header. Frames that require timestamping, such as
-+	  PTP, are not delivered over Ethernet but over register-based MMIO.
-+	  Flow control over the CPU port is functional in this mode. When using
-+	  this mode, less TCAM resources (VCAP IS1, IS2, ES0) are available for
-+	  use with tc-flower.
- 
- config NET_DSA_TAG_QCA
- 	tristate "Tag driver for Qualcomm Atheros QCA8K switches"
-diff --git a/net/dsa/Makefile b/net/dsa/Makefile
-index 92cea2132241..44bc79952b8b 100644
---- a/net/dsa/Makefile
-+++ b/net/dsa/Makefile
-@@ -15,6 +15,7 @@ obj-$(CONFIG_NET_DSA_TAG_RTL4_A) += tag_rtl4_a.o
- obj-$(CONFIG_NET_DSA_TAG_LAN9303) += tag_lan9303.o
- obj-$(CONFIG_NET_DSA_TAG_MTK) += tag_mtk.o
- obj-$(CONFIG_NET_DSA_TAG_OCELOT) += tag_ocelot.o
-+obj-$(CONFIG_NET_DSA_TAG_OCELOT_8021Q) += tag_ocelot_8021q.o
- obj-$(CONFIG_NET_DSA_TAG_QCA) += tag_qca.o
- obj-$(CONFIG_NET_DSA_TAG_SJA1105) += tag_sja1105.o
- obj-$(CONFIG_NET_DSA_TAG_TRAILER) += tag_trailer.o
-diff --git a/net/dsa/tag_ocelot_8021q.c b/net/dsa/tag_ocelot_8021q.c
-new file mode 100644
-index 000000000000..09e10ade11f7
---- /dev/null
-+++ b/net/dsa/tag_ocelot_8021q.c
-@@ -0,0 +1,68 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/* Copyright 2020-2021 NXP Semiconductors
-+ *
-+ * An implementation of the software-defined tag_8021q.c tagger format, which
-+ * also preserves full functionality under a vlan_filtering bridge. It does
-+ * this by using the TCAM engines for:
-+ * - pushing the RX VLAN as a second, outer tag, on egress towards the CPU port
-+ * - redirecting towards the correct front port based on TX VLAN and popping
-+ *   that on egress
-+ */
-+#include <linux/dsa/8021q.h>
-+#include "dsa_priv.h"
-+
-+static struct sk_buff *ocelot_xmit(struct sk_buff *skb,
-+				   struct net_device *netdev)
-+{
-+	struct dsa_port *dp = dsa_slave_to_port(netdev);
-+	u16 tx_vid = dsa_8021q_tx_vid(dp->ds, dp->index);
-+	u16 queue_mapping = skb_get_queue_mapping(skb);
-+	u8 pcp = netdev_txq_to_tc(netdev, queue_mapping);
-+
-+	return dsa_8021q_xmit(skb, netdev, ETH_P_8021Q,
-+			      ((pcp << VLAN_PRIO_SHIFT) | tx_vid));
-+}
-+
-+static struct sk_buff *ocelot_rcv(struct sk_buff *skb,
-+				  struct net_device *netdev,
-+				  struct packet_type *pt)
-+{
-+	int src_port, switch_id, qos_class;
-+	u16 vid, tci;
-+
-+	skb_push_rcsum(skb, ETH_HLEN);
-+	if (skb_vlan_tag_present(skb)) {
-+		tci = skb_vlan_tag_get(skb);
-+		__vlan_hwaccel_clear_tag(skb);
-+	} else {
-+		__skb_vlan_pop(skb, &tci);
-+	}
-+	skb_pull_rcsum(skb, ETH_HLEN);
-+
-+	vid = tci & VLAN_VID_MASK;
-+	src_port = dsa_8021q_rx_source_port(vid);
-+	switch_id = dsa_8021q_rx_switch_id(vid);
-+	qos_class = (tci & VLAN_PRIO_MASK) >> VLAN_PRIO_SHIFT;
-+
-+	skb->dev = dsa_master_find_slave(netdev, switch_id, src_port);
-+	if (!skb->dev)
-+		return NULL;
-+
-+	skb->offload_fwd_mark = 1;
-+	skb->priority = qos_class;
-+
-+	return skb;
-+}
-+
-+static struct dsa_device_ops ocelot_netdev_ops = {
-+	.name			= "ocelot-8021q",
-+	.proto			= DSA_TAG_PROTO_OCELOT_8021Q,
-+	.xmit			= ocelot_xmit,
-+	.rcv			= ocelot_rcv,
-+	.overhead		= VLAN_HLEN,
-+};
-+
-+MODULE_LICENSE("GPL v2");
-+MODULE_ALIAS_DSA_TAG_DRIVER(DSA_TAG_PROTO_OCELOT_8021Q);
-+
-+module_dsa_tag_driver(ocelot_netdev_ops);
--- 
-2.25.1
-
+> jirka
+>
+> >  tools/scripts/Makefile.include              | 7 +++++++
+> >  tools/testing/selftests/bpf/Makefile        | 3 +--
+> >  tools/testing/selftests/tc-testing/Makefile | 3 +--
+> >  7 files changed, 11 insertions(+), 12 deletions(-)
+> >
+> > diff --git a/tools/bpf/bpftool/Makefile b/tools/bpf/bpftool/Makefile
+> > index f897cb5fb12d..71c14efa6e91 100644
+> > --- a/tools/bpf/bpftool/Makefile
+> > +++ b/tools/bpf/bpftool/Makefile
+>
+> SNIP
+>
