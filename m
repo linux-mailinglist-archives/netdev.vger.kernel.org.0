@@ -2,138 +2,273 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D616F2FE431
-	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 08:42:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 486BC2FE440
+	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 08:44:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727485AbhAUHkm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jan 2021 02:40:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48680 "EHLO
+        id S1727001AbhAUHn5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jan 2021 02:43:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49076 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727401AbhAUHkQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jan 2021 02:40:16 -0500
-Received: from mail-yb1-xb2d.google.com (mail-yb1-xb2d.google.com [IPv6:2607:f8b0:4864:20::b2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92F22C061575;
-        Wed, 20 Jan 2021 23:39:36 -0800 (PST)
-Received: by mail-yb1-xb2d.google.com with SMTP id x78so1140512ybe.11;
-        Wed, 20 Jan 2021 23:39:36 -0800 (PST)
+        with ESMTP id S1727695AbhAUHni (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jan 2021 02:43:38 -0500
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98344C061575;
+        Wed, 20 Jan 2021 23:41:28 -0800 (PST)
+Received: by mail-pj1-x1035.google.com with SMTP id kx7so1093670pjb.2;
+        Wed, 20 Jan 2021 23:41:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=8/Qs+LIYozRQBaZzt7plrZI8EEeLdzE+oyXQd9hZHQA=;
-        b=vGcE306V5zNAqKhlLk64OTHHpdU/koNggfFasdYXILHtg7/C/1Tbjpmr2jMOEg0Nzy
-         Yu37YSMkfcNr645mv/TNpJt0hM3Hpw8hz/CussyzRk2tD58cjSc/ypZDEtW6SmlTZnSw
-         T3TTCp9oSkV2G/58hgWeQHYu58RwZms2aIbrxqB93yP7AEsEyRcNegBI24OAU71sI9Dy
-         Xz/d7rKQKjb8VBAPYdFFJdE/u0KEulKf5sb3Q+uFV3ZCoUQqt3P5GqDNd2m1h052YLDA
-         QXZy8pQNWiCBiO3kSPnHt+svMDfmV8Q/YzwNHxnFnaEm40Xl1Mly6REjCZMSYm26Jt9K
-         Hd/g==
+         :cc;
+        bh=+WSQWbxfP2pXq6KG7rxKw6Frm1tiAUnTy+aL8NH7tLg=;
+        b=U+oUAi+6oPz7NK/UpWAYd2rzwp662I5l05vsAZctRN13kGBNBWB+wdHiMdJf4vrd2Z
+         PAR/V91v5bSPqb8FQ0Q3KO3jHi6Sruea2oqzQr+drUyRarFTz8w6lRM+wJ78aSWWaaYt
+         WJfWsT23QYzAIBpdgK/9BEPnIC8hL7KJAU2LF6o/zwV46NlWLn/ZVm6243cwjFV159RU
+         m/TEkIHmEWgXyyN1DYpVdfMxPKzBCp7N2Pj4r85aO/Klg0qfgjN7B46bVXEGWjbqhXq5
+         tASO7vbl3rW+80m/KOOEPPn0ObUtVpnCDhTqs2eVHfMTpRct1GXQdMJ/tckQ9SyedLu6
+         b9Bg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=8/Qs+LIYozRQBaZzt7plrZI8EEeLdzE+oyXQd9hZHQA=;
-        b=l91gXYN3sqfxxFdBszO+oVBFwwtPKB1Mm7uJSxBxoje/HI1kXRycYJaMLGZ/jEm+n3
-         MNDkDRcNPVwAF7SGX1YaCdaUDrtiA2GR6cuGcptW/dKBBreqy21vEfjy8egJbVnnHj78
-         hkYsNIj/V98HwtqJWBGuLO0pTMYZnDJ7i8hM+DpvLopH1IS+Xeyu218jh6EbqQrWNAZP
-         +o3XyYnfnErHW9xt00sXJGpyOv2VKcJ7I16MWs/oVT8SGO5Kycavq7gq3KLj1a2geK3E
-         qopBozyr4CgN0ufUMkN9g+TQfWnBFeyArq3bKayNYYKdwUYC5ITvqRk/x/MRGNMYGTSE
-         /A2Q==
-X-Gm-Message-State: AOAM530cH9D+/zkok/S75pUunhuHasLbDV3mR/kcOoUX9MvsPkESAi8s
-        /B7kssvQvQ7M6GCmkkc0CRF1ONDE4WuVjAOoozrm6fJuv6M=
-X-Google-Smtp-Source: ABdhPJzw6UlLjC/wQFMrQ4yJ8ofwrZkM/W9C4rvFWoi7V44Wji1Mj2zUyGqVNOfq86AIRCRAYxumqXX0StoWGdYXbiI=
-X-Received: by 2002:a25:d6d0:: with SMTP id n199mr18707086ybg.27.1611214775780;
- Wed, 20 Jan 2021 23:39:35 -0800 (PST)
+         :message-id:subject:to:cc;
+        bh=+WSQWbxfP2pXq6KG7rxKw6Frm1tiAUnTy+aL8NH7tLg=;
+        b=tbohkIP6XbS/OzIs9XX4fHIQMkT/3ZSYBsUQXy3zR4BOTYVFxsVqtbmcm8PxevIe0t
+         9smtH+zSNxjf2xZhJJOevKHysWMnBakB+h1oZBK6NEdoqIy2Ycj0pGHDC40eFRFI6qgt
+         k+5z26zQpSdG3ds/xE665fgCeW5iU/zB0LV1+2728aG/ExDoU2nKr3G1M5MXUULdRyln
+         3xmYpQ+5/E6Hd//bEv3IcJTkn4hEiUEXyqT9gAyFf59GbokZLEdwO+PXT3heP9EaWweD
+         5SqDS8YfHsczNYX1tL25Av57i6LNNM0XO6FdZbvcOhj53+Ek8fOvi7+YDcKIwv9VJMf0
+         a7mg==
+X-Gm-Message-State: AOAM531/0d2wNl3Ucw5fCxTT3QUZrV9ZYpiFCqPtQQEOuCGEY6GgR1nl
+        v5hzQHpLbF66MlsbBi5fVzeP+zfLo5Z4aKitGgw=
+X-Google-Smtp-Source: ABdhPJwdys27ZARkcsj3JlP6jJ7vhfnyOXsgy7FqDh/DOuIWf5jJV+IaXEog/pbBxb3lxbAWI82s0GLKrmGAdclf+HQ=
+X-Received: by 2002:a17:902:7c04:b029:dc:99f2:eea4 with SMTP id
+ x4-20020a1709027c04b02900dc99f2eea4mr13569991pll.43.1611214888029; Wed, 20
+ Jan 2021 23:41:28 -0800 (PST)
 MIME-Version: 1.0
-References: <20210119155013.154808-1-bjorn.topel@gmail.com> <20210119155013.154808-8-bjorn.topel@gmail.com>
-In-Reply-To: <20210119155013.154808-8-bjorn.topel@gmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Wed, 20 Jan 2021 23:39:25 -0800
-Message-ID: <CAEf4BzYaV+zA8tEX2xVyA7EeDw1_aQMUQHq8_RHNe=ZfnQWTQw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 7/8] selftest/bpf: add XDP socket tests for
- bpf_redirect_{xsk, map}()
-To:     =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+References: <0461512be1925bece9bcda1b4924b09eaa4edd87.1611131344.git.xuanzhuo@linux.alibaba.com>
+ <20210120135537.5184-1-alobakin@pm.me>
+In-Reply-To: <20210120135537.5184-1-alobakin@pm.me>
+From:   Magnus Karlsson <magnus.karlsson@gmail.com>
+Date:   Thu, 21 Jan 2021 08:41:17 +0100
+Message-ID: <CAJ8uoz0=7UmJpqKGeb9BQp9qv_c6ioyxhtU4+B+j-Z01pc-BhQ@mail.gmail.com>
+Subject: Re: [PATCH net-next v2 3/3] xsk: build skb by page
+To:     Alexander Lobakin <alobakin@pm.me>
+Cc:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
         =?UTF-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
         Magnus Karlsson <magnus.karlsson@intel.com>,
-        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>, maximmi@nvidia.com,
-        "David S. Miller" <davem@davemloft.net>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
         Jesper Dangaard Brouer <hawk@kernel.org>,
-        john fastabend <john.fastabend@gmail.com>,
-        ciara.loftus@intel.com, weqaar.a.janjua@intel.com
+        John Fastabend <john.fastabend@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>,
+        virtualization@lists.linux-foundation.org,
+        bpf <bpf@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 19, 2021 at 7:55 AM Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.co=
-m> wrote:
+On Wed, Jan 20, 2021 at 9:29 PM Alexander Lobakin <alobakin@pm.me> wrote:
 >
-> From: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
+> From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> Date: Wed, 20 Jan 2021 16:30:56 +0800
 >
-> Add support for externally loaded XDP programs to
-> xdpxceiver/test_xsk.sh, so that bpf_redirect_xsk() and
-> bpf_redirect_map() can be exercised.
+> > This patch is used to construct skb based on page to save memory copy
+> > overhead.
+> >
+> > This function is implemented based on IFF_TX_SKB_NO_LINEAR. Only the
+> > network card priv_flags supports IFF_TX_SKB_NO_LINEAR will use page to
+> > directly construct skb. If this feature is not supported, it is still
+> > necessary to copy data to construct skb.
+> >
+> > ---------------- Performance Testing ------------
+> >
+> > The test environment is Aliyun ECS server.
+> > Test cmd:
+> > ```
+> > xdpsock -i eth0 -t  -S -s <msg size>
+> > ```
+> >
+> > Test result data:
+> >
+> > size    64      512     1024    1500
+> > copy    1916747 1775988 1600203 1440054
+> > page    1974058 1953655 1945463 1904478
+> > percent 3.0%    10.0%   21.58%  32.3%
+> >
+> > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> > Reviewed-by: Dust Li <dust.li@linux.alibaba.com>
+> > ---
+> >  net/xdp/xsk.c | 104 ++++++++++++++++++++++++++++++++++++++++++++++++----------
+> >  1 file changed, 86 insertions(+), 18 deletions(-)
 >
-> Signed-off-by: Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com>
-> ---
->  .../selftests/bpf/progs/xdpxceiver_ext1.c     | 15 ++++
->  .../selftests/bpf/progs/xdpxceiver_ext2.c     |  9 +++
->  tools/testing/selftests/bpf/test_xsk.sh       | 48 ++++++++++++
->  tools/testing/selftests/bpf/xdpxceiver.c      | 77 ++++++++++++++++++-
->  tools/testing/selftests/bpf/xdpxceiver.h      |  2 +
->  5 files changed, 147 insertions(+), 4 deletions(-)
->  create mode 100644 tools/testing/selftests/bpf/progs/xdpxceiver_ext1.c
->  create mode 100644 tools/testing/selftests/bpf/progs/xdpxceiver_ext2.c
+> Now I like the result, thanks!
 >
-> diff --git a/tools/testing/selftests/bpf/progs/xdpxceiver_ext1.c b/tools/=
-testing/selftests/bpf/progs/xdpxceiver_ext1.c
-> new file mode 100644
-> index 000000000000..18894040cca6
-> --- /dev/null
-> +++ b/tools/testing/selftests/bpf/progs/xdpxceiver_ext1.c
-> @@ -0,0 +1,15 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +#include <linux/bpf.h>
-> +#include <bpf/bpf_helpers.h>
-> +
-> +struct {
-> +       __uint(type, BPF_MAP_TYPE_XSKMAP);
-> +       __uint(max_entries, 32);
-> +       __uint(key_size, sizeof(int));
-> +       __uint(value_size, sizeof(int));
-> +} xsks_map SEC(".maps");
-> +
-> +SEC("xdp_sock") int xdp_sock_prog(struct xdp_md *ctx)
+> But Patchwork still display your series incorrectly (messages 0 and 1
+> are missing). I'm concerning maintainers may not take this in such
+> form. Try to pass the folder's name, not folder/*.patch to
+> git send-email when sending, and don't use --in-reply-to when sending
+> a new iteration.
 
-hmm.. that's unconventional... please keep SEC() on separate line
+Xuan,
 
-> +{
-> +       return bpf_redirect_map(&xsks_map, ctx->rx_queue_index, XDP_DROP)=
-;
-> +}
-> diff --git a/tools/testing/selftests/bpf/progs/xdpxceiver_ext2.c b/tools/=
-testing/selftests/bpf/progs/xdpxceiver_ext2.c
-> new file mode 100644
-> index 000000000000..bd239b958c01
-> --- /dev/null
-> +++ b/tools/testing/selftests/bpf/progs/xdpxceiver_ext2.c
-> @@ -0,0 +1,9 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +#include <linux/bpf.h>
-> +#include <bpf/bpf_helpers.h>
-> +
-> +SEC("xdp_sock") int xdp_sock_prog(struct xdp_md *ctx)
+Please make the new submission of the patch set a v3 even though you
+did not change the code. Just so we can clearly see it is the new
+submission.
 
-same here
-
-> +{
-> +       return bpf_redirect_xsk(ctx, XDP_DROP);
-> +}
-> +
-
-[...]
+> > diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+> > index 8037b04..40bac11 100644
+> > --- a/net/xdp/xsk.c
+> > +++ b/net/xdp/xsk.c
+> > @@ -430,6 +430,87 @@ static void xsk_destruct_skb(struct sk_buff *skb)
+> >       sock_wfree(skb);
+> >  }
+> >
+> > +static struct sk_buff *xsk_build_skb_zerocopy(struct xdp_sock *xs,
+> > +                                           struct xdp_desc *desc)
+> > +{
+> > +     u32 len, offset, copy, copied;
+> > +     struct sk_buff *skb;
+> > +     struct page *page;
+> > +     void *buffer;
+> > +     int err, i;
+> > +     u64 addr;
+> > +
+> > +     skb = sock_alloc_send_skb(&xs->sk, 0, 1, &err);
+> > +     if (unlikely(!skb))
+> > +             return ERR_PTR(err);
+> > +
+> > +     addr = desc->addr;
+> > +     len = desc->len;
+> > +
+> > +     buffer = xsk_buff_raw_get_data(xs->pool, addr);
+> > +     offset = offset_in_page(buffer);
+> > +     addr = buffer - xs->pool->addrs;
+> > +
+> > +     for (copied = 0, i = 0; copied < len; i++) {
+> > +             page = xs->pool->umem->pgs[addr >> PAGE_SHIFT];
+> > +
+> > +             get_page(page);
+> > +
+> > +             copy = min_t(u32, PAGE_SIZE - offset, len - copied);
+> > +
+> > +             skb_fill_page_desc(skb, i, page, offset, copy);
+> > +
+> > +             copied += copy;
+> > +             addr += copy;
+> > +             offset = 0;
+> > +     }
+> > +
+> > +     skb->len += len;
+> > +     skb->data_len += len;
+> > +     skb->truesize += len;
+> > +
+> > +     refcount_add(len, &xs->sk.sk_wmem_alloc);
+> > +
+> > +     return skb;
+> > +}
+> > +
+> > +static struct sk_buff *xsk_build_skb(struct xdp_sock *xs,
+> > +                                  struct xdp_desc *desc)
+> > +{
+> > +     struct sk_buff *skb = NULL;
+> > +
+> > +     if (xs->dev->priv_flags & IFF_TX_SKB_NO_LINEAR) {
+> > +             skb = xsk_build_skb_zerocopy(xs, desc);
+> > +             if (IS_ERR(skb))
+> > +                     return skb;
+> > +     } else {
+> > +             void *buffer;
+> > +             u32 len;
+> > +             int err;
+> > +
+> > +             len = desc->len;
+> > +             skb = sock_alloc_send_skb(&xs->sk, len, 1, &err);
+> > +             if (unlikely(!skb))
+> > +                     return ERR_PTR(err);
+> > +
+> > +             skb_put(skb, len);
+> > +             buffer = xsk_buff_raw_get_data(xs->pool, desc->addr);
+> > +             err = skb_store_bits(skb, 0, buffer, len);
+> > +             if (unlikely(err)) {
+> > +                     kfree_skb(skb);
+> > +                     return ERR_PTR(err);
+> > +             }
+> > +     }
+> > +
+> > +     skb->dev = xs->dev;
+> > +     skb->priority = xs->sk.sk_priority;
+> > +     skb->mark = xs->sk.sk_mark;
+> > +     skb_shinfo(skb)->destructor_arg = (void *)(long)desc->addr;
+> > +     skb->destructor = xsk_destruct_skb;
+> > +
+> > +     return skb;
+> > +}
+> > +
+> >  static int xsk_generic_xmit(struct sock *sk)
+> >  {
+> >       struct xdp_sock *xs = xdp_sk(sk);
+> > @@ -446,43 +527,30 @@ static int xsk_generic_xmit(struct sock *sk)
+> >               goto out;
+> >
+> >       while (xskq_cons_peek_desc(xs->tx, &desc, xs->pool)) {
+> > -             char *buffer;
+> > -             u64 addr;
+> > -             u32 len;
+> > -
+> >               if (max_batch-- == 0) {
+> >                       err = -EAGAIN;
+> >                       goto out;
+> >               }
+> >
+> > -             len = desc.len;
+> > -             skb = sock_alloc_send_skb(sk, len, 1, &err);
+> > -             if (unlikely(!skb))
+> > +             skb = xsk_build_skb(xs, &desc);
+> > +             if (IS_ERR(skb)) {
+> > +                     err = PTR_ERR(skb);
+> >                       goto out;
+> > +             }
+> >
+> > -             skb_put(skb, len);
+> > -             addr = desc.addr;
+> > -             buffer = xsk_buff_raw_get_data(xs->pool, addr);
+> > -             err = skb_store_bits(skb, 0, buffer, len);
+> >               /* This is the backpressure mechanism for the Tx path.
+> >                * Reserve space in the completion queue and only proceed
+> >                * if there is space in it. This avoids having to implement
+> >                * any buffering in the Tx path.
+> >                */
+> >               spin_lock_irqsave(&xs->pool->cq_lock, flags);
+> > -             if (unlikely(err) || xskq_prod_reserve(xs->pool->cq)) {
+> > +             if (xskq_prod_reserve(xs->pool->cq)) {
+> >                       spin_unlock_irqrestore(&xs->pool->cq_lock, flags);
+> >                       kfree_skb(skb);
+> >                       goto out;
+> >               }
+> >               spin_unlock_irqrestore(&xs->pool->cq_lock, flags);
+> >
+> > -             skb->dev = xs->dev;
+> > -             skb->priority = sk->sk_priority;
+> > -             skb->mark = sk->sk_mark;
+> > -             skb_shinfo(skb)->destructor_arg = (void *)(long)desc.addr;
+> > -             skb->destructor = xsk_destruct_skb;
+> > -
+> >               err = __dev_direct_xmit(skb, xs->queue_id);
+> >               if  (err == NETDEV_TX_BUSY) {
+> >                       /* Tell user-space to retry the send */
+> > --
+> > 1.8.3.1
+>
+> Al
+>
