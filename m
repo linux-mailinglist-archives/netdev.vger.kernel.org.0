@@ -2,41 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 240C92FE178
-	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 06:21:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4DD932FE17C
+	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 06:22:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726014AbhAUFSM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jan 2021 00:18:12 -0500
-Received: from mail.kernel.org ([198.145.29.99]:47022 "EHLO mail.kernel.org"
+        id S1726013AbhAUFRs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jan 2021 00:17:48 -0500
+Received: from mail.kernel.org ([198.145.29.99]:47024 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726439AbhAUFLx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726458AbhAUFLx (ORCPT <rfc822;netdev@vger.kernel.org>);
         Thu, 21 Jan 2021 00:11:53 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 916462395B;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 9CB4A2395C;
         Thu, 21 Jan 2021 05:10:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1611205809;
-        bh=HaE3GOiqgQb70X7xxt/LkgczCAi2/i/OR54pIENbNio=;
+        bh=3I8l4CUgu5O5uaZ2w+gMlhJdudrEz7ZQNwjq5x68k7g=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=VQR9y+4Kz6AyteY2h4wxhI5KnR0ozxfbYlEifTNvxADTSdDW8Z6rCZyszqbGgb/qk
-         LBt80SiCOFKoQLag8n50uWbOOOXh4n/89HfXLwl2MI46FseB5GHPt6uqV3QOtipwKZ
-         YSXe2uweHrapOKV2tVKl5WXRGF/xGT4JIPEgY9Txk54z3cAJFWaQBam2b6ZhgGq2Yb
-         LPu/aXl/sgRjGo5eLiO2lOpok8AYJmJx0Z+lsO20t6dKb/1Q+IuY9jK4jcoFCUQyt8
-         vFa20kiMhjanne2/p0xcXMEvmNMH4otG8bKcZJpTkSBoMSJUyjP5VCXDjnJbF6NBMa
-         cITy0qi3Ek/JQ==
+        b=qarVy4UkzWFMoyAJjQfutDPxjCKgXcjtaeSxeAm47CyFJVw68v7JB/2jOx8i0UUOb
+         DB5vcq0F6y2LEq+xLptF0Ii9awf97ZG6VZpLFicfMp1qcrlHEifqWGxlSKPQ4Jp8Mt
+         BngRaDQxkXslXwGrxDIBMqlWUh2kVbx3OqLlyXXtb0p3C08FRIKC9HT67l5KiaKac9
+         SlEaUS9HTaRqDwmUFLCsnU226wIW5Kzc9BlUU7gDkaf0KPlpNapCZV/r/N2aZyIrBl
+         oyUxNIb7uv2jD1HmeZnaWd3ovIBZQ1YlbjGSe0qf0zWCN9gyNX9zjF91nyoPYa5neb
+         LboS1kK+utZoQ==
 Received: from pdx-korg-docbuild-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-1.ci.codeaurora.org (Postfix) with ESMTP id 857EA600E0;
+        by pdx-korg-docbuild-1.ci.codeaurora.org (Postfix) with ESMTP id 8E0F260641;
         Thu, 21 Jan 2021 05:10:09 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v2 0/4] net: inline rollback_registered() functions
+Subject: Re: [PATCH net-next v2 0/3] nexthop: More fine-grained policies for
+ netlink message validation
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161120580954.27834.6435877219293871873.git-patchwork-notify@kernel.org>
+Message-Id: <161120580957.27834.10077802568257203594.git-patchwork-notify@kernel.org>
 Date:   Thu, 21 Jan 2021 05:10:09 +0000
-References: <20210119202521.3108236-1-kuba@kernel.org>
-In-Reply-To: <20210119202521.3108236-1-kuba@kernel.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, netdev@vger.kernel.org
+References: <cover.1611156111.git.petrm@nvidia.com>
+In-Reply-To: <cover.1611156111.git.petrm@nvidia.com>
+To:     Petr Machata <petrm@nvidia.com>
+Cc:     netdev@vger.kernel.org, dsahern@kernel.org, davem@davemloft.net,
+        kuba@kernel.org, idosch@nvidia.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -45,25 +47,27 @@ Hello:
 
 This series was applied to netdev/net-next.git (refs/heads/master):
 
-On Tue, 19 Jan 2021 12:25:17 -0800 you wrote:
-> After recent changes to the error path of register_netdevice()
-> we no longer need a version of unregister_netdevice_many() which
-> does not set net_todo. We can inline the rollback_registered()
-> functions into respective unregister_netdevice() calls.
+On Wed, 20 Jan 2021 16:44:09 +0100 you wrote:
+> There is currently one policy that covers all attributes for next hop
+> object management. Actual validation is then done in code, which makes it
+> unobvious which attributes are acceptable when, and indeed that everything
+> is rejected as necessary.
 > 
-> v2: - add missing list_del() in the last patch
+> In this series, split rtm_nh_policy to several policies that cover various
+> aspects of the next hop object configuration, and instead of open-coding
+> the validation, defer to nlmsg_parse(). This should make extending the next
+> hop code simpler as well, which will be relevant in near future for
+> resilient hashing implementation.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,v2,1/4] net: move net_set_todo inside rollback_registered()
-    https://git.kernel.org/netdev/net-next/c/2014beea7eb1
-  - [net-next,v2,2/4] net: inline rollback_registered()
-    https://git.kernel.org/netdev/net-next/c/037e56bd965e
-  - [net-next,v2,3/4] net: move rollback_registered_many()
-    https://git.kernel.org/netdev/net-next/c/bcfe2f1a3818
-  - [net-next,v2,4/4] net: inline rollback_registered_many()
-    https://git.kernel.org/netdev/net-next/c/0cbe1e57a7b9
+  - [net-next,v2,1/3] nexthop: Use a dedicated policy for nh_valid_get_del_req()
+    https://git.kernel.org/netdev/net-next/c/60f5ad5e19c0
+  - [net-next,v2,2/3] nexthop: Use a dedicated policy for nh_valid_dump_req()
+    https://git.kernel.org/netdev/net-next/c/44551bff290d
+  - [net-next,v2,3/3] nexthop: Specialize rtm_nh_policy
+    https://git.kernel.org/netdev/net-next/c/643d0878e674
 
 You are awesome, thank you!
 --
