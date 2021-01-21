@@ -2,136 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 80D642FE2B1
-	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 07:24:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DDFC32FE2A9
+	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 07:22:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726619AbhAUGXC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jan 2021 01:23:02 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:48250 "EHLO
-        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726094AbhAUGVT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jan 2021 01:21:19 -0500
-Received: from pps.filterd (m0127361.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 10L63ckk153465;
-        Thu, 21 Jan 2021 01:20:10 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-type :
- content-transfer-encoding; s=pp1;
- bh=apZsuJV1RxnYcj5RnznI/GBa5Vz4k53A5ZYwLCgfYDo=;
- b=W5QpSzHkFHPvfriHUdY0R7AhVNY+e6D41ZFgSYr4EgMtYT4EsnJA088VrmaPp1rIgKD5
- Rk6N5821QGMFeIextEFWn+RqVfpPbkTxnxuRgt8x0EHKEapkI8CA3e8vnddpiYrAUKBb
- XjuLYKGTjTlPI/U3UBT6DXitdIa7W1WJkSS/30YOuV4vXjChw4Y3Q5HbC+/Ik9OO6w26
- cne8WzZ+ZUuz5f6S5H910VqnHh9aU+rWHIwtvFCOHCG0SOllhJQSekSxVoqvTBzR0LVL
- EKjETzVcH6/9a9vJokS9Zx103v4VbyTyMe4xfnPqlxbdetOTCL76CDKoa2QsOjrGuagc xg== 
-Received: from ppma04wdc.us.ibm.com (1a.90.2fa9.ip4.static.sl-reverse.com [169.47.144.26])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 3673nq0wgf-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 21 Jan 2021 01:20:10 -0500
-Received: from pps.filterd (ppma04wdc.us.ibm.com [127.0.0.1])
-        by ppma04wdc.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 10L6CSR5013639;
-        Thu, 21 Jan 2021 06:20:09 GMT
-Received: from b03cxnp08025.gho.boulder.ibm.com (b03cxnp08025.gho.boulder.ibm.com [9.17.130.17])
-        by ppma04wdc.us.ibm.com with ESMTP id 3668pqhvus-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 21 Jan 2021 06:20:09 +0000
-Received: from b03ledav004.gho.boulder.ibm.com (b03ledav004.gho.boulder.ibm.com [9.17.130.235])
-        by b03cxnp08025.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 10L6K8Pv26607936
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 21 Jan 2021 06:20:08 GMT
-Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 2D27A7805F;
-        Thu, 21 Jan 2021 06:20:08 +0000 (GMT)
-Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 71FBB7805C;
-        Thu, 21 Jan 2021 06:20:06 +0000 (GMT)
-Received: from pompom.ibm.com (unknown [9.85.137.249])
-        by b03ledav004.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Thu, 21 Jan 2021 06:20:06 +0000 (GMT)
-From:   Lijun Pan <ljp@linux.ibm.com>
-To:     netdev@vger.kernel.org
-Cc:     linuxppc-dev@lists.ozlabs.org, drt@linux.ibm.com,
-        sukadev@linux.ibm.com, mpe@ellerman.id.au,
-        julietk@linux.vnet.ibm.com, benh@kernel.crashing.org,
-        paulus@samba.org, davem@davemloft.net, kuba@kernel.org,
-        gregkh@linuxfoundation.org, kernel@pengutronix.de,
-        Lijun Pan <ljp@linux.ibm.com>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Subject: [PATCH net] ibmvnic: device remove has higher precedence over reset
-Date:   Thu, 21 Jan 2021 00:20:05 -0600
-Message-Id: <20210121062005.53271-1-ljp@linux.ibm.com>
-X-Mailer: git-send-email 2.22.0
+        id S1726496AbhAUGWE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jan 2021 01:22:04 -0500
+Received: from mail.kernel.org ([198.145.29.99]:56164 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726526AbhAUGUt (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 21 Jan 2021 01:20:49 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id ACDFD2396D;
+        Thu, 21 Jan 2021 06:20:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1611210008;
+        bh=3OUlOwnyM/Lq6dcSDU7VFLAgwB1L2BEv2nrFHtIfGZI=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=gmkaysQdC+C8KtxfnWCiL2l1hwazNyxA0OR4MXtwUbkKsDwt8HFJt7qqyMhqsA21m
+         Co+mJDRLp/cpuhF8jjEhJImipHZ04+ocPkEl+ALKr6yYCvkgzDt4L7Gvqnvml8tGPw
+         RntRHXrv+hcH+bFN1+ZlD0OtZisD1gip1VEewKcLUzRQrpvznrmezLzPD9BIOSl0AS
+         +zgBGLkh5VBugmE8sTD3CyHnmYRmspReCGGYa7lLGKB4b9iPQwlPTHvgdhkuQtF7Nz
+         yO9BUqkZrE/CWYTwDpiAAnnZhVzET3QdbjvQkf+Nzg3oq+q5L101IdWTALM8IAvnLI
+         e5bVBLDm0o9Bg==
+Received: from pdx-korg-docbuild-1.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-1.ci.codeaurora.org (Postfix) with ESMTP id 9F67660591;
+        Thu, 21 Jan 2021 06:20:08 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
- definitions=2021-01-21_02:2021-01-20,2021-01-21 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=986
- impostorscore=0 lowpriorityscore=0 priorityscore=1501 bulkscore=0
- suspectscore=0 adultscore=0 spamscore=0 phishscore=0 mlxscore=0
- clxscore=1015 malwarescore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2009150000 definitions=main-2101210031
+Subject: Re: [PATCH] net: stmmac: dwmac-meson8b: fix the RX delay validation
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161121000864.22302.2434343187659178869.git-patchwork-notify@kernel.org>
+Date:   Thu, 21 Jan 2021 06:20:08 +0000
+References: <20210119202424.591349-1-martin.blumenstingl@googlemail.com>
+In-Reply-To: <20210119202424.591349-1-martin.blumenstingl@googlemail.com>
+To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Cc:     linux-amlogic@lists.infradead.org, netdev@vger.kernel.org,
+        davem@davemloft.net, kuba@kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        martijn@martijnvandeventer.nl
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Returning -EBUSY in ibmvnic_remove() does not actually hold the
-removal procedure since driver core doesn't care for the return
-value (see __device_release_driver() in drivers/base/dd.c
-calling dev->bus->remove()) though vio_bus_remove
-(in arch/powerpc/platforms/pseries/vio.c) records the
-return value and passes it on. [1]
+Hello:
 
-During the device removal precedure, we should not schedule
-any new reset (ibmvnic_reset check for REMOVING and exit),
-and should rely on the flush_work and flush_delayed_work
-to complete the pending resets, specifically we need to
-let __ibmvnic_reset() keep running while in REMOVING state since
-flush_work and flush_delayed_work shall call __ibmvnic_reset finally.
-So we skip the checking for REMOVING in __ibmvnic_reset.
+This patch was applied to netdev/net-next.git (refs/heads/master):
 
-[1] https://lore.kernel.org/linuxppc-dev/20210117101242.dpwayq6wdgfdzirl@pengutronix.de/T/#m48f5befd96bc9842ece2a3ad14f4c27747206a53
-Reported-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Fixes: 7d7195a026ba ("ibmvnic: Do not process device remove during device reset")
-Signed-off-by: Lijun Pan <ljp@linux.ibm.com>
----
-v1 versus RFC: 
-  1/ articulate why remove the REMOVING checking in __ibmvnic_reset
-  and why keep the current checking for REMOVING in ibmvnic_reset.
-  2/ The locking issue mentioned by Uwe are being addressed separately 
-     by	https://lists.openwall.net/netdev/2021/01/08/89
-  3/ This patch does not have merge conflict with 2/
+On Tue, 19 Jan 2021 21:24:24 +0100 you wrote:
+> When has_prg_eth1_rgmii_rx_delay is true then we support RX delays
+> between 0ps and 3000ps in 200ps steps. Swap the validation of the RX
+> delay based on the has_prg_eth1_rgmii_rx_delay flag so the 200ps check
+> is now applied correctly on G12A SoCs (instead of only allow 0ps or
+> 2000ps on G12A, but 0..3000ps in 200ps steps on older SoCs which don't
+> support that).
+> 
+> [...]
 
- drivers/net/ethernet/ibm/ibmvnic.c | 8 +-------
- 1 file changed, 1 insertion(+), 7 deletions(-)
+Here is the summary with links:
+  - net: stmmac: dwmac-meson8b: fix the RX delay validation
+    https://git.kernel.org/netdev/net-next/c/9e8789c85dee
 
-diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-index aed985e08e8a..11f28fd03057 100644
---- a/drivers/net/ethernet/ibm/ibmvnic.c
-+++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -2235,8 +2235,7 @@ static void __ibmvnic_reset(struct work_struct *work)
- 	while (rwi) {
- 		spin_lock_irqsave(&adapter->state_lock, flags);
- 
--		if (adapter->state == VNIC_REMOVING ||
--		    adapter->state == VNIC_REMOVED) {
-+		if (adapter->state == VNIC_REMOVED) {
- 			spin_unlock_irqrestore(&adapter->state_lock, flags);
- 			kfree(rwi);
- 			rc = EBUSY;
-@@ -5372,11 +5371,6 @@ static int ibmvnic_remove(struct vio_dev *dev)
- 	unsigned long flags;
- 
- 	spin_lock_irqsave(&adapter->state_lock, flags);
--	if (test_bit(0, &adapter->resetting)) {
--		spin_unlock_irqrestore(&adapter->state_lock, flags);
--		return -EBUSY;
--	}
--
- 	adapter->state = VNIC_REMOVING;
- 	spin_unlock_irqrestore(&adapter->state_lock, flags);
- 
--- 
-2.22.0
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
