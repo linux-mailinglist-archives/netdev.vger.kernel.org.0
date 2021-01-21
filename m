@@ -2,144 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C030F2FF358
-	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 19:41:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C19C62FF334
+	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 19:32:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727322AbhAUSkf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jan 2021 13:40:35 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:18014 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726202AbhAUS0B (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jan 2021 13:26:01 -0500
-Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 10LIBGhM044882;
-        Thu, 21 Jan 2021 13:24:05 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=mime-version :
- content-type : content-transfer-encoding : date : from : to : cc : subject
- : in-reply-to : references : message-id; s=pp1;
- bh=Mg6re5QmA4AtijIQv5WI3wTkGejnJfeUGID6cqzZM6w=;
- b=QDOxrV8boTOTn4xP3ILtvAfzunjnbpH00gfVREz1tIo4r6kcaav29j/vrp3cvA1xURoh
- OKF8yxNXQO/ttmbxKUpdM3GHlhDUZoJLuoLm5xz+j+hnrwonfZu3FwJJy75bUlfUIUn7
- rnw8eLxHLi4ZQ/bjx9snn5mj6RpMHEZF3uFplaWcUCJClsC4FPALdV4VjkBuEcm5/Oab
- fnMV10t89TRn408nGbn+QLbp+3UzjrEo6xCIlp4T5qwBc0fSNs7tkZAc86BF5KPz9Yg+
- 90doniXKom0efItAZWJOVuoo6QCmOeAe4iPys38WW1GgTKCJFQEQMmJs7fE+ZP6297l6 3g== 
-Received: from ppma04dal.us.ibm.com (7a.29.35a9.ip4.static.sl-reverse.com [169.53.41.122])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 367ens0byc-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 21 Jan 2021 13:24:05 -0500
-Received: from pps.filterd (ppma04dal.us.ibm.com [127.0.0.1])
-        by ppma04dal.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 10LICvcU010425;
-        Thu, 21 Jan 2021 18:24:04 GMT
-Received: from b01cxnp23033.gho.pok.ibm.com (b01cxnp23033.gho.pok.ibm.com [9.57.198.28])
-        by ppma04dal.us.ibm.com with ESMTP id 3668p31k38-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 21 Jan 2021 18:24:04 +0000
-Received: from b01ledav001.gho.pok.ibm.com (b01ledav001.gho.pok.ibm.com [9.57.199.106])
-        by b01cxnp23033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 10LIO36Z14418322
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 21 Jan 2021 18:24:03 GMT
-Received: from b01ledav001.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 6D9572805E;
-        Thu, 21 Jan 2021 18:24:03 +0000 (GMT)
-Received: from b01ledav001.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id D961E28059;
-        Thu, 21 Jan 2021 18:24:02 +0000 (GMT)
-Received: from ltc.linux.ibm.com (unknown [9.10.229.42])
-        by b01ledav001.gho.pok.ibm.com (Postfix) with ESMTP;
-        Thu, 21 Jan 2021 18:24:02 +0000 (GMT)
+        id S1728193AbhAUSbi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jan 2021 13:31:38 -0500
+Received: from mail-io1-f70.google.com ([209.85.166.70]:43210 "EHLO
+        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728747AbhAUSbF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jan 2021 13:31:05 -0500
+Received: by mail-io1-f70.google.com with SMTP id n18so4842039ioo.10
+        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 10:30:50 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:in-reply-to:message-id:subject
+         :from:to;
+        bh=oVWccvp7x6PMxOa3dh/LvOXdIcojqs3FO4GiLhT8EWY=;
+        b=tLD82rALO8UZLx7JQj2rtb2HSD0850q6F54KHmhfK433Kikj9e9Z0363uI82BcQFBH
+         9swDUaGGvDnh2khxDTsnpf6kr+HisH3Th9l4vEVMztwUid+T150jwJAi/oPszKGrOPL3
+         OUh4Wq/HjDriul7lCvbAnappx7ITLEZ1oljuMEOYG4X+/Y6DvSSrw+mB8kV2gek2Hd5T
+         EBg+Bsy0tnixCVX4/TO4ggJwJPyvYz7wElc8unCZtGKzpidjlbGQ2K3cevOyJ7MlDKF/
+         6ZSxTk9l5Cw4997LCfiMlTgqZNrfhqGSPw+BYJtgLhTcsKIfr7X3eJ4iuCANDxvgA5kp
+         fJ1g==
+X-Gm-Message-State: AOAM530eiGP0fywX94KZ+3Q71BxImFJLhX4+xV8gsATeheMC/eRtBOte
+        VutxPqJ70vxYX5IoXPZETsxGLJ4LD4aLFMyswnq9jYtkEvzF
+X-Google-Smtp-Source: ABdhPJxaPmTNkCSEprX+gFOvjNLdlWCW3XhUsIg14ROxCkei2qe77eZyd0hChFVaFaX32ZWsxC9ICPgq3iCeQlVXY7A3ZUacQvbW
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
-Content-Transfer-Encoding: 8bit
-Date:   Thu, 21 Jan 2021 10:24:02 -0800
-From:   Dany Madden <drt@linux.ibm.com>
-To:     Lijun Pan <ljp@linux.ibm.com>
-Cc:     netdev@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        sukadev@linux.ibm.com, mpe@ellerman.id.au,
-        julietk@linux.vnet.ibm.com, benh@kernel.crashing.org,
-        paulus@samba.org, davem@davemloft.net, kuba@kernel.org,
-        gregkh@linuxfoundation.org, kernel@pengutronix.de,
-        =?UTF-8?Q?Uwe_Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH net] ibmvnic: device remove has higher precedence over
- reset
-In-Reply-To: <20210121062005.53271-1-ljp@linux.ibm.com>
-References: <20210121062005.53271-1-ljp@linux.ibm.com>
-Message-ID: <c34816a13d857b7f5d1a25991b58ec63@imap.linux.ibm.com>
-X-Sender: drt@linux.ibm.com
-User-Agent: Roundcube Webmail/1.1.12
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
- definitions=2021-01-21_09:2021-01-21,2021-01-21 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 spamscore=0
- bulkscore=0 suspectscore=0 clxscore=1015 malwarescore=0 lowpriorityscore=0
- mlxscore=0 priorityscore=1501 mlxlogscore=946 adultscore=0 phishscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2101210091
+X-Received: by 2002:a6b:b258:: with SMTP id b85mr617052iof.97.1611253823888;
+ Thu, 21 Jan 2021 10:30:23 -0800 (PST)
+Date:   Thu, 21 Jan 2021 10:30:23 -0800
+In-Reply-To: <0000000000004c9e3505b96c58eb@google.com>
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000d0e9a705b96d4332@google.com>
+Subject: Re: UBSAN: array-index-out-of-bounds in decode_data
+From:   syzbot <syzbot+70ba6cae2f44c82dcb76@syzkaller.appspotmail.com>
+To:     ajk@comnets.uni-bremen.de, davem@davemloft.net, kuba@kernel.org,
+        linux-hams@vger.kernel.org, linux-kernel@vger.kernel.org,
+        netdev@vger.kernel.org, syzkaller-bugs@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021-01-20 22:20, Lijun Pan wrote:
-> Returning -EBUSY in ibmvnic_remove() does not actually hold the
-> removal procedure since driver core doesn't care for the return
-> value (see __device_release_driver() in drivers/base/dd.c
-> calling dev->bus->remove()) though vio_bus_remove
-> (in arch/powerpc/platforms/pseries/vio.c) records the
-> return value and passes it on. [1]
-> 
-> During the device removal precedure, we should not schedule
-> any new reset (ibmvnic_reset check for REMOVING and exit),
-> and should rely on the flush_work and flush_delayed_work
-> to complete the pending resets, specifically we need to
-> let __ibmvnic_reset() keep running while in REMOVING state since
-> flush_work and flush_delayed_work shall call __ibmvnic_reset finally.
-> So we skip the checking for REMOVING in __ibmvnic_reset.
-> 
-> [1]
-> https://lore.kernel.org/linuxppc-dev/20210117101242.dpwayq6wdgfdzirl@pengutronix.de/T/#m48f5befd96bc9842ece2a3ad14f4c27747206a53
-> Reported-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-> Fixes: 7d7195a026ba ("ibmvnic: Do not process device remove during
-> device reset")
-> Signed-off-by: Lijun Pan <ljp@linux.ibm.com>
-> ---
-> v1 versus RFC:
->   1/ articulate why remove the REMOVING checking in __ibmvnic_reset
->   and why keep the current checking for REMOVING in ibmvnic_reset.
->   2/ The locking issue mentioned by Uwe are being addressed separately
->      by	https://lists.openwall.net/netdev/2021/01/08/89
->   3/ This patch does not have merge conflict with 2/
-> 
->  drivers/net/ethernet/ibm/ibmvnic.c | 8 +-------
->  1 file changed, 1 insertion(+), 7 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/ibm/ibmvnic.c
-> b/drivers/net/ethernet/ibm/ibmvnic.c
-> index aed985e08e8a..11f28fd03057 100644
-> --- a/drivers/net/ethernet/ibm/ibmvnic.c
-> +++ b/drivers/net/ethernet/ibm/ibmvnic.c
-> @@ -2235,8 +2235,7 @@ static void __ibmvnic_reset(struct work_struct 
-> *work)
->  	while (rwi) {
->  		spin_lock_irqsave(&adapter->state_lock, flags);
-> 
-> -		if (adapter->state == VNIC_REMOVING ||
-> -		    adapter->state == VNIC_REMOVED) {
-> +		if (adapter->state == VNIC_REMOVED) {
+syzbot has found a reproducer for the following issue on:
 
-If we do get here, we would crash because ibmvnic_remove() happened. It 
-frees the adapter struct already.
+HEAD commit:    9791581c Merge tag 'for-5.11-rc4-tag' of git://git.kernel...
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=13cd09a4d00000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=39701af622f054a9
+dashboard link: https://syzkaller.appspot.com/bug?extid=70ba6cae2f44c82dcb76
+compiler:       gcc (GCC) 10.1.0-syz 20200507
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=133d8030d00000
 
->  			spin_unlock_irqrestore(&adapter->state_lock, flags);
->  			kfree(rwi);
->  			rc = EBUSY;
-> @@ -5372,11 +5371,6 @@ static int ibmvnic_remove(struct vio_dev *dev)
->  	unsigned long flags;
-> 
->  	spin_lock_irqsave(&adapter->state_lock, flags);
-> -	if (test_bit(0, &adapter->resetting)) {
-> -		spin_unlock_irqrestore(&adapter->state_lock, flags);
-> -		return -EBUSY;
-> -	}
-> -
->  	adapter->state = VNIC_REMOVING;
->  	spin_unlock_irqrestore(&adapter->state_lock, flags);
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+70ba6cae2f44c82dcb76@syzkaller.appspotmail.com
+
+================================================================================
+UBSAN: array-index-out-of-bounds in drivers/net/hamradio/6pack.c:845:16
+index 400 is out of range for type 'unsigned char [400]'
+CPU: 1 PID: 8 Comm: kworker/u4:0 Not tainted 5.11.0-rc4-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: events_unbound flush_to_ldisc
+Call Trace:
+ __dump_stack lib/dump_stack.c:79 [inline]
+ dump_stack+0x107/0x163 lib/dump_stack.c:120
+ ubsan_epilogue+0xb/0x5a lib/ubsan.c:148
+ __ubsan_handle_out_of_bounds.cold+0x62/0x6c lib/ubsan.c:356
+ decode_data.part.0+0x2c8/0x2e0 drivers/net/hamradio/6pack.c:845
+ decode_data drivers/net/hamradio/6pack.c:965 [inline]
+ sixpack_decode drivers/net/hamradio/6pack.c:968 [inline]
+ sixpack_receive_buf drivers/net/hamradio/6pack.c:458 [inline]
+ sixpack_receive_buf+0xd8c/0x1320 drivers/net/hamradio/6pack.c:435
+ tty_ldisc_receive_buf+0x14a/0x190 drivers/tty/tty_buffer.c:465
+ tty_port_default_receive_buf+0x6e/0xa0 drivers/tty/tty_port.c:38
+ receive_buf drivers/tty/tty_buffer.c:481 [inline]
+ flush_to_ldisc+0x20d/0x380 drivers/tty/tty_buffer.c:533
+ process_one_work+0x98d/0x15f0 kernel/workqueue.c:2275
+ worker_thread+0x64c/0x1120 kernel/workqueue.c:2421
+ kthread+0x3b1/0x4a0 kernel/kthread.c:292
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
+================================================================================
+Kernel panic - not syncing: panic_on_warn set ...
+CPU: 1 PID: 8 Comm: kworker/u4:0 Not tainted 5.11.0-rc4-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Workqueue: events_unbound flush_to_ldisc
+Call Trace:
+ __dump_stack lib/dump_stack.c:79 [inline]
+ dump_stack+0x107/0x163 lib/dump_stack.c:120
+ panic+0x306/0x73d kernel/panic.c:231
+ ubsan_epilogue+0x54/0x5a lib/ubsan.c:162
+ __ubsan_handle_out_of_bounds.cold+0x62/0x6c lib/ubsan.c:356
+ decode_data.part.0+0x2c8/0x2e0 drivers/net/hamradio/6pack.c:845
+ decode_data drivers/net/hamradio/6pack.c:965 [inline]
+ sixpack_decode drivers/net/hamradio/6pack.c:968 [inline]
+ sixpack_receive_buf drivers/net/hamradio/6pack.c:458 [inline]
+ sixpack_receive_buf+0xd8c/0x1320 drivers/net/hamradio/6pack.c:435
+ tty_ldisc_receive_buf+0x14a/0x190 drivers/tty/tty_buffer.c:465
+ tty_port_default_receive_buf+0x6e/0xa0 drivers/tty/tty_port.c:38
+ receive_buf drivers/tty/tty_buffer.c:481 [inline]
+ flush_to_ldisc+0x20d/0x380 drivers/tty/tty_buffer.c:533
+ process_one_work+0x98d/0x15f0 kernel/workqueue.c:2275
+ worker_thread+0x64c/0x1120 kernel/workqueue.c:2421
+ kthread+0x3b1/0x4a0 kernel/kthread.c:292
+ ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
+Kernel Offset: disabled
+Rebooting in 86400 seconds..
+
