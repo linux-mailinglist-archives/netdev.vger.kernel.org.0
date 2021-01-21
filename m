@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 937802FDFC5
-	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 03:57:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E4D242FDFC0
+	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 03:57:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2393254AbhAUCwH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jan 2021 21:52:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40540 "EHLO
+        id S2392834AbhAUCuE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jan 2021 21:50:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728757AbhAUCjW (ORCPT
+        with ESMTP id S1729241AbhAUCjW (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 21:39:22 -0500
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D94BDC061794
-        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 18:36:39 -0800 (PST)
-Received: by mail-ed1-x52c.google.com with SMTP id c6so724276ede.0
-        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 18:36:39 -0800 (PST)
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12C0AC061798
+        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 18:36:43 -0800 (PST)
+Received: by mail-ed1-x533.google.com with SMTP id s11so696571edd.5
+        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 18:36:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=0AEZmpbMS9sm6+SLmOVP2Mfz5Eyy0NnxxA2WVVixTSU=;
-        b=A7MbFgt0uHewTLND1lRMNyq/l1YJKCFQ6A6ft30sZxLuk68Z+FY8Ooac1o5BPx+NRQ
-         nx6cbJBY/sWobb6gZcyrT5mGIPLj5DKKgXsKo8I3feDGSF2RM8fbZyrmERpy80Ppqqc1
-         flVZIZTMBVRgzVIrWDt35axHiCfJwrJMsfDgfjkWm1RPEL8Y1VNe2VPJc6atC7QbbK0x
-         yYoKyh1G5mfK/MVSC2O6SgQ/HCGOKIhJyZ1sf3GOBLSbLKDOHBzm5TQ8+SOPCs45eoC/
-         xok8czd4NU016ALFB8xN42LJKcZ2Ownm6Hv70lbbfaEKh3jVv1qR1rrfF3XOAku3zbRO
-         hOUg==
+        bh=BAkdLVMMzHpe1mJvFxXDc6syXQ8Tf2FZUbQOLBzFN84=;
+        b=LWGIWdI9JL/T9sBmVpA8UMeop7qOqWV3+mowPRtJdMiDx7oOF4vj7icdgi1RsUVmK4
+         a8zoKYqsEfJDlzB9rjRB8bCyZXk0BWzoKbcHlvZ5t/oXjeLHV5XBfReujn5sSTS7GNQD
+         4jEPejsLw0RNmme128V0bZHTuLDTdw8jOH6pREJSiEWfPbIX9RPtiVA1pbIeLl11G1hX
+         iKv7iyBsD4GepkAdTAjq2cg/N7r5jnifJ7Xg73p+wklt3TPXhiu8ow/Q44/FCjPCCJxl
+         btdW8//j1vzF66it600hNKOR3XhBH7+1vSmqgXVcXgZP7PgN2LvaTPLCYdW2UBOwjJku
+         PqQw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=0AEZmpbMS9sm6+SLmOVP2Mfz5Eyy0NnxxA2WVVixTSU=;
-        b=VcpUGoQCpG1l8uMlw3NUJw38q34iHqbW23igbw+liPd33gqAqqpH5wpxHLZ+WtYZ/p
-         qUj+EMUgv8BUFHFezssB/YAr+ChRFsph1RfkD3vh/Ed49ULnONP1LevjYAuLTptkupR1
-         8GrUsEDLQOknQdRt8cPZb7DJknnIDcfMz9CTCU0fUnMbJthxa5WJT1kh2J9S+C49KaB2
-         +48kS6c6jYDtwnZoGMSf507tVyh3Oi8vvm2EqOm9k+tFJtEDMawVTT6o7eHO70rSM4I3
-         WRmOpgdwrP7XGug1wFDJs0hDQsEA95Sxz+0W0aSu07U8YeQnCGiot1ou1dbN2G1A4JdF
-         Wl9g==
-X-Gm-Message-State: AOAM531vgZYZky8pRjk9sREKpXXxhyjnnUkYLxzryrduEYD5mL4oN1uk
-        jcRzDlFh+YqXlV0C+Cxnz0M=
-X-Google-Smtp-Source: ABdhPJzvOCnrEk/REJ2BuoiX3+vu+xRr5y5DkMAUglGLALhFH32i8d3Op9tEwavEdZ+GpghcMAxsyQ==
-X-Received: by 2002:a05:6402:1f4:: with SMTP id i20mr9110946edy.180.1611196598610;
-        Wed, 20 Jan 2021 18:36:38 -0800 (PST)
+        bh=BAkdLVMMzHpe1mJvFxXDc6syXQ8Tf2FZUbQOLBzFN84=;
+        b=Wfrum3Kc0g5G2o1RXUVuf48wKjKt6NRnnzVqcZ49KS/14By0v2vfEwQW2XSUoNCsd5
+         e2hFDEWHYadJz9ny4CzaSOrWzV9NwcO388FqOYjUGJskq88nkjJcyqwQcc1fS25zK/Lh
+         JON7xPUT1MFhb10r4vbyfLWVWpyEPmevYyg4kD420mJeMRFLJIeZv5Q8Z5fdbC65XQMG
+         DtYBykJN1Q4n7XxWRaYS/mjO/Q0JxwZYaahbVsnC+Andw3JUMF7FgbrWOVemRzWNs6ej
+         6rSrUTGa+qH8DsfNwBB4J7nC1LBagFBMS0ojuSFZYLKxicThxHHU9ZrRc2sTl9owopgK
+         N5XA==
+X-Gm-Message-State: AOAM532b0Y6cIK2K4V0oaQKo3IFMXD97qW2o8onaJjFY6RMkkHPLjvuR
+        CxAn+8SdHdDgjd0pK2qbAiM=
+X-Google-Smtp-Source: ABdhPJxXbBG2aKnVtRgaJELgbk1AyJ1MNWLUMiU7rNJQr24rW1rcMNev0AWy6rlj8y+TJv8qANrGww==
+X-Received: by 2002:a50:8a90:: with SMTP id j16mr8947940edj.334.1611196601734;
+        Wed, 20 Jan 2021 18:36:41 -0800 (PST)
 Received: from localhost.localdomain (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id k22sm2025787edv.33.2021.01.20.18.36.37
+        by smtp.gmail.com with ESMTPSA id k22sm2025787edv.33.2021.01.20.18.36.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Jan 2021 18:36:38 -0800 (PST)
+        Wed, 20 Jan 2021 18:36:41 -0800 (PST)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
@@ -66,9 +66,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Andrey L <al@b4comtech.com>,
         Tobias Waldekranz <tobias@waldekranz.com>,
         UNGLinuxDriver@microchip.com
-Subject: [PATCH v5 net-next 08/10] net: dsa: felix: convert to the new .{set,del}_tag_protocol DSA API
-Date:   Thu, 21 Jan 2021 04:36:14 +0200
-Message-Id: <20210121023616.1696021-9-olteanv@gmail.com>
+Subject: [PATCH v5 net-next 10/10] net: dsa: felix: perform switch setup for tag_8021q
+Date:   Thu, 21 Jan 2021 04:36:16 +0200
+Message-Id: <20210121023616.1696021-11-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210121023616.1696021-1-olteanv@gmail.com>
 References: <20210121023616.1696021-1-olteanv@gmail.com>
@@ -80,38 +80,39 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-In expectation of the new tag_ocelot_8021q tagger implementation, we
-need to be able to do runtime switchover between one tagger and another.
-So we must implement the .set_tag_protocol() and .del_tag_protocol() for
-the current NPI-based tagger.
+Unlike sja1105, the only other user of the software-defined tag_8021q.c
+tagger format, the implementation we choose for the Felix DSA switch
+driver preserves full functionality under a vlan_filtering bridge
+(i.e. IP termination works through the DSA user ports under all
+circumstances).
 
-We move the felix_npi_port_init function in expectation of the future
-driver configuration necessary for tag_ocelot_8021q: we would like to
-not have the NPI-related bits interspersed with the tag_8021q bits.
+The tag_8021q protocol just wants:
+- Identifying the ingress switch port based on the RX VLAN ID, as seen
+  by the CPU. We achieve this by using the TCAM engines (which are also
+  used for tc-flower offload) to push the RX VLAN as a second, outer
+  tag, on egress towards the CPU port.
+- Steering traffic injected into the switch from the network stack
+  towards the correct front port based on the TX VLAN, and consuming
+  (popping) that header on the switch's egress.
 
-Note that the NPI port is no longer configured when the .setup() method
-concludes - aka when ocelot_init() and ocelot_init_port() are called.
-So we need to set the replicator groups - the PGIDs - again, when the
-NPI port is configured - in .set_tag_protocol(). So we export and call
-ocelot_apply_bridge_fwd_mask().
+A tc-flower pseudocode of the static configuration done by the driver
+would look like this:
 
-The conversion from this:
+$ tc qdisc add dev <cpu-port> clsact
+$ for eth in swp0 swp1 swp2 swp3; do \
+	tc filter add dev <cpu-port> egress flower indev ${eth} \
+		action vlan push id <rxvlan> protocol 802.1ad; \
+	tc filter add dev <cpu-port> ingress protocol 802.1Q flower
+		vlan_id <txvlan> action vlan pop \
+		action mirred egress redirect dev ${eth}; \
+done
 
-	ocelot_write_rix(ocelot,
-			 ANA_PGID_PGID_PGID(GENMASK(ocelot->num_phys_ports, 0)),
-			 ANA_PGID_PGID, PGID_UC);
-
-to this:
-
-	cpu_flood = ANA_PGID_PGID_PGID(BIT(ocelot->num_phys_ports));
-	ocelot_rmw_rix(ocelot, cpu_flood, cpu_flood, ANA_PGID_PGID, PGID_UC);
-
-is perhaps non-trivial, but is nonetheless non-functional. The PGID_UC
-(replicator for unknown unicast) is already configured out of hardware
-reset to flood to all ports except ocelot->num_phys_ports (the CPU port
-module). All we change is that we use a read-modify-write to only add
-the CPU port module to the unknown unicast replicator, as opposed to
-doing a full write to the register.
+but of course since DSA does not register network interfaces for the CPU
+port, this configuration would be impossible for the user to do. Also,
+due to the same reason, it is impossible for the user to inadvertently
+delete these rules using tc. These rules do not collide in any way with
+tc-flower, they just consume some TCAM space, which is something we can
+live with.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
@@ -119,282 +120,519 @@ Changes in v5:
 Path is split from previous monolithic patch "net: dsa: felix: add new
 VLAN-based tagger".
 
- drivers/net/dsa/ocelot/felix.c           | 150 +++++++++++++++++------
- drivers/net/dsa/ocelot/felix.h           |   1 +
- drivers/net/dsa/ocelot/felix_vsc9959.c   |   1 +
- drivers/net/dsa/ocelot/seville_vsc9953.c |   1 +
- drivers/net/ethernet/mscc/ocelot.c       |   3 +-
- include/soc/mscc/ocelot.h                |   1 +
- 6 files changed, 120 insertions(+), 37 deletions(-)
+Changes in v4:
+- Support simultaneous compilation of tag_ocelot.c and
+  tag_ocelot_8021q.c.
+- Support runtime switchover between these two taggers.
+- We are now actually performing cleanup instead of just probe-time
+  setup, which is required for supporting tagger switchover.
+
+Changes in v3:
+- Use a per-port bool is_dsa_8021q_cpu instead of a single dsa_8021q_cpu
+  variable, to be compatible with future work where there may be
+  potentially multiple tag_8021q CPU ports in a LAG.
+- Initialize ocelot->npi = -1 in felix_8021q_cpu_port_init to ensure we
+  don't mistakenly trigger NPI-specific code in ocelot.
+
+Changes in v2:
+Clean up the hardcoding of random VCAP filter IDs and the inclusion of a
+private ocelot header.
+ drivers/net/dsa/ocelot/felix.c          | 332 ++++++++++++++++++++++++
+ drivers/net/dsa/ocelot/felix.h          |   1 +
+ drivers/net/ethernet/mscc/ocelot.c      |  33 ++-
+ drivers/net/ethernet/mscc/ocelot_vcap.c |   1 +
+ drivers/net/ethernet/mscc/ocelot_vcap.h |   3 -
+ include/soc/mscc/ocelot.h               |   1 +
+ include/soc/mscc/ocelot_vcap.h          |   3 +
+ 7 files changed, 363 insertions(+), 11 deletions(-)
 
 diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
-index 054e57dd4383..f45dfb800bcb 100644
+index f45dfb800bcb..7096b5985199 100644
 --- a/drivers/net/dsa/ocelot/felix.c
 +++ b/drivers/net/dsa/ocelot/felix.c
-@@ -1,5 +1,5 @@
- // SPDX-License-Identifier: GPL-2.0
--/* Copyright 2019 NXP Semiconductors
-+/* Copyright 2019-2021 NXP Semiconductors
-  *
-  * This is an umbrella module for all network switches that are
-  * register-compatible with Ocelot and that perform I/O to their host CPU
-@@ -24,11 +24,118 @@
+@@ -13,6 +13,7 @@
+ #include <soc/mscc/ocelot_ana.h>
+ #include <soc/mscc/ocelot_ptp.h>
+ #include <soc/mscc/ocelot.h>
++#include <linux/dsa/8021q.h>
+ #include <linux/platform_device.h>
+ #include <linux/packing.h>
+ #include <linux/module.h>
+@@ -24,6 +25,331 @@
  #include <net/dsa.h>
  #include "felix.h"
  
-+/* The CPU port module is connected to the Node Processor Interface (NPI). This
-+ * is the mode through which frames can be injected from and extracted to an
-+ * external CPU, over Ethernet. In NXP SoCs, the "external CPU" is the ARM CPU
-+ * running Linux, and this forms a DSA setup together with the enetc or fman
-+ * DSA master.
-+ */
-+static void felix_npi_port_init(struct ocelot *ocelot, int port)
++static int felix_tag_8021q_rxvlan_add(struct felix *felix, int port, u16 vid,
++				      bool pvid, bool untagged)
 +{
-+	ocelot->npi = port;
++	struct ocelot_vcap_filter *outer_tagging_rule;
++	struct ocelot *ocelot = &felix->ocelot;
++	struct dsa_switch *ds = felix->ds;
++	int key_length, upstream, err;
 +
-+	ocelot_write(ocelot, QSYS_EXT_CPU_CFG_EXT_CPUQ_MSK_M |
-+		     QSYS_EXT_CPU_CFG_EXT_CPU_PORT(port),
-+		     QSYS_EXT_CPU_CFG);
-+
-+	/* NPI port Injection/Extraction configuration */
-+	ocelot_fields_write(ocelot, port, SYS_PORT_MODE_INCL_XTR_HDR,
-+			    ocelot->npi_xtr_prefix);
-+	ocelot_fields_write(ocelot, port, SYS_PORT_MODE_INCL_INJ_HDR,
-+			    ocelot->npi_inj_prefix);
-+
-+	/* Disable transmission of pause frames */
-+	ocelot_fields_write(ocelot, port, SYS_PAUSE_CFG_PAUSE_ENA, 0);
-+}
-+
-+static void felix_npi_port_deinit(struct ocelot *ocelot, int port)
-+{
-+	/* Restore hardware defaults */
-+	int unused_port = ocelot->num_phys_ports + 2;
-+
-+	ocelot->npi = -1;
-+
-+	ocelot_write(ocelot, QSYS_EXT_CPU_CFG_EXT_CPU_PORT(unused_port),
-+		     QSYS_EXT_CPU_CFG);
-+
-+	ocelot_fields_write(ocelot, port, SYS_PORT_MODE_INCL_XTR_HDR,
-+			    OCELOT_TAG_PREFIX_DISABLED);
-+	ocelot_fields_write(ocelot, port, SYS_PORT_MODE_INCL_INJ_HDR,
-+			    OCELOT_TAG_PREFIX_DISABLED);
-+
-+	/* Enable transmission of pause frames */
-+	ocelot_fields_write(ocelot, port, SYS_PAUSE_CFG_PAUSE_ENA, 1);
-+}
-+
-+static int felix_setup_tag_npi(struct dsa_switch *ds, int cpu)
-+{
-+	struct ocelot *ocelot = ds->priv;
-+	unsigned long cpu_flood;
-+
-+	felix_npi_port_init(ocelot, cpu);
-+
-+	/* Include the CPU port module (and indirectly, the NPI port)
-+	 * in the forwarding mask for unknown unicast - the hardware
-+	 * default value for ANA_FLOODING_FLD_UNICAST excludes
-+	 * BIT(ocelot->num_phys_ports), and so does ocelot_init,
-+	 * since Ocelot relies on whitelisting MAC addresses towards
-+	 * PGID_CPU.
-+	 * We do this because DSA does not yet perform RX filtering,
-+	 * and the NPI port does not perform source address learning,
-+	 * so traffic sent to Linux is effectively unknown from the
-+	 * switch's perspective.
++	/* We don't need to install the rxvlan into the other ports' filtering
++	 * tables, because we're just pushing the rxvlan when sending towards
++	 * the CPU
 +	 */
-+	cpu_flood = ANA_PGID_PGID_PGID(BIT(ocelot->num_phys_ports));
-+	ocelot_rmw_rix(ocelot, cpu_flood, cpu_flood, ANA_PGID_PGID, PGID_UC);
++	if (!pvid)
++		return 0;
 +
-+	ocelot_apply_bridge_fwd_mask(ocelot);
++	key_length = ocelot->vcap[VCAP_ES0].keys[VCAP_ES0_IGR_PORT].length;
++	upstream = dsa_upstream_port(ds, port);
 +
-+	return 0;
-+}
++	outer_tagging_rule = kzalloc(sizeof(struct ocelot_vcap_filter),
++				     GFP_KERNEL);
++	if (!outer_tagging_rule)
++		return -ENOMEM;
 +
-+static void felix_teardown_tag_npi(struct dsa_switch *ds, int cpu)
-+{
-+	struct ocelot *ocelot = ds->priv;
++	outer_tagging_rule->key_type = OCELOT_VCAP_KEY_ANY;
++	outer_tagging_rule->prio = 1;
++	outer_tagging_rule->id.cookie = port;
++	outer_tagging_rule->id.tc_offload = false;
++	outer_tagging_rule->block_id = VCAP_ES0;
++	outer_tagging_rule->type = OCELOT_VCAP_FILTER_OFFLOAD;
++	outer_tagging_rule->lookup = 0;
++	outer_tagging_rule->ingress_port.value = port;
++	outer_tagging_rule->ingress_port.mask = GENMASK(key_length - 1, 0);
++	outer_tagging_rule->egress_port.value = upstream;
++	outer_tagging_rule->egress_port.mask = GENMASK(key_length - 1, 0);
++	outer_tagging_rule->action.push_outer_tag = OCELOT_ES0_TAG;
++	outer_tagging_rule->action.tag_a_tpid_sel = OCELOT_TAG_TPID_SEL_8021AD;
++	outer_tagging_rule->action.tag_a_vid_sel = 1;
++	outer_tagging_rule->action.vid_a_val = vid;
 +
-+	felix_npi_port_deinit(ocelot, cpu);
-+}
-+
- static enum dsa_tag_protocol felix_get_tag_protocol(struct dsa_switch *ds,
- 						    int port,
- 						    enum dsa_tag_protocol mp)
- {
--	return DSA_TAG_PROTO_OCELOT;
-+	struct ocelot *ocelot = ds->priv;
-+	struct felix *felix = ocelot_to_felix(ocelot);
-+
-+	return felix->tag_proto;
-+}
-+
-+static int felix_set_tag_protocol(struct dsa_switch *ds, int cpu,
-+				  enum dsa_tag_protocol proto)
-+{
-+	int err;
-+
-+	switch (proto) {
-+	case DSA_TAG_PROTO_OCELOT:
-+		err = felix_setup_tag_npi(ds, cpu);
-+		break;
-+	default:
-+		err = -EOPNOTSUPP;
-+	}
++	err = ocelot_vcap_filter_add(ocelot, outer_tagging_rule, NULL);
++	if (err)
++		kfree(outer_tagging_rule);
 +
 +	return err;
 +}
 +
-+static void felix_del_tag_protocol(struct dsa_switch *ds, int cpu,
-+				   enum dsa_tag_protocol proto)
++static int felix_tag_8021q_txvlan_add(struct felix *felix, int port, u16 vid,
++				      bool pvid, bool untagged)
 +{
-+	switch (proto) {
-+	case DSA_TAG_PROTO_OCELOT:
-+		felix_teardown_tag_npi(ds, cpu);
-+		break;
-+	default:
-+		break;
++	struct ocelot_vcap_filter *untagging_rule, *redirect_rule;
++	struct ocelot *ocelot = &felix->ocelot;
++	struct dsa_switch *ds = felix->ds;
++	int upstream, err;
++
++	/* tag_8021q.c assumes we are implementing this via port VLAN
++	 * membership, which we aren't. So we don't need to add any VCAP filter
++	 * for the CPU port.
++	 */
++	if (ocelot->ports[port]->is_dsa_8021q_cpu)
++		return 0;
++
++	untagging_rule = kzalloc(sizeof(struct ocelot_vcap_filter), GFP_KERNEL);
++	if (!untagging_rule)
++		return -ENOMEM;
++
++	redirect_rule = kzalloc(sizeof(struct ocelot_vcap_filter), GFP_KERNEL);
++	if (!redirect_rule) {
++		kfree(untagging_rule);
++		return -ENOMEM;
 +	}
- }
- 
- static int felix_set_ageing_time(struct dsa_switch *ds,
-@@ -527,28 +634,6 @@ static int felix_init_structs(struct felix *felix, int num_phys_ports)
- 	return 0;
- }
- 
--/* The CPU port module is connected to the Node Processor Interface (NPI). This
-- * is the mode through which frames can be injected from and extracted to an
-- * external CPU, over Ethernet.
-- */
--static void felix_npi_port_init(struct ocelot *ocelot, int port)
--{
--	ocelot->npi = port;
--
--	ocelot_write(ocelot, QSYS_EXT_CPU_CFG_EXT_CPUQ_MSK_M |
--		     QSYS_EXT_CPU_CFG_EXT_CPU_PORT(port),
--		     QSYS_EXT_CPU_CFG);
--
--	/* NPI port Injection/Extraction configuration */
--	ocelot_fields_write(ocelot, port, SYS_PORT_MODE_INCL_XTR_HDR,
--			    ocelot->npi_xtr_prefix);
--	ocelot_fields_write(ocelot, port, SYS_PORT_MODE_INCL_INJ_HDR,
--			    ocelot->npi_inj_prefix);
--
--	/* Disable transmission of pause frames */
--	ocelot_fields_write(ocelot, port, SYS_PAUSE_CFG_PAUSE_ENA, 0);
--}
--
- /* Hardware initialization done here so that we can allocate structures with
-  * devm without fear of dsa_register_switch returning -EPROBE_DEFER and causing
-  * us to allocate structures twice (leak memory) and map PCI memory twice
-@@ -578,10 +663,10 @@ static int felix_setup(struct dsa_switch *ds)
- 	}
- 
- 	for (port = 0; port < ds->num_ports; port++) {
--		ocelot_init_port(ocelot, port);
++
++	upstream = dsa_upstream_port(ds, port);
++
++	untagging_rule->key_type = OCELOT_VCAP_KEY_ANY;
++	untagging_rule->ingress_port_mask = BIT(upstream);
++	untagging_rule->vlan.vid.value = vid;
++	untagging_rule->vlan.vid.mask = VLAN_VID_MASK;
++	untagging_rule->prio = 1;
++	untagging_rule->id.cookie = port;
++	untagging_rule->id.tc_offload = false;
++	untagging_rule->block_id = VCAP_IS1;
++	untagging_rule->type = OCELOT_VCAP_FILTER_OFFLOAD;
++	untagging_rule->lookup = 0;
++	untagging_rule->action.vlan_pop_cnt_ena = true;
++	untagging_rule->action.vlan_pop_cnt = 1;
++	untagging_rule->action.pag_override_mask = 0xff;
++	untagging_rule->action.pag_val = port;
++
++	err = ocelot_vcap_filter_add(ocelot, untagging_rule, NULL);
++	if (err) {
++		kfree(untagging_rule);
++		kfree(redirect_rule);
++		return err;
++	}
++
++	redirect_rule->key_type = OCELOT_VCAP_KEY_ANY;
++	redirect_rule->ingress_port_mask = BIT(upstream);
++	redirect_rule->pag = port;
++	redirect_rule->prio = 1;
++	redirect_rule->id.cookie = port;
++	redirect_rule->id.tc_offload = false;
++	redirect_rule->block_id = VCAP_IS2;
++	redirect_rule->type = OCELOT_VCAP_FILTER_OFFLOAD;
++	redirect_rule->lookup = 0;
++	redirect_rule->action.mask_mode = OCELOT_MASK_MODE_REDIRECT;
++	redirect_rule->action.port_mask = BIT(port);
++
++	err = ocelot_vcap_filter_add(ocelot, redirect_rule, NULL);
++	if (err) {
++		ocelot_vcap_filter_del(ocelot, untagging_rule);
++		kfree(redirect_rule);
++		return err;
++	}
++
++	return 0;
++}
++
++static int felix_tag_8021q_vlan_add(struct dsa_switch *ds, int port, u16 vid,
++				    u16 flags)
++{
++	bool untagged = flags & BRIDGE_VLAN_INFO_UNTAGGED;
++	bool pvid = flags & BRIDGE_VLAN_INFO_PVID;
++	struct ocelot *ocelot = ds->priv;
++
++	if (vid_is_dsa_8021q_rxvlan(vid))
++		return felix_tag_8021q_rxvlan_add(ocelot_to_felix(ocelot),
++						  port, vid, pvid, untagged);
++
++	if (vid_is_dsa_8021q_txvlan(vid))
++		return felix_tag_8021q_txvlan_add(ocelot_to_felix(ocelot),
++						  port, vid, pvid, untagged);
++
++	return 0;
++}
++
++static int felix_tag_8021q_rxvlan_del(struct felix *felix, int port, u16 vid)
++{
++	struct ocelot_vcap_filter *outer_tagging_rule;
++	struct ocelot_vcap_block *block_vcap_es0;
++	struct ocelot *ocelot = &felix->ocelot;
++
++	block_vcap_es0 = &ocelot->block[VCAP_ES0];
++
++	outer_tagging_rule = ocelot_vcap_block_find_filter_by_id(block_vcap_es0,
++								 port, false);
++	/* In rxvlan_add, we had the "if (!pvid) return 0" logic to avoid
++	 * installing outer tagging ES0 rules where they weren't needed.
++	 * But in rxvlan_del, the API doesn't give us the "flags" anymore,
++	 * so that forces us to be slightly sloppy here, and just assume that
++	 * if we didn't find an outer_tagging_rule it means that there was
++	 * none in the first place, i.e. rxvlan_del is called on a non-pvid
++	 * port. This is most probably true though.
++	 */
++	if (!outer_tagging_rule)
++		return 0;
++
++	return ocelot_vcap_filter_del(ocelot, outer_tagging_rule);
++}
++
++static int felix_tag_8021q_txvlan_del(struct felix *felix, int port, u16 vid)
++{
++	struct ocelot_vcap_filter *untagging_rule, *redirect_rule;
++	struct ocelot_vcap_block *block_vcap_is1;
++	struct ocelot_vcap_block *block_vcap_is2;
++	struct ocelot *ocelot = &felix->ocelot;
++	int err;
++
++	if (ocelot->ports[port]->is_dsa_8021q_cpu)
++		return 0;
++
++	block_vcap_is1 = &ocelot->block[VCAP_IS1];
++	block_vcap_is2 = &ocelot->block[VCAP_IS2];
++
++	untagging_rule = ocelot_vcap_block_find_filter_by_id(block_vcap_is1,
++							     port, false);
++	if (!untagging_rule)
++		return 0;
++
++	err = ocelot_vcap_filter_del(ocelot, untagging_rule);
++	if (err)
++		return err;
++
++	redirect_rule = ocelot_vcap_block_find_filter_by_id(block_vcap_is2,
++							    port, false);
++	if (!redirect_rule)
++		return 0;
++
++	return ocelot_vcap_filter_del(ocelot, redirect_rule);
++}
++
++static int felix_tag_8021q_vlan_del(struct dsa_switch *ds, int port, u16 vid)
++{
++	struct ocelot *ocelot = ds->priv;
++
++	if (vid_is_dsa_8021q_rxvlan(vid))
++		return felix_tag_8021q_rxvlan_del(ocelot_to_felix(ocelot),
++						  port, vid);
++
++	if (vid_is_dsa_8021q_txvlan(vid))
++		return felix_tag_8021q_txvlan_del(ocelot_to_felix(ocelot),
++						  port, vid);
++
++	return 0;
++}
++
++static const struct dsa_8021q_ops felix_tag_8021q_ops = {
++	.vlan_add	= felix_tag_8021q_vlan_add,
++	.vlan_del	= felix_tag_8021q_vlan_del,
++};
++
++/* Alternatively to using the NPI functionality, that same hardware MAC
++ * connected internally to the enetc or fman DSA master can be configured to
++ * use the software-defined tag_8021q frame format. As far as the hardware is
++ * concerned, it thinks it is a "dumb switch" - the queues of the CPU port
++ * module are now disconnected from it, but can still be accessed through
++ * register-based MMIO.
++ */
++static void felix_8021q_cpu_port_init(struct ocelot *ocelot, int port)
++{
++	ocelot->ports[port]->is_dsa_8021q_cpu = true;
++	ocelot->npi = -1;
++
++	/* Overwrite PGID_CPU with the non-tagging port */
++	ocelot_write_rix(ocelot, BIT(port), ANA_PGID_PGID, PGID_CPU);
++}
++
++static void felix_8021q_cpu_port_deinit(struct ocelot *ocelot, int port)
++{
++	ocelot->ports[port]->is_dsa_8021q_cpu = false;
++
++	/* Restore PGID_CPU */
++	ocelot_write_rix(ocelot, BIT(ocelot->num_phys_ports), ANA_PGID_PGID,
++			 PGID_CPU);
++}
++
++static int felix_setup_tag_8021q(struct dsa_switch *ds, int cpu)
++{
++	struct ocelot *ocelot = ds->priv;
++	struct felix *felix = ocelot_to_felix(ocelot);
++	unsigned long cpu_flood;
++	int port, err;
++
++	felix_8021q_cpu_port_init(ocelot, cpu);
++
++	for (port = 0; port < ds->num_ports; port++) {
 +		if (dsa_is_unused_port(ds, port))
 +			continue;
- 
--		if (dsa_is_cpu_port(ds, port))
--			felix_npi_port_init(ocelot, port);
-+		ocelot_init_port(ocelot, port);
- 
- 		/* Set the default QoS Classification based on PCP and DEI
- 		 * bits of vlan tag.
-@@ -593,15 +678,6 @@ static int felix_setup(struct dsa_switch *ds)
- 	if (err)
- 		return err;
- 
--	/* Include the CPU port module in the forwarding mask for unknown
--	 * unicast - the hardware default value for ANA_FLOODING_FLD_UNICAST
--	 * excludes BIT(ocelot->num_phys_ports), and so does ocelot_init, since
--	 * Ocelot relies on whitelisting MAC addresses towards PGID_CPU.
--	 */
--	ocelot_write_rix(ocelot,
--			 ANA_PGID_PGID_PGID(GENMASK(ocelot->num_phys_ports, 0)),
--			 ANA_PGID_PGID, PGID_UC);
--
- 	ds->mtu_enforcement_ingress = true;
- 	ds->assisted_learning_on_cpu_port = true;
- 
-@@ -860,6 +936,8 @@ static int felix_sb_occ_tc_port_bind_get(struct dsa_switch *ds, int port,
- 
- const struct dsa_switch_ops felix_switch_ops = {
- 	.get_tag_protocol		= felix_get_tag_protocol,
-+	.set_tag_protocol		= felix_set_tag_protocol,
-+	.del_tag_protocol		= felix_del_tag_protocol,
- 	.setup				= felix_setup,
- 	.teardown			= felix_teardown,
- 	.set_ageing_time		= felix_set_ageing_time,
++
++		/* This overwrites ocelot_init():
++		 * Do not forward BPDU frames to the CPU port module,
++		 * for 2 reasons:
++		 * - When these packets are injected from the tag_8021q
++		 *   CPU port, we want them to go out, not loop back
++		 *   into the system.
++		 * - STP traffic ingressing on a user port should go to
++		 *   the tag_8021q CPU port, not to the hardware CPU
++		 *   port module.
++		 */
++		ocelot_write_gix(ocelot,
++				 ANA_PORT_CPU_FWD_BPDU_CFG_BPDU_REDIR_ENA(0),
++				 ANA_PORT_CPU_FWD_BPDU_CFG, port);
++	}
++
++	/* In tag_8021q mode, the CPU port module is unused. So we
++	 * want to disable flooding of any kind to the CPU port module,
++	 * since packets going there will end in a black hole.
++	 */
++	cpu_flood = ANA_PGID_PGID_PGID(BIT(ocelot->num_phys_ports));
++	ocelot_rmw_rix(ocelot, 0, cpu_flood, ANA_PGID_PGID, PGID_UC);
++	ocelot_rmw_rix(ocelot, 0, cpu_flood, ANA_PGID_PGID, PGID_MC);
++
++	ocelot_apply_bridge_fwd_mask(ocelot);
++
++	felix->dsa_8021q_ctx = kzalloc(sizeof(*felix->dsa_8021q_ctx),
++				       GFP_KERNEL);
++	if (!felix->dsa_8021q_ctx)
++		return -ENOMEM;
++
++	felix->dsa_8021q_ctx->ops = &felix_tag_8021q_ops;
++	felix->dsa_8021q_ctx->proto = htons(ETH_P_8021AD);
++	felix->dsa_8021q_ctx->ds = ds;
++
++	rtnl_lock();
++	err = dsa_8021q_setup(felix->dsa_8021q_ctx, true);
++	rtnl_unlock();
++	if (err)
++		goto out_free_dsa_8021_ctx;
++
++	return 0;
++
++out_free_dsa_8021_ctx:
++	kfree(felix->dsa_8021q_ctx);
++	return err;
++}
++
++static void felix_teardown_tag_8021q(struct dsa_switch *ds, int cpu)
++{
++	struct ocelot *ocelot = ds->priv;
++	struct felix *felix = ocelot_to_felix(ocelot);
++	int err, port;
++
++	rtnl_lock();
++	err = dsa_8021q_setup(felix->dsa_8021q_ctx, false);
++	rtnl_unlock();
++	if (err)
++		dev_err(ds->dev, "dsa_8021q_setup returned %d", err);
++
++	kfree(felix->dsa_8021q_ctx);
++
++	for (port = 0; port < ds->num_ports; port++) {
++		if (dsa_is_unused_port(ds, port))
++			continue;
++
++		/* Restore the logic from ocelot_init:
++		 * do not forward BPDU frames to the front ports.
++		 */
++		ocelot_write_gix(ocelot,
++				 ANA_PORT_CPU_FWD_BPDU_CFG_BPDU_REDIR_ENA(0xffff),
++				 ANA_PORT_CPU_FWD_BPDU_CFG,
++				 port);
++	}
++
++	felix_8021q_cpu_port_deinit(ocelot, cpu);
++}
++
+ /* The CPU port module is connected to the Node Processor Interface (NPI). This
+  * is the mode through which frames can be injected from and extracted to an
+  * external CPU, over Ethernet. In NXP SoCs, the "external CPU" is the ARM CPU
+@@ -119,6 +445,9 @@ static int felix_set_tag_protocol(struct dsa_switch *ds, int cpu,
+ 	case DSA_TAG_PROTO_OCELOT:
+ 		err = felix_setup_tag_npi(ds, cpu);
+ 		break;
++	case DSA_TAG_PROTO_OCELOT_8021Q:
++		err = felix_setup_tag_8021q(ds, cpu);
++		break;
+ 	default:
+ 		err = -EOPNOTSUPP;
+ 	}
+@@ -133,6 +462,9 @@ static void felix_del_tag_protocol(struct dsa_switch *ds, int cpu,
+ 	case DSA_TAG_PROTO_OCELOT:
+ 		felix_teardown_tag_npi(ds, cpu);
+ 		break;
++	case DSA_TAG_PROTO_OCELOT_8021Q:
++		felix_teardown_tag_8021q(ds, cpu);
++		break;
+ 	default:
+ 		break;
+ 	}
 diff --git a/drivers/net/dsa/ocelot/felix.h b/drivers/net/dsa/ocelot/felix.h
-index 994835cb9307..264b3bbdc4d1 100644
+index 264b3bbdc4d1..9d4459f2fffb 100644
 --- a/drivers/net/dsa/ocelot/felix.h
 +++ b/drivers/net/dsa/ocelot/felix.h
 @@ -48,6 +48,7 @@ struct felix {
  	struct lynx_pcs			**pcs;
  	resource_size_t			switch_base;
  	resource_size_t			imdio_base;
-+	enum dsa_tag_protocol		tag_proto;
++	struct dsa_8021q_context	*dsa_8021q_ctx;
+ 	enum dsa_tag_protocol		tag_proto;
  };
  
- struct net_device *felix_port_to_netdev(struct ocelot *ocelot, int port);
-diff --git a/drivers/net/dsa/ocelot/felix_vsc9959.c b/drivers/net/dsa/ocelot/felix_vsc9959.c
-index f9711e69b8d5..e944868cc120 100644
---- a/drivers/net/dsa/ocelot/felix_vsc9959.c
-+++ b/drivers/net/dsa/ocelot/felix_vsc9959.c
-@@ -1467,6 +1467,7 @@ static int felix_pci_probe(struct pci_dev *pdev,
- 	ds->ops = &felix_switch_ops;
- 	ds->priv = ocelot;
- 	felix->ds = ds;
-+	felix->tag_proto = DSA_TAG_PROTO_OCELOT;
- 
- 	err = dsa_register_switch(ds);
- 	if (err) {
-diff --git a/drivers/net/dsa/ocelot/seville_vsc9953.c b/drivers/net/dsa/ocelot/seville_vsc9953.c
-index 5e9bfdea50be..512f677a6c1c 100644
---- a/drivers/net/dsa/ocelot/seville_vsc9953.c
-+++ b/drivers/net/dsa/ocelot/seville_vsc9953.c
-@@ -1246,6 +1246,7 @@ static int seville_probe(struct platform_device *pdev)
- 	ds->ops = &felix_switch_ops;
- 	ds->priv = ocelot;
- 	felix->ds = ds;
-+	felix->tag_proto = DSA_TAG_PROTO_OCELOT;
- 
- 	err = dsa_register_switch(ds);
- 	if (err) {
 diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
-index acf7ef00e56b..a14ff1e5f940 100644
+index a14ff1e5f940..0cbd1bbbf365 100644
 --- a/drivers/net/ethernet/mscc/ocelot.c
 +++ b/drivers/net/ethernet/mscc/ocelot.c
-@@ -876,7 +876,7 @@ int ocelot_get_ts_info(struct ocelot *ocelot, int port,
- }
- EXPORT_SYMBOL(ocelot_get_ts_info);
+@@ -878,16 +878,37 @@ EXPORT_SYMBOL(ocelot_get_ts_info);
  
--static void ocelot_apply_bridge_fwd_mask(struct ocelot *ocelot)
-+void ocelot_apply_bridge_fwd_mask(struct ocelot *ocelot)
+ void ocelot_apply_bridge_fwd_mask(struct ocelot *ocelot)
  {
++	unsigned long cpu_fwd_mask = 0;
  	int port;
  
-@@ -908,6 +908,7 @@ static void ocelot_apply_bridge_fwd_mask(struct ocelot *ocelot)
++	/* If a DSA tag_8021q CPU exists, it needs to be unconditionally
++	 * (i.e. regardless of whether the port is bridged or standalone)
++	 * included in the regular forwarding path, as opposed to the
++	 * hardware-based CPU port module which can be a destination for
++	 * packets even if it isn't part of PGID_SRC.
++	 */
++	for (port = 0; port < ocelot->num_phys_ports; port++)
++		if (ocelot->ports[port]->is_dsa_8021q_cpu)
++			cpu_fwd_mask |= BIT(port);
++
+ 	/* Apply FWD mask. The loop is needed to add/remove the current port as
+ 	 * a source for the other ports.
+ 	 */
+ 	for (port = 0; port < ocelot->num_phys_ports; port++) {
+-		if (ocelot->bridge_fwd_mask & BIT(port)) {
+-			unsigned long mask = ocelot->bridge_fwd_mask & ~BIT(port);
++		/* Standalone ports forward only to DSA tag_8021q CPU ports */
++		unsigned long mask = cpu_fwd_mask;
++
++		/* The DSA tag_8021q CPU ports need to be able to forward
++		 * packets to all other ports except for themselves
++		 */
++		if (ocelot->ports[port]->is_dsa_8021q_cpu) {
++			mask = GENMASK(ocelot->num_phys_ports - 1, 0);
++			mask &= ~cpu_fwd_mask;
++		} else if (ocelot->bridge_fwd_mask & BIT(port)) {
+ 			int lag;
+ 
++			mask |= ocelot->bridge_fwd_mask & ~BIT(port);
++
+ 			for (lag = 0; lag < ocelot->num_phys_ports; lag++) {
+ 				unsigned long bond_mask = ocelot->lags[lag];
+ 
+@@ -899,13 +920,9 @@ void ocelot_apply_bridge_fwd_mask(struct ocelot *ocelot)
+ 					break;
+ 				}
+ 			}
+-
+-			ocelot_write_rix(ocelot, mask,
+-					 ANA_PGID_PGID, PGID_SRC + port);
+-		} else {
+-			ocelot_write_rix(ocelot, 0,
+-					 ANA_PGID_PGID, PGID_SRC + port);
  		}
++
++		ocelot_write_rix(ocelot, mask, ANA_PGID_PGID, PGID_SRC + port);
  	}
  }
-+EXPORT_SYMBOL(ocelot_apply_bridge_fwd_mask);
+ EXPORT_SYMBOL(ocelot_apply_bridge_fwd_mask);
+diff --git a/drivers/net/ethernet/mscc/ocelot_vcap.c b/drivers/net/ethernet/mscc/ocelot_vcap.c
+index b82fd4103a68..37a232911395 100644
+--- a/drivers/net/ethernet/mscc/ocelot_vcap.c
++++ b/drivers/net/ethernet/mscc/ocelot_vcap.c
+@@ -1009,6 +1009,7 @@ ocelot_vcap_block_find_filter_by_id(struct ocelot_vcap_block *block, int cookie,
  
- void ocelot_bridge_stp_state_set(struct ocelot *ocelot, int port, u8 state)
- {
+ 	return NULL;
+ }
++EXPORT_SYMBOL(ocelot_vcap_block_find_filter_by_id);
+ 
+ /* If @on=false, then SNAP, ARP, IP and OAM frames will not match on keys based
+  * on destination and source MAC addresses, but only on higher-level protocol
+diff --git a/drivers/net/ethernet/mscc/ocelot_vcap.h b/drivers/net/ethernet/mscc/ocelot_vcap.h
+index 3b0c7916056e..523611ccc48f 100644
+--- a/drivers/net/ethernet/mscc/ocelot_vcap.h
++++ b/drivers/net/ethernet/mscc/ocelot_vcap.h
+@@ -14,9 +14,6 @@
+ 
+ int ocelot_vcap_filter_stats_update(struct ocelot *ocelot,
+ 				    struct ocelot_vcap_filter *rule);
+-struct ocelot_vcap_filter *
+-ocelot_vcap_block_find_filter_by_id(struct ocelot_vcap_block *block, int id,
+-				    bool tc_offload);
+ 
+ void ocelot_detect_vcap_constants(struct ocelot *ocelot);
+ int ocelot_vcap_init(struct ocelot *ocelot);
 diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
-index 93c22627dedd..fba24a0327d4 100644
+index fba24a0327d4..6a61c499a30d 100644
 --- a/include/soc/mscc/ocelot.h
 +++ b/include/soc/mscc/ocelot.h
-@@ -760,6 +760,7 @@ void ocelot_adjust_link(struct ocelot *ocelot, int port,
- 			struct phy_device *phydev);
- int ocelot_port_vlan_filtering(struct ocelot *ocelot, int port, bool enabled);
- void ocelot_bridge_stp_state_set(struct ocelot *ocelot, int port, u8 state);
-+void ocelot_apply_bridge_fwd_mask(struct ocelot *ocelot);
- int ocelot_port_bridge_join(struct ocelot *ocelot, int port,
- 			    struct net_device *bridge);
- int ocelot_port_bridge_leave(struct ocelot *ocelot, int port,
+@@ -610,6 +610,7 @@ struct ocelot_port {
+ 	phy_interface_t			phy_mode;
+ 
+ 	u8				*xmit_template;
++	bool				is_dsa_8021q_cpu;
+ };
+ 
+ struct ocelot {
+diff --git a/include/soc/mscc/ocelot_vcap.h b/include/soc/mscc/ocelot_vcap.h
+index 76e01c927e17..25fd525aaf92 100644
+--- a/include/soc/mscc/ocelot_vcap.h
++++ b/include/soc/mscc/ocelot_vcap.h
+@@ -693,5 +693,8 @@ int ocelot_vcap_filter_add(struct ocelot *ocelot,
+ 			   struct netlink_ext_ack *extack);
+ int ocelot_vcap_filter_del(struct ocelot *ocelot,
+ 			   struct ocelot_vcap_filter *rule);
++struct ocelot_vcap_filter *
++ocelot_vcap_block_find_filter_by_id(struct ocelot_vcap_block *block, int id,
++				    bool tc_offload);
+ 
+ #endif /* _OCELOT_VCAP_H_ */
 -- 
 2.25.1
 
