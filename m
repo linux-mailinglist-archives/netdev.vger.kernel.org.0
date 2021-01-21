@@ -2,77 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E70DA2FDF70
-	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 03:36:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B99442FDF92
+	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 03:45:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732209AbhAUCVS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jan 2021 21:21:18 -0500
-Received: from mail-out.m-online.net ([212.18.0.9]:33789 "EHLO
-        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2392901AbhAUBwb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 20:52:31 -0500
-Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
-        by mail-out.m-online.net (Postfix) with ESMTP id 4DLljl1LYYz1qs04;
-        Thu, 21 Jan 2021 02:51:23 +0100 (CET)
-Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
-        by mail.m-online.net (Postfix) with ESMTP id 4DLljl0mVMz1r2y8;
-        Thu, 21 Jan 2021 02:51:23 +0100 (CET)
-X-Virus-Scanned: amavisd-new at mnet-online.de
-Received: from mail.mnet-online.de ([192.168.8.182])
-        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
-        with ESMTP id J3r4SyxYuVTD; Thu, 21 Jan 2021 02:51:21 +0100 (CET)
-X-Auth-Info: RhaUe+hEc+Br+v91hFTUEVLeLsUKumDEhVAIhWBJRng=
-Received: from [IPv6:::1] (p578adb1c.dip0.t-ipconnect.de [87.138.219.28])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.mnet-online.de (Postfix) with ESMTPSA;
-        Thu, 21 Jan 2021 02:51:21 +0100 (CET)
-Subject: Re: [PATCH net-next V2] net: dsa: microchip: Adjust reset release
- timing to match reference reset circuit
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Michael Grzeschik <m.grzeschik@pengutronix.de>,
-        Paul Barker <pbarker@konsulko.com>
-References: <20210120030502.617185-1-marex@denx.de>
- <20210120173127.58445e6c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Marek Vasut <marex@denx.de>
-Message-ID: <9dd12956-4ddc-b641-185e-a36c7d4d81a9@denx.de>
-Date:   Thu, 21 Jan 2021 02:51:21 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
-MIME-Version: 1.0
-In-Reply-To: <20210120173127.58445e6c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        id S2390047AbhAUCWH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jan 2021 21:22:07 -0500
+Received: from mail-m972.mail.163.com ([123.126.97.2]:53878 "EHLO
+        mail-m972.mail.163.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731645AbhAUCK7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 21:10:59 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=From:Subject:Date:Message-Id; bh=dqcHSmHAfDMQIlJJSN
+        4wpg35l5Qu7xOOGot1v9uNrfM=; b=UgmHeHyANBrnjbaK385ZOUqyGsjLPTuKDn
+        eWRvRXkJEfe8xSkV4O64KNYx2gH67NXhxRI3li7uZBRiRbySOG+9Hl0BQcQIg/yi
+        35JhfhxgaCg6fiQ34Eehrp3bd5qKTffj+uX5udyRhnNkbwTLGZNhmTdUqgq1zg0y
+        gWvY3oUYQ=
+Received: from localhost.localdomain (unknown [119.3.119.20])
+        by smtp2 (Coremail) with SMTP id GtxpCgCnEcw+4ghgGLEmJw--.3551S4;
+        Thu, 21 Jan 2021 10:09:06 +0800 (CST)
+From:   Pan Bian <bianpan2016@163.com>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Pan Bian <bianpan2016@163.com>
+Subject: [PATCH] bpf: put file handler if no storage found
+Date:   Wed, 20 Jan 2021 18:08:56 -0800
+Message-Id: <20210121020856.25507-1-bianpan2016@163.com>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: GtxpCgCnEcw+4ghgGLEmJw--.3551S4
+X-Coremail-Antispam: 1Uf129KBjvdXoW7Jry8KryxArWkKry5Cw4rXwb_yoWfZrb_XF
+        WUX3yxKr4q9rZ7Xws8CaySq3s2yF4rKr1kC347KF4UG3Z8Z3s8JFnrAwnxZFyrtw4rKFZx
+        JrZ3Zr95Gr15ZjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUvcSsGvfC2KfnxnUUI43ZEXa7IU1BbytUUUUU==
+X-Originating-IP: [119.3.119.20]
+X-CM-SenderInfo: held01tdqsiiqw6rljoofrz/xtbBUQIhclaD9tYxSgAAsO
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/21/21 2:31 AM, Jakub Kicinski wrote:
-> On Wed, 20 Jan 2021 04:05:02 +0100 Marek Vasut wrote:
->> KSZ8794CNX datasheet section 8.0 RESET CIRCUIT describes recommended
->> circuit for interfacing with CPU/FPGA reset consisting of 10k pullup
->> resistor and 10uF capacitor to ground. This circuit takes ~100 ms to
->> rise enough to release the reset.
->>
->> For maximum supply voltage VDDIO=3.3V VIH=2.0V R=10kR C=10uF that is
->>                      VDDIO - VIH
->>    t = R * C * -ln( ------------- ) = 10000*0.00001*-(-0.93)=0.093 s
->>                         VDDIO
->> so we need ~95 ms for the reset to really de-assert, and then the
->> original 100us for the switch itself to come out of reset. Simply
->> msleep() for 100 ms which fits the constraint with a bit of extra
->> space.
->>
->> Fixes: 5b797980908a ("net: dsa: microchip: Implement recommended reset timing")
->> Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
->> Signed-off-by: Marek Vasut <marex@denx.de>
-> 
-> I'm slightly confused whether this is just future proofing or you
-> actually have a board where this matters. The tree is tagged as
-> net-next but there is a Fixes tag which normally indicates net+stable.
+Put file f if inode_storage_ptr() returns NULL.
 
-I have a board where I trigger this problem, that's how I found it. It 
-should be passed to stable too. So the correct tree / tag is "net" ?
+Fixes: 8ea636848aca ("bpf: Implement bpf_local_storage for inodes")
+Acked-by: KP Singh <kpsingh@kernel.org>
+Signed-off-by: Pan Bian <bianpan2016@163.com>
+---
+ kernel/bpf/bpf_inode_storage.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/kernel/bpf/bpf_inode_storage.c b/kernel/bpf/bpf_inode_storage.c
+index 6edff97ad594..089d5071d4fc 100644
+--- a/kernel/bpf/bpf_inode_storage.c
++++ b/kernel/bpf/bpf_inode_storage.c
+@@ -125,8 +125,12 @@ static int bpf_fd_inode_storage_update_elem(struct bpf_map *map, void *key,
+ 
+ 	fd = *(int *)key;
+ 	f = fget_raw(fd);
+-	if (!f || !inode_storage_ptr(f->f_inode))
++	if (!f)
++		return -EBADF;
++	if (!inode_storage_ptr(f->f_inode)) {
++		fput(f);
+ 		return -EBADF;
++	}
+ 
+ 	sdata = bpf_local_storage_update(f->f_inode,
+ 					 (struct bpf_local_storage_map *)map,
+-- 
+2.17.1
+
