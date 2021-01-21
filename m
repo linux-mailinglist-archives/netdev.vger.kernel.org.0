@@ -2,493 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 911662FF3BC
-	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 20:04:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E4C982FF3F0
+	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 20:12:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726874AbhAUSxq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jan 2021 13:53:46 -0500
-Received: from mail.kernel.org ([198.145.29.99]:33950 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728294AbhAUIyY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 21 Jan 2021 03:54:24 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id B0E8023A03;
-        Thu, 21 Jan 2021 08:52:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611219174;
-        bh=6zzHwhx2gA99CSu4CUOlz7dq+/h5z8gCbSLJ1mCXi9s=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DA6wA48Bdmj78C/GKptnPhbcJ3XiliH2CRKMtd8YKV7D2mGfVIvmX4fLaig5BC0+Z
-         LkHCumqYZXwuLT3da7mOuoKfF45CWB592b19J4MIcYAEBMjt4U+43oBY8QaPpCxEQ7
-         uUMcXaAS8r5qYOnFrP/Cdh+YJXbKyD/SHT4Dw77kE6mtOcqwEunoOr+6s5n6gDD17n
-         Yn42Ys1vLaomuinFbdQFiSkIsNByqDXkMeaeQvQQTdT1g8Fbn8vuiqlEdGzy7nrL8A
-         i76KjkcEPVwAcagcv0szME6F81iD8/YusBykJ/3P/5g1mfhUR4tZQ/nUUm+kfSElNk
-         Lwrtq1NGrihrQ==
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>,
+        id S1725794AbhAUTLd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jan 2021 14:11:33 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56940 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727013AbhAUTLX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jan 2021 14:11:23 -0500
+Received: from ms.lwn.net (ms.lwn.net [IPv6:2600:3c01:e000:3a1::42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 686F7C061756;
+        Thu, 21 Jan 2021 11:11:08 -0800 (PST)
+Received: from lwn.net (unknown [IPv6:2601:281:8300:104d::5f6])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ms.lwn.net (Postfix) with ESMTPSA id 67463615C;
+        Thu, 21 Jan 2021 19:09:55 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 ms.lwn.net 67463615C
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=lwn.net; s=20201203;
+        t=1611256197; bh=0PfEGC/cPJ5o5ce4iP7kPM3qg+xRX/ZAzMq8mA7LR+w=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=LfmTwdSQP3IBIFsgIimE+P0zc4qOuRRENhFAbFZ81/G0xiY0DScELhTCtldW3XIfz
+         Ugs8obCBqzDnsrsJoi5krEbWrGHjyZPpGee+9oAGUJ1ZDXrSP/jMHtPw39Va3bBst2
+         L4SlcWZ4eBnLVGq3hawDKWCzzYzGfx0DG20ajnIZZRO05FEVzu6Z6QH1o0t7hxv9Z5
+         FAGLGDnT/R3zaflLKjCnNdzZoWBPmMbSxH+vE+gp8swBNJrsI901YZhh5xO0J5KAQE
+         q+gS4MkjsOprcfN5wLvJLeHWfw2eGdzUGLUYeV2MifPW5V3sfXPnjMGNWyuhz0xfWx
+         Q0+/sodoN2x/A==
+Date:   Thu, 21 Jan 2021 12:09:54 -0700
+From:   Jonathan Corbet <corbet@lwn.net>
+To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        linux-kernel@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexander Viro <viro@zeniv.linux.org.uk>,
+        Alexandre Bounine <alex.bou9@gmail.com>,
+        Andy Lutomirski <luto@amacapital.net>,
+        Anton Vorontsov <anton@enomsg.org>,
+        Colin Cross <ccross@android.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Evgeniy Polyakov <zbr@ioremap.net>,
+        Hans de Goede <hdegoede@redhat.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Jason Gunthorpe <jgg@nvidia.com>
-Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        alexander.duyck@gmail.com, sridhar.samudrala@intel.com,
-        edwin.peer@broadcom.com, dsahern@kernel.org, kiran.patil@intel.com,
-        jacob.e.keller@intel.com, david.m.ertman@intel.com,
-        dan.j.williams@intel.com, Parav Pandit <parav@nvidia.com>,
-        Vu Pham <vuhuong@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next V9 06/14] net/mlx5: SF, Add auxiliary device support
-Date:   Thu, 21 Jan 2021 00:52:29 -0800
-Message-Id: <20210121085237.137919-7-saeed@kernel.org>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20210121085237.137919-1-saeed@kernel.org>
-References: <20210121085237.137919-1-saeed@kernel.org>
+        Johannes Berg <johannes@sipsolutions.net>,
+        Jon Maloy <jmaloy@redhat.com>,
+        Kees Cook <keescook@chromium.org>,
+        Maarten Lankhorst <maarten.lankhorst@linux.intel.com>,
+        Mark Gross <mgross@linux.intel.com>,
+        Matt Porter <mporter@kernel.crashing.org>,
+        Maxime Ripard <mripard@kernel.org>,
+        Maximilian Luz <luzmaximilian@gmail.com>,
+        Mike Rapoport <rppt@kernel.org>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Richard Gong <richard.gong@linux.intel.com>,
+        Shuah Khan <shuah@kernel.org>,
+        Sudip Mukherjee <sudipm.mukherjee@gmail.com>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Tony Luck <tony.luck@intel.com>,
+        Will Drewry <wad@chromium.org>,
+        Ying Xue <ying.xue@windriver.com>,
+        dri-devel@lists.freedesktop.org, linux-fsdevel@vger.kernel.org,
+        linux-kselftest@vger.kernel.org, linux-mm@kvack.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org,
+        tipc-discussion@lists.sourceforge.net
+Subject: Re: [PATCH v6 00/16] Fix several bad kernel-doc markups
+Message-ID: <20210121120954.5ed4c3b2@lwn.net>
+In-Reply-To: <cover.1610610937.git.mchehab+huawei@kernel.org>
+References: <cover.1610610937.git.mchehab+huawei@kernel.org>
+Organization: LWN.net
 MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Parav Pandit <parav@nvidia.com>
+On Thu, 14 Jan 2021 09:04:36 +0100
+Mauro Carvalho Chehab <mchehab+huawei@kernel.org> wrote:
 
-Introduce API to add and delete an auxiliary device for an SF.
-Each SF has its own dedicated window in the PCI BAR 2.
+> 1)  10 remaining fixup patches from the series I sent back on Dec, 1st:
+> 
+>    parport: fix a kernel-doc markup
+>    rapidio: fix kernel-doc a markup
+>    fs: fix kernel-doc markups
+>    pstore/zone: fix a kernel-doc markup
+>    firmware: stratix10-svc: fix kernel-doc markups
+>    connector: fix a kernel-doc markup
+>    lib/crc7: fix a kernel-doc markup
+>    memblock: fix kernel-doc markups
+>    w1: fix a kernel-doc markup
+>    selftests: kselftest_harness.h: partially fix kernel-doc markups
 
-SF device is similar to PCI PF and VF that supports multiple class of
-devices such as net, rdma and vdpa.
+A week later none of these have shown up in linux-next, so I went ahead
+and applied the set.
 
-SF device will be added or removed in subsequent patch during SF
-devlink port function state change command.
+Thanks,
 
-A subfunction device exposes user supplied subfunction number which will
-be further used by systemd/udev to have deterministic name for its
-netdevice and rdma device.
-
-An mlx5 subfunction auxiliary device example:
-
-$ devlink dev eswitch set pci/0000:06:00.0 mode switchdev
-
-$ devlink port show
-pci/0000:06:00.0/65535: type eth netdev ens2f0np0 flavour physical port 0 splittable false
-
-$ devlink port add pci/0000:06:00.0 flavour pcisf pfnum 0 sfnum 88
-pci/0000:08:00.0/32768: type eth netdev eth6 flavour pcisf controller 0 pfnum 0 sfnum 88 external false splittable false
-  function:
-    hw_addr 00:00:00:00:00:00 state inactive opstate detached
-
-$ devlink port show ens2f0npf0sf88
-pci/0000:06:00.0/32768: type eth netdev ens2f0npf0sf88 flavour pcisf controller 0 pfnum 0 sfnum 88 external false splittable false
-  function:
-    hw_addr 00:00:00:00:88:88 state inactive opstate detached
-
-$ devlink port function set ens2f0npf0sf88 hw_addr 00:00:00:00:88:88 state active
-
-On activation,
-
-$ ls -l /sys/bus/auxiliary/devices/
-mlx5_core.sf.4 -> ../../../devices/pci0000:00/0000:00:03.0/0000:06:00.0/mlx5_core.sf.4
-
-$ cat /sys/bus/auxiliary/devices/mlx5_core.sf.4/sfnum
-88
-
-Signed-off-by: Parav Pandit <parav@nvidia.com>
-Reviewed-by: Vu Pham <vuhuong@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
----
- .../device_drivers/ethernet/mellanox/mlx5.rst |   5 +
- .../net/ethernet/mellanox/mlx5/core/Makefile  |   2 +-
- .../net/ethernet/mellanox/mlx5/core/main.c    |   4 +
- .../ethernet/mellanox/mlx5/core/sf/dev/dev.c  | 265 ++++++++++++++++++
- .../ethernet/mellanox/mlx5/core/sf/dev/dev.h  |  35 +++
- include/linux/mlx5/driver.h                   |   2 +
- 6 files changed, 312 insertions(+), 1 deletion(-)
- create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/sf/dev/dev.c
- create mode 100644 drivers/net/ethernet/mellanox/mlx5/core/sf/dev/dev.h
-
-diff --git a/Documentation/networking/device_drivers/ethernet/mellanox/mlx5.rst b/Documentation/networking/device_drivers/ethernet/mellanox/mlx5.rst
-index e9b65035cd47..a5eb22793bb9 100644
---- a/Documentation/networking/device_drivers/ethernet/mellanox/mlx5.rst
-+++ b/Documentation/networking/device_drivers/ethernet/mellanox/mlx5.rst
-@@ -97,6 +97,11 @@ Enabling the driver and kconfig options
- 
- |   Provides low-level InfiniBand/RDMA and `RoCE <https://community.mellanox.com/s/article/recommended-network-configuration-examples-for-roce-deployment>`_ support.
- 
-+**CONFIG_MLX5_SF=(y/n)**
-+
-+|   Build support for subfunction.
-+|   Subfunctons are more light weight than PCI SRIOV VFs. Choosing this option
-+|   will enable support for creating subfunction devices.
- 
- **External options** ( Choose if the corresponding mlx5 feature is required )
- 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/Makefile b/drivers/net/ethernet/mellanox/mlx5/core/Makefile
-index 22ef2ebbee96..f5b2e9101348 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/Makefile
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/Makefile
-@@ -89,4 +89,4 @@ mlx5_core-$(CONFIG_MLX5_SW_STEERING) += steering/dr_domain.o steering/dr_table.o
- #
- # SF device
- #
--mlx5_core-$(CONFIG_MLX5_SF) += sf/vhca_event.o
-+mlx5_core-$(CONFIG_MLX5_SF) += sf/vhca_event.o sf/dev/dev.o
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/main.c b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-index b16f57befe52..26b5502712a6 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/main.c
-@@ -74,6 +74,7 @@
- #include "lib/hv_vhca.h"
- #include "diag/rsc_dump.h"
- #include "sf/vhca_event.h"
-+#include "sf/dev/dev.h"
- 
- MODULE_AUTHOR("Eli Cohen <eli@mellanox.com>");
- MODULE_DESCRIPTION("Mellanox 5th generation network adapters (ConnectX series) core driver");
-@@ -1155,6 +1156,8 @@ static int mlx5_load(struct mlx5_core_dev *dev)
- 		goto err_sriov;
- 	}
- 
-+	mlx5_sf_dev_table_create(dev);
-+
- 	return 0;
- 
- err_sriov:
-@@ -1186,6 +1189,7 @@ static int mlx5_load(struct mlx5_core_dev *dev)
- 
- static void mlx5_unload(struct mlx5_core_dev *dev)
- {
-+	mlx5_sf_dev_table_destroy(dev);
- 	mlx5_sriov_detach(dev);
- 	mlx5_ec_cleanup(dev);
- 	mlx5_vhca_event_stop(dev);
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/sf/dev/dev.c b/drivers/net/ethernet/mellanox/mlx5/core/sf/dev/dev.c
-new file mode 100644
-index 000000000000..4a8eeb7c853e
---- /dev/null
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/sf/dev/dev.c
-@@ -0,0 +1,265 @@
-+// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-+/* Copyright (c) 2020 Mellanox Technologies Ltd */
-+
-+#include <linux/mlx5/driver.h>
-+#include <linux/mlx5/device.h>
-+#include "mlx5_core.h"
-+#include "dev.h"
-+#include "sf/vhca_event.h"
-+#include "sf/sf.h"
-+#include "sf/mlx5_ifc_vhca_event.h"
-+#include "ecpf.h"
-+
-+struct mlx5_sf_dev_table {
-+	struct xarray devices;
-+	unsigned int max_sfs;
-+	phys_addr_t base_address;
-+	u64 sf_bar_length;
-+	struct notifier_block nb;
-+	struct mlx5_core_dev *dev;
-+};
-+
-+static bool mlx5_sf_dev_supported(const struct mlx5_core_dev *dev)
-+{
-+	return MLX5_CAP_GEN(dev, sf) && mlx5_vhca_event_supported(dev);
-+}
-+
-+static ssize_t sfnum_show(struct device *dev, struct device_attribute *attr, char *buf)
-+{
-+	struct auxiliary_device *adev = container_of(dev, struct auxiliary_device, dev);
-+	struct mlx5_sf_dev *sf_dev = container_of(adev, struct mlx5_sf_dev, adev);
-+
-+	return scnprintf(buf, PAGE_SIZE, "%u\n", sf_dev->sfnum);
-+}
-+static DEVICE_ATTR_RO(sfnum);
-+
-+static struct attribute *sf_device_attrs[] = {
-+	&dev_attr_sfnum.attr,
-+	NULL,
-+};
-+
-+static const struct attribute_group sf_attr_group = {
-+	.attrs = sf_device_attrs,
-+};
-+
-+static const struct attribute_group *sf_attr_groups[2] = {
-+	&sf_attr_group,
-+	NULL
-+};
-+
-+static void mlx5_sf_dev_release(struct device *device)
-+{
-+	struct auxiliary_device *adev = container_of(device, struct auxiliary_device, dev);
-+	struct mlx5_sf_dev *sf_dev = container_of(adev, struct mlx5_sf_dev, adev);
-+
-+	mlx5_adev_idx_free(adev->id);
-+	kfree(sf_dev);
-+}
-+
-+static void mlx5_sf_dev_remove(struct mlx5_sf_dev *sf_dev)
-+{
-+	auxiliary_device_delete(&sf_dev->adev);
-+	auxiliary_device_uninit(&sf_dev->adev);
-+}
-+
-+static void mlx5_sf_dev_add(struct mlx5_core_dev *dev, u16 sf_index, u32 sfnum)
-+{
-+	struct mlx5_sf_dev_table *table = dev->priv.sf_dev_table;
-+	struct mlx5_sf_dev *sf_dev;
-+	struct pci_dev *pdev;
-+	int err;
-+	int id;
-+
-+	id = mlx5_adev_idx_alloc();
-+	if (id < 0) {
-+		err = id;
-+		goto add_err;
-+	}
-+
-+	sf_dev = kzalloc(sizeof(*sf_dev), GFP_KERNEL);
-+	if (!sf_dev) {
-+		mlx5_adev_idx_free(id);
-+		err = -ENOMEM;
-+		goto add_err;
-+	}
-+	pdev = dev->pdev;
-+	sf_dev->adev.id = id;
-+	sf_dev->adev.name = MLX5_SF_DEV_ID_NAME;
-+	sf_dev->adev.dev.release = mlx5_sf_dev_release;
-+	sf_dev->adev.dev.parent = &pdev->dev;
-+	sf_dev->adev.dev.groups = sf_attr_groups;
-+	sf_dev->sfnum = sfnum;
-+	sf_dev->parent_mdev = dev;
-+
-+	if (!table->max_sfs) {
-+		mlx5_adev_idx_free(id);
-+		kfree(sf_dev);
-+		err = -EOPNOTSUPP;
-+		goto add_err;
-+	}
-+	sf_dev->bar_base_addr = table->base_address + (sf_index * table->sf_bar_length);
-+
-+	err = auxiliary_device_init(&sf_dev->adev);
-+	if (err) {
-+		mlx5_adev_idx_free(id);
-+		kfree(sf_dev);
-+		goto add_err;
-+	}
-+
-+	err = auxiliary_device_add(&sf_dev->adev);
-+	if (err) {
-+		put_device(&sf_dev->adev.dev);
-+		goto add_err;
-+	}
-+
-+	err = xa_insert(&table->devices, sf_index, sf_dev, GFP_KERNEL);
-+	if (err)
-+		goto xa_err;
-+	return;
-+
-+xa_err:
-+	mlx5_sf_dev_remove(sf_dev);
-+add_err:
-+	mlx5_core_err(dev, "SF DEV: fail device add for index=%d sfnum=%d err=%d\n",
-+		      sf_index, sfnum, err);
-+}
-+
-+static void mlx5_sf_dev_del(struct mlx5_core_dev *dev, struct mlx5_sf_dev *sf_dev, u16 sf_index)
-+{
-+	struct mlx5_sf_dev_table *table = dev->priv.sf_dev_table;
-+
-+	xa_erase(&table->devices, sf_index);
-+	mlx5_sf_dev_remove(sf_dev);
-+}
-+
-+static int
-+mlx5_sf_dev_state_change_handler(struct notifier_block *nb, unsigned long event_code, void *data)
-+{
-+	struct mlx5_sf_dev_table *table = container_of(nb, struct mlx5_sf_dev_table, nb);
-+	const struct mlx5_vhca_state_event *event = data;
-+	struct mlx5_sf_dev *sf_dev;
-+	u16 sf_index;
-+
-+	sf_index = event->function_id - MLX5_CAP_GEN(table->dev, sf_base_id);
-+	sf_dev = xa_load(&table->devices, sf_index);
-+	switch (event->new_vhca_state) {
-+	case MLX5_VHCA_STATE_ALLOCATED:
-+		if (sf_dev)
-+			mlx5_sf_dev_del(table->dev, sf_dev, sf_index);
-+		break;
-+	case MLX5_VHCA_STATE_TEARDOWN_REQUEST:
-+		if (sf_dev)
-+			mlx5_sf_dev_del(table->dev, sf_dev, sf_index);
-+		else
-+			mlx5_core_err(table->dev,
-+				      "SF DEV: teardown state for invalid dev index=%d fn_id=0x%x\n",
-+				      sf_index, event->sw_function_id);
-+		break;
-+	case MLX5_VHCA_STATE_ACTIVE:
-+		if (!sf_dev)
-+			mlx5_sf_dev_add(table->dev, sf_index, event->sw_function_id);
-+		break;
-+	default:
-+		break;
-+	}
-+	return 0;
-+}
-+
-+static int mlx5_sf_dev_vhca_arm_all(struct mlx5_sf_dev_table *table)
-+{
-+	struct mlx5_core_dev *dev = table->dev;
-+	u16 max_functions;
-+	u16 function_id;
-+	int err = 0;
-+	bool ecpu;
-+	int i;
-+
-+	max_functions = mlx5_sf_max_functions(dev);
-+	function_id = MLX5_CAP_GEN(dev, sf_base_id);
-+	ecpu = mlx5_read_embedded_cpu(dev);
-+	/* Arm the vhca context as the vhca event notifier */
-+	for (i = 0; i < max_functions; i++) {
-+		err = mlx5_vhca_event_arm(dev, function_id, ecpu);
-+		if (err)
-+			return err;
-+
-+		function_id++;
-+	}
-+	return 0;
-+}
-+
-+void mlx5_sf_dev_table_create(struct mlx5_core_dev *dev)
-+{
-+	struct mlx5_sf_dev_table *table;
-+	unsigned int max_sfs;
-+	int err;
-+
-+	if (!mlx5_sf_dev_supported(dev) || !mlx5_vhca_event_supported(dev))
-+		return;
-+
-+	table = kzalloc(sizeof(*table), GFP_KERNEL);
-+	if (!table) {
-+		err = -ENOMEM;
-+		goto table_err;
-+	}
-+
-+	table->nb.notifier_call = mlx5_sf_dev_state_change_handler;
-+	table->dev = dev;
-+	if (MLX5_CAP_GEN(dev, max_num_sf))
-+		max_sfs = MLX5_CAP_GEN(dev, max_num_sf);
-+	else
-+		max_sfs = 1 << MLX5_CAP_GEN(dev, log_max_sf);
-+	table->sf_bar_length = 1 << (MLX5_CAP_GEN(dev, log_min_sf_size) + 12);
-+	table->base_address = pci_resource_start(dev->pdev, 2);
-+	table->max_sfs = max_sfs;
-+	xa_init(&table->devices);
-+	dev->priv.sf_dev_table = table;
-+
-+	err = mlx5_vhca_event_notifier_register(dev, &table->nb);
-+	if (err)
-+		goto vhca_err;
-+	err = mlx5_sf_dev_vhca_arm_all(table);
-+	if (err)
-+		goto arm_err;
-+	mlx5_core_dbg(dev, "SF DEV: max sf devices=%d\n", max_sfs);
-+	return;
-+
-+arm_err:
-+	mlx5_vhca_event_notifier_unregister(dev, &table->nb);
-+vhca_err:
-+	table->max_sfs = 0;
-+	kfree(table);
-+	dev->priv.sf_dev_table = NULL;
-+table_err:
-+	mlx5_core_err(dev, "SF DEV table create err = %d\n", err);
-+}
-+
-+static void mlx5_sf_dev_destroy_all(struct mlx5_sf_dev_table *table)
-+{
-+	struct mlx5_sf_dev *sf_dev;
-+	unsigned long index;
-+
-+	xa_for_each(&table->devices, index, sf_dev) {
-+		xa_erase(&table->devices, index);
-+		mlx5_sf_dev_remove(sf_dev);
-+	}
-+}
-+
-+void mlx5_sf_dev_table_destroy(struct mlx5_core_dev *dev)
-+{
-+	struct mlx5_sf_dev_table *table = dev->priv.sf_dev_table;
-+
-+	if (!table)
-+		return;
-+
-+	mlx5_vhca_event_notifier_unregister(dev, &table->nb);
-+
-+	/* Now that event handler is not running, it is safe to destroy
-+	 * the sf device without race.
-+	 */
-+	mlx5_sf_dev_destroy_all(table);
-+
-+	WARN_ON(!xa_empty(&table->devices));
-+	kfree(table);
-+	dev->priv.sf_dev_table = NULL;
-+}
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/sf/dev/dev.h b/drivers/net/ethernet/mellanox/mlx5/core/sf/dev/dev.h
-new file mode 100644
-index 000000000000..a6fb7289ba2c
---- /dev/null
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/sf/dev/dev.h
-@@ -0,0 +1,35 @@
-+/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-+/* Copyright (c) 2020 Mellanox Technologies Ltd */
-+
-+#ifndef __MLX5_SF_DEV_H__
-+#define __MLX5_SF_DEV_H__
-+
-+#ifdef CONFIG_MLX5_SF
-+
-+#include <linux/auxiliary_bus.h>
-+
-+#define MLX5_SF_DEV_ID_NAME "sf"
-+
-+struct mlx5_sf_dev {
-+	struct auxiliary_device adev;
-+	struct mlx5_core_dev *parent_mdev;
-+	phys_addr_t bar_base_addr;
-+	u32 sfnum;
-+};
-+
-+void mlx5_sf_dev_table_create(struct mlx5_core_dev *dev);
-+void mlx5_sf_dev_table_destroy(struct mlx5_core_dev *dev);
-+
-+#else
-+
-+static inline void mlx5_sf_dev_table_create(struct mlx5_core_dev *dev)
-+{
-+}
-+
-+static inline void mlx5_sf_dev_table_destroy(struct mlx5_core_dev *dev)
-+{
-+}
-+
-+#endif
-+
-+#endif
-diff --git a/include/linux/mlx5/driver.h b/include/linux/mlx5/driver.h
-index ffba0786051e..08e5fbe97df0 100644
---- a/include/linux/mlx5/driver.h
-+++ b/include/linux/mlx5/driver.h
-@@ -508,6 +508,7 @@ struct mlx5_fw_reset;
- struct mlx5_eq_table;
- struct mlx5_irq_table;
- struct mlx5_vhca_state_notifier;
-+struct mlx5_sf_dev_table;
- 
- struct mlx5_rate_limit {
- 	u32			rate;
-@@ -606,6 +607,7 @@ struct mlx5_priv {
- 	struct mlx5_uars_page	       *uar;
- #ifdef CONFIG_MLX5_SF
- 	struct mlx5_vhca_state_notifier *vhca_state_notifier;
-+	struct mlx5_sf_dev_table *sf_dev_table;
- #endif
- };
- 
--- 
-2.26.2
-
+jon
