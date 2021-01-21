@@ -2,80 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3DB5E2FDFB6
-	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 03:57:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E2AE2FDF94
+	for <lists+netdev@lfdr.de>; Thu, 21 Jan 2021 03:45:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727378AbhAUCc1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 20 Jan 2021 21:32:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33272 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2404051AbhATXxY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 20 Jan 2021 18:53:24 -0500
-Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 726A6C061757
-        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 15:52:38 -0800 (PST)
-Received: by mail-io1-xd33.google.com with SMTP id d81so573122iof.3
-        for <netdev@vger.kernel.org>; Wed, 20 Jan 2021 15:52:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linuxfoundation.org; s=google;
-        h=to:from:cc:subject:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=BQ+C6cxMr+NFXAiwMQZbpz+U43nbXJpB0nxvOmHbDDk=;
-        b=GBSSYqKse4GktCQQv1dhwdvucvIBHv6a/8vYcZZzt8CglYaJuMkWvupsAJ2XJDpCRX
-         sBWqCBvysBMQEml1P36301Da/reVbbo3/GOvU0v0FYphlDUpsy3UvS4H78YcWJLmbkmu
-         E1xXCOfh1iCVA0orsq5z+fa5LtZnuv+0AIF5c=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:to:from:cc:subject:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=BQ+C6cxMr+NFXAiwMQZbpz+U43nbXJpB0nxvOmHbDDk=;
-        b=kSh9+e1bWIqoiHpJqxVKZdidZHfoHRJQxpGsO+WAsLCCnViqI1gisbHwgsay11mm6Z
-         Ye8qjZftecxGK9b/QOMJZii02Dpr/in+pXh7f0zjKR3LaIcU08pETQQS7Ok5bQ35GcHA
-         EPFGZ4iMTCC0+UOej8sV3bE88QY4Bkk6n2R1Z9Htj/Lf3WlSvivXnCZWH1VDn8ExPFRR
-         nhx8puiiXf54Vqpwdc73t5Kmk1dX8xcNDxBRqPGj5dZI2l2x7gMxqPWimFdqCqNBeMYr
-         1XXmZlbVrtACDcfscDiTlL1YGDv4Rtu7wQ4i89hG15Z/vHokDRzDjTmhsY1W4R4uOJf0
-         vUHw==
-X-Gm-Message-State: AOAM531czA5CG8VQ/uKkvSJk7el/LJKBu2frQ2ByOTePHwt5N/+WUUin
-        ODE9YQhyhKar+1UKhB7p8ylv2w==
-X-Google-Smtp-Source: ABdhPJyIFhoU6bCVbtrka/8a6fUyKb0QF3oP0zoYmAU7UKS8RIO3TiE/RmGDIOcZPkwKTc1P34hU4Q==
-X-Received: by 2002:a6b:7f45:: with SMTP id m5mr8559311ioq.180.1611186757822;
-        Wed, 20 Jan 2021 15:52:37 -0800 (PST)
-Received: from [192.168.1.112] (c-24-9-64-241.hsd1.co.comcast.net. [24.9.64.241])
-        by smtp.gmail.com with ESMTPSA id a5sm1819555ilq.60.2021.01.20.15.52.36
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 20 Jan 2021 15:52:37 -0800 (PST)
-To:     Anna.Schumaker@netapp.com, trond.myklebust@hammerspace.com
-From:   Shuah Khan <skhan@linuxfoundation.org>
-Cc:     "J. Bruce Fields" <bfields@fieldses.org>, chuck.lever@oracle.com,
-        "David S. Miller" <davem@davemloft.net>, kuba@kernel.org,
-        linux-nfs@vger.kernel.org, Networking <netdev@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: rpc_xprt_debugfs_register() - atomic_inc_return() usage
-Message-ID: <06c8f6ff-f821-e909-d40c-9de98657729f@linuxfoundation.org>
-Date:   Wed, 20 Jan 2021 16:52:34 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.0
+        id S2388379AbhAUCVn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 20 Jan 2021 21:21:43 -0500
+Received: from mail.kernel.org ([198.145.29.99]:40644 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727662AbhAUAwI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 20 Jan 2021 19:52:08 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 947F023602;
+        Thu, 21 Jan 2021 00:50:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1611190241;
+        bh=87wGMhsXUrsr3OJlQSSHfERoYkWmFHAB+rp1mZXf4eM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=N62MTHKejFTJ91VreEJyH/SsWFmuvTIajfyM6UtXgWNSASz2i1qHKqUAIge+AmNtA
+         4XS31j31rIPwZwWV0NEzOgcaqGaKZA2oKA9EKYMlt54nSVYofDdq1NravCKE+xMemr
+         79DuRPQ5ep2XAJlh5Y7neJng1hG9YSnQhvfeyXMNoafSCvcaDc360WUN7VoQTy3g0k
+         Bi2Fs5FhfhPzow6lQznDaDFGYb8B5sdJtsi4V7DTIUg02goEM9L38b6kILP0yLBBHv
+         H1MHp5vSnV9JiuelqwuC0vUAp4BCNMmRR41LLOrMUbMWH3sQvK0jFbSKrEWqoSYRek
+         ozmEI1KnVcf5A==
+Date:   Wed, 20 Jan 2021 16:50:39 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Kurt Kanzenbach <kurt@linutronix.de>
+Cc:     Vladimir Oltean <olteanv@gmail.com>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
+        netdev@vger.kernel.org
+Subject: Re: [PATCH v2 net-next 1/1] net: dsa: hellcreek: Add TAPRIO
+ offloading support
+Message-ID: <20210120165039.2867de26@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <87turc2i14.fsf@kurt>
+References: <20210116124922.32356-1-kurt@linutronix.de>
+        <20210116124922.32356-2-kurt@linutronix.de>
+        <20210119155703.7064800d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <87turc2i14.fsf@kurt>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Anna and Trond,
+On Wed, 20 Jan 2021 08:18:15 +0100 Kurt Kanzenbach wrote:
+> >> +	/* Schedule periodic schedule check */
+> >> +	schedule_delayed_work(&hellcreek_port->schedule_work,
+> >> +			      HELLCREEK_SCHEDULE_PERIOD);  
+> >
+> > Why schedule this work every 2 seconds rather than scheduling it
+> > $start_time - 8 sec + epsilon?  
+> 
+> The two seconds are taken from the programming guide. That's why I used
+> it.
+> 
+> The PTP frequency starts to matter for large deltas. In theory the
+> rescheduling period can be increased [1]. Should I adjust it? 
 
-I came across the following while reviewing atomic_inc_return() usages
-that cast return value to unsigned
-
-rpc_xprt_debugfs_register()'s atomic_inc_return() usage looks a bit odd.
-
-- cur_id isn't initialized
-- id = (unsigned int)atomic_inc_return(&cur_id);
-
-Please note that id is int. Is it expected that cur_id could overflow?
-Is there a maximum limit for this value?
-
-thanks,
--- Shuah
-
+I see, makes sense. You can leave it as is, please just add a comment
+next to the definition saying that the exact value is not important we
+just want it to be low enough to no suffer from clock freq error.
