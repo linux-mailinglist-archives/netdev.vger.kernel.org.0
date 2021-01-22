@@ -2,220 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CF77F300166
-	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 12:25:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EE1CB300189
+	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 12:29:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727092AbhAVLWG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jan 2021 06:22:06 -0500
-Received: from mail1.protonmail.ch ([185.70.40.18]:36425 "EHLO
-        mail1.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728135AbhAVLUw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 06:20:52 -0500
-Date:   Fri, 22 Jan 2021 11:19:51 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
-        t=1611314395; bh=p7+8XjPhSmAbABVYbt84wqNdvpY3y5DtUEPQrJtgE7A=;
-        h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
-        b=dsE44vL5poHC9QkDbiBO1M2JWyJqpO+Sou0Y3OUxPWZ4Kh4DtIUwsTHoq5cgKX+jt
-         aHXOMkom6SoN1wG5FPsVAOgzdGG5DgKVszVdSugwA0/4CiG0hVqVOXncT42uSeueNi
-         cIwFiAUIsXBqBzyDwxgKXA/fuuv4gUE5jgIJh66ddvvSLzErwlfXg4f2CCabHeWv3j
-         13yHj2ogdozKAo8DDThnD/iVsqsGse3TX1LhcIQULOa4cpk/A2IRHb3+9IMEATuvg4
-         I1zRH9KfpDV42DJL1Yn/bv0kvHQgWFQcGDrqIqV+hnyawhQEFWvOCvMHaBad5+0aB3
-         esFB+ZMeXkC3Q==
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-From:   Alexander Lobakin <alobakin@pm.me>
-Cc:     Alexander Lobakin <alobakin@pm.me>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Igor Russkikh <irusskikh@marvell.com>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Miaohe Lin <linmiaohe@huawei.com>,
-        Antoine Tenart <atenart@kernel.org>,
-        Michal Kubecek <mkubecek@suse.cz>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Meir Lichtinger <meirl@mellanox.com>,
-        Aya Levin <ayal@mellanox.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>
-Reply-To: Alexander Lobakin <alobakin@pm.me>
-Subject: Re: [PATCH net-next 2/2] udp: allow forwarding of plain (non-fraglisted) UDP GRO packets
-Message-ID: <20210122111919.1973-1-alobakin@pm.me>
-In-Reply-To: <CA+FuTSeZu6Z0eQ20Fwhr6DmraV1a90vMb1LQcwLxesD04LXGgw@mail.gmail.com>
-References: <20210118193122.87271-1-alobakin@pm.me> <20210118193232.87583-1-alobakin@pm.me> <20210118193232.87583-2-alobakin@pm.me> <CA+FuTSeZu6Z0eQ20Fwhr6DmraV1a90vMb1LQcwLxesD04LXGgw@mail.gmail.com>
+        id S1728016AbhAVL1O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jan 2021 06:27:14 -0500
+Received: from ssl.serverraum.org ([176.9.125.105]:60985 "EHLO
+        ssl.serverraum.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728229AbhAVLVo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 06:21:44 -0500
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id 6BF8023E55;
+        Fri, 22 Jan 2021 12:20:28 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1611314428;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=N0jkU0A6+sRQTSTbqXmOfHIS/IFpKYV+/+z5rJ/xeBA=;
+        b=ZfMHxkrJan8uxD2NBz35wsua6hbv8vOj+NC6uWxmbpGqf5Na9wjutQkkwPoBqT21QK/vPM
+        TcSdLag1W8AKtV1j4L+HoEZpH/3uaDQvE21zDDFHq+c5p5z1OzaZhD2YYRQlut0pW3UkLd
+        +lXKx0rOmkBrpSPAV8PT1C1KAYL7jG8=
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.2 required=10.0 tests=ALL_TRUSTED,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF shortcircuit=no
-        autolearn=disabled version=3.4.4
-X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on
-        mailout.protonmail.ch
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
+Content-Transfer-Encoding: 8bit
+Date:   Fri, 22 Jan 2021 12:20:27 +0100
+From:   Michael Walle <michael@walle.cc>
+To:     Claudiu.Beznea@microchip.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Nicolas.Ferre@microchip.com, davem@davemloft.net
+Subject: Re: [PATCH] net: macb: ignore tx_clk if MII is used
+In-Reply-To: <1bde9969-8769-726b-02cb-a1fcded0cd74@microchip.com>
+References: <20210120194303.28268-1-michael@walle.cc>
+ <38734f00-e672-e694-1344-35f4dd68c90c@microchip.com>
+ <bd029c647db42e05bf1a54d43d601861@walle.cc>
+ <1bde9969-8769-726b-02cb-a1fcded0cd74@microchip.com>
+User-Agent: Roundcube Webmail/1.4.10
+Message-ID: <9737f7e5e53790ca5acbea8f07ddf1a4@walle.cc>
+X-Sender: michael@walle.cc
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date: Thu, 21 Jan 2021 21:47:47 -0500
+Am 2021-01-22 10:10, schrieb Claudiu.Beznea@microchip.com:
+> On 21.01.2021 11:41, Michael Walle wrote:
+>> EXTERNAL EMAIL: Do not click links or open attachments unless you know 
+>> the
+>> content is safe
+>> 
+>> Hi Claudiu,
+>> 
+>> Am 2021-01-21 10:19, schrieb Claudiu.Beznea@microchip.com:
+>>> On 20.01.2021 21:43, Michael Walle wrote:
+>>>> EXTERNAL EMAIL: Do not click links or open attachments unless you 
+>>>> know
+>>>> the content is safe
+>>>> 
+>>>> If the MII interface is used, the PHY is the clock master, thus 
+>>>> don't
+>>>> set the clock rate. On Zynq-7000, this will prevent the following
+>>>> warning:
+>>>>   macb e000b000.ethernet eth0: unable to generate target frequency:
+>>>> 25000000 Hz
+>>>> 
+>>> 
+>>> Since in this case the PHY provides the TX clock and it provides the
+>>> proper
+>>> rate based on link speed, the MACB driver should not handle the
+>>> bp->tx_clk
+>>> at all (MACB driver uses this clock only for setting the proper rate 
+>>> on
+>>> it
+>>> based on link speed). So, I believe the proper fix would be to not 
+>>> pass
+>>> the
+>>> tx_clk at all in device tree. This clock is optional for MACB driver.
+>> 
+>> Thanks for looking into this.
+>> 
+>> I had the same thought. But shouldn't the driver handle this case
+>> gracefully?
+>> I mean it does know that the clock isn't needed at all.
+> 
+> Currently it may knows that by checking the bp->tx_clk. Moreover the 
+> clock
+> could be provided by PHY not only for MII interface.
 
-> On Mon, Jan 18, 2021 at 2:33 PM Alexander Lobakin <alobakin@pm.me> wrote:
-> >
-> > Commit 9fd1ff5d2ac7 ("udp: Support UDP fraglist GRO/GSO.") actually
-> > not only added a support for fraglisted UDP GRO, but also tweaked
-> > some logics the way that non-fraglisted UDP GRO started to work for
-> > forwarding too.
-> > Commit 2e4ef10f5850 ("net: add GSO UDP L4 and GSO fraglists to the
-> > list of software-backed types") added GSO UDP L4 to the list of
-> > software GSO to allow virtual netdevs to forward them as is up to
-> > the real drivers.
-> >
-> > Tests showed that currently forwarding and NATing of plain UDP GRO
-> > packets are performed fully correctly, regardless if the target
-> > netdevice has a support for hardware/driver GSO UDP L4 or not.
-> > Plain UDP GRO forwarding even shows better performance than fraglisted
-> > UDP GRO in some cases due to not wasting one skbuff_head per every
-> > segment.
->=20
-> That is surprising. The choice for fraglist based forwarding was made
-> on the assumption that it is cheaper if software segmentation is needed.
->=20
-> Do you have a more specific definition of the relevant cases?
+That doesn't make this patch wrong, does it? It just doesn't cover
+all use cases (which also wasn't covered before).
 
-"Classic" UDP GRO shows better performance when forwarding to a NIC
-that supports GSO UDP L4 (i.e. no software segmentation occurs), like
-the one that I test kernel on.
-I don't have much info about performance without UDP GSO offload
-as I usually test NAT, and fralisted UDP GRO currently fails on
-this [0].
+> Moreover the IP has the bit "refclk" of register at offset 0xc (userio)
+> that tells it to use the clock provided by PHY or to use one internal 
+> to
+> the SoC. If a SoC generated clock would be used the IP logic may have 
+> the
+> option to do the proper division based on link speed (if IP has this 
+> option
+> enabled then this should be selected in driver with capability
+> MACB_CAPS_CLK_HW_CHG).
+> 
+> If the clock provided by the PHY is the one to be used then this is
+> selected with capability MACB_CAPS_USRIO_HAS_CLKEN. So, if the change 
+> you
+> proposed in this patch is still imperative then checking for this
+> capability would be the best as the clock could be provided by PHY not 
+> only
+> for MII interface.
 
-> There currently is no option to enable GRO for forwarding, without
-> fraglist if to a device with h/w udp segmentation offload. This would
-> add that option too.
+Fair enough, but this register doesn't seem to be implemented on
+Zynq-7000. Albeit MACB_CAPS_USRIO_DISABLED isn't defined for the
+Zynq MACB. It isn't defined in the Zynq-7000 reference manual and
+you cannot set any bits:
 
-Yes, that's exactly what I want. I want to maximize UDP
-forwarding/NATing performance when NIC is capable of UDP GSO offload,
-as I said above, non-fraglisted UDP GRO is better for that case.
+=> mw 0xE000B00C 0xFFFFFFFF
+=> md 0xE000B00C 1
+e000b00c: 00000000
 
-> Though under admin control, which may make it a rarely exercised option.
-> Assuming most hosts to have single or homogeneous NICs, the OS should
-> be able to choose the preferred option in most cases (e.g.,: use fraglist
-> unless all devices support h/w gro).
+Also please note, that tx_clk may be an arbitrary clock which doesn't
+necessarily need to be the clock which is controlled by CLK_EN. Or
+am I missing something here?
 
-I though about some sort of auto-selection, but at the moment of
-receiving we can't know which interface this skb will be forwarded
-to.
-Also, as Paolo Abeni said in a comment to v2, UDP GRO may cause
-sensible delays, which may be inacceptable in some environments.
-That's why we have to use a sockopt and netdev features to explicitly
-enable UDP GRO.
+-michael
 
-Regarding all this, I introduced NETIF_F_UDP_GRO to have the
-following chose:
- - both NETIF_F_UDP_GRO and NETIF_F_GRO_FRAGLIST is off - no UDP GRO;
- - NETIF_F_UDP_GRO is on, NETIF_F_GRO_FRAGLIST is off - classic GRO;
- - both NETIF_F_UDP_GRO and NETIF_F_GRO_FRAGLIST is on - fraglisted
-   UDP GRO.
-
-> > Add the last element and allow to form plain UDP GRO packets if
-> > there is no socket -> we are on forwarding path, and the new
-> > NETIF_F_GRO_UDP is enabled on a receiving netdevice.
-> > Note that fraglisted UDP GRO now also depends on this feature, as
->=20
-> That may cause a regression for applications that currently enable
-> that device feature.
-
-Thought about this one too. Not sure if it would be better to leave
-it as it is for now or how it's done in this series. The problem
-that we may have in future is that in some day we may get fraglisted
-TCP GRO, and then NETIF_F_GRO_FRAGLIST will affect both TCP and UDP,
-which is not desirable as for me. So I decided to guard this possible
-case.
-
-> > NETIF_F_GRO_FRAGLIST isn't tied to any particular L4 protocol.
-> >
-> > Signed-off-by: Alexander Lobakin <alobakin@pm.me>
-> > ---
-> >  net/ipv4/udp_offload.c | 16 +++++++++++-----
-> >  1 file changed, 11 insertions(+), 5 deletions(-)
-> >
-> > diff --git a/net/ipv4/udp_offload.c b/net/ipv4/udp_offload.c
-> > index ff39e94781bf..781a035de5a9 100644
-> > --- a/net/ipv4/udp_offload.c
-> > +++ b/net/ipv4/udp_offload.c
-> > @@ -454,13 +454,19 @@ struct sk_buff *udp_gro_receive(struct list_head =
-*head, struct sk_buff *skb,
-> >         struct sk_buff *p;
-> >         struct udphdr *uh2;
-> >         unsigned int off =3D skb_gro_offset(skb);
-> > -       int flush =3D 1;
-> > +       int flist =3D 0, flush =3D 1;
-> > +       bool gro_by_feat =3D false;
->=20
-> What is this variable shorthand for? By feature? Perhaps
-> gro_forwarding is more descriptive.
-
-Yes, I chose "by feature" because fraglisted GRO also starts to
-work for local traffic if enabled, so "gro_forwarding" would be
-inaccurate naming.
-
-> >
-> > -       NAPI_GRO_CB(skb)->is_flist =3D 0;
-> > -       if (skb->dev->features & NETIF_F_GRO_FRAGLIST)
-> > -               NAPI_GRO_CB(skb)->is_flist =3D sk ? !udp_sk(sk)->gro_en=
-abled: 1;
-
-I mean this. is_flist gets enabled if socket GRO option is disabled.
-
-> > +       if (skb->dev->features & NETIF_F_GRO_UDP) {
-> > +               if (skb->dev->features & NETIF_F_GRO_FRAGLIST)
-> > +                       flist =3D !sk || !udp_sk(sk)->gro_enabled;
-> >
-> > -       if ((sk && udp_sk(sk)->gro_enabled) || NAPI_GRO_CB(skb)->is_fli=
-st) {
->=20
-> I would almost rename NETIF_F_GRO_FRAGLIST to NETIF_F_UDP_GRO_FWD.
-> Then this could be a !NETIF_F_UDP_GRO_FWD_FRAGLIST toggle on top of
-> that. If it wasn't for this fraglist option also enabling UDP GRO to
-> local sockets if set.
->=20
-> That is, if the performance difference is significant enough to
-> require supporting both types of forwarding, under admin control.
->=20
-> Perhaps the simplest alternative is to add the new feature without
-> making fraglist dependent on it:
->=20
->   if ((sk && udp_sk(sk)->gro_enabled) ||
->       (skb->dev->features & NETIF_F_GRO_FRAGLIST) ||
->       (!sk && skb->dev->features & NETIF_F_GRO_UDP_FWD))
-
-Yep, this will be the exact code if we end up with that
-NETIF_F_GRO_FRAGLIST should not depends on new netdev feature.
-But again, I wanted to protect TCP GRO if fraglisted TCP GRO will
-ever land the kernel. May be it's too much for the feature that
-currently doesn't exists even as a draft or plan, not sure.
-
-So, I'd stick to this variant (NETIF_F_UDP_GRO_FWD for plain,
-NETIF_F_GRO_FRAGLIST without changes for fraglisted) if preferred.
-
-> > +               gro_by_feat =3D !sk || flist;
-> > +       }
-> > +
-> > +       NAPI_GRO_CB(skb)->is_flist =3D flist;
-> > +
-> > +       if (gro_by_feat || (sk && udp_sk(sk)->gro_enabled)) {
-> >                 pp =3D call_gro_receive(udp_gro_receive_segment, head, =
-skb);
-> >                 return pp;
-> >         }
-> > --
-> > 2.30.0
-
-[0] https://lore.kernel.org/netdev/1611235479-39399-1-git-send-email-dseok.=
-yi@samsung.com
-
-Thanks,
-Al
-
+>> Ususually that
+>> clock
+>> is defined in a device tree include. So you'd have to redefine that 
+>> node
+>> in
+>> an actual board file which means duplicating the other clocks.
+>> 
+>> -michael
