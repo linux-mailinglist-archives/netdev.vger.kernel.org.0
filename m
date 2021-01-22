@@ -2,110 +2,118 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 99F3D300F8A
-	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 23:03:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 88E10300FAC
+	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 23:13:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730258AbhAVWBC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jan 2021 17:01:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40060 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730189AbhAVUGW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 15:06:22 -0500
-Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4803C0613D6;
-        Fri, 22 Jan 2021 12:05:40 -0800 (PST)
-Received: by mail-yb1-xb2a.google.com with SMTP id r32so6619378ybd.5;
-        Fri, 22 Jan 2021 12:05:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=yIJeE19Ex412BCh+tXZdyqfHWVAMXMH3ZAW2ZmTwEvs=;
-        b=EHtGF6/TD4BsGrkHJBxIryItSGkMyar7VNULjL950bhJ7Mh2bp2g43eQEkoX80cCjD
-         Jt1sAd7/bb5badTmt81icFDmrkYmgGXtsOUYhX7ytNeVi1ZgdCehzUkSTYJlXfckYPOD
-         9PD0TZPBTGegD1cR+ioo9v5zlxzrqjG3nCK45JgsmfylzMs7HVJfcgzwxTG0wcOER30+
-         +/PvU5KKMLwcW66J++eacO4l5qppcU3C+/7io+An8WGnWHpgFXAI6Q3mEcf/tUyH57b8
-         08bF+7ag+E0cvRsPGtCpkxraJnPU68RRkiNaVjgZfyqdg+KzONT7H0p0UHFNGIztDVd1
-         I8EQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=yIJeE19Ex412BCh+tXZdyqfHWVAMXMH3ZAW2ZmTwEvs=;
-        b=cAuhSwLhcktQD242baBGY/jrQGheACQvnxXgMm/5uTxM6LemKEYDan2Sd6tL8ch8KZ
-         SrYB2UQCxSEXARljiF1coi4oGOGgHCq+PEFEnWB92oC01JrAYGyK6XGIqNlrmOWumjRw
-         MGMXieRXg6vw/XPDo17x/77YVB5+7rJuMXjxmBfxLOO6RzBeOFa+rAf3GFtDvrlFf6P/
-         W51S6+v6VT7s79k72oY3lBo/XRVb6SRmB4eykvlhvG9k/f5RxiSGv8QWdUBdxVUzXOy+
-         HuCxbxPPxsQ1iyei7WoySc8cxp6C2WFtjgEfa1m+HH4sJKQq6pqOylDJUsXRrVISMJJM
-         R53A==
-X-Gm-Message-State: AOAM5330KYsjkW4u+r3yPjUf8tDIwkMrwxSIQg4g+YFPyboDEUYddytK
-        Co1MvgTy0CfZz6wdex+Mrijt3aVt39YRMTZEqNA=
-X-Google-Smtp-Source: ABdhPJzH9EaAVMjy4oznG8MRXKCsklDSK7xJtJFAv5F51i+auk5rZ05L0WLF6kwCNTlgofr+6K0ySUs/6QM8cBv+MZg=
-X-Received: by 2002:a25:9882:: with SMTP id l2mr8206839ybo.425.1611345940074;
- Fri, 22 Jan 2021 12:05:40 -0800 (PST)
+        id S1730788AbhAVWMD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jan 2021 17:12:03 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:55214 "EHLO vps0.lunn.ch"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729912AbhAVWJT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 22 Jan 2021 17:09:19 -0500
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1l34b5-0029Gh-PB; Fri, 22 Jan 2021 23:08:03 +0100
+Date:   Fri, 22 Jan 2021 23:08:03 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Sergej Bauer <sbauer@blackbox.su>
+Cc:     netdev@vger.kernel.org, f.fainelli@gmail.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Bryan Whitehead <bryan.whitehead@microchip.com>,
+        UNGLinuxDriver@microchip.com,
+        Simon Horman <simon.horman@netronome.com>,
+        Mark Einon <mark.einon@gmail.com>,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] lan743x: add virtual PHY for PHY-less devices
+Message-ID: <YAtMw5Yk1QYp28rJ@lunn.ch>
+References: <20210122214247.6536-1-sbauer@blackbox.su>
 MIME-Version: 1.0
-References: <20210122163920.59177-1-jolsa@kernel.org> <20210122163920.59177-2-jolsa@kernel.org>
-In-Reply-To: <20210122163920.59177-2-jolsa@kernel.org>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Fri, 22 Jan 2021 12:05:28 -0800
-Message-ID: <CAEf4BzZEeuw0LPVHcR_7wvt14jkWZdSa9Rf-cGwpgJ57Rg9qHA@mail.gmail.com>
-Subject: Re: [PATCH 1/2] elf_symtab: Add support for SHN_XINDEX index to elf_section_by_name
-To:     Jiri Olsa <jolsa@kernel.org>
-Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>, dwarves@vger.kernel.org,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Yonghong Song <yhs@fb.com>, Hao Luo <haoluo@google.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Joe Lawrence <joe.lawrence@redhat.com>,
-        Mark Wielaard <mjw@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210122214247.6536-1-sbauer@blackbox.su>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 22, 2021 at 9:22 AM Jiri Olsa <jolsa@kernel.org> wrote:
->
-> In case the elf's header e_shstrndx contains SHN_XINDEX,
-> we need to call elf_getshdrstrndx to get the proper
-> string table index.
->
-> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
-> ---
+On Sat, Jan 23, 2021 at 12:42:41AM +0300, Sergej Bauer wrote:
+> From: sbauer@blackbox.su
+> 
+> v1->v2:
+> 	switch to using of fixed_phy as was suggested by Andrew and Florian
+> 	also features-related parts are removed
 
-Acked-by: Andrii Nakryiko <andrii@kernel.org>
+This is not using fixed_phy, at least not in the normal way.
 
->  dutil.c | 8 +++++++-
->  1 file changed, 7 insertions(+), 1 deletion(-)
->
-> diff --git a/dutil.c b/dutil.c
-> index 7b667647420f..11fb7202049c 100644
-> --- a/dutil.c
-> +++ b/dutil.c
-> @@ -179,12 +179,18 @@ Elf_Scn *elf_section_by_name(Elf *elf, GElf_Ehdr *ep,
->  {
->         Elf_Scn *sec = NULL;
->         size_t cnt = 1;
-> +       size_t str_idx;
+Take a look at bgmac_phy_connect_direct() for example. Call
+fixed_phy_register(), and then phy_connect_direct() with the
+phydev. End of story. Done.
+
+> +int lan743x_set_link_ksettings(struct net_device *netdev,
+> +			       const struct ethtool_link_ksettings *cmd)
+> +{
+> +	if (!netdev->phydev)
+> +		return -ENETDOWN;
 > +
-> +       if (elf_getshdrstrndx(elf, &str_idx))
-> +               return NULL;
->
->         while ((sec = elf_nextscn(elf, sec)) != NULL) {
->                 char *str;
->
->                 gelf_getshdr(sec, shp);
-> -               str = elf_strptr(elf, ep->e_shstrndx, shp->sh_name);
-> +               str = elf_strptr(elf, str_idx, shp->sh_name);
-> +               if (!str)
-> +                       return NULL;
->                 if (!strcmp(name, str)) {
->                         if (index)
->                                 *index = cnt;
-> --
-> 2.26.2
->
+> +	return phy_is_pseudo_fixed_link(netdev->phydev) ?
+> +			lan743x_set_virtual_link_ksettings(netdev, cmd)
+> +			: phy_ethtool_set_link_ksettings(netdev, cmd);
+> +}
+
+There should not be any need to do something different. The whole
+point of fixed_phy is it looks like a PHY. So calling
+phy_ethtool_set_link_ksettings() should work, nothing special needed.
+
+> @@ -1000,8 +1005,10 @@ static void lan743x_phy_close(struct lan743x_adapter *adapter)
+>  	struct net_device *netdev = adapter->netdev;
+>  
+>  	phy_stop(netdev->phydev);
+> -	phy_disconnect(netdev->phydev);
+> -	netdev->phydev = NULL;
+> +	if (phy_is_pseudo_fixed_link(netdev->phydev))
+> +		lan743x_virtual_phy_disconnect(netdev->phydev);
+> +	else
+> +		phy_disconnect(netdev->phydev);
+
+phy_disconnect() should work. You might want to call
+fixed_phy_unregister() afterwards, so you do not leak memory.
+
+> +		if (phy_is_pseudo_fixed_link(phydev)) {
+> +			ret = phy_connect_direct(netdev, phydev,
+> +						 lan743x_virtual_phy_status_change,
+> +						 PHY_INTERFACE_MODE_MII);
+> +		} else {
+> +			ret = phy_connect_direct(netdev, phydev,
+> +						 lan743x_phy_link_status_change,
+
+There should not be any need for a special link change
+callback. lan743x_phy_link_status_change() should work fine, the MAC
+should have no idea it is using a fixed_phy.
+
+> +						 PHY_INTERFACE_MODE_GMII);
+> +		}
+> +
+>  		if (ret)
+>  			goto return_error;
+>  	}
+> @@ -1031,6 +1049,15 @@ static int lan743x_phy_open(struct lan743x_adapter *adapter)
+>  	/* MAC doesn't support 1000T Half */
+>  	phy_remove_link_mode(phydev, ETHTOOL_LINK_MODE_1000baseT_Half_BIT);
+>  
+> +	if (phy_is_pseudo_fixed_link(phydev)) {
+> +		phy_remove_link_mode(phydev, ETHTOOL_LINK_MODE_TP_BIT);
+> +		linkmode_set_bit(ETHTOOL_LINK_MODE_10baseT_Full_BIT,
+> +				 phydev->supported);
+> +		linkmode_set_bit(ETHTOOL_LINK_MODE_100baseT_Full_BIT,
+> +				 phydev->supported);
+> +		phy_advertise_supported(phydev);
+> +	}
+
+The fixed PHY driver will set these bits depending on the speed it has
+been configured for. No need to change them. The MAC should also not
+care if it is TP, AUI, Fibre or smoke signals.
+
+     Andrew
