@@ -2,100 +2,117 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 02F152FFDDF
+	by mail.lfdr.de (Postfix) with ESMTP id DDEB42FFDE1
 	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 09:07:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727009AbhAVIFj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jan 2021 03:05:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53854 "EHLO
+        id S1726382AbhAVIG5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jan 2021 03:06:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54114 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726751AbhAVIFZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 03:05:25 -0500
-Received: from mail-qt1-x832.google.com (mail-qt1-x832.google.com [IPv6:2607:f8b0:4864:20::832])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F302C06174A;
-        Fri, 22 Jan 2021 00:04:44 -0800 (PST)
-Received: by mail-qt1-x832.google.com with SMTP id o18so3505842qtp.10;
-        Fri, 22 Jan 2021 00:04:44 -0800 (PST)
+        with ESMTP id S1726777AbhAVIGm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 03:06:42 -0500
+Received: from mail-wm1-x32e.google.com (mail-wm1-x32e.google.com [IPv6:2a00:1450:4864:20::32e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A93EC06174A
+        for <netdev@vger.kernel.org>; Fri, 22 Jan 2021 00:05:57 -0800 (PST)
+Received: by mail-wm1-x32e.google.com with SMTP id u14so3540274wmq.4
+        for <netdev@vger.kernel.org>; Fri, 22 Jan 2021 00:05:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=Kx3sH6YHlpgK218Xqk1ihUZMM+LeKPCk6agxOk0gJmM=;
-        b=D3e7DVZXhlIvnI8Jabvi3Ua7OjQqy3K9WCZPCDupl3J5qtqmO8a8VE7zup0z14bvWX
-         jn+I9U4TbM7y3xkbY4ZlEwR7K7vE5D3KCkDeVKEzidU/sW4FIZFf/I8Lt4sQkeABNG9O
-         rbNT9kke1JSvUe6eVkD+6CstOjPhswyElvy9JMuUDKjqnq26Ayue0Wsa/A+UQ4VLgXcO
-         7tcIB7thrFFe200npdTBk6YsOjkZHXPZ74n6Tq7BeOwbAAQS8BZe5gG+3XZkUfymCDeL
-         RA0vmPfbp6jcpWmqxt58XEa9TXr5fMtABVORBoIQREpybdUTvFPQc8pdJkp696y/VElP
-         WalQ==
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=w8/Ey9yZ3/wVzwhQAFdThnbUgWNmn6yzJJ4qmJw/2fE=;
+        b=l5E54K8nZ70VVUK5/IiICsJH0F19c1VAckv+HLMfnqjLxkvVqOpBbacJY8g0MQpVTf
+         MZ//LZC+b1neVK6BiB8pN5CLW51XkfsMa4cxb2QWz3wkBR4kDEfKX3rqusmhxsYB6Wjg
+         RXQ9z1IIooh7KRxg6qI92tUa3Sj1U36MtriuzHrnR1qT57ucyClSIqzr7cBeFMILflbu
+         iofo4/GF0r1pWU/xd2xIlsLmSxuNnt1BX543z5aoh2WEy3ZAQcrAPEB6r6n8sZpdBqLz
+         OFsSYLhbjq+9tK0ahtB/OgNP1c4t2bpJeGeva4G+lM/GmKAlzJuK/VsVDSifdW4/wjax
+         OGxQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=Kx3sH6YHlpgK218Xqk1ihUZMM+LeKPCk6agxOk0gJmM=;
-        b=a21Q4EIV0QtM30OJAj86RdM32gD2iMfEJouqaAmdLUZBJl3gTa23fYHtZHEqDhEvS/
-         pzGN9ps0LTV0fgiohtlU4BOJGPkK8uu4nxfopOivjXBn17EXASRotRM5u3Gid01gRXr+
-         G32xMSdnXS6Z++yNuoLPumnfrl5sYA+OEzmYGYS5avH1GuAHTcqRIyItjYnK67efbKTX
-         S1XOAPLpdC4n8GAyJQ1hirpSHIv4v25E2GrSTujH3YmudxWJypLRBgBPIvbo3rcs57El
-         k/OU4AcClpgsgufr7VC7JO2RpbIWeFbQtnc41X1HGdPk0NtFBpg1nu4x9q9I0nfcxi7F
-         +zww==
-X-Gm-Message-State: AOAM532OFGmuO5kQ42quu5cOdZA7lVvxHrmWnV4SGmWGg39lz23HFdI8
-        A6o7lQPy9K7YfoakHZji4VnsBiYBgEadfOXtyIY=
-X-Google-Smtp-Source: ABdhPJxJHbeeR43zsgpwVrgT6+nsbNZ6WrgxKtmBY3w5+CnKtZ90SVA4xW0zshG3KJ3afUHPLQdcXw==
-X-Received: by 2002:ac8:3987:: with SMTP id v7mr3243472qte.144.1611302683458;
-        Fri, 22 Jan 2021 00:04:43 -0800 (PST)
-Received: from [0.0.0.0] ([2001:19f0:5:2661:5400:2ff:fe99:4621])
-        by smtp.gmail.com with ESMTPSA id e38sm5385674qtb.30.2021.01.22.00.04.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 22 Jan 2021 00:04:42 -0800 (PST)
-Subject: Re: [PATCH v1] can: mcp251xfd: Add some sysfs debug interfaces for
- registers r/w
-To:     Marc Kleine-Budde <mkl@pengutronix.de>,
-        manivannan.sadhasivam@linaro.org, thomas.kopp@microchip.com,
-        wg@grandegger.com, davem@davemloft.net, kuba@kernel.org,
-        lgirdwood@gmail.com, broonie@kernel.org
-Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20210122062255.202620-1-suyanjun218@gmail.com>
- <7181a6a3-62c6-9021-ea63-827f55eacd98@pengutronix.de>
-From:   Su <suyanjun218@gmail.com>
-Message-ID: <f311f01e-5203-821b-e44f-f0088a4622e7@gmail.com>
-Date:   Fri, 22 Jan 2021 16:04:21 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=w8/Ey9yZ3/wVzwhQAFdThnbUgWNmn6yzJJ4qmJw/2fE=;
+        b=tCpVy8bTdeKodNtxF5uskbLuDpdXOdB6pD9U/Qm6pg7G0fS5zhGM56VlAh93/Z47Vx
+         SM8TBkoSAz/63xfia3V7Pji5FKwArk6raA2UEnoDFZPHmNju+8PXiuklMKmhbLEmDBRy
+         xzz52wQmDXqGCXpKch68LiIFKGbuurRAyzyX/YIB9ZEMoXvV0Mfgvfu1SGWu2SQhhsiw
+         pGgBFeF/PSR08jcrZIieGAW0Vb474KKeO32E+koxMdZh5q8aC9fzIByhO72jgvwpvhfk
+         Q4wI5yIZjYkLUj+FPOeSKOvUTEE6riDh8C6h1Dwkddol0X2Au5Ec37W3AAQRxy9nX8pw
+         OVKw==
+X-Gm-Message-State: AOAM530MxP1KiemiWAgpFKJFSydP6Jimnb969ws3SNd4b9rr4vvj8QgD
+        AJuaaTgY4aY4xOUZLGpigUIc9A==
+X-Google-Smtp-Source: ABdhPJzJwDv+M2KRHTkNMPPG1a3loELuc8L3fw8dPsbNvPPrPaf82OJbai3gl5yMTPl+NnAs7giwgQ==
+X-Received: by 2002:a1c:9a4d:: with SMTP id c74mr2667236wme.73.1611302756311;
+        Fri, 22 Jan 2021 00:05:56 -0800 (PST)
+Received: from localhost ([85.163.43.78])
+        by smtp.gmail.com with ESMTPSA id g132sm11225352wmg.2.2021.01.22.00.05.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 22 Jan 2021 00:05:55 -0800 (PST)
+Date:   Fri, 22 Jan 2021 09:05:55 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        netdev@vger.kernel.org, davem@davemloft.net,
+        jacob.e.keller@intel.com, roopa@nvidia.com, mlxsw@nvidia.com
+Subject: Re: [patch net-next RFC 00/10] introduce line card support for
+ modular switch
+Message-ID: <20210122080555.GI3565223@nanopsycho.orion>
+References: <20210113121222.733517-1-jiri@resnulli.us>
+ <X/+nVtRrC2lconET@lunn.ch>
+ <20210119115610.GZ3565223@nanopsycho.orion>
+ <YAbyBbEE7lbhpFkw@lunn.ch>
+ <20210120083605.GB3565223@nanopsycho.orion>
+ <YAg2ngUQIty8U36l@lunn.ch>
+ <20210120154158.206b8752@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20210121153224.GE3565223@nanopsycho.orion>
+ <971e9eff-0b71-8ff9-d72c-aebe73cab599@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <7181a6a3-62c6-9021-ea63-827f55eacd98@pengutronix.de>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <971e9eff-0b71-8ff9-d72c-aebe73cab599@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Thu, Jan 21, 2021 at 05:38:40PM CET, dsahern@gmail.com wrote:
+>On 1/21/21 8:32 AM, Jiri Pirko wrote:
+>> Thu, Jan 21, 2021 at 12:41:58AM CET, kuba@kernel.org wrote:
+>>> On Wed, 20 Jan 2021 14:56:46 +0100 Andrew Lunn wrote:
+>>>>> No, the FW does not know. The ASIC is not physically able to get the
+>>>>> linecard type. Yes, it is odd, I agree. The linecard type is known to
+>>>>> the driver which operates on i2c. This driver takes care of power
+>>>>> management of the linecard, among other tasks.  
+>>>>
+>>>> So what does activated actually mean for your hardware? It seems to
+>>>> mean something like: Some random card has been plugged in, we have no
+>>>> idea what, but it has power, and we have enabled the MACs as
+>>>> provisioned, which if you are lucky might match the hardware?
+>>>>
+>>>> The foundations of this feature seems dubious.
+>>>
+>>> But Jiri also says "The linecard type is known to the driver which
+>>> operates on i2c." which sounds like there is some i2c driver (in user
+>>> space?) which talks to the card and _does_ have the info? Maybe I'm
+>>> misreading it. What's the i2c driver?
+>> 
+>> That is Vadim's i2c kernel driver, this is going to upstream.
+>> 
+>
+>This pre-provisioning concept makes a fragile design to work around h/w
+>shortcomings. You really need a way for the management card to know
 
-在 2021/1/22 下午3:22, Marc Kleine-Budde 写道:
-> On 1/22/21 7:22 AM, Su Yanjun wrote:
->> When i debug mcp2518fd, some method to track registers is
->> needed. This easy debug interface will be ok.
-> NACK
->
-> As the driver uses regmap, everything should be there already.
->
-> To read use:
->
-> | cat /sys/kernel/debug/regmap/spi0.0-crc/registers
->
-> Register write support for devices that are handles by proper kernel drivers is
-> a pure debugging tool, thus not enabled by default, not even with a Kconfig
-> switch. You have to enable it manually, have a look at commit:
->
-> 09c6ecd39410 regmap: Add support for writing to regmap registers via debugfs
+Not really. As I replied to you in the other part of this thread, the
+linecard is basically very similar to a splitter cable. In a way, it is
+a splitter cable. And should be threated in a similar way. As a phy. Not
+as a device. Cables are replaceble without netdevice reappearing. This
+linecards are the same. Therefore, the concept of provisioning makes
+sense for them, as it does for splitter cable.
 
-You're right.
 
-Thank you
+>exactly what was plugged in to a slot so the control plane S/W can
+>respond accordingly. Surely there is a way for processes on the LC to
+>communicate with a process on the management card - even if it is inband
+>packets with special headers.
 
->
-> regards,
-> Marc
->
+If a device is capable of splitter cable/linecard hotplug, sure, that
+may be implemented. But the user has to configure it as such, to be
+aware that "cable change" may move netdevices around.
