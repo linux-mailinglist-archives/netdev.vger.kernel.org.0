@@ -2,195 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 354943002F6
-	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 13:31:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 06F9130033E
+	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 13:36:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728007AbhAVMaF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jan 2021 07:30:05 -0500
-Received: from mail2.protonmail.ch ([185.70.40.22]:13422 "EHLO
-        mail2.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727999AbhAVMJC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 07:09:02 -0500
-Date:   Fri, 22 Jan 2021 12:08:00 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
-        t=1611317289; bh=LxHX459fz95IKnWnMss4jlo7OKseIL+7KUGL4C4wHkc=;
-        h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
-        b=nsASNQ58V/Gi13soh8Ii4nJ3nLxojereRGSAJ2+kykJoKuMHzeN+86pvewPJhEQxc
-         giNlkzt14L5E+V/cRD15C1VhxBiJRaJk4lEEfCJSlQzWFyxIEvcPlvp8nYzztUrON7
-         lwMCxf19u+SN1mk+SY31Umn4s+I/UADRGEUmRr27OnXHFDP+kOQkwLR3zpFhLVMmAI
-         VKsHTnTq87uhrdLnEoBWWXnvS9RFW0OMJkxecNG0XszRAYOU0KU0ebRw9okA43itpa
-         l+LSt2ojA9rIfWlecPCIjUyw89N6oj4fH2I2o66fmw16a1ANKcP0y2tOVQ97v+udSD
-         ZxCvkkbuHvbNA==
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-From:   Alexander Lobakin <alobakin@pm.me>
-Cc:     Alexander Lobakin <alobakin@pm.me>,
-        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, bjorn@kernel.org,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Reply-To: Alexander Lobakin <alobakin@pm.me>
-Subject: Re: [PATCH bpf-next v3 3/3] xsk: build skb by page
-Message-ID: <20210122120743.2642-1-alobakin@pm.me>
-In-Reply-To: <20210122115519.2183-1-alobakin@pm.me>
-References: <cover.1611236588.git.xuanzhuo@linux.alibaba.com> <340f1dfa40416dd966a56e08507daba82d633088.1611236588.git.xuanzhuo@linux.alibaba.com> <dcee4592-9fa9-adbb-55ca-58a962076e7a@gmail.com> <20210122114729.1758-1-alobakin@pm.me> <20210122115519.2183-1-alobakin@pm.me>
+        id S1728142AbhAVMdt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jan 2021 07:33:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55176 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728042AbhAVMdD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 07:33:03 -0500
+Received: from ssl.serverraum.org (ssl.serverraum.org [IPv6:2a01:4f8:151:8464::1:2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C7B4C06174A;
+        Fri, 22 Jan 2021 04:32:20 -0800 (PST)
+Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ssl.serverraum.org (Postfix) with ESMTPSA id BD26A23E55;
+        Fri, 22 Jan 2021 13:32:18 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
+        t=1611318739;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ov6vIrC/q0d467yXdm93eNZr1OWHmR3FpV864jD1vNg=;
+        b=cgHT7EncJgJSv6jmQTPdw+t8K68X4SW53G2kLDhkuhK3V9eS60+R29FLVZginMWB4G74xV
+        Tid/b8ftHOvyAkepBtZ8a/D+/r9G2YplEdSRBlQVnclOlgcrQ6a+i7EY/+mPckv7skdDY8
+        sm2Mr/KOcoCDAk72bUtLTD7zesUrWJg=
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.2 required=10.0 tests=ALL_TRUSTED,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF shortcircuit=no
-        autolearn=disabled version=3.4.4
-X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on
-        mailout.protonmail.ch
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
+Content-Transfer-Encoding: 8bit
+Date:   Fri, 22 Jan 2021 13:32:18 +0100
+From:   Michael Walle <michael@walle.cc>
+To:     Claudiu.Beznea@microchip.com
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Nicolas.Ferre@microchip.com, davem@davemloft.net
+Subject: Re: [PATCH] net: macb: ignore tx_clk if MII is used
+In-Reply-To: <9a6a93a0-7911-5910-333d-4aa9c0cd184d@microchip.com>
+References: <20210120194303.28268-1-michael@walle.cc>
+ <38734f00-e672-e694-1344-35f4dd68c90c@microchip.com>
+ <bd029c647db42e05bf1a54d43d601861@walle.cc>
+ <1bde9969-8769-726b-02cb-a1fcded0cd74@microchip.com>
+ <9737f7e5e53790ca5acbea8f07ddf1a4@walle.cc>
+ <9a6a93a0-7911-5910-333d-4aa9c0cd184d@microchip.com>
+User-Agent: Roundcube Webmail/1.4.10
+Message-ID: <b18ecd35dc826aa868e0b992d4ee38c9@walle.cc>
+X-Sender: michael@walle.cc
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alexander Lobakin <alobakin@pm.me>
-Date: Fri, 22 Jan 2021 11:55:35 +0000
+Am 2021-01-22 12:38, schrieb Claudiu.Beznea@microchip.com:
+> On 22.01.2021 13:20, Michael Walle wrote:
+>> EXTERNAL EMAIL: Do not click links or open attachments unless you know 
+>> the
+>> content is safe
+>> 
+>> Am 2021-01-22 10:10, schrieb Claudiu.Beznea@microchip.com:
+>>> On 21.01.2021 11:41, Michael Walle wrote:
+>>>> EXTERNAL EMAIL: Do not click links or open attachments unless you 
+>>>> know
+>>>> the
+>>>> content is safe
+>>>> 
+>>>> Hi Claudiu,
+>>>> 
+>>>> Am 2021-01-21 10:19, schrieb Claudiu.Beznea@microchip.com:
+>>>>> On 20.01.2021 21:43, Michael Walle wrote:
+>>>>>> EXTERNAL EMAIL: Do not click links or open attachments unless you
+>>>>>> know
+>>>>>> the content is safe
+>>>>>> 
+>>>>>> If the MII interface is used, the PHY is the clock master, thus
+>>>>>> don't
+>>>>>> set the clock rate. On Zynq-7000, this will prevent the following
+>>>>>> warning:
+>>>>>>   macb e000b000.ethernet eth0: unable to generate target 
+>>>>>> frequency:
+>>>>>> 25000000 Hz
+>>>>>> 
+>>>>> 
+>>>>> Since in this case the PHY provides the TX clock and it provides 
+>>>>> the
+>>>>> proper
+>>>>> rate based on link speed, the MACB driver should not handle the
+>>>>> bp->tx_clk
+>>>>> at all (MACB driver uses this clock only for setting the proper 
+>>>>> rate
+>>>>> on
+>>>>> it
+>>>>> based on link speed). So, I believe the proper fix would be to not
+>>>>> pass
+>>>>> the
+>>>>> tx_clk at all in device tree. This clock is optional for MACB 
+>>>>> driver.
+>>>> 
+>>>> Thanks for looking into this.
+>>>> 
+>>>> I had the same thought. But shouldn't the driver handle this case
+>>>> gracefully?
+>>>> I mean it does know that the clock isn't needed at all.
+>>> 
+>>> Currently it may knows that by checking the bp->tx_clk. Moreover the
+>>> clock
+>>> could be provided by PHY not only for MII interface.
+>> 
+>> That doesn't make this patch wrong, does it? It just doesn't cover
+>> all use cases (which also wasn't covered before).
+> 
+> I would say that it breaks setups using MII interface and with clock
+> provided via DT that need to be handled by macb_set_tx_clk().
 
-> From: Alexander Lobakin <alobakin@pm.me>
-> Date: Fri, 22 Jan 2021 11:47:45 +0000
->=20
-> > From: Eric Dumazet <eric.dumazet@gmail.com>
-> > Date: Thu, 21 Jan 2021 16:41:33 +0100
-> >=20
-> > > On 1/21/21 2:47 PM, Xuan Zhuo wrote:
-> > > > This patch is used to construct skb based on page to save memory co=
-py
-> > > > overhead.
-> > > >=20
-> > > > This function is implemented based on IFF_TX_SKB_NO_LINEAR. Only th=
-e
-> > > > network card priv_flags supports IFF_TX_SKB_NO_LINEAR will use page=
- to
-> > > > directly construct skb. If this feature is not supported, it is sti=
-ll
-> > > > necessary to copy data to construct skb.
-> > > >=20
-> > > > ---------------- Performance Testing ------------
-> > > >=20
-> > > > The test environment is Aliyun ECS server.
-> > > > Test cmd:
-> > > > ```
-> > > > xdpsock -i eth0 -t  -S -s <msg size>
-> > > > ```
-> > > >=20
-> > > > Test result data:
-> > > >=20
-> > > > size    64      512     1024    1500
-> > > > copy    1916747 1775988 1600203 1440054
-> > > > page    1974058 1953655 1945463 1904478
-> > > > percent 3.0%    10.0%   21.58%  32.3%
-> > > >=20
-> > > > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> > > > Reviewed-by: Dust Li <dust.li@linux.alibaba.com>
-> > > > ---
-> > > >  net/xdp/xsk.c | 104 ++++++++++++++++++++++++++++++++++++++++++++++=
-++----------
-> > > >  1 file changed, 86 insertions(+), 18 deletions(-)
-> > > >=20
-> > > > diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-> > > > index 4a83117..38af7f1 100644
-> > > > --- a/net/xdp/xsk.c
-> > > > +++ b/net/xdp/xsk.c
-> > > > @@ -430,6 +430,87 @@ static void xsk_destruct_skb(struct sk_buff *s=
-kb)
-> > > >  =09sock_wfree(skb);
-> > > >  }
-> > > > =20
-> > > > +static struct sk_buff *xsk_build_skb_zerocopy(struct xdp_sock *xs,
-> > > > +=09=09=09=09=09      struct xdp_desc *desc)
-> > > > +{
-> > > > +=09u32 len, offset, copy, copied;
-> > > > +=09struct sk_buff *skb;
-> > > > +=09struct page *page;
-> > > > +=09void *buffer;
-> > > > +=09int err, i;
-> > > > +=09u64 addr;
-> > > > +
-> > > > +=09skb =3D sock_alloc_send_skb(&xs->sk, 0, 1, &err);
+But the MII interface has by definition no tx clock? At the moment
+tx_clk is set to the correct frequency for RGMII interfaces, right?
+How would it break boards then?
 
-Also,
-maybe we should allocate it with NET_SKB_PAD so NIC drivers could
-use some reserved space?
+And if you use tx_clk for like driving the PHY refclk input, that
+would be an abuse of this clock (and shouldn't even work, because it
+just sets the correct RGMII frequencies).
 
-=09=09skb =3D sock_alloc_send_skb(&xs->sk, NET_SKB_PAD, 1, &err);
-=09=09...
-=09=09skb_reserve(skb, NET_SKB_PAD);
+>>> Moreover the IP has the bit "refclk" of register at offset 0xc 
+>>> (userio)
+>>> that tells it to use the clock provided by PHY or to use one internal
+>>> to
+>>> the SoC. If a SoC generated clock would be used the IP logic may have
+>>> the
+>>> option to do the proper division based on link speed (if IP has this
+>>> option
+>>> enabled then this should be selected in driver with capability
+>>> MACB_CAPS_CLK_HW_CHG).
+>>> 
+>>> If the clock provided by the PHY is the one to be used then this is
+>>> selected with capability MACB_CAPS_USRIO_HAS_CLKEN. So, if the change
+>>> you
+>>> proposed in this patch is still imperative then checking for this
+>>> capability would be the best as the clock could be provided by PHY 
+>>> not
+>>> only
+>>> for MII interface.
+>> 
+>> Fair enough, but this register doesn't seem to be implemented on
+>> Zynq-7000. Albeit MACB_CAPS_USRIO_DISABLED isn't defined for the
+>> Zynq MACB. It isn't defined in the Zynq-7000 reference manual and
+>> you cannot set any bits:
+>> 
+>> => mw 0xE000B00C 0xFFFFFFFF
+>> => md 0xE000B00C 1
+>> e000b00c: 00000000
+> 
+> I wasn't aware of this. In this case, maybe adding the
+> MACB_CAPS_USRIO_DISABLED to the Zync-7000 capability list and checking 
+> this
+> one plus MACB_CAPS_USRIO_HAS_CLKEN would be better instead of checking 
+> the
+> MAC-PHY interface?
 
-Eric, what do you think?
+But then RGMII would be broken. Zynq and ZynqMP are the only users of
+the tx_clk as far as I can see. There, it will set the clock generated
+by the clock controller which is driving the TX_CLK for RGMII and the
+corresponding input of the GEM/MACB.
 
-> > > > +=09if (unlikely(!skb))
-> > > > +=09=09return ERR_PTR(err);
-> > > > +
-> > > > +=09addr =3D desc->addr;
-> > > > +=09len =3D desc->len;
-> > > > +
-> > > > +=09buffer =3D xsk_buff_raw_get_data(xs->pool, addr);
-> > > > +=09offset =3D offset_in_page(buffer);
-> > > > +=09addr =3D buffer - xs->pool->addrs;
-> > > > +
-> > > > +=09for (copied =3D 0, i =3D 0; copied < len; i++) {
-> > > > +=09=09page =3D xs->pool->umem->pgs[addr >> PAGE_SHIFT];
-> > > > +
-> > > > +=09=09get_page(page);
-> > > > +
-> > > > +=09=09copy =3D min_t(u32, PAGE_SIZE - offset, len - copied);
-> > > > +
-> > > > +=09=09skb_fill_page_desc(skb, i, page, offset, copy);
-> > > > +
-> > > > +=09=09copied +=3D copy;
-> > > > +=09=09addr +=3D copy;
-> > > > +=09=09offset =3D 0;
-> > > > +=09}
-> > > > +
-> > > > +=09skb->len +=3D len;
-> > > > +=09skb->data_len +=3D len;
-> > >=20
-> > > > +=09skb->truesize +=3D len;
-> > >=20
-> > > This is not the truesize, unfortunately.
-> > >=20
-> > > We need to account for the number of pages, not number of bytes.
-> >=20
-> > The easiest solution is:
-> >=20
-> > =09skb->truesize +=3D PAGE_SIZE * i;
-> >=20
-> > i would be equal to skb_shinfo(skb)->nr_frags after exiting the loop.
->=20
-> Oops, pls ignore this. I forgot that XSK buffers are not
-> "one per page".
-> We need to count the number of pages manually and then do
->=20
-> =09skb->truesize +=3D PAGE_SIZE * npages;
->=20
-> Right.
->=20
-> > > > +
-> > > > +=09refcount_add(len, &xs->sk.sk_wmem_alloc);
-> > > > +
-> > > > +=09return skb;
-> > > > +}
-> > > > +
-> >=20
-> > Al
->=20
-> Thanks,
-> Al
+I mean you have the same SoC, thus the same caps and usrio settings,
+but you have two possible interfaces: MII and RGMII. (At least, because
+there might also be other interfaces like GMII). Therefore, you cannot
+check this bit, right? It will be the same for both MII and RGMII mode.
 
-Al
+In any case, it should be correct to add MACB_CAPS_USRIO_DISABLED to
+caps for the zynq family (I'd need to double check the ZynqMP RM).
 
+>> Also please note, that tx_clk may be an arbitrary clock which doesn't
+>> necessarily need to be the clock which is controlled by CLK_EN. Or
+>> am I missing something here?
+> 
+> I suppose that whoever creates the device tree knows what is doing and 
+> it
+> passes the proper clock to macb driver.
+
+Mh. If CLK_EN is supported this might be the case. Unfortunalty, Zynq
+is the only user and doesn't have this bit.
+
+-michael
+
+PS. dont' get me wrong, I'm all for fixing this "the right way".
