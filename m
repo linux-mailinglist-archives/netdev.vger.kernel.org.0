@@ -2,1245 +2,212 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CD45B300197
-	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 12:31:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 37A493001C6
+	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 12:41:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728159AbhAVLaA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jan 2021 06:30:00 -0500
-Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:6425 "EHLO
-        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728320AbhAVL2A (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 06:28:00 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B600ab6940002>; Fri, 22 Jan 2021 03:27:16 -0800
-Received: from sw-mtx-036.mtx.labs.mlnx (172.20.145.6) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Fri, 22 Jan
- 2021 11:27:15 +0000
-From:   Parav Pandit <parav@nvidia.com>
-To:     <virtualization@lists.linux-foundation.org>,
-        <netdev@vger.kernel.org>, <dsahern@gmail.com>,
-        <stephen@networkplumber.org>, <mst@redhat.com>,
-        <jasowang@redhat.com>
-CC:     Parav Pandit <parav@nvidia.com>
-Subject: [PATCH iproute2-next 2/2] vdpa: Add vdpa tool
-Date:   Fri, 22 Jan 2021 13:26:54 +0200
-Message-ID: <20210122112654.9593-3-parav@nvidia.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20210122112654.9593-1-parav@nvidia.com>
-References: <20210122112654.9593-1-parav@nvidia.com>
+        id S1727383AbhAVLkb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jan 2021 06:40:31 -0500
+Received: from esa.microchip.iphmx.com ([68.232.153.233]:44919 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727140AbhAVLjy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 06:39:54 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1611315595; x=1642851595;
+  h=from:to:cc:subject:date:message-id:references:
+   in-reply-to:content-id:content-transfer-encoding:
+   mime-version;
+  bh=0Op5641yfIBm3yGv8Ic1BshgxbPbsSuxsuxX632fBTU=;
+  b=QWTlgKRicq++rcqk3JUXELfphA4RAnWwdo4zQ07JxGazVNEE0Zp+MsTY
+   b3MNLqqIwkPc0007EFFqLp5C3k8N4COrW39H2rEVwqEC8XMQjr4HAzaxn
+   drd/wxJ493u3ET2D/riqOXFZUEUySUNvbxsb7KvbV50WWnMJEfQQ81jA3
+   gpYhGoz+DkyyfPPrM/t66+jceeV0ArRX/tu3QNu7u2QwzSvKBM5a0BUdn
+   5mufdAhw53dAPY8zOiJbdBLpGo/PFVSoSNKZXWD4ys9qmNL58/5Q3mmrA
+   s7AhGD3uyKvxWZYoa+NLSh0VfjmzwLOSwHr4BOA30Qbu13Pw1vkzCFQXo
+   A==;
+IronPort-SDR: 3rkJ+L8lsYDsTEefM5bUChunJ1OF1iawUECtKv8kcmDeiZpLc06FC/9cTjxyIwaq/KkcM0OHfW
+ 3uWxnkBBEJ8KTrg4QGFsAbwstiswtldSOTGUWvJf0X+8ljsuYLpnE+PEcMWZaTcQ2U+de9RFOx
+ 5t5Wjs+CwUdH2J3BCb06NZrwcdiZUlAYC3PsfO1Ef5T0d8QmhuIbQlgen7DAYvATN8i4EjaMt2
+ 9F+S8vHZBlISN5l7hRvO9pJTlGeFk4J47+7weACPOJWEpNzND6Bi39pe3+EeyAxPWnMOsQFYpT
+ bGo=
+X-IronPort-AV: E=Sophos;i="5.79,366,1602572400"; 
+   d="scan'208";a="106388789"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 22 Jan 2021 04:38:34 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Fri, 22 Jan 2021 04:38:32 -0700
+Received: from NAM10-MW2-obe.outbound.protection.outlook.com (10.10.215.89) by
+ email.microchip.com (10.10.87.72) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1979.3 via Frontend
+ Transport; Fri, 22 Jan 2021 04:38:32 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=oFCUAMTNCFoDNr7yoxWpzl16N1BrUkMB73iNm0N5bV2i2nrZsgR6J4G7r30OzM175ogPT6hMzp6wQEOVyDHPX7R6MvFl1Tswhoq1UEkNbISFytfDd5H24cAJYmO3uN+az0U3TiedOGYpm3Mofn+j2OPz/3q9aq9c90A4Jb/AxG3hg6FhCAjHjGETfZAK477sAjldCngsw9x6TNal7hd70zyBI9EuC5CH1TeIPxH5W4LrT33pn+UmF8dAE2O7FpKfhMGr7H44ghPaxDVUq4bTWgv1koHP4kYpj07XVJMyLFISUgBLygNENTUdMdhqQYuH6jNEk1KPsduVZ2dHJ+R7RQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=0Op5641yfIBm3yGv8Ic1BshgxbPbsSuxsuxX632fBTU=;
+ b=XCURTCMWdVDLCf80fx/WjxizvqHZYSsMorQD7kNQdvbW9phkb0rA3RowdU/Cvrk7yoetaCAj/lA6sDi1ImResAnr8D1wx1bfjpvXXM4w43koWmv511G/PzPOwQlELlhMq68XT+UEIdqRwniPU8FYBNl+KQg4qfUUgLzCZawz+Hka1sw2yyzVzAmoL9bpA5mcP/iKtaR7heRGJKCkOODLHuoFhuvKuJU0q021XdAYF5Tl8UYpFETqX+NOiMdxuvn5MMPhI7fz9jpku33QUQSf/wIjmNswrcLIG4vHBwO1NF6BAYXZlAbagEljT+ecgbmZgk60chbIfYnPO//bEanNNQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microchip.com; dmarc=pass action=none
+ header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=microchiptechnology.onmicrosoft.com;
+ s=selector2-microchiptechnology-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=0Op5641yfIBm3yGv8Ic1BshgxbPbsSuxsuxX632fBTU=;
+ b=tzZn19nIFYcDgzmdZCQsZTNQtt9fH/KjdnyGM2njWhlPpG+YaVi05ZVM44M3s19PMflGSWo8Ln8w0KFhj4fAUX5XCcKJX0dqTrN6K2xgfthLZEZ+t9OgJ7uc/hsf3Q/b5qSYTV3a+E4b37JPf2gGbd1nGns4HcwzVHPTsWEZjpc=
+Received: from DM6PR11MB3420.namprd11.prod.outlook.com (2603:10b6:5:69::31) by
+ DM5PR1101MB2185.namprd11.prod.outlook.com (2603:10b6:4:4f::18) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.3763.11; Fri, 22 Jan 2021 11:38:30 +0000
+Received: from DM6PR11MB3420.namprd11.prod.outlook.com
+ ([fe80::b96e:6776:6971:80f4]) by DM6PR11MB3420.namprd11.prod.outlook.com
+ ([fe80::b96e:6776:6971:80f4%5]) with mapi id 15.20.3763.014; Fri, 22 Jan 2021
+ 11:38:30 +0000
+From:   <Claudiu.Beznea@microchip.com>
+To:     <michael@walle.cc>
+CC:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <Nicolas.Ferre@microchip.com>, <davem@davemloft.net>
+Subject: Re: [PATCH] net: macb: ignore tx_clk if MII is used
+Thread-Topic: [PATCH] net: macb: ignore tx_clk if MII is used
+Thread-Index: AQHW79Z6nzNG5V5dqke5o+L2S+jLWw==
+Date:   Fri, 22 Jan 2021 11:38:29 +0000
+Message-ID: <9a6a93a0-7911-5910-333d-4aa9c0cd184d@microchip.com>
+References: <20210120194303.28268-1-michael@walle.cc>
+ <38734f00-e672-e694-1344-35f4dd68c90c@microchip.com>
+ <bd029c647db42e05bf1a54d43d601861@walle.cc>
+ <1bde9969-8769-726b-02cb-a1fcded0cd74@microchip.com>
+ <9737f7e5e53790ca5acbea8f07ddf1a4@walle.cc>
+In-Reply-To: <9737f7e5e53790ca5acbea8f07ddf1a4@walle.cc>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
+authentication-results: walle.cc; dkim=none (message not signed)
+ header.d=none;walle.cc; dmarc=none action=none header.from=microchip.com;
+x-originating-ip: [82.76.227.168]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 3df74c07-4337-4f5b-3087-08d8beca3db2
+x-ms-traffictypediagnostic: DM5PR1101MB2185:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <DM5PR1101MB2185CE58FAD06689C041371687A00@DM5PR1101MB2185.namprd11.prod.outlook.com>
+x-bypassexternaltag: True
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: eT3drmTJNIKbc/2S9GdhxQ5zyyFvP9gq4aQSaUJ2tgTky7CakYRlooLnZ0J43Y8TvB9lm6REWW+Cu4ppxlG4hIzLn5m7OaVuhRfQWDgquwTNSHqo9MCqbxg+PyQEkL15Nyux3A1TC6ga4gL8aK3HU6G4Pxc1AXo1ybhQRD7ngjrxJ6IsXI/wUD8jLUAfLuvT1nwxjPRkuBuD3uVECuhtC/TKQF2b6brFzdtHDiRdxaQIEQf/KjLqCqztfX7KR6n0GozN+Dy6tU6z5OUpXhqzloEpAnEqZvTguuBMaSATiYiIzXzZSHNBFY2NrMA9mEX5IAg5tr4mKYd8RdIf3BpuiahumyIXkQlP3mk63J32nzS7WBHrW02UWs0PWY6jBiSnL7OlKGih5L9KF1o9tB7f2EHOGoEb97IYhkFAZWg8IVse6kmpq5lYmHsXwjmHVywtAgI4q4TbMdb6DRYJDIwuYSFb2A7CraeRujZfSnNG4VM=
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR11MB3420.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(346002)(366004)(136003)(396003)(39860400002)(376002)(91956017)(53546011)(31686004)(6916009)(478600001)(66556008)(6506007)(66476007)(66946007)(5660300002)(8936002)(316002)(76116006)(64756008)(26005)(83380400001)(186003)(71200400001)(4326008)(2906002)(31696002)(54906003)(8676002)(2616005)(36756003)(86362001)(6486002)(66446008)(6512007)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: =?utf-8?B?MVhBckxPUDVvUStmR3dScjgzYmNXTWVUYXVwazdPVHFobzdVU1dsa01sMHht?=
+ =?utf-8?B?cS9XTmhvZmFnMDdNcElZN1ZhQkVkaWFUNmxsMnc4LzMrWEJhQm5ZUTA4azNv?=
+ =?utf-8?B?UlpOVHFMY3B2UmZ4a2pwOUlzY0lnVkY4elA1MTh6bzhVbjg5Y0lQeVlMK0pE?=
+ =?utf-8?B?VzcwdS9RT3B2MTUwVmpvMEU5VlF2QTV2N1ZCajZNLzZ4K1UwaDRhbmlaeXNl?=
+ =?utf-8?B?ZzJxUlIvY3VydWFaY1BteDdPbDJPS1dyV0F4bWVxUmU5ZnpyTW0vRlUwUWhV?=
+ =?utf-8?B?eXZsbjVxMGg4WURYM1RWbXozd0x5UFVmK3NoRmNSYVpqNkZsbm5IVmNnclpU?=
+ =?utf-8?B?QmpoTGRjWGYwbFhNMzlPYnlJSHRpWHl4bVFJK1hhNkZ1UFExRVRhZkFodlVR?=
+ =?utf-8?B?WGZaaCtRbXA5Unl4MU9ueDczUkgzNWQvN0NWcmd3ZU1JMzJDNXA5V0lVRTBR?=
+ =?utf-8?B?NjFlWVBrL3dXYVBwYjY1YUJ5SllYZ2RpaVJnYkQ4MWt1dzJxMjhsMk5YYW5K?=
+ =?utf-8?B?WHpuWUwzZEhrejkvSllQSmJ4N0VEVGtVMTdQSXNNMlB6am5BeXF1bEJFT25Q?=
+ =?utf-8?B?TFlWSlFtR1dUTDVhKzlrLzg2aHlVVS9lOU5DK3liQ0dXRUVadlZDMjB5TlVk?=
+ =?utf-8?B?T0FBajBwR1VGelFBc3lhWXBsNUc3bksrUkxEYXBnSW0xemNaY1F1S0dkZG9h?=
+ =?utf-8?B?bE5FTEp6QlZjeVppcDYvelZySXhlK1BHbzZJNE9EbFVDbjNaQlllQ1VqME1j?=
+ =?utf-8?B?a0tJSzh5RUtmRmQ3T01tbDV1ZlVWYXB4QkpicWVYVmJvYm8zQW8xd3lkdFQ3?=
+ =?utf-8?B?cWx0dUtUb1h2QjkzM3RxWTRQeHpUVDFrcHF6WW1BbGI2aFdveS9YN1BwSHlx?=
+ =?utf-8?B?dlNVNE9Rbk5LOGN6cXpmVTROQnRKY2FQOGxVY3FLbWFDa1dzMXh2bDMxcEl2?=
+ =?utf-8?B?NE00WHYwbzk4MlRHK0gvQ2J1c1JQWERMSGloZk4rSUZXR1BZakRVQ2ZIZXdr?=
+ =?utf-8?B?YllJaXRMcDVHZWtxNG1oVXVlZTZQandZRUxXRUJDV1ROZ2RJc3k0TzFMTjVT?=
+ =?utf-8?B?TENCOTZHc01DSS9XN0JkK2ZjVFNVcmVueW9xLzRyY3VNSHNFWDFBdy9OdFow?=
+ =?utf-8?B?NWw2eCtSN3lSNHdRSTNIeFRrMUMxUkt3NmpVV0lJQmtVNlUrcG0zNkExZkE5?=
+ =?utf-8?B?TUNxTHhKcmNKdWVVN2pPQmMvcUNBMUJkZHlkWWlWZjFxUkhxb0NCRjZWRDNB?=
+ =?utf-8?B?cmExNG9lK1o2SVYvRWRRY2srVjhMcUI3Q09tcG12a3FtVkFTTHlTNmVLQ0cz?=
+ =?utf-8?B?bWhUS1lreWVibjNYbWZoU1ZOVXA4Qlp3TENzK3hjTUtPMldjMzFxdEhxM2dI?=
+ =?utf-8?B?MG91TGhNSXUvSFl2OFhTTzZPcEhTdW1GWnNCMGJKY0lkZ0NTcE1nd2g4bk9m?=
+ =?utf-8?B?MUdoV1lQRlRJOUhCMGlKNmQwMkdJenZMTVpPVXJRPT0=?=
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <3F52BE015A50C648B94DFDADACAD0F32@namprd11.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain
-X-Originating-IP: [172.20.145.6]
-X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
- HQMAIL107.nvidia.com (172.20.187.13)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1611314837; bh=KkRdGRQtbOEoLosxxNRCJZKnNuFc6rWyWj/ibFF6IGw=;
-        h=From:To:CC:Subject:Date:Message-ID:X-Mailer:In-Reply-To:
-         References:MIME-Version:Content-Transfer-Encoding:Content-Type:
-         X-Originating-IP:X-ClientProxiedBy;
-        b=o2yVTxviFQpGn+yroVSBEuul+X3c6GV485fkDNvrnJNaFfhY2cDZ/euSXXo4hg9S8
-         /XUBV3ouLQRXcGL4JLIhLDPrAcXBV2NVWFcF8quUM8bJwtrZBEV2cS7LcgQZg6WvGk
-         NCPcAGYETeGOQhXbGaArqAIwGYmeoaaYc2xo571Vhg7i6GkJviCJG/oT/5TMhUe18q
-         1rj8+qHrryTFCRJruBUOrnxpwkVnvpHmtN+P+umTMn1mN/t3famRQHpv8UTvjwXzOb
-         MPkSffm9xVuTMIQDo8Mfvn5QIIXEuLvAUg6CY8ngJu7uCuakCetSIdGD4dk9/NuUW0
-         mxE5EXqTokKLQ==
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR11MB3420.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 3df74c07-4337-4f5b-3087-08d8beca3db2
+X-MS-Exchange-CrossTenant-originalarrivaltime: 22 Jan 2021 11:38:29.9495
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: qBo0wstmTJ9xSWllCZ27wu9Z24C9VEnogn4pKMALtcnLzGKpJZQABY9qISdmpoIUzAMk5hJs0gpOezI/msakXn6ChBCVUGSLZj4KFgoEjrU=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR1101MB2185
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-vdpa tool is created to create, delete and query vdpa devices.
-examples:
-Show vdpa management device that supports creating, deleting vdpa devices.
-
-$ vdpa mgmtdev show
-vdpasim:
-  supported_classes net
-
-$ vdpa mgmtdev show -jp
-{
-    "show": {
-        "vdpasim": {
-            "supported_classes": [ "net" ]
-        }
-    }
-}
-
-Create a vdpa device of type networking named as "foo2" from
-the management device vdpasim_net:
-
-$ vdpa dev add mgmtdev vdpasim_net name foo2
-
-Show the newly created vdpa device by its name:
-$ vdpa dev show foo2
-foo2: type network mgmtdev vdpasim_net vendor_id 0 max_vqs 2 max_vq_size 25=
-6
-
-$ vdpa dev show foo2 -jp
-{
-    "dev": {
-        "foo2": {
-            "type": "network",
-            "mgmtdev": "vdpasim_net",
-            "vendor_id": 0,
-            "max_vqs": 2,
-            "max_vq_size": 256
-        }
-    }
-}
-
-Delete the vdpa device after its use:
-$ vdpa dev del foo2
-
-Signed-off-by: Parav Pandit <parav@nvidia.com>
----
- Makefile                |   2 +-
- man/man8/vdpa-dev.8     |  96 +++++
- man/man8/vdpa-mgmtdev.8 |  53 +++
- man/man8/vdpa.8         |  76 ++++
- vdpa/Makefile           |  24 ++
- vdpa/vdpa.c             | 828 ++++++++++++++++++++++++++++++++++++++++
- 6 files changed, 1078 insertions(+), 1 deletion(-)
- create mode 100644 man/man8/vdpa-dev.8
- create mode 100644 man/man8/vdpa-mgmtdev.8
- create mode 100644 man/man8/vdpa.8
- create mode 100644 vdpa/Makefile
- create mode 100644 vdpa/vdpa.c
-
-diff --git a/Makefile b/Makefile
-index e64c6599..19bd163e 100644
---- a/Makefile
-+++ b/Makefile
-@@ -55,7 +55,7 @@ WFLAGS +=3D -Wmissing-declarations -Wold-style-definition=
- -Wformat=3D2
- CFLAGS :=3D $(WFLAGS) $(CCOPTS) -I../include -I../include/uapi $(DEFINES) =
-$(CFLAGS)
- YACCFLAGS =3D -d -t -v
-=20
--SUBDIRS=3Dlib ip tc bridge misc netem genl tipc devlink rdma dcb man
-+SUBDIRS=3Dlib ip tc bridge misc netem genl tipc devlink rdma dcb man vdpa
-=20
- LIBNETLINK=3D../lib/libutil.a ../lib/libnetlink.a
- LDLIBS +=3D $(LIBNETLINK)
-diff --git a/man/man8/vdpa-dev.8 b/man/man8/vdpa-dev.8
-new file mode 100644
-index 00000000..36433519
---- /dev/null
-+++ b/man/man8/vdpa-dev.8
-@@ -0,0 +1,96 @@
-+.TH DEVLINK\-DEV 8 "5 Jan 2021" "iproute2" "Linux"
-+.SH NAME
-+vdpa-dev \- vdpa device configuration
-+.SH SYNOPSIS
-+.sp
-+.ad l
-+.in +8
-+.ti -8
-+.B vdpa
-+.B dev
-+.RI "[ " OPTIONS " ] "
-+.RI  " { " COMMAND | " "
-+.BR help " }"
-+.sp
-+
-+.ti -8
-+.IR OPTIONS " :=3D { "
-+\fB\-V\fR[\fIersion\fR]
-+}
-+
-+.ti -8
-+.B vdpa dev show
-+.RI "[ " DEV " ]"
-+
-+.ti -8
-+.B vdpa dev help
-+
-+.ti -8
-+.B vdpa dev add
-+.B name
-+.I NAME
-+.B mgmtdev
-+.I MGMTDEV
-+
-+.ti -8
-+.B vdpa dev del
-+.I DEV
-+
-+.SH "DESCRIPTION"
-+.SS vdpa dev show - display vdpa device attributes
-+
-+.PP
-+.I "DEV"
-+- specifies the vdpa device to show.
-+If this argument is omitted all devices are listed.
-+
-+.in +4
-+Format is:
-+.in +2
-+VDPA_DEVICE_NAME
-+
-+.SS vdpa dev add - add a new vdpa device.
-+
-+.TP
-+.BI name " NAME"
-+Name of the new vdpa device to add.
-+
-+.TP
-+.BI mgmtdev " MGMTDEV"
-+Name of the management device to use for device addition.
-+
-+.SS vdpa dev del - Delete the vdpa device.
-+
-+.PP
-+.I "DEV"
-+- specifies the vdpa device to delete.
-+
-+.SH "EXAMPLES"
-+.PP
-+vdpa dev show
-+.RS 4
-+Shows the all vdpa devices on the system.
-+.RE
-+.PP
-+vdpa dev show foo
-+.RS 4
-+Shows the specified vdpa device.
-+.RE
-+.PP
-+vdpa dev add name foo mgmtdev vdpa_sim_net
-+.RS 4
-+Add the vdpa device named foo on the management device vdpa_sim_net.
-+.RE
-+.PP
-+vdpa dev del foo
-+.RS 4
-+Delete the vdpa device named foo which was previously created.
-+.RE
-+
-+.SH SEE ALSO
-+.BR vdpa (8),
-+.BR vdpa-mgmtdev (8),
-+.br
-+
-+.SH AUTHOR
-+Parav Pandit <parav@nvidia.com>
-diff --git a/man/man8/vdpa-mgmtdev.8 b/man/man8/vdpa-mgmtdev.8
-new file mode 100644
-index 00000000..cae2cbd0
---- /dev/null
-+++ b/man/man8/vdpa-mgmtdev.8
-@@ -0,0 +1,53 @@
-+.TH DEVLINK\-DEV 8 "5 Jan 2021" "iproute2" "Linux"
-+.SH NAME
-+vdpa-dev \- vdpa management device view
-+.SH SYNOPSIS
-+.sp
-+.ad l
-+.in +8
-+.ti -8
-+.B vdpa
-+.B mgmtdev
-+.RI  " { " COMMAND | " "
-+.BR help " }"
-+.sp
-+
-+.ti -8
-+.IR OPTIONS " :=3D { "
-+\fB\-V\fR[\fIersion\fR]
-+}
-+
-+.ti -8
-+.B vdpa mgmtdev show
-+.RI "[ " MGMTDEV " ]"
-+
-+.ti -8
-+.B vdpa mgmtdev help
-+
-+.SH "DESCRIPTION"
-+.SS vdpa mgmtdev show - display vdpa management device attributes
-+
-+.PP
-+.I "MGMTDEV"
-+- specifies the vdpa management device to show.
-+If this argument is omitted all management devices are listed.
-+
-+.SH "EXAMPLES"
-+.PP
-+vdpa mgmtdev show
-+.RS 4
-+Shows all the vdpa management devices on the system.
-+.RE
-+.PP
-+vdpa mgmtdev show bar
-+.RS 4
-+Shows the specified vdpa management device.
-+.RE
-+
-+.SH SEE ALSO
-+.BR vdpa (8),
-+.BR vdpa-dev (8),
-+.br
-+
-+.SH AUTHOR
-+Parav Pandit <parav@nvidia.com>
-diff --git a/man/man8/vdpa.8 b/man/man8/vdpa.8
-new file mode 100644
-index 00000000..d1aaecec
---- /dev/null
-+++ b/man/man8/vdpa.8
-@@ -0,0 +1,76 @@
-+.TH VDPA 8 "5 Jan 2021" "iproute2" "Linux"
-+.SH NAME
-+vdpa \- vdpa management tool
-+.SH SYNOPSIS
-+.sp
-+.ad l
-+.in +8
-+.ti -8
-+.B vdpa
-+.RI "[ " OPTIONS " ] { " dev | mgmtdev " } { " COMMAND " | "
-+.BR help " }"
-+.sp
-+
-+.SH OPTIONS
-+
-+.TP
-+.BR "\-V" , " --Version"
-+Print the version of the
-+.B vdpa
-+utility and exit.
-+
-+.TP
-+.BR "\-j" , " --json"
-+Generate JSON output.
-+
-+.TP
-+.BR "\-p" , " --pretty"
-+When combined with -j generate a pretty JSON output.
-+
-+.SS
-+.I OBJECT
-+
-+.TP
-+.B dev
-+- vdpa device.
-+
-+.TP
-+.B mgmtdev
-+- vdpa management device.
-+
-+.SS
-+.I COMMAND
-+
-+Specifies the action to perform on the object.
-+The set of possible actions depends on the object type.
-+It is possible to
-+.B show
-+(or
-+.B list
-+) objects. The
-+.B help
-+command is available for all objects. It prints
-+out a list of available commands and argument syntax conventions.
-+.sp
-+If no command is given, some default command is assumed.
-+Usually it is
-+.B show
-+or, if the objects of this class cannot be listed,
-+.BR "help" .
-+
-+.SH EXIT STATUS
-+Exit status is 0 if command was successful or a positive integer upon fail=
-ure.
-+
-+.SH SEE ALSO
-+.BR vdpa-dev (8),
-+.BR vdpa-mgmtdev (8),
-+.br
-+
-+.SH REPORTING BUGS
-+Report any bugs to the Network Developers mailing list
-+.B <netdev@vger.kernel.org>
-+where the development and maintenance is primarily done.
-+You do not have to be subscribed to the list to send a message there.
-+
-+.SH AUTHOR
-+Parav Pandit <parav@nvidia.com>
-diff --git a/vdpa/Makefile b/vdpa/Makefile
-new file mode 100644
-index 00000000..275f9ded
---- /dev/null
-+++ b/vdpa/Makefile
-@@ -0,0 +1,24 @@
-+# SPDX-License-Identifier: GPL-2.0
-+include ../config.mk
-+
-+TARGETS :=3D
-+
-+ifeq ($(HAVE_MNL),y)
-+
-+VDPAOBJ =3D vdpa.o
-+TARGETS +=3D vdpa
-+
-+endif
-+
-+all: $(TARGETS) $(LIBS)
-+
-+vdpa: $(VDPAOBJ)
-+	$(QUIET_LINK)$(CC) $^ $(LDFLAGS) $(LDLIBS) -o $@
-+
-+install: all
-+	for i in $(TARGETS); \
-+	do install -m 0755 $$i $(DESTDIR)$(SBINDIR); \
-+	done
-+
-+clean:
-+	rm -f $(VDPAOBJ) $(TARGETS)
-diff --git a/vdpa/vdpa.c b/vdpa/vdpa.c
-new file mode 100644
-index 00000000..942524b7
---- /dev/null
-+++ b/vdpa/vdpa.c
-@@ -0,0 +1,828 @@
-+// SPDX-License-Identifier: GPL-2.0+
-+
-+#include <stdio.h>
-+#include <getopt.h>
-+#include <errno.h>
-+#include <linux/genetlink.h>
-+#include <linux/vdpa.h>
-+#include <linux/virtio_ids.h>
-+#include <linux/netlink.h>
-+#include <libmnl/libmnl.h>
-+#include "mnl_utils.h"
-+
-+#include "version.h"
-+#include "json_print.h"
-+#include "utils.h"
-+
-+static int g_indent_level;
-+
-+#define INDENT_STR_STEP 2
-+#define INDENT_STR_MAXLEN 32
-+static char g_indent_str[INDENT_STR_MAXLEN + 1] =3D "";
-+
-+struct vdpa_socket {
-+	struct mnl_socket *nl;
-+	char *buf;
-+	uint32_t family;
-+	unsigned int seq;
-+};
-+
-+static int vdpa_socket_sndrcv(struct vdpa_socket *nlg, const struct nlmsgh=
-dr *nlh,
-+			      mnl_cb_t data_cb, void *data)
-+{
-+	int err;
-+
-+	err =3D mnl_socket_sendto(nlg->nl, nlh, nlh->nlmsg_len);
-+	if (err < 0) {
-+		perror("Failed to send data");
-+		return -errno;
-+	}
-+
-+	err =3D mnlu_socket_recv_run(nlg->nl, nlh->nlmsg_seq, nlg->buf, MNL_SOCKE=
-T_BUFFER_SIZE,
-+				   data_cb, data);
-+	if (err < 0) {
-+		fprintf(stderr, "vdpa answers: %s\n", strerror(errno));
-+		return -errno;
-+	}
-+	return 0;
-+}
-+
-+static int get_family_id_attr_cb(const struct nlattr *attr, void *data)
-+{
-+	int type =3D mnl_attr_get_type(attr);
-+	const struct nlattr **tb =3D data;
-+
-+	if (mnl_attr_type_valid(attr, CTRL_ATTR_MAX) < 0)
-+		return MNL_CB_ERROR;
-+
-+	if (type =3D=3D CTRL_ATTR_FAMILY_ID &&
-+	    mnl_attr_validate(attr, MNL_TYPE_U16) < 0)
-+		return MNL_CB_ERROR;
-+	tb[type] =3D attr;
-+	return MNL_CB_OK;
-+}
-+
-+static int get_family_id_cb(const struct nlmsghdr *nlh, void *data)
-+{
-+	struct genlmsghdr *genl =3D mnl_nlmsg_get_payload(nlh);
-+	struct nlattr *tb[CTRL_ATTR_MAX + 1] =3D {};
-+	uint32_t *p_id =3D data;
-+
-+	mnl_attr_parse(nlh, sizeof(*genl), get_family_id_attr_cb, tb);
-+	if (!tb[CTRL_ATTR_FAMILY_ID])
-+		return MNL_CB_ERROR;
-+	*p_id =3D mnl_attr_get_u16(tb[CTRL_ATTR_FAMILY_ID]);
-+	return MNL_CB_OK;
-+}
-+
-+static int family_get(struct vdpa_socket *nlg)
-+{
-+	struct genlmsghdr hdr =3D {};
-+	struct nlmsghdr *nlh;
-+	int err;
-+
-+	hdr.cmd =3D CTRL_CMD_GETFAMILY;
-+	hdr.version =3D 0x1;
-+
-+	nlh =3D mnlu_msg_prepare(nlg->buf, GENL_ID_CTRL,
-+			       NLM_F_REQUEST | NLM_F_ACK,
-+			       &hdr, sizeof(hdr));
-+
-+	mnl_attr_put_strz(nlh, CTRL_ATTR_FAMILY_NAME, VDPA_GENL_NAME);
-+
-+	err =3D mnl_socket_sendto(nlg->nl, nlh, nlh->nlmsg_len);
-+	if (err < 0)
-+		return err;
-+
-+	err =3D mnlu_socket_recv_run(nlg->nl, nlh->nlmsg_seq, nlg->buf,
-+				   MNL_SOCKET_BUFFER_SIZE,
-+				   get_family_id_cb, &nlg->family);
-+	return err;
-+}
-+
-+static int vdpa_socket_open(struct vdpa_socket *nlg)
-+{
-+	int err;
-+
-+	nlg->buf =3D malloc(MNL_SOCKET_BUFFER_SIZE);
-+	if (!nlg->buf)
-+		goto err_buf_alloc;
-+
-+	nlg->nl =3D mnlu_socket_open(NETLINK_GENERIC);
-+	if (!nlg->nl)
-+		goto err_socket_open;
-+
-+	err =3D family_get(nlg);
-+	if (err)
-+		goto err_socket;
-+
-+	return 0;
-+
-+err_socket:
-+	mnl_socket_close(nlg->nl);
-+err_socket_open:
-+	free(nlg->buf);
-+err_buf_alloc:
-+	return -1;
-+}
-+
-+static void vdpa_socket_close(struct vdpa_socket *nlg)
-+{
-+	mnl_socket_close(nlg->nl);
-+	free(nlg->buf);
-+}
-+
-+#define VDPA_OPT_MGMTDEV_HANDLE		BIT(0)
-+#define VDPA_OPT_VDEV_MGMTDEV_HANDLE	BIT(1)
-+#define VDPA_OPT_VDEV_NAME 		BIT(2)
-+#define VDPA_OPT_VDEV_HANDLE 		BIT(3)
-+
-+struct vdpa_opts {
-+	uint64_t present; /* flags of present items */
-+	const char *mdev_bus_name;
-+	const char *mdev_name;
-+	const char *vdev_name;
-+	unsigned int device_id;
-+};
-+
-+struct vdpa {
-+	struct vdpa_socket nlg;
-+	struct vdpa_opts opts;
-+	bool json_output;
-+};
-+
-+static void indent_inc(void)
-+{
-+	if (g_indent_level + INDENT_STR_STEP > INDENT_STR_MAXLEN)
-+		return;
-+	g_indent_level +=3D INDENT_STR_STEP;
-+	memset(g_indent_str, ' ', sizeof(g_indent_str));
-+	g_indent_str[g_indent_level] =3D '\0';
-+}
-+
-+static void indent_dec(void)
-+{
-+	if (g_indent_level - INDENT_STR_STEP < 0)
-+		return;
-+	g_indent_level -=3D INDENT_STR_STEP;
-+	g_indent_str[g_indent_level] =3D '\0';
-+}
-+
-+static void indent_print(void)
-+{
-+	if (g_indent_level)
-+		printf("%s", g_indent_str);
-+}
-+
-+static void pr_out_section_start(struct vdpa *vdpa, const char *name)
-+{
-+	open_json_object(NULL);
-+	open_json_object(name);
-+}
-+
-+static void pr_out_section_end(struct vdpa *vdpa)
-+{
-+	close_json_object();
-+	close_json_object();
-+}
-+
-+static void pr_out_array_start(struct vdpa *vdpa, const char *name)
-+{
-+	if (!vdpa->json_output) {
-+		print_nl();
-+		indent_inc();
-+		indent_print();
-+	}
-+	open_json_array(PRINT_ANY, name);
-+}
-+
-+static void pr_out_array_end(struct vdpa *vdpa)
-+{
-+	close_json_array(PRINT_JSON, NULL);
-+	if (!vdpa->json_output)
-+		indent_dec();
-+}
-+
-+static const enum mnl_attr_data_type vdpa_policy[VDPA_ATTR_MAX + 1] =3D {
-+	[VDPA_ATTR_MGMTDEV_BUS_NAME] =3D MNL_TYPE_NUL_STRING,
-+	[VDPA_ATTR_MGMTDEV_DEV_NAME] =3D MNL_TYPE_NUL_STRING,
-+	[VDPA_ATTR_DEV_NAME] =3D MNL_TYPE_STRING,
-+	[VDPA_ATTR_DEV_ID] =3D MNL_TYPE_U32,
-+	[VDPA_ATTR_DEV_VENDOR_ID] =3D MNL_TYPE_U32,
-+	[VDPA_ATTR_DEV_MAX_VQS] =3D MNL_TYPE_U32,
-+	[VDPA_ATTR_DEV_MAX_VQ_SIZE] =3D MNL_TYPE_U16,
-+};
-+
-+static int attr_cb(const struct nlattr *attr, void *data)
-+{
-+	const struct nlattr **tb =3D data;
-+	int type;
-+
-+	if (mnl_attr_type_valid(attr, VDPA_ATTR_MAX) < 0)
-+		return MNL_CB_OK;
-+
-+	type =3D mnl_attr_get_type(attr);
-+	if (mnl_attr_validate(attr, vdpa_policy[type]) < 0)
-+		return MNL_CB_ERROR;
-+
-+	tb[type] =3D attr;
-+	return MNL_CB_OK;
-+}
-+
-+static unsigned int strslashcount(char *str)
-+{
-+	unsigned int count =3D 0;
-+	char *pos =3D str;
-+
-+	while ((pos =3D strchr(pos, '/'))) {
-+		count++;
-+		pos++;
-+	}
-+	return count;
-+}
-+
-+static int strslashrsplit(char *str, const char **before, const char **aft=
-er)
-+{
-+	char *slash;
-+
-+	slash =3D strrchr(str, '/');
-+	if (!slash)
-+		return -EINVAL;
-+	*slash =3D '\0';
-+	*before =3D str;
-+	*after =3D slash + 1;
-+	return 0;
-+}
-+
-+static int vdpa_argv_handle(struct vdpa *vdpa, int argc, char **argv,
-+			    const char **p_mdev_bus_name,
-+			    const char **p_mdev_name)
-+{
-+	unsigned int slashcount;
-+	char *str;
-+
-+	if (argc <=3D 0 || *argv =3D=3D NULL) {
-+		fprintf(stderr,
-+			"vdpa identification (\"mgmtdev_bus_name/mgmtdev_name\") expected\n");
-+		return -EINVAL;
-+	}
-+	str =3D *argv;
-+	slashcount =3D strslashcount(str);
-+	if (slashcount > 1) {
-+		fprintf(stderr,
-+			"Wrong vdpa mgmtdev identification string format\n");
-+		fprintf(stderr, "Expected \"mgmtdev_bus_name/mgmtdev_name\"\n");
-+		fprintf(stderr, "Expected \"mgmtdev_name\"\n");
-+		return -EINVAL;
-+	}
-+	switch (slashcount) {
-+	case 0:
-+		*p_mdev_bus_name =3D NULL;
-+		*p_mdev_name =3D str;
-+		return 0;
-+	case 1:
-+		strslashrsplit(str, p_mdev_bus_name, p_mdev_name);
-+		return 0;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int vdpa_argv_str(struct vdpa *vdpa, int argc, char **argv,
-+			 const char **p_str)
-+{
-+	if (argc <=3D 0 || *argv =3D=3D NULL) {
-+		fprintf(stderr, "String parameter expected\n");
-+		return -EINVAL;
-+	}
-+	*p_str =3D *argv;
-+	return 0;
-+}
-+
-+struct vdpa_args_metadata {
-+	uint64_t o_flag;
-+	const char *err_msg;
-+};
-+
-+static const struct vdpa_args_metadata vdpa_args_required[] =3D {
-+	{VDPA_OPT_VDEV_MGMTDEV_HANDLE, "management device handle not set."},
-+	{VDPA_OPT_VDEV_NAME, "device name is not set."},
-+	{VDPA_OPT_VDEV_HANDLE, "device name is not set."},
-+};
-+
-+static int vdpa_args_finding_required_validate(uint64_t o_required,
-+					       uint64_t o_found)
-+{
-+	uint64_t o_flag;
-+	int i;
-+
-+	for (i =3D 0; i < ARRAY_SIZE(vdpa_args_required); i++) {
-+		o_flag =3D vdpa_args_required[i].o_flag;
-+		if ((o_required & o_flag) && !(o_found & o_flag)) {
-+			fprintf(stderr, "%s\n", vdpa_args_required[i].err_msg);
-+			return -EINVAL;
-+		}
-+	}
-+	if (o_required & ~o_found) {
-+		fprintf(stderr, "BUG: unknown argument required but not found\n");
-+		return -EINVAL;
-+	}
-+	return 0;
-+}
-+
-+static void vdpa_opts_put(struct nlmsghdr *nlh, struct vdpa *vdpa)
-+{
-+	struct vdpa_opts *opts =3D &vdpa->opts;
-+
-+	if ((opts->present & VDPA_OPT_MGMTDEV_HANDLE) ||
-+	    (opts->present & VDPA_OPT_VDEV_MGMTDEV_HANDLE)) {
-+		if (opts->mdev_bus_name)
-+			mnl_attr_put_strz(nlh, VDPA_ATTR_MGMTDEV_BUS_NAME,
-+					  opts->mdev_bus_name);
-+		mnl_attr_put_strz(nlh, VDPA_ATTR_MGMTDEV_DEV_NAME,
-+				  opts->mdev_name);
-+	}
-+	if ((opts->present & VDPA_OPT_VDEV_NAME) ||
-+	    (opts->present & VDPA_OPT_VDEV_HANDLE))
-+		mnl_attr_put_strz(nlh, VDPA_ATTR_DEV_NAME, opts->vdev_name);
-+}
-+
-+static int vdpa_argv_parse(struct vdpa *vdpa, int argc, char **argv,
-+			   uint64_t o_required)
-+{
-+	struct vdpa_opts *opts =3D &vdpa->opts;
-+	uint64_t o_all =3D o_required;
-+	uint64_t o_found =3D 0;
-+	int err;
-+
-+	if (o_required & VDPA_OPT_MGMTDEV_HANDLE) {
-+		err =3D vdpa_argv_handle(vdpa, argc, argv, &opts->mdev_bus_name,
-+				       &opts->mdev_name);
-+		if (err)
-+			return err;
-+
-+		NEXT_ARG_FWD();
-+		o_found |=3D VDPA_OPT_MGMTDEV_HANDLE;
-+	} else if (o_required & VDPA_OPT_VDEV_HANDLE) {
-+		err =3D vdpa_argv_str(vdpa, argc, argv, &opts->vdev_name);
-+		if (err)
-+			return err;
-+
-+		NEXT_ARG_FWD();
-+		o_found |=3D VDPA_OPT_VDEV_HANDLE;
-+	}
-+
-+	while (NEXT_ARG_OK()) {
-+		if ((matches(*argv, "name") =3D=3D 0) && (o_all & VDPA_OPT_VDEV_NAME)) {
-+			const char *namestr;
-+
-+			NEXT_ARG_FWD();
-+			err =3D vdpa_argv_str(vdpa, argc, argv, &namestr);
-+			if (err)
-+				return err;
-+			opts->vdev_name =3D namestr;
-+			NEXT_ARG_FWD();
-+			o_found |=3D VDPA_OPT_VDEV_NAME;
-+		} else if ((matches(*argv, "mgmtdev")  =3D=3D 0) &&
-+			   (o_all & VDPA_OPT_VDEV_MGMTDEV_HANDLE)) {
-+			NEXT_ARG_FWD();
-+			err =3D vdpa_argv_handle(vdpa, argc, argv,
-+					       &opts->mdev_bus_name,
-+					       &opts->mdev_name);
-+			if (err)
-+				return err;
-+
-+			NEXT_ARG_FWD();
-+			o_found |=3D VDPA_OPT_VDEV_MGMTDEV_HANDLE;
-+		} else {
-+			fprintf(stderr, "Unknown option \"%s\"\n", *argv);
-+			return -EINVAL;
-+		}
-+	}
-+
-+	opts->present =3D o_found;
-+
-+	return vdpa_args_finding_required_validate(o_required, o_found);
-+}
-+
-+static int vdpa_argv_parse_put(struct nlmsghdr *nlh, struct vdpa *vdpa,
-+			       int argc, char **argv,
-+			       uint64_t o_required)
-+{
-+	int err;
-+
-+	err =3D vdpa_argv_parse(vdpa, argc, argv, o_required);
-+	if (err)
-+		return err;
-+	vdpa_opts_put(nlh, vdpa);
-+	return 0;
-+}
-+
-+static void cmd_mgmtdev_help(void)
-+{
-+	fprintf(stderr, "Usage: vdpa mgmtdev show [ DEV ]\n");
-+}
-+
-+static void pr_out_handle_start(struct vdpa *vdpa, struct nlattr **tb)
-+{
-+	const char *mdev_bus_name =3D NULL;
-+	const char *mdev_name;
-+	SPRINT_BUF(buf);
-+
-+	mdev_name =3D mnl_attr_get_str(tb[VDPA_ATTR_MGMTDEV_DEV_NAME]);
-+	if (tb[VDPA_ATTR_MGMTDEV_BUS_NAME]) {
-+		mdev_bus_name =3D mnl_attr_get_str(tb[VDPA_ATTR_MGMTDEV_BUS_NAME]);
-+		sprintf(buf, "%s/%s", mdev_bus_name, mdev_name);
-+	} else {
-+		sprintf(buf, "%s", mdev_name);
-+	}
-+
-+	if (vdpa->json_output)
-+		open_json_object(buf);
-+	else
-+		printf("%s: ", buf);
-+}
-+
-+static void pr_out_handle_end(struct vdpa *vdpa)
-+{
-+	if (vdpa->json_output)
-+		close_json_object();
-+	else
-+		print_nl();
-+}
-+
-+static void __pr_out_vdev_handle_start(struct vdpa *vdpa, const char *vdev=
-_name)
-+{
-+	SPRINT_BUF(buf);
-+
-+	sprintf(buf, "%s", vdev_name);
-+	if (vdpa->json_output)
-+		open_json_object(buf);
-+	else
-+		printf("%s: ", buf);
-+}
-+
-+static void pr_out_vdev_handle_start(struct vdpa *vdpa, struct nlattr **tb=
-)
-+{
-+	const char *vdev_name;
-+
-+	vdev_name =3D mnl_attr_get_str(tb[VDPA_ATTR_DEV_NAME]);
-+	__pr_out_vdev_handle_start(vdpa, vdev_name);
-+}
-+
-+static void pr_out_vdev_handle_end(struct vdpa *vdpa)
-+{
-+	if (vdpa->json_output)
-+		close_json_object();
-+	else
-+		print_nl();
-+}
-+
-+static void pr_out_mgmtdev_show(struct vdpa *vdpa, const struct nlmsghdr *=
-nlh,
-+				  struct nlattr **tb)
-+{
-+	int i;
-+
-+	pr_out_handle_start(vdpa, tb);
-+
-+	if (tb[VDPA_ATTR_MGMTDEV_SUPPORTED_CLASSES]) {
-+		uint64_t classes =3D mnl_attr_get_u64(tb[VDPA_ATTR_MGMTDEV_SUPPORTED_CLA=
-SSES]);
-+
-+		pr_out_array_start(vdpa, "supported_classes");
-+
-+		for (i =3D 1; i < 64; i++) {
-+			if ((classes & (1ULL << i)) =3D=3D 0)
-+				continue;
-+
-+			switch (i) {
-+			case VIRTIO_ID_NET:
-+				print_string(PRINT_ANY, NULL, " %s", "net");
-+				break;
-+			case VIRTIO_ID_BLOCK:
-+				print_string(PRINT_ANY, NULL, " %s", "block");
-+				break;
-+			default:
-+				print_string(PRINT_ANY, NULL, " %s", "unknown");
-+				break;
-+			}
-+		}
-+		pr_out_array_end(vdpa);
-+	}
-+
-+	pr_out_handle_end(vdpa);
-+}
-+
-+static int cmd_mgmtdev_show_cb(const struct nlmsghdr *nlh, void *data)
-+{
-+	struct genlmsghdr *genl =3D mnl_nlmsg_get_payload(nlh);
-+	struct nlattr *tb[VDPA_ATTR_MAX + 1] =3D {};
-+	struct vdpa *vdpa =3D data;
-+
-+	mnl_attr_parse(nlh, sizeof(*genl), attr_cb, tb);
-+
-+	if (!tb[VDPA_ATTR_MGMTDEV_DEV_NAME])
-+		return MNL_CB_ERROR;
-+
-+	pr_out_mgmtdev_show(vdpa, nlh, tb);
-+
-+	return MNL_CB_OK;
-+}
-+
-+static struct nlmsghdr *
-+vdpa_prepare(struct vdpa_socket *nlg, uint16_t flags, uint8_t cmd)
-+{
-+	struct genlmsghdr hdr =3D {};
-+	struct nlmsghdr *nlh;
-+
-+	hdr.cmd =3D cmd;
-+	hdr.version =3D VDPA_GENL_VERSION;
-+	nlh =3D mnlu_msg_prepare(nlg->buf, nlg->family, flags, &hdr, sizeof(hdr))=
-;
-+	return nlh;
-+}
-+
-+static int cmd_mgmtdev_show(struct vdpa *vdpa, int argc, char **argv)
-+{
-+	uint16_t flags =3D NLM_F_REQUEST | NLM_F_ACK;
-+	struct nlmsghdr *nlh;
-+	int err;
-+
-+	if (argc =3D=3D 0)
-+		flags |=3D NLM_F_DUMP;
-+
-+	nlh =3D vdpa_prepare(&vdpa->nlg, flags, VDPA_CMD_MGMTDEV_GET);
-+	if (argc > 0) {
-+		err =3D vdpa_argv_parse_put(nlh, vdpa, argc, argv,
-+					  VDPA_OPT_MGMTDEV_HANDLE);
-+		if (err)
-+			return err;
-+	}
-+
-+	pr_out_section_start(vdpa, "mgmtdev");
-+	err =3D vdpa_socket_sndrcv(&vdpa->nlg, nlh, cmd_mgmtdev_show_cb, vdpa);
-+	pr_out_section_end(vdpa);
-+	return err;
-+}
-+
-+static int cmd_mgmtdev(struct vdpa *vdpa, int argc, char **argv)
-+{
-+	if (!argc || matches(*argv, "help") =3D=3D 0) {
-+		cmd_mgmtdev_help();
-+		return 0;
-+	} else if (matches(*argv, "show") =3D=3D 0 ||
-+		   matches(*argv, "list") =3D=3D 0) {
-+		return cmd_mgmtdev_show(vdpa, argc - 1, argv + 1);
-+	}
-+	fprintf(stderr, "Command \"%s\" not found\n", *argv);
-+	return -ENOENT;
-+}
-+
-+static void cmd_dev_help(void)
-+{
-+	fprintf(stderr, "Usage: vdpa dev show [ DEV ]\n");
-+	fprintf(stderr, "       vdpa dev add name NAME mgmtdev MANAGEMENTDEV\n");
-+	fprintf(stderr, "       vdpa dev del DEV\n");
-+}
-+
-+static const char *device_type_name(uint32_t type)
-+{
-+	switch (type) {
-+	case 0x1: return "network";
-+	case 0x2: return "block";
-+	default: return "<unknown type>";
-+	}
-+}
-+
-+static void pr_out_dev(struct vdpa *vdpa, struct nlattr **tb)
-+{
-+	const char *mdev_name =3D mnl_attr_get_str(tb[VDPA_ATTR_MGMTDEV_DEV_NAME]=
-);
-+	uint32_t device_id =3D mnl_attr_get_u32(tb[VDPA_ATTR_DEV_ID]);
-+	const char *mdev_bus_name =3D NULL;
-+	char mgmtdev_buf[128];
-+
-+	if (tb[VDPA_ATTR_MGMTDEV_BUS_NAME])
-+		mdev_bus_name =3D mnl_attr_get_str(tb[VDPA_ATTR_MGMTDEV_BUS_NAME]);
-+
-+	if (mdev_bus_name)
-+		sprintf(mgmtdev_buf, "%s/%s", mdev_bus_name, mdev_name);
-+	else
-+		sprintf(mgmtdev_buf, "%s", mdev_name);
-+	pr_out_vdev_handle_start(vdpa, tb);
-+	print_string(PRINT_ANY, "type", "type %s", device_type_name(device_id));
-+	print_string(PRINT_ANY, "mgmtdev", " mgmtdev %s", mgmtdev_buf);
-+
-+	if (tb[VDPA_ATTR_DEV_VENDOR_ID])
-+		print_uint(PRINT_ANY, "vendor_id", " vendor_id %u",
-+			   mnl_attr_get_u32(tb[VDPA_ATTR_DEV_VENDOR_ID]));
-+	if (tb[VDPA_ATTR_DEV_MAX_VQS])
-+		print_uint(PRINT_ANY, "max_vqs", " max_vqs %u",
-+			   mnl_attr_get_u32(tb[VDPA_ATTR_DEV_MAX_VQS]));
-+	if (tb[VDPA_ATTR_DEV_MAX_VQ_SIZE])
-+		print_uint(PRINT_ANY, "max_vq_size", " max_vq_size %u",
-+			   mnl_attr_get_u16(tb[VDPA_ATTR_DEV_MAX_VQ_SIZE]));
-+	pr_out_vdev_handle_end(vdpa);
-+}
-+
-+static int cmd_dev_show_cb(const struct nlmsghdr *nlh, void *data)
-+{
-+	struct genlmsghdr *genl =3D mnl_nlmsg_get_payload(nlh);
-+	struct nlattr *tb[VDPA_ATTR_MAX + 1] =3D {};
-+	struct vdpa *vdpa =3D data;
-+
-+	mnl_attr_parse(nlh, sizeof(*genl), attr_cb, tb);
-+	if (!tb[VDPA_ATTR_MGMTDEV_DEV_NAME] ||
-+	    !tb[VDPA_ATTR_DEV_NAME] || !tb[VDPA_ATTR_DEV_ID])
-+		return MNL_CB_ERROR;
-+	pr_out_dev(vdpa, tb);
-+	return MNL_CB_OK;
-+}
-+
-+static int cmd_dev_show(struct vdpa *vdpa, int argc, char **argv)
-+{
-+	uint16_t flags =3D NLM_F_REQUEST | NLM_F_ACK;
-+	struct nlmsghdr *nlh;
-+	int err;
-+
-+	if (argc <=3D 0)
-+		flags |=3D NLM_F_DUMP;
-+
-+	nlh =3D vdpa_prepare(&vdpa->nlg, flags, VDPA_CMD_DEV_GET);
-+	if (argc > 0) {
-+		err =3D vdpa_argv_parse_put(nlh, vdpa, argc, argv,
-+					  VDPA_OPT_VDEV_HANDLE);
-+		if (err)
-+			return err;
-+	}
-+
-+	pr_out_section_start(vdpa, "dev");
-+	err =3D vdpa_socket_sndrcv(&vdpa->nlg, nlh, cmd_dev_show_cb, vdpa);
-+	pr_out_section_end(vdpa);
-+	return err;
-+}
-+
-+static int cmd_dev_add(struct vdpa *vdpa, int argc, char **argv)
-+{
-+	struct nlmsghdr *nlh;
-+	int err;
-+
-+	nlh =3D vdpa_prepare(&vdpa->nlg, NLM_F_REQUEST | NLM_F_ACK,
-+			   VDPA_CMD_DEV_NEW);
-+	err =3D vdpa_argv_parse_put(nlh, vdpa, argc, argv,
-+				  VDPA_OPT_VDEV_MGMTDEV_HANDLE | VDPA_OPT_VDEV_NAME);
-+	if (err)
-+		return err;
-+
-+	return vdpa_socket_sndrcv(&vdpa->nlg, nlh, NULL, NULL);
-+}
-+
-+static int cmd_dev_del(struct vdpa *vdpa,  int argc, char **argv)
-+{
-+	struct nlmsghdr *nlh;
-+	int err;
-+
-+	nlh =3D vdpa_prepare(&vdpa->nlg, NLM_F_REQUEST | NLM_F_ACK,
-+			   VDPA_CMD_DEV_DEL);
-+	err =3D vdpa_argv_parse_put(nlh, vdpa, argc, argv, VDPA_OPT_VDEV_HANDLE);
-+	if (err)
-+		return err;
-+
-+	return vdpa_socket_sndrcv(&vdpa->nlg, nlh, NULL, NULL);
-+}
-+
-+static int cmd_dev(struct vdpa *vdpa, int argc, char **argv)
-+{
-+	if (!argc)
-+		return cmd_dev_show(vdpa, argc - 1, argv + 1);
-+
-+	if (matches(*argv, "help") =3D=3D 0) {
-+		cmd_dev_help();
-+		return 0;
-+	} else if (matches(*argv, "show") =3D=3D 0 ||
-+		   matches(*argv, "list") =3D=3D 0) {
-+		return cmd_dev_show(vdpa, argc - 1, argv + 1);
-+	} else if (matches(*argv, "add") =3D=3D 0) {
-+		return cmd_dev_add(vdpa, argc - 1, argv + 1);
-+	} else if (matches(*argv, "del") =3D=3D 0) {
-+		return cmd_dev_del(vdpa, argc - 1, argv + 1);
-+	}
-+	fprintf(stderr, "Command \"%s\" not found\n", *argv);
-+	return -ENOENT;
-+}
-+
-+static void help(void)
-+{
-+	fprintf(stderr,
-+		"Usage: vdpa [ OPTIONS ] OBJECT { COMMAND | help }\n"
-+		"where  OBJECT :=3D { mgmtdev | dev }\n"
-+		"       OPTIONS :=3D { -V[ersion] | -n[o-nice-names] | -j[son] | -p[rett=
-y] | -v[erbose] }\n");
-+}
-+
-+static int vdpa_cmd(struct vdpa *vdpa, int argc, char **argv)
-+{
-+	if (!argc || matches(*argv, "help") =3D=3D 0) {
-+		help();
-+		return 0;
-+	} else if (matches(*argv, "mgmtdev") =3D=3D 0) {
-+		return cmd_mgmtdev(vdpa, argc - 1, argv + 1);
-+	} else if (matches(*argv, "dev") =3D=3D 0) {
-+		return cmd_dev(vdpa, argc - 1, argv + 1);
-+	}
-+	fprintf(stderr, "Object \"%s\" not found\n", *argv);
-+	return -ENOENT;
-+}
-+
-+static int vdpa_init(struct vdpa *vdpa)
-+{
-+	int err;
-+
-+	err =3D vdpa_socket_open(&vdpa->nlg);
-+	if (err) {
-+		fprintf(stderr, "Failed to connect to vdpa Netlink\n");
-+		return -errno;
-+	}
-+	new_json_obj_plain(vdpa->json_output);
-+	return 0;
-+}
-+
-+static void vdpa_fini(struct vdpa *vdpa)
-+{
-+	delete_json_obj_plain();
-+	vdpa_socket_close(&vdpa->nlg);
-+}
-+
-+static struct vdpa *vdpa_alloc(void)
-+{
-+	return calloc(1, sizeof(struct vdpa));
-+}
-+
-+static void vdpa_free(struct vdpa *vdpa)
-+{
-+	free(vdpa);
-+}
-+
-+int main(int argc, char **argv)
-+{
-+	static const struct option long_options[] =3D {
-+		{ "Version",		no_argument,	NULL, 'V' },
-+		{ "json",		no_argument,	NULL, 'j' },
-+		{ "pretty",		no_argument,	NULL, 'p' },
-+		{ "help",		no_argument,	NULL, 'h' },
-+		{ NULL, 0, NULL, 0 }
-+	};
-+	struct vdpa *vdpa;
-+	int opt;
-+	int err;
-+	int ret;
-+
-+	vdpa =3D vdpa_alloc();
-+	if (!vdpa) {
-+		fprintf(stderr, "Failed to allocate memory for vdpa\n");
-+		return EXIT_FAILURE;
-+	}
-+
-+	while ((opt =3D getopt_long(argc, argv, "Vjpsh", long_options, NULL)) >=
-=3D 0) {
-+		switch (opt) {
-+		case 'V':
-+			printf("vdpa utility, iproute2-%s\n", version);
-+			ret =3D EXIT_SUCCESS;
-+			goto vdpa_free;
-+		case 'j':
-+			vdpa->json_output =3D true;
-+			break;
-+		case 'p':
-+			pretty =3D true;
-+			break;
-+		case 'h':
-+			help();
-+			ret =3D EXIT_SUCCESS;
-+			goto vdpa_free;
-+		default:
-+			fprintf(stderr, "Unknown option.\n");
-+			help();
-+			ret =3D EXIT_FAILURE;
-+			goto vdpa_free;
-+		}
-+	}
-+
-+	argc -=3D optind;
-+	argv +=3D optind;
-+
-+	err =3D vdpa_init(vdpa);
-+	if (err) {
-+		ret =3D EXIT_FAILURE;
-+		goto vdpa_free;
-+	}
-+
-+	err =3D vdpa_cmd(vdpa, argc, argv);
-+	if (err) {
-+		ret =3D EXIT_FAILURE;
-+		goto vdpa_fini;
-+	}
-+
-+	ret =3D EXIT_SUCCESS;
-+
-+vdpa_fini:
-+	vdpa_fini(vdpa);
-+vdpa_free:
-+	vdpa_free(vdpa);
-+	return ret;
-+}
---=20
-2.26.2
-
+DQoNCk9uIDIyLjAxLjIwMjEgMTM6MjAsIE1pY2hhZWwgV2FsbGUgd3JvdGU6DQo+IEVYVEVSTkFM
+IEVNQUlMOiBEbyBub3QgY2xpY2sgbGlua3Mgb3Igb3BlbiBhdHRhY2htZW50cyB1bmxlc3MgeW91
+IGtub3cgdGhlDQo+IGNvbnRlbnQgaXMgc2FmZQ0KPiANCj4gQW0gMjAyMS0wMS0yMiAxMDoxMCwg
+c2NocmllYiBDbGF1ZGl1LkJlem5lYUBtaWNyb2NoaXAuY29tOg0KPj4gT24gMjEuMDEuMjAyMSAx
+MTo0MSwgTWljaGFlbCBXYWxsZSB3cm90ZToNCj4+PiBFWFRFUk5BTCBFTUFJTDogRG8gbm90IGNs
+aWNrIGxpbmtzIG9yIG9wZW4gYXR0YWNobWVudHMgdW5sZXNzIHlvdSBrbm93DQo+Pj4gdGhlDQo+
+Pj4gY29udGVudCBpcyBzYWZlDQo+Pj4NCj4+PiBIaSBDbGF1ZGl1LA0KPj4+DQo+Pj4gQW0gMjAy
+MS0wMS0yMSAxMDoxOSwgc2NocmllYiBDbGF1ZGl1LkJlem5lYUBtaWNyb2NoaXAuY29tOg0KPj4+
+PiBPbiAyMC4wMS4yMDIxIDIxOjQzLCBNaWNoYWVsIFdhbGxlIHdyb3RlOg0KPj4+Pj4gRVhURVJO
+QUwgRU1BSUw6IERvIG5vdCBjbGljayBsaW5rcyBvciBvcGVuIGF0dGFjaG1lbnRzIHVubGVzcyB5
+b3UNCj4+Pj4+IGtub3cNCj4+Pj4+IHRoZSBjb250ZW50IGlzIHNhZmUNCj4+Pj4+DQo+Pj4+PiBJ
+ZiB0aGUgTUlJIGludGVyZmFjZSBpcyB1c2VkLCB0aGUgUEhZIGlzIHRoZSBjbG9jayBtYXN0ZXIs
+IHRodXMNCj4+Pj4+IGRvbid0DQo+Pj4+PiBzZXQgdGhlIGNsb2NrIHJhdGUuIE9uIFp5bnEtNzAw
+MCwgdGhpcyB3aWxsIHByZXZlbnQgdGhlIGZvbGxvd2luZw0KPj4+Pj4gd2FybmluZzoNCj4+Pj4+
+IMKgIG1hY2IgZTAwMGIwMDAuZXRoZXJuZXQgZXRoMDogdW5hYmxlIHRvIGdlbmVyYXRlIHRhcmdl
+dCBmcmVxdWVuY3k6DQo+Pj4+PiAyNTAwMDAwMCBIeg0KPj4+Pj4NCj4+Pj4NCj4+Pj4gU2luY2Ug
+aW4gdGhpcyBjYXNlIHRoZSBQSFkgcHJvdmlkZXMgdGhlIFRYIGNsb2NrIGFuZCBpdCBwcm92aWRl
+cyB0aGUNCj4+Pj4gcHJvcGVyDQo+Pj4+IHJhdGUgYmFzZWQgb24gbGluayBzcGVlZCwgdGhlIE1B
+Q0IgZHJpdmVyIHNob3VsZCBub3QgaGFuZGxlIHRoZQ0KPj4+PiBicC0+dHhfY2xrDQo+Pj4+IGF0
+IGFsbCAoTUFDQiBkcml2ZXIgdXNlcyB0aGlzIGNsb2NrIG9ubHkgZm9yIHNldHRpbmcgdGhlIHBy
+b3BlciByYXRlDQo+Pj4+IG9uDQo+Pj4+IGl0DQo+Pj4+IGJhc2VkIG9uIGxpbmsgc3BlZWQpLiBT
+bywgSSBiZWxpZXZlIHRoZSBwcm9wZXIgZml4IHdvdWxkIGJlIHRvIG5vdA0KPj4+PiBwYXNzDQo+
+Pj4+IHRoZQ0KPj4+PiB0eF9jbGsgYXQgYWxsIGluIGRldmljZSB0cmVlLiBUaGlzIGNsb2NrIGlz
+IG9wdGlvbmFsIGZvciBNQUNCIGRyaXZlci4NCj4+Pg0KPj4+IFRoYW5rcyBmb3IgbG9va2luZyBp
+bnRvIHRoaXMuDQo+Pj4NCj4+PiBJIGhhZCB0aGUgc2FtZSB0aG91Z2h0LiBCdXQgc2hvdWxkbid0
+IHRoZSBkcml2ZXIgaGFuZGxlIHRoaXMgY2FzZQ0KPj4+IGdyYWNlZnVsbHk/DQo+Pj4gSSBtZWFu
+IGl0IGRvZXMga25vdyB0aGF0IHRoZSBjbG9jayBpc24ndCBuZWVkZWQgYXQgYWxsLg0KPj4NCj4+
+IEN1cnJlbnRseSBpdCBtYXkga25vd3MgdGhhdCBieSBjaGVja2luZyB0aGUgYnAtPnR4X2Nsay4g
+TW9yZW92ZXIgdGhlDQo+PiBjbG9jaw0KPj4gY291bGQgYmUgcHJvdmlkZWQgYnkgUEhZIG5vdCBv
+bmx5IGZvciBNSUkgaW50ZXJmYWNlLg0KPiANCj4gVGhhdCBkb2Vzbid0IG1ha2UgdGhpcyBwYXRj
+aCB3cm9uZywgZG9lcyBpdD8gSXQganVzdCBkb2Vzbid0IGNvdmVyDQo+IGFsbCB1c2UgY2FzZXMg
+KHdoaWNoIGFsc28gd2Fzbid0IGNvdmVyZWQgYmVmb3JlKS4NCg0KSSB3b3VsZCBzYXkgdGhhdCBp
+dCBicmVha3Mgc2V0dXBzIHVzaW5nIE1JSSBpbnRlcmZhY2UgYW5kIHdpdGggY2xvY2sNCnByb3Zp
+ZGVkIHZpYSBEVCB0aGF0IG5lZWQgdG8gYmUgaGFuZGxlZCBieSBtYWNiX3NldF90eF9jbGsoKS4N
+Cg0KPiANCj4+IE1vcmVvdmVyIHRoZSBJUCBoYXMgdGhlIGJpdCAicmVmY2xrIiBvZiByZWdpc3Rl
+ciBhdCBvZmZzZXQgMHhjICh1c2VyaW8pDQo+PiB0aGF0IHRlbGxzIGl0IHRvIHVzZSB0aGUgY2xv
+Y2sgcHJvdmlkZWQgYnkgUEhZIG9yIHRvIHVzZSBvbmUgaW50ZXJuYWwNCj4+IHRvDQo+PiB0aGUg
+U29DLiBJZiBhIFNvQyBnZW5lcmF0ZWQgY2xvY2sgd291bGQgYmUgdXNlZCB0aGUgSVAgbG9naWMg
+bWF5IGhhdmUNCj4+IHRoZQ0KPj4gb3B0aW9uIHRvIGRvIHRoZSBwcm9wZXIgZGl2aXNpb24gYmFz
+ZWQgb24gbGluayBzcGVlZCAoaWYgSVAgaGFzIHRoaXMNCj4+IG9wdGlvbg0KPj4gZW5hYmxlZCB0
+aGVuIHRoaXMgc2hvdWxkIGJlIHNlbGVjdGVkIGluIGRyaXZlciB3aXRoIGNhcGFiaWxpdHkNCj4+
+IE1BQ0JfQ0FQU19DTEtfSFdfQ0hHKS4NCj4+DQo+PiBJZiB0aGUgY2xvY2sgcHJvdmlkZWQgYnkg
+dGhlIFBIWSBpcyB0aGUgb25lIHRvIGJlIHVzZWQgdGhlbiB0aGlzIGlzDQo+PiBzZWxlY3RlZCB3
+aXRoIGNhcGFiaWxpdHkgTUFDQl9DQVBTX1VTUklPX0hBU19DTEtFTi4gU28sIGlmIHRoZSBjaGFu
+Z2UNCj4+IHlvdQ0KPj4gcHJvcG9zZWQgaW4gdGhpcyBwYXRjaCBpcyBzdGlsbCBpbXBlcmF0aXZl
+IHRoZW4gY2hlY2tpbmcgZm9yIHRoaXMNCj4+IGNhcGFiaWxpdHkgd291bGQgYmUgdGhlIGJlc3Qg
+YXMgdGhlIGNsb2NrIGNvdWxkIGJlIHByb3ZpZGVkIGJ5IFBIWSBub3QNCj4+IG9ubHkNCj4+IGZv
+ciBNSUkgaW50ZXJmYWNlLg0KPiANCj4gRmFpciBlbm91Z2gsIGJ1dCB0aGlzIHJlZ2lzdGVyIGRv
+ZXNuJ3Qgc2VlbSB0byBiZSBpbXBsZW1lbnRlZCBvbg0KPiBaeW5xLTcwMDAuIEFsYmVpdCBNQUNC
+X0NBUFNfVVNSSU9fRElTQUJMRUQgaXNuJ3QgZGVmaW5lZCBmb3IgdGhlDQo+IFp5bnEgTUFDQi4g
+SXQgaXNuJ3QgZGVmaW5lZCBpbiB0aGUgWnlucS03MDAwIHJlZmVyZW5jZSBtYW51YWwgYW5kDQo+
+IHlvdSBjYW5ub3Qgc2V0IGFueSBiaXRzOg0KPiANCj4gPT4gbXcgMHhFMDAwQjAwQyAweEZGRkZG
+RkZGDQo+ID0+IG1kIDB4RTAwMEIwMEMgMQ0KPiBlMDAwYjAwYzogMDAwMDAwMDANCg0KSSB3YXNu
+J3QgYXdhcmUgb2YgdGhpcy4gSW4gdGhpcyBjYXNlLCBtYXliZSBhZGRpbmcgdGhlDQpNQUNCX0NB
+UFNfVVNSSU9fRElTQUJMRUQgdG8gdGhlIFp5bmMtNzAwMCBjYXBhYmlsaXR5IGxpc3QgYW5kIGNo
+ZWNraW5nIHRoaXMNCm9uZSBwbHVzIE1BQ0JfQ0FQU19VU1JJT19IQVNfQ0xLRU4gd291bGQgYmUg
+YmV0dGVyIGluc3RlYWQgb2YgY2hlY2tpbmcgdGhlDQpNQUMtUEhZIGludGVyZmFjZT8NCg0KPiAN
+Cj4gQWxzbyBwbGVhc2Ugbm90ZSwgdGhhdCB0eF9jbGsgbWF5IGJlIGFuIGFyYml0cmFyeSBjbG9j
+ayB3aGljaCBkb2Vzbid0DQo+IG5lY2Vzc2FyaWx5IG5lZWQgdG8gYmUgdGhlIGNsb2NrIHdoaWNo
+IGlzIGNvbnRyb2xsZWQgYnkgQ0xLX0VOLiBPcg0KPiBhbSBJIG1pc3Npbmcgc29tZXRoaW5nIGhl
+cmU/DQoNCkkgc3VwcG9zZSB0aGF0IHdob2V2ZXIgY3JlYXRlcyB0aGUgZGV2aWNlIHRyZWUga25v
+d3Mgd2hhdCBpcyBkb2luZyBhbmQgaXQNCnBhc3NlcyB0aGUgcHJvcGVyIGNsb2NrIHRvIG1hY2Ig
+ZHJpdmVyLg0KDQpUaGFuayB5b3UsDQpDbGF1ZGl1IEJlem5lYQ0KDQo+IA0KPiAtbWljaGFlbA0K
+PiANCj4+PiBVc3VzdWFsbHkgdGhhdA0KPj4+IGNsb2NrDQo+Pj4gaXMgZGVmaW5lZCBpbiBhIGRl
+dmljZSB0cmVlIGluY2x1ZGUuIFNvIHlvdSdkIGhhdmUgdG8gcmVkZWZpbmUgdGhhdA0KPj4+IG5v
+ZGUNCj4+PiBpbg0KPj4+IGFuIGFjdHVhbCBib2FyZCBmaWxlIHdoaWNoIG1lYW5zIGR1cGxpY2F0
+aW5nIHRoZSBvdGhlciBjbG9ja3MuDQo+Pj4NCj4+PiAtbWljaGFlbA==
