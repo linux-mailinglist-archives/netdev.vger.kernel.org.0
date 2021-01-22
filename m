@@ -2,132 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 11B0F2FFE54
-	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 09:39:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E2BAA2FFE3D
+	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 09:35:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726555AbhAVIiE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jan 2021 03:38:04 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:55622 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726024AbhAVIcE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 03:32:04 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1611304239;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=qvMwVVlFXQYGVqb6WRJLk0ECV6lsevaioKw5/v7v+OI=;
-        b=DE1rl1i6q/2sgHV97/1hgOr/tXJiOl3sRM3WfjCSArImvyZ8lB7vFpTrDzWzyRjFwq0EK8
-        mlRQM9pats8WV8YbEUD5c+VSy1WqSmRDhdHfck06801BcE2++nbjfiYZxT80+DFyQW9lJN
-        T07xYYBdJZT1hoeo/lajH+/n6E8GTQM=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-578-ZIfmriKlNU2ppM3d1DREEg-1; Fri, 22 Jan 2021 03:30:37 -0500
-X-MC-Unique: ZIfmriKlNU2ppM3d1DREEg-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C6F9518C89CF;
-        Fri, 22 Jan 2021 08:30:32 +0000 (UTC)
-Received: from ceranb (unknown [10.40.194.12])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 7F0C460C13;
-        Fri, 22 Jan 2021 08:30:28 +0000 (UTC)
-Date:   Fri, 22 Jan 2021 09:30:27 +0100
-From:   Ivan Vecera <ivecera@redhat.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Cong Wang <xiyou.wangcong@gmail.com>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        saeed@kernel.org, Jiri Pirko <jiri@resnulli.us>
-Subject: Re: [PATCH net] team: postpone features update to avoid deadlock
-Message-ID: <20210122093027.33b2e8e7@ceranb>
-In-Reply-To: <20210121183452.47f0cffa@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <20210120122354.3687556-1-ivecera@redhat.com>
-        <CAM_iQpUqdm-mpSUdsxEtLnq6GwhN=YL+ub--8N0aGxtM+PRfAQ@mail.gmail.com>
-        <20210121112937.11b72ea6@ceranb>
-        <20210121183452.47f0cffa@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S1726042AbhAVIcy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jan 2021 03:32:54 -0500
+Received: from ex13-edg-ou-001.vmware.com ([208.91.0.189]:56963 "EHLO
+        EX13-EDG-OU-001.vmware.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726710AbhAVIbv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 03:31:51 -0500
+Received: from sc9-mailhost1.vmware.com (10.113.161.71) by
+ EX13-EDG-OU-001.vmware.com (10.113.208.155) with Microsoft SMTP Server id
+ 15.0.1156.6; Fri, 22 Jan 2021 00:30:51 -0800
+Received: from htb-1n-eng-dhcp122.eng.vmware.com (unknown [10.20.114.3])
+        by sc9-mailhost1.vmware.com (Postfix) with ESMTP id 195C82053A;
+        Fri, 22 Jan 2021 00:30:59 -0800 (PST)
+Received: by htb-1n-eng-dhcp122.eng.vmware.com (Postfix, from userid 0)
+        id 084C9A9FB5; Fri, 22 Jan 2021 00:30:59 -0800 (PST)
+From:   Ronak Doshi <doshir@vmware.com>
+To:     <netdev@vger.kernel.org>
+CC:     Ronak Doshi <doshir@vmware.com>, Petr Vandrovec <petr@vmware.com>,
+        "maintainer:VMWARE VMXNET3 ETHERNET DRIVER" <pv-drivers@vmware.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: [PATCH v2 net-next] vmxnet3: Remove buf_info from device
+Date:   Fri, 22 Jan 2021 00:30:51 -0800
+Message-ID: <20210122083051.16258-1-doshir@vmware.com>
+X-Mailer: git-send-email 2.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
+Content-Type: text/plain
+Received-SPF: None (EX13-EDG-OU-001.vmware.com: doshir@vmware.com does not
+ designate permitted sender hosts)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 21 Jan 2021 18:34:52 -0800
-Jakub Kicinski <kuba@kernel.org> wrote:
+vmxnet3: Remove buf_info from device accessible structures
 
-> On Thu, 21 Jan 2021 11:29:37 +0100 Ivan Vecera wrote:
-> > On Wed, 20 Jan 2021 15:18:20 -0800
-> > Cong Wang <xiyou.wangcong@gmail.com> wrote:  
-> > > On Wed, Jan 20, 2021 at 4:56 AM Ivan Vecera <ivecera@redhat.com> wrote:    
-> > > > Team driver protects port list traversal by its team->lock mutex
-> > > > in functions like team_change_mtu(), team_set_rx_mode(),  
-> 
-> The set_rx_mode part can't be true, set_rx_mode can't sleep and
-> team->lock is a mutex.
-> 
-> > > > To fix the problem __team_compute_features() needs to be postponed
-> > > > for these cases.      
-> > > 
-> > > Is there any user-visible effect after deferring this feature change?  
-> >
-> > An user should not notice this change.  
-> 
-> I think Cong is right, can you expand a little on your assertion?
-> User should be able to assume that the moment syscall returns the
-> features had settled.
-> 
-> What does team->mutex actually protect in team_compute_features()?
-> All callers seem to hold RTNL at a quick glance. This is a bit of 
-> a long shot but isn't it just tryin to protect the iteration over 
-> ports which could be under RCU?
+buf_info structures in RX & TX queues are private driver data that
+do not need to be visible to the device.  Although there is physical
+address and length in the queue descriptor that points to these
+structures, their layout is not standardized, and device never looks
+at them.
 
-In fact the mutex could be removed at all because all port-list
-writers are running under rtnl_lock, some readers like team_change_mtu()
-or team_device_event() [notifier] as well and hot path readers are
-protected by RCU.
-I have discussed this with Jiri but he don't want to introduce any dependency
-on RTNL to team as it was designed as RTNL-independent from beginning.
+So lets allocate these structures in non-DMA-able memory, and fill
+physical address as all-ones and length as zero in the queue
+descriptor.
 
-Anyway your idea to run team_compute_features under RCU could be fine
-as subsequent __team_compute_features() cannot sleep...
+That should alleviate worries brought by Martin Radev in
+https://lists.osuosl.org/pipermail/intel-wired-lan/Week-of-Mon-20210104/022829.html
+that malicious vmxnet3 device could subvert SVM/TDX guarantees.
 
-Do you mean something like this?
+Signed-off-by: Petr Vandrovec <petr@vmware.com>
+Signed-off-by: Ronak Doshi <doshir@vmware.com>
+---
+Changes in v2:
+ - Use kcalloc_node()
+ - Remove log for memory allocation failure
+---
+ drivers/net/vmxnet3/vmxnet3_drv.c | 37 ++++++++++++-------------------------
+ drivers/net/vmxnet3/vmxnet3_int.h |  2 --
+ 2 files changed, 12 insertions(+), 27 deletions(-)
 
-diff --git a/drivers/net/team/team.c b/drivers/net/team/team.c
-index c19dac21c468..dd7917cab2b1 100644
---- a/drivers/net/team/team.c
-+++ b/drivers/net/team/team.c
-@@ -992,7 +992,8 @@ static void __team_compute_features(struct team *team)
-        unsigned int dst_release_flag = IFF_XMIT_DST_RELEASE |
-                                        IFF_XMIT_DST_RELEASE_PERM;
- 
--       list_for_each_entry(port, &team->port_list, list) {
-+       rcu_read_lock();
-+       list_for_each_entry_rcu(port, &team->port_list, list) {
-                vlan_features = netdev_increment_features(vlan_features,
-                                        port->dev->vlan_features,
-                                        TEAM_VLAN_FEATURES);
-@@ -1006,6 +1007,7 @@ static void __team_compute_features(struct team *team)
-                if (port->dev->hard_header_len > max_hard_header_len)
-                        max_hard_header_len = port->dev->hard_header_len;
-        }
-+       rcu_read_unlock();
- 
-        team->dev->vlan_features = vlan_features;
-        team->dev->hw_enc_features = enc_features | NETIF_F_GSO_ENCAP_ALL |
-@@ -1020,9 +1022,7 @@ static void __team_compute_features(struct team *team)
- 
- static void team_compute_features(struct team *team)
- {
--       mutex_lock(&team->lock);
-        __team_compute_features(team);
--       mutex_unlock(&team->lock);
-        netdev_change_features(team->dev);
+diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
+index 336504b7531d..c263b4767b28 100644
+--- a/drivers/net/vmxnet3/vmxnet3_drv.c
++++ b/drivers/net/vmxnet3/vmxnet3_drv.c
+@@ -452,9 +452,7 @@ vmxnet3_tq_destroy(struct vmxnet3_tx_queue *tq,
+ 		tq->comp_ring.base = NULL;
+ 	}
+ 	if (tq->buf_info) {
+-		dma_free_coherent(&adapter->pdev->dev,
+-				  tq->tx_ring.size * sizeof(tq->buf_info[0]),
+-				  tq->buf_info, tq->buf_info_pa);
++		kfree(tq->buf_info);
+ 		tq->buf_info = NULL;
+ 	}
  }
-
-Thanks for comments,
-
-Ivan
+@@ -505,8 +503,6 @@ static int
+ vmxnet3_tq_create(struct vmxnet3_tx_queue *tq,
+ 		  struct vmxnet3_adapter *adapter)
+ {
+-	size_t sz;
+-
+ 	BUG_ON(tq->tx_ring.base || tq->data_ring.base ||
+ 	       tq->comp_ring.base || tq->buf_info);
+ 
+@@ -534,9 +530,9 @@ vmxnet3_tq_create(struct vmxnet3_tx_queue *tq,
+ 		goto err;
+ 	}
+ 
+-	sz = tq->tx_ring.size * sizeof(tq->buf_info[0]);
+-	tq->buf_info = dma_alloc_coherent(&adapter->pdev->dev, sz,
+-					  &tq->buf_info_pa, GFP_KERNEL);
++	tq->buf_info = kcalloc_node(tq->tx_ring.size, sizeof(tq->buf_info[0]),
++				    GFP_KERNEL | __GFP_ZERO,
++				    dev_to_node(&adapter->pdev->dev));
+ 	if (!tq->buf_info)
+ 		goto err;
+ 
+@@ -1738,10 +1734,7 @@ static void vmxnet3_rq_destroy(struct vmxnet3_rx_queue *rq,
+ 	}
+ 
+ 	if (rq->buf_info[0]) {
+-		size_t sz = sizeof(struct vmxnet3_rx_buf_info) *
+-			(rq->rx_ring[0].size + rq->rx_ring[1].size);
+-		dma_free_coherent(&adapter->pdev->dev, sz, rq->buf_info[0],
+-				  rq->buf_info_pa);
++		kfree(rq->buf_info[0]);
+ 		rq->buf_info[0] = rq->buf_info[1] = NULL;
+ 	}
+ }
+@@ -1883,10 +1876,9 @@ vmxnet3_rq_create(struct vmxnet3_rx_queue *rq, struct vmxnet3_adapter *adapter)
+ 		goto err;
+ 	}
+ 
+-	sz = sizeof(struct vmxnet3_rx_buf_info) * (rq->rx_ring[0].size +
+-						   rq->rx_ring[1].size);
+-	bi = dma_alloc_coherent(&adapter->pdev->dev, sz, &rq->buf_info_pa,
+-				GFP_KERNEL);
++	bi = kcalloc_node(rq->rx_ring[0].size + rq->rx_ring[1].size,
++			  sizeof(rq->buf_info[0][0]), GFP_KERNEL | __GFP_ZERO,
++			  dev_to_node(&adapter->pdev->dev));
+ 	if (!bi)
+ 		goto err;
+ 
+@@ -2522,14 +2514,12 @@ vmxnet3_setup_driver_shared(struct vmxnet3_adapter *adapter)
+ 		tqc->txRingBasePA   = cpu_to_le64(tq->tx_ring.basePA);
+ 		tqc->dataRingBasePA = cpu_to_le64(tq->data_ring.basePA);
+ 		tqc->compRingBasePA = cpu_to_le64(tq->comp_ring.basePA);
+-		tqc->ddPA           = cpu_to_le64(tq->buf_info_pa);
++		tqc->ddPA           = cpu_to_le64(~0ULL);
+ 		tqc->txRingSize     = cpu_to_le32(tq->tx_ring.size);
+ 		tqc->dataRingSize   = cpu_to_le32(tq->data_ring.size);
+ 		tqc->txDataRingDescSize = cpu_to_le32(tq->txdata_desc_size);
+ 		tqc->compRingSize   = cpu_to_le32(tq->comp_ring.size);
+-		tqc->ddLen          = cpu_to_le32(
+-					sizeof(struct vmxnet3_tx_buf_info) *
+-					tqc->txRingSize);
++		tqc->ddLen          = cpu_to_le32(0);
+ 		tqc->intrIdx        = tq->comp_ring.intr_idx;
+ 	}
+ 
+@@ -2541,14 +2531,11 @@ vmxnet3_setup_driver_shared(struct vmxnet3_adapter *adapter)
+ 		rqc->rxRingBasePA[0] = cpu_to_le64(rq->rx_ring[0].basePA);
+ 		rqc->rxRingBasePA[1] = cpu_to_le64(rq->rx_ring[1].basePA);
+ 		rqc->compRingBasePA  = cpu_to_le64(rq->comp_ring.basePA);
+-		rqc->ddPA            = cpu_to_le64(rq->buf_info_pa);
++		rqc->ddPA            = cpu_to_le64(~0ULL);
+ 		rqc->rxRingSize[0]   = cpu_to_le32(rq->rx_ring[0].size);
+ 		rqc->rxRingSize[1]   = cpu_to_le32(rq->rx_ring[1].size);
+ 		rqc->compRingSize    = cpu_to_le32(rq->comp_ring.size);
+-		rqc->ddLen           = cpu_to_le32(
+-					sizeof(struct vmxnet3_rx_buf_info) *
+-					(rqc->rxRingSize[0] +
+-					 rqc->rxRingSize[1]));
++		rqc->ddLen           = cpu_to_le32(0);
+ 		rqc->intrIdx         = rq->comp_ring.intr_idx;
+ 		if (VMXNET3_VERSION_GE_3(adapter)) {
+ 			rqc->rxDataRingBasePA =
+diff --git a/drivers/net/vmxnet3/vmxnet3_int.h b/drivers/net/vmxnet3/vmxnet3_int.h
+index d958b92c9429..e910596b79cf 100644
+--- a/drivers/net/vmxnet3/vmxnet3_int.h
++++ b/drivers/net/vmxnet3/vmxnet3_int.h
+@@ -240,7 +240,6 @@ struct vmxnet3_tx_queue {
+ 	spinlock_t                      tx_lock;
+ 	struct vmxnet3_cmd_ring         tx_ring;
+ 	struct vmxnet3_tx_buf_info      *buf_info;
+-	dma_addr_t                       buf_info_pa;
+ 	struct vmxnet3_tx_data_ring     data_ring;
+ 	struct vmxnet3_comp_ring        comp_ring;
+ 	struct Vmxnet3_TxQueueCtrl      *shared;
+@@ -298,7 +297,6 @@ struct vmxnet3_rx_queue {
+ 	u32 qid2;           /* rqID in RCD for buffer from 2nd ring */
+ 	u32 dataRingQid;    /* rqID in RCD for buffer from data ring */
+ 	struct vmxnet3_rx_buf_info     *buf_info[2];
+-	dma_addr_t                      buf_info_pa;
+ 	struct Vmxnet3_RxQueueCtrl            *shared;
+ 	struct vmxnet3_rq_driver_stats  stats;
+ } __attribute__((__aligned__(SMP_CACHE_BYTES)));
+-- 
+2.11.0
 
