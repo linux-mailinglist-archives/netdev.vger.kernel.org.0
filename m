@@ -2,279 +2,138 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DB8A300FEC
-	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 23:25:36 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7EB67300FE6
+	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 23:25:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730553AbhAVTyK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jan 2021 14:54:10 -0500
-Received: from mail-ot1-f46.google.com ([209.85.210.46]:38508 "EHLO
-        mail-ot1-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729001AbhAVTXO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 14:23:14 -0500
-Received: by mail-ot1-f46.google.com with SMTP id s2so3975086otp.5;
-        Fri, 22 Jan 2021 11:22:57 -0800 (PST)
+        id S1728336AbhAVWXG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jan 2021 17:23:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37564 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730667AbhAVTyp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 14:54:45 -0500
+Received: from mail-qk1-x72a.google.com (mail-qk1-x72a.google.com [IPv6:2607:f8b0:4864:20::72a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04624C061788
+        for <netdev@vger.kernel.org>; Fri, 22 Jan 2021 11:54:03 -0800 (PST)
+Received: by mail-qk1-x72a.google.com with SMTP id d14so6324782qkc.13
+        for <netdev@vger.kernel.org>; Fri, 22 Jan 2021 11:54:02 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=o3+2RrVerjMaWuS5/ui/Sx1ksZD77pxsUnMtE6ueQUw=;
+        b=Px2iN2UyfVAQro3oP7tv3xH1JBVH4ZW100K5nazymj8nxitzrw5ztR0doNRZJoGquj
+         4DYiTQQ8R+2lEi7xJbRtYD130dRvsEWCBy5Yyzb5QdAJeZEMWY/59xZ8fJGvxTElDTDC
+         oBI6LEyj4NjF2vb1+5kICsLCvAM0HjeduezoNCkp6Ks0UbtNunNdAwzjoG99itoPkHnv
+         K+JMIobKhFpJNB8kg2pCcFKjjUv4pk635LTHy3HRdxCy4z5Lm6xVq7X/F1A96Ll/SwH9
+         kSfAVhI0JcTT6kXBZrodK7i6rSa3vp7gQGfypHDke/xUU1ap2OHfJ0a4Xy+RruVzERak
+         3K0A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=AcWL/Daw/XNoId/ExdNCO9ieLMb3o6Tm1Cik9cvjN0Y=;
-        b=KUtkAnRLFQpVFxbEEtYDyCj7N56rrgcYPN8N7bqTDkEr8ucG5dTuVE4QGC/QSau+oK
-         geuOFHKplFc265ckq1YTCTLwRBM7KrpaCiyJ8M+tV/YlxibX7yYuPVxZ/B8+e1xaGfe+
-         y/3TPqJxfQAyxrJnSuy1nOFiTfLamz96lNQnRGd/yXsYuRVuleHFIItEkBYoZdKlXrPM
-         fILgG55w33OLPZCycqRhsU+Tm/bKhCYjUX8Gv7cyqwnHn91TZe9J5HSYpEFepVJ/g77w
-         jRlonfsD4IAsUdxjQ8g01/fKWjldaKOCd3tBoh/MIx6HzCzhaWvdPt5ubDuDAleW8duJ
-         pnPg==
-X-Gm-Message-State: AOAM530NVKAX7+cHvnm/sdLyogeYVZ5MhOI9VSixDMYWpt+6XVyMva5S
-        DMWAfJv/EUsyrgSieFRZkxWdyR98+0Mw2H+xC73H1XR6JM4sRw==
-X-Google-Smtp-Source: ABdhPJzweY2mg/zFWP93YsFHVJt5xaD20MtLkVatRFMIokm+C6mB13HNhebPzAWgGsPX6kHU3X2VmvszA6UQsk6dJgw=
-X-Received: by 2002:a05:6830:2313:: with SMTP id u19mr1341091ote.321.1611343352346;
- Fri, 22 Jan 2021 11:22:32 -0800 (PST)
+        bh=o3+2RrVerjMaWuS5/ui/Sx1ksZD77pxsUnMtE6ueQUw=;
+        b=SpXbi5Z2jpxBdsmMP7aMiUQBuL4QmUKLOjEHXuxngzz66q0QsqoV8N6m2HB6bpVEI/
+         M+KJf9oQ/gxegF0L2OpGLscOvyf66ZLOjE27FywPC0NdoR1DeQglhQa7czoKpaudL16V
+         X9epPCch2JHAfBEsqXT6LqLAnPYBeiZvxfcpMEknxNvZjwIFszWoehkHCsvtExk4Npod
+         Wb1Z0DjHIlwGj86CwadGrN/bPGx4r3v3/AtyuP6CwBkxU243liu+KaP+iZoUod7JO7M/
+         4dT9mL6PcWLq48FRowFNoonebgTlwfyJJyAi9aMFnGkjdPRHzcoUib3SWCZfHFwVfWuL
+         Ra3w==
+X-Gm-Message-State: AOAM533y30AMi+V12oYid01NZJNsd6PAgp0svhdSmEMqOm3qeCSz1elu
+        N3vtxJMoEBSXLFxVwKLeFNOjV0dot7uMd9R3mlWmWsYOmpY=
+X-Google-Smtp-Source: ABdhPJzSM43NTCuGbPUVg21hUwmPCbZ2cc61t0SNIgR0kc0idNF01oQm06wIsE897ym/NCYi1bXoOgg0zr2YcZnX2B0=
+X-Received: by 2002:a05:620a:22ab:: with SMTP id p11mr6315334qkh.237.1611345241897;
+ Fri, 22 Jan 2021 11:54:01 -0800 (PST)
 MIME-Version: 1.0
-References: <20210122154300.7628-1-calvin.johnson@oss.nxp.com> <20210122154300.7628-2-calvin.johnson@oss.nxp.com>
-In-Reply-To: <20210122154300.7628-2-calvin.johnson@oss.nxp.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Fri, 22 Jan 2021 20:22:21 +0100
-Message-ID: <CAJZ5v0iX3uU36448ALA20hiVk968VKTsvgwLrp8ur96MQo3Acw@mail.gmail.com>
-Subject: Re: [net-next PATCH v4 01/15] Documentation: ACPI: DSD: Document MDIO PHY
-To:     Calvin Johnson <calvin.johnson@oss.nxp.com>
-Cc:     Grant Likely <grant.likely@arm.com>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Jeremy Linton <jeremy.linton@arm.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
-        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Pieter Jansen Van Vuuren <pieter.jansenvv@bamboosystems.io>,
-        Jon <jon@solid-run.com>, Saravana Kannan <saravanak@google.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        "linux.cj" <linux.cj@gmail.com>,
-        Diana Madalina Craciun <diana.craciun@nxp.com>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        Len Brown <lenb@kernel.org>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>
+References: <20210121012241.2109147-1-sdf@google.com> <YAspc5rk2sNWojDQ@rdna-mbp.dhcp.thefacebook.com>
+In-Reply-To: <YAspc5rk2sNWojDQ@rdna-mbp.dhcp.thefacebook.com>
+From:   Stanislav Fomichev <sdf@google.com>
+Date:   Fri, 22 Jan 2021 11:53:51 -0800
+Message-ID: <CAKH8qBumq7cHDeCpvA1T_rJyvY8+9uCUyb--YAhvcAx3p58faw@mail.gmail.com>
+Subject: Re: [PATCH bpf-next 1/2] bpf: allow rewriting to ports under ip_unprivileged_port_start
+To:     Andrey Ignatov <rdna@fb.com>
+Cc:     Martin KaFai Lau <kafai@fb.com>, Netdev <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 22, 2021 at 4:43 PM Calvin Johnson
-<calvin.johnson@oss.nxp.com> wrote:
+On Fri, Jan 22, 2021 at 11:37 AM Andrey Ignatov <rdna@fb.com> wrote:
 >
-> Introduce ACPI mechanism to get PHYs registered on a MDIO bus and
-> provide them to be connected to MAC.
+> Stanislav Fomichev <sdf@google.com> [Wed, 2021-01-20 18:09 -0800]:
+> > At the moment, BPF_CGROUP_INET{4,6}_BIND hooks can rewrite user_port
+> > to the privileged ones (< ip_unprivileged_port_start), but it will
+> > be rejected later on in the __inet_bind or __inet6_bind.
+> >
+> > Let's export 'port_changed' event from the BPF program and bypass
+> > ip_unprivileged_port_start range check when we've seen that
+> > the program explicitly overrode the port. This is accomplished
+> > by generating instructions to set ctx->port_changed along with
+> > updating ctx->user_port.
+> >
+> > Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> > ---
+> ...
+> > @@ -244,17 +245,27 @@ int bpf_percpu_cgroup_storage_update(struct bpf_map *map, void *key,
+> >       if (cgroup_bpf_enabled(type))   {                                      \
+> >               lock_sock(sk);                                                 \
+> >               __ret = __cgroup_bpf_run_filter_sock_addr(sk, uaddr, type,     \
+> > -                                                       t_ctx);              \
+> > +                                                       t_ctx, NULL);        \
+> >               release_sock(sk);                                              \
+> >       }                                                                      \
+> >       __ret;                                                                 \
+> >  })
+> >
+> > -#define BPF_CGROUP_RUN_PROG_INET4_BIND_LOCK(sk, uaddr)                              \
+> > -     BPF_CGROUP_RUN_SA_PROG_LOCK(sk, uaddr, BPF_CGROUP_INET4_BIND, NULL)
+> > -
+> > -#define BPF_CGROUP_RUN_PROG_INET6_BIND_LOCK(sk, uaddr)                              \
+> > -     BPF_CGROUP_RUN_SA_PROG_LOCK(sk, uaddr, BPF_CGROUP_INET6_BIND, NULL)
+> > +#define BPF_CGROUP_RUN_PROG_INET_BIND_LOCK(sk, uaddr, type, flags)          \
+> > +({                                                                          \
+> > +     bool port_changed = false;                                             \
 >
-> Describe properties "phy-handle" and "phy-mode".
+> I see the discussion with Martin in [0] on the program overriding the
+> port but setting exactly same value as it already contains. Commenting
+> on this patch since the code is here.
 >
-> Signed-off-by: Calvin Johnson <calvin.johnson@oss.nxp.com>
-> ---
+> From what I understand there is no use-case to support overriding the
+> port w/o changing the value to just bypass the capability. In this case
+> the code can be simplified.
 >
-> Changes in v4:
-> - More cleanup
-
-This looks much better that the previous versions IMV, some nits below.
-
-> Changes in v3: None
-> Changes in v2:
-> - Updated with more description in document
+> Here instead of introducing port_changed you can just remember the
+> original ((struct sockaddr_in *)uaddr)->sin_port or
+> ((struct sockaddr_in6 *)uaddr)->sin6_port (they have same offset/size so
+> it can be simplified same way as in sock_addr_convert_ctx_access() for
+> user_port) ...
 >
->  Documentation/firmware-guide/acpi/dsd/phy.rst | 129 ++++++++++++++++++
->  1 file changed, 129 insertions(+)
->  create mode 100644 Documentation/firmware-guide/acpi/dsd/phy.rst
+> > +     int __ret = 0;                                                         \
+> > +     if (cgroup_bpf_enabled(type))   {                                      \
+> > +             lock_sock(sk);                                                 \
+> > +             __ret = __cgroup_bpf_run_filter_sock_addr(sk, uaddr, type,     \
+> > +                                                       NULL,                \
+> > +                                                       &port_changed);      \
+> > +             release_sock(sk);                                              \
+> > +             if (port_changed)                                              \
 >
-> diff --git a/Documentation/firmware-guide/acpi/dsd/phy.rst b/Documentation/firmware-guide/acpi/dsd/phy.rst
-> new file mode 100644
-> index 000000000000..76fca994bc99
-> --- /dev/null
-> +++ b/Documentation/firmware-guide/acpi/dsd/phy.rst
-> @@ -0,0 +1,129 @@
-> +.. SPDX-License-Identifier: GPL-2.0
-> +
-> +=========================
-> +MDIO bus and PHYs in ACPI
-> +=========================
-> +
-> +The PHYs on an MDIO bus [1] are probed and registered using
-> +fwnode_mdiobus_register_phy().
-
-Empty line here, please.
-
-> +Later, for connecting these PHYs to MAC, the PHYs registered on the
-> +MDIO bus have to be referenced.
-> +
-> +The UUID given below should be used as mentioned in the "Device Properties
-> +UUID For _DSD" [2] document.
-> +   - UUID: daffd814-6eba-4d8c-8a91-bc9bbf4aa301
-
-I would drop the above paragraph.
-
-> +
-> +This document introduces two _DSD properties that are to be used
-> +for PHYs on the MDIO bus.[3]
-
-I'd say "for connecting PHYs on the MDIO bus [3] to the MAC layer."
-above and add the following here:
-
-"These properties are defined in accordance with the "Device
-Properties UUID For _DSD" [2] document and the
-daffd814-6eba-4d8c-8a91-bc9bbf4aa301 UUID must be used in the Device
-Data Descriptors containing them."
-
-> +
-> +phy-handle
-> +----------
-> +For each MAC node, a device property "phy-handle" is used to reference
-> +the PHY that is registered on an MDIO bus. This is mandatory for
-> +network interfaces that have PHYs connected to MAC via MDIO bus.
-> +
-> +During the MDIO bus driver initialization, PHYs on this bus are probed
-> +using the _ADR object as shown below and are registered on the MDIO bus.
-
-Do you want to mention the "reg" property here?  I think it would be
-useful to do that.
-
-> +
-> +::
-> +      Scope(\_SB.MDI0)
-> +      {
-> +        Device(PHY1) {
-> +          Name (_ADR, 0x1)
-> +        } // end of PHY1
-> +
-> +        Device(PHY2) {
-> +          Name (_ADR, 0x2)
-> +        } // end of PHY2
-> +      }
-> +
-> +Later, during the MAC driver initialization, the registered PHY devices
-> +have to be retrieved from the MDIO bus. For this, MAC driver needs
-
-"the MAC driver" I suppose?
-
-> +reference to the previously registered PHYs which are provided
-
-s/reference/references/ (plural)
-
-> +using reference to the device as {\_SB.MDI0.PHY1}.
-
-"as device object references (e.g. \_SB.MDI0.PHY1}."
-
-> +
-> +phy-mode
-> +--------
-> +The "phy-mode" _DSD property is used to describe the connection to
-> +the PHY. The valid values for "phy-mode" are defined in [4].
-> +
-
-One empty line should be sufficient.
-
-> +
-> +An ASL example of this is shown below.
-
-"The following ASL example illustrates the usage of these properties."
-
-> +
-> +DSDT entry for MDIO node
-> +------------------------
-
-Empty line here, please.
-
-> +The MDIO bus has an SoC component(MDIO controller) and a platform
-
-Missing space after "component".
-
-> +component (PHYs on the MDIO bus).
-> +
-> +a) Silicon Component
-> +This node describes the MDIO controller, MDI0
-> +---------------------------------------------
-> +::
-> +       Scope(_SB)
-> +       {
-> +         Device(MDI0) {
-> +           Name(_HID, "NXP0006")
-> +           Name(_CCA, 1)
-> +           Name(_UID, 0)
-> +           Name(_CRS, ResourceTemplate() {
-> +             Memory32Fixed(ReadWrite, MDI0_BASE, MDI_LEN)
-> +             Interrupt(ResourceConsumer, Level, ActiveHigh, Shared)
-> +              {
-> +                MDI0_IT
-> +              }
-> +           }) // end of _CRS for MDI0
-> +         } // end of MDI0
-> +       }
-> +
-> +b) Platform Component
-> +This node defines the PHYs that are connected to the MDIO bus, MDI0
-
-"The PHY1 and PHY2 nodes represent the PHYs connected to MDIO bus MDI0."
-
-> +-------------------------------------------------------------------
-> +::
-> +       Scope(\_SB.MDI0)
-> +       {
-> +         Device(PHY1) {
-> +           Name (_ADR, 0x1)
-> +         } // end of PHY1
-> +
-> +         Device(PHY2) {
-> +           Name (_ADR, 0x2)
-> +         } // end of PHY2
-> +       }
-> +
-> +
-
-"DSDT entries representing MAC nodes
------------------------------------"
-
-Plus an empty line.
-
-> +Below are the MAC nodes where PHY nodes are referenced.
-> +phy-mode and phy-handle are used as explained earlier.
-> +------------------------------------------------------
-> +::
-> +       Scope(\_SB.MCE0.PR17)
-> +       {
-> +         Name (_DSD, Package () {
-> +            ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
-> +                Package () {
-> +                    Package (2) {"phy-mode", "rgmii-id"},
-> +                    Package (2) {"phy-handle", \_SB.MDI0.PHY1}
-> +             }
-> +          })
-> +       }
-> +
-> +       Scope(\_SB.MCE0.PR18)
-> +       {
-> +         Name (_DSD, Package () {
-> +           ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
-> +               Package () {
-> +                   Package (2) {"phy-mode", "rgmii-id"},
-> +                   Package (2) {"phy-handle", \_SB.MDI0.PHY2}}
-> +           }
-> +         })
-> +       }
-> +
-> +References
-> +==========
-> +
-> +[1] Documentation/networking/phy.rst
-> +
-> +[2] https://www.uefi.org/sites/default/files/resources/_DSD-device-properties-UUID.pdf
-> +
-> +[3] Documentation/firmware-guide/acpi/DSD-properties-rules.rst
-> +
-> +[4] Documentation/devicetree/bindings/net/ethernet-controller.yaml
-> --
-> 2.17.1
+> ... and then just compare the original and the new ports here.
 >
+> The benefits will be:
+> * no need to introduce port_changed field in struct bpf_sock_addr_kern;
+> * no need to do change program instructions;
+> * no need to think about compiler optimizing out those instructions;
+> * no need to think about multiple programs coordination, the flag will
+>   be set only if port has actually changed what is easy to reason about
+>   from user perspective.
+>
+> wdyt?
+Martin mentioned in another email that we might want to do that when
+we rewrite only the address portion of it.
+I think it makes sense. Imagine doing 1.1.1.1:50 -> 2.2.2.2:50 it
+seems like it should also work, right?
+And in this case, we need to store and compare addresses as well and
+it becomes messy :-/
+It also seems like it would be nice to have this 'bypass
+cap_net_bind_service" without changing the address while we are at it.
