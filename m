@@ -2,116 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B192F2FFF39
-	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 10:33:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9ACDD2FFF3B
+	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 10:33:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727397AbhAVJal (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jan 2021 04:30:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39470 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727315AbhAVJK1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 04:10:27 -0500
-Received: from mailout3.hostsharing.net (mailout3.hostsharing.net [IPv6:2a01:4f8:150:2161:1:b009:f236:0])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67535C06178B;
-        Fri, 22 Jan 2021 01:08:27 -0800 (PST)
-Received: from h08.hostsharing.net (h08.hostsharing.net [IPv6:2a01:37:1000::53df:5f1c:0])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client CN "*.hostsharing.net", Issuer "RapidSSL TLS DV RSA Mixed SHA256 2020 CA-1" (verified OK))
-        by mailout3.hostsharing.net (Postfix) with ESMTPS id 141B8102A88BC;
-        Fri, 22 Jan 2021 10:05:29 +0100 (CET)
-Received: from localhost (unknown [89.246.108.87])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-256) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by h08.hostsharing.net (Postfix) with ESMTPSA id ADD516017D32;
-        Fri, 22 Jan 2021 10:05:28 +0100 (CET)
-X-Mailbox-Line: From 05223ee20770fad62abe3898541fe873733f83c0 Mon Sep 17 00:00:00 2001
-Message-Id: <05223ee20770fad62abe3898541fe873733f83c0.1611304190.git.lukas@wunner.de>
-In-Reply-To: <cover.1611304190.git.lukas@wunner.de>
-References: <cover.1611304190.git.lukas@wunner.de>
-From:   Lukas Wunner <lukas@wunner.de>
-Date:   Fri, 22 Jan 2021 09:47:03 +0100
-Subject: [PATCH nf-next v4 3/5] netfilter: Generalize ingress hook include
- file
-To:     "Pablo Neira Ayuso" <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>
-Cc:     netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org, Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Thomas Graf <tgraf@suug.ch>,
-        Laura Garcia Liebana <nevola@gmail.com>,
-        John Fastabend <john.fastabend@gmail.com>
+        id S1727185AbhAVJbP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jan 2021 04:31:15 -0500
+Received: from esa.microchip.iphmx.com ([68.232.153.233]:9321 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727327AbhAVJKf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 04:10:35 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1611306635; x=1642842635;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Z38pDxdKMpMX2YbLgpd/OdAMnBLEJY0NO6h7QN8ozSY=;
+  b=cfGHqh2v0NVIOuU6CLmZqnGDevIp7xyhF2COEMIYyDHwONjnduG3k8oH
+   S9KCbR2i22ood1vIZ6icizaL6Kre4CBN0dmRM/eUCA/QQZjPySQeHL4Vp
+   M6K1zG0YZujIAil5pdwiHGSIs9OZrkUPcjltAb0depemMmaAcf27UOJMm
+   fxfNT/45oqFQHchFBEECKX++joyMvmK6GrPrHScTufc0LA3+raLOq0YWR
+   sXrNJBAgPWV/22KoLTpttBuWoC4SKzmC6pW4Nr5ho3tY2/jkiGCcgyhFm
+   +MSVEIN0ZStCNjFQq6sNm6ep3vU938gPu8IATcPGTC/XLUf0eKH8aeJ5h
+   g==;
+IronPort-SDR: m/Scjx0oCP2/XR9k1JUv28PKYau5WoX7wRbvZRjo96jgaKu3dMOgFxQOl5Z1OJ9RN7WXGYoOzG
+ UgNQXBFExz2TezG8o4Dl8Gw8QWMmbMFqaguvC08Cc3AF4OxErMinFvK6/fAHvcgysdleggF2Zv
+ UYn3twiT1hXkyp2LSFHgrf6xA23ICKIfjYxH6cRao2lLLVu0dwzg6t1KfkQ0NkFa32pDG3d9Pu
+ JCDODweU53HY56pOD5wxZ0f8Ms4xA9WD5EHvG9m8DDced1qwJomcc4wHC3cchv0YowfzJImRts
+ eVI=
+X-IronPort-AV: E=Sophos;i="5.79,366,1602572400"; 
+   d="scan'208";a="112064098"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 22 Jan 2021 02:05:06 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Fri, 22 Jan 2021 02:05:06 -0700
+Received: from localhost (10.10.115.15) by chn-vm-ex02.mchp-main.com
+ (10.10.85.144) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
+ Transport; Fri, 22 Jan 2021 02:05:06 -0700
+Date:   Fri, 22 Jan 2021 10:05:05 +0100
+From:   Horatiu Vultur <horatiu.vultur@microchip.com>
+To:     Rasmus Villemoes <rasmus.villemoes@prevas.dk>
+CC:     <netdev@vger.kernel.org>, Jiri Pirko <jiri@mellanox.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Petr Machata <petrm@mellanox.com>,
+        Ido Schimmel <idosch@mellanox.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Ivan Vecera <ivecera@redhat.com>,
+        Jakub Kicinski <kuba@kernel.org>
+Subject: Re: [PATCH resend net] net: switchdev: don't set
+ port_obj_info->handled true when -EOPNOTSUPP
+Message-ID: <20210122090505.3tb4idcvrjd4zcwe@soft-dev3.localdomain>
+References: <20210121234317.65936-1-rasmus.villemoes@prevas.dk>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <20210121234317.65936-1-rasmus.villemoes@prevas.dk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Prepare for addition of a netfilter egress hook by generalizing the
-ingress hook include file.
+The 01/22/2021 00:43, Rasmus Villemoes wrote:
+> 
+> It's not true that switchdev_port_obj_notify() only inspects the
+> ->handled field of "struct switchdev_notifier_port_obj_info" if
+> call_switchdev_blocking_notifiers() returns 0 - there's a WARN_ON()
+> triggering for a non-zero return combined with ->handled not being
+> true. But the real problem here is that -EOPNOTSUPP is not being
+> properly handled.
+> 
+> The wrapper functions switchdev_handle_port_obj_add() et al change a
+> return value of -EOPNOTSUPP to 0, and the treatment of ->handled in
+> switchdev_port_obj_notify() seems to be designed to change that back
+> to -EOPNOTSUPP in case nobody actually acted on the notifier (i.e.,
+> everybody returned -EOPNOTSUPP).
+> 
+> Currently, as soon as some device down the stack passes the check_cb()
+> check, ->handled gets set to true, which means that
+> switchdev_port_obj_notify() cannot actually ever return -EOPNOTSUPP.
+> 
+> This, for example, means that the detection of hardware offload
+> support in the MRP code is broken - br_mrp_set_ring_role() always ends
+> up setting mrp->ring_role_offloaded to 1, despite not a single
+> mainline driver implementing any of the SWITCHDEV_OBJ_ID*_MRP. So
+> since the MRP code thinks the generation of MRP test frames has been
+> offloaded, no such frames are actually put on the wire.
 
-No functional change intended.
+Just a small correction to what you have said regarding MRP. Is not the
+option mrp->ring_role_offload that determines if the MRP Test frames are
+generated by the HW but is the return value of the function
+'br_mrp_switchdev_send_ring_test' called from function
+'br_mrp_start_test'. But everything else looks good.
 
-Signed-off-by: Lukas Wunner <lukas@wunner.de>
----
- include/linux/netfilter_netdev.h | 20 +++++++++++---------
- net/core/dev.c                   |  2 +-
- 2 files changed, 12 insertions(+), 10 deletions(-)
+I have also started to work on a patch series where I try to improve the
+way the return values of switchdev calls are handled in MRP. I should be
+able to send these patches by the end of week.
 
-diff --git a/include/linux/netfilter_netdev.h b/include/linux/netfilter_netdev.h
-index a13774be2eb5..5812b0fb0278 100644
---- a/include/linux/netfilter_netdev.h
-+++ b/include/linux/netfilter_netdev.h
-@@ -1,6 +1,6 @@
- /* SPDX-License-Identifier: GPL-2.0 */
--#ifndef _NETFILTER_INGRESS_H_
--#define _NETFILTER_INGRESS_H_
-+#ifndef _NETFILTER_NETDEV_H_
-+#define _NETFILTER_NETDEV_H_
- 
- #include <linux/netfilter.h>
- #include <linux/netdevice.h>
-@@ -38,10 +38,6 @@ static inline int nf_hook_ingress(struct sk_buff *skb)
- 	return ret;
- }
- 
--static inline void nf_hook_ingress_init(struct net_device *dev)
--{
--	RCU_INIT_POINTER(dev->nf_hooks_ingress, NULL);
--}
- #else /* CONFIG_NETFILTER_INGRESS */
- static inline int nf_hook_ingress_active(struct sk_buff *skb)
- {
-@@ -52,7 +48,13 @@ static inline int nf_hook_ingress(struct sk_buff *skb)
- {
- 	return 0;
- }
--
--static inline void nf_hook_ingress_init(struct net_device *dev) {}
- #endif /* CONFIG_NETFILTER_INGRESS */
--#endif /* _NETFILTER_INGRESS_H_ */
-+
-+static inline void nf_hook_netdev_init(struct net_device *dev)
-+{
-+#ifdef CONFIG_NETFILTER_INGRESS
-+	RCU_INIT_POINTER(dev->nf_hooks_ingress, NULL);
-+#endif
-+}
-+
-+#endif /* _NETFILTER_NETDEV_H_ */
-diff --git a/net/core/dev.c b/net/core/dev.c
-index 98c5abf22e63..931149bd654a 100644
---- a/net/core/dev.c
-+++ b/net/core/dev.c
-@@ -10602,7 +10602,7 @@ struct net_device *alloc_netdev_mqs(int sizeof_priv, const char *name,
- 	if (!dev->ethtool_ops)
- 		dev->ethtool_ops = &default_ethtool_ops;
- 
--	nf_hook_ingress_init(dev);
-+	nf_hook_netdev_init(dev);
- 
- 	return dev;
- 
+> 
+> So, continue to set ->handled true if any callback returns success or
+> any error distinct from -EOPNOTSUPP. But if all the callbacks return
+> -EOPNOTSUPP, make sure that ->handled stays false, so the logic in
+> switchdev_port_obj_notify() can propagate that information.
+> 
+> Fixes: f30f0601eb93 ("switchdev: Add helpers to aid traversal through lower devices")
+> Signed-off-by: Rasmus Villemoes <rasmus.villemoes@prevas.dk>
+> ---
+> Resending with more folks on cc and a tentative fixes tag.
+> 
+>  net/switchdev/switchdev.c | 23 +++++++++++++----------
+>  1 file changed, 13 insertions(+), 10 deletions(-)
+> 
+> diff --git a/net/switchdev/switchdev.c b/net/switchdev/switchdev.c
+> index 23d868545362..2c1ffc9ba2eb 100644
+> --- a/net/switchdev/switchdev.c
+> +++ b/net/switchdev/switchdev.c
+> @@ -460,10 +460,11 @@ static int __switchdev_handle_port_obj_add(struct net_device *dev,
+>         extack = switchdev_notifier_info_to_extack(&port_obj_info->info);
+> 
+>         if (check_cb(dev)) {
+> -               /* This flag is only checked if the return value is success. */
+> -               port_obj_info->handled = true;
+> -               return add_cb(dev, port_obj_info->obj, port_obj_info->trans,
+> -                             extack);
+> +               err = add_cb(dev, port_obj_info->obj, port_obj_info->trans,
+> +                            extack);
+> +               if (err != -EOPNOTSUPP)
+> +                       port_obj_info->handled = true;
+> +               return err;
+>         }
+> 
+>         /* Switch ports might be stacked under e.g. a LAG. Ignore the
+> @@ -515,9 +516,10 @@ static int __switchdev_handle_port_obj_del(struct net_device *dev,
+>         int err = -EOPNOTSUPP;
+> 
+>         if (check_cb(dev)) {
+> -               /* This flag is only checked if the return value is success. */
+> -               port_obj_info->handled = true;
+> -               return del_cb(dev, port_obj_info->obj);
+> +               err = del_cb(dev, port_obj_info->obj);
+> +               if (err != -EOPNOTSUPP)
+> +                       port_obj_info->handled = true;
+> +               return err;
+>         }
+> 
+>         /* Switch ports might be stacked under e.g. a LAG. Ignore the
+> @@ -568,9 +570,10 @@ static int __switchdev_handle_port_attr_set(struct net_device *dev,
+>         int err = -EOPNOTSUPP;
+> 
+>         if (check_cb(dev)) {
+> -               port_attr_info->handled = true;
+> -               return set_cb(dev, port_attr_info->attr,
+> -                             port_attr_info->trans);
+> +               err = set_cb(dev, port_attr_info->attr, port_attr_info->trans);
+> +               if (err != -EOPNOTSUPP)
+> +                       port_attr_info->handled = true;
+> +               return err;
+>         }
+> 
+>         /* Switch ports might be stacked under e.g. a LAG. Ignore the
+> --
+> 2.23.0
+> 
+
 -- 
-2.29.2
-
+/Horatiu
