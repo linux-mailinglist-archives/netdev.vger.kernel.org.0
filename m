@@ -2,90 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 591592FF9D3
-	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 02:13:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3AE3F2FF9DF
+	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 02:20:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726057AbhAVBMQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jan 2021 20:12:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50072 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725775AbhAVBMP (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jan 2021 20:12:15 -0500
-Received: from mail-ot1-x331.google.com (mail-ot1-x331.google.com [IPv6:2607:f8b0:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED508C0613D6
-        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 17:11:34 -0800 (PST)
-Received: by mail-ot1-x331.google.com with SMTP id v21so3611772otj.3
-        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 17:11:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=UXx7BWuoMYCvHJqURfT9sjwsJKtVlcy+yL9cdDPFaos=;
-        b=eoirGusi6t2BSR0q1/mPSgB9AkItSGT5Z2ZAOBNpKo0JPb/iLPrPcD6286iL4IKbos
-         Sh58KUD+zf4gBpe7hmbmvUui5+j3Du0RTuOsg9IYKescj9r+y/UX90DSVX61ACGsrIl+
-         8iPQqQsIWYaSc+pdWw9BpwZgwydYKqHjG3cwKVP3yGVMJGiKS4zwl9k0//6+LcCls6Zf
-         B+ElgSie/t+0YkXk8GDvrOl8EDux7jC1/s+PWCJVd0XAXTcwNnEQUl2RljzZ9d7OdD0w
-         eYCObaOibr0sSqKJ/fyJNOFC1e6sX2hSZIZ68psy3lLtfomjIaZ0RlFKM9ImBo8LDxc+
-         PXfQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=UXx7BWuoMYCvHJqURfT9sjwsJKtVlcy+yL9cdDPFaos=;
-        b=tE7dq0130Cu8LQTw1fc14CP9fcwaUuEJjbEHFGllw9RFnoK65T7bQ8dG7ftMhlRH4a
-         XZRrrL1QMc0gCs5RbqLJKgdXT4VBt6V1BF90LQ6GtgOlzuN//NuEdaFTHhMNjIPwV1tk
-         yqk0vCS71dZ6xcQNoglmC56aCEbXAfRjIZrTPjCmoR6ASNdj9WmMeAdsfaMI67mguNkx
-         lGJsSXcYkkyAVRyuIBHvyQIKiyFkattwcdPUs0vGWM47nGzfSygB9HkWExqNSxwugZp0
-         QBgrB8BIKd6rETiYcZZHtE/c4COSioul3t02lFM5TMXBTTHT/abe2Lki38CxIoxmy3X7
-         +NOQ==
-X-Gm-Message-State: AOAM530aE0ExZWUBgIeR1wFkE+iq8lFTMLvFG87H0XJirGHaulIVoiq8
-        GNMvIBqswR87V9FIv3SwquA=
-X-Google-Smtp-Source: ABdhPJz/KJgZDt4032ov+pAojEVnOzPY1TRj8T+IkWiWWF5Xm4ZOoFI547fSMl2aIcLysboslpUpjg==
-X-Received: by 2002:a05:6830:1689:: with SMTP id k9mr1486163otr.154.1611277894139;
-        Thu, 21 Jan 2021 17:11:34 -0800 (PST)
-Received: from Davids-MacBook-Pro.local ([8.48.134.50])
-        by smtp.googlemail.com with ESMTPSA id i9sm1419643oii.34.2021.01.21.17.11.32
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 21 Jan 2021 17:11:33 -0800 (PST)
-Subject: Re: [PATCH iproute2] man: tc-taprio.8: document the full offload
- feature
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     netdev@vger.kernel.org,
-        Vinicius Costa Gomes <vinicius.gomes@intel.com>,
-        Vedang Patel <vedang.patel@intel.com>
-References: <20210121214708.2477352-1-olteanv@gmail.com>
- <20210121215719.fimgnp5j6ngckjkl@skbuf>
- <229d141f-2335-7e6d-838d-6ff7cd3723a0@gmail.com>
- <20210122003735.33op5zc7cxvrl7cu@skbuf>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <bf45ea89-5b92-7265-8fdc-f4d280aae291@gmail.com>
-Date:   Thu, 21 Jan 2021 18:11:32 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
- Gecko/20100101 Thunderbird/78.6.1
+        id S1726013AbhAVBTe (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jan 2021 20:19:34 -0500
+Received: from correo.us.es ([193.147.175.20]:35624 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726264AbhAVBTU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 21 Jan 2021 20:19:20 -0500
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id D136F1022A2
+        for <netdev@vger.kernel.org>; Fri, 22 Jan 2021 02:17:43 +0100 (CET)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id C3BF8DA78F
+        for <netdev@vger.kernel.org>; Fri, 22 Jan 2021 02:17:43 +0100 (CET)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id B92DEDA730; Fri, 22 Jan 2021 02:17:43 +0100 (CET)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WELCOMELIST,USER_IN_WHITELIST autolearn=disabled
+        version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 9D9E1DA73F;
+        Fri, 22 Jan 2021 02:17:41 +0100 (CET)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Fri, 22 Jan 2021 02:17:41 +0100 (CET)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from us.es (unknown [90.77.255.23])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: 1984lsi)
+        by entrada.int (Postfix) with ESMTPSA id 6B6C442EF9E1;
+        Fri, 22 Jan 2021 02:17:41 +0100 (CET)
+Date:   Fri, 22 Jan 2021 02:18:34 +0100
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     Oz Shlomo <ozsh@nvidia.com>
+Cc:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Roi Dayan <roid@nvidia.com>, Saeed Mahameed <saeed@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Paul Blakey <paulb@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: Re: [net-next 08/15] net/mlx5e: CT: Preparation for offloading
+ +trk+new ct rules
+Message-ID: <20210122011834.GA25356@salvia>
+References: <20210108053054.660499-9-saeed@kernel.org>
+ <20210108214812.GB3678@horizon.localdomain>
+ <c11867d2-6fda-d77c-6b52-f4093c751379@nvidia.com>
+ <218258b2-3a86-2d87-dfc6-8b3c1e274b26@nvidia.com>
+ <20210111235116.GA2595@horizon.localdomain>
+ <f25eee28-4c4a-9036-8c3d-d84b15a8b5e7@nvidia.com>
+ <20210114130238.GA2676@horizon.localdomain>
+ <d1b5b862-8c30-efb6-1a2f-4f9f0d49ef15@nvidia.com>
+ <20210114215052.GB2676@horizon.localdomain>
+ <009bd8cf-df39-5346-b892-4e68a042c4b4@nvidia.com>
 MIME-Version: 1.0
-In-Reply-To: <20210122003735.33op5zc7cxvrl7cu@skbuf>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+In-Reply-To: <009bd8cf-df39-5346-b892-4e68a042c4b4@nvidia.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/21/21 5:37 PM, Vladimir Oltean wrote:
-> On Thu, Jan 21, 2021 at 04:10:06PM -0700, David Ahern wrote:
->> On 1/21/21 2:57 PM, Vladimir Oltean wrote:
->>> On Thu, Jan 21, 2021 at 11:47:08PM +0200, Vladimir Oltean wrote:
->>>> +Enables the full-offload feature. In this mode, taprio will pass the gate
->>>> +control list to the NIC which will execute cyclically it in hardware.
->>>
->>> Ugh, I meant "execute it cyclically" not "execute cyclically it".
->>> David, could you fix this up or do I need to resend?
->>>
->>
->> I'll fix up
-> 
-> And I just noticed that ".BR etf(8)" needs to be on a line of its own. Sorry...
-> 
+Hi Oz,
 
-send a new version
+On Wed, Jan 20, 2021 at 06:09:48PM +0200, Oz Shlomo wrote:
+> On 1/14/2021 11:50 PM, Marcelo Ricardo Leitner wrote:
+> > 
+> > Thoughts?
+> > 
+> 
+> I wonder if we should develop a generic mechanism to optimize CT software
+> for a use case that is faulty by design.
+> This has limited value for software as it would only reduce the conntrack
+> table size (packet classification is still required).
+> However, this feature may have a big impact on hardware offload.
+> Normally hardware offload relies on software to handle new connections.
+> Causing all new connections to be processed by software.
+> With this patch the hardware may autonomously set the +new connection state
+> for the relevant connections.
+
+Could you fix this issue with unidirectional flows by checking for
+IPS_CONFIRMED status bit? The idea is to hardware offload the entry
+after the first packet goes through software successfully. Then, there
+is no need to wait for the established state that requires to see
+traffic in both directions.
