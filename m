@@ -2,86 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D9B9300DF4
-	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 21:44:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AAD95300E5D
+	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 21:59:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731057AbhAVUns (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jan 2021 15:43:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47858 "EHLO
+        id S1728105AbhAVU4i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jan 2021 15:56:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50608 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730407AbhAVUmg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 15:42:36 -0500
-Received: from mail-io1-xd2d.google.com (mail-io1-xd2d.google.com [IPv6:2607:f8b0:4864:20::d2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EFF5C06174A
-        for <netdev@vger.kernel.org>; Fri, 22 Jan 2021 12:41:39 -0800 (PST)
-Received: by mail-io1-xd2d.google.com with SMTP id u8so756782ior.13
-        for <netdev@vger.kernel.org>; Fri, 22 Jan 2021 12:41:39 -0800 (PST)
+        with ESMTP id S1730343AbhAVUzL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 15:55:11 -0500
+Received: from mail-ot1-x32d.google.com (mail-ot1-x32d.google.com [IPv6:2607:f8b0:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D53F4C06174A;
+        Fri, 22 Jan 2021 12:54:30 -0800 (PST)
+Received: by mail-ot1-x32d.google.com with SMTP id 36so6454759otp.2;
+        Fri, 22 Jan 2021 12:54:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=P+7s2tkVUfM+BW/7C7dTp16gqbBze+VCFXaj6B34TXk=;
-        b=XRup72qxPpm4XucnYUWWeTrU8zT1PVzcryeZqqt0TZNUriBcCV7X4Fao8MBin4HMWr
-         Rd/NO378OhnB0m5mGUkXdU2gUoUfY3Ln8ACRtV7O7HllUUd75LZzb/yBcBSKsbyags7Q
-         ivdJGru80ZQYqYuv3FyAjaU3YqexHBtkgAwEgZcEXyGKz8cI21K86lU+vduYDgzpe9Xo
-         q3iddcUdBwIoqvdU44qu+VDkfdapD2aelJ8ZJZ12Qzg5Gy9W1kDdaniTpZIaL6+/MqyI
-         V6W+QLdsjXxwUwXWe+qScL9fabX1pvLZagXcByHOZbWl2S/iJjrSswtEQEJtkWOBYtJ5
-         gflg==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=DOVTjNJRZMnM+kceEiLJHqeJw55QWfuw/x9E/sbQ+ws=;
+        b=tsowucZcMrElg3LFFkcBe5NB2AVwbMPq8ozIsRn+8iVFSgNMrkLEJOYPLYSwFGLNIG
+         wwj5leUpJ8um/r3oTocXEbPNP+JwAIcuOhohmUlN1eTqWf59hgQaPVIR4v/rwZ9JF/9P
+         Wtby9GYcEGdDBrZXD6S7THp1Aq4Iu0DXq8KAPaozjrWFxrzU66GoVQFxegcVnCQhc01d
+         ljDuw1PbQj/Ntd7xiKDwLd7WZhVeOVyE162UxDNKx9lpPnp+25tqJdRZJb7DAIeTXWKZ
+         P6Qkp+XpWkccZdkeHkgRzN28GJ7o/Hb44//gADbEtT1DjAxIihM6AE4xGaL57nWQjjeM
+         lT1g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=P+7s2tkVUfM+BW/7C7dTp16gqbBze+VCFXaj6B34TXk=;
-        b=qcYKczSdjYIbQ88nut5b6+7UWqig8/xcpcWt/3diO26fyQH6sIafikYeuEdYu+6kZz
-         /BU34++nmKKrQ8c4Pt+nCLpNmUzEMt037GJbJ3RH9rQ76B+dtC52NbLdN7pmyzLSKkWy
-         2m9lF0ioycRC/eK+sYA2osNkBFGTT9/np0svoIW4IWaAwS4Kj2AfTgGxAIdhofmVRCko
-         ELO8yvcvJL2ZqLgDaiqETZgxeKG08+0uea3U2JXKnFG2MP++foRxvrTcBZIImBduNrqr
-         0uJ4GeObkPl+uGmdGbiUgDuKQDoo8R+0TH11l5DoH7aY1DyX9twkc4carCO5sZ/wnP3X
-         NyuQ==
-X-Gm-Message-State: AOAM530Gu9EZeLytWekPhQIvnCz2sIT3wFwX5IOJJdBSKqIl/xRgREmh
-        +Y82xwEWuo0rFqkImxelauJyzXjK2t8kyUQAPHOsrg==
-X-Google-Smtp-Source: ABdhPJxLMyDjGbtY2wgA8tFrQ/qTzOK66CQMt4Xb4gbdaIM3nCoCLboO+3v3ou2vq+M7xjHoB/hFoqJ8Qbmte5x0A5o=
-X-Received: by 2002:a92:d3c7:: with SMTP id c7mr300561ilh.137.1611348098424;
- Fri, 22 Jan 2021 12:41:38 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=DOVTjNJRZMnM+kceEiLJHqeJw55QWfuw/x9E/sbQ+ws=;
+        b=kOMUdR4i1qG6GXfDYrsg2bvablgfZ9dz27vvN5dEYOlaHUtU55yw7fGYL2IQl2MbSf
+         qaxoeTy3tkxcvgX4oaP9lLnwMDIkbNmNV0ALdK5OZvla+H1ViXa1Ypwd3MmPRELLkL3f
+         ntAJgpilyH12tXfxlzeCRz/qjVN8OZfZNxbe4RN46SGMJYcR7ipl9+XGY8QVjU6VChvc
+         vSxc8Fg6lUuFfFsepLmkAhUtTO3H0AecVqFslfcjXivPqQsmXP0nVL0dTWOc8J1E6Ku5
+         /+Ltqch+h3gDsykFUD7h0+GQghEBwBiMxni78Mywc1OGIQ2uKJrTV79FbAys4LshM7kM
+         nTHQ==
+X-Gm-Message-State: AOAM533lzWR3j6KepEIjXbsOP73RWLJ6HGPZyJ2VP3xYRgy7lzy4fYCA
+        dJek39bMGtxyRsbvbU/cbKYhAP5LINYrcg==
+X-Google-Smtp-Source: ABdhPJyUCqTvmyTHgFTrTyMm8d1WftmtHPiqwbInT1YSC4ZjbU8TiM2PZHVVmd5ffREIHYFtOuoNww==
+X-Received: by 2002:a9d:4917:: with SMTP id e23mr2343802otf.143.1611348869858;
+        Fri, 22 Jan 2021 12:54:29 -0800 (PST)
+Received: from unknown.attlocal.net ([2600:1700:65a0:ab60:1c14:d05:b7d:917b])
+        by smtp.gmail.com with ESMTPSA id k18sm1349193otj.36.2021.01.22.12.54.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 22 Jan 2021 12:54:29 -0800 (PST)
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+To:     netdev@vger.kernel.org
+Cc:     bpf@vger.kernel.org, jhs@mojatatu.com, andrii@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, kafai@fb.com,
+        Cong Wang <cong.wang@bytedance.com>
+Subject: [Patch bpf-next v5 0/3] bpf: introduce timeout hash map
+Date:   Fri, 22 Jan 2021 12:54:12 -0800
+Message-Id: <20210122205415.113822-1-xiyou.wangcong@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <20210122191306.GA99540@localhost.localdomain>
-In-Reply-To: <20210122191306.GA99540@localhost.localdomain>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Fri, 22 Jan 2021 21:41:27 +0100
-Message-ID: <CANn89iLBvwmRbbgw=U3z8k+i_S-ycSf7K-ow4rH5ZQP9CFJuWQ@mail.gmail.com>
-Subject: Re: [PATCH net] tcp: make TCP_USER_TIMEOUT accurate for zero window probes
-To:     Enke Chen <enkechen2020@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        netdev <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Neal Cardwell <ncardwell@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 22, 2021 at 8:13 PM Enke Chen <enkechen2020@gmail.com> wrote:
->
-> From: Enke Chen <enchen@paloaltonetworks.com>
->
-> The TCP_USER_TIMEOUT is checked by the 0-window probe timer. As the
-> timer has backoff with a max interval of about two minutes, the
-> actual timeout for TCP_USER_TIMEOUT can be off by up to two minutes.
->
-> In this patch the TCP_USER_TIMEOUT is made more accurate by taking it
-> into account when computing the timer value for the 0-window probes.
->
-> This patch is similar to the one that made TCP_USER_TIMEOUT accurate for
-> RTOs in commit b701a99e431d ("tcp: Add tcp_clamp_rto_to_user_timeout()
-> helper to improve accuracy").
->
-> Signed-off-by: Enke Chen <enchen@paloaltonetworks.com>
-> Reviewed-by: Neal Cardwell <ncardwell@google.com>
-> ---
+From: Cong Wang <cong.wang@bytedance.com>
 
-SGTM, thanks !
+This patchset introduces a new eBPF hash map whose elements have
+timeouts. Patch 1 is the implementation of timeout map, patch 2 adds
+some test cases for timeout map in test_maps, and patch 3 adds a test
+case in map ptr test. This patchset has been tested with the provided
+test cases for hours.
 
-Signed-off-by: Eric Dumazet <edumazet@google.com>
+Please check each patch description for more details.
+
+---
+v5: add a lost piece of patch during rebase
+    fix the extra_elems corner case
+    add a stress test case
+
+v4: merge gc_work into gc_idle_work to avoid a nasty race condition
+    fix a potential use-after-free
+    add one more test case
+    improve comments and update changelog
+
+v3: move gc list from bucket to elem
+    reuse lru_node in struct htab_elem
+    drop patches which are no longer necessary
+    fix delete path
+    add a test case for delete path
+    add parallel test cases
+    change timeout to ms
+    drop batch ops
+
+v2: fix hashmap ptr test
+    add a test case in map ptr test
+    factor out htab_timeout_map_alloc()
+
+Cong Wang (3):
+  bpf: introduce timeout hash map
+  selftests/bpf: add test cases for bpf timeout map
+  selftests/bpf: add timeout map check in map_ptr tests
+
+ include/linux/bpf_types.h                     |   1 +
+ include/uapi/linux/bpf.h                      |   5 +-
+ kernel/bpf/hashtab.c                          | 274 +++++++++++++++++-
+ kernel/bpf/syscall.c                          |   3 +-
+ tools/include/uapi/linux/bpf.h                |   1 +
+ .../selftests/bpf/progs/map_ptr_kern.c        |  20 ++
+ tools/testing/selftests/bpf/test_maps.c       |  68 +++++
+ 7 files changed, 357 insertions(+), 15 deletions(-)
+
+-- 
+2.25.1
+
