@@ -2,186 +2,94 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E2BAA2FFE3D
-	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 09:35:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5382B2FFE4C
+	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 09:38:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726042AbhAVIcy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jan 2021 03:32:54 -0500
-Received: from ex13-edg-ou-001.vmware.com ([208.91.0.189]:56963 "EHLO
-        EX13-EDG-OU-001.vmware.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726710AbhAVIbv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 03:31:51 -0500
-Received: from sc9-mailhost1.vmware.com (10.113.161.71) by
- EX13-EDG-OU-001.vmware.com (10.113.208.155) with Microsoft SMTP Server id
- 15.0.1156.6; Fri, 22 Jan 2021 00:30:51 -0800
-Received: from htb-1n-eng-dhcp122.eng.vmware.com (unknown [10.20.114.3])
-        by sc9-mailhost1.vmware.com (Postfix) with ESMTP id 195C82053A;
-        Fri, 22 Jan 2021 00:30:59 -0800 (PST)
-Received: by htb-1n-eng-dhcp122.eng.vmware.com (Postfix, from userid 0)
-        id 084C9A9FB5; Fri, 22 Jan 2021 00:30:59 -0800 (PST)
-From:   Ronak Doshi <doshir@vmware.com>
-To:     <netdev@vger.kernel.org>
-CC:     Ronak Doshi <doshir@vmware.com>, Petr Vandrovec <petr@vmware.com>,
-        "maintainer:VMWARE VMXNET3 ETHERNET DRIVER" <pv-drivers@vmware.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: [PATCH v2 net-next] vmxnet3: Remove buf_info from device
-Date:   Fri, 22 Jan 2021 00:30:51 -0800
-Message-ID: <20210122083051.16258-1-doshir@vmware.com>
-X-Mailer: git-send-email 2.11.0
+        id S1726931AbhAVIgQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jan 2021 03:36:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59534 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726919AbhAVIcJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 03:32:09 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7134CC061788
+        for <netdev@vger.kernel.org>; Fri, 22 Jan 2021 00:31:20 -0800 (PST)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1l2rqa-0004fJ-MY; Fri, 22 Jan 2021 09:31:12 +0100
+Received: from hardanger.blackshift.org (unknown [IPv6:2a03:f580:87bc:d400:aed1:e241:8b32:9cc0])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (Client did not present a certificate)
+        (Authenticated sender: mkl-all@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 043E05CA589;
+        Fri, 22 Jan 2021 08:31:09 +0000 (UTC)
+Date:   Fri, 22 Jan 2021 09:31:09 +0100
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+To:     Su Yanjun <suyanjun218@gmail.com>
+Cc:     manivannan.sadhasivam@linaro.org, thomas.kopp@microchip.com,
+        wg@grandegger.com, davem@davemloft.net, kuba@kernel.org,
+        linux-can@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4] can: mcp251xfd: replace sizeof(u32) with val_bytes in
+ regmap
+Message-ID: <20210122083109.7gyxdwi2dlo3ptjj@hardanger.blackshift.org>
+References: <20210122081334.213957-1-suyanjun218@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-Received-SPF: None (EX13-EDG-OU-001.vmware.com: doshir@vmware.com does not
- designate permitted sender hosts)
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="5h6qemvvzzz5qhue"
+Content-Disposition: inline
+In-Reply-To: <20210122081334.213957-1-suyanjun218@gmail.com>
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-vmxnet3: Remove buf_info from device accessible structures
 
-buf_info structures in RX & TX queues are private driver data that
-do not need to be visible to the device.  Although there is physical
-address and length in the queue descriptor that points to these
-structures, their layout is not standardized, and device never looks
-at them.
+--5h6qemvvzzz5qhue
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-So lets allocate these structures in non-DMA-able memory, and fill
-physical address as all-ones and length as zero in the queue
-descriptor.
+On Fri, Jan 22, 2021 at 04:13:34PM +0800, Su Yanjun wrote:
+> The sizeof(u32) is hardcoded. It's better to use the config value in
+> regmap.
+>=20
+> It increases the size of target object, but it's flexible when new mcp ch=
+ip
+> need other val_bytes.
+>=20
+> Signed-off-by: Su Yanjun <suyanjun218@gmail.com>
 
-That should alleviate worries brought by Martin Radev in
-https://lists.osuosl.org/pipermail/intel-wired-lan/Week-of-Mon-20210104/022829.html
-that malicious vmxnet3 device could subvert SVM/TDX guarantees.
+Applied to linux-can-next/testing.
 
-Signed-off-by: Petr Vandrovec <petr@vmware.com>
-Signed-off-by: Ronak Doshi <doshir@vmware.com>
----
-Changes in v2:
- - Use kcalloc_node()
- - Remove log for memory allocation failure
----
- drivers/net/vmxnet3/vmxnet3_drv.c | 37 ++++++++++++-------------------------
- drivers/net/vmxnet3/vmxnet3_int.h |  2 --
- 2 files changed, 12 insertions(+), 27 deletions(-)
+Thanks,
+Marc
 
-diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
-index 336504b7531d..c263b4767b28 100644
---- a/drivers/net/vmxnet3/vmxnet3_drv.c
-+++ b/drivers/net/vmxnet3/vmxnet3_drv.c
-@@ -452,9 +452,7 @@ vmxnet3_tq_destroy(struct vmxnet3_tx_queue *tq,
- 		tq->comp_ring.base = NULL;
- 	}
- 	if (tq->buf_info) {
--		dma_free_coherent(&adapter->pdev->dev,
--				  tq->tx_ring.size * sizeof(tq->buf_info[0]),
--				  tq->buf_info, tq->buf_info_pa);
-+		kfree(tq->buf_info);
- 		tq->buf_info = NULL;
- 	}
- }
-@@ -505,8 +503,6 @@ static int
- vmxnet3_tq_create(struct vmxnet3_tx_queue *tq,
- 		  struct vmxnet3_adapter *adapter)
- {
--	size_t sz;
--
- 	BUG_ON(tq->tx_ring.base || tq->data_ring.base ||
- 	       tq->comp_ring.base || tq->buf_info);
- 
-@@ -534,9 +530,9 @@ vmxnet3_tq_create(struct vmxnet3_tx_queue *tq,
- 		goto err;
- 	}
- 
--	sz = tq->tx_ring.size * sizeof(tq->buf_info[0]);
--	tq->buf_info = dma_alloc_coherent(&adapter->pdev->dev, sz,
--					  &tq->buf_info_pa, GFP_KERNEL);
-+	tq->buf_info = kcalloc_node(tq->tx_ring.size, sizeof(tq->buf_info[0]),
-+				    GFP_KERNEL | __GFP_ZERO,
-+				    dev_to_node(&adapter->pdev->dev));
- 	if (!tq->buf_info)
- 		goto err;
- 
-@@ -1738,10 +1734,7 @@ static void vmxnet3_rq_destroy(struct vmxnet3_rx_queue *rq,
- 	}
- 
- 	if (rq->buf_info[0]) {
--		size_t sz = sizeof(struct vmxnet3_rx_buf_info) *
--			(rq->rx_ring[0].size + rq->rx_ring[1].size);
--		dma_free_coherent(&adapter->pdev->dev, sz, rq->buf_info[0],
--				  rq->buf_info_pa);
-+		kfree(rq->buf_info[0]);
- 		rq->buf_info[0] = rq->buf_info[1] = NULL;
- 	}
- }
-@@ -1883,10 +1876,9 @@ vmxnet3_rq_create(struct vmxnet3_rx_queue *rq, struct vmxnet3_adapter *adapter)
- 		goto err;
- 	}
- 
--	sz = sizeof(struct vmxnet3_rx_buf_info) * (rq->rx_ring[0].size +
--						   rq->rx_ring[1].size);
--	bi = dma_alloc_coherent(&adapter->pdev->dev, sz, &rq->buf_info_pa,
--				GFP_KERNEL);
-+	bi = kcalloc_node(rq->rx_ring[0].size + rq->rx_ring[1].size,
-+			  sizeof(rq->buf_info[0][0]), GFP_KERNEL | __GFP_ZERO,
-+			  dev_to_node(&adapter->pdev->dev));
- 	if (!bi)
- 		goto err;
- 
-@@ -2522,14 +2514,12 @@ vmxnet3_setup_driver_shared(struct vmxnet3_adapter *adapter)
- 		tqc->txRingBasePA   = cpu_to_le64(tq->tx_ring.basePA);
- 		tqc->dataRingBasePA = cpu_to_le64(tq->data_ring.basePA);
- 		tqc->compRingBasePA = cpu_to_le64(tq->comp_ring.basePA);
--		tqc->ddPA           = cpu_to_le64(tq->buf_info_pa);
-+		tqc->ddPA           = cpu_to_le64(~0ULL);
- 		tqc->txRingSize     = cpu_to_le32(tq->tx_ring.size);
- 		tqc->dataRingSize   = cpu_to_le32(tq->data_ring.size);
- 		tqc->txDataRingDescSize = cpu_to_le32(tq->txdata_desc_size);
- 		tqc->compRingSize   = cpu_to_le32(tq->comp_ring.size);
--		tqc->ddLen          = cpu_to_le32(
--					sizeof(struct vmxnet3_tx_buf_info) *
--					tqc->txRingSize);
-+		tqc->ddLen          = cpu_to_le32(0);
- 		tqc->intrIdx        = tq->comp_ring.intr_idx;
- 	}
- 
-@@ -2541,14 +2531,11 @@ vmxnet3_setup_driver_shared(struct vmxnet3_adapter *adapter)
- 		rqc->rxRingBasePA[0] = cpu_to_le64(rq->rx_ring[0].basePA);
- 		rqc->rxRingBasePA[1] = cpu_to_le64(rq->rx_ring[1].basePA);
- 		rqc->compRingBasePA  = cpu_to_le64(rq->comp_ring.basePA);
--		rqc->ddPA            = cpu_to_le64(rq->buf_info_pa);
-+		rqc->ddPA            = cpu_to_le64(~0ULL);
- 		rqc->rxRingSize[0]   = cpu_to_le32(rq->rx_ring[0].size);
- 		rqc->rxRingSize[1]   = cpu_to_le32(rq->rx_ring[1].size);
- 		rqc->compRingSize    = cpu_to_le32(rq->comp_ring.size);
--		rqc->ddLen           = cpu_to_le32(
--					sizeof(struct vmxnet3_rx_buf_info) *
--					(rqc->rxRingSize[0] +
--					 rqc->rxRingSize[1]));
-+		rqc->ddLen           = cpu_to_le32(0);
- 		rqc->intrIdx         = rq->comp_ring.intr_idx;
- 		if (VMXNET3_VERSION_GE_3(adapter)) {
- 			rqc->rxDataRingBasePA =
-diff --git a/drivers/net/vmxnet3/vmxnet3_int.h b/drivers/net/vmxnet3/vmxnet3_int.h
-index d958b92c9429..e910596b79cf 100644
---- a/drivers/net/vmxnet3/vmxnet3_int.h
-+++ b/drivers/net/vmxnet3/vmxnet3_int.h
-@@ -240,7 +240,6 @@ struct vmxnet3_tx_queue {
- 	spinlock_t                      tx_lock;
- 	struct vmxnet3_cmd_ring         tx_ring;
- 	struct vmxnet3_tx_buf_info      *buf_info;
--	dma_addr_t                       buf_info_pa;
- 	struct vmxnet3_tx_data_ring     data_ring;
- 	struct vmxnet3_comp_ring        comp_ring;
- 	struct Vmxnet3_TxQueueCtrl      *shared;
-@@ -298,7 +297,6 @@ struct vmxnet3_rx_queue {
- 	u32 qid2;           /* rqID in RCD for buffer from 2nd ring */
- 	u32 dataRingQid;    /* rqID in RCD for buffer from data ring */
- 	struct vmxnet3_rx_buf_info     *buf_info[2];
--	dma_addr_t                      buf_info_pa;
- 	struct Vmxnet3_RxQueueCtrl            *shared;
- 	struct vmxnet3_rq_driver_stats  stats;
- } __attribute__((__aligned__(SMP_CACHE_BYTES)));
--- 
-2.11.0
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
 
+--5h6qemvvzzz5qhue
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmAKjUoACgkQqclaivrt
+76m+Cwf/QmCkqwzxOCPGlj7JWUKqIeOMCNJWBFJzqnV6mMaihyIwiPHsollFQpyE
+tmmZl2bcJ+N1zq2BfDQiK/3WksXbIgqhFg5gGhhgfA/Co4i9wq/EsgJcocKb0+Zq
+fl5R2JZKDQf8h2GN/qOP96+vUnXie8vr6cKpExlPH2Nm4cmC0ekjW0kYb33XNkvo
+E5XzfdewZBOoyxb50nFn/yvkM3GxirMlR3NhvVp4sQxugzpWCkekBcOseMiWY2Sp
+xt3sLwZfLoOblu791qIB+2uAWwJgG5V2UJWwTZMRI2eT/mDeKuIePFn9LH+w2Wgv
+6jrwq/1o8+CjBNw5CEbSdLttBQ/d+w==
+=YbTG
+-----END PGP SIGNATURE-----
+
+--5h6qemvvzzz5qhue--
