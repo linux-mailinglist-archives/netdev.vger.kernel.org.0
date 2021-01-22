@@ -2,28 +2,28 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D8B5301136
-	for <lists+netdev@lfdr.de>; Sat, 23 Jan 2021 00:54:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EC1C3301140
+	for <lists+netdev@lfdr.de>; Sat, 23 Jan 2021 00:59:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725881AbhAVXxn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jan 2021 18:53:43 -0500
-Received: from mga05.intel.com ([192.55.52.43]:55257 "EHLO mga05.intel.com"
+        id S1726662AbhAVX5N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jan 2021 18:57:13 -0500
+Received: from mga05.intel.com ([192.55.52.43]:55261 "EHLO mga05.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726414AbhAVXwU (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 22 Jan 2021 18:52:20 -0500
-IronPort-SDR: JZZOfgtUkkyaeBKhIM62HZ/H8VQxhv26ZYr5OE2gPKEhG1uJKLQlybcKHpVp5tCr3VxzeGaU5j
- RPcPKFPDmgCw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9872"; a="264346888"
+        id S1726694AbhAVXyv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 22 Jan 2021 18:54:51 -0500
+IronPort-SDR: 2V3vHGLV/4AesI0QCaHXMvWztUOCxYNNCVrBWs8WnQOu+9nda5VexJOG4hIgJxURNOC2TgiLO/
+ mg59hLjrdgfw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9872"; a="264346897"
 X-IronPort-AV: E=Sophos;i="5.79,368,1602572400"; 
-   d="scan'208";a="264346888"
+   d="scan'208";a="264346897"
 Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jan 2021 15:50:18 -0800
-IronPort-SDR: fFlU75G7p+8wXRr9+lenLOWaUzhO944M2ZLBiifPALwa0Avm7oMRnZyNd4/9CA9U+Q2BbOksIm
- fSRUpN4x0eWQ==
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jan 2021 15:50:24 -0800
+IronPort-SDR: 0xAhxQjoDKKsvi+Rcxky4EoIPJVAOAGMMo8vojnxkiswn3lIuuCrvsE3mg7R6AmmqlO2pylPUf
+ Ye0KWoRlT4dw==
 X-IronPort-AV: E=Sophos;i="5.79,368,1602572400"; 
-   d="scan'208";a="574869485"
+   d="scan'208";a="574869543"
 Received: from ssaleem-mobl.amr.corp.intel.com ([10.251.4.95])
-  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jan 2021 15:50:17 -0800
+  by fmsmga005-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jan 2021 15:50:23 -0800
 From:   Shiraz Saleem <shiraz.saleem@intel.com>
 To:     dledford@redhat.com, jgg@nvidia.com, kuba@kernel.org,
         davem@davemloft.net
@@ -32,9 +32,9 @@ Cc:     linux-rdma@vger.kernel.org, gregkh@linuxfoundation.org,
         anthony.l.nguyen@intel.com,
         Mustafa Ismail <mustafa.ismail@intel.com>,
         Shiraz Saleem <shiraz.saleem@intel.com>
-Subject: [PATCH 10/22] RDMA/irdma: Add HMC backing store setup functions
-Date:   Fri, 22 Jan 2021 17:48:15 -0600
-Message-Id: <20210122234827.1353-11-shiraz.saleem@intel.com>
+Subject: [PATCH 14/22] RDMA/irdma: Add PBLE resource manager
+Date:   Fri, 22 Jan 2021 17:48:19 -0600
+Message-Id: <20210122234827.1353-15-shiraz.saleem@intel.com>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20210122234827.1353-1-shiraz.saleem@intel.com>
 References: <20210122234827.1353-1-shiraz.saleem@intel.com>
@@ -46,29 +46,24 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Mustafa Ismail <mustafa.ismail@intel.com>
 
-HW uses host memory as a backing store for a number of
-protocol context objects and queue state tracking.
-The Host Memory Cache (HMC) is a component responsible for
-managing these objects stored in host memory.
-
-Add the functions and data structures to manage the allocation
-of backing pages used by the HMC for the various objects
+Implement a Physical Buffer List Entry (PBLE) resource manager
+to manage a pool of PBLE HMC resource objects.
 
 Signed-off-by: Mustafa Ismail <mustafa.ismail@intel.com>
 Signed-off-by: Shiraz Saleem <shiraz.saleem@intel.com>
 ---
- drivers/infiniband/hw/irdma/hmc.c | 734 ++++++++++++++++++++++++++++++++++++++
- drivers/infiniband/hw/irdma/hmc.h | 184 ++++++++++
- 2 files changed, 918 insertions(+)
- create mode 100644 drivers/infiniband/hw/irdma/hmc.c
- create mode 100644 drivers/infiniband/hw/irdma/hmc.h
+ drivers/infiniband/hw/irdma/pble.c | 525 +++++++++++++++++++++++++++++++++++++
+ drivers/infiniband/hw/irdma/pble.h | 136 ++++++++++
+ 2 files changed, 661 insertions(+)
+ create mode 100644 drivers/infiniband/hw/irdma/pble.c
+ create mode 100644 drivers/infiniband/hw/irdma/pble.h
 
-diff --git a/drivers/infiniband/hw/irdma/hmc.c b/drivers/infiniband/hw/irdma/hmc.c
+diff --git a/drivers/infiniband/hw/irdma/pble.c b/drivers/infiniband/hw/irdma/pble.c
 new file mode 100644
-index 0000000..a2ff1af
+index 0000000..33f7171
 --- /dev/null
-+++ b/drivers/infiniband/hw/irdma/hmc.c
-@@ -0,0 +1,734 @@
++++ b/drivers/infiniband/hw/irdma/pble.c
+@@ -0,0 +1,525 @@
 +// SPDX-License-Identifier: GPL-2.0 or Linux-OpenIB
 +/* Copyright (c) 2015 - 2020 Intel Corporation */
 +#include "osdep.h"
@@ -77,922 +72,665 @@ index 0000000..a2ff1af
 +#include "defs.h"
 +#include "type.h"
 +#include "protos.h"
++#include "pble.h"
 +
-+/**
-+ * irdma_find_sd_index_limit - finds segment descriptor index limit
-+ * @hmc_info: pointer to the HMC configuration information structure
-+ * @type: type of HMC resources we're searching
-+ * @idx: starting index for the object
-+ * @cnt: number of objects we're trying to create
-+ * @sd_idx: pointer to return index of the segment descriptor in question
-+ * @sd_limit: pointer to return the maximum number of segment descriptors
-+ *
-+ * This function calculates the segment descriptor index and index limit
-+ * for the resource defined by irdma_hmc_rsrc_type.
-+ */
-+
-+static void irdma_find_sd_index_limit(struct irdma_hmc_info *hmc_info, u32 type,
-+				      u32 idx, u32 cnt, u32 *sd_idx,
-+				      u32 *sd_limit)
-+{
-+	u64 fpm_addr, fpm_limit;
-+
-+	fpm_addr = hmc_info->hmc_obj[(type)].base +
-+		   hmc_info->hmc_obj[type].size * idx;
-+	fpm_limit = fpm_addr + hmc_info->hmc_obj[type].size * cnt;
-+	*sd_idx = (u32)(fpm_addr / IRDMA_HMC_DIRECT_BP_SIZE);
-+	*sd_limit = (u32)((fpm_limit - 1) / IRDMA_HMC_DIRECT_BP_SIZE);
-+	*sd_limit += 1;
-+}
-+
-+/**
-+ * irdma_find_pd_index_limit - finds page descriptor index limit
-+ * @hmc_info: pointer to the HMC configuration information struct
-+ * @type: HMC resource type we're examining
-+ * @idx: starting index for the object
-+ * @cnt: number of objects we're trying to create
-+ * @pd_idx: pointer to return page descriptor index
-+ * @pd_limit: pointer to return page descriptor index limit
-+ *
-+ * Calculates the page descriptor index and index limit for the resource
-+ * defined by irdma_hmc_rsrc_type.
-+ */
-+
-+static void irdma_find_pd_index_limit(struct irdma_hmc_info *hmc_info, u32 type,
-+				      u32 idx, u32 cnt, u32 *pd_idx,
-+				      u32 *pd_limit)
-+{
-+	u64 fpm_adr, fpm_limit;
-+
-+	fpm_adr = hmc_info->hmc_obj[type].base +
-+		  hmc_info->hmc_obj[type].size * idx;
-+	fpm_limit = fpm_adr + (hmc_info)->hmc_obj[(type)].size * (cnt);
-+	*pd_idx = (u32)(fpm_adr / IRDMA_HMC_PAGED_BP_SIZE);
-+	*pd_limit = (u32)((fpm_limit - 1) / IRDMA_HMC_PAGED_BP_SIZE);
-+	*pd_limit += 1;
-+}
-+
-+/**
-+ * irdma_set_sd_entry - setup entry for sd programming
-+ * @pa: physical addr
-+ * @idx: sd index
-+ * @type: paged or direct sd
-+ * @entry: sd entry ptr
-+ */
-+static void irdma_set_sd_entry(u64 pa, u32 idx, enum irdma_sd_entry_type type,
-+			       struct irdma_update_sd_entry *entry)
-+{
-+	entry->data = pa | (IRDMA_HMC_MAX_BP_COUNT << IRDMA_PFHMC_SDDATALOW_PMSDBPCOUNT_S) |
-+		      (((type == IRDMA_SD_TYPE_PAGED) ? 0 : 1) << IRDMA_PFHMC_SDDATALOW_PMSDTYPE_S) |
-+		      (1 << IRDMA_PFHMC_SDDATALOW_PMSDVALID_S);
-+	entry->cmd = (idx | (1 << IRDMA_PFHMC_SDCMD_PMSDWR_S) | (1 << 15));
-+}
-+
-+/**
-+ * irdma_clr_sd_entry - setup entry for sd clear
-+ * @idx: sd index
-+ * @type: paged or direct sd
-+ * @entry: sd entry ptr
-+ */
-+static void irdma_clr_sd_entry(u32 idx, enum irdma_sd_entry_type type,
-+			       struct irdma_update_sd_entry *entry)
-+{
-+	entry->data = (IRDMA_HMC_MAX_BP_COUNT << IRDMA_PFHMC_SDDATALOW_PMSDBPCOUNT_S) |
-+		      (((type == IRDMA_SD_TYPE_PAGED) ? 0 : 1) << IRDMA_PFHMC_SDDATALOW_PMSDTYPE_S);
-+	entry->cmd = (idx | (1 << IRDMA_PFHMC_SDCMD_PMSDWR_S) | (1 << 15));
-+}
-+
-+/**
-+ * irdma_invalidate_pf_hmc_pd - Invalidates the pd cache in the hardware for PF
-+ * @dev: pointer to our device struct
-+ * @sd_idx: segment descriptor index
-+ * @pd_idx: page descriptor index
-+ */
-+static inline void irdma_invalidate_pf_hmc_pd(struct irdma_sc_dev *dev, u32 sd_idx,
-+					      u32 pd_idx)
-+{
-+	u32 val = LS_32(sd_idx, IRDMA_PFHMC_PDINV_PMSDIDX) |
-+		  LS_32(1, IRDMA_PFHMC_PDINV_PMSDPARTSEL) |
-+		  LS_32(pd_idx, IRDMA_PFHMC_PDINV_PMPDIDX);
-+
-+	writel(val, dev->hw_regs[IRDMA_PFHMC_PDINV]);
-+}
-+
-+/**
-+ * irdma_invalidate_vf_hmc_pd - Invalidates the pd cache in the hardware for VF
-+ * @dev: pointer to our device struct
-+ * @sd_idx: segment descriptor index
-+ * @pd_idx: page descriptor index
-+ * @hmc_fn_id: VF's function id
-+ */
-+static inline void irdma_invalidate_vf_hmc_pd(struct irdma_sc_dev *dev, u32 sd_idx,
-+					      u32 pd_idx, u8 hmc_fn_id)
-+{
-+	u32 val = LS_32(sd_idx, IRDMA_PFHMC_PDINV_PMSDIDX) |
-+		  LS_32(pd_idx, IRDMA_PFHMC_PDINV_PMPDIDX);
-+
-+	writel(val,
-+	       dev->hw_regs[IRDMA_GLHMC_VFPDINV] + hmc_fn_id - dev->hw_attrs.first_hw_vf_fpm_id);
-+}
-+
-+/**
-+ * irdma_hmc_sd_one - setup 1 sd entry for cqp
-+ * @dev: pointer to the device structure
-+ * @hmc_fn_id: hmc's function id
-+ * @pa: physical addr
-+ * @sd_idx: sd index
-+ * @type: paged or direct sd
-+ * @setsd: flag to set or clear sd
-+ */
-+enum irdma_status_code irdma_hmc_sd_one(struct irdma_sc_dev *dev, u8 hmc_fn_id,
-+					u64 pa, u32 sd_idx,
-+					enum irdma_sd_entry_type type,
-+					bool setsd)
-+{
-+	struct irdma_update_sds_info sdinfo;
-+
-+	sdinfo.cnt = 1;
-+	sdinfo.hmc_fn_id = hmc_fn_id;
-+	if (setsd)
-+		irdma_set_sd_entry(pa, sd_idx, type, sdinfo.entry);
-+	else
-+		irdma_clr_sd_entry(sd_idx, type, sdinfo.entry);
-+	return dev->cqp->process_cqp_sds(dev, &sdinfo);
-+}
-+
-+/**
-+ * irdma_hmc_sd_grp - setup group of sd entries for cqp
-+ * @dev: pointer to the device structure
-+ * @hmc_info: pointer to the HMC configuration information struct
-+ * @sd_index: sd index
-+ * @sd_cnt: number of sd entries
-+ * @setsd: flag to set or clear sd
-+ */
-+static enum irdma_status_code irdma_hmc_sd_grp(struct irdma_sc_dev *dev,
-+					       struct irdma_hmc_info *hmc_info,
-+					       u32 sd_index, u32 sd_cnt,
-+					       bool setsd)
-+{
-+	struct irdma_hmc_sd_entry *sd_entry;
-+	struct irdma_update_sds_info sdinfo = {};
-+	u64 pa;
-+	u32 i;
-+	enum irdma_status_code ret_code = 0;
-+
-+	sdinfo.hmc_fn_id = hmc_info->hmc_fn_id;
-+	for (i = sd_index; i < sd_index + sd_cnt; i++) {
-+		sd_entry = &hmc_info->sd_table.sd_entry[i];
-+		if (!sd_entry || (!sd_entry->valid && setsd) ||
-+		    (sd_entry->valid && !setsd))
-+			continue;
-+		if (setsd) {
-+			pa = (sd_entry->entry_type == IRDMA_SD_TYPE_PAGED) ?
-+				     sd_entry->u.pd_table.pd_page_addr.pa :
-+				     sd_entry->u.bp.addr.pa;
-+			irdma_set_sd_entry(pa, i, sd_entry->entry_type,
-+					   &sdinfo.entry[sdinfo.cnt]);
-+		} else {
-+			irdma_clr_sd_entry(i, sd_entry->entry_type,
-+					   &sdinfo.entry[sdinfo.cnt]);
-+		}
-+		sdinfo.cnt++;
-+		if (sdinfo.cnt == IRDMA_MAX_SD_ENTRIES) {
-+			ret_code = dev->cqp->process_cqp_sds(dev, &sdinfo);
-+			if (ret_code) {
-+				irdma_dbg(dev,
-+					  "HMC: sd_programming failed err=%d\n",
-+					  ret_code);
-+				return ret_code;
-+			}
-+
-+			sdinfo.cnt = 0;
-+		}
-+	}
-+	if (sdinfo.cnt)
-+		ret_code = dev->cqp->process_cqp_sds(dev, &sdinfo);
-+
-+	return ret_code;
-+}
-+
-+/**
-+ * irdma_hmc_finish_add_sd_reg - program sd entries for objects
-+ * @dev: pointer to the device structure
-+ * @info: create obj info
-+ */
 +static enum irdma_status_code
-+irdma_hmc_finish_add_sd_reg(struct irdma_sc_dev *dev,
-+			    struct irdma_hmc_create_obj_info *info)
++add_pble_prm(struct irdma_hmc_pble_rsrc *pble_rsrc);
++
++/**
++ * irdma_destroy_pble_prm - destroy prm during module unload
++ * @pble_rsrc: pble resources
++ */
++void irdma_destroy_pble_prm(struct irdma_hmc_pble_rsrc *pble_rsrc)
 +{
-+	if (info->start_idx >= info->hmc_info->hmc_obj[info->rsrc_type].cnt)
-+		return IRDMA_ERR_INVALID_HMC_OBJ_INDEX;
++	struct irdma_chunk *chunk;
++	struct irdma_pble_prm *pinfo = &pble_rsrc->pinfo;
 +
-+	if ((info->start_idx + info->count) >
-+	    info->hmc_info->hmc_obj[info->rsrc_type].cnt)
-+		return IRDMA_ERR_INVALID_HMC_OBJ_COUNT;
-+
-+	if (!info->add_sd_cnt)
-+		return 0;
-+	return irdma_hmc_sd_grp(dev, info->hmc_info,
-+				info->hmc_info->sd_indexes[0], info->add_sd_cnt,
-+				true);
++	while (!list_empty(&pinfo->clist)) {
++		chunk = (struct irdma_chunk *) pinfo->clist.next;
++		list_del(&chunk->list);
++		if (chunk->type == PBLE_SD_PAGED)
++			irdma_pble_free_paged_mem(chunk);
++		if (chunk->bitmapbuf)
++			kfree(chunk->bitmapmem.va);
++		kfree(chunk->chunkmem.va);
++	}
 +}
 +
 +/**
-+ * irdma_sc_create_hmc_obj - allocate backing store for hmc objects
-+ * @dev: pointer to the device structure
-+ * @info: pointer to irdma_hmc_create_obj_info struct
-+ *
-+ * This will allocate memory for PDs and backing pages and populate
-+ * the sd and pd entries.
++ * irdma_hmc_init_pble - Initialize pble resources during module load
++ * @dev: irdma_sc_dev struct
++ * @pble_rsrc: pble resources
 + */
 +enum irdma_status_code
-+irdma_sc_create_hmc_obj(struct irdma_sc_dev *dev,
-+			struct irdma_hmc_create_obj_info *info)
++irdma_hmc_init_pble(struct irdma_sc_dev *dev,
++		    struct irdma_hmc_pble_rsrc *pble_rsrc)
 +{
-+	struct irdma_hmc_sd_entry *sd_entry;
-+	u32 sd_idx, sd_lmt;
-+	u32 pd_idx = 0, pd_lmt = 0;
-+	u32 pd_idx1 = 0, pd_lmt1 = 0;
-+	u32 i, j;
-+	bool pd_error = false;
++	struct irdma_hmc_info *hmc_info;
++	u32 fpm_idx = 0;
++	enum irdma_status_code status = 0;
++
++	hmc_info = dev->hmc_info;
++	pble_rsrc->dev = dev;
++	pble_rsrc->fpm_base_addr = hmc_info->hmc_obj[IRDMA_HMC_IW_PBLE].base;
++	/* Start pble' on 4k boundary */
++	if (pble_rsrc->fpm_base_addr & 0xfff)
++		fpm_idx = (4096 - (pble_rsrc->fpm_base_addr & 0xfff)) >> 3;
++	pble_rsrc->unallocated_pble =
++		hmc_info->hmc_obj[IRDMA_HMC_IW_PBLE].cnt - fpm_idx;
++	pble_rsrc->next_fpm_addr = pble_rsrc->fpm_base_addr + (fpm_idx << 3);
++	pble_rsrc->pinfo.pble_shift = PBLE_SHIFT;
++
++	mutex_init(&pble_rsrc->pble_mutex_lock);
++
++	spin_lock_init(&pble_rsrc->pinfo.prm_lock);
++	INIT_LIST_HEAD(&pble_rsrc->pinfo.clist);
++	if (add_pble_prm(pble_rsrc)) {
++		irdma_destroy_pble_prm(pble_rsrc);
++		status = IRDMA_ERR_NO_MEMORY;
++	}
++
++	return status;
++}
++
++/**
++ * get_sd_pd_idx -  Returns sd index, pd index and rel_pd_idx from fpm address
++ * @pble_rsrc: structure containing fpm address
++ * @idx: where to return indexes
++ */
++static void get_sd_pd_idx(struct irdma_hmc_pble_rsrc *pble_rsrc,
++			  struct sd_pd_idx *idx)
++{
++	idx->sd_idx = (u32)pble_rsrc->next_fpm_addr / IRDMA_HMC_DIRECT_BP_SIZE;
++	idx->pd_idx = (u32)(pble_rsrc->next_fpm_addr / IRDMA_HMC_PAGED_BP_SIZE);
++	idx->rel_pd_idx = (idx->pd_idx % IRDMA_HMC_PD_CNT_IN_SD);
++}
++
++/**
++ * add_sd_direct - add sd direct for pble
++ * @pble_rsrc: pble resource ptr
++ * @info: page info for sd
++ */
++static enum irdma_status_code
++add_sd_direct(struct irdma_hmc_pble_rsrc *pble_rsrc,
++	      struct irdma_add_page_info *info)
++{
++	struct irdma_sc_dev *dev = pble_rsrc->dev;
 +	enum irdma_status_code ret_code = 0;
++	struct sd_pd_idx *idx = &info->idx;
++	struct irdma_chunk *chunk = info->chunk;
++	struct irdma_hmc_info *hmc_info = info->hmc_info;
++	struct irdma_hmc_sd_entry *sd_entry = info->sd_entry;
++	u32 offset = 0;
 +
-+	if (info->start_idx >= info->hmc_info->hmc_obj[info->rsrc_type].cnt)
-+		return IRDMA_ERR_INVALID_HMC_OBJ_INDEX;
-+
-+	if ((info->start_idx + info->count) >
-+	    info->hmc_info->hmc_obj[info->rsrc_type].cnt) {
-+		irdma_dbg(dev,
-+			  "HMC: error type %u, start = %u, req cnt %u, cnt = %u\n",
-+			  info->rsrc_type, info->start_idx, info->count,
-+			  info->hmc_info->hmc_obj[info->rsrc_type].cnt);
-+		return IRDMA_ERR_INVALID_HMC_OBJ_COUNT;
-+	}
-+
-+	irdma_find_sd_index_limit(info->hmc_info, info->rsrc_type,
-+				  info->start_idx, info->count, &sd_idx,
-+				  &sd_lmt);
-+	if (sd_idx >= info->hmc_info->sd_table.sd_cnt ||
-+	    sd_lmt > info->hmc_info->sd_table.sd_cnt) {
-+		return IRDMA_ERR_INVALID_SD_INDEX;
-+	}
-+
-+	irdma_find_pd_index_limit(info->hmc_info, info->rsrc_type,
-+				  info->start_idx, info->count, &pd_idx,
-+				  &pd_lmt);
-+
-+	for (j = sd_idx; j < sd_lmt; j++) {
-+		ret_code = irdma_add_sd_table_entry(dev->hw, info->hmc_info, j,
-+						    info->entry_type,
++	if (!sd_entry->valid) {
++		ret_code = irdma_add_sd_table_entry(dev->hw, hmc_info,
++						    info->idx.sd_idx,
++						    IRDMA_SD_TYPE_DIRECT,
 +						    IRDMA_HMC_DIRECT_BP_SIZE);
 +		if (ret_code)
-+			goto exit_sd_error;
++			return ret_code;
 +
-+		sd_entry = &info->hmc_info->sd_table.sd_entry[j];
-+		if (sd_entry->entry_type == IRDMA_SD_TYPE_PAGED &&
-+		    (dev->hmc_info == info->hmc_info &&
-+		     info->rsrc_type != IRDMA_HMC_IW_PBLE)) {
-+			pd_idx1 = max(pd_idx, (j * IRDMA_HMC_MAX_BP_COUNT));
-+			pd_lmt1 = min(pd_lmt, (j + 1) * IRDMA_HMC_MAX_BP_COUNT);
-+			for (i = pd_idx1; i < pd_lmt1; i++) {
-+				/* update the pd table entry */
-+				ret_code = irdma_add_pd_table_entry(dev,
-+								    info->hmc_info,
-+								    i, NULL);
-+				if (ret_code) {
-+					pd_error = true;
-+					break;
-+				}
-+			}
-+			if (pd_error) {
-+				while (i && (i > pd_idx1)) {
-+					irdma_remove_pd_bp(dev, info->hmc_info,
-+							   i - 1);
-+					i--;
-+				}
-+			}
-+		}
-+		if (sd_entry->valid)
-+			continue;
-+
-+		info->hmc_info->sd_indexes[info->add_sd_cnt] = (u16)j;
-+		info->add_sd_cnt++;
-+		sd_entry->valid = true;
-+	}
-+	return irdma_hmc_finish_add_sd_reg(dev, info);
-+
-+exit_sd_error:
-+	while (j && (j > sd_idx)) {
-+		sd_entry = &info->hmc_info->sd_table.sd_entry[j - 1];
-+		switch (sd_entry->entry_type) {
-+		case IRDMA_SD_TYPE_PAGED:
-+			pd_idx1 = max(pd_idx, (j - 1) * IRDMA_HMC_MAX_BP_COUNT);
-+			pd_lmt1 = min(pd_lmt, (j * IRDMA_HMC_MAX_BP_COUNT));
-+			for (i = pd_idx1; i < pd_lmt1; i++)
-+				irdma_prep_remove_pd_page(info->hmc_info, i);
-+			break;
-+		case IRDMA_SD_TYPE_DIRECT:
-+			irdma_prep_remove_pd_page(info->hmc_info, (j - 1));
-+			break;
-+		default:
-+			ret_code = IRDMA_ERR_INVALID_SD_TYPE;
-+			break;
-+		}
-+		j--;
++		chunk->type = PBLE_SD_CONTIGOUS;
 +	}
 +
-+	return ret_code;
++	offset = idx->rel_pd_idx << HMC_PAGED_BP_SHIFT;
++	chunk->size = info->pages << HMC_PAGED_BP_SHIFT;
++	chunk->vaddr = (uintptr_t)sd_entry->u.bp.addr.va + offset;
++	chunk->fpm_addr = pble_rsrc->next_fpm_addr;
++	irdma_dbg(dev,
++		  "PBLE: chunk_size[%lld] = 0x%llx vaddr=0x%llx fpm_addr = %llx\n",
++		  chunk->size, chunk->size, chunk->vaddr, chunk->fpm_addr);
++
++	return 0;
 +}
 +
 +/**
-+ * irdma_finish_del_sd_reg - delete sd entries for objects
-+ * @dev: pointer to the device structure
-+ * @info: dele obj info
-+ * @reset: true if called before reset
++ * fpm_to_idx - given fpm address, get pble index
++ * @pble_rsrc: pble resource management
++ * @addr: fpm address for index
++ */
++static u32 fpm_to_idx(struct irdma_hmc_pble_rsrc *pble_rsrc, u64 addr)
++{
++	u64 idx;
++
++	idx = (addr - (pble_rsrc->fpm_base_addr)) >> 3;
++
++	return (u32)idx;
++}
++
++/**
++ * add_bp_pages - add backing pages for sd
++ * @pble_rsrc: pble resource management
++ * @info: page info for sd
 + */
 +static enum irdma_status_code
-+irdma_finish_del_sd_reg(struct irdma_sc_dev *dev,
-+			struct irdma_hmc_del_obj_info *info, bool reset)
++add_bp_pages(struct irdma_hmc_pble_rsrc *pble_rsrc,
++	     struct irdma_add_page_info *info)
 +{
-+	struct irdma_hmc_sd_entry *sd_entry;
-+	enum irdma_status_code ret_code = 0;
-+	u32 i, sd_idx;
-+	struct irdma_dma_mem *mem;
++	struct irdma_sc_dev *dev = pble_rsrc->dev;
++	u8 *addr;
++	struct irdma_dma_mem mem;
++	struct irdma_hmc_pd_entry *pd_entry;
++	struct irdma_hmc_sd_entry *sd_entry = info->sd_entry;
++	struct irdma_hmc_info *hmc_info = info->hmc_info;
++	struct irdma_chunk *chunk = info->chunk;
++	enum irdma_status_code status = 0;
++	u32 rel_pd_idx = info->idx.rel_pd_idx;
++	u32 pd_idx = info->idx.pd_idx;
++	u32 i;
 +
-+	if (dev->privileged && !reset)
-+		ret_code = irdma_hmc_sd_grp(dev, info->hmc_info,
-+					    info->hmc_info->sd_indexes[0],
-+					    info->del_sd_cnt, false);
++	if (irdma_pble_get_paged_mem(chunk, info->pages))
++		return IRDMA_ERR_NO_MEMORY;
 +
-+	if (ret_code)
-+		irdma_dbg(dev, "HMC: error cqp sd sd_grp\n");
-+	for (i = 0; i < info->del_sd_cnt; i++) {
-+		sd_idx = info->hmc_info->sd_indexes[i];
-+		sd_entry = &info->hmc_info->sd_table.sd_entry[sd_idx];
-+		mem = (sd_entry->entry_type == IRDMA_SD_TYPE_PAGED) ?
-+			      &sd_entry->u.pd_table.pd_page_addr :
-+			      &sd_entry->u.bp.addr;
++	status = irdma_add_sd_table_entry(dev->hw, hmc_info, info->idx.sd_idx,
++					  IRDMA_SD_TYPE_PAGED,
++					  IRDMA_HMC_DIRECT_BP_SIZE);
++	if (status)
++		goto error;
 +
-+		if (!mem || !mem->va) {
-+			irdma_dbg(dev, "HMC: error cqp sd mem\n");
-+		} else {
-+			dma_free_coherent(ihw_to_dev(dev->hw), mem->size,
-+					  mem->va, mem->pa);
-+			mem->va = NULL;
++	addr = (u8 *)(uintptr_t)chunk->vaddr;
++	for (i = 0; i < info->pages; i++) {
++		mem.pa = (u64)chunk->dmainfo.dmaaddrs[i];
++		mem.size = 4096;
++		mem.va = addr;
++		pd_entry = &sd_entry->u.pd_table.pd_entry[rel_pd_idx++];
++		if (!pd_entry->valid) {
++			status = irdma_add_pd_table_entry(dev, hmc_info,
++							  pd_idx++, &mem);
++			if (status)
++				goto error;
++
++			addr += 4096;
 +		}
 +	}
++
++	chunk->fpm_addr = pble_rsrc->next_fpm_addr;
++	return 0;
++
++error:
++	irdma_pble_free_paged_mem(chunk);
++
++	return status;
++}
++
++/**
++ * irdma_get_type - add a sd entry type for sd
++ * @dev: irdma_sc_dev struct
++ * @idx: index of sd
++ * @pages: pages in the sd
++ */
++static enum irdma_sd_entry_type irdma_get_type(struct irdma_sc_dev *dev,
++					       struct sd_pd_idx *idx, u32 pages)
++{
++	enum irdma_sd_entry_type sd_entry_type;
++
++	sd_entry_type = !idx->rel_pd_idx && pages == IRDMA_HMC_PD_CNT_IN_SD && dev->privileged ?
++			IRDMA_SD_TYPE_DIRECT : IRDMA_SD_TYPE_PAGED;
++
++	return sd_entry_type;
++}
++
++/**
++ * add_pble_prm - add a sd entry for pble resoure
++ * @pble_rsrc: pble resource management
++ */
++static enum irdma_status_code
++add_pble_prm(struct irdma_hmc_pble_rsrc *pble_rsrc)
++{
++	struct irdma_sc_dev *dev = pble_rsrc->dev;
++	struct irdma_hmc_sd_entry *sd_entry;
++	struct irdma_hmc_info *hmc_info;
++	struct irdma_chunk *chunk;
++	struct irdma_add_page_info info;
++	struct sd_pd_idx *idx = &info.idx;
++	enum irdma_status_code ret_code = 0;
++	enum irdma_sd_entry_type sd_entry_type;
++	u64 sd_reg_val = 0;
++	struct irdma_virt_mem chunkmem;
++	u32 pages;
++
++	if (pble_rsrc->unallocated_pble < PBLE_PER_PAGE)
++		return IRDMA_ERR_NO_MEMORY;
++
++	if (pble_rsrc->next_fpm_addr & 0xfff)
++		return IRDMA_ERR_INVALID_PAGE_DESC_INDEX;
++
++	chunkmem.size = sizeof(*chunk);
++	chunkmem.va = kzalloc(chunkmem.size, GFP_KERNEL);
++	if (!chunkmem.va)
++		return IRDMA_ERR_NO_MEMORY;
++
++	chunk = chunkmem.va;
++	chunk->chunkmem = chunkmem;
++	hmc_info = dev->hmc_info;
++	chunk->dev = dev;
++	chunk->fpm_addr = pble_rsrc->next_fpm_addr;
++	get_sd_pd_idx(pble_rsrc, idx);
++	sd_entry = &hmc_info->sd_table.sd_entry[idx->sd_idx];
++	pages = (idx->rel_pd_idx) ? (IRDMA_HMC_PD_CNT_IN_SD - idx->rel_pd_idx) :
++				    IRDMA_HMC_PD_CNT_IN_SD;
++	pages = min(pages, pble_rsrc->unallocated_pble >> PBLE_512_SHIFT);
++	info.chunk = chunk;
++	info.hmc_info = hmc_info;
++	info.pages = pages;
++	info.sd_entry = sd_entry;
++	if (!sd_entry->valid)
++		sd_entry_type = irdma_get_type(dev, idx, pages);
++	else
++		sd_entry_type = sd_entry->entry_type;
++
++	irdma_dbg(dev,
++		  "PBLE: pages = %d, unallocated_pble[%d] current_fpm_addr = %llx\n",
++		  pages, pble_rsrc->unallocated_pble,
++		  pble_rsrc->next_fpm_addr);
++	irdma_dbg(dev, "PBLE: sd_entry_type = %d\n", sd_entry_type);
++	if (sd_entry_type == IRDMA_SD_TYPE_DIRECT)
++		ret_code = add_sd_direct(pble_rsrc, &info);
++
++	if (ret_code)
++		sd_entry_type = IRDMA_SD_TYPE_PAGED;
++	else
++		pble_rsrc->stats_direct_sds++;
++
++	if (sd_entry_type == IRDMA_SD_TYPE_PAGED) {
++		ret_code = add_bp_pages(pble_rsrc, &info);
++		if (ret_code)
++			goto error;
++		else
++			pble_rsrc->stats_paged_sds++;
++	}
++
++	ret_code = irdma_prm_add_pble_mem(&pble_rsrc->pinfo, chunk);
++	if (ret_code)
++		goto error;
++
++	pble_rsrc->next_fpm_addr += chunk->size;
++	irdma_dbg(dev,
++		  "PBLE: next_fpm_addr = %llx chunk_size[%llu] = 0x%llx\n",
++		  pble_rsrc->next_fpm_addr, chunk->size, chunk->size);
++	pble_rsrc->unallocated_pble -= (u32)(chunk->size >> 3);
++	list_add(&chunk->list, &pble_rsrc->pinfo.clist);
++	sd_reg_val = (sd_entry_type == IRDMA_SD_TYPE_PAGED) ?
++			     sd_entry->u.pd_table.pd_page_addr.pa :
++			     sd_entry->u.bp.addr.pa;
++	if (sd_entry->valid)
++		return 0;
++
++	if (dev->privileged) {
++		ret_code = irdma_hmc_sd_one(dev, hmc_info->hmc_fn_id,
++					    sd_reg_val, idx->sd_idx,
++					    sd_entry->entry_type, true);
++		if (ret_code)
++			goto error;
++	}
++
++	sd_entry->valid = true;
++	return 0;
++
++error:
++	if (chunk->bitmapbuf)
++		kfree(chunk->bitmapmem.va);
++	kfree(chunk->chunkmem.va);
 +
 +	return ret_code;
 +}
 +
 +/**
-+ * irdma_sc_del_hmc_obj - remove pe hmc objects
-+ * @dev: pointer to the device structure
-+ * @info: pointer to irdma_hmc_del_obj_info struct
-+ * @reset: true if called before reset
-+ *
-+ * This will de-populate the SDs and PDs.  It frees
-+ * the memory for PDS and backing storage.  After this function is returned,
-+ * caller should deallocate memory allocated previously for
-+ * book-keeping information about PDs and backing storage.
++ * free_lvl2 - fee level 2 pble
++ * @pble_rsrc: pble resource management
++ * @palloc: level 2 pble allocation
 + */
-+enum irdma_status_code irdma_sc_del_hmc_obj(struct irdma_sc_dev *dev,
-+					    struct irdma_hmc_del_obj_info *info,
-+					    bool reset)
++static void free_lvl2(struct irdma_hmc_pble_rsrc *pble_rsrc,
++		      struct irdma_pble_alloc *palloc)
 +{
-+	struct irdma_hmc_pd_table *pd_table;
-+	u32 sd_idx, sd_lmt;
-+	u32 pd_idx, pd_lmt, rel_pd_idx;
-+	u32 i, j;
-+	enum irdma_status_code ret_code = 0;
++	u32 i;
++	struct irdma_pble_level2 *lvl2 = &palloc->level2;
++	struct irdma_pble_info *root = &lvl2->root;
++	struct irdma_pble_info *leaf = lvl2->leaf;
 +
-+	if (info->start_idx >= info->hmc_info->hmc_obj[info->rsrc_type].cnt) {
-+		irdma_dbg(dev,
-+			  "HMC: error start_idx[%04d]  >= [type %04d].cnt[%04d]\n",
-+			  info->start_idx, info->rsrc_type,
-+			  info->hmc_info->hmc_obj[info->rsrc_type].cnt);
-+		return IRDMA_ERR_INVALID_HMC_OBJ_INDEX;
-+	}
-+
-+	if ((info->start_idx + info->count) >
-+	    info->hmc_info->hmc_obj[info->rsrc_type].cnt) {
-+		irdma_dbg(dev,
-+			  "HMC: error start_idx[%04d] + count %04d  >= [type %04d].cnt[%04d]\n",
-+			  info->start_idx, info->count, info->rsrc_type,
-+			  info->hmc_info->hmc_obj[info->rsrc_type].cnt);
-+		return IRDMA_ERR_INVALID_HMC_OBJ_COUNT;
-+	}
-+
-+	irdma_find_pd_index_limit(info->hmc_info, info->rsrc_type,
-+				  info->start_idx, info->count, &pd_idx,
-+				  &pd_lmt);
-+
-+	for (j = pd_idx; j < pd_lmt; j++) {
-+		sd_idx = j / IRDMA_HMC_PD_CNT_IN_SD;
-+
-+		if (!info->hmc_info->sd_table.sd_entry[sd_idx].valid)
-+			continue;
-+
-+		if (info->hmc_info->sd_table.sd_entry[sd_idx].entry_type !=
-+		    IRDMA_SD_TYPE_PAGED)
-+			continue;
-+
-+		rel_pd_idx = j % IRDMA_HMC_PD_CNT_IN_SD;
-+		pd_table = &info->hmc_info->sd_table.sd_entry[sd_idx].u.pd_table;
-+		if (pd_table->pd_entry &&
-+		    pd_table->pd_entry[rel_pd_idx].valid) {
-+			ret_code = irdma_remove_pd_bp(dev, info->hmc_info, j);
-+			if (ret_code) {
-+				irdma_dbg(dev, "HMC: remove_pd_bp error\n");
-+				return ret_code;
-+			}
-+		}
-+	}
-+
-+	irdma_find_sd_index_limit(info->hmc_info, info->rsrc_type,
-+				  info->start_idx, info->count, &sd_idx,
-+				  &sd_lmt);
-+	if (sd_idx >= info->hmc_info->sd_table.sd_cnt ||
-+	    sd_lmt > info->hmc_info->sd_table.sd_cnt) {
-+		irdma_dbg(dev, "HMC: invalid sd_idx\n");
-+		return IRDMA_ERR_INVALID_SD_INDEX;
-+	}
-+
-+	for (i = sd_idx; i < sd_lmt; i++) {
-+		pd_table = &info->hmc_info->sd_table.sd_entry[i].u.pd_table;
-+		if (!info->hmc_info->sd_table.sd_entry[i].valid)
-+			continue;
-+		switch (info->hmc_info->sd_table.sd_entry[i].entry_type) {
-+		case IRDMA_SD_TYPE_DIRECT:
-+			ret_code = irdma_prep_remove_sd_bp(info->hmc_info, i);
-+			if (!ret_code) {
-+				info->hmc_info->sd_indexes[info->del_sd_cnt] =
-+					(u16)i;
-+				info->del_sd_cnt++;
-+			}
-+			break;
-+		case IRDMA_SD_TYPE_PAGED:
-+			ret_code = irdma_prep_remove_pd_page(info->hmc_info, i);
-+			if (ret_code)
-+				break;
-+			if (dev->hmc_info != info->hmc_info &&
-+			    info->rsrc_type == IRDMA_HMC_IW_PBLE &&
-+			    pd_table->pd_entry) {
-+				kfree(pd_table->pd_entry_virt_mem.va);
-+				pd_table->pd_entry = NULL;
-+			}
-+			info->hmc_info->sd_indexes[info->del_sd_cnt] = (u16)i;
-+			info->del_sd_cnt++;
-+			break;
-+		default:
-+			break;
-+		}
-+	}
-+	return irdma_finish_del_sd_reg(dev, info, reset);
-+}
-+
-+/**
-+ * irdma_add_sd_table_entry - Adds a segment descriptor to the table
-+ * @hw: pointer to our hw struct
-+ * @hmc_info: pointer to the HMC configuration information struct
-+ * @sd_index: segment descriptor index to manipulate
-+ * @type: what type of segment descriptor we're manipulating
-+ * @direct_mode_sz: size to alloc in direct mode
-+ */
-+enum irdma_status_code irdma_add_sd_table_entry(struct irdma_hw *hw,
-+						struct irdma_hmc_info *hmc_info,
-+						u32 sd_index,
-+						enum irdma_sd_entry_type type,
-+						u64 direct_mode_sz)
-+{
-+	struct irdma_hmc_sd_entry *sd_entry;
-+	struct irdma_dma_mem dma_mem;
-+	u64 alloc_len;
-+
-+	sd_entry = &hmc_info->sd_table.sd_entry[sd_index];
-+	if (!sd_entry->valid) {
-+		if (type == IRDMA_SD_TYPE_PAGED)
-+			alloc_len = IRDMA_HMC_PAGED_BP_SIZE;
++	for (i = 0; i < lvl2->leaf_cnt; i++, leaf++) {
++		if (leaf->addr)
++			irdma_prm_return_pbles(&pble_rsrc->pinfo,
++					       &leaf->chunkinfo);
 +		else
-+			alloc_len = direct_mode_sz;
-+
-+		/* allocate a 4K pd page or 2M backing page */
-+		dma_mem.size = ALIGN(alloc_len, IRDMA_HMC_PD_BP_BUF_ALIGNMENT);
-+		dma_mem.va = dma_alloc_coherent(ihw_to_dev(hw), dma_mem.size,
-+						&dma_mem.pa, GFP_KERNEL);
-+		if (!dma_mem.va)
-+			return IRDMA_ERR_NO_MEMORY;
-+		if (type == IRDMA_SD_TYPE_PAGED) {
-+			struct irdma_virt_mem *vmem =
-+				&sd_entry->u.pd_table.pd_entry_virt_mem;
-+
-+			vmem->size = sizeof(struct irdma_hmc_pd_entry) * 512;
-+			vmem->va = kzalloc(vmem->size, GFP_KERNEL);
-+			if (!vmem->va) {
-+				dma_free_coherent(ihw_to_dev(hw),
-+						  dma_mem.size, dma_mem.va,
-+						  dma_mem.pa);
-+				dma_mem.va = NULL;
-+				return IRDMA_ERR_NO_MEMORY;
-+			}
-+			sd_entry->u.pd_table.pd_entry = vmem->va;
-+
-+			memcpy(&sd_entry->u.pd_table.pd_page_addr, &dma_mem,
-+			       sizeof(sd_entry->u.pd_table.pd_page_addr));
-+		} else {
-+			memcpy(&sd_entry->u.bp.addr, &dma_mem,
-+			       sizeof(sd_entry->u.bp.addr));
-+
-+			sd_entry->u.bp.sd_pd_index = sd_index;
-+		}
-+
-+		hmc_info->sd_table.sd_entry[sd_index].entry_type = type;
-+		hmc_info->sd_table.use_cnt++;
++			break;
 +	}
-+	if (sd_entry->entry_type == IRDMA_SD_TYPE_DIRECT)
-+		sd_entry->u.bp.use_cnt++;
++
++	if (root->addr)
++		irdma_prm_return_pbles(&pble_rsrc->pinfo, &root->chunkinfo);
++
++	kfree(lvl2->leafmem.va);
++	lvl2->leaf = NULL;
++}
++
++/**
++ * get_lvl2_pble - get level 2 pble resource
++ * @pble_rsrc: pble resource management
++ * @palloc: level 2 pble allocation
++ */
++static enum irdma_status_code
++get_lvl2_pble(struct irdma_hmc_pble_rsrc *pble_rsrc,
++	      struct irdma_pble_alloc *palloc)
++{
++	u32 lf4k, lflast, total, i;
++	u32 pblcnt = PBLE_PER_PAGE;
++	u64 *addr;
++	struct irdma_pble_level2 *lvl2 = &palloc->level2;
++	struct irdma_pble_info *root = &lvl2->root;
++	struct irdma_pble_info *leaf;
++	enum irdma_status_code ret_code;
++	u64 fpm_addr;
++
++	/* number of full 512 (4K) leafs) */
++	lf4k = palloc->total_cnt >> 9;
++	lflast = palloc->total_cnt % PBLE_PER_PAGE;
++	total = (lflast == 0) ? lf4k : lf4k + 1;
++	lvl2->leaf_cnt = total;
++
++	lvl2->leafmem.size = (sizeof(*leaf) * total);
++	lvl2->leafmem.va = kzalloc(lvl2->leafmem.size, GFP_KERNEL);
++	if (!lvl2->leafmem.va)
++		return IRDMA_ERR_NO_MEMORY;
++
++	lvl2->leaf = lvl2->leafmem.va;
++	leaf = lvl2->leaf;
++	ret_code = irdma_prm_get_pbles(&pble_rsrc->pinfo, &root->chunkinfo,
++				       total << 3, &root->addr, &fpm_addr);
++	if (ret_code) {
++		kfree(lvl2->leafmem.va);
++		lvl2->leaf = NULL;
++		return IRDMA_ERR_NO_MEMORY;
++	}
++
++	root->idx = fpm_to_idx(pble_rsrc, fpm_addr);
++	root->cnt = total;
++	addr = (u64 *)(uintptr_t)root->addr;
++	for (i = 0; i < total; i++, leaf++) {
++		pblcnt = (lflast && ((i + 1) == total)) ?
++				lflast : PBLE_PER_PAGE;
++		ret_code = irdma_prm_get_pbles(&pble_rsrc->pinfo,
++					       &leaf->chunkinfo, pblcnt << 3,
++					       &leaf->addr, &fpm_addr);
++		if (ret_code)
++			goto error;
++
++		leaf->idx = fpm_to_idx(pble_rsrc, fpm_addr);
++
++		leaf->cnt = pblcnt;
++		*addr = (u64)leaf->idx;
++		addr++;
++	}
++
++	palloc->level = PBLE_LEVEL_2;
++	pble_rsrc->stats_lvl2++;
++	return 0;
++
++error:
++	free_lvl2(pble_rsrc, palloc);
++
++	return IRDMA_ERR_NO_MEMORY;
++}
++
++/**
++ * get_lvl1_pble - get level 1 pble resource
++ * @pble_rsrc: pble resource management
++ * @palloc: level 1 pble allocation
++ */
++static enum irdma_status_code
++get_lvl1_pble(struct irdma_hmc_pble_rsrc *pble_rsrc,
++	      struct irdma_pble_alloc *palloc)
++{
++	enum irdma_status_code ret_code;
++	u64 fpm_addr, vaddr;
++	struct irdma_pble_info *lvl1 = &palloc->level1;
++
++	ret_code = irdma_prm_get_pbles(&pble_rsrc->pinfo, &lvl1->chunkinfo,
++				       palloc->total_cnt << 3, &vaddr,
++				       &fpm_addr);
++	if (ret_code)
++		return IRDMA_ERR_NO_MEMORY;
++
++	lvl1->addr = vaddr;
++	palloc->level = PBLE_LEVEL_1;
++	lvl1->idx = fpm_to_idx(pble_rsrc, fpm_addr);
++	lvl1->cnt = palloc->total_cnt;
++	pble_rsrc->stats_lvl1++;
 +
 +	return 0;
 +}
 +
 +/**
-+ * irdma_add_pd_table_entry - Adds page descriptor to the specified table
-+ * @dev: pointer to our device structure
-+ * @hmc_info: pointer to the HMC configuration information structure
-+ * @pd_index: which page descriptor index to manipulate
-+ * @rsrc_pg: if not NULL, use preallocated page instead of allocating new one.
-+ *
-+ * This function:
-+ *	1. Initializes the pd entry
-+ *	2. Adds pd_entry in the pd_table
-+ *	3. Mark the entry valid in irdma_hmc_pd_entry structure
-+ *	4. Initializes the pd_entry's ref count to 1
-+ * assumptions:
-+ *	1. The memory for pd should be pinned down, physically contiguous and
-+ *	   aligned on 4K boundary and zeroed memory.
-+ *	2. It should be 4K in size.
++ * get_lvl1_lvl2_pble - calls get_lvl1 and get_lvl2 pble routine
++ * @pble_rsrc: pble resources
++ * @palloc: contains all inforamtion regarding pble (idx + pble addr)
++ * @level1_only: flag for a level 1 PBLE
 + */
-+enum irdma_status_code irdma_add_pd_table_entry(struct irdma_sc_dev *dev,
-+						struct irdma_hmc_info *hmc_info,
-+						u32 pd_index,
-+						struct irdma_dma_mem *rsrc_pg)
++static enum irdma_status_code
++get_lvl1_lvl2_pble(struct irdma_hmc_pble_rsrc *pble_rsrc,
++		   struct irdma_pble_alloc *palloc, bool level1_only)
 +{
-+	struct irdma_hmc_pd_table *pd_table;
-+	struct irdma_hmc_pd_entry *pd_entry;
-+	struct irdma_dma_mem mem;
-+	struct irdma_dma_mem *page = &mem;
-+	u32 sd_idx, rel_pd_idx;
-+	u64 *pd_addr;
-+	u64 page_desc;
++	enum irdma_status_code status = 0;
 +
-+	if (pd_index / IRDMA_HMC_PD_CNT_IN_SD >= hmc_info->sd_table.sd_cnt)
-+		return IRDMA_ERR_INVALID_PAGE_DESC_INDEX;
++	status = get_lvl1_pble(pble_rsrc, palloc);
++	if (!status || level1_only || palloc->total_cnt <= PBLE_PER_PAGE)
++		return status;
 +
-+	sd_idx = (pd_index / IRDMA_HMC_PD_CNT_IN_SD);
-+	if (hmc_info->sd_table.sd_entry[sd_idx].entry_type !=
-+	    IRDMA_SD_TYPE_PAGED)
-+		return 0;
++	status = get_lvl2_pble(pble_rsrc, palloc);
 +
-+	rel_pd_idx = (pd_index % IRDMA_HMC_PD_CNT_IN_SD);
-+	pd_table = &hmc_info->sd_table.sd_entry[sd_idx].u.pd_table;
-+	pd_entry = &pd_table->pd_entry[rel_pd_idx];
-+	if (!pd_entry->valid) {
-+		if (rsrc_pg) {
-+			pd_entry->rsrc_pg = true;
-+			page = rsrc_pg;
-+		} else {
-+			page->size = ALIGN(IRDMA_HMC_PAGED_BP_SIZE,
-+					   IRDMA_HMC_PD_BP_BUF_ALIGNMENT);
-+			page->va = dma_alloc_coherent(ihw_to_dev(dev->hw),
-+						      page->size, &page->pa,
-+						      GFP_KERNEL);
-+			if (!page->va)
-+				return IRDMA_ERR_NO_MEMORY;
-+
-+			pd_entry->rsrc_pg = false;
-+		}
-+
-+		memcpy(&pd_entry->bp.addr, page, sizeof(pd_entry->bp.addr));
-+		pd_entry->bp.sd_pd_index = pd_index;
-+		pd_entry->bp.entry_type = IRDMA_SD_TYPE_PAGED;
-+		page_desc = page->pa | 0x1;
-+		pd_addr = pd_table->pd_page_addr.va;
-+		pd_addr += rel_pd_idx;
-+		memcpy(pd_addr, &page_desc, sizeof(*pd_addr));
-+		pd_entry->sd_index = sd_idx;
-+		pd_entry->valid = true;
-+		pd_table->use_cnt++;
-+		if (hmc_info->hmc_fn_id < dev->hw_attrs.first_hw_vf_fpm_id &&
-+		    dev->privileged)
-+			irdma_invalidate_pf_hmc_pd(dev, sd_idx, rel_pd_idx);
-+		else if (dev->hw->hmc.hmc_fn_id != hmc_info->hmc_fn_id)
-+			irdma_invalidate_vf_hmc_pd(dev, sd_idx, rel_pd_idx,
-+						   hmc_info->hmc_fn_id);
-+	}
-+	pd_entry->bp.use_cnt++;
-+
-+	return 0;
++	return status;
 +}
 +
 +/**
-+ * irdma_remove_pd_bp - remove a backing page from a page descriptor
-+ * @dev: pointer to our HW structure
-+ * @hmc_info: pointer to the HMC configuration information structure
-+ * @idx: the page index
-+ *
-+ * This function:
-+ *	1. Marks the entry in pd table (for paged address mode) or in sd table
-+ *	   (for direct address mode) invalid.
-+ *	2. Write to register PMPDINV to invalidate the backing page in FV cache
-+ *	3. Decrement the ref count for the pd _entry
-+ * assumptions:
-+ *	1. Caller can deallocate the memory used by backing storage after this
-+ *	   function returns.
++ * irdma_get_pble - allocate pbles from the prm
++ * @pble_rsrc: pble resources
++ * @palloc: contains all inforamtion regarding pble (idx + pble addr)
++ * @pble_cnt: #of pbles requested
++ * @level1_only: true if only pble level 1 to acquire
 + */
-+enum irdma_status_code irdma_remove_pd_bp(struct irdma_sc_dev *dev,
-+					  struct irdma_hmc_info *hmc_info,
-+					  u32 idx)
++enum irdma_status_code irdma_get_pble(struct irdma_hmc_pble_rsrc *pble_rsrc,
++				      struct irdma_pble_alloc *palloc,
++				      u32 pble_cnt, bool level1_only)
 +{
-+	struct irdma_hmc_pd_entry *pd_entry;
-+	struct irdma_hmc_pd_table *pd_table;
-+	struct irdma_hmc_sd_entry *sd_entry;
-+	u32 sd_idx, rel_pd_idx;
-+	struct irdma_dma_mem *mem;
-+	u64 *pd_addr;
++	enum irdma_status_code status = 0;
++	int max_sds = 0;
++	int i;
 +
-+	sd_idx = idx / IRDMA_HMC_PD_CNT_IN_SD;
-+	rel_pd_idx = idx % IRDMA_HMC_PD_CNT_IN_SD;
-+	if (sd_idx >= hmc_info->sd_table.sd_cnt)
-+		return IRDMA_ERR_INVALID_PAGE_DESC_INDEX;
++	palloc->total_cnt = pble_cnt;
++	palloc->level = PBLE_LEVEL_0;
 +
-+	sd_entry = &hmc_info->sd_table.sd_entry[sd_idx];
-+	if (sd_entry->entry_type != IRDMA_SD_TYPE_PAGED)
-+		return IRDMA_ERR_INVALID_SD_TYPE;
++	mutex_lock(&pble_rsrc->pble_mutex_lock);
 +
-+	pd_table = &hmc_info->sd_table.sd_entry[sd_idx].u.pd_table;
-+	pd_entry = &pd_table->pd_entry[rel_pd_idx];
-+	if (--pd_entry->bp.use_cnt)
-+		return 0;
++	/*check first to see if we can get pble's without acquiring
++	 * additional sd's
++	 */
++	status = get_lvl1_lvl2_pble(pble_rsrc, palloc, level1_only);
++	if (!status)
++		goto exit;
 +
-+	pd_entry->valid = false;
-+	pd_table->use_cnt--;
-+	pd_addr = pd_table->pd_page_addr.va;
-+	pd_addr += rel_pd_idx;
-+	memset(pd_addr, 0, sizeof(u64));
-+	if (dev->privileged) {
-+		if (dev->hmc_fn_id == hmc_info->hmc_fn_id)
-+			irdma_invalidate_pf_hmc_pd(dev, sd_idx, idx);
++	max_sds = (palloc->total_cnt >> 18) + 1;
++	for (i = 0; i < max_sds; i++) {
++		status = add_pble_prm(pble_rsrc);
++		if (status)
++			break;
 +
-+		else
-+			irdma_invalidate_vf_hmc_pd(dev, sd_idx, idx,
-+						   hmc_info->hmc_fn_id);
++		status = get_lvl1_lvl2_pble(pble_rsrc, palloc, level1_only);
++		/* if level1_only, only go through it once */
++		if (!status || level1_only)
++			break;
 +	}
 +
-+	if (!pd_entry->rsrc_pg) {
-+		mem = &pd_entry->bp.addr;
-+		if (!mem || !mem->va)
-+			return IRDMA_ERR_PARAM;
-+
-+		dma_free_coherent(ihw_to_dev(dev->hw), mem->size, mem->va,
-+				  mem->pa);
-+		mem->va = NULL;
++exit:
++	if (!status) {
++		pble_rsrc->allocdpbles += pble_cnt;
++		pble_rsrc->stats_alloc_ok++;
++	} else {
++		pble_rsrc->stats_alloc_fail++;
 +	}
-+	if (!pd_table->use_cnt)
-+		kfree(pd_table->pd_entry_virt_mem.va);
++	mutex_unlock(&pble_rsrc->pble_mutex_lock);
 +
-+	return 0;
++	return status;
 +}
 +
 +/**
-+ * irdma_prep_remove_sd_bp - Prepares to remove a backing page from a sd entry
-+ * @hmc_info: pointer to the HMC configuration information structure
-+ * @idx: the page index
++ * irdma_free_pble - put pbles back into prm
++ * @pble_rsrc: pble resources
++ * @palloc: contains all information regarding pble resource being freed
 + */
-+enum irdma_status_code irdma_prep_remove_sd_bp(struct irdma_hmc_info *hmc_info,
-+					       u32 idx)
++void irdma_free_pble(struct irdma_hmc_pble_rsrc *pble_rsrc,
++		     struct irdma_pble_alloc *palloc)
 +{
-+	struct irdma_hmc_sd_entry *sd_entry;
++	pble_rsrc->freedpbles += palloc->total_cnt;
 +
-+	sd_entry = &hmc_info->sd_table.sd_entry[idx];
-+	if (--sd_entry->u.bp.use_cnt)
-+		return IRDMA_ERR_NOT_READY;
-+
-+	hmc_info->sd_table.use_cnt--;
-+	sd_entry->valid = false;
-+
-+	return 0;
++	if (palloc->level == PBLE_LEVEL_2)
++		free_lvl2(pble_rsrc, palloc);
++	else
++		irdma_prm_return_pbles(&pble_rsrc->pinfo,
++				       &palloc->level1.chunkinfo);
++	pble_rsrc->stats_alloc_freed++;
 +}
-+
-+/**
-+ * irdma_prep_remove_pd_page - Prepares to remove a PD page from sd entry.
-+ * @hmc_info: pointer to the HMC configuration information structure
-+ * @idx: segment descriptor index to find the relevant page descriptor
-+ */
-+enum irdma_status_code
-+irdma_prep_remove_pd_page(struct irdma_hmc_info *hmc_info, u32 idx)
-+{
-+	struct irdma_hmc_sd_entry *sd_entry;
-+
-+	sd_entry = &hmc_info->sd_table.sd_entry[idx];
-+
-+	if (sd_entry->u.pd_table.use_cnt)
-+		return IRDMA_ERR_NOT_READY;
-+
-+	sd_entry->valid = false;
-+	hmc_info->sd_table.use_cnt--;
-+
-+	return 0;
-+}
-diff --git a/drivers/infiniband/hw/irdma/hmc.h b/drivers/infiniband/hw/irdma/hmc.h
+diff --git a/drivers/infiniband/hw/irdma/pble.h b/drivers/infiniband/hw/irdma/pble.h
 new file mode 100644
-index 0000000..9acec63
+index 0000000..e4da6f5
 --- /dev/null
-+++ b/drivers/infiniband/hw/irdma/hmc.h
-@@ -0,0 +1,184 @@
++++ b/drivers/infiniband/hw/irdma/pble.h
+@@ -0,0 +1,136 @@
 +/* SPDX-License-Identifier: GPL-2.0 or Linux-OpenIB */
-+/* Copyright (c) 2015 - 2020 Intel Corporation */
-+#ifndef IRDMA_HMC_H
-+#define IRDMA_HMC_H
++/* Copyright (c) 2015 - 2019 Intel Corporation */
++#ifndef IRDMA_PBLE_H
++#define IRDMA_PBLE_H
 +
-+#include "defs.h"
++#define PBLE_SHIFT		6
++#define PBLE_PER_PAGE		512
++#define HMC_PAGED_BP_SHIFT	12
++#define PBLE_512_SHIFT		9
++#define PBLE_INVALID_IDX	0xffffffff
 +
-+#define IRDMA_HMC_MAX_BP_COUNT			512
-+#define IRDMA_MAX_SD_ENTRIES			11
-+#define IRDMA_HW_DBG_HMC_INVALID_BP_MARK	0xca
-+#define IRDMA_HMC_INFO_SIGNATURE		0x484d5347
-+#define IRDMA_HMC_PD_CNT_IN_SD			512
-+#define IRDMA_HMC_DIRECT_BP_SIZE		0x200000
-+#define IRDMA_HMC_MAX_SD_COUNT			8192
-+#define IRDMA_HMC_PAGED_BP_SIZE			4096
-+#define IRDMA_HMC_PD_BP_BUF_ALIGNMENT		4096
-+#define IRDMA_FIRST_VF_FPM_ID			8
-+#define FPM_MULTIPLIER				1024
-+
-+enum irdma_hmc_rsrc_type {
-+	IRDMA_HMC_IW_QP		 = 0,
-+	IRDMA_HMC_IW_CQ		 = 1,
-+	IRDMA_HMC_IW_RESERVED	 = 2,
-+	IRDMA_HMC_IW_HTE	 = 3,
-+	IRDMA_HMC_IW_ARP	 = 4,
-+	IRDMA_HMC_IW_APBVT_ENTRY = 5,
-+	IRDMA_HMC_IW_MR		 = 6,
-+	IRDMA_HMC_IW_XF		 = 7,
-+	IRDMA_HMC_IW_XFFL	 = 8,
-+	IRDMA_HMC_IW_Q1		 = 9,
-+	IRDMA_HMC_IW_Q1FL	 = 10,
-+	IRDMA_HMC_IW_TIMER       = 11,
-+	IRDMA_HMC_IW_FSIMC       = 12,
-+	IRDMA_HMC_IW_FSIAV       = 13,
-+	IRDMA_HMC_IW_PBLE	 = 14,
-+	IRDMA_HMC_IW_RRF	 = 15,
-+	IRDMA_HMC_IW_RRFFL       = 16,
-+	IRDMA_HMC_IW_HDR	 = 17,
-+	IRDMA_HMC_IW_MD		 = 18,
-+	IRDMA_HMC_IW_OOISC       = 19,
-+	IRDMA_HMC_IW_OOISCFFL    = 20,
-+	IRDMA_HMC_IW_MAX, /* Must be last entry */
++enum irdma_pble_level {
++	PBLE_LEVEL_0 = 0,
++	PBLE_LEVEL_1 = 1,
++	PBLE_LEVEL_2 = 2,
 +};
 +
-+enum irdma_sd_entry_type {
-+	IRDMA_SD_TYPE_INVALID = 0,
-+	IRDMA_SD_TYPE_PAGED   = 1,
-+	IRDMA_SD_TYPE_DIRECT  = 2,
++enum irdma_alloc_type {
++	PBLE_NO_ALLOC	  = 0,
++	PBLE_SD_CONTIGOUS = 1,
++	PBLE_SD_PAGED	  = 2,
 +};
 +
-+struct irdma_hmc_obj_info {
-+	u64 base;
-+	u32 max_cnt;
++struct irdma_chunk;
++
++struct irdma_pble_chunkinfo {
++	struct irdma_chunk *pchunk;
++	u64 bit_idx;
++	u64 bits_used;
++};
++
++struct irdma_pble_info {
++	u64 addr;
++	u32 idx;
 +	u32 cnt;
-+	u64 size;
++	struct irdma_pble_chunkinfo chunkinfo;
 +};
 +
-+struct irdma_hmc_bp {
-+	enum irdma_sd_entry_type entry_type;
-+	struct irdma_dma_mem addr;
-+	u32 sd_pd_index;
-+	u32 use_cnt;
++struct irdma_pble_level2 {
++	struct irdma_pble_info root;
++	struct irdma_pble_info *leaf;
++	struct irdma_virt_mem leafmem;
++	u32 leaf_cnt;
 +};
 +
-+struct irdma_hmc_pd_entry {
-+	struct irdma_hmc_bp bp;
-+	u32 sd_index;
-+	bool rsrc_pg:1;
-+	bool valid:1;
-+};
-+
-+struct irdma_hmc_pd_table {
-+	struct irdma_dma_mem pd_page_addr;
-+	struct irdma_hmc_pd_entry *pd_entry;
-+	struct irdma_virt_mem pd_entry_virt_mem;
-+	u32 use_cnt;
-+	u32 sd_index;
-+};
-+
-+struct irdma_hmc_sd_entry {
-+	enum irdma_sd_entry_type entry_type;
-+	bool valid;
++struct irdma_pble_alloc {
++	u32 total_cnt;
++	enum irdma_pble_level level;
 +	union {
-+		struct irdma_hmc_pd_table pd_table;
-+		struct irdma_hmc_bp bp;
-+	} u;
++		struct irdma_pble_info level1;
++		struct irdma_pble_level2 level2;
++	};
 +};
 +
-+struct irdma_hmc_sd_table {
-+	struct irdma_virt_mem addr;
-+	u32 sd_cnt;
-+	u32 use_cnt;
++struct sd_pd_idx {
++	u32 sd_idx;
++	u32 pd_idx;
++	u32 rel_pd_idx;
++};
++
++struct irdma_add_page_info {
++	struct irdma_chunk *chunk;
 +	struct irdma_hmc_sd_entry *sd_entry;
-+};
-+
-+struct irdma_hmc_info {
-+	u32 signature;
-+	u8 hmc_fn_id;
-+	u16 first_sd_index;
-+	struct irdma_hmc_obj_info *hmc_obj;
-+	struct irdma_virt_mem hmc_obj_virt_mem;
-+	struct irdma_hmc_sd_table sd_table;
-+	u16 sd_indexes[IRDMA_HMC_MAX_SD_COUNT];
-+};
-+
-+struct irdma_update_sd_entry {
-+	u64 cmd;
-+	u64 data;
-+};
-+
-+struct irdma_update_sds_info {
-+	u32 cnt;
-+	u8 hmc_fn_id;
-+	struct irdma_update_sd_entry entry[IRDMA_MAX_SD_ENTRIES];
-+};
-+
-+struct irdma_ccq_cqe_info;
-+struct irdma_hmc_fcn_info {
-+	void (*callback_fcn)(struct irdma_sc_dev *dev, void *cqp_callback_param,
-+			     struct irdma_ccq_cqe_info *ccq_cqe_info);
-+	void *cqp_callback_param;
-+	u32 vf_id;
-+	u16 iw_vf_idx;
-+	u8 free_fcn;
-+};
-+
-+struct irdma_hmc_create_obj_info {
 +	struct irdma_hmc_info *hmc_info;
-+	struct irdma_virt_mem add_sd_virt_mem;
-+	u32 rsrc_type;
-+	u32 start_idx;
-+	u32 count;
-+	u32 add_sd_cnt;
-+	enum irdma_sd_entry_type entry_type;
-+	bool privileged;
++	struct sd_pd_idx idx;
++	u32 pages;
 +};
 +
-+struct irdma_hmc_del_obj_info {
-+	struct irdma_hmc_info *hmc_info;
-+	struct irdma_virt_mem del_sd_virt_mem;
-+	u32 rsrc_type;
-+	u32 start_idx;
-+	u32 count;
-+	u32 del_sd_cnt;
-+	bool privileged;
++struct irdma_chunk {
++	struct list_head list;
++	struct irdma_dma_info dmainfo;
++	void *bitmapbuf;
++
++	u32 sizeofbitmap;
++	u64 size;
++	u64 vaddr;
++	u64 fpm_addr;
++	u32 pg_cnt;
++	enum irdma_alloc_type type;
++	struct irdma_sc_dev *dev;
++	struct irdma_virt_mem bitmapmem;
++	struct irdma_virt_mem chunkmem;
 +};
 +
-+enum irdma_status_code irdma_copy_dma_mem(struct irdma_hw *hw, void *dest_buf,
-+					  struct irdma_dma_mem *src_mem,
-+					  u64 src_offset, u64 size);
++struct irdma_pble_prm {
++	struct list_head clist;
++	spinlock_t prm_lock; /* protect prm bitmap */
++	u64 total_pble_alloc;
++	u64 free_pble_cnt;
++	u8 pble_shift;
++};
++
++struct irdma_hmc_pble_rsrc {
++	u32 unallocated_pble;
++	struct mutex pble_mutex_lock; /* protect PBLE resource */
++	struct irdma_sc_dev *dev;
++	u64 fpm_base_addr;
++	u64 next_fpm_addr;
++	struct irdma_pble_prm pinfo;
++	u64 allocdpbles;
++	u64 freedpbles;
++	u32 stats_direct_sds;
++	u32 stats_paged_sds;
++	u64 stats_alloc_ok;
++	u64 stats_alloc_fail;
++	u64 stats_alloc_freed;
++	u64 stats_lvl1;
++	u64 stats_lvl2;
++};
++
++void irdma_destroy_pble_prm(struct irdma_hmc_pble_rsrc *pble_rsrc);
 +enum irdma_status_code
-+irdma_sc_create_hmc_obj(struct irdma_sc_dev *dev,
-+			struct irdma_hmc_create_obj_info *info);
-+enum irdma_status_code irdma_sc_del_hmc_obj(struct irdma_sc_dev *dev,
-+					    struct irdma_hmc_del_obj_info *info,
-+					    bool reset);
-+enum irdma_status_code irdma_hmc_sd_one(struct irdma_sc_dev *dev, u8 hmc_fn_id,
-+					u64 pa, u32 sd_idx,
-+					enum irdma_sd_entry_type type,
-+					bool setsd);
++irdma_hmc_init_pble(struct irdma_sc_dev *dev,
++		    struct irdma_hmc_pble_rsrc *pble_rsrc);
++void irdma_free_pble(struct irdma_hmc_pble_rsrc *pble_rsrc,
++		     struct irdma_pble_alloc *palloc);
++enum irdma_status_code irdma_get_pble(struct irdma_hmc_pble_rsrc *pble_rsrc,
++				      struct irdma_pble_alloc *palloc,
++				      u32 pble_cnt, bool level1_only);
++enum irdma_status_code irdma_prm_add_pble_mem(struct irdma_pble_prm *pprm,
++					      struct irdma_chunk *pchunk);
 +enum irdma_status_code
-+irdma_update_sds_noccq(struct irdma_sc_dev *dev,
-+		       struct irdma_update_sds_info *info);
-+struct irdma_vfdev *irdma_vfdev_from_fpm(struct irdma_sc_dev *dev,
-+					 u8 hmc_fn_id);
-+struct irdma_hmc_info *irdma_vf_hmcinfo_from_fpm(struct irdma_sc_dev *dev,
-+						 u8 hmc_fn_id);
-+enum irdma_status_code irdma_add_sd_table_entry(struct irdma_hw *hw,
-+						struct irdma_hmc_info *hmc_info,
-+						u32 sd_index,
-+						enum irdma_sd_entry_type type,
-+						u64 direct_mode_sz);
-+enum irdma_status_code irdma_add_pd_table_entry(struct irdma_sc_dev *dev,
-+						struct irdma_hmc_info *hmc_info,
-+						u32 pd_index,
-+						struct irdma_dma_mem *rsrc_pg);
-+enum irdma_status_code irdma_remove_pd_bp(struct irdma_sc_dev *dev,
-+					  struct irdma_hmc_info *hmc_info,
-+					  u32 idx);
-+enum irdma_status_code irdma_prep_remove_sd_bp(struct irdma_hmc_info *hmc_info,
-+					       u32 idx);
-+enum irdma_status_code
-+irdma_prep_remove_pd_page(struct irdma_hmc_info *hmc_info, u32 idx);
-+#endif /* IRDMA_HMC_H */
++irdma_prm_get_pbles(struct irdma_pble_prm *pprm,
++		    struct irdma_pble_chunkinfo *chunkinfo, u32 mem_size,
++		    u64 *vaddr, u64 *fpm_addr);
++void irdma_prm_return_pbles(struct irdma_pble_prm *pprm,
++			    struct irdma_pble_chunkinfo *chunkinfo);
++void irdma_pble_acquire_lock(struct irdma_hmc_pble_rsrc *pble_rsrc,
++			     unsigned long *flags);
++void irdma_pble_release_lock(struct irdma_hmc_pble_rsrc *pble_rsrc,
++			     unsigned long *flags);
++void irdma_pble_free_paged_mem(struct irdma_chunk *chunk);
++enum irdma_status_code irdma_pble_get_paged_mem(struct irdma_chunk *chunk,
++						u32 pg_cnt);
++void irdma_prm_rem_bitmapmem(struct irdma_hw *hw, struct irdma_chunk *chunk);
++#endif /* IRDMA_PBLE_H */
 -- 
 1.8.3.1
 
