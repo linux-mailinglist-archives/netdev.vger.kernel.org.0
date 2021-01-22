@@ -2,240 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6C5E92FFC8F
-	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 07:24:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E9632FFD4F
+	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 08:25:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726686AbhAVGYj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jan 2021 01:24:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60458 "EHLO
+        id S1727037AbhAVHX4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jan 2021 02:23:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44844 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726526AbhAVGYQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 01:24:16 -0500
-Received: from mail-qk1-x72c.google.com (mail-qk1-x72c.google.com [IPv6:2607:f8b0:4864:20::72c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAEF9C06174A;
-        Thu, 21 Jan 2021 22:23:35 -0800 (PST)
-Received: by mail-qk1-x72c.google.com with SMTP id 22so4196950qkf.9;
-        Thu, 21 Jan 2021 22:23:35 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=2jiQWzGRiVyC9PGi+1tFArEXO7Y2cXcpw8AScVWzwYo=;
-        b=FKU8qh/iFz6Iycz0f/HyIvt51vCXfl3f16ZEzyLR1s8Nw8Y6GAyvpbSQMT9r9cTo6r
-         5PiAHEfyNPaTYOUKcZCxJQVFTVsxYRLYjYBBYlWaB+fAeaw7Om7USIWYFMqXTEBqUCpx
-         2XifSTZnAkaXnAGOmg8YRKmnTaTz7szK+whh2nDXI3syh4O6pLq6nHFSCgN4e4aGugbh
-         jKuujEMWlh+X9XZjpwVnnINFqGSsGYjBZWzsFgNddOsHkgOXy9FTZvFoZeIa9VD8siQ0
-         fI3VU7zCX0CzTOZy/MLmCy3FwT1bLonTJhUxrHQHJNVeuFhQC1GpyxeMX1tyGi1ew38r
-         02gw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=2jiQWzGRiVyC9PGi+1tFArEXO7Y2cXcpw8AScVWzwYo=;
-        b=jP29FAXJ5rOsWiURiI3jvT1o47rMDrnMXsd0zqJJAGrjLTxPf/lG4MCy9HB6+VVJoX
-         qecV7O27LwrcWtk2qhpqRtUHka/BKnEoA2/ldo/vf+dt4AGAgnvLrHjb6G/QkYpzdSnl
-         fJ1Zzw84jciZgIxhcaDpT8i1lZXhVKtXXjLtUQwSrRUM9nNUVE5R4+TMoGm02Hj78tLJ
-         6+9TUPyqW3N1lGDbOa3tNvOydyG9EBpHCuoB2QuLD91Kw0GCcIy8KFIKFmXOsjzzfrvk
-         iFz4+frr3FAAUEArypK7G7VfSE0ODZdJqjC7SXF3+qt0kPkHuO1vD8ANXKH9z2Wok+Gv
-         emZA==
-X-Gm-Message-State: AOAM531LCjD+LL3ZZrEO9etMw8M/aUa9eannErvSPqpLSCfdSu95POEr
-        26kaunkIce7caCldq5NkUMg=
-X-Google-Smtp-Source: ABdhPJyLriqxN5+FOiRb+be/raohZeaJksFYnlyUUwAI8fgNTuQblQcdEJLkqwi0wlzi79KK+fVKSg==
-X-Received: by 2002:a37:7a46:: with SMTP id v67mr3497770qkc.16.1611296614825;
-        Thu, 21 Jan 2021 22:23:34 -0800 (PST)
-Received: from localhost.localdomain ([45.32.7.59])
-        by smtp.gmail.com with ESMTPSA id e5sm5178886qtp.86.2021.01.21.22.23.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Jan 2021 22:23:34 -0800 (PST)
-From:   Su Yanjun <suyanjun218@gmail.com>
-To:     mkl@pengutronix.de, manivannan.sadhasivam@linaro.org,
-        thomas.kopp@microchip.com, wg@grandegger.com, davem@davemloft.net,
-        kuba@kernel.org, lgirdwood@gmail.com, broonie@kernel.org
+        with ESMTP id S1727016AbhAVHXo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 02:23:44 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69B61C0613D6
+        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 23:23:04 -0800 (PST)
+Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mkl@pengutronix.de>)
+        id 1l2qmR-0006Du-Cy; Fri, 22 Jan 2021 08:22:51 +0100
+Received: from [IPv6:2a03:f580:87bc:d400:aed1:e241:8b32:9cc0] (unknown [IPv6:2a03:f580:87bc:d400:aed1:e241:8b32:9cc0])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256
+         client-signature RSA-PSS (4096 bits) client-digest SHA256)
+        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
+        (Authenticated sender: mkl@blackshift.org)
+        by smtp.blackshift.org (Postfix) with ESMTPSA id 934425CA4EA;
+        Fri, 22 Jan 2021 07:22:47 +0000 (UTC)
+To:     Su Yanjun <suyanjun218@gmail.com>,
+        manivannan.sadhasivam@linaro.org, thomas.kopp@microchip.com,
+        wg@grandegger.com, davem@davemloft.net, kuba@kernel.org,
+        lgirdwood@gmail.com, broonie@kernel.org
 Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Su Yanjun <suyanjun218@gmail.com>
-Subject: [PATCH v1] can: mcp251xfd: Add some sysfs debug interfaces for registers r/w
-Date:   Fri, 22 Jan 2021 14:22:55 +0800
-Message-Id: <20210122062255.202620-1-suyanjun218@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        linux-kernel@vger.kernel.org
+References: <20210122062255.202620-1-suyanjun218@gmail.com>
+From:   Marc Kleine-Budde <mkl@pengutronix.de>
+Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
+ 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
+Subject: Re: [PATCH v1] can: mcp251xfd: Add some sysfs debug interfaces for
+ registers r/w
+Message-ID: <7181a6a3-62c6-9021-ea63-827f55eacd98@pengutronix.de>
+Date:   Fri, 22 Jan 2021 08:22:43 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.12.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210122062255.202620-1-suyanjun218@gmail.com>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+ protocol="application/pgp-signature";
+ boundary="byx8IapFzFTq197OxxdaaUfUZZSZetpZA"
+X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
+X-SA-Exim-Mail-From: mkl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When i debug mcp2518fd, some method to track registers is
-needed. This easy debug interface will be ok.
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--byx8IapFzFTq197OxxdaaUfUZZSZetpZA
+Content-Type: multipart/mixed; boundary="KEhEh49rfMhHsKuTYM517rKrOeh8U3Yqe";
+ protected-headers="v1"
+From: Marc Kleine-Budde <mkl@pengutronix.de>
+To: Su Yanjun <suyanjun218@gmail.com>, manivannan.sadhasivam@linaro.org,
+ thomas.kopp@microchip.com, wg@grandegger.com, davem@davemloft.net,
+ kuba@kernel.org, lgirdwood@gmail.com, broonie@kernel.org
+Cc: linux-can@vger.kernel.org, netdev@vger.kernel.org,
+ linux-kernel@vger.kernel.org
+Message-ID: <7181a6a3-62c6-9021-ea63-827f55eacd98@pengutronix.de>
+Subject: Re: [PATCH v1] can: mcp251xfd: Add some sysfs debug interfaces for
+ registers r/w
+References: <20210122062255.202620-1-suyanjun218@gmail.com>
+In-Reply-To: <20210122062255.202620-1-suyanjun218@gmail.com>
 
-For example,
-read a register at 0xe00:
-echo 0xe00 > can_get_reg
-cat can_get_reg
+--KEhEh49rfMhHsKuTYM517rKrOeh8U3Yqe
+Content-Type: text/plain; charset=utf-8
+Content-Language: de-DE
+Content-Transfer-Encoding: quoted-printable
 
-write a register at 0xe00:
-echo 0xe00,0x60 > can_set_reg
+On 1/22/21 7:22 AM, Su Yanjun wrote:
+> When i debug mcp2518fd, some method to track registers is
+> needed. This easy debug interface will be ok.
 
-Signed-off-by: Su Yanjun <suyanjun218@gmail.com>
----
- .../net/can/spi/mcp251xfd/mcp251xfd-core.c    | 132 ++++++++++++++++++
- 1 file changed, 132 insertions(+)
+NACK
 
-diff --git a/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c b/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c
-index ab8aad0a7594..d65abe5505d5 100644
---- a/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c
-+++ b/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c
-@@ -27,6 +27,131 @@
- 
- #define DEVICE_NAME "mcp251xfd"
- 
-+/* Add sysfs debug interface for easy to debug
-+ *
-+ * For example,
-+ *
-+ * - read a register
-+ * echo 0xe00 > can_get_reg
-+ * cat can_get_reg
-+ *
-+ * - write a register
-+ * echo 0xe00,0x1 > can_set_reg
-+ *
-+ */
-+static int reg_offset;
-+
-+static int __get_param(const char *buf, char *off, char *val)
-+{
-+	int len;
-+
-+	if (!buf || !off || !val)
-+		return -EINVAL;
-+
-+	len = 0;
-+	while (*buf != ',') {
-+		*off++ = *buf++;
-+		len++;
-+
-+		if (len >= 16)
-+			return -EINVAL;
-+	}
-+
-+	buf++;
-+
-+	*off = '\0';
-+
-+	len = 0;
-+	while (*buf) {
-+		*val++ = *buf++;
-+		len++;
-+
-+		if (len >= 16)
-+			return -EINVAL;
-+	}
-+
-+	*val = '\0';
-+
-+	return 0;
-+}
-+
-+static ssize_t can_get_reg_show(struct device *dev,
-+				struct device_attribute *attr, char *buf)
-+{
-+	int err;
-+	u32 val;
-+	struct mcp251xfd_priv *priv;
-+
-+	priv = dev_get_drvdata(dev);
-+
-+	err = regmap_read(priv->map_reg, reg_offset, &val);
-+	if (err)
-+		return 0;
-+
-+	return sprintf(buf, "reg = 0x%08x, val = 0x%08x\n", reg_offset, val);
-+}
-+
-+static ssize_t can_get_reg_store(struct device *dev,
-+				 struct device_attribute *attr, const char *buf, size_t len)
-+{
-+	u32 off;
-+
-+	reg_offset = 0;
-+
-+	if (kstrtouint(buf, 0, &off) || (off % 4))
-+		return -EINVAL;
-+
-+	reg_offset = off;
-+
-+	return len;
-+}
-+
-+static ssize_t can_set_reg_show(struct device *dev,
-+				struct device_attribute *attr, char *buf)
-+{
-+	return 0;
-+}
-+
-+static ssize_t can_set_reg_store(struct device *dev,
-+				 struct device_attribute *attr, const char *buf, size_t len)
-+{
-+	struct mcp251xfd_priv *priv;
-+	u32 off, val;
-+	int err;
-+
-+	char s1[16];
-+	char s2[16];
-+
-+	if (__get_param(buf, s1, s2))
-+		return -EINVAL;
-+
-+	if (kstrtouint(s1, 0, &off) || (off % 4))
-+		return -EINVAL;
-+
-+	if (kstrtouint(s2, 0, &val))
-+		return -EINVAL;
-+
-+	err = regmap_write(priv->map_reg, off, val);
-+	if (err)
-+		return -EINVAL;
-+
-+	return len;
-+}
-+
-+static DEVICE_ATTR_RW(can_get_reg);
-+static DEVICE_ATTR_RW(can_set_reg);
-+
-+static struct attribute *can_attributes[] = {
-+	&dev_attr_can_get_reg.attr,
-+	&dev_attr_can_set_reg.attr,
-+	NULL
-+};
-+
-+static const struct attribute_group can_group = {
-+	.attrs = can_attributes,
-+	NULL
-+};
-+
- static const struct mcp251xfd_devtype_data mcp251xfd_devtype_data_mcp2517fd = {
- 	.quirks = MCP251XFD_QUIRK_MAB_NO_WARN | MCP251XFD_QUIRK_CRC_REG |
- 		MCP251XFD_QUIRK_CRC_RX | MCP251XFD_QUIRK_CRC_TX |
-@@ -2944,6 +3069,12 @@ static int mcp251xfd_probe(struct spi_device *spi)
- 	if (err)
- 		goto out_free_candev;
- 
-+	err = sysfs_create_group(&spi->dev.kobj, &can_group);
-+	if (err) {
-+		netdev_err(priv->ndev, "Create can group fail.\n");
-+		goto out_free_candev;
-+	}
-+
- 	err = can_rx_offload_add_manual(ndev, &priv->offload,
- 					MCP251XFD_NAPI_WEIGHT);
- 	if (err)
-@@ -2972,6 +3103,7 @@ static int mcp251xfd_remove(struct spi_device *spi)
- 	mcp251xfd_unregister(priv);
- 	spi->max_speed_hz = priv->spi_max_speed_hz_orig;
- 	free_candev(ndev);
-+	sysfs_remove_group(&spi->dev.kobj, &can_group);
- 
- 	return 0;
- }
--- 
-2.25.1
+As the driver uses regmap, everything should be there already.
 
+To read use:
+
+| cat /sys/kernel/debug/regmap/spi0.0-crc/registers
+
+Register write support for devices that are handles by proper kernel driv=
+ers is
+a pure debugging tool, thus not enabled by default, not even with a Kconf=
+ig
+switch. You have to enable it manually, have a look at commit:
+
+09c6ecd39410 regmap: Add support for writing to regmap registers via debu=
+gfs
+
+regards,
+Marc
+
+--=20
+Pengutronix e.K.                 | Marc Kleine-Budde           |
+Embedded Linux                   | https://www.pengutronix.de  |
+Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
+Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
+
+
+--KEhEh49rfMhHsKuTYM517rKrOeh8U3Yqe--
+
+--byx8IapFzFTq197OxxdaaUfUZZSZetpZA
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmAKfUMACgkQqclaivrt
+76ncugf+MUBVB+aTRouQmk/9/GF5nxzgNZftctWAXsLodpiT3ATRXq/BFgWl+QHh
+wFMTAM+aryuEhqlC9aWOKUgqGZCAHGPcHSF3l7UBeOh3hDGnVit1gB9brkF8byHR
+Vsln/dBJyjcpVdcF1IaGF5rLrVuLOutTr1sWgBl8frf97+z6fL75g/A01mJ/zd+r
+KGzi90eZnHM9FKm6Cr6jpvgcAIZbmOV/LYk9gN+PvuCsfmbsMVv32qPcqezxwc3l
+VpzLw9DfmIQO+JXyaTxZmQ+HCyN8tE4WqPun8IUC+Q4kfvcNcD4G4sA+xwq5PcA1
+HEIQm4YaQ0HOHmikPUx5lapExjDquA==
+=aEbX
+-----END PGP SIGNATURE-----
+
+--byx8IapFzFTq197OxxdaaUfUZZSZetpZA--
