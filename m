@@ -2,276 +2,429 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DA92D2FFF9A
-	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 10:57:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E3572FFF89
+	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 10:52:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727383AbhAVJ4a (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jan 2021 04:56:30 -0500
-Received: from mga11.intel.com ([192.55.52.93]:60969 "EHLO mga11.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727200AbhAVJ4O (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 22 Jan 2021 04:56:14 -0500
-IronPort-SDR: YdyaPivU96x5eP+21Za+IaMTCerKcS7xj4WEmAF2eX5gvbe3lai83z/fmsaZPomQu8Z8i+s+Ab
- kJuMo8+RdOIA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9871"; a="175913610"
-X-IronPort-AV: E=Sophos;i="5.79,366,1602572400"; 
-   d="scan'208";a="175913610"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jan 2021 01:55:10 -0800
-IronPort-SDR: UdiKqc9igkxD/D284xaFkCp+DWe9XueR73/kf+zPIJ/74hDIXeyY+hUNxKBfEK6xfqozIAZWFC
- 3iqG9pVfTSNg==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.79,366,1602572400"; 
-   d="scan'208";a="502631283"
-Received: from ranger.igk.intel.com ([10.102.21.164])
-  by orsmga004.jf.intel.com with ESMTP; 22 Jan 2021 01:55:06 -0800
-Date:   Fri, 22 Jan 2021 10:45:28 +0100
-From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-To:     Magnus Karlsson <magnus.karlsson@gmail.com>
-Cc:     Jesper Dangaard Brouer <brouer@redhat.com>,
-        Maxim Mikityanskiy <maximmi@nvidia.com>,
-        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Network Development <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>,
-        =?iso-8859-1?Q?Bj=F6rn_T=F6pel?= <bjorn.topel@intel.com>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Ciara Loftus <ciara.loftus@intel.com>,
-        Weqaar Janjua <weqaar.a.janjua@intel.com>
-Subject: Re: [PATCH bpf-next v2 0/8] Introduce bpf_redirect_xsk() helper
-Message-ID: <20210122094528.GA52373@ranger.igk.intel.com>
-References: <20210119155013.154808-1-bjorn.topel@gmail.com>
- <7dcee85b-b3ef-947f-f433-03ad7066c5dd@nvidia.com>
- <20210120165708.243f83cb@carbon>
- <20210120161931.GA32916@ranger.igk.intel.com>
- <20210121180134.51070b74@carbon>
- <CAJ8uoz2JJpd9aqhp84noA-_TspR4=sJeE2bRWYoXUKKuB2ty+Q@mail.gmail.com>
+        id S1727687AbhAVJuH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jan 2021 04:50:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47612 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727128AbhAVJrv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 04:47:51 -0500
+Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9AE3C061356
+        for <netdev@vger.kernel.org>; Fri, 22 Jan 2021 01:46:53 -0800 (PST)
+Received: by mail-wm1-x32d.google.com with SMTP id 190so3721110wmz.0
+        for <netdev@vger.kernel.org>; Fri, 22 Jan 2021 01:46:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=sS0QldToSTXte0Df+rAgEJxB2PEFjKwYcDLQbVqdlYM=;
+        b=gkT7du3xI5w0X5BDT20QT9Ox+aW/xXb1D1YIvZnGMKlhSrJJZ4Wa5AcS6wQGej4XSw
+         U4lUzOhVy9l+Ceh8Sf7aCk0Af5R4V44tqP710YPgc5nOquSxFIBSXq3lWd/fEpymRR4Y
+         WsxF7FMuVa0AsEsb5YSx65FMBzGo2SwukX+LPAR0mP/nB153OZOJGMS/WRd7CiYumo3j
+         6wdpNZIswJse2Xqr8HgXSti87vKcuFs0rphzyXw0J6lo/gHypk8XiEOE+8SJJDaL6j+P
+         +pnzHmaTynJi2wVPyXmnlGEaVqHHeQipj2hFHuAl1u+ovyZh9yjTEN20YyboEr1VvPvZ
+         IZzA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=sS0QldToSTXte0Df+rAgEJxB2PEFjKwYcDLQbVqdlYM=;
+        b=EXql5BzkgyagJ56mSnoCro+pNGypf9dWW7vW502CmbJVYZXwWzkKNmzVH/lv7YKDww
+         wAgpH7dqoxwl3ia/Timf+rEFX9mABqYi5m+yogBrskVy5Vhflm8JGIoWRgdECW0DgG7r
+         6luixMHZx8FMmel2UK9k7WpESih8BpqumFCCogCCV5Tx9k7Y0Dm6oPhoGPAn7JFJzu1A
+         6GGoVyQvNoeKXhVn6FKmwJzk/khJAbqn2bdf19Z1CeBtajPAd6ICemunloC6GF1rPmPR
+         3nSdyjCd6x2+0tNNmoGiFD+/OdT26QLR7mBt8nLplnheVs+PyHTrGcROe+fuwVx98TD3
+         pfXw==
+X-Gm-Message-State: AOAM532ygSPpIrYMM+4rhTgZV/PAivleSt54nNQKqMGr/cAL00S3gIUS
+        BIXP6bA6Xt9IQ5rBq8qmdtpDft0FygosDIrPj8Q=
+X-Google-Smtp-Source: ABdhPJzbRjApcsBQfQNEnlWp+Xb0eFwqQ+qRK37/aR9vON64jTvUdj3tQ50/C6yDOIvPBq/LABw10w==
+X-Received: by 2002:a1c:1dc2:: with SMTP id d185mr3084850wmd.175.1611308812158;
+        Fri, 22 Jan 2021 01:46:52 -0800 (PST)
+Received: from localhost ([85.163.43.78])
+        by smtp.gmail.com with ESMTPSA id 62sm11416038wmd.34.2021.01.22.01.46.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 22 Jan 2021 01:46:51 -0800 (PST)
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, jacob.e.keller@intel.com,
+        roopa@nvidia.com, andrew@lunn.ch, dsahern@gmail.com,
+        mlxsw@nvidia.com
+Subject: [patch net-next RFCv2 02/10] devlink: implement line card provisioning
+Date:   Fri, 22 Jan 2021 10:46:40 +0100
+Message-Id: <20210122094648.1631078-3-jiri@resnulli.us>
+X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20210122094648.1631078-1-jiri@resnulli.us>
+References: <20210122094648.1631078-1-jiri@resnulli.us>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <CAJ8uoz2JJpd9aqhp84noA-_TspR4=sJeE2bRWYoXUKKuB2ty+Q@mail.gmail.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 22, 2021 at 09:59:53AM +0100, Magnus Karlsson wrote:
-> On Thu, Jan 21, 2021 at 6:07 PM Jesper Dangaard Brouer
-> <brouer@redhat.com> wrote:
-> >
-> > On Wed, 20 Jan 2021 17:19:31 +0100
-> > Maciej Fijalkowski <maciej.fijalkowski@intel.com> wrote:
-> >
-> > > On Wed, Jan 20, 2021 at 04:57:08PM +0100, Jesper Dangaard Brouer wrote:
-> > > > On Wed, 20 Jan 2021 15:15:22 +0200
-> > > > Maxim Mikityanskiy <maximmi@nvidia.com> wrote:
-> > > >
-> > > > > On 2021-01-19 17:50, Björn Töpel wrote:
-> > > > > > This series extends bind() for XDP sockets, so that the bound socket
-> > > > > > is added to the netdev_rx_queue _rx array in the netdevice. We call
-> > > > > > this to register the socket. To redirect packets to the registered
-> > > > > > socket, a new BPF helper is used: bpf_redirect_xsk().
-> > > > > >
-> > > > > > For shared XDP sockets, only the first bound socket is
-> > > > > > registered. Users that need more complex setup has to use XSKMAP and
-> > > > > > bpf_redirect_map().
-> > > > > >
-> > > > > > Now, why would one use bpf_redirect_xsk() over the regular
-> > > > > > bpf_redirect_map() helper?
-> > > > > >
-> > > > > > * Better performance!
-> > > > > > * Convenience; Most user use one socket per queue. This scenario is
-> > > > > >    what registered sockets support. There is no need to create an
-> > > > > >    XSKMAP. This can also reduce complexity from containerized setups,
-> > > > > >    where users might what to use XDP sockets without CAP_SYS_ADMIN
-> > > > > >    capabilities.
-> > > >
-> > > > I'm buying into the convenience and reduce complexity, and XDP sockets
-> > > > without CAP_SYS_ADMIN into containers.
-> > > >
-> > > > People might be surprised that I'm actually NOT buying into the better
-> > > > performance argument here.  At these speeds we are basically comparing
-> > > > how close we are to zero (and have to use nanosec time scale for our
-> > > > comparisons), more below.
-> > > >
-> > > >
-> > > > > > The first patch restructures xdp_do_redirect() a bit, to make it
-> > > > > > easier to add the new helper. This restructure also give us a slight
-> > > > > > performance benefit. The following three patches extends bind() and
-> > > > > > adds the new helper. After that, two libbpf patches that selects XDP
-> > > > > > program based on what kernel is running. Finally, selftests for the new
-> > > > > > functionality is added.
-> > > > > >
-> > > > > > Note that the libbpf "auto-selection" is based on kernel version, so
-> > > > > > it is hard coded to the "-next" version (5.12). If you would like to
-> > > > > > try this is out, you will need to change the libbpf patch locally!
-> > > > > >
-> > > > > > Thanks to Maciej and Magnus for the internal review/comments!
-> > > > > >
-> > > > > > Performance (rxdrop, zero-copy)
-> > > > > >
-> > > > > > Baseline
-> > > > > > Two cores:                   21.3 Mpps
-> > > > > > One core:                    24.5 Mpps
-> > > > >
-> > > > > Two cores is slower? It used to be faster all the time, didn't it?
-> > > > >
-> > > > > > Patched
-> > > > > > Two cores, bpf_redirect_map: 21.7 Mpps + 2%
-> > > > > > One core, bpf_redirect_map:  24.9 Mpps + 2%
-> > > > > >
-> > > > > > Two cores, bpf_redirect_xsk: 24.0 Mpps +13%
-> > > > >
-> > > > > Nice, impressive improvement!
-> > > >
-> > > > I do appreciate you work and performance optimizations at this level,
-> > > > because when we are using this few CPU cycles per packet, then it is
-> > > > really hard to find new ways to reduce cycles further.
-> > > >
-> > > > Thank for you saying +13% instead of saying +2.7 Mpps.
-> > > > It *is* impressive to basically reduce cycles with 13%.
-> > > >
-> > > >  21.3 Mpps = 46.94 nanosec per packet
-> > > >  24.0 Mpps = 41.66 nanosec per packet
-> > > >
-> > > >  21.3 Mpps -> 24.0 Mpps = 5.28 nanosec saved
-> > > >
-> > > > On my 3.60GHz testlab machine that gives me 19 cycles.
-> > > >
-> > > >
-> > > > > > One core, bpf_redirect_xsk:  25.5 Mpps + 4%
-> > > > > >
-> > > >
-> > > >  24.5 Mpps -> 25.5 Mpps = 1.6 nanosec saved
-> > > >
-> > > > At this point with saving 1.6 ns this is around the cost of a function call 1.3 ns.
-> > > >
-> > > >
-> > > > We still need these optimization in the kernel, but end-users in
-> > > > userspace are very quickly going to waste the 19 cycles we found.
-> > > > I still support/believe that the OS need to have a little overhead as
-> > > > possible, but for me 42 nanosec overhead is close to zero overhead. For
-> > > > comparison, I just ran a udp_sink[3] test, and it "cost" 625 ns for
-> > > > delivery of UDP packets into socket (almost 15 times slower).
-> > > >
-> > > > I guess my point is that with XDP we have already achieved and exceeded
-> > > > (my original) performance goals, making it even faster is just showing off ;-P
-> > >
-> > > Even though I'll let Bjorn elaborating on this, we're talking here about
-> > > AF-XDP which is a bit different pair of shoes to me in terms of
-> > > performance. AFAIK we still have a gap when compared to DPDK's numbers. So
-> >
-> > AFAIK the gap on this i40e hardware is DPDK=36Mpps, and lets say
-> > AF_XDP=25.5 Mpps, that looks large +10.5Mpps, but it is only 11.4
-> > nanosec.
-> >
-> > > I'm really not sure why better performance bothers you? :)
-> >
-> > Finding those 11.4 nanosec is going to be really difficult and take a
-> > huge effort. My fear is also that some of these optimizations will make
-> > the code harder to maintain and understand.
-> >
-> > If you are ready to do this huge effort, then I'm actually ready to
-> > provide ideas on what you can optimize.
-> >
-> > E.g. you can get 2-4 nanosec if we prefetch to L2 in driver (assuming
-> > data is DDIO in L3 already).  (CPU supports L2 prefetch, but kernel
-> > have no users of that feature).
+From: Jiri Pirko <jiri@nvidia.com>
 
-Just to add to what Magnus wrote below, when comparing technologies, XDP
-is confronted with kernel's netstack and as we know, difference is really
-big and there's no secret who's the winner in terms of performance in
-specific scenarios. So, I'm not saying I'm super OK with that, but we can
-allow ourselves for having a cool feature that boosts our control plane,
-but degrades performance a bit, as you found out with egress XDP prog. We
-are still going to be fine.
+In order to be able to configure all needed stuff on a port/netdevice
+of a line card without the line card being present, introduce line card
+provisioning. Basically by setting a type, provisioning process will
+start and driver is supposed to create a placeholder for instances
+(ports/netdevices) for a line card type.
 
-For AF_XDP the case is the opposite, meaning, we are the chaser in this
-scenario. Performance work is still the top priority for AF_XDP in my
-eyes.
+Allow the user to query the supported line card types over line card
+get command. Then implement two netlink command SET to allow user to
+set/unset the card type.
 
-> 
-> In my experience, I would caution starting to use L2 prefetch at this
-> point since it is somewhat finicky. It is possible to get better
-> performance using it on one platform, but significantly harder to get
-> it to work also on a three year older one, not to mention other
-> platforms and architectures.
-> 
-> Instead, I would start with optimizations that always work such as not
-> having to execute code (or removing code) that is not necessary for
-> the functionality that is provided. One example of this is having to
-> execute all the bpf_redirect code when we are using packet steering in
-> HW to AF_XDP sockets and other potential consumers. In this scenario,
-> the core bpf_redirect code (xdp_do_redirect + bpf_xdp_redirect_map +
-> __xsk_map_redirect for the XSKMAP case) provides no value and amounts
-> to 19% of the total execution time on my machine (application plus
-> kernel, and the XDP program itself is another 7% on top of the 19%).
-> By removing this, you could cut down a large chunk of those 11.4 ns we
-> would need to find in our optimization work. Just to be clear, there
-> are plenty of other scenarios where the bpf_redirect functionality
-> provides great value, so it is really good to have. I just think it is
-> weird that it has to be executed all the time even when it is not
-> needed. The big question is just how to achieve this in an
-> architecturally sound way. Any ideas?
-> 
-> Just note that there are plenty that could be done in other areas too.
-> For example, the Rx part of the driver is around 22% of the execution
-> time and I am sure we can optimize this part too and increase the
-> readability and maintainability of the code at the same time. But not
-> trim it down to 0% as some of this is actually necessary work in all
-> cases where traffic is received :-). xp_alloc is another big time
-> consumer of cycles, but for this one I do have a patch set that cuts
-> it down from 21% to 8% that I plan on submitting in February.
-> 
-> perf top data:
-> 21.58%  [ice]                      [k] ice_clean_rx_irq_zc
-> 21.21%  [kernel]                   [k] xp_alloc
-> 13.93%  [kernel]                   [k] __xsk_rcv_zc
-> 8.53%  [kernel]                   [k] xdp_do_redirect
-> 8.15%  [kernel]                   [k] xsk_rcv
-> 6.66%  [kernel]                   [k] bpf_xdp_redirect_map
-> 5.08%  bpf_prog_992d9ddc835e5629  [k] bpf_prog_992d9ddc835e5629
-> 3.73%  [ice]                      [k] ice_alloc_rx_bufs_zc
-> 3.36%  [kernel]                   [k] __xsk_map_redirect
-> 2.62%  xdpsock                    [.] main
-> 0.96%  [kernel]                   [k] rcu_read_unlock_strict
-> 0.90%  bpf_dispatcher_xdp         [k] bpf_dispatcher_xdp
-> 0.87%  [kernel]                   [k] bpf_dispatcher_xdp_func
-> 0.51%  [kernel]                   [k] xsk_flush
-> 0.38%  [kernel]                   [k] lapic_next_deadline
-> 0.13%  [ice]                      [k] ice_napi_poll
-> 
-> > The base design of XDP redirect API, that have a number of function
-> > calls per packet, in itself becomes a limiting factor.  Even the cost
-> > of getting the per-CPU pointer to bpf_redirect_info becomes something
-> > to look at.
-> >
-> >
-> > > Let's rather be more harsh on changes that actually decrease the
-> > > performance, not the other way around. And I suppose you were the one that
-> > > always was bringing up the 'death by a 1000 paper cuts' of XDP. So yeah,
-> > > I'm a bit confused with your statement.
-> >
-> > Yes, we really need to protect the existing the performance.
-> >
-> > I think I'm mostly demotivated by the 'death by a 1000 paper cuts'.
-> > People with good intentions are adding features, and performance slowly
-> > disappears.  I've been spending weeks/months finding nanosec level
-> > improvements, which I don't have time to "defend". Recently I realized
-> > that the 2nd XDP prog on egress, even when no prog is attached, is
-> > slowing down the performance of base redirect (I don't fully understand
-> > why, maybe it is simply the I-cache increase, I didn't realize when
-> > reviewing the code).
-> >
-> > --
-> > Best regards,
-> >   Jesper Dangaard Brouer
-> >   MSc.CS, Principal Kernel Engineer at Red Hat
-> >   LinkedIn: http://www.linkedin.com/in/brouer
-> >
+On the driver API side, add provision/unprovision ops and supported
+types array to be advertised. Upon provision op call, the driver should
+take care of creating the instances for the particular line card type.
+Introduce provision_set/clear() functions to be called by the driver
+once the provisioning/unprovisioning is done on its side. These helpers
+are not to be called directly due to the async nature of provisioning.
+
+Signed-off-by: Jiri Pirko <jiri@nvidia.com>
+---
+RFC->RFCv2:
+- added missed const to supported_types
+- converted provision/unprovision commands to SET.type command
+- adjusted the patch description a bit
+- added state "provisioning_failed" and a helper to set it from driver
+---
+ include/net/devlink.h        |  32 ++++++-
+ include/uapi/linux/devlink.h |  15 +++
+ net/core/devlink.c           | 177 ++++++++++++++++++++++++++++++++++-
+ 3 files changed, 220 insertions(+), 4 deletions(-)
+
+diff --git a/include/net/devlink.h b/include/net/devlink.h
+index 67c2547d5ef9..bca3b2fc180a 100644
+--- a/include/net/devlink.h
++++ b/include/net/devlink.h
+@@ -139,10 +139,33 @@ struct devlink_port {
+ 	struct mutex reporters_lock; /* Protects reporter_list */
+ };
+ 
++struct devlink_linecard_ops;
++
+ struct devlink_linecard {
+ 	struct list_head list;
+ 	struct devlink *devlink;
+ 	unsigned int index;
++	const struct devlink_linecard_ops *ops;
++	void *priv;
++	enum devlink_linecard_state state;
++	const char *type;
++};
++
++/**
++ * struct devlink_linecard_ops - Linecard operations
++ * @supported_types: array of supported types of linecards
++ * @supported_types_count: number of elements in the array above
++ * @provision: callback to provision the linecard slot with certain
++ *	       type of linecard
++ * @unprovision: callback to unprovision the linecard slot
++ */
++struct devlink_linecard_ops {
++	const char * const *supported_types;
++	unsigned int supported_types_count;
++	int (*provision)(struct devlink_linecard *linecard, void *priv,
++			 u32 type_index, struct netlink_ext_ack *extack);
++	int (*unprovision)(struct devlink_linecard *linecard, void *priv,
++			   struct netlink_ext_ack *extack);
+ };
+ 
+ struct devlink_sb_pool_info {
+@@ -1414,9 +1437,14 @@ void devlink_port_attrs_pci_pf_set(struct devlink_port *devlink_port, u32 contro
+ 				   u16 pf, bool external);
+ void devlink_port_attrs_pci_vf_set(struct devlink_port *devlink_port, u32 controller,
+ 				   u16 pf, u16 vf, bool external);
+-struct devlink_linecard *devlink_linecard_create(struct devlink *devlink,
+-						 unsigned int linecard_index);
++struct devlink_linecard *
++devlink_linecard_create(struct devlink *devlink, unsigned int linecard_index,
++			const struct devlink_linecard_ops *ops, void *priv);
+ void devlink_linecard_destroy(struct devlink_linecard *linecard);
++void devlink_linecard_provision_set(struct devlink_linecard *linecard,
++				    u32 type_index);
++void devlink_linecard_provision_clear(struct devlink_linecard *linecard);
++void devlink_linecard_provision_fail(struct devlink_linecard *linecard);
+ int devlink_sb_register(struct devlink *devlink, unsigned int sb_index,
+ 			u32 size, u16 ingress_pools_count,
+ 			u16 egress_pools_count, u16 ingress_tc_count,
+diff --git a/include/uapi/linux/devlink.h b/include/uapi/linux/devlink.h
+index e5ed0522591f..24091391fa89 100644
+--- a/include/uapi/linux/devlink.h
++++ b/include/uapi/linux/devlink.h
+@@ -329,6 +329,18 @@ enum devlink_reload_limit {
+ 
+ #define DEVLINK_RELOAD_LIMITS_VALID_MASK (_BITUL(__DEVLINK_RELOAD_LIMIT_MAX) - 1)
+ 
++enum devlink_linecard_state {
++	DEVLINK_LINECARD_STATE_UNSPEC,
++	DEVLINK_LINECARD_STATE_UNPROVISIONED,
++	DEVLINK_LINECARD_STATE_UNPROVISIONING,
++	DEVLINK_LINECARD_STATE_PROVISIONING,
++	DEVLINK_LINECARD_STATE_PROVISIONING_FAILED,
++	DEVLINK_LINECARD_STATE_PROVISIONED,
++
++	__DEVLINK_LINECARD_STATE_MAX,
++	DEVLINK_LINECARD_STATE_MAX = __DEVLINK_LINECARD_STATE_MAX - 1
++};
++
+ enum devlink_attr {
+ 	/* don't change the order or add anything between, this is ABI! */
+ 	DEVLINK_ATTR_UNSPEC,
+@@ -535,6 +547,9 @@ enum devlink_attr {
+ 	DEVLINK_ATTR_RELOAD_ACTION_STATS,       /* nested */
+ 
+ 	DEVLINK_ATTR_LINECARD_INDEX,		/* u32 */
++	DEVLINK_ATTR_LINECARD_STATE,		/* u8 */
++	DEVLINK_ATTR_LINECARD_TYPE,		/* string */
++	DEVLINK_ATTR_LINECARD_SUPPORTED_TYPES,	/* nested */
+ 
+ 	/* add new attributes above here, update the policy in devlink.c */
+ 
+diff --git a/net/core/devlink.c b/net/core/devlink.c
+index 70154bed9950..2ff950da3417 100644
+--- a/net/core/devlink.c
++++ b/net/core/devlink.c
+@@ -1192,7 +1192,9 @@ static int devlink_nl_linecard_fill(struct sk_buff *msg,
+ 				    u32 seq, int flags,
+ 				    struct netlink_ext_ack *extack)
+ {
++	struct nlattr *attr;
+ 	void *hdr;
++	int i;
+ 
+ 	hdr = genlmsg_put(msg, portid, seq, &devlink_nl_family, flags, cmd);
+ 	if (!hdr)
+@@ -1202,6 +1204,21 @@ static int devlink_nl_linecard_fill(struct sk_buff *msg,
+ 		goto nla_put_failure;
+ 	if (nla_put_u32(msg, DEVLINK_ATTR_LINECARD_INDEX, linecard->index))
+ 		goto nla_put_failure;
++	if (nla_put_u8(msg, DEVLINK_ATTR_LINECARD_STATE, linecard->state))
++		goto nla_put_failure;
++	if (linecard->state >= DEVLINK_LINECARD_STATE_PROVISIONED &&
++	    nla_put_string(msg, DEVLINK_ATTR_LINECARD_TYPE, linecard->type))
++		goto nla_put_failure;
++
++	attr = nla_nest_start(msg, DEVLINK_ATTR_LINECARD_SUPPORTED_TYPES);
++	if (!attr)
++		return -EMSGSIZE;
++	for (i = 0; i < linecard->ops->supported_types_count; i++) {
++		if (nla_put_string(msg, DEVLINK_ATTR_LINECARD_TYPE,
++				   linecard->ops->supported_types[i]))
++			goto nla_put_failure;
++	}
++	nla_nest_end(msg, attr);
+ 
+ 	genlmsg_end(msg, hdr);
+ 	return 0;
+@@ -1300,6 +1317,95 @@ static int devlink_nl_cmd_linecard_get_dumpit(struct sk_buff *msg,
+ 	return msg->len;
+ }
+ 
++static int devlink_linecard_type_set(struct devlink_linecard *linecard,
++				     const char *type,
++				     struct netlink_ext_ack *extack)
++{
++	int i;
++
++	if (linecard->state == DEVLINK_LINECARD_STATE_PROVISIONING) {
++		NL_SET_ERR_MSG_MOD(extack, "Linecard is currently being provisioned");
++		return -EBUSY;
++	}
++	if (linecard->state == DEVLINK_LINECARD_STATE_UNPROVISIONING) {
++		NL_SET_ERR_MSG_MOD(extack, "Linecard is currently being unprovisioned");
++		return -EBUSY;
++	}
++	if (linecard->state != DEVLINK_LINECARD_STATE_UNPROVISIONED &&
++	    linecard->state != DEVLINK_LINECARD_STATE_PROVISIONING_FAILED) {
++		NL_SET_ERR_MSG_MOD(extack, "Linecard already provisioned");
++		return -EBUSY;
++	}
++
++	for (i = 0; i < linecard->ops->supported_types_count; i++) {
++		if (!strcmp(linecard->ops->supported_types[i], type)) {
++			linecard->state = DEVLINK_LINECARD_STATE_PROVISIONING;
++			linecard->type = linecard->ops->supported_types[i];
++			devlink_linecard_notify(linecard,
++						DEVLINK_CMD_LINECARD_NEW);
++			return linecard->ops->provision(linecard,
++							linecard->priv, i,
++							extack);
++		}
++	}
++	NL_SET_ERR_MSG_MOD(extack, "Unsupported provision type provided");
++	return -EINVAL;
++}
++
++static int devlink_linecard_type_unset(struct devlink_linecard *linecard,
++				       struct netlink_ext_ack *extack)
++{
++	if (linecard->state == DEVLINK_LINECARD_STATE_PROVISIONING) {
++		NL_SET_ERR_MSG_MOD(extack, "Linecard is currently being provisioned");
++		return -EBUSY;
++	}
++	if (linecard->state == DEVLINK_LINECARD_STATE_UNPROVISIONING) {
++		NL_SET_ERR_MSG_MOD(extack, "Linecard is currently being unprovisioned");
++		return -EBUSY;
++	}
++	if (linecard->state == DEVLINK_LINECARD_STATE_PROVISIONING_FAILED) {
++		linecard->state = DEVLINK_LINECARD_STATE_UNPROVISIONED;
++		linecard->type = NULL;
++		devlink_linecard_notify(linecard, DEVLINK_CMD_LINECARD_NEW);
++		return 0;
++	}
++
++	if (linecard->state == DEVLINK_LINECARD_STATE_UNPROVISIONED) {
++		NL_SET_ERR_MSG_MOD(extack, "Linecard is not provisioned");
++		return -EOPNOTSUPP;
++	}
++	linecard->state = DEVLINK_LINECARD_STATE_UNPROVISIONING;
++	devlink_linecard_notify(linecard, DEVLINK_CMD_LINECARD_NEW);
++	return linecard->ops->unprovision(linecard, linecard->priv,
++					  extack);
++}
++
++
++static int devlink_nl_cmd_linecard_set_doit(struct sk_buff *skb,
++					    struct genl_info *info)
++{
++	struct devlink_linecard *linecard = info->user_ptr[1];
++	struct netlink_ext_ack *extack = info->extack;
++	int err;
++
++	if (info->attrs[DEVLINK_ATTR_LINECARD_TYPE]) {
++		const char *type;
++
++		type = nla_data(info->attrs[DEVLINK_ATTR_LINECARD_TYPE]);
++		if (strcmp(type, "")) {
++			err = devlink_linecard_type_set(linecard, type, extack);
++			if (err)
++				return err;
++		} else {
++			err = devlink_linecard_type_unset(linecard, extack);
++			if (err)
++				return err;
++		}
++	}
++
++	return 0;
++}
++
+ static int devlink_nl_sb_fill(struct sk_buff *msg, struct devlink *devlink,
+ 			      struct devlink_sb *devlink_sb,
+ 			      enum devlink_command cmd, u32 portid,
+@@ -7759,6 +7865,7 @@ static const struct nla_policy devlink_nl_policy[DEVLINK_ATTR_MAX + 1] = {
+ 							DEVLINK_RELOAD_ACTION_MAX),
+ 	[DEVLINK_ATTR_RELOAD_LIMITS] = NLA_POLICY_BITFIELD32(DEVLINK_RELOAD_LIMITS_VALID_MASK),
+ 	[DEVLINK_ATTR_LINECARD_INDEX] = { .type = NLA_U32 },
++	[DEVLINK_ATTR_LINECARD_TYPE] = { .type = NLA_NUL_STRING },
+ };
+ 
+ static const struct genl_small_ops devlink_nl_ops[] = {
+@@ -7806,6 +7913,13 @@ static const struct genl_small_ops devlink_nl_ops[] = {
+ 		.internal_flags = DEVLINK_NL_FLAG_NEED_LINECARD,
+ 		/* can be retrieved by unprivileged users */
+ 	},
++	{
++		.cmd = DEVLINK_CMD_LINECARD_SET,
++		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
++		.doit = devlink_nl_cmd_linecard_set_doit,
++		.flags = GENL_ADMIN_PERM,
++		.internal_flags = DEVLINK_NL_FLAG_NEED_LINECARD,
++	},
+ 	{
+ 		.cmd = DEVLINK_CMD_SB_GET,
+ 		.validate = GENL_DONT_VALIDATE_STRICT | GENL_DONT_VALIDATE_DUMP,
+@@ -8613,11 +8727,17 @@ static int __devlink_port_phys_port_name_get(struct devlink_port *devlink_port,
+  *	Create devlink linecard instance with provided linecard index.
+  *	Caller can use any indexing, even hw-related one.
+  */
+-struct devlink_linecard *devlink_linecard_create(struct devlink *devlink,
+-						 unsigned int linecard_index)
++struct devlink_linecard *
++devlink_linecard_create(struct devlink *devlink, unsigned int linecard_index,
++			const struct devlink_linecard_ops *ops, void *priv)
+ {
+ 	struct devlink_linecard *linecard;
+ 
++	if (WARN_ON(!ops || !ops->supported_types ||
++		    !ops->supported_types_count ||
++		    !ops->provision || !ops->unprovision))
++		return ERR_PTR(-EINVAL);
++
+ 	mutex_lock(&devlink->lock);
+ 	if (devlink_linecard_index_exists(devlink, linecard_index)) {
+ 		mutex_unlock(&devlink->lock);
+@@ -8630,6 +8750,9 @@ struct devlink_linecard *devlink_linecard_create(struct devlink *devlink,
+ 
+ 	linecard->devlink = devlink;
+ 	linecard->index = linecard_index;
++	linecard->ops = ops;
++	linecard->priv = priv;
++	linecard->state = DEVLINK_LINECARD_STATE_UNPROVISIONED;
+ 	list_add_tail(&linecard->list, &devlink->linecard_list);
+ 	mutex_unlock(&devlink->lock);
+ 	devlink_linecard_notify(linecard, DEVLINK_CMD_LINECARD_NEW);
+@@ -8653,6 +8776,56 @@ void devlink_linecard_destroy(struct devlink_linecard *linecard)
+ }
+ EXPORT_SYMBOL_GPL(devlink_linecard_destroy);
+ 
++/**
++ *	devlink_linecard_provision_set - Set provisioning on linecard
++ *
++ *	@devlink_linecard: devlink linecard
++ *	@type_index: index of the linecard type (in array of types in ops)
++ */
++void devlink_linecard_provision_set(struct devlink_linecard *linecard,
++				    u32 type_index)
++{
++	WARN_ON(type_index >= linecard->ops->supported_types_count);
++	mutex_lock(&linecard->devlink->lock);
++	WARN_ON(linecard->type &&
++		linecard->type != linecard->ops->supported_types[type_index]);
++	linecard->state = DEVLINK_LINECARD_STATE_PROVISIONED;
++	linecard->type = linecard->ops->supported_types[type_index];
++	mutex_unlock(&linecard->devlink->lock);
++	devlink_linecard_notify(linecard, DEVLINK_CMD_LINECARD_NEW);
++
++}
++EXPORT_SYMBOL_GPL(devlink_linecard_provision_set);
++
++/**
++ *	devlink_linecard_provision_clear - Clear provisioning on linecard
++ *
++ *	@devlink_linecard: devlink linecard
++ */
++void devlink_linecard_provision_clear(struct devlink_linecard *linecard)
++{
++	mutex_lock(&linecard->devlink->lock);
++	linecard->state = DEVLINK_LINECARD_STATE_UNPROVISIONED;
++	linecard->type = NULL;
++	mutex_unlock(&linecard->devlink->lock);
++	devlink_linecard_notify(linecard, DEVLINK_CMD_LINECARD_NEW);
++}
++EXPORT_SYMBOL_GPL(devlink_linecard_provision_clear);
++
++/**
++ *	devlink_linecard_provision_fail - Fail provisioning on linecard
++ *
++ *	@devlink_linecard: devlink linecard
++ */
++void devlink_linecard_provision_fail(struct devlink_linecard *linecard)
++{
++	mutex_lock(&linecard->devlink->lock);
++	linecard->state = DEVLINK_LINECARD_STATE_PROVISIONING_FAILED;
++	mutex_unlock(&linecard->devlink->lock);
++	devlink_linecard_notify(linecard, DEVLINK_CMD_LINECARD_NEW);
++}
++EXPORT_SYMBOL_GPL(devlink_linecard_provision_fail);
++
+ int devlink_sb_register(struct devlink *devlink, unsigned int sb_index,
+ 			u32 size, u16 ingress_pools_count,
+ 			u16 egress_pools_count, u16 ingress_tc_count,
+-- 
+2.26.2
+
