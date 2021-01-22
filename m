@@ -2,111 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BAEEF2FFD52
-	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 08:25:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EFF3F2FFD55
+	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 08:26:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726886AbhAVHYo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jan 2021 02:24:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45038 "EHLO
+        id S1726995AbhAVH0D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jan 2021 02:26:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726732AbhAVHYk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 02:24:40 -0500
-Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BC66C06174A
-        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 23:23:59 -0800 (PST)
-Received: by mail-oi1-x22a.google.com with SMTP id 15so5061980oix.8
-        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 23:23:59 -0800 (PST)
+        with ESMTP id S1727056AbhAVHZ5 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 02:25:57 -0500
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9BEFC06174A
+        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 23:25:16 -0800 (PST)
+Received: by mail-wr1-x432.google.com with SMTP id 7so4102135wrz.0
+        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 23:25:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Q2cnartO5VSigxEhPJCDzt4hVZPHOHRMZn656f4qH9k=;
-        b=g5QR4ZtUmJDjkmnh3DTuoxiYrAcmWMYo0up4e1Vv9+gyTD1rA7CO/gPK59cLO7cBmP
-         V5NeWoLxVAsWM8y7enfl2uumiysE2Dcsglkds30d26UasufFkTRUsTQK4Ur3HPLlJqsN
-         2IZhPV+gi35UDfmHX4ZzgdKCPnHyIPuwcU6+mOlqaCHm9zRmY0m34JVbB7O1evv6Pduk
-         ZC+hp+hAES8ShaMt2OiD52gJmargt/U1oNTk3ApLBs6Vh2KquFfsAKg5PfoBOihh3IJr
-         ial0jb05bA7B2C9LvmADd0iZbmwOplN5Z13hrJdeQKAChl1EupvbkUZi5A2+lcYtuoV8
-         1t2g==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=0RMHgtgB5xkk9LFRgCVaAj41J8LIc67kmbXqxtG5yCs=;
+        b=qon2fEM6rh180J7M3KjDsm8AwEt8egILRlj07VO002ARml3WX7CHPFwDrwfqkCpWk5
+         lR4pA6vtyfkDaqkwJ+7wd1kWxRYGn10pEtii1jnqHrUhuEnYaHw/aM4Xxdwy0k3maqu+
+         oRg97p6xo64DjhG/buJlhwB63nyUGnNe6FqPvdVo4YsAgq1L2ffgXP4sfYXP9hq2csPt
+         21NGDClEF56UkNNrLcMjFAzb7uJnyKXFqYv/kMU+ZzqC7PD012dYQj75jUIIsBQBhdcp
+         KT9gQ1EiiGlD+FB9+mXyialvT+KJdocgNh1kPOB1HHDV1Uwu78P1ZQxyH1g6fTc3P3R9
+         D7eQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Q2cnartO5VSigxEhPJCDzt4hVZPHOHRMZn656f4qH9k=;
-        b=NVjvlgE80t2kfYlC6kYb7k5cFgG+76c2CYVEWkf2l7PqT3uUMoWLupIWDYcLmf29Nv
-         UZIbzthKsPt7BxJ+oUB8em+DxM3xqYwHhiAnYPEtQGOTjCaF8p1q5zW5FqTVZb9jMGaY
-         cqWfrg7ERbvBnJ8O8InIl3bxHOVSpTXZ1Ny5Bs8lFjcHlW2rMUElXFrWwfTHaJ9GniSb
-         479+ktOndODaR60Q5PjoMn85jzDeUVRCibnttKQXoMKaO6TMz9ojD+Rv8XC2lDNSk1ro
-         aD4DJyTs5N5/OM4JfUiNZo+vpy0CCBJz+MggjvcSr/Thc14WJanTM+do6I/F+ywVhiyj
-         lDVA==
-X-Gm-Message-State: AOAM530AEb4g64tVKtnk828GXqgGYNnEUJF0EylnxRXCssEdNLX+HtSU
-        5NhAcz9Ddpueh9dmDLwIyQBij2THsV0a2kWeKO3fYg==
-X-Google-Smtp-Source: ABdhPJxu/9BWIQb+68tCu13kU7fTlmvXhna/Cn3pz2Yb3dAIRdE06yGxjj3qjHcd2XbwGNlMXlvx2A/E4pCLLUr/J70=
-X-Received: by 2002:aca:58d6:: with SMTP id m205mr2402924oib.121.1611300238833;
- Thu, 21 Jan 2021 23:23:58 -0800 (PST)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=0RMHgtgB5xkk9LFRgCVaAj41J8LIc67kmbXqxtG5yCs=;
+        b=CCtA8lQBXhSkUYpDjx+nVCG8M5k9EFqGUrvmLwDW/x/SIekOn5h9kw+CfWmK/TKm3K
+         okGdJmCPxX7zcxeneYtwa/kSfPhC4nJU7oM+GCBgqmU1ZD7kq+hVE1mUgFtwqOnPFjn0
+         1tgv6TID3HJVlJnitNKP38aM29Df0fQz+FDm+0t9xpSURW+DtlzNvH0esZVqmK5tkTfk
+         baCrkNpV3u4VbM3dpOG+knmGP8NUzHwjNCdlWc6a8V+4y4DvFpUjFfNfIsTCz2Jljtiq
+         R8rsCx7/JcVyU+O2d0hUZtKJBUXy8OpPWLGnHe/FPmHwfMEh8PzNHI7I2igPjjpuWajT
+         MiDg==
+X-Gm-Message-State: AOAM531CVVt+CbTjgxfZaZTBSjpbUUUKSk/4MJyh94rFyijq9jMQjGxL
+        EHA0aCh3Mx1djsXwykJx5g==
+X-Google-Smtp-Source: ABdhPJyhVpydbyMWOVaue7Lc56NW98R2jHdkaemb7LEuK3xy3TSLkhZMoYv/4DvUxBMqvEtdvZvMAA==
+X-Received: by 2002:a5d:47ce:: with SMTP id o14mr3168674wrc.18.1611300315611;
+        Thu, 21 Jan 2021 23:25:15 -0800 (PST)
+Received: from localhost.localdomain ([46.53.253.48])
+        by smtp.gmail.com with ESMTPSA id v1sm10005521wmj.31.2021.01.21.23.25.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 Jan 2021 23:25:14 -0800 (PST)
+Date:   Fri, 22 Jan 2021 10:25:12 +0300
+From:   Alexey Dobriyan <adobriyan@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, drt@linux.ibm.com,
+        ljp@linux.ibm.com, sukadev@linux.ibm.com
+Subject: Re: [PATCH v2 net-next] ibmvnic: workaround QT Creator/libCPlusPlus
+ segfault
+Message-ID: <20210122072512.GA3854@localhost.localdomain>
+References: <20210121220150.GA1485603@localhost.localdomain>
+ <20210121220739.GA1486367@localhost.localdomain>
+ <20210121184454.0ef91be3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-References: <0000000000004c9e3505b96c58eb@google.com> <000000000000d0e9a705b96d4332@google.com>
-In-Reply-To: <000000000000d0e9a705b96d4332@google.com>
-From:   Marco Elver <elver@google.com>
-Date:   Fri, 22 Jan 2021 08:23:47 +0100
-Message-ID: <CANpmjNNkvG1vBMpsE9ORTrz4sVTdW3KW4CvHiaA_c7vDD5+B7A@mail.gmail.com>
-Subject: Re: UBSAN: array-index-out-of-bounds in decode_data
-To:     syzbot <syzbot+70ba6cae2f44c82dcb76@syzkaller.appspotmail.com>
-Cc:     ajk@comnets.uni-bremen.de, "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-hams@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        Netdev <netdev@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        Dmitry Vyukov <dvyukov@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20210121184454.0ef91be3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 21 Jan 2021 at 19:30, syzbot
-<syzbot+70ba6cae2f44c82dcb76@syzkaller.appspotmail.com> wrote:
-> syzbot has found a reproducer for the following issue on:
->
-> HEAD commit:    9791581c Merge tag 'for-5.11-rc4-tag' of git://git.kernel...
-> git tree:       upstream
-> console output: https://syzkaller.appspot.com/x/log.txt?x=13cd09a4d00000
-> kernel config:  https://syzkaller.appspot.com/x/.config?x=39701af622f054a9
-> dashboard link: https://syzkaller.appspot.com/bug?extid=70ba6cae2f44c82dcb76
-> compiler:       gcc (GCC) 10.1.0-syz 20200507
-> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=133d8030d00000
->
-> IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> Reported-by: syzbot+70ba6cae2f44c82dcb76@syzkaller.appspotmail.com
->
-> ================================================================================
-> UBSAN: array-index-out-of-bounds in drivers/net/hamradio/6pack.c:845:16
-> index 400 is out of range for type 'unsigned char [400]'
-> CPU: 1 PID: 8 Comm: kworker/u4:0 Not tainted 5.11.0-rc4-syzkaller #0
-> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> Workqueue: events_unbound flush_to_ldisc
-> Call Trace:
->  __dump_stack lib/dump_stack.c:79 [inline]
->  dump_stack+0x107/0x163 lib/dump_stack.c:120
->  ubsan_epilogue+0xb/0x5a lib/ubsan.c:148
->  __ubsan_handle_out_of_bounds.cold+0x62/0x6c lib/ubsan.c:356
->  decode_data.part.0+0x2c8/0x2e0 drivers/net/hamradio/6pack.c:845
+On Thu, Jan 21, 2021 at 06:44:54PM -0800, Jakub Kicinski wrote:
+> On Fri, 22 Jan 2021 01:07:39 +0300 Alexey Dobriyan wrote:
+> > My name is Alexey and I've tried to use IDE for kernel development.
+> > 
+> > QT Creator segfaults while parsing ibmvnic.c which is annoying as it
+> > will start parsing after restart only to crash again.
+> > 
+> > The workaround is to either exclude ibmvnic.c from list of project files
+> > or to apply dummy ifdef to hide the offending code.
+> > 
+> > https://bugzilla.redhat.com/show_bug.cgi?id=1886548
+> > 
+> > Signed-off-by: Alexey Dobriyan <adobriyan@gmail.com>
+> 
+> That's a bug in QT Creator and whatever parsing it does/uses.
+> 
+> Sorry we can't take this patch, there is no indication that the kernel
+> code is actually wrong here.
 
-It looks like this might be due to a race condition; syzbot had
-detected a data race in this code a while back, but it seems this was
-never fixed: https://lore.kernel.org/lkml/000000000000bbb17d05a19540cd@google.com/
-
->  decode_data drivers/net/hamradio/6pack.c:965 [inline]
->  sixpack_decode drivers/net/hamradio/6pack.c:968 [inline]
->  sixpack_receive_buf drivers/net/hamradio/6pack.c:458 [inline]
->  sixpack_receive_buf+0xd8c/0x1320 drivers/net/hamradio/6pack.c:435
->  tty_ldisc_receive_buf+0x14a/0x190 drivers/tty/tty_buffer.c:465
->  tty_port_default_receive_buf+0x6e/0xa0 drivers/tty/tty_port.c:38
->  receive_buf drivers/tty/tty_buffer.c:481 [inline]
->  flush_to_ldisc+0x20d/0x380 drivers/tty/tty_buffer.c:533
->  process_one_work+0x98d/0x15f0 kernel/workqueue.c:2275
->  worker_thread+0x64c/0x1120 kernel/workqueue.c:2421
->  kthread+0x3b1/0x4a0 kernel/kthread.c:292
->  ret_from_fork+0x1f/0x30 arch/x86/entry/entry_64.S:296
-> ================================================================================
-
-Thanks,
--- Marco
+It is QtC bug. It will take ages for distros to pick up the fix
+(which doesn't even exist probably).
