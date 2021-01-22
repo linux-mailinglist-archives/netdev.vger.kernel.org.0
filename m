@@ -2,113 +2,97 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5999930059C
-	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 15:37:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 040B73005A5
+	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 15:40:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728718AbhAVOhS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jan 2021 09:37:18 -0500
-Received: from mail.eaton.com ([192.104.67.6]:10500 "EHLO mail.eaton.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728810AbhAVOgm (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 22 Jan 2021 09:36:42 -0500
-Received: from mail.eaton.com (simtcimsva01.etn.com [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 28EDC960C3;
-        Fri, 22 Jan 2021 09:35:41 -0500 (EST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=eaton.com;
-        s=eaton-s2020-01; t=1611326141;
-        bh=R2zHmX5/NiL6WCxfs6TaceDHiNspxfniXOh6eGlV4CQ=; h=From:To:Date;
-        b=KeIJAdRuXECjMpawxwr3DS7u6S3DVG6dkMhU9DAOuu3pYyvRn+DgRdQ/lEBOgAHzA
-         edSIhNG/9FD1C8CF5EqjzwEGcORpwMUaifBQFQze9n/rtB+34aSLIV+FHukp4vNeaP
-         RGcxNdsMB6VbHZuy1iB0lTb1hISIgZ/vNYAmCORMb8dHKhYloX+6Xas9fA/gs9nHnp
-         hNNVkN9NwtOc+Mz5eEqB39j4enJpVZHY83UPBTrDOznND5Ju1Z6BjRUN4gWXv6BpT0
-         QvsFmnG9G6D6GX7NpNZ+gKBnO1LukKNLse6eD4Xg/ANxckpOrsh7HJ0/MmiYZmXuQF
-         uy+zEdEANXiUw==
-Received: from mail.eaton.com (simtcimsva01.etn.com [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id AD403960BD;
-        Fri, 22 Jan 2021 09:35:38 -0500 (EST)
-Received: from SIMTCSGWY04.napa.ad.etn.com (simtcsgwy04.napa.ad.etn.com [151.110.126.121])
-        by mail.eaton.com (Postfix) with ESMTPS;
-        Fri, 22 Jan 2021 09:35:38 -0500 (EST)
-Received: from localhost (151.110.234.147) by SIMTCSGWY04.napa.ad.etn.com
- (151.110.126.205) with Microsoft SMTP Server id 14.3.487.0; Fri, 22 Jan 2021
- 09:35:37 -0500
-From:   Laurent Badel <laurentbadel@eaton.com>
-To:     <netdev@vger.kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        "Rafael J . Wysocki" <rjw@rjwysocki.net>,
-        Pavel Machek <pavel@ucw.cz>, <linux-pm@vger.kernel.org>
-CC:     Laurent Badel <laurentbadel@eaton.com>
-Subject: [PATCH net 1/1] net: phy: Reconfigure PHY interrupt in mdio_bus_phy_restore()
-Date:   Fri, 22 Jan 2021 15:35:24 +0100
-Message-ID: <20210122143524.14516-2-laurentbadel@eaton.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210122143524.14516-1-laurentbadel@eaton.com>
-References: <20210122143524.14516-1-laurentbadel@eaton.com>
+        id S1728868AbhAVOiK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jan 2021 09:38:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53828 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728746AbhAVOiA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 09:38:00 -0500
+Received: from mail-vs1-xe32.google.com (mail-vs1-xe32.google.com [IPv6:2607:f8b0:4864:20::e32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51351C06174A
+        for <netdev@vger.kernel.org>; Fri, 22 Jan 2021 06:37:15 -0800 (PST)
+Received: by mail-vs1-xe32.google.com with SMTP id 186so3074340vsz.13
+        for <netdev@vger.kernel.org>; Fri, 22 Jan 2021 06:37:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=mWVqs/bI9wwr3tSnltmuSBGXJrYR6JzaEPLhsLUOb2w=;
+        b=vNbj/DD/Msv/wACPFyJoexQkB0cazUlpSKezfd/S887z7Q+D4b+liGMCx6Lcm5Oi5+
+         SER7t52tQ4Q3rcb7i0UtijjXx7IUf/RdksI7IeS5z00VnkrQ9zkbFHjkVYP+/+vJgZ4n
+         sOhH7Ai9fYfhG8KXKsYKiHthQn0YJ5apd+XVtW0tk7TAuQWHrIex1Zsd4qxaYOBMsf9A
+         4SHg4M5N1QrlOf40SWq9yHQmua6ZLpDMPreUd4sZOSkdYJZovIcUZQqBLnkCCL7zmQ7m
+         1Xl+JYyWdQtm8zI34oxxlE2iseZYi+MtcOcQcxgghiRea2/SNyYIhXiBt92fCl1bXOZG
+         Oe6Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=mWVqs/bI9wwr3tSnltmuSBGXJrYR6JzaEPLhsLUOb2w=;
+        b=baV5vMR+g0Yurgf9d1Gxtsn2PWJU7Aw3oRuJdG0w3SdTkxcOp0ChLlN0quXix/AbHh
+         Vmo35wO0EvKYEaV/jOMSk3M7BZrVf9JoJTjrJEDfAM4KAvvecaKN8hyGA76GcWA1EvOu
+         EzxsJzRBHB326qEZJ2CyHkcK4/Wq8dqo9zCAk/Mnl6zYrlj6gr89sKdgvFPvNcuhMZq1
+         bLMfHpwrwdknXN5kjj5ze9Yh38myWPkgkRFsxJTF6T1FbYT2uCLfYiYfeX4VKCuk1UFe
+         q0CM083itAIrutsZvZNisYoZeXmp8U9UcY1JNR9uYr/4SYOm2sXCrv3hwxYLjJmxhF8I
+         FiFg==
+X-Gm-Message-State: AOAM532+9CYOGKqBPvMGn6E8JVOSzAtm9ahHHmn9NO51txnSBaXUKpUR
+        C2zYsn5ZJTAEDg2RqEKs6lmPho+4VH9ncm+8M1yPPQ==
+X-Google-Smtp-Source: ABdhPJwZtwXw4vHnYNQuq50JH5MFq1Wr5I5Cdl81C1Rpehkkd0FyVI7zlSVPnsrquojJ0Q+m262lWqHvTkA5gLRmHm0=
+X-Received: by 2002:a67:7956:: with SMTP id u83mr951182vsc.54.1611326234187;
+ Fri, 22 Jan 2021 06:37:14 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: quoted-printable
-X-EXCLAIMER-MD-CONFIG: 96b59d02-bc1a-4a40-8c96-611cac62bce9
-X-TM-SNTS-SMTP: FE70FC713CB97F6DAD8BEDAB0A1D68EFAE1D5103F39DC3EE98EE31318D8342EB2002:8
-X-TM-AS-GCONF: 00
-X-TM-AS-Product-Ver: IMSVA-9.1.0.1988-8.6.0.1013-25928.000
-X-TM-AS-Result: No--2.003-7.0-31-10
-X-imss-scan-details: No--2.003-7.0-31-10
-X-TMASE-Version: IMSVA-9.1.0.1988-8.6.1013-25928.000
-X-TMASE-Result: 10--2.002600-10.000000
-X-TMASE-MatchedRID: VIW3LEg1l16YizZS4XBb3/RUId35VCIe+ahnrHhmAJRGM2uNXRqsUvsY
-        8bNjl3gGPMs0cdM/lphnRutsGMyuGPI1YbpS1+avqJSK+HSPY+9lRzZAkKRGDVIxScKXZnK0QBz
-        oPKhLasiPqQJ9fQR1zrcPaeb4aji83nEpDU+5f9ko19GoN4WoGEyWLwjUVKFuA8FfY2Fm0lMIyT
-        NFi0TCbVYJIpN1DYJ5vqEhop8TGnRYF3qW3Je6+19QXM0Jj/jaf1tdYMcH2nI1pZREe8ejp8uoR
-        xHHrkLVNN00X0JwCr1AKfTbEPjR+peTN2GaEP5Hz9DvVzrxOJm0hbFWy4EqU4pebMSk1UmKlmXP
-        gyQocYp5E1G2nFNyeETBf0diyKhk8g9TaEI7TXx+3BndfXUhXQ==
-X-TMASE-SNAP-Result: 1.821001.0001-0-1-12:0,22:0,33:0,34:0-0
+References: <1611311242-6675-1-git-send-email-yangpc@wangsu.com> <CANn89iJoBeApn6y8k9xv_FZCGKG8n1GyXb9SKYq+LGBTp52cag@mail.gmail.com>
+In-Reply-To: <CANn89iJoBeApn6y8k9xv_FZCGKG8n1GyXb9SKYq+LGBTp52cag@mail.gmail.com>
+From:   Neal Cardwell <ncardwell@google.com>
+Date:   Fri, 22 Jan 2021 09:36:57 -0500
+Message-ID: <CADVnQynw7_4wJTUBHTnQ91rEoXKK+LuS1NQHdpYNhQs3CnMfsg@mail.gmail.com>
+Subject: Re: [PATCH net] tcp: fix TLP timer not set when CA_STATE changes from
+ DISORDER to OPEN
+To:     Eric Dumazet <edumazet@google.com>
+Cc:     Pengcheng Yang <yangpc@wangsu.com>,
+        Yuchung Cheng <ycheng@google.com>,
+        David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-=EF=BB=BFSome PHY (e.g. SMSC LAN87xx) clear their interrupt mask on softwar=
-e
-reset. This breaks the ethernet interface on resuming from hibernation,
-if the PHY is running in interrupt mode, so reconfigure interrupts
-after the software reset in mdio_bus_phy_restore().
+On Fri, Jan 22, 2021 at 5:53 AM Eric Dumazet <edumazet@google.com> wrote:
+>
+> On Fri, Jan 22, 2021 at 11:28 AM Pengcheng Yang <yangpc@wangsu.com> wrote:
+> >
+> > When CA_STATE is in DISORDER, the TLP timer is not set when receiving
+> > an ACK (a cumulative ACK covered out-of-order data) causes CA_STATE to
+> > change from DISORDER to OPEN. If the sender is app-limited, it can only
+> > wait for the RTO timer to expire and retransmit.
+> >
+> > The reason for this is that the TLP timer is set before CA_STATE changes
+> > in tcp_ack(), so we delay the time point of calling tcp_set_xmit_timer()
+> > until after tcp_fastretrans_alert() returns and remove the
+> > FLAG_SET_XMIT_TIMER from ack_flag when the RACK reorder timer is set.
+> >
+> > This commit has two additional benefits:
+> > 1) Make sure to reset RTO according to RFC6298 when receiving ACK, to
+> > avoid spurious RTO caused by RTO timer early expires.
+> > 2) Reduce the xmit timer reschedule once per ACK when the RACK reorder
+> > timer is set.
+> >
+> > Link: https://lore.kernel.org/netdev/1611139794-11254-1-git-send-email-yangpc@wangsu.com
+> > Signed-off-by: Pengcheng Yang <yangpc@wangsu.com>
+> > Cc: Neal Cardwell <ncardwell@google.com>
+> > ---
+>
+> This looks like a very nice patch, let me run packetdrill tests on it.
+>
+> By any chance, have you cooked a packetdrill test showing the issue
+> (failing on unpatched kernel) ?
 
-Signed-off-by: Laurent Badel <laurentbadel@eaton.com>
----
- drivers/net/phy/phy_device.c | 9 +++++++++
- 1 file changed, 9 insertions(+)
+Thanks, Pengcheng. This patch looks good to me as well, assuming it
+passes our packetdrill tests. I agree with Eric that it would be good
+to have an explicit packetdrill test for this case.
 
-diff --git a/drivers/net/phy/phy_device.c b/drivers/net/phy/phy_device.c
-index 80c2e646c093..5070eed55447 100644
---- a/drivers/net/phy/phy_device.c
-+++ b/drivers/net/phy/phy_device.c
-@@ -324,6 +324,15 @@ static int mdio_bus_phy_restore(struct device *dev)
- 	if (ret < 0)
- 		return ret;
-=20
-+	if (phydev->drv->config_intr && phy_interrupt_is_valid(phydev))
-+	{
-+		/* Some PHYs (e.g. SMSC LAN8720) clear their
-+		 * interrupt mask on software reset.
-+		 */
-+		phy_free_interrupt(phydev);
-+		phy_request_interrupt(phydev);
-+	}
-+
- 	if (phydev->attached_dev && phydev->adjust_link)
- 		phy_start_machine(phydev);
-=20
---=20
-2.17.1
-
-
-
------------------------------
-Eaton Industries Manufacturing GmbH ~ Registered place of business: Route d=
-e la Longeraie 7, 1110, Morges, Switzerland=20
-
------------------------------
-
+neal
