@@ -2,79 +2,170 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0C19B2FFAD6
-	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 04:10:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B56DB2FFAF1
+	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 04:20:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726160AbhAVDJ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jan 2021 22:09:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46938 "EHLO
+        id S1726644AbhAVDTc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jan 2021 22:19:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726044AbhAVDJY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jan 2021 22:09:24 -0500
-Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 470AEC06174A
-        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 19:08:44 -0800 (PST)
-Received: by mail-wr1-x429.google.com with SMTP id v15so3713966wrx.4
-        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 19:08:44 -0800 (PST)
+        with ESMTP id S1725984AbhAVDTU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jan 2021 22:19:20 -0500
+Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94066C06174A
+        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 19:18:39 -0800 (PST)
+Received: by mail-lf1-x129.google.com with SMTP id q12so5568358lfo.12
+        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 19:18:39 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=jJ3PyGZRAIkRDgrNezAY8Cgj65X9oPSlmSnMZzc7qa8=;
-        b=MMhQeLo1OeddV8VFxhNwgXZs4584v4QpkvrYJL/54w864+fuDy4K9U+nOHXHV4CVUG
-         R9w9p9xCTxZ0vudSQNZHnIUkhCNBHAwk5F73O0Ld2rDLuNL6IXB9xmsrSLJjSWcMuQQT
-         j8NIuyVdgTD78XI+IVQ+NraSSCVC60ryBtJv3DQmJqORYhRAZ+TQ2dr+DFIT1EqEKwpL
-         tVR/Nbm0wyLKlsnuDRCRcIFlcSRc+/I+PzWbTEadvzR4WsStP4Ns/PWKLWod587OcEc5
-         VfgvExlvbtLdRjRkdx5pAEarKkLxBRDWq+ym+spF9NgA+ukaNgYN1MdUcDdYm5K6Zds2
-         W6og==
+         :cc;
+        bh=wml7QTbmq4yq5V/auUOV9vZUKRrdYtWtvrQE87PaN2c=;
+        b=Py5q/BO1+LPHI6m7OU74LBucTD0cQq2UpIeHjvSTkK8ZGr7QVs51H1COfm53iWQjJa
+         O6ICMSImz+P1707lGxH0/NG75tln0fDRFjAL7Jf7A7hmDsKV58ntaceGkpqvK8n7S3Hy
+         3gROYc//RVWs4AOSFiyqYa+r7/gtl5N7lhNo6w7gS3/Kur4v2Y9z0lXBMQwtd5X/Gxqw
+         TrgvArcHNaN1bmOdpXzz6SjtAfakO+LP6xHzr7WwKaBw+gFj8MpYRRQ1TaRdmkvCED50
+         0qDuC7YO4lJ79VTckei10hYOyeEJHwBQq6I+XkXE3YnJAiq1xFP4ALxi5NVe//NV+kT0
+         5EJw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=jJ3PyGZRAIkRDgrNezAY8Cgj65X9oPSlmSnMZzc7qa8=;
-        b=n92lBsdMovhe/eKYYPwrGECcQ1iQpeHpP4KC29kN7ZkSWao3+sSgDERiMvSNSelIqJ
-         +dO+eD+pqAk3trtUrMcvRy2Tkcv5AzpCtNqsu0setFh+/CPQWjFoYQPomwK9KkhiQfgV
-         YUuc3te2xFzu9LxDA7MSb3Jt/eckHXKlipQ3Y2GVd05inDm9snXBBQkNdvV/0bX0caH5
-         8EiRGeuwD0NYILpjiyRlmxjoPfrpYZUvTMTWtQILCxRQds0azZClg3R/8X98lDL7jWnv
-         6a+BwqS6qqw0kDfjEa71cBXKAgDpmQxFS1HzrYj6sXi2c+exvcnSmRqCfqBnoBtgXLlL
-         cUaQ==
-X-Gm-Message-State: AOAM530f34ctue1T+RA2ckhS3kgU2OIEjqODorNuewW1nglg5cvzmJ1/
-        fD1bcLxPMi5POWdNxSwGzPnqODsxoxSA1D9tJ7A=
-X-Google-Smtp-Source: ABdhPJxs9Yz6OvApd/KH15gSWE46TN/7y29JRUJGJKmjfOG2nvGGC2hdXP9Oljbm1XDZlc5J8UE+WbvL1DqK4BRM1EU=
-X-Received: by 2002:a5d:6749:: with SMTP id l9mr2257078wrw.395.1611284922804;
- Thu, 21 Jan 2021 19:08:42 -0800 (PST)
+         :message-id:subject:to:cc;
+        bh=wml7QTbmq4yq5V/auUOV9vZUKRrdYtWtvrQE87PaN2c=;
+        b=FChrETUzw/aAI+oXLXokCZ9dZ7znusaTtRQCCFtVaMLLRrkZPlK4F8BFNRXJq0hcOp
+         863bEXrRDDW82pg1Ds+vQqYVdQUgHiNQCvN/KuMt9X1njWsyaiMz5PgG4O9NM7WV0oeT
+         WU5AWO3/krWmmFCEdvA/ynOkZntwiZwhOAuD1pq3Mm23JSRYXky0KMVB3UEvRJTu1D1F
+         5FNbPA8DVBeWCI8+s91plF5TwdHuLSmkaRpRLNTEOJwBeJrl2lqS68su05tmL+b1YJ6k
+         IyQIpf1P4ya3TUC9vWWnk/mGzb1qyX8DsmNlWgZw1uxqxMKeENyiPH6H6UXcce0AWpZd
+         VQ4Q==
+X-Gm-Message-State: AOAM533G9uEB8sjkIbeWTnJI2K+XTLnv6AhimAIAjfuQN1ttdcPLJyAO
+        vU/Dc9VtKJkQDtw1b73c2200mY4VQk1s4cP7fco=
+X-Google-Smtp-Source: ABdhPJzCHjrtONv7f1j9bCDbvlMPRuJPHOh/5hmEHFgD0k4hrby80f/uMZ+HVUKLhd0/gEtfRDsRnrK+utNsjfbY3uw=
+X-Received: by 2002:ac2:418b:: with SMTP id z11mr438165lfh.479.1611285518133;
+ Thu, 21 Jan 2021 19:18:38 -0800 (PST)
 MIME-Version: 1.0
 References: <cover.1611218673.git.lucien.xin@gmail.com> <0fa4f7f04222e0c4e7bd27cbd86ffe22148f6476.1611218673.git.lucien.xin@gmail.com>
- <20210121185018.4ba57d3d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210121185018.4ba57d3d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <bb59ed7c9c438bf076da3a956bb24fddf80978f7.1611218673.git.lucien.xin@gmail.com>
+ <CAKgT0Ucb6EO45+AxWAL8Vgwy4e7b=88TagW+xE-XizedOvmQEw@mail.gmail.com>
+In-Reply-To: <CAKgT0Ucb6EO45+AxWAL8Vgwy4e7b=88TagW+xE-XizedOvmQEw@mail.gmail.com>
 From:   Xin Long <lucien.xin@gmail.com>
-Date:   Fri, 22 Jan 2021 11:08:31 +0800
-Message-ID: <CADvbK_d8Vf9ghNqqQf7UAHPHH9WVwtaJMs8=q7Qw_Sz24wWxRA@mail.gmail.com>
-Subject: Re: [PATCH net-next 1/3] net: rename csum_not_inet to csum_type
-To:     Jakub Kicinski <kuba@kernel.org>
+Date:   Fri, 22 Jan 2021 11:18:26 +0800
+Message-ID: <CADvbK_c0ByOxha_+afNP_UqdVcKmuQjbp1S47j+4Zjvu+aBPLw@mail.gmail.com>
+Subject: Re: [PATCH net-next 2/3] net: add CSUM_T_IP_GENERIC csum_type
+To:     Alexander Duyck <alexander.duyck@gmail.com>
 Cc:     network dev <netdev@vger.kernel.org>,
         Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
         Davide Caratti <dcaratti@redhat.com>,
-        davem <davem@davemloft.net>,
-        Alexander Duyck <alexander.duyck@gmail.com>
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 22, 2021 at 10:50 AM Jakub Kicinski <kuba@kernel.org> wrote:
+On Fri, Jan 22, 2021 at 2:13 AM Alexander Duyck
+<alexander.duyck@gmail.com> wrote:
 >
-> On Thu, 21 Jan 2021 16:45:36 +0800 Xin Long wrote:
-> > This patch is to rename csum_not_inet to csum_type, as later
-> > more csum type would be introduced in the next patch.
+> On Thu, Jan 21, 2021 at 12:46 AM Xin Long <lucien.xin@gmail.com> wrote:
+> >
+> > This patch is to extend csum_type field to 2 bits, and introduce
+> > CSUM_T_IP_GENERIC csum type, and add the support for this in
+> > skb_csum_hwoffload_help(), just like CSUM_T_SCTP_CRC.
+> >
+> > Note here it moves dst_pending_confirm field below ndisc_nodetype
+> > to avoid a memory hole.
 > >
 > > Signed-off-by: Xin Long <lucien.xin@gmail.com>
+> > ---
+> >  include/linux/skbuff.h |  5 +++--
+> >  net/core/dev.c         | 17 +++++++++++++----
+> >  2 files changed, 16 insertions(+), 6 deletions(-)
+> >
+> > diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
+> > index 67b0a01..d5011fb 100644
+> > --- a/include/linux/skbuff.h
+> > +++ b/include/linux/skbuff.h
+> > @@ -224,6 +224,7 @@
+> >
+> >  #define CSUM_T_INET            0
+> >  #define CSUM_T_SCTP_CRC                1
+> > +#define CSUM_T_IP_GENERIC      2
+> >
+> >  /* Maximum value in skb->csum_level */
+> >  #define SKB_MAX_CSUM_LEVEL     3
+> > @@ -839,11 +840,11 @@ struct sk_buff {
+> >         __u8                    vlan_present:1;
+> >         __u8                    csum_complete_sw:1;
+> >         __u8                    csum_level:2;
+> > -       __u8                    csum_type:1;
+> > -       __u8                    dst_pending_confirm:1;
+> > +       __u8                    csum_type:2;
+> >  #ifdef CONFIG_IPV6_NDISC_NODETYPE
+> >         __u8                    ndisc_nodetype:2;
+> >  #endif
+> > +       __u8                    dst_pending_confirm:1;
+> >
+> >         __u8                    ipvs_property:1;
+> >         __u8                    inner_protocol_type:1;
+> > diff --git a/net/core/dev.c b/net/core/dev.c
+> > index 3241de2..6d48af2 100644
+> > --- a/net/core/dev.c
+> > +++ b/net/core/dev.c
+> > @@ -3617,11 +3617,20 @@ static struct sk_buff *validate_xmit_vlan(struct sk_buff *skb,
+> >  int skb_csum_hwoffload_help(struct sk_buff *skb,
+> >                             const netdev_features_t features)
+> >  {
+> > -       if (unlikely(skb_csum_is_sctp(skb)))
+> > -               return !!(features & NETIF_F_SCTP_CRC) ? 0 :
+> > -                       skb_crc32c_csum_help(skb);
+> > +       if (likely(!skb->csum_type))
+> > +               return !!(features & NETIF_F_CSUM_MASK) ? 0 :
+> > +                      skb_checksum_help(skb);
+> >
+> > -       return !!(features & NETIF_F_CSUM_MASK) ? 0 : skb_checksum_help(skb);
+> > +       if (skb_csum_is_sctp(skb)) {
+> > +               return !!(features & NETIF_F_SCTP_CRC) ? 0 :
+> > +                      skb_crc32c_csum_help(skb);
+> > +       } else if (skb->csum_type == CSUM_T_IP_GENERIC) {
+> > +               return !!(features & NETIF_F_HW_CSUM) ? 0 :
+> > +                      skb_checksum_help(skb);
+> > +       } else {
+> > +               pr_warn("Wrong csum type: %d\n", skb->csum_type);
+> > +               return 1;
+> > +       }
 >
-> drivers/net/ethernet/hisilicon/hns3/hns3_enet.c:1073:11: error: =E2=80=98=
-struct sk_buff=E2=80=99 has no member named =E2=80=98csum_not_inet=E2=80=99=
-; did you mean =E2=80=98csum_offset=E2=80=99?
->  1073 |  if (skb->csum_not_inet || skb_is_gso(skb) ||
->       |           ^~~~~~~~~~~~~
->       |           csum_offset
-I will replace it with skb_csum_is_sctp(). Thanks.
+> Is the only difference between CSUM_T_IP_GENERIC the fact that we
+> check for NETIF_F_HW_CSUM versus using NETIF_F_CSUM_MASK? If so I
+> don't think adding the new bit is adding all that much value. Instead
+> you could probably just catch this in the testing logic here.
+>
+> You could very easily just fold CSUM_T_IP_GENERIC into CSUM_T_INET,
+> and then in the checks here you split up the checks for
+> NETIF_F_HW_CSUM as follows:
+If so, better not to touch csum_not_inet now. I will drop the patch 1/3.
+
+>
+>  if (skb_csum_is_sctp(skb))
+>     return !!(features & NETIF_F_SCTP_CRC) ? 0 : skb_crc32c_csum_help(skb);
+>
+> if (skb->csum_type) {
+>     pr_warn("Wrong csum type: %d\n", skb->csum_type);
+>     return 1;
+> }
+>
+> if (features & NETIF_F_HW_CSUM)
+>     return 0;
+>
+> if (features & NETIF_F_CSUM_MASK) {
+>     switch (skb->csum_offset) {
+>     case offsetof(struct tcphdr, check):
+>     case offsetof(struct udphdr, check):
+>             return 0;
+>     }
+Question is: is it reliable to check the type by skb->csum_offset?
+What if one day there's another protocol, whose the checksum field
+is on the same offset, which is also using the CSUM_T_IP_GENERIC?
+
+> }
+>
+> return skb_checksum_help(skb);
