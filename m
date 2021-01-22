@@ -2,280 +2,167 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2D0C230098A
-	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 18:23:21 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F235A30098E
+	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 18:23:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729609AbhAVQwK convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Fri, 22 Jan 2021 11:52:10 -0500
-Received: from us-smtp-delivery-44.mimecast.com ([205.139.111.44]:50321 "EHLO
-        us-smtp-delivery-44.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728055AbhAVQlE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 11:41:04 -0500
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-582-i1eFmC8iMsOS0E3Axc7mCA-1; Fri, 22 Jan 2021 11:39:40 -0500
-X-MC-Unique: i1eFmC8iMsOS0E3Axc7mCA-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2E7628066E5;
-        Fri, 22 Jan 2021 16:39:38 +0000 (UTC)
-Received: from krava.redhat.com (unknown [10.40.192.97])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id BC5A65C5FC;
-        Fri, 22 Jan 2021 16:39:34 +0000 (UTC)
-From:   Jiri Olsa <jolsa@kernel.org>
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>
-Cc:     dwarves@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Yonghong Song <yhs@fb.com>,
-        Hao Luo <haoluo@google.com>, Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Joe Lawrence <joe.lawrence@redhat.com>,
-        Mark Wielaard <mjw@redhat.com>
-Subject: [PATCH 2/2] bpf_encoder: Translate SHN_XINDEX in symbol's st_shndx values
-Date:   Fri, 22 Jan 2021 17:39:20 +0100
-Message-Id: <20210122163920.59177-3-jolsa@kernel.org>
-In-Reply-To: <20210122163920.59177-1-jolsa@kernel.org>
-References: <20210122163920.59177-1-jolsa@kernel.org>
+        id S1729462AbhAVQxj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jan 2021 11:53:39 -0500
+Received: from mail-ot1-f53.google.com ([209.85.210.53]:41718 "EHLO
+        mail-ot1-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728653AbhAVQlb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 11:41:31 -0500
+Received: by mail-ot1-f53.google.com with SMTP id k8so5633682otr.8;
+        Fri, 22 Jan 2021 08:41:19 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=oBT6lOdqQ9gMoz0GrIXk1aglXl4WV8PiXf0WiP0Be/g=;
+        b=sK9HqeorKNyuqZc9D65d3wLYSPXF6CBNQZ9wzZsDtqdMEiF2P4KVX8cLsEqDbvX3dQ
+         p09W/XK0J2jglBb8Hm3ALhwXRTZljkIDle1Fbbp3vCnZh74XotZI6I3Lfn+W7S0WOdJ4
+         ICv4eFU7XQIsU8G+dzrF1MlLXYxiWXBQU0ySIPanqxgUm3N4Ju+vaNdQXSk9MBBldHcA
+         7nan7bmA4eL0lzt0Qscu/NuVYMxa8GHbdaXcRdcsP8NMuPcrTqh2j0rCA4v/xQUGVxfY
+         Zn0T9fi0NO9MjgJBHAXALIJbfCL9Jb8TzJy5Nhr/xT5VNdYHr38y086VAig97gnydXJd
+         0K1A==
+X-Gm-Message-State: AOAM533930mA3d/BAblFPajpgCU/5qJPIRUOB17DZqCNlgrMGFp1tERY
+        DKIvt/fo3xlOBO1iD9kiiBS2rCch8V5j7hdPSOs=
+X-Google-Smtp-Source: ABdhPJwkHlDPwIKw9uPIf9JKIEPyQ8b86W99bEyIhjtfIg47ZVy19I7pbvzBYx7O/SotAOAHLaBtP7zplW4kclFkKoA=
+X-Received: by 2002:a9d:745a:: with SMTP id p26mr4087167otk.206.1611333652686;
+ Fri, 22 Jan 2021 08:40:52 -0800 (PST)
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=jolsa@kernel.org
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: kernel.org
-Content-Transfer-Encoding: 8BIT
-Content-Type: text/plain; charset=WINDOWS-1252
+References: <20210122154300.7628-1-calvin.johnson@oss.nxp.com> <20210122154300.7628-10-calvin.johnson@oss.nxp.com>
+In-Reply-To: <20210122154300.7628-10-calvin.johnson@oss.nxp.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Fri, 22 Jan 2021 17:40:41 +0100
+Message-ID: <CAJZ5v0gzdi08fwf0e3NyP1WzuSBk47J5OT5DW_aaUHn_9icfag@mail.gmail.com>
+Subject: Re: [net-next PATCH v4 09/15] device property: Introduce fwnode_get_id()
+To:     Calvin Johnson <calvin.johnson@oss.nxp.com>
+Cc:     Grant Likely <grant.likely@arm.com>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Jeremy Linton <jeremy.linton@arm.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
+        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Marcin Wojtas <mw@semihalf.com>,
+        Pieter Jansen Van Vuuren <pieter.jansenvv@bamboosystems.io>,
+        Jon <jon@solid-run.com>, Saravana Kannan <saravanak@google.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        "linux.cj" <linux.cj@gmail.com>,
+        Diana Madalina Craciun <diana.craciun@nxp.com>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
+        Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-For very large ELF objects (with many sections), we could
-get special value SHN_XINDEX (65535) for symbol's st_shndx.
+On Fri, Jan 22, 2021 at 4:46 PM Calvin Johnson
+<calvin.johnson@oss.nxp.com> wrote:
+>
+> Using fwnode_get_id(), get the reg property value for DT node
+> or get the _ADR object value for ACPI node.
 
-This patch is adding code to detect the optional extended
-section index table and use it to resolve symbol's section
-index.
+So I'm not really sure if this is going to be generically useful.
 
-Adding elf_symtab__for_each_symbol_index macro that returns
-symbol's section index and usign it in collect functions.
+First of all, the meaning of the _ADR return value is specific to a
+given bus type (e.g. the PCI encoding of it is different from the I2C
+encoding of it) and it just happens to be matching the definition of
+the "reg" property for this particular binding.
 
-Signed-off-by: Jiri Olsa <jolsa@kernel.org>
----
- btf_encoder.c | 59 +++++++++++++++++++++++++++++++++++++--------------
- elf_symtab.c  | 39 +++++++++++++++++++++++++++++++++-
- elf_symtab.h  |  2 ++
- 3 files changed, 83 insertions(+), 17 deletions(-)
+IOW, not everyone may expect the "reg" property and the _ADR return
+value to have the same encoding and belong to the same set of values,
+so maybe put this function somewhere closer to the code that's going
+to use it, because it seems to be kind of specific to this particular
+use case?
 
-diff --git a/btf_encoder.c b/btf_encoder.c
-index 5557c9efd365..56ee55965093 100644
---- a/btf_encoder.c
-+++ b/btf_encoder.c
-@@ -63,13 +63,13 @@ static void delete_functions(void)
- #define max(x, y) ((x) < (y) ? (y) : (x))
- #endif
- 
--static int collect_function(struct btf_elf *btfe, GElf_Sym *sym)
-+static int collect_function(struct btf_elf *btfe, GElf_Sym *sym,
-+			    Elf32_Word sym_sec_idx)
- {
- 	struct elf_function *new;
- 	static GElf_Shdr sh;
--	static int last_idx;
-+	static Elf32_Word last_idx;
- 	const char *name;
--	int idx;
- 
- 	if (elf_sym__type(sym) != STT_FUNC)
- 		return 0;
-@@ -90,12 +90,10 @@ static int collect_function(struct btf_elf *btfe, GElf_Sym *sym)
- 		functions = new;
- 	}
- 
--	idx = elf_sym__section(sym);
--
--	if (idx != last_idx) {
--		if (!elf_section_by_idx(btfe->elf, &sh, idx))
-+	if (sym_sec_idx != last_idx) {
-+		if (!elf_section_by_idx(btfe->elf, &sh, sym_sec_idx))
- 			return 0;
--		last_idx = idx;
-+		last_idx = sym_sec_idx;
- 	}
- 
- 	functions[functions_cnt].name = name;
-@@ -542,14 +540,15 @@ static bool percpu_var_exists(uint64_t addr, uint32_t *sz, const char **name)
- 	return true;
- }
- 
--static int collect_percpu_var(struct btf_elf *btfe, GElf_Sym *sym)
-+static int collect_percpu_var(struct btf_elf *btfe, GElf_Sym *sym,
-+			      Elf32_Word sym_sec_idx)
- {
- 	const char *sym_name;
- 	uint64_t addr;
- 	uint32_t size;
- 
- 	/* compare a symbol's shndx to determine if it's a percpu variable */
--	if (elf_sym__section(sym) != btfe->percpu_shndx)
-+	if (sym_sec_idx != btfe->percpu_shndx)
- 		return 0;
- 	if (elf_sym__type(sym) != STT_OBJECT)
- 		return 0;
-@@ -585,12 +584,13 @@ static int collect_percpu_var(struct btf_elf *btfe, GElf_Sym *sym)
- 	return 0;
- }
- 
--static void collect_symbol(GElf_Sym *sym, struct funcs_layout *fl)
-+static void collect_symbol(GElf_Sym *sym, struct funcs_layout *fl,
-+			   Elf32_Word sym_sec_idx)
- {
- 	if (!fl->mcount_start &&
- 	    !strcmp("__start_mcount_loc", elf_sym__name(sym, btfe->symtab))) {
- 		fl->mcount_start = sym->st_value;
--		fl->mcount_sec_idx = sym->st_shndx;
-+		fl->mcount_sec_idx = sym_sec_idx;
- 	}
- 
- 	if (!fl->mcount_stop &&
-@@ -598,9 +598,36 @@ static void collect_symbol(GElf_Sym *sym, struct funcs_layout *fl)
- 		fl->mcount_stop = sym->st_value;
- }
- 
-+static bool elf_sym__get(Elf_Data *syms, Elf_Data *syms_sec_idx_table,
-+			 int id, GElf_Sym *sym, Elf32_Word *sym_sec_idx)
-+{
-+	if (!gelf_getsym(syms, id, sym))
-+		return false;
-+
-+	*sym_sec_idx = sym->st_shndx;
-+
-+	if (sym->st_shndx == SHN_XINDEX) {
-+		if (!syms_sec_idx_table)
-+			return false;
-+		if (!gelf_getsymshndx(syms, syms_sec_idx_table,
-+				      id, sym, sym_sec_idx))
-+			return false;
-+	}
-+
-+	return true;
-+}
-+
-+#define elf_symtab__for_each_symbol_index(symtab, id, sym, sym_sec_idx)		\
-+	for (id = 0;								\
-+	     id < symtab->nr_syms &&						\
-+	     elf_sym__get(symtab->syms, symtab->syms_sec_idx_table,		\
-+			  id, &sym, &sym_sec_idx);				\
-+	     id++)
-+
- static int collect_symbols(struct btf_elf *btfe, bool collect_percpu_vars)
- {
- 	struct funcs_layout fl = { };
-+	Elf32_Word sym_sec_idx;
- 	uint32_t core_id;
- 	GElf_Sym sym;
- 
-@@ -608,12 +635,12 @@ static int collect_symbols(struct btf_elf *btfe, bool collect_percpu_vars)
- 	percpu_var_cnt = 0;
- 
- 	/* search within symtab for percpu variables */
--	elf_symtab__for_each_symbol(btfe->symtab, core_id, sym) {
--		if (collect_percpu_vars && collect_percpu_var(btfe, &sym))
-+	elf_symtab__for_each_symbol_index(btfe->symtab, core_id, sym, sym_sec_idx) {
-+		if (collect_percpu_vars && collect_percpu_var(btfe, &sym, sym_sec_idx))
- 			return -1;
--		if (collect_function(btfe, &sym))
-+		if (collect_function(btfe, &sym, sym_sec_idx))
- 			return -1;
--		collect_symbol(&sym, &fl);
-+		collect_symbol(&sym, &fl, sym_sec_idx);
- 	}
- 
- 	if (collect_percpu_vars) {
-diff --git a/elf_symtab.c b/elf_symtab.c
-index 741990ea3ed9..fad5e0c0ba3c 100644
---- a/elf_symtab.c
-+++ b/elf_symtab.c
-@@ -17,11 +17,13 @@
- 
- struct elf_symtab *elf_symtab__new(const char *name, Elf *elf, GElf_Ehdr *ehdr)
- {
-+	size_t symtab_index;
-+
- 	if (name == NULL)
- 		name = ".symtab";
- 
- 	GElf_Shdr shdr;
--	Elf_Scn *sec = elf_section_by_name(elf, ehdr, &shdr, name, NULL);
-+	Elf_Scn *sec = elf_section_by_name(elf, ehdr, &shdr, name, &symtab_index);
- 
- 	if (sec == NULL)
- 		return NULL;
-@@ -41,6 +43,12 @@ struct elf_symtab *elf_symtab__new(const char *name, Elf *elf, GElf_Ehdr *ehdr)
- 	if (symtab->syms == NULL)
- 		goto out_free_name;
- 
-+	/*
-+	 * This returns extended section index table's
-+	 * section index, if it exists.
-+	 */
-+	int symtab_xindex = elf_scnshndx(sec);
-+
- 	sec = elf_getscn(elf, shdr.sh_link);
- 	if (sec == NULL)
- 		goto out_free_name;
-@@ -49,6 +57,35 @@ struct elf_symtab *elf_symtab__new(const char *name, Elf *elf, GElf_Ehdr *ehdr)
- 	if (symtab->symstrs == NULL)
- 		goto out_free_name;
- 
-+	/*
-+	 * The .symtab section has optional extended section index
-+	 * table, load its data so it can be used to resolve symbol's
-+	 * section index.
-+	 **/
-+	if (symtab_xindex > 0) {
-+		GElf_Shdr shdr_xindex;
-+		Elf_Scn *sec_xindex;
-+
-+		sec_xindex = elf_getscn(elf, symtab_xindex);
-+		if (sec_xindex == NULL)
-+			goto out_free_name;
-+
-+		if (gelf_getshdr(sec_xindex, &shdr_xindex) == NULL)
-+			goto out_free_name;
-+
-+		/* Extra check to verify it's correct type */
-+		if (shdr_xindex.sh_type != SHT_SYMTAB_SHNDX)
-+			goto out_free_name;
-+
-+		/* Extra check to verify it belongs to the .symtab */
-+		if (symtab_index != shdr_xindex.sh_link)
-+			goto out_free_name;
-+
-+		symtab->syms_sec_idx_table = elf_getdata(elf_getscn(elf, symtab_xindex), NULL);
-+		if (symtab->syms_sec_idx_table == NULL)
-+			goto out_free_name;
-+	}
-+
- 	symtab->nr_syms = shdr.sh_size / shdr.sh_entsize;
- 
- 	return symtab;
-diff --git a/elf_symtab.h b/elf_symtab.h
-index 359add69c8ab..2e05ca98158b 100644
---- a/elf_symtab.h
-+++ b/elf_symtab.h
-@@ -16,6 +16,8 @@ struct elf_symtab {
- 	uint32_t  nr_syms;
- 	Elf_Data  *syms;
- 	Elf_Data  *symstrs;
-+	/* Data of SHT_SYMTAB_SHNDX section. */
-+	Elf_Data  *syms_sec_idx_table;
- 	char	  *name;
- };
- 
--- 
-2.26.2
-
+> Signed-off-by: Calvin Johnson <calvin.johnson@oss.nxp.com>
+> ---
+>
+> Changes in v4:
+> - Improve code structure to handle all cases
+>
+> Changes in v3:
+> - Modified to retrieve reg property value for ACPI as well
+> - Resolved compilation issue with CONFIG_ACPI = n
+> - Added more info into documentation
+>
+> Changes in v2: None
+>
+>  drivers/base/property.c  | 34 ++++++++++++++++++++++++++++++++++
+>  include/linux/property.h |  1 +
+>  2 files changed, 35 insertions(+)
+>
+> diff --git a/drivers/base/property.c b/drivers/base/property.c
+> index 35b95c6ac0c6..f0581bbf7a4b 100644
+> --- a/drivers/base/property.c
+> +++ b/drivers/base/property.c
+> @@ -580,6 +580,40 @@ const char *fwnode_get_name_prefix(const struct fwnode_handle *fwnode)
+>         return fwnode_call_ptr_op(fwnode, get_name_prefix);
+>  }
+>
+> +/**
+> + * fwnode_get_id - Get the id of a fwnode.
+> + * @fwnode: firmware node
+> + * @id: id of the fwnode
+> + *
+> + * This function provides the id of a fwnode which can be either
+> + * DT or ACPI node. For ACPI, "reg" property value, if present will
+> + * be provided or else _ADR value will be provided.
+> + * Returns 0 on success or a negative errno.
+> + */
+> +int fwnode_get_id(struct fwnode_handle *fwnode, u32 *id)
+> +{
+> +#ifdef CONFIG_ACPI
+> +       unsigned long long adr;
+> +       acpi_status status;
+> +#endif
+> +       int ret;
+> +
+> +       ret = fwnode_property_read_u32(fwnode, "reg", id);
+> +       if (ret) {
+> +#ifdef CONFIG_ACPI
+> +               status = acpi_evaluate_integer(ACPI_HANDLE_FWNODE(fwnode),
+> +                                              METHOD_NAME__ADR, NULL, &adr);
+> +               if (ACPI_FAILURE(status))
+> +                       return -EINVAL;
+> +               *id = (u32)adr;
+> +#else
+> +               return ret;
+> +#endif
+> +       }
+> +       return 0;
+> +}
+> +EXPORT_SYMBOL_GPL(fwnode_get_id);
+> +
+>  /**
+>   * fwnode_get_parent - Return parent firwmare node
+>   * @fwnode: Firmware whose parent is retrieved
+> diff --git a/include/linux/property.h b/include/linux/property.h
+> index 0a9001fe7aea..3f41475f010b 100644
+> --- a/include/linux/property.h
+> +++ b/include/linux/property.h
+> @@ -82,6 +82,7 @@ struct fwnode_handle *fwnode_find_reference(const struct fwnode_handle *fwnode,
+>
+>  const char *fwnode_get_name(const struct fwnode_handle *fwnode);
+>  const char *fwnode_get_name_prefix(const struct fwnode_handle *fwnode);
+> +int fwnode_get_id(struct fwnode_handle *fwnode, u32 *id);
+>  struct fwnode_handle *fwnode_get_parent(const struct fwnode_handle *fwnode);
+>  struct fwnode_handle *fwnode_get_next_parent(
+>         struct fwnode_handle *fwnode);
+> --
+> 2.17.1
+>
