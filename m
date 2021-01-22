@@ -2,288 +2,226 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 99FF1301098
-	for <lists+netdev@lfdr.de>; Sat, 23 Jan 2021 00:08:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E3BE3010A9
+	for <lists+netdev@lfdr.de>; Sat, 23 Jan 2021 00:12:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728489AbhAVXH7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jan 2021 18:07:59 -0500
-Received: from mail.kernel.org ([198.145.29.99]:32868 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728588AbhAVTkP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 22 Jan 2021 14:40:15 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 0735423B23;
-        Fri, 22 Jan 2021 19:37:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611344236;
-        bh=FZUTy6l6DtkXWDUvMlBb593cpHNCaucfYeLH7pkK/KA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fsF6X1M+9F5PwFCAVuG0qZfVyDjeSLece/Bw5/Ddci9MUfbDE8NSvu297+Wes9N5B
-         0Ttu4ceGMbHEVpoS/ID1plD72R6+2XTRhhaX+JfiU6eeceXpv9FBrPicsuZKKykH1+
-         +d8pJRGFVBo2xezgKZ3MPhhMUCpRxujOMMUX42iTrQ7OxYBxWNSOFZQeh+wA68Ewn9
-         Y93q4YTRMnP0djJ8HUlAhq4NI+hMDWyza0rBCZM36GPegwpeGo2zgEa5vnFvSOrHE7
-         7yCws4G4QN1IhnkgCrc0nVfreK4jos1tgIdbqbIgAhNfhlx8H6E1vcc+iq95vK/kTc
-         oXDcMbIdt8qKA==
-From:   Saeed Mahameed <saeed@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jason Gunthorpe <jgg@nvidia.com>
-Cc:     netdev@vger.kernel.org, linux-rdma@vger.kernel.org,
-        alexander.duyck@gmail.com, sridhar.samudrala@intel.com,
-        edwin.peer@broadcom.com, dsahern@kernel.org, kiran.patil@intel.com,
-        jacob.e.keller@intel.com, david.m.ertman@intel.com,
-        dan.j.williams@intel.com, Parav Pandit <parav@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next V10 14/14] net/mlx5: Add devlink subfunction port documentation
-Date:   Fri, 22 Jan 2021 11:36:58 -0800
-Message-Id: <20210122193658.282884-15-saeed@kernel.org>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20210122193658.282884-1-saeed@kernel.org>
-References: <20210122193658.282884-1-saeed@kernel.org>
+        id S1728360AbhAVXJ7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jan 2021 18:09:59 -0500
+Received: from mx0b-00082601.pphosted.com ([67.231.153.30]:45534 "EHLO
+        mx0b-00082601.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1730148AbhAVTiz (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 14:38:55 -0500
+Received: from pps.filterd (m0109332.ppops.net [127.0.0.1])
+        by mx0a-00082601.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 10MJ8oG3001228;
+        Fri, 22 Jan 2021 11:37:29 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.com; h=date : from : to : cc :
+ subject : message-id : references : content-type : in-reply-to :
+ mime-version; s=facebook; bh=HQS4HSF2Q/kZDh3Ba6iQ5L1/Y3PUQjgEOaHMN70bBuE=;
+ b=k5yfHgsjcgI0S8iaF3CbXSPl+qRCsf/gekY6BKUUrDYSAe5P2ibvyS2ai0nQrJK+ervx
+ AVIcIfBmcK/xV0nTBDw6xzJqN/hznugYBKwpSOvLie0wlLSbg/XemKy29ypGBnXhxRNV
+ 6wEe3tfd32ALWXVNkjtOYwg6W3rts5louBE= 
+Received: from maileast.thefacebook.com ([163.114.130.16])
+        by mx0a-00082601.pphosted.com with ESMTP id 367scpuqth-3
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=NOT);
+        Fri, 22 Jan 2021 11:37:29 -0800
+Received: from NAM02-CY1-obe.outbound.protection.outlook.com (100.104.31.183)
+ by o365-in.thefacebook.com (100.104.35.174) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Fri, 22 Jan 2021 11:37:28 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=O66bbWM0Prk/88stZtc300ru9+EDB6Z+afGuNmjc015zlfpWtl1k+6I1Ud5Dm5FhIHaam8OYM18XbQS40I8M0vhKcnunE20nUYHJbP9I9D59A919aqXhj9G9e7IS2kJu0mJlCJOp5W1h3+/OOm/qVCQbto6HMK8FKX6l/pDcgbxKZYTP7VmGpfrISOKyk9jH7XL9UfsemnQr3utxPhPqYQSQNxbmvHigVQ0650Qa9vq56ITOfXoUXrerRgvwQr9sqLInwTqPz01FyctGwWQaeejmht85L/BIUp0Tizf+XG+XAm9W1qvG0L0pYCPR0AH7ihpQaBONxDw40TziVgmVwQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=HQS4HSF2Q/kZDh3Ba6iQ5L1/Y3PUQjgEOaHMN70bBuE=;
+ b=CQkuTMZcwqNauoz39kDvQlS657+LsQ7K/nqezHsjRp6ptF4lD82sd/m9jPlYdzjHXIIYSfUn/RDmghwiIiCj02j8B9tkQzwB2ClaTm3/WoVNxPnDaOgGwEXHtbbt4DP8jpI9BBDibfk1FHnH3CwMne6Ex3lyYAnlYm0l0xyeT2JKTnHbak0HR0dIjkm77stz2s0+O1KH61VhqrUdMAIOXfkAxLgd4Z2qrcoasfMsYx0A2vM5rvaN/WpH8cuOv/L+Ol198RhS/vbHIZnOuHLMhbFUiFMIa9ZHOzEFmH2CTmkDLfOBb4FYWf1F0peVXHOdzBiaQIYdoQ8CBFJ6YMSxMA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=fb.com; dmarc=pass action=none header.from=fb.com; dkim=pass
+ header.d=fb.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=fb.onmicrosoft.com;
+ s=selector2-fb-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=HQS4HSF2Q/kZDh3Ba6iQ5L1/Y3PUQjgEOaHMN70bBuE=;
+ b=Jc+1DYMwcIXn/obzMYyV+LhnqbYBPs+0w7s4cZ8FjpBUdH2pVxY5kuReLCCS8/yvrbKTn6vHbYuFPV7vfSagTGEPBSoB4CJ0Y7pzlsYh74xqJczE2Sq+akxnSzp4cFnJLM/TK8a7NhwOBxU6Ehc8px8j5eLDLYFDBI1CYv4fO2g=
+Authentication-Results: google.com; dkim=none (message not signed)
+ header.d=none;google.com; dmarc=none action=none header.from=fb.com;
+Received: from BYAPR15MB4119.namprd15.prod.outlook.com (2603:10b6:a02:cd::20)
+ by SJ0PR15MB4201.namprd15.prod.outlook.com (2603:10b6:a03:2ab::24) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3784.15; Fri, 22 Jan
+ 2021 19:37:27 +0000
+Received: from BYAPR15MB4119.namprd15.prod.outlook.com
+ ([fe80::2cfe:c26b:fd06:6c26]) by BYAPR15MB4119.namprd15.prod.outlook.com
+ ([fe80::2cfe:c26b:fd06:6c26%6]) with mapi id 15.20.3784.015; Fri, 22 Jan 2021
+ 19:37:27 +0000
+Date:   Fri, 22 Jan 2021 11:37:23 -0800
+From:   Andrey Ignatov <rdna@fb.com>
+To:     Stanislav Fomichev <sdf@google.com>,
+        Martin KaFai Lau <kafai@fb.com>
+CC:     <netdev@vger.kernel.org>, <bpf@vger.kernel.org>, <ast@kernel.org>,
+        <daniel@iogearbox.net>
+Subject: Re: [PATCH bpf-next 1/2] bpf: allow rewriting to ports under
+ ip_unprivileged_port_start
+Message-ID: <YAspc5rk2sNWojDQ@rdna-mbp.dhcp.thefacebook.com>
+References: <20210121012241.2109147-1-sdf@google.com>
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20210121012241.2109147-1-sdf@google.com>
+X-Originating-IP: [2620:10d:c090:400::5:363d]
+X-ClientProxiedBy: MW4PR03CA0126.namprd03.prod.outlook.com
+ (2603:10b6:303:8c::11) To BYAPR15MB4119.namprd15.prod.outlook.com
+ (2603:10b6:a02:cd::20)
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from localhost (2620:10d:c090:400::5:363d) by MW4PR03CA0126.namprd03.prod.outlook.com (2603:10b6:303:8c::11) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3784.12 via Frontend Transport; Fri, 22 Jan 2021 19:37:26 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 8328dc6f-05ae-4101-1d49-08d8bf0d25fb
+X-MS-TrafficTypeDiagnostic: SJ0PR15MB4201:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <SJ0PR15MB4201A77C8413B6B9BED193C5A8A09@SJ0PR15MB4201.namprd15.prod.outlook.com>
+X-FB-Source: Internal
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 7Utcw8V7nUGcavVg+d1ktkDl0VN1mWZ3svlsbfz1WYHQqZxqRnUXhlg2wETzfikjclAAVAQGBrbDItBz8zff2n7aQqcRmw2RV/WGAurludhc57KiUvbTIngWiVUqRgcCEL8NQip6LVvthnmxCnU/DpnHF8bSMmso9XtaGQASB8++SvTnhICCNcXARJ2HNj0ECBRbwd6LO+Fgpoik4ewdsFGs0Um/6qleLX38ft8LjGt4nJVLBKn9hXiC7hg3U0YOW9JGpLwHsIDAycTnYgUVqVZl+MzDCpv7XcZvwNs4fJ4eBxJVmX4zoUn4KZPA34KKezrVKVmsNFgHyJ3xmxDcjI8+vsrKutLAJ/YEAR1Y4djcF3IPsi+Y2aLpQvgDaVAC2lN5W1h3jYG/36nNJ1q6sKcG1n3+KpVoRXM06SvwXGDh03PkfblX4d4YeQX2nbqKmVJQuaJIYSknp9u8hqtd4A==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR15MB4119.namprd15.prod.outlook.com;PTR:;CAT:NONE;SFS:(39860400002)(396003)(366004)(376002)(346002)(136003)(8936002)(6486002)(9686003)(6636002)(4326008)(6666004)(5660300002)(86362001)(478600001)(66946007)(8676002)(83380400001)(110136005)(6496006)(52116002)(316002)(66476007)(66556008)(966005)(2906002)(186003)(16526019);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?Y0dHcmYvYTRGcVN1ampNYnU4YlRGL3JXbnVxWUlIUjAwMCtqa2xFQWJSRnFx?=
+ =?utf-8?B?OTEzYndFYlgyZHRCNXkyZWcwY0tqN0Fuek0vUFo5S25Ya012YTltR0pSdXBM?=
+ =?utf-8?B?K21jMDNNNkVwWVlRUE1FVG9GNkxRMlRlTjIvQndxaG5CZ3Qzd3grbjU2ME9Q?=
+ =?utf-8?B?SmE5Vzd6cTNQc2xFYW5rM1ExZTF2WWNyRlF6dkgvaldBNEZLUlQvMGxNcVZq?=
+ =?utf-8?B?YnNhUEVhNVluSE9hUjQ4dG44bWUydU1RamJxVmNMeFRkdGpQWkIzZzVTRFh6?=
+ =?utf-8?B?WDhzUzhqS3d4RVI2b3JqLy9qS2tpOHNpYTFyV01OZzAxUjl4N1lpbmp3ejRF?=
+ =?utf-8?B?N2svd1N3T3pyODRFMmx2R2x2UmRtdHZCMHE4dlpSY2s2QWlIM3FhWFpCa3JP?=
+ =?utf-8?B?eVltRkVmd3M5VW5QNTVPRkVscm43MDRRQ1FaWUhKTXdDNG43TUc4S0x2TEww?=
+ =?utf-8?B?eThobG0rRTdYNHVGVk5DNkxQSHdyUGhsMGhIMkF1dnUrS1p1d3gyZm5xQkJT?=
+ =?utf-8?B?T1VPdmZ1dkwvcFdmMUtWN1I1NkFYWFVpOHBHRUo5TmptSmxUcXhMTkxUd3FR?=
+ =?utf-8?B?VzExLzF3aUJqdEtiZWlqU0ZLYkZzc0VEM1I4Y3ExL2gweTUwVTMxNGxVNUdt?=
+ =?utf-8?B?Um8xdWF0eWJlWDVRWUhtUDlKR1VuaEVIUUc0R05RQStiMnZZTi9pNEhkZUdQ?=
+ =?utf-8?B?RXBEQ3FudzF1aE1BRXQxVkQ3VnhjaVpwY1dScWRhMWNrUXNIUjhuNXRqL1lW?=
+ =?utf-8?B?U0NBY0FRRmlrNFBVVkorYjVsTkZyZkc5NU1kR2FhY0lpczRHVjZFaFJBQWtS?=
+ =?utf-8?B?TnU5Sm0xWWl5dWYvNWxVd3VoT1BPWEdCNXRSZzJyRXhWZ3gzUHl2UFZ5Vk5N?=
+ =?utf-8?B?L3lIaGdUMXErK1pxWDN3d0ViRVVJN0NIK2dDemlVQmdpcGZDMmQ0UVdLS2la?=
+ =?utf-8?B?b3ErY1FIV0l2QzFiVER4YkYvSGpmS2ZBZ1ZyYjR5TS9WQnJuUk5QOURyL25q?=
+ =?utf-8?B?ck5CWXRVTkJ4UlYxNWo1T3B6dUR4UGVPU3IrM24zS0o4Q0tKMlQybnhiZHBE?=
+ =?utf-8?B?T096ekhNZzNiT3kvdENRRUlrbkdUSUQweG5TMzNEVitYK09YaklCQ09udVdM?=
+ =?utf-8?B?SHJsYTBjejNkL1EySDdJSENXYWJRTjR6cW8wbHRvSGZpMHFjZXhXSCtBN3Vi?=
+ =?utf-8?B?UmZIbVlJa2dZbU1nbW5reXNpTlVJMjUxMEVpbG1hcjh1Yjl1MjNyZ3lFWGxM?=
+ =?utf-8?B?R1VmWFdsZEJGMG5KWmR4UWdTWUdkRGZyVFdDbDAzVU80SUJDU3lEaXNSVmpF?=
+ =?utf-8?B?SzlJMGd0RlJXQ0Y5aTBCb201dFdXaXBCL0tIL1hNblBrZmpxQW9ncTRlRFNM?=
+ =?utf-8?B?ekk1c09WSHAzVXc9PQ==?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8328dc6f-05ae-4101-1d49-08d8bf0d25fb
+X-MS-Exchange-CrossTenant-AuthSource: BYAPR15MB4119.namprd15.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jan 2021 19:37:27.0546
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 8ae927fe-1255-47a7-a2af-5f3a069daaa2
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Oou4Y/D0MTORwrEzwQemrAFGZR9XmJk0rrl4JUUBfb2K6Kyj5txiiiMRhsXrDK5i
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR15MB4201
+X-OriginatorOrg: fb.com
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
+ definitions=2021-01-22_14:2021-01-22,2021-01-22 signatures=0
+X-Proofpoint-Spam-Details: rule=fb_default_notspam policy=fb_default score=0 bulkscore=0
+ impostorscore=0 priorityscore=1501 mlxscore=0 suspectscore=0 adultscore=0
+ phishscore=0 mlxlogscore=999 malwarescore=0 clxscore=1011 spamscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2101220099
+X-FB-Internal: deliver
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Parav Pandit <parav@nvidia.com>
+Stanislav Fomichev <sdf@google.com> [Wed, 2021-01-20 18:09 -0800]:
+> At the moment, BPF_CGROUP_INET{4,6}_BIND hooks can rewrite user_port
+> to the privileged ones (< ip_unprivileged_port_start), but it will
+> be rejected later on in the __inet_bind or __inet6_bind.
+>
+> Let's export 'port_changed' event from the BPF program and bypass
+> ip_unprivileged_port_start range check when we've seen that
+> the program explicitly overrode the port. This is accomplished
+> by generating instructions to set ctx->port_changed along with
+> updating ctx->user_port.
+> 
+> Signed-off-by: Stanislav Fomichev <sdf@google.com>
+> ---
+...
+> @@ -244,17 +245,27 @@ int bpf_percpu_cgroup_storage_update(struct bpf_map *map, void *key,
+>  	if (cgroup_bpf_enabled(type))	{				       \
+>  		lock_sock(sk);						       \
+>  		__ret = __cgroup_bpf_run_filter_sock_addr(sk, uaddr, type,     \
+> -							  t_ctx);	       \
+> +							  t_ctx, NULL);	       \
+>  		release_sock(sk);					       \
+>  	}								       \
+>  	__ret;								       \
+>  })
+>  
+> -#define BPF_CGROUP_RUN_PROG_INET4_BIND_LOCK(sk, uaddr)			       \
+> -	BPF_CGROUP_RUN_SA_PROG_LOCK(sk, uaddr, BPF_CGROUP_INET4_BIND, NULL)
+> -
+> -#define BPF_CGROUP_RUN_PROG_INET6_BIND_LOCK(sk, uaddr)			       \
+> -	BPF_CGROUP_RUN_SA_PROG_LOCK(sk, uaddr, BPF_CGROUP_INET6_BIND, NULL)
+> +#define BPF_CGROUP_RUN_PROG_INET_BIND_LOCK(sk, uaddr, type, flags)	       \
+> +({									       \
+> +	bool port_changed = false;					       \
 
-Add documentation for subfunction management using devlink
-port.
+I see the discussion with Martin in [0] on the program overriding the
+port but setting exactly same value as it already contains. Commenting
+on this patch since the code is here.
 
-Signed-off-by: Parav Pandit <parav@nvidia.com>
-Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
----
- .../device_drivers/ethernet/mellanox/mlx5.rst | 210 ++++++++++++++++++
- 1 file changed, 210 insertions(+)
+From what I understand there is no use-case to support overriding the
+port w/o changing the value to just bypass the capability. In this case
+the code can be simplified.
 
-diff --git a/Documentation/networking/device_drivers/ethernet/mellanox/mlx5.rst b/Documentation/networking/device_drivers/ethernet/mellanox/mlx5.rst
-index a5eb22793bb9..a1b32fcd0d76 100644
---- a/Documentation/networking/device_drivers/ethernet/mellanox/mlx5.rst
-+++ b/Documentation/networking/device_drivers/ethernet/mellanox/mlx5.rst
-@@ -12,6 +12,8 @@ Contents
- - `Enabling the driver and kconfig options`_
- - `Devlink info`_
- - `Devlink parameters`_
-+- `mlx5 subfunction`_
-+- `mlx5 port function`_
- - `Devlink health reporters`_
- - `mlx5 tracepoints`_
- 
-@@ -181,6 +183,214 @@ User command examples:
-       values:
-          cmode driverinit value true
- 
-+mlx5 subfunction
-+================
-+mlx5 supports subfunction management using devlink port (see :ref:`Documentation/networking/devlink/devlink-port.rst <devlink_port>`) interface.
-+
-+A Subfunction has its own function capabilities and its own resources. This
-+means a subfunction has its own dedicated queues (txq, rxq, cq, eq). These
-+queues are neither shared nor stolen from the parent PCI function.
-+
-+When a subfunction is RDMA capable, it has its own QP1, GID table and rdma
-+resources neither shared nor stolen from the parent PCI function.
-+
-+A subfunction has a dedicated window in PCI BAR space that is not shared
-+with ther other subfunctions or the parent PCI function. This ensures that all
-+devices (netdev, rdma, vdpa etc.) of the subfunction accesses only assigned
-+PCI BAR space.
-+
-+A Subfunction supports eswitch representation through which it supports tc
-+offloads. The user configures eswitch to send/receive packets from/to
-+the subfunction port.
-+
-+Subfunctions share PCI level resources such as PCI MSI-X IRQs with
-+other subfunctions and/or with its parent PCI function.
-+
-+Example mlx5 software, system and device view::
-+
-+       _______
-+      | admin |
-+      | user  |----------
-+      |_______|         |
-+          |             |
-+      ____|____       __|______            _________________
-+     |         |     |         |          |                 |
-+     | devlink |     | tc tool |          |    user         |
-+     | tool    |     |_________|          | applications    |
-+     |_________|         |                |_________________|
-+           |             |                   |          |
-+           |             |                   |          |         Userspace
-+ +---------|-------------|-------------------|----------|--------------------+
-+           |             |           +----------+   +----------+   Kernel
-+           |             |           |  netdev  |   | rdma dev |
-+           |             |           +----------+   +----------+
-+   (devlink port add/del |              ^               ^
-+    port function set)   |              |               |
-+           |             |              +---------------|
-+      _____|___          |              |        _______|_______
-+     |         |         |              |       | mlx5 class    |
-+     | devlink |   +------------+       |       |   drivers     |
-+     | kernel  |   | rep netdev |       |       |(mlx5_core,ib) |
-+     |_________|   +------------+       |       |_______________|
-+           |             |              |               ^
-+   (devlink ops)         |              |          (probe/remove)
-+  _________|________     |              |           ____|________
-+ | subfunction      |    |     +---------------+   | subfunction |
-+ | management driver|-----     | subfunction   |---|  driver     |
-+ | (mlx5_core)      |          | auxiliary dev |   | (mlx5_core) |
-+ |__________________|          +---------------+   |_____________|
-+           |                                            ^
-+  (sf add/del, vhca events)                             |
-+           |                                      (device add/del)
-+      _____|____                                    ____|________
-+     |          |                                  | subfunction |
-+     |  PCI NIC |---- activate/deactive events---->| host driver |
-+     |__________|                                  | (mlx5_core) |
-+                                                   |_____________|
-+
-+Subfunction is created using devlink port interface.
-+
-+- Change device to switchdev mode::
-+
-+    $ devlink dev eswitch set pci/0000:06:00.0 mode switchdev
-+
-+- Add a devlink port of subfunction flaovur::
-+
-+    $ devlink port add pci/0000:06:00.0 flavour pcisf pfnum 0 sfnum 88
-+    pci/0000:06:00.0/32768: type eth netdev eth6 flavour pcisf controller 0 pfnum 0 sfnum 88 external false splittable false
-+      function:
-+        hw_addr 00:00:00:00:00:00 state inactive opstate detached
-+
-+- Show a devlink port of the subfunction::
-+
-+    $ devlink port show pci/0000:06:00.0/32768
-+    pci/0000:06:00.0/32768: type eth netdev enp6s0pf0sf88 flavour pcisf pfnum 0 sfnum 88
-+      function:
-+        hw_addr 00:00:00:00:00:00 state inactive opstate detached
-+
-+- Delete a devlink port of subfunction after use::
-+
-+    $ devlink port del pci/0000:06:00.0/32768
-+
-+mlx5 function attributes
-+========================
-+The mlx5 driver provides a mechanism to setup PCI VF/SF function attributes in
-+a unified way for SmartNIC and non-SmartNIC.
-+
-+This is supported only when the eswitch mode is set to switchdev. Port function
-+configuration of the PCI VF/SF is supported through devlink eswitch port.
-+
-+Port function attributes should be set before PCI VF/SF is enumerated by the
-+driver.
-+
-+MAC address setup
-+-----------------
-+mlx5 driver provides mechanism to setup the MAC address of the PCI VF/SF.
-+
-+The configured MAC address of the PCI VF/SF will be used by netdevice and rdma
-+device created for the PCI VF/SF.
-+
-+- Get the MAC address of the VF identified by its unique devlink port index::
-+
-+    $ devlink port show pci/0000:06:00.0/2
-+    pci/0000:06:00.0/2: type eth netdev enp6s0pf0vf1 flavour pcivf pfnum 0 vfnum 1
-+      function:
-+        hw_addr 00:00:00:00:00:00
-+
-+- Set the MAC address of the VF identified by its unique devlink port index::
-+
-+    $ devlink port function set pci/0000:06:00.0/2 hw_addr 00:11:22:33:44:55
-+
-+    $ devlink port show pci/0000:06:00.0/2
-+    pci/0000:06:00.0/2: type eth netdev enp6s0pf0vf1 flavour pcivf pfnum 0 vfnum 1
-+      function:
-+        hw_addr 00:11:22:33:44:55
-+
-+- Get the MAC address of the SF identified by its unique devlink port index::
-+
-+    $ devlink port show pci/0000:06:00.0/32768
-+    pci/0000:06:00.0/32768: type eth netdev enp6s0pf0sf88 flavour pcisf pfnum 0 sfnum 88
-+      function:
-+        hw_addr 00:00:00:00:00:00
-+
-+- Set the MAC address of the VF identified by its unique devlink port index::
-+
-+    $ devlink port function set pci/0000:06:00.0/32768 hw_addr 00:00:00:00:88:88
-+
-+    $ devlink port show pci/0000:06:00.0/32768
-+    pci/0000:06:00.0/32768: type eth netdev enp6s0pf0sf88 flavour pcivf pfnum 0 sfnum 88
-+      function:
-+        hw_addr 00:00:00:00:88:88
-+
-+SF state setup
-+--------------
-+To use the SF, the user must active the SF using the SF function state
-+attribute.
-+
-+- Get the state of the SF identified by its unique devlink port index::
-+
-+   $ devlink port show ens2f0npf0sf88
-+   pci/0000:06:00.0/32768: type eth netdev ens2f0npf0sf88 flavour pcisf controller 0 pfnum 0 sfnum 88 external false splittable false
-+     function:
-+       hw_addr 00:00:00:00:88:88 state inactive opstate detached
-+
-+- Activate the function and verify its state is active::
-+
-+   $ devlink port function set ens2f0npf0sf88 state active
-+
-+   $ devlink port show ens2f0npf0sf88
-+   pci/0000:06:00.0/32768: type eth netdev ens2f0npf0sf88 flavour pcisf controller 0 pfnum 0 sfnum 88 external false splittable false
-+     function:
-+       hw_addr 00:00:00:00:88:88 state active opstate detached
-+
-+Upon function activation, the PF driver instance gets the event from the device
-+that a particular SF was activated. It's the cue to put the device on bus, probe
-+it and instantiate the devlink instance and class specific auxiliary devices
-+for it.
-+
-+- Show the auxiliary device and port of the subfunction::
-+
-+    $ devlink dev show
-+    devlink dev show auxiliary/mlx5_core.sf.4
-+
-+    $ devlink port show auxiliary/mlx5_core.sf.4/1
-+    auxiliary/mlx5_core.sf.4/1: type eth netdev p0sf88 flavour virtual port 0 splittable false
-+
-+    $ rdma link show mlx5_0/1
-+    link mlx5_0/1 state ACTIVE physical_state LINK_UP netdev p0sf88
-+
-+    $ rdma dev show
-+    8: rocep6s0f1: node_type ca fw 16.29.0550 node_guid 248a:0703:00b3:d113 sys_image_guid 248a:0703:00b3:d112
-+    13: mlx5_0: node_type ca fw 16.29.0550 node_guid 0000:00ff:fe00:8888 sys_image_guid 248a:0703:00b3:d112
-+
-+- Subfunction auxiliary device and class device hierarchy::
-+
-+                 mlx5_core.sf.4
-+          (subfunction auxiliary device)
-+                       /\
-+                      /  \
-+                     /    \
-+                    /      \
-+                   /        \
-+      mlx5_core.eth.4     mlx5_core.rdma.4
-+     (sf eth aux dev)     (sf rdma aux dev)
-+         |                      |
-+         |                      |
-+      p0sf88                  mlx5_0
-+     (sf netdev)          (sf rdma device)
-+
-+Additionally, the SF port also gets the event when the driver attaches to the
-+auxiliary device of the subfunction. This results in changing the operational
-+state of the function. This provides visiblity to the user to decide when is it
-+safe to delete the SF port for graceful termination of the subfunction.
-+
-+- Show the SF port operational state::
-+
-+    $ devlink port show ens2f0npf0sf88
-+    pci/0000:06:00.0/32768: type eth netdev ens2f0npf0sf88 flavour pcisf controller 0 pfnum 0 sfnum 88 external false splittable false
-+      function:
-+        hw_addr 00:00:00:00:88:88 state active opstate attached
-+
- Devlink health reporters
- ========================
- 
+Here instead of introducing port_changed you can just remember the
+original ((struct sockaddr_in *)uaddr)->sin_port or
+((struct sockaddr_in6 *)uaddr)->sin6_port (they have same offset/size so
+it can be simplified same way as in sock_addr_convert_ctx_access() for
+user_port) ...
+
+> +	int __ret = 0;							       \
+> +	if (cgroup_bpf_enabled(type))	{				       \
+> +		lock_sock(sk);						       \
+> +		__ret = __cgroup_bpf_run_filter_sock_addr(sk, uaddr, type,     \
+> +							  NULL,		       \
+> +							  &port_changed);      \
+> +		release_sock(sk);					       \
+> +		if (port_changed)					       \
+
+... and then just compare the original and the new ports here.
+
+The benefits will be:
+* no need to introduce port_changed field in struct bpf_sock_addr_kern;
+* no need to do change program instructions;
+* no need to think about compiler optimizing out those instructions;
+* no need to think about multiple programs coordination, the flag will
+  be set only if port has actually changed what is easy to reason about
+  from user perspective.
+
+wdyt?
+
+> +			*flags |= BIND_NO_CAP_NET_BIND_SERVICE;		       \
+> +	}								       \
+> +	__ret;								       \
+> +})
+>  
+>  #define BPF_CGROUP_PRE_CONNECT_ENABLED(sk)				       \
+>  	((cgroup_bpf_enabled(BPF_CGROUP_INET4_CONNECT) ||		       \
+> @@ -453,8 +464,7 @@ static inline int bpf_percpu_cgroup_storage_update(struct bpf_map *map,
+>  #define BPF_CGROUP_RUN_PROG_INET_EGRESS(sk,skb) ({ 0; })
+>  #define BPF_CGROUP_RUN_PROG_INET_SOCK(sk) ({ 0; })
+>  #define BPF_CGROUP_RUN_PROG_INET_SOCK_RELEASE(sk) ({ 0; })
+> -#define BPF_CGROUP_RUN_PROG_INET4_BIND_LOCK(sk, uaddr) ({ 0; })
+> -#define BPF_CGROUP_RUN_PROG_INET6_BIND_LOCK(sk, uaddr) ({ 0; })
+> +#define BPF_CGROUP_RUN_PROG_INET_BIND_LOCK(sk, uaddr, type, flags) ({ 0; })
+>  #define BPF_CGROUP_RUN_PROG_INET4_POST_BIND(sk) ({ 0; })
+>  #define BPF_CGROUP_RUN_PROG_INET6_POST_BIND(sk) ({ 0; })
+>  #define BPF_CGROUP_RUN_PROG_INET4_CONNECT(sk, uaddr) ({ 0; })
+...
+
+[0] https://lore.kernel.org/bpf/20210121223330.pyk4ljtjirm2zlay@kafai-mbp/
+
 -- 
-2.26.2
-
+Andrey Ignatov
