@@ -2,167 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F235A30098E
-	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 18:23:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B61430098F
+	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 18:23:23 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729462AbhAVQxj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jan 2021 11:53:39 -0500
-Received: from mail-ot1-f53.google.com ([209.85.210.53]:41718 "EHLO
-        mail-ot1-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728653AbhAVQlb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 11:41:31 -0500
-Received: by mail-ot1-f53.google.com with SMTP id k8so5633682otr.8;
-        Fri, 22 Jan 2021 08:41:19 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=oBT6lOdqQ9gMoz0GrIXk1aglXl4WV8PiXf0WiP0Be/g=;
-        b=sK9HqeorKNyuqZc9D65d3wLYSPXF6CBNQZ9wzZsDtqdMEiF2P4KVX8cLsEqDbvX3dQ
-         p09W/XK0J2jglBb8Hm3ALhwXRTZljkIDle1Fbbp3vCnZh74XotZI6I3Lfn+W7S0WOdJ4
-         ICv4eFU7XQIsU8G+dzrF1MlLXYxiWXBQU0ySIPanqxgUm3N4Ju+vaNdQXSk9MBBldHcA
-         7nan7bmA4eL0lzt0Qscu/NuVYMxa8GHbdaXcRdcsP8NMuPcrTqh2j0rCA4v/xQUGVxfY
-         Zn0T9fi0NO9MjgJBHAXALIJbfCL9Jb8TzJy5Nhr/xT5VNdYHr38y086VAig97gnydXJd
-         0K1A==
-X-Gm-Message-State: AOAM533930mA3d/BAblFPajpgCU/5qJPIRUOB17DZqCNlgrMGFp1tERY
-        DKIvt/fo3xlOBO1iD9kiiBS2rCch8V5j7hdPSOs=
-X-Google-Smtp-Source: ABdhPJwkHlDPwIKw9uPIf9JKIEPyQ8b86W99bEyIhjtfIg47ZVy19I7pbvzBYx7O/SotAOAHLaBtP7zplW4kclFkKoA=
-X-Received: by 2002:a9d:745a:: with SMTP id p26mr4087167otk.206.1611333652686;
- Fri, 22 Jan 2021 08:40:52 -0800 (PST)
+        id S1729635AbhAVQyI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jan 2021 11:54:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52854 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729386AbhAVQnq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 11:43:46 -0500
+Received: from mout-p-102.mailbox.org (mout-p-102.mailbox.org [IPv6:2001:67c:2050::465:102])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B37CCC061794;
+        Fri, 22 Jan 2021 08:43:09 -0800 (PST)
+Received: from smtp1.mailbox.org (smtp1.mailbox.org [IPv6:2001:67c:2050:105:465:1:1:0])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
+        (No client certificate requested)
+        by mout-p-102.mailbox.org (Postfix) with ESMTPS id 4DMlS919QJzQlYs;
+        Fri, 22 Jan 2021 17:43:05 +0100 (CET)
+Authentication-Results: spamfilter06.heinlein-hosting.de (amavisd-new);
+        dkim=pass (2048-bit key) reason="pass (just generated, assumed good)"
+        header.d=mailbox.org
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=mailbox.org; h=
+        content-transfer-encoding:mime-version:message-id:date:date
+        :subject:subject:from:from:received; s=mail20150812; t=
+        1611333777; bh=Lh2xfkUbit1Y/Lo9qAlrk6Bt3Nw0IkInj3l415cJVDA=; b=l
+        l1gvic6Z5Mm26JDD4PeFolt+OHTiOCKNObJRwAQRy+M2OcNIj/3jbUGxetb/P4xR
+        U1actvoCYj6kajYCJh+JAqDINbkCOCw7PZa8uGW3zPY4hsA6zu+VVEJ/5DR89VFA
+        SiaDAeQ/eI7642d6xK2Bae6wuWNgH8dBWfNMxz4m75EA7s1xMPgKN8HAAEF/N9oL
+        ehxDP4ksrmbPhX517eNHxOJJlLFKnD5Xxz4NtcZs1O3hjcimvwzEQcNjpw0CtpF/
+        lqOlZoanipoVgq/hiGlEEtg/MxCai+w+/3J7hnU064I88uZDjyK2LPE0XYBUKLcK
+        UBFTD7LFPPN5zSf4GbXog==
+X-Virus-Scanned: amavisd-new at heinlein-support.de
+Received: from smtp1.mailbox.org ([80.241.60.240])
+        by spamfilter06.heinlein-hosting.de (spamfilter06.heinlein-hosting.de [80.241.56.125]) (amavisd-new, port 10030)
+        with ESMTP id KUGvmkt91g7F; Fri, 22 Jan 2021 17:42:57 +0100 (CET)
+From:   Loris Reiff <loris.reiff@liblor.ch>
+To:     bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org, sdf@google.com,
+        Loris Reiff <loris.reiff@liblor.ch>
+Subject: [PATCH 1/2] bpf: cgroup: Fix optlen WARN_ON_ONCE toctou
+Date:   Fri, 22 Jan 2021 17:42:31 +0100
+Message-Id: <20210122164232.61770-1-loris.reiff@liblor.ch>
 MIME-Version: 1.0
-References: <20210122154300.7628-1-calvin.johnson@oss.nxp.com> <20210122154300.7628-10-calvin.johnson@oss.nxp.com>
-In-Reply-To: <20210122154300.7628-10-calvin.johnson@oss.nxp.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Fri, 22 Jan 2021 17:40:41 +0100
-Message-ID: <CAJZ5v0gzdi08fwf0e3NyP1WzuSBk47J5OT5DW_aaUHn_9icfag@mail.gmail.com>
-Subject: Re: [net-next PATCH v4 09/15] device property: Introduce fwnode_get_id()
-To:     Calvin Johnson <calvin.johnson@oss.nxp.com>
-Cc:     Grant Likely <grant.likely@arm.com>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Jeremy Linton <jeremy.linton@arm.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
-        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Pieter Jansen Van Vuuren <pieter.jansenvv@bamboosystems.io>,
-        Jon <jon@solid-run.com>, Saravana Kannan <saravanak@google.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        "linux.cj" <linux.cj@gmail.com>,
-        Diana Madalina Craciun <diana.craciun@nxp.com>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Kieran Bingham <kieran.bingham+renesas@ideasonboard.com>,
-        Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-MBO-SPAM-Probability: **
+X-Rspamd-Score: 1.80 / 15.00 / 15.00
+X-Rspamd-Queue-Id: C547C186B
+X-Rspamd-UID: 3024cb
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 22, 2021 at 4:46 PM Calvin Johnson
-<calvin.johnson@oss.nxp.com> wrote:
->
-> Using fwnode_get_id(), get the reg property value for DT node
-> or get the _ADR object value for ACPI node.
+A toctou issue in `__cgroup_bpf_run_filter_getsockopt` can trigger a
+WARN_ON_ONCE in a check of `copy_from_user`.
+`*optlen` is checked to be non-negative in the individual getsockopt
+functions beforehand. Changing `*optlen` in a race to a negative value
+will result in a `copy_from_user(ctx.optval, optval, ctx.optlen)` with
+`ctx.optlen` being a negative integer.
 
-So I'm not really sure if this is going to be generically useful.
+Fixes: 0d01da6afc54 ("bpf: implement getsockopt and setsockopt hooks")
+Signed-off-by: Loris Reiff <loris.reiff@liblor.ch>
+---
+ kernel/bpf/cgroup.c | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-First of all, the meaning of the _ADR return value is specific to a
-given bus type (e.g. the PCI encoding of it is different from the I2C
-encoding of it) and it just happens to be matching the definition of
-the "reg" property for this particular binding.
+diff --git a/kernel/bpf/cgroup.c b/kernel/bpf/cgroup.c
+index 96555a8a2..6ec8f02f4 100644
+--- a/kernel/bpf/cgroup.c
++++ b/kernel/bpf/cgroup.c
+@@ -1442,6 +1442,11 @@ int __cgroup_bpf_run_filter_getsockopt(struct sock *sk, int level,
+ 			goto out;
+ 		}
+ 
++		if (ctx.optlen < 0) {
++			ret = -EFAULT;
++			goto out;
++		}
++
+ 		if (copy_from_user(ctx.optval, optval,
+ 				   min(ctx.optlen, max_optlen)) != 0) {
+ 			ret = -EFAULT;
+-- 
+2.29.2
 
-IOW, not everyone may expect the "reg" property and the _ADR return
-value to have the same encoding and belong to the same set of values,
-so maybe put this function somewhere closer to the code that's going
-to use it, because it seems to be kind of specific to this particular
-use case?
-
-> Signed-off-by: Calvin Johnson <calvin.johnson@oss.nxp.com>
-> ---
->
-> Changes in v4:
-> - Improve code structure to handle all cases
->
-> Changes in v3:
-> - Modified to retrieve reg property value for ACPI as well
-> - Resolved compilation issue with CONFIG_ACPI = n
-> - Added more info into documentation
->
-> Changes in v2: None
->
->  drivers/base/property.c  | 34 ++++++++++++++++++++++++++++++++++
->  include/linux/property.h |  1 +
->  2 files changed, 35 insertions(+)
->
-> diff --git a/drivers/base/property.c b/drivers/base/property.c
-> index 35b95c6ac0c6..f0581bbf7a4b 100644
-> --- a/drivers/base/property.c
-> +++ b/drivers/base/property.c
-> @@ -580,6 +580,40 @@ const char *fwnode_get_name_prefix(const struct fwnode_handle *fwnode)
->         return fwnode_call_ptr_op(fwnode, get_name_prefix);
->  }
->
-> +/**
-> + * fwnode_get_id - Get the id of a fwnode.
-> + * @fwnode: firmware node
-> + * @id: id of the fwnode
-> + *
-> + * This function provides the id of a fwnode which can be either
-> + * DT or ACPI node. For ACPI, "reg" property value, if present will
-> + * be provided or else _ADR value will be provided.
-> + * Returns 0 on success or a negative errno.
-> + */
-> +int fwnode_get_id(struct fwnode_handle *fwnode, u32 *id)
-> +{
-> +#ifdef CONFIG_ACPI
-> +       unsigned long long adr;
-> +       acpi_status status;
-> +#endif
-> +       int ret;
-> +
-> +       ret = fwnode_property_read_u32(fwnode, "reg", id);
-> +       if (ret) {
-> +#ifdef CONFIG_ACPI
-> +               status = acpi_evaluate_integer(ACPI_HANDLE_FWNODE(fwnode),
-> +                                              METHOD_NAME__ADR, NULL, &adr);
-> +               if (ACPI_FAILURE(status))
-> +                       return -EINVAL;
-> +               *id = (u32)adr;
-> +#else
-> +               return ret;
-> +#endif
-> +       }
-> +       return 0;
-> +}
-> +EXPORT_SYMBOL_GPL(fwnode_get_id);
-> +
->  /**
->   * fwnode_get_parent - Return parent firwmare node
->   * @fwnode: Firmware whose parent is retrieved
-> diff --git a/include/linux/property.h b/include/linux/property.h
-> index 0a9001fe7aea..3f41475f010b 100644
-> --- a/include/linux/property.h
-> +++ b/include/linux/property.h
-> @@ -82,6 +82,7 @@ struct fwnode_handle *fwnode_find_reference(const struct fwnode_handle *fwnode,
->
->  const char *fwnode_get_name(const struct fwnode_handle *fwnode);
->  const char *fwnode_get_name_prefix(const struct fwnode_handle *fwnode);
-> +int fwnode_get_id(struct fwnode_handle *fwnode, u32 *id);
->  struct fwnode_handle *fwnode_get_parent(const struct fwnode_handle *fwnode);
->  struct fwnode_handle *fwnode_get_next_parent(
->         struct fwnode_handle *fwnode);
-> --
-> 2.17.1
->
