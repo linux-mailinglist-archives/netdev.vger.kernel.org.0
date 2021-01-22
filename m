@@ -2,180 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DA0872FF93F
-	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 01:10:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C03DC2FF943
+	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 01:13:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726123AbhAVAKf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jan 2021 19:10:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36756 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725823AbhAVAKb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jan 2021 19:10:31 -0500
-Received: from mail-pg1-x54a.google.com (mail-pg1-x54a.google.com [IPv6:2607:f8b0:4864:20::54a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C8C9C0613ED
-        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 16:09:50 -0800 (PST)
-Received: by mail-pg1-x54a.google.com with SMTP id s17so2248633pgv.14
-        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 16:09:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=sender:date:in-reply-to:message-id:mime-version:references:subject
-         :from:to:cc;
-        bh=RavGfVHe+w3dtIeMBqaz6zQ9VwkDBaCQiimc6m0hfak=;
-        b=dKG1d5LX5bfkc887lD8MSi0bwIDqhYnWwuRetEWAt/En2MoS/1oz6PnQNQz9H/2EN9
-         MSbYbFZFR9IJzJa/K5V1yWeHbY4qLT9lU+A6AbSnQ7QZiHi/jWVGFS4/POtjdbn/ueFv
-         2KnQZSIfQlJipwNQkwAySsN35hpTxsnSH6ercV33++pxeouHGNWzTX4Sv1HkqHkF1NIn
-         dyf4dE3rtzbZ9r3quJ0U1iRyvr/lcuKdWVIK/Mia/ZeSVtjBml6tsNIoc2z0i3PLm6C+
-         cuv1eISWyDavw6vOpJNA7lnK8h9s+cPI7NfFEwPVGm96dgpONAffYq06Gn065q8bve98
-         03Zg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=RavGfVHe+w3dtIeMBqaz6zQ9VwkDBaCQiimc6m0hfak=;
-        b=q+t9KM1i71ycZtb+9ec6+MYLcVAGmXhtlYCXHW72mr7nvcfLx+D1BaL3FHmEmYmOjb
-         QpD2GjawfuwVEKf+gjPPndFrlM/YC+Frbt19+y9uyGZbMEkJGj1ki61mk+Judk0HjhLe
-         Bl5JLmhH3d2mo+WmHRMVWYGdsAo3zv6wgGFIQYE+aNi3FV54j2rML3QfgsIVMcmwLo58
-         Jk2hQqSdEOH1JbemTcLJ3S6vIPeJSbBljK/mrUd4HC8jZsEf3Ur4/OckL6l8RXhJguqL
-         S0Mam4o0S7/iKvoAUnNJosxdLcB7y0xYX0jI2QlEFBKOnkiHYyU5QrUqRDxxJc+KouDj
-         plmg==
-X-Gm-Message-State: AOAM533Ywu0MLMO4Vi22nD2IIPuIFnJ42ffccJpFrIptqaeNfmIMtehD
-        KzpJQNNnAHeAIpoBZFjxvsbGWNQ=
-X-Google-Smtp-Source: ABdhPJxDBRTaiWASndjxunEU/EXlMmIOr7fGAdn4uRQ7SpyTbG6WnfG3tY0wjVOfGXI4qEwaFoXa9Sk=
-Sender: "sdf via sendgmr" <sdf@sdf2.svl.corp.google.com>
-X-Received: from sdf2.svl.corp.google.com ([2620:15c:2c4:1:7220:84ff:fe09:7732])
- (user=sdf job=sendgmr) by 2002:a17:90a:8b94:: with SMTP id
- z20mr695646pjn.1.1611274189692; Thu, 21 Jan 2021 16:09:49 -0800 (PST)
-Date:   Thu, 21 Jan 2021 16:09:47 -0800
-In-Reply-To: <CAEf4BzaOjBN=C=zjmhP-nLJbtm-FKBdpQbJmxtavn6r9VC3eiA@mail.gmail.com>
-Message-Id: <YAoXy0xcjhW8BftF@google.com>
-Mime-Version: 1.0
-References: <20210121012241.2109147-1-sdf@google.com> <20210121012241.2109147-2-sdf@google.com>
- <CAEf4BzaOjBN=C=zjmhP-nLJbtm-FKBdpQbJmxtavn6r9VC3eiA@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 2/2] selftests/bpf: verify that rebinding to port
- < 1024 from BPF works
-From:   sdf@google.com
-To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Content-Type: text/plain; charset="UTF-8"; format=flowed; delsp=yes
+        id S1725912AbhAVAM5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jan 2021 19:12:57 -0500
+Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:2307 "EHLO
+        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725868AbhAVAMy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jan 2021 19:12:54 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B600a185e0000>; Thu, 21 Jan 2021 16:12:14 -0800
+Received: from HKMAIL101.nvidia.com (10.18.16.10) by HQMAIL109.nvidia.com
+ (172.20.187.15) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Fri, 22 Jan
+ 2021 00:12:13 +0000
+Received: from HKMAIL103.nvidia.com (10.18.16.12) by HKMAIL101.nvidia.com
+ (10.18.16.10) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Fri, 22 Jan
+ 2021 00:12:02 +0000
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.177)
+ by HKMAIL103.nvidia.com (10.18.16.12) with Microsoft SMTP Server (TLS) id
+ 15.0.1473.3 via Frontend Transport; Fri, 22 Jan 2021 00:12:02 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=gzBSJ9VecpdGZOYH4i/t6nPK9OxjntWXyqs7SaCogcbY3w8mjUQPZiWXaiQQmE991mSBb0ToItB5BGyNQZ+XXxkjXcrOW+awE/9mKrlaXPBnbpq0kifYdIazC/TI5juxW0Wxt1EBsyNRPowbsmvLMoe2JqxhtBh06Zd1/AC6oKjvFExQz0swEDxW+/UajZ8ZyK0knwmXwLjrZ1F38EpGS34rsV/BNoGUEaTrdMmOsE+tuk71CiEOeIw1L/pWeKlZ6mui81jwyrg0otZ2ovnrR/5F4ofVa3nRG47/01YyLHQWs0RSJhqCsHHUMWRcM7TZN564R2sOow7bc59MauaqQg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=tg49lyOe4ndxOafM38vTTLJE13SGiijd8pIleDt2BEY=;
+ b=KXxMcA3Q4vFc9Fz9sjIaRgkkHdkK2WLWzBpTeaYJhZg5NJMu7QyV8YmjoT2T0G86h4rIY2Z8rW3sbDh+ChGibI6oTvknGqj7CPeQXQPR45RrwZPvidaLb8iRAEQzWEwrZvUrODULX2X6P7koCHxn0M3xW91KGVWPP4Q8tT8fUiFKWwVNuI9SqLyv7fBbMCDUc6o1cMk2n/sDe6LCFJivr5ggNCjn27fxWZvY7jPLq2LACNAEvgrcRasv+Fv0GnMqieQp1a9opNj2A4zWdME3/hVF4giwDiSikldxRKS1OMSPCC8tvEHajeHTYQITPTuyi6mm3RjveFjhg1MhnGmJmg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
+ by DM5PR12MB2437.namprd12.prod.outlook.com (2603:10b6:4:ba::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3784.13; Fri, 22 Jan
+ 2021 00:11:59 +0000
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::546d:512c:72fa:4727]) by DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::546d:512c:72fa:4727%7]) with mapi id 15.20.3784.011; Fri, 22 Jan 2021
+ 00:11:59 +0000
+Date:   Thu, 21 Jan 2021 20:11:57 -0400
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
+CC:     Saeed Mahameed <saeed@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        <linux-rdma@vger.kernel.org>, <alexander.duyck@gmail.com>,
+        <edwin.peer@broadcom.com>, <dsahern@kernel.org>,
+        <kiran.patil@intel.com>, <jacob.e.keller@intel.com>,
+        <david.m.ertman@intel.com>, <dan.j.williams@intel.com>,
+        Parav Pandit <parav@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: Re: [net-next V9 14/14] net/mlx5: Add devlink subfunction port
+ documentation
+Message-ID: <20210122001157.GE4147@nvidia.com>
+References: <20210121085237.137919-1-saeed@kernel.org>
+ <20210121085237.137919-15-saeed@kernel.org>
+ <d5ef3359-ff3c-0e71-8312-0f24c3af4bce@intel.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <d5ef3359-ff3c-0e71-8312-0f24c3af4bce@intel.com>
+X-ClientProxiedBy: BL0PR03CA0012.namprd03.prod.outlook.com
+ (2603:10b6:208:2d::25) To DM6PR12MB3834.namprd12.prod.outlook.com
+ (2603:10b6:5:14a::12)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from mlx.ziepe.ca (142.162.115.133) by BL0PR03CA0012.namprd03.prod.outlook.com (2603:10b6:208:2d::25) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3784.11 via Frontend Transport; Fri, 22 Jan 2021 00:11:59 +0000
+Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1l2k3R-005EeE-SM; Thu, 21 Jan 2021 20:11:57 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1611274334; bh=tg49lyOe4ndxOafM38vTTLJE13SGiijd8pIleDt2BEY=;
+        h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:Date:
+         From:To:CC:Subject:Message-ID:References:Content-Type:
+         Content-Disposition:In-Reply-To:X-ClientProxiedBy:MIME-Version:
+         X-MS-Exchange-MessageSentRepresentingType;
+        b=K9P2KHk4yxn82P82PC9L6d2500CeYextiz/7teDdiW9XwR7k91AKIdsVuuy5SRLlS
+         hC6X2IE/lp+wRCWeZG8L5wzrk4WuXCU0LNPWgyW2ryoQZR/tKeEs6M3pQECguufqLh
+         fbPCMsPjxcETprvZ09ooUmmsh8NOrUohd8Vs/mHLULCKEVBtoUgmJh9+iZBITcXUfT
+         eOj9Jq1Hab9TVqfqLuV6fcj6uB/NQrrjkS/E1kUSuanPrbtzF/s10NC1ybP3QsTOWa
+         X/kIWTIThTyT2D2VsG3w78f2JTXGIBMAvKb03hTKgS/XYJhKibXVF5ubkYOvEuBZPu
+         wpzSRGcKIejHg==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 01/21, Andrii Nakryiko wrote:
-> On Wed, Jan 20, 2021 at 7:16 PM Stanislav Fomichev <sdf@google.com> wrote:
-> >
-> > BPF rewrites from 111 to 111, but it still should mark the port as
-> > "changed".
-> > We also verify that if port isn't touched by BPF, it's still prohibited.
-> >
-> > Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> > ---
-> >  .../selftests/bpf/prog_tests/bind_perm.c      | 88 +++++++++++++++++++
-> >  tools/testing/selftests/bpf/progs/bind_perm.c | 36 ++++++++
-> >  2 files changed, 124 insertions(+)
-> >  create mode 100644 tools/testing/selftests/bpf/prog_tests/bind_perm.c
-> >  create mode 100644 tools/testing/selftests/bpf/progs/bind_perm.c
-> >
-> > diff --git a/tools/testing/selftests/bpf/prog_tests/bind_perm.c  
-> b/tools/testing/selftests/bpf/prog_tests/bind_perm.c
-> > new file mode 100644
-> > index 000000000000..840a04ac9042
-> > --- /dev/null
-> > +++ b/tools/testing/selftests/bpf/prog_tests/bind_perm.c
-> > @@ -0,0 +1,88 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +#include <test_progs.h>
-> > +#include "bind_perm.skel.h"
-> > +
-> > +#include <sys/types.h>
-> > +#include <sys/socket.h>
-> > +#include <sys/capability.h>
-> > +
-> > +static int duration;
-> > +
-> > +void try_bind(int port, int expected_errno)
-> > +{
-> > +       struct sockaddr_in sin = {};
-> > +       int fd = -1;
-> > +
-> > +       fd = socket(AF_INET, SOCK_STREAM, 0);
-> > +       if (CHECK(fd < 0, "fd", "errno %d", errno))
-> > +               goto close_socket;
-> > +
-> > +       sin.sin_family = AF_INET;
-> > +       sin.sin_port = htons(port);
-> > +
-> > +       errno = 0;
-> > +       bind(fd, (struct sockaddr *)&sin, sizeof(sin));
-> > +       CHECK(errno != expected_errno, "bind", "errno %d, expected %d",
-> > +             errno, expected_errno);
+On Thu, Jan 21, 2021 at 12:59:55PM -0800, Samudrala, Sridhar wrote:
 
-> ASSERT_NEQ() is nicer
-Nice, didn't know these existed. Now we need ASSERT_GT/LE/GE/LE to also
-get rid of those other CHECKs :-)
+> > +                 mlx5_core.sf.4
+> > +          (subfunction auxiliary device)
+> > +                       /\
+> > +                      /  \
+> > +                     /    \
+> > +                    /      \
+> > +                   /        \
+> > +      mlx5_core.eth.4     mlx5_core.rdma.4
+> > +     (sf eth aux dev)     (sf rdma aux dev)
+> > +         |                      |
+> > +         |                      |
+> > +      p0sf88                  mlx5_0
+> > +     (sf netdev)          (sf rdma device)
+> 
+> This picture seems to indicate that when SF is activated, a sub
+> function auxiliary device is created 
 
-> > +
-> > +close_socket:
-> > +       if (fd >= 0)
-> > +               close(fd);
-> > +}
-> > +
-> > +void cap_net_bind_service(cap_flag_value_t flag)
-> > +{
-> > +       const cap_value_t cap_net_bind_service = CAP_NET_BIND_SERVICE;
-> > +       cap_t caps;
-> > +
-> > +       caps = cap_get_proc();
-> > +       if (CHECK(!caps, "cap_get_proc", "errno %d", errno))
-> > +               goto free_caps;
-> > +
-> > +       if (CHECK(cap_set_flag(caps, CAP_EFFECTIVE, 1,  
-> &cap_net_bind_service,
-> > +                              CAP_CLEAR),
-> > +                 "cap_set_flag", "errno %d", errno))
-> > +               goto free_caps;
-> > +
-> > +       if (CHECK(cap_set_flag(caps, CAP_EFFECTIVE, 1,  
-> &cap_net_bind_service,
-> > +                              CAP_CLEAR),
-> > +                 "cap_set_flag", "errno %d", errno))
-> > +               goto free_caps;
-> > +
-> > +       if (CHECK(cap_set_proc(caps), "cap_set_proc", "errno %d",  
-> errno))
-> > +               goto free_caps;
-> > +
-> > +free_caps:
-> > +       if (CHECK(cap_free(caps), "cap_free", "errno %d", errno))
-> > +               goto free_caps;
-> > +}
-> > +
-> > +void test_bind_perm(void)
-> > +{
-> > +       struct bind_perm *skel;
-> > +       int cgroup_fd;
-> > +
-> > +       cgroup_fd = test__join_cgroup("/bind_perm");
-> > +       if (CHECK(cgroup_fd < 0, "cg-join", "errno %d", errno))
-> > +               return;
-> > +
-> > +       skel = bind_perm__open_and_load();
-> > +       if (CHECK(!skel, "skel-load", "errno %d", errno))
-> > +               goto close_cgroup_fd;
+Yes
 
-> errno is irrelevant; also use ASSERT_PTR_OK() instead
-Ack, it might be worth unconditionally printing it in your ASSERT_XXX
-macros. Worst case - it's not used, but in general case avoids
-all this "errno %d" boilerplate.
+> and when a driver is bound to that sub function aux device and
+> probed, 2 additional auxiliary devices are created.  
 
-> > +
-> > +       skel->links.bind_v4_prog =  
-> bpf_program__attach_cgroup(skel->progs.bind_v4_prog, cgroup_fd);
-> > +       if (CHECK(IS_ERR(skel->links.bind_v4_prog),
-> > +                 "cg-attach", "bind4 %ld",
-> > +                 PTR_ERR(skel->links.bind_v4_prog)))
+More than two, but yes
 
-> try using ASSERT_PTR_OK instead
-Sure, thanks!
+> Is this correct? Are all these auxiliary devices seen on the same
+> aux bus?  
+
+Yes
+
+> Why do we need another sf eth aux device?
+
+The first aux device represents the physical HW and mlx5_core binds to it,
+the analog is like a pci_device.
+
+The other aux devices represent the subsystem split of the mlx5 driver
+- mlx5_core creates them and each subsystem in turn binds to the
+mlx5_core driver. This already exists, and Intel will be doing this as
+well whenever the RDMA driver is posted again..
+
+Jason
