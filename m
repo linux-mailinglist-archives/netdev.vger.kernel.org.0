@@ -2,168 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E7AAC2FFA05
-	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 02:37:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 71DE22FFA0B
+	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 02:41:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726510AbhAVBg1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jan 2021 20:36:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55304 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726354AbhAVBgX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jan 2021 20:36:23 -0500
-Received: from mail-vs1-xe34.google.com (mail-vs1-xe34.google.com [IPv6:2607:f8b0:4864:20::e34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C5B3C0613D6
-        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 17:35:43 -0800 (PST)
-Received: by mail-vs1-xe34.google.com with SMTP id o125so2201341vsc.6
-        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 17:35:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=dhDwpu3ikwYygM4oiSvm5B6mg/6Q+Vve0WMVsVsakY4=;
-        b=PmNF7zWGGkMfysydqUgdfw8ZFBT3QyNGV/qCuIzIUrdQf3W2gkDYX+Ovl18s47yLJY
-         7MGkbPn0xFs9X6/oDNNSfWXI49rYwU5ksle28/XOxNZVk0t84b41OL8h/NmkBlpLAX09
-         /Mfb+moQkFL5oXLlwHbRKfpinqZj/m+pJogto=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=dhDwpu3ikwYygM4oiSvm5B6mg/6Q+Vve0WMVsVsakY4=;
-        b=AqBIWmbPUu+jopqKN1Zu5bxDo1uAznaWWYPA1OIsqY+vO0ti4p39e+IReSq9HTpltv
-         l+kwoTTBdDjBWzONT8a2ga3OTX9A9UQhuOw3gL7N1h6kITqFcG2VXKK2A8Oq5tegerIx
-         xetWRKP+wwyOAiBocCJ5H0p9wPV3MaPikFkRcbjePJjxtHGgJbvN4q0rpYvAQynJgLIx
-         wU/WjgcopHmT4txGxWLQHhJ2pBBpigozEnIzd2cnxUdZZSBl9ixQKYxBkcMQjaqU0bwM
-         rex0A2aX0uMkNCkZCzdmok5jD7rbqs6w/FFUkuzfCfc2WjuxjOLsa2W0da7Xj68QucEb
-         98Pw==
-X-Gm-Message-State: AOAM531v8J6mRqn3YfQkPuf4+jSa9NNZnhT8saPdb/uENjuo+2AmiuJX
-        aimZymU9w+S0ymvEFe7Ie0Gcmud58gW3YoFeOQJJA7jjhhg=
-X-Google-Smtp-Source: ABdhPJxAzbn6qsV5vmVMszjjWZdlKgI+b8c8HrvMZ7QiBzYLP5bBwHUoXRQKsamE1AvwtkWo7UmSiMw5LV2TW2pCU24=
-X-Received: by 2002:a05:6102:226f:: with SMTP id v15mr200762vsd.36.1611279341078;
- Thu, 21 Jan 2021 17:35:41 -0800 (PST)
-MIME-Version: 1.0
-References: <20210121125731.19425-1-oneukum@suse.com> <20210121125731.19425-3-oneukum@suse.com>
-In-Reply-To: <20210121125731.19425-3-oneukum@suse.com>
-From:   Grant Grundler <grundler@chromium.org>
-Date:   Fri, 22 Jan 2021 01:35:29 +0000
-Message-ID: <CANEJEGu8vhKmFzjHfxWAhK13EQwFG3nv9xXY4=sFvJ_03Ec0fA@mail.gmail.com>
-Subject: Re: [PATCHv2 2/3] usbnet: add method for reporting speed without MDIO
-To:     Oliver Neukum <oneukum@suse.com>
-Cc:     Hayes Wang <hayeswang@realtek.com>,
-        Grant Grundler <grundler@chromium.org>,
-        David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>, linux-usb@vger.kernel.org,
-        Roland Dreier <roland@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        id S1726431AbhAVBlO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jan 2021 20:41:14 -0500
+Received: from mail.loongson.cn ([114.242.206.163]:38040 "EHLO loongson.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725775AbhAVBlI (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 21 Jan 2021 20:41:08 -0500
+Received: from linux.localdomain (unknown [113.200.148.30])
+        by mail.loongson.cn (Coremail) with SMTP id AQAAf9DxS+TgLApgnQAJAA--.14315S2;
+        Fri, 22 Jan 2021 09:39:46 +0800 (CST)
+From:   Tiezhu Yang <yangtiezhu@loongson.cn>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Nathan Chancellor <natechancellor@gmail.com>,
+        Nick Desaulniers <ndesaulniers@google.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        clang-built-linux@googlegroups.com, linux-kernel@vger.kernel.org,
+        Xuefeng Li <lixuefeng@loongson.cn>,
+        Fangrui Song <maskray@google.com>
+Subject: [PATCH bpf-next v4] samples/bpf: Update build procedure for manually compiling LLVM and Clang
+Date:   Fri, 22 Jan 2021 09:39:44 +0800
+Message-Id: <1611279584-26047-1-git-send-email-yangtiezhu@loongson.cn>
+X-Mailer: git-send-email 2.1.0
+X-CM-TRANSID: AQAAf9DxS+TgLApgnQAJAA--.14315S2
+X-Coremail-Antispam: 1UD129KBjvJXoWxKrWfZFyUAFyktw4xAr4Dtwb_yoW7uryDpw
+        13ta4SgrZ7tryfXFyxGF48XF4fZr4kXa4UCa4xJrykAF1qvwn7Kr43trWrKFW7Jr92kr45
+        Cw1rKay5uF1UXaDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUU9Y14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26ryj6F1UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4U
+        JVWxJr1l84ACjcxK6I8E87Iv67AKxVW8Jr0_Cr1UM28EF7xvwVC2z280aVCY1x0267AKxV
+        W8Jr0_Cr1UM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xf
+        McIj6xIIjxv20xvE14v26r1j6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7
+        v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7M4IIrI8v6xkF
+        7I0E8cxan2IY04v7MxkIecxEwVAFwVWkMxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4
+        AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE
+        17CEb7AF67AKxVW8ZVWrXwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMI
+        IF0xvE2Ix0cI8IcVCY1x0267AKxVW8JVWxJwCI42IY6xAIw20EY4v20xvaj40_WFyUJVCq
+        3wCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCT
+        nIWIevJa73UjIFyTuYvjfUOMKZDUUUU
+X-CM-SenderInfo: p1dqw3xlh2x3gn0dqz5rrqw2lrqou0/
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 21, 2021 at 12:57 PM Oliver Neukum <oneukum@suse.com> wrote:
->
-> The old method for reporting network speed upwards
-> assumed that a device uses MDIO and uses the generic phy
-> functions based on that.
-> Add a a primitive internal version not making the assumption
-> reporting back directly what the status operations record.
+The current LLVM and Clang build procedure in samples/bpf/README.rst is
+out of date. See below that the links are not accessible any more.
 
-Excellent!  I wasted a bunch of time looking at emulating the MDIO
-interface and decided that was too hacky.  I didn't realize it could
-be so easy to fork off a different method to collect the most recently
-reported speed. Thank you!
+$ git clone http://llvm.org/git/llvm.git
+Cloning into 'llvm'...
+fatal: unable to access 'http://llvm.org/git/llvm.git/': Maximum (20) redirects followed
+$ git clone --depth 1 http://llvm.org/git/clang.git
+Cloning into 'clang'...
+fatal: unable to access 'http://llvm.org/git/clang.git/': Maximum (20) redirects followed
 
-> v2: adjusted to recent changes
->
-> Signed-off-by: Oliver Neukum <oneukum@suse.com>
-> Tested-by: Roland Dreier <roland@kernel.org>
-> ---
->  drivers/net/usb/usbnet.c   | 23 +++++++++++++++++++++++
->  include/linux/usb/usbnet.h |  4 ++++
->  2 files changed, 27 insertions(+)
->
-> diff --git a/drivers/net/usb/usbnet.c b/drivers/net/usb/usbnet.c
-> index e2ca88259b05..6f8fcc276ca7 100644
-> --- a/drivers/net/usb/usbnet.c
-> +++ b/drivers/net/usb/usbnet.c
-> @@ -961,6 +961,27 @@ int usbnet_get_link_ksettings_mdio(struct net_device *net,
->  }
->  EXPORT_SYMBOL_GPL(usbnet_get_link_ksettings_mdio);
->
-> +int usbnet_get_link_ksettings_internal(struct net_device *net,
-> +                                       struct ethtool_link_ksettings *cmd)
-> +{
-> +       struct usbnet *dev = netdev_priv(net);
-> +
-> +       /* the assumption that speed is equal on tx and rx
-> +        * is deeply engrained into the networking layer.
-> +        * For wireless stuff it is not true.
-> +        * We assume that rxspeed matters more.
-> +        */
-> +       if (dev->rxspeed != SPEED_UNKNOWN)
-> +               cmd->base.speed = dev->rxspeed / 1000000;
-> +       else if (dev->txspeed != SPEED_UNKNOWN)
-> +               cmd->base.speed = dev->txspeed / 1000000;
-> +       else
-> +               cmd->base.speed = SPEED_UNKNOWN;
-> +
-> +       return 0;
-> +}
-> +EXPORT_SYMBOL_GPL(usbnet_get_link_ksettings_internal);
-> +
->  int usbnet_set_link_ksettings_mdio(struct net_device *net,
->                               const struct ethtool_link_ksettings *cmd)
->  {
-> @@ -1664,6 +1685,8 @@ usbnet_probe (struct usb_interface *udev, const struct usb_device_id *prod)
->         dev->intf = udev;
->         dev->driver_info = info;
->         dev->driver_name = name;
-> +       dev->rxspeed = SPEED_UNKNOWN; /* unknown or handled by MII */
-> +       dev->txspeed = SPEED_UNKNOWN;
+The LLVM community has adopted new ways to build the compiler. There are
+different ways to build LLVM and Clang, the Clang Getting Started page [1]
+has one way. As Yonghong said, it is better to copy the build procedure
+in Documentation/bpf/bpf_devel_QA.rst to keep consistent.
 
-Nit: Use of SPEED_UNKNOWN here can be confusing since the units for
-rxspeed/txspeed are bps, not Mbps (AFAICT SPEED_XXX are Mbps numbers).
-In other words, this is the only usbnet location that could use
-SPEED_xxx define and other developers might not realize that.
-Personally, I'd rather set the fields to zero here.
+I verified the procedure and it is proved to be feasible, so we should
+update README.rst to reflect the reality. At the same time, update the
+related comment in Makefile.
 
->
->         net->tstats = netdev_alloc_pcpu_stats(struct pcpu_sw_netstats);
->         if (!net->tstats)
-> diff --git a/include/linux/usb/usbnet.h b/include/linux/usb/usbnet.h
-> index fd65b7a5ee15..a91c6defb104 100644
-> --- a/include/linux/usb/usbnet.h
-> +++ b/include/linux/usb/usbnet.h
-> @@ -53,6 +53,8 @@ struct usbnet {
->         u32                     hard_mtu;       /* count any extra framing */
->         size_t                  rx_urb_size;    /* size for rx urbs */
->         struct mii_if_info      mii;
-> +       long                    rxspeed;        /* if MII is not used */
-> +       long                    txspeed;        /* if MII is not used */
+Additionally, as Fangrui said, the dir llvm-project/llvm/build/install is
+not used, BUILD_SHARED_LIBS=OFF is the default option [2], so also change
+Documentation/bpf/bpf_devel_QA.rst together.
 
-Do you want to note the units used (bps) in the trailing comment?
+At last, we recommend that developers who want the fastest incremental
+builds use the Ninja build system [1], you can find it in your system's
+package manager, usually the package is ninja or ninja-build [3], so add
+ninja to build dependencies suggested by Nathan.
 
-The numbers for cdc_ncm and cdc_ether will be "bits per second" due to
-how older modems could report "odd" (from an ethernet point of view)
-speeds.
+[1] https://clang.llvm.org/get_started.html
+[2] https://www.llvm.org/docs/CMake.html
+[3] https://github.com/ninja-build/ninja/wiki/Pre-built-Ninja-packages
 
-Also, the changes I just submitted (and kuba@kernel.org accepted)
-named these "rx_speed" (with underscore). I don't care which it is but
-just wanted to warn about and apologize for the conflict.
+Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
+Acked-by: Yonghong Song <yhs@fb.com>
+Reviewed-by: Nathan Chancellor <natechancellor@gmail.com>
+---
 
-cheers,
-grant
+v2: Update the commit message suggested by Yonghong,
+    thank you very much.
 
->         /* various kinds of pending driver work */
->         struct sk_buff_head     rxq;
-> @@ -269,6 +271,8 @@ extern void usbnet_purge_paused_rxq(struct usbnet *);
->
->  extern int usbnet_get_link_ksettings_mdio(struct net_device *net,
->                                      struct ethtool_link_ksettings *cmd);
-> +extern int usbnet_get_link_ksettings_internal(struct net_device *net,
-> +                                       struct ethtool_link_ksettings *cmd);
->  extern int usbnet_set_link_ksettings_mdio(struct net_device *net,
->                                      const struct ethtool_link_ksettings *cmd);
->  extern u32 usbnet_get_link(struct net_device *net);
-> --
-> 2.26.2
->
+v3: Remove the default option BUILD_SHARED_LIBS=OFF
+    and just mkdir llvm-project/llvm/build suggested
+    by Fangrui.
+
+v4: Add some description about ninja suggested by Nathan.
+
+ Documentation/bpf/bpf_devel_QA.rst | 11 +++++++----
+ samples/bpf/Makefile               |  2 +-
+ samples/bpf/README.rst             | 22 ++++++++++++++--------
+ 3 files changed, 22 insertions(+), 13 deletions(-)
+
+diff --git a/Documentation/bpf/bpf_devel_QA.rst b/Documentation/bpf/bpf_devel_QA.rst
+index 5b613d2..2ed89ab 100644
+--- a/Documentation/bpf/bpf_devel_QA.rst
++++ b/Documentation/bpf/bpf_devel_QA.rst
+@@ -501,16 +501,19 @@ All LLVM releases can be found at: http://releases.llvm.org/
+ 
+ Q: Got it, so how do I build LLVM manually anyway?
+ --------------------------------------------------
+-A: You need cmake and gcc-c++ as build requisites for LLVM. Once you have
+-that set up, proceed with building the latest LLVM and clang version
++A: We recommend that developers who want the fastest incremental builds
++use the Ninja build system, you can find it in your system's package
++manager, usually the package is ninja or ninja-build.
++
++You need ninja, cmake and gcc-c++ as build requisites for LLVM. Once you
++have that set up, proceed with building the latest LLVM and clang version
+ from the git repositories::
+ 
+      $ git clone https://github.com/llvm/llvm-project.git
+-     $ mkdir -p llvm-project/llvm/build/install
++     $ mkdir -p llvm-project/llvm/build
+      $ cd llvm-project/llvm/build
+      $ cmake .. -G "Ninja" -DLLVM_TARGETS_TO_BUILD="BPF;X86" \
+                 -DLLVM_ENABLE_PROJECTS="clang"    \
+-                -DBUILD_SHARED_LIBS=OFF           \
+                 -DCMAKE_BUILD_TYPE=Release        \
+                 -DLLVM_BUILD_RUNTIME=OFF
+      $ ninja
+diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
+index 26fc96c..d061446 100644
+--- a/samples/bpf/Makefile
++++ b/samples/bpf/Makefile
+@@ -208,7 +208,7 @@ TPROGLDLIBS_xdpsock		+= -pthread -lcap
+ TPROGLDLIBS_xsk_fwd		+= -pthread
+ 
+ # Allows pointing LLC/CLANG to a LLVM backend with bpf support, redefine on cmdline:
+-#  make M=samples/bpf/ LLC=~/git/llvm/build/bin/llc CLANG=~/git/llvm/build/bin/clang
++# make M=samples/bpf LLC=~/git/llvm-project/llvm/build/bin/llc CLANG=~/git/llvm-project/llvm/build/bin/clang
+ LLC ?= llc
+ CLANG ?= clang
+ OPT ?= opt
+diff --git a/samples/bpf/README.rst b/samples/bpf/README.rst
+index dd34b2d..60c6494 100644
+--- a/samples/bpf/README.rst
++++ b/samples/bpf/README.rst
+@@ -62,20 +62,26 @@ To generate a smaller llc binary one can use::
+ 
+  -DLLVM_TARGETS_TO_BUILD="BPF"
+ 
++We recommend that developers who want the fastest incremental builds
++use the Ninja build system, you can find it in your system's package
++manager, usually the package is ninja or ninja-build.
++
+ Quick sniplet for manually compiling LLVM and clang
+-(build dependencies are cmake and gcc-c++)::
++(build dependencies are ninja, cmake and gcc-c++)::
+ 
+- $ git clone http://llvm.org/git/llvm.git
+- $ cd llvm/tools
+- $ git clone --depth 1 http://llvm.org/git/clang.git
+- $ cd ..; mkdir build; cd build
+- $ cmake .. -DLLVM_TARGETS_TO_BUILD="BPF;X86"
+- $ make -j $(getconf _NPROCESSORS_ONLN)
++ $ git clone https://github.com/llvm/llvm-project.git
++ $ mkdir -p llvm-project/llvm/build
++ $ cd llvm-project/llvm/build
++ $ cmake .. -G "Ninja" -DLLVM_TARGETS_TO_BUILD="BPF;X86" \
++            -DLLVM_ENABLE_PROJECTS="clang"    \
++            -DCMAKE_BUILD_TYPE=Release        \
++            -DLLVM_BUILD_RUNTIME=OFF
++ $ ninja
+ 
+ It is also possible to point make to the newly compiled 'llc' or
+ 'clang' command via redefining LLC or CLANG on the make command line::
+ 
+- make M=samples/bpf LLC=~/git/llvm/build/bin/llc CLANG=~/git/llvm/build/bin/clang
++ make M=samples/bpf LLC=~/git/llvm-project/llvm/build/bin/llc CLANG=~/git/llvm-project/llvm/build/bin/clang
+ 
+ Cross compiling samples
+ -----------------------
+-- 
+2.1.0
+
