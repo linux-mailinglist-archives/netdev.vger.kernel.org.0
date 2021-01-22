@@ -2,279 +2,196 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CBA20300CF4
-	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 20:57:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3270F300D54
+	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 21:07:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730389AbhAVTxq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jan 2021 14:53:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49206 "EHLO
+        id S1730329AbhAVUGY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jan 2021 15:06:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728425AbhAVSh7 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 13:37:59 -0500
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA112C061788;
-        Fri, 22 Jan 2021 10:37:18 -0800 (PST)
-Received: by mail-pj1-x1036.google.com with SMTP id u4so4448365pjn.4;
-        Fri, 22 Jan 2021 10:37:18 -0800 (PST)
+        with ESMTP id S1729522AbhAVUF7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 15:05:59 -0500
+Received: from mail-yb1-xb31.google.com (mail-yb1-xb31.google.com [IPv6:2607:f8b0:4864:20::b31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 066FFC06174A;
+        Fri, 22 Jan 2021 12:05:12 -0800 (PST)
+Received: by mail-yb1-xb31.google.com with SMTP id e67so6590717ybc.12;
+        Fri, 22 Jan 2021 12:05:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=qaA8gn8W+Qu4RF9KetEmDBu/lptRV9ahKpJnZpI7ZCo=;
-        b=Q9HhAWjka/fgAdf6tIezBrvuW0cqacMGrv5pjCFzngBW44GQxtCcNZSPne3ymkCfhg
-         YYBo+8Ei8TAYYjJ5Eu0diMLL+MuMDVtQA+Lb6IpKqVcDzM+zoAWjORzSs53tAddbxY2v
-         m6GqvrK8kuPKSk6uttoSnbJ7XUr5BYvXs+mDNZWqR0ov5GMYmL9yCbH8WNg43XU8/DkA
-         j9RdPlvHhj/EhnQqqTlwDoKourDCNC87oFvQblXxjzZ5zZsHQ5Il3ec9mwQAtteMk3pq
-         Uuxe9dHerS5Ii5o55wbA5hmc1BRFS7V4SqI10Vh0b5x+3zqzhLr5459nwZct7Yl98Ynt
-         9wgQ==
+        bh=L8jS0HzNfqD4thkNxIQ6N1AxEPEUC70ooGhoF1TKbcw=;
+        b=dOQjb7CJ+l5Zdb7DzQ2FVeJa6kN5ropptNySqsHo2wFS3utiWUMlLHfI65VK7YdYM0
+         HwllVkwwytkIptzGyPCUN0sJD+TjHkxBe5ZR6RhnZ04Av0NbppS3rZiHKkuIKRHi3PzH
+         dQQ08wNe0A3CMseHhgdfmohjmL3q4Bts+ghNw7K/I2TfO7HBKMXu1hNthCmErvTWVF+k
+         6LJZmIvjonOLfHMpK53O38uPj5qKRNgT/aJyby/joGnUr+4tPNUSfCt4vKW4Oj5Uc0Gl
+         ukpICjL6HaCUnGqTX6nODBuJYtOikvVEaJOfmuOnjlNBpcTwM5iZEJw7K31D9j2PvlMA
+         LZ3g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=qaA8gn8W+Qu4RF9KetEmDBu/lptRV9ahKpJnZpI7ZCo=;
-        b=LEOzMtiS1DypVUxJS0fDijXKW6aBlyZmjn9rmMjhFAQsy61pkPFR2IXK2lMbCT16Ue
-         8KwOZ8ZwvgN7XiP+bSXKtlY8dqYb+5bMH8Uxm+9KL8iWEzSzyGBh10r1EwKahQMjB9Jr
-         ArI1VrsAQJGg7fk+9oDyD17v73Gg673CpeIsNWQ6egC6cbZuVg2wLO3bJ31QhHpDI27T
-         ehYyeRrwsAvIkv5/xw1Wtjz3UnqxEns4xQnAzPY+E+nFECB0yHvjz5GxXTZ6dzssSRqZ
-         Hw5yLWjra3rW5d9IOVi8lGLAK4nPUPPQknMrmbbfiyGS+PTTBvtff1iZEs3jEv6teWTj
-         S9Zw==
-X-Gm-Message-State: AOAM533P6V/PvQt3qPtPn+RbRKOdfatEkEkEhj3YXjIf0bke79V/2/iy
-        ud2tBwxYvoAQD2PQPDoP0NJax0DIrSKJVGs1NwrGeMrMgyG3UQ==
-X-Google-Smtp-Source: ABdhPJzBM0YzSfYP6oM7kRIRx6dclFXfHRC0Ic0kFqaNBSS+HPxNtv8ookM9vpCOGsNT+AdZ+FmAMIpQ8Gfu0nU/hJY=
-X-Received: by 2002:a17:902:7c04:b029:dc:99f2:eea4 with SMTP id
- x4-20020a1709027c04b02900dc99f2eea4mr5931479pll.43.1611340638255; Fri, 22 Jan
- 2021 10:37:18 -0800 (PST)
+        bh=L8jS0HzNfqD4thkNxIQ6N1AxEPEUC70ooGhoF1TKbcw=;
+        b=FLg1j0IUB1dTZJBSyih0mMe2BerIQc+FyW9C1nspJapNBHHcyo6zhZNNMSOR8uNIA9
+         cc7Vc1P7ptEFZDSixgQZUpJ7G3ghh5KN1oud/aLxxjBYFqB24t3qpDFMbCxEAU/dZnw8
+         OVA41BNNEnBPfXJ/9LjXSgINkvjlp+oGdpc8I8EEg6H09Mszv5y7OVz73mbih57cgc/F
+         hXGvoCESwJAh2ykoT8UQkwodH8xs5arePEnQkGnQz98ASM9BuYNlGaiXQd+aNuYn2kxX
+         MEk2U9280xgpvZKkpmOgBDha/LF86xmJdFr69Dx3A6UbYXavJ9GzzHMprwNflqyDqwPy
+         NYXw==
+X-Gm-Message-State: AOAM5305HPBF9VfOLsWwzbZVxZnPNAfKgKxz3t1ay9HQ18dKGXdIiYKb
+        oHRrdp5D5AXJJ+FnDhbv2uJBiIArcc9IUHWseA8=
+X-Google-Smtp-Source: ABdhPJxj9qW9L/HDufNevNp2GUA1P6i+/BKcIKeMfaeHlJsEEugWD0I923OU79Dqk/W4OG19gN7PLYaWIT2FyhCUOzU=
+X-Received: by 2002:a25:b195:: with SMTP id h21mr8766090ybj.347.1611345911187;
+ Fri, 22 Jan 2021 12:05:11 -0800 (PST)
 MIME-Version: 1.0
-References: <1611329955.4913929-2-xuanzhuo@linux.alibaba.com> <20210122172534.9896-1-alobakin@pm.me>
-In-Reply-To: <20210122172534.9896-1-alobakin@pm.me>
-From:   Magnus Karlsson <magnus.karlsson@gmail.com>
-Date:   Fri, 22 Jan 2021 19:37:06 +0100
-Message-ID: <CAJ8uoz310du+0qsdGWKtsrK3tBxGFTr=kWkT+GwY1GqN=A2ejQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v3 3/3] xsk: build skb by page
-To:     Alexander Lobakin <alobakin@pm.me>
-Cc:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        "Michael S . Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Bjorn Topel <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
+References: <1610921764-7526-1-git-send-email-alan.maguire@oracle.com>
+ <1610921764-7526-4-git-send-email-alan.maguire@oracle.com>
+ <CAEf4BzZ6bYenSTUmwu7jXqQOyD=AG75oLsLE5B=9ycPjm1jOkw@mail.gmail.com>
+ <CAEf4Bzb4z+ZA+taOEo=N9eSGZaCqMALpFxShujm9GahBOFnhvg@mail.gmail.com> <alpine.LRH.2.23.451.2101221612440.12992@localhost>
+In-Reply-To: <alpine.LRH.2.23.451.2101221612440.12992@localhost>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 22 Jan 2021 12:05:00 -0800
+Message-ID: <CAEf4BzZBVjUQnPxG1hyxkoM5HLWyEm2VJjOg0MoogrBdm6QdEQ@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 3/4] libbpf: BTF dumper support for typed data
+To:     Alan Maguire <alan.maguire@oracle.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
+        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
         Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        john fastabend <john.fastabend@gmail.com>,
         KP Singh <kpsingh@kernel.org>,
-        virtualization@lists.linux-foundation.org,
-        bpf <bpf@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
+        Bill Wendling <morbo@google.com>,
+        Shuah Khan <shuah@kernel.org>, bpf <bpf@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
         open list <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 22, 2021 at 6:26 PM Alexander Lobakin <alobakin@pm.me> wrote:
+On Fri, Jan 22, 2021 at 8:31 AM Alan Maguire <alan.maguire@oracle.com> wrote:
 >
-> From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> Date: Fri, 22 Jan 2021 23:39:15 +0800
+> On Thu, 21 Jan 2021, Andrii Nakryiko wrote:
 >
-> > On Fri, 22 Jan 2021 13:55:14 +0100, Magnus Karlsson <magnus.karlsson@gmail.com> wrote:
-> > > On Fri, Jan 22, 2021 at 1:39 PM Alexander Lobakin <alobakin@pm.me> wrote:
-> > > >
-> > > > From: Magnus Karlsson <magnus.karlsson@gmail.com>
-> > > > Date: Fri, 22 Jan 2021 13:18:47 +0100
-> > > >
-> > > > > On Fri, Jan 22, 2021 at 12:57 PM Alexander Lobakin <alobakin@pm.me> wrote:
-> > > > > >
-> > > > > > From: Alexander Lobakin <alobakin@pm.me>
-> > > > > > Date: Fri, 22 Jan 2021 11:47:45 +0000
-> > > > > >
-> > > > > > > From: Eric Dumazet <eric.dumazet@gmail.com>
-> > > > > > > Date: Thu, 21 Jan 2021 16:41:33 +0100
-> > > > > > >
-> > > > > > > > On 1/21/21 2:47 PM, Xuan Zhuo wrote:
-> > > > > > > > > This patch is used to construct skb based on page to save memory copy
-> > > > > > > > > overhead.
-> > > > > > > > >
-> > > > > > > > > This function is implemented based on IFF_TX_SKB_NO_LINEAR. Only the
-> > > > > > > > > network card priv_flags supports IFF_TX_SKB_NO_LINEAR will use page to
-> > > > > > > > > directly construct skb. If this feature is not supported, it is still
-> > > > > > > > > necessary to copy data to construct skb.
-> > > > > > > > >
-> > > > > > > > > ---------------- Performance Testing ------------
-> > > > > > > > >
-> > > > > > > > > The test environment is Aliyun ECS server.
-> > > > > > > > > Test cmd:
-> > > > > > > > > ```
-> > > > > > > > > xdpsock -i eth0 -t  -S -s <msg size>
-> > > > > > > > > ```
-> > > > > > > > >
-> > > > > > > > > Test result data:
-> > > > > > > > >
-> > > > > > > > > size    64      512     1024    1500
-> > > > > > > > > copy    1916747 1775988 1600203 1440054
-> > > > > > > > > page    1974058 1953655 1945463 1904478
-> > > > > > > > > percent 3.0%    10.0%   21.58%  32.3%
-> > > > > > > > >
-> > > > > > > > > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> > > > > > > > > Reviewed-by: Dust Li <dust.li@linux.alibaba.com>
-> > > > > > > > > ---
-> > > > > > > > >  net/xdp/xsk.c | 104 ++++++++++++++++++++++++++++++++++++++++++++++++----------
-> > > > > > > > >  1 file changed, 86 insertions(+), 18 deletions(-)
-> > > > > > > > >
-> > > > > > > > > diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-> > > > > > > > > index 4a83117..38af7f1 100644
-> > > > > > > > > --- a/net/xdp/xsk.c
-> > > > > > > > > +++ b/net/xdp/xsk.c
-> > > > > > > > > @@ -430,6 +430,87 @@ static void xsk_destruct_skb(struct sk_buff *skb)
-> > > > > > > > >   sock_wfree(skb);
-> > > > > > > > >  }
-> > > > > > > > >
-> > > > > > > > > +static struct sk_buff *xsk_build_skb_zerocopy(struct xdp_sock *xs,
-> > > > > > > > > +                                       struct xdp_desc *desc)
-> > > > > > > > > +{
-> > > > > > > > > + u32 len, offset, copy, copied;
-> > > > > > > > > + struct sk_buff *skb;
-> > > > > > > > > + struct page *page;
-> > > > > > > > > + void *buffer;
-> > > > > > > > > + int err, i;
-> > > > > > > > > + u64 addr;
-> > > > > > > > > +
-> > > > > > > > > + skb = sock_alloc_send_skb(&xs->sk, 0, 1, &err);
-> > > > > > > > > + if (unlikely(!skb))
-> > > > > > > > > +         return ERR_PTR(err);
-> > > > > > > > > +
-> > > > > > > > > + addr = desc->addr;
-> > > > > > > > > + len = desc->len;
-> > > > > > > > > +
-> > > > > > > > > + buffer = xsk_buff_raw_get_data(xs->pool, addr);
-> > > > > > > > > + offset = offset_in_page(buffer);
-> > > > > > > > > + addr = buffer - xs->pool->addrs;
-> > > > > > > > > +
-> > > > > > > > > + for (copied = 0, i = 0; copied < len; i++) {
-> > > > > > > > > +         page = xs->pool->umem->pgs[addr >> PAGE_SHIFT];
-> > > > > > > > > +
-> > > > > > > > > +         get_page(page);
-> > > > > > > > > +
-> > > > > > > > > +         copy = min_t(u32, PAGE_SIZE - offset, len - copied);
-> > > > > > > > > +
-> > > > > > > > > +         skb_fill_page_desc(skb, i, page, offset, copy);
-> > > > > > > > > +
-> > > > > > > > > +         copied += copy;
-> > > > > > > > > +         addr += copy;
-> > > > > > > > > +         offset = 0;
-> > > > > > > > > + }
-> > > > > > > > > +
-> > > > > > > > > + skb->len += len;
-> > > > > > > > > + skb->data_len += len;
-> > > > > > > >
-> > > > > > > > > + skb->truesize += len;
-> > > > > > > >
-> > > > > > > > This is not the truesize, unfortunately.
-> > > > > > > >
-> > > > > > > > We need to account for the number of pages, not number of bytes.
-> > > > > > >
-> > > > > > > The easiest solution is:
-> > > > > > >
-> > > > > > >       skb->truesize += PAGE_SIZE * i;
-> > > > > > >
-> > > > > > > i would be equal to skb_shinfo(skb)->nr_frags after exiting the loop.
-> > > > > >
-> > > > > > Oops, pls ignore this. I forgot that XSK buffers are not
-> > > > > > "one per page".
-> > > > > > We need to count the number of pages manually and then do
-> > > > > >
-> > > > > >         skb->truesize += PAGE_SIZE * npages;
-> > > > > >
-> > > > > > Right.
-> > > > >
-> > > > > There are two possible packet buffer (chunks) sizes in a umem, 2K and
-> > > > > 4K on a system with a PAGE_SIZE of 4K. If I remember correctly, and
-> > > > > please correct me if wrong, truesize is used for memory accounting.
-> > > > > But in this code, no kernel memory has been allocated (apart from the
-> > > > > skb). The page is just a part of the umem that has been already
-> > > > > allocated beforehand and by user-space in this case. So what should
-> > > > > truesize be in this case? Do we add 0, chunk_size * i, or the
-> > > > > complicated case of counting exactly how many 4K pages that are used
-> > > > > when the chunk_size is 2K, as two chunks could occupy the same page,
-> > > > > or just the upper bound of PAGE_SIZE * i that is likely a good
-> > > > > approximation in most cases? Just note that there might be other uses
-> > > > > of truesize that I am unaware of that could impact this choice.
-> > > >
-> > > > Truesize is "what amount of memory does this skb occupy with all its
-> > > > fragments, linear space and struct sk_buff itself". The closest it
-> > > > will be to the actual value, the better.
-> > > > In this case, I think adding of chunk_size * i would be enough.
+> > On Wed, Jan 20, 2021 at 10:56 PM Andrii Nakryiko
+> > <andrii.nakryiko@gmail.com> wrote:
 > > >
-> > > Sounds like a good approximation to me.
-> > >
-> > > > (PAGE_SIZE * i can be overwhelming when chunk_size is 2K, especially
-> > > > for setups with PAGE_SIZE > SZ_4K)
-> > >
-> > > You are right. That would be quite horrible on a system with a page size of 64K.
+> > > On Sun, Jan 17, 2021 at 2:22 PM Alan Maguire <alan.maguire@oracle.com> wrote:
+> > > >
+> > > > Add a BTF dumper for typed data, so that the user can dump a typed
+> > > > version of the data provided.
+> > > >
+> > > > The API is
+> > > >
+> > > > int btf_dump__emit_type_data(struct btf_dump *d, __u32 id,
+> > > >                              const struct btf_dump_emit_type_data_opts *opts,
+> > > >                              void *data);
+> > > >
 > >
-> > Thank you everyone, I learned it.
+> > Two more things I realized about this API overnight:
 > >
-> > I also think it is appropriate to add a chunk size here, and there is actually
-> > only one chunk here, so it's very simple
-> >
-> >       skb->truesize += xs->pool->chunk_size;
+> > 1. It's error-prone to specify only the pointer to data without
+> > specifying the size. If user screws up and scecifies wrong type ID or
+> > if BTF data is corrupted, then this API would start reading and
+> > printing memory outside the bounds. I think it's much better to also
+> > require user to specify the size and bail out with error if we reach
+> > the end of the allowed memory area.
 >
-> umem chunks can't cross page boundaries. So if you're sure that
-> there could be only one chunk, you don't need the loop at all,
-> if I'm not missing anything.
+> Yep, good point, especially given in the tracing context we will likely
+> only have a subset of the data (e.g. part of the 16k representing a
+> task_struct).  The way I was approaching this was to return -E2BIG
+> and append a "..." to the dumped data denoting the data provided
+> didn't cover the size needed to fully represent the type. The idea is
+> the structure is too big for the data provided, hence E2BIG, but maybe
+> there's a more intuitive way to do this? See below for more...
+>
 
-In the default mode, this is true. But in the unaligned_chunk mode
-that can be set on the umem, the chunk may cross one page boundary, so
-we need the loop and the chunk_size * i in the assignment of truesize.
-So "i" can be 1 or 2, but nothing else.
+Hm... that's an interesting use case for sure, but seems reasonable to
+support. "..." seems a bit misleading because it can be interpreted as
+"we omitted some output for brevity", no? "<truncated>" or something
+like that might be more obvious, but I'm just bikeshedding :)
 
-> > In addition, I actually borrowed from the tcp code:
 > >
-> >    tcp_build_frag:
-> >    --------------
+> > 2. This API would be more useful if it also returns the amount of
+> > "consumed" bytes. That way users can do more flexible and powerful
+> > pretty-printing of raw data. So on success we'll have >= 0 number of
+> > bytes used for dumping given BTF type, or <0 on error. WDYT?
 > >
-> >       if (can_coalesce) {
-> >               skb_frag_size_add(&skb_shinfo(skb)->frags[i - 1], copy);
-> >       } else {
-> >               get_page(page);
-> >               skb_fill_page_desc(skb, i, page, offset, copy);
-> >       }
-> >
-> >       if (!(flags & MSG_NO_SHARED_FRAGS))
-> >               skb_shinfo(skb)->flags |= SKBFL_SHARED_FRAG;
-> >
-> >       skb->len += copy;
-> >       skb->data_len += copy;
-> >       skb->truesize += copy;
-> >
-> > So, here is one bug?
 >
-> skb_frag_t is an alias to struct bvec. It doesn't contain info about
-> real memory consumption, so there's no other option buf just to add
-> "copy" to truesize.
-> XSK is different in this term, as it operates with chunks of a known
-> size.
+> I like it! So
 >
-> > Thanks.
-> >
-> > >
-> > > > > > > > > +
-> > > > > > > > > + refcount_add(len, &xs->sk.sk_wmem_alloc);
-> > > > > > > > > +
-> > > > > > > > > + return skb;
-> > > > > > > > > +}
-> > > > > > > > > +
-> > > > > > >
-> > > > > > > Al
-> > > > > >
-> > > > > > Thanks,
-> > > > > > Al
+> 1. if a user provides a too-big data object, we return the amount we used; and
+> 2. if a user provides a too-small data object, we append "..." to the dump
+>   and return -E2BIG (or whatever error code).
+>
+> However I wonder for case 2 if it'd be better to use a snprintf()-like
+> semantic rather than an error code, returning the amount we would have
+> used. That way we easily detect case 1 (size passed in > return value),
+> case 2 (size passed in < return value), and errors can be treated separately.
+> Feels to me that dealing with truncated data is going to be sufficiently
+> frequent it might be good not to classify it as an error. Let me know if
+> you think that makes sense.
+
+Hm... Yeah, that would work, I think, and would feel pretty natural.
+On the other hand, it's easy to know the total input size needed by
+calling btf__resolve_size(btf, type_id), so if user expects to provide
+truncated input data and wants to know how much they should have
+provided, they can easily do that.
+
+Basically, I don't have strong preference here, though providing
+truncated input data still feels more like an error, than a normal
+situation... Maybe someone else want to weigh in? And -E2BIG is
+distinctive enough in this case. So both would work fine, but not
+clear which one is less surprising API.
+
+>
+> I'm working on v3, and hope to have something early next week, but a quick
+> reply to a question below...
+>
+> > > > ...where the id is the BTF id of the data pointed to by the "void *"
+> > > > argument; for example the BTF id of "struct sk_buff" for a
+> > > > "struct skb *" data pointer.  Options supported are
 > > > >
-> > > > Al
+> > > >  - a starting indent level (indent_lvl)
+> > > >  - a set of boolean options to control dump display, similar to those
+> > > >    used for BPF helper bpf_snprintf_btf().  Options are
+> > > >         - compact : omit newlines and other indentation
+> > > >         - noname: omit member names
+> > > >         - zero: show zero-value members
+> > > >
+> > > > Default output format is identical to that dumped by bpf_snprintf_btf(),
+> > > > for example a "struct sk_buff" representation would look like this:
+> > > >
+> > > > struct sk_buff){
+> > > >  (union){
+> > > >   (struct){
+> > >
+> > > Curious, these explicit anonymous (union) and (struct), is that
+> > > preferred way for explicitness, or is it just because it makes
+> > > implementation simpler and thus was chosen? I.e., if the goal was to
+> > > mimic C-style data initialization, you'd just have plain .next = ...,
+> > > .prev = ..., .dev = ..., .dev_scratch = ..., all on the same level. So
+> > > just checking for myself.
 >
+> The idea here is that we want to clarify if we're dealing with
+> an anonymous struct or union.  I wanted to have things work
+> like a C-style initializer as closely as possible, but I
+> realized it's not legit to initialize multiple values in a
+> union, and more importantly when we're trying to visually interpret
+> data, we really want to know if an anonymous container of data is
+> a structure (where all values represent different elements in the
+> structure) or a union (where we're seeing multiple interpretations of
+> the same value).
+
+Yeah, fair enough.
+
+>
+> Thanks again for the detailed review!
+
+Of course. But it's not clear if you agree with me on everything, so I
+still hope to get replies later.
+
+>
+> Alan
