@@ -2,116 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 70AF1300975
-	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 18:22:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B8D6E300983
+	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 18:22:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729427AbhAVQHL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jan 2021 11:07:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44798 "EHLO
+        id S1728745AbhAVQuT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jan 2021 11:50:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729441AbhAVQGn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 11:06:43 -0500
-Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4CC1C0613D6;
-        Fri, 22 Jan 2021 08:05:59 -0800 (PST)
-Received: by mail-lj1-x229.google.com with SMTP id l12so4561572ljc.3;
-        Fri, 22 Jan 2021 08:05:59 -0800 (PST)
+        with ESMTP id S1729400AbhAVQOk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 11:14:40 -0500
+Received: from mail-vs1-xe2b.google.com (mail-vs1-xe2b.google.com [IPv6:2607:f8b0:4864:20::e2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2044C06174A
+        for <netdev@vger.kernel.org>; Fri, 22 Jan 2021 08:13:59 -0800 (PST)
+Received: by mail-vs1-xe2b.google.com with SMTP id f22so3271078vsk.11
+        for <netdev@vger.kernel.org>; Fri, 22 Jan 2021 08:13:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:subject:in-reply-to:references:date:message-id:mime-version;
-        bh=dYnyyDVesC6Z9/jeabSdXpAorVFlaVIqQIB+RhVpm20=;
-        b=Pjk8XN0YQxDSUm0xUJqm0sY6ZgUSIKRGcuyScCBDKU62oyPWiFsPlYm0eGDjATy1ux
-         Wi0pqVdpZ4UJqGG5jrqJn1C79iqJLS3ff92ZspYcX9f34oAOIpN2MK0Z/zK5loKz4oWr
-         ylNlljL+Tp5QHdw7mG0i7dKnff35K15eQXAe66PW0a3yHrW5i+NdWrxNi5WHlLeAJfhp
-         PVmXFv1bPnMYS7icgAEdqy5UYwDwmp9Fc7+J8CXxaXOyeeuw5MhtW1mr6CZv05b88chG
-         8ZcbCIplVT8XUEq7blupmNhPcBuwf1vFfXK9czYXR+5en2Wlf8Q73jrym1XLEGMGlEEx
-         8p3Q==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=h8+g/NRfnVZLGFcDvx8fAHELJk187RHrW8PWSNrlAnk=;
+        b=WSNVo6+0oBK2cG3IjqGcQfv7+Csg2Rems3GNcds6v0PCg2X3V13M8qPfjwYQHc+3VQ
+         CzB5MgRh4tqLusti9t05XHIOHMZoOjsRXL5rpUtOt5TGwU/EakqZQzzoA2slfkbAyZP+
+         fdnd2EDTbGcIonZkXmqzhDQVKuUQDougJYnh6sZ/OFBL1NMD0lsJmQomyhYzvi2s4RIo
+         Gps6J3K/c5pSQpce8U5xq33KC6+tTVJUWjZnc9oymht+I6LIqmdQZrYvG0uEu4xYN+Uq
+         PxJhbPSmu2BVaQXWFyVSMPBfVEFc4KPcq9t3kzSi2PnMPqN+XkgjPb7hGm+eDb/cjZzo
+         agfQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:subject:in-reply-to:references:date
-         :message-id:mime-version;
-        bh=dYnyyDVesC6Z9/jeabSdXpAorVFlaVIqQIB+RhVpm20=;
-        b=Z9msNoygHzUJSBP+9frIt82hL4K2intu54ywLAZMQIrWFhOP0HE7fg0mxnlHqRSQCf
-         PNdIk4liAtA8Dp3vk2vpHw0781MyBeDOXqNOA9QquZlO9RTFC4FrSWVMKIABOMQJbtGN
-         gLuqyPFtctZuqevk3b5zMMxhTEVtyQwWy0qX2OJ7c5XIt0/wiGRhflkQbUrXmfbk9tl0
-         8465/SJBecTa9ErNZYmyrDysa2Qz5rJiBBVSt1pImMfPvCkkpBifU5ODPPl8uqNZS0qY
-         c7fSE5GA/MKrUzsUF3JccYWEe6RmIURrM2WpQDErdTA3FzlQOWMVbUgxRKSpVCXKkBlm
-         1n6Q==
-X-Gm-Message-State: AOAM532RQ49bpcG2t2GIXP3UDA12aANWnz5RDiX7PaqtnWt6b/rKzphI
-        03/2LydK9ZHIGhmE1G/Kg2g=
-X-Google-Smtp-Source: ABdhPJxBa1WiN/jurrX5CRJ6eaLx6b/Zr+ZK+9s9s6R+83bCQy2uN+hg+wESRQnZBzKPbEdJc33izA==
-X-Received: by 2002:a2e:b52c:: with SMTP id z12mr1144667ljm.250.1611331558242;
-        Fri, 22 Jan 2021 08:05:58 -0800 (PST)
-Received: from luthien (h-82-196-111-206.NA.cust.bahnhof.se. [82.196.111.206])
-        by smtp.gmail.com with ESMTPSA id n23sm1027123lji.36.2021.01.22.08.05.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Jan 2021 08:05:57 -0800 (PST)
-From:   Joachim Wiberg <troglobit@gmail.com>
-To:     Nikolay Aleksandrov <nikolay@nvidia.com>,
-        Horatiu Vultur <horatiu.vultur@microchip.com>,
-        davem@davemloft.net, kuba@kernel.org, roopa@nvidia.com,
-        allan.nielsen@microchip.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, bridge@lists.linux-foundation.org
-Subject: Re: [RFC PATCH v2] net: bridge: igmp: Extend IGMP query to be per vlan
-In-Reply-To: <b54644f6-b559-b13b-adf8-d95f7b2a6885@nvidia.com>
-References: <20210112135903.3730765-1-horatiu.vultur@microchip.com> <32bf6a72-6aff-5e36-fb02-333f3c450f49@nvidia.com> <8735z0zyab.fsf@gmail.com> <b54644f6-b559-b13b-adf8-d95f7b2a6885@nvidia.com>
-Date:   Fri, 22 Jan 2021 17:05:57 +0100
-Message-ID: <87czxxvtwa.fsf@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=h8+g/NRfnVZLGFcDvx8fAHELJk187RHrW8PWSNrlAnk=;
+        b=sP2Ln7Ynx88uGUtrbzSSMANnGAVLzo3wV++H5HIDGMbqMEjctOXc/kAj+ze3N/zvc2
+         FEpPX26ZONagDPxWVh4uzwmWyv6hZpU4cL3HPCz0StYhP/NP2OsDFjR4otVv5b1joeBk
+         CGFPVq+bAA3x6t/D0vz4lLA6EG5PZK0egTraijFLEwcRLu/ZGlcu/z2NzQZuKWMUCfR4
+         G75CHjKbKLqk1Vjl9Qf4HYoPzRGCdQY4iMlCoWbb7sWgUx4RVtW+RizNhA79+1Id9Ooj
+         pl8vPOQm3PN881Dnx2IxyLhbHI3kQXZbvxh+TZJcReKYS8p0otqE/uN0jiUhz/3KeQyu
+         3ZnQ==
+X-Gm-Message-State: AOAM531epnLkbqxyWqbnF/uHj4xf3EkCdPgvkwddwKu4Q7k9WtegZNWH
+        sIvCx0EV3FLhCBoBWuVVh7fPvgqQYgk=
+X-Google-Smtp-Source: ABdhPJzk95EsPbkzpaolkjNJIZTcmZiMksYgIdyqYcsSCvUP7ghpoGXc5ry8BtNIZWCngLOuPzdlVg==
+X-Received: by 2002:a67:f787:: with SMTP id j7mr1755024vso.60.1611332037988;
+        Fri, 22 Jan 2021 08:13:57 -0800 (PST)
+Received: from mail-vs1-f43.google.com (mail-vs1-f43.google.com. [209.85.217.43])
+        by smtp.gmail.com with ESMTPSA id v76sm1283541vkv.20.2021.01.22.08.13.56
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 22 Jan 2021 08:13:56 -0800 (PST)
+Received: by mail-vs1-f43.google.com with SMTP id h11so3265301vsa.10
+        for <netdev@vger.kernel.org>; Fri, 22 Jan 2021 08:13:56 -0800 (PST)
+X-Received: by 2002:a67:a41:: with SMTP id 62mr1273885vsk.51.1611332035582;
+ Fri, 22 Jan 2021 08:13:55 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
+References: <cover.1611304190.git.lukas@wunner.de> <012e6863d0103d8dda1932d56427d1b5ba2b9619.1611304190.git.lukas@wunner.de>
+In-Reply-To: <012e6863d0103d8dda1932d56427d1b5ba2b9619.1611304190.git.lukas@wunner.de>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Fri, 22 Jan 2021 11:13:19 -0500
+X-Gmail-Original-Message-ID: <CA+FuTSfuLfh3H45HnvtJPocxj+E7maGwzkgYsfktna2+cJi9zQ@mail.gmail.com>
+Message-ID: <CA+FuTSfuLfh3H45HnvtJPocxj+E7maGwzkgYsfktna2+cJi9zQ@mail.gmail.com>
+Subject: Re: [PATCH nf-next v4 5/5] af_packet: Introduce egress hook
+To:     Lukas Wunner <lukas@wunner.de>
+Cc:     Pablo Neira Ayuso <pablo@netfilter.org>,
+        Jozsef Kadlecsik <kadlec@netfilter.org>,
+        Florian Westphal <fw@strlen.de>,
+        netfilter-devel <netfilter-devel@vger.kernel.org>,
+        coreteam@netfilter.org,
+        Network Development <netdev@vger.kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Thomas Graf <tgraf@suug.ch>,
+        Laura Garcia Liebana <nevola@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 18, 2021 at 13:53, Nikolay Aleksandrov <nikolay@nvidia.com> wrote:
-> On 16/01/2021 17:39, Joachim Wiberg wrote:
->> We have discussed at length at work if an IGMP snooping implementation
->> really belongs in the bridge, or if it's better suited as a user space
->> daemon?  Similar to what was decided for RSTP/MSTP support, i.e., the
->> bridge only has STP and RSTP/MSTP is handled by mstpd[2].
->> 
->> Most of what's required for a user space implementation is available,
->> but it would've been nice if a single AF_PACKET socket on br0 could be
->> used to catch what brport (ifindex) a query or report comes in on.  As
->> it is now that information is lost/replaced with the ifindex of br0.
->> And then there's the issue of detecting and forwarding to a multicast
->> routing daemon on top of br0.  That br0 is not a brport in the MDB, or
->> that host_joined cannot be set/seen with iproute2 is quite limiting.
->> These issues can of course be addressed, but are they of interest to
->> the community at large?
->> 
->> [1]: https://lore.kernel.org/netdev/20180418120713.GA10742@troglobit/
->> [2]: https://github.com/mstpd/mstpd
+On Fri, Jan 22, 2021 at 4:44 AM Lukas Wunner <lukas@wunner.de> wrote:
+>
+> From: Pablo Neira Ayuso <pablo@netfilter.org>
+>
+> Add egress hook for AF_PACKET sockets that have the PACKET_QDISC_BYPASS
+> socket option set to on, which allows packets to escape without being
+> filtered in the egress path.
+>
+> This patch only updates the AF_PACKET path, it does not update
+> dev_direct_xmit() so the XDP infrastructure has a chance to bypass
+> Netfilter.
+>
+> Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
+> [lukas: acquire rcu_read_lock, fix typos, rebase]
+> Signed-off-by: Lukas Wunner <lukas@wunner.de>
 
-Ni Nik,
-
-> I actually had started implementing IGMPv3/MLDv2 as a user-space daemon part of
-> FRRouting (since it already has a lot of the required infra to talk to the kernel).
-> It also has IGMPv3/MLDv2 support within pimd, so a lot of code can be shared.
-
-Interesting!  Glad to hear other people have had similar ideas :)
-
-> Obviously there are pros and cons to each choice, but I'd be interested to see a
-> full user-space implementation. I decided to make the kernel support more complete
-> since it already did IGMPv2 and so stopped with the new FRR daemon.
-
-Yeah it's difficult to find the right cut-off for when it'll be more
-useful to do it all in userspace.  For us I think it was the combination
-of having many VLANs and wanting full querier support, i.e., not having
-any multicast router available.  When we had to go dumpster diving for
-useful IP address in IGMP queries on higher-level VLAN interfaces.
-
-> If needed I'd be happy to help with the kernel support for a new
-> user-space daemon, and also can contribute to the daemon itself if
-> time permits.
-
-That's good to know.  I think I'll start breathing life into a small
-IGMP-only (for now) userspace daemon and see where it leads.  I need
-it both for work and for all the various multicast routing projects
-I maintain on my spare time.
-
-Would it be OK to send questions regarding issues interfacing with the
-bridge and updates/progress to this list for such a project?
-
-Best regards
- /Joachim
+Isn't the point of PACKET_QDISC_BYPASS to skip steps like this?
