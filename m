@@ -2,142 +2,79 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D51712FFAC8
-	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 04:05:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0C19B2FFAD6
+	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 04:10:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726704AbhAVDDS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jan 2021 22:03:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45628 "EHLO
+        id S1726160AbhAVDJ0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jan 2021 22:09:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46938 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726646AbhAVDDQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jan 2021 22:03:16 -0500
-Received: from mail-ua1-x92a.google.com (mail-ua1-x92a.google.com [IPv6:2607:f8b0:4864:20::92a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E559C06174A
-        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 19:02:35 -0800 (PST)
-Received: by mail-ua1-x92a.google.com with SMTP id t15so1385517ual.6
-        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 19:02:35 -0800 (PST)
+        with ESMTP id S1726044AbhAVDJY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jan 2021 22:09:24 -0500
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 470AEC06174A
+        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 19:08:44 -0800 (PST)
+Received: by mail-wr1-x429.google.com with SMTP id v15so3713966wrx.4
+        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 19:08:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=a8+5Gm76y+b0jt2/jBQKKYc91WSpLxV2qAWcOQhFTbY=;
-        b=n8H3wqeiuIjVOpELBQ8Z4PFvlxBpYqz3yetbaBoCZfuX/vTdUaOmXWpOWFOclUfyz8
-         TrLcf+HwJtRfiw9Lao24FzFUZnRsZMRHGb7rjfWqmAXODIkJAGjrca37EM8vLaSizI7s
-         Z+gpjc714T9DNkvIU2l7UAeA5AMAoTfpGt+lc=
+         :cc:content-transfer-encoding;
+        bh=jJ3PyGZRAIkRDgrNezAY8Cgj65X9oPSlmSnMZzc7qa8=;
+        b=MMhQeLo1OeddV8VFxhNwgXZs4584v4QpkvrYJL/54w864+fuDy4K9U+nOHXHV4CVUG
+         R9w9p9xCTxZ0vudSQNZHnIUkhCNBHAwk5F73O0Ld2rDLuNL6IXB9xmsrSLJjSWcMuQQT
+         j8NIuyVdgTD78XI+IVQ+NraSSCVC60ryBtJv3DQmJqORYhRAZ+TQ2dr+DFIT1EqEKwpL
+         tVR/Nbm0wyLKlsnuDRCRcIFlcSRc+/I+PzWbTEadvzR4WsStP4Ns/PWKLWod587OcEc5
+         VfgvExlvbtLdRjRkdx5pAEarKkLxBRDWq+ym+spF9NgA+ukaNgYN1MdUcDdYm5K6Zds2
+         W6og==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=a8+5Gm76y+b0jt2/jBQKKYc91WSpLxV2qAWcOQhFTbY=;
-        b=YnlkyOUyAdKnBaaWJtfD2edZgtZoXwtpLHP7kJ4fTO6KQdof4hElEF+GoWg8ZJlSbk
-         y0D0iWohpkpS1yMfhmYYGaUeNBp/cLVRGqkSb8/6t79FjdRkYuFp6QDiQbC4JY6MSOa2
-         rAusrE3NKUdlmW4VeEIjFxWEcfrH/SrP1jQLdqHLKd0QAZHzFYHRqalunRR8yyFZnsV1
-         yBP1orStaZIh4BFZ2x0tHnq4u/kcBxPPWl/ZhshTiqeIjdWKwqVp5RBhy3z/elI8aVH8
-         QAnxxiTDw63HcQCN0+0YAY1J8R/9/1w1NND36eHq14xH4ZbyruVyHDuHMtYfKcIhgEbJ
-         ayFA==
-X-Gm-Message-State: AOAM531z6JmDu9mykEbowYjzsGhmQdev67cCiSOQ04PbU4Hh49x7FiCu
-        rllI41IkiZSohAItLMzi8WGfANGi9Xvt+HaDXQZaeA==
-X-Google-Smtp-Source: ABdhPJyjjKeglVrq0ENqYc+6xUuuW5J9nEkjLxVZgWtLQTJFddnRviMdPkrIGbHTqpjdXi2uTNOzE5LNAqb8aouMHiU=
-X-Received: by 2002:ab0:7193:: with SMTP id l19mr62551uao.84.1611284554145;
- Thu, 21 Jan 2021 19:02:34 -0800 (PST)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=jJ3PyGZRAIkRDgrNezAY8Cgj65X9oPSlmSnMZzc7qa8=;
+        b=n92lBsdMovhe/eKYYPwrGECcQ1iQpeHpP4KC29kN7ZkSWao3+sSgDERiMvSNSelIqJ
+         +dO+eD+pqAk3trtUrMcvRy2Tkcv5AzpCtNqsu0setFh+/CPQWjFoYQPomwK9KkhiQfgV
+         YUuc3te2xFzu9LxDA7MSb3Jt/eckHXKlipQ3Y2GVd05inDm9snXBBQkNdvV/0bX0caH5
+         8EiRGeuwD0NYILpjiyRlmxjoPfrpYZUvTMTWtQILCxRQds0azZClg3R/8X98lDL7jWnv
+         6a+BwqS6qqw0kDfjEa71cBXKAgDpmQxFS1HzrYj6sXi2c+exvcnSmRqCfqBnoBtgXLlL
+         cUaQ==
+X-Gm-Message-State: AOAM530f34ctue1T+RA2ckhS3kgU2OIEjqODorNuewW1nglg5cvzmJ1/
+        fD1bcLxPMi5POWdNxSwGzPnqODsxoxSA1D9tJ7A=
+X-Google-Smtp-Source: ABdhPJxs9Yz6OvApd/KH15gSWE46TN/7y29JRUJGJKmjfOG2nvGGC2hdXP9Oljbm1XDZlc5J8UE+WbvL1DqK4BRM1EU=
+X-Received: by 2002:a5d:6749:: with SMTP id l9mr2257078wrw.395.1611284922804;
+ Thu, 21 Jan 2021 19:08:42 -0800 (PST)
 MIME-Version: 1.0
-References: <20210121125731.19425-1-oneukum@suse.com> <20210121125731.19425-4-oneukum@suse.com>
-In-Reply-To: <20210121125731.19425-4-oneukum@suse.com>
-From:   Grant Grundler <grundler@chromium.org>
-Date:   Fri, 22 Jan 2021 03:02:23 +0000
-Message-ID: <CANEJEGsGr8VMCDLAviTXJ9wkRs8R3t79ccqmK3+CJ8cpAD=hdg@mail.gmail.com>
-Subject: Re: [PATCHv2 3/3] CDC-NCM: record speed in status method
-To:     Oliver Neukum <oneukum@suse.com>
-Cc:     Hayes Wang <hayeswang@realtek.com>,
-        Grant Grundler <grundler@chromium.org>,
-        David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>, linux-usb@vger.kernel.org,
-        Roland Dreier <roland@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>
+References: <cover.1611218673.git.lucien.xin@gmail.com> <0fa4f7f04222e0c4e7bd27cbd86ffe22148f6476.1611218673.git.lucien.xin@gmail.com>
+ <20210121185018.4ba57d3d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210121185018.4ba57d3d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Xin Long <lucien.xin@gmail.com>
+Date:   Fri, 22 Jan 2021 11:08:31 +0800
+Message-ID: <CADvbK_d8Vf9ghNqqQf7UAHPHH9WVwtaJMs8=q7Qw_Sz24wWxRA@mail.gmail.com>
+Subject: Re: [PATCH net-next 1/3] net: rename csum_not_inet to csum_type
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     network dev <netdev@vger.kernel.org>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Davide Caratti <dcaratti@redhat.com>,
+        davem <davem@davemloft.net>,
+        Alexander Duyck <alexander.duyck@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 21, 2021 at 12:57 PM Oliver Neukum <oneukum@suse.com> wrote:
+On Fri, Jan 22, 2021 at 10:50 AM Jakub Kicinski <kuba@kernel.org> wrote:
 >
-> The driver has a status method for receiving speed updates.
-> The framework, however, had support functions only for devices
-> that reported their speed upon an explicit query over a MDIO
-> interface.
-> CDC_NCM however gets direct notifications from the device.
-> As new support functions have become available, we shall now
-> record such notifications and tell the usbnet framework
-> to make direct use of them without going through the PHY layer.
+> On Thu, 21 Jan 2021 16:45:36 +0800 Xin Long wrote:
+> > This patch is to rename csum_not_inet to csum_type, as later
+> > more csum type would be introduced in the next patch.
+> >
+> > Signed-off-by: Xin Long <lucien.xin@gmail.com>
 >
-> v2: adjusted to recent changes
->
-> Signed-off-by: Oliver Neukum <oneukum@suse.com>
-> Tested-by: Roland Dreier <roland@kernel.org>
-> ---
->  drivers/net/usb/cdc_ncm.c | 29 ++++-------------------------
->  1 file changed, 4 insertions(+), 25 deletions(-)
->
-> diff --git a/drivers/net/usb/cdc_ncm.c b/drivers/net/usb/cdc_ncm.c
-> index 04174704bf7c..9b5bb8ae5eb8 100644
-> --- a/drivers/net/usb/cdc_ncm.c
-> +++ b/drivers/net/usb/cdc_ncm.c
-> @@ -142,7 +142,7 @@ static const struct ethtool_ops cdc_ncm_ethtool_ops = {
->         .get_sset_count    = cdc_ncm_get_sset_count,
->         .get_strings       = cdc_ncm_get_strings,
->         .get_ethtool_stats = cdc_ncm_get_ethtool_stats,
-> -       .get_link_ksettings      = usbnet_get_link_ksettings_mdio,
-> +       .get_link_ksettings      = usbnet_get_link_ksettings_internal,
->         .set_link_ksettings      = usbnet_set_link_ksettings_mdio,
->  };
->
-> @@ -1827,30 +1827,9 @@ cdc_ncm_speed_change(struct usbnet *dev,
->         uint32_t rx_speed = le32_to_cpu(data->DLBitRRate);
->         uint32_t tx_speed = le32_to_cpu(data->ULBitRate);
->
-> -       /* if the speed hasn't changed, don't report it.
-> -        * RTL8156 shipped before 2021 sends notification about every 32ms.
-> -        */
-> -       if (dev->rx_speed == rx_speed && dev->tx_speed == tx_speed)
-> -               return;
-> -
-> -       dev->rx_speed = rx_speed;
-> -       dev->tx_speed = tx_speed;
-
-Oliver,
-This patch removes the use of "rx_speed" field but doesn't remove the
-field from struct usbnet (usbnet.h).
-
-It might be better to revert my patch (make that the first patch in
-your series) and use your original patches.
-OR use "rx_speed" as the field name in the entire series and move them
-to the preferred location in struct usbnet (patch 2/3).
-
-cheers,
-grant
-
-> -
-> -       /*
-> -        * Currently the USB-NET API does not support reporting the actual
-> -        * device speed. Do print it instead.
-> -        */
-> -       if ((tx_speed > 1000000) && (rx_speed > 1000000)) {
-> -               netif_info(dev, link, dev->net,
-> -                          "%u mbit/s downlink %u mbit/s uplink\n",
-> -                          (unsigned int)(rx_speed / 1000000U),
-> -                          (unsigned int)(tx_speed / 1000000U));
-> -       } else {
-> -               netif_info(dev, link, dev->net,
-> -                          "%u kbit/s downlink %u kbit/s uplink\n",
-> -                          (unsigned int)(rx_speed / 1000U),
-> -                          (unsigned int)(tx_speed / 1000U));
-> -       }
-> +        /* RTL8156 shipped before 2021 sends notification about every 32ms. */
-> +       dev->rxspeed = rx_speed;
-> +       dev->txspeed = tx_speed;
->  }
->
->  static void cdc_ncm_status(struct usbnet *dev, struct urb *urb)
-> --
-> 2.26.2
->
+> drivers/net/ethernet/hisilicon/hns3/hns3_enet.c:1073:11: error: =E2=80=98=
+struct sk_buff=E2=80=99 has no member named =E2=80=98csum_not_inet=E2=80=99=
+; did you mean =E2=80=98csum_offset=E2=80=99?
+>  1073 |  if (skb->csum_not_inet || skb_is_gso(skb) ||
+>       |           ^~~~~~~~~~~~~
+>       |           csum_offset
+I will replace it with skb_csum_is_sctp(). Thanks.
