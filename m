@@ -2,172 +2,206 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7398D3007FE
-	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 16:59:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 92A6F300812
+	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 17:02:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728686AbhAVP5c (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jan 2021 10:57:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42578 "EHLO
+        id S1729354AbhAVQBP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jan 2021 11:01:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728872AbhAVP4Y (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 10:56:24 -0500
-Received: from mail-ot1-x332.google.com (mail-ot1-x332.google.com [IPv6:2607:f8b0:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF4FCC06174A;
-        Fri, 22 Jan 2021 07:55:44 -0800 (PST)
-Received: by mail-ot1-x332.google.com with SMTP id n42so5467081ota.12;
-        Fri, 22 Jan 2021 07:55:44 -0800 (PST)
+        with ESMTP id S1727911AbhAVQBA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 11:01:00 -0500
+Received: from mail-ot1-x334.google.com (mail-ot1-x334.google.com [IPv6:2607:f8b0:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A939FC061788
+        for <netdev@vger.kernel.org>; Fri, 22 Jan 2021 08:00:18 -0800 (PST)
+Received: by mail-ot1-x334.google.com with SMTP id a109so5526430otc.1
+        for <netdev@vger.kernel.org>; Fri, 22 Jan 2021 08:00:18 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=lVwBZlqiYAkRijUO0G3Pdgufy3KTr/KU+bLABsRacK0=;
-        b=o3cV7KBYdJWHwjHBJpMCzihXhznKL1pW79F6twFp3Vr788Uig3i00AbOCbPit72oYv
-         wziGblz8dA+bIKUHN09rqDQeIurEs3dReqCnqMkXO0lhCp4wxaCXZ8sY1P4bPxvUS0vP
-         ykOWb0FR+uK7HBwROaw7vbCcrj2sPnXf8PM6h3+6eNuEcWONv2vlrVbcTYZ8WeENlg6u
-         fFcdAN0FxgFiGJaEjtDi0RiTeDIZPx6gdMKXcLUSdDwGvxaA2I8BaWZFyGALO+4i4p8U
-         BBUN9DCvY5QI1Or8qGcCak9BaO6hgzNlkt9gnK23K8/6KVvw5QUpx4YFdieJlUBNwLRb
-         DzXg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=qpNdCAKICP0UB5OknYDWRj1L6fMqJ0u0YADyo5AvMbk=;
+        b=ecEG7Y9x1a2FrX2H3sqhSZT3mk2EhvcIwGIdmp+y+tFIM30Blwq/opebzHa19/0WKC
+         nBn4010o7OdPxadZyUtkBGFyUbO++k0MtQ2wl4Kwj1U0HjDx2u77jw29QQIsmcSI+/CS
+         k8hmiX2LH7BK/K8hTW8Jwj9uHNqIEK2SB6DUp29YzwQ1xs7lNTK25H5Te6PQeSi3STHx
+         sOUXlp45LC2NgfpACr4ds8QXMaR+4gLbpNYcYI1qM0+xGyYVXofISuCQC5mDIk+yPFwT
+         jzMKi16EyCoHv0lYB8MDCU1bJ7aKaWnlsdoMilABSyvn9SXYt9nsf2De+9dhcV9uIRXo
+         tHbA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=lVwBZlqiYAkRijUO0G3Pdgufy3KTr/KU+bLABsRacK0=;
-        b=CBaCXNdBmqqoQ9cf+b1768tvVIPTVuSUljv3oW+QpBDMwvsM0xL2RwK3gYsIQQ/MTd
-         R1AL77/x6GxTMf/9cpdqWPUucGO5KYEsTdVciGpCp8TVhHr2e4Ql/kDDngiy/Nuu2v+g
-         jXOA9WdAyi1ByIE7ar1tYIB9DEAEEWG4unzI1dIU8bN8RLasJUqr679VaspEUajPkcHR
-         47o4vpwygbj8o39kxL1p3N+GEvDTPue6zqHkGVuhhRIWjFyKuyu25XWyBNOzi6oPa3Ac
-         wHGIdTUbZn/Ehm+mngwXt9pvgr1so5i0BeJSYbLuZpadqRj928iivDjInoVOOoeaeg7O
-         SR8w==
-X-Gm-Message-State: AOAM532gCeP0qbhEJsbo7BwUece6S39dMb8tZwI0I6YckkxP4iFcOLQq
-        xdH0gJvSSZ3FDRxsQd4O8zs=
-X-Google-Smtp-Source: ABdhPJx9oAWwSu666d9+RiZPNbctzTlb8yeHu4vEo52+ZLz0UdxaZBqtC1t4CxdlvDW68G/+B6SkAg==
-X-Received: by 2002:a05:6830:796:: with SMTP id w22mr1581370ots.297.1611330944051;
-        Fri, 22 Jan 2021 07:55:44 -0800 (PST)
-Received: from Davids-MacBook-Pro.local ([8.48.134.50])
-        by smtp.googlemail.com with ESMTPSA id y24sm1672792oos.44.2021.01.22.07.55.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 22 Jan 2021 07:55:43 -0800 (PST)
-Subject: Re: [PATCH v3 net-next 1/1] Allow user to set metric on default route
- learned via Router Advertisement.
-To:     Praveen Chaudhary <praveen5582@gmail.com>, davem@davemloft.net,
-        kuba@kernel.org, corbet@lwn.net, kuznet@ms2.inr.ac.ru,
-        yoshfuji@linux-ipv6.org, netdev@vger.kernel.org,
-        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Zhenggen Xu <zxu@linkedin.com>
-References: <20210119212959.25917-1-pchaudhary@linkedin.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <1cc9e887-a984-c14a-451c-60a202c4cf20@gmail.com>
-Date:   Fri, 22 Jan 2021 08:55:41 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
- Gecko/20100101 Thunderbird/78.6.1
-MIME-Version: 1.0
-In-Reply-To: <20210119212959.25917-1-pchaudhary@linkedin.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=qpNdCAKICP0UB5OknYDWRj1L6fMqJ0u0YADyo5AvMbk=;
+        b=jbH1DdF8J7SJ0RBKwcwpynhVKEMLmKk7vr1Y3bhwTWvfZuX4tLh3dT3lpY9N8rYU2f
+         6ujPh8WBFL9iCQIfdVJRmQqubmQZp2cxrqSGMITCo6YA5tB6rhrvhELL62GJPcgF8m+d
+         e0P/qQykvEsn74vGXN8kU63VfQt4F4WMWWG3K03T6PIicYiqHqEsDe3K9dJlTzyn8hMW
+         wkte6c+ZAcJ2zJyGpA8UCkATuB3t5FIUQg1WVu/MHMQ6zFj+DTJ4wWLqrmLLAUJen3Gt
+         Nq+z0dU4Z94EZv0SgBBYaliryL1gZzxehVTjFIDiGX3ZkcF6vuRRtBebkXFlLmE8TM1I
+         Njjw==
+X-Gm-Message-State: AOAM532hU5yMIBxTadefOvQBOaC9v3HauQnj2cIaswYGkn+N5OonCGZR
+        TXyzoWa2FLGI0/H3wiH4+Q==
+X-Google-Smtp-Source: ABdhPJwwR3KqcPGY9peAGbYDs4M0c/5k2DydYUqz212fShDpO9K7HxXYUvVGK2Kqq0MOZEXkGujVQw==
+X-Received: by 2002:a9d:7b5a:: with SMTP id f26mr3583601oto.95.1611331218109;
+        Fri, 22 Jan 2021 08:00:18 -0800 (PST)
+Received: from threadripper.novatech-llc.local ([216.21.169.52])
+        by smtp.gmail.com with ESMTPSA id y24sm1674942oos.44.2021.01.22.08.00.16
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 22 Jan 2021 08:00:17 -0800 (PST)
+From:   George McCollister <george.mccollister@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Murali Karicheri <m-karicheri2@ti.com>, netdev@vger.kernel.org,
+        George McCollister <george.mccollister@gmail.com>
+Subject: [RFC PATCH net-next 1/3] net: hsr: generate supervision frame without HSR tag
+Date:   Fri, 22 Jan 2021 09:59:46 -0600
+Message-Id: <20210122155948.5573-2-george.mccollister@gmail.com>
+X-Mailer: git-send-email 2.11.0
+In-Reply-To: <20210122155948.5573-1-george.mccollister@gmail.com>
+References: <20210122155948.5573-1-george.mccollister@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/19/21 2:29 PM, Praveen Chaudhary wrote:
-> For IPv4, default route is learned via DHCPv4 and user is allowed to change
-> metric using config etc/network/interfaces. But for IPv6, default route can
-> be learned via RA, for which, currently a fixed metric value 1024 is used.
-> 
-> Ideally, user should be able to configure metric on default route for IPv6
-> similar to IPv4. This fix adds sysctl for the same.
-> 
-> Signed-off-by: Praveen Chaudhary <pchaudhary@linkedin.com>
-> Signed-off-by: Zhenggen Xu <zxu@linkedin.com>
-> 
-> Changes in v1.
-> 1.) Correct the call to rt6_add_dflt_router.
-> 
-> Changes in v2.
-> 1.) Replace accept_ra_defrtr_metric to ra_defrtr_metric.
-> 2.) Change Type to __u32 instead of __s32.
-> 3.) Change description in Documentation/networking/ip-sysctl.rst.
-> 4.) Use proc_douintvec instead of proc_dointvec.
-> 5.) Code style in ndisc_router_discovery().
-> 6.) Change Type to u32 instead of unsigned int.
-> 
-> Changes in v3:
-> 1.) Removed '---' and '```' from description.
-> 2.) Remove stray ' after accept_ra_defrtr.
-> 3.) Fix tab in net/ipv6/addrconf.c.
-> 
-> Logs:
-> 
-> For IPv4:
-> 
-> Config in etc/network/interfaces:
-> auto eth0
-> iface eth0 inet dhcp
->     metric 4261413864
-> 
-> IPv4 Kernel Route Table:
-> $ ip route list
-> default via 172.21.47.1 dev eth0 metric 4261413864
-> 
-> FRR Table, if a static route is configured:
-> [In real scenario, it is useful to prefer BGP learned default route over DHCPv4 default route.]
-> Codes: K - kernel route, C - connected, S - static, R - RIP,
->        O - OSPF, I - IS-IS, B - BGP, P - PIM, E - EIGRP, N - NHRP,
->        T - Table, v - VNC, V - VNC-Direct, A - Babel, D - SHARP,
->        > - selected route, * - FIB route
-> 
-> S>* 0.0.0.0/0 [20/0] is directly connected, eth0, 00:00:03
-> K   0.0.0.0/0 [254/1000] via 172.21.47.1, eth0, 6d08h51m
-> 
-> i.e. User can prefer Default Router learned via Routing Protocol in IPv4.
-> Similar behavior is not possible for IPv6, without this fix.
-> 
-> After fix [for IPv6]:
-> sudo sysctl -w net.ipv6.conf.eth0.net.ipv6.conf.eth0.ra_defrtr_metric=1996489705
-> 
-> IP monitor: [When IPv6 RA is received]
-> default via fe80::xx16:xxxx:feb3:ce8e dev eth0 proto ra metric 1996489705  pref high
-> 
-> Kernel IPv6 routing table
-> $ ip -6 route list
-> default via fe80::be16:65ff:feb3:ce8e dev eth0 proto ra metric 1996489705 expires 21sec hoplimit 64 pref high
-> 
-> FRR Table, if a static route is configured:
-> [In real scenario, it is useful to prefer BGP learned default route over IPv6 RA default route.]
-> Codes: K - kernel route, C - connected, S - static, R - RIPng,
->        O - OSPFv3, I - IS-IS, B - BGP, N - NHRP, T - Table,
->        v - VNC, V - VNC-Direct, A - Babel, D - SHARP,
->        > - selected route, * - FIB route
-> 
-> S>* ::/0 [20/0] is directly connected, eth0, 00:00:06
-> K   ::/0 [119/1001] via fe80::xx16:xxxx:feb3:ce8e, eth0, 6d07h43m
-> 
-> If the metric is changed later, the effect will be seen only when next IPv6
-> RA is received, because the default route must be fully controlled by RA msg.
-> Below metric is changed from 1996489705 to 1996489704.
-> 
-> $ sudo sysctl -w net.ipv6.conf.eth0.ra_defrtr_metric=1996489704
-> net.ipv6.conf.eth0.ra_defrtr_metric = 1996489704
-> 
-> IP monitor:
-> [On next IPv6 RA msg, Kernel deletes prev route and installs new route with updated metric]
-> 
-> Deleted default via fe80::xx16:xxxx:feb3:ce8e dev eth0 proto ra metric 1996489705  expires 3sec hoplimit 64 pref high
-> default via fe80::xx16:xxxx:feb3:ce8e dev eth0 proto ra metric 1996489704  pref high
-> ---
->  Documentation/networking/ip-sysctl.rst | 12 ++++++++++++
->  include/linux/ipv6.h                   |  1 +
->  include/net/ip6_route.h                |  3 ++-
->  include/uapi/linux/ipv6.h              |  1 +
->  include/uapi/linux/sysctl.h            |  1 +
->  net/ipv6/addrconf.c                    | 10 ++++++++++
->  net/ipv6/ndisc.c                       | 14 ++++++++++----
->  net/ipv6/route.c                       |  5 +++--
->  8 files changed, 40 insertions(+), 7 deletions(-)
-> 
+Generate supervision frame without HSR/PRP tag and rely on existing
+code which inserts it later.
+This will allow HSR/PRP tag insertions to be offloaded in the future.
 
-LGTM. I can't think of a better way to do this than a sysctl. Shame that
-the metric/priority is not an RA option.
+Signed-off-by: George McCollister <george.mccollister@gmail.com>
+---
+ net/hsr/hsr_device.c  | 32 ++++----------------------------
+ net/hsr/hsr_forward.c | 10 +++++++---
+ 2 files changed, 11 insertions(+), 31 deletions(-)
 
-Reviewed-by: David Ahern <dsahern@kernel.org>
+diff --git a/net/hsr/hsr_device.c b/net/hsr/hsr_device.c
+index ab953a1a0d6c..161b8da6a21d 100644
+--- a/net/hsr/hsr_device.c
++++ b/net/hsr/hsr_device.c
+@@ -242,8 +242,7 @@ static struct sk_buff *hsr_init_skb(struct hsr_port *master, u16 proto)
+ 	 * being, for PRP it is a trailer and for HSR it is a
+ 	 * header
+ 	 */
+-	skb = dev_alloc_skb(sizeof(struct hsr_tag) +
+-			    sizeof(struct hsr_sup_tag) +
++	skb = dev_alloc_skb(sizeof(struct hsr_sup_tag) +
+ 			    sizeof(struct hsr_sup_payload) + hlen + tlen);
+ 
+ 	if (!skb)
+@@ -275,12 +274,10 @@ static void send_hsr_supervision_frame(struct hsr_port *master,
+ {
+ 	struct hsr_priv *hsr = master->hsr;
+ 	__u8 type = HSR_TLV_LIFE_CHECK;
+-	struct hsr_tag *hsr_tag = NULL;
+ 	struct hsr_sup_payload *hsr_sp;
+ 	struct hsr_sup_tag *hsr_stag;
+ 	unsigned long irqflags;
+ 	struct sk_buff *skb;
+-	u16 proto;
+ 
+ 	*interval = msecs_to_jiffies(HSR_LIFE_CHECK_INTERVAL);
+ 	if (hsr->announce_count < 3 && hsr->prot_version == 0) {
+@@ -289,23 +286,12 @@ static void send_hsr_supervision_frame(struct hsr_port *master,
+ 		hsr->announce_count++;
+ 	}
+ 
+-	if (!hsr->prot_version)
+-		proto = ETH_P_PRP;
+-	else
+-		proto = ETH_P_HSR;
+-
+-	skb = hsr_init_skb(master, proto);
++	skb = hsr_init_skb(master, ETH_P_PRP);
+ 	if (!skb) {
+ 		WARN_ONCE(1, "HSR: Could not send supervision frame\n");
+ 		return;
+ 	}
+ 
+-	if (hsr->prot_version > 0) {
+-		hsr_tag = skb_put(skb, sizeof(struct hsr_tag));
+-		hsr_tag->encap_proto = htons(ETH_P_PRP);
+-		set_hsr_tag_LSDU_size(hsr_tag, HSR_V1_SUP_LSDUSIZE);
+-	}
+-
+ 	hsr_stag = skb_put(skb, sizeof(struct hsr_sup_tag));
+ 	set_hsr_stag_path(hsr_stag, (hsr->prot_version ? 0x0 : 0xf));
+ 	set_hsr_stag_HSR_ver(hsr_stag, hsr->prot_version);
+@@ -315,8 +301,6 @@ static void send_hsr_supervision_frame(struct hsr_port *master,
+ 	if (hsr->prot_version > 0) {
+ 		hsr_stag->sequence_nr = htons(hsr->sup_sequence_nr);
+ 		hsr->sup_sequence_nr++;
+-		hsr_tag->sequence_nr = htons(hsr->sequence_nr);
+-		hsr->sequence_nr++;
+ 	} else {
+ 		hsr_stag->sequence_nr = htons(hsr->sequence_nr);
+ 		hsr->sequence_nr++;
+@@ -332,7 +316,7 @@ static void send_hsr_supervision_frame(struct hsr_port *master,
+ 	hsr_sp = skb_put(skb, sizeof(struct hsr_sup_payload));
+ 	ether_addr_copy(hsr_sp->macaddress_A, master->dev->dev_addr);
+ 
+-	if (skb_put_padto(skb, ETH_ZLEN + HSR_HLEN))
++	if (skb_put_padto(skb, ETH_ZLEN))
+ 		return;
+ 
+ 	hsr_forward_skb(skb, master);
+@@ -348,8 +332,6 @@ static void send_prp_supervision_frame(struct hsr_port *master,
+ 	struct hsr_sup_tag *hsr_stag;
+ 	unsigned long irqflags;
+ 	struct sk_buff *skb;
+-	struct prp_rct *rct;
+-	u8 *tail;
+ 
+ 	skb = hsr_init_skb(master, ETH_P_PRP);
+ 	if (!skb) {
+@@ -373,17 +355,11 @@ static void send_prp_supervision_frame(struct hsr_port *master,
+ 	hsr_sp = skb_put(skb, sizeof(struct hsr_sup_payload));
+ 	ether_addr_copy(hsr_sp->macaddress_A, master->dev->dev_addr);
+ 
+-	if (skb_put_padto(skb, ETH_ZLEN + HSR_HLEN)) {
++	if (skb_put_padto(skb, ETH_ZLEN)) {
+ 		spin_unlock_irqrestore(&master->hsr->seqnr_lock, irqflags);
+ 		return;
+ 	}
+ 
+-	tail = skb_tail_pointer(skb) - HSR_HLEN;
+-	rct = (struct prp_rct *)tail;
+-	rct->PRP_suffix = htons(ETH_P_PRP);
+-	set_prp_LSDU_size(rct, HSR_V1_SUP_LSDUSIZE);
+-	rct->sequence_nr = htons(hsr->sequence_nr);
+-	hsr->sequence_nr++;
+ 	spin_unlock_irqrestore(&master->hsr->seqnr_lock, irqflags);
+ 
+ 	hsr_forward_skb(skb, master);
+diff --git a/net/hsr/hsr_forward.c b/net/hsr/hsr_forward.c
+index cadfccd7876e..a5566b2245a0 100644
+--- a/net/hsr/hsr_forward.c
++++ b/net/hsr/hsr_forward.c
+@@ -454,8 +454,10 @@ static void handle_std_frame(struct sk_buff *skb,
+ void hsr_fill_frame_info(__be16 proto, struct sk_buff *skb,
+ 			 struct hsr_frame_info *frame)
+ {
+-	if (proto == htons(ETH_P_PRP) ||
+-	    proto == htons(ETH_P_HSR)) {
++	struct hsr_port *port = frame->port_rcv;
++
++	if (port->type != HSR_PT_MASTER &&
++	    (proto == htons(ETH_P_PRP) || proto == htons(ETH_P_HSR))) {
+ 		/* HSR tagged frame :- Data or Supervision */
+ 		frame->skb_std = NULL;
+ 		frame->skb_prp = NULL;
+@@ -473,8 +475,10 @@ void prp_fill_frame_info(__be16 proto, struct sk_buff *skb,
+ {
+ 	/* Supervision frame */
+ 	struct prp_rct *rct = skb_get_PRP_rct(skb);
++	struct hsr_port *port = frame->port_rcv;
+ 
+-	if (rct &&
++	if (port->type != HSR_PT_MASTER &&
++	    rct &&
+ 	    prp_check_lsdu_size(skb, rct, frame->is_supervision)) {
+ 		frame->skb_hsr = NULL;
+ 		frame->skb_std = NULL;
+-- 
+2.11.0
+
