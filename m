@@ -2,190 +2,201 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 43F8F2FF96B
-	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 01:26:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EFA972FF972
+	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 01:28:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726481AbhAVAZY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jan 2021 19:25:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39926 "EHLO
+        id S1726508AbhAVA0b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jan 2021 19:26:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725918AbhAVAZR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jan 2021 19:25:17 -0500
-Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 896FBC06174A;
-        Thu, 21 Jan 2021 16:24:37 -0800 (PST)
-Received: by mail-yb1-xb34.google.com with SMTP id f6so3813439ybq.13;
-        Thu, 21 Jan 2021 16:24:37 -0800 (PST)
+        with ESMTP id S1726094AbhAVA0W (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jan 2021 19:26:22 -0500
+Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79829C06174A;
+        Thu, 21 Jan 2021 16:25:42 -0800 (PST)
+Received: by mail-io1-xd2e.google.com with SMTP id q129so7866099iod.0;
+        Thu, 21 Jan 2021 16:25:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=a0YT6DkGrqfNzRDHinbGmMwd+UI+97FY2H6+yORyunA=;
-        b=LROqX8HRVfvUy9IoPwyCCKbS5vhipGSkhVxgDlceLZmbnuGdJakH2pTkvTUwt94d0J
-         07L4Q6qfl/tD09amM4HSewHQgAtjPxUGk6B4cZwwEIzyKlrjTfq50kwIv6Yg9DP/7EcD
-         HbQP1N4JOeMcuEt22x/BTRGm783E2GjaDnKNFQRJZXLKSUKmev0GCsb3neeqT1UvIV/V
-         QwGAiK5T6AKqr/cKdsPWjLTci5jp6k++0HqJ7GWfBO+Zk2bHSI2TJUhTGf6nZAO3zFGY
-         Ls5dfqYq4ZW8x8bOCwwqfgoj/Fz3kDW+MnBQzVIzS/l+cLXzYHA/PoBI2Q/ERKeauxws
-         4g5w==
+        h=mime-version:references:in-reply-to:reply-to:from:date:message-id
+         :subject:to:cc;
+        bh=ykOiitFyiN0YSC/lJm0MiGgBb0JXAdtJs/AnjN6QPxY=;
+        b=QDG0JJplOoNQz84k3mYR476kQh5U3VxQVzKvtt1e8CSfdDU8M8xdbIuGJjcZXrNbNC
+         lcmBx6MWm8ACOAF38UaCM0rT4//qt8cBuoS1xm1X1P3lngLnpJkcvTBbZBrjhmYfhhvZ
+         +DnawjDsJC0prF+exWXZexUH/WsmtUz9/xjVXxoO/XDC+sMpahwchcDb1nMJ2sLzWhN1
+         DHUDnHgm1p0HAexyYuRHLyzsQsfBt5ZpaqwkewmCA60fsHURrjAhbJPqcyJBBV0DDi24
+         sgSmuySVd8NFBRSNt3fRdKlZICvGbnyrgaamfofcoQm94m9dkgfBbHYmSc3ADcHm9TDl
+         Fx0g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=a0YT6DkGrqfNzRDHinbGmMwd+UI+97FY2H6+yORyunA=;
-        b=ogczGqa9wq1tGF6jhdl5og94VSUO5kwYr+zPnAHiLZ4YW+/n3snIelEAg7z2ZQT/YK
-         9dPUkyt4n73+1d10nnUJfhqBohguSwP47KM0xj4hzoVVD3889LlP+Fvh1mTjT++RkRIn
-         Pz3Ssr8nQeEe0QIsbL/XfuCjXvbfk6dvUga2dUAN74w2+85v7U5uuhrpx0If/93MaZga
-         bGgitvkJ7FgfEpmpG2qJCMCDnHc7iNDUcHk3IBlz+GRrm11uVva1k3/6iGGx67szRNqg
-         IO9ZwO+Bfa+rTFgmrZa/yPBKW+NYHvjrWr8MmDyXt3pC1JQzZFefvT+8gAhHLhKX6AH/
-         PWVQ==
-X-Gm-Message-State: AOAM5333O5pq0B5Gy1aOCHX32Ji1qlQycsi70WXyq1pEaKBOyLTQGXxW
-        8E0x18GTxmyUjiZC+VfGvxJne/QL5R+2fBoEAcw=
-X-Google-Smtp-Source: ABdhPJwn8vIsjq+qYvYLlxxYQdTA5iInBbf/JOay3aeVpQtXP2+hk1pULbNg7ue4VnMEWTJhVcM2dtaZ0ukGLbmZe20=
-X-Received: by 2002:a25:48c7:: with SMTP id v190mr2773922yba.260.1611275076764;
- Thu, 21 Jan 2021 16:24:36 -0800 (PST)
+        h=x-gm-message-state:mime-version:references:in-reply-to:reply-to
+         :from:date:message-id:subject:to:cc;
+        bh=ykOiitFyiN0YSC/lJm0MiGgBb0JXAdtJs/AnjN6QPxY=;
+        b=CBqDKjjDjEQnfzFc7R6V9TvJXPEo6IYppZjEB7JbM9DcdXzlVZ8tXwcZXBPwQ0tzd4
+         UIwccIR4GgvKdsdPzPZTw5syOjQ30Ka3FfgyrURDIyjRSF5Wv3JwD6W+mATGHUu7z6I6
+         rHhhW3It/sRhyjfdfUJCzJla3cmSYUNMYczEPM4Z5Sjp+MeIuPHFJvJmatE0RWBU6LWh
+         tdDlITWQfwuBvLAPdLZA7IQNiSrNPlxVG984JScnvQvNh1KUiiZEUxbGKq3w2XjadggS
+         aTPcmvp8w47fLfUQkOPiNN/kJvAj6QvCV0Re5dRPnZSumj+8y4sFNS2ek77h+3DEIX+b
+         CSnQ==
+X-Gm-Message-State: AOAM532Q62iHmFyoiXfHCdyNK15u4mo9B64rxAAcgQooNcrC8vIqQUxP
+        kWMWzb4gbugtmThMfD5POUFKitK9DL9gDZ5MGmw=
+X-Google-Smtp-Source: ABdhPJwA9IQtExG+5RlQWaPI0YodAZOnsMrpJLghO7Nv6S4fYgKHUyyRllGljUmIxkyy2DcFr61UVjM4KqztO1BDJcc=
+X-Received: by 2002:a6b:6a0e:: with SMTP id x14mr1540463iog.57.1611275141850;
+ Thu, 21 Jan 2021 16:25:41 -0800 (PST)
 MIME-Version: 1.0
-References: <20210121012241.2109147-1-sdf@google.com> <20210121012241.2109147-2-sdf@google.com>
- <CAEf4BzaOjBN=C=zjmhP-nLJbtm-FKBdpQbJmxtavn6r9VC3eiA@mail.gmail.com> <YAoXy0xcjhW8BftF@google.com>
-In-Reply-To: <YAoXy0xcjhW8BftF@google.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Thu, 21 Jan 2021 16:24:25 -0800
-Message-ID: <CAEf4Bza6OeNMy9DH2Du8obSNfVFhg7wS1j9KgvR2ihOukEpNmw@mail.gmail.com>
-Subject: Re: [PATCH bpf-next 2/2] selftests/bpf: verify that rebinding to port
- < 1024 from BPF works
-To:     Stanislav Fomichev <sdf@google.com>
-Cc:     Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>
+References: <20210116095413.72820-1-sedat.dilek@gmail.com> <20210120223546.GF1798087@krava>
+ <CAEf4Bza2W061YpxtUx9ZKQUtE0-tS6gf4yg2Le_2g4kyi3FhnQ@mail.gmail.com>
+ <CA+icZUUGKn4DiBGN8Tq3yrh0NH2Fqboaigwm4Q3yceDJVe9dAA@mail.gmail.com> <CA+icZUX_DsEi+k5kpko5fxrG2+-oL8H4gVRq93fXHjN6ny9K=Q@mail.gmail.com>
+In-Reply-To: <CA+icZUX_DsEi+k5kpko5fxrG2+-oL8H4gVRq93fXHjN6ny9K=Q@mail.gmail.com>
+Reply-To: sedat.dilek@gmail.com
+From:   Sedat Dilek <sedat.dilek@gmail.com>
+Date:   Fri, 22 Jan 2021 01:25:30 +0100
+Message-ID: <CA+icZUW11s-rmu+hw4ue44cn4FDBLoJWSrZ78qpdfk-CSYHYHQ@mail.gmail.com>
+Subject: Re: [PATCH RFC] tools: Factor Clang, LLC and LLVM utils definitions
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Jiri Olsa <jolsa@redhat.com>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Nathan Chancellor <natechancellor@gmail.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Quentin Monnet <quentin@isovalent.com>,
+        Jean-Philippe Brucker <jean-philippe@linaro.org>,
+        Tobias Klauser <tklauser@distanz.ch>,
+        Ilya Leoshkevich <iii@linux.ibm.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Yulia Kartseva <hex@fb.com>, Andrey Ignatov <rdna@fb.com>,
+        Thomas Hebb <tommyhebb@gmail.com>,
+        Stephane Eranian <eranian@google.com>,
+        "Frank Ch. Eigler" <fche@redhat.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Davide Caratti <dcaratti@redhat.com>,
+        Briana Oursler <briana.oursler@gmail.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        clang-built-linux <clang-built-linux@googlegroups.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 21, 2021 at 4:09 PM <sdf@google.com> wrote:
+On Fri, Jan 22, 2021 at 1:21 AM Sedat Dilek <sedat.dilek@gmail.com> wrote:
 >
-> On 01/21, Andrii Nakryiko wrote:
-> > On Wed, Jan 20, 2021 at 7:16 PM Stanislav Fomichev <sdf@google.com> wrote:
+> On Fri, Jan 22, 2021 at 1:12 AM Sedat Dilek <sedat.dilek@gmail.com> wrote:
+> >
+> > On Fri, Jan 22, 2021 at 1:04 AM Andrii Nakryiko
+> > <andrii.nakryiko@gmail.com> wrote:
 > > >
-> > > BPF rewrites from 111 to 111, but it still should mark the port as
-> > > "changed".
-> > > We also verify that if port isn't touched by BPF, it's still prohibited.
+> > > On Wed, Jan 20, 2021 at 2:36 PM Jiri Olsa <jolsa@redhat.com> wrote:
+> > > >
+> > > > On Sat, Jan 16, 2021 at 10:54:04AM +0100, Sedat Dilek wrote:
+> > > > > When dealing with BPF/BTF/pahole and DWARF v5 I wanted to build bpftool.
+> > > > >
+> > > > > While looking into the source code I found duplicate assignments
+> > > > > in misc tools for the LLVM eco system, e.g. clang and llvm-objcopy.
+> > > > >
+> > > > > Move the Clang, LLC and/or LLVM utils definitions to
+> > > > > tools/scripts/Makefile.include file and add missing
+> > > > > includes where needed.
+> > > > > Honestly, I was inspired by commit c8a950d0d3b9
+> > > > > ("tools: Factor HOSTCC, HOSTLD, HOSTAR definitions").
+> > > > >
+> > > > > I tested with bpftool and perf on Debian/testing AMD64 and
+> > > > > LLVM/Clang v11.1.0-rc1.
+> > > > >
+> > > > > Build instructions:
+> > > > >
+> > > > > [ make and make-options ]
+> > > > > MAKE="make V=1"
+> > > > > MAKE_OPTS="HOSTCC=clang HOSTCXX=clang++ HOSTLD=ld.lld CC=clang LD=ld.lld LLVM=1 LLVM_IAS=1"
+> > > > > MAKE_OPTS="$MAKE_OPTS PAHOLE=/opt/pahole/bin/pahole"
+> > > > >
+> > > > > [ clean-up ]
+> > > > > $MAKE $MAKE_OPTS -C tools/ clean
+> > > > >
+> > > > > [ bpftool ]
+> > > > > $MAKE $MAKE_OPTS -C tools/bpf/bpftool/
+> > > > >
+> > > > > [ perf ]
+> > > > > PYTHON=python3 $MAKE $MAKE_OPTS -C tools/perf/
+> > > > >
+> > > > > I was careful with respecting the user's wish to override custom compiler,
+> > > > > linker, GNU/binutils and/or LLVM utils settings.
+> > > > >
+> > > > > Some personal notes:
+> > > > > 1. I have NOT tested with cross-toolchain for other archs (cross compiler/linker etc.).
+> > > > > 2. This patch is on top of Linux v5.11-rc3.
+> > > > >
+> > > > > I hope to get some feedback from especially Linux-bpf folks.
+> > > > >
+> > > > > Signed-off-by: Sedat Dilek <sedat.dilek@gmail.com>
+> > > > > ---
+> > > > >  tools/bpf/bpftool/Makefile                  | 2 --
+> > > > >  tools/bpf/runqslower/Makefile               | 3 ---
+> > > > >  tools/build/feature/Makefile                | 4 ++--
+> > > > >  tools/perf/Makefile.perf                    | 1 -
+> > > >
+> > > > for tools/build and tools/perf
+> > > >
+> > > > Acked-by: Jiri Olsa <jolsa@redhat.com>
+> > > >
 > > >
-> > > Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> > > ---
-> > >  .../selftests/bpf/prog_tests/bind_perm.c      | 88 +++++++++++++++++++
-> > >  tools/testing/selftests/bpf/progs/bind_perm.c | 36 ++++++++
-> > >  2 files changed, 124 insertions(+)
-> > >  create mode 100644 tools/testing/selftests/bpf/prog_tests/bind_perm.c
-> > >  create mode 100644 tools/testing/selftests/bpf/progs/bind_perm.c
+> > > It's pretty straightforward and looks good for bpftool and runqslower,
+> > > but I couldn't apply directly to test due to merge conflicts.
 > > >
-> > > diff --git a/tools/testing/selftests/bpf/prog_tests/bind_perm.c
-> > b/tools/testing/selftests/bpf/prog_tests/bind_perm.c
-> > > new file mode 100644
-> > > index 000000000000..840a04ac9042
-> > > --- /dev/null
-> > > +++ b/tools/testing/selftests/bpf/prog_tests/bind_perm.c
-> > > @@ -0,0 +1,88 @@
-> > > +// SPDX-License-Identifier: GPL-2.0
-> > > +#include <test_progs.h>
-> > > +#include "bind_perm.skel.h"
-> > > +
-> > > +#include <sys/types.h>
-> > > +#include <sys/socket.h>
-> > > +#include <sys/capability.h>
-> > > +
-> > > +static int duration;
-> > > +
-> > > +void try_bind(int port, int expected_errno)
-> > > +{
-> > > +       struct sockaddr_in sin = {};
-> > > +       int fd = -1;
-> > > +
-> > > +       fd = socket(AF_INET, SOCK_STREAM, 0);
-> > > +       if (CHECK(fd < 0, "fd", "errno %d", errno))
-> > > +               goto close_socket;
-> > > +
-> > > +       sin.sin_family = AF_INET;
-> > > +       sin.sin_port = htons(port);
-> > > +
-> > > +       errno = 0;
-> > > +       bind(fd, (struct sockaddr *)&sin, sizeof(sin));
-> > > +       CHECK(errno != expected_errno, "bind", "errno %d, expected %d",
-> > > +             errno, expected_errno);
+> > > Also, which tree this should go through, given it touches multiple
+> > > parts under tools/?
+> > >
+> >
+> > Sorry, for the conflicts.
+> > AFAICS I should do this again against Linux v5.11-rc4 vanilla?
+> > Is this OK to you?
+> >
 >
-> > ASSERT_NEQ() is nicer
-> Nice, didn't know these existed. Now we need ASSERT_GT/LE/GE/LE to also
-> get rid of those other CHECKs :-)
+> I re-checked:
+> This patch was on top of Linux v5.11-rc3 and applies cleanly against
+> Linux v5.11-rc.
+>
 
-When I was adding the initial set of ASSERT_XXX() I didn't think we'll
-need all those variants, but it turns out they come up pretty
-frequently. So while you might be joking, I think it's a good idea to
-add them and start using them consistently.
+Bullshit.
 
->
-> > > +
-> > > +close_socket:
-> > > +       if (fd >= 0)
-> > > +               close(fd);
-> > > +}
-> > > +
-> > > +void cap_net_bind_service(cap_flag_value_t flag)
-> > > +{
-> > > +       const cap_value_t cap_net_bind_service = CAP_NET_BIND_SERVICE;
-> > > +       cap_t caps;
-> > > +
-> > > +       caps = cap_get_proc();
-> > > +       if (CHECK(!caps, "cap_get_proc", "errno %d", errno))
-> > > +               goto free_caps;
-> > > +
-> > > +       if (CHECK(cap_set_flag(caps, CAP_EFFECTIVE, 1,
-> > &cap_net_bind_service,
-> > > +                              CAP_CLEAR),
-> > > +                 "cap_set_flag", "errno %d", errno))
-> > > +               goto free_caps;
-> > > +
-> > > +       if (CHECK(cap_set_flag(caps, CAP_EFFECTIVE, 1,
-> > &cap_net_bind_service,
-> > > +                              CAP_CLEAR),
-> > > +                 "cap_set_flag", "errno %d", errno))
-> > > +               goto free_caps;
-> > > +
-> > > +       if (CHECK(cap_set_proc(caps), "cap_set_proc", "errno %d",
-> > errno))
-> > > +               goto free_caps;
-> > > +
-> > > +free_caps:
-> > > +       if (CHECK(cap_free(caps), "cap_free", "errno %d", errno))
-> > > +               goto free_caps;
-> > > +}
-> > > +
-> > > +void test_bind_perm(void)
-> > > +{
-> > > +       struct bind_perm *skel;
-> > > +       int cgroup_fd;
-> > > +
-> > > +       cgroup_fd = test__join_cgroup("/bind_perm");
-> > > +       if (CHECK(cgroup_fd < 0, "cg-join", "errno %d", errno))
-> > > +               return;
-> > > +
-> > > +       skel = bind_perm__open_and_load();
-> > > +       if (CHECK(!skel, "skel-load", "errno %d", errno))
-> > > +               goto close_cgroup_fd;
->
-> > errno is irrelevant; also use ASSERT_PTR_OK() instead
-> Ack, it might be worth unconditionally printing it in your ASSERT_XXX
-> macros. Worst case - it's not used, but in general case avoids
-> all this "errno %d" boilerplate.
+I will send out a v2 against Linux v5.11-rc4 - was on the wrong local
+Git branch.
 
-Don't know about that, having unrelated errno everywhere is annoying
-and misleading. I'd rather move away from relying on errno so much :)
+- Sedat -
 
+> Please let me know if I should adapt to a different Git tree.
 >
-> > > +
-> > > +       skel->links.bind_v4_prog =
-> > bpf_program__attach_cgroup(skel->progs.bind_v4_prog, cgroup_fd);
-> > > +       if (CHECK(IS_ERR(skel->links.bind_v4_prog),
-> > > +                 "cg-attach", "bind4 %ld",
-> > > +                 PTR_ERR(skel->links.bind_v4_prog)))
+> - Sedat -
 >
-> > try using ASSERT_PTR_OK instead
-> Sure, thanks!
+> > Good hint, cannot say through which tree this should go through.
+> >
+> > - Sedat -
+> >
+> > > > jirka
+> > > >
+> > > > >  tools/scripts/Makefile.include              | 7 +++++++
+> > > > >  tools/testing/selftests/bpf/Makefile        | 3 +--
+> > > > >  tools/testing/selftests/tc-testing/Makefile | 3 +--
+> > > > >  7 files changed, 11 insertions(+), 12 deletions(-)
+> > > > >
+> > > > > diff --git a/tools/bpf/bpftool/Makefile b/tools/bpf/bpftool/Makefile
+> > > > > index f897cb5fb12d..71c14efa6e91 100644
+> > > > > --- a/tools/bpf/bpftool/Makefile
+> > > > > +++ b/tools/bpf/bpftool/Makefile
+> > > >
+> > > > SNIP
+> > > >
