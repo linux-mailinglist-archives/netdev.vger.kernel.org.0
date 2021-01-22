@@ -2,54 +2,54 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C286730093A
-	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 18:06:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DCE1A30093B
+	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 18:06:36 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729705AbhAVRFn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jan 2021 12:05:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57404 "EHLO
+        id S1729722AbhAVRGI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jan 2021 12:06:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729743AbhAVRFA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 12:05:00 -0500
-Received: from mail-qt1-x82a.google.com (mail-qt1-x82a.google.com [IPv6:2607:f8b0:4864:20::82a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFE5DC0613D6
-        for <netdev@vger.kernel.org>; Fri, 22 Jan 2021 09:04:18 -0800 (PST)
-Received: by mail-qt1-x82a.google.com with SMTP id z6so4628272qtn.0
-        for <netdev@vger.kernel.org>; Fri, 22 Jan 2021 09:04:18 -0800 (PST)
+        with ESMTP id S1729718AbhAVRFr (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 12:05:47 -0500
+Received: from mail-qk1-x736.google.com (mail-qk1-x736.google.com [IPv6:2607:f8b0:4864:20::736])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C2F72C06178B
+        for <netdev@vger.kernel.org>; Fri, 22 Jan 2021 09:05:06 -0800 (PST)
+Received: by mail-qk1-x736.google.com with SMTP id n15so1108422qkh.8
+        for <netdev@vger.kernel.org>; Fri, 22 Jan 2021 09:05:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=LkXre3Jn5BQNLfYvq2ivFLi/y/XcVxQ/mvEDUU0zFUM=;
-        b=aoCtGDeoCpDuZ1M8hmOguwCqCcdPweO66+78DRPhUdJmBTVuBVsXUOJHicfzJEjlhr
-         1UVmndO5Z+DmmkChJq0UN9Qh/xWgge9WH9166mtn4yOLhj2O9703VgJc7ljORbPjqmQx
-         q1LHMhoS0oPw1GyaUP4HUaagl0Q7ADyP7H1L+miS0SX//Ow6XbdZOzc6/vZT/Hcn9dR/
-         vn5U4JSeqJvl8jfXqdGqZp0Emqt4T6ieC//nLtT6jFqfIhyaZPUNbfQseQBBW0zaE4wU
-         0t39QbyrVWg6de/Wns7Ot/zMl/cXyHM9MQZnyP6cKYRYQP0rLiAADAy9UarF1mROSTwQ
-         gFvw==
+        bh=PagpKKYHrimAyJj24L8Bk3YzjjtGo1A9w2b9ySnmzPg=;
+        b=kkjk18XUfWrHShM1sL++Cd5qQ9OQcDVLjnQ7LCi95k5HaFWDy3RzUKGFKurj5yc9JK
+         rbHhxtb3HKzv786f/RFp5TSZL+JsJPyb9EVd98C+rkP9sQ5OI9Qp6IMjRa5bP0n2UhFz
+         lVRRBUMTGjvq11/UaHnm63dMlMgMf8Xl6jau+hc+r4jupSvLTCEOL4NYLN6ZtCYlH2au
+         edckYYC/85VYSi8+2b9MVLvrrCLMUrQwfHleSPuCbwMTmyX4pX6yK8Ngv5qgjrlWcjuS
+         gDiUGgxmM1+/T5z5sjis1DgHKWoge6JJ46645SjsF5g8QKyz4fOjrw5I/v6rHXmfVrmn
+         ku/Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=LkXre3Jn5BQNLfYvq2ivFLi/y/XcVxQ/mvEDUU0zFUM=;
-        b=qMB2aFid0ovu+WR4ws33v0t5jxxk+R9VhBHuJcToZTLX80ewL09KvXHjVVXBAcdh2Z
-         g3hApbhsCe44X64UQX2yga8n5XV+3dCnWH1Eu2yFNjagUCyUTR8vnYXBBBj651Ilugvy
-         r9W/OUtOvyDOUR/3UgkY/vrbxOMwjZ2bOriHqgcQC+DElYG1SIg+mVqS/FFwsvCyXrAs
-         K9M7CRZYDweoaAwK2O3ARqhXZv/SjOVMEFpCrFaU/Kw2IvY4VYUYFkTrnsn4V3ht7glE
-         qcxC/E5fOByEAdObksTxmDcKrG/vzoo5DY7OtsdBM9GECHh/6qvXQ4czN/yJX7/P26CE
-         YCxg==
-X-Gm-Message-State: AOAM5336RnPJbiCRCzEZbda5ZAVIlPvTvQp/SwkceXzV55MwtNJZ8l5a
-        5+v+Cm9iqZLVnGyXKZXS1xWDAxNjsQ6Ab0AJ+IBblA==
-X-Google-Smtp-Source: ABdhPJyIloiXBIr5YvNM8BIAng+QSQEug8CjQEDk0vbyqGkd+rKpaD+MeeZqw+cctMfxM8PgY9TZXF3ZoQK/5mrXu2o=
-X-Received: by 2002:ac8:524f:: with SMTP id y15mr5264291qtn.266.1611335057791;
- Fri, 22 Jan 2021 09:04:17 -0800 (PST)
+        bh=PagpKKYHrimAyJj24L8Bk3YzjjtGo1A9w2b9ySnmzPg=;
+        b=DMNwyTHlSX1G+OABmeLbn7X86GouhSVmEo4uWzyntxG5shATVMHJu3esjcktI6OreH
+         mBsYiuYqj0p8L2/elsxOQ6mmkdB/l1rPN+luZzT2HTvmZigVU7uiTPMAOjFNiAsTBlt/
+         +cbOu/bDUHhpp6yf4n2ivcVe29OY3u2uNz95QuHYVpPdtIzplYlEURM8BPf63kVyvy1U
+         ZNP/oSPtlqa6uAnNuwF9/T5xtKkKKgjAmY+i5ZJpMli1ukXzNYxaPSyFK/CZ48B7q65Y
+         A6kHJmC62gRgogObwB1JL0WY4FPoYIrA6ITZZssyMbcL7Q7R+adbT7QRmUWMsC5OXp2b
+         ZDMg==
+X-Gm-Message-State: AOAM533mWwD59uZre1OIofa+dpzGYakUAPBYSJRwOhP2AGd8tyVhUNh/
+        Qc7FEjTssXAcBFWS3Y/QdBYGWQ5/21DKrGgZb6W9Hw==
+X-Google-Smtp-Source: ABdhPJyLhQKL59L23NciXi/VFE/tmeccGcXmCOvRVM4ez0WSsphAE3r/WXK2sadIT/5VOKo24wEphlOx8ufuEjQzLr8=
+X-Received: by 2002:a37:6c81:: with SMTP id h123mr1995282qkc.448.1611335105786;
+ Fri, 22 Jan 2021 09:05:05 -0800 (PST)
 MIME-Version: 1.0
-References: <20210122164232.61770-1-loris.reiff@liblor.ch>
-In-Reply-To: <20210122164232.61770-1-loris.reiff@liblor.ch>
+References: <20210122164232.61770-1-loris.reiff@liblor.ch> <20210122164232.61770-2-loris.reiff@liblor.ch>
+In-Reply-To: <20210122164232.61770-2-loris.reiff@liblor.ch>
 From:   Stanislav Fomichev <sdf@google.com>
-Date:   Fri, 22 Jan 2021 09:04:07 -0800
-Message-ID: <CAKH8qBvy0aRODNXtdseu5ygLMzAKPD-N8H1=GfGqPz--v83KpQ@mail.gmail.com>
-Subject: Re: [PATCH 1/2] bpf: cgroup: Fix optlen WARN_ON_ONCE toctou
+Date:   Fri, 22 Jan 2021 09:04:54 -0800
+Message-ID: <CAKH8qBtOVr_y2r2dSC+p7E1jfehXsh-RUdNLeo3n7zquMzogBw@mail.gmail.com>
+Subject: Re: [PATCH 2/2] bpf: cgroup: Fix problematic bounds check
 To:     Loris Reiff <loris.reiff@liblor.ch>
 Cc:     bpf <bpf@vger.kernel.org>, Netdev <netdev@vger.kernel.org>,
         Alexei Starovoitov <ast@kernel.org>,
@@ -64,38 +64,32 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Fri, Jan 22, 2021 at 8:43 AM Loris Reiff <loris.reiff@liblor.ch> wrote:
 >
-> A toctou issue in `__cgroup_bpf_run_filter_getsockopt` can trigger a
-> WARN_ON_ONCE in a check of `copy_from_user`.
-> `*optlen` is checked to be non-negative in the individual getsockopt
-> functions beforehand. Changing `*optlen` in a race to a negative value
-> will result in a `copy_from_user(ctx.optval, optval, ctx.optlen)` with
-> `ctx.optlen` being a negative integer.
+> Since ctx.optlen is signed, a larger value than max_value could be
+> passed, as it is later on used as unsigned, which causes a WARN_ON_ONCE
+> in the copy_to_user.
 >
 > Fixes: 0d01da6afc54 ("bpf: implement getsockopt and setsockopt hooks")
 > Signed-off-by: Loris Reiff <loris.reiff@liblor.ch>
 > ---
->  kernel/bpf/cgroup.c | 5 +++++
->  1 file changed, 5 insertions(+)
+>  kernel/bpf/cgroup.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 >
 > diff --git a/kernel/bpf/cgroup.c b/kernel/bpf/cgroup.c
-> index 96555a8a2..6ec8f02f4 100644
+> index 6ec8f02f4..6aa9e10c6 100644
 > --- a/kernel/bpf/cgroup.c
 > +++ b/kernel/bpf/cgroup.c
-> @@ -1442,6 +1442,11 @@ int __cgroup_bpf_run_filter_getsockopt(struct sock *sk, int level,
->                         goto out;
->                 }
+> @@ -1464,7 +1464,7 @@ int __cgroup_bpf_run_filter_getsockopt(struct sock *sk, int level,
+>                 goto out;
+>         }
 >
-> +               if (ctx.optlen < 0) {
-> +                       ret = -EFAULT;
-> +                       goto out;
-> +               }
-> +
->                 if (copy_from_user(ctx.optval, optval,
->                                    min(ctx.optlen, max_optlen)) != 0) {
->                         ret = -EFAULT;
+> -       if (ctx.optlen > max_optlen) {
+> +       if (ctx.optlen > max_optlen || ctx.optlen < 0) {
+>                 ret = -EFAULT;
+>                 goto out;
+>         }
 > --
 > 2.29.2
-Good point, user's optlen can be concurrently changed after the kernel
-updated it.
+Thanks! I assume this is only an issue if the BPF program is written
+incorrectly.
 
 Reviewed-by: Stanislav Fomichev <sdf@google.com>
