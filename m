@@ -2,176 +2,227 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F7C130087A
-	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 17:19:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9551030089B
+	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 17:27:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729566AbhAVQTh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jan 2021 11:19:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47418 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729608AbhAVQSm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 11:18:42 -0500
-Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33451C06174A
-        for <netdev@vger.kernel.org>; Fri, 22 Jan 2021 08:18:02 -0800 (PST)
-Received: by mail-io1-xd30.google.com with SMTP id e22so12108385iog.6
-        for <netdev@vger.kernel.org>; Fri, 22 Jan 2021 08:18:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=k7aFdZLlLkKadaaLgSOzC0pYwBp2DvRtsE6eIRlG/L4=;
-        b=uhU6OTUbrIKzj4xk3+jcmodex87T07GUFw1Knfk5JLPO0zMjv7UwmbihNrRt0jZBkO
-         Gv/j+gx1ZJZ+/4YeljbaVBCRfNS2fWgr/zpV5C7apSxCHWIaUS4NMaYII5HUUGO7EuTq
-         /IMQ4W60oAThy4sn+cu09nQMhpQQyLjZWh326QYQCgOZ+n9zag/t/308gZHIM4xNxB9d
-         /1QDCcyO5y0VmxIKRBzk39dm6KYRDaAGKK/zTV7RoodPo0GOTRNgV2ocRhSpUUN3APZW
-         su5d6Qo2UD5z/DN8AJ46cY/myz4cPtm5Ty/k2sUs7s+cQ9ryhdLvfEih5EYlt2sJwkbg
-         0AxA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=k7aFdZLlLkKadaaLgSOzC0pYwBp2DvRtsE6eIRlG/L4=;
-        b=Ztctsn0QKvCbwm91y1be/zxiL37SAIQh36RQxx2KqC+XfThUyU8HwEDeHZURnC+xus
-         OqwuSKibS5z+xqeui3Jo5Or4uavppIVyCsJ6kgqRPYwn2cckdvW8mTcYX+sqt6YEgT/d
-         Qn4FzbG9VRe+UNpLKvZE4Pjucxb4uvXCpBPboHXnl1AfUaz8OlOVWnZ0JQ+Ndr2BD7yx
-         5hJF2M0+Vj2OKEB8n1pamGTQU/ShSWqcTIegg0abDxSNU0GzgMEvpX2+IuBoFd9ptz9p
-         re5UByCgWg6x6jyg8ScWdWprZU5Hz6vGpVzoU74+JyLGfKBzCg2G4tOzL88DZqw266a9
-         tl5w==
-X-Gm-Message-State: AOAM533neUhXdNUGTRiBsdms1Jhiv3Z3yDxBwTjP/jQ9soF0BxB5K8dU
-        Lwi2Bek1ZNQnxQhdsPMYYNQnjQgWxgwIcf+QDWM=
-X-Google-Smtp-Source: ABdhPJxPEGt/Xq/Wyo/diZSm6cCUpopj66B+C6CuxTrsQHxCeT2vXOKS8qhuMWDzwa1uBHxhzW9g15XL0DwK4r5dcmg=
-X-Received: by 2002:a05:6e02:4d2:: with SMTP id f18mr481287ils.64.1611332281479;
- Fri, 22 Jan 2021 08:18:01 -0800 (PST)
+        id S1729702AbhAVQZ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jan 2021 11:25:28 -0500
+Received: from mail1.protonmail.ch ([185.70.40.18]:33768 "EHLO
+        mail1.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729690AbhAVQZL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 11:25:11 -0500
+Date:   Fri, 22 Jan 2021 16:24:17 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
+        t=1611332664; bh=0XqNUwlQ8fpKxv5Ne2GqdJi36Jlx2ZgxyrvnesA4vCQ=;
+        h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
+        b=ZeasStcty7Ro1QLfQXPpxq9ViE63PveckERmPRlit8m0mNWEgZxcaqBuPhdZsw9+s
+         8UFQVeGcIfq++QT/jGQQs9QcGeJtfYku8X8pD3xEsl2E6n4Okv24nTWXg46qBKLw3T
+         2ALHAq2HXnTInnMEkVRnU1qUlxwyAk02hV2Zu+IDyWQ2MZV1hWtdxp6+pdWpPWOekw
+         /UZIYmCj6dV2td644iJfigLVqIccHO4SlWXq1cQzdBKU98ePvaokaeWc7vKf+e6GZV
+         S0sQrinP22/YFOHs7PgvvR+oycqxRitrRwGMDLd73yXQDTt8sWsx1mOamARzPQ64rE
+         EUhbwrg7P/cUw==
+To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+From:   Alexander Lobakin <alobakin@pm.me>
+Cc:     Alexander Lobakin <alobakin@pm.me>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        "Michael S . Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, bjorn@kernel.org,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>,
+        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Reply-To: Alexander Lobakin <alobakin@pm.me>
+Subject: Re: [PATCH bpf-next v3 3/3] xsk: build skb by page
+Message-ID: <20210122162350.8846-1-alobakin@pm.me>
+In-Reply-To: <1611329789.3222687-1-xuanzhuo@linux.alibaba.com>
+References: <1611329789.3222687-1-xuanzhuo@linux.alibaba.com>
 MIME-Version: 1.0
-References: <cover.1611218673.git.lucien.xin@gmail.com> <0fa4f7f04222e0c4e7bd27cbd86ffe22148f6476.1611218673.git.lucien.xin@gmail.com>
- <bb59ed7c9c438bf076da3a956bb24fddf80978f7.1611218673.git.lucien.xin@gmail.com>
- <CAKgT0Ucb6EO45+AxWAL8Vgwy4e7b=88TagW+xE-XizedOvmQEw@mail.gmail.com> <CADvbK_c0ByOxha_+afNP_UqdVcKmuQjbp1S47j+4Zjvu+aBPLw@mail.gmail.com>
-In-Reply-To: <CADvbK_c0ByOxha_+afNP_UqdVcKmuQjbp1S47j+4Zjvu+aBPLw@mail.gmail.com>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Fri, 22 Jan 2021 08:17:50 -0800
-Message-ID: <CAKgT0UfxD1ZyKbcw0ZLOtDtbKBQaQUXPdpUEqxDiaKKR4CRdhA@mail.gmail.com>
-Subject: Re: [PATCH net-next 2/3] net: add CSUM_T_IP_GENERIC csum_type
-To:     Xin Long <lucien.xin@gmail.com>
-Cc:     network dev <netdev@vger.kernel.org>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Davide Caratti <dcaratti@redhat.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.2 required=10.0 tests=ALL_TRUSTED,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF shortcircuit=no
+        autolearn=disabled version=3.4.4
+X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on
+        mailout.protonmail.ch
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 21, 2021 at 7:18 PM Xin Long <lucien.xin@gmail.com> wrote:
->
-> On Fri, Jan 22, 2021 at 2:13 AM Alexander Duyck
-> <alexander.duyck@gmail.com> wrote:
-> >
-> > On Thu, Jan 21, 2021 at 12:46 AM Xin Long <lucien.xin@gmail.com> wrote:
-> > >
-> > > This patch is to extend csum_type field to 2 bits, and introduce
-> > > CSUM_T_IP_GENERIC csum type, and add the support for this in
-> > > skb_csum_hwoffload_help(), just like CSUM_T_SCTP_CRC.
-> > >
-> > > Note here it moves dst_pending_confirm field below ndisc_nodetype
-> > > to avoid a memory hole.
-> > >
-> > > Signed-off-by: Xin Long <lucien.xin@gmail.com>
-> > > ---
-> > >  include/linux/skbuff.h |  5 +++--
-> > >  net/core/dev.c         | 17 +++++++++++++----
-> > >  2 files changed, 16 insertions(+), 6 deletions(-)
-> > >
-> > > diff --git a/include/linux/skbuff.h b/include/linux/skbuff.h
-> > > index 67b0a01..d5011fb 100644
-> > > --- a/include/linux/skbuff.h
-> > > +++ b/include/linux/skbuff.h
-> > > @@ -224,6 +224,7 @@
-> > >
-> > >  #define CSUM_T_INET            0
-> > >  #define CSUM_T_SCTP_CRC                1
-> > > +#define CSUM_T_IP_GENERIC      2
-> > >
-> > >  /* Maximum value in skb->csum_level */
-> > >  #define SKB_MAX_CSUM_LEVEL     3
-> > > @@ -839,11 +840,11 @@ struct sk_buff {
-> > >         __u8                    vlan_present:1;
-> > >         __u8                    csum_complete_sw:1;
-> > >         __u8                    csum_level:2;
-> > > -       __u8                    csum_type:1;
-> > > -       __u8                    dst_pending_confirm:1;
-> > > +       __u8                    csum_type:2;
-> > >  #ifdef CONFIG_IPV6_NDISC_NODETYPE
-> > >         __u8                    ndisc_nodetype:2;
-> > >  #endif
-> > > +       __u8                    dst_pending_confirm:1;
-> > >
-> > >         __u8                    ipvs_property:1;
-> > >         __u8                    inner_protocol_type:1;
-> > > diff --git a/net/core/dev.c b/net/core/dev.c
-> > > index 3241de2..6d48af2 100644
-> > > --- a/net/core/dev.c
-> > > +++ b/net/core/dev.c
-> > > @@ -3617,11 +3617,20 @@ static struct sk_buff *validate_xmit_vlan(struct sk_buff *skb,
-> > >  int skb_csum_hwoffload_help(struct sk_buff *skb,
-> > >                             const netdev_features_t features)
-> > >  {
-> > > -       if (unlikely(skb_csum_is_sctp(skb)))
-> > > -               return !!(features & NETIF_F_SCTP_CRC) ? 0 :
-> > > -                       skb_crc32c_csum_help(skb);
-> > > +       if (likely(!skb->csum_type))
-> > > +               return !!(features & NETIF_F_CSUM_MASK) ? 0 :
-> > > +                      skb_checksum_help(skb);
-> > >
-> > > -       return !!(features & NETIF_F_CSUM_MASK) ? 0 : skb_checksum_help(skb);
-> > > +       if (skb_csum_is_sctp(skb)) {
-> > > +               return !!(features & NETIF_F_SCTP_CRC) ? 0 :
-> > > +                      skb_crc32c_csum_help(skb);
-> > > +       } else if (skb->csum_type == CSUM_T_IP_GENERIC) {
-> > > +               return !!(features & NETIF_F_HW_CSUM) ? 0 :
-> > > +                      skb_checksum_help(skb);
-> > > +       } else {
-> > > +               pr_warn("Wrong csum type: %d\n", skb->csum_type);
-> > > +               return 1;
-> > > +       }
-> >
-> > Is the only difference between CSUM_T_IP_GENERIC the fact that we
-> > check for NETIF_F_HW_CSUM versus using NETIF_F_CSUM_MASK? If so I
-> > don't think adding the new bit is adding all that much value. Instead
-> > you could probably just catch this in the testing logic here.
-> >
-> > You could very easily just fold CSUM_T_IP_GENERIC into CSUM_T_INET,
-> > and then in the checks here you split up the checks for
-> > NETIF_F_HW_CSUM as follows:
-> If so, better not to touch csum_not_inet now. I will drop the patch 1/3.
->
-> >
-> >  if (skb_csum_is_sctp(skb))
-> >     return !!(features & NETIF_F_SCTP_CRC) ? 0 : skb_crc32c_csum_help(skb);
-> >
-> > if (skb->csum_type) {
-> >     pr_warn("Wrong csum type: %d\n", skb->csum_type);
-> >     return 1;
-> > }
-> >
-> > if (features & NETIF_F_HW_CSUM)
-> >     return 0;
-> >
-> > if (features & NETIF_F_CSUM_MASK) {
-> >     switch (skb->csum_offset) {
-> >     case offsetof(struct tcphdr, check):
-> >     case offsetof(struct udphdr, check):
-> >             return 0;
-> >     }
-> Question is: is it reliable to check the type by skb->csum_offset?
-> What if one day there's another protocol, whose the checksum field
-> is on the same offset, which is also using the CSUM_T_IP_GENERIC?
+From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Date: Fri, 22 Jan 2021 23:36:29 +0800
 
-I'd say we are better off crossing that bridge once we get there. For
-now we only have a few L4 protocols that are requesting Tx checksum
-offload, and I suspect that in many cases they probably won't care
-about the actual protocol when it comes to the checksum since the L4
-checksum is usually pretty straight forward with it consisting of just
-needing to know the start of the transport header and the offset to
-place it at based on the protocol.
+> On Fri, 22 Jan 2021 12:08:00 +0000, Alexander Lobakin <alobakin@pm.me> wr=
+ote:
+> > From: Alexander Lobakin <alobakin@pm.me>
+> > Date: Fri, 22 Jan 2021 11:55:35 +0000
+> >
+> > > From: Alexander Lobakin <alobakin@pm.me>
+> > > Date: Fri, 22 Jan 2021 11:47:45 +0000
+> > >
+> > > > From: Eric Dumazet <eric.dumazet@gmail.com>
+> > > > Date: Thu, 21 Jan 2021 16:41:33 +0100
+> > > >
+> > > > > On 1/21/21 2:47 PM, Xuan Zhuo wrote:
+> > > > > > This patch is used to construct skb based on page to save memor=
+y copy
+> > > > > > overhead.
+> > > > > >
+> > > > > > This function is implemented based on IFF_TX_SKB_NO_LINEAR. Onl=
+y the
+> > > > > > network card priv_flags supports IFF_TX_SKB_NO_LINEAR will use =
+page to
+> > > > > > directly construct skb. If this feature is not supported, it is=
+ still
+> > > > > > necessary to copy data to construct skb.
+> > > > > >
+> > > > > > ---------------- Performance Testing ------------
+> > > > > >
+> > > > > > The test environment is Aliyun ECS server.
+> > > > > > Test cmd:
+> > > > > > ```
+> > > > > > xdpsock -i eth0 -t  -S -s <msg size>
+> > > > > > ```
+> > > > > >
+> > > > > > Test result data:
+> > > > > >
+> > > > > > size    64      512     1024    1500
+> > > > > > copy    1916747 1775988 1600203 1440054
+> > > > > > page    1974058 1953655 1945463 1904478
+> > > > > > percent 3.0%    10.0%   21.58%  32.3%
+> > > > > >
+> > > > > > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> > > > > > Reviewed-by: Dust Li <dust.li@linux.alibaba.com>
+> > > > > > ---
+> > > > > >  net/xdp/xsk.c | 104 ++++++++++++++++++++++++++++++++++++++++++=
+++++++----------
+> > > > > >  1 file changed, 86 insertions(+), 18 deletions(-)
+> > > > > >
+> > > > > > diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+> > > > > > index 4a83117..38af7f1 100644
+> > > > > > --- a/net/xdp/xsk.c
+> > > > > > +++ b/net/xdp/xsk.c
+> > > > > > @@ -430,6 +430,87 @@ static void xsk_destruct_skb(struct sk_buf=
+f *skb)
+> > > > > >  =09sock_wfree(skb);
+> > > > > >  }
+> > > > > >
+> > > > > > +static struct sk_buff *xsk_build_skb_zerocopy(struct xdp_sock =
+*xs,
+> > > > > > +=09=09=09=09=09      struct xdp_desc *desc)
+> > > > > > +{
+> > > > > > +=09u32 len, offset, copy, copied;
+> > > > > > +=09struct sk_buff *skb;
+> > > > > > +=09struct page *page;
+> > > > > > +=09void *buffer;
+> > > > > > +=09int err, i;
+> > > > > > +=09u64 addr;
+> > > > > > +
+> > > > > > +=09skb =3D sock_alloc_send_skb(&xs->sk, 0, 1, &err);
+> >
+> > Also,
+> > maybe we should allocate it with NET_SKB_PAD so NIC drivers could
+> > use some reserved space?
+> >
+> > =09=09skb =3D sock_alloc_send_skb(&xs->sk, NET_SKB_PAD, 1, &err);
+> > =09=09...
+> > =09=09skb_reserve(skb, NET_SKB_PAD);
+> >
+> > Eric, what do you think?
+>=20
+> I think you are right. Some space should be added to continuous equipment=
+. This
+> space should also be added in the copy mode below. Is LL_RESERVED_SPACE m=
+ore
+> appropriate?
+
+No. If you look at __netdev_alloc_skb() and __napi_alloc_skb(), they
+reserve NET_SKB_PAD at the beginning of linear area. Documentation of
+__build_skb() also says that driver should reserve NET_SKB_PAD before
+the actual frame, so it is a standartized hardware-independent
+headroom.
+Leaving that space in skb->head will allow developers to implement
+IFF_TX_SKB_NO_LINEAR in a wider variety of drivers, especially when
+a driver has to prepend some sort of data before the actual frame.
+Since it's usually of a size of one cacheline, shouldn't be a big
+deal.
+
+
+[ I also had an idea of allocating an skb with a headroom of
+NET_SKB_PAD + 256 bytes, so nearly all drivers could just call
+pskb_pull_tail() to support such type of skbuffs without much
+effort, but I think that it's better to teach drivers to support
+xmitting of really headless ones. If virtio_net can do it, why
+shouldn't the others ]
+
+> > > > > > +=09if (unlikely(!skb))
+> > > > > > +=09=09return ERR_PTR(err);
+> > > > > > +
+> > > > > > +=09addr =3D desc->addr;
+> > > > > > +=09len =3D desc->len;
+> > > > > > +
+> > > > > > +=09buffer =3D xsk_buff_raw_get_data(xs->pool, addr);
+> > > > > > +=09offset =3D offset_in_page(buffer);
+> > > > > > +=09addr =3D buffer - xs->pool->addrs;
+> > > > > > +
+> > > > > > +=09for (copied =3D 0, i =3D 0; copied < len; i++) {
+> > > > > > +=09=09page =3D xs->pool->umem->pgs[addr >> PAGE_SHIFT];
+> > > > > > +
+> > > > > > +=09=09get_page(page);
+> > > > > > +
+> > > > > > +=09=09copy =3D min_t(u32, PAGE_SIZE - offset, len - copied);
+> > > > > > +
+> > > > > > +=09=09skb_fill_page_desc(skb, i, page, offset, copy);
+> > > > > > +
+> > > > > > +=09=09copied +=3D copy;
+> > > > > > +=09=09addr +=3D copy;
+> > > > > > +=09=09offset =3D 0;
+> > > > > > +=09}
+> > > > > > +
+> > > > > > +=09skb->len +=3D len;
+> > > > > > +=09skb->data_len +=3D len;
+> > > > >
+> > > > > > +=09skb->truesize +=3D len;
+> > > > >
+> > > > > This is not the truesize, unfortunately.
+> > > > >
+> > > > > We need to account for the number of pages, not number of bytes.
+> > > >
+> > > > The easiest solution is:
+> > > >
+> > > > =09skb->truesize +=3D PAGE_SIZE * i;
+> > > >
+> > > > i would be equal to skb_shinfo(skb)->nr_frags after exiting the loo=
+p.
+> > >
+> > > Oops, pls ignore this. I forgot that XSK buffers are not
+> > > "one per page".
+> > > We need to count the number of pages manually and then do
+> > >
+> > > =09skb->truesize +=3D PAGE_SIZE * npages;
+> > >
+> > > Right.
+> > >
+> > > > > > +
+> > > > > > +=09refcount_add(len, &xs->sk.sk_wmem_alloc);
+> > > > > > +
+> > > > > > +=09return skb;
+> > > > > > +}
+> > > > > > +
+> > > >
+> > > > Al
+> > >
+> > > Thanks,
+> > > Al
+> >
+> > Al
+
