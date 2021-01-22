@@ -2,148 +2,113 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1EC03300053
-	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 11:32:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 608D7300078
+	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 11:37:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727955AbhAVKb1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jan 2021 05:31:27 -0500
-Received: from mail.wangsu.com ([123.103.51.227]:38352 "EHLO wangsu.com"
-        rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727676AbhAVK3b (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 22 Jan 2021 05:29:31 -0500
-Received: from 137.localdomain (unknown [59.61.78.232])
-        by app2 (Coremail) with SMTP id 4zNnewCHj6+vqApg5ZgBAA--.387S2;
-        Fri, 22 Jan 2021 18:28:00 +0800 (CST)
-From:   Pengcheng Yang <yangpc@wangsu.com>
-To:     edumazet@google.com, ncardwell@google.com, ycheng@google.com,
-        davem@davemloft.net
-Cc:     netdev@vger.kernel.org, Pengcheng Yang <yangpc@wangsu.com>
-Subject: [PATCH net] tcp: fix TLP timer not set when CA_STATE changes from DISORDER to OPEN
-Date:   Fri, 22 Jan 2021 18:27:22 +0800
-Message-Id: <1611311242-6675-1-git-send-email-yangpc@wangsu.com>
-X-Mailer: git-send-email 1.8.3.1
-X-CM-TRANSID: 4zNnewCHj6+vqApg5ZgBAA--.387S2
-X-Coremail-Antispam: 1UD129KBjvJXoWxAw4kKrW5Aw4rWr48tF18Xwb_yoWrXr1xpF
-        sakwsrGr4kGFWUCF1vyFWkXw1qgws5AFy3ur4UWrySyr1DKF1IgFWkKF45tF43KF40kF4a
-        yr109rWrJF18A37anT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUyG1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l8cAvFVAK
-        0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVWDJVCq3wA2z4
-        x0Y4vE2Ix0cI8IcVCY1x0267AKxVW0oVCq3wA2z4x0Y4vEx4A2jsIE14v26rxl6s0DM28E
-        F7xvwVC2z280aVCY1x0267AKxVW0oVCq3wAS0I0E0xvYzxvE52x082IY62kv0487Mc02F4
-        0EFcxC0VAKzVAqx4xG6I80ewAv7VCjz48v1sIEY20_Gr4lYx0Ec7CjxVAajcxG14v26r1j
-        6r4UMcvjeVCFs4IE7xkEbVWUJVW8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI
-        8I648v4I1lc2xSY4AK67AK6r4DMxAIw28IcxkI7VAKI48JMxAIw28IcVCjz48v1sIEY20_
-        Gr4l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGwC20s026x8Gjc
-        xK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r126r1DMIIYrxkI7VAKI48JMIIF0xvE2Ix0
-        cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r1j6r4UMIIF0xvE42xK8V
-        AvwI8IcIk0rVW3JVWrJr1lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY1x02
-        67AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VU04lk3UUUUU==
-X-CM-SenderInfo: p1dqw1nf6zt0xjvxhudrp/
+        id S1727639AbhAVKgy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jan 2021 05:36:54 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:41410 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728042AbhAVKe0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 05:34:26 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1611311565;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=IShh/PB74Qh7ZVtwc2vsohdpK5rU9/+uE6woLaCXjt4=;
+        b=QRs3j9dPPiZ24xXHLJCTWSOt1GsqYmMp6wRPdDus3jlxAvMMvgkh43K+FDmZozt3oytvCh
+        FoWxyx6hw84gQjoayAQtq7w/fWPDWdhUgieFYaMzWihkrLAc8MEdr5Bkmfb/lgbtA9xSqj
+        e00uORx4YPm2fiC+NJryp73FZ+Zc1i0=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-319-Jb8oDqr2MC-jVWyfrSMdHw-1; Fri, 22 Jan 2021 05:32:43 -0500
+X-MC-Unique: Jb8oDqr2MC-jVWyfrSMdHw-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 9A1EB1005504;
+        Fri, 22 Jan 2021 10:32:41 +0000 (UTC)
+Received: from carbon (unknown [10.36.110.4])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 7D8E671D55;
+        Fri, 22 Jan 2021 10:32:33 +0000 (UTC)
+Date:   Fri, 22 Jan 2021 11:32:32 +0100
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Yonghong Song <yhs@fb.com>,
+        Toke =?UTF-8?B?SMO4aWxhbmQtSsO4cmdlbnNlbg==?= <toke@redhat.com>,
+        brouer@redhat.com
+Subject: Re: [PATCHv10 bpf-next] samples/bpf: add xdp program on egress for
+ xdp_redirect_map
+Message-ID: <20210122113232.70040869@carbon>
+In-Reply-To: <20210122025007.2968381-1-liuhangbin@gmail.com>
+References: <20210121130642.2943811-1-liuhangbin@gmail.com>
+        <20210122025007.2968381-1-liuhangbin@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When CA_STATE is in DISORDER, the TLP timer is not set when receiving
-an ACK (a cumulative ACK covered out-of-order data) causes CA_STATE to
-change from DISORDER to OPEN. If the sender is app-limited, it can only
-wait for the RTO timer to expire and retransmit.
+On Fri, 22 Jan 2021 10:50:07 +0800
+Hangbin Liu <liuhangbin@gmail.com> wrote:
 
-The reason for this is that the TLP timer is set before CA_STATE changes
-in tcp_ack(), so we delay the time point of calling tcp_set_xmit_timer()
-until after tcp_fastretrans_alert() returns and remove the
-FLAG_SET_XMIT_TIMER from ack_flag when the RACK reorder timer is set.
+> This patch add a xdp program on egress to show that we can modify
+> the packet on egress. In this sample we will set the pkt's src
+> mac to egress's mac address. The xdp_prog will be attached when
+> -X option supplied.
+> 
+> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+> ---
 
-This commit has two additional benefits:
-1) Make sure to reset RTO according to RFC6298 when receiving ACK, to
-avoid spurious RTO caused by RTO timer early expires.
-2) Reduce the xmit timer reschedule once per ACK when the RACK reorder
-timer is set.
+I think we have nitpicked this enough ;-)
 
-Link: https://lore.kernel.org/netdev/1611139794-11254-1-git-send-email-yangpc@wangsu.com
-Signed-off-by: Pengcheng Yang <yangpc@wangsu.com>
-Cc: Neal Cardwell <ncardwell@google.com>
----
- include/net/tcp.h       |  2 +-
- net/ipv4/tcp_input.c    | 10 ++++++----
- net/ipv4/tcp_recovery.c |  5 +++--
- 3 files changed, 10 insertions(+), 7 deletions(-)
+Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
 
-diff --git a/include/net/tcp.h b/include/net/tcp.h
-index 78d13c8..67f7e52 100644
---- a/include/net/tcp.h
-+++ b/include/net/tcp.h
-@@ -2060,7 +2060,7 @@ static inline __u32 cookie_init_sequence(const struct tcp_request_sock_ops *ops,
- void tcp_newreno_mark_lost(struct sock *sk, bool snd_una_advanced);
- extern s32 tcp_rack_skb_timeout(struct tcp_sock *tp, struct sk_buff *skb,
- 				u32 reo_wnd);
--extern void tcp_rack_mark_lost(struct sock *sk);
-+extern bool tcp_rack_mark_lost(struct sock *sk);
- extern void tcp_rack_advance(struct tcp_sock *tp, u8 sacked, u32 end_seq,
- 			     u64 xmit_time);
- extern void tcp_rack_reo_timeout(struct sock *sk);
-diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
-index c7e16b0..d0a9588 100644
---- a/net/ipv4/tcp_input.c
-+++ b/net/ipv4/tcp_input.c
-@@ -2859,7 +2859,8 @@ static void tcp_identify_packet_loss(struct sock *sk, int *ack_flag)
- 	} else if (tcp_is_rack(sk)) {
- 		u32 prior_retrans = tp->retrans_out;
+> v10:
+> make xdp_redirect_map() always inline.
+> 
+> v9:
+> roll back to just set src mac to egress interface mac on 2nd xdp prog,
+> this could avoid packet reorder introduce in patch v6.
+> 
+> v8: Fix some checkpatch issues.
+> 
+> v7:
+> a) use bpf_object__find_program_by_name() instad of
+>    bpf_object__find_program_by_title()
+> b) set default devmap fd to 0
+> 
+> v6: no code update, only rebase the code on latest bpf-next
+> 
+> v5:
+> a) close fd when err out in get_mac_addr()
+> b) exit program when both -S and -X supplied.
+> 
+> v4:
+> a) Update get_mac_addr socket create
+> b) Load dummy prog regardless of 2nd xdp prog on egress
+> 
+> v3:
+> a) modify the src mac address based on egress mac
+> 
+> v2:
+> a) use pkt counter instead of IP ttl modification on egress program
+> b) make the egress program selectable by option -X
+> ---
+>  samples/bpf/xdp_redirect_map_kern.c |  60 +++++++++++++--
+>  samples/bpf/xdp_redirect_map_user.c | 112 +++++++++++++++++++++++-----
+>  2 files changed, 147 insertions(+), 25 deletions(-)
  
--		tcp_rack_mark_lost(sk);
-+		if (tcp_rack_mark_lost(sk))
-+			*ack_flag &= ~FLAG_SET_XMIT_TIMER;
- 		if (prior_retrans > tp->retrans_out)
- 			*ack_flag |= FLAG_LOST_RETRANS;
- 	}
-@@ -3815,9 +3816,6 @@ static int tcp_ack(struct sock *sk, const struct sk_buff *skb, int flag)
- 
- 	if (tp->tlp_high_seq)
- 		tcp_process_tlp_ack(sk, ack, flag);
--	/* If needed, reset TLP/RTO timer; RACK may later override this. */
--	if (flag & FLAG_SET_XMIT_TIMER)
--		tcp_set_xmit_timer(sk);
- 
- 	if (tcp_ack_is_dubious(sk, flag)) {
- 		if (!(flag & (FLAG_SND_UNA_ADVANCED | FLAG_NOT_DUP))) {
-@@ -3830,6 +3828,10 @@ static int tcp_ack(struct sock *sk, const struct sk_buff *skb, int flag)
- 				      &rexmit);
- 	}
- 
-+	/* If needed, reset TLP/RTO timer when RACK doesn't set. */
-+	if (flag & FLAG_SET_XMIT_TIMER)
-+		tcp_set_xmit_timer(sk);
-+
- 	if ((flag & FLAG_FORWARD_PROGRESS) || !(flag & FLAG_NOT_DUP))
- 		sk_dst_confirm(sk);
- 
-diff --git a/net/ipv4/tcp_recovery.c b/net/ipv4/tcp_recovery.c
-index 177307a..6f1b4ac 100644
---- a/net/ipv4/tcp_recovery.c
-+++ b/net/ipv4/tcp_recovery.c
-@@ -96,13 +96,13 @@ static void tcp_rack_detect_loss(struct sock *sk, u32 *reo_timeout)
- 	}
- }
- 
--void tcp_rack_mark_lost(struct sock *sk)
-+bool tcp_rack_mark_lost(struct sock *sk)
- {
- 	struct tcp_sock *tp = tcp_sk(sk);
- 	u32 timeout;
- 
- 	if (!tp->rack.advanced)
--		return;
-+		return false;
- 
- 	/* Reset the advanced flag to avoid unnecessary queue scanning */
- 	tp->rack.advanced = 0;
-@@ -112,6 +112,7 @@ void tcp_rack_mark_lost(struct sock *sk)
- 		inet_csk_reset_xmit_timer(sk, ICSK_TIME_REO_TIMEOUT,
- 					  timeout, inet_csk(sk)->icsk_rto);
- 	}
-+	return !!timeout;
- }
- 
- /* Record the most recently (re)sent time among the (s)acked packets
 -- 
-1.8.3.1
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
