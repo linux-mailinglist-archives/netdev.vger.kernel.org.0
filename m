@@ -2,121 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C28B6300255
-	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 13:04:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EB44B3002C2
+	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 13:21:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727466AbhAVMCE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jan 2021 07:02:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34060 "EHLO
+        id S1727272AbhAVMTh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jan 2021 07:19:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50088 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727847AbhAVKyp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 05:54:45 -0500
-Received: from mail-lj1-x22b.google.com (mail-lj1-x22b.google.com [IPv6:2a00:1450:4864:20::22b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AD55C06178B;
-        Fri, 22 Jan 2021 02:54:01 -0800 (PST)
-Received: by mail-lj1-x22b.google.com with SMTP id x23so5996402lji.7;
-        Fri, 22 Jan 2021 02:54:01 -0800 (PST)
+        with ESMTP id S1727359AbhAVMJL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 07:09:11 -0500
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA7A9C06174A
+        for <netdev@vger.kernel.org>; Fri, 22 Jan 2021 04:08:30 -0800 (PST)
+Received: by mail-wr1-x432.google.com with SMTP id v15so4852554wrx.4
+        for <netdev@vger.kernel.org>; Fri, 22 Jan 2021 04:08:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=DIoaswv7B1iicUnLwGWig+2UbyTxVZWzlqhoeUIxenk=;
-        b=Aoo8DM1/97CyxI8eDrSo8GY/MTrS/ySxhpEl7dqNW6hwrMmR3d02gjRS2x31TijGtz
-         TrjqIJ36cgKdJYkCfxA5gydspNfdQEtsXlNhLTwl9zQ6wRxpwyljQddMhIXwA02CPOym
-         Ofwap2ZLw0pxiHFbYWHKRE2hmG1NwhHM5XdCJwY5AkLujXXyNcQUeQSnF0uJKe97pdPU
-         hiW7Yaeh2bfNSy0+u/AImFfWbMJkOMReJ1iL1/0h+xwttmTdVUcmGPd9bsjQE6h7B183
-         be6XLninUo6isnbJcJw2ugMhhEcmV80r5gTSj7pE88I3/J8q7xVPqyBgZzC8i/JKcpAH
-         S/jA==
+        h=from:to:cc:subject:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=8Bbf1qexURyw5HBggdlNQxrcnsreQOWaeHogsb3+oSQ=;
+        b=eGBEv7oafv9QPCRAGw6qKT2MAg8EjA99gDESHrfk758vaU1UeBxiShyKt02ZcExMGn
+         ZGXk9x6YX91fNoRAthn+h4yyyuteffwlOVvykPs1guQ9dLZ4RPzl5SlK4fV+6BaaLzF6
+         1Mc50RS+AYjs8yZXkJ8LTowt3r9bwQdnrUQ4JUM2rFcetTt9vWzFOIFFjOLbcC25JuDo
+         UMLmwOG6oqFWf2JvBu3tD2zaU03MvHMlCC6SuBuwBoQmf94u5KK2f2IIUWfp+uBuGwNK
+         YpvWjM2zmq25dfM6TjLNaIjD4ISb41d10Sqrb1nd9T9a3fxxpq8wuQ321SZXmnDgRSgB
+         U8SQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=DIoaswv7B1iicUnLwGWig+2UbyTxVZWzlqhoeUIxenk=;
-        b=iyOkK7DKEqBxBgest7ZqdTbs8PRKGYbqdZEgfx2juyqyjWQY29t6AbotJ5X/S2LDMk
-         xYhfUTV8BUxLHhDqX9mwg2bkKSsQkEEF/2Qzbs+SP4Lxi9GbAlBGpuo8AkOf2p8KNRyl
-         2/5ZFtyqFf7ZI0x0h6ZmmGa2VyozBHPRTdHcbsGdWZnxr+AykeNR9Mpzn/6fdImeBu3X
-         0znXHe7UHfFNfhygxdgw0QWi4Lfd/ROU5UQXD/rCI9yeT8XflXMlIDB/gDGbU3VpeqWU
-         sxo6QU+dZMaEkocNNEVSEbLmWYA+nw9qXKQ75VkFw2hf5uF49fjY7Cbo6DMSfzZvCjn9
-         O9vg==
-X-Gm-Message-State: AOAM533g677tAhGz9Z8n9UgC5kcd4W+A+1e3zDn7x8hNiiJKhqsCKf5N
-        2uSAQu+2DeKHF/LoPVE8NcE=
-X-Google-Smtp-Source: ABdhPJy/ppHP7o13BG30n7hpJE+1iACUpMWLv+Mfp3RKgYfpyIDZHwJ8UOaXQOVEJ4QGznvM6BFUjw==
-X-Received: by 2002:a2e:97c3:: with SMTP id m3mr267043ljj.286.1611312839883;
-        Fri, 22 Jan 2021 02:53:59 -0800 (PST)
-Received: from btopel-mobl.ger.intel.com (c213-102-90-208.bredband.comhem.se. [213.102.90.208])
-        by smtp.gmail.com with ESMTPSA id g14sm409580lja.120.2021.01.22.02.53.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Jan 2021 02:53:59 -0800 (PST)
-From:   =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@gmail.com>
-To:     ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Cc:     =?UTF-8?q?Bj=C3=B6rn=20T=C3=B6pel?= <bjorn.topel@intel.com>,
-        magnus.karlsson@intel.com, maciej.fijalkowski@intel.com,
-        kuba@kernel.org, jonathan.lemon@gmail.com, maximmi@nvidia.com,
-        davem@davemloft.net, hawk@kernel.org, john.fastabend@gmail.com,
-        ciara.loftus@intel.com, weqaar.a.janjua@intel.com,
-        andrii@kernel.org
-Subject: [PATCH bpf-next 2/3] xsk: fold xp_assign_dev and __xp_assign_dev
-Date:   Fri, 22 Jan 2021 11:53:50 +0100
-Message-Id: <20210122105351.11751-3-bjorn.topel@gmail.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20210122105351.11751-1-bjorn.topel@gmail.com>
-References: <20210122105351.11751-1-bjorn.topel@gmail.com>
+        h=x-gm-message-state:from:to:cc:subject:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=8Bbf1qexURyw5HBggdlNQxrcnsreQOWaeHogsb3+oSQ=;
+        b=puStICsTSQU72Qsetv/McwbaOAQggAc7rceXRMwburGQLyZ5QfPacrZP2v76WaKWQ3
+         t7tt7S6OcjIE+4vpsCF7lmD+eXGmjuvhofaoq/fqueuiYwl7wrydeIJ8blGbydER6pyJ
+         UGc8HXWwoEwXTprk0HF2U0uoH/Wt61cFDeqr5L4TjECFNvPGyBXKz9Fq/7rDwjnblHQt
+         v/JO/kz+WhLudr1VvQVST8Xdy/KFvhZKhuL3u70DwB3KWbm/0XQhzOVPqSW/TJvJc+BL
+         s/0F9ZU1E8MQyjlA8FlV6UJF+Iq05K2NEuTL34Dsk3lFFwAbNAgWutPZ1tMxaoEyPufH
+         ZWUw==
+X-Gm-Message-State: AOAM530fjmANJzFCXdAJlZl4cK2rnFJom8lv9W/QzgFZwgRU/1vR3CfE
+        Ya+wQzVVvAfpX49XYf1Qt2jfn0/xfs0=
+X-Google-Smtp-Source: ABdhPJxLTyZWnh1es8bKhl7P5qyyi4Jhc6pLIjUYW0tlxJVC3jv8AMsdD+y/8nRG3ast6n+v46aNvA==
+X-Received: by 2002:a5d:6809:: with SMTP id w9mr4216931wru.60.1611317309301;
+        Fri, 22 Jan 2021 04:08:29 -0800 (PST)
+Received: from ?IPv6:2003:ea:8f06:5500:5c9d:dd78:3e40:95d? (p200300ea8f0655005c9ddd783e40095d.dip0.t-ipconnect.de. [2003:ea:8f06:5500:5c9d:dd78:3e40:95d])
+        by smtp.googlemail.com with ESMTPSA id s1sm11912565wrv.97.2021.01.22.04.08.28
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 22 Jan 2021 04:08:28 -0800 (PST)
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Siva Reddy Kallam <siva.kallam@broadcom.com>,
+        Prashant Sreedharan <prashant@broadcom.com>,
+        Michael Chan <mchan@broadcom.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: [PATCH net-next] tg3: improve PCI VPD access
+Message-ID: <cb9e9113-0861-3904-87e0-d4c4ab3c8860@gmail.com>
+Date:   Fri, 22 Jan 2021 13:08:22 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Björn Töpel <bjorn.topel@intel.com>
+When working on the PCI VPD code I also tested with a Broadcom BCM95719
+card. tg3 uses internal NVRAM access with this card, so I forced it to
+PCI VPD mode for testing. PCI VPD access fails
+(i + PCI_VPD_LRDT_TAG_SIZE + j > len) because only TG3_NVM_VPD_LEN (256)
+bytes are read, but PCI VPD has 400 bytes on this card.
 
-Fold xp_assign_dev and __xp_assign_dev. The former directly calls the
-latter.
+So add a constant TG3_NVM_PCI_VPD_MAX_LEN that defines the maximum
+PCI VPD size. The actual VPD size is returned by pci_read_vpd().
+In addition it's not worth looping over pci_read_vpd(). If we miss the
+125ms timeout per VPD dword read then definitely something is wrong,
+and if the tg3 module loading is killed then there's also not much
+benefit in retrying the VPD read.
 
-Reviewed-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
-Signed-off-by: Björn Töpel <bjorn.topel@intel.com>
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 ---
- net/xdp/xsk_buff_pool.c | 12 +++---------
- 1 file changed, 3 insertions(+), 9 deletions(-)
+ drivers/net/ethernet/broadcom/tg3.c | 30 +++++++++++------------------
+ drivers/net/ethernet/broadcom/tg3.h |  1 +
+ 2 files changed, 12 insertions(+), 19 deletions(-)
 
-diff --git a/net/xdp/xsk_buff_pool.c b/net/xdp/xsk_buff_pool.c
-index 20598eea658c..8de01aaac4a0 100644
---- a/net/xdp/xsk_buff_pool.c
-+++ b/net/xdp/xsk_buff_pool.c
-@@ -119,8 +119,8 @@ static void xp_disable_drv_zc(struct xsk_buff_pool *pool)
+diff --git a/drivers/net/ethernet/broadcom/tg3.c b/drivers/net/ethernet/broadcom/tg3.c
+index 7def6d815..4ee9da498 100644
+--- a/drivers/net/ethernet/broadcom/tg3.c
++++ b/drivers/net/ethernet/broadcom/tg3.c
+@@ -12826,11 +12826,13 @@ static __be32 *tg3_vpd_readblock(struct tg3 *tp, u32 *vpdlen)
+ 
+ 			offset = tg3_nvram_logical_addr(tp, offset);
+ 		}
+-	}
+ 
+-	if (!offset || !len) {
+-		offset = TG3_NVM_VPD_OFF;
+-		len = TG3_NVM_VPD_LEN;
++		if (!offset || !len) {
++			offset = TG3_NVM_VPD_OFF;
++			len = TG3_NVM_VPD_LEN;
++		}
++	} else {
++		len = TG3_NVM_PCI_VPD_MAX_LEN;
  	}
- }
  
--static int __xp_assign_dev(struct xsk_buff_pool *pool,
--			   struct net_device *netdev, u16 queue_id, u16 flags)
-+int xp_assign_dev(struct xsk_buff_pool *pool,
-+		  struct net_device *netdev, u16 queue_id, u16 flags)
- {
- 	bool force_zc, force_copy;
- 	struct netdev_bpf bpf;
-@@ -191,12 +191,6 @@ static int __xp_assign_dev(struct xsk_buff_pool *pool,
- 	return err;
- }
- 
--int xp_assign_dev(struct xsk_buff_pool *pool, struct net_device *dev,
--		  u16 queue_id, u16 flags)
--{
--	return __xp_assign_dev(pool, dev, queue_id, flags);
--}
+ 	buf = kmalloc(len, GFP_KERNEL);
+@@ -12846,26 +12848,16 @@ static __be32 *tg3_vpd_readblock(struct tg3 *tp, u32 *vpdlen)
+ 			if (tg3_nvram_read_be32(tp, offset + i, &buf[i/4]))
+ 				goto error;
+ 		}
++		*vpdlen = len;
+ 	} else {
+-		u8 *ptr;
+ 		ssize_t cnt;
+-		unsigned int pos = 0;
 -
- int xp_assign_dev_shared(struct xsk_buff_pool *pool, struct xdp_umem *umem,
- 			 struct net_device *dev, u16 queue_id)
- {
-@@ -210,7 +204,7 @@ int xp_assign_dev_shared(struct xsk_buff_pool *pool, struct xdp_umem *umem,
- 	if (pool->uses_need_wakeup)
- 		flags |= XDP_USE_NEED_WAKEUP;
+-		ptr = (u8 *)&buf[0];
+-		for (i = 0; pos < len && i < 3; i++, pos += cnt, ptr += cnt) {
+-			cnt = pci_read_vpd(tp->pdev, pos,
+-					   len - pos, ptr);
+-			if (cnt == -ETIMEDOUT || cnt == -EINTR)
+-				cnt = 0;
+-			else if (cnt < 0)
+-				goto error;
+-		}
+-		if (pos != len)
++
++		cnt = pci_read_vpd(tp->pdev, 0, len, (u8 *)buf);
++		if (cnt < 0)
+ 			goto error;
++		*vpdlen = cnt;
+ 	}
  
--	return __xp_assign_dev(pool, dev, queue_id, flags);
-+	return xp_assign_dev(pool, dev, queue_id, flags);
- }
+-	*vpdlen = len;
+-
+ 	return buf;
  
- void xp_clear_dev(struct xsk_buff_pool *pool)
+ error:
+diff --git a/drivers/net/ethernet/broadcom/tg3.h b/drivers/net/ethernet/broadcom/tg3.h
+index 1000c8940..46ec4fdfd 100644
+--- a/drivers/net/ethernet/broadcom/tg3.h
++++ b/drivers/net/ethernet/broadcom/tg3.h
+@@ -2101,6 +2101,7 @@
+ /* Hardware Legacy NVRAM layout */
+ #define TG3_NVM_VPD_OFF			0x100
+ #define TG3_NVM_VPD_LEN			256
++#define TG3_NVM_PCI_VPD_MAX_LEN		512
+ 
+ /* Hardware Selfboot NVRAM layout */
+ #define TG3_NVM_HWSB_CFG1		0x00000004
 -- 
-2.27.0
+2.30.0
 
