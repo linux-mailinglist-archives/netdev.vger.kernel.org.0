@@ -2,121 +2,225 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 27D15300E61
-	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 21:59:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 95A95300EE7
+	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 22:29:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730328AbhAVU6H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jan 2021 15:58:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50628 "EHLO
+        id S1730019AbhAVV1y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jan 2021 16:27:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42466 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730770AbhAVUzQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 15:55:16 -0500
-Received: from mail-oi1-x234.google.com (mail-oi1-x234.google.com [IPv6:2607:f8b0:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC2E2C061788;
-        Fri, 22 Jan 2021 12:54:34 -0800 (PST)
-Received: by mail-oi1-x234.google.com with SMTP id h192so7518255oib.1;
-        Fri, 22 Jan 2021 12:54:34 -0800 (PST)
+        with ESMTP id S1729150AbhAVURf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 15:17:35 -0500
+Received: from mail-yb1-xb2c.google.com (mail-yb1-xb2c.google.com [IPv6:2607:f8b0:4864:20::b2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD777C06174A;
+        Fri, 22 Jan 2021 12:16:54 -0800 (PST)
+Received: by mail-yb1-xb2c.google.com with SMTP id k4so6653034ybp.6;
+        Fri, 22 Jan 2021 12:16:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=6cUrGuJbAAzbmOZxLUmIXIAt0gGPRKf0H8ukS5QNZuo=;
-        b=Y05zV/4NNupFAdTX5/j8xXgZ8dCXunYy/bA/WtyMgWKn7a/6HRLLz57fFCzqUOEmIb
-         JinOXZnYL9p4n0u8CMlaiDeduAqKvdjZ3AiYDsrnJhFA1VCoIueYAayO94QKqNQsVE4R
-         luiBMdnhgvDTwcqUt+Pyd3mMvPYItgCKfW3u5/v1DqAN361VWTBkNuwiHB7rfAD/1wl+
-         GuVCgEKJ8TtlrsxTmlABsT4kvzY/iy1I+HvHKn4SKkFH6yfGQUWCFoDJ0j6SUrl45BXI
-         FbpapkZ8vyIKD1BEMi99OOlChBf6aJQcZn6YCxmfToA0AknMShT+07BVMQ30aaYlTiCI
-         wnOg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=caUFpVR6WIj9qgWvacov+DHyivBtNRs+N8epP9yO/t8=;
+        b=R2UlZf13C1n+2qMYFEmGHCQpWXguM8bjrjK47G7zubr2mCGfpRj35d/tTUX5LaEroz
+         kMEO2Ro6mKRg6K91HmL+13wr7sd62D80iSo1OfM8iZR546EqH63P+We6TAVjJh8/ewdQ
+         wzi8AfT8we+IosttgD7datgdeEMV5lm58DeCKKdtVDF6+mAEDqiMgC0bdXHVV9Ftf/hZ
+         NSQ4qNm/sGn8TDaIWtCfd14sc7jOLJEL6+PYgHfclVB0mjMwlCpdtqIyWfKrzKqTN0C2
+         qbG1REx/2nPw9+wv7sF4UBFWhZS+xWjPFFfa8kM2cyw+F9eIYyYpIfyJ+DQl48Xw0Z/L
+         BYkQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=6cUrGuJbAAzbmOZxLUmIXIAt0gGPRKf0H8ukS5QNZuo=;
-        b=CkRtylDh0t/+iDBokkG60IpT9lDkkbcNGDR+4dsrOoRznZUEBqzRJLfCmeLKLHMlkE
-         a3J614gW36MChsmB7FcJPoG9d1dkP9UAf9VtzghDIIFgcXLKGtFE/W7x+rr+tbUUxYaq
-         5xFldN4EGqS8tR3O8xpauSFj0lGSs843yUT5SluzBGbZabyV+zZZjXFqn+sFobsdfT1a
-         v832YhNP4sXBvBu7o6Rc7MQBkTeFDUCqASwHO3QHKzSogjKsCX+Wv/CeMkVjZJUzMOLx
-         DI9SrjQu9xoI8OIbuF3QgxEx7GmiZE3411i9Y+QR7bL7fOYqnvpXuU7Ha7HwVYXPKIIE
-         y/yQ==
-X-Gm-Message-State: AOAM532oSFl5/96+gS+pYVbPxugCytvHHVm+VYEMmHHsDodETuUz/JeB
-        hiejtpdjtD/RSY9hF0dHjsSKG8cLIz4uVg==
-X-Google-Smtp-Source: ABdhPJxt+nTs9bDdH9W3mjPO1YEk+OcZLxje5zVzBQ+ICCGvWmA+5Boa7jQIf0na1WLe/BIJUgNRKQ==
-X-Received: by 2002:aca:d417:: with SMTP id l23mr4537916oig.145.1611348874165;
-        Fri, 22 Jan 2021 12:54:34 -0800 (PST)
-Received: from unknown.attlocal.net ([2600:1700:65a0:ab60:1c14:d05:b7d:917b])
-        by smtp.gmail.com with ESMTPSA id k18sm1349193otj.36.2021.01.22.12.54.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Jan 2021 12:54:33 -0800 (PST)
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     bpf@vger.kernel.org, jhs@mojatatu.com, andrii@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, kafai@fb.com,
-        Cong Wang <cong.wang@bytedance.com>,
-        Andrey Ignatov <rdna@fb.com>,
-        Dongdong Wang <wangdongdong.6@bytedance.com>
-Subject: [Patch bpf-next v5 3/3] selftests/bpf: add timeout map check in map_ptr tests
-Date:   Fri, 22 Jan 2021 12:54:15 -0800
-Message-Id: <20210122205415.113822-4-xiyou.wangcong@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210122205415.113822-1-xiyou.wangcong@gmail.com>
-References: <20210122205415.113822-1-xiyou.wangcong@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=caUFpVR6WIj9qgWvacov+DHyivBtNRs+N8epP9yO/t8=;
+        b=od5sJVsi8DfFC4VFSTpaEeSI/NeadlTQWh7iQ6anfd6ZSjEcG2DtqROoFKeEWT7YXI
+         S076Xf6Qo8aajBftoTPH0txfbvVjebw0Alw9rDA/y8AC9H8qq+J8chxHzwclGg525Uxw
+         DEcl48WREcE2dxVo7vhshOR8zgg3ei9VD6MNxn94MZrdZyhuXrw6hfy9PPkHOUlmKvAz
+         qhjJsFxMy9a9jgunOSoIrecwkF61RaiFtly4JTgSPTV3NQvvzVN7tO3I6Rxb+eBwZoqq
+         hydZAxWJKOyP0MZA3eayOGGhqZCOXnRci/H31jDnxHM2m5STk755fzRoWW2AM3ztJD2V
+         RSSg==
+X-Gm-Message-State: AOAM533zIxL/2ccz2iWWitAbGKBgnwaGlpY2b8ZtgUGh2OoxapquEP9T
+        ljnXnGbc9cSBsjzXqRAcxPbmM2gQbguADGM1lD8=
+X-Google-Smtp-Source: ABdhPJxralpJGF5PIDOEOKkhCz6tgqoquH7R0a5BTagdkhDJudHS5ZwU9sy1Q8YIvIGCvkCMXq5VEO/rY+gWn2nlY6c=
+X-Received: by 2002:a25:4b86:: with SMTP id y128mr8637826yba.403.1611346614035;
+ Fri, 22 Jan 2021 12:16:54 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210122163920.59177-1-jolsa@kernel.org> <20210122163920.59177-3-jolsa@kernel.org>
+In-Reply-To: <20210122163920.59177-3-jolsa@kernel.org>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Fri, 22 Jan 2021 12:16:42 -0800
+Message-ID: <CAEf4BzbC-s=27vmcJ1KYLVKgGbns2py1bHny3Q_yr4v3Oe49RQ@mail.gmail.com>
+Subject: Re: [PATCH 2/2] bpf_encoder: Translate SHN_XINDEX in symbol's
+ st_shndx values
+To:     Jiri Olsa <jolsa@kernel.org>
+Cc:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>, dwarves@vger.kernel.org,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Yonghong Song <yhs@fb.com>, Hao Luo <haoluo@google.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        Mark Wielaard <mjw@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Cong Wang <cong.wang@bytedance.com>
+On Fri, Jan 22, 2021 at 8:46 AM Jiri Olsa <jolsa@kernel.org> wrote:
+>
+> For very large ELF objects (with many sections), we could
+> get special value SHN_XINDEX (65535) for symbol's st_shndx.
+>
+> This patch is adding code to detect the optional extended
+> section index table and use it to resolve symbol's section
+> index.
+>
+> Adding elf_symtab__for_each_symbol_index macro that returns
+> symbol's section index and usign it in collect functions.
+>
+> Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> ---
+>  btf_encoder.c | 59 +++++++++++++++++++++++++++++++++++++--------------
+>  elf_symtab.c  | 39 +++++++++++++++++++++++++++++++++-
+>  elf_symtab.h  |  2 ++
+>  3 files changed, 83 insertions(+), 17 deletions(-)
+>
+> diff --git a/btf_encoder.c b/btf_encoder.c
+> index 5557c9efd365..56ee55965093 100644
+> --- a/btf_encoder.c
+> +++ b/btf_encoder.c
+> @@ -63,13 +63,13 @@ static void delete_functions(void)
+>  #define max(x, y) ((x) < (y) ? (y) : (x))
+>  #endif
+>
+> -static int collect_function(struct btf_elf *btfe, GElf_Sym *sym)
+> +static int collect_function(struct btf_elf *btfe, GElf_Sym *sym,
+> +                           Elf32_Word sym_sec_idx)
 
-Similar to regular hashmap test.
+nit: we use size_t or int for this, no need for libelf types here, imo
 
-Acked-by: Andrey Ignatov <rdna@fb.com>
-Cc: Alexei Starovoitov <ast@kernel.org>
-Cc: Daniel Borkmann <daniel@iogearbox.net>
-Cc: Dongdong Wang <wangdongdong.6@bytedance.com>
-Signed-off-by: Cong Wang <cong.wang@bytedance.com>
----
- .../selftests/bpf/progs/map_ptr_kern.c        | 20 +++++++++++++++++++
- 1 file changed, 20 insertions(+)
 
-diff --git a/tools/testing/selftests/bpf/progs/map_ptr_kern.c b/tools/testing/selftests/bpf/progs/map_ptr_kern.c
-index d8850bc6a9f1..424a9e76c93f 100644
---- a/tools/testing/selftests/bpf/progs/map_ptr_kern.c
-+++ b/tools/testing/selftests/bpf/progs/map_ptr_kern.c
-@@ -648,6 +648,25 @@ static inline int check_ringbuf(void)
- 	return 1;
- }
- 
-+struct {
-+	__uint(type, BPF_MAP_TYPE_TIMEOUT_HASH);
-+	__uint(max_entries, MAX_ENTRIES);
-+	__type(key, __u32);
-+	__type(value, __u32);
-+} m_timeout SEC(".maps");
-+
-+static inline int check_timeout_hash(void)
-+{
-+	struct bpf_htab *timeout_hash = (struct bpf_htab *)&m_timeout;
-+	struct bpf_map *map = (struct bpf_map *)&m_timeout;
-+
-+	VERIFY(check_default(&timeout_hash->map, map));
-+	VERIFY(timeout_hash->n_buckets == MAX_ENTRIES);
-+	VERIFY(timeout_hash->elem_size == 64);
-+
-+	return 1;
-+}
-+
- SEC("cgroup_skb/egress")
- int cg_skb(void *ctx)
- {
-@@ -679,6 +698,7 @@ int cg_skb(void *ctx)
- 	VERIFY_TYPE(BPF_MAP_TYPE_SK_STORAGE, check_sk_storage);
- 	VERIFY_TYPE(BPF_MAP_TYPE_DEVMAP_HASH, check_devmap_hash);
- 	VERIFY_TYPE(BPF_MAP_TYPE_RINGBUF, check_ringbuf);
-+	VERIFY_TYPE(BPF_MAP_TYPE_TIMEOUT_HASH, check_timeout_hash);
- 
- 	return 1;
- }
--- 
-2.25.1
 
+>  {
+>         struct elf_function *new;
+>         static GElf_Shdr sh;
+> -       static int last_idx;
+> +       static Elf32_Word last_idx;
+>         const char *name;
+> -       int idx;
+>
+>         if (elf_sym__type(sym) != STT_FUNC)
+>                 return 0;
+> @@ -90,12 +90,10 @@ static int collect_function(struct btf_elf *btfe, GElf_Sym *sym)
+>                 functions = new;
+>         }
+>
+> -       idx = elf_sym__section(sym);
+> -
+> -       if (idx != last_idx) {
+> -               if (!elf_section_by_idx(btfe->elf, &sh, idx))
+> +       if (sym_sec_idx != last_idx) {
+> +               if (!elf_section_by_idx(btfe->elf, &sh, sym_sec_idx))
+>                         return 0;
+> -               last_idx = idx;
+> +               last_idx = sym_sec_idx;
+>         }
+>
+>         functions[functions_cnt].name = name;
+> @@ -542,14 +540,15 @@ static bool percpu_var_exists(uint64_t addr, uint32_t *sz, const char **name)
+>         return true;
+>  }
+>
+> -static int collect_percpu_var(struct btf_elf *btfe, GElf_Sym *sym)
+> +static int collect_percpu_var(struct btf_elf *btfe, GElf_Sym *sym,
+> +                             Elf32_Word sym_sec_idx)
+
+nit: same, size_t or just int would be fine
+
+>  {
+>         const char *sym_name;
+>         uint64_t addr;
+>         uint32_t size;
+>
+>         /* compare a symbol's shndx to determine if it's a percpu variable */
+> -       if (elf_sym__section(sym) != btfe->percpu_shndx)
+> +       if (sym_sec_idx != btfe->percpu_shndx)
+>                 return 0;
+>         if (elf_sym__type(sym) != STT_OBJECT)
+>                 return 0;
+> @@ -585,12 +584,13 @@ static int collect_percpu_var(struct btf_elf *btfe, GElf_Sym *sym)
+>         return 0;
+>  }
+>
+> -static void collect_symbol(GElf_Sym *sym, struct funcs_layout *fl)
+> +static void collect_symbol(GElf_Sym *sym, struct funcs_layout *fl,
+> +                          Elf32_Word sym_sec_idx)
+>  {
+>         if (!fl->mcount_start &&
+>             !strcmp("__start_mcount_loc", elf_sym__name(sym, btfe->symtab))) {
+>                 fl->mcount_start = sym->st_value;
+> -               fl->mcount_sec_idx = sym->st_shndx;
+> +               fl->mcount_sec_idx = sym_sec_idx;
+>         }
+>
+>         if (!fl->mcount_stop &&
+> @@ -598,9 +598,36 @@ static void collect_symbol(GElf_Sym *sym, struct funcs_layout *fl)
+>                 fl->mcount_stop = sym->st_value;
+>  }
+>
+> +static bool elf_sym__get(Elf_Data *syms, Elf_Data *syms_sec_idx_table,
+> +                        int id, GElf_Sym *sym, Elf32_Word *sym_sec_idx)
+
+This is a generic function, why don't you want to move it into elf_symtab.h?
+
+> +{
+> +       if (!gelf_getsym(syms, id, sym))
+> +               return false;
+> +
+> +       *sym_sec_idx = sym->st_shndx;
+> +
+> +       if (sym->st_shndx == SHN_XINDEX) {
+> +               if (!syms_sec_idx_table)
+> +                       return false;
+> +               if (!gelf_getsymshndx(syms, syms_sec_idx_table,
+> +                                     id, sym, sym_sec_idx))
+> +                       return false;
+
+You also ignored my feedback about not fetching symbol twice. Why?
+
+> +       }
+> +
+> +       return true;
+> +}
+> +
+> +#define elf_symtab__for_each_symbol_index(symtab, id, sym, sym_sec_idx)                \
+> +       for (id = 0;                                                            \
+> +            id < symtab->nr_syms &&                                            \
+> +            elf_sym__get(symtab->syms, symtab->syms_sec_idx_table,             \
+> +                         id, &sym, &sym_sec_idx);                              \
+> +            id++)
+
+This should be in elf_symtab.h next to elf_symtab__for_each_symbol.
+
+And thinking a bit more, the variant with just ignoring symbols that
+we failed to get is probably a safer alternative. I.e., currently
+there is no way to communicate that we terminated iteration with
+error, so it's probably better to skip failed symbols and still get
+the rest, no? I was hoping to discuss stuff like this on the previous
+version of the patch...
+
+And please do fix elf_symtab__for_each_symbol().
+
+> +
+>  static int collect_symbols(struct btf_elf *btfe, bool collect_percpu_vars)
+>  {
+>         struct funcs_layout fl = { };
+> +       Elf32_Word sym_sec_idx;
+>         uint32_t core_id;
+>         GElf_Sym sym;
+>
+
+[...]
