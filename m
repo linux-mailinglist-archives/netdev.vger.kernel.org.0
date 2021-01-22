@@ -2,106 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 516EA30046B
-	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 14:42:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8E6F0300470
+	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 14:44:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727876AbhAVNmP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jan 2021 08:42:15 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:56428 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727179AbhAVNmM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 08:42:12 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1611322844;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=T8/dpz659mbFNh9PVeskulIsAiFLuZwS2fClqbyn3YM=;
-        b=IHmcGmF1V0D0wKqz0E7sCMMoccEbiEsxLHZxeW/k0r3pQYjTxZjpxebGOzyXHWQKG7kFa7
-        0XQSmbRLkYoYUuZA7Xxl7R3gjGcu6g2uYQ45V918lODo1RnK1f1YInw8FXe3pw3fmVs3TT
-        z33EI9Z/U3zl8YdyKTj2ehRdyCJz+Jg=
-Received: from mail-ed1-f69.google.com (mail-ed1-f69.google.com
- [209.85.208.69]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-353-OYfwsH18NFesO_stpOxmkA-1; Fri, 22 Jan 2021 08:40:43 -0500
-X-MC-Unique: OYfwsH18NFesO_stpOxmkA-1
-Received: by mail-ed1-f69.google.com with SMTP id a24so2915400eda.14
-        for <netdev@vger.kernel.org>; Fri, 22 Jan 2021 05:40:43 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
-         :message-id:mime-version:content-transfer-encoding;
-        bh=T8/dpz659mbFNh9PVeskulIsAiFLuZwS2fClqbyn3YM=;
-        b=ZjINADOz50xN1BTBuk7LEBk4yuFtc1joIwJoSwLYPrZrKqX/d/xP91p1vYDPhnrnMU
-         FFX85NiMoDkunNcMN+YELltT3Bxd66/9fO+nPZIruAkJCSbri3meuhlHbHfqRiKlnTmR
-         kSshGvZUfK+jhN37+eR4hT4gnXuNOSHCz3KU/fHz6JHRGCoPEXrmmwFLKOgbnlIacnDK
-         AV4ZpIg33jGbeMIHUT7EIP+OA0OLhgDJxiiK/8cHDvKxlwI9wOy7lrIouAsqNs2o64oW
-         38gnrF4WhaXTrpt0tgMaLTZa8cpKQMvAGs7WhTvdU/Sd2wMW1TkmEnGfMKvym8W0C4r/
-         TcYw==
-X-Gm-Message-State: AOAM533pWs+6klt6kHivvOrpwKsyBw8CpBocUV4j6gsjekvS9U0uWm0E
-        uH6UvZ+ckYpILqtrSVYZjFzjatM0LS4UzD27Fngdx8C76/tqtXpc1u62qi7RRPqhxun6m99YPhe
-        YLegIOMeeSIa9Fol2
-X-Received: by 2002:a17:906:ff43:: with SMTP id zo3mr2959951ejb.542.1611322842178;
-        Fri, 22 Jan 2021 05:40:42 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwOicqAnMz/rfgF1MSmZt6fZrskk1X4SXMSNmV7CV2eRyt+QfLPZcYukOmJGeJkXkw95BNOuw==
-X-Received: by 2002:a17:906:ff43:: with SMTP id zo3mr2959932ejb.542.1611322842062;
-        Fri, 22 Jan 2021 05:40:42 -0800 (PST)
-Received: from alrua-x1.borgediget.toke.dk ([45.145.92.2])
-        by smtp.gmail.com with ESMTPSA id g90sm5756006edd.30.2021.01.22.05.40.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Jan 2021 05:40:41 -0800 (PST)
-Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
-        id 14110180338; Fri, 22 Jan 2021 14:40:41 +0100 (CET)
-From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
-To:     =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@intel.com>,
-        =?utf-8?B?QmrDtnJuIFTDtnBlbA==?= <bjorn.topel@gmail.com>,
-        ast@kernel.org, daniel@iogearbox.net, netdev@vger.kernel.org,
-        bpf@vger.kernel.org
-Cc:     magnus.karlsson@intel.com, maciej.fijalkowski@intel.com,
-        kuba@kernel.org, jonathan.lemon@gmail.com, maximmi@nvidia.com,
-        davem@davemloft.net, hawk@kernel.org, john.fastabend@gmail.com,
-        ciara.loftus@intel.com, weqaar.a.janjua@intel.com,
-        andrii@kernel.org
-Subject: Re: [PATCH bpf-next 0/3] AF_XDP clean up/perf improvements
-In-Reply-To: <82c445fd-5be8-c9e8-eda1-68ed6f355966@intel.com>
-References: <20210122105351.11751-1-bjorn.topel@gmail.com>
- <877do56reh.fsf@toke.dk> <82c445fd-5be8-c9e8-eda1-68ed6f355966@intel.com>
-X-Clacks-Overhead: GNU Terry Pratchett
-Date:   Fri, 22 Jan 2021 14:40:41 +0100
-Message-ID: <87y2gl5bty.fsf@toke.dk>
+        id S1727856AbhAVNnl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jan 2021 08:43:41 -0500
+Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:17499 "EHLO
+        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726509AbhAVNnj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 08:43:39 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B600ad6620000>; Fri, 22 Jan 2021 05:42:58 -0800
+Received: from yaviefel (172.20.145.6) by HQMAIL107.nvidia.com (172.20.187.13)
+ with Microsoft SMTP Server (TLS) id 15.0.1473.3; Fri, 22 Jan 2021 13:42:49
+ +0000
+References: <20210121234317.65936-1-rasmus.villemoes@prevas.dk>
+User-agent: mu4e 1.4.10; emacs 27.1
+From:   Petr Machata <petrm@nvidia.com>
+To:     Rasmus Villemoes <rasmus.villemoes@prevas.dk>
+CC:     <netdev@vger.kernel.org>,
+        Horatiu Vultur <horatiu.vultur@microchip.com>,
+        Jiri Pirko <jiri@mellanox.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "Petr Machata" <petrm@mellanox.com>,
+        Ido Schimmel <idosch@mellanox.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Ivan Vecera <ivecera@redhat.com>,
+        "Jakub Kicinski" <kuba@kernel.org>
+Subject: Re: [PATCH resend net] net: switchdev: don't set
+ port_obj_info->handled true when -EOPNOTSUPP
+In-Reply-To: <20210121234317.65936-1-rasmus.villemoes@prevas.dk>
+Date:   Fri, 22 Jan 2021 14:42:45 +0100
+Message-ID: <87y2glay0a.fsf@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain
+X-Originating-IP: [172.20.145.6]
+X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1611322978; bh=z7AAVkq4BTsyvhDS6nXFnqc5/A75c8keaNt8zf2SlLY=;
+        h=References:User-agent:From:To:CC:Subject:In-Reply-To:Date:
+         Message-ID:MIME-Version:Content-Type:X-Originating-IP:
+         X-ClientProxiedBy;
+        b=ZiSK8uaUwuNbQAsAEkF0tGAurVaVNxb8lQVFrjz9jehcQzaPG5UyKhag1WTz+B3E/
+         ojKkHxF9S8I8im9XgwysywE5LBRLHOPvysgcklYed5mvcCkjGe+FsrdmahgHx0nCAF
+         6PZxd9sZC1MaT0FX+aVyS1gjhUIDAYCiSIGL0ibrckbgdVIRw+jkpO+2ZCzbutHSzQ
+         lPiZa/fNmvJjzneX9fGlPfLswnpx/tpXmiV7Gu7K33gHfhX+tEv2+jevrprYGyZ0+D
+         +hW3U8ctlBNp98JS6Ey/J8NH0B+QaoGGCQukxolaWOM04dkLqq1TAdeGxyZiH6yvsC
+         lgs0C5o4KcjuA==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Bj=C3=B6rn T=C3=B6pel <bjorn.topel@intel.com> writes:
 
-> On 2021-01-22 14:19, Toke H=C3=B8iland-J=C3=B8rgensen wrote:
->> Bj=C3=B6rn T=C3=B6pel <bjorn.topel@gmail.com> writes:
->>=20
->>> This series has some clean up/performance improvements for XDP
->>> sockets.
->>>
->>> The first two patches are cleanups for the AF_XDP core, and the
->>> restructure actually give a little performance boost.
->>>
->>> The last patch adds support for selecting AF_XDP BPF program, based on
->>> what the running kernel supports.
->>>
->>> The patches were earlier part of the bigger "bpf_redirect_xsk()"
->>> series [1]. I pulled out the non-controversial parts into this series.
->>=20
->> What about the first patch from that series, refactoring the existing
->> bpf_redirect_map() handling? I think that would be eligible for sending
->> on its own as well :)
->>
+Rasmus Villemoes <rasmus.villemoes@prevas.dk> writes:
+
+> It's not true that switchdev_port_obj_notify() only inspects the
+> ->handled field of "struct switchdev_notifier_port_obj_info" if
+> call_switchdev_blocking_notifiers() returns 0 - there's a WARN_ON()
+> triggering for a non-zero return combined with ->handled not being
+> true. But the real problem here is that -EOPNOTSUPP is not being
+> properly handled.
 >
-> Yeah, I'm planning on doing that, but I figured I'd wait for Hangbin's
-> work to go first.
+> The wrapper functions switchdev_handle_port_obj_add() et al change a
+> return value of -EOPNOTSUPP to 0, and the treatment of ->handled in
+> switchdev_port_obj_notify() seems to be designed to change that back
+> to -EOPNOTSUPP in case nobody actually acted on the notifier (i.e.,
+> everybody returned -EOPNOTSUPP).
+>
+> Currently, as soon as some device down the stack passes the check_cb()
+> check, ->handled gets set to true, which means that
+> switchdev_port_obj_notify() cannot actually ever return -EOPNOTSUPP.
+>
+> This, for example, means that the detection of hardware offload
+> support in the MRP code is broken - br_mrp_set_ring_role() always ends
+> up setting mrp->ring_role_offloaded to 1, despite not a single
+> mainline driver implementing any of the SWITCHDEV_OBJ_ID*_MRP. So
+> since the MRP code thinks the generation of MRP test frames has been
+> offloaded, no such frames are actually put on the wire.
+>
+> So, continue to set ->handled true if any callback returns success or
+> any error distinct from -EOPNOTSUPP. But if all the callbacks return
+> -EOPNOTSUPP, make sure that ->handled stays false, so the logic in
+> switchdev_port_obj_notify() can propagate that information.
+>
+> Fixes: f30f0601eb93 ("switchdev: Add helpers to aid traversal through lower devices")
+> Signed-off-by: Rasmus Villemoes <rasmus.villemoes@prevas.dk>
 
-Ah, right, good point; cool! :)
+Looks good.
 
--Toke
+Reviewed-by: Petr Machata <petrm@nvidia.com>
 
+Thanks!
