@@ -2,39 +2,32 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C957300DAD
-	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 21:28:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 85262300DD8
+	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 21:38:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730125AbhAVU1e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jan 2021 15:27:34 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:59165 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729626AbhAVUZn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 15:25:43 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1611347057;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=XzwvF2fSb3OX9OE+OjVvXhaC5ymgR7sWG/hoQvSQubI=;
-        b=ECSDNS8+AlYcVNdvA1uI5qNQ8hJSrr3AywAcwnAxyHLfgattAzlLfDA7ZpzPePKmqknzjN
-        1DdjaHFfApZSk26r9WI4u75G8xetuYEp0UxslWXJ339jerDBhQri3QUELRv/TNpu0vuyI5
-        TZUSxwOOL5GdkeH3YYgOiZh7M674Uoc=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-152-fngIOAcvO0mKOGlzcTs_Xg-1; Fri, 22 Jan 2021 15:24:15 -0500
-X-MC-Unique: fngIOAcvO0mKOGlzcTs_Xg-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 930A48030A3;
-        Fri, 22 Jan 2021 20:24:13 +0000 (UTC)
-Received: from krava (unknown [10.40.192.97])
-        by smtp.corp.redhat.com (Postfix) with SMTP id 4073D19C44;
-        Fri, 22 Jan 2021 20:24:04 +0000 (UTC)
-Date:   Fri, 22 Jan 2021 21:24:03 +0100
-From:   Jiri Olsa <jolsa@redhat.com>
-To:     Arnaldo Carvalho de Melo <acme@kernel.org>
+        id S1729722AbhAVUgM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jan 2021 15:36:12 -0500
+Received: from mail.kernel.org ([198.145.29.99]:43544 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728366AbhAVUec (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 22 Jan 2021 15:34:32 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 9D8F123B06;
+        Fri, 22 Jan 2021 20:33:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1611347631;
+        bh=SyQP41PwpeKLZope/oUux/+VUUA4Mr4nW64xb8MeMJI=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=K95RP+AjLtLOhWYLEX9Zga4StevHNyRJbxy2U9Qw40DifgXUAhdKTOu8U/A2jEGjl
+         yP4j+nm9MD/QXRgd7XTcYB4JPLvmolWxr9/pX3/t3czlrGlX7o2RqL1BfShyHTo/X0
+         PmhrlQxqg8GFPD0Kse1XQmKbz/bNCVBWkGDoMSU9DeZQy6CKFbC1OviDiK9AZIhfaV
+         sAazw51LpGYgDNbYev9QTtlvoc1t7qb2SfNgM4N+5TLaAz3CFoMr0YeRk1bO3vEET3
+         scQBVCnReCvuxwUyGXbEvK7gPT+pCUh4eLp9cgSazKmC6ZSQVtlYXl3xfVwu2LCfEG
+         54N7c06dELO6A==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id D2ECA40513; Fri, 22 Jan 2021 17:33:48 -0300 (-03)
+Date:   Fri, 22 Jan 2021 17:33:48 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Jiri Olsa <jolsa@redhat.com>
 Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
         Daniel Borkmann <daniel@iogearbox.net>,
         Andrii Nakryiko <andriin@fb.com>, dwarves@vger.kernel.org,
@@ -49,61 +42,67 @@ Cc:     Jiri Olsa <jolsa@kernel.org>, Alexei Starovoitov <ast@kernel.org>,
         Yulia Kopkova <ykopkova@redhat.com>
 Subject: Re: [PATCH 2/2] bpf_encoder: Translate SHN_XINDEX in symbol's
  st_shndx values
-Message-ID: <20210122202403.GC35850@krava>
+Message-ID: <20210122203348.GC617095@kernel.org>
 References: <20210122163920.59177-1-jolsa@kernel.org>
  <20210122163920.59177-3-jolsa@kernel.org>
  <20210122195228.GB617095@kernel.org>
+ <20210122202403.GC35850@krava>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210122195228.GB617095@kernel.org>
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+In-Reply-To: <20210122202403.GC35850@krava>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 22, 2021 at 04:52:28PM -0300, Arnaldo Carvalho de Melo wrote:
-> Em Fri, Jan 22, 2021 at 05:39:20PM +0100, Jiri Olsa escreveu:
-> > For very large ELF objects (with many sections), we could
-> > get special value SHN_XINDEX (65535) for symbol's st_shndx.
+Em Fri, Jan 22, 2021 at 09:24:03PM +0100, Jiri Olsa escreveu:
+> On Fri, Jan 22, 2021 at 04:52:28PM -0300, Arnaldo Carvalho de Melo wrote:
+> > Em Fri, Jan 22, 2021 at 05:39:20PM +0100, Jiri Olsa escreveu:
+> > > For very large ELF objects (with many sections), we could
+> > > get special value SHN_XINDEX (65535) for symbol's st_shndx.
+> > > 
+> > > This patch is adding code to detect the optional extended
+> > > section index table and use it to resolve symbol's section
+> > > index.
+> > > 
+> > > Adding elf_symtab__for_each_symbol_index macro that returns
+> > > symbol's section index and usign it in collect functions.
 > > 
-> > This patch is adding code to detect the optional extended
-> > section index table and use it to resolve symbol's section
-> > index.
+> > From a quick look it seems you addressed Andrii's review comments,
+> > right?
+> 
+> yep, it's described in the cover email
+> 
 > > 
-> > Adding elf_symtab__for_each_symbol_index macro that returns
-> > symbol's section index and usign it in collect functions.
+> > I've merged it locally, but would like to have some detailed set of
+> > steps on how to test this, so that I can add it to a "Committer testing"
+> > section in the cset commit log and probably add it to my local set of
+> > regression tests.
 > 
-> From a quick look it seems you addressed Andrii's review comments,
-> right?
-
-yep, it's described in the cover email
-
+> sorry I forgot to mention that:
 > 
-> I've merged it locally, but would like to have some detailed set of
-> steps on how to test this, so that I can add it to a "Committer testing"
-> section in the cset commit log and probably add it to my local set of
-> regression tests.
-
-sorry I forgot to mention that:
-
-The test was to run pahole on kernel compiled with:
-  make KCFLAGS="-ffunction-sections -fdata-sections" -j$(nproc) vmlinux
-
-and ensure FUNC records are generated and match normal
-build (without above KCFLAGS)
-
-Also bpf selftest passed.
-
-
+> The test was to run pahole on kernel compiled with:
+>   make KCFLAGS="-ffunction-sections -fdata-sections" -j$(nproc) vmlinux
 > 
-> Who originally reported this? Joe? Also can someone provide a Tested-by:
-> in addition to mine when I get this detailed set of steps to test?
+> and ensure FUNC records are generated and match normal
+> build (without above KCFLAGS)
+> 
+> Also bpf selftest passed.
 
-oops, it was reported by Yulia Kopkova (just cc-ed)
+Thanks, I'll come up with some shell script to test that.
+ 
+> 
+> > 
+> > Who originally reported this? Joe? Also can someone provide a Tested-by:
+> > in addition to mine when I get this detailed set of steps to test?
+> 
+> oops, it was reported by Yulia Kopkova (just cc-ed)
+> 
+> Joe tested the v2 of the patchset, I'll make a dwarves scratch
+> build with v3 and let them test it
 
-Joe tested the v2 of the patchset, I'll make a dwarves scratch
-build with v3 and let them test it
+Thanks, and there is a new comment by Andrii that I've found relevant
+about using size_t instead of Elf_something.
 
-jirka
-
+- Arnaldo
