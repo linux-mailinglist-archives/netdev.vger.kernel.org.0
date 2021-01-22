@@ -2,128 +2,179 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C03DC2FF943
-	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 01:13:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9ACFA2FF946
+	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 01:14:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725912AbhAVAM5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 21 Jan 2021 19:12:57 -0500
-Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:2307 "EHLO
-        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725868AbhAVAMy (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jan 2021 19:12:54 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B600a185e0000>; Thu, 21 Jan 2021 16:12:14 -0800
-Received: from HKMAIL101.nvidia.com (10.18.16.10) by HQMAIL109.nvidia.com
- (172.20.187.15) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Fri, 22 Jan
- 2021 00:12:13 +0000
-Received: from HKMAIL103.nvidia.com (10.18.16.12) by HKMAIL101.nvidia.com
- (10.18.16.10) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Fri, 22 Jan
- 2021 00:12:02 +0000
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.177)
- by HKMAIL103.nvidia.com (10.18.16.12) with Microsoft SMTP Server (TLS) id
- 15.0.1473.3 via Frontend Transport; Fri, 22 Jan 2021 00:12:02 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=gzBSJ9VecpdGZOYH4i/t6nPK9OxjntWXyqs7SaCogcbY3w8mjUQPZiWXaiQQmE991mSBb0ToItB5BGyNQZ+XXxkjXcrOW+awE/9mKrlaXPBnbpq0kifYdIazC/TI5juxW0Wxt1EBsyNRPowbsmvLMoe2JqxhtBh06Zd1/AC6oKjvFExQz0swEDxW+/UajZ8ZyK0knwmXwLjrZ1F38EpGS34rsV/BNoGUEaTrdMmOsE+tuk71CiEOeIw1L/pWeKlZ6mui81jwyrg0otZ2ovnrR/5F4ofVa3nRG47/01YyLHQWs0RSJhqCsHHUMWRcM7TZN564R2sOow7bc59MauaqQg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=tg49lyOe4ndxOafM38vTTLJE13SGiijd8pIleDt2BEY=;
- b=KXxMcA3Q4vFc9Fz9sjIaRgkkHdkK2WLWzBpTeaYJhZg5NJMu7QyV8YmjoT2T0G86h4rIY2Z8rW3sbDh+ChGibI6oTvknGqj7CPeQXQPR45RrwZPvidaLb8iRAEQzWEwrZvUrODULX2X6P7koCHxn0M3xW91KGVWPP4Q8tT8fUiFKWwVNuI9SqLyv7fBbMCDUc6o1cMk2n/sDe6LCFJivr5ggNCjn27fxWZvY7jPLq2LACNAEvgrcRasv+Fv0GnMqieQp1a9opNj2A4zWdME3/hVF4giwDiSikldxRKS1OMSPCC8tvEHajeHTYQITPTuyi6mm3RjveFjhg1MhnGmJmg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
- by DM5PR12MB2437.namprd12.prod.outlook.com (2603:10b6:4:ba::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3784.13; Fri, 22 Jan
- 2021 00:11:59 +0000
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::546d:512c:72fa:4727]) by DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::546d:512c:72fa:4727%7]) with mapi id 15.20.3784.011; Fri, 22 Jan 2021
- 00:11:59 +0000
-Date:   Thu, 21 Jan 2021 20:11:57 -0400
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
-CC:     Saeed Mahameed <saeed@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        <linux-rdma@vger.kernel.org>, <alexander.duyck@gmail.com>,
-        <edwin.peer@broadcom.com>, <dsahern@kernel.org>,
-        <kiran.patil@intel.com>, <jacob.e.keller@intel.com>,
-        <david.m.ertman@intel.com>, <dan.j.williams@intel.com>,
-        Parav Pandit <parav@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: Re: [net-next V9 14/14] net/mlx5: Add devlink subfunction port
- documentation
-Message-ID: <20210122001157.GE4147@nvidia.com>
-References: <20210121085237.137919-1-saeed@kernel.org>
- <20210121085237.137919-15-saeed@kernel.org>
- <d5ef3359-ff3c-0e71-8312-0f24c3af4bce@intel.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <d5ef3359-ff3c-0e71-8312-0f24c3af4bce@intel.com>
-X-ClientProxiedBy: BL0PR03CA0012.namprd03.prod.outlook.com
- (2603:10b6:208:2d::25) To DM6PR12MB3834.namprd12.prod.outlook.com
- (2603:10b6:5:14a::12)
+        id S1726229AbhAVAN6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 21 Jan 2021 19:13:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37456 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725918AbhAVANn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 21 Jan 2021 19:13:43 -0500
+Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98B19C061756;
+        Thu, 21 Jan 2021 16:13:03 -0800 (PST)
+Received: by mail-io1-xd2c.google.com with SMTP id n2so7772300iom.7;
+        Thu, 21 Jan 2021 16:13:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:reply-to:from:date:message-id
+         :subject:to:cc;
+        bh=rg4F4fY1x1Ys+AVDMAzCYT98XvORKJFOa8hJzzR365Y=;
+        b=lF7PPJExoyH/ckstwaEjDdSnli0xe4IXnLk1il7CeROQDsS3YUqvXJDTA79WCFC/Hw
+         5jv7yU3mS1QMAcsKNRDc8rZdzKVRdrivUuQhtwIu1VPssDSY+Ja4iLHgNvszGejhffV7
+         Y6J4rD4yCTE4Qq2aPoaLTdm+Qg2F6GUquCFPte3fLvn05EM+xEmoakhkRy4XqqOAdYSi
+         p3v0/hfUsBfAkm4TngCyhBlCUvhUHquQieVj/afxqldY9Va0O8vAB1+HHVEcHW2a28R7
+         sabBJixLJuWx0HTMuvrXhEJ0ggoRtLHB9rdVH3cvEb58mzFbpR1VQ05GnXI2Mk7T9qoO
+         fRsw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:reply-to
+         :from:date:message-id:subject:to:cc;
+        bh=rg4F4fY1x1Ys+AVDMAzCYT98XvORKJFOa8hJzzR365Y=;
+        b=RbK9QbWk7DXQsn3/AM0RUrL1+aEsz/IATCgox02PSZWUWZkiQbiRf4wK6qQasLGauB
+         SAiOWivRvZKXJgeDJvdaY/RmyRmoHgH5O6BvbMWUPs2GPiS+jprliLKGOrRmoAEaZmGx
+         XuQ3K7BXvzNXVaMJqZrpPjyRta14+RoDCiCXVbOxIzZSni9vV81WLch7d0nqj7Gg+NFI
+         SQsqJgMAIpM2xWYOqK4r9HFQe8HfNl/ySxpdqHeS11BgHKOHoa2xL3n05MnOGHUyGP6F
+         TelEmLWJEnHzVwi7wOgL/k1lnbqtUP7gD4fwXua3U0qu5DNonCbuZkAm7QmamXBvw0jR
+         uPyQ==
+X-Gm-Message-State: AOAM532u1p3Ac4JLE8cUXzWY3y/vOISe2kTGDGE8YhmVf6kBc2NzgLVB
+        L9rOEfYipu5DY8XE2+F1d2pkJuW7tMpzMWZE5Fw=
+X-Google-Smtp-Source: ABdhPJxiFsnBYYgducB8dGHSjjEJc6dQEORoE9PJV6BfiJzchZ8YEWP/MHRxNUYkrL4mxdw2Z5h4ipnRF8yhoGriSN0=
+X-Received: by 2002:a92:d990:: with SMTP id r16mr1914693iln.10.1611274383015;
+ Thu, 21 Jan 2021 16:13:03 -0800 (PST)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from mlx.ziepe.ca (142.162.115.133) by BL0PR03CA0012.namprd03.prod.outlook.com (2603:10b6:208:2d::25) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3784.11 via Frontend Transport; Fri, 22 Jan 2021 00:11:59 +0000
-Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1l2k3R-005EeE-SM; Thu, 21 Jan 2021 20:11:57 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1611274334; bh=tg49lyOe4ndxOafM38vTTLJE13SGiijd8pIleDt2BEY=;
-        h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:Date:
-         From:To:CC:Subject:Message-ID:References:Content-Type:
-         Content-Disposition:In-Reply-To:X-ClientProxiedBy:MIME-Version:
-         X-MS-Exchange-MessageSentRepresentingType;
-        b=K9P2KHk4yxn82P82PC9L6d2500CeYextiz/7teDdiW9XwR7k91AKIdsVuuy5SRLlS
-         hC6X2IE/lp+wRCWeZG8L5wzrk4WuXCU0LNPWgyW2ryoQZR/tKeEs6M3pQECguufqLh
-         fbPCMsPjxcETprvZ09ooUmmsh8NOrUohd8Vs/mHLULCKEVBtoUgmJh9+iZBITcXUfT
-         eOj9Jq1Hab9TVqfqLuV6fcj6uB/NQrrjkS/E1kUSuanPrbtzF/s10NC1ybP3QsTOWa
-         X/kIWTIThTyT2D2VsG3w78f2JTXGIBMAvKb03hTKgS/XYJhKibXVF5ubkYOvEuBZPu
-         wpzSRGcKIejHg==
+References: <20210116095413.72820-1-sedat.dilek@gmail.com> <20210120223546.GF1798087@krava>
+ <CAEf4Bza2W061YpxtUx9ZKQUtE0-tS6gf4yg2Le_2g4kyi3FhnQ@mail.gmail.com>
+In-Reply-To: <CAEf4Bza2W061YpxtUx9ZKQUtE0-tS6gf4yg2Le_2g4kyi3FhnQ@mail.gmail.com>
+Reply-To: sedat.dilek@gmail.com
+From:   Sedat Dilek <sedat.dilek@gmail.com>
+Date:   Fri, 22 Jan 2021 01:12:51 +0100
+Message-ID: <CA+icZUUGKn4DiBGN8Tq3yrh0NH2Fqboaigwm4Q3yceDJVe9dAA@mail.gmail.com>
+Subject: Re: [PATCH RFC] tools: Factor Clang, LLC and LLVM utils definitions
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Jiri Olsa <jolsa@redhat.com>, Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Nathan Chancellor <natechancellor@gmail.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Quentin Monnet <quentin@isovalent.com>,
+        Jean-Philippe Brucker <jean-philippe@linaro.org>,
+        Tobias Klauser <tklauser@distanz.ch>,
+        Ilya Leoshkevich <iii@linux.ibm.com>,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Yulia Kartseva <hex@fb.com>, Andrey Ignatov <rdna@fb.com>,
+        Thomas Hebb <tommyhebb@gmail.com>,
+        Stephane Eranian <eranian@google.com>,
+        "Frank Ch. Eigler" <fche@redhat.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Davide Caratti <dcaratti@redhat.com>,
+        Briana Oursler <briana.oursler@gmail.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        clang-built-linux <clang-built-linux@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 21, 2021 at 12:59:55PM -0800, Samudrala, Sridhar wrote:
+On Fri, Jan 22, 2021 at 1:04 AM Andrii Nakryiko
+<andrii.nakryiko@gmail.com> wrote:
+>
+> On Wed, Jan 20, 2021 at 2:36 PM Jiri Olsa <jolsa@redhat.com> wrote:
+> >
+> > On Sat, Jan 16, 2021 at 10:54:04AM +0100, Sedat Dilek wrote:
+> > > When dealing with BPF/BTF/pahole and DWARF v5 I wanted to build bpftool.
+> > >
+> > > While looking into the source code I found duplicate assignments
+> > > in misc tools for the LLVM eco system, e.g. clang and llvm-objcopy.
+> > >
+> > > Move the Clang, LLC and/or LLVM utils definitions to
+> > > tools/scripts/Makefile.include file and add missing
+> > > includes where needed.
+> > > Honestly, I was inspired by commit c8a950d0d3b9
+> > > ("tools: Factor HOSTCC, HOSTLD, HOSTAR definitions").
+> > >
+> > > I tested with bpftool and perf on Debian/testing AMD64 and
+> > > LLVM/Clang v11.1.0-rc1.
+> > >
+> > > Build instructions:
+> > >
+> > > [ make and make-options ]
+> > > MAKE="make V=1"
+> > > MAKE_OPTS="HOSTCC=clang HOSTCXX=clang++ HOSTLD=ld.lld CC=clang LD=ld.lld LLVM=1 LLVM_IAS=1"
+> > > MAKE_OPTS="$MAKE_OPTS PAHOLE=/opt/pahole/bin/pahole"
+> > >
+> > > [ clean-up ]
+> > > $MAKE $MAKE_OPTS -C tools/ clean
+> > >
+> > > [ bpftool ]
+> > > $MAKE $MAKE_OPTS -C tools/bpf/bpftool/
+> > >
+> > > [ perf ]
+> > > PYTHON=python3 $MAKE $MAKE_OPTS -C tools/perf/
+> > >
+> > > I was careful with respecting the user's wish to override custom compiler,
+> > > linker, GNU/binutils and/or LLVM utils settings.
+> > >
+> > > Some personal notes:
+> > > 1. I have NOT tested with cross-toolchain for other archs (cross compiler/linker etc.).
+> > > 2. This patch is on top of Linux v5.11-rc3.
+> > >
+> > > I hope to get some feedback from especially Linux-bpf folks.
+> > >
+> > > Signed-off-by: Sedat Dilek <sedat.dilek@gmail.com>
+> > > ---
+> > >  tools/bpf/bpftool/Makefile                  | 2 --
+> > >  tools/bpf/runqslower/Makefile               | 3 ---
+> > >  tools/build/feature/Makefile                | 4 ++--
+> > >  tools/perf/Makefile.perf                    | 1 -
+> >
+> > for tools/build and tools/perf
+> >
+> > Acked-by: Jiri Olsa <jolsa@redhat.com>
+> >
+>
+> It's pretty straightforward and looks good for bpftool and runqslower,
+> but I couldn't apply directly to test due to merge conflicts.
+>
+> Also, which tree this should go through, given it touches multiple
+> parts under tools/?
+>
 
-> > +                 mlx5_core.sf.4
-> > +          (subfunction auxiliary device)
-> > +                       /\
-> > +                      /  \
-> > +                     /    \
-> > +                    /      \
-> > +                   /        \
-> > +      mlx5_core.eth.4     mlx5_core.rdma.4
-> > +     (sf eth aux dev)     (sf rdma aux dev)
-> > +         |                      |
-> > +         |                      |
-> > +      p0sf88                  mlx5_0
-> > +     (sf netdev)          (sf rdma device)
-> 
-> This picture seems to indicate that when SF is activated, a sub
-> function auxiliary device is created 
+Sorry, for the conflicts.
+AFAICS I should do this again against Linux v5.11-rc4 vanilla?
+Is this OK to you?
 
-Yes
+Good hint, cannot say through which tree this should go through.
 
-> and when a driver is bound to that sub function aux device and
-> probed, 2 additional auxiliary devices are created.  
+- Sedat -
 
-More than two, but yes
-
-> Is this correct? Are all these auxiliary devices seen on the same
-> aux bus?  
-
-Yes
-
-> Why do we need another sf eth aux device?
-
-The first aux device represents the physical HW and mlx5_core binds to it,
-the analog is like a pci_device.
-
-The other aux devices represent the subsystem split of the mlx5 driver
-- mlx5_core creates them and each subsystem in turn binds to the
-mlx5_core driver. This already exists, and Intel will be doing this as
-well whenever the RDMA driver is posted again..
-
-Jason
+> > jirka
+> >
+> > >  tools/scripts/Makefile.include              | 7 +++++++
+> > >  tools/testing/selftests/bpf/Makefile        | 3 +--
+> > >  tools/testing/selftests/tc-testing/Makefile | 3 +--
+> > >  7 files changed, 11 insertions(+), 12 deletions(-)
+> > >
+> > > diff --git a/tools/bpf/bpftool/Makefile b/tools/bpf/bpftool/Makefile
+> > > index f897cb5fb12d..71c14efa6e91 100644
+> > > --- a/tools/bpf/bpftool/Makefile
+> > > +++ b/tools/bpf/bpftool/Makefile
+> >
+> > SNIP
+> >
