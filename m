@@ -2,177 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9ED39300226
-	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 12:57:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6F3A4300258
+	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 13:04:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727584AbhAVL4k (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jan 2021 06:56:40 -0500
-Received: from mail-40134.protonmail.ch ([185.70.40.134]:33594 "EHLO
-        mail-40134.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727072AbhAVL4g (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 06:56:36 -0500
-Date:   Fri, 22 Jan 2021 11:55:35 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
-        t=1611316542; bh=7A+bIR8MNPqdhF6YnTCaCIMQNA6knpBQGh4OvqlULpo=;
-        h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
-        b=HLMSAeeApixBhvZ3tpz175dGXj/jgdg89s2NoCXwiW8UeRQIZdClncPD5Y/ZgppNS
-         ou5J0N1hGSSOjRz6fph1o48g6BKu5GEyeaI84QjzCAwUjtVdXD6aAqGIE2E2DiTgnj
-         WYxHKVp7k8ojDiOTtBFJ3KoZtzEaaSS9SPpPrqicxg2LNDacmaN9kgasauoY4VeDoH
-         XoTRQsOPtAk7qfAasCEpEQVW6dtItxjAxwt2oqe0sVg36Mq7jwzzagbhIau6CpAzJS
-         jpDZBgIKl0bOPk5LF3RwvVHJfnvRwFE3tiCe93hnR4+4LozuzZUG1F3ypqY5HMzYg2
-         2gerxDsul37rA==
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-From:   Alexander Lobakin <alobakin@pm.me>
-Cc:     Alexander Lobakin <alobakin@pm.me>,
-        Xuan Zhuo <xuanzhuo@linux.alibaba.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        =?utf-8?Q?Bj=C3=B6rn_T=C3=B6pel?= <bjorn@kernel.org>,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Reply-To: Alexander Lobakin <alobakin@pm.me>
-Subject: Re: [PATCH bpf-next v3 3/3] xsk: build skb by page
-Message-ID: <20210122115519.2183-1-alobakin@pm.me>
-In-Reply-To: <20210122114729.1758-1-alobakin@pm.me>
-References: <cover.1611236588.git.xuanzhuo@linux.alibaba.com> <340f1dfa40416dd966a56e08507daba82d633088.1611236588.git.xuanzhuo@linux.alibaba.com> <dcee4592-9fa9-adbb-55ca-58a962076e7a@gmail.com> <20210122114729.1758-1-alobakin@pm.me>
+        id S1727476AbhAVMCV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jan 2021 07:02:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34048 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727831AbhAVKyj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 05:54:39 -0500
+Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7DE7C061786
+        for <netdev@vger.kernel.org>; Fri, 22 Jan 2021 02:53:58 -0800 (PST)
+Received: by mail-io1-xd35.google.com with SMTP id x21so10096421iog.10
+        for <netdev@vger.kernel.org>; Fri, 22 Jan 2021 02:53:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=vse2orAIc61P3ZfRdF2aUXRbMcJ34GBbNbDziqUJ0uQ=;
+        b=hNYKJh4ivtbOelmKTPNNlDrpjd4LiR6vLaN8zGQIGVw5uJowZQNlig1JmKIovkmUgI
+         WtS2u52/xgGmEwKp34ITbvHXKDvthuqsdrwCImR8z/x4ckudS3UoapkbatrCprjAsFQ6
+         RHAHNVGO1FUOHjusMxJTyiIMH/jV0o9MgjioEEe1pn4fhThKhXHAA3AqQdksHnfI2HLJ
+         Raf1gGERmmwY3o7G3Hx3PJGybqsghi0jX21awDfQZgpTXWqhID2kNOB6Hl/fNn17ZYCU
+         cn3dDla7oEhjggN1kDAs+FmNlPAX3K7lEkMCuFSFPR/MMYXmrs7a32Cp7Hfn17KZk4p9
+         1Xyw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=vse2orAIc61P3ZfRdF2aUXRbMcJ34GBbNbDziqUJ0uQ=;
+        b=a1qkdG3zKZGKTZ1kGRcZAVePEwHthcLhhcxIzjqvwCb1wnggm6wLFiZF+5GrWSEaoq
+         ErHDjoinqtDWZljR24yx9M9M/WNCoVwY9ot5wV6MSitYtH0DDrUa1WFApHuvFHRhyWNF
+         Fj/OFSApLugrnlPo+N/EdTqUVQASFwtHizabEoXOJrJ+NOAbvJOy12StS/hlu0wHWhZe
+         t9v/hWt/0c62yhA8fqIMstpBg8M5zsgpWpkJlRwzHTdyin32TbMhvtfVZLahHggyGjHJ
+         pHvo93ky5sJyqOkUrWFCe+U/INbG7i0J0c7PYFuv3hECuv6RTXfI1XjtEL/ZsK3d1sjz
+         Oczw==
+X-Gm-Message-State: AOAM533zbWj1uC9yLHKDASuFuwaz2h+6Lq/lTlN0flXm7gddKGMn8h7U
+        vix5Rv0GR7+hazofp7/Lz0bgkYE8W4svM90JpjyJIVOVYZ0=
+X-Google-Smtp-Source: ABdhPJzoPVZX3Ue+z4i8ATR91e2c/Yi8gF8IO8hGlxOTjBKq2UtNJs1btT/txFdL5wdCjaxK34lIKiUHYBfGOZ7cuog=
+X-Received: by 2002:a92:9f59:: with SMTP id u86mr504017ili.205.1611312837888;
+ Fri, 22 Jan 2021 02:53:57 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.2 required=10.0 tests=ALL_TRUSTED,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF shortcircuit=no
-        autolearn=disabled version=3.4.4
-X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on
-        mailout.protonmail.ch
+References: <1611311242-6675-1-git-send-email-yangpc@wangsu.com>
+In-Reply-To: <1611311242-6675-1-git-send-email-yangpc@wangsu.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Fri, 22 Jan 2021 11:53:46 +0100
+Message-ID: <CANn89iJoBeApn6y8k9xv_FZCGKG8n1GyXb9SKYq+LGBTp52cag@mail.gmail.com>
+Subject: Re: [PATCH net] tcp: fix TLP timer not set when CA_STATE changes from
+ DISORDER to OPEN
+To:     Pengcheng Yang <yangpc@wangsu.com>
+Cc:     Neal Cardwell <ncardwell@google.com>,
+        Yuchung Cheng <ycheng@google.com>,
+        David Miller <davem@davemloft.net>,
+        netdev <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alexander Lobakin <alobakin@pm.me>
-Date: Fri, 22 Jan 2021 11:47:45 +0000
+On Fri, Jan 22, 2021 at 11:28 AM Pengcheng Yang <yangpc@wangsu.com> wrote:
+>
+> When CA_STATE is in DISORDER, the TLP timer is not set when receiving
+> an ACK (a cumulative ACK covered out-of-order data) causes CA_STATE to
+> change from DISORDER to OPEN. If the sender is app-limited, it can only
+> wait for the RTO timer to expire and retransmit.
+>
+> The reason for this is that the TLP timer is set before CA_STATE changes
+> in tcp_ack(), so we delay the time point of calling tcp_set_xmit_timer()
+> until after tcp_fastretrans_alert() returns and remove the
+> FLAG_SET_XMIT_TIMER from ack_flag when the RACK reorder timer is set.
+>
+> This commit has two additional benefits:
+> 1) Make sure to reset RTO according to RFC6298 when receiving ACK, to
+> avoid spurious RTO caused by RTO timer early expires.
+> 2) Reduce the xmit timer reschedule once per ACK when the RACK reorder
+> timer is set.
+>
+> Link: https://lore.kernel.org/netdev/1611139794-11254-1-git-send-email-yangpc@wangsu.com
+> Signed-off-by: Pengcheng Yang <yangpc@wangsu.com>
+> Cc: Neal Cardwell <ncardwell@google.com>
+> ---
 
-> From: Eric Dumazet <eric.dumazet@gmail.com>
-> Date: Thu, 21 Jan 2021 16:41:33 +0100
->=20
-> > On 1/21/21 2:47 PM, Xuan Zhuo wrote:
-> > > This patch is used to construct skb based on page to save memory copy
-> > > overhead.
-> > >=20
-> > > This function is implemented based on IFF_TX_SKB_NO_LINEAR. Only the
-> > > network card priv_flags supports IFF_TX_SKB_NO_LINEAR will use page t=
-o
-> > > directly construct skb. If this feature is not supported, it is still
-> > > necessary to copy data to construct skb.
-> > >=20
-> > > ---------------- Performance Testing ------------
-> > >=20
-> > > The test environment is Aliyun ECS server.
-> > > Test cmd:
-> > > ```
-> > > xdpsock -i eth0 -t  -S -s <msg size>
-> > > ```
-> > >=20
-> > > Test result data:
-> > >=20
-> > > size    64      512     1024    1500
-> > > copy    1916747 1775988 1600203 1440054
-> > > page    1974058 1953655 1945463 1904478
-> > > percent 3.0%    10.0%   21.58%  32.3%
-> > >=20
-> > > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> > > Reviewed-by: Dust Li <dust.li@linux.alibaba.com>
-> > > ---
-> > >  net/xdp/xsk.c | 104 ++++++++++++++++++++++++++++++++++++++++++++++++=
-----------
-> > >  1 file changed, 86 insertions(+), 18 deletions(-)
-> > >=20
-> > > diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-> > > index 4a83117..38af7f1 100644
-> > > --- a/net/xdp/xsk.c
-> > > +++ b/net/xdp/xsk.c
-> > > @@ -430,6 +430,87 @@ static void xsk_destruct_skb(struct sk_buff *skb=
-)
-> > >  =09sock_wfree(skb);
-> > >  }
-> > > =20
-> > > +static struct sk_buff *xsk_build_skb_zerocopy(struct xdp_sock *xs,
-> > > +=09=09=09=09=09      struct xdp_desc *desc)
-> > > +{
-> > > +=09u32 len, offset, copy, copied;
-> > > +=09struct sk_buff *skb;
-> > > +=09struct page *page;
-> > > +=09void *buffer;
-> > > +=09int err, i;
-> > > +=09u64 addr;
-> > > +
-> > > +=09skb =3D sock_alloc_send_skb(&xs->sk, 0, 1, &err);
-> > > +=09if (unlikely(!skb))
-> > > +=09=09return ERR_PTR(err);
-> > > +
-> > > +=09addr =3D desc->addr;
-> > > +=09len =3D desc->len;
-> > > +
-> > > +=09buffer =3D xsk_buff_raw_get_data(xs->pool, addr);
-> > > +=09offset =3D offset_in_page(buffer);
-> > > +=09addr =3D buffer - xs->pool->addrs;
-> > > +
-> > > +=09for (copied =3D 0, i =3D 0; copied < len; i++) {
-> > > +=09=09page =3D xs->pool->umem->pgs[addr >> PAGE_SHIFT];
-> > > +
-> > > +=09=09get_page(page);
-> > > +
-> > > +=09=09copy =3D min_t(u32, PAGE_SIZE - offset, len - copied);
-> > > +
-> > > +=09=09skb_fill_page_desc(skb, i, page, offset, copy);
-> > > +
-> > > +=09=09copied +=3D copy;
-> > > +=09=09addr +=3D copy;
-> > > +=09=09offset =3D 0;
-> > > +=09}
-> > > +
-> > > +=09skb->len +=3D len;
-> > > +=09skb->data_len +=3D len;
-> >=20
-> > > +=09skb->truesize +=3D len;
-> >=20
-> > This is not the truesize, unfortunately.
-> >=20
-> > We need to account for the number of pages, not number of bytes.
->=20
-> The easiest solution is:
->=20
-> =09skb->truesize +=3D PAGE_SIZE * i;
->=20
-> i would be equal to skb_shinfo(skb)->nr_frags after exiting the loop.
+This looks like a very nice patch, let me run packetdrill tests on it.
 
-Oops, pls ignore this. I forgot that XSK buffers are not
-"one per page".
-We need to count the number of pages manually and then do
+By any chance, have you cooked a packetdrill test showing the issue
+(failing on unpatched kernel) ?
 
-=09skb->truesize +=3D PAGE_SIZE * npages;
+Thanks.
 
-Right.
-
-> > > +
-> > > +=09refcount_add(len, &xs->sk.sk_wmem_alloc);
-> > > +
-> > > +=09return skb;
-> > > +}
-> > > +
->=20
-> Al
-
-Thanks,
-Al
-
+>  include/net/tcp.h       |  2 +-
+>  net/ipv4/tcp_input.c    | 10 ++++++----
+>  net/ipv4/tcp_recovery.c |  5 +++--
+>  3 files changed, 10 insertions(+), 7 deletions(-)
+>
+> diff --git a/include/net/tcp.h b/include/net/tcp.h
+> index 78d13c8..67f7e52 100644
+> --- a/include/net/tcp.h
+> +++ b/include/net/tcp.h
+> @@ -2060,7 +2060,7 @@ static inline __u32 cookie_init_sequence(const struct tcp_request_sock_ops *ops,
+>  void tcp_newreno_mark_lost(struct sock *sk, bool snd_una_advanced);
+>  extern s32 tcp_rack_skb_timeout(struct tcp_sock *tp, struct sk_buff *skb,
+>                                 u32 reo_wnd);
+> -extern void tcp_rack_mark_lost(struct sock *sk);
+> +extern bool tcp_rack_mark_lost(struct sock *sk);
+>  extern void tcp_rack_advance(struct tcp_sock *tp, u8 sacked, u32 end_seq,
+>                              u64 xmit_time);
+>  extern void tcp_rack_reo_timeout(struct sock *sk);
+> diff --git a/net/ipv4/tcp_input.c b/net/ipv4/tcp_input.c
+> index c7e16b0..d0a9588 100644
+> --- a/net/ipv4/tcp_input.c
+> +++ b/net/ipv4/tcp_input.c
+> @@ -2859,7 +2859,8 @@ static void tcp_identify_packet_loss(struct sock *sk, int *ack_flag)
+>         } else if (tcp_is_rack(sk)) {
+>                 u32 prior_retrans = tp->retrans_out;
+>
+> -               tcp_rack_mark_lost(sk);
+> +               if (tcp_rack_mark_lost(sk))
+> +                       *ack_flag &= ~FLAG_SET_XMIT_TIMER;
+>                 if (prior_retrans > tp->retrans_out)
+>                         *ack_flag |= FLAG_LOST_RETRANS;
+>         }
+> @@ -3815,9 +3816,6 @@ static int tcp_ack(struct sock *sk, const struct sk_buff *skb, int flag)
+>
+>         if (tp->tlp_high_seq)
+>                 tcp_process_tlp_ack(sk, ack, flag);
+> -       /* If needed, reset TLP/RTO timer; RACK may later override this. */
+> -       if (flag & FLAG_SET_XMIT_TIMER)
+> -               tcp_set_xmit_timer(sk);
+>
+>         if (tcp_ack_is_dubious(sk, flag)) {
+>                 if (!(flag & (FLAG_SND_UNA_ADVANCED | FLAG_NOT_DUP))) {
+> @@ -3830,6 +3828,10 @@ static int tcp_ack(struct sock *sk, const struct sk_buff *skb, int flag)
+>                                       &rexmit);
+>         }
+>
+> +       /* If needed, reset TLP/RTO timer when RACK doesn't set. */
+> +       if (flag & FLAG_SET_XMIT_TIMER)
+> +               tcp_set_xmit_timer(sk);
+> +
+>         if ((flag & FLAG_FORWARD_PROGRESS) || !(flag & FLAG_NOT_DUP))
+>                 sk_dst_confirm(sk);
+>
+> diff --git a/net/ipv4/tcp_recovery.c b/net/ipv4/tcp_recovery.c
+> index 177307a..6f1b4ac 100644
+> --- a/net/ipv4/tcp_recovery.c
+> +++ b/net/ipv4/tcp_recovery.c
+> @@ -96,13 +96,13 @@ static void tcp_rack_detect_loss(struct sock *sk, u32 *reo_timeout)
+>         }
+>  }
+>
+> -void tcp_rack_mark_lost(struct sock *sk)
+> +bool tcp_rack_mark_lost(struct sock *sk)
+>  {
+>         struct tcp_sock *tp = tcp_sk(sk);
+>         u32 timeout;
+>
+>         if (!tp->rack.advanced)
+> -               return;
+> +               return false;
+>
+>         /* Reset the advanced flag to avoid unnecessary queue scanning */
+>         tp->rack.advanced = 0;
+> @@ -112,6 +112,7 @@ void tcp_rack_mark_lost(struct sock *sk)
+>                 inet_csk_reset_xmit_timer(sk, ICSK_TIME_REO_TIMEOUT,
+>                                           timeout, inet_csk(sk)->icsk_rto);
+>         }
+> +       return !!timeout;
+>  }
+>
+>  /* Record the most recently (re)sent time among the (s)acked packets
+> --
+> 1.8.3.1
+>
