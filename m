@@ -2,136 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8BE772FFFC0
-	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 11:07:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 11C042FFFD4
+	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 11:12:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727728AbhAVKFa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jan 2021 05:05:30 -0500
-Received: from mail.wangsu.com ([123.103.51.227]:33367 "EHLO wangsu.com"
-        rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727786AbhAVKDH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 22 Jan 2021 05:03:07 -0500
-Received: from XMCDN1207038 (unknown [59.61.78.236])
-        by app2 (Coremail) with SMTP id 4zNnewD3_q6LogpgP5MBAA--.260S2;
-        Fri, 22 Jan 2021 18:01:48 +0800 (CST)
-From:   "Pengcheng Yang" <yangpc@wangsu.com>
-To:     "'Neal Cardwell'" <ncardwell@google.com>
-Cc:     "'Yuchung Cheng'" <ycheng@google.com>,
-        "'Netdev'" <netdev@vger.kernel.org>,
-        "'Eric Dumazet'" <edumazet@google.com>
-References: <1611139794-11254-1-git-send-email-yangpc@wangsu.com> <CADVnQykgYGc4_U+eyXU72fky2C5tDQKuOuQ=BdfqfROTG++w7Q@mail.gmail.com> <CAK6E8=e1sdqntpLzeaGKhFB_DhhcNrJmPBQ3u9M44fSqdNTg_Q@mail.gmail.com> <022d01d6effc$0ccd0c50$266724f0$@wangsu.com> <CADVnQy=jwBHg_Pf+puzxTCOCKxZJU2uThAuXU9CtkWFxtqU69w@mail.gmail.com>
-In-Reply-To: <CADVnQy=jwBHg_Pf+puzxTCOCKxZJU2uThAuXU9CtkWFxtqU69w@mail.gmail.com>
-Subject: Re: tcp: rearm RTO timer does not comply with RFC6298
-Date:   Fri, 22 Jan 2021 18:01:53 +0800
-Message-ID: <028901d6f0a5$9cb75920$d6260b60$@wangsu.com>
+        id S1727421AbhAVKKJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jan 2021 05:10:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52086 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727815AbhAVKH1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 05:07:27 -0500
+Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7ECB4C061786
+        for <netdev@vger.kernel.org>; Fri, 22 Jan 2021 02:06:43 -0800 (PST)
+Received: by mail-lf1-x12f.google.com with SMTP id v24so6747891lfr.7
+        for <netdev@vger.kernel.org>; Fri, 22 Jan 2021 02:06:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=53LZGt+p3UglMmJ8LC7owG+jDtMJhUwB3mc3c22vo3w=;
+        b=yh/tASQseJelhwA8jiNe7G+W3KDRWW1njEvuW/XSR6hWhLACFO+3sS7ZPZgJ9aST0v
+         oFk/pn/i82nx2thugENYmvvL3JfDvOlhHldDiLx+runOC2sJlqzLL9M6NpJvY6PV1pcG
+         OgpdD/gayiEOFeOg1e6OJxfd/6GJOOgFxOr68V7TeyWGKerpb/HV/1qyQ9LYPNLPv1+z
+         hlWzdt0d0bo4bmizD9krbFveuKWYj0dlkBhxBoucYfvdsWW8jV/8zj/FYyUbfLRBhpJ6
+         NgC3ooDGAJiOCtisAeBgSmc0XoZ4oEoOF+SVNjhNdQJd6dAEWnj817BaPGSwMmQ2JGR9
+         OYbw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=53LZGt+p3UglMmJ8LC7owG+jDtMJhUwB3mc3c22vo3w=;
+        b=ETb2L60O1TW1VfAOxFUg7hFOLY5HRneMyQBz/fabIpjzXLlSTfx+Y8fQ3diUsSI1u1
+         J9s5DPZLWZLcawAU7kaIKAgZ+80k2mJaKESWQM3mpCwAcMwlyTYpXbzTvuUEqsjyyLwB
+         /4R5G5Eyw2MwyCEF6yEQcm5f6dgVWIyjPH4X1b6uGJlkomQga+LqfG3o5FjwrZ5O8LbN
+         4RUcNmngyajdSGoLf9+p6JMwoeJUgPuB9tTKIfpU+oedRxhNM2SSRnSSaX6I2Rt+b07Q
+         RdMd2SQ7PumdxEulfrFIOiSyiRAaXMfDSdd4Aq4RMo2jjMXZS+ZoiiHIyeEExJB3nutR
+         vx6A==
+X-Gm-Message-State: AOAM5301KSlqS379y5tg3eNIm1YSPMZuqiheOfI6F4xDmAP2KQo+ptc+
+        I8tejUv0E6J3jE87WvVoLgtdYQi/nZ/XydQQegSelg==
+X-Google-Smtp-Source: ABdhPJyoTle4qxXu3NBqEJlHwN6jTzoBM52s7nfkB0Kj/1T93Ni/LPtdYQD6ZORaUqNYGsjXZQISQSEyffbqb3DhuEk=
+X-Received: by 2002:ac2:5c45:: with SMTP id s5mr32690lfp.586.1611310001970;
+ Fri, 22 Jan 2021 02:06:41 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain;
-        charset="utf-8"
-Content-Transfer-Encoding: 7bit
-X-Mailer: Microsoft Outlook 16.0
-Content-Language: zh-cn
-Thread-Index: AQHseN1+7zYacLg+xDbjQEUA7cnGOAH+ZpDuAhn1HdgCGs6QXQFkbtZxqcsV0CA=
-X-CM-TRANSID: 4zNnewD3_q6LogpgP5MBAA--.260S2
-X-Coremail-Antispam: 1UD129KBjvJXoWxXF15ZrW5KrWDWFWUKw15Arb_yoWrJF45pF
-        W3KFs7tr4kJryxCwn2qw1kZr1vqryfJr1UXa4DKryUu3sFgrySqr4UK3y2gFW7ur4kCr1Y
-        vFWUtrW3Xan8Z37anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUkCb7Iv0xC_Kw4lb4IE77IF4wAFc2x0x2IEx4CE42xK8VAvwI8I
-        cIk0rVWrJVCq3wA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK021l84ACjcxK6xIIjx
-        v20xvE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26rxl6s0DM28EF7xvwVC2
-        z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s0DM2AIxVAIcxkEcV
-        Aq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj64x0Y40En7xvr7AKxVWU
-        JVW8JwAv7VCjz48v1sIEY20_Gr4lYx0Ec7CjxVAajcxG14v26r1j6r4UMcvjeVCFs4IE7x
-        kEbVWUJVW8JwACjcxG0xvY0x0EwIxGrwCY02Avz4vE14v_Gw1l42xK82IYc2Ij64vIr41l
-        42xK82IY6x8ErcxFaVAv8VW8GwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14
-        v26r1j6r18MI8I3I0E7480Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_JF0_Jw1lIxkG
-        c2Ij64vIr41lIxAIcVC0I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI
-        0_Jr0_Gr1lIxAIcVCF04k26cxKx2IYs7xG6rW3Jr0E3s1lIxAIcVC2z280aVAFwI0_Jr0_
-        Gr1lIxAIcVC2z280aVCY1x0267AKxVWUJVW8JbIYCTnIWIevJa73UjIFyTuYvjxUSPrcDU
-        UUU
-X-CM-SenderInfo: p1dqw1nf6zt0xjvxhudrp/
+References: <20210111054428.3273-1-dqfext@gmail.com> <20210111054428.3273-3-dqfext@gmail.com>
+ <CACRpkdYA2fWF_1K+2aYoZnBAsm9H3=VHpeT4ZDU5sCdrOUWx=w@mail.gmail.com> <CALW65jbJ2DFqLw-i91y7oRfRhcukHSAS3A0XMuy4kA+1AtLtLQ@mail.gmail.com>
+In-Reply-To: <CALW65jbJ2DFqLw-i91y7oRfRhcukHSAS3A0XMuy4kA+1AtLtLQ@mail.gmail.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Fri, 22 Jan 2021 11:06:30 +0100
+Message-ID: <CACRpkdZguQkTNtdeELHQ9HPzqrBFdO3NhbxHrQErcefjb-WpHQ@mail.gmail.com>
+Subject: Re: [PATCH net-next 2/2] drivers: net: dsa: mt7530: MT7530 optional
+ GPIO support
+To:     DENG Qingfang <dqfext@gmail.com>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Sean Wang <sean.wang@mediatek.com>,
+        Landen Chao <Landen.Chao@mediatek.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Russell King <linux@armlinux.org.uk>,
+        netdev <netdev@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        =?UTF-8?Q?Ren=C3=A9_van_Dorst?= <opensource@vdorst.com>,
+        Frank Wunderlich <frank-w@public-files.de>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 21, 2021 at 11:51 PM Neal Cardwell <ncardwell@google.com> wrote:
-> 
-> On Thu, Jan 21, 2021 at 9:05 AM Pengcheng Yang <yangpc@wangsu.com> wrote:
+On Tue, Jan 19, 2021 at 4:20 AM DENG Qingfang <dqfext@gmail.com> wrote:
+> On Mon, Jan 18, 2021 at 10:55 PM Linus Walleij <linus.walleij@linaro.org> wrote:
 > >
-> > On Thu, Jan 21, 2021 at 2:59 AM Yuchung Cheng <ycheng@google.com> wrote:
-> > >
-> > > On Wed, Jan 20, 2021 at 6:59 AM Neal Cardwell <ncardwell@google.com> wrote:
-> > > >
-> > > > On Wed, Jan 20, 2021 at 5:50 AM Pengcheng Yang <yangpc@wangsu.com> wrote:
-> > > > >
-> > > > > hi,
-> > > > >
-> > > > > I have a doubt about tcp_rearm_rto().
-> > > > >
-> > > > > Early TCP always rearm the RTO timer to NOW+RTO when it receives
-> > > > > an ACK that acknowledges new data.
-> > > > >
-> > > > > Referring to RFC6298 SECTION 5.3: "When an ACK is received that
-> > > > > acknowledges new data, restart the retransmission timer so that
-> > > > > it will expire after RTO seconds (for the current value of RTO)."
-> > > > >
-> > > > > After ER and TLP, we rearm the RTO timer to *tstamp_of_head+RTO*
-> > > > > when switching from ER/TLP/RACK to original RTO in tcp_rearm_rto(),
-> > > > > in this case the RTO timer is triggered earlier than described in
-> > > > > RFC6298, otherwise the same.
-> > > > >
-> > > > > Is this planned? Or can we always rearm the RTO timer to
-> > > > > tstamp_of_head+RTO?
-> > > > >
-> > > > > Thanks.
-> > > > >
-> > > >
-> > > > This is a good question. As far as I can tell, this difference in
-> > > > behavior would only come into play in a few corner cases, like:
-> > > >
-> > > > (1) The TLP timer fires and the connection is unable to transmit a TLP
-> > > > probe packet. This could happen due to memory allocation failure  or
-> > > > the local qdisc being full.
-> > > >
-> > > > (2) The RACK reorder timer fires but the connection does not take the
-> > > > normal course of action and mark some packets lost and retransmit at
-> > > > least one of them. I'm not sure how this would happen. Maybe someone
-> > > > can think of a case.
+> > So for offset 0..14 this becomes bits
+> > 0, 1, 2, 4, 5, 6, 8, 9, 10, 12  ... 18
 > >
-> > Yes, and it also happens when an ACK (a cumulative ACK covered out-of-order data)
-> > is received that makes ca_state change from DISORDER to OPEN, by calling tcp_set_xmit_timer().
-> > Because TLP is not triggered under DISORDER and tcp_rearm_rto() is called before the
-> > ca_state changes.
-> 
-> Hmm, that sounds like a good catch, and potentially a significant bug.
-> Re-reading the code, it seems that you correctly identify that on an
-> ACK when reordering is resolved (ca_state change from DISORDER to
-> OPEN) we will not set a TLP timer for now+TLP_interval, but instead
-> will set an RTO timer for rtx_head_tx_time+RTO (which could be very
-> soon indeed, if RTTVAR is very low). Seems like that could cause
-> spurious RTOs with connections that experience reordering with low RTT
-> variance.
-> 
-> It seems like we should try to fix this. Perhaps by calling
-> tcp_set_xmit_timer() only after we have settled on a final ca_state
-> implied by this ACK (in this case, to allow DISORDER to be resolved to
-> OPEN). Though that would require some careful surgery, since that
-> would move the tcp_set_xmit_timer() call *after* the point at which
-> the RACK reorder timer would be set.
-> 
-> Other thoughts?
-> 
-> neal
+> > What is the logic in this and is it what you intend?
+>
+> Yes. Bit 0..2 are phy 0's LED 0..2, bit 4..6 are phy 1's LED 0..2, etc.
 
-I think this fix is necessary. Actually, we also fixed this issue on our branch recently
-when we fixed an issue where the TLP timer might not fire(Point 1 below),
-by calling tcp_set_xmit_timer() after tcp_fastretrans_alert() and 
-then removing FLAG_SET_XMIT_TIMER from ack_flag when the RACK 
-reorder timer is set. 
+OK add a comment and explain how the bits relate
+to each PHY and how the lines are arranged per-phy
+so it is crystal clear for people reading the driver.
 
-This repair has two additional benefits according to my understanding:
-(1) When ca_state changes from DISORDER to OPEN, the TLP timer can be activated,
-otherwise, the sender can only wait for the RTO timer when it is app-limited.
-(2) Reduce the xmit timer reschedule once per ACK when the RACK reorder timer is set.
-
-I'll send this fix later, I'm not sure whether there is a more elegant way. : )
-
+Thanks!
+Linus Walleij
