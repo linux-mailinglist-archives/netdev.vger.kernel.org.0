@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 92A6F300812
-	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 17:02:16 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 01081300815
+	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 17:02:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729354AbhAVQBP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jan 2021 11:01:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43556 "EHLO
+        id S1729380AbhAVQBx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jan 2021 11:01:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727911AbhAVQBA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 11:01:00 -0500
-Received: from mail-ot1-x334.google.com (mail-ot1-x334.google.com [IPv6:2607:f8b0:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A939FC061788
-        for <netdev@vger.kernel.org>; Fri, 22 Jan 2021 08:00:18 -0800 (PST)
-Received: by mail-ot1-x334.google.com with SMTP id a109so5526430otc.1
-        for <netdev@vger.kernel.org>; Fri, 22 Jan 2021 08:00:18 -0800 (PST)
+        with ESMTP id S1729238AbhAVQBh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 11:01:37 -0500
+Received: from mail-ot1-x32a.google.com (mail-ot1-x32a.google.com [IPv6:2607:f8b0:4864:20::32a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B82DFC06178B
+        for <netdev@vger.kernel.org>; Fri, 22 Jan 2021 08:00:23 -0800 (PST)
+Received: by mail-ot1-x32a.google.com with SMTP id e70so5479132ote.11
+        for <netdev@vger.kernel.org>; Fri, 22 Jan 2021 08:00:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=qpNdCAKICP0UB5OknYDWRj1L6fMqJ0u0YADyo5AvMbk=;
-        b=ecEG7Y9x1a2FrX2H3sqhSZT3mk2EhvcIwGIdmp+y+tFIM30Blwq/opebzHa19/0WKC
-         nBn4010o7OdPxadZyUtkBGFyUbO++k0MtQ2wl4Kwj1U0HjDx2u77jw29QQIsmcSI+/CS
-         k8hmiX2LH7BK/K8hTW8Jwj9uHNqIEK2SB6DUp29YzwQ1xs7lNTK25H5Te6PQeSi3STHx
-         sOUXlp45LC2NgfpACr4ds8QXMaR+4gLbpNYcYI1qM0+xGyYVXofISuCQC5mDIk+yPFwT
-         jzMKi16EyCoHv0lYB8MDCU1bJ7aKaWnlsdoMilABSyvn9SXYt9nsf2De+9dhcV9uIRXo
-         tHbA==
+        bh=mFLtE3g0EjsOTeRVCEtooiFyBxJeQBA83vZYyjzIIkU=;
+        b=klHh1nKpjMFw44L0uVoDlefq4Va0qh4FJlG7HHQjhRbZ7E/9ZQb6nRfHAiTQ/yPStL
+         vGvWAF2nXxF51zFAnKgbREbL7E6pmm4t1hxDpqHEl2zDJ0cj1IgBFQOwOWxS/QIZHGjS
+         KvAZFXXH2bfrxtrUstxbDlYiV191TMnm0qk/jrET3IflQswnb88IV+rVRDJI1AfvWS2l
+         k0O6NZPXyzZd9NHNgPNT+awLnYhoU5N5sdCRxhPhUASpzklZRRs3MgMqf47HiCRuVN5z
+         VJPLXfBg21Mprfjd2HTLgmSUASzICTohyLjC6h3aeKdbg3q+i7ESUS6BQtdUB+ni9U7A
+         nHLQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=qpNdCAKICP0UB5OknYDWRj1L6fMqJ0u0YADyo5AvMbk=;
-        b=jbH1DdF8J7SJ0RBKwcwpynhVKEMLmKk7vr1Y3bhwTWvfZuX4tLh3dT3lpY9N8rYU2f
-         6ujPh8WBFL9iCQIfdVJRmQqubmQZp2cxrqSGMITCo6YA5tB6rhrvhELL62GJPcgF8m+d
-         e0P/qQykvEsn74vGXN8kU63VfQt4F4WMWWG3K03T6PIicYiqHqEsDe3K9dJlTzyn8hMW
-         wkte6c+ZAcJ2zJyGpA8UCkATuB3t5FIUQg1WVu/MHMQ6zFj+DTJ4wWLqrmLLAUJen3Gt
-         Nq+z0dU4Z94EZv0SgBBYaliryL1gZzxehVTjFIDiGX3ZkcF6vuRRtBebkXFlLmE8TM1I
-         Njjw==
-X-Gm-Message-State: AOAM532hU5yMIBxTadefOvQBOaC9v3HauQnj2cIaswYGkn+N5OonCGZR
-        TXyzoWa2FLGI0/H3wiH4+Q==
-X-Google-Smtp-Source: ABdhPJwwR3KqcPGY9peAGbYDs4M0c/5k2DydYUqz212fShDpO9K7HxXYUvVGK2Kqq0MOZEXkGujVQw==
-X-Received: by 2002:a9d:7b5a:: with SMTP id f26mr3583601oto.95.1611331218109;
-        Fri, 22 Jan 2021 08:00:18 -0800 (PST)
+        bh=mFLtE3g0EjsOTeRVCEtooiFyBxJeQBA83vZYyjzIIkU=;
+        b=Qu8tij6sxKE76dQecDHPycelQ+UjpuQZ+GKGnrbJkzXawCqkDaokA2Og6KNC0yYOml
+         V+zZiG//KJHQZKfxguKtGH07mBD11syxfTfC1iUfyYP1OfVetf7l9hcKnINSp+KKgtn1
+         raDmXDdMeTx/1TOEQMlydErAt8qPsbtMxUl52cDe3K4f/6F9XtZ81dslrq2Xdr8MDED9
+         D7o0QCTAmERPkPuSaDt4OTgDb92qAMqAI7u0Y9zUAVBQV6iTzTyk1ZjL+zeeTvSnRbmW
+         8vsrblmKGtCqI800CQf2S1xslZY/nlrqaLmCUpteHyk+8QvV3aTsVqOatXhvXTmWytvw
+         vilA==
+X-Gm-Message-State: AOAM533s2rts6AhMDxuljfn22tMsQqIBCqsUEiR4nWF14OYbCBhNS5ko
+        6UVrXeVJyY/u4Zq0YSqdqQ==
+X-Google-Smtp-Source: ABdhPJxbvjb6e+YjTo6Hy2kisE5y2HLpfDXiP529boiJkENjMbruufRGec813UdHD1l0CxbD79+Kcw==
+X-Received: by 2002:a05:6830:1e79:: with SMTP id m25mr3981538otr.31.1611331223138;
+        Fri, 22 Jan 2021 08:00:23 -0800 (PST)
 Received: from threadripper.novatech-llc.local ([216.21.169.52])
-        by smtp.gmail.com with ESMTPSA id y24sm1674942oos.44.2021.01.22.08.00.16
+        by smtp.gmail.com with ESMTPSA id y24sm1674942oos.44.2021.01.22.08.00.19
         (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 22 Jan 2021 08:00:17 -0800 (PST)
+        Fri, 22 Jan 2021 08:00:22 -0800 (PST)
 From:   George McCollister <george.mccollister@gmail.com>
 To:     Jakub Kicinski <kuba@kernel.org>
 Cc:     Andrew Lunn <andrew@lunn.ch>,
@@ -55,9 +55,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Jonathan Corbet <corbet@lwn.net>,
         Murali Karicheri <m-karicheri2@ti.com>, netdev@vger.kernel.org,
         George McCollister <george.mccollister@gmail.com>
-Subject: [RFC PATCH net-next 1/3] net: hsr: generate supervision frame without HSR tag
-Date:   Fri, 22 Jan 2021 09:59:46 -0600
-Message-Id: <20210122155948.5573-2-george.mccollister@gmail.com>
+Subject: [RFC PATCH net-next 3/3] net: dsa: xrs700x: add HSR offloading support
+Date:   Fri, 22 Jan 2021 09:59:48 -0600
+Message-Id: <20210122155948.5573-4-george.mccollister@gmail.com>
 X-Mailer: git-send-email 2.11.0
 In-Reply-To: <20210122155948.5573-1-george.mccollister@gmail.com>
 References: <20210122155948.5573-1-george.mccollister@gmail.com>
@@ -65,143 +65,189 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Generate supervision frame without HSR/PRP tag and rely on existing
-code which inserts it later.
-This will allow HSR/PRP tag insertions to be offloaded in the future.
+Add offloading for HSR/PRP (IEC 62439-3) tag insertion, tag removal
+forwarding and duplication supported by the xrs7000 series switches.
+
+Only HSR v1 and PRP v1 are supported by the xrs7000 series switches (HSR
+v0 is not).
 
 Signed-off-by: George McCollister <george.mccollister@gmail.com>
 ---
- net/hsr/hsr_device.c  | 32 ++++----------------------------
- net/hsr/hsr_forward.c | 10 +++++++---
- 2 files changed, 11 insertions(+), 31 deletions(-)
+ drivers/net/dsa/xrs700x/xrs700x.c     | 106 ++++++++++++++++++++++++++++++++++
+ drivers/net/dsa/xrs700x/xrs700x_reg.h |   5 ++
+ net/dsa/tag_xrs700x.c                 |   7 ++-
+ 3 files changed, 117 insertions(+), 1 deletion(-)
 
-diff --git a/net/hsr/hsr_device.c b/net/hsr/hsr_device.c
-index ab953a1a0d6c..161b8da6a21d 100644
---- a/net/hsr/hsr_device.c
-+++ b/net/hsr/hsr_device.c
-@@ -242,8 +242,7 @@ static struct sk_buff *hsr_init_skb(struct hsr_port *master, u16 proto)
- 	 * being, for PRP it is a trailer and for HSR it is a
- 	 * header
- 	 */
--	skb = dev_alloc_skb(sizeof(struct hsr_tag) +
--			    sizeof(struct hsr_sup_tag) +
-+	skb = dev_alloc_skb(sizeof(struct hsr_sup_tag) +
- 			    sizeof(struct hsr_sup_payload) + hlen + tlen);
+diff --git a/drivers/net/dsa/xrs700x/xrs700x.c b/drivers/net/dsa/xrs700x/xrs700x.c
+index 259f5e657c46..566ce9330903 100644
+--- a/drivers/net/dsa/xrs700x/xrs700x.c
++++ b/drivers/net/dsa/xrs700x/xrs700x.c
+@@ -7,6 +7,8 @@
+ #include <net/dsa.h>
+ #include <linux/if_bridge.h>
+ #include <linux/of_device.h>
++#include <linux/netdev_features.h>
++#include <linux/if_hsr.h>
+ #include "xrs700x.h"
+ #include "xrs700x_reg.h"
  
- 	if (!skb)
-@@ -275,12 +274,10 @@ static void send_hsr_supervision_frame(struct hsr_port *master,
- {
- 	struct hsr_priv *hsr = master->hsr;
- 	__u8 type = HSR_TLV_LIFE_CHECK;
--	struct hsr_tag *hsr_tag = NULL;
- 	struct hsr_sup_payload *hsr_sp;
- 	struct hsr_sup_tag *hsr_stag;
- 	unsigned long irqflags;
- 	struct sk_buff *skb;
--	u16 proto;
+@@ -496,6 +498,108 @@ static void xrs700x_bridge_leave(struct dsa_switch *ds, int port,
+ 	xrs700x_bridge_common(ds, port, bridge, false);
+ }
  
- 	*interval = msecs_to_jiffies(HSR_LIFE_CHECK_INTERVAL);
- 	if (hsr->announce_count < 3 && hsr->prot_version == 0) {
-@@ -289,23 +286,12 @@ static void send_hsr_supervision_frame(struct hsr_port *master,
- 		hsr->announce_count++;
- 	}
- 
--	if (!hsr->prot_version)
--		proto = ETH_P_PRP;
--	else
--		proto = ETH_P_HSR;
--
--	skb = hsr_init_skb(master, proto);
-+	skb = hsr_init_skb(master, ETH_P_PRP);
- 	if (!skb) {
- 		WARN_ONCE(1, "HSR: Could not send supervision frame\n");
- 		return;
- 	}
- 
--	if (hsr->prot_version > 0) {
--		hsr_tag = skb_put(skb, sizeof(struct hsr_tag));
--		hsr_tag->encap_proto = htons(ETH_P_PRP);
--		set_hsr_tag_LSDU_size(hsr_tag, HSR_V1_SUP_LSDUSIZE);
--	}
--
- 	hsr_stag = skb_put(skb, sizeof(struct hsr_sup_tag));
- 	set_hsr_stag_path(hsr_stag, (hsr->prot_version ? 0x0 : 0xf));
- 	set_hsr_stag_HSR_ver(hsr_stag, hsr->prot_version);
-@@ -315,8 +301,6 @@ static void send_hsr_supervision_frame(struct hsr_port *master,
- 	if (hsr->prot_version > 0) {
- 		hsr_stag->sequence_nr = htons(hsr->sup_sequence_nr);
- 		hsr->sup_sequence_nr++;
--		hsr_tag->sequence_nr = htons(hsr->sequence_nr);
--		hsr->sequence_nr++;
- 	} else {
- 		hsr_stag->sequence_nr = htons(hsr->sequence_nr);
- 		hsr->sequence_nr++;
-@@ -332,7 +316,7 @@ static void send_hsr_supervision_frame(struct hsr_port *master,
- 	hsr_sp = skb_put(skb, sizeof(struct hsr_sup_payload));
- 	ether_addr_copy(hsr_sp->macaddress_A, master->dev->dev_addr);
- 
--	if (skb_put_padto(skb, ETH_ZLEN + HSR_HLEN))
-+	if (skb_put_padto(skb, ETH_ZLEN))
- 		return;
- 
- 	hsr_forward_skb(skb, master);
-@@ -348,8 +332,6 @@ static void send_prp_supervision_frame(struct hsr_port *master,
- 	struct hsr_sup_tag *hsr_stag;
- 	unsigned long irqflags;
- 	struct sk_buff *skb;
--	struct prp_rct *rct;
--	u8 *tail;
- 
- 	skb = hsr_init_skb(master, ETH_P_PRP);
- 	if (!skb) {
-@@ -373,17 +355,11 @@ static void send_prp_supervision_frame(struct hsr_port *master,
- 	hsr_sp = skb_put(skb, sizeof(struct hsr_sup_payload));
- 	ether_addr_copy(hsr_sp->macaddress_A, master->dev->dev_addr);
- 
--	if (skb_put_padto(skb, ETH_ZLEN + HSR_HLEN)) {
-+	if (skb_put_padto(skb, ETH_ZLEN)) {
- 		spin_unlock_irqrestore(&master->hsr->seqnr_lock, irqflags);
- 		return;
- 	}
- 
--	tail = skb_tail_pointer(skb) - HSR_HLEN;
--	rct = (struct prp_rct *)tail;
--	rct->PRP_suffix = htons(ETH_P_PRP);
--	set_prp_LSDU_size(rct, HSR_V1_SUP_LSDUSIZE);
--	rct->sequence_nr = htons(hsr->sequence_nr);
--	hsr->sequence_nr++;
- 	spin_unlock_irqrestore(&master->hsr->seqnr_lock, irqflags);
- 
- 	hsr_forward_skb(skb, master);
-diff --git a/net/hsr/hsr_forward.c b/net/hsr/hsr_forward.c
-index cadfccd7876e..a5566b2245a0 100644
---- a/net/hsr/hsr_forward.c
-+++ b/net/hsr/hsr_forward.c
-@@ -454,8 +454,10 @@ static void handle_std_frame(struct sk_buff *skb,
- void hsr_fill_frame_info(__be16 proto, struct sk_buff *skb,
- 			 struct hsr_frame_info *frame)
- {
--	if (proto == htons(ETH_P_PRP) ||
--	    proto == htons(ETH_P_HSR)) {
-+	struct hsr_port *port = frame->port_rcv;
++static int xrs700x_hsr_join(struct dsa_switch *ds, int port,
++			    struct net_device *hsr)
++{
++	unsigned int val = XRS_HSR_CFG_HSR_PRP;
++	struct dsa_port *partner = NULL, *dp;
++	struct xrs700x *priv = ds->priv;
++	struct net_device *slave;
++	enum hsr_version ver;
++	int ret;
 +
-+	if (port->type != HSR_PT_MASTER &&
-+	    (proto == htons(ETH_P_PRP) || proto == htons(ETH_P_HSR))) {
- 		/* HSR tagged frame :- Data or Supervision */
- 		frame->skb_std = NULL;
- 		frame->skb_prp = NULL;
-@@ -473,8 +475,10 @@ void prp_fill_frame_info(__be16 proto, struct sk_buff *skb,
- {
- 	/* Supervision frame */
- 	struct prp_rct *rct = skb_get_PRP_rct(skb);
-+	struct hsr_port *port = frame->port_rcv;
++	ret = hsr_get_version(hsr, &ver);
++	if (ret)
++		return ret;
++
++	if (ver == HSR_V1)
++		val |= XRS_HSR_CFG_HSR;
++	else if (ver == PRP_V1)
++		val |= XRS_HSR_CFG_PRP;
++	else
++		return -EOPNOTSUPP;
++
++	dsa_hsr_foreach_port(dp, ds, hsr) {
++		partner = dp;
++	}
++
++	/* We can't enable redundancy on the switch until both
++	 * redundant ports have signed up.
++	 */
++	if (!partner)
++		return 0;
++
++	regmap_fields_write(priv->ps_forward, partner->index,
++			    XRS_PORT_DISABLED);
++	regmap_fields_write(priv->ps_forward, port, XRS_PORT_DISABLED);
++
++	regmap_write(priv->regmap, XRS_HSR_CFG(partner->index),
++		     val | XRS_HSR_CFG_LANID_A);
++	regmap_write(priv->regmap, XRS_HSR_CFG(port),
++		     val | XRS_HSR_CFG_LANID_B);
++
++	/* Clear bits for both redundant ports (HSR only) and the CPU port to
++	 * enable forwarding.
++	 */
++	val = GENMASK(ds->num_ports - 1, 0);
++	if (ver == HSR_V1) {
++		val &= ~BIT(partner->index);
++		val &= ~BIT(port);
++	}
++	val &= ~BIT(dsa_upstream_port(ds, port));
++	regmap_write(priv->regmap, XRS_PORT_FWD_MASK(partner->index), val);
++	regmap_write(priv->regmap, XRS_PORT_FWD_MASK(port), val);
++
++	regmap_fields_write(priv->ps_forward, partner->index,
++			    XRS_PORT_FORWARDING);
++	regmap_fields_write(priv->ps_forward, port, XRS_PORT_FORWARDING);
++
++	slave = dsa_to_port(ds, port)->slave;
++
++	slave->features |= NETIF_F_HW_HSR_TAG_INS | NETIF_F_HW_HSR_TAG_RM |
++			   NETIF_F_HW_HSR_FWD | NETIF_F_HW_HSR_DUP;
++
++	return 0;
++}
++
++static void xrs700x_hsr_leave(struct dsa_switch *ds, int port,
++			      struct net_device *hsr)
++{
++	struct dsa_port *partner = NULL, *dp;
++	struct xrs700x *priv = ds->priv;
++	struct net_device *slave;
++	unsigned int val;
++
++	dsa_hsr_foreach_port(dp, ds, hsr) {
++		partner = dp;
++	}
++
++	if (!partner)
++		return;
++
++	regmap_fields_write(priv->ps_forward, partner->index,
++			    XRS_PORT_DISABLED);
++	regmap_fields_write(priv->ps_forward, port, XRS_PORT_DISABLED);
++
++	regmap_write(priv->regmap, XRS_HSR_CFG(partner->index), 0);
++	regmap_write(priv->regmap, XRS_HSR_CFG(port), 0);
++
++	/* Clear bit for the CPU port to enable forwarding. */
++	val = GENMASK(ds->num_ports - 1, 0);
++	val &= ~BIT(dsa_upstream_port(ds, port));
++	regmap_write(priv->regmap, XRS_PORT_FWD_MASK(partner->index), val);
++	regmap_write(priv->regmap, XRS_PORT_FWD_MASK(port), val);
++
++	regmap_fields_write(priv->ps_forward, partner->index,
++			    XRS_PORT_FORWARDING);
++	regmap_fields_write(priv->ps_forward, port, XRS_PORT_FORWARDING);
++
++	slave = dsa_to_port(ds, port)->slave;
++
++	slave->features &= ~(NETIF_F_HW_HSR_TAG_INS | NETIF_F_HW_HSR_TAG_RM |
++			   NETIF_F_HW_HSR_FWD | NETIF_F_HW_HSR_DUP);
++}
++
+ static const struct dsa_switch_ops xrs700x_ops = {
+ 	.get_tag_protocol	= xrs700x_get_tag_protocol,
+ 	.setup			= xrs700x_setup,
+@@ -509,6 +613,8 @@ static const struct dsa_switch_ops xrs700x_ops = {
+ 	.get_stats64		= xrs700x_get_stats64,
+ 	.port_bridge_join	= xrs700x_bridge_join,
+ 	.port_bridge_leave	= xrs700x_bridge_leave,
++	.port_hsr_join		= xrs700x_hsr_join,
++	.port_hsr_leave		= xrs700x_hsr_leave,
+ };
  
--	if (rct &&
-+	if (port->type != HSR_PT_MASTER &&
-+	    rct &&
- 	    prp_check_lsdu_size(skb, rct, frame->is_supervision)) {
- 		frame->skb_hsr = NULL;
- 		frame->skb_std = NULL;
+ static int xrs700x_detect(struct xrs700x *priv)
+diff --git a/drivers/net/dsa/xrs700x/xrs700x_reg.h b/drivers/net/dsa/xrs700x/xrs700x_reg.h
+index a135d4d92b6d..470d00e07f15 100644
+--- a/drivers/net/dsa/xrs700x/xrs700x_reg.h
++++ b/drivers/net/dsa/xrs700x/xrs700x_reg.h
+@@ -49,6 +49,11 @@
+ 
+ /* Port Configuration Registers - HSR/PRP */
+ #define XRS_HSR_CFG(x)			(XRS_PORT_HSR_BASE(x) + 0x0)
++#define XRS_HSR_CFG_HSR_PRP		BIT(0)
++#define XRS_HSR_CFG_HSR			0
++#define XRS_HSR_CFG_PRP			BIT(8)
++#define XRS_HSR_CFG_LANID_A		0
++#define XRS_HSR_CFG_LANID_B		BIT(10)
+ 
+ /* Port Configuration Registers - PTP */
+ #define XRS_PTP_RX_SYNC_DELAY_NS_LO(x)	(XRS_PORT_PTP_BASE(x) + 0x2)
+diff --git a/net/dsa/tag_xrs700x.c b/net/dsa/tag_xrs700x.c
+index db0ed1a5fcb7..858cdf9d2913 100644
+--- a/net/dsa/tag_xrs700x.c
++++ b/net/dsa/tag_xrs700x.c
+@@ -11,12 +11,17 @@
+ 
+ static struct sk_buff *xrs700x_xmit(struct sk_buff *skb, struct net_device *dev)
+ {
+-	struct dsa_port *dp = dsa_slave_to_port(dev);
++	struct dsa_port *partner, *dp = dsa_slave_to_port(dev);
+ 	u8 *trailer;
+ 
+ 	trailer = skb_put(skb, 1);
+ 	trailer[0] = BIT(dp->index);
+ 
++	if (dp->hsr_dev)
++		dsa_hsr_foreach_port(partner, dp->ds, dp->hsr_dev)
++			if (partner != dp)
++				trailer[0] |= BIT(partner->index);
++
+ 	return skb;
+ }
+ 
 -- 
 2.11.0
 
