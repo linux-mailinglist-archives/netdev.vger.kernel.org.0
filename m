@@ -2,180 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 530162FFD5F
-	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 08:30:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AFC5E2FFD62
+	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 08:30:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727093AbhAVH2C (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jan 2021 02:28:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45738 "EHLO
+        id S1727117AbhAVH3K (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jan 2021 02:29:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727041AbhAVH1w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 02:27:52 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AD71C061788
-        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 23:26:45 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <mkl@pengutronix.de>)
-        id 1l2qq4-0006bj-4g; Fri, 22 Jan 2021 08:26:36 +0100
-Received: from [IPv6:2a03:f580:87bc:d400:aed1:e241:8b32:9cc0] (unknown [IPv6:2a03:f580:87bc:d400:aed1:e241:8b32:9cc0])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits)
-         client-signature RSA-PSS (4096 bits))
-        (Client CN "mkl@blackshift.org", Issuer "StartCom Class 1 Client CA" (not verified))
-        (Authenticated sender: mkl@blackshift.org)
-        by smtp.blackshift.org (Postfix) with ESMTPSA id 3AEE05CA4F1;
-        Fri, 22 Jan 2021 07:26:34 +0000 (UTC)
-To:     Su Yanjun <suyanjun218@gmail.com>,
-        manivannan.sadhasivam@linaro.org, thomas.kopp@microchip.com,
-        wg@grandegger.com, davem@davemloft.net, kuba@kernel.org,
-        lgirdwood@gmail.com, broonie@kernel.org
-Cc:     linux-can@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20210122030214.166334-1-suyanjun218@gmail.com>
-From:   Marc Kleine-Budde <mkl@pengutronix.de>
-Autocrypt: addr=mkl@pengutronix.de; prefer-encrypt=mutual; keydata=
- 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
-Subject: Re: [PATCH v1] can: mcp251xfd: use regmap_bulk_write for
- compatibility
-Message-ID: <7007275e-a271-8160-729b-67e4d579dfe2@pengutronix.de>
-Date:   Fri, 22 Jan 2021 08:26:30 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.12.0
+        with ESMTP id S1726919AbhAVH25 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 02:28:57 -0500
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2339CC061756
+        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 23:28:17 -0800 (PST)
+Received: by mail-ej1-x62c.google.com with SMTP id l9so6276798ejx.3
+        for <netdev@vger.kernel.org>; Thu, 21 Jan 2021 23:28:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=iA8HpgeNBFfwu6VsHIUD4ZW0ond4LJ90nVhAoHSVhfw=;
+        b=uCfJ0+YiP35X3FKfoRnWKjUuCAgdvzQ7+oyHnBT4gvWdn12IGAVTdEnjdMnEGg7pGa
+         yggb8jVa5rrJU+pB3RzVwx9cg+WK+TtL8LuJWDJ9A7KJMqwKOTX7ZP88zUaDEu127ZuZ
+         ZD+rV3w5UEBwS/T+hUBDcb+q9F+9HRhfN+bA5umdW/HK2mTHZRx5LZDzo1+gVqN9Mi99
+         21/D3IzkGjpRaI98pQEE9x3yRZ7IRn3GBhszIxyDN5XzXSc/0Vz+c5X2ovj8G6PCbwR5
+         D8SnZ+oenVWJU1EcEiEU3sUwReWdeMQFIAyMndcXlpzB9YTrPQz0Ra4+B1OUKhz3ohg6
+         85iQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=iA8HpgeNBFfwu6VsHIUD4ZW0ond4LJ90nVhAoHSVhfw=;
+        b=pYLAWUjyTpKs+pgQZFeU6CdBxyTsL9Rr9LbNGeXnClR6XGfCW/zNfXZ/veC3c5G9NS
+         p91qKWCiEBsaosP4tX+vLI4M06PwD4OOkrx5C77Vv04MEQpzAHV1FTAtS0Rs5LoQZLpo
+         Un0TpOgClvIX84Y6TvONkOvIzfXRX9M0ojk/epA83HFi05gzIpLbeQA/Z3oOZT6Pk4XW
+         FAA/6K/oy1ZA8LHUneKoojK4crQcfdd5J7z9SZUp8/IpvEKD2cu0mPPcyoOP2REv0D8z
+         TOwMcxugNVvuYOpKDITfHqchuIfcplsVFrZUOQSFBwm6f61SVkPcj0jLJfadgMRPPMOm
+         ZNww==
+X-Gm-Message-State: AOAM531NcJNpQ1MBH48WCbR/ksZEjNe+9cF9CNZj6whoIcGplT+yOkvW
+        duDDbm6BA1iaBLjOJSvFA8gkgw==
+X-Google-Smtp-Source: ABdhPJynEdXVZnCS3MSwHI4FyTM3BHQrJ3C5AkSIa1jyr2ndkp51H9MgtJgpvfQ0/S49pliZhJVX1g==
+X-Received: by 2002:a17:907:3d86:: with SMTP id he6mr1007649ejc.174.1611300495843;
+        Thu, 21 Jan 2021 23:28:15 -0800 (PST)
+Received: from localhost ([86.61.181.4])
+        by smtp.gmail.com with ESMTPSA id f17sm4486953edu.25.2021.01.21.23.28.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 21 Jan 2021 23:28:15 -0800 (PST)
+Date:   Fri, 22 Jan 2021 08:28:14 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        netdev@vger.kernel.org, davem@davemloft.net,
+        jacob.e.keller@intel.com, roopa@nvidia.com, mlxsw@nvidia.com
+Subject: Re: [patch net-next RFC 00/10] introduce line card support for
+ modular switch
+Message-ID: <20210122072814.GG3565223@nanopsycho.orion>
+References: <20210113121222.733517-1-jiri@resnulli.us>
+ <X/+nVtRrC2lconET@lunn.ch>
+ <20210119115610.GZ3565223@nanopsycho.orion>
+ <YAbyBbEE7lbhpFkw@lunn.ch>
+ <20210120083605.GB3565223@nanopsycho.orion>
+ <YAg2ngUQIty8U36l@lunn.ch>
+ <20210120154158.206b8752@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20210121153224.GE3565223@nanopsycho.orion>
+ <971e9eff-0b71-8ff9-d72c-aebe73cab599@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20210122030214.166334-1-suyanjun218@gmail.com>
-Content-Type: multipart/signed; micalg=pgp-sha512;
- protocol="application/pgp-signature";
- boundary="JqAFCNcLepDxQuiQEg2w1MyCLwdxcSq6B"
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: mkl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: netdev@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <971e9eff-0b71-8ff9-d72c-aebe73cab599@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---JqAFCNcLepDxQuiQEg2w1MyCLwdxcSq6B
-Content-Type: multipart/mixed; boundary="xOnKsZEu3EoQCXgzv2UK6pcoBQzUNpUgy";
- protected-headers="v1"
-From: Marc Kleine-Budde <mkl@pengutronix.de>
-To: Su Yanjun <suyanjun218@gmail.com>, manivannan.sadhasivam@linaro.org,
- thomas.kopp@microchip.com, wg@grandegger.com, davem@davemloft.net,
- kuba@kernel.org, lgirdwood@gmail.com, broonie@kernel.org
-Cc: linux-can@vger.kernel.org, netdev@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Message-ID: <7007275e-a271-8160-729b-67e4d579dfe2@pengutronix.de>
-Subject: Re: [PATCH v1] can: mcp251xfd: use regmap_bulk_write for
- compatibility
-References: <20210122030214.166334-1-suyanjun218@gmail.com>
-In-Reply-To: <20210122030214.166334-1-suyanjun218@gmail.com>
+Thu, Jan 21, 2021 at 05:38:40PM CET, dsahern@gmail.com wrote:
+>On 1/21/21 8:32 AM, Jiri Pirko wrote:
+>> Thu, Jan 21, 2021 at 12:41:58AM CET, kuba@kernel.org wrote:
+>>> On Wed, 20 Jan 2021 14:56:46 +0100 Andrew Lunn wrote:
+>>>>> No, the FW does not know. The ASIC is not physically able to get the
+>>>>> linecard type. Yes, it is odd, I agree. The linecard type is known to
+>>>>> the driver which operates on i2c. This driver takes care of power
+>>>>> management of the linecard, among other tasks.  
+>>>>
+>>>> So what does activated actually mean for your hardware? It seems to
+>>>> mean something like: Some random card has been plugged in, we have no
+>>>> idea what, but it has power, and we have enabled the MACs as
+>>>> provisioned, which if you are lucky might match the hardware?
+>>>>
+>>>> The foundations of this feature seems dubious.
+>>>
+>>> But Jiri also says "The linecard type is known to the driver which
+>>> operates on i2c." which sounds like there is some i2c driver (in user
+>>> space?) which talks to the card and _does_ have the info? Maybe I'm
+>>> misreading it. What's the i2c driver?
+>> 
+>> That is Vadim's i2c kernel driver, this is going to upstream.
+>> 
+>
+>This pre-provisioning concept makes a fragile design to work around h/w
+>shortcomings. You really need a way for the management card to know
+>exactly what was plugged in to a slot so the control plane S/W can
+>respond accordingly. Surely there is a way for processes on the LC to
+>communicate with a process on the management card - even if it is inband
+>packets with special headers.
 
---xOnKsZEu3EoQCXgzv2UK6pcoBQzUNpUgy
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: quoted-printable
+I don't see any way. The userspace is the one who can get the info, from
+the i2c driver. The mlxsw driver has no means to get that info itself.
 
-On 1/22/21 4:02 AM, Su Yanjun wrote:
-> Recently i use mcp2518fd on 4.x kernel which multiple write is not
-> backported, regmap_raw_write will cause old kernel crash because the
-> tx buffer in driver is smaller then 2K. Use regmap_bulk_write instead
-> for compatibility.
-
-Hmmm, this patch will never be backported to any 4.x kernel, as the drive=
-r is
-not available on these kernels. You have to carry patches for these kerne=
-ls
-anyway, so I think I'll not take that patch. Sorry. Drop me a note if you=
- are
-interested in updating your kernel to a recent v5.11 kernel.
-
-regards,
-Marc
-
---=20
-Pengutronix e.K.                 | Marc Kleine-Budde           |
-Embedded Linux                   | https://www.pengutronix.de  |
-Vertretung West/Dortmund         | Phone: +49-231-2826-924     |
-Amtsgericht Hildesheim, HRA 2686 | Fax:   +49-5121-206917-5555 |
-
-
---xOnKsZEu3EoQCXgzv2UK6pcoBQzUNpUgy--
-
---JqAFCNcLepDxQuiQEg2w1MyCLwdxcSq6B
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCgAdFiEEK3kIWJt9yTYMP3ehqclaivrt76kFAmAKfiYACgkQqclaivrt
-76lNsAf/RID0x67zSmVj2QoEMW3Dy8ksMpCzboa/GbeB9Vq1Mpg4YXeeA6//88J5
-GmtGBxxbrJMDMpUs5c4fer7JPJKetEM0FCDxAuR2KCVetVaGvyFtthaOKuB3zWfu
-D2d3nwf4F+vmhzjs9S8LVXKXK+kcjfKgtVYnW56EQEYrSOImQuF4c3PJZYh6JHZq
-apSle4AtsfjawLTV6nJGVPQZre0nPYftIKbcTBeIHe+Q6ljfzGacBnho9+jM0Za8
-CQUoUkmBqS4tZ8gOpr8CxB0CVKM54Y8K+Y0kVzmpKVA5FP/QQIngk25ClaHdlvf2
-A8C8HzhwDBVurFW99zkMYymuPoNEEA==
-=vFGj
------END PGP SIGNATURE-----
-
---JqAFCNcLepDxQuiQEg2w1MyCLwdxcSq6B--
