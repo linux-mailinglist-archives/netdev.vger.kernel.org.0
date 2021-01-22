@@ -2,140 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E5CDB3008E9
-	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 17:47:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DDD5A3008E3
+	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 17:46:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728254AbhAVQir (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jan 2021 11:38:47 -0500
-Received: from mail-ot1-f42.google.com ([209.85.210.42]:45440 "EHLO
-        mail-ot1-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729681AbhAVQhz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 11:37:55 -0500
-Received: by mail-ot1-f42.google.com with SMTP id n42so5600744ota.12;
-        Fri, 22 Jan 2021 08:37:14 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=7ziah0gDgjxW52q7hTGscqUGRQaHkOp440j+Y21a5So=;
-        b=V7wRvj/6ti3ImPdHhBG2RS7aurp3AKeyeNJoxspfVqhm9s7yuSCgQRslUN+01/93l/
-         YpoUfEEtHniTHjYdHbMapN8t+n0AyiaCOPn+2W4MXJphIsgUkdQf1n020jFaI0zQrqyH
-         4OTUSaAgX9CUaZztj1XLE7FleXXipW7l99W6HP7XCGpEQIlsWkVv0mbV66irUy4mxrjk
-         naK1YwB73BLOuKn7m6r3t3CQ9qR0carnLEQ5JBxyayxBKCIhGtxWP14OTSYPN1TnrARS
-         Aoi16dcFBMOhZxZTu4NqJqWiBYuq7xH5Ef4+eSp61kFNYsSyVoKE/Nx/D8c//aQ2Ypnt
-         VANg==
-X-Gm-Message-State: AOAM530Pf1in5AFmxcHeVZyIblV4DMgsF6FAdx3h28MHVIdRR4zFDjs0
-        KfoaI6m+zvv18Es96TR3tEurBu/R0PtZvK68PEPuxsaa
-X-Google-Smtp-Source: ABdhPJxNJ2wvRRXdQ/YZlopcgpGZ26D4L7j3Kp5mfxpU0edrQrsmUV3VOk1J3Rk1OEfhRrxRfbJQoDpsNQJvmizZBpw=
-X-Received: by 2002:a9d:1710:: with SMTP id i16mr3885403ota.260.1611333263819;
- Fri, 22 Jan 2021 08:34:23 -0800 (PST)
+        id S1728765AbhAVQmC convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 22 Jan 2021 11:42:02 -0500
+Received: from us-smtp-delivery-44.mimecast.com ([207.211.30.44]:28137 "EHLO
+        us-smtp-delivery-44.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728816AbhAVQkv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 11:40:51 -0500
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-293-VaGEYQ1jOLC_DYulxn_qRw-1; Fri, 22 Jan 2021 11:39:33 -0500
+X-MC-Unique: VaGEYQ1jOLC_DYulxn_qRw-1
+Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id EDF2B84A5E1;
+        Fri, 22 Jan 2021 16:39:30 +0000 (UTC)
+Received: from krava.redhat.com (unknown [10.40.192.97])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 7117971CBF;
+        Fri, 22 Jan 2021 16:39:21 +0000 (UTC)
+From:   Jiri Olsa <jolsa@kernel.org>
+To:     Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>
+Cc:     dwarves@vger.kernel.org, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, Yonghong Song <yhs@fb.com>,
+        Hao Luo <haoluo@google.com>, Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        Mark Wielaard <mjw@redhat.com>
+Subject: [PATCHv3 0/2] libbpf: Add support to use optional extended section index table
+Date:   Fri, 22 Jan 2021 17:39:18 +0100
+Message-Id: <20210122163920.59177-1-jolsa@kernel.org>
 MIME-Version: 1.0
-References: <20210112134054.342-1-calvin.johnson@oss.nxp.com>
- <20210112134054.342-10-calvin.johnson@oss.nxp.com> <CAGETcx-7JVz=QLCMWicHqoagWYjeBXdFJmSv1v6MQhtPt2RS=Q@mail.gmail.com>
- <20210112180343.GI4077@smile.fi.intel.com> <CAJZ5v0iW0jJUcXtiQtLOakkSejZCJD=hTFLL4mvoAN3ZTB+1Tw@mail.gmail.com>
- <CAHp75VcJS10KMA5amUc36PFgj0FLddj1fXD4dUtuAchrVhhzPg@mail.gmail.com>
- <CAJZ5v0ga5RqwFzbBqSChJ7=gBBM-7dWNQPz6bqvqsNAkWZJ=vQ@mail.gmail.com> <CAGETcx8DP8J53ntxX2VCSnbMfq1qki7gD-md+NC_jVfOkTam3g@mail.gmail.com>
-In-Reply-To: <CAGETcx8DP8J53ntxX2VCSnbMfq1qki7gD-md+NC_jVfOkTam3g@mail.gmail.com>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Fri, 22 Jan 2021 17:34:12 +0100
-Message-ID: <CAJZ5v0gUCUxJX9sGJiZ+zTVYrc3rjuUO2B2fx+O6PewbG7F8aw@mail.gmail.com>
-Subject: Re: [net-next PATCH v3 09/15] device property: Introduce fwnode_get_id()
-To:     Saravana Kannan <saravanak@google.com>
-Cc:     "Rafael J. Wysocki" <rafael@kernel.org>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Calvin Johnson <calvin.johnson@oss.nxp.com>,
-        Grant Likely <grant.likely@arm.com>,
-        Jeremy Linton <jeremy.linton@arm.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
-        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
-        Ioana Ciornei <ioana.ciornei@nxp.com>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Marcin Wojtas <mw@semihalf.com>,
-        Pieter Jansen Van Vuuren <pieter.jansenvv@bamboosystems.io>,
-        Jon <jon@solid-run.com>,
-        Diana Madalina Craciun <diana.craciun@nxp.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        "linux.cj" <linux.cj@gmail.com>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Laurent Pinchart <laurent.pinchart+renesas@ideasonboard.com>,
-        Randy Dunlap <rdunlap@infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=CUSA124A263 smtp.mailfrom=jolsa@kernel.org
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: kernel.org
+Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=WINDOWS-1252
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 20, 2021 at 9:01 PM Saravana Kannan <saravanak@google.com> wrote:
->
-> On Wed, Jan 20, 2021 at 11:15 AM Rafael J. Wysocki <rafael@kernel.org> wrote:
-> >
-> > On Wed, Jan 20, 2021 at 7:51 PM Andy Shevchenko
-> > <andy.shevchenko@gmail.com> wrote:
-> > >
-> > > On Wed, Jan 20, 2021 at 8:18 PM Rafael J. Wysocki <rafael@kernel.org> wrote:
-> > > > On Tue, Jan 12, 2021 at 7:02 PM Andy Shevchenko
-> > > > <andy.shevchenko@gmail.com> wrote:
-> > > > > On Tue, Jan 12, 2021 at 09:30:31AM -0800, Saravana Kannan wrote:
-> > > > > > On Tue, Jan 12, 2021 at 5:42 AM Calvin Johnson
-> > > > > > <calvin.johnson@oss.nxp.com> wrote:
-> > >
-> > > ...
-> > >
-> > > > > > > +       ret = fwnode_property_read_u32(fwnode, "reg", id);
-> > > > > > > +       if (!(ret && is_acpi_node(fwnode)))
-> > > > > > > +               return ret;
-> > > > > > > +
-> > > > > > > +#ifdef CONFIG_ACPI
-> > > > > > > +       status = acpi_evaluate_integer(ACPI_HANDLE_FWNODE(fwnode),
-> > > > > > > +                                      METHOD_NAME__ADR, NULL, &adr);
-> > > > > > > +       if (ACPI_FAILURE(status))
-> > > > > > > +               return -EINVAL;
-> > > > > > > +       *id = (u32)adr;
-> > > > > > > +#endif
-> > > > > > > +       return 0;
-> > >
-> > > > > > Also ACPI and DT
-> > > > > > aren't mutually exclusive if I'm not mistaken.
-> > > > >
-> > > > > That's why we try 'reg' property for both cases first.
-> > > > >
-> > > > > is_acpi_fwnode() conditional is that what I don't like though.
-> > > >
-> > > > I'm not sure what you mean here, care to elaborate?
-> > >
-> > > I meant is_acpi_node(fwnode) in the conditional.
-> > >
-> > > I think it's redundant and we can simple do something like this:
-> > >
-> > >   if (ret) {
-> > > #ifdef ACPI
-> > >     ...
-> > > #else
-> > >     return ret;
-> > > #endif
-> > >   }
-> > >   return 0;
-> > >
-> > > --
-> >
-> > Right, that should work.  And I'd prefer it too.
->
-> Rafael,
->
-> I'd rather this new function be an ops instead of a bunch of #ifdef or
-> if (acpi) checks. Thoughts?
+hi,
+kpatch guys hit an issue with pahole over their vmlinux, which
+contains many (over 100000) sections, pahole crashes.
 
-Well, it looks more like a helper function than like an op and I'm not
-even sure how many potential users of it will expect that _ADR should
-be evaluated in the absence of the "reg" property.
+With so many sections, ELF is using extended section index table,
+which is used to hold values for some of the indexes and extra
+code is needed to retrieve them.
 
-It's just that the "reg" property happens to be kind of an _ADR
-equivalent in this particular binding AFAICS.
+This patchset adds the support for pahole to properly read string
+table index and symbol's section index, which are used in btf_encoder.
+
+This patchset also adds support for libbpf to properly parse .BTF
+section on such object.
+
+This patchset is based on previously posted fix [1].
+
+v3 changes:
+  - directly bail out for !str in elf_section_by_name [Andrii]
+  - use symbol index in collect_function [Andrii] 
+  - use symbol index in collect_percpu_var
+  - change elf_symtab__for_each_symbol_index, move elf_sym__get
+    to for's condition part
+  - libbpf patch got merged
+
+v2 changes:
+  - many variables renames [Andrii]
+  - use elf_getshdrstrndx() unconditionally [Andrii]
+  - add elf_symtab__for_each_symbol_index macro [Andrii]
+  - add more comments [Andrii]
+  - verify that extended symtab section type is SHT_SYMTAB_SHNDX [Andrii]
+  - fix Joe's crash in dwarves build, wrong sym.st_shndx assignment
+
+thanks,
+jirka
+
+
+[1] https://lore.kernel.org/bpf/20210113102509.1338601-1-jolsa@kernel.org/
+---
+Jiri Olsa (2):
+      elf_symtab: Add support for SHN_XINDEX index to elf_section_by_name
+      bpf_encoder: Translate SHN_XINDEX in symbol's st_shndx values
+
+ btf_encoder.c | 59 +++++++++++++++++++++++++++++++++++++++++++----------------
+ dutil.c       |  8 +++++++-
+ elf_symtab.c  | 39 ++++++++++++++++++++++++++++++++++++++-
+ elf_symtab.h  |  2 ++
+ 4 files changed, 90 insertions(+), 18 deletions(-)
+
