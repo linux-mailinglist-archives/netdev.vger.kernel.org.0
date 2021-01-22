@@ -2,89 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6B61430098F
-	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 18:23:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C286730093A
+	for <lists+netdev@lfdr.de>; Fri, 22 Jan 2021 18:06:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729635AbhAVQyI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jan 2021 11:54:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52854 "EHLO
+        id S1729705AbhAVRFn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jan 2021 12:05:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57404 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729386AbhAVQnq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 11:43:46 -0500
-Received: from mout-p-102.mailbox.org (mout-p-102.mailbox.org [IPv6:2001:67c:2050::465:102])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B37CCC061794;
-        Fri, 22 Jan 2021 08:43:09 -0800 (PST)
-Received: from smtp1.mailbox.org (smtp1.mailbox.org [IPv6:2001:67c:2050:105:465:1:1:0])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
-        (No client certificate requested)
-        by mout-p-102.mailbox.org (Postfix) with ESMTPS id 4DMlS919QJzQlYs;
-        Fri, 22 Jan 2021 17:43:05 +0100 (CET)
-Authentication-Results: spamfilter06.heinlein-hosting.de (amavisd-new);
-        dkim=pass (2048-bit key) reason="pass (just generated, assumed good)"
-        header.d=mailbox.org
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=mailbox.org; h=
-        content-transfer-encoding:mime-version:message-id:date:date
-        :subject:subject:from:from:received; s=mail20150812; t=
-        1611333777; bh=Lh2xfkUbit1Y/Lo9qAlrk6Bt3Nw0IkInj3l415cJVDA=; b=l
-        l1gvic6Z5Mm26JDD4PeFolt+OHTiOCKNObJRwAQRy+M2OcNIj/3jbUGxetb/P4xR
-        U1actvoCYj6kajYCJh+JAqDINbkCOCw7PZa8uGW3zPY4hsA6zu+VVEJ/5DR89VFA
-        SiaDAeQ/eI7642d6xK2Bae6wuWNgH8dBWfNMxz4m75EA7s1xMPgKN8HAAEF/N9oL
-        ehxDP4ksrmbPhX517eNHxOJJlLFKnD5Xxz4NtcZs1O3hjcimvwzEQcNjpw0CtpF/
-        lqOlZoanipoVgq/hiGlEEtg/MxCai+w+/3J7hnU064I88uZDjyK2LPE0XYBUKLcK
-        UBFTD7LFPPN5zSf4GbXog==
-X-Virus-Scanned: amavisd-new at heinlein-support.de
-Received: from smtp1.mailbox.org ([80.241.60.240])
-        by spamfilter06.heinlein-hosting.de (spamfilter06.heinlein-hosting.de [80.241.56.125]) (amavisd-new, port 10030)
-        with ESMTP id KUGvmkt91g7F; Fri, 22 Jan 2021 17:42:57 +0100 (CET)
-From:   Loris Reiff <loris.reiff@liblor.ch>
-To:     bpf@vger.kernel.org
-Cc:     netdev@vger.kernel.org, ast@kernel.org, daniel@iogearbox.net,
-        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org, sdf@google.com,
-        Loris Reiff <loris.reiff@liblor.ch>
-Subject: [PATCH 1/2] bpf: cgroup: Fix optlen WARN_ON_ONCE toctou
-Date:   Fri, 22 Jan 2021 17:42:31 +0100
-Message-Id: <20210122164232.61770-1-loris.reiff@liblor.ch>
+        with ESMTP id S1729743AbhAVRFA (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 12:05:00 -0500
+Received: from mail-qt1-x82a.google.com (mail-qt1-x82a.google.com [IPv6:2607:f8b0:4864:20::82a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BFE5DC0613D6
+        for <netdev@vger.kernel.org>; Fri, 22 Jan 2021 09:04:18 -0800 (PST)
+Received: by mail-qt1-x82a.google.com with SMTP id z6so4628272qtn.0
+        for <netdev@vger.kernel.org>; Fri, 22 Jan 2021 09:04:18 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=LkXre3Jn5BQNLfYvq2ivFLi/y/XcVxQ/mvEDUU0zFUM=;
+        b=aoCtGDeoCpDuZ1M8hmOguwCqCcdPweO66+78DRPhUdJmBTVuBVsXUOJHicfzJEjlhr
+         1UVmndO5Z+DmmkChJq0UN9Qh/xWgge9WH9166mtn4yOLhj2O9703VgJc7ljORbPjqmQx
+         q1LHMhoS0oPw1GyaUP4HUaagl0Q7ADyP7H1L+miS0SX//Ow6XbdZOzc6/vZT/Hcn9dR/
+         vn5U4JSeqJvl8jfXqdGqZp0Emqt4T6ieC//nLtT6jFqfIhyaZPUNbfQseQBBW0zaE4wU
+         0t39QbyrVWg6de/Wns7Ot/zMl/cXyHM9MQZnyP6cKYRYQP0rLiAADAy9UarF1mROSTwQ
+         gFvw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=LkXre3Jn5BQNLfYvq2ivFLi/y/XcVxQ/mvEDUU0zFUM=;
+        b=qMB2aFid0ovu+WR4ws33v0t5jxxk+R9VhBHuJcToZTLX80ewL09KvXHjVVXBAcdh2Z
+         g3hApbhsCe44X64UQX2yga8n5XV+3dCnWH1Eu2yFNjagUCyUTR8vnYXBBBj651Ilugvy
+         r9W/OUtOvyDOUR/3UgkY/vrbxOMwjZ2bOriHqgcQC+DElYG1SIg+mVqS/FFwsvCyXrAs
+         K9M7CRZYDweoaAwK2O3ARqhXZv/SjOVMEFpCrFaU/Kw2IvY4VYUYFkTrnsn4V3ht7glE
+         qcxC/E5fOByEAdObksTxmDcKrG/vzoo5DY7OtsdBM9GECHh/6qvXQ4czN/yJX7/P26CE
+         YCxg==
+X-Gm-Message-State: AOAM5336RnPJbiCRCzEZbda5ZAVIlPvTvQp/SwkceXzV55MwtNJZ8l5a
+        5+v+Cm9iqZLVnGyXKZXS1xWDAxNjsQ6Ab0AJ+IBblA==
+X-Google-Smtp-Source: ABdhPJyIloiXBIr5YvNM8BIAng+QSQEug8CjQEDk0vbyqGkd+rKpaD+MeeZqw+cctMfxM8PgY9TZXF3ZoQK/5mrXu2o=
+X-Received: by 2002:ac8:524f:: with SMTP id y15mr5264291qtn.266.1611335057791;
+ Fri, 22 Jan 2021 09:04:17 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-MBO-SPAM-Probability: **
-X-Rspamd-Score: 1.80 / 15.00 / 15.00
-X-Rspamd-Queue-Id: C547C186B
-X-Rspamd-UID: 3024cb
+References: <20210122164232.61770-1-loris.reiff@liblor.ch>
+In-Reply-To: <20210122164232.61770-1-loris.reiff@liblor.ch>
+From:   Stanislav Fomichev <sdf@google.com>
+Date:   Fri, 22 Jan 2021 09:04:07 -0800
+Message-ID: <CAKH8qBvy0aRODNXtdseu5ygLMzAKPD-N8H1=GfGqPz--v83KpQ@mail.gmail.com>
+Subject: Re: [PATCH 1/2] bpf: cgroup: Fix optlen WARN_ON_ONCE toctou
+To:     Loris Reiff <loris.reiff@liblor.ch>
+Cc:     bpf <bpf@vger.kernel.org>, Netdev <netdev@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>, kpsingh@kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-A toctou issue in `__cgroup_bpf_run_filter_getsockopt` can trigger a
-WARN_ON_ONCE in a check of `copy_from_user`.
-`*optlen` is checked to be non-negative in the individual getsockopt
-functions beforehand. Changing `*optlen` in a race to a negative value
-will result in a `copy_from_user(ctx.optval, optval, ctx.optlen)` with
-`ctx.optlen` being a negative integer.
+On Fri, Jan 22, 2021 at 8:43 AM Loris Reiff <loris.reiff@liblor.ch> wrote:
+>
+> A toctou issue in `__cgroup_bpf_run_filter_getsockopt` can trigger a
+> WARN_ON_ONCE in a check of `copy_from_user`.
+> `*optlen` is checked to be non-negative in the individual getsockopt
+> functions beforehand. Changing `*optlen` in a race to a negative value
+> will result in a `copy_from_user(ctx.optval, optval, ctx.optlen)` with
+> `ctx.optlen` being a negative integer.
+>
+> Fixes: 0d01da6afc54 ("bpf: implement getsockopt and setsockopt hooks")
+> Signed-off-by: Loris Reiff <loris.reiff@liblor.ch>
+> ---
+>  kernel/bpf/cgroup.c | 5 +++++
+>  1 file changed, 5 insertions(+)
+>
+> diff --git a/kernel/bpf/cgroup.c b/kernel/bpf/cgroup.c
+> index 96555a8a2..6ec8f02f4 100644
+> --- a/kernel/bpf/cgroup.c
+> +++ b/kernel/bpf/cgroup.c
+> @@ -1442,6 +1442,11 @@ int __cgroup_bpf_run_filter_getsockopt(struct sock *sk, int level,
+>                         goto out;
+>                 }
+>
+> +               if (ctx.optlen < 0) {
+> +                       ret = -EFAULT;
+> +                       goto out;
+> +               }
+> +
+>                 if (copy_from_user(ctx.optval, optval,
+>                                    min(ctx.optlen, max_optlen)) != 0) {
+>                         ret = -EFAULT;
+> --
+> 2.29.2
+Good point, user's optlen can be concurrently changed after the kernel
+updated it.
 
-Fixes: 0d01da6afc54 ("bpf: implement getsockopt and setsockopt hooks")
-Signed-off-by: Loris Reiff <loris.reiff@liblor.ch>
----
- kernel/bpf/cgroup.c | 5 +++++
- 1 file changed, 5 insertions(+)
-
-diff --git a/kernel/bpf/cgroup.c b/kernel/bpf/cgroup.c
-index 96555a8a2..6ec8f02f4 100644
---- a/kernel/bpf/cgroup.c
-+++ b/kernel/bpf/cgroup.c
-@@ -1442,6 +1442,11 @@ int __cgroup_bpf_run_filter_getsockopt(struct sock *sk, int level,
- 			goto out;
- 		}
- 
-+		if (ctx.optlen < 0) {
-+			ret = -EFAULT;
-+			goto out;
-+		}
-+
- 		if (copy_from_user(ctx.optval, optval,
- 				   min(ctx.optlen, max_optlen)) != 0) {
- 			ret = -EFAULT;
--- 
-2.29.2
-
+Reviewed-by: Stanislav Fomichev <sdf@google.com>
