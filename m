@@ -2,226 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CAF26301660
-	for <lists+netdev@lfdr.de>; Sat, 23 Jan 2021 16:30:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 748CC301696
+	for <lists+netdev@lfdr.de>; Sat, 23 Jan 2021 17:06:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726204AbhAWP2y (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Jan 2021 10:28:54 -0500
-Received: from wout1-smtp.messagingengine.com ([64.147.123.24]:47463 "EHLO
-        wout1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725922AbhAWP2w (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 Jan 2021 10:28:52 -0500
+        id S1726151AbhAWQFD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Jan 2021 11:05:03 -0500
+Received: from out1-smtp.messagingengine.com ([66.111.4.25]:40121 "EHLO
+        out1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725922AbhAWQE7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 Jan 2021 11:04:59 -0500
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.west.internal (Postfix) with ESMTP id 793E312D0;
-        Sat, 23 Jan 2021 10:28:06 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Sat, 23 Jan 2021 10:28:07 -0500
+        by mailout.nyi.internal (Postfix) with ESMTP id B08995C014E;
+        Sat, 23 Jan 2021 11:03:52 -0500 (EST)
+Received: from mailfrontend2 ([10.202.2.163])
+  by compute3.internal (MEProxy); Sat, 23 Jan 2021 11:03:52 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=VBJEGR
-        XF/VFisWs7Lv92eHBvpRfX3N0kmLDsvpMf9tU=; b=qNyJ021LJyBSPE4gfoLQvA
-        hqZoyzlW//3Z/tzVuemZG4dpVfa4gCAuP/imWC/5Hk9OiowY6vFbBIkThwIhfxA7
-        YLtiaJc3IgZUIiqVGX123rlGAbkv7+DMvMBY+rb/WDfHiSnPOQKFAmLU8RcYFAA3
-        AlNzXGAhX3J68y5KH43X3wUOpWT+MFcfbzUpICJSU3hg1zFpAWAcoeLO4F8m2BKG
-        wjoqlC+/YAlfY4ByR5lX10ehWqolzIaeNbcV6hbNNNKps/JEmtygSAMLWcd6iDBq
-        ZO0UBuu/wEtZw7OOTOiH8ONlnGaQE/IpzJ5fjuW5uLsDdYIwcvoHpgu55p+6JuZg
-        ==
-X-ME-Sender: <xms:hUAMYA2SlKa0uQEOzm4xHG-dEslqbqYJD-yJg6SsuW-habrjoZcBeg>
-    <xme:hUAMYLH5a5rnFoAebab_Ua6t2DldR5lxWC0sDi6N_btNEbsMax8-U4HOHUNswg9xs
-    C6vUTiq_PPTwsc>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrudekgdektdcutefuodetggdotefrodftvf
+        messagingengine.com; h=cc:content-transfer-encoding:content-type
+        :date:from:in-reply-to:message-id:mime-version:references
+        :subject:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
+        :x-sasl-enc; s=fm1; bh=aq6Uu67tL9E9uPSKo9XbNQhKfBADUmFovTpQgKZV7
+        10=; b=eEpIZz5LPbnlMbVPdQKlxxd+c4XilDegayL5pQjaJdL8TopfDnbTHW/oU
+        bFaNBIyukz+Lh0pQXEqwz7qC1BQXTxxrzVWcigfN9An6f2R4kNGtIenmQMDRa/70
+        toKzUqWwm6wk8ZCL5unzO4Hsb5SENVEmqsyfoYqFguUhfCl/LhyLbPzur2OjTtbg
+        PqNBiK6WwjyqYbXrAsw+tvqZjTpu5qqc9hDrqzBr6OCirt3DxIUXBsutrq4UYewR
+        d26bOrkQyMsDKvIbdY9GwxaYJ1qShKO2J2ynQ3JPprDXF9joK9qgj1u4SWj5ApDk
+        Ngg2qqlJ9g8QoQpKxu8cEH4nbZ+AQ==
+X-ME-Sender: <xms:6EgMYBgouMwvWwofplvF9vMcUmyvUBSeMR1D_bGfClJlL3iNkWTSwg>
+    <xme:6EgMYGC-hKzc-_1_UD-LnQJYl3YThh4fAhSoECqJA7YtoW5HjdjBVV7QQvSMmgfbS
+    tuKB5VbFzao2Hw>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrudekgdekjecutefuodetggdotefrodftvf
     curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecunecujfgurhepfffhvffukfhfgggtuggjsehttdertd
-    dttddvnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhs
-    tghhrdhorhhgqeenucggtffrrghtthgvrhhnpedtffekkeefudffveegueejffejhfetgf
-    euuefgvedtieehudeuueekhfduheelteenucfkphepkeegrddvvdelrdduheefrdeggeen
-    ucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughosh
-    gthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:hUAMYI6u2mYFmtk-Trp6UetizhKVQH0x_TcJGRu72bm6rFIPAENhYw>
-    <xmx:hUAMYJ1Su5dDtl0a3yTDPBIYueAiyEQLY58SxSRKXggzfzIui3bfuA>
-    <xmx:hUAMYDH_-nFF4M7mk26nYPyihFkT2I7co-DxazCsbSLqPVGyGjA_Gg>
-    <xmx:hkAMYHg4wXQ7JddphYX-wGs0J2jvlgJl5JX8b4w2H8_f50nd6hEEtQ>
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvuffkfhggtggugfgjsehtkeertddttddunecuhfhrohhmpefkughoucfu
+    tghhihhmmhgvlhcuoehiughoshgthhesihguohhstghhrdhorhhgqeenucggtffrrghtth
+    gvrhhnpedvffevkeefieeiueeitedufeekveekuefhueeiudduteekgeelfedvgeehjeeh
+    hfenucfkphepkeegrddvvdelrdduheefrdeggeenucevlhhushhtvghrufhiiigvpedtne
+    curfgrrhgrmhepmhgrihhlfhhrohhmpehiughoshgthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:6EgMYBGnb2_jOiqidyJO--FdzP3SnIQdmHDFmhtKZVqZG_QeyHYsTQ>
+    <xmx:6EgMYGTUMslxM-2kLU--QEbkEGp6iRnQy5TM43zByjG34bn3G58y9Q>
+    <xmx:6EgMYOwK6hVM6xomDfTgnPJ3S4q8fgxZZiGri6hNBLLdHmFQR0wesQ>
+    <xmx:6EgMYJ8J2xR_TnXcVEMiBJkOc32yDTZcufhAvkndsN_oO2RZntRr_Q>
 Received: from localhost (igld-84-229-153-44.inter.net.il [84.229.153.44])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 7FC21240057;
-        Sat, 23 Jan 2021 10:28:05 -0500 (EST)
-Date:   Sat, 23 Jan 2021 17:28:02 +0200
+        by mail.messagingengine.com (Postfix) with ESMTPA id 0F3CC1080057;
+        Sat, 23 Jan 2021 11:03:51 -0500 (EST)
+Date:   Sat, 23 Jan 2021 18:03:48 +0200
 From:   Ido Schimmel <idosch@idosch.org>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, petrm@nvidia.com,
-        jiri@nvidia.com, amcohen@nvidia.com, mlxsw@nvidia.com,
-        Ido Schimmel <idosch@nvidia.com>
-Subject: Re: [PATCH net-next 0/5] mlxsw: Add support for RED qevent "mark"
-Message-ID: <20210123152802.GA2799851@shredder.lan>
-References: <20210117080223.2107288-1-idosch@idosch.org>
- <20210119142255.1caca7fb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20210120091437.GA2591869@shredder.lan>
- <20210120164508.6009dbbd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20210121102318.GA2637214@shredder.lan>
- <20210121091940.5101388a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+To:     Oleksandr Mazur <oleksandr.mazur@plvision.eu>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "jiri@nvidia.com" <jiri@nvidia.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH net-next] net: core: devlink: add new trap action
+ HARD_DROP
+Message-ID: <20210123160348.GB2799851@shredder.lan>
+References: <AM0P190MB073828252FFDA3215387765CE4A00@AM0P190MB0738.EURP190.PROD.OUTLOOK.COM>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=iso-8859-1
 Content-Disposition: inline
-In-Reply-To: <20210121091940.5101388a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <AM0P190MB073828252FFDA3215387765CE4A00@AM0P190MB0738.EURP190.PROD.OUTLOOK.COM>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 21, 2021 at 09:19:40AM -0800, Jakub Kicinski wrote:
-> On Thu, 21 Jan 2021 12:23:18 +0200 Ido Schimmel wrote:
-> > On Wed, Jan 20, 2021 at 04:45:08PM -0800, Jakub Kicinski wrote:
-> > > On Wed, 20 Jan 2021 11:14:37 +0200 Ido Schimmel wrote:  
-> > > > On Tue, Jan 19, 2021 at 02:22:55PM -0800, Jakub Kicinski wrote:  
-> > > > > On Sun, 17 Jan 2021 10:02:18 +0200 Ido Schimmel wrote:    
-> > > > > > From: Ido Schimmel <idosch@nvidia.com>
-> > > > > > 
-> > > > > > The RED qdisc currently supports two qevents: "early_drop" and "mark". The
-> > > > > > filters added to the block bound to the "early_drop" qevent are executed on
-> > > > > > packets for which the RED algorithm decides that they should be
-> > > > > > early-dropped. The "mark" filters are similarly executed on ECT packets
-> > > > > > that are marked as ECN-CE (Congestion Encountered).
-> > > > > > 
-> > > > > > A previous patchset has offloaded "early_drop" filters on Spectrum-2 and
-> > > > > > later, provided that the classifier used is "matchall", that the action
-> > > > > > used is either "trap" or "mirred", and a handful or further limitations.    
-> > > > > 
-> > > > > For early_drop trap or mirred makes obvious sense, no explanation
-> > > > > needed.
-> > > > > 
-> > > > > But for marked as a user I'd like to see a _copy_ of the packet, 
-> > > > > while the original continues on its marry way to the destination.
-> > > > > I'd venture to say that e.g. for a DCTCP deployment mark+trap is
-> > > > > unusable, at least for tracing, because it distorts the operation 
-> > > > > by effectively dropping instead of marking.
-> > > > > 
-> > > > > Am I reading this right?    
-> > > > 
-> > > > You get a copy of the packet as otherwise it will create a lot of
-> > > > problems (like you wrote).  
-> > > 
-> > > Hm, so am I missing some background on semantics on TC_ACT_TRAP?
-> > > Or perhaps you use a different action code?  
+On Fri, Jan 22, 2021 at 08:36:01AM +0000, Oleksandr Mazur wrote:
+> On Thu, 21 Jan 2021 14:21:52 +0200 Ido Schimmel wrote:
+> > On Thu, Jan 21, 2021 at 01:29:37PM +0200, Oleksandr Mazur wrote:
+> > > Add new trap action HARD_DROP, which can be used by the
+> > > drivers to register traps, where it's impossible to get
+> > > packet reported to the devlink subsystem by the device
+> > > driver, because it's impossible to retrieve dropped packet
+> > > from the device itself.
+> > > In order to use this action, driver must also register
+> > > additional devlink operation - callback that is used
+> > > to retrieve number of packets that have been dropped by
+> > > the device.  
 > > 
-> > Well, to make it really clear, we can add TC_ACT_TRAP_MIRROR.
+> > Are these global statistics about number of packets the hardware dropped
+> > for a specific reason or are these per-port statistics?
 > > 
-> > TC_ACT_TRAP: Sole copy goes to the CPU
-> > TC_ACT_TRAP_MIRROR: The packet is forwarded by the underlying device and
-> > a copy is sent to the CPU
-> > 
-> > And only allow (in mlxsw) attaching filters with TC_ACT_TRAP_MIRROR to
-> > the "mark" qevent.
-> > 
-> > > 
-> > > AFAICT the code in the kernel is:
-> > > 
-> > > struct sk_buff *tcf_qevent_handle(...
-> > > 
-> > > 	case TC_ACT_STOLEN:
-> > > 	case TC_ACT_QUEUED:
-> > > 	case TC_ACT_TRAP:
-> > > 		__qdisc_drop(skb, to_free);
-> > > 		*ret = __NET_XMIT_STOLEN;
-> > > 		return NULL;
-> > > 
-> > > Having TRAP mean DROP makes sense for filters, but in case of qevents
-> > > shouldn't they be a no-op?
-> > > 
-> > > Looking at sch_red looks like TRAP being a no-op would actually give us
-> > > the expected behavior.  
-> > 
-> > I'm not sure it makes sense to try to interpret these actions in
-> > software (I expect they will be used with "skip_sw" filters), but
-> > TC_ACT_TRAP_MIRROR can be a no-op like you suggested.
+> > It's a creative use of devlink-trap interface, but I think it makes
+> > sense. Better to re-use an existing interface than creating yet another
+> > one.
 > 
-> Well our paradigm is SW defines the behavior, we can't have HW forward
-> and copy, while the SW drops the frame. Some engineer will try to
-> implement this some day in their switch driver, look at the SW behavior
-> and scratch their head.
-
-OK, TC_ACT_TRAP_MIRROR will be a no-op in software
-
+> > Not sure if I agree, if we can't trap why is it a trap?
+> > It's just a counter.
 > 
-> > > > the 'mark' qevent of the RED qdisc."
-> > > >
-> > > > In addition, this output:
-> > > > 
-> > > > $ devlink trap show pci/0000:06:00.0 trap ecn_mark 
-> > > > pci/0000:06:00.0:
-> > > >   name ecn_mark type drop generic true action trap group buffer_drops
-> > > > 
-> > > > Can be converted to:
-> > > > 
-> > > > $ devlink trap show pci/0000:06:00.0 trap ecn_mark 
-> > > > pci/0000:06:00.0:
-> > > >   name ecn_mark type drop generic true action mirror group buffer_drops
-> > > > 
-> > > > "mirror: The packet is forwarded by the underlying device and a copy is sent to
-> > > > the CPU."
-> > > > 
-> > > > In this case the action is static and you cannot change it.  
-> > > 
-> > > Oh yes, that's nice, I thought mirror in traps means mirror to another
-> > > port. Are there already traps which implement the mirroring / trapping
-> > > a clone? Quick grep yields nothing of substance.  
-> > 
-> > Yes. That's why we have the 'offload_fwd_mark' and 'offload_l3_fwd_mark'
-> > bits in the skb. For example, we let the hardware flood ARP requests
-> > ('arp_request'), but also send a copy to the CPU in case it needs to
-> > update its neighbour table. The trapping happens at L2, so we only set
-> > the 'offload_fwd_mark' bit. It will tell the bridge driver to not flood
-> > the packet again.
-> > 
-> > The 'offload_l3_fwd_mark' bit is mainly used to support one-armed router
-> > use cases where a packet is forwarded through the same interface through
-> > which it was received ('uc_loopback'). We do the forwarding in hardware,
-> > but also send a copy to the CPU to give the kernel the chance to
-> > generate an ICMP redirect if it was not disabled by the user. See more
-> > info in commit 55827458e058 ("Merge branch
-> > 'mlxsw-Add-one-armed-router-support'").
+> It's just another ACTION for trap item. Action however can be switched, e.g. from HARD_DROP to MIRROR.
 > 
-> I see, thanks for the example, but just to be clear those are "internal
-> traps", they don't have any impact on the devlink trap uAPI (in case we
-> want to change the definition of MIRRED since nothing is using it).
+> The thing is to be able to configure specific trap to be dropped, and provide a way for the device to report back how many packets have been dropped.
+> If device is able to report the packet itself, then devlink would be in charge of counting. If not, there should be a way to retrieve these statistics from the devlink.
 
-It's not MIRRED, but MIRROR. Anyway, these are not internal traps:
+So no need for another action. Just report these stats via
+'DEVLINK_ATTR_STATS_RX_DROPPED' if the hardware supports it.
 
-$ devlink trap show pci/0000:01:00.0 trap arp_request 
-pci/0000:01:00.0:
-  name arp_request type control generic true action mirror group neigh_discovery
+Currently you do:
 
-> 
-> > I also want to explain how the qevent stuff works in hardware to make
-> > sure it is all clear. We have the ability to bind different triggers to
-> > a mirroring (SPAN) agent. The agent can point to a physical port /
-> > virtual interface (e.g., gretap for ERSPAN) or to the CPU port. The
-> > first is programmed via the mirred action and the second using the trap
-> > action.
-> > 
-> > The triggers can be simple such as Rx/Tx packet (matchall + mirred) or
-> > policy engine (flower + mirred). The more advanced triggers are various
-> > buffer events such as early drops ('early_drop' qevent) and ECN marking
-> > ('mark' qevent). Currently, it is only possible to bind these triggers
-> > to a mirroring agent which is why we only support (in mlxsw) attaching
-> > matchall filters to these qevents. In the future we might be able to
-> > bind ACLs to these triggers in which case we will allow attaching flower
-> > filters. devlink-trap is really only a read-only interface in this case,
-> > meant to tell you why you go the packet from the hardware datapath. The
-> > enablement / disablement is done by tc which gives us feature parity
-> > with the software datapath.
-> 
-> Thanks for the explanation. I feel more and more convinced now that
-> we should have TC_ACT_TRAP_MIRROR and the devlink trap should only 
-> be on/off :S Current model of "if ACT_TRAP consult devlink for trap
-> configuration" is impossible to model in SW since it doesn't have a
-> equivalent of devlink traps. Or we need that equivalent..
++static int
++devlink_trap_hard_drop_stats_put(struct sk_buff *msg,
++				 struct devlink *devlink,
++				 const struct devlink_trap_item *trap_item)
++{
++	struct nlattr *attr;
++	u64 drops;
++	int err;
++
++	err = devlink->ops->trap_hard_drop_counter_get(devlink, trap_item->trap,
++						       &drops);
++	if (err)
++		return err;
++
++	attr = nla_nest_start(msg, DEVLINK_ATTR_STATS);
++	if (!attr)
++		return -EMSGSIZE;
++
++	if (nla_put_u64_64bit(msg, DEVLINK_ATTR_STATS_RX_DROPPED, drops,
++			      DEVLINK_ATTR_PAD))
++		goto nla_put_failure;
++
++	nla_nest_end(msg, attr);
++
++	return 0;
++
++nla_put_failure:
++	nla_nest_cancel(msg, attr);
++	return -EMSGSIZE;
++}
++
+ static int devlink_nl_trap_fill(struct sk_buff *msg, struct devlink *devlink,
+ 				const struct devlink_trap_item *trap_item,
+ 				enum devlink_command cmd, u32 portid, u32 seq,
+@@ -6857,7 +6889,10 @@ static int devlink_nl_trap_fill(struct sk_buff *msg, struct devlink *devlink,
+ 	if (err)
+ 		goto nla_put_failure;
+ 
+-	err = devlink_trap_stats_put(msg, trap_item->stats);
++	if (trap_item->action == DEVLINK_TRAP_ACTION_HARD_DROP)
++		err = devlink_trap_hard_drop_stats_put(msg, devlink, trap_item);
++	else
++		err = devlink_trap_stats_put(msg, trap_item->stats);
+ 	if (err)
+ 		goto nla_put_failure;
 
-Wait, the current model is not "if ACT_TRAP consult devlink for trap
-configuration". 'ecn_mark' action is always 'trap' ('mirror' in v2) and
-can't be changed. Such packets can always be sent to the CPU, but the
-decision of whether to send them or not is based on the presence of tc
-filters attached to RED's 'mark' qevent with TC_ACT_TRAP
-(TC_ACT_TRAP_MIRROR in v2).
+Which means that user space will see stats come and go based on the
+trap's action. That's not desirable. Instead, change:
 
-I believe that with the proposed changes in v2 it should be perfectly
-clear that ECN marked packets are forwarded in hardware and a copy is
-sent to the CPU.
+[DEVLINK_ATTR_STATS]
+	[DEVLINK_ATTR_STATS_RX_PACKETS]
+	[DEVLINK_ATTR_STATS_RX_BYTES]
+
+To:
+
+[DEVLINK_ATTR_STATS]
+	[DEVLINK_ATTR_STATS_RX_PACKETS]
+	[DEVLINK_ATTR_STATS_RX_BYTES]
+	[DEVLINK_ATTR_STATS_RX_DROPPED]
+
+Where the last attribute is reported to user space for devices that
+support such stats. No changes required in uAPI / iproute2.
