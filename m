@@ -2,185 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 120A230136C
-	for <lists+netdev@lfdr.de>; Sat, 23 Jan 2021 06:42:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 03732301371
+	for <lists+netdev@lfdr.de>; Sat, 23 Jan 2021 06:59:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725914AbhAWFlm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Jan 2021 00:41:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50810 "EHLO
+        id S1725768AbhAWF4b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Jan 2021 00:56:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725287AbhAWFli (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 Jan 2021 00:41:38 -0500
-Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ECEFC06174A;
-        Fri, 22 Jan 2021 21:40:57 -0800 (PST)
-Received: by mail-yb1-xb34.google.com with SMTP id x6so7677224ybr.1;
-        Fri, 22 Jan 2021 21:40:57 -0800 (PST)
+        with ESMTP id S1725290AbhAWF4a (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 Jan 2021 00:56:30 -0500
+Received: from mail-oi1-x230.google.com (mail-oi1-x230.google.com [IPv6:2607:f8b0:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1980C06174A
+        for <netdev@vger.kernel.org>; Fri, 22 Jan 2021 21:55:49 -0800 (PST)
+Received: by mail-oi1-x230.google.com with SMTP id h192so8652236oib.1
+        for <netdev@vger.kernel.org>; Fri, 22 Jan 2021 21:55:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to
-         :content-transfer-encoding;
-        bh=03/Y36mzYVxbtK/mFMaH4uFEzgZnAC+URADhOZPlVXk=;
-        b=cDzMt/iorc7NK+p9noSntxgQqgucrYoB4D8MLvvC2cw7BBR0n7giTqtFAjgYUNyuIB
-         1uviCzRakvco06yt87T8e+A+Wbe7pjYQ9mEkwZKXMugNIOsP5zgq9kA8sF/RmfQaKOdD
-         f+z99Mgcg09fzonX11EEAKGDfttSDkBoZ4cCP3lIzPwcRGHPbwlK6li8S5Pb4lDM4ijJ
-         iEazYvFxCa1YMgq0EMt7w/OUdxjPiafIZ7/Q9pJO4JcJfyaGCc8QydPyzSyOznxJApUE
-         e2BeJzxsGw7C6CIiAr/jCl5GVqXSM3ARgk3oOEJiXpLolKTZiBSRIh39XiPkyOyW0Pa0
-         pcoQ==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=DzXIDoxCShF+D0m41kLIyCBPOiRYQAH/OF2pwzhOznI=;
+        b=HqbvXGzVfINRTIUMELzCFmiQYcjjmFLNdZdXaK1F0Zw0z/eU9WqXyyBrccndD9xhpU
+         tPtfMhmXCZSV7ZZGMf/qBiSp6d1DSZXz/yrjbOW6d3zsHU+PAkg3r7ePQ17ffiWkSN+L
+         t4s7XxIT0EjZMgR7CLj5vJg2uPmsk7xq+lAnRX5C0MEfUsPHbFQHkHFsn333UP0DgDlf
+         +axCbJLAU12um4cRe5gL5nisr6fSl4HtjMYuireLTPj8uQMyj4ViHrm1H50vo74plgz2
+         uthUma1H4uMw+iSoYuQukDqoCLsnfLcyENMePLVugt6FWQuiQ66luNBCxs1cTzZOQ4gT
+         sGvw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=03/Y36mzYVxbtK/mFMaH4uFEzgZnAC+URADhOZPlVXk=;
-        b=GRgoQu922M35SSYAJ7U2J8VsaPDBE3o7+c4grwr/z3BvyVXR0cHFVWnPKYEJk9lpuc
-         K7TZwSdsRSobuTj3b6bo2aJQjX1ITIsEzT7r9B3UfQfJneWOim+D4mfiIo5uufbRDBqL
-         29j/0sW1xmMGS/MSsYSPGgJ4qs+maay/XjI950hM8+8TtvWVXEhr1PMBEYsom/Ww7Hta
-         pLKsKIeImTQufz0msSNzkoFd7M/hxJZhWczBu7Wq/Ii5k2ena1GTwNaNkWzTeBvNjlFz
-         tXXJ3R8xOtSHbOwdkdj5dwBhZh17M43GMMxeKYwFJJ3YYbtRthesTMPR0iL5zVLrjohh
-         w+TQ==
-X-Gm-Message-State: AOAM532HursR7tL+m5UlvnqCw9UxQWCt1wAm5E54Q92w6yhTg1ZZY1dS
-        BgAuEVbWmsdY6cPgJH/APfKsG0IvhAQsm7caHNM=
-X-Google-Smtp-Source: ABdhPJzUjLjUGt+ghARaavXE/vfDAzwC4IkMmm+GlQyG00bio39+Pf78Yh6USxsM0fZvprfT5EOt8RfFxJoPNVHeCmA=
-X-Received: by 2002:a25:c544:: with SMTP id v65mr10612520ybe.167.1611380456246;
- Fri, 22 Jan 2021 21:40:56 -0800 (PST)
+        bh=DzXIDoxCShF+D0m41kLIyCBPOiRYQAH/OF2pwzhOznI=;
+        b=UjjZ9vYkQvtN9GGK3Q+tM3Z6p/Twy9ew8/qMcNAJzqLDzdWP7tI1dFNOs9I9jjU+39
+         uSPADzEMbI6nF3JdpP/TQWfnwG02MwwtVSJJwPsYsv3VwH9JMoptszBYwk36c3mV+ib4
+         faLULwjTINFX0A+XiXYBd34c+KJfNeoRrceE7xN/Wus0irWCTz4EEazTtGe4TpBATpbB
+         S4bK9BxedcF78xnOAklgJuCeEC6AN2kyJXPQyj8Rcc+KTicXIbH/IMCeR32oKHY4Y+MR
+         M0SDJ3BFOQxwnE2cBiywcntROEXi7VVdW07k8fQ9ZAGjQYZj0qNX9uZjLdo/ntzZ0fsr
+         19Qw==
+X-Gm-Message-State: AOAM532FitCbRKKJ0PeMr43vtdXlvWrPVATGD7JFObFuYnoRaHLmqCum
+        E+jaOtQC0oGS3+TULJ6oCGI=
+X-Google-Smtp-Source: ABdhPJwiC7Z2pwERrAb94PU913nND6pdv/hS5tmSkLnXywf0qo0kcPo0oKW3R4CL/XZF5A3Wvkr8TA==
+X-Received: by 2002:a05:6808:99a:: with SMTP id a26mr5683426oic.40.1611381348209;
+        Fri, 22 Jan 2021 21:55:48 -0800 (PST)
+Received: from Davids-MacBook-Pro.local ([8.48.134.50])
+        by smtp.googlemail.com with ESMTPSA id 49sm2140568oth.31.2021.01.22.21.55.46
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 22 Jan 2021 21:55:47 -0800 (PST)
+Subject: Re: [net-next v2 2/2] tcp: Add receive timestamp support for receive
+ zerocopy.
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Arjun Roy <arjunroy.kdev@gmail.com>
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, arjunroy@google.com,
+        edumazet@google.com, soheil@google.com
+References: <20210121004148.2340206-1-arjunroy.kdev@gmail.com>
+ <20210121004148.2340206-3-arjunroy.kdev@gmail.com>
+ <20210122200723.50e4afe6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <a18cbf73-1720-dec0-fbc6-2e357fee6bd8@gmail.com>
+Date:   Fri, 22 Jan 2021 22:55:45 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
+ Gecko/20100101 Thunderbird/78.6.1
 MIME-Version: 1.0
-From:   =?UTF-8?B?5oWV5Yas5Lqu?= <mudongliangabcd@gmail.com>
-Date:   Sat, 23 Jan 2021 13:40:30 +0800
-Message-ID: <CAD-N9QUdXFhTqZXpjg02Ya7viR8WmkORbU7pwNTquNg8k_kzMg@mail.gmail.com>
-Subject: Duplicate crash reports related with smsc75xx/smsc95xx and root cause analysis
-To:     davem@davemloft.net, kuba@kernel.org,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
-        steve.glendinning@shawell.net, UNGLinuxDriver@microchip.com
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20210122200723.50e4afe6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Dear kernel developers,
+On 1/22/21 9:07 PM, Jakub Kicinski wrote:
+> On Wed, 20 Jan 2021 16:41:48 -0800 Arjun Roy wrote:
+>> diff --git a/include/uapi/linux/tcp.h b/include/uapi/linux/tcp.h
+>> index 768e93bd5b51..b216270105af 100644
+>> --- a/include/uapi/linux/tcp.h
+>> +++ b/include/uapi/linux/tcp.h
+>> @@ -353,5 +353,9 @@ struct tcp_zerocopy_receive {
+>>  	__u64 copybuf_address;	/* in: copybuf address (small reads) */
+>>  	__s32 copybuf_len; /* in/out: copybuf bytes avail/used or error */
+>>  	__u32 flags; /* in: flags */
+>> +	__u64 msg_control; /* ancillary data */
+>> +	__u64 msg_controllen;
+>> +	__u32 msg_flags;
+>> +	/* __u32 hole;  Next we must add >1 u32 otherwise length checks fail. */
+> 
+> Well, let's hope nobody steps on this landmine.. :)
+> 
 
-I found that on the syzbot dashboard, =E2=80=9CKMSAN: uninit-value in
-smsc75xx_read_eeprom (2)=E2=80=9D [1],
-"KMSAN: uninit-value in smsc95xx_read_eeprom (2)" [2], "KMSAN:
-uninit-value in smsc75xx_bind" [3],
-"KMSAN: uninit-value in smsc95xx_reset" [4], "KMSAN: uninit-value in
-smsc95xx_wait_eeprom (2)" [5]
-should share the same root cause.
+Past suggestions were made to use anonymous declarations - e.g., __u32
+:32; - as a way of reserving the space for future use. That or declare
+'__u32 resvd', check that it must be 0 and makes it available for later
+(either directly or with a union).
 
-## Root Cause Analysis && Different behaviors
-
-The root cause of these crash reports resides in the
-"__smsc75xx_read_reg/__smsc95xx_read_reg". Take __smsc95xx_read_reg as
-an example,
-
----------------------------------------------------------------------------=
---------------------------------------
-static int __must_check __smsc95xx_read_reg(struct usbnet *dev, u32 index,
-                                            u32 *data, int in_pm)
-{
-        u32 buf;
-        int ret;
-        int (*fn)(struct usbnet *, u8, u8, u16, u16, void *, u16);
-
-        BUG_ON(!dev);
-
-        if (!in_pm)
-                fn =3D usbnet_read_cmd;
-        else
-                fn =3D usbnet_read_cmd_nopm;
-
-        ret =3D fn(dev, USB_VENDOR_REQUEST_READ_REGISTER, USB_DIR_IN
-                 | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
-                 0, index, &buf, 4);
-        if (unlikely(ret < 0)) {
-                netdev_warn(dev->net, "Failed to read reg index 0x%08x: %d\=
-n",
-                            index, ret);
-                return ret;
-        }
-
-        le32_to_cpus(&buf);
-        *data =3D buf;
-
-        return ret;
-}
-
-
-static int __must_check smsc95xx_eeprom_confirm_not_busy(struct usbnet *dev=
-)
-{
-        unsigned long start_time =3D jiffies;
-        u32 val;
-        int ret;
-
-        do {
-                ret =3D smsc95xx_read_reg(dev, E2P_CMD, &val);
-                if (ret < 0) {
-                        netdev_warn(dev->net, "Error reading E2P_CMD\n");
-                        return ret;
-                }
-
-                if (!(val & E2P_CMD_BUSY_))
-                        return 0;
-        ......
-}
----------------------------------------------------------------------------=
---------------------------------------
-
-In a special situation, local variable "buf" is not initialized with
-"fn" function invocation. And the ret is bigger than zero, and buf is
-assigned to "*data". In its parent function -
-smsc95xx_eeprom_confirm_not_busy, KMSAN reports "uninit-value" when
-accessing variable "val".
-Note, due to the lack of testing environment, I don't know the
-concrete reason for the uninitialization of "buf" local variable.
-
-The reason for such different crash behaviors is that the event -
-"buf" is not initialized is random when
-"__smsc75xx_read_reg/__smsc95xx_read_reg" is invoked.
-
-## Patch
-
-diff --git a/drivers/net/usb/smsc75xx.c b/drivers/net/usb/smsc75xx.c
-index 4353b370249f..a8e500d92285 100644
---- a/drivers/net/usb/smsc75xx.c
-+++ b/drivers/net/usb/smsc75xx.c
-@@ -76,7 +76,7 @@ static int smsc75xx_phy_gig_workaround(struct usbnet *dev=
-);
- static int __must_check __smsc75xx_read_reg(struct usbnet *dev, u32 index,
-                                            u32 *data, int in_pm)
- {
--       u32 buf;
-+       u32 buf =3D 0;
-        int ret;
-        int (*fn)(struct usbnet *, u8, u8, u16, u16, void *, u16);
-
-diff --git a/drivers/net/usb/smsc95xx.c b/drivers/net/usb/smsc95xx.c
-index 4c8ee1cff4d4..dae3be723e0c 100644
---- a/drivers/net/usb/smsc95xx.c
-+++ b/drivers/net/usb/smsc95xx.c
-@@ -70,7 +70,7 @@ MODULE_PARM_DESC(turbo_mode, "Enable multiple frames
-per Rx transaction");
- static int __must_check __smsc95xx_read_reg(struct usbnet *dev, u32 index,
-                                            u32 *data, int in_pm)
- {
--       u32 buf;
-+       u32 buf =3D 0;
-        int ret;
-        int (*fn)(struct usbnet *, u8, u8, u16, u16, void *, u16);
-
-If you can have any issues with this statement or our information is
-useful to you, please let us know. Thanks very much.
-
-[1] =E2=80=9CKMSAN: uninit-value in smsc75xx_read_eeprom (2)=E2=80=9D - url
-[2] =E2=80=9CKMSAN: uninit-value in smsc95xx_read_eeprom (2)=E2=80=9D - URL
-[3] "KMSAN: uninit-value in smsc75xx_bind" -
-[4] "KMSAN: uninit-value in smsc95xx_reset" -
-[5] "KMSAN: uninit-value in smsc95xx_wait_eeprom (2)" -
-
---
-My best regards to you.
-
-     No System Is Safe!
-     Dongliang Mu
