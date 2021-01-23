@@ -2,138 +2,162 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E0E0F30115C
-	for <lists+netdev@lfdr.de>; Sat, 23 Jan 2021 01:06:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BE952301176
+	for <lists+netdev@lfdr.de>; Sat, 23 Jan 2021 01:15:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726751AbhAWAF1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jan 2021 19:05:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34782 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726960AbhAWACc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 19:02:32 -0500
-Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F870C06174A;
-        Fri, 22 Jan 2021 16:01:52 -0800 (PST)
-Received: by mail-pg1-x529.google.com with SMTP id n7so4917864pgg.2;
-        Fri, 22 Jan 2021 16:01:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=r0zcK5OGmywiWXQCPpHyBJ5jwx8Q3v3tj2k5NoX1R4Q=;
-        b=U737ERJNYiWCeT5giCEIOY1SeZ/4Mw/RzSJX0+E6pRRZvMwJV8V+vLwGzKo9mvQbsJ
-         QkrhuxfT3OKODEe6eoyfd4FJew1ACBjtrxP/NJPtdzZvidzzVOg2UgBXM1GGmB12rvk1
-         aSwWTiYyWJQMD9JP13QWxYPhePUUhp+CoT9BFtkzHk2XnwtEXgvwP15yv4FGjsSqCmRA
-         WO31bLDYCWubuzApTfw4q8kRDWAAgX4T78lNMdw8aXGbRvxTyDhZSH3WaT8RVcKBZtSx
-         VK2bQKct3ajsQrNSGLvY60/cA0pRv8ZSSZrpX1uTNEctIRBjhteqcI/xvvhLKQsnC18P
-         GhgA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=r0zcK5OGmywiWXQCPpHyBJ5jwx8Q3v3tj2k5NoX1R4Q=;
-        b=OQcuG8qfDkGKzgIp6vLTKAbqD1AKtWyKdi/A/nd5WVy/1j7o9Vu8NIzXIwG2Jahy+w
-         yJUYO+HVVGZ+4wPg5P6k+ibi8feUNE0CcEn8BYJ7UVDkqQsxIFJbqVc8aSgf8cGtmz9u
-         EVrjnahD7mIPWkFSNl6JM+APvFX8k1+JudeX5NvdHMZEdXPblCGswRaNBnzCe3JWASDJ
-         R2R5K+tYxGn0WQan7oYJPx1SlQ4XtHrzrlq9Mxh/kVn5HYme418JUJvT3b0fS9627N8B
-         uS6m92d7+dtlBOwi2Dz7j68IloHpnmdKZm517ouSg0CCBv0WXhPUoRmEcKNkrc5/3nib
-         f+SA==
-X-Gm-Message-State: AOAM533bRfbveL3wLUoZqnwrsbSgKt0b+owkvpKN3HJx3lCFUcOR3ZiQ
-        1sRuyUPeKch8azSwj5FKFyBcpHN1pig=
-X-Google-Smtp-Source: ABdhPJxfA9Pq32dZsQYHANNjveL0UbSMEAjfsLAaAiTyhuv6PA+IBKth7yRvQCFWe8eSHo0cmbho6Q==
-X-Received: by 2002:a63:db03:: with SMTP id e3mr7069054pgg.225.1611360111166;
-        Fri, 22 Jan 2021 16:01:51 -0800 (PST)
-Received: from [10.230.29.30] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id a9sm10077912pfn.178.2021.01.22.16.01.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 22 Jan 2021 16:01:50 -0800 (PST)
-Subject: Re: [PATCH v2] lan743x: add virtual PHY for PHY-less devices
-To:     Sergej Bauer <sbauer@blackbox.su>, Andrew Lunn <andrew@lunn.ch>
-Cc:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Bryan Whitehead <bryan.whitehead@microchip.com>,
-        UNGLinuxDriver@microchip.com,
-        Simon Horman <simon.horman@netronome.com>,
-        Mark Einon <mark.einon@gmail.com>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        linux-kernel@vger.kernel.org
-References: <20210122214247.6536-1-sbauer@blackbox.su>
- <21783568.4JFRnjC3Rk@metabook> <YAtebdG1Q0dxxkdC@lunn.ch>
- <3174210.ndmClRx9B8@metabook>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <5306ffe6-112c-83c9-826a-9bacd661691b@gmail.com>
-Date:   Fri, 22 Jan 2021 16:01:47 -0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.6.1
-MIME-Version: 1.0
-In-Reply-To: <3174210.ndmClRx9B8@metabook>
-Content-Type: text/plain; charset=utf-8
+        id S1726532AbhAWAO3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jan 2021 19:14:29 -0500
+Received: from mga12.intel.com ([192.55.52.136]:9050 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726503AbhAWAN7 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 22 Jan 2021 19:13:59 -0500
+IronPort-SDR: WuM5fJsx1OXydRutLVE6hwjRA4XkN09BIzJlGjEpDoxWpX6pgx8gnC1QCkRRC20EwZxHdp6jx7
+ NMeTdTPejQ6A==
+X-IronPort-AV: E=McAfee;i="6000,8403,9872"; a="158708413"
+X-IronPort-AV: E=Sophos;i="5.79,368,1602572400"; 
+   d="scan'208";a="158708413"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jan 2021 16:13:12 -0800
+IronPort-SDR: zXzV40hZUsW95t2KIOTKdR275qpG2axjJY3xgMYyLB4iaTFGfnu16AcB28NSlUDC1+tRxa89On
+ DpNvFkVTm47Q==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.79,368,1602572400"; 
+   d="scan'208";a="355412663"
+Received: from fmsmsx604.amr.corp.intel.com ([10.18.126.84])
+  by orsmga006.jf.intel.com with ESMTP; 22 Jan 2021 16:13:12 -0800
+Received: from fmsmsx601.amr.corp.intel.com (10.18.126.81) by
+ fmsmsx604.amr.corp.intel.com (10.18.126.84) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Fri, 22 Jan 2021 16:13:09 -0800
+Received: from fmsedg601.ED.cps.intel.com (10.1.192.135) by
+ fmsmsx601.amr.corp.intel.com (10.18.126.81) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2106.2
+ via Frontend Transport; Fri, 22 Jan 2021 16:13:09 -0800
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.168)
+ by edgegateway.intel.com (192.55.55.70) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.1713.5; Fri, 22 Jan 2021 16:13:09 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=RrY18A0mQ3abUWqY8HOcHwyot6BFK+jRbI/uyMqsfpEK6shMyC6OHeFvDvkWoIqPWk6NCCrygnQoVwxsMHzVgHCfiH/ZNRaDL7PRAm1wY+7+J/GpVVGBhYlGhBIO/CY1tg5vSw6kH+STrKIL2bS7dm3pIqtubOeCKMIkOjiS88HEmvVLdaX3VyzxBDESybcm+j7nuHW2+2ptOeDKh+UtygruH9ynHU5oX7NtoEH2+u0AeIx6Fxz620P7l22kXJkqOA320jVfbTJixHbAqqSI6vKJZAZN/CDmVzLZiT7oODBQnkMdLHNLKuEnLhZxscWmDG4PQxUkSYk21RntNlPgSg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=hOWyPU9tu6OSE8wE1JRWYWxCYSYdc0/BlU8TEBwV0dg=;
+ b=VYmBBQl+lC18bNbWN3ouFCyzks94MXEbCO85WuqeWOBG5Iv/2J96+meI7gxBYxPbC0sV0fOPSCiUwrE4L1L5AyGf7ZN14hJJC/USugBOiywRZn3PYLAaKdsSYJQadPtPAK9/6z7IwbWod3nmlXjpg0ivxNfQQ4DRHP/9QDdwLZcrxH4ur90etcABECOjK1nFLhc14Z+M1eZc484uT3B+MYD7moMQwdixUh5kvSTgreP7H7eAlqKo//0EXYvP7SjlZenReZXTlPBrwJ+weJUhmw8s2bTEdnYrkDDPET31EUM2oOGfnr4QTaO0Ucaclb595W3W+cy4M2U+uAFFZ5Qo5A==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
+ dkim=pass header.d=intel.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
+ s=selector2-intel-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=hOWyPU9tu6OSE8wE1JRWYWxCYSYdc0/BlU8TEBwV0dg=;
+ b=NX9w96apGNyk/lZJUzvnm5Iuvn167OMarpAn9hsZ5InpKfnf7OW8JN5rOHripTNS3m+8IGUA4kIEK7skJKiPqOewuTrNESjJttU7eckjIQPpxTNgYmpUwqJqptbeU38ztkwq2PQFQ8QgdFCaD632yPdW94xTFdc+J7EicP8f608=
+Received: from SN6PR11MB3229.namprd11.prod.outlook.com (2603:10b6:805:ba::28)
+ by SA2PR11MB5195.namprd11.prod.outlook.com (2603:10b6:806:11a::16) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3784.15; Sat, 23 Jan
+ 2021 00:13:08 +0000
+Received: from SN6PR11MB3229.namprd11.prod.outlook.com
+ ([fe80::fc53:e004:bade:6bc6]) by SN6PR11MB3229.namprd11.prod.outlook.com
+ ([fe80::fc53:e004:bade:6bc6%6]) with mapi id 15.20.3784.015; Sat, 23 Jan 2021
+ 00:13:08 +0000
+From:   "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>
+To:     "wangyunjian@huawei.com" <wangyunjian@huawei.com>,
+        "alexander.duyck@gmail.com" <alexander.duyck@gmail.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "jerry.lilijun@huawei.com" <jerry.lilijun@huawei.com>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "xudingke@huawei.com" <xudingke@huawei.com>,
+        "davem@davemloft.net" <davem@davemloft.net>
+Subject: Re: [Intel-wired-lan] [PATCH net v2] ixgbe: add NULL pointer check
+ before calling xdp_rxq_info_reg
+Thread-Topic: [Intel-wired-lan] [PATCH net v2] ixgbe: add NULL pointer check
+ before calling xdp_rxq_info_reg
+Thread-Index: AQHW8MKy0kqSrmmyy0+0kJqXSpUyNKoz7aEAgABp5oA=
+Date:   Sat, 23 Jan 2021 00:13:08 +0000
+Message-ID: <b14b76065d51d7a3242231a78f0b41c7166c0882.camel@intel.com>
+References: <1611322105-30688-1-git-send-email-wangyunjian@huawei.com>
+         <CAKgT0UcpQpGLCdRbaEzyb4Q4gC9gmefg4bMFcgrQoRwy6UJvrQ@mail.gmail.com>
+In-Reply-To: <CAKgT0UcpQpGLCdRbaEzyb4Q4gC9gmefg4bMFcgrQoRwy6UJvrQ@mail.gmail.com>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: Evolution 3.28.5 (3.28.5-3.fc28) 
+authentication-results: huawei.com; dkim=none (message not signed)
+ header.d=none;huawei.com; dmarc=none action=none header.from=intel.com;
+x-originating-ip: [134.134.136.204]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: c70c2248-855e-4ab7-6565-08d8bf33a9bb
+x-ms-traffictypediagnostic: SA2PR11MB5195:
+x-microsoft-antispam-prvs: <SA2PR11MB5195CC662885578AA3DEBA2FC6BF9@SA2PR11MB5195.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6790;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: D6YUSgCiizRyPhaVV+ViWZwuBvrQF4EuChI+1SUqJbbsCEfGwx0B2gKzMbgIYPw2HPo4D1lojADa2m2+0I5wBL/ZOV2PM+knchbI5ZvUE5QpePKMfqpXqhu2Osb81vt4RP+04cecS6znsspLe8eMI9364gJfFlNNlhtiMliQLrnDYGcH0Z6pP9wqxMmLjDSpJITp9ynaVBgXUkBxuCGZ33hGqf0Wa1D6bgLcXmH1l5Ow85/T+j4590lj1bef6gJ7pSXctMZMq9/U6EnwuvVseapiPf7fGsVhTG+kZk6nZGkUctkFiLddXbTUyQJZHbZjCLwFpeKgGBh00WhvXGzRQFTAMsTIZjcFR0eHbemibJUJWCq+5dugLfz7dcX9YuvDFP5lTo0nniAbzPMdlStFNKAjxxgbjAtmsYA7wOvhIXv1m85lfapno8kYcoNBckmT4z4Fozvn9PV7TE28dD56D0J9JTebRkoRJ+/Tw2xmFREA89lYm6hksg81st0a6tWq+CsK8jX9epu6Kc0Q62GEvZKUu4RhZYe2OGfrU6Dg63oEvXfKifQJhvX5fU+dbCIh
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR11MB3229.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(366004)(396003)(346002)(39860400002)(136003)(376002)(2616005)(8936002)(6486002)(2906002)(54906003)(110136005)(6506007)(86362001)(478600001)(53546011)(8676002)(6512007)(71200400001)(316002)(186003)(26005)(4326008)(36756003)(64756008)(4744005)(66476007)(66946007)(5660300002)(66556008)(76116006)(91956017)(66446008)(99106002);DIR:OUT;SFP:1102;
+x-ms-exchange-antispam-messagedata: =?utf-8?B?UENiM2h2QlM0a2J3cG9qYk9lNEdDY09FdzkzcFhWSDViQ0k1TmpEL0Z0Uklr?=
+ =?utf-8?B?YlA5TjJJc3kwNlJXdlRmeWg0UlZ5VW9zZHl0bGJLVEdhOTF2L3ZXNU04UmNr?=
+ =?utf-8?B?MDNVMFo5TUdOSWVwcCtTa1JqcHFPOFEwZ2NaOW1nWTlXQlZ2WlcyTE9OTXAr?=
+ =?utf-8?B?RlhsOXF0WU0yTk1YK1BNRytUVFlXQmRyYkNmT0ZFa1VsZkxnQW5MZWx1UUxZ?=
+ =?utf-8?B?Q3AwQklOZlMwNjVOWHIyREtyM1ZEYnM5dEVlMU4vMEJ1bHA1akFmRUhsUVRV?=
+ =?utf-8?B?Yy9jM1BsS0YyQWp0WUczWGFEZEZLTGxjMkRoL1B2S1lQSW5WclFyTkpteEpq?=
+ =?utf-8?B?NUFWQ0ZIam1jN0p1VWJkNEwydFB1Q3JzY0huM2tiY2I5bVFrajdMaFVYbllL?=
+ =?utf-8?B?Mkd2NUxTM21LSnk1K1ZZZEpnbUI1cVhCUElaam96a2xFTVpGVytmOWJoZEhL?=
+ =?utf-8?B?ejRLN3VpSmYzNElaenk4TVRCVEg4WGZCTE01ZFh5dmZFT2tpRDhvVjR6OWQ2?=
+ =?utf-8?B?UnJFWUpUZTA3YjBGR0E1VTRCK1BkYzNrV0YvSlhEcUg3VmwvZFQ2ckprS3J4?=
+ =?utf-8?B?Uzlvb2tnbElPUTBySkZPS2Z5YXNvbythaDBPdWFpUjFBblFiK00zR2xDK2wr?=
+ =?utf-8?B?TWdyK3I0SFpaRTNjWFZPLzVOSEk2N2lFSFBDUk80dmFscFc0RmhrYmhyT3B2?=
+ =?utf-8?B?RFhmNEI1dkNtdVcrK3ZSUjdXMCs1ZjhHcHdhV0hsVmNGT2hGZmJkZTBZYU1j?=
+ =?utf-8?B?YTBTOE5xVEFtNlI0cXFPMUxPWWdNbzJYZzZTM2NFWHhUdDM5ZE9DaGRnNHBH?=
+ =?utf-8?B?bndQSEZBdklRK3RQWmVYUGZxWVFGd3J6VjcxbUxWNXgxMTNubE5CaTg0STZ6?=
+ =?utf-8?B?Q3BhNmJJZ2w2a040UnIrMGVYZXFVZkh1RE1kWnVQY2syK0JoQWx1YVJRMHov?=
+ =?utf-8?B?dVlueVVxdHhwRTI0SXRMVE5lbExDT0gwR29yd2tEMnJJZjY0LzdOeS9oWi9u?=
+ =?utf-8?B?VERPVTlYa1Z4a25reHlHdnlBMXpsSFRaSW1BS3NndGZRdTkrc2l0MUJscWxR?=
+ =?utf-8?B?eU1Za3lmQlFTZFByUDh4V3BTS0o4ekJEeVRXK243UHJvcWVjREQwMHAwNytK?=
+ =?utf-8?B?cVk0emZTdEZkeWVIM3liZ2ZPY00wRHlxS0FUYTVZQlhaR0xrV1pLaXNieE9J?=
+ =?utf-8?B?T09xRk1lcEE5bG1JVDFFUUYyK3FoMHVVeWVoZ3pTNEVqNHJSNEhzMnViVU51?=
+ =?utf-8?B?aCtHU1RXcEZYQm9kNFBhQmpPcjAvU0c1bExVK2xUUDRXb3p6c2xrSHhoU1Fi?=
+ =?utf-8?B?Sk9lc290eTA4Z2pNU3orV0VzYXVkdDhVeTB5bC9jVkYxSlI4MmlwOU5tNFNo?=
+ =?utf-8?B?RHBhWmNjYVZ6RUoxQU16VnMxTWhldnhrSW5nS2tzTlgrOEJzSlVtOVNtYVFz?=
+ =?utf-8?B?YXRTdmF2SDJma2JZbUk0L3czWGRpa2NENVVSU2FBPT0=?=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <F384A5C0B14E3248AF7C518E9D33B48B@namprd11.prod.outlook.com>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: SN6PR11MB3229.namprd11.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: c70c2248-855e-4ab7-6565-08d8bf33a9bb
+X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Jan 2021 00:13:08.4043
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: qdrtQfvsX1cMdmOllqd7LZQafiNo2DwCVfIXEcavuY/C1KEo5WQQCsO+rWIh4vpK/u2Sh7yCngRcR4OeRFdT0tMOUjqXgXpoGE3UBvvop0M=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SA2PR11MB5195
+X-OriginatorOrg: intel.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 1/22/2021 3:58 PM, Sergej Bauer wrote:
-> On Saturday, January 23, 2021 2:23:25 AM MSK Andrew Lunn wrote:
->>>>> @@ -1000,8 +1005,10 @@ static void lan743x_phy_close(struct
->>>>> lan743x_adapter *adapter)>
->>>>>
->>>>>  	struct net_device *netdev = adapter->netdev;
->>>>>  	
->>>>>  	phy_stop(netdev->phydev);
->>>>>
->>>>> -	phy_disconnect(netdev->phydev);
->>>>> -	netdev->phydev = NULL;
->>>>> +	if (phy_is_pseudo_fixed_link(netdev->phydev))
->>>>> +		lan743x_virtual_phy_disconnect(netdev->phydev);
->>>>> +	else
->>>>> +		phy_disconnect(netdev->phydev);
->>>>
->>>> phy_disconnect() should work. You might want to call
->>
->> There are drivers which call phy_disconnect() on a fixed_link. e.g.
->>
->> https://elixir.bootlin.com/linux/v5.11-rc4/source/drivers/net/usb/lan78xx.c#
->> L3555.
->>
-> 
->> It could be your missing call to fixed_phy_unregister() is leaving
->> behind bad state.
->>
-> lan743x_virtual_phy_disconnect removes sysfs-links and calls 
-> fixed_phy_unregister()
-> and the reason was phydev in sysfs.
-> 
->>> It was to make ethtool show full set of supported speeds and MII only in
->>> supported ports (without TP and the no any ports in the bare card).
->>
->> But fixed link does not support the full set of speed. It is fixed. It
->> supports only one speed it is configured with.
-> That's why I "re-implemented the fixed PHY driver" as Florian said.
-> The goal of virtual phy was to make an illusion of real device working in
-> loopback mode. So I could use ethtool and ioctl's to switch speed of device.
-> 
->> And by setting it
->> wrongly, you are going to allow the user to do odd things, like use
->> ethtool force the link speed to a speed which is not actually
->> supported.
-> I have lan743x only and in loopback mode it allows to use speeds 
-> 10/100/1000MBps
-> in full-duplex mode only. But the highest speed I have achived was something 
-> near
-> 752Mbps...
-> And I can switch speed on the fly, without reloading the module.
-> 
-> May by I should limit the list of acceptable devices?
-
-It is not clear what your use case is so maybe start with explaining it
-and we can help you define something that may be acceptable for upstream
-inclusion.
--- 
-Florian
+T24gRnJpLCAyMDIxLTAxLTIyIGF0IDA5OjU0IC0wODAwLCBBbGV4YW5kZXIgRHV5Y2sgd3JvdGU6
+DQo+IE9uIEZyaSwgSmFuIDIyLCAyMDIxIGF0IDU6MjkgQU0gd2FuZ3l1bmppYW4gPHdhbmd5dW5q
+aWFuQGh1YXdlaS5jb20+DQo+IHdyb3RlOg0KPiA+IA0KPiA+IEZyb206IFl1bmppYW4gV2FuZyA8
+d2FuZ3l1bmppYW5AaHVhd2VpLmNvbT4NCj4gPiANCj4gPiBUaGUgcnhfcmluZy0+cV92ZWN0b3Ig
+Y291bGQgYmUgTlVMTCwgc28gaXQgbmVlZHMgdG8gYmUgY2hlY2tlZA0KPiA+IGJlZm9yZQ0KPiA+
+IGNhbGxpbmcgeGRwX3J4cV9pbmZvX3JlZy4NCj4gPiANCj4gPiBGaXhlczogYjAyZTVhMGViYjE3
+MiAoInhzazogUHJvcGFnYXRlIG5hcGlfaWQgdG8gWERQIHNvY2tldCBSeA0KPiA+IHBhdGgiKQ0K
+PiA+IEFkZHJlc3Nlcy1Db3Zlcml0eTogKCJEZXJlZmVyZW5jZSBhZnRlciBudWxsIGNoZWNrIikN
+Cj4gPiBTaWduZWQtb2ZmLWJ5OiBZdW5qaWFuIFdhbmcgPHdhbmd5dW5qaWFuQGh1YXdlaS5jb20+
+DQo+IA0KPiBUaGlzIGlzIGtpbmQgb2YgYSBiaWcgZXNjYXBlIGZvciB0aGUgZHJpdmVyLiBGcm9t
+IHdoYXQgSSBjYW4gdGVsbCBpdA0KPiBsb29rcyBsaWtlIHRoZSAiZXRodG9vbCAtdCIgdGVzdCBu
+b3cgY2F1c2VzIGEgTlVMTCBwb2ludGVyDQo+IGRlcmVmZXJlbmNlLg0KPiANCj4gQXMgZmFyIGFz
+IHRoZSBwYXRjaCBpdHNlbGYgaXQgbG9va3MgZ29vZCB0byBtZS4gVGhpcyBzaG91bGQgcHJvYmFi
+bHkNCj4gYmUgcHVzaGVkIGZvciBhbnkgb2YgdGhlIG90aGVyIEludGVsIGRyaXZlcnMgdGhhdCBm
+b2xsb3cgYSBzaW1pbGFyDQo+IG1vZGVsIGFzIEkgc3VzcGVjdCB0aGV5IHdlcmUgZXhoaWJpdCB0
+aGUgc2FtZSBzeW1wdG9tIHdpdGggImV0aHRvb2wNCj4gLXQiIHRyaWdnZXJpbmcgYSBOVUxMIHBv
+aW50ZXIgZGVyZWZlcmVuY2UuDQoNClRoYW5rcyBmb3IgdGhlIHJldmlldyBBbGV4LiBXZSdsbCBs
+b29rIGludG8gZml4aW5nIHRoZSBvdGhlciBJbnRlbA0KZHJpdmVycy4NCg0KVGhhbmtzLA0KVG9u
+eQ0K
