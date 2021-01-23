@@ -2,75 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2306A3011FC
-	for <lists+netdev@lfdr.de>; Sat, 23 Jan 2021 02:28:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B9BA3301208
+	for <lists+netdev@lfdr.de>; Sat, 23 Jan 2021 02:34:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726147AbhAWB1s (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jan 2021 20:27:48 -0500
-Received: from mail.kernel.org ([198.145.29.99]:55866 "EHLO mail.kernel.org"
+        id S1726275AbhAWBde (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jan 2021 20:33:34 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:55582 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726007AbhAWB1p (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 22 Jan 2021 20:27:45 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 8A4E723B3E;
-        Sat, 23 Jan 2021 01:27:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611365224;
-        bh=2SU6WEhMDJ8r1hQaUdgvnOv5FxDz9Wshd4CNOOPSgZA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=uiZ7jLQKJ1gg92i5XZsQLyZqlQe7k570Ixm5CCNhIfyAEQHzqzIWOGfzXionmN+8c
-         nsEZEHHAks9VpJdECB6TaYjKt4sS7kPYsPbFO0Yz+vrw+SQfpE/7GAsohPLpw1EW6I
-         9ct83O13X+rKsulPzIWTxP7X99K7JHNPU3JFosuB5u4xL+ClrvINBjk+/RX2M3CpRc
-         ILfF/A4pnrA+ZPfv/IOfNnd/5YZ/wcjWiz7Bmq+0639r0lsrYsVKbQp78lDqbLYYgU
-         CNhpZcIvkuKY96OSvufcdg4yFz7WEiPGpVRbzEoPphKr5JU3p6u4QFvFZiweRM5fXD
-         7t8FhIYBDBdig==
-Date:   Fri, 22 Jan 2021 17:27:03 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Eric Dumazet <edumazet@google.com>
-Cc:     Pengcheng Yang <yangpc@wangsu.com>,
-        Neal Cardwell <ncardwell@google.com>,
-        Yuchung Cheng <ycheng@google.com>,
-        David Miller <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>
-Subject: Re: [PATCH net] tcp: fix TLP timer not set when CA_STATE changes
- from DISORDER to OPEN
-Message-ID: <20210122172703.39cfff6c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CANn89iJoBeApn6y8k9xv_FZCGKG8n1GyXb9SKYq+LGBTp52cag@mail.gmail.com>
-References: <1611311242-6675-1-git-send-email-yangpc@wangsu.com>
-        <CANn89iJoBeApn6y8k9xv_FZCGKG8n1GyXb9SKYq+LGBTp52cag@mail.gmail.com>
+        id S1725881AbhAWBdc (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 22 Jan 2021 20:33:32 -0500
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1l37n4-002B2R-3T; Sat, 23 Jan 2021 02:32:38 +0100
+Date:   Sat, 23 Jan 2021 02:32:38 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Sergej Bauer <sbauer@blackbox.su>
+Cc:     Florian Fainelli <f.fainelli@gmail.com>, netdev@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Bryan Whitehead <bryan.whitehead@microchip.com>,
+        UNGLinuxDriver@microchip.com,
+        Simon Horman <simon.horman@netronome.com>,
+        Mark Einon <mark.einon@gmail.com>,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2] lan743x: add virtual PHY for PHY-less devices
+Message-ID: <YAt8trmR1FjGnCeF@lunn.ch>
+References: <20210122214247.6536-1-sbauer@blackbox.su>
+ <3174210.ndmClRx9B8@metabook>
+ <5306ffe6-112c-83c9-826a-9bacd661691b@gmail.com>
+ <4496952.bab7Homqhv@metabook>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <4496952.bab7Homqhv@metabook>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 22 Jan 2021 11:53:46 +0100 Eric Dumazet wrote:
-> On Fri, Jan 22, 2021 at 11:28 AM Pengcheng Yang <yangpc@wangsu.com> wrote:
-> >
-> > When CA_STATE is in DISORDER, the TLP timer is not set when receiving
-> > an ACK (a cumulative ACK covered out-of-order data) causes CA_STATE to
-> > change from DISORDER to OPEN. If the sender is app-limited, it can only
-> > wait for the RTO timer to expire and retransmit.
-> >
-> > The reason for this is that the TLP timer is set before CA_STATE changes
-> > in tcp_ack(), so we delay the time point of calling tcp_set_xmit_timer()
-> > until after tcp_fastretrans_alert() returns and remove the
-> > FLAG_SET_XMIT_TIMER from ack_flag when the RACK reorder timer is set.
-> >
-> > This commit has two additional benefits:
-> > 1) Make sure to reset RTO according to RFC6298 when receiving ACK, to
-> > avoid spurious RTO caused by RTO timer early expires.
-> > 2) Reduce the xmit timer reschedule once per ACK when the RACK reorder
-> > timer is set.
-> >
-> > Link: https://lore.kernel.org/netdev/1611139794-11254-1-git-send-email-yangpc@wangsu.com
-> > Signed-off-by: Pengcheng Yang <yangpc@wangsu.com>
-> > Cc: Neal Cardwell <ncardwell@google.com>
->
-> This looks like a very nice patch, let me run packetdrill tests on it.
-> 
-> By any chance, have you cooked a packetdrill test showing the issue
-> (failing on unpatched kernel) ?
+> it migth be helpful for developers work on userspace networking tools with
+> PHY-less lan743x
 
-Any guidance on backporting / fixes tag? (once the packetdrill
-questions are satisfied)
+(the interface even could not be brought up)
+> of course, there nothing much to do without TP port but the difference is
+> representative.
+> 
+> sbauer@metamini ~$ sudo ethtool eth7
+> Settings for eth7:
+> Cannot get device settings: No such device
+>         Supports Wake-on: pumbag
+>         Wake-on: d
+>         Current message level: 0x00000137 (311)
+>                                drv probe link ifdown ifup tx_queued
+>         Link detected: no
+> sbauer@metamini ~$ sudo ifup eth7
+> sbauer@metamini ~$ sudo ethtool eth7
+> Settings for eth7:
+>         Supported ports: [ MII ]
+>         Supported link modes:   10baseT/Full 
+>                                 100baseT/Full 
+>                                 1000baseT/Full 
+>         Supported pause frame use: Symmetric Receive-only
+>         Supports auto-negotiation: Yes
+>         Supported FEC modes: Not reported
+>         Advertised link modes:  10baseT/Full 
+>                                 100baseT/Full 
+>                                 1000baseT/Full 
+>         Advertised pause frame use: Symmetric Receive-only
+>         Advertised auto-negotiation: Yes
+>         Advertised FEC modes: Not reported
+>         Speed: 1000Mb/s
+>         Duplex: Full
+>         Port: MII
+>         PHYAD: 0
+>         Transceiver: internal
+>         Auto-negotiation: on
+>         Supports Wake-on: pumbag
+>         Wake-on: d
+>         Current message level: 0x00000137 (311)
+>                                drv probe link ifdown ifup tx_queued
+>         Link detected: yes
+> sbauer@metamini ~$ sudo mii-tool -vv eth7
+> Using SIOCGMIIPHY=0x8947
+> eth7: negotiated 1000baseT-FD, link ok
+>   registers for MII PHY 0: 
+>     5140 512d 7431 0011 4140 4140 000d 0000
+>     0000 0200 7800 0000 0000 0000 0000 2000
+>     0000 0000 0000 0000 0000 0000 0000 0000
+>     0000 0000 0000 0000 0000 0000 0000 0000
+>   product info: vendor 1d:0c:40, model 1 rev 1
+>   basic mode:   loopback, autonegotiation enabled
+>   basic status: autonegotiation complete, link ok
+>   capabilities: 1000baseT-FD 100baseTx-FD 10baseT-FD
+>   advertising:  1000baseT-FD 100baseTx-FD 10baseT-FD
+>   link partner: 1000baseT-FD 100baseTx-FD 10baseT-FD
+
+You have not shown anything i cannot do with the ethernet interfaces i
+have in my laptop. And since ethtool is pretty standardized, what
+lan743x offers should be pretty much the same as any 1G Ethernet MAC
+using most 1G PHYs.
+
+      Andrew
