@@ -2,104 +2,185 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 72597301336
-	for <lists+netdev@lfdr.de>; Sat, 23 Jan 2021 06:18:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 120A230136C
+	for <lists+netdev@lfdr.de>; Sat, 23 Jan 2021 06:42:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726668AbhAWFRr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Jan 2021 00:17:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45646 "EHLO
+        id S1725914AbhAWFlm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Jan 2021 00:41:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726426AbhAWFRY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 Jan 2021 00:17:24 -0500
-Received: from mail-oo1-xc29.google.com (mail-oo1-xc29.google.com [IPv6:2607:f8b0:4864:20::c29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94C01C061786;
-        Fri, 22 Jan 2021 21:16:44 -0800 (PST)
-Received: by mail-oo1-xc29.google.com with SMTP id u7so1345916ooq.0;
-        Fri, 22 Jan 2021 21:16:44 -0800 (PST)
+        with ESMTP id S1725287AbhAWFli (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 Jan 2021 00:41:38 -0500
+Received: from mail-yb1-xb34.google.com (mail-yb1-xb34.google.com [IPv6:2607:f8b0:4864:20::b34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8ECEFC06174A;
+        Fri, 22 Jan 2021 21:40:57 -0800 (PST)
+Received: by mail-yb1-xb34.google.com with SMTP id x6so7677224ybr.1;
+        Fri, 22 Jan 2021 21:40:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=zxNG662Tpnsoz8s5rDmsMzt/BLhFhjnXV6eLd4EYb9o=;
-        b=OCm+4WEKTHVXtK6/TX7smrp79P/GGOR+w/7KiDo+8jeq/ksAy3rxssV1CuJv6tuYRl
-         p/AO5XsNXHgW2UOv1LjNUy9jyWYbacgs8146zP5RAQMwQaqZUA1i9cG4embLRK4R0loy
-         wmYN/xM2gMJOdX1ZsfjMYVohVMn6dGF3t1mDM/MU+TyX1a41Z8Asv1xFhaPkiztuxYOJ
-         uiHI7g1FFfKkgDaqzWQXf0NpL1tBARdtCv8A6VMZjiVCLg1OAmzEeOzXpuwqMUuJOWVO
-         E750pIbTaJ2CZXUxdY8Ex3g0JqKMUYhbBGDr4sMLnHictC8UXeMGtGB5K+dp7Z/v3w+5
-         g9Ag==
+        h=mime-version:from:date:message-id:subject:to
+         :content-transfer-encoding;
+        bh=03/Y36mzYVxbtK/mFMaH4uFEzgZnAC+URADhOZPlVXk=;
+        b=cDzMt/iorc7NK+p9noSntxgQqgucrYoB4D8MLvvC2cw7BBR0n7giTqtFAjgYUNyuIB
+         1uviCzRakvco06yt87T8e+A+Wbe7pjYQ9mEkwZKXMugNIOsP5zgq9kA8sF/RmfQaKOdD
+         f+z99Mgcg09fzonX11EEAKGDfttSDkBoZ4cCP3lIzPwcRGHPbwlK6li8S5Pb4lDM4ijJ
+         iEazYvFxCa1YMgq0EMt7w/OUdxjPiafIZ7/Q9pJO4JcJfyaGCc8QydPyzSyOznxJApUE
+         e2BeJzxsGw7C6CIiAr/jCl5GVqXSM3ARgk3oOEJiXpLolKTZiBSRIh39XiPkyOyW0Pa0
+         pcoQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to
          :content-transfer-encoding;
-        bh=zxNG662Tpnsoz8s5rDmsMzt/BLhFhjnXV6eLd4EYb9o=;
-        b=nkaObXN27mjp4XvW7kYn6qaaoqJgDqe6da9FrA02OH7RWCS71j8OlIncnSr/NJinWz
-         6EUwr6jhcNkpajh3DFFifp2kvskU8f5aG7mZvJvy5CfoVYORtH2JEBqiZnud1EMEs7CL
-         RcaIcOJUtdnK/DGJt4Ivcka24/zJ2NDdv4X105Co1oJ6bGEdmUgcaL+/J98k0biGTOTT
-         39BiQL4QyLmckJ/C+Jrv1OVXKzd7l30EBalHzIquKstXkeTMy8zGjan27SdN998M/Fq2
-         c7bqslauz4Iy9wTx1TEBp/ydV3ovALTJR5MXayT0VCpGqLrh02x1QlxeFVOzsIOwSY+u
-         Y13Q==
-X-Gm-Message-State: AOAM533hA5ovcNIg1U7fPGrIeJXLLEfU7JUNaSrGvojjQxA3iZ3/Bk2M
-        KuP/9PBb+MXYakKaGIe+Rww=
-X-Google-Smtp-Source: ABdhPJxA+4+j4HTMeDWLI8zan6VNkVXWGoDLVeWMHezRa95zOtEuJmLY0QZf0uyYNHswa/3PTASX8w==
-X-Received: by 2002:a4a:52d1:: with SMTP id d200mr813555oob.64.1611379003994;
-        Fri, 22 Jan 2021 21:16:43 -0800 (PST)
-Received: from Davids-MacBook-Pro.local ([8.48.134.50])
-        by smtp.googlemail.com with ESMTPSA id e14sm2628oou.19.2021.01.22.21.16.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 22 Jan 2021 21:16:43 -0800 (PST)
-Subject: Re: [PATCH v3 net-next 1/1] Allow user to set metric on default route
- learned via Router Advertisement.
-To:     =?UTF-8?Q?Maciej_=c5=bbenczykowski?= <zenczykowski@gmail.com>
-Cc:     Praveen Chaudhary <praveen5582@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, corbet@lwn.net,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki Yoshifuji <yoshfuji@linux-ipv6.org>,
-        Linux NetDev <netdev@vger.kernel.org>,
-        linux-doc@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Zhenggen Xu <zxu@linkedin.com>
-References: <20210119212959.25917-1-pchaudhary@linkedin.com>
- <1cc9e887-a984-c14a-451c-60a202c4cf20@gmail.com>
- <CAHo-Oozz-mGNz4sphOJekNeAgGJCLmiZaiNccXjiQ02fQbfthQ@mail.gmail.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <bc855311-f348-430b-0d3c-9103d4fdbbb6@gmail.com>
-Date:   Fri, 22 Jan 2021 22:16:41 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
- Gecko/20100101 Thunderbird/78.6.1
+        bh=03/Y36mzYVxbtK/mFMaH4uFEzgZnAC+URADhOZPlVXk=;
+        b=GRgoQu922M35SSYAJ7U2J8VsaPDBE3o7+c4grwr/z3BvyVXR0cHFVWnPKYEJk9lpuc
+         K7TZwSdsRSobuTj3b6bo2aJQjX1ITIsEzT7r9B3UfQfJneWOim+D4mfiIo5uufbRDBqL
+         29j/0sW1xmMGS/MSsYSPGgJ4qs+maay/XjI950hM8+8TtvWVXEhr1PMBEYsom/Ww7Hta
+         pLKsKIeImTQufz0msSNzkoFd7M/hxJZhWczBu7Wq/Ii5k2ena1GTwNaNkWzTeBvNjlFz
+         tXXJ3R8xOtSHbOwdkdj5dwBhZh17M43GMMxeKYwFJJ3YYbtRthesTMPR0iL5zVLrjohh
+         w+TQ==
+X-Gm-Message-State: AOAM532HursR7tL+m5UlvnqCw9UxQWCt1wAm5E54Q92w6yhTg1ZZY1dS
+        BgAuEVbWmsdY6cPgJH/APfKsG0IvhAQsm7caHNM=
+X-Google-Smtp-Source: ABdhPJzUjLjUGt+ghARaavXE/vfDAzwC4IkMmm+GlQyG00bio39+Pf78Yh6USxsM0fZvprfT5EOt8RfFxJoPNVHeCmA=
+X-Received: by 2002:a25:c544:: with SMTP id v65mr10612520ybe.167.1611380456246;
+ Fri, 22 Jan 2021 21:40:56 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <CAHo-Oozz-mGNz4sphOJekNeAgGJCLmiZaiNccXjiQ02fQbfthQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+From:   =?UTF-8?B?5oWV5Yas5Lqu?= <mudongliangabcd@gmail.com>
+Date:   Sat, 23 Jan 2021 13:40:30 +0800
+Message-ID: <CAD-N9QUdXFhTqZXpjg02Ya7viR8WmkORbU7pwNTquNg8k_kzMg@mail.gmail.com>
+Subject: Duplicate crash reports related with smsc75xx/smsc95xx and root cause analysis
+To:     davem@davemloft.net, kuba@kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        linux-usb@vger.kernel.org, netdev@vger.kernel.org,
+        steve.glendinning@shawell.net, UNGLinuxDriver@microchip.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/22/21 9:02 PM, Maciej Żenczykowski wrote:
-> Why can't we get rid of the special case for 0 and simply make 1024 the
-> default value?
+Dear kernel developers,
 
-That would work too.
+I found that on the syzbot dashboard, =E2=80=9CKMSAN: uninit-value in
+smsc75xx_read_eeprom (2)=E2=80=9D [1],
+"KMSAN: uninit-value in smsc95xx_read_eeprom (2)" [2], "KMSAN:
+uninit-value in smsc75xx_bind" [3],
+"KMSAN: uninit-value in smsc95xx_reset" [4], "KMSAN: uninit-value in
+smsc95xx_wait_eeprom (2)" [5]
+should share the same root cause.
 
-> 
-> As for making it an RA option: it's not clear how that would work, the
-> use case I see for this is for example two connections to the internet,
-> of which one is clearly better (higher throughput, lower latency, lower
-> packet loss, etc) then the other.
-> 
-> The upstream routers would have to somehow coordinate with each other
-> the metric values... that seems impossible to achieve in practice -
-> unless they do something like report expected down/up
-> bandwidth, latency, etc...  While some sort of policy on the machine
-> itself seems much more feasible (for example wired interface > wireless
-> interface > cell interface or something like that)
+## Root Cause Analysis && Different behaviors
 
-I was thinking the admin of the network controls the RAs and knows which
-paths are preferred over the admin of the node receiving the RA (not
-practical for a mobile setup with cell vs wifi, but is for a DC which is
-the driving use case).
+The root cause of these crash reports resides in the
+"__smsc75xx_read_reg/__smsc95xx_read_reg". Take __smsc95xx_read_reg as
+an example,
 
-But it takes an extension to IPv6/ndisc to add metric as an RA option,
-so not realistic in a reasonable time frame.
+---------------------------------------------------------------------------=
+--------------------------------------
+static int __must_check __smsc95xx_read_reg(struct usbnet *dev, u32 index,
+                                            u32 *data, int in_pm)
+{
+        u32 buf;
+        int ret;
+        int (*fn)(struct usbnet *, u8, u8, u16, u16, void *, u16);
+
+        BUG_ON(!dev);
+
+        if (!in_pm)
+                fn =3D usbnet_read_cmd;
+        else
+                fn =3D usbnet_read_cmd_nopm;
+
+        ret =3D fn(dev, USB_VENDOR_REQUEST_READ_REGISTER, USB_DIR_IN
+                 | USB_TYPE_VENDOR | USB_RECIP_DEVICE,
+                 0, index, &buf, 4);
+        if (unlikely(ret < 0)) {
+                netdev_warn(dev->net, "Failed to read reg index 0x%08x: %d\=
+n",
+                            index, ret);
+                return ret;
+        }
+
+        le32_to_cpus(&buf);
+        *data =3D buf;
+
+        return ret;
+}
+
+
+static int __must_check smsc95xx_eeprom_confirm_not_busy(struct usbnet *dev=
+)
+{
+        unsigned long start_time =3D jiffies;
+        u32 val;
+        int ret;
+
+        do {
+                ret =3D smsc95xx_read_reg(dev, E2P_CMD, &val);
+                if (ret < 0) {
+                        netdev_warn(dev->net, "Error reading E2P_CMD\n");
+                        return ret;
+                }
+
+                if (!(val & E2P_CMD_BUSY_))
+                        return 0;
+        ......
+}
+---------------------------------------------------------------------------=
+--------------------------------------
+
+In a special situation, local variable "buf" is not initialized with
+"fn" function invocation. And the ret is bigger than zero, and buf is
+assigned to "*data". In its parent function -
+smsc95xx_eeprom_confirm_not_busy, KMSAN reports "uninit-value" when
+accessing variable "val".
+Note, due to the lack of testing environment, I don't know the
+concrete reason for the uninitialization of "buf" local variable.
+
+The reason for such different crash behaviors is that the event -
+"buf" is not initialized is random when
+"__smsc75xx_read_reg/__smsc95xx_read_reg" is invoked.
+
+## Patch
+
+diff --git a/drivers/net/usb/smsc75xx.c b/drivers/net/usb/smsc75xx.c
+index 4353b370249f..a8e500d92285 100644
+--- a/drivers/net/usb/smsc75xx.c
++++ b/drivers/net/usb/smsc75xx.c
+@@ -76,7 +76,7 @@ static int smsc75xx_phy_gig_workaround(struct usbnet *dev=
+);
+ static int __must_check __smsc75xx_read_reg(struct usbnet *dev, u32 index,
+                                            u32 *data, int in_pm)
+ {
+-       u32 buf;
++       u32 buf =3D 0;
+        int ret;
+        int (*fn)(struct usbnet *, u8, u8, u16, u16, void *, u16);
+
+diff --git a/drivers/net/usb/smsc95xx.c b/drivers/net/usb/smsc95xx.c
+index 4c8ee1cff4d4..dae3be723e0c 100644
+--- a/drivers/net/usb/smsc95xx.c
++++ b/drivers/net/usb/smsc95xx.c
+@@ -70,7 +70,7 @@ MODULE_PARM_DESC(turbo_mode, "Enable multiple frames
+per Rx transaction");
+ static int __must_check __smsc95xx_read_reg(struct usbnet *dev, u32 index,
+                                            u32 *data, int in_pm)
+ {
+-       u32 buf;
++       u32 buf =3D 0;
+        int ret;
+        int (*fn)(struct usbnet *, u8, u8, u16, u16, void *, u16);
+
+If you can have any issues with this statement or our information is
+useful to you, please let us know. Thanks very much.
+
+[1] =E2=80=9CKMSAN: uninit-value in smsc75xx_read_eeprom (2)=E2=80=9D - url
+[2] =E2=80=9CKMSAN: uninit-value in smsc95xx_read_eeprom (2)=E2=80=9D - URL
+[3] "KMSAN: uninit-value in smsc75xx_bind" -
+[4] "KMSAN: uninit-value in smsc95xx_reset" -
+[5] "KMSAN: uninit-value in smsc95xx_wait_eeprom (2)" -
+
+--
+My best regards to you.
+
+     No System Is Safe!
+     Dongliang Mu
