@@ -2,96 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B3D16301331
-	for <lists+netdev@lfdr.de>; Sat, 23 Jan 2021 06:12:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 72597301336
+	for <lists+netdev@lfdr.de>; Sat, 23 Jan 2021 06:18:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726335AbhAWFMA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Jan 2021 00:12:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44494 "EHLO
+        id S1726668AbhAWFRr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Jan 2021 00:17:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725710AbhAWFL6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 Jan 2021 00:11:58 -0500
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A441C06174A;
-        Fri, 22 Jan 2021 21:11:18 -0800 (PST)
-Received: by mail-pj1-x1030.google.com with SMTP id m5so5158985pjv.5;
-        Fri, 22 Jan 2021 21:11:18 -0800 (PST)
+        with ESMTP id S1726426AbhAWFRY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 Jan 2021 00:17:24 -0500
+Received: from mail-oo1-xc29.google.com (mail-oo1-xc29.google.com [IPv6:2607:f8b0:4864:20::c29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94C01C061786;
+        Fri, 22 Jan 2021 21:16:44 -0800 (PST)
+Received: by mail-oo1-xc29.google.com with SMTP id u7so1345916ooq.0;
+        Fri, 22 Jan 2021 21:16:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=BgyIeh58D93pJvM3haaFS5xnKvaiUdCpe+YJAVdakLQ=;
-        b=bFdHJ27IhGNVLvmyN7ew8pAZGxWjXBtPFmfo7ptvfCZw6K5RMXA9fL+qKm0aLCB2W5
-         1xaGw2Zz5RfOPfoyfU2zPK7aK2oclqFb5wbvrF3v433/I3Hz5JY8ZQjEuQrnXxZMTSI0
-         0cC3u74hDYyusIMYuTUzqy9hCuEv34TuaMwivVc8NQjPiRxuDwCZ9Pkexq4h3tUd+iEM
-         KGSCpx6QicH8KQgkzkAK0AwPO5/F94bDTXHBgJA7iimDuhKdz6qCSOLRyXDvcMuyYQR0
-         HqoFngNyNpOIelzl8t7GfFIS4d9slZL1iFTNZSBwcXEsbJY/vJtH4OsF0XGfUPp5lngY
-         iOjA==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=zxNG662Tpnsoz8s5rDmsMzt/BLhFhjnXV6eLd4EYb9o=;
+        b=OCm+4WEKTHVXtK6/TX7smrp79P/GGOR+w/7KiDo+8jeq/ksAy3rxssV1CuJv6tuYRl
+         p/AO5XsNXHgW2UOv1LjNUy9jyWYbacgs8146zP5RAQMwQaqZUA1i9cG4embLRK4R0loy
+         wmYN/xM2gMJOdX1ZsfjMYVohVMn6dGF3t1mDM/MU+TyX1a41Z8Asv1xFhaPkiztuxYOJ
+         uiHI7g1FFfKkgDaqzWQXf0NpL1tBARdtCv8A6VMZjiVCLg1OAmzEeOzXpuwqMUuJOWVO
+         E750pIbTaJ2CZXUxdY8Ex3g0JqKMUYhbBGDr4sMLnHictC8UXeMGtGB5K+dp7Z/v3w+5
+         g9Ag==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=BgyIeh58D93pJvM3haaFS5xnKvaiUdCpe+YJAVdakLQ=;
-        b=RphAEv8ab6/t7aFpBn4Wt6oOu4n6RJ1eqrP3zk7I8ROfmT3/VQQ/39SWnjqM1HK2Qp
-         fVqy9FUsDxFy791IHW3jrRDWf/f69ZFVfrX/2Cl3cUfakv4cjOFP9vjms+llLA9Db9OU
-         eeo/TjRIboDKe5cBxJOqa+37hwkxrvFVEyFVTVkB6n4rXN3/6YGXqRj+bCcWZDxTekMx
-         cixFrTU/oD5LX8qpzLvyRvV+jNOeD5EV27NTf70bOklhx3Mn8mib1ceh0h26bsRdOCDn
-         ArAaQOonGOUMIwuksM+ep5z4O5j4HNl5R9gtuh4a46J662D0OT18HSnSSqnwd2X7VEci
-         pEOg==
-X-Gm-Message-State: AOAM533KWVUMS3hDpu9NQ4bLhHWq7RzDuAk7HdCyJCmjQo/5j5jVrg3X
-        sKOxaZq3WtP+cXPcf09Gw9g=
-X-Google-Smtp-Source: ABdhPJwtP0WP4mmJVtoCC8zK1lggz413w13RIGL4R0CuHAbwCbDf/dPIYt+cQpA3gnCEUbPLKozogg==
-X-Received: by 2002:a17:90a:380c:: with SMTP id w12mr9165252pjb.117.1611378678042;
-        Fri, 22 Jan 2021 21:11:18 -0800 (PST)
-Received: from localhost.localdomain ([45.135.186.76])
-        by smtp.gmail.com with ESMTPSA id q9sm10155791pgb.82.2021.01.22.21.11.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Jan 2021 21:11:17 -0800 (PST)
-From:   Dongliang Mu <mudongliangabcd@gmail.com>
-To:     oneukum@suse.com, davem@davemloft.net, kuba@kernel.org
-Cc:     netdev@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Dongliang Mu <mudongliangabcd@gmail.com>
-Subject: [PATCH] usbnet: fix the indentation of one code snippet
-Date:   Sat, 23 Jan 2021 13:11:02 +0800
-Message-Id: <20210123051102.1091541-1-mudongliangabcd@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        bh=zxNG662Tpnsoz8s5rDmsMzt/BLhFhjnXV6eLd4EYb9o=;
+        b=nkaObXN27mjp4XvW7kYn6qaaoqJgDqe6da9FrA02OH7RWCS71j8OlIncnSr/NJinWz
+         6EUwr6jhcNkpajh3DFFifp2kvskU8f5aG7mZvJvy5CfoVYORtH2JEBqiZnud1EMEs7CL
+         RcaIcOJUtdnK/DGJt4Ivcka24/zJ2NDdv4X105Co1oJ6bGEdmUgcaL+/J98k0biGTOTT
+         39BiQL4QyLmckJ/C+Jrv1OVXKzd7l30EBalHzIquKstXkeTMy8zGjan27SdN998M/Fq2
+         c7bqslauz4Iy9wTx1TEBp/ydV3ovALTJR5MXayT0VCpGqLrh02x1QlxeFVOzsIOwSY+u
+         Y13Q==
+X-Gm-Message-State: AOAM533hA5ovcNIg1U7fPGrIeJXLLEfU7JUNaSrGvojjQxA3iZ3/Bk2M
+        KuP/9PBb+MXYakKaGIe+Rww=
+X-Google-Smtp-Source: ABdhPJxA+4+j4HTMeDWLI8zan6VNkVXWGoDLVeWMHezRa95zOtEuJmLY0QZf0uyYNHswa/3PTASX8w==
+X-Received: by 2002:a4a:52d1:: with SMTP id d200mr813555oob.64.1611379003994;
+        Fri, 22 Jan 2021 21:16:43 -0800 (PST)
+Received: from Davids-MacBook-Pro.local ([8.48.134.50])
+        by smtp.googlemail.com with ESMTPSA id e14sm2628oou.19.2021.01.22.21.16.42
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 22 Jan 2021 21:16:43 -0800 (PST)
+Subject: Re: [PATCH v3 net-next 1/1] Allow user to set metric on default route
+ learned via Router Advertisement.
+To:     =?UTF-8?Q?Maciej_=c5=bbenczykowski?= <zenczykowski@gmail.com>
+Cc:     Praveen Chaudhary <praveen5582@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, corbet@lwn.net,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki Yoshifuji <yoshfuji@linux-ipv6.org>,
+        Linux NetDev <netdev@vger.kernel.org>,
+        linux-doc@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Zhenggen Xu <zxu@linkedin.com>
+References: <20210119212959.25917-1-pchaudhary@linkedin.com>
+ <1cc9e887-a984-c14a-451c-60a202c4cf20@gmail.com>
+ <CAHo-Oozz-mGNz4sphOJekNeAgGJCLmiZaiNccXjiQ02fQbfthQ@mail.gmail.com>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <bc855311-f348-430b-0d3c-9103d4fdbbb6@gmail.com>
+Date:   Fri, 22 Jan 2021 22:16:41 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
+ Gecko/20100101 Thunderbird/78.6.1
 MIME-Version: 1.0
+In-Reply-To: <CAHo-Oozz-mGNz4sphOJekNeAgGJCLmiZaiNccXjiQ02fQbfthQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Every line of code should start with tab (8 characters)
+On 1/22/21 9:02 PM, Maciej Żenczykowski wrote:
+> Why can't we get rid of the special case for 0 and simply make 1024 the
+> default value?
 
-Signed-off-by: Dongliang Mu <mudongliangabcd@gmail.com>
----
- drivers/net/usb/usbnet.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+That would work too.
 
-diff --git a/drivers/net/usb/usbnet.c b/drivers/net/usb/usbnet.c
-index 1447da1d5729..305c5f7b9a9b 100644
---- a/drivers/net/usb/usbnet.c
-+++ b/drivers/net/usb/usbnet.c
-@@ -1964,12 +1964,12 @@ static int __usbnet_read_cmd(struct usbnet *dev, u8 cmd, u8 reqtype,
- 			      cmd, reqtype, value, index, buf, size,
- 			      USB_CTRL_GET_TIMEOUT);
- 	if (err > 0 && err <= size) {
--        if (data)
--            memcpy(data, buf, err);
--        else
--            netdev_dbg(dev->net,
--                "Huh? Data requested but thrown away.\n");
--    }
-+		if (data)
-+			memcpy(data, buf, err);
-+		else
-+			netdev_dbg(dev->net,
-+				   "Huh? Data requested but thrown away.\n");
-+	}
- 	kfree(buf);
- out:
- 	return err;
--- 
-2.25.1
+> 
+> As for making it an RA option: it's not clear how that would work, the
+> use case I see for this is for example two connections to the internet,
+> of which one is clearly better (higher throughput, lower latency, lower
+> packet loss, etc) then the other.
+> 
+> The upstream routers would have to somehow coordinate with each other
+> the metric values... that seems impossible to achieve in practice -
+> unless they do something like report expected down/up
+> bandwidth, latency, etc...  While some sort of policy on the machine
+> itself seems much more feasible (for example wired interface > wireless
+> interface > cell interface or something like that)
 
+I was thinking the admin of the network controls the RAs and knows which
+paths are preferred over the admin of the node receiving the RA (not
+practical for a mobile setup with cell vs wifi, but is for a DC which is
+the driving use case).
+
+But it takes an extension to IPv6/ndisc to add metric as an RA option,
+so not realistic in a reasonable time frame.
