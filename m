@@ -2,69 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 96FB4301895
-	for <lists+netdev@lfdr.de>; Sat, 23 Jan 2021 22:41:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D7F23018A4
+	for <lists+netdev@lfdr.de>; Sat, 23 Jan 2021 23:17:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726424AbhAWVk6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Jan 2021 16:40:58 -0500
-Received: from mail.kernel.org ([198.145.29.99]:56896 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725765AbhAWVku (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 23 Jan 2021 16:40:50 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id E415C225AB;
-        Sat, 23 Jan 2021 21:40:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611438009;
-        bh=ONvjq+UjX4anQ1tPM9isMfz7qcgIk0uLz88ecngJZf0=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=uzgt6R+Pa0OhnhH96TA6ztSy8BcSYr7JYHSp8b4CS2ulDljCBzzgT58ACs/XySiC3
-         ppAqpU6PTKLs+IGM6luXuL1AbuZb/05Hz67Q+M6YyJ5AVEfR0x5eeu6FjpQEfHphVE
-         po+5hEaT8Q8lHqNw5wle4mvBBL+vPHWl0Rij+M/BSxAfWsnu+KodYP271Kq5ochmwf
-         rLqYGVqCM4qn3WmGKzP7i8wA2uZ6ANlBK/cTntAClXZOmGP1TODr7EqEuqw4qQO8p+
-         xQG7DwRw/WVWAEH9AuFAhO83xLvy/l/VA3XLA9uSGjp3/5wvWqfIwidr0wFqNVe5HD
-         Sm6Q40HdDonpw==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id D6837652E7;
-        Sat, 23 Jan 2021 21:40:09 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S1726278AbhAWWQh (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Jan 2021 17:16:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37672 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725765AbhAWWQg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 Jan 2021 17:16:36 -0500
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77641C0613D6;
+        Sat, 23 Jan 2021 14:15:56 -0800 (PST)
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.94)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1l3RCB-00Aicf-K9; Sat, 23 Jan 2021 23:15:51 +0100
+Message-ID: <b83f6cf001c4e3df97eeaed710b34fda0a08265f.camel@sipsolutions.net>
+Subject: Re: pull-request: mac80211 2021-01-18.2
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Hans de Goede <hdegoede@redhat.com>, netdev@vger.kernel.org
+Cc:     linux-wireless@vger.kernel.org, ilan.peer@intel.com,
+        luciano.coelho@intel.com
+Date:   Sat, 23 Jan 2021 23:15:50 +0100
+In-Reply-To: <77c606d4-a78a-1fa3-5937-b270c3d0bbd3@redhat.com>
+References: <20210118204750.7243-1-johannes@sipsolutions.net>
+         <77c606d4-a78a-1fa3-5937-b270c3d0bbd3@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] NFC: fix resource leak when target index is invalid
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161143800987.9404.16584498835961654532.git-patchwork-notify@kernel.org>
-Date:   Sat, 23 Jan 2021 21:40:09 +0000
-References: <20210121152748.98409-1-bianpan2016@163.com>
-In-Reply-To: <20210121152748.98409-1-bianpan2016@163.com>
-To:     Pan Bian <bianpan2016@163.com>
-Cc:     davem@davemloft.net, kuba@kernel.org, mkl@pengutronix.de,
-        ieatmuttonchuan@gmail.com, sameo@linux.intel.com,
-        linville@tuxdriver.com, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+Content-Transfer-Encoding: 7bit
+X-malware-bazaar: not-scanned
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (refs/heads/master):
-
-On Thu, 21 Jan 2021 07:27:48 -0800 you wrote:
-> Goto to the label put_dev instead of the label error to fix potential
-> resource leak on path that the target index is invalid.
+On Sat, 2021-01-23 at 22:31 +0100, Hans de Goede wrote:
 > 
-> Fixes: c4fbb6515a4d ("NFC: The core part should generate the target index")
-> Signed-off-by: Pan Bian <bianpan2016@163.com>
-> ---
->  net/nfc/rawsock.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> So I'm afraid that I have some bad news about this patch, it fixes
+> the RCU warning which I reported:
+> 
+> https://lore.kernel.org/linux-wireless/20210104170713.66956-1-hdegoede@redhat.com/
+> 
+> But it introduces a deadlock. See:
+> 
+> https://lore.kernel.org/linux-wireless/d839ab62-e4bc-56f0-d861-f172bf19c4b3@redhat.com/
+> 
+> for details. Note we really should fix this new deadlock before 5.11
+> is released. This is worse then the RCU warning which this patch fixes.
 
-Here is the summary with links:
-  - NFC: fix resource leak when target index is invalid
-    https://git.kernel.org/netdev/net/c/3a30537cee23
+Ouch. Thanks for the heads-up. I guess I'll revert both patches for now,
+unless we can quickly figure out a way to get all these paths in order.
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
+Thanks,
+johannes
 
