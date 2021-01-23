@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C6583301743
-	for <lists+netdev@lfdr.de>; Sat, 23 Jan 2021 18:35:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C6C6E30174E
+	for <lists+netdev@lfdr.de>; Sat, 23 Jan 2021 18:36:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726261AbhAWRdZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Jan 2021 12:33:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33546 "EHLO
+        id S1726356AbhAWRfl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Jan 2021 12:35:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725899AbhAWRdS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 Jan 2021 12:33:18 -0500
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57B2DC06174A;
-        Sat, 23 Jan 2021 09:32:38 -0800 (PST)
-Received: by mail-ed1-x536.google.com with SMTP id n6so10259361edt.10;
-        Sat, 23 Jan 2021 09:32:38 -0800 (PST)
+        with ESMTP id S1725765AbhAWRdW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 Jan 2021 12:33:22 -0500
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA2C4C0613D6;
+        Sat, 23 Jan 2021 09:32:41 -0800 (PST)
+Received: by mail-ej1-x62a.google.com with SMTP id ke15so12120593ejc.12;
+        Sat, 23 Jan 2021 09:32:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=sender:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=FdwjG+/goCAlHzUdu2se/N1hjJwHSvoGioV6fhKxFvw=;
-        b=TquSW4rasw3h0DG7ldt2v9LIDMEVP7FnVrKmY3JpW2l7cGIrL0fZzLIFdL9tmn1r0b
-         ea/15STiQI1/TFkSxFDfgvwJSwaZ9G3HqM6BersUYj2UC+C7Cn3s3Ypq0GvFdrJuIVbo
-         6jfKcIml1jMR8nKWwWRJ0tWU5MZ/StD786IUjDd4jm/JM2tPAE83lRxHHVqxHJBck709
-         ArIDCQJ0IHqc62GRXZcLa/TfNqZu2Gjdubps0y+IfPXUzzIppyI4xFzuuAXd79aLopRZ
-         dXS1ypJr7vbeANpPHPN7WSsJD6lHWXoHxsXfk080dWOLb7uL8CLFGSL9nTTWTp2OGgQF
-         6oCA==
+        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=AP3OwkTp0YWxBuX7mQrwCmymgPjHNWJQuUPHDC7WEYQ=;
+        b=AFHS7fvP5NonOYoSLJhPWjQ+KFbjUZM5Sk8hHImL+fI/2R7FcPSjxnXL+TSMdQtJnR
+         8rRlrGwadbHw4aroITLMmDYbc3zags/wtVwWTH309/k13pgpf4/pm8vPf10CeFspUz1p
+         ZMDYx+I8/B1mas0cqQTOJ2Lu+QVPNW0M/GJK3xBzOOHYNeO8gNTTJ9s3dNdt8VvsTFdr
+         N3usPVVBpQfoAHTJc/O1qVYKgvjVcsFFhPsM6ravI0ASUw6p37r1X2QXWwyaS1c/PhsS
+         90Sg9U2lf3+D9u09naTtgsFmqLpZYmgvU7RvYjBLLg+6WYZrpKYAPASe3RdHk5HXhoft
+         tfdA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
-         :mime-version:content-transfer-encoding;
-        bh=FdwjG+/goCAlHzUdu2se/N1hjJwHSvoGioV6fhKxFvw=;
-        b=TsObhYcKsRa9v8g6cV2AW3UKh1KXCLneoG/aaJo7o6dEqupep/PLd4aBf5mcc9oCwO
-         ThkO21mdMVPcQld6YGGedAxw7JFjgkAg65cTdZO/PcATZXFRyGW2v+jHm9ChezgalCaw
-         5RMK02FXWXOCzmOUv+cT17CihIHp9CxhHZTgDY+ejaopGTpenUOjwmX7kTH6BIEsRFlG
-         Td+sgpFhWg9YX+ksjjzzGTtfOoxPfpLDNwdO4nMEYQ4EB1amDioHX4G6yOUuK+exkXy1
-         8H1qtT2wPwppGrrcAIor8eMfh4C8rAeRHyAMLdV8dJtkLT2T3MMrgZnV646w0WloFq9Y
-         5sbA==
-X-Gm-Message-State: AOAM530uJAWi3zRYJUwszo0yBHTXz7+yLaNgEt2hc/UXnid2Gasr/hKB
-        ytukYtvpwP85XasyQZr0zpEh0PF0qcM=
-X-Google-Smtp-Source: ABdhPJzDHazHz5O841+SNuHM1hVyNdm45DFR1cYgZRSyYN8o2W8+26jQRKYUeBvRUS1WXxuFiqH/fA==
-X-Received: by 2002:a05:6402:220e:: with SMTP id cq14mr1685198edb.240.1611423157054;
-        Sat, 23 Jan 2021 09:32:37 -0800 (PST)
+         :in-reply-to:references:mime-version:content-transfer-encoding;
+        bh=AP3OwkTp0YWxBuX7mQrwCmymgPjHNWJQuUPHDC7WEYQ=;
+        b=UGKoNb2rpQT6MO7MY+kGFtMhembbrGUqDviKQK+CZh66yWnLb7sLuVV8w/Xx2ZN/va
+         XJj3SJXcJ/XuOw5Z/SzAzS2MH/gh9PnRNWLWsoCspucTe+KFqPysDgSn++BdkZ+inVvo
+         K/rWq/Pn9ScOtY6UmK/9D+/uRD9FK+AXAF+ELvsdQBoTtkJFBss4ib1AZyWBA59qmC40
+         BAxnIEyCTb2Pcc7htoD21RQLBDWuEY3MVvvF0ZTAuWXfGwKgyPLVAmXH6xKsrL16SLeG
+         qt9qXjEOFvB6SrcmYZaX3SWnlue6oo0xO+WMP6f9ttIp/v1YS0GtkomIUghI3G4Ow+En
+         Q0hw==
+X-Gm-Message-State: AOAM532adAxNQQZT3ELczTx9mUCVUwF6raSMRQMR8qvgtFb/851NmMWz
+        f6tNq/7HXdo2GFzcz+6x3lpy3Hu+DEyiOg==
+X-Google-Smtp-Source: ABdhPJyUhw8YuL4ZTKWKQr73JXMdAgj1zztDlewiH3u8a/UeKSNW63n00CXBDAoEbVMfxTMO0wVDKw==
+X-Received: by 2002:a17:906:cb82:: with SMTP id mf2mr5620098ejb.515.1611423160660;
+        Sat, 23 Jan 2021 09:32:40 -0800 (PST)
 Received: from stitch.. ([2a01:4262:1ab:c:de4:866f:76c3:151d])
-        by smtp.gmail.com with ESMTPSA id e19sm7528116eds.79.2021.01.23.09.32.35
+        by smtp.gmail.com with ESMTPSA id e19sm7528116eds.79.2021.01.23.09.32.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 23 Jan 2021 09:32:36 -0800 (PST)
+        Sat, 23 Jan 2021 09:32:40 -0800 (PST)
 Sender: Emil Renner Berthing <emil.renner.berthing@gmail.com>
 From:   Emil Renner Berthing <esmil@mailme.dk>
 To:     linux-usb@vger.kernel.org, netdev@vger.kernel.org
@@ -54,10 +54,12 @@ Cc:     Emil Renner Berthing <kernel@esmil.dk>,
         Oliver Neukum <oneukum@suse.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org
-Subject: [PATCH 0/2] net: usbnet: convert to new tasklet API
-Date:   Sat, 23 Jan 2021 18:32:19 +0100
-Message-Id: <20210123173221.5855-1-esmil@mailme.dk>
+Subject: [PATCH 1/2] net: usbnet: initialize tasklet using tasklet_init
+Date:   Sat, 23 Jan 2021 18:32:20 +0100
+Message-Id: <20210123173221.5855-2-esmil@mailme.dk>
 X-Mailer: git-send-email 2.30.0
+In-Reply-To: <20210123173221.5855-1-esmil@mailme.dk>
+References: <20210123173221.5855-1-esmil@mailme.dk>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -66,18 +68,27 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Emil Renner Berthing <kernel@esmil.dk>
 
-This converts the usbnet driver to use the new tasklet API introduced in
-commit 12cc923f1ccc ("tasklet: Introduce new initialization API")
+Initialize tasklet using tasklet_init() rather than open-coding it.
 
-It is split into two commits for ease of reviewing.
+Signed-off-by: Emil Renner Berthing <kernel@esmil.dk>
+---
+ drivers/net/usb/usbnet.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-Emil Renner Berthing (2):
-  net: usbnet: use tasklet_init
-  net: usbnet: use new tasklet API
-
- drivers/net/usb/usbnet.c | 9 ++++-----
- 1 file changed, 4 insertions(+), 5 deletions(-)
-
+diff --git a/drivers/net/usb/usbnet.c b/drivers/net/usb/usbnet.c
+index 1447da1d5729..26455c76588f 100644
+--- a/drivers/net/usb/usbnet.c
++++ b/drivers/net/usb/usbnet.c
+@@ -1673,8 +1673,7 @@ usbnet_probe (struct usb_interface *udev, const struct usb_device_id *prod)
+ 	skb_queue_head_init (&dev->txq);
+ 	skb_queue_head_init (&dev->done);
+ 	skb_queue_head_init(&dev->rxq_pause);
+-	dev->bh.func = usbnet_bh_tasklet;
+-	dev->bh.data = (unsigned long)&dev->delay;
++	tasklet_init(&dev->bh, usbnet_bh_tasklet, (unsigned long)&dev->delay);
+ 	INIT_WORK (&dev->kevent, usbnet_deferred_kevent);
+ 	init_usb_anchor(&dev->deferred);
+ 	timer_setup(&dev->delay, usbnet_bh, 0);
 -- 
 2.30.0
 
