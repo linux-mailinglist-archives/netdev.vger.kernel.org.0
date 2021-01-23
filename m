@@ -2,97 +2,78 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 28B0430187E
-	for <lists+netdev@lfdr.de>; Sat, 23 Jan 2021 22:16:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 182D4301882
+	for <lists+netdev@lfdr.de>; Sat, 23 Jan 2021 22:22:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726278AbhAWVOs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Jan 2021 16:14:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52716 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725765AbhAWVOp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 Jan 2021 16:14:45 -0500
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AED3C0613D6;
-        Sat, 23 Jan 2021 13:14:05 -0800 (PST)
-Received: by mail-pj1-x102f.google.com with SMTP id j12so5964240pjy.5;
-        Sat, 23 Jan 2021 13:14:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=xrDzudvDNG2fzllxzF5s0DnJ66F4Ddj8oXL2djg9H1c=;
-        b=cZ+4u7WYxh/96OX0BUO92HsWyJVgXXnIPSqw082exCGUF/+rczi6n8WtbeK61dsk5r
-         xMG8ByEt+KGhAxogkLFp3dqXo4/KqRTmcu+YI9504r5aeeKBJOFp0WpKaemElkvaBYCF
-         tmc0iGGts71BVp7ggt3uF0J2bHoYXi2EO6N93UOFFbA9uiBVpeabkHzGRVYBmKLGMedp
-         yN9sIJOQ630sxFcOgAchSq/8LzRyukApKs2Y5fs3fP88kOFERTRX0h0wltxtEt5a2n+J
-         6i1+fdvNP8SaK9FIgNZqfXAR+rhMFZ9QHv/dzXQDSANm0tMQFr7HhcOJ9SL8Jh0gy61Q
-         T9Xg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=xrDzudvDNG2fzllxzF5s0DnJ66F4Ddj8oXL2djg9H1c=;
-        b=nqgGfa6BiFWHvzmvlFKD1qPOkklnMYHDa/296VQfYwhl1t0EoaagnFZVqev/mh/CiH
-         1U6x3wkYQLk8TGozZGmuc8/xNMas7OSWQ0xuxxoHg45BnP2ypkSNeoyKHp/1soIAodQf
-         x0y2SAVUyIMJAu7WVQt0nwSrKJfiy+IvdrXK2SUkRPJVYitklDCh1JweSN/GdgaDiJdi
-         eNsvUmjnQJxTOTUIsaYETIya+yF9JkGrUMaCXofkmcAnioa9lOe+wdaq6L/irhlbowxV
-         7eL+xR+XFF8t0tFw27H0U5BCanRQkQSslslaZLQwN8rfhaCNjqebEsNUCgHzfjYvtOl+
-         l+qA==
-X-Gm-Message-State: AOAM531OhrV0HFbT778tqVCBCB/zaOySK5nuA1fW4ZuyzoQFRXUWiFhE
-        eiAGf/6pP/YWhzuhCUOZeWXOGmiD+tY=
-X-Google-Smtp-Source: ABdhPJycLRNBdDKA7LXwJHiYsOYDEQMTgcKYBKgsirezYlVlVJgraCQBohQuBIPSE5J4ydZZ+cam0Q==
-X-Received: by 2002:a17:90a:de09:: with SMTP id m9mr1714639pjv.117.1611436444466;
-        Sat, 23 Jan 2021 13:14:04 -0800 (PST)
-Received: from hoboy.vegasvil.org (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
-        by smtp.gmail.com with ESMTPSA id f71sm12551835pfa.138.2021.01.23.13.14.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 23 Jan 2021 13:14:03 -0800 (PST)
-Date:   Sat, 23 Jan 2021 13:14:00 -0800
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Marc Zyngier <maz@kernel.org>, linux-kernel@vger.kernel.org,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Dinh Nguyen <dinguyen@kernel.org>,
-        Brandon Streiff <brandon.streiff@ni.com>,
-        Olof Johansson <olof@lixom.net>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH net 2/4] net: mvpp2: Remove unneeded Kconfig dependency.
-Message-ID: <20210123211400.GA6270@hoboy.vegasvil.org>
-References: <cover.1611198584.git.richardcochran@gmail.com>
- <1069fecd4b7e13485839e1c66696c5a6c70f6144.1611198584.git.richardcochran@gmail.com>
- <20210121102753.GO1551@shell.armlinux.org.uk>
- <20210121150802.GB20321@hoboy.vegasvil.org>
- <20210122181444.66f9417d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20210123132626.GA22662@hoboy.vegasvil.org>
- <20210123121227.16384ff5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S1726316AbhAWVU4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Jan 2021 16:20:56 -0500
+Received: from mail.kernel.org ([198.145.29.99]:54054 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725765AbhAWVUu (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 23 Jan 2021 16:20:50 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id 46A4B22CAF;
+        Sat, 23 Jan 2021 21:20:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1611436810;
+        bh=17lHtOZOZprY9WJIOivNcmGQ3BZnmW29XOtqM+i6Q6c=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=CQSo/yKwIak1RJxDwrjWsjyQXqPojFYczoJyUdEGwJ7WNICHzVpd+lN06utl0dSDC
+         nxfpRsQebVX9phVvW1uoMrwqRvGR3Tom1sPe/Aud39c4gYSWBCVEvg8OjgPI/qPWiV
+         W3njWS6KI1OOsslZFEOtafljMSvf4TWD5uexI1iPkpZJsKqeDV/eo7nNmf4NCSuQ+T
+         g0IQ1t1c2NkWH5V1VvpPkk5G2E7e069sGVYZX8gcPeagNs0c2iQC1fnjnDXLOevHQG
+         1+fxIjmBiHg20lYDbrYMjvkWp3D8iqzjS6DoiMNqNAdz3U4iKiYH0HVE1IwrhVjKo/
+         XbWmgF/RUjioQ==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 375C7652E6;
+        Sat, 23 Jan 2021 21:20:10 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210123121227.16384ff5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next v2 0/5] net: ipa: NAPI poll updates
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161143681022.3146.11842157448605316831.git-patchwork-notify@kernel.org>
+Date:   Sat, 23 Jan 2021 21:20:10 +0000
+References: <20210121114821.26495-1-elder@linaro.org>
+In-Reply-To: <20210121114821.26495-1-elder@linaro.org>
+To:     Alex Elder <elder@linaro.org>
+Cc:     davem@davemloft.net, kuba@kernel.org, elder@kernel.org,
+        evgreen@chromium.org, bjorn.andersson@linaro.org,
+        cpratapa@codeaurora.org, subashab@codeaurora.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jan 23, 2021 at 12:12:27PM -0800, Jakub Kicinski wrote:
-> I see. The only thing I'm worried about then is the churn in patch 3.
-> This would land in Linus's tree shortly before rc6, kinda late to be
-> taking chances in the name of minor optimizations :S
+Hello:
 
-;^)
+This series was applied to netdev/net-next.git (refs/heads/master):
 
-Yeah, by all means, avoid ARM churn... I remember Bad Things there...
+On Thu, 21 Jan 2021 05:48:16 -0600 you wrote:
+> Version 1 of this series inadvertently dropped the "static" that
+> limits the scope of gsi_channel_update().  Version 2 fixes this
+> (in patch 3).
+> 
+> While reviewing the IPA NAPI polling code in detail I found two
+> problems.  This series fixes those, and implements a few other
+> improvements to this part of the code.
+> 
+> [...]
 
-Maybe you could take #1 and #2 for net-next?
+Here is the summary with links:
+  - [net-next,v2,1/5] net: ipa: count actual work done in gsi_channel_poll()
+    https://git.kernel.org/netdev/net-next/c/c80c4a1ea47f
+  - [net-next,v2,2/5] net: ipa: heed napi_complete() return value
+    https://git.kernel.org/netdev/net-next/c/148604e7eafb
+  - [net-next,v2,3/5] net: ipa: have gsi_channel_update() return a value
+    https://git.kernel.org/netdev/net-next/c/223f5b34b409
+  - [net-next,v2,4/5] net: ipa: repurpose gsi_irq_ieob_disable()
+    https://git.kernel.org/netdev/net-next/c/5725593e6f18
+  - [net-next,v2,5/5] net: ipa: disable IEOB interrupts before clearing
+    https://git.kernel.org/netdev/net-next/c/7bd9785f683a
 
-I should probably submit 3-4 throught the SoC tree anyhow.
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-Thanks,
-Richard
 
