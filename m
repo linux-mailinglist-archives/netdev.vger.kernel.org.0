@@ -2,159 +2,238 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 14D473011A7
-	for <lists+netdev@lfdr.de>; Sat, 23 Jan 2021 01:26:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 442663011BE
+	for <lists+netdev@lfdr.de>; Sat, 23 Jan 2021 01:41:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726306AbhAWAZx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jan 2021 19:25:53 -0500
-Received: from mga01.intel.com ([192.55.52.88]:60021 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726375AbhAWAZf (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 22 Jan 2021 19:25:35 -0500
-IronPort-SDR: pwp4GHbtEYgfQdfMRoVcaUuVOellNAQSGhHe3pi3KEQ6LvmbVvzSvhUiQX8R5RxknddV/dDrua
- 95cRq5KigqFg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9872"; a="198291696"
-X-IronPort-AV: E=Sophos;i="5.79,368,1602572400"; 
-   d="scan'208";a="198291696"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Jan 2021 16:24:50 -0800
-IronPort-SDR: 0pwPodnLD1FnGa4Hc+tf6+iVGmQe+y6jG471+kBhdDHU4RUdB+CFCI4NZK7jdmIZVk9hKGxn2P
- XzL4Ge59mdcQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.79,368,1602572400"; 
-   d="scan'208";a="392480672"
-Received: from orsmsx603.amr.corp.intel.com ([10.22.229.16])
-  by orsmga007.jf.intel.com with ESMTP; 22 Jan 2021 16:24:49 -0800
-Received: from orsmsx607.amr.corp.intel.com (10.22.229.20) by
- ORSMSX603.amr.corp.intel.com (10.22.229.16) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1713.5; Fri, 22 Jan 2021 16:24:49 -0800
-Received: from orsedg603.ED.cps.intel.com (10.7.248.4) by
- orsmsx607.amr.corp.intel.com (10.22.229.20) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5
- via Frontend Transport; Fri, 22 Jan 2021 16:24:49 -0800
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (104.47.36.56) by
- edgegateway.intel.com (134.134.137.100) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.1.1713.5; Fri, 22 Jan 2021 16:24:48 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=GA2NTcELm6KNVyHADPxHrZ+LC7PtlP92Ykm/IFdy4lwHCpZwXM2sqfCO9QOMziw5n/h4iJzb35ZCP/aYjnnDInQtBY/OUGGR+vJ0BD6Ycd/zV5GAkK1Xjsf9Tudw/1jnMA6ur+6Es3Vr2u1cHbinHRnzXTpyijNWzYUUkx+OJ+lXF7yUMNX9GTexwHJa/66ZoL9xmJhY3jYKcdjeuSRXTE7RQvdQh9I02SORD1gVyaEXC/5UEw26jl1BYESc9+t2CzXGQznbgcH2jAtQ3tO3NLy86NZ6l38I6urDOnByYj8PYcm/HnbQ67h2//LzufRJDyxdOqCSqIzx10ymYSPqaA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8FHii0kGabaKzf8Twxj87aqeH3QcoGN2mmv4ATfYfHo=;
- b=GbZBYBGG2HaDy8WWf21OxcM4pslfFnxNb6TDyAFxQZx0rtajGhpufC8skVBmFKoNb6/8cfm3L3aEYC+F73SPEu+SCwLkxYKKPyI9WuMqbG+Ys5e5oLlHxtn59EQndMhFO95n6frMoIR9qlrJdD7Mb/pbGpwJi/jX3MLGJcS5R1uWDQON1Z+rX80P5ILolG2IJ2SoRFiHvibBCXLrPkx4juUBmv6CJjuGr7M81HGnTQevKhT6O6F2VANeedTuTYro5r6LFmG2TXRmmuJYVTpm2cKELzognkcI/4Wng0+HT+h2v5+UfSa5CQti1RwCPSRyaztiniwc9GB/i4frr6tx6Q==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=intel.com; dmarc=pass action=none header.from=intel.com;
- dkim=pass header.d=intel.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=intel.onmicrosoft.com;
- s=selector2-intel-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8FHii0kGabaKzf8Twxj87aqeH3QcoGN2mmv4ATfYfHo=;
- b=VHZmfzSshU0BqLQKVxL76NOcHBKOHnhOVcur+gunUtj3KJkCB4lWncp6gKTJyXKyjB7pk0ImyaDEmJkbRsbjsruqPljEOIaQwb705ZDtPkkWGs6LHxIWk8buLF9EPFosBQoc5mOkppmNMpFAx3Zs0PLUt4E6YYbbyb+JaUxRc6w=
-Received: from CO1PR11MB5105.namprd11.prod.outlook.com (2603:10b6:303:9f::7)
- by MWHPR11MB1966.namprd11.prod.outlook.com (2603:10b6:300:10f::9) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3784.13; Sat, 23 Jan
- 2021 00:24:46 +0000
-Received: from CO1PR11MB5105.namprd11.prod.outlook.com
- ([fe80::fc66:dd19:b156:7090]) by CO1PR11MB5105.namprd11.prod.outlook.com
- ([fe80::fc66:dd19:b156:7090%6]) with mapi id 15.20.3784.015; Sat, 23 Jan 2021
- 00:24:46 +0000
-From:   "Brelinski, TonyX" <tonyx.brelinski@intel.com>
-To:     "Fijalkowski, Maciej" <maciej.fijalkowski@intel.com>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>
-CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "bpf@vger.kernel.org" <bpf@vger.kernel.org>,
-        "Topel, Bjorn" <bjorn.topel@intel.com>,
-        "Karlsson, Magnus" <magnus.karlsson@intel.com>
-Subject: RE: [Intel-wired-lan] [PATCH v3 net-next 06/11] ice: remove redundant
- checks in ice_change_mtu
-Thread-Topic: [Intel-wired-lan] [PATCH v3 net-next 06/11] ice: remove
- redundant checks in ice_change_mtu
-Thread-Index: AQHW7a3kfJeyfxqkIEOH+6Wp1dRIHqo0YIsQ
-Date:   Sat, 23 Jan 2021 00:24:46 +0000
-Message-ID: <CO1PR11MB5105166702FEA3D49B9D867BFABF9@CO1PR11MB5105.namprd11.prod.outlook.com>
-References: <20210118151318.12324-1-maciej.fijalkowski@intel.com>
- <20210118151318.12324-7-maciej.fijalkowski@intel.com>
-In-Reply-To: <20210118151318.12324-7-maciej.fijalkowski@intel.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-dlp-product: dlpe-windows
-dlp-version: 11.6.0.76
-dlp-reaction: no-action
-authentication-results: intel.com; dkim=none (message not signed)
- header.d=none;intel.com; dmarc=none action=none header.from=intel.com;
-x-originating-ip: [71.236.132.75]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: b0b61304-6889-4a9c-261d-08d8bf3549e0
-x-ms-traffictypediagnostic: MWHPR11MB1966:
-x-ld-processed: 46c98d88-e344-4ed4-8496-4ed7712e255d,ExtAddr
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <MWHPR11MB1966B2B453D673CDBD5A1506FABF9@MWHPR11MB1966.namprd11.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:1824;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: TpmBdbHYSpI3UZYk42bpwNJnYcXmnigxyb2ljikbbIwQ9p7Vey92o0lIybNhE5KThHfo+bfiCd4qj/x5jpK1KxqKECeN7Ce7/9l1ou9l8NI7U+5wE9cVD4qYW2cDVKqZ8KoV2R8Ng7cHvmdTho9vVJV0Jd6/Hy5QKoZq0k4oGdWt0QR1HuW+lxYb3kq/ZsP1FdMxmvKXf8kgenBn0dTNSPRvGw2iyVb8xWwhsglxIx6i2syzUvONgt0mfs3S8nGFFXBKl7wHqqWudM74SUv8kEfZAH2GMlRA+z2buDY62Lj0sfzt+E9uShjzTsjkcuVPGZ7+Hfd7PpqeA/JxOFM5io+H0EM+lL00k1Iz01f2ACUjz+aL2ZUxnmpXKpUJo2lxX6hbDZjzcVCRd/whzPw2VA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO1PR11MB5105.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(366004)(39860400002)(376002)(396003)(136003)(9686003)(4744005)(5660300002)(53546011)(8676002)(110136005)(52536014)(316002)(6506007)(186003)(55016002)(26005)(7696005)(54906003)(86362001)(33656002)(8936002)(64756008)(478600001)(2906002)(4326008)(83380400001)(66574015)(66476007)(66556008)(66446008)(107886003)(66946007)(71200400001)(76116006);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: =?utf-8?B?ak5DQUx2czhySVliQURBZFdsYm9TeS8wUkNYNXBRQzNNS1VZTDRaajFZMDBS?=
- =?utf-8?B?d0twbnAxbitpR0t4Z2hkczZxcU1maEt4czNBTDZWN3F5SlZCYnB3dlhMcTlZ?=
- =?utf-8?B?WlV6bFFoQ0g4cnExcWJVVWtOVDMzTHBabjV4U2lxRXlLVC9aTlpnUDN4bTFj?=
- =?utf-8?B?WmtvWnUxM2JjWUxUa2V6dzZmR21YY0ZtMlh3UUZHOEJnS2JmRUppRW1JVlJo?=
- =?utf-8?B?ZEo5VG5oZjhyL05KcmtSNjdjcnpzK3A5bTZRMFJjUzdvc25QNEo1em1qb1Rj?=
- =?utf-8?B?VVlKOVpFcW1tcERPc1lpTXIyZlR4dWJkUnIrc0lMWUJKRllZbk40YmU1VnNE?=
- =?utf-8?B?UVdoUjl0cno0QzZvNDRlTVM1TzBoNm11MVprdS9RZFJnd2IzSlp4cVJwZmY2?=
- =?utf-8?B?TXRGSkdHaFVRV3UwaUZlT3pXcFcyVFB2M1E2QTJkLzdKQnNNbERTY05CNmVB?=
- =?utf-8?B?YU53SyswL3V4cG5CaVJyaHE1SnN0ZWwxKzc1Tm5pbzVlRDd2VEtYRDV1ZjBM?=
- =?utf-8?B?Yi9VMDFBdWZYbTJEOGdKUGJLNnJVbHl3RmZsbVcvYTZHREJKQmhhNVBaYnFU?=
- =?utf-8?B?dC9EZkFMYWsvOUhhSkdtalJ3Y0pOOFNIREtEckRYeGl2UTBlMlF5RWZCM0Uy?=
- =?utf-8?B?TWNWcjQyRU1mKzlSbGlJa3FVTjdESWl6Tml3eXdFZGcwWXlVd0lWRkhRYkJM?=
- =?utf-8?B?OG9pemNybTF1RHlFNDZKZXM1d0g0a1RCWWszaVg5c3pmZVNZeng0bG9aTFRo?=
- =?utf-8?B?VTd2WlRJTnoyQXR0a1M4SmdrcmxMUG5SOTdTR292MDN5U3hwaXk3Z1NiRDF2?=
- =?utf-8?B?SEVVRVhHWDk1Q3BHVXREME5GZnhEbTNFZDJCakdaRmFlK0FDMExDWUdZQkNG?=
- =?utf-8?B?bjdNQUh6bm1lWlBLVEdpMHJYaExnUCtoeHlobGtqdXM0RG95ZVp5OG8xSk45?=
- =?utf-8?B?V05pZ3NuV0tSQ2NoWlQ2elM3U3FyTWVYMXJDbTQzenBnS3AraUZXVnoyUGZC?=
- =?utf-8?B?c2JQenNTZE1OTHo1MnpoME5aZDRicnhqYTcxRXY3ZFFjcW5rRlNGZFBKZUNk?=
- =?utf-8?B?MGlhYjNMOE5JcDl6bjBKbnZkd2pkdmNhNzZrSW4wYkJ1aWNmZWdNeThxTlJi?=
- =?utf-8?B?L1BVUVRNREhRU0luTEUwV05MYTZ0emRJb0k3eEJOSWNHNkdMVS9PVldhZEh0?=
- =?utf-8?B?QzducHlaWGVHSEVmeGQ0RW1NK2pobllMbE52QU1QVk5mQW9Ya1MxQWltaHYx?=
- =?utf-8?B?ZXlHMnJGbjVURUlYVXlob0toeGVFdHBGdWd2dWlLV3FseW9sM3ludi9hQjBw?=
- =?utf-8?Q?9XAhG8Lv/6Elc=3D?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        id S1726121AbhAWAks (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jan 2021 19:40:48 -0500
+Received: from www262.sakura.ne.jp ([202.181.97.72]:60109 "EHLO
+        www262.sakura.ne.jp" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725798AbhAWAkq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 19:40:46 -0500
+Received: from fsav403.sakura.ne.jp (fsav403.sakura.ne.jp [133.242.250.102])
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTP id 10N0e0ih020973;
+        Sat, 23 Jan 2021 09:40:00 +0900 (JST)
+        (envelope-from penguin-kernel@i-love.sakura.ne.jp)
+Received: from www262.sakura.ne.jp (202.181.97.72)
+ by fsav403.sakura.ne.jp (F-Secure/fsigk_smtp/550/fsav403.sakura.ne.jp);
+ Sat, 23 Jan 2021 09:40:00 +0900 (JST)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/fsav403.sakura.ne.jp)
+Received: from [192.168.1.9] (M106072142033.v4.enabler.ne.jp [106.72.142.33])
+        (authenticated bits=0)
+        by www262.sakura.ne.jp (8.15.2/8.15.2) with ESMTPSA id 10N0e01Y020970
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=NO);
+        Sat, 23 Jan 2021 09:40:00 +0900 (JST)
+        (envelope-from penguin-kernel@i-love.sakura.ne.jp)
+Subject: BPF: unbounded bpf_map_free_deferred problem
+To:     netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Tejun Heo <tj@kernel.org>,
+        Alexey Kardashevskiy <aik@ozlabs.ru>,
+        Dmitry Vyukov <dvyukov@google.com>
+References: <c099ad52-0c2c-b886-bae2-c64bd8626452@ozlabs.ru>
+ <CACT4Y+Z+kwPM=WUzJ-e359PWeLLqmF0w4Yxp1spzZ=+J0ekrag@mail.gmail.com>
+ <6af41136-4344-73da-f821-e831674be473@i-love.sakura.ne.jp>
+ <70d427e8-7281-0aae-c524-813d73eca2d7@ozlabs.ru>
+ <CACT4Y+bqidtwh1HUFFoyyKyVy0jnwrzhVBgqmU+T9sN1yPMO=g@mail.gmail.com>
+ <eb71cc37-afbd-5446-6305-8c7abcc6e91f@i-love.sakura.ne.jp>
+ <6eaafbd8-1c10-75df-75ae-9afa0861f69b@i-love.sakura.ne.jp>
+ <e4767b84-05a4-07c0-811b-b3a08cad2f43@ozlabs.ru>
+From:   Tetsuo Handa <penguin-kernel@i-love.sakura.ne.jp>
+Message-ID: <b9e41542-5c93-9d37-d99d-acde6fb01fa1@i-love.sakura.ne.jp>
+Date:   Sat, 23 Jan 2021 09:39:57 +0900
+User-Agent: Mozilla/5.0 (Windows NT 6.3; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.1
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: CO1PR11MB5105.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b0b61304-6889-4a9c-261d-08d8bf3549e0
-X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Jan 2021 00:24:46.5438
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 46c98d88-e344-4ed4-8496-4ed7712e255d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: niq3EKkay1KQxH0OO5X0lU6ziIE58ZkKEcDAcPwN/GOB4U6T9Ohej5RzgfQ1GS31DyK9sJkVObqN2JObgKCaJRF2hfLHJ8ziU+UXi59tfCE=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR11MB1966
-X-OriginatorOrg: intel.com
+In-Reply-To: <e4767b84-05a4-07c0-811b-b3a08cad2f43@ozlabs.ru>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-RnJvbTogSW50ZWwtd2lyZWQtbGFuIDxpbnRlbC13aXJlZC1sYW4tYm91bmNlc0Bvc3Vvc2wub3Jn
-PiBPbiBCZWhhbGYgT2YgTWFjaWVqIEZpamFsa293c2tpDQpTZW50OiBNb25kYXksIEphbnVhcnkg
-MTgsIDIwMjEgNzoxMyBBTQ0KVG86IGludGVsLXdpcmVkLWxhbkBsaXN0cy5vc3Vvc2wub3JnDQpD
-YzogbmV0ZGV2QHZnZXIua2VybmVsLm9yZzsga3ViYUBrZXJuZWwub3JnOyBicGZAdmdlci5rZXJu
-ZWwub3JnOyBUb3BlbCwgQmpvcm4gPGJqb3JuLnRvcGVsQGludGVsLmNvbT47IEthcmxzc29uLCBN
-YWdudXMgPG1hZ251cy5rYXJsc3NvbkBpbnRlbC5jb20+DQpTdWJqZWN0OiBbSW50ZWwtd2lyZWQt
-bGFuXSBbUEFUQ0ggdjMgbmV0LW5leHQgMDYvMTFdIGljZTogcmVtb3ZlIHJlZHVuZGFudCBjaGVj
-a3MgaW4gaWNlX2NoYW5nZV9tdHUNCg0KZGV2X3ZhbGlkYXRlX210dSBjaGVja3MgdGhhdCBtdHUg
-dmFsdWUgc3BlY2lmaWVkIGJ5IHVzZXIgaXMgbm90IGxlc3MgdGhhbiBtaW4gbXR1IGFuZCBub3Qg
-Z3JlYXRlciB0aGFuIG1heCBhbGxvd2VkIG10dS4gSXQgaXMgYmVpbmcgZG9uZSBiZWZvcmUgY2Fs
-bGluZyB0aGUgbmRvX2NoYW5nZV9tdHUgZXhwb3NlZCBieSBkcml2ZXIsIHNvIHJlbW92ZSB0aGVz
-ZSByZWR1bmRhbnQgY2hlY2tzIGluIGljZV9jaGFuZ2VfbXR1Lg0KDQpSZXZpZXdlZC1ieTogQmrD
-tnJuIFTDtnBlbCA8Ympvcm4udG9wZWxAaW50ZWwuY29tPg0KU2lnbmVkLW9mZi1ieTogTWFjaWVq
-IEZpamFsa293c2tpIDxtYWNpZWouZmlqYWxrb3dza2lAaW50ZWwuY29tPg0KLS0tDQogZHJpdmVy
-cy9uZXQvZXRoZXJuZXQvaW50ZWwvaWNlL2ljZV9tYWluLmMgfCA5IC0tLS0tLS0tLQ0KIDEgZmls
-ZSBjaGFuZ2VkLCA5IGRlbGV0aW9ucygtKQ0KDQpUZXN0ZWQtYnk6IFRvbnkgQnJlbGluc2tpIDx0
-b255eC5icmVsaW5za2lAaW50ZWwuY29tPiBBIENvbnRpbmdlbnQgV29ya2VyIGF0IEludGVsDQo=
+Hello, BPF developers.
+
+Alexey Kardashevskiy is reporting that system_wq gets stuck due to flooding of
+unbounded bpf_map_free_deferred work. Use of WQ_MEM_RECLAIM | WQ_HIGHPRI | WQ_UNBOUND
+workqueue did not solve this problem. Is it possible that a refcount leak somewhere
+preventing bpf_map_free_deferred from completing? Please see
+https://lkml.kernel.org/r/CACT4Y+Z+kwPM=WUzJ-e359PWeLLqmF0w4Yxp1spzZ=+J0ekrag@mail.gmail.com .
+
+On 2021/01/23 7:53, Alexey Kardashevskiy wrote:
+> 
+> 
+> On 23/01/2021 02:30, Tetsuo Handa wrote:
+>> On 2021/01/22 22:28, Tetsuo Handa wrote:
+>>> On 2021/01/22 21:10, Dmitry Vyukov wrote:
+>>>> On Fri, Jan 22, 2021 at 1:03 PM Alexey Kardashevskiy <aik@ozlabs.ru> wrote:
+>>>>>
+>>>>>
+>>>>>
+>>>>> On 22/01/2021 21:30, Tetsuo Handa wrote:
+>>>>>> On 2021/01/22 18:16, Dmitry Vyukov wrote:
+>>>>>>> The reproducer only does 2 bpf syscalls, so something is slowly leaking in bpf.
+>>>>>>> My first suspect would be one of these. Since workqueue is async, it
+>>>>>>> may cause such slow drain that happens only when tasks are spawned
+>>>>>>> fast. I don't know if there is a procfs/debugfs introspection file to
+>>>>>>> monitor workqueue lengths to verify this hypothesis.
+>>>>>>
+>>>>>> If you can reproduce locally, you can call show_workqueue_state()
+>>>>>> (part of SysRq-t) when hitting the limit.
+>>>>>>
+>>>>>> --- a/kernel/locking/lockdep.c
+>>>>>> +++ b/kernel/locking/lockdep.c
+>>>>>> @@ -1277,6 +1277,7 @@ register_lock_class(struct lockdep_map *lock, unsigned int subclass, int force)
+>>>>>>
+>>>>>>                   print_lockdep_off("BUG: MAX_LOCKDEP_KEYS too low!");
+>>>>>>                   dump_stack();
+>>>>>> +               show_workqueue_state();
+>>>>>>                   return NULL;
+>>>>>>           }
+>>>>>>           nr_lock_classes++;
+>>>>>>
+>>>>>
+>>>>>
+>>>>>
+>>>>> Here is the result:
+>>>>> https://pastebin.com/rPn0Cytu
+>>>>
+>>>> Do you mind posting this publicly?
+>>>> Yes, it seems that bpf_map_free_deferred is the problem (11138
+>>>> outstanding callbacks).
+>>>>
+>>>
+>>> Wow. Horribly stuck queue. I guess BPF wants to try WQ created by
+>>>
+>>>    alloc_workqueue("bpf_free_wq", WQ_MEM_RECLAIM | WQ_HIGHPRI | WQ_UNBOUND, 0);
+>>>
+>>> rather than system_wq . You can add Tejun Heo <tj@kernel.org> for WQ.
+>>>
+>>> Anyway, please post your result to ML.
+> 
+> 
+> 
+> https://pastebin.com/JfrmzguK is with the patch below applied. Seems less output. Interestingly when I almost hit "send", OOM kicked in and tried killing a bunch of "maxlockdep" processes (my test case):
+> 
+> [  891.037315] [  31007]     0 31007      281        5    49152        0          1000 maxlockdep
+> [  891.037540] [  31009]     0 31009      281        5    49152        0          1000 maxlockdep
+> [  891.037760] [  31012]     0 31012      281        5    49152        0          1000 maxlockdep
+> [  891.037980] [  31013]     0 31013      281        5    47104        0             0 maxlockdep
+> [  891.038210] [  31014]     0 31014      281        5    49152        0          1000 maxlockdep
+> [  891.038429] [  31018]     0 31018      281        5    47104        0             0 maxlockdep
+> [  891.038652] [  31019]     0 31019      281        5    49152        0          1000 maxlockdep
+> [  891.038874] [  31020]     0 31020      281        5    49152        0          1000 maxlockdep
+> [  891.039095] [  31021]     0 31021      281        5    49152        0          1000 maxlockdep
+> [  891.039317] [  31022]     0 31022      281        5    47104        0             0 maxlockdep
+> 
+> 
+> 
+> 
+> And (re)adding LKML and Tejun as suggested. Thanks,
+> 
+> 
+>>>
+>>
+>> Does this patch (which is only compile tested) reduce number of pending works
+>> when hitting "BUG: MAX_LOCKDEP_KEYS too low!" ?
+>>
+>> diff --git a/include/linux/bpf.h b/include/linux/bpf.h
+>> index 07cb5d15e743..c6c6902090f0 100644
+>> --- a/include/linux/bpf.h
+>> +++ b/include/linux/bpf.h
+>> @@ -41,6 +41,7 @@ struct bpf_local_storage_map;
+>>   struct kobject;
+>>   struct mem_cgroup;
+>>   +extern struct workqueue_struct *bpf_free_wq;
+>>   extern struct idr btf_idr;
+>>   extern spinlock_t btf_idr_lock;
+>>   extern struct kobject *btf_kobj;
+>> diff --git a/kernel/bpf/arraymap.c b/kernel/bpf/arraymap.c
+>> index 1f8453343bf2..8b1cf6aab089 100644
+>> --- a/kernel/bpf/arraymap.c
+>> +++ b/kernel/bpf/arraymap.c
+>> @@ -994,7 +994,7 @@ static void prog_array_map_clear(struct bpf_map *map)
+>>       struct bpf_array_aux *aux = container_of(map, struct bpf_array,
+>>                            map)->aux;
+>>       bpf_map_inc(map);
+>> -    schedule_work(&aux->work);
+>> +    queue_work(bpf_free_wq, &aux->work);
+>>   }
+>>     static struct bpf_map *prog_array_map_alloc(union bpf_attr *attr)
+>> diff --git a/kernel/bpf/cgroup.c b/kernel/bpf/cgroup.c
+>> index 96555a8a2c54..f272844163df 100644
+>> --- a/kernel/bpf/cgroup.c
+>> +++ b/kernel/bpf/cgroup.c
+>> @@ -160,7 +160,7 @@ static void cgroup_bpf_release_fn(struct percpu_ref *ref)
+>>       struct cgroup *cgrp = container_of(ref, struct cgroup, bpf.refcnt);
+>>         INIT_WORK(&cgrp->bpf.release_work, cgroup_bpf_release);
+>> -    queue_work(system_wq, &cgrp->bpf.release_work);
+>> +    queue_work(bpf_free_wq, &cgrp->bpf.release_work);
+>>   }
+>>     /* Get underlying bpf_prog of bpf_prog_list entry, regardless if it's through
+>> diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
+>> index 261f8692d0d2..9d76c0d77687 100644
+>> --- a/kernel/bpf/core.c
+>> +++ b/kernel/bpf/core.c
+>> @@ -34,6 +34,15 @@
+>>   #include <linux/log2.h>
+>>   #include <asm/unaligned.h>
+>>   +struct workqueue_struct *bpf_free_wq;
+>> +
+>> +static int __init bpf_free_wq_init(void)
+>> +{
+>> +    bpf_free_wq = alloc_workqueue("bpf_free_wq", WQ_MEM_RECLAIM | WQ_HIGHPRI | WQ_UNBOUND, 0);
+>> +    return 0;
+>> +}
+>> +subsys_initcall(bpf_free_wq_init);
+>> +
+>>   /* Registers */
+>>   #define BPF_R0    regs[BPF_REG_0]
+>>   #define BPF_R1    regs[BPF_REG_1]
+>> @@ -2152,7 +2161,7 @@ void bpf_prog_free(struct bpf_prog *fp)
+>>       if (aux->dst_prog)
+>>           bpf_prog_put(aux->dst_prog);
+>>       INIT_WORK(&aux->work, bpf_prog_free_deferred);
+>> -    schedule_work(&aux->work);
+>> +    queue_work(bpf_free_wq, &aux->work);
+>>   }
+>>   EXPORT_SYMBOL_GPL(bpf_prog_free);
+>>   diff --git a/kernel/bpf/cpumap.c b/kernel/bpf/cpumap.c
+>> index 747313698178..6507cc8263fc 100644
+>> --- a/kernel/bpf/cpumap.c
+>> +++ b/kernel/bpf/cpumap.c
+>> @@ -515,7 +515,7 @@ static void __cpu_map_entry_replace(struct bpf_cpu_map *cmap,
+>>       if (old_rcpu) {
+>>           call_rcu(&old_rcpu->rcu, __cpu_map_entry_free);
+>>           INIT_WORK(&old_rcpu->kthread_stop_wq, cpu_map_kthread_stop);
+>> -        schedule_work(&old_rcpu->kthread_stop_wq);
+>> +        queue_work(bpf_free_wq, &old_rcpu->kthread_stop_wq);
+>>       }
+>>   }
+>>   diff --git a/kernel/bpf/syscall.c b/kernel/bpf/syscall.c
+>> index e5999d86c76e..084b903b4ee6 100644
+>> --- a/kernel/bpf/syscall.c
+>> +++ b/kernel/bpf/syscall.c
+>> @@ -477,7 +477,7 @@ static void __bpf_map_put(struct bpf_map *map, bool do_idr_lock)
+>>           bpf_map_free_id(map, do_idr_lock);
+>>           btf_put(map->btf);
+>>           INIT_WORK(&map->work, bpf_map_free_deferred);
+>> -        schedule_work(&map->work);
+>> +        queue_work(bpf_free_wq, &map->work);
+>>       }
+>>   }
+>>   @@ -2343,7 +2343,7 @@ void bpf_link_put(struct bpf_link *link)
+>>         if (in_atomic()) {
+>>           INIT_WORK(&link->work, bpf_link_put_deferred);
+>> -        schedule_work(&link->work);
+>> +        queue_work(bpf_free_wq, &link->work);
+>>       } else {
+>>           bpf_link_free(link);
+>>       }
+>>
+> 
+
