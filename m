@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A5D830131D
+	by mail.lfdr.de (Postfix) with ESMTP id 7726B30131E
 	for <lists+netdev@lfdr.de>; Sat, 23 Jan 2021 05:56:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726819AbhAWEzA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jan 2021 23:55:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40820 "EHLO
+        id S1726849AbhAWEzF (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jan 2021 23:55:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726754AbhAWEyw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 23:54:52 -0500
-Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7101C061794
-        for <netdev@vger.kernel.org>; Fri, 22 Jan 2021 20:53:59 -0800 (PST)
-Received: by mail-pf1-x42f.google.com with SMTP id 11so5180263pfu.4
-        for <netdev@vger.kernel.org>; Fri, 22 Jan 2021 20:53:59 -0800 (PST)
+        with ESMTP id S1726779AbhAWEyy (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 23:54:54 -0500
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5E3DC061797
+        for <netdev@vger.kernel.org>; Fri, 22 Jan 2021 20:54:01 -0800 (PST)
+Received: by mail-pj1-x1032.google.com with SMTP id m5so5141566pjv.5
+        for <netdev@vger.kernel.org>; Fri, 22 Jan 2021 20:54:01 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version;
-        bh=LI6HKM/0jE7QF0K+h0o5q3QojmaF5bUVzmQHTFlOYdk=;
-        b=GkL0M0V/Jfs/BUU9I9u7abs/+DHik3sM/GkLr+7gxHX38Nrr9OgL6Oij/m9UZlAdFM
-         CmUeqRWO/U7KkEOJQ9fs7NA1Ly91/RO4IYMUQlGK4sR4Z5Xk2jyF33+DDh4F5as27Zyx
-         cLA7UiezGIKCvIRPszJsH9cLMS93wUk+uf9/E=
+        bh=ijQyXmtUqboHOtjn+T8pA+UT/7phNjo4BxqNiVOV+YU=;
+        b=MTIurxjAMBXk+CtNRSuOUou/Ws70uqIAHtx09VbjjCOXsVga3AkRGCSWQYhF5A1vMk
+         aTPfJJVT8lw7xSLtMPAgaAenDsgOCl4sdxovb8svOLFJb4f5/REgPT76AUTFeuCk5ieM
+         8pZrENca21NxPF8SarKi13ckMDHteRVcbXtLU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version;
-        bh=LI6HKM/0jE7QF0K+h0o5q3QojmaF5bUVzmQHTFlOYdk=;
-        b=jqIiPHfX0bPdcQO1UuNwtNzhdBoYoRKfbEf778eoqJQoF4r1i+SHiPOK5Eev1uMmxd
-         9PKVqG0QEcRhQU4EXfm+bLiJMThHVwTCXmXNVv1wSOu5oAzonNUBlpY4/etrOwmmxJA2
-         GviIzFOPYicZIbZxcWtJAuRHe1UfRaVADBmoFp0IskCpVbw7TJ1teMgYq5Exz5/89dcU
-         0k+D//PiyTzTrUL5r+7SYnBSvvVja9gI7YDexsgCGE4/gnc/XEDVihVavD4XYj2NvqGW
-         UfvVaeo1lAkg4eaczscrg9fv1rlGcj2OPEPsW6fXJUguWdOQxx29CAJ+i4YlTksE5dnw
-         UVWg==
-X-Gm-Message-State: AOAM53266wvQclhNiPI/1SUgOH/y31EyQ7RkoiF3vwrHxOBNcmotGDZf
-        aZ7JilUVF243KSwYstwGbEg2k0gyh31tBszaUgBu2M3uoxvLW1bbIQSSJsO9U2O0MvVZQX/VkAm
-        UpivoawFWf+h5zArxpw6Hm4ne75nRKgVpHSlaefHOtgZqGglEqodsn1+uwZC7N2U9NZr97PiI
-X-Google-Smtp-Source: ABdhPJxpZWybz67XNnA04/l/wnN39xhCGxsaecNgaEx4vqTN1ucp4QMmlEdlh2u7wGs8DGlPcxeFRw==
-X-Received: by 2002:a62:31c7:0:b029:1b8:4194:8982 with SMTP id x190-20020a6231c70000b02901b841948982mr8354488pfx.33.1611377638639;
-        Fri, 22 Jan 2021 20:53:58 -0800 (PST)
+        bh=ijQyXmtUqboHOtjn+T8pA+UT/7phNjo4BxqNiVOV+YU=;
+        b=Mhe4Av292mc9fQXpk96SPA8Xj7OYpmivygIg4PzJ+w66ezvr7sh6MD3WoZpfTBo2/5
+         1a6e3nLiXwC5qZtI9ChiROKbprHNNCf3pUoo7T/qMdPFOQwpRZfMgOFrYVuBD3ZQoPib
+         MlXRSS5cH1CS6YdztyQn4V/+1UvCKpExLFB3kMxk9RoKHC1XxU9Q/5OuJGpnCm3n0fDX
+         x5lVSO5/PonT6JTl4y4RoqSIZEMapKvDp1T59/+xIbWfGxxJ8QoAdqAKt6+USheQfEAv
+         /KjQl/UfqmUeQzZrXUQF3wIc78akK1aMr9jluYNb2ocHdfoix+cAtdX0b2SRDeMxWT7C
+         uNTw==
+X-Gm-Message-State: AOAM5339GPObh4AG6FCv+1QvbB13E241qaln0O4pH7A+cAgdt+WSdLnh
+        AEY8Wzry53D5qVdyIBBF7QbDaMZ4DwyHSFf9KnTed9JLHdVpOfTKBc7R4UiCmOpxgdeA2dl39Au
+        RB4VRwUog5xN1rsA4AnCgS0Fhe7IbPeE0RlNUPgQdT5ALdUi2w2wWx5krS1saOZMp45K4HbnI
+X-Google-Smtp-Source: ABdhPJybMlpHFpPi1L9MwKWnN6qPTXFy2ENv0fDe25zFoj8PhVksnpx0CzMbh2VO6Ssjp7pmGELa3w==
+X-Received: by 2002:a17:90a:eacf:: with SMTP id ev15mr9400480pjb.209.1611377640598;
+        Fri, 22 Jan 2021 20:54:00 -0800 (PST)
 Received: from hex.swdvt.lab.broadcom.net ([2600:8802:d04:de02::77c])
-        by smtp.gmail.com with ESMTPSA id k3sm9675743pgm.94.2021.01.22.20.53.56
+        by smtp.gmail.com with ESMTPSA id k3sm9675743pgm.94.2021.01.22.20.53.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Jan 2021 20:53:57 -0800 (PST)
+        Fri, 22 Jan 2021 20:53:59 -0800 (PST)
 From:   Edwin Peer <edwin.peer@broadcom.com>
 To:     netdev@vger.kernel.org
 Cc:     Edwin Peer <edwin.peer@broadcom.com>,
@@ -54,125 +54,70 @@ Cc:     Edwin Peer <edwin.peer@broadcom.com>,
         Stephen Hemminger <stephen@networkplumber.org>,
         Michal Kubecek <mkubecek@suse.cz>,
         David Ahern <dsahern@gmail.com>
-Subject: [PATCH iproute2-next 2/4] lib: iplink: print warnings for missing data
-Date:   Fri, 22 Jan 2021 20:53:49 -0800
-Message-Id: <20210123045351.2797433-2-edwin.peer@broadcom.com>
+Subject: [PATCH iproute2-next 3/4] iplink: filter stats using RTEXT_FILTER_SKIP_STATS
+Date:   Fri, 22 Jan 2021 20:53:50 -0800
+Message-Id: <20210123045351.2797433-3-edwin.peer@broadcom.com>
 X-Mailer: git-send-email 2.30.0
 In-Reply-To: <20210123045351.2797433-1-edwin.peer@broadcom.com>
 References: <20210123045351.2797433-1-edwin.peer@broadcom.com>
 MIME-Version: 1.0
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000c87f0605b98a17a8"
+        boundary="000000000000e3f49405b98a1757"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000c87f0605b98a17a8
+--000000000000e3f49405b98a1757
 Content-Transfer-Encoding: 8bit
 
-The kernel might truncate VF info in IFLA_VFINFO_LIST. Sufficiently new
-kernels will provide NLM_F_NEST_TRUNCATED in these cases, but this flag
-has limited resolution, as it pertains to the entire netlink message. A
-better approach is to compare the expected number of VFs in IFLA_NUM_VF
-to how many were found in the list and warn accordingly.
+Don't request statistics we do not intend to render. This is a step
+towards avoiding a truncated IFLA_VFINFO_LIST. It also avoids fetching
+unnecessary data, reducing netlink traffic.
 
 Signed-off-by: Edwin Peer <edwin.peer@broadcom.com>
 ---
- ip/ipaddress.c   |  9 ++++++++-
- lib/libnetlink.c | 12 ++++++++++++
- 2 files changed, 20 insertions(+), 1 deletion(-)
+ ip/ipaddress.c | 6 +++++-
+ ip/iplink.c    | 3 +++
+ 2 files changed, 8 insertions(+), 1 deletion(-)
 
 diff --git a/ip/ipaddress.c b/ip/ipaddress.c
-index 571346b15cc3..0bbcee2b3bb2 100644
+index 0bbcee2b3bb2..75511881050d 100644
 --- a/ip/ipaddress.c
 +++ b/ip/ipaddress.c
-@@ -922,6 +922,7 @@ int print_linkinfo(struct nlmsghdr *n, void *arg)
- 	const char *name;
- 	unsigned int m_flag = 0;
- 	SPRINT_BUF(b1);
-+	bool truncated_vfs = false;
+@@ -1882,9 +1882,13 @@ static int ipaddr_flush(void)
  
- 	if (n->nlmsg_type != RTM_NEWLINK && n->nlmsg_type != RTM_DELLINK)
- 		return 0;
-@@ -1199,15 +1200,18 @@ int print_linkinfo(struct nlmsghdr *n, void *arg)
+ static int iplink_filter_req(struct nlmsghdr *nlh, int reqlen)
+ {
++	__u32 filt_mask;
+ 	int err;
  
- 	if ((do_link || show_details) && tb[IFLA_VFINFO_LIST] && tb[IFLA_NUM_VF]) {
- 		struct rtattr *i, *vflist = tb[IFLA_VFINFO_LIST];
--		int rem = RTA_PAYLOAD(vflist);
-+		int rem = RTA_PAYLOAD(vflist), count = 0;
+-	err = addattr32(nlh, reqlen, IFLA_EXT_MASK, RTEXT_FILTER_VF);
++	filt_mask = RTEXT_FILTER_VF;
++	if (!show_stats)
++		filt_mask |= RTEXT_FILTER_SKIP_STATS;
++	err = addattr32(nlh, reqlen, IFLA_EXT_MASK, filt_mask);
+ 	if (err)
+ 		return err;
  
- 		open_json_array(PRINT_JSON, "vfinfo_list");
- 		for (i = RTA_DATA(vflist); RTA_OK(i, rem); i = RTA_NEXT(i, rem)) {
- 			open_json_object(NULL);
- 			print_vfinfo(fp, ifi, i);
- 			close_json_object();
-+			count++;
- 		}
- 		close_json_array(PRINT_JSON, NULL);
-+		if (count != rta_getattr_u32(tb[IFLA_NUM_VF]))
-+			truncated_vfs = true;
+diff --git a/ip/iplink.c b/ip/iplink.c
+index 27c9be442a7a..6a973213dc11 100644
+--- a/ip/iplink.c
++++ b/ip/iplink.c
+@@ -1116,6 +1116,9 @@ int iplink_get(char *name, __u32 filt_mask)
+ 			  !check_ifname(name) ? IFLA_IFNAME : IFLA_ALT_IFNAME,
+ 			  name, strlen(name) + 1);
  	}
- 
- 	if (tb[IFLA_PROP_LIST]) {
-@@ -1228,6 +1232,9 @@ int print_linkinfo(struct nlmsghdr *n, void *arg)
- 
- 	print_string(PRINT_FP, NULL, "%s", "\n");
- 	fflush(fp);
-+	/* prettier here if stderr and stdout go to the same place */
-+	if (truncated_vfs)
-+		fprintf(stderr, "Truncated VF list: %s\n", name);
- 	return 1;
- }
- 
-diff --git a/lib/libnetlink.c b/lib/libnetlink.c
-index c958aa57d0cd..b1f07d4570cf 100644
---- a/lib/libnetlink.c
-+++ b/lib/libnetlink.c
-@@ -833,6 +833,9 @@ static int rtnl_dump_filter_l(struct rtnl_handle *rth,
- 				if (h->nlmsg_flags & NLM_F_DUMP_INTR)
- 					dump_intr = 1;
- 
-+				if (h->nlmsg_flags & NLM_F_NEST_TRUNCATED)
-+					fprintf(stderr, "Incomplete data: truncated attribute list\n");
 +
- 				if (h->nlmsg_type == NLMSG_DONE) {
- 					err = rtnl_dump_done(h);
- 					if (err < 0) {
-@@ -978,6 +981,9 @@ next:
- 				continue;
- 			}
++	if (!show_stats)
++		filt_mask |= RTEXT_FILTER_SKIP_STATS;
+ 	addattr32(&req.n, sizeof(req), IFLA_EXT_MASK, filt_mask);
  
-+			if (h->nlmsg_flags & NLM_F_NEST_TRUNCATED)
-+				fprintf(stderr, "Incomplete data: truncated attribute list\n");
-+
- 			if (h->nlmsg_type == NLMSG_ERROR) {
- 				struct nlmsgerr *err = (struct nlmsgerr *)NLMSG_DATA(h);
- 				int error = err->error;
-@@ -1156,6 +1162,9 @@ int rtnl_listen(struct rtnl_handle *rtnl,
- 				exit(1);
- 			}
- 
-+			if (h->nlmsg_flags & NLM_F_NEST_TRUNCATED)
-+				fprintf(stderr, "Incomplete data: truncated attribute list\n");
-+
- 			err = handler(&ctrl, h, jarg);
- 			if (err < 0)
- 				return err;
-@@ -1206,6 +1215,9 @@ int rtnl_from_file(FILE *rtnl, rtnl_listen_filter_t handler,
- 			return -1;
- 		}
- 
-+		if (h->nlmsg_flags & NLM_F_NEST_TRUNCATED)
-+			fprintf(stderr, "Incomplete data: truncated attribute list\n");
-+
- 		status = fread(NLMSG_DATA(h), 1, NLMSG_ALIGN(l), rtnl);
- 
- 		if (status != NLMSG_ALIGN(l)) {
+ 	if (rtnl_talk(&rth, &req.n, &answer) < 0)
 -- 
 2.30.0
 
 
---000000000000c87f0605b98a17a8
+--000000000000e3f49405b98a1757
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -242,13 +187,13 @@ wL3owFiCmLmw5R8OH22wqf/7sQFMRpH5IQFLRYdU9uCUy5FlUAgiCEXegph8ytxvo8MgYyQcCOeg
 BMfFgFEHuM2IgsDQyFC6XUViX6BQny67nlrO8pqwNRJ9Bdd7ykLCzCLOuR1znBAc2wAL9OKQe0cx
 ggJvMIICawIBATBtMF0xCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTMw
 MQYDVQQDEypHbG9iYWxTaWduIFBlcnNvbmFsU2lnbiAyIENBIC0gU0hBMjU2IC0gRzMCDCXgDAeB
-YW0HGKjSdzANBglghkgBZQMEAgEFAKCB1DAvBgkqhkiG9w0BCQQxIgQgp5fsJ3VRx6gxqSweXHsF
-SC7+IhTvMzuV3g6pnlvQ/1swGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUx
-DxcNMjEwMTIzMDQ1MzU5WjBpBgkqhkiG9w0BCQ8xXDBaMAsGCWCGSAFlAwQBKjALBglghkgBZQME
+YW0HGKjSdzANBglghkgBZQMEAgEFAKCB1DAvBgkqhkiG9w0BCQQxIgQgI3fBq6z8edsAWDwVTa7Q
+WmsDJxrrFceM3L1mzfrZJQcwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUx
+DxcNMjEwMTIzMDQ1NDAwWjBpBgkqhkiG9w0BCQ8xXDBaMAsGCWCGSAFlAwQBKjALBglghkgBZQME
 ARYwCwYJYIZIAWUDBAECMAoGCCqGSIb3DQMHMAsGCSqGSIb3DQEBCjALBgkqhkiG9w0BAQcwCwYJ
-YIZIAWUDBAIBMA0GCSqGSIb3DQEBAQUABIIBAFYc3ClM3CeYlfF6/6eRgahwlgKVz1FpJabpKWEo
-i5Ewhk7gmtspNZmvdKGCDMDELlfjHsCCq6UE4Z/Akpe5Sv8Zb6l3dVu//lYxeUAD0+sQWLX44h7U
-DPemijCsyRkZuBKxWb9muiBLVALsi1suMKw3SlQEaQ+1YDkRy1ksAPTzVXw+XqQXPk789GqVbGCb
-B1dmStOgi1hbjk0kbkFXdNdBczLN1ouZCx6DAWH3qiRO1dn2NqgwR+2FvaSpxKoL2kNX41STgXm2
-sv/sF+hraC4VtiObtGyj7xwMM87YFfu9wAObbJMPdJNIVH/3bY5CyWDRAJo2YJgeOydVBMRz8qE=
---000000000000c87f0605b98a17a8--
+YIZIAWUDBAIBMA0GCSqGSIb3DQEBAQUABIIBADJG22msjhuUO26bGVDuy9aoi00jjlH8bwuNnpY4
+aPpfcWJ+8+2BWvYM2Uunz9GjnP+xSM1fmTEPoMa7KhYLCmfFlRMpcsx1sH/LSsgopssLreX+74Vg
+sPc+BVIz84zKYC4elKl9ZI3R0xDRY+pvaogSHchJPWZd3/dRHSjJez9fqlVqGrjkEI8KQamEFK8Q
+CMZpq+8YxW83FxtjGbTZFEsLVmpvw0fbkFgGbOGmXgvFDl+CO8EYxo+aOsdGpilZyPoSxaCchoKF
+aVjYZeMfNZjXDh1WdDPwt5danhtPBAUGkErL+WjDScd2c70q8NaCeWnxGmcj8GqMwzNq/0iy2yM=
+--000000000000e3f49405b98a1757--
