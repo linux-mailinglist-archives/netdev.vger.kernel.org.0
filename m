@@ -2,49 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 24E4330131B
+	by mail.lfdr.de (Postfix) with ESMTP id 9198B30131C
 	for <lists+netdev@lfdr.de>; Sat, 23 Jan 2021 05:56:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726732AbhAWEyl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jan 2021 23:54:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40690 "EHLO
+        id S1726734AbhAWEy4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jan 2021 23:54:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726335AbhAWEyQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 23:54:16 -0500
-Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96C55C06178B
-        for <netdev@vger.kernel.org>; Fri, 22 Jan 2021 20:53:36 -0800 (PST)
-Received: by mail-pg1-x52f.google.com with SMTP id 30so5228837pgr.6
-        for <netdev@vger.kernel.org>; Fri, 22 Jan 2021 20:53:36 -0800 (PST)
+        with ESMTP id S1726335AbhAWEyw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 23:54:52 -0500
+Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A885BC061793
+        for <netdev@vger.kernel.org>; Fri, 22 Jan 2021 20:53:57 -0800 (PST)
+Received: by mail-pg1-x536.google.com with SMTP id g15so5211767pgu.9
+        for <netdev@vger.kernel.org>; Fri, 22 Jan 2021 20:53:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version;
-        bh=ILT1zsp1gp4scssLPHXpg9nOq/pEWZdcrMBoO8vJPso=;
-        b=FDHG9xt/uUv4UCDAT7XXiyEpUfYUbGqCzgr57SUu6eINvIsFKq9BvEJ0yPdg8PS69Q
-         eYO5Cd/IqLEFKFUs0R5Q1cIUa1eYtwyOwemQhekp05pnQP1i9vW7pFzI+pZ7W0GyWOpD
-         iRelljGFJ9W/a4ABlqWYz0SD0LBhTLTtpLM4Y=
+        h=from:to:cc:subject:date:message-id:mime-version;
+        bh=iifPFpUiPAIGGGpKVyrqMYbWgW37mzS8FqtqoApIEJQ=;
+        b=GRq/ID3RwkTvTt1ar2RuYgtRwt5mDFT7N1tPl4GMocEsQNKLTtCocDFmHclVTFo7c/
+         j78PYnOHPD5ngZ7KCH1krUibf3uQa8lr8+uEw+vgb1r7TBoJth/oUmI7mH6s87TyLAT0
+         2xR140jbwRjSycX7RwE40E4tWPtMe5D0fsmtA=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version;
-        bh=ILT1zsp1gp4scssLPHXpg9nOq/pEWZdcrMBoO8vJPso=;
-        b=dcrbjXwUXsuwpm7hKaTw/HzD70NZHZBFct1mwNpjhtUzMLVz4pguYUYZ06cDSxbe2e
-         H12IYdEFGbsyryyQKqs0f+SCC2e6xVZeFum5RLhPZjfzYBuVzTap1XziCIRFII8te1IX
-         swCw3v/g656kypYBxvQ5niW9KHPNRq5pe2fXgxYXcuhh+UaXJXrXQLpr7b10LZmBdCYl
-         pJEw2i0jDLrnMQPLp8zdis96cOWMdm231ekUAgJV0H3jHtUEEjDntX5/zNZlOeeFlA8X
-         RCNFNz1SL2vR5jGHhDeFRaLAXvlrhx9Mw/kIFAhN1CdlUzSe1jIEoX998QgtFii8Bq60
-         Y2Eg==
-X-Gm-Message-State: AOAM531/NmTlx4ASbZHPTldehR+dS2Retw6vILBLeftgdcN29YWy1EYw
-        8Azh7MFDaTbrCmQIJc1nHyN/wO3+nemP3NHjCiQ/qbHGf0+3+xe2YdvmewRZxJKHHJPkYACDrwf
-        Ob1OW4tmAJNly4P/gjLFZee8sy5BD9wnBOmYXRWu88JNrsMFoJ2rakDgFj4L/alNn/M0736qh
-X-Google-Smtp-Source: ABdhPJySCY33xJR4VeDi1DgVlWuCpV9QTkW315eyZKeZZEYSuPRBO3z+J86cBy7oIX+KFjtL3pqmwA==
-X-Received: by 2002:a65:6405:: with SMTP id a5mr7953724pgv.389.1611377615593;
-        Fri, 22 Jan 2021 20:53:35 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version;
+        bh=iifPFpUiPAIGGGpKVyrqMYbWgW37mzS8FqtqoApIEJQ=;
+        b=GQNS0L2CC4S5gaYMiZLAOSQe5x47usSE2GUMtgpn0aUghGSLHpR4y50ZTYNWfV0XZG
+         zMloa3qgAtoVkQEnt7uPxgvY06yBdNSLW5MWN+K+CeZMGwo12EP0LjyqxKuOwdJjIubr
+         6QzzHp96/XjUoLgAa7u0BlFzy4KQqJhF1dK4fd5GLtwkjvWcw4B4D/XjcIHS7tT2Hlgn
+         rAgt9UDqXeVB9Q0ZPIepdnj0ThDjy0LS3GkWFIC65JO4Tb1g3w62UwjiK5quEk0bODq8
+         8GaqiyTg2wARdeKa60afDKCaGcJzNyVjwtn5wRtkYQIJ6rAAvdOxO9pEOdOGXkvdvHcW
+         p7Cg==
+X-Gm-Message-State: AOAM530p6t6+d4NzJbmIKZhMnbDuLnm5yZ4RTP0SoGslErWDXklbUkPF
+        ctjEIpzm7d+7zqxV/B6HghjzmH3P4TBf+ox4BprWCodcMBw1Ea8fn7eLTOjnfMID6TiayOprGG4
+        /zXT6xM+Ozd38fGWmg77+pH+gqQiB7/gDRA5+tehdJ4m+LSw88IBnqhTcL2weuvVIjsDubsZI
+X-Google-Smtp-Source: ABdhPJxcksPXuHqTjhNaDKLvItS8HDzYo/LE4gnNjYp6zfIwzxbWK+rtwkDHO4Term2kOhUSrejtDg==
+X-Received: by 2002:a62:5a03:0:b029:1ae:7e1f:7f1 with SMTP id o3-20020a625a030000b02901ae7e1f07f1mr8508221pfb.9.1611377636381;
+        Fri, 22 Jan 2021 20:53:56 -0800 (PST)
 Received: from hex.swdvt.lab.broadcom.net ([2600:8802:d04:de02::77c])
-        by smtp.gmail.com with ESMTPSA id d2sm10725832pjd.29.2021.01.22.20.53.33
+        by smtp.gmail.com with ESMTPSA id k3sm9675743pgm.94.2021.01.22.20.53.54
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Jan 2021 20:53:34 -0800 (PST)
+        Fri, 22 Jan 2021 20:53:55 -0800 (PST)
 From:   Edwin Peer <edwin.peer@broadcom.com>
 To:     netdev@vger.kernel.org
 Cc:     Edwin Peer <edwin.peer@broadcom.com>,
@@ -54,44 +52,34 @@ Cc:     Edwin Peer <edwin.peer@broadcom.com>,
         Stephen Hemminger <stephen@networkplumber.org>,
         Michal Kubecek <mkubecek@suse.cz>,
         David Ahern <dsahern@gmail.com>
-Subject: [PATCH net-next 4/4] rtnetlink: promote IFLA_VF_STATS to same level as IFLA_VF_INFO
-Date:   Fri, 22 Jan 2021 20:53:21 -0800
-Message-Id: <20210123045321.2797360-5-edwin.peer@broadcom.com>
+Subject: [PATCH iproute2-next 1/4] uapi: update kernel headers from upstream
+Date:   Fri, 22 Jan 2021 20:53:48 -0800
+Message-Id: <20210123045351.2797433-1-edwin.peer@broadcom.com>
 X-Mailer: git-send-email 2.30.0
-In-Reply-To: <20210123045321.2797360-1-edwin.peer@broadcom.com>
-References: <20210123045321.2797360-1-edwin.peer@broadcom.com>
 MIME-Version: 1.0
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="0000000000006621ca05b98a16b7"
+        boundary="000000000000a406ef05b98a174a"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---0000000000006621ca05b98a16b7
+--000000000000a406ef05b98a174a
 Content-Transfer-Encoding: 8bit
 
-Separating the VF stats out of IFLA_VF_INFO appears to be the least
-impact way of resolving the nlattr overflow bug in IFLA_VFINFO_LIST.
+This primarily pulls in the ABI changes needed to detect truncated
+lists of netlink attributes as well as the bits necessary to elevate
+IFLA_VF_INFO stats out of IFLA_VFINFO_LIST. Unrelated changes in the
+affected files were also synced.
 
-Since changing the hierarchy does constitute an ABI change, it must
-be explicitly requested via RTEXT_FILTER_VF_SEPARATE_STATS. Otherwise,
-the old location is maintained for compatibility.
-
-A new container type, namely IFLA_VFSTATS_LIST, is introduced to group
-the stats objects into an ordered list that corresponds with the order
-of VFs in IFLA_VFINFO_LIST.
-
-Fixes: 3b766cd83232 ("net/core: Add reading VF statistics through the PF netdevice")
-Fixes: c5a9f6f0ab40 ("net/core: Add drop counters to VF statistics")
 Signed-off-by: Edwin Peer <edwin.peer@broadcom.com>
 ---
- include/uapi/linux/if_link.h   |  1 +
- include/uapi/linux/rtnetlink.h |  1 +
- net/core/rtnetlink.c           | 24 +++++++++++++++++++++---
- 3 files changed, 23 insertions(+), 3 deletions(-)
+ include/uapi/linux/if_link.h   | 2 ++
+ include/uapi/linux/netlink.h   | 1 +
+ include/uapi/linux/rtnetlink.h | 1 +
+ 3 files changed, 4 insertions(+)
 
 diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
-index 2bd0d8bbcdb2..db12ffd2bffd 100644
+index 97a95cf7e4f9..2889897bc2bb 100644
 --- a/include/uapi/linux/if_link.h
 +++ b/include/uapi/linux/if_link.h
 @@ -341,6 +341,7 @@ enum {
@@ -102,80 +90,43 @@ index 2bd0d8bbcdb2..db12ffd2bffd 100644
  	__IFLA_MAX
  };
  
+@@ -807,6 +808,7 @@ enum {
+ 	IFLA_GTP_FD1,
+ 	IFLA_GTP_PDP_HASHSIZE,
+ 	IFLA_GTP_ROLE,
++	IFLA_GTP_COLLECT_METADATA,
+ 	__IFLA_GTP_MAX,
+ };
+ #define IFLA_GTP_MAX (__IFLA_GTP_MAX - 1)
+diff --git a/include/uapi/linux/netlink.h b/include/uapi/linux/netlink.h
+index 5024c5435749..1cab84506eaf 100644
+--- a/include/uapi/linux/netlink.h
++++ b/include/uapi/linux/netlink.h
+@@ -57,6 +57,7 @@ struct nlmsghdr {
+ #define NLM_F_ECHO		0x08	/* Echo this request 		*/
+ #define NLM_F_DUMP_INTR		0x10	/* Dump was inconsistent due to sequence change */
+ #define NLM_F_DUMP_FILTERED	0x20	/* Dump was filtered as requested */
++#define NLM_F_NEST_TRUNCATED	0x40	/* Message contains truncated nested attribute */
+ 
+ /* Modifiers to GET request */
+ #define NLM_F_ROOT	0x100	/* specify tree	root	*/
 diff --git a/include/uapi/linux/rtnetlink.h b/include/uapi/linux/rtnetlink.h
-index b841caa4657e..f2f4f9b4d595 100644
+index c66fd247d90a..b31afc8f70a4 100644
 --- a/include/uapi/linux/rtnetlink.h
 +++ b/include/uapi/linux/rtnetlink.h
-@@ -789,6 +789,7 @@ enum {
+@@ -787,6 +787,7 @@ enum {
  #define RTEXT_FILTER_MRP	(1 << 4)
  #define RTEXT_FILTER_CFM_CONFIG	(1 << 5)
  #define RTEXT_FILTER_CFM_STATUS	(1 << 6)
-+#define RTEXT_FILTER_VF_SEPARATE_STATS	(1 << 7)
++#define RTEXT_FILTER_VF_SEPARATE_STATS (1 << 7)
  
  /* End of information exported to user level */
- 
-diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-index 95564fd12f24..cddd3945bc11 100644
---- a/net/core/rtnetlink.c
-+++ b/net/core/rtnetlink.c
-@@ -933,6 +933,8 @@ static inline int rtnl_vfinfo_size(const struct net_device *dev,
- 			 nla_total_size(sizeof(struct ifla_vf_rss_query_en)) +
- 			 nla_total_size(sizeof(struct ifla_vf_trust)));
- 		if (~ext_filter_mask & RTEXT_FILTER_SKIP_STATS) {
-+			if (ext_filter_mask & RTEXT_FILTER_VF_SEPARATE_STATS)
-+				size += nla_total_size(0); /* IFLA_VFSTATS_LIST */
- 			size += num_vfs *
- 				(nla_total_size(0) + /* nest IFLA_VF_STATS */
- 				 /* IFLA_VF_STATS_RX_PACKETS */
-@@ -1368,7 +1370,8 @@ static noinline_for_stack int rtnl_fill_vfinfo(struct sk_buff *skb,
- 		goto nla_put_vf_failure;
- 	}
- 	nla_nest_end(skb, vfvlanlist);
--	if (~ext_filter_mask & RTEXT_FILTER_SKIP_STATS) {
-+	if (~ext_filter_mask & RTEXT_FILTER_SKIP_STATS &&
-+	    ~ext_filter_mask & RTEXT_FILTER_VF_SEPARATE_STATS) {
- 		if (rtnl_fill_vfstats(skb, dev, vfs_num))
- 			goto nla_put_vf_failure;
- 	}
-@@ -1386,7 +1389,7 @@ static noinline_for_stack int rtnl_fill_vf(struct sk_buff *skb,
- 					   struct net_device *dev,
- 					   u32 ext_filter_mask)
- {
--	struct nlattr *vfinfo;
-+	struct nlattr *vfinfo, *vfstats;
- 	int i, num_vfs;
- 
- 	if (!dev->dev.parent || ((ext_filter_mask & RTEXT_FILTER_VF) == 0))
-@@ -1407,8 +1410,23 @@ static noinline_for_stack int rtnl_fill_vf(struct sk_buff *skb,
- 		if (rtnl_fill_vfinfo(skb, dev, i, vfinfo, ext_filter_mask))
- 			return -EMSGSIZE;
- 	}
--
- 	nla_nest_end(skb, vfinfo);
-+
-+	if (~ext_filter_mask & RTEXT_FILTER_SKIP_STATS &&
-+	    ext_filter_mask & RTEXT_FILTER_VF_SEPARATE_STATS) {
-+		vfstats = nla_nest_start_noflag(skb, IFLA_VFSTATS_LIST);
-+		if (!vfstats)
-+			return -EMSGSIZE;
-+
-+		for (i = 0; i < num_vfs; i++) {
-+			if (rtnl_fill_vfstats(skb, dev, i)) {
-+				nla_nest_cancel(skb, vfstats);
-+				return -EMSGSIZE;
-+			}
-+		}
-+		nla_nest_end(skb, vfstats);
-+	}
-+
- 	return 0;
- }
  
 -- 
 2.30.0
 
 
---0000000000006621ca05b98a16b7
+--000000000000a406ef05b98a174a
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -245,13 +196,13 @@ wL3owFiCmLmw5R8OH22wqf/7sQFMRpH5IQFLRYdU9uCUy5FlUAgiCEXegph8ytxvo8MgYyQcCOeg
 BMfFgFEHuM2IgsDQyFC6XUViX6BQny67nlrO8pqwNRJ9Bdd7ykLCzCLOuR1znBAc2wAL9OKQe0cx
 ggJvMIICawIBATBtMF0xCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTMw
 MQYDVQQDEypHbG9iYWxTaWduIFBlcnNvbmFsU2lnbiAyIENBIC0gU0hBMjU2IC0gRzMCDCXgDAeB
-YW0HGKjSdzANBglghkgBZQMEAgEFAKCB1DAvBgkqhkiG9w0BCQQxIgQg/a3p4xUq/vOPzYjaSuRy
-R5nbZFQGKiE00NY3hRKMeEQwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUx
-DxcNMjEwMTIzMDQ1MzM1WjBpBgkqhkiG9w0BCQ8xXDBaMAsGCWCGSAFlAwQBKjALBglghkgBZQME
+YW0HGKjSdzANBglghkgBZQMEAgEFAKCB1DAvBgkqhkiG9w0BCQQxIgQgO5QRZtFsKbHfCh7yMbtn
+dY2Y72DDP5L/S7BBxZ2nxQEwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUx
+DxcNMjEwMTIzMDQ1MzU2WjBpBgkqhkiG9w0BCQ8xXDBaMAsGCWCGSAFlAwQBKjALBglghkgBZQME
 ARYwCwYJYIZIAWUDBAECMAoGCCqGSIb3DQMHMAsGCSqGSIb3DQEBCjALBgkqhkiG9w0BAQcwCwYJ
-YIZIAWUDBAIBMA0GCSqGSIb3DQEBAQUABIIBAGe91Gui9peHErBa0enaJnZa62uF21k0RE0egFnj
-CO+av7TQC98s5AJdQdxb/Ev/wWbsvQj//D/eZphhWbybEl39P/1bZll1VlBKleIrUskkWdUqIr7j
-/gcZuwqQWw0MmowCnpuhxdH7iwy3+NDCPlDjBZL0qw+zoR7arbpWkTvV+WjJ0w5OdP6BxCIrzip3
-jsJD7PyIrqS4Mw3CQ/s27gYCnCMc4idBSDv6gjufndh6m67M32hIrEZSPrBc1Gr/6d8Ft/TjgE4t
-LrKEs9l05Y7TNArckz3NuQQtqNo3ZMp/pUB2uHW5AsJd0OOb4B1qLMhtymZkvpTweBWO/LvbwMk=
---0000000000006621ca05b98a16b7--
+YIZIAWUDBAIBMA0GCSqGSIb3DQEBAQUABIIBAGxhyaionsYsvH9P3kUIQUuH5FhcOEIqsc1XlgPq
+8LT0UbKYAqyeK1IiYVRWJP3jibMBvOZeo8fx36wzl4apITwVA7XXjfYjCsZEb4tR9PVsaoiFmICV
+HM6DzqoLXGMFPvW3KWT3Uo3ZQ3+6MAjwdPz9//ss8eF62O4BV0W2c58EHlF6yiMJQpMTdDV10W/D
+NryN0mMvdmuL7EugZYHiF31xNmYA30nmlzWiUkI2TYEUoZ2SsTEp8MDRIBJLUkk+Rrcmngwov039
+aHOLT02QuAFuGosJCBN5I2uuWOLSwuJ+Ba5aIxreQ1B1ltMfmMN07zyw5x7Bnq1H9r5Vq926mg8=
+--000000000000a406ef05b98a174a--
