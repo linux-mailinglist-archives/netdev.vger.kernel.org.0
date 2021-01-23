@@ -2,170 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0E24F3011D3
-	for <lists+netdev@lfdr.de>; Sat, 23 Jan 2021 02:05:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DBD413011D7
+	for <lists+netdev@lfdr.de>; Sat, 23 Jan 2021 02:06:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726208AbhAWBCr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jan 2021 20:02:47 -0500
-Received: from 95-165-96-9.static.spd-mgts.ru ([95.165.96.9]:50914 "EHLO
-        blackbox.su" rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725842AbhAWBCX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 22 Jan 2021 20:02:23 -0500
-Received: from metabook.localnet (metabook.metanet [192.168.2.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by blackbox.su (Postfix) with ESMTPSA id B837982100;
-        Sat, 23 Jan 2021 04:01:53 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=blackbox.su; s=mail;
-        t=1611363713; bh=myjVRTj0hYQ3C1Pas3KTHSpLIBYbubJF7/c2yKRmhgo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ek7+aYHo6WCklcG1f1doU+ihHWS7uxV+2GDEhfKPu0qFsIPUQHiaCCODChfuTMHdW
-         DL/LDl9HmTUIbo3ur/WaVOImDm8+Nl2ASS8pcuf4+MzcUulycV/n51QMWzhCq/TfG6
-         AHxKoj0OUx5qgtvr0XGtqDZPzE3S6A7fzUI8MeAbfnz0Vv+N6fyZkQItR7ji1aYEt5
-         7OMPwTXdcrOLgvbGe+a3XmpLiitfrNDj0siVtg6Z8DJ1KLLE5wFqRxruzPcwxZMAzz
-         CLNnEKMcjpqerxEq29/ENiQ0L1I76EH8NDgQGC0PZ1o7vzWkob9U2ntmNxwz61pmJS
-         wBe8u9HYOj65Q==
-From:   Sergej Bauer <sbauer@blackbox.su>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     Andrew Lunn <andrew@lunn.ch>, netdev@vger.kernel.org,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Bryan Whitehead <bryan.whitehead@microchip.com>,
-        UNGLinuxDriver@microchip.com,
-        Simon Horman <simon.horman@netronome.com>,
-        Mark Einon <mark.einon@gmail.com>,
-        Madalin Bucur <madalin.bucur@oss.nxp.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] lan743x: add virtual PHY for PHY-less devices
-Date:   Sat, 23 Jan 2021 04:01:01 +0300
-Message-ID: <4496952.bab7Homqhv@metabook>
-In-Reply-To: <5306ffe6-112c-83c9-826a-9bacd661691b@gmail.com>
-References: <20210122214247.6536-1-sbauer@blackbox.su> <3174210.ndmClRx9B8@metabook> <5306ffe6-112c-83c9-826a-9bacd661691b@gmail.com>
+        id S1725968AbhAWBFK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jan 2021 20:05:10 -0500
+Received: from www62.your-server.de ([213.133.104.62]:50138 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726317AbhAWBEk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 20:04:40 -0500
+Received: from sslproxy02.your-server.de ([78.47.166.47])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1l37Kh-000Gey-4d; Sat, 23 Jan 2021 02:03:19 +0100
+Received: from [85.7.101.30] (helo=pc-9.home)
+        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1l37Kg-000LEl-Pg; Sat, 23 Jan 2021 02:03:18 +0100
+Subject: Re: [PATCH v6 bpf-next 0/8] mvneta: introduce XDP multi-buffer
+ support
+To:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org
+Cc:     lorenzo.bianconi@redhat.com, davem@davemloft.net, kuba@kernel.org,
+        ast@kernel.org, shayagr@amazon.com, john.fastabend@gmail.com,
+        dsahern@kernel.org, brouer@redhat.com, echaudro@redhat.com,
+        jasowang@redhat.com, alexander.duyck@gmail.com, saeed@kernel.org,
+        maciej.fijalkowski@intel.com, sameehj@amazon.com
+References: <cover.1611086134.git.lorenzo@kernel.org>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <572556bb-845f-1b4a-8f0a-fb6a4fc286e3@iogearbox.net>
+Date:   Sat, 23 Jan 2021 02:03:17 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+In-Reply-To: <cover.1611086134.git.lorenzo@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/26057/Fri Jan 22 13:30:31 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Saturday, January 23, 2021 3:01:47 AM MSK Florian Fainelli wrote:
-> On 1/22/2021 3:58 PM, Sergej Bauer wrote:
-> > On Saturday, January 23, 2021 2:23:25 AM MSK Andrew Lunn wrote:
-> >>>>> @@ -1000,8 +1005,10 @@ static void lan743x_phy_close(struct
-> >>>>> lan743x_adapter *adapter)>
-> >>>>> 
-> >>>>>  	struct net_device *netdev = adapter->netdev;
-> >>>>>  	
-> >>>>>  	phy_stop(netdev->phydev);
-> >>>>> 
-> >>>>> -	phy_disconnect(netdev->phydev);
-> >>>>> -	netdev->phydev = NULL;
-> >>>>> +	if (phy_is_pseudo_fixed_link(netdev->phydev))
-> >>>>> +		lan743x_virtual_phy_disconnect(netdev->phydev);
-> >>>>> +	else
-> >>>>> +		phy_disconnect(netdev->phydev);
-> >>>> 
-> >>>> phy_disconnect() should work. You might want to call
-> >> 
-> >> There are drivers which call phy_disconnect() on a fixed_link. e.g.
-> >> 
-> >> https://elixir.bootlin.com/linux/v5.11-rc4/source/drivers/net/usb/lan78xx
-> >> .c# L3555.
-> >> 
-> >> 
-> >> It could be your missing call to fixed_phy_unregister() is leaving
-> >> behind bad state.
-> > 
-> > lan743x_virtual_phy_disconnect removes sysfs-links and calls
-> > fixed_phy_unregister()
-> > and the reason was phydev in sysfs.
-> > 
-> >>> It was to make ethtool show full set of supported speeds and MII only in
-> >>> supported ports (without TP and the no any ports in the bare card).
-> >> 
-> >> But fixed link does not support the full set of speed. It is fixed. It
-> >> supports only one speed it is configured with.
-> > 
-> > That's why I "re-implemented the fixed PHY driver" as Florian said.
-> > The goal of virtual phy was to make an illusion of real device working in
-> > loopback mode. So I could use ethtool and ioctl's to switch speed of
-> > device.> 
-> >> And by setting it
-> >> wrongly, you are going to allow the user to do odd things, like use
-> >> ethtool force the link speed to a speed which is not actually
-> >> supported.
-> > 
-> > I have lan743x only and in loopback mode it allows to use speeds
-> > 10/100/1000MBps
-> > in full-duplex mode only. But the highest speed I have achived was
-> > something near
-> > 752Mbps...
-> > And I can switch speed on the fly, without reloading the module.
-> > 
-> > May by I should limit the list of acceptable devices?
+Hi Lorenzo,
+
+On 1/19/21 9:20 PM, Lorenzo Bianconi wrote:
+> This series introduce XDP multi-buffer support. The mvneta driver is
+> the first to support these new "non-linear" xdp_{buff,frame}. Reviewers
+> please focus on how these new types of xdp_{buff,frame} packets
+> traverse the different layers and the layout design. It is on purpose
+> that BPF-helpers are kept simple, as we don't want to expose the
+> internal layout to allow later changes.
 > 
-> It is not clear what your use case is so maybe start with explaining it
-> and we can help you define something that may be acceptable for upstream
-> inclusion.
-it migth be helpful for developers work on userspace networking tools with
-PHY-less lan743x (the interface even could not be brought up)
-of course, there nothing much to do without TP port but the difference is
-representative.
+> For now, to keep the design simple and to maintain performance, the XDP
+> BPF-prog (still) only have access to the first-buffer. It is left for
+> later (another patchset) to add payload access across multiple buffers.
 
-sbauer@metamini ~$ sudo ethtool eth7
-Settings for eth7:
-Cannot get device settings: No such device
-        Supports Wake-on: pumbag
-        Wake-on: d
-        Current message level: 0x00000137 (311)
-                               drv probe link ifdown ifup tx_queued
-        Link detected: no
-sbauer@metamini ~$ sudo ifup eth7
-sbauer@metamini ~$ sudo ethtool eth7
-Settings for eth7:
-        Supported ports: [ MII ]
-        Supported link modes:   10baseT/Full 
-                                100baseT/Full 
-                                1000baseT/Full 
-        Supported pause frame use: Symmetric Receive-only
-        Supports auto-negotiation: Yes
-        Supported FEC modes: Not reported
-        Advertised link modes:  10baseT/Full 
-                                100baseT/Full 
-                                1000baseT/Full 
-        Advertised pause frame use: Symmetric Receive-only
-        Advertised auto-negotiation: Yes
-        Advertised FEC modes: Not reported
-        Speed: 1000Mb/s
-        Duplex: Full
-        Port: MII
-        PHYAD: 0
-        Transceiver: internal
-        Auto-negotiation: on
-        Supports Wake-on: pumbag
-        Wake-on: d
-        Current message level: 0x00000137 (311)
-                               drv probe link ifdown ifup tx_queued
-        Link detected: yes
-sbauer@metamini ~$ sudo mii-tool -vv eth7
-Using SIOCGMIIPHY=0x8947
-eth7: negotiated 1000baseT-FD, link ok
-  registers for MII PHY 0: 
-    5140 512d 7431 0011 4140 4140 000d 0000
-    0000 0200 7800 0000 0000 0000 0000 2000
-    0000 0000 0000 0000 0000 0000 0000 0000
-    0000 0000 0000 0000 0000 0000 0000 0000
-  product info: vendor 1d:0c:40, model 1 rev 1
-  basic mode:   loopback, autonegotiation enabled
-  basic status: autonegotiation complete, link ok
-  capabilities: 1000baseT-FD 100baseTx-FD 10baseT-FD
-  advertising:  1000baseT-FD 100baseTx-FD 10baseT-FD
-  link partner: 1000baseT-FD 100baseTx-FD 10baseT-FD
+I think xmas break has mostly wiped my memory from 2020 ;) so it would be
+good to describe the sketched out design for how this will look like inside
+the cover letter in terms of planned uapi exposure. (Additionally discussing
+api design proposal could also be sth for BPF office hour to move things
+quicker + posting a summary to the list for transparency of course .. just
+a thought.)
 
-							   Regards,
-							       Sergej.
+Glancing over the series, while you've addressed the bpf_xdp_adjust_tail()
+helper API, this series will be breaking one assumption of programs at least
+for the mvneta driver from one kernel to another if you then use the multi
+buff mode, and that is basically bpf_xdp_event_output() API: the assumption
+is that you can do full packet capture by passing in the xdp buff len that
+is data_end - data ptr. We use it this way for sampling & others might as well
+(e.g. xdpcap). But bpf_xdp_copy() would only copy the first buffer today which
+would break the full pkt visibility assumption. Just walking the frags if
+xdp->mb bit is set would still need some sort of struct xdp_md exposure so
+the prog can figure out the actual full size..
 
+> This patchset should still allow for these future extensions. The goal
+> is to lift the XDP MTU restriction that comes with XDP, but maintain
+> same performance as before.
+> 
+> The main idea for the new multi-buffer layout is to reuse the same
+> layout used for non-linear SKB. We introduced a "xdp_shared_info" data
+> structure at the end of the first buffer to link together subsequent buffers.
+> xdp_shared_info will alias skb_shared_info allowing to keep most of the frags
+> in the same cache-line (while with skb_shared_info only the first fragment will
+> be placed in the first "shared_info" cache-line). Moreover we introduced some
+> xdp_shared_info helpers aligned to skb_frag* ones.
+> Converting xdp_frame to SKB and deliver it to the network stack is shown in
+> cpumap code (patch 7/8). Building the SKB, the xdp_shared_info structure
+> will be converted in a skb_shared_info one.
+> 
+> A multi-buffer bit (mb) has been introduced in xdp_{buff,frame} structure
+> to notify the bpf/network layer if this is a xdp multi-buffer frame (mb = 1)
+> or not (mb = 0).
+> The mb bit will be set by a xdp multi-buffer capable driver only for
+> non-linear frames maintaining the capability to receive linear frames
+> without any extra cost since the xdp_shared_info structure at the end
+> of the first buffer will be initialized only if mb is set.
+> 
+> Typical use cases for this series are:
+> - Jumbo-frames
+> - Packet header split (please see Google’s use-case @ NetDevConf 0x14, [0])
+> - TSO
+> 
+> bpf_xdp_adjust_tail helper has been modified to take info account xdp
+> multi-buff frames.
 
+Also in terms of logistics (I think mentioned earlier already), for the series to
+be merged - as with other networking features spanning core + driver (example
+af_xdp) - we also need a second driver (ideally mlx5, i40e or ice) implementing
+this and ideally be submitted together in the same series for review. For that
+it probably also makes sense to more cleanly split out the core pieces from the
+driver ones. Either way, how is progress on that side coming along?
 
+Thanks,
+Daniel
