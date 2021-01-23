@@ -2,111 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 25A28301569
-	for <lists+netdev@lfdr.de>; Sat, 23 Jan 2021 14:27:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F3BB301567
+	for <lists+netdev@lfdr.de>; Sat, 23 Jan 2021 14:27:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725940AbhAWN1O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Jan 2021 08:27:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37554 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725778AbhAWN1M (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 Jan 2021 08:27:12 -0500
-Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CAA0C06174A;
-        Sat, 23 Jan 2021 05:26:31 -0800 (PST)
-Received: by mail-pg1-x52a.google.com with SMTP id z21so5784348pgj.4;
-        Sat, 23 Jan 2021 05:26:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=LTEsSL5/qEA0pl5YAeZp3Gvk1wl1Tnvm61u8N/Wojw8=;
-        b=imN4Tc5IQE20IPCzQAtZil2dfLwC3ISfTTRl29dgCela7E30vNY4WHna6RWDec1HLx
-         88PzXcIgTFGtV5eAm55loQlFUBLyXQyHkzlG1cp3AwC+cpyukPYz4lHzLyqMdFcmOUrT
-         D/Cmmv3DanBFuUf+nPl0uM4miAv3W8+K7WOoSmN2V7zxoQvHXtLV2kQ/kqm0nnw7QBHM
-         +4Dt7ZKCNkNlZxgE+ImexYoUbBngpuWAZiNMbnbebK4obYzvdwahRyEXt3zVn7RLqER0
-         ZqP2q8mbz1k6Xm5xPL8DAMjHGLPyUXJneYSFyp12E5RgoTPCNkffoGcc75Zs76shK3g/
-         Do7g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=LTEsSL5/qEA0pl5YAeZp3Gvk1wl1Tnvm61u8N/Wojw8=;
-        b=EIN9wl1l9OrW/Jewv4P+M7wLA0qISPFGXkqJn7R0atTnj74b/9JtOWszLiitjSsRZr
-         E/DW4CQgdQ8GZnZeQnF+Lh6K/1X6ohq95L0zpwC3lYl1AQeR4Vq58hp4XL2xHl+4dqom
-         9CZRXcmCxWUxBHEpbnA2f414ex2X58GwM/oCQmjNP2wzbZ4sujVksjQ0n1CHhcjsEIAm
-         7+vCFaaPENECbCT2Rah5KAqb2Dr9xCxakfz42ASPs95lszPvSddSoVj7YQcJJMKQwRRp
-         +84IqCwMKYng43iIC0FH3C/ouhRFhc9b0elzYQMhBo3yCfPb5mkWEzxm24oI0fWge+f/
-         tBiQ==
-X-Gm-Message-State: AOAM532PxXm+30ldvWsgzup2cONGTmXOTwoKaT6q65GnsDnMrEH4rQ7n
-        2ofjYMc4qD9GEdRuVEUlUp+MoMXPbcU=
-X-Google-Smtp-Source: ABdhPJw2DWv3ukp/JUCsF0PWYxhjjIIZkzQR8rWVQCFESgtuWCvz8iDhgT+eeHWJn8KKkdZkgw1XZw==
-X-Received: by 2002:a63:564f:: with SMTP id g15mr2581916pgm.334.1611408391001;
-        Sat, 23 Jan 2021 05:26:31 -0800 (PST)
-Received: from hoboy.vegasvil.org (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
-        by smtp.gmail.com with ESMTPSA id h3sm11236821pgm.67.2021.01.23.05.26.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 23 Jan 2021 05:26:30 -0800 (PST)
-Date:   Sat, 23 Jan 2021 05:26:26 -0800
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Marc Zyngier <maz@kernel.org>, linux-kernel@vger.kernel.org,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Dinh Nguyen <dinguyen@kernel.org>,
-        Brandon Streiff <brandon.streiff@ni.com>,
-        Olof Johansson <olof@lixom.net>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        David Miller <davem@davemloft.net>,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH net 2/4] net: mvpp2: Remove unneeded Kconfig dependency.
-Message-ID: <20210123132626.GA22662@hoboy.vegasvil.org>
-References: <cover.1611198584.git.richardcochran@gmail.com>
- <1069fecd4b7e13485839e1c66696c5a6c70f6144.1611198584.git.richardcochran@gmail.com>
- <20210121102753.GO1551@shell.armlinux.org.uk>
- <20210121150802.GB20321@hoboy.vegasvil.org>
- <20210122181444.66f9417d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210122181444.66f9417d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        id S1725854AbhAWN0F (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Jan 2021 08:26:05 -0500
+Received: from mail.wangsu.com ([123.103.51.227]:42121 "EHLO wangsu.com"
+        rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725268AbhAWN0D (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 23 Jan 2021 08:26:03 -0500
+Received: from 137.localdomain (unknown [59.61.78.232])
+        by app2 (Coremail) with SMTP id 4zNnewAHD699IwxgkocCAA--.486S2;
+        Sat, 23 Jan 2021 21:24:13 +0800 (CST)
+From:   Pengcheng Yang <yangpc@wangsu.com>
+To:     ycheng@google.com
+Cc:     davem@davemloft.net, edumazet@google.com, ncardwell@google.com,
+        netdev@vger.kernel.org, yangpc@wangsu.com
+Subject: Re: [PATCH net] tcp: fix TLP timer not set when CA_STATE changes from DISORDER to OPEN
+Date:   Sat, 23 Jan 2021 21:58:58 +0800
+Message-Id: <1611410338-12911-1-git-send-email-yangpc@wangsu.com>
+X-Mailer: git-send-email 1.8.3.1
+In-Reply-To: <CAK6E8=dAyf+ajSFZ1eoA_BbVRDnLQRJwCL=t6vDBvEkCiquwxw@mail.gmail.com>
+References: <CAK6E8=dAyf+ajSFZ1eoA_BbVRDnLQRJwCL=t6vDBvEkCiquwxw@mail.gmail.com>
+X-CM-TRANSID: 4zNnewAHD699IwxgkocCAA--.486S2
+X-Coremail-Antispam: 1UD129KBjvJXoWxXr47XFW7uF1kCFW7Gw15Arb_yoW5tryrpF
+        45Aa97trs5GFy8Cws2y3Z5Z34UKrsxZF13W348Kry29as0vr1SvF48t3yUWFWagr1kGa12
+        yry8trZIvFZ8AaDanT9S1TB71UUUUU7qnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUyK1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l8cAvFVAK
+        0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVWDJVCq3wA2z4
+        x0Y4vE2Ix0cI8IcVCY1x0267AKxVWxJr0_GcWl84ACjcxK6I8E87Iv67AKxVW0oVCq3wA2
+        z4x0Y4vEx4A2jsIEc7CjxVAFwI0_GcCE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4
+        xG64xvF2IEw4CE5I8CrVC2j2WlYx0E74AGY7Cv6cx26r48McIj6xkF7I0En7xvr7AKxVWU
+        JVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64vIr41lF7I21c0EjII2zVCS5c
+        I20VAGYxC7MxkIecxEwVAFwVW5GwCF04k20xvY0x0EwIxGrwCF04k20xvE74AGY7Cv6cx2
+        6r48MxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7
+        xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUAVWUtwCIc40Y0x0EwIxGrwCI42IY6xII
+        jxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267AKxVWUJVW8JwCI42IY6xAIw2
+        0EY4v20xvaj40_Wr1j6rW3Jr1lIxAIcVC2z280aVAFwI0_Jr0_Gr1lIxAIcVC2z280aVCY
+        1x0267AKxVWUJVW8JbIYCTnIWIevJa73UjIFyTuYvjfU418BUUUUU
+X-CM-SenderInfo: p1dqw1nf6zt0xjvxhudrp/
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 22, 2021 at 06:14:44PM -0800, Jakub Kicinski wrote:
+On Sat, Jan 23, 2021 at 5:02 AM "Yuchung Cheng" <ycheng@google.com> wrote:
+>
+> On Fri, Jan 22, 2021 at 6:37 AM Neal Cardwell <ncardwell@google.com> wrote:
+> >
+> > On Fri, Jan 22, 2021 at 5:53 AM Eric Dumazet <edumazet@google.com> wrote:
+> > >
+> > > On Fri, Jan 22, 2021 at 11:28 AM Pengcheng Yang <yangpc@wangsu.com> wrote:
+> > > >
+> > > > When CA_STATE is in DISORDER, the TLP timer is not set when receiving
+> > > > an ACK (a cumulative ACK covered out-of-order data) causes CA_STATE to
+> > > > change from DISORDER to OPEN. If the sender is app-limited, it can only
+> 
+> Could you point which line of code causes the state to flip
+> incorrectly due to the TLP timer setting?
+> 
 
-> (I would put it in net-next tho, given the above this at most a space
-> optimization.)
+I mean TLP timer is not set due to receiving an ACK that changes CA_STATE 
+from DISORDER to OPEN.
 
-It isn't just about space but also time.  The reason why I targeted
-net and not net-next was that NETWORK_PHY_TIMESTAMPING activates a
-function call to skb_clone_tx_timestamp() for every transmitted frame.
+Receive an ACK covered out-of-order data in disorder state:
 
-	static inline void skb_tx_timestamp(struct sk_buff *skb)
-	{
-		skb_clone_tx_timestamp(skb);
-		if (skb_shinfo(skb)->tx_flags & SKBTX_SW_TSTAMP)
-			skb_tstamp_tx(skb, NULL);
-	}
+tcp_ack()
+|-tcp_set_xmit_timer()	// RTO timer is set instead of TLP timer
+|  ...
+|-tcp_fastretrans_alert() // change from disorder to open
 
-In the abscence of a PHY time stamping device, the check for its
-presence inside of skb_clone_tx_timestamp() will of course fail, but
-this still incurs the cost of the call on every transmitted skb.
+> > > > wait for the RTO timer to expire and retransmit.
+> > > >
+> > > > The reason for this is that the TLP timer is set before CA_STATE changes
+> > > > in tcp_ack(), so we delay the time point of calling tcp_set_xmit_timer()
+> > > > until after tcp_fastretrans_alert() returns and remove the
+> > > > FLAG_SET_XMIT_TIMER from ack_flag when the RACK reorder timer is set.
+> > > >
+> > > > This commit has two additional benefits:
+> > > > 1) Make sure to reset RTO according to RFC6298 when receiving ACK, to
+> > > > avoid spurious RTO caused by RTO timer early expires.
+> > > > 2) Reduce the xmit timer reschedule once per ACK when the RACK reorder
+> > > > timer is set.
+> > > >
+> > > > Link: https://lore.kernel.org/netdev/1611139794-11254-1-git-send-email-yangpc@wangsu.com
+> > > > Signed-off-by: Pengcheng Yang <yangpc@wangsu.com>
+> > > > Cc: Neal Cardwell <ncardwell@google.com>
+> > > > ---
+> > >
+> > > This looks like a very nice patch, let me run packetdrill tests on it.
+> > >
+> > > By any chance, have you cooked a packetdrill test showing the issue
+> > > (failing on unpatched kernel) ?
+> >
+> > Thanks, Pengcheng. This patch looks good to me as well, assuming it
+> > passes our packetdrill tests. I agree with Eric that it would be good
+> > to have an explicit packetdrill test for this case.
+> >
+> > neal
 
-Similarly netif_receive_skb() futilely calls skb_defer_rx_timestamp()
-on every received skb.
+Here is a packetdrill test case:
 
-I would argue that most users don't want this option activated by
-accident.
+// Enable TLP
+    0 `sysctl -q net.ipv4.tcp_early_retrans=3`
 
-(And yes, we could avoid the functions call by moving the check
-outside of the global functions and inline to the call sites.  I'll be
-sure to have that in the shiny new improved scheme under discussion.)
+// Establish a connection
+   +0 socket(..., SOCK_STREAM, IPPROTO_TCP) = 3
+   +0 setsockopt(3, SOL_SOCKET, SO_REUSEADDR, [1], 4) = 0
+   +0 bind(3, ..., ...) = 0
+   +0 listen(3, 1) = 0
 
-Thanks,
-Richard
+// RTT 100ms, RTO 300ms
+  +.1 < S 0:0(0) win 32792 <mss 1000,sackOK,nop,nop,nop,wscale 7>
+   +0 > S. 0:0(0) ack 1 <...>
+  +.1 < . 1:1(0) ack 1 win 257
+   +0 accept(3, ..., ...) = 4
+
+// Send 4 data segments
+   +0 write(4, ..., 4000) = 4000
+   +0 > P. 1:4001(4000) ack 1
+
+// out-of-order: ca_state turns to disorder
+  +.1 < . 1:1(0) ack 1 win 257 <sack 1001:2001,nop,nop>
+
+// ACK covered out-of-order data: ca_state turns to open,
+// but RTO timer is set instead of TLP timer and the RTO 
+// timer will expire at rtx_head_time+RTO (in 200ms).
+   +0 < . 1:1(0) ack 2001 win 257
+
+// Expect to send TLP packet in 2*rtt (200ms)
++.2~+.25 > P. 3001:4001(1000) ack 1
+
+
+I ran this packetdrill test case on the kernel without 
+the patch applied:
+
+tlp_timer_unset.pkt:31: error handling packet: live packet 
+field tcp_seq: expected: 3001 (0xbb9) vs actual: 2001 (0x7d1)
+script packet:  0.644587 P. 3001:4001(1000) ack 1 
+actual packet:  0.646197 . 2001:3001(1000) ack 1 win 502 
+
