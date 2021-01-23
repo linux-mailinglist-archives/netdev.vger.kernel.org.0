@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7726B30131E
+	by mail.lfdr.de (Postfix) with ESMTP id E3E8A30131F
 	for <lists+netdev@lfdr.de>; Sat, 23 Jan 2021 05:56:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726849AbhAWEzF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jan 2021 23:55:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40826 "EHLO
+        id S1726898AbhAWEzV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jan 2021 23:55:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726779AbhAWEyy (ORCPT
+        with ESMTP id S1726781AbhAWEyy (ORCPT
         <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 23:54:54 -0500
-Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5E3DC061797
-        for <netdev@vger.kernel.org>; Fri, 22 Jan 2021 20:54:01 -0800 (PST)
-Received: by mail-pj1-x1032.google.com with SMTP id m5so5141566pjv.5
-        for <netdev@vger.kernel.org>; Fri, 22 Jan 2021 20:54:01 -0800 (PST)
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 756E1C0617A7
+        for <netdev@vger.kernel.org>; Fri, 22 Jan 2021 20:54:03 -0800 (PST)
+Received: by mail-pj1-x102b.google.com with SMTP id a20so2110435pjs.1
+        for <netdev@vger.kernel.org>; Fri, 22 Jan 2021 20:54:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version;
-        bh=ijQyXmtUqboHOtjn+T8pA+UT/7phNjo4BxqNiVOV+YU=;
-        b=MTIurxjAMBXk+CtNRSuOUou/Ws70uqIAHtx09VbjjCOXsVga3AkRGCSWQYhF5A1vMk
-         aTPfJJVT8lw7xSLtMPAgaAenDsgOCl4sdxovb8svOLFJb4f5/REgPT76AUTFeuCk5ieM
-         8pZrENca21NxPF8SarKi13ckMDHteRVcbXtLU=
+        bh=2HiPQbERNmDJsN7tLgdcD8TxeTumghftwa9JpFzrsGw=;
+        b=IABNyNRTOlckv/zPzdqeMTlVKQFHP/wNME7+ExBFDp7V8jmAl4e/YcHwU/IBBpdDlR
+         lKKr/7xuOZsqUTC2Kg1ZMi6hjrz6gxSuAKZuVkNstURCeicZHQxgFFx4xfHLrqxOAdX3
+         EYBGXUY/fSa9dUrGJbtsEeE+uCevaH4oYhtCo=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version;
-        bh=ijQyXmtUqboHOtjn+T8pA+UT/7phNjo4BxqNiVOV+YU=;
-        b=Mhe4Av292mc9fQXpk96SPA8Xj7OYpmivygIg4PzJ+w66ezvr7sh6MD3WoZpfTBo2/5
-         1a6e3nLiXwC5qZtI9ChiROKbprHNNCf3pUoo7T/qMdPFOQwpRZfMgOFrYVuBD3ZQoPib
-         MlXRSS5cH1CS6YdztyQn4V/+1UvCKpExLFB3kMxk9RoKHC1XxU9Q/5OuJGpnCm3n0fDX
-         x5lVSO5/PonT6JTl4y4RoqSIZEMapKvDp1T59/+xIbWfGxxJ8QoAdqAKt6+USheQfEAv
-         /KjQl/UfqmUeQzZrXUQF3wIc78akK1aMr9jluYNb2ocHdfoix+cAtdX0b2SRDeMxWT7C
-         uNTw==
-X-Gm-Message-State: AOAM5339GPObh4AG6FCv+1QvbB13E241qaln0O4pH7A+cAgdt+WSdLnh
-        AEY8Wzry53D5qVdyIBBF7QbDaMZ4DwyHSFf9KnTed9JLHdVpOfTKBc7R4UiCmOpxgdeA2dl39Au
-        RB4VRwUog5xN1rsA4AnCgS0Fhe7IbPeE0RlNUPgQdT5ALdUi2w2wWx5krS1saOZMp45K4HbnI
-X-Google-Smtp-Source: ABdhPJybMlpHFpPi1L9MwKWnN6qPTXFy2ENv0fDe25zFoj8PhVksnpx0CzMbh2VO6Ssjp7pmGELa3w==
-X-Received: by 2002:a17:90a:eacf:: with SMTP id ev15mr9400480pjb.209.1611377640598;
-        Fri, 22 Jan 2021 20:54:00 -0800 (PST)
+        bh=2HiPQbERNmDJsN7tLgdcD8TxeTumghftwa9JpFzrsGw=;
+        b=HM/4lIkShcLdqGWOXRd3U/SH2yAdgrpPlXXIzNtL3L6yuZeUX3HAjFU5tt8aVgyfwq
+         ctU0Nzyg6phfGdCeRq95yqEA1dAq/Qln1acvdnwMqajqClyreKOtsrz1nFcPS9ZYLudy
+         rhQQ8gLiCae2JCWzUFEhaGe2Yjhfna0sMJzRAJ0C8zUVNbD9m67INib77zGnGL4Vvtml
+         FeNn5ycimPnVHH1/R7i89JYXtjdWF7cyx+mXdnfus1d6Z/IZqpJ8R4c1NagpQw1GISys
+         ZFqgO8Y+6F++io8iefExN5lZOwKtSonkHfkr6KTUoabYCDp4Ba/y+M19ea0/qOGtuZug
+         narQ==
+X-Gm-Message-State: AOAM53124MdtiKzWWhFn21PTB1xEPKjGt+e9aqigsuwikN35iye56ogB
+        wyUkwBS+X7yYtvu87MlnIrve8GB96UBa/LIneszoFhukNpi36NmkdoBaBd8zYaoCYXr3gakSOiT
+        lxBTWiAZVuy8juyGt6gw14yPr9wRoLM+gVE/4VUghntyxXLZZYuBYqvABZJdSZXzomhov8vLU
+X-Google-Smtp-Source: ABdhPJz53qIoW4PMu7VJuoVvc9aV3hRpjMR7/ySPOnd5YTTlDdmeFWok0s8Cp3iQynzsL2EhQ1Kx7A==
+X-Received: by 2002:a17:90a:c82:: with SMTP id v2mr9217635pja.171.1611377642233;
+        Fri, 22 Jan 2021 20:54:02 -0800 (PST)
 Received: from hex.swdvt.lab.broadcom.net ([2600:8802:d04:de02::77c])
-        by smtp.gmail.com with ESMTPSA id k3sm9675743pgm.94.2021.01.22.20.53.58
+        by smtp.gmail.com with ESMTPSA id k3sm9675743pgm.94.2021.01.22.20.54.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Jan 2021 20:53:59 -0800 (PST)
+        Fri, 22 Jan 2021 20:54:01 -0800 (PST)
 From:   Edwin Peer <edwin.peer@broadcom.com>
 To:     netdev@vger.kernel.org
 Cc:     Edwin Peer <edwin.peer@broadcom.com>,
@@ -54,70 +54,115 @@ Cc:     Edwin Peer <edwin.peer@broadcom.com>,
         Stephen Hemminger <stephen@networkplumber.org>,
         Michal Kubecek <mkubecek@suse.cz>,
         David Ahern <dsahern@gmail.com>
-Subject: [PATCH iproute2-next 3/4] iplink: filter stats using RTEXT_FILTER_SKIP_STATS
-Date:   Fri, 22 Jan 2021 20:53:50 -0800
-Message-Id: <20210123045351.2797433-3-edwin.peer@broadcom.com>
+Subject: [PATCH iproute2-next 4/4] iplink: render IFLA_VF_STATS from IFLA_VFSTATS_LIST
+Date:   Fri, 22 Jan 2021 20:53:51 -0800
+Message-Id: <20210123045351.2797433-4-edwin.peer@broadcom.com>
 X-Mailer: git-send-email 2.30.0
 In-Reply-To: <20210123045351.2797433-1-edwin.peer@broadcom.com>
 References: <20210123045351.2797433-1-edwin.peer@broadcom.com>
 MIME-Version: 1.0
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000e3f49405b98a1757"
+        boundary="000000000000fef04305b98a171c"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000e3f49405b98a1757
+--000000000000fef04305b98a171c
 Content-Transfer-Encoding: 8bit
 
-Don't request statistics we do not intend to render. This is a step
-towards avoiding a truncated IFLA_VFINFO_LIST. It also avoids fetching
-unnecessary data, reducing netlink traffic.
+The maximum possible length of a netlink attribute is 64KB, but the
+IFLA_VFINFO_LIST exceeds this when stats are included and more than
+about 220 VFs are present (each VF consumes approximately 300 bytes,
+depending on alignment and optional fields). Exceeding the limit will
+cause the list to be truncated by the kernel's nla_nest_end().
+
+A recent ABI fix moves the VF stats into an independent list when
+requested, thus avoiding the problem. Send requests using the new
+RTEXT_FILTER_VF_SEPARATE_STATS filter and render the stats from
+the alternate list instead.
 
 Signed-off-by: Edwin Peer <edwin.peer@broadcom.com>
 ---
- ip/ipaddress.c | 6 +++++-
- ip/iplink.c    | 3 +++
- 2 files changed, 8 insertions(+), 1 deletion(-)
+ ip/ipaddress.c   | 14 +++++++++++---
+ ip/iplink.c      |  1 +
+ lib/libnetlink.c |  3 ++-
+ 3 files changed, 14 insertions(+), 4 deletions(-)
 
 diff --git a/ip/ipaddress.c b/ip/ipaddress.c
-index 0bbcee2b3bb2..75511881050d 100644
+index 75511881050d..a048b3db601c 100644
 --- a/ip/ipaddress.c
 +++ b/ip/ipaddress.c
-@@ -1882,9 +1882,13 @@ static int ipaddr_flush(void)
+@@ -1200,12 +1200,20 @@ int print_linkinfo(struct nlmsghdr *n, void *arg)
  
- static int iplink_filter_req(struct nlmsghdr *nlh, int reqlen)
- {
-+	__u32 filt_mask;
+ 	if ((do_link || show_details) && tb[IFLA_VFINFO_LIST] && tb[IFLA_NUM_VF]) {
+ 		struct rtattr *i, *vflist = tb[IFLA_VFINFO_LIST];
+-		int rem = RTA_PAYLOAD(vflist), count = 0;
++		struct rtattr *j, *vfstats = tb[IFLA_VFSTATS_LIST];
++		int rem_stats, rem = RTA_PAYLOAD(vflist), count = 0;
+ 
++		j = vfstats ? RTA_DATA(vfstats) : NULL;
++		rem_stats = vfstats ? RTA_PAYLOAD(vfstats) : 0;
+ 		open_json_array(PRINT_JSON, "vfinfo_list");
+ 		for (i = RTA_DATA(vflist); RTA_OK(i, rem); i = RTA_NEXT(i, rem)) {
+ 			open_json_object(NULL);
+ 			print_vfinfo(fp, ifi, i);
++			if (show_stats && j) {
++				print_vf_stats64(fp, j);
++				j = RTA_OK(j, rem_stats) ?
++					RTA_NEXT(j, rem_stats) : NULL;
++			}
+ 			close_json_object();
+ 			count++;
+ 		}
+@@ -1885,7 +1893,7 @@ static int iplink_filter_req(struct nlmsghdr *nlh, int reqlen)
+ 	__u32 filt_mask;
  	int err;
  
--	err = addattr32(nlh, reqlen, IFLA_EXT_MASK, RTEXT_FILTER_VF);
-+	filt_mask = RTEXT_FILTER_VF;
-+	if (!show_stats)
-+		filt_mask |= RTEXT_FILTER_SKIP_STATS;
-+	err = addattr32(nlh, reqlen, IFLA_EXT_MASK, filt_mask);
- 	if (err)
- 		return err;
+-	filt_mask = RTEXT_FILTER_VF;
++	filt_mask = RTEXT_FILTER_VF | RTEXT_FILTER_VF_SEPARATE_STATS;
+ 	if (!show_stats)
+ 		filt_mask |= RTEXT_FILTER_SKIP_STATS;
+ 	err = addattr32(nlh, reqlen, IFLA_EXT_MASK, filt_mask);
+@@ -1923,7 +1931,7 @@ static int ipaddr_link_get(int index, struct nlmsg_chain *linfo)
+ 		.i.ifi_family = filter.family,
+ 		.i.ifi_index = index,
+ 	};
+-	__u32 filt_mask = RTEXT_FILTER_VF;
++	__u32 filt_mask = RTEXT_FILTER_VF | RTEXT_FILTER_VF_SEPARATE_STATS;
+ 	struct nlmsghdr *answer;
  
+ 	if (!show_stats)
 diff --git a/ip/iplink.c b/ip/iplink.c
-index 27c9be442a7a..6a973213dc11 100644
+index 6a973213dc11..3cce8aa2a0b7 100644
 --- a/ip/iplink.c
 +++ b/ip/iplink.c
-@@ -1116,6 +1116,9 @@ int iplink_get(char *name, __u32 filt_mask)
- 			  !check_ifname(name) ? IFLA_IFNAME : IFLA_ALT_IFNAME,
+@@ -1117,6 +1117,7 @@ int iplink_get(char *name, __u32 filt_mask)
  			  name, strlen(name) + 1);
  	}
-+
-+	if (!show_stats)
-+		filt_mask |= RTEXT_FILTER_SKIP_STATS;
- 	addattr32(&req.n, sizeof(req), IFLA_EXT_MASK, filt_mask);
  
- 	if (rtnl_talk(&rth, &req.n, &answer) < 0)
++	filt_mask |= RTEXT_FILTER_VF_SEPARATE_STATS;
+ 	if (!show_stats)
+ 		filt_mask |= RTEXT_FILTER_SKIP_STATS;
+ 	addattr32(&req.n, sizeof(req), IFLA_EXT_MASK, filt_mask);
+diff --git a/lib/libnetlink.c b/lib/libnetlink.c
+index b1f07d4570cf..b4aa9d16b446 100644
+--- a/lib/libnetlink.c
++++ b/lib/libnetlink.c
+@@ -486,7 +486,8 @@ static int __rtnl_linkdump_req(struct rtnl_handle *rth, int family)
+ int rtnl_linkdump_req(struct rtnl_handle *rth, int family)
+ {
+ 	if (family == AF_UNSPEC)
+-		return rtnl_linkdump_req_filter(rth, family, RTEXT_FILTER_VF);
++		return rtnl_linkdump_req_filter(rth, family, RTEXT_FILTER_VF |
++						RTEXT_FILTER_VF_SEPARATE_STATS);
+ 
+ 	return __rtnl_linkdump_req(rth, family);
+ }
 -- 
 2.30.0
 
 
---000000000000e3f49405b98a1757
+--000000000000fef04305b98a171c
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -187,13 +232,13 @@ wL3owFiCmLmw5R8OH22wqf/7sQFMRpH5IQFLRYdU9uCUy5FlUAgiCEXegph8ytxvo8MgYyQcCOeg
 BMfFgFEHuM2IgsDQyFC6XUViX6BQny67nlrO8pqwNRJ9Bdd7ykLCzCLOuR1znBAc2wAL9OKQe0cx
 ggJvMIICawIBATBtMF0xCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTMw
 MQYDVQQDEypHbG9iYWxTaWduIFBlcnNvbmFsU2lnbiAyIENBIC0gU0hBMjU2IC0gRzMCDCXgDAeB
-YW0HGKjSdzANBglghkgBZQMEAgEFAKCB1DAvBgkqhkiG9w0BCQQxIgQgI3fBq6z8edsAWDwVTa7Q
-WmsDJxrrFceM3L1mzfrZJQcwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUx
-DxcNMjEwMTIzMDQ1NDAwWjBpBgkqhkiG9w0BCQ8xXDBaMAsGCWCGSAFlAwQBKjALBglghkgBZQME
+YW0HGKjSdzANBglghkgBZQMEAgEFAKCB1DAvBgkqhkiG9w0BCQQxIgQgGzPJa4FK/GE+Xryr/PIP
+YNCZq4EjfZzaBcbl+SPAxUgwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUx
+DxcNMjEwMTIzMDQ1NDAyWjBpBgkqhkiG9w0BCQ8xXDBaMAsGCWCGSAFlAwQBKjALBglghkgBZQME
 ARYwCwYJYIZIAWUDBAECMAoGCCqGSIb3DQMHMAsGCSqGSIb3DQEBCjALBgkqhkiG9w0BAQcwCwYJ
-YIZIAWUDBAIBMA0GCSqGSIb3DQEBAQUABIIBADJG22msjhuUO26bGVDuy9aoi00jjlH8bwuNnpY4
-aPpfcWJ+8+2BWvYM2Uunz9GjnP+xSM1fmTEPoMa7KhYLCmfFlRMpcsx1sH/LSsgopssLreX+74Vg
-sPc+BVIz84zKYC4elKl9ZI3R0xDRY+pvaogSHchJPWZd3/dRHSjJez9fqlVqGrjkEI8KQamEFK8Q
-CMZpq+8YxW83FxtjGbTZFEsLVmpvw0fbkFgGbOGmXgvFDl+CO8EYxo+aOsdGpilZyPoSxaCchoKF
-aVjYZeMfNZjXDh1WdDPwt5danhtPBAUGkErL+WjDScd2c70q8NaCeWnxGmcj8GqMwzNq/0iy2yM=
---000000000000e3f49405b98a1757--
+YIZIAWUDBAIBMA0GCSqGSIb3DQEBAQUABIIBAE4s6t7r5Aee7ZrpcGXgmotNQ5mhLX10JB4WhsSl
+4WTRZ9R0lzQP8jyJlLXq5KaGuYjypq/q3/FSshdXJm4pPAx6avwEwdpUCDjytwjRuyrpVHuvacam
+Qvyyq/D1AwfnuamYv0FHmTuqNKwDIHmdgS+8zOqfqWZaVAAhyI3b9K/TaUaWRMtMDGPxeq/9mHzR
+NwgMyJXv5G/XFiuCsQ/Cum1Gir338QdBgu1msvQBiR2ebLg+48N6EiarDOqs6hUFPQbzK7mbxDQA
+bOpEE5bGUEIxu9poMyoBx+IyVpueOmA1RDR7FVBzt8yCAdd+Mg8xfZYNSXdYXD2gzC+nW/ff6sg=
+--000000000000fef04305b98a171c--
