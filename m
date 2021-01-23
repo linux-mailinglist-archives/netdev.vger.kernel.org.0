@@ -2,103 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8D6E530183B
-	for <lists+netdev@lfdr.de>; Sat, 23 Jan 2021 21:10:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EFD7A30184A
+	for <lists+netdev@lfdr.de>; Sat, 23 Jan 2021 21:14:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726443AbhAWUKF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Jan 2021 15:10:05 -0500
-Received: from mga04.intel.com ([192.55.52.120]:2301 "EHLO mga04.intel.com"
+        id S1726388AbhAWUNT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Jan 2021 15:13:19 -0500
+Received: from mail.kernel.org ([198.145.29.99]:45736 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726249AbhAWUKD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 23 Jan 2021 15:10:03 -0500
-IronPort-SDR: MgNsff2tHQWl2no2cZ3mUpAGQd1Oqhs4EPeOX6aP2qKYuvpdt+TwoyqoQDQ7IQn1CSL2qscLF5
- yaSo2tG6GuKA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9873"; a="177008883"
-X-IronPort-AV: E=Sophos;i="5.79,369,1602572400"; 
-   d="scan'208";a="177008883"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jan 2021 12:09:17 -0800
-IronPort-SDR: KC8P61i1leZJ9TrCS+6n3lStrkoT4Vbs8r861R+jj3bqYOq3o+I2tz7F4kEHPh6cPW2aqgW6To
- Y5NiRqWSBSmQ==
-X-IronPort-AV: E=Sophos;i="5.79,369,1602572400"; 
-   d="scan'208";a="469413293"
-Received: from samudral-mobl.amr.corp.intel.com (HELO [10.212.57.78]) ([10.212.57.78])
-  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Jan 2021 12:09:16 -0800
-Subject: Re: [net-next V9 14/14] net/mlx5: Add devlink subfunction port
- documentation
-To:     Jason Gunthorpe <jgg@nvidia.com>
-Cc:     Saeed Mahameed <saeed@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        linux-rdma@vger.kernel.org, alexander.duyck@gmail.com,
-        edwin.peer@broadcom.com, dsahern@kernel.org, kiran.patil@intel.com,
-        jacob.e.keller@intel.com, david.m.ertman@intel.com,
-        dan.j.williams@intel.com, Parav Pandit <parav@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-References: <20210121085237.137919-1-saeed@kernel.org>
- <20210121085237.137919-15-saeed@kernel.org>
- <d5ef3359-ff3c-0e71-8312-0f24c3af4bce@intel.com>
- <20210122001157.GE4147@nvidia.com>
-From:   "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
-Message-ID: <89d0c6de-18e3-5728-a220-3440ca263616@intel.com>
-Date:   Sat, 23 Jan 2021 12:09:15 -0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
+        id S1726472AbhAWUNJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 23 Jan 2021 15:13:09 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id E723322CF6;
+        Sat, 23 Jan 2021 20:12:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1611432748;
+        bh=7hHQFIp8INU9E1r1CKHRyBOeopowHsDQ9DHiC5W5u20=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=R7EXO41dEhCE7UHljkd+kYXssnuzYJS1YVy13jSjA+8ZkdxQyOJItX5ZtuSS86G/s
+         Wmhiu7N2SsOmW8u3KA+7EtcbOoOoBFbeTvXeTugAi8g1uMEUk4KvhrBlQ166Z3RJuj
+         FJEdx3VC2jTquc88M9sao3FSAhZvg5Tjqxuo+JXMxexF9YG19jzYLhth5AFqFhKWHF
+         DTfGc394zgMrYqTP9q9dh4LcjUpl+ns76dVazssOpjSJMXm67O3P/O4l5Bxcd6pN0e
+         T6hxzB0NXVDoHnHbf4sYPsxpED/GEZqkBP/ku5fbcaKDi/ch+Jjfzfg1ZW66yRHMiw
+         oxy3YEDK8KGIQ==
+Date:   Sat, 23 Jan 2021 12:12:27 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Richard Cochran <richardcochran@gmail.com>
+Cc:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        netdev@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Marc Zyngier <maz@kernel.org>, linux-kernel@vger.kernel.org,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Dinh Nguyen <dinguyen@kernel.org>,
+        Brandon Streiff <brandon.streiff@ni.com>,
+        Olof Johansson <olof@lixom.net>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        David Miller <davem@davemloft.net>,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH net 2/4] net: mvpp2: Remove unneeded Kconfig dependency.
+Message-ID: <20210123121227.16384ff5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210123132626.GA22662@hoboy.vegasvil.org>
+References: <cover.1611198584.git.richardcochran@gmail.com>
+        <1069fecd4b7e13485839e1c66696c5a6c70f6144.1611198584.git.richardcochran@gmail.com>
+        <20210121102753.GO1551@shell.armlinux.org.uk>
+        <20210121150802.GB20321@hoboy.vegasvil.org>
+        <20210122181444.66f9417d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20210123132626.GA22662@hoboy.vegasvil.org>
 MIME-Version: 1.0
-In-Reply-To: <20210122001157.GE4147@nvidia.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/21/2021 4:11 PM, Jason Gunthorpe wrote:
-> On Thu, Jan 21, 2021 at 12:59:55PM -0800, Samudrala, Sridhar wrote:
->
->>> +                 mlx5_core.sf.4
->>> +          (subfunction auxiliary device)
->>> +                       /\
->>> +                      /  \
->>> +                     /    \
->>> +                    /      \
->>> +                   /        \
->>> +      mlx5_core.eth.4     mlx5_core.rdma.4
->>> +     (sf eth aux dev)     (sf rdma aux dev)
->>> +         |                      |
->>> +         |                      |
->>> +      p0sf88                  mlx5_0
->>> +     (sf netdev)          (sf rdma device)
->> This picture seems to indicate that when SF is activated, a sub
->> function auxiliary device is created
-> Yes
->
->> and when a driver is bound to that sub function aux device and
->> probed, 2 additional auxiliary devices are created.
-> More than two, but yes
->
->> Is this correct? Are all these auxiliary devices seen on the same
->> aux bus?
-> Yes
->
->> Why do we need another sf eth aux device?
-> The first aux device represents the physical HW and mlx5_core binds to it,
-> the analog is like a pci_device.
+On Sat, 23 Jan 2021 05:26:26 -0800 Richard Cochran wrote:
+> On Fri, Jan 22, 2021 at 06:14:44PM -0800, Jakub Kicinski wrote:
+> 
+> > (I would put it in net-next tho, given the above this at most a space
+> > optimization.)  
+> 
+> It isn't just about space but also time.  The reason why I targeted
+> net and not net-next was that NETWORK_PHY_TIMESTAMPING activates a
+> function call to skb_clone_tx_timestamp() for every transmitted frame.
+> 
+> 	static inline void skb_tx_timestamp(struct sk_buff *skb)
+> 	{
+> 		skb_clone_tx_timestamp(skb);
+> 		if (skb_shinfo(skb)->tx_flags & SKBTX_SW_TSTAMP)
+> 			skb_tstamp_tx(skb, NULL);
+> 	}
+> 
+> In the abscence of a PHY time stamping device, the check for its
+> presence inside of skb_clone_tx_timestamp() will of course fail, but
+> this still incurs the cost of the call on every transmitted skb.
+> 
+> Similarly netif_receive_skb() futilely calls skb_defer_rx_timestamp()
+> on every received skb.
+> 
+> I would argue that most users don't want this option activated by
+> accident.
 
-OK. So looks like you are creating a function level aux device and a 
-subsytem-level aux
-device for each subsystem including ethernet.
-
->
-> The other aux devices represent the subsystem split of the mlx5 driver
-> - mlx5_core creates them and each subsystem in turn binds to the
-> mlx5_core driver. This already exists, and Intel will be doing this as
-> well whenever the RDMA driver is posted again..
-
-Yes. I see that the intel RDMA patches are now submitted. We are 
-creating an aux device to
-expose RDMA functionality, but  not planning to create an aux device for 
-ethernet subsystem
-on a PF/SF as the function-level pci/aux device can represent the 
-default ethernet.
-
+I see. The only thing I'm worried about then is the churn in patch 3.
+This would land in Linus's tree shortly before rc6, kinda late to be
+taking chances in the name of minor optimizations :S
+ 
+> (And yes, we could avoid the functions call by moving the check
+> outside of the global functions and inline to the call sites.  I'll be
+> sure to have that in the shiny new improved scheme under discussion.)
