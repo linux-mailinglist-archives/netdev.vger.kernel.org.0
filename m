@@ -2,97 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 62C2B301241
-	for <lists+netdev@lfdr.de>; Sat, 23 Jan 2021 03:29:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 78727301246
+	for <lists+netdev@lfdr.de>; Sat, 23 Jan 2021 03:32:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726411AbhAWC3K (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jan 2021 21:29:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37904 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726274AbhAWC3H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 21:29:07 -0500
-Received: from mail-oi1-x22a.google.com (mail-oi1-x22a.google.com [IPv6:2607:f8b0:4864:20::22a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19DAFC06174A;
-        Fri, 22 Jan 2021 18:28:27 -0800 (PST)
-Received: by mail-oi1-x22a.google.com with SMTP id r189so8271883oih.4;
-        Fri, 22 Jan 2021 18:28:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=BsDzyWGQpODPbH1iLNKpROubuzOQsoIWVH4nNscjPfc=;
-        b=W7FPwbwJ/Tu4gxGZ31mbzZ342RijhVm5CNSuhNdCBaLdw3RLkh6EwPpBpPxxOvssOp
-         Xf5e1kcF8su5TCDN1a5MRU9TKLMuF4btTCWUJRR3o/KCga+e+prQRT9AYLE+yUbwoRDD
-         JMs3CmXeSZjRyAO8dQTBS+4IfzaEVMKg5+ufZknb1yNC2R172t/xeF6Fh8tjaTvh9s96
-         E1zseTc4URIdrqWzg30zhW2ZpwEt01c7TIwhWEORsmK5p6jCtJYa56Qy740TPL21gTsr
-         i/aOwEEu0gbjM70bcOaZkanEBHIn1jjpIALpiGo41GSrTJhqcA/ol3cBcrtJJPsGIZDH
-         C8MA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=BsDzyWGQpODPbH1iLNKpROubuzOQsoIWVH4nNscjPfc=;
-        b=YWz/zjxOEy97xxTLIiOis3bxV8FrXdRsMYlAEUniHqB/IcVYOcKUIBIGnIlrrq23o8
-         wtZdqnOVk9Ot2BpPtqPt0bav3eVsPKoi+sPzpDZmEaC71o0yjVjDXdkfIxESeH10U6j1
-         yyGxgaM99TQj0A4dwTBOuL78ndHxsLyg+tSMHQcN+PAn7sC0JBanu0x/GCqjZB7KtqVC
-         ISRGQbKO9oDMfd/H2s+4R6kV2Ja+2daHsmJNb2gSBfIn0e+6dQrRyliRrkVt+9HngWGq
-         yZGn357vdwQ1uGHO7qLZlc5tU8xTJCxSxSHT5vWCtDde0p66fTp5ZEZ3wy9BoINF91SO
-         rxMQ==
-X-Gm-Message-State: AOAM530trS7Dh6RW6pW50dQQWVvzvHdd5lP/OLpOUzjCFmsaNaz8K1Eo
-        qo7Vjelapc5kgxsvOenRCks=
-X-Google-Smtp-Source: ABdhPJxgYFnXQg2ZTCgtcmNrP0OktrCUPaah9P6i71SwQfx/LEdU42a19tF7Fo3pmrYZvV+u1+uO6w==
-X-Received: by 2002:aca:a844:: with SMTP id r65mr5162645oie.35.1611368906406;
-        Fri, 22 Jan 2021 18:28:26 -0800 (PST)
-Received: from localhost.localdomain (99-6-134-177.lightspeed.snmtca.sbcglobal.net. [99.6.134.177])
-        by smtp.gmail.com with ESMTPSA id i126sm2078627oif.22.2021.01.22.18.28.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Jan 2021 18:28:25 -0800 (PST)
-Date:   Fri, 22 Jan 2021 18:28:23 -0800
-From:   Enke Chen <enkechen2020@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Neal Cardwell <ncardwell@google.com>, enkechen2020@gmail.com
-Subject: Re: [PATCH net] tcp: make TCP_USER_TIMEOUT accurate for zero window
- probes
-Message-ID: <20210123022823.GA100578@localhost.localdomain>
-References: <20210122191306.GA99540@localhost.localdomain>
- <20210122174325.269ac329@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S1726510AbhAWCaw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jan 2021 21:30:52 -0500
+Received: from mail.kernel.org ([198.145.29.99]:36950 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726274AbhAWCau (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 22 Jan 2021 21:30:50 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id ED7D923B55;
+        Sat, 23 Jan 2021 02:30:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1611369010;
+        bh=LOIOXfspCXmNEKWExfVa6HeC2JfufFMepdIvAt/GA7Y=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=Vk0DzkrU+HRg+syBoG9CYeaR61h8Pqf95mQ9wp2Q9RCQPZzTdF59fzvqxNkXMV3MB
+         zZ45tiX9js+juPiOPnmyF25ztzVc55SG8rXX7O+T+MHbOeD8NQF5dnb7pkMoFP7rmz
+         i/qzA/cMhuP9TrBLyQ16JQPf8il4L5kL3cwqycdeAlacVpaJSMPhzR2Lib/il9HagK
+         cTjfdpiH6mAkX5eRsge8av7Q17vPPxuzvTOmxA/YyfjQUxNPclzqiQu342OThKmOtS
+         FKNCmoOdzpBpfqZxzzW1hKEnygdTFJHXHspkYnGYS6XjzsAId+AW0HBJF9yj7FGTcV
+         WiU46N/qfCV4g==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id E047F652DC;
+        Sat, 23 Jan 2021 02:30:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210122174325.269ac329@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] net: stmmac: dwmac-intel-plat: remove config data on error
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161136900991.8400.5085131401439003900.git-patchwork-notify@kernel.org>
+Date:   Sat, 23 Jan 2021 02:30:09 +0000
+References: <20210120110745.36412-1-bianpan2016@163.com>
+In-Reply-To: <20210120110745.36412-1-bianpan2016@163.com>
+To:     Pan Bian <bianpan2016@163.com>
+Cc:     peppe.cavallaro@st.com, alexandre.torgue@st.com,
+        joabreu@synopsys.com, davem@davemloft.net, kuba@kernel.org,
+        mcoquelin.stm32@gmail.com, vineetha.g.jaya.kumaran@intel.com,
+        rusaimi.amira.rusaimi@intel.com, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi, Jakub:
+Hello:
 
-In terms of backporting, this patch should go together with:
+This patch was applied to netdev/net.git (refs/heads/master):
 
-    9d9b1ee0b2d1 tcp: fix TCP_USER_TIMEOUT with zero window
-
-Thanks.  -- Enke
-
-On Fri, Jan 22, 2021 at 05:43:25PM -0800, Jakub Kicinski wrote:
-> On Fri, 22 Jan 2021 11:13:06 -0800 Enke Chen wrote:
-> > From: Enke Chen <enchen@paloaltonetworks.com>
-> > 
-> > The TCP_USER_TIMEOUT is checked by the 0-window probe timer. As the
-> > timer has backoff with a max interval of about two minutes, the
-> > actual timeout for TCP_USER_TIMEOUT can be off by up to two minutes.
-> > 
-> > In this patch the TCP_USER_TIMEOUT is made more accurate by taking it
-> > into account when computing the timer value for the 0-window probes.
-> > 
-> > This patch is similar to the one that made TCP_USER_TIMEOUT accurate for
-> > RTOs in commit b701a99e431d ("tcp: Add tcp_clamp_rto_to_user_timeout()
-> > helper to improve accuracy").
-> > 
-> > Signed-off-by: Enke Chen <enchen@paloaltonetworks.com>
-> > Reviewed-by: Neal Cardwell <ncardwell@google.com>
+On Wed, 20 Jan 2021 03:07:44 -0800 you wrote:
+> Remove the config data when rate setting fails.
 > 
-> This is targeting net, any guidance on Fixes / backporting?
+> Fixes: 9efc9b2b04c7 ("net: stmmac: Add dwmac-intel-plat for GBE driver")
+> Signed-off-by: Pan Bian <bianpan2016@163.com>
+> ---
+>  drivers/net/ethernet/stmicro/stmmac/dwmac-intel-plat.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+
+Here is the summary with links:
+  - net: stmmac: dwmac-intel-plat: remove config data on error
+    https://git.kernel.org/netdev/net/c/3765d86ffcd3
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
