@@ -2,43 +2,45 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BF83301386
-	for <lists+netdev@lfdr.de>; Sat, 23 Jan 2021 07:12:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1C71F301387
+	for <lists+netdev@lfdr.de>; Sat, 23 Jan 2021 07:12:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726451AbhAWGLZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Jan 2021 01:11:25 -0500
-Received: from mail.kernel.org ([198.145.29.99]:36962 "EHLO mail.kernel.org"
+        id S1726571AbhAWGLj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Jan 2021 01:11:39 -0500
+Received: from mail.kernel.org ([198.145.29.99]:36956 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725766AbhAWGLQ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1725730AbhAWGLQ (ORCPT <rfc822;netdev@vger.kernel.org>);
         Sat, 23 Jan 2021 01:11:16 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id DBCAF23B08;
+Received: by mail.kernel.org (Postfix) with ESMTPS id C82F323B04;
         Sat, 23 Jan 2021 06:10:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1611382223;
-        bh=IJGCJIOiy+Vq3ntuYjU9PBUfLior1uJyFKQOK091cbA=;
+        bh=RLniG/uSEgA9JDMZQQgxTdmy5OF9U0bKuTK/444Kdr8=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=CIjr2fQ1tFM268LUVLKssZeF5A2+QSvw86St3IqRjMY/93wg06LWzJi4vsmq+BlPn
-         xSPnpD/aZVRxf4n5A1cQoITmAdT1aWuQsevxIXb2jg8mUw4zplIgRkJLpeXZa23GeH
-         A0rav94kNoWBEUa8sptq4xnvx7Oi3nIAyUYo1mayZMrLbVY5PkjGwoDXMDSv/zKyXq
-         2tEHldN97d8cF8nJuo8rT1BNvqz7mX2ltz8AaBn0aH4jqFriF0c6aUaz1UKA8xmx5D
-         D4eF6Rtjpf6kECSYl4OcOW1CgUYdPyMkMaIiZNUsvJXa8j9SXGFt2LbJDy/TAnFtE+
-         diR7dEnh1YLoA==
+        b=SzmL/WTK8DCBoN3WK/6NGjS09NiOJsaodQRiPyjVP3x+s9PM73xygaoJKzGgnpWo2
+         uxsh9er82uWiDKLXUXHMWvbMQg3s9asMsYsJP3l0pdXwfPZGQ9agnBcsJ6/CIGSdhF
+         0ZONCQDu8toDcQOyNgAvGkAgWeHKs9LfRiMMkQE7C4+fM+YJSWIOjnaCaKuFcuQCbF
+         gtsb006BFE2WxDKYylLSXiALq7foo966Wu6iVix71a3Hjca/7jTkmFdH5AsX3FyZig
+         RFSKR25L0UDbPAGjLpyHImp59RD0S2qeVL/zmXAMa04zZ0EB/8UJZ8tk/M7Y34Zfwj
+         etNPW4BjA2xIA==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id BC6C7652E4;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id AA11D652E0;
         Sat, 23 Jan 2021 06:10:23 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v2 0/2] mlxsw: Expose number of physical ports
+Subject: Re: [PATCH net-next v4 0/5] HTB offload
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161138222376.25900.4792043766515391595.git-patchwork-notify@kernel.org>
+Message-Id: <161138222368.25900.11180760224277767499.git-patchwork-notify@kernel.org>
 Date:   Sat, 23 Jan 2021 06:10:23 +0000
-References: <20210121131024.2656154-1-idosch@idosch.org>
-In-Reply-To: <20210121131024.2656154-1-idosch@idosch.org>
-To:     Ido Schimmel <idosch@idosch.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        jiri@nvidia.com, danieller@nvidia.com, mlxsw@nvidia.com,
-        idosch@nvidia.com
+References: <20210119120815.463334-1-maximmi@mellanox.com>
+In-Reply-To: <20210119120815.463334-1-maximmi@mellanox.com>
+To:     Maxim Mikityanskiy <maximmi@mellanox.com>
+Cc:     davem@davemloft.net, jhs@mojatatu.com, xiyou.wangcong@gmail.com,
+        jiri@resnulli.us, dsahern@gmail.com, saeedm@nvidia.com,
+        kuba@kernel.org, tariqt@nvidia.com, yossiku@nvidia.com,
+        maximmi@nvidia.com, dan.carpenter@oracle.com,
+        netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -47,21 +49,32 @@ Hello:
 
 This series was applied to netdev/net-next.git (refs/heads/master):
 
-On Thu, 21 Jan 2021 15:10:22 +0200 you wrote:
-> From: Ido Schimmel <idosch@nvidia.com>
+On Tue, 19 Jan 2021 14:08:10 +0200 you wrote:
+> This series adds support for HTB offload to the HTB qdisc, and adds
+> usage to mlx5 driver.
 > 
-> The switch ASIC has a limited capacity of physical ports that it can
-> support. While each system is brought up with a different number of
-> ports, this number can be increased via splitting up to the ASIC's
-> limit.
+> The previous RFCs are available at [1], [2].
+> 
+> The feature is intended to solve the performance bottleneck caused by
+> the single lock of the HTB qdisc, which prevents it from scaling well.
+> The HTB algorithm itself is offloaded to the device, eliminating the
+> need to take the root lock of HTB on every packet. Classification part
+> is done in clsact (still in software) to avoid acquiring the lock, which
+> imposes a limitation that filters can target only leaf classes.
 > 
 > [...]
 
 Here is the summary with links:
-  - [net-next,v2,1/2] mlxsw: Register physical ports as a devlink resource
-    https://git.kernel.org/netdev/net-next/c/321f7ab0d458
-  - [net-next,v2,2/2] selftests: mlxsw: Add a scale test for physical ports
-    https://git.kernel.org/netdev/net-next/c/5154b1b826d9
+  - [net-next,v4,1/5] net: sched: Add multi-queue support to sch_tree_lock
+    https://git.kernel.org/netdev/net-next/c/ca1e4ab19993
+  - [net-next,v4,2/5] net: sched: Add extack to Qdisc_class_ops.delete
+    https://git.kernel.org/netdev/net-next/c/4dd78a73738a
+  - [net-next,v4,3/5] sch_htb: Hierarchical QoS hardware offload
+    https://git.kernel.org/netdev/net-next/c/d03b195b5aa0
+  - [net-next,v4,4/5] sch_htb: Stats for offloaded HTB
+    https://git.kernel.org/netdev/net-next/c/83271586249c
+  - [net-next,v4,5/5] net/mlx5e: Support HTB offload
+    https://git.kernel.org/netdev/net-next/c/214baf22870c
 
 You are awesome, thank you!
 --
