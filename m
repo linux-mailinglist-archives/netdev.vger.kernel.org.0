@@ -2,108 +2,280 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2FBE2301261
-	for <lists+netdev@lfdr.de>; Sat, 23 Jan 2021 03:46:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5179F30126C
+	for <lists+netdev@lfdr.de>; Sat, 23 Jan 2021 03:50:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726564AbhAWCqV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jan 2021 21:46:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41552 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726013AbhAWCqS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 21:46:18 -0500
-Received: from mail-oo1-xc34.google.com (mail-oo1-xc34.google.com [IPv6:2607:f8b0:4864:20::c34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3800FC06174A;
-        Fri, 22 Jan 2021 18:45:38 -0800 (PST)
-Received: by mail-oo1-xc34.google.com with SMTP id y72so1381447ooa.5;
-        Fri, 22 Jan 2021 18:45:38 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=ac67bof6xx2niPfUiSINB6obuW30Yl6gKBcDMoWsLps=;
-        b=TWN6/5tuWN09KxgXYis9xL/sf/taqvDK0zdsYvN+n1dExITRtPFMkOIm3wSZAY8TWm
-         Y5xa2UWBCL6g504k79tvABTp8lmJDBqAMf5UfNJSvVJwN2QvrvDrXKcpcDCY2zmdT8Bd
-         iyPk9Xk1E95TdaLSUH7yS1ffetKZ03d0BVZ0TP/TdrxoLBRWDNP7UvNFjXeMQiMGHNFZ
-         1naUo7A0Xkr4d487BrJ4MlbL5gJngwW5AMu+pUkqSzpn4Vr9Q8O6bP3sm/4ID+8pyimO
-         R2rABPoAxRAjVX+xAAKaqRyWNTLRtgKjCBB76QtZwaEtWZTQW/CogItTLQz7D+SJ4DIz
-         A6lA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ac67bof6xx2niPfUiSINB6obuW30Yl6gKBcDMoWsLps=;
-        b=EyizBKiENBDc5nJrapPkHceGXn83b6JVDrToEXMiGedEC96pdnjGSJ2xbOkaGYno7/
-         NcqYNjaHDLcBs1osLu0BVDsIfYC+diGOjNexcE8Ce7AbicWnOT4oVuotlCqW43YBMjIq
-         4Bbt9w5OtvXUXBCNpkAwYOgT5Dp6Lc38mZK2OYNoTnWHRVtg46Av9p177bmblrAohS0t
-         cjByGRpr7ReHCeuMNuKtG3SCDpuxO8ol9NG9F2rmYBwRyMDdrs+ROct+IdrafxLFP4tD
-         YuSY4UsQ6QXIFEJBKP5+tLTZrMcXSvKC9QkB6OlWl0cVgh5b5UVLZn3APzPGD8wCo9hs
-         5rYw==
-X-Gm-Message-State: AOAM531fpAan+3GpevpseVT6xxNu968VtlwFuqq+QruqQJ2Wkj+xcb4W
-        VPy+6yjHUt4DT6sTiziiZDVAYBpoBOw=
-X-Google-Smtp-Source: ABdhPJxPTWoTqktvaTj7Ftm4EJGhuIkXezC57/bN1fUjiFaBslTZobb454ArpI9WqLZ1GseWOKbR4g==
-X-Received: by 2002:a4a:e9f2:: with SMTP id w18mr5917373ooc.88.1611369937632;
-        Fri, 22 Jan 2021 18:45:37 -0800 (PST)
-Received: from localhost.localdomain (99-6-134-177.lightspeed.snmtca.sbcglobal.net. [99.6.134.177])
-        by smtp.gmail.com with ESMTPSA id h203sm2109175oib.11.2021.01.22.18.45.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Jan 2021 18:45:37 -0800 (PST)
-Date:   Fri, 22 Jan 2021 18:45:34 -0800
-From:   Enke Chen <enkechen2020@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     Eric Dumazet <edumazet@google.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Neal Cardwell <ncardwell@google.com>, enkechen2020@gmail.com
-Subject: Re: [PATCH net] tcp: make TCP_USER_TIMEOUT accurate for zero window
- probes
-Message-ID: <20210123024534.GB100578@localhost.localdomain>
-References: <20210122191306.GA99540@localhost.localdomain>
- <20210122174325.269ac329@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20210123022823.GA100578@localhost.localdomain>
- <20210122183424.59c716a1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        id S1726563AbhAWCuO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jan 2021 21:50:14 -0500
+Received: from mail.kernel.org ([198.145.29.99]:38996 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726354AbhAWCuL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 22 Jan 2021 21:50:11 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 82CBD23B6A;
+        Sat, 23 Jan 2021 02:49:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1611370170;
+        bh=IUMWyv1iSVgS8j+iVIFQH0GEincUb50BP7tb8YxP0yE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=C/muT8+0QGmufd7B0gmj5WuStNwc78gzwzIfQ2czF+eUHy/oOZk1aKdphTzQIRC7A
+         usHnelUYlmGAmbJ6uR+GGrCieOOBC8w4Sqhv88wFnXx4Q3GziK0beHJwyLzsHaJCvm
+         K3LZF+j9SnC8t4SU+4TDfjq7Tn2j/AGCIfuLhH2S4uzq1FpTYC9UtMANX3egiooT6+
+         va0GXCqjrqTEYMEaKWn2GntGwbJzVETgZBEw7w+2Atg4DI48c3yynDGN3QtH70Z3R3
+         129A8NVan9U+Gw//ROOqc06a/lPBMBimM5hol5vmGRohJKw6y0VCMx07pg7l24tak4
+         CtvOkNs+3owNg==
+Date:   Fri, 22 Jan 2021 18:49:29 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Bongsu Jeon <bongsu.jeon2@gmail.com>
+Cc:     shuah@kernel.org, netdev@vger.kernel.org, linux-nfc@lists.01.org,
+        linux-kselftest@vger.kernel.org,
+        Bongsu Jeon <bongsu.jeon@samsung.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>
+Subject: Re: [PATCH net-next v2 1/2] nfc: Add a virtual nci device driver
+Message-ID: <20210122184929.1b1a51a0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210120115645.32798-2-bongsu.jeon@samsung.com>
+References: <20210120115645.32798-1-bongsu.jeon@samsung.com>
+        <20210120115645.32798-2-bongsu.jeon@samsung.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210122183424.59c716a1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi, Jakub:
-
-On Fri, Jan 22, 2021 at 06:34:24PM -0800, Jakub Kicinski wrote:
-> On Fri, 22 Jan 2021 18:28:23 -0800 Enke Chen wrote:
-> > Hi, Jakub:
-> > 
-> > In terms of backporting, this patch should go together with:
-> > 
-> >     9d9b1ee0b2d1 tcp: fix TCP_USER_TIMEOUT with zero window
+On Wed, 20 Jan 2021 20:56:44 +0900 Bongsu Jeon wrote:
+> From: Bongsu Jeon <bongsu.jeon@samsung.com>
 > 
-> As in it:
+> A NCI virtual device can be made to simulate a NCI device in user space.
+> Using the virtual NCI device, The NCI module and application can be
+> validated. This driver supports to communicate between the virtual NCI
+> device and NCI module.
 > 
-> Fixes: 9d9b1ee0b2d1 tcp: fix TCP_USER_TIMEOUT with zero window
-> 
-> or does it further fix the same issue, so:
-> 
-> Fixes: 9721e709fa68 ("tcp: simplify window probe aborting on USER_TIMEOUT")
->
-> ?
+> Signed-off-by: Bongsu Jeon <bongsu.jeon@samsung.com>
 
-Let me clarify:
+Please CC Krzysztof on next version, maybe we'll be lucky and he finds
+time to look at this :)
 
-1) 9d9b1ee0b2d1 tcp: fix TCP_USER_TIMEOUT with zero window
+> diff --git a/drivers/nfc/Kconfig b/drivers/nfc/Kconfig
+> index 75c65d339018..d32c3a8937ed 100644
+> --- a/drivers/nfc/Kconfig
+> +++ b/drivers/nfc/Kconfig
+> @@ -49,6 +49,17 @@ config NFC_PORT100
+>  
+>  	  If unsure, say N.
+>  
+> +config NFC_VIRTUAL_NCI
+> +	tristate "NCI device simulator driver"
+> +	depends on NFC_NCI
+> +	help
+> +	  A NCI virtual device can be made to simulate a NCI device in user
+> +	  level. Using the virtual NCI device, The NCI module and application
+> +	  can be validated. This driver supports to communicate between the
+> +	  virtual NCI device and NCI module.
 
-   fixes the bug and makes it work.
+How about:
 
-2) The current patch makes the TCP_USER_TIMEOUT accurate for 0-window probes.
-   It's independent.
+  NCI virtual device simulates a NCI device to the user. 
+  It can be used to validate the NCI module and applications. 
+  This driver supports communication between the virtual NCI 
+  device and NCI module.
 
-With 1) and 2), the known issues with TCP_USER_TIMEOUT for 0-window probes
-would be resolved.
-
-Thanks.   -- Enke
+Just trying to improve the grammar.
 
 
+> +#define IOCTL_GET_NCIDEV_IDX    0
+> +#define VIRTUAL_NFC_PROTOCOLS	(NFC_PROTO_JEWEL_MASK | \
+> +				 NFC_PROTO_MIFARE_MASK | \
+> +				 NFC_PROTO_FELICA_MASK | \
+> +				 NFC_PROTO_ISO14443_MASK | \
+> +				 NFC_PROTO_ISO14443_B_MASK | \
+> +				 NFC_PROTO_ISO15693_MASK)
+> +
+> +static enum virtual_ncidev_mode state;
+> +static struct mutex nci_send_mutex;
+> +static struct miscdevice miscdev;
+> +static struct sk_buff *send_buff;
+> +static struct mutex nci_mutex;
+
+I think if you use:
+
+static DEFINE_MUTEX(...);
+
+you won't have to init them in the code
+
+> +static struct nci_dev *ndev;
+> +static bool full_txbuff;
+> +
+> +static bool virtual_ncidev_check_enabled(void)
+> +{
+> +	bool ret = true;
+> +
+> +	mutex_lock(&nci_mutex);
+> +	if (state != virtual_ncidev_enabled)
+> +		ret = false;
+> +	mutex_unlock(&nci_mutex);
+> +
+> +	return ret;
+> +}
+> +
+> +static int virtual_nci_open(struct nci_dev *ndev)
+> +{
+> +	return 0;
+> +}
+> +
+> +static int virtual_nci_close(struct nci_dev *ndev)
+> +{
+> +	mutex_lock(&nci_send_mutex);
+> +	if (full_txbuff)
+> +		kfree_skb(send_buff);
+> +	full_txbuff = false;
+> +	mutex_unlock(&nci_send_mutex);
+> +
+> +	return 0;
+> +}
+> +
+> +static int virtual_nci_send(struct nci_dev *ndev, struct sk_buff *skb)
+> +{
+> +	if (virtual_ncidev_check_enabled() == false)
+> +		return 0;
+> +
+> +	mutex_lock(&nci_send_mutex);
+> +	if (full_txbuff) {
+> +		mutex_unlock(&nci_send_mutex);
+> +		return -1;
+> +	}
+> +	send_buff = skb_copy(skb, GFP_KERNEL);
+> +	full_txbuff = true;
+
+Do you need this variable? looks like you can just set send_buff to NULL
+
+> +	mutex_unlock(&nci_send_mutex);
+> +
+> +	return 0;
+> +}
+> +
+> +static struct nci_ops virtual_nci_ops = {
+> +	.open = virtual_nci_open,
+> +	.close = virtual_nci_close,
+> +	.send = virtual_nci_send
+> +};
+> +
+> +static ssize_t virtual_ncidev_read(struct file *file, char __user *buf,
+> +				   size_t count, loff_t *ppos)
+> +{
+> +	size_t actual_len;
+> +
+> +	mutex_lock(&nci_send_mutex);
+> +	if (!full_txbuff) {
+> +		mutex_unlock(&nci_send_mutex);
+> +		return 0;
+> +	}
+> +
+> +	actual_len = count > send_buff->len ? send_buff->len : count;
+
+min_t()
+
+> +	if (copy_to_user(buf, send_buff->data, actual_len)) {
+> +		mutex_unlock(&nci_send_mutex);
+> +		return -EFAULT;
+> +	}
+> +
+> +	skb_pull(send_buff, actual_len);
+> +	if (send_buff->len == 0) {
+> +		kfree_skb(send_buff);
+
+consume_skb()
+
+> +		full_txbuff = false;
+> +	}
+> +	mutex_unlock(&nci_send_mutex);
+> +
+> +	return actual_len;
+> +}
+> +
+> +static ssize_t virtual_ncidev_write(struct file *file,
+> +				    const char __user *buf,
+> +				    size_t count, loff_t *ppos)
+> +{
+> +	struct sk_buff *skb;
+> +
+> +	skb = alloc_skb(count, GFP_KERNEL);
+> +	if (!skb)
+> +		return -ENOMEM;
+> +
+> +	if (copy_from_user(skb_put(skb, count), buf, count))
+
+leaks skb
+
+> +		return -EFAULT;
+> +
+> +	nci_recv_frame(ndev, skb);
+> +	return count;
+> +}
+
+> +static long virtual_ncidev_ioctl(struct file *flip, unsigned int cmd,
+> +				 unsigned long arg)
+> +{
+> +	long res = -ENOTTY;
+> +
+> +	if (cmd == IOCTL_GET_NCIDEV_IDX) {
+> +		struct nfc_dev *nfc_dev = ndev->nfc_dev;
+> +		void __user *p = (void __user *)arg;
+> +
+> +		if (copy_to_user(p, &nfc_dev->idx, sizeof(nfc_dev->idx)))
+> +			return -EFAULT;
+> +		res = 0;
+> +	}
+> +
+> +	return res;
+
+The condition can be flipped to save the indentation and local variable:
+
+if (cmd != ...)
+	return -ENOTTY;
+
+....
+return 0;
+
+> +}
+> +
+> +static const struct file_operations virtual_ncidev_fops = {
+> +	.owner = THIS_MODULE,
+> +	.read = virtual_ncidev_read,
+> +	.write = virtual_ncidev_write,
+> +	.open = virtual_ncidev_open,
+> +	.release = virtual_ncidev_close,
+> +	.unlocked_ioctl = virtual_ncidev_ioctl
+> +};
+> +
+> +static int __init virtual_ncidev_init(void)
+> +{
+> +	int ret;
+> +
+> +	mutex_init(&nci_mutex);
+> +	state = virtual_ncidev_disabled;
+> +	miscdev.minor = MISC_DYNAMIC_MINOR;
+> +	miscdev.name = "virtual_nci";
+> +	miscdev.fops = &virtual_ncidev_fops;
+> +	miscdev.mode = S_IALLUGO;
+> +	ret = misc_register(&miscdev);
+> +
+> +	return ret;
+
+no need for the local variable here, just 
+
+	return misc_register()
+
+> +}
+> +
+> +static void __exit virtual_ncidev_exit(void)
+> +{
+> +	misc_deregister(&miscdev);
+> +}
+> +
+> +module_init(virtual_ncidev_init);
+> +module_exit(virtual_ncidev_exit);
+> +
+> +MODULE_LICENSE("GPL");
+> +MODULE_DESCRIPTION("Virtual NCI device simulation driver");
+> +MODULE_AUTHOR("Bongsu Jeon <bongsu.jeon@samsung.com>");
 
