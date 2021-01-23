@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 98765301318
-	for <lists+netdev@lfdr.de>; Sat, 23 Jan 2021 05:56:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3F4F9301319
+	for <lists+netdev@lfdr.de>; Sat, 23 Jan 2021 05:56:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726693AbhAWEyS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jan 2021 23:54:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40662 "EHLO
+        id S1726705AbhAWEyV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jan 2021 23:54:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40672 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726426AbhAWEyK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 23:54:10 -0500
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95EABC0613D6
-        for <netdev@vger.kernel.org>; Fri, 22 Jan 2021 20:53:30 -0800 (PST)
-Received: by mail-pf1-x429.google.com with SMTP id y205so5172694pfc.5
-        for <netdev@vger.kernel.org>; Fri, 22 Jan 2021 20:53:30 -0800 (PST)
+        with ESMTP id S1726597AbhAWEyM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 23:54:12 -0500
+Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86FAEC061786
+        for <netdev@vger.kernel.org>; Fri, 22 Jan 2021 20:53:32 -0800 (PST)
+Received: by mail-pg1-x52e.google.com with SMTP id c22so5202152pgg.13
+        for <netdev@vger.kernel.org>; Fri, 22 Jan 2021 20:53:32 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version;
-        bh=h7VPruB668G7g5/SHWgIuv8gpm2uLDqUmzfEvcvvW90=;
-        b=iG69MaHjvgRumTR94d6RYcAhIJ6aQV+bMIO2wNQAw9J7AOdXwvyKEVbtrrLT87O7zm
-         GNSXlguoaF4IsPVCpGcn/2JWN5Yf7UZbednoHt7ego4nwLXR05jIw2DG3intLMTpk50P
-         ZPF5J+cCDkdIDMT6pnn6zhqng02CAf6+o+Nao=
+        bh=7zXTc6CMeL7KIeVi/3C+r0OPMcrMBNOUicc8iFisY5w=;
+        b=GdKrTFCo4+KGfmDsGYmi/Oc27yXNB/5JnXtfGWh8r2jRJ7FfINXYvL3ewxHp9dSMTQ
+         99N9L2AnDMHyfO6gLutZPUTG09kduFf6N3Dtrh6ADUFsqyPT5buk+QUmdsHw23BKlilO
+         azbEUbeXN8J4H3Kx5vwazV3A7MPcyro1OTUYg=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version;
-        bh=h7VPruB668G7g5/SHWgIuv8gpm2uLDqUmzfEvcvvW90=;
-        b=YjR/ZxgWxtDrft1Q1rECkDdgH8I7KdaS3GL5RWmuu6oNO5agbsxx6RQ/ACTFaPdddM
-         i1MAd/U2FBEO5lrOvn71st/AoejbyRUFZlCmLnoLz4yg0uYG9jvpViIC+RqDQSGnGsu1
-         Gu6SozHTmFVc9CnLF29uEXpsH9eI239EPHAGi4JVfjUB/wzx0+5M3GlyRrglkK/sAsEi
-         aBUkddF1g/p1bF/zwsKnT1/Rr1hvgdQBTK789vNWD4sqHyvKzXSNy/afulss9nbFBYIP
-         mSx2T3Yzjmk/ieFSK0oAJb58WwnaYSjBz+2ukwW/vlJQW++goY46Pu6mWkAnPz66o662
-         RJ+w==
-X-Gm-Message-State: AOAM530iey/fW/aZZ4xxF8ugKys10sSrJ1T6taDfJkqVi8jFhH66wfDN
-        7OjMkyXEj2v9vi6UvARlUlLCxtsbHN2/IvuUWFY4FcQnz4Bl4ACL0e+IORp99/6H4r3FJnvu7US
-        FXegcwYrsXvJbEa59L3NC7RWSGMSwqmjY00c45gXxPjpQ5izckFwxL1gfZvbmeOSY0rDn1vbx
-X-Google-Smtp-Source: ABdhPJw+4Yh1sHiUlRpUnv16S72bwaklF4sSmvr7Q90atuyIeCdGhyMj/4gL50mk//zzuJuE6leAjw==
-X-Received: by 2002:a62:e30e:0:b029:1b9:3823:4b3a with SMTP id g14-20020a62e30e0000b02901b938234b3amr1994914pfh.15.1611377609441;
-        Fri, 22 Jan 2021 20:53:29 -0800 (PST)
+        bh=7zXTc6CMeL7KIeVi/3C+r0OPMcrMBNOUicc8iFisY5w=;
+        b=PYFgx1+yAeU5YlJBsSrvxHW7PFHm3LpwlWsLWdjvOOyyxHrH/K9gR1bv/qBqrY+rEK
+         TE8XfyTPCZ0B+YDlH7mQfsbhAsHWNN/hnHF6z3SAar6jv4jzH/qo1Z3PDBBexdo2RSr2
+         yZQRazQAzTm9ybSy+SbUdiTgQ7W3amsoUCy1BmYDINayq0nfoc5IiNzWnfHlh5pKciPs
+         SJ9TL9qHgXth3b73DiQOHDFWcPTWBEQi61QuwxDIilPUQFQzZiJvs+xga4x9aphQjtdQ
+         dg4BiPheUvJuJBOp/hTh4ohOODR8uyIpLrl05kRJ01jMMb/aC6zFfuv+y816BgatClU0
+         McIw==
+X-Gm-Message-State: AOAM531unKAEP7O27sTTXNJ/K5BrRV9wX0hjIfcafGHmOEzFEojf7EVN
+        sz0p9tSK9wdkHiSwKsxdRsxqF0PMbkbCtcVZZ8m6Y68kkMmxp/H7Ca3hCbdap8kkI3RJAlSwDGY
+        kY3ZbnKlnxGGvUbPxWik2da9jvJQ4xqJlsxPOPE3DxWEdNcdSge43Nnta1U2oZ6t0nqGGWG3u
+X-Google-Smtp-Source: ABdhPJylECeeQBAJlxJdJt2uBRWFTe2EmrO+hE1iLScg/A264G/gZM03ZDfZne6bIbrU2nCEza6OAg==
+X-Received: by 2002:a62:32c5:0:b029:1b6:7586:f718 with SMTP id y188-20020a6232c50000b02901b67586f718mr8243373pfy.74.1611377611327;
+        Fri, 22 Jan 2021 20:53:31 -0800 (PST)
 Received: from hex.swdvt.lab.broadcom.net ([2600:8802:d04:de02::77c])
-        by smtp.gmail.com with ESMTPSA id d2sm10725832pjd.29.2021.01.22.20.53.27
+        by smtp.gmail.com with ESMTPSA id d2sm10725832pjd.29.2021.01.22.20.53.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Jan 2021 20:53:28 -0800 (PST)
+        Fri, 22 Jan 2021 20:53:30 -0800 (PST)
 From:   Edwin Peer <edwin.peer@broadcom.com>
 To:     netdev@vger.kernel.org
 Cc:     Edwin Peer <edwin.peer@broadcom.com>,
@@ -54,144 +54,177 @@ Cc:     Edwin Peer <edwin.peer@broadcom.com>,
         Stephen Hemminger <stephen@networkplumber.org>,
         Michal Kubecek <mkubecek@suse.cz>,
         David Ahern <dsahern@gmail.com>
-Subject: [PATCH net-next 1/4] netlink: truncate overlength attribute list in nla_nest_end()
-Date:   Fri, 22 Jan 2021 20:53:18 -0800
-Message-Id: <20210123045321.2797360-2-edwin.peer@broadcom.com>
+Subject: [PATCH net-next 2/4] rtnetlink: extend RTEXT_FILTER_SKIP_STATS to IFLA_VF_INFO
+Date:   Fri, 22 Jan 2021 20:53:19 -0800
+Message-Id: <20210123045321.2797360-3-edwin.peer@broadcom.com>
 X-Mailer: git-send-email 2.30.0
 In-Reply-To: <20210123045321.2797360-1-edwin.peer@broadcom.com>
 References: <20210123045321.2797360-1-edwin.peer@broadcom.com>
 MIME-Version: 1.0
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="0000000000000a6c6705b98a16e0"
+        boundary="0000000000002752d005b98a16ee"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---0000000000000a6c6705b98a16e0
+--0000000000002752d005b98a16ee
 Content-Transfer-Encoding: 8bit
 
-If a nested list of attributes is too long, then the length will
-exceed the 16-bit nla_len of the parent nlattr. In such cases,
-determine how many whole attributes can fit and truncate the
-message to this length. This properly maintains the nesting
-hierarchy, keeping the entire message valid, while fitting more
-subelements inside the nest range than may result if the length
-is wrapped modulo 64KB.
+This filter already exists for excluding IPv6 SNMP stats. Extend its
+definition to also exclude IFLA_VF_INFO stats in RTM_GETLINK.
 
-Marking truncated attributes, such that user space can determine
-the precise attribute truncated, by means of an additional bit in
-the nla_type was considered and rejected. The NLA_F_NESTED and
-NLA_F_NET_BYTEORDER flags are supposed to be mutually exclusive.
-So, in theory, the latter bit could have been redefined for nested
-attributes in order to indicate truncation, but user space tools
-(most notably iproute2) cannot be relied on to honor NLA_TYPE_MASK,
-resulting in alteration of the perceived nla_type and subsequent
-catastrophic failure.
+This patch constitutes a partial fix for a netlink attribute nesting
+overflow bug in IFLA_VFINFO_LIST. By excluding the stats when the
+requester doesn't need them, the truncation of the VF list is avoided.
 
-Failing the entire message with a hard error must also be rejected,
-as this would break existing user space functionality. The trigger
-issue is evident for IFLA_VFINFO_LIST and a hard error here would
-cause iproute2 to fail to render an entire interface list even if
-only a single interface warranted a truncated VF list. Instead, set
-NLM_F_NEST_TRUNCATED in the netlink header to inform user space
-about the incomplete data. In this particular case, however, user
-space can better ascertain which instance is truncated by consulting
-the associated IFLA_NUM_VF to determine how many VFs were expected.
+While it was technically only the stats added in commit c5a9f6f0ab40
+("net/core: Add drop counters to VF statistics") breaking the camel's
+back, the appreciable size of the stats data should never have been
+included without due consideration for the maximum number of VFs
+supported by PCI.
 
-Fixes: bfa83a9e03cf ("[NETLINK]: Type-safe netlink messages/attributes interface")
+Fixes: 3b766cd83232 ("net/core: Add reading VF statistics through the PF netdevice")
+Fixes: c5a9f6f0ab40 ("net/core: Add drop counters to VF statistics")
 Signed-off-by: Edwin Peer <edwin.peer@broadcom.com>
 ---
- include/net/netlink.h        | 11 +++++++++--
- include/uapi/linux/netlink.h |  1 +
- lib/nlattr.c                 | 27 +++++++++++++++++++++++++++
- 3 files changed, 37 insertions(+), 2 deletions(-)
+ net/core/rtnetlink.c | 96 +++++++++++++++++++++++---------------------
+ 1 file changed, 51 insertions(+), 45 deletions(-)
 
-diff --git a/include/net/netlink.h b/include/net/netlink.h
-index 1ceec518ab49..fc8c57dafb05 100644
---- a/include/net/netlink.h
-+++ b/include/net/netlink.h
-@@ -1785,19 +1785,26 @@ static inline struct nlattr *nla_nest_start(struct sk_buff *skb, int attrtype)
- 	return nla_nest_start_noflag(skb, attrtype | NLA_F_NESTED);
- }
- 
-+int __nla_nest_trunc_msg(struct sk_buff *skb, const struct nlattr *start);
-+
- /**
-  * nla_nest_end - Finalize nesting of attributes
-  * @skb: socket buffer the attributes are stored in
-  * @start: container attribute
-  *
-  * Corrects the container attribute header to include the all
-- * appeneded attributes.
-+ * appeneded attributes. The list of attributes will be truncated
-+ * if too long to fit within the parent attribute's maximum reach.
-  *
-  * Returns the total data length of the skb.
-  */
- static inline int nla_nest_end(struct sk_buff *skb, struct nlattr *start)
+diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
+index 3d6ab194d0f5..466f920ac974 100644
+--- a/net/core/rtnetlink.c
++++ b/net/core/rtnetlink.c
+@@ -931,24 +931,27 @@ static inline int rtnl_vfinfo_size(const struct net_device *dev,
+ 			 nla_total_size(sizeof(struct ifla_vf_rate)) +
+ 			 nla_total_size(sizeof(struct ifla_vf_link_state)) +
+ 			 nla_total_size(sizeof(struct ifla_vf_rss_query_en)) +
+-			 nla_total_size(0) + /* nest IFLA_VF_STATS */
+-			 /* IFLA_VF_STATS_RX_PACKETS */
+-			 nla_total_size_64bit(sizeof(__u64)) +
+-			 /* IFLA_VF_STATS_TX_PACKETS */
+-			 nla_total_size_64bit(sizeof(__u64)) +
+-			 /* IFLA_VF_STATS_RX_BYTES */
+-			 nla_total_size_64bit(sizeof(__u64)) +
+-			 /* IFLA_VF_STATS_TX_BYTES */
+-			 nla_total_size_64bit(sizeof(__u64)) +
+-			 /* IFLA_VF_STATS_BROADCAST */
+-			 nla_total_size_64bit(sizeof(__u64)) +
+-			 /* IFLA_VF_STATS_MULTICAST */
+-			 nla_total_size_64bit(sizeof(__u64)) +
+-			 /* IFLA_VF_STATS_RX_DROPPED */
+-			 nla_total_size_64bit(sizeof(__u64)) +
+-			 /* IFLA_VF_STATS_TX_DROPPED */
+-			 nla_total_size_64bit(sizeof(__u64)) +
+ 			 nla_total_size(sizeof(struct ifla_vf_trust)));
++		if (~ext_filter_mask & RTEXT_FILTER_SKIP_STATS) {
++			size += num_vfs *
++				(nla_total_size(0) + /* nest IFLA_VF_STATS */
++				 /* IFLA_VF_STATS_RX_PACKETS */
++				 nla_total_size_64bit(sizeof(__u64)) +
++				 /* IFLA_VF_STATS_TX_PACKETS */
++				 nla_total_size_64bit(sizeof(__u64)) +
++				 /* IFLA_VF_STATS_RX_BYTES */
++				 nla_total_size_64bit(sizeof(__u64)) +
++				 /* IFLA_VF_STATS_TX_BYTES */
++				 nla_total_size_64bit(sizeof(__u64)) +
++				 /* IFLA_VF_STATS_BROADCAST */
++				 nla_total_size_64bit(sizeof(__u64)) +
++				 /* IFLA_VF_STATS_MULTICAST */
++				 nla_total_size_64bit(sizeof(__u64)) +
++				 /* IFLA_VF_STATS_RX_DROPPED */
++				 nla_total_size_64bit(sizeof(__u64)) +
++				 /* IFLA_VF_STATS_TX_DROPPED */
++				 nla_total_size_64bit(sizeof(__u64)));
++		}
+ 		return size;
+ 	} else
+ 		return 0;
+@@ -1223,7 +1226,8 @@ static noinline_for_stack int rtnl_fill_stats(struct sk_buff *skb,
+ static noinline_for_stack int rtnl_fill_vfinfo(struct sk_buff *skb,
+ 					       struct net_device *dev,
+ 					       int vfs_num,
+-					       struct nlattr *vfinfo)
++					       struct nlattr *vfinfo,
++					       u32 ext_filter_mask)
  {
--	start->nla_len = skb_tail_pointer(skb) - (unsigned char *)start;
-+	int len = skb_tail_pointer(skb) - (unsigned char *)start;
-+
-+	if (len > 0xffff)
-+		len = __nla_nest_trunc_msg(skb, start);
-+	start->nla_len = len;
- 	return skb->len;
- }
- 
-diff --git a/include/uapi/linux/netlink.h b/include/uapi/linux/netlink.h
-index 3d94269bbfa8..44a250825c30 100644
---- a/include/uapi/linux/netlink.h
-+++ b/include/uapi/linux/netlink.h
-@@ -57,6 +57,7 @@ struct nlmsghdr {
- #define NLM_F_ECHO		0x08	/* Echo this request 		*/
- #define NLM_F_DUMP_INTR		0x10	/* Dump was inconsistent due to sequence change */
- #define NLM_F_DUMP_FILTERED	0x20	/* Dump was filtered as requested */
-+#define NLM_F_NEST_TRUNCATED	0x40	/* Message contains truncated nested attribute */
- 
- /* Modifiers to GET request */
- #define NLM_F_ROOT	0x100	/* specify tree	root	*/
-diff --git a/lib/nlattr.c b/lib/nlattr.c
-index 5b6116e81f9f..2a267c0d3e16 100644
---- a/lib/nlattr.c
-+++ b/lib/nlattr.c
-@@ -1119,4 +1119,31 @@ int nla_append(struct sk_buff *skb, int attrlen, const void *data)
+ 	struct ifla_vf_rss_query_en vf_rss_query_en;
+ 	struct nlattr *vf, *vfstats, *vfvlanlist;
+@@ -1329,33 +1333,35 @@ static noinline_for_stack int rtnl_fill_vfinfo(struct sk_buff *skb,
+ 		goto nla_put_vf_failure;
+ 	}
+ 	nla_nest_end(skb, vfvlanlist);
+-	memset(&vf_stats, 0, sizeof(vf_stats));
+-	if (dev->netdev_ops->ndo_get_vf_stats)
+-		dev->netdev_ops->ndo_get_vf_stats(dev, vfs_num,
+-						&vf_stats);
+-	vfstats = nla_nest_start_noflag(skb, IFLA_VF_STATS);
+-	if (!vfstats)
+-		goto nla_put_vf_failure;
+-	if (nla_put_u64_64bit(skb, IFLA_VF_STATS_RX_PACKETS,
+-			      vf_stats.rx_packets, IFLA_VF_STATS_PAD) ||
+-	    nla_put_u64_64bit(skb, IFLA_VF_STATS_TX_PACKETS,
+-			      vf_stats.tx_packets, IFLA_VF_STATS_PAD) ||
+-	    nla_put_u64_64bit(skb, IFLA_VF_STATS_RX_BYTES,
+-			      vf_stats.rx_bytes, IFLA_VF_STATS_PAD) ||
+-	    nla_put_u64_64bit(skb, IFLA_VF_STATS_TX_BYTES,
+-			      vf_stats.tx_bytes, IFLA_VF_STATS_PAD) ||
+-	    nla_put_u64_64bit(skb, IFLA_VF_STATS_BROADCAST,
+-			      vf_stats.broadcast, IFLA_VF_STATS_PAD) ||
+-	    nla_put_u64_64bit(skb, IFLA_VF_STATS_MULTICAST,
+-			      vf_stats.multicast, IFLA_VF_STATS_PAD) ||
+-	    nla_put_u64_64bit(skb, IFLA_VF_STATS_RX_DROPPED,
+-			      vf_stats.rx_dropped, IFLA_VF_STATS_PAD) ||
+-	    nla_put_u64_64bit(skb, IFLA_VF_STATS_TX_DROPPED,
+-			      vf_stats.tx_dropped, IFLA_VF_STATS_PAD)) {
+-		nla_nest_cancel(skb, vfstats);
+-		goto nla_put_vf_failure;
++	if (~ext_filter_mask & RTEXT_FILTER_SKIP_STATS) {
++		memset(&vf_stats, 0, sizeof(vf_stats));
++		if (dev->netdev_ops->ndo_get_vf_stats)
++			dev->netdev_ops->ndo_get_vf_stats(dev, vfs_num,
++							  &vf_stats);
++		vfstats = nla_nest_start_noflag(skb, IFLA_VF_STATS);
++		if (!vfstats)
++			goto nla_put_vf_failure;
++		if (nla_put_u64_64bit(skb, IFLA_VF_STATS_RX_PACKETS,
++				      vf_stats.rx_packets, IFLA_VF_STATS_PAD) ||
++		    nla_put_u64_64bit(skb, IFLA_VF_STATS_TX_PACKETS,
++				      vf_stats.tx_packets, IFLA_VF_STATS_PAD) ||
++		    nla_put_u64_64bit(skb, IFLA_VF_STATS_RX_BYTES,
++				      vf_stats.rx_bytes, IFLA_VF_STATS_PAD) ||
++		    nla_put_u64_64bit(skb, IFLA_VF_STATS_TX_BYTES,
++				      vf_stats.tx_bytes, IFLA_VF_STATS_PAD) ||
++		    nla_put_u64_64bit(skb, IFLA_VF_STATS_BROADCAST,
++				      vf_stats.broadcast, IFLA_VF_STATS_PAD) ||
++		    nla_put_u64_64bit(skb, IFLA_VF_STATS_MULTICAST,
++				      vf_stats.multicast, IFLA_VF_STATS_PAD) ||
++		    nla_put_u64_64bit(skb, IFLA_VF_STATS_RX_DROPPED,
++				      vf_stats.rx_dropped, IFLA_VF_STATS_PAD) ||
++		    nla_put_u64_64bit(skb, IFLA_VF_STATS_TX_DROPPED,
++				      vf_stats.tx_dropped, IFLA_VF_STATS_PAD)) {
++			nla_nest_cancel(skb, vfstats);
++			goto nla_put_vf_failure;
++		}
++		nla_nest_end(skb, vfstats);
+ 	}
+-	nla_nest_end(skb, vfstats);
+ 	nla_nest_end(skb, vf);
  	return 0;
- }
- EXPORT_SYMBOL(nla_append);
-+
-+/**
-+ * __nla_nest_trunc_msg - Truncate list of nested netlink attributes to max len
-+ * @skb: socket buffer with tail pointer positioned after end of nested list
-+ * @start: container attribute designating the beginning of the list
-+ *
-+ * Trims the skb to fit only the attributes which are within the range of the
-+ * containing nest attribute. This is a helper for nla_nest_end, to prevent
-+ * adding unduly to the length of what is an inline function. It is not
-+ * intended to be called from anywhere else.
-+ *
-+ * Returns the truncated length of the enclosing nest attribute in accordance
-+ * with the number of whole attributes that can fit.
-+ */
-+int __nla_nest_trunc_msg(struct sk_buff *skb, const struct nlattr *start)
-+{
-+	struct nlattr *attr = nla_data(start);
-+	int rem = 0xffff - NLA_HDRLEN;
-+
-+	while (nla_ok(attr, rem))
-+		attr = nla_next(attr, &rem);
-+	nlmsg_trim(skb, attr);
-+	nlmsg_hdr(skb)->nlmsg_flags |= NLM_F_NEST_TRUNCATED;
-+	return (unsigned char *)attr - (unsigned char *)start;
-+}
-+EXPORT_SYMBOL(__nla_nest_trunc_msg);
-+
- #endif
+ 
+@@ -1388,7 +1394,7 @@ static noinline_for_stack int rtnl_fill_vf(struct sk_buff *skb,
+ 		return -EMSGSIZE;
+ 
+ 	for (i = 0; i < num_vfs; i++) {
+-		if (rtnl_fill_vfinfo(skb, dev, i, vfinfo))
++		if (rtnl_fill_vfinfo(skb, dev, i, vfinfo, ext_filter_mask))
+ 			return -EMSGSIZE;
+ 	}
+ 
 -- 
 2.30.0
 
 
---0000000000000a6c6705b98a16e0
+--0000000000002752d005b98a16ee
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -261,13 +294,13 @@ wL3owFiCmLmw5R8OH22wqf/7sQFMRpH5IQFLRYdU9uCUy5FlUAgiCEXegph8ytxvo8MgYyQcCOeg
 BMfFgFEHuM2IgsDQyFC6XUViX6BQny67nlrO8pqwNRJ9Bdd7ykLCzCLOuR1znBAc2wAL9OKQe0cx
 ggJvMIICawIBATBtMF0xCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTMw
 MQYDVQQDEypHbG9iYWxTaWduIFBlcnNvbmFsU2lnbiAyIENBIC0gU0hBMjU2IC0gRzMCDCXgDAeB
-YW0HGKjSdzANBglghkgBZQMEAgEFAKCB1DAvBgkqhkiG9w0BCQQxIgQgfRKa5pR7EXKrm5O/J+YV
-FV0SXtQy1lyAiNIqsuB7GZ0wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUx
-DxcNMjEwMTIzMDQ1MzI5WjBpBgkqhkiG9w0BCQ8xXDBaMAsGCWCGSAFlAwQBKjALBglghkgBZQME
+YW0HGKjSdzANBglghkgBZQMEAgEFAKCB1DAvBgkqhkiG9w0BCQQxIgQgzmu2p5owmICDy1AqWIuk
+2kCUnhAxVoBfdcJzwPyBAHAwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUx
+DxcNMjEwMTIzMDQ1MzMxWjBpBgkqhkiG9w0BCQ8xXDBaMAsGCWCGSAFlAwQBKjALBglghkgBZQME
 ARYwCwYJYIZIAWUDBAECMAoGCCqGSIb3DQMHMAsGCSqGSIb3DQEBCjALBgkqhkiG9w0BAQcwCwYJ
-YIZIAWUDBAIBMA0GCSqGSIb3DQEBAQUABIIBAAd3aVXg5qZWTlGoD14nrPno4NKljsyn3KUqs4Nr
-Wt/43LMCxWCF3oAQUPiYtin1G4/ZPIRyBrZFdoCUycg75lEubKz8W2miOrF3W4+5ELLI3ZBbZoSz
-ToRbYWYgfKfivWnU4uFvkosJwSmq7c9qpO8V5g2GOG2VvNIc6A9dCBLoh6nne14O37hrW6rTROsG
-a4ha+ZOZzBKpa+fD1LbdCwipFQtqWCf9fWunL06YyulVOpq8z7/QboJx9GEsaAXraf4cnAumLvx4
-e4FBvK/Ru4TePfU86I84SOO+CFHnyaKVK3WboqIrFr+GYXdZT+KhEP/FJ2np++ZvwAUV4VG+czc=
---0000000000000a6c6705b98a16e0--
+YIZIAWUDBAIBMA0GCSqGSIb3DQEBAQUABIIBAG7KPCTQ5s/50S6MuXOiz3mtRsKGJpm59jtmzD0D
+rKoKYp0i02hn2bmEEwkXGEFkJwFHzySTwKmM4Yz67exdHlbj+1JKzbRlqhPr4nGfTqbl0URdrBys
+hq9MEhVKYFTL+8rFh8L5he+Ue/9jruPVJOFsk0V/SGOdiFDdXikM/ls9ghAVFE7SXsaSUGiPGNJV
+9NUPEFI6sMBnx2ebsnVKlqyY08S6cn1Gn+TOZVtLMOXTpTOms+xWF8kZcE7+TzUtIRXDAggPYabL
+eseu5PeDaXIo5ZiaAq2h0NO3RAMFhCgqti7Q95l/mhYMwyS5/GZx4dPoDp/8JrQbkQc6FvaC95c=
+--0000000000002752d005b98a16ee--
