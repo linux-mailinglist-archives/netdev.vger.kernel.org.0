@@ -2,42 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F155330188A
+	by mail.lfdr.de (Postfix) with ESMTP id 0BA53301888
 	for <lists+netdev@lfdr.de>; Sat, 23 Jan 2021 22:32:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726347AbhAWVa6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Jan 2021 16:30:58 -0500
-Received: from mail.kernel.org ([198.145.29.99]:55380 "EHLO mail.kernel.org"
+        id S1726294AbhAWVax (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Jan 2021 16:30:53 -0500
+Received: from mail.kernel.org ([198.145.29.99]:55378 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726204AbhAWVau (ORCPT <rfc822;netdev@vger.kernel.org>);
+        id S1726197AbhAWVau (ORCPT <rfc822;netdev@vger.kernel.org>);
         Sat, 23 Jan 2021 16:30:50 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 74C4722CB9;
+Received: by mail.kernel.org (Postfix) with ESMTPS id 69F6B22CB3;
         Sat, 23 Jan 2021 21:30:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1611437410;
-        bh=xWxjFL8KQ0wPPz2ZDkC580KuJTjd8N1tFJVySZm7f80=;
+        bh=mIwCz3e5wggyiLievM406wxYGfd92Z0fEGQcLOf1fcs=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Sa9PpMQxUv97Be3bt6LRbPwvMf6jYgSqgbo4LeVjDjB696aSpxzp3ChAT0cWBMwmh
-         xMJT14M55AkCPzp5Ss3uFgCCY5Oxw8jaMXJ+EqsvaDbKOartwLqgmRMg7V2vCTbdf1
-         Jx2EwKqmw68ofLGP1qFzsic8wXfzmNino1z4xHpvm8PV5Pasi+U2Pma6kPXbsUkHNZ
-         PBbzZurmsxOSgEZyOpLa0V7Fm4B4ixDB/fgF8l4Pafnfo0HtQW8Xa3DYzFv5mL8o4Z
-         cQer+8RraN2i7l3qioqexyHy7ccDqm9nl8Ni8uSRO+/VM3WUCMXBsUFx+yj3E0l0TL
-         Ly4NpDrbggBeg==
+        b=KOW9R/FwmfT61FTbgYMupdV2OlqTJxt+ci5gFizTR1mutAABx+cWYDUEa0HYKZatL
+         HU4Ovt3rzYQRSc2SeZpcQdBuPi9pf8MT08mSOQk1bt3wHJ9Br6CUJpwn2NgT0B6N5p
+         LEFu/kqogxYHMyQ4Q9n3eKnDetvbk0mdj0hMmzGLzWozBvsSi9S05op1HNtN8HX9Os
+         F8Zl2dRys9nfQwWLI3TjNbONnCVPrp6k6P/Pf9JL7u+hxpLbpm0518l8z6ehZBvy+r
+         2JvNrbHd0I1SaOU/BbdlHAV/aFX32AzbJD95qWygHxkE84dOVpbstl+823H5Lx2qzn
+         sLM+xPPtEVrdA==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 64F21652E4;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 5B2F6652E6;
         Sat, 23 Jan 2021 21:30:10 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net: dsa: bcm_sf2: put device node before return
+Subject: Re: [PATCH] chtls: Fix potential resource leak
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161143741040.6169.4592145285251122406.git-patchwork-notify@kernel.org>
+Message-Id: <161143741036.6169.15421270286833058037.git-patchwork-notify@kernel.org>
 Date:   Sat, 23 Jan 2021 21:30:10 +0000
-References: <20210121123343.26330-1-bianpan2016@163.com>
-In-Reply-To: <20210121123343.26330-1-bianpan2016@163.com>
+References: <20210121145738.51091-1-bianpan2016@163.com>
+In-Reply-To: <20210121145738.51091-1-bianpan2016@163.com>
 To:     Pan Bian <bianpan2016@163.com>
-Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        olteanv@gmail.com, davem@davemloft.net, kuba@kernel.org,
+Cc:     ayush.sawal@chelsio.com, vinay.yadav@chelsio.com,
+        rohitm@chelsio.com, kuba@kernel.org, davem@davemloft.net,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
@@ -47,18 +47,19 @@ Hello:
 
 This patch was applied to netdev/net.git (refs/heads/master):
 
-On Thu, 21 Jan 2021 04:33:43 -0800 you wrote:
-> Put the device node dn before return error code on failure path.
+On Thu, 21 Jan 2021 06:57:38 -0800 you wrote:
+> The dst entry should be released if no neighbour is found. Goto label
+> free_dst to fix the issue. Besides, the check of ndev against NULL is
+> redundant.
 > 
-> Fixes: 461cd1b03e32 ("net: dsa: bcm_sf2: Register our slave MDIO bus")
 > Signed-off-by: Pan Bian <bianpan2016@163.com>
 > ---
->  drivers/net/dsa/bcm_sf2.c | 8 ++++++--
->  1 file changed, 6 insertions(+), 2 deletions(-)
+>  .../net/ethernet/chelsio/inline_crypto/chtls/chtls_cm.c    | 7 +++----
+>  1 file changed, 3 insertions(+), 4 deletions(-)
 
 Here is the summary with links:
-  - net: dsa: bcm_sf2: put device node before return
-    https://git.kernel.org/netdev/net/c/cf3c46631e16
+  - chtls: Fix potential resource leak
+    https://git.kernel.org/netdev/net/c/b6011966ac6f
 
 You are awesome, thank you!
 --
