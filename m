@@ -2,82 +2,226 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A5B83015BA
-	for <lists+netdev@lfdr.de>; Sat, 23 Jan 2021 15:14:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CAF26301660
+	for <lists+netdev@lfdr.de>; Sat, 23 Jan 2021 16:30:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726124AbhAWOOF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Jan 2021 09:14:05 -0500
-Received: from mail.wangsu.com ([123.103.51.227]:45407 "EHLO wangsu.com"
-        rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1725956AbhAWON7 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 23 Jan 2021 09:13:59 -0500
-Received: from 137.localdomain (unknown [59.61.78.232])
-        by app2 (Coremail) with SMTP id 4zNnewDX36_KLgxgCY0CAA--.740S2;
-        Sat, 23 Jan 2021 22:12:27 +0800 (CST)
-From:   Pengcheng Yang <yangpc@wangsu.com>
-To:     kuba@kernel.org
-Cc:     davem@davemloft.net, edumazet@google.com, ncardwell@google.com,
-        netdev@vger.kernel.org, yangpc@wangsu.com, ycheng@google.com
-Subject: Re: [PATCH net] tcp: fix TLP timer not set when CA_STATE changes from DISORDER to OPEN
-Date:   Sat, 23 Jan 2021 22:47:11 +0800
-Message-Id: <1611413231-13731-1-git-send-email-yangpc@wangsu.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <20210122172703.39cfff6c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <20210122172703.39cfff6c@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-X-CM-TRANSID: 4zNnewDX36_KLgxgCY0CAA--.740S2
-X-Coremail-Antispam: 1UD129KBjvJXoW7uF18GFyrtw13Cr48WF17ZFb_yoW8Ww1xpF
-        45uayqyrs5KFy8Cws2yw1fZ3sYgwsxJF1rWr1UCFyjkw12q3WSqF48Kw43WF9Igr18Cw4a
-        yrWjgrZIqF1FyFDanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
-        9KBjDU0xBIdaVrnRJUUUkj1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l8cAvFVAK
-        0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2IY67AKxVWDJVCq3wA2z4
-        x0Y4vE2Ix0cI8IcVCY1x0267AKxVW8Jr0_Cr1UM28EF7xvwVC2z280aVAFwI0_GcCE3s1l
-        84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s0DM2AIxVAIcxkEcVAq07x20xvEncxIr21l5I
-        8CrVACY4xI64kE6c02F40Ex7xfMcIj6x8ErcxFaVAv8VW8GwAv7VCY1x0262k0Y48FwI0_
-        Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcxkI7VAKI48JM4x0x7Aq67IIx4CEVc
-        8vx2IErcIFxwCY02Avz4vE14v_Xryl42xK82IYc2Ij64vIr41l42xK82IY6x8ErcxFaVAv
-        8VW8GwCFx2IqxVCFs4IE7xkEbVWUJVW8JwC20s026c02F40E14v26r1j6r18MI8I3I0E74
-        80Y4vE14v26r106r1rMI8E67AF67kF1VAFwI0_JF0_Jw1lIxkGc2Ij64vIr41lIxAIcVC0
-        I7IYx2IY67AKxVWUJVWUCwCI42IY6xIIjxv20xvEc7CjxVAFwI0_Jr0_Gr1lIxAIcVCF04
-        k26cxKx2IYs7xG6rWUJVWrZr1UMIIF0xvEx4A2jsIE14v26r1j6r4UMIIF0xvEx4A2jsIE
-        c7CjxVAFwI0_Gr0_Gr1UYxBIdaVFxhVjvjDU0xZFpf9x0Jj4sjbUUUUU=
-X-CM-SenderInfo: p1dqw1nf6zt0xjvxhudrp/
+        id S1726204AbhAWP2y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Jan 2021 10:28:54 -0500
+Received: from wout1-smtp.messagingengine.com ([64.147.123.24]:47463 "EHLO
+        wout1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725922AbhAWP2w (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 Jan 2021 10:28:52 -0500
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.west.internal (Postfix) with ESMTP id 793E312D0;
+        Sat, 23 Jan 2021 10:28:06 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Sat, 23 Jan 2021 10:28:07 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=VBJEGR
+        XF/VFisWs7Lv92eHBvpRfX3N0kmLDsvpMf9tU=; b=qNyJ021LJyBSPE4gfoLQvA
+        hqZoyzlW//3Z/tzVuemZG4dpVfa4gCAuP/imWC/5Hk9OiowY6vFbBIkThwIhfxA7
+        YLtiaJc3IgZUIiqVGX123rlGAbkv7+DMvMBY+rb/WDfHiSnPOQKFAmLU8RcYFAA3
+        AlNzXGAhX3J68y5KH43X3wUOpWT+MFcfbzUpICJSU3hg1zFpAWAcoeLO4F8m2BKG
+        wjoqlC+/YAlfY4ByR5lX10ehWqolzIaeNbcV6hbNNNKps/JEmtygSAMLWcd6iDBq
+        ZO0UBuu/wEtZw7OOTOiH8ONlnGaQE/IpzJ5fjuW5uLsDdYIwcvoHpgu55p+6JuZg
+        ==
+X-ME-Sender: <xms:hUAMYA2SlKa0uQEOzm4xHG-dEslqbqYJD-yJg6SsuW-habrjoZcBeg>
+    <xme:hUAMYLH5a5rnFoAebab_Ua6t2DldR5lxWC0sDi6N_btNEbsMax8-U4HOHUNswg9xs
+    C6vUTiq_PPTwsc>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrudekgdektdcutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecunecujfgurhepfffhvffukfhfgggtuggjsehttdertd
+    dttddvnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhs
+    tghhrdhorhhgqeenucggtffrrghtthgvrhhnpedtffekkeefudffveegueejffejhfetgf
+    euuefgvedtieehudeuueekhfduheelteenucfkphepkeegrddvvdelrdduheefrdeggeen
+    ucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughosh
+    gthhesihguohhstghhrdhorhhg
+X-ME-Proxy: <xmx:hUAMYI6u2mYFmtk-Trp6UetizhKVQH0x_TcJGRu72bm6rFIPAENhYw>
+    <xmx:hUAMYJ1Su5dDtl0a3yTDPBIYueAiyEQLY58SxSRKXggzfzIui3bfuA>
+    <xmx:hUAMYDH_-nFF4M7mk26nYPyihFkT2I7co-DxazCsbSLqPVGyGjA_Gg>
+    <xmx:hkAMYHg4wXQ7JddphYX-wGs0J2jvlgJl5JX8b4w2H8_f50nd6hEEtQ>
+Received: from localhost (igld-84-229-153-44.inter.net.il [84.229.153.44])
+        by mail.messagingengine.com (Postfix) with ESMTPA id 7FC21240057;
+        Sat, 23 Jan 2021 10:28:05 -0500 (EST)
+Date:   Sat, 23 Jan 2021 17:28:02 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, petrm@nvidia.com,
+        jiri@nvidia.com, amcohen@nvidia.com, mlxsw@nvidia.com,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: Re: [PATCH net-next 0/5] mlxsw: Add support for RED qevent "mark"
+Message-ID: <20210123152802.GA2799851@shredder.lan>
+References: <20210117080223.2107288-1-idosch@idosch.org>
+ <20210119142255.1caca7fb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20210120091437.GA2591869@shredder.lan>
+ <20210120164508.6009dbbd@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <20210121102318.GA2637214@shredder.lan>
+ <20210121091940.5101388a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210121091940.5101388a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jan 23, 2021 at 9:27 AM "Jakub Kicinski" <kuba@kernel.org> wrote:
-> 
-> On Fri, 22 Jan 2021 11:53:46 +0100 Eric Dumazet wrote:
-> > On Fri, Jan 22, 2021 at 11:28 AM Pengcheng Yang <yangpc@wangsu.com> wrote:
-> > >
-> > > When CA_STATE is in DISORDER, the TLP timer is not set when receiving
-> > > an ACK (a cumulative ACK covered out-of-order data) causes CA_STATE to
-> > > change from DISORDER to OPEN. If the sender is app-limited, it can only
-> > > wait for the RTO timer to expire and retransmit.
-> > >
-> > > The reason for this is that the TLP timer is set before CA_STATE changes
-> > > in tcp_ack(), so we delay the time point of calling tcp_set_xmit_timer()
-> > > until after tcp_fastretrans_alert() returns and remove the
-> > > FLAG_SET_XMIT_TIMER from ack_flag when the RACK reorder timer is set.
-> > >
-> > > This commit has two additional benefits:
-> > > 1) Make sure to reset RTO according to RFC6298 when receiving ACK, to
-> > > avoid spurious RTO caused by RTO timer early expires.
-> > > 2) Reduce the xmit timer reschedule once per ACK when the RACK reorder
-> > > timer is set.
-> > >
-> > > Link: https://lore.kernel.org/netdev/1611139794-11254-1-git-send-email-yangpc@wangsu.com
-> > > Signed-off-by: Pengcheng Yang <yangpc@wangsu.com>
-> > > Cc: Neal Cardwell <ncardwell@google.com>
-> >
-> > This looks like a very nice patch, let me run packetdrill tests on it.
+On Thu, Jan 21, 2021 at 09:19:40AM -0800, Jakub Kicinski wrote:
+> On Thu, 21 Jan 2021 12:23:18 +0200 Ido Schimmel wrote:
+> > On Wed, Jan 20, 2021 at 04:45:08PM -0800, Jakub Kicinski wrote:
+> > > On Wed, 20 Jan 2021 11:14:37 +0200 Ido Schimmel wrote:  
+> > > > On Tue, Jan 19, 2021 at 02:22:55PM -0800, Jakub Kicinski wrote:  
+> > > > > On Sun, 17 Jan 2021 10:02:18 +0200 Ido Schimmel wrote:    
+> > > > > > From: Ido Schimmel <idosch@nvidia.com>
+> > > > > > 
+> > > > > > The RED qdisc currently supports two qevents: "early_drop" and "mark". The
+> > > > > > filters added to the block bound to the "early_drop" qevent are executed on
+> > > > > > packets for which the RED algorithm decides that they should be
+> > > > > > early-dropped. The "mark" filters are similarly executed on ECT packets
+> > > > > > that are marked as ECN-CE (Congestion Encountered).
+> > > > > > 
+> > > > > > A previous patchset has offloaded "early_drop" filters on Spectrum-2 and
+> > > > > > later, provided that the classifier used is "matchall", that the action
+> > > > > > used is either "trap" or "mirred", and a handful or further limitations.    
+> > > > > 
+> > > > > For early_drop trap or mirred makes obvious sense, no explanation
+> > > > > needed.
+> > > > > 
+> > > > > But for marked as a user I'd like to see a _copy_ of the packet, 
+> > > > > while the original continues on its marry way to the destination.
+> > > > > I'd venture to say that e.g. for a DCTCP deployment mark+trap is
+> > > > > unusable, at least for tracing, because it distorts the operation 
+> > > > > by effectively dropping instead of marking.
+> > > > > 
+> > > > > Am I reading this right?    
+> > > > 
+> > > > You get a copy of the packet as otherwise it will create a lot of
+> > > > problems (like you wrote).  
+> > > 
+> > > Hm, so am I missing some background on semantics on TC_ACT_TRAP?
+> > > Or perhaps you use a different action code?  
 > > 
-> > By any chance, have you cooked a packetdrill test showing the issue
-> > (failing on unpatched kernel) ?
+> > Well, to make it really clear, we can add TC_ACT_TRAP_MIRROR.
+> > 
+> > TC_ACT_TRAP: Sole copy goes to the CPU
+> > TC_ACT_TRAP_MIRROR: The packet is forwarded by the underlying device and
+> > a copy is sent to the CPU
+> > 
+> > And only allow (in mlxsw) attaching filters with TC_ACT_TRAP_MIRROR to
+> > the "mark" qevent.
+> > 
+> > > 
+> > > AFAICT the code in the kernel is:
+> > > 
+> > > struct sk_buff *tcf_qevent_handle(...
+> > > 
+> > > 	case TC_ACT_STOLEN:
+> > > 	case TC_ACT_QUEUED:
+> > > 	case TC_ACT_TRAP:
+> > > 		__qdisc_drop(skb, to_free);
+> > > 		*ret = __NET_XMIT_STOLEN;
+> > > 		return NULL;
+> > > 
+> > > Having TRAP mean DROP makes sense for filters, but in case of qevents
+> > > shouldn't they be a no-op?
+> > > 
+> > > Looking at sch_red looks like TRAP being a no-op would actually give us
+> > > the expected behavior.  
+> > 
+> > I'm not sure it makes sense to try to interpret these actions in
+> > software (I expect they will be used with "skip_sw" filters), but
+> > TC_ACT_TRAP_MIRROR can be a no-op like you suggested.
 > 
-> Any guidance on backporting / fixes tag? (once the packetdrill
-> questions are satisfied)
+> Well our paradigm is SW defines the behavior, we can't have HW forward
+> and copy, while the SW drops the frame. Some engineer will try to
+> implement this some day in their switch driver, look at the SW behavior
+> and scratch their head.
 
-By reading the commits, we can add:
-Fixes: df92c8394e6e ("tcp: fix xmit timer to only be reset if data ACKed/SACKed")
+OK, TC_ACT_TRAP_MIRROR will be a no-op in software
 
+> 
+> > > > the 'mark' qevent of the RED qdisc."
+> > > >
+> > > > In addition, this output:
+> > > > 
+> > > > $ devlink trap show pci/0000:06:00.0 trap ecn_mark 
+> > > > pci/0000:06:00.0:
+> > > >   name ecn_mark type drop generic true action trap group buffer_drops
+> > > > 
+> > > > Can be converted to:
+> > > > 
+> > > > $ devlink trap show pci/0000:06:00.0 trap ecn_mark 
+> > > > pci/0000:06:00.0:
+> > > >   name ecn_mark type drop generic true action mirror group buffer_drops
+> > > > 
+> > > > "mirror: The packet is forwarded by the underlying device and a copy is sent to
+> > > > the CPU."
+> > > > 
+> > > > In this case the action is static and you cannot change it.  
+> > > 
+> > > Oh yes, that's nice, I thought mirror in traps means mirror to another
+> > > port. Are there already traps which implement the mirroring / trapping
+> > > a clone? Quick grep yields nothing of substance.  
+> > 
+> > Yes. That's why we have the 'offload_fwd_mark' and 'offload_l3_fwd_mark'
+> > bits in the skb. For example, we let the hardware flood ARP requests
+> > ('arp_request'), but also send a copy to the CPU in case it needs to
+> > update its neighbour table. The trapping happens at L2, so we only set
+> > the 'offload_fwd_mark' bit. It will tell the bridge driver to not flood
+> > the packet again.
+> > 
+> > The 'offload_l3_fwd_mark' bit is mainly used to support one-armed router
+> > use cases where a packet is forwarded through the same interface through
+> > which it was received ('uc_loopback'). We do the forwarding in hardware,
+> > but also send a copy to the CPU to give the kernel the chance to
+> > generate an ICMP redirect if it was not disabled by the user. See more
+> > info in commit 55827458e058 ("Merge branch
+> > 'mlxsw-Add-one-armed-router-support'").
+> 
+> I see, thanks for the example, but just to be clear those are "internal
+> traps", they don't have any impact on the devlink trap uAPI (in case we
+> want to change the definition of MIRRED since nothing is using it).
+
+It's not MIRRED, but MIRROR. Anyway, these are not internal traps:
+
+$ devlink trap show pci/0000:01:00.0 trap arp_request 
+pci/0000:01:00.0:
+  name arp_request type control generic true action mirror group neigh_discovery
+
+> 
+> > I also want to explain how the qevent stuff works in hardware to make
+> > sure it is all clear. We have the ability to bind different triggers to
+> > a mirroring (SPAN) agent. The agent can point to a physical port /
+> > virtual interface (e.g., gretap for ERSPAN) or to the CPU port. The
+> > first is programmed via the mirred action and the second using the trap
+> > action.
+> > 
+> > The triggers can be simple such as Rx/Tx packet (matchall + mirred) or
+> > policy engine (flower + mirred). The more advanced triggers are various
+> > buffer events such as early drops ('early_drop' qevent) and ECN marking
+> > ('mark' qevent). Currently, it is only possible to bind these triggers
+> > to a mirroring agent which is why we only support (in mlxsw) attaching
+> > matchall filters to these qevents. In the future we might be able to
+> > bind ACLs to these triggers in which case we will allow attaching flower
+> > filters. devlink-trap is really only a read-only interface in this case,
+> > meant to tell you why you go the packet from the hardware datapath. The
+> > enablement / disablement is done by tc which gives us feature parity
+> > with the software datapath.
+> 
+> Thanks for the explanation. I feel more and more convinced now that
+> we should have TC_ACT_TRAP_MIRROR and the devlink trap should only 
+> be on/off :S Current model of "if ACT_TRAP consult devlink for trap
+> configuration" is impossible to model in SW since it doesn't have a
+> equivalent of devlink traps. Or we need that equivalent..
+
+Wait, the current model is not "if ACT_TRAP consult devlink for trap
+configuration". 'ecn_mark' action is always 'trap' ('mirror' in v2) and
+can't be changed. Such packets can always be sent to the CPU, but the
+decision of whether to send them or not is based on the presence of tc
+filters attached to RED's 'mark' qevent with TC_ACT_TRAP
+(TC_ACT_TRAP_MIRROR in v2).
+
+I believe that with the proposed changes in v2 it should be perfectly
+clear that ECN marked packets are forwarded in hardware and a copy is
+sent to the CPU.
