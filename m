@@ -2,80 +2,70 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B593E30120E
-	for <lists+netdev@lfdr.de>; Sat, 23 Jan 2021 02:38:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ECB8D301211
+	for <lists+netdev@lfdr.de>; Sat, 23 Jan 2021 02:40:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726344AbhAWBhb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jan 2021 20:37:31 -0500
-Received: from mail.kernel.org ([198.145.29.99]:56778 "EHLO mail.kernel.org"
+        id S1726335AbhAWBjv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jan 2021 20:39:51 -0500
+Received: from mail.kernel.org ([198.145.29.99]:56996 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726059AbhAWBhO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 22 Jan 2021 20:37:14 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 625FF23B55;
-        Sat, 23 Jan 2021 01:36:33 +0000 (UTC)
+        id S1726167AbhAWBjo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 22 Jan 2021 20:39:44 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 29A5223B55;
+        Sat, 23 Jan 2021 01:39:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611365793;
-        bh=kZIXz5RL0YNBD+BfkX8CUOfgUtS7jsLyaO6rWl6A9T4=;
+        s=k20201202; t=1611365944;
+        bh=qgKJptsK1N2IK67Aym/KNaINRy2ePn8gQlRoAvYXPKY=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=OtJjDBi9fyNQWx5MffCII2uFS+7W5aNO6478BdWACi16iZX1i21Ny5Y08ZBpaSTsV
-         0uPt/v8xgp05HGBhFGna/l/bKKySt+UBzsTcgXeqyBp+3i0/ELepfDAfJ52FTeiJKC
-         8dLq4gj8iLAxqycDH4KPfdzr0pDsftvwYAekAFK/6qPwaEpJQ7P9WObttlSno6aP4f
-         59N1OTt9AMWAwHAokk1PkRM3WulGYVHmYGqm8RYBcabRu9U8gZbYhDp1d3go+9KrYC
-         jMX1ycC68iFKvPAldeiN9XcAzIWoIR34WRDBwSZHbPBh7AsNjEA2lRgnF3LSm+U7nH
-         LBloYRfy885Cg==
-Date:   Fri, 22 Jan 2021 17:36:32 -0800
+        b=BQGFNFuihOPg5cPMADik+6SZXQzmYU47N+uy+lwUzX2X07MeBKzIqApSijsqjXxdN
+         EKtnkhiFAhR4j7wZqPh0e7DdCLkYdLFiFDbVTBKjtPiitGqYOonIqmBZN9Et7jHsar
+         Wpo0CaMU2TJ24WiZN7JLD2I7BQ86Hd0LQ03xvQnT8dHyd8tsM/AjdYg2YrBJ3lu5pE
+         7LOgCvnf1Uitqpn7TvT2bMDEOmDW0orLHh7E5QO7rfCXOwh3gixMiWTcLIGOzrOQQn
+         genmNo+c0JXxqzhv3FIS10b4zsVRy8EA9UwgfrVqietu3t3Ys3GMCCgM3YKuIfIC7H
+         AYtTrfBeB4gaQ==
+Date:   Fri, 22 Jan 2021 17:39:02 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Laurent Badel <laurentbadel@eaton.com>
-Cc:     Fugang Duan <fugang.duan@nxp.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>, <netdev@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net 1/1] net: fec: Fix temporary RMII clock reset on
- link up
-Message-ID: <20210122173632.25db0d09@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210122151347.30417-2-laurentbadel@eaton.com>
-References: <20210122151347.30417-1-laurentbadel@eaton.com>
-        <20210122151347.30417-2-laurentbadel@eaton.com>
+To:     Calvin Johnson <calvin.johnson@oss.nxp.com>
+Cc:     Grant Likely <grant.likely@arm.com>,
+        "Rafael J . Wysocki" <rafael@kernel.org>,
+        Jeremy Linton <jeremy.linton@arm.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Cristi Sovaiala <cristian.sovaiala@nxp.com>,
+        Florin Laurentiu Chiculita <florinlaurentiu.chiculita@nxp.com>,
+        Ioana Ciornei <ioana.ciornei@nxp.com>,
+        Madalin Bucur <madalin.bucur@oss.nxp.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Marcin Wojtas <mw@semihalf.com>,
+        Pieter Jansen Van Vuuren <pieter.jansenvv@bamboosystems.io>,
+        Jon <jon@solid-run.com>, Saravana Kannan <saravanak@google.com>,
+        Randy Dunlap <rdunlap@infradead.org>, linux.cj@gmail.com,
+        Diana Madalina Craciun <diana.craciun@nxp.com>,
+        linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Laurentiu Tudor <laurentiu.tudor@nxp.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [net-next PATCH v4 10/15] net: mdio: Add ACPI support code for
+ mdio
+Message-ID: <20210122173902.57af2311@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210122154300.7628-11-calvin.johnson@oss.nxp.com>
+References: <20210122154300.7628-1-calvin.johnson@oss.nxp.com>
+        <20210122154300.7628-11-calvin.johnson@oss.nxp.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 22 Jan 2021 16:13:47 +0100 Laurent Badel wrote:
-> =EF=BB=BFfec_restart() does a hard reset of the MAC module when the link =
-status
-> changes to up. This temporarily resets the R_CNTRL register which controls
-> the MII mode of the ENET_OUT clock. In the case of RMII, the clock
-> frequency momentarily drops from 50MHz to 25MHz until the register is
-> reconfigured. Some link partners do not tolerate this glitch and
-> invalidate the link causing failure to establish a stable link when using
-> PHY polling mode. Since as per IEEE802.11 the criteria for link validity=
-=20
-> are PHY-specific, what the partner should tolerate cannot be assumed, so=
-=20
-> avoid resetting the MII clock by using software reset instead of hardware=
-=20
-> reset when the link is up. This is generally relevant only if the SoC=20
-> provides the clock to an external PHY and the PHY is configured for RMII.
+On Fri, 22 Jan 2021 21:12:55 +0530 Calvin Johnson wrote:
+> Define acpi_mdiobus_register() to Register mii_bus and create PHYs for
+> each ACPI child node.
+> 
+> Signed-off-by: Calvin Johnson <calvin.johnson@oss.nxp.com>
 
->  static const struct fec_devinfo fec_imx6q_info =3D {
-> @@ -953,7 +954,8 @@ fec_restart(struct net_device *ndev)
->  	 * For i.MX6SX SOC, enet use AXI bus, we use disable MAC
->  	 * instead of reset MAC itself.
->  	 */
-> -	if (fep->quirks & FEC_QUIRK_HAS_AVB) {
-> +	if (fep->quirks & FEC_QUIRK_HAS_AVB ||
-> +	    (fep->quirks & FEC_QUIRK_NO_HARD_RESET) && fep->link) {
->  		writel(0, fep->hwp + FEC_ECNTRL);
->  	} else {
->  		writel(1, fep->hwp + FEC_ECNTRL);
-
-drivers/net/ethernet/freescale/fec_main.c: In function =E2=80=98fec_restart=
-=E2=80=99:
-drivers/net/ethernet/freescale/fec_main.c:958:46: warning: suggest parenthe=
-ses around =E2=80=98&&=E2=80=99 within =E2=80=98||=E2=80=99 [-Wparentheses]
-  958 |      (fep->quirks & FEC_QUIRK_NO_HARD_RESET) && fep->link) {
-      |      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~~~~~~~~~~
+ERROR: modpost: missing MODULE_LICENSE() in drivers/net/mdio/acpi_mdio.o
+make[2]: *** [Module.symvers] Error 1
