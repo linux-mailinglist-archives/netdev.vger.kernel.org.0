@@ -2,70 +2,63 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 78727301246
-	for <lists+netdev@lfdr.de>; Sat, 23 Jan 2021 03:32:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 30D1C30124F
+	for <lists+netdev@lfdr.de>; Sat, 23 Jan 2021 03:35:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726510AbhAWCaw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jan 2021 21:30:52 -0500
-Received: from mail.kernel.org ([198.145.29.99]:36950 "EHLO mail.kernel.org"
+        id S1726535AbhAWCfU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jan 2021 21:35:20 -0500
+Received: from mail.kernel.org ([198.145.29.99]:37402 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726274AbhAWCau (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 22 Jan 2021 21:30:50 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id ED7D923B55;
-        Sat, 23 Jan 2021 02:30:09 +0000 (UTC)
+        id S1726374AbhAWCfK (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 22 Jan 2021 21:35:10 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D78B423B2F;
+        Sat, 23 Jan 2021 02:34:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611369010;
-        bh=LOIOXfspCXmNEKWExfVa6HeC2JfufFMepdIvAt/GA7Y=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=Vk0DzkrU+HRg+syBoG9CYeaR61h8Pqf95mQ9wp2Q9RCQPZzTdF59fzvqxNkXMV3MB
-         zZ45tiX9js+juPiOPnmyF25ztzVc55SG8rXX7O+T+MHbOeD8NQF5dnb7pkMoFP7rmz
-         i/qzA/cMhuP9TrBLyQ16JQPf8il4L5kL3cwqycdeAlacVpaJSMPhzR2Lib/il9HagK
-         cTjfdpiH6mAkX5eRsge8av7Q17vPPxuzvTOmxA/YyfjQUxNPclzqiQu342OThKmOtS
-         FKNCmoOdzpBpfqZxzzW1hKEnygdTFJHXHspkYnGYS6XjzsAId+AW0HBJF9yj7FGTcV
-         WiU46N/qfCV4g==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id E047F652DC;
-        Sat, 23 Jan 2021 02:30:09 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1611369265;
+        bh=Tn3Ljt78OWX/vk/E7IdSDzroXqvkM/ec13V1UWGX98Q=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=hZRdWVy+mwTJISPfd2P4Rih+Fh36oTCu/XAF17zixDcY+oX5zuUWVVRV2wNuUORv+
+         EMKn0/tQ/MB6Pn+WzIqorqQwZWAb33Yx4qWInwPAj1sCc5IJw0NrgQGJgrfUWck2qk
+         E1dRIzUmWtcZhIMrRJekO5Zh0TfpCwIG38x5t8BxJamIfkDR7IhLGRWm4bMsRy0hnj
+         MAJrHSh2hLLcXEJsA71ofvVf62GFFKfpNo3AshFDlkbev/lOkHx1eBL4FY29V7N5Z5
+         eNlAoLvYm65Q1ZSfo53xyZH/eLZwDM626K9Qs6gYL4pZARhp04lWqohlvpS2YfV9Mv
+         +UF1WsgaOoFdQ==
+Date:   Fri, 22 Jan 2021 18:34:24 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Enke Chen <enkechen2020@gmail.com>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Neal Cardwell <ncardwell@google.com>
+Subject: Re: [PATCH net] tcp: make TCP_USER_TIMEOUT accurate for zero window
+ probes
+Message-ID: <20210122183424.59c716a1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210123022823.GA100578@localhost.localdomain>
+References: <20210122191306.GA99540@localhost.localdomain>
+        <20210122174325.269ac329@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20210123022823.GA100578@localhost.localdomain>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH] net: stmmac: dwmac-intel-plat: remove config data on error
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161136900991.8400.5085131401439003900.git-patchwork-notify@kernel.org>
-Date:   Sat, 23 Jan 2021 02:30:09 +0000
-References: <20210120110745.36412-1-bianpan2016@163.com>
-In-Reply-To: <20210120110745.36412-1-bianpan2016@163.com>
-To:     Pan Bian <bianpan2016@163.com>
-Cc:     peppe.cavallaro@st.com, alexandre.torgue@st.com,
-        joabreu@synopsys.com, davem@davemloft.net, kuba@kernel.org,
-        mcoquelin.stm32@gmail.com, vineetha.g.jaya.kumaran@intel.com,
-        rusaimi.amira.rusaimi@intel.com, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This patch was applied to netdev/net.git (refs/heads/master):
-
-On Wed, 20 Jan 2021 03:07:44 -0800 you wrote:
-> Remove the config data when rate setting fails.
+On Fri, 22 Jan 2021 18:28:23 -0800 Enke Chen wrote:
+> Hi, Jakub:
 > 
-> Fixes: 9efc9b2b04c7 ("net: stmmac: Add dwmac-intel-plat for GBE driver")
-> Signed-off-by: Pan Bian <bianpan2016@163.com>
-> ---
->  drivers/net/ethernet/stmicro/stmmac/dwmac-intel-plat.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+> In terms of backporting, this patch should go together with:
+> 
+>     9d9b1ee0b2d1 tcp: fix TCP_USER_TIMEOUT with zero window
 
-Here is the summary with links:
-  - net: stmmac: dwmac-intel-plat: remove config data on error
-    https://git.kernel.org/netdev/net/c/3765d86ffcd3
+As in it:
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Fixes: 9d9b1ee0b2d1 tcp: fix TCP_USER_TIMEOUT with zero window
 
+or does it further fix the same issue, so:
 
+Fixes: 9721e709fa68 ("tcp: simplify window probe aborting on USER_TIMEOUT")
+
+?
