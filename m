@@ -2,135 +2,151 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3BD053017A9
-	for <lists+netdev@lfdr.de>; Sat, 23 Jan 2021 19:36:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 426D23017D4
+	for <lists+netdev@lfdr.de>; Sat, 23 Jan 2021 19:54:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726232AbhAWSfv (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Jan 2021 13:35:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46924 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726208AbhAWSfq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sat, 23 Jan 2021 13:35:46 -0500
-Received: from mail-oo1-xc2a.google.com (mail-oo1-xc2a.google.com [IPv6:2607:f8b0:4864:20::c2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1F51C0613D6
-        for <netdev@vger.kernel.org>; Sat, 23 Jan 2021 10:35:05 -0800 (PST)
-Received: by mail-oo1-xc2a.google.com with SMTP id n19so881472ooj.11
-        for <netdev@vger.kernel.org>; Sat, 23 Jan 2021 10:35:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=uOUAj1ysgb+0j1HujC6gwf//1nyiH7g1tdbPs6Cv2YA=;
-        b=gYEAYIH6iYA/1MrcTKdv9dG/mKGAPKoCmFvR54eIJ022/7QDF78qYr7zHuQA950FCM
-         fdq7HMTCF1lkw+TWLp+QB6Jz9/0fcrqhztOTntY+c80JBBygDb94J9sKLPc5sUX0HHs6
-         hoohJcvrXxxaVYzA+rT7/3yMIKzrpE4gDFIPrao/2irmZnVf6e1nYTlEUlQ9MkJXkEdQ
-         IqWNFRFKYt4LESSqT/NtmJIxvR1b16PLvC39j9bgJ7Dpakw0iZwJ2F2gazfpcvZvuk1T
-         nL7KEQcMj0z7AS5RF6YecdVLMP9owipC5naCjD6GbfE2J7QE/CJnGinsWwjQtfV/eQ7i
-         0E0A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=uOUAj1ysgb+0j1HujC6gwf//1nyiH7g1tdbPs6Cv2YA=;
-        b=UwTnLTuGGOdupEzxgrBkRSA9YyLsHksU2mUcWY67whDSRFuhWgM+8ClST/0vZzQpAI
-         BgsDrKjTxzSeEw3Gp+g+E/AF6G8XBurmjR2rolc+cBlAWaFZGNqJozQzPA81s9nNHoFa
-         K+eUt9I7PKVtvAbPZMtuQVC4krKyq5INMRh83ZQkG8quQ6p2uS3Y/EL6cApqMoeJmyVS
-         5yBZYOEdGtAFBZGMmf5oo2CR6GSk7GuMWzQLUQFKiEKaRDmsJUMTIiA0bIpN0UJ/DWw5
-         eO4ponE5zCujkv8f+MEZ8VepLHTL6xPgpibKI//wrxuscx2xMhRESldQpnVVbwbYfmKw
-         ofww==
-X-Gm-Message-State: AOAM531+YIWXJnMZCcxLKqSe0ZDtRclDVo5Uy7fra5pW2z7jxX702jWs
-        ZdZQzQcLOwrgrQ0fo3nrmGU=
-X-Google-Smtp-Source: ABdhPJws1ethEM9qc36JLRnXsVVhMpJK7WOIh9gDTwHmxvr2OQyWrNN9l8PYwkbNclkOYHDoixPVxg==
-X-Received: by 2002:a4a:dc13:: with SMTP id p19mr5334115oov.83.1611426905102;
-        Sat, 23 Jan 2021 10:35:05 -0800 (PST)
-Received: from Davids-MacBook-Pro.local ([8.48.134.50])
-        by smtp.googlemail.com with ESMTPSA id d17sm2477029oic.12.2021.01.23.10.35.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 23 Jan 2021 10:35:04 -0800 (PST)
-Subject: Re: [PATCH iproute2 v2] bond: support xmit_hash_policy=vlan+srcmac
-To:     Jarod Wilson <jarod@redhat.com>, netdev@vger.kernel.org
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        Jay Vosburgh <j.vosburgh@gmail.com>
-References: <20210113234117.3805255-1-jarod@redhat.com>
- <20210115192137.1878336-1-jarod@redhat.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <35de645e-0d2b-8131-12df-9bca8259e6ce@gmail.com>
-Date:   Sat, 23 Jan 2021 11:35:03 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
- Gecko/20100101 Thunderbird/78.6.1
+        id S1726352AbhAWSxb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Jan 2021 13:53:31 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:43852 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726232AbhAWSx0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sat, 23 Jan 2021 13:53:26 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1611427920;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=+oLnuKKVFcP+jX7dsGpygkLnCbNNWlvIsEBxJq1BWIw=;
+        b=bbMl4ld7fPElROlT0rXIWcOklW89ipdUEoCKYtHbVvrDGmRTYWSDinyP7xBq4nvlaoaWjb
+        18QXfIgCEGvGUWX8XYL61FXzLyoE6xqTfChywmvC3o/X01bD713SIqT4vjrO3OAoFiAZos
+        zgo6wSPAEN1rt56qWwry+375O1Zv5/g=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-407-RnZdjAXlMzO42_QSCJ_OOA-1; Sat, 23 Jan 2021 13:51:56 -0500
+X-MC-Unique: RnZdjAXlMzO42_QSCJ_OOA-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 06CA4806661;
+        Sat, 23 Jan 2021 18:51:54 +0000 (UTC)
+Received: from krava (unknown [10.40.192.55])
+        by smtp.corp.redhat.com (Postfix) with SMTP id C73AF10016FF;
+        Sat, 23 Jan 2021 18:51:44 +0000 (UTC)
+Date:   Sat, 23 Jan 2021 19:51:43 +0100
+From:   Jiri Olsa <jolsa@redhat.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Jiri Olsa <jolsa@kernel.org>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>, dwarves@vger.kernel.org,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Yonghong Song <yhs@fb.com>, Hao Luo <haoluo@google.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        Mark Wielaard <mjw@redhat.com>
+Subject: Re: [PATCH 2/3] bpf_encoder: Translate SHN_XINDEX in symbol's
+ st_shndx values
+Message-ID: <20210123185143.GA117714@krava>
+References: <20210121202203.9346-1-jolsa@kernel.org>
+ <20210121202203.9346-3-jolsa@kernel.org>
+ <CAEf4BzZquSn0Th7bpVuM0M4XbTPU5-9jDPPd5RJBS5AH2zqaMA@mail.gmail.com>
+ <20210122204654.GB70760@krava>
+ <CAEf4BzaRrMp1+2dgv_1WrkBt+=KF1BJnN_KGwZKx5gDg7t++Yg@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20210115192137.1878336-1-jarod@redhat.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAEf4BzaRrMp1+2dgv_1WrkBt+=KF1BJnN_KGwZKx5gDg7t++Yg@mail.gmail.com>
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/15/21 12:21 PM, Jarod Wilson wrote:
-> There's a new transmit hash policy being added to the bonding driver that
-> is a simple XOR of vlan ID and source MAC, xmit_hash_policy vlan+srcmac.
-> This trivial patch makes it configurable and queryable via iproute2.
+On Fri, Jan 22, 2021 at 02:55:51PM -0800, Andrii Nakryiko wrote:
+> On Fri, Jan 22, 2021 at 12:47 PM Jiri Olsa <jolsa@redhat.com> wrote:
+> >
+> > On Thu, Jan 21, 2021 at 03:32:40PM -0800, Andrii Nakryiko wrote:
+> >
+> > SNIP
+> >
+> > > > @@ -598,9 +599,36 @@ static void collect_symbol(GElf_Sym *sym, struct funcs_layout *fl)
+> > > >                 fl->mcount_stop = sym->st_value;
+> > > >  }
+> > > >
+> > > > +static bool elf_sym__get(Elf_Data *syms, Elf_Data *syms_sec_idx_table,
+> > > > +                        int id, GElf_Sym *sym, Elf32_Word *sym_sec_idx)
+> > > > +{
+> > > > +       if (!gelf_getsym(syms, id, sym))
+> > > > +               return false;
+> > > > +
+> > > > +       *sym_sec_idx = sym->st_shndx;
+> > > > +
+> > > > +       if (sym->st_shndx == SHN_XINDEX) {
+> > > > +               if (!syms_sec_idx_table)
+> > > > +                       return false;
+> > > > +               if (!gelf_getsymshndx(syms, syms_sec_idx_table,
+> > > > +                                     id, sym, sym_sec_idx))
+> > >
+> > >
+> > > gelf_getsymshndx() is supposed to work even for cases that don't use
+> > > extended numbering, so this should work, right?
+> > >
+> > > if (!gelf_getsymshndx(syms, syms_sec_idx_table, id, sym, sym_sec_idx))
+> > >     return false;
+> > >
+> >
+> > it seems you're right, gelf_getsymshndx seem to work for
+> > both cases, I'll check
+> >
+> >
+> > > if (sym->st_shndx == SHN_XINDEX)
+> > >   *sym_sec_idx = sym->st_shndx;
+> >
+> > I don't understand this..  gelf_getsymshndx will return both
+> > symbol and proper index, no? also sym_sec_idx is already
+> > assigned from previou call
 > 
-> $ sudo modprobe bonding mode=2 max_bonds=1 xmit_hash_policy=0
-> 
-> $ sudo ip link set bond0 type bond xmit_hash_policy vlan+srcmac
-> 
-> $ ip -d link show bond0
-> 11: bond0: <BROADCAST,MULTICAST,MASTER> mtu 1500 qdisc noop state DOWN mode DEFAULT group default qlen 1000
->     link/ether ce:85:5e:24:ce:90 brd ff:ff:ff:ff:ff:ff promiscuity 0 minmtu 68 maxmtu 65535
->     bond mode balance-xor miimon 0 updelay 0 downdelay 0 peer_notify_delay 0 use_carrier 1 arp_interval 0 arp_validate none arp_all_targets any
-> primary_reselect always fail_over_mac none xmit_hash_policy vlan+srcmac resend_igmp 1 num_grat_arp 1 all_slaves_active 0 min_links 0 lp_interval 1
-> packets_per_slave 1 lacp_rate slow ad_select stable tlb_dynamic_lb 1 addrgenmode eui64 numtxqueues 16 numrxqueues 16 gso_max_size 65536 gso_max_segs
-> 65535
-> 
-> $ grep Hash /proc/net/bonding/bond0
-> Transmit Hash Policy: vlan+srcmac (5)
-> 
-> $ sudo ip link add test type bond help
-> Usage: ... bond [ mode BONDMODE ] [ active_slave SLAVE_DEV ]
->                 [ clear_active_slave ] [ miimon MIIMON ]
->                 [ updelay UPDELAY ] [ downdelay DOWNDELAY ]
->                 [ peer_notify_delay DELAY ]
->                 [ use_carrier USE_CARRIER ]
->                 [ arp_interval ARP_INTERVAL ]
->                 [ arp_validate ARP_VALIDATE ]
->                 [ arp_all_targets ARP_ALL_TARGETS ]
->                 [ arp_ip_target [ ARP_IP_TARGET, ... ] ]
->                 [ primary SLAVE_DEV ]
->                 [ primary_reselect PRIMARY_RESELECT ]
->                 [ fail_over_mac FAIL_OVER_MAC ]
->                 [ xmit_hash_policy XMIT_HASH_POLICY ]
->                 [ resend_igmp RESEND_IGMP ]
->                 [ num_grat_arp|num_unsol_na NUM_GRAT_ARP|NUM_UNSOL_NA ]
->                 [ all_slaves_active ALL_SLAVES_ACTIVE ]
->                 [ min_links MIN_LINKS ]
->                 [ lp_interval LP_INTERVAL ]
->                 [ packets_per_slave PACKETS_PER_SLAVE ]
->                 [ tlb_dynamic_lb TLB_DYNAMIC_LB ]
->                 [ lacp_rate LACP_RATE ]
->                 [ ad_select AD_SELECT ]
->                 [ ad_user_port_key PORTKEY ]
->                 [ ad_actor_sys_prio SYSPRIO ]
->                 [ ad_actor_system LLADDR ]
-> 
-> BONDMODE := balance-rr|active-backup|balance-xor|broadcast|802.3ad|balance-tlb|balance-alb
-> ARP_VALIDATE := none|active|backup|all
-> ARP_ALL_TARGETS := any|all
-> PRIMARY_RESELECT := always|better|failure
-> FAIL_OVER_MAC := none|active|follow
-> XMIT_HASH_POLICY := layer2|layer2+3|layer3+4|encap2+3|encap3+4|vlan+srcmac
-> LACP_RATE := slow|fast
-> AD_SELECT := stable|bandwidth|count
-> 
-> Cc: Stephen Hemminger <stephen@networkplumber.org>
-> Cc: Jay Vosburgh <j.vosburgh@gmail.com>
-> Signed-off-by: Jarod Wilson <jarod@redhat.com>
-> ---
->  ip/iplink_bond.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
+> Reading (some) implementation of gelf_getsymshndx() that I found
+> online, it won't set sym_sec_idx, if the symbol *doesn't* use extended
+> numbering. But it will still return symbol data. So to return the
 
-applied to iproute2-next.
+the latest upstream code seems to set it always,
+but I agree we should be careful
+
+Mark, any insight in here? thanks
+
+> section index in all cases, we need to check again *after* we got
+> symbol, and if it's not extended, then set index manually.
+
+hum, then we should use '!=', right?
+
+  if (sym->st_shndx != SHN_XINDEX)
+    *sym_sec_idx = sym->st_shndx;
+
+SNIP
+
+> > > so either
+> > >
+> > > for (id = 0; id < symtab->nr_syms && elf_sym__get(symtab->syms,
+> > > symtab->syms_sec_idx_table, d, &sym, &sym_sec_idx); id++)
+> > >
+> > > or
+> > >
+> > > for (id = 0; id < symtab->nr_syms; id++)
+> > >   if (elf_sym__get(symtab->syms, symtab->syms_sec_idx_table, d, &sym,
+> > > &sym_sec_idx))
+> >
+> > if we go ahead with skipping symbols, this one seems good
+> 
+> I think skipping symbols is nicer. If ELF is totally broken, then all
+> symbols are going to be ignored anyway. If it's some one-off issue for
+> a specific symbol, we'll just ignore it (unfortunately, silently).
+
+agreed, I'll use this
+
+thanks,
+jirka
 
