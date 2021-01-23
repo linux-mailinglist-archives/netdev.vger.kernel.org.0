@@ -2,49 +2,49 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3F4F9301319
+	by mail.lfdr.de (Postfix) with ESMTP id AC34F30131A
 	for <lists+netdev@lfdr.de>; Sat, 23 Jan 2021 05:56:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726705AbhAWEyV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jan 2021 23:54:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40672 "EHLO
+        id S1726718AbhAWEyj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jan 2021 23:54:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726597AbhAWEyM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 23:54:12 -0500
-Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86FAEC061786
-        for <netdev@vger.kernel.org>; Fri, 22 Jan 2021 20:53:32 -0800 (PST)
-Received: by mail-pg1-x52e.google.com with SMTP id c22so5202152pgg.13
-        for <netdev@vger.kernel.org>; Fri, 22 Jan 2021 20:53:32 -0800 (PST)
+        with ESMTP id S1726654AbhAWEyO (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 22 Jan 2021 23:54:14 -0500
+Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82284C061788
+        for <netdev@vger.kernel.org>; Fri, 22 Jan 2021 20:53:34 -0800 (PST)
+Received: by mail-pl1-x62e.google.com with SMTP id u11so4414871plg.13
+        for <netdev@vger.kernel.org>; Fri, 22 Jan 2021 20:53:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version;
-        bh=7zXTc6CMeL7KIeVi/3C+r0OPMcrMBNOUicc8iFisY5w=;
-        b=GdKrTFCo4+KGfmDsGYmi/Oc27yXNB/5JnXtfGWh8r2jRJ7FfINXYvL3ewxHp9dSMTQ
-         99N9L2AnDMHyfO6gLutZPUTG09kduFf6N3Dtrh6ADUFsqyPT5buk+QUmdsHw23BKlilO
-         azbEUbeXN8J4H3Kx5vwazV3A7MPcyro1OTUYg=
+        bh=K83YF7GcNY82TVK2vJYspKj0xmLPWlJ36U3nO8TnBUE=;
+        b=AEj2GmuSq9bAwmytXSXrvfU1Tvb3GkGgDFWbpAjFqi2td1IS73PkWrfpN/UyL5+CD4
+         70kXImoeWMlbmJWuN5/GL0+blgrmnUviMGLcD29o9UOp28bU7Y4jaG10Fu3IKWHWyWBy
+         fYluih1Yy9c8An4nEP1/kCQJuTmQWfAeIpwnc=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version;
-        bh=7zXTc6CMeL7KIeVi/3C+r0OPMcrMBNOUicc8iFisY5w=;
-        b=PYFgx1+yAeU5YlJBsSrvxHW7PFHm3LpwlWsLWdjvOOyyxHrH/K9gR1bv/qBqrY+rEK
-         TE8XfyTPCZ0B+YDlH7mQfsbhAsHWNN/hnHF6z3SAar6jv4jzH/qo1Z3PDBBexdo2RSr2
-         yZQRazQAzTm9ybSy+SbUdiTgQ7W3amsoUCy1BmYDINayq0nfoc5IiNzWnfHlh5pKciPs
-         SJ9TL9qHgXth3b73DiQOHDFWcPTWBEQi61QuwxDIilPUQFQzZiJvs+xga4x9aphQjtdQ
-         dg4BiPheUvJuJBOp/hTh4ohOODR8uyIpLrl05kRJ01jMMb/aC6zFfuv+y816BgatClU0
-         McIw==
-X-Gm-Message-State: AOAM531unKAEP7O27sTTXNJ/K5BrRV9wX0hjIfcafGHmOEzFEojf7EVN
-        sz0p9tSK9wdkHiSwKsxdRsxqF0PMbkbCtcVZZ8m6Y68kkMmxp/H7Ca3hCbdap8kkI3RJAlSwDGY
-        kY3ZbnKlnxGGvUbPxWik2da9jvJQ4xqJlsxPOPE3DxWEdNcdSge43Nnta1U2oZ6t0nqGGWG3u
-X-Google-Smtp-Source: ABdhPJylECeeQBAJlxJdJt2uBRWFTe2EmrO+hE1iLScg/A264G/gZM03ZDfZne6bIbrU2nCEza6OAg==
-X-Received: by 2002:a62:32c5:0:b029:1b6:7586:f718 with SMTP id y188-20020a6232c50000b02901b67586f718mr8243373pfy.74.1611377611327;
-        Fri, 22 Jan 2021 20:53:31 -0800 (PST)
+        bh=K83YF7GcNY82TVK2vJYspKj0xmLPWlJ36U3nO8TnBUE=;
+        b=hU/lUSNPMuFR44W4YIaE77k4NFUMJ38AnKsE3qJ2LPAHDkgCIuxYW7IwkG1cFvV3Ed
+         tx1qupfCdZQ7ZsruMOwCETqlV+X3cdM/3WXYZkpZduJaokgmvQC0z8gmgsRda7GtNRys
+         X2N1LCx1zKkGOxxr9uf98LQUGohzlphEGWWPxKJioc06OyRp2Ao6bnSrdDojpepQbozy
+         5nrNART27wyPwrzC26jEuBJoT5jrzPfdZFpSHQ5A7s0IBgCPgJVdUsVr9DnnpL27W/SO
+         QaNLVTXd13UvHpJ7NH/Cdv54HIxLOaoNobcVQBu/yMPB9Au8yv6gaNnsXDEoT+speXbm
+         TbKQ==
+X-Gm-Message-State: AOAM533CTp1GkC1ggBoAYVO8TjicFzv+HvT2WxwfM+QY2Kf8GPgO4O1U
+        jx4QQxRJnfBo2Sx3sktQEydSoXk1K0tcXQb8wzs/y0pgrx9uPlFWK8MIgiTVuAWksIxD6PayLo0
+        S/CJnZs+dxFQ6lycbLISH+LJGQ67XC6jlnP+fuyLWEyoA0HFmf9m7y9LUtdtJZxYZghi9OnDd
+X-Google-Smtp-Source: ABdhPJxDPNUZI9t3LGRfbfRNqdv9D1LgnQFipdU7hhrCtRRe5CVwmQcG76I8yH1uqw+i1UIiRSvoIA==
+X-Received: by 2002:a17:90a:bd8c:: with SMTP id z12mr9270511pjr.204.1611377613505;
+        Fri, 22 Jan 2021 20:53:33 -0800 (PST)
 Received: from hex.swdvt.lab.broadcom.net ([2600:8802:d04:de02::77c])
-        by smtp.gmail.com with ESMTPSA id d2sm10725832pjd.29.2021.01.22.20.53.29
+        by smtp.gmail.com with ESMTPSA id d2sm10725832pjd.29.2021.01.22.20.53.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Jan 2021 20:53:30 -0800 (PST)
+        Fri, 22 Jan 2021 20:53:32 -0800 (PST)
 From:   Edwin Peer <edwin.peer@broadcom.com>
 To:     netdev@vger.kernel.org
 Cc:     Edwin Peer <edwin.peer@broadcom.com>,
@@ -54,177 +54,133 @@ Cc:     Edwin Peer <edwin.peer@broadcom.com>,
         Stephen Hemminger <stephen@networkplumber.org>,
         Michal Kubecek <mkubecek@suse.cz>,
         David Ahern <dsahern@gmail.com>
-Subject: [PATCH net-next 2/4] rtnetlink: extend RTEXT_FILTER_SKIP_STATS to IFLA_VF_INFO
-Date:   Fri, 22 Jan 2021 20:53:19 -0800
-Message-Id: <20210123045321.2797360-3-edwin.peer@broadcom.com>
+Subject: [PATCH net-next 3/4] rtnetlink: refactor IFLA_VF_INFO stats into rtnl_fill_vfstats()
+Date:   Fri, 22 Jan 2021 20:53:20 -0800
+Message-Id: <20210123045321.2797360-4-edwin.peer@broadcom.com>
 X-Mailer: git-send-email 2.30.0
 In-Reply-To: <20210123045321.2797360-1-edwin.peer@broadcom.com>
 References: <20210123045321.2797360-1-edwin.peer@broadcom.com>
 MIME-Version: 1.0
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="0000000000002752d005b98a16ee"
+        boundary="00000000000045dfd505b98a1608"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---0000000000002752d005b98a16ee
+--00000000000045dfd505b98a1608
 Content-Transfer-Encoding: 8bit
 
-This filter already exists for excluding IPv6 SNMP stats. Extend its
-definition to also exclude IFLA_VF_INFO stats in RTM_GETLINK.
+Moving VF stats into their own function will facilitate separating
+them out later.
 
-This patch constitutes a partial fix for a netlink attribute nesting
-overflow bug in IFLA_VFINFO_LIST. By excluding the stats when the
-requester doesn't need them, the truncation of the VF list is avoided.
+No functional change.
 
-While it was technically only the stats added in commit c5a9f6f0ab40
-("net/core: Add drop counters to VF statistics") breaking the camel's
-back, the appreciable size of the stats data should never have been
-included without due consideration for the maximum number of VFs
-supported by PCI.
-
-Fixes: 3b766cd83232 ("net/core: Add reading VF statistics through the PF netdevice")
-Fixes: c5a9f6f0ab40 ("net/core: Add drop counters to VF statistics")
 Signed-off-by: Edwin Peer <edwin.peer@broadcom.com>
 ---
- net/core/rtnetlink.c | 96 +++++++++++++++++++++++---------------------
- 1 file changed, 51 insertions(+), 45 deletions(-)
+ net/core/rtnetlink.c | 66 +++++++++++++++++++++++++-------------------
+ 1 file changed, 38 insertions(+), 28 deletions(-)
 
 diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-index 3d6ab194d0f5..466f920ac974 100644
+index 466f920ac974..95564fd12f24 100644
 --- a/net/core/rtnetlink.c
 +++ b/net/core/rtnetlink.c
-@@ -931,24 +931,27 @@ static inline int rtnl_vfinfo_size(const struct net_device *dev,
- 			 nla_total_size(sizeof(struct ifla_vf_rate)) +
- 			 nla_total_size(sizeof(struct ifla_vf_link_state)) +
- 			 nla_total_size(sizeof(struct ifla_vf_rss_query_en)) +
--			 nla_total_size(0) + /* nest IFLA_VF_STATS */
--			 /* IFLA_VF_STATS_RX_PACKETS */
--			 nla_total_size_64bit(sizeof(__u64)) +
--			 /* IFLA_VF_STATS_TX_PACKETS */
--			 nla_total_size_64bit(sizeof(__u64)) +
--			 /* IFLA_VF_STATS_RX_BYTES */
--			 nla_total_size_64bit(sizeof(__u64)) +
--			 /* IFLA_VF_STATS_TX_BYTES */
--			 nla_total_size_64bit(sizeof(__u64)) +
--			 /* IFLA_VF_STATS_BROADCAST */
--			 nla_total_size_64bit(sizeof(__u64)) +
--			 /* IFLA_VF_STATS_MULTICAST */
--			 nla_total_size_64bit(sizeof(__u64)) +
--			 /* IFLA_VF_STATS_RX_DROPPED */
--			 nla_total_size_64bit(sizeof(__u64)) +
--			 /* IFLA_VF_STATS_TX_DROPPED */
--			 nla_total_size_64bit(sizeof(__u64)) +
- 			 nla_total_size(sizeof(struct ifla_vf_trust)));
-+		if (~ext_filter_mask & RTEXT_FILTER_SKIP_STATS) {
-+			size += num_vfs *
-+				(nla_total_size(0) + /* nest IFLA_VF_STATS */
-+				 /* IFLA_VF_STATS_RX_PACKETS */
-+				 nla_total_size_64bit(sizeof(__u64)) +
-+				 /* IFLA_VF_STATS_TX_PACKETS */
-+				 nla_total_size_64bit(sizeof(__u64)) +
-+				 /* IFLA_VF_STATS_RX_BYTES */
-+				 nla_total_size_64bit(sizeof(__u64)) +
-+				 /* IFLA_VF_STATS_TX_BYTES */
-+				 nla_total_size_64bit(sizeof(__u64)) +
-+				 /* IFLA_VF_STATS_BROADCAST */
-+				 nla_total_size_64bit(sizeof(__u64)) +
-+				 /* IFLA_VF_STATS_MULTICAST */
-+				 nla_total_size_64bit(sizeof(__u64)) +
-+				 /* IFLA_VF_STATS_RX_DROPPED */
-+				 nla_total_size_64bit(sizeof(__u64)) +
-+				 /* IFLA_VF_STATS_TX_DROPPED */
-+				 nla_total_size_64bit(sizeof(__u64)));
-+		}
- 		return size;
- 	} else
- 		return 0;
-@@ -1223,7 +1226,8 @@ static noinline_for_stack int rtnl_fill_stats(struct sk_buff *skb,
+@@ -1223,6 +1223,42 @@ static noinline_for_stack int rtnl_fill_stats(struct sk_buff *skb,
+ 	return 0;
+ }
+ 
++static noinline_for_stack int rtnl_fill_vfstats(struct sk_buff *skb,
++						struct net_device *dev,
++						int vf_num)
++{
++	struct ifla_vf_stats vf_stats;
++	struct nlattr *vfstats;
++
++	memset(&vf_stats, 0, sizeof(vf_stats));
++	if (dev->netdev_ops->ndo_get_vf_stats)
++		dev->netdev_ops->ndo_get_vf_stats(dev, vf_num, &vf_stats);
++	vfstats = nla_nest_start_noflag(skb, IFLA_VF_STATS);
++	if (!vfstats)
++		return -EMSGSIZE;
++	if (nla_put_u64_64bit(skb, IFLA_VF_STATS_RX_PACKETS,
++			      vf_stats.rx_packets, IFLA_VF_STATS_PAD) ||
++	    nla_put_u64_64bit(skb, IFLA_VF_STATS_TX_PACKETS,
++			      vf_stats.tx_packets, IFLA_VF_STATS_PAD) ||
++	    nla_put_u64_64bit(skb, IFLA_VF_STATS_RX_BYTES,
++			      vf_stats.rx_bytes, IFLA_VF_STATS_PAD) ||
++	    nla_put_u64_64bit(skb, IFLA_VF_STATS_TX_BYTES,
++			      vf_stats.tx_bytes, IFLA_VF_STATS_PAD) ||
++	    nla_put_u64_64bit(skb, IFLA_VF_STATS_BROADCAST,
++			      vf_stats.broadcast, IFLA_VF_STATS_PAD) ||
++	    nla_put_u64_64bit(skb, IFLA_VF_STATS_MULTICAST,
++			      vf_stats.multicast, IFLA_VF_STATS_PAD) ||
++	    nla_put_u64_64bit(skb, IFLA_VF_STATS_RX_DROPPED,
++			      vf_stats.rx_dropped, IFLA_VF_STATS_PAD) ||
++	    nla_put_u64_64bit(skb, IFLA_VF_STATS_TX_DROPPED,
++			      vf_stats.tx_dropped, IFLA_VF_STATS_PAD)) {
++		nla_nest_cancel(skb, vfstats);
++		return -EMSGSIZE;
++	}
++	nla_nest_end(skb, vfstats);
++	return 0;
++}
++
  static noinline_for_stack int rtnl_fill_vfinfo(struct sk_buff *skb,
  					       struct net_device *dev,
  					       int vfs_num,
--					       struct nlattr *vfinfo)
-+					       struct nlattr *vfinfo,
-+					       u32 ext_filter_mask)
+@@ -1230,12 +1266,11 @@ static noinline_for_stack int rtnl_fill_vfinfo(struct sk_buff *skb,
+ 					       u32 ext_filter_mask)
  {
  	struct ifla_vf_rss_query_en vf_rss_query_en;
- 	struct nlattr *vf, *vfstats, *vfvlanlist;
-@@ -1329,33 +1333,35 @@ static noinline_for_stack int rtnl_fill_vfinfo(struct sk_buff *skb,
- 		goto nla_put_vf_failure;
+-	struct nlattr *vf, *vfstats, *vfvlanlist;
++	struct nlattr *vf, *vfvlanlist;
+ 	struct ifla_vf_link_state vf_linkstate;
+ 	struct ifla_vf_vlan_info vf_vlan_info;
+ 	struct ifla_vf_spoofchk vf_spoofchk;
+ 	struct ifla_vf_tx_rate vf_tx_rate;
+-	struct ifla_vf_stats vf_stats;
+ 	struct ifla_vf_trust vf_trust;
+ 	struct ifla_vf_vlan vf_vlan;
+ 	struct ifla_vf_rate vf_rate;
+@@ -1334,33 +1369,8 @@ static noinline_for_stack int rtnl_fill_vfinfo(struct sk_buff *skb,
  	}
  	nla_nest_end(skb, vfvlanlist);
--	memset(&vf_stats, 0, sizeof(vf_stats));
--	if (dev->netdev_ops->ndo_get_vf_stats)
--		dev->netdev_ops->ndo_get_vf_stats(dev, vfs_num,
--						&vf_stats);
--	vfstats = nla_nest_start_noflag(skb, IFLA_VF_STATS);
--	if (!vfstats)
--		goto nla_put_vf_failure;
--	if (nla_put_u64_64bit(skb, IFLA_VF_STATS_RX_PACKETS,
--			      vf_stats.rx_packets, IFLA_VF_STATS_PAD) ||
--	    nla_put_u64_64bit(skb, IFLA_VF_STATS_TX_PACKETS,
--			      vf_stats.tx_packets, IFLA_VF_STATS_PAD) ||
--	    nla_put_u64_64bit(skb, IFLA_VF_STATS_RX_BYTES,
--			      vf_stats.rx_bytes, IFLA_VF_STATS_PAD) ||
--	    nla_put_u64_64bit(skb, IFLA_VF_STATS_TX_BYTES,
--			      vf_stats.tx_bytes, IFLA_VF_STATS_PAD) ||
--	    nla_put_u64_64bit(skb, IFLA_VF_STATS_BROADCAST,
--			      vf_stats.broadcast, IFLA_VF_STATS_PAD) ||
--	    nla_put_u64_64bit(skb, IFLA_VF_STATS_MULTICAST,
--			      vf_stats.multicast, IFLA_VF_STATS_PAD) ||
--	    nla_put_u64_64bit(skb, IFLA_VF_STATS_RX_DROPPED,
--			      vf_stats.rx_dropped, IFLA_VF_STATS_PAD) ||
--	    nla_put_u64_64bit(skb, IFLA_VF_STATS_TX_DROPPED,
--			      vf_stats.tx_dropped, IFLA_VF_STATS_PAD)) {
--		nla_nest_cancel(skb, vfstats);
--		goto nla_put_vf_failure;
-+	if (~ext_filter_mask & RTEXT_FILTER_SKIP_STATS) {
-+		memset(&vf_stats, 0, sizeof(vf_stats));
-+		if (dev->netdev_ops->ndo_get_vf_stats)
-+			dev->netdev_ops->ndo_get_vf_stats(dev, vfs_num,
-+							  &vf_stats);
-+		vfstats = nla_nest_start_noflag(skb, IFLA_VF_STATS);
-+		if (!vfstats)
-+			goto nla_put_vf_failure;
-+		if (nla_put_u64_64bit(skb, IFLA_VF_STATS_RX_PACKETS,
-+				      vf_stats.rx_packets, IFLA_VF_STATS_PAD) ||
-+		    nla_put_u64_64bit(skb, IFLA_VF_STATS_TX_PACKETS,
-+				      vf_stats.tx_packets, IFLA_VF_STATS_PAD) ||
-+		    nla_put_u64_64bit(skb, IFLA_VF_STATS_RX_BYTES,
-+				      vf_stats.rx_bytes, IFLA_VF_STATS_PAD) ||
-+		    nla_put_u64_64bit(skb, IFLA_VF_STATS_TX_BYTES,
-+				      vf_stats.tx_bytes, IFLA_VF_STATS_PAD) ||
-+		    nla_put_u64_64bit(skb, IFLA_VF_STATS_BROADCAST,
-+				      vf_stats.broadcast, IFLA_VF_STATS_PAD) ||
-+		    nla_put_u64_64bit(skb, IFLA_VF_STATS_MULTICAST,
-+				      vf_stats.multicast, IFLA_VF_STATS_PAD) ||
-+		    nla_put_u64_64bit(skb, IFLA_VF_STATS_RX_DROPPED,
-+				      vf_stats.rx_dropped, IFLA_VF_STATS_PAD) ||
-+		    nla_put_u64_64bit(skb, IFLA_VF_STATS_TX_DROPPED,
-+				      vf_stats.tx_dropped, IFLA_VF_STATS_PAD)) {
-+			nla_nest_cancel(skb, vfstats);
-+			goto nla_put_vf_failure;
-+		}
-+		nla_nest_end(skb, vfstats);
+ 	if (~ext_filter_mask & RTEXT_FILTER_SKIP_STATS) {
+-		memset(&vf_stats, 0, sizeof(vf_stats));
+-		if (dev->netdev_ops->ndo_get_vf_stats)
+-			dev->netdev_ops->ndo_get_vf_stats(dev, vfs_num,
+-							  &vf_stats);
+-		vfstats = nla_nest_start_noflag(skb, IFLA_VF_STATS);
+-		if (!vfstats)
+-			goto nla_put_vf_failure;
+-		if (nla_put_u64_64bit(skb, IFLA_VF_STATS_RX_PACKETS,
+-				      vf_stats.rx_packets, IFLA_VF_STATS_PAD) ||
+-		    nla_put_u64_64bit(skb, IFLA_VF_STATS_TX_PACKETS,
+-				      vf_stats.tx_packets, IFLA_VF_STATS_PAD) ||
+-		    nla_put_u64_64bit(skb, IFLA_VF_STATS_RX_BYTES,
+-				      vf_stats.rx_bytes, IFLA_VF_STATS_PAD) ||
+-		    nla_put_u64_64bit(skb, IFLA_VF_STATS_TX_BYTES,
+-				      vf_stats.tx_bytes, IFLA_VF_STATS_PAD) ||
+-		    nla_put_u64_64bit(skb, IFLA_VF_STATS_BROADCAST,
+-				      vf_stats.broadcast, IFLA_VF_STATS_PAD) ||
+-		    nla_put_u64_64bit(skb, IFLA_VF_STATS_MULTICAST,
+-				      vf_stats.multicast, IFLA_VF_STATS_PAD) ||
+-		    nla_put_u64_64bit(skb, IFLA_VF_STATS_RX_DROPPED,
+-				      vf_stats.rx_dropped, IFLA_VF_STATS_PAD) ||
+-		    nla_put_u64_64bit(skb, IFLA_VF_STATS_TX_DROPPED,
+-				      vf_stats.tx_dropped, IFLA_VF_STATS_PAD)) {
+-			nla_nest_cancel(skb, vfstats);
++		if (rtnl_fill_vfstats(skb, dev, vfs_num))
+ 			goto nla_put_vf_failure;
+-		}
+-		nla_nest_end(skb, vfstats);
  	}
--	nla_nest_end(skb, vfstats);
  	nla_nest_end(skb, vf);
  	return 0;
- 
-@@ -1388,7 +1394,7 @@ static noinline_for_stack int rtnl_fill_vf(struct sk_buff *skb,
- 		return -EMSGSIZE;
- 
- 	for (i = 0; i < num_vfs; i++) {
--		if (rtnl_fill_vfinfo(skb, dev, i, vfinfo))
-+		if (rtnl_fill_vfinfo(skb, dev, i, vfinfo, ext_filter_mask))
- 			return -EMSGSIZE;
- 	}
- 
 -- 
 2.30.0
 
 
---0000000000002752d005b98a16ee
+--00000000000045dfd505b98a1608
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -294,13 +250,13 @@ wL3owFiCmLmw5R8OH22wqf/7sQFMRpH5IQFLRYdU9uCUy5FlUAgiCEXegph8ytxvo8MgYyQcCOeg
 BMfFgFEHuM2IgsDQyFC6XUViX6BQny67nlrO8pqwNRJ9Bdd7ykLCzCLOuR1znBAc2wAL9OKQe0cx
 ggJvMIICawIBATBtMF0xCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTMw
 MQYDVQQDEypHbG9iYWxTaWduIFBlcnNvbmFsU2lnbiAyIENBIC0gU0hBMjU2IC0gRzMCDCXgDAeB
-YW0HGKjSdzANBglghkgBZQMEAgEFAKCB1DAvBgkqhkiG9w0BCQQxIgQgzmu2p5owmICDy1AqWIuk
-2kCUnhAxVoBfdcJzwPyBAHAwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUx
-DxcNMjEwMTIzMDQ1MzMxWjBpBgkqhkiG9w0BCQ8xXDBaMAsGCWCGSAFlAwQBKjALBglghkgBZQME
+YW0HGKjSdzANBglghkgBZQMEAgEFAKCB1DAvBgkqhkiG9w0BCQQxIgQg0wfsTCSmUA+DcvpRyZrb
+4BcSvkFpQ3r6fni+EAJKVh4wGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUx
+DxcNMjEwMTIzMDQ1MzMzWjBpBgkqhkiG9w0BCQ8xXDBaMAsGCWCGSAFlAwQBKjALBglghkgBZQME
 ARYwCwYJYIZIAWUDBAECMAoGCCqGSIb3DQMHMAsGCSqGSIb3DQEBCjALBgkqhkiG9w0BAQcwCwYJ
-YIZIAWUDBAIBMA0GCSqGSIb3DQEBAQUABIIBAG7KPCTQ5s/50S6MuXOiz3mtRsKGJpm59jtmzD0D
-rKoKYp0i02hn2bmEEwkXGEFkJwFHzySTwKmM4Yz67exdHlbj+1JKzbRlqhPr4nGfTqbl0URdrBys
-hq9MEhVKYFTL+8rFh8L5he+Ue/9jruPVJOFsk0V/SGOdiFDdXikM/ls9ghAVFE7SXsaSUGiPGNJV
-9NUPEFI6sMBnx2ebsnVKlqyY08S6cn1Gn+TOZVtLMOXTpTOms+xWF8kZcE7+TzUtIRXDAggPYabL
-eseu5PeDaXIo5ZiaAq2h0NO3RAMFhCgqti7Q95l/mhYMwyS5/GZx4dPoDp/8JrQbkQc6FvaC95c=
---0000000000002752d005b98a16ee--
+YIZIAWUDBAIBMA0GCSqGSIb3DQEBAQUABIIBAIkc5Xn3o5qZvnB4xe+IyqMkiNs4YZflLomnWiRM
+SnzYQMqceyacA9X0O0xw3rgo+81i0zq+SPg+w8/0b/zKNTf37h2HAN+AnNKDVIxKf4lTfOwLWLP6
+kUZGyI0WZzvuxeFfDcJcvHAPB31+UR2KsDD1FkQwhfESqTvzxlKS2S3afG9qVsvSOfaTU28akGVY
+EXRlIqf46BeU7Msf9c83ui7D2unK4hn3tCHcaNgzjDg1KTMu6kFT2AZsbHVI/Yklca9tnJsVlPA/
+l39YuRnZrrmthT/rncMpKTQAHPduiHNDUHQckDFVxsKQq/a56oIK21PDBxQstrNqHmGBZWWAX10=
+--00000000000045dfd505b98a1608--
