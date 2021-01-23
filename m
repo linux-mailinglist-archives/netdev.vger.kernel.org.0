@@ -2,39 +2,53 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7BAB3301310
-	for <lists+netdev@lfdr.de>; Sat, 23 Jan 2021 05:31:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A2347301316
+	for <lists+netdev@lfdr.de>; Sat, 23 Jan 2021 05:56:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726654AbhAWEah (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 22 Jan 2021 23:30:37 -0500
-Received: from mail.kernel.org ([198.145.29.99]:56846 "EHLO mail.kernel.org"
+        id S1726617AbhAWEw7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 22 Jan 2021 23:52:59 -0500
+Received: from mail.kernel.org ([198.145.29.99]:57556 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726533AbhAWEag (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 22 Jan 2021 23:30:36 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 997E023601;
-        Sat, 23 Jan 2021 04:29:54 +0000 (UTC)
+        id S1726597AbhAWEw6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 22 Jan 2021 23:52:58 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id EC47923A74;
+        Sat, 23 Jan 2021 04:52:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611376195;
-        bh=hLHo7mfSPRIbnQWSc9flUm38ftt5VN8HqJYp0ZQpb8A=;
+        s=k20201202; t=1611377537;
+        bh=x+YKr2pJDFBMDMn6j1g8rJRdj8rsvVujG6jZukHgGVo=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=lJTIM0C45DNI9UY2KJoxVp84qoIaFptWxM2AZ97dktFLrHc0OzpOErrkZKiPSCgr7
-         1g7I0qeu/Kj1eKQnzFeTHuYjTEZxcIfVeF2BW4u/NBY205ajcEWy6RojCPHkRxBSuV
-         Z5KH0Kdc6QiNS4ULUwuApGmrtWYJ2QuFqk9CauVkCjVK4l/VeeYqqsC7rl1iwxLg7h
-         8qxK94OEM4BCzSn7rZ6aogQkxa5tsYex63cpER6s0Voaa8SHv32JXcyRMh6QWu6pA9
-         W0IK93SzTVkpZF90ahmv6xjxOJhNqeBWJzIeQo7YXhhUiPwv64GoC5h/drS95f4r9o
-         HZhRYEOnTg6cg==
-Date:   Fri, 22 Jan 2021 20:29:53 -0800
+        b=erQNg+ra/WEMUN39gfOTos8+1kAoL7zQiWM6iJ0Bq8q/HGqyE9IhI3S6RaAFl267C
+         uXIv12+xubLrdIasoU9GBCcVmSTmhN2vYxrGs7h66CwGhJWgkHLbRtgtlwL8D45E4U
+         0sCs9ToEKZJ93jeNSJv4iWu0w5hmlElYQ/ieFtjp7/VL9LWXFlsI2jHXub/VuSK6HH
+         +7ZrxfL/nY1PLp+ClbsRfMZB9rm5RXfJDdjsCZ7cwB+K+FFuIwMvXQZOk0tAra88IG
+         q5XecVJDS4qBnwDvcxvhQBqx6x090aWTDKrxUrNlzh+dpgMbm1ZLOwAp7f/QzUnRJZ
+         mWarLW97VyzPg==
+Date:   Fri, 22 Jan 2021 20:52:16 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Hariprasad Kelam <hkelam@marvell.com>
-Cc:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <davem@davemloft.net>, <sgoutham@marvell.com>,
-        <lcherian@marvell.com>, <gakula@marvell.com>, <jerinj@marvell.com>,
-        <sbhatta@marvell.com>, Christina Jacob <cjacob@marvell.com>
-Subject: Re: [net-next PATCH 3/7] octeontx2-pf: ethtool fec mode support
-Message-ID: <20210122202953.59f806c0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <1611215609-92301-4-git-send-email-hkelam@marvell.com>
-References: <1611215609-92301-1-git-send-email-hkelam@marvell.com>
-        <1611215609-92301-4-git-send-email-hkelam@marvell.com>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandru Marginean <alexandru.marginean@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Xiaoliang Yang <xiaoliang.yang_1@nxp.com>,
+        Hongbo Wang <hongbo.wang@nxp.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Po Liu <po.liu@nxp.com>, Yangbo Lu <yangbo.lu@nxp.com>,
+        Maxim Kochetkov <fido_max@inbox.ru>,
+        Eldar Gasanov <eldargasanov2@gmail.com>,
+        Andrey L <al@b4comtech.com>,
+        Tobias Waldekranz <tobias@waldekranz.com>,
+        UNGLinuxDriver@microchip.com
+Subject: Re: [PATCH v6 net-next 07/10] net: dsa: allow changing the tag
+ protocol via the "tagging" device attribute
+Message-ID: <20210122205216.7f1e05f6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210121160131.2364236-8-olteanv@gmail.com>
+References: <20210121160131.2364236-1-olteanv@gmail.com>
+        <20210121160131.2364236-8-olteanv@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -42,204 +56,62 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, 21 Jan 2021 13:23:25 +0530 Hariprasad Kelam wrote:
-> From: Christina Jacob <cjacob@marvell.com>
-> 
-> Add ethtool support to configure fec modes baser/rs and
-> support to fecth FEC stats from CGX as well PHY.
-> 
-> Configure fec mode
-> 	- ethtool --set-fec eth0 encoding rs/baser/off/auto
-> Query fec mode
-> 	- ethtool --show-fec eth0
-> 
-> Signed-off-by: Christina Jacob <cjacob@marvell.com>
-> Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
-> Signed-off-by: Hariprasad Kelam <hkelam@marvell.com>
-> ---
->  .../ethernet/marvell/octeontx2/nic/otx2_common.c   |  23 +++
->  .../ethernet/marvell/octeontx2/nic/otx2_common.h   |   6 +
->  .../ethernet/marvell/octeontx2/nic/otx2_ethtool.c  | 174 ++++++++++++++++++++-
->  .../net/ethernet/marvell/octeontx2/nic/otx2_pf.c   |   3 +
->  4 files changed, 204 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-> index bdfa2e2..d09119b 100644
-> --- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-> +++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_common.c
-> @@ -60,6 +60,22 @@ void otx2_update_lmac_stats(struct otx2_nic *pfvf)
->  	mutex_unlock(&pfvf->mbox.lock);
->  }
->  
-> +void otx2_update_lmac_fec_stats(struct otx2_nic *pfvf)
+On Thu, 21 Jan 2021 18:01:28 +0200 Vladimir Oltean wrote:
+> +/* Since the dsa/tagging sysfs device attribute is per master, the assumption
+> + * is that all DSA switches within a tree share the same tagger, otherwise
+> + * they would have formed disjoint trees (different "dsa,member" values).
+> + */
+> +int dsa_tree_change_tag_proto(struct dsa_switch_tree *dst,
+> +			      struct net_device *master,
+> +			      const struct dsa_device_ops *tag_ops,
+> +			      const struct dsa_device_ops *old_tag_ops)
 > +{
-> +	struct msg_req *req;
+> +	struct dsa_notifier_tag_proto_info info;
+> +	struct dsa_port *dp;
+> +	int err;
 > +
-> +	if (!netif_running(pfvf->netdev))
-> +		return;
-> +	mutex_lock(&pfvf->mbox.lock);
-> +	req = otx2_mbox_alloc_msg_cgx_fec_stats(&pfvf->mbox);
-> +	if (!req) {
-> +		mutex_unlock(&pfvf->mbox.lock);
-> +		return;
-> +	}
-> +	otx2_sync_mbox_msg(&pfvf->mbox);
-> +	mutex_unlock(&pfvf->mbox.lock);
-> +}
-> +
->  int otx2_update_rq_stats(struct otx2_nic *pfvf, int qidx)
->  {
->  	struct otx2_rcv_queue *rq = &pfvf->qset.rq[qidx];
-> @@ -1491,6 +1507,13 @@ void mbox_handler_cgx_stats(struct otx2_nic *pfvf,
->  		pfvf->hw.cgx_tx_stats[id] = rsp->tx_stats[id];
->  }
->  
-> +void mbox_handler_cgx_fec_stats(struct otx2_nic *pfvf,
-> +				struct cgx_fec_stats_rsp *rsp)
-> +{
-> +		pfvf->hw.cgx_fec_corr_blks += rsp->fec_corr_blks;
-> +		pfvf->hw.cgx_fec_uncorr_blks += rsp->fec_uncorr_blks;
+> +	/* At the moment we don't allow changing the tag protocol under
+> +	 * traffic. May revisit in the future.
+> +	 */
+> +	if (master->flags & IFF_UP)
+> +		return -EBUSY;
 
-double indented
+But you're not holding rtnl_lock at this point, this check is advisory
+at best.
 
-> +}
-> +
->  void mbox_handler_nix_txsch_alloc(struct otx2_nic *pf,
->  				  struct nix_txsch_alloc_rsp *rsp)
->  {
+> +	list_for_each_entry(dp, &dst->ports, list) {
 
-> @@ -183,12 +210,42 @@ static void otx2_get_ethtool_stats(struct net_device *netdev,
->  	for (stat = 0; stat < CGX_TX_STATS_COUNT; stat++)
->  		*(data++) = pfvf->hw.cgx_tx_stats[stat];
->  	*(data++) = pfvf->reset_count;
-> +
-> +	if (pfvf->linfo.fec == OTX2_FEC_NONE)
-> +		return;
+What protects this iteration? All sysfs guarantees you is that  
+struct net_device *master itself will not disappear.
 
-Don't hide the stats based on configuration.
-Getting number of stats and requesting them are two different syscalls.
+Could you explain the locking expectations a bit?
 
-> +	fec_corr_blks = pfvf->hw.cgx_fec_corr_blks;
-> +	fec_uncorr_blks = pfvf->hw.cgx_fec_uncorr_blks;
+> +		if (!dsa_is_user_port(dp->ds, dp->index))
+> +			continue;
 > +
-> +	rsp = otx2_get_fwdata(pfvf);
-> +	if (!IS_ERR(rsp) && rsp->fwdata.phy.misc.has_fec_stats &&
-> +	    !otx2_get_phy_fec_stats(pfvf)) {
-> +		/* Fetch fwdata again because it's been recently populated with
-> +		 * latest PHY FEC stats.
-> +		 */
-> +		rsp = otx2_get_fwdata(pfvf);
-> +		if (!IS_ERR(rsp)) {
-> +			struct fec_stats_s *p = &rsp->fwdata.phy.fec_stats;
-> +
-> +			if (pfvf->linfo.fec == OTX2_FEC_BASER) {
-> +				fec_corr_blks   = p->brfec_corr_blks;
-> +				fec_uncorr_blks = p->brfec_uncorr_blks;
-> +			} else {
-> +				fec_corr_blks   = p->rsfec_corr_cws;
-> +				fec_uncorr_blks = p->rsfec_uncorr_cws;
-> +			}
-> +		}
+> +		if (dp->slave->flags & IFF_UP)
+> +			return -EBUSY;
 > +	}
 > +
-> +	*(data++) = fec_corr_blks;
-> +	*(data++) = fec_uncorr_blks;
->  }
-
-> +static int otx2_get_fecparam(struct net_device *netdev,
-> +			     struct ethtool_fecparam *fecparam)
-> +{
-> +	struct otx2_nic *pfvf = netdev_priv(netdev);
-> +	struct cgx_fw_data *rsp;
-> +	int fec[] = {
-
-const
-
-> +		ETHTOOL_FEC_OFF,
-> +		ETHTOOL_FEC_BASER,
-> +		ETHTOOL_FEC_RS,
-> +		ETHTOOL_FEC_BASER | ETHTOOL_FEC_RS};
-> +#define FEC_MAX_INDEX 3
-> +	if (pfvf->linfo.fec < FEC_MAX_INDEX)
-> +		fecparam->active_fec = fec[pfvf->linfo.fec];
+> +	mutex_lock(&dst->tagger_lock);
 > +
-> +	rsp = otx2_get_fwdata(pfvf);
-> +	if (IS_ERR(rsp))
-> +		return PTR_ERR(rsp);
-> +
-> +	if (rsp->fwdata.supported_fec <= FEC_MAX_INDEX) {
-> +		if (!rsp->fwdata.supported_fec)
-> +			fecparam->fec = ETHTOOL_FEC_NONE;
-> +		else
-> +			fecparam->fec = fec[rsp->fwdata.supported_fec];
-> +	}
-> +	return 0;
-> +}
-> +
-> +static int otx2_set_fecparam(struct net_device *netdev,
-> +			     struct ethtool_fecparam *fecparam)
-> +{
-> +	struct otx2_nic *pfvf = netdev_priv(netdev);
-> +	struct mbox *mbox = &pfvf->mbox;
-> +	struct fec_mode *req, *rsp;
-> +	int err = 0, fec = 0;
-> +
-> +	switch (fecparam->fec) {
-> +	case ETHTOOL_FEC_OFF:
-> +		fec = OTX2_FEC_NONE;
-> +		break;
-> +	case ETHTOOL_FEC_RS:
-> +		fec = OTX2_FEC_RS;
-> +		break;
-> +	case ETHTOOL_FEC_BASER:
-> +		fec = OTX2_FEC_BASER;
-> +		break;
-> +	default:
-> +		fec = OTX2_FEC_NONE;
-
-IIRC fecparam->fec is a bitmask, you can't assume other than one bit
-set is NONE.
-
-> +		break;
-> +	}
-> +
-> +	if (fec == pfvf->linfo.fec)
-> +		return 0;
-> +
-> +	mutex_lock(&mbox->lock);
-> +	req = otx2_mbox_alloc_msg_cgx_set_fec_param(&pfvf->mbox);
-> +	if (!req) {
-> +		err = -EAGAIN;
-
-Why -EAGAIN? When does msg allocation fail?
-
-> +		goto end;
-> +	}
-> +	req->fec = fec;
-> +	err = otx2_sync_mbox_msg(&pfvf->mbox);
+> +	info.tag_ops = old_tag_ops;
+> +	err = dsa_tree_notify(dst, DSA_NOTIFIER_TAG_PROTO_DEL, &info);
 > +	if (err)
-> +		goto end;
+> +		return err;
 > +
-> +	rsp = (struct fec_mode *)otx2_mbox_get_rsp(&pfvf->mbox.mbox,
-> +						   0, &req->hdr);
-> +	if (rsp->fec >= 0) {
-> +		pfvf->linfo.fec = rsp->fec;
-> +		pfvf->hw.cgx_fec_corr_blks = 0;
-> +		pfvf->hw.cgx_fec_uncorr_blks = 0;
-
-Are you clearing stats every time FEC changes?
-
+> +	info.tag_ops = tag_ops;
+> +	err = dsa_tree_notify(dst, DSA_NOTIFIER_TAG_PROTO_SET, &info);
+> +	if (err)
+> +		goto out_unwind_tagger;
 > +
-
-spurious new line
-
-> +	} else {
-> +		err = rsp->fec;
-> +	}
+> +	mutex_unlock(&dst->tagger_lock);
 > +
-> +end:	mutex_unlock(&mbox->lock);
-
-label on a separate line
-
+> +	return 0;
+> +
+> +out_unwind_tagger:
+> +	info.tag_ops = old_tag_ops;
+> +	dsa_tree_notify(dst, DSA_NOTIFIER_TAG_PROTO_SET, &info);
+> +	mutex_unlock(&dst->tagger_lock);
 > +	return err;
 > +}
