@@ -2,116 +2,101 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7D66B301DF2
-	for <lists+netdev@lfdr.de>; Sun, 24 Jan 2021 18:38:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A4B20301DF7
+	for <lists+netdev@lfdr.de>; Sun, 24 Jan 2021 18:40:42 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726149AbhAXRii convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Sun, 24 Jan 2021 12:38:38 -0500
-Received: from mail-lf1-f54.google.com ([209.85.167.54]:33355 "EHLO
-        mail-lf1-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726105AbhAXRic (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 Jan 2021 12:38:32 -0500
-Received: by mail-lf1-f54.google.com with SMTP id v67so14513122lfa.0
-        for <netdev@vger.kernel.org>; Sun, 24 Jan 2021 09:38:16 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=7g0YxH2zXtoVZezdMcpa2y0APkykfD37xoglV2/imsk=;
-        b=om7Ce01+iAqsdYiuit8snb6I0K0HO4T8N26++gWZZsZCJV7tHM48rs2cYG3zAi5t7R
-         h8WFr4nG1aiKZ1Ip11pi7WasVIABy4nNCg3V0yMLvePcnz49MLgVSFYd51je0Pk4MHzf
-         W6+69xRqZPmGGuzSj+PiU5wW+xS7kU7vJAJ6yBSDK4IQ9qny36UMMpi1jFU1JgcYCCy8
-         NYxIK41PEQDW7wsUai+xWx4vCx3Sy+mkUl9iCjby4JXAV8C+5yeOyaksYWgLFhhGjF7D
-         PyaBByshpCtZoZfGXC+AWUSPIyuwdmYS9V3oZfVGxtO9SYYSNVQHhjyyhdR2wyDGZKaP
-         7uuA==
-X-Gm-Message-State: AOAM530BRl6I0Mtxs24aojmxcM759bEi3TiX3O8hXz0VWAlcyib+GH1z
-        IyW0En1Ew9qHokZH1cuP9Un9B1xTFl4xQw==
-X-Google-Smtp-Source: ABdhPJzyrSjqshcMFHietr8vyprgP0xGjJVHza7Bk74fkBq39iuTw2SvdOnqzIBO7L/WOKHfoyiOkw==
-X-Received: by 2002:a19:8789:: with SMTP id j131mr260640lfd.382.1611509870355;
-        Sun, 24 Jan 2021 09:37:50 -0800 (PST)
-Received: from mail-lf1-f46.google.com (mail-lf1-f46.google.com. [209.85.167.46])
-        by smtp.gmail.com with ESMTPSA id g4sm1516560lfc.85.2021.01.24.09.37.50
-        for <netdev@vger.kernel.org>
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 24 Jan 2021 09:37:50 -0800 (PST)
-Received: by mail-lf1-f46.google.com with SMTP id b26so14460976lff.9
-        for <netdev@vger.kernel.org>; Sun, 24 Jan 2021 09:37:50 -0800 (PST)
-X-Received: by 2002:a19:7507:: with SMTP id y7mr1443988lfe.334.1611509870014;
- Sun, 24 Jan 2021 09:37:50 -0800 (PST)
+        id S1726222AbhAXRj5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Jan 2021 12:39:57 -0500
+Received: from out4-smtp.messagingengine.com ([66.111.4.28]:48055 "EHLO
+        out4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725842AbhAXRjw (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 Jan 2021 12:39:52 -0500
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailout.nyi.internal (Postfix) with ESMTP id 246F15C00A3;
+        Sun, 24 Jan 2021 12:38:44 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute4.internal (MEProxy); Sun, 24 Jan 2021 12:38:44 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=animalcreek.com;
+         h=date:from:to:cc:subject:message-id:references:mime-version
+        :content-type:in-reply-to; s=fm1; bh=hFuytUMxrsRHZuxgi8tWvmAayIS
+        GiEYy95yz/w2iQA8=; b=dB/LVoCdGWgV/gr8Lh/mvCMv+nsBPtNmXFSA/GB6JJy
+        lT7YpdlwdQhco9EqJbTf8vqOLYeEk7qVPGWaFh3Mi7PycJ1z//gkORPZumUl4QFO
+        U/v7EO0TJTwiMSOt/8FRYwZbRjXQZmrGfYLYOlNunGAX7PZ5lQ4vndtBVkN/tiV6
+        xDFHXEzCUAxnFu9uQIWfgwJVDEIgxoxRRcVYAqwg+YsN5Qk4yOwLwUfOxjNgqWF2
+        N3UOl6DQHNBwz9R3qdtIEDbNEaRtU4oII9YVnIhoVoA5L1avYehr6Ib/tPWRoQvQ
+        HX5DeFFFPuDP2+RPfl0qLWHrCMNIUmRgnRneRoRx7Hw==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=hFuytU
+        MxrsRHZuxgi8tWvmAayISGiEYy95yz/w2iQA8=; b=mzPsFzVYsGMBPui//S75rj
+        /QOg5LQeiblERR9EziJ7PfxR4aaxOZppEwCZ9Q3gab/81bdwVtKchKi8MJP5smVu
+        vP1IRP2w3VQGCCfE2ffdBa8OY8CM2KfgM6gO68kH/lF4A/7ljzpWC0P2viDodwaB
+        bvbaIPSoPv2qsj3egczzkSiFBXS9TM/oRMxhMPo1cP6D7vgs8eTRDYIo9ZHw0xQO
+        Mz41q7VHe/84YXhxDhJcgbXYyiGAEnQKmHsERocgIdmQW3JgNcCDBd1ckF0ouI3+
+        sCoWc34iOeR7hYKku6bBz796SZMzyWInD0OlrAueOT66AgQBvbePtih6BDWQd2xQ
+        ==
+X-ME-Sender: <xms:o7ANYANBx_A9U5HB7kUv3bBYoYonzeSsn1kB9prNTZ4as13oB3qTHQ>
+    <xme:o7ANYG98-VmjJmS5VheXk8qHSCVBOg1lLZzbzXRiI88FhrBrMOfXJ1DjcRseifgKw
+    rBLXut8s6Txkd0jsA>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrvddugddutdegucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpeffhffvuffkfhggtggujghosehttd
+    ertddttddvnecuhfhrohhmpeforghrkhcuifhrvggvrhcuoehmghhrvggvrhesrghnihhm
+    rghltghrvggvkhdrtghomheqnecuggftrfgrthhtvghrnhepieeugfdutdefiedtvdffte
+    dufedvjeehgfevveefudfgjeffgeeiteetjedufffhnecukfhppeeikedrvddrkedvrddu
+    jedunecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomhepmh
+    hgrhgvvghrsegrnhhimhgrlhgtrhgvvghkrdgtohhm
+X-ME-Proxy: <xmx:o7ANYHQNumQjNlqXBQeK52yAE-yv1SDiLCY5pbImWydo6VMMzpw3ow>
+    <xmx:o7ANYIteIU9yOHjbQE_8J81KrAzLIoiaNiwuv_B2S3PEKLraaIlAxA>
+    <xmx:o7ANYIfnjZpsofmgNMw0O7a-qFKWXXcXZFfp5fHcNa_yPeYskENjKw>
+    <xmx:pLANYH5C7Zst5GUtT4dH1tSzU4wvDefVcNpPJtYxnP6paeldc5InVg>
+Received: from blue.animalcreek.com (ip68-2-82-171.ph.ph.cox.net [68.2.82.171])
+        by mail.messagingengine.com (Postfix) with ESMTPA id E39B224005B;
+        Sun, 24 Jan 2021 12:38:42 -0500 (EST)
+Received: by blue.animalcreek.com (Postfix, from userid 1000)
+        id 61F451360081; Sun, 24 Jan 2021 10:38:42 -0700 (MST)
+Date:   Sun, 24 Jan 2021 10:38:42 -0700
+From:   Mark Greer <mgreer@animalcreek.com>
+To:     samirweng1979 <samirweng1979@163.com>
+Cc:     mgreer@animalcreek.com, linux-wireless@vger.kernel.org,
+        linux-nfc@lists.01.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        wengjianfeng <wengjianfeng@yulong.com>
+Subject: Re: [PATCH] nfc: fix typo
+Message-ID: <20210124173842.GC31737@animalcreek.com>
+References: <20210123052618.2448-1-samirweng1979@163.com>
 MIME-Version: 1.0
-References: <20210124155347.61959-1-bluca@debian.org> <5a165b08-9394-6c64-efe7-2f141b498b76@gmail.com>
-In-Reply-To: <5a165b08-9394-6c64-efe7-2f141b498b76@gmail.com>
-From:   Luca Boccassi <bluca@debian.org>
-Date:   Sun, 24 Jan 2021 17:37:38 +0000
-X-Gmail-Original-Message-ID: <CAMw=ZnTko4jf0GeLzPNQ1pz5ccZb6d+Rt1PgNSVmHVTMBtOixQ@mail.gmail.com>
-Message-ID: <CAMw=ZnTko4jf0GeLzPNQ1pz5ccZb6d+Rt1PgNSVmHVTMBtOixQ@mail.gmail.com>
-Subject: Re: [PATCH iproute2] iproute get: force rtm_dst_len to 32/128
-To:     David Ahern <dsahern@gmail.com>
-Cc:     Netdev <netdev@vger.kernel.org>,
-        Stephen Hemminger <stephen@networkplumber.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210123052618.2448-1-samirweng1979@163.com>
+Organization: Animal Creek Technologies, Inc.
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, 24 Jan 2021 at 17:26, David Ahern <dsahern@gmail.com> wrote:
->
-> On 1/24/21 8:53 AM, Luca Boccassi wrote:
-> > Since NETLINK_GET_STRICT_CHK was enabled, the kernel rejects commands
-> > that pass a prefix length, eg:
-> >
-> >  ip route get `1.0.0.0/1
-> >   Error: ipv4: Invalid values in header for route get request.
-> >  ip route get 0.0.0.0/0
-> >   Error: ipv4: rtm_src_len and rtm_dst_len must be 32 for IPv4
->
-> Those are not the best responses from the kernel for the mask setting. I
-> should have been clearer about src and dst masks.
->
-> >
-> > Since there's no point in setting a rtm_dst_len that we know is going
-> > to be rejected, just force it to the right value if it's passed on
-> > the command line.
-> >
-> > Bug-Debian: https://bugs.debian.org/944730
-> > Reported-By: Clément 'wxcafé' Hertling <wxcafe@wxcafe.net>
-> > Signed-off-by: Luca Boccassi <bluca@debian.org>
-> > ---
-> > As mentioned by David on:
-> >
-> > https://www.spinics.net/lists/netdev/msg624125.html
-> >
-> >  ip/iproute.c | 7 ++++++-
-> >  1 file changed, 6 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/ip/iproute.c b/ip/iproute.c
-> > index ebb5f160..3646d531 100644
-> > --- a/ip/iproute.c
-> > +++ b/ip/iproute.c
-> > @@ -2069,7 +2069,12 @@ static int iproute_get(int argc, char **argv)
-> >                       if (addr.bytelen)
-> >                               addattr_l(&req.n, sizeof(req),
-> >                                         RTA_DST, &addr.data, addr.bytelen);
-> > -                     req.r.rtm_dst_len = addr.bitlen;
-> > +                     if (req.r.rtm_family == AF_INET)
-> > +                             req.r.rtm_dst_len = 32;
-> > +                     else if (req.r.rtm_family == AF_INET6)
-> > +                             req.r.rtm_dst_len = 128;
-> > +                     else
-> > +                             req.r.rtm_dst_len = addr.bitlen;
-> >                       address_found = true;
-> >               }
-> >               argc--; argv++;
-> >
->
-> Since the kernel used to blindly ignore the mask, having iproute2 fix it
-> up seems acceptable.
->
-> I think it would be good to educate the user about invalid settings as
-> well - get them to fix scripts and mind set.
+On Sat, Jan 23, 2021 at 01:26:18PM +0800, samirweng1979 wrote:
+> From: wengjianfeng <wengjianfeng@yulong.com>
+> 
+> change 'regster' to 'register'
+> 
+> Signed-off-by: wengjianfeng <wengjianfeng@yulong.com>
+> ---
+>  drivers/nfc/trf7970a.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/nfc/trf7970a.c b/drivers/nfc/trf7970a.c
+> index c70f62fe..3397802 100644
+> --- a/drivers/nfc/trf7970a.c
+> +++ b/drivers/nfc/trf7970a.c
+> @@ -169,7 +169,7 @@
+>  
+>  /* Bits determining whether its a direct command or register R/W,
+>   * whether to use a continuous SPI transaction or not, and the actual
+> - * direct cmd opcode or regster address.
+> + * direct cmd opcode or register address.
+>   */
+>  #define TRF7970A_CMD_BIT_CTRL			BIT(7)
+>  #define TRF7970A_CMD_BIT_RW			BIT(6)
 
-Sent v2 with a warning print to stderr.
-
-Kind regards,
-Luca Boccassi
+Acked-by: Mark Greer <mgreer@animalcreek.com>
