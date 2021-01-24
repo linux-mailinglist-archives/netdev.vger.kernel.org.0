@@ -2,106 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 172AB301A38
-	for <lists+netdev@lfdr.de>; Sun, 24 Jan 2021 07:37:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 68B94301A65
+	for <lists+netdev@lfdr.de>; Sun, 24 Jan 2021 08:59:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726530AbhAXGgW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Jan 2021 01:36:22 -0500
-Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:3333 "EHLO
-        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726096AbhAXGgV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 Jan 2021 01:36:21 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B600d153c0000>; Sat, 23 Jan 2021 22:35:40 -0800
-Received: from localhost (172.20.145.6) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Sun, 24 Jan
- 2021 06:35:39 +0000
-Date:   Sun, 24 Jan 2021 08:31:26 +0200
-From:   Leon Romanovsky <leonro@nvidia.com>
-To:     Alan Perry <alanp@snowmoose.com>
-CC:     <netdev@vger.kernel.org>
-Subject: Re: [PATCH] rdma.8: Add basic description for users unfamiliar with
- rdma
-Message-ID: <20210124063126.GD4742@unreal>
-References: <eb358848-49a8-1a8e-3919-c07b6aa3d21d@snowmoose.com>
- <20201223081918.GF3128@unreal>
- <7e80d241-d33c-8bb2-08a5-cdc11f2a3e80@snowmoose.com>
+        id S1726435AbhAXH61 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Jan 2021 02:58:27 -0500
+Received: from smtp03.smtpout.orange.fr ([80.12.242.125]:37107 "EHLO
+        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726398AbhAXH6Z (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 Jan 2021 02:58:25 -0500
+Received: from localhost.localdomain ([92.131.99.25])
+        by mwinf5d58 with ME
+        id LXwg2400H0Ys01Y03Xwg1N; Sun, 24 Jan 2021 08:56:42 +0100
+X-ME-Helo: localhost.localdomain
+X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
+X-ME-Date: Sun, 24 Jan 2021 08:56:42 +0100
+X-ME-IP: 92.131.99.25
+From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+To:     luciano.coelho@intel.com, kvalo@codeaurora.org,
+        davem@davemloft.net, kuba@kernel.org,
+        mordechay.goodstein@intel.com, johannes.berg@intel.com,
+        sara.sharon@intel.com, nathan.errera@intel.com,
+        Dan1.Halperin@intel.com, emmanuel.grumbach@intel.com,
+        naftali.goldstein@intel.com, netdev@vger.kernel.org
+Cc:     linux-wireless@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Subject: [PATCH] iwlwifi: mvm: Fix an error handling path in 'ebu_dma_start()'
+Date:   Sun, 24 Jan 2021 08:56:37 +0100
+Message-Id: <20210124075637.732126-1-christophe.jaillet@wanadoo.fr>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <7e80d241-d33c-8bb2-08a5-cdc11f2a3e80@snowmoose.com>
-X-Originating-IP: [172.20.145.6]
-X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
- HQMAIL107.nvidia.com (172.20.187.13)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1611470140; bh=LnzCWKv1uyNSGIZKSz9gWGmnTbh/MQQvn+aoq62HUMI=;
-        h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
-         Content-Type:Content-Disposition:In-Reply-To:X-Originating-IP:
-         X-ClientProxiedBy;
-        b=Qqa1LEOZm3Y/9TMDNIhY6u+ACNwEqlXCYzk2XIzL9Jx/MVDkj1/Bq6xlBDMea+7rm
-         A+iAYZq2y8Row/cclfhKnELzSOS7tMNF2J4uCIoDdz1wrBfgE5sB4simbz5kE/zSJR
-         MNpqL58rZ9v2l78BiRvcGckADUM5hYojPSi+o5atZ6tH+KY5xF9UH/fpGw++MwsAB+
-         e6qhgeQyTtXbFKs/PO2WVn7BZecruq9IpDye7IhEYupg+MVNqUKG59NVyNj/PRib2L
-         fqF+aZvywFG3K2AmgGyLTQ84v9pQGm0PosuT8fe/mvutpDUL7ezizy2el7wZ5h7aFs
-         0OQ5t7LZbKklg==
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 21, 2021 at 01:32:42PM -0800, Alan Perry wrote:
->
->
-> On 12/23/20 12:19 AM, Leon Romanovsky wrote:
-> > On Tue, Dec 22, 2020 at 08:47:51PM -0800, Alan Perry wrote:
-> > > Add a description section with basic info about the rdma command for users
-> > > unfamiliar with it.
-> > >
-> > > Signed-off-by: Alan Perry <alanp@snowmoose.com>
-> > > ---
-> > >   man/man8/rdma.8 | 6 +++++-
-> > >   1 file changed, 5 insertion(+), 1 deletion(-)
-> > >
-> > > diff --git a/man/man8/rdma.8 b/man/man8/rdma.8
-> > > index c9e5d50d..d68d0cf6 100644
-> > > --- a/man/man8/rdma.8
-> > > +++ b/man/man8/rdma.8
-> > > @@ -1,4 +1,4 @@
-> > > -.TH RDMA 8 "28 Mar 2017" "iproute2" "Linux"
-> > > +.TH RDMA 8 "22 Dec 2020" "iproute2" "Linux"
-> > >   .SH NAME
-> > >   rdma \- RDMA tool
-> > >   .SH SYNOPSIS
-> > > @@ -29,6 +29,10 @@ rdma \- RDMA tool
-> > >   \fB\-j\fR[\fIson\fR] }
-> > >   \fB\-p\fR[\fIretty\fR] }
-> > >
-> > > +.SH DESCRIPTION
-> > > +.B rdma
-> > > +is a tool for querying and setting the configuration for RDMA, direct
-> > > memory access between the memory of two computers without use of the
-> > > operating system on either computer.
-> > > +
-> >
-> > Thanks, it is too close to the Wikipedia description that can be written
-> > slightly differently (without "two computers"), what about the following
-> > description from Mellanox site?
-> >
-> > "is a tool for querying and setting the configuration for RDMA-capable
-> > devices. Remote direct memory access (RDMA) is the ability of accessing
-> > (read, write) memory on a remote machine without interrupting the processing
-> > of the CPU(s) on that system."
-> >
-> > Thanks,
-> > Acked-by: Leon Romanovsky <leonro@nvidia.com>
-> >
->
-> I noticed that the rdma man page has not been changed. I am unfamiliar with
-> the process. Should I have submitted an updated patch with the alternate
-> wording after this exchange?
+If the 'cmd_ver' check fails, we must release some memory as already done
+in all the other error handling paths of this function.
 
-Yes, please.
+Fixes: 9e3c39361a30 ("iwlwifi: mvm: support new KEK KCK api")
+Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+---
+ drivers/net/wireless/intel/iwlwifi/mvm/d3.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-Thanks
+diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/d3.c b/drivers/net/wireless/intel/iwlwifi/mvm/d3.c
+index c025188fa9bc..2fb897cbfca6 100644
+--- a/drivers/net/wireless/intel/iwlwifi/mvm/d3.c
++++ b/drivers/net/wireless/intel/iwlwifi/mvm/d3.c
+@@ -810,8 +810,10 @@ static int iwl_mvm_wowlan_config_key_params(struct iwl_mvm *mvm,
+ 						WOWLAN_KEK_KCK_MATERIAL,
+ 						IWL_FW_CMD_VER_UNKNOWN);
+ 		if (WARN_ON(cmd_ver != 2 && cmd_ver != 3 &&
+-			    cmd_ver != IWL_FW_CMD_VER_UNKNOWN))
+-			return -EINVAL;
++			    cmd_ver != IWL_FW_CMD_VER_UNKNOWN)) {
++			ret = -EINVAL;
++			goto out;
++		}
+ 		if (cmd_ver == 3)
+ 			cmd_size = sizeof(struct iwl_wowlan_kek_kck_material_cmd_v3);
+ 		else
+-- 
+2.27.0
 
->
-> alan
