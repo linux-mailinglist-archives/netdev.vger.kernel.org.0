@@ -2,142 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EBAB7301A22
-	for <lists+netdev@lfdr.de>; Sun, 24 Jan 2021 07:09:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 172AB301A38
+	for <lists+netdev@lfdr.de>; Sun, 24 Jan 2021 07:37:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726451AbhAXGJE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Jan 2021 01:09:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53480 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725803AbhAXGJC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 Jan 2021 01:09:02 -0500
-Received: from mail-yb1-xb2a.google.com (mail-yb1-xb2a.google.com [IPv6:2607:f8b0:4864:20::b2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A51DC061573;
-        Sat, 23 Jan 2021 22:08:22 -0800 (PST)
-Received: by mail-yb1-xb2a.google.com with SMTP id i141so9997934yba.0;
-        Sat, 23 Jan 2021 22:08:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=5Z/2Ilxxmqb2VTfLDcIvMPIJEIfnk9D8Dw6wAk1T0KA=;
-        b=tZoCItM+obRTF+olLdMs9aRJsVvaNcwJnhK1NJx5sITGBjJnTCs4wgrJErpeIoLdFN
-         1oGsCgTJiI6fIHabTRbdozYCWai99r6ERTBJTArx9tDAaTyiX/zdtl2sI1gkTaQZeKXQ
-         ThtxQ1FFM4z/Fuv69oQmPoVX9QvF1aRHc+KxQYgYEHfvoaDMxshumIIO2o0abu14v46+
-         UlxdyP3Cs1xZERru4CKYa4an+TWQNBdpAarXVDFEw8gV9BYiJpEV3dx/FAtUge3G3NvT
-         m+5xxQ/qR0smxedbeUmbxQ1vJEcbIRWI22ukliufRdPInQtBi8tDP9cq3d8MpfDQQAEG
-         KYug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=5Z/2Ilxxmqb2VTfLDcIvMPIJEIfnk9D8Dw6wAk1T0KA=;
-        b=EcyFmStlYNQrlLdnG6wCIuB4tj1KZ9ncNhOPZWreCX3nvAPHb53Z3SJQOllW/mh4WO
-         jFe4NnZpqnxMhe/ZIMJPxieVmuqvVWJGvT66IhRRy1jwK/dPD1oiGgvupXBSkewRD4Q3
-         7tHTyGyhk7L3mbiaaxz+tctOLt/uZBa6G6BEra3XRcqd6qix467GXiCnbB6mIwWDI2gt
-         E6BcSPE6LpITSv0D9VHgLdYqpMsfO+y8aKAJprKW+3T35rxB0Fo6EzCa7YWu4b/73d3Z
-         fKT49AnWmEqCojG76cCTm6rvb2eH9Qrjty4pF0EFhPDkriYnlna6a7HPsxw2epvsQdup
-         3n8w==
-X-Gm-Message-State: AOAM531Ca6YXXnXqUwtxmOQmvfrWg7Hu4369PrAZrtwtJNTpJxYZvx+C
-        D4RqYCLcGaZOmBkSnTrzmA/MguubR/WLnYg3ZnU=
-X-Google-Smtp-Source: ABdhPJzkG8ibM33ns8CNui5frd1GsQEvbqOl9xdb0zXpOkDJrjh5qXop6Bkn+pvCEtnDeBE6IjihajEQ+whdPHcpU8M=
-X-Received: by 2002:a25:9882:: with SMTP id l2mr16341174ybo.425.1611468501020;
- Sat, 23 Jan 2021 22:08:21 -0800 (PST)
+        id S1726530AbhAXGgW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Jan 2021 01:36:22 -0500
+Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:3333 "EHLO
+        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726096AbhAXGgV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 Jan 2021 01:36:21 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B600d153c0000>; Sat, 23 Jan 2021 22:35:40 -0800
+Received: from localhost (172.20.145.6) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Sun, 24 Jan
+ 2021 06:35:39 +0000
+Date:   Sun, 24 Jan 2021 08:31:26 +0200
+From:   Leon Romanovsky <leonro@nvidia.com>
+To:     Alan Perry <alanp@snowmoose.com>
+CC:     <netdev@vger.kernel.org>
+Subject: Re: [PATCH] rdma.8: Add basic description for users unfamiliar with
+ rdma
+Message-ID: <20210124063126.GD4742@unreal>
+References: <eb358848-49a8-1a8e-3919-c07b6aa3d21d@snowmoose.com>
+ <20201223081918.GF3128@unreal>
+ <7e80d241-d33c-8bb2-08a5-cdc11f2a3e80@snowmoose.com>
 MIME-Version: 1.0
-References: <20210121202203.9346-1-jolsa@kernel.org> <20210121202203.9346-3-jolsa@kernel.org>
- <CAEf4BzZquSn0Th7bpVuM0M4XbTPU5-9jDPPd5RJBS5AH2zqaMA@mail.gmail.com> <20210123212341.GC117714@krava>
-In-Reply-To: <20210123212341.GC117714@krava>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Sat, 23 Jan 2021 22:08:10 -0800
-Message-ID: <CAEf4BzaaP8YwCsQpiSkCCgYFTqFJ-yV234u0dtuxOgEQgwPeiA@mail.gmail.com>
-Subject: Re: [PATCH 2/3] bpf_encoder: Translate SHN_XINDEX in symbol's
- st_shndx values
-To:     Jiri Olsa <jolsa@redhat.com>
-Cc:     Jiri Olsa <jolsa@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>, dwarves@vger.kernel.org,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Yonghong Song <yhs@fb.com>, Hao Luo <haoluo@google.com>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>,
-        Joe Lawrence <joe.lawrence@redhat.com>,
-        Mark Wielaard <mjw@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <7e80d241-d33c-8bb2-08a5-cdc11f2a3e80@snowmoose.com>
+X-Originating-IP: [172.20.145.6]
+X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1611470140; bh=LnzCWKv1uyNSGIZKSz9gWGmnTbh/MQQvn+aoq62HUMI=;
+        h=Date:From:To:CC:Subject:Message-ID:References:MIME-Version:
+         Content-Type:Content-Disposition:In-Reply-To:X-Originating-IP:
+         X-ClientProxiedBy;
+        b=Qqa1LEOZm3Y/9TMDNIhY6u+ACNwEqlXCYzk2XIzL9Jx/MVDkj1/Bq6xlBDMea+7rm
+         A+iAYZq2y8Row/cclfhKnELzSOS7tMNF2J4uCIoDdz1wrBfgE5sB4simbz5kE/zSJR
+         MNpqL58rZ9v2l78BiRvcGckADUM5hYojPSi+o5atZ6tH+KY5xF9UH/fpGw++MwsAB+
+         e6qhgeQyTtXbFKs/PO2WVn7BZecruq9IpDye7IhEYupg+MVNqUKG59NVyNj/PRib2L
+         fqF+aZvywFG3K2AmgGyLTQ84v9pQGm0PosuT8fe/mvutpDUL7ezizy2el7wZ5h7aFs
+         0OQ5t7LZbKklg==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jan 23, 2021 at 1:23 PM Jiri Olsa <jolsa@redhat.com> wrote:
+On Thu, Jan 21, 2021 at 01:32:42PM -0800, Alan Perry wrote:
 >
-> On Thu, Jan 21, 2021 at 03:32:40PM -0800, Andrii Nakryiko wrote:
 >
-> SNIP
+> On 12/23/20 12:19 AM, Leon Romanovsky wrote:
+> > On Tue, Dec 22, 2020 at 08:47:51PM -0800, Alan Perry wrote:
+> > > Add a description section with basic info about the rdma command for users
+> > > unfamiliar with it.
+> > >
+> > > Signed-off-by: Alan Perry <alanp@snowmoose.com>
+> > > ---
+> > >   man/man8/rdma.8 | 6 +++++-
+> > >   1 file changed, 5 insertion(+), 1 deletion(-)
+> > >
+> > > diff --git a/man/man8/rdma.8 b/man/man8/rdma.8
+> > > index c9e5d50d..d68d0cf6 100644
+> > > --- a/man/man8/rdma.8
+> > > +++ b/man/man8/rdma.8
+> > > @@ -1,4 +1,4 @@
+> > > -.TH RDMA 8 "28 Mar 2017" "iproute2" "Linux"
+> > > +.TH RDMA 8 "22 Dec 2020" "iproute2" "Linux"
+> > >   .SH NAME
+> > >   rdma \- RDMA tool
+> > >   .SH SYNOPSIS
+> > > @@ -29,6 +29,10 @@ rdma \- RDMA tool
+> > >   \fB\-j\fR[\fIson\fR] }
+> > >   \fB\-p\fR[\fIretty\fR] }
+> > >
+> > > +.SH DESCRIPTION
+> > > +.B rdma
+> > > +is a tool for querying and setting the configuration for RDMA, direct
+> > > memory access between the memory of two computers without use of the
+> > > operating system on either computer.
+> > > +
+> >
+> > Thanks, it is too close to the Wikipedia description that can be written
+> > slightly differently (without "two computers"), what about the following
+> > description from Mellanox site?
+> >
+> > "is a tool for querying and setting the configuration for RDMA-capable
+> > devices. Remote direct memory access (RDMA) is the ability of accessing
+> > (read, write) memory on a remote machine without interrupting the processing
+> > of the CPU(s) on that system."
+> >
+> > Thanks,
+> > Acked-by: Leon Romanovsky <leonro@nvidia.com>
+> >
 >
-> > But the current variant looks broken. Oh, and
-> > elf_symtab__for_each_symbol() is similarly broken, can you please fix
-> > that as well?
->
-> we'll have to change its callers a bit, because of hanging 'else'
-> I'll send this separately if that's ok, when I figure out how to
-> test ctf code
->
+> I noticed that the rdma man page has not been changed. I am unfamiliar with
+> the process. Should I have submitted an updated patch with the alternate
+> wording after this exchange?
 
-oh, else sucks. Sure, no problem doing it separately.
+Yes, please.
 
-> jirka
+Thanks
+
 >
->
-> ---
-> diff --git a/elf_symtab.h b/elf_symtab.h
-> index 489e2b1a3505..6823a8c37ecf 100644
-> --- a/elf_symtab.h
-> +++ b/elf_symtab.h
-> @@ -99,10 +99,9 @@ elf_sym__get(Elf_Data *syms, Elf_Data *syms_sec_idx_table,
->   * @index: uint32_t index
->   * @sym: GElf_Sym iterator
->   */
-> -#define elf_symtab__for_each_symbol(symtab, index, sym) \
-> -       for (index = 0, gelf_getsym(symtab->syms, index, &sym);\
-> -            index < symtab->nr_syms; \
-> -            index++, gelf_getsym(symtab->syms, index, &sym))
-> +#define elf_symtab__for_each_symbol(symtab, index, sym)                \
-> +       for (index = 0; index < symtab->nr_syms; index++)       \
-> +               if (gelf_getsym(symtab->syms, index, &sym))
->
->  /**
->   * elf_symtab__for_each_symbol_index - iterate through all the symbols,
-> diff --git a/libctf.h b/libctf.h
-> index 749be8955c52..ee5412bec77e 100644
-> --- a/libctf.h
-> +++ b/libctf.h
-> @@ -90,11 +90,9 @@ char *ctf__string(struct ctf *ctf, uint32_t ref);
->   */
->  #define ctf__for_each_symtab_function(ctf, index, sym)                       \
->         elf_symtab__for_each_symbol(ctf->symtab, index, sym)                  \
-> -               if (ctf__ignore_symtab_function(&sym,                         \
-> +               if (!ctf__ignore_symtab_function(&sym,                        \
->                                                 elf_sym__name(&sym,           \
->                                                               ctf->symtab)))  \
-> -                       continue;                                             \
-> -               else
->
->  /**
->   * ctf__for_each_symtab_object - iterate thru all the symtab objects
-> @@ -105,11 +103,9 @@ char *ctf__string(struct ctf *ctf, uint32_t ref);
->   */
->  #define ctf__for_each_symtab_object(ctf, index, sym)                         \
->         elf_symtab__for_each_symbol(ctf->symtab, index, sym)                  \
-> -               if (ctf__ignore_symtab_object(&sym,                           \
-> +               if (!ctf__ignore_symtab_object(&sym,                          \
->                                               elf_sym__name(&sym,             \
->                                                             ctf->symtab)))    \
-> -                       continue;                                             \
-> -               else
->
->
->  #endif /* _LIBCTF_H */
->
+> alan
