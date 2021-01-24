@@ -2,121 +2,135 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A65A7301DE3
-	for <lists+netdev@lfdr.de>; Sun, 24 Jan 2021 18:27:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7C1F8301DE9
+	for <lists+netdev@lfdr.de>; Sun, 24 Jan 2021 18:30:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725969AbhAXR1g (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Jan 2021 12:27:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57250 "EHLO
+        id S1726177AbhAXRaY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Jan 2021 12:30:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57854 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725768AbhAXR1f (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 Jan 2021 12:27:35 -0500
-Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com [IPv6:2607:f8b0:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27FF2C061573
-        for <netdev@vger.kernel.org>; Sun, 24 Jan 2021 09:26:55 -0800 (PST)
-Received: by mail-oi1-x235.google.com with SMTP id g69so11448813oib.12
-        for <netdev@vger.kernel.org>; Sun, 24 Jan 2021 09:26:54 -0800 (PST)
+        with ESMTP id S1725948AbhAXRaV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 Jan 2021 12:30:21 -0500
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50147C061573
+        for <netdev@vger.kernel.org>; Sun, 24 Jan 2021 09:29:41 -0800 (PST)
+Received: by mail-ej1-x62c.google.com with SMTP id by1so14718976ejc.0
+        for <netdev@vger.kernel.org>; Sun, 24 Jan 2021 09:29:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=dgLDmXp70iNQKKUTna+wkUgVQQhcTluo+11lcvqoR08=;
-        b=gEdprt1Usu6DFEiDv5xn8upAd0WtkWD3ORYHH82Fun9He3uEoB9CSOFjdhp6M0OIM0
-         45RQ/OCLP64EGZJLzpkdAPYgyFip9MFXcDq2ok4xJX71khtvl5emedcQvdB37hVi5xEX
-         9yTkx3B1h27rH8LqrvlMIhJteuiOU0VYyFfrcJqdkL3fhziVp8aEB6+ieG5Jf6pc5OlV
-         l9XMA7UsbWSfWB2wgLT0wqb1Wv4BOSGFpxit2Tdt5YAi/o9hcN2qWrBHNzgYAUntTEKX
-         E9rg3pS+UcaTJjN1rbzXPVx4JKwBC29DVOy97jVjTVUYGH/k9SPEusloW4PjMQQRfSU1
-         HYpA==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=jxlxjYHs9sWiYwAzLKpveJ4rn1wS5sW/Rd41DZjJyBA=;
+        b=WDWHmWt6hYJWiWCmI6TPBgkyaxoDrjJ7yvfKOUUL+iXXeePGF7OPZlp0tmzHDop+SR
+         wjugka9is6aaHSSmhkSxsvXx2m8GaQImiJCTrap6VwcSzRtzSbQ6RXld63WaqOpjRTCp
+         BdkuBvCqDDn64btxgTSCpT5SSNPtBxLCQeuf+rRr+CHuzuUV+MlzuBcBXOhu5ReJDo5T
+         Aapi60f9tRoCLVpLIRjeQ+6yX1FuTWsUjNNLLOdfjcR+0trymeJt+rF/9CYE+nTkVWfe
+         eR2mJhf9uJ9PhXTa9BRACg2N/ihcchQyhBa4VqXu9+DFyo9nm8gSRxb6JbFQzzxN9pQ8
+         P0bg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=dgLDmXp70iNQKKUTna+wkUgVQQhcTluo+11lcvqoR08=;
-        b=Rj4/avP/8Ak6durRXAdCDwLq7pNSXx6DT3t+T3PHTkvRD9P2wOk/yERqo9zIqg9mnL
-         SM9dCiW19thb8fNyYap4L/oWA+d8sa0b7kvCnln1o7aJTX9DOMkmB6DGOD2odd0Qp6Vr
-         mNL4hiXfNX25K/1ogyBpM8umbvie8YvfLOp/iq8ofY5y6YewakqRJ3nrMbhk/3ZCMLau
-         nRrH8bx+3FKZXooNaatnJPHb285mYebBYYz0QRvkzlxfl4ZEJv+9uFSB1hVk5Y0j9f7X
-         xw3My5S0ymw+ldkgGluF7HAwdXv8WXQnviMxofjBV1ronsgKLVLjrcoZjVAb7t4+eYGh
-         p5WQ==
-X-Gm-Message-State: AOAM5334Jl1H2/GPB/C+sZH06lJCdktGxPwbiFy7Bul7iPnlbqky7A59
-        VNsJac8PJobMbzq5Kd46nWWhJzr8KuE=
-X-Google-Smtp-Source: ABdhPJwmfBtuZMbLY0/pe1I7o7yB08NOrubLYuY6zVZ035ixvjaLOpHZ2Xf4o6CoX9fZEglFLYhzEw==
-X-Received: by 2002:aca:d7c6:: with SMTP id o189mr104926oig.144.1611509214303;
-        Sun, 24 Jan 2021 09:26:54 -0800 (PST)
-Received: from Davids-MacBook-Pro.local ([8.48.134.50])
-        by smtp.googlemail.com with ESMTPSA id j17sm2975026otj.52.2021.01.24.09.26.53
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 24 Jan 2021 09:26:53 -0800 (PST)
-Subject: Re: [PATCH iproute2] iproute get: force rtm_dst_len to 32/128
-To:     Luca Boccassi <bluca@debian.org>, netdev@vger.kernel.org
-Cc:     stephen@networkplumber.org
-References: <20210124155347.61959-1-bluca@debian.org>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <5a165b08-9394-6c64-efe7-2f141b498b76@gmail.com>
-Date:   Sun, 24 Jan 2021 10:26:52 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
- Gecko/20100101 Thunderbird/78.6.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=jxlxjYHs9sWiYwAzLKpveJ4rn1wS5sW/Rd41DZjJyBA=;
+        b=qeCNNQsRCgn0TF0x3S1YXoRBFEqcHme7wSLxCnc52Loav1HrRU3IfXWi1QGXChO1Vx
+         skSpA9BN0wkPs8BXLj3mbWDY6CjXYGuVLAy7cN7rEBPwTn41zfg44ep667rT8m/7Derd
+         VBuYirqXYhQwY0T8EXy0uQ9Ksn/WCUBDw76eHvxZ6X/ei4F/lrYJAIXmSCL+ATyE+g7g
+         6GMUOrcLWYD9weM4Z3uS0nlSGd8kq4LnLY0mQkCnysw4NJDe3r3lS+ggjSwFB9TRT2Ww
+         QIPjcdMDRqMsgLl8nQ20B8fzmhJU4fOexGxxnweyqaJKpXbZYr6i8fjlxO9CrrNsPXkm
+         Gojw==
+X-Gm-Message-State: AOAM532kzUb8w0dZonCshPvMT6LXquUEyVtrimfskh5usPIb9jnp5SoH
+        MafmJ6BziSZwYdisr8DfzkPh+r518lk=
+X-Google-Smtp-Source: ABdhPJzgPA3R2ujextX7WxSK58R6W4NmDSaMgF/xBzUueuLJiwt9kCblus02U4YIrZY50dHUIEzmoA==
+X-Received: by 2002:a17:906:7c57:: with SMTP id g23mr1313823ejp.364.1611509380032;
+        Sun, 24 Jan 2021 09:29:40 -0800 (PST)
+Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
+        by smtp.gmail.com with ESMTPSA id s3sm1401733ejn.47.2021.01.24.09.29.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 24 Jan 2021 09:29:39 -0800 (PST)
+Date:   Sun, 24 Jan 2021 19:29:38 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     George McCollister <george.mccollister@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Jonathan Corbet <corbet@lwn.net>, Nishanth Menon <nm@ti.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        Sekhar Nori <nsekhar@ti.com>,
+        Lokesh Vutla <lokeshvutla@ti.com>, netdev@vger.kernel.org
+Subject: Re: [RFC PATCH net-next 2/3] net: hsr: add DSA offloading support
+Message-ID: <20210124172938.ikhpe44bqjqmttul@skbuf>
+References: <20210122155948.5573-1-george.mccollister@gmail.com>
+ <20210122155948.5573-3-george.mccollister@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20210124155347.61959-1-bluca@debian.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210122155948.5573-3-george.mccollister@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/24/21 8:53 AM, Luca Boccassi wrote:
-> Since NETLINK_GET_STRICT_CHK was enabled, the kernel rejects commands
-> that pass a prefix length, eg:
-> 
->  ip route get `1.0.0.0/1
->   Error: ipv4: Invalid values in header for route get request.
->  ip route get 0.0.0.0/0
->   Error: ipv4: rtm_src_len and rtm_dst_len must be 32 for IPv4
-
-Those are not the best responses from the kernel for the mask setting. I
-should have been clearer about src and dst masks.
-
-> 
-> Since there's no point in setting a rtm_dst_len that we know is going
-> to be rejected, just force it to the right value if it's passed on
-> the command line.
-> 
-> Bug-Debian: https://bugs.debian.org/944730
-> Reported-By: Clément 'wxcafé' Hertling <wxcafe@wxcafe.net>
-> Signed-off-by: Luca Boccassi <bluca@debian.org>
-> ---
-> As mentioned by David on:
-> 
-> https://www.spinics.net/lists/netdev/msg624125.html
-> 
->  ip/iproute.c | 7 ++++++-
->  1 file changed, 6 insertions(+), 1 deletion(-)
-> 
-> diff --git a/ip/iproute.c b/ip/iproute.c
-> index ebb5f160..3646d531 100644
-> --- a/ip/iproute.c
-> +++ b/ip/iproute.c
-> @@ -2069,7 +2069,12 @@ static int iproute_get(int argc, char **argv)
->  			if (addr.bytelen)
->  				addattr_l(&req.n, sizeof(req),
->  					  RTA_DST, &addr.data, addr.bytelen);
-> -			req.r.rtm_dst_len = addr.bitlen;
-> +			if (req.r.rtm_family == AF_INET)
-> +				req.r.rtm_dst_len = 32;
-> +			else if (req.r.rtm_family == AF_INET6)
-> +				req.r.rtm_dst_len = 128;
-> +			else
-> +				req.r.rtm_dst_len = addr.bitlen;
->  			address_found = true;
+On Fri, Jan 22, 2021 at 09:59:47AM -0600, George McCollister wrote:
+> diff --git a/net/dsa/slave.c b/net/dsa/slave.c
+> index f2fb433f3828..fc7e3ff11c5c 100644
+> --- a/net/dsa/slave.c
+> +++ b/net/dsa/slave.c
+> @@ -1924,6 +1924,19 @@ static int dsa_slave_changeupper(struct net_device *dev,
+>  			dsa_port_lag_leave(dp, info->upper_dev);
+>  			err = NOTIFY_OK;
 >  		}
->  		argc--; argv++;
-> 
+> +	} else if (netif_is_hsr_master(info->upper_dev)) {
+> +		if (info->linking) {
+> +			err = dsa_port_hsr_join(dp, info->upper_dev);
+> +			if (err == -EOPNOTSUPP) {
+> +				NL_SET_ERR_MSG_MOD(info->info.extack,
+> +						   "Offloading not supported");
+> +				err = 0;
+> +			}
+> +			err = notifier_from_errno(err);
+> +		} else {
+> +			dsa_port_hsr_leave(dp, info->upper_dev);
+> +			err = NOTIFY_OK;
+> +		}
+>  	}
 
-Since the kernel used to blindly ignore the mask, having iproute2 fix it
-up seems acceptable.
+How is the RedBox use case handled with the Linux hsr driver (i.e. a
+HSR-unaware SAN endpoint attached to a HSR ring)? I would expect
+something like this:
 
-I think it would be good to educate the user about invalid settings as
-well - get them to fix scripts and mind set.
+                   +---------+
+                   |         |
+                   |   SAN   |
+                   |         |
+                   +---------+
+                        |
+                        |
+                        |
+ +-----------------+---------+------------------+
+ |                 |         |                  |
+ |  Your           |   swp0  |                  |
+ |  board          |         |                  |
+ |                 +---------+                  |
+ |                    |   ^                     |
+ |                    |   |                     |
+ |                    |   | br0                 |
+ |                    |   |                     |
+ |                    v   |                     |
+ |       +-----------------------------+        |
+ |       |                             |        |
+ |       |             hsr0            |        |
+ |       |                             |        |
+ |       +---------+---------+---------+        |
+ |       |         |         |         |        |
+ |       |   swp1  |  DAN-H  |  swp2   |        |
+ |       |         |         |         |        |
+ +-------+---------+---------+---------+--------+
+            |   ^               |   ^
+    to/from |   |               |   | to/from
+     ring   |   |               |   |  ring
+            v   |               v   |
 
+Therefore, aren't you interested in offloading this setup as well?
+I.e. the case where the hsr0 interface joins a bridge that also
+contains other DSA switch ports. This would be similar to the LAG
+offload recently added by Tobias.
