@@ -2,122 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9406B301AF6
-	for <lists+netdev@lfdr.de>; Sun, 24 Jan 2021 10:59:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9D86E301B3D
+	for <lists+netdev@lfdr.de>; Sun, 24 Jan 2021 11:29:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726735AbhAXJ6w (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Jan 2021 04:58:52 -0500
-Received: from serv108.segi.ulg.ac.be ([139.165.32.111]:47197 "EHLO
-        serv108.segi.ulg.ac.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726709AbhAXJ6o (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 Jan 2021 04:58:44 -0500
-Received: from mbx12-zne.ulg.ac.be (serv470.segi.ulg.ac.be [139.165.32.199])
-        by serv108.segi.ulg.ac.be (Postfix) with ESMTP id 27E4D200DF9F;
-        Sun, 24 Jan 2021 10:57:46 +0100 (CET)
-DKIM-Filter: OpenDKIM Filter v2.11.0 serv108.segi.ulg.ac.be 27E4D200DF9F
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uliege.be;
-        s=ulg20190529; t=1611482266;
-        bh=P2P0U/RD3dqLKPghqKC9g6/acI4835uWRgrUH161iwM=;
-        h=Date:From:Reply-To:To:Cc:In-Reply-To:References:Subject:From;
-        b=HB/1OXUiTYvpniNfW9bYtLbbzAHw7rLfJpPhRaibAuuR0vJg2JAP0A+2VzNbn5Ruu
-         NMr/flpYy/G8LXngYq75UvNGiaHkztQKVCfwk6jxyKwRA6I5ZygBZ1w1rkG5gHWc19
-         mE4wjYZ6J6dgTWiJIi/bSFU9VpEC/IQWzYlPdO6OD7Rp99c/UwJo2tWQAFcO0sPRvQ
-         mFT73rCJ4nGYkpiTpdeTjEXZeRCGyrm+Uktdc88AC5+rgjEf7pyT3q2LU+2WJT5wpU
-         MQhi+OzHfQw7CUXZQB5MKJN6TFenWVYdYG82r5Rf5es6JX5YNCR37W9fzJE7JBoWF3
-         IJWXDSJMx045A==
-Received: from localhost (localhost.localdomain [127.0.0.1])
-        by mbx12-zne.ulg.ac.be (Postfix) with ESMTP id 1CA54129EC68;
-        Sun, 24 Jan 2021 10:57:46 +0100 (CET)
-Received: from mbx12-zne.ulg.ac.be ([127.0.0.1])
-        by localhost (mbx12-zne.ulg.ac.be [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id qlHqiHV7IDMn; Sun, 24 Jan 2021 10:57:46 +0100 (CET)
-Received: from mbx12-zne.ulg.ac.be (mbx12-zne.ulg.ac.be [139.165.32.199])
-        by mbx12-zne.ulg.ac.be (Postfix) with ESMTP id 04550129E9B1;
-        Sun, 24 Jan 2021 10:57:46 +0100 (CET)
-Date:   Sun, 24 Jan 2021 10:57:45 +0100 (CET)
-From:   Justin Iurman <justin.iurman@uliege.be>
-Reply-To: Justin Iurman <justin.iurman@uliege.be>
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, davem@davemloft.net,
-        alex aring <alex.aring@gmail.com>
-Message-ID: <55663307.1072450.1611482265804.JavaMail.zimbra@uliege.be>
-In-Reply-To: <20210123205444.5e1df187@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-References: <20210121220044.22361-1-justin.iurman@uliege.be> <20210121220044.22361-2-justin.iurman@uliege.be> <20210123205444.5e1df187@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Subject: Re: [PATCH net 1/1] uapi: fix big endian definition of
- ipv6_rpl_sr_hdr
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Originating-IP: [80.200.25.38]
-X-Mailer: Zimbra 8.8.15_GA_3980 (ZimbraWebClient - FF84 (Linux)/8.8.15_GA_3980)
-Thread-Topic: uapi: fix big endian definition of ipv6_rpl_sr_hdr
-Thread-Index: mc2ODQcPVkkULg1Nn7dGBQfWruvijA==
+        id S1726663AbhAXK31 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Jan 2021 05:29:27 -0500
+Received: from wout4-smtp.messagingengine.com ([64.147.123.20]:58047 "EHLO
+        wout4-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726546AbhAXK3Y (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 Jan 2021 05:29:24 -0500
+Received: from compute2.internal (compute2.nyi.internal [10.202.2.42])
+        by mailout.west.internal (Postfix) with ESMTP id 8E278D3C;
+        Sun, 24 Jan 2021 05:28:17 -0500 (EST)
+Received: from imap6 ([10.202.2.56])
+  by compute2.internal (MEProxy); Sun, 24 Jan 2021 05:28:18 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kode54.net; h=
+        mime-version:message-id:in-reply-to:references:date:from:to:cc
+        :subject:content-type; s=fm2; bh=9bTaOq/ywin9K4U2DKZqsyrGf/ZSeUy
+        3tGjtLPYRmSA=; b=FpAaiiiyhZdbkNreOl76L6OmYD40OvOkrOXUXqwWa6mJaSu
+        1G+nTecenF/cNy9DlY10QeTGZtJt9+bM7b3QjYhrCrbK/e3kkj6lePPdyGGN05Gx
+        R/T27MUdw2FPChUhYnDMUqJYTz9PvgCZQbre1s7aF+lyVBFdftk2TIxPXES1IPnM
+        Vuz0vyJY21jq7G4fjFwVcBfYevMvdnyFkI0jyWKmdgt18Al911fPP1BkEivXx6t9
+        WKx6ps8e2+CCOkevyXF95BSNeXVZxXSbqIzHo3ipfSv4+aYtTycHYzc/cjmivK4H
+        T0mXqVUrWErsOpnJFuqj7z/BOwoJXKUhJVYtk1A==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=9bTaOq
+        /ywin9K4U2DKZqsyrGf/ZSeUy3tGjtLPYRmSA=; b=rLD7+pFeWTkCJSTwhBlyWR
+        Tr9AnVtSKu38Si0eLsoO94VCMCxAJpBD7rooVx6qURWO20XTKZ1dWqubw49P1+bu
+        FkOj/2KqACbVrc1JzuPG8vihtgLY7l+MEqRQxO4pr1Qy+dyCd6xh+OEOKnk67bcC
+        scenD9EmimbAGeMUSOn0eSw/Db8J4f5YMVj9gjRc3UCk8PR1eVuheZFFe4eMo0a6
+        zhOD+fUo0MzYZlTWytbbZBaOd3zo1M6EsMdqM8Rk5QT+XUPP0F4LSWa+mK4D3LeR
+        8iHUqVpE7wh0MDwWNHvaLsZT850K1nCl4bnwDYCKZyOE55LJyMrumc/Nz/kBZ+Iw
+        ==
+X-ME-Sender: <xms:wEsNYBLG5b0IDrrO9JgOYMq-CYgnshFNBomEcGBCOR9ELTpEm4zPCg>
+    <xme:wEsNYNKdV8ef0jmLmpNv2betINdzDyHlElP-i2RiZAB5gOdtyThQIW6yCTrH1UovE
+    1mJqrB_lry2B64JBj0>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrvddugddujecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpefofgggkfgjfhffhffvufgtsehttdertderredtnecuhfhrohhmpedfvehhrhhi
+    shhtohhphhgvrhcuhghilhhlihgrmhcuufhnohifhhhilhhlfdcuoegthhhrihhssehkoh
+    guvgehgedrnhgvtheqnecuggftrfgrthhtvghrnhepteelueegledvteehveefiefhveev
+    gefhteefiedtveekhfehledvjeffudelgfegnecuffhomhgrihhnpehkvghrnhgvlhdroh
+    hrghenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpegt
+    hhhrihhssehkohguvgehgedrnhgvth
+X-ME-Proxy: <xmx:wEsNYJs2ESlyhDdn7AsvnrvpTIR0DQJ4wyEg_y5nJ3d7OtUeutIbSQ>
+    <xmx:wEsNYCbuKvmVqMuq9igL29QonamWkdrkAQ6MvxgbpXm1t_WCWFxxMw>
+    <xmx:wEsNYIZOiWSU0yu3ouvYoV8Yh8kmUmTbORWhneGyAOECbs1oCKhlUA>
+    <xmx:wUsNYPXSk4o64KhCyXYeSjcMfpeBgxNCEtgeb6b5yZD3-L8mpnubgw>
+Received: by mailuser.nyi.internal (Postfix, from userid 501)
+        id A864D240408; Sun, 24 Jan 2021 05:28:16 -0500 (EST)
+X-Mailer: MessagingEngine.com Webmail Interface
+User-Agent: Cyrus-JMAP/3.5.0-alpha0-78-g36b56e88ef-fm-20210120.001-g36b56e88
+Mime-Version: 1.0
+Message-Id: <4f19b649-a837-48af-90d1-c4692580053d@www.fastmail.com>
+In-Reply-To: <161048280875.1131.14039972740532054006.git-patchwork-notify@kernel.org>
+References: <20210110070341.1380086-1-andrii@kernel.org>
+ <161048280875.1131.14039972740532054006.git-patchwork-notify@kernel.org>
+Date:   Sun, 24 Jan 2021 02:27:53 -0800
+From:   "Christopher William Snowhill" <chris@kode54.net>
+To:     patchwork-bot+netdevbpf@kernel.org,
+        "Andrii Nakryiko" <andrii@kernel.org>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, ast@fb.com,
+        daniel@iogearbox.net, kernel-team@fb.com
+Subject: Re: [PATCH bpf 1/2] bpf: allow empty module BTFs
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-> De: "Jakub Kicinski" <kuba@kernel.org>
-> =C3=80: "Justin Iurman" <justin.iurman@uliege.be>
-> Cc: netdev@vger.kernel.org, davem@davemloft.net, "alex aring" <alex.aring=
-@gmail.com>
-> Envoy=C3=A9: Dimanche 24 Janvier 2021 05:54:44
-> Objet: Re: [PATCH net 1/1] uapi: fix big endian definition of ipv6_rpl_sr=
-_hdr
+When is this being applied to an actual kernel? 5.11 is still quite broken without these two patches. Unless you're not using a vfat EFI partition, I guess.
 
-> On Thu, 21 Jan 2021 23:00:44 +0100 Justin Iurman wrote:
->> Following RFC 6554 [1], the current order of fields is wrong for big
->> endian definition. Indeed, here is how the header looks like:
->>=20
->> +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
->> |  Next Header  |  Hdr Ext Len  | Routing Type  | Segments Left |
->> +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
->> | CmprI | CmprE |  Pad  |               Reserved                |
->> +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
->>=20
->> This patch reorders fields so that big endian definition is now correct.
->>=20
->>   [1] https://tools.ietf.org/html/rfc6554#section-3
->>=20
->> Signed-off-by: Justin Iurman <justin.iurman@uliege.be>
->=20
-> Are you sure? This looks right to me.
-
-AFAIK, yes. Did you mean the old (current) one looks right, or the new one?=
- If you meant the old/current one, well, I don't understand why the big end=
-ian definition would look like this:
-
-#elif defined(__BIG_ENDIAN_BITFIELD)
-=09__u32=09reserved:20,
-=09=09pad:4,
-=09=09cmpri:4,
-=09=09cmpre:4;
-
-When the RFC defines the header as follows:
-
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-| CmprI | CmprE |  Pad  |               Reserved                |
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-
-The little endian definition looks fine. But, when it comes to big endian, =
-you define fields as you see them on the wire with the same order, right? S=
-o the current big endian definition makes no sense. It looks like it was a =
-wrong mix with the little endian conversion.
-
->> diff --git a/include/uapi/linux/rpl.h b/include/uapi/linux/rpl.h
->> index 1dccb55cf8c6..708adddf9f13 100644
->> --- a/include/uapi/linux/rpl.h
->> +++ b/include/uapi/linux/rpl.h
->> @@ -28,10 +28,10 @@ struct ipv6_rpl_sr_hdr {
->>  =09=09pad:4,
->>  =09=09reserved1:16;
->>  #elif defined(__BIG_ENDIAN_BITFIELD)
->> -=09__u32=09reserved:20,
->> +=09__u32=09cmpri:4,
->> +=09=09cmpre:4,
->>  =09=09pad:4,
->> -=09=09cmpri:4,
->> -=09=09cmpre:4;
->> +=09=09reserved:20;
->>  #else
->>  #error  "Please fix <asm/byteorder.h>"
-> >  #endif
+On Tue, Jan 12, 2021, at 12:20 PM, patchwork-bot+netdevbpf@kernel.org wrote:
+> Hello:
+> 
+> This series was applied to bpf/bpf.git (refs/heads/master):
+> 
+> On Sat, 9 Jan 2021 23:03:40 -0800 you wrote:
+> > Some modules don't declare any new types and end up with an empty BTF,
+> > containing only valid BTF header and no types or strings sections. This
+> > currently causes BTF validation error. There is nothing wrong with such BTF,
+> > so fix the issue by allowing module BTFs with no types or strings.
+> > 
+> > Reported-by: Christopher William Snowhill <chris@kode54.net>
+> > Fixes: 36e68442d1af ("bpf: Load and verify kernel module BTFs")
+> > Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
+> > 
+> > [...]
+> 
+> Here is the summary with links:
+>   - [bpf,1/2] bpf: allow empty module BTFs
+>     https://git.kernel.org/bpf/bpf/c/bcc5e6162d66
+>   - [bpf,2/2] libbpf: allow loading empty BTFs
+>     https://git.kernel.org/bpf/bpf/c/b8d52264df85
+> 
+> You are awesome, thank you!
+> --
+> Deet-doot-dot, I am a bot.
+> https://korg.docs.kernel.org/patchwork/pwbot.html
+> 
+> 
+>
