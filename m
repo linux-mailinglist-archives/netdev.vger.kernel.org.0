@@ -2,81 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 94496301BE9
-	for <lists+netdev@lfdr.de>; Sun, 24 Jan 2021 13:46:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 07674301BF7
+	for <lists+netdev@lfdr.de>; Sun, 24 Jan 2021 14:02:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726886AbhAXMp2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Jan 2021 07:45:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53484 "EHLO
+        id S1726951AbhAXNAc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Jan 2021 08:00:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726672AbhAXMp0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 Jan 2021 07:45:26 -0500
-Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 11134C061573;
-        Sun, 24 Jan 2021 04:44:46 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=OUUmvGFFed3VF14x9AJZnsLh0I+LDXrMD5jb+zPJRz0=; b=xq+pQ4eIJ1iYDiD4QywJhngTn
-        T2FNSpaJ4jvc98MGhfEgtvw0f3aAqWPntU5wzIdHmupUppykY8mNGANNza3Z8+WT/xlFZz9Wrl8Hw
-        uEBMGhiBZXm+5WERwbBttfo0Fecb06i/x8isYs3U+f1ogv/ihB0wOr4A8m9D02k2Sr+TI5jpz2G/c
-        upQ77klFMnz+xg2xueFsUrcXU+tjzgBeIHXmfFBZfN3rgpiB7+OinnbLtzIzx4D91DV7kr2B4JPyH
-        CRhfS27wU9vrJkeUupaDikzdP7dU4egFSco9GmwLiUdiU8KIvs1jnAtL+AdIzl/DGAeIghp7PLCAA
-        fnid3ilkA==;
-Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:52112)
-        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1l3el2-0002Ns-5z; Sun, 24 Jan 2021 12:44:44 +0000
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1l3el1-0001iZ-DV; Sun, 24 Jan 2021 12:44:43 +0000
-Date:   Sun, 24 Jan 2021 12:44:43 +0000
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     stefanc@marvell.com
-Cc:     netdev@vger.kernel.org, thomas.petazzoni@bootlin.com,
-        davem@davemloft.net, nadavh@marvell.com, ymarkman@marvell.com,
-        linux-kernel@vger.kernel.org, kuba@kernel.org, mw@semihalf.com,
-        andrew@lunn.ch, atenart@kernel.org
-Subject: Re: [PATCH v2 RFC net-next 03/18] net: mvpp2: add CM3 SRAM memory map
-Message-ID: <20210124124443.GX1551@shell.armlinux.org.uk>
-References: <1611488647-12478-1-git-send-email-stefanc@marvell.com>
- <1611488647-12478-4-git-send-email-stefanc@marvell.com>
+        with ESMTP id S1726456AbhAXNA1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 Jan 2021 08:00:27 -0500
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1C4CC061573
+        for <netdev@vger.kernel.org>; Sun, 24 Jan 2021 04:59:46 -0800 (PST)
+Received: by mail-pj1-x1035.google.com with SMTP id jx18so1289850pjb.5
+        for <netdev@vger.kernel.org>; Sun, 24 Jan 2021 04:59:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
+        bh=1je9icuwBJ1UZSJUVy0sS3F10fijSU8vN9AFDaLbwK0=;
+        b=ICCcLduMS1OcSi170owp5Sm4Lh306QH+3s2zWorIz5qKIDzep5xYeMuwW28+KnExcm
+         G2te1vFaEcJTM5Xdpmj58/zSneRoy+YMkg/U+t/3gb7v4uHQTnDL+sBVo0Phs6b9R0KX
+         z7NXP+8xjpnZmHM1AGps9XQmVXAyC+SYhxI/MBcWI12Ks0KpQEJoYB1qEVBhcBZ64UkG
+         +tbzdsVyb1XAuU8P0paLZC3RTFaao7ue1rA5QuH5ZP7S+5YEtZDLDEl+bp3o6zmtypwF
+         6awCG5vblLr1/JT0WDQrlcW0UlPgYKUB6hUlvDhIXiAa0HKlFuODEb0QnXErjuJS2qb/
+         ZVgw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=1je9icuwBJ1UZSJUVy0sS3F10fijSU8vN9AFDaLbwK0=;
+        b=WEhMTWZbSdSAaEfAXlxersRuOQA8n26NPBhmdxYq45gvxQOzZHTGP3y+q7hdu//j9p
+         oFlzfe7348J+Rxyay9PsoTZih5pe/TVLqhZ4NgBE2ApWroN4xr8aj+ELIoREgkGpEFtI
+         FB972A4iVTkZo4yGxTzektY0OrL6D0qQDwHgRI1qEZxs2hsSGnNOiM5NHkmr4nlkcfUP
+         ECo0C4K21widH1u0b7aLurAdu76iljsV98ziw9mwe9d7OPrh09fGM1xNgd7Pa0RxlI04
+         agE9fVu/UAJnwQ+to4CgnoQPwPFcUKT7op2bkwUwJsjxhSDdj07wFQUvjbFdTT+9j1cG
+         vXOw==
+X-Gm-Message-State: AOAM531oNKVc+W7kAqzogxfp8OovXznbOyowOwaz/DjJykq5vuOvIhjp
+        3HDAFGHncYA4Q2Dj6reuyf3q9OKVTw==
+X-Google-Smtp-Source: ABdhPJyLkRfF5WawfqgnIk+ac/5O5qwZIpLRV7N7uq7X/4h7Fn2IqRbZ1C9SjuCxSxzkfxsozmb/Jg==
+X-Received: by 2002:a17:90a:aa8a:: with SMTP id l10mr1732393pjq.86.1611493186430;
+        Sun, 24 Jan 2021 04:59:46 -0800 (PST)
+Received: from DESKTOP (softbank126012184080.bbtec.net. [126.12.184.80])
+        by smtp.gmail.com with ESMTPSA id 14sm13695154pfy.55.2021.01.24.04.59.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 24 Jan 2021 04:59:46 -0800 (PST)
+Date:   Sun, 24 Jan 2021 21:59:43 +0900
+From:   Takeshi Misawa <jeliantsurux@gmail.com>
+To:     David Howells <dhowells@redhat.com>
+Cc:     netdev@vger.kernel.org
+Subject: [PATCH net] rxrpc: Fix memory leak in rxrpc_lookup_local
+Message-ID: <20210124125943.GA20333@DESKTOP>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1611488647-12478-4-git-send-email-stefanc@marvell.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
-Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jan 24, 2021 at 01:43:52PM +0200, stefanc@marvell.com wrote:
-> +		priv->sram_pool = of_gen_pool_get(dn, "cm3-mem", 0);
-> +		if (!priv->sram_pool) {
-> +			if (!defer_once) {
-> +				defer_once = true;
-> +				/* Try defer once */
-> +				return -EPROBE_DEFER;
-> +			}
-> +			dev_warn(&pdev->dev, "DT is too old, Flow control not supported\n");
-> +			return -ENOMEM;
-> +		}
-> +		priv->cm3_base = (void __iomem *)gen_pool_alloc(priv->sram_pool,
-> +								MSS_SRAM_SIZE);
-> +		if (!priv->cm3_base)
-> +			return -ENOMEM;
+Commit 9ebeddef58c4 ("rxrpc: rxrpc_peer needs to hold a ref on the rxrpc_local record")
+Then release ref in __rxrpc_put_peer and rxrpc_put_peer_locked.
 
-This probably could do with a comment indicating that it is reliant on
-this allocation happening at offset zero into the SRAM. The only reason
-that is guaranteed _at the moment_ is because the SRAM mapping is 0x800
-bytes in size, and you are requesting 0x800 bytes in this allocation,
-so allocating the full size.
+	struct rxrpc_peer *rxrpc_alloc_peer(struct rxrpc_local *local, gfp_t gfp)
+	-               peer->local = local;
+	+               peer->local = rxrpc_get_local(local);
 
+rxrpc_discard_prealloc also need ref release in discarding.
+
+syzbot report:
+BUG: memory leak
+unreferenced object 0xffff8881080ddc00 (size 256):
+  comm "syz-executor339", pid 8462, jiffies 4294942238 (age 12.350s)
+  hex dump (first 32 bytes):
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+    00 00 00 00 0a 00 00 00 00 c0 00 08 81 88 ff ff  ................
+  backtrace:
+    [<000000002b6e495f>] kmalloc include/linux/slab.h:552 [inline]
+    [<000000002b6e495f>] kzalloc include/linux/slab.h:682 [inline]
+    [<000000002b6e495f>] rxrpc_alloc_local net/rxrpc/local_object.c:79 [inline]
+    [<000000002b6e495f>] rxrpc_lookup_local+0x1c1/0x760 net/rxrpc/local_object.c:244
+    [<000000006b43a77b>] rxrpc_bind+0x174/0x240 net/rxrpc/af_rxrpc.c:149
+    [<00000000fd447a55>] afs_open_socket+0xdb/0x200 fs/afs/rxrpc.c:64
+    [<000000007fd8867c>] afs_net_init+0x2b4/0x340 fs/afs/main.c:126
+    [<0000000063d80ec1>] ops_init+0x4e/0x190 net/core/net_namespace.c:152
+    [<00000000073c5efa>] setup_net+0xde/0x2d0 net/core/net_namespace.c:342
+    [<00000000a6744d5b>] copy_net_ns+0x19f/0x3e0 net/core/net_namespace.c:483
+    [<0000000017d3aec3>] create_new_namespaces+0x199/0x4f0 kernel/nsproxy.c:110
+    [<00000000186271ef>] unshare_nsproxy_namespaces+0x9b/0x120 kernel/nsproxy.c:226
+    [<000000002de7bac4>] ksys_unshare+0x2fe/0x5c0 kernel/fork.c:2957
+    [<00000000349b12ba>] __do_sys_unshare kernel/fork.c:3025 [inline]
+    [<00000000349b12ba>] __se_sys_unshare kernel/fork.c:3023 [inline]
+    [<00000000349b12ba>] __x64_sys_unshare+0x12/0x20 kernel/fork.c:3023
+    [<000000006d178ef7>] do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+    [<00000000637076d4>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
+
+Fixes: 9ebeddef58c4 ("rxrpc: rxrpc_peer needs to hold a ref on the rxrpc_local record")
+Signed-off-by: Takeshi Misawa <jeliantsurux@gmail.com>
+Reported-and-tested-by: syzbot+305326672fed51b205f7@syzkaller.appspotmail.com
+---
+Dear David Howells
+
+syzbot reported memory leak in rxrpc_lookup_local.
+
+I send a patch that passed syzbot reproducer test.
+Please consider this memory leak and patch.
+
+syzbot link:
+https://syzkaller.appspot.com/bug?id=80b2343d6c19226dfa59e33b151c168d96253420
+
+Regards.
+---
+ net/rxrpc/call_accept.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/net/rxrpc/call_accept.c b/net/rxrpc/call_accept.c
+index 8df1964db333..a0b033954cea 100644
+--- a/net/rxrpc/call_accept.c
++++ b/net/rxrpc/call_accept.c
+@@ -197,6 +197,7 @@ void rxrpc_discard_prealloc(struct rxrpc_sock *rx)
+ 	tail = b->peer_backlog_tail;
+ 	while (CIRC_CNT(head, tail, size) > 0) {
+ 		struct rxrpc_peer *peer = b->peer_backlog[tail];
++		rxrpc_put_local(peer->local);
+ 		kfree(peer);
+ 		tail = (tail + 1) & (size - 1);
+ 	}
 -- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
+2.25.1
+
