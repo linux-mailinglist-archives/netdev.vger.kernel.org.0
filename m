@@ -2,146 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B13F1301CB2
-	for <lists+netdev@lfdr.de>; Sun, 24 Jan 2021 15:28:33 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 38443301CCF
+	for <lists+netdev@lfdr.de>; Sun, 24 Jan 2021 15:45:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726164AbhAXO2b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Jan 2021 09:28:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47162 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725775AbhAXO2a (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 Jan 2021 09:28:30 -0500
-Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55375C061573
-        for <netdev@vger.kernel.org>; Sun, 24 Jan 2021 06:27:50 -0800 (PST)
-Received: by mail-lf1-x12d.google.com with SMTP id v67so14120808lfa.0
-        for <netdev@vger.kernel.org>; Sun, 24 Jan 2021 06:27:50 -0800 (PST)
+        id S1726160AbhAXOo2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Jan 2021 09:44:28 -0500
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:43920 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725798AbhAXOo1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 Jan 2021 09:44:27 -0500
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 10OEfYZe008190;
+        Sun, 24 Jan 2021 06:43:34 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : references : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=pfpt0220;
+ bh=AB5GzbXi2gKtTR2wNlwSohx9lNiSHsOtSjj6s0zeV14=;
+ b=fVx3bUY8DVhLRlxjmtPoTjrbhWG+RwfUToskajXJWlaimx7VJ/6yqodDAyKxmOlm1v4s
+ +0iTkhSTo8ZhxUk/Ta4AbS02WsxHpzY+gQxxpDDYJVgTyuA3pP5St6dgjcXRdfSgYnw7
+ 1OGsAUh0QLE3rEMeB+/+ov+S57KS61qn+L3MJdkGI/HqMJz5THzUHFR3KctH4a8mpspG
+ yxinnLCb3jNaiUygqwjtSGAPcKl0G2X93kCJDAY+rh/WAjQZwStUkDSe5dZ2bW8Q01MK
+ lzLXoU+uSQ08Yjw3EUjTTky5RJ8esaxLkZEHMBbE0XK2JYw4K53H+TEyXu6EIVGDawpv Uw== 
+Received: from dc5-exch01.marvell.com ([199.233.59.181])
+        by mx0a-0016f401.pphosted.com with ESMTP id 368j1u28a1-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Sun, 24 Jan 2021 06:43:33 -0800
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sun, 24 Jan
+ 2021 06:43:32 -0800
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.168)
+ by DC5-EXCH01.marvell.com (10.69.176.38) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2 via Frontend Transport; Sun, 24 Jan 2021 06:43:32 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=oPbPjv21/Cr1OuzzMw/idfKD3PCzL25/p118Kn835S0yDiBQvguFjZw+GRzPc0xr6AeChiOQdoK8/gj1zPDZ4CXV4S429OqskkhyaRTZYfR+vYVkIyCF2D3F/GgJPs/bNwC9QUXclQ+GkjOFISW966LLR7o2ZcsjLxGAgJHYg42IhAsgILKPwMG/4cUkiZn1xJoVjzUK9lRI4g3tgduTqVeHDk5lPomeyMd0/O3uymHGpAfqc/dEAJ2CFjs2gnsZNQoHV5pLXoKgSRlhPPMw62yYVDxYnrRTXbDjJ/UHqX8fu4lsXerWyYrM6nq5toj4CbIBHpqM1THsVwu33PcHlw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AB5GzbXi2gKtTR2wNlwSohx9lNiSHsOtSjj6s0zeV14=;
+ b=OXSN3gPzZAU4so+B66ehsD8+n96AfI4JTo0rW79eNZdifqEFXw/fm7MFclbVT7ZTC3iOUGGwl2ZQ9otYGOpXdszWx2c0waCtafEXc14d8SZoHc/Yu7UB26p/5NNtP7QIOOwKjKpXBRAeqm2UCAzrL2jTF5wkeSu25yI+PxMssrERGLtI3DIRamqnOSPqsxUx2IArphtWIlj4xAJH0INb9z2dp+4O5iI9OwfhZqDGUn7vw0Vfw5OUo2isHXFuh73EXRFXjK1EcnfzXW2wdDO/aNhY/2EKnCe+GcRgufbLrlfmI0eRNWtTKUG8/d5GTYzH5lQpZKqM3pVcpmNxR66cAA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
+ dkim=pass header.d=marvell.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=norrbonn-se.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=a8olPCXeRNua+xeUk/3CtMK+Tojt9SCDz62urHJB6Qg=;
-        b=mKNMMY3/Qs12n4PGkGTfVoZbQ1JXryLpkqbhw3k530QWue5SIzOWqtufusckcoCUrM
-         spZmtNQ7vipKB/FHU9a2Pd7Ou1C5JZbNzJjxbPh2GP1h2D6MWdJBSKfZqACPBkmx68Sr
-         SBqQMeIVBYV15hvSqK1gL8VI2KIYy56HyacA5gl3dexA9IlOMO4y8VRtiGu8oyEH1kKC
-         kAN0cgseWsTrwL7BcHcf2qZtCjjZaexHeeNfwZIpKURzEs7grV33/pG1mzZTHmsUgLY/
-         hdXax/IEBkPmvxwU++50365EPnUwD2oiDw2OIoguyhM+zMCwNYP0Gq/x2moI99hkx6u+
-         88ww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=a8olPCXeRNua+xeUk/3CtMK+Tojt9SCDz62urHJB6Qg=;
-        b=Tz3PwN+/dhxOFeX8UMBg6G8Q7Gj89YI4CHuNQQGOWKDnlbDVvmq992PZRHfLVv+3Lg
-         5pOIThK2b2dzBbOFSjBJpl/LWl2FNWj2kZdI+U9CouuPfqezDTN2myAj4WWNOcJNDlzb
-         9IQbWFmS2+BNK/TcdX3VFFaWdMaOJE9UmYhghSAX42rsqPhBkYg+Nb/+WoF+UfvRFSpL
-         0FHXXXvihod1YXehmctI5tn0WxNQEx4WCY+mks0MIN9sy8T2RFXUTzUrP5itUHD05GYk
-         ir38Z+YUm9+TgH5kXE/4Vy9HUU938lBl8RhjfaRYMQQBeQ8A8ue5JDXqbhjWN7QfSm6/
-         t1Jg==
-X-Gm-Message-State: AOAM530Gba57n8uh+6d9lLaZm3EJrL3yKUmErqOe3k5AWJm6YdaYTnHW
-        S1ze9Oa8VJUlw3Fb5a2WJyZLpQ==
-X-Google-Smtp-Source: ABdhPJylHd8B8t8YxAk2KXVdYjfhA8Q15oJrshnOTr45OkMOTZqGAN0R3NGm+GbfNiCLKjdC+v6GWg==
-X-Received: by 2002:ac2:4846:: with SMTP id 6mr118557lfy.653.1611498468891;
-        Sun, 24 Jan 2021 06:27:48 -0800 (PST)
-Received: from [192.168.1.157] (h-137-65.A159.priv.bahnhof.se. [81.170.137.65])
-        by smtp.gmail.com with ESMTPSA id k8sm728509lfg.41.2021.01.24.06.27.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 24 Jan 2021 06:27:48 -0800 (PST)
-Subject: Re: [RFC PATCH 14/16] gtp: add support for flow based tunneling
-To:     laforge@gnumonks.org, netdev@vger.kernel.org, pbshelar@fb.com,
-        kuba@kernel.org
-Cc:     pablo@netfilter.org
-References: <20210123195916.2765481-1-jonas@norrbonn.se>
- <20210123195916.2765481-15-jonas@norrbonn.se>
-From:   Jonas Bonn <jonas@norrbonn.se>
-Message-ID: <a9246112-fd2d-1042-4eb7-12a3096c6923@norrbonn.se>
-Date:   Sun, 24 Jan 2021 15:27:47 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.0
-MIME-Version: 1.0
-In-Reply-To: <20210123195916.2765481-15-jonas@norrbonn.se>
-Content-Type: text/plain; charset=utf-8; format=flowed
+ d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AB5GzbXi2gKtTR2wNlwSohx9lNiSHsOtSjj6s0zeV14=;
+ b=PRYeHG1FnaiVBS9VPdZWa/hu0P78pz5I6o3pI0e2UxjH1kOAtt3CSiyKmOV3QdrFtAeAkr6DRbhCB0eL1mXbUzn3y6xae/v8fW15/x03PiHdy2Cn8oRH4cd/FbQenu2pDAv2Cxja9mC1dVw5VHkOnQcjzScahmj++M75cKTniCA=
+Received: from CO6PR18MB3873.namprd18.prod.outlook.com (2603:10b6:5:350::23)
+ by MWHPR18MB1087.namprd18.prod.outlook.com (2603:10b6:300:a2::14) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3784.12; Sun, 24 Jan
+ 2021 14:43:31 +0000
+Received: from CO6PR18MB3873.namprd18.prod.outlook.com
+ ([fe80::c041:1c61:e57:349a]) by CO6PR18MB3873.namprd18.prod.outlook.com
+ ([fe80::c041:1c61:e57:349a%3]) with mapi id 15.20.3784.017; Sun, 24 Jan 2021
+ 14:43:30 +0000
+From:   Stefan Chulski <stefanc@marvell.com>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "thomas.petazzoni@bootlin.com" <thomas.petazzoni@bootlin.com>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        Nadav Haklai <nadavh@marvell.com>,
+        Yan Markman <ymarkman@marvell.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "mw@semihalf.com" <mw@semihalf.com>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "atenart@kernel.org" <atenart@kernel.org>
+Subject: RE: [EXT] Re: [PATCH v2 RFC net-next 08/18] net: mvpp2: add FCA
+ periodic timer configurations
+Thread-Topic: [EXT] Re: [PATCH v2 RFC net-next 08/18] net: mvpp2: add FCA
+ periodic timer configurations
+Thread-Index: AQHW8kZjKx4oGFLdHkqof+xVkN95zqo2sHGAgAAngvA=
+Date:   Sun, 24 Jan 2021 14:43:30 +0000
+Message-ID: <CO6PR18MB3873F47DE5BD28951CC3D2E9B0BE9@CO6PR18MB3873.namprd18.prod.outlook.com>
+References: <1611488647-12478-1-git-send-email-stefanc@marvell.com>
+ <1611488647-12478-9-git-send-email-stefanc@marvell.com>
+ <20210124121443.GU1551@shell.armlinux.org.uk>
+In-Reply-To: <20210124121443.GU1551@shell.armlinux.org.uk>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: armlinux.org.uk; dkim=none (message not signed)
+ header.d=none;armlinux.org.uk; dmarc=none action=none
+ header.from=marvell.com;
+x-originating-ip: [80.230.11.87]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 6bad2b73-d646-4cc6-0a69-08d8c0766b1b
+x-ms-traffictypediagnostic: MWHPR18MB1087:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <MWHPR18MB1087E4D35F1A589681EAEABEB0BE9@MWHPR18MB1087.namprd18.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: ejtdy5JUZMIuHWUlbsNirhzw19PgqTdcXBmkF8zPUhof43ffjePRuiGwxBSjC/RSZ9OrjUI22AwqgJmZyMJhp6UWZB9hgm4VNOo2Dph3yP0KVlzGNPFS2MQy23a9N1uXyhooBHY7x4pG9bKJXkLcsIXh6ttUkgJFmhZX/KemJY2K/92xbKBh7hb5ol7sk7MC6K5lDjrw+1B/52TcH+VU4NT07x8Fg0S2eyLm4FTOaXvtFiseNTB+E798IdXSrFZzzuSIVHY8VmVViEEjSX2nLqvo8pCWfY7Wlt1WhAn0FoLPHYfVOa8HIPWuN/9jAEBtubfWf0nV8dvkQ6qftjRvtXhZyqGDPf+eaqPpdlJY5lktRSSr61nVPwUQekBdXohT6yw4YA4OIItJgzuM/LZLIw==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO6PR18MB3873.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(346002)(396003)(136003)(366004)(39860400002)(66946007)(76116006)(7696005)(26005)(186003)(4326008)(54906003)(8676002)(8936002)(66556008)(2906002)(52536014)(66446008)(64756008)(66476007)(5660300002)(71200400001)(9686003)(316002)(55016002)(478600001)(86362001)(6506007)(33656002)(6916009)(4744005);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?tmu9jyCSlXSJo2XsRxmIBp2Mwa7NqO7nfOhg/5vusZqYevf/xV+aQfYiQJzV?=
+ =?us-ascii?Q?UniBRTQ011KOhG4pC0CRL4IqDZ7ljzdIP57Il79BNcbFtBa5UR3BABTr+24L?=
+ =?us-ascii?Q?yB62eHVtlyYp3/g7DoTdisIJIuGZYkXbzJxu9wlrDAMccV3XyMwU0h/1Oo6Q?=
+ =?us-ascii?Q?1zI4+eR6qnD7XWJZc695TC22xpn2O4mlQVOPiG6Z0nw0H3X0Gu+tEDASh0vs?=
+ =?us-ascii?Q?frgW0CPBtrsGhN28hTtlQyivSkh4qlQDq8EGXp1ypAX+wTvWOCYWi3ok1AuU?=
+ =?us-ascii?Q?/idTwh67EZMJimT3dhtBOGqa5NMPITmslC1jSKI/6cLDbBlZBnuMBwkReQ2l?=
+ =?us-ascii?Q?Sti/LShtcAboehS1UuyVUDgA9gxmAdI3k1sLVHxgM+CJw2xuiemgxLsQ4gGh?=
+ =?us-ascii?Q?uew+PDc7WYOZQxKj9E/Qpa4y2z5SbR1Y6q+rrA648ksNj6AoLtE5BG0bdC9j?=
+ =?us-ascii?Q?uetiv2/dyqZ/qZaS790DvVXtK6ZqtxuSMClQBe9n3Njt2woHIvt1/AeuTJ6+?=
+ =?us-ascii?Q?9xfcx6p6k0sm6W2v0xHQzPJYVfRoya/1ViiP129g/O1+JxKwfJY8g8benvJB?=
+ =?us-ascii?Q?aKKNtJ0E6yVVIncNjmvHE87xCvR90/AomD8ySVDReCOypNzq+3ydg9gP9dw7?=
+ =?us-ascii?Q?7VfjLWLez31SmOCODqrHQSMHuSkZIm5ckfeTHP6K+LXSiufM7bPxzprUtrY9?=
+ =?us-ascii?Q?WNfaoptcI0qwnVPwZmXETxLweK98dzJVouto4WNulOhDA84I8mKorvhMLE2Y?=
+ =?us-ascii?Q?kfCAAIWuaD+zAjRG9csYwEAFYk54EXgbVqu2gWK2jWPGFhPw23DFt66HzZp4?=
+ =?us-ascii?Q?p4WsBJQthqDXXCyyB+lc79ABxJhnjn9txsZg/8d6sqiPxXe8nbVYvOpnByeh?=
+ =?us-ascii?Q?WXJ28QhOTnzaQ2XmGGm4S9B7pz6Rdt5Byhffmbly5Vrq4BLRfX+PM3oQRTrL?=
+ =?us-ascii?Q?yFPPnsHASSkjz8ewlTYM974P5MYZuGbhRbrw3CeIPp7n3Mxn8iDHGv4CHH61?=
+ =?us-ascii?Q?g7E6K5A9MTGN0QU+hUvChbCegxSJLmprRo/xHzatXriQjCnxQMNkV0Rfd0j/?=
+ =?us-ascii?Q?Cu06IegG?=
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: CO6PR18MB3873.namprd18.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6bad2b73-d646-4cc6-0a69-08d8c0766b1b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 24 Jan 2021 14:43:30.7249
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: x8K5DUXgaxntODFvrMStBnZ5MgRb74W3uFntgmazG8+LKCayKbcTQhvKKsEtQ65F2f33kHZAPSv1i9Tvclz2Qg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR18MB1087
+X-OriginatorOrg: marvell.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
+ definitions=2021-01-24_05:2021-01-22,2021-01-24 signatures=0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Pravin,
+>=20
+> ----------------------------------------------------------------------
+> On Sun, Jan 24, 2021 at 01:43:57PM +0200, stefanc@marvell.com wrote:
+> > +/* Set Flow Control timer x140 faster than pause quanta to ensure
+> > +that link
+> > + * partner won't send taffic if port in XOFF mode.
+>=20
+> Can you explain more why 140 times faster is desirable here? Why 140 time=
+s
+> and not, say, 10 times faster? Where does this figure come from, and what=
+ is
+> the reasoning? Is there a switch that requires it?
 
-A couple more comments around the GTP_METADATA bits:
+I tested with 140.
+Actually regarding to spec each quanta should be equal to 512 bit times.
+In 10G bit time is 0.1ns.
+So It actually should be:
+FC_CLK_DIVIDER =3D 10000 / 512 =3D ~20. I took some buffer and made it 140.
+So maybe I can do it 100?
 
-On 23/01/2021 20:59, Jonas Bonn wrote:
-> From: Pravin B Shelar <pbshelar@fb.com>
-> 
-> This patch adds support for flow based tunneling, allowing to send and
-> receive GTP tunneled packets via the (lightweight) tunnel metadata
-> mechanism.  This would allow integration with OVS and eBPF using flow
-> based tunneling APIs.
-> 
-> The mechanism used here is to get the required GTP tunnel parameters
-> from the tunnel metadata instead of looking up a pre-configured PDP
-> context.  The tunnel metadata contains the necessary information for
-> creating the GTP header.
-> 
-> Signed-off-by: Jonas Bonn <jonas@norrbonn.se>
-> ---
->   drivers/net/gtp.c                  | 160 +++++++++++++++++++++++++----
->   include/uapi/linux/gtp.h           |  12 +++
->   include/uapi/linux/if_tunnel.h     |   1 +
->   tools/include/uapi/linux/if_link.h |   1 +
->   4 files changed, 156 insertions(+), 18 deletions(-)
-> 
-
-<...>
-
->   
-> +static int gtp_set_tun_dst(struct pdp_ctx *pctx, struct sk_buff *skb,
-> +			   unsigned int hdrlen)
-> +{
-> +	struct metadata_dst *tun_dst;
-> +	struct gtp1_header *gtp1;
-> +	int opts_len = 0;
-> +	__be64 tid;
-> +
-> +	gtp1 = (struct gtp1_header *)(skb->data + sizeof(struct udphdr));
-> +
-> +	tid = key32_to_tunnel_id(gtp1->tid);
-> +
-> +	if (unlikely(gtp1->flags & GTP1_F_MASK))
-> +		opts_len = sizeof(struct gtpu_metadata);
-
-So if there are GTP flags sets, you're saying that this no longer a 
-T-PDU but something else.  That's wrong... the flags indicate the 
-presence of extensions to the GTP header itself.
-
-> +
-> +	tun_dst = udp_tun_rx_dst(skb,
-> +			pctx->sk->sk_family, TUNNEL_KEY, tid, opts_len);
-> +	if (!tun_dst) {
-> +		netdev_dbg(pctx->dev, "Failed to allocate tun_dst");
-> +		goto err;
-> +	}
-> +
-> +	netdev_dbg(pctx->dev, "attaching metadata_dst to skb, gtp ver %d hdrlen %d\n",
-> +		   pctx->gtp_version, hdrlen);
-> +	if (unlikely(opts_len)) {
-> +		struct gtpu_metadata *opts;
-> +
-> +		opts = ip_tunnel_info_opts(&tun_dst->u.tun_info);
-> +		opts->ver = GTP_METADATA_V1;
-> +		opts->flags = gtp1->flags;
-> +		opts->type = gtp1->type;
-> +		netdev_dbg(pctx->dev, "recved control pkt: flag %x type: %d\n",
-> +			   opts->flags, opts->type);
-> +		tun_dst->u.tun_info.key.tun_flags |= TUNNEL_GTPU_OPT;
-> +		tun_dst->u.tun_info.options_len = opts_len;
-> +		skb->protocol = htons(0xffff);         /* Unknown */
-
-It might be relevant to set protocol to unknown for 'end markers' (i.e. 
-gtp1->type == 0xfe), but not for everything that happens to have flag 
-bits set.  'flags' and 'type' are independent of each other and need to 
-handled as such.
-
-/Jonas
+Regards,
+Stefan.
