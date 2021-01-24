@@ -2,47 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CF38430195A
-	for <lists+netdev@lfdr.de>; Sun, 24 Jan 2021 04:27:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4A0A730195E
+	for <lists+netdev@lfdr.de>; Sun, 24 Jan 2021 04:39:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726288AbhAXD1O (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sat, 23 Jan 2021 22:27:14 -0500
-Received: from mail.kernel.org ([198.145.29.99]:34254 "EHLO mail.kernel.org"
+        id S1726498AbhAXDhM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sat, 23 Jan 2021 22:37:12 -0500
+Received: from mail.kernel.org ([198.145.29.99]:35050 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726375AbhAXD1J (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Sat, 23 Jan 2021 22:27:09 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 90CB322D0A;
-        Sun, 24 Jan 2021 03:26:25 +0000 (UTC)
+        id S1726398AbhAXDhG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Sat, 23 Jan 2021 22:37:06 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C12AE22583;
+        Sun, 24 Jan 2021 03:36:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611458786;
-        bh=+OOJlwiRevgXr+hw4L13I8DH0AsYtPCQi4EnGrYc5gM=;
+        s=k20201202; t=1611459386;
+        bh=akMV4ADvawbd5xbEeRfWHTqtAQ9OXS7p8jk2hktPLqM=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=bVGwaYitrqgUvCcJOYsC1tYWpRN4CdN8TKkLfKjCod6DpsRvHkz9rkU0B2RwfiXI+
-         ykwg5qHnGPOQX1tgAB+8o4iM45MnLB+TdCkS2+sv78yWG6MERZJlSYR97VNWMCR/Zs
-         RCkvsvEudcMYMX+e590qz7nEXQI+2OS4IAxsmec3F2bhuRTdGUg2fn7jQulwK02UEv
-         oFv9qXKf01OlO4Ngw5lEEE1RC20WZqz8Kn7iLiUISwG2UVWLTfPAVPiVrC8Pmzib/X
-         ddIA07xY0XV6QGGQJJvWN1/hjwNQre4zccWHcvs34vgirLYDPUPlxLTvibKFy0k0B0
-         hNjc++Sv/eDGA==
-Date:   Sat, 23 Jan 2021 19:26:24 -0800
+        b=kA65blENSwCIRyopmG7/qZQr2tV13FW31+h8vPKRA0+GyXp762UMUwlkBXRLGlY8I
+         poh8M0V0iUgCKZsQIyHZef5IOLYytkFGSx38X45TxgN1Gq2/UOPm4+bgWuCn8gT6l2
+         Mda78BAlNfdyXIoBKg+KyRy0jKqA18QHnK2e08jX19AjcCm04qBW2TquPIEyJGG9c5
+         bRAJfQgPAfK1Yj5lfQozmhjEIzhA9ECATg6hUXK/vcbbqtciEzbxWVlhHs5H2wx7R0
+         NPVZr+GJEy7Y2RvXYL7WAbuiOHmPS99cvfe7O//Jk5AF6m7R7FUnSkXzbAsrMpvDCK
+         Trahv4lHBQzog==
+Date:   Sat, 23 Jan 2021 19:36:24 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Lukas Wunner <lukas@wunner.de>
-Cc:     "Pablo Neira Ayuso" <pablo@netfilter.org>,
-        Jozsef Kadlecsik <kadlec@netfilter.org>,
-        Florian Westphal <fw@strlen.de>,
-        netfilter-devel@vger.kernel.org, coreteam@netfilter.org,
-        netdev@vger.kernel.org, Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Thomas Graf <tgraf@suug.ch>,
-        Laura Garcia Liebana <nevola@gmail.com>,
-        John Fastabend <john.fastabend@gmail.com>,
+To:     Enke Chen <enkechen2020@gmail.com>,
+        Neal Cardwell <ncardwell@google.com>,
+        Eric Dumazet <edumazet@google.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Netdev <netdev@vger.kernel.org>,
         LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH nf-next v4 1/5] net: sched: Micro-optimize egress
- handling
-Message-ID: <20210123192624.4cee3b7d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <a2a8af1622dff2bfd51d446aa8da2c1d2f6f543c.1611304190.git.lukas@wunner.de>
-References: <cover.1611304190.git.lukas@wunner.de>
-        <a2a8af1622dff2bfd51d446aa8da2c1d2f6f543c.1611304190.git.lukas@wunner.de>
+Subject: Re: [PATCH net] tcp: make TCP_USER_TIMEOUT accurate for zero window
+ probes
+Message-ID: <20210123193624.6111b292@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210124005643.GH129261@localhost.localdomain>
+References: <20210122191306.GA99540@localhost.localdomain>
+        <20210122174325.269ac329@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20210123022823.GA100578@localhost.localdomain>
+        <20210122183424.59c716a1@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <20210123024534.GB100578@localhost.localdomain>
+        <CADVnQy=zzrFf=sF+oMwjm+Pp-VJ-veC93poVp0XUPFKRoiGRUQ@mail.gmail.com>
+        <20210124005643.GH129261@localhost.localdomain>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -50,73 +51,48 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 22 Jan 2021 09:47:01 +0100 Lukas Wunner wrote:
-> sch_handle_egress() returns either the skb or NULL to signal to its
-> caller __dev_queue_xmit() whether a packet should continue to be
-> processed.
+On Sat, 23 Jan 2021 16:56:43 -0800 Enke Chen wrote:
+> On Sat, Jan 23, 2021 at 07:19:13PM -0500, Neal Cardwell wrote:
+> > On Fri, Jan 22, 2021 at 9:45 PM Enke Chen <enkechen2020@gmail.com> wrote:  
+> > > On Fri, Jan 22, 2021 at 06:34:24PM -0800, Jakub Kicinski wrote:  
+> > > > On Fri, 22 Jan 2021 18:28:23 -0800 Enke Chen wrote:  
+> > > > > In terms of backporting, this patch should go together with:
+> > > > >
+> > > > >     9d9b1ee0b2d1 tcp: fix TCP_USER_TIMEOUT with zero window  
+> > > >
+> > > > As in it:
+> > > >
+> > > > Fixes: 9d9b1ee0b2d1 tcp: fix TCP_USER_TIMEOUT with zero window
+> > > >
+> > > > or does it further fix the same issue, so:
+> > > >
+> > > > Fixes: 9721e709fa68 ("tcp: simplify window probe aborting on USER_TIMEOUT")
+> > > >
+> > > > ?  
+> > >
+> > > Let me clarify:
+> > >
+> > > 1) 9d9b1ee0b2d1 tcp: fix TCP_USER_TIMEOUT with zero window
+> > >
+> > >    fixes the bug and makes it work.
+> > >
+> > > 2) The current patch makes the TCP_USER_TIMEOUT accurate for 0-window probes.
+> > >    It's independent.  
+> > 
+> > Patch (2) ("tcp: make TCP_USER_TIMEOUT accurate for zero window
+> > probes") is indeed conceptually independent of (1) but its
+> > implementation depends on the icsk_probes_tstamp field defined in (1),
+> > so AFAICT (2) cannot be backported further back than (1).
+> > 
+> > Patch (1) fixes a bug in 5.1:
+> >     Fixes: 9721e709fa68 ("tcp: simplify window probe aborting on USER_TIMEOUT")
+> > 
+> > So probably (1) and (2) should be backported as a pair, and only back
+> > as far as 5.1. (That covers 2 LTS kernels, 5.4 and 5.10, so hopefully
+> > that is good enough.)
 > 
-> The skb is always non-NULL, otherwise __dev_queue_xmit() would hit a
-> NULL pointer deref right at its top.
-> 
-> But the compiler doesn't know that.  So if sch_handle_egress() signals
-> success by returning the skb, the "if (!skb) goto out;" statement
-> results in a gratuitous NULL pointer check in the Assembler output.
+> What you described is more accurate, and is correct.
 
-Which exact compiler are we talking about it? Did you report this?
-As Eric pointed the compiler should be able to figure this out quite
-easily.
+That makes it clear.
 
-> Avoid by telling the compiler that __dev_queue_xmit() is never passed a
-> NULL skb.  This also eliminates another gratuitous NULL pointer check in
-> __dev_queue_xmit()
->   qdisc_pkt_len_init()
->     skb_header_pointer()
->       __skb_header_pointer()
-> 
-> The speedup is barely measurable:
-> Before: 1877 1875 1878 1874 1882 1873 Mb/sec
-> After:  1877 1877 1880 1883 1888 1886 Mb/sec
-> 
-> However we're about to add a netfilter egress hook to __dev_queue_xmit()
-> and without the micro-optimization, it will result in a performance
-> degradation which is indeed measurable:
-> With netfilter hook:               1853 1852 1850 1848 1849 1851 Mb/sec
-> With netfilter hook + micro-optim: 1874 1877 1881 1875 1876 1876 Mb/sec
-> 
-> The performance degradation is caused by a JNE instruction ("if (skb)")
-> being flipped to a JE instruction ("if (!skb)") once the netfilter hook
-> is added.  The micro-optimization removes the test and jump instructions
-> altogether.
-> 
-> Measurements were performed on a Core i7-3615QM.  Reproducer:
-> ip link add dev foo type dummy
-> ip link set dev foo up
-> tc qdisc add dev foo clsact
-> tc filter add dev foo egress bpf da bytecode '1,6 0 0 0,'
-> modprobe pktgen
-> echo "add_device foo" > /proc/net/pktgen/kpktgend_3
-> samples/pktgen/pktgen_bench_xmit_mode_queue_xmit.sh -i foo -n 400000000 -m "11:11:11:11:11:11" -d 1.1.1.1
-> 
-> Signed-off-by: Lukas Wunner <lukas@wunner.de>
-> Cc: John Fastabend <john.fastabend@gmail.com>
-> Cc: Daniel Borkmann <daniel@iogearbox.net>
-> Cc: Alexei Starovoitov <ast@kernel.org>
-> Cc: Eric Dumazet <edumazet@google.com>
-> Cc: Thomas Graf <tgraf@suug.ch>
-> ---
->  net/core/dev.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/net/core/dev.c b/net/core/dev.c
-> index 7afbb642e203..4c16b9932823 100644
-> --- a/net/core/dev.c
-> +++ b/net/core/dev.c
-> @@ -4072,6 +4072,7 @@ struct netdev_queue *netdev_core_pick_tx(struct net_device *dev,
->   *      the BH enable code must have IRQs enabled so that it will not deadlock.
->   *          --BLG
->   */
-> +__attribute__((nonnull(1)))
->  static int __dev_queue_xmit(struct sk_buff *skb, struct net_device *sb_dev)
->  {
->  	struct net_device *dev = skb->dev;
-
+I added a Fixes tag, reworded the message slightly and applied, thanks!
