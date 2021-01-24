@@ -2,158 +2,119 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 70424301B9F
-	for <lists+netdev@lfdr.de>; Sun, 24 Jan 2021 12:56:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DC28D301BBA
+	for <lists+netdev@lfdr.de>; Sun, 24 Jan 2021 13:05:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726687AbhAXLy6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Jan 2021 06:54:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42350 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726987AbhAXLxW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 Jan 2021 06:53:22 -0500
-Received: from mail-oo1-xc29.google.com (mail-oo1-xc29.google.com [IPv6:2607:f8b0:4864:20::c29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05F4FC061756
-        for <netdev@vger.kernel.org>; Sun, 24 Jan 2021 03:52:41 -0800 (PST)
-Received: by mail-oo1-xc29.google.com with SMTP id r199so2606354oor.2
-        for <netdev@vger.kernel.org>; Sun, 24 Jan 2021 03:52:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=daynix-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=pu6Zr2Jo68blbhpXwzl9uRs7KbDV3skHPD8u3gz3sVI=;
-        b=hLK0CiEKpK6Efjx+XUatItsaWE/mRmo/IWq/x6fk1BFPF2i7i2bt6e2DFk6OygAPzE
-         skDu0spVWAOL2kvuzdgaIX2Qzsskv8asVzkubHi6iX0Ny6xxFzxJjd3ejJAIKNpcdQmB
-         l2s+Xraztpfd/HTF6ODoGotgqxTnd9XN8vvHZVJfZ2UjfoOC1hS7U8dgydDpnwXWPG3Z
-         KVKPhLqebfmRllhbj66PsU7MRJ0MA6C01kJ1uNo0VpBNMHDFWjksnk6joesUdAeLg94o
-         8DWm9RaNOF0kKvdzaOGdAbgJGAVRkvQey/hZo8Xq3kMC+AYT1hayxKGLfKPk03C3pgXo
-         G36w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=pu6Zr2Jo68blbhpXwzl9uRs7KbDV3skHPD8u3gz3sVI=;
-        b=oFqYlfc38ExrbiHrNFfo8rt5mqSa/z9TCQZ81a9e/l52055TUIp8VVLXoiIxZ8a/LL
-         dQWOOhE+8z2rzw45/dZzGay99d00kU4WfZbhihcAhxD9l1UDT6fEMi+0Ci0kHqY2yb3I
-         jY1oiXjqS5l3G9HWG5cpZv2Bkgrvulo8rH3gX1czOhNPr9VIoxa21XcpeqlrlEkCzuLa
-         pRJHoUvJ+hPxwwCFJ49p4U56BqUGfYQwuFL6r8RMcLeWAp1WK2wfoyQID/WU4YCBLCbs
-         uE5idxRSCURqIFD6vvOh6Jh/Ws/+7dCd29+TNKlKjPTOgtCnYndxyTkEla3IlLN0kazF
-         WqKw==
-X-Gm-Message-State: AOAM5326G9TGrAvkwY5OEQLdhuCgVs56d9szSLDTsQI7Y8DH9QLpN+x9
-        HoqHcKboEXXkvKsU2jxsiJ4Pi+MQGqeesrrYv6C5Cw==
-X-Google-Smtp-Source: ABdhPJwt8xWKLlXxiJG8fjcBaxoKGZnK9ey4WRGE+AXDo7swV/wzVlPEyFF7MT2HJelv6cWoDDRUCoFqXQlbsX91d4E=
-X-Received: by 2002:a4a:7353:: with SMTP id e19mr9268056oof.55.1611489161343;
- Sun, 24 Jan 2021 03:52:41 -0800 (PST)
+        id S1726834AbhAXMEf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Jan 2021 07:04:35 -0500
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:29258 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726665AbhAXLrk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 Jan 2021 06:47:40 -0500
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 10OBikn7025902;
+        Sun, 24 Jan 2021 03:44:46 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : mime-version : content-type; s=pfpt0220;
+ bh=VHYkGEOVBEvSapJuS7ktnJMfO/w7oGBul9I8TK0Epi4=;
+ b=R5cfG/bkqKcv5IkhFe+X3kqcaMVh/rH53SO/S2vXZb/iE+wuKoFjjIHBXq2ZLPoM3d7d
+ WvRvHy9hA4ZEeB+p36I4+fbo2i+y8l79HcVRp4TNbWe6Z5Ng6cY70Ls4WmV2AdQjaYF1
+ prCW9vSx4okGdEum5cWL0F2mepjNu0mETTnazk2XEe2QJqbVN/UOj4iPA0vMvJXvjDDv
+ 5rhcNGnaqFOweE1RC96O0OJajyxOgleu11PrygwmetUG1nwhuxeOW5QPC8uhs7cZ5M5k
+ mTOEFQeXxJhxUAzff29pVeZnYTcXyZCYAmWJx/3w6ysvkok2ay0FgpVH4virvppYOSJa Ew== 
+Received: from dc5-exch02.marvell.com ([199.233.59.182])
+        by mx0b-0016f401.pphosted.com with ESMTP id 368m6u9ssx-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Sun, 24 Jan 2021 03:44:46 -0800
+Received: from SC-EXCH02.marvell.com (10.93.176.82) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sun, 24 Jan
+ 2021 03:44:44 -0800
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH02.marvell.com
+ (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Sun, 24 Jan
+ 2021 03:44:44 -0800
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Sun, 24 Jan 2021 03:44:43 -0800
+Received: from stefan-pc.marvell.com (stefan-pc.marvell.com [10.5.25.21])
+        by maili.marvell.com (Postfix) with ESMTP id F0D7B3F7040;
+        Sun, 24 Jan 2021 03:44:40 -0800 (PST)
+From:   <stefanc@marvell.com>
+To:     <netdev@vger.kernel.org>
+CC:     <thomas.petazzoni@bootlin.com>, <davem@davemloft.net>,
+        <nadavh@marvell.com>, <ymarkman@marvell.com>,
+        <linux-kernel@vger.kernel.org>, <stefanc@marvell.com>,
+        <kuba@kernel.org>, <linux@armlinux.org.uk>, <mw@semihalf.com>,
+        <andrew@lunn.ch>, <rmk+kernel@armlinux.org.uk>,
+        <atenart@kernel.org>
+Subject: [PATCH v2 RFC net-next 00/18] net: mvpp2: Add TX Flow Control support
+Date:   Sun, 24 Jan 2021 13:43:49 +0200
+Message-ID: <1611488647-12478-1-git-send-email-stefanc@marvell.com>
+X-Mailer: git-send-email 1.9.1
 MIME-Version: 1.0
-References: <20210112194143.1494-1-yuri.benditovich@daynix.com>
- <20210112194143.1494-4-yuri.benditovich@daynix.com> <CAOEp5Ocz-xGq5=e=WY0aipEYHEhN-wxekNaAiqAS+HsOF8TcDQ@mail.gmail.com>
- <CAOEp5OevYR5FWVMfQ_esmWTKtz9_ddTupbe7FtBFQ=sv2kEt2w@mail.gmail.com> <CAADnVQJLN0sFyKdAmc6Pikv8Ww9OocnK_VXMG=ZLSMONHkqe4Q@mail.gmail.com>
-In-Reply-To: <CAADnVQJLN0sFyKdAmc6Pikv8Ww9OocnK_VXMG=ZLSMONHkqe4Q@mail.gmail.com>
-From:   Yuri Benditovich <yuri.benditovich@daynix.com>
-Date:   Sun, 24 Jan 2021 13:52:29 +0200
-Message-ID: <CAOEp5OeV0y5-vw3Kufe_=rszOu8QPsHPrFjtn-fAM_TJtBTuhA@mail.gmail.com>
-Subject: Re: [RFC PATCH 3/7] tun: allow use of BPF_PROG_TYPE_SCHED_CLS program type
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "Michael S . Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Willem de Bruijn <willemb@google.com>,
-        "Gustavo A . R . Silva" <gustavoars@kernel.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>, decui@microsoft.com,
-        cai@lca.pw, Jakub Sitnicki <jakub@cloudflare.com>,
-        Marco Elver <elver@google.com>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Network Development <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org,
-        bpf <bpf@vger.kernel.org>, Yan Vugenfirer <yan@daynix.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
+ definitions=2021-01-24_04:2021-01-22,2021-01-24 signatures=0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 20, 2021 at 8:45 PM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Tue, Jan 12, 2021 at 12:55 PM Yuri Benditovich
-> <yuri.benditovich@daynix.com> wrote:
-> >
-> > On Tue, Jan 12, 2021 at 10:40 PM Yuri Benditovich
-> > <yuri.benditovich@daynix.com> wrote:
-> > >
-> > > On Tue, Jan 12, 2021 at 9:42 PM Yuri Benditovich
-> > > <yuri.benditovich@daynix.com> wrote:
-> > > >
-> > > > This program type can set skb hash value. It will be useful
-> > > > when the tun will support hash reporting feature if virtio-net.
-> > > >
-> > > > Signed-off-by: Yuri Benditovich <yuri.benditovich@daynix.com>
-> > > > ---
-> > > >  drivers/net/tun.c | 2 ++
-> > > >  1 file changed, 2 insertions(+)
-> > > >
-> > > > diff --git a/drivers/net/tun.c b/drivers/net/tun.c
-> > > > index 7959b5c2d11f..455f7afc1f36 100644
-> > > > --- a/drivers/net/tun.c
-> > > > +++ b/drivers/net/tun.c
-> > > > @@ -2981,6 +2981,8 @@ static int tun_set_ebpf(struct tun_struct *tun, struct tun_prog __rcu **prog_p,
-> > > >                 prog = NULL;
-> > > >         } else {
-> > > >                 prog = bpf_prog_get_type(fd, BPF_PROG_TYPE_SOCKET_FILTER);
-> > > > +               if (IS_ERR(prog))
-> > > > +                       prog = bpf_prog_get_type(fd, BPF_PROG_TYPE_SCHED_CLS);
-> > > >                 if (IS_ERR(prog))
-> > > >                         return PTR_ERR(prog);
-> > > >         }
-> > >
-> > > Comment from Alexei Starovoitov:
-> > > Patches 1 and 2 are missing for me, so I couldn't review properly,
-> > > but this diff looks odd.
-> > > It allows sched_cls prog type to attach to tun.
-> > > That means everything that sched_cls progs can do will be done from tun hook?
-> >
-> > We do not have an intention to modify the packet in this steering eBPF.
->
-> The intent is irrelevant. Using SCHED_CLS here will let users modify the packet
-> and some users will do so. Hence the tun code has to support it.
->
-> > There is just one function that unavailable for BPF_PROG_TYPE_SOCKET_FILTER
-> > that the eBPF needs to make possible to deliver the hash to the guest
-> > VM - it is 'bpf_set_hash'
-> >
-> > Does it mean that we need to define a new eBPF type for socket filter
-> > operations + set_hash?
-> >
-> > Our problem is that the eBPF calculates 32-bit hash, 16-bit queue
-> > index and 8-bit of hash type.
-> > But it is able to return only 32-bit integer, so in this set of
-> > patches the eBPF returns
-> > queue index and hash type and saves the hash in skb->hash using bpf_set_hash().
->
-> bpf prog can only return a 32-bit integer. That's true.
-> But the prog can use helpers to set any number of bits and variables.
-> bpf_set_hash_v2() with hash, queue and index arguments could fit this purpose,
-> but if you allow it for SCHED_CLS type,
+From: Stefan Chulski <stefanc@marvell.com>
 
-Do I understand correctly that this means:
-1. Creation of new helper like
-https://lists.linuxfoundation.org/pipermail/bridge/2020-July/013036.html
-2. Validation on tun side that the BPF uses only limited subset of
-helpers available for SCHED_CLS
+Armada hardware has a pause generation mechanism in GOP (MAC).
+The GOP generate flow control frames based on an indication programmed in Ports Control 0 Register. There is a bit per port.
+However assertion of the PortX Pause bits in the ports control 0 register only sends a one time pause.
+To complement the function the GOP has a mechanism to periodically send pause control messages based on periodic counters.
+This mechanism ensures that the pause is effective as long as the Appropriate PortX Pause is asserted.
 
-> tc side of the code should be ready to deal with that too and this extended
-> helper should be meaningful for both tc and tun.
->
-> In general if the purpose of the prog is to compute three values they better be
-> grouped together. Returned two of them via ORed 32-bit integer and
-> returning 32-bit via bpf_set_hash is an awkward api.
+Problem is that Packet Processor that actually can drop packets due to lack of resources not connected to the GOP flow control generation mechanism.
+To solve this issue Armada has firmware running on CM3 CPU dedicated for Flow Control support.
+Firmware monitors Packet Processor resources and asserts XON/XOFF by writing to Ports Control 0 Register.
+
+MSS shared SRAM memory used to communicate between CM3 firmware and PP2 driver.
+During init PP2 driver informs firmware about used BM pools, RXQs, congestion and depletion thresholds.
+
+The pause frames are generated whenever congestion or depletion in resources is detected.
+The back pressure is stopped when the resource reaches a sufficient level.
+So the congestion/depletion and sufficient level implement a hysteresis that reduces the XON/XOFF toggle frequency.
+
+Packet Processor v23 hardware introduces support for RX FIFO fill level monitor.
+Patch "add PPv23 version definition" to differ between v23 and v22 hardware.
+Patch "add TX FC firmware check" verifies that CM3 firmware supports Flow Control monitoring.
+
+v1 --> v2
+- Add memory requirements information
+- Add EPROBE_DEFER if of_gen_pool_get return NULL
+- Move Flow control configuration to mvpp2_mac_link_up callback
+- Add firmware version info with Flow control support
+
+Konstantin Porotchkin (1):
+  dts: marvell: add CM3 SRAM memory to cp115 ethernet device tree
+
+Stefan Chulski (17):
+  doc: marvell: add cm3-mem device tree bindings description
+  net: mvpp2: add CM3 SRAM memory map
+  net: mvpp2: add PPv23 version definition
+  net: mvpp2: always compare hw-version vs MVPP21
+  net: mvpp2: increase BM pool size to 2048 buffers
+  net: mvpp2: increase RXQ size to 1024 descriptors
+  net: mvpp2: add FCA periodic timer configurations
+  net: mvpp2: add FCA RXQ non occupied descriptor threshold
+  net: mvpp2: add spinlock for FW FCA configuration path
+  net: mvpp2: enable global flow control
+  net: mvpp2: add RXQ flow control configurations
+  net: mvpp2: add ethtool flow control configuration support
+  net: mvpp2: add BM protection underrun feature support
+  net: mvpp2: add PPv23 RX FIFO flow control
+  net: mvpp2: set 802.3x GoP Flow Control mode
+  net: mvpp2: limit minimum ring size to 1024 descriptors
+  net: mvpp2: add TX FC firmware check
+
+ Documentation/devicetree/bindings/net/marvell-pp2.txt |   1 +
+ arch/arm64/boot/dts/marvell/armada-cp11x.dtsi         |  10 +
+ drivers/net/ethernet/marvell/mvpp2/mvpp2.h            | 130 ++++-
+ drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c       | 558 +++++++++++++++++++-
+ 4 files changed, 657 insertions(+), 42 deletions(-)
+
+-- 
+1.9.1
+
