@@ -2,183 +2,136 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ACD99301ECD
-	for <lists+netdev@lfdr.de>; Sun, 24 Jan 2021 21:48:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D7E9E301ED4
+	for <lists+netdev@lfdr.de>; Sun, 24 Jan 2021 21:53:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726333AbhAXUs1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Jan 2021 15:48:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43696 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726103AbhAXUsZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 Jan 2021 15:48:25 -0500
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A67EC061573
-        for <netdev@vger.kernel.org>; Sun, 24 Jan 2021 12:47:45 -0800 (PST)
-Received: by mail-lf1-x132.google.com with SMTP id u25so14894264lfc.2
-        for <netdev@vger.kernel.org>; Sun, 24 Jan 2021 12:47:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Y1+QkENKYbAy+U9VrpZEltmGMjYM6ZhBJqF37mUfpGs=;
-        b=g0lAGWxKSAloCobA+9FCSKBLxbJ/Wrk2yrgPlgwrUmSVNNVwE/tIx5Knqh/TGETwiz
-         fnb4cQa7wbZS2C7cJPzsiS+Lcr7TIb5EqYqhVrUfmdkotfByhCZS59U43ZLLOv2GKCu7
-         p/ltc12BAFLeaiYfq5VkvUCq3jQdNqlsgE31o=
+        id S1726449AbhAXUwG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Sun, 24 Jan 2021 15:52:06 -0500
+Received: from mail-io1-f71.google.com ([209.85.166.71]:56204 "EHLO
+        mail-io1-f71.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726103AbhAXUwB (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Sun, 24 Jan 2021 15:52:01 -0500
+Received: by mail-io1-f71.google.com with SMTP id h25so4098446ioh.22
+        for <netdev@vger.kernel.org>; Sun, 24 Jan 2021 12:51:45 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Y1+QkENKYbAy+U9VrpZEltmGMjYM6ZhBJqF37mUfpGs=;
-        b=oD7coc4CwMwaYrKtbGO7yDvAgc/MUAIbqUn/Js+MBN86ayfg6m+/41ZmX+UuCjAwCU
-         SBnv71CHpssrIDVT/YAQ3BEVSSteE7kjI7wDiwM649wZLbfggaeEovYFnwRKWMWm0SPb
-         TBNaPvttM+APd0h5ndndADkgSJJBurBcaybwasPWhts6XWIyor7aLPN4ZGlV9BKCWRkK
-         ac97GrXqOV3U2Bk0DlCpJC5febMDRJmUhnACfH3kljQDaNFIzF/Dksel5quOqb6J3Wuz
-         J3K765EJHjXLzN9m44xpxP3hknW9AVHW8xa5gd+53QA03g9ny2hDXw1T416lk/MOjNZ9
-         Roxg==
-X-Gm-Message-State: AOAM531JZtV/mS8/T9UiNVJonL6C50b0TBagYgB3XwASB4u4p+R5NEgC
-        c96bg8IAMroPcJUGdwAw5NJSRhr9e5YQ3HI3aS+8nA==
-X-Google-Smtp-Source: ABdhPJz5CmHOdyj+rN+RHjFnDtGfLpDGabC1JacCr75HJDhsLEthd9TW3Y1zk9VbCU5z86Wj7AvLij8wCh91X9S2cwg=
-X-Received: by 2002:a19:c17:: with SMTP id 23mr2111276lfm.464.1611521263420;
- Sun, 24 Jan 2021 12:47:43 -0800 (PST)
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=ZJ6MDO/iuzaljFh/B5+xqAkcCIehSw4ZcwbEnFaGiCE=;
+        b=T71SYNXESvaCHGtDZB8PbBRJ26wbPdpY2C+ixYHGcDCG1h5G4QLUdiMq8d26gMjuvG
+         Kq3ibsL7lpXXuddoYpnLhSPzIjcnpJZZ8HFqSIITFXpOVgr61MWdB9c8iMOaf+5s7qqE
+         AUNemXX7u3jUjfOxzA7Z+Eh9MSTGYptcJOhsMU/YkOtjl7ScYdLHxFJHIBT5kZxOLnm9
+         rE+gGfNyzJlzxLINzH/EooZY6Mpmju8sjV7TPEFMuMg3L1zXXK0WT9FYB/TWmXTtcm3t
+         TQfp8CdcFtOb5Bts9M/2oSTZ5enO8BdEA50woplCZ8f3Nh6l0zmUm+q/8ZeNoHJyzc67
+         3jPQ==
+X-Gm-Message-State: AOAM533iadXcJcw3ale134STpjzkim7Y3gSfw+AaL1Xlh9vq3wAGEMrh
+        UIHWvYQshHU98x0qYpJy0LqToeEA3c+7cKkhlJikmEfAPzP3
+X-Google-Smtp-Source: ABdhPJzJDX1QNEk1NkwKiL09v9N0EbJGuvZSqSgdVNROGFGzMCyNoumRUD++R7w+w4eGQpLnOjCq6JCxceSUSPYWthYxdJZwcDwL
 MIME-Version: 1.0
-References: <20210122193658.282884-1-saeed@kernel.org>
-In-Reply-To: <20210122193658.282884-1-saeed@kernel.org>
-From:   Edwin Peer <edwin.peer@broadcom.com>
-Date:   Sun, 24 Jan 2021 12:47:07 -0800
-Message-ID: <CAKOOJTxQ8G1krPbRmRHx8N0bsHnT3XXkgkREY6NxCJ26aHH7RQ@mail.gmail.com>
-Subject: Re: [pull request][net-next V10 00/14] Add mlx5 subfunction support
-To:     Saeed Mahameed <saeed@kernel.org>
-Cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        netdev <netdev@vger.kernel.org>, linux-rdma@vger.kernel.org,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        Sridhar Samudrala <sridhar.samudrala@intel.com>,
-        David Ahern <dsahern@kernel.org>,
-        Kiran Patil <kiran.patil@intel.com>,
-        Jacob Keller <jacob.e.keller@intel.com>,
-        "Ertman, David M" <david.m.ertman@intel.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="0000000000007a461205b9ab885a"
+X-Received: by 2002:a05:6602:2c52:: with SMTP id x18mr15034iov.5.1611521480018;
+ Sun, 24 Jan 2021 12:51:20 -0800 (PST)
+Date:   Sun, 24 Jan 2021 12:51:20 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <0000000000005d4f3205b9ab95f4@google.com>
+Subject: WARNING in pskb_expand_head
+From:   syzbot <syzbot+a1c17e56a8a62294c714@syzkaller.appspotmail.com>
+To:     alexanderduyck@fb.com, andrii@kernel.org, ast@kernel.org,
+        bpf@vger.kernel.org, daniel@iogearbox.net, davem@davemloft.net,
+        edumazet@google.com, hawk@kernel.org, john.fastabend@gmail.com,
+        kafai@fb.com, kpsingh@kernel.org, kuba@kernel.org,
+        linux-kernel@vger.kernel.org, mst@redhat.com,
+        netdev@vger.kernel.org, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, yhs@fb.com
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---0000000000007a461205b9ab885a
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Hello,
 
-On Fri, Jan 22, 2021 at 11:37 AM Saeed Mahameed <saeed@kernel.org> wrote:
+syzbot found the following issue on:
 
-> This series form Parav was the theme of this mlx5 release cycle,
-> we've been waiting anxiously for the auxbus infrastructure to make it int=
-o
-> the kernel, and now as the auxbus is in and all the stars are aligned, I
-> can finally submit this patchset of the devlink and mlx5 subfunction supp=
-ort.
->
-> For more detailed information about subfunctions please see detailed tag
-> log below.
+HEAD commit:    7d68e382 bpf: Permit size-0 datasec
+git tree:       bpf-next
+console output: https://syzkaller.appspot.com/x/log.txt?x=132567e7500000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=e0c7843b8af99dff
+dashboard link: https://syzkaller.appspot.com/bug?extid=a1c17e56a8a62294c714
+compiler:       gcc (GCC) 10.1.0-syz 20200507
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=17ae23af500000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13856bc7500000
 
-Apologies for the tardy question out of left field, but I've been
-thinking about this some more. If I recall, the primary motivation for
-this was a means to effectively address more VFs? But, why can't the
-device simply expose more bus numbers?
+The issue was bisected to:
 
-From the PCI spec:
+commit 3226b158e67cfaa677fd180152bfb28989cb2fac
+Author: Eric Dumazet <edumazet@google.com>
+Date:   Wed Jan 13 16:18:19 2021 +0000
 
-"SR-IOV Devices may consume more than one Bus Number. A VF can be
-associated with any Bus Number within
-the Device=E2=80=99s Bus Number range - the captured Bus Number plus any
-additional Bus Numbers configured by
-software. See Section 9.2.1.2 for details.
+    net: avoid 32 x truesize under-estimation for tiny skbs
 
-- Use of multiple Bus Numbers enables a device to support a very large
-number of VFs - up to the size
-of the Routing ID space minus the bits used to identify intervening busses"
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=151a3027500000
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=171a3027500000
+console output: https://syzkaller.appspot.com/x/log.txt?x=131a3027500000
 
-Regards,
-Edwin Peer
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+a1c17e56a8a62294c714@syzkaller.appspotmail.com
+Fixes: 3226b158e67c ("net: avoid 32 x truesize under-estimation for tiny skbs")
 
---0000000000007a461205b9ab885a
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
+RBP: 0000000000000000 R08: 0000000000000001 R09: 0000000001bbbbbb
+R10: 0000000000000000 R11: 0000000000000246 R12: ffffffffffffffff
+R13: 0000000000000004 R14: 0000000000000000 R15: 0000000000000000
+------------[ cut here ]------------
+WARNING: CPU: 1 PID: 8703 at mm/page_alloc.c:4976 __alloc_pages_nodemask+0x5f8/0x730 mm/page_alloc.c:5011
+Modules linked in:
+CPU: 1 PID: 8703 Comm: syz-executor857 Not tainted 5.11.0-rc3-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+RIP: 0010:__alloc_pages_nodemask+0x5f8/0x730 mm/page_alloc.c:4976
+Code: 00 00 0c 00 0f 85 a7 00 00 00 8b 3c 24 4c 89 f2 44 89 e6 c6 44 24 70 00 48 89 6c 24 58 e8 d0 d7 ff ff 49 89 c5 e9 ea fc ff ff <0f> 0b e9 b5 fd ff ff 89 74 24 14 4c 89 4c 24 08 4c 89 74 24 18 e8
+RSP: 0018:ffffc90001ecf910 EFLAGS: 00010246
+RAX: 0000000000000000 RBX: 1ffff920003d9f26 RCX: 0000000000000000
+RDX: 0000000000000000 RSI: dffffc0000000000 RDI: 0000000000060a20
+RBP: 0000000000020a20 R08: 0000000000000000 R09: 0000000000000001
+R10: ffffffff86f1be3c R11: 0000000000000000 R12: 0000000000000012
+R13: 0000000020010300 R14: 0000000000060a20 R15: 0000000000000000
+FS:  0000000001148880(0000) GS:ffff8880b9f00000(0000) knlGS:0000000000000000
+CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+CR2: 00000000006d5090 CR3: 000000001d414000 CR4: 00000000001506e0
+DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+Call Trace:
+ __alloc_pages include/linux/gfp.h:511 [inline]
+ __alloc_pages_node include/linux/gfp.h:524 [inline]
+ alloc_pages_node include/linux/gfp.h:538 [inline]
+ kmalloc_large_node+0x60/0x110 mm/slub.c:3984
+ __kmalloc_node_track_caller+0x319/0x3f0 mm/slub.c:4481
+ __kmalloc_reserve net/core/skbuff.c:150 [inline]
+ pskb_expand_head+0xae9/0x1050 net/core/skbuff.c:1632
+ __skb_grow include/linux/skbuff.h:2748 [inline]
+ tun_napi_alloc_frags drivers/net/tun.c:1377 [inline]
+ tun_get_user+0x1f52/0x3690 drivers/net/tun.c:1730
+ tun_chr_write_iter+0xe1/0x1d0 drivers/net/tun.c:1926
+ call_write_iter include/linux/fs.h:1901 [inline]
+ new_sync_write+0x426/0x650 fs/read_write.c:518
+ vfs_write+0x791/0xa30 fs/read_write.c:605
+ ksys_write+0x12d/0x250 fs/read_write.c:658
+ do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x4440a9
+Code: e8 6c 05 03 00 48 83 c4 18 c3 0f 1f 80 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 9b 07 fc ff c3 66 2e 0f 1f 84 00 00 00 00
+RSP: 002b:00007fffdb5a8e08 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
+RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 00000000004440a9
+RDX: 000000002001016f RSI: 0000000020000380 RDI: 0000000000000003
+RBP: 0000000000000000 R08: 0000000000000001 R09: 0000000001bbbbbb
+R10: 0000000000000000 R11: 0000000000000246 R12: ffffffffffffffff
+R13: 0000000000000004 R14: 0000000000000000 R15: 0000000000000000
 
-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
-mbo++PCnVfHaIk6rK1M0CPodEV0uUttmi6Mp/Ha7XmNgWQeQE3qkFIwAlb/kPNmJAMECAwEAAaOC
-Ac4wggHKMA4GA1UdDwEB/wQEAwIFoDCBngYIKwYBBQUHAQEEgZEwgY4wTQYIKwYBBQUHMAKGQWh0
-dHA6Ly9zZWN1cmUuZ2xvYmFsc2lnbi5jb20vY2FjZXJ0L2dzcGVyc29uYWxzaWduMnNoYTJnM29j
-c3AuY3J0MD0GCCsGAQUFBzABhjFodHRwOi8vb2NzcDIuZ2xvYmFsc2lnbi5jb20vZ3NwZXJzb25h
-bHNpZ24yc2hhMmczME0GA1UdIARGMEQwQgYKKwYBBAGgMgEoCjA0MDIGCCsGAQUFBwIBFiZodHRw
-czovL3d3dy5nbG9iYWxzaWduLmNvbS9yZXBvc2l0b3J5LzAJBgNVHRMEAjAAMEQGA1UdHwQ9MDsw
-OaA3oDWGM2h0dHA6Ly9jcmwuZ2xvYmFsc2lnbi5jb20vZ3NwZXJzb25hbHNpZ24yc2hhMmczLmNy
-bDAiBgNVHREEGzAZgRdlZHdpbi5wZWVyQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcD
-BDAfBgNVHSMEGDAWgBRpcoJiMWeVRIV3kYDEBDZJnXsLYTAdBgNVHQ4EFgQU9IOrXBkaTFAmOmjl
-0nu9X2Lzo+0wDQYJKoZIhvcNAQELBQADggEBADL+5FenxoguXoMm8ZG+bsMvN0LibFO75wee8cJI
-3K8dcJ8y6rPc6yvMRqI7CNwjWV5kBT3aQPZCdqOlNLl/HnKJxBt3WJRWGePcE1s/ljK4Kg1rUQAo
-e3Fx6cKh9/q3gqElSPU5pBOsCEy8cbi6UGA+IVifQ2Mrm5tsvYqWSaZ1mKTGz8/z8vxG2kGJZI6W
-wL3owFiCmLmw5R8OH22wqf/7sQFMRpH5IQFLRYdU9uCUy5FlUAgiCEXegph8ytxvo8MgYyQcCOeg
-BMfFgFEHuM2IgsDQyFC6XUViX6BQny67nlrO8pqwNRJ9Bdd7ykLCzCLOuR1znBAc2wAL9OKQe0cx
-ggJvMIICawIBATBtMF0xCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTMw
-MQYDVQQDEypHbG9iYWxTaWduIFBlcnNvbmFsU2lnbiAyIENBIC0gU0hBMjU2IC0gRzMCDCXgDAeB
-YW0HGKjSdzANBglghkgBZQMEAgEFAKCB1DAvBgkqhkiG9w0BCQQxIgQgMyV9I2BKDbga/9oUxbgd
-IfhFFCDtcf8efBtoBBewmVwwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUx
-DxcNMjEwMTI0MjA0NzQzWjBpBgkqhkiG9w0BCQ8xXDBaMAsGCWCGSAFlAwQBKjALBglghkgBZQME
-ARYwCwYJYIZIAWUDBAECMAoGCCqGSIb3DQMHMAsGCSqGSIb3DQEBCjALBgkqhkiG9w0BAQcwCwYJ
-YIZIAWUDBAIBMA0GCSqGSIb3DQEBAQUABIIBALY8ayKtILWozfVVIZNtptuyr2G9C92WyNiy8KlK
-YyWPD/cufC63vLEOs8sb2OPP4/G5X7SdxKV/Jsxt+q1Ykqe4LG+im9KsxdrB7D+vzla8mCuQWuHa
-C56s0W0I8Dn1xY9UhPp6WCDZsw9K+lagaACFwhwMefvyKoPi1xuvphjs60CoNbcrdXERKQzuBkfN
-CdOsAaozQeV1aiPyj1JaqpplFPmntdc2xgaZn/uCQ7WCmxpIp2qBTpl/ndS64zs/7mG/zKQ0eQek
-LusXVyEBh+qw4Tx9Qts74OvNTqf12mdfUvCgNee1w+U9w+os5njk3CF1Y6PTnUl+xfubiqgxX70=
---0000000000007a461205b9ab885a--
+
+---
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
+
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
