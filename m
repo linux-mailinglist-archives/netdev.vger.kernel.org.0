@@ -2,108 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DE40D304A60
-	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 21:43:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 39EB9304A44
+	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 21:42:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726361AbhAZFFr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jan 2021 00:05:47 -0500
-Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:15154 "EHLO
-        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728595AbhAYNIT (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 08:08:19 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B600ec2790000>; Mon, 25 Jan 2021 05:07:05 -0800
-Received: from HQMAIL109.nvidia.com (172.20.187.15) by HQMAIL109.nvidia.com
- (172.20.187.15) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 25 Jan
- 2021 13:06:57 +0000
-Received: from NAM11-CO1-obe.outbound.protection.outlook.com (104.47.56.176)
- by HQMAIL109.nvidia.com (172.20.187.15) with Microsoft SMTP Server (TLS) id
- 15.0.1473.3 via Frontend Transport; Mon, 25 Jan 2021 13:06:57 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=UlES/XAK5kiQUzy5IFZt0F7Bz8pUIfg+5wm7tSm4FJFs3ZeiW2S3KOR4ozkz5CC5eTtoJhNiybPMjkmwMlDY87fsBz9RL0Of8h3k7SGmLEp745vfvAVzpXO++3AxsyhLiwDhf8N+2Wn4zcv5nhoyiI9pj9KamuijwlBURQ3weplySQMPmge1L1mczb6YJ/UNuy+OFYZiUkvqKbvOj6twsA61kZAJ5uMTFBe8JbcIpgJJj0VpZ/hgUghUt2OFMu+CXUZ1QvUcwy56oBoK+WNdxW3xFVaLvpqpZrSfqBT17TIfP/XKyzvqy1mNK/jcoEntGbXIq8fLHO4460KmbfA6mQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=x2BtXjwSXfzJg2tpgFpOEQEtp3L1KjIvV6LvlaELgEg=;
- b=ZSxc8I3xrj0UvbQX5MKoj8lnKOCBGYKO4WtkqINvkEvY80y2btrLKjPfq8cSDbVxWPjGmKGDCLkXA+9/4AX5PJVxuaue08R1l6Z4fOASxLY/odzTVJsUqvz8ZJd/SC5ht0nCuZj3r7QRc+sTv2ooaOAz7sn47hbEG5eEIdidiEjJ9+PsJEZrTK7SM85K4R+88QMedqa0Bi+Es27RWNKLV5VQfo/W8XmFUhNpdMTXnsQ9GzM9FS0C8is/1r8Xa2FnptDluf2wzd/br2BlzZSdH/OkfSMMNVHcr6W3dXNfM1b//WFfq6rX9FAkHAR9nmu3JrV0+letJc40l8vEqqBmJA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
- by DM5PR12MB2582.namprd12.prod.outlook.com (2603:10b6:4:b5::37) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3784.12; Mon, 25 Jan
- 2021 13:06:56 +0000
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::546d:512c:72fa:4727]) by DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::546d:512c:72fa:4727%7]) with mapi id 15.20.3784.017; Mon, 25 Jan 2021
- 13:06:56 +0000
-Date:   Mon, 25 Jan 2021 09:06:54 -0400
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     "Samudrala, Sridhar" <sridhar.samudrala@intel.com>
-CC:     Saeed Mahameed <saeed@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        <linux-rdma@vger.kernel.org>, <alexander.duyck@gmail.com>,
-        <edwin.peer@broadcom.com>, <dsahern@kernel.org>,
-        <kiran.patil@intel.com>, <jacob.e.keller@intel.com>,
-        <david.m.ertman@intel.com>, <dan.j.williams@intel.com>,
-        Parav Pandit <parav@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-Subject: Re: [net-next V9 14/14] net/mlx5: Add devlink subfunction port
- documentation
-Message-ID: <20210125130654.GI4147@nvidia.com>
-References: <20210121085237.137919-1-saeed@kernel.org>
- <20210121085237.137919-15-saeed@kernel.org>
- <d5ef3359-ff3c-0e71-8312-0f24c3af4bce@intel.com>
- <20210122001157.GE4147@nvidia.com>
- <89d0c6de-18e3-5728-a220-3440ca263616@intel.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <89d0c6de-18e3-5728-a220-3440ca263616@intel.com>
-X-ClientProxiedBy: BLAPR03CA0057.namprd03.prod.outlook.com
- (2603:10b6:208:32d::32) To DM6PR12MB3834.namprd12.prod.outlook.com
- (2603:10b6:5:14a::12)
+        id S1729788AbhAZFG6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jan 2021 00:06:58 -0500
+Received: from mail.kernel.org ([198.145.29.99]:42414 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728624AbhAYNJo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 25 Jan 2021 08:09:44 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 60E6622DFB;
+        Mon, 25 Jan 2021 13:08:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1611580139;
+        bh=1wOJZ4FJ0PDEC5fN/ovAq0qlFT12N+k1DDBGhO2O7QA=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=Y4dbJP3GlaUG6C5bud5v0+kwerdEaatEI1wMDWOvu1BmAqZljetRou5TbiJ+LD/Ef
+         NEGF0SMhONAhJLCqsg8i7Fnzsy/PPZg67ihvX89l/yoQFTnqWV7OF6d0egFmRblqGW
+         U96OJ++SczGR51L4Xsqy24gMrY/MiFCed8uc5AvRzpdVh4bYYE/3o1GB7abw2I28/i
+         OkuXTnoUhnaO3ht012O9+RCxmWfRA3QQXHX6GghvsgaexoxXzZDmG5/MA86cVa9Aws
+         rD85ABL9KzahoX5/tUODJei6TktVS8tfFQC2J1AVJorn+0OpN4cDSdvFVg0si3NLqy
+         aYhCTYXi/Sn0w==
+Received: by mail-ot1-f42.google.com with SMTP id a109so12670218otc.1;
+        Mon, 25 Jan 2021 05:08:59 -0800 (PST)
+X-Gm-Message-State: AOAM5301Ykg7lOrr9n62AOVO/6RbpKVTkxzqHGoR1CC+P8sGGOvpSsSj
+        xKOlAgNgslUTZUSgsxeoQk6/XNsEono9nBZvKqo=
+X-Google-Smtp-Source: ABdhPJw43suOaoKizgEZR7ekOyty04AJ2IEReeT8qTkzlvQIMmG6vmgb4cCLrl26kiR4DHwpeYcwROPy2zVGS4C1Dkw=
+X-Received: by 2002:a9d:741a:: with SMTP id n26mr386721otk.210.1611580138587;
+ Mon, 25 Jan 2021 05:08:58 -0800 (PST)
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from mlx.ziepe.ca (142.162.115.133) by BLAPR03CA0057.namprd03.prod.outlook.com (2603:10b6:208:32d::32) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3784.12 via Frontend Transport; Mon, 25 Jan 2021 13:06:56 +0000
-Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1l41a2-006UR5-HS; Mon, 25 Jan 2021 09:06:54 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1611580025; bh=GOxnf/1FDRpkmxX0Rfc95kJhR6v5dbRL9ZP6sX1B9XI=;
-        h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:Date:
-         From:To:CC:Subject:Message-ID:References:Content-Type:
-         Content-Disposition:Content-Transfer-Encoding:In-Reply-To:
-         X-ClientProxiedBy:MIME-Version:
-         X-MS-Exchange-MessageSentRepresentingType;
-        b=No/XmjyJwcyJ16fHZy0vx3rFK7qdfjw37B853q5YkvIN2RCEuF0JxlbkC+jPxKRCv
-         v56dqq/RxiYmOSltseP6CZYigFtruotot5HWKwY2ss4mNddKV8E85LJbkQmSgszSbb
-         DmnbjqoOiEKohk/3o/I5MsVmAGK3K/KvB8mq1vs4pYZ7E9umUps3XoR0ZZkY8sM/xn
-         /ABZUOXfUWSVbj/3i6Pt8XZUxLgKKoBLlBHmfhIq2tsK5QyL9psW+8/NpubRxMfYC8
-         sScOGkcF3fPLgJGAqcxlsl+P/64lym/TREKp8olDHxufdbNx/+7kUtOnMMB/b9Lcfd
-         zOqNCmQif7c2A==
+References: <20210125113654.2408057-1-arnd@kernel.org> <CAJKOXPfteJ3Jia4Qd9DabjxcOtax3uDgi1fSbz4_+cHsJ1prQQ@mail.gmail.com>
+In-Reply-To: <CAJKOXPfteJ3Jia4Qd9DabjxcOtax3uDgi1fSbz4_+cHsJ1prQQ@mail.gmail.com>
+From:   Arnd Bergmann <arnd@kernel.org>
+Date:   Mon, 25 Jan 2021 14:08:42 +0100
+X-Gmail-Original-Message-ID: <CAK8P3a0apBUbck9Z3UMKfwSJw8a-UbbXLTLUvSyOKEwTgPLjqg@mail.gmail.com>
+Message-ID: <CAK8P3a0apBUbck9Z3UMKfwSJw8a-UbbXLTLUvSyOKEwTgPLjqg@mail.gmail.com>
+Subject: Re: [PATCH] ath9k: fix build error with LEDS_CLASS=m
+To:     Krzysztof Kozlowski <krzk@kernel.org>
+Cc:     QCA ath9k Development <ath9k-devel@qca.qualcomm.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Flavio Suligoi <f.suligoi@asem.it>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, Jan 23, 2021 at 12:09:15PM -0800, Samudrala, Sridhar wrote:
+On Mon, Jan 25, 2021 at 12:40 PM Krzysztof Kozlowski <krzk@kernel.org> wrote:
+> On Mon, 25 Jan 2021 at 12:36, Arnd Bergmann <arnd@kernel.org> wrote:
+> >
+> > From: Arnd Bergmann <arnd@arndb.de>
+> >
+> > When CONFIG_ATH9K is built-in but LED support is in a loadable
+> > module, both ath9k drivers fails to link:
+> >
+> > x86_64-linux-ld: drivers/net/wireless/ath/ath9k/gpio.o: in function `ath_deinit_leds':
+> > gpio.c:(.text+0x36): undefined reference to `led_classdev_unregister'
+> > x86_64-linux-ld: drivers/net/wireless/ath/ath9k/gpio.o: in function `ath_init_leds':
+> > gpio.c:(.text+0x179): undefined reference to `led_classdev_register_ext'
+> >
+> > The problem is that the 'imply' keyword does not enforce any dependency
+> > but is only a weak hint to Kconfig to enable another symbol from a
+> > defconfig file.
+> >
+> > Change imply to a 'depends on LEDS_CLASS' that prevents the incorrect
+> > configuration but still allows building the driver without LED support.
+> >
+> > The 'select MAC80211_LEDS' is now ensures that the LED support is
+> > actually used if it is present, and the added Kconfig dependency
+> > on MAC80211_LEDS ensures that it cannot be enabled manually when it
+> > has no effect.
+>
+> But we do not want to have this dependency (selecting MAC80211_LEDS).
+> I fixed this problem here:
+> https://lore.kernel.org/lkml/20201227143034.1134829-1-krzk@kernel.org/
+> Maybe let's take this approach?
 
-> > The other aux devices represent the subsystem split of the mlx5 driver
-> > - mlx5_core creates them and each subsystem in turn binds to the
-> > mlx5_core driver. This already exists, and Intel will be doing this as
-> > well whenever the RDMA driver is posted again..
->=20
-> Yes. I see that the intel RDMA patches are now submitted. We are
-> creating an aux device to expose RDMA functionality, but=C2=A0 not
-> planning to create an aux device for ethernet subsystem on a PF/SF
-> as the function-level pci/aux device can represent the default
-> ethernet.
+Generally speaking, I don't like to have a device driver specific Kconfig
+setting 'select' a subsystem', for two reasons:
 
-That is because the ethernet and shared code are all in the same
-module
+- you suddenly get asked for tons of new LED specific options when
+  enabling seemingly benign options
 
-You may find this becomes inconvenient when you want to add something
-like SF, where there is alot of merit to having uniformity in the
-ethernet driver.
+- Mixing 'depends on' and 'select' leads to bugs with circular
+  dependencies that usually require turning some other 'select'
+  into 'depends on'.
 
-Jason
+The problem with LEDS_CLASS in particular is that there is a mix of drivers
+using one vs the other roughly 50:50.
+
+      Arnd
