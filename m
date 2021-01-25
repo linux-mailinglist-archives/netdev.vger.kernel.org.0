@@ -2,214 +2,66 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3088630300A
-	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 00:25:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DED6E303015
+	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 00:26:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732149AbhAYXWd (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Jan 2021 18:22:33 -0500
-Received: from conuserg-10.nifty.com ([210.131.2.77]:49068 "EHLO
-        conuserg-10.nifty.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732103AbhAYXVs (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 18:21:48 -0500
-Received: from localhost.localdomain (softbank126026094251.bbtec.net [126.26.94.251]) (authenticated)
-        by conuserg-10.nifty.com with ESMTP id 10PNKYDv019068;
-        Tue, 26 Jan 2021 08:20:34 +0900
-DKIM-Filter: OpenDKIM Filter v2.10.3 conuserg-10.nifty.com 10PNKYDv019068
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nifty.com;
-        s=dec2015msa; t=1611616834;
-        bh=+l83WuWdtV27RWVmVMoaKLClHYmBniItWR+xAN910Iw=;
-        h=From:To:Cc:Subject:Date:From;
-        b=kLtOiqSG1PsPTiDWCaePLM0vRNPJmBlKXHsz4UUY2gBjqu54b8BYCoQnrq5xweKX3
-         XbrfxMJhZa3P03+ttLIXwf0cf2h+9LTaMMH7a4Uz/m/xsqXBh3nLPVrIsPH19nhboz
-         2TLkEnIsozUY4szfRdq6QsNMEBj/4MmkI27Icqhj8FUcHIWTRpZQyLcQUgux+Difj0
-         3r/amToA5g6Qo2xb8cR2kx3UDzASmYgwEUNs7EAZp7CPdJ8q0B1qTjwpRd6wWwMu3l
-         4R5ZSQOCNR/5ne2UUXi7r3Hnrn1dWX6QogeRup5kCfIaWf29v0E0PA8l4y1GkzkG4v
-         hkh2ZrXcZuEEA==
-X-Nifty-SrcIP: [126.26.94.251]
-From:   Masahiro Yamada <masahiroy@kernel.org>
-To:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Masahiro Yamada <masahiroy@kernel.org>
-Subject: [PATCH] net: remove redundant 'depends on NET'
-Date:   Tue, 26 Jan 2021 08:20:26 +0900
-Message-Id: <20210125232026.106855-1-masahiroy@kernel.org>
-X-Mailer: git-send-email 2.27.0
+        id S1732560AbhAYXZw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Jan 2021 18:25:52 -0500
+Received: from mail.kernel.org ([198.145.29.99]:36018 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1732441AbhAYXZj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 25 Jan 2021 18:25:39 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 44ED621D93;
+        Mon, 25 Jan 2021 23:24:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1611617098;
+        bh=VkOmmnHknyr6LM+wL1Y2PgU5vXbAOBOP2SZuqIUbr50=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ZRs8jnFVXXoIxrEai1DOmf29LQDtaJzA9lLg/XkOBKR6JV9C4pPMGGcNalC79ySyN
+         D2c0WX0PHHOgF1z7aW8cPc1oOZLwf+QWJd8rTG3uDFdjO9VCzPbmxlmEU28R4mdPmS
+         FucEMI+OyXngC1EM+29A6Cw70N3zQC7fy4g73xgwrve06XX1zfn3jl14/MeDiGMLsr
+         tuYkVjiAvx0vccyAFL1CCR9H/nkIj2l5whPCJgLWMlD05mFCmVtmeaTqIAuGfxt+r2
+         HVpa35T5GcjJkS8oBQKGTpbEO0oSocGS7nnbakjcHNxRgfrYl5YSMSJYEoCt/Eqq/M
+         1xxH6jhV7+2/A==
+Date:   Mon, 25 Jan 2021 15:24:57 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Michael Chan <michael.chan@broadcom.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Siva Reddy Kallam <siva.kallam@broadcom.com>,
+        Prashant Sreedharan <prashant@broadcom.com>,
+        Michael Chan <mchan@broadcom.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: Re: [PATCH net-next] tg3: improve PCI VPD access
+Message-ID: <20210125152457.043f3c91@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CACKFLiky=a2k6bsi9Zdbv0m+-TCszqYWXLsp79nZTG7QQBijEw@mail.gmail.com>
+References: <cb9e9113-0861-3904-87e0-d4c4ab3c8860@gmail.com>
+        <CACKFLiky=a2k6bsi9Zdbv0m+-TCszqYWXLsp79nZTG7QQBijEw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-These Kconfig files are included from net/Kconfig, inside the
-if NET ... endif.
+On Mon, 25 Jan 2021 14:09:16 -0800 Michael Chan wrote:
+> On Fri, Jan 22, 2021 at 4:08 AM Heiner Kallweit <hkallweit1@gmail.com> wrote:
+> >
+> > When working on the PCI VPD code I also tested with a Broadcom BCM95719
+> > card. tg3 uses internal NVRAM access with this card, so I forced it to
+> > PCI VPD mode for testing. PCI VPD access fails
+> > (i + PCI_VPD_LRDT_TAG_SIZE + j > len) because only TG3_NVM_VPD_LEN (256)
+> > bytes are read, but PCI VPD has 400 bytes on this card.
+> >
+> > So add a constant TG3_NVM_PCI_VPD_MAX_LEN that defines the maximum
+> > PCI VPD size. The actual VPD size is returned by pci_read_vpd().
+> > In addition it's not worth looping over pci_read_vpd(). If we miss the
+> > 125ms timeout per VPD dword read then definitely something is wrong,
+> > and if the tg3 module loading is killed then there's also not much
+> > benefit in retrying the VPD read.
+> >
+> > Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>  
+> 
+> Reviewed-by: Michael Chan <michael.chan@broadcom.com>
 
-Remove 'depends on NET', which we know it is already met.
-
-Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
----
-
- net/9p/Kconfig             | 1 -
- net/batman-adv/Kconfig     | 1 -
- net/bluetooth/Kconfig      | 2 +-
- net/bpfilter/Kconfig       | 2 +-
- net/can/Kconfig            | 1 -
- net/dns_resolver/Kconfig   | 2 +-
- net/ife/Kconfig            | 1 -
- net/llc/Kconfig            | 1 -
- net/netfilter/Kconfig      | 2 +-
- net/netfilter/ipvs/Kconfig | 2 +-
- net/nfc/Kconfig            | 1 -
- net/psample/Kconfig        | 1 -
- 12 files changed, 5 insertions(+), 12 deletions(-)
-
-diff --git a/net/9p/Kconfig b/net/9p/Kconfig
-index 3d11fec3a8dc..64468c49791f 100644
---- a/net/9p/Kconfig
-+++ b/net/9p/Kconfig
-@@ -4,7 +4,6 @@
- #
- 
- menuconfig NET_9P
--	depends on NET
- 	tristate "Plan 9 Resource Sharing Support (9P2000)"
- 	help
- 	  If you say Y here, you will get experimental support for
-diff --git a/net/batman-adv/Kconfig b/net/batman-adv/Kconfig
-index 993afd5ff7bb..43ae3dcbbbeb 100644
---- a/net/batman-adv/Kconfig
-+++ b/net/batman-adv/Kconfig
-@@ -9,7 +9,6 @@
- 
- config BATMAN_ADV
- 	tristate "B.A.T.M.A.N. Advanced Meshing Protocol"
--	depends on NET
- 	select LIBCRC32C
- 	help
- 	  B.A.T.M.A.N. (better approach to mobile ad-hoc networking) is
-diff --git a/net/bluetooth/Kconfig b/net/bluetooth/Kconfig
-index 64e669acd42f..400c5130dc0a 100644
---- a/net/bluetooth/Kconfig
-+++ b/net/bluetooth/Kconfig
-@@ -5,7 +5,7 @@
- 
- menuconfig BT
- 	tristate "Bluetooth subsystem support"
--	depends on NET && !S390
-+	depends on !S390
- 	depends on RFKILL || !RFKILL
- 	select CRC16
- 	select CRYPTO
-diff --git a/net/bpfilter/Kconfig b/net/bpfilter/Kconfig
-index 8ad0233ce497..3d4a21462458 100644
---- a/net/bpfilter/Kconfig
-+++ b/net/bpfilter/Kconfig
-@@ -1,7 +1,7 @@
- # SPDX-License-Identifier: GPL-2.0-only
- menuconfig BPFILTER
- 	bool "BPF based packet filtering framework (BPFILTER)"
--	depends on NET && BPF && INET
-+	depends on BPF && INET
- 	select USERMODE_DRIVER
- 	help
- 	  This builds experimental bpfilter framework that is aiming to
-diff --git a/net/can/Kconfig b/net/can/Kconfig
-index 7c9958df91d3..a9ac5ffab286 100644
---- a/net/can/Kconfig
-+++ b/net/can/Kconfig
-@@ -4,7 +4,6 @@
- #
- 
- menuconfig CAN
--	depends on NET
- 	tristate "CAN bus subsystem support"
- 	help
- 	  Controller Area Network (CAN) is a slow (up to 1Mbit/s) serial
-diff --git a/net/dns_resolver/Kconfig b/net/dns_resolver/Kconfig
-index 255df9b6e9e8..155b06163409 100644
---- a/net/dns_resolver/Kconfig
-+++ b/net/dns_resolver/Kconfig
-@@ -4,7 +4,7 @@
- #
- config DNS_RESOLVER
- 	tristate "DNS Resolver support"
--	depends on NET && KEYS
-+	depends on KEYS
- 	help
- 	  Saying Y here will include support for the DNS Resolver key type
- 	  which can be used to make upcalls to perform DNS lookups in
-diff --git a/net/ife/Kconfig b/net/ife/Kconfig
-index bcf650564db4..de36a5b91e50 100644
---- a/net/ife/Kconfig
-+++ b/net/ife/Kconfig
-@@ -4,7 +4,6 @@
- #
- 
- menuconfig NET_IFE
--	depends on NET
- 	tristate "Inter-FE based on IETF ForCES InterFE LFB"
- 	default n
- 	help
-diff --git a/net/llc/Kconfig b/net/llc/Kconfig
-index b0e646ac47eb..7f79f5e134f9 100644
---- a/net/llc/Kconfig
-+++ b/net/llc/Kconfig
-@@ -1,7 +1,6 @@
- # SPDX-License-Identifier: GPL-2.0-only
- config LLC
- 	tristate
--	depends on NET
- 
- config LLC2
- 	tristate "ANSI/IEEE 802.2 LLC type 2 Support"
-diff --git a/net/netfilter/Kconfig b/net/netfilter/Kconfig
-index 49fbef0d99be..1a92063c73a4 100644
---- a/net/netfilter/Kconfig
-+++ b/net/netfilter/Kconfig
-@@ -1,6 +1,6 @@
- # SPDX-License-Identifier: GPL-2.0-only
- menu "Core Netfilter Configuration"
--	depends on NET && INET && NETFILTER
-+	depends on INET && NETFILTER
- 
- config NETFILTER_INGRESS
- 	bool "Netfilter ingress support"
-diff --git a/net/netfilter/ipvs/Kconfig b/net/netfilter/ipvs/Kconfig
-index eb0e329f9b8d..c39a1e35c104 100644
---- a/net/netfilter/ipvs/Kconfig
-+++ b/net/netfilter/ipvs/Kconfig
-@@ -4,7 +4,7 @@
- #
- menuconfig IP_VS
- 	tristate "IP virtual server support"
--	depends on NET && INET && NETFILTER
-+	depends on INET && NETFILTER
- 	depends on (NF_CONNTRACK || NF_CONNTRACK=n)
- 	help
- 	  IP Virtual Server support will let you build a high-performance
-diff --git a/net/nfc/Kconfig b/net/nfc/Kconfig
-index 96b91674dd37..466a0279b93e 100644
---- a/net/nfc/Kconfig
-+++ b/net/nfc/Kconfig
-@@ -4,7 +4,6 @@
- #
- 
- menuconfig NFC
--	depends on NET
- 	depends on RFKILL || !RFKILL
- 	tristate "NFC subsystem support"
- 	default n
-diff --git a/net/psample/Kconfig b/net/psample/Kconfig
-index 028f514a9c60..be0b839209ba 100644
---- a/net/psample/Kconfig
-+++ b/net/psample/Kconfig
-@@ -4,7 +4,6 @@
- #
- 
- menuconfig PSAMPLE
--	depends on NET
- 	tristate "Packet-sampling netlink channel"
- 	default n
- 	help
--- 
-2.27.0
-
+Applied, thank you!
