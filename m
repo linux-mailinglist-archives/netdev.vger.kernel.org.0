@@ -2,77 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 62830304A0A
-	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 21:24:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E644C304A14
+	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 21:28:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731680AbhAZFSN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jan 2021 00:18:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58972 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730012AbhAYPgH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 10:36:07 -0500
-Received: from mail-out.m-online.net (mail-out.m-online.net [IPv6:2001:a60:0:28:0:1:25:1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C74D8C061786;
-        Mon, 25 Jan 2021 07:04:03 -0800 (PST)
-Received: from frontend01.mail.m-online.net (unknown [192.168.8.182])
-        by mail-out.m-online.net (Postfix) with ESMTP id 4DPTlp38fgz1s8P3;
-        Mon, 25 Jan 2021 13:32:38 +0100 (CET)
-Received: from localhost (dynscan1.mnet-online.de [192.168.6.70])
-        by mail.m-online.net (Postfix) with ESMTP id 4DPTlp29gnz1rfK8;
-        Mon, 25 Jan 2021 13:32:38 +0100 (CET)
-X-Virus-Scanned: amavisd-new at mnet-online.de
-Received: from mail.mnet-online.de ([192.168.8.182])
-        by localhost (dynscan1.mail.m-online.net [192.168.6.70]) (amavisd-new, port 10024)
-        with ESMTP id SjUqCsmRVQvc; Mon, 25 Jan 2021 13:32:35 +0100 (CET)
-X-Auth-Info: pQzdjtka2BKwz0OQu6FP+DYh5itMUuZK8lIFjS5qH9s=
-Received: from [127.0.0.1] (p578adb1c.dip0.t-ipconnect.de [87.138.219.28])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.mnet-online.de (Postfix) with ESMTPSA;
-        Mon, 25 Jan 2021 13:32:35 +0100 (CET)
-Subject: Re: [PATCH] [5.8 regression] net: ks8851: fix link error
-To:     Arnd Bergmann <arnd@kernel.org>,
+        id S1731034AbhAZFPT (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jan 2021 00:15:19 -0500
+Received: from mail.kernel.org ([198.145.29.99]:39190 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729887AbhAYPfk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 25 Jan 2021 10:35:40 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id B2610225AB;
+        Mon, 25 Jan 2021 15:03:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1611586982;
+        bh=anyjJQn5LMe/z7QdjC1tPEtQH0Fp7Y+ZF9Tn/tpqdWo=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=ZIATlKNz2IJ+/G3lPuG30rPIgX7EniVgb3H8pwow2UlN0rwXyYArmtrFvVIjtYqY/
+         7MnmS2MBu0QXy1jnKPQTvy4gEq5r0MqFZqvhEFg7blRMP/hOnxIJICmL+ufN2mTFvW
+         bjYFs1xlWPku7VPuQzo+7GZeW8r4kZBE7K9xwGpleKGWK7NpBOo2hMX9midbGzSNVV
+         q0hYkM0GZU5D2eLHPq/vNM8LHhoeitYAMFjMN8axwYxEpBVZ3cd5IlqNYLwDIrxJPC
+         dBIjINvTbi15mo/oWrvVLv5Al69ItHMFywxQzrTMFfI48EY0QGm5XiPz/+J74YSk21
+         i6TgWmvZ7rqDg==
+Received: by pali.im (Postfix)
+        id 8E5B8768; Mon, 25 Jan 2021 16:03:00 +0100 (CET)
+From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
+        Andrew Lunn <andrew@lunn.ch>,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>
-Cc:     Arnd Bergmann <arnd@arndb.de>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20210125121937.3900988-1-arnd@kernel.org>
-From:   Marek Vasut <marex@denx.de>
-Message-ID: <d412433b-032a-9ed9-81aa-fe3f7c6d50d5@denx.de>
-Date:   Mon, 25 Jan 2021 13:32:35 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Thomas Schreiber <tschreibe@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v4 0/2] net: sfp: add support for GPON RTL8672/RTL9601C and Ubiquiti U-Fiber
+Date:   Mon, 25 Jan 2021 16:02:26 +0100
+Message-Id: <20210125150228.8523-1-pali@kernel.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20201230154755.14746-1-pali@kernel.org>
+References: <20201230154755.14746-1-pali@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <20210125121937.3900988-1-arnd@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/25/21 1:19 PM, Arnd Bergmann wrote:
-> From: Arnd Bergmann <arnd@arndb.de>
-> 
-> An object file cannot be built for both loadable module and built-in
-> use at the same time:
-> 
-> arm-linux-gnueabi-ld: drivers/net/ethernet/micrel/ks8851_common.o: in function `ks8851_probe_common':
-> ks8851_common.c:(.text+0xf80): undefined reference to `__this_module'
-> 
-> Change the ks8851_common code to be a standalone module instead,
-> and use Makefile logic to ensure this is built-in if at least one
-> of its two users is.
-> 
-> Fixes: 797047f875b5 ("net: ks8851: Implement Parallel bus operations")
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> ---
-> Marek sent two other patches to address the problem:
-> https://lore.kernel.org/netdev/20210116164828.40545-1-marex@denx.de/
-> https://lore.kernel.org/netdev/20210115134239.126152-1-marex@denx.de/
-> 
-> My version is what I applied locally to my randconfig tree, and
-> I think this is the cleanest solution.
+This is fourth version of patches which add workarounds for
+RTL8672/RTL9601C EEPROMs and Ubiquiti U-Fiber Instant SFP.
 
-If this version works for all the configuration combinations, then 
-that's perfect, thanks.
+The only change since third version is modification of commit messages.
+
+Pali Rohár (2):
+  net: sfp: add workaround for Realtek RTL8672 and RTL9601C chips
+  net: sfp: add mode quirk for GPON module Ubiquiti U-Fiber Instant
+
+ drivers/net/phy/sfp-bus.c |  15 +++++
+ drivers/net/phy/sfp.c     | 117 ++++++++++++++++++++++++++------------
+ 2 files changed, 97 insertions(+), 35 deletions(-)
+
+-- 
+2.20.1
+
