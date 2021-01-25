@@ -2,98 +2,169 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 315FC302877
-	for <lists+netdev@lfdr.de>; Mon, 25 Jan 2021 18:10:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5029B302888
+	for <lists+netdev@lfdr.de>; Mon, 25 Jan 2021 18:13:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729603AbhAYRJw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Jan 2021 12:09:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48378 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728759AbhAYQ4H (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 11:56:07 -0500
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15924C06174A
-        for <netdev@vger.kernel.org>; Mon, 25 Jan 2021 08:55:26 -0800 (PST)
-Received: by mail-wr1-x434.google.com with SMTP id a1so13563953wrq.6
-        for <netdev@vger.kernel.org>; Mon, 25 Jan 2021 08:55:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=GJMVjIhhFJ4r/l27K2hWTLnP+dOq5YGNVehTsffsC6A=;
-        b=nV+u0HGcISh7g+c8D/m8O2TTL4WxlvSVULmOJYto4z3kcGgP7Nr8tDvNXh+k0HYmBk
-         5MBhov9lHSVdUN1aT0JL32at4FLP/O0QsKeDxlj2wpPTdJPuWhXMe+i1febRNhKzePSd
-         wnaAldqvtFKenw81CxJ3+MBAreuvZPx1M95Cud4S5hhTyetP6KX7/nn0GfujB9FJfl4o
-         sewRPK/DA1sJmZDGNQ0ikbvPBcy7rlzH/UwbQTyAzubZABubD6TE9BxuV2BkzzIMGVWU
-         HpxNA/R0ZSIZIIoJdk257+8edm8PCend0W4lSqh97Gv7ZOuB0Ta6Aj4e38t9R4t4uSmv
-         2y3A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=GJMVjIhhFJ4r/l27K2hWTLnP+dOq5YGNVehTsffsC6A=;
-        b=MMMiuONXCvgw7TeNB9yUh7go6QkT4fRTaHFZprscWLHFJg8RIqQX3abLhZRu7saQYJ
-         WNnTKbxddVdWaY4BxRwJrIjCEOsbCuupXrLk4gTXa4KpUZ8jt87jfM4fqv89/BaTmZ4N
-         9xlAj9emBxBG5tkTh4QSs2mdZ7Cx7D5y3+u4KGEnAObdlW7A+qtzemdIZ6LHkOjv6U6g
-         6iGvsWdchr54wc83VdOtlfDzXZLbYqOIUqCLnPIMSJJYOHohyXeAIL5qrWX03+2rJ4fd
-         lzZNSdBVjf34Yx6e8SAcS+MKUpBarXkL+64Dn+D43Fm9/7ABVurujyP4SpqIKLWpD9ht
-         +vtQ==
-X-Gm-Message-State: AOAM531kEGIhaJQxWA0pMrk4DlDgT9yNaaOv9uL++WJWxXu14ANQxhGV
-        LhbPx79aTfw9rNjqryoksL/c3yB/yW8=
-X-Google-Smtp-Source: ABdhPJzATyxMh7d9I9W6AVAY6u99VOhXemIJC0f85wihx+ONewmsmBsPNoLlJEi6V/afuGzOppCAjQ==
-X-Received: by 2002:adf:e8c5:: with SMTP id k5mr2096688wrn.242.1611593724620;
-        Mon, 25 Jan 2021 08:55:24 -0800 (PST)
-Received: from ?IPv6:2003:ea:8f06:5500:20b9:2450:6471:c6e0? (p200300ea8f06550020b924506471c6e0.dip0.t-ipconnect.de. [2003:ea:8f06:5500:20b9:2450:6471:c6e0])
-        by smtp.googlemail.com with ESMTPSA id r1sm23596470wrl.95.2021.01.25.08.55.23
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 25 Jan 2021 08:55:24 -0800 (PST)
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Realtek linux nic maintainers <nic_swsd@realtek.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: [PATCH net-next] r8169: remove not needed call to rtl_wol_enable_rx
- from rtl_shutdown
-Message-ID: <34ce78e2-596c-e2ac-16aa-c550fa624c22@gmail.com>
-Date:   Mon, 25 Jan 2021 17:55:12 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
+        id S1730597AbhAYRNQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Jan 2021 12:13:16 -0500
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:30374 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1730492AbhAYRMj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 12:12:39 -0500
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 10PGqCSR013946;
+        Mon, 25 Jan 2021 09:09:50 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-type; s=pfpt0220; bh=6g15w3uNCwvIp8J1tMnuTZzSBalD75DB53rQXgqy48M=;
+ b=EMPHR8MEr+URooAie1lLXMDnwkiMImhJSsGDhEEDn5inStJcexgpnlFOzRx855+6M4i3
+ TmubbrrTiKuzDsnWms2fDi0aH0zlMjvvI5C4zgf/kHqaumPsJaJIM35ODa62tGmyaMrI
+ JohEK7AefrhTwOZ13ycakeWESk0XgYTa0ci3deFODwG1UnroYsSaR/kWJU63sCt6nLBA
+ wuZXELg+49YkuwvG78UnjeW/QqT8rBBpYPFPIlKbFxd+bYaUJ6YsW7JcA/anrkM/0Lbl
+ WADZz2+Z5UoRgXamNwAK1p8iu9VH1PBSQnOlCnVpBoBVIYUsKdWhTLFQfZX2Z3p6ECfj Lg== 
+Received: from dc5-exch02.marvell.com ([199.233.59.182])
+        by mx0b-0016f401.pphosted.com with ESMTP id 368m6ud2e6-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Mon, 25 Jan 2021 09:09:50 -0800
+Received: from SC-EXCH01.marvell.com (10.93.176.81) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 25 Jan
+ 2021 09:09:48 -0800
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH01.marvell.com
+ (10.93.176.81) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 25 Jan
+ 2021 09:09:48 -0800
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 25 Jan 2021 09:09:48 -0800
+Received: from stefan-pc.marvell.com (stefan-pc.marvell.com [10.5.25.21])
+        by maili.marvell.com (Postfix) with ESMTP id 2313F3F7040;
+        Mon, 25 Jan 2021 09:09:44 -0800 (PST)
+From:   <stefanc@marvell.com>
+To:     <netdev@vger.kernel.org>
+CC:     <thomas.petazzoni@bootlin.com>, <davem@davemloft.net>,
+        <nadavh@marvell.com>, <ymarkman@marvell.com>,
+        <linux-kernel@vger.kernel.org>, <stefanc@marvell.com>,
+        <kuba@kernel.org>, <linux@armlinux.org.uk>, <mw@semihalf.com>,
+        <andrew@lunn.ch>, <rmk+kernel@armlinux.org.uk>,
+        <atenart@kernel.org>
+Subject: [PATCH v3 RFC net-next 09/19] net: mvpp2: add FCA periodic timer configurations
+Date:   Mon, 25 Jan 2021 19:07:56 +0200
+Message-ID: <1611594486-29431-10-git-send-email-stefanc@marvell.com>
+X-Mailer: git-send-email 1.9.1
+In-Reply-To: <1611594486-29431-1-git-send-email-stefanc@marvell.com>
+References: <1611594486-29431-1-git-send-email-stefanc@marvell.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
+ definitions=2021-01-25_07:2021-01-25,2021-01-25 signatures=0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-rtl_wol_enable_rx() is called via the following call chain if WoL
-is enabled:
-rtl8169_down()
--> rtl_prepare_power_down()
-   -> rtl_wol_enable_rx()
-Therefore we don't have to call this function here.
+From: Stefan Chulski <stefanc@marvell.com>
 
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+Flow Control periodic timer would be used if port in
+XOFF to transmit periodic XOFF frames.
+
+Signed-off-by: Stefan Chulski <stefanc@marvell.com>
 ---
- drivers/net/ethernet/realtek/r8169_main.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ drivers/net/ethernet/marvell/mvpp2/mvpp2.h      | 13 +++++-
+ drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 45 ++++++++++++++++++++
+ 2 files changed, 57 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index fb67d8f79..475e6f01e 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -4850,10 +4850,8 @@ static void rtl_shutdown(struct pci_dev *pdev)
- 	rtl_rar_set(tp, tp->dev->perm_addr);
+diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
+index cac9885..73f087c 100644
+--- a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
++++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
+@@ -596,6 +596,15 @@
+ #define     MVPP22_MPCS_CLK_RESET_DIV_RATIO(n)	((n) << 4)
+ #define     MVPP22_MPCS_CLK_RESET_DIV_SET	BIT(11)
  
- 	if (system_state == SYSTEM_POWER_OFF) {
--		if (tp->saved_wolopts) {
--			rtl_wol_enable_rx(tp);
-+		if (tp->saved_wolopts)
- 			rtl_wol_shutdown_quirk(tp);
--		}
++/* FCA registers. PPv2.2 and PPv2.3 */
++#define MVPP22_FCA_BASE(port)			(0x7600 + (port) * 0x1000)
++#define MVPP22_FCA_REG_SIZE			16
++#define MVPP22_FCA_REG_MASK			0xFFFF
++#define MVPP22_FCA_CONTROL_REG			0x0
++#define MVPP22_FCA_ENABLE_PERIODIC		BIT(11)
++#define MVPP22_PERIODIC_COUNTER_LSB_REG		(0x110)
++#define MVPP22_PERIODIC_COUNTER_MSB_REG		(0x114)
++
+ /* XPCS registers. PPv2.2 and PPv2.3 */
+ #define MVPP22_XPCS_BASE(port)			(0x7400 + (port) * 0x1000)
+ #define MVPP22_XPCS_CFG0			0x0
+@@ -752,7 +761,9 @@
+ 		((kb) * 1024 - MVPP2_TX_FIFO_THRESHOLD_MIN)
  
- 		pci_wake_from_d3(pdev, tp->saved_wolopts);
- 		pci_set_power_state(pdev, PCI_D3hot);
+ /* MSS Flow control */
+-#define MSS_SRAM_SIZE	0x800
++#define MSS_SRAM_SIZE		0x800
++#define FC_QUANTA		0xFFFF
++#define FC_CLK_DIVIDER		100
+ 
+ /* RX buffer constants */
+ #define MVPP2_SKB_SHINFO_SIZE \
+diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+index 409ca64..8f40293a 100644
+--- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
++++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+@@ -1291,6 +1291,49 @@ static void mvpp22_gop_init_10gkr(struct mvpp2_port *port)
+ 	writel(val, mpcs + MVPP22_MPCS_CLK_RESET);
+ }
+ 
++static void mvpp22_gop_fca_enable_periodic(struct mvpp2_port *port, bool en)
++{
++	struct mvpp2 *priv = port->priv;
++	void __iomem *fca = priv->iface_base + MVPP22_FCA_BASE(port->gop_id);
++	u32 val;
++
++	val = readl(fca + MVPP22_FCA_CONTROL_REG);
++	val &= ~MVPP22_FCA_ENABLE_PERIODIC;
++	if (en)
++		val |= MVPP22_FCA_ENABLE_PERIODIC;
++	writel(val, fca + MVPP22_FCA_CONTROL_REG);
++}
++
++static void mvpp22_gop_fca_set_timer(struct mvpp2_port *port, u32 timer)
++{
++	struct mvpp2 *priv = port->priv;
++	void __iomem *fca = priv->iface_base + MVPP22_FCA_BASE(port->gop_id);
++	u32 lsb, msb;
++
++	lsb = timer & MVPP22_FCA_REG_MASK;
++	msb = timer >> MVPP22_FCA_REG_SIZE;
++
++	writel(lsb, fca + MVPP22_PERIODIC_COUNTER_LSB_REG);
++	writel(msb, fca + MVPP22_PERIODIC_COUNTER_MSB_REG);
++}
++
++/* Set Flow Control timer x100 faster than pause quanta to ensure that link
++ * partner won't send traffic if port is in XOFF mode.
++ */
++static void mvpp22_gop_fca_set_periodic_timer(struct mvpp2_port *port)
++{
++	u32 timer;
++
++	timer = (port->priv->tclk / (USEC_PER_SEC * FC_CLK_DIVIDER))
++		* FC_QUANTA;
++
++	mvpp22_gop_fca_enable_periodic(port, false);
++
++	mvpp22_gop_fca_set_timer(port, timer);
++
++	mvpp22_gop_fca_enable_periodic(port, true);
++}
++
+ static int mvpp22_gop_init(struct mvpp2_port *port)
+ {
+ 	struct mvpp2 *priv = port->priv;
+@@ -1335,6 +1378,8 @@ static int mvpp22_gop_init(struct mvpp2_port *port)
+ 	val |= GENCONF_SOFT_RESET1_GOP;
+ 	regmap_write(priv->sysctrl_base, GENCONF_SOFT_RESET1, val);
+ 
++	mvpp22_gop_fca_set_periodic_timer(port);
++
+ unsupported_conf:
+ 	return 0;
+ 
 -- 
-2.30.0
+1.9.1
 
