@@ -2,127 +2,72 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B55EA304B3B
-	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 22:28:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 96B8D304B1D
+	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 22:17:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728039AbhAZEsY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Jan 2021 23:48:24 -0500
-Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:3116 "EHLO
-        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726166AbhAYJRV (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 04:17:21 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B600e8c500000>; Mon, 25 Jan 2021 01:16:01 -0800
-Received: from [172.27.12.21] (172.20.145.6) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 25 Jan
- 2021 09:15:58 +0000
-Subject: Re: [net-next 08/15] net/mlx5e: CT: Preparation for offloading
- +trk+new ct rules
-To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>
-CC:     Roi Dayan <roid@nvidia.com>, Saeed Mahameed <saeed@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>,
-        Paul Blakey <paulb@nvidia.com>,
-        Saeed Mahameed <saeedm@nvidia.com>
-References: <20210108214812.GB3678@horizon.localdomain>
- <c11867d2-6fda-d77c-6b52-f4093c751379@nvidia.com>
- <218258b2-3a86-2d87-dfc6-8b3c1e274b26@nvidia.com>
- <20210111235116.GA2595@horizon.localdomain>
- <f25eee28-4c4a-9036-8c3d-d84b15a8b5e7@nvidia.com>
- <20210114130238.GA2676@horizon.localdomain>
- <d1b5b862-8c30-efb6-1a2f-4f9f0d49ef15@nvidia.com>
- <20210114215052.GB2676@horizon.localdomain>
- <009bd8cf-df39-5346-b892-4e68a042c4b4@nvidia.com>
- <20210122011834.GA25356@salvia> <20210122021618.GH3863@horizon.localdomain>
-From:   Oz Shlomo <ozsh@nvidia.com>
-Message-ID: <ce10c528-e431-7b54-bcb5-5d7633cdf268@nvidia.com>
-Date:   Mon, 25 Jan 2021 11:15:55 +0200
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
+        id S1728373AbhAZEty (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Jan 2021 23:49:54 -0500
+Received: from smtprelay0067.hostedemail.com ([216.40.44.67]:51872 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726523AbhAYJZP (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 04:25:15 -0500
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay06.hostedemail.com (Postfix) with ESMTP id 02DE91801EC45;
+        Mon, 25 Jan 2021 09:24:18 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:800:960:973:988:989:1260:1261:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1541:1593:1594:1711:1730:1747:1777:1792:2194:2199:2393:2559:2562:2828:3138:3139:3140:3141:3142:3352:3622:3865:3866:3867:3868:3871:4321:4605:5007:6117:7576:7652:7903:10004:10234:10400:10848:11026:11232:11473:11657:11658:11914:12043:12297:12438:12740:12895:13069:13311:13357:13439:13894:14181:14659:14721:21080:21212:21433:21611:21627:30046:30054:30064:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
+X-HE-Tag: owner83_3a15a9227584
+X-Filterd-Recvd-Size: 2076
+Received: from [192.168.1.159] (unknown [47.151.137.21])
+        (Authenticated sender: joe@perches.com)
+        by omf03.hostedemail.com (Postfix) with ESMTPA;
+        Mon, 25 Jan 2021 09:24:16 +0000 (UTC)
+Message-ID: <6cad823891a9bb8aa5e9bc8712896898f9747fcd.camel@perches.com>
+Subject: Re: [PATCH net-next 07/15] bnxt_en: log firmware debug notifications
+From:   Joe Perches <joe@perches.com>
+To:     Michael Chan <michael.chan@broadcom.com>, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com
+Date:   Mon, 25 Jan 2021 01:24:15 -0800
+In-Reply-To: <1611558501-11022-8-git-send-email-michael.chan@broadcom.com>
+References: <1611558501-11022-1-git-send-email-michael.chan@broadcom.com>
+         <1611558501-11022-8-git-send-email-michael.chan@broadcom.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.38.1-1 
 MIME-Version: 1.0
-In-Reply-To: <20210122021618.GH3863@horizon.localdomain>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [172.20.145.6]
-X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
- HQMAIL107.nvidia.com (172.20.187.13)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1611566161; bh=gS4gnp3oDpqSjhOQXpEh1mLd+0H6VCvPvkhBkSSJOmQ=;
-        h=Subject:To:CC:References:From:Message-ID:Date:User-Agent:
-         MIME-Version:In-Reply-To:Content-Type:Content-Language:
-         Content-Transfer-Encoding:X-Originating-IP:X-ClientProxiedBy;
-        b=N6f3fsJHaGX61Z/QsqlYDGLZtANWdAU0bgT74ptd4fhqXEknz/A73j4Zp0B46ViNe
-         h+tXtk+jarzupABBXnXf3Z2MohKRzTALtwsn8L39GQGW5Hh+c5XdZ1JindGK3ecCf5
-         ErCowWiGmZPHd1Ksu+f6T3h0zZgVKIu62zeT+u03VbR00dljidyPfR779doSwGYluM
-         4Eo0DE2EMbUZCvcvqZWWFc7Bvp44DQhEGhfKPhGy9S9KJ1z4sUuQdfrLQf62yT52rl
-         Mwn9WWohkFdCFZ4gEKMEV4Dw22+CrAfw9JUs/W470TQmKNQOjREZfEkZF/X+PfNI2x
-         AOscnrf7F/tfA==
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-
-On 1/22/2021 4:16 AM, Marcelo Ricardo Leitner wrote:
-> On Fri, Jan 22, 2021 at 02:18:34AM +0100, Pablo Neira Ayuso wrote:
->> Hi Oz,
->>
->> On Wed, Jan 20, 2021 at 06:09:48PM +0200, Oz Shlomo wrote:
->>> On 1/14/2021 11:50 PM, Marcelo Ricardo Leitner wrote:
->>>>
->>>> Thoughts?
->>>>
->>>
->>> I wonder if we should develop a generic mechanism to optimize CT software
->>> for a use case that is faulty by design.
->>> This has limited value for software as it would only reduce the conntrack
->>> table size (packet classification is still required).
->>> However, this feature may have a big impact on hardware offload.
->>> Normally hardware offload relies on software to handle new connections.
->>> Causing all new connections to be processed by software.
->>> With this patch the hardware may autonomously set the +new connection state
->>> for the relevant connections.
->>
->> Could you fix this issue with unidirectional flows by checking for
->> IPS_CONFIRMED status bit? The idea is to hardware offload the entry
->> after the first packet goes through software successfully. Then, there
->> is no need to wait for the established state that requires to see
->> traffic in both directions.
+On Mon, 2021-01-25 at 02:08 -0500, Michael Chan wrote:
+> From: Edwin Peer <edwin.peer@broadcom.com>
 > 
-> That's an interesting idea. This way, basically all that needs to be
-> changed is tcf_ct_flow_table_process_conn() to handle this new
-> condition for UDP packets and on tcf_ct_act().
+> Firmware is capable of generating asynchronous debug notifications.
+> The event data is opaque to the driver and is simply logged. Debug
+> notifications can be enabled by turning on hardware status messages
+> using the ethtool msglvl interface.
+[]
+> diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
+[]
+> @@ -2072,6 +2073,13 @@ static int bnxt_async_event_process(struct bnxt *bp,
+>  			bnxt_fw_health_readl(bp, BNXT_FW_RESET_CNT_REG);
+>  		goto async_event_process_exit;
+>  	}
+> +	case ASYNC_EVENT_CMPL_EVENT_ID_DEBUG_NOTIFICATION:
+> +		if (netif_msg_hw(bp)) {
+> +			netdev_notice(bp->dev,
+> +				      "Received firmware debug notification, data1: 0x%x, data2: 0x%x\n",
+> +				      data1, data2);
+> +		}
 
-Will act_ct need to maintain a port list and classify the packet to realize whether the udp packet 
-is part of a unidirection or biderectional udp connection?
+		netif_notice(bp, hw, bp->dev,
+			     "Received firmware debug notification, data1: 0x%x, data2: 0x%x\n",
+			     data1, data2);
+
+> +		goto async_event_process_exit;
+
+>  	case ASYNC_EVENT_CMPL_EVENT_ID_RING_MONITOR_MSG: {
+>  		struct bnxt_rx_ring_info *rxr;
+>  		u16 grp_idx;
 
 
-> 
-> It has a small performance penaulty if compared to the original
-> solution, as now the first packet(s) goes to sw, but looks like a good
-> compromise between supporting a (from what I could understand)
-> somewhat lazy flow design (as I still think these didn't need to go
-> through conntrack), an uniform system behavior (with and without
-> offload, with mlx5 or another driver) and a more generic approach.
-> Other situations that rely on unidirectional UDP flows will benefit
-> from it as well.
-
-The hardware offload perspective is a bit different.
-With this approach the system will offload a rule per connection instead of offloading one mega-flow 
-rule on dst udp port.
-This will increase the hardware scale requirements in terms of number of offloaded rules.
-In addition, a counter will need to be instantiated per rule and the software will need to manage 
-the aging of these connections.
-
-We hoped that the hardware can fully offload this scenario, avoiding the need for sw processing at all.
-
-
-> 
-> This way I even think it doesn't need to be configurable right now.
-> It will be easier to add a knob to switch back to the old behavior if
-> needed later on, if anything.
-> 
->    Marcelo
-> 
