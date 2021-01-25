@@ -2,107 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 15D1D302705
-	for <lists+netdev@lfdr.de>; Mon, 25 Jan 2021 16:40:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1F91D302700
+	for <lists+netdev@lfdr.de>; Mon, 25 Jan 2021 16:39:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730096AbhAYPjK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Jan 2021 10:39:10 -0500
-Received: from mail2.candelatech.com ([208.74.158.173]:44746 "EHLO
-        mail3.candelatech.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730075AbhAYPil (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 10:38:41 -0500
-Received: from [192.168.254.6] (unknown [50.34.179.205])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail3.candelatech.com (Postfix) with ESMTPSA id 90D8F13C2B0;
-        Mon, 25 Jan 2021 07:15:05 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mail3.candelatech.com 90D8F13C2B0
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=candelatech.com;
-        s=default; t=1611587706;
-        bh=D72s6Vo8e4dexbEsXVvtzwjbmu/KhYklot7icQzzIgg=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=DICVx+MNcWTfvWUhTcJ/Rx5TquEP3WuZJZdwch/gBidovHK8jGHlDLlg4m6/hCcYl
-         ajsXQb1z5st6Eruwd43LvLsYCi890ixkKSz8GDF7rYHUJzKGSjxfoNrRM5tFbWhLGD
-         GArq1X2Gu+rBgoQoxyO4Ix+OXhS92I0jCbqGFlhc=
+        id S1730064AbhAYPhf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Jan 2021 10:37:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58992 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730000AbhAYPfk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 10:35:40 -0500
+Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0F0DC0611C0
+        for <netdev@vger.kernel.org>; Mon, 25 Jan 2021 07:25:43 -0800 (PST)
+Received: by mail-io1-xd2e.google.com with SMTP id q1so27231736ion.8
+        for <netdev@vger.kernel.org>; Mon, 25 Jan 2021 07:25:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=r+wfrvqtOpxPoqdtWvG82QG2jp5MbSFV+Tu1UFjBSDM=;
+        b=RHRTj5fcCfCRzDmSKGv539mFjvdCDijLz7Y7rUyEaCS8oZmksrBSiET40Da/3LgEXV
+         NSai00HiTAUDGIs87nf5c+y17/XxDBS05Ea9CzTD1ZNjFes0ydKJhAY4N76dClZK+88r
+         +G0NSYUSEw1lsKE9xvurkLIhBMvpKW+MoRCz7hkWVvyQ+2A/HGSyZ/iu0nGYk6LuKF2/
+         8XIAK+BEfTOysDXHKU3IGtvhV758xkpP09ze0UpokIB3K8l+IK4E6U00DEUjWhs7GVLN
+         AMoc9f68SEJu3lbZiUVFSh5FXsquFUIoSBc1D5bi0Hs0rZZ1XovKB7gHn1TTjFqg/G5e
+         xKfg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=r+wfrvqtOpxPoqdtWvG82QG2jp5MbSFV+Tu1UFjBSDM=;
+        b=FzrhwdrgvTeK18ULCvJA9AQdAjxqe7ptLIE99LU2m7OpSUDHoq+0IooGQyGjjSJ7VX
+         CgmMg30RFLyxYF6D9sHtZpDmSDR/3VYlGQ73U3P1D5KlBGbgC5N0Kk6+gEsnz8mVTX8H
+         pRSdt7V7Lpy+st6YH74X40ydgQptuTR+ADz+1dTPXisTR+/KAGA//fBNJ95eRcW3D2vU
+         jNgyqx0VhX56UDv9TgB9dBGlZmdinVPGtDsS0vEGaZB+K6AvFZUDzTucgFWprTdng/n4
+         SobCB/OCMAtY5OTMjU9qxgxfP6ut3NrvVVAOj+QixswB0DhyjwF04zxiD8dhE0j7+Hkw
+         UUhg==
+X-Gm-Message-State: AOAM533RUJ0qVCy04XNAogtMFct8iwCm12L1iSM8IRKD3abgy1VuHInY
+        OLqDDcsBIf1r/mToN8ywW3sn7IVpV0CJUJ8LAUtpfA==
+X-Google-Smtp-Source: ABdhPJzFnvqEgbnL8Mg0JMnCYP+Zt8gPrVuABjrRQKuC6ErxkE2h7yfn+nhzAFr67AT2WR37Ln9FaaQ0bj+iTj4+tMM=
+X-Received: by 2002:a05:6e02:1d0e:: with SMTP id i14mr754933ila.69.1611588342867;
+ Mon, 25 Jan 2021 07:25:42 -0800 (PST)
+MIME-Version: 1.0
+References: <20210125150949.619309-1-eric.dumazet@gmail.com> <97cf98b0-d464-1901-f01f-ac5dd362561d@candelatech.com>
+In-Reply-To: <97cf98b0-d464-1901-f01f-ac5dd362561d@candelatech.com>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Mon, 25 Jan 2021 16:25:31 +0100
+Message-ID: <CANn89iLn5HVzuCJvCeZaV3e6CNJyzsM7GO38kWEtvm0i2s5UTg@mail.gmail.com>
 Subject: Re: [PATCH net] iwlwifi: provide gso_type to GSO packets
-To:     Eric Dumazet <eric.dumazet@gmail.com>,
+To:     Ben Greear <greearb@candelatech.com>
+Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
         "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
         Luca Coelho <luciano.coelho@intel.com>,
         linux-wireless@vger.kernel.org,
         Johannes Berg <johannes@sipsolutions.net>
-References: <20210125150949.619309-1-eric.dumazet@gmail.com>
-From:   Ben Greear <greearb@candelatech.com>
-Organization: Candela Technologies
-Message-ID: <97cf98b0-d464-1901-f01f-ac5dd362561d@candelatech.com>
-Date:   Mon, 25 Jan 2021 07:15:04 -0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
-MIME-Version: 1.0
-In-Reply-To: <20210125150949.619309-1-eric.dumazet@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-MW
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/25/21 7:09 AM, Eric Dumazet wrote:
-> From: Eric Dumazet <edumazet@google.com>
-> 
-> net/core/tso.c got recent support for USO, and this broke iwlfifi
-> because the driver implemented a limited form of GSO.
-> 
-> Providing ->gso_type allows for skb_is_gso_tcp() to provide
-> a correct result.
-> 
-> Fixes: 3d5b459ba0e3 ("net: tso: add UDP segmentation support")
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Reported-by: Ben Greear <greearb@candelatech.com>
-> Bisected-by: Ben Greear <greearb@candelatech.com>
+On Mon, Jan 25, 2021 at 4:15 PM Ben Greear <greearb@candelatech.com> wrote:
+>
+> On 1/25/21 7:09 AM, Eric Dumazet wrote:
+> > From: Eric Dumazet <edumazet@google.com>
+> >
+> > net/core/tso.c got recent support for USO, and this broke iwlfifi
+> > because the driver implemented a limited form of GSO.
+> >
+> > Providing ->gso_type allows for skb_is_gso_tcp() to provide
+> > a correct result.
+> >
+> > Fixes: 3d5b459ba0e3 ("net: tso: add UDP segmentation support")
+> > Signed-off-by: Eric Dumazet <edumazet@google.com>
+> > Reported-by: Ben Greear <greearb@candelatech.com>
+> > Bisected-by: Ben Greear <greearb@candelatech.com>
+>
+> I appreciate the credit, but the bisect and some other initial bug hunting was
+> done by people on this thread:
+>
+> https://bugzilla.kernel.org/show_bug.cgi?id=209913
+>
 
-I appreciate the credit, but the bisect and some other initial bug hunting was
-done by people on this thread:
-
-https://bugzilla.kernel.org/show_bug.cgi?id=209913
-
-Thanks,
-Ben
-
-> Tested-by: Ben Greear <greearb@candelatech.com>
-> Cc: Luca Coelho <luciano.coelho@intel.com>
-> Cc: linux-wireless@vger.kernel.org
-> Cc: Johannes Berg <johannes@sipsolutions.net>
-> ---
->   drivers/net/wireless/intel/iwlwifi/mvm/tx.c | 3 +++
->   1 file changed, 3 insertions(+)
-> 
-> diff --git a/drivers/net/wireless/intel/iwlwifi/mvm/tx.c b/drivers/net/wireless/intel/iwlwifi/mvm/tx.c
-> index a983c215df310776ffe67f3b3ffa203eab609bfc..3712adc3ccc2511d46bcc855efbfba41c487d8e6 100644
-> --- a/drivers/net/wireless/intel/iwlwifi/mvm/tx.c
-> +++ b/drivers/net/wireless/intel/iwlwifi/mvm/tx.c
-> @@ -773,6 +773,7 @@ iwl_mvm_tx_tso_segment(struct sk_buff *skb, unsigned int num_subframes,
->   
->   	next = skb_gso_segment(skb, netdev_flags);
->   	skb_shinfo(skb)->gso_size = mss;
-> +	skb_shinfo(skb)->gso_type = ipv4 ? SKB_GSO_TCPV4 : SKB_GSO_TCPV6;
->   	if (WARN_ON_ONCE(IS_ERR(next)))
->   		return -EINVAL;
->   	else if (next)
-> @@ -795,6 +796,8 @@ iwl_mvm_tx_tso_segment(struct sk_buff *skb, unsigned int num_subframes,
->   
->   		if (tcp_payload_len > mss) {
->   			skb_shinfo(tmp)->gso_size = mss;
-> +			skb_shinfo(tmp)->gso_type = ipv4 ? SKB_GSO_TCPV4 :
-> +							   SKB_GSO_TCPV6;
->   		} else {
->   			if (qos) {
->   				u8 *qc;
-> 
-
-
--- 
-Ben Greear <greearb@candelatech.com>
-Candela Technologies Inc  http://www.candelatech.com
+Well, I do not think bugzilla can display full names/emails ?
