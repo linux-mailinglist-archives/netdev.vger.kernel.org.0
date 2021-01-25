@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 366DE304A29
-	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 21:34:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 90F89304ABB
+	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 21:56:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728830AbhAZFMA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jan 2021 00:12:00 -0500
-Received: from mx12.kaspersky-labs.com ([91.103.66.155]:11145 "EHLO
+        id S1730132AbhAZE6w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Jan 2021 23:58:52 -0500
+Received: from mx12.kaspersky-labs.com ([91.103.66.155]:26682 "EHLO
         mx12.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728973AbhAYNj5 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 08:39:57 -0500
+        with ESMTP id S1728014AbhAYMZc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 07:25:32 -0500
 Received: from relay12.kaspersky-labs.com (unknown [127.0.0.10])
-        by relay12.kaspersky-labs.com (Postfix) with ESMTP id 36BD275F9A;
-        Mon, 25 Jan 2021 14:12:49 +0300 (MSK)
+        by relay12.kaspersky-labs.com (Postfix) with ESMTP id A3DBD760E6;
+        Mon, 25 Jan 2021 14:13:51 +0300 (MSK)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kaspersky.com;
-        s=mail; t=1611573169;
-        bh=pkTumD+fZqWlO43eEnV4ccjNyUhusQnXcnmd+wP9qEE=;
+        s=mail; t=1611573231;
+        bh=stu9GO49LPKre6+8F7vR9bLCiSZP0+jxTi3lGWw3t/s=;
         h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type;
-        b=dd+l48+6pt2ITTaGgHlAyDZS8MpHF21XQ+it9mOg8/i4SOwnbWEGylgXN8Rs18XTN
-         vVX9KOJW8p2LSlZ7OfKX85Qofl/PcPhYIcy+wVxLYoMdc5MvI224B7279SgGsfAYwC
-         cA0/+Lba2868+MXBs2JjpzROzX6lkyJaRwX3rEE0=
+        b=UrgkjsDw5I3l04G+xHnOg0TmKTlyhghgpxVedV85MFu+iHSrkMx2/kRdqzPM7No8x
+         bxN34Y75eqB4njxIMott2bYjnXUEEwoSUV9crrM0KYNvkQ6uSCjmSVNSI8mfDIDTRu
+         s9AMQEqvNIO3GLBWvLAJswBH0xlk6ztLFK6324oY=
 Received: from mail-hq2.kaspersky.com (unknown [91.103.66.206])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
         (Client CN "mail-hq2.kaspersky.com", Issuer "Kaspersky MailRelays CA G3" (verified OK))
-        by mailhub12.kaspersky-labs.com (Postfix) with ESMTPS id 68A2575FBD;
-        Mon, 25 Jan 2021 14:12:48 +0300 (MSK)
-Received: from arseniy-pc.avp.ru (10.64.64.121) by hqmailmbx3.avp.ru
+        by mailhub12.kaspersky-labs.com (Postfix) with ESMTPS id 59A9B760DF;
+        Mon, 25 Jan 2021 14:13:51 +0300 (MSK)
+Received: from arseniy-pc.avp.ru (10.64.68.129) by hqmailmbx3.avp.ru
  (10.64.67.243) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2044.4; Mon, 25
- Jan 2021 14:12:47 +0300
+ Jan 2021 14:13:50 +0300
 From:   Arseny Krasnov <arseny.krasnov@kaspersky.com>
 To:     Stefan Hajnoczi <stefanha@redhat.com>,
         Stefano Garzarella <sgarzare@redhat.com>,
@@ -38,22 +38,23 @@ To:     Stefan Hajnoczi <stefanha@redhat.com>,
         "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
         Arseny Krasnov <arseny.krasnov@kaspersky.com>,
+        Jorgen Hansen <jhansen@vmware.com>,
         Andra Paraschiv <andraprs@amazon.com>,
         Colin Ian King <colin.king@canonical.com>,
         Jeff Vander Stoep <jeffv@google.com>
 CC:     <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
         <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <stsp2@yandex.ru>, <oxffffaa@gmail.com>
-Subject: [RFC PATCH v3 03/13] af_vsock: implement SEQPACKET rx loop
-Date:   Mon, 25 Jan 2021 14:12:36 +0300
-Message-ID: <20210125111239.598377-1-arseny.krasnov@kaspersky.com>
+Subject: [RFC PATCH v3 06/13] af_vsock: update comments for stream sockets
+Date:   Mon, 25 Jan 2021 14:13:39 +0300
+Message-ID: <20210125111342.598799-1-arseny.krasnov@kaspersky.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210125110903.597155-1-arseny.krasnov@kaspersky.com>
 References: <20210125110903.597155-1-arseny.krasnov@kaspersky.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Originating-IP: [10.64.64.121]
+X-Originating-IP: [10.64.68.129]
 X-ClientProxiedBy: hqmailmbx3.avp.ru (10.64.67.243) To hqmailmbx3.avp.ru
  (10.64.67.243)
 X-KSE-ServerInfo: hqmailmbx3.avp.ru, 9
@@ -96,153 +97,84 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This adds receive loop for SEQPACKET. It looks like receive loop for
-SEQPACKET, but there is a little bit difference:
-1) It doesn't call notify callbacks.
-2) It doesn't care about 'SO_SNDLOWAT' and 'SO_RCVLOWAT' values, because
-   there is no sense for these values in SEQPACKET case.
-3) It waits until whole record is received or error is found during
-   receiving.
-4) It processes and sets 'MSG_TRUNC' flag.
-
-So to avoid extra conditions for two types of socket inside one loop, two
-independent functions were created.
+This replaces 'stream' to 'connect oriented' in comments as SEQPACKET is
+also connect oriented.
 
 Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
 ---
- include/net/af_vsock.h   |   5 ++
- net/vmw_vsock/af_vsock.c | 102 ++++++++++++++++++++++++++++++++++++++-
- 2 files changed, 106 insertions(+), 1 deletion(-)
+ net/vmw_vsock/af_vsock.c | 31 +++++++++++++++++--------------
+ 1 file changed, 17 insertions(+), 14 deletions(-)
 
-diff --git a/include/net/af_vsock.h b/include/net/af_vsock.h
-index b1c717286993..46073842d489 100644
---- a/include/net/af_vsock.h
-+++ b/include/net/af_vsock.h
-@@ -135,6 +135,11 @@ struct vsock_transport {
- 	bool (*stream_is_active)(struct vsock_sock *);
- 	bool (*stream_allow)(u32 cid, u32 port);
- 
-+	/* SEQ_PACKET. */
-+	size_t (*seqpacket_seq_get_len)(struct vsock_sock *);
-+	ssize_t (*seqpacket_dequeue)(struct vsock_sock *, struct msghdr *,
-+				     size_t len, int flags);
-+
- 	/* Notification. */
- 	int (*notify_poll_in)(struct vsock_sock *, size_t, bool *);
- 	int (*notify_poll_out)(struct vsock_sock *, size_t, bool *);
 diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
-index 524df8fc84cd..3b266880b7c8 100644
+index bbc3c31085aa..0ff1190aad7b 100644
 --- a/net/vmw_vsock/af_vsock.c
 +++ b/net/vmw_vsock/af_vsock.c
-@@ -2006,7 +2006,107 @@ static int __vsock_stream_recvmsg(struct sock *sk, struct msghdr *msg,
- static int __vsock_seqpacket_recvmsg(struct sock *sk, struct msghdr *msg,
- 				     size_t len, int flags)
- {
--	return -1;
-+	const struct vsock_transport *transport;
-+	const struct iovec *orig_iov;
-+	unsigned long orig_nr_segs;
-+	ssize_t dequeued_total = 0;
-+	struct vsock_sock *vsk;
-+	size_t record_len;
-+	long timeout;
-+	int err = 0;
-+	DEFINE_WAIT(wait);
-+
-+	vsk = vsock_sk(sk);
-+	transport = vsk->transport;
-+
-+	timeout = sock_rcvtimeo(sk, flags & MSG_DONTWAIT);
-+	msg->msg_flags &= ~MSG_EOR;
-+	orig_nr_segs = msg->msg_iter.nr_segs;
-+	orig_iov = msg->msg_iter.iov;
-+
-+	while (1) {
-+		ssize_t dequeued;
-+		s64 ready;
-+
-+		prepare_to_wait(sk_sleep(sk), &wait, TASK_INTERRUPTIBLE);
-+		ready = vsock_stream_has_data(vsk);
-+
-+		if (ready == 0) {
-+			if (vsock_wait_data(sk, &wait, timeout, NULL, 0)) {
-+				/* In case of any loop break(timeout, signal
-+				 * interrupt or shutdown), we report user that
-+				 * nothing was copied.
-+				 */
-+				dequeued_total = 0;
-+				break;
-+			}
-+			continue;
-+		}
-+
-+		finish_wait(sk_sleep(sk), &wait);
-+
-+		if (ready < 0) {
-+			err = -ENOMEM;
-+			goto out;
-+		}
-+
-+		if (dequeued_total == 0) {
-+			record_len =
-+				transport->seqpacket_seq_get_len(vsk);
-+
-+			if (record_len == 0)
-+				continue;
-+		}
-+
-+		/* 'msg_iter.count' is number of unused bytes in iov.
-+		 * On every copy to iov iterator it is decremented at
-+		 * size of data.
-+		 */
-+		dequeued = transport->seqpacket_dequeue(vsk, msg,
-+					msg->msg_iter.count, flags);
-+
-+		if (dequeued < 0) {
-+			dequeued_total = 0;
-+
-+			if (dequeued == -EAGAIN) {
-+				iov_iter_init(&msg->msg_iter, READ,
-+					      orig_iov, orig_nr_segs,
-+					      len);
-+				msg->msg_flags &= ~MSG_EOR;
-+				continue;
-+			}
-+
-+			err = -ENOMEM;
-+			break;
-+		}
-+
-+		dequeued_total += dequeued;
-+
-+		if (dequeued_total >= record_len)
-+			break;
-+	}
-+	if (sk->sk_err)
-+		err = -sk->sk_err;
-+	else if (sk->sk_shutdown & RCV_SHUTDOWN)
-+		err = 0;
-+
-+	if (dequeued_total > 0) {
-+		/* User sets MSG_TRUNC, so return real length of
-+		 * packet.
-+		 */
-+		if (flags & MSG_TRUNC)
-+			err = record_len;
-+		else
-+			err = len - msg->msg_iter.count;
-+
-+		/* Always set MSG_TRUNC if real length of packet is
-+		 * bigger that user buffer.
-+		 */
-+		if (record_len > len)
-+			msg->msg_flags |= MSG_TRUNC;
-+	}
-+out:
-+	return err;
- }
+@@ -415,8 +415,8 @@ static void vsock_deassign_transport(struct vsock_sock *vsk)
  
- static int
+ /* Assign a transport to a socket and call the .init transport callback.
+  *
+- * Note: for stream socket this must be called when vsk->remote_addr is set
+- * (e.g. during the connect() or when a connection request on a listener
++ * Note: for connect oriented socket this must be called when vsk->remote_addr
++ * is set (e.g. during the connect() or when a connection request on a listener
+  * socket is received).
+  * The vsk->remote_addr is used to decide which transport to use:
+  *  - remote CID == VMADDR_CID_LOCAL or g2h->local_cid or VMADDR_CID_HOST if
+@@ -477,10 +477,10 @@ int vsock_assign_transport(struct vsock_sock *vsk, struct vsock_sock *psk)
+ 			return 0;
+ 
+ 		/* transport->release() must be called with sock lock acquired.
+-		 * This path can only be taken during vsock_stream_connect(),
+-		 * where we have already held the sock lock.
+-		 * In the other cases, this function is called on a new socket
+-		 * which is not assigned to any transport.
++		 * This path can only be taken during vsock_connect(), where we
++		 * have already held the sock lock. In the other cases, this
++		 * function is called on a new socket which is not assigned to
++		 * any transport.
+ 		 */
+ 		vsk->transport->release(vsk);
+ 		vsock_deassign_transport(vsk);
+@@ -657,9 +657,10 @@ static int __vsock_bind_connectible(struct vsock_sock *vsk,
+ 
+ 	vsock_addr_init(&vsk->local_addr, new_addr.svm_cid, new_addr.svm_port);
+ 
+-	/* Remove stream sockets from the unbound list and add them to the hash
+-	 * table for easy lookup by its address.  The unbound list is simply an
+-	 * extra entry at the end of the hash table, a trick used by AF_UNIX.
++	/* Remove connect oriented sockets from the unbound list and add them
++	 * to the hash table for easy lookup by its address.  The unbound list
++	 * is simply an extra entry at the end of the hash table, a trick used
++	 * by AF_UNIX.
+ 	 */
+ 	__vsock_remove_bound(vsk);
+ 	__vsock_insert_bound(vsock_bound_sockets(&vsk->local_addr), vsk);
+@@ -950,10 +951,10 @@ static int vsock_shutdown(struct socket *sock, int mode)
+ 	if ((mode & ~SHUTDOWN_MASK) || !mode)
+ 		return -EINVAL;
+ 
+-	/* If this is a STREAM socket and it is not connected then bail out
+-	 * immediately.  If it is a DGRAM socket then we must first kick the
+-	 * socket so that it wakes up from any sleeping calls, for example
+-	 * recv(), and then afterwards return the error.
++	/* If this is a connect oriented socket and it is not connected then
++	 * bail out immediately.  If it is a DGRAM socket then we must first
++	 * kick the socket so that it wakes up from any sleeping calls, for
++	 * example recv(), and then afterwards return the error.
+ 	 */
+ 
+ 	sk = sock->sk;
+@@ -1770,7 +1771,9 @@ static int vsock_connectible_sendmsg(struct socket *sock, struct msghdr *msg,
+ 
+ 	lock_sock(sk);
+ 
+-	/* Callers should not provide a destination with stream sockets. */
++	/* Callers should not provide a destination with connect oriented
++	 * sockets.
++	 */
+ 	if (msg->msg_namelen) {
+ 		err = sk->sk_state == TCP_ESTABLISHED ? -EISCONN : -EOPNOTSUPP;
+ 		goto out;
 -- 
 2.25.1
 
