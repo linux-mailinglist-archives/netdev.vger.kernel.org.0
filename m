@@ -2,87 +2,235 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6BA91303451
-	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 06:23:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 60B493034C0
+	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 06:27:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732440AbhAZFXe (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jan 2021 00:23:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47278 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729736AbhAYQvo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 11:51:44 -0500
-Received: from mail-oi1-x22f.google.com (mail-oi1-x22f.google.com [IPv6:2607:f8b0:4864:20::22f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 68A0AC061788
-        for <netdev@vger.kernel.org>; Mon, 25 Jan 2021 08:50:23 -0800 (PST)
-Received: by mail-oi1-x22f.google.com with SMTP id h192so15473402oib.1
-        for <netdev@vger.kernel.org>; Mon, 25 Jan 2021 08:50:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=L8VysMoy/6ZWM4Z2wTjc5OGMC8yffqUrNtZJ4X5dnRw=;
-        b=tDzKmLPQUE5oIMMKoZ0mw+5AeeWNupUMiync+sK0FHg/OhX4YjezK6kift/ymiQgTb
-         mDcovFCErehzhoTkos6pvlyby1UaqmdgHo87zz7FFKBcuKEQybFsIwdFqfDIRXvwlEux
-         tEXg+zS1RBOeLFavfR7U5Q4IxQLhzcLzhQhSeoqJqPJ4Ur3rK7nPEKBXBC1RjTF0Q9H6
-         vtVtgRmxSl77Hln9zrAuEanJiru5JF+EK5jrdgcM61Ywm6eDCwgxvxYElqzHPQcowIef
-         I3qkisu/jo25vj598DPXPPTDbwRl3JRCthsw3sHFq7p6zvzCsdZDcYYVjM1akXkEFfkg
-         Wqpw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=L8VysMoy/6ZWM4Z2wTjc5OGMC8yffqUrNtZJ4X5dnRw=;
-        b=VzVu0MShWbOBeQzwyUze4buVCaEsmSVkl2NqlCi/I/Pv9yknl3cPXrWN8nkoh8Mh/6
-         0zf7pucBUm30Ceqvb8pBTOQLt5c5ptnYXARKBddrfSlUHOeOjd+RQ36mUkng7lAKQ0hI
-         UpaUaNh7jt0xAvAk40cYXf6uCVlNok6SzMVJZAH6tLc8zHyiDLYv1DNit3l3tLFPwYDr
-         4HxUyl4ViWWZxC7cLcRQuWMKPJeDaqLRWFnSd3RxY/666/qRDz/NT809yNc/mniojGqm
-         5G04Mw11lFO/mFgqOaIkGpFWWQiOmArxJqnHlZLP0IpFUexDpdb2pkmAm1tze7sKt4vM
-         9zPw==
-X-Gm-Message-State: AOAM5319ZkX9+gYZB1Iv1AcN0T24LoE1fP/YheGIiUjuBqPNh2YWNh3O
-        KBrm9Xp9TTP1g5jCG4+rEpewczZGPUQ=
-X-Google-Smtp-Source: ABdhPJz+3AKQxNjTpqOLlFhSAQ0nQuuADZ521xeOyFykoreBQ6AveYvBEMg2X3dilYRSEu+P7by2cg==
-X-Received: by 2002:aca:df57:: with SMTP id w84mr680263oig.16.1611593422744;
-        Mon, 25 Jan 2021 08:50:22 -0800 (PST)
-Received: from Davids-MacBook-Pro.local ([2601:282:800:dc80:59b3:c1d3:7fbc:c577])
-        by smtp.googlemail.com with ESMTPSA id c2sm3135489ooo.17.2021.01.25.08.50.21
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 25 Jan 2021 08:50:22 -0800 (PST)
-Subject: Re: [PATCH iproute2-next] Add description section to rdma man page
-To:     Leon Romanovsky <leonro@nvidia.com>
-Cc:     Alan Perry <alanp@snowmoose.com>, netdev@vger.kernel.org
-References: <20210124200026.75071-1-alanp@snowmoose.com>
- <20210125062515.GD579511@unreal>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <3d1df9a0-b4f8-8d11-17a5-bd5e5f0d2bad@gmail.com>
-Date:   Mon, 25 Jan 2021 09:50:21 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
- Gecko/20100101 Thunderbird/78.6.1
+        id S1732753AbhAZF0v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jan 2021 00:26:51 -0500
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:36830 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1730342AbhAYRMU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 12:12:20 -0500
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 10PGqCSP013946;
+        Mon, 25 Jan 2021 09:09:30 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-type; s=pfpt0220; bh=FbF0MDZhBxuqz88tmQetlnJLnae516o4bQ1eRnjxSw4=;
+ b=fO+XUJFgE2vlDa/XeEX8n7+B1O1jSLiFp6wus8Ek2zhDBW2n85t8A5383xllfaGrltm8
+ nTC3BDvGH7ZExgd50EAwYAWfRBu8Wqc8Q8PV6x3nSqQ3VGf+X41hTFm7tjpMaxFb4NLp
+ 84pZYxYkdEP20ViimhuCOMMB/zNtCc4AIc3ICWjBnQ7qnjBrOpCij9lSAlfZxy2+rC5d
+ DSWjnq9VupHtZ/rpiwY+3zNZx5NYmxxM1cJKUuVTFsk191XFgfSJdUAbj1SKrqzp6Rzw
+ XyhUWaDXEC1lj7M2yB38aMQvoC+vZxeBt1O+7JIIVPPrb0fSX4jPA+FOdOZOculPDbEp Lg== 
+Received: from dc5-exch01.marvell.com ([199.233.59.181])
+        by mx0b-0016f401.pphosted.com with ESMTP id 368m6ud2c8-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Mon, 25 Jan 2021 09:09:30 -0800
+Received: from SC-EXCH01.marvell.com (10.93.176.81) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 25 Jan
+ 2021 09:09:28 -0800
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH01.marvell.com
+ (10.93.176.81) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 25 Jan
+ 2021 09:09:27 -0800
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 25 Jan 2021 09:09:27 -0800
+Received: from stefan-pc.marvell.com (stefan-pc.marvell.com [10.5.25.21])
+        by maili.marvell.com (Postfix) with ESMTP id BECAA3F7040;
+        Mon, 25 Jan 2021 09:09:24 -0800 (PST)
+From:   <stefanc@marvell.com>
+To:     <netdev@vger.kernel.org>
+CC:     <thomas.petazzoni@bootlin.com>, <davem@davemloft.net>,
+        <nadavh@marvell.com>, <ymarkman@marvell.com>,
+        <linux-kernel@vger.kernel.org>, <stefanc@marvell.com>,
+        <kuba@kernel.org>, <linux@armlinux.org.uk>, <mw@semihalf.com>,
+        <andrew@lunn.ch>, <rmk+kernel@armlinux.org.uk>,
+        <atenart@kernel.org>
+Subject: [PATCH v3 RFC net-next 03/19] net: mvpp2: add CM3 SRAM memory map
+Date:   Mon, 25 Jan 2021 19:07:50 +0200
+Message-ID: <1611594486-29431-4-git-send-email-stefanc@marvell.com>
+X-Mailer: git-send-email 1.9.1
+In-Reply-To: <1611594486-29431-1-git-send-email-stefanc@marvell.com>
+References: <1611594486-29431-1-git-send-email-stefanc@marvell.com>
 MIME-Version: 1.0
-In-Reply-To: <20210125062515.GD579511@unreal>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
+ definitions=2021-01-25_07:2021-01-25,2021-01-25 signatures=0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/24/21 11:25 PM, Leon Romanovsky wrote:
-> On Sun, Jan 24, 2021 at 12:00:27PM -0800, Alan Perry wrote:
->> Add a description section with basic info about the rdma command for users
->> unfamiliar with it.
->>
->> Signed-off-by: Alan Perry <alanp@snowmoose.com>
->> Acked-by: Leon Romanovsky <leonro@nvidia.com>
->>
->> ---
->>  man/man8/rdma.8 | 9 ++++++++-
->>  1 file changed, 8 insertions(+), 1 deletion(-)
-> 
-> David, can you please pick it up?
-> 
-> Thanks
-> 
+From: Stefan Chulski <stefanc@marvell.com>
 
-changes to man pages for existing features go through main branch.
-redirecting to Stephen
+This patch adds CM3 memory map and CM3 read/write callbacks.
+No functionality changes.
+
+Signed-off-by: Stefan Chulski <stefanc@marvell.com>
+---
+ drivers/net/ethernet/marvell/mvpp2/mvpp2.h      |  7 ++
+ drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 73 +++++++++++++++++++-
+ 2 files changed, 77 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
+index 6bd7e40..aec9179 100644
+--- a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
++++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
+@@ -748,6 +748,9 @@
+ #define MVPP2_TX_FIFO_THRESHOLD(kb)	\
+ 		((kb) * 1024 - MVPP2_TX_FIFO_THRESHOLD_MIN)
+ 
++/* MSS Flow control */
++#define MSS_SRAM_SIZE	0x800
++
+ /* RX buffer constants */
+ #define MVPP2_SKB_SHINFO_SIZE \
+ 	SKB_DATA_ALIGN(sizeof(struct skb_shared_info))
+@@ -925,6 +928,7 @@ struct mvpp2 {
+ 	/* Shared registers' base addresses */
+ 	void __iomem *lms_base;
+ 	void __iomem *iface_base;
++	void __iomem *cm3_base;
+ 
+ 	/* On PPv2.2, each "software thread" can access the base
+ 	 * register through a separate address space, each 64 KB apart
+@@ -996,6 +1000,9 @@ struct mvpp2 {
+ 
+ 	/* page_pool allocator */
+ 	struct page_pool *page_pool[MVPP2_PORT_MAX_RXQ];
++
++	/* CM3 SRAM pool */
++	struct gen_pool *sram_pool;
+ };
+ 
+ struct mvpp2_pcpu_stats {
+diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+index a07cf60..501b17e 100644
+--- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
++++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+@@ -25,6 +25,7 @@
+ #include <linux/of_net.h>
+ #include <linux/of_address.h>
+ #include <linux/of_device.h>
++#include <linux/genalloc.h>
+ #include <linux/phy.h>
+ #include <linux/phylink.h>
+ #include <linux/phy/phy.h>
+@@ -91,6 +92,16 @@ static inline u32 mvpp2_cpu_to_thread(struct mvpp2 *priv, int cpu)
+ 	return cpu % priv->nthreads;
+ }
+ 
++static void mvpp2_cm3_write(struct mvpp2 *priv, u32 offset, u32 data)
++{
++	writel(data, priv->cm3_base + offset);
++}
++
++static u32 mvpp2_cm3_read(struct mvpp2 *priv, u32 offset)
++{
++	return readl(priv->cm3_base + offset);
++}
++
+ static struct page_pool *
+ mvpp2_create_page_pool(struct device *dev, int num, int len,
+ 		       enum dma_data_direction dma_dir)
+@@ -6846,6 +6857,44 @@ static int mvpp2_init(struct platform_device *pdev, struct mvpp2 *priv)
+ 	return 0;
+ }
+ 
++static int mvpp2_get_sram(struct platform_device *pdev,
++			  struct mvpp2 *priv)
++{
++	struct device_node *dn = pdev->dev.of_node;
++	static bool defer_once;
++	struct resource *res;
++
++	if (has_acpi_companion(&pdev->dev)) {
++		res = platform_get_resource(pdev, IORESOURCE_MEM, 2);
++		if (!res) {
++			dev_warn(&pdev->dev, "ACPI is too old, Flow control not supported\n");
++			return 0;
++		}
++		priv->cm3_base = devm_ioremap_resource(&pdev->dev, res);
++		if (IS_ERR(priv->cm3_base))
++			return PTR_ERR(priv->cm3_base);
++	} else {
++		priv->sram_pool = of_gen_pool_get(dn, "cm3-mem", 0);
++		if (!priv->sram_pool) {
++			if (!defer_once) {
++				defer_once = true;
++				/* Try defer once */
++				return -EPROBE_DEFER;
++			}
++			dev_warn(&pdev->dev, "DT is too old, Flow control not supported\n");
++			return -ENOMEM;
++		}
++		/* cm3_base allocated with offset zero into the SRAM since mapping size
++		 * is equal to requested size.
++		 */
++		priv->cm3_base = (void __iomem *)gen_pool_alloc(priv->sram_pool,
++								MSS_SRAM_SIZE);
++		if (!priv->cm3_base)
++			return -ENOMEM;
++	}
++	return 0;
++}
++
+ static int mvpp2_probe(struct platform_device *pdev)
+ {
+ 	const struct acpi_device_id *acpi_id;
+@@ -6902,6 +6951,13 @@ static int mvpp2_probe(struct platform_device *pdev)
+ 		priv->iface_base = devm_ioremap_resource(&pdev->dev, res);
+ 		if (IS_ERR(priv->iface_base))
+ 			return PTR_ERR(priv->iface_base);
++
++		/* Map CM3 SRAM */
++		err = mvpp2_get_sram(pdev, priv);
++		if (err == -EPROBE_DEFER)
++			return err;
++		else if (err)
++			dev_warn(&pdev->dev, "Fail to alloc CM3 SRAM\n");
+ 	}
+ 
+ 	if (priv->hw_version == MVPP22 && dev_of_node(&pdev->dev)) {
+@@ -6947,11 +7003,13 @@ static int mvpp2_probe(struct platform_device *pdev)
+ 
+ 	if (dev_of_node(&pdev->dev)) {
+ 		priv->pp_clk = devm_clk_get(&pdev->dev, "pp_clk");
+-		if (IS_ERR(priv->pp_clk))
+-			return PTR_ERR(priv->pp_clk);
++		if (IS_ERR(priv->pp_clk)) {
++			err = PTR_ERR(priv->pp_clk);
++			goto err_cm3;
++		}
+ 		err = clk_prepare_enable(priv->pp_clk);
+ 		if (err < 0)
+-			return err;
++			goto err_cm3;
+ 
+ 		priv->gop_clk = devm_clk_get(&pdev->dev, "gop_clk");
+ 		if (IS_ERR(priv->gop_clk)) {
+@@ -7087,6 +7145,11 @@ static int mvpp2_probe(struct platform_device *pdev)
+ 	clk_disable_unprepare(priv->gop_clk);
+ err_pp_clk:
+ 	clk_disable_unprepare(priv->pp_clk);
++err_cm3:
++	if (priv->sram_pool && priv->cm3_base)
++		gen_pool_free(priv->sram_pool, (unsigned long)priv->cm3_base,
++			      MSS_SRAM_SIZE);
++
+ 	return err;
+ }
+ 
+@@ -7127,6 +7190,10 @@ static int mvpp2_remove(struct platform_device *pdev)
+ 				  aggr_txq->descs_dma);
+ 	}
+ 
++	if (priv->sram_pool && priv->cm3_base)
++		gen_pool_free(priv->sram_pool, (unsigned long)priv->cm3_base,
++			      MSS_SRAM_SIZE);
++
+ 	if (is_acpi_node(port_fwnode))
+ 		return 0;
+ 
+-- 
+1.9.1
+
