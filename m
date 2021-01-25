@@ -2,120 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C3E60303086
-	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 00:51:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 01C6330307E
+	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 00:50:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732061AbhAYXvA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Jan 2021 18:51:00 -0500
-Received: from serv108.segi.ulg.ac.be ([139.165.32.111]:49297 "EHLO
-        serv108.segi.ulg.ac.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732537AbhAYVMj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 16:12:39 -0500
-Received: from mbx12-zne.ulg.ac.be (serv470.segi.ulg.ac.be [139.165.32.199])
-        by serv108.segi.ulg.ac.be (Postfix) with ESMTP id 7CD16200F4B1;
-        Mon, 25 Jan 2021 22:11:35 +0100 (CET)
-DKIM-Filter: OpenDKIM Filter v2.11.0 serv108.segi.ulg.ac.be 7CD16200F4B1
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=uliege.be;
-        s=ulg20190529; t=1611609095;
-        bh=wD4fIaJYrczPpSMJRVDbjFtKdrupqrerE1JjV2L1JHo=;
-        h=From:Subject:Date:References:To:In-Reply-To:Cc:From;
-        b=Jed/ruVyw+OkDdBfYXPf2bE/rwSRfNSUi3zxmmMCch34BXe3eciRy2s7b3HOPFtiV
-         1mF7aesvQQC8uHOtC16NGjxaa0XIBJR+Aq5yN+vpiRigvhOYqM3vJj45jk1H+yLpo6
-         bJt2/2n36v4J1Pe+zyQxDy7TzZ60pJ/n6BePhaNizP2kHQyAbsXV2io8S1xaxzz29Y
-         ZzDM1cu1WrLgEKrC9qMDEwX+kOs7JHgtiUKIUtKVnHXsJzFJJq3XV6dyoJvEignZFI
-         IPh4AJ/jxOxwezlYwXK8+8aEfo2b3qL1sdrn/lCio3xlrKpuNjsxrIuUJXlCq4z05E
-         9kbhgYKA/oobw==
-Received: from localhost (localhost.localdomain [127.0.0.1])
-        by mbx12-zne.ulg.ac.be (Postfix) with ESMTP id 73125129E932;
-        Mon, 25 Jan 2021 22:11:35 +0100 (CET)
-Received: from mbx12-zne.ulg.ac.be ([127.0.0.1])
-        by localhost (mbx12-zne.ulg.ac.be [127.0.0.1]) (amavisd-new, port 10026)
-        with ESMTP id zDGAhtky_ebp; Mon, 25 Jan 2021 22:11:35 +0100 (CET)
-Received: from mbx12-zne.ulg.ac.be (mbx12-zne.ulg.ac.be [139.165.32.199])
-        by mbx12-zne.ulg.ac.be (Postfix) with ESMTP id 560FE129E925;
-        Mon, 25 Jan 2021 22:11:35 +0100 (CET)
-From:   Justin Iurman <justin.iurman@uliege.be>
+        id S1732614AbhAYXtq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Jan 2021 18:49:46 -0500
+Received: from mail.kernel.org ([198.145.29.99]:58784 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1732553AbhAYVNo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 25 Jan 2021 16:13:44 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 9684A207B1;
+        Mon, 25 Jan 2021 21:12:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1611609174;
+        bh=+7/JFcAs+r5TtRk8YUAj0V2gIvU9ZzWSvrnlc++n4Tg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=AHuQ4tPHNSLwfaIpQuUoRkmuQiUx4BqrrF+8oGZ+HAsyzhRMayzSTu3hn/odj5f/H
+         HK2icuEmUuIJuweyiXEhJDdgmOb+B2K+pVLeQX1FuRehC4oMmSVZOC7cWr7D9McA2K
+         xG4rtddSLzHbZ2J0+DzDUjrLIleCXOeq6B6cSBx/zFzZvslVG6pFzXHpZgEEDkd16t
+         OyAbv4x+Pvmy+10TGUPr97Cwvgzl6meH4k8Xw2eWy4WORWXGCWNmdbG3OiuczjVD8q
+         92Qv+TaNY+6hn7AcvwUdkdN78rQBfgZDWfSsK5mgTgYhKqzfL2hr5OkFTkK450lWSI
+         AN4yYCk/25c7A==
+Date:   Mon, 25 Jan 2021 13:12:52 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     syzbot <syzbot+a1c17e56a8a62294c714@syzkaller.appspotmail.com>
+Cc:     alexanderduyck@fb.com, andrii@kernel.org, ast@kernel.org,
+        bpf@vger.kernel.org, daniel@iogearbox.net, davem@davemloft.net,
+        edumazet@google.com, hawk@kernel.org, john.fastabend@gmail.com,
+        kafai@fb.com, kpsingh@kernel.org, linux-kernel@vger.kernel.org,
+        mst@redhat.com, netdev@vger.kernel.org, songliubraving@fb.com,
+        syzkaller-bugs@googlegroups.com, yhs@fb.com,
+        Willem de Bruijn <willemb@google.com>
+Subject: Re: WARNING in pskb_expand_head
+Message-ID: <20210125131252.4e17d3f3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <0000000000005d4f3205b9ab95f4@google.com>
+References: <0000000000005d4f3205b9ab95f4@google.com>
 MIME-Version: 1.0
-Subject: Re: [PATCH net 1/1] uapi: fix big endian definition of ipv6_rpl_sr_hdr
-Message-Id: <6FEDA1B9-14CC-4EC5-A41D-A38599C8CDBD@uliege.be>
-Date:   Mon, 25 Jan 2021 22:11:35 +0100 (CET)
-References: <20210121220044.22361-1-justin.iurman@uliege.be> <20210121220044.22361-2-justin.iurman@uliege.be> <20210123205444.5e1df187@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com> <55663307.1072450.1611482265804.JavaMail.zimbra@uliege.be> <fd7957e7-ab5c-d2c2-9338-76879563460e@gmail.com> <20210125113231.3fac0e10@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-To:     Jakub Kicinski <kuba@kernel.org>
-In-Reply-To: <20210125113231.3fac0e10@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Cc:     David Ahern <dsahern@gmail.com>, netdev@vger.kernel.org,
-        davem@davemloft.net, alex aring <alex.aring@gmail.com>
-Content-Transfer-Encoding: base64
-Content-Type: text/plain;
-        charset=utf-8
-X-Originating-IP: [80.200.25.38]
-X-Mailer: Zimbra 8.8.15_GA_3980 (MobileSync - Apple-iPhone8C2/1607.102)
-Thread-Topic: uapi: fix big endian definition of ipv6_rpl_sr_hdr
-Thread-Index: h/CbTaUD+funzCR4mb2fxxCsIaxPPQ==
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-DQoNCj4gTGUgMjUgamFudi4gMjAyMSDDoCAyMDozMiwgSmFrdWIgS2ljaW5za2kgPGt1YmFAa2Vy
-bmVsLm9yZz4gYSDDqWNyaXQgOg0KPiANCj4+IE9uIFN1biwgMjQgSmFuIDIwMjEgMTE6NTc6MDMg
-LTA3MDAgRGF2aWQgQWhlcm4gd3JvdGU6DQo+PiBPbiAxLzI0LzIxIDI6NTcgQU0sIEp1c3RpbiBJ
-dXJtYW4gd3JvdGU6DQo+Pj4+IERlOiAiSmFrdWIgS2ljaW5za2kiIDxrdWJhQGtlcm5lbC5vcmc+
-DQo+Pj4+IMOAOiAiSnVzdGluIEl1cm1hbiIgPGp1c3Rpbi5pdXJtYW5AdWxpZWdlLmJlPg0KPj4+
-PiBDYzogbmV0ZGV2QHZnZXIua2VybmVsLm9yZywgZGF2ZW1AZGF2ZW1sb2Z0Lm5ldCwgImFsZXgg
-YXJpbmciIDxhbGV4LmFyaW5nQGdtYWlsLmNvbT4NCj4+Pj4gRW52b3nDqTogRGltYW5jaGUgMjQg
-SmFudmllciAyMDIxIDA1OjU0OjQ0DQo+Pj4+IE9iamV0OiBSZTogW1BBVENIIG5ldCAxLzFdIHVh
-cGk6IGZpeCBiaWcgZW5kaWFuIGRlZmluaXRpb24gb2YgaXB2Nl9ycGxfc3JfaGRyICANCj4+PiAN
-Cj4+Pj4+IE9uIFRodSwgMjEgSmFuIDIwMjEgMjM6MDA6NDQgKzAxMDAgSnVzdGluIEl1cm1hbiB3
-cm90ZTogIA0KPj4+Pj4gRm9sbG93aW5nIFJGQyA2NTU0IFsxXSwgdGhlIGN1cnJlbnQgb3JkZXIg
-b2YgZmllbGRzIGlzIHdyb25nIGZvciBiaWcNCj4+Pj4+IGVuZGlhbiBkZWZpbml0aW9uLiBJbmRl
-ZWQsIGhlcmUgaXMgaG93IHRoZSBoZWFkZXIgbG9va3MgbGlrZToNCj4+Pj4+IA0KPj4+Pj4gKy0r
-LSstKy0rLSstKy0rLSstKy0rLSstKy0rLSstKy0rLSstKy0rLSstKy0rLSstKy0rLSstKy0rLSst
-Ky0rLSsNCj4+Pj4+IHwgIE5leHQgSGVhZGVyICB8ICBIZHIgRXh0IExlbiAgfCBSb3V0aW5nIFR5
-cGUgIHwgU2VnbWVudHMgTGVmdCB8DQo+Pj4+PiArLSstKy0rLSstKy0rLSstKy0rLSstKy0rLSst
-Ky0rLSstKy0rLSstKy0rLSstKy0rLSstKy0rLSstKy0rLSstKw0KPj4+Pj4gfCBDbXBySSB8IENt
-cHJFIHwgIFBhZCAgfCAgICAgICAgICAgICAgIFJlc2VydmVkICAgICAgICAgICAgICAgIHwNCj4+
-Pj4+ICstKy0rLSstKy0rLSstKy0rLSstKy0rLSstKy0rLSstKy0rLSstKy0rLSstKy0rLSstKy0r
-LSstKy0rLSstKy0rDQo+Pj4+PiANCj4+Pj4+IFRoaXMgcGF0Y2ggcmVvcmRlcnMgZmllbGRzIHNv
-IHRoYXQgYmlnIGVuZGlhbiBkZWZpbml0aW9uIGlzIG5vdyBjb3JyZWN0Lg0KPj4+Pj4gDQo+Pj4+
-PiAgWzFdIGh0dHBzOi8vdG9vbHMuaWV0Zi5vcmcvaHRtbC9yZmM2NTU0I3NlY3Rpb24tMw0KPj4+
-Pj4gDQo+Pj4+PiBTaWduZWQtb2ZmLWJ5OiBKdXN0aW4gSXVybWFuIDxqdXN0aW4uaXVybWFuQHVs
-aWVnZS5iZT4gIA0KPj4+PiANCj4+Pj4gQXJlIHlvdSBzdXJlPyBUaGlzIGxvb2tzIHJpZ2h0IHRv
-IG1lLiAgDQo+Pj4gDQo+Pj4gQUZBSUssIHllcy4gRGlkIHlvdSBtZWFuIHRoZSBvbGQgKGN1cnJl
-bnQpIG9uZSBsb29rcyByaWdodCwgb3IgdGhlIG5ldyBvbmU/IA0KPiANCj4gT2xkIG9uZSAvIGV4
-aXN0aW5nIGlzIGNvcnJlY3QuDQo+IA0KPj4+IElmIHlvdSBtZWFudCB0aGUgb2xkL2N1cnJlbnQg
-b25lLCB3ZWxsLCBJIGRvbid0IHVuZGVyc3RhbmQgd2h5IHRoZSBiaWcgZW5kaWFuIGRlZmluaXRp
-b24gd291bGQgbG9vayBsaWtlIHRoaXM6DQo+Pj4gDQo+Pj4gI2VsaWYgZGVmaW5lZChfX0JJR19F
-TkRJQU5fQklURklFTEQpDQo+Pj4gICAgX191MzIgICAgcmVzZXJ2ZWQ6MjAsDQo+Pj4gICAgICAg
-IHBhZDo0LA0KPj4+ICAgICAgICBjbXByaTo0LA0KPj4+ICAgICAgICBjbXByZTo0Ow0KPj4+IA0K
-Pj4+IFdoZW4gdGhlIFJGQyBkZWZpbmVzIHRoZSBoZWFkZXIgYXMgZm9sbG93czoNCj4+PiANCj4+
-PiArLSstKy0rLSstKy0rLSstKy0rLSstKy0rLSstKy0rLSstKy0rLSstKy0rLSstKy0rLSstKy0r
-LSstKy0rLSstKw0KPj4+IHwgQ21wckkgfCBDbXByRSB8ICBQYWQgIHwgICAgICAgICAgICAgICBS
-ZXNlcnZlZCAgICAgICAgICAgICAgICB8DQo+Pj4gKy0rLSstKy0rLSstKy0rLSstKy0rLSstKy0r
-LSstKy0rLSstKy0rLSstKy0rLSstKy0rLSstKy0rLSstKy0rLSsNCj4+PiANCj4+PiBUaGUgbGl0
-dGxlIGVuZGlhbiBkZWZpbml0aW9uIGxvb2tzIGZpbmUuIEJ1dCwgd2hlbiBpdCBjb21lcyB0byBi
-aWcgZW5kaWFuLCB5b3UgZGVmaW5lIGZpZWxkcyBhcyB5b3Ugc2VlIHRoZW0gb24gdGhlIHdpcmUg
-d2l0aCB0aGUgc2FtZSBvcmRlciwgcmlnaHQ/IFNvIHRoZSBjdXJyZW50IGJpZyBlbmRpYW4gZGVm
-aW5pdGlvbiBtYWtlcyBubyBzZW5zZS4gSXQgbG9va3MgbGlrZSBpdCB3YXMgYSB3cm9uZyBtaXgg
-d2l0aCB0aGUgbGl0dGxlIGVuZGlhbiBjb252ZXJzaW9uLg0KPiANCj4gV2VsbCwgeW91IGRvbid0
-IGxpc3QgdGhlIGJpdCBwb3NpdGlvbnMgaW4gdGhlIHF1b3RlIGZyb20gdGhlIFJGQywgYW5kDQo+
-IEknbSBub3QgZmFtaWxpYXIgd2l0aCB0aGUgSUVURiBwYXJsb3IuIEknbSBvbmx5DQoNCkluZGVl
-ZCwgc29ycnkgZm9yIHRoYXQuIEJpdCBwb3NpdGlvbnMgYXJlIGF2YWlsYWJsZSBpZiB5b3UgZm9s
-bG93IHRoZSBsaW5rIHRvIHRoZSBSRkMgSSByZWZlcmVuY2VkIGluIHRoZSBwYXRjaC4gSXQgaXMg
-YWx3YXlzIGRlZmluZWQgYXMgbmV0d29yayBieXRlIG9yZGVyIGJ5IGRlZmF1bHQgKD1CRSkuDQoN
-Cj4gY29tcGFyaW5nIHRoZSBMRQ0KPiBkZWZpbml0aW9uIHdpdGggdGhlIEJFLiBJZiB5b3UgY2xh
-aW0gdGhlIEJFIGlzIHdyb25nLCB0aGVuIHRoZSBMRSBpcw0KPiB3cm9uZywgdG9vLg0KDQpBY3R1
-YWxseSwgbm8sIGl04oCZcyBub3QuIElmIHlvdSBoYXZlIGEgbG9vayBhdCB0aGUgaGVhZGVyIGRl
-ZmluaXRpb24gZnJvbSB0aGUgUkZDLCB5b3UgY2FuIHNlZSB0aGF0IHRoZSBMRSBpcyBjb3JyZWN0
-ICh2YWxpZCB0cmFuc2xhdGlvbiBmcm9tIEJFLCB0aGUgKm5ldyogQkUgaW4gdGhpcyBwYXRjaCku
-DQoNCj4+Pj4+IGRpZmYgLS1naXQgYS9pbmNsdWRlL3VhcGkvbGludXgvcnBsLmggYi9pbmNsdWRl
-L3VhcGkvbGludXgvcnBsLmgNCj4+Pj4+IGluZGV4IDFkY2NiNTVjZjhjNi4uNzA4YWRkZGY5ZjEz
-IDEwMDY0NA0KPj4+Pj4gLS0tIGEvaW5jbHVkZS91YXBpL2xpbnV4L3JwbC5oDQo+Pj4+PiArKysg
-Yi9pbmNsdWRlL3VhcGkvbGludXgvcnBsLmgNCj4+Pj4+IEBAIC0yOCwxMCArMjgsMTAgQEAgc3Ry
-dWN0IGlwdjZfcnBsX3NyX2hkciB7DQo+Pj4+PiAgICAgICAgcGFkOjQsDQo+Pj4+PiAgICAgICAg
-cmVzZXJ2ZWQxOjE2Ow0KPj4+Pj4gI2VsaWYgZGVmaW5lZChfX0JJR19FTkRJQU5fQklURklFTEQp
-DQo+Pj4+PiAtICAgIF9fdTMyICAgIHJlc2VydmVkOjIwLA0KPj4+Pj4gKyAgICBfX3UzMiAgICBj
-bXByaTo0LA0KPj4+Pj4gKyAgICAgICAgY21wcmU6NCwNCj4+Pj4+ICAgICAgICBwYWQ6NCwNCj4+
-Pj4+IC0gICAgICAgIGNtcHJpOjQsDQo+Pj4+PiAtICAgICAgICBjbXByZTo0Ow0KPj4+Pj4gKyAg
-ICAgICAgcmVzZXJ2ZWQ6MjA7DQo+Pj4+PiAjZWxzZQ0KPj4+Pj4gI2Vycm9yICAiUGxlYXNlIGZp
-eCA8YXNtL2J5dGVvcmRlci5oPiINCj4+Pj4+ICNlbmRpZiAgDQo+PiANCj4+IGNyb3NzLWNoZWNr
-aW5nIHdpdGggb3RoZXIgaGVhZGVycyAtIHRjcCBhbmQgdnhsYW4tZ3BlIC0gdGhpcyBwYXRjaCBs
-b29rcw0KPj4gY29ycmVjdC4NCj4gDQo+IFdoYXQgYXJlIHlvdSBjcm9zcy1jaGVja2luZz8NCg==
+CC Willem just in case
+
+On Sun, 24 Jan 2021 12:51:20 -0800 syzbot wrote:
+> Hello,
+> 
+> syzbot found the following issue on:
+> 
+> HEAD commit:    7d68e382 bpf: Permit size-0 datasec
+> git tree:       bpf-next
+> console output: https://syzkaller.appspot.com/x/log.txt?x=132567e7500000
+> kernel config:  https://syzkaller.appspot.com/x/.config?x=e0c7843b8af99dff
+> dashboard link: https://syzkaller.appspot.com/bug?extid=a1c17e56a8a62294c714
+> compiler:       gcc (GCC) 10.1.0-syz 20200507
+> syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=17ae23af500000
+> C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13856bc7500000
+> 
+> The issue was bisected to:
+> 
+> commit 3226b158e67cfaa677fd180152bfb28989cb2fac
+> Author: Eric Dumazet <edumazet@google.com>
+> Date:   Wed Jan 13 16:18:19 2021 +0000
+> 
+>     net: avoid 32 x truesize under-estimation for tiny skbs
+> 
+> bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=151a3027500000
+> final oops:     https://syzkaller.appspot.com/x/report.txt?x=171a3027500000
+> console output: https://syzkaller.appspot.com/x/log.txt?x=131a3027500000
+> 
+> IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> Reported-by: syzbot+a1c17e56a8a62294c714@syzkaller.appspotmail.com
+> Fixes: 3226b158e67c ("net: avoid 32 x truesize under-estimation for tiny skbs")
+> 
+> RBP: 0000000000000000 R08: 0000000000000001 R09: 0000000001bbbbbb
+> R10: 0000000000000000 R11: 0000000000000246 R12: ffffffffffffffff
+> R13: 0000000000000004 R14: 0000000000000000 R15: 0000000000000000
+> ------------[ cut here ]------------
+> WARNING: CPU: 1 PID: 8703 at mm/page_alloc.c:4976 __alloc_pages_nodemask+0x5f8/0x730 mm/page_alloc.c:5011
+> Modules linked in:
+> CPU: 1 PID: 8703 Comm: syz-executor857 Not tainted 5.11.0-rc3-syzkaller #0
+> Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+> RIP: 0010:__alloc_pages_nodemask+0x5f8/0x730 mm/page_alloc.c:4976
+> Code: 00 00 0c 00 0f 85 a7 00 00 00 8b 3c 24 4c 89 f2 44 89 e6 c6 44 24 70 00 48 89 6c 24 58 e8 d0 d7 ff ff 49 89 c5 e9 ea fc ff ff <0f> 0b e9 b5 fd ff ff 89 74 24 14 4c 89 4c 24 08 4c 89 74 24 18 e8
+> RSP: 0018:ffffc90001ecf910 EFLAGS: 00010246
+> RAX: 0000000000000000 RBX: 1ffff920003d9f26 RCX: 0000000000000000
+> RDX: 0000000000000000 RSI: dffffc0000000000 RDI: 0000000000060a20
+> RBP: 0000000000020a20 R08: 0000000000000000 R09: 0000000000000001
+> R10: ffffffff86f1be3c R11: 0000000000000000 R12: 0000000000000012
+> R13: 0000000020010300 R14: 0000000000060a20 R15: 0000000000000000
+> FS:  0000000001148880(0000) GS:ffff8880b9f00000(0000) knlGS:0000000000000000
+> CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+> CR2: 00000000006d5090 CR3: 000000001d414000 CR4: 00000000001506e0
+> DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
+> DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
+> Call Trace:
+>  __alloc_pages include/linux/gfp.h:511 [inline]
+>  __alloc_pages_node include/linux/gfp.h:524 [inline]
+>  alloc_pages_node include/linux/gfp.h:538 [inline]
+>  kmalloc_large_node+0x60/0x110 mm/slub.c:3984
+>  __kmalloc_node_track_caller+0x319/0x3f0 mm/slub.c:4481
+>  __kmalloc_reserve net/core/skbuff.c:150 [inline]
+>  pskb_expand_head+0xae9/0x1050 net/core/skbuff.c:1632
+>  __skb_grow include/linux/skbuff.h:2748 [inline]
+>  tun_napi_alloc_frags drivers/net/tun.c:1377 [inline]
+>  tun_get_user+0x1f52/0x3690 drivers/net/tun.c:1730
+>  tun_chr_write_iter+0xe1/0x1d0 drivers/net/tun.c:1926
+>  call_write_iter include/linux/fs.h:1901 [inline]
+>  new_sync_write+0x426/0x650 fs/read_write.c:518
+>  vfs_write+0x791/0xa30 fs/read_write.c:605
+>  ksys_write+0x12d/0x250 fs/read_write.c:658
+>  do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+>  entry_SYSCALL_64_after_hwframe+0x44/0xa9
+> RIP: 0033:0x4440a9
+> Code: e8 6c 05 03 00 48 83 c4 18 c3 0f 1f 80 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 9b 07 fc ff c3 66 2e 0f 1f 84 00 00 00 00
+> RSP: 002b:00007fffdb5a8e08 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
+> RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 00000000004440a9
+> RDX: 000000002001016f RSI: 0000000020000380 RDI: 0000000000000003
+> RBP: 0000000000000000 R08: 0000000000000001 R09: 0000000001bbbbbb
+> R10: 0000000000000000 R11: 0000000000000246 R12: ffffffffffffffff
+> R13: 0000000000000004 R14: 0000000000000000 R15: 0000000000000000
+> 
+> 
+> ---
+> This report is generated by a bot. It may contain errors.
+> See https://goo.gl/tpsmEJ for more information about syzbot.
+> syzbot engineers can be reached at syzkaller@googlegroups.com.
+> 
+> syzbot will keep track of this issue. See:
+> https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+> For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+> syzbot can test patches for this issue, for details see:
+> https://goo.gl/tpsmEJ#testing-patches
+
