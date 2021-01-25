@@ -2,143 +2,188 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8727A302F07
-	for <lists+netdev@lfdr.de>; Mon, 25 Jan 2021 23:29:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 016FD302F24
+	for <lists+netdev@lfdr.de>; Mon, 25 Jan 2021 23:36:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732441AbhAYW2b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Jan 2021 17:28:31 -0500
-Received: from www62.your-server.de ([213.133.104.62]:59376 "EHLO
-        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732127AbhAYW2I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 17:28:08 -0500
-Received: from sslproxy06.your-server.de ([78.46.172.3])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1l4AKR-0004gm-Qi; Mon, 25 Jan 2021 23:27:23 +0100
-Received: from [85.7.101.30] (helo=pc-9.home)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1l4AKR-0009UD-Gr; Mon, 25 Jan 2021 23:27:23 +0100
-Subject: Re: [PATCH bpf-next V12 4/7] bpf: add BPF-helper for MTU checking
-To:     Jesper Dangaard Brouer <brouer@redhat.com>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Daniel Borkmann <borkmann@iogearbox.net>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        maze@google.com, lmb@cloudflare.com, shaun@tigera.io,
-        Lorenzo Bianconi <lorenzo@kernel.org>, marek@cloudflare.com,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>, eyal.birger@gmail.com,
-        colrack@gmail.com
-References: <161098881526.108067.7603213364270807261.stgit@firesoul>
- <161098887018.108067.13643446976934084937.stgit@firesoul>
- <6772a12b-2a60-bb3b-93df-1d6d6c7c7fd7@iogearbox.net>
- <20210125094148.2b3bb128@carbon>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <3c542e42-2033-aca6-ba0e-4854c24980c2@iogearbox.net>
-Date:   Mon, 25 Jan 2021 23:27:22 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        id S1732614AbhAYWgm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Jan 2021 17:36:42 -0500
+Received: from ex13-edg-ou-002.vmware.com ([208.91.0.190]:37959 "EHLO
+        EX13-EDG-OU-002.vmware.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1731266AbhAYWf6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 17:35:58 -0500
+Received: from sc9-mailhost3.vmware.com (10.113.161.73) by
+ EX13-EDG-OU-002.vmware.com (10.113.208.156) with Microsoft SMTP Server id
+ 15.0.1156.6; Mon, 25 Jan 2021 14:34:59 -0800
+Received: from htb-1n-eng-dhcp122.eng.vmware.com (unknown [10.20.114.3])
+        by sc9-mailhost3.vmware.com (Postfix) with ESMTP id 1580C2020A;
+        Mon, 25 Jan 2021 14:35:01 -0800 (PST)
+Received: by htb-1n-eng-dhcp122.eng.vmware.com (Postfix, from userid 0)
+        id 0D032A9FB6; Mon, 25 Jan 2021 14:35:01 -0800 (PST)
+From:   Ronak Doshi <doshir@vmware.com>
+To:     <netdev@vger.kernel.org>
+CC:     Ronak Doshi <doshir@vmware.com>, Petr Vandrovec <petr@vmware.com>,
+        "maintainer:VMWARE VMXNET3 ETHERNET DRIVER" <pv-drivers@vmware.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+Subject: [PATCH v3 net-next] Remove buf_info from device accessible structures
+Date:   Mon, 25 Jan 2021 14:34:56 -0800
+Message-ID: <20210125223456.25043-1-doshir@vmware.com>
+X-Mailer: git-send-email 2.11.0
 MIME-Version: 1.0
-In-Reply-To: <20210125094148.2b3bb128@carbon>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.4/26060/Mon Jan 25 13:28:03 2021)
+Content-Type: text/plain
+Received-SPF: None (EX13-EDG-OU-002.vmware.com: doshir@vmware.com does not
+ designate permitted sender hosts)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/25/21 9:41 AM, Jesper Dangaard Brouer wrote:
-> On Sat, 23 Jan 2021 02:35:41 +0100
-> Daniel Borkmann <daniel@iogearbox.net> wrote:
-> 
->>> + *		The *flags* argument can be a combination of one or more of the
->>> + *		following values:
->>> + *
->>> + *		**BPF_MTU_CHK_SEGS**
->>> + *			This flag will only works for *ctx* **struct sk_buff**.
->>> + *			If packet context contains extra packet segment buffers
->>> + *			(often knows as GSO skb), then MTU check is harder to
->>> + *			check at this point, because in transmit path it is
->>> + *			possible for the skb packet to get re-segmented
->>> + *			(depending on net device features).  This could still be
->>> + *			a MTU violation, so this flag enables performing MTU
->>> + *			check against segments, with a different violation
->>> + *			return code to tell it apart. Check cannot use len_diff.
->>> + *
->>> + *		On return *mtu_len* pointer contains the MTU value of the net
->>> + *		device.  Remember the net device configured MTU is the L3 size,
->>> + *		which is returned here and XDP and TX length operate at L2.
->>> + *		Helper take this into account for you, but remember when using
->>> + *		MTU value in your BPF-code.  On input *mtu_len* must be a valid
->>> + *		pointer and be initialized (to zero), else verifier will reject
->>> + *		BPF program.
->>> + *
->>> + *	Return
->>> + *		* 0 on success, and populate MTU value in *mtu_len* pointer.
->>> + *
->>> + *		* < 0 if any input argument is invalid (*mtu_len* not updated)
->>> + *
->>> + *		MTU violations return positive values, but also populate MTU
->>> + *		value in *mtu_len* pointer, as this can be needed for
->>> + *		implementing PMTU handing:
->>> + *
->>> + *		* **BPF_MTU_CHK_RET_FRAG_NEEDED**
->>> + *		* **BPF_MTU_CHK_RET_SEGS_TOOBIG**
->>> + *
->>>     */
->> [...]
->>> +BPF_CALL_5(bpf_skb_check_mtu, struct sk_buff *, skb,
->>> +	   u32, ifindex, u32 *, mtu_len, s32, len_diff, u64, flags)
->>> +{
->>> +	int ret = BPF_MTU_CHK_RET_FRAG_NEEDED;
->>> +	struct net_device *dev = skb->dev;
->>> +	int skb_len, dev_len;
->>> +	int mtu;
->>> +
->>> +	if (unlikely(flags & ~(BPF_MTU_CHK_SEGS)))
->>> +		return -EINVAL;
->>> +
->>> +	dev = __dev_via_ifindex(dev, ifindex);
->>> +	if (unlikely(!dev))
->>> +		return -ENODEV;
->>> +
->>> +	mtu = READ_ONCE(dev->mtu);
->>> +
->>> +	dev_len = mtu + dev->hard_header_len;
->>> +	skb_len = skb->len + len_diff; /* minus result pass check */
->>> +	if (skb_len <= dev_len) {
->>> +		ret = BPF_MTU_CHK_RET_SUCCESS;
->>> +		goto out;
->>> +	}
->>> +	/* At this point, skb->len exceed MTU, but as it include length of all
->>> +	 * segments, it can still be below MTU.  The SKB can possibly get
->>> +	 * re-segmented in transmit path (see validate_xmit_skb).  Thus, user
->>> +	 * must choose if segs are to be MTU checked.
->>> +	 */
->>> +	if (skb_is_gso(skb)) {
->>> +		ret = BPF_MTU_CHK_RET_SUCCESS;
->>> +
->>> +		if (flags & BPF_MTU_CHK_SEGS &&
->>> +		    !skb_gso_validate_network_len(skb, mtu))
->>> +			ret = BPF_MTU_CHK_RET_SEGS_TOOBIG;
->>
->> I think that looks okay overall now. One thing that will easily slip through
->> is that in the helper description you mentioned 'Check cannot use len_diff.'
->> for BPF_MTU_CHK_SEGS flag. So right now for non-zero len_diff the user
->> will still get BPF_MTU_CHK_RET_SUCCESS if the current length check via
->> skb_gso_validate_network_len(skb, mtu) passes. If it cannot be checked,
->> maybe enforce len_diff == 0 for gso skbs on BPF_MTU_CHK_SEGS?
-> 
-> Ok. Do you want/think this can be enforced by the verifier or are you
-> simply requesting that the helper will return -EINVAL (or another errno)?
+vmxnet3: Remove buf_info from device accessible structures
 
-Simple -EINVAL should be fine in this case. Generally, we can detect this from
-verifier side but I don't think the extra complexity is worth it especially given
-this is dependent on BPF_MTU_CHK_SEGS and otherwise can be non-zero.
+buf_info structures in RX & TX queues are private driver data that
+do not need to be visible to the device.  Although there is physical
+address and length in the queue descriptor that points to these
+structures, their layout is not standardized, and device never looks
+at them.
 
-Thanks,
-Daniel
+So lets allocate these structures in non-DMA-able memory, and fill
+physical address as all-ones and length as zero in the queue
+descriptor.
+
+That should alleviate worries brought by Martin Radev in
+https://lists.osuosl.org/pipermail/intel-wired-lan/Week-of-Mon-20210104/022829.html
+that malicious vmxnet3 device could subvert SVM/TDX guarantees.
+
+Signed-off-by: Petr Vandrovec <petr@vmware.com>
+Signed-off-by: Ronak Doshi <doshir@vmware.com>
+---
+Changes in v2:
+ - Use kcalloc_node()
+ - Remove log for memory allocation failure
+Changes in v3:
+ - Do not pass __GFP_ZERO to kcalloc
+---
+ drivers/net/vmxnet3/vmxnet3_drv.c | 37 ++++++++++++-------------------------
+ drivers/net/vmxnet3/vmxnet3_int.h |  2 --
+ 2 files changed, 12 insertions(+), 27 deletions(-)
+
+diff --git a/drivers/net/vmxnet3/vmxnet3_drv.c b/drivers/net/vmxnet3/vmxnet3_drv.c
+index 336504b7531d..419e81b21d9b 100644
+--- a/drivers/net/vmxnet3/vmxnet3_drv.c
++++ b/drivers/net/vmxnet3/vmxnet3_drv.c
+@@ -452,9 +452,7 @@ vmxnet3_tq_destroy(struct vmxnet3_tx_queue *tq,
+ 		tq->comp_ring.base = NULL;
+ 	}
+ 	if (tq->buf_info) {
+-		dma_free_coherent(&adapter->pdev->dev,
+-				  tq->tx_ring.size * sizeof(tq->buf_info[0]),
+-				  tq->buf_info, tq->buf_info_pa);
++		kfree(tq->buf_info);
+ 		tq->buf_info = NULL;
+ 	}
+ }
+@@ -505,8 +503,6 @@ static int
+ vmxnet3_tq_create(struct vmxnet3_tx_queue *tq,
+ 		  struct vmxnet3_adapter *adapter)
+ {
+-	size_t sz;
+-
+ 	BUG_ON(tq->tx_ring.base || tq->data_ring.base ||
+ 	       tq->comp_ring.base || tq->buf_info);
+ 
+@@ -534,9 +530,9 @@ vmxnet3_tq_create(struct vmxnet3_tx_queue *tq,
+ 		goto err;
+ 	}
+ 
+-	sz = tq->tx_ring.size * sizeof(tq->buf_info[0]);
+-	tq->buf_info = dma_alloc_coherent(&adapter->pdev->dev, sz,
+-					  &tq->buf_info_pa, GFP_KERNEL);
++	tq->buf_info = kcalloc_node(tq->tx_ring.size, sizeof(tq->buf_info[0]),
++				    GFP_KERNEL,
++				    dev_to_node(&adapter->pdev->dev));
+ 	if (!tq->buf_info)
+ 		goto err;
+ 
+@@ -1738,10 +1734,7 @@ static void vmxnet3_rq_destroy(struct vmxnet3_rx_queue *rq,
+ 	}
+ 
+ 	if (rq->buf_info[0]) {
+-		size_t sz = sizeof(struct vmxnet3_rx_buf_info) *
+-			(rq->rx_ring[0].size + rq->rx_ring[1].size);
+-		dma_free_coherent(&adapter->pdev->dev, sz, rq->buf_info[0],
+-				  rq->buf_info_pa);
++		kfree(rq->buf_info[0]);
+ 		rq->buf_info[0] = rq->buf_info[1] = NULL;
+ 	}
+ }
+@@ -1883,10 +1876,9 @@ vmxnet3_rq_create(struct vmxnet3_rx_queue *rq, struct vmxnet3_adapter *adapter)
+ 		goto err;
+ 	}
+ 
+-	sz = sizeof(struct vmxnet3_rx_buf_info) * (rq->rx_ring[0].size +
+-						   rq->rx_ring[1].size);
+-	bi = dma_alloc_coherent(&adapter->pdev->dev, sz, &rq->buf_info_pa,
+-				GFP_KERNEL);
++	bi = kcalloc_node(rq->rx_ring[0].size + rq->rx_ring[1].size,
++			  sizeof(rq->buf_info[0][0]), GFP_KERNEL,
++			  dev_to_node(&adapter->pdev->dev));
+ 	if (!bi)
+ 		goto err;
+ 
+@@ -2522,14 +2514,12 @@ vmxnet3_setup_driver_shared(struct vmxnet3_adapter *adapter)
+ 		tqc->txRingBasePA   = cpu_to_le64(tq->tx_ring.basePA);
+ 		tqc->dataRingBasePA = cpu_to_le64(tq->data_ring.basePA);
+ 		tqc->compRingBasePA = cpu_to_le64(tq->comp_ring.basePA);
+-		tqc->ddPA           = cpu_to_le64(tq->buf_info_pa);
++		tqc->ddPA           = cpu_to_le64(~0ULL);
+ 		tqc->txRingSize     = cpu_to_le32(tq->tx_ring.size);
+ 		tqc->dataRingSize   = cpu_to_le32(tq->data_ring.size);
+ 		tqc->txDataRingDescSize = cpu_to_le32(tq->txdata_desc_size);
+ 		tqc->compRingSize   = cpu_to_le32(tq->comp_ring.size);
+-		tqc->ddLen          = cpu_to_le32(
+-					sizeof(struct vmxnet3_tx_buf_info) *
+-					tqc->txRingSize);
++		tqc->ddLen          = cpu_to_le32(0);
+ 		tqc->intrIdx        = tq->comp_ring.intr_idx;
+ 	}
+ 
+@@ -2541,14 +2531,11 @@ vmxnet3_setup_driver_shared(struct vmxnet3_adapter *adapter)
+ 		rqc->rxRingBasePA[0] = cpu_to_le64(rq->rx_ring[0].basePA);
+ 		rqc->rxRingBasePA[1] = cpu_to_le64(rq->rx_ring[1].basePA);
+ 		rqc->compRingBasePA  = cpu_to_le64(rq->comp_ring.basePA);
+-		rqc->ddPA            = cpu_to_le64(rq->buf_info_pa);
++		rqc->ddPA            = cpu_to_le64(~0ULL);
+ 		rqc->rxRingSize[0]   = cpu_to_le32(rq->rx_ring[0].size);
+ 		rqc->rxRingSize[1]   = cpu_to_le32(rq->rx_ring[1].size);
+ 		rqc->compRingSize    = cpu_to_le32(rq->comp_ring.size);
+-		rqc->ddLen           = cpu_to_le32(
+-					sizeof(struct vmxnet3_rx_buf_info) *
+-					(rqc->rxRingSize[0] +
+-					 rqc->rxRingSize[1]));
++		rqc->ddLen           = cpu_to_le32(0);
+ 		rqc->intrIdx         = rq->comp_ring.intr_idx;
+ 		if (VMXNET3_VERSION_GE_3(adapter)) {
+ 			rqc->rxDataRingBasePA =
+diff --git a/drivers/net/vmxnet3/vmxnet3_int.h b/drivers/net/vmxnet3/vmxnet3_int.h
+index d958b92c9429..e910596b79cf 100644
+--- a/drivers/net/vmxnet3/vmxnet3_int.h
++++ b/drivers/net/vmxnet3/vmxnet3_int.h
+@@ -240,7 +240,6 @@ struct vmxnet3_tx_queue {
+ 	spinlock_t                      tx_lock;
+ 	struct vmxnet3_cmd_ring         tx_ring;
+ 	struct vmxnet3_tx_buf_info      *buf_info;
+-	dma_addr_t                       buf_info_pa;
+ 	struct vmxnet3_tx_data_ring     data_ring;
+ 	struct vmxnet3_comp_ring        comp_ring;
+ 	struct Vmxnet3_TxQueueCtrl      *shared;
+@@ -298,7 +297,6 @@ struct vmxnet3_rx_queue {
+ 	u32 qid2;           /* rqID in RCD for buffer from 2nd ring */
+ 	u32 dataRingQid;    /* rqID in RCD for buffer from data ring */
+ 	struct vmxnet3_rx_buf_info     *buf_info[2];
+-	dma_addr_t                      buf_info_pa;
+ 	struct Vmxnet3_RxQueueCtrl            *shared;
+ 	struct vmxnet3_rq_driver_stats  stats;
+ } __attribute__((__aligned__(SMP_CACHE_BYTES)));
+-- 
+2.11.0
+
