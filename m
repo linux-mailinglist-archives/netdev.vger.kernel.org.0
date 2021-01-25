@@ -2,34 +2,34 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1931130247E
-	for <lists+netdev@lfdr.de>; Mon, 25 Jan 2021 12:56:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7AB323024A5
+	for <lists+netdev@lfdr.de>; Mon, 25 Jan 2021 13:06:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727834AbhAYLtl (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Jan 2021 06:49:41 -0500
-Received: from mx13.kaspersky-labs.com ([91.103.66.164]:36288 "EHLO
+        id S1727841AbhAYMFI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Jan 2021 07:05:08 -0500
+Received: from mx13.kaspersky-labs.com ([91.103.66.164]:36273 "EHLO
         mx13.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727830AbhAYLrK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 06:47:10 -0500
+        with ESMTP id S1727827AbhAYLqn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 06:46:43 -0500
 Received: from relay13.kaspersky-labs.com (unknown [127.0.0.10])
-        by relay13.kaspersky-labs.com (Postfix) with ESMTP id 317C152170D;
-        Mon, 25 Jan 2021 14:12:07 +0300 (MSK)
+        by relay13.kaspersky-labs.com (Postfix) with ESMTP id 1A8945215D6;
+        Mon, 25 Jan 2021 14:14:10 +0300 (MSK)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kaspersky.com;
-        s=mail; t=1611573127;
-        bh=PQvxSXikVxKrVvCVMuElHDDXYoRL/SJwgxpXVZlaTv4=;
+        s=mail; t=1611573250;
+        bh=xehpZdINuigRE7SHgV+E33/kf9+ur9w+6c46qJ46gnM=;
         h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type;
-        b=J0l4ZiKz2VgdK3yjznbepmRpPcf6NdweTVPUbzSW690fZ6WdY4zh1Iem9uRBJwB2b
-         PAqNHShidV+0h1UoLQ4hUeZxLoMhoEyMox4OJaUq5SfEanvijsgAz833M3pYMUW7pf
-         NJuKXLs2QRbisd3RQxSsZWZM5jz+bypphN04a5XI=
+        b=JJXzgJesng2AkdQNMV5F3FR3+cfN7zcCqUoP5OUofsCxLeAruunZYkCFhJ4ecBT3e
+         MCwy4RGSA7+49QmeP6y74Hz2soUkHC68mO/OUmcaKRGZQTM3jgrDYAEJTsV/OODyk0
+         FwhJCZC/d8Ad6/voxMXKOa/YWJjqopjUwN8NP7Fo=
 Received: from mail-hq2.kaspersky.com (unknown [91.103.66.206])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
         (Client CN "mail-hq2.kaspersky.com", Issuer "Kaspersky MailRelays CA G3" (verified OK))
-        by mailhub13.kaspersky-labs.com (Postfix) with ESMTPS id D3FD7521738;
-        Mon, 25 Jan 2021 14:12:06 +0300 (MSK)
-Received: from arseniy-pc.avp.ru (10.64.64.121) by hqmailmbx3.avp.ru
+        by mailhub13.kaspersky-labs.com (Postfix) with ESMTPS id B87E3521356;
+        Mon, 25 Jan 2021 14:14:09 +0300 (MSK)
+Received: from arseniy-pc.avp.ru (10.64.68.129) by hqmailmbx3.avp.ru
  (10.64.67.243) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2044.4; Mon, 25
- Jan 2021 14:12:06 +0300
+ Jan 2021 14:14:08 +0300
 From:   Arseny Krasnov <arseny.krasnov@kaspersky.com>
 To:     Stefan Hajnoczi <stefanha@redhat.com>,
         Stefano Garzarella <sgarzare@redhat.com>,
@@ -44,17 +44,17 @@ To:     Stefan Hajnoczi <stefanha@redhat.com>,
 CC:     <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
         <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <stsp2@yandex.ru>, <oxffffaa@gmail.com>
-Subject: [RFC PATCH v3 02/13] af_vsock: prepare 'vsock_connectible_recvmsg()'
-Date:   Mon, 25 Jan 2021 14:11:57 +0300
-Message-ID: <20210125111200.598103-1-arseny.krasnov@kaspersky.com>
+Subject: [RFC PATCH v3 07/13] virtio/vsock: dequeue callback for SOCK_SEQPACKET
+Date:   Mon, 25 Jan 2021 14:13:59 +0300
+Message-ID: <20210125111402.598929-1-arseny.krasnov@kaspersky.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210125110903.597155-1-arseny.krasnov@kaspersky.com>
 References: <20210125110903.597155-1-arseny.krasnov@kaspersky.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
-X-Originating-IP: [10.64.64.121]
-X-ClientProxiedBy: hqmailmbx2.avp.ru (10.64.67.242) To hqmailmbx3.avp.ru
+X-Originating-IP: [10.64.68.129]
+X-ClientProxiedBy: hqmailmbx3.avp.ru (10.64.67.243) To hqmailmbx3.avp.ru
  (10.64.67.243)
 X-KSE-ServerInfo: hqmailmbx3.avp.ru, 9
 X-KSE-AntiSpam-Interceptor-Info: scan successful
@@ -69,7 +69,7 @@ X-KSE-AntiSpam-Info: Envelope from: arseny.krasnov@kaspersky.com
 X-KSE-AntiSpam-Info: {Prob_from_in_msgid}
 X-KSE-AntiSpam-Info: {Tracking_date, moscow}
 X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
-X-KSE-AntiSpam-Info: arseniy-pc.avp.ru:7.1.1;127.0.0.199:7.1.2;kaspersky.com:7.1.1;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1
+X-KSE-AntiSpam-Info: kaspersky.com:7.1.1;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;127.0.0.199:7.1.2;arseniy-pc.avp.ru:7.1.1
 X-KSE-AntiSpam-Info: Rate: 10
 X-KSE-AntiSpam-Info: Status: not_detected
 X-KSE-AntiSpam-Info: Method: none
@@ -96,318 +96,216 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This prepares 'vsock_connectible_recvmg()' to call SEQPACKET receive
-loop:
-1) Some shared check left in this function, then socket type
-   specific receive loop is called.
-2) Stream receive loop is moved to separate function.
+This adds transport callback and it's logic for SEQPACKET dequeue.
+Callback fetches RW packets from rx queue of socket until whole record
+is copied(if user's buffer is full, user is not woken up). This is done
+to not stall sender, because if we wake up user and it leaves syscall,
+nobody will send credit update for rest of record, and sender will wait
+for next enter of read syscall at receiver's side. So if user buffer is
+full, we just send credit update and drop data. If during copy SEQ_BEGIN
+was found(and not all data was copied), copying is restarted by reset
+user's iov iterator(previous unfinished data is dropped).
 
 Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
 ---
- net/vmw_vsock/af_vsock.c | 242 ++++++++++++++++++++++-----------------
- 1 file changed, 138 insertions(+), 104 deletions(-)
+ include/linux/virtio_vsock.h            |   4 +
+ include/uapi/linux/virtio_vsock.h       |   9 ++
+ net/vmw_vsock/virtio_transport_common.c | 128 ++++++++++++++++++++++++
+ 3 files changed, 141 insertions(+)
 
-diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
-index c9ce57db9554..524df8fc84cd 100644
---- a/net/vmw_vsock/af_vsock.c
-+++ b/net/vmw_vsock/af_vsock.c
-@@ -1858,65 +1858,69 @@ static int vsock_stream_sendmsg(struct socket *sock, struct msghdr *msg,
- 	return vsock_connectible_sendmsg(sock, msg, len);
- }
- 
--
--static int
--vsock_connectible_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
--			  int flags)
-+static int vsock_wait_data(struct sock *sk, struct wait_queue_entry *wait,
-+			   long timeout,
-+			   struct vsock_transport_recv_notify_data *recv_data,
-+			   size_t target)
- {
--	struct sock *sk;
-+	int err = 0;
- 	struct vsock_sock *vsk;
- 	const struct vsock_transport *transport;
--	int err;
--	size_t target;
--	ssize_t copied;
--	long timeout;
--	struct vsock_transport_recv_notify_data recv_data;
--
--	DEFINE_WAIT(wait);
- 
--	sk = sock->sk;
- 	vsk = vsock_sk(sk);
- 	transport = vsk->transport;
--	err = 0;
--
--	lock_sock(sk);
--
--	if (!transport || sk->sk_state != TCP_ESTABLISHED) {
--		/* Recvmsg is supposed to return 0 if a peer performs an
--		 * orderly shutdown. Differentiate between that case and when a
--		 * peer has not connected or a local shutdown occured with the
--		 * SOCK_DONE flag.
--		 */
--		if (sock_flag(sk, SOCK_DONE))
--			err = 0;
--		else
--			err = -ENOTCONN;
- 
-+	if (sk->sk_err != 0 ||
-+	    (sk->sk_shutdown & RCV_SHUTDOWN) ||
-+	    (vsk->peer_shutdown & SEND_SHUTDOWN)) {
-+		err = -1;
- 		goto out;
- 	}
--
--	if (flags & MSG_OOB) {
--		err = -EOPNOTSUPP;
-+	/* Don't wait for non-blocking sockets. */
-+	if (timeout == 0) {
-+		err = -EAGAIN;
- 		goto out;
- 	}
- 
--	/* We don't check peer_shutdown flag here since peer may actually shut
--	 * down, but there can be data in the queue that a local socket can
--	 * receive.
--	 */
--	if (sk->sk_shutdown & RCV_SHUTDOWN) {
--		err = 0;
--		goto out;
-+	if (recv_data) {
-+		err = transport->notify_recv_pre_block(vsk, target, recv_data);
-+		if (err < 0)
-+			goto out;
- 	}
- 
--	/* It is valid on Linux to pass in a zero-length receive buffer.  This
--	 * is not an error.  We may as well bail out now.
--	 */
--	if (!len) {
--		err = 0;
-+	release_sock(sk);
-+	timeout = schedule_timeout(timeout);
-+	lock_sock(sk);
+diff --git a/include/linux/virtio_vsock.h b/include/linux/virtio_vsock.h
+index dc636b727179..7f0ef5204e33 100644
+--- a/include/linux/virtio_vsock.h
++++ b/include/linux/virtio_vsock.h
+@@ -36,6 +36,10 @@ struct virtio_vsock_sock {
+ 	u32 rx_bytes;
+ 	u32 buf_alloc;
+ 	struct list_head rx_queue;
 +
-+	if (signal_pending(current)) {
-+		err = sock_intr_errno(timeout);
-+		goto out;
-+	} else if (timeout == 0) {
-+		err = -EAGAIN;
- 		goto out;
- 	}
++	/* For SOCK_SEQPACKET */
++	u32 user_read_seq_len;
++	u32 user_read_copied;
+ };
  
-+out:
-+	finish_wait(sk_sleep(sk), wait);
-+	return err;
-+}
+ struct virtio_vsock_pkt {
+diff --git a/include/uapi/linux/virtio_vsock.h b/include/uapi/linux/virtio_vsock.h
+index 1d57ed3d84d2..058908bc19fc 100644
+--- a/include/uapi/linux/virtio_vsock.h
++++ b/include/uapi/linux/virtio_vsock.h
+@@ -65,6 +65,7 @@ struct virtio_vsock_hdr {
+ 
+ enum virtio_vsock_type {
+ 	VIRTIO_VSOCK_TYPE_STREAM = 1,
++	VIRTIO_VSOCK_TYPE_SEQPACKET = 2,
+ };
+ 
+ enum virtio_vsock_op {
+@@ -83,6 +84,9 @@ enum virtio_vsock_op {
+ 	VIRTIO_VSOCK_OP_CREDIT_UPDATE = 6,
+ 	/* Request the peer to send the credit info to us */
+ 	VIRTIO_VSOCK_OP_CREDIT_REQUEST = 7,
 +
-+static int __vsock_stream_recvmsg(struct sock *sk, struct msghdr *msg,
-+				  size_t len, int flags)
-+{
-+	struct vsock_transport_recv_notify_data recv_data;
-+	const struct vsock_transport *transport;
-+	struct vsock_sock *vsk;
-+	ssize_t copied;
-+	size_t target;
-+	long timeout;
-+	int err;
++	/* Record begin for SOCK_SEQPACKET */
++	VIRTIO_VSOCK_OP_SEQ_BEGIN = 8,
+ };
+ 
+ /* VIRTIO_VSOCK_OP_SHUTDOWN flags values */
+@@ -91,4 +95,9 @@ enum virtio_vsock_shutdown {
+ 	VIRTIO_VSOCK_SHUTDOWN_SEND = 2,
+ };
+ 
++/* VIRTIO_VSOCK_OP_RW flags values for SOCK_SEQPACKET type */
++enum virtio_vsock_rw_seqpacket {
++	VIRTIO_VSOCK_RW_EOR = 1,
++};
 +
-+	DEFINE_WAIT(wait);
-+
-+	vsk = vsock_sk(sk);
-+	transport = vsk->transport;
-+
- 	/* We must not copy less than target bytes into the user's buffer
- 	 * before returning successfully, so we wait for the consume queue to
- 	 * have that much data to consume before dequeueing.  Note that this
-@@ -1937,85 +1941,53 @@ vsock_connectible_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
- 
- 
- 	while (1) {
-+		ssize_t read;
- 		s64 ready;
- 
- 		prepare_to_wait(sk_sleep(sk), &wait, TASK_INTERRUPTIBLE);
- 		ready = vsock_stream_has_data(vsk);
- 
- 		if (ready == 0) {
--			if (sk->sk_err != 0 ||
--			    (sk->sk_shutdown & RCV_SHUTDOWN) ||
--			    (vsk->peer_shutdown & SEND_SHUTDOWN)) {
--				finish_wait(sk_sleep(sk), &wait);
--				break;
--			}
--			/* Don't wait for non-blocking sockets. */
--			if (timeout == 0) {
--				err = -EAGAIN;
--				finish_wait(sk_sleep(sk), &wait);
--				break;
--			}
--
--			err = transport->notify_recv_pre_block(
--					vsk, target, &recv_data);
--			if (err < 0) {
--				finish_wait(sk_sleep(sk), &wait);
--				break;
--			}
--			release_sock(sk);
--			timeout = schedule_timeout(timeout);
--			lock_sock(sk);
--
--			if (signal_pending(current)) {
--				err = sock_intr_errno(timeout);
--				finish_wait(sk_sleep(sk), &wait);
--				break;
--			} else if (timeout == 0) {
--				err = -EAGAIN;
--				finish_wait(sk_sleep(sk), &wait);
-+			if (vsock_wait_data(sk, &wait, timeout, &recv_data, target))
- 				break;
--			}
--		} else {
--			ssize_t read;
-+			continue;
-+		}
- 
--			finish_wait(sk_sleep(sk), &wait);
-+		finish_wait(sk_sleep(sk), &wait);
- 
--			if (ready < 0) {
--				/* Invalid queue pair content. XXX This should
--				* be changed to a connection reset in a later
--				* change.
--				*/
-+		if (ready < 0) {
-+			/* Invalid queue pair content. XXX This should
-+			 * be changed to a connection reset in a later
-+			 * change.
-+			 */
- 
--				err = -ENOMEM;
--				goto out;
--			}
-+			err = -ENOMEM;
-+			goto out;
-+		}
- 
--			err = transport->notify_recv_pre_dequeue(
--					vsk, target, &recv_data);
--			if (err < 0)
--				break;
-+		err = transport->notify_recv_pre_dequeue(vsk,
-+					target, &recv_data);
-+		if (err < 0)
-+			break;
-+		read = transport->stream_dequeue(vsk, msg, len - copied, flags);
- 
--			read = transport->stream_dequeue(
--					vsk, msg,
--					len - copied, flags);
--			if (read < 0) {
--				err = -ENOMEM;
--				break;
--			}
-+		if (read < 0) {
-+			err = -ENOMEM;
-+			break;
-+		}
- 
--			copied += read;
-+		copied += read;
- 
--			err = transport->notify_recv_post_dequeue(
--					vsk, target, read,
-+		err = transport->notify_recv_post_dequeue(vsk,
-+					target, read,
- 					!(flags & MSG_PEEK), &recv_data);
--			if (err < 0)
--				goto out;
-+		if (err < 0)
-+			goto out;
- 
--			if (read >= target || flags & MSG_PEEK)
--				break;
-+		if (read >= target || flags & MSG_PEEK)
-+			break;
- 
--			target -= read;
--		}
-+		target -= read;
- 	}
- 
- 	if (sk->sk_err)
-@@ -2031,6 +2003,68 @@ vsock_connectible_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
+ #endif /* _UAPI_LINUX_VIRTIO_VSOCK_H */
+diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
+index 5956939eebb7..e66ec39445ff 100644
+--- a/net/vmw_vsock/virtio_transport_common.c
++++ b/net/vmw_vsock/virtio_transport_common.c
+@@ -397,6 +397,132 @@ virtio_transport_stream_do_dequeue(struct vsock_sock *vsk,
  	return err;
  }
  
-+static int __vsock_seqpacket_recvmsg(struct sock *sk, struct msghdr *msg,
-+				     size_t len, int flags)
++static inline void virtio_transport_del_n_free_pkt(struct virtio_vsock_pkt *pkt)
 +{
-+	return -1;
++	list_del(&pkt->list);
++	virtio_transport_free_pkt(pkt);
 +}
 +
-+static int
-+vsock_connectible_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
-+			  int flags)
++static size_t virtio_transport_drop_until_seq_begin(struct virtio_vsock_sock *vvs)
 +{
-+	const struct vsock_transport *transport;
-+	struct vsock_sock *vsk;
-+	struct sock *sk;
++	struct virtio_vsock_pkt *pkt, *n;
++	size_t bytes_dropped = 0;
++
++	list_for_each_entry_safe(pkt, n, &vvs->rx_queue, list) {
++		if (le16_to_cpu(pkt->hdr.op) == VIRTIO_VSOCK_OP_SEQ_BEGIN)
++			break;
++
++		bytes_dropped += le32_to_cpu(pkt->hdr.len);
++		virtio_transport_dec_rx_pkt(vvs, pkt);
++		virtio_transport_del_n_free_pkt(pkt);
++	}
++
++	return bytes_dropped;
++}
++
++static ssize_t virtio_transport_seqpacket_do_dequeue(struct vsock_sock *vsk,
++						     struct msghdr *msg,
++						     size_t user_buf_len)
++{
++	struct virtio_vsock_sock *vvs = vsk->trans;
++	struct virtio_vsock_pkt *pkt;
++	size_t bytes_handled = 0;
 +	int err = 0;
 +
-+	sk = sock->sk;
++	spin_lock_bh(&vvs->rx_lock);
 +
-+	lock_sock(sk);
-+
-+	vsk = vsock_sk(sk);
-+	transport = vsk->transport;
-+
-+	if (!transport || sk->sk_state != TCP_ESTABLISHED) {
-+		/* Recvmsg is supposed to return 0 if a peer performs an
-+		 * orderly shutdown. Differentiate between that case and when a
-+		 * peer has not connected or a local shutdown occurred with the
-+		 * SOCK_DONE flag.
++	if (user_buf_len == 0) {
++		/* User's buffer is full, we processing rest of
++		 * record and drop it. If 'SEQ_BEGIN' is found
++		 * while iterating, user will be woken up,
++		 * because record is already copied, and we
++		 * don't care about absent of some tail RW packets
++		 * of it. Return number of bytes(rest of record),
++		 * but ignore credit update for such absent bytes.
 +		 */
-+		if (!sock_flag(sk, SOCK_DONE))
-+			err = -ENOTCONN;
++		bytes_handled = virtio_transport_drop_until_seq_begin(vvs);
++		vvs->user_read_copied += bytes_handled;
 +
-+		goto out;
++		if (!list_empty(&vvs->rx_queue) &&
++		    vvs->user_read_copied < vvs->user_read_seq_len) {
++			/* 'SEQ_BEGIN' found, but record isn't complete.
++			 * Set number of copied bytes to fit record size
++			 * and force counters to finish receiving.
++			 */
++			bytes_handled += (vvs->user_read_seq_len - vvs->user_read_copied);
++			vvs->user_read_copied = vvs->user_read_seq_len;
++		}
 +	}
 +
-+	if (flags & MSG_OOB) {
-+		err = -EOPNOTSUPP;
-+		goto out;
++	/* Now start copying. */
++	while (vvs->user_read_copied < vvs->user_read_seq_len &&
++	       vvs->rx_bytes &&
++	       user_buf_len &&
++	       !err) {
++		pkt = list_first_entry(&vvs->rx_queue, struct virtio_vsock_pkt, list);
++
++		switch (le16_to_cpu(pkt->hdr.op)) {
++		case VIRTIO_VSOCK_OP_SEQ_BEGIN: {
++			/* Unexpected 'SEQ_BEGIN' during record copy:
++			 * Leave receive loop, 'EAGAIN' will restart it from
++			 * outer receive loop, packet is still in queue and
++			 * counters are cleared. So in next loop enter,
++			 * 'SEQ_BEGIN' will be dequeued first. User's iov
++			 * iterator will be reset in outer loop. Also
++			 * send credit update, because some bytes could be
++			 * copied. User will never see unfinished record.
++			 */
++			err = -EAGAIN;
++			break;
++		}
++		case VIRTIO_VSOCK_OP_RW: {
++			size_t bytes_to_copy;
++			size_t pkt_len;
++
++			pkt_len = (size_t)le32_to_cpu(pkt->hdr.len);
++			bytes_to_copy = min(user_buf_len, pkt_len);
++
++			/* sk_lock is held by caller so no one else can dequeue.
++			 * Unlock rx_lock since memcpy_to_msg() may sleep.
++			 */
++			spin_unlock_bh(&vvs->rx_lock);
++
++			if (memcpy_to_msg(msg, pkt->buf, bytes_to_copy)) {
++				spin_lock_bh(&vvs->rx_lock);
++				err = -EINVAL;
++				break;
++			}
++
++			spin_lock_bh(&vvs->rx_lock);
++			user_buf_len -= bytes_to_copy;
++			bytes_handled += pkt->len;
++			vvs->user_read_copied += bytes_to_copy;
++
++			if (le32_to_cpu(pkt->hdr.flags) & VIRTIO_VSOCK_RW_EOR)
++				msg->msg_flags |= MSG_EOR;
++			break;
++		}
++		default:
++			;
++		}
++
++		/* For unexpected 'SEQ_BEGIN', keep such packet in queue,
++		 * but drop any other type of packet.
++		 */
++		if (le16_to_cpu(pkt->hdr.op) != VIRTIO_VSOCK_OP_SEQ_BEGIN) {
++			virtio_transport_dec_rx_pkt(vvs, pkt);
++			virtio_transport_del_n_free_pkt(pkt);
++		}
 +	}
 +
-+	/* We don't check peer_shutdown flag here since peer may actually shut
-+	 * down, but there can be data in the queue that a local socket can
-+	 * receive.
-+	 */
-+	if (sk->sk_shutdown & RCV_SHUTDOWN)
-+		goto out;
++	spin_unlock_bh(&vvs->rx_lock);
 +
-+	/* It is valid on Linux to pass in a zero-length receive buffer.  This
-+	 * is not an error.  We may as well bail out now.
-+	 */
-+	if (!len)
-+		goto out;
++	virtio_transport_send_credit_update(vsk, VIRTIO_VSOCK_TYPE_SEQPACKET,
++					    NULL);
 +
-+	if (sk->sk_type == SOCK_STREAM)
-+		err = __vsock_stream_recvmsg(sk, msg, len, flags);
-+	else
-+		err = __vsock_seqpacket_recvmsg(sk, msg, len, flags);
-+
-+out:
-+	release_sock(sk);
-+	return err;
++	return err ?: bytes_handled;
 +}
 +
- static int
- vsock_stream_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
- 		     int flags)
+ ssize_t
+ virtio_transport_stream_dequeue(struct vsock_sock *vsk,
+ 				struct msghdr *msg,
+@@ -481,6 +607,8 @@ int virtio_transport_do_socket_init(struct vsock_sock *vsk,
+ 	spin_lock_init(&vvs->rx_lock);
+ 	spin_lock_init(&vvs->tx_lock);
+ 	INIT_LIST_HEAD(&vvs->rx_queue);
++	vvs->user_read_copied = 0;
++	vvs->user_read_seq_len = 0;
+ 
+ 	return 0;
+ }
 -- 
 2.25.1
 
