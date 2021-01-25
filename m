@@ -2,110 +2,143 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 95758302EE2
-	for <lists+netdev@lfdr.de>; Mon, 25 Jan 2021 23:24:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8727A302F07
+	for <lists+netdev@lfdr.de>; Mon, 25 Jan 2021 23:29:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732281AbhAYWVS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Jan 2021 17:21:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34140 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732118AbhAYWTO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 17:19:14 -0500
-Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9247C061756
-        for <netdev@vger.kernel.org>; Mon, 25 Jan 2021 14:18:33 -0800 (PST)
-Received: by mail-lf1-x130.google.com with SMTP id i187so9818843lfd.4
-        for <netdev@vger.kernel.org>; Mon, 25 Jan 2021 14:18:33 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=A/Q6Oc7PeuEcOpsoTdR6W8VQQNB+BX6FWqtQmvephYI=;
-        b=TGVCNCPSNbUbsysH6Tox8d7pwWgph9ObN+6ge3dhPh5MKc6p7Z5wgPqQ2NNKfuCzZj
-         L1KLMBgdwttsYm/V0TBJ8Czaru+RbXH1bym7El17fcwB/A0PYkUidXKrhSUaqWqNj/0p
-         bM2jSpOBuiRZIfYYmyDd6ql/u6wBz7OOs5lcA=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=A/Q6Oc7PeuEcOpsoTdR6W8VQQNB+BX6FWqtQmvephYI=;
-        b=t7/O5i8MESO8SQzrWiJdGudh879u44RNHWPjpN2jFnfFCUrKZHT4mcT2JCmgD0Ddh2
-         ocuQHB7aHw699/u3NsNKq93c4uMyIbD+sW1Uojgm4oYtlxVFX3RpnUhzaQmehV++6O/6
-         SKmU0VicGmKTgEoAJVdPtq4yX8OG7fsR1dasinWvDxD8qtpwWyAI2E3Y7PO0zhtCoVLA
-         kWgRxPgQ+89wOPbnx1ixAmwrCkp47M3DFHSgiqmUtk0d6Bipw+lEuwukZG4py3KPi9iz
-         7Y/4uoVdWRhtCWtMPElMJvqyyqxWSFY9FEzHRmeg9KIsWBnhSEmXEh56rJcldxzIeIXW
-         WPdQ==
-X-Gm-Message-State: AOAM530NM7MGJE/KJ4ot+PADseXZ3KYSNzaKLDvS7Dc/RBHOidERgfm3
-        qUuJQ2JrVoiaHO9fajJYZQmGTAGef5EfyGLKXIXHnw==
-X-Google-Smtp-Source: ABdhPJyai8NTk2KgZnwz2fp7w8KnZGavKufSHn1oqZr7KwEuq5/gI61Hrs6tOhwWfyUmve7sEMkTiksFvcUnNBIRE0I=
-X-Received: by 2002:a19:644b:: with SMTP id b11mr1179908lfj.358.1611613112276;
- Mon, 25 Jan 2021 14:18:32 -0800 (PST)
+        id S1732441AbhAYW2b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Jan 2021 17:28:31 -0500
+Received: from www62.your-server.de ([213.133.104.62]:59376 "EHLO
+        www62.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732127AbhAYW2I (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 17:28:08 -0500
+Received: from sslproxy06.your-server.de ([78.46.172.3])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1l4AKR-0004gm-Qi; Mon, 25 Jan 2021 23:27:23 +0100
+Received: from [85.7.101.30] (helo=pc-9.home)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1l4AKR-0009UD-Gr; Mon, 25 Jan 2021 23:27:23 +0100
+Subject: Re: [PATCH bpf-next V12 4/7] bpf: add BPF-helper for MTU checking
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        maze@google.com, lmb@cloudflare.com, shaun@tigera.io,
+        Lorenzo Bianconi <lorenzo@kernel.org>, marek@cloudflare.com,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>, eyal.birger@gmail.com,
+        colrack@gmail.com
+References: <161098881526.108067.7603213364270807261.stgit@firesoul>
+ <161098887018.108067.13643446976934084937.stgit@firesoul>
+ <6772a12b-2a60-bb3b-93df-1d6d6c7c7fd7@iogearbox.net>
+ <20210125094148.2b3bb128@carbon>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <3c542e42-2033-aca6-ba0e-4854c24980c2@iogearbox.net>
+Date:   Mon, 25 Jan 2021 23:27:22 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-References: <20210121163801.v3.1.Id9bc5434114de07512661f002cdc0ada8b3d6d02@changeid>
- <070E7413-A3E3-4FEB-80BC-D3DD922DA19B@holtmann.org>
-In-Reply-To: <070E7413-A3E3-4FEB-80BC-D3DD922DA19B@holtmann.org>
-From:   Miao-chen Chou <mcchou@chromium.org>
-Date:   Mon, 25 Jan 2021 14:18:22 -0800
-Message-ID: <CABmPvSEtpmz5oK2ZshRm0+HhoLL6rig92v9d63ocpy6m7MvUdw@mail.gmail.com>
-Subject: Re: [PATCH v3] Bluetooth: Keep MSFT ext info throughout ahci_dev's
- life cycle
-To:     Marcel Holtmann <marcel@holtmann.org>
-Cc:     Bluetooth Kernel Mailing List <linux-bluetooth@vger.kernel.org>,
-        Alain Michaud <alainm@chromium.org>,
-        Archie Pusaka <apusaka@chromium.org>,
-        Luiz Augusto von Dentz <luiz.von.dentz@intel.com>,
-        Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20210125094148.2b3bb128@carbon>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/26060/Mon Jan 25 13:28:03 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Marcel,
+On 1/25/21 9:41 AM, Jesper Dangaard Brouer wrote:
+> On Sat, 23 Jan 2021 02:35:41 +0100
+> Daniel Borkmann <daniel@iogearbox.net> wrote:
+> 
+>>> + *		The *flags* argument can be a combination of one or more of the
+>>> + *		following values:
+>>> + *
+>>> + *		**BPF_MTU_CHK_SEGS**
+>>> + *			This flag will only works for *ctx* **struct sk_buff**.
+>>> + *			If packet context contains extra packet segment buffers
+>>> + *			(often knows as GSO skb), then MTU check is harder to
+>>> + *			check at this point, because in transmit path it is
+>>> + *			possible for the skb packet to get re-segmented
+>>> + *			(depending on net device features).  This could still be
+>>> + *			a MTU violation, so this flag enables performing MTU
+>>> + *			check against segments, with a different violation
+>>> + *			return code to tell it apart. Check cannot use len_diff.
+>>> + *
+>>> + *		On return *mtu_len* pointer contains the MTU value of the net
+>>> + *		device.  Remember the net device configured MTU is the L3 size,
+>>> + *		which is returned here and XDP and TX length operate at L2.
+>>> + *		Helper take this into account for you, but remember when using
+>>> + *		MTU value in your BPF-code.  On input *mtu_len* must be a valid
+>>> + *		pointer and be initialized (to zero), else verifier will reject
+>>> + *		BPF program.
+>>> + *
+>>> + *	Return
+>>> + *		* 0 on success, and populate MTU value in *mtu_len* pointer.
+>>> + *
+>>> + *		* < 0 if any input argument is invalid (*mtu_len* not updated)
+>>> + *
+>>> + *		MTU violations return positive values, but also populate MTU
+>>> + *		value in *mtu_len* pointer, as this can be needed for
+>>> + *		implementing PMTU handing:
+>>> + *
+>>> + *		* **BPF_MTU_CHK_RET_FRAG_NEEDED**
+>>> + *		* **BPF_MTU_CHK_RET_SEGS_TOOBIG**
+>>> + *
+>>>     */
+>> [...]
+>>> +BPF_CALL_5(bpf_skb_check_mtu, struct sk_buff *, skb,
+>>> +	   u32, ifindex, u32 *, mtu_len, s32, len_diff, u64, flags)
+>>> +{
+>>> +	int ret = BPF_MTU_CHK_RET_FRAG_NEEDED;
+>>> +	struct net_device *dev = skb->dev;
+>>> +	int skb_len, dev_len;
+>>> +	int mtu;
+>>> +
+>>> +	if (unlikely(flags & ~(BPF_MTU_CHK_SEGS)))
+>>> +		return -EINVAL;
+>>> +
+>>> +	dev = __dev_via_ifindex(dev, ifindex);
+>>> +	if (unlikely(!dev))
+>>> +		return -ENODEV;
+>>> +
+>>> +	mtu = READ_ONCE(dev->mtu);
+>>> +
+>>> +	dev_len = mtu + dev->hard_header_len;
+>>> +	skb_len = skb->len + len_diff; /* minus result pass check */
+>>> +	if (skb_len <= dev_len) {
+>>> +		ret = BPF_MTU_CHK_RET_SUCCESS;
+>>> +		goto out;
+>>> +	}
+>>> +	/* At this point, skb->len exceed MTU, but as it include length of all
+>>> +	 * segments, it can still be below MTU.  The SKB can possibly get
+>>> +	 * re-segmented in transmit path (see validate_xmit_skb).  Thus, user
+>>> +	 * must choose if segs are to be MTU checked.
+>>> +	 */
+>>> +	if (skb_is_gso(skb)) {
+>>> +		ret = BPF_MTU_CHK_RET_SUCCESS;
+>>> +
+>>> +		if (flags & BPF_MTU_CHK_SEGS &&
+>>> +		    !skb_gso_validate_network_len(skb, mtu))
+>>> +			ret = BPF_MTU_CHK_RET_SEGS_TOOBIG;
+>>
+>> I think that looks okay overall now. One thing that will easily slip through
+>> is that in the helper description you mentioned 'Check cannot use len_diff.'
+>> for BPF_MTU_CHK_SEGS flag. So right now for non-zero len_diff the user
+>> will still get BPF_MTU_CHK_RET_SUCCESS if the current length check via
+>> skb_gso_validate_network_len(skb, mtu) passes. If it cannot be checked,
+>> maybe enforce len_diff == 0 for gso skbs on BPF_MTU_CHK_SEGS?
+> 
+> Ok. Do you want/think this can be enforced by the verifier or are you
+> simply requesting that the helper will return -EINVAL (or another errno)?
 
-On Mon, Jan 25, 2021 at 7:13 AM Marcel Holtmann <marcel@holtmann.org> wrote:
->
-> Hi Miao-chen,
->
-> > This moves msft_do_close() from hci_dev_do_close() to
-> > hci_unregister_dev() to avoid clearing MSFT extension info. This also
-> > avoids retrieving MSFT info upon every msft_do_open() if MSFT extension
-> > has been initialized.
-> >
-> > The following test steps were performed.
-> > (1) boot the test device and verify the MSFT support debug log in syslog
-> > (2) restart bluetoothd and verify msft_do_close() doesn't get invoked
-> >
-> > Signed-off-by: Miao-chen Chou <mcchou@chromium.org>
-> > Reviewed-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
-> > Reviewed-by: Archie Pusaka <apusaka@chromium.org>
-> > ---
-> > Hi Maintainers,
-> >
-> > This patch fixes the life cycle of MSFT HCI extension. The current
-> > symmetric calls to msft_do{open,close} in hci_dev_do_{open,close} cause
-> > incorrect MSFT features during bluetoothd start-up. After the kernel
-> > powers on the controller to register the hci_dev, it performs
-> > hci_dev_do_close() which call msft_do_close() and MSFT data gets wiped
-> > out. And then during the startup of bluetoothd, Adv Monitor Manager
-> > relies on reading the MSFT features from the kernel to present the
-> > feature set of the controller to D-Bus clients. However, the power state
-> > of the controller is off during the init of D-Bus interfaces. As a
-> > result, invalid MSFT features are returned by the kernel, since it was
-> > previously wiped out due to hci_dev_do_close().
->
-> then just keep the values around and not wipe them. However I prefer still to keep the symmetry and re-read the value every time we init. We can make sure to release the msft_data on unregister.
-This patch does exactly what you described - keep the values around
-and not wipe them until unregistration of hdev. Since the only thing
-that msft_do_close() does is to release msft_data and reset
-hdev->msft_data it to NULL, and that's why I move msft_do_close() from
- hci_dev_do_close() to hci_unregister_dev() to release the msft_data.
-If this is about naming, I am happy to change msft_do_close() to
-perhaps msft_reset() or something similar. As for msft_do_open(), I
-will change it to re-read the msft_data instead of skipping.
+Simple -EINVAL should be fine in this case. Generally, we can detect this from
+verifier side but I don't think the extra complexity is worth it especially given
+this is dependent on BPF_MTU_CHK_SEGS and otherwise can be non-zero.
 
-Regards,
-Miao
+Thanks,
+Daniel
