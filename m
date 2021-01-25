@@ -2,172 +2,178 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 60BA130338D
-	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 05:59:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 91FDF303408
+	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 06:13:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729981AbhAZE6X (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Jan 2021 23:58:23 -0500
-Received: from mailout2.w1.samsung.com ([210.118.77.12]:60632 "EHLO
-        mailout2.w1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727967AbhAYMVD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 07:21:03 -0500
-Received: from eucas1p2.samsung.com (unknown [182.198.249.207])
-        by mailout2.w1.samsung.com (KnoxPortal) with ESMTP id 20210125115623euoutp020dc3b597c2b0bdee9e8114c49e5cdda5~dd6LnZ_bD0364103641euoutp02W
-        for <netdev@vger.kernel.org>; Mon, 25 Jan 2021 11:56:23 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.w1.samsung.com 20210125115623euoutp020dc3b597c2b0bdee9e8114c49e5cdda5~dd6LnZ_bD0364103641euoutp02W
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1611575783;
-        bh=Mq5BJ1+vePex+qTwblveMz5iiS+Z7q8tJa66kykf0ZI=;
-        h=Subject:To:Cc:From:Date:In-Reply-To:References:From;
-        b=Ls1MsuVsJsmtA1MWoFFK9OXp/K7oNB/pF+lZ574tQgSui2VZjwCCuANeXD8/9wV7o
-         cVcoL0BHZnWiJFGKQKfMcd82PnVu1RAQJ6RULMz6PZ+suu8QPo61v8WCqW8634UXpK
-         7kxE64Emxrk9BGkIckQ9wpKCU9MUazbmWi62epO0=
-Received: from eusmges2new.samsung.com (unknown [203.254.199.244]) by
-        eucas1p1.samsung.com (KnoxPortal) with ESMTP id
-        20210125115622eucas1p16882e454000fffd45560f125c7e7bafe~dd6LXnE730603906039eucas1p1t;
-        Mon, 25 Jan 2021 11:56:22 +0000 (GMT)
-Received: from eucas1p2.samsung.com ( [182.198.249.207]) by
-        eusmges2new.samsung.com (EUCPMTA) with SMTP id 98.D9.44805.6E1BE006; Mon, 25
-        Jan 2021 11:56:22 +0000 (GMT)
-Received: from eusmtrp1.samsung.com (unknown [182.198.249.138]) by
-        eucas1p1.samsung.com (KnoxPortal) with ESMTPA id
-        20210125115622eucas1p1d95ea4bff4043bd2524c98beafd32408~dd6K_IuN63035330353eucas1p1b;
-        Mon, 25 Jan 2021 11:56:22 +0000 (GMT)
-Received: from eusmgms1.samsung.com (unknown [182.198.249.179]) by
-        eusmtrp1.samsung.com (KnoxPortal) with ESMTP id
-        20210125115622eusmtrp1917aea26e690990dfcea6031a1d31807~dd6K9gjcP2084120841eusmtrp17;
-        Mon, 25 Jan 2021 11:56:22 +0000 (GMT)
-X-AuditID: cbfec7f4-b4fff7000000af05-ed-600eb1e6733d
-Received: from eusmtip2.samsung.com ( [203.254.199.222]) by
-        eusmgms1.samsung.com (EUCPMTA) with SMTP id 34.05.21957.6E1BE006; Mon, 25
-        Jan 2021 11:56:22 +0000 (GMT)
-Received: from [106.210.134.192] (unknown [106.210.134.192]) by
-        eusmtip2.samsung.com (KnoxPortal) with ESMTPA id
-        20210125115622eusmtip2da7cf912f5561017ad5a85bcd40d06de~dd6KpPK_E2285722857eusmtip2Q;
-        Mon, 25 Jan 2021 11:56:22 +0000 (GMT)
-Subject: Re: [PATCH v2] cfg80211: avoid holding the RTNL when calling the
- driver
-To:     Johannes Berg <johannes@sipsolutions.net>,
-        linux-wireless@vger.kernel.org
-Cc:     netdev@vger.kernel.org, Oliver Neukum <oneukum@suse.com>
-From:   Marek Szyprowski <m.szyprowski@samsung.com>
-Message-ID: <b425cbc3-63a8-3252-e828-bcb7b336b783@samsung.com>
-Date:   Mon, 25 Jan 2021 12:56:21 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0)
-        Gecko/20100101 Thunderbird/78.6.1
-MIME-Version: 1.0
-In-Reply-To: <4ae7a27c32cbf85b4ddb05cc2a16e52918663633.camel@sipsolutions.net>
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFmpkleLIzCtJLcpLzFFi42LZduzned1nG/kSDJb1mFt83PCJxeLNijvs
-        FscWiFl0PV7J5sDi0d+7jcVj/ZarLB6fN8kFMEdx2aSk5mSWpRbp2yVwZUz+tZSpoFOy4tzK
-        +gbGV6JdjJwcEgImEv0vVjN2MXJxCAmsYJToWLSLDcL5wihxZcs5qMxnRomTJ6eyw7TM3vAC
-        zBYSWM4o8e2GF0TRR0aJNQtAZnFyCAsESdzcuI0FxBYR8JfYd6ABqIGDg1nARmLhlWKQMJuA
-        oUTX2y42EJtXwE7i4/9VYDaLgKrEo4MrwcaICiRJ3L1zmAmiRlDi5MwnYCM5Bfwk3r1sYgax
-        mQXkJZq3zoayxSVuPZnPBHKPhMAWDoknt66xgeyVEHCR6L/AC3G/sMSr41ugfpGROD25hwWi
-        vplR4uG5tewQTg+jxOWmGYwQVdYSd879YoN4QFNi/S59iLCjRNOtjawQ8/kkbrwVhLiBT2LS
-        tunMEGFeiY42IYhqNYlZx9fBrT144RLzBEalWUg+m4Xkm1lIvpmFsHcBI8sqRvHU0uLc9NRi
-        o7zUcr3ixNzi0rx0veT83E2MwFRy+t/xLzsYl7/6qHeIkYmD8RCjBAezkgjvbj2eBCHelMTK
-        qtSi/Pii0pzU4kOM0hwsSuK8SVvWxAsJpCeWpGanphakFsFkmTg4pRqYJJyUipyjhLb5JO7Z
-        8MY9M7TPJLt936PS2XsqDrtFH2AyNes18OvRlFU65ep87kiJ93RRhbX6THnr19fyJU/wMrVm
-        9X17KyjwymKVlD6pk7pX1nKzbXi40/wXd8rnq7+3TFmqmCFT8q8ycOqKg4vSWB4KJxfeSPjI
-        XPkr69SZLYYWK0J5Pjzj64+w133L4JHvExr++eOuw29DPI7/MJVhEZn7VrEo+Mavmj2CIqXM
-        CpejFynzFG1LyTohyuygN+nZk8ZMbZltqxX8Tq+13WVcUL9hwaqr/7ZJvT/XU+jXL2hd4idX
-        Ft1k4mhY/v8qb4xv/ryyH5zf6nQ3qzKxGd8V/vn5goiNC5ddV+PDpUosxRmJhlrMRcWJALHk
-        Il+UAwAA
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFprKIsWRmVeSWpSXmKPExsVy+t/xe7rPNvIlGPS8l7L4uOETi8WbFXfY
-        LY4tELPoerySzYHFo793G4vH+i1XWTw+b5ILYI7SsynKLy1JVcjILy6xVYo2tDDSM7S00DMy
-        sdQzNDaPtTIyVdK3s0lJzcksSy3St0vQy5j8aylTQadkxbmV9Q2Mr0S7GDk5JARMJGZveMHe
-        xcjFISSwlFFi/pP/zBAJGYmT0xpYIWxhiT/Xutggit4zShxd2csGkhAWCJK4uXEbC4gtIuAr
-        seDOe6BJHBzMAjYSC68UQ9SvZJLYtfwhI0gNm4ChRNfbLrBeXgE7iY//V4HZLAKqEo8OrgSr
-        ERVIkjgx6xMzRI2gxMmZT8Dmcwr4Sbx72QQWZxYwk5i3+SGULS/RvHU2lC0ucevJfKYJjEKz
-        kLTPQtIyC0nLLCQtCxhZVjGKpJYW56bnFhvqFSfmFpfmpesl5+duYgTGz7ZjPzfvYJz36qPe
-        IUYmDsZDjBIczEoivLv1eBKEeFMSK6tSi/Lji0pzUosPMZoC/TORWUo0OR8YwXkl8YZmBqaG
-        JmaWBqaWZsZK4rxb566JFxJITyxJzU5NLUgtgulj4uCUamAy2Vm63FfeYpJT1M2YY+m719x6
-        NpOv2OWFSUq486fG13ptH45Y3pzhdHRDm7/Z9raQ417yE4+UObxo81wW8vsty2OF7dsZb78Q
-        KCou5lBX4U7exOWdd6dhL9P9lAs2ilMPx/fOu9PFfFuzPFrT9ydbq1qK2MEn0mZrBEqPyl80
-        DS9zXxS+vUdWuEqvwOq/Ws6TiidcM6TbjOSZVC55z2Vma/l6bRPLG598wW7h70u+zJ7+YKbQ
-        F2Mn0Rk6mvt+8fSoGJ2X398QtUM8dYf7gw95ObZv2hpili66VPTJ7uC33XkPDJ8//2AQaXN/
-        g9W7xXOzPvMoun1VO19k/FREUbnhl8TtJYtXzgoL+vU7arcSS3FGoqEWc1FxIgA4Gd/VKAMA
-        AA==
-X-CMS-MailID: 20210125115622eucas1p1d95ea4bff4043bd2524c98beafd32408
-X-Msg-Generator: CA
+        id S1729072AbhAZFMi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jan 2021 00:12:38 -0500
+Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:18451 "EHLO
+        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729158AbhAYN56 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 08:57:58 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B600e7fee0001>; Mon, 25 Jan 2021 00:23:10 -0800
+Received: from HQMAIL101.nvidia.com (172.20.187.10) by HQMAIL101.nvidia.com
+ (172.20.187.10) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 25 Jan
+ 2021 08:23:10 +0000
+Received: from NAM12-DM6-obe.outbound.protection.outlook.com (104.47.59.170)
+ by HQMAIL101.nvidia.com (172.20.187.10) with Microsoft SMTP Server (TLS) id
+ 15.0.1473.3 via Frontend Transport; Mon, 25 Jan 2021 08:23:10 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=GRIzna5MxioXIkwoRjZeCXHtxtvihe9vmWuoapqC1DjAPXNYKZOBymBgcOdThgrzdzccnHnycJH863PUhPKTsK4jWHPiylcTbaJOeR/drlg86Ck8A8XbKFZP0DkzBVZzQsLCn/1spGbgBW7zXEPT90QZFucReyDsR8G1AAz0ankSWAMzsLOTbrHtK2amYT0PBI94/dYlXHRbNmo1gXHq0ezUWgm1uadtBaMl953mUoqPnzyjsiTyVjKXovugb+chmBaH19Ydf0d3N3DRy+tys2tLxx79SE2DwGnaYVJg4i1WNhEls2edZTbZFe2sZ6+F17o12q4ONzbUyLfMWABRsg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=PIRuWXZCFHS5EcypCfN7alZbx+dHw8KfVNzh7RiZl98=;
+ b=HhqMaOjS1qz3i4Lij3FIU/Gp6ccB0Q8y4law7H3l3wQ9xuRvq7pblRGlJN89U8rXztJjs7uS4mwyDsP9GZMCOTxjUuIVjcE/UEUBzyI6vt9WzFIdq4Fn9s1b+ob+sldDqvTYj2UwjZNMtW2FjlDnBwotpy/N+pzWbvejkKwP1MT4PTwTcdLCK/XG+q9TdNkMDlh5aTDhqDibMACQQvcz2LU0+C2XE3jJXw6uRehRYw8d7xSUPAYIL/Ukllbahrrq0Y3aQ2L9baP8UbSwhF7TIcMK6ktBrrjKPsHNL9GqvcTemcEF+JbFMWWioJ7hJuIXpJBcxq9kgPVnfUKNDRsE7g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+Authentication-Results: googlegroups.com; dkim=none (message not signed)
+ header.d=none;googlegroups.com; dmarc=none action=none
+ header.from=nvidia.com;
+Received: from DM6PR12MB4403.namprd12.prod.outlook.com (2603:10b6:5:2ab::24)
+ by DM5PR12MB1609.namprd12.prod.outlook.com (2603:10b6:4:10::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3763.12; Mon, 25 Jan
+ 2021 08:23:09 +0000
+Received: from DM6PR12MB4403.namprd12.prod.outlook.com
+ ([fe80::edba:d7b5:bd18:5704]) by DM6PR12MB4403.namprd12.prod.outlook.com
+ ([fe80::edba:d7b5:bd18:5704%4]) with mapi id 15.20.3784.019; Mon, 25 Jan 2021
+ 08:23:08 +0000
+Subject: Re: [PATCH] bridge: Use PTR_ERR_OR_ZERO instead if(IS_ERR(...)) +
+ PTR_ERR
+To:     Jiapeng Zhong <abaci-bugfix@linux.alibaba.com>, <roopa@nvidia.com>
+CC:     <davem@davemloft.net>, <kuba@kernel.org>,
+        <natechancellor@gmail.com>, <ndesaulniers@google.com>,
+        <bridge@lists.linux-foundation.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <clang-built-linux@googlegroups.com>
+References: <1611542381-91178-1-git-send-email-abaci-bugfix@linux.alibaba.com>
+From:   Nikolay Aleksandrov <nikolay@nvidia.com>
+Message-ID: <4c68f49c-a537-3f8f-73ed-5f243cb142a9@nvidia.com>
+Date:   Mon, 25 Jan 2021 10:23:00 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
+In-Reply-To: <1611542381-91178-1-git-send-email-abaci-bugfix@linux.alibaba.com>
 Content-Type: text/plain; charset="utf-8"
-X-RootMTR: 20210122121108eucas1p2d153ab9c3a95015221b470a66a0c8458
-X-EPHeader: CA
-CMS-TYPE: 201P
-X-CMS-RootMailID: 20210122121108eucas1p2d153ab9c3a95015221b470a66a0c8458
-References: <20210119102145.99917b8fc5d6.Iacd5916c0e01f71342159f6d419e56dc4c3f07a2@changeid>
-        <CGME20210122121108eucas1p2d153ab9c3a95015221b470a66a0c8458@eucas1p2.samsung.com>
-        <6569c83a-11b0-7f13-4b4c-c0318780895c@samsung.com>
-        <4ae7a27c32cbf85b4ddb05cc2a16e52918663633.camel@sipsolutions.net>
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [213.179.129.39]
+X-ClientProxiedBy: ZR0P278CA0074.CHEP278.PROD.OUTLOOK.COM
+ (2603:10a6:910:22::7) To DM6PR12MB4403.namprd12.prod.outlook.com
+ (2603:10b6:5:2ab::24)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [10.21.240.166] (213.179.129.39) by ZR0P278CA0074.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:22::7) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3784.14 via Frontend Transport; Mon, 25 Jan 2021 08:23:06 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 523204d0-895c-4a83-8b69-08d8c10a7272
+X-MS-TrafficTypeDiagnostic: DM5PR12MB1609:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <DM5PR12MB1609562AAC1D0A6C1305A388DFBD0@DM5PR12MB1609.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:1751;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: FPS6BWn/jHEgFzzy5Uric6CE3uuW3ZLoWuzrrNRhPGB+ozz0kwosqFDAvZePsUKkeWNOMyfqJ5zpilol3B/r8wuyC7nQ5KV82Pj7lDKBLtVNjiug+QO8XQx2lLQKggs4X7v70jjUbqGpO6WPexheogLhNVuOsptpKcZ5CTROdz3MCtLy1OWnAPZObCbYgVOCpoYDc5pD0qHpY4y6qYDazcwrLa7NO0kcR+Oa2J57gf3QSA9UfVXhPe/VDlAWnvrDVlq1tm9Iygel9UjnP42SncM2X0nOA1JFGI60G/JX2ZiWouzbfEvDT+iqwiA9y4YtDIavtN27dk3GNw0xeWP0ZzUrHQZBKnvjm7H8CIOizOdZKN7laapuSxP0cJsCFdWCtWI3UJ9UT+8PGKf5trWjbsBXyqOEYd3mMMr9Ggq6LJ7aNGjPsMlMCuHtWJkwm6JZxEuY8r9i6pVvx4Tm73q4olI8ObZx6sNtTbM+tg9rpXk=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB4403.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(39860400002)(376002)(136003)(346002)(396003)(366004)(36756003)(6486002)(5660300002)(53546011)(86362001)(316002)(16526019)(26005)(66946007)(186003)(6636002)(66476007)(8676002)(31686004)(66556008)(8936002)(478600001)(6666004)(956004)(31696002)(2616005)(83380400001)(2906002)(4326008)(16576012)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?M2J4WGtzVDF2YjBOOHFzUVZpS2xsVVBWMTRtbDNoeFBYNEVEbWo3RmF0bUcx?=
+ =?utf-8?B?N1FIZGdzSTd3czMzM0dIM3haNVU0VzBrZTJ3YUFJS3l3Mm9iMmFFVHVhalNs?=
+ =?utf-8?B?eEZmZnlySlZzT3kvL3NOU05vWmJ3MXdDNUtBbzh2NUxqSDB2cnh0U3oyZkJq?=
+ =?utf-8?B?WTNueE84RWgyczdBdWYrcTg5S3gvQWxXSEMwU2JaMERyRURwTThXN2M0T1Rp?=
+ =?utf-8?B?clBqME9UQ3l6aVBaTWgycnRvRW5vLzBvTEhnK3ZXOWhNUmI2dVYxeWpSbzNM?=
+ =?utf-8?B?ZEtuWlV3d002Q01FRE51aXd1UzVRVTRmR2o3UE9YVUpreHk3TWJMRHRyQ1NB?=
+ =?utf-8?B?SlZFdGY4b2xETVg5bUVSTFJ5ajJXNWtsZU1CbGdUQlJQdW5XT1duZVI2MW53?=
+ =?utf-8?B?bnFxOWtjelVIK0pNem1zMWF3UWQ3QlF1TlJFQWVXUHdYd284R3hmcWkyRVFZ?=
+ =?utf-8?B?QmJRVmJIandVL3MvRWpRQXRMYzA2VlZob1cwKzBsQ1RTb2tvTWZDZVBzQ1Jj?=
+ =?utf-8?B?dTZ4ZDRDUW9FMFdlS2VxOWtDVTJ2bE1xeUhiamJtd09ndzlGOVFqdkptOGJO?=
+ =?utf-8?B?aGJLd3E0YVErZTNsRThZc0FaREtaQ3FGNXAvS25xQ0h1dmxoYWI5SEJQVUha?=
+ =?utf-8?B?MlJJZk4xN2QrQ09CZS85Qjd4Y3BxN3NBbGs0WWd0dmxselk3eVZzNE5MZXpH?=
+ =?utf-8?B?RDFTK2Vldkk1c0lnd3F4VElOZkV1cTF1OEJGZFY1U1pKRmtqLzlETmlXRDho?=
+ =?utf-8?B?S1c3TzVhdlZ6WFFMeDFra1cxNFpYRHc2WU9zS0dPUGtETktubkZiM3dVbm4z?=
+ =?utf-8?B?ajJSd1htZ3lEeGg4WG40NVY5L29kMHl4cGxjbHg1WllTekVkbCs0VkxldUU1?=
+ =?utf-8?B?aWYxVXUvY0Rkd0NLUXpyeWtqTWphY1pXcjdEVk5INnFBa2lDUi81T3h1ZUVo?=
+ =?utf-8?B?UkZLeG1WZys3eHhwWWNtRU9YakVzbUhYbFNOc1ZQM0FYNUc5czV4UmZaTUQ2?=
+ =?utf-8?B?dmhQREw0ZXkzZEFRQnMwLzg1RGdmbG1leVJYUTZSOW1NbThIL2FXdlNFcWh3?=
+ =?utf-8?B?bnhGNVIrcVVmbks5SENGQWd5SkYwallzQW1OS1NVUTY0NlJZbE1xQ0h2Y0Vh?=
+ =?utf-8?B?ZU5IMTFoc3VvY1VTdTZRK2c1bDZmdzNGc3l3d242ZzF5cDJvMUlFbE8xRGZS?=
+ =?utf-8?B?dXIvKzFVdzYrdldZN2djSis0bUhEc0RYb09PN0M4TlpiWVplZjgzNXU5Syth?=
+ =?utf-8?B?dlJjc0JRdExQbi9KWEkwVENNRS9oSHhZS2J5MWpoM1JQWlVKYkV2T0liUWx3?=
+ =?utf-8?B?c0wvY0U1Nnp0MWRPMG5pMlpBbVY2NWVTK3ZtY2hiLy9aV0d5SnlwRnliZVBD?=
+ =?utf-8?B?N0RwSWpqYW9TWTJDdmNYdW1ZdENXZlhaSkhtaFF0WWpldWxVdEd1a1c1S2pV?=
+ =?utf-8?Q?3PWBhL9A?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 523204d0-895c-4a83-8b69-08d8c10a7272
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB4403.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jan 2021 08:23:08.8700
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: sDcmcSE8zWQcVfEuOeHno4TEyztas5QKlIhAh26NC0YCWPcDMJchhR0MAhidKxXQoIHcTBJ9EKzRACGXKH67Tg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR12MB1609
+X-OriginatorOrg: Nvidia.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1611562990; bh=PIRuWXZCFHS5EcypCfN7alZbx+dHw8KfVNzh7RiZl98=;
+        h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:
+         Authentication-Results:Subject:To:CC:References:From:Message-ID:
+         Date:User-Agent:In-Reply-To:Content-Type:Content-Language:
+         Content-Transfer-Encoding:X-Originating-IP:X-ClientProxiedBy:
+         MIME-Version:X-MS-Exchange-MessageSentRepresentingType:
+         X-MS-PublicTrafficType:X-MS-Office365-Filtering-Correlation-Id:
+         X-MS-TrafficTypeDiagnostic:X-MS-Exchange-Transport-Forked:
+         X-Microsoft-Antispam-PRVS:X-MS-Oob-TLC-OOBClassifiers:
+         X-MS-Exchange-SenderADCheck:X-Microsoft-Antispam:
+         X-Microsoft-Antispam-Message-Info:X-Forefront-Antispam-Report:
+         X-MS-Exchange-AntiSpam-MessageData:
+         X-MS-Exchange-CrossTenant-Network-Message-Id:
+         X-MS-Exchange-CrossTenant-AuthSource:
+         X-MS-Exchange-CrossTenant-AuthAs:
+         X-MS-Exchange-CrossTenant-OriginalArrivalTime:
+         X-MS-Exchange-CrossTenant-FromEntityHeader:
+         X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
+         X-MS-Exchange-CrossTenant-UserPrincipalName:
+         X-MS-Exchange-Transport-CrossTenantHeadersStamped:X-OriginatorOrg;
+        b=MmD/eIM6JGtlNoaOOoP0+gYYHKGdqmH2PsZDqw8VTfowbQpflMj1OcOCW58d5eMHS
+         BzkKVHBZOW2MwLBqtftcuOcac3dVAvdyrSfIOG+eVSeRmpc62RcmNnwlgt+XocK8fK
+         JtCC1JhGDeofkQFK4b0mw4rJmN+5L/I8zCNF/vR/j7U0QVFAydsXMLavcDOOG++u/7
+         BHSDklBT3VTk8am0ONzJPHPdM/AJelooD5JpWknWdtTwaiNHgECsim91FRvMhHyHs1
+         uu+4haYcG1ttLlzmjJA64QT32LSPLUAG4iG+0lsDfGVCDBgzLprNv2x2k9jHj5/YXi
+         wR1zwP2AveBAw==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Johannes,
+On 25/01/2021 04:39, Jiapeng Zhong wrote:
+> coccicheck suggested using PTR_ERR_OR_ZERO() and looking at the code.
+> 
+> Fix the following coccicheck warnings:
+> 
+> ./net/bridge/br_multicast.c:1295:7-13: WARNING: PTR_ERR_OR_ZERO can be
+> used.
+> 
+> Reported-by: Abaci <abaci@linux.alibaba.com>
+> Signed-off-by: Jiapeng Zhong <abaci-bugfix@linux.alibaba.com>
+> ---
+>  net/bridge/br_multicast.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/net/bridge/br_multicast.c b/net/bridge/br_multicast.c
+> index 257ac4e..2229d10 100644
+> --- a/net/bridge/br_multicast.c
+> +++ b/net/bridge/br_multicast.c
+> @@ -1292,7 +1292,7 @@ static int br_multicast_add_group(struct net_bridge *br,
+>  	pg = __br_multicast_add_group(br, port, group, src, filter_mode,
+>  				      igmpv2_mldv1, false);
+>  	/* NULL is considered valid for host joined groups */
+> -	err = IS_ERR(pg) ? PTR_ERR(pg) : 0;
+> +	err = PTR_ERR_OR_ZERO(pg);
+>  	spin_unlock(&br->multicast_lock);
+>  
+>  	return err;
+> 
 
-On 22.01.2021 13:27, Johannes Berg wrote:
->> This patch landed in today's (20210122) linux-next as commit
->> 791daf8fc49a ("cfg80211: avoid holding the RTNL when calling the
->> driver"). Sadly, it causes deadlock with mwifiex driver. I think that
->> lockdep report describes it enough:
-> Yeah, umm, sorry about that. Evidently, I somehow managed to put
-> "wiphy_lock()" into that part of the code, rather than "wiphy_unlock()"!
->
-> I'll fix, thanks!
+This should be targeted at net-next.
+Acked-by: Nikolay Aleksandrov <nikolay@nvidia.com>
 
-I've checked today's linux-next with the updated commit 27bc93583e35 
-("cfg80211: avoid holding the RTNL when calling the driver") and there 
-is still an issue there, but at least it doesn't cause a deadlock:
 
-cfg80211: Loading compiled-in X.509 certificates for regulatory database
-Bluetooth: vendor=0x2df, device=0x912a, class=255, fn=2
-cfg80211: Loaded X.509 cert 'sforshee: 00b28ddf47aef9cea7'
-Bluetooth: FW download over, size 533976 bytes
-btmrvl_sdio mmc3:0001:2: sdio device tree data not available
-mwifiex_sdio mmc3:0001:1: WLAN FW already running! Skip FW dnld
-mwifiex_sdio mmc3:0001:1: WLAN FW is active
-mwifiex_sdio mmc3:0001:1: CMD_RESP: cmd 0x242 error, result=0x2
-mwifiex_sdio mmc3:0001:1: mwifiex_process_cmdresp: cmd 0x242 failed 
-during       initialization
-------------[ cut here ]------------
-WARNING: CPU: 0 PID: 5 at net/wireless/core.c:1336 
-cfg80211_register_netdevice+0xa4/0x198 [cfg80211]
-Modules linked in: mwifiex_sdio mwifiex sha256_generic libsha256 
-sha256_arm btmrvl_sdio btmrvl cfg80211 bluetooth s5p_mfc exynos_gsc 
-v4l2_mem2mem videobuf2_dma_co
-ntig videobuf2_memops videobuf2_v4l2 videobuf2_common videodev 
-ecdh_generic ecc mc s5p_cec
-CPU: 1 PID: 18 Comm: kworker/1:0 Not tainted 
-5.11.0-rc4-00536-g27bc93583e35-dirty #2345
-Hardware name: Samsung Exynos (Flattened Device Tree)
-Workqueue: events request_firmware_work_func
-[<c01116e8>] (unwind_backtrace) from [<c010cf58>] (show_stack+0x10/0x14)
-[<c010cf58>] (show_stack) from [<c0b46744>] (dump_stack+0xa4/0xc4)
-[<c0b46744>] (dump_stack) from [<c01270ac>] (__warn+0x118/0x11c)
-[<c01270ac>] (__warn) from [<c0127164>] (warn_slowpath_fmt+0xb4/0xbc)
-[<c0127164>] (warn_slowpath_fmt) from [<bf1a9de0>] 
-(cfg80211_register_netdevice+0xa4/0x198 [cfg80211])
-[<bf1a9de0>] (cfg80211_register_netdevice [cfg80211]) from [<bf28f2e4>] 
-(mwifiex_add_virtual_intf+0x6a0/0x9f4 [mwifiex])
-[<bf28f2e4>] (mwifiex_add_virtual_intf [mwifiex]) from [<bf26c79c>] 
-(_mwifiex_fw_dpc+0x264/0x494 [mwifiex])
-[<bf26c79c>] (_mwifiex_fw_dpc [mwifiex]) from [<c06c881c>] 
-(request_firmware_work_func+0x58/0x94)
-[<c06c881c>] (request_firmware_work_func) from [<c0149af8>] 
-(process_one_work+0x30c/0x888)
-[<c0149af8>] (process_one_work) from [<c014a0cc>] (worker_thread+0x58/0x594)
-[<c014a0cc>] (worker_thread) from [<c015105c>] (kthread+0x154/0x19c)
-[<c015105c>] (kthread) from [<c010011c>] (ret_from_fork+0x14/0x38)
-Exception stack(0xc1cedfb0 to 0xc1cedff8)
-...
----[ end trace c04a86d3eb55e7cb ]---
-mwifiex_sdio mmc3:0001:1: info: MWIFIEX VERSION: mwifiex 1.0 (14.68.29.p59)
-mwifiex_sdio mmc3:0001:1: driver_version = mwifiex 1.0 (14.68.29.p59)
-
-Best regards
--- 
-Marek Szyprowski, PhD
-Samsung R&D Institute Poland
 
