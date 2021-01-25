@@ -2,87 +2,196 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B71C302955
-	for <lists+netdev@lfdr.de>; Mon, 25 Jan 2021 18:52:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0F7B23029F2
+	for <lists+netdev@lfdr.de>; Mon, 25 Jan 2021 19:20:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731198AbhAYRv1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Jan 2021 12:51:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60328 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731004AbhAYRu4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 12:50:56 -0500
-Received: from ganesha.gnumonks.org (ganesha.gnumonks.org [IPv6:2001:780:45:1d:225:90ff:fe52:c662])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AFF7C061A2B
-        for <netdev@vger.kernel.org>; Mon, 25 Jan 2021 09:50:08 -0800 (PST)
-Received: from uucp by ganesha.gnumonks.org with local-bsmtp (Exim 4.89)
-        (envelope-from <laforge@gnumonks.org>)
-        id 1l4603-0005MA-W0; Mon, 25 Jan 2021 18:50:04 +0100
-Received: from laforge by localhost.localdomain with local (Exim 4.94)
-        (envelope-from <laforge@gnumonks.org>)
-        id 1l45rP-001yMp-9a; Mon, 25 Jan 2021 18:41:07 +0100
-Date:   Mon, 25 Jan 2021 18:41:07 +0100
-From:   Harald Welte <laforge@gnumonks.org>
-To:     Jonas Bonn <jonas@norrbonn.se>
-Cc:     netdev@vger.kernel.org, pbshelar@fb.com, kuba@kernel.org,
-        pablo@netfilter.org
-Subject: Re: [RFC PATCH 15/16] gtp: add ability to send GTP controls headers
-Message-ID: <YA8Cs3SD1zeR2JWz@nataraja>
-References: <20210123195916.2765481-1-jonas@norrbonn.se>
- <20210123195916.2765481-16-jonas@norrbonn.se>
- <bf6de363-8e32-aca0-1803-a041c0f55650@norrbonn.se>
+        id S1726436AbhAYST3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Jan 2021 13:19:29 -0500
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:65232 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1730507AbhAYRND (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 12:13:03 -0500
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 10PGpMBB017885;
+        Mon, 25 Jan 2021 09:09:53 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-type; s=pfpt0220; bh=DUpO0wHw6W9Q7OIz6Ir6AZBxbH3roAo4pdxP7MQK5/E=;
+ b=SD5FGTg+lsNKYw3epa2RuPRo7+OK92s6EhNpuOzrJuFAfaEfpxSiqXQrFENL+kkImpTH
+ FgPeWLfI5wJhgxWRENyT+8lgg9NivI4VkbSCDBvwEIE53TcgZy/7yvh5GGpexQaYjV/k
+ ZCfG5mC9zjGNFqn+xRE9Luzat2YLoK6pQ6ZVuAMg7Oou82zC9nMmO7RAj0OJEIcC8Ds9
+ 7YMmxeaYWJ6/B9nE2egBhnRwMQQ9SbEY4zkXnD7ExHl/bWoo7JKp35cwUVkJ7iT52BRd
+ qRuFoAasKc74E5D9idE8/BfjVC2Shq28yFA8uKSbIM9CJlmRGGwFdyse9u9jvXFBACt9 Ng== 
+Received: from dc5-exch02.marvell.com ([199.233.59.182])
+        by mx0a-0016f401.pphosted.com with ESMTP id 368j1u5ah0-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Mon, 25 Jan 2021 09:09:53 -0800
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 25 Jan
+ 2021 09:09:51 -0800
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 25 Jan 2021 09:09:51 -0800
+Received: from stefan-pc.marvell.com (stefan-pc.marvell.com [10.5.25.21])
+        by maili.marvell.com (Postfix) with ESMTP id 7E02F3F703F;
+        Mon, 25 Jan 2021 09:09:48 -0800 (PST)
+From:   <stefanc@marvell.com>
+To:     <netdev@vger.kernel.org>
+CC:     <thomas.petazzoni@bootlin.com>, <davem@davemloft.net>,
+        <nadavh@marvell.com>, <ymarkman@marvell.com>,
+        <linux-kernel@vger.kernel.org>, <stefanc@marvell.com>,
+        <kuba@kernel.org>, <linux@armlinux.org.uk>, <mw@semihalf.com>,
+        <andrew@lunn.ch>, <rmk+kernel@armlinux.org.uk>,
+        <atenart@kernel.org>
+Subject: [PATCH v3 RFC net-next 10/19] net: mvpp2: add FCA RXQ non occupied descriptor threshold
+Date:   Mon, 25 Jan 2021 19:07:57 +0200
+Message-ID: <1611594486-29431-11-git-send-email-stefanc@marvell.com>
+X-Mailer: git-send-email 1.9.1
+In-Reply-To: <1611594486-29431-1-git-send-email-stefanc@marvell.com>
+References: <1611594486-29431-1-git-send-email-stefanc@marvell.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <bf6de363-8e32-aca0-1803-a041c0f55650@norrbonn.se>
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
+ definitions=2021-01-25_07:2021-01-25,2021-01-25 signatures=0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Jonas,
+From: Stefan Chulski <stefanc@marvell.com>
 
-thanks for your detailed analysis and review of the changes.  To me, they
-once again show that the original patch was merged too quickly, without
-a detailed review by people with strong GTP background.
+RXQ non occupied descriptor threshold would be used by
+Flow Control Firmware feature to move to the XOFF mode.
+RXQ non occupied threshold would change interrupt cause
+that polled by CM3 Firmware.
+Actual non occupied interrupt masked and won't trigger interrupt.
 
-On Sun, Jan 24, 2021 at 03:21:21PM +0100, Jonas Bonn wrote:
-> struct gtpu_metadata {
->         __u8    ver;
->         __u8    flags;
->         __u8    type;
-> };
-> 
-> Here ver is the version of the metadata structure itself, which is fine.
-> 'flags' corresponds to the 3 flag bits of GTP header's first byte:  E, S,
-> and PN.
-> 'type' corresponds to the 'message type' field of the GTP header.
+Signed-off-by: Stefan Chulski <stefanc@marvell.com>
+---
+ drivers/net/ethernet/marvell/mvpp2/mvpp2.h      |  3 ++
+ drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 46 +++++++++++++++++---
+ 2 files changed, 42 insertions(+), 7 deletions(-)
 
-One more comment on the 'type': Of how much use is it?  After all, the
-GTP-U kernel driver only handles a single message type at all (G-PDU /
-255 - the only message type that encapsulates user IP data), while all
-other message types are always processed in userland via the UDP socket.
-
-Side-note: 3GPP TS 29.060 lists 5 other message types that can happen in
-GTP-U:
-* Echo Request
-* Echo Response
-* Error Indication
-* Supported Extension Headers Notification
-* End Marker
-
-It would be interesting to understand how the new flow-based tunnel would
-treat those, if those 
-
-> The 'control header' (strange name) example below allows the flags to be
-> set; however, setting these flags alone is insufficient because each one
-> indicates the presence of additional fields in the header and there's
-> nothing in the code to account for that.
-
-Full ACK from my side here.  Setting arbitrary bits in the GTP flags without
-then actually encoding the required additional bits that those flags require
-will produce broken packets.  IMHO, the GTP driver should never do that.
-
+diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
+index 73f087c..9d8993f 100644
+--- a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
++++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
+@@ -295,6 +295,8 @@
+ #define     MVPP2_PON_CAUSE_TXP_OCCUP_DESC_ALL_MASK	0x3fc00000
+ #define     MVPP2_PON_CAUSE_MISC_SUM_MASK		BIT(31)
+ #define MVPP2_ISR_MISC_CAUSE_REG		0x55b0
++#define MVPP2_ISR_RX_ERR_CAUSE_REG(port)	(0x5520 + 4 * (port))
++#define	    MVPP2_ISR_RX_ERR_CAUSE_NONOCC_MASK	0x00ff
+ 
+ /* Buffer Manager registers */
+ #define MVPP2_BM_POOL_BASE_REG(pool)		(0x6000 + ((pool) * 4))
+@@ -764,6 +766,7 @@
+ #define MSS_SRAM_SIZE		0x800
+ #define FC_QUANTA		0xFFFF
+ #define FC_CLK_DIVIDER		100
++#define MSS_THRESHOLD_STOP	768
+ 
+ /* RX buffer constants */
+ #define MVPP2_SKB_SHINFO_SIZE \
+diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+index 8f40293a..a4933c4 100644
+--- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
++++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+@@ -1144,14 +1144,19 @@ static inline void mvpp2_qvec_interrupt_disable(struct mvpp2_queue_vector *qvec)
+ static void mvpp2_interrupts_mask(void *arg)
+ {
+ 	struct mvpp2_port *port = arg;
++	int cpu = smp_processor_id();
++	u32 thread;
+ 
+ 	/* If the thread isn't used, don't do anything */
+-	if (smp_processor_id() > port->priv->nthreads)
++	if (cpu >= port->priv->nthreads)
+ 		return;
+ 
+-	mvpp2_thread_write(port->priv,
+-			   mvpp2_cpu_to_thread(port->priv, smp_processor_id()),
++	thread = mvpp2_cpu_to_thread(port->priv, cpu);
++
++	mvpp2_thread_write(port->priv, thread,
+ 			   MVPP2_ISR_RX_TX_MASK_REG(port->id), 0);
++	mvpp2_thread_write(port->priv, thread,
++			   MVPP2_ISR_RX_ERR_CAUSE_REG(port->id), 0);
+ }
+ 
+ /* Unmask the current thread's Rx/Tx interrupts.
+@@ -1161,20 +1166,25 @@ static void mvpp2_interrupts_mask(void *arg)
+ static void mvpp2_interrupts_unmask(void *arg)
+ {
+ 	struct mvpp2_port *port = arg;
+-	u32 val;
++	int cpu = smp_processor_id();
++	u32 val, thread;
+ 
+ 	/* If the thread isn't used, don't do anything */
+-	if (smp_processor_id() > port->priv->nthreads)
++	if (cpu >= port->priv->nthreads)
+ 		return;
+ 
++	thread = mvpp2_cpu_to_thread(port->priv, cpu);
++
+ 	val = MVPP2_CAUSE_MISC_SUM_MASK |
+ 		MVPP2_CAUSE_RXQ_OCCUP_DESC_ALL_MASK(port->priv->hw_version);
+ 	if (port->has_tx_irqs)
+ 		val |= MVPP2_CAUSE_TXQ_OCCUP_DESC_ALL_MASK;
+ 
+-	mvpp2_thread_write(port->priv,
+-			   mvpp2_cpu_to_thread(port->priv, smp_processor_id()),
++	mvpp2_thread_write(port->priv, thread,
+ 			   MVPP2_ISR_RX_TX_MASK_REG(port->id), val);
++	mvpp2_thread_write(port->priv, thread,
++			   MVPP2_ISR_RX_ERR_CAUSE_REG(port->id),
++			   MVPP2_ISR_RX_ERR_CAUSE_NONOCC_MASK);
+ }
+ 
+ static void
+@@ -1199,6 +1209,9 @@ static void mvpp2_interrupts_unmask(void *arg)
+ 
+ 		mvpp2_thread_write(port->priv, v->sw_thread_id,
+ 				   MVPP2_ISR_RX_TX_MASK_REG(port->id), val);
++		mvpp2_thread_write(port->priv, v->sw_thread_id,
++				   MVPP2_ISR_RX_ERR_CAUSE_REG(port->id),
++				   MVPP2_ISR_RX_ERR_CAUSE_NONOCC_MASK);
+ 	}
+ }
+ 
+@@ -2404,6 +2417,22 @@ static void mvpp2_txp_max_tx_size_set(struct mvpp2_port *port)
+ 	}
+ }
+ 
++/* Routine set the number of non-occupied descriptors threshold that change
++ * interrupt error cause polled by FW Flow Control
++ */
++static void mvpp2_set_rxq_free_tresh(struct mvpp2_port *port,
++				     struct mvpp2_rx_queue *rxq)
++{
++	u32 val;
++
++	mvpp2_write(port->priv, MVPP2_RXQ_NUM_REG, rxq->id);
++
++	val = mvpp2_read(port->priv, MVPP2_RXQ_THRESH_REG);
++	val &= ~MVPP2_RXQ_NON_OCCUPIED_MASK;
++	val |= MSS_THRESHOLD_STOP << MVPP2_RXQ_NON_OCCUPIED_OFFSET;
++	mvpp2_write(port->priv, MVPP2_RXQ_THRESH_REG, val);
++}
++
+ /* Set the number of packets that will be received before Rx interrupt
+  * will be generated by HW.
+  */
+@@ -2659,6 +2688,9 @@ static int mvpp2_rxq_init(struct mvpp2_port *port,
+ 	mvpp2_rx_pkts_coal_set(port, rxq);
+ 	mvpp2_rx_time_coal_set(port, rxq);
+ 
++	/* Set the number of non occupied descriptors threshold */
++	mvpp2_set_rxq_free_tresh(port, rxq);
++
+ 	/* Add number of descriptors ready for receiving packets */
+ 	mvpp2_rxq_status_update(port, rxq->id, 0, rxq->size);
+ 
 -- 
-- Harald Welte <laforge@gnumonks.org>           http://laforge.gnumonks.org/
-============================================================================
-"Privacy in residential applications is a desirable marketing option."
-                                                  (ETSI EN 300 175-7 Ch. A6)
+1.9.1
+
