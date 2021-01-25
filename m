@@ -2,91 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F3EF530497F
-	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 21:06:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AB9643049B8
+	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 21:14:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732213AbhAZF1h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jan 2021 00:27:37 -0500
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:60080 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730421AbhAYRMY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 12:12:24 -0500
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 10PGq1p4013149;
-        Mon, 25 Jan 2021 09:09:34 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0220; bh=YccNla7+MM6+0y0+HkOTLVpcXPupLVKj6UvrIorxUl0=;
- b=jEUZq389d6U8nBP4fgaCnMasJn9mh1kxbkisZ67szHtkxvOYY3EUfquNgnVHeztXMEQY
- g8ji+gcVLu2MCStMf3MgYZA0iYM2lUJatub9krKSiI9VJ+HNujsIzwMkfpJpPzkeAOtG
- MQazh6Q5EYvGIYRvrWZ7O5MqaED59oQbLs8uFXJAGuXoiVnT71tsEId79NTcrq2cdES+
- ZIqqRazNM/x5JmwgM7U7Z+Vm5go6zjXuGiJac7pNNbthyXL+yOd2QTCteYcZHrPWV/7/
- JrUfUX+eDZAIXlAwAICSUFheDU4t9xTicQEbRdFVPROpua46BMSbgu20A/KhqCmYjfLN vw== 
-Received: from dc5-exch02.marvell.com ([199.233.59.182])
-        by mx0b-0016f401.pphosted.com with ESMTP id 368m6ud2cn-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Mon, 25 Jan 2021 09:09:34 -0800
-Received: from SC-EXCH01.marvell.com (10.93.176.81) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 25 Jan
- 2021 09:09:32 -0800
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH01.marvell.com
- (10.93.176.81) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 25 Jan
- 2021 09:09:31 -0800
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 25 Jan 2021 09:09:31 -0800
-Received: from stefan-pc.marvell.com (stefan-pc.marvell.com [10.5.25.21])
-        by maili.marvell.com (Postfix) with ESMTP id 2E6323F7040;
-        Mon, 25 Jan 2021 09:09:27 -0800 (PST)
-From:   <stefanc@marvell.com>
-To:     <netdev@vger.kernel.org>
-CC:     <thomas.petazzoni@bootlin.com>, <davem@davemloft.net>,
-        <nadavh@marvell.com>, <ymarkman@marvell.com>,
-        <linux-kernel@vger.kernel.org>, <stefanc@marvell.com>,
-        <kuba@kernel.org>, <linux@armlinux.org.uk>, <mw@semihalf.com>,
-        <andrew@lunn.ch>, <rmk+kernel@armlinux.org.uk>,
-        <atenart@kernel.org>
-Subject: [PATCH v3 RFC net-next 04/19] doc: marvell: add PPv2.3 description to marvell-pp2.txt
-Date:   Mon, 25 Jan 2021 19:07:51 +0200
-Message-ID: <1611594486-29431-5-git-send-email-stefanc@marvell.com>
-X-Mailer: git-send-email 1.9.1
-In-Reply-To: <1611594486-29431-1-git-send-email-stefanc@marvell.com>
-References: <1611594486-29431-1-git-send-email-stefanc@marvell.com>
+        id S1732565AbhAZFYc (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jan 2021 00:24:32 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:37067 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728817AbhAYRKv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 12:10:51 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1611594563;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=JCHr3yiyIY7GPneDCI6rt8PZWi1gXVb/d0DuxETCvnw=;
+        b=BWNqccSUwPATTdFRMN2jEbO656xzFlmOUEC5BiGhypDa0fETRjVURHK+9VJt0kn2afxp2M
+        3B8XZyW1Tr7/smKmTaHE0bMHmxwAST7hEBGnQM9Ix7QEDv1E6pCbCmg9T/332f6u6eD+f+
+        2zf+c6s1aMO/Vzn8fm0217AuSL1ygBw=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-497-cyRhZ7LwPW-oZ7Btw_WG0w-1; Mon, 25 Jan 2021 12:09:19 -0500
+X-MC-Unique: cyRhZ7LwPW-oZ7Btw_WG0w-1
+Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id BE1C2100F340;
+        Mon, 25 Jan 2021 17:09:16 +0000 (UTC)
+Received: from firesoul.localdomain (unknown [10.40.208.19])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 43CA35275D;
+        Mon, 25 Jan 2021 17:09:13 +0000 (UTC)
+Received: from [192.168.42.3] (localhost [IPv6:::1])
+        by firesoul.localdomain (Postfix) with ESMTP id 2264132233490;
+        Mon, 25 Jan 2021 18:09:12 +0100 (CET)
+Subject: [PATCH bpf-next V13 0/7] bpf: New approach for BPF MTU handling
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     bpf@vger.kernel.org
+Cc:     Jesper Dangaard Brouer <brouer@redhat.com>, netdev@vger.kernel.org,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        maze@google.com, lmb@cloudflare.com, shaun@tigera.io,
+        Lorenzo Bianconi <lorenzo@kernel.org>, marek@cloudflare.com,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>, eyal.birger@gmail.com,
+        colrack@gmail.com
+Date:   Mon, 25 Jan 2021 18:09:12 +0100
+Message-ID: <161159451743.321749.17528005626909164523.stgit@firesoul>
+User-Agent: StGit/0.19
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
- definitions=2021-01-25_07:2021-01-25,2021-01-25 signatures=0
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.13
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Stefan Chulski <stefanc@marvell.com>
+This patchset drops all the MTU checks in TC BPF-helpers that limits
+growing the packet size. This is done because these BPF-helpers doesn't
+take redirect into account, which can result in their MTU check being done
+against the wrong netdev.
 
-Signed-off-by: Stefan Chulski <stefanc@marvell.com>
+The new approach is to give BPF-programs knowledge about the MTU on a
+netdev (via ifindex) and fib route lookup level. Meaning some BPF-helpers
+are added and extended to make it possible to do MTU checks in the
+BPF-code.
+
+If BPF-prog doesn't comply with the MTU then the packet will eventually
+get dropped as some other layer. In some cases the existing kernel MTU
+checks will drop the packet, but there are also cases where BPF can bypass
+these checks. Specifically doing TC-redirect from ingress step
+(sch_handle_ingress) into egress code path (basically calling
+dev_queue_xmit()). It is left up to driver code to handle these kind of
+MTU violations.
+
+One advantage of this approach is that it ingress-to-egress BPF-prog can
+send information via packet data. With the MTU checks removed in the
+helpers, and also not done in skb_do_redirect() call, this allows for an
+ingress BPF-prog to communicate with an egress BPF-prog via packet data,
+as long as egress BPF-prog remove this prior to transmitting packet.
+
+This patchset is primarily focused on TC-BPF, but I've made sure that the
+MTU BPF-helpers also works for XDP BPF-programs.
+
+V2: Change BPF-helper API from lookup to check.
+V3: Drop enforcement of MTU in net-core, leave it to drivers.
+V4: Keep sanity limit + netdev "up" checks + rename BPF-helper.
+V5: Fix uninit variable + name struct output member mtu_result.
+V6: Use bpf_check_mtu() in selftest
+V7: Fix logic using tot_len and add another selftest
+V8: Add better selftests for BPF-helper bpf_check_mtu
+V9: Remove patch that use skb_set_redirected
+V10: Fix selftests and 'tot_len' MTU check like XDP
+V11: Fix nitpicks in selftests
+V12: Adjustments requested by Daniel
+V13: More adjustments requested by Daniel
+
 ---
- Documentation/devicetree/bindings/net/marvell-pp2.txt | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/net/marvell-pp2.txt b/Documentation/devicetree/bindings/net/marvell-pp2.txt
-index f9f8cc6..df80cff 100644
---- a/Documentation/devicetree/bindings/net/marvell-pp2.txt
-+++ b/Documentation/devicetree/bindings/net/marvell-pp2.txt
-@@ -1,5 +1,6 @@
- * Marvell Armada 375 Ethernet Controller (PPv2.1)
-   Marvell Armada 7K/8K Ethernet Controller (PPv2.2)
-+  Marvell CN913X Ethernet Controller (PPv2.3)
- 
- Required properties:
- 
-@@ -12,7 +13,7 @@ Required properties:
- 	- common controller registers
- 	- LMS registers
- 	- one register area per Ethernet port
--  For "marvell,armada-7k-pp2", must contain the following register
-+  For "marvell,armada-7k-pp2" used by 7K/8K and CN913X, must contain the following register
-   sets:
- 	- packet processor registers
- 	- networking interfaces registers
--- 
-1.9.1
+Jesper Dangaard Brouer (7):
+      bpf: Remove MTU check in __bpf_skb_max_len
+      bpf: fix bpf_fib_lookup helper MTU check for SKB ctx
+      bpf: bpf_fib_lookup return MTU value as output when looked up
+      bpf: add BPF-helper for MTU checking
+      bpf: drop MTU check when doing TC-BPF redirect to ingress
+      selftests/bpf: use bpf_check_mtu in selftest test_cls_redirect
+      selftests/bpf: tests using bpf_check_mtu BPF-helper
+
+
+ include/linux/netdevice.h                          |   32 +++
+ include/uapi/linux/bpf.h                           |   78 +++++++
+ net/core/dev.c                                     |   32 +--
+ net/core/filter.c                                  |  204 +++++++++++++++----
+ tools/include/uapi/linux/bpf.h                     |   78 +++++++
+ tools/testing/selftests/bpf/prog_tests/check_mtu.c |  216 ++++++++++++++++++++
+ tools/testing/selftests/bpf/progs/test_check_mtu.c |  198 ++++++++++++++++++
+ .../selftests/bpf/progs/test_cls_redirect.c        |    7 +
+ 8 files changed, 781 insertions(+), 64 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/check_mtu.c
+ create mode 100644 tools/testing/selftests/bpf/progs/test_check_mtu.c
+
+--
 
