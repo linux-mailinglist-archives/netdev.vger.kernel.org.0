@@ -2,150 +2,203 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8AD33304A22
-	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 21:31:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BE8D4304AE0
+	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 22:02:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730745AbhAZFPJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jan 2021 00:15:09 -0500
-Received: from mail.kernel.org ([198.145.29.99]:37762 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729943AbhAYPe6 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 25 Jan 2021 10:34:58 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id B0CFB227BF;
-        Mon, 25 Jan 2021 15:03:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611586987;
-        bh=0lg9lKXNFsGW0ZYgktOcWgFnhneGWwZnxv6sZqfftUg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oxEo6gbjMpHT+BzNGHzl9XABc5soiu8eVcnZ32gNyDQ4W9p1DHT+U66PxAFY/N6VW
-         CdYsQteCbACzes2Qv8d4/Tv5xbdsn0Ebht7XMccDOfjgDfpqxZI8f+8xQQED8Ev1jI
-         aJoxhjszwOSBS0vqx4MG0bciZ0Z3aOdBsoA0j7P2UBa+ZcWdzqPbKx7U7I6SctL21o
-         3Erg0hiXga1keYNq9oU888fEEH1JFDMPzkLFCam5SX7jw0h4rGizfZNYYKqQrq0eR+
-         ROjxDh3JaHJR9+PSn8yOr2rA1PbE23/Kh1ug/YoAxz3eQTe0m0ZZF6JMeDLXPoqhdL
-         or0ELKGQjuK5Q==
-Received: by pali.im (Postfix)
-        id CA0F3BAB; Mon, 25 Jan 2021 16:03:05 +0100 (CET)
-From:   =?UTF-8?q?Pali=20Roh=C3=A1r?= <pali@kernel.org>
-To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>,
+        id S1729452AbhAZE4W (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Jan 2021 23:56:22 -0500
+Received: from aserp2120.oracle.com ([141.146.126.78]:33410 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727519AbhAYK3G (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 05:29:06 -0500
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 10P8AVSE101478;
+        Mon, 25 Jan 2021 08:12:59 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : mime-version : content-type; s=corp-2020-01-29;
+ bh=3v5ov03CgWGnjGR/strYEROcXrL34Fr8nIjtf5Iguwg=;
+ b=x7axNsTK9ZqhnGkiPnDz8khmaU8wLifzrx6bT35UZDfZQm9BtVPMr64o7QJN4MBntudN
+ Bn8SXcp08lGBr5mZb9w9AxkNNcYr4XBgwk2fC9hcHneKJnVe+yZz0PQiyVt1ZWj+Ymqb
+ 7cPk0vlb6kTigZC49pC18Btt66nPz9GoeFdHcME42sZihdT4ijuQdKeMnS0enPrDI4xk
+ YSJxStU3mne0kpgmSPAKk+gGB2AqKTSg+NACbrjROgDk/Oj2t0DgK7WKWIyGqSVdu/IA
+ QebbqlDTKYTng7+wD3wWuhqb3BVCaI/wBOMID3Xxfb4+r9WNQNDdta/sUkLfXKThPt0h fg== 
+Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
+        by aserp2120.oracle.com with ESMTP id 368brkc06h-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 25 Jan 2021 08:12:59 +0000
+Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
+        by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 10P8BSCX003702;
+        Mon, 25 Jan 2021 08:12:57 GMT
+Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
+        by userp3020.oracle.com with ESMTP id 368wjpctkh-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 25 Jan 2021 08:12:57 +0000
+Received: from abhmp0006.oracle.com (abhmp0006.oracle.com [141.146.116.12])
+        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 10P8CpgI020970;
+        Mon, 25 Jan 2021 08:12:51 GMT
+Received: from mwanda (/102.36.221.92)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Mon, 25 Jan 2021 00:12:50 -0800
+Date:   Mon, 25 Jan 2021 11:12:42 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        UNGLinuxDriver@microchip.com,
         "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     Thomas Schreiber <tschreibe@gmail.com>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        =?UTF-8?q?Marek=20Beh=C3=BAn?= <kabel@kernel.org>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v4 2/2] net: sfp: add mode quirk for GPON module Ubiquiti U-Fiber Instant
-Date:   Mon, 25 Jan 2021 16:02:28 +0100
-Message-Id: <20210125150228.8523-3-pali@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20210125150228.8523-1-pali@kernel.org>
-References: <20201230154755.14746-1-pali@kernel.org>
- <20210125150228.8523-1-pali@kernel.org>
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+Subject: [PATCH 1/2 net-next] net: mscc: ocelot: fix error handling bugs in
+ mscc_ocelot_init_ports()
+Message-ID: <YA59en4lJCiYsPHv@mwanda>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+X-Mailer: git-send-email haha only kidding
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9874 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 suspectscore=0
+ adultscore=0 mlxscore=0 malwarescore=0 spamscore=0 mlxlogscore=999
+ bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2101250048
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9874 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 impostorscore=0
+ phishscore=0 bulkscore=0 priorityscore=1501 mlxlogscore=999
+ lowpriorityscore=0 spamscore=0 mlxscore=0 suspectscore=0 malwarescore=0
+ clxscore=1011 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2101250048
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The Ubiquiti U-Fiber Instant SFP GPON module has nonsensical information
-stored in its EEPROM. It claims to support all transceiver types including
-10G Ethernet. Clear all claimed modes and set only 1000baseX_Full, which is
-the only one supported.
+There are several error handling bugs in mscc_ocelot_init_ports().  I
+went through the code, and carefully audited it and made fixes and
+cleanups.
 
-This module has also phys_id set to SFF, and the SFP subsystem currently
-does not allow to use SFP modules detected as SFFs. Add exception for this
-module so it can be detected as supported.
+1) The ocelot_probe_port() function didn't have a mirror release function
+   so it was hard to follow.  I created the ocelot_release_port()
+   function.
+2) In the ocelot_probe_port() function, if the register_netdev() call
+   failed, then it lead to a double free_netdev(dev) bug.  Fix this
+   by moving the "ocelot->ports[port] = ocelot_port;" assignment to the
+   end of the function after everything has succeeded.
+3) I was concerned that the "port" which comes from of_property_read_u32()
+   might be out of bounds so I added a check for that.
+4) In the original code if ocelot_regmap_init() failed then the driver
+   tried to continue but I think that should be a fatal error.
+5) If ocelot_probe_port() failed then the most recent devlink was leaked.
+   Fix this by moving the "registered_ports[port] = true;" assignment
+   earlier.
+6) The error handling if the final ocelot_port_devlink_init() failed had
+   two problems.  The "while (port-- >= 0)" loop should have been
+   "--port" pre-op instead of a post-op to avoid a buffer underflow.
+   The "if (!registered_ports[port])" condition was reversed leading to
+   resource leaks and double frees.
 
-This change finally allows to detect and use SFP GPON module Ubiquiti
-U-Fiber Instant on Linux system.
-
-EEPROM content of this SFP module is (where XX is serial number):
-
-00: 02 04 0b ff ff ff ff ff ff ff ff 03 0c 00 14 c8    ???........??.??
-10: 00 00 00 00 55 42 4e 54 20 20 20 20 20 20 20 20    ....UBNT
-20: 20 20 20 20 00 18 e8 29 55 46 2d 49 4e 53 54 41        .??)UF-INSTA
-30: 4e 54 20 20 20 20 20 20 34 20 20 20 05 1e 00 36    NT      4   ??.6
-40: 00 06 00 00 55 42 4e 54 XX XX XX XX XX XX XX XX    .?..UBNTXXXXXXXX
-50: 20 20 20 20 31 34 30 31 32 33 20 20 60 80 02 41        140123  `??A
-
-Signed-off-by: Pali Rohár <pali@kernel.org>
-
+Fixes: 6c30384eb1de ("net: mscc: ocelot: register devlink ports")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
 ---
-Changes in v4:
-* Rewritten the commit message by Marek's suggestion
+ drivers/net/ethernet/mscc/ocelot_vsc7514.c | 39 +++++++++-------------
+ 1 file changed, 16 insertions(+), 23 deletions(-)
 
-Changes in v3:
-* no change
-
-Changes in v2:
-* add this module also into sfp_module_supported() function
----
- drivers/net/phy/sfp-bus.c | 15 +++++++++++++++
- drivers/net/phy/sfp.c     | 17 +++++++++++++++--
- 2 files changed, 30 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/net/phy/sfp-bus.c b/drivers/net/phy/sfp-bus.c
-index 20b91f5dfc6e..4cf874fb5c5b 100644
---- a/drivers/net/phy/sfp-bus.c
-+++ b/drivers/net/phy/sfp-bus.c
-@@ -44,6 +44,17 @@ static void sfp_quirk_2500basex(const struct sfp_eeprom_id *id,
- 	phylink_set(modes, 2500baseX_Full);
+diff --git a/drivers/net/ethernet/mscc/ocelot_vsc7514.c b/drivers/net/ethernet/mscc/ocelot_vsc7514.c
+index 30a38df08a21..2c82ffe2c611 100644
+--- a/drivers/net/ethernet/mscc/ocelot_vsc7514.c
++++ b/drivers/net/ethernet/mscc/ocelot_vsc7514.c
+@@ -1064,7 +1064,6 @@ static void mscc_ocelot_release_ports(struct ocelot *ocelot)
+ 	int port;
+ 
+ 	for (port = 0; port < ocelot->num_phys_ports; port++) {
+-		struct ocelot_port_private *priv;
+ 		struct ocelot_port *ocelot_port;
+ 
+ 		ocelot_port = ocelot->ports[port];
+@@ -1072,12 +1071,7 @@ static void mscc_ocelot_release_ports(struct ocelot *ocelot)
+ 			continue;
+ 
+ 		ocelot_deinit_port(ocelot, port);
+-
+-		priv = container_of(ocelot_port, struct ocelot_port_private,
+-				    port);
+-
+-		unregister_netdev(priv->dev);
+-		free_netdev(priv->dev);
++		ocelot_release_port(ocelot_port);
+ 	}
  }
  
-+static void sfp_quirk_ubnt_uf_instant(const struct sfp_eeprom_id *id,
-+				      unsigned long *modes)
-+{
-+	/* Ubiquiti U-Fiber Instant module claims that support all transceiver
-+	 * types including 10G Ethernet which is not truth. So clear all claimed
-+	 * modes and set only one mode which module supports: 1000baseX_Full.
-+	 */
-+	phylink_zero(modes);
-+	phylink_set(modes, 1000baseX_Full);
-+}
-+
- static const struct sfp_quirk sfp_quirks[] = {
- 	{
- 		// Alcatel Lucent G-010S-P can operate at 2500base-X, but
-@@ -63,6 +74,10 @@ static const struct sfp_quirk sfp_quirks[] = {
- 		.vendor = "HUAWEI",
- 		.part = "MA5671A",
- 		.modes = sfp_quirk_2500basex,
-+	}, {
-+		.vendor = "UBNT",
-+		.part = "UF-INSTANT",
-+		.modes = sfp_quirk_ubnt_uf_instant,
- 	},
- };
+@@ -1123,14 +1117,22 @@ static int mscc_ocelot_init_ports(struct platform_device *pdev,
+ 			continue;
  
-diff --git a/drivers/net/phy/sfp.c b/drivers/net/phy/sfp.c
-index f2b5e467a800..7a680b5177f5 100644
---- a/drivers/net/phy/sfp.c
-+++ b/drivers/net/phy/sfp.c
-@@ -273,8 +273,21 @@ static const struct sff_data sff_data = {
+ 		port = reg;
++		if (port < 0 || port >= ocelot->num_phys_ports) {
++			dev_err(ocelot->dev,
++				"invalid port number: %d >= %d\n", port,
++				ocelot->num_phys_ports);
++			continue;
++		}
  
- static bool sfp_module_supported(const struct sfp_eeprom_id *id)
- {
--	return id->base.phys_id == SFF8024_ID_SFP &&
--	       id->base.phys_ext_id == SFP_PHYS_EXT_ID_SFP;
-+	if (id->base.phys_id == SFF8024_ID_SFP &&
-+	    id->base.phys_ext_id == SFP_PHYS_EXT_ID_SFP)
-+		return true;
-+
-+	/* SFP GPON module Ubiquiti U-Fiber Instant has in its EEPROM stored
-+	 * phys id SFF instead of SFP. Therefore mark this module explicitly
-+	 * as supported based on vendor name and pn match.
-+	 */
-+	if (id->base.phys_id == SFF8024_ID_SFF_8472 &&
-+	    id->base.phys_ext_id == SFP_PHYS_EXT_ID_SFP &&
-+	    !memcmp(id->base.vendor_name, "UBNT            ", 16) &&
-+	    !memcmp(id->base.vendor_pn, "UF-INSTANT      ", 16))
-+		return true;
-+
-+	return false;
- }
+ 		snprintf(res_name, sizeof(res_name), "port%d", port);
  
- static const struct sff_data sfp_data = {
+ 		res = platform_get_resource_byname(pdev, IORESOURCE_MEM,
+ 						   res_name);
+ 		target = ocelot_regmap_init(ocelot, res);
+-		if (IS_ERR(target))
+-			continue;
++		if (IS_ERR(target)) {
++			err = PTR_ERR(target);
++			goto out_teardown;
++		}
+ 
+ 		phy_node = of_parse_phandle(portnp, "phy-handle", 0);
+ 		if (!phy_node)
+@@ -1147,6 +1149,7 @@ static int mscc_ocelot_init_ports(struct platform_device *pdev,
+ 			of_node_put(portnp);
+ 			goto out_teardown;
+ 		}
++		registered_ports[port] = true;
+ 
+ 		err = ocelot_probe_port(ocelot, port, target, phy);
+ 		if (err) {
+@@ -1154,8 +1157,6 @@ static int mscc_ocelot_init_ports(struct platform_device *pdev,
+ 			goto out_teardown;
+ 		}
+ 
+-		registered_ports[port] = true;
+-
+ 		ocelot_port = ocelot->ports[port];
+ 		priv = container_of(ocelot_port, struct ocelot_port_private,
+ 				    port);
+@@ -1213,15 +1214,9 @@ static int mscc_ocelot_init_ports(struct platform_device *pdev,
+ 
+ 		err = ocelot_port_devlink_init(ocelot, port,
+ 					       DEVLINK_PORT_FLAVOUR_UNUSED);
+-		if (err) {
+-			while (port-- >= 0) {
+-				if (!registered_ports[port])
+-					continue;
+-				ocelot_port_devlink_teardown(ocelot, port);
+-			}
+-
++		if (err)
+ 			goto out_teardown;
+-		}
++		registered_ports[port] = true;
+ 	}
+ 
+ 	kfree(registered_ports);
+@@ -1233,10 +1228,8 @@ static int mscc_ocelot_init_ports(struct platform_device *pdev,
+ 	mscc_ocelot_release_ports(ocelot);
+ 	/* Tear down devlink ports for the registered network interfaces */
+ 	for (port = 0; port < ocelot->num_phys_ports; port++) {
+-		if (!registered_ports[port])
+-			continue;
+-
+-		ocelot_port_devlink_teardown(ocelot, port);
++		if (registered_ports[port])
++			ocelot_port_devlink_teardown(ocelot, port);
+ 	}
+ 	kfree(registered_ports);
+ 	return err;
 -- 
-2.20.1
+2.29.2
 
