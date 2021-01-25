@@ -2,227 +2,301 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8F129303059
-	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 00:39:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 114F230305C
+	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 00:42:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732928AbhAYXjG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Jan 2021 18:39:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51140 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732242AbhAYXij (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 18:38:39 -0500
-Received: from mail-qv1-xf2e.google.com (mail-qv1-xf2e.google.com [IPv6:2607:f8b0:4864:20::f2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDCDFC061793
-        for <netdev@vger.kernel.org>; Mon, 25 Jan 2021 15:37:45 -0800 (PST)
-Received: by mail-qv1-xf2e.google.com with SMTP id h21so7068475qvb.8
-        for <netdev@vger.kernel.org>; Mon, 25 Jan 2021 15:37:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=xQCUN625VAgpGUPUXKsLzb9sl6V+DmdN8TP1oPnRPiM=;
-        b=QuIOe7Uty7UBgeM3KwR6M0kBnNb168EYXOal4GAsZu5s+o6XWG3KM2umTQR50IKoFx
-         VFEVeTkbcbL779I57zZbr+swDovwha3emwdbIhRfEByIEqDGggGcnYTcpdcFh82V3sq9
-         KE9jRJTedaLl0HGBp1D1L9GSqOm060FojWjkJevtjFRJXHI3CE354Q1B4oBSyxzVSuwC
-         JOaq3UNdKcJMK4W8sECH1G1jL8t1EOLjggDnDySB7F1muQ1zbVXN91B77JbV7LsWohSp
-         bhN3CxlhzhGjklJyjFDnnJrw8h+5KadfVGFs6brfVjzjbfqObv7FFCtwcvFBCmiHPk7y
-         DPnw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=xQCUN625VAgpGUPUXKsLzb9sl6V+DmdN8TP1oPnRPiM=;
-        b=GaBgiQn3abtqabtYSrWs96jJDEjFGZUmPSN6YBDCjLjD6k7fsA35xf4t1ynFEqdQrE
-         t0pnsNX1bh3u/fC9fv1NeELZRaXuKeuKFEsBkBIkkMFLnd9wlHYAuMQcHmmIE0IQPN53
-         ZPEiL+mT9N0hUKVZukwWa4THcw7jbR7YUto4nmQPqN+q7Pi+KK0ZJQPLUzUYsCnTzh2B
-         uQHtqfZmJXSCWV1eP/iX8F/kzACd15Oxt/tpp0jSpLyzD2/xn4/YbWcDqt9dFgkW/+4s
-         9WBdEb6lZvIyLBoy9a16f7oNdOpe0ZzhWNn8GPlRsHBMljMybq0bzmwQfL0Y0dogYR7g
-         IMtQ==
-X-Gm-Message-State: AOAM532kWl/XXKz17FtUJLzKSzuAmDOjE+BSdHjOOFQThHRT01Q9WVH3
-        3rqTcucG59KOdsnaMQO280PGKbsllNLocPESuAD/iw==
-X-Google-Smtp-Source: ABdhPJxcyBLLRSQVFwQ2Vionp60H5PIjYkov5j44oew/iGDuiGR6Ix0Q7Bi/M6YJIK3D4ZOm6ipXqNMvdVC0u0MeOvs=
-X-Received: by 2002:ad4:486e:: with SMTP id u14mr3178530qvy.21.1611617864845;
- Mon, 25 Jan 2021 15:37:44 -0800 (PST)
+        id S1732964AbhAYXlx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Jan 2021 18:41:53 -0500
+Received: from frotz.zork.net ([69.164.197.204]:33582 "EHLO frotz.zork.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1732941AbhAYXjl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 25 Jan 2021 18:39:41 -0500
+Received: by frotz.zork.net (Postfix, from userid 1008)
+        id 121B311992; Mon, 25 Jan 2021 23:38:47 +0000 (UTC)
+DKIM-Filter: OpenDKIM Filter v2.11.0 frotz.zork.net 121B311992
+Date:   Mon, 25 Jan 2021 15:38:47 -0800
+From:   Seth David Schoen <schoen@loyalty.org>
+To:     netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        David Ahern <dsahern@kernel.org>, John Gilmore <gnu@toad.com>
+Subject: [PATCH net-next v2] selftests: add IPv4 unicast extensions tests
+Message-ID: <20210125233847.GK24989@frotz.zork.net>
+Mail-Followup-To: Seth David Schoen <schoen@loyalty.org>,
+        netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, David Ahern <dsahern@kernel.org>,
+        John Gilmore <gnu@toad.com>
 MIME-Version: 1.0
-References: <20210125172641.3008234-1-sdf@google.com> <20210125172641.3008234-2-sdf@google.com>
- <20210125232949.46r26lcc3wyieoaj@kafai-mbp>
-In-Reply-To: <20210125232949.46r26lcc3wyieoaj@kafai-mbp>
-From:   Stanislav Fomichev <sdf@google.com>
-Date:   Mon, 25 Jan 2021 15:37:34 -0800
-Message-ID: <CAKH8qBuQ8icMgxiozme=HgXcE5Tm937PwNMjFAn0tSAUcMDaYQ@mail.gmail.com>
-Subject: Re: [PATCH bpf-next v2 2/2] selftests/bpf: verify that rebinding to
- port < 1024 from BPF works
-To:     Martin KaFai Lau <kafai@fb.com>
-Cc:     Netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrey Ignatov <rdna@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 25, 2021 at 3:30 PM Martin KaFai Lau <kafai@fb.com> wrote:
->
-> On Mon, Jan 25, 2021 at 09:26:41AM -0800, Stanislav Fomichev wrote:
-> > BPF rewrites from 111 to 111, but it still should mark the port as
-> > "changed".
-> > We also verify that if port isn't touched by BPF, it's still prohibited.
-> The description requires an update.
-Good point, will update this one and the comment!
+Add selftests for kernel behavior with regard to various classes of
+unallocated/reserved IPv4 addresses, checking whether or not these
+addresses can be assigned as unicast addresses on links and used in
+routing.
 
-> >
-> > Cc: Andrey Ignatov <rdna@fb.com>
-> > Cc: Martin KaFai Lau <kafai@fb.com>
-> > Signed-off-by: Stanislav Fomichev <sdf@google.com>
-> > ---
-> >  .../selftests/bpf/prog_tests/bind_perm.c      | 85 +++++++++++++++++++
-> >  tools/testing/selftests/bpf/progs/bind_perm.c | 36 ++++++++
-> >  2 files changed, 121 insertions(+)
-> >  create mode 100644 tools/testing/selftests/bpf/prog_tests/bind_perm.c
-> >  create mode 100644 tools/testing/selftests/bpf/progs/bind_perm.c
-> >
-> > diff --git a/tools/testing/selftests/bpf/prog_tests/bind_perm.c b/tools/testing/selftests/bpf/prog_tests/bind_perm.c
-> > new file mode 100644
-> > index 000000000000..61307d4494bf
-> > --- /dev/null
-> > +++ b/tools/testing/selftests/bpf/prog_tests/bind_perm.c
-> > @@ -0,0 +1,85 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +#include <test_progs.h>
-> > +#include "bind_perm.skel.h"
-> > +
-> > +#include <sys/types.h>
-> > +#include <sys/socket.h>
-> > +#include <sys/capability.h>
-> > +
-> > +static int duration;
-> > +
-> > +void try_bind(int port, int expected_errno)
-> > +{
-> > +     struct sockaddr_in sin = {};
-> > +     int fd = -1;
-> > +
-> > +     fd = socket(AF_INET, SOCK_STREAM, 0);
-> > +     if (CHECK(fd < 0, "fd", "errno %d", errno))
-> > +             goto close_socket;
-> > +
-> > +     sin.sin_family = AF_INET;
-> > +     sin.sin_port = htons(port);
-> > +
-> > +     errno = 0;
-> > +     bind(fd, (struct sockaddr *)&sin, sizeof(sin));
-> > +     ASSERT_EQ(errno, expected_errno, "bind");
-> > +
-> > +close_socket:
-> > +     if (fd >= 0)
-> > +             close(fd);
-> > +}
-> > +
-> > +void cap_net_bind_service(cap_flag_value_t flag)
-> > +{
-> > +     const cap_value_t cap_net_bind_service = CAP_NET_BIND_SERVICE;
-> > +     cap_t caps;
-> > +
-> > +     caps = cap_get_proc();
-> > +     if (CHECK(!caps, "cap_get_proc", "errno %d", errno))
-> > +             goto free_caps;
-> > +
-> > +     if (CHECK(cap_set_flag(caps, CAP_EFFECTIVE, 1, &cap_net_bind_service,
-> > +                            CAP_CLEAR),
-> > +               "cap_set_flag", "errno %d", errno))
-> > +             goto free_caps;
-> > +
-> > +     if (CHECK(cap_set_flag(caps, CAP_EFFECTIVE, 1, &cap_net_bind_service,
-> > +                            CAP_CLEAR),
-> > +               "cap_set_flag", "errno %d", errno))
-> These two back-to-back cap_set_flag() looks incorrect.
-> Also, the "cap_flag_value_t flag" is unused.
-Ah, true, I never reset back CAP_NET_BIND_SERVICE, will fix, thanks!
+Expect the current kernel behavior at the time of this patch. That is:
 
-> > +             goto free_caps;
-> > +
-> > +     if (CHECK(cap_set_proc(caps), "cap_set_proc", "errno %d", errno))
-> > +             goto free_caps;
-> > +
-> > +free_caps:
-> > +     if (CHECK(cap_free(caps), "cap_free", "errno %d", errno))
-> > +             goto free_caps;
-> There is a loop.
->
-> > +}
-> > +
-> > +void test_bind_perm(void)
-> > +{
-> > +     struct bind_perm *skel;
-> > +     int cgroup_fd;
-> > +
-> > +     cgroup_fd = test__join_cgroup("/bind_perm");
-> > +     if (CHECK(cgroup_fd < 0, "cg-join", "errno %d", errno))
-> > +             return;
-> > +
-> > +     skel = bind_perm__open_and_load();
-> > +     if (!ASSERT_OK_PTR(skel, "skel"))
-> > +             goto close_cgroup_fd;
-> > +
-> > +     skel->links.bind_v4_prog = bpf_program__attach_cgroup(skel->progs.bind_v4_prog, cgroup_fd);
-> > +     if (!ASSERT_OK_PTR(skel, "bind_v4_prog"))
-> > +             goto close_skeleton;
-> > +
-> > +     cap_net_bind_service(CAP_CLEAR);
-> > +     try_bind(110, EACCES);
-> > +     try_bind(111, 0);
-> > +     cap_net_bind_service(CAP_SET);
-> > +
-> > +close_skeleton:
-> > +     bind_perm__destroy(skel);
-> > +close_cgroup_fd:
-> > +     close(cgroup_fd);
-> > +}
-> > diff --git a/tools/testing/selftests/bpf/progs/bind_perm.c b/tools/testing/selftests/bpf/progs/bind_perm.c
-> > new file mode 100644
-> > index 000000000000..31ae8d599796
-> > --- /dev/null
-> > +++ b/tools/testing/selftests/bpf/progs/bind_perm.c
-> > @@ -0,0 +1,36 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +
-> > +#include <linux/stddef.h>
-> > +#include <linux/bpf.h>
-> > +#include <sys/types.h>
-> > +#include <sys/socket.h>
-> > +#include <bpf/bpf_helpers.h>
-> > +#include <bpf/bpf_endian.h>
-> > +
-> > +SEC("cgroup/bind4")
-> > +int bind_v4_prog(struct bpf_sock_addr *ctx)
-> > +{
-> > +     struct bpf_sock *sk;
-> > +     __u32 user_ip4;
-> > +     __u16 user_port;
-> > +
-> > +     sk = ctx->sk;
-> > +     if (!sk)
-> > +             return 0;
-> > +
-> > +     if (sk->family != AF_INET)
-> > +             return 0;
-> > +
-> > +     if (ctx->type != SOCK_STREAM)
-> > +             return 0;
-> > +
-> > +     /* Rewriting to the same value should still cause
-> > +      * permission check to be bypassed.
-> > +      */
-> This comment is out dated also.
->
-> > +     if (ctx->user_port == bpf_htons(111))
-> > +             return 3;
-> > +
-> > +     return 1;
-> > +}
-> > +
-> > +char _license[] SEC("license") = "GPL";
-> > --
-> > 2.30.0.280.ga3ce27912f-goog
-> >
+* 0/8 and 240/4 may be used as unicast, with the exceptions of 0.0.0.0
+  and 255.255.255.255;
+* the lowest host in a subnet may only be used as a broadcast address;
+* 127/8 may not be used as unicast (the route_localnet option, which is
+  disabled by default, still leaves it treated slightly specially);
+* 224/4 may not be used as unicast.
+---
+ tools/testing/selftests/net/Makefile          |   1 +
+ .../selftests/net/unicast_extensions.sh       | 228 ++++++++++++++++++
+ 2 files changed, 229 insertions(+)
+ create mode 100755 tools/testing/selftests/net/unicast_extensions.sh
+
+diff --git a/tools/testing/selftests/net/Makefile b/tools/testing/selftests/net/Makefile
+index fa5fa425d148..25f198bec0b2 100644
+--- a/tools/testing/selftests/net/Makefile
++++ b/tools/testing/selftests/net/Makefile
+@@ -22,6 +22,7 @@ TEST_PROGS += devlink_port_split.py
+ TEST_PROGS += drop_monitor_tests.sh
+ TEST_PROGS += vrf_route_leaking.sh
+ TEST_PROGS += bareudp.sh
++TEST_PROGS += unicast_extensions.sh
+ TEST_PROGS_EXTENDED := in_netns.sh
+ TEST_GEN_FILES =  socket nettest
+ TEST_GEN_FILES += psock_fanout psock_tpacket msg_zerocopy reuseport_addr_any
+diff --git a/tools/testing/selftests/net/unicast_extensions.sh b/tools/testing/selftests/net/unicast_extensions.sh
+new file mode 100755
+index 000000000000..936600082bba
+--- /dev/null
++++ b/tools/testing/selftests/net/unicast_extensions.sh
+@@ -0,0 +1,228 @@
++#!/bin/sh
++# SPDX-License-Identifier: GPL-2.0
++#
++# By Seth Schoen (c) 2021, for the IPv4 Unicast Extensions Project
++# Thanks to David Ahern for help and advice on nettest modifications.
++#
++# Self-tests for IPv4 address extensions: the kernel's ability to accept
++# certain traditionally unused or unallocated IPv4 addresses. For each kind
++# of address, we test for interface assignment, ping, TCP, and forwarding.
++# Must be run as root (to manipulate network namespaces and virtual
++# interfaces).
++#
++# Things we test for here:
++#
++# * Currently the kernel accepts addresses in 0/8 and 240/4 as valid.
++#
++# * Notwithstanding that, 0.0.0.0 and 255.255.255.255 cannot be assigned.
++#
++# * Currently the kernel DOES NOT accept unicast use of the lowest
++#   host in an IPv4 subnet (e.g. 192.168.100.0/32 in 192.168.100.0/24).
++#   This is treated as a second broadcast address, for compatibility
++#   with 4.2BSD (!).
++#
++# * Currently the kernel DOES NOT accept unicast use of any of 127/8.
++#
++# * Currently the kernel DOES NOT accept unicast use of any of 224/4.
++#
++# These tests provide an easy way to flip the expected result of any
++# of these behaviors for testing kernel patches that change them.
++
++# nettest can be run from PATH or from same directory as this selftest
++if ! which nettest >/dev/null; then
++	PATH=$PWD:$PATH
++	if ! which nettest >/dev/null; then
++		echo "'nettest' command not found; skipping tests"
++		exit 0
++	fi
++fi
++
++result=0
++
++hide_output(){ exec 3>&1 4>&2 >/dev/null 2>/dev/null; }
++show_output(){ exec >&3 2>&4; }
++
++show_result(){
++	if [ $1 -eq 0 ]; then
++		printf "TEST: %-60s  [ OK ]\n" "${2}"
++	else
++		printf "TEST: %-60s  [FAIL]\n" "${2}"
++		result=1
++	fi
++}
++
++_do_segmenttest(){
++	# Perform a simple set of link tests between a pair of
++	# IP addresses on a shared (virtual) segment, using
++	# ping and nettest.
++	# foo --- bar
++	# Arguments: ip_a ip_b prefix_length test_description
++	#
++	# Caller must set up foo-ns and bar-ns namespaces
++	# containing linked veth devices foo and bar,
++	# respectively.
++
++	ip -n foo-ns address add $1/$3 dev foo || return 1
++	ip -n foo-ns link set foo up || return 1
++	ip -n bar-ns address add $2/$3 dev bar || return 1
++	ip -n bar-ns link set bar up || return 1
++
++	ip netns exec foo-ns timeout 2 ping -c 1 $2 || return 1
++	ip netns exec bar-ns timeout 2 ping -c 1 $1 || return 1
++
++	nettest -B -N bar-ns -O foo-ns -r $1 || return 1
++	nettest -B -N foo-ns -O bar-ns -r $2 || return 1
++
++	return 0
++}
++
++_do_route_test(){
++	# Perform a simple set of gateway tests.
++	#
++	# [foo] <---> [foo1]-[bar1] <---> [bar]   /prefix
++	#  host          gateway          host
++	#
++	# Arguments: foo_ip foo1_ip bar1_ip bar_ip prefix_len test_description
++	# Displays test result and returns success or failure.
++
++	# Caller must set up foo-ns, bar-ns, and router-ns
++	# containing linked veth devices foo-foo1, bar1-bar
++	# (foo in foo-ns, foo1 and bar1 in router-ns, and
++	# bar in bar-ns).
++
++	ip -n foo-ns address add $1/$5 dev foo || return 1
++	ip -n foo-ns link set foo up || return 1
++	ip -n foo-ns route add default via $2 || return 1
++	ip -n bar-ns address add $4/$5 dev bar || return 1
++	ip -n bar-ns link set bar up || return 1
++	ip -n bar-ns route add default via $3 || return 1
++	ip -n router-ns address add $2/$5 dev foo1 || return 1
++	ip -n router-ns link set foo1 up || return 1
++	ip -n router-ns address add $3/$5 dev bar1 || return 1
++	ip -n router-ns link set bar1 up || return 1
++
++	echo 1 | ip netns exec router-ns tee /proc/sys/net/ipv4/ip_forward
++
++	ip netns exec foo-ns timeout 2 ping -c 1 $2 || return 1
++	ip netns exec foo-ns timeout 2 ping -c 1 $4 || return 1
++	ip netns exec bar-ns timeout 2 ping -c 1 $3 || return 1
++	ip netns exec bar-ns timeout 2 ping -c 1 $1 || return 1
++
++	nettest -B -N bar-ns -O foo-ns -r $1 || return 1
++	nettest -B -N foo-ns -O bar-ns -r $4 || return 1
++
++	return 0
++}
++
++segmenttest(){
++	# Sets up veth link and tries to connect over it.
++	# Arguments: ip_a ip_b prefix_len test_description
++	hide_output
++	ip netns add foo-ns
++	ip netns add bar-ns
++	ip link add foo netns foo-ns type veth peer name bar netns bar-ns
++
++	test_result=0
++	_do_segmenttest "$@" || test_result=1
++
++	ip netns pids foo-ns | xargs -r kill -9
++	ip netns pids bar-ns | xargs -r kill -9
++	ip netns del foo-ns
++	ip netns del bar-ns
++	show_output
++
++	# inverted tests will expect failure instead of success
++	[ -n "$expect_failure" ] && test_result=`expr 1 - $test_result`
++
++	show_result $test_result "$4"
++}
++
++route_test(){
++	# Sets up a simple gateway and tries to connect through it.
++	# [foo] <---> [foo1]-[bar1] <---> [bar]   /prefix
++	# Arguments: foo_ip foo1_ip bar1_ip bar_ip prefix_len test_description
++	# Returns success or failure.
++
++	hide_output
++	ip netns add foo-ns
++	ip netns add bar-ns
++	ip netns add router-ns
++	ip link add foo netns foo-ns type veth peer name foo1 netns router-ns
++	ip link add bar netns bar-ns type veth peer name bar1 netns router-ns
++
++	test_result=0
++	_do_route_test "$@" || test_result=1
++
++	ip netns pids foo-ns | xargs -r kill -9
++	ip netns pids bar-ns | xargs -r kill -9
++	ip netns pids router-ns | xargs -r kill -9
++	ip netns del foo-ns
++	ip netns del bar-ns
++	ip netns del router-ns
++
++	show_output
++
++	# inverted tests will expect failure instead of success
++	[ -n "$expect_failure" ] && test_result=`expr 1 - $test_result`
++	show_result $test_result "$6"
++}
++
++echo "###########################################################################"
++echo "Unicast address extensions tests (behavior of reserved IPv4 addresses)"
++echo "###########################################################################"
++#
++# Test support for 240/4
++segmenttest 240.1.2.1   240.1.2.4    24 "assign and ping within 240/4 (1 of 2) (is allowed)"
++segmenttest 250.100.2.1 250.100.30.4 16 "assign and ping within 240/4 (2 of 2) (is allowed)"
++#
++# Test support for 0/8
++segmenttest 0.1.2.17    0.1.2.23  24 "assign and ping within 0/8 (1 of 2) (is allowed)"
++segmenttest 0.77.240.17 0.77.2.23 16 "assign and ping within 0/8 (2 of 2) (is allowed)"
++#
++# Even 255.255/16 is OK!
++segmenttest 255.255.3.1 255.255.50.77 16 "assign and ping inside 255.255/16 (is allowed)"
++#
++# Or 255.255.255/24
++segmenttest 255.255.255.1 255.255.255.254 24 "assign and ping inside 255.255.255/24 (is allowed)"
++#
++# Routing between different networks
++route_test 240.5.6.7 240.5.6.1  255.1.2.1    255.1.2.3      24 "route between 240.5.6/24 and 255.1.2/24 (is allowed)"
++route_test 0.200.6.7 0.200.38.1 245.99.101.1 245.99.200.111 16 "route between 0.200/16 and 245.99/16 (is allowed)"
++#
++# ==============================================
++# ==== TESTS THAT CURRENTLY EXPECT FAILURE =====
++# ==============================================
++expect_failure=true
++# It should still not be possible to use 0.0.0.0 or 255.255.255.255
++# as a unicast address.  Thus, these tests expect failure.
++segmenttest 0.0.1.5       0.0.0.0         16 "assigning 0.0.0.0 (is forbidden)"
++segmenttest 255.255.255.1 255.255.255.255 16 "assigning 255.255.255.255 (is forbidden)"
++#
++# Test support for not having all of 127 be loopback
++# Currently Linux does not allow this, so this should fail too
++segmenttest 127.99.4.5 127.99.4.6 16 "assign and ping inside 127/8 (is forbidden)"
++#
++# Test support for lowest host
++# Currently Linux does not allow this, so this should fail too
++segmenttest 5.10.15.20 5.10.15.0 24 "assign and ping lowest host (is forbidden)"
++#
++# Routing using lowest host as a gateway/endpoint
++# Currently Linux does not allow this, so this should fail too
++route_test 192.168.42.1 192.168.42.0 9.8.7.6 9.8.7.0 24 "routing using lowest host (is forbidden)"
++#
++# Test support for unicast use of class D
++# Currently Linux does not allow this, so this should fail too
++segmenttest 225.1.2.3 225.1.2.200 24 "assign and ping class D address (is forbidden)"
++#
++# Routing using class D as a gateway
++route_test 225.1.42.1 225.1.42.2 9.8.7.6 9.8.7.1 24 "routing using class D (is forbidden)"
++#
++# Routing using 127/8
++# Currently Linux does not allow this, so this should fail too
++route_test 127.99.2.3 127.99.2.4 200.1.2.3 200.1.2.4 24 "routing using 127/8 (is forbidden)"
++#
++unset expect_failure
++# =====================================================
++# ==== END OF TESTS THAT CURRENTLY EXPECT FAILURE =====
++# =====================================================
++exit ${result}
+-- 
+2.25.1
+
