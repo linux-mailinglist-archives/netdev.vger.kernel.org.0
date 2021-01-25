@@ -2,121 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E957630326B
-	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 04:08:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A6C8930325A
+	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 04:02:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728051AbhAYMZa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Jan 2021 07:25:30 -0500
-Received: from mail.kernel.org ([198.145.29.99]:34858 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727959AbhAYMVD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 25 Jan 2021 07:21:03 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 11A49224F9;
-        Mon, 25 Jan 2021 12:19:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611577182;
-        bh=8f6FDfyPTj9Z8NGkA0jdmKoUiJCsnrC85dCV+QqULhA=;
-        h=From:To:Cc:Subject:Date:From;
-        b=TavlPDqlLgmWFdOiWpnoUAtplEQ7wtsxf29KNCUyzUs5M70f0SlDX4UCksfAbQBPm
-         nT8Kht8OlxVv5koQc4X1dku1AkOVhCTlTyK85LD8nU2AkKbPQEGsN9lHn/z1kVJkhg
-         eH3VSHnG8kcVbf76vj9A59KE9Y+Ch6KsUw/iXtQOmPFEgzLidBZIrTHjiUn4WxWBmZ
-         RjnlQNSQMTWtajaIHPXlhP+EeP5abZtwrovTIOA8QlMp4YfimIWY4UArcpTFm3BgPg
-         4/hIJvhGdKHT+O+24XdkfXSBCihjdsReSXJHVWWUhPXv1J5dus8yYzfhz0DXwj3iY/
-         UOF4VBESOOmhA==
-From:   Arnd Bergmann <arnd@kernel.org>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Marek Vasut <marex@denx.de>
-Cc:     Arnd Bergmann <arnd@arndb.de>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] [5.8 regression] net: ks8851: fix link error
-Date:   Mon, 25 Jan 2021 13:19:20 +0100
-Message-Id: <20210125121937.3900988-1-arnd@kernel.org>
-X-Mailer: git-send-email 2.29.2
+        id S1728689AbhAYNY5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Jan 2021 08:24:57 -0500
+Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:5689 "EHLO
+        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728754AbhAYNXS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 08:23:18 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B600ec6110001>; Mon, 25 Jan 2021 05:22:25 -0800
+Received: from HKMAIL102.nvidia.com (10.18.16.11) by HQMAIL111.nvidia.com
+ (172.20.187.18) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 25 Jan
+ 2021 13:22:24 +0000
+Received: from HKMAIL104.nvidia.com (10.18.16.13) by HKMAIL102.nvidia.com
+ (10.18.16.11) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 25 Jan
+ 2021 13:22:14 +0000
+Received: from NAM11-DM6-obe.outbound.protection.outlook.com (104.47.57.168)
+ by HKMAIL104.nvidia.com (10.18.16.13) with Microsoft SMTP Server (TLS) id
+ 15.0.1473.3 via Frontend Transport; Mon, 25 Jan 2021 13:22:14 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Xe5VlSP7opi/D00Kr2C4ITSqlFk8ohK9+q96JPlCcaW7ur/gYj0HnqZ6xc4ImX0eYriQhF0ApzDRh2IrU2p0/Zyt/bU1lVoiJiwLbFc5hZAovYinXr8J/kEtZEjU0K4RA5edHVKUb7pQZOhRd20ZCKOKZht05l9X7FBkkLuYXBFf8OFed5mPpZj3LdwmuKqXJxXAGtC9cFZAwa/tv6RWKEYFN2yOejv+4/vyb12hATiuX7xI+kVkLyCAbBp2F/N88OhSp16hML/bxLtzzjRysHm7Jt8BlM2VIz4qzq1/Y3KNcbvE+T3KfRueS+mAziKdBUNNJNDzQRRbsZm3ZanBRA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=N14MOe7zKRarnSVCPHj68Jlgyy0ftSkDvB71RhG3G3o=;
+ b=Pkhk4y9KvGzcWQl4T8v8JSZmi4dovERoqRMJWYabE+rFfYifLYXZ5Sr38sFRhPZSPmqt2y3JUuE8J/l7bfvulUTRUSdUZTOx7L5OOPAqvU7URBv7fcbKz6r61xdxgHJ6LeB0Ao+fh80vI4bWSKds1n/LihjMeUETAxlMobokUd4HCI8XPjkWDS1LP0g19ILyvXRPV9fPWNz4LNQMb56Q5+uh+5LCPy1NO+fjW75U3aYy7XZFSET2KXXIk0nOHZjwUDVH1sJlz75K/Y6fzBLyVxIU1+l1j1IGL+W0jeC7VfruKWdHo6bCJngmc7A9fJClp7CXef057j2gcSKQsEGCGA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
+ by DM5PR12MB1340.namprd12.prod.outlook.com (2603:10b6:3:76::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3784.13; Mon, 25 Jan
+ 2021 13:22:12 +0000
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::546d:512c:72fa:4727]) by DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::546d:512c:72fa:4727%7]) with mapi id 15.20.3784.017; Mon, 25 Jan 2021
+ 13:22:11 +0000
+Date:   Mon, 25 Jan 2021 09:22:10 -0400
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Parav Pandit <parav@nvidia.com>
+CC:     Edwin Peer <edwin.peer@broadcom.com>,
+        Saeed Mahameed <saeed@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        Sridhar Samudrala <sridhar.samudrala@intel.com>,
+        David Ahern <dsahern@kernel.org>,
+        Kiran Patil <kiran.patil@intel.com>,
+        Jacob Keller <jacob.e.keller@intel.com>,
+        "Ertman, David M" <david.m.ertman@intel.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+Subject: Re: [pull request][net-next V10 00/14] Add mlx5 subfunction support
+Message-ID: <20210125132210.GJ4147@nvidia.com>
+References: <20210122193658.282884-1-saeed@kernel.org>
+ <CAKOOJTxQ8G1krPbRmRHx8N0bsHnT3XXkgkREY6NxCJ26aHH7RQ@mail.gmail.com>
+ <BY5PR12MB43229840037E730F884C3356DCBD9@BY5PR12MB4322.namprd12.prod.outlook.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <BY5PR12MB43229840037E730F884C3356DCBD9@BY5PR12MB4322.namprd12.prod.outlook.com>
+X-ClientProxiedBy: MN2PR04CA0025.namprd04.prod.outlook.com
+ (2603:10b6:208:d4::38) To DM6PR12MB3834.namprd12.prod.outlook.com
+ (2603:10b6:5:14a::12)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from mlx.ziepe.ca (142.162.115.133) by MN2PR04CA0025.namprd04.prod.outlook.com (2603:10b6:208:d4::38) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3784.14 via Frontend Transport; Mon, 25 Jan 2021 13:22:11 +0000
+Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1l41oo-006Uo3-3T; Mon, 25 Jan 2021 09:22:10 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1611580945; bh=N14MOe7zKRarnSVCPHj68Jlgyy0ftSkDvB71RhG3G3o=;
+        h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:Date:
+         From:To:CC:Subject:Message-ID:References:Content-Type:
+         Content-Disposition:In-Reply-To:X-ClientProxiedBy:MIME-Version:
+         X-MS-Exchange-MessageSentRepresentingType;
+        b=K1HPy5pmkzjUG8rywT0tpAi2Gj8bZX6sjQiDhIZ/o98DAwI+6RXvxxXq/75tZFFt0
+         wkbq9VYnSPz4nWcud1WdcIEgbyBiOHMbHuY79GOdrvQq1VdITjqQrILUr8bY90GhZV
+         IvVI9OgNIH56rroVKmRynxbCu+uR59XBvbPPSD+UxuEh0Pw5PjfbHSW/GN7/MrvdU+
+         P72BcDZXrEmmLwo/+nZ5M9t0iC6D9+nxYawIfQwFUBUnwDdeckULQYS40SM5JhRhVS
+         Q2Z9hJFhNV/5iyHVbyQiovUvA2Zxz0QA+RcEX0KYPwhYYGikO9kTxdIMrgXHumcJ2j
+         WOA9bPEhdagNg==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Arnd Bergmann <arnd@arndb.de>
+On Mon, Jan 25, 2021 at 10:57:14AM +0000, Parav Pandit wrote:
+> Hi Edwin,
+> 
+> > From: Edwin Peer <edwin.peer@broadcom.com>
+> > Sent: Monday, January 25, 2021 2:17 AM
+> > 
+> > On Fri, Jan 22, 2021 at 11:37 AM Saeed Mahameed <saeed@kernel.org>
+> > wrote:
+> > 
+> > > For more detailed information about subfunctions please see detailed tag
+> > > log below.
+> > 
+> > Apologies for the tardy question out of left field, but I've been
+> > thinking about this some more. If I recall, the primary motivation for
+> > this was a means to effectively address more VFs? But, why can't the
+> > device simply expose more bus numbers?
+> 
+> Several weeks back, Jason already answered this VF scaling question
+> from you at discussion [1].
 
-An object file cannot be built for both loadable module and built-in
-use at the same time:
+To add a little more colour, the PCI spec design requires a CAM (ie
+search) to figure out which function an incoming address is connected
+to because there are no restrictions on how BAR's of each function
+have to be layed out.
 
-arm-linux-gnueabi-ld: drivers/net/ethernet/micrel/ks8851_common.o: in function `ks8851_probe_common':
-ks8851_common.c:(.text+0xf80): undefined reference to `__this_module'
+SRIOV and SF's require a simple linear lookup to learn the "function"
+because the BAR space is required to be linear.
 
-Change the ks8851_common code to be a standalone module instead,
-and use Makefile logic to ensure this is built-in if at least one
-of its two users is.
+Scaling a CAM to high sizes is physicaly infeasible, so all approaches
+to scaling PCI functions go this road of having a single large BAR
+space.
 
-Fixes: 797047f875b5 ("net: ks8851: Implement Parallel bus operations")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
-Marek sent two other patches to address the problem:
-https://lore.kernel.org/netdev/20210116164828.40545-1-marex@denx.de/
-https://lore.kernel.org/netdev/20210115134239.126152-1-marex@denx.de/
-
-My version is what I applied locally to my randconfig tree, and
-I think this is the cleanest solution.
----
- drivers/net/ethernet/micrel/Makefile        | 6 ++----
- drivers/net/ethernet/micrel/ks8851_common.c | 8 ++++++++
- 2 files changed, 10 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/net/ethernet/micrel/Makefile b/drivers/net/ethernet/micrel/Makefile
-index 5cc00d22c708..6ecc4eb30e74 100644
---- a/drivers/net/ethernet/micrel/Makefile
-+++ b/drivers/net/ethernet/micrel/Makefile
-@@ -4,8 +4,6 @@
- #
- 
- obj-$(CONFIG_KS8842) += ks8842.o
--obj-$(CONFIG_KS8851) += ks8851.o
--ks8851-objs = ks8851_common.o ks8851_spi.o
--obj-$(CONFIG_KS8851_MLL) += ks8851_mll.o
--ks8851_mll-objs = ks8851_common.o ks8851_par.o
-+obj-$(CONFIG_KS8851) += ks8851_common.o ks8851_spi.o
-+obj-$(CONFIG_KS8851_MLL) += ks8851_common.o ks8851_par.o
- obj-$(CONFIG_KSZ884X_PCI) += ksz884x.o
-diff --git a/drivers/net/ethernet/micrel/ks8851_common.c b/drivers/net/ethernet/micrel/ks8851_common.c
-index 2feed6ce19d3..13d0623c88c6 100644
---- a/drivers/net/ethernet/micrel/ks8851_common.c
-+++ b/drivers/net/ethernet/micrel/ks8851_common.c
-@@ -1065,6 +1065,7 @@ int ks8851_suspend(struct device *dev)
- 
- 	return 0;
- }
-+EXPORT_SYMBOL_GPL(ks8851_suspend);
- 
- int ks8851_resume(struct device *dev)
- {
-@@ -1078,6 +1079,7 @@ int ks8851_resume(struct device *dev)
- 
- 	return 0;
- }
-+EXPORT_SYMBOL_GPL(ks8851_resume);
- #endif
- 
- static int ks8851_register_mdiobus(struct ks8851_net *ks, struct device *dev)
-@@ -1251,6 +1253,7 @@ int ks8851_probe_common(struct net_device *netdev, struct device *dev,
- err_reg_io:
- 	return ret;
- }
-+EXPORT_SYMBOL_GPL(ks8851_probe_common);
- 
- int ks8851_remove_common(struct device *dev)
- {
-@@ -1269,3 +1272,8 @@ int ks8851_remove_common(struct device *dev)
- 
- 	return 0;
- }
-+EXPORT_SYMBOL_GPL(ks8851_remove_common);
-+
-+MODULE_DESCRIPTION("KS8851 Network driver");
-+MODULE_AUTHOR("Ben Dooks <ben@simtec.co.uk>");
-+MODULE_LICENSE("GPL");
--- 
-2.29.2
-
+Jason
