@@ -2,156 +2,243 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 97E0B302A2D
-	for <lists+netdev@lfdr.de>; Mon, 25 Jan 2021 19:27:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 61360302A43
+	for <lists+netdev@lfdr.de>; Mon, 25 Jan 2021 19:31:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726701AbhAYS0x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Jan 2021 13:26:53 -0500
-Received: from coyote.holtmann.net ([212.227.132.17]:34472 "EHLO
-        mail.holtmann.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726586AbhAYS0j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 13:26:39 -0500
-Received: from marcel-macbook.holtmann.net (p4ff9f11c.dip0.t-ipconnect.de [79.249.241.28])
-        by mail.holtmann.org (Postfix) with ESMTPSA id 27A8CCECCB;
-        Mon, 25 Jan 2021 19:33:07 +0100 (CET)
-Content-Type: text/plain;
-        charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 14.0 \(3654.40.0.2.32\))
-Subject: Re: [PATCH v2] Bluetooth: btusb: fix memory leak on suspend and
- resume
-From:   Marcel Holtmann <marcel@holtmann.org>
-In-Reply-To: <20210114112143.GA1318@cosmos>
-Date:   Mon, 25 Jan 2021 19:25:41 +0100
-Cc:     Johan Hedberg <johan.hedberg@gmail.com>,
-        Luiz Augusto von Dentz <luiz.dentz@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>, kuba@kernel.org,
-        linux-bluetooth@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Transfer-Encoding: 7bit
-Message-Id: <B529E35E-EAB3-4D8C-B615-9D5C3BDECB94@holtmann.org>
-References: <20210114112143.GA1318@cosmos>
-To:     Vamshi K Sthambamkadi <vamshi.k.sthambamkadi@gmail.com>
-X-Mailer: Apple Mail (2.3654.40.0.2.32)
+        id S1727067AbhAYSam (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Jan 2021 13:30:42 -0500
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:8586 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1730442AbhAYRMa (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 12:12:30 -0500
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 10PGpZT6012844;
+        Mon, 25 Jan 2021 09:09:41 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-type; s=pfpt0220; bh=MvMzXkloRG2zvRsXVBgSJK1sd7lKrfN9Qfe0fgKApjo=;
+ b=HQJ/zZDdkrMgCpxDJVBEj/ocEx3HBX7uBFQUU493WttJNl7/DrJJ2qaMYPJMFYqoGhs2
+ ok8pItetehC5svF7tG4cNnrhtihZUXSZRlhs6OLDf4nQdCIQEIIVqX4SD+Hx9DgRJadv
+ mHvHoOZZPesrBddrn6MydIk8vhL6qfKARcI9jC+x1K+WoApvw6+UydMzaJ1TLzPMPIJK
+ 7v1BrVMykKMOv6d8+wy3zicGVWv3aW3ewEgCqz4pWQTptZCJnDDClpCtwG1NepaJdmVC
+ p6Ks0zRjzQZNSo6uJha1avSl2bbwm8TKV2kriiNP2ZzcJ0/IYb3/+GJ9RDujem2HnQah sg== 
+Received: from dc5-exch01.marvell.com ([199.233.59.181])
+        by mx0b-0016f401.pphosted.com with ESMTP id 368m6ud2dc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Mon, 25 Jan 2021 09:09:41 -0800
+Received: from SC-EXCH02.marvell.com (10.93.176.82) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 25 Jan
+ 2021 09:09:38 -0800
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH02.marvell.com
+ (10.93.176.82) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 25 Jan
+ 2021 09:09:38 -0800
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 25 Jan 2021 09:09:37 -0800
+Received: from stefan-pc.marvell.com (stefan-pc.marvell.com [10.5.25.21])
+        by maili.marvell.com (Postfix) with ESMTP id 06D6E3F7040;
+        Mon, 25 Jan 2021 09:09:34 -0800 (PST)
+From:   <stefanc@marvell.com>
+To:     <netdev@vger.kernel.org>
+CC:     <thomas.petazzoni@bootlin.com>, <davem@davemloft.net>,
+        <nadavh@marvell.com>, <ymarkman@marvell.com>,
+        <linux-kernel@vger.kernel.org>, <stefanc@marvell.com>,
+        <kuba@kernel.org>, <linux@armlinux.org.uk>, <mw@semihalf.com>,
+        <andrew@lunn.ch>, <rmk+kernel@armlinux.org.uk>,
+        <atenart@kernel.org>
+Subject: [PATCH v3 RFC net-next 06/19] net: mvpp2: always compare hw-version vs MVPP21
+Date:   Mon, 25 Jan 2021 19:07:53 +0200
+Message-ID: <1611594486-29431-7-git-send-email-stefanc@marvell.com>
+X-Mailer: git-send-email 1.9.1
+In-Reply-To: <1611594486-29431-1-git-send-email-stefanc@marvell.com>
+References: <1611594486-29431-1-git-send-email-stefanc@marvell.com>
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
+ definitions=2021-01-25_07:2021-01-25,2021-01-25 signatures=0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Vamshi,
+From: Stefan Chulski <stefanc@marvell.com>
 
-> kmemleak report:
-> unreferenced object 0xffff9b1127f00500 (size 208):
->  comm "kworker/u17:2", pid 500, jiffies 4294937470 (age 580.136s)
->  hex dump (first 32 bytes):
->    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
->    00 60 ed 05 11 9b ff ff 00 00 00 00 00 00 00 00  .`..............
->  backtrace:
->    [<000000006ab3fd59>] kmem_cache_alloc_node+0x17a/0x480
->    [<0000000051a5f6f9>] __alloc_skb+0x5b/0x1d0
->    [<0000000037e2d252>] hci_prepare_cmd+0x32/0xc0 [bluetooth]
->    [<0000000010b586d5>] hci_req_add_ev+0x84/0xe0 [bluetooth]
->    [<00000000d2deb520>] hci_req_clear_event_filter+0x42/0x70 [bluetooth]
->    [<00000000f864bd8c>] hci_req_prepare_suspend+0x84/0x470 [bluetooth]
->    [<000000001deb2cc4>] hci_prepare_suspend+0x31/0x40 [bluetooth]
->    [<000000002677dd79>] process_one_work+0x209/0x3b0
->    [<00000000aaa62b07>] worker_thread+0x34/0x400
->    [<00000000826d176c>] kthread+0x126/0x140
->    [<000000002305e558>] ret_from_fork+0x22/0x30
-> unreferenced object 0xffff9b1125c6ee00 (size 512):
->  comm "kworker/u17:2", pid 500, jiffies 4294937470 (age 580.136s)
->  hex dump (first 32 bytes):
->    04 00 00 00 0d 00 00 00 05 0c 01 00 11 9b ff ff  ................
->    00 00 00 00 00 00 00 00 01 00 00 00 00 00 00 00  ................
->  backtrace:
->    [<000000009f07c0cc>] slab_post_alloc_hook+0x59/0x270
->    [<0000000049431dc2>] __kmalloc_node_track_caller+0x15f/0x330
->    [<00000000027a42f6>] __kmalloc_reserve.isra.70+0x31/0x90
->    [<00000000e8e3e76a>] __alloc_skb+0x87/0x1d0
->    [<0000000037e2d252>] hci_prepare_cmd+0x32/0xc0 [bluetooth]
->    [<0000000010b586d5>] hci_req_add_ev+0x84/0xe0 [bluetooth]
->    [<00000000d2deb520>] hci_req_clear_event_filter+0x42/0x70 [bluetooth]
->    [<00000000f864bd8c>] hci_req_prepare_suspend+0x84/0x470 [bluetooth]
->    [<000000001deb2cc4>] hci_prepare_suspend+0x31/0x40 [bluetooth]
->    [<000000002677dd79>] process_one_work+0x209/0x3b0
->    [<00000000aaa62b07>] worker_thread+0x34/0x400
->    [<00000000826d176c>] kthread+0x126/0x140
->    [<000000002305e558>] ret_from_fork+0x22/0x30
-> unreferenced object 0xffff9b112b395788 (size 8):
->  comm "kworker/u17:2", pid 500, jiffies 4294937470 (age 580.136s)
->  hex dump (first 8 bytes):
->    20 00 00 00 00 00 04 00                           .......
->  backtrace:
->    [<0000000052dc28d2>] kmem_cache_alloc_trace+0x15e/0x460
->    [<0000000046147591>] alloc_ctrl_urb+0x52/0xe0 [btusb]
->    [<00000000a2ed3e9e>] btusb_send_frame+0x91/0x100 [btusb]
->    [<000000001e66030e>] hci_send_frame+0x7e/0xf0 [bluetooth]
->    [<00000000bf6b7269>] hci_cmd_work+0xc5/0x130 [bluetooth]
->    [<000000002677dd79>] process_one_work+0x209/0x3b0
->    [<00000000aaa62b07>] worker_thread+0x34/0x400
->    [<00000000826d176c>] kthread+0x126/0x140
->    [<000000002305e558>] ret_from_fork+0x22/0x30
-> 
-> In pm sleep-resume context, while the btusb device rebinds, it enters
-> hci_unregister_dev(), whilst there is a possibility of hdev receiving
-> PM_POST_SUSPEND suspend_notifier event, leading to generation of msg
-> frames. When hci_unregister_dev() completes, i.e. hdev context is
-> destroyed/freed, those intermittently sent msg frames cause memory
-> leak.
-> 
-> BUG details:
-> Below is stack trace of thread that enters hci_unregister_dev(), marks
-> the hdev flag HCI_UNREGISTER to 1, and then goes onto to wait on notifier
-> lock - refer unregister_pm_notifier().
-> 
->  hci_unregister_dev+0xa5/0x320 [bluetoot]
->  btusb_disconnect+0x68/0x150 [btusb]
->  usb_unbind_interface+0x77/0x250
->  ? kernfs_remove_by_name_ns+0x75/0xa0
->  device_release_driver_internal+0xfe/0x1
->  device_release_driver+0x12/0x20
->  bus_remove_device+0xe1/0x150
->  device_del+0x192/0x3e0
->  ? usb_remove_ep_devs+0x1f/0x30
->  usb_disable_device+0x92/0x1b0
->  usb_disconnect+0xc2/0x270
->  hub_event+0x9f6/0x15d0
->  ? rpm_idle+0x23/0x360
->  ? rpm_idle+0x26b/0x360
->  process_one_work+0x209/0x3b0
->  worker_thread+0x34/0x400
->  ? process_one_work+0x3b0/0x3b0
->  kthread+0x126/0x140
->  ? kthread_park+0x90/0x90
->  ret_from_fork+0x22/0x30
-> 
-> Below is stack trace of thread executing hci_suspend_notifier() which
-> processes the PM_POST_SUSPEND event, while the unbinding thread is
-> waiting on lock.
-> 
->  hci_suspend_notifier.cold.39+0x5/0x2b [bluetooth]
->  blocking_notifier_call_chain+0x69/0x90
->  pm_notifier_call_chain+0x1a/0x20
->  pm_suspend.cold.9+0x334/0x352
->  state_store+0x84/0xf0
->  kobj_attr_store+0x12/0x20
->  sysfs_kf_write+0x3b/0x40
->  kernfs_fop_write+0xda/0x1c0
->  vfs_write+0xbb/0x250
->  ksys_write+0x61/0xe0
->  __x64_sys_write+0x1a/0x20
->  do_syscall_64+0x37/0x80
->  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> 
-> Fix hci_suspend_notifer(), not to act on events when flag HCI_UNREGISTER
-> is set.
-> 
-> Signed-off-by: Vamshi K Sthambamkadi <vamshi.k.sthambamkadi@gmail.com>
-> ---
-> net/bluetooth/hci_core.c | 3 ++-
-> 1 file changed, 2 insertions(+), 1 deletion(-)
+Currently we have PP2v1 and PP2v2 hw-versions, with some different
+handlers depending upon condition hw_version = MVPP21/MVPP22.
+In a future there will be also PP2v3. Let's use now the generic
+"if equal/notEqual MVPP21" for all cases instead of "if MVPP22".
 
-patch has been applied to bluetooth-next tree.
+This patch does not change any functionality.
+It is not intended to introduce PP2v3.
+It just modifies MVPP21/MVPP22 check-condition
+bringing it to generic and unified form correct for new-code
+introducing and PP2v3 net-next generation.
 
-Regards
+Signed-off-by: Stefan Chulski <stefanc@marvell.com>
+---
+ drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 36 ++++++++++----------
+ 1 file changed, 18 insertions(+), 18 deletions(-)
 
-Marcel
+diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+index 4f482ad..409ca64 100644
+--- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
++++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+@@ -330,7 +330,7 @@ static int mvpp2_get_nrxqs(struct mvpp2 *priv)
+ {
+ 	unsigned int nrxqs;
+ 
+-	if (priv->hw_version == MVPP22 && queue_mode == MVPP2_QDIST_SINGLE_MODE)
++	if (priv->hw_version != MVPP21 && queue_mode == MVPP2_QDIST_SINGLE_MODE)
+ 		return 1;
+ 
+ 	/* According to the PPv2.2 datasheet and our experiments on
+@@ -457,7 +457,7 @@ static void mvpp2_bm_bufs_get_addrs(struct device *dev, struct mvpp2 *priv,
+ 				      MVPP2_BM_PHY_ALLOC_REG(bm_pool->id));
+ 	*phys_addr = mvpp2_thread_read(priv, thread, MVPP2_BM_VIRT_ALLOC_REG);
+ 
+-	if (priv->hw_version == MVPP22) {
++	if (priv->hw_version != MVPP21) {
+ 		u32 val;
+ 		u32 dma_addr_highbits, phys_addr_highbits;
+ 
+@@ -753,7 +753,7 @@ static inline void mvpp2_bm_pool_put(struct mvpp2_port *port, int pool,
+ 	if (test_bit(thread, &port->priv->lock_map))
+ 		spin_lock_irqsave(&port->bm_lock[thread], flags);
+ 
+-	if (port->priv->hw_version == MVPP22) {
++	if (port->priv->hw_version != MVPP21) {
+ 		u32 val = 0;
+ 
+ 		if (sizeof(dma_addr_t) == 8)
+@@ -1210,7 +1210,7 @@ static bool mvpp2_port_supports_xlg(struct mvpp2_port *port)
+ 
+ static bool mvpp2_port_supports_rgmii(struct mvpp2_port *port)
+ {
+-	return !(port->priv->hw_version == MVPP22 && port->gop_id == 0);
++	return !(port->priv->hw_version != MVPP21 && port->gop_id == 0);
+ }
+ 
+ /* Port configuration routines */
+@@ -1828,7 +1828,7 @@ static void mvpp2_mac_reset_assert(struct mvpp2_port *port)
+ 	      MVPP2_GMAC_PORT_RESET_MASK;
+ 	writel(val, port->base + MVPP2_GMAC_CTRL_2_REG);
+ 
+-	if (port->priv->hw_version == MVPP22 && port->gop_id == 0) {
++	if (port->priv->hw_version != MVPP21 && port->gop_id == 0) {
+ 		val = readl(port->base + MVPP22_XLG_CTRL0_REG) &
+ 		      ~MVPP22_XLG_CTRL0_MAC_RESET_DIS;
+ 		writel(val, port->base + MVPP22_XLG_CTRL0_REG);
+@@ -1841,7 +1841,7 @@ static void mvpp22_pcs_reset_assert(struct mvpp2_port *port)
+ 	void __iomem *mpcs, *xpcs;
+ 	u32 val;
+ 
+-	if (port->priv->hw_version != MVPP22 || port->gop_id != 0)
++	if (port->priv->hw_version == MVPP21 || port->gop_id != 0)
+ 		return;
+ 
+ 	mpcs = priv->iface_base + MVPP22_MPCS_BASE(port->gop_id);
+@@ -1862,7 +1862,7 @@ static void mvpp22_pcs_reset_deassert(struct mvpp2_port *port)
+ 	void __iomem *mpcs, *xpcs;
+ 	u32 val;
+ 
+-	if (port->priv->hw_version != MVPP22 || port->gop_id != 0)
++	if (port->priv->hw_version == MVPP21 || port->gop_id != 0)
+ 		return;
+ 
+ 	mpcs = priv->iface_base + MVPP22_MPCS_BASE(port->gop_id);
+@@ -4199,7 +4199,7 @@ static void mvpp2_start_dev(struct mvpp2_port *port)
+ 	/* Enable interrupts on all threads */
+ 	mvpp2_interrupts_enable(port);
+ 
+-	if (port->priv->hw_version == MVPP22)
++	if (port->priv->hw_version != MVPP21)
+ 		mvpp22_mode_reconfigure(port);
+ 
+ 	if (port->phylink) {
+@@ -4415,7 +4415,7 @@ static int mvpp2_open(struct net_device *dev)
+ 		valid = true;
+ 	}
+ 
+-	if (priv->hw_version == MVPP22 && port->port_irq) {
++	if (priv->hw_version != MVPP21 && port->port_irq) {
+ 		err = request_irq(port->port_irq, mvpp2_port_isr, 0,
+ 				  dev->name, port);
+ 		if (err) {
+@@ -6063,7 +6063,7 @@ static int mvpp2__mac_prepare(struct phylink_config *config, unsigned int mode,
+ 			     MVPP2_GMAC_PORT_RESET_MASK,
+ 			     MVPP2_GMAC_PORT_RESET_MASK);
+ 
+-		if (port->priv->hw_version == MVPP22) {
++		if (port->priv->hw_version != MVPP21) {
+ 			mvpp22_gop_mask_irq(port);
+ 
+ 			phy_power_off(port->comphy);
+@@ -6117,7 +6117,7 @@ static int mvpp2_mac_finish(struct phylink_config *config, unsigned int mode,
+ {
+ 	struct mvpp2_port *port = mvpp2_phylink_to_port(config);
+ 
+-	if (port->priv->hw_version == MVPP22 &&
++	if (port->priv->hw_version != MVPP21 &&
+ 	    port->phy_interface != interface) {
+ 		port->phy_interface = interface;
+ 
+@@ -6797,7 +6797,7 @@ static int mvpp2_init(struct platform_device *pdev, struct mvpp2 *priv)
+ 	if (dram_target_info)
+ 		mvpp2_conf_mbus_windows(dram_target_info, priv);
+ 
+-	if (priv->hw_version == MVPP22)
++	if (priv->hw_version != MVPP21)
+ 		mvpp2_axi_init(priv);
+ 
+ 	/* Disable HW PHY polling */
+@@ -6960,7 +6960,7 @@ static int mvpp2_probe(struct platform_device *pdev)
+ 			dev_warn(&pdev->dev, "Fail to alloc CM3 SRAM\n");
+ 	}
+ 
+-	if (priv->hw_version == MVPP22 && dev_of_node(&pdev->dev)) {
++	if (priv->hw_version != MVPP21 && dev_of_node(&pdev->dev)) {
+ 		priv->sysctrl_base =
+ 			syscon_regmap_lookup_by_phandle(pdev->dev.of_node,
+ 							"marvell,system-controller");
+@@ -6973,7 +6973,7 @@ static int mvpp2_probe(struct platform_device *pdev)
+ 			priv->sysctrl_base = NULL;
+ 	}
+ 
+-	if (priv->hw_version == MVPP22 &&
++	if (priv->hw_version != MVPP21 &&
+ 	    mvpp2_get_nrxqs(priv) * 2 <= MVPP2_BM_MAX_POOLS)
+ 		priv->percpu_pools = 1;
+ 
+@@ -7020,7 +7020,7 @@ static int mvpp2_probe(struct platform_device *pdev)
+ 		if (err < 0)
+ 			goto err_pp_clk;
+ 
+-		if (priv->hw_version == MVPP22) {
++		if (priv->hw_version != MVPP21) {
+ 			priv->mg_clk = devm_clk_get(&pdev->dev, "mg_clk");
+ 			if (IS_ERR(priv->mg_clk)) {
+ 				err = PTR_ERR(priv->mg_clk);
+@@ -7061,7 +7061,7 @@ static int mvpp2_probe(struct platform_device *pdev)
+ 		return -EINVAL;
+ 	}
+ 
+-	if (priv->hw_version == MVPP22) {
++	if (priv->hw_version != MVPP21) {
+ 		err = dma_set_mask(&pdev->dev, MVPP2_DESC_DMA_MASK);
+ 		if (err)
+ 			goto err_axi_clk;
+@@ -7141,10 +7141,10 @@ static int mvpp2_probe(struct platform_device *pdev)
+ 	clk_disable_unprepare(priv->axi_clk);
+ 
+ err_mg_core_clk:
+-	if (priv->hw_version == MVPP22)
++	if (priv->hw_version != MVPP21)
+ 		clk_disable_unprepare(priv->mg_core_clk);
+ err_mg_clk:
+-	if (priv->hw_version == MVPP22)
++	if (priv->hw_version != MVPP21)
+ 		clk_disable_unprepare(priv->mg_clk);
+ err_gop_clk:
+ 	clk_disable_unprepare(priv->gop_clk);
+-- 
+1.9.1
 
