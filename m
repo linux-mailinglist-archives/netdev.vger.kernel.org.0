@@ -2,112 +2,161 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A3FA3031EF
-	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 03:37:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A5426303287
+	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 04:14:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730911AbhAYQto (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Jan 2021 11:49:44 -0500
-Received: from mail-40133.protonmail.ch ([185.70.40.133]:36301 "EHLO
-        mail-40133.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730901AbhAYQs3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 11:48:29 -0500
-Date:   Mon, 25 Jan 2021 16:47:20 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
-        t=1611593248; bh=PQjqCY1n/n+4wNCpUtWb3rQkV1Ny0cNm6fdbl7f6pik=;
-        h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
-        b=QV6ZOPg0656nfl1DEH/S322UL4+pstgUgCc1D1CKk+HVHLbKEV+ewpATEWp5Q2eyp
-         0lsWNC9+XSddJ1LCqgvTPbHc+S6hYcR8A4hVYiJyLTitAeI7WF+1rsWLslrCAGkOX5
-         jEkHVWyb1P69/EUyfSsZLxVqP0CyMZ7v7Rm68NXplu9W1/G6howkrSHUKDizycGriX
-         bKgyr8xwzvdhUKVpkxSpn5yG1ZaFwioid4sNE2m+1MmTEKHoAbrkxIuQO3CM5rhdD1
-         I/HRYbQNpisrempK/yISGDWXVzxypGSshKmbXw98Hv/d4DeohCAi9HLwK50hsgD7G+
-         YLKFDroD9T46g==
-To:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-From:   Alexander Lobakin <alobakin@pm.me>
-Cc:     Yisen Zhuang <yisen.zhuang@huawei.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Aleksandr Nogikh <nogikh@google.com>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Dexuan Cui <decui@microsoft.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Marco Elver <elver@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
-        linux-rdma@vger.kernel.org, linux-mm@kvack.org,
-        Alexander Lobakin <alobakin@pm.me>
-Reply-To: Alexander Lobakin <alobakin@pm.me>
-Subject: [PATCH net-next 3/3] net: page_pool: simplify page recycling condition tests
-Message-ID: <20210125164612.243838-4-alobakin@pm.me>
-In-Reply-To: <20210125164612.243838-1-alobakin@pm.me>
-References: <20210125164612.243838-1-alobakin@pm.me>
+        id S1726829AbhAYJlA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Jan 2021 04:41:00 -0500
+Received: from mga09.intel.com ([134.134.136.24]:41207 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726743AbhAYJjL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 25 Jan 2021 04:39:11 -0500
+IronPort-SDR: WAGY27PuJBC9IqR4Ijijjqib1yOj1Pf/TpV78IidL6QKDiFNy65Aojpl49WJ8QvTX0iSns1Z7+
+ 82Efebw/d9Wg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9874"; a="179844622"
+X-IronPort-AV: E=Sophos;i="5.79,373,1602572400"; 
+   d="scan'208";a="179844622"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2021 01:37:21 -0800
+IronPort-SDR: Ilev5HQ4/ZOZrn9KOFYkJzh12G5nBOMntakVHMFdASh9VJ5uNhcaRv8KbMsHztdKYZMF64CBXl
+ HRD2pHzQh8Rw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.79,373,1602572400"; 
+   d="scan'208";a="577321008"
+Received: from silpixa00399839.ir.intel.com (HELO localhost.localdomain) ([10.237.222.142])
+  by fmsmga005.fm.intel.com with ESMTP; 25 Jan 2021 01:37:19 -0800
+From:   Ciara Loftus <ciara.loftus@intel.com>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        magnus.karlsson@intel.com, bjorn@kernel.org,
+        weqaar.a.janjua@intel.com
+Cc:     Ciara Loftus <ciara.loftus@intel.com>
+Subject: [PATCH bpf-next 2/6] selftests/bpf: restructure setting the packet count
+Date:   Mon, 25 Jan 2021 09:07:35 +0000
+Message-Id: <20210125090739.1045-3-ciara.loftus@intel.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20210125090739.1045-1-ciara.loftus@intel.com>
+References: <20210125090739.1045-1-ciara.loftus@intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.2 required=10.0 tests=ALL_TRUSTED,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF shortcircuit=no
-        autolearn=disabled version=3.4.4
-X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on
-        mailout.protonmail.ch
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-pool_page_reusable() is a leftover from pre-NUMA-aware times. For now,
-this function is just a redundant wrapper over page_is_pfmemalloc(),
-so Inline it into its sole call site.
+Prior to this, the packet count was fixed at 10000
+for every test. Future tracing tests need to modify
+the count, so make it possible to set the count from
+test_xsk.h using the -C opt.
 
-Signed-off-by: Alexander Lobakin <alobakin@pm.me>
+Signed-off-by: Ciara Loftus <ciara.loftus@intel.com>
 ---
- net/core/page_pool.c | 14 ++++----------
- 1 file changed, 4 insertions(+), 10 deletions(-)
+ tools/testing/selftests/bpf/test_xsk.sh    | 17 +++++++++--------
+ tools/testing/selftests/bpf/xsk_prereqs.sh |  3 +--
+ 2 files changed, 10 insertions(+), 10 deletions(-)
 
-diff --git a/net/core/page_pool.c b/net/core/page_pool.c
-index f3c690b8c8e3..ad8b0707af04 100644
---- a/net/core/page_pool.c
-+++ b/net/core/page_pool.c
-@@ -350,14 +350,6 @@ static bool page_pool_recycle_in_cache(struct page *pa=
-ge,
- =09return true;
- }
-=20
--/* page is NOT reusable when:
-- * 1) allocated when system is under some pressure. (page_is_pfmemalloc)
-- */
--static bool pool_page_reusable(struct page_pool *pool, struct page *page)
--{
--=09return !page_is_pfmemalloc(page);
--}
--
- /* If the page refcnt =3D=3D 1, this will try to recycle the page.
-  * if PP_FLAG_DMA_SYNC_DEV is set, we'll try to sync the DMA area for
-  * the configured size min(dma_sync_size, pool->max_len).
-@@ -373,9 +365,11 @@ __page_pool_put_page(struct page_pool *pool, struct pa=
-ge *page,
- =09 * regular page allocator APIs.
- =09 *
- =09 * refcnt =3D=3D 1 means page_pool owns page, and can recycle it.
-+=09 *
-+=09 * page is NOT reusable when allocated when system is under
-+=09 * some pressure. (page_is_pfmemalloc)
- =09 */
--=09if (likely(page_ref_count(page) =3D=3D 1 &&
--=09=09   pool_page_reusable(pool, page))) {
-+=09if (likely(page_ref_count(page) =3D=3D 1 && !page_is_pfmemalloc(page)))=
+diff --git a/tools/testing/selftests/bpf/test_xsk.sh b/tools/testing/selftests/bpf/test_xsk.sh
+index 88a7483eaae4..2b4a4f42b220 100755
+--- a/tools/testing/selftests/bpf/test_xsk.sh
++++ b/tools/testing/selftests/bpf/test_xsk.sh
+@@ -82,6 +82,7 @@ do
+ done
+ 
+ TEST_NAME="PREREQUISITES"
++DEFAULTPKTS=10000
+ 
+ URANDOM=/dev/urandom
+ [ ! -e "${URANDOM}" ] && { echo "${URANDOM} not found. Skipping tests."; test_exit 1 1; }
+@@ -154,7 +155,7 @@ TEST_NAME="SKB NOPOLL"
+ 
+ vethXDPgeneric ${VETH0} ${VETH1} ${NS1}
+ 
+-params=("-S")
++params=("-S" "-C" "${DEFAULTPKTS}")
+ execxdpxceiver params
+ 
+ retval=$?
+@@ -166,7 +167,7 @@ TEST_NAME="SKB POLL"
+ 
+ vethXDPgeneric ${VETH0} ${VETH1} ${NS1}
+ 
+-params=("-S" "-p")
++params=("-S" "-p" "-C" "${DEFAULTPKTS}")
+ execxdpxceiver params
+ 
+ retval=$?
+@@ -178,7 +179,7 @@ TEST_NAME="DRV NOPOLL"
+ 
+ vethXDPnative ${VETH0} ${VETH1} ${NS1}
+ 
+-params=("-N")
++params=("-N" "-C" "${DEFAULTPKTS}")
+ execxdpxceiver params
+ 
+ retval=$?
+@@ -190,7 +191,7 @@ TEST_NAME="DRV POLL"
+ 
+ vethXDPnative ${VETH0} ${VETH1} ${NS1}
+ 
+-params=("-N" "-p")
++params=("-N" "-p" "-C" "${DEFAULTPKTS}")
+ execxdpxceiver params
+ 
+ retval=$?
+@@ -202,7 +203,7 @@ TEST_NAME="SKB SOCKET TEARDOWN"
+ 
+ vethXDPgeneric ${VETH0} ${VETH1} ${NS1}
+ 
+-params=("-S" "-T")
++params=("-S" "-T" "-C" "${DEFAULTPKTS}")
+ execxdpxceiver params
+ 
+ retval=$?
+@@ -214,7 +215,7 @@ TEST_NAME="DRV SOCKET TEARDOWN"
+ 
+ vethXDPnative ${VETH0} ${VETH1} ${NS1}
+ 
+-params=("-N" "-T")
++params=("-N" "-T" "-C" "${DEFAULTPKTS}")
+ execxdpxceiver params
+ 
+ retval=$?
+@@ -226,7 +227,7 @@ TEST_NAME="SKB BIDIRECTIONAL SOCKETS"
+ 
+ vethXDPgeneric ${VETH0} ${VETH1} ${NS1}
+ 
+-params=("-S" "-B")
++params=("-S" "-B" "-C" "${DEFAULTPKTS}")
+ execxdpxceiver params
+ 
+ retval=$?
+@@ -238,7 +239,7 @@ TEST_NAME="DRV BIDIRECTIONAL SOCKETS"
+ 
+ vethXDPnative ${VETH0} ${VETH1} ${NS1}
+ 
+-params=("-N" "-B")
++params=("-N" "-B" "-C" "${DEFAULTPKTS}")
+ execxdpxceiver params
+ 
+ retval=$?
+diff --git a/tools/testing/selftests/bpf/xsk_prereqs.sh b/tools/testing/selftests/bpf/xsk_prereqs.sh
+index 9d54c4645127..41dd713d14df 100755
+--- a/tools/testing/selftests/bpf/xsk_prereqs.sh
++++ b/tools/testing/selftests/bpf/xsk_prereqs.sh
+@@ -15,7 +15,6 @@ NC='\033[0m'
+ STACK_LIM=131072
+ SPECFILE=veth.spec
+ XSKOBJ=xdpxceiver
+-NUMPKTS=10000
+ 
+ validate_root_exec()
  {
- =09=09/* Read barrier done in page_ref_count / READ_ONCE */
-=20
- =09=09if (pool->p.flags & PP_FLAG_DMA_SYNC_DEV)
---=20
-2.30.0
-
+@@ -131,5 +130,5 @@ execxdpxceiver()
+ 			copy[$index]=${!current}
+ 		done
+ 
+-	./${XSKOBJ} -i ${VETH0} -i ${VETH1},${NS1} ${copy[*]} -C ${NUMPKTS}
++	./${XSKOBJ} -i ${VETH0} -i ${VETH1},${NS1} ${copy[*]}
+ }
+-- 
+2.17.1
 
