@@ -2,129 +2,157 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9BC7A30490E
-	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 20:54:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F69A304913
+	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 20:54:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387462AbhAZF3n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jan 2021 00:29:43 -0500
-Received: from mga05.intel.com ([192.55.52.43]:23609 "EHLO mga05.intel.com"
+        id S2387493AbhAZF3x (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jan 2021 00:29:53 -0500
+Received: from mail.kernel.org ([198.145.29.99]:43616 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731463AbhAYTC5 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 25 Jan 2021 14:02:57 -0500
-IronPort-SDR: u6oamzVoyNKvg+yDVmwKFBnnmtdD21y+0JKp8N8ytJVTaQKFPW0+tXpWkMcdnQdMMO052tE+b1
- vCX09Z3J4JdA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9875"; a="264604207"
-X-IronPort-AV: E=Sophos;i="5.79,374,1602572400"; 
-   d="scan'208";a="264604207"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2021 10:59:26 -0800
-IronPort-SDR: B08H21B+zFrlqvm69jqBhPFBCdbYjWjq9u6HWQbIgrV/0M6Eahoj53uXI6vmmCacr5jwpPLR2h
- PK/UiaVK9dJw==
-X-IronPort-AV: E=Sophos;i="5.79,374,1602572400"; 
-   d="scan'208";a="361637472"
-Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.254.126.22])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2021 10:59:26 -0800
-From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
-To:     netdev@vger.kernel.org
-Cc:     Matthieu Baerts <matthieu.baerts@tessares.net>,
-        davem@davemloft.net, kuba@kernel.org, mptcp@lists.01.org,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>,
-        Geliang Tang <geliangtang@gmail.com>
-Subject: [PATCH net-next 2/5] mptcp: pm nl: support IPv4 mapped in v6 addresses
-Date:   Mon, 25 Jan 2021 10:59:01 -0800
-Message-Id: <20210125185904.6997-3-mathew.j.martineau@linux.intel.com>
-X-Mailer: git-send-email 2.30.0
-In-Reply-To: <20210125185904.6997-1-mathew.j.martineau@linux.intel.com>
-References: <20210125185904.6997-1-mathew.j.martineau@linux.intel.com>
+        id S1731417AbhAYTDH (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 25 Jan 2021 14:03:07 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 46EAC2067B;
+        Mon, 25 Jan 2021 19:02:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1611601345;
+        bh=Skuwd1IPU3qk3d6diQvKSRj1qZmAePV3Biv3OTvGyVI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=GbMXZ46TquDqE0EbDwB8bsPAiqyQLzI1kPfJNTbmVpcR1tY9c4Yvkm/ZgIpYYbhAZ
+         3iNnrUevp/ov0kDfLYBTUV3A+SXIwRcUJeG1u0g4SG7k7n+7gNbyg7XX9vSCkruf5G
+         juKHl8KRVZjtYcqwb3gOiNGrqKsJPjSf24ZYzSQbQhKglzn/SFYTBx71IemHVxVwnn
+         hFW1AVpismZ9rWU5vmfOQdbrqshf6keN8MyOV5QhzRCX0kxwZN3d3SOb4uwDvmwAJA
+         Aca7rDMRM400R4my9oP1R9q09+uqDN7IOHD++yiqp2jUnRka1sBsAl4g2Rj4Ur+tJy
+         cOfrbo8ZjYJxA==
+Date:   Mon, 25 Jan 2021 11:02:24 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Danielle Ratson <danieller@nvidia.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        Jiri Pirko <jiri@nvidia.com>,
+        "andrew@lunn.ch" <andrew@lunn.ch>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "mkubecek@suse.cz" <mkubecek@suse.cz>, mlxsw <mlxsw@nvidia.com>,
+        Ido Schimmel <idosch@nvidia.com>
+Subject: Re: [PATCH net-next v3 1/7] ethtool: Extend link modes settings
+ uAPI with lanes
+Message-ID: <20210125110224.08886797@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <DM6PR12MB4516C3011B5D158930444203D8BD9@DM6PR12MB4516.namprd12.prod.outlook.com>
+References: <20210120093713.4000363-1-danieller@nvidia.com>
+        <20210120093713.4000363-2-danieller@nvidia.com>
+        <20210121194451.3fe8c8bf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <DM6PR12MB4516C3011B5D158930444203D8BD9@DM6PR12MB4516.namprd12.prod.outlook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Matthieu Baerts <matthieu.baerts@tessares.net>
+On Mon, 25 Jan 2021 15:53:24 +0000 Danielle Ratson wrote:
+> > > @@ -353,10 +358,39 @@ static int ethnl_update_linkmodes(struct
+> > > genl_info *info, struct nlattr **tb,
+> > >
+> > >  	*mod = false;
+> > >  	req_speed = tb[ETHTOOL_A_LINKMODES_SPEED];
+> > > +	req_lanes = tb[ETHTOOL_A_LINKMODES_LANES];
+> > >  	req_duplex = tb[ETHTOOL_A_LINKMODES_DUPLEX];
+> > >
+> > >  	ethnl_update_u8(&lsettings->autoneg, tb[ETHTOOL_A_LINKMODES_AUTONEG],
+> > >  			mod);
+> > > +
+> > > +	if (req_lanes) {
+> > > +		u32 lanes_cfg = nla_get_u32(tb[ETHTOOL_A_LINKMODES_LANES]);  
+> > 
+> > req_lanes == tb[ETHTOOL_A_LINKMODES_LANES], right?   
+> 
+> Yes, but req_lanes is a bool and doesn't fit to nla_get_u32. Do you want me to change the req_lanes type and name?
 
-On one side, we can allow the creation of subflows between v4 mapped in
-v6 and v4 addresses. For that we look for v4mapped addresses between the
-local address we want to select and the remote one.
+Ah, yes please.
 
-On the other side, we also properly deal with received v4mapped
-addresses, either announced ones or set via Netlink.
+> > Please use req_lanes variable where possible.
+> >   
+> > > +
+> > > +		if (!is_power_of_2(lanes_cfg)) {
+> > > +			NL_SET_ERR_MSG_ATTR(info->extack,
+> > > +					    tb[ETHTOOL_A_LINKMODES_LANES],
+> > > +					    "lanes value is invalid");
+> > > +			return -EINVAL;
+> > > +		}
+> > > +
+> > > +		/* If autoneg is off and lanes parameter is not supported by the
+> > > +		 * driver, return an error.
+> > > +		 */
+> > > +		if (!lsettings->autoneg &&
+> > > +		    !dev->ethtool_ops->cap_link_lanes_supported) {
+> > > +			NL_SET_ERR_MSG_ATTR(info->extack,
+> > > +					    tb[ETHTOOL_A_LINKMODES_LANES],
+> > > +					    "lanes configuration not supported by device");
+> > > +			return -EOPNOTSUPP;
+> > > +		}  
+> > 
+> > This validation does not depend on the current settings at all,
+> > it's just input validation, it can be done before rtnl_lock is
+> > taken (in a new function).
+> > 
+> > You can move ethnl_validate_master_slave_cfg() to that function as
+> > well (as a cleanup before this patch).  
+> 
+> Do you mean to move the ethnl_validate_master_slave_cfg() if from
+> that function? 
 
-Fixes: 01cacb00b35c ("mptcp: add netlink-based PM")
-Closes: https://github.com/multipath-tcp/mptcp_net-next/issues/122
-Suggested-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
-Co-developed-by: Geliang Tang <geliangtang@gmail.com>
-Signed-off-by: Geliang Tang <geliangtang@gmail.com>
-Signed-off-by: Matthieu Baerts <matthieu.baerts@tessares.net>
-Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
----
- net/mptcp/pm_netlink.c | 33 ++++++++++++++++++++++++---------
- 1 file changed, 24 insertions(+), 9 deletions(-)
+Yes, to a separate helper.
 
-diff --git a/net/mptcp/pm_netlink.c b/net/mptcp/pm_netlink.c
-index 9b1f6298bbdb..f0afff6ba015 100644
---- a/net/mptcp/pm_netlink.c
-+++ b/net/mptcp/pm_netlink.c
-@@ -60,15 +60,20 @@ static bool addresses_equal(const struct mptcp_addr_info *a,
+> Doesn't it depend on the current settings, as opposed
+> to the supported lanes param that you wanted me to move as well? Not
+> sure I understand the second part of the request...
+
+Sorry maybe I quoted a little too much context form the patch.
+
+A helper like this:
+
+static int ethnl_check_linkmodes(...)
+{
+	const struct nlattr *master_slave_cfg;
+	
+	master_slave_cfg = tb[ETHTOOL_A_LINKMODES_MASTER_SLAVE_CFG];
+	if (master_slave_cfg && 
+	    !ethnl_validate_master_slave_cfg(nla_get_u8(master_slave_cfg))) {
+		NL_SET_ERR_MSG_ATTR(info->extack, master_slave_cfg,
+				    "master/slave value is invalid");
+		return -EOPNOTSUPP;
+	}
+
+	lanes_cfg = ...
+	if (!is_power_of_2(...lanes_cfg)) {
+		...
+		return -EINVAL;
+	}
+
+	return 0;
+}
+ 
+Which you can call before the device reference is taken:
+
+ int ethnl_set_linkmodes(struct sk_buff *skb, struct genl_info *info)
  {
- 	bool addr_equals = false;
+ 	struct ethtool_link_ksettings ksettings = {};
+ 	struct ethnl_req_info req_info = {};
+ 	struct nlattr **tb = info->attrs;
+ 	struct net_device *dev;
+ 	bool mod = false;
+ 	int ret;
  
--	if (a->family != b->family)
--		return false;
--
--	if (a->family == AF_INET)
--		addr_equals = a->addr.s_addr == b->addr.s_addr;
-+	if (a->family == b->family) {
-+		if (a->family == AF_INET)
-+			addr_equals = a->addr.s_addr == b->addr.s_addr;
- #if IS_ENABLED(CONFIG_MPTCP_IPV6)
--	else
--		addr_equals = !ipv6_addr_cmp(&a->addr6, &b->addr6);
-+		else
-+			addr_equals = !ipv6_addr_cmp(&a->addr6, &b->addr6);
-+	} else if (a->family == AF_INET) {
-+		if (ipv6_addr_v4mapped(&b->addr6))
-+			addr_equals = a->addr.s_addr == b->addr6.s6_addr32[3];
-+	} else if (b->family == AF_INET) {
-+		if (ipv6_addr_v4mapped(&a->addr6))
-+			addr_equals = a->addr6.s6_addr32[3] == b->addr.s_addr;
- #endif
-+	}
++	ret = ethnl_check_linkmodes(tb);
++	if (ret)
++		return ret;
  
- 	if (!addr_equals)
- 		return false;
-@@ -137,6 +142,7 @@ select_local_address(const struct pm_nl_pernet *pernet,
- 		     struct mptcp_sock *msk)
- {
- 	struct mptcp_pm_addr_entry *entry, *ret = NULL;
-+	struct sock *sk = (struct sock *)msk;
- 
- 	rcu_read_lock();
- 	__mptcp_flush_join_list(msk);
-@@ -144,11 +150,20 @@ select_local_address(const struct pm_nl_pernet *pernet,
- 		if (!(entry->addr.flags & MPTCP_PM_ADDR_FLAG_SUBFLOW))
- 			continue;
- 
-+		if (entry->addr.family != sk->sk_family) {
-+#if IS_ENABLED(CONFIG_MPTCP_IPV6)
-+			if ((entry->addr.family == AF_INET &&
-+			     !ipv6_addr_v4mapped(&sk->sk_v6_daddr)) ||
-+			    (sk->sk_family == AF_INET &&
-+			     !ipv6_addr_v4mapped(&entry->addr.addr6)))
-+#endif
-+				continue;
-+		}
-+
- 		/* avoid any address already in use by subflows and
- 		 * pending join
- 		 */
--		if (entry->addr.family == ((struct sock *)msk)->sk_family &&
--		    !lookup_subflow_by_saddr(&msk->conn_list, &entry->addr)) {
-+		if (!lookup_subflow_by_saddr(&msk->conn_list, &entry->addr)) {
- 			ret = entry;
- 			break;
- 		}
--- 
-2.30.0
+ 	ret = ethnl_parse_header_dev_get(&req_info,
+ 					 tb[ETHTOOL_A_LINKMODES_HEADER],
+ 					 genl_info_net(info), info->extack,
+ 					 true);
+ 	if (ret < 0)
+ 		return ret;
 
+
+But please make sure that you move the master_slave_cfg check in a
+separate patch.
