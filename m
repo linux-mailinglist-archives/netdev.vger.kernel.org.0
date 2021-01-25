@@ -2,306 +2,102 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DF8543049ED
-	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 21:20:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E63DE3049F8
+	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 21:21:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732058AbhAZFUY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jan 2021 00:20:24 -0500
-Received: from mail-41104.protonmail.ch ([185.70.41.104]:22811 "EHLO
-        mail-41104.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730244AbhAYPm3 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 10:42:29 -0500
-Received: from mail-03.mail-europe.com (mail-03.mail-europe.com [91.134.188.129])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (4096 bits))
-        (No client certificate requested)
-        by mail-41104.protonmail.ch (Postfix) with ESMTPS id B4C442000FB5
-        for <netdev@vger.kernel.org>; Mon, 25 Jan 2021 15:11:00 +0000 (UTC)
-Authentication-Results: mail-41104.protonmail.ch;
-        dkim=pass (2048-bit key) header.d=pm.me header.i=@pm.me header.b="F91tdGQe"
-Date:   Mon, 25 Jan 2021 15:07:31 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
-        t=1611587255; bh=6gbNlVdgnHaUiyryohCgZd5ryQzBNr+5hI97WloEzqs=;
-        h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
-        b=F91tdGQeVEguAB9jLIWvfC1BVy1mAQ9X/NTKAZ6x7nxJC5lRm89/zGyXcqtDaiZXy
-         HvhpygRf31tL0n7vzl/bhzMIycIglvExF3T9T3Ui+HmKPlOKMgOHdtUkF1pbjipTPk
-         iRk+KC+zj6Zjo3+alMpgRftCfLAd1P9cef8/U7zH6tscm4Zpf037i/TQIUUIvS+r0d
-         OZ3f2Gx+/eEttGnWiYYqVl1OtYfqCzBU+hXssHhCPTs/WVpdnnJnV7SUTepX32cvDI
-         ijbQ4dJLZdAv+Bq2SFqF9LF95t2dOcmEf4M4lOScZkk4GAkVTtkx1jsLAInkRQ1n62
-         pllGZJfn9dUwA==
-To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-From:   Alexander Lobakin <alobakin@pm.me>
-Cc:     Alexander Lobakin <alobakin@pm.me>,
-        Eric Dumazet <eric.dumazet@gmail.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, bjorn@kernel.org,
-        Magnus Karlsson <magnus.karlsson@intel.com>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        KP Singh <kpsingh@kernel.org>,
-        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Reply-To: Alexander Lobakin <alobakin@pm.me>
-Subject: Re: [PATCH bpf-next v3 3/3] xsk: build skb by page
-Message-ID: <20210125150705.18376-1-alobakin@pm.me>
-In-Reply-To: <1611586627.1035807-1-xuanzhuo@linux.alibaba.com>
-References: <1611586627.1035807-1-xuanzhuo@linux.alibaba.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.2 required=10.0 tests=ALL_TRUSTED,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF shortcircuit=no
-        autolearn=disabled version=3.4.4
-X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on
-        mailout.protonmail.ch
+        id S1731898AbhAZFTo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jan 2021 00:19:44 -0500
+Received: from foss.arm.com ([217.140.110.172]:49698 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730115AbhAYPja (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 25 Jan 2021 10:39:30 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id F3610176C;
+        Mon, 25 Jan 2021 07:19:27 -0800 (PST)
+Received: from localhost.localdomain (unknown [172.31.20.19])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 7DD233F68F;
+        Mon, 25 Jan 2021 07:19:25 -0800 (PST)
+From:   Andre Przywara <andre.przywara@arm.com>
+To:     Maxime Ripard <mripard@kernel.org>, Chen-Yu Tsai <wens@csie.org>
+Cc:     Jernej Skrabec <jernej.skrabec@siol.net>,
+        Samuel Holland <samuel@sholland.org>,
+        Icenowy Zheng <icenowy@aosc.io>, Rob Herring <robh@kernel.org>,
+        =?UTF-8?q?Cl=C3=A9ment=20P=C3=A9ron?= <peron.clem@gmail.com>,
+        Shuosheng Huang <huangshuosheng@allwinnertech.com>,
+        Yangtao Li <tiny.windzz@gmail.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-sunxi@googlegroups.com,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Jose Abreu <joabreu@synopsys.com>, netdev@vger.kernel.org
+Subject: [PATCH v4 14/21] net: stmmac: dwmac-sun8i: Prepare for second EMAC clock register
+Date:   Mon, 25 Jan 2021 15:18:04 +0000
+Message-Id: <20210125151811.11871-15-andre.przywara@arm.com>
+X-Mailer: git-send-email 2.14.1
+In-Reply-To: <20210125151811.11871-1-andre.przywara@arm.com>
+References: <20210125151811.11871-1-andre.przywara@arm.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-Date: Mon, 25 Jan 2021 22:57:07 +0800
+The Allwinner H616 SoC has two EMAC controllers, with the second one
+being tied to the internal PHY, but also using a separate EMAC clock
+register.
 
-> On Mon, 25 Jan 2021 13:25:45 +0000, Alexander Lobakin <alobakin@pm.me> wr=
-ote:
-> > From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> > Date: Mon, 25 Jan 2021 11:10:43 +0800
-> >
-> > > On Fri, 22 Jan 2021 16:24:17 +0000, Alexander Lobakin <alobakin@pm.me=
-> wrote:
-> > > > From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> > > > Date: Fri, 22 Jan 2021 23:36:29 +0800
-> > > >
-> > > > > On Fri, 22 Jan 2021 12:08:00 +0000, Alexander Lobakin <alobakin@p=
-m.me> wrote:
-> > > > > > From: Alexander Lobakin <alobakin@pm.me>
-> > > > > > Date: Fri, 22 Jan 2021 11:55:35 +0000
-> > > > > >
-> > > > > > > From: Alexander Lobakin <alobakin@pm.me>
-> > > > > > > Date: Fri, 22 Jan 2021 11:47:45 +0000
-> > > > > > >
-> > > > > > > > From: Eric Dumazet <eric.dumazet@gmail.com>
-> > > > > > > > Date: Thu, 21 Jan 2021 16:41:33 +0100
-> > > > > > > >
-> > > > > > > > > On 1/21/21 2:47 PM, Xuan Zhuo wrote:
-> > > > > > > > > > This patch is used to construct skb based on page to sa=
-ve memory copy
-> > > > > > > > > > overhead.
-> > > > > > > > > >
-> > > > > > > > > > This function is implemented based on IFF_TX_SKB_NO_LIN=
-EAR. Only the
-> > > > > > > > > > network card priv_flags supports IFF_TX_SKB_NO_LINEAR w=
-ill use page to
-> > > > > > > > > > directly construct skb. If this feature is not supporte=
-d, it is still
-> > > > > > > > > > necessary to copy data to construct skb.
-> > > > > > > > > >
-> > > > > > > > > > ---------------- Performance Testing ------------
-> > > > > > > > > >
-> > > > > > > > > > The test environment is Aliyun ECS server.
-> > > > > > > > > > Test cmd:
-> > > > > > > > > > ```
-> > > > > > > > > > xdpsock -i eth0 -t  -S -s <msg size>
-> > > > > > > > > > ```
-> > > > > > > > > >
-> > > > > > > > > > Test result data:
-> > > > > > > > > >
-> > > > > > > > > > size    64      512     1024    1500
-> > > > > > > > > > copy    1916747 1775988 1600203 1440054
-> > > > > > > > > > page    1974058 1953655 1945463 1904478
-> > > > > > > > > > percent 3.0%    10.0%   21.58%  32.3%
-> > > > > > > > > >
-> > > > > > > > > > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
-> > > > > > > > > > Reviewed-by: Dust Li <dust.li@linux.alibaba.com>
-> > > > > > > > > > ---
-> > > > > > > > > >  net/xdp/xsk.c | 104 ++++++++++++++++++++++++++++++++++=
-++++++++++++++----------
-> > > > > > > > > >  1 file changed, 86 insertions(+), 18 deletions(-)
-> > > > > > > > > >
-> > > > > > > > > > diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-> > > > > > > > > > index 4a83117..38af7f1 100644
-> > > > > > > > > > --- a/net/xdp/xsk.c
-> > > > > > > > > > +++ b/net/xdp/xsk.c
-> > > > > > > > > > @@ -430,6 +430,87 @@ static void xsk_destruct_skb(struc=
-t sk_buff *skb)
-> > > > > > > > > >  =09sock_wfree(skb);
-> > > > > > > > > >  }
-> > > > > > > > > >
-> > > > > > > > > > +static struct sk_buff *xsk_build_skb_zerocopy(struct x=
-dp_sock *xs,
-> > > > > > > > > > +=09=09=09=09=09      struct xdp_desc *desc)
-> > > > > > > > > > +{
-> > > > > > > > > > +=09u32 len, offset, copy, copied;
-> > > > > > > > > > +=09struct sk_buff *skb;
-> > > > > > > > > > +=09struct page *page;
-> > > > > > > > > > +=09void *buffer;
-> > > > > > > > > > +=09int err, i;
-> > > > > > > > > > +=09u64 addr;
-> > > > > > > > > > +
-> > > > > > > > > > +=09skb =3D sock_alloc_send_skb(&xs->sk, 0, 1, &err);
-> > > > > >
-> > > > > > Also,
-> > > > > > maybe we should allocate it with NET_SKB_PAD so NIC drivers cou=
-ld
-> > > > > > use some reserved space?
-> > > > > >
-> > > > > > =09=09skb =3D sock_alloc_send_skb(&xs->sk, NET_SKB_PAD, 1, &err=
-);
-> > > > > > =09=09...
-> > > > > > =09=09skb_reserve(skb, NET_SKB_PAD);
-> > > > > >
-> > > > > > Eric, what do you think?
-> > > > >
-> > > > > I think you are right. Some space should be added to continuous e=
-quipment. This
-> > > > > space should also be added in the copy mode below. Is LL_RESERVED=
-_SPACE more
-> > > > > appropriate?
-> > > >
-> > > > No. If you look at __netdev_alloc_skb() and __napi_alloc_skb(), the=
-y
-> > > > reserve NET_SKB_PAD at the beginning of linear area. Documentation =
-of
-> > > > __build_skb() also says that driver should reserve NET_SKB_PAD befo=
-re
-> > > > the actual frame, so it is a standartized hardware-independent
-> > > > headroom.
-> > >
-> > > I understand that these scenarios are in the case of receiving packet=
-s, and the
-> > > increased space is used by the protocol stack, especially RPS. I don'=
-t know if
-> > > this also applies to the sending scenario?
-> > >
-> > > > Leaving that space in skb->head will allow developers to implement
-> > > > IFF_TX_SKB_NO_LINEAR in a wider variety of drivers, especially when
-> > > > a driver has to prepend some sort of data before the actual frame.
-> > > > Since it's usually of a size of one cacheline, shouldn't be a big
-> > > > deal.
-> > > >
-> > >
-> > > I agree with this. Some network cards require some space. For example=
-,
-> > > virtio-net needs to add a virtio_net_hdr_mrg_rxbuf before skb->data, =
-so my
-> > > original understanding is used here. When we send the skb to the
-> > > driver, the driver may need a memory space. So I refer to the
-> > > implementation of __ip_append_data, I feel that adding
-> > > LL_RESERVED_SPACE is a suitable solution.
-> > >
-> > > I feel that I may still not understand the use scene you mentioned. C=
-an you
-> > > elaborate on what you understand this space will be used for?
-> >
-> > LL_RESERVED_SPACE() consists of L2 header size (Ethernet for the most
-> > cases) and dev->needed_headroom. That is not a value to count on, as:
-> >  - L2 header is already here in XSK buffer;
-> >  - not all drivers set dev->needed_headroom;
-> >  - it's aligned by 16, not L1_CACHE_SIZE.
-> >
-> > As this path is XSK generic path, i.e. when driver-side XSK is not
-> > present or not requested, it can be applied to every driver. Many
-> > of them call skb_cow_head() + skb_push() on their xmit path:
-> >  - nearly all virtual drivers (to insert their specific headers);
-> >  - nearly all switch drivers (to insert switch CPU port tags);
-> >  - some enterprise NIC drivers (ChelsIO for LSO, Netronome
-> >    for TLS etc.).
-> >
-> > skb_cow_head() + skb_push() relies on a required NET_SKB_PAD headroom.
-> > In case where there is no enough space (and you allocate an skb with
-> > no headroom at all), skb will be COWed, which is a huge overhead and
-> > will cause slowdowns.
-> > So, adding NET_SKB_PAD would save from almost all, if not all, such
-> > reallocations.
->
-> I have learnt so much, thanks to you.
+To tell the driver about which clock register to use, we add a parameter
+to our syscon phandle. The driver will use this value as an index into
+the regmap, so that we can address more than the first register, if
+needed.
 
-Glad to hear!
+Signed-off-by: Andre Przywara <andre.przywara@arm.com>
+---
+ drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c | 12 ++++++++++--
+ 1 file changed, 10 insertions(+), 2 deletions(-)
 
-> > > Thanks.
-> > >
-> > > >
-> > > > [ I also had an idea of allocating an skb with a headroom of
-> > > > NET_SKB_PAD + 256 bytes, so nearly all drivers could just call
-> > > > pskb_pull_tail() to support such type of skbuffs without much
-> > > > effort, but I think that it's better to teach drivers to support
-> > > > xmitting of really headless ones. If virtio_net can do it, why
-> > > > shouldn't the others ]
-> > > >
-> > > > > > > > > > +=09if (unlikely(!skb))
-> > > > > > > > > > +=09=09return ERR_PTR(err);
-> > > > > > > > > > +
-> > > > > > > > > > +=09addr =3D desc->addr;
-> > > > > > > > > > +=09len =3D desc->len;
-> > > > > > > > > > +
-> > > > > > > > > > +=09buffer =3D xsk_buff_raw_get_data(xs->pool, addr);
-> > > > > > > > > > +=09offset =3D offset_in_page(buffer);
-> > > > > > > > > > +=09addr =3D buffer - xs->pool->addrs;
-> > > > > > > > > > +
-> > > > > > > > > > +=09for (copied =3D 0, i =3D 0; copied < len; i++) {
-> > > > > > > > > > +=09=09page =3D xs->pool->umem->pgs[addr >> PAGE_SHIFT]=
-;
-> > > > > > > > > > +
-> > > > > > > > > > +=09=09get_page(page);
-> > > > > > > > > > +
-> > > > > > > > > > +=09=09copy =3D min_t(u32, PAGE_SIZE - offset, len - co=
-pied);
-> > > > > > > > > > +
-> > > > > > > > > > +=09=09skb_fill_page_desc(skb, i, page, offset, copy);
-> > > > > > > > > > +
-> > > > > > > > > > +=09=09copied +=3D copy;
-> > > > > > > > > > +=09=09addr +=3D copy;
-> > > > > > > > > > +=09=09offset =3D 0;
-> > > > > > > > > > +=09}
-> > > > > > > > > > +
-> > > > > > > > > > +=09skb->len +=3D len;
-> > > > > > > > > > +=09skb->data_len +=3D len;
-> > > > > > > > >
-> > > > > > > > > > +=09skb->truesize +=3D len;
-> > > > > > > > >
-> > > > > > > > > This is not the truesize, unfortunately.
-> > > > > > > > >
-> > > > > > > > > We need to account for the number of pages, not number of=
- bytes.
-> > > > > > > >
-> > > > > > > > The easiest solution is:
-> > > > > > > >
-> > > > > > > > =09skb->truesize +=3D PAGE_SIZE * i;
-> > > > > > > >
-> > > > > > > > i would be equal to skb_shinfo(skb)->nr_frags after exiting=
- the loop.
-> > > > > > >
-> > > > > > > Oops, pls ignore this. I forgot that XSK buffers are not
-> > > > > > > "one per page".
-> > > > > > > We need to count the number of pages manually and then do
-> > > > > > >
-> > > > > > > =09skb->truesize +=3D PAGE_SIZE * npages;
-> > > > > > >
-> > > > > > > Right.
-> > > > > > >
-> > > > > > > > > > +
-> > > > > > > > > > +=09refcount_add(len, &xs->sk.sk_wmem_alloc);
-> > > > > > > > > > +
-> > > > > > > > > > +=09return skb;
-> > > > > > > > > > +}
-> > > > > > > > > > +
-> > > > > > > >
-> > > > > > > > Al
-> > > > > > >
-> > > > > > > Thanks,
-> > > > > > > Al
-> > > > > >
-> > > > > > Al
-> >
-> > Thanks,
-> > Al
-
-Al
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
+index 58e0511badba..c7951790ed98 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-sun8i.c
+@@ -1124,11 +1124,13 @@ static int sun8i_dwmac_probe(struct platform_device *pdev)
+ 	struct stmmac_resources stmmac_res;
+ 	struct sunxi_priv_data *gmac;
+ 	struct device *dev = &pdev->dev;
++	struct reg_field syscon_field;
+ 	phy_interface_t interface;
+ 	int ret;
+ 	struct stmmac_priv *priv;
+ 	struct net_device *ndev;
+ 	struct regmap *regmap;
++	u32 syscon_idx = 0;
+ 
+ 	ret = stmmac_get_platform_resources(pdev, &stmmac_res);
+ 	if (ret)
+@@ -1190,8 +1192,12 @@ static int sun8i_dwmac_probe(struct platform_device *pdev)
+ 		return ret;
+ 	}
+ 
+-	gmac->regmap_field = devm_regmap_field_alloc(dev, regmap,
+-						     *gmac->variant->syscon_field);
++	syscon_field = *gmac->variant->syscon_field;
++	ret = of_property_read_u32_index(pdev->dev.of_node, "syscon", 1,
++					 &syscon_idx);
++	if (!ret)
++		syscon_field.reg += syscon_idx * sizeof(u32);
++	gmac->regmap_field = devm_regmap_field_alloc(dev, regmap, syscon_field);
+ 	if (IS_ERR(gmac->regmap_field)) {
+ 		ret = PTR_ERR(gmac->regmap_field);
+ 		dev_err(dev, "Unable to map syscon register: %d\n", ret);
+@@ -1263,6 +1269,8 @@ static const struct of_device_id sun8i_dwmac_match[] = {
+ 		.data = &emac_variant_a64 },
+ 	{ .compatible = "allwinner,sun50i-h6-emac",
+ 		.data = &emac_variant_h6 },
++	{ .compatible = "allwinner,sun50i-h616-emac",
++		.data = &emac_variant_h6 },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(of, sun8i_dwmac_match);
+-- 
+2.17.5
 
