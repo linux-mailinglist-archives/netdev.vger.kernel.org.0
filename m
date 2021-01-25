@@ -2,393 +2,378 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BC63E304AC7
-	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 21:56:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 85E33304A8C
+	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 21:49:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730411AbhAZE7h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Jan 2021 23:59:37 -0500
-Received: from mail-eopbgr60090.outbound.protection.outlook.com ([40.107.6.90]:8416
-        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727047AbhAYMkk (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 25 Jan 2021 07:40:40 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lVbhYGVqLjGldjhci3lu6r+q05gZQxu14PDOAPaLmXZp4HE/xO9JZfsaBARCLWmDADNNcq6dMo+sc09MDsG40um68BZMJisf4El4GTgVEu91rYSrrGvD+wBBnxEKTbv4WqLcIOnZTa2V059vi/aSSojGWax7NGxCM0eEWLEqQZNv42cPeciIr7h+lv7nsn7obY9DQDAYEDdoqxXYKuDTnIPAxBeM3WbZ4PJhzRorYNsqPTm5/7gJMBJDzoPWunHKIwz68azx8dCtKHNPSR4I45FbJlgnswLMXXcmp2Pp97HtA9JSgjjjS4nKdKP4WoacAFUFwipTsHBOsA3cQ+WaUg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=CPm7NGQs5OrKJdGi5Rn6D+B5GcOdz2UmAbAFLKfoJg0=;
- b=iix2JeTqXr4WiLliCXhP9BHMJVZ342LopftRBHZEpbQT4PhxwqxsPVlqJyhi3OUCoDYB97mVj8NDahgpSdeNZ3IRQQ+QtYPPnDFsck9Sg9a9rpjg2DlCmaxHrq0UlzftmkuUZ4Atjw0YhDHI5EGX4CL2TqiKNNJ6OFfoN+Mq7JACwwDz9UW+19vNAcybHEakmJJrBNVVCSyKIDP8gYQtWnbfbl3hkofN/118xRYg+X1MbX8Yb+xdy1fvpo1VTfiRfJo2uyCivHvqaGsKIbEUXKXyEv3Ehu2pFcS4gRFYqT2AB++RU+XIsZNQ5bbJpMHsOLi/SdSfVg5djtuovT+LrQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=plvision.eu; dmarc=pass action=none header.from=plvision.eu;
- dkim=pass header.d=plvision.eu; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=plvision.eu;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=CPm7NGQs5OrKJdGi5Rn6D+B5GcOdz2UmAbAFLKfoJg0=;
- b=DYxgc9VHK8x5geDTc00t8xXv/Uxso/ZkVVNKt9cRj+tsqKdklc9GCJlLl5eSy8esBwo0wCjlRJgt5Kbf1UCLTO9zE/wsoXf1L8Is4+5J0y4Lx3jbfWwlAXffzZks0uQ2HWzVLzDgwhjyndye9PUYAh6M21wl+Z4ILZwCww7CGAg=
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none
- header.from=plvision.eu;
-Received: from AM0P190MB0738.EURP190.PROD.OUTLOOK.COM (2603:10a6:208:19b::9)
- by AM9P190MB1233.EURP190.PROD.OUTLOOK.COM (2603:10a6:20b:270::20) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3784.11; Mon, 25 Jan
- 2021 12:39:16 +0000
-Received: from AM0P190MB0738.EURP190.PROD.OUTLOOK.COM
- ([fe80::3011:87e8:b505:d066]) by AM0P190MB0738.EURP190.PROD.OUTLOOK.COM
- ([fe80::3011:87e8:b505:d066%9]) with mapi id 15.20.3784.017; Mon, 25 Jan 2021
- 12:39:16 +0000
-From:   Oleksandr Mazur <oleksandr.mazur@plvision.eu>
-To:     netdev@vger.kernel.org
-Cc:     jiri@nvidia.com, davem@davemloft.net, linux-kernel@vger.kernel.org,
-        kuba@kernel.org, Oleksandr Mazur <oleksandr.mazur@plvision.eu>
-Subject: [RFC v3 net-next] net: core: devlink: add 'dropped' stats field for DROP trap action
-Date:   Mon, 25 Jan 2021 14:38:56 +0200
-Message-Id: <20210125123856.1746-1-oleksandr.mazur@plvision.eu>
-X-Mailer: git-send-email 2.17.1
-Content-Type: text/plain
-X-Originating-IP: [217.20.186.93]
-X-ClientProxiedBy: AM0PR04CA0110.eurprd04.prod.outlook.com
- (2603:10a6:208:55::15) To AM0P190MB0738.EURP190.PROD.OUTLOOK.COM
- (2603:10a6:208:19b::9)
+        id S1730782AbhAZFEZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jan 2021 00:04:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51100 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728321AbhAYMrq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 07:47:46 -0500
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CDE8C06178C;
+        Mon, 25 Jan 2021 04:46:26 -0800 (PST)
+Received: by mail-pl1-x62f.google.com with SMTP id 31so7503683plb.10;
+        Mon, 25 Jan 2021 04:46:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=WhEjp90S8v5tScfR7Qe7gXy+P2RrD05DCaixP7pwYxM=;
+        b=b+vJ6JJynI3tDoW6YobxwJGY5dZP8eoug7rsUUHvhugJ+2FjBt+tZiUY3kEVsfswSS
+         UUF3dMN714efceSGNLxMGV6vBJGa4Fz0uX/vqXTW5tdDttcX8G7a7PpccPXHZBnws04/
+         i4uYRwL3dojKx/ZPvOy7RMSKb2zHgP5JcqST0cBtv2v4fLouhLBCZrxTyYrlde7AVSc1
+         yLI3sa3NXd1r69MZvvzKlicj5gwPRulUmZA341W7yGBZ2QRxaXPuNYwAEzIEcfMMFCIk
+         MpbTVH/skoE8kPuE81iFt0qPxQtZoENxfgthelPWzswQllN6yf1hzPDz0LhUuAcpRfVW
+         ZvLw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=WhEjp90S8v5tScfR7Qe7gXy+P2RrD05DCaixP7pwYxM=;
+        b=UPIq6QzxLO/p8JPm4+WMF3F+77u6Ne6y6L1OeJty/Z00cj7BnC6EChVrcI4RLH8cvB
+         mV+K7p0A4GJFq/tPGCleRo58uT5+IuEQZdD0YRMzhV6pJQ//PimqDmPHaPoooIDthwXJ
+         mgixY+rv46F29opSBEL9hWYtrmHKFdR1dVYJcWIuM29Gu+Uv+D9e8Qo5aAXglzUt0U35
+         3nsrCsMxT6Jpgor5g8v2sABKTJ8HaIcnWK++JuzAyThTHnC10yn5i/oApuKjY6Img8JA
+         TBy2m2s9SHDOV1nDhR+fqPcTL3TBsWdgOcW+tqGZ8SaKS0EBTiiH64zql8lmGohD1a50
+         wixw==
+X-Gm-Message-State: AOAM532A5Lr9lDM9+eQWyb69qsGaCOF78Wpo8XMa8g3tYCVSTcZ7/prc
+        OJaIAsg0v7iGJjxXc1QFRFsXcDOAJ2EYolji
+X-Google-Smtp-Source: ABdhPJwaZlXH+cYtJ24WzU8EOxSwQM7ve5e4pilSurp/gtT3j0J5hyc3Q+NJ1eGsDGy6e6BxaCmXGQ==
+X-Received: by 2002:a17:90a:b392:: with SMTP id e18mr245929pjr.156.1611578785494;
+        Mon, 25 Jan 2021 04:46:25 -0800 (PST)
+Received: from Leo-laptop-t470s.redhat.com ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id j123sm17815466pfg.36.2021.01.25.04.46.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 25 Jan 2021 04:46:25 -0800 (PST)
+From:   Hangbin Liu <liuhangbin@gmail.com>
+To:     bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org,
+        =?UTF-8?q?Toke=20H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>,
+        Jiri Benc <jbenc@redhat.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        David Ahern <dsahern@gmail.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Hangbin Liu <liuhangbin@gmail.com>
+Subject: [PATCHv17 bpf-next 1/6] bpf: run devmap xdp_prog on flush instead of bulk enqueue
+Date:   Mon, 25 Jan 2021 20:45:11 +0800
+Message-Id: <20210125124516.3098129-2-liuhangbin@gmail.com>
+X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20210125124516.3098129-1-liuhangbin@gmail.com>
+References: <20210122074652.2981711-1-liuhangbin@gmail.com>
+ <20210125124516.3098129-1-liuhangbin@gmail.com>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from omazur.x.ow.s (217.20.186.93) by AM0PR04CA0110.eurprd04.prod.outlook.com (2603:10a6:208:55::15) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3784.11 via Frontend Transport; Mon, 25 Jan 2021 12:39:15 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 8e8bc033-ee03-4090-c07d-08d8c12e39f8
-X-MS-TrafficTypeDiagnostic: AM9P190MB1233:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <AM9P190MB12337280B5E7FD4913F43CE2E4BD0@AM9P190MB1233.EURP190.PROD.OUTLOOK.COM>
-X-MS-Oob-TLC-OOBClassifiers: OLM:2582;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: GyPq0N5xamyU6h5ko0TYw23W/1uDFpGLO00kqC3oKDzx3KVRfBYJhsDEVj5bixaFRpEjUzws/LG6Xn3XtWRyKoI9zDyVhkhx/eq2cjTTo7h0jFE6Hwul5RzppldT00afrsPfU48htafN0Ce3PKnv86Li3OUq3MDu/PsLBPkJdPD1+u1TJRPWTwqtH+SoNHB3fyOB51NIV82mu5UIrszqnbAHknKtxmGlLfWjxp2oGrL3Aq98h5398DS8S1t9rT0YtErjGI83IT68DNMRjG90S7kAlddMxT2CsDgymdUrMigZNkjEuA4Rxo0ycHPg1xIE09zk70zS/f4D3Jyc2PIc9WgO1X+Ur8qWuNjpAGpfLKoFkDBfaMV7HLkI+U0fSNnFgwqSxIneC2Lm7cFRVaAPAVqlko4+6QMJ3s4FzFLg+2iC0S1vHLZ1gzJU4OPeAyQC9Puvn87PWYm0jZ7sHFBS5LtvXaugCMZ+s/5te46fz1icpdswPgWn6dap0ctsYH7LL6iyzIqWfo1Y1kct3XwFFQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0P190MB0738.EURP190.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(136003)(366004)(396003)(346002)(376002)(39830400003)(2906002)(6666004)(478600001)(52116002)(1076003)(107886003)(956004)(86362001)(44832011)(4326008)(316002)(8676002)(2616005)(6512007)(5660300002)(83380400001)(186003)(26005)(16526019)(66556008)(66476007)(6916009)(8936002)(6506007)(6486002)(66946007)(36756003);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?fTCKBWTByrE7tS5vliOHPDuTBu8B5sKiR9hu0mErJqArMjejB6VwHyjAILH1?=
- =?us-ascii?Q?bphqVivxmzd5zOg2KJUty1wVbvPSmX+uX5idL7HDSEjzfZfE6PZRwEdi7PAZ?=
- =?us-ascii?Q?uCRr3mC3DLe9mnAEFH8posc+4uRluvLo1KWIN5vWVwSz5ABaw/ftVghOenUX?=
- =?us-ascii?Q?Qpcbf4T9qfY3h5+pRlmLgHvFSCfq5xoWORUaD+iMIOfCRlpotOkF0Gn+bbWA?=
- =?us-ascii?Q?WliwFOG9hPSnWFwZXKtNtq2csqp7JY3au8dbWcgIXJiLzSxbnD8ntTir/RGG?=
- =?us-ascii?Q?5UkkUBbUy0dwOYssMk1ClBT5zNPhGga05h3j80B9SA5kHgQtp0UwbNYT6buX?=
- =?us-ascii?Q?BtPqgNJWX8UrJSUFB3zOZ0LN3SookYF+uc6hk8EuUxLlOiLDYN41XWMSZ3v1?=
- =?us-ascii?Q?5tUKiLu9UwEZ+FWT5XIe5wfIOcMSI8JMu7kRBm17Pp9X8U79cuJBO6P2iCLI?=
- =?us-ascii?Q?BfitJG/TobTCnylf6z7h75RYOkQj74wWEYPO8OA3N3qoXOgiDA//tonLZQmp?=
- =?us-ascii?Q?+VWdKJpHdtvk9pQaY7ccWBoFb3Q2bawzBqMVUMZ/FNMtRrkORj1YbjvvVo7m?=
- =?us-ascii?Q?8bQ3KTSumc9rSBGlC+bp6oEIH48+dTKUI0yy9gsObo2BXxKwfhoyz0w7Y/Y9?=
- =?us-ascii?Q?LmO+tlBZ9J9+r+Eqdh1zVG6wfxpHD2pS9zh3qp3yDuqwssllQeFxLaepGXaO?=
- =?us-ascii?Q?WdDuoZbpIB5jxTb8ai/jIdgPCMxgnLqSvtIj3fijIRH3mzNfELUxAFaretJD?=
- =?us-ascii?Q?CCka6W/PwysMPWzanrEo8Zc49HgW8ghgtgX4Vjis8rUafrZzpXl9IiO5l3RG?=
- =?us-ascii?Q?pL6i9l6cnDGa/DigfJ/jKmlY6R+rxoIZlzzavrM0rh/WVcJPgSJScaQaMXYp?=
- =?us-ascii?Q?X6/MqvZBkaay4JmKJOhZi+c85/B61lfjK6U0yUKJ4w/a+8LTkUI4KjTC6b/I?=
- =?us-ascii?Q?2198fNCd5FofFrCusgQxGk6Lq3G+uQFxW7gZ3rkpJFGZvaWeYfDqqPnq0MnL?=
- =?us-ascii?Q?hC2g6+bzX3sbjP47BNPA95ATyhs9GKaHl3wyxzBxdEeoOGF/qu+KmKl+jy9V?=
- =?us-ascii?Q?L0WqO+Lj?=
-X-OriginatorOrg: plvision.eu
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8e8bc033-ee03-4090-c07d-08d8c12e39f8
-X-MS-Exchange-CrossTenant-AuthSource: AM0P190MB0738.EURP190.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jan 2021 12:39:15.9559
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 03707b74-30f3-46b6-a0e0-ff0a7438c9c4
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: v2efzpSb6kAS37swydgeQt9/FCvk65mYkd9xhcO0nMSv4QItUP3mD+SlFUCQ/lSFHntcJ516Vm7llhwF5SR1T/IZvHrZIYbiuG5OIuCHOd8=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM9P190MB1233
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Whenever query statistics is issued for trap with DROP action,
-devlink subsystem would also fill-in statistics 'dropped' field.
-In case if device driver did't register callback for hard drop
-statistics querying, 'dropped' field will be omitted and not filled.
-Add trap_drop_counter_get callback implementation to the netdevsim.
-Add new test cases for netdevsim, to test both the callback
-functionality, as well as drop statistics alteration check.
+From: Jesper Dangaard Brouer <brouer@redhat.com>
 
-Signed-off-by: Oleksandr Mazur <oleksandr.mazur@plvision.eu>
+This changes the devmap XDP program support to run the program when the
+bulk queue is flushed instead of before the frame is enqueued. This has
+a couple of benefits:
+
+- It "sorts" the packets by destination devmap entry, and then runs the
+  same BPF program on all the packets in sequence. This ensures that we
+  keep the XDP program and destination device properties hot in I-cache.
+
+- It makes the multicast implementation simpler because it can just
+  enqueue packets using bq_enqueue() without having to deal with the
+  devmap program at all.
+
+The drawback is that if the devmap program drops the packet, the enqueue
+step is redundant. However, arguably this is mostly visible in a
+micro-benchmark, and with more mixed traffic the I-cache benefit should
+win out. The performance impact of just this patch is as follows:
+
+The bq_xmit_all's logic is also refactored and error label is removed.
+When bq_xmit_all() is called from bq_enqueue(), another packet will
+always be enqueued immediately after, so clearing dev_rx, xdp_prog and
+flush_node in bq_xmit_all() is redundant. Let's move the clear to
+__dev_flush(), and only check them once in bq_enqueue() since they are
+all modified together.
+
+By using xdp_redirect_map in sample/bpf and send pkts via pktgen cmd:
+./pktgen_sample03_burst_single_flow.sh -i eno1 -d $dst_ip -m $dst_mac -t 10 -s 64
+
+There are about +/- 0.1M deviation for native testing, the performance
+improved for the base-case, but some drop back with xdp devmap prog attached.
+
+Version          | Test                           | Generic | Native | Native + 2nd xdp_prog
+5.10 rc6         | xdp_redirect_map   i40e->i40e  |    2.0M |   9.1M |  8.0M
+5.10 rc6         | xdp_redirect_map   i40e->veth  |    1.7M |  11.0M |  9.7M
+5.10 rc6 + patch | xdp_redirect_map   i40e->i40e  |    2.0M |   9.5M |  7.5M
+5.10 rc6 + patch | xdp_redirect_map   i40e->veth  |    1.7M |  11.6M |  9.1M
+
+[1] https://lore.kernel.org/bpf/20210122025007.2968381-1-liuhangbin@gmail.com
+
+Reviewed-by: Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+Acked-by: Toke Høiland-Jørgensen <toke@redhat.com>
+Signed-off-by: Jesper Dangaard Brouer <brouer@redhat.com>
+Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+
 ---
-V3:
-    1) Mark subject as RFC instead of PATCH.
-V2:
-    1) Change commit description / subject.
-    2) Remove HARD_DROP action.
-    3) Remove devlink UAPI changes.
-    4) Rename hard statistics get callback to be 'trap_drop_counter_get'
-    5) Make callback get called for existing trap action - DROP:
-       whenever statistics for trap with DROP action is queried,
-       devlink subsystem would call-in callback to get stats from HW;
-    6) Add changes to the netdevsim support implemented changes
-       (as well as changes to make it possible to test netdevsim with
-        these changes).
-    7) Add new test cases to the netdevsim's kselftests to test new
-       changes provided with this patchset;
+v17:
+a) rename to_sent to to_send.
+b) clear bq dev_rx, xdp_prog and flush_node in __dev_flush().
 
-Test-results:
-# selftests: drivers/net/netdevsim: devlink_trap.sh
-# TEST: Initialization                                                [ OK ]
-# TEST: Trap action                                                   [ OK ]
-# TEST: Trap metadata                                                 [ OK ]
-# TEST: Non-existing trap                                             [ OK ]
-# TEST: Non-existing trap action                                      [ OK ]
-# TEST: Trap statistics                                               [ OK ]
-# TEST: Trap group action                                             [ OK ]
-# TEST: Non-existing trap group                                       [ OK ]
-# TEST: Trap group statistics                                         [ OK ]
-# TEST: Trap policer                                                  [ OK ]
-# TEST: Trap policer binding                                          [ OK ]
-# TEST: Port delete                                                   [ OK ]
-# TEST: Device delete                                                 [ OK ]
-ok 1 selftests: drivers/net/netdevsim: devlink_trap.sh
+v16:
+a) refactor bq_xmit_all logic and remove error label
 
+v15:
+a) do not use unlikely when checking bq->xdp_prog
+b) return sent frames for dev_map_bpf_prog_run()
 
- drivers/net/netdevsim/dev.c                   | 21 +++++++
- drivers/net/netdevsim/netdevsim.h             |  1 +
- include/net/devlink.h                         | 10 ++++
- net/core/devlink.c                            | 55 +++++++++++++++++--
- .../drivers/net/netdevsim/devlink_trap.sh     | 10 ++++
- .../selftests/net/forwarding/devlink_lib.sh   | 26 +++++++++
- 6 files changed, 119 insertions(+), 4 deletions(-)
+v14: no update, only rebase the code
+v13: pass in xdp_prog through __xdp_enqueue()
+v2-v12: no this patch
+---
+ kernel/bpf/devmap.c | 146 +++++++++++++++++++++++++-------------------
+ 1 file changed, 84 insertions(+), 62 deletions(-)
 
-diff --git a/drivers/net/netdevsim/dev.c b/drivers/net/netdevsim/dev.c
-index 816af1f55e2c..1fc8c7a2a1e3 100644
---- a/drivers/net/netdevsim/dev.c
-+++ b/drivers/net/netdevsim/dev.c
-@@ -231,6 +231,9 @@ static int nsim_dev_debugfs_init(struct nsim_dev *nsim_dev)
- 	debugfs_create_bool("fail_trap_policer_counter_get", 0600,
- 			    nsim_dev->ddir,
- 			    &nsim_dev->fail_trap_policer_counter_get);
-+	debugfs_create_bool("fail_trap_drop_counter_get", 0600,
-+			    nsim_dev->ddir,
-+			    &nsim_dev->fail_trap_drop_counter_get);
- 	nsim_udp_tunnels_debugfs_create(nsim_dev);
- 	return 0;
- }
-@@ -416,6 +419,7 @@ struct nsim_trap_data {
- 	struct delayed_work trap_report_dw;
- 	struct nsim_trap_item *trap_items_arr;
- 	u64 *trap_policers_cnt_arr;
-+	u64 trap_hard_drop_cnt;
- 	struct nsim_dev *nsim_dev;
- 	spinlock_t trap_lock;	/* Protects trap_items_arr */
+diff --git a/kernel/bpf/devmap.c b/kernel/bpf/devmap.c
+index f6e9c68afdd4..bf8b6b5c9cab 100644
+--- a/kernel/bpf/devmap.c
++++ b/kernel/bpf/devmap.c
+@@ -57,6 +57,7 @@ struct xdp_dev_bulk_queue {
+ 	struct list_head flush_node;
+ 	struct net_device *dev;
+ 	struct net_device *dev_rx;
++	struct bpf_prog *xdp_prog;
+ 	unsigned int count;
  };
-@@ -892,6 +896,22 @@ nsim_dev_devlink_trap_policer_counter_get(struct devlink *devlink,
- 	return 0;
+ 
+@@ -327,46 +328,92 @@ bool dev_map_can_have_prog(struct bpf_map *map)
+ 	return false;
  }
  
-+int nsim_dev_devlink_trap_drop_counter_get(struct devlink *devlink,
-+					   const struct devlink_trap *trap,
-+					   u64 *p_drops)
++static int dev_map_bpf_prog_run(struct bpf_prog *xdp_prog,
++				struct xdp_frame **frames, int n,
++				struct net_device *dev)
 +{
-+	struct nsim_dev *nsim_dev = devlink_priv(devlink);
-+	u64 *cnt;
++	struct xdp_txq_info txq = { .dev = dev };
++	struct xdp_buff xdp;
++	int i, nframes = 0;
 +
-+	if (nsim_dev->fail_trap_drop_counter_get)
-+		return -EINVAL;
++	for (i = 0; i < n; i++) {
++		struct xdp_frame *xdpf = frames[i];
++		u32 act;
++		int err;
 +
-+	cnt = &nsim_dev->trap_data->trap_hard_drop_cnt;
-+	*p_drops = (*cnt)++;
++		xdp_convert_frame_to_buff(xdpf, &xdp);
++		xdp.txq = &txq;
 +
-+	return 0;
++		act = bpf_prog_run_xdp(xdp_prog, &xdp);
++		switch (act) {
++		case XDP_PASS:
++			err = xdp_update_frame_from_buff(&xdp, xdpf);
++			if (unlikely(err < 0))
++				xdp_return_frame_rx_napi(xdpf);
++			else
++				frames[nframes++] = xdpf;
++			break;
++		default:
++			bpf_warn_invalid_xdp_action(act);
++			fallthrough;
++		case XDP_ABORTED:
++			trace_xdp_exception(dev, xdp_prog, act);
++			fallthrough;
++		case XDP_DROP:
++			xdp_return_frame_rx_napi(xdpf);
++			break;
++		}
++	}
++	return nframes; /* sent frames count */
 +}
 +
- static const struct devlink_ops nsim_dev_devlink_ops = {
- 	.supported_flash_update_params = DEVLINK_SUPPORT_FLASH_UPDATE_COMPONENT |
- 					 DEVLINK_SUPPORT_FLASH_UPDATE_OVERWRITE_MASK,
-@@ -905,6 +925,7 @@ static const struct devlink_ops nsim_dev_devlink_ops = {
- 	.trap_group_set = nsim_dev_devlink_trap_group_set,
- 	.trap_policer_set = nsim_dev_devlink_trap_policer_set,
- 	.trap_policer_counter_get = nsim_dev_devlink_trap_policer_counter_get,
-+	.trap_drop_counter_get = nsim_dev_devlink_trap_drop_counter_get,
- };
- 
- #define NSIM_DEV_MAX_MACS_DEFAULT 32
-diff --git a/drivers/net/netdevsim/netdevsim.h b/drivers/net/netdevsim/netdevsim.h
-index 48163c5f2ec9..b0d8ec7d09a5 100644
---- a/drivers/net/netdevsim/netdevsim.h
-+++ b/drivers/net/netdevsim/netdevsim.h
-@@ -219,6 +219,7 @@ struct nsim_dev {
- 	bool fail_trap_group_set;
- 	bool fail_trap_policer_set;
- 	bool fail_trap_policer_counter_get;
-+	bool fail_trap_drop_counter_get;
- 	struct {
- 		struct udp_tunnel_nic_shared utn_shared;
- 		u32 __ports[2][NSIM_UDP_TUNNEL_N_PORTS];
-diff --git a/include/net/devlink.h b/include/net/devlink.h
-index f466819cc477..0b9ed24533c5 100644
---- a/include/net/devlink.h
-+++ b/include/net/devlink.h
-@@ -1294,6 +1294,16 @@ struct devlink_ops {
- 				     const struct devlink_trap_group *group,
- 				     enum devlink_trap_action action,
- 				     struct netlink_ext_ack *extack);
-+	/**
-+	 * @trap_drop_counter_get: Trap drop counter get function.
-+	 *
-+	 * Should be used by device drivers to report number of packets
-+	 * that have been dropped, and cannot be passed to the devlink
-+	 * subsystem by the underlying device.
-+	 */
-+	int (*trap_drop_counter_get)(struct devlink *devlink,
-+				     const struct devlink_trap *trap,
-+				     u64 *p_drops);
- 	/**
- 	 * @trap_policer_init: Trap policer initialization function.
- 	 *
-diff --git a/net/core/devlink.c b/net/core/devlink.c
-index ee828e4b1007..2bb129cdf722 100644
---- a/net/core/devlink.c
-+++ b/net/core/devlink.c
-@@ -6791,8 +6791,9 @@ static void devlink_trap_stats_read(struct devlink_stats __percpu *trap_stats,
- 	}
- }
- 
--static int devlink_trap_stats_put(struct sk_buff *msg,
--				  struct devlink_stats __percpu *trap_stats)
-+static int
-+devlink_trap_group_stats_put(struct sk_buff *msg,
-+			     struct devlink_stats __percpu *trap_stats)
+ static void bq_xmit_all(struct xdp_dev_bulk_queue *bq, u32 flags)
  {
- 	struct devlink_stats stats;
- 	struct nlattr *attr;
-@@ -6820,6 +6821,52 @@ static int devlink_trap_stats_put(struct sk_buff *msg,
- 	return -EMSGSIZE;
- }
+ 	struct net_device *dev = bq->dev;
+-	int sent = 0, drops = 0, err = 0;
++	unsigned int cnt = bq->count;
++	int drops = 0, err = 0;
++	int to_send = cnt;
++	int sent = cnt;
+ 	int i;
  
-+static int devlink_trap_stats_put(struct sk_buff *msg, struct devlink *devlink,
-+				  const struct devlink_trap_item *trap_item)
-+{
-+	struct devlink_stats stats;
-+	struct nlattr *attr;
-+	u64 drops = 0;
-+	int err;
-+
-+	if (trap_item->action == DEVLINK_TRAP_ACTION_DROP &&
-+	    devlink->ops->trap_drop_counter_get) {
-+		err = devlink->ops->trap_drop_counter_get(devlink,
-+							  trap_item->trap,
-+							  &drops);
-+		if (err)
-+			return err;
+-	if (unlikely(!bq->count))
++	if (unlikely(!cnt))
+ 		return;
+ 
+-	for (i = 0; i < bq->count; i++) {
++	for (i = 0; i < cnt; i++) {
+ 		struct xdp_frame *xdpf = bq->q[i];
+ 
+ 		prefetch(xdpf);
+ 	}
+ 
+-	sent = dev->netdev_ops->ndo_xdp_xmit(dev, bq->count, bq->q, flags);
++	if (bq->xdp_prog) {
++		to_send = dev_map_bpf_prog_run(bq->xdp_prog, bq->q, cnt, dev);
++		if (!to_send) {
++			sent = 0;
++			goto out;
++		}
++		drops = cnt - to_send;
 +	}
 +
-+	devlink_trap_stats_read(trap_item->stats, &stats);
++	sent = dev->netdev_ops->ndo_xdp_xmit(dev, to_send, bq->q, flags);
+ 	if (sent < 0) {
+ 		err = sent;
+ 		sent = 0;
+-		goto error;
 +
-+	attr = nla_nest_start(msg, DEVLINK_ATTR_STATS);
-+	if (!attr)
-+		return -EMSGSIZE;
++		/* If ndo_xdp_xmit fails with an errno, no frames have been
++		 * xmit'ed and it's our responsibility to them free all.
++		 */
++		for (i = 0; i < cnt - drops; i++) {
++			struct xdp_frame *xdpf = bq->q[i];
 +
-+	if (nla_put_u64_64bit(msg, DEVLINK_ATTR_STATS_RX_DROPPED, drops,
-+			      DEVLINK_ATTR_PAD))
-+		goto nla_put_failure;
-+
-+	if (trap_item->action == DEVLINK_TRAP_ACTION_DROP &&
-+	    devlink->ops->trap_drop_counter_get &&
-+	    nla_put_u64_64bit(msg, DEVLINK_ATTR_STATS_RX_PACKETS,
-+			      stats.rx_packets, DEVLINK_ATTR_PAD))
-+			goto nla_put_failure;
-+
-+	if (nla_put_u64_64bit(msg, DEVLINK_ATTR_STATS_RX_BYTES,
-+			      stats.rx_bytes, DEVLINK_ATTR_PAD))
-+		goto nla_put_failure;
-+
-+	nla_nest_end(msg, attr);
-+
-+	return 0;
-+
-+nla_put_failure:
-+	nla_nest_cancel(msg, attr);
-+	return -EMSGSIZE;
-+}
-+
- static int devlink_nl_trap_fill(struct sk_buff *msg, struct devlink *devlink,
- 				const struct devlink_trap_item *trap_item,
- 				enum devlink_command cmd, u32 portid, u32 seq,
-@@ -6857,7 +6904,7 @@ static int devlink_nl_trap_fill(struct sk_buff *msg, struct devlink *devlink,
- 	if (err)
- 		goto nla_put_failure;
++			xdp_return_frame_rx_napi(xdpf);
++		}
+ 	}
+-	drops = bq->count - sent;
+ out:
++	drops = cnt - sent;
+ 	bq->count = 0;
  
--	err = devlink_trap_stats_put(msg, trap_item->stats);
-+	err = devlink_trap_stats_put(msg, devlink, trap_item);
- 	if (err)
- 		goto nla_put_failure;
- 
-@@ -7074,7 +7121,7 @@ devlink_nl_trap_group_fill(struct sk_buff *msg, struct devlink *devlink,
- 			group_item->policer_item->policer->id))
- 		goto nla_put_failure;
- 
--	err = devlink_trap_stats_put(msg, group_item->stats);
-+	err = devlink_trap_group_stats_put(msg, group_item->stats);
- 	if (err)
- 		goto nla_put_failure;
- 
-diff --git a/tools/testing/selftests/drivers/net/netdevsim/devlink_trap.sh b/tools/testing/selftests/drivers/net/netdevsim/devlink_trap.sh
-index da49ad2761b5..ff4f3617e0c5 100755
---- a/tools/testing/selftests/drivers/net/netdevsim/devlink_trap.sh
-+++ b/tools/testing/selftests/drivers/net/netdevsim/devlink_trap.sh
-@@ -163,6 +163,16 @@ trap_stats_test()
- 			devlink_trap_action_set $trap_name "drop"
- 			devlink_trap_stats_idle_test $trap_name
- 			check_err $? "Stats of trap $trap_name not idle when action is drop"
-+
-+			echo "y"> $DEBUGFS_DIR/fail_trap_drop_counter_get
-+			devlink -s trap show $DEVLINK_DEV trap $trap_name &> /dev/null
-+			check_fail $? "Managed to read trap (hard dropped) statistics when should not"
-+			echo "n"> $DEBUGFS_DIR/fail_trap_drop_counter_get
-+			devlink -s trap show $DEVLINK_DEV trap $trap_name &> /dev/null
-+			check_err $? "Did not manage to read trap (hard dropped) statistics when should"
-+
-+			devlink_trap_drop_stats_idle_test $trap_name
-+			check_fail $? "Drop stats of trap $trap_name idle when should not"
- 		else
- 			devlink_trap_stats_idle_test $trap_name
- 			check_fail $? "Stats of non-drop trap $trap_name idle when should not"
-diff --git a/tools/testing/selftests/net/forwarding/devlink_lib.sh b/tools/testing/selftests/net/forwarding/devlink_lib.sh
-index 9c12c4fd3afc..2094ba025af5 100644
---- a/tools/testing/selftests/net/forwarding/devlink_lib.sh
-+++ b/tools/testing/selftests/net/forwarding/devlink_lib.sh
-@@ -318,6 +318,14 @@ devlink_trap_rx_bytes_get()
- 		| jq '.[][][]["stats"]["rx"]["bytes"]'
+ 	trace_xdp_devmap_xmit(bq->dev_rx, dev, sent, drops, err);
+-	bq->dev_rx = NULL;
+-	__list_del_clearprev(&bq->flush_node);
+ 	return;
+-error:
+-	/* If ndo_xdp_xmit fails with an errno, no frames have been
+-	 * xmit'ed and it's our responsibility to them free all.
+-	 */
+-	for (i = 0; i < bq->count; i++) {
+-		struct xdp_frame *xdpf = bq->q[i];
+-
+-		xdp_return_frame_rx_napi(xdpf);
+-		drops++;
+-	}
+-	goto out;
  }
  
-+devlink_trap_drop_packets_get()
-+{
-+	local trap_name=$1; shift
-+
-+	devlink -js trap show $DEVLINK_DEV trap $trap_name \
-+		| jq '.[][][]["stats"]["rx"]["dropped"]'
-+}
-+
- devlink_trap_stats_idle_test()
- {
- 	local trap_name=$1; shift
-@@ -339,6 +347,24 @@ devlink_trap_stats_idle_test()
- 	fi
+ /* __dev_flush is called from xdp_do_flush() which _must_ be signaled
+@@ -384,8 +431,12 @@ void __dev_flush(void)
+ 	struct list_head *flush_list = this_cpu_ptr(&dev_flush_list);
+ 	struct xdp_dev_bulk_queue *bq, *tmp;
+ 
+-	list_for_each_entry_safe(bq, tmp, flush_list, flush_node)
++	list_for_each_entry_safe(bq, tmp, flush_list, flush_node) {
+ 		bq_xmit_all(bq, XDP_XMIT_FLUSH);
++		bq->dev_rx = NULL;
++		bq->xdp_prog = NULL;
++		__list_del_clearprev(&bq->flush_node);
++	}
  }
  
-+devlink_trap_drop_stats_idle_test()
-+{
-+	local trap_name=$1; shift
-+	local t0_packets t0_bytes
-+
-+	t0_packets=$(devlink_trap_drop_packets_get $trap_name)
-+
-+	sleep 1
-+
-+	t1_packets=$(devlink_trap_drop_packets_get $trap_name)
-+
-+	if [[ $t0_packets -eq $t1_packets ]]; then
-+		return 0
-+	else
-+		return 1
-+	fi
-+}
-+
- devlink_traps_enable_all()
+ /* rcu_read_lock (from syscall and BPF contexts) ensures that if a delete and/or
+@@ -408,7 +459,7 @@ struct bpf_dtab_netdev *__dev_map_lookup_elem(struct bpf_map *map, u32 key)
+  * Thus, safe percpu variable access.
+  */
+ static void bq_enqueue(struct net_device *dev, struct xdp_frame *xdpf,
+-		       struct net_device *dev_rx)
++		       struct net_device *dev_rx, struct bpf_prog *xdp_prog)
  {
- 	local trap_name
+ 	struct list_head *flush_list = this_cpu_ptr(&dev_flush_list);
+ 	struct xdp_dev_bulk_queue *bq = this_cpu_ptr(dev->xdp_bulkq);
+@@ -419,18 +470,22 @@ static void bq_enqueue(struct net_device *dev, struct xdp_frame *xdpf,
+ 	/* Ingress dev_rx will be the same for all xdp_frame's in
+ 	 * bulk_queue, because bq stored per-CPU and must be flushed
+ 	 * from net_device drivers NAPI func end.
++	 *
++	 * Do the same with xdp_prog and flush_list since these fields
++	 * are only ever modified together.
+ 	 */
+-	if (!bq->dev_rx)
++	if (!bq->dev_rx) {
+ 		bq->dev_rx = dev_rx;
++		bq->xdp_prog = xdp_prog;
++		list_add(&bq->flush_node, flush_list);
++	}
+ 
+ 	bq->q[bq->count++] = xdpf;
+-
+-	if (!bq->flush_node.prev)
+-		list_add(&bq->flush_node, flush_list);
+ }
+ 
+ static inline int __xdp_enqueue(struct net_device *dev, struct xdp_buff *xdp,
+-			       struct net_device *dev_rx)
++				struct net_device *dev_rx,
++				struct bpf_prog *xdp_prog)
+ {
+ 	struct xdp_frame *xdpf;
+ 	int err;
+@@ -446,42 +501,14 @@ static inline int __xdp_enqueue(struct net_device *dev, struct xdp_buff *xdp,
+ 	if (unlikely(!xdpf))
+ 		return -EOVERFLOW;
+ 
+-	bq_enqueue(dev, xdpf, dev_rx);
++	bq_enqueue(dev, xdpf, dev_rx, xdp_prog);
+ 	return 0;
+ }
+ 
+-static struct xdp_buff *dev_map_run_prog(struct net_device *dev,
+-					 struct xdp_buff *xdp,
+-					 struct bpf_prog *xdp_prog)
+-{
+-	struct xdp_txq_info txq = { .dev = dev };
+-	u32 act;
+-
+-	xdp_set_data_meta_invalid(xdp);
+-	xdp->txq = &txq;
+-
+-	act = bpf_prog_run_xdp(xdp_prog, xdp);
+-	switch (act) {
+-	case XDP_PASS:
+-		return xdp;
+-	case XDP_DROP:
+-		break;
+-	default:
+-		bpf_warn_invalid_xdp_action(act);
+-		fallthrough;
+-	case XDP_ABORTED:
+-		trace_xdp_exception(dev, xdp_prog, act);
+-		break;
+-	}
+-
+-	xdp_return_buff(xdp);
+-	return NULL;
+-}
+-
+ int dev_xdp_enqueue(struct net_device *dev, struct xdp_buff *xdp,
+ 		    struct net_device *dev_rx)
+ {
+-	return __xdp_enqueue(dev, xdp, dev_rx);
++	return __xdp_enqueue(dev, xdp, dev_rx, NULL);
+ }
+ 
+ int dev_map_enqueue(struct bpf_dtab_netdev *dst, struct xdp_buff *xdp,
+@@ -489,12 +516,7 @@ int dev_map_enqueue(struct bpf_dtab_netdev *dst, struct xdp_buff *xdp,
+ {
+ 	struct net_device *dev = dst->dev;
+ 
+-	if (dst->xdp_prog) {
+-		xdp = dev_map_run_prog(dev, xdp, dst->xdp_prog);
+-		if (!xdp)
+-			return 0;
+-	}
+-	return __xdp_enqueue(dev, xdp, dev_rx);
++	return __xdp_enqueue(dev, xdp, dev_rx, dst->xdp_prog);
+ }
+ 
+ int dev_map_generic_redirect(struct bpf_dtab_netdev *dst, struct sk_buff *skb,
 -- 
-2.17.1
+2.26.2
 
