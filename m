@@ -2,395 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 94567302183
-	for <lists+netdev@lfdr.de>; Mon, 25 Jan 2021 05:58:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3297330218F
+	for <lists+netdev@lfdr.de>; Mon, 25 Jan 2021 06:07:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727117AbhAYE5i (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Sun, 24 Jan 2021 23:57:38 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34800 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727025AbhAYE5W (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Sun, 24 Jan 2021 23:57:22 -0500
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7AB1C061574;
-        Sun, 24 Jan 2021 20:56:41 -0800 (PST)
-Received: by mail-ed1-x536.google.com with SMTP id s11so13674117edd.5;
-        Sun, 24 Jan 2021 20:56:41 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=zYsl0odAU+at1sse2lectf7SOmVe6rJJ4N5juxJaBng=;
-        b=Rsp8SwN9U+SoJpoa6gyV8rIUpANfnG34S+OqL89e3kANUaoYXPRT6U99RCvjPkYF3R
-         tPS0uIV/ALI/Zl8NuzAqxBr74vdpqpDIVBAFvD3wP0znPaLYVMevUwm3rf2r8t7kJtRq
-         DqxjaHjOfu7FelSoqRSfomTswJnAfAs/bKXkdkExc8S87/Lp3oKg3Y80cQL4sISXp0R4
-         33UCpO7W80pEii/7ENb0rT1oku14js2h27tVZsKxXv1lXJql3AK8XNLSgkaaNTHGaXfG
-         7H3zR9C/AdrTf7SkjIBuh2TSGBX7vi/OEIkM3Y0g99DfgevC4im9vPCOUXIGh6dE+gTh
-         Ny3g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=zYsl0odAU+at1sse2lectf7SOmVe6rJJ4N5juxJaBng=;
-        b=r1mTJvuxsYut6mGseB25vD3LNcuFtAOT6/W4a3+Fx3MX5z5SKizdVQo7Qxo0A0rGzG
-         RphfjkB7SeDOY72v6O8nKNVQYEwyJVVogUgWB7ctHkKBoReskqpKX7RCFs07ilJ/PGRm
-         KUbcCoz1wN5QlkckKcQ4oYroYtlLB7YyjrvBATDHc1fvv9Z3YSfE8lgrIO2/rYsCdewi
-         WHqud2tLhCSKjxaGskSGnFQO6kh62xMQ4vF2qJzQAfu477L1JGLXfeQ4w4H2fSIz0HAL
-         9LPvgrpvFlnMWMEUNSqXfkZz5xlbU6ga5GXlTNHBzeokEehNOJRNwTnN08lrsuhQMnbf
-         KB+w==
-X-Gm-Message-State: AOAM532vn536qmlVBTGvBgDpSxdiy1nkQRnqvl3GKW8b9VofU13zaSWY
-        QcOh87S9rY+VwHwRooQrG0E=
-X-Google-Smtp-Source: ABdhPJyWIbRyvBqI2gTFt19MbM1oLoEc0sOLKfaMZ7O/DUGoTp3RYbvr++v68Lhsqu1NqsaqHQwn2A==
-X-Received: by 2002:aa7:ca51:: with SMTP id j17mr493405edt.124.1611550600529;
-        Sun, 24 Jan 2021 20:56:40 -0800 (PST)
-Received: from lorenzo-HP-650-Notebook-PC.mshome.net (host-82-61-142-146.retail.telecomitalia.it. [82.61.142.146])
-        by smtp.gmail.com with ESMTPSA id k22sm7765828eji.101.2021.01.24.20.56.39
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 24 Jan 2021 20:56:40 -0800 (PST)
-From:   Lorenzo Carletti <lorenzo.carletti98@gmail.com>
-To:     linus.walleij@linaro.org
-Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        olteanv@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lorenzo Carletti <lorenzo.carletti98@gmail.com>
-Subject: [PATCH 1/1] net: dsa: rtl8366rb: standardize init jam tables
-Date:   Mon, 25 Jan 2021 05:56:31 +0100
-Message-Id: <20210125045631.2345-2-lorenzo.carletti98@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210125045631.2345-1-lorenzo.carletti98@gmail.com>
-References: <20210125045631.2345-1-lorenzo.carletti98@gmail.com>
+        id S1726052AbhAYFGo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Jan 2021 00:06:44 -0500
+Received: from mail.loongson.cn ([114.242.206.163]:36364 "EHLO loongson.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725272AbhAYFGn (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 25 Jan 2021 00:06:43 -0500
+Received: from linux.localdomain (unknown [113.200.148.30])
+        by mail.loongson.cn (Coremail) with SMTP id AQAAf9DxSL6qUQ5gvboLAA--.17884S2;
+        Mon, 25 Jan 2021 13:05:47 +0800 (CST)
+From:   Tiezhu Yang <yangtiezhu@loongson.cn>
+To:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-mips@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Xuefeng Li <lixuefeng@loongson.cn>
+Subject: [PATCH bpf-next v2] samples/bpf: Set flag __SANE_USERSPACE_TYPES__ for MIPS to fix build warnings
+Date:   Mon, 25 Jan 2021 13:05:46 +0800
+Message-Id: <1611551146-14052-1-git-send-email-yangtiezhu@loongson.cn>
+X-Mailer: git-send-email 2.1.0
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-CM-TRANSID: AQAAf9DxSL6qUQ5gvboLAA--.17884S2
+X-Coremail-Antispam: 1UD129KBjvJXoWxZFyDZr1ktrW8ArW5Xw13urg_yoW5KF17pa
+        n29rW7Cr4jvrW3GrW7Cr4I9w1fW398WFyDXFW8WryYv3W2gasYqr4DK3yaqrs5Wrs2va1S
+        vry3KrW5Ja4rXw7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUvE14x267AKxVW8JVW5JwAFc2x0x2IEx4CE42xK8VAvwI8IcIk0
+        rVWrJVCq3wAFIxvE14AKwVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK02
+        1l84ACjcxK6xIIjxv20xvE14v26r1I6r4UM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26r4j
+        6F4UM28EF7xvwVC2z280aVAFwI0_Gr1j6F4UJwA2z4x0Y4vEx4A2jsIEc7CjxVAFwI0_Gc
+        CE3s1le2I262IYc4CY6c8Ij28IcVAaY2xG8wAqx4xG64xvF2IEw4CE5I8CrVC2j2WlYx0E
+        2Ix0cI8IcVAFwI0_Jr0_Jr4lYx0Ex4A2jsIE14v26r4j6F4UMcvjeVCFs4IE7xkEbVWUJV
+        W8JwACjcxG0xvY0x0EwIxGrwACjI8F5VA0II8E6IAqYI8I648v4I1lFIxGxcIEc7CjxVA2
+        Y2ka0xkIwI1lc2xSY4AK67AK6r4rMxAIw28IcxkI7VAKI48JMxC20s026xCaFVCjc4AY6r
+        1j6r4UMI8I3I0E5I8CrVAFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CE
+        b7AF67AKxVWUtVW8ZwCIc40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0x
+        vE2Ix0cI8IcVCY1x0267AKxVW8JVWxJwCI42IY6xAIw20EY4v20xvaj40_WFyUJVCq3wCI
+        42IY6I8E87Iv67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWI
+        evJa73UjIFyTuYvjfUeF4iUUUUU
+X-CM-SenderInfo: p1dqw3xlh2x3gn0dqz5rrqw2lrqou0/
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In the rtl8366rb driver there are some jam tables which contain
-undocumented values.
-While trying to understand what these tables actually do,
-I noticed a discrepancy in how one of those was treated.
-Most of them were plain u16 arrays, while the ethernet one was
-an u16 matrix.
-By looking at the vendor's droplets of source code these tables came from,
-I found out that they were all originally u16 matrixes.
+There exists many build warnings when make M=samples/bpf on the Loongson
+platform, this issue is MIPS related, x86 compiles just fine.
 
-This commit standardizes the jam tables, turning them all into
-u16 matrixes.
-This change makes it easier to understand how the jam tables are used
-and also makes it possible for a single function to handle all of them,
-removing some duplicated code.
+Here are some warnings:
 
-Signed-off-by: Lorenzo Carletti <lorenzo.carletti98@gmail.com>
+  CC  samples/bpf/ibumad_user.o
+samples/bpf/ibumad_user.c: In function ‘dump_counts’:
+samples/bpf/ibumad_user.c:46:24: warning: format ‘%llu’ expects argument of type ‘long long unsigned int’, but argument 3 has type ‘__u64’ {aka ‘long unsigned int’} [-Wformat=]
+    printf("0x%02x : %llu\n", key, value);
+                     ~~~^          ~~~~~
+                     %lu
+  CC  samples/bpf/offwaketime_user.o
+samples/bpf/offwaketime_user.c: In function ‘print_ksym’:
+samples/bpf/offwaketime_user.c:34:17: warning: format ‘%llx’ expects argument of type ‘long long unsigned int’, but argument 3 has type ‘__u64’ {aka ‘long unsigned int’} [-Wformat=]
+   printf("%s/%llx;", sym->name, addr);
+              ~~~^               ~~~~
+              %lx
+samples/bpf/offwaketime_user.c: In function ‘print_stack’:
+samples/bpf/offwaketime_user.c:68:17: warning: format ‘%lld’ expects argument of type ‘long long int’, but argument 3 has type ‘__u64’ {aka ‘long unsigned int’} [-Wformat=]
+  printf(";%s %lld\n", key->waker, count);
+              ~~~^                 ~~~~~
+              %ld
+
+MIPS needs __SANE_USERSPACE_TYPES__ before <linux/types.h> to select
+'int-ll64.h' in arch/mips/include/uapi/asm/types.h, then it can avoid
+build warnings when printing __u64 with %llu, %llx or %lld.
+
+The header tools/include/linux/types.h defines __SANE_USERSPACE_TYPES__,
+it seems that we can include <linux/types.h> in the source files which
+have build warnings, but it has no effect due to actually it includes
+usr/include/linux/types.h instead of tools/include/linux/types.h, the
+problem is that "usr/include" is preferred first than "tools/include"
+in samples/bpf/Makefile, that sounds like a ugly hack to -Itools/include
+before -Iusr/include.
+
+So define __SANE_USERSPACE_TYPES__ for MIPS in samples/bpf/Makefile
+is proper, if add "TPROGS_CFLAGS += -D__SANE_USERSPACE_TYPES__" in
+samples/bpf/Makefile, it appears the following error:
+
+Auto-detecting system features:
+...                        libelf: [ on  ]
+...                          zlib: [ on  ]
+...                           bpf: [ OFF ]
+
+BPF API too old
+make[3]: *** [Makefile:293: bpfdep] Error 1
+make[2]: *** [Makefile:156: all] Error 2
+
+With #ifndef __SANE_USERSPACE_TYPES__  in tools/include/linux/types.h,
+the above error has gone and this ifndef change does not hurt other
+compilations.
+
+Signed-off-by: Tiezhu Yang <yangtiezhu@loongson.cn>
 ---
- drivers/net/dsa/rtl8366rb.c | 264 ++++++++++++++++++------------------
- 1 file changed, 131 insertions(+), 133 deletions(-)
 
-diff --git a/drivers/net/dsa/rtl8366rb.c b/drivers/net/dsa/rtl8366rb.c
-index cfe56960f44b..673744e56713 100644
---- a/drivers/net/dsa/rtl8366rb.c
-+++ b/drivers/net/dsa/rtl8366rb.c
-@@ -602,107 +602,107 @@ static int rtl8366rb_set_addr(struct realtek_smi *smi)
- /* Found in a vendor driver */
+v2: Update the commit message
+
+ samples/bpf/Makefile        | 4 ++++
+ tools/include/linux/types.h | 3 +++
+ 2 files changed, 7 insertions(+)
+
+diff --git a/samples/bpf/Makefile b/samples/bpf/Makefile
+index 26fc96c..27de306 100644
+--- a/samples/bpf/Makefile
++++ b/samples/bpf/Makefile
+@@ -183,6 +183,10 @@ BPF_EXTRA_CFLAGS := $(ARM_ARCH_SELECTOR)
+ TPROGS_CFLAGS += $(ARM_ARCH_SELECTOR)
+ endif
  
- /* For the "version 0" early silicon, appear in most source releases */
--static const u16 rtl8366rb_init_jam_ver_0[] = {
--	0x000B, 0x0001, 0x03A6, 0x0100, 0x03A7, 0x0001, 0x02D1, 0x3FFF,
--	0x02D2, 0x3FFF, 0x02D3, 0x3FFF, 0x02D4, 0x3FFF, 0x02D5, 0x3FFF,
--	0x02D6, 0x3FFF, 0x02D7, 0x3FFF, 0x02D8, 0x3FFF, 0x022B, 0x0688,
--	0x022C, 0x0FAC, 0x03D0, 0x4688, 0x03D1, 0x01F5, 0x0000, 0x0830,
--	0x02F9, 0x0200, 0x02F7, 0x7FFF, 0x02F8, 0x03FF, 0x0080, 0x03E8,
--	0x0081, 0x00CE, 0x0082, 0x00DA, 0x0083, 0x0230, 0xBE0F, 0x2000,
--	0x0231, 0x422A, 0x0232, 0x422A, 0x0233, 0x422A, 0x0234, 0x422A,
--	0x0235, 0x422A, 0x0236, 0x422A, 0x0237, 0x422A, 0x0238, 0x422A,
--	0x0239, 0x422A, 0x023A, 0x422A, 0x023B, 0x422A, 0x023C, 0x422A,
--	0x023D, 0x422A, 0x023E, 0x422A, 0x023F, 0x422A, 0x0240, 0x422A,
--	0x0241, 0x422A, 0x0242, 0x422A, 0x0243, 0x422A, 0x0244, 0x422A,
--	0x0245, 0x422A, 0x0246, 0x422A, 0x0247, 0x422A, 0x0248, 0x422A,
--	0x0249, 0x0146, 0x024A, 0x0146, 0x024B, 0x0146, 0xBE03, 0xC961,
--	0x024D, 0x0146, 0x024E, 0x0146, 0x024F, 0x0146, 0x0250, 0x0146,
--	0xBE64, 0x0226, 0x0252, 0x0146, 0x0253, 0x0146, 0x024C, 0x0146,
--	0x0251, 0x0146, 0x0254, 0x0146, 0xBE62, 0x3FD0, 0x0084, 0x0320,
--	0x0255, 0x0146, 0x0256, 0x0146, 0x0257, 0x0146, 0x0258, 0x0146,
--	0x0259, 0x0146, 0x025A, 0x0146, 0x025B, 0x0146, 0x025C, 0x0146,
--	0x025D, 0x0146, 0x025E, 0x0146, 0x025F, 0x0146, 0x0260, 0x0146,
--	0x0261, 0xA23F, 0x0262, 0x0294, 0x0263, 0xA23F, 0x0264, 0x0294,
--	0x0265, 0xA23F, 0x0266, 0x0294, 0x0267, 0xA23F, 0x0268, 0x0294,
--	0x0269, 0xA23F, 0x026A, 0x0294, 0x026B, 0xA23F, 0x026C, 0x0294,
--	0x026D, 0xA23F, 0x026E, 0x0294, 0x026F, 0xA23F, 0x0270, 0x0294,
--	0x02F5, 0x0048, 0xBE09, 0x0E00, 0xBE1E, 0x0FA0, 0xBE14, 0x8448,
--	0xBE15, 0x1007, 0xBE4A, 0xA284, 0xC454, 0x3F0B, 0xC474, 0x3F0B,
--	0xBE48, 0x3672, 0xBE4B, 0x17A7, 0xBE4C, 0x0B15, 0xBE52, 0x0EDD,
--	0xBE49, 0x8C00, 0xBE5B, 0x785C, 0xBE5C, 0x785C, 0xBE5D, 0x785C,
--	0xBE61, 0x368A, 0xBE63, 0x9B84, 0xC456, 0xCC13, 0xC476, 0xCC13,
--	0xBE65, 0x307D, 0xBE6D, 0x0005, 0xBE6E, 0xE120, 0xBE2E, 0x7BAF,
-+static const u16 rtl8366rb_init_jam_ver_0[][2] = {
-+	{0x000B, 0x0001}, {0x03A6, 0x0100}, {0x03A7, 0x0001}, {0x02D1, 0x3FFF},
-+	{0x02D2, 0x3FFF}, {0x02D3, 0x3FFF}, {0x02D4, 0x3FFF}, {0x02D5, 0x3FFF},
-+	{0x02D6, 0x3FFF}, {0x02D7, 0x3FFF}, {0x02D8, 0x3FFF}, {0x022B, 0x0688},
-+	{0x022C, 0x0FAC}, {0x03D0, 0x4688}, {0x03D1, 0x01F5}, {0x0000, 0x0830},
-+	{0x02F9, 0x0200}, {0x02F7, 0x7FFF}, {0x02F8, 0x03FF}, {0x0080, 0x03E8},
-+	{0x0081, 0x00CE}, {0x0082, 0x00DA}, {0x0083, 0x0230}, {0xBE0F, 0x2000},
-+	{0x0231, 0x422A}, {0x0232, 0x422A}, {0x0233, 0x422A}, {0x0234, 0x422A},
-+	{0x0235, 0x422A}, {0x0236, 0x422A}, {0x0237, 0x422A}, {0x0238, 0x422A},
-+	{0x0239, 0x422A}, {0x023A, 0x422A}, {0x023B, 0x422A}, {0x023C, 0x422A},
-+	{0x023D, 0x422A}, {0x023E, 0x422A}, {0x023F, 0x422A}, {0x0240, 0x422A},
-+	{0x0241, 0x422A}, {0x0242, 0x422A}, {0x0243, 0x422A}, {0x0244, 0x422A},
-+	{0x0245, 0x422A}, {0x0246, 0x422A}, {0x0247, 0x422A}, {0x0248, 0x422A},
-+	{0x0249, 0x0146}, {0x024A, 0x0146}, {0x024B, 0x0146}, {0xBE03, 0xC961},
-+	{0x024D, 0x0146}, {0x024E, 0x0146}, {0x024F, 0x0146}, {0x0250, 0x0146},
-+	{0xBE64, 0x0226}, {0x0252, 0x0146}, {0x0253, 0x0146}, {0x024C, 0x0146},
-+	{0x0251, 0x0146}, {0x0254, 0x0146}, {0xBE62, 0x3FD0}, {0x0084, 0x0320},
-+	{0x0255, 0x0146}, {0x0256, 0x0146}, {0x0257, 0x0146}, {0x0258, 0x0146},
-+	{0x0259, 0x0146}, {0x025A, 0x0146}, {0x025B, 0x0146}, {0x025C, 0x0146},
-+	{0x025D, 0x0146}, {0x025E, 0x0146}, {0x025F, 0x0146}, {0x0260, 0x0146},
-+	{0x0261, 0xA23F}, {0x0262, 0x0294}, {0x0263, 0xA23F}, {0x0264, 0x0294},
-+	{0x0265, 0xA23F}, {0x0266, 0x0294}, {0x0267, 0xA23F}, {0x0268, 0x0294},
-+	{0x0269, 0xA23F}, {0x026A, 0x0294}, {0x026B, 0xA23F}, {0x026C, 0x0294},
-+	{0x026D, 0xA23F}, {0x026E, 0x0294}, {0x026F, 0xA23F}, {0x0270, 0x0294},
-+	{0x02F5, 0x0048}, {0xBE09, 0x0E00}, {0xBE1E, 0x0FA0}, {0xBE14, 0x8448},
-+	{0xBE15, 0x1007}, {0xBE4A, 0xA284}, {0xC454, 0x3F0B}, {0xC474, 0x3F0B},
-+	{0xBE48, 0x3672}, {0xBE4B, 0x17A7}, {0xBE4C, 0x0B15}, {0xBE52, 0x0EDD},
-+	{0xBE49, 0x8C00}, {0xBE5B, 0x785C}, {0xBE5C, 0x785C}, {0xBE5D, 0x785C},
-+	{0xBE61, 0x368A}, {0xBE63, 0x9B84}, {0xC456, 0xCC13}, {0xC476, 0xCC13},
-+	{0xBE65, 0x307D}, {0xBE6D, 0x0005}, {0xBE6E, 0xE120}, {0xBE2E, 0x7BAF},
- };
- 
- /* This v1 init sequence is from Belkin F5D8235 U-Boot release */
--static const u16 rtl8366rb_init_jam_ver_1[] = {
--	0x0000, 0x0830, 0x0001, 0x8000, 0x0400, 0x8130, 0xBE78, 0x3C3C,
--	0x0431, 0x5432, 0xBE37, 0x0CE4, 0x02FA, 0xFFDF, 0x02FB, 0xFFE0,
--	0xC44C, 0x1585, 0xC44C, 0x1185, 0xC44C, 0x1585, 0xC46C, 0x1585,
--	0xC46C, 0x1185, 0xC46C, 0x1585, 0xC451, 0x2135, 0xC471, 0x2135,
--	0xBE10, 0x8140, 0xBE15, 0x0007, 0xBE6E, 0xE120, 0xBE69, 0xD20F,
--	0xBE6B, 0x0320, 0xBE24, 0xB000, 0xBE23, 0xFF51, 0xBE22, 0xDF20,
--	0xBE21, 0x0140, 0xBE20, 0x00BB, 0xBE24, 0xB800, 0xBE24, 0x0000,
--	0xBE24, 0x7000, 0xBE23, 0xFF51, 0xBE22, 0xDF60, 0xBE21, 0x0140,
--	0xBE20, 0x0077, 0xBE24, 0x7800, 0xBE24, 0x0000, 0xBE2E, 0x7B7A,
--	0xBE36, 0x0CE4, 0x02F5, 0x0048, 0xBE77, 0x2940, 0x000A, 0x83E0,
--	0xBE79, 0x3C3C, 0xBE00, 0x1340,
-+static const u16 rtl8366rb_init_jam_ver_1[][2] = {
-+	{0x0000, 0x0830}, {0x0001, 0x8000}, {0x0400, 0x8130}, {0xBE78, 0x3C3C},
-+	{0x0431, 0x5432}, {0xBE37, 0x0CE4}, {0x02FA, 0xFFDF}, {0x02FB, 0xFFE0},
-+	{0xC44C, 0x1585}, {0xC44C, 0x1185}, {0xC44C, 0x1585}, {0xC46C, 0x1585},
-+	{0xC46C, 0x1185}, {0xC46C, 0x1585}, {0xC451, 0x2135}, {0xC471, 0x2135},
-+	{0xBE10, 0x8140}, {0xBE15, 0x0007}, {0xBE6E, 0xE120}, {0xBE69, 0xD20F},
-+	{0xBE6B, 0x0320}, {0xBE24, 0xB000}, {0xBE23, 0xFF51}, {0xBE22, 0xDF20},
-+	{0xBE21, 0x0140}, {0xBE20, 0x00BB}, {0xBE24, 0xB800}, {0xBE24, 0x0000},
-+	{0xBE24, 0x7000}, {0xBE23, 0xFF51}, {0xBE22, 0xDF60}, {0xBE21, 0x0140},
-+	{0xBE20, 0x0077}, {0xBE24, 0x7800}, {0xBE24, 0x0000}, {0xBE2E, 0x7B7A},
-+	{0xBE36, 0x0CE4}, {0x02F5, 0x0048}, {0xBE77, 0x2940}, {0x000A, 0x83E0},
-+	{0xBE79, 0x3C3C}, {0xBE00, 0x1340},
- };
- 
- /* This v2 init sequence is from Belkin F5D8235 U-Boot release */
--static const u16 rtl8366rb_init_jam_ver_2[] = {
--	0x0450, 0x0000, 0x0400, 0x8130, 0x000A, 0x83ED, 0x0431, 0x5432,
--	0xC44F, 0x6250, 0xC46F, 0x6250, 0xC456, 0x0C14, 0xC476, 0x0C14,
--	0xC44C, 0x1C85, 0xC44C, 0x1885, 0xC44C, 0x1C85, 0xC46C, 0x1C85,
--	0xC46C, 0x1885, 0xC46C, 0x1C85, 0xC44C, 0x0885, 0xC44C, 0x0881,
--	0xC44C, 0x0885, 0xC46C, 0x0885, 0xC46C, 0x0881, 0xC46C, 0x0885,
--	0xBE2E, 0x7BA7, 0xBE36, 0x1000, 0xBE37, 0x1000, 0x8000, 0x0001,
--	0xBE69, 0xD50F, 0x8000, 0x0000, 0xBE69, 0xD50F, 0xBE6E, 0x0320,
--	0xBE77, 0x2940, 0xBE78, 0x3C3C, 0xBE79, 0x3C3C, 0xBE6E, 0xE120,
--	0x8000, 0x0001, 0xBE15, 0x1007, 0x8000, 0x0000, 0xBE15, 0x1007,
--	0xBE14, 0x0448, 0xBE1E, 0x00A0, 0xBE10, 0x8160, 0xBE10, 0x8140,
--	0xBE00, 0x1340, 0x0F51, 0x0010,
-+static const u16 rtl8366rb_init_jam_ver_2[][2] = {
-+	{0x0450, 0x0000}, {0x0400, 0x8130}, {0x000A, 0x83ED}, {0x0431, 0x5432},
-+	{0xC44F, 0x6250}, {0xC46F, 0x6250}, {0xC456, 0x0C14}, {0xC476, 0x0C14},
-+	{0xC44C, 0x1C85}, {0xC44C, 0x1885}, {0xC44C, 0x1C85}, {0xC46C, 0x1C85},
-+	{0xC46C, 0x1885}, {0xC46C, 0x1C85}, {0xC44C, 0x0885}, {0xC44C, 0x0881},
-+	{0xC44C, 0x0885}, {0xC46C, 0x0885}, {0xC46C, 0x0881}, {0xC46C, 0x0885},
-+	{0xBE2E, 0x7BA7}, {0xBE36, 0x1000}, {0xBE37, 0x1000}, {0x8000, 0x0001},
-+	{0xBE69, 0xD50F}, {0x8000, 0x0000}, {0xBE69, 0xD50F}, {0xBE6E, 0x0320},
-+	{0xBE77, 0x2940}, {0xBE78, 0x3C3C}, {0xBE79, 0x3C3C}, {0xBE6E, 0xE120},
-+	{0x8000, 0x0001}, {0xBE15, 0x1007}, {0x8000, 0x0000}, {0xBE15, 0x1007},
-+	{0xBE14, 0x0448}, {0xBE1E, 0x00A0}, {0xBE10, 0x8160}, {0xBE10, 0x8140},
-+	{0xBE00, 0x1340}, {0x0F51, 0x0010},
- };
- 
- /* Appears in a DDWRT code dump */
--static const u16 rtl8366rb_init_jam_ver_3[] = {
--	0x0000, 0x0830, 0x0400, 0x8130, 0x000A, 0x83ED, 0x0431, 0x5432,
--	0x0F51, 0x0017, 0x02F5, 0x0048, 0x02FA, 0xFFDF, 0x02FB, 0xFFE0,
--	0xC456, 0x0C14, 0xC476, 0x0C14, 0xC454, 0x3F8B, 0xC474, 0x3F8B,
--	0xC450, 0x2071, 0xC470, 0x2071, 0xC451, 0x226B, 0xC471, 0x226B,
--	0xC452, 0xA293, 0xC472, 0xA293, 0xC44C, 0x1585, 0xC44C, 0x1185,
--	0xC44C, 0x1585, 0xC46C, 0x1585, 0xC46C, 0x1185, 0xC46C, 0x1585,
--	0xC44C, 0x0185, 0xC44C, 0x0181, 0xC44C, 0x0185, 0xC46C, 0x0185,
--	0xC46C, 0x0181, 0xC46C, 0x0185, 0xBE24, 0xB000, 0xBE23, 0xFF51,
--	0xBE22, 0xDF20, 0xBE21, 0x0140, 0xBE20, 0x00BB, 0xBE24, 0xB800,
--	0xBE24, 0x0000, 0xBE24, 0x7000, 0xBE23, 0xFF51, 0xBE22, 0xDF60,
--	0xBE21, 0x0140, 0xBE20, 0x0077, 0xBE24, 0x7800, 0xBE24, 0x0000,
--	0xBE2E, 0x7BA7, 0xBE36, 0x1000, 0xBE37, 0x1000, 0x8000, 0x0001,
--	0xBE69, 0xD50F, 0x8000, 0x0000, 0xBE69, 0xD50F, 0xBE6B, 0x0320,
--	0xBE77, 0x2800, 0xBE78, 0x3C3C, 0xBE79, 0x3C3C, 0xBE6E, 0xE120,
--	0x8000, 0x0001, 0xBE10, 0x8140, 0x8000, 0x0000, 0xBE10, 0x8140,
--	0xBE15, 0x1007, 0xBE14, 0x0448, 0xBE1E, 0x00A0, 0xBE10, 0x8160,
--	0xBE10, 0x8140, 0xBE00, 0x1340, 0x0450, 0x0000, 0x0401, 0x0000,
-+static const u16 rtl8366rb_init_jam_ver_3[][2] = {
-+	{0x0000, 0x0830}, {0x0400, 0x8130}, {0x000A, 0x83ED}, {0x0431, 0x5432},
-+	{0x0F51, 0x0017}, {0x02F5, 0x0048}, {0x02FA, 0xFFDF}, {0x02FB, 0xFFE0},
-+	{0xC456, 0x0C14}, {0xC476, 0x0C14}, {0xC454, 0x3F8B}, {0xC474, 0x3F8B},
-+	{0xC450, 0x2071}, {0xC470, 0x2071}, {0xC451, 0x226B}, {0xC471, 0x226B},
-+	{0xC452, 0xA293}, {0xC472, 0xA293}, {0xC44C, 0x1585}, {0xC44C, 0x1185},
-+	{0xC44C, 0x1585}, {0xC46C, 0x1585}, {0xC46C, 0x1185}, {0xC46C, 0x1585},
-+	{0xC44C, 0x0185}, {0xC44C, 0x0181}, {0xC44C, 0x0185}, {0xC46C, 0x0185},
-+	{0xC46C, 0x0181}, {0xC46C, 0x0185}, {0xBE24, 0xB000}, {0xBE23, 0xFF51},
-+	{0xBE22, 0xDF20}, {0xBE21, 0x0140}, {0xBE20, 0x00BB}, {0xBE24, 0xB800},
-+	{0xBE24, 0x0000}, {0xBE24, 0x7000}, {0xBE23, 0xFF51}, {0xBE22, 0xDF60},
-+	{0xBE21, 0x0140}, {0xBE20, 0x0077}, {0xBE24, 0x7800}, {0xBE24, 0x0000},
-+	{0xBE2E, 0x7BA7}, {0xBE36, 0x1000}, {0xBE37, 0x1000}, {0x8000, 0x0001},
-+	{0xBE69, 0xD50F}, {0x8000, 0x0000}, {0xBE69, 0xD50F}, {0xBE6B, 0x0320},
-+	{0xBE77, 0x2800}, {0xBE78, 0x3C3C}, {0xBE79, 0x3C3C}, {0xBE6E, 0xE120},
-+	{0x8000, 0x0001}, {0xBE10, 0x8140}, {0x8000, 0x0000}, {0xBE10, 0x8140},
-+	{0xBE15, 0x1007}, {0xBE14, 0x0448}, {0xBE1E, 0x00A0}, {0xBE10, 0x8160},
-+	{0xBE10, 0x8140}, {0xBE00, 0x1340}, {0x0450, 0x0000}, {0x0401, 0x0000},
- };
- 
- /* Belkin F5D8235 v1, "belkin,f5d8235-v1" */
--static const u16 rtl8366rb_init_jam_f5d8235[] = {
--	0x0242, 0x02BF, 0x0245, 0x02BF, 0x0248, 0x02BF, 0x024B, 0x02BF,
--	0x024E, 0x02BF, 0x0251, 0x02BF, 0x0254, 0x0A3F, 0x0256, 0x0A3F,
--	0x0258, 0x0A3F, 0x025A, 0x0A3F, 0x025C, 0x0A3F, 0x025E, 0x0A3F,
--	0x0263, 0x007C, 0x0100, 0x0004, 0xBE5B, 0x3500, 0x800E, 0x200F,
--	0xBE1D, 0x0F00, 0x8001, 0x5011, 0x800A, 0xA2F4, 0x800B, 0x17A3,
--	0xBE4B, 0x17A3, 0xBE41, 0x5011, 0xBE17, 0x2100, 0x8000, 0x8304,
--	0xBE40, 0x8304, 0xBE4A, 0xA2F4, 0x800C, 0xA8D5, 0x8014, 0x5500,
--	0x8015, 0x0004, 0xBE4C, 0xA8D5, 0xBE59, 0x0008, 0xBE09, 0x0E00,
--	0xBE36, 0x1036, 0xBE37, 0x1036, 0x800D, 0x00FF, 0xBE4D, 0x00FF,
-+static const u16 rtl8366rb_init_jam_f5d8235[][2] = {
-+	{0x0242, 0x02BF}, {0x0245, 0x02BF}, {0x0248, 0x02BF}, {0x024B, 0x02BF},
-+	{0x024E, 0x02BF}, {0x0251, 0x02BF}, {0x0254, 0x0A3F}, {0x0256, 0x0A3F},
-+	{0x0258, 0x0A3F}, {0x025A, 0x0A3F}, {0x025C, 0x0A3F}, {0x025E, 0x0A3F},
-+	{0x0263, 0x007C}, {0x0100, 0x0004}, {0xBE5B, 0x3500}, {0x800E, 0x200F},
-+	{0xBE1D, 0x0F00}, {0x8001, 0x5011}, {0x800A, 0xA2F4}, {0x800B, 0x17A3},
-+	{0xBE4B, 0x17A3}, {0xBE41, 0x5011}, {0xBE17, 0x2100}, {0x8000, 0x8304},
-+	{0xBE40, 0x8304}, {0xBE4A, 0xA2F4}, {0x800C, 0xA8D5}, {0x8014, 0x5500},
-+	{0x8015, 0x0004}, {0xBE4C, 0xA8D5}, {0xBE59, 0x0008}, {0xBE09, 0x0E00},
-+	{0xBE36, 0x1036}, {0xBE37, 0x1036}, {0x800D, 0x00FF}, {0xBE4D, 0x00FF},
- };
- 
- /* DGN3500, "netgear,dgn3500", "netgear,dgn3500b" */
--static const u16 rtl8366rb_init_jam_dgn3500[] = {
--	0x0000, 0x0830, 0x0400, 0x8130, 0x000A, 0x83ED, 0x0F51, 0x0017,
--	0x02F5, 0x0048, 0x02FA, 0xFFDF, 0x02FB, 0xFFE0, 0x0450, 0x0000,
--	0x0401, 0x0000, 0x0431, 0x0960,
-+static const u16 rtl8366rb_init_jam_dgn3500[][2] = {
-+	{0x0000, 0x0830}, {0x0400, 0x8130}, {0x000A, 0x83ED}, {0x0F51, 0x0017},
-+	{0x02F5, 0x0048}, {0x02FA, 0xFFDF}, {0x02FB, 0xFFE0}, {0x0450, 0x0000},
-+	{0x0401, 0x0000}, {0x0431, 0x0960},
- };
- 
- /* This jam table activates "green ethernet", which means low power mode
-@@ -716,10 +716,46 @@ static const u16 rtl8366rb_green_jam[][2] = {
- 	{0xBE5C, 0x785C}, {0xBE6E, 0xE120}, {0xBE79, 0x323C},
- };
- 
-+/* Function that jams the tables in the proper registers */
-+static int rtl8366rb_jam_table(const u16 (*jam_table)[2], int jam_size,
-+			       struct realtek_smi *smi, bool write_dbg)
-+{
-+	u32 val;
-+	int ret;
-+	int i;
++ifeq ($(ARCH), mips)
++TPROGS_CFLAGS += -D__SANE_USERSPACE_TYPES__
++endif
 +
-+	for (i = 0; i < jam_size; i++) {
-+		if ((jam_table[i][0] & 0xBE00) == 0xBE00) {
-+			ret = regmap_read(smi->map,
-+					  RTL8366RB_PHY_ACCESS_BUSY_REG,
-+					  &val);
-+			if (ret)
-+				return ret;
-+			if (!(val & RTL8366RB_PHY_INT_BUSY)) {
-+				ret = regmap_write(smi->map,
-+						RTL8366RB_PHY_ACCESS_CTRL_REG,
-+						RTL8366RB_PHY_CTRL_WRITE);
-+				if (ret)
-+					return ret;
-+			}
-+		}
-+		if (write_dbg)
-+			dev_dbg(smi->dev, "jam %04x into register %04x\n",
-+				jam_table[i][1],
-+				jam_table[i][0]);
-+		ret = regmap_write(smi->map,
-+				   jam_table[i][0],
-+				   jam_table[i][1]);
-+		if (ret)
-+			return ret;
-+	}
-+	return 0;
-+}
-+
- static int rtl8366rb_setup(struct dsa_switch *ds)
- {
- 	struct realtek_smi *smi = ds->priv;
--	const u16 *jam_table;
-+	const u16 (*jam_table)[2];
- 	struct rtl8366rb *rb;
- 	u32 chip_ver = 0;
- 	u32 chip_id = 0;
-@@ -788,54 +824,16 @@ static int rtl8366rb_setup(struct dsa_switch *ds)
- 		jam_size = ARRAY_SIZE(rtl8366rb_init_jam_dgn3500);
- 	}
+ TPROGS_CFLAGS += -Wall -O2
+ TPROGS_CFLAGS += -Wmissing-prototypes
+ TPROGS_CFLAGS += -Wstrict-prototypes
+diff --git a/tools/include/linux/types.h b/tools/include/linux/types.h
+index 154eb4e..e9c5a21 100644
+--- a/tools/include/linux/types.h
++++ b/tools/include/linux/types.h
+@@ -6,7 +6,10 @@
+ #include <stddef.h>
+ #include <stdint.h>
  
--	i = 0;
--	while (i < jam_size) {
--		if ((jam_table[i] & 0xBE00) == 0xBE00) {
--			ret = regmap_read(smi->map,
--					  RTL8366RB_PHY_ACCESS_BUSY_REG,
--					  &val);
--			if (ret)
--				return ret;
--			if (!(val & RTL8366RB_PHY_INT_BUSY)) {
--				ret = regmap_write(smi->map,
--						RTL8366RB_PHY_ACCESS_CTRL_REG,
--						RTL8366RB_PHY_CTRL_WRITE);
--				if (ret)
--					return ret;
--			}
--		}
--		dev_dbg(smi->dev, "jam %04x into register %04x\n",
--			jam_table[i + 1],
--			jam_table[i]);
--		ret = regmap_write(smi->map,
--				   jam_table[i],
--				   jam_table[i + 1]);
--		if (ret)
--			return ret;
--		i += 2;
--	}
-+	ret = rtl8366rb_jam_table(jam_table, jam_size, smi, true);
-+	if (ret)
-+		return ret;
- 
- 	/* Set up the "green ethernet" feature */
--	i = 0;
--	while (i < ARRAY_SIZE(rtl8366rb_green_jam)) {
--		ret = regmap_read(smi->map, RTL8366RB_PHY_ACCESS_BUSY_REG,
--				  &val);
--		if (ret)
--			return ret;
--		if (!(val & RTL8366RB_PHY_INT_BUSY)) {
--			ret = regmap_write(smi->map,
--					   RTL8366RB_PHY_ACCESS_CTRL_REG,
--					   RTL8366RB_PHY_CTRL_WRITE);
--			if (ret)
--				return ret;
--			ret = regmap_write(smi->map,
--					   rtl8366rb_green_jam[i][0],
--					   rtl8366rb_green_jam[i][1]);
--			if (ret)
--				return ret;
--			i++;
--		}
--	}
-+	ret = rtl8366rb_jam_table(rtl8366rb_green_jam,
-+				  ARRAY_SIZE(rtl8366rb_green_jam), smi, false);
-+	if (ret)
-+		return ret;
++#ifndef __SANE_USERSPACE_TYPES__
+ #define __SANE_USERSPACE_TYPES__	/* For PPC64, to get LL64 types */
++#endif
 +
- 	ret = regmap_write(smi->map,
- 			   RTL8366RB_GREEN_FEATURE_REG,
- 			   (chip_ver == 1) ? 0x0007 : 0x0003);
+ #include <asm/types.h>
+ #include <asm/posix_types.h>
+ 
 -- 
-2.17.1
+2.1.0
 
