@@ -2,84 +2,93 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5BD34304A95
-	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 21:51:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1610F304A83
+	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 21:47:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730630AbhAZFC5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jan 2021 00:02:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50502 "EHLO
+        id S1731166AbhAZFFH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jan 2021 00:05:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728268AbhAYMpG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 07:45:06 -0500
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34670C06121F;
-        Mon, 25 Jan 2021 04:34:18 -0800 (PST)
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.94)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1l414R-00BPl8-Jp; Mon, 25 Jan 2021 13:34:15 +0100
-Message-ID: <9cf620a5ae47bce0cf6344db502589a8763fc861.camel@sipsolutions.net>
-Subject: Re: [PATCH v2] cfg80211: avoid holding the RTNL when calling the
- driver
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Marek Szyprowski <m.szyprowski@samsung.com>,
-        linux-wireless@vger.kernel.org
-Cc:     netdev@vger.kernel.org, Oliver Neukum <oneukum@suse.com>
-Date:   Mon, 25 Jan 2021 13:34:14 +0100
-In-Reply-To: <b425cbc3-63a8-3252-e828-bcb7b336b783@samsung.com>
-References: <20210119102145.99917b8fc5d6.Iacd5916c0e01f71342159f6d419e56dc4c3f07a2@changeid>
-         <CGME20210122121108eucas1p2d153ab9c3a95015221b470a66a0c8458@eucas1p2.samsung.com>
-         <6569c83a-11b0-7f13-4b4c-c0318780895c@samsung.com>
-         <4ae7a27c32cbf85b4ddb05cc2a16e52918663633.camel@sipsolutions.net>
-         <b425cbc3-63a8-3252-e828-bcb7b336b783@samsung.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
+        with ESMTP id S1728354AbhAYMuG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 07:50:06 -0500
+Received: from mail-vs1-xe42.google.com (mail-vs1-xe42.google.com [IPv6:2607:f8b0:4864:20::e42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF9FBC061224
+        for <netdev@vger.kernel.org>; Mon, 25 Jan 2021 04:38:07 -0800 (PST)
+Received: by mail-vs1-xe42.google.com with SMTP id h11so7057559vsa.10
+        for <netdev@vger.kernel.org>; Mon, 25 Jan 2021 04:38:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:reply-to:sender:from:date:message-id:subject:to;
+        bh=wZAkicxWk2zk1yvflCN0xA4qAFwkjVzM25+GzazVjw4=;
+        b=YXBlnny2MlmQfd51ni5uTk/dEQdTAYcc/hvcZmUOO7vXf1WQYWznIdTQxw0G3v4Ijp
+         Wgmu1j7pISIJTZj33OiOTG6gL69RMZN+suDjDqieudEg+nDkPhtgmutVcM0izeOD90oQ
+         aNeotMXITozaK15aKdP9ORQffqFUSqlrLOwB2VgpangOPeaFWnwws4lKTbFVU1tSOryO
+         adbp7nkO4L3rqcFGmwbkI6owbyZHqL/ppAVWtgpax5JBo2uGG4OumU02ttHKaNnWTd/k
+         6dnPZVGbYCacsbv9wQFcELKZbWe8BxVQ5+xCQ1CJWhWzwSjAYeYtxAoYtFdIxhInkIHP
+         6ydQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:reply-to:sender:from:date
+         :message-id:subject:to;
+        bh=wZAkicxWk2zk1yvflCN0xA4qAFwkjVzM25+GzazVjw4=;
+        b=ETvVM4itJBggDa6mUptf9CgCrPWAYXqk5q2n9OeSE+0kCbEnqqIj32eXK+HBr3Q3c4
+         2uqlzQkLK1bIFKcYFvnGKJkoveByWm1JyKTnfOwkVyk+RxR9HAPZw4w9lC4gesdB8QBu
+         v/BTHoqH5pcr3WEiXxFVziGEtdpYKQiWuoWd6bFQmmCsAb15KtBOGbBndUno4CeeHMGQ
+         Zp3U10e3U39yjcw3AfLXzemsDQ+TTrZqd0TVYDUgn5hg7GabwqKraYvoEDhQU/z2BTnj
+         iDflsg+7JhA4cMlSqHlSCDeeqlgcLslm8lPk8khXMo6VserGhr6qyJ2ElswNMT2s/BSo
+         EIHQ==
+X-Gm-Message-State: AOAM532bPml27ZCKZn/iVHQg89omLOdzODumqSO1m1EfEohKmOHby13h
+        IQ7HGOXpVQpj+LipCUIhMu9LRfyh640Yc1TMlUU=
+X-Google-Smtp-Source: ABdhPJxsG+Zo4zu6gN2xSrhq1IP9xHyeENciCjXhrjkBx3FqHcv7KQ8bx7iutGueiVjs33sFoHL+lhcYY5ZXhXoO61w=
+X-Received: by 2002:a05:6102:1c8:: with SMTP id s8mr228284vsq.52.1611578286977;
+ Mon, 25 Jan 2021 04:38:06 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-malware-bazaar: not-scanned
+Reply-To: mrsaishaalgaddafi1976@gmail.com
+Sender: entiuomarmachar@gmail.com
+Received: by 2002:ab0:4e19:0:0:0:0:0 with HTTP; Mon, 25 Jan 2021 04:38:06
+ -0800 (PST)
+From:   Aisha Al-Qaddafi <aishaalqaddafi2@gmail.com>
+Date:   Mon, 25 Jan 2021 12:38:06 +0000
+X-Google-Sender-Auth: EVGFW3xT64N2Xb8wrWJGH5iWzmI
+Message-ID: <CACoQbmd5RP3H+ojUGgGPS=sNASqMFhoXbf=31Z733KoWsUFqRQ@mail.gmail.com>
+Subject: Inquiry for Investment.
+To:     undisclosed-recipients:;
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Marek,
+Assalamu Alaikum Wa Rahmatullahi Wa Barakatuh.
 
-> I've checked today's linux-next with the updated commit 27bc93583e35 
-> ("cfg80211: avoid holding the RTNL when calling the driver") and there 
-> is still an issue there, but at least it doesn't cause a deadlock:
-> 
-> cfg80211: Loading compiled-in X.509 certificates for regulatory database
-> Bluetooth: vendor=0x2df, device=0x912a, class=255, fn=2
-> cfg80211: Loaded X.509 cert 'sforshee: 00b28ddf47aef9cea7'
-> Bluetooth: FW download over, size 533976 bytes
-> btmrvl_sdio mmc3:0001:2: sdio device tree data not available
-> mwifiex_sdio mmc3:0001:1: WLAN FW already running! Skip FW dnld
-> mwifiex_sdio mmc3:0001:1: WLAN FW is active
-> mwifiex_sdio mmc3:0001:1: CMD_RESP: cmd 0x242 error, result=0x2
-> mwifiex_sdio mmc3:0001:1: mwifiex_process_cmdresp: cmd 0x242 failed 
-> during       initialization
-> ------------[ cut here ]------------
-> WARNING: CPU: 0 PID: 5 at net/wireless/core.c:1336 
-> cfg80211_register_netdevice+0xa4/0x198 [cfg80211]
+Inquiry for Investment.
 
-Yeah, umm, brown paper bag style bug.
+Dear Friend,
 
-I meant to _move_ that line down, but somehow managed to _copy_ it down.
-Need to just remove it since rdev is not even initialized at that point.
+Greetings to you from the city of Ouagadougou,Burkina Faso.
 
-I've updated my tree to include this:
+I came across your e-mail contact prior to a private search while in
+need of your assistance. I am pleased to use this medium to open a
+mutual communication with you and to ask for your permission and
+acceptance to partner with you to invest in your country.
 
-diff --git a/net/wireless/core.c b/net/wireless/core.c
-index 5e8b523dc645..200cd9f5fd5f 100644
---- a/net/wireless/core.c
-+++ b/net/wireless/core.c
-@@ -1333,7 +1333,6 @@ int cfg80211_register_netdevice(struct net_device *dev)
-        int ret;
- 
-        ASSERT_RTNL();
--       lockdep_assert_held(&rdev->wiphy.mtx);
- 
-        if (WARN_ON(!wdev))
-                return -EINVAL;
+My name is Aisha Gaddafi, a single Mother and a Widow with three
+Children. I am the only biological Daughter of late Libyan President
+(Late Colonel Muammar Gaddafi).
 
-johannes
+I have an investment fund worth Twenty Seven Million Five Hundred
+Thousand United States Dollar ($27,500,000.00 ) which I want to
+entrust to you for investment project assistance in your country, May
+be from there, we can build a business relationship in the near
+future.
 
+I am willing to negotiate an investment/business profit sharing ratio
+with you based on the future investment earning profits.
+
+If you are willing to handle this project on my behalf I shall
+appreciate your urgent response to provide you more details to proceed
+further. Kindly get back to me at my discreet Email (
+mrsaishaalgaddafi1976@gmail.com ) for further discussion.
+
+Best Regards
+Mrs Aisha Gaddafi
+mrsaishaalgaddafi1976@gmail.com
