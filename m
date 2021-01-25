@@ -2,198 +2,158 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 00B6A3033A3
-	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 06:02:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3FADB3033C9
+	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 06:06:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730349AbhAZFBU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jan 2021 00:01:20 -0500
-Received: from mail-eopbgr80138.outbound.protection.outlook.com ([40.107.8.138]:10821
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728207AbhAYMm2 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 25 Jan 2021 07:42:28 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Fy3hCEY08+MtQGs/n2aUt2QL/c/qAwA/VGNzDs7nL0JM9dgkCGztQclzP3nGV40KlZ40eP3yrPFYPuftGbYkvp9ov5ZQtIoLLC/M/nGj+VdJqUapxvHOQTnvu4fL58yex5bvfLtUT8iG1xLC5Fz/R61H8U4wApD3BJX2mffKD2ozFIoKXFQr34qaoRor2KWLOXnfjyrawsa+qFGlXlwaNqQStYJ88GGAjrzfqd6BQWqxN3chfjBD0mqTyE62u+W/1racHfEYRhsQI74/lh2XV5zFV+DwrKbH4HEqM+9slrfpCK8QYalcw9FhTFuTDmKHikcvPqgTl13YTFXHP/Ykwg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=oFJAkv4cdjgzcihB8Rk4OrK14GfiTos28tz+arCdJNo=;
- b=MEf7LlyjXGCz3hfVoZc0qR+sN1jZea5iloIw0aKlspLpuj8DkRsjJ8e26sxlsiQFfIjpU7b78iIJptekUT/N2s7tOFfRlqnCK/iv6N/nlzhODOHGwoHaA69rwwQBEJKiKKKDOwProdP8jtgrnyUHbaV5kdNhpxfN7dq5RqtrSv1DH2rvWc098d1/fskZ42lQ98xtNILwmQDWeYuW1mQTBpjuijMmhPNPQBLfbOgV3mLNeOZO/PXi+I0+ovbs+0fLRwMd1jI9J8FuN07n8S1I9xxn4Ks/Za3xiAbHLxsLC/UcDNNAHlPTfDqWKvX6w6cEhsgF/56LkY4gjmN0zcAIBw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=prevas.dk; dmarc=pass action=none header.from=prevas.dk;
- dkim=pass header.d=prevas.dk; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=prevas.dk;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=oFJAkv4cdjgzcihB8Rk4OrK14GfiTos28tz+arCdJNo=;
- b=XYsvPVxHBeLQ281d0TtkPgo8BJZOqWe7x8L7Jt4Sv/mtXXK5IOkHXUE56gJljImQBJYIun5HUhxQ+XgqRfOQD63OgMIaIII04r79xkYAH4EWXW8ch0wu0yJHvCP5rRtR7UlhxGoyC5qWHwjLJVWn7WLPPDBjy3QyGSb5b1IoiIo=
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none header.from=prevas.dk;
-Received: from AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:208:3f::10)
- by AM4PR1001MB1346.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:200:99::7) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3784.13; Mon, 25 Jan
- 2021 12:41:25 +0000
-Received: from AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::58b2:6a2a:b8f9:bc1a]) by AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::58b2:6a2a:b8f9:bc1a%3]) with mapi id 15.20.3784.017; Mon, 25 Jan 2021
- 12:41:25 +0000
-From:   Rasmus Villemoes <rasmus.villemoes@prevas.dk>
-To:     netdev@vger.kernel.org
-Cc:     Horatiu Vultur <horatiu.vultur@microchip.com>,
-        Jiri Pirko <jiri@mellanox.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Petr Machata <petrm@mellanox.com>,
-        Ido Schimmel <idosch@mellanox.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Rasmus Villemoes <rasmus.villemoes@prevas.dk>,
-        Petr Machata <petrm@nvidia.com>
-Subject: [PATCH v2 net] net: switchdev: don't set port_obj_info->handled true when -EOPNOTSUPP
-Date:   Mon, 25 Jan 2021 13:41:16 +0100
-Message-Id: <20210125124116.102928-1-rasmus.villemoes@prevas.dk>
-X-Mailer: git-send-email 2.23.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [5.186.115.188]
-X-ClientProxiedBy: AM6P192CA0008.EURP192.PROD.OUTLOOK.COM
- (2603:10a6:209:83::21) To AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:208:3f::10)
+        id S1731319AbhAZFFU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jan 2021 00:05:20 -0500
+Received: from mail-io1-f70.google.com ([209.85.166.70]:48333 "EHLO
+        mail-io1-f70.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728422AbhAYMwE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 07:52:04 -0500
+Received: by mail-io1-f70.google.com with SMTP id v25so18721086ioj.15
+        for <netdev@vger.kernel.org>; Mon, 25 Jan 2021 04:51:47 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
+        bh=7yzACKBivQNVWbNjmhIg71uYXUw2G8UL5fat5y7REW4=;
+        b=cCcxG5s8lEjk3LdnqytSGLSl67hjMv8XbYWzA2pNJWyR52E8r4ZldBdEbcpNZ/6mvl
+         KYDRFv2K+3MllNjtC3jDrrDUAYggm9wvQAyTNDQnJVU8mifnUdV2+RA5+jwaAS/uU2Bw
+         zd3kxMrOz3+yPplx5+q7ioOvqZUpTye6jiV7i6uQ3rt4y+hP7XTqXVsoTzbg+WKgS3E9
+         QCRkyvOdgavuxBqVXkjBXMbDwZSn8RHjrCT4itzNGgFOx7ADcQtU7vAQIgfrQMvRdGXe
+         GKxLuxKMjEtwrUD0K3fWYjWFyKequnBxU43FK7xH344JEddWORrGq0MWmCZb/OqDuY5g
+         8Plg==
+X-Gm-Message-State: AOAM530VXw3nVpckKrRhpk4KQ0VuuuRvh0NTcbLQnSnrhO6emg6p62iy
+        yM1ZHEfLXhd85kZxX9lm5vxE/+APldxsHInckIWk91eLJ9+4
+X-Google-Smtp-Source: ABdhPJzzOgJeF/k86yPx6Ztit1zKlLLNrUgdYqjd8lbjY8KSPTCNUjYPR+VhMYD1Qny61CaNhemRGItHNDiPue28Zw8h++HRxTP/
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from prevas-ravi.prevas.se (5.186.115.188) by AM6P192CA0008.EURP192.PROD.OUTLOOK.COM (2603:10a6:209:83::21) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3784.12 via Frontend Transport; Mon, 25 Jan 2021 12:41:24 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: d0d27b86-d116-4bf5-a5d4-08d8c12e86f8
-X-MS-TrafficTypeDiagnostic: AM4PR1001MB1346:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <AM4PR1001MB13463749E8C84A606E43658C93BD0@AM4PR1001MB1346.EURPRD10.PROD.OUTLOOK.COM>
-X-MS-Oob-TLC-OOBClassifiers: OLM:2887;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: MmB3+Wy38bBomGnj9+PRjK1rr9AcQEcgIyJkstSYbfrjXO4oSCicyiXgB/c5Ot+Zinno3WrmCNGVxHhNBPowwaURst8/2eTBLMgEJW2dodYg3ET60VTAq1mY5iJKdVHvm2LHqdrWB5PBuC+wE2ZNXxQhlcaIJTHlG5E8KTuctjK77HW9xTf22OvHmCsEF2WtGG7S0FjxhElkHOfZf6KGgfeaoB6QSkYQ1rXawkg/heEUAZTWAeVLgV+/1kP7n0Mv7Vzjyihz/S8/IB2O5wJWDeryQkxiS2Pkl/88qxwIMlcMroR3OE+rITFqir72btcpcFKrhUC6USFvIkGxDbpRFo/mGc8/BkThu68JPk6fulQRHpPMeEwTvICSDZQ8Jw/s4LeYLV0H/kZzYXCUPb6hrfus/QSautFDLpiJSzTL2+sLnl+DjMV8u29CpoMn5TJ6d04l6fiS2Ygb8FZmIIZgAkK38dQK51g4ZGJWKov7XtfvZ9WtJZOSrHVWoun9Py6vR5oqGSHsXqjVzK6oOIzM0A==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(376002)(396003)(39850400004)(346002)(366004)(136003)(1076003)(6506007)(26005)(66556008)(66946007)(8676002)(66476007)(6512007)(6666004)(83380400001)(86362001)(6916009)(6486002)(5660300002)(8976002)(2616005)(8936002)(44832011)(956004)(54906003)(2906002)(478600001)(316002)(186003)(16526019)(7416002)(36756003)(52116002)(4326008);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?b+Kvafw6BNLQny9mFleAAUHZc1gSFEPYn0dBa/CXmRiVoZFHTDFDWnlxuFI3?=
- =?us-ascii?Q?hSWKeMKw6Onyjrf+r5JdgWAkY/pjs4khwETGlIVnQLrf4FZc5KS8y42WuqAW?=
- =?us-ascii?Q?tLH9ahMhQfsrKC7ybrB11xr1EyFH5YueB+kEiapi/gWAzIzLUJduoIoQiqTT?=
- =?us-ascii?Q?b2kW/K9TNF8JTOBBMhmSAIJs0WTrbxKT325WT8YL4Th4AEFQWq8sH0y/F//U?=
- =?us-ascii?Q?A6QLGxpDxvDzjgpkDZNcX8T1ppN6FDWe3prE4DeJAZRymWVpC0AoUzI+/NgP?=
- =?us-ascii?Q?QJK3wTt8K7wycvEObd6ft+4/TTZY7ij2B8O+DyzGoTN0YBOW7nH3AJs/jU3S?=
- =?us-ascii?Q?8LH3szS+hSrm2NiyOZ6tPuLLgY+O2ol1qGE7Dh08g+G48EPRL8xJWzqspHdH?=
- =?us-ascii?Q?aLQq28zvXvxxdF30xhZr2EdJxDaSnoWayQ9s5VS2SjzsgQzRq4r0iMusxjo1?=
- =?us-ascii?Q?aEOqYBLbuMO0XfXuDXXZw088wad0/10GslGMtiN5iDAjoFJUK4UF2GdzXmvs?=
- =?us-ascii?Q?WJXQ+klPQeOziwe7AS5742vEOd9LjwRyE2utmFgu4Bag9qYG2MGO9R1cP+Xb?=
- =?us-ascii?Q?40D09DzV4dDnW85Jgreq7HCrQAJNOtMstHilKpibEDWkXFsis/ZSaq4imykB?=
- =?us-ascii?Q?r9TrCpDcrzAVeLAaPAEcz0rnrlBUt5Kz0HVhrdOuNtP+w2/sMmuZgM9SjzOj?=
- =?us-ascii?Q?n+M20UVHEHrwVupd4xcf4cN3tChEoKj0IrPcj5fsKuClA6qc/33EK0VS/jzg?=
- =?us-ascii?Q?vGUs0lUmJbMNmTnSxlkrEoNGQCvju+Z3hitkrjFZpW9wBmDWLCDWgGE+3iSv?=
- =?us-ascii?Q?X0uFEfjzFj09WBlfYNvWJVXxdVOphyYPIu8/g6XWRXwe+z9Kc5NUzz/x+jCX?=
- =?us-ascii?Q?sWK+TKJpoR+Yq/90ffhRX1W9ikuNYTp+B/kQfjyHxUkaJc0Kg/5Nr56eqVIW?=
- =?us-ascii?Q?sbytD5k1BddO6NOWEWWacrjnkqF8ZimrWucoHv4yX4rL2P5dmeikGAQC1SeD?=
- =?us-ascii?Q?cdOQ?=
-X-OriginatorOrg: prevas.dk
-X-MS-Exchange-CrossTenant-Network-Message-Id: d0d27b86-d116-4bf5-a5d4-08d8c12e86f8
-X-MS-Exchange-CrossTenant-AuthSource: AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jan 2021 12:41:25.3801
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: d350cf71-778d-4780-88f5-071a4cb1ed61
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: s97goQsCXE4aWVIQroyA2FLo3DG1pIIGOEU50e3f+RrhLTJGArV2y009qEVXENXSDijtWXvzINZw+oDsq50AHPDETAhrLyhCVzW9ond4oNU=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM4PR1001MB1346
+X-Received: by 2002:a02:1d0a:: with SMTP id 10mr399144jaj.122.1611579082433;
+ Mon, 25 Jan 2021 04:51:22 -0800 (PST)
+Date:   Mon, 25 Jan 2021 04:51:22 -0800
+X-Google-Appengine-App-Id: s~syzkaller
+X-Google-Appengine-App-Id-Alias: syzkaller
+Message-ID: <000000000000bc67d205b9b8feb2@google.com>
+Subject: KASAN: slab-out-of-bounds Write in record_print_text
+From:   syzbot <syzbot+a42d84593d6a89a76f26@syzkaller.appspotmail.com>
+To:     adobriyan@gmail.com, akpm@linux-foundation.org,
+        davem@davemloft.net, john.ogness@linutronix.de, kuba@kernel.org,
+        kuznet@ms2.inr.ac.ru, linux-fsdevel@vger.kernel.org,
+        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        pmladek@suse.com, sergey.senozhatsky@gmail.com,
+        sfr@canb.auug.org.au, syzkaller-bugs@googlegroups.com,
+        yoshfuji@linux-ipv6.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It's not true that switchdev_port_obj_notify() only inspects the
-->handled field of "struct switchdev_notifier_port_obj_info" if
-call_switchdev_blocking_notifiers() returns 0 - there's a WARN_ON()
-triggering for a non-zero return combined with ->handled not being
-true. But the real problem here is that -EOPNOTSUPP is not being
-properly handled.
+Hello,
 
-The wrapper functions switchdev_handle_port_obj_add() et al change a
-return value of -EOPNOTSUPP to 0, and the treatment of ->handled in
-switchdev_port_obj_notify() seems to be designed to change that back
-to -EOPNOTSUPP in case nobody actually acted on the notifier (i.e.,
-everybody returned -EOPNOTSUPP).
+syzbot found the following issue on:
 
-Currently, as soon as some device down the stack passes the check_cb()
-check, ->handled gets set to true, which means that
-switchdev_port_obj_notify() cannot actually ever return -EOPNOTSUPP.
+HEAD commit:    e6806137 Merge tag 'irq_urgent_for_v5.11_rc5' of git://git..
+git tree:       upstream
+console output: https://syzkaller.appspot.com/x/log.txt?x=10c59c6f500000
+kernel config:  https://syzkaller.appspot.com/x/.config?x=be33d8015c9de024
+dashboard link: https://syzkaller.appspot.com/bug?extid=a42d84593d6a89a76f26
+compiler:       gcc (GCC) 10.1.0-syz 20200507
+syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=1575e6b4d00000
+C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=17aea4e8d00000
 
-This, for example, means that the detection of hardware offload
-support in the MRP code is broken: switchdev_port_obj_add() used by
-br_mrp_switchdev_send_ring_test() always returns 0, so since the MRP
-code thinks the generation of MRP test frames has been offloaded, no
-such frames are actually put on the wire. Similarly,
-br_mrp_switchdev_set_ring_role() also always returns 0, causing
-mrp->ring_role_offloaded to be set to 1.
+The issue was bisected to:
 
-To fix this, continue to set ->handled true if any callback returns
-success or any error distinct from -EOPNOTSUPP. But if all the
-callbacks return -EOPNOTSUPP, make sure that ->handled stays false, so
-the logic in switchdev_port_obj_notify() can propagate that
-information.
+commit f0e386ee0c0b71ea6f7238506a4d0965a2dbef11
+Author: John Ogness <john.ogness@linutronix.de>
+Date:   Thu Jan 14 17:04:12 2021 +0000
 
-Fixes: f30f0601eb93 ("switchdev: Add helpers to aid traversal through lower devices")
-Reviewed-by: Petr Machata <petrm@nvidia.com>
-Signed-off-by: Rasmus Villemoes <rasmus.villemoes@prevas.dk>
+    printk: fix buffer overflow potential for print_text()
+
+bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=17f30130d00000
+final oops:     https://syzkaller.appspot.com/x/report.txt?x=140b0130d00000
+console output: https://syzkaller.appspot.com/x/log.txt?x=100b0130d00000
+
+IMPORTANT: if you fix the issue, please add the following tag to the commit:
+Reported-by: syzbot+a42d84593d6a89a76f26@syzkaller.appspotmail.com
+Fixes: f0e386ee0c0b ("printk: fix buffer overflow potential for print_text()")
+
+==================================================================
+BUG: KASAN: slab-out-of-bounds in record_print_text+0x33f/0x380 kernel/printk/printk.c:1401
+Write of size 1 at addr ffff88801c2faf40 by task in:imklog/8158
+
+CPU: 1 PID: 8158 Comm: in:imklog Not tainted 5.11.0-rc4-syzkaller #0
+Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
+Call Trace:
+ __dump_stack lib/dump_stack.c:79 [inline]
+ dump_stack+0x107/0x163 lib/dump_stack.c:120
+ print_address_description.constprop.0.cold+0x5b/0x2f8 mm/kasan/report.c:230
+ __kasan_report mm/kasan/report.c:396 [inline]
+ kasan_report.cold+0x79/0xd5 mm/kasan/report.c:413
+ record_print_text+0x33f/0x380 kernel/printk/printk.c:1401
+ syslog_print+0x2bb/0x430 kernel/printk/printk.c:1459
+ do_syslog.part.0+0x2a8/0x7c0 kernel/printk/printk.c:1586
+ do_syslog+0x49/0x60 kernel/printk/printk.c:1567
+ kmsg_read+0x90/0xb0 fs/proc/kmsg.c:40
+ pde_read fs/proc/inode.c:321 [inline]
+ proc_reg_read+0x119/0x300 fs/proc/inode.c:331
+ vfs_read+0x1b5/0x570 fs/read_write.c:494
+ ksys_read+0x12d/0x250 fs/read_write.c:634
+ do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+RIP: 0033:0x7f3e2eec922d
+Code: c1 20 00 00 75 10 b8 00 00 00 00 0f 05 48 3d 01 f0 ff ff 73 31 c3 48 83 ec 08 e8 4e fc ff ff 48 89 04 24 b8 00 00 00 00 0f 05 <48> 8b 3c 24 48 89 c2 e8 97 fc ff ff 48 89 d0 48 83 c4 08 48 3d 01
+RSP: 002b:00007f3e2c865580 EFLAGS: 00000293 ORIG_RAX: 0000000000000000
+RAX: ffffffffffffffda RBX: 0000000000000000 RCX: 00007f3e2eec922d
+RDX: 0000000000001fa0 RSI: 00007f3e2c865da0 RDI: 0000000000000004
+RBP: 000055d0880849d0 R08: 0000000000000000 R09: 0000000004000001
+R10: 0000000000000001 R11: 0000000000000293 R12: 00007f3e2c865da0
+R13: 0000000000001fa0 R14: 0000000000001f9f R15: 00007f3e2c865df3
+
+Allocated by task 8158:
+ kasan_save_stack+0x1b/0x40 mm/kasan/common.c:38
+ kasan_set_track mm/kasan/common.c:46 [inline]
+ set_alloc_info mm/kasan/common.c:401 [inline]
+ ____kasan_kmalloc.constprop.0+0x82/0xa0 mm/kasan/common.c:429
+ kmalloc include/linux/slab.h:552 [inline]
+ syslog_print+0xb2/0x430 kernel/printk/printk.c:1430
+ do_syslog.part.0+0x2a8/0x7c0 kernel/printk/printk.c:1586
+ do_syslog+0x49/0x60 kernel/printk/printk.c:1567
+ kmsg_read+0x90/0xb0 fs/proc/kmsg.c:40
+ pde_read fs/proc/inode.c:321 [inline]
+ proc_reg_read+0x119/0x300 fs/proc/inode.c:331
+ vfs_read+0x1b5/0x570 fs/read_write.c:494
+ ksys_read+0x12d/0x250 fs/read_write.c:634
+ do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+ entry_SYSCALL_64_after_hwframe+0x44/0xa9
+
+The buggy address belongs to the object at ffff88801c2fa800
+ which belongs to the cache kmalloc-1k of size 1024
+The buggy address is located 832 bytes to the right of
+ 1024-byte region [ffff88801c2fa800, ffff88801c2fac00)
+The buggy address belongs to the page:
+page:00000000eb65f4f5 refcount:1 mapcount:0 mapping:0000000000000000 index:0x0 pfn:0x1c2f8
+head:00000000eb65f4f5 order:2 compound_mapcount:0 compound_pincount:0
+flags: 0xfff00000010200(slab|head)
+raw: 00fff00000010200 dead000000000100 dead000000000122 ffff888010041140
+raw: 0000000000000000 0000000080080008 00000001ffffffff 0000000000000000
+page dumped because: kasan: bad access detected
+
+Memory state around the buggy address:
+ ffff88801c2fae00: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+ ffff88801c2fae80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+>ffff88801c2faf00: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+                                           ^
+ ffff88801c2faf80: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+ ffff88801c2fb000: fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc fc
+==================================================================
+
+
 ---
-v2: reword commit message to make it more accurate; include Petr's R-b.
+This report is generated by a bot. It may contain errors.
+See https://goo.gl/tpsmEJ for more information about syzbot.
+syzbot engineers can be reached at syzkaller@googlegroups.com.
 
- net/switchdev/switchdev.c | 23 +++++++++++++----------
- 1 file changed, 13 insertions(+), 10 deletions(-)
-
-diff --git a/net/switchdev/switchdev.c b/net/switchdev/switchdev.c
-index 23d868545362..2c1ffc9ba2eb 100644
---- a/net/switchdev/switchdev.c
-+++ b/net/switchdev/switchdev.c
-@@ -460,10 +460,11 @@ static int __switchdev_handle_port_obj_add(struct net_device *dev,
- 	extack = switchdev_notifier_info_to_extack(&port_obj_info->info);
- 
- 	if (check_cb(dev)) {
--		/* This flag is only checked if the return value is success. */
--		port_obj_info->handled = true;
--		return add_cb(dev, port_obj_info->obj, port_obj_info->trans,
--			      extack);
-+		err = add_cb(dev, port_obj_info->obj, port_obj_info->trans,
-+			     extack);
-+		if (err != -EOPNOTSUPP)
-+			port_obj_info->handled = true;
-+		return err;
- 	}
- 
- 	/* Switch ports might be stacked under e.g. a LAG. Ignore the
-@@ -515,9 +516,10 @@ static int __switchdev_handle_port_obj_del(struct net_device *dev,
- 	int err = -EOPNOTSUPP;
- 
- 	if (check_cb(dev)) {
--		/* This flag is only checked if the return value is success. */
--		port_obj_info->handled = true;
--		return del_cb(dev, port_obj_info->obj);
-+		err = del_cb(dev, port_obj_info->obj);
-+		if (err != -EOPNOTSUPP)
-+			port_obj_info->handled = true;
-+		return err;
- 	}
- 
- 	/* Switch ports might be stacked under e.g. a LAG. Ignore the
-@@ -568,9 +570,10 @@ static int __switchdev_handle_port_attr_set(struct net_device *dev,
- 	int err = -EOPNOTSUPP;
- 
- 	if (check_cb(dev)) {
--		port_attr_info->handled = true;
--		return set_cb(dev, port_attr_info->attr,
--			      port_attr_info->trans);
-+		err = set_cb(dev, port_attr_info->attr, port_attr_info->trans);
-+		if (err != -EOPNOTSUPP)
-+			port_attr_info->handled = true;
-+		return err;
- 	}
- 
- 	/* Switch ports might be stacked under e.g. a LAG. Ignore the
--- 
-2.23.0
-
+syzbot will keep track of this issue. See:
+https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+For information about bisection process see: https://goo.gl/tpsmEJ#bisection
+syzbot can test patches for this issue, for details see:
+https://goo.gl/tpsmEJ#testing-patches
