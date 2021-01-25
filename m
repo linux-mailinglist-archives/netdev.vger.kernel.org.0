@@ -2,117 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AC34E302925
-	for <lists+netdev@lfdr.de>; Mon, 25 Jan 2021 18:42:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3B71C302955
+	for <lists+netdev@lfdr.de>; Mon, 25 Jan 2021 18:52:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731101AbhAYRlg (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Jan 2021 12:41:36 -0500
-Received: from out2-smtp.messagingengine.com ([66.111.4.26]:59189 "EHLO
-        out2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730823AbhAYRl2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 12:41:28 -0500
-Received: from compute7.internal (compute7.nyi.internal [10.202.2.47])
-        by mailout.nyi.internal (Postfix) with ESMTP id 92EAF5C0117;
-        Mon, 25 Jan 2021 12:40:37 -0500 (EST)
-Received: from mailfrontend2 ([10.202.2.163])
-  by compute7.internal (MEProxy); Mon, 25 Jan 2021 12:40:37 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-transfer-encoding:content-type
-        :date:from:in-reply-to:message-id:mime-version:references
-        :subject:to:x-me-proxy:x-me-proxy:x-me-sender:x-me-sender
-        :x-sasl-enc; s=fm1; bh=a/1Zdl8q3hrc9J13uyMUxKnwgql+l/+n6v4WGL5c3
-        7I=; b=BvgBCr0wL2XfvptDg33jpQdkTVA28ZsheUyov/8+0QyMMw4ob4HiwJSqF
-        zgaqju8N9jk3G4Z2bP461zNtPDRrrgkjJaNa9KCdIJrLogpdBb62PieETVbtIlY+
-        luXTJeuxhJlNpOfQzPsoPSIY3N7g9PjeXKwBasR8zSy+KaYTdd8fWmLqm7O/flod
-        k2XsDchEjyWABk1ceLcfXzlt/w0vi+xL+2eEkNZOuqdvly2Voehmjpu937PeBabW
-        K6V5oQfKIwH7qppKbyRgzQzYN0wAZ1Jq8ofXNQcleXjhjvZc8hpltRrSc9CTeuV+
-        dAYSu5p3xcfg/JRLEPw60kAyCJwRg==
-X-ME-Sender: <xms:lAIPYDkFB5EGDVTQwdXFDORcQ_OVs70OAfYNZi8n-vUFKs4z4eypcQ>
-    <xme:lAIPYGauWOsQHWzFpgPQkDjVSXnuHSukjZAHj6-5kkgB__-yHkn4za1S08Ime6WM_
-    S8PMMIrvuM90Vo>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrvdefgddutdduucetufdoteggodetrfdotf
-    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
-    uceurghilhhouhhtmecufedttdenucesvcftvggtihhpihgvnhhtshculddquddttddmne
-    cujfgurhepfffhvffukfhfgggtugfgjgesthekredttddtudenucfhrhhomhepkfguohcu
-    ufgthhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrth
-    htvghrnhepjeehtdevhfekgeefleffffeufedvhfegffejtefhkeehfefgkeevueekvdeu
-    ffevnecuffhomhgrihhnpehkvghrnhgvlhdrohhrghenucfkphepkeegrddvvdelrdduhe
-    efrdeggeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhm
-    pehiughoshgthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:lAIPYN949f35eXPz85P6V_c-rv8CPxKnZa1Vj_KSHJiEKob50g6xcw>
-    <xmx:lAIPYOFQkby8WZIaYb7-0CEfE9XOTiGo71yoVmbvPOjZVAPAhueMmA>
-    <xmx:lAIPYPcmscg0e6ZvfDk958TystaM1ZeLGvbs-kAkES0y9U5vCOWw4g>
-    <xmx:lQIPYOXlg-E_WAS2tYQ255jbY6oQE0i4ieC1NipzQKOpei1tQfAfjw>
-Received: from localhost (igld-84-229-153-44.inter.net.il [84.229.153.44])
-        by mail.messagingengine.com (Postfix) with ESMTPA id D59E81080059;
-        Mon, 25 Jan 2021 12:40:35 -0500 (EST)
-Date:   Mon, 25 Jan 2021 19:40:32 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Jiri Pirko <jiri@resnulli.us>
-Cc:     Oleksandr Mazur <oleksandr.mazur@plvision.eu>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "jiri@nvidia.com" <jiri@nvidia.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH net-next] net: core: devlink: add new trap action
- HARD_DROP
-Message-ID: <20210125174032.GA2982684@shredder.lan>
-References: <20210121112937.30989-1-oleksandr.mazur@plvision.eu>
- <20210121122152.GA2647590@shredder.lan>
- <20210121093605.49ba26ba@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20210125121234.GJ3565223@nanopsycho.orion>
- <AM0P190MB07387522928B6730DBE1BB77E4BD0@AM0P190MB0738.EURP190.PROD.OUTLOOK.COM>
- <20210125145614.GM3565223@nanopsycho.orion>
+        id S1731198AbhAYRv1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Jan 2021 12:51:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60328 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731004AbhAYRu4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 12:50:56 -0500
+Received: from ganesha.gnumonks.org (ganesha.gnumonks.org [IPv6:2001:780:45:1d:225:90ff:fe52:c662])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AFF7C061A2B
+        for <netdev@vger.kernel.org>; Mon, 25 Jan 2021 09:50:08 -0800 (PST)
+Received: from uucp by ganesha.gnumonks.org with local-bsmtp (Exim 4.89)
+        (envelope-from <laforge@gnumonks.org>)
+        id 1l4603-0005MA-W0; Mon, 25 Jan 2021 18:50:04 +0100
+Received: from laforge by localhost.localdomain with local (Exim 4.94)
+        (envelope-from <laforge@gnumonks.org>)
+        id 1l45rP-001yMp-9a; Mon, 25 Jan 2021 18:41:07 +0100
+Date:   Mon, 25 Jan 2021 18:41:07 +0100
+From:   Harald Welte <laforge@gnumonks.org>
+To:     Jonas Bonn <jonas@norrbonn.se>
+Cc:     netdev@vger.kernel.org, pbshelar@fb.com, kuba@kernel.org,
+        pablo@netfilter.org
+Subject: Re: [RFC PATCH 15/16] gtp: add ability to send GTP controls headers
+Message-ID: <YA8Cs3SD1zeR2JWz@nataraja>
+References: <20210123195916.2765481-1-jonas@norrbonn.se>
+ <20210123195916.2765481-16-jonas@norrbonn.se>
+ <bf6de363-8e32-aca0-1803-a041c0f55650@norrbonn.se>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210125145614.GM3565223@nanopsycho.orion>
+In-Reply-To: <bf6de363-8e32-aca0-1803-a041c0f55650@norrbonn.se>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 25, 2021 at 03:56:14PM +0100, Jiri Pirko wrote:
-> Mon, Jan 25, 2021 at 01:24:27PM CET, oleksandr.mazur@plvision.eu wrote:
-> >Thu, Jan 21, 2021 at 06:36:05PM CET, kuba@kernel.org wrote:
-> >>On Thu, 21 Jan 2021 14:21:52 +0200 Ido Schimmel wrote:
-> >>> On Thu, Jan 21, 2021 at 01:29:37PM +0200, Oleksandr Mazur wrote:
-> >>> > Add new trap action HARD_DROP, which can be used by the
-> >>> > drivers to register traps, where it's impossible to get
-> >>> > packet reported to the devlink subsystem by the device
-> >>> > driver, because it's impossible to retrieve dropped packet
-> >>> > from the device itself.
-> >>> > In order to use this action, driver must also register
-> >>> > additional devlink operation - callback that is used
-> >>> > to retrieve number of packets that have been dropped by
-> >>> > the device.  
-> >>> 
-> >>> Are these global statistics about number of packets the hardware dropped
-> >>> for a specific reason or are these per-port statistics?
-> >>> 
-> >>> It's a creative use of devlink-trap interface, but I think it makes
-> >>> sense. Better to re-use an existing interface than creating yet another
-> >>> one.
-> >>
-> >>Not sure if I agree, if we can't trap why is it a trap?
-> >>It's just a counter.
-> >
-> >>+1
-> >Device might be unable to trap only the 'DROP' packets, and this information should be transparent for the user.
-> >
-> >I agree on the statement, that new action might be an overhead.
-> >I could continue on with the solution Ido Schimmel proposed: since no new action would be needed and no UAPI changes are required, i could simply do the dropped statistics (additional field) output added upon trap stats queiring.
-> >(In case if driver registerd callback, of course; and do so only for DROP actions)
+Hi Jonas,
+
+thanks for your detailed analysis and review of the changes.  To me, they
+once again show that the original patch was merged too quickly, without
+a detailed review by people with strong GTP background.
+
+On Sun, Jan 24, 2021 at 03:21:21PM +0100, Jonas Bonn wrote:
+> struct gtpu_metadata {
+>         __u8    ver;
+>         __u8    flags;
+>         __u8    type;
+> };
 > 
-> It is not "a trap". You just need to count dropped packet. You don't
-> trap anything. That is why I don't think this has anything to do with
-> "trap" infra.
+> Here ver is the version of the metadata structure itself, which is fine.
+> 'flags' corresponds to the 3 flag bits of GTP header's first byte:  E, S,
+> and PN.
+> 'type' corresponds to the 'message type' field of the GTP header.
 
-From [1] I understand that it is a trap and the action can be switched,
-but when it is 'drop', the hardware can provide statistics about number
-of packets that were discarded in hardware. If this is correct, then the
-suggestion in [2] looks valid to me.
+One more comment on the 'type': Of how much use is it?  After all, the
+GTP-U kernel driver only handles a single message type at all (G-PDU /
+255 - the only message type that encapsulates user IP data), while all
+other message types are always processed in userland via the UDP socket.
 
-[1] https://lore.kernel.org/netdev/AM0P190MB073828252FFDA3215387765CE4A00@AM0P190MB0738.EURP190.PROD.OUTLOOK.COM/
-[2] https://lore.kernel.org/netdev/20210123160348.GB2799851@shredder.lan/
+Side-note: 3GPP TS 29.060 lists 5 other message types that can happen in
+GTP-U:
+* Echo Request
+* Echo Response
+* Error Indication
+* Supported Extension Headers Notification
+* End Marker
+
+It would be interesting to understand how the new flow-based tunnel would
+treat those, if those 
+
+> The 'control header' (strange name) example below allows the flags to be
+> set; however, setting these flags alone is insufficient because each one
+> indicates the presence of additional fields in the header and there's
+> nothing in the code to account for that.
+
+Full ACK from my side here.  Setting arbitrary bits in the GTP flags without
+then actually encoding the required additional bits that those flags require
+will produce broken packets.  IMHO, the GTP driver should never do that.
+
+-- 
+- Harald Welte <laforge@gnumonks.org>           http://laforge.gnumonks.org/
+============================================================================
+"Privacy in residential applications is a desirable marketing option."
+                                                  (ETSI EN 300 175-7 Ch. A6)
