@@ -2,149 +2,255 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2B595304B08
-	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 22:14:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3A313304B45
+	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 22:28:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728659AbhAZEvY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Jan 2021 23:51:24 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:36530 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726551AbhAYJZ6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 04:25:58 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1611566668;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=QDsYKYdE9xnD8PZO2/oXTlbgUjCrmpaZCS6Ef2BKYBQ=;
-        b=JZfX+YSWSGyH2eays9Ag11hkyy7/zqDeydZ4xVxWGVfDMKKzc+Vap6v2DVnYbRe7/pkHk9
-        EsGXsYV5IpzBWcCNWZC3Wpy0/zo0Em7yghRNWo33xSzfm8bKrV9D5iH92FJRpdPiMx9GpK
-        0EW21VtxP8uP5XLOIptUz6NTNLiSIe8=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-539-yLYxnAOfN3av0bSrpVTM1w-1; Mon, 25 Jan 2021 03:41:59 -0500
-X-MC-Unique: yLYxnAOfN3av0bSrpVTM1w-1
-Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 4C7A18018A7;
-        Mon, 25 Jan 2021 08:41:57 +0000 (UTC)
-Received: from carbon (unknown [10.36.110.4])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 4FF5F7216D;
-        Mon, 25 Jan 2021 08:41:49 +0000 (UTC)
-Date:   Mon, 25 Jan 2021 09:41:48 +0100
-From:   Jesper Dangaard Brouer <brouer@redhat.com>
-To:     Daniel Borkmann <daniel@iogearbox.net>
-Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
-        Daniel Borkmann <borkmann@iogearbox.net>,
-        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
-        maze@google.com, lmb@cloudflare.com, shaun@tigera.io,
-        Lorenzo Bianconi <lorenzo@kernel.org>, marek@cloudflare.com,
-        John Fastabend <john.fastabend@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>, eyal.birger@gmail.com,
-        colrack@gmail.com, brouer@redhat.com
-Subject: Re: [PATCH bpf-next V12 4/7] bpf: add BPF-helper for MTU checking
-Message-ID: <20210125094148.2b3bb128@carbon>
-In-Reply-To: <6772a12b-2a60-bb3b-93df-1d6d6c7c7fd7@iogearbox.net>
-References: <161098881526.108067.7603213364270807261.stgit@firesoul>
-        <161098887018.108067.13643446976934084937.stgit@firesoul>
-        <6772a12b-2a60-bb3b-93df-1d6d6c7c7fd7@iogearbox.net>
+        id S1727934AbhAZEsB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Jan 2021 23:48:01 -0500
+Received: from aserp2130.oracle.com ([141.146.126.79]:48416 "EHLO
+        aserp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726116AbhAYJQ1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 04:16:27 -0500
+Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
+        by aserp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 10P8a9c9018450;
+        Mon, 25 Jan 2021 08:42:16 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : mime-version : content-type : in-reply-to;
+ s=corp-2020-01-29; bh=BgLPaVKgIgdP94HtqYID5cE+Urus7OpTziV0O304eRA=;
+ b=GwvnfMPNFzESaxT7XtzW89sE6QKBig4g94XjkiAgNhFj5ffKCd3Qst0/VZw4J/FFS/6J
+ xw3vROrwWtSsLY9gTjjnCk8YqGk6PEyQ9l+htYMn9GSx30A9rYvXq5Ef+LxLSaFvoEB7
+ aIyBmkk/zuWi8DCWWierFermzrN5DqFdfGorXTe88m3/Pr+JpDceBD/fV7juFnVobrP7
+ Z9ejeAJFUDC1m0f9+joqidhsKRqFXIfPP+mAeu+kU2B1d+KdDGbheT2RanbsGDQVWroZ
+ wsaQ+8vmSMsxecxfLOImaDfioNksqSK1RFX3taBNIYV4Bxst4LAO3hhj1yUaL+ej/xDx Qg== 
+Received: from aserp3030.oracle.com (aserp3030.oracle.com [141.146.126.71])
+        by aserp2130.oracle.com with ESMTP id 3689aacakf-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 25 Jan 2021 08:42:16 +0000
+Received: from pps.filterd (aserp3030.oracle.com [127.0.0.1])
+        by aserp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 10P8YwuX062461;
+        Mon, 25 Jan 2021 08:42:14 GMT
+Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
+        by aserp3030.oracle.com with ESMTP id 368wck9jwp-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 25 Jan 2021 08:42:14 +0000
+Received: from abhmp0012.oracle.com (abhmp0012.oracle.com [141.146.116.18])
+        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 10P8gCWc001970;
+        Mon, 25 Jan 2021 08:42:12 GMT
+Received: from mwanda (/102.36.221.92)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Mon, 25 Jan 2021 00:42:11 -0800
+Date:   Mon, 25 Jan 2021 11:42:03 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        UNGLinuxDriver@microchip.com,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        netdev@vger.kernel.org, kernel-janitors@vger.kernel.org
+Subject: [PATCH v2 1/2 net-next] net: mscc: ocelot: fix error handling bugs
+ in mscc_ocelot_init_ports()
+Message-ID: <YA6EW9SPE4q6x7d3@mwanda>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210125081940.GK20820@kadam>
+X-Mailer: git-send-email haha only kidding
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9874 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 mlxscore=0 suspectscore=0
+ phishscore=0 mlxlogscore=999 bulkscore=0 malwarescore=0 spamscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2101250051
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9874 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 malwarescore=0 adultscore=0
+ lowpriorityscore=0 mlxlogscore=999 clxscore=1015 phishscore=0 bulkscore=0
+ spamscore=0 priorityscore=1501 mlxscore=0 suspectscore=0 impostorscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2101250051
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sat, 23 Jan 2021 02:35:41 +0100
-Daniel Borkmann <daniel@iogearbox.net> wrote:
+There are several error handling bugs in mscc_ocelot_init_ports().  I
+went through the code, and carefully audited it and made fixes and
+cleanups.
 
-> > + *		The *flags* argument can be a combination of one or more of the
-> > + *		following values:
-> > + *
-> > + *		**BPF_MTU_CHK_SEGS**
-> > + *			This flag will only works for *ctx* **struct sk_buff**.
-> > + *			If packet context contains extra packet segment buffers
-> > + *			(often knows as GSO skb), then MTU check is harder to
-> > + *			check at this point, because in transmit path it is
-> > + *			possible for the skb packet to get re-segmented
-> > + *			(depending on net device features).  This could still be
-> > + *			a MTU violation, so this flag enables performing MTU
-> > + *			check against segments, with a different violation
-> > + *			return code to tell it apart. Check cannot use len_diff.
-> > + *
-> > + *		On return *mtu_len* pointer contains the MTU value of the net
-> > + *		device.  Remember the net device configured MTU is the L3 size,
-> > + *		which is returned here and XDP and TX length operate at L2.
-> > + *		Helper take this into account for you, but remember when using
-> > + *		MTU value in your BPF-code.  On input *mtu_len* must be a valid
-> > + *		pointer and be initialized (to zero), else verifier will reject
-> > + *		BPF program.
-> > + *
-> > + *	Return
-> > + *		* 0 on success, and populate MTU value in *mtu_len* pointer.
-> > + *
-> > + *		* < 0 if any input argument is invalid (*mtu_len* not updated)
-> > + *
-> > + *		MTU violations return positive values, but also populate MTU
-> > + *		value in *mtu_len* pointer, as this can be needed for
-> > + *		implementing PMTU handing:
-> > + *
-> > + *		* **BPF_MTU_CHK_RET_FRAG_NEEDED**
-> > + *		* **BPF_MTU_CHK_RET_SEGS_TOOBIG**
-> > + *
-> >    */  
-> [...]
-> > +BPF_CALL_5(bpf_skb_check_mtu, struct sk_buff *, skb,
-> > +	   u32, ifindex, u32 *, mtu_len, s32, len_diff, u64, flags)
-> > +{
-> > +	int ret = BPF_MTU_CHK_RET_FRAG_NEEDED;
-> > +	struct net_device *dev = skb->dev;
-> > +	int skb_len, dev_len;
-> > +	int mtu;
-> > +
-> > +	if (unlikely(flags & ~(BPF_MTU_CHK_SEGS)))
-> > +		return -EINVAL;
-> > +
-> > +	dev = __dev_via_ifindex(dev, ifindex);
-> > +	if (unlikely(!dev))
-> > +		return -ENODEV;
-> > +
-> > +	mtu = READ_ONCE(dev->mtu);
-> > +
-> > +	dev_len = mtu + dev->hard_header_len;
-> > +	skb_len = skb->len + len_diff; /* minus result pass check */
-> > +	if (skb_len <= dev_len) {
-> > +		ret = BPF_MTU_CHK_RET_SUCCESS;
-> > +		goto out;
-> > +	}
-> > +	/* At this point, skb->len exceed MTU, but as it include length of all
-> > +	 * segments, it can still be below MTU.  The SKB can possibly get
-> > +	 * re-segmented in transmit path (see validate_xmit_skb).  Thus, user
-> > +	 * must choose if segs are to be MTU checked.
-> > +	 */
-> > +	if (skb_is_gso(skb)) {
-> > +		ret = BPF_MTU_CHK_RET_SUCCESS;
-> > +
-> > +		if (flags & BPF_MTU_CHK_SEGS &&
-> > +		    !skb_gso_validate_network_len(skb, mtu))
-> > +			ret = BPF_MTU_CHK_RET_SEGS_TOOBIG;  
-> 
-> I think that looks okay overall now. One thing that will easily slip through
-> is that in the helper description you mentioned 'Check cannot use len_diff.'
-> for BPF_MTU_CHK_SEGS flag. So right now for non-zero len_diff the user
-> will still get BPF_MTU_CHK_RET_SUCCESS if the current length check via
-> skb_gso_validate_network_len(skb, mtu) passes. If it cannot be checked,
-> maybe enforce len_diff == 0 for gso skbs on BPF_MTU_CHK_SEGS?
+1) The ocelot_probe_port() function didn't have a mirror release function
+   so it was hard to follow.  I created the ocelot_release_port()
+   function.
+2) In the ocelot_probe_port() function, if the register_netdev() call
+   failed, then it lead to a double free_netdev(dev) bug.  Fix this
+   by moving the "ocelot->ports[port] = ocelot_port;" assignment to the
+   end of the function after everything has succeeded.
+3) I was concerned that the "port" which comes from of_property_read_u32()
+   might be out of bounds so I added a check for that.
+4) In the original code if ocelot_regmap_init() failed then the driver
+   tried to continue but I think that should be a fatal error.
+5) If ocelot_probe_port() failed then the most recent devlink was leaked.
+   Fix this by moving the "registered_ports[port] = true;" assignment
+   earlier.
+6) The error handling if the final ocelot_port_devlink_init() failed had
+   two problems.  The "while (port-- >= 0)" loop should have been
+   "--port" pre-op instead of a post-op to avoid a buffer underflow.
+   The "if (!registered_ports[port])" condition was reversed leading to
+   resource leaks and double frees.
 
-Ok. Do you want/think this can be enforced by the verifier or are you
-simply requesting that the helper will return -EINVAL (or another errno)?
+Fixes: 6c30384eb1de ("net: mscc: ocelot: register devlink ports")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+---
+v2: In v1, I accidentally left out parts of the commit so it didn't
+compile.
 
+ drivers/net/ethernet/mscc/ocelot.h         |  1 +
+ drivers/net/ethernet/mscc/ocelot_net.c     | 15 +++++++--
+ drivers/net/ethernet/mscc/ocelot_vsc7514.c | 39 +++++++++-------------
+ 3 files changed, 30 insertions(+), 25 deletions(-)
+
+diff --git a/drivers/net/ethernet/mscc/ocelot.h b/drivers/net/ethernet/mscc/ocelot.h
+index e8621dbc14f7..76b8d8ce3b48 100644
+--- a/drivers/net/ethernet/mscc/ocelot.h
++++ b/drivers/net/ethernet/mscc/ocelot.h
+@@ -121,6 +121,7 @@ void ocelot_port_writel(struct ocelot_port *port, u32 val, u32 reg);
+ 
+ int ocelot_probe_port(struct ocelot *ocelot, int port, struct regmap *target,
+ 		      struct phy_device *phy);
++void ocelot_release_port(struct ocelot_port *ocelot_port);
+ int ocelot_devlink_init(struct ocelot *ocelot);
+ void ocelot_devlink_teardown(struct ocelot *ocelot);
+ int ocelot_port_devlink_init(struct ocelot *ocelot, int port,
+diff --git a/drivers/net/ethernet/mscc/ocelot_net.c b/drivers/net/ethernet/mscc/ocelot_net.c
+index 9553eb3e441c..875ab8532d8c 100644
+--- a/drivers/net/ethernet/mscc/ocelot_net.c
++++ b/drivers/net/ethernet/mscc/ocelot_net.c
+@@ -1262,7 +1262,6 @@ int ocelot_probe_port(struct ocelot *ocelot, int port, struct regmap *target,
+ 	ocelot_port = &priv->port;
+ 	ocelot_port->ocelot = ocelot;
+ 	ocelot_port->target = target;
+-	ocelot->ports[port] = ocelot_port;
+ 
+ 	dev->netdev_ops = &ocelot_port_netdev_ops;
+ 	dev->ethtool_ops = &ocelot_ethtool_ops;
+@@ -1282,7 +1281,19 @@ int ocelot_probe_port(struct ocelot *ocelot, int port, struct regmap *target,
+ 	if (err) {
+ 		dev_err(ocelot->dev, "register_netdev failed\n");
+ 		free_netdev(dev);
++		return err;
+ 	}
+ 
+-	return err;
++	ocelot->ports[port] = ocelot_port;
++	return 0;
++}
++
++void ocelot_release_port(struct ocelot_port *ocelot_port)
++{
++	struct ocelot_port_private *priv = container_of(ocelot_port,
++						struct ocelot_port_private,
++						port);
++
++	unregister_netdev(priv->dev);
++	free_netdev(priv->dev);
+ }
+diff --git a/drivers/net/ethernet/mscc/ocelot_vsc7514.c b/drivers/net/ethernet/mscc/ocelot_vsc7514.c
+index 30a38df08a21..2c82ffe2c611 100644
+--- a/drivers/net/ethernet/mscc/ocelot_vsc7514.c
++++ b/drivers/net/ethernet/mscc/ocelot_vsc7514.c
+@@ -1064,7 +1064,6 @@ static void mscc_ocelot_release_ports(struct ocelot *ocelot)
+ 	int port;
+ 
+ 	for (port = 0; port < ocelot->num_phys_ports; port++) {
+-		struct ocelot_port_private *priv;
+ 		struct ocelot_port *ocelot_port;
+ 
+ 		ocelot_port = ocelot->ports[port];
+@@ -1072,12 +1071,7 @@ static void mscc_ocelot_release_ports(struct ocelot *ocelot)
+ 			continue;
+ 
+ 		ocelot_deinit_port(ocelot, port);
+-
+-		priv = container_of(ocelot_port, struct ocelot_port_private,
+-				    port);
+-
+-		unregister_netdev(priv->dev);
+-		free_netdev(priv->dev);
++		ocelot_release_port(ocelot_port);
+ 	}
+ }
+ 
+@@ -1123,14 +1117,22 @@ static int mscc_ocelot_init_ports(struct platform_device *pdev,
+ 			continue;
+ 
+ 		port = reg;
++		if (port < 0 || port >= ocelot->num_phys_ports) {
++			dev_err(ocelot->dev,
++				"invalid port number: %d >= %d\n", port,
++				ocelot->num_phys_ports);
++			continue;
++		}
+ 
+ 		snprintf(res_name, sizeof(res_name), "port%d", port);
+ 
+ 		res = platform_get_resource_byname(pdev, IORESOURCE_MEM,
+ 						   res_name);
+ 		target = ocelot_regmap_init(ocelot, res);
+-		if (IS_ERR(target))
+-			continue;
++		if (IS_ERR(target)) {
++			err = PTR_ERR(target);
++			goto out_teardown;
++		}
+ 
+ 		phy_node = of_parse_phandle(portnp, "phy-handle", 0);
+ 		if (!phy_node)
+@@ -1147,6 +1149,7 @@ static int mscc_ocelot_init_ports(struct platform_device *pdev,
+ 			of_node_put(portnp);
+ 			goto out_teardown;
+ 		}
++		registered_ports[port] = true;
+ 
+ 		err = ocelot_probe_port(ocelot, port, target, phy);
+ 		if (err) {
+@@ -1154,8 +1157,6 @@ static int mscc_ocelot_init_ports(struct platform_device *pdev,
+ 			goto out_teardown;
+ 		}
+ 
+-		registered_ports[port] = true;
+-
+ 		ocelot_port = ocelot->ports[port];
+ 		priv = container_of(ocelot_port, struct ocelot_port_private,
+ 				    port);
+@@ -1213,15 +1214,9 @@ static int mscc_ocelot_init_ports(struct platform_device *pdev,
+ 
+ 		err = ocelot_port_devlink_init(ocelot, port,
+ 					       DEVLINK_PORT_FLAVOUR_UNUSED);
+-		if (err) {
+-			while (port-- >= 0) {
+-				if (!registered_ports[port])
+-					continue;
+-				ocelot_port_devlink_teardown(ocelot, port);
+-			}
+-
++		if (err)
+ 			goto out_teardown;
+-		}
++		registered_ports[port] = true;
+ 	}
+ 
+ 	kfree(registered_ports);
+@@ -1233,10 +1228,8 @@ static int mscc_ocelot_init_ports(struct platform_device *pdev,
+ 	mscc_ocelot_release_ports(ocelot);
+ 	/* Tear down devlink ports for the registered network interfaces */
+ 	for (port = 0; port < ocelot->num_phys_ports; port++) {
+-		if (!registered_ports[port])
+-			continue;
+-
+-		ocelot_port_devlink_teardown(ocelot, port);
++		if (registered_ports[port])
++			ocelot_port_devlink_teardown(ocelot, port);
+ 	}
+ 	kfree(registered_ports);
+ 	return err;
 -- 
-Best regards,
-  Jesper Dangaard Brouer
-  MSc.CS, Principal Kernel Engineer at Red Hat
-  LinkedIn: http://www.linkedin.com/in/brouer
+2.29.2
 
