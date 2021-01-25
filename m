@@ -2,196 +2,128 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F7B23029F2
-	for <lists+netdev@lfdr.de>; Mon, 25 Jan 2021 19:20:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D33983029A9
+	for <lists+netdev@lfdr.de>; Mon, 25 Jan 2021 19:12:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726436AbhAYST3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Jan 2021 13:19:29 -0500
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:65232 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1730507AbhAYRND (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 12:13:03 -0500
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 10PGpMBB017885;
-        Mon, 25 Jan 2021 09:09:53 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0220; bh=DUpO0wHw6W9Q7OIz6Ir6AZBxbH3roAo4pdxP7MQK5/E=;
- b=SD5FGTg+lsNKYw3epa2RuPRo7+OK92s6EhNpuOzrJuFAfaEfpxSiqXQrFENL+kkImpTH
- FgPeWLfI5wJhgxWRENyT+8lgg9NivI4VkbSCDBvwEIE53TcgZy/7yvh5GGpexQaYjV/k
- ZCfG5mC9zjGNFqn+xRE9Luzat2YLoK6pQ6ZVuAMg7Oou82zC9nMmO7RAj0OJEIcC8Ds9
- 7YMmxeaYWJ6/B9nE2egBhnRwMQQ9SbEY4zkXnD7ExHl/bWoo7JKp35cwUVkJ7iT52BRd
- qRuFoAasKc74E5D9idE8/BfjVC2Shq28yFA8uKSbIM9CJlmRGGwFdyse9u9jvXFBACt9 Ng== 
-Received: from dc5-exch02.marvell.com ([199.233.59.182])
-        by mx0a-0016f401.pphosted.com with ESMTP id 368j1u5ah0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Mon, 25 Jan 2021 09:09:53 -0800
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 25 Jan
- 2021 09:09:51 -0800
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 25 Jan 2021 09:09:51 -0800
-Received: from stefan-pc.marvell.com (stefan-pc.marvell.com [10.5.25.21])
-        by maili.marvell.com (Postfix) with ESMTP id 7E02F3F703F;
-        Mon, 25 Jan 2021 09:09:48 -0800 (PST)
-From:   <stefanc@marvell.com>
-To:     <netdev@vger.kernel.org>
-CC:     <thomas.petazzoni@bootlin.com>, <davem@davemloft.net>,
-        <nadavh@marvell.com>, <ymarkman@marvell.com>,
-        <linux-kernel@vger.kernel.org>, <stefanc@marvell.com>,
-        <kuba@kernel.org>, <linux@armlinux.org.uk>, <mw@semihalf.com>,
-        <andrew@lunn.ch>, <rmk+kernel@armlinux.org.uk>,
-        <atenart@kernel.org>
-Subject: [PATCH v3 RFC net-next 10/19] net: mvpp2: add FCA RXQ non occupied descriptor threshold
-Date:   Mon, 25 Jan 2021 19:07:57 +0200
-Message-ID: <1611594486-29431-11-git-send-email-stefanc@marvell.com>
-X-Mailer: git-send-email 1.9.1
-In-Reply-To: <1611594486-29431-1-git-send-email-stefanc@marvell.com>
-References: <1611594486-29431-1-git-send-email-stefanc@marvell.com>
+        id S1731307AbhAYSKH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Jan 2021 13:10:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35318 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730944AbhAYSFR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 13:05:17 -0500
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 86A24C0617A9
+        for <netdev@vger.kernel.org>; Mon, 25 Jan 2021 10:03:34 -0800 (PST)
+Received: by mail-pl1-x629.google.com with SMTP id q2so5373465plk.4
+        for <netdev@vger.kernel.org>; Mon, 25 Jan 2021 10:03:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=1pJ/Zg4ITbpnJw71WkGTelTq5ONDoCLkdhBdvVCe5i4=;
+        b=k+KsWO2X4iS3aQW0u2AustK5TvQV3i7HDSLpoN2SKTpgi2Cg1iDN3/xQWKhErdpfg7
+         QHVwRoJHJi9HP1UDsT1vPCaYjFAvbL7/w0refH8FvCVOfCSmaBZQVF7xcpuygh5BJG/h
+         zeImed+1NT7e9sv9w1rcprQaGeQMIpTfJyHbCU24COqaNF4pubMfYHdIUBPajTTB9obw
+         Ki40OU0c1SsW5Y/uaREqbLRNwDT3q/hkhxGYzwPjRB4SkcuD56axUKkS59J8q2jr+WvS
+         a5xqHXyzy+Bl/sa8FJGv+7eJ8uHrkGLPrAZiO9o9KXthrQHHXF6wbMWbLDKciwrSdyFO
+         oFZA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=1pJ/Zg4ITbpnJw71WkGTelTq5ONDoCLkdhBdvVCe5i4=;
+        b=R0hFC1Diug8nsGiQtyJu2rpeSWYv4eOwO7LxSFmgWyXzPY95JkpXt40yu7TWerQqbt
+         A7y3y3SpMBXGDxrSDJnnMMPgRggoaTlrPZO59ORlbVbJPjlxxRKnDgLFdjRvK88q1oXQ
+         CSGSiEz21rwmMYR4M/krT2zitmDtBu9GSflm7slr4hsofCB5cBg7uvZ7hflVbCs3ds1o
+         rn98ELiMAcCK5POCO8IT0HHvI87nE5MhzTl+XZsnuMGGkiLybFQdFwIg2KjFmq2Bd33e
+         dy8bL3y/sRvQZEotTA7FR6cGhgrqaE0G5cDF2TN7VHM56VQUpWiHMNGmnUW0+SwBzfsx
+         fNkg==
+X-Gm-Message-State: AOAM531LlsaUrsaeI6pT8uSDq3UwA2bFYzL/0SdC3RaM9aNYmgw+kuoz
+        RdipCN51iEEgk9v8mAnDxo3w+riptibkXfGUglktCJum43U=
+X-Google-Smtp-Source: ABdhPJxhTFp/J1wD7mLm9mReeYAHLE1jxITaDZV7Ek3501Dq5sv45lD9qOFynyiG2hL1//FGjgYTzzNjuYIJhIUamkw=
+X-Received: by 2002:a17:902:aa8b:b029:da:ef22:8675 with SMTP id
+ d11-20020a170902aa8bb02900daef228675mr1620975plr.15.1611597813990; Mon, 25
+ Jan 2021 10:03:33 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
- definitions=2021-01-25_07:2021-01-25,2021-01-25 signatures=0
+References: <20210125111223.2540294c@canb.auug.org.au>
+In-Reply-To: <20210125111223.2540294c@canb.auug.org.au>
+From:   Arjun Roy <arjunroy@google.com>
+Date:   Mon, 25 Jan 2021 10:03:23 -0800
+Message-ID: <CAOFY-A0_f_fbj_+7HN-sBh5H97_HciW=yBRMnw5kvwYsvjyhBg@mail.gmail.com>
+Subject: Re: linux-next: manual merge of the bpf-next tree with the net-next tree
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>,
+        Stanislav Fomichev <sdf@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Stefan Chulski <stefanc@marvell.com>
+On Sun, Jan 24, 2021 at 4:12 PM Stephen Rothwell <sfr@canb.auug.org.au> wrote:
+>
+> Hi all,
+>
+> Today's linux-next merge of the bpf-next tree got a conflict in:
+>
+>   net/ipv4/tcp.c
+>
+> between commit:
+>
+>   7eeba1706eba ("tcp: Add receive timestamp support for receive zerocopy.")
+>
+> from the net-next tree and commit:
+>
+>   9cacf81f8161 ("bpf: Remove extra lock_sock for TCP_ZEROCOPY_RECEIVE")
+>
+> from the bpf-next tree.
+>
+> I fixed it up (see below) and can carry the fix as necessary. This
+> is now fixed as far as linux-next is concerned, but any non trivial
+> conflicts should be mentioned to your upstream maintainer when your tree
+> is submitted for merging.  You may also want to consider cooperating
+> with the maintainer of the conflicting tree to minimise any particularly
+> complex conflicts.
+>
 
-RXQ non occupied descriptor threshold would be used by
-Flow Control Firmware feature to move to the XOFF mode.
-RXQ non occupied threshold would change interrupt cause
-that polled by CM3 Firmware.
-Actual non occupied interrupt masked and won't trigger interrupt.
+The fix looks good, thank you.
 
-Signed-off-by: Stefan Chulski <stefanc@marvell.com>
----
- drivers/net/ethernet/marvell/mvpp2/mvpp2.h      |  3 ++
- drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 46 +++++++++++++++++---
- 2 files changed, 42 insertions(+), 7 deletions(-)
+-Arjun
 
-diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
-index 73f087c..9d8993f 100644
---- a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
-+++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
-@@ -295,6 +295,8 @@
- #define     MVPP2_PON_CAUSE_TXP_OCCUP_DESC_ALL_MASK	0x3fc00000
- #define     MVPP2_PON_CAUSE_MISC_SUM_MASK		BIT(31)
- #define MVPP2_ISR_MISC_CAUSE_REG		0x55b0
-+#define MVPP2_ISR_RX_ERR_CAUSE_REG(port)	(0x5520 + 4 * (port))
-+#define	    MVPP2_ISR_RX_ERR_CAUSE_NONOCC_MASK	0x00ff
- 
- /* Buffer Manager registers */
- #define MVPP2_BM_POOL_BASE_REG(pool)		(0x6000 + ((pool) * 4))
-@@ -764,6 +766,7 @@
- #define MSS_SRAM_SIZE		0x800
- #define FC_QUANTA		0xFFFF
- #define FC_CLK_DIVIDER		100
-+#define MSS_THRESHOLD_STOP	768
- 
- /* RX buffer constants */
- #define MVPP2_SKB_SHINFO_SIZE \
-diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-index 8f40293a..a4933c4 100644
---- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-+++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-@@ -1144,14 +1144,19 @@ static inline void mvpp2_qvec_interrupt_disable(struct mvpp2_queue_vector *qvec)
- static void mvpp2_interrupts_mask(void *arg)
- {
- 	struct mvpp2_port *port = arg;
-+	int cpu = smp_processor_id();
-+	u32 thread;
- 
- 	/* If the thread isn't used, don't do anything */
--	if (smp_processor_id() > port->priv->nthreads)
-+	if (cpu >= port->priv->nthreads)
- 		return;
- 
--	mvpp2_thread_write(port->priv,
--			   mvpp2_cpu_to_thread(port->priv, smp_processor_id()),
-+	thread = mvpp2_cpu_to_thread(port->priv, cpu);
-+
-+	mvpp2_thread_write(port->priv, thread,
- 			   MVPP2_ISR_RX_TX_MASK_REG(port->id), 0);
-+	mvpp2_thread_write(port->priv, thread,
-+			   MVPP2_ISR_RX_ERR_CAUSE_REG(port->id), 0);
- }
- 
- /* Unmask the current thread's Rx/Tx interrupts.
-@@ -1161,20 +1166,25 @@ static void mvpp2_interrupts_mask(void *arg)
- static void mvpp2_interrupts_unmask(void *arg)
- {
- 	struct mvpp2_port *port = arg;
--	u32 val;
-+	int cpu = smp_processor_id();
-+	u32 val, thread;
- 
- 	/* If the thread isn't used, don't do anything */
--	if (smp_processor_id() > port->priv->nthreads)
-+	if (cpu >= port->priv->nthreads)
- 		return;
- 
-+	thread = mvpp2_cpu_to_thread(port->priv, cpu);
-+
- 	val = MVPP2_CAUSE_MISC_SUM_MASK |
- 		MVPP2_CAUSE_RXQ_OCCUP_DESC_ALL_MASK(port->priv->hw_version);
- 	if (port->has_tx_irqs)
- 		val |= MVPP2_CAUSE_TXQ_OCCUP_DESC_ALL_MASK;
- 
--	mvpp2_thread_write(port->priv,
--			   mvpp2_cpu_to_thread(port->priv, smp_processor_id()),
-+	mvpp2_thread_write(port->priv, thread,
- 			   MVPP2_ISR_RX_TX_MASK_REG(port->id), val);
-+	mvpp2_thread_write(port->priv, thread,
-+			   MVPP2_ISR_RX_ERR_CAUSE_REG(port->id),
-+			   MVPP2_ISR_RX_ERR_CAUSE_NONOCC_MASK);
- }
- 
- static void
-@@ -1199,6 +1209,9 @@ static void mvpp2_interrupts_unmask(void *arg)
- 
- 		mvpp2_thread_write(port->priv, v->sw_thread_id,
- 				   MVPP2_ISR_RX_TX_MASK_REG(port->id), val);
-+		mvpp2_thread_write(port->priv, v->sw_thread_id,
-+				   MVPP2_ISR_RX_ERR_CAUSE_REG(port->id),
-+				   MVPP2_ISR_RX_ERR_CAUSE_NONOCC_MASK);
- 	}
- }
- 
-@@ -2404,6 +2417,22 @@ static void mvpp2_txp_max_tx_size_set(struct mvpp2_port *port)
- 	}
- }
- 
-+/* Routine set the number of non-occupied descriptors threshold that change
-+ * interrupt error cause polled by FW Flow Control
-+ */
-+static void mvpp2_set_rxq_free_tresh(struct mvpp2_port *port,
-+				     struct mvpp2_rx_queue *rxq)
-+{
-+	u32 val;
-+
-+	mvpp2_write(port->priv, MVPP2_RXQ_NUM_REG, rxq->id);
-+
-+	val = mvpp2_read(port->priv, MVPP2_RXQ_THRESH_REG);
-+	val &= ~MVPP2_RXQ_NON_OCCUPIED_MASK;
-+	val |= MSS_THRESHOLD_STOP << MVPP2_RXQ_NON_OCCUPIED_OFFSET;
-+	mvpp2_write(port->priv, MVPP2_RXQ_THRESH_REG, val);
-+}
-+
- /* Set the number of packets that will be received before Rx interrupt
-  * will be generated by HW.
-  */
-@@ -2659,6 +2688,9 @@ static int mvpp2_rxq_init(struct mvpp2_port *port,
- 	mvpp2_rx_pkts_coal_set(port, rxq);
- 	mvpp2_rx_time_coal_set(port, rxq);
- 
-+	/* Set the number of non occupied descriptors threshold */
-+	mvpp2_set_rxq_free_tresh(port, rxq);
-+
- 	/* Add number of descriptors ready for receiving packets */
- 	mvpp2_rxq_status_update(port, rxq->id, 0, rxq->size);
- 
--- 
-1.9.1
-
+> --
+> Cheers,
+> Stephen Rothwell
+>
+> diff --cc net/ipv4/tcp.c
+> index e1a17c6b473c,26aa923cf522..000000000000
+> --- a/net/ipv4/tcp.c
+> +++ b/net/ipv4/tcp.c
+> @@@ -4160,18 -4098,13 +4160,20 @@@ static int do_tcp_getsockopt(struct soc
+>                 if (copy_from_user(&zc, optval, len))
+>                         return -EFAULT;
+>                 lock_sock(sk);
+>  -              err = tcp_zerocopy_receive(sk, &zc);
+>  +              err = tcp_zerocopy_receive(sk, &zc, &tss);
+> +               err = BPF_CGROUP_RUN_PROG_GETSOCKOPT_KERN(sk, level, optname,
+> +                                                         &zc, &len, err);
+>                 release_sock(sk);
+>  -              if (len >= offsetofend(struct tcp_zerocopy_receive, err))
+>  -                      goto zerocopy_rcv_sk_err;
+>  +              if (len >= offsetofend(struct tcp_zerocopy_receive, msg_flags))
+>  +                      goto zerocopy_rcv_cmsg;
+>                 switch (len) {
+>  +              case offsetofend(struct tcp_zerocopy_receive, msg_flags):
+>  +                      goto zerocopy_rcv_cmsg;
+>  +              case offsetofend(struct tcp_zerocopy_receive, msg_controllen):
+>  +              case offsetofend(struct tcp_zerocopy_receive, msg_control):
+>  +              case offsetofend(struct tcp_zerocopy_receive, flags):
+>  +              case offsetofend(struct tcp_zerocopy_receive, copybuf_len):
+>  +              case offsetofend(struct tcp_zerocopy_receive, copybuf_address):
+>                 case offsetofend(struct tcp_zerocopy_receive, err):
+>                         goto zerocopy_rcv_sk_err;
+>                 case offsetofend(struct tcp_zerocopy_receive, inq):
