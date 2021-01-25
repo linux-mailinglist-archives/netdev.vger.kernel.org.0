@@ -2,93 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2EAE5302776
-	for <lists+netdev@lfdr.de>; Mon, 25 Jan 2021 17:08:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F272302786
+	for <lists+netdev@lfdr.de>; Mon, 25 Jan 2021 17:12:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730568AbhAYQGn (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Jan 2021 11:06:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37570 "EHLO
+        id S1728842AbhAYQLU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Jan 2021 11:11:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38514 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730382AbhAYQGL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 11:06:11 -0500
-Received: from mail-io1-xd2b.google.com (mail-io1-xd2b.google.com [IPv6:2607:f8b0:4864:20::d2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2B47C06174A;
-        Mon, 25 Jan 2021 08:05:28 -0800 (PST)
-Received: by mail-io1-xd2b.google.com with SMTP id d81so27507230iof.3;
-        Mon, 25 Jan 2021 08:05:28 -0800 (PST)
+        with ESMTP id S1730611AbhAYQKc (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 11:10:32 -0500
+Received: from mail-qt1-x831.google.com (mail-qt1-x831.google.com [IPv6:2607:f8b0:4864:20::831])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E40D7C061788
+        for <netdev@vger.kernel.org>; Mon, 25 Jan 2021 08:09:51 -0800 (PST)
+Received: by mail-qt1-x831.google.com with SMTP id l23so7537933qtq.13
+        for <netdev@vger.kernel.org>; Mon, 25 Jan 2021 08:09:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=PKFdQJWox9aZ4PvErLOeFCl9Ca17gHD16VMhp7rOwKE=;
-        b=eaWu6IaaAS1LwErvpIhsdIx/0+R9KO4T4Cx31RtpY0Yy3VtFfQ/6s00liOzOGJTwOk
-         ZmfNaObMhPCkgFrcxhBQJnozdAfvcDmxBzvZpE4zdNvPQ4lRaGS89XnjAmxrkFp69Bx0
-         ZhKsFzCWUwL8RlnSFwESG7dcN2SVziZE/ZDMrFjqu6fCrek5hBSwfzliRQOF29rrJj1Y
-         /H8kpeQBkaAi7BpgDuyjRy9y3T87hjGVfICWv/JGyc6P5cI71vwe6zMT9fnpI0WcA+cJ
-         JEKSaiNigmSFbpi7TXcrPkiH/nllazHNWPOKEltDzXfEpY0cDwi53GbmCISUT+gtjIXj
-         XWBw==
+        bh=Q8bxUP4SZLC7pRMbVLxdU+OOQgW0ishf2aucQ47lV0g=;
+        b=CSL31hCUQXPjH3ulEF0/gUF6JbaFvZ8v9/Q4qwzK142bF6wJZ841wdymvwRUMlVMSA
+         9YV4h8k7ArrTGRwMH/650FwwfI+F0juz3IgcwA0LooUGNhJYYNpSHMaRwt5OZyDZWn7L
+         xurgpX0TFeple36KrsmxypbJ3VCHrjEoaMXEmRhQsuZcuJwZ2O9SZsobmt1AyIl4Kc4I
+         uD7AwGNsriyD52r7sn72OTLXLdjcOsdj2I/kou6TTLiwCmimLn00usup7f7x6s08rx8G
+         S1esD7sHjj1dCQAhjTuzGlvzwKmqQ+JQZ/hwiGp0dBcyvaFwDH0Yh5RmXFIkU0W3B1za
+         LQJQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=PKFdQJWox9aZ4PvErLOeFCl9Ca17gHD16VMhp7rOwKE=;
-        b=l2WGairOWxGnejGowPL9VbJNwAy42Y4ZPKwDa343gBA3qJR/+DGbnQ/sgWVrqIDgAW
-         uptXcYtwBqCPCXjd/V/xtvy+MOJ+zV7K9eSS9U5Oiw0FOA8OKE2WFwQhH64cthcs4F/R
-         L9xHTiyIEaRb3x7y8sSvrsulDzGZIKTOmIg1hKsjtA1yYoxKuzC08FZidXhXarUpmZ3k
-         LuC9b5KAnHYVGTnpwJ7u3ZFzXHrnuPRQa1EIQECvuQcLjWrKGMEh2Z+eb8jXWPb7I5kT
-         SVjjf8nW1x/zemF/OTkW/tMimKzYMGH3yoeJy4NOd3cCSBZuRyVngxMbdMeBjVkgiiMy
-         KNcg==
-X-Gm-Message-State: AOAM530AMTIvs1nuAzlhRMMEoVFqKYEz1FeD257nI26g78h41B/Zh8I2
-        dRJz3wOHp5ccjXCqazIMpYJPpzV+c6tXPXYvK1TIkCxDEa5Sgg==
-X-Google-Smtp-Source: ABdhPJya+WW0x+mSKy2+g1N2ELbfh9H+kwJYEORd7Sqf4JqMZg5irYw5+OZ2UJ4CA9yR84lFPe0qiYvozCA2otGsDVc=
-X-Received: by 2002:a05:6e02:dea:: with SMTP id m10mr950392ilj.241.1611590728327;
- Mon, 25 Jan 2021 08:05:28 -0800 (PST)
+        bh=Q8bxUP4SZLC7pRMbVLxdU+OOQgW0ishf2aucQ47lV0g=;
+        b=UmsRlyXPdqBx8tIHrflVgdTuiaoYrygk/JfxJzovTw2nt++Evg44KRilN3P+KXfflc
+         DsgMozI9eezR72s6fkN1q1QswiTidWwRF/s7hp5iko7t4/h+UTK1jd6gDl8dpni94INi
+         xG2T0f4Oe/zKEAgAwFRNh+tUpyw5OqigYIWXShxBUjY31L3eTStKkiCueyLyVFaZy9ym
+         nkqQlbevo3vaApOtVf1d7C38gtbooPJtSnWAsnO3snyDJCl4iTe1FSB2zm0XoOfGO0RY
+         JNcD00TCd3nM+suhUZazbPJiOZosg7UX+mdcKaLdCxka2H0RiaoDXmg4caDU0J7BhJPP
+         YNBQ==
+X-Gm-Message-State: AOAM533CXZ9kuO+HE4yHiqnWNUHCTJ0jNO22By1mRCaxB/+9w+olVy65
+        oqTosLM0Acnb2i2WhaZNShHg6sJR/GPYKrYvT4VyBQ==
+X-Google-Smtp-Source: ABdhPJzBsfakB8gLLdz6SY+yyV1zer6olHzaJbEO7s+UAtcDNd57y1jVlnVklvpEFpZR85DtcJhRL6jiH3rPp3wM2OE=
+X-Received: by 2002:ac8:5bc2:: with SMTP id b2mr1154243qtb.98.1611590990621;
+ Mon, 25 Jan 2021 08:09:50 -0800 (PST)
 MIME-Version: 1.0
-References: <20210125044322.6280-1-dqfext@gmail.com> <20210125044322.6280-2-dqfext@gmail.com>
- <20210125155233.GA438031@robh.at.kernel.org>
-In-Reply-To: <20210125155233.GA438031@robh.at.kernel.org>
-From:   DENG Qingfang <dqfext@gmail.com>
-Date:   Tue, 26 Jan 2021 00:05:17 +0800
-Message-ID: <CALW65jb0W3R1fEDM8hGPR8kHFAg9KXpXkdmDJqxiTaVZ4vP+ig@mail.gmail.com>
-Subject: Re: [PATCH net-next v2 1/2] dt-bindings: net: dsa: add MT7530 GPIO
- controller binding
-To:     Rob Herring <robh@kernel.org>
-Cc:     Matthias Brugger <matthias.bgg@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        =?UTF-8?Q?Ren=C3=A9_van_Dorst?= <opensource@vdorst.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Sean Wang <sean.wang@mediatek.com>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+References: <20210125111223.2540294c@canb.auug.org.au>
+In-Reply-To: <20210125111223.2540294c@canb.auug.org.au>
+From:   Stanislav Fomichev <sdf@google.com>
+Date:   Mon, 25 Jan 2021 08:09:06 -0800
+Message-ID: <CAKH8qBvQQxJLBRxEs8=Vq3CWLSr+m8V3Cwm0wgakLDcRHieYVg@mail.gmail.com>
+Subject: Re: linux-next: manual merge of the bpf-next tree with the net-next tree
+To:     Stephen Rothwell <sfr@canb.auug.org.au>
+Cc:     Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Networking <netdev@vger.kernel.org>,
+        Arjun Roy <arjunroy@google.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        linux-kernel@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Landen Chao <Landen.Chao@mediatek.com>,
-        linux-gpio@vger.kernel.org,
-        Frank Wunderlich <frank-w@public-files.de>,
-        Russell King <linux@armlinux.org.uk>,
-        Andrew Lunn <andrew@lunn.ch>, netdev <netdev@vger.kernel.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Philipp Zabel <p.zabel@pengutronix.de>
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linux Next Mailing List <linux-next@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 25, 2021 at 11:52 PM Rob Herring <robh@kernel.org> wrote:
->
-> Please add Acked-by/Reviewed-by tags when posting new versions. However,
-> there's no need to repost patches *only* to add the tags. The upstream
-> maintainer will do that for acks received on the version they apply.
+Thanks, the merge resolution looks good to me!
 
-Sorry. Will do that next time.
-
+On Sun, Jan 24, 2021 at 4:12 PM Stephen Rothwell <sfr@canb.auug.org.au> wrote:
 >
-> If a tag was not added on purpose, please state why and what changed.
+> Hi all,
 >
+> Today's linux-next merge of the bpf-next tree got a conflict in:
+>
+>   net/ipv4/tcp.c
+>
+> between commit:
+>
+>   7eeba1706eba ("tcp: Add receive timestamp support for receive zerocopy.")
+>
+> from the net-next tree and commit:
+>
+>   9cacf81f8161 ("bpf: Remove extra lock_sock for TCP_ZEROCOPY_RECEIVE")
+>
+> from the bpf-next tree.
+>
+> I fixed it up (see below) and can carry the fix as necessary. This
+> is now fixed as far as linux-next is concerned, but any non trivial
+> conflicts should be mentioned to your upstream maintainer when your tree
+> is submitted for merging.  You may also want to consider cooperating
+> with the maintainer of the conflicting tree to minimise any particularly
+> complex conflicts.
+>
+> --
+> Cheers,
+> Stephen Rothwell
+>
+> diff --cc net/ipv4/tcp.c
+> index e1a17c6b473c,26aa923cf522..000000000000
+> --- a/net/ipv4/tcp.c
+> +++ b/net/ipv4/tcp.c
+> @@@ -4160,18 -4098,13 +4160,20 @@@ static int do_tcp_getsockopt(struct soc
+>                 if (copy_from_user(&zc, optval, len))
+>                         return -EFAULT;
+>                 lock_sock(sk);
+>  -              err = tcp_zerocopy_receive(sk, &zc);
+>  +              err = tcp_zerocopy_receive(sk, &zc, &tss);
+> +               err = BPF_CGROUP_RUN_PROG_GETSOCKOPT_KERN(sk, level, optname,
+> +                                                         &zc, &len, err);
+>                 release_sock(sk);
+>  -              if (len >= offsetofend(struct tcp_zerocopy_receive, err))
+>  -                      goto zerocopy_rcv_sk_err;
+>  +              if (len >= offsetofend(struct tcp_zerocopy_receive, msg_flags))
+>  +                      goto zerocopy_rcv_cmsg;
+>                 switch (len) {
+>  +              case offsetofend(struct tcp_zerocopy_receive, msg_flags):
+>  +                      goto zerocopy_rcv_cmsg;
+>  +              case offsetofend(struct tcp_zerocopy_receive, msg_controllen):
+>  +              case offsetofend(struct tcp_zerocopy_receive, msg_control):
+>  +              case offsetofend(struct tcp_zerocopy_receive, flags):
+>  +              case offsetofend(struct tcp_zerocopy_receive, copybuf_len):
+>  +              case offsetofend(struct tcp_zerocopy_receive, copybuf_address):
+>                 case offsetofend(struct tcp_zerocopy_receive, err):
+>                         goto zerocopy_rcv_sk_err;
+>                 case offsetofend(struct tcp_zerocopy_receive, inq):
