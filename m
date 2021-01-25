@@ -2,132 +2,130 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 81262302B32
-	for <lists+netdev@lfdr.de>; Mon, 25 Jan 2021 20:11:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 30237302B9A
+	for <lists+netdev@lfdr.de>; Mon, 25 Jan 2021 20:29:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731626AbhAYTKy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Jan 2021 14:10:54 -0500
-Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:16688 "EHLO
-        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727131AbhAYTKQ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 14:10:16 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B600f17700000>; Mon, 25 Jan 2021 11:09:36 -0800
-Received: from HKMAIL103.nvidia.com (10.18.16.12) by HQMAIL101.nvidia.com
- (172.20.187.10) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 25 Jan
- 2021 19:09:35 +0000
-Received: from HKMAIL104.nvidia.com (10.18.16.13) by HKMAIL103.nvidia.com
- (10.18.16.12) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 25 Jan
- 2021 19:09:28 +0000
-Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.171)
- by HKMAIL104.nvidia.com (10.18.16.13) with Microsoft SMTP Server (TLS) id
- 15.0.1473.3 via Frontend Transport; Mon, 25 Jan 2021 19:09:28 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=l/4wBZxEjB4zGcP741SuUOuoo6eayOi/RYxrd2DdSUSRI6Knbjsj9V8GRoBaMATCr0x0i+lJSXfaEvwx1rgyWwFtaiKkwHfyuZ9vi9pNcoEBIJyxvyBynf18I94P0V/PE87W6A+as9y10v5LUD5Wig3C6FnStI4ghCM4uWp//wroEiYWjvbbmBWpHBxWIHeATGwt4Wzh/rfnowMIgQcSUHisw9UWYhXx0wiNB4w23M5tgKwCmnLBcXwFfpsDS3u9M7aH+zHtbRHk+CtOp91v7wn7r+y7bEWfpe4NxN81rUR3W/vgup02CVP/DfCuX1e+lmHAt3Av5z+lwle9erEZ1g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=pABo+Vp1poNCDyyXRHs/mEbDRfxMu5RVsZ3daU61PRk=;
- b=RFWmVmfLat3fLqGHTneLazroGEnId+33jZsCqcLa++A4ItGGlNrn5whjHfRLyH6LbJdEFulckgft/PYzGn6/ldngRoNaZ3iEupCCEwNrL4PPKhi18JywCE7dwGFFA9u+lzslOZj0ugW1+5ToGoGWLr8J5bdME3Izs+a07dpCCCa0ZTeNpm9/wV8DbEMxQAv3kFiUOkRQk64hM/KH53o6M+ijDhWJVdXWEkqrQSCNa7vwrYhXN7UHdwxO5yPGqv7qcRw9HEtK4khQKcafNApU1rXwOEqUt1zm5SvYnzNejSDkr8pM/quR2b/zGItCy6R76LRMd4SLDGyl7pnTrUwEpw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
- by DM5PR12MB2437.namprd12.prod.outlook.com (2603:10b6:4:ba::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3784.13; Mon, 25 Jan
- 2021 19:09:25 +0000
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::546d:512c:72fa:4727]) by DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::546d:512c:72fa:4727%7]) with mapi id 15.20.3784.017; Mon, 25 Jan 2021
- 19:09:25 +0000
-Date:   Mon, 25 Jan 2021 15:09:23 -0400
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     Shiraz Saleem <shiraz.saleem@intel.com>
-CC:     <dledford@redhat.com>, <kuba@kernel.org>, <davem@davemloft.net>,
-        <linux-rdma@vger.kernel.org>, <gregkh@linuxfoundation.org>,
-        <netdev@vger.kernel.org>, <david.m.ertman@intel.com>,
-        <anthony.l.nguyen@intel.com>
-Subject: Re: [PATCH 04/22] ice: Register auxiliary device to provide RDMA
-Message-ID: <20210125190923.GV4147@nvidia.com>
-References: <20210122234827.1353-1-shiraz.saleem@intel.com>
- <20210122234827.1353-5-shiraz.saleem@intel.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20210122234827.1353-5-shiraz.saleem@intel.com>
-X-ClientProxiedBy: MN2PR10CA0019.namprd10.prod.outlook.com
- (2603:10b6:208:120::32) To DM6PR12MB3834.namprd12.prod.outlook.com
- (2603:10b6:5:14a::12)
+        id S1731876AbhAYT1a (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Jan 2021 14:27:30 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:36806 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1731494AbhAYTYT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 14:24:19 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1611602558;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=sLaxbldCpmtlUDFodMqs6EtRoH2fJw9kHTicx3mvJQs=;
+        b=TpLlE2chPMLDkOEmxB4XV1i3z3nyNI/pMrsrcDBNDGoP00NDzvDGCVX8KFoJU0AQpNUPpS
+        es8i+TD21rKVerJAGwl3wBI1OByZMA8Ah7jL8MmG5iHbupn+BqiESfnAQyuO2mq62DMen1
+        tMxBsXA2PQIxC1UE29qDNF/lRbnzI4c=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-561-wbF-Bqt3NsKIoD6ejRlndQ-1; Mon, 25 Jan 2021 14:22:34 -0500
+X-MC-Unique: wbF-Bqt3NsKIoD6ejRlndQ-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E23E9100C601;
+        Mon, 25 Jan 2021 19:22:30 +0000 (UTC)
+Received: from carbon (unknown [10.36.110.4])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 251C960C0F;
+        Mon, 25 Jan 2021 19:22:21 +0000 (UTC)
+Date:   Mon, 25 Jan 2021 20:22:19 +0100
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Alexander Lobakin <alobakin@pm.me>
+Cc:     brouer@redhat.com, "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Yisen Zhuang <yisen.zhuang@huawei.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Aleksandr Nogikh <nogikh@google.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Dexuan Cui <decui@microsoft.com>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Marco Elver <elver@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
+        linux-rdma@vger.kernel.org, linux-mm@kvack.org
+Subject: Re: [PATCH net-next 3/3] net: page_pool: simplify page recycling
+ condition tests
+Message-ID: <20210125202219.43d3d0f0@carbon>
+In-Reply-To: <20210125164612.243838-4-alobakin@pm.me>
+References: <20210125164612.243838-1-alobakin@pm.me>
+        <20210125164612.243838-4-alobakin@pm.me>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from mlx.ziepe.ca (142.162.115.133) by MN2PR10CA0019.namprd10.prod.outlook.com (2603:10b6:208:120::32) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3784.12 via Frontend Transport; Mon, 25 Jan 2021 19:09:24 +0000
-Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1l47Ep-006i3K-HU; Mon, 25 Jan 2021 15:09:23 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1611601776; bh=pABo+Vp1poNCDyyXRHs/mEbDRfxMu5RVsZ3daU61PRk=;
-        h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:Date:
-         From:To:CC:Subject:Message-ID:References:Content-Type:
-         Content-Disposition:In-Reply-To:X-ClientProxiedBy:MIME-Version:
-         X-MS-Exchange-MessageSentRepresentingType;
-        b=SqPZezi8ofhtC6cdfI2/rPBJkO2GeIf0fsEYsI5ORMbvuk+G23T6zj/oglQ9Rz5Px
-         UizeUBjHYj7hugLpec5saq82lEdKgzv25gXKPm0y3bn3ICi/PqMlbdfoWW6e5l+jUu
-         S9IJ23qC/X9BpsQDqOIYZ5GZ8aAUQSWbA9PArxQgAX9wUzbY9Cqcy++M9gg/hE+t4R
-         tqxDZSfHn9QkX3kGzRfthWsVvfY3GU4L9s+0slY/iPx2ew9Xs+teWAgDQ8r/yAyFV2
-         MbQMBmSQUS4WcHJwRZtJ0qcq+Q/zLiWPtoPLLfy++Edi8iTWfP7dVHTjGycRR1MYD6
-         wbTaAoDtDLR8g==
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 22, 2021 at 05:48:09PM -0600, Shiraz Saleem wrote:
-> +static void ice_peer_adev_release(struct device *dev)
-> +{
-> +	struct iidc_auxiliary_object *abo;
-> +	struct auxiliary_device *adev;
-> +
-> +	adev = container_of(dev, struct auxiliary_device, dev);
-> +	abo = container_of(adev, struct iidc_auxiliary_object, adev);
+On Mon, 25 Jan 2021 16:47:20 +0000
+Alexander Lobakin <alobakin@pm.me> wrote:
 
-This is just
+> pool_page_reusable() is a leftover from pre-NUMA-aware times. For now,
+> this function is just a redundant wrapper over page_is_pfmemalloc(),
+> so Inline it into its sole call site.
+> 
+> Signed-off-by: Alexander Lobakin <alobakin@pm.me>
+> ---
+>  net/core/page_pool.c | 14 ++++----------
+>  1 file changed, 4 insertions(+), 10 deletions(-)
 
- container_of(dev, struct iidc_auxiliary_object, adev.dev);
+Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
 
-> @@ -1254,20 +1282,37 @@ int ice_init_peer_devices(struct ice_pf *pf)
->  		 * |--> iidc_peer_obj
->  		 * |--> *ice_peer_drv_int
->  		 *
-> +		 * iidc_auxiliary_object (container_of parent for adev)
-> +		 * |--> auxiliary_device
-> +		 * |--> *iidc_peer_obj (pointer from internal struct)
-> +		 *
->  		 * ice_peer_drv_int (internal only peer_drv struct)
->  		 */
->  		peer_obj_int = kzalloc(sizeof(*peer_obj_int), GFP_KERNEL);
-> -		if (!peer_obj_int)
-> +		if (!peer_obj_int) {
-> +			ida_simple_remove(&ice_peer_ida, id);
->  			return -ENOMEM;
-> +		}
+> 
+> diff --git a/net/core/page_pool.c b/net/core/page_pool.c
+> index f3c690b8c8e3..ad8b0707af04 100644
+> --- a/net/core/page_pool.c
+> +++ b/net/core/page_pool.c
+> @@ -350,14 +350,6 @@ static bool page_pool_recycle_in_cache(struct page *page,
+>  	return true;
+>  }
+>  
+> -/* page is NOT reusable when:
+> - * 1) allocated when system is under some pressure. (page_is_pfmemalloc)
+> - */
+> -static bool pool_page_reusable(struct page_pool *pool, struct page *page)
+> -{
+> -	return !page_is_pfmemalloc(page);
+> -}
+> -
+>  /* If the page refcnt == 1, this will try to recycle the page.
+>   * if PP_FLAG_DMA_SYNC_DEV is set, we'll try to sync the DMA area for
+>   * the configured size min(dma_sync_size, pool->max_len).
+> @@ -373,9 +365,11 @@ __page_pool_put_page(struct page_pool *pool, struct page *page,
+>  	 * regular page allocator APIs.
+>  	 *
+>  	 * refcnt == 1 means page_pool owns page, and can recycle it.
+> +	 *
+> +	 * page is NOT reusable when allocated when system is under
+> +	 * some pressure. (page_is_pfmemalloc)
+>  	 */
+> -	if (likely(page_ref_count(page) == 1 &&
+> -		   pool_page_reusable(pool, page))) {
+> +	if (likely(page_ref_count(page) == 1 && !page_is_pfmemalloc(page))) {
+>  		/* Read barrier done in page_ref_count / READ_ONCE */
+>  
+>  		if (pool->p.flags & PP_FLAG_DMA_SYNC_DEV)
 
-Why is this allocated memory with a lifetime different from the aux
-device?
 
-This whole peer_dev/aux_dev split needs to go, why on earth does
-peer_obj need an entire state machine for driver binding? This is what
-the aux device and driver core or supposed to provide.
 
-> +		abo = kzalloc(sizeof(*abo), GFP_KERNEL);
-> +		if (!abo) {
-> +			ida_simple_remove(&ice_peer_ida, id);
-> +			kfree(peer_obj_int);
-> +			return -ENOMEM;
-> +		}
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
-Put the auxiliary_device_init() directly after kzalloc.
-
-Even better is to put everything up to the
-kzalloc/auxiliary_device_init() into a function called
-'alloc_aux_device'
-
-Then all the error unwind here doesn't look so bad
-
-Jason
