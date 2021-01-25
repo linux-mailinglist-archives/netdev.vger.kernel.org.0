@@ -2,310 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7AB323024A5
-	for <lists+netdev@lfdr.de>; Mon, 25 Jan 2021 13:06:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 707E93024A0
+	for <lists+netdev@lfdr.de>; Mon, 25 Jan 2021 13:05:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727841AbhAYMFI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Jan 2021 07:05:08 -0500
-Received: from mx13.kaspersky-labs.com ([91.103.66.164]:36273 "EHLO
-        mx13.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727827AbhAYLqn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 06:46:43 -0500
-Received: from relay13.kaspersky-labs.com (unknown [127.0.0.10])
-        by relay13.kaspersky-labs.com (Postfix) with ESMTP id 1A8945215D6;
-        Mon, 25 Jan 2021 14:14:10 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kaspersky.com;
-        s=mail; t=1611573250;
-        bh=xehpZdINuigRE7SHgV+E33/kf9+ur9w+6c46qJ46gnM=;
-        h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type;
-        b=JJXzgJesng2AkdQNMV5F3FR3+cfN7zcCqUoP5OUofsCxLeAruunZYkCFhJ4ecBT3e
-         MCwy4RGSA7+49QmeP6y74Hz2soUkHC68mO/OUmcaKRGZQTM3jgrDYAEJTsV/OODyk0
-         FwhJCZC/d8Ad6/voxMXKOa/YWJjqopjUwN8NP7Fo=
-Received: from mail-hq2.kaspersky.com (unknown [91.103.66.206])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
-        (Client CN "mail-hq2.kaspersky.com", Issuer "Kaspersky MailRelays CA G3" (verified OK))
-        by mailhub13.kaspersky-labs.com (Postfix) with ESMTPS id B87E3521356;
-        Mon, 25 Jan 2021 14:14:09 +0300 (MSK)
-Received: from arseniy-pc.avp.ru (10.64.68.129) by hqmailmbx3.avp.ru
- (10.64.67.243) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2044.4; Mon, 25
- Jan 2021 14:14:08 +0300
-From:   Arseny Krasnov <arseny.krasnov@kaspersky.com>
-To:     Stefan Hajnoczi <stefanha@redhat.com>,
-        Stefano Garzarella <sgarzare@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Arseny Krasnov <arseny.krasnov@kaspersky.com>,
-        Andra Paraschiv <andraprs@amazon.com>,
-        Colin Ian King <colin.king@canonical.com>,
-        Jeff Vander Stoep <jeffv@google.com>
-CC:     <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <stsp2@yandex.ru>, <oxffffaa@gmail.com>
-Subject: [RFC PATCH v3 07/13] virtio/vsock: dequeue callback for SOCK_SEQPACKET
-Date:   Mon, 25 Jan 2021 14:13:59 +0300
-Message-ID: <20210125111402.598929-1-arseny.krasnov@kaspersky.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210125110903.597155-1-arseny.krasnov@kaspersky.com>
-References: <20210125110903.597155-1-arseny.krasnov@kaspersky.com>
+        id S1727786AbhAYLrQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Jan 2021 06:47:16 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:45981 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727526AbhAYLqf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 06:46:35 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1611575071;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=eHdkSW7IR3/Ta55fw+aNpZ8wmGr6kIeF4oZRSyYjqFc=;
+        b=e3qE8VGL1NcAkRuDzQ3trlWYzkgk1dflnWoazQsYUPAXqK+iI5YS7uY5NqGY0c1JI5ACCi
+        RFRwUMrkWOY0jbQxzX878HTX0aeHqor7ICdjTkD5oh6OfadeI0Gl+4bLk2EQr59FTS+mkd
+        bYLAx7gwZyV3o9t9WqSa3diZKwo0/N4=
+Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
+ [209.85.208.72]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-333-MojOvvPQO7a2boUaWK5sHw-1; Mon, 25 Jan 2021 06:21:28 -0500
+X-MC-Unique: MojOvvPQO7a2boUaWK5sHw-1
+Received: by mail-ed1-f72.google.com with SMTP id dg17so7202072edb.11
+        for <netdev@vger.kernel.org>; Mon, 25 Jan 2021 03:21:28 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:in-reply-to:references:date
+         :message-id:mime-version:content-transfer-encoding;
+        bh=eHdkSW7IR3/Ta55fw+aNpZ8wmGr6kIeF4oZRSyYjqFc=;
+        b=YW10K3weGGcnM75N3mbH2GpJQahogLGMAIQyE3hCJ7N30ARaO2N68EYw0aDUa00urr
+         qz3xgt4AzxfUaAM/llLCmEKpPYbOED11maRLuOnTOTlXdA5T0xGiY79/9GBEBv6SA6wr
+         bf51yGiQXWYvavNiE7kEf7t3BlMZ55mk31VbbrW37whBt0ArPooBv6ii+wRUE6ShWZfv
+         TwTXeIcCqn/wr5scwp0mkwPbzgb6peATIjedlMdzRsl5jo+ERw3DYBS17C1Ojyk+GgCt
+         y4yuGSNYoAe0B9kVpH++SCJW4IH0E3zAhdaHWpUsbmH5fEaVLqhgoXHjd5DM1nN3doCJ
+         eckQ==
+X-Gm-Message-State: AOAM533em7r6tmhVTgfUghm5n9a42VvqszMBUsUGCtR1ICs9BjulOeR1
+        /bj+3AvJqGVAMdDDVTJEGfsxM23I8Qb0NbKBq8Ng+fGxOhR0a3IjT21nUKci8Qg43JrEfFrmeQl
+        INlwW7IZdxGDtaEUN
+X-Received: by 2002:aa7:c6cc:: with SMTP id b12mr17752eds.67.1611573687237;
+        Mon, 25 Jan 2021 03:21:27 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzGuRwlf5DctnjkbyQm3Qvy9VicrSSSlvYXaqqsPfZLUd+0Y/hLfx+NGJowpHioUtLsi7B0mw==
+X-Received: by 2002:aa7:c6cc:: with SMTP id b12mr17736eds.67.1611573686945;
+        Mon, 25 Jan 2021 03:21:26 -0800 (PST)
+Received: from alrua-x1.borgediget.toke.dk ([2a0c:4d80:42:443::2])
+        by smtp.gmail.com with ESMTPSA id br6sm6404022ejb.46.2021.01.25.03.21.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 25 Jan 2021 03:21:26 -0800 (PST)
+Received: by alrua-x1.borgediget.toke.dk (Postfix, from userid 1000)
+        id 29FA418033D; Mon, 25 Jan 2021 12:21:26 +0100 (CET)
+From:   Toke =?utf-8?Q?H=C3=B8iland-J=C3=B8rgensen?= <toke@redhat.com>
+To:     Hangbin Liu <liuhangbin@gmail.com>
+Cc:     Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Jiri Benc <jbenc@redhat.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        David Ahern <dsahern@gmail.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>
+Subject: Re: [PATCHv16 bpf-next 1/6] bpf: run devmap xdp_prog on flush
+ instead of bulk enqueue
+In-Reply-To: <20210125033025.GL1421720@Leo-laptop-t470s>
+References: <20210120022514.2862872-1-liuhangbin@gmail.com>
+ <20210122074652.2981711-1-liuhangbin@gmail.com>
+ <20210122074652.2981711-2-liuhangbin@gmail.com>
+ <20210122105043.GB52373@ranger.igk.intel.com> <871red6qhr.fsf@toke.dk>
+ <20210125033025.GL1421720@Leo-laptop-t470s>
+X-Clacks-Overhead: GNU Terry Pratchett
+Date:   Mon, 25 Jan 2021 12:21:26 +0100
+Message-ID: <87r1m9mfd5.fsf@toke.dk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.64.68.129]
-X-ClientProxiedBy: hqmailmbx3.avp.ru (10.64.67.243) To hqmailmbx3.avp.ru
- (10.64.67.243)
-X-KSE-ServerInfo: hqmailmbx3.avp.ru, 9
-X-KSE-AntiSpam-Interceptor-Info: scan successful
-X-KSE-AntiSpam-Version: 5.9.16, Database issued on: 01/25/2021 10:59:54
-X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
-X-KSE-AntiSpam-Method: none
-X-KSE-AntiSpam-Rate: 10
-X-KSE-AntiSpam-Info: Lua profiles 161363 [Jan 25 2021]
-X-KSE-AntiSpam-Info: LuaCore: 421 421 33a18ad4049b4a5e5420c907b38d332fafd06b09
-X-KSE-AntiSpam-Info: Version: 5.9.16.0
-X-KSE-AntiSpam-Info: Envelope from: arseny.krasnov@kaspersky.com
-X-KSE-AntiSpam-Info: {Prob_from_in_msgid}
-X-KSE-AntiSpam-Info: {Tracking_date, moscow}
-X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
-X-KSE-AntiSpam-Info: kaspersky.com:7.1.1;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;127.0.0.199:7.1.2;arseniy-pc.avp.ru:7.1.1
-X-KSE-AntiSpam-Info: Rate: 10
-X-KSE-AntiSpam-Info: Status: not_detected
-X-KSE-AntiSpam-Info: Method: none
-X-KSE-Antiphishing-Info: Clean
-X-KSE-Antiphishing-ScanningType: Deterministic
-X-KSE-Antiphishing-Method: None
-X-KSE-Antiphishing-Bases: 01/25/2021 11:02:00
-X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
- rules found
-X-KSE-Antivirus-Interceptor-Info: scan successful
-X-KSE-Antivirus-Info: Clean, bases: 1/25/2021 10:11:00 AM
-X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
-X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
- rules found
-X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
-X-KLMS-Rule-ID: 52
-X-KLMS-Message-Action: clean
-X-KLMS-AntiSpam-Status: not scanned, disabled by settings
-X-KLMS-AntiSpam-Interceptor-Info: not scanned
-X-KLMS-AntiPhishing: Clean, bases: 2021/01/25 10:04:00
-X-KLMS-AntiVirus: Kaspersky Security for Linux Mail Server, version 8.0.3.30, bases: 2021/01/25 05:31:00 #16022694
-X-KLMS-AntiVirus-Status: Clean, skipped
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This adds transport callback and it's logic for SEQPACKET dequeue.
-Callback fetches RW packets from rx queue of socket until whole record
-is copied(if user's buffer is full, user is not woken up). This is done
-to not stall sender, because if we wake up user and it leaves syscall,
-nobody will send credit update for rest of record, and sender will wait
-for next enter of read syscall at receiver's side. So if user buffer is
-full, we just send credit update and drop data. If during copy SEQ_BEGIN
-was found(and not all data was copied), copying is restarted by reset
-user's iov iterator(previous unfinished data is dropped).
+Hangbin Liu <liuhangbin@gmail.com> writes:
 
-Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
----
- include/linux/virtio_vsock.h            |   4 +
- include/uapi/linux/virtio_vsock.h       |   9 ++
- net/vmw_vsock/virtio_transport_common.c | 128 ++++++++++++++++++++++++
- 3 files changed, 141 insertions(+)
+> On Fri, Jan 22, 2021 at 02:38:40PM +0100, Toke H=C3=B8iland-J=C3=B8rgense=
+n wrote:
+>> >>  out:
+>> >> +	drops =3D cnt - sent;
+>> >>  	bq->count =3D 0;
+>> >>=20=20
+>> >>  	trace_xdp_devmap_xmit(bq->dev_rx, dev, sent, drops, err);
+>> >>  	bq->dev_rx =3D NULL;
+>> >> +	bq->xdp_prog =3D NULL;
+>> >
+>> > One more question, do you really have to do that per each bq_xmit_all
+>> > call? Couldn't you clear it in __dev_flush ?
+>> >
+>> > Or IOW - what's the rationale behind storing xdp_prog in
+>> > xdp_dev_bulk_queue. Why can't you propagate the dst->xdp_prog and rely=
+ on
+>> > that without that local pointer?
+>> >
+>> > You probably have an answer for that, so maybe include it in commit
+>> > message.
+>> >
+>> > BTW same question for clearing dev_rx. To me this will be the same for=
+ all
+>> > bq_xmit_all() calls that will happen within same napi.
+>>=20
+>> I think you're right: When bq_xmit_all() is called from bq_enqueue(),
+>> another packet will always be enqueued immediately after, so clearing
+>> out all of those things in bq_xmit_all() is redundant. This also
+>> includes the list_del on bq->flush_node, BTW.
+>>=20
+>> And while we're getting into e micro-optimisations: In bq_enqueue() we
+>> have two checks:
+>>=20
+>> 	if (!bq->dev_rx)
+>> 		bq->dev_rx =3D dev_rx;
+>>=20
+>> 	bq->q[bq->count++] =3D xdpf;
+>>=20
+>> 	if (!bq->flush_node.prev)
+>> 		list_add(&bq->flush_node, flush_list);
+>>=20
+>>=20
+>> those two if() checks can be collapsed into one, since the list and the
+>> dev_rx field are only ever modified together. This will also be the case
+>> for bq->xdp_prog, so putting all three under the same check in
+>> bq_enqueue() and only clearing them in __dev_flush() would be a win, I
+>> suppose - nice catch! :)
+>
+> Thanks for the advice, so how about modify it like:
 
-diff --git a/include/linux/virtio_vsock.h b/include/linux/virtio_vsock.h
-index dc636b727179..7f0ef5204e33 100644
---- a/include/linux/virtio_vsock.h
-+++ b/include/linux/virtio_vsock.h
-@@ -36,6 +36,10 @@ struct virtio_vsock_sock {
- 	u32 rx_bytes;
- 	u32 buf_alloc;
- 	struct list_head rx_queue;
-+
-+	/* For SOCK_SEQPACKET */
-+	u32 user_read_seq_len;
-+	u32 user_read_copied;
- };
- 
- struct virtio_vsock_pkt {
-diff --git a/include/uapi/linux/virtio_vsock.h b/include/uapi/linux/virtio_vsock.h
-index 1d57ed3d84d2..058908bc19fc 100644
---- a/include/uapi/linux/virtio_vsock.h
-+++ b/include/uapi/linux/virtio_vsock.h
-@@ -65,6 +65,7 @@ struct virtio_vsock_hdr {
- 
- enum virtio_vsock_type {
- 	VIRTIO_VSOCK_TYPE_STREAM = 1,
-+	VIRTIO_VSOCK_TYPE_SEQPACKET = 2,
- };
- 
- enum virtio_vsock_op {
-@@ -83,6 +84,9 @@ enum virtio_vsock_op {
- 	VIRTIO_VSOCK_OP_CREDIT_UPDATE = 6,
- 	/* Request the peer to send the credit info to us */
- 	VIRTIO_VSOCK_OP_CREDIT_REQUEST = 7,
-+
-+	/* Record begin for SOCK_SEQPACKET */
-+	VIRTIO_VSOCK_OP_SEQ_BEGIN = 8,
- };
- 
- /* VIRTIO_VSOCK_OP_SHUTDOWN flags values */
-@@ -91,4 +95,9 @@ enum virtio_vsock_shutdown {
- 	VIRTIO_VSOCK_SHUTDOWN_SEND = 2,
- };
- 
-+/* VIRTIO_VSOCK_OP_RW flags values for SOCK_SEQPACKET type */
-+enum virtio_vsock_rw_seqpacket {
-+	VIRTIO_VSOCK_RW_EOR = 1,
-+};
-+
- #endif /* _UAPI_LINUX_VIRTIO_VSOCK_H */
-diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
-index 5956939eebb7..e66ec39445ff 100644
---- a/net/vmw_vsock/virtio_transport_common.c
-+++ b/net/vmw_vsock/virtio_transport_common.c
-@@ -397,6 +397,132 @@ virtio_transport_stream_do_dequeue(struct vsock_sock *vsk,
- 	return err;
- }
- 
-+static inline void virtio_transport_del_n_free_pkt(struct virtio_vsock_pkt *pkt)
-+{
-+	list_del(&pkt->list);
-+	virtio_transport_free_pkt(pkt);
-+}
-+
-+static size_t virtio_transport_drop_until_seq_begin(struct virtio_vsock_sock *vvs)
-+{
-+	struct virtio_vsock_pkt *pkt, *n;
-+	size_t bytes_dropped = 0;
-+
-+	list_for_each_entry_safe(pkt, n, &vvs->rx_queue, list) {
-+		if (le16_to_cpu(pkt->hdr.op) == VIRTIO_VSOCK_OP_SEQ_BEGIN)
-+			break;
-+
-+		bytes_dropped += le32_to_cpu(pkt->hdr.len);
-+		virtio_transport_dec_rx_pkt(vvs, pkt);
-+		virtio_transport_del_n_free_pkt(pkt);
-+	}
-+
-+	return bytes_dropped;
-+}
-+
-+static ssize_t virtio_transport_seqpacket_do_dequeue(struct vsock_sock *vsk,
-+						     struct msghdr *msg,
-+						     size_t user_buf_len)
-+{
-+	struct virtio_vsock_sock *vvs = vsk->trans;
-+	struct virtio_vsock_pkt *pkt;
-+	size_t bytes_handled = 0;
-+	int err = 0;
-+
-+	spin_lock_bh(&vvs->rx_lock);
-+
-+	if (user_buf_len == 0) {
-+		/* User's buffer is full, we processing rest of
-+		 * record and drop it. If 'SEQ_BEGIN' is found
-+		 * while iterating, user will be woken up,
-+		 * because record is already copied, and we
-+		 * don't care about absent of some tail RW packets
-+		 * of it. Return number of bytes(rest of record),
-+		 * but ignore credit update for such absent bytes.
-+		 */
-+		bytes_handled = virtio_transport_drop_until_seq_begin(vvs);
-+		vvs->user_read_copied += bytes_handled;
-+
-+		if (!list_empty(&vvs->rx_queue) &&
-+		    vvs->user_read_copied < vvs->user_read_seq_len) {
-+			/* 'SEQ_BEGIN' found, but record isn't complete.
-+			 * Set number of copied bytes to fit record size
-+			 * and force counters to finish receiving.
-+			 */
-+			bytes_handled += (vvs->user_read_seq_len - vvs->user_read_copied);
-+			vvs->user_read_copied = vvs->user_read_seq_len;
-+		}
-+	}
-+
-+	/* Now start copying. */
-+	while (vvs->user_read_copied < vvs->user_read_seq_len &&
-+	       vvs->rx_bytes &&
-+	       user_buf_len &&
-+	       !err) {
-+		pkt = list_first_entry(&vvs->rx_queue, struct virtio_vsock_pkt, list);
-+
-+		switch (le16_to_cpu(pkt->hdr.op)) {
-+		case VIRTIO_VSOCK_OP_SEQ_BEGIN: {
-+			/* Unexpected 'SEQ_BEGIN' during record copy:
-+			 * Leave receive loop, 'EAGAIN' will restart it from
-+			 * outer receive loop, packet is still in queue and
-+			 * counters are cleared. So in next loop enter,
-+			 * 'SEQ_BEGIN' will be dequeued first. User's iov
-+			 * iterator will be reset in outer loop. Also
-+			 * send credit update, because some bytes could be
-+			 * copied. User will never see unfinished record.
-+			 */
-+			err = -EAGAIN;
-+			break;
-+		}
-+		case VIRTIO_VSOCK_OP_RW: {
-+			size_t bytes_to_copy;
-+			size_t pkt_len;
-+
-+			pkt_len = (size_t)le32_to_cpu(pkt->hdr.len);
-+			bytes_to_copy = min(user_buf_len, pkt_len);
-+
-+			/* sk_lock is held by caller so no one else can dequeue.
-+			 * Unlock rx_lock since memcpy_to_msg() may sleep.
-+			 */
-+			spin_unlock_bh(&vvs->rx_lock);
-+
-+			if (memcpy_to_msg(msg, pkt->buf, bytes_to_copy)) {
-+				spin_lock_bh(&vvs->rx_lock);
-+				err = -EINVAL;
-+				break;
-+			}
-+
-+			spin_lock_bh(&vvs->rx_lock);
-+			user_buf_len -= bytes_to_copy;
-+			bytes_handled += pkt->len;
-+			vvs->user_read_copied += bytes_to_copy;
-+
-+			if (le32_to_cpu(pkt->hdr.flags) & VIRTIO_VSOCK_RW_EOR)
-+				msg->msg_flags |= MSG_EOR;
-+			break;
-+		}
-+		default:
-+			;
-+		}
-+
-+		/* For unexpected 'SEQ_BEGIN', keep such packet in queue,
-+		 * but drop any other type of packet.
-+		 */
-+		if (le16_to_cpu(pkt->hdr.op) != VIRTIO_VSOCK_OP_SEQ_BEGIN) {
-+			virtio_transport_dec_rx_pkt(vvs, pkt);
-+			virtio_transport_del_n_free_pkt(pkt);
-+		}
-+	}
-+
-+	spin_unlock_bh(&vvs->rx_lock);
-+
-+	virtio_transport_send_credit_update(vsk, VIRTIO_VSOCK_TYPE_SEQPACKET,
-+					    NULL);
-+
-+	return err ?: bytes_handled;
-+}
-+
- ssize_t
- virtio_transport_stream_dequeue(struct vsock_sock *vsk,
- 				struct msghdr *msg,
-@@ -481,6 +607,8 @@ int virtio_transport_do_socket_init(struct vsock_sock *vsk,
- 	spin_lock_init(&vvs->rx_lock);
- 	spin_lock_init(&vvs->tx_lock);
- 	INIT_LIST_HEAD(&vvs->rx_queue);
-+	vvs->user_read_copied = 0;
-+	vvs->user_read_seq_len = 0;
- 
- 	return 0;
- }
--- 
-2.25.1
+Yup, exactly! :)
+
+-Toke
 
