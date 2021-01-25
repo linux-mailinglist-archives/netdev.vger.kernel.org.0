@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5B800302EA4
-	for <lists+netdev@lfdr.de>; Mon, 25 Jan 2021 23:06:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ED5AD302EA9
+	for <lists+netdev@lfdr.de>; Mon, 25 Jan 2021 23:08:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733178AbhAYWGP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Jan 2021 17:06:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59358 "EHLO
+        id S1733189AbhAYWHV (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Jan 2021 17:07:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59532 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732134AbhAYWFK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 17:05:10 -0500
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75756C0613D6
-        for <netdev@vger.kernel.org>; Mon, 25 Jan 2021 14:04:30 -0800 (PST)
-Received: by mail-ej1-x630.google.com with SMTP id w1so20201442ejf.11
-        for <netdev@vger.kernel.org>; Mon, 25 Jan 2021 14:04:30 -0800 (PST)
+        with ESMTP id S1733151AbhAYWGM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 17:06:12 -0500
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C970EC0613ED
+        for <netdev@vger.kernel.org>; Mon, 25 Jan 2021 14:04:31 -0800 (PST)
+Received: by mail-ed1-x536.google.com with SMTP id n6so17383803edt.10
+        for <netdev@vger.kernel.org>; Mon, 25 Jan 2021 14:04:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=YCg9KlHjU+4+nj9DXghx0cPGR0Hm3/1sRcbbBPFiAX4=;
-        b=mryobeBgPMPvHF02VOYwHB5ngSBENb5dXj+Sk/ilyFBe5AdHQvfCND7HOp9NcYEIIp
-         wBZrQcifcS4sdX8BaYVcmWuljGe/421sux1+SzUBl2/MGTX5YDsNKCcPV+VkOq1CJtEA
-         zWtNmi7qxqoiZcwrF+oZCV8WYaXOI++rO04lu0vl8FQCQLog31HEz9zsFQJzn1G3+MhX
-         FkD40AlsL2YZeLwIPH2UfMz0ZC1XmnmeI9KbP5CksYI+2bQREYscyG2p1tQkh9d81TPo
-         9n9+vbDn71El5sdYWq5l0kt4PmY1vjGx8faQAjvXDFx9V9AfgpDe6mS6YuA41F+84mtF
-         8pNw==
+        bh=R80rKR8xhGvkhvxNcFZ5Dztn+Dx4q1giZJEP37pLBOc=;
+        b=WniA88n4xprxNsLmUHlLmDiLKAYWv3Wfn54uhAQmu9E8urPlw+IHsCrssCthec+H1z
+         ZqcPevzRq84qhSAibx+YfwdfE/giiokbS3YtCZ2znxM6Chybjg+1bapdRymL1GjP/V6Q
+         SxLGYKfvvW8dDR6zpyy8/VoaU/O4EItZ9naENizKFYAHd+THTsnbrhcQqJ30SxXs6FLE
+         dpstFvw2Rwi47SWNwnEaiq9g9a+4tY3IaXWt3XTpsRwnFzdmL9hjQVFhDBF+EUXRx+N8
+         Xf969cMyj+NR8u0Ftd2Rs0FlE/HrRVxF/TUJXKbSW4vHlfvD29Ha/Loc69qv4i9GuAWZ
+         iVJA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=YCg9KlHjU+4+nj9DXghx0cPGR0Hm3/1sRcbbBPFiAX4=;
-        b=eacNnY4jwCv2Jm4z6JrQE8ngYTs0fmCWryyqCWuBBc1mvYQcKugR+2JOzwpcCTltsJ
-         aEAq6M3mnYSMfPxi6t1HjxNkX8VJzat52ZpKQyTau+uNZPe35xQnS47D4tH6Tno0PP/U
-         T0wFiDVwGCcmJFV0XNWaPmdJ4AU2ctvdFzks1zFrUkoaSX1u522X8qeATxpLLrPNK1kW
-         yMiCNGGkI2L6Q+efe6ars07z4ZIbhlXwsDibCt/ldXSd7bbsr/988kXEJ2NpGRyUoRBL
-         wFBUmim4BryFsYvodMFm27+lP6CgVq9WnpgrL3mZdu00xeNtmPpk6pa+sNOjzmPQhIj7
-         l9vw==
-X-Gm-Message-State: AOAM5334bbrKY3hzmuAP5AhNGbPl2fz3XsU5EAjS5X57fiE8VKjbXbT8
-        CctI/Z6ANR2GakAPcvcyQrE=
-X-Google-Smtp-Source: ABdhPJwGmhf3bIax6TwYrxe2jMNx3w2/QbrZhW6vyu3io3s3RPC7CqYoxNCmcsBPzSJF0lj+DT1eCw==
-X-Received: by 2002:a17:906:358f:: with SMTP id o15mr1645769ejb.369.1611612269202;
-        Mon, 25 Jan 2021 14:04:29 -0800 (PST)
+        bh=R80rKR8xhGvkhvxNcFZ5Dztn+Dx4q1giZJEP37pLBOc=;
+        b=JgEUlltX1RpjTmXs4rJFenfusk6B3GHELK8K+P15nvjIhtoBJixe25gp5u1QSkwTsv
+         4j/ryTHU9L1MGx+1i8sLX9ldzFn4SbouT1PPkJ2Rq+ki5k+an0rybjPRUh8md5gOnL34
+         WsLmRnC40ZRfT7+ryQXwP2Kuk6P2CoK19D57Cif6B8t6nLja2H0qVYHqhVS3quB4Hf83
+         aMUWWuwYg9zMRhROsIhRG8DqjjFV5l3wvKp6sfPRlFVUBXV+FK4vkF3811wZtfLmstcy
+         4YGIjErlu/I7BKknDZtT5WCFNcP9V1LstgHDSP+0coN6S/OyUwqxoKOlDXvSpvbjcEW3
+         zi1A==
+X-Gm-Message-State: AOAM530sCIVkGR0kDr3hz1rXSB5c+mR0K9D+LQdDQ1PZS1AfBH2ZiRUR
+        RDNU1Po7fzz8nquESJUbBrU=
+X-Google-Smtp-Source: ABdhPJxM7M98224JoBI90LsYR+MXRdNjAp9VxktFNLQlqgBg34ApRm1A5Z2E5Km4LUh4oA9LO6h7hQ==
+X-Received: by 2002:a05:6402:524a:: with SMTP id t10mr2235068edd.270.1611612270529;
+        Mon, 25 Jan 2021 14:04:30 -0800 (PST)
 Received: from localhost.localdomain (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id s13sm1760555edi.92.2021.01.25.14.04.27
+        by smtp.gmail.com with ESMTPSA id s13sm1760555edi.92.2021.01.25.14.04.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Jan 2021 14:04:28 -0800 (PST)
+        Mon, 25 Jan 2021 14:04:29 -0800 (PST)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
@@ -57,9 +57,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Alexandre Belloni <alexandre.belloni@bootlin.com>,
         Vladimir Oltean <vladimir.oltean@nxp.com>,
         UNGLinuxDriver@microchip.com
-Subject: [PATCH v7 net-next 04/11] net: mscc: ocelot: reapply bridge forwarding mask on bonding join/leave
-Date:   Tue, 26 Jan 2021 00:03:26 +0200
-Message-Id: <20210125220333.1004365-5-olteanv@gmail.com>
+Subject: [PATCH v7 net-next 05/11] net: mscc: ocelot: don't use NPI tag prefix for the CPU port module
+Date:   Tue, 26 Jan 2021 00:03:27 +0200
+Message-Id: <20210125220333.1004365-6-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210125220333.1004365-1-olteanv@gmail.com>
 References: <20210125220333.1004365-1-olteanv@gmail.com>
@@ -71,19 +71,29 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Applying the bridge forwarding mask currently is done only on the STP
-state changes for any port. But it depends on both STP state changes,
-and bonding interface state changes. Export the bit that recalculates
-the forwarding mask so that it could be reused, and call it when a port
-starts and stops offloading a bonding interface.
+Context: Ocelot switches put the injection/extraction frame header in
+front of the Ethernet header. When used in NPI mode, a DSA master would
+see junk instead of the destination MAC address, and it would most
+likely drop the packets. So the Ocelot frame header can have an optional
+prefix, which is just "ff:ff:ff:ff:ff:fe > ff:ff:ff:ff:ff:ff" padding
+put before the actual tag (still before the real Ethernet header) such
+that the DSA master thinks it's looking at a broadcast frame with a
+strange EtherType.
 
-Now that the logic is split into a separate function, we can rename "p"
-into "port", since the "port" variable was already taken in
-ocelot_bridge_stp_state_set. Also, we can rename "i" into "lag", to make
-it more clear what is it that we're iterating through.
+Unfortunately, a lesson learned in commit 69df578c5f4b ("net: mscc:
+ocelot: eliminate confusion between CPU and NPI port") seems to have
+been forgotten in the meanwhile.
+
+The CPU port module and the NPI port have independent settings for the
+length of the tag prefix. However, the driver is using the same variable
+to program both of them.
+
+There is no reason really to use any tag prefix with the CPU port
+module, since that is not connected to any Ethernet port. So this patch
+makes the inj_prefix and xtr_prefix variables apply only to the NPI
+port (which the switchdev ocelot_vsc7514 driver does not use).
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-Reviewed-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
 Changes in v7:
@@ -91,121 +101,114 @@ None.
 
 Changes in v6:
 None.
-Jakub, just FYI: ./scripts/get_maintainer.pl parses the "bpf" string
-from the patchwork instance name, and wants me to CC the BPF maintainers
-because of that.
 
 Changes in v5:
 None.
 
 Changes in v4:
-Patch is carried over from the "LAG offload for Ocelot DSA switches"
-series:
-https://patchwork.kernel.org/project/netdevbpf/patch/20210116005943.219479-10-olteanv@gmail.com/
-I need it here because it refactors ocelot_apply_bridge_fwd_mask into a
-separate function which I also need to call from felix now.
+Patch is new.
 
- drivers/net/ethernet/mscc/ocelot.c | 63 +++++++++++++++++-------------
- 1 file changed, 36 insertions(+), 27 deletions(-)
+ drivers/net/dsa/ocelot/felix.c             |  8 ++++----
+ drivers/net/ethernet/mscc/ocelot.c         | 12 ++++++------
+ drivers/net/ethernet/mscc/ocelot_vsc7514.c |  2 --
+ include/soc/mscc/ocelot.h                  |  4 ++--
+ 4 files changed, 12 insertions(+), 14 deletions(-)
 
+diff --git a/drivers/net/dsa/ocelot/felix.c b/drivers/net/dsa/ocelot/felix.c
+index 767cbdccdb3e..054e57dd4383 100644
+--- a/drivers/net/dsa/ocelot/felix.c
++++ b/drivers/net/dsa/ocelot/felix.c
+@@ -425,8 +425,8 @@ static int felix_init_structs(struct felix *felix, int num_phys_ports)
+ 	ocelot->num_mact_rows	= felix->info->num_mact_rows;
+ 	ocelot->vcap		= felix->info->vcap;
+ 	ocelot->ops		= felix->info->ops;
+-	ocelot->inj_prefix	= OCELOT_TAG_PREFIX_SHORT;
+-	ocelot->xtr_prefix	= OCELOT_TAG_PREFIX_SHORT;
++	ocelot->npi_inj_prefix	= OCELOT_TAG_PREFIX_SHORT;
++	ocelot->npi_xtr_prefix	= OCELOT_TAG_PREFIX_SHORT;
+ 	ocelot->devlink		= felix->ds->devlink;
+ 
+ 	port_phy_modes = kcalloc(num_phys_ports, sizeof(phy_interface_t),
+@@ -541,9 +541,9 @@ static void felix_npi_port_init(struct ocelot *ocelot, int port)
+ 
+ 	/* NPI port Injection/Extraction configuration */
+ 	ocelot_fields_write(ocelot, port, SYS_PORT_MODE_INCL_XTR_HDR,
+-			    ocelot->xtr_prefix);
++			    ocelot->npi_xtr_prefix);
+ 	ocelot_fields_write(ocelot, port, SYS_PORT_MODE_INCL_INJ_HDR,
+-			    ocelot->inj_prefix);
++			    ocelot->npi_inj_prefix);
+ 
+ 	/* Disable transmission of pause frames */
+ 	ocelot_fields_write(ocelot, port, SYS_PAUSE_CFG_PAUSE_ENA, 0);
 diff --git a/drivers/net/ethernet/mscc/ocelot.c b/drivers/net/ethernet/mscc/ocelot.c
-index 5b2c0cea49ea..7352f58f9bc2 100644
+index 7352f58f9bc2..714165c2f85a 100644
 --- a/drivers/net/ethernet/mscc/ocelot.c
 +++ b/drivers/net/ethernet/mscc/ocelot.c
-@@ -889,10 +889,42 @@ int ocelot_get_ts_info(struct ocelot *ocelot, int port,
- }
- EXPORT_SYMBOL(ocelot_get_ts_info);
+@@ -1359,9 +1359,9 @@ void ocelot_port_set_maxlen(struct ocelot *ocelot, int port, size_t sdu)
+ 	if (port == ocelot->npi) {
+ 		maxlen += OCELOT_TAG_LEN;
  
-+static void ocelot_apply_bridge_fwd_mask(struct ocelot *ocelot)
-+{
-+	int port;
-+
-+	/* Apply FWD mask. The loop is needed to add/remove the current port as
-+	 * a source for the other ports.
-+	 */
-+	for (port = 0; port < ocelot->num_phys_ports; port++) {
-+		if (ocelot->bridge_fwd_mask & BIT(port)) {
-+			unsigned long mask = ocelot->bridge_fwd_mask & ~BIT(port);
-+			int lag;
-+
-+			for (lag = 0; lag < ocelot->num_phys_ports; lag++) {
-+				unsigned long bond_mask = ocelot->lags[lag];
-+
-+				if (!bond_mask)
-+					continue;
-+
-+				if (bond_mask & BIT(port)) {
-+					mask &= ~bond_mask;
-+					break;
-+				}
-+			}
-+
-+			ocelot_write_rix(ocelot, mask,
-+					 ANA_PGID_PGID, PGID_SRC + port);
-+		} else {
-+			ocelot_write_rix(ocelot, 0,
-+					 ANA_PGID_PGID, PGID_SRC + port);
-+		}
-+	}
-+}
-+
- void ocelot_bridge_stp_state_set(struct ocelot *ocelot, int port, u8 state)
- {
- 	u32 port_cfg;
--	int p, i;
- 
- 	if (!(BIT(port) & ocelot->bridge_mask))
- 		return;
-@@ -915,32 +947,7 @@ void ocelot_bridge_stp_state_set(struct ocelot *ocelot, int port, u8 state)
- 
- 	ocelot_write_gix(ocelot, port_cfg, ANA_PORT_PORT_CFG, port);
- 
--	/* Apply FWD mask. The loop is needed to add/remove the current port as
--	 * a source for the other ports.
--	 */
--	for (p = 0; p < ocelot->num_phys_ports; p++) {
--		if (ocelot->bridge_fwd_mask & BIT(p)) {
--			unsigned long mask = ocelot->bridge_fwd_mask & ~BIT(p);
--
--			for (i = 0; i < ocelot->num_phys_ports; i++) {
--				unsigned long bond_mask = ocelot->lags[i];
--
--				if (!bond_mask)
--					continue;
--
--				if (bond_mask & BIT(p)) {
--					mask &= ~bond_mask;
--					break;
--				}
--			}
--
--			ocelot_write_rix(ocelot, mask,
--					 ANA_PGID_PGID, PGID_SRC + p);
--		} else {
--			ocelot_write_rix(ocelot, 0,
--					 ANA_PGID_PGID, PGID_SRC + p);
--		}
--	}
-+	ocelot_apply_bridge_fwd_mask(ocelot);
- }
- EXPORT_SYMBOL(ocelot_bridge_stp_state_set);
- 
-@@ -1297,6 +1304,7 @@ int ocelot_port_lag_join(struct ocelot *ocelot, int port,
+-		if (ocelot->inj_prefix == OCELOT_TAG_PREFIX_SHORT)
++		if (ocelot->npi_inj_prefix == OCELOT_TAG_PREFIX_SHORT)
+ 			maxlen += OCELOT_SHORT_PREFIX_LEN;
+-		else if (ocelot->inj_prefix == OCELOT_TAG_PREFIX_LONG)
++		else if (ocelot->npi_inj_prefix == OCELOT_TAG_PREFIX_LONG)
+ 			maxlen += OCELOT_LONG_PREFIX_LEN;
  	}
  
- 	ocelot_setup_lag(ocelot, lag);
-+	ocelot_apply_bridge_fwd_mask(ocelot);
- 	ocelot_set_aggr_pgids(ocelot);
+@@ -1391,9 +1391,9 @@ int ocelot_get_max_mtu(struct ocelot *ocelot, int port)
+ 	if (port == ocelot->npi) {
+ 		max_mtu -= OCELOT_TAG_LEN;
  
- 	return 0;
-@@ -1330,6 +1338,7 @@ void ocelot_port_lag_leave(struct ocelot *ocelot, int port,
- 	ocelot_write_gix(ocelot, port_cfg | ANA_PORT_PORT_CFG_PORTID_VAL(port),
- 			 ANA_PORT_PORT_CFG, port);
+-		if (ocelot->inj_prefix == OCELOT_TAG_PREFIX_SHORT)
++		if (ocelot->npi_inj_prefix == OCELOT_TAG_PREFIX_SHORT)
+ 			max_mtu -= OCELOT_SHORT_PREFIX_LEN;
+-		else if (ocelot->inj_prefix == OCELOT_TAG_PREFIX_LONG)
++		else if (ocelot->npi_inj_prefix == OCELOT_TAG_PREFIX_LONG)
+ 			max_mtu -= OCELOT_LONG_PREFIX_LEN;
+ 	}
  
-+	ocelot_apply_bridge_fwd_mask(ocelot);
- 	ocelot_set_aggr_pgids(ocelot);
- }
- EXPORT_SYMBOL(ocelot_port_lag_leave);
+@@ -1478,9 +1478,9 @@ static void ocelot_cpu_port_init(struct ocelot *ocelot)
+ 	ocelot_fields_write(ocelot, cpu, QSYS_SWITCH_PORT_MODE_PORT_ENA, 1);
+ 	/* CPU port Injection/Extraction configuration */
+ 	ocelot_fields_write(ocelot, cpu, SYS_PORT_MODE_INCL_XTR_HDR,
+-			    ocelot->xtr_prefix);
++			    OCELOT_TAG_PREFIX_NONE);
+ 	ocelot_fields_write(ocelot, cpu, SYS_PORT_MODE_INCL_INJ_HDR,
+-			    ocelot->inj_prefix);
++			    OCELOT_TAG_PREFIX_NONE);
+ 
+ 	/* Configure the CPU port to be VLAN aware */
+ 	ocelot_write_gix(ocelot, ANA_PORT_VLAN_CFG_VLAN_VID(0) |
+diff --git a/drivers/net/ethernet/mscc/ocelot_vsc7514.c b/drivers/net/ethernet/mscc/ocelot_vsc7514.c
+index 30a38df08a21..407244fe5b17 100644
+--- a/drivers/net/ethernet/mscc/ocelot_vsc7514.c
++++ b/drivers/net/ethernet/mscc/ocelot_vsc7514.c
+@@ -1347,8 +1347,6 @@ static int mscc_ocelot_probe(struct platform_device *pdev)
+ 	ocelot->num_flooding_pgids = 1;
+ 
+ 	ocelot->vcap = vsc7514_vcap_props;
+-	ocelot->inj_prefix = OCELOT_TAG_PREFIX_NONE;
+-	ocelot->xtr_prefix = OCELOT_TAG_PREFIX_NONE;
+ 	ocelot->npi = -1;
+ 
+ 	err = ocelot_init(ocelot);
+diff --git a/include/soc/mscc/ocelot.h b/include/soc/mscc/ocelot.h
+index cdc33fa05660..93c22627dedd 100644
+--- a/include/soc/mscc/ocelot.h
++++ b/include/soc/mscc/ocelot.h
+@@ -651,8 +651,8 @@ struct ocelot {
+ 
+ 	int				npi;
+ 
+-	enum ocelot_tag_prefix		inj_prefix;
+-	enum ocelot_tag_prefix		xtr_prefix;
++	enum ocelot_tag_prefix		npi_inj_prefix;
++	enum ocelot_tag_prefix		npi_xtr_prefix;
+ 
+ 	u32				*lags;
+ 
 -- 
 2.25.1
 
