@@ -2,198 +2,233 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6527A302945
-	for <lists+netdev@lfdr.de>; Mon, 25 Jan 2021 18:48:46 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8878230291A
+	for <lists+netdev@lfdr.de>; Mon, 25 Jan 2021 18:39:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731084AbhAYRsF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Jan 2021 12:48:05 -0500
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:64100 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1730561AbhAYRND (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 12:13:03 -0500
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 10PGpnLJ018054;
-        Mon, 25 Jan 2021 09:10:13 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0220; bh=RjCe0w7MxyE06lySfvxq8HVEJytotz6Wz6Yim/yNLWQ=;
- b=QLNYdDNtsWBBkJYnzASkcCM43Mqa9Zi6o2ISthwDZHHdGNB+xBnW4/rEJgCGDEaWXS9Q
- FBlqLq5ASMJ/Z5AWWAj6CUhj0zubL3qX5z1feXdOvl85jW4bvrT+W0fPKDpXUcCd8kuH
- oi0hM/PmvVEmM6U6r0vH/LoAsulU2xeFAjAOn/iz0nO+63nkO70QhtoW/zi/+yNlbo5n
- PbYqa0nIcr19weJPyDjtYMTQHjEx1u5orBeVe6r+aOg9MA9htVi4JMpTISikTHrz/NDw
- 7MNwQOc5AMvTV9CO639LX9tHDoiryupxNQEEPk/aik23kmlvlUHJwlXpgE+rvDP+cH88 PQ== 
-Received: from dc5-exch02.marvell.com ([199.233.59.182])
-        by mx0a-0016f401.pphosted.com with ESMTP id 368j1u5ajc-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Mon, 25 Jan 2021 09:10:13 -0800
-Received: from SC-EXCH04.marvell.com (10.93.176.84) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 25 Jan
- 2021 09:10:12 -0800
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH04.marvell.com
- (10.93.176.84) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 25 Jan
- 2021 09:10:11 -0800
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 25 Jan 2021 09:10:12 -0800
-Received: from stefan-pc.marvell.com (stefan-pc.marvell.com [10.5.25.21])
-        by maili.marvell.com (Postfix) with ESMTP id 0BA6E3F703F;
-        Mon, 25 Jan 2021 09:10:08 -0800 (PST)
-From:   <stefanc@marvell.com>
-To:     <netdev@vger.kernel.org>
-CC:     <thomas.petazzoni@bootlin.com>, <davem@davemloft.net>,
-        <nadavh@marvell.com>, <ymarkman@marvell.com>,
-        <linux-kernel@vger.kernel.org>, <stefanc@marvell.com>,
-        <kuba@kernel.org>, <linux@armlinux.org.uk>, <mw@semihalf.com>,
-        <andrew@lunn.ch>, <rmk+kernel@armlinux.org.uk>,
-        <atenart@kernel.org>
-Subject: [PATCH v3 RFC net-next 16/19] net: mvpp2: add PPv23 RX FIFO flow control
-Date:   Mon, 25 Jan 2021 19:08:03 +0200
-Message-ID: <1611594486-29431-17-git-send-email-stefanc@marvell.com>
-X-Mailer: git-send-email 1.9.1
-In-Reply-To: <1611594486-29431-1-git-send-email-stefanc@marvell.com>
-References: <1611594486-29431-1-git-send-email-stefanc@marvell.com>
+        id S1731149AbhAYRip (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Jan 2021 12:38:45 -0500
+Received: from mail.kernel.org ([198.145.29.99]:35102 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730605AbhAYRiB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 25 Jan 2021 12:38:01 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 7A50222583;
+        Mon, 25 Jan 2021 17:37:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1611596234;
+        bh=6sAHpexwV3E1wMY3f2ODMH4HeE/GvpgftiTgGfYZgOY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=iFHm38L+28trlPkwfAFWJs0EJXo1UIstTLOJZ1R57Lbh1b4bFCQhMFWqEKq1NW9m4
+         e0tYmtMPbc07uh79aMLuHGJHM+gWT4AOMGvmz1tPnesZjT68R9c8/Lppu0dSOT/Hpg
+         toG/Wu0tXExkaz54gha7mgahhCJ6vqZ2CBDVKZqjLgTUEGe0wrgzNW5pd8oBDVfHgG
+         xEvO4GX2Z3xuewhq8fEBKjih/OQuCXFAfcg2dlCMQZO66ezfsS8O4YJXpxBk0W5w1V
+         YgQpRYBBRpG/diUUeh7b/uRLDevuPijqB5tMcGQ/oofpKyG5uOHKH1OHgh5Wu2gyZH
+         IZ7Wgifj8IjFg==
+Received: by quaco.ghostprotocols.net (Postfix, from userid 1000)
+        id 983E740513; Mon, 25 Jan 2021 14:37:11 -0300 (-03)
+Date:   Mon, 25 Jan 2021 14:37:11 -0300
+From:   Arnaldo Carvalho de Melo <acme@kernel.org>
+To:     Jiri Olsa <jolsa@redhat.com>
+Cc:     Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Jiri Olsa <jolsa@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andriin@fb.com>, dwarves@vger.kernel.org,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Yonghong Song <yhs@fb.com>, Hao Luo <haoluo@google.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Joe Lawrence <joe.lawrence@redhat.com>,
+        Mark Wielaard <mjw@redhat.com>
+Subject: Re: [PATCH 2/2] bpf_encoder: Translate SHN_XINDEX in symbol's
+ st_shndx values
+Message-ID: <20210125173711.GE617095@kernel.org>
+References: <20210122163920.59177-1-jolsa@kernel.org>
+ <20210122163920.59177-3-jolsa@kernel.org>
+ <CAEf4BzbC-s=27vmcJ1KYLVKgGbns2py1bHny3Q_yr4v3Oe49RQ@mail.gmail.com>
+ <20210122203748.GA70760@krava>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
- definitions=2021-01-25_07:2021-01-25,2021-01-25 signatures=0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210122203748.GA70760@krava>
+X-Url:  http://acmel.wordpress.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Stefan Chulski <stefanc@marvell.com>
+Em Fri, Jan 22, 2021 at 09:37:48PM +0100, Jiri Olsa escreveu:
+> On Fri, Jan 22, 2021 at 12:16:42PM -0800, Andrii Nakryiko wrote:
+> > On Fri, Jan 22, 2021 at 8:46 AM Jiri Olsa <jolsa@kernel.org> wrote:
+> > >
+> > > For very large ELF objects (with many sections), we could
+> > > get special value SHN_XINDEX (65535) for symbol's st_shndx.
+> > >
+> > > This patch is adding code to detect the optional extended
+> > > section index table and use it to resolve symbol's section
+> > > index.
+> > >
+> > > Adding elf_symtab__for_each_symbol_index macro that returns
+> > > symbol's section index and usign it in collect functions.
+> > >
+> > > Signed-off-by: Jiri Olsa <jolsa@kernel.org>
+> > > ---
+> > >  btf_encoder.c | 59 +++++++++++++++++++++++++++++++++++++--------------
+> > >  elf_symtab.c  | 39 +++++++++++++++++++++++++++++++++-
+> > >  elf_symtab.h  |  2 ++
+> > >  3 files changed, 83 insertions(+), 17 deletions(-)
+> > >
+> > > diff --git a/btf_encoder.c b/btf_encoder.c
+> > > index 5557c9efd365..56ee55965093 100644
+> > > --- a/btf_encoder.c
+> > > +++ b/btf_encoder.c
+> > > @@ -63,13 +63,13 @@ static void delete_functions(void)
+> > >  #define max(x, y) ((x) < (y) ? (y) : (x))
+> > >  #endif
+> > >
+> > > -static int collect_function(struct btf_elf *btfe, GElf_Sym *sym)
+> > > +static int collect_function(struct btf_elf *btfe, GElf_Sym *sym,
+> > > +                           Elf32_Word sym_sec_idx)
+> > 
+> > nit: we use size_t or int for this, no need for libelf types here, imo
+> 
+> ok
 
-New FIFO flow control feature were added in PPv23.
-PPv2 FIFO polled by HW and trigger pause frame if FIFO
-fill level is below threshold.
-FIFO HW flow control enabled with CM3 RXQ&BM flow
-control with ethtool.
-Current  FIFO thresholds is:
-9KB for port with maximum speed 10Gb/s port
-4KB for port with maximum speed 5Gb/s port
-2KB for port with maximum speed 1Gb/s port
+I think it is because this patch ends up calling 
 
-Signed-off-by: Stefan Chulski <stefanc@marvell.com>
----
- drivers/net/ethernet/marvell/mvpp2/mvpp2.h      | 15 ++++++
- drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 53 ++++++++++++++++++++
- 2 files changed, 68 insertions(+)
+extern GElf_Sym *gelf_getsymshndx (Elf_Data *__symdata, Elf_Data *__shndxdata,
+                                   int __ndx, GElf_Sym *__sym,
+                                   Elf32_Word *__xshndx);
 
-diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
-index 798be58..0765d6f 100644
---- a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
-+++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
-@@ -770,6 +770,18 @@
- #define MVPP2_TX_FIFO_THRESHOLD(kb)	\
- 		((kb) * 1024 - MVPP2_TX_FIFO_THRESHOLD_MIN)
+Which expects a pointer to a Elf32_Word, right Jiri?
+
+Jiri, are you going to submit a new version of this patch? I processed
+the first one, collecting Andrii's Acked-by, if you're busy I can try to
+address the other concerns from Andrii, please let me know.
+
+- Arnaldo
  
-+/* RX FIFO threshold in 1KB granularity */
-+#define MVPP23_PORT0_FIFO_TRSH	(9 * 1024)
-+#define MVPP23_PORT1_FIFO_TRSH	(4 * 1024)
-+#define MVPP23_PORT2_FIFO_TRSH	(2 * 1024)
-+
-+/* RX Flow Control Registers */
-+#define MVPP2_RX_FC_REG(port)		(0x150 + 4 * (port))
-+#define     MVPP2_RX_FC_EN		BIT(24)
-+#define     MVPP2_RX_FC_TRSH_OFFS	16
-+#define     MVPP2_RX_FC_TRSH_MASK	(0xFF << MVPP2_RX_FC_TRSH_OFFS)
-+#define     MVPP2_RX_FC_TRSH_UNIT	256
-+
- /* MSS Flow control */
- #define MSS_SRAM_SIZE			0x800
- #define MSS_FC_COM_REG			0
-@@ -1504,6 +1516,8 @@ struct mvpp2_bm_pool {
- 
- void mvpp2_dbgfs_cleanup(struct mvpp2 *priv);
- 
-+void mvpp23_rx_fifo_fc_en(struct mvpp2 *priv, int port, bool en);
-+
- #ifdef CONFIG_MVPP2_PTP
- int mvpp22_tai_probe(struct device *dev, struct mvpp2 *priv);
- void mvpp22_tai_tstamp(struct mvpp2_tai *tai, u32 tstamp,
-@@ -1536,4 +1550,5 @@ static inline bool mvpp22_rx_hwtstamping(struct mvpp2_port *port)
- {
- 	return IS_ENABLED(CONFIG_MVPP2_PTP) && port->rx_hwtstamp;
- }
-+
- #endif
-diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-index 6f43881..15974a7 100644
---- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-+++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-@@ -6537,6 +6537,8 @@ static void mvpp2_mac_link_up(struct phylink_config *config,
- 			mvpp2_bm_pool_update_fc(port, port->pool_long, tx_pause);
- 			mvpp2_bm_pool_update_fc(port, port->pool_short, tx_pause);
- 		}
-+		if (port->priv->hw_version == MVPP23)
-+			mvpp23_rx_fifo_fc_en(port->priv, port->id, tx_pause);
- 	}
- 
- 	mvpp2_port_enable(port);
-@@ -7005,6 +7007,55 @@ static void mvpp22_rx_fifo_init(struct mvpp2 *priv)
- 	mvpp2_write(priv, MVPP2_RX_FIFO_INIT_REG, 0x1);
- }
- 
-+/* Configure Rx FIFO Flow control thresholds */
-+static void mvpp23_rx_fifo_fc_set_tresh(struct mvpp2 *priv)
-+{
-+	int port, val;
-+
-+	/* Port 0: maximum speed -10Gb/s port
-+	 *	   required by spec RX FIFO threshold 9KB
-+	 * Port 1: maximum speed -5Gb/s port
-+	 *	   required by spec RX FIFO threshold 4KB
-+	 * Port 2: maximum speed -1Gb/s port
-+	 *	   required by spec RX FIFO threshold 2KB
-+	 */
-+
-+	/* Without loopback port */
-+	for (port = 0; port < (MVPP2_MAX_PORTS - 1); port++) {
-+		if (port == 0) {
-+			val = (MVPP23_PORT0_FIFO_TRSH / MVPP2_RX_FC_TRSH_UNIT)
-+				<< MVPP2_RX_FC_TRSH_OFFS;
-+			val &= MVPP2_RX_FC_TRSH_MASK;
-+			mvpp2_write(priv, MVPP2_RX_FC_REG(port), val);
-+		} else if (port == 1) {
-+			val = (MVPP23_PORT1_FIFO_TRSH / MVPP2_RX_FC_TRSH_UNIT)
-+				<< MVPP2_RX_FC_TRSH_OFFS;
-+			val &= MVPP2_RX_FC_TRSH_MASK;
-+			mvpp2_write(priv, MVPP2_RX_FC_REG(port), val);
-+		} else {
-+			val = (MVPP23_PORT2_FIFO_TRSH / MVPP2_RX_FC_TRSH_UNIT)
-+				<< MVPP2_RX_FC_TRSH_OFFS;
-+			val &= MVPP2_RX_FC_TRSH_MASK;
-+			mvpp2_write(priv, MVPP2_RX_FC_REG(port), val);
-+		}
-+	}
-+}
-+
-+/* Configure Rx FIFO Flow control thresholds */
-+void mvpp23_rx_fifo_fc_en(struct mvpp2 *priv, int port, bool en)
-+{
-+	int val;
-+
-+	val = mvpp2_read(priv, MVPP2_RX_FC_REG(port));
-+
-+	if (en)
-+		val |= MVPP2_RX_FC_EN;
-+	else
-+		val &= ~MVPP2_RX_FC_EN;
-+
-+	mvpp2_write(priv, MVPP2_RX_FC_REG(port), val);
-+}
-+
- static void mvpp22_tx_fifo_set_hw(struct mvpp2 *priv, int port, int size)
- {
- 	int threshold = MVPP2_TX_FIFO_THRESHOLD(size);
-@@ -7156,6 +7207,8 @@ static int mvpp2_init(struct platform_device *pdev, struct mvpp2 *priv)
- 	} else {
- 		mvpp22_rx_fifo_init(priv);
- 		mvpp22_tx_fifo_init(priv);
-+		if (priv->hw_version == MVPP23)
-+			mvpp23_rx_fifo_fc_set_tresh(priv);
- 	}
- 
- 	if (priv->hw_version == MVPP21)
+> > 
+> > 
+> > 
+> > >  {
+> > >         struct elf_function *new;
+> > >         static GElf_Shdr sh;
+> > > -       static int last_idx;
+> > > +       static Elf32_Word last_idx;
+> > >         const char *name;
+> > > -       int idx;
+> > >
+> > >         if (elf_sym__type(sym) != STT_FUNC)
+> > >                 return 0;
+> > > @@ -90,12 +90,10 @@ static int collect_function(struct btf_elf *btfe, GElf_Sym *sym)
+> > >                 functions = new;
+> > >         }
+> > >
+> > > -       idx = elf_sym__section(sym);
+> > > -
+> > > -       if (idx != last_idx) {
+> > > -               if (!elf_section_by_idx(btfe->elf, &sh, idx))
+> > > +       if (sym_sec_idx != last_idx) {
+> > > +               if (!elf_section_by_idx(btfe->elf, &sh, sym_sec_idx))
+> > >                         return 0;
+> > > -               last_idx = idx;
+> > > +               last_idx = sym_sec_idx;
+> > >         }
+> > >
+> > >         functions[functions_cnt].name = name;
+> > > @@ -542,14 +540,15 @@ static bool percpu_var_exists(uint64_t addr, uint32_t *sz, const char **name)
+> > >         return true;
+> > >  }
+> > >
+> > > -static int collect_percpu_var(struct btf_elf *btfe, GElf_Sym *sym)
+> > > +static int collect_percpu_var(struct btf_elf *btfe, GElf_Sym *sym,
+> > > +                             Elf32_Word sym_sec_idx)
+> > 
+> > nit: same, size_t or just int would be fine
+> > 
+> > >  {
+> > >         const char *sym_name;
+> > >         uint64_t addr;
+> > >         uint32_t size;
+> > >
+> > >         /* compare a symbol's shndx to determine if it's a percpu variable */
+> > > -       if (elf_sym__section(sym) != btfe->percpu_shndx)
+> > > +       if (sym_sec_idx != btfe->percpu_shndx)
+> > >                 return 0;
+> > >         if (elf_sym__type(sym) != STT_OBJECT)
+> > >                 return 0;
+> > > @@ -585,12 +584,13 @@ static int collect_percpu_var(struct btf_elf *btfe, GElf_Sym *sym)
+> > >         return 0;
+> > >  }
+> > >
+> > > -static void collect_symbol(GElf_Sym *sym, struct funcs_layout *fl)
+> > > +static void collect_symbol(GElf_Sym *sym, struct funcs_layout *fl,
+> > > +                          Elf32_Word sym_sec_idx)
+> > >  {
+> > >         if (!fl->mcount_start &&
+> > >             !strcmp("__start_mcount_loc", elf_sym__name(sym, btfe->symtab))) {
+> > >                 fl->mcount_start = sym->st_value;
+> > > -               fl->mcount_sec_idx = sym->st_shndx;
+> > > +               fl->mcount_sec_idx = sym_sec_idx;
+> > >         }
+> > >
+> > >         if (!fl->mcount_stop &&
+> > > @@ -598,9 +598,36 @@ static void collect_symbol(GElf_Sym *sym, struct funcs_layout *fl)
+> > >                 fl->mcount_stop = sym->st_value;
+> > >  }
+> > >
+> > > +static bool elf_sym__get(Elf_Data *syms, Elf_Data *syms_sec_idx_table,
+> > > +                        int id, GElf_Sym *sym, Elf32_Word *sym_sec_idx)
+> > 
+> > This is a generic function, why don't you want to move it into elf_symtab.h?
+> > 
+> > > +{
+> > > +       if (!gelf_getsym(syms, id, sym))
+> > > +               return false;
+> > > +
+> > > +       *sym_sec_idx = sym->st_shndx;
+> > > +
+> > > +       if (sym->st_shndx == SHN_XINDEX) {
+> > > +               if (!syms_sec_idx_table)
+> > > +                       return false;
+> > > +               if (!gelf_getsymshndx(syms, syms_sec_idx_table,
+> > > +                                     id, sym, sym_sec_idx))
+> > > +                       return false;
+> > 
+> > You also ignored my feedback about not fetching symbol twice. Why?
+> 
+> ugh, I did not read your last 2 comments.. let me check that, sry
+> 
+> > 
+> > > +       }
+> > > +
+> > > +       return true;
+> > > +}
+> > > +
+> > > +#define elf_symtab__for_each_symbol_index(symtab, id, sym, sym_sec_idx)                \
+> > > +       for (id = 0;                                                            \
+> > > +            id < symtab->nr_syms &&                                            \
+> > > +            elf_sym__get(symtab->syms, symtab->syms_sec_idx_table,             \
+> > > +                         id, &sym, &sym_sec_idx);                              \
+> > > +            id++)
+> > 
+> > This should be in elf_symtab.h next to elf_symtab__for_each_symbol.
+> > 
+> > And thinking a bit more, the variant with just ignoring symbols that
+> > we failed to get is probably a safer alternative. I.e., currently
+> > there is no way to communicate that we terminated iteration with
+> > error, so it's probably better to skip failed symbols and still get
+> > the rest, no? I was hoping to discuss stuff like this on the previous
+> > version of the patch...
+> 
+> I was thinking of that, but then I thought it's better to fail,
+> than have possibly wrong data in BTF, because the ELF data is
+> possibly damaged? no idea.. so I took the safer way
+> 
+> jirka
+> 
+
 -- 
-1.9.1
 
+- Arnaldo
