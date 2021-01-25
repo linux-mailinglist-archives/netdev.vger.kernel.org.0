@@ -2,203 +2,140 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BE8D4304AE0
-	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 22:02:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7452F304B25
+	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 22:17:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729452AbhAZE4W (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Jan 2021 23:56:22 -0500
-Received: from aserp2120.oracle.com ([141.146.126.78]:33410 "EHLO
-        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727519AbhAYK3G (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 05:29:06 -0500
-Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
-        by aserp2120.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 10P8AVSE101478;
-        Mon, 25 Jan 2021 08:12:59 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : mime-version : content-type; s=corp-2020-01-29;
- bh=3v5ov03CgWGnjGR/strYEROcXrL34Fr8nIjtf5Iguwg=;
- b=x7axNsTK9ZqhnGkiPnDz8khmaU8wLifzrx6bT35UZDfZQm9BtVPMr64o7QJN4MBntudN
- Bn8SXcp08lGBr5mZb9w9AxkNNcYr4XBgwk2fC9hcHneKJnVe+yZz0PQiyVt1ZWj+Ymqb
- 7cPk0vlb6kTigZC49pC18Btt66nPz9GoeFdHcME42sZihdT4ijuQdKeMnS0enPrDI4xk
- YSJxStU3mne0kpgmSPAKk+gGB2AqKTSg+NACbrjROgDk/Oj2t0DgK7WKWIyGqSVdu/IA
- QebbqlDTKYTng7+wD3wWuhqb3BVCaI/wBOMID3Xxfb4+r9WNQNDdta/sUkLfXKThPt0h fg== 
-Received: from userp3020.oracle.com (userp3020.oracle.com [156.151.31.79])
-        by aserp2120.oracle.com with ESMTP id 368brkc06h-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 25 Jan 2021 08:12:59 +0000
-Received: from pps.filterd (userp3020.oracle.com [127.0.0.1])
-        by userp3020.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 10P8BSCX003702;
-        Mon, 25 Jan 2021 08:12:57 GMT
-Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
-        by userp3020.oracle.com with ESMTP id 368wjpctkh-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 25 Jan 2021 08:12:57 +0000
-Received: from abhmp0006.oracle.com (abhmp0006.oracle.com [141.146.116.12])
-        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 10P8CpgI020970;
-        Mon, 25 Jan 2021 08:12:51 GMT
-Received: from mwanda (/102.36.221.92)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Mon, 25 Jan 2021 00:12:50 -0800
-Date:   Mon, 25 Jan 2021 11:12:42 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        UNGLinuxDriver@microchip.com,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-Subject: [PATCH 1/2 net-next] net: mscc: ocelot: fix error handling bugs in
- mscc_ocelot_init_ports()
-Message-ID: <YA59en4lJCiYsPHv@mwanda>
+        id S1728514AbhAZEum (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Jan 2021 23:50:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35444 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726540AbhAYJZY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 04:25:24 -0500
+Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 46881C06174A
+        for <netdev@vger.kernel.org>; Mon, 25 Jan 2021 00:12:50 -0800 (PST)
+Received: by mail-lf1-x12f.google.com with SMTP id m22so16394613lfg.5
+        for <netdev@vger.kernel.org>; Mon, 25 Jan 2021 00:12:50 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=norrbonn-se.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=bsE93UFl5PtYy3HJ5hlNHKN4+yoGAKw1M08tLJ7E8iw=;
+        b=FWQ70IPS+h3119nHmkdh1omOnMMVP4uaHsMixzA44wwWJgdTGNQjNKL5XxSzOpWB0K
+         /aeQWAJq/CLSK1kcI+RyAbaLrUSYXVBJ1QbbkvZ6ZGfvYcL41WuVisKmZRGaBUetO07E
+         A+TuKZ6H8KAOJR7n2swXmwopjMeP3OFkUdMV8sOCu882yxUVg+vN+hLIxp9xs1F8PByJ
+         K1DZqMgSZMkVNYJzckoIADwBPWEL0zNTbI3tlACc9oIBzY8uawUq/s1InQPNJkQ5IKqb
+         PINjrMykxGR0ByqYuVjdM7qArV8s9lBR9Sg5qcKrJ5P6aGmEEgfCKQmfqByofZCndHaf
+         +mrQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=bsE93UFl5PtYy3HJ5hlNHKN4+yoGAKw1M08tLJ7E8iw=;
+        b=ZSx/wMYnexlv0PsbS+JfX3jpsBiUGZ3Ze1XD2gAu3h1TxHUFYKTcZthOJjVmWIUOlY
+         1o74xA+s3iX/uH1mgl1ht+Y82Q399hPBWkrdUbvv5kM5z4RSBI/3h8uzaTPhN7XVqvcL
+         jSonBj++tpf6/bpawxgxmoE2SQWvhoK/XomXGE/soCQ/2fNVylb5GZ3t7rFi48B6joTd
+         wIi05NbyTQ0ZUi3iFwcYNaUMjL1OF9TBSCF6dHH3ZboH2zEau10DJUssGVHS2rxjx0uo
+         af/oT+q+9crVW5dlzS0cyXp+78YTB5L5xS/BJbYN1i6wiEHazhgDCV5kbI/xIRKZW6be
+         HXiQ==
+X-Gm-Message-State: AOAM530cdqaU5NkUevBAGolOeehH3KiBLmL10Us6xFKmU95vO832qMmo
+        ZtRl9Vntrh86jClQSNT32rmuG1FHR67oYQ==
+X-Google-Smtp-Source: ABdhPJx9jFUcrzWp1XrKBje5PxySzncfE/yP3qXa45qlh2WFfDbq7joRJUoX0u2zyJPKeGvmNEmP3A==
+X-Received: by 2002:ac2:57c2:: with SMTP id k2mr281144lfo.105.1611562368824;
+        Mon, 25 Jan 2021 00:12:48 -0800 (PST)
+Received: from [192.168.1.157] (h-137-65.A159.priv.bahnhof.se. [81.170.137.65])
+        by smtp.gmail.com with ESMTPSA id z141sm1749215lfc.118.2021.01.25.00.12.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 25 Jan 2021 00:12:48 -0800 (PST)
+Subject: Re: [RFC PATCH 14/16] gtp: add support for flow based tunneling
+To:     laforge@gnumonks.org, netdev@vger.kernel.org, pbshelar@fb.com,
+        kuba@kernel.org
+Cc:     pablo@netfilter.org
+References: <20210123195916.2765481-1-jonas@norrbonn.se>
+ <20210123195916.2765481-15-jonas@norrbonn.se>
+From:   Jonas Bonn <jonas@norrbonn.se>
+Message-ID: <0f60fd78-3f0a-c27d-6fcc-1355d40c5d1c@norrbonn.se>
+Date:   Mon, 25 Jan 2021 09:12:47 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Mailer: git-send-email haha only kidding
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9874 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 phishscore=0 suspectscore=0
- adultscore=0 mlxscore=0 malwarescore=0 spamscore=0 mlxlogscore=999
- bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2101250048
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9874 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 adultscore=0 impostorscore=0
- phishscore=0 bulkscore=0 priorityscore=1501 mlxlogscore=999
- lowpriorityscore=0 spamscore=0 mlxscore=0 suspectscore=0 malwarescore=0
- clxscore=1011 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2101250048
+In-Reply-To: <20210123195916.2765481-15-jonas@norrbonn.se>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There are several error handling bugs in mscc_ocelot_init_ports().  I
-went through the code, and carefully audited it and made fixes and
-cleanups.
+Hi Pravin,
 
-1) The ocelot_probe_port() function didn't have a mirror release function
-   so it was hard to follow.  I created the ocelot_release_port()
-   function.
-2) In the ocelot_probe_port() function, if the register_netdev() call
-   failed, then it lead to a double free_netdev(dev) bug.  Fix this
-   by moving the "ocelot->ports[port] = ocelot_port;" assignment to the
-   end of the function after everything has succeeded.
-3) I was concerned that the "port" which comes from of_property_read_u32()
-   might be out of bounds so I added a check for that.
-4) In the original code if ocelot_regmap_init() failed then the driver
-   tried to continue but I think that should be a fatal error.
-5) If ocelot_probe_port() failed then the most recent devlink was leaked.
-   Fix this by moving the "registered_ports[port] = true;" assignment
-   earlier.
-6) The error handling if the final ocelot_port_devlink_init() failed had
-   two problems.  The "while (port-- >= 0)" loop should have been
-   "--port" pre-op instead of a post-op to avoid a buffer underflow.
-   The "if (!registered_ports[port])" condition was reversed leading to
-   resource leaks and double frees.
+I'm going to submit a new series without the GTP_METADATA bits.  I think 
+the whole "collect metadata" approach is fine, but the way GTP header 
+information is passed through the tunnel via metadata needs a bit more 
+thought.  See below...
 
-Fixes: 6c30384eb1de ("net: mscc: ocelot: register devlink ports")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
----
- drivers/net/ethernet/mscc/ocelot_vsc7514.c | 39 +++++++++-------------
- 1 file changed, 16 insertions(+), 23 deletions(-)
+On 23/01/2021 20:59, Jonas Bonn wrote:
+> From: Pravin B Shelar <pbshelar@fb.com>
+>   
+> +static int gtp_set_tun_dst(struct pdp_ctx *pctx, struct sk_buff *skb,
+> +			   unsigned int hdrlen)
+> +{
+> +	struct metadata_dst *tun_dst;
+> +	struct gtp1_header *gtp1;
+> +	int opts_len = 0;
+> +	__be64 tid;
+> +
+> +	gtp1 = (struct gtp1_header *)(skb->data + sizeof(struct udphdr));
+> +
+> +	tid = key32_to_tunnel_id(gtp1->tid);
+> +
+> +	if (unlikely(gtp1->flags & GTP1_F_MASK))
+> +		opts_len = sizeof(struct gtpu_metadata);
 
-diff --git a/drivers/net/ethernet/mscc/ocelot_vsc7514.c b/drivers/net/ethernet/mscc/ocelot_vsc7514.c
-index 30a38df08a21..2c82ffe2c611 100644
---- a/drivers/net/ethernet/mscc/ocelot_vsc7514.c
-+++ b/drivers/net/ethernet/mscc/ocelot_vsc7514.c
-@@ -1064,7 +1064,6 @@ static void mscc_ocelot_release_ports(struct ocelot *ocelot)
- 	int port;
- 
- 	for (port = 0; port < ocelot->num_phys_ports; port++) {
--		struct ocelot_port_private *priv;
- 		struct ocelot_port *ocelot_port;
- 
- 		ocelot_port = ocelot->ports[port];
-@@ -1072,12 +1071,7 @@ static void mscc_ocelot_release_ports(struct ocelot *ocelot)
- 			continue;
- 
- 		ocelot_deinit_port(ocelot, port);
--
--		priv = container_of(ocelot_port, struct ocelot_port_private,
--				    port);
--
--		unregister_netdev(priv->dev);
--		free_netdev(priv->dev);
-+		ocelot_release_port(ocelot_port);
- 	}
- }
- 
-@@ -1123,14 +1117,22 @@ static int mscc_ocelot_init_ports(struct platform_device *pdev,
- 			continue;
- 
- 		port = reg;
-+		if (port < 0 || port >= ocelot->num_phys_ports) {
-+			dev_err(ocelot->dev,
-+				"invalid port number: %d >= %d\n", port,
-+				ocelot->num_phys_ports);
-+			continue;
-+		}
- 
- 		snprintf(res_name, sizeof(res_name), "port%d", port);
- 
- 		res = platform_get_resource_byname(pdev, IORESOURCE_MEM,
- 						   res_name);
- 		target = ocelot_regmap_init(ocelot, res);
--		if (IS_ERR(target))
--			continue;
-+		if (IS_ERR(target)) {
-+			err = PTR_ERR(target);
-+			goto out_teardown;
-+		}
- 
- 		phy_node = of_parse_phandle(portnp, "phy-handle", 0);
- 		if (!phy_node)
-@@ -1147,6 +1149,7 @@ static int mscc_ocelot_init_ports(struct platform_device *pdev,
- 			of_node_put(portnp);
- 			goto out_teardown;
- 		}
-+		registered_ports[port] = true;
- 
- 		err = ocelot_probe_port(ocelot, port, target, phy);
- 		if (err) {
-@@ -1154,8 +1157,6 @@ static int mscc_ocelot_init_ports(struct platform_device *pdev,
- 			goto out_teardown;
- 		}
- 
--		registered_ports[port] = true;
--
- 		ocelot_port = ocelot->ports[port];
- 		priv = container_of(ocelot_port, struct ocelot_port_private,
- 				    port);
-@@ -1213,15 +1214,9 @@ static int mscc_ocelot_init_ports(struct platform_device *pdev,
- 
- 		err = ocelot_port_devlink_init(ocelot, port,
- 					       DEVLINK_PORT_FLAVOUR_UNUSED);
--		if (err) {
--			while (port-- >= 0) {
--				if (!registered_ports[port])
--					continue;
--				ocelot_port_devlink_teardown(ocelot, port);
--			}
--
-+		if (err)
- 			goto out_teardown;
--		}
-+		registered_ports[port] = true;
- 	}
- 
- 	kfree(registered_ports);
-@@ -1233,10 +1228,8 @@ static int mscc_ocelot_init_ports(struct platform_device *pdev,
- 	mscc_ocelot_release_ports(ocelot);
- 	/* Tear down devlink ports for the registered network interfaces */
- 	for (port = 0; port < ocelot->num_phys_ports; port++) {
--		if (!registered_ports[port])
--			continue;
--
--		ocelot_port_devlink_teardown(ocelot, port);
-+		if (registered_ports[port])
-+			ocelot_port_devlink_teardown(ocelot, port);
- 	}
- 	kfree(registered_ports);
- 	return err;
--- 
-2.29.2
+This decides that GTP metadata is required if any of the S, E, and PN 
+bits are set in the header.  However:
 
+i) even when any of those bits are set, none of the extra headers are 
+actually added to the metadata so it's somewhat pointless to even bother 
+reporting that they're set
+
+ii) the more interesting case is that you might want to report reception 
+of an end marker through the tunnel; that however, is signalled by way 
+of the GTP header type and not via the flags; but, see below...
+
+
+> +
+> +	tun_dst = udp_tun_rx_dst(skb,
+> +			pctx->sk->sk_family, TUNNEL_KEY, tid, opts_len);
+> +	if (!tun_dst) {
+> +		netdev_dbg(pctx->dev, "Failed to allocate tun_dst");
+> +		goto err;
+> +	}
+
+The problem, as I see it, is that end marker messages don't actually 
+contain an inner packet, so you won't be able to set up a destination 
+for them.  The above fails and you never hit the metadata path below.
+
+> +
+> +	netdev_dbg(pctx->dev, "attaching metadata_dst to skb, gtp ver %d hdrlen %d\n",
+> +		   pctx->gtp_version, hdrlen);
+> +	if (unlikely(opts_len)) {
+> +		struct gtpu_metadata *opts;
+> +
+> +		opts = ip_tunnel_info_opts(&tun_dst->u.tun_info);
+> +		opts->ver = GTP_METADATA_V1;
+> +		opts->flags = gtp1->flags;
+> +		opts->type = gtp1->type;
+> +		netdev_dbg(pctx->dev, "recved control pkt: flag %x type: %d\n",
+> +			   opts->flags, opts->type);
+> +		tun_dst->u.tun_info.key.tun_flags |= TUNNEL_GTPU_OPT;
+> +		tun_dst->u.tun_info.options_len = opts_len;
+> +		skb->protocol = htons(0xffff);         /* Unknown */
+> +	}
+
+Assuming that you do hit this code and are able to set the 'type' field 
+in the metadata, who is going to be the recipient.  After you pull the 
+GTP headers, the SKB is presumably zero-length...
+
+/Jonas
