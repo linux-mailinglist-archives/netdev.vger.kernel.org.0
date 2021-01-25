@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 43310302EA7
-	for <lists+netdev@lfdr.de>; Mon, 25 Jan 2021 23:08:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2F064302EA6
+	for <lists+netdev@lfdr.de>; Mon, 25 Jan 2021 23:07:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733191AbhAYWGu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Jan 2021 17:06:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59348 "EHLO
+        id S1733192AbhAYWGm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Jan 2021 17:06:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59352 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1733148AbhAYWFI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 17:05:08 -0500
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6D13C06174A
-        for <netdev@vger.kernel.org>; Mon, 25 Jan 2021 14:04:27 -0800 (PST)
-Received: by mail-ej1-x629.google.com with SMTP id g12so20264629ejf.8
-        for <netdev@vger.kernel.org>; Mon, 25 Jan 2021 14:04:27 -0800 (PST)
+        with ESMTP id S1733155AbhAYWFJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 17:05:09 -0500
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 132B0C061756
+        for <netdev@vger.kernel.org>; Mon, 25 Jan 2021 14:04:29 -0800 (PST)
+Received: by mail-ed1-x533.google.com with SMTP id f1so17361169edr.12
+        for <netdev@vger.kernel.org>; Mon, 25 Jan 2021 14:04:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=TXHkSQfYP+HcG+tZ7hnVepbi7ZCRYkZi1Hu/yGOuK5g=;
-        b=bP1k8TfQjlbg++gDEosba6u9orhQN1b0pVRVmHzHpUuE0qg+u0avNjo7+6BWq5KGrQ
-         NuFKpngH+vGTapX8PVT02p2IkL/UeF2oI4sfsDFDctnPcrlJLMTnLXvdCmIG1RcgRO6P
-         0O2B59hr+xuuKLokLXdWLvMn44ymSPc8LnRgh2mcwo19W+3KebXquxUO+Zb42i7KOww2
-         P4EdeEDp1JJnulHJ2FQLtKgb8R0i4YZhh0YvG5VOZZiiZj8gwRl6vN1OYLl9rEFS0eWY
-         ozX1FfA49VhPpxfLr8mw5v52uCTPYgXl7Vi+lnaYcNc6wyO1rVd9gnG3P3sM85wur7hh
-         Gpvw==
+        bh=qg/4up8Zvai8vksH4rAIXOtpatM8jVNOUkUD0I41kNQ=;
+        b=SapSEvqQi0uIgaf6HOiwkYBeT1oQUgf9iFXwYawmLNLVjSibUUu5c5IdkPi8Q07YgF
+         Gqj5VH9e+MmeCaWUfyWicgIYf0bcoan7IV1nEmNF/ABc3Ez8PHe84xFBLTaOjZZWRB9+
+         wlhWkj8eqRwlJfMvsDghUi8iSjFMDIo/lWhRUhsU+TORra29Sc07WWEqRJ4TjFCNodmu
+         XA6mX1NFq6x72x44a0l4GUJPwYU1E/5aooPoD4qCehmxN8HkGW+EJMpjZ9BmSzvupDcv
+         h0pDRVwPrcwj0/ptoV/x9wQ0ETbOf6s09lVpDDyAyqzJmLcqL8F7NurZYL2KpcIQPuJE
+         fT1Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=TXHkSQfYP+HcG+tZ7hnVepbi7ZCRYkZi1Hu/yGOuK5g=;
-        b=NZKx4rH3O6Olz0AmvPigPAVQIqRLf/d3J5PQb6gZOo3lZ5djUS2QhUu/szazVy137o
-         9XBeVrfSF3s8dOUxoI7F9h+RJl/RXYFT4HXoywLcoBc46HBokyuER06P9KIG3r6YNVeQ
-         esQCPImAVz976xOV4DuiJ1WG1Zyd3wJfmtgnqAi+IgyfI4r85tAAZc+cpRGJYOiigqSq
-         fYeRATaprfPBBJ406dLC7qYFmGQLX6n6lgh3YPmNQpJvze9UGnX+UExhGs51eoZgPH1T
-         yYoyC8Ypz1wbTDqhSOp6fsft71zkeBrdz4l2VQTmcFs55oIuMA+Usvb0ga+CnCREbkBd
-         6P1Q==
-X-Gm-Message-State: AOAM5328gwQyC1/0buUkIeD0UQLeLemTPNxwTYif/pHXlU/fGiicqgtM
-        RrbXP1LKN4vJOxfHUkpDITQ=
-X-Google-Smtp-Source: ABdhPJyWNq8Lkq1HY3NjmQ3RLuBOUx6PRVtZvG76hvw7hiM7m4G5AjUWogI0siYJJh86FUR0pnfKrw==
-X-Received: by 2002:a17:906:d103:: with SMTP id b3mr1699634ejz.60.1611612266370;
-        Mon, 25 Jan 2021 14:04:26 -0800 (PST)
+        bh=qg/4up8Zvai8vksH4rAIXOtpatM8jVNOUkUD0I41kNQ=;
+        b=SVhraflzOa8R4cpUEYgDtdppaz1Hpi4OOa0LYaxgvJusfKYWETZT+8eHo3E6zwEFRk
+         8hz2tECP7T/syIBRQAhfz9XpT74LmiJhcR8YpNssZMe9gs3xjcuDheci8XhrMAFXINgR
+         NWVTnG9xFInDG2o3GkuBfNm17fveXLHcwwrGybQW9aOYFK6L+QAVbwlgM1vFGfTC43SJ
+         NNc8UVizN9hJZpskkvN7C8ks1B1WJMsJccjJjkNkI+NSC2J+7afZvNmMflXuN3kCRorl
+         iruQMY3WzvOA07k576giabgw4DYl9CNuzdYlf2n31kOwgX0PN3SE13KQI2EMwKSIHKd/
+         Cc+A==
+X-Gm-Message-State: AOAM532E6PhAnod4cGh64G0ZPR7x2kIV8U/ArFYHoMSFVXw/emAqPYkF
+        2mnsjTzxsacrSgyck5vHQqU=
+X-Google-Smtp-Source: ABdhPJwQui3PCKX/AfYm07tB3q3IZiCStM4LDhYCVBsv9OAOaKuskZmoFwpFPvJo4m+4muYbd4D/pA==
+X-Received: by 2002:aa7:ca51:: with SMTP id j17mr2274339edt.124.1611612267842;
+        Mon, 25 Jan 2021 14:04:27 -0800 (PST)
 Received: from localhost.localdomain (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id s13sm1760555edi.92.2021.01.25.14.04.24
+        by smtp.gmail.com with ESMTPSA id s13sm1760555edi.92.2021.01.25.14.04.26
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Jan 2021 14:04:25 -0800 (PST)
+        Mon, 25 Jan 2021 14:04:27 -0800 (PST)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
@@ -57,9 +57,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Alexandre Belloni <alexandre.belloni@bootlin.com>,
         Vladimir Oltean <vladimir.oltean@nxp.com>,
         UNGLinuxDriver@microchip.com
-Subject: [PATCH v7 net-next 02/11] net: mscc: ocelot: export VCAP structures to include/soc/mscc
-Date:   Tue, 26 Jan 2021 00:03:24 +0200
-Message-Id: <20210125220333.1004365-3-olteanv@gmail.com>
+Subject: [PATCH v7 net-next 03/11] net: mscc: ocelot: store a namespaced VCAP filter ID
+Date:   Tue, 26 Jan 2021 00:03:25 +0200
+Message-Id: <20210125220333.1004365-4-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210125220333.1004365-1-olteanv@gmail.com>
 References: <20210125220333.1004365-1-olteanv@gmail.com>
@@ -71,31 +71,33 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-The Felix driver will need to preinstall some VCAP filters for its
-tag_8021q implementation (outside of the tc-flower offload logic), so
-these need to be exported to the common includes.
+We will be adding some private VCAP filters that should not interfere in
+any way with the filters added using tc-flower. So we need to allocate
+some IDs which will not be used by tc.
+
+Currently ocelot uses an u32 id derived from the flow cookie, which in
+itself is an unsigned long. This is a problem in itself, since on 64 bit
+systems, sizeof(unsigned long)=8, so the driver is already truncating
+these.
+
+Create a struct ocelot_vcap_id which contains the full unsigned long
+cookie from tc, as well as a boolean that is supposed to namespace the
+filters added by tc with the ones that aren't.
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
 ---
-changes in v7:
-none.
+Changes in v7:
+None.
 
-changes in v6:
-none.
+Changes in v6:
+None.
 
 Changes in v5:
 None.
 
-Changes in v3:
-None.
-
-Changes in v2:
-Patch is new.
-
 Changes in v4:
-Use EXPORT_SYMBOL for ocelot_vcap_filter_add and ocelot_vcap_filter_del
-so that building as module does not fail.
+None.
 
 Changes in v3:
 None.
@@ -103,649 +105,135 @@ None.
 Changes in v2:
 Patch is new.
 
- drivers/net/ethernet/mscc/ocelot_net.c  |   1 +
- drivers/net/ethernet/mscc/ocelot_vcap.c |   2 +
- drivers/net/ethernet/mscc/ocelot_vcap.h | 293 +-----------------------
- include/soc/mscc/ocelot_vcap.h          | 289 +++++++++++++++++++++++
- 4 files changed, 294 insertions(+), 291 deletions(-)
+ drivers/net/ethernet/mscc/ocelot_flower.c |  7 ++++---
+ drivers/net/ethernet/mscc/ocelot_vcap.c   | 16 ++++++++++++----
+ drivers/net/ethernet/mscc/ocelot_vcap.h   |  3 ++-
+ include/soc/mscc/ocelot_vcap.h            |  7 ++++++-
+ 4 files changed, 24 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/net/ethernet/mscc/ocelot_net.c b/drivers/net/ethernet/mscc/ocelot_net.c
-index 9553eb3e441c..05142803a463 100644
---- a/drivers/net/ethernet/mscc/ocelot_net.c
-+++ b/drivers/net/ethernet/mscc/ocelot_net.c
-@@ -9,6 +9,7 @@
-  */
+diff --git a/drivers/net/ethernet/mscc/ocelot_flower.c b/drivers/net/ethernet/mscc/ocelot_flower.c
+index 729495a1a77e..c3ac026f6aea 100644
+--- a/drivers/net/ethernet/mscc/ocelot_flower.c
++++ b/drivers/net/ethernet/mscc/ocelot_flower.c
+@@ -622,7 +622,8 @@ static int ocelot_flower_parse(struct ocelot *ocelot, int port, bool ingress,
+ 	int ret;
  
- #include <linux/if_bridge.h>
-+#include <net/pkt_cls.h>
- #include "ocelot.h"
- #include "ocelot_vcap.h"
+ 	filter->prio = f->common.prio;
+-	filter->id = f->cookie;
++	filter->id.cookie = f->cookie;
++	filter->id.tc_offload = true;
+ 
+ 	ret = ocelot_flower_parse_action(ocelot, port, ingress, f, filter);
+ 	if (ret)
+@@ -717,7 +718,7 @@ int ocelot_cls_flower_destroy(struct ocelot *ocelot, int port,
+ 
+ 	block = &ocelot->block[block_id];
+ 
+-	filter = ocelot_vcap_block_find_filter_by_id(block, f->cookie);
++	filter = ocelot_vcap_block_find_filter_by_id(block, f->cookie, true);
+ 	if (!filter)
+ 		return 0;
+ 
+@@ -741,7 +742,7 @@ int ocelot_cls_flower_stats(struct ocelot *ocelot, int port,
+ 
+ 	block = &ocelot->block[block_id];
+ 
+-	filter = ocelot_vcap_block_find_filter_by_id(block, f->cookie);
++	filter = ocelot_vcap_block_find_filter_by_id(block, f->cookie, true);
+ 	if (!filter || filter->type == OCELOT_VCAP_FILTER_DUMMY)
+ 		return 0;
  
 diff --git a/drivers/net/ethernet/mscc/ocelot_vcap.c b/drivers/net/ethernet/mscc/ocelot_vcap.c
-index d8c778ee6f1b..489bf16362a7 100644
+index 489bf16362a7..b82fd4103a68 100644
 --- a/drivers/net/ethernet/mscc/ocelot_vcap.c
 +++ b/drivers/net/ethernet/mscc/ocelot_vcap.c
-@@ -1150,6 +1150,7 @@ int ocelot_vcap_filter_add(struct ocelot *ocelot,
- 	vcap_entry_set(ocelot, index, filter);
- 	return 0;
+@@ -959,6 +959,12 @@ static void ocelot_vcap_filter_add_to_block(struct ocelot *ocelot,
+ 	list_add(&filter->list, pos->prev);
  }
-+EXPORT_SYMBOL(ocelot_vcap_filter_add);
  
- static void ocelot_vcap_block_remove_filter(struct ocelot *ocelot,
- 					    struct ocelot_vcap_block *block,
-@@ -1204,6 +1205,7 @@ int ocelot_vcap_filter_del(struct ocelot *ocelot,
++static bool ocelot_vcap_filter_equal(const struct ocelot_vcap_filter *a,
++				     const struct ocelot_vcap_filter *b)
++{
++	return !memcmp(&a->id, &b->id, sizeof(struct ocelot_vcap_id));
++}
++
+ static int ocelot_vcap_block_get_filter_index(struct ocelot_vcap_block *block,
+ 					      struct ocelot_vcap_filter *filter)
+ {
+@@ -966,7 +972,7 @@ static int ocelot_vcap_block_get_filter_index(struct ocelot_vcap_block *block,
+ 	int index = 0;
  
- 	return 0;
+ 	list_for_each_entry(tmp, &block->rules, list) {
+-		if (filter->id == tmp->id)
++		if (ocelot_vcap_filter_equal(filter, tmp))
+ 			return index;
+ 		index++;
+ 	}
+@@ -991,12 +997,14 @@ ocelot_vcap_block_find_filter_by_index(struct ocelot_vcap_block *block,
  }
-+EXPORT_SYMBOL(ocelot_vcap_filter_del);
  
- int ocelot_vcap_filter_stats_update(struct ocelot *ocelot,
- 				    struct ocelot_vcap_filter *filter)
+ struct ocelot_vcap_filter *
+-ocelot_vcap_block_find_filter_by_id(struct ocelot_vcap_block *block, int id)
++ocelot_vcap_block_find_filter_by_id(struct ocelot_vcap_block *block, int cookie,
++				    bool tc_offload)
+ {
+ 	struct ocelot_vcap_filter *filter;
+ 
+ 	list_for_each_entry(filter, &block->rules, list)
+-		if (filter->id == id)
++		if (filter->id.tc_offload == tc_offload &&
++		    filter->id.cookie == cookie)
+ 			return filter;
+ 
+ 	return NULL;
+@@ -1161,7 +1169,7 @@ static void ocelot_vcap_block_remove_filter(struct ocelot *ocelot,
+ 
+ 	list_for_each_safe(pos, q, &block->rules) {
+ 		tmp = list_entry(pos, struct ocelot_vcap_filter, list);
+-		if (tmp->id == filter->id) {
++		if (ocelot_vcap_filter_equal(filter, tmp)) {
+ 			if (tmp->block_id == VCAP_IS2 &&
+ 			    tmp->action.police_ena)
+ 				ocelot_vcap_policer_del(ocelot, block,
 diff --git a/drivers/net/ethernet/mscc/ocelot_vcap.h b/drivers/net/ethernet/mscc/ocelot_vcap.h
-index 82fd10581a14..cfc8b976d1de 100644
+index cfc8b976d1de..3b0c7916056e 100644
 --- a/drivers/net/ethernet/mscc/ocelot_vcap.h
 +++ b/drivers/net/ethernet/mscc/ocelot_vcap.h
-@@ -7,300 +7,11 @@
- #define _MSCC_OCELOT_VCAP_H_
- 
- #include "ocelot.h"
--#include "ocelot_police.h"
--#include <net/sch_generic.h>
--#include <net/pkt_cls.h>
-+#include <soc/mscc/ocelot_vcap.h>
-+#include <net/flow_offload.h>
- 
- #define OCELOT_POLICER_DISCARD 0x17f
- 
--struct ocelot_ipv4 {
--	u8 addr[4];
--};
--
--enum ocelot_vcap_bit {
--	OCELOT_VCAP_BIT_ANY,
--	OCELOT_VCAP_BIT_0,
--	OCELOT_VCAP_BIT_1
--};
--
--struct ocelot_vcap_u8 {
--	u8 value[1];
--	u8 mask[1];
--};
--
--struct ocelot_vcap_u16 {
--	u8 value[2];
--	u8 mask[2];
--};
--
--struct ocelot_vcap_u24 {
--	u8 value[3];
--	u8 mask[3];
--};
--
--struct ocelot_vcap_u32 {
--	u8 value[4];
--	u8 mask[4];
--};
--
--struct ocelot_vcap_u40 {
--	u8 value[5];
--	u8 mask[5];
--};
--
--struct ocelot_vcap_u48 {
--	u8 value[6];
--	u8 mask[6];
--};
--
--struct ocelot_vcap_u64 {
--	u8 value[8];
--	u8 mask[8];
--};
--
--struct ocelot_vcap_u128 {
--	u8 value[16];
--	u8 mask[16];
--};
--
--struct ocelot_vcap_vid {
--	u16 value;
--	u16 mask;
--};
--
--struct ocelot_vcap_ipv4 {
--	struct ocelot_ipv4 value;
--	struct ocelot_ipv4 mask;
--};
--
--struct ocelot_vcap_udp_tcp {
--	u16 value;
--	u16 mask;
--};
--
--struct ocelot_vcap_port {
--	u8 value;
--	u8 mask;
--};
--
--enum ocelot_vcap_key_type {
--	OCELOT_VCAP_KEY_ANY,
--	OCELOT_VCAP_KEY_ETYPE,
--	OCELOT_VCAP_KEY_LLC,
--	OCELOT_VCAP_KEY_SNAP,
--	OCELOT_VCAP_KEY_ARP,
--	OCELOT_VCAP_KEY_IPV4,
--	OCELOT_VCAP_KEY_IPV6
--};
--
--struct ocelot_vcap_key_vlan {
--	struct ocelot_vcap_vid vid;    /* VLAN ID (12 bit) */
--	struct ocelot_vcap_u8  pcp;    /* PCP (3 bit) */
--	enum ocelot_vcap_bit dei;    /* DEI */
--	enum ocelot_vcap_bit tagged; /* Tagged/untagged frame */
--};
--
--struct ocelot_vcap_key_etype {
--	struct ocelot_vcap_u48 dmac;
--	struct ocelot_vcap_u48 smac;
--	struct ocelot_vcap_u16 etype;
--	struct ocelot_vcap_u16 data; /* MAC data */
--};
--
--struct ocelot_vcap_key_llc {
--	struct ocelot_vcap_u48 dmac;
--	struct ocelot_vcap_u48 smac;
--
--	/* LLC header: DSAP at byte 0, SSAP at byte 1, Control at byte 2 */
--	struct ocelot_vcap_u32 llc;
--};
--
--struct ocelot_vcap_key_snap {
--	struct ocelot_vcap_u48 dmac;
--	struct ocelot_vcap_u48 smac;
--
--	/* SNAP header: Organization Code at byte 0, Type at byte 3 */
--	struct ocelot_vcap_u40 snap;
--};
--
--struct ocelot_vcap_key_arp {
--	struct ocelot_vcap_u48 smac;
--	enum ocelot_vcap_bit arp;	/* Opcode ARP/RARP */
--	enum ocelot_vcap_bit req;	/* Opcode request/reply */
--	enum ocelot_vcap_bit unknown;    /* Opcode unknown */
--	enum ocelot_vcap_bit smac_match; /* Sender MAC matches SMAC */
--	enum ocelot_vcap_bit dmac_match; /* Target MAC matches DMAC */
--
--	/**< Protocol addr. length 4, hardware length 6 */
--	enum ocelot_vcap_bit length;
--
--	enum ocelot_vcap_bit ip;       /* Protocol address type IP */
--	enum  ocelot_vcap_bit ethernet; /* Hardware address type Ethernet */
--	struct ocelot_vcap_ipv4 sip;     /* Sender IP address */
--	struct ocelot_vcap_ipv4 dip;     /* Target IP address */
--};
--
--struct ocelot_vcap_key_ipv4 {
--	enum ocelot_vcap_bit ttl;      /* TTL zero */
--	enum ocelot_vcap_bit fragment; /* Fragment */
--	enum ocelot_vcap_bit options;  /* Header options */
--	struct ocelot_vcap_u8 ds;
--	struct ocelot_vcap_u8 proto;      /* Protocol */
--	struct ocelot_vcap_ipv4 sip;      /* Source IP address */
--	struct ocelot_vcap_ipv4 dip;      /* Destination IP address */
--	struct ocelot_vcap_u48 data;      /* Not UDP/TCP: IP data */
--	struct ocelot_vcap_udp_tcp sport; /* UDP/TCP: Source port */
--	struct ocelot_vcap_udp_tcp dport; /* UDP/TCP: Destination port */
--	enum ocelot_vcap_bit tcp_fin;
--	enum ocelot_vcap_bit tcp_syn;
--	enum ocelot_vcap_bit tcp_rst;
--	enum ocelot_vcap_bit tcp_psh;
--	enum ocelot_vcap_bit tcp_ack;
--	enum ocelot_vcap_bit tcp_urg;
--	enum ocelot_vcap_bit sip_eq_dip;     /* SIP equals DIP  */
--	enum ocelot_vcap_bit sport_eq_dport; /* SPORT equals DPORT  */
--	enum ocelot_vcap_bit seq_zero;       /* TCP sequence number is zero */
--};
--
--struct ocelot_vcap_key_ipv6 {
--	struct ocelot_vcap_u8 proto; /* IPv6 protocol */
--	struct ocelot_vcap_u128 sip; /* IPv6 source (byte 0-7 ignored) */
--	struct ocelot_vcap_u128 dip; /* IPv6 destination (byte 0-7 ignored) */
--	enum ocelot_vcap_bit ttl;  /* TTL zero */
--	struct ocelot_vcap_u8 ds;
--	struct ocelot_vcap_u48 data; /* Not UDP/TCP: IP data */
--	struct ocelot_vcap_udp_tcp sport;
--	struct ocelot_vcap_udp_tcp dport;
--	enum ocelot_vcap_bit tcp_fin;
--	enum ocelot_vcap_bit tcp_syn;
--	enum ocelot_vcap_bit tcp_rst;
--	enum ocelot_vcap_bit tcp_psh;
--	enum ocelot_vcap_bit tcp_ack;
--	enum ocelot_vcap_bit tcp_urg;
--	enum ocelot_vcap_bit sip_eq_dip;     /* SIP equals DIP  */
--	enum ocelot_vcap_bit sport_eq_dport; /* SPORT equals DPORT  */
--	enum ocelot_vcap_bit seq_zero;       /* TCP sequence number is zero */
--};
--
--enum ocelot_mask_mode {
--	OCELOT_MASK_MODE_NONE,
--	OCELOT_MASK_MODE_PERMIT_DENY,
--	OCELOT_MASK_MODE_POLICY,
--	OCELOT_MASK_MODE_REDIRECT,
--};
--
--enum ocelot_es0_tag {
--	OCELOT_NO_ES0_TAG,
--	OCELOT_ES0_TAG,
--	OCELOT_FORCE_PORT_TAG,
--	OCELOT_FORCE_UNTAG,
--};
--
--enum ocelot_tag_tpid_sel {
--	OCELOT_TAG_TPID_SEL_8021Q,
--	OCELOT_TAG_TPID_SEL_8021AD,
--};
--
--struct ocelot_vcap_action {
--	union {
--		/* VCAP ES0 */
--		struct {
--			enum ocelot_es0_tag push_outer_tag;
--			enum ocelot_es0_tag push_inner_tag;
--			enum ocelot_tag_tpid_sel tag_a_tpid_sel;
--			int tag_a_vid_sel;
--			int tag_a_pcp_sel;
--			u16 vid_a_val;
--			u8 pcp_a_val;
--			u8 dei_a_val;
--			enum ocelot_tag_tpid_sel tag_b_tpid_sel;
--			int tag_b_vid_sel;
--			int tag_b_pcp_sel;
--			u16 vid_b_val;
--			u8 pcp_b_val;
--			u8 dei_b_val;
--		};
--
--		/* VCAP IS1 */
--		struct {
--			bool vid_replace_ena;
--			u16 vid;
--			bool vlan_pop_cnt_ena;
--			int vlan_pop_cnt;
--			bool pcp_dei_ena;
--			u8 pcp;
--			u8 dei;
--			bool qos_ena;
--			u8 qos_val;
--			u8 pag_override_mask;
--			u8 pag_val;
--		};
--
--		/* VCAP IS2 */
--		struct {
--			bool cpu_copy_ena;
--			u8 cpu_qu_num;
--			enum ocelot_mask_mode mask_mode;
--			unsigned long port_mask;
--			bool police_ena;
--			struct ocelot_policer pol;
--			u32 pol_ix;
--		};
--	};
--};
--
--struct ocelot_vcap_stats {
--	u64 bytes;
--	u64 pkts;
--	u64 used;
--};
--
--enum ocelot_vcap_filter_type {
--	OCELOT_VCAP_FILTER_DUMMY,
--	OCELOT_VCAP_FILTER_PAG,
--	OCELOT_VCAP_FILTER_OFFLOAD,
--};
--
--struct ocelot_vcap_filter {
--	struct list_head list;
--
--	enum ocelot_vcap_filter_type type;
--	int block_id;
--	int goto_target;
--	int lookup;
--	u8 pag;
--	u16 prio;
--	u32 id;
--
--	struct ocelot_vcap_action action;
--	struct ocelot_vcap_stats stats;
--	/* For VCAP IS1 and IS2 */
--	unsigned long ingress_port_mask;
--	/* For VCAP ES0 */
--	struct ocelot_vcap_port ingress_port;
--	struct ocelot_vcap_port egress_port;
--
--	enum ocelot_vcap_bit dmac_mc;
--	enum ocelot_vcap_bit dmac_bc;
--	struct ocelot_vcap_key_vlan vlan;
--
--	enum ocelot_vcap_key_type key_type;
--	union {
--		/* OCELOT_VCAP_KEY_ANY: No specific fields */
--		struct ocelot_vcap_key_etype etype;
--		struct ocelot_vcap_key_llc llc;
--		struct ocelot_vcap_key_snap snap;
--		struct ocelot_vcap_key_arp arp;
--		struct ocelot_vcap_key_ipv4 ipv4;
--		struct ocelot_vcap_key_ipv6 ipv6;
--	} key;
--};
--
--int ocelot_vcap_filter_add(struct ocelot *ocelot,
--			   struct ocelot_vcap_filter *rule,
--			   struct netlink_ext_ack *extack);
--int ocelot_vcap_filter_del(struct ocelot *ocelot,
--			   struct ocelot_vcap_filter *rule);
+@@ -15,7 +15,8 @@
  int ocelot_vcap_filter_stats_update(struct ocelot *ocelot,
  				    struct ocelot_vcap_filter *rule);
  struct ocelot_vcap_filter *
+-ocelot_vcap_block_find_filter_by_id(struct ocelot_vcap_block *block, int id);
++ocelot_vcap_block_find_filter_by_id(struct ocelot_vcap_block *block, int id,
++				    bool tc_offload);
+ 
+ void ocelot_detect_vcap_constants(struct ocelot *ocelot);
+ int ocelot_vcap_init(struct ocelot *ocelot);
 diff --git a/include/soc/mscc/ocelot_vcap.h b/include/soc/mscc/ocelot_vcap.h
-index 96300adf3648..7f1b82fba63c 100644
+index 7f1b82fba63c..76e01c927e17 100644
 --- a/include/soc/mscc/ocelot_vcap.h
 +++ b/include/soc/mscc/ocelot_vcap.h
-@@ -400,4 +400,293 @@ enum vcap_es0_action_field {
- 	VCAP_ES0_ACT_HIT_STICKY,
+@@ -648,6 +648,11 @@ enum ocelot_vcap_filter_type {
+ 	OCELOT_VCAP_FILTER_OFFLOAD,
  };
  
-+struct ocelot_ipv4 {
-+	u8 addr[4];
++struct ocelot_vcap_id {
++	unsigned long cookie;
++	bool tc_offload;
 +};
 +
-+enum ocelot_vcap_bit {
-+	OCELOT_VCAP_BIT_ANY,
-+	OCELOT_VCAP_BIT_0,
-+	OCELOT_VCAP_BIT_1
-+};
-+
-+struct ocelot_vcap_u8 {
-+	u8 value[1];
-+	u8 mask[1];
-+};
-+
-+struct ocelot_vcap_u16 {
-+	u8 value[2];
-+	u8 mask[2];
-+};
-+
-+struct ocelot_vcap_u24 {
-+	u8 value[3];
-+	u8 mask[3];
-+};
-+
-+struct ocelot_vcap_u32 {
-+	u8 value[4];
-+	u8 mask[4];
-+};
-+
-+struct ocelot_vcap_u40 {
-+	u8 value[5];
-+	u8 mask[5];
-+};
-+
-+struct ocelot_vcap_u48 {
-+	u8 value[6];
-+	u8 mask[6];
-+};
-+
-+struct ocelot_vcap_u64 {
-+	u8 value[8];
-+	u8 mask[8];
-+};
-+
-+struct ocelot_vcap_u128 {
-+	u8 value[16];
-+	u8 mask[16];
-+};
-+
-+struct ocelot_vcap_vid {
-+	u16 value;
-+	u16 mask;
-+};
-+
-+struct ocelot_vcap_ipv4 {
-+	struct ocelot_ipv4 value;
-+	struct ocelot_ipv4 mask;
-+};
-+
-+struct ocelot_vcap_udp_tcp {
-+	u16 value;
-+	u16 mask;
-+};
-+
-+struct ocelot_vcap_port {
-+	u8 value;
-+	u8 mask;
-+};
-+
-+enum ocelot_vcap_key_type {
-+	OCELOT_VCAP_KEY_ANY,
-+	OCELOT_VCAP_KEY_ETYPE,
-+	OCELOT_VCAP_KEY_LLC,
-+	OCELOT_VCAP_KEY_SNAP,
-+	OCELOT_VCAP_KEY_ARP,
-+	OCELOT_VCAP_KEY_IPV4,
-+	OCELOT_VCAP_KEY_IPV6
-+};
-+
-+struct ocelot_vcap_key_vlan {
-+	struct ocelot_vcap_vid vid;    /* VLAN ID (12 bit) */
-+	struct ocelot_vcap_u8  pcp;    /* PCP (3 bit) */
-+	enum ocelot_vcap_bit dei;    /* DEI */
-+	enum ocelot_vcap_bit tagged; /* Tagged/untagged frame */
-+};
-+
-+struct ocelot_vcap_key_etype {
-+	struct ocelot_vcap_u48 dmac;
-+	struct ocelot_vcap_u48 smac;
-+	struct ocelot_vcap_u16 etype;
-+	struct ocelot_vcap_u16 data; /* MAC data */
-+};
-+
-+struct ocelot_vcap_key_llc {
-+	struct ocelot_vcap_u48 dmac;
-+	struct ocelot_vcap_u48 smac;
-+
-+	/* LLC header: DSAP at byte 0, SSAP at byte 1, Control at byte 2 */
-+	struct ocelot_vcap_u32 llc;
-+};
-+
-+struct ocelot_vcap_key_snap {
-+	struct ocelot_vcap_u48 dmac;
-+	struct ocelot_vcap_u48 smac;
-+
-+	/* SNAP header: Organization Code at byte 0, Type at byte 3 */
-+	struct ocelot_vcap_u40 snap;
-+};
-+
-+struct ocelot_vcap_key_arp {
-+	struct ocelot_vcap_u48 smac;
-+	enum ocelot_vcap_bit arp;	/* Opcode ARP/RARP */
-+	enum ocelot_vcap_bit req;	/* Opcode request/reply */
-+	enum ocelot_vcap_bit unknown;    /* Opcode unknown */
-+	enum ocelot_vcap_bit smac_match; /* Sender MAC matches SMAC */
-+	enum ocelot_vcap_bit dmac_match; /* Target MAC matches DMAC */
-+
-+	/**< Protocol addr. length 4, hardware length 6 */
-+	enum ocelot_vcap_bit length;
-+
-+	enum ocelot_vcap_bit ip;       /* Protocol address type IP */
-+	enum  ocelot_vcap_bit ethernet; /* Hardware address type Ethernet */
-+	struct ocelot_vcap_ipv4 sip;     /* Sender IP address */
-+	struct ocelot_vcap_ipv4 dip;     /* Target IP address */
-+};
-+
-+struct ocelot_vcap_key_ipv4 {
-+	enum ocelot_vcap_bit ttl;      /* TTL zero */
-+	enum ocelot_vcap_bit fragment; /* Fragment */
-+	enum ocelot_vcap_bit options;  /* Header options */
-+	struct ocelot_vcap_u8 ds;
-+	struct ocelot_vcap_u8 proto;      /* Protocol */
-+	struct ocelot_vcap_ipv4 sip;      /* Source IP address */
-+	struct ocelot_vcap_ipv4 dip;      /* Destination IP address */
-+	struct ocelot_vcap_u48 data;      /* Not UDP/TCP: IP data */
-+	struct ocelot_vcap_udp_tcp sport; /* UDP/TCP: Source port */
-+	struct ocelot_vcap_udp_tcp dport; /* UDP/TCP: Destination port */
-+	enum ocelot_vcap_bit tcp_fin;
-+	enum ocelot_vcap_bit tcp_syn;
-+	enum ocelot_vcap_bit tcp_rst;
-+	enum ocelot_vcap_bit tcp_psh;
-+	enum ocelot_vcap_bit tcp_ack;
-+	enum ocelot_vcap_bit tcp_urg;
-+	enum ocelot_vcap_bit sip_eq_dip;     /* SIP equals DIP  */
-+	enum ocelot_vcap_bit sport_eq_dport; /* SPORT equals DPORT  */
-+	enum ocelot_vcap_bit seq_zero;       /* TCP sequence number is zero */
-+};
-+
-+struct ocelot_vcap_key_ipv6 {
-+	struct ocelot_vcap_u8 proto; /* IPv6 protocol */
-+	struct ocelot_vcap_u128 sip; /* IPv6 source (byte 0-7 ignored) */
-+	struct ocelot_vcap_u128 dip; /* IPv6 destination (byte 0-7 ignored) */
-+	enum ocelot_vcap_bit ttl;  /* TTL zero */
-+	struct ocelot_vcap_u8 ds;
-+	struct ocelot_vcap_u48 data; /* Not UDP/TCP: IP data */
-+	struct ocelot_vcap_udp_tcp sport;
-+	struct ocelot_vcap_udp_tcp dport;
-+	enum ocelot_vcap_bit tcp_fin;
-+	enum ocelot_vcap_bit tcp_syn;
-+	enum ocelot_vcap_bit tcp_rst;
-+	enum ocelot_vcap_bit tcp_psh;
-+	enum ocelot_vcap_bit tcp_ack;
-+	enum ocelot_vcap_bit tcp_urg;
-+	enum ocelot_vcap_bit sip_eq_dip;     /* SIP equals DIP  */
-+	enum ocelot_vcap_bit sport_eq_dport; /* SPORT equals DPORT  */
-+	enum ocelot_vcap_bit seq_zero;       /* TCP sequence number is zero */
-+};
-+
-+enum ocelot_mask_mode {
-+	OCELOT_MASK_MODE_NONE,
-+	OCELOT_MASK_MODE_PERMIT_DENY,
-+	OCELOT_MASK_MODE_POLICY,
-+	OCELOT_MASK_MODE_REDIRECT,
-+};
-+
-+enum ocelot_es0_tag {
-+	OCELOT_NO_ES0_TAG,
-+	OCELOT_ES0_TAG,
-+	OCELOT_FORCE_PORT_TAG,
-+	OCELOT_FORCE_UNTAG,
-+};
-+
-+enum ocelot_tag_tpid_sel {
-+	OCELOT_TAG_TPID_SEL_8021Q,
-+	OCELOT_TAG_TPID_SEL_8021AD,
-+};
-+
-+struct ocelot_vcap_action {
-+	union {
-+		/* VCAP ES0 */
-+		struct {
-+			enum ocelot_es0_tag push_outer_tag;
-+			enum ocelot_es0_tag push_inner_tag;
-+			enum ocelot_tag_tpid_sel tag_a_tpid_sel;
-+			int tag_a_vid_sel;
-+			int tag_a_pcp_sel;
-+			u16 vid_a_val;
-+			u8 pcp_a_val;
-+			u8 dei_a_val;
-+			enum ocelot_tag_tpid_sel tag_b_tpid_sel;
-+			int tag_b_vid_sel;
-+			int tag_b_pcp_sel;
-+			u16 vid_b_val;
-+			u8 pcp_b_val;
-+			u8 dei_b_val;
-+		};
-+
-+		/* VCAP IS1 */
-+		struct {
-+			bool vid_replace_ena;
-+			u16 vid;
-+			bool vlan_pop_cnt_ena;
-+			int vlan_pop_cnt;
-+			bool pcp_dei_ena;
-+			u8 pcp;
-+			u8 dei;
-+			bool qos_ena;
-+			u8 qos_val;
-+			u8 pag_override_mask;
-+			u8 pag_val;
-+		};
-+
-+		/* VCAP IS2 */
-+		struct {
-+			bool cpu_copy_ena;
-+			u8 cpu_qu_num;
-+			enum ocelot_mask_mode mask_mode;
-+			unsigned long port_mask;
-+			bool police_ena;
-+			struct ocelot_policer pol;
-+			u32 pol_ix;
-+		};
-+	};
-+};
-+
-+struct ocelot_vcap_stats {
-+	u64 bytes;
-+	u64 pkts;
-+	u64 used;
-+};
-+
-+enum ocelot_vcap_filter_type {
-+	OCELOT_VCAP_FILTER_DUMMY,
-+	OCELOT_VCAP_FILTER_PAG,
-+	OCELOT_VCAP_FILTER_OFFLOAD,
-+};
-+
-+struct ocelot_vcap_filter {
-+	struct list_head list;
-+
-+	enum ocelot_vcap_filter_type type;
-+	int block_id;
-+	int goto_target;
-+	int lookup;
-+	u8 pag;
-+	u16 prio;
-+	u32 id;
-+
-+	struct ocelot_vcap_action action;
-+	struct ocelot_vcap_stats stats;
-+	/* For VCAP IS1 and IS2 */
-+	unsigned long ingress_port_mask;
-+	/* For VCAP ES0 */
-+	struct ocelot_vcap_port ingress_port;
-+	struct ocelot_vcap_port egress_port;
-+
-+	enum ocelot_vcap_bit dmac_mc;
-+	enum ocelot_vcap_bit dmac_bc;
-+	struct ocelot_vcap_key_vlan vlan;
-+
-+	enum ocelot_vcap_key_type key_type;
-+	union {
-+		/* OCELOT_VCAP_KEY_ANY: No specific fields */
-+		struct ocelot_vcap_key_etype etype;
-+		struct ocelot_vcap_key_llc llc;
-+		struct ocelot_vcap_key_snap snap;
-+		struct ocelot_vcap_key_arp arp;
-+		struct ocelot_vcap_key_ipv4 ipv4;
-+		struct ocelot_vcap_key_ipv6 ipv6;
-+	} key;
-+};
-+
-+int ocelot_vcap_filter_add(struct ocelot *ocelot,
-+			   struct ocelot_vcap_filter *rule,
-+			   struct netlink_ext_ack *extack);
-+int ocelot_vcap_filter_del(struct ocelot *ocelot,
-+			   struct ocelot_vcap_filter *rule);
-+
- #endif /* _OCELOT_VCAP_H_ */
+ struct ocelot_vcap_filter {
+ 	struct list_head list;
+ 
+@@ -657,7 +662,7 @@ struct ocelot_vcap_filter {
+ 	int lookup;
+ 	u8 pag;
+ 	u16 prio;
+-	u32 id;
++	struct ocelot_vcap_id id;
+ 
+ 	struct ocelot_vcap_action action;
+ 	struct ocelot_vcap_stats stats;
 -- 
 2.25.1
 
