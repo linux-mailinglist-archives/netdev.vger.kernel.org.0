@@ -2,42 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 14299302893
-	for <lists+netdev@lfdr.de>; Mon, 25 Jan 2021 18:16:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 24CBA302891
+	for <lists+netdev@lfdr.de>; Mon, 25 Jan 2021 18:16:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730851AbhAYRPT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Jan 2021 12:15:19 -0500
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:44574 "EHLO
+        id S1730765AbhAYROq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Jan 2021 12:14:46 -0500
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:64180 "EHLO
         mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730539AbhAYRNE (ORCPT
+        by vger.kernel.org with ESMTP id S1730550AbhAYRNE (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 12:13:04 -0500
 Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 10PGqCST013946;
-        Mon, 25 Jan 2021 09:10:00 -0800
+        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 10PGq1p9013149;
+        Mon, 25 Jan 2021 09:10:07 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0220; bh=kD0BtR8HgmNU3Ca++S0TKaMVdBUFrAchxJ8ThT34+Ec=;
- b=lC24rZ0T32OJHt2xch7QnvCqCKznvckDYQjTfBkskp82bFFXJZInP18nBCUGPr6v4U2A
- sZ3FDqbUyHx9NOhLL1T6zUsptKjGWA+aW1PhIt4OG+PxOxzzHEeYVPCtvrguylaxyKOM
- nUyxJMyO0I2GS/0eWth5nMov0BmrVLR0yfYykbl/LQ6efxpfpVcZhVCer2tqN9q7cfhX
- JqDw1/79yOHJNVIDb81nr2rGV5zZu8jA98QegLyenh06WjmthJU+E1QjBMMYunuXtRdA
- S5aDtbKQiP/3lGQSUjgGueswMQyVR44wblWP0GMRZFDCZe6eGn1AJUaEbhodI4rbUDv6 oA== 
+ content-type; s=pfpt0220; bh=47f/KEtU2a6TdHsQvmaG/uzxhH9smbjZgwRSrqi2zqw=;
+ b=Mo5resxXQDw98zuCtHy69VsO6dALlksxeJwP2x2U/XVn3jyQN/2N+/jBUk8IQcAQ6hCT
+ +H96F9g01LKJrZmZK69mLKNzcz8q3crJ5IoZn9zWtuEvLeYMPkenm7gyHhMglKd1cwdn
+ V3tRvAhCjxsec4iZE/n8IdaTBk2pYdQegSpNygxLJGIJ+tH1erYyI7+4YHGYCi1R8jck
+ /pyX85GwZKIR7qmEw2hwONafjE2vsbHiuG+QwgmtvBsjriYEVCdGagO8hlIC5JnVP6dQ
+ jo2x4UnBUmlmi0HhLHgSKCKmpu7QQKN2ctBi+rnO+nMut6fAzpXHWZjW24a0vGeMXQRi Ow== 
 Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0b-0016f401.pphosted.com with ESMTP id 368m6ud2es-2
+        by mx0b-0016f401.pphosted.com with ESMTP id 368m6ud2fb-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Mon, 25 Jan 2021 09:09:59 -0800
-Received: from SC-EXCH01.marvell.com (10.93.176.81) by DC5-EXCH01.marvell.com
+        Mon, 25 Jan 2021 09:10:07 -0800
+Received: from DC5-EXCH01.marvell.com (10.69.176.38) by DC5-EXCH01.marvell.com
  (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 25 Jan
- 2021 09:09:58 -0800
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH01.marvell.com
- (10.93.176.81) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 25 Jan
- 2021 09:09:58 -0800
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 25 Jan 2021 09:09:58 -0800
+ 2021 09:10:05 -0800
+Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
+ (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
+ Transport; Mon, 25 Jan 2021 09:10:05 -0800
 Received: from stefan-pc.marvell.com (stefan-pc.marvell.com [10.5.25.21])
-        by maili.marvell.com (Postfix) with ESMTP id 4C6EB3F7041;
-        Mon, 25 Jan 2021 09:09:55 -0800 (PST)
+        by maili.marvell.com (Postfix) with ESMTP id 217E53F7044;
+        Mon, 25 Jan 2021 09:10:01 -0800 (PST)
 From:   <stefanc@marvell.com>
 To:     <netdev@vger.kernel.org>
 CC:     <thomas.petazzoni@bootlin.com>, <davem@davemloft.net>,
@@ -46,9 +43,9 @@ CC:     <thomas.petazzoni@bootlin.com>, <davem@davemloft.net>,
         <kuba@kernel.org>, <linux@armlinux.org.uk>, <mw@semihalf.com>,
         <andrew@lunn.ch>, <rmk+kernel@armlinux.org.uk>,
         <atenart@kernel.org>
-Subject: [PATCH v3 RFC net-next 12/19] net: mvpp2: enable global flow control
-Date:   Mon, 25 Jan 2021 19:07:59 +0200
-Message-ID: <1611594486-29431-13-git-send-email-stefanc@marvell.com>
+Subject: [PATCH v3 RFC net-next 14/19] net: mvpp2: add ethtool flow control configuration support
+Date:   Mon, 25 Jan 2021 19:08:01 +0200
+Message-ID: <1611594486-29431-15-git-send-email-stefanc@marvell.com>
 X-Mailer: git-send-email 1.9.1
 In-Reply-To: <1611594486-29431-1-git-send-email-stefanc@marvell.com>
 References: <1611594486-29431-1-git-send-email-stefanc@marvell.com>
@@ -62,80 +59,181 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Stefan Chulski <stefanc@marvell.com>
 
-This patch enables global flow control in FW and in the phylink validate mask.
+This patch add ethtool flow control configuration support.
+
+Tx flow control retrieved correctly by ethtool get function.
+FW per port ethtool configuration capability added.
+
+Patch also takes care about mtu change procedure, if PPv2 switch
+BM pools during mtu change.
 
 Signed-off-by: Stefan Chulski <stefanc@marvell.com>
 ---
- drivers/net/ethernet/marvell/mvpp2/mvpp2.h      |  3 +++
- drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 20 +++++++++++++++++++-
- 2 files changed, 22 insertions(+), 1 deletion(-)
+ drivers/net/ethernet/marvell/mvpp2/mvpp2.h      | 13 +++
+ drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 98 ++++++++++++++++++++
+ 2 files changed, 111 insertions(+)
 
 diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
-index f34e260..e9625fb 100644
+index 934d535..1d0d8f2 100644
 --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
 +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
-@@ -1022,6 +1022,9 @@ struct mvpp2 {
- 	/* CM3 SRAM pool */
- 	struct gen_pool *sram_pool;
+@@ -775,6 +775,19 @@
+ #define MSS_RXQ_TRESH_REG(q, fq)	(MSS_RXQ_TRESH_BASE + (((q) + (fq)) \
+ 					* MSS_RXQ_TRESH_OFFS))
  
-+	/* Global TX Flow Control config */
-+	bool global_tx_fc;
++#define MSS_BUF_POOL_BASE		0x40
++#define MSS_BUF_POOL_OFFS		4
++#define MSS_BUF_POOL_REG(id)		(MSS_BUF_POOL_BASE		\
++					+ (id) * MSS_BUF_POOL_OFFS)
 +
- 	bool custom_dma_mask;
- 
- 	/* Spinlocks for CM3 shared memory configuration */
++#define MSS_BUF_POOL_STOP_MASK		0xFFF
++#define MSS_BUF_POOL_START_MASK		(0xFFF << MSS_BUF_POOL_START_OFFS)
++#define MSS_BUF_POOL_START_OFFS		12
++#define MSS_BUF_POOL_PORTS_MASK		(0xF << MSS_BUF_POOL_PORTS_OFFS)
++#define MSS_BUF_POOL_PORTS_OFFS		24
++#define MSS_BUF_POOL_PORT_OFFS(id)	(0x1 <<				\
++					((id) + MSS_BUF_POOL_PORTS_OFFS))
++
+ #define MSS_RXQ_TRESH_START_MASK	0xFFFF
+ #define MSS_RXQ_TRESH_STOP_MASK		(0xFFFF << MSS_RXQ_TRESH_STOP_OFFS)
+ #define MSS_RXQ_TRESH_STOP_OFFS		16
 diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-index 64534f0..4d55344 100644
+index 36e33d5..eab7d12 100644
 --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
 +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
-@@ -5963,6 +5963,11 @@ static void mvpp2_phylink_validate(struct phylink_config *config,
- 	phylink_set(mask, Autoneg);
- 	phylink_set_port_modes(mask);
+@@ -846,6 +846,59 @@ static void mvpp2_rxq_disable_fc(struct mvpp2_port *port)
+ 	spin_unlock_irqrestore(&port->priv->mss_spinlock, flags);
+ }
+ 
++/* Routine disable/enable flow control for BM pool condition */
++static void mvpp2_bm_pool_update_fc(struct mvpp2_port *port,
++				    struct mvpp2_bm_pool *pool,
++				    bool en)
++{
++	int val, cm3_state;
++	unsigned long flags;
++
++	spin_lock_irqsave(&port->priv->mss_spinlock, flags);
++
++	/* Remove Flow control enable bit to prevent race between FW and Kernel
++	 * If Flow control were enabled, it would be re-enabled.
++	 */
++	val = mvpp2_cm3_read(port->priv, MSS_FC_COM_REG);
++	cm3_state = (val & FLOW_CONTROL_ENABLE_BIT);
++	val &= ~FLOW_CONTROL_ENABLE_BIT;
++	mvpp2_cm3_write(port->priv, MSS_FC_COM_REG, val);
++
++	/* Check if BM pool should be enabled/disable */
++	if (en) {
++		/* Set BM pool start and stop thresholds per port */
++		val = mvpp2_cm3_read(port->priv, MSS_BUF_POOL_REG(pool->id));
++		val |= MSS_BUF_POOL_PORT_OFFS(port->id);
++		val &= ~MSS_BUF_POOL_START_MASK;
++		val |= (MSS_THRESHOLD_START << MSS_BUF_POOL_START_OFFS);
++		val &= ~MSS_BUF_POOL_STOP_MASK;
++		val |= MSS_THRESHOLD_STOP;
++		mvpp2_cm3_write(port->priv, MSS_BUF_POOL_REG(pool->id), val);
++	} else {
++		/* Remove BM pool from the port */
++		val = mvpp2_cm3_read(port->priv, MSS_BUF_POOL_REG(pool->id));
++		val &= ~MSS_BUF_POOL_PORT_OFFS(port->id);
++
++		/* Zero BM pool start and stop thresholds to disable pool
++		 * flow control if pool empty (not used by any port)
++		 */
++		if (!pool->buf_num) {
++			val &= ~MSS_BUF_POOL_START_MASK;
++			val &= ~MSS_BUF_POOL_STOP_MASK;
++		}
++
++		mvpp2_cm3_write(port->priv, MSS_BUF_POOL_REG(pool->id), val);
++	}
++
++	/* Notify Firmware that Flow control config space ready for update */
++	val = mvpp2_cm3_read(port->priv, MSS_FC_COM_REG);
++	val |= FLOW_CONTROL_UPDATE_COMMAND_BIT;
++	val |= cm3_state;
++	mvpp2_cm3_write(port->priv, MSS_FC_COM_REG, val);
++
++	spin_unlock_irqrestore(&port->priv->mss_spinlock, flags);
++}
++
+ /* Release buffer to BM */
+ static inline void mvpp2_bm_pool_put(struct mvpp2_port *port, int pool,
+ 				     dma_addr_t buf_dma_addr,
+@@ -1176,6 +1229,16 @@ static int mvpp2_bm_update_mtu(struct net_device *dev, int mtu)
+ 		new_long_pool = MVPP2_BM_LONG;
+ 
+ 	if (new_long_pool != port->pool_long->id) {
++		if (port->tx_fc) {
++			if (pkt_size > MVPP2_BM_LONG_PKT_SIZE)
++				mvpp2_bm_pool_update_fc(port,
++							port->pool_short,
++							false);
++			else
++				mvpp2_bm_pool_update_fc(port, port->pool_long,
++							false);
++		}
++
+ 		/* Remove port from old short & long pool */
+ 		port->pool_long = mvpp2_bm_pool_use(port, port->pool_long->id,
+ 						    port->pool_long->pkt_size);
+@@ -1193,6 +1256,25 @@ static int mvpp2_bm_update_mtu(struct net_device *dev, int mtu)
+ 		mvpp2_swf_bm_pool_init(port);
+ 
+ 		mvpp2_set_hw_csum(port, new_long_pool);
++
++		if (port->tx_fc) {
++			if (pkt_size > MVPP2_BM_LONG_PKT_SIZE)
++				mvpp2_bm_pool_update_fc(port, port->pool_long,
++							true);
++			else
++				mvpp2_bm_pool_update_fc(port, port->pool_short,
++							true);
++		}
++
++		/* Update L4 checksum when jumbo enable/disable on port */
++		if (new_long_pool == MVPP2_BM_JUMBO && port->id != 0) {
++			dev->features &= ~(NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM);
++			dev->hw_features &= ~(NETIF_F_IP_CSUM |
++					      NETIF_F_IPV6_CSUM);
++		} else {
++			dev->features |= NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM;
++			dev->hw_features |= NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM;
++		}
+ 	}
+ 
+ out_set:
+@@ -6358,6 +6440,7 @@ static void mvpp2_mac_link_up(struct phylink_config *config,
+ {
+ 	struct mvpp2_port *port = mvpp2_phylink_to_port(config);
+ 	u32 val;
++	int i;
+ 
+ 	if (mvpp2_is_xlg(interface)) {
+ 		if (!phylink_autoneg_inband(mode)) {
+@@ -6408,6 +6491,21 @@ static void mvpp2_mac_link_up(struct phylink_config *config,
+ 			     val);
+ 	}
  
 +	if (port->priv->global_tx_fc) {
-+		phylink_set(mask, Pause);
-+		phylink_set(mask, Asym_Pause);
++		port->tx_fc = tx_pause;
++		if (tx_pause)
++			mvpp2_rxq_enable_fc(port);
++		else
++			mvpp2_rxq_disable_fc(port);
++		if (port->priv->percpu_pools) {
++			for (i = 0; i < port->nrxqs; i++)
++				mvpp2_bm_pool_update_fc(port, &port->priv->bm_pools[i], tx_pause);
++		} else {
++			mvpp2_bm_pool_update_fc(port, port->pool_long, tx_pause);
++			mvpp2_bm_pool_update_fc(port, port->pool_short, tx_pause);
++		}
 +	}
 +
- 	switch (state->interface) {
- 	case PHY_INTERFACE_MODE_10GBASER:
- 	case PHY_INTERFACE_MODE_XAUI:
-@@ -6981,7 +6986,7 @@ static int mvpp2_probe(struct platform_device *pdev)
- 	struct resource *res;
- 	void __iomem *base;
- 	int i, shared;
--	int err;
-+	int err, val;
+ 	mvpp2_port_enable(port);
  
- 	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
- 	if (!priv)
-@@ -7035,6 +7040,10 @@ static int mvpp2_probe(struct platform_device *pdev)
- 			return err;
- 		else if (err)
- 			dev_warn(&pdev->dev, "Fail to alloc CM3 SRAM\n");
-+
-+		/* Enable global Flow Control only if handler to SRAM not NULL */
-+		if (priv->cm3_base)
-+			priv->global_tx_fc = true;
- 	}
- 
- 	if (priv->hw_version != MVPP21 && dev_of_node(&pdev->dev)) {
-@@ -7205,6 +7214,15 @@ static int mvpp2_probe(struct platform_device *pdev)
- 		goto err_port_probe;
- 	}
- 
-+	/* Enable global flow control. In this stage global
-+	 * flow control enabled, but still disabled per port.
-+	 */
-+	if (priv->global_tx_fc && priv->hw_version != MVPP21) {
-+		val = mvpp2_cm3_read(priv, MSS_FC_COM_REG);
-+		val |= FLOW_CONTROL_ENABLE_BIT;
-+		mvpp2_cm3_write(priv, MSS_FC_COM_REG, val);
-+	}
-+
- 	mvpp2_dbgfs_init(priv, pdev->name);
- 
- 	platform_set_drvdata(pdev, priv);
+ 	mvpp2_egress_enable(port);
 -- 
 1.9.1
 
