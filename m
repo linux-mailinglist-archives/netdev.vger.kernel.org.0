@@ -2,118 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 790AF304925
-	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 20:55:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D1A630492B
+	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 20:55:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732995AbhAZFaK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jan 2021 00:30:10 -0500
-Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:17675 "EHLO
-        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731605AbhAYTYS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 14:24:18 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B600f1ab30000>; Mon, 25 Jan 2021 11:23:31 -0800
-Received: from HKMAIL101.nvidia.com (10.18.16.10) by HQMAIL105.nvidia.com
- (172.20.187.12) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 25 Jan
- 2021 19:23:30 +0000
-Received: from HKMAIL102.nvidia.com (10.18.16.11) by HKMAIL101.nvidia.com
- (10.18.16.10) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 25 Jan
- 2021 19:23:24 +0000
-Received: from NAM10-DM6-obe.outbound.protection.outlook.com (104.47.58.101)
- by HKMAIL102.nvidia.com (10.18.16.11) with Microsoft SMTP Server (TLS) id
- 15.0.1473.3 via Frontend Transport; Mon, 25 Jan 2021 19:23:24 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mLzpkqBe1D+ffNoeA8z3pjkh1tTdAYSGnD3clbFtiiPS7Bm4k3lFzPIDpMNjtGKTZvqqMTWPpOBQkhvsphMl9WrmPXlK2yaSxAM/f6c0TBHgIpnAN/ry3mM/5hYN9IO7i6FvmBWRisMTkZLg87X6Zxh8F5ukSPZ2wyxNnwHljogiizw/ZwbGnzS5PdisbSAFj/4U/cp4asS/dg0+NxKTGRphPFk7ABwJ7M2aXAnCok7ZyAMwMukYXx/xMx3HChjfMdYFltiSYprlv84tfB0FwFYnpgNkrK9kx4TAWn9/wgRlGt+2ywC8mWlI2V0pJoet2IwUY5piOO5G1LSZM6hjmA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6NfZn8/vgbvXLs39OV5+DLkRYC8rfCgVQ41wEMwYd+4=;
- b=GS9iAedl8mxwMbyD7KIU7tHR9k2zemWV23RZTRIkfna7PDOaImOeEbblPAcfAWyBgZBknAwQvhVMXHEAsm3Ty1WvoI7b+dZQOW05W/3eg7SuaeucDdnpChyDjDBYF36vUuq3u4TTIiHG0pqcKzCdmau8XhCEw7WfGpeJEJu8peliiJl7efeHZ47K5JnuFTMU2pq5iv+IC8cWB6xD9MxP0xYCkycGIv0w+EoGe17Rmbe34SN/c42S0WLq9NFKIlpDaQAWt3XoWrLeRvZqxHIDjiU4Fr6pZvgqjmuFQJ2Zn9KQk18AgyWwaB6nQb0MDVnpRPiqZnR/5G/yFzXQj3Ukwg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
- by DM6PR12MB4137.namprd12.prod.outlook.com (2603:10b6:5:218::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3784.16; Mon, 25 Jan
- 2021 19:23:21 +0000
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::546d:512c:72fa:4727]) by DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::546d:512c:72fa:4727%7]) with mapi id 15.20.3784.017; Mon, 25 Jan 2021
- 19:23:21 +0000
-Date:   Mon, 25 Jan 2021 15:23:19 -0400
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     Shiraz Saleem <shiraz.saleem@intel.com>
-CC:     <dledford@redhat.com>, <kuba@kernel.org>, <davem@davemloft.net>,
-        <linux-rdma@vger.kernel.org>, <gregkh@linuxfoundation.org>,
-        <netdev@vger.kernel.org>, <david.m.ertman@intel.com>,
-        <anthony.l.nguyen@intel.com>,
-        Mustafa Ismail <mustafa.ismail@intel.com>
-Subject: Re: [PATCH 09/22] RDMA/irdma: Implement HW Admin Queue OPs
-Message-ID: <20210125192319.GW4147@nvidia.com>
-References: <20210122234827.1353-1-shiraz.saleem@intel.com>
- <20210122234827.1353-10-shiraz.saleem@intel.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20210122234827.1353-10-shiraz.saleem@intel.com>
-X-ClientProxiedBy: BL0PR03CA0005.namprd03.prod.outlook.com
- (2603:10b6:208:2d::18) To DM6PR12MB3834.namprd12.prod.outlook.com
- (2603:10b6:5:14a::12)
+        id S2387628AbhAZFaX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jan 2021 00:30:23 -0500
+Received: from mail.kernel.org ([198.145.29.99]:53644 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1731841AbhAYTdV (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 25 Jan 2021 14:33:21 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 5B7C321D79;
+        Mon, 25 Jan 2021 19:32:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1611603152;
+        bh=+PPjBpw9iumIdesQ8VOZeMYYXa4HtrBTzlEGzCaGB6U=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=FsMpNpNw7fl/sXo4/N11KW3MC96IzllRElgwfNiD2ef84SmbaQTof7xw7jUG8qANy
+         wpCfhBFsdUGlju4CM6Y+9fS5zEmY/g/+WuPCMCzmd5EOmmYwYPwERGsONzFyazopW/
+         85ilj/4/TK9pJ2Uti6og/wCt/K3ngma7m2i7BGhAYkXRSbGOJMMNMBX5Hhf3zAsOmh
+         URfDhMi5XVgalmzqTspPcMZUKOh34oadfbGNrVxAkLD4wrFEZGGQOcdKsWTfFDzNzq
+         t3kUO/kA6D5VAxIvRxlr7FhN1bEnYMcrG9gwUT7X+Qkw62kUaazrstGKB2hmT8TSYZ
+         go3rahlNx7/JQ==
+Date:   Mon, 25 Jan 2021 11:32:31 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     David Ahern <dsahern@gmail.com>
+Cc:     Justin Iurman <justin.iurman@uliege.be>, netdev@vger.kernel.org,
+        davem@davemloft.net, alex aring <alex.aring@gmail.com>
+Subject: Re: [PATCH net 1/1] uapi: fix big endian definition of
+ ipv6_rpl_sr_hdr
+Message-ID: <20210125113231.3fac0e10@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <fd7957e7-ab5c-d2c2-9338-76879563460e@gmail.com>
+References: <20210121220044.22361-1-justin.iurman@uliege.be>
+        <20210121220044.22361-2-justin.iurman@uliege.be>
+        <20210123205444.5e1df187@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+        <55663307.1072450.1611482265804.JavaMail.zimbra@uliege.be>
+        <fd7957e7-ab5c-d2c2-9338-76879563460e@gmail.com>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from mlx.ziepe.ca (142.162.115.133) by BL0PR03CA0005.namprd03.prod.outlook.com (2603:10b6:208:2d::18) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3784.11 via Frontend Transport; Mon, 25 Jan 2021 19:23:20 +0000
-Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1l47SJ-006iL3-4P; Mon, 25 Jan 2021 15:23:19 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1611602611; bh=6NfZn8/vgbvXLs39OV5+DLkRYC8rfCgVQ41wEMwYd+4=;
-        h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:Date:
-         From:To:CC:Subject:Message-ID:References:Content-Type:
-         Content-Disposition:In-Reply-To:X-ClientProxiedBy:MIME-Version:
-         X-MS-Exchange-MessageSentRepresentingType;
-        b=fgl4q9/9432pZu3bMEAOWRFWa0l3cCsDyUx+LpBcWltuLANxLHh8GuX2Pd7plGfod
-         xcGYWHKGGpuyqSICLNv7UMccsFPgJweNda4JD2oLfPAaL45POoU3B7dIdpeMbXa/Jk
-         ZalCray+yrqXCZUY3Ga2QyktYpZhiYrDMiBkIO2fDuArWHYwUflMdvZbGItK2gdn9u
-         v5SucNga1cqeRU1nIGg9mXoeV3ynHf+evL/L4tjC1403GD76q2wERCbqQ2Jpe2v5PF
-         mm2PR3qTnZKGsIBOEeLMOdoH+ZbBZ950Ij9FOi4khqXBQ78/ZDxS6gVgYr5d+S5jwM
-         /nrusPJub7OtQ==
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 22, 2021 at 05:48:14PM -0600, Shiraz Saleem wrote:
-> +#define LS_64_1(val, bits)	((u64)(uintptr_t)(val) << (bits))
-> +#define RS_64_1(val, bits)	((u64)(uintptr_t)(val) >> (bits))
-> +#define LS_32_1(val, bits)	((u32)((val) << (bits)))
-> +#define RS_32_1(val, bits)	((u32)((val) >> (bits)))
-> +#define LS_64(val, field)	(((u64)(val) << field ## _S) & (field ## _M))
-> +#define RS_64(val, field)	((u64)((val) & field ## _M) >> field ## _S)
-> +#define LS_32(val, field)	(((val) << field ## _S) & (field ## _M))
-> +#define RS_32(val, field)	(((val) & field ## _M) >> field ## _S)
+On Sun, 24 Jan 2021 11:57:03 -0700 David Ahern wrote:
+> On 1/24/21 2:57 AM, Justin Iurman wrote:
+> >> De: "Jakub Kicinski" <kuba@kernel.org>
+> >> =C3=80: "Justin Iurman" <justin.iurman@uliege.be>
+> >> Cc: netdev@vger.kernel.org, davem@davemloft.net, "alex aring" <alex.ar=
+ing@gmail.com>
+> >> Envoy=C3=A9: Dimanche 24 Janvier 2021 05:54:44
+> >> Objet: Re: [PATCH net 1/1] uapi: fix big endian definition of ipv6_rpl=
+_sr_hdr =20
+> >  =20
+> >> On Thu, 21 Jan 2021 23:00:44 +0100 Justin Iurman wrote: =20
+> >>> Following RFC 6554 [1], the current order of fields is wrong for big
+> >>> endian definition. Indeed, here is how the header looks like:
+> >>>
+> >>> +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+> >>> |  Next Header  |  Hdr Ext Len  | Routing Type  | Segments Left |
+> >>> +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+> >>> | CmprI | CmprE |  Pad  |               Reserved                |
+> >>> +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+> >>>
+> >>> This patch reorders fields so that big endian definition is now corre=
+ct.
+> >>>
+> >>>   [1] https://tools.ietf.org/html/rfc6554#section-3
+> >>>
+> >>> Signed-off-by: Justin Iurman <justin.iurman@uliege.be> =20
+> >>
+> >> Are you sure? This looks right to me. =20
+> >=20
+> > AFAIK, yes. Did you mean the old (current) one looks right, or the new =
+one?=20
 
-Yikes, why can't this use the normal GENMASK/FIELD_PREP infrastructure
-like the other new drivers are now doing?
+Old one / existing is correct.
 
-EFA is not a perfect example, but EFA_GET/EFA_SET are the macros I
-would expect to see, just without the _MASK thing.
+> > If you meant the old/current one, well, I don't understand why the big =
+endian definition would look like this:
+> >=20
+> > #elif defined(__BIG_ENDIAN_BITFIELD)
+> > 	__u32	reserved:20,
+> > 		pad:4,
+> > 		cmpri:4,
+> > 		cmpre:4;
+> >=20
+> > When the RFC defines the header as follows:
+> >=20
+> > +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+> > | CmprI | CmprE |  Pad  |               Reserved                |
+> > +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+> >=20
+> > The little endian definition looks fine. But, when it comes to big endi=
+an, you define fields as you see them on the wire with the same order, righ=
+t? So the current big endian definition makes no sense. It looks like it wa=
+s a wrong mix with the little endian conversion.
 
-IBA_GET/SET shows how to do that pattern
+Well, you don't list the bit positions in the quote from the RFC, and
+I'm not familiar with the IETF parlor. I'm only comparing the LE
+definition with the BE. If you claim the BE is wrong, then the LE is
+wrong, too.
 
-> +#define FLD_LS_64(dev, val, field)	\
-> +	(((u64)(val) << (dev)->hw_shifts[field ## _S]) & (dev)->hw_masks[field ## _M])
-> +#define FLD_RS_64(dev, val, field)	\
-> +	((u64)((val) & (dev)->hw_masks[field ## _M]) >> (dev)->hw_shifts[field ## _S])
-> +#define FLD_LS_32(dev, val, field)	\
-> +	(((val) << (dev)->hw_shifts[field ## _S]) & (dev)->hw_masks[field ## _M])
-> +#define FLD_RS_32(dev, val, field)	\
-> +	((u64)((val) & (dev)->hw_masks[field ## _M]) >> (dev)->hw_shifts[field ## _S])
+> >>> diff --git a/include/uapi/linux/rpl.h b/include/uapi/linux/rpl.h
+> >>> index 1dccb55cf8c6..708adddf9f13 100644
+> >>> --- a/include/uapi/linux/rpl.h
+> >>> +++ b/include/uapi/linux/rpl.h
+> >>> @@ -28,10 +28,10 @@ struct ipv6_rpl_sr_hdr {
+> >>>  		pad:4,
+> >>>  		reserved1:16;
+> >>>  #elif defined(__BIG_ENDIAN_BITFIELD)
+> >>> -	__u32	reserved:20,
+> >>> +	__u32	cmpri:4,
+> >>> +		cmpre:4,
+> >>>  		pad:4,
+> >>> -		cmpri:4,
+> >>> -		cmpre:4;
+> >>> +		reserved:20;
+> >>>  #else
+> >>>  #error  "Please fix <asm/byteorder.h>"
+> >>>  #endif =20
+>=20
+> cross-checking with other headers - tcp and vxlan-gpe - this patch looks
+> correct.
 
-Is it because the register access is programmable? That shouldn't be a
-significant problem.
-
-> +#define IRDMA_CQPSQ_QHASH_QS_HANDLE_S 0
-> +#define IRDMA_CQPSQ_QHASH_QS_HANDLE_M ((u64)0x3ff << IRDMA_CQPSQ_QHASH_QS_HANDLE_S)
-
-All of this is particularly painful
-
-A bit of time with coccinelle would probably fix all of this
-
-Jason
+What are you cross-checking?
