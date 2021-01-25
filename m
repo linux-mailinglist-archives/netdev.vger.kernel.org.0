@@ -2,200 +2,306 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 193E63049EF
-	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 21:20:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DF8543049ED
+	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 21:20:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732096AbhAZFU3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jan 2021 00:20:29 -0500
-Received: from mail-eopbgr80091.outbound.protection.outlook.com ([40.107.8.91]:12165
-        "EHLO EUR04-VI1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1730328AbhAYPoH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 25 Jan 2021 10:44:07 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=fvpGLfNqOWKloeA2v95v68BFLd2Cd499JLo5bImp9aH5s2vZ4rtIPkaeVJWGnAYez0mKQsDwnf/NCo+C6w2C8lCWMBWDsxzExWV6h2A9sYznK0P2CQF8LWR6xiyh0DBbEoOyixux+1rr0aI8vJXXoe2fjQhOIVcEqqtXYF10WPe9S6sS9NELRNmzJDi3hqhdly9M9kcwoyeBWu3E+Pryhjp7x/Eaqd4mGrY1ERvLYjXc1tHkEWRi0JWSV91OsXiiq7STy6Z8SY0wPQh4FfpDIGZMfHo1QH0lixK2Elyocby4dKIkbOaeJK2s/sIVJ0lRTdWznSQY9zt96/IKYzgt+A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=h3/Fxap1DysBcMnQcZvquAQC0w2LccdslgETEt2RNj0=;
- b=cM2UN2QAutssrw+lius0F1DAkzXtAemfMWTrFxjx5oWcnNm+5xsT0QiTr3p8V1QIiIhnR8epgcpV6yKvzdy5yOvD4EUvLMcdt8hGspviuDORm4P96ItEoId+btLhe32/votqG/hL7LPLV/pSo1Wu2jXf0MQrO7qm64K9A3H+ifgDN6xlFOADwvpr+aM6M8O56AIM2sJzJoaByykCWtZMEoc5eGFpJEsWNm2xQFV5sl1lwqnLwDIv9soB4hP/0q+dEVQONiqZZnME0jFUIQB/7xiHIsUKyT7JYONVBnehRvEiKQ+ADTIPpN9KNMRh5Buj49gj1cfKrCW+UXAk33Cg8g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=prevas.dk; dmarc=pass action=none header.from=prevas.dk;
- dkim=pass header.d=prevas.dk; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=prevas.dk;
- s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=h3/Fxap1DysBcMnQcZvquAQC0w2LccdslgETEt2RNj0=;
- b=jRHQm49qvsd0Wz7WRNvhD0reTuxHAreQZ30m+cCSc9zSsVSF5TAm4k5KuaEJj3Cm2R8EEPUktk/XOKMUXspNfObFJbDtFEGouzqcc/QhRNPAzOf4HRdt/aEBuxPMAxx2w8lxfyu6fBK75ccba6TYM68qV24kjx4x4c6f37mwf90=
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none header.from=prevas.dk;
-Received: from AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:208:3f::10)
- by AM0PR10MB3331.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:208:18b::19) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3784.15; Mon, 25 Jan
- 2021 15:04:59 +0000
-Received: from AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::58b2:6a2a:b8f9:bc1a]) by AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM
- ([fe80::58b2:6a2a:b8f9:bc1a%3]) with mapi id 15.20.3784.017; Mon, 25 Jan 2021
- 15:04:59 +0000
-From:   Rasmus Villemoes <rasmus.villemoes@prevas.dk>
-To:     netdev@vger.kernel.org
-Cc:     Florian Fainelli <f.fainelli@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Tobias Waldekranz <tobias@waldekranz.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S . Miller" <davem@davemloft.net>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Rasmus Villemoes <rasmus.villemoes@prevas.dk>
-Subject: [PATCH net-next v2 2/2] net: dsa: mv88e6xxx: use mv88e6185_g1_vtu_loadpurge() for the 6250
-Date:   Mon, 25 Jan 2021 16:04:49 +0100
-Message-Id: <20210125150449.115032-3-rasmus.villemoes@prevas.dk>
-X-Mailer: git-send-email 2.23.0
-In-Reply-To: <20210125150449.115032-1-rasmus.villemoes@prevas.dk>
-References: <20210125150449.115032-1-rasmus.villemoes@prevas.dk>
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [5.186.115.188]
-X-ClientProxiedBy: AM5PR1001CA0048.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:206:15::25) To AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM
- (2603:10a6:208:3f::10)
+        id S1732058AbhAZFUY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jan 2021 00:20:24 -0500
+Received: from mail-41104.protonmail.ch ([185.70.41.104]:22811 "EHLO
+        mail-41104.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730244AbhAYPm3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 10:42:29 -0500
+Received: from mail-03.mail-europe.com (mail-03.mail-europe.com [91.134.188.129])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (4096 bits))
+        (No client certificate requested)
+        by mail-41104.protonmail.ch (Postfix) with ESMTPS id B4C442000FB5
+        for <netdev@vger.kernel.org>; Mon, 25 Jan 2021 15:11:00 +0000 (UTC)
+Authentication-Results: mail-41104.protonmail.ch;
+        dkim=pass (2048-bit key) header.d=pm.me header.i=@pm.me header.b="F91tdGQe"
+Date:   Mon, 25 Jan 2021 15:07:31 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
+        t=1611587255; bh=6gbNlVdgnHaUiyryohCgZd5ryQzBNr+5hI97WloEzqs=;
+        h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
+        b=F91tdGQeVEguAB9jLIWvfC1BVy1mAQ9X/NTKAZ6x7nxJC5lRm89/zGyXcqtDaiZXy
+         HvhpygRf31tL0n7vzl/bhzMIycIglvExF3T9T3Ui+HmKPlOKMgOHdtUkF1pbjipTPk
+         iRk+KC+zj6Zjo3+alMpgRftCfLAd1P9cef8/U7zH6tscm4Zpf037i/TQIUUIvS+r0d
+         OZ3f2Gx+/eEttGnWiYYqVl1OtYfqCzBU+hXssHhCPTs/WVpdnnJnV7SUTepX32cvDI
+         ijbQ4dJLZdAv+Bq2SFqF9LF95t2dOcmEf4M4lOScZkk4GAkVTtkx1jsLAInkRQ1n62
+         pllGZJfn9dUwA==
+To:     Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+From:   Alexander Lobakin <alobakin@pm.me>
+Cc:     Alexander Lobakin <alobakin@pm.me>,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, bjorn@kernel.org,
+        Magnus Karlsson <magnus.karlsson@intel.com>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>,
+        virtualization@lists.linux-foundation.org, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Reply-To: Alexander Lobakin <alobakin@pm.me>
+Subject: Re: [PATCH bpf-next v3 3/3] xsk: build skb by page
+Message-ID: <20210125150705.18376-1-alobakin@pm.me>
+In-Reply-To: <1611586627.1035807-1-xuanzhuo@linux.alibaba.com>
+References: <1611586627.1035807-1-xuanzhuo@linux.alibaba.com>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from prevas-ravi.prevas.se (5.186.115.188) by AM5PR1001CA0048.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:206:15::25) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3784.11 via Frontend Transport; Mon, 25 Jan 2021 15:04:58 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: b2bf1ddb-fd30-41aa-0340-08d8c142952a
-X-MS-TrafficTypeDiagnostic: AM0PR10MB3331:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <AM0PR10MB3331C1CAE23A72B29CE6FF4E93BD0@AM0PR10MB3331.EURPRD10.PROD.OUTLOOK.COM>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: YcUDoiz4Rc7FHk4rR6miotBIbKMdFp0o+NMtYkXfUWpphzaPGbsALlkcBkk3H+gLF9v5re8mEH46MbpmcQlJ/hLQNlzK/MzCSS3cVGSANKgs2tBiRymZRGSjc6dM/wSJBb9XKUIiVwHRxDSsrMC5MSuQSlpmEfiva6Ndeq2b+Wr2/d9hvINWSj6D1iXPTM0oU8Ek9EwMXuyox7uV7NFqgF4XtEs+3r225dpmJE21/ZPIdE3cWRds6p1GbOpP/+deL00JhTjRSKGqlfz71D/z8oc9xalsKNvGp47WANRm1zBfBTKXznWnK8cFfFAMbKM1WfgInuEvvUiJDTgi+KnoCsia92Gg4gVHPlDBShgA0iNwQanG+0J4XuTUPOPTr6yiVaOzFbM1524yG3+Dd/NcPaGWNWvCoU3KKBDvKvlY1hiv+U1AYhSbFCizeD7IMN2tQbIQ9MlT3lYmcMSLKzKarP11yxHxb2frx3lZGAANIWiKQ5A+YogO7Vfqp/D3sTzcocj7ta7YsaNPo43nK3UpmA==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(346002)(366004)(39850400004)(136003)(396003)(376002)(52116002)(83380400001)(4326008)(8676002)(6486002)(66476007)(5660300002)(66556008)(107886003)(66946007)(36756003)(54906003)(44832011)(6512007)(8976002)(16526019)(316002)(8936002)(478600001)(186003)(26005)(2906002)(6916009)(6666004)(1076003)(2616005)(86362001)(956004)(6506007);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?+UOcg5wnhfReMfFzCm0o/Pw8FzXYRkADX90Lvy1L57RwJZ+nhI+jkH/bvp4S?=
- =?us-ascii?Q?apQ1N3z+0E7YV4fz3WRykqGuOk78Rs4a7UtZPFC6Wjau4eW9CJdchg+ZJ3RR?=
- =?us-ascii?Q?9SLARev3kPyqfnQB31DJ1Ab/JsoTNnYb9xYwxnmPgkS0ZXGkBJsKKI293/Yr?=
- =?us-ascii?Q?9RrX0D54PTHp019EvK38D3nxQAGgxY0WYXI/ym28yRoV0s83XBMSuZ+pF7bN?=
- =?us-ascii?Q?JYlump8qxMWhbn+/1j7NdDPnYxNHvABg9tX2kklqC/pcKcCKROzUIe/k1APj?=
- =?us-ascii?Q?hcKfqbaJEwNdhsE1DMVkFtW+in6zC/grbg2EU81T3RsaBOcsMRi8ty1EgwAD?=
- =?us-ascii?Q?eFO1jOmEmHgPiAONMlcLgamizB6L1wGDWHF7i6vdYEP5e/kJpBYtNvThLjmT?=
- =?us-ascii?Q?WiM5PrkXuCg5sMCdAku0/cefD6HtEK+nqjsql0+dZa+Bbo5oZtbWEBeosoVt?=
- =?us-ascii?Q?syi+Sfnq1ZTynKhGDKNwskuMo8nqCgYLW1QdiJnIpEcBq63sljHsb/f2yNMK?=
- =?us-ascii?Q?RdlVT6xfhxxYmi7lZAifdnCItt+M5b2R/Zp3Oe2lfexpFgPl98+EpmBHzPhv?=
- =?us-ascii?Q?g8qvjKKLa18LeDpZraEjQelssHwD8lnykPYKEyb/bXXXF2Oc67R4h062SBfm?=
- =?us-ascii?Q?G7XzszFOPC7ENHQBIedKVOefpebF7ol5SOXE4v/dZMqqF6MhipfrYWIM4Q5E?=
- =?us-ascii?Q?8dzyrD3XeQygWc6j9swp4HCT4GhBpdK33N6FAtGlRZEEsoKs46dGaZK4qJ8Q?=
- =?us-ascii?Q?UkwjIfzwApvaKL31brjtmYFH6yM+TChsdjjHLixNVvY/U2pDtLMokSssIZPH?=
- =?us-ascii?Q?BUUR5fjdjyhgJrqByG6Wq9KxHBJ/pUm0VKBGliFgX4QfqBu4CBEvNubuWWfY?=
- =?us-ascii?Q?cRi6wvMGTe1U64r4MTLpGA2sxrm79YnErw3bDLJ3RyjOSAl5acUA8qVztf5N?=
- =?us-ascii?Q?9FL82qsKA0mlkneaQ8pupj7QjIFtQ8xzwUArqY1Wmo4bOsXXGCB4LM1EKrBI?=
- =?us-ascii?Q?CtAz?=
-X-OriginatorOrg: prevas.dk
-X-MS-Exchange-CrossTenant-Network-Message-Id: b2bf1ddb-fd30-41aa-0340-08d8c142952a
-X-MS-Exchange-CrossTenant-AuthSource: AM0PR10MB1874.EURPRD10.PROD.OUTLOOK.COM
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jan 2021 15:04:58.9354
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: d350cf71-778d-4780-88f5-071a4cb1ed61
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: DiGwGfFhOfB9FY0FRKUVEUVUn4JIV48FPv9oPJUar4OkI02hmDM5g9JXsV6MhuGIM/ITyKNq2SoYGkXdo8wCpsTeMPHRSYZD6krf3BVKjww=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR10MB3331
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.2 required=10.0 tests=ALL_TRUSTED,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF shortcircuit=no
+        autolearn=disabled version=3.4.4
+X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on
+        mailout.protonmail.ch
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Apart from the mask used to get the high bits of the fid,
-mv88e6185_g1_vtu_loadpurge() and mv88e6250_g1_vtu_loadpurge() are
-identical. Since the entry->fid passed in should never exceed the
-number of databases, we can simply use the former as-is as replacement
-for the latter.
+From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+Date: Mon, 25 Jan 2021 22:57:07 +0800
 
-Suggested-by: Tobias Waldekranz <tobias@waldekranz.com>
-Signed-off-by: Rasmus Villemoes <rasmus.villemoes@prevas.dk>
----
- drivers/net/dsa/mv88e6xxx/chip.c        |  2 +-
- drivers/net/dsa/mv88e6xxx/global1.h     |  2 --
- drivers/net/dsa/mv88e6xxx/global1_vtu.c | 33 +++----------------------
- 3 files changed, 5 insertions(+), 32 deletions(-)
+> On Mon, 25 Jan 2021 13:25:45 +0000, Alexander Lobakin <alobakin@pm.me> wr=
+ote:
+> > From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> > Date: Mon, 25 Jan 2021 11:10:43 +0800
+> >
+> > > On Fri, 22 Jan 2021 16:24:17 +0000, Alexander Lobakin <alobakin@pm.me=
+> wrote:
+> > > > From: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> > > > Date: Fri, 22 Jan 2021 23:36:29 +0800
+> > > >
+> > > > > On Fri, 22 Jan 2021 12:08:00 +0000, Alexander Lobakin <alobakin@p=
+m.me> wrote:
+> > > > > > From: Alexander Lobakin <alobakin@pm.me>
+> > > > > > Date: Fri, 22 Jan 2021 11:55:35 +0000
+> > > > > >
+> > > > > > > From: Alexander Lobakin <alobakin@pm.me>
+> > > > > > > Date: Fri, 22 Jan 2021 11:47:45 +0000
+> > > > > > >
+> > > > > > > > From: Eric Dumazet <eric.dumazet@gmail.com>
+> > > > > > > > Date: Thu, 21 Jan 2021 16:41:33 +0100
+> > > > > > > >
+> > > > > > > > > On 1/21/21 2:47 PM, Xuan Zhuo wrote:
+> > > > > > > > > > This patch is used to construct skb based on page to sa=
+ve memory copy
+> > > > > > > > > > overhead.
+> > > > > > > > > >
+> > > > > > > > > > This function is implemented based on IFF_TX_SKB_NO_LIN=
+EAR. Only the
+> > > > > > > > > > network card priv_flags supports IFF_TX_SKB_NO_LINEAR w=
+ill use page to
+> > > > > > > > > > directly construct skb. If this feature is not supporte=
+d, it is still
+> > > > > > > > > > necessary to copy data to construct skb.
+> > > > > > > > > >
+> > > > > > > > > > ---------------- Performance Testing ------------
+> > > > > > > > > >
+> > > > > > > > > > The test environment is Aliyun ECS server.
+> > > > > > > > > > Test cmd:
+> > > > > > > > > > ```
+> > > > > > > > > > xdpsock -i eth0 -t  -S -s <msg size>
+> > > > > > > > > > ```
+> > > > > > > > > >
+> > > > > > > > > > Test result data:
+> > > > > > > > > >
+> > > > > > > > > > size    64      512     1024    1500
+> > > > > > > > > > copy    1916747 1775988 1600203 1440054
+> > > > > > > > > > page    1974058 1953655 1945463 1904478
+> > > > > > > > > > percent 3.0%    10.0%   21.58%  32.3%
+> > > > > > > > > >
+> > > > > > > > > > Signed-off-by: Xuan Zhuo <xuanzhuo@linux.alibaba.com>
+> > > > > > > > > > Reviewed-by: Dust Li <dust.li@linux.alibaba.com>
+> > > > > > > > > > ---
+> > > > > > > > > >  net/xdp/xsk.c | 104 ++++++++++++++++++++++++++++++++++=
+++++++++++++++----------
+> > > > > > > > > >  1 file changed, 86 insertions(+), 18 deletions(-)
+> > > > > > > > > >
+> > > > > > > > > > diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
+> > > > > > > > > > index 4a83117..38af7f1 100644
+> > > > > > > > > > --- a/net/xdp/xsk.c
+> > > > > > > > > > +++ b/net/xdp/xsk.c
+> > > > > > > > > > @@ -430,6 +430,87 @@ static void xsk_destruct_skb(struc=
+t sk_buff *skb)
+> > > > > > > > > >  =09sock_wfree(skb);
+> > > > > > > > > >  }
+> > > > > > > > > >
+> > > > > > > > > > +static struct sk_buff *xsk_build_skb_zerocopy(struct x=
+dp_sock *xs,
+> > > > > > > > > > +=09=09=09=09=09      struct xdp_desc *desc)
+> > > > > > > > > > +{
+> > > > > > > > > > +=09u32 len, offset, copy, copied;
+> > > > > > > > > > +=09struct sk_buff *skb;
+> > > > > > > > > > +=09struct page *page;
+> > > > > > > > > > +=09void *buffer;
+> > > > > > > > > > +=09int err, i;
+> > > > > > > > > > +=09u64 addr;
+> > > > > > > > > > +
+> > > > > > > > > > +=09skb =3D sock_alloc_send_skb(&xs->sk, 0, 1, &err);
+> > > > > >
+> > > > > > Also,
+> > > > > > maybe we should allocate it with NET_SKB_PAD so NIC drivers cou=
+ld
+> > > > > > use some reserved space?
+> > > > > >
+> > > > > > =09=09skb =3D sock_alloc_send_skb(&xs->sk, NET_SKB_PAD, 1, &err=
+);
+> > > > > > =09=09...
+> > > > > > =09=09skb_reserve(skb, NET_SKB_PAD);
+> > > > > >
+> > > > > > Eric, what do you think?
+> > > > >
+> > > > > I think you are right. Some space should be added to continuous e=
+quipment. This
+> > > > > space should also be added in the copy mode below. Is LL_RESERVED=
+_SPACE more
+> > > > > appropriate?
+> > > >
+> > > > No. If you look at __netdev_alloc_skb() and __napi_alloc_skb(), the=
+y
+> > > > reserve NET_SKB_PAD at the beginning of linear area. Documentation =
+of
+> > > > __build_skb() also says that driver should reserve NET_SKB_PAD befo=
+re
+> > > > the actual frame, so it is a standartized hardware-independent
+> > > > headroom.
+> > >
+> > > I understand that these scenarios are in the case of receiving packet=
+s, and the
+> > > increased space is used by the protocol stack, especially RPS. I don'=
+t know if
+> > > this also applies to the sending scenario?
+> > >
+> > > > Leaving that space in skb->head will allow developers to implement
+> > > > IFF_TX_SKB_NO_LINEAR in a wider variety of drivers, especially when
+> > > > a driver has to prepend some sort of data before the actual frame.
+> > > > Since it's usually of a size of one cacheline, shouldn't be a big
+> > > > deal.
+> > > >
+> > >
+> > > I agree with this. Some network cards require some space. For example=
+,
+> > > virtio-net needs to add a virtio_net_hdr_mrg_rxbuf before skb->data, =
+so my
+> > > original understanding is used here. When we send the skb to the
+> > > driver, the driver may need a memory space. So I refer to the
+> > > implementation of __ip_append_data, I feel that adding
+> > > LL_RESERVED_SPACE is a suitable solution.
+> > >
+> > > I feel that I may still not understand the use scene you mentioned. C=
+an you
+> > > elaborate on what you understand this space will be used for?
+> >
+> > LL_RESERVED_SPACE() consists of L2 header size (Ethernet for the most
+> > cases) and dev->needed_headroom. That is not a value to count on, as:
+> >  - L2 header is already here in XSK buffer;
+> >  - not all drivers set dev->needed_headroom;
+> >  - it's aligned by 16, not L1_CACHE_SIZE.
+> >
+> > As this path is XSK generic path, i.e. when driver-side XSK is not
+> > present or not requested, it can be applied to every driver. Many
+> > of them call skb_cow_head() + skb_push() on their xmit path:
+> >  - nearly all virtual drivers (to insert their specific headers);
+> >  - nearly all switch drivers (to insert switch CPU port tags);
+> >  - some enterprise NIC drivers (ChelsIO for LSO, Netronome
+> >    for TLS etc.).
+> >
+> > skb_cow_head() + skb_push() relies on a required NET_SKB_PAD headroom.
+> > In case where there is no enough space (and you allocate an skb with
+> > no headroom at all), skb will be COWed, which is a huge overhead and
+> > will cause slowdowns.
+> > So, adding NET_SKB_PAD would save from almost all, if not all, such
+> > reallocations.
+>
+> I have learnt so much, thanks to you.
 
-diff --git a/drivers/net/dsa/mv88e6xxx/chip.c b/drivers/net/dsa/mv88e6xxx/chip.c
-index 8a0df1e903bf..7e1bbb400e8a 100644
---- a/drivers/net/dsa/mv88e6xxx/chip.c
-+++ b/drivers/net/dsa/mv88e6xxx/chip.c
-@@ -4024,7 +4024,7 @@ static const struct mv88e6xxx_ops mv88e6250_ops = {
- 	.pot_clear = mv88e6xxx_g2_pot_clear,
- 	.reset = mv88e6250_g1_reset,
- 	.vtu_getnext = mv88e6185_g1_vtu_getnext,
--	.vtu_loadpurge = mv88e6250_g1_vtu_loadpurge,
-+	.vtu_loadpurge = mv88e6185_g1_vtu_loadpurge,
- 	.avb_ops = &mv88e6352_avb_ops,
- 	.ptp_ops = &mv88e6250_ptp_ops,
- 	.phylink_validate = mv88e6065_phylink_validate,
-diff --git a/drivers/net/dsa/mv88e6xxx/global1.h b/drivers/net/dsa/mv88e6xxx/global1.h
-index d2dd2f4e4730..7c396964d0b2 100644
---- a/drivers/net/dsa/mv88e6xxx/global1.h
-+++ b/drivers/net/dsa/mv88e6xxx/global1.h
-@@ -336,8 +336,6 @@ int mv88e6185_g1_vtu_getnext(struct mv88e6xxx_chip *chip,
- 			     struct mv88e6xxx_vtu_entry *entry);
- int mv88e6185_g1_vtu_loadpurge(struct mv88e6xxx_chip *chip,
- 			       struct mv88e6xxx_vtu_entry *entry);
--int mv88e6250_g1_vtu_loadpurge(struct mv88e6xxx_chip *chip,
--			       struct mv88e6xxx_vtu_entry *entry);
- int mv88e6352_g1_vtu_getnext(struct mv88e6xxx_chip *chip,
- 			     struct mv88e6xxx_vtu_entry *entry);
- int mv88e6352_g1_vtu_loadpurge(struct mv88e6xxx_chip *chip,
-diff --git a/drivers/net/dsa/mv88e6xxx/global1_vtu.c b/drivers/net/dsa/mv88e6xxx/global1_vtu.c
-index 519ae48ba96e..ae12c981923e 100644
---- a/drivers/net/dsa/mv88e6xxx/global1_vtu.c
-+++ b/drivers/net/dsa/mv88e6xxx/global1_vtu.c
-@@ -434,35 +434,6 @@ int mv88e6390_g1_vtu_getnext(struct mv88e6xxx_chip *chip,
- 	return 0;
- }
- 
--int mv88e6250_g1_vtu_loadpurge(struct mv88e6xxx_chip *chip,
--			       struct mv88e6xxx_vtu_entry *entry)
--{
--	u16 op = MV88E6XXX_G1_VTU_OP_VTU_LOAD_PURGE;
--	int err;
--
--	err = mv88e6xxx_g1_vtu_op_wait(chip);
--	if (err)
--		return err;
--
--	err = mv88e6xxx_g1_vtu_vid_write(chip, entry);
--	if (err)
--		return err;
--
--	if (entry->valid) {
--		err = mv88e6185_g1_vtu_data_write(chip, entry);
--		if (err)
--			return err;
--
--		/* VTU DBNum[3:0] are located in VTU Operation 3:0
--		 * VTU DBNum[5:4] are located in VTU Operation 9:8
--		 */
--		op |= entry->fid & 0x000f;
--		op |= (entry->fid & 0x0030) << 4;
--	}
--
--	return mv88e6xxx_g1_vtu_op(chip, op);
--}
--
- int mv88e6185_g1_vtu_loadpurge(struct mv88e6xxx_chip *chip,
- 			       struct mv88e6xxx_vtu_entry *entry)
- {
-@@ -484,6 +455,10 @@ int mv88e6185_g1_vtu_loadpurge(struct mv88e6xxx_chip *chip,
- 
- 		/* VTU DBNum[3:0] are located in VTU Operation 3:0
- 		 * VTU DBNum[7:4] are located in VTU Operation 11:8
-+		 *
-+		 * For the 6250/6220, the latter are really [5:4] and
-+		 * 9:8, but in those cases bits 7:6 of entry->fid are
-+		 * 0 since they have num_databases = 64.
- 		 */
- 		op |= entry->fid & 0x000f;
- 		op |= (entry->fid & 0x00f0) << 4;
--- 
-2.23.0
+Glad to hear!
+
+> > > Thanks.
+> > >
+> > > >
+> > > > [ I also had an idea of allocating an skb with a headroom of
+> > > > NET_SKB_PAD + 256 bytes, so nearly all drivers could just call
+> > > > pskb_pull_tail() to support such type of skbuffs without much
+> > > > effort, but I think that it's better to teach drivers to support
+> > > > xmitting of really headless ones. If virtio_net can do it, why
+> > > > shouldn't the others ]
+> > > >
+> > > > > > > > > > +=09if (unlikely(!skb))
+> > > > > > > > > > +=09=09return ERR_PTR(err);
+> > > > > > > > > > +
+> > > > > > > > > > +=09addr =3D desc->addr;
+> > > > > > > > > > +=09len =3D desc->len;
+> > > > > > > > > > +
+> > > > > > > > > > +=09buffer =3D xsk_buff_raw_get_data(xs->pool, addr);
+> > > > > > > > > > +=09offset =3D offset_in_page(buffer);
+> > > > > > > > > > +=09addr =3D buffer - xs->pool->addrs;
+> > > > > > > > > > +
+> > > > > > > > > > +=09for (copied =3D 0, i =3D 0; copied < len; i++) {
+> > > > > > > > > > +=09=09page =3D xs->pool->umem->pgs[addr >> PAGE_SHIFT]=
+;
+> > > > > > > > > > +
+> > > > > > > > > > +=09=09get_page(page);
+> > > > > > > > > > +
+> > > > > > > > > > +=09=09copy =3D min_t(u32, PAGE_SIZE - offset, len - co=
+pied);
+> > > > > > > > > > +
+> > > > > > > > > > +=09=09skb_fill_page_desc(skb, i, page, offset, copy);
+> > > > > > > > > > +
+> > > > > > > > > > +=09=09copied +=3D copy;
+> > > > > > > > > > +=09=09addr +=3D copy;
+> > > > > > > > > > +=09=09offset =3D 0;
+> > > > > > > > > > +=09}
+> > > > > > > > > > +
+> > > > > > > > > > +=09skb->len +=3D len;
+> > > > > > > > > > +=09skb->data_len +=3D len;
+> > > > > > > > >
+> > > > > > > > > > +=09skb->truesize +=3D len;
+> > > > > > > > >
+> > > > > > > > > This is not the truesize, unfortunately.
+> > > > > > > > >
+> > > > > > > > > We need to account for the number of pages, not number of=
+ bytes.
+> > > > > > > >
+> > > > > > > > The easiest solution is:
+> > > > > > > >
+> > > > > > > > =09skb->truesize +=3D PAGE_SIZE * i;
+> > > > > > > >
+> > > > > > > > i would be equal to skb_shinfo(skb)->nr_frags after exiting=
+ the loop.
+> > > > > > >
+> > > > > > > Oops, pls ignore this. I forgot that XSK buffers are not
+> > > > > > > "one per page".
+> > > > > > > We need to count the number of pages manually and then do
+> > > > > > >
+> > > > > > > =09skb->truesize +=3D PAGE_SIZE * npages;
+> > > > > > >
+> > > > > > > Right.
+> > > > > > >
+> > > > > > > > > > +
+> > > > > > > > > > +=09refcount_add(len, &xs->sk.sk_wmem_alloc);
+> > > > > > > > > > +
+> > > > > > > > > > +=09return skb;
+> > > > > > > > > > +}
+> > > > > > > > > > +
+> > > > > > > >
+> > > > > > > > Al
+> > > > > > >
+> > > > > > > Thanks,
+> > > > > > > Al
+> > > > > >
+> > > > > > Al
+> >
+> > Thanks,
+> > Al
+
+Al
 
