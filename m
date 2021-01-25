@@ -2,269 +2,212 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B6432304B5D
-	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 22:28:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 96EF4304AFD
+	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 22:11:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727476AbhAZEq4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Jan 2021 23:46:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33288 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726049AbhAYJPX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 04:15:23 -0500
-Received: from mail-lj1-x229.google.com (mail-lj1-x229.google.com [IPv6:2a00:1450:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 382C9C061225
-        for <netdev@vger.kernel.org>; Mon, 25 Jan 2021 01:03:50 -0800 (PST)
-Received: by mail-lj1-x229.google.com with SMTP id f2so9135024ljp.11
-        for <netdev@vger.kernel.org>; Mon, 25 Jan 2021 01:03:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=am1eLwIE+FOK3HS7GnVwONuR9YBK6NLPFHdkHE3pNFE=;
-        b=AQKEYycHtGqodteT0Y/PwLv54mqDztSuhYB9clcp0uR2ZCwcwSe+kYhzI3JFal6NuG
-         M6RREFkx27ADvyAjJJC4VFCVFyT4b+mayWeLsMte0Q8sIWC3qJ30GRdg0rTuXuj90w4I
-         KGjk7TgS4yi/6i2LpJG4LS84rFzsGB/nybp+hrOnRWusE4aeSmmff0cl1vnuSgatWSt+
-         Oh/+JVuJ+4574eOXK3u6lEWscjTxc59bAWR1iyD3lcgIzcgYF1xKKw6bbogxeCPrjuTL
-         34z3luCapOcvw4WU/u/e4eLqpLoX2/WJM/h6f7MWMHO36U8p8rIezYZbDWOhCA07Asd1
-         2+AA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=am1eLwIE+FOK3HS7GnVwONuR9YBK6NLPFHdkHE3pNFE=;
-        b=uPD1NhR7EeDkn9jSGGucT/UcNhl686wOVdh0S17BlbRtV3QQrGbxhyFLBLqowTtKKh
-         N+sI79UH68dfMZzaQCxNzhhOXOZ1WGeEw6sWZKhrnGcs9SYjncOXwDwQWUagdQb0SogS
-         oPhA+n5+NCoeDZ4148hL+1q7pH0ap6eSC7M/pZgtElT+6jPIkyLhpoeC0iBc7TXidDFQ
-         zJ/d6JnPc52c1elIyw9ZnatH/+dYjAu54Fq3X3+giF4Ok6uT7vq5201JumX7uIEJsXed
-         kt0rbuKNQA47sXxMK7aZ3NPLhe073uPKEfMKKBRVmc37Xif+XdZqo+rnCwafdCGAX8dG
-         +KQQ==
-X-Gm-Message-State: AOAM533JhksiSeRA7cbkXBtNqt4KAMzq62hjr3DGvPRpnnlLnk4YTp0q
-        T1OPVWrp9B5k3wOF2xF+DlvmrcjAvQnD7K1REeE=
-X-Google-Smtp-Source: ABdhPJzAw5BfJfepplNRgunm5/W2WETMSRKGfLe0SwD8FSIQpyy5x0ICU+xfeD/72LxG8Av1LQYIIA==
-X-Received: by 2002:a2e:5456:: with SMTP id y22mr201239ljd.450.1611565428762;
-        Mon, 25 Jan 2021 01:03:48 -0800 (PST)
-Received: from denisov-pc.mrn.ru ([46.146.202.208])
-        by smtp.gmail.com with ESMTPSA id b31sm2141533ljf.38.2021.01.25.01.03.47
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Jan 2021 01:03:48 -0800 (PST)
-From:   Alexey Denisov <rtgbnm@gmail.com>
-Cc:     bryan.whitehead@microchip.com, UNGLinuxDriver@microchip.com,
-        netdev@vger.kernel.org, Alexey Denisov <rtgbnm@gmail.com>
-Subject: [PATCH] lan743x: fix endianness when accessing descriptors
-Date:   Mon, 25 Jan 2021 14:03:20 +0500
-Message-Id: <20210125090320.27954-1-rtgbnm@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        id S1728837AbhAZExK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Jan 2021 23:53:10 -0500
+Received: from mga09.intel.com ([134.134.136.24]:41202 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726952AbhAYJjw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 25 Jan 2021 04:39:52 -0500
+IronPort-SDR: 2Bugw0SFI0BTT9JQ28XZ7Q4jsgEUbMc0r46JPqaZR/Bz+eIptSfLELzU/MlHFQ1EP7ZvjqwgaB
+ xD5LVAB7GxRA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9874"; a="179844624"
+X-IronPort-AV: E=Sophos;i="5.79,373,1602572400"; 
+   d="scan'208";a="179844624"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2021 01:37:23 -0800
+IronPort-SDR: 5x2uVhr1n31HY3UXEuEC+C9AJ6EKcXeczXQugNk9chjFmDX/n1YAQYJ0KfHyIFnDKiu1IaHYtV
+ R9zVWyIfrLuw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.79,373,1602572400"; 
+   d="scan'208";a="577321015"
+Received: from silpixa00399839.ir.intel.com (HELO localhost.localdomain) ([10.237.222.142])
+  by fmsmga005.fm.intel.com with ESMTP; 25 Jan 2021 01:37:21 -0800
+From:   Ciara Loftus <ciara.loftus@intel.com>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        magnus.karlsson@intel.com, bjorn@kernel.org,
+        weqaar.a.janjua@intel.com
+Cc:     Ciara Loftus <ciara.loftus@intel.com>
+Subject: [PATCH bpf-next 3/6] selftests/bpf: add framework for xsk selftests
+Date:   Mon, 25 Jan 2021 09:07:36 +0000
+Message-Id: <20210125090739.1045-4-ciara.loftus@intel.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20210125090739.1045-1-ciara.loftus@intel.com>
+References: <20210125090739.1045-1-ciara.loftus@intel.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-TX/RX descriptor ring fields are always little-endian, but conversion
-wasn't performed for big-endian CPUs, so the driver failed to work.
+This commit introduces framework to the xsk selftests
+for testing the xsk_packet_drop traces. The '-t' or
+'--trace-enable' args enable the trace, and disable
+it on exit unless it was already enabled before the
+test.
 
-This patch makes the driver work on big-endian CPUs. It was tested and
-confirmed to work on NXP P1010 processor (PowerPC).
-
-Signed-off-by: Alexey Denisov <rtgbnm@gmail.com>
+Signed-off-by: Ciara Loftus <ciara.loftus@intel.com>
 ---
- drivers/net/ethernet/microchip/lan743x_main.c | 66 +++++++++----------
- 1 file changed, 33 insertions(+), 33 deletions(-)
+ tools/testing/selftests/bpf/xdpxceiver.c | 65 ++++++++++++++++++++++--
+ tools/testing/selftests/bpf/xdpxceiver.h |  3 ++
+ 2 files changed, 65 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/ethernet/microchip/lan743x_main.c b/drivers/net/ethernet/microchip/lan743x_main.c
-index 3804310c853a..51359ce650bd 100644
---- a/drivers/net/ethernet/microchip/lan743x_main.c
-+++ b/drivers/net/ethernet/microchip/lan743x_main.c
-@@ -1253,7 +1253,7 @@ static void lan743x_tx_release_desc(struct lan743x_tx *tx,
- 	if (!(buffer_info->flags & TX_BUFFER_INFO_FLAG_ACTIVE))
- 		goto done;
+diff --git a/tools/testing/selftests/bpf/xdpxceiver.c b/tools/testing/selftests/bpf/xdpxceiver.c
+index 1e722ee76b1f..95e5cddc3f78 100644
+--- a/tools/testing/selftests/bpf/xdpxceiver.c
++++ b/tools/testing/selftests/bpf/xdpxceiver.c
+@@ -72,6 +72,7 @@
+ typedef __u16 __sum16;
+ #include <linux/if_link.h>
+ #include <linux/if_ether.h>
++#include <linux/if_xdp.h>
+ #include <linux/ip.h>
+ #include <linux/udp.h>
+ #include <arpa/inet.h>
+@@ -108,7 +109,8 @@ static void __exit_with_error(int error, const char *file, const char *func, int
+ #define print_ksft_result(void)\
+ 	(ksft_test_result_pass("PASS: %s %s %s%s\n", uut ? "DRV" : "SKB", opt_poll ? "POLL" :\
+ 			       "NOPOLL", opt_teardown ? "Socket Teardown" : "",\
+-			       opt_bidi ? "Bi-directional Sockets" : ""))
++			       opt_bidi ? "Bi-directional Sockets" : "",\
++			       opt_trace_enable ? "Trace enabled" : ""))
  
--	descriptor_type = (descriptor->data0) &
-+	descriptor_type = le32_to_cpu(descriptor->data0) &
- 			  TX_DESC_DATA0_DTYPE_MASK_;
- 	if (descriptor_type == TX_DESC_DATA0_DTYPE_DATA_)
- 		goto clean_up_data_descriptor;
-@@ -1313,7 +1313,7 @@ static int lan743x_tx_next_index(struct lan743x_tx *tx, int index)
- 
- static void lan743x_tx_release_completed_descriptors(struct lan743x_tx *tx)
+ static void pthread_init_mutex(void)
  {
--	while ((*tx->head_cpu_ptr) != (tx->last_head)) {
-+	while (le32_to_cpu(*tx->head_cpu_ptr) != (tx->last_head)) {
- 		lan743x_tx_release_desc(tx, tx->last_head, false);
- 		tx->last_head = lan743x_tx_next_index(tx, tx->last_head);
- 	}
-@@ -1399,10 +1399,10 @@ static int lan743x_tx_frame_start(struct lan743x_tx *tx,
- 	if (dma_mapping_error(dev, dma_ptr))
- 		return -ENOMEM;
+@@ -342,6 +344,7 @@ static struct option long_options[] = {
+ 	{"bidi", optional_argument, 0, 'B'},
+ 	{"debug", optional_argument, 0, 'D'},
+ 	{"tx-pkt-count", optional_argument, 0, 'C'},
++	{"trace-enable", optional_argument, 0, 't'},
+ 	{0, 0, 0, 0}
+ };
  
--	tx_descriptor->data1 = DMA_ADDR_LOW32(dma_ptr);
--	tx_descriptor->data2 = DMA_ADDR_HIGH32(dma_ptr);
--	tx_descriptor->data3 = (frame_length << 16) &
--		TX_DESC_DATA3_FRAME_LENGTH_MSS_MASK_;
-+	tx_descriptor->data1 = cpu_to_le32(DMA_ADDR_LOW32(dma_ptr));
-+	tx_descriptor->data2 = cpu_to_le32(DMA_ADDR_HIGH32(dma_ptr));
-+	tx_descriptor->data3 = cpu_to_le32((frame_length << 16) &
-+		TX_DESC_DATA3_FRAME_LENGTH_MSS_MASK_);
- 
- 	buffer_info->skb = NULL;
- 	buffer_info->dma_ptr = dma_ptr;
-@@ -1443,7 +1443,7 @@ static void lan743x_tx_frame_add_lso(struct lan743x_tx *tx,
- 		tx->frame_data0 |= TX_DESC_DATA0_IOC_;
- 	}
- 	tx_descriptor = &tx->ring_cpu_ptr[tx->frame_tail];
--	tx_descriptor->data0 = tx->frame_data0;
-+	tx_descriptor->data0 = cpu_to_le32(tx->frame_data0);
- 
- 	/* move to next descriptor */
- 	tx->frame_tail = lan743x_tx_next_index(tx, tx->frame_tail);
-@@ -1487,7 +1487,7 @@ static int lan743x_tx_frame_add_fragment(struct lan743x_tx *tx,
- 
- 	/* wrap up previous descriptor */
- 	tx_descriptor = &tx->ring_cpu_ptr[tx->frame_tail];
--	tx_descriptor->data0 = tx->frame_data0;
-+	tx_descriptor->data0 = cpu_to_le32(tx->frame_data0);
- 
- 	/* move to next descriptor */
- 	tx->frame_tail = lan743x_tx_next_index(tx, tx->frame_tail);
-@@ -1513,10 +1513,10 @@ static int lan743x_tx_frame_add_fragment(struct lan743x_tx *tx,
- 		return -ENOMEM;
- 	}
- 
--	tx_descriptor->data1 = DMA_ADDR_LOW32(dma_ptr);
--	tx_descriptor->data2 = DMA_ADDR_HIGH32(dma_ptr);
--	tx_descriptor->data3 = (frame_length << 16) &
--			       TX_DESC_DATA3_FRAME_LENGTH_MSS_MASK_;
-+	tx_descriptor->data1 = cpu_to_le32(DMA_ADDR_LOW32(dma_ptr));
-+	tx_descriptor->data2 = cpu_to_le32(DMA_ADDR_HIGH32(dma_ptr));
-+	tx_descriptor->data3 = cpu_to_le32((frame_length << 16) &
-+			       TX_DESC_DATA3_FRAME_LENGTH_MSS_MASK_);
- 
- 	buffer_info->skb = NULL;
- 	buffer_info->dma_ptr = dma_ptr;
-@@ -1560,7 +1560,7 @@ static void lan743x_tx_frame_end(struct lan743x_tx *tx,
- 	if (ignore_sync)
- 		buffer_info->flags |= TX_BUFFER_INFO_FLAG_IGNORE_SYNC;
- 
--	tx_descriptor->data0 = tx->frame_data0;
-+	tx_descriptor->data0 = cpu_to_le32(tx->frame_data0);
- 	tx->frame_tail = lan743x_tx_next_index(tx, tx->frame_tail);
- 	tx->last_tail = tx->frame_tail;
- 
-@@ -1967,11 +1967,11 @@ static int lan743x_rx_init_ring_element(struct lan743x_rx *rx, int index,
- 	}
- 
- 	buffer_info->buffer_length = length;
--	descriptor->data1 = DMA_ADDR_LOW32(buffer_info->dma_ptr);
--	descriptor->data2 = DMA_ADDR_HIGH32(buffer_info->dma_ptr);
-+	descriptor->data1 = cpu_to_le32(DMA_ADDR_LOW32(buffer_info->dma_ptr));
-+	descriptor->data2 = cpu_to_le32(DMA_ADDR_HIGH32(buffer_info->dma_ptr));
- 	descriptor->data3 = 0;
--	descriptor->data0 = (RX_DESC_DATA0_OWN_ |
--			    (length & RX_DESC_DATA0_BUF_LENGTH_MASK_));
-+	descriptor->data0 = cpu_to_le32((RX_DESC_DATA0_OWN_ |
-+			    (length & RX_DESC_DATA0_BUF_LENGTH_MASK_)));
- 	skb_reserve(buffer_info->skb, RX_HEAD_PADDING);
- 	lan743x_rx_update_tail(rx, index);
- 
-@@ -1986,12 +1986,12 @@ static void lan743x_rx_reuse_ring_element(struct lan743x_rx *rx, int index)
- 	descriptor = &rx->ring_cpu_ptr[index];
- 	buffer_info = &rx->buffer_info[index];
- 
--	descriptor->data1 = DMA_ADDR_LOW32(buffer_info->dma_ptr);
--	descriptor->data2 = DMA_ADDR_HIGH32(buffer_info->dma_ptr);
-+	descriptor->data1 = cpu_to_le32(DMA_ADDR_LOW32(buffer_info->dma_ptr));
-+	descriptor->data2 = cpu_to_le32(DMA_ADDR_HIGH32(buffer_info->dma_ptr));
- 	descriptor->data3 = 0;
--	descriptor->data0 = (RX_DESC_DATA0_OWN_ |
-+	descriptor->data0 = cpu_to_le32((RX_DESC_DATA0_OWN_ |
- 			    ((buffer_info->buffer_length) &
--			    RX_DESC_DATA0_BUF_LENGTH_MASK_));
-+			    RX_DESC_DATA0_BUF_LENGTH_MASK_)));
- 	lan743x_rx_update_tail(rx, index);
+@@ -359,7 +362,8 @@ static void usage(const char *prog)
+ 	    "  -T, --tear-down      Tear down sockets by repeatedly recreating them\n"
+ 	    "  -B, --bidi           Bi-directional sockets test\n"
+ 	    "  -D, --debug          Debug mode - dump packets L2 - L5\n"
+-	    "  -C, --tx-pkt-count=n Number of packets to send\n";
++	    "  -C, --tx-pkt-count=n Number of packets to send\n"
++	    "  -t, --trace-enable   Enable trace\n";
+ 	ksft_print_msg(str, prog);
  }
  
-@@ -2025,7 +2025,7 @@ static int lan743x_rx_process_packet(struct lan743x_rx *rx)
+@@ -448,7 +452,7 @@ static void parse_command_line(int argc, char **argv)
+ 	opterr = 0;
+ 
+ 	for (;;) {
+-		c = getopt_long(argc, argv, "i:q:pSNcTBDC:", long_options, &option_index);
++		c = getopt_long(argc, argv, "i:q:pSNcTBDC:t", long_options, &option_index);
+ 
+ 		if (c == -1)
+ 			break;
+@@ -499,6 +503,9 @@ static void parse_command_line(int argc, char **argv)
+ 		case 'C':
+ 			opt_pkt_count = atoi(optarg);
+ 			break;
++		case 't':
++			opt_trace_enable = 1;
++			break;
+ 		default:
+ 			usage(basename(argv[0]));
+ 			ksft_exit_xfail();
+@@ -811,6 +818,48 @@ static void thread_common_ops(void *arg, void *bufs, pthread_mutex_t *mutexptr,
+ 		exit_with_error(ret);
+ }
+ 
++static int enable_disable_trace(bool enable)
++{
++	FILE *en_fp;
++	int val;
++	int read, ret = 0;
++
++	en_fp = fopen(TRACE_ENABLE_FILE, "r+");
++	if (en_fp == NULL) {
++		ksft_print_msg("Error opening %s\n", TRACE_ENABLE_FILE);
++		return -1;
++	}
++
++	/* Read current value */
++	read = fscanf(en_fp, "%i", &val);
++	if (read != 1) {
++		ksft_print_msg("Error reading from %s\n", TRACE_ENABLE_FILE);
++		ret = -1;
++		goto out_close;
++	}
++
++	if (val != enable) {
++		char w[2];
++
++		snprintf(w, 2, "%d", enable);
++		if (fputs(w, en_fp) == EOF) {
++			ksft_print_msg("Error writing to %s\n", TRACE_ENABLE_FILE);
++			ret = -1;
++		} else {
++			ksft_print_msg("Trace %s\n", enable == 1 ? "enabled" : "disabled");
++		}
++	}
++
++	/* If we are enabling the trace, flag to restore it to its original state (off) on exit */
++	reset_trace = enable;
++
++out_close:
++	fclose(en_fp);
++
++	return ret;
++}
++
++
+ static void *worker_testapp_validate(void *arg)
  {
- 	struct skb_shared_hwtstamps *hwtstamps = NULL;
- 	int result = RX_PROCESS_RESULT_NOTHING_TO_DO;
--	int current_head_index = *rx->head_cpu_ptr;
-+	int current_head_index = le32_to_cpu(*rx->head_cpu_ptr);
- 	struct lan743x_rx_buffer_info *buffer_info;
- 	struct lan743x_rx_descriptor *descriptor;
- 	int extension_index = -1;
-@@ -2040,14 +2040,14 @@ static int lan743x_rx_process_packet(struct lan743x_rx *rx)
+ 	struct udphdr *udp_hdr =
+@@ -1050,6 +1099,13 @@ int main(int argc, char **argv)
  
- 	if (rx->last_head != current_head_index) {
- 		descriptor = &rx->ring_cpu_ptr[rx->last_head];
--		if (descriptor->data0 & RX_DESC_DATA0_OWN_)
-+		if (le32_to_cpu(descriptor->data0) & RX_DESC_DATA0_OWN_)
- 			goto done;
+ 	init_iface_config((void *)ifaceconfig);
  
--		if (!(descriptor->data0 & RX_DESC_DATA0_FS_))
-+		if (!(le32_to_cpu(descriptor->data0) & RX_DESC_DATA0_FS_))
- 			goto done;
++	if (opt_trace_enable) {
++		if (enable_disable_trace(1)) {
++			ksft_test_result_fail("ERROR: failed to enable tracing for trace test\n");
++			ksft_exit_xfail();
++		}
++	}
++
+ 	pthread_init_mutex();
  
- 		first_index = rx->last_head;
--		if (descriptor->data0 & RX_DESC_DATA0_LS_) {
-+		if (le32_to_cpu(descriptor->data0) & RX_DESC_DATA0_LS_) {
- 			last_index = rx->last_head;
- 		} else {
- 			int index;
-@@ -2055,10 +2055,10 @@ static int lan743x_rx_process_packet(struct lan743x_rx *rx)
- 			index = lan743x_rx_next_index(rx, first_index);
- 			while (index != current_head_index) {
- 				descriptor = &rx->ring_cpu_ptr[index];
--				if (descriptor->data0 & RX_DESC_DATA0_OWN_)
-+				if (le32_to_cpu(descriptor->data0) & RX_DESC_DATA0_OWN_)
- 					goto done;
+ 	ksft_set_plan(1);
+@@ -1066,6 +1122,9 @@ int main(int argc, char **argv)
+ 	for (int i = 0; i < MAX_INTERFACES; i++)
+ 		free(ifdict[i]);
  
--				if (descriptor->data0 & RX_DESC_DATA0_LS_) {
-+				if (le32_to_cpu(descriptor->data0) & RX_DESC_DATA0_LS_) {
- 					last_index = index;
- 					break;
- 				}
-@@ -2067,17 +2067,17 @@ static int lan743x_rx_process_packet(struct lan743x_rx *rx)
- 		}
- 		if (last_index >= 0) {
- 			descriptor = &rx->ring_cpu_ptr[last_index];
--			if (descriptor->data0 & RX_DESC_DATA0_EXT_) {
-+			if (le32_to_cpu(descriptor->data0) & RX_DESC_DATA0_EXT_) {
- 				/* extension is expected to follow */
- 				int index = lan743x_rx_next_index(rx,
- 								  last_index);
- 				if (index != current_head_index) {
- 					descriptor = &rx->ring_cpu_ptr[index];
--					if (descriptor->data0 &
-+					if (le32_to_cpu(descriptor->data0) &
- 					    RX_DESC_DATA0_OWN_) {
- 						goto done;
- 					}
--					if (descriptor->data0 &
-+					if (le32_to_cpu(descriptor->data0) &
- 					    RX_DESC_DATA0_EXT_) {
- 						extension_index = index;
- 					} else {
-@@ -2129,7 +2129,7 @@ static int lan743x_rx_process_packet(struct lan743x_rx *rx)
- 			}
- 			buffer_info->skb = NULL;
- 			packet_length =	RX_DESC_DATA0_FRAME_LENGTH_GET_
--					(descriptor->data0);
-+					(le32_to_cpu(descriptor->data0));
- 			skb_put(skb, packet_length - 4);
- 			skb->protocol = eth_type_trans(skb,
- 						       rx->adapter->netdev);
-@@ -2167,8 +2167,8 @@ static int lan743x_rx_process_packet(struct lan743x_rx *rx)
- 			descriptor = &rx->ring_cpu_ptr[extension_index];
- 			buffer_info = &rx->buffer_info[extension_index];
++	if (reset_trace)
++		enable_disable_trace(0);
++
+ 	pthread_destroy_mutex();
  
--			ts_sec = descriptor->data1;
--			ts_nsec = (descriptor->data2 &
-+			ts_sec = le32_to_cpu(descriptor->data1);
-+			ts_nsec = (le32_to_cpu(descriptor->data2) &
- 				  RX_DESC_DATA2_TS_NS_MASK_);
- 			lan743x_rx_reuse_ring_element(rx, extension_index);
- 			real_last_index = extension_index;
+ 	ksft_exit_pass();
+diff --git a/tools/testing/selftests/bpf/xdpxceiver.h b/tools/testing/selftests/bpf/xdpxceiver.h
+index 61f595b6f200..d6542fe42324 100644
+--- a/tools/testing/selftests/bpf/xdpxceiver.h
++++ b/tools/testing/selftests/bpf/xdpxceiver.h
+@@ -41,6 +41,7 @@
+ #define BATCH_SIZE 64
+ #define POLL_TMOUT 1000
+ #define NEED_WAKEUP true
++#define TRACE_ENABLE_FILE "/sys/kernel/debug/tracing/events/xsk/xsk_packet_drop/enable"
+ 
+ typedef __u32 u32;
+ typedef __u16 u16;
+@@ -64,6 +65,8 @@ static int opt_poll;
+ static int opt_teardown;
+ static int opt_bidi;
+ static u32 opt_xdp_bind_flags = XDP_USE_NEED_WAKEUP;
++static int opt_trace_enable;
++static int reset_trace;
+ static u8 pkt_data[XSK_UMEM__DEFAULT_FRAME_SIZE];
+ static u32 pkt_counter;
+ static u32 prev_pkt = -1;
 -- 
-2.25.1
+2.17.1
 
