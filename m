@@ -2,129 +2,298 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B415530319D
-	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 03:14:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ED04A30324A
+	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 03:58:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731459AbhAYTCx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Jan 2021 14:02:53 -0500
-Received: from mga05.intel.com ([192.55.52.43]:23609 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731417AbhAYTBO (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 25 Jan 2021 14:01:14 -0500
-IronPort-SDR: kf9ZFMQnVnCmKlWnsmpHFRw+EXnBPek7LdIwyNQzX5qii74F+HP2c+Zvc6xguSbPkkXGzor4eI
- gsOjCBTJ/5sA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9875"; a="264604205"
-X-IronPort-AV: E=Sophos;i="5.79,374,1602572400"; 
-   d="scan'208";a="264604205"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2021 10:59:26 -0800
-IronPort-SDR: I9Mrl6edG6iqIdJPM/QsjB3VQm0QGaWJR9J+lfKZYbJ2VD/i6+GNwuBGP4uWZ9eYlU41UE0VuR
- bOeeeWP1Kq6A==
-X-IronPort-AV: E=Sophos;i="5.79,374,1602572400"; 
-   d="scan'208";a="361637470"
-Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.254.126.22])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2021 10:59:25 -0800
-From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
-To:     netdev@vger.kernel.org
-Cc:     Matthieu Baerts <matthieu.baerts@tessares.net>,
-        davem@davemloft.net, kuba@kernel.org, mptcp@lists.01.org,
-        Geliang Tang <geliangtang@gmail.com>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH net-next 1/5] mptcp: support MPJoin with IPv4 mapped in v6 sk
-Date:   Mon, 25 Jan 2021 10:59:00 -0800
-Message-Id: <20210125185904.6997-2-mathew.j.martineau@linux.intel.com>
-X-Mailer: git-send-email 2.30.0
-In-Reply-To: <20210125185904.6997-1-mathew.j.martineau@linux.intel.com>
-References: <20210125185904.6997-1-mathew.j.martineau@linux.intel.com>
+        id S1728979AbhAYNj6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Jan 2021 08:39:58 -0500
+Received: from mx12.kaspersky-labs.com ([91.103.66.155]:11137 "EHLO
+        mx12.kaspersky-labs.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728969AbhAYNjS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 08:39:18 -0500
+Received: from relay12.kaspersky-labs.com (unknown [127.0.0.10])
+        by relay12.kaspersky-labs.com (Postfix) with ESMTP id 02D22760F2;
+        Mon, 25 Jan 2021 14:15:39 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=kaspersky.com;
+        s=mail; t=1611573339;
+        bh=vizNlLTZW1bM9iuWxOwTnV/Ph3Dxt9KLhvtSDzP7eyI=;
+        h=From:To:Subject:Date:Message-ID:MIME-Version:Content-Type;
+        b=Ys02DRcH1o0Rn5oXYE6Kk/oNFDx6zx0/wSwQ16kQ2v8H1/PldgOzbTGjxMPpvHK1i
+         xd4FCdvMO3G+BOxA7t7xPwy20hGawfARy8Bzpvc4rsxv+kJyrG1QicH1fMoIPzxEJb
+         lm+JipPToixEHxYH/AKd+aMn2Mhv7uXAKaXK4trc=
+Received: from mail-hq2.kaspersky.com (unknown [91.103.66.206])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
+        (Client CN "mail-hq2.kaspersky.com", Issuer "Kaspersky MailRelays CA G3" (verified OK))
+        by mailhub12.kaspersky-labs.com (Postfix) with ESMTPS id B4591760FD;
+        Mon, 25 Jan 2021 14:15:38 +0300 (MSK)
+Received: from arseniy-pc.avp.ru (10.64.68.128) by hqmailmbx3.avp.ru
+ (10.64.67.243) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2044.4; Mon, 25
+ Jan 2021 14:15:37 +0300
+From:   Arseny Krasnov <arseny.krasnov@kaspersky.com>
+To:     Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Arseny Krasnov <arseny.krasnov@kaspersky.com>,
+        Jorgen Hansen <jhansen@vmware.com>,
+        Colin Ian King <colin.king@canonical.com>,
+        Andra Paraschiv <andraprs@amazon.com>,
+        Jeff Vander Stoep <jeffv@google.com>
+CC:     <kvm@vger.kernel.org>, <virtualization@lists.linux-foundation.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <stsp2@yandex.ru>, <oxffffaa@gmail.com>
+Subject: [RFC PATCH v3 10/13] virtio/vsock: rest of SOCK_SEQPACKET support
+Date:   Mon, 25 Jan 2021 14:15:26 +0300
+Message-ID: <20210125111529.599448-1-arseny.krasnov@kaspersky.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20210125110903.597155-1-arseny.krasnov@kaspersky.com>
+References: <20210125110903.597155-1-arseny.krasnov@kaspersky.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.64.68.128]
+X-ClientProxiedBy: hqmailmbx3.avp.ru (10.64.67.243) To hqmailmbx3.avp.ru
+ (10.64.67.243)
+X-KSE-ServerInfo: hqmailmbx3.avp.ru, 9
+X-KSE-AntiSpam-Interceptor-Info: scan successful
+X-KSE-AntiSpam-Version: 5.9.16, Database issued on: 01/25/2021 10:59:54
+X-KSE-AntiSpam-Status: KAS_STATUS_NOT_DETECTED
+X-KSE-AntiSpam-Method: none
+X-KSE-AntiSpam-Rate: 10
+X-KSE-AntiSpam-Info: Lua profiles 161363 [Jan 25 2021]
+X-KSE-AntiSpam-Info: LuaCore: 421 421 33a18ad4049b4a5e5420c907b38d332fafd06b09
+X-KSE-AntiSpam-Info: Version: 5.9.16.0
+X-KSE-AntiSpam-Info: Envelope from: arseny.krasnov@kaspersky.com
+X-KSE-AntiSpam-Info: {Prob_from_in_msgid}
+X-KSE-AntiSpam-Info: {Tracking_date, moscow}
+X-KSE-AntiSpam-Info: {Tracking_from_domain_doesnt_match_to}
+X-KSE-AntiSpam-Info: arseniy-pc.avp.ru:7.1.1;d41d8cd98f00b204e9800998ecf8427e.com:7.1.1;127.0.0.199:7.1.2;kaspersky.com:7.1.1
+X-KSE-AntiSpam-Info: Rate: 10
+X-KSE-AntiSpam-Info: Status: not_detected
+X-KSE-AntiSpam-Info: Method: none
+X-KSE-Antiphishing-Info: Clean
+X-KSE-Antiphishing-ScanningType: Deterministic
+X-KSE-Antiphishing-Method: None
+X-KSE-Antiphishing-Bases: 01/25/2021 11:02:00
+X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
+ rules found
+X-KSE-Antivirus-Interceptor-Info: scan successful
+X-KSE-Antivirus-Info: Clean, bases: 1/25/2021 10:11:00 AM
+X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
+X-KSE-AttachmentFiltering-Interceptor-Info: no applicable attachment filtering
+ rules found
+X-KSE-BulkMessagesFiltering-Scan-Result: InTheLimit
+X-KLMS-Rule-ID: 52
+X-KLMS-Message-Action: clean
+X-KLMS-AntiSpam-Status: not scanned, disabled by settings
+X-KLMS-AntiSpam-Interceptor-Info: not scanned
+X-KLMS-AntiPhishing: Clean, bases: 2021/01/25 10:04:00
+X-KLMS-AntiVirus: Kaspersky Security for Linux Mail Server, version 8.0.3.30, bases: 2021/01/25 10:14:00 #16023936
+X-KLMS-AntiVirus-Status: Clean, skipped
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Matthieu Baerts <matthieu.baerts@tessares.net>
+This adds rest of logic for SEQPACKET:
+1) Shared functions for packet sending now set valid type of packet
+   according socket type.
+2) SEQPACKET specific function like SEQ_BEGIN send and data dequeue.
+3) TAP support for SEQPACKET is not so easy if it is necessary to
+send whole record to TAP interface. This could be done by allocating
+new packet when whole record is received, data of record must be
+copied to TAP packet.
 
-With an IPv4 mapped in v6 socket, we were trying to call inet6_bind()
-with an IPv4 address resulting in a -EINVAL error because the given
-addr_len -- size of the address structure -- was too short.
-
-We now make sure to use address structures for the same family as the
-MPTCP socket for both the bind() and the connect(). It means we convert
-v4 addresses to v4 mapped in v6 or the opposite if needed.
-
-Fixes: ec3edaa7ca6c ("mptcp: Add handling of outgoing MP_JOIN requests")
-Closes: https://github.com/multipath-tcp/mptcp_net-next/issues/122
-Co-developed-by: Geliang Tang <geliangtang@gmail.com>
-Signed-off-by: Geliang Tang <geliangtang@gmail.com>
-Signed-off-by: Matthieu Baerts <matthieu.baerts@tessares.net>
-Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
+Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
 ---
- net/mptcp/subflow.c | 24 +++++++++++++++++-------
- 1 file changed, 17 insertions(+), 7 deletions(-)
+ include/linux/virtio_vsock.h            |  7 ++++
+ net/vmw_vsock/virtio_transport_common.c | 55 +++++++++++++++++++++----
+ 2 files changed, 55 insertions(+), 7 deletions(-)
 
-diff --git a/net/mptcp/subflow.c b/net/mptcp/subflow.c
-index 721059916c96..586156281e5a 100644
---- a/net/mptcp/subflow.c
-+++ b/net/mptcp/subflow.c
-@@ -1085,21 +1085,31 @@ void mptcpv6_handle_mapped(struct sock *sk, bool mapped)
- #endif
+diff --git a/include/linux/virtio_vsock.h b/include/linux/virtio_vsock.h
+index af8705ea8b95..ad9783df97c9 100644
+--- a/include/linux/virtio_vsock.h
++++ b/include/linux/virtio_vsock.h
+@@ -84,7 +84,14 @@ virtio_transport_dgram_dequeue(struct vsock_sock *vsk,
+ 			       struct msghdr *msg,
+ 			       size_t len, int flags);
  
- static void mptcp_info2sockaddr(const struct mptcp_addr_info *info,
--				struct sockaddr_storage *addr)
-+				struct sockaddr_storage *addr,
-+				unsigned short family)
++bool virtio_transport_seqpacket_seq_send_len(struct vsock_sock *vsk, size_t len);
+ size_t virtio_transport_seqpacket_seq_get_len(struct vsock_sock *vsk);
++ssize_t
++virtio_transport_seqpacket_dequeue(struct vsock_sock *vsk,
++				   struct msghdr *msg,
++				   size_t len,
++				   int type);
++
+ s64 virtio_transport_stream_has_data(struct vsock_sock *vsk);
+ s64 virtio_transport_stream_has_space(struct vsock_sock *vsk);
+ 
+diff --git a/net/vmw_vsock/virtio_transport_common.c b/net/vmw_vsock/virtio_transport_common.c
+index 90f9feef9d8f..fab14679ca7b 100644
+--- a/net/vmw_vsock/virtio_transport_common.c
++++ b/net/vmw_vsock/virtio_transport_common.c
+@@ -139,6 +139,7 @@ static struct sk_buff *virtio_transport_build_skb(void *opaque)
+ 		break;
+ 	case VIRTIO_VSOCK_OP_CREDIT_UPDATE:
+ 	case VIRTIO_VSOCK_OP_CREDIT_REQUEST:
++	case VIRTIO_VSOCK_OP_SEQ_BEGIN:
+ 		hdr->op = cpu_to_le16(AF_VSOCK_OP_CONTROL);
+ 		break;
+ 	default:
+@@ -157,6 +158,10 @@ static struct sk_buff *virtio_transport_build_skb(void *opaque)
+ 
+ void virtio_transport_deliver_tap_pkt(struct virtio_vsock_pkt *pkt)
  {
- 	memset(addr, 0, sizeof(*addr));
--	addr->ss_family = info->family;
-+	addr->ss_family = family;
- 	if (addr->ss_family == AF_INET) {
- 		struct sockaddr_in *in_addr = (struct sockaddr_in *)addr;
++	/* TODO: implement tap support for SOCK_SEQPACKET. */
++	if (le16_to_cpu(pkt->hdr.type) == VIRTIO_VSOCK_TYPE_SEQPACKET)
++		return;
++
+ 	if (pkt->tap_delivered)
+ 		return;
  
--		in_addr->sin_addr = info->addr;
-+		if (info->family == AF_INET)
-+			in_addr->sin_addr = info->addr;
-+#if IS_ENABLED(CONFIG_MPTCP_IPV6)
-+		else if (ipv6_addr_v4mapped(&info->addr6))
-+			in_addr->sin_addr.s_addr = info->addr6.s6_addr32[3];
-+#endif
- 		in_addr->sin_port = info->port;
- 	}
- #if IS_ENABLED(CONFIG_MPTCP_IPV6)
- 	else if (addr->ss_family == AF_INET6) {
- 		struct sockaddr_in6 *in6_addr = (struct sockaddr_in6 *)addr;
+@@ -405,6 +410,19 @@ static u16 virtio_transport_get_type(struct sock *sk)
+ 		return VIRTIO_VSOCK_TYPE_SEQPACKET;
+ }
  
--		in6_addr->sin6_addr = info->addr6;
-+		if (info->family == AF_INET)
-+			ipv6_addr_set_v4mapped(info->addr.s_addr,
-+					       &in6_addr->sin6_addr);
-+		else
-+			in6_addr->sin6_addr = info->addr6;
- 		in6_addr->sin6_port = info->port;
- 	}
- #endif
-@@ -1143,11 +1153,11 @@ int __mptcp_subflow_connect(struct sock *sk, const struct mptcp_addr_info *loc,
- 	subflow->remote_key = msk->remote_key;
- 	subflow->local_key = msk->local_key;
- 	subflow->token = msk->token;
--	mptcp_info2sockaddr(loc, &addr);
-+	mptcp_info2sockaddr(loc, &addr, ssk->sk_family);
++bool virtio_transport_seqpacket_seq_send_len(struct vsock_sock *vsk, size_t len)
++{
++	struct virtio_vsock_pkt_info info = {
++		.type = VIRTIO_VSOCK_TYPE_SEQPACKET,
++		.op = VIRTIO_VSOCK_OP_SEQ_BEGIN,
++		.vsk = vsk,
++		.flags = len
++	};
++
++	return virtio_transport_send_pkt_info(vsk, &info);
++}
++EXPORT_SYMBOL_GPL(virtio_transport_seqpacket_seq_send_len);
++
+ static inline void virtio_transport_del_n_free_pkt(struct virtio_vsock_pkt *pkt)
+ {
+ 	list_del(&pkt->list);
+@@ -576,6 +594,18 @@ virtio_transport_stream_dequeue(struct vsock_sock *vsk,
+ }
+ EXPORT_SYMBOL_GPL(virtio_transport_stream_dequeue);
  
- 	addrlen = sizeof(struct sockaddr_in);
- #if IS_ENABLED(CONFIG_MPTCP_IPV6)
--	if (loc->family == AF_INET6)
-+	if (addr.ss_family == AF_INET6)
- 		addrlen = sizeof(struct sockaddr_in6);
- #endif
- 	ssk->sk_bound_dev_if = loc->ifindex;
-@@ -1163,7 +1173,7 @@ int __mptcp_subflow_connect(struct sock *sk, const struct mptcp_addr_info *loc,
- 	subflow->remote_id = remote_id;
- 	subflow->request_join = 1;
- 	subflow->request_bkup = !!(loc->flags & MPTCP_PM_ADDR_FLAG_BACKUP);
--	mptcp_info2sockaddr(remote, &addr);
-+	mptcp_info2sockaddr(remote, &addr, ssk->sk_family);
++ssize_t
++virtio_transport_seqpacket_dequeue(struct vsock_sock *vsk,
++				   struct msghdr *msg,
++				   size_t len, int flags)
++{
++	if (flags & MSG_PEEK)
++		return -EOPNOTSUPP;
++
++	return virtio_transport_seqpacket_do_dequeue(vsk, msg, len);
++}
++EXPORT_SYMBOL_GPL(virtio_transport_seqpacket_dequeue);
++
+ int
+ virtio_transport_dgram_dequeue(struct vsock_sock *vsk,
+ 			       struct msghdr *msg,
+@@ -659,14 +689,15 @@ EXPORT_SYMBOL_GPL(virtio_transport_do_socket_init);
+ void virtio_transport_notify_buffer_size(struct vsock_sock *vsk, u64 *val)
+ {
+ 	struct virtio_vsock_sock *vvs = vsk->trans;
++	int type;
  
- 	mptcp_add_pending_subflow(msk, subflow);
- 	err = kernel_connect(sf, (struct sockaddr *)&addr, addrlen, O_NONBLOCK);
+ 	if (*val > VIRTIO_VSOCK_MAX_BUF_SIZE)
+ 		*val = VIRTIO_VSOCK_MAX_BUF_SIZE;
+ 
+ 	vvs->buf_alloc = *val;
+ 
+-	virtio_transport_send_credit_update(vsk, VIRTIO_VSOCK_TYPE_STREAM,
+-					    NULL);
++	type = virtio_transport_get_type(sk_vsock(vsk));
++	virtio_transport_send_credit_update(vsk, type, NULL);
+ }
+ EXPORT_SYMBOL_GPL(virtio_transport_notify_buffer_size);
+ 
+@@ -793,10 +824,11 @@ int virtio_transport_connect(struct vsock_sock *vsk)
+ {
+ 	struct virtio_vsock_pkt_info info = {
+ 		.op = VIRTIO_VSOCK_OP_REQUEST,
+-		.type = VIRTIO_VSOCK_TYPE_STREAM,
+ 		.vsk = vsk,
+ 	};
+ 
++	info.type = virtio_transport_get_type(sk_vsock(vsk));
++
+ 	return virtio_transport_send_pkt_info(vsk, &info);
+ }
+ EXPORT_SYMBOL_GPL(virtio_transport_connect);
+@@ -805,7 +837,6 @@ int virtio_transport_shutdown(struct vsock_sock *vsk, int mode)
+ {
+ 	struct virtio_vsock_pkt_info info = {
+ 		.op = VIRTIO_VSOCK_OP_SHUTDOWN,
+-		.type = VIRTIO_VSOCK_TYPE_STREAM,
+ 		.flags = (mode & RCV_SHUTDOWN ?
+ 			  VIRTIO_VSOCK_SHUTDOWN_RCV : 0) |
+ 			 (mode & SEND_SHUTDOWN ?
+@@ -813,6 +844,8 @@ int virtio_transport_shutdown(struct vsock_sock *vsk, int mode)
+ 		.vsk = vsk,
+ 	};
+ 
++	info.type = virtio_transport_get_type(sk_vsock(vsk));
++
+ 	return virtio_transport_send_pkt_info(vsk, &info);
+ }
+ EXPORT_SYMBOL_GPL(virtio_transport_shutdown);
+@@ -834,12 +867,18 @@ virtio_transport_stream_enqueue(struct vsock_sock *vsk,
+ {
+ 	struct virtio_vsock_pkt_info info = {
+ 		.op = VIRTIO_VSOCK_OP_RW,
+-		.type = VIRTIO_VSOCK_TYPE_STREAM,
+ 		.msg = msg,
+ 		.pkt_len = len,
+ 		.vsk = vsk,
++		.flags = 0,
+ 	};
+ 
++	info.type = virtio_transport_get_type(sk_vsock(vsk));
++
++	if (info.type == VIRTIO_VSOCK_TYPE_SEQPACKET &&
++	    msg->msg_flags & MSG_EOR)
++		info.flags |= VIRTIO_VSOCK_RW_EOR;
++
+ 	return virtio_transport_send_pkt_info(vsk, &info);
+ }
+ EXPORT_SYMBOL_GPL(virtio_transport_stream_enqueue);
+@@ -857,7 +896,6 @@ static int virtio_transport_reset(struct vsock_sock *vsk,
+ {
+ 	struct virtio_vsock_pkt_info info = {
+ 		.op = VIRTIO_VSOCK_OP_RST,
+-		.type = VIRTIO_VSOCK_TYPE_STREAM,
+ 		.reply = !!pkt,
+ 		.vsk = vsk,
+ 	};
+@@ -866,6 +904,8 @@ static int virtio_transport_reset(struct vsock_sock *vsk,
+ 	if (pkt && le16_to_cpu(pkt->hdr.op) == VIRTIO_VSOCK_OP_RST)
+ 		return 0;
+ 
++	info.type = virtio_transport_get_type(sk_vsock(vsk));
++
+ 	return virtio_transport_send_pkt_info(vsk, &info);
+ }
+ 
+@@ -1177,13 +1217,14 @@ virtio_transport_send_response(struct vsock_sock *vsk,
+ {
+ 	struct virtio_vsock_pkt_info info = {
+ 		.op = VIRTIO_VSOCK_OP_RESPONSE,
+-		.type = VIRTIO_VSOCK_TYPE_STREAM,
+ 		.remote_cid = le64_to_cpu(pkt->hdr.src_cid),
+ 		.remote_port = le32_to_cpu(pkt->hdr.src_port),
+ 		.reply = true,
+ 		.vsk = vsk,
+ 	};
+ 
++	info.type = virtio_transport_get_type(sk_vsock(vsk));
++
+ 	return virtio_transport_send_pkt_info(vsk, &info);
+ }
+ 
 -- 
-2.30.0
+2.25.1
 
