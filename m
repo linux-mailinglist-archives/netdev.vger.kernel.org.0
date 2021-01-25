@@ -2,83 +2,186 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B0676302279
-	for <lists+netdev@lfdr.de>; Mon, 25 Jan 2021 08:37:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 11CBE30227B
+	for <lists+netdev@lfdr.de>; Mon, 25 Jan 2021 08:39:53 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727286AbhAYHhF (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Jan 2021 02:37:05 -0500
-Received: from lpdvacalvio01.broadcom.com ([192.19.229.182]:33746 "EHLO
-        relay.smtp-ext.broadcom.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727244AbhAYHWD (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 02:22:03 -0500
-Received: from localhost.swdvt.lab.broadcom.net (dhcp-10-13-253-90.swdvt.lab.broadcom.net [10.13.253.90])
-        by relay.smtp-ext.broadcom.com (Postfix) with ESMTP id 6422180F9;
-        Sun, 24 Jan 2021 23:08:24 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.11.0 relay.smtp-ext.broadcom.com 6422180F9
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=broadcom.com;
-        s=dkimrelay; t=1611558504;
-        bh=R0yGNtXuiC8FMhGMb3tZiYY4yrJhaxLLxJkHpwVaSj4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vkegJ5PsgdnpN1WiX3XEgMROOnfQZADwbHag6X6DemLRXNbChnIChpqdV/ypic9tb
-         HihzsRlFo9g96gjBTjzmyyNivtDvL5/Pd0GzZvw9uZ4rf++PuTLthlECis5nNbxUEK
-         +2KOxnns0m8X54TitP0HUICyphoVwo5Zmi49bMxk=
-From:   Michael Chan <michael.chan@broadcom.com>
-To:     davem@davemloft.net
-Cc:     netdev@vger.kernel.org, kuba@kernel.org, gospo@broadcom.com
-Subject: [PATCH net-next 15/15] bnxt_en: Do not process completion entries after fatal condition detected.
-Date:   Mon, 25 Jan 2021 02:08:21 -0500
-Message-Id: <1611558501-11022-16-git-send-email-michael.chan@broadcom.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1611558501-11022-1-git-send-email-michael.chan@broadcom.com>
-References: <1611558501-11022-1-git-send-email-michael.chan@broadcom.com>
+        id S1727288AbhAYHh4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Jan 2021 02:37:56 -0500
+Received: from m42-8.mailgun.net ([69.72.42.8]:10418 "EHLO m42-8.mailgun.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727185AbhAYHfU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 25 Jan 2021 02:35:20 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1611560099; h=Message-Id: Date: Subject: Cc: To: From:
+ Sender; bh=/lsVz8gMDVaJB0fhRDVbi9JRpm8ZUi3sr1krkiDGETY=; b=B9TS8S2ARrilvHOcAutuDnuDhrwLDMiYRr1vzAHnUIao0Zw1kfsRsn8o5hhmbFMwk2Awjspa
+ 29pmmlvB0mDDsyc82ecnV14xSfYgFLQ93I6arDHORrC475ZMVFdaC5LR9J7DaWN6eSbAVfmI
+ I3DDJZmUXo3n2IfsUkmCIunE3zk=
+X-Mailgun-Sending-Ip: 69.72.42.8
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n02.prod.us-east-1.postgun.com with SMTP id
+ 600e7488fb02735e8cbae920 (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 25 Jan 2021 07:34:32
+ GMT
+Sender: subashab=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 32452C433ED; Mon, 25 Jan 2021 07:34:31 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL,
+        URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+Received: from subashab-lnx.qualcomm.com (unknown [129.46.15.92])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: subashab)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id DB154C433C6;
+        Mon, 25 Jan 2021 07:34:28 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org DB154C433C6
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=subashab@codeaurora.org
+From:   Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
+To:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        stranche@codeaurora.org, aleksander@aleksander.es,
+        dnlplm@gmail.com, bjorn@mork.no, stephan@gerhold.net,
+        ejcaruso@google.com, andrewlassalle@google.com
+Cc:     Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
+Subject: [PATCH net-next v2] net: qmi_wwan: Add pass through mode
+Date:   Mon, 25 Jan 2021 00:33:35 -0700
+Message-Id: <1611560015-20034-1-git-send-email-subashab@codeaurora.org>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Once the firmware fatal condition is detected, we should cease
-comminication with the firmware and hardware quickly even if there
-are many completion entries in the completion rings.  This will
-speed up the recovery process and prevent further I/Os that may
-cause further exceptions.
+Pass through mode is to allow packets in MAP format to be passed
+on to the stack. rmnet driver can be used to process and demultiplex
+these packets.
 
-Do not proceed in the NAPI poll function if fatal condition is
-detected.  Call napi_complete() and return without arming interrupts.
-Cleanup of all rings and reset are imminent.
+Pass through mode can be enabled when the device is in raw ip mode only.
+Conversely, raw ip mode cannot be disabled when pass through mode is
+enabled.
 
-Reviewed-by: Pavan Chebbi <pavan.chebbi@broadcom.com>
-Reviewed-by: Vasundhara Volam <vasundhara-v.volam@broadcom.com>
-Reviewed-by: Edwin Peer <edwin.peer@broadcom.com>
-Signed-off-by: Michael Chan <michael.chan@broadcom.com>
+Userspace can use pass through mode in conjunction with rmnet driver
+through the following steps-
+
+1. Enable raw ip mode on qmi_wwan device
+2. Enable pass through mode on qmi_wwan device
+3. Create a rmnet device with qmi_wwan device as real device using netlink
+
+Signed-off-by: Subash Abhinov Kasiviswanathan <subashab@codeaurora.org>
 ---
- drivers/net/ethernet/broadcom/bnxt/bnxt.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+v1->v2: Update commit text and fix the following comments from Bjorn-
+Remove locking as no netdev state change is requried since all the
+configuration is already done in raw_ip_store.
+Check the inverse relationship between raw_ip mode and pass_through mode.
+pass_through_mode just sets/resets the flag now.
+raw_ip check is not needed when queueing pass_through mode packets as
+that is enforced already during the mode configuration.
 
-diff --git a/drivers/net/ethernet/broadcom/bnxt/bnxt.c b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-index 221f5437884b..dd7d2caa57a2 100644
---- a/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-+++ b/drivers/net/ethernet/broadcom/bnxt/bnxt.c
-@@ -2405,6 +2405,10 @@ static int bnxt_poll(struct napi_struct *napi, int budget)
- 	struct bnxt_cp_ring_info *cpr = &bnapi->cp_ring;
- 	int work_done = 0;
+ drivers/net/usb/qmi_wwan.c | 58 ++++++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 58 insertions(+)
+
+diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
+index 7ea113f5..e58a80a 100644
+--- a/drivers/net/usb/qmi_wwan.c
++++ b/drivers/net/usb/qmi_wwan.c
+@@ -57,6 +57,7 @@ struct qmi_wwan_state {
+ enum qmi_wwan_flags {
+ 	QMI_WWAN_FLAG_RAWIP = 1 << 0,
+ 	QMI_WWAN_FLAG_MUX = 1 << 1,
++	QMI_WWAN_FLAG_PASS_THROUGH = 1 << 2,
+ };
  
-+	if (unlikely(test_bit(BNXT_STATE_FW_FATAL_COND, &bp->state))) {
-+		napi_complete(napi);
-+		return 0;
+ enum qmi_wwan_quirks {
+@@ -326,6 +327,13 @@ static ssize_t raw_ip_store(struct device *d,  struct device_attribute *attr, co
+ 	if (enable == (info->flags & QMI_WWAN_FLAG_RAWIP))
+ 		return len;
+ 
++	/* ip mode cannot be cleared when pass through mode is set */
++	if (!enable && (info->flags & QMI_WWAN_FLAG_PASS_THROUGH)) {
++		netdev_err(dev->net,
++			   "Cannot clear ip mode on pass through device\n");
++		return -EINVAL;
 +	}
- 	while (1) {
- 		work_done += bnxt_poll_work(bp, cpr, budget - work_done);
++
+ 	if (!rtnl_trylock())
+ 		return restart_syscall();
  
-@@ -2479,6 +2483,10 @@ static int bnxt_poll_p5(struct napi_struct *napi, int budget)
- 	int work_done = 0;
- 	u32 cons;
+@@ -456,14 +464,59 @@ static ssize_t del_mux_store(struct device *d,  struct device_attribute *attr, c
+ 	return ret;
+ }
  
-+	if (unlikely(test_bit(BNXT_STATE_FW_FATAL_COND, &bp->state))) {
-+		napi_complete(napi);
-+		return 0;
++static ssize_t pass_through_show(struct device *d,
++				 struct device_attribute *attr, char *buf)
++{
++	struct usbnet *dev = netdev_priv(to_net_dev(d));
++	struct qmi_wwan_state *info;
++
++	info = (void *)&dev->data;
++	return sprintf(buf, "%c\n",
++		       info->flags & QMI_WWAN_FLAG_PASS_THROUGH ? 'Y' : 'N');
++}
++
++static ssize_t pass_through_store(struct device *d,
++				  struct device_attribute *attr,
++				  const char *buf, size_t len)
++{
++	struct usbnet *dev = netdev_priv(to_net_dev(d));
++	struct qmi_wwan_state *info;
++	bool enable;
++
++	if (strtobool(buf, &enable))
++		return -EINVAL;
++
++	info = (void *)&dev->data;
++
++	/* no change? */
++	if (enable == (info->flags & QMI_WWAN_FLAG_PASS_THROUGH))
++		return len;
++
++	/* pass through mode can be set for raw ip devices only */
++	if (!(info->flags & QMI_WWAN_FLAG_RAWIP)) {
++		netdev_err(dev->net,
++			   "Cannot set pass through mode on non ip device\n");
++		return -EINVAL;
 +	}
- 	if (cpr->has_more_work) {
- 		cpr->has_more_work = 0;
- 		work_done = __bnxt_poll_cqs(bp, bnapi, budget);
++
++	if (enable)
++		info->flags |= QMI_WWAN_FLAG_PASS_THROUGH;
++	else
++		info->flags &= ~QMI_WWAN_FLAG_PASS_THROUGH;
++
++	return len;
++}
++
+ static DEVICE_ATTR_RW(raw_ip);
+ static DEVICE_ATTR_RW(add_mux);
+ static DEVICE_ATTR_RW(del_mux);
++static DEVICE_ATTR_RW(pass_through);
+ 
+ static struct attribute *qmi_wwan_sysfs_attrs[] = {
+ 	&dev_attr_raw_ip.attr,
+ 	&dev_attr_add_mux.attr,
+ 	&dev_attr_del_mux.attr,
++	&dev_attr_pass_through.attr,
+ 	NULL,
+ };
+ 
+@@ -510,6 +563,11 @@ static int qmi_wwan_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
+ 	if (info->flags & QMI_WWAN_FLAG_MUX)
+ 		return qmimux_rx_fixup(dev, skb);
+ 
++	if (info->flags & QMI_WWAN_FLAG_PASS_THROUGH) {
++		skb->protocol = htons(ETH_P_MAP);
++		return (netif_rx(skb) == NET_RX_SUCCESS);
++	}
++
+ 	switch (skb->data[0] & 0xf0) {
+ 	case 0x40:
+ 		proto = htons(ETH_P_IP);
 -- 
-2.18.1
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project
 
