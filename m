@@ -2,87 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E7566302A3F
-	for <lists+netdev@lfdr.de>; Mon, 25 Jan 2021 19:31:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D677A302A44
+	for <lists+netdev@lfdr.de>; Mon, 25 Jan 2021 19:31:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726904AbhAYSaS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Jan 2021 13:30:18 -0500
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:44536 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730488AbhAYRMh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 12:12:37 -0500
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 10PGq1p7013149;
-        Mon, 25 Jan 2021 09:09:48 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0220; bh=/g/es+Tg5FBzCKG2QIZyAEonCnsAEgNRvkP3FuHc02k=;
- b=H96ckyJFDgb6mNyXN3R5nbzxvWV7JFHiKHTadKbgbhcZSDnZbLgdQmCaLzOEV5+yiUOD
- qJ8V4MZy7bQkSjw25iBksE3e8UCsErCIntqsIsUn/btYd+TFuqn0b0hk8eMyHv03c9J4
- eDoZ67g8YWyRtJ5vm8tEx8F415VCtsWFquXuC4lUCQVB6Z1dw/HzazXQkb893ErLpydZ
- stpeyE930j50GC9iSalmI4Bv15kiWI8sSZ7yL8VQ0xtpaqIu+Q3vNuvhcCceG+SCDZEN
- lURzi3Y6lvpix4D19sXcGzPyVR6JEsUQxnNnsxFwHmIGpZ/K5RkTMA4+oF/huYolu2f7 Ig== 
-Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0b-0016f401.pphosted.com with ESMTP id 368m6ud2ds-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Mon, 25 Jan 2021 09:09:48 -0800
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 25 Jan
- 2021 09:09:44 -0800
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 25 Jan 2021 09:09:44 -0800
-Received: from stefan-pc.marvell.com (stefan-pc.marvell.com [10.5.25.21])
-        by maili.marvell.com (Postfix) with ESMTP id BC62A3F703F;
-        Mon, 25 Jan 2021 09:09:41 -0800 (PST)
-From:   <stefanc@marvell.com>
-To:     <netdev@vger.kernel.org>
-CC:     <thomas.petazzoni@bootlin.com>, <davem@davemloft.net>,
-        <nadavh@marvell.com>, <ymarkman@marvell.com>,
-        <linux-kernel@vger.kernel.org>, <stefanc@marvell.com>,
-        <kuba@kernel.org>, <linux@armlinux.org.uk>, <mw@semihalf.com>,
-        <andrew@lunn.ch>, <rmk+kernel@armlinux.org.uk>,
-        <atenart@kernel.org>
-Subject: [PATCH v3 RFC net-next 08/19] net: mvpp2: increase RXQ size to 1024 descriptors
-Date:   Mon, 25 Jan 2021 19:07:55 +0200
-Message-ID: <1611594486-29431-9-git-send-email-stefanc@marvell.com>
-X-Mailer: git-send-email 1.9.1
-In-Reply-To: <1611594486-29431-1-git-send-email-stefanc@marvell.com>
-References: <1611594486-29431-1-git-send-email-stefanc@marvell.com>
+        id S1727118AbhAYSbG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Jan 2021 13:31:06 -0500
+Received: from mail-40136.protonmail.ch ([185.70.40.136]:35521 "EHLO
+        mail-40136.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726886AbhAYS2V (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 13:28:21 -0500
+Date:   Mon, 25 Jan 2021 18:27:33 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
+        t=1611599255; bh=BNsVpptmPCWnM/HSD7DFkyRUhexA9u11ZFBtrI8eXBw=;
+        h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
+        b=aw2vpID7+/tcFGlQBlD9SjxMuz+grORCsiUs4coVpZPWcuIL3pf1vkiYfr2JRZaZT
+         EwhVJPGp3/tZwXNjCo8HiBvRNB9hO/AUA499dNaBjQzn5xAam5Sfdypp43gCxrTBsx
+         nZWz6AhMji7ekBopTmogGQmAm02Ir/+PZU0xCzWxobwLTcq9S+o+av/RuMqjxh1qno
+         jCu7otS0DW5MtXXM5XrHrcf1DWg4fRB1uVvyBRofxLUGowVVNpS5WgGrNWzJDCPpP+
+         Yu5v0rgcUcRC4wejN4NhYEol36SE9E3WINOxv3ldpJtKfmAAbgK7gv9F42sBHN7c8x
+         bc+pB4ZowJz6Q==
+To:     David Rientjes <rientjes@google.com>
+From:   Alexander Lobakin <alobakin@pm.me>
+Cc:     Alexander Lobakin <alobakin@pm.me>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Yisen Zhuang <yisen.zhuang@huawei.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Dexuan Cui <decui@microsoft.com>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Marco Elver <elver@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
+        linux-rdma@vger.kernel.org, linux-mm@kvack.org
+Reply-To: Alexander Lobakin <alobakin@pm.me>
+Subject: Re: [PATCH net-next 2/3] net: constify page_is_pfmemalloc() argument at call sites
+Message-ID: <20210125182702.247232-1-alobakin@pm.me>
+In-Reply-To: <85978330-9753-f7a-f263-7a1cfd95b851@google.com>
+References: <20210125164612.243838-1-alobakin@pm.me> <20210125164612.243838-3-alobakin@pm.me> <85978330-9753-f7a-f263-7a1cfd95b851@google.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
- definitions=2021-01-25_07:2021-01-25,2021-01-25 signatures=0
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.2 required=10.0 tests=ALL_TRUSTED,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF shortcircuit=no
+        autolearn=disabled version=3.4.4
+X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on
+        mailout.protonmail.ch
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Stefan Chulski <stefanc@marvell.com>
+From: David Rientjes <rientjes@google.com>
+Date: Mon, 25 Jan 2021 10:19:48 -0800 (PST)
 
-RXQ size increased to support Firmware Flow Control.
-Minimum depletion thresholds to support FC is 1024 buffers.
-Default set to 1024 descriptors and maximum size to 2048.
+> On Mon, 25 Jan 2021, Alexander Lobakin wrote:
+>=20
+> > Constify "page" argument for page_is_pfmemalloc() users where applicabl=
+e.
+> >
+> > Signed-off-by: Alexander Lobakin <alobakin@pm.me>
+> > ---
+> >  drivers/net/ethernet/hisilicon/hns3/hns3_enet.c   | 2 +-
+> >  drivers/net/ethernet/intel/fm10k/fm10k_main.c     | 2 +-
+> >  drivers/net/ethernet/intel/i40e/i40e_txrx.c       | 2 +-
+> >  drivers/net/ethernet/intel/iavf/iavf_txrx.c       | 2 +-
+> >  drivers/net/ethernet/intel/ice/ice_txrx.c         | 2 +-
+> >  drivers/net/ethernet/intel/igb/igb_main.c         | 2 +-
+> >  drivers/net/ethernet/intel/igc/igc_main.c         | 2 +-
+> >  drivers/net/ethernet/intel/ixgbe/ixgbe_main.c     | 2 +-
+> >  drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c | 2 +-
+> >  drivers/net/ethernet/mellanox/mlx5/core/en_rx.c   | 2 +-
+> >  include/linux/skbuff.h                            | 4 ++--
+> >  11 files changed, 12 insertions(+), 12 deletions(-)
+> >
+> > diff --git a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c b/drivers/=
+net/ethernet/hisilicon/hns3/hns3_enet.c
+> > index 512080640cbc..0f8e962b5010 100644
+> > --- a/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+> > +++ b/drivers/net/ethernet/hisilicon/hns3/hns3_enet.c
+> > @@ -2800,7 +2800,7 @@ static void hns3_nic_alloc_rx_buffers(struct hns3=
+_enet_ring *ring,
+> >  =09writel(i, ring->tqp->io_base + HNS3_RING_RX_RING_HEAD_REG);
+> >  }
+> >
+> > -static bool hns3_page_is_reusable(struct page *page)
+> > +static bool hns3_page_is_reusable(const struct page *page)
+> >  {
+> >  =09return page_to_nid(page) =3D=3D numa_mem_id() &&
+> >  =09=09!page_is_pfmemalloc(page);
+>=20
+> Hi Alexander,
 
-Signed-off-by: Stefan Chulski <stefanc@marvell.com>
----
- drivers/net/ethernet/marvell/mvpp2/mvpp2.h | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Hi David!
 
-diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
-index 8dc669d..cac9885 100644
---- a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
-+++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
-@@ -715,8 +715,8 @@
- #define MVPP2_PORT_MAX_RXQ		32
- 
- /* Max number of Rx descriptors */
--#define MVPP2_MAX_RXD_MAX		1024
--#define MVPP2_MAX_RXD_DFLT		128
-+#define MVPP2_MAX_RXD_MAX		2048
-+#define MVPP2_MAX_RXD_DFLT		1024
- 
- /* Max number of Tx descriptors */
- #define MVPP2_MAX_TXD_MAX		2048
--- 
-1.9.1
+> All of these functions appear to be doing the same thing, would it make
+> sense to simply add this to a header file and remove all the code
+> duplication as well?
+
+That's an interesting idea. I'll be glad to do this if drivers'
+maintainers agree it's okay for them.
+
+Thanks,
+Al
 
