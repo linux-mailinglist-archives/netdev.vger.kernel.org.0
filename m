@@ -2,54 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6DFE63028D3
-	for <lists+netdev@lfdr.de>; Mon, 25 Jan 2021 18:28:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 984423028D5
+	for <lists+netdev@lfdr.de>; Mon, 25 Jan 2021 18:28:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730936AbhAYR1b (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Jan 2021 12:27:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55178 "EHLO
+        id S1731019AbhAYR1i (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Jan 2021 12:27:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730976AbhAYR11 (ORCPT
+        with ESMTP id S1730986AbhAYR11 (ORCPT
         <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 12:27:27 -0500
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F11EAC06178C
-        for <netdev@vger.kernel.org>; Mon, 25 Jan 2021 09:26:43 -0800 (PST)
-Received: by mail-yb1-xb49.google.com with SMTP id r1so14698046ybd.23
-        for <netdev@vger.kernel.org>; Mon, 25 Jan 2021 09:26:43 -0800 (PST)
+Received: from mail-qk1-x749.google.com (mail-qk1-x749.google.com [IPv6:2607:f8b0:4864:20::749])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23DACC061793
+        for <netdev@vger.kernel.org>; Mon, 25 Jan 2021 09:26:46 -0800 (PST)
+Received: by mail-qk1-x749.google.com with SMTP id j78so3584897qke.11
+        for <netdev@vger.kernel.org>; Mon, 25 Jan 2021 09:26:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
-        h=sender:date:message-id:mime-version:subject:from:to:cc;
-        bh=KA3LlxQnwkmhXzMgKRGSu/049kauUQh/qhyWcFDQLsw=;
-        b=V6nh5IMS76ftyZlGLqLDoewgIJEdMW2Zra90yrAmvwdaMEN936CBNskkm3q+EgQG5g
-         PhQg0cpS8L6A0wNvabDZ9yMkqfJaP16M3nl5xg0FSF1c7o5E3sVA9ABDpGlocD0h7yk4
-         maKaBdXFLL5JWyfVzsgcHLnHtN3Z3htoKbq93xgSbFhUoElQzVnc8i70KN6aE5pHygB/
-         +Rq9u7ZUtq5ZBvvm+treoM0mDLvNoRtyrwQ1xg2/2cGckE1mtRpS73sDSUxoxqPKf/+N
-         wfzQPSIxBh4Ga5IsluLNLat0faUytbWOnjRLWoE8+CqqbsNVRxGG3jfP4+bVzNJM8WnG
-         +rvQ==
+        h=sender:date:in-reply-to:message-id:mime-version:references:subject
+         :from:to:cc;
+        bh=j8AGqnKKRD78l3wBrmQ20U2ERtehVbx66klZw1aS8fw=;
+        b=CYdJpeBXtcYzpG1EjpK+dBGBDj+xhl20ZjSiYVDFHBTlY4nlS+e0K1phYbyyZbQUC+
+         DL7fceLgw58RvyP4L4g4gVzNPblbgIiUoCac0qJ1VawigxJb0yHTnL3sWbtnloPD6WP4
+         DRFUNqCYiN/DADEU/BK/EGExbqUtqAwLTVFyYa8V4tMKM2AnrgCly4TTgeR8IGDBcg07
+         di5vJ/uZ89eP5+5bTkq5MyzZ/cANuNlPYfxHpiZR8FjeolicGlwQ9ARTXGcsB7qXwppM
+         nifKj2Ag5BZ/czT3M49R5966gT8kdLqsH3HKjc8cXSxONiELwF5gu0VSLxWzXifKdgp9
+         vs4g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:message-id:mime-version:subject:from
-         :to:cc;
-        bh=KA3LlxQnwkmhXzMgKRGSu/049kauUQh/qhyWcFDQLsw=;
-        b=knoWpfN4KOHaUobYoLR/G1DM8BZFppHjlP6UkyIlpvzbbLPB2FfJnqy33kxbMwR3Sz
-         jCy3LqFDyAMkdHs1adg9hnTjTqYfarfuVnr11vHrUzxv+hEVMOhWAG95WjuVeHUNZbuq
-         B0K8aoKEqKKx7dOlhn2UaH30GKEDGGp60eGD6awNZlNX/QtJAA72tNer6KpbqHxfCIJ1
-         FoGO2IjKU71alnlMMWoXl1GFWQOLsWJa/2s44dHUCVcQYxTT3LxX2a7G6jZQz3rPyCbZ
-         Skkro9tnaajwKCs8+ZRtBxSD1THJAJRUgGU4oyYjb6iSZnDpvNPRRYKeXPjFbjqRM19C
-         idAQ==
-X-Gm-Message-State: AOAM53143X8J0/PKSXMyAWGLWLUe4rw8Kk++Wurin1Rtlj24POFt1M9O
-        LiAwQmujyhS2Q4NnryzzIvcFb9Dpc7gKDULc0SlT37XOx/0+9K9A6n8Gm9yMRFctesnShMd1b3v
-        nZmfulfapextyDPOSfQczRgP7DOdWGyqAueqjDl3hDOZt1G2X+veNfA==
-X-Google-Smtp-Source: ABdhPJxz6sdwlX3nPSIQc7dEuiq9f6kR42g502zBcg5N6H9eXE16/Rwg7pVK+TdPJ53ARsEv5P/Q0QY=
+        h=x-gm-message-state:sender:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=j8AGqnKKRD78l3wBrmQ20U2ERtehVbx66klZw1aS8fw=;
+        b=ddx6sTlD+/fDHR1XJgOK7smHWh0b15g9QS/AIYEGeXijLo1iGALUiYMRPLCpYcaMDD
+         WWUeZjB6TG0gXE90eNLzcHbJnWHorSWqwxa6Bzfj/WyCICQJoRt4LNoQ/gn9JF7vlsog
+         sLpFAzLs7zfm8EoTuHibZdY3hYxdSP2tgSEN1xY96cHlC2myP7ZND5pVNhTSPYFgCgKz
+         DZhUUfSBV/BXyzWLe1ApcKId9H0NWs1TD7D/UNo5Rm8a1pFBBNwREccPDwwKcG0WKB9S
+         bQiV/AHM5u9XLtm48HU3eqKSn7O1SoM6wyPh21OyGYOEf5YjcJK1HcpDMj4GtFZlcDOQ
+         fiHA==
+X-Gm-Message-State: AOAM531ZjBnqmu+4UB999hySUkxF287CEm/ek9Ch/bkpAcv3VYt+ARkU
+        Xm9YCkB5bRxyntX9sJ3cHM+40fA0/WMaBpIvPoL2IG9qElIE13XyxaLtdGG8GCQPHh5eVtKIeCk
+        7MV+D33utMJmXYpf54LwKgDQ57vaqK3vKN4WLmiVXUx5ogKqtjgU1vA==
+X-Google-Smtp-Source: ABdhPJwLb8Rlc6AkymUL6JDDLL3heBNAIulj1bPeZB0401yriLCGiKY9Xh59QwS+QVmdBo9z7IfEw2o=
 Sender: "sdf via sendgmr" <sdf@sdf2.svl.corp.google.com>
 X-Received: from sdf2.svl.corp.google.com ([2620:15c:2c4:1:7220:84ff:fe09:7732])
- (user=sdf job=sendgmr) by 2002:a25:aba4:: with SMTP id v33mr2483446ybi.388.1611595603151;
- Mon, 25 Jan 2021 09:26:43 -0800 (PST)
-Date:   Mon, 25 Jan 2021 09:26:40 -0800
-Message-Id: <20210125172641.3008234-1-sdf@google.com>
+ (user=sdf job=sendgmr) by 2002:a0c:fd68:: with SMTP id k8mr1746663qvs.56.1611595605132;
+ Mon, 25 Jan 2021 09:26:45 -0800 (PST)
+Date:   Mon, 25 Jan 2021 09:26:41 -0800
+In-Reply-To: <20210125172641.3008234-1-sdf@google.com>
+Message-Id: <20210125172641.3008234-2-sdf@google.com>
 Mime-Version: 1.0
+References: <20210125172641.3008234-1-sdf@google.com>
 X-Mailer: git-send-email 2.30.0.280.ga3ce27912f-goog
-Subject: [PATCH bpf-next v2 1/2] bpf: allow rewriting to ports under ip_unprivileged_port_start
+Subject: [PATCH bpf-next v2 2/2] selftests/bpf: verify that rebinding to port
+ < 1024 from BPF works
 From:   Stanislav Fomichev <sdf@google.com>
 To:     netdev@vger.kernel.org, bpf@vger.kernel.org
 Cc:     ast@kernel.org, daniel@iogearbox.net,
@@ -60,298 +64,153 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-At the moment, BPF_CGROUP_INET{4,6}_BIND hooks can rewrite user_port
-to the privileged ones (< ip_unprivileged_port_start), but it will
-be rejected later on in the __inet_bind or __inet6_bind.
-
-Let's export 'port_changed' event from the BPF program and bypass
-ip_unprivileged_port_start range check when we've seen that
-the program explicitly overrode the port. This is accomplished
-by generating instructions to set ctx->port_changed along with
-updating ctx->user_port.
+BPF rewrites from 111 to 111, but it still should mark the port as
+"changed".
+We also verify that if port isn't touched by BPF, it's still prohibited.
 
 Cc: Andrey Ignatov <rdna@fb.com>
 Cc: Martin KaFai Lau <kafai@fb.com>
 Signed-off-by: Stanislav Fomichev <sdf@google.com>
 ---
- include/linux/bpf-cgroup.h | 38 ++++++++++++++++++++++++---------
- include/linux/bpf.h        | 43 ++++++++++++++++++++++----------------
- include/net/inet_common.h  |  3 +++
- kernel/bpf/cgroup.c        |  8 +++++--
- kernel/bpf/verifier.c      |  5 +++++
- net/ipv4/af_inet.c         |  9 +++++---
- net/ipv6/af_inet6.c        |  6 ++++--
- 7 files changed, 77 insertions(+), 35 deletions(-)
+ .../selftests/bpf/prog_tests/bind_perm.c      | 85 +++++++++++++++++++
+ tools/testing/selftests/bpf/progs/bind_perm.c | 36 ++++++++
+ 2 files changed, 121 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/bind_perm.c
+ create mode 100644 tools/testing/selftests/bpf/progs/bind_perm.c
 
-diff --git a/include/linux/bpf-cgroup.h b/include/linux/bpf-cgroup.h
-index 0748fd87969e..6232745bae9b 100644
---- a/include/linux/bpf-cgroup.h
-+++ b/include/linux/bpf-cgroup.h
-@@ -125,7 +125,8 @@ int __cgroup_bpf_run_filter_sk(struct sock *sk,
- int __cgroup_bpf_run_filter_sock_addr(struct sock *sk,
- 				      struct sockaddr *uaddr,
- 				      enum bpf_attach_type type,
--				      void *t_ctx);
-+				      void *t_ctx,
-+				      u32 *flags);
- 
- int __cgroup_bpf_run_filter_sock_ops(struct sock *sk,
- 				     struct bpf_sock_ops_kern *sock_ops,
-@@ -231,30 +232,48 @@ int bpf_percpu_cgroup_storage_update(struct bpf_map *map, void *key,
- 
- #define BPF_CGROUP_RUN_SA_PROG(sk, uaddr, type)				       \
- ({									       \
-+	u32 __unused_flags;						       \
- 	int __ret = 0;							       \
- 	if (cgroup_bpf_enabled(type))					       \
- 		__ret = __cgroup_bpf_run_filter_sock_addr(sk, uaddr, type,     \
--							  NULL);	       \
-+							  NULL,		       \
-+							  &__unused_flags);    \
- 	__ret;								       \
- })
- 
- #define BPF_CGROUP_RUN_SA_PROG_LOCK(sk, uaddr, type, t_ctx)		       \
- ({									       \
-+	u32 __unused_flags;						       \
- 	int __ret = 0;							       \
- 	if (cgroup_bpf_enabled(type))	{				       \
- 		lock_sock(sk);						       \
- 		__ret = __cgroup_bpf_run_filter_sock_addr(sk, uaddr, type,     \
--							  t_ctx);	       \
-+							  t_ctx,	       \
-+							  &__unused_flags);    \
- 		release_sock(sk);					       \
- 	}								       \
- 	__ret;								       \
- })
- 
--#define BPF_CGROUP_RUN_PROG_INET4_BIND_LOCK(sk, uaddr)			       \
--	BPF_CGROUP_RUN_SA_PROG_LOCK(sk, uaddr, BPF_CGROUP_INET4_BIND, NULL)
--
--#define BPF_CGROUP_RUN_PROG_INET6_BIND_LOCK(sk, uaddr)			       \
--	BPF_CGROUP_RUN_SA_PROG_LOCK(sk, uaddr, BPF_CGROUP_INET6_BIND, NULL)
-+/* BPF_CGROUP_INET4_BIND and BPF_CGROUP_INET6_BIND can return extra flags
-+ * via upper bits of return code. The only flag that is supported
-+ * (at bit position 0) is to indicate CAP_NET_BIND_SERVICE capability check
-+ * should be bypassed.
-+ */
-+#define BPF_CGROUP_RUN_PROG_INET_BIND_LOCK(sk, uaddr, type, flags)	       \
-+({									       \
-+	u32 __flags = 0;						       \
-+	int __ret = 0;							       \
-+	if (cgroup_bpf_enabled(type))	{				       \
-+		lock_sock(sk);						       \
-+		__ret = __cgroup_bpf_run_filter_sock_addr(sk, uaddr, type,     \
-+							  NULL, &__flags);     \
-+		release_sock(sk);					       \
-+		if (__flags & 1)					       \
-+			*flags |= BIND_NO_CAP_NET_BIND_SERVICE;		       \
-+	}								       \
-+	__ret;								       \
-+})
- 
- #define BPF_CGROUP_PRE_CONNECT_ENABLED(sk)				       \
- 	((cgroup_bpf_enabled(BPF_CGROUP_INET4_CONNECT) ||		       \
-@@ -453,8 +472,7 @@ static inline int bpf_percpu_cgroup_storage_update(struct bpf_map *map,
- #define BPF_CGROUP_RUN_PROG_INET_EGRESS(sk,skb) ({ 0; })
- #define BPF_CGROUP_RUN_PROG_INET_SOCK(sk) ({ 0; })
- #define BPF_CGROUP_RUN_PROG_INET_SOCK_RELEASE(sk) ({ 0; })
--#define BPF_CGROUP_RUN_PROG_INET4_BIND_LOCK(sk, uaddr) ({ 0; })
--#define BPF_CGROUP_RUN_PROG_INET6_BIND_LOCK(sk, uaddr) ({ 0; })
-+#define BPF_CGROUP_RUN_PROG_INET_BIND_LOCK(sk, uaddr, type, flags) ({ 0; })
- #define BPF_CGROUP_RUN_PROG_INET4_POST_BIND(sk) ({ 0; })
- #define BPF_CGROUP_RUN_PROG_INET6_POST_BIND(sk) ({ 0; })
- #define BPF_CGROUP_RUN_PROG_INET4_CONNECT(sk, uaddr) ({ 0; })
-diff --git a/include/linux/bpf.h b/include/linux/bpf.h
-index 1aac2af12fed..08eee284d251 100644
---- a/include/linux/bpf.h
-+++ b/include/linux/bpf.h
-@@ -1073,6 +1073,29 @@ int bpf_prog_array_copy(struct bpf_prog_array *old_array,
- 			struct bpf_prog *include_prog,
- 			struct bpf_prog_array **new_array);
- 
-+#define BPF_PROG_RUN_ARRAY_FLAGS(array, ctx, func, flags)		\
-+	({								\
-+		struct bpf_prog_array_item *_item;			\
-+		struct bpf_prog *_prog;					\
-+		struct bpf_prog_array *_array;				\
-+		u32 _ret = 1;						\
-+		u32 ret;						\
-+		migrate_disable();					\
-+		rcu_read_lock();					\
-+		_array = rcu_dereference(array);			\
-+		_item = &_array->items[0];				\
-+		while ((_prog = READ_ONCE(_item->prog))) {		\
-+			bpf_cgroup_storage_set(_item->cgroup_storage);	\
-+			ret = func(_prog, ctx);				\
-+			_ret &= (ret & 1);				\
-+			*(flags) |= (ret >> 1);				\
-+			_item++;					\
-+		}							\
-+		rcu_read_unlock();					\
-+		migrate_enable();					\
-+		_ret;							\
-+	 })
+diff --git a/tools/testing/selftests/bpf/prog_tests/bind_perm.c b/tools/testing/selftests/bpf/prog_tests/bind_perm.c
+new file mode 100644
+index 000000000000..61307d4494bf
+--- /dev/null
++++ b/tools/testing/selftests/bpf/prog_tests/bind_perm.c
+@@ -0,0 +1,85 @@
++// SPDX-License-Identifier: GPL-2.0
++#include <test_progs.h>
++#include "bind_perm.skel.h"
 +
- #define __BPF_PROG_RUN_ARRAY(array, ctx, func, check_non_null)	\
- 	({						\
- 		struct bpf_prog_array_item *_item;	\
-@@ -1120,25 +1143,9 @@ _out:							\
-  */
- #define BPF_PROG_CGROUP_INET_EGRESS_RUN_ARRAY(array, ctx, func)		\
- 	({						\
--		struct bpf_prog_array_item *_item;	\
--		struct bpf_prog *_prog;			\
--		struct bpf_prog_array *_array;		\
--		u32 ret;				\
--		u32 _ret = 1;				\
- 		u32 _cn = 0;				\
--		migrate_disable();			\
--		rcu_read_lock();			\
--		_array = rcu_dereference(array);	\
--		_item = &_array->items[0];		\
--		while ((_prog = READ_ONCE(_item->prog))) {		\
--			bpf_cgroup_storage_set(_item->cgroup_storage);	\
--			ret = func(_prog, ctx);		\
--			_ret &= (ret & 1);		\
--			_cn |= (ret & 2);		\
--			_item++;			\
--		}					\
--		rcu_read_unlock();			\
--		migrate_enable();			\
-+		u32 _ret;				\
-+		_ret = BPF_PROG_RUN_ARRAY_FLAGS(array, ctx, func, &_cn); \
- 		if (_ret)				\
- 			_ret = (_cn ? NET_XMIT_CN : NET_XMIT_SUCCESS);	\
- 		else					\
-diff --git a/include/net/inet_common.h b/include/net/inet_common.h
-index cb2818862919..9ba935c15869 100644
---- a/include/net/inet_common.h
-+++ b/include/net/inet_common.h
-@@ -41,6 +41,9 @@ int inet_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len);
- #define BIND_WITH_LOCK			(1 << 1)
- /* Called from BPF program. */
- #define BIND_FROM_BPF			(1 << 2)
-+/* Skip CAP_NET_BIND_SERVICE check. */
-+#define BIND_NO_CAP_NET_BIND_SERVICE	(1 << 3)
++#include <sys/types.h>
++#include <sys/socket.h>
++#include <sys/capability.h>
 +
- int __inet_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len,
- 		u32 flags);
- int inet_getname(struct socket *sock, struct sockaddr *uaddr,
-diff --git a/kernel/bpf/cgroup.c b/kernel/bpf/cgroup.c
-index da649f20d6b2..cdf3c7e611d9 100644
---- a/kernel/bpf/cgroup.c
-+++ b/kernel/bpf/cgroup.c
-@@ -1055,6 +1055,8 @@ EXPORT_SYMBOL(__cgroup_bpf_run_filter_sk);
-  * @uaddr: sockaddr struct provided by user
-  * @type: The type of program to be exectuted
-  * @t_ctx: Pointer to attach type specific context
-+ * @flags: Pointer to u32 which contains higher bits of BPF program
-+ *         return value (OR'ed together).
-  *
-  * socket is expected to be of type INET or INET6.
-  *
-@@ -1064,7 +1066,8 @@ EXPORT_SYMBOL(__cgroup_bpf_run_filter_sk);
- int __cgroup_bpf_run_filter_sock_addr(struct sock *sk,
- 				      struct sockaddr *uaddr,
- 				      enum bpf_attach_type type,
--				      void *t_ctx)
-+				      void *t_ctx,
-+				      u32 *flags)
- {
- 	struct bpf_sock_addr_kern ctx = {
- 		.sk = sk,
-@@ -1087,7 +1090,8 @@ int __cgroup_bpf_run_filter_sock_addr(struct sock *sk,
- 	}
- 
- 	cgrp = sock_cgroup_ptr(&sk->sk_cgrp_data);
--	ret = BPF_PROG_RUN_ARRAY(cgrp->bpf.effective[type], &ctx, BPF_PROG_RUN);
-+	ret = BPF_PROG_RUN_ARRAY_FLAGS(cgrp->bpf.effective[type], &ctx,
-+				       BPF_PROG_RUN, flags);
- 
- 	return ret == 1 ? 0 : -EPERM;
- }
-diff --git a/kernel/bpf/verifier.c b/kernel/bpf/verifier.c
-index d0eae51b31e4..ef7c3ca53214 100644
---- a/kernel/bpf/verifier.c
-+++ b/kernel/bpf/verifier.c
-@@ -7986,6 +7986,11 @@ static int check_return_code(struct bpf_verifier_env *env)
- 		    env->prog->expected_attach_type == BPF_CGROUP_INET4_GETSOCKNAME ||
- 		    env->prog->expected_attach_type == BPF_CGROUP_INET6_GETSOCKNAME)
- 			range = tnum_range(1, 1);
-+		if (env->prog->expected_attach_type == BPF_CGROUP_INET4_BIND ||
-+		    env->prog->expected_attach_type == BPF_CGROUP_INET6_BIND) {
-+			range = tnum_range(0, 3);
-+			enforce_attach_type_range = tnum_range(0, 3);
-+		}
- 		break;
- 	case BPF_PROG_TYPE_CGROUP_SKB:
- 		if (env->prog->expected_attach_type == BPF_CGROUP_INET_EGRESS) {
-diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
-index 6ba2930ff49b..aaa94bea19c3 100644
---- a/net/ipv4/af_inet.c
-+++ b/net/ipv4/af_inet.c
-@@ -438,6 +438,7 @@ EXPORT_SYMBOL(inet_release);
- int inet_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len)
- {
- 	struct sock *sk = sock->sk;
-+	u32 flags = BIND_WITH_LOCK;
- 	int err;
- 
- 	/* If the socket has its own bind function then use it. (RAW) */
-@@ -450,11 +451,12 @@ int inet_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len)
- 	/* BPF prog is run before any checks are done so that if the prog
- 	 * changes context in a wrong way it will be caught.
- 	 */
--	err = BPF_CGROUP_RUN_PROG_INET4_BIND_LOCK(sk, uaddr);
-+	err = BPF_CGROUP_RUN_PROG_INET_BIND_LOCK(sk, uaddr,
-+						 BPF_CGROUP_INET4_BIND, &flags);
- 	if (err)
- 		return err;
- 
--	return __inet_bind(sk, uaddr, addr_len, BIND_WITH_LOCK);
-+	return __inet_bind(sk, uaddr, addr_len, flags);
- }
- EXPORT_SYMBOL(inet_bind);
- 
-@@ -499,7 +501,8 @@ int __inet_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len,
- 
- 	snum = ntohs(addr->sin_port);
- 	err = -EACCES;
--	if (snum && inet_port_requires_bind_service(net, snum) &&
-+	if (!(flags & BIND_NO_CAP_NET_BIND_SERVICE) &&
-+	    snum && inet_port_requires_bind_service(net, snum) &&
- 	    !ns_capable(net->user_ns, CAP_NET_BIND_SERVICE))
- 		goto out;
- 
-diff --git a/net/ipv6/af_inet6.c b/net/ipv6/af_inet6.c
-index b9c654836b72..3e523c4f5226 100644
---- a/net/ipv6/af_inet6.c
-+++ b/net/ipv6/af_inet6.c
-@@ -439,6 +439,7 @@ static int __inet6_bind(struct sock *sk, struct sockaddr *uaddr, int addr_len,
- int inet6_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len)
- {
- 	struct sock *sk = sock->sk;
-+	u32 flags = BIND_WITH_LOCK;
- 	int err = 0;
- 
- 	/* If the socket has its own bind function then use it. */
-@@ -451,11 +452,12 @@ int inet6_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len)
- 	/* BPF prog is run before any checks are done so that if the prog
- 	 * changes context in a wrong way it will be caught.
- 	 */
--	err = BPF_CGROUP_RUN_PROG_INET6_BIND_LOCK(sk, uaddr);
-+	err = BPF_CGROUP_RUN_PROG_INET_BIND_LOCK(sk, uaddr,
-+						 BPF_CGROUP_INET6_BIND, &flags);
- 	if (err)
- 		return err;
- 
--	return __inet6_bind(sk, uaddr, addr_len, BIND_WITH_LOCK);
-+	return __inet6_bind(sk, uaddr, addr_len, flags);
- }
- EXPORT_SYMBOL(inet6_bind);
- 
++static int duration;
++
++void try_bind(int port, int expected_errno)
++{
++	struct sockaddr_in sin = {};
++	int fd = -1;
++
++	fd = socket(AF_INET, SOCK_STREAM, 0);
++	if (CHECK(fd < 0, "fd", "errno %d", errno))
++		goto close_socket;
++
++	sin.sin_family = AF_INET;
++	sin.sin_port = htons(port);
++
++	errno = 0;
++	bind(fd, (struct sockaddr *)&sin, sizeof(sin));
++	ASSERT_EQ(errno, expected_errno, "bind");
++
++close_socket:
++	if (fd >= 0)
++		close(fd);
++}
++
++void cap_net_bind_service(cap_flag_value_t flag)
++{
++	const cap_value_t cap_net_bind_service = CAP_NET_BIND_SERVICE;
++	cap_t caps;
++
++	caps = cap_get_proc();
++	if (CHECK(!caps, "cap_get_proc", "errno %d", errno))
++		goto free_caps;
++
++	if (CHECK(cap_set_flag(caps, CAP_EFFECTIVE, 1, &cap_net_bind_service,
++			       CAP_CLEAR),
++		  "cap_set_flag", "errno %d", errno))
++		goto free_caps;
++
++	if (CHECK(cap_set_flag(caps, CAP_EFFECTIVE, 1, &cap_net_bind_service,
++			       CAP_CLEAR),
++		  "cap_set_flag", "errno %d", errno))
++		goto free_caps;
++
++	if (CHECK(cap_set_proc(caps), "cap_set_proc", "errno %d", errno))
++		goto free_caps;
++
++free_caps:
++	if (CHECK(cap_free(caps), "cap_free", "errno %d", errno))
++		goto free_caps;
++}
++
++void test_bind_perm(void)
++{
++	struct bind_perm *skel;
++	int cgroup_fd;
++
++	cgroup_fd = test__join_cgroup("/bind_perm");
++	if (CHECK(cgroup_fd < 0, "cg-join", "errno %d", errno))
++		return;
++
++	skel = bind_perm__open_and_load();
++	if (!ASSERT_OK_PTR(skel, "skel"))
++		goto close_cgroup_fd;
++
++	skel->links.bind_v4_prog = bpf_program__attach_cgroup(skel->progs.bind_v4_prog, cgroup_fd);
++	if (!ASSERT_OK_PTR(skel, "bind_v4_prog"))
++		goto close_skeleton;
++
++	cap_net_bind_service(CAP_CLEAR);
++	try_bind(110, EACCES);
++	try_bind(111, 0);
++	cap_net_bind_service(CAP_SET);
++
++close_skeleton:
++	bind_perm__destroy(skel);
++close_cgroup_fd:
++	close(cgroup_fd);
++}
+diff --git a/tools/testing/selftests/bpf/progs/bind_perm.c b/tools/testing/selftests/bpf/progs/bind_perm.c
+new file mode 100644
+index 000000000000..31ae8d599796
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/bind_perm.c
+@@ -0,0 +1,36 @@
++// SPDX-License-Identifier: GPL-2.0
++
++#include <linux/stddef.h>
++#include <linux/bpf.h>
++#include <sys/types.h>
++#include <sys/socket.h>
++#include <bpf/bpf_helpers.h>
++#include <bpf/bpf_endian.h>
++
++SEC("cgroup/bind4")
++int bind_v4_prog(struct bpf_sock_addr *ctx)
++{
++	struct bpf_sock *sk;
++	__u32 user_ip4;
++	__u16 user_port;
++
++	sk = ctx->sk;
++	if (!sk)
++		return 0;
++
++	if (sk->family != AF_INET)
++		return 0;
++
++	if (ctx->type != SOCK_STREAM)
++		return 0;
++
++	/* Rewriting to the same value should still cause
++	 * permission check to be bypassed.
++	 */
++	if (ctx->user_port == bpf_htons(111))
++		return 3;
++
++	return 1;
++}
++
++char _license[] SEC("license") = "GPL";
 -- 
 2.30.0.280.ga3ce27912f-goog
 
