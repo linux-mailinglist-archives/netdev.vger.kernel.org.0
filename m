@@ -2,152 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4DC0E302B10
-	for <lists+netdev@lfdr.de>; Mon, 25 Jan 2021 20:05:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 81262302B32
+	for <lists+netdev@lfdr.de>; Mon, 25 Jan 2021 20:11:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731462AbhAYTE0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Jan 2021 14:04:26 -0500
-Received: from mga05.intel.com ([192.55.52.43]:23761 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731474AbhAYTDb (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 25 Jan 2021 14:03:31 -0500
-IronPort-SDR: bGC9/PdAsvtihFD6eMErOhiSmYhtRdE+ccRPy9WWj7HRTCoeesN6+wybzpaWDFYqOxzhxX2g5N
- PVozCA4ciu2Q==
-X-IronPort-AV: E=McAfee;i="6000,8403,9875"; a="264604210"
-X-IronPort-AV: E=Sophos;i="5.79,374,1602572400"; 
-   d="scan'208";a="264604210"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2021 10:59:27 -0800
-IronPort-SDR: +rrohAqSpJMPRD4Wl0dK7N8pQP6h89vUAdKlQRyjmtohOx0g3FmpaQEUDBQsV8+KE3BhJEm4mC
- nMk+9QiVdVxA==
-X-IronPort-AV: E=Sophos;i="5.79,374,1602572400"; 
-   d="scan'208";a="361637476"
-Received: from mjmartin-desk2.amr.corp.intel.com (HELO mjmartin-desk2.intel.com) ([10.254.126.22])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2021 10:59:26 -0800
-From:   Mat Martineau <mathew.j.martineau@linux.intel.com>
-To:     netdev@vger.kernel.org
-Cc:     Geliang Tang <geliangtang@gmail.com>, davem@davemloft.net,
-        kuba@kernel.org, mptcp@lists.01.org,
-        Matthieu Baerts <matthieu.baerts@tessares.net>,
-        Mat Martineau <mathew.j.martineau@linux.intel.com>
-Subject: [PATCH net-next 4/5] selftests: mptcp: add IPv4-mapped IPv6 testcases
-Date:   Mon, 25 Jan 2021 10:59:03 -0800
-Message-Id: <20210125185904.6997-5-mathew.j.martineau@linux.intel.com>
-X-Mailer: git-send-email 2.30.0
-In-Reply-To: <20210125185904.6997-1-mathew.j.martineau@linux.intel.com>
-References: <20210125185904.6997-1-mathew.j.martineau@linux.intel.com>
+        id S1731626AbhAYTKy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Jan 2021 14:10:54 -0500
+Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:16688 "EHLO
+        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727131AbhAYTKQ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 14:10:16 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B600f17700000>; Mon, 25 Jan 2021 11:09:36 -0800
+Received: from HKMAIL103.nvidia.com (10.18.16.12) by HQMAIL101.nvidia.com
+ (172.20.187.10) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 25 Jan
+ 2021 19:09:35 +0000
+Received: from HKMAIL104.nvidia.com (10.18.16.13) by HKMAIL103.nvidia.com
+ (10.18.16.12) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 25 Jan
+ 2021 19:09:28 +0000
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.171)
+ by HKMAIL104.nvidia.com (10.18.16.13) with Microsoft SMTP Server (TLS) id
+ 15.0.1473.3 via Frontend Transport; Mon, 25 Jan 2021 19:09:28 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=l/4wBZxEjB4zGcP741SuUOuoo6eayOi/RYxrd2DdSUSRI6Knbjsj9V8GRoBaMATCr0x0i+lJSXfaEvwx1rgyWwFtaiKkwHfyuZ9vi9pNcoEBIJyxvyBynf18I94P0V/PE87W6A+as9y10v5LUD5Wig3C6FnStI4ghCM4uWp//wroEiYWjvbbmBWpHBxWIHeATGwt4Wzh/rfnowMIgQcSUHisw9UWYhXx0wiNB4w23M5tgKwCmnLBcXwFfpsDS3u9M7aH+zHtbRHk+CtOp91v7wn7r+y7bEWfpe4NxN81rUR3W/vgup02CVP/DfCuX1e+lmHAt3Av5z+lwle9erEZ1g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=pABo+Vp1poNCDyyXRHs/mEbDRfxMu5RVsZ3daU61PRk=;
+ b=RFWmVmfLat3fLqGHTneLazroGEnId+33jZsCqcLa++A4ItGGlNrn5whjHfRLyH6LbJdEFulckgft/PYzGn6/ldngRoNaZ3iEupCCEwNrL4PPKhi18JywCE7dwGFFA9u+lzslOZj0ugW1+5ToGoGWLr8J5bdME3Izs+a07dpCCCa0ZTeNpm9/wV8DbEMxQAv3kFiUOkRQk64hM/KH53o6M+ijDhWJVdXWEkqrQSCNa7vwrYhXN7UHdwxO5yPGqv7qcRw9HEtK4khQKcafNApU1rXwOEqUt1zm5SvYnzNejSDkr8pM/quR2b/zGItCy6R76LRMd4SLDGyl7pnTrUwEpw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
+ by DM5PR12MB2437.namprd12.prod.outlook.com (2603:10b6:4:ba::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3784.13; Mon, 25 Jan
+ 2021 19:09:25 +0000
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::546d:512c:72fa:4727]) by DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::546d:512c:72fa:4727%7]) with mapi id 15.20.3784.017; Mon, 25 Jan 2021
+ 19:09:25 +0000
+Date:   Mon, 25 Jan 2021 15:09:23 -0400
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Shiraz Saleem <shiraz.saleem@intel.com>
+CC:     <dledford@redhat.com>, <kuba@kernel.org>, <davem@davemloft.net>,
+        <linux-rdma@vger.kernel.org>, <gregkh@linuxfoundation.org>,
+        <netdev@vger.kernel.org>, <david.m.ertman@intel.com>,
+        <anthony.l.nguyen@intel.com>
+Subject: Re: [PATCH 04/22] ice: Register auxiliary device to provide RDMA
+Message-ID: <20210125190923.GV4147@nvidia.com>
+References: <20210122234827.1353-1-shiraz.saleem@intel.com>
+ <20210122234827.1353-5-shiraz.saleem@intel.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20210122234827.1353-5-shiraz.saleem@intel.com>
+X-ClientProxiedBy: MN2PR10CA0019.namprd10.prod.outlook.com
+ (2603:10b6:208:120::32) To DM6PR12MB3834.namprd12.prod.outlook.com
+ (2603:10b6:5:14a::12)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from mlx.ziepe.ca (142.162.115.133) by MN2PR10CA0019.namprd10.prod.outlook.com (2603:10b6:208:120::32) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3784.12 via Frontend Transport; Mon, 25 Jan 2021 19:09:24 +0000
+Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1l47Ep-006i3K-HU; Mon, 25 Jan 2021 15:09:23 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1611601776; bh=pABo+Vp1poNCDyyXRHs/mEbDRfxMu5RVsZ3daU61PRk=;
+        h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:Date:
+         From:To:CC:Subject:Message-ID:References:Content-Type:
+         Content-Disposition:In-Reply-To:X-ClientProxiedBy:MIME-Version:
+         X-MS-Exchange-MessageSentRepresentingType;
+        b=SqPZezi8ofhtC6cdfI2/rPBJkO2GeIf0fsEYsI5ORMbvuk+G23T6zj/oglQ9Rz5Px
+         UizeUBjHYj7hugLpec5saq82lEdKgzv25gXKPm0y3bn3ICi/PqMlbdfoWW6e5l+jUu
+         S9IJ23qC/X9BpsQDqOIYZ5GZ8aAUQSWbA9PArxQgAX9wUzbY9Cqcy++M9gg/hE+t4R
+         tqxDZSfHn9QkX3kGzRfthWsVvfY3GU4L9s+0slY/iPx2ew9Xs+teWAgDQ8r/yAyFV2
+         MbQMBmSQUS4WcHJwRZtJ0qcq+Q/zLiWPtoPLLfy++Edi8iTWfP7dVHTjGycRR1MYD6
+         wbTaAoDtDLR8g==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Geliang Tang <geliangtang@gmail.com>
+On Fri, Jan 22, 2021 at 05:48:09PM -0600, Shiraz Saleem wrote:
+> +static void ice_peer_adev_release(struct device *dev)
+> +{
+> +	struct iidc_auxiliary_object *abo;
+> +	struct auxiliary_device *adev;
+> +
+> +	adev = container_of(dev, struct auxiliary_device, dev);
+> +	abo = container_of(adev, struct iidc_auxiliary_object, adev);
 
-Here, we make sure we support IPv4-mapped in IPv6 addresses in different
-contexts:
+This is just
 
-- a v4-mapped address is received by the PM and can be used as v4.
-- a v4 address is received by the PM and can be used even with a v4
-  mapped socket.
+ container_of(dev, struct iidc_auxiliary_object, adev.dev);
 
-We also make sure we don't try to establish subflows between v4 and v6
-addresses, e.g. if a real v6 address ends with a valid v4 address.
+> @@ -1254,20 +1282,37 @@ int ice_init_peer_devices(struct ice_pf *pf)
+>  		 * |--> iidc_peer_obj
+>  		 * |--> *ice_peer_drv_int
+>  		 *
+> +		 * iidc_auxiliary_object (container_of parent for adev)
+> +		 * |--> auxiliary_device
+> +		 * |--> *iidc_peer_obj (pointer from internal struct)
+> +		 *
+>  		 * ice_peer_drv_int (internal only peer_drv struct)
+>  		 */
+>  		peer_obj_int = kzalloc(sizeof(*peer_obj_int), GFP_KERNEL);
+> -		if (!peer_obj_int)
+> +		if (!peer_obj_int) {
+> +			ida_simple_remove(&ice_peer_ida, id);
+>  			return -ENOMEM;
+> +		}
 
-Co-developed-by: Matthieu Baerts <matthieu.baerts@tessares.net>
-Signed-off-by: Matthieu Baerts <matthieu.baerts@tessares.net>
-Signed-off-by: Geliang Tang <geliangtang@gmail.com>
-Signed-off-by: Mat Martineau <mathew.j.martineau@linux.intel.com>
----
- .../testing/selftests/net/mptcp/mptcp_join.sh | 75 +++++++++++++++++++
- 1 file changed, 75 insertions(+)
+Why is this allocated memory with a lifetime different from the aux
+device?
 
-diff --git a/tools/testing/selftests/net/mptcp/mptcp_join.sh b/tools/testing/selftests/net/mptcp/mptcp_join.sh
-index f74cd993b168..be34b9ccbd20 100755
---- a/tools/testing/selftests/net/mptcp/mptcp_join.sh
-+++ b/tools/testing/selftests/net/mptcp/mptcp_join.sh
-@@ -790,6 +790,81 @@ chk_join_nr "remove subflow and signal IPv6" 2 2 2
- chk_add_nr 1 1
- chk_rm_nr 1 1
- 
-+# subflow IPv4-mapped to IPv4-mapped
-+reset
-+ip netns exec $ns1 ./pm_nl_ctl limits 0 1
-+ip netns exec $ns2 ./pm_nl_ctl limits 0 1
-+ip netns exec $ns2 ./pm_nl_ctl add "::ffff:10.0.3.2" flags subflow
-+run_tests $ns1 $ns2 "::ffff:10.0.1.1"
-+chk_join_nr "single subflow IPv4-mapped" 1 1 1
-+
-+# signal address IPv4-mapped with IPv4-mapped sk
-+reset
-+ip netns exec $ns1 ./pm_nl_ctl limits 0 1
-+ip netns exec $ns2 ./pm_nl_ctl limits 1 1
-+ip netns exec $ns1 ./pm_nl_ctl add "::ffff:10.0.2.1" flags signal
-+run_tests $ns1 $ns2 "::ffff:10.0.1.1"
-+chk_join_nr "signal address IPv4-mapped" 1 1 1
-+chk_add_nr 1 1
-+
-+# subflow v4-map-v6
-+reset
-+ip netns exec $ns1 ./pm_nl_ctl limits 0 1
-+ip netns exec $ns2 ./pm_nl_ctl limits 0 1
-+ip netns exec $ns2 ./pm_nl_ctl add 10.0.3.2 flags subflow
-+run_tests $ns1 $ns2 "::ffff:10.0.1.1"
-+chk_join_nr "single subflow v4-map-v6" 1 1 1
-+
-+# signal address v4-map-v6
-+reset
-+ip netns exec $ns1 ./pm_nl_ctl limits 0 1
-+ip netns exec $ns2 ./pm_nl_ctl limits 1 1
-+ip netns exec $ns1 ./pm_nl_ctl add 10.0.2.1 flags signal
-+run_tests $ns1 $ns2 "::ffff:10.0.1.1"
-+chk_join_nr "signal address v4-map-v6" 1 1 1
-+chk_add_nr 1 1
-+
-+# subflow v6-map-v4
-+reset
-+ip netns exec $ns1 ./pm_nl_ctl limits 0 1
-+ip netns exec $ns2 ./pm_nl_ctl limits 0 1
-+ip netns exec $ns2 ./pm_nl_ctl add "::ffff:10.0.3.2" flags subflow
-+run_tests $ns1 $ns2 10.0.1.1
-+chk_join_nr "single subflow v6-map-v4" 1 1 1
-+
-+# signal address v6-map-v4
-+reset
-+ip netns exec $ns1 ./pm_nl_ctl limits 0 1
-+ip netns exec $ns2 ./pm_nl_ctl limits 1 1
-+ip netns exec $ns1 ./pm_nl_ctl add "::ffff:10.0.2.1" flags signal
-+run_tests $ns1 $ns2 10.0.1.1
-+chk_join_nr "signal address v6-map-v4" 1 1 1
-+chk_add_nr 1 1
-+
-+# no subflow IPv6 to v4 address
-+reset
-+ip netns exec $ns1 ./pm_nl_ctl limits 0 1
-+ip netns exec $ns2 ./pm_nl_ctl limits 0 1
-+ip netns exec $ns2 ./pm_nl_ctl add dead:beef:2::2 flags subflow
-+run_tests $ns1 $ns2 10.0.1.1
-+chk_join_nr "no JOIN with diff families v4-v6" 0 0 0
-+
-+# no subflow IPv6 to v4 address even if v6 has a valid v4 at the end
-+reset
-+ip netns exec $ns1 ./pm_nl_ctl limits 0 1
-+ip netns exec $ns2 ./pm_nl_ctl limits 0 1
-+ip netns exec $ns2 ./pm_nl_ctl add dead:beef:2::10.0.3.2 flags subflow
-+run_tests $ns1 $ns2 10.0.1.1
-+chk_join_nr "no JOIN with diff families v4-v6-2" 0 0 0
-+
-+# no subflow IPv4 to v6 address, no need to slow down too then
-+reset
-+ip netns exec $ns1 ./pm_nl_ctl limits 0 1
-+ip netns exec $ns2 ./pm_nl_ctl limits 0 1
-+ip netns exec $ns2 ./pm_nl_ctl add 10.0.3.2 flags subflow
-+run_tests $ns1 $ns2 dead:beef:1::1
-+chk_join_nr "no JOIN with diff families v6-v4" 0 0 0
-+
- # single subflow, backup
- reset
- ip netns exec $ns1 ./pm_nl_ctl limits 0 1
--- 
-2.30.0
+This whole peer_dev/aux_dev split needs to go, why on earth does
+peer_obj need an entire state machine for driver binding? This is what
+the aux device and driver core or supposed to provide.
 
+> +		abo = kzalloc(sizeof(*abo), GFP_KERNEL);
+> +		if (!abo) {
+> +			ida_simple_remove(&ice_peer_ida, id);
+> +			kfree(peer_obj_int);
+> +			return -ENOMEM;
+> +		}
+
+Put the auxiliary_device_init() directly after kzalloc.
+
+Even better is to put everything up to the
+kzalloc/auxiliary_device_init() into a function called
+'alloc_aux_device'
+
+Then all the error unwind here doesn't look so bad
+
+Jason
