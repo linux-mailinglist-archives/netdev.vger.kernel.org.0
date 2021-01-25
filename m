@@ -2,138 +2,127 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1E75C304AE3
-	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 22:04:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B55EA304B3B
+	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 22:28:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729057AbhAZEyq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Jan 2021 23:54:46 -0500
-Received: from mga09.intel.com ([134.134.136.24]:41204 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726982AbhAYJkz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 25 Jan 2021 04:40:55 -0500
-IronPort-SDR: votsNA7tKCncXzdb3jiqgGnZ0VQO2S+jAJozL55mtvyMnkwQ5QLNvlkovdKMwmPKpCWc4IGzph
- pDnT3uXAPjLQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9874"; a="179844634"
-X-IronPort-AV: E=Sophos;i="5.79,373,1602572400"; 
-   d="scan'208";a="179844634"
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 25 Jan 2021 01:37:31 -0800
-IronPort-SDR: s3AFhwzo1DOo3sDesamo0CQgokAeNo3MwI1paZdl8QcAXNhp5lc8mdAPGHqMv1QH44nn1xWSHF
- duQm/lLrKiIw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.79,373,1602572400"; 
-   d="scan'208";a="577321035"
-Received: from silpixa00399839.ir.intel.com (HELO localhost.localdomain) ([10.237.222.142])
-  by fmsmga005.fm.intel.com with ESMTP; 25 Jan 2021 01:37:29 -0800
-From:   Ciara Loftus <ciara.loftus@intel.com>
-To:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        magnus.karlsson@intel.com, bjorn@kernel.org,
-        weqaar.a.janjua@intel.com
-Cc:     Ciara Loftus <ciara.loftus@intel.com>
-Subject: [PATCH bpf-next 6/6] selftests/bpf: XSK_TRACE_DROP_FQ_EMPTY test
-Date:   Mon, 25 Jan 2021 09:07:39 +0000
-Message-Id: <20210125090739.1045-7-ciara.loftus@intel.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210125090739.1045-1-ciara.loftus@intel.com>
-References: <20210125090739.1045-1-ciara.loftus@intel.com>
+        id S1728039AbhAZEsY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Jan 2021 23:48:24 -0500
+Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:3116 "EHLO
+        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726166AbhAYJRV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 04:17:21 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B600e8c500000>; Mon, 25 Jan 2021 01:16:01 -0800
+Received: from [172.27.12.21] (172.20.145.6) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 25 Jan
+ 2021 09:15:58 +0000
+Subject: Re: [net-next 08/15] net/mlx5e: CT: Preparation for offloading
+ +trk+new ct rules
+To:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Pablo Neira Ayuso <pablo@netfilter.org>
+CC:     Roi Dayan <roid@nvidia.com>, Saeed Mahameed <saeed@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, <netdev@vger.kernel.org>,
+        Paul Blakey <paulb@nvidia.com>,
+        Saeed Mahameed <saeedm@nvidia.com>
+References: <20210108214812.GB3678@horizon.localdomain>
+ <c11867d2-6fda-d77c-6b52-f4093c751379@nvidia.com>
+ <218258b2-3a86-2d87-dfc6-8b3c1e274b26@nvidia.com>
+ <20210111235116.GA2595@horizon.localdomain>
+ <f25eee28-4c4a-9036-8c3d-d84b15a8b5e7@nvidia.com>
+ <20210114130238.GA2676@horizon.localdomain>
+ <d1b5b862-8c30-efb6-1a2f-4f9f0d49ef15@nvidia.com>
+ <20210114215052.GB2676@horizon.localdomain>
+ <009bd8cf-df39-5346-b892-4e68a042c4b4@nvidia.com>
+ <20210122011834.GA25356@salvia> <20210122021618.GH3863@horizon.localdomain>
+From:   Oz Shlomo <ozsh@nvidia.com>
+Message-ID: <ce10c528-e431-7b54-bcb5-5d7633cdf268@nvidia.com>
+Date:   Mon, 25 Jan 2021 11:15:55 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210122021618.GH3863@horizon.localdomain>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [172.20.145.6]
+X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1611566161; bh=gS4gnp3oDpqSjhOQXpEh1mLd+0H6VCvPvkhBkSSJOmQ=;
+        h=Subject:To:CC:References:From:Message-ID:Date:User-Agent:
+         MIME-Version:In-Reply-To:Content-Type:Content-Language:
+         Content-Transfer-Encoding:X-Originating-IP:X-ClientProxiedBy;
+        b=N6f3fsJHaGX61Z/QsqlYDGLZtANWdAU0bgT74ptd4fhqXEknz/A73j4Zp0B46ViNe
+         h+tXtk+jarzupABBXnXf3Z2MohKRzTALtwsn8L39GQGW5Hh+c5XdZ1JindGK3ecCf5
+         ErCowWiGmZPHd1Ksu+f6T3h0zZgVKIu62zeT+u03VbR00dljidyPfR779doSwGYluM
+         4Eo0DE2EMbUZCvcvqZWWFc7Bvp44DQhEGhfKPhGy9S9KJ1z4sUuQdfrLQf62yT52rl
+         Mwn9WWohkFdCFZ4gEKMEV4Dw22+CrAfw9JUs/W470TQmKNQOjREZfEkZF/X+PfNI2x
+         AOscnrf7F/tfA==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This test skips the populating of the fill queue which
-causes packet drops and traces reporting the drop. The
-test validates that these traces were successfully
-generated.
 
-Signed-off-by: Ciara Loftus <ciara.loftus@intel.com>
----
- tools/testing/selftests/bpf/test_xsk.sh  | 24 ++++++++++++++++++++++++
- tools/testing/selftests/bpf/xdpxceiver.c | 12 ++++++++++--
- 2 files changed, 34 insertions(+), 2 deletions(-)
 
-diff --git a/tools/testing/selftests/bpf/test_xsk.sh b/tools/testing/selftests/bpf/test_xsk.sh
-index 95ceee151de1..997ba0aa79db 100755
---- a/tools/testing/selftests/bpf/test_xsk.sh
-+++ b/tools/testing/selftests/bpf/test_xsk.sh
-@@ -295,6 +295,30 @@ retval=$?
- test_status $retval "${TEST_NAME}"
- statusList+=($retval)
- 
-+### TEST 14
-+TEST_NAME="SKB TRACE DROP FQ_EMPTY"
-+
-+vethXDPgeneric ${VETH0} ${VETH1} ${NS1}
-+
-+params=("-S" "-t" "2" "-C" "${TRACEPKTS}")
-+execxdpxceiver params
-+
-+retval=$?
-+test_status $retval "${TEST_NAME}"
-+statusList+=($retval)
-+
-+### TEST 15
-+TEST_NAME="DRV TRACE DROP FQ_EMPTY"
-+
-+vethXDPnative ${VETH0} ${VETH1} ${NS1}
-+
-+params=("-N" "-t" "2" "-C" "${TRACEPKTS}")
-+execxdpxceiver params
-+
-+retval=$?
-+test_status $retval "${TEST_NAME}"
-+statusList+=($retval)
-+
- ## END TESTS
- 
- cleanup_exit ${VETH0} ${VETH1} ${NS1}
-diff --git a/tools/testing/selftests/bpf/xdpxceiver.c b/tools/testing/selftests/bpf/xdpxceiver.c
-index 71d684639ccb..acdb934b4ff4 100644
---- a/tools/testing/selftests/bpf/xdpxceiver.c
-+++ b/tools/testing/selftests/bpf/xdpxceiver.c
-@@ -37,6 +37,8 @@
-  *       Reduce the RXQ size and do not read from it. Validate traces.
-  *    f. Tracing - XSK_TRACE_DROP_PKT_TOO_BIG
-  *       Increase the headroom size and send packets. Validate traces.
-+ *    g. Tracing - XSK_TRACE_DROP_FQ_EMPTY
-+ *       Do not populate the fill queue and send packets. Validate traces.
-  *
-  * 2. AF_XDP DRV/Native mode
-  *    Works on any netdevice with XDP_REDIRECT support, driver dependent. Processes
-@@ -50,8 +52,9 @@
-  *      zero-copy mode
-  *    e. Tracing - XSK_TRACE_DROP_RXQ_FULL
-  *    f. Tracing - XSK_TRACE_DROP_PKT_TOO_BIG
-+ *    g. Tracing - XSK_TRACE_DROP_FQ_EMPTY
-  *
-- * Total tests: 12
-+ * Total tests: 14
-  *
-  * Flow:
-  * -----
-@@ -989,7 +992,8 @@ static void *worker_testapp_validate(void *arg)
- 			thread_common_ops(arg, bufs, &sync_mutex_tx, &spinning_rx);
- 
- 		ksft_print_msg("Interface [%s] vector [Rx]\n", ((struct ifobject *)arg)->ifname);
--		xsk_populate_fill_ring(((struct ifobject *)arg)->umem);
-+		if (opt_trace_code != XSK_TRACE_DROP_FQ_EMPTY)
-+			xsk_populate_fill_ring(((struct ifobject *)arg)->umem);
- 
- 		TAILQ_INIT(&head);
- 		if (debug_pkt_dump) {
-@@ -1196,6 +1200,10 @@ int main(int argc, char **argv)
- 			expected_traces = opt_pkt_count;
- 			reason_str = "packet too big";
- 			break;
-+		case XSK_TRACE_DROP_FQ_EMPTY:
-+			expected_traces = opt_pkt_count;
-+			reason_str = "fq empty";
-+			break;
- 		default:
- 			ksft_test_result_fail("ERROR: unsupported trace %i\n",
- 						opt_trace_code);
--- 
-2.17.1
+On 1/22/2021 4:16 AM, Marcelo Ricardo Leitner wrote:
+> On Fri, Jan 22, 2021 at 02:18:34AM +0100, Pablo Neira Ayuso wrote:
+>> Hi Oz,
+>>
+>> On Wed, Jan 20, 2021 at 06:09:48PM +0200, Oz Shlomo wrote:
+>>> On 1/14/2021 11:50 PM, Marcelo Ricardo Leitner wrote:
+>>>>
+>>>> Thoughts?
+>>>>
+>>>
+>>> I wonder if we should develop a generic mechanism to optimize CT software
+>>> for a use case that is faulty by design.
+>>> This has limited value for software as it would only reduce the conntrack
+>>> table size (packet classification is still required).
+>>> However, this feature may have a big impact on hardware offload.
+>>> Normally hardware offload relies on software to handle new connections.
+>>> Causing all new connections to be processed by software.
+>>> With this patch the hardware may autonomously set the +new connection state
+>>> for the relevant connections.
+>>
+>> Could you fix this issue with unidirectional flows by checking for
+>> IPS_CONFIRMED status bit? The idea is to hardware offload the entry
+>> after the first packet goes through software successfully. Then, there
+>> is no need to wait for the established state that requires to see
+>> traffic in both directions.
+> 
+> That's an interesting idea. This way, basically all that needs to be
+> changed is tcf_ct_flow_table_process_conn() to handle this new
+> condition for UDP packets and on tcf_ct_act().
 
+Will act_ct need to maintain a port list and classify the packet to realize whether the udp packet 
+is part of a unidirection or biderectional udp connection?
+
+
+> 
+> It has a small performance penaulty if compared to the original
+> solution, as now the first packet(s) goes to sw, but looks like a good
+> compromise between supporting a (from what I could understand)
+> somewhat lazy flow design (as I still think these didn't need to go
+> through conntrack), an uniform system behavior (with and without
+> offload, with mlx5 or another driver) and a more generic approach.
+> Other situations that rely on unidirectional UDP flows will benefit
+> from it as well.
+
+The hardware offload perspective is a bit different.
+With this approach the system will offload a rule per connection instead of offloading one mega-flow 
+rule on dst udp port.
+This will increase the hardware scale requirements in terms of number of offloaded rules.
+In addition, a counter will need to be instantiated per rule and the software will need to manage 
+the aging of these connections.
+
+We hoped that the hardware can fully offload this scenario, avoiding the need for sw processing at all.
+
+
+> 
+> This way I even think it doesn't need to be configurable right now.
+> It will be easier to add a knob to switch back to the old behavior if
+> needed later on, if anything.
+> 
+>    Marcelo
+> 
