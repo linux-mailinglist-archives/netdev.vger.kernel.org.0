@@ -2,87 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ABF59302657
-	for <lists+netdev@lfdr.de>; Mon, 25 Jan 2021 15:36:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C8FB30266A
+	for <lists+netdev@lfdr.de>; Mon, 25 Jan 2021 15:46:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729457AbhAYOdA (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Jan 2021 09:33:00 -0500
-Received: from a1.mail.mailgun.net ([198.61.254.60]:57996 "EHLO
-        a1.mail.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729469AbhAYObc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 09:31:32 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1611585069; h=Date: Message-Id: Cc: To: References:
- In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
- Content-Type: Sender; bh=WIm37k0ByHb05TgsSjKkGlgy9s/AveqlMwkdHtOxQkE=;
- b=xIeUwjwqBkUB1u702Pzeu9GE/W2HHkLCIfusubeWfMpl4IeAHSX76OewWtpsuf91RnTzuWxG
- lCzJVxiO+XzCENn17/v+FWi/E1NsSM0+LoR49STsws+y/d+vdJ77tc0qhyWJGJPvonJgI1Z5
- hu3quoF1iBPe+qVXg3h2hQ5k3Dc=
-X-Mailgun-Sending-Ip: 198.61.254.60
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n01.prod.us-west-2.postgun.com with SMTP id
- 600ed606ad4c9e395bf69ead (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Mon, 25 Jan 2021 14:30:30
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 10EA1C43464; Mon, 25 Jan 2021 14:30:30 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        MISSING_DATE,MISSING_MID,SPF_FAIL autolearn=no autolearn_force=no
-        version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id BA8B0C433C6;
-        Mon, 25 Jan 2021 14:30:27 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org BA8B0C433C6
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
-Content-Type: text/plain; charset="utf-8"
+        id S1729736AbhAYOnx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Jan 2021 09:43:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47704 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729713AbhAYOnM (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 09:43:12 -0500
+Received: from pandora.armlinux.org.uk (pandora.armlinux.org.uk [IPv6:2001:4d48:ad52:32c8:5054:ff:fe00:142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF139C061574;
+        Mon, 25 Jan 2021 06:42:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:
+        Content-Transfer-Encoding:Content-Type:MIME-Version:References:Message-ID:
+        Subject:Cc:To:From:Date:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=18CAxTK3LlXW3fAUVds+hr8MiQ4foh0e7sgTFpboodo=; b=tHhuyGGNmnjdGP80Qihex9fMO
+        5llpohjDXMEW9bGa+M7hZLmqjplEL5SQidV7PuCL3mz9cJWM5nfcqrsfdAPM4S55KNAavdG4Z3xaS
+        li1bUoXc9TW/yyuCCdwOrR/AGL8VUJDM44CuGLgdMnWVY6yWR2N9S52QEfS49jvpHy6DTE7mPBkEG
+        IF+8n8pP6KDJ8O4sZZNdagEc/byno8eVR+ympfOsX4MwoVRYeLC/Csn3ASdm5yVoD7awt/qrxJzKU
+        Azw1dk3ztXa7HHR+UyaTneV/wA8wLDxhs8s7q38gpjYb9T73dxwtWMuxPX3UpzjgGAuHqYojNJQgd
+        iwyWFhA+A==;
+Received: from shell.armlinux.org.uk ([fd8f:7570:feb6:1:5054:ff:fe00:4ec]:52568)
+        by pandora.armlinux.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <linux@armlinux.org.uk>)
+        id 1l434R-0003Gw-0Q; Mon, 25 Jan 2021 14:42:23 +0000
+Received: from linux by shell.armlinux.org.uk with local (Exim 4.92)
+        (envelope-from <linux@shell.armlinux.org.uk>)
+        id 1l434P-0002pn-TI; Mon, 25 Jan 2021 14:42:21 +0000
+Date:   Mon, 25 Jan 2021 14:42:21 +0000
+From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
+To:     Pali =?iso-8859-1?Q?Roh=E1r?= <pali@kernel.org>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Thomas Schreiber <tschreibe@gmail.com>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 0/2] net: sfp: add support for GPON RTL8672/RTL9601C
+ and Ubiquiti U-Fiber
+Message-ID: <20210125144221.GE1551@shell.armlinux.org.uk>
+References: <20201230154755.14746-1-pali@kernel.org>
+ <20210111113909.31702-1-pali@kernel.org>
+ <20210118093435.coy3rnchbmlkinpe@pali>
+ <20210125140957.4afiqlfprm65jcr5@pali>
+ <20210125141643.GD1551@shell.armlinux.org.uk>
+ <20210125142301.qkvjyzrm3efkkikn@pali>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-Subject: Re: [PATCH] rtlwifi: rtl8821ae: style: Simplify bool comparison
-From:   Kalle Valo <kvalo@codeaurora.org>
-In-Reply-To: <1610440409-73330-1-git-send-email-abaci-bugfix@linux.alibaba.com>
-References: <1610440409-73330-1-git-send-email-abaci-bugfix@linux.alibaba.com>
-To:     YANG LI <abaci-bugfix@linux.alibaba.com>
-Cc:     pkshih@realtek.com, davem@davemloft.net, kuba@kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        YANG LI <abaci-bugfix@linux.alibaba.com>
-User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
-Message-Id: <20210125143030.10EA1C43464@smtp.codeaurora.org>
-Date:   Mon, 25 Jan 2021 14:30:30 +0000 (UTC)
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210125142301.qkvjyzrm3efkkikn@pali>
+User-Agent: Mutt/1.10.1 (2018-07-13)
+Sender: Russell King - ARM Linux admin <linux@armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-YANG LI <abaci-bugfix@linux.alibaba.com> wrote:
-
-> Fix the following coccicheck warning:
-> ./drivers/net/wireless/realtek/rtlwifi/rtl8821ae/phy.c:3853:7-17:
-> WARNING: Comparison of 0/1 to bool variable
+On Mon, Jan 25, 2021 at 03:23:01PM +0100, Pali Rohár wrote:
+> On Monday 25 January 2021 14:16:44 Russell King - ARM Linux admin wrote:
+> > On Mon, Jan 25, 2021 at 03:09:57PM +0100, Pali Rohár wrote:
+> > > On Monday 18 January 2021 10:34:35 Pali Rohár wrote:
+> > > > On Monday 11 January 2021 12:39:07 Pali Rohár wrote:
+> > > > > This is a third version of patches which add workarounds for
+> > > > > RTL8672/RTL9601C EEPROMs and Ubiquiti U-Fiber Instant SFP.
+> > > > > 
+> > > > > Russel's PATCH v2 2/3 was dropped from this patch series as
+> > > > > it is being handled separately.
+> > > > 
+> > > > Andrew and Russel, are you fine with this third iteration of patches?
+> > > > Or are there still some issues which needs to be fixed?
+> > > 
+> > > PING!
+> > 
+> > What about the commit message suggestions from Marek?
 > 
-> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> Signed-off-by: YANG LI <abaci-bugfix@linux.alibaba.com>
+> I have already wrote that I'm fine with those suggestions.
+> 
+> It is the only thing to handle? If yes, should I send a new patch series
+> with fixed commit messages?
 
-Patchwork gives me this From field:
+Yes, because that's the way the netdev list works - patches sent to
+netdev go into patchwork, when they get reviewed and acks etc,
+patchwork updates itself. Jakub or David can then see what the status
+is and apply them to the net or net-next trees as appropriate.
 
-From: Jiapeng Zhong <abaci-bugfix@linux.alibaba.com>
+The "finished" patches need to be posted for this process to start.
 
-I guess you are sharing the same email address with multiple persons? And patchwork stored the first person using that address?
-
-I recommend using individual addresses for each person submitting patches. I
-cannot apply this.
+Thanks.
 
 -- 
-https://patchwork.kernel.org/project/linux-wireless/patch/1610440409-73330-1-git-send-email-abaci-bugfix@linux.alibaba.com/
-
-https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
-
+RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
+FTTP is here! 40Mbps down 10Mbps up. Decent connectivity at last!
