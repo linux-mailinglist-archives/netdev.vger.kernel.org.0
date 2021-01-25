@@ -2,202 +2,267 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 15957302E9B
-	for <lists+netdev@lfdr.de>; Mon, 25 Jan 2021 23:04:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 27E14302EA8
+	for <lists+netdev@lfdr.de>; Mon, 25 Jan 2021 23:08:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733121AbhAYWCZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Mon, 25 Jan 2021 17:02:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58648 "EHLO
+        id S1733150AbhAYWG5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Mon, 25 Jan 2021 17:06:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59330 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732996AbhAYWBz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 17:01:55 -0500
-Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C64A2C061573
-        for <netdev@vger.kernel.org>; Mon, 25 Jan 2021 14:01:14 -0800 (PST)
-Received: by mail-io1-xd2e.google.com with SMTP id z22so29754700ioh.9
-        for <netdev@vger.kernel.org>; Mon, 25 Jan 2021 14:01:14 -0800 (PST)
+        with ESMTP id S1733143AbhAYWFI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 17:05:08 -0500
+Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28F6DC061573
+        for <netdev@vger.kernel.org>; Mon, 25 Jan 2021 14:04:24 -0800 (PST)
+Received: by mail-ed1-x536.google.com with SMTP id n6so17383442edt.10
+        for <netdev@vger.kernel.org>; Mon, 25 Jan 2021 14:04:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=pt4uK7+fglRi5mSqUM+0Zo64wDCR3qdBbt9k3yKslD8=;
-        b=axfpFnb5vFhsKKRyt7UL2WEe+Dlta2QbR/1ZinUR8BsFqr4/jOkuHB0Wgc0c71WHhd
-         MLn93dAhJA5BeLIo8Uj8DrJKcSXEfTdB8vhufNuTHrPtHimZ4EjJ+qYldHjXGdv6ye9R
-         AUaY7LzLH40iRCf/65TXPhX/zhZzxCwJuqXZfVI0pB3VyfHLg5eFPzvRnBJnBrqxSm1A
-         pWlOadjqDuTwEMwzT/0n4jiCvhIYhkAqmwLwIrrwa7oDdWhAwWJHjP4IH770SAqqZz9w
-         sqiF2I9cJWr7nLrUJKZNvQAJNth5jxl7QE6onbn+5XQGaFfgRb8sqUQpWP13dHMy2+2o
-         TUkg==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=NvzMmi45ogR9+Lb1fHSZG8Wub/J+LcHIHzmWHGzPKUM=;
+        b=BSwRfn3RLaH4/LTewP120J2/aEZSh8Aq7v40omXnu0qAR4NiIOPpTpMj6C2CcJ1bcD
+         Sn1ivGiZs/Rb4fBwi6CkMMqdOmYZzr+VXVUQYDWg5836gME3w9PVsozbKsS5mhMqKTBy
+         vFMp8hM9jyQmEVSZgH2T96jwT7r77+nAhbefF//6R7fcluxN56z/9nPz+3h4EP06NXaQ
+         s8Sve7HBHqgnEymgNi7O06CoIbXt8659ocuZyH9h7e9SUieoh9npgokvVByIbxqQB9my
+         IHe6KDK8UQuZQe8EE/Abuv3uqrC7TyaPJydUdL/wzUjwS+gXKY3WBJSlP/Q6tZYmS+vf
+         n+vw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=pt4uK7+fglRi5mSqUM+0Zo64wDCR3qdBbt9k3yKslD8=;
-        b=J9rB+bsx0lxz/x6xJsF0YY4uI2JzX4xyd3TpTSxhoz1tN8lYahXNRti1sjwOKPgU4c
-         ambqQrNM3onBaULChi7y3TnO0JaMLfTUXHHQaILGi9Z5WZ0YZyN1xsof2Nz9Oj67+7Xw
-         wu3XrSeIcLAc8gggRuzsh42OJCM3xUbvVhIxh4iSr1GQ+SLIsMeWZeDsYn3VCze9QKAp
-         YLoJ8lZil2A7H209jHI5MmNwFN0ChLmGLZB9fTCumQu1GUpkVsHik0hwCq95QYYCb1OV
-         5/r33xaSieG/Sw0EQ+zlRZ+sk0BZcHcfriab18sWKVy0Pxlnfu8m6WnkvH5370uOUXD/
-         KQHw==
-X-Gm-Message-State: AOAM531yX3+goIAPTOYLW08cPLQm0yIW+4exszNUkCVi4dDD9BgdViwc
-        Q/jq84uSyN5oEnn+Tw2cIjsIw3551CCkrMxxXgs7lQ==
-X-Google-Smtp-Source: ABdhPJxbv+KJl68OGuLDQGZ21cJh5kav4eRWVOWzT1xABymSjAkyc9/0/SfMYctXANPZG7uAUInsnbX+k+F8kqwxNK4=
-X-Received: by 2002:a05:6e02:1d0e:: with SMTP id i14mr2058326ila.69.1611612073822;
- Mon, 25 Jan 2021 14:01:13 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=NvzMmi45ogR9+Lb1fHSZG8Wub/J+LcHIHzmWHGzPKUM=;
+        b=JwOnxhQLhoh2rYYPL0eYZ2EgAdhrSoz8eQsC85YMdtP7wE9MP6xdPJqCq8+wj4uTcE
+         EG33En691mRH7ybifYG/51NFP6dDImb4mDi2oR6VIVRtytS7X4wEqxYMG8vWAi/+DseR
+         BHBo96xxloi4+8GKI3Vfb6Rlap+Lop9Mp/qAtGwzf6WThbivvdBaCtuhXh5WCtKJZMZx
+         S+kXDj6PSzmJqL212fZY+voWpFri/zyJXD10jQFHZFLZNECa80jvDf3YIELx8PaM6tWl
+         fnzbykpxbnXN8R//wn0d8cgI++pQ04DWkEUFC37/u4USyuJAgqIXK4nmQQa/7NXU3tdD
+         1C4g==
+X-Gm-Message-State: AOAM530oUBTtQnktMfLVr/JZM6IQ8zvjcasArMatbHp4A4qRLkzO0H2f
+        LzIsUn56hpo7Qa6XOttaNbg=
+X-Google-Smtp-Source: ABdhPJx2bueL7VLphAEp9v1P8Ji0HUissgX7fonjTBN8eHVqYqQOY5HJKglGA3/RvqaGu5mVzkccrA==
+X-Received: by 2002:a05:6402:2211:: with SMTP id cq17mr2120017edb.167.1611612262816;
+        Mon, 25 Jan 2021 14:04:22 -0800 (PST)
+Received: from localhost.localdomain (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
+        by smtp.gmail.com with ESMTPSA id s13sm1760555edi.92.2021.01.25.14.04.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 25 Jan 2021 14:04:22 -0800 (PST)
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Vladimir Oltean <vladimir.oltean@nxp.com>,
+        UNGLinuxDriver@microchip.com
+Subject: [PATCH v7 net-next 00/11] tag_8021q for Ocelot switches
+Date:   Tue, 26 Jan 2021 00:03:22 +0200
+Message-Id: <20210125220333.1004365-1-olteanv@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-References: <0000000000005d4f3205b9ab95f4@google.com> <20210125131252.4e17d3f3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210125131252.4e17d3f3@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Mon, 25 Jan 2021 23:01:02 +0100
-Message-ID: <CANn89iK+ckTzYd70CzerWOiCXt6TJfKPok1mBHarDJYBCot-_A@mail.gmail.com>
-Subject: Re: WARNING in pskb_expand_head
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     syzbot <syzbot+a1c17e56a8a62294c714@syzkaller.appspotmail.com>,
-        Alexander Duyck <alexanderduyck@fb.com>, andrii@kernel.org,
-        Alexei Starovoitov <ast@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        David Miller <davem@davemloft.net>, hawk@kernel.org,
-        John Fastabend <john.fastabend@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>, kpsingh@kernel.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        netdev <netdev@vger.kernel.org>,
-        Song Liu <songliubraving@fb.com>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        Yonghong Song <yhs@fb.com>,
-        Willem de Bruijn <willemb@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 25, 2021 at 10:12 PM Jakub Kicinski <kuba@kernel.org> wrote:
->
-> CC Willem just in case
+From: Vladimir Oltean <vladimir.oltean@nxp.com>
+
+Changes in v7:
+- Keep a copy of the tagging protocol in the DSA switch tree (patch 7/11)
+- Call {set,del}_tag_protocol for DSA links with the tag_ops of the DSA
+  tree and not of their own dp, since the latter is an invalid pointer
+  never set up by anybody.
+- Wrap the calls done at probe and remove time into some helper
+  functions called dsa_switch_inform_initial_tag_proto and
+  dsa_switch_inform_tag_proto_gone. Call dsa_switch_inform_tag_proto_gone
+  more vigorously during the probe error path.
+
+- Hold the rtnl_mutex in dsa_tree_change_tag_proto and change the calling
+  convention such that drivers now expect rtnl_mutex to be held.
+- Drop the rtnl_lock surrounding dsa_8021q_setup in the felix driver,
+  since some callers of .{set,del}_tag_protocol now hold the rtnl_mutex
+  and we'd run into a deadlock if we took it. That's also why all
+  callers needed to be converted to hold the lock, since otherwise
+  dsa_8021q_setup would have no guarantees short of passing it a bool
+  rtnl_is_held variable.
+
+Changes in v6:
+- Removed redundant tree_index from dsa_notifier_tag_proto_info.
+- Call .{set,del}_tag_protocol for the DSA links too.
+- Check for ops::set_tag_protocol only once instead of in a loop.
+- Check for ops::set_tag_protocol in dsa_switch_tag_proto_set too.
+
+Changes in v5:
+- Split patch series in half, removing PTP bits.
+- Split previous monolithic patch "net: dsa: felix: add new VLAN-based
+  tagger" into 3 smaller patches.
+- Updated the sysfs documentation
+- Made the tagger_lock per DSA switch tree instead of per DSA switch
+- Using dsa_tree_notify instead of dsa_broadcast.
+
+Changes in v4:
+- Support simultaneous compilation of tag_ocelot.c and
+  tag_ocelot_8021q.c.
+- Support runtime switchover between the two taggers, by using
+  echo ocelot-8021q > /sys/class/net/eno2/dsa/tagging
+- We are now actually performing cleanup instead of just probe-time
+  setup, which is required for supporting tagger switchover.
+- Now draining the CPU queues by continuously reading QS_XTR_READ, same
+  as Ocelot, instead of one-time asserting QS_XTR_FLUSH, which actually
+  needed a sleep to be effective.
+
+Changes in v3:
+Use a per-port bool is_dsa_8021q_cpu instead of a single dsa_8021q_cpu
+variable, to be compatible with future work where there may be
+potentially multiple tag_8021q CPU ports in a LAG.
+
+Changes in v2:
+Posted the entire rework necessary for PTP support using tag_8021q.c.
+Added a larger audience to the series.
 
 
-This is an old bug really, tun_napi_alloc_frags() does not make sure
-its @len argument is not too big.
 
-Since __skb_grow() does not use __GFP_NOWARN we end up with this well
-known warning in mm layer.
+The Felix switch inside LS1028A has an issue. It has a 2.5G CPU port,
+and the external ports, in the majority of use cases, run at 1G. This
+means that, when the CPU injects traffic into the switch, it is very
+easy to run into congestion. This is not to say that it is impossible to
+enter congestion even with all ports running at the same speed, just
+that the default configuration is already very prone to that by design.
 
-I would use the following fix :
+Normally, the way to deal with that is using Ethernet flow control
+(PAUSE frames).
 
+However, this functionality is not working today with the ENETC - Felix
+switch pair. The hardware issue is undergoing documentation right now as
+an erratum within NXP, but several customers have been requesting a
+reasonable workaround for it.
 
-diff --git a/drivers/net/tun.c b/drivers/net/tun.c
-index 62690baa19bc8c4bf52f8b18a092f570e2125fc8..a0740e40a145fa2e175edd2180d369859c5d786b
-100644
---- a/drivers/net/tun.c
-+++ b/drivers/net/tun.c
-@@ -1367,13 +1367,16 @@ static struct sk_buff
-*tun_napi_alloc_frags(struct tun_file *tfile,
-        if (it->nr_segs > MAX_SKB_FRAGS + 1)
-                return ERR_PTR(-EMSGSIZE);
+In truth, the LS1028A has 2 internal port pairs. The lack of flow control
+is an issue only when NPI mode (Node Processor Interface, aka the mode
+where the "CPU port module", which carries DSA-style tagged packets, is
+connected to a regular Ethernet port) is used, and NPI mode is supported
+by Felix on a single port.
 
-+       linear = iov_iter_single_seg_count(it);
-+       if (linear > SKB_MAX_ALLOC)
-+               return ERR_PTR(-EMSGSIZE);
-+
-        local_bh_disable();
-        skb = napi_get_frags(&tfile->napi);
-        local_bh_enable();
-        if (!skb)
-                return ERR_PTR(-ENOMEM);
+In past BSPs, we have had setups where both internal port pairs were
+enabled. We were advertising the following setup:
 
--       linear = iov_iter_single_seg_count(it);
-        err = __skb_grow(skb, linear);
-        if (err)
-                goto free;
+"data port"     "control port"
+  (2.5G)            (1G)
 
+   eno2             eno3
+    ^                ^
+    |                |
+    | regular        | DSA-tagged
+    | frames         | frames
+    |                |
+    v                v
+   swp4             swp5
 
->
-> On Sun, 24 Jan 2021 12:51:20 -0800 syzbot wrote:
-> > Hello,
-> >
-> > syzbot found the following issue on:
-> >
-> > HEAD commit:    7d68e382 bpf: Permit size-0 datasec
-> > git tree:       bpf-next
-> > console output: https://syzkaller.appspot.com/x/log.txt?x=132567e7500000
-> > kernel config:  https://syzkaller.appspot.com/x/.config?x=e0c7843b8af99dff
-> > dashboard link: https://syzkaller.appspot.com/bug?extid=a1c17e56a8a62294c714
-> > compiler:       gcc (GCC) 10.1.0-syz 20200507
-> > syz repro:      https://syzkaller.appspot.com/x/repro.syz?x=17ae23af500000
-> > C reproducer:   https://syzkaller.appspot.com/x/repro.c?x=13856bc7500000
-> >
-> > The issue was bisected to:
-> >
-> > commit 3226b158e67cfaa677fd180152bfb28989cb2fac
-> > Author: Eric Dumazet <edumazet@google.com>
-> > Date:   Wed Jan 13 16:18:19 2021 +0000
-> >
-> >     net: avoid 32 x truesize under-estimation for tiny skbs
-> >
-> > bisection log:  https://syzkaller.appspot.com/x/bisect.txt?x=151a3027500000
-> > final oops:     https://syzkaller.appspot.com/x/report.txt?x=171a3027500000
-> > console output: https://syzkaller.appspot.com/x/log.txt?x=131a3027500000
-> >
-> > IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> > Reported-by: syzbot+a1c17e56a8a62294c714@syzkaller.appspotmail.com
-> > Fixes: 3226b158e67c ("net: avoid 32 x truesize under-estimation for tiny skbs")
-> >
-> > RBP: 0000000000000000 R08: 0000000000000001 R09: 0000000001bbbbbb
-> > R10: 0000000000000000 R11: 0000000000000246 R12: ffffffffffffffff
-> > R13: 0000000000000004 R14: 0000000000000000 R15: 0000000000000000
-> > ------------[ cut here ]------------
-> > WARNING: CPU: 1 PID: 8703 at mm/page_alloc.c:4976 __alloc_pages_nodemask+0x5f8/0x730 mm/page_alloc.c:5011
-> > Modules linked in:
-> > CPU: 1 PID: 8703 Comm: syz-executor857 Not tainted 5.11.0-rc3-syzkaller #0
-> > Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-> > RIP: 0010:__alloc_pages_nodemask+0x5f8/0x730 mm/page_alloc.c:4976
-> > Code: 00 00 0c 00 0f 85 a7 00 00 00 8b 3c 24 4c 89 f2 44 89 e6 c6 44 24 70 00 48 89 6c 24 58 e8 d0 d7 ff ff 49 89 c5 e9 ea fc ff ff <0f> 0b e9 b5 fd ff ff 89 74 24 14 4c 89 4c 24 08 4c 89 74 24 18 e8
-> > RSP: 0018:ffffc90001ecf910 EFLAGS: 00010246
-> > RAX: 0000000000000000 RBX: 1ffff920003d9f26 RCX: 0000000000000000
-> > RDX: 0000000000000000 RSI: dffffc0000000000 RDI: 0000000000060a20
-> > RBP: 0000000000020a20 R08: 0000000000000000 R09: 0000000000000001
-> > R10: ffffffff86f1be3c R11: 0000000000000000 R12: 0000000000000012
-> > R13: 0000000020010300 R14: 0000000000060a20 R15: 0000000000000000
-> > FS:  0000000001148880(0000) GS:ffff8880b9f00000(0000) knlGS:0000000000000000
-> > CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> > CR2: 00000000006d5090 CR3: 000000001d414000 CR4: 00000000001506e0
-> > DR0: 0000000000000000 DR1: 0000000000000000 DR2: 0000000000000000
-> > DR3: 0000000000000000 DR6: 00000000fffe0ff0 DR7: 0000000000000400
-> > Call Trace:
-> >  __alloc_pages include/linux/gfp.h:511 [inline]
-> >  __alloc_pages_node include/linux/gfp.h:524 [inline]
-> >  alloc_pages_node include/linux/gfp.h:538 [inline]
-> >  kmalloc_large_node+0x60/0x110 mm/slub.c:3984
-> >  __kmalloc_node_track_caller+0x319/0x3f0 mm/slub.c:4481
-> >  __kmalloc_reserve net/core/skbuff.c:150 [inline]
-> >  pskb_expand_head+0xae9/0x1050 net/core/skbuff.c:1632
-> >  __skb_grow include/linux/skbuff.h:2748 [inline]
-> >  tun_napi_alloc_frags drivers/net/tun.c:1377 [inline]
-> >  tun_get_user+0x1f52/0x3690 drivers/net/tun.c:1730
-> >  tun_chr_write_iter+0xe1/0x1d0 drivers/net/tun.c:1926
-> >  call_write_iter include/linux/fs.h:1901 [inline]
-> >  new_sync_write+0x426/0x650 fs/read_write.c:518
-> >  vfs_write+0x791/0xa30 fs/read_write.c:605
-> >  ksys_write+0x12d/0x250 fs/read_write.c:658
-> >  do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
-> >  entry_SYSCALL_64_after_hwframe+0x44/0xa9
-> > RIP: 0033:0x4440a9
-> > Code: e8 6c 05 03 00 48 83 c4 18 c3 0f 1f 80 00 00 00 00 48 89 f8 48 89 f7 48 89 d6 48 89 ca 4d 89 c2 4d 89 c8 4c 8b 4c 24 08 0f 05 <48> 3d 01 f0 ff ff 0f 83 9b 07 fc ff c3 66 2e 0f 1f 84 00 00 00 00
-> > RSP: 002b:00007fffdb5a8e08 EFLAGS: 00000246 ORIG_RAX: 0000000000000001
-> > RAX: ffffffffffffffda RBX: 0000000000000003 RCX: 00000000004440a9
-> > RDX: 000000002001016f RSI: 0000000020000380 RDI: 0000000000000003
-> > RBP: 0000000000000000 R08: 0000000000000001 R09: 0000000001bbbbbb
-> > R10: 0000000000000000 R11: 0000000000000246 R12: ffffffffffffffff
-> > R13: 0000000000000004 R14: 0000000000000000 R15: 0000000000000000
-> >
-> >
-> > ---
-> > This report is generated by a bot. It may contain errors.
-> > See https://goo.gl/tpsmEJ for more information about syzbot.
-> > syzbot engineers can be reached at syzkaller@googlegroups.com.
-> >
-> > syzbot will keep track of this issue. See:
-> > https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
-> > For information about bisection process see: https://goo.gl/tpsmEJ#bisection
-> > syzbot can test patches for this issue, for details see:
-> > https://goo.gl/tpsmEJ#testing-patches
->
+This works but is highly unpractical, due to NXP shifting the task of
+designing a functional system (choosing which port to use, depending on
+type of traffic required) up to the end user. The swpN interfaces would
+have to be bridged with swp4, in order for the eno2 "data port" to have
+access to the outside network. And the swpN interfaces would still be
+capable of IP networking. So running a DHCP client would give us two IP
+interfaces from the same subnet, one assigned to eno2, and the other to
+swpN (0, 1, 2, 3).
+
+Also, the dual port design doesn't scale. When attaching another DSA
+switch to a Felix port, the end result is that the "data port" cannot
+carry any meaningful data to the external world, since it lacks the DSA
+tags required to traverse the sja1105 switches below. All that traffic
+needs to go through the "control port".
+
+So in newer BSPs there was a desire to simplify that setup, and only
+have one internal port pair:
+
+   eno2            eno3
+    ^
+    |
+    | DSA-tagged    x disabled
+    | frames
+    |
+    v
+   swp4            swp5
+
+However, this setup only exacerbates the issue of not having flow
+control on the NPI port, since that is the only port now. Also, there
+are use cases that still require the "data port", such as IEEE 802.1CB
+(TSN stream identification doesn't work over an NPI port), source
+MAC address learning over NPI, etc.
+
+Again, there is a desire to keep the simplicity of the single internal
+port setup, while regaining the benefits of having a dedicated data port
+as well. And this series attempts to deliver just that.
+
+So the NPI functionality is disabled conditionally. Its purpose was:
+- To ensure individually addressable ports on TX. This can be replaced
+  by using some designated VLAN tags which are pushed by the DSA tagger
+  code, then removed by the switch (so they are invisible to the outside
+  world and to the user).
+- To ensure source port identification on RX. Again, this can be
+  replaced by using some designated VLAN tags to encapsulate all RX
+  traffic (each VLAN uniquely identifies a source port). The DSA tagger
+  determines which port it was based on the VLAN number, then removes
+  that header.
+- To deliver PTP timestamps. This cannot be obtained through VLAN
+  headers, so we need to take a step back and see how else we can do
+  that. The Microchip Ocelot-1 (VSC7514 MIPS) driver performs manual
+  injection/extraction from the CPU port module using register-based
+  MMIO, and not over Ethernet. We will need to do the same from DSA,
+  which makes this tagger a sort of hybrid between DSA and pure
+  switchdev.
+
+Vladimir Oltean (11):
+  net: dsa: tag_8021q: add helpers to deduce whether a VLAN ID is RX or
+    TX VLAN
+  net: mscc: ocelot: export VCAP structures to include/soc/mscc
+  net: mscc: ocelot: store a namespaced VCAP filter ID
+  net: mscc: ocelot: reapply bridge forwarding mask on bonding
+    join/leave
+  net: mscc: ocelot: don't use NPI tag prefix for the CPU port module
+  net: dsa: document the existing switch tree notifiers and add a new
+    one
+  net: dsa: keep a copy of the tagging protocol in the DSA switch tree
+  net: dsa: allow changing the tag protocol via the "tagging" device
+    attribute
+  net: dsa: felix: convert to the new .{set,del}_tag_protocol DSA API
+  net: dsa: add a second tagger for Ocelot switches based on tag_8021q
+  net: dsa: felix: perform switch setup for tag_8021q
+
+ Documentation/ABI/testing/sysfs-class-net-dsa |  11 +-
+ MAINTAINERS                                   |   1 +
+ drivers/net/dsa/ocelot/Kconfig                |   2 +
+ drivers/net/dsa/ocelot/felix.c                | 482 ++++++++++++++++--
+ drivers/net/dsa/ocelot/felix.h                |   2 +
+ drivers/net/dsa/ocelot/felix_vsc9959.c        |   1 +
+ drivers/net/dsa/ocelot/seville_vsc9953.c      |   1 +
+ drivers/net/ethernet/mscc/ocelot.c            |  93 ++--
+ drivers/net/ethernet/mscc/ocelot_flower.c     |   7 +-
+ drivers/net/ethernet/mscc/ocelot_net.c        |   1 +
+ drivers/net/ethernet/mscc/ocelot_vcap.c       |  19 +-
+ drivers/net/ethernet/mscc/ocelot_vcap.h       | 295 +----------
+ drivers/net/ethernet/mscc/ocelot_vsc7514.c    |   2 -
+ include/linux/dsa/8021q.h                     |  14 +
+ include/net/dsa.h                             |  24 +-
+ include/soc/mscc/ocelot.h                     |   6 +-
+ include/soc/mscc/ocelot_vcap.h                | 297 +++++++++++
+ net/dsa/Kconfig                               |  21 +-
+ net/dsa/Makefile                              |   1 +
+ net/dsa/dsa.c                                 |  20 +
+ net/dsa/dsa2.c                                | 168 +++++-
+ net/dsa/dsa_priv.h                            |  18 +
+ net/dsa/master.c                              |  26 +-
+ net/dsa/port.c                                |  44 +-
+ net/dsa/slave.c                               |  35 +-
+ net/dsa/switch.c                              |  84 +++
+ net/dsa/tag_8021q.c                           |  15 +-
+ net/dsa/tag_ocelot_8021q.c                    |  68 +++
+ 28 files changed, 1334 insertions(+), 424 deletions(-)
+ create mode 100644 net/dsa/tag_ocelot_8021q.c
+
+-- 
+2.25.1
+
