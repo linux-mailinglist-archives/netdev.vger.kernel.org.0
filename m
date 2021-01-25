@@ -2,157 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2F69A304913
-	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 20:54:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9288E30491D
+	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 20:55:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387493AbhAZF3x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jan 2021 00:29:53 -0500
-Received: from mail.kernel.org ([198.145.29.99]:43616 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731417AbhAYTDH (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 25 Jan 2021 14:03:07 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 46EAC2067B;
-        Mon, 25 Jan 2021 19:02:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611601345;
-        bh=Skuwd1IPU3qk3d6diQvKSRj1qZmAePV3Biv3OTvGyVI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=GbMXZ46TquDqE0EbDwB8bsPAiqyQLzI1kPfJNTbmVpcR1tY9c4Yvkm/ZgIpYYbhAZ
-         3iNnrUevp/ov0kDfLYBTUV3A+SXIwRcUJeG1u0g4SG7k7n+7gNbyg7XX9vSCkruf5G
-         juKHl8KRVZjtYcqwb3gOiNGrqKsJPjSf24ZYzSQbQhKglzn/SFYTBx71IemHVxVwnn
-         hFW1AVpismZ9rWU5vmfOQdbrqshf6keN8MyOV5QhzRCX0kxwZN3d3SOb4uwDvmwAJA
-         Aca7rDMRM400R4my9oP1R9q09+uqDN7IOHD++yiqp2jUnRka1sBsAl4g2Rj4Ur+tJy
-         cOfrbo8ZjYJxA==
-Date:   Mon, 25 Jan 2021 11:02:24 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Danielle Ratson <danieller@nvidia.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        Jiri Pirko <jiri@nvidia.com>,
-        "andrew@lunn.ch" <andrew@lunn.ch>,
-        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
-        "mkubecek@suse.cz" <mkubecek@suse.cz>, mlxsw <mlxsw@nvidia.com>,
-        Ido Schimmel <idosch@nvidia.com>
-Subject: Re: [PATCH net-next v3 1/7] ethtool: Extend link modes settings
- uAPI with lanes
-Message-ID: <20210125110224.08886797@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <DM6PR12MB4516C3011B5D158930444203D8BD9@DM6PR12MB4516.namprd12.prod.outlook.com>
-References: <20210120093713.4000363-1-danieller@nvidia.com>
-        <20210120093713.4000363-2-danieller@nvidia.com>
-        <20210121194451.3fe8c8bf@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <DM6PR12MB4516C3011B5D158930444203D8BD9@DM6PR12MB4516.namprd12.prod.outlook.com>
+        id S2387548AbhAZFaC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jan 2021 00:30:02 -0500
+Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:14825 "EHLO
+        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731509AbhAYTRm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 14:17:42 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B600f190e0002>; Mon, 25 Jan 2021 11:16:30 -0800
+Received: from HQMAIL101.nvidia.com (172.20.187.10) by HQMAIL101.nvidia.com
+ (172.20.187.10) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 25 Jan
+ 2021 19:16:27 +0000
+Received: from NAM04-BN3-obe.outbound.protection.outlook.com (104.47.46.50) by
+ HQMAIL101.nvidia.com (172.20.187.10) with Microsoft SMTP Server (TLS) id
+ 15.0.1473.3 via Frontend Transport; Mon, 25 Jan 2021 19:16:27 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=EKttc8vS+IMK7C/6WFmQB5W+CH3LrxuZz549Mz9fZfI3gT4dSNW5rgUArCIy/mzgpqIBjWRwWVhn/pOv/f+VmF1HIFxSCZpAcouol5G2ch5tRtb2/Cx3n4UMvAAEdyHuVw+vlAHBxMaavtYiFef5IHn492RUuwgwhj1sRj5tb+JDKLT908Nwa/NMx07v+4dpQuTFMGsqZ9tBsiftTsa2PI7JKDYtcomZ3o4LjJo3WNvhA5p+TTEDgmQlrH8e/AX4D0hbCVTO8z2LwZEWE5yUGP6WPHjKQhP4DGJzexU6zYJqPGkOA+48AhbgdCY8pFzUB6wJtZYNT39bsEfPbhedUg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Iq205kGSdLIdROtYgzFvv/cnHyeAbnz8UZMyR0oRauM=;
+ b=d3/3SfwFhoxMNqeFq+gCvTxpBk7k3fsRTQTCwqmc8riLIXw4evG/wv4IUHu83mlTWIO+W3BhEX2G+Zx+89thGmqxpsYKTAIV/n35emf+eV0Y75BwogdfyfcSqFOgAZFAJHneePjgccHlOKD+jKhSBHU9UEaJFQ/c9tK4oekEyt165AV8Du+s9e39F17LxjRL0u/IJvxF0ytShhTTMPJCQFpQek0Z7t7KLB0lXPRllZ5CDD34Mmdxgy3l6+XM5BDbTphDEbx8O+oxh1hWVaWMFzKZhaJKwKBxJEmbYjB2h4QUDHdiq170G4+OsapuBrekz6lcoJ9gNAMTRjVNgLCx6w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
+ by DM6PR12MB4268.namprd12.prod.outlook.com (2603:10b6:5:223::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3784.11; Mon, 25 Jan
+ 2021 19:16:25 +0000
+Received: from DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::546d:512c:72fa:4727]) by DM6PR12MB3834.namprd12.prod.outlook.com
+ ([fe80::546d:512c:72fa:4727%7]) with mapi id 15.20.3784.017; Mon, 25 Jan 2021
+ 19:16:25 +0000
+Date:   Mon, 25 Jan 2021 15:16:22 -0400
+From:   Jason Gunthorpe <jgg@nvidia.com>
+To:     Shiraz Saleem <shiraz.saleem@intel.com>
+CC:     <dledford@redhat.com>, <kuba@kernel.org>, <davem@davemloft.net>,
+        <linux-rdma@vger.kernel.org>, <gregkh@linuxfoundation.org>,
+        <netdev@vger.kernel.org>, <david.m.ertman@intel.com>,
+        <anthony.l.nguyen@intel.com>,
+        Mustafa Ismail <mustafa.ismail@intel.com>
+Subject: Re: [PATCH 07/22] RDMA/irdma: Register an auxiliary driver and
+ implement private channel OPs
+Message-ID: <20210125191622.GA1599720@nvidia.com>
+References: <20210122234827.1353-1-shiraz.saleem@intel.com>
+ <20210122234827.1353-8-shiraz.saleem@intel.com>
+Content-Type: text/plain; charset="us-ascii"
+Content-Disposition: inline
+In-Reply-To: <20210122234827.1353-8-shiraz.saleem@intel.com>
+X-ClientProxiedBy: BL1PR13CA0502.namprd13.prod.outlook.com
+ (2603:10b6:208:2c7::27) To DM6PR12MB3834.namprd12.prod.outlook.com
+ (2603:10b6:5:14a::12)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from mlx.ziepe.ca (142.162.115.133) by BL1PR13CA0502.namprd13.prod.outlook.com (2603:10b6:208:2c7::27) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3805.5 via Frontend Transport; Mon, 25 Jan 2021 19:16:24 +0000
+Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1l47La-006iDJ-W5; Mon, 25 Jan 2021 15:16:23 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1611602190; bh=Iq205kGSdLIdROtYgzFvv/cnHyeAbnz8UZMyR0oRauM=;
+        h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:Date:
+         From:To:CC:Subject:Message-ID:References:Content-Type:
+         Content-Disposition:In-Reply-To:X-ClientProxiedBy:MIME-Version:
+         X-MS-Exchange-MessageSentRepresentingType;
+        b=B52Aod8Sw5eCFNoo/2MkeBU+t44Mt0D0qpnjM9oME+1YBCrER5A9hQq83Pifc7fVt
+         x+h2xoucNJ057WBtDfmV+buvOctL1aoi6GH2QMsVeRmN+dgV8wAvCXaURNx8EdJiqy
+         +gaQgxvfRdzLXme64K9wNLbA6cTWdUTTwKyy5cwGL+Wui14S+IL8j/LzllmZ1mWmvb
+         Asj4fYhr85A4P831C7+cp2psbKh4nLKo0Ur+KHLVs5DBOtzV8mxlTerxJavnFXetVW
+         KIXOcAKPvPdlAStTiojdOcwSyXZkdZAa9gndCLx+fx9CgeFkeGRhzZP21AfKQZKIr4
+         4St8dPzhOB+lw==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 25 Jan 2021 15:53:24 +0000 Danielle Ratson wrote:
-> > > @@ -353,10 +358,39 @@ static int ethnl_update_linkmodes(struct
-> > > genl_info *info, struct nlattr **tb,
-> > >
-> > >  	*mod = false;
-> > >  	req_speed = tb[ETHTOOL_A_LINKMODES_SPEED];
-> > > +	req_lanes = tb[ETHTOOL_A_LINKMODES_LANES];
-> > >  	req_duplex = tb[ETHTOOL_A_LINKMODES_DUPLEX];
-> > >
-> > >  	ethnl_update_u8(&lsettings->autoneg, tb[ETHTOOL_A_LINKMODES_AUTONEG],
-> > >  			mod);
-> > > +
-> > > +	if (req_lanes) {
-> > > +		u32 lanes_cfg = nla_get_u32(tb[ETHTOOL_A_LINKMODES_LANES]);  
-> > 
-> > req_lanes == tb[ETHTOOL_A_LINKMODES_LANES], right?   
-> 
-> Yes, but req_lanes is a bool and doesn't fit to nla_get_u32. Do you want me to change the req_lanes type and name?
+On Fri, Jan 22, 2021 at 05:48:12PM -0600, Shiraz Saleem wrote:
 
-Ah, yes please.
+> +static int irdma_probe(struct auxiliary_device *aux_dev,
+> +		       const struct auxiliary_device_id *id)
+> +{
+> +	struct irdma_drvdata *drvdata;
+> +	int ret;
+> +
+> +	drvdata = kzalloc(sizeof(*drvdata), GFP_KERNEL);
+> +	if (!drvdata)
+> +		return -ENOMEM;
+> +
+> +	switch (id->driver_data) {
+> +	case IRDMA_GEN_2:
+> +		drvdata->init_dev = irdma_init_dev;
+> +		drvdata->deinit_dev = irdma_deinit_dev;
+> +		break;
+> +	case IRDMA_GEN_1:
+> +		drvdata->init_dev = i40iw_init_dev;
+> +		drvdata->deinit_dev = i40iw_deinit_dev;
+> +		break;
+> +	default:
+> +		ret = -ENODEV;
+> +		goto ver_err;
 
-> > Please use req_lanes variable where possible.
-> >   
-> > > +
-> > > +		if (!is_power_of_2(lanes_cfg)) {
-> > > +			NL_SET_ERR_MSG_ATTR(info->extack,
-> > > +					    tb[ETHTOOL_A_LINKMODES_LANES],
-> > > +					    "lanes value is invalid");
-> > > +			return -EINVAL;
-> > > +		}
-> > > +
-> > > +		/* If autoneg is off and lanes parameter is not supported by the
-> > > +		 * driver, return an error.
-> > > +		 */
-> > > +		if (!lsettings->autoneg &&
-> > > +		    !dev->ethtool_ops->cap_link_lanes_supported) {
-> > > +			NL_SET_ERR_MSG_ATTR(info->extack,
-> > > +					    tb[ETHTOOL_A_LINKMODES_LANES],
-> > > +					    "lanes configuration not supported by device");
-> > > +			return -EOPNOTSUPP;
-> > > +		}  
-> > 
-> > This validation does not depend on the current settings at all,
-> > it's just input validation, it can be done before rtnl_lock is
-> > taken (in a new function).
-> > 
-> > You can move ethnl_validate_master_slave_cfg() to that function as
-> > well (as a cleanup before this patch).  
-> 
-> Do you mean to move the ethnl_validate_master_slave_cfg() if from
-> that function? 
+Also don't do this, if the drivers are so different then give them
+different aux bus names and bind two drivers with the different
+flow.
 
-Yes, to a separate helper.
+I suppose the old i40e can keep its weird registration thing, but ice
+should not duplicate that, new code must use aux devices properly, as
+in my other email.
 
-> Doesn't it depend on the current settings, as opposed
-> to the supported lanes param that you wanted me to move as well? Not
-> sure I understand the second part of the request...
-
-Sorry maybe I quoted a little too much context form the patch.
-
-A helper like this:
-
-static int ethnl_check_linkmodes(...)
-{
-	const struct nlattr *master_slave_cfg;
-	
-	master_slave_cfg = tb[ETHTOOL_A_LINKMODES_MASTER_SLAVE_CFG];
-	if (master_slave_cfg && 
-	    !ethnl_validate_master_slave_cfg(nla_get_u8(master_slave_cfg))) {
-		NL_SET_ERR_MSG_ATTR(info->extack, master_slave_cfg,
-				    "master/slave value is invalid");
-		return -EOPNOTSUPP;
-	}
-
-	lanes_cfg = ...
-	if (!is_power_of_2(...lanes_cfg)) {
-		...
-		return -EINVAL;
-	}
-
-	return 0;
-}
- 
-Which you can call before the device reference is taken:
-
- int ethnl_set_linkmodes(struct sk_buff *skb, struct genl_info *info)
- {
- 	struct ethtool_link_ksettings ksettings = {};
- 	struct ethnl_req_info req_info = {};
- 	struct nlattr **tb = info->attrs;
- 	struct net_device *dev;
- 	bool mod = false;
- 	int ret;
- 
-+	ret = ethnl_check_linkmodes(tb);
-+	if (ret)
-+		return ret;
- 
- 	ret = ethnl_parse_header_dev_get(&req_info,
- 					 tb[ETHTOOL_A_LINKMODES_HEADER],
- 					 genl_info_net(info), info->extack,
- 					 true);
- 	if (ret < 0)
- 		return ret;
-
-
-But please make sure that you move the master_slave_cfg check in a
-separate patch.
+Jason
