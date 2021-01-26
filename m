@@ -2,37 +2,37 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F2E003037E4
-	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 09:30:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DBB443037D9
+	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 09:27:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390030AbhAZI2h (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jan 2021 03:28:37 -0500
-Received: from mga04.intel.com ([192.55.52.120]:62057 "EHLO mga04.intel.com"
+        id S2389994AbhAZI0v (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jan 2021 03:26:51 -0500
+Received: from mga04.intel.com ([192.55.52.120]:61804 "EHLO mga04.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2389798AbhAZI0E (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 26 Jan 2021 03:26:04 -0500
-IronPort-SDR: W/D5FQNyT6LPewH20Q/IgQEyuB0YhdTXnnphLhVLmT1lI/tkPev6x2QZWMvr6em644ZTG2o50X
- Exf307TsVhCA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9875"; a="177298551"
+        id S2389955AbhAZIZj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 26 Jan 2021 03:25:39 -0500
+IronPort-SDR: 25ip74m4BJWRWm3NesmW0obK5xAdaX87Yj1uzXvOQI27S1BzJ5iT/bQNqTKSTnGnifKVpcWpvG
+ BDmZKkvaK9cg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9875"; a="177298552"
 X-IronPort-AV: E=Sophos;i="5.79,375,1602572400"; 
-   d="scan'208";a="177298551"
+   d="scan'208";a="177298552"
 Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2021 00:22:40 -0800
-IronPort-SDR: 81q4VsQb/M2TyviKcXvu6RsiKJ9rkfEwSMfAOf3dxEtTzThYELJzH41X9HqEvp9IxGvHcZDmOl
- fEqS1QcfxQ+A==
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2021 00:22:41 -0800
+IronPort-SDR: qS4IRyNGKOilW1IYHpqR8gdQ/cI1NAPkcvRrS1XCztr1fNR2/RwSx+wT7qhBxlmnbZEY1pPVAd
+ 6ok8B3f05ATA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.79,375,1602572400"; 
-   d="scan'208";a="361901146"
+   d="scan'208";a="361901151"
 Received: from silpixa00399839.ir.intel.com (HELO localhost.localdomain) ([10.237.222.142])
-  by fmsmga008.fm.intel.com with ESMTP; 26 Jan 2021 00:22:25 -0800
+  by fmsmga008.fm.intel.com with ESMTP; 26 Jan 2021 00:22:26 -0800
 From:   Ciara Loftus <ciara.loftus@intel.com>
 To:     netdev@vger.kernel.org, bpf@vger.kernel.org,
         magnus.karlsson@intel.com, bjorn@kernel.org,
         weqaar.a.janjua@intel.com
 Cc:     Ciara Loftus <ciara.loftus@intel.com>
-Subject: [PATCH bpf-next v2 1/6] xsk: add tracepoints for packet drops
-Date:   Tue, 26 Jan 2021 07:52:34 +0000
-Message-Id: <20210126075239.25378-2-ciara.loftus@intel.com>
+Subject: [PATCH bpf-next v2 2/6] selftests/bpf: restructure setting the packet count
+Date:   Tue, 26 Jan 2021 07:52:35 +0000
+Message-Id: <20210126075239.25378-3-ciara.loftus@intel.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20210126075239.25378-1-ciara.loftus@intel.com>
 References: <20210126075239.25378-1-ciara.loftus@intel.com>
@@ -43,212 +43,120 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This commit introduces static perf tracepoints for AF_XDP which
-report information about packet drops, such as the netdev, qid and
-high level reason for the drop. The tracepoint can be
-enabled/disabled by toggling
-/sys/kernel/debug/tracing/events/xsk/xsk_packet_drop/enable
+Prior to this, the packet count was fixed at 10000
+for every test. Future tracing tests need to modify
+the count, so make it possible to set the count from
+test_xsk.h using the -C opt.
 
 Signed-off-by: Ciara Loftus <ciara.loftus@intel.com>
 ---
- MAINTAINERS                       |  1 +
- include/linux/bpf_trace.h         |  1 +
- include/trace/events/xsk.h        | 45 +++++++++++++++++++++++++++++++
- include/uapi/linux/if_xdp.h       |  8 ++++++
- kernel/bpf/core.c                 |  1 +
- net/xdp/xsk.c                     |  5 ++++
- net/xdp/xsk_buff_pool.c           |  8 +++++-
- tools/include/uapi/linux/if_xdp.h |  8 ++++++
- 8 files changed, 76 insertions(+), 1 deletion(-)
- create mode 100644 include/trace/events/xsk.h
+ tools/testing/selftests/bpf/test_xsk.sh    | 17 +++++++++--------
+ tools/testing/selftests/bpf/xsk_prereqs.sh |  3 +--
+ 2 files changed, 10 insertions(+), 10 deletions(-)
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 1df56a32d2df..efe6662d4198 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -19440,6 +19440,7 @@ S:	Maintained
- F:	Documentation/networking/af_xdp.rst
- F:	include/net/xdp_sock*
- F:	include/net/xsk_buff_pool.h
-+F:	include/trace/events/xsk.h
- F:	include/uapi/linux/if_xdp.h
- F:	include/uapi/linux/xdp_diag.h
- F:	include/net/netns/xdp.h
-diff --git a/include/linux/bpf_trace.h b/include/linux/bpf_trace.h
-index ddf896abcfb6..477d29b6c2c1 100644
---- a/include/linux/bpf_trace.h
-+++ b/include/linux/bpf_trace.h
-@@ -3,5 +3,6 @@
- #define __LINUX_BPF_TRACE_H__
+diff --git a/tools/testing/selftests/bpf/test_xsk.sh b/tools/testing/selftests/bpf/test_xsk.sh
+index 88a7483eaae4..2b4a4f42b220 100755
+--- a/tools/testing/selftests/bpf/test_xsk.sh
++++ b/tools/testing/selftests/bpf/test_xsk.sh
+@@ -82,6 +82,7 @@ do
+ done
  
- #include <trace/events/xdp.h>
-+#include <trace/events/xsk.h>
+ TEST_NAME="PREREQUISITES"
++DEFAULTPKTS=10000
  
- #endif /* __LINUX_BPF_TRACE_H__ */
-diff --git a/include/trace/events/xsk.h b/include/trace/events/xsk.h
-new file mode 100644
-index 000000000000..4f5629ba1b0f
---- /dev/null
-+++ b/include/trace/events/xsk.h
-@@ -0,0 +1,45 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/* Copyright(c) 2021 Intel Corporation. */
-+
-+#undef TRACE_SYSTEM
-+#define TRACE_SYSTEM xsk
-+
-+#if !defined(_TRACE_XSK_H) || defined(TRACE_HEADER_MULTI_READ)
-+#define _TRACE_XSK_H
-+
-+#include <linux/if_xdp.h>
-+#include <linux/tracepoint.h>
-+
-+#define print_reason(val) \
-+	__print_symbolic(val, \
-+			{ XSK_TRACE_DROP_RXQ_FULL, "rxq full" }, \
-+			{ XSK_TRACE_DROP_PKT_TOO_BIG, "packet too big" }, \
-+			{ XSK_TRACE_DROP_FQ_EMPTY, "fq empty" }, \
-+			{ XSK_TRACE_DROP_POOL_EMPTY, "xskb pool empty" }, \
-+			{ XSK_TRACE_DROP_DRV_ERR_TX, "driver error on tx" })
-+
-+TRACE_EVENT(xsk_packet_drop,
-+
-+	TP_PROTO(char *name, u16 queue_id, u32 reason),
-+
-+	TP_ARGS(name, queue_id, reason),
-+
-+	TP_STRUCT__entry(
-+		__field(char *, name)
-+		__field(u16, queue_id)
-+		__field(u32, reason)
-+	),
-+
-+	TP_fast_assign(
-+		__entry->name = name;
-+		__entry->queue_id = queue_id;
-+		__entry->reason = reason;
-+	),
-+
-+	TP_printk("netdev: %s qid %u reason: %s", __entry->name,
-+			__entry->queue_id, print_reason(__entry->reason))
-+);
-+
-+#endif /* _TRACE_XSK_H */
-+
-+#include <trace/define_trace.h>
-diff --git a/include/uapi/linux/if_xdp.h b/include/uapi/linux/if_xdp.h
-index a78a8096f4ce..5f1b8bf99bb5 100644
---- a/include/uapi/linux/if_xdp.h
-+++ b/include/uapi/linux/if_xdp.h
-@@ -108,4 +108,12 @@ struct xdp_desc {
+ URANDOM=/dev/urandom
+ [ ! -e "${URANDOM}" ] && { echo "${URANDOM} not found. Skipping tests."; test_exit 1 1; }
+@@ -154,7 +155,7 @@ TEST_NAME="SKB NOPOLL"
  
- /* UMEM descriptor is __u64 */
+ vethXDPgeneric ${VETH0} ${VETH1} ${NS1}
  
-+enum xdp_trace_reasons {
-+	XSK_TRACE_DROP_RXQ_FULL,
-+	XSK_TRACE_DROP_PKT_TOO_BIG,
-+	XSK_TRACE_DROP_FQ_EMPTY,
-+	XSK_TRACE_DROP_POOL_EMPTY,
-+	XSK_TRACE_DROP_DRV_ERR_TX,
-+};
-+
- #endif /* _LINUX_IF_XDP_H */
-diff --git a/kernel/bpf/core.c b/kernel/bpf/core.c
-index 5bbd4884ff7a..442b0d7f9bf8 100644
---- a/kernel/bpf/core.c
-+++ b/kernel/bpf/core.c
-@@ -2362,3 +2362,4 @@ EXPORT_SYMBOL(bpf_stats_enabled_key);
+-params=("-S")
++params=("-S" "-C" "${DEFAULTPKTS}")
+ execxdpxceiver params
  
- EXPORT_TRACEPOINT_SYMBOL_GPL(xdp_exception);
- EXPORT_TRACEPOINT_SYMBOL_GPL(xdp_bulk_tx);
-+EXPORT_TRACEPOINT_SYMBOL_GPL(xsk_packet_drop);
-diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-index 4faabd1ecfd1..9b850716630b 100644
---- a/net/xdp/xsk.c
-+++ b/net/xdp/xsk.c
-@@ -11,6 +11,7 @@
+ retval=$?
+@@ -166,7 +167,7 @@ TEST_NAME="SKB POLL"
  
- #define pr_fmt(fmt) "AF_XDP: %s: " fmt, __func__
+ vethXDPgeneric ${VETH0} ${VETH1} ${NS1}
  
-+#include <linux/bpf_trace.h>
- #include <linux/if_xdp.h>
- #include <linux/init.h>
- #include <linux/sched/mm.h>
-@@ -158,6 +159,7 @@ static int __xsk_rcv_zc(struct xdp_sock *xs, struct xdp_buff *xdp, u32 len)
- 	addr = xp_get_handle(xskb);
- 	err = xskq_prod_reserve_desc(xs->rx, addr, len);
- 	if (err) {
-+		trace_xsk_packet_drop(xs->dev->name, xs->queue_id, XSK_TRACE_DROP_RXQ_FULL);
- 		xs->rx_queue_full++;
- 		return err;
- 	}
-@@ -192,6 +194,7 @@ static int __xsk_rcv(struct xdp_sock *xs, struct xdp_buff *xdp)
+-params=("-S" "-p")
++params=("-S" "-p" "-C" "${DEFAULTPKTS}")
+ execxdpxceiver params
  
- 	len = xdp->data_end - xdp->data;
- 	if (len > xsk_pool_get_rx_frame_size(xs->pool)) {
-+		trace_xsk_packet_drop(xs->dev->name, xs->queue_id, XSK_TRACE_DROP_PKT_TOO_BIG);
- 		xs->rx_dropped++;
- 		return -ENOSPC;
- 	}
-@@ -516,6 +519,8 @@ static int xsk_generic_xmit(struct sock *sk)
- 		if (err == NET_XMIT_DROP) {
- 			/* SKB completed but not sent */
- 			err = -EBUSY;
-+			trace_xsk_packet_drop(xs->dev->name, xs->queue_id,
-+					      XSK_TRACE_DROP_DRV_ERR_TX);
- 			goto out;
- 		}
+ retval=$?
+@@ -178,7 +179,7 @@ TEST_NAME="DRV NOPOLL"
  
-diff --git a/net/xdp/xsk_buff_pool.c b/net/xdp/xsk_buff_pool.c
-index 8de01aaac4a0..d3c1ca83c75d 100644
---- a/net/xdp/xsk_buff_pool.c
-+++ b/net/xdp/xsk_buff_pool.c
-@@ -1,5 +1,6 @@
- // SPDX-License-Identifier: GPL-2.0
+ vethXDPnative ${VETH0} ${VETH1} ${NS1}
  
-+#include <linux/bpf_trace.h>
- #include <net/xsk_buff_pool.h>
- #include <net/xdp_sock.h>
- #include <net/xdp_sock_drv.h>
-@@ -445,8 +446,11 @@ static struct xdp_buff_xsk *__xp_alloc(struct xsk_buff_pool *pool)
- 	u64 addr;
- 	bool ok;
+-params=("-N")
++params=("-N" "-C" "${DEFAULTPKTS}")
+ execxdpxceiver params
  
--	if (pool->free_heads_cnt == 0)
-+	if (pool->free_heads_cnt == 0) {
-+		trace_xsk_packet_drop(pool->netdev->name, pool->queue_id,
-+				      XSK_TRACE_DROP_POOL_EMPTY);
- 		return NULL;
-+	}
+ retval=$?
+@@ -190,7 +191,7 @@ TEST_NAME="DRV POLL"
  
- 	xskb = pool->free_heads[--pool->free_heads_cnt];
+ vethXDPnative ${VETH0} ${VETH1} ${NS1}
  
-@@ -454,6 +458,8 @@ static struct xdp_buff_xsk *__xp_alloc(struct xsk_buff_pool *pool)
- 		if (!xskq_cons_peek_addr_unchecked(pool->fq, &addr)) {
- 			pool->fq->queue_empty_descs++;
- 			xp_release(xskb);
-+			trace_xsk_packet_drop(pool->netdev->name, pool->queue_id,
-+					      XSK_TRACE_DROP_FQ_EMPTY);
- 			return NULL;
- 		}
+-params=("-N" "-p")
++params=("-N" "-p" "-C" "${DEFAULTPKTS}")
+ execxdpxceiver params
  
-diff --git a/tools/include/uapi/linux/if_xdp.h b/tools/include/uapi/linux/if_xdp.h
-index a78a8096f4ce..5f1b8bf99bb5 100644
---- a/tools/include/uapi/linux/if_xdp.h
-+++ b/tools/include/uapi/linux/if_xdp.h
-@@ -108,4 +108,12 @@ struct xdp_desc {
+ retval=$?
+@@ -202,7 +203,7 @@ TEST_NAME="SKB SOCKET TEARDOWN"
  
- /* UMEM descriptor is __u64 */
+ vethXDPgeneric ${VETH0} ${VETH1} ${NS1}
  
-+enum xdp_trace_reasons {
-+	XSK_TRACE_DROP_RXQ_FULL,
-+	XSK_TRACE_DROP_PKT_TOO_BIG,
-+	XSK_TRACE_DROP_FQ_EMPTY,
-+	XSK_TRACE_DROP_POOL_EMPTY,
-+	XSK_TRACE_DROP_DRV_ERR_TX,
-+};
-+
- #endif /* _LINUX_IF_XDP_H */
+-params=("-S" "-T")
++params=("-S" "-T" "-C" "${DEFAULTPKTS}")
+ execxdpxceiver params
+ 
+ retval=$?
+@@ -214,7 +215,7 @@ TEST_NAME="DRV SOCKET TEARDOWN"
+ 
+ vethXDPnative ${VETH0} ${VETH1} ${NS1}
+ 
+-params=("-N" "-T")
++params=("-N" "-T" "-C" "${DEFAULTPKTS}")
+ execxdpxceiver params
+ 
+ retval=$?
+@@ -226,7 +227,7 @@ TEST_NAME="SKB BIDIRECTIONAL SOCKETS"
+ 
+ vethXDPgeneric ${VETH0} ${VETH1} ${NS1}
+ 
+-params=("-S" "-B")
++params=("-S" "-B" "-C" "${DEFAULTPKTS}")
+ execxdpxceiver params
+ 
+ retval=$?
+@@ -238,7 +239,7 @@ TEST_NAME="DRV BIDIRECTIONAL SOCKETS"
+ 
+ vethXDPnative ${VETH0} ${VETH1} ${NS1}
+ 
+-params=("-N" "-B")
++params=("-N" "-B" "-C" "${DEFAULTPKTS}")
+ execxdpxceiver params
+ 
+ retval=$?
+diff --git a/tools/testing/selftests/bpf/xsk_prereqs.sh b/tools/testing/selftests/bpf/xsk_prereqs.sh
+index 9d54c4645127..41dd713d14df 100755
+--- a/tools/testing/selftests/bpf/xsk_prereqs.sh
++++ b/tools/testing/selftests/bpf/xsk_prereqs.sh
+@@ -15,7 +15,6 @@ NC='\033[0m'
+ STACK_LIM=131072
+ SPECFILE=veth.spec
+ XSKOBJ=xdpxceiver
+-NUMPKTS=10000
+ 
+ validate_root_exec()
+ {
+@@ -131,5 +130,5 @@ execxdpxceiver()
+ 			copy[$index]=${!current}
+ 		done
+ 
+-	./${XSKOBJ} -i ${VETH0} -i ${VETH1},${NS1} ${copy[*]} -C ${NUMPKTS}
++	./${XSKOBJ} -i ${VETH0} -i ${VETH1},${NS1} ${copy[*]}
+ }
 -- 
 2.17.1
 
