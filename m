@@ -2,115 +2,163 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 22D3B3037C1
-	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 09:21:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B836C30383E
+	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 09:43:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388734AbhAZIVM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jan 2021 03:21:12 -0500
-Received: from smtprelay0146.hostedemail.com ([216.40.44.146]:53526 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2389809AbhAZIVA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jan 2021 03:21:00 -0500
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay02.hostedemail.com (Postfix) with ESMTP id 8742B12C7;
-        Tue, 26 Jan 2021 08:20:14 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Spam-Summary: 2,0,0,,d41d8cd98f00b204,joe@perches.com,,RULES_HIT:41:355:379:599:982:988:989:1260:1261:1277:1311:1313:1314:1345:1359:1437:1515:1516:1518:1534:1543:1593:1594:1711:1730:1747:1777:1792:2393:2553:2559:2562:2828:2919:3138:3139:3140:3141:3142:3355:3622:3867:3868:3870:3871:3872:3873:3874:4250:4321:5007:7652:8531:10004:10400:10848:10967:11026:11232:11473:11658:11914:12043:12294:12296:12297:12438:12555:12740:12760:12895:12986:13255:13439:14181:14659:14721:21080:21212:21451:21627:21740:21990:30054:30070:30090:30091,0,RBL:none,CacheIP:none,Bayesian:0.5,0.5,0.5,Netcheck:none,DomainCache:0,MSF:not bulk,SPF:,MSBL:0,DNSBL:none,Custom_rules:0:0:0,LFtime:1,LUA_SUMMARY:none
-X-HE-Tag: fire53_3e0904e2758c
-X-Filterd-Recvd-Size: 4553
-Received: from [192.168.1.159] (unknown [47.151.137.21])
-        (Authenticated sender: joe@perches.com)
-        by omf02.hostedemail.com (Postfix) with ESMTPA;
-        Tue, 26 Jan 2021 08:20:12 +0000 (UTC)
-Message-ID: <48c5a16657bb7b6c0f619253e57133137d4e825c.camel@perches.com>
-Subject: Re: [PATCH mlx5-next v4 1/4] PCI: Add sysfs callback to allow MSI-X
- table size change of SR-IOV VFs
-From:   Joe Perches <joe@perches.com>
-To:     Leon Romanovsky <leon@kernel.org>, Jakub Kicinski <kuba@kernel.org>
-Cc:     Bjorn Helgaas <bhelgaas@google.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        linux-pci@vger.kernel.org, linux-rdma@vger.kernel.org,
-        netdev@vger.kernel.org, Don Dutile <ddutile@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        "David S . Miller" <davem@davemloft.net>
-Date:   Tue, 26 Jan 2021 00:20:11 -0800
-In-Reply-To: <20210126060135.GQ579511@unreal>
-References: <20210124131119.558563-1-leon@kernel.org>
-         <20210124131119.558563-2-leon@kernel.org>
-         <20210125135229.6193f783@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-         <20210126060135.GQ579511@unreal>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.38.1-1 
+        id S2390378AbhAZIne (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jan 2021 03:43:34 -0500
+Received: from userp2130.oracle.com ([156.151.31.86]:51622 "EHLO
+        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390387AbhAZImg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jan 2021 03:42:36 -0500
+Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
+        by userp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 10Q7TwEe152538;
+        Tue, 26 Jan 2021 07:30:10 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=corp-2020-01-29;
+ bh=SJ15W1q+FIQewIC7/ta0Gam/PBScbc3sS8SJfQABM8k=;
+ b=yfl5WGMhTpd/DXeQgDuA4Tubu7v9oSADO5smZXJqV2rnKPR5OtonhX/s3jwZVelrO5DZ
+ WsKeCZymXwZ1fedKbeEkVPEiB/aF/SuH4m/zdN4rpxpyitBdzj+n+c/4YdxFTDKgDVGx
+ t89pqHt3J9pNRpIu8aPscHGIzW/bOeZ8IRpNgEAaIv20mD+eADBgTytm7XdUVVnJMC+A
+ VeJnfEJ7oyOfE/jJpReCnSjZ3tfykQ45BhfEhmP7v/jkfOZqk6vbN9KLArLhJKgPEw0x
+ /eeqcVoGVXJMcE3a2I91jfv3bpnwddRP9YdJTmzMwq37r8s/VgTaYCvzpH9Qr3ai7qyn jQ== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+        by userp2130.oracle.com with ESMTP id 368b7qrt2e-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 26 Jan 2021 07:30:10 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 10Q7K5QJ013329;
+        Tue, 26 Jan 2021 07:28:08 GMT
+Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
+        by userp3030.oracle.com with ESMTP id 368wqw2rxe-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 26 Jan 2021 07:28:08 +0000
+Received: from abhmp0005.oracle.com (abhmp0005.oracle.com [141.146.116.11])
+        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 10Q7S3P7026709;
+        Tue, 26 Jan 2021 07:28:03 GMT
+Received: from kadam (/102.36.221.92)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Mon, 25 Jan 2021 23:28:02 -0800
+Date:   Tue, 26 Jan 2021 10:27:53 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>
+Cc:     Claudiu Manoil <claudiu.manoil@nxp.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>
+Subject: Re: [PATCH v2 1/2 net-next] net: mscc: ocelot: fix error handling
+ bugs in mscc_ocelot_init_ports()
+Message-ID: <20210126072753.GU2696@kadam>
+References: <20210125081940.GK20820@kadam>
+ <YA6EW9SPE4q6x7d3@mwanda>
+ <20210125161806.q5rmiqj6r3yvp3ke@skbuf>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210125161806.q5rmiqj6r3yvp3ke@skbuf>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9875 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 spamscore=0 phishscore=0
+ adultscore=0 mlxlogscore=999 malwarescore=0 suspectscore=0 bulkscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2101260037
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9875 signatures=668683
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 spamscore=0 phishscore=0
+ adultscore=0 impostorscore=0 malwarescore=0 lowpriorityscore=0 bulkscore=0
+ priorityscore=1501 mlxscore=0 clxscore=1015 mlxlogscore=999
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2101260038
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 2021-01-26 at 08:01 +0200, Leon Romanovsky wrote:
-> On Mon, Jan 25, 2021 at 01:52:29PM -0800, Jakub Kicinski wrote:
-> > On Sun, 24 Jan 2021 15:11:16 +0200 Leon Romanovsky wrote:
-> > > +static int pci_enable_vfs_overlay(struct pci_dev *dev) { return 0; }
-> > > +static void pci_disable_vfs_overlay(struct pci_dev *dev) {}
-> > 
-> > s/static /static inline /
+On Mon, Jan 25, 2021 at 04:18:07PM +0000, Vladimir Oltean wrote:
+> Hi Dan,
 > 
-> Thanks a lot, I think that we should extend checkpatch.pl to catch such
-> mistakes.
+> On Mon, Jan 25, 2021 at 11:42:03AM +0300, Dan Carpenter wrote:
+> > diff --git a/drivers/net/ethernet/mscc/ocelot_net.c b/drivers/net/ethernet/mscc/ocelot_net.c
+> > index 9553eb3e441c..875ab8532d8c 100644
+> > --- a/drivers/net/ethernet/mscc/ocelot_net.c
+> > +++ b/drivers/net/ethernet/mscc/ocelot_net.c
+> > @@ -1262,7 +1262,6 @@ int ocelot_probe_port(struct ocelot *ocelot, int port, struct regmap *target,
+> >  	ocelot_port = &priv->port;
+> >  	ocelot_port->ocelot = ocelot;
+> >  	ocelot_port->target = target;
+> > -	ocelot->ports[port] = ocelot_port;
+> 
+> You cannot remove this from here just like that, because
+> ocelot_init_port right below accesses ocelot->ports[port], and it will
+> dereference through a NULL pointer otherwise.
+> 
 
-Who is this "we" you refer to? ;)
+Argh...  Thanks for spotting that.
 
-> How hard is it to extend checkpatch.pl to do regexp and warn if in *.h file
-> someone declared function with implementation but didn't add "inline" word?
+> >  	dev->netdev_ops = &ocelot_port_netdev_ops;
+> >  	dev->ethtool_ops = &ocelot_ethtool_ops;
+> > @@ -1282,7 +1281,19 @@ int ocelot_probe_port(struct ocelot *ocelot, int port, struct regmap *target,
+> >  	if (err) {
+> >  		dev_err(ocelot->dev, "register_netdev failed\n");
+> >  		free_netdev(dev);
+> > +		return err;
+> >  	}
+> >  
+> > -	return err;
+> > +	ocelot->ports[port] = ocelot_port;
+> > +	return 0;
+> > +}
+> > +
+> > +void ocelot_release_port(struct ocelot_port *ocelot_port)
+> > +{
+> > +	struct ocelot_port_private *priv = container_of(ocelot_port,
+> > +						struct ocelot_port_private,
+> > +						port);
+> 
+> Can this assignment please be done separately from the declaration?
+> 
+> 	struct ocelot_port_private *priv;
+> 
+> 	priv = container_of(ocelot_port, struct ocelot_port_private, port);
+> 
+> > +
+> > +	unregister_netdev(priv->dev);
+> > +	free_netdev(priv->dev);
+> >  }
+> 
+> Fun, isn't it? :D
+> Thanks for taking the time to untangle this.
+> 
+> Additionally, you have changed the meaning of "registered_ports" from
+> "this port had its net_device registered" to "this port had its
+> devlink_port registered". This is ok, but I would like the variable
+> renamed now, too. I think devlink_ports_registered would be ok.
+> 
+> In hindsight, I was foolish for using a heap-allocated boolean array for
+> registered_ports, because this switch architecture is guaranteed to not
+> have more than 32 ports, so a u32 bitmask is fine.
+> 
+> If you resend, can you please squash this diff on top of your patch?
 
-Something like this seems reasonable and catches these instances in
-include/linux/*.h
+Yep.  I will resend.  Thanks for basically writing v2 for me.  Your
+review comments were very clear but code is always 100% clear so that's
+really great.  I've never seen anyone do that before.  I should copy
+that for my own reviews and hopefully it's a new trend.
 
-$ ./scripts/checkpatch.pl -f include/linux/*.h --types=static_inline --terse --nosummary
-include/linux/dma-mapping.h:203: WARNING: static function definition might be better as static inline
-include/linux/genl_magic_func.h:55: WARNING: static function definition might be better as static inline
-include/linux/genl_magic_func.h:78: WARNING: static function definition might be better as static inline
-include/linux/kernel.h:670: WARNING: static function definition might be better as static inline
-include/linux/kprobes.h:213: WARNING: static function definition might be better as static inline
-include/linux/kprobes.h:231: WARNING: static function definition might be better as static inline
-include/linux/kprobes.h:511: WARNING: static function definition might be better as static inline
-include/linux/skb_array.h:185: WARNING: static function definition might be better as static inline
-include/linux/slab.h:606: WARNING: static function definition might be better as static inline
-include/linux/stop_machine.h:62: WARNING: static function definition might be better as static inline
-include/linux/vmw_vmci_defs.h:850: WARNING: static function definition might be better as static inline
-include/linux/zstd.h:95: WARNING: static function definition might be better as static inline
-include/linux/zstd.h:106: WARNING: static function definition might be better as static inline
+> 
+> Then you can add:
+> 
+> Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> Tested-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+> 
+> Also, it's strange but I don't see the v2 patches in patchwork. Did you
+> send them in-reply-to v1 or something?
 
-A false positive exists when __must_check is used between
-static and inline.  It's an unusual and IMO not a preferred use.
----
- scripts/checkpatch.pl | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+I did send them as a reply to v1.  Patchwork doesn't like that?
 
-diff --git a/scripts/checkpatch.pl b/scripts/checkpatch.pl
-index 4f8494527139..0ac366481962 100755
---- a/scripts/checkpatch.pl
-+++ b/scripts/checkpatch.pl
-@@ -4451,6 +4451,18 @@ sub process {
- 			}
- 		}
- 
-+# check for static function definitions without inline in .h files
-+# only works for static in column 1 and avoids multiline macro definitions
-+		if ($realfile =~ /\.h$/ &&
-+		    defined($stat) &&
-+		    $stat =~ /^\+static(?!\s+(?:$Inline|union|struct))\b.*\{.*\}\s*$/s &&
-+		    $line =~ /^\+static(?!\s+(?:$Inline|union|struct))\b/ &&
-+		    $line !~ /\\$/) {
-+			WARN("STATIC_INLINE",
-+			     "static function definition might be better as static inline\n" .
-+				$herecurr);
-+		}
-+
- # check for non-global char *foo[] = {"bar", ...} declarations.
- 		if ($line =~ /^.\s+(?:static\s+|const\s+)?char\s+\*\s*\w+\s*\[\s*\]\s*=\s*\{/) {
- 			WARN("STATIC_CONST_CHAR_ARRAY",
-
+regards,
+dan carpenter
 
