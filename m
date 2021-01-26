@@ -2,30 +2,29 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 333E9305527
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 09:01:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E148F305528
+	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 09:02:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232893AbhA0IAV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 03:00:21 -0500
-Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:2460 "EHLO
+        id S233724AbhA0IA5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 03:00:57 -0500
+Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:2472 "EHLO
         hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S317153AbhAZX1A (ORCPT
+        with ESMTP id S316406AbhAZX1A (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 26 Jan 2021 18:27:00 -0500
 Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B6010a4be0001>; Tue, 26 Jan 2021 15:24:46 -0800
+        id <B6010a4c10000>; Tue, 26 Jan 2021 15:24:49 -0800
 Received: from sx1.mtl.com (172.20.145.6) by HQMAIL107.nvidia.com
  (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 26 Jan
- 2021 23:24:45 +0000
+ 2021 23:24:48 +0000
 From:   Saeed Mahameed <saeedm@nvidia.com>
 To:     Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>
 CC:     <netdev@vger.kernel.org>, Aya Levin <ayal@nvidia.com>,
-        Moshe Shemesh <moshe@nvidia.com>,
         Tariq Toukan <tariqt@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 09/14] net/mlx5e: Add flow steering DMAC trap rule
-Date:   Tue, 26 Jan 2021 15:24:14 -0800
-Message-ID: <20210126232419.175836-10-saeedm@nvidia.com>
+Subject: [net-next 12/14] net/mlx5e: Add listener to trap event
+Date:   Tue, 26 Jan 2021 15:24:17 -0800
+Message-ID: <20210126232419.175836-13-saeedm@nvidia.com>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20210126232419.175836-1-saeedm@nvidia.com>
 References: <20210126232419.175836-1-saeedm@nvidia.com>
@@ -36,135 +35,124 @@ X-Originating-IP: [172.20.145.6]
 X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
  HQMAIL107.nvidia.com (172.20.187.13)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1611703486; bh=afSovO6ngo6FDTRQ6vNlacjcVrDihpV02exteGms4Zk=;
+        t=1611703489; bh=r48xrHG0Z51k93jiFKzml8O58k28OfY5ATRts5NBgpM=;
         h=From:To:CC:Subject:Date:Message-ID:X-Mailer:In-Reply-To:
          References:MIME-Version:Content-Transfer-Encoding:Content-Type:
          X-Originating-IP:X-ClientProxiedBy;
-        b=gMfwuBgj5kTqqaiOzkSma1XWrHW0b1h/NfknxJ8feOLLe+CuThz7EXTvOHyq1j4X+
-         47VsQImEu457QjZN9g/eyj4Qvim38hUaFXo0aB0Jhm91KybEiAkwDoWBFx9hTeU7IX
-         q1/0OmPHbTzkH3k9D1vfBZyUVReGpTSFrdxzllHLTEBF6GmIM6jpNgve+z8gHdSocB
-         UGqXLHzKEC704uHf8kfKaMT10zzATo1M4LNekpC5UqtAj4TEpzsspGk1mPyWnrDHil
-         +KskcDIM+cPy00JUeuYUbjLn5/FQBa3fAwAdQStWPIkijVfhRqBf3+DlmQH+4jiMXV
-         k9UZKC2wzZVUw==
+        b=HhqkJlKfrzK1aN7PL/+OgCqbnvFY2oxcaFGobq9tzGai5qDPmH3vCSJKMwiECdJks
+         4UWOM5RAgwARrYZX4OBdPcguLt3luYzEr9EhNh2d8ltMJPuvUY8nD+iKE551Y86rRs
+         1wZUtI4NrrOUuIAZxs0638ENTbAQsyZid5nkaS/g5hXjatq0ExtQGwyUjixjpGvnhC
+         viFa6dLJ3JYmacL+70x7lWuTp3EqYOoSE17SEfP9Z9ivxOKQoFHEVcEZ1aTGC2gia3
+         w+YGDispgNFC/EHMg/cUOrnqucue2pmzSyuDR3QG0sx9xWizkbX2Pf9vZJT+EkBjeO
+         Cg+RLgJ8+ncsw==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 From: Aya Levin <ayal@nvidia.com>
 
-Add flow group to the L2 table to hold the catch-all DMAC rule. Add API
-which adds/removes DMAC trap rule. This rule catches packets that were
-destined to be dropped due to no-match with previous DMAC rules. The
-trap rule steer these packets to the trap tir related to the trap-RQ.
+Add support for listening to blocking events in the ETH driver. Listen
+on trap event. If received, call mlx5e_handle_trap_event() which:
+1) Verifies if driver needs open/close trap-RQ with respect to the
+active traps count.
+2) Inspects trap id and its action (trap/drop) and add/remove the flow
+steering rule accordingly.
+Otherwise, return an error.
 
 Signed-off-by: Aya Levin <ayal@nvidia.com>
-Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
 Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
 Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../net/ethernet/mellanox/mlx5/core/en/fs.h   |  3 ++
- .../net/ethernet/mellanox/mlx5/core/en_fs.c   | 42 ++++++++++++++++++-
- 2 files changed, 43 insertions(+), 2 deletions(-)
+ drivers/net/ethernet/mellanox/mlx5/core/en.h  |  1 +
+ .../net/ethernet/mellanox/mlx5/core/en_main.c | 35 +++++++++++++++++++
+ 2 files changed, 36 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/fs.h b/drivers/net/=
-ethernet/mellanox/mlx5/core/en/fs.h
-index 688183a03e23..a16297e7e2ac 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en/fs.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en/fs.h
-@@ -68,6 +68,7 @@ struct mlx5e_l2_table {
- 	struct hlist_head          netdev_mc[MLX5E_L2_ADDR_HASH_SIZE];
- 	struct mlx5e_l2_rule	   broadcast;
- 	struct mlx5e_l2_rule	   allmulti;
-+	struct mlx5_flow_handle    *trap_rule;
- 	bool                       broadcast_enabled;
- 	bool                       allmulti_enabled;
- 	bool                       promisc_enabled;
-@@ -297,6 +298,8 @@ void mlx5e_destroy_flow_steering(struct mlx5e_priv *pri=
-v);
- u8 mlx5e_get_proto_by_tunnel_type(enum mlx5e_tunnel_types tt);
- int mlx5e_add_vlan_trap(struct mlx5e_priv *priv, int  trap_id, int tir_num=
-);
- void mlx5e_remove_vlan_trap(struct mlx5e_priv *priv);
-+int mlx5e_add_mac_trap(struct mlx5e_priv *priv, int  trap_id, int tir_num)=
-;
-+void mlx5e_remove_mac_trap(struct mlx5e_priv *priv);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en.h b/drivers/net/eth=
+ernet/mellanox/mlx5/core/en.h
+index f439a977ad61..39f389cc40fc 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
+@@ -859,6 +859,7 @@ struct mlx5e_priv {
+ 	u16                        q_counter;
+ 	u16                        drop_rq_q_counter;
+ 	struct notifier_block      events_nb;
++	struct notifier_block      blocking_events_nb;
+ 	int                        num_tc_x_num_ch;
 =20
- #endif /* __MLX5E_FLOW_STEER_H__ */
+ 	struct udp_tunnel_nic_info nic_info;
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/ne=
+t/ethernet/mellanox/mlx5/core/en_main.c
+index ec5bb48cb54a..3252919ec7bf 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+@@ -66,6 +66,7 @@
+ #include "lib/mlx5.h"
+ #include "en/ptp.h"
+ #include "qos.h"
++#include "en/trap.h"
 =20
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_fs.c b/drivers/net/=
-ethernet/mellanox/mlx5/core/en_fs.c
-index b7637a2ffd12..16ce7756ac43 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_fs.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_fs.c
-@@ -352,6 +352,32 @@ void mlx5e_remove_vlan_trap(struct mlx5e_priv *priv)
- 	}
+ bool mlx5e_check_fragmented_striding_rq_cap(struct mlx5_core_dev *mdev)
+ {
+@@ -212,6 +213,33 @@ static void mlx5e_disable_async_events(struct mlx5e_pr=
+iv *priv)
+ 	mlx5_notifier_unregister(priv->mdev, &priv->events_nb);
  }
 =20
-+int mlx5e_add_mac_trap(struct mlx5e_priv *priv, int trap_id, int tir_num)
++static int blocking_event(struct notifier_block *nb, unsigned long event, =
+void *data)
 +{
-+	struct mlx5_flow_table *ft =3D priv->fs.l2.ft.t;
-+	struct mlx5_flow_handle *rule;
++	struct mlx5e_priv *priv =3D container_of(nb, struct mlx5e_priv, blocking_=
+events_nb);
 +	int err;
 +
-+	rule =3D mlx5e_add_trap_rule(ft, trap_id, tir_num);
-+	if (IS_ERR(rule)) {
-+		err =3D PTR_ERR(rule);
-+		priv->fs.l2.trap_rule =3D NULL;
-+		netdev_err(priv->netdev, "%s: add MAC trap rule failed, err %d\n",
-+			   __func__, err);
-+		return err;
++	switch (event) {
++	case MLX5_DRIVER_EVENT_TYPE_TRAP:
++		err =3D mlx5e_handle_trap_event(priv, data);
++		break;
++	default:
++		netdev_warn(priv->netdev, "Sync event: Unknouwn event %ld\n", event);
++		err =3D -EINVAL;
 +	}
-+	priv->fs.l2.trap_rule =3D rule;
-+	return 0;
++	return err;
 +}
 +
-+void mlx5e_remove_mac_trap(struct mlx5e_priv *priv)
++static void mlx5e_enable_blocking_events(struct mlx5e_priv *priv)
 +{
-+	if (priv->fs.l2.trap_rule) {
-+		mlx5_del_flow_rules(priv->fs.l2.trap_rule);
-+		priv->fs.l2.trap_rule =3D NULL;
-+	}
++	priv->blocking_events_nb.notifier_call =3D blocking_event;
++	mlx5_blocking_notifier_register(priv->mdev, &priv->blocking_events_nb);
 +}
 +
- void mlx5e_enable_cvlan_filter(struct mlx5e_priv *priv)
- {
- 	if (!priv->fs.vlan.cvlan_filter_disabled)
-@@ -1444,11 +1470,13 @@ static int mlx5e_add_l2_flow_rule(struct mlx5e_priv=
- *priv,
- 	return err;
- }
-=20
--#define MLX5E_NUM_L2_GROUPS	   2
-+#define MLX5E_NUM_L2_GROUPS	   3
- #define MLX5E_L2_GROUP1_SIZE	   BIT(15)
- #define MLX5E_L2_GROUP2_SIZE	   BIT(0)
-+#define MLX5E_L2_GROUP_TRAP_SIZE   BIT(0) /* must be last */
- #define MLX5E_L2_TABLE_SIZE	   (MLX5E_L2_GROUP1_SIZE +\
--				    MLX5E_L2_GROUP2_SIZE)
-+				    MLX5E_L2_GROUP2_SIZE +\
-+				    MLX5E_L2_GROUP_TRAP_SIZE)
- static int mlx5e_create_l2_table_groups(struct mlx5e_l2_table *l2_table)
- {
- 	int inlen =3D MLX5_ST_SZ_BYTES(create_flow_group_in);
-@@ -1493,6 +1521,16 @@ static int mlx5e_create_l2_table_groups(struct mlx5e=
-_l2_table *l2_table)
- 		goto err_destroy_groups;
- 	ft->num_groups++;
-=20
-+	/* Flow Group for l2 traps */
-+	memset(in, 0, inlen);
-+	MLX5_SET_CFG(in, start_flow_index, ix);
-+	ix +=3D MLX5E_L2_GROUP_TRAP_SIZE;
-+	MLX5_SET_CFG(in, end_flow_index, ix - 1);
-+	ft->g[ft->num_groups] =3D mlx5_create_flow_group(ft->t, in);
-+	if (IS_ERR(ft->g[ft->num_groups]))
-+		goto err_destroy_groups;
-+	ft->num_groups++;
++static void mlx5e_disable_blocking_events(struct mlx5e_priv *priv)
++{
++	mlx5_blocking_notifier_unregister(priv->mdev, &priv->blocking_events_nb);
++}
 +
- 	kvfree(in);
- 	return 0;
+ static inline void mlx5e_build_umr_wqe(struct mlx5e_rq *rq,
+ 				       struct mlx5e_icosq *sq,
+ 				       struct mlx5e_umr_wqe *wqe)
+@@ -5341,6 +5369,7 @@ static void mlx5e_nic_enable(struct mlx5e_priv *priv)
+ 	mlx5_lag_add(mdev, netdev);
 =20
+ 	mlx5e_enable_async_events(priv);
++	mlx5e_enable_blocking_events(priv);
+ 	if (mlx5e_monitor_counter_supported(priv))
+ 		mlx5e_monitor_counter_init(priv);
+=20
+@@ -5378,6 +5407,12 @@ static void mlx5e_nic_disable(struct mlx5e_priv *pri=
+v)
+ 	if (mlx5e_monitor_counter_supported(priv))
+ 		mlx5e_monitor_counter_cleanup(priv);
+=20
++	mlx5e_disable_blocking_events(priv);
++	if (priv->en_trap) {
++		mlx5e_deactivate_trap(priv);
++		mlx5e_close_trap(priv->en_trap);
++		priv->en_trap =3D NULL;
++	}
+ 	mlx5e_disable_async_events(priv);
+ 	mlx5_lag_remove(mdev);
+ 	mlx5_vxlan_reset_to_default(mdev->vxlan);
 --=20
 2.29.2
 
