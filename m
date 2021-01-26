@@ -2,202 +2,210 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 768BA304CDC
-	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 23:58:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6B15C304CE6
+	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 23:59:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727070AbhAZW6e (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jan 2021 17:58:34 -0500
-Received: from sonic302-28.consmr.mail.ne1.yahoo.com ([66.163.186.154]:43026
-        "EHLO sonic302-28.consmr.mail.ne1.yahoo.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728591AbhAZRCL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jan 2021 12:02:11 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1611680485; bh=9YoXmcR9GfEUUKOi9Heh7nYvpBpiCcLdyEdcPUGrvg8=; h=From:To:Cc:Subject:Date:In-Reply-To:References:From:Subject:Reply-To; b=JqkoMjtE0EjzT3LnnJkYntYj5joWDk/HBhTCZXOa155OWW2bRzYHDDOpSvqIoi0DDkeBf5zf/1LmmWq1Aj5Vd1CGzAojXxCXG0o3RIPew3hOE4h31ie+zxf3+SPu50NBed01ZM9jYJW+R2wdSI0+QTjxbVfiupVciwPsqilHHfD1E3WsJUfKoaKovE1QdyM5Q2pE1R6mcnyiO9OKFFttOf7y2urQZQ6te+65Zli4K823cJGxsuiUWe6ieNC811salAp9719fYg8uJWD0qrObexl6uaxTMrTXeuUZAUus/lgVxwNAOZ9drcO3s1Yio1m6EseCEHWRSKv4+jE8Q+2USQ==
-X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1611680485; bh=bVuCUsFGKiRWMV4Cd81rbOX0bsQ6NomNR9M9qO3SiUj=; h=From:To:Subject:Date:From:Subject:Reply-To; b=mkRf8Sr500HyLv755kQNjemWkXKBVmKaYZ+TAZytOsNTa7dU57W8mW5+iEKC1BzsTXYIijQ69ZfFb+2d7HUE22J4wEuiiyNgTKFws6DeD1j02ZUbEjbnud+3RRaGVGpxxkseh3iP415BZ1bAaGT/l/8bDoKKnEk4bE4ek+3dNnAvbVxeTs+dGldUAOnbO43EszkWki/xkGpQVSU1Fx5zqgCBMjApJOqUCsIEqAJEVvyQU+dUb20qUidpbHjL2EuwqqP1OmPOe+zTonnZSMgnVQMD4N2ib2Q6t2T4CdPWjePKft7I/BufslXfTeJ5Y+qAaRXLPXG63b7pOVAhcxVuig==
-X-YMail-OSG: iyNXdgMVM1l5kVouslgwArlYw_zQUwYhnjGiVNgegINh71EjMeP6nBim2DQHaQn
- mrPBuQCiT595uHdwCAgFEUjwvaIy573GdC_VwgtjyMQKK6eKCGIeNq2xjsJcvrE82ZDWwmIGt6Mw
- LshpITZ3KfjsIxt4l75SI7HT1_N99.SfCEAuu_uxYXKbbjotmEiwO5qKmajbcWvTyaPbATPXpFzG
- jbBweaV5x9SZqylU7t6U9GM6dq4uDpp0tVjlOYtvK9iHf_U6wait.1.fAFz2eFo_j01sjUOP91wn
- P.ujPJpOH9TXCzNvDfO8xwRRAbBCkl1TATU0IWPeorZ90cq5wMYNXhQhfj8tExD3Gmn8IfDVX_bx
- 75Cypv_AemvzXQ4sEon8ZirkLBVNtHZopGA66PfZPwGLor2.I7lQZ.mbTVZf4diwCczPRnc3Qfwi
- QWOSdfPYv16RByCaKujEXvr_I5vItVEblV_pgcw7EdkBLLJDar1skC5txxyAY9gPUONelZmPsH9_
- ZN_UCW4SdXItrY1VDcwkbWL6VLL3iZ0q4hc6NQ026lS40VaW0aAexEUvgeNyw2LDvgZ_HE1L5joI
- 200XNHLQvvIeKMea1K7bzEj0LPLIQi5ITTMfc6wrf68GjUJU93D2.GBaNVfj9.WGl786A5Xe_QrI
- dhyNIl8qzDNiGF_b.KECjHfaqwuT9wMXqUmv_kYQW0Z2kokflldmgHW1ORkqbincjJIEfL.iHidQ
- _5DOYJ1B48iGRoWw5VOmHhGEZ.HZD9Q7lJLMxzuehpGXEdOusMKzKKJXFcJ0LPLrytKUe9.q1O_2
- qO.xNXJKFyPl5YXxm1unN.8PzL.8.vxnl8UU4ZFxfeQHZK6ZVhgDLgDeVIu.P4S3FhM62P2ppSl2
- q_WLlyIHPaQzj3pf75ZquiyaVI6ynq99_REDySB24h83Q7gbaMnx3TE6w8OPq_V02IizduuZGs_S
- If_ibaIpYaWzgRAVisy5_v6feR7H6uY5DrtEb5JO2TJS.57CEjofKhJX_FP7NsCvq4NGN6WucIsj
- kRxqPgDs7QlwFDYCSsddZCIuke_bBvzy2ZMw0XZYmSXcT7m1ic9cO6dFDCu81Y4A_3b40dGiY8Qd
- KlHOn9vwtiBdfMXbMvnW7FPWZLivVm_wr4kbicAw9VR7BanJpU4nhHBR03lBofOQR75gA5aZUiUJ
- FH5Ra5jLNwxS5uuPYcpCKytVGytaO9Zj1atoy0zGlh95t9PrF9WgqAJ7TnKktir0NuyqYkEKt6R1
- KJolTQqCv_0EzCECyjKyzT0jbDrwqQhongr9DYgjwqr_Qw.Dwyp8cF_248f9bEpwBSSDjpe4w2vn
- P1lbIMtnGGi7WIRorncBqZYFofQa0ORSJGHkdLUt7KFBA.DWM7cUO36yyo9CsLHA3tFvc.6WH3Rq
- BzRdTn1tuj1J4hxkpWU8CkV.ejbVCsJOFogjpquGsyEZ7T7YvVFHc6r8.D3wdyfKIaIh7wClDN8s
- 7f04EkKVSTvTYNMm1Oj8Yg2ON6ljCe0LLGXxNP5zIw5dhxUjhxfZCCHfrJWS6V30SdpKrbatBglU
- uorp11tqBMSvh1P8nupoJq6tI3yYxVxEmusnHWHIt0X2e.ntgchDLkKzprxN7ekQajzJGtA34FEy
- tXd6s.b9BzlqUz0CYUCxHPcrVL_jgIvTjqHdub2sT1GAKFDOwHL3rIA8N6Hf.Im76eeySbmOXioq
- fEw6dx_H1RdMuB0yb1ss6OoRJrWbpSMmSQro95QEZjrfeMvau_s2qB8o9pQ1BOQ101znya1iTq7L
- u09eVKpZPgetMxzBmL2_6MfqFShjOhLRuFa7ujpUe9qYgGi5QD_0Y4gt7bYYQsFhNvQIEMCIg4XE
- POO1NUJB1BwL9mlMOCdMsQHOMNGqdj2hWyVt5x0y4BIAEvviSdc57vZ3JzPycpPz5IUpexXYfKVQ
- h1Jrim3g7SvZUxxCdzv0VcEnTICfNhu3DN4Rz_7TZxQxtnkOW2X3iZ.QeyiaRmQXElCIhLz3Ml0c
- GXUt8Nw.5Eq2WLoyxnSRvbnJwbDw9OrONfGYMhxY9b7isfiK580qTeigB3MfiOhGNuiBogVoV0Iw
- ph9QK1LoWCAKvYNqIHhxd0uaH5t8XU4KrJ.MbH71a.ZUu2roLfZ20vmPwDrv6y2A54xXdzTOWLGl
- VSB3fKFCM9pAYgTzdPBrGjpDMXbcEtIy19lLPO5GKgEgzWxbMEj0jpe6xAfgHqwHwbM7a2Yd8Vjb
- 78D22yqjs5jBlQU4thVMB4yVafSA2iHSFjQimV4MFoD2Au.XhGXoh6o7y9hI2a06Y65Cxjfibrhg
- 3rE3MiVO.gvgYnbUYmsAUMDao1vuMTYSVyG9EB2KndCYLlbx__4sPxvEsUJgfsECoMJ2xMJWNbJw
- s2QuHZDDVc1_wY.GAV4nxvwxgK2g2Vigxyzdr9BUuQGFoDxEWbtlCgVaRnDqn6Met3lxtfr3_raT
- Wq4J3UYx0fieu5swyDAtNIx9YocFJ_7pzzKa5Lj4fiWRWfr235T6oTlq07lz6Com_oqWsNPBykVx
- D7ZyNnwvdMkbYwp3rc8RnWhfRu6AMNQ0mzP8dD4jg2Zl0EXI48psQnUNN12t.wYojcYMl28hwF_b
- Q9wXc1LZiiSm.EuQq1KxYb3SzXA4307t_OIo4GwgKw.yDRv_zY2ocn8nKR_DFMzijdswcw3m05yV
- 9URyOb.AwBdahIlCSPbAhWUEsM251Zj2HIQsR48C4160SS.0ArO18YVNqeIVXIKO8irrRvQGThVz
- s4GpieIWnmU4i75yjykIhK2ezHpRG2dknt1m3._hxQtUYwrJc2mUpqx3sCm5g9vZENafv.pJZTTX
- rRI30Tx7tXYmeQkc_dfb34PBVEQ37YldBFhnS.MzPA2l6xv_LMfMPnW3xHJ6yoUinI1EBGRbn7e3
- JrFF7hXhZJxE274wCVbedHLWb6ENfiG0W2KtZqAOf.Cdt9my.M7Tq9rOIqTKFrOcIQPSGiqdKclp
- ij3wPs2.goDZ4GDOF2qPi2__eWiRNBEh1rPWC7gX_CnNWl7rcaUpdUeaVhaibDB3oH2uTRhkXxpk
- 0yM1GUIheVP2r7FWMzZUmTO4ugiDYfKuXBCxcJom0nAZ6Gus4.uxmQ_Cc4yIrOJaByE6HiooxP3a
- YWUxmbNVisml33CCB3h3PUmuchQTuizCIBzbKUFLBQ9uJrAFvZ0OM0mfirybxVNPNdndGg4X9.u8
- SEEreVft5Cjxw59.YdvZQgKr6KUfh74rpktxIvp42O404KnihkWpnARwDbAfFHZ3CWhXjF_ndrZo
- 7YdKjstm5rrlxRlrXR9CZraxqFELqytB5t6pEGHVvxaE-
-Received: from sonic.gate.mail.ne1.yahoo.com by sonic302.consmr.mail.ne1.yahoo.com with HTTP; Tue, 26 Jan 2021 17:01:25 +0000
-Received: by smtp406.mail.bf1.yahoo.com (VZM Hermes SMTP Server) with ESMTPA ID 95bfae2557e9d921feb8a05f30947867;
-          Tue, 26 Jan 2021 17:01:22 +0000 (UTC)
-From:   Casey Schaufler <casey@schaufler-ca.com>
-To:     casey.schaufler@intel.com, jmorris@namei.org,
-        linux-security-module@vger.kernel.org, selinux@vger.kernel.org
-Cc:     casey@schaufler-ca.com, linux-audit@redhat.com,
-        keescook@chromium.org, john.johansen@canonical.com,
-        penguin-kernel@i-love.sakura.ne.jp, paul@paul-moore.com,
-        sds@tycho.nsa.gov, linux-kernel@vger.kernel.org,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        netdev@vger.kernel.org, netfilter-devel@vger.kernel.org
-Subject: [PATCH v24 18/25] LSM: security_secid_to_secctx in netlink netfilter
-Date:   Tue, 26 Jan 2021 08:41:01 -0800
-Message-Id: <20210126164108.1958-19-casey@schaufler-ca.com>
-X-Mailer: git-send-email 2.25.4
-In-Reply-To: <20210126164108.1958-1-casey@schaufler-ca.com>
-References: <20210126164108.1958-1-casey@schaufler-ca.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1731126AbhAZW6w (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jan 2021 17:58:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50224 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728752AbhAZRCN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jan 2021 12:02:13 -0500
+Received: from mail-pl1-x649.google.com (mail-pl1-x649.google.com [IPv6:2607:f8b0:4864:20::649])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FC8BC061A86
+        for <netdev@vger.kernel.org>; Tue, 26 Jan 2021 08:51:08 -0800 (PST)
+Received: by mail-pl1-x649.google.com with SMTP id e3so10050123pls.7
+        for <netdev@vger.kernel.org>; Tue, 26 Jan 2021 08:51:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=sender:date:in-reply-to:message-id:mime-version:references:subject
+         :from:to:cc;
+        bh=FJcc6MaSwZQRYOWrg1XK9d9cSH1sraaN8OpW2J95iRQ=;
+        b=QSkfO0h4d/vctYI3z52+MQly82DrobeOliUI16mTKFwNS9EsEjBU7YOSzIkr1BG7Jz
+         +euw2Fr8jmX5MtDMVJXBsHp/XtSO5LUKZGQiG2TtxCDqF5YiAtXW0OwAtl4meNlw6Bsc
+         5/+NvZLmB4ulBnxBi+rH/b6gSPuJ0yYgO0pP4LInAgzeKi+e5x/U8PTn8X0YMfyuaCGb
+         vMSLmt6Z/ps7LoVFxJijVY2jLI0Z5AWmTmcmaOzr9En+8DFy1j1rsAYJEqQJGWkuPFta
+         0s8MUNTm1sqkweir7vwns+3f8vbZ8GKkxrnmdz7EFZzYrIJ7eYlGP4QV+SMO5cGJ8/xv
+         S2Vw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:sender:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=FJcc6MaSwZQRYOWrg1XK9d9cSH1sraaN8OpW2J95iRQ=;
+        b=YkILtkFbKSdgm58khOTBOJGXKRsXw4CtbPioAgHurr4qvnS/L4HJJdzSBAOq7yA2el
+         IZXLtIkkZfV3tgOuBbSt2YWmqs9dEHhkJkg7o0kfUZO5v7mrFLJ5VWNj6nZECr/sh/YY
+         8EIJ/cG8+bhQfdJpguoRDrBMqDAXJWmQIiCR3qGTnoptZiM0eu2DcqTEyJG47CvhMpPX
+         xU0gjyRtZI80vBVveCyeo4NYG+VsmfD4eHY0AdFZ5v002ypjf4HC3wVoX1DOrbDkDhAu
+         pXdIsL2hwgH8sdTHsaS6LwdhzWok/49NA4fI+QwU6CnrOMPGWP/jXDi2No7OicW7fZRh
+         3BVA==
+X-Gm-Message-State: AOAM530yXJl1Lh0V5q7Wan6cYDIZNcAmY/Q3flVIgCYGNAlgH+XTVuue
+        AlfJggsfr5b6Nb2KAmc1yQQ9Vuzu+IrUK0Zc5aWwpJJdW6kjWJtN3JsPyfHAVeeAM0YZBPQSIGz
+        4A9qstg/JQgvq6Ce03bmtfy2F5JNHjpfxZDFn8AxuREoQY/KWp3jowg==
+X-Google-Smtp-Source: ABdhPJwv4t7xSnFbkbrmYAgMUBcmRK0xqfqrObkr8p7LyBbF01J1rr3ChaxGxiUgFcwu+4vxm1aiKnU=
+Sender: "sdf via sendgmr" <sdf@sdf2.svl.corp.google.com>
+X-Received: from sdf2.svl.corp.google.com ([2620:15c:2c4:1:7220:84ff:fe09:7732])
+ (user=sdf job=sendgmr) by 2002:a62:6047:0:b029:1ac:6091:cf50 with SMTP id
+ u68-20020a6260470000b02901ac6091cf50mr6087096pfb.40.1611679867930; Tue, 26
+ Jan 2021 08:51:07 -0800 (PST)
+Date:   Tue, 26 Jan 2021 08:51:04 -0800
+In-Reply-To: <20210126165104.891536-1-sdf@google.com>
+Message-Id: <20210126165104.891536-2-sdf@google.com>
+Mime-Version: 1.0
+References: <20210126165104.891536-1-sdf@google.com>
+X-Mailer: git-send-email 2.30.0.280.ga3ce27912f-goog
+Subject: [PATCH bpf-next v3 2/2] selftests/bpf: verify that rebinding to port
+ < 1024 from BPF works
+From:   Stanislav Fomichev <sdf@google.com>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     ast@kernel.org, daniel@iogearbox.net,
+        Stanislav Fomichev <sdf@google.com>,
+        Andrey Ignatov <rdna@fb.com>, Martin KaFai Lau <kafai@fb.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Change netlink netfilter interfaces to use lsmcontext
-pointers, and remove scaffolding.
+Return 3 to indicate that permission check for port 111
+should be skipped.
 
-Reviewed-by: Kees Cook <keescook@chromium.org>
-Reviewed-by: John Johansen <john.johansen@canonical.com>
-Acked-by: Stephen Smalley <sds@tycho.nsa.gov>
-Acked-by: Pablo Neira Ayuso <pablo@netfilter.org>
-Signed-off-by: Casey Schaufler <casey@schaufler-ca.com>
-Cc: netdev@vger.kernel.org
-Cc: netfilter-devel@vger.kernel.org
+Cc: Andrey Ignatov <rdna@fb.com>
+Cc: Martin KaFai Lau <kafai@fb.com>
+Signed-off-by: Stanislav Fomichev <sdf@google.com>
 ---
- net/netfilter/nfnetlink_queue.c | 37 +++++++++++++--------------------
- 1 file changed, 14 insertions(+), 23 deletions(-)
+ .../selftests/bpf/prog_tests/bind_perm.c      | 80 +++++++++++++++++++
+ tools/testing/selftests/bpf/progs/bind_perm.c | 36 +++++++++
+ 2 files changed, 116 insertions(+)
+ create mode 100644 tools/testing/selftests/bpf/prog_tests/bind_perm.c
+ create mode 100644 tools/testing/selftests/bpf/progs/bind_perm.c
 
-diff --git a/net/netfilter/nfnetlink_queue.c b/net/netfilter/nfnetlink_queue.c
-index 84be5a49a157..0d8b83d84422 100644
---- a/net/netfilter/nfnetlink_queue.c
-+++ b/net/netfilter/nfnetlink_queue.c
-@@ -301,15 +301,13 @@ static int nfqnl_put_sk_uidgid(struct sk_buff *skb, struct sock *sk)
- 	return -1;
- }
- 
--static u32 nfqnl_get_sk_secctx(struct sk_buff *skb, char **secdata)
-+static void nfqnl_get_sk_secctx(struct sk_buff *skb, struct lsmcontext *context)
- {
--	u32 seclen = 0;
- #if IS_ENABLED(CONFIG_NETWORK_SECMARK)
- 	struct lsmblob blob;
--	struct lsmcontext context = { };
- 
- 	if (!skb || !sk_fullsock(skb->sk))
--		return 0;
+diff --git a/tools/testing/selftests/bpf/prog_tests/bind_perm.c b/tools/testing/selftests/bpf/prog_tests/bind_perm.c
+new file mode 100644
+index 000000000000..763de148e511
+--- /dev/null
++++ b/tools/testing/selftests/bpf/prog_tests/bind_perm.c
+@@ -0,0 +1,80 @@
++// SPDX-License-Identifier: GPL-2.0
++#include <test_progs.h>
++#include "bind_perm.skel.h"
++
++#include <sys/types.h>
++#include <sys/socket.h>
++#include <sys/capability.h>
++
++static int duration;
++
++void try_bind(int port, int expected_errno)
++{
++	struct sockaddr_in sin = {};
++	int fd = -1;
++
++	fd = socket(AF_INET, SOCK_STREAM, 0);
++	if (CHECK(fd < 0, "fd", "errno %d", errno))
++		goto close_socket;
++
++	sin.sin_family = AF_INET;
++	sin.sin_port = htons(port);
++
++	errno = 0;
++	bind(fd, (struct sockaddr *)&sin, sizeof(sin));
++	ASSERT_EQ(errno, expected_errno, "bind");
++
++close_socket:
++	if (fd >= 0)
++		close(fd);
++}
++
++void cap_net_bind_service(cap_flag_value_t flag)
++{
++	const cap_value_t cap_net_bind_service = CAP_NET_BIND_SERVICE;
++	cap_t caps;
++
++	caps = cap_get_proc();
++	if (CHECK(!caps, "cap_get_proc", "errno %d", errno))
++		goto free_caps;
++
++	if (CHECK(cap_set_flag(caps, CAP_EFFECTIVE, 1, &cap_net_bind_service,
++			       flag),
++		  "cap_set_flag", "errno %d", errno))
++		goto free_caps;
++
++	if (CHECK(cap_set_proc(caps), "cap_set_proc", "errno %d", errno))
++		goto free_caps;
++
++free_caps:
++	if (CHECK(cap_free(caps), "cap_free", "errno %d", errno))
++		goto free_caps;
++}
++
++void test_bind_perm(void)
++{
++	struct bind_perm *skel;
++	int cgroup_fd;
++
++	cgroup_fd = test__join_cgroup("/bind_perm");
++	if (CHECK(cgroup_fd < 0, "cg-join", "errno %d", errno))
 +		return;
- 
- 	read_lock_bh(&skb->sk->sk_callback_lock);
- 
-@@ -318,14 +316,12 @@ static u32 nfqnl_get_sk_secctx(struct sk_buff *skb, char **secdata)
- 		 * blob. security_secid_to_secctx() will know which security
- 		 * module to use to create the secctx.  */
- 		lsmblob_init(&blob, skb->secmark);
--		security_secid_to_secctx(&blob, &context);
--		*secdata = context.context;
-+		security_secid_to_secctx(&blob, context);
- 	}
- 
- 	read_unlock_bh(&skb->sk->sk_callback_lock);
--	seclen = context.len;
- #endif
--	return seclen;
-+	return;
- }
- 
- static u32 nfqnl_get_bridge_size(struct nf_queue_entry *entry)
-@@ -398,12 +394,10 @@ nfqnl_build_packet_message(struct net *net, struct nfqnl_instance *queue,
- 	struct net_device *indev;
- 	struct net_device *outdev;
- 	struct nf_conn *ct = NULL;
-+	struct lsmcontext context = { };
- 	enum ip_conntrack_info ctinfo;
- 	struct nfnl_ct_hook *nfnl_ct;
- 	bool csum_verify;
--	struct lsmcontext scaff; /* scaffolding */
--	char *secdata = NULL;
--	u32 seclen = 0;
- 
- 	size = nlmsg_total_size(sizeof(struct nfgenmsg))
- 		+ nla_total_size(sizeof(struct nfqnl_msg_packet_hdr))
-@@ -469,9 +463,9 @@ nfqnl_build_packet_message(struct net *net, struct nfqnl_instance *queue,
- 	}
- 
- 	if ((queue->flags & NFQA_CFG_F_SECCTX) && entskb->sk) {
--		seclen = nfqnl_get_sk_secctx(entskb, &secdata);
--		if (seclen)
--			size += nla_total_size(seclen);
-+		nfqnl_get_sk_secctx(entskb, &context);
-+		if (context.len)
-+			size += nla_total_size(context.len);
- 	}
- 
- 	skb = alloc_skb(size, GFP_ATOMIC);
-@@ -604,7 +598,8 @@ nfqnl_build_packet_message(struct net *net, struct nfqnl_instance *queue,
- 	    nfqnl_put_sk_uidgid(skb, entskb->sk) < 0)
- 		goto nla_put_failure;
- 
--	if (seclen && nla_put(skb, NFQA_SECCTX, seclen, secdata))
-+	if (context.len &&
-+	    nla_put(skb, NFQA_SECCTX, context.len, context.context))
- 		goto nla_put_failure;
- 
- 	if (ct && nfnl_ct->build(skb, ct, ctinfo, NFQA_CT, NFQA_CT_INFO) < 0)
-@@ -632,10 +627,8 @@ nfqnl_build_packet_message(struct net *net, struct nfqnl_instance *queue,
- 	}
- 
- 	nlh->nlmsg_len = skb->len;
--	if (seclen) {
--		lsmcontext_init(&scaff, secdata, seclen, 0);
--		security_release_secctx(&scaff);
--	}
-+	if (context.len)
-+		security_release_secctx(&context);
- 	return skb;
- 
- nla_put_failure:
-@@ -643,10 +636,8 @@ nfqnl_build_packet_message(struct net *net, struct nfqnl_instance *queue,
- 	kfree_skb(skb);
- 	net_err_ratelimited("nf_queue: error creating packet message\n");
- nlmsg_failure:
--	if (seclen) {
--		lsmcontext_init(&scaff, secdata, seclen, 0);
--		security_release_secctx(&scaff);
--	}
-+	if (context.len)
-+		security_release_secctx(&context);
- 	return NULL;
- }
- 
++
++	skel = bind_perm__open_and_load();
++	if (!ASSERT_OK_PTR(skel, "skel"))
++		goto close_cgroup_fd;
++
++	skel->links.bind_v4_prog = bpf_program__attach_cgroup(skel->progs.bind_v4_prog, cgroup_fd);
++	if (!ASSERT_OK_PTR(skel, "bind_v4_prog"))
++		goto close_skeleton;
++
++	cap_net_bind_service(CAP_CLEAR);
++	try_bind(110, EACCES);
++	try_bind(111, 0);
++	cap_net_bind_service(CAP_SET);
++
++close_skeleton:
++	bind_perm__destroy(skel);
++close_cgroup_fd:
++	close(cgroup_fd);
++}
+diff --git a/tools/testing/selftests/bpf/progs/bind_perm.c b/tools/testing/selftests/bpf/progs/bind_perm.c
+new file mode 100644
+index 000000000000..e89bd264ed26
+--- /dev/null
++++ b/tools/testing/selftests/bpf/progs/bind_perm.c
+@@ -0,0 +1,36 @@
++// SPDX-License-Identifier: GPL-2.0
++
++#include <linux/stddef.h>
++#include <linux/bpf.h>
++#include <sys/types.h>
++#include <sys/socket.h>
++#include <bpf/bpf_helpers.h>
++#include <bpf/bpf_endian.h>
++
++SEC("cgroup/bind4")
++int bind_v4_prog(struct bpf_sock_addr *ctx)
++{
++	struct bpf_sock *sk;
++	__u32 user_ip4;
++	__u16 user_port;
++
++	sk = ctx->sk;
++	if (!sk)
++		return 0;
++
++	if (sk->family != AF_INET)
++		return 0;
++
++	if (ctx->type != SOCK_STREAM)
++		return 0;
++
++	/* Return 1 OR'ed with the first bit set to indicate
++	 * that CAP_NET_BIND_SERVICE should be bypassed.
++	 */
++	if (ctx->user_port == bpf_htons(111))
++		return (1 | 2);
++
++	return 1;
++}
++
++char _license[] SEC("license") = "GPL";
 -- 
-2.25.4
+2.30.0.280.ga3ce27912f-goog
 
