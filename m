@@ -2,65 +2,81 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E161F3043C1
-	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 17:25:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3D0633043D8
+	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 17:29:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392895AbhAZQYp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jan 2021 11:24:45 -0500
-Received: from foss.arm.com ([217.140.110.172]:46890 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2392859AbhAZQWr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 26 Jan 2021 11:22:47 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2E00C31B;
-        Tue, 26 Jan 2021 08:21:58 -0800 (PST)
-Received: from C02TD0UTHF1T.local (unknown [10.57.45.247])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 263843F66E;
-        Tue, 26 Jan 2021 08:21:57 -0800 (PST)
-Date:   Tue, 26 Jan 2021 16:21:54 +0000
-From:   Mark Rutland <mark.rutland@arm.com>
-To:     Matthew Wilcox <willy@infradead.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Courtney Cavin <courtney.cavin@sonymobile.com>
-Subject: Re: Preemptible idr_alloc() in QRTR code
-Message-ID: <20210126162154.GD80448@C02TD0UTHF1T.local>
-References: <20210126104734.GB80448@C02TD0UTHF1T.local>
- <20210126145833.GM308988@casper.infradead.org>
+        id S2392879AbhAZQ2N (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jan 2021 11:28:13 -0500
+Received: from a1.mail.mailgun.net ([198.61.254.60]:10775 "EHLO
+        a1.mail.mailgun.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2392886AbhAZQ0b (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jan 2021 11:26:31 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1611678365; h=Date: Message-Id: Cc: To: References:
+ In-Reply-To: From: Subject: Content-Transfer-Encoding: MIME-Version:
+ Content-Type: Sender; bh=roFrb5eBhPqZTvXpSEWS1kSBgr+K1E0l4LAsnVOoPAw=;
+ b=mNnHE2VHRe04UHrFvJ9mwHjoiyU/2gNpOf3X+PU4Clmb/HBy0GA5Ybq5H/MPbhKh/d0RkkOk
+ WvRgftrBHvvXqSXs1P4l6OYwehxSoFWiLWWrd/jiDpP8t78MoFL5uHnQRMLQpOm48ZiJydNL
+ eg1yjtBYSCFeFEcURXmm9etXPB4=
+X-Mailgun-Sending-Ip: 198.61.254.60
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n02.prod.us-east-1.postgun.com with SMTP id
+ 6010427cfb02735e8cffe38e (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 26 Jan 2021 16:25:32
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id 2357AC433ED; Tue, 26 Jan 2021 16:25:31 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
+        MISSING_DATE,MISSING_MID,SPF_FAIL,URIBL_BLOCKED autolearn=no
+        autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id AAB1EC433CA;
+        Tue, 26 Jan 2021 16:25:28 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org AAB1EC433CA
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210126145833.GM308988@casper.infradead.org>
+Content-Transfer-Encoding: 7bit
+Subject: Re: [PATCH wireless v2 -next] wcn36xx: Remove unnecessary memset
+From:   Kalle Valo <kvalo@codeaurora.org>
+In-Reply-To: <20201223012516.24286-1-zhengyongjun3@huawei.com>
+References: <20201223012516.24286-1-zhengyongjun3@huawei.com>
+To:     Zheng Yongjun <zhengyongjun3@huawei.com>
+Cc:     <davem@davemloft.net>, <kuba@kernel.org>,
+        <wcn36xx@lists.infradead.org>, <linux-wireless@vger.kernel.org>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Zheng Yongjun <zhengyongjun3@huawei.com>
+User-Agent: pwcli/0.1.0-git (https://github.com/kvalo/pwcli/) Python/3.5.2
+Message-Id: <20210126162531.2357AC433ED@smtp.codeaurora.org>
+Date:   Tue, 26 Jan 2021 16:25:31 +0000 (UTC)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 26, 2021 at 02:58:33PM +0000, Matthew Wilcox wrote:
-> On Tue, Jan 26, 2021 at 10:47:34AM +0000, Mark Rutland wrote:
-> > Hi,
-> > 
-> > When fuzzing arm64 with Syzkaller, I'm seeing some splats where
-> > this_cpu_ptr() is used in the bowels of idr_alloc(), by way of
-> > radix_tree_node_alloc(), in a preemptible context:
+Zheng Yongjun <zhengyongjun3@huawei.com> wrote:
+
+> memcpy operation is next to memset code, and the size to copy is equals to the size to
+> memset, so the memset operation is unnecessary, remove it.
 > 
-> I sent a patch to fix this last June.  The maintainer seems to be
-> under the impression that I care an awful lot more about their
-> code than I do.
-> 
-> https://lore.kernel.org/netdev/20200605120037.17427-1-willy@infradead.org/
+> Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>
+> Signed-off-by: Kalle Valo <kvalo@codeaurora.org>
 
-Ah; I hadn't spotted the (glaringly obvious) GFP_ATOMIC abuse, thanks
-for the pointer, and sorry for the noise.
+Patch applied to ath-next branch of ath.git, thanks.
 
-It looks like Eric was after a fix that trivially backported to v4.7
-(and hence couldn't rely on xarray) but instead it just got left broken
-for months. :/
+337cd0d3ce0c wcn36xx: Remove unnecessary memset
 
-Bjorn, is this something you care about? You seem to have the most
-commits to the file, and otherwise the official maintainer is Dave
-Miller per get_maintainer.pl.
+-- 
+https://patchwork.kernel.org/project/linux-wireless/patch/20201223012516.24286-1-zhengyongjun3@huawei.com/
 
-It is very tempting to make the config option depend on BROKEN...
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
 
-Thanks,
-Mark.
