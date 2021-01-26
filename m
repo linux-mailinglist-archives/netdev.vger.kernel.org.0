@@ -2,29 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E148F305528
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 09:02:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1E17B30552D
+	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 09:02:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233724AbhA0IA5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 03:00:57 -0500
-Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:2472 "EHLO
-        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S316406AbhAZX1A (ORCPT
+        id S232072AbhA0ICD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 03:02:03 -0500
+Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:8256 "EHLO
+        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S315192AbhAZX1A (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 26 Jan 2021 18:27:00 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B6010a4c10000>; Tue, 26 Jan 2021 15:24:49 -0800
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B6010a4c20000>; Tue, 26 Jan 2021 15:24:50 -0800
 Received: from sx1.mtl.com (172.20.145.6) by HQMAIL107.nvidia.com
  (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 26 Jan
- 2021 23:24:48 +0000
+ 2021 23:24:50 +0000
 From:   Saeed Mahameed <saeedm@nvidia.com>
 To:     Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>
 CC:     <netdev@vger.kernel.org>, Aya Levin <ayal@nvidia.com>,
+        Moshe Shemesh <moshe@nvidia.com>,
         Tariq Toukan <tariqt@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 12/14] net/mlx5e: Add listener to trap event
-Date:   Tue, 26 Jan 2021 15:24:17 -0800
-Message-ID: <20210126232419.175836-13-saeedm@nvidia.com>
+Subject: [net-next 14/14] net/mlx5e: Enable traps according to link state
+Date:   Tue, 26 Jan 2021 15:24:19 -0800
+Message-ID: <20210126232419.175836-15-saeedm@nvidia.com>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20210126232419.175836-1-saeedm@nvidia.com>
 References: <20210126232419.175836-1-saeedm@nvidia.com>
@@ -35,124 +36,176 @@ X-Originating-IP: [172.20.145.6]
 X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
  HQMAIL107.nvidia.com (172.20.187.13)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1611703489; bh=r48xrHG0Z51k93jiFKzml8O58k28OfY5ATRts5NBgpM=;
+        t=1611703490; bh=7TYcSXniewij/fdB+CeNhZrOtYIYRWqf4/a3CGJbmD0=;
         h=From:To:CC:Subject:Date:Message-ID:X-Mailer:In-Reply-To:
          References:MIME-Version:Content-Transfer-Encoding:Content-Type:
          X-Originating-IP:X-ClientProxiedBy;
-        b=HhqkJlKfrzK1aN7PL/+OgCqbnvFY2oxcaFGobq9tzGai5qDPmH3vCSJKMwiECdJks
-         4UWOM5RAgwARrYZX4OBdPcguLt3luYzEr9EhNh2d8ltMJPuvUY8nD+iKE551Y86rRs
-         1wZUtI4NrrOUuIAZxs0638ENTbAQsyZid5nkaS/g5hXjatq0ExtQGwyUjixjpGvnhC
-         viFa6dLJ3JYmacL+70x7lWuTp3EqYOoSE17SEfP9Z9ivxOKQoFHEVcEZ1aTGC2gia3
-         w+YGDispgNFC/EHMg/cUOrnqucue2pmzSyuDR3QG0sx9xWizkbX2Pf9vZJT+EkBjeO
-         Cg+RLgJ8+ncsw==
+        b=Jl9gBeNG8JdCu2gotjHDfUrerbt2nH98eUtAWL4d5Iphor89Qd0JGS8wIH2TFtBzt
+         owZS0AG1GOLjLKHX2jFwQM9Iakb65UondIyNIX/aD/dGKa9XAz6tdo72Vz6GzYxX7S
+         f2Uhobbq/ylO3Ot9MKOsy2TXlIKgPFy4GKFUa3NonXNXpA+SnRH19iAUsuaALbVM+f
+         r4BTZFXCL6c+1NmPDQNLr35snt57PmQJ9Hp1vpMhLoM+FPEy4m6qGvKkhiyPOnPRfD
+         J8yrbW+hR1lHnEQDQ88+6I08kcgS/tip+umkAfGm8+fsxrjuWYid2lBmFrwF9WgaLT
+         PcSX/pa3qp/BA==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 From: Aya Levin <ayal@nvidia.com>
 
-Add support for listening to blocking events in the ETH driver. Listen
-on trap event. If received, call mlx5e_handle_trap_event() which:
-1) Verifies if driver needs open/close trap-RQ with respect to the
-active traps count.
-2) Inspects trap id and its action (trap/drop) and add/remove the flow
-steering rule accordingly.
-Otherwise, return an error.
+Avoid trapping packets when the interface is down, and revive them when
+interface is back up. Add API to mlx5 core retrieving the action by trap
+id. Use it to apply traps when interface is up, and disable then when
+interface is down.
 
 Signed-off-by: Aya Levin <ayal@nvidia.com>
-Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
 Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- drivers/net/ethernet/mellanox/mlx5/core/en.h  |  1 +
- .../net/ethernet/mellanox/mlx5/core/en_main.c | 35 +++++++++++++++++++
- 2 files changed, 36 insertions(+)
+ .../net/ethernet/mellanox/mlx5/core/devlink.c | 16 ++++++++
+ .../net/ethernet/mellanox/mlx5/core/devlink.h |  2 +
+ .../net/ethernet/mellanox/mlx5/core/en/trap.c | 40 +++++++++++++++++++
+ .../net/ethernet/mellanox/mlx5/core/en/trap.h |  2 +
+ .../net/ethernet/mellanox/mlx5/core/en_main.c |  2 +
+ 5 files changed, 62 insertions(+)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en.h b/drivers/net/eth=
-ernet/mellanox/mlx5/core/en.h
-index f439a977ad61..39f389cc40fc 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en.h
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en.h
-@@ -859,6 +859,7 @@ struct mlx5e_priv {
- 	u16                        q_counter;
- 	u16                        drop_rq_q_counter;
- 	struct notifier_block      events_nb;
-+	struct notifier_block      blocking_events_nb;
- 	int                        num_tc_x_num_ch;
-=20
- 	struct udp_tunnel_nic_info nic_info;
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/ne=
-t/ethernet/mellanox/mlx5/core/en_main.c
-index ec5bb48cb54a..3252919ec7bf 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
-@@ -66,6 +66,7 @@
- #include "lib/mlx5.h"
- #include "en/ptp.h"
- #include "qos.h"
-+#include "en/trap.h"
-=20
- bool mlx5e_check_fragmented_striding_rq_cap(struct mlx5_core_dev *mdev)
- {
-@@ -212,6 +213,33 @@ static void mlx5e_disable_async_events(struct mlx5e_pr=
-iv *priv)
- 	mlx5_notifier_unregister(priv->mdev, &priv->events_nb);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c b/drivers/ne=
+t/ethernet/mellanox/mlx5/core/devlink.c
+index c47291467cb0..b23b54814356 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
+@@ -308,6 +308,22 @@ int mlx5_devlink_trap_get_num_active(struct mlx5_core_=
+dev *dev)
+ 	return count;
  }
 =20
-+static int blocking_event(struct notifier_block *nb, unsigned long event, =
-void *data)
++int mlx5_devlink_traps_get_action(struct mlx5_core_dev *dev, int trap_id,
++				  enum devlink_trap_action *action)
 +{
-+	struct mlx5e_priv *priv =3D container_of(nb, struct mlx5e_priv, blocking_=
-events_nb);
++	struct mlx5_devlink_trap *dl_trap;
++
++	dl_trap =3D mlx5_find_trap_by_id(dev, trap_id);
++	if (!dl_trap) {
++		mlx5_core_err(dev, "Devlink trap: Get action on invalid trap id 0x%x",
++			      trap_id);
++		return -EINVAL;
++	}
++
++	*action =3D dl_trap->trap.action;
++	return 0;
++}
++
+ struct devlink *mlx5_devlink_alloc(void)
+ {
+ 	return devlink_alloc(&mlx5_devlink_ops, sizeof(struct mlx5_core_dev));
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/devlink.h b/drivers/ne=
+t/ethernet/mellanox/mlx5/core/devlink.h
+index a9829006fa78..eff107dad922 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/devlink.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/devlink.h
+@@ -27,6 +27,8 @@ struct mlx5_core_dev;
+ void mlx5_devlink_trap_report(struct mlx5_core_dev *dev, int trap_id, stru=
+ct sk_buff *skb,
+ 			      struct devlink_port *dl_port);
+ int mlx5_devlink_trap_get_num_active(struct mlx5_core_dev *dev);
++int mlx5_devlink_traps_get_action(struct mlx5_core_dev *dev, int trap_id,
++				  enum devlink_trap_action *action);
+=20
+ struct devlink *mlx5_devlink_alloc(void);
+ void mlx5_devlink_free(struct devlink *devlink);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/trap.c b/drivers/ne=
+t/ethernet/mellanox/mlx5/core/en/trap.c
+index d078281dbd1d..37fc1d77ded7 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/trap.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/trap.c
+@@ -401,6 +401,14 @@ int mlx5e_handle_trap_event(struct mlx5e_priv *priv, s=
+truct mlx5_trap_ctx *trap_
+ {
+ 	int err =3D 0;
+=20
++	/* Traps are unarmed when interface is down, no need to update
++	 * them. The configuration is saved in the core driver,
++	 * queried and applied upon interface up operation in
++	 * mlx5e_open_locked().
++	 */
++	if (!test_bit(MLX5E_STATE_OPENED, &priv->state))
++		return 0;
++
+ 	switch (trap_ctx->action) {
+ 	case DEVLINK_TRAP_ACTION_TRAP:
+ 		err =3D mlx5e_handle_action_trap(priv, trap_ctx->id);
+@@ -415,3 +423,35 @@ int mlx5e_handle_trap_event(struct mlx5e_priv *priv, s=
+truct mlx5_trap_ctx *trap_
+ 	}
+ 	return err;
+ }
++
++static int mlx5e_apply_trap(struct mlx5e_priv *priv, int trap_id, bool ena=
+ble)
++{
++	enum devlink_trap_action action;
 +	int err;
 +
-+	switch (event) {
-+	case MLX5_DRIVER_EVENT_TYPE_TRAP:
-+		err =3D mlx5e_handle_trap_event(priv, data);
-+		break;
-+	default:
-+		netdev_warn(priv->netdev, "Sync event: Unknouwn event %ld\n", event);
-+		err =3D -EINVAL;
-+	}
++	err =3D mlx5_devlink_traps_get_action(priv->mdev, trap_id, &action);
++	if (err)
++		return err;
++	if (action =3D=3D DEVLINK_TRAP_ACTION_TRAP)
++		err =3D enable ? mlx5e_handle_action_trap(priv, trap_id) :
++			       mlx5e_handle_action_drop(priv, trap_id);
 +	return err;
 +}
 +
-+static void mlx5e_enable_blocking_events(struct mlx5e_priv *priv)
-+{
-+	priv->blocking_events_nb.notifier_call =3D blocking_event;
-+	mlx5_blocking_notifier_register(priv->mdev, &priv->blocking_events_nb);
-+}
++static const int mlx5e_traps_arr[] =3D {
++	DEVLINK_TRAP_GENERIC_ID_INGRESS_VLAN_FILTER,
++	DEVLINK_TRAP_GENERIC_ID_DMAC_FILTER,
++};
 +
-+static void mlx5e_disable_blocking_events(struct mlx5e_priv *priv)
++int mlx5e_apply_traps(struct mlx5e_priv *priv, bool enable)
 +{
-+	mlx5_blocking_notifier_unregister(priv->mdev, &priv->blocking_events_nb);
-+}
++	int err;
++	int i;
 +
- static inline void mlx5e_build_umr_wqe(struct mlx5e_rq *rq,
- 				       struct mlx5e_icosq *sq,
- 				       struct mlx5e_umr_wqe *wqe)
-@@ -5341,6 +5369,7 @@ static void mlx5e_nic_enable(struct mlx5e_priv *priv)
- 	mlx5_lag_add(mdev, netdev);
-=20
- 	mlx5e_enable_async_events(priv);
-+	mlx5e_enable_blocking_events(priv);
- 	if (mlx5e_monitor_counter_supported(priv))
- 		mlx5e_monitor_counter_init(priv);
-=20
-@@ -5378,6 +5407,12 @@ static void mlx5e_nic_disable(struct mlx5e_priv *pri=
-v)
- 	if (mlx5e_monitor_counter_supported(priv))
- 		mlx5e_monitor_counter_cleanup(priv);
-=20
-+	mlx5e_disable_blocking_events(priv);
-+	if (priv->en_trap) {
-+		mlx5e_deactivate_trap(priv);
-+		mlx5e_close_trap(priv->en_trap);
-+		priv->en_trap =3D NULL;
++	for (i =3D 0; i < ARRAY_SIZE(mlx5e_traps_arr); i++) {
++		err =3D mlx5e_apply_trap(priv, mlx5e_traps_arr[i], enable);
++		if (err)
++			return err;
 +	}
- 	mlx5e_disable_async_events(priv);
- 	mlx5_lag_remove(mdev);
- 	mlx5_vxlan_reset_to_default(mdev->vxlan);
++	return 0;
++}
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/trap.h b/drivers/ne=
+t/ethernet/mellanox/mlx5/core/en/trap.h
+index cc1fa9f12c45..aa3f17658c6d 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/trap.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/trap.h
+@@ -32,4 +32,6 @@ struct mlx5e_trap {
+ void mlx5e_close_trap(struct mlx5e_trap *trap);
+ void mlx5e_deactivate_trap(struct mlx5e_priv *priv);
+ int mlx5e_handle_trap_event(struct mlx5e_priv *priv, struct mlx5_trap_ctx =
+*trap_ctx);
++int mlx5e_apply_traps(struct mlx5e_priv *priv, bool enable);
++
+ #endif
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c b/drivers/ne=
+t/ethernet/mellanox/mlx5/core/en_main.c
+index 3252919ec7bf..f8619d381345 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_main.c
+@@ -3247,6 +3247,7 @@ int mlx5e_open_locked(struct net_device *netdev)
+=20
+ 	priv->profile->update_rx(priv);
+ 	mlx5e_activate_priv_channels(priv);
++	mlx5e_apply_traps(priv, true);
+ 	if (priv->profile->update_carrier)
+ 		priv->profile->update_carrier(priv);
+=20
+@@ -3282,6 +3283,7 @@ int mlx5e_close_locked(struct net_device *netdev)
+ 	if (!test_bit(MLX5E_STATE_OPENED, &priv->state))
+ 		return 0;
+=20
++	mlx5e_apply_traps(priv, false);
+ 	clear_bit(MLX5E_STATE_OPENED, &priv->state);
+=20
+ 	netif_carrier_off(priv->netdev);
 --=20
 2.29.2
 
