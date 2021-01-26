@@ -2,79 +2,179 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 15A183055F1
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 09:40:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4391B3055F3
+	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 09:40:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S316918AbhAZXMS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jan 2021 18:12:18 -0500
-Received: from mail.kernel.org ([198.145.29.99]:44546 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726554AbhAZVJT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 26 Jan 2021 16:09:19 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id D494D221EF;
-        Tue, 26 Jan 2021 21:08:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611695319;
-        bh=bkBpnlPXphp5YIBfQclI0r681mrPpCajCNo/bOnVu/4=;
-        h=From:To:Cc:Subject:Date:From;
-        b=PxjT79g46yNhKWpaZqhTaALdDs9CeoQFUsAHg9dLQQG7uD9HgNyxk7kCMTVKHxkvV
-         XC97dY9vXl51dd8yEzOlJW52zO30H/+pp8ejjA8uLXckamJKMupCCqBn98n4EC0qxT
-         xzvt305NmCOMIHz4l8u39U3J4/ZH3/+ARyQXddI7d2GDipX/JctvFlw7WAYChXTgHa
-         44c5ZZ3/NN+XzzBYVEgW9UB3x6aBVPBZwfPaBstb7LGMAb1G9ZVN/fS80CgHKKQ2MZ
-         4n27C8dOXkEqB0Ty7h0+DPU/mK3gn1qsJ30ocNwkrOcf0C1vR5cha88zzqICfNz0Qs
-         1a4f37iat7f1w==
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Sunil Goutham <sgoutham@marvell.com>,
-        Linu Cherian <lcherian@marvell.com>,
-        Geetha sowjanya <gakula@marvell.com>,
-        Jerin Jacob <jerinj@marvell.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>
-Subject: [PATCH] octeontx2-af: Fix 'physical' typos
-Date:   Tue, 26 Jan 2021 15:08:30 -0600
-Message-Id: <20210126210830.2919352-1-helgaas@kernel.org>
-X-Mailer: git-send-email 2.25.1
+        id S316929AbhAZXMY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jan 2021 18:12:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49352 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729604AbhAZVTV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jan 2021 16:19:21 -0500
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6ED0C061793;
+        Tue, 26 Jan 2021 13:16:21 -0800 (PST)
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.94)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1l4VhE-00C3HE-A2; Tue, 26 Jan 2021 22:16:20 +0100
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     netdev@vger.kernel.org
+Cc:     linux-wireless@vger.kernel.org
+Subject: pull-request: mac80211-next 2021-01-26
+Date:   Tue, 26 Jan 2021 22:16:13 +0100
+Message-Id: <20210126211614.76456-1-johannes@sipsolutions.net>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Bjorn Helgaas <bhelgaas@google.com>
+Hi,
 
-Fix misspellings of "physical".
+So here's a pretty big and invasive mac80211-next pull. It has now been
+in linux-next for some time, and all the issues that had been reported by
+people running that are fixed. I've also thrown hwsim and Intel-internal
+tests at it. However, changing the locking is somewhat dangerous, so if I
+consider it, I sort of expect some more fallout from that. I did sprinkle
+lockdep assertions fairly liberally, so we'll see.
 
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
----
- drivers/net/ethernet/marvell/octeontx2/af/rvu.c      | 2 +-
- drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+Please pull and let me know if there's any problem.
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
-index e8fd712860a1..565d9373bfe4 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
-@@ -646,7 +646,7 @@ static int rvu_setup_msix_resources(struct rvu *rvu)
- 	}
- 
- 	/* HW interprets RVU_AF_MSIXTR_BASE address as an IOVA, hence
--	 * create a IOMMU mapping for the physcial address configured by
-+	 * create an IOMMU mapping for the physical address configured by
- 	 * firmware and reconfig RVU_AF_MSIXTR_BASE with IOVA.
- 	 */
- 	cfg = rvu_read64(rvu, BLKADDR_RVUM, RVU_PRIV_CONST);
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-index 634d60655a74..07ec85aebcca 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-@@ -1,5 +1,5 @@
- // SPDX-License-Identifier: GPL-2.0
--/* Marvell OcteonTx2 RVU Physcial Function ethernet driver
-+/* Marvell OcteonTx2 RVU Physical Function ethernet driver
-  *
-  * Copyright (C) 2020 Marvell International Ltd.
-  *
--- 
-2.25.1
+Thanks,
+johannes
+
+
+
+The following changes since commit 9e8789c85deee047c5753e22f725d5fc10682468:
+
+  net: stmmac: dwmac-meson8b: fix the RX delay validation (2021-01-20 22:15:08 -0800)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/jberg/mac80211-next.git tags/mac80211-next-for-net-next-2021-01-26
+
+for you to fetch changes up to a05829a7222e9d10c416dd2dbbf3929fe6646b89:
+
+  cfg80211: avoid holding the RTNL when calling the driver (2021-01-26 11:55:50 +0100)
+
+----------------------------------------------------------------
+More updates:
+ * many minstrel improvements, including removal of the old
+   minstrel in favour of minstrel_ht
+ * speed improvements on FQ
+ * support for RX decapsulation (header conversion) offload
+ * RTNL reduction: limit RTNL usage in the wireless stack
+   mostly to where really needed (regulatory not yet) to
+   reduce contention on it
+ * various other small updates
+
+----------------------------------------------------------------
+Arend van Spriel (1):
+      cfg80211: add VHT rate entries for MCS-10 and MCS-11
+
+Felix Fietkau (13):
+      net/fq_impl: bulk-free packets from a flow on overmemory
+      net/fq_impl: drop get_default_func, move default flow to fq_tin
+      net/fq_impl: do not maintain a backlog-sorted list of flows
+      mac80211: add rx decapsulation offload support
+      mac80211: minstrel_ht: clean up CCK code
+      mac80211: minstrel_ht: add support for OFDM rates on non-HT clients
+      mac80211: remove legacy minstrel rate control
+      mac80211: minstrel_ht: remove old ewma based rate average code
+      mac80211: minstrel_ht: improve ampdu length estimation
+      mac80211: minstrel_ht: improve sample rate selection
+      mac80211: minstrel_ht: fix max probability rate selection
+      mac80211: minstrel_ht: increase stats update interval
+      mac80211: minstrel_ht: fix rounding error in throughput calculation
+
+Johannes Berg (2):
+      cfg80211: change netdev registration/unregistration semantics
+      cfg80211: avoid holding the RTNL when calling the driver
+
+Lorenzo Bianconi (1):
+      mac80211: introduce aql_enable node in debugfs
+
+Max Chen (1):
+      cfg80211: Add phyrate conversion support for extended MCS in 60GHz band
+
+Philipp Borgers (1):
+      mac80211: add LDPC encoding to ieee80211_parse_tx_radiotap
+
+Ramon Fontes (1):
+      mac80211_hwsim: add 6GHz channels
+
+Wen Gong (2):
+      mac80211: remove NSS number of 160MHz if not support 160MHz for HE
+      mac80211: reduce peer HE MCS/NSS to own capabilities
+
+ drivers/net/wireless/ath/ath11k/reg.c              |   4 +-
+ drivers/net/wireless/ath/ath6kl/cfg80211.c         |   4 +-
+ drivers/net/wireless/ath/ath6kl/core.c             |   2 +
+ drivers/net/wireless/ath/ath6kl/init.c             |   2 +
+ drivers/net/wireless/ath/wil6210/cfg80211.c        |   2 +
+ drivers/net/wireless/ath/wil6210/netdev.c          |  11 +-
+ drivers/net/wireless/ath/wil6210/pcie_bus.c        |   2 +
+ .../wireless/broadcom/brcm80211/brcmfmac/core.c    |  24 +-
+ .../wireless/broadcom/brcm80211/brcmfmac/core.h    |   6 +-
+ .../net/wireless/broadcom/brcm80211/brcmfmac/p2p.c |  12 +-
+ drivers/net/wireless/intel/iwlwifi/mvm/d3.c        |   2 +-
+ drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c  |   4 +-
+ drivers/net/wireless/intel/iwlwifi/mvm/nvm.c       |   2 +-
+ drivers/net/wireless/mac80211_hwsim.c              |  74 ++-
+ drivers/net/wireless/marvell/mwifiex/cfg80211.c    |  10 +-
+ drivers/net/wireless/marvell/mwifiex/main.c        |   7 +
+ drivers/net/wireless/microchip/wilc1000/cfg80211.c |   2 +-
+ drivers/net/wireless/microchip/wilc1000/mon.c      |   4 +-
+ drivers/net/wireless/microchip/wilc1000/netdev.c   |   2 +-
+ drivers/net/wireless/quantenna/qtnfmac/cfg80211.c  |   4 +-
+ drivers/net/wireless/quantenna/qtnfmac/core.c      |   5 +-
+ drivers/net/wireless/virt_wifi.c                   |   8 +
+ include/net/cfg80211.h                             | 146 ++++-
+ include/net/fq.h                                   |  11 +-
+ include/net/fq_impl.h                              | 171 ++++--
+ include/net/mac80211.h                             |  26 +-
+ net/mac80211/Makefile                              |   2 -
+ net/mac80211/debugfs.c                             |  52 ++
+ net/mac80211/debugfs_sta.c                         |   1 +
+ net/mac80211/driver-ops.h                          |  16 +
+ net/mac80211/he.c                                  |  92 +++
+ net/mac80211/ieee80211_i.h                         |   3 +-
+ net/mac80211/iface.c                               |  40 +-
+ net/mac80211/key.c                                 |   4 +-
+ net/mac80211/main.c                                |   5 +
+ net/mac80211/pm.c                                  |   6 +-
+ net/mac80211/rc80211_minstrel.c                    | 574 ------------------
+ net/mac80211/rc80211_minstrel.h                    | 184 ------
+ net/mac80211/rc80211_minstrel_debugfs.c            | 172 ------
+ net/mac80211/rc80211_minstrel_ht.c                 | 560 ++++++++++++------
+ net/mac80211/rc80211_minstrel_ht.h                 |  96 ++-
+ net/mac80211/rc80211_minstrel_ht_debugfs.c         |  57 +-
+ net/mac80211/rx.c                                  | 243 +++++---
+ net/mac80211/sta_info.h                            |   2 +
+ net/mac80211/tdls.c                                |   6 +-
+ net/mac80211/trace.h                               |  18 +-
+ net/mac80211/tx.c                                  |  33 +-
+ net/mac80211/util.c                                |  14 +-
+ net/mac80211/vht.c                                 |   9 +-
+ net/wireless/chan.c                                |   5 +-
+ net/wireless/core.c                                | 159 +++--
+ net/wireless/core.h                                |   2 +-
+ net/wireless/debugfs.c                             |   4 -
+ net/wireless/ibss.c                                |   3 +-
+ net/wireless/mlme.c                                |   6 +-
+ net/wireless/nl80211.c                             | 657 +++++++++++----------
+ net/wireless/reg.c                                 |  91 ++-
+ net/wireless/reg.h                                 |   1 -
+ net/wireless/scan.c                                |  35 +-
+ net/wireless/sme.c                                 |   5 +-
+ net/wireless/sysfs.c                               |   5 +
+ net/wireless/util.c                                |  39 +-
+ net/wireless/wext-compat.c                         | 271 ++++++---
+ net/wireless/wext-sme.c                            |   4 +-
+ 64 files changed, 2097 insertions(+), 1926 deletions(-)
+ delete mode 100644 net/mac80211/rc80211_minstrel.c
+ delete mode 100644 net/mac80211/rc80211_minstrel.h
+ delete mode 100644 net/mac80211/rc80211_minstrel_debugfs.c
 
