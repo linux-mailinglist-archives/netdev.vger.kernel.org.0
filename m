@@ -2,129 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F0A8E304DA9
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 01:48:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 35BD1304DAC
+	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 01:48:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387624AbhAZXNV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jan 2021 18:13:21 -0500
-Received: from mga12.intel.com ([192.55.52.136]:40976 "EHLO mga12.intel.com"
+        id S2387701AbhAZXNd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jan 2021 18:13:33 -0500
+Received: from mga14.intel.com ([192.55.52.115]:62462 "EHLO mga14.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728183AbhAZWI3 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 26 Jan 2021 17:08:29 -0500
-IronPort-SDR: NAnPUhaiWxZ95zT7oKzW5e9CxNHSkksx9wrqFrIhGFtle25LxDYRBssDG16XSFZxsYSHda8HRT
- 7nO6SjwoAXsw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9876"; a="159153059"
+        id S1728185AbhAZWKx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 26 Jan 2021 17:10:53 -0500
+IronPort-SDR: wC4o29CiUaCHxEU1TaGtjoJoCcGkhn6cAtsGEOSI7dAHW6kQkTUbmA+61OvvlxW61PXUcfF3zq
+ YBsNZGbOYpyg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9876"; a="179198672"
 X-IronPort-AV: E=Sophos;i="5.79,377,1602572400"; 
-   d="scan'208";a="159153059"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2021 14:07:43 -0800
-IronPort-SDR: JdBVuSuUm/XowqcsRNe8tNk+epVAjphlRAxgq9IK4LDUdGYce96lMMAESjmikJtr3EAimJYey2
- nhsLMoeQLX3A==
+   d="scan'208";a="179198672"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2021 14:10:00 -0800
+IronPort-SDR: efX/uAAEsIz3h6js7MbOw/Dn6Ph+VF3GW09tozS5ehMWHdd4Cl8MB4y/e7iMxfXudqik4dtNYB
+ uRy6P+BmHBTg==
+X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.79,377,1602572400"; 
-   d="scan'208";a="388026878"
-Received: from jekeller-mobl1.amr.corp.intel.com (HELO [10.209.75.167]) ([10.209.75.167])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2021 14:07:42 -0800
-Subject: Re: [PATCH 07/22] RDMA/irdma: Register an auxiliary driver and
- implement private channel OPs
-To:     Leon Romanovsky <leon@kernel.org>
-Cc:     "Saleem, Shiraz" <shiraz.saleem@intel.com>,
-        Jason Gunthorpe <jgg@nvidia.com>,
-        "dledford@redhat.com" <dledford@redhat.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Ertman, David M" <david.m.ertman@intel.com>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        "Ismail, Mustafa" <mustafa.ismail@intel.com>,
-        "jiri@nvidia.com" <jiri@nvidia.com>,
-        "Samudrala, Sridhar" <sridhar.samudrala@intel.com>,
-        "Williams, Dan J" <dan.j.williams@intel.com>
-References: <20210122234827.1353-1-shiraz.saleem@intel.com>
- <20210122234827.1353-8-shiraz.saleem@intel.com>
- <20210124134551.GB5038@unreal> <20210125132834.GK4147@nvidia.com>
- <2072c76154cd4232b78392c650b2b2bf@intel.com>
- <5b3f609d-034a-826f-1e50-0a5f8ad8406e@intel.com>
- <20210126052914.GN579511@unreal>
-From:   Jacob Keller <jacob.e.keller@intel.com>
-Organization: Intel Corporation
-Message-ID: <236bd48f-ad16-1502-3194-b3e48ca2de97@intel.com>
-Date:   Tue, 26 Jan 2021 14:07:40 -0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
+   d="scan'208";a="472908301"
+Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
+  by fmsmga001.fm.intel.com with ESMTP; 26 Jan 2021 14:10:00 -0800
+From:   Tony Nguyen <anthony.l.nguyen@intel.com>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     Tony Nguyen <anthony.l.nguyen@intel.com>, netdev@vger.kernel.org,
+        sassmann@redhat.com
+Subject: [PATCH net v2 0/7][pull request] Intel Wired LAN Driver Updates 2021-01-26
+Date:   Tue, 26 Jan 2021 14:10:28 -0800
+Message-Id: <20210126221035.658124-1-anthony.l.nguyen@intel.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-In-Reply-To: <20210126052914.GN579511@unreal>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+This series contains updates to the ice, i40e, and igc driver.
 
+Henry corrects setting an unspecified protocol to IPPROTO_NONE instead of
+0 for IPv6 flexbytes filters for ice.
 
-On 1/25/2021 9:29 PM, Leon Romanovsky wrote:
-> On Mon, Jan 25, 2021 at 05:01:40PM -0800, Jacob Keller wrote:
->>
->>
->> On 1/25/2021 4:39 PM, Saleem, Shiraz wrote:
->>>> Subject: Re: [PATCH 07/22] RDMA/irdma: Register an auxiliary driver and
->>>> implement private channel OPs
->>>>
->>>> On Sun, Jan 24, 2021 at 03:45:51PM +0200, Leon Romanovsky wrote:
->>>>> On Fri, Jan 22, 2021 at 05:48:12PM -0600, Shiraz Saleem wrote:
->>>>>> From: Mustafa Ismail <mustafa.ismail@intel.com>
->>>>>>
->>>>>> Register irdma as an auxiliary driver which can attach to auxiliary
->>>>>> RDMA devices from Intel PCI netdev drivers i40e and ice. Implement
->>>>>> the private channel ops, add basic devlink support in the driver and
->>>>>> register net notifiers.
->>>>>
->>>>> Devlink part in "the RDMA client" is interesting thing.
->>>>>
->>>>> The idea behind auxiliary bus was that PCI logic will stay at one
->>>>> place and devlink considered as the tool to manage that.
->>>>
->>>> Yes, this doesn't seem right, I don't think these auxiliary bus objects should have
->>>> devlink instances, or at least someone from devlink land should approve of the
->>>> idea.
->>>>
->>>
->>> In our model, we have one auxdev (for RDMA) per PCI device function owned by netdev driver
->>> and one devlink instance per auxdev. Plus there is an Intel netdev driver for each HW generation.
->>> Moving the devlink logic to the PCI netdev driver would mean duplicating the same set of RDMA
->>> params in each Intel netdev driver. Additionally, plumbing RDMA specific params in the netdev
->>> driver sort of seems misplaced to me.
->>>
->>
->> I agree that plumbing these parameters at the PCI side in the devlink of
->> the parent device is weird. They don't seem to be parameters that the
->> parent driver cares about.
->>
->> Maybe there is another mechanism that makes more sense? To me it is a
->> bit like if we were plumbing netdev specific paramters into devlink
->> instead of trying to expose them through netdevice specific interfaces
->> like iproute2 or ethtool.
-> 
-> I'm far from being expert in devlink, but for me separation is following:
-> 1. devlink - operates on physical device level, when PCI device already initialized.
-> 2. ethtool - changes needed to be done on netdev layer.
-> 3. ip - upper layer of the netdev
-> 4. rdmatool - RDMA specific when IB device already exists.
-> 
-> And the ENABLE_ROCE/ENABLE_RDMA thing shouldn't be in the RDMA driver at
-> all, because it is physical device property which once toggled will
-> prohibit creation of respective aux device.
-> 
+Nick fixes the IPv6 extension header being processed incorrectly and
+updates the netdev->dev_addr if it exists in hardware as it may have been
+modified outside the ice driver.
 
-Ok. I guess I hadn't looked quite as close at the specifics here. I
-agree that ENABLE_RDMA should go in the PF devlink.
+Brett ensures a user cannot request more channels than available LAN MSI-X
+and fixes the minimum allocation logic as it was incorrectly trying to use
+more MSI-X than allocated for ice.
 
-If there's any other sort of RDMA-specific configuration that ties to
-the IB device, that should go somehow into rdmatool, rather than
-devlink. And thus: I think I agree, we don't want the IB device or the
-aux device to create a devlink instance.
+Stefan Assmann minimizes the delay between getting and using the VSI
+pointer to prevent a possible crash for i40e.
 
-> Thanks
-> 
+Corinna Vinschen fixes link speed advertising for igc.
+
+v2: Dropped patch 4 (ice XDP). Added igc link speed advertisement patch
+(patch 7).
+
+The following are changes since commit 07d46d93c9acdfe0614071d73c415dd5f745cc6e:
+  uapi: fix big endian definition of ipv6_rpl_sr_hdr
+and are available in the git repository at:
+  git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/net-queue 100GbE
+
+Brett Creeley (2):
+  ice: Don't allow more channels than LAN MSI-X available
+  ice: Fix MSI-X vector fallback logic
+
+Corinna Vinschen (1):
+  igc: fix link speed advertising
+
+Henry Tieman (1):
+  ice: fix FDir IPv6 flexbyte
+
+Nick Nunley (2):
+  ice: Implement flow for IPv6 next header (extension header)
+  ice: update dev_addr in ice_set_mac_address even if HW filter exists
+
+Stefan Assmann (1):
+  i40e: acquire VSI pointer only after VF is initialized
+
+ .../ethernet/intel/i40e/i40e_virtchnl_pf.c    | 11 ++++-----
+ drivers/net/ethernet/intel/ice/ice.h          |  4 +++-
+ drivers/net/ethernet/intel/ice/ice_ethtool.c  |  8 +++----
+ .../net/ethernet/intel/ice/ice_ethtool_fdir.c |  8 ++++++-
+ drivers/net/ethernet/intel/ice/ice_lib.c      | 14 +++++++----
+ drivers/net/ethernet/intel/ice/ice_main.c     | 16 +++++++------
+ drivers/net/ethernet/intel/ice/ice_txrx.c     |  9 ++++---
+ drivers/net/ethernet/intel/igc/igc_ethtool.c  | 24 ++++++++++++++-----
+ 8 files changed, 60 insertions(+), 34 deletions(-)
+
+-- 
+2.26.2
+
