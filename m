@@ -2,190 +2,260 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B2D4F3044C6
-	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 18:18:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B87863044D7
+	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 18:18:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387898AbhAZRMr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jan 2021 12:12:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59272 "EHLO
+        id S2389627AbhAZRPp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jan 2021 12:15:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35000 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390780AbhAZJDt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jan 2021 04:03:49 -0500
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E32DAC061573
-        for <netdev@vger.kernel.org>; Tue, 26 Jan 2021 01:03:08 -0800 (PST)
-Received: by mail-wr1-x42b.google.com with SMTP id v15so15579667wrx.4
-        for <netdev@vger.kernel.org>; Tue, 26 Jan 2021 01:03:08 -0800 (PST)
+        with ESMTP id S2390925AbhAZJWZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jan 2021 04:22:25 -0500
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B00B7C061756
+        for <netdev@vger.kernel.org>; Tue, 26 Jan 2021 01:21:44 -0800 (PST)
+Received: by mail-ej1-x631.google.com with SMTP id w1so21916402ejf.11
+        for <netdev@vger.kernel.org>; Tue, 26 Jan 2021 01:21:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:subject:to:cc:message-id:date:user-agent:mime-version
-         :content-language:content-transfer-encoding;
-        bh=LqFTfj3ouyLumB+z+5pG0kcz9O9PRTWEWgkuaChwCGs=;
-        b=RuDmBqJPWt/MV6RiKHgrwvNqSos2vkNu0BSZ7IaGNjUj/3CdrskZoJKMDiAg2ZauYI
-         KMQrhi2PIDy+k9HcKf5O5mEoqRDXaQMrQfVXQjpulguc53BMV4q5/QpLCk9EWFwfGUTd
-         3BQY5rKYC/5lc7BlWJGqe17oVXt71RDMz4EwrRMDBvnes6H34NEFuf2IKXkqodHmTWgj
-         dRXbD/O4nAE7mYmOrNXw6AuBblSUDT750fdOqXIhBPnXWzYkMwc7hQSCL6UwCBB7Frk/
-         HC6rEFrPHcNCu1Fqlwc/T1mDy3DWa4lBPkvkt6y2Ik7bwm2G1LbadLsSKA3f9PXzzr9J
-         doTA==
+        d=blackwall-org.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=SuR1iWSnWTqH0nrAv2mw90IusiF91+bmYioErH616vU=;
+        b=ZC7+TCTiGqiDMFSkasL7GbsdZU9sdNBRe5WUoo5T/5icNI1nkmJ8lbN7AiAJFzd289
+         C2WP/1T0maOBwqEezckfB2X0Wq52l5FIsoNWoiAy/CnI5OTLfO0bE6M40bbfE1YDZH2U
+         x3G04DmNpMwbXoD9PIDRXWQoVnkERDLkB5gj/zifQaeZyVn8snlTpEk/T2cuT0Zgg9Or
+         JwgzLqr2acBTM9vflfYXN+asaYMviNEs6PHD8V67+5KZ5LvtsYHei6Hzx4O9Ly4/8tXz
+         6TIEJ7aZWEWKQ40RbzMSnWgcin9tWSO6dRJz/Q0OnttJbtO/oxpuZybfX1YtqPHwUwJk
+         Ttag==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:subject:to:cc:message-id:date:user-agent
-         :mime-version:content-language:content-transfer-encoding;
-        bh=LqFTfj3ouyLumB+z+5pG0kcz9O9PRTWEWgkuaChwCGs=;
-        b=hYRpgt03FxzG2XgWN3XadYMuR4A0IsaGxJ01XssIG/qhmPWhAbzWoyI68/2S88sKLb
-         g169TwT2I0Dqrq686QSAZeTJYoJM8UC0f6+cSFdSFgdf+SPbGOypZsKBp/lfLCzK4B+9
-         7YuRx5oSRlbTDKm0LGcnhyCymTLo0PX0De9fwbLYPNCTeotIJWnTDdhPfEJrxiRKrF/6
-         RnPfEnBnlGbAC461Rq4TMBZP69dWOJ6xwOhzGqpPPn77t/DdyS2LGWFQ7/fIqhp9/VOA
-         Bfg1CXBkiNsh0mNfSrpr9+ryo1yqXCytP9JZBI2odviJc9mghIB/l9QgZB8fB3FFLVK4
-         BWTg==
-X-Gm-Message-State: AOAM530gxQRtMBTmP0GV7xZJDx5AjYeqhMdqIhoGckA86NXS7z+BBc+Z
-        6BR+jttrHjMUw0FxFPhtFr8=
-X-Google-Smtp-Source: ABdhPJxfSgYmrO+753i/A2Uqr9GanjSDwbGxM01ojXUImGTXP8KHAKOQ2KS7zdd0MzO9MAdTYTU1eg==
-X-Received: by 2002:a5d:6305:: with SMTP id i5mr4804407wru.314.1611651787699;
-        Tue, 26 Jan 2021 01:03:07 -0800 (PST)
-Received: from ?IPv6:2003:ea:8f1f:ad00:510a:e145:c422:75a7? (p200300ea8f1fad00510ae145c42275a7.dip0.t-ipconnect.de. [2003:ea:8f1f:ad00:510a:e145:c422:75a7])
-        by smtp.googlemail.com with ESMTPSA id r15sm6436452wrj.61.2021.01.26.01.03.04
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 26 Jan 2021 01:03:06 -0800 (PST)
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-Subject: [PATCH net] r8169: work around RTL8125 UDP hw bug
-To:     Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Realtek linux nic maintainers <nic_swsd@realtek.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        xplo.bn@gmail.com
-Message-ID: <c7fd197f-8ab8-2297-385e-5d2b1d5911d7@gmail.com>
-Date:   Tue, 26 Jan 2021 10:02:56 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=SuR1iWSnWTqH0nrAv2mw90IusiF91+bmYioErH616vU=;
+        b=sYeRN1Djqo7/BZ1nP4pTEQEzCOUhaquEbukfjltJpO98B66Pjs+8MyIthDFFOcvtdh
+         3lAClWDpab94A3HGi4gStwFAyfdgkQatWkTrKYqUwrGc59wrKJFP3SXTBDwL0d3N7fzR
+         o2PCczYH7kTq//BP4HIzfIqJZiMZbfjQWCy4Rf8ir2c17QKco/ZDesyjk61HAkNxOGy4
+         ksjZ0AqXkKAqkglvoTn25BzpymNmdpY0YKWluqKuayUqTsSCKieO5EluhaDqwHCBMrZF
+         6kLeJjvYhQEpVFqtbXDOvBA9QGXxREeVg2mJch8HlW5s/aJaL/VKXCxy/L4zjqXg1OTi
+         NLdw==
+X-Gm-Message-State: AOAM532jH54JYiFWWC7mhIezLqMG44ZO3nybS+MM4iDhKTwGPwFVE+QD
+        HZxzfZG+zIA6IBvadszC5yQd66JTchZyo+rKq5w=
+X-Google-Smtp-Source: ABdhPJxxeqVumyG9mvvtOqJYsp/nlu9I7Cg19BL+e9eectO+/msUE+fbSKB7fdKIWrfJQ8znzq7qeA==
+X-Received: by 2002:a17:906:5e45:: with SMTP id b5mr2914984eju.69.1611652903179;
+        Tue, 26 Jan 2021 01:21:43 -0800 (PST)
+Received: from debil.vdiclient.nvidia.com (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
+        by smtp.gmail.com with ESMTPSA id u9sm1195274edv.32.2021.01.26.01.21.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Jan 2021 01:21:42 -0800 (PST)
+From:   Nikolay Aleksandrov <razor@blackwall.org>
+To:     netdev@vger.kernel.org
+Cc:     roopa@nvidia.com, bridge@lists.linux-foundation.org,
+        kuba@kernel.org, davem@davemloft.net,
+        Nikolay Aleksandrov <nikolay@nvidia.com>
+Subject: [PATCH net-next 2/2] net: bridge: multicast: make tracked EHT hosts limit configurable
+Date:   Tue, 26 Jan 2021 11:21:32 +0200
+Message-Id: <20210126092132.407355-3-razor@blackwall.org>
+X-Mailer: git-send-email 2.29.2
+In-Reply-To: <20210126092132.407355-1-razor@blackwall.org>
+References: <20210126092132.407355-1-razor@blackwall.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-It was reported that on RTL8125 network breaks under heavy UDP load,
-e.g. torrent traffic ([0], from comment 27). Realtek confirmed a hw bug
-and provided me with a test version of the r8125 driver including a
-workaround. Tests confirmed that the workaround fixes the issue.
-I modified the original version of the workaround to meet mainline
-code style.
+From: Nikolay Aleksandrov <nikolay@nvidia.com>
 
-[0] https://bugzilla.kernel.org/show_bug.cgi?id=209839
+Add two new port attributes which make EHT hosts limit configurable and
+export the current number of tracked EHT hosts:
+ - IFLA_BRPORT_MCAST_EHT_HOSTS_LIMIT: configure/retrieve current limit
+ - IFLA_BRPORT_MCAST_EHT_HOSTS_CNT: current number of tracked hosts
+Setting IFLA_BRPORT_MCAST_EHT_HOSTS_LIMIT to 0 is currently not allowed.
 
-Fixes: f1bce4ad2f1c ("r8169: add support for RTL8125")
-Tested-by: xplo <xplo.bn@gmail.com>
-Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+Note that we have to increase RTNL_SLAVE_MAX_TYPE to 38 minimum, I've
+increased it to 40 to have space for two more future entries.
+
+Signed-off-by: Nikolay Aleksandrov <nikolay@nvidia.com>
 ---
- drivers/net/ethernet/realtek/r8169_main.c | 64 ++++++++++++++++++++---
- 1 file changed, 58 insertions(+), 6 deletions(-)
+ include/uapi/linux/if_link.h      |  2 ++
+ net/bridge/br_multicast.c         | 15 +++++++++++++++
+ net/bridge/br_netlink.c           | 19 ++++++++++++++++++-
+ net/bridge/br_private_mcast_eht.h |  2 ++
+ net/bridge/br_sysfs_if.c          | 26 ++++++++++++++++++++++++++
+ net/core/rtnetlink.c              |  2 +-
+ 6 files changed, 64 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-index fb67d8f79..90052033b 100644
---- a/drivers/net/ethernet/realtek/r8169_main.c
-+++ b/drivers/net/ethernet/realtek/r8169_main.c
-@@ -28,6 +28,7 @@
- #include <linux/bitfield.h>
- #include <linux/prefetch.h>
- #include <linux/ipv6.h>
-+#include <linux/ptp_classify.h>
- #include <asm/unaligned.h>
- #include <net/ip6_checksum.h>
+diff --git a/include/uapi/linux/if_link.h b/include/uapi/linux/if_link.h
+index 2bd0d8bbcdb2..eb8018c3a737 100644
+--- a/include/uapi/linux/if_link.h
++++ b/include/uapi/linux/if_link.h
+@@ -525,6 +525,8 @@ enum {
+ 	IFLA_BRPORT_BACKUP_PORT,
+ 	IFLA_BRPORT_MRP_RING_OPEN,
+ 	IFLA_BRPORT_MRP_IN_OPEN,
++	IFLA_BRPORT_MCAST_EHT_HOSTS_LIMIT,
++	IFLA_BRPORT_MCAST_EHT_HOSTS_CNT,
+ 	__IFLA_BRPORT_MAX
+ };
+ #define IFLA_BRPORT_MAX (__IFLA_BRPORT_MAX - 1)
+diff --git a/net/bridge/br_multicast.c b/net/bridge/br_multicast.c
+index 8c0029f415ea..907cfd85f05b 100644
+--- a/net/bridge/br_multicast.c
++++ b/net/bridge/br_multicast.c
+@@ -4024,3 +4024,18 @@ void br_mdb_hash_fini(struct net_bridge *br)
+ 	rhashtable_destroy(&br->sg_port_tbl);
+ 	rhashtable_destroy(&br->mdb_hash_tbl);
+ }
++
++int br_multicast_eht_set_hosts_limit(struct net_bridge_port *p,
++				     u32 eht_hosts_limit)
++{
++	struct net_bridge *br = p->br;
++
++	if (!eht_hosts_limit)
++		return -EINVAL;
++
++	spin_lock_bh(&br->multicast_lock);
++	p->multicast_eht_hosts_limit = eht_hosts_limit;
++	spin_unlock_bh(&br->multicast_lock);
++
++	return 0;
++}
+diff --git a/net/bridge/br_netlink.c b/net/bridge/br_netlink.c
+index 762f273802cd..bd3962da345a 100644
+--- a/net/bridge/br_netlink.c
++++ b/net/bridge/br_netlink.c
+@@ -18,6 +18,7 @@
+ #include "br_private_stp.h"
+ #include "br_private_cfm.h"
+ #include "br_private_tunnel.h"
++#include "br_private_mcast_eht.h"
  
-@@ -4007,17 +4008,64 @@ static int rtl8169_xmit_frags(struct rtl8169_private *tp, struct sk_buff *skb,
- 	return -EIO;
+ static int __get_num_vlan_infos(struct net_bridge_vlan_group *vg,
+ 				u32 filter_mask)
+@@ -199,6 +200,8 @@ static inline size_t br_port_info_size(void)
+ 		+ nla_total_size(sizeof(u16))	/* IFLA_BRPORT_GROUP_FWD_MASK */
+ 		+ nla_total_size(sizeof(u8))	/* IFLA_BRPORT_MRP_RING_OPEN */
+ 		+ nla_total_size(sizeof(u8))	/* IFLA_BRPORT_MRP_IN_OPEN */
++		+ nla_total_size(sizeof(u32))	/* IFLA_BRPORT_MCAST_EHT_HOSTS_LIMIT */
++		+ nla_total_size(sizeof(u32))	/* IFLA_BRPORT_MCAST_EHT_HOSTS_CNT */
+ 		+ 0;
  }
  
--static bool rtl_test_hw_pad_bug(struct rtl8169_private *tp)
-+static bool rtl_skb_is_udp(struct sk_buff *skb)
- {
-+	switch (vlan_get_protocol(skb)) {
-+	case htons(ETH_P_IP):
-+		return ip_hdr(skb)->protocol == IPPROTO_UDP;
-+	case htons(ETH_P_IPV6):
-+		return ipv6_hdr(skb)->nexthdr == IPPROTO_UDP;
-+	default:
-+		return false;
-+	}
-+}
-+
-+#define RTL_MIN_PATCH_LEN	47
-+#define PTP_GEN_PORT		320
-+
-+/* see rtl8125_get_patch_pad_len() in r8125 vendor driver */
-+static unsigned int rtl8125_quirk_udp_padto(struct rtl8169_private *tp,
-+					    struct sk_buff *skb)
-+{
-+	unsigned int padto = 0, len = skb->len;
-+
-+	if (rtl_is_8125(tp) && len < 175 && rtl_skb_is_udp(skb) &&
-+	    skb_transport_header_was_set(skb)) {
-+		unsigned int trans_data_len = skb_tail_pointer(skb) -
-+					      skb_transport_header(skb);
-+
-+		if (trans_data_len > 3 && trans_data_len < RTL_MIN_PATCH_LEN) {
-+			u16 dest = ntohs(udp_hdr(skb)->dest);
-+
-+			if (dest == PTP_EV_PORT || dest == PTP_GEN_PORT)
-+				padto = len + RTL_MIN_PATCH_LEN - trans_data_len;
-+		}
-+
-+		if (trans_data_len < UDP_HLEN)
-+			padto = max(padto, len + UDP_HLEN - trans_data_len);
-+	}
-+
-+	return padto;
-+}
-+
-+static unsigned int rtl_quirk_packet_padto(struct rtl8169_private *tp,
-+					   struct sk_buff *skb)
-+{
-+	unsigned int padto;
-+
-+	padto = rtl8125_quirk_udp_padto(tp, skb);
-+
- 	switch (tp->mac_version) {
- 	case RTL_GIGA_MAC_VER_34:
- 	case RTL_GIGA_MAC_VER_60:
- 	case RTL_GIGA_MAC_VER_61:
- 	case RTL_GIGA_MAC_VER_63:
--		return true;
-+		padto = max_t(unsigned int, padto, ETH_ZLEN);
- 	default:
--		return false;
-+		break;
+@@ -283,7 +286,11 @@ static int br_port_fill_attrs(struct sk_buff *skb,
+ 
+ #ifdef CONFIG_BRIDGE_IGMP_SNOOPING
+ 	if (nla_put_u8(skb, IFLA_BRPORT_MULTICAST_ROUTER,
+-		       p->multicast_router))
++		       p->multicast_router) ||
++	    nla_put_u32(skb, IFLA_BRPORT_MCAST_EHT_HOSTS_LIMIT,
++			p->multicast_eht_hosts_limit) ||
++	    nla_put_u32(skb, IFLA_BRPORT_MCAST_EHT_HOSTS_CNT,
++			p->multicast_eht_hosts_cnt))
+ 		return -EMSGSIZE;
+ #endif
+ 
+@@ -820,6 +827,7 @@ static const struct nla_policy br_port_policy[IFLA_BRPORT_MAX + 1] = {
+ 	[IFLA_BRPORT_NEIGH_SUPPRESS] = { .type = NLA_U8 },
+ 	[IFLA_BRPORT_ISOLATED]	= { .type = NLA_U8 },
+ 	[IFLA_BRPORT_BACKUP_PORT] = { .type = NLA_U32 },
++	[IFLA_BRPORT_MCAST_EHT_HOSTS_LIMIT] = { .type = NLA_U32 },
+ };
+ 
+ /* Change the state of the port and notify spanning tree */
+@@ -955,6 +963,15 @@ static int br_setport(struct net_bridge_port *p, struct nlattr *tb[])
+ 		if (err)
+ 			return err;
  	}
 +
-+	return padto;
- }
- 
- static void rtl8169_tso_csum_v1(struct sk_buff *skb, u32 *opts)
-@@ -4089,9 +4137,10 @@ static bool rtl8169_tso_csum_v2(struct rtl8169_private *tp,
- 
- 		opts[1] |= transport_offset << TCPHO_SHIFT;
- 	} else {
--		if (unlikely(skb->len < ETH_ZLEN && rtl_test_hw_pad_bug(tp)))
--			/* eth_skb_pad would free the skb on error */
--			return !__skb_put_padto(skb, ETH_ZLEN, false);
-+		unsigned int padto = rtl_quirk_packet_padto(tp, skb);
++	if (tb[IFLA_BRPORT_MCAST_EHT_HOSTS_LIMIT]) {
++		u32 hlimit;
 +
-+		/* skb_padto would free the skb on error */
-+		return !__skb_put_padto(skb, padto, false);
- 	}
++		hlimit = nla_get_u32(tb[IFLA_BRPORT_MCAST_EHT_HOSTS_LIMIT]);
++		err = br_multicast_eht_set_hosts_limit(p, hlimit);
++		if (err)
++			return err;
++	}
+ #endif
  
- 	return true;
-@@ -4268,6 +4317,9 @@ static netdev_features_t rtl8169_features_check(struct sk_buff *skb,
- 		if (skb->len < ETH_ZLEN)
- 			features &= ~NETIF_F_CSUM_MASK;
+ 	if (tb[IFLA_BRPORT_GROUP_FWD_MASK]) {
+diff --git a/net/bridge/br_private_mcast_eht.h b/net/bridge/br_private_mcast_eht.h
+index b2c8d988721f..f89049f4892c 100644
+--- a/net/bridge/br_private_mcast_eht.h
++++ b/net/bridge/br_private_mcast_eht.h
+@@ -57,6 +57,8 @@ bool br_multicast_eht_handle(struct net_bridge_port_group *pg,
+ 			     u32 nsrcs,
+ 			     size_t addr_size,
+ 			     int grec_type);
++int br_multicast_eht_set_hosts_limit(struct net_bridge_port *p,
++				     u32 eht_hosts_limit);
  
-+		if (rtl_quirk_packet_padto(tp, skb))
-+			features &= ~NETIF_F_CSUM_MASK;
+ static inline bool
+ br_multicast_eht_should_del_pg(const struct net_bridge_port_group *pg)
+diff --git a/net/bridge/br_sysfs_if.c b/net/bridge/br_sysfs_if.c
+index 7a59cdddd3ce..b66305fae26b 100644
+--- a/net/bridge/br_sysfs_if.c
++++ b/net/bridge/br_sysfs_if.c
+@@ -16,6 +16,7 @@
+ #include <linux/sched/signal.h>
+ 
+ #include "br_private.h"
++#include "br_private_mcast_eht.h"
+ 
+ struct brport_attribute {
+ 	struct attribute	attr;
+@@ -245,6 +246,29 @@ static int store_multicast_router(struct net_bridge_port *p,
+ static BRPORT_ATTR(multicast_router, 0644, show_multicast_router,
+ 		   store_multicast_router);
+ 
++static ssize_t show_multicast_eht_hosts_limit(struct net_bridge_port *p,
++					      char *buf)
++{
++	return sprintf(buf, "%u\n", p->multicast_eht_hosts_limit);
++}
 +
- 		if (transport_offset > TCPHO_MAX &&
- 		    rtl_chip_supports_csum_v2(tp))
- 			features &= ~NETIF_F_CSUM_MASK;
++static int store_multicast_eht_hosts_limit(struct net_bridge_port *p,
++					   unsigned long v)
++{
++	return br_multicast_eht_set_hosts_limit(p, v);
++}
++static BRPORT_ATTR(multicast_eht_hosts_limit, 0644,
++		   show_multicast_eht_hosts_limit,
++		   store_multicast_eht_hosts_limit);
++
++static ssize_t show_multicast_eht_hosts_cnt(struct net_bridge_port *p,
++					    char *buf)
++{
++	return sprintf(buf, "%u\n", p->multicast_eht_hosts_cnt);
++}
++static BRPORT_ATTR(multicast_eht_hosts_cnt, 0444, show_multicast_eht_hosts_cnt,
++		   NULL);
++
+ BRPORT_ATTR_FLAG(multicast_fast_leave, BR_MULTICAST_FAST_LEAVE);
+ BRPORT_ATTR_FLAG(multicast_to_unicast, BR_MULTICAST_TO_UNICAST);
+ #endif
+@@ -274,6 +298,8 @@ static const struct brport_attribute *brport_attrs[] = {
+ 	&brport_attr_multicast_router,
+ 	&brport_attr_multicast_fast_leave,
+ 	&brport_attr_multicast_to_unicast,
++	&brport_attr_multicast_eht_hosts_limit,
++	&brport_attr_multicast_eht_hosts_cnt,
+ #endif
+ 	&brport_attr_proxyarp,
+ 	&brport_attr_proxyarp_wifi,
+diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
+index 3d6ab194d0f5..c313aaf2bce1 100644
+--- a/net/core/rtnetlink.c
++++ b/net/core/rtnetlink.c
+@@ -55,7 +55,7 @@
+ #include <net/net_namespace.h>
+ 
+ #define RTNL_MAX_TYPE		50
+-#define RTNL_SLAVE_MAX_TYPE	36
++#define RTNL_SLAVE_MAX_TYPE	40
+ 
+ struct rtnl_link {
+ 	rtnl_doit_func		doit;
 -- 
-2.30.0
+2.29.2
 
