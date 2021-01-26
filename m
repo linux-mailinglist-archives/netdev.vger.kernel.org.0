@@ -2,105 +2,131 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BABB9303D80
-	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 13:46:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2C91C303D73
+	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 13:45:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2403775AbhAZMp7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jan 2021 07:45:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43878 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2391647AbhAZKDk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jan 2021 05:03:40 -0500
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14372C06174A
-        for <netdev@vger.kernel.org>; Tue, 26 Jan 2021 02:03:00 -0800 (PST)
-Received: by mail-ed1-x52f.google.com with SMTP id c2so18727568edr.11
-        for <netdev@vger.kernel.org>; Tue, 26 Jan 2021 02:03:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=r0PEk1uUKM5Q9q/+MGqHGgCH1yxOpiIv91u8qq+76tw=;
-        b=Nx5rzbRRJmiojIU5lVxNWI69CKbFX2mVcLTlMH5MAJetlFeEHzpbTtVmkDUNhT06Pm
-         o5xMpAy24oHNFS6kgdrRKDehMcNLir3XYyoeTSnY6NvjIh4/+NZGYfED1eIBEC4St8C8
-         SndGD3Suj+1BvWGTpjBHG+IY9TtzTrJAvAeCjErfYhDExG2iVX6sP7gqpNVxiOBEKZI2
-         zi11aLgNSYep2Qz8v9wNrn8X6gqc0bMLDds38yzuJPrHBZYZ3Q94rA2+sVRHWOamIiWh
-         QHp2+HZku5KfsOu5osLckvKXPnitWVLE02vzXWJb9jtxwT71FIOxcTHGUhaUr+KvE5Cm
-         VyiQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=r0PEk1uUKM5Q9q/+MGqHGgCH1yxOpiIv91u8qq+76tw=;
-        b=PD3R9W8GpTVgB/lLE2jr+hHe/MtOOr90OQPVGJxQ8r9QKNe9GsSXzz2gSRI2QYt6wG
-         6W+wWA48c9N90XsfDvTFgW9RzrDb68YxRpI+bnRshcpztzUAFOevHafThBkSKM34a2by
-         NaNqeT3t8A2YN8DEGBE5t9a9t4A3PsDLADAV2VRBnEwNMMlFTRP+9G/NAuyZsteTa4LS
-         E4zdBuuCgX9scaLKQ74qUaas9kbu1WZcMltND/1pFyOx7AeVDKyVXsHD1M+A1TBrTmAI
-         SRzeWDyuLyMOfJRDqw+AaGbJbXQW1TXyTRe7M/owKsJ3KpOv83UFHZRrslhVJGRILZNh
-         QcUA==
-X-Gm-Message-State: AOAM533nbNivNN6+jJ0wVDP5Y+GQgd0U2AgP99hei/JOldfA1SqaqQmB
-        0yLBtf8vUXZ4Xn5Ak+QOyj68hA==
-X-Google-Smtp-Source: ABdhPJwvMoBWgevYlTDP7GMOl+FiuvLn3103n++BnlpWARsldzAvMdl331aoaTpkyTm9/yF54NB+AQ==
-X-Received: by 2002:a05:6402:306a:: with SMTP id bs10mr3950881edb.209.1611655378812;
-        Tue, 26 Jan 2021 02:02:58 -0800 (PST)
-Received: from localhost ([86.61.181.4])
-        by smtp.gmail.com with ESMTPSA id v25sm9596974ejw.21.2021.01.26.02.02.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Jan 2021 02:02:58 -0800 (PST)
-Date:   Tue, 26 Jan 2021 11:02:57 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Ivan Vecera <ivecera@redhat.com>
-Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
+        id S2391315AbhAZMns (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jan 2021 07:43:48 -0500
+Received: from mga05.intel.com ([192.55.52.43]:44725 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2403821AbhAZKJa (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 26 Jan 2021 05:09:30 -0500
+IronPort-SDR: n1THrCiGmiGpC2f2niYIn4WkUcLBhmEvdZ2sUkd48RceslOXxQtLmRItTxLc9j/UryrWNQQhLf
+ jdg9AY3gD8Aw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9875"; a="264701942"
+X-IronPort-AV: E=Sophos;i="5.79,375,1602572400"; 
+   d="scan'208";a="264701942"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2021 02:08:49 -0800
+IronPort-SDR: aOPYzlnUI5z73Xm81GemkPBlFpsFjjVE4RsRDWTTjJ8JtCpdtb8tQY4d9VJ+8kcW3SKVZj51Vh
+ LYP/kOlYhtWA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.79,375,1602572400"; 
+   d="scan'208";a="361931330"
+Received: from mismail5-ilbpg0.png.intel.com ([10.88.229.82])
+  by fmsmga008.fm.intel.com with ESMTP; 26 Jan 2021 02:08:46 -0800
+From:   mohammad.athari.ismail@intel.com
+To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Saeed Mahameed <saeed@kernel.org>
-Subject: Re: [PATCH net] team: protect features update by RCU to avoid
- deadlock
-Message-ID: <20210126100257.GN3565223@nanopsycho.orion>
-References: <20210125074416.4056484-1-ivecera@redhat.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210125074416.4056484-1-ivecera@redhat.com>
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Cc:     Ong Boon Leong <boon.leong.ong@intel.com>,
+        Voon Weifeng <weifeng.voon@intel.com>, netdev@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        mohammad.athari.ismail@intel.com
+Subject: [PATCH net] stmmac: intel: Configure EHL PSE0 GbE and PSE1 GbE to 32 bits DMA addressing
+Date:   Tue, 26 Jan 2021 18:08:44 +0800
+Message-Id: <20210126100844.30326-1-mohammad.athari.ismail@intel.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Mon, Jan 25, 2021 at 08:44:16AM CET, ivecera@redhat.com wrote:
->Function __team_compute_features() is protected by team->lock
->mutex when it is called from team_compute_features() used when
->features of an underlying device is changed. This causes
->a deadlock when NETDEV_FEAT_CHANGE notifier for underlying device
->is fired due to change propagated from team driver (e.g. MTU
->change). It's because callbacks like team_change_mtu() or
->team_vlan_rx_{add,del}_vid() protect their port list traversal
->by team->lock mutex.
->
->Example (r8169 case where this driver disables TSO for certain MTU
->values):
->...
->[ 6391.348202]  __mutex_lock.isra.6+0x2d0/0x4a0
->[ 6391.358602]  team_device_event+0x9d/0x160 [team]
->[ 6391.363756]  notifier_call_chain+0x47/0x70
->[ 6391.368329]  netdev_update_features+0x56/0x60
->[ 6391.373207]  rtl8169_change_mtu+0x14/0x50 [r8169]
->[ 6391.378457]  dev_set_mtu_ext+0xe1/0x1d0
->[ 6391.387022]  dev_set_mtu+0x52/0x90
->[ 6391.390820]  team_change_mtu+0x64/0xf0 [team]
->[ 6391.395683]  dev_set_mtu_ext+0xe1/0x1d0
->[ 6391.399963]  do_setlink+0x231/0xf50
->...
->
->In fact team_compute_features() called from team_device_event()
->does not need to be protected by team->lock mutex and rcu_read_lock()
->is sufficient there for port list traversal.
->
->Fixes: 3d249d4ca7d0 ("net: introduce ethernet teaming device")
->Cc: Jiri Pirko <jiri@resnulli.us>
->Cc: David S. Miller <davem@davemloft.net>
->Cc: Cong Wang <xiyou.wangcong@gmail.com>
->Cc: Jakub Kicinski <kuba@kernel.org>
->Cc: Saeed Mahameed <saeed@kernel.org>
->Signed-off-by: Ivan Vecera <ivecera@redhat.com>
+From: Voon Weifeng <weifeng.voon@intel.com>
 
-Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+Fix an issue where dump stack is printed and Reset Adapter occurs when
+PSE0 GbE or/and PSE1 GbE is/are enabled. EHL PSE0 GbE and PSE1 GbE use
+32 bits DMA addressing whereas EHL PCH GbE uses 64 bits DMA addressing.
+
+[   25.535095] ------------[ cut here ]------------
+[   25.540276] NETDEV WATCHDOG: enp0s29f2 (intel-eth-pci): transmit queue 2 timed out
+[   25.548749] WARNING: CPU: 2 PID: 0 at net/sched/sch_generic.c:443 dev_watchdog+0x259/0x260
+[   25.558004] Modules linked in: 8021q bnep bluetooth ecryptfs snd_hda_codec_hdmi intel_gpy marvell intel_ishtp_loader intel_ishtp_hid iTCO_wdt mei_hdcp iTCO_vendor_support x86_pkg_temp_thermal kvm_intel dwmac_intel stmmac kvm igb pcs_xpcs irqbypass phylink snd_hda_intel intel_rapl_msr pcspkr dca snd_hda_codec i915 i2c_i801 i2c_smbus libphy intel_ish_ipc snd_hda_core mei_me intel_ishtp mei spi_dw_pci 8250_lpss spi_dw thermal dw_dmac_core parport_pc tpm_crb tpm_tis parport tpm_tis_core tpm intel_pmc_core sch_fq_codel uhid fuse configfs snd_sof_pci snd_sof_intel_byt snd_sof_intel_ipc snd_sof_intel_hda_common snd_sof_xtensa_dsp snd_sof snd_soc_acpi_intel_match snd_soc_acpi snd_intel_dspcfg ledtrig_audio snd_soc_core snd_compress ac97_bus snd_pcm snd_timer snd soundcore
+[   25.633795] CPU: 2 PID: 0 Comm: swapper/2 Tainted: G     U            5.11.0-rc4-intel-lts-MISMAIL5+ #5
+[   25.644306] Hardware name: Intel Corporation Elkhart Lake Embedded Platform/ElkhartLake LPDDR4x T4 RVP1, BIOS EHLSFWI1.R00.2434.A00.2010231402 10/23/2020
+[   25.659674] RIP: 0010:dev_watchdog+0x259/0x260
+[   25.664650] Code: e8 3b 6b 60 ff eb 98 4c 89 ef c6 05 ec e7 bf 00 01 e8 fb e5 fa ff 89 d9 4c 89 ee 48 c7 c7 78 31 d2 9e 48 89 c2 e8 79 1b 18 00 <0f> 0b e9 77 ff ff ff 0f 1f 44 00 00 48 c7 47 08 00 00 00 00 48 c7
+[   25.685647] RSP: 0018:ffffb7ca80160eb8 EFLAGS: 00010286
+[   25.691498] RAX: 0000000000000000 RBX: 0000000000000002 RCX: 0000000000000103
+[   25.699483] RDX: 0000000080000103 RSI: 00000000000000f6 RDI: 00000000ffffffff
+[   25.707465] RBP: ffff985709ce0440 R08: 0000000000000000 R09: c0000000ffffefff
+[   25.715455] R10: ffffb7ca80160cf0 R11: ffffb7ca80160ce8 R12: ffff985709ce039c
+[   25.723438] R13: ffff985709ce0000 R14: 0000000000000008 R15: ffff9857068af940
+[   25.731425] FS:  0000000000000000(0000) GS:ffff985864300000(0000) knlGS:0000000000000000
+[   25.740481] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[   25.746913] CR2: 00005567f8bb76b8 CR3: 00000001f8e0a000 CR4: 0000000000350ee0
+[   25.754900] Call Trace:
+[   25.757631]  <IRQ>
+[   25.759891]  ? qdisc_put_unlocked+0x30/0x30
+[   25.764565]  ? qdisc_put_unlocked+0x30/0x30
+[   25.769245]  call_timer_fn+0x2e/0x140
+[   25.773346]  run_timer_softirq+0x1f3/0x430
+[   25.777932]  ? __hrtimer_run_queues+0x12c/0x2c0
+[   25.783005]  ? ktime_get+0x3e/0xa0
+[   25.786812]  __do_softirq+0xa6/0x2ef
+[   25.790816]  asm_call_irq_on_stack+0xf/0x20
+[   25.795501]  </IRQ>
+[   25.797852]  do_softirq_own_stack+0x5d/0x80
+[   25.802538]  irq_exit_rcu+0x94/0xb0
+[   25.806475]  sysvec_apic_timer_interrupt+0x42/0xc0
+[   25.811836]  asm_sysvec_apic_timer_interrupt+0x12/0x20
+[   25.817586] RIP: 0010:cpuidle_enter_state+0xd9/0x370
+[   25.823142] Code: 85 c0 0f 8f 0a 02 00 00 31 ff e8 22 d5 7e ff 45 84 ff 74 12 9c 58 f6 c4 02 0f 85 47 02 00 00 31 ff e8 7b a0 84 ff fb 45 85 f6 <0f> 88 ab 00 00 00 49 63 ce 48 2b 2c 24 48 89 c8 48 6b d1 68 48 c1
+[   25.844140] RSP: 0018:ffffb7ca800f7e80 EFLAGS: 00000206
+[   25.849996] RAX: ffff985864300000 RBX: 0000000000000003 RCX: 000000000000001f
+[   25.857975] RDX: 00000005f2028ea8 RSI: ffffffff9ec5907f RDI: ffffffff9ec62a5d
+[   25.865961] RBP: 00000005f2028ea8 R08: 0000000000000000 R09: 0000000000029d00
+[   25.873947] R10: 000000137b0e0508 R11: ffff9858643294e4 R12: ffff9858643336d0
+[   25.881935] R13: ffffffff9ef74b00 R14: 0000000000000003 R15: 0000000000000000
+[   25.889918]  cpuidle_enter+0x29/0x40
+[   25.893922]  do_idle+0x24a/0x290
+[   25.897536]  cpu_startup_entry+0x19/0x20
+[   25.901930]  start_secondary+0x128/0x160
+[   25.906326]  secondary_startup_64_no_verify+0xb0/0xbb
+[   25.911983] ---[ end trace b4c0c8195d0ba61f ]---
+[   25.917193] intel-eth-pci 0000:00:1d.2 enp0s29f2: Reset adapter.
+
+Fixes: 67c08ac4140a ("net: stmmac: add EHL PSE0 & PSE1 1Gbps PCI info and PCI ID")
+Signed-off-by: Voon Weifeng <weifeng.voon@intel.com>
+Co-developed-by: Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>
+Signed-off-by: Mohammad Athari Bin Ismail <mohammad.athari.ismail@intel.com>
+---
+ drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
+index 9a6a519426a0..103d2448e9e0 100644
+--- a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
++++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
+@@ -375,6 +375,7 @@ static int ehl_pse0_common_data(struct pci_dev *pdev,
+ 				struct plat_stmmacenet_data *plat)
+ {
+ 	plat->bus_id = 2;
++	plat->addr64 = 32;
+ 	return ehl_common_data(pdev, plat);
+ }
+ 
+@@ -406,6 +407,7 @@ static int ehl_pse1_common_data(struct pci_dev *pdev,
+ 				struct plat_stmmacenet_data *plat)
+ {
+ 	plat->bus_id = 3;
++	plat->addr64 = 32;
+ 	return ehl_common_data(pdev, plat);
+ }
+ 
+-- 
+2.17.1
+
