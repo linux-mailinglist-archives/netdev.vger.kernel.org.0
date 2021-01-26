@@ -2,49 +2,47 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1833C304D37
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 00:06:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 61C1A304D39
+	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 00:06:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731795AbhAZXFZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jan 2021 18:05:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58798 "EHLO
+        id S1731819AbhAZXFb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jan 2021 18:05:31 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58864 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2391312AbhAZRlW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jan 2021 12:41:22 -0500
-Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10B0FC061756
-        for <netdev@vger.kernel.org>; Tue, 26 Jan 2021 09:40:42 -0800 (PST)
-Received: by mail-pl1-x62b.google.com with SMTP id g3so10183401plp.2
-        for <netdev@vger.kernel.org>; Tue, 26 Jan 2021 09:40:42 -0800 (PST)
+        with ESMTP id S2392974AbhAZRlk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jan 2021 12:41:40 -0500
+Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EB7DC0613D6
+        for <netdev@vger.kernel.org>; Tue, 26 Jan 2021 09:40:59 -0800 (PST)
+Received: by mail-pf1-x433.google.com with SMTP id w18so10842617pfu.9
+        for <netdev@vger.kernel.org>; Tue, 26 Jan 2021 09:40:59 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version;
-        bh=nYLc1FBHTA2jN0mTy9h1TvmGCHc/AgeNNuVnZsuPwVY=;
-        b=KAWQ/IirJGuGQ8gGgijyFemGHkTZO+g4UI3lZlHvJoYHBVWCAA5NJqlLMJaih0wKKT
-         5SsXFWIoFGHHM7SuHzo/nT7pxm50pPBHTPcOVXJ06p+7+WAtIPxGj8FibHnDRgg0yxZR
-         TfPC+hJsp+ghFAgZymfN1C7DE/V7gOFZWD4T8=
+        h=from:to:cc:subject:date:message-id:mime-version;
+        bh=4ygLgTsrz5e/YwxcVWmQzRYL2Z5QWQ13xMq8BfFh4G8=;
+        b=HTyGanCmhLkuQjR9KyXdtHyPHHdn2ug3syavrl5z/d9klIlm20bCOiWEtXr+bzNGka
+         21uSpkObtkvgpGbCzfXfYBX3Xcn0Sh7y2XgxptXy1D9oDWEw3EC5WoCwumeYZbPhSC5d
+         T9dhZiHg5YtsBZqpnRm0JM+7/x3dNbPoXmFaQ=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version;
-        bh=nYLc1FBHTA2jN0mTy9h1TvmGCHc/AgeNNuVnZsuPwVY=;
-        b=gqQeFGGywpeJoCZqE3ps/9vJfnfv7YIcBeIKraCNDRy6BuZOWzoJas3MeT7WnYYS4w
-         tWCG3kM9LlANwjJQGTr/HFUuA8D0v6uJ6zbh70cBb1LvblNZTF2rR6gp+v1te0rMsmoQ
-         Of7BY8RUXH7J0Dxe4mioDo8qWi1UZBrWCDz0KfHI0TAh/ilUiTeLHpTT7naQALkiBZnH
-         iVi94sjEFhkKZPlpK6PCABjIC684YamfULG6SspmxrJt0RVcoyckGMu/Xh8V7GRxgoIS
-         8Qm2NtMTrEvigiOgoolRf8wnCR/eqj8bgydA4pgCvD9EBBzE3Q7CWEyCONlm4FICChdy
-         n3Sw==
-X-Gm-Message-State: AOAM5309HNSnzjlgKJIuuc6UjKQPrhJtvpexi6asdZx2PJ87sLalYzT2
-        XIWGMiMV4/+I/F2J3NpXJsSc2cWa4Sxj9XbN06cgTNYkCvWgBczBlubRedPL3AfO/nID0w1hokb
-        5AtcK9UVLZASddRPZTuFkfxRqg/MUPNzslFghb+AK9VzcRg3aj2vmmdLCzxtgo9f5jXuQxeuH
-X-Google-Smtp-Source: ABdhPJyqYX4Wp0BYWeaiF8c9abnfvp/dUlvBz+yOcSUphcJMXLZTJDfXSTZQK26YpSjq+2RrH3thVw==
-X-Received: by 2002:a17:902:fe8b:b029:df:fab8:a0fe with SMTP id x11-20020a170902fe8bb02900dffab8a0femr7293433plm.71.1611682840797;
-        Tue, 26 Jan 2021 09:40:40 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version;
+        bh=4ygLgTsrz5e/YwxcVWmQzRYL2Z5QWQ13xMq8BfFh4G8=;
+        b=tLu664+83rMMHvkS1bTUKC11oKthgmy+6c0V4ilPhYvCvqc4jynm2Ig3NAPKz0nXf/
+         q7FvRstfgK3zquRR4SI5mzIGjvw16mbbO3GIxcKur007pQAhgZpMHv1K5IedFEH3cWuw
+         6maftg+Qm+VT9UqCGXv8UvLzIytAz9TNTaAczOpDabqDWtZLOp/adKXEGDEfPBMxDp3a
+         CLX+w5aDke9tHr8/B+AKTO5ehgLLs20VzpI4/nQfE6mUxhLAr5AkwW1R/r3oB09atLOi
+         9zu4CCL/2HYyqEfwPoW512bQQbhxq74G+xja1KTff3bkFZ8LKdxAlVrfSP3t/+kiWsyG
+         yufw==
+X-Gm-Message-State: AOAM533dU93CE99LIPwt8zMeRP1dx7gk7HSc/2ycAeVVUtEBzI/gQJbm
+        zw1T2Is54fecmNvx89tSSt5z3DWLYywEQVmADPj+KDBTzoaDTpRLOhXfzD6UtBiVYpsI2y1h+Hr
+        IPTz7qjcoPwUfVahCEdBjkIGHR8JzPDXw0FzsgmRX7trxE4prU4bLd+EIqt2KwtJHw/79jssF
+X-Google-Smtp-Source: ABdhPJyvp0wpc9yYzGtjb6ePUEcmNV/z4UPrTLxRQKVNyG3nS7nheB77wu6172Oy7KLdyfn9ly/J2g==
+X-Received: by 2002:a63:c911:: with SMTP id o17mr6137611pgg.102.1611682858577;
+        Tue, 26 Jan 2021 09:40:58 -0800 (PST)
 Received: from hex.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id n15sm2895269pjk.57.2021.01.26.09.40.38
+        by smtp.gmail.com with ESMTPSA id w66sm19595647pfd.48.2021.01.26.09.40.56
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Jan 2021 09:40:39 -0800 (PST)
+        Tue, 26 Jan 2021 09:40:57 -0800 (PST)
 From:   Edwin Peer <edwin.peer@broadcom.com>
 To:     netdev@vger.kernel.org
 Cc:     Edwin Peer <edwin.peer@broadcom.com>,
@@ -54,177 +52,76 @@ Cc:     Edwin Peer <edwin.peer@broadcom.com>,
         Stephen Hemminger <stephen@networkplumber.org>,
         Michal Kubecek <mkubecek@suse.cz>,
         David Ahern <dsahern@gmail.com>
-Subject: [PATCH net-next v2 1/1] rtnetlink: extend RTEXT_FILTER_SKIP_STATS to IFLA_VF_INFO
-Date:   Tue, 26 Jan 2021 09:40:24 -0800
-Message-Id: <20210126174024.185001-2-edwin.peer@broadcom.com>
+Subject: [PATCH iproute2-next v2 1/2] iplink: print warning for missing VF data
+Date:   Tue, 26 Jan 2021 09:40:53 -0800
+Message-Id: <20210126174054.185084-1-edwin.peer@broadcom.com>
 X-Mailer: git-send-email 2.30.0
-In-Reply-To: <20210126174024.185001-1-edwin.peer@broadcom.com>
-References: <20210126174024.185001-1-edwin.peer@broadcom.com>
 MIME-Version: 1.0
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="0000000000003ed1a605b9d127a2"
+        boundary="0000000000004d654e05b9d12826"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---0000000000003ed1a605b9d127a2
+--0000000000004d654e05b9d12826
 Content-Transfer-Encoding: 8bit
 
-This filter already exists for excluding IPv6 SNMP stats. Extend its
-definition to also exclude IFLA_VF_INFO stats in RTM_GETLINK.
+The kernel might truncate VF info in IFLA_VFINFO_LIST. Compare the
+expected number of VFs in IFLA_NUM_VF to how many were found in the
+list and warn accordingly.
 
-This patch constitutes a partial fix for a netlink attribute nesting
-overflow bug in IFLA_VFINFO_LIST. By excluding the stats when the
-requester doesn't need them, the truncation of the VF list is avoided.
-
-While it was technically only the stats added in commit c5a9f6f0ab40
-("net/core: Add drop counters to VF statistics") breaking the camel's
-back, the appreciable size of the stats data should never have been
-included without due consideration for the maximum number of VFs
-supported by PCI.
-
-Fixes: 3b766cd83232 ("net/core: Add reading VF statistics through the PF netdevice")
-Fixes: c5a9f6f0ab40 ("net/core: Add drop counters to VF statistics")
 Signed-off-by: Edwin Peer <edwin.peer@broadcom.com>
 ---
- net/core/rtnetlink.c | 96 +++++++++++++++++++++++---------------------
- 1 file changed, 51 insertions(+), 45 deletions(-)
+ ip/ipaddress.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
-diff --git a/net/core/rtnetlink.c b/net/core/rtnetlink.c
-index 3d6ab194d0f5..466f920ac974 100644
---- a/net/core/rtnetlink.c
-+++ b/net/core/rtnetlink.c
-@@ -931,24 +931,27 @@ static inline int rtnl_vfinfo_size(const struct net_device *dev,
- 			 nla_total_size(sizeof(struct ifla_vf_rate)) +
- 			 nla_total_size(sizeof(struct ifla_vf_link_state)) +
- 			 nla_total_size(sizeof(struct ifla_vf_rss_query_en)) +
--			 nla_total_size(0) + /* nest IFLA_VF_STATS */
--			 /* IFLA_VF_STATS_RX_PACKETS */
--			 nla_total_size_64bit(sizeof(__u64)) +
--			 /* IFLA_VF_STATS_TX_PACKETS */
--			 nla_total_size_64bit(sizeof(__u64)) +
--			 /* IFLA_VF_STATS_RX_BYTES */
--			 nla_total_size_64bit(sizeof(__u64)) +
--			 /* IFLA_VF_STATS_TX_BYTES */
--			 nla_total_size_64bit(sizeof(__u64)) +
--			 /* IFLA_VF_STATS_BROADCAST */
--			 nla_total_size_64bit(sizeof(__u64)) +
--			 /* IFLA_VF_STATS_MULTICAST */
--			 nla_total_size_64bit(sizeof(__u64)) +
--			 /* IFLA_VF_STATS_RX_DROPPED */
--			 nla_total_size_64bit(sizeof(__u64)) +
--			 /* IFLA_VF_STATS_TX_DROPPED */
--			 nla_total_size_64bit(sizeof(__u64)) +
- 			 nla_total_size(sizeof(struct ifla_vf_trust)));
-+		if (~ext_filter_mask & RTEXT_FILTER_SKIP_STATS) {
-+			size += num_vfs *
-+				(nla_total_size(0) + /* nest IFLA_VF_STATS */
-+				 /* IFLA_VF_STATS_RX_PACKETS */
-+				 nla_total_size_64bit(sizeof(__u64)) +
-+				 /* IFLA_VF_STATS_TX_PACKETS */
-+				 nla_total_size_64bit(sizeof(__u64)) +
-+				 /* IFLA_VF_STATS_RX_BYTES */
-+				 nla_total_size_64bit(sizeof(__u64)) +
-+				 /* IFLA_VF_STATS_TX_BYTES */
-+				 nla_total_size_64bit(sizeof(__u64)) +
-+				 /* IFLA_VF_STATS_BROADCAST */
-+				 nla_total_size_64bit(sizeof(__u64)) +
-+				 /* IFLA_VF_STATS_MULTICAST */
-+				 nla_total_size_64bit(sizeof(__u64)) +
-+				 /* IFLA_VF_STATS_RX_DROPPED */
-+				 nla_total_size_64bit(sizeof(__u64)) +
-+				 /* IFLA_VF_STATS_TX_DROPPED */
-+				 nla_total_size_64bit(sizeof(__u64)));
-+		}
- 		return size;
- 	} else
+diff --git a/ip/ipaddress.c b/ip/ipaddress.c
+index 571346b15cc3..0bbcee2b3bb2 100644
+--- a/ip/ipaddress.c
++++ b/ip/ipaddress.c
+@@ -922,6 +922,7 @@ int print_linkinfo(struct nlmsghdr *n, void *arg)
+ 	const char *name;
+ 	unsigned int m_flag = 0;
+ 	SPRINT_BUF(b1);
++	bool truncated_vfs = false;
+ 
+ 	if (n->nlmsg_type != RTM_NEWLINK && n->nlmsg_type != RTM_DELLINK)
  		return 0;
-@@ -1223,7 +1226,8 @@ static noinline_for_stack int rtnl_fill_stats(struct sk_buff *skb,
- static noinline_for_stack int rtnl_fill_vfinfo(struct sk_buff *skb,
- 					       struct net_device *dev,
- 					       int vfs_num,
--					       struct nlattr *vfinfo)
-+					       struct nlattr *vfinfo,
-+					       u32 ext_filter_mask)
- {
- 	struct ifla_vf_rss_query_en vf_rss_query_en;
- 	struct nlattr *vf, *vfstats, *vfvlanlist;
-@@ -1329,33 +1333,35 @@ static noinline_for_stack int rtnl_fill_vfinfo(struct sk_buff *skb,
- 		goto nla_put_vf_failure;
- 	}
- 	nla_nest_end(skb, vfvlanlist);
--	memset(&vf_stats, 0, sizeof(vf_stats));
--	if (dev->netdev_ops->ndo_get_vf_stats)
--		dev->netdev_ops->ndo_get_vf_stats(dev, vfs_num,
--						&vf_stats);
--	vfstats = nla_nest_start_noflag(skb, IFLA_VF_STATS);
--	if (!vfstats)
--		goto nla_put_vf_failure;
--	if (nla_put_u64_64bit(skb, IFLA_VF_STATS_RX_PACKETS,
--			      vf_stats.rx_packets, IFLA_VF_STATS_PAD) ||
--	    nla_put_u64_64bit(skb, IFLA_VF_STATS_TX_PACKETS,
--			      vf_stats.tx_packets, IFLA_VF_STATS_PAD) ||
--	    nla_put_u64_64bit(skb, IFLA_VF_STATS_RX_BYTES,
--			      vf_stats.rx_bytes, IFLA_VF_STATS_PAD) ||
--	    nla_put_u64_64bit(skb, IFLA_VF_STATS_TX_BYTES,
--			      vf_stats.tx_bytes, IFLA_VF_STATS_PAD) ||
--	    nla_put_u64_64bit(skb, IFLA_VF_STATS_BROADCAST,
--			      vf_stats.broadcast, IFLA_VF_STATS_PAD) ||
--	    nla_put_u64_64bit(skb, IFLA_VF_STATS_MULTICAST,
--			      vf_stats.multicast, IFLA_VF_STATS_PAD) ||
--	    nla_put_u64_64bit(skb, IFLA_VF_STATS_RX_DROPPED,
--			      vf_stats.rx_dropped, IFLA_VF_STATS_PAD) ||
--	    nla_put_u64_64bit(skb, IFLA_VF_STATS_TX_DROPPED,
--			      vf_stats.tx_dropped, IFLA_VF_STATS_PAD)) {
--		nla_nest_cancel(skb, vfstats);
--		goto nla_put_vf_failure;
-+	if (~ext_filter_mask & RTEXT_FILTER_SKIP_STATS) {
-+		memset(&vf_stats, 0, sizeof(vf_stats));
-+		if (dev->netdev_ops->ndo_get_vf_stats)
-+			dev->netdev_ops->ndo_get_vf_stats(dev, vfs_num,
-+							  &vf_stats);
-+		vfstats = nla_nest_start_noflag(skb, IFLA_VF_STATS);
-+		if (!vfstats)
-+			goto nla_put_vf_failure;
-+		if (nla_put_u64_64bit(skb, IFLA_VF_STATS_RX_PACKETS,
-+				      vf_stats.rx_packets, IFLA_VF_STATS_PAD) ||
-+		    nla_put_u64_64bit(skb, IFLA_VF_STATS_TX_PACKETS,
-+				      vf_stats.tx_packets, IFLA_VF_STATS_PAD) ||
-+		    nla_put_u64_64bit(skb, IFLA_VF_STATS_RX_BYTES,
-+				      vf_stats.rx_bytes, IFLA_VF_STATS_PAD) ||
-+		    nla_put_u64_64bit(skb, IFLA_VF_STATS_TX_BYTES,
-+				      vf_stats.tx_bytes, IFLA_VF_STATS_PAD) ||
-+		    nla_put_u64_64bit(skb, IFLA_VF_STATS_BROADCAST,
-+				      vf_stats.broadcast, IFLA_VF_STATS_PAD) ||
-+		    nla_put_u64_64bit(skb, IFLA_VF_STATS_MULTICAST,
-+				      vf_stats.multicast, IFLA_VF_STATS_PAD) ||
-+		    nla_put_u64_64bit(skb, IFLA_VF_STATS_RX_DROPPED,
-+				      vf_stats.rx_dropped, IFLA_VF_STATS_PAD) ||
-+		    nla_put_u64_64bit(skb, IFLA_VF_STATS_TX_DROPPED,
-+				      vf_stats.tx_dropped, IFLA_VF_STATS_PAD)) {
-+			nla_nest_cancel(skb, vfstats);
-+			goto nla_put_vf_failure;
-+		}
-+		nla_nest_end(skb, vfstats);
- 	}
--	nla_nest_end(skb, vfstats);
- 	nla_nest_end(skb, vf);
- 	return 0;
+@@ -1199,15 +1200,18 @@ int print_linkinfo(struct nlmsghdr *n, void *arg)
  
-@@ -1388,7 +1394,7 @@ static noinline_for_stack int rtnl_fill_vf(struct sk_buff *skb,
- 		return -EMSGSIZE;
+ 	if ((do_link || show_details) && tb[IFLA_VFINFO_LIST] && tb[IFLA_NUM_VF]) {
+ 		struct rtattr *i, *vflist = tb[IFLA_VFINFO_LIST];
+-		int rem = RTA_PAYLOAD(vflist);
++		int rem = RTA_PAYLOAD(vflist), count = 0;
  
- 	for (i = 0; i < num_vfs; i++) {
--		if (rtnl_fill_vfinfo(skb, dev, i, vfinfo))
-+		if (rtnl_fill_vfinfo(skb, dev, i, vfinfo, ext_filter_mask))
- 			return -EMSGSIZE;
+ 		open_json_array(PRINT_JSON, "vfinfo_list");
+ 		for (i = RTA_DATA(vflist); RTA_OK(i, rem); i = RTA_NEXT(i, rem)) {
+ 			open_json_object(NULL);
+ 			print_vfinfo(fp, ifi, i);
+ 			close_json_object();
++			count++;
+ 		}
+ 		close_json_array(PRINT_JSON, NULL);
++		if (count != rta_getattr_u32(tb[IFLA_NUM_VF]))
++			truncated_vfs = true;
  	}
+ 
+ 	if (tb[IFLA_PROP_LIST]) {
+@@ -1228,6 +1232,9 @@ int print_linkinfo(struct nlmsghdr *n, void *arg)
+ 
+ 	print_string(PRINT_FP, NULL, "%s", "\n");
+ 	fflush(fp);
++	/* prettier here if stderr and stdout go to the same place */
++	if (truncated_vfs)
++		fprintf(stderr, "Truncated VF list: %s\n", name);
+ 	return 1;
+ }
  
 -- 
 2.30.0
 
 
---0000000000003ed1a605b9d127a2
+--0000000000004d654e05b9d12826
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -294,13 +191,13 @@ wL3owFiCmLmw5R8OH22wqf/7sQFMRpH5IQFLRYdU9uCUy5FlUAgiCEXegph8ytxvo8MgYyQcCOeg
 BMfFgFEHuM2IgsDQyFC6XUViX6BQny67nlrO8pqwNRJ9Bdd7ykLCzCLOuR1znBAc2wAL9OKQe0cx
 ggJvMIICawIBATBtMF0xCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTMw
 MQYDVQQDEypHbG9iYWxTaWduIFBlcnNvbmFsU2lnbiAyIENBIC0gU0hBMjU2IC0gRzMCDCXgDAeB
-YW0HGKjSdzANBglghkgBZQMEAgEFAKCB1DAvBgkqhkiG9w0BCQQxIgQgzmu2p5owmICDy1AqWIuk
-2kCUnhAxVoBfdcJzwPyBAHAwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUx
-DxcNMjEwMTI2MTc0MDQxWjBpBgkqhkiG9w0BCQ8xXDBaMAsGCWCGSAFlAwQBKjALBglghkgBZQME
+YW0HGKjSdzANBglghkgBZQMEAgEFAKCB1DAvBgkqhkiG9w0BCQQxIgQgKp1c0y0q/m3j1ML35+aF
+dy8tqA9SHqFZrD+odGJOIvgwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUx
+DxcNMjEwMTI2MTc0MDU5WjBpBgkqhkiG9w0BCQ8xXDBaMAsGCWCGSAFlAwQBKjALBglghkgBZQME
 ARYwCwYJYIZIAWUDBAECMAoGCCqGSIb3DQMHMAsGCSqGSIb3DQEBCjALBgkqhkiG9w0BAQcwCwYJ
-YIZIAWUDBAIBMA0GCSqGSIb3DQEBAQUABIIBAEWwA4zfe5ZApy+EquifZPMX5qXANqo1kAAfHeiv
-i4GSB8xoA1JLHiRc8j4i9PHsEVPT/aGYNdWhfKgPMdJEvrPefiuqSbajzCOMn8b1o4Qqsuw9ACZV
-XJT90FBZb4ZX05o4X7p/w1L2hy2oigdgpnj8KF6bzafqVapnQw14WzwY9T+UcuamQ4CSrw7MPAc8
-BAOkALYqL0S4eBCYcZIATVk8cU3ZDNhrNznRoIst8IuenWyvJKs2LwTEGAF2aDxvVE3iQV/8bRfy
-e/JC9+kCjlNXtu7TDIerQxs7nlkLelvlE4Fs2WZWT06t0ObYDZRvI4VorqlIzQGgqnFmIvoosDY=
---0000000000003ed1a605b9d127a2--
+YIZIAWUDBAIBMA0GCSqGSIb3DQEBAQUABIIBAKIGvTR2gC2mzdh9J1BL0dbgDEaF0bXvbbiYhr73
+WiZdvyEcfwd6O3kzYJUhTKCj6hozcrP8vAN2PZPVyaere0Pv4GE6KSpvNysgN1a4X8zufRLKZXeN
+/v8gxZmjA8kypZURuo7sfw9Iv5/E54VF1foAwn/N7j/cMDvVUUHr/4PssHZMr1I0r8AEiqr1sW7s
+UYrQ+OnXMeP0sVfMQYL5LTRnt2QEOjwc0MVocUhivLEez7iEIaxVmiv6cp+Nv30fjxyKcqeUtLFf
+g3lFemVpHsLn9ckVrb5l/IxLMaJSUK1dapuBa274uu4EDxM9rOGzk1mzk41cXyL6z2GMTWq8kMs=
+--0000000000004d654e05b9d12826--
