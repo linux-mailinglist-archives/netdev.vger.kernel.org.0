@@ -2,74 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C7837303AB5
-	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 11:49:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 51A45303AE1
+	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 11:56:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404388AbhAZKtI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jan 2021 05:49:08 -0500
-Received: from foss.arm.com ([217.140.110.172]:32954 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2404244AbhAZKsX (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 26 Jan 2021 05:48:23 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 105B3D6E;
-        Tue, 26 Jan 2021 02:47:38 -0800 (PST)
-Received: from C02TD0UTHF1T.local (unknown [10.57.45.247])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id B147F3F66B;
-        Tue, 26 Jan 2021 02:47:36 -0800 (PST)
-Date:   Tue, 26 Jan 2021 10:47:34 +0000
-From:   Mark Rutland <mark.rutland@arm.com>
-To:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Cc:     Matthew Wilcox <willy@infradead.org>,
-        Courtney Cavin <courtney.cavin@sonymobile.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-Subject: Preemptible idr_alloc() in QRTR code
-Message-ID: <20210126104734.GB80448@C02TD0UTHF1T.local>
+        id S2404679AbhAZKzj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jan 2021 05:55:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55004 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2392020AbhAZKzD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jan 2021 05:55:03 -0500
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0C6BC061573;
+        Tue, 26 Jan 2021 02:54:22 -0800 (PST)
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_X25519__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.94)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1l4LzE-00BsQd-2V; Tue, 26 Jan 2021 11:54:16 +0100
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     devel@driverdev.osuosl.org
+Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        ilan.peer@intel.com, Johannes Berg <johannes.berg@intel.com>,
+        Hans de Goede <hdegoede@redhat.com>
+Subject: [PATCH] staging: rtl8723bs: fix wireless regulatory API misuse
+Date:   Tue, 26 Jan 2021 11:54:09 +0100
+Message-Id: <20210126115409.d5fd6f8fe042.Ib5823a6feb2e2aa01ca1a565d2505367f38ad246@changeid>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+From: Johannes Berg <johannes.berg@intel.com>
 
-When fuzzing arm64 with Syzkaller, I'm seeing some splats where
-this_cpu_ptr() is used in the bowels of idr_alloc(), by way of
-radix_tree_node_alloc(), in a preemptible context:
+This code ends up calling wiphy_apply_custom_regulatory(), for which
+we document that it should be called before wiphy_register(). This
+driver doesn't do that, but calls it from ndo_open() with the RTNL
+held, which caused deadlocks.
 
-| BUG: using smp_processor_id() in preemptible [00000000] code: syz-executor.1/32582
-| caller is debug_smp_processor_id+0x24/0x30
-| CPU: 3 PID: 32582 Comm: syz-executor.1 Not tainted 5.11.0-rc4-next-20210125-00001-gf57e7edf910d #3
-| Hardware name: linux,dummy-virt (DT)
-| Call trace:
-|  dump_backtrace+0x0/0x4a8
-|  show_stack+0x34/0x88
-|  dump_stack+0x1d4/0x2a0
-|  check_preemption_disabled+0x1b8/0x210
-|  debug_smp_processor_id+0x24/0x30
-|  radix_tree_node_alloc.constprop.17+0x26c/0x3d0
-|  radix_tree_extend+0x200/0x420
-|  idr_get_free+0x63c/0xa38
-|  idr_alloc_u32+0x164/0x2a0
-|  __qrtr_bind.isra.8+0x350/0x658
-|  qrtr_bind+0x18c/0x218
-|  __sys_bind+0x1fc/0x238
-|  __arm64_sys_bind+0x78/0xb0
-|  el0_svc_common+0x1ac/0x4c8
-|  do_el0_svc+0xfc/0x150
-|  el0_svc+0x24/0x38
-|  el0_sync_handler+0x134/0x180
-|  el0_sync+0x154/0x180
+Since the driver just registers static regdomain data and then the
+notifier applies the channel changes if any, there's no reason for
+it to call this in ndo_open(), move it earlier to fix the deadlock.
 
-It's not clear to me whether this is a bug in the caller or a bug the
-implementation of idr_alloc(). The kerneldoc for idr_alloc() mentions
-that callers must provide their own locking (and in this case a mutex is
-used), but doesn't mention that preemption must be disabled.
+Reported-and-tested-by: Hans de Goede <hdegoede@redhat.com>
+Fixes: 51d62f2f2c50 ("cfg80211: Save the regulatory domain with a lock")
+Signed-off-by: Johannes Berg <johannes.berg@intel.com>
+---
+Greg, can you take this for 5.11 please? Or if you prefer, since the
+patch that exposed this and broke the driver went through my tree, I
+can take it as well.
+---
+ drivers/staging/rtl8723bs/include/rtw_wifi_regd.h |  6 +++---
+ drivers/staging/rtl8723bs/os_dep/ioctl_cfg80211.c |  6 +++---
+ drivers/staging/rtl8723bs/os_dep/wifi_regd.c      | 10 +++-------
+ 3 files changed, 9 insertions(+), 13 deletions(-)
 
-Is this an intentional requirement that's simply missing from the
-documentation and requires a change to the QRTR code, or is this
-something to fix within the bowels of idr_alloc() and its callees?
+diff --git a/drivers/staging/rtl8723bs/include/rtw_wifi_regd.h b/drivers/staging/rtl8723bs/include/rtw_wifi_regd.h
+index ab5a8627d371..f798b0c744a4 100644
+--- a/drivers/staging/rtl8723bs/include/rtw_wifi_regd.h
++++ b/drivers/staging/rtl8723bs/include/rtw_wifi_regd.h
+@@ -20,9 +20,9 @@ enum country_code_type_t {
+ 	COUNTRY_CODE_MAX
+ };
+ 
+-int rtw_regd_init(struct adapter *padapter,
+-	void (*reg_notifier)(struct wiphy *wiphy,
+-		struct regulatory_request *request));
++void rtw_regd_init(struct wiphy *wiphy,
++		   void (*reg_notifier)(struct wiphy *wiphy,
++					struct regulatory_request *request));
+ void rtw_reg_notifier(struct wiphy *wiphy, struct regulatory_request *request);
+ 
+ 
+diff --git a/drivers/staging/rtl8723bs/os_dep/ioctl_cfg80211.c b/drivers/staging/rtl8723bs/os_dep/ioctl_cfg80211.c
+index bf1417236161..11032316c53d 100644
+--- a/drivers/staging/rtl8723bs/os_dep/ioctl_cfg80211.c
++++ b/drivers/staging/rtl8723bs/os_dep/ioctl_cfg80211.c
+@@ -3211,9 +3211,6 @@ void rtw_cfg80211_init_wiphy(struct adapter *padapter)
+ 			rtw_cfg80211_init_ht_capab(&bands->ht_cap, NL80211_BAND_2GHZ, rf_type);
+ 	}
+ 
+-	/* init regulary domain */
+-	rtw_regd_init(padapter, rtw_reg_notifier);
+-
+ 	/* copy mac_addr to wiphy */
+ 	memcpy(wiphy->perm_addr, padapter->eeprompriv.mac_addr, ETH_ALEN);
+ 
+@@ -3328,6 +3325,9 @@ int rtw_wdev_alloc(struct adapter *padapter, struct device *dev)
+ 	*((struct adapter **)wiphy_priv(wiphy)) = padapter;
+ 	rtw_cfg80211_preinit_wiphy(padapter, wiphy);
+ 
++	/* init regulary domain */
++	rtw_regd_init(wiphy, rtw_reg_notifier);
++
+ 	ret = wiphy_register(wiphy);
+ 	if (ret < 0) {
+ 		DBG_8192C("Couldn't register wiphy device\n");
+diff --git a/drivers/staging/rtl8723bs/os_dep/wifi_regd.c b/drivers/staging/rtl8723bs/os_dep/wifi_regd.c
+index 578b9f734231..2833fc6901e6 100644
+--- a/drivers/staging/rtl8723bs/os_dep/wifi_regd.c
++++ b/drivers/staging/rtl8723bs/os_dep/wifi_regd.c
+@@ -139,15 +139,11 @@ static void _rtw_regd_init_wiphy(struct rtw_regulatory *reg,
+ 	_rtw_reg_apply_flags(wiphy);
+ }
+ 
+-int rtw_regd_init(struct adapter *padapter,
+-		  void (*reg_notifier)(struct wiphy *wiphy,
+-				       struct regulatory_request *request))
++void rtw_regd_init(struct wiphy *wiphy,
++		   void (*reg_notifier)(struct wiphy *wiphy,
++					struct regulatory_request *request))
+ {
+-	struct wiphy *wiphy = padapter->rtw_wdev->wiphy;
+-
+ 	_rtw_regd_init_wiphy(NULL, wiphy, reg_notifier);
+-
+-	return 0;
+ }
+ 
+ void rtw_reg_notifier(struct wiphy *wiphy, struct regulatory_request *request)
+-- 
+2.26.2
 
-Thanks,
-Mark.
