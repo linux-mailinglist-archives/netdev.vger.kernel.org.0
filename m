@@ -2,231 +2,120 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CF29B304D48
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 00:08:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5E64A304D83
+	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 01:43:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732152AbhAZXIP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jan 2021 18:08:15 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50934 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2392337AbhAZSnP (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 26 Jan 2021 13:43:15 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 565B622B2C;
-        Tue, 26 Jan 2021 18:42:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611686554;
-        bh=3qZm5K7ckbIxfNAVqBBI1SIMJgLLh/X7TkQMazS543I=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UmKLROO+6Q7ZXwFt2T+RKDugU96U4aItAoGg0OvXefdKqg+r5wL4lY79l9YB2iJDE
-         aIVuEQ4dTY6JrIvC/aRGi/POhX2Sb3me7zc7IOSEmeXimUaxhCee/u+NmT6STM1MM5
-         lx/ZbNQ7PLZobNWGJd+znSZjCNjdXpA9Mardw5FkSbQyYvJ/pT8haaDelLDnUI3gjq
-         fgcmfkLBSK2MRym8I/SFmEHZ/QQSOKlv89BFaqU5yu1oN1RYqiMLJkQHr6MCJ6S0hZ
-         uzKgQwyQuKp2BRWEUaM51YKdcxsYEfnzEiT8VE25jSheXsj2KNS+op0RgkZ4u16cy1
-         RvNYdehwbaYAw==
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     bpf@vger.kernel.org
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, toshiaki.makita1@gmail.com,
-        lorenzo.bianconi@redhat.com, brouer@redhat.com, toke@redhat.com
-Subject: [PATCH bpf-next 3/3] net: veth: alloc skb in bulk for ndo_xdp_xmit
-Date:   Tue, 26 Jan 2021 19:42:01 +0100
-Message-Id: <efff40b98b311f6c8de4e98f247a84aa587b8936.1611685778.git.lorenzo@kernel.org>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <cover.1611685778.git.lorenzo@kernel.org>
-References: <cover.1611685778.git.lorenzo@kernel.org>
+        id S1732283AbhAZXKA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jan 2021 18:10:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47044 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731723AbhAZS5s (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jan 2021 13:57:48 -0500
+Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA72BC061573
+        for <netdev@vger.kernel.org>; Tue, 26 Jan 2021 10:57:07 -0800 (PST)
+Received: by mail-io1-xd34.google.com with SMTP id u7so4438526iol.8
+        for <netdev@vger.kernel.org>; Tue, 26 Jan 2021 10:57:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Fou4Lq6mqe4XTJhzFND5pizo3LVmYALorA/wjxT+0ac=;
+        b=sGHnTtrj7FyNa6xiPsUCJAQMIsP0G9PyW0J+KcYlWeD++uJfn/ri7o4fQVl2Wm3THE
+         nWH+BpbHA6wOFpNLmYOxmkx97tE/08Vt0JX0eUhm9vr+EpzlHS94rtgKJpioumwq7A65
+         XCM3t98NxMXAFgwOeo8mcALYUGhSCzTXjZZagAzD5Nbo8XVMomgpr6Q/2tRz6XRXj2Ck
+         ToGrFmVcI2fX4elaUatKAWqZwLQVWU0pulrJED5Qfgu6ZdvayZZPTlk7wS2vp1GJqmoA
+         4aOYISeZvG58f6p/Sf8nEuJQEwdN2IBQp8pCv/NeRBb6YNeDqUaLguF/HJoApyxAcoDH
+         NZwA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Fou4Lq6mqe4XTJhzFND5pizo3LVmYALorA/wjxT+0ac=;
+        b=ebR1d0sWaLMs8ZvNPYD5UC+c0w6+JRcYtUiyufSBs9W2JotBn6qGTy7C49t3WREOng
+         WtV53KFTbWVrkb9wT5MyrzYe4I9ijwPeJyn69kayWydckkr1WMCsoWEHIme+kqkfewQS
+         cZIVIBDYYO3oMlGj6wBcFvj2uY40Ym4Ii/AsNTWeYPD68f0Lg7F+frlJeIhAy/E2zEcs
+         DUvePgpQcakBlGjMtwGFWCuAp7WbdktkEttSYHBPZi+rcpqHlwQuVZzY+8xd2vZUPXBO
+         GDzuOc8vxo7YQF8oWzGiQfrdZMpHnZurPuVrpw7S38ejC0En+r5iWBl6MsWEusD+lOGw
+         P/mA==
+X-Gm-Message-State: AOAM530zK/EvaFxjhc4JoCmPI3LeVpwIGV007uluv/7dmlhoCcyjCUBX
+        xPMLtu+FrQXSFACTbJXFLjWo6g==
+X-Google-Smtp-Source: ABdhPJy00gWpHXop/6jAzwA1TFCJ+LKJEXem6EQ1XuR1YkA5x/dJKi//oToRJjc3Rywwt8gJTYOXjQ==
+X-Received: by 2002:a02:c80a:: with SMTP id p10mr5928747jao.3.1611687427249;
+        Tue, 26 Jan 2021 10:57:07 -0800 (PST)
+Received: from beast.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.gmail.com with ESMTPSA id l14sm13060681ilh.58.2021.01.26.10.57.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Jan 2021 10:57:06 -0800 (PST)
+From:   Alex Elder <elder@linaro.org>
+To:     davem@davemloft.net, kuba@kernel.org
+Cc:     elder@kernel.org, evgreen@chromium.org, bjorn.andersson@linaro.org,
+        cpratapa@codeaurora.org, subashab@codeaurora.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH net-next v2 0/6] net: ipa: hardware pipeline cleanup fixes
+Date:   Tue, 26 Jan 2021 12:56:57 -0600
+Message-Id: <20210126185703.29087-1-elder@linaro.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Split ndo_xdp_xmit and ndo_start_xmit use cases in veth_xdp_rcv routine
-in order to alloc skbs in bulk for XDP_PASS verdict.
-Introduce xdp_alloc_skb_bulk utility routine to alloc skb bulk list.
+Version 2 of this series fixes a "restricted __le16 degrades to
+integer" warning from sparse in the third patch.  The normal host
+architecture is little-endian, so the problem did not produce
+incorrect behavior, but the code was wrong not to perform the
+endianness conversion.  The updated patch uses le16_get_bits() to
+properly extract the value of the field we're interested in.
 
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
----
- drivers/net/veth.c | 96 ++++++++++++++++++++++++++++++++--------------
- include/net/xdp.h  |  1 +
- net/core/xdp.c     | 11 ++++++
- 3 files changed, 79 insertions(+), 29 deletions(-)
+Everything else remains the same.  Below is the original description.
 
-diff --git a/drivers/net/veth.c b/drivers/net/veth.c
-index ff77b541e5fc..3464f4c7844b 100644
---- a/drivers/net/veth.c
-+++ b/drivers/net/veth.c
-@@ -563,14 +563,13 @@ static int veth_xdp_tx(struct veth_rq *rq, struct xdp_buff *xdp,
- 	return 0;
- }
- 
--static struct sk_buff *veth_xdp_rcv_one(struct veth_rq *rq,
--					struct xdp_frame *frame,
--					struct veth_xdp_tx_bq *bq,
--					struct veth_stats *stats)
-+static struct xdp_frame *veth_xdp_rcv_one(struct veth_rq *rq,
-+					  struct xdp_frame *frame,
-+					  struct veth_xdp_tx_bq *bq,
-+					  struct veth_stats *stats)
- {
- 	struct xdp_frame orig_frame;
- 	struct bpf_prog *xdp_prog;
--	struct sk_buff *skb;
- 
- 	rcu_read_lock();
- 	xdp_prog = rcu_dereference(rq->xdp_prog);
-@@ -624,13 +623,7 @@ static struct sk_buff *veth_xdp_rcv_one(struct veth_rq *rq,
- 	}
- 	rcu_read_unlock();
- 
--	skb = xdp_build_skb_from_frame(frame, rq->dev);
--	if (!skb) {
--		xdp_return_frame(frame);
--		stats->rx_drops++;
--	}
--
--	return skb;
-+	return frame;
- err_xdp:
- 	rcu_read_unlock();
- 	xdp_return_frame(frame);
-@@ -638,6 +631,48 @@ static struct sk_buff *veth_xdp_rcv_one(struct veth_rq *rq,
- 	return NULL;
- }
- 
-+static void veth_xdp_rcv_batch(struct veth_rq *rq, void **frames,
-+			       int n_xdpf, struct veth_xdp_tx_bq *bq,
-+			       struct veth_stats *stats)
-+{
-+	void *skbs[XDP_BATCH_SIZE];
-+	int i, n_skb = 0;
-+
-+	for (i = 0; i < n_xdpf; i++) {
-+		struct xdp_frame *frame = frames[i];
-+
-+		stats->xdp_bytes += frame->len;
-+		frame = veth_xdp_rcv_one(rq, frame, bq, stats);
-+		if (frame)
-+			frames[n_skb++] = frame;
-+	}
-+
-+	if (!n_skb)
-+		return;
-+
-+	if (xdp_alloc_skb_bulk(skbs, n_skb, GFP_ATOMIC) < 0) {
-+		for (i = 0; i < n_skb; i++) {
-+			xdp_return_frame(frames[i]);
-+			stats->rx_drops++;
-+		}
-+		return;
-+	}
-+
-+	for (i = 0; i < n_skb; i++) {
-+		struct sk_buff *skb = skbs[i];
-+
-+		memset(skb, 0, offsetof(struct sk_buff, tail));
-+		skb = __xdp_build_skb_from_frame(frames[i], skb,
-+						 rq->dev);
-+		if (!skb) {
-+			xdp_return_frame(frames[i]);
-+			stats->rx_drops++;
-+			continue;
-+		}
-+		napi_gro_receive(&rq->xdp_napi, skb);
-+	}
-+}
-+
- static struct sk_buff *veth_xdp_rcv_skb(struct veth_rq *rq,
- 					struct sk_buff *skb,
- 					struct veth_xdp_tx_bq *bq,
-@@ -788,9 +823,10 @@ static int veth_xdp_rcv(struct veth_rq *rq, int budget,
- 	int i, done = 0;
- 
- 	for (i = 0; i < budget; i++) {
-+		int i, n_frame, n_xdpf = 0, n_skb = 0;
- 		void *frames[VETH_XDP_BATCH];
- 		void *skbs[VETH_XDP_BATCH];
--		int i, n_frame, n_skb = 0;
-+		void *xdpf[VETH_XDP_BATCH];
- 
- 		n_frame = __ptr_ring_consume_batched(&rq->xdp_ring, frames,
- 						     XDP_BATCH_SIZE);
-@@ -798,24 +834,26 @@ static int veth_xdp_rcv(struct veth_rq *rq, int budget,
- 			break;
- 
- 		for (i = 0; i < n_frame; i++) {
--			void *f = frames[i];
--			struct sk_buff *skb;
--
--			if (veth_is_xdp_frame(f)) {
--				struct xdp_frame *frame = veth_ptr_to_xdp(f);
--
--				stats->xdp_bytes += frame->len;
--				skb = veth_xdp_rcv_one(rq, frame, bq, stats);
--			} else {
--				skb = f;
--				stats->xdp_bytes += skb->len;
--				skb = veth_xdp_rcv_skb(rq, skb, bq, stats);
--			}
-+			if (veth_is_xdp_frame(frames[i]))
-+				xdpf[n_xdpf++] = veth_ptr_to_xdp(frames[i]);
-+			else
-+				skbs[n_skb++] = frames[i];
-+		}
-+
-+		/* ndo_xdp_xmit */
-+		if (n_xdpf)
-+			veth_xdp_rcv_batch(rq, xdpf, n_xdpf, bq, stats);
-+
-+		/* ndo_start_xmit */
-+		for (i = 0; i < n_skb; i++) {
-+			struct sk_buff *skb = skbs[i];
-+
-+			stats->xdp_bytes += skb->len;
-+			skb = veth_xdp_rcv_skb(rq, skb, bq, stats);
- 			if (skb)
--				skbs[n_skb++] = skb;
-+				napi_gro_receive(&rq->xdp_napi, skb);
- 		}
--		for (i = 0; i < n_skb; i++)
--			napi_gro_receive(&rq->xdp_napi, skbs[i]);
-+
- 		done += n_frame;
- 	}
- 
-diff --git a/include/net/xdp.h b/include/net/xdp.h
-index c0e15bcb3a22..e8db521f5323 100644
---- a/include/net/xdp.h
-+++ b/include/net/xdp.h
-@@ -170,6 +170,7 @@ struct sk_buff *__xdp_build_skb_from_frame(struct xdp_frame *xdpf,
- 					   struct net_device *dev);
- struct sk_buff *xdp_build_skb_from_frame(struct xdp_frame *xdpf,
- 					 struct net_device *dev);
-+int xdp_alloc_skb_bulk(void **skbs, int n_skb, gfp_t gfp);
- 
- static inline
- void xdp_convert_frame_to_buff(struct xdp_frame *frame, struct xdp_buff *xdp)
-diff --git a/net/core/xdp.c b/net/core/xdp.c
-index 0d2630a35c3e..05354976c1fc 100644
---- a/net/core/xdp.c
-+++ b/net/core/xdp.c
-@@ -514,6 +514,17 @@ void xdp_warn(const char *msg, const char *func, const int line)
- };
- EXPORT_SYMBOL_GPL(xdp_warn);
- 
-+int xdp_alloc_skb_bulk(void **skbs, int n_skb, gfp_t gfp)
-+{
-+	n_skb = kmem_cache_alloc_bulk(skbuff_head_cache, gfp,
-+				      n_skb, skbs);
-+	if (unlikely(!n_skb))
-+		return -ENOMEM;
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(xdp_alloc_skb_bulk);
-+
- struct sk_buff *__xdp_build_skb_from_frame(struct xdp_frame *xdpf,
- 					   struct sk_buff *skb,
- 					   struct net_device *dev)
+					-Alex
+
+There is a procedure currently referred to as a "tag process" that
+is performed to clear the IPA hardware pipeline--either at the time
+of a modem crash, or when suspending modem GSI channels.
+
+One thing done in this procedure is issuing a command that sends a
+data packet originating from the AP->command TX endpoint, destined
+for the AP<-LAN RX (default) endpoint.  And although we currently
+wait for the send to complete, we do *not* wait for the packet to be
+received.  But the pipeline can't be assumed clear until we have
+actually received this packet.
+
+This series addresses this by detecting when the pipeline-clearing
+packet has been received, and using a completion to allow a waiter
+to know when that has happened.  This uses the IPA status capability
+(which sends an extra status buffer for certain packets).  It also
+uses the ability to supply a "tag" with a packet, which will be
+delivered with the packet's status buffer.  We tag the data packet
+that's sent to clear the pipeline, and use the receipt of a status
+buffer associated with a tagged packet to determine when that packet
+has arrived.
+
+"Tag status" just desribes one aspect of this procedure, so some
+symbols are renamed to be more like "pipeline clear" so they better
+describe the larger purpose.  Finally, two functions used in this
+code don't use their arguments, so those arguments are removed.
+
+					-Alex
+
+Alex Elder (6):
+  net: ipa: rename "tag status" symbols
+  net: ipa: minor update to handling of packet with status
+  net: ipa: drop packet if status has valid tag
+  net: ipa: signal when tag transfer completes
+  net: ipa: don't pass tag value to ipa_cmd_ip_tag_status_add()
+  net: ipa: don't pass size to ipa_cmd_transfer_add()
+
+ drivers/net/ipa/ipa.h          |  2 +
+ drivers/net/ipa/ipa_cmd.c      | 45 +++++++++++++------
+ drivers/net/ipa/ipa_cmd.h      | 24 ++++++-----
+ drivers/net/ipa/ipa_endpoint.c | 79 ++++++++++++++++++++++++++--------
+ drivers/net/ipa/ipa_main.c     |  1 +
+ 5 files changed, 109 insertions(+), 42 deletions(-)
+
 -- 
-2.29.2
+2.20.1
 
