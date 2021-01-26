@@ -2,114 +2,87 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2A8A53057BD
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 11:04:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 819503057CC
+	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 11:06:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S316773AbhAZXJu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jan 2021 18:09:50 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46516 "EHLO
+        id S235599AbhA0KF4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 05:05:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731451AbhAZS5j (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jan 2021 13:57:39 -0500
-Received: from mail-io1-xd33.google.com (mail-io1-xd33.google.com [IPv6:2607:f8b0:4864:20::d33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6EF8AC061356
-        for <netdev@vger.kernel.org>; Tue, 26 Jan 2021 10:57:14 -0800 (PST)
-Received: by mail-io1-xd33.google.com with SMTP id z22so35766836ioh.9
-        for <netdev@vger.kernel.org>; Tue, 26 Jan 2021 10:57:14 -0800 (PST)
+        with ESMTP id S316712AbhAZXJY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jan 2021 18:09:24 -0500
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A84F3C061573
+        for <netdev@vger.kernel.org>; Tue, 26 Jan 2021 15:08:36 -0800 (PST)
+Received: by mail-ej1-x62c.google.com with SMTP id g3so32800ejb.6
+        for <netdev@vger.kernel.org>; Tue, 26 Jan 2021 15:08:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=4XCw/DKlPzbfEbK7Wq85mEUjWal6SYNVmWAVH0HVNQI=;
-        b=ttpVKqscHXaGViXdvSusZvZERSWcJPWvYrFU9sZywNA8AMsbqBK3qqsXM+VmaQ0sAx
-         6pDXe50mX9MdwXdzf6HPA/JAeCOMg1wiI2BrTO10adpMmHAcSDrSsDFlyrcjTpQdhlMr
-         kq6xvoIFeT4GX4IGY1llEZ4fW/aFINUcCcBaCCWM6L9v3VWnSa2L3YFGcN+ndos8iVwU
-         jkGwlD+KXlet9d1CMy44S6GkaJS6lX4jaDKEO8SagXVkwNrm1xyhbgixjsMbtWd69td7
-         /ujPltyUdXWNCWqJ+U1d9Jst10Xm24X8NXzBGKvjnMbKx9O0SS0u4wPzJwENRRf5JOhQ
-         i8FA==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=UuWKb7JkRecIO+hyjBuSiB6Qy8dgwEVmPtBF4GparO8=;
+        b=D3oUBmmB3OZqm3TlrduboP9AZX/PHA+3HlUGCi7cNPP0v/LpI3eG+llGcsNgKGug/x
+         Lkag5eto15Y3uOZp+8BI55MHJXjlvzRNtM4Y1QAvMQnXIdHcdbAcmmHGK1DGD/Pu9TY/
+         Vz1yiTh7ar21gsC1y+zD8O3XBdJLhVsSpejh7j3dR6MPyyZ/7A2kk7Il2ITXrUI0qpjZ
+         JJdgB3QnyZDh1LyeMYjX/BUyoinGE8zpiJZBhkZVBsZ5+7etl40I61I9k4cDm7PLNSd7
+         44azsD+cFuSs0h6GWEWo+vp5T7Xzpunx1TVHNmdCpZLRvLlEGpOj//YnqrdHDCTLbrUb
+         uxDQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=4XCw/DKlPzbfEbK7Wq85mEUjWal6SYNVmWAVH0HVNQI=;
-        b=sLF4+wFBK2aDzQLJjV1nsheOLH958QOc/izsVXwC3QkOMO4D4SFqam0qFNMqZeBOpZ
-         SIRhXkzdqSmQpgSN72/sqXO5RHENp2uIQ7W3wbSRJaCE/bASX/G9/A3tWTZLTMa7DLr+
-         U4HILrP8tKHUN1bSnn8YjA1USy3LSSIhEUn74qrEZ65pXPgaM42oqj/KjFyQ+8AJmJIv
-         oTZUf6XhJvPx9tZoulYoEcRvMQfaPnjYRlSMiUySxrc0VvfHCErZ8ILcB8BsC7DzguIQ
-         9TAKX4fF9zauYe2nR+a4FOy97bRnIZJuQVrCwbfw4GgCN8C/GaIJLtdrF4DNJvlYqprJ
-         ds8Q==
-X-Gm-Message-State: AOAM533q/NhWKhb+yCqfllA/UvjiKEjh/1XK8FP5vdBv65q3zWPh5Bm3
-        GqX4pf8tpLjJZFHrnmr7fB8VtUWUt7Bt9g==
-X-Google-Smtp-Source: ABdhPJxmdBae+jtQZrJUa1v7TtQbok3Z7C9DRv/TjW+uO6wbi2nuXcDzIrtbFLX44XiFXIP40gmBlg==
-X-Received: by 2002:a05:6e02:541:: with SMTP id i1mr5962831ils.295.1611687433855;
-        Tue, 26 Jan 2021 10:57:13 -0800 (PST)
-Received: from beast.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id l14sm13060681ilh.58.2021.01.26.10.57.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Jan 2021 10:57:13 -0800 (PST)
-From:   Alex Elder <elder@linaro.org>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     elder@kernel.org, evgreen@chromium.org, bjorn.andersson@linaro.org,
-        cpratapa@codeaurora.org, subashab@codeaurora.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v2 6/6] net: ipa: don't pass size to ipa_cmd_transfer_add()
-Date:   Tue, 26 Jan 2021 12:57:03 -0600
-Message-Id: <20210126185703.29087-7-elder@linaro.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20210126185703.29087-1-elder@linaro.org>
-References: <20210126185703.29087-1-elder@linaro.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=UuWKb7JkRecIO+hyjBuSiB6Qy8dgwEVmPtBF4GparO8=;
+        b=Dv40vpnHTPLI42LD4TF5QTrhXm8oKumeqCvVyHKNr1a0hz6IjDyR4aJO/g+kkotZ5a
+         RxS3PzR4/HHuVnufmF7ytKg9z9azvvcV6rURBK3p/ThH5cYBbhsHtWU0cirmqxO8eQiv
+         q397XlgQsz5DVPfOlSqmPl3xcrlbjELZYq65f+eXkuFmU0sSw+ZNQ+oohJF9Db3rl6to
+         INeXgUqZiNMZwgJw10ixpQgnTQaZnU6s71oCqfR1P61IbtUGouBETuluvK1L02VGwNvf
+         LhLKi7IWDPACd68VGjVJSnsBkyi44nVRP9ZJXlwiBrtsdwOsBKPWO5XewzPE4OQFl1II
+         rAcQ==
+X-Gm-Message-State: AOAM532acjrHr76BXCCD7/xzLZ1Y8HW42csGJrwwcSSFpGtHpm0f9n7t
+        v62lQ/dicAG2yMydK6lTQdGiyoimit/Wxtanz5I=
+X-Google-Smtp-Source: ABdhPJzV6hCVEqkSgA9MgGxa38S/AdcqQA1fBPEUEAB4fooQzSCe8eVNCRdN4h3OpueRetJVnjI0d6spWAjXKmD+5lc=
+X-Received: by 2002:a17:906:e28a:: with SMTP id gg10mr4798651ejb.11.1611702515165;
+ Tue, 26 Jan 2021 15:08:35 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <cover.1611637639.git.lucien.xin@gmail.com> <77cd57759f66c642fb0ed52be85abde201f8bfc9.1611637639.git.lucien.xin@gmail.com>
+In-Reply-To: <77cd57759f66c642fb0ed52be85abde201f8bfc9.1611637639.git.lucien.xin@gmail.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Tue, 26 Jan 2021 18:07:58 -0500
+Message-ID: <CAF=yD-JjXopPwAR=N3+BgfYoA2B53zmcykz9Buk3qfB=8Cc4nw@mail.gmail.com>
+Subject: Re: [PATCHv4 net-next 1/2] udp: call udp_encap_enable for v6 sockets
+ when enabling encap
+To:     Xin Long <lucien.xin@gmail.com>
+Cc:     network dev <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Martin Varghese <martin.varghese@nokia.com>,
+        Alexander Duyck <alexander.duyck@gmail.com>,
+        David Howells <dhowells@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The only time we transfer data (rather than issuing a command) out
-of the AP->command TX endpoint is when we're clearing the hardware
-pipeline.  All that's needed is a "small" data buffer, and its
-contents aren't even important.
+On Tue, Jan 26, 2021 at 5:59 PM Xin Long <lucien.xin@gmail.com> wrote:
+>
+> When enabling encap for a ipv6 socket without udp_encap_needed_key
+> increased, UDP GRO won't work for v4 mapped v6 address packets as
+> sk will be NULL in udp4_gro_receive().
+>
+> This patch is to enable it by increasing udp_encap_needed_key for
+> v6 sockets in udp_tunnel_encap_enable(), and correspondingly
+> decrease udp_encap_needed_key in udpv6_destroy_sock().
+>
+> v1->v2:
+>   - add udp_encap_disable() and export it.
+> v2->v3:
+>   - add the change for rxrpc and bareudp into one patch, as Alex
+>     suggested.
+> v3->v4:
+>   - move rxrpc part to another patch.
+>
+> Signed-off-by: Xin Long <lucien.xin@gmail.com>
 
-For convenience, we just transfer a command structure in this case
-(it's already mapped for DMA).  The TRE is added to a transaction
-using ipa_cmd_ip_tag_status_add(), but we ignore the size value
-provided to that function.  So just get rid of the size argument.
-
-Signed-off-by: Alex Elder <elder@linaro.org>
----
- drivers/net/ipa/ipa_cmd.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/net/ipa/ipa_cmd.c b/drivers/net/ipa/ipa_cmd.c
-index eb50e7437359a..97b50fee60089 100644
---- a/drivers/net/ipa/ipa_cmd.c
-+++ b/drivers/net/ipa/ipa_cmd.c
-@@ -550,7 +550,7 @@ static void ipa_cmd_ip_tag_status_add(struct gsi_trans *trans)
- }
- 
- /* Issue a small command TX data transfer */
--static void ipa_cmd_transfer_add(struct gsi_trans *trans, u16 size)
-+static void ipa_cmd_transfer_add(struct gsi_trans *trans)
- {
- 	struct ipa *ipa = container_of(trans->gsi, struct ipa, gsi);
- 	enum dma_data_direction direction = DMA_TO_DEVICE;
-@@ -558,8 +558,6 @@ static void ipa_cmd_transfer_add(struct gsi_trans *trans, u16 size)
- 	union ipa_cmd_payload *payload;
- 	dma_addr_t payload_addr;
- 
--	/* assert(size <= sizeof(*payload)); */
--
- 	/* Just transfer a zero-filled payload structure */
- 	payload = ipa_cmd_payload_alloc(ipa, &payload_addr);
- 
-@@ -590,7 +588,7 @@ void ipa_cmd_pipeline_clear_add(struct gsi_trans *trans)
- 	endpoint = ipa->name_map[IPA_ENDPOINT_AP_LAN_RX];
- 	ipa_cmd_ip_packet_init_add(trans, endpoint->endpoint_id);
- 	ipa_cmd_ip_tag_status_add(trans);
--	ipa_cmd_transfer_add(trans, 4);
-+	ipa_cmd_transfer_add(trans);
- }
- 
- /* Returns the number of commands required to clear the pipeline */
--- 
-2.20.1
-
+Acked-by: Willem de Bruijn <willemb@google.com>
