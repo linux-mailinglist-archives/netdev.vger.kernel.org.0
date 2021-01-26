@@ -2,126 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 61C1A304D39
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 00:06:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 511F8304D3B
+	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 00:06:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731819AbhAZXFb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jan 2021 18:05:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58864 "EHLO
+        id S1731908AbhAZXGA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jan 2021 18:06:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33036 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2392974AbhAZRlk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jan 2021 12:41:40 -0500
-Received: from mail-pf1-x433.google.com (mail-pf1-x433.google.com [IPv6:2607:f8b0:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EB7DC0613D6
-        for <netdev@vger.kernel.org>; Tue, 26 Jan 2021 09:40:59 -0800 (PST)
-Received: by mail-pf1-x433.google.com with SMTP id w18so10842617pfu.9
-        for <netdev@vger.kernel.org>; Tue, 26 Jan 2021 09:40:59 -0800 (PST)
+        with ESMTP id S2393550AbhAZRwt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jan 2021 12:52:49 -0500
+Received: from mail-lj1-x22c.google.com (mail-lj1-x22c.google.com [IPv6:2a00:1450:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6355CC061756
+        for <netdev@vger.kernel.org>; Tue, 26 Jan 2021 09:52:09 -0800 (PST)
+Received: by mail-lj1-x22c.google.com with SMTP id t12so5250715ljc.6
+        for <netdev@vger.kernel.org>; Tue, 26 Jan 2021 09:52:09 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=broadcom.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version;
-        bh=4ygLgTsrz5e/YwxcVWmQzRYL2Z5QWQ13xMq8BfFh4G8=;
-        b=HTyGanCmhLkuQjR9KyXdtHyPHHdn2ug3syavrl5z/d9klIlm20bCOiWEtXr+bzNGka
-         21uSpkObtkvgpGbCzfXfYBX3Xcn0Sh7y2XgxptXy1D9oDWEw3EC5WoCwumeYZbPhSC5d
-         T9dhZiHg5YtsBZqpnRm0JM+7/x3dNbPoXmFaQ=
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=LCIelp8OO7+PKpyp8rf86aSkhaK2z+dRmBbOuhNmB0o=;
+        b=heXRVETbr5TVECsKuaA/4e/KJTaWk7/gItrmvdadqBrGCW5fLcKiifJxoDmB1EjVyJ
+         UiD+yRYqsBmzHNhRfeaKwjIKJyB3I1Ji4LCWaFOU7JxdktCrOGLMlQ4UPtXv+OC/4NY+
+         kf0P4R1DzBd/wchRjvqrGpJGwQOpfEUwajSws=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version;
-        bh=4ygLgTsrz5e/YwxcVWmQzRYL2Z5QWQ13xMq8BfFh4G8=;
-        b=tLu664+83rMMHvkS1bTUKC11oKthgmy+6c0V4ilPhYvCvqc4jynm2Ig3NAPKz0nXf/
-         q7FvRstfgK3zquRR4SI5mzIGjvw16mbbO3GIxcKur007pQAhgZpMHv1K5IedFEH3cWuw
-         6maftg+Qm+VT9UqCGXv8UvLzIytAz9TNTaAczOpDabqDWtZLOp/adKXEGDEfPBMxDp3a
-         CLX+w5aDke9tHr8/B+AKTO5ehgLLs20VzpI4/nQfE6mUxhLAr5AkwW1R/r3oB09atLOi
-         9zu4CCL/2HYyqEfwPoW512bQQbhxq74G+xja1KTff3bkFZ8LKdxAlVrfSP3t/+kiWsyG
-         yufw==
-X-Gm-Message-State: AOAM533dU93CE99LIPwt8zMeRP1dx7gk7HSc/2ycAeVVUtEBzI/gQJbm
-        zw1T2Is54fecmNvx89tSSt5z3DWLYywEQVmADPj+KDBTzoaDTpRLOhXfzD6UtBiVYpsI2y1h+Hr
-        IPTz7qjcoPwUfVahCEdBjkIGHR8JzPDXw0FzsgmRX7trxE4prU4bLd+EIqt2KwtJHw/79jssF
-X-Google-Smtp-Source: ABdhPJyvp0wpc9yYzGtjb6ePUEcmNV/z4UPrTLxRQKVNyG3nS7nheB77wu6172Oy7KLdyfn9ly/J2g==
-X-Received: by 2002:a63:c911:: with SMTP id o17mr6137611pgg.102.1611682858577;
-        Tue, 26 Jan 2021 09:40:58 -0800 (PST)
-Received: from hex.swdvt.lab.broadcom.net ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id w66sm19595647pfd.48.2021.01.26.09.40.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Jan 2021 09:40:57 -0800 (PST)
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=LCIelp8OO7+PKpyp8rf86aSkhaK2z+dRmBbOuhNmB0o=;
+        b=UQJx/H5eLzamwRelFFi3r2PGMAFog0n6JNHhgsLE+E2Kk3DJahYbI1s3Du4NvMp0hc
+         bE3W2PDD3aIrYjRZiAAfU75ZrSryWZPhvB9LKXQVtulI+yM1XvN5Om1ystzvSwwRq37e
+         uWhKvibTmEbuMhGAZIM7i3DYFfMXgbN+AVaaRULf/nm+ecaT9N9FfOzFVW90uYdZdI4G
+         /abXbIBDWCfQVGT1bXwcMBszIjym0APldj12JYy+h4/xeb8A1eLHKGnjpfSZRgGNcQ56
+         CncAmEr0rfbDYHc1xMLKYLKSumAidVxRkDYTPXGFMaBzw6YfQluQyn7vSVRzUDGWiprN
+         odEg==
+X-Gm-Message-State: AOAM5326v/FtGlfb8OIi29Y681wmQu9XB2k7BsS76Mcs5ImeSRycmtSU
+        gFw6wFvW2sbgjXWxolbw8j4VJaYEy6tQS9kNGNk7og==
+X-Google-Smtp-Source: ABdhPJz6rWuV1gzAs6XQwlRlU4vz4OP3giliFNvbATSNqkf2WbDeBzpvdAlRjUsLSGmgVPJ+oblyw28BX4iieZB4AzU=
+X-Received: by 2002:a2e:b0d3:: with SMTP id g19mr3614533ljl.279.1611683527803;
+ Tue, 26 Jan 2021 09:52:07 -0800 (PST)
+MIME-Version: 1.0
+References: <20210123045321.2797360-1-edwin.peer@broadcom.com>
+ <20210123045321.2797360-2-edwin.peer@broadcom.com> <1dc163b0-d4b0-8f6c-d047-7eae6dc918c4@gmail.com>
+ <CAKOOJTwKK5AgTf+g5LS4MMwR_HwbdFS6U7SFH0jZe8FuJMgNgA@mail.gmail.com>
+ <CAKOOJTzwdSdwBF=H-h5qJzXaFDiMoX=vjrMi_vKfZoLrkt4=Lg@mail.gmail.com> <62a12b2c-c94e-8d89-0e75-f01dc6abbe92@gmail.com>
+In-Reply-To: <62a12b2c-c94e-8d89-0e75-f01dc6abbe92@gmail.com>
 From:   Edwin Peer <edwin.peer@broadcom.com>
-To:     netdev@vger.kernel.org
-Cc:     Edwin Peer <edwin.peer@broadcom.com>,
-        Jakub Kicinski <kuba@kernel.org>,
+Date:   Tue, 26 Jan 2021 09:51:31 -0800
+Message-ID: <CAKOOJTwBcRJah=tngJH3EaHCCXb6T_ptAV+GMvqX_sZONeKe9w@mail.gmail.com>
+Subject: Re: [PATCH net-next 1/4] netlink: truncate overlength attribute list
+ in nla_nest_end()
+To:     David Ahern <dsahern@gmail.com>
+Cc:     netdev <netdev@vger.kernel.org>, Jakub Kicinski <kuba@kernel.org>,
         Andrew Gospodarek <andrew.gospodarek@broadcom.com>,
         Michael Chan <michael.chan@broadcom.com>,
         Stephen Hemminger <stephen@networkplumber.org>,
-        Michal Kubecek <mkubecek@suse.cz>,
-        David Ahern <dsahern@gmail.com>
-Subject: [PATCH iproute2-next v2 1/2] iplink: print warning for missing VF data
-Date:   Tue, 26 Jan 2021 09:40:53 -0800
-Message-Id: <20210126174054.185084-1-edwin.peer@broadcom.com>
-X-Mailer: git-send-email 2.30.0
-MIME-Version: 1.0
+        Michal Kubecek <mkubecek@suse.cz>
 Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="0000000000004d654e05b9d12826"
+        boundary="0000000000002f191205b9d15081"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---0000000000004d654e05b9d12826
-Content-Transfer-Encoding: 8bit
+--0000000000002f191205b9d15081
+Content-Type: text/plain; charset="UTF-8"
 
-The kernel might truncate VF info in IFLA_VFINFO_LIST. Compare the
-expected number of VFs in IFLA_NUM_VF to how many were found in the
-list and warn accordingly.
+On Mon, Jan 25, 2021 at 8:56 PM David Ahern <dsahern@gmail.com> wrote:
 
-Signed-off-by: Edwin Peer <edwin.peer@broadcom.com>
----
- ip/ipaddress.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+> I'm not a fan of the skb trim idea. I think it would be better to figure
+> out how to stop adding to the skb when an attr length is going to exceed
+> 64kB. Not failing hard with an error (ip link sh needs to succeed), but
+> truncating the specific attribute of a message with a flag so userspace
+> knows it is short.
 
-diff --git a/ip/ipaddress.c b/ip/ipaddress.c
-index 571346b15cc3..0bbcee2b3bb2 100644
---- a/ip/ipaddress.c
-+++ b/ip/ipaddress.c
-@@ -922,6 +922,7 @@ int print_linkinfo(struct nlmsghdr *n, void *arg)
- 	const char *name;
- 	unsigned int m_flag = 0;
- 	SPRINT_BUF(b1);
-+	bool truncated_vfs = false;
- 
- 	if (n->nlmsg_type != RTM_NEWLINK && n->nlmsg_type != RTM_DELLINK)
- 		return 0;
-@@ -1199,15 +1200,18 @@ int print_linkinfo(struct nlmsghdr *n, void *arg)
- 
- 	if ((do_link || show_details) && tb[IFLA_VFINFO_LIST] && tb[IFLA_NUM_VF]) {
- 		struct rtattr *i, *vflist = tb[IFLA_VFINFO_LIST];
--		int rem = RTA_PAYLOAD(vflist);
-+		int rem = RTA_PAYLOAD(vflist), count = 0;
- 
- 		open_json_array(PRINT_JSON, "vfinfo_list");
- 		for (i = RTA_DATA(vflist); RTA_OK(i, rem); i = RTA_NEXT(i, rem)) {
- 			open_json_object(NULL);
- 			print_vfinfo(fp, ifi, i);
- 			close_json_object();
-+			count++;
- 		}
- 		close_json_array(PRINT_JSON, NULL);
-+		if (count != rta_getattr_u32(tb[IFLA_NUM_VF]))
-+			truncated_vfs = true;
- 	}
- 
- 	if (tb[IFLA_PROP_LIST]) {
-@@ -1228,6 +1232,9 @@ int print_linkinfo(struct nlmsghdr *n, void *arg)
- 
- 	print_string(PRINT_FP, NULL, "%s", "\n");
- 	fflush(fp);
-+	/* prettier here if stderr and stdout go to the same place */
-+	if (truncated_vfs)
-+		fprintf(stderr, "Truncated VF list: %s\n", name);
- 	return 1;
- }
- 
--- 
-2.30.0
+Absent the ability to do something useful in terms of actually
+avoiding the overflow [1], I'm abandoning this approach entirely. I
+have a different idea that I will propose in due course.
 
+[1] https://marc.info/?l=linux-netdev&m=161163943811663
 
---0000000000004d654e05b9d12826
+Regards,
+Edwin Peer
+
+--0000000000002f191205b9d15081
 Content-Type: application/pkcs7-signature; name="smime.p7s"
 Content-Transfer-Encoding: base64
 Content-Disposition: attachment; filename="smime.p7s"
@@ -191,13 +153,13 @@ wL3owFiCmLmw5R8OH22wqf/7sQFMRpH5IQFLRYdU9uCUy5FlUAgiCEXegph8ytxvo8MgYyQcCOeg
 BMfFgFEHuM2IgsDQyFC6XUViX6BQny67nlrO8pqwNRJ9Bdd7ykLCzCLOuR1znBAc2wAL9OKQe0cx
 ggJvMIICawIBATBtMF0xCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTMw
 MQYDVQQDEypHbG9iYWxTaWduIFBlcnNvbmFsU2lnbiAyIENBIC0gU0hBMjU2IC0gRzMCDCXgDAeB
-YW0HGKjSdzANBglghkgBZQMEAgEFAKCB1DAvBgkqhkiG9w0BCQQxIgQgKp1c0y0q/m3j1ML35+aF
-dy8tqA9SHqFZrD+odGJOIvgwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUx
-DxcNMjEwMTI2MTc0MDU5WjBpBgkqhkiG9w0BCQ8xXDBaMAsGCWCGSAFlAwQBKjALBglghkgBZQME
+YW0HGKjSdzANBglghkgBZQMEAgEFAKCB1DAvBgkqhkiG9w0BCQQxIgQgjioPU/qlKxIEIFYmdlbl
+bwriKCh/0jR2xNSYudhCGRkwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUx
+DxcNMjEwMTI2MTc1MjA4WjBpBgkqhkiG9w0BCQ8xXDBaMAsGCWCGSAFlAwQBKjALBglghkgBZQME
 ARYwCwYJYIZIAWUDBAECMAoGCCqGSIb3DQMHMAsGCSqGSIb3DQEBCjALBgkqhkiG9w0BAQcwCwYJ
-YIZIAWUDBAIBMA0GCSqGSIb3DQEBAQUABIIBAKIGvTR2gC2mzdh9J1BL0dbgDEaF0bXvbbiYhr73
-WiZdvyEcfwd6O3kzYJUhTKCj6hozcrP8vAN2PZPVyaere0Pv4GE6KSpvNysgN1a4X8zufRLKZXeN
-/v8gxZmjA8kypZURuo7sfw9Iv5/E54VF1foAwn/N7j/cMDvVUUHr/4PssHZMr1I0r8AEiqr1sW7s
-UYrQ+OnXMeP0sVfMQYL5LTRnt2QEOjwc0MVocUhivLEez7iEIaxVmiv6cp+Nv30fjxyKcqeUtLFf
-g3lFemVpHsLn9ckVrb5l/IxLMaJSUK1dapuBa274uu4EDxM9rOGzk1mzk41cXyL6z2GMTWq8kMs=
---0000000000004d654e05b9d12826--
+YIZIAWUDBAIBMA0GCSqGSIb3DQEBAQUABIIBAIlsSqGbTqKXjyZbmte2kqCZp3iahAuNMkjLZWVa
+qGOZPCVdjje/i6U6tIs/dILZeW+fm7yIWEse/m37mUZLHsmaLfZbprfA761nDsw+MzQ6mrFPLdad
+s7Wf/j9nOy0QxqJ1oI6Njdm//zpR0vFtwV3FXc4rqY1/uEprYPu7A9EUdRrs1MrwZN2BX1P8B6uM
+6k6uuFCXyxtMxXcDHKHGhfrY0+JvCxhp3vDzKCPuze1jaBUpu1LMRXi8nyWqbfvnIfBOwWROe/1k
+sIHCaQMxaraokeLbJM5/rITiQnJkG9WKny8YRa9XBaPfubCdIa/oVb26/evzoRN7NWogyMohTWs=
+--0000000000002f191205b9d15081--
