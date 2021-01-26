@@ -2,105 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 18F6B303871
-	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 09:57:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B4633038F7
+	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 10:27:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387875AbhAZI4V (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jan 2021 03:56:21 -0500
-Received: from mga07.intel.com ([134.134.136.100]:43131 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728161AbhAZIzn (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 26 Jan 2021 03:55:43 -0500
-IronPort-SDR: KKL/ZWufeUk/aISqYHmG5FDkdh3TApN0Fpde8RGFVvUxvqSGWeJg5nq1Csuexc1lDb2tzYFPuv
- ibUQrdI+7yZg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9875"; a="243950321"
-X-IronPort-AV: E=Sophos;i="5.79,375,1602572400"; 
-   d="scan'208";a="243950321"
-Received: from orsmga007.jf.intel.com ([10.7.209.58])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2021 00:54:53 -0800
-IronPort-SDR: HiSh2Eab8nbapDkJt/yoex7HLrUMn5c6fcYl8n6fDvfcicaBSFH5j4xuk/qLprrEo+P/BqLUc8
- LTbakaIISQ5Q==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.79,375,1602572400"; 
-   d="scan'208";a="393680509"
-Received: from glass.png.intel.com ([10.158.65.51])
-  by orsmga007.jf.intel.com with ESMTP; 26 Jan 2021 00:54:49 -0800
-From:   Wong Vee Khee <vee.khee.wong@intel.com>
-To:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Cc:     netdev@vger.kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Ong Boon Leong <boon.leong.ong@intel.com>,
-        Voon Wei Feng <weifeng.voon@intel.com>,
-        Wong Vee Khee <vee.khee.wong@intel.com>
-Subject: [PATCH net-next 1/1] stmmac: intel: Add ADL-S 1Gbps PCI IDs
-Date:   Tue, 26 Jan 2021 16:58:32 +0800
-Message-Id: <20210126085832.3814-1-vee.khee.wong@intel.com>
-X-Mailer: git-send-email 2.17.0
+        id S2389917AbhAZJZ6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jan 2021 04:25:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34988 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390921AbhAZJWX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jan 2021 04:22:23 -0500
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A52EC061573
+        for <netdev@vger.kernel.org>; Tue, 26 Jan 2021 01:21:42 -0800 (PST)
+Received: by mail-ej1-x62c.google.com with SMTP id by1so21990767ejc.0
+        for <netdev@vger.kernel.org>; Tue, 26 Jan 2021 01:21:42 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=blackwall-org.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=XdLi2k7bp5m2hq3pEkkJKOTLNg7Dpyy+GJx91gunEG8=;
+        b=RAQdfDKfGB5XehyNiAe7lCmK/wr+jWCKZgZCPxq8MlVuEH6vVEzbcnYBvKZhUbl4In
+         lLLXCtzwYSN3eleiegfCjn1mBDa0lqHdczqrKTlWJuLbW6HsEDvYvdsgPKmkfMJgE9CP
+         oCUz8WD7umQ7Bq+tM9jdH5bdFc/+ID2KeYOWQdfbJ+oWV+brDLytO5heWlM36JM0MYi1
+         1iCJhT4JpWLTgCwwBit2B9CXHiK7Tc9NFeLZ0KpStjry7XuzcZX6dmORHQRJSkl/sU1u
+         MjkSwARjz1LtZk0+AwfWaVyjv8dN6nlvgQ9FefSbUac1in9WkdfDDR2NlJkaLksjLAL3
+         l82w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=XdLi2k7bp5m2hq3pEkkJKOTLNg7Dpyy+GJx91gunEG8=;
+        b=fkD3flEjdPWaCWOGa0b70eVIz4wnpiS4ugb1ZJXETGVTIkbJjCP4OhzOUtT2txsso8
+         rNBmqy0W8moe6M2n4aeqpFP+RUCZIu/G9KAwAM9HF7Dqx8yJOAxKfc5uBz0aUf1fJOd1
+         Kjtp/ABLXN+Bg7eyfKYbHM+jawm+RfT1I3yJWyBSeSdXEm9f4t+tMiGdVX2xo7fRaD8e
+         1mZXlLu1C+jkVHC4zpP1zQwre6n46d+ra7Cuxn2AO0r0SbXGnB+5YA20WIWpMpmcUkDZ
+         +/8LwhRNrl4UeBTv7kEj12fSH+yJKL0x/mDh/S8cZ9INNyKAZj0dZDl+vgMYjA+KsbxQ
+         UxHA==
+X-Gm-Message-State: AOAM5337NVxGgqHpstuWPIBv9eIOJA6tBTW89qoFO5+yV4+T/R5Y5vIM
+        raGZXtJa4tRYddVuLTrxTRXPLIhOzLiCwsus3cs=
+X-Google-Smtp-Source: ABdhPJw/PzTYZ1qkLgDURIxHfYWD6i4N2xfrg2GJxNgol2HYKD5eRSyN+/37pEX2tAUv+yx+m5LsYQ==
+X-Received: by 2002:a17:906:c410:: with SMTP id u16mr2777136ejz.159.1611652900833;
+        Tue, 26 Jan 2021 01:21:40 -0800 (PST)
+Received: from debil.vdiclient.nvidia.com (84-238-136-197.ip.btc-net.bg. [84.238.136.197])
+        by smtp.gmail.com with ESMTPSA id u9sm1195274edv.32.2021.01.26.01.21.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Jan 2021 01:21:40 -0800 (PST)
+From:   Nikolay Aleksandrov <razor@blackwall.org>
+To:     netdev@vger.kernel.org
+Cc:     roopa@nvidia.com, bridge@lists.linux-foundation.org,
+        kuba@kernel.org, davem@davemloft.net,
+        Nikolay Aleksandrov <nikolay@nvidia.com>
+Subject: [PATCH net-next 0/2] net: bridge: multicast: per-port EHT hosts limit
+Date:   Tue, 26 Jan 2021 11:21:30 +0200
+Message-Id: <20210126092132.407355-1-razor@blackwall.org>
+X-Mailer: git-send-email 2.29.2
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: "Wong, Vee Khee" <vee.khee.wong@intel.com>
+From: Nikolay Aleksandrov <nikolay@nvidia.com>
 
-Added PCI IDs for both Ethernet TSN Controllers on the ADL-S.
+Hi,
+This set adds a simple configurable per-port EHT tracked hosts limit.
+Patch 01 adds a default limit of 512 tracked hosts per-port, since the EHT
+changes are still only in net-next that shouldn't be a problem. Then
+patch 02 adds the ability to configure and retrieve the hosts limit
+and to retrieve the current number of tracked hosts per port.
 
-Also, skip SerDes programming sequences as these are being carried out
-at the BIOS level for ADL-S.
+Thanks,
+ Nik
 
-Signed-off-by: Wong, Vee Khee <vee.khee.wong@intel.com>
----
- .../net/ethernet/stmicro/stmmac/dwmac-intel.c | 19 +++++++++++++++++++
- 1 file changed, 19 insertions(+)
+Nikolay Aleksandrov (2):
+  net: bridge: multicast: add per-port EHT hosts limit
+  net: bridge: multicast: make tracked EHT hosts limit configurable
 
-diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-index 9a6a519426a0..9c272a241136 100644
---- a/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-+++ b/drivers/net/ethernet/stmicro/stmmac/dwmac-intel.c
-@@ -457,6 +457,21 @@ static struct stmmac_pci_info tgl_sgmii1g_info = {
- 	.setup = tgl_sgmii_data,
- };
- 
-+static int adls_sgmii_data(struct pci_dev *pdev,
-+			   struct plat_stmmacenet_data *plat)
-+{
-+	plat->bus_id = 1;
-+	plat->phy_interface = PHY_INTERFACE_MODE_SGMII;
-+
-+	/* SerDes power up and power down are done in BIOS for ADL */
-+
-+	return tgl_common_data(pdev, plat);
-+}
-+
-+static struct stmmac_pci_info adls_sgmii1g_info = {
-+	.setup = adls_sgmii_data,
-+};
-+
- static const struct stmmac_pci_func_data galileo_stmmac_func_data[] = {
- 	{
- 		.func = 6,
-@@ -724,6 +739,8 @@ static SIMPLE_DEV_PM_OPS(intel_eth_pm_ops, intel_eth_pci_suspend,
- #define PCI_DEVICE_ID_INTEL_TGLH_SGMII1G_0_ID		0x43ac
- #define PCI_DEVICE_ID_INTEL_TGLH_SGMII1G_1_ID		0x43a2
- #define PCI_DEVICE_ID_INTEL_TGL_SGMII1G_ID		0xa0ac
-+#define PCI_DEVICE_ID_INTEL_ADLS_SGMII1G_0_ID		0x7aac
-+#define PCI_DEVICE_ID_INTEL_ADLS_SGMII1G_1_ID		0x7aad
- 
- static const struct pci_device_id intel_eth_pci_id_table[] = {
- 	{ PCI_DEVICE_DATA(INTEL, QUARK_ID, &quark_info) },
-@@ -739,6 +756,8 @@ static const struct pci_device_id intel_eth_pci_id_table[] = {
- 	{ PCI_DEVICE_DATA(INTEL, TGL_SGMII1G_ID, &tgl_sgmii1g_info) },
- 	{ PCI_DEVICE_DATA(INTEL, TGLH_SGMII1G_0_ID, &tgl_sgmii1g_info) },
- 	{ PCI_DEVICE_DATA(INTEL, TGLH_SGMII1G_1_ID, &tgl_sgmii1g_info) },
-+	{ PCI_DEVICE_DATA(INTEL, ADLS_SGMII1G_0_ID, &adls_sgmii1g_info) },
-+	{ PCI_DEVICE_DATA(INTEL, ADLS_SGMII1G_1_ID, &adls_sgmii1g_info) },
- 	{}
- };
- MODULE_DEVICE_TABLE(pci, intel_eth_pci_id_table);
+ include/uapi/linux/if_link.h      |  2 ++
+ net/bridge/br_multicast.c         | 16 ++++++++++++++++
+ net/bridge/br_multicast_eht.c     |  7 +++++++
+ net/bridge/br_netlink.c           | 19 ++++++++++++++++++-
+ net/bridge/br_private.h           |  2 ++
+ net/bridge/br_private_mcast_eht.h | 28 ++++++++++++++++++++++++++++
+ net/bridge/br_sysfs_if.c          | 26 ++++++++++++++++++++++++++
+ net/core/rtnetlink.c              |  2 +-
+ 8 files changed, 100 insertions(+), 2 deletions(-)
+
 -- 
-2.17.0
+2.29.2
 
