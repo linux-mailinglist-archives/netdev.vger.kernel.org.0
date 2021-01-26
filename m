@@ -2,62 +2,64 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5280D305C4B
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 13:59:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4C9C7305C06
+	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 13:49:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S313910AbhAZWtV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jan 2021 17:49:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59786 "EHLO
+        id S313231AbhAZWwM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jan 2021 17:52:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726840AbhAZEmr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 23:42:47 -0500
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82418C061573;
-        Mon, 25 Jan 2021 20:42:05 -0800 (PST)
-Received: by mail-ed1-x530.google.com with SMTP id g1so18222195edu.4;
-        Mon, 25 Jan 2021 20:42:05 -0800 (PST)
+        with ESMTP id S1726731AbhAZEn3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 23:43:29 -0500
+Received: from mail-ed1-x531.google.com (mail-ed1-x531.google.com [IPv6:2a00:1450:4864:20::531])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54863C06174A;
+        Mon, 25 Jan 2021 20:42:49 -0800 (PST)
+Received: by mail-ed1-x531.google.com with SMTP id d22so18229215edy.1;
+        Mon, 25 Jan 2021 20:42:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id;
-        bh=9yCUCO33bIUfmXmhlow4Pw9ekcWCVlpA1POTUtdkoJQ=;
-        b=Vgjwia0aLiZ3/CtqZFv8K2f6XV1GJQThvTBMDSFc9bU95gVe9HQD91Cwil+w2XqMez
-         40jDKtgFVBvozxmdC3kcaGVw988b54dtItr98o0MgopXE3bM/WR1W80vQcMKCeOd3n+1
-         9UCY20zQyW/FY9PTXlHKTXAHxAf7mbs+rNEdBmnkjAt0b4nR8+WoHj45EOM6+MoDiHOk
-         IwX4kxqAaM7Sq6/7JH0lXCodBO9lfVg3+6H3Ivzoc5mZST4yLiCOTXNdARxp8G0tHIDk
-         9CPWxN6bXqLUfUae0XY6Td1dW0WtTCcxyuJUks4N3Jcmt2jurh//LfqdIjxtaxOBCf4F
-         C08w==
+        bh=UZmB4BFw+sflHCAeBaRBA/VSc/ur1xYNqfwpdc90lDM=;
+        b=sXV/yt/4jGo3VtXjMxytykhCOpScx1znurTzF2Vmfy9KKYrq0joNRGOdX33wdOgvX+
+         484qkHmiL9w7dxqN2dvMXYsYetu1BnhT5dE2QsdKhF17h8M70uKxsXxEMPmjh+DkE1LH
+         t6WXxYshdXcWUbrg39ljl0nlcOcptlqKSZ6zxNCZgbgAXc+PabOTvHeHCy/c2mLcOMoD
+         +9b9LsJLxsWUwrVmX6/0R9MSklY/FN+dzOEDuj8yqlAVNpeXrSbYnEd6As1FX9OCrdtD
+         ygwGhIP4dnzL/IF0ZjvELPByPOZKfnP07mfDvgg/09adu0997hfZqlc3v/CYsS65UxoN
+         72Ww==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=9yCUCO33bIUfmXmhlow4Pw9ekcWCVlpA1POTUtdkoJQ=;
-        b=L49QTZ5KlD+BgJCxIoMdqfOETSOfAJXkFRS5Kdto3YkwHy8V9ksA7ojLGn8BMzZ5iM
-         99Pj/KPZKP9JqoHPTPG5KgqmOapkO/B+xGPoTOiP/BpdcofzUEHVPHwZX3LMje5cnls7
-         sABL56iff/8vTGdM99M/deA+DNgFxYR9AQHOi+nc0cxE5N3EvIJx7ygefO4Thrv7mMkr
-         NmwkkYJ2mive8/VaS3nQh8vgJi3dudC2BkDfR8rzqdXRyNQs2X0uurPpPnx6Ho4l9FaR
-         FJmH1mMVoR+mg+X+5hO96gi3xtxXF6VaVk2ueJGzFlfe9GS2cZdp3j9qbuFAcq39mhFX
-         4Eog==
-X-Gm-Message-State: AOAM530g1Zy4+FOEdzFfQEYkJcRCEYYgQ4FL/pCMxpmvjc5hZ93ADl7K
-        o5KW0681z3HcIb7IP2oFSc4=
-X-Google-Smtp-Source: ABdhPJyOiMNSeKHhuLR7mEnqMqYXU4mHZjaWnODVfht1KV0ZKZrlGYDM3x+MbGPeruUkRUSbo/pFcw==
-X-Received: by 2002:a50:852a:: with SMTP id 39mr3178231edr.114.1611636124170;
-        Mon, 25 Jan 2021 20:42:04 -0800 (PST)
+        bh=UZmB4BFw+sflHCAeBaRBA/VSc/ur1xYNqfwpdc90lDM=;
+        b=l38P0Z4gdoSH0gQ3F9Uve3nJ3LryaXEUVIhGC9jDEc71ruZoFmEtZSMgtEwqjXXOyE
+         vE0eoSvX3/zhp0DXKeA5S2dcdjMWvtCe4W1BtPiBNVOY194Z3ClX6F+PcL/Sk2NjJqn8
+         biyYj1THsDOD4XE5O37cDK9aScUuiUqtaE8/sQCXYfZ58i3Ukr2HvYafgXAMUhaKsH1G
+         MJsOdflQi5hjaJ5D6Ur9+Zwx9zt/ZyWRlXUpqYWxmqJjzs1GlkkODg8In2YiOXylsPp6
+         23yiDZ+kRec4K0gnPCcKc08WkL+qPBnjrvrm7EbfzyIgWYFX5klloMMcC/uI/6Fss680
+         EiLA==
+X-Gm-Message-State: AOAM531WRhhKabLevpFRGcVrFTMnBN1Oo+XJ99lv6n9P0nkmfdmgCqA6
+        QhGN9Rgs8McCYrD5OlDtkxs=
+X-Google-Smtp-Source: ABdhPJzkJ/n0/Agow9wwS3i1E4voHEbKYOPRQJTgYBWKeHCSK7nMfCBqbrdI8J5ghPVBCOgvmT0nJg==
+X-Received: by 2002:a50:9dc9:: with SMTP id l9mr3082809edk.377.1611636167962;
+        Mon, 25 Jan 2021 20:42:47 -0800 (PST)
 Received: from gci-Precision-M2800.fritz.box ([2a02:8109:8b00:c24:906e:aa4c:c963:8f7c])
-        by smtp.googlemail.com with ESMTPSA id l17sm2240882edr.75.2021.01.25.20.42.03
+        by smtp.googlemail.com with ESMTPSA id v20sm5136192edt.3.2021.01.25.20.42.47
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Jan 2021 20:42:03 -0800 (PST)
+        Mon, 25 Jan 2021 20:42:47 -0800 (PST)
 From:   Giacinto Cifelli <gciofono@gmail.com>
 To:     oliver@neukum.org, davem@davemloft.net, kuba@kernel.org,
         linux-usb@vger.kernel.org, netdev@vger.kernel.org
 Cc:     Giacinto Cifelli <gciofono@gmail.com>
-Subject: [PATCH] net: usb: qmi_wwan: added support for Thales Cinterion PLSx3 modem family
-Date:   Tue, 26 Jan 2021 05:41:55 +0100
-Message-Id: <20210126044155.8348-1-gciofono@gmail.com>
+Subject: [PATCH] net: usb: cdc_ether: added support for Thales Cinterion PLSx3 modem family.
+Date:   Tue, 26 Jan 2021 05:42:45 +0100
+Message-Id: <20210126044245.8455-1-gciofono@gmail.com>
 X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Bus 003 Device 009: ID 1e2d:006f
+lsusb -v for this device:
+
+Bus 003 Device 007: ID 1e2d:0069
 Device Descriptor:
   bLength                18
   bDescriptorType         1
@@ -67,19 +69,19 @@ Device Descriptor:
   bDeviceProtocol         1 Interface Association
   bMaxPacketSize0        64
   idVendor           0x1e2d
-  idProduct          0x006f
+  idProduct          0x0069
   bcdDevice            0.00
-  iManufacturer           3 Cinterion Wireless Modules
-  iProduct                2 PLSx3
-  iSerial                 4 fa3c1419
+  iManufacturer           4 Cinterion Wireless Modules
+  iProduct                3 PLSx3
+  iSerial                 5 fa3c1419
   bNumConfigurations      1
   Configuration Descriptor:
     bLength                 9
     bDescriptorType         2
-    wTotalLength          303
-    bNumInterfaces          9
+    wTotalLength          352
+    bNumInterfaces         10
     bConfigurationValue     1
-    iConfiguration          1 Cinterion Configuration
+    iConfiguration          2 Cinterion Configuration
     bmAttributes         0xe0
       Self Powered
       Remote Wakeup
@@ -372,16 +374,36 @@ Device Descriptor:
           Usage Type               Data
         wMaxPacketSize     0x0200  1x 512 bytes
         bInterval               0
+    Interface Association:
+      bLength                 8
+      bDescriptorType        11
+      bFirstInterface         8
+      bInterfaceCount         2
+      bFunctionClass          2 Communications
+      bFunctionSubClass       0
+      bFunctionProtocol       0
+      iFunction               0
     Interface Descriptor:
       bLength                 9
       bDescriptorType         4
       bInterfaceNumber        8
       bAlternateSetting       0
-      bNumEndpoints           3
-      bInterfaceClass       255 Vendor Specific Class
-      bInterfaceSubClass    255 Vendor Specific Subclass
-      bInterfaceProtocol    255 Vendor Specific Protocol
+      bNumEndpoints           1
+      bInterfaceClass         2 Communications
+      bInterfaceSubClass      6 Ethernet Networking
+      bInterfaceProtocol      0
       iInterface              0
+      CDC Header:
+        bcdCDC               1.10
+      CDC Ethernet:
+        iMacAddress                      1 00A0C6C14190
+        bmEthernetStatistics    0x00000000
+        wMaxSegmentSize              16384
+        wNumberMCFilters            0x0001
+        bNumberPowerFilters              0
+      CDC Union:
+        bMasterInterface        8
+        bSlaveInterface         9
       Endpoint Descriptor:
         bLength                 7
         bDescriptorType         5
@@ -392,6 +414,26 @@ Device Descriptor:
           Usage Type               Data
         wMaxPacketSize     0x0040  1x 64 bytes
         bInterval               5
+    Interface Descriptor:
+      bLength                 9
+      bDescriptorType         4
+      bInterfaceNumber        9
+      bAlternateSetting       0
+      bNumEndpoints           0
+      bInterfaceClass        10 CDC Data
+      bInterfaceSubClass      0 Unused
+      bInterfaceProtocol      0
+      iInterface              0
+    Interface Descriptor:
+      bLength                 9
+      bDescriptorType         4
+      bInterfaceNumber        9
+      bAlternateSetting       1
+      bNumEndpoints           2
+      bInterfaceClass        10 CDC Data
+      bInterfaceSubClass      0 Unused
+      bInterfaceProtocol      0
+      iInterface              0
       Endpoint Descriptor:
         bLength                 7
         bDescriptorType         5
@@ -426,22 +468,26 @@ Device Status:     0x0000
 
 Signed-off-by: Giacinto Cifelli <gciofono@gmail.com>
 ---
- drivers/net/usb/qmi_wwan.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/net/usb/cdc_ether.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
-index af19513a9f75..262d19439b34 100644
---- a/drivers/net/usb/qmi_wwan.c
-+++ b/drivers/net/usb/qmi_wwan.c
-@@ -1302,6 +1302,8 @@ static const struct usb_device_id products[] = {
- 	{QMI_FIXED_INTF(0x0b3c, 0xc00a, 6)},	/* Olivetti Olicard 160 */
- 	{QMI_FIXED_INTF(0x0b3c, 0xc00b, 4)},	/* Olivetti Olicard 500 */
- 	{QMI_FIXED_INTF(0x1e2d, 0x0060, 4)},	/* Cinterion PLxx */
-+	{QMI_FIXED_INTF(0x1e2d, 0x006f, 8)},	/* Cinterion PLS83/PLS63 */
-+	{QMI_QUIRK_SET_DTR(0x1e2d, 0x006f, 8)},
- 	{QMI_FIXED_INTF(0x1e2d, 0x0053, 4)},	/* Cinterion PHxx,PXxx */
- 	{QMI_FIXED_INTF(0x1e2d, 0x0063, 10)},	/* Cinterion ALASxx (1 RmNet) */
- 	{QMI_FIXED_INTF(0x1e2d, 0x0082, 4)},	/* Cinterion PHxx,PXxx (2 RmNet) */
+diff --git a/drivers/net/usb/cdc_ether.c b/drivers/net/usb/cdc_ether.c
+index 8c1d61c2cbac..3157184a6274 100644
+--- a/drivers/net/usb/cdc_ether.c
++++ b/drivers/net/usb/cdc_ether.c
+@@ -961,6 +961,12 @@ static const struct usb_device_id	products[] = {
+ 				      USB_CDC_SUBCLASS_ETHERNET,
+ 				      USB_CDC_PROTO_NONE),
+ 	.driver_info = (unsigned long)&wwan_info,
++}, {
++	/* Cinterion PLS83/PLS63 modem by GEMALTO/THALES */
++	USB_DEVICE_AND_INTERFACE_INFO(0x1e2d, 0x0069, USB_CLASS_COMM,
++				      USB_CDC_SUBCLASS_ETHERNET,
++				      USB_CDC_PROTO_NONE),
++	.driver_info = (unsigned long)&wwan_info,
+ }, {
+ 	USB_INTERFACE_INFO(USB_CLASS_COMM, USB_CDC_SUBCLASS_ETHERNET,
+ 			USB_CDC_PROTO_NONE),
 -- 
 2.17.1
 
