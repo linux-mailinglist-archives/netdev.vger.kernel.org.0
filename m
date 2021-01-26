@@ -2,87 +2,80 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5F7723040F0
-	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 15:53:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BBC0D3040B8
+	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 15:45:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391277AbhAZOw1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jan 2021 09:52:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38286 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390942AbhAZJiA (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jan 2021 04:38:00 -0500
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8581C06174A
-        for <netdev@vger.kernel.org>; Tue, 26 Jan 2021 01:37:09 -0800 (PST)
-Received: by mail-lf1-x134.google.com with SMTP id v67so21899288lfa.0
-        for <netdev@vger.kernel.org>; Tue, 26 Jan 2021 01:37:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=cloudflare.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=fc97bl9y/fOUWfcqC9Hh9udHha7efiEnc5d5nu4VkAU=;
-        b=vd1XuR3gcGy119h75Y1qjivJKBqfMQoxlVfdaFE8OOJ2A7JYfLrSDiKeDDulAHSNrA
-         MclXbRVXfHjAiw06826JQERooCqRYe5tGUyUBFnRcU+r4Fnp+nw+ZgwBLpDl9dzSETIN
-         bHIKEFQ9jPwYKMb17EdGRflrasDgMbTkVP248=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=fc97bl9y/fOUWfcqC9Hh9udHha7efiEnc5d5nu4VkAU=;
-        b=fPuVqpRMmAySW3hQEQ0HWSKhURyU2zEaNr/VjwQIvH5BUwn0D+RCTfdSyCRXhWyC00
-         n3z5Aa6//8UKPgsH3p9cpoJHrq9MoIQMfK6DATpcVWxcLsF3KjTGn+jFe+UJszW+ZDxA
-         MzX8PgyrX3fA0GW38nAUh/9Mrngp+fhXetUomJtYZUJ5J46tk+BP2GibdVIDZlwh25m6
-         31R1K7tQmUqSqoR5wQ0afXkwCVgNOSiIfbBHkIEQRaX5rR1duynoHHdweBeaUriZlCeq
-         BColrhEcJELr+HImoe9icBpmcCjVbQXKVEUk6S/+Yhl1+DVaFjORyQykijKahGaCINrJ
-         nIlA==
-X-Gm-Message-State: AOAM533/pYGFkKOInCng5sWHQPMG4D9+vfbmlKMziZYnCPWZSRuXbYJw
-        c33/rNEFbLSmtjgTyO9bZ6uUA7Z2DAspCci6z+YFvQ==
-X-Google-Smtp-Source: ABdhPJyCGPCvmzSWUJppoFAjsEUtCf8KWSJC0FJrI/QII7dvxqZrr5XBPR4F3kafupLvwui/f8oqxjIf8OmPtbBhies=
-X-Received: by 2002:a19:c56:: with SMTP id 83mr2467065lfm.325.1611653828443;
- Tue, 26 Jan 2021 01:37:08 -0800 (PST)
-MIME-Version: 1.0
-References: <20210126082606.3183-1-minhquangbui99@gmail.com>
-In-Reply-To: <20210126082606.3183-1-minhquangbui99@gmail.com>
-From:   Lorenz Bauer <lmb@cloudflare.com>
-Date:   Tue, 26 Jan 2021 09:36:57 +0000
-Message-ID: <CACAyw99bEYWJCSGqfLiJ9Jp5YE1ZsZSiJxb4RFUTwbofipf0dA@mail.gmail.com>
-Subject: Re: [PATCH] bpf: Fix integer overflow in argument calculation for bpf_map_area_alloc
-To:     Bui Quang Minh <minhquangbui99@gmail.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, hawk@kernel.org,
-        John Fastabend <john.fastabend@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        kpsingh@kernel.org, Jakub Sitnicki <jakub@cloudflare.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
+        id S2390255AbhAZOob (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jan 2021 09:44:31 -0500
+Received: from mx2.suse.de ([195.135.220.15]:47554 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1731103AbhAZJm6 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 26 Jan 2021 04:42:58 -0500
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.com; s=susede1;
+        t=1611654131; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
+         mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=mkHiLfHnIISE4hTYhT0zvaW5h6MozWBuiHpb4OaeraQ=;
+        b=PsUgLd2LQ/Rrp8BLXvX7CymNpx3bzG670Hk4xXHtoW7obtbUUBefTeCv+f+KmMgstZMcnA
+        B0QLmc0909tdwBZyvZsjHJM4Z6CGs5T9QSi5Ci6e3g1U/kIdO968y1stDlFid+/RG+NKCD
+        eBAsct3vGvXUBk5vh4+19aoIhD1ot1c=
+Received: from relay2.suse.de (unknown [195.135.221.27])
+        by mx2.suse.de (Postfix) with ESMTP id B463BAF7E;
+        Tue, 26 Jan 2021 09:42:11 +0000 (UTC)
+Message-ID: <3da2bd93f8da246d9032f4b07dff53a1b3648ccd.camel@suse.com>
+Subject: Re: [PATCHv2 1/3] usbnet: specify naming of
+ usbnet_set/get_link_ksettings
+From:   Oliver Neukum <oneukum@suse.com>
+To:     Andrew Lunn <andrew@lunn.ch>
+Cc:     hayeswang@realtek.com, grundler@chromium.org, davem@davemloft.net,
+        netdev@vger.kernel.org, linux-usb@vger.kernel.org,
+        Roland Dreier <roland@kernel.org>
+Date:   Tue, 26 Jan 2021 10:42:09 +0100
+In-Reply-To: <YAomCIEWCsquQODX@lunn.ch>
+References: <20210121125731.19425-1-oneukum@suse.com>
+         <20210121125731.19425-2-oneukum@suse.com> <YAomCIEWCsquQODX@lunn.ch>
 Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.34.4 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 26 Jan 2021 at 08:26, Bui Quang Minh <minhquangbui99@gmail.com> wrote:
->
-> In 32-bit architecture, the result of sizeof() is a 32-bit integer so
-> the expression becomes the multiplication between 2 32-bit integer which
-> can potentially leads to integer overflow. As a result,
-> bpf_map_area_alloc() allocates less memory than needed.
->
-> Fix this by casting 1 operand to u64.
+Am Freitag, den 22.01.2021, 02:10 +0100 schrieb Andrew Lunn:
+> On Thu, Jan 21, 2021 at 01:57:29PM +0100, Oliver Neukum wrote:
+> > The old generic functions assume that the devices includes
+> > an MDIO interface. This is true only for genuine ethernet.
+> > Devices with a higher level of abstraction or based on different
+> > technologies do not have it. So in preparation for
+> > supporting that, we rename the old functions to something specific.
+> > 
+> > v2: adjusted to recent changes
+> 
+> Hi Oliver
+> 
+> It  looks like my comment:
+> 
+> https://www.spinics.net/lists/netdev/msg711869.html
+> 
+> was ignored. Do you not like the name mii?
 
-Some quick thoughts:
-* Should this have a Fixes tag?
-* Seems like there are quite a few similar calls scattered around
-(cpumap, etc.). Did you audit these as well?
-* I'd prefer a calloc style version of bpf_map_area_alloc although
-that might conflict with Fixes tag.
+Hi,
 
-Lorenz
+sorry for not replying earlier.
 
--- 
-Lorenz Bauer  |  Systems Engineer
-6th Floor, County Hall/The Riverside Building, SE1 7PB, UK
+It was my understanding that on the hardware level of the
+networking devices we are using MII, but to control MII we
+use MDIO, don't we?
+So it seems to me that hardware could use MII but not
+MDIO, yet for this purpose we require MDIO. So could
+you please explain your reasoning about networking stuff?
 
-www.cloudflare.com
+I do not want to create false impressions in users.
+
+	Regards
+		Oliver
+
+
