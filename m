@@ -2,102 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E25A73034F6
-	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 06:32:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 06292303514
+	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 06:35:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726226AbhAZFbJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jan 2021 00:31:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46120 "EHLO
+        id S2387876AbhAZFew (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jan 2021 00:34:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51104 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731954AbhAZB1P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 20:27:15 -0500
-Received: from mail-yb1-xb33.google.com (mail-yb1-xb33.google.com [IPv6:2607:f8b0:4864:20::b33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8A26C0698D4;
-        Mon, 25 Jan 2021 17:26:26 -0800 (PST)
-Received: by mail-yb1-xb33.google.com with SMTP id e67so15203083ybc.12;
-        Mon, 25 Jan 2021 17:26:26 -0800 (PST)
+        with ESMTP id S1730747AbhAZBuH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 20:50:07 -0500
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BBF5C061225
+        for <netdev@vger.kernel.org>; Mon, 25 Jan 2021 17:38:30 -0800 (PST)
+Received: by mail-ed1-x52f.google.com with SMTP id z22so3184449edb.9
+        for <netdev@vger.kernel.org>; Mon, 25 Jan 2021 17:38:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=TJ1MOV1sLhRzD9dsnoNfW9onPTJTHyufrbfsglTYLYQ=;
-        b=EfJnubrvjHb/BqtUfrnZejoWcTf9CKQc0Og7bC1Qegt44CrVRVvWyCj+mpxY3JyQqk
-         fYPnLZcyGJqg1VImtwoi5KWF7G270cHWfxzfe9DvqrtYiUVaF2sQqydLA55F13TGwzWg
-         9CA4KjsskKyLY4SOtQY6jvr5dAF5thLrqC1xCilHbXryaud7WU1XZjpLqyxFpx/jLWRU
-         BgvVfLoZx0WL5Ca6z7K25AMl4G5MKzVOMuGMNJID0m/gC0slR2u6DMb4q4PpyG3ealyg
-         SGTNKV6tqkdv7OHJPB6fhpWzKmpJ5K35iqQUN8/EDdUPWvsCxiMSTabSSPc6Dg2kzgHJ
-         JC6Q==
+        bh=MsIlAIUrbRHFPp86Lpz6wYmDwGMXWfFOQRbCym/dO1s=;
+        b=RdCvAqWTwF7luiWxlR31fbMjnGU9zrj7hpsT6egvsvktpF2i7/oVUgKWwZeqZYV8kK
+         MMMqv45wJES83q8vR+Tk6gEsaHn3oqzBeA6WBmjbm/A73jGOSY2Sjm8b7pC9H8uDbq/P
+         mKHBPNfxMj2kwk7hBKN9Ez950HiBpKwIeZYqRZdcsP6m6nNt6/a2JpYD64QZ95Nn9RWI
+         kuRRbxWV0G4puaDwk94j8BcQfRe9VD8eon1Yn4JMK1QKNzX9uW3xht2XWgyrbb9yKCQy
+         KpGEcTi8E6cJ/AlvA1LCFqkYcT/40oGsJ/Gsf8MoR5BubVbJs5Cauc2JZ/78zfP4c3XC
+         9CwA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=TJ1MOV1sLhRzD9dsnoNfW9onPTJTHyufrbfsglTYLYQ=;
-        b=KSx1B8XM4FiEdzVRwpTqm5FiIifSUVDuV86w6n1JrGukAg+zcKsuC+3EiRFhyo1Z0C
-         2WicrjiPDo/QZ0rjy2BREOC/7lEQU4kmpgkFTWqccVz4kHloM4oSd2Gtq8Jv4PPSUCrl
-         7bUWpDSuyfSzAy44iFeM8ntEQ5GpkJ8LeMygmmwHgvIAr1GP8ENGWD9ph4cc7ZTo3HSa
-         2EJhyQlrBFWk519I1X/p9caVuFN6AXXw+zFtYlMFJZu7sE656t6JOx84aaUrpAwovqBI
-         wRHFTuunREcjXHytqzWUwqUPu5I93p0N3BRzXGy9yx13wQ4Dz2pKj+439qWlkJnaWLsE
-         jIrw==
-X-Gm-Message-State: AOAM530jc3CgNpP1bX6Lj/dTDLoIltBgchc85jS9oaOqSr+0ZHuoH0mF
-        JiU6v//IZuLmdBuXDdYBMtXrWO6WSv0xjWtYMew=
-X-Google-Smtp-Source: ABdhPJx04na/2x4JVJ5DEA6knJaGMhDp8y0R7IZqRkqqcdm2FlMlj1ZM8po33S7jTgUBspPx+yrOMQNV6cTrs6GkENY=
-X-Received: by 2002:a25:a183:: with SMTP id a3mr4771090ybi.459.1611624386074;
- Mon, 25 Jan 2021 17:26:26 -0800 (PST)
+        bh=MsIlAIUrbRHFPp86Lpz6wYmDwGMXWfFOQRbCym/dO1s=;
+        b=m/nv3rg5j9PsefEZeVyqhQXrf38AlJQdLhPRmZzXAD6t+RHJxJn/QhLBCVUGPtM8YQ
+         f7wjLTkkQSCOkoeAyvJx76P6xSDQiN66rhNYNnGdWgAWObaoeMexrQ3AHDUypZtC67PN
+         HSHVDvHT10RDzsBtqDJf1QY/IsDEEiP4UdKgbJBPxNa9xWGqGAj25Er7DtbmaxmHpzYN
+         wCdbvlaE7p/o2PlMMv622nMjYy7hQxuUamd1v4Cuc2ZGBHdmyAHzXZxhlyJ08uPSQELE
+         IAEsIte8IIzMYQaP9NAmG4PAYBDfJEoqAeO6t9yNiTHMJtDj8h2TE6/53nWM9PpjA2H7
+         lrSA==
+X-Gm-Message-State: AOAM532PrFO+BG/yGP5WM1ol0cSXx9pQA4HANqEJz5f9uP4l/3lKmpJN
+        oeiLsQqKg+msk+ZWyez/zhDtqS/QyJHK75UbPBdZd3c+
+X-Google-Smtp-Source: ABdhPJwyFxsEfSckN3uix9wch1ECiNRrpuo1Q8tcd4e+kxA1DuHy9cM0DO1iLaC/AOGjCJaEDLQMD3Lm70/9cZ3zOoI=
+X-Received: by 2002:a05:6402:149a:: with SMTP id e26mr2803815edv.254.1611625108885;
+ Mon, 25 Jan 2021 17:38:28 -0800 (PST)
 MIME-Version: 1.0
-References: <20210110070341.1380086-1-andrii@kernel.org> <161048280875.1131.14039972740532054006.git-patchwork-notify@kernel.org>
- <4f19b649-a837-48af-90d1-c4692580053d@www.fastmail.com>
-In-Reply-To: <4f19b649-a837-48af-90d1-c4692580053d@www.fastmail.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 25 Jan 2021 17:26:15 -0800
-Message-ID: <CAEf4BzY4LWhyHfd3OpvrM5DB7qieOemcxzp0GBtqWJTw56PMCg@mail.gmail.com>
-Subject: Re: [PATCH bpf 1/2] bpf: allow empty module BTFs
-To:     Christopher William Snowhill <chris@kode54.net>
-Cc:     patchwork-bot+netdevbpf@kernel.org,
-        Andrii Nakryiko <andrii@kernel.org>, bpf <bpf@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>,
-        Alexei Starovoitov <ast@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Kernel Team <kernel-team@fb.com>
+References: <1611558501-11022-1-git-send-email-michael.chan@broadcom.com>
+In-Reply-To: <1611558501-11022-1-git-send-email-michael.chan@broadcom.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Mon, 25 Jan 2021 20:37:52 -0500
+Message-ID: <CAF=yD-KFe+QAb5JkK1xYUTzjgL32cOWUEqsX3qJrbg3ky-ZPrQ@mail.gmail.com>
+Subject: Re: [PATCH net-next 00/15] bnxt_en: Error recovery improvements.
+To:     Michael Chan <michael.chan@broadcom.com>
+Cc:     David Miller <davem@davemloft.net>,
+        Network Development <netdev@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>, gospo@broadcom.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Sun, Jan 24, 2021 at 2:28 AM Christopher William Snowhill
-<chris@kode54.net> wrote:
+On Mon, Jan 25, 2021 at 3:36 AM Michael Chan <michael.chan@broadcom.com> wrote:
 >
-> When is this being applied to an actual kernel? 5.11 is still quite broken without these two patches. Unless you're not using a vfat EFI partition, I guess.
+> This series contains a number of improvements in the area of error
+> recovery.  Most error recovery scenarios are tightly coordinated with
+> the firmware.  A number of patches add retry logic to establish
+> connection with the firmware if there are indications that the
+> firmware is still alive and will likely transition back to the
+> normal state.  Some patches speed up the recovery process and make
+> it more reliable.  There are some cleanup patches as well.
 >
+> Edwin Peer (3):
+>   bnxt_en: handle CRASH_NO_MASTER during bnxt_open()
+>   bnxt_en: log firmware debug notifications
+>   bnxt_en: attempt to reinitialize after aborted reset
+>
+> Michael Chan (9):
+>   bnxt_en: Update firmware interface to 1.10.2.11.
+>   bnxt_en: Define macros for the various health register states.
+>   bnxt_en: Retry sending the first message to firmware if it is under
+>     reset.
+>   bnxt_en: Add bnxt_fw_reset_timeout() helper.
+>   bnxt_en: Add a new BNXT_STATE_NAPI_DISABLED flag to keep track of NAPI
+>     state.
+>   bnxt_en: Modify bnxt_disable_int_sync() to be called more than once.
+>   bnxt_en: Improve firmware fatal error shutdown sequence.
+>   bnxt_en: Consolidate firmware reset event logging.
+>   bnxt_en: Do not process completion entries after fatal condition
+>     detected.
+>
+> Vasundhara Volam (3):
+>   bnxt_en: Move reading VPD info after successful handshake with fw.
+>   bnxt_en: Add an upper bound for all firmware command timeouts.
+>   bnxt_en: Retry open if firmware is in reset.
+>
+>  drivers/net/ethernet/broadcom/bnxt/bnxt.c     | 228 ++++++++++++----
+>  drivers/net/ethernet/broadcom/bnxt/bnxt.h     |  22 ++
+>  .../net/ethernet/broadcom/bnxt/bnxt_devlink.c |   7 +-
+>  drivers/net/ethernet/broadcom/bnxt/bnxt_hsi.h | 249 ++++++++++++++----
+>  4 files changed, 393 insertions(+), 113 deletions(-)
 
-It's in v5.11-rc5.
+For netdrv:
 
-> On Tue, Jan 12, 2021, at 12:20 PM, patchwork-bot+netdevbpf@kernel.org wrote:
-> > Hello:
-> >
-> > This series was applied to bpf/bpf.git (refs/heads/master):
-> >
-> > On Sat, 9 Jan 2021 23:03:40 -0800 you wrote:
-> > > Some modules don't declare any new types and end up with an empty BTF,
-> > > containing only valid BTF header and no types or strings sections. This
-> > > currently causes BTF validation error. There is nothing wrong with such BTF,
-> > > so fix the issue by allowing module BTFs with no types or strings.
-> > >
-> > > Reported-by: Christopher William Snowhill <chris@kode54.net>
-> > > Fixes: 36e68442d1af ("bpf: Load and verify kernel module BTFs")
-> > > Signed-off-by: Andrii Nakryiko <andrii@kernel.org>
-> > >
-> > > [...]
-> >
-> > Here is the summary with links:
-> >   - [bpf,1/2] bpf: allow empty module BTFs
-> >     https://git.kernel.org/bpf/bpf/c/bcc5e6162d66
-> >   - [bpf,2/2] libbpf: allow loading empty BTFs
-> >     https://git.kernel.org/bpf/bpf/c/b8d52264df85
-> >
-> > You are awesome, thank you!
-> > --
-> > Deet-doot-dot, I am a bot.
-> > https://korg.docs.kernel.org/patchwork/pwbot.html
-> >
-> >
-> >
+Acked-by: Willem de Bruijn <willemb@google.com>
