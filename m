@@ -2,39 +2,40 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EC0863048D9
-	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 20:41:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B0493048CD
+	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 20:39:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388132AbhAZFj3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jan 2021 00:39:29 -0500
-Received: from mail.kernel.org ([198.145.29.99]:45730 "EHLO mail.kernel.org"
+        id S2388146AbhAZFja (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jan 2021 00:39:30 -0500
+Received: from mail.kernel.org ([198.145.29.99]:45890 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732114AbhAZDYT (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 25 Jan 2021 22:24:19 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id AD7B822583;
-        Tue, 26 Jan 2021 03:23:39 +0000 (UTC)
+        id S1732099AbhAZD2O (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 25 Jan 2021 22:28:14 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 76B8A2256F;
+        Tue, 26 Jan 2021 03:27:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611631419;
-        bh=WxM0D+6iES5SFbyYQlBl/+BIf+WzcsCilaXdZAepgF4=;
+        s=k20201202; t=1611631654;
+        bh=h90NenU3bBs6nTKkn9ChQTzjwguZxyJs58vaCJSQLNU=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=f5m+J9f8ltXFn58fzGIU1pyAwPbvN0GmMzWfA9IgJrDlnTq7VWGlRfHs4kjHnCpzv
-         HkveqGAzBXoLVhxT9i2ztTH2rrCCDmIWuu5r3pjKfCMufmNJk0P9YmBRZb8Fmyh0/6
-         lGogzBprVgI2a6luv+pgFbddKy4hhaSduOiDWLkhj1bGMxJ6+ipoSw0nwrtTQI5H+4
-         n87k8xBWwrnswUoB+VrCgADR0zKy3qOs1j0H4w15sG2WPJVz+v6/E0wFsu5UT6bmvf
-         vV2qisaimvHwKjzhMAs20BA3P1Mh3QpL3lHVw0kzy67Hzmvv7dDisS1kMTjbxcIUfz
-         yP1YfIL5kJbkQ==
-Date:   Mon, 25 Jan 2021 19:23:38 -0800
+        b=nhGDtX46VXV2foWEDNgtLYmlLT/xAvPnv6y+NuXkYh8VjwCZMv4mPwCCqUMDCZg/z
+         gLdW5lr7Djbb04Y+Sdvo9O4udfCmMEujxxgvx8u14lexfBq/htW0rHYJfrBtvXE5FB
+         9t5LQbAQGerlD9pPXmbUphG8g+UKX2I41dgsxydRsuQHQEwfKkFk7tNOa911aYSuof
+         TA+jNhWSDn7Hr1MdaKGX6E1DA768akqe+3yHEJLRKiMt3mP4pB7TpX+KabKF6m0sD+
+         PAuzQNJanWbwSVyG3/IZFiLv9224en9dPxUPs8HYlvFfMB9PMNhtWHPClvZtv81qtA
+         BU281FaAs3HWg==
+Date:   Mon, 25 Jan 2021 19:27:33 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Michael Chan <michael.chan@broadcom.com>,
-        David Miller <davem@davemloft.net>,
-        Network Development <netdev@vger.kernel.org>,
-        gospo@broadcom.com
-Subject: Re: [PATCH net-next 00/15] bnxt_en: Error recovery improvements.
-Message-ID: <20210125192338.526932e6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <CAF=yD-KFe+QAb5JkK1xYUTzjgL32cOWUEqsX3qJrbg3ky-ZPrQ@mail.gmail.com>
-References: <1611558501-11022-1-git-send-email-michael.chan@broadcom.com>
-        <CAF=yD-KFe+QAb5JkK1xYUTzjgL32cOWUEqsX3qJrbg3ky-ZPrQ@mail.gmail.com>
+To:     Alex Elder <elder@linaro.org>
+Cc:     davem@davemloft.net, elder@kernel.org, evgreen@chromium.org,
+        bjorn.andersson@linaro.org, cpratapa@codeaurora.org,
+        subashab@codeaurora.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next 3/6] net: ipa: drop packet if status has valid
+ tag
+Message-ID: <20210125192733.38ff2ac5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210125212947.17097-4-elder@linaro.org>
+References: <20210125212947.17097-1-elder@linaro.org>
+        <20210125212947.17097-4-elder@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -42,18 +43,28 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 25 Jan 2021 20:37:52 -0500 Willem de Bruijn wrote:
-> On Mon, Jan 25, 2021 at 3:36 AM Michael Chan <michael.chan@broadcom.com> wrote:
-> > This series contains a number of improvements in the area of error
-> > recovery.  Most error recovery scenarios are tightly coordinated with
-> > the firmware.  A number of patches add retry logic to establish
-> > connection with the firmware if there are indications that the
-> > firmware is still alive and will likely transition back to the
-> > normal state.  Some patches speed up the recovery process and make
-> > it more reliable.  There are some cleanup patches as well.
->
-> Acked-by: Willem de Bruijn <willemb@google.com>
+On Mon, 25 Jan 2021 15:29:44 -0600 Alex Elder wrote:
+> Introduce ipa_endpoint_status_tag(), which returns true if received
+> status indicates its tag field is valid.  The endpoint parameter is
+> not yet used.
+> 
+> Call this from ipa_status_drop_packet(), and drop the packet if the
+> status indicates the tag was valid.  Pass the endpoint pointer to
+> ipa_status_drop_packet(), and rename it ipa_endpoint_status_drop().
+> The endpoint will be used in the next patch.
+> 
+> Signed-off-by: Alex Elder <elder@linaro.org>
 
-Thanks! 
+> @@ -1172,11 +1175,22 @@ static bool ipa_endpoint_status_skip(struct ipa_endpoint *endpoint,
+>  	return false;	/* Don't skip this packet, process it */
+>  }
+>  
+> +static bool ipa_endpoint_status_tag(struct ipa_endpoint *endpoint,
+> +				    const struct ipa_status *status)
+> +{
+> +	return !!(status->mask & IPA_STATUS_MASK_TAG_VALID_FMASK);
 
-Applied.
+drivers/net/ipa/ipa_endpoint.c:1181:25: warning: restricted __le16 degrades to integer
+
+> +}
+> +
