@@ -2,132 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 60BAE303D7C
-	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 13:46:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BABB9303D80
+	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 13:46:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391612AbhAZMp0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jan 2021 07:45:26 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:25031 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1731323AbhAZKBe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jan 2021 05:01:34 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1611655205;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=kElVC+jkHLstLVhvoAPiIFDGEp54B3rvncUWM43dOQw=;
-        b=DdR/2vq2nEet8tbYkQNIlMz5/Huhmk2JXM5+1LGNEvf2u0nbq50PsdjBSFhVDv6FgzlfpZ
-        prgSlB6YGV53fAQIvenmKaHXAki/EuchZefgt+beGPuKhx4LYjQKIVk7/VbXAtFW0qDijU
-        pGlSq2O5xyukpq/FgouyDyNpnoVxUhQ=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-140-kXrSMgh9PS6y4-sMWhagKQ-1; Tue, 26 Jan 2021 03:17:43 -0500
-X-MC-Unique: kXrSMgh9PS6y4-sMWhagKQ-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 07CAD107ACF6;
-        Tue, 26 Jan 2021 08:17:41 +0000 (UTC)
-Received: from [10.72.12.70] (ovpn-12-70.pek2.redhat.com [10.72.12.70])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id E668E1A839;
-        Tue, 26 Jan 2021 08:17:29 +0000 (UTC)
-Subject: Re: [RFC v3 11/11] vduse: Introduce a workqueue for irq injection
-To:     Xie Yongji <xieyongji@bytedance.com>, mst@redhat.com,
-        stefanha@redhat.com, sgarzare@redhat.com, parav@nvidia.com,
-        bob.liu@oracle.com, hch@infradead.org, rdunlap@infradead.org,
-        willy@infradead.org, viro@zeniv.linux.org.uk, axboe@kernel.dk,
-        bcrl@kvack.org, corbet@lwn.net
-Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org, linux-aio@kvack.org,
-        linux-fsdevel@vger.kernel.org
-References: <20210119045920.447-1-xieyongji@bytedance.com>
- <20210119050756.600-1-xieyongji@bytedance.com>
- <20210119050756.600-5-xieyongji@bytedance.com>
-From:   Jason Wang <jasowang@redhat.com>
-Message-ID: <9cacd59d-1063-7a1f-9831-8728eb1d1c15@redhat.com>
-Date:   Tue, 26 Jan 2021 16:17:28 +0800
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S2403775AbhAZMp7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jan 2021 07:45:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43878 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2391647AbhAZKDk (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jan 2021 05:03:40 -0500
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14372C06174A
+        for <netdev@vger.kernel.org>; Tue, 26 Jan 2021 02:03:00 -0800 (PST)
+Received: by mail-ed1-x52f.google.com with SMTP id c2so18727568edr.11
+        for <netdev@vger.kernel.org>; Tue, 26 Jan 2021 02:03:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=r0PEk1uUKM5Q9q/+MGqHGgCH1yxOpiIv91u8qq+76tw=;
+        b=Nx5rzbRRJmiojIU5lVxNWI69CKbFX2mVcLTlMH5MAJetlFeEHzpbTtVmkDUNhT06Pm
+         o5xMpAy24oHNFS6kgdrRKDehMcNLir3XYyoeTSnY6NvjIh4/+NZGYfED1eIBEC4St8C8
+         SndGD3Suj+1BvWGTpjBHG+IY9TtzTrJAvAeCjErfYhDExG2iVX6sP7gqpNVxiOBEKZI2
+         zi11aLgNSYep2Qz8v9wNrn8X6gqc0bMLDds38yzuJPrHBZYZ3Q94rA2+sVRHWOamIiWh
+         QHp2+HZku5KfsOu5osLckvKXPnitWVLE02vzXWJb9jtxwT71FIOxcTHGUhaUr+KvE5Cm
+         VyiQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=r0PEk1uUKM5Q9q/+MGqHGgCH1yxOpiIv91u8qq+76tw=;
+        b=PD3R9W8GpTVgB/lLE2jr+hHe/MtOOr90OQPVGJxQ8r9QKNe9GsSXzz2gSRI2QYt6wG
+         6W+wWA48c9N90XsfDvTFgW9RzrDb68YxRpI+bnRshcpztzUAFOevHafThBkSKM34a2by
+         NaNqeT3t8A2YN8DEGBE5t9a9t4A3PsDLADAV2VRBnEwNMMlFTRP+9G/NAuyZsteTa4LS
+         E4zdBuuCgX9scaLKQ74qUaas9kbu1WZcMltND/1pFyOx7AeVDKyVXsHD1M+A1TBrTmAI
+         SRzeWDyuLyMOfJRDqw+AaGbJbXQW1TXyTRe7M/owKsJ3KpOv83UFHZRrslhVJGRILZNh
+         QcUA==
+X-Gm-Message-State: AOAM533nbNivNN6+jJ0wVDP5Y+GQgd0U2AgP99hei/JOldfA1SqaqQmB
+        0yLBtf8vUXZ4Xn5Ak+QOyj68hA==
+X-Google-Smtp-Source: ABdhPJwvMoBWgevYlTDP7GMOl+FiuvLn3103n++BnlpWARsldzAvMdl331aoaTpkyTm9/yF54NB+AQ==
+X-Received: by 2002:a05:6402:306a:: with SMTP id bs10mr3950881edb.209.1611655378812;
+        Tue, 26 Jan 2021 02:02:58 -0800 (PST)
+Received: from localhost ([86.61.181.4])
+        by smtp.gmail.com with ESMTPSA id v25sm9596974ejw.21.2021.01.26.02.02.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Jan 2021 02:02:58 -0800 (PST)
+Date:   Tue, 26 Jan 2021 11:02:57 +0100
+From:   Jiri Pirko <jiri@resnulli.us>
+To:     Ivan Vecera <ivecera@redhat.com>
+Cc:     netdev@vger.kernel.org, "David S . Miller" <davem@davemloft.net>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Saeed Mahameed <saeed@kernel.org>
+Subject: Re: [PATCH net] team: protect features update by RCU to avoid
+ deadlock
+Message-ID: <20210126100257.GN3565223@nanopsycho.orion>
+References: <20210125074416.4056484-1-ivecera@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <20210119050756.600-5-xieyongji@bytedance.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210125074416.4056484-1-ivecera@redhat.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-
-On 2021/1/19 下午1:07, Xie Yongji wrote:
-> This patch introduces a dedicated workqueue for irq injection
-> so that we are able to do some performance tuning for it.
+Mon, Jan 25, 2021 at 08:44:16AM CET, ivecera@redhat.com wrote:
+>Function __team_compute_features() is protected by team->lock
+>mutex when it is called from team_compute_features() used when
+>features of an underlying device is changed. This causes
+>a deadlock when NETDEV_FEAT_CHANGE notifier for underlying device
+>is fired due to change propagated from team driver (e.g. MTU
+>change). It's because callbacks like team_change_mtu() or
+>team_vlan_rx_{add,del}_vid() protect their port list traversal
+>by team->lock mutex.
 >
-> Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
-
-
-If we want the split like this.
-
-It might be better to:
-
-1) implement a simple irq injection on the ioctl context in patch 8
-2) add the dedicated workqueue injection in this patch
-
-Since my understanding is that
-
-1) the function looks more isolated for readers
-2) the difference between sysctl vs workqueue should be more obvious 
-than system wq vs dedicated wq
-3) a chance to describe why workqueue is needed in the commit log in 
-this patch
-
-Thanks
-
-
-> ---
->   drivers/vdpa/vdpa_user/eventfd.c | 10 +++++++++-
->   1 file changed, 9 insertions(+), 1 deletion(-)
+>Example (r8169 case where this driver disables TSO for certain MTU
+>values):
+>...
+>[ 6391.348202]  __mutex_lock.isra.6+0x2d0/0x4a0
+>[ 6391.358602]  team_device_event+0x9d/0x160 [team]
+>[ 6391.363756]  notifier_call_chain+0x47/0x70
+>[ 6391.368329]  netdev_update_features+0x56/0x60
+>[ 6391.373207]  rtl8169_change_mtu+0x14/0x50 [r8169]
+>[ 6391.378457]  dev_set_mtu_ext+0xe1/0x1d0
+>[ 6391.387022]  dev_set_mtu+0x52/0x90
+>[ 6391.390820]  team_change_mtu+0x64/0xf0 [team]
+>[ 6391.395683]  dev_set_mtu_ext+0xe1/0x1d0
+>[ 6391.399963]  do_setlink+0x231/0xf50
+>...
 >
-> diff --git a/drivers/vdpa/vdpa_user/eventfd.c b/drivers/vdpa/vdpa_user/eventfd.c
-> index dbffddb08908..caf7d8d68ac0 100644
-> --- a/drivers/vdpa/vdpa_user/eventfd.c
-> +++ b/drivers/vdpa/vdpa_user/eventfd.c
-> @@ -18,6 +18,7 @@
->   #include "eventfd.h"
->   
->   static struct workqueue_struct *vduse_irqfd_cleanup_wq;
-> +static struct workqueue_struct *vduse_irq_wq;
->   
->   static void vduse_virqfd_shutdown(struct work_struct *work)
->   {
-> @@ -57,7 +58,7 @@ static int vduse_virqfd_wakeup(wait_queue_entry_t *wait, unsigned int mode,
->   	__poll_t flags = key_to_poll(key);
->   
->   	if (flags & EPOLLIN)
-> -		schedule_work(&virqfd->inject);
-> +		queue_work(vduse_irq_wq, &virqfd->inject);
->   
->   	if (flags & EPOLLHUP) {
->   		spin_lock(&vq->irq_lock);
-> @@ -165,11 +166,18 @@ int vduse_virqfd_init(void)
->   	if (!vduse_irqfd_cleanup_wq)
->   		return -ENOMEM;
->   
-> +	vduse_irq_wq = alloc_workqueue("vduse-irq", WQ_SYSFS | WQ_UNBOUND, 0);
-> +	if (!vduse_irq_wq) {
-> +		destroy_workqueue(vduse_irqfd_cleanup_wq);
-> +		return -ENOMEM;
-> +	}
-> +
->   	return 0;
->   }
->   
->   void vduse_virqfd_exit(void)
->   {
-> +	destroy_workqueue(vduse_irq_wq);
->   	destroy_workqueue(vduse_irqfd_cleanup_wq);
->   }
->   
+>In fact team_compute_features() called from team_device_event()
+>does not need to be protected by team->lock mutex and rcu_read_lock()
+>is sufficient there for port list traversal.
+>
+>Fixes: 3d249d4ca7d0 ("net: introduce ethernet teaming device")
+>Cc: Jiri Pirko <jiri@resnulli.us>
+>Cc: David S. Miller <davem@davemloft.net>
+>Cc: Cong Wang <xiyou.wangcong@gmail.com>
+>Cc: Jakub Kicinski <kuba@kernel.org>
+>Cc: Saeed Mahameed <saeed@kernel.org>
+>Signed-off-by: Ivan Vecera <ivecera@redhat.com>
 
+Reviewed-by: Jiri Pirko <jiri@nvidia.com>
