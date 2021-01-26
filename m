@@ -2,154 +2,207 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 9A6AC3048FE
-	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 20:47:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7BD0430494F
+	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 20:56:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387894AbhAZFey (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jan 2021 00:34:54 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51102 "EHLO
+        id S2387769AbhAZFd3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jan 2021 00:33:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46520 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730831AbhAZBuH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 20:50:07 -0500
-Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 858DEC061351;
-        Mon, 25 Jan 2021 16:32:32 -0800 (PST)
-Received: by mail-yb1-xb32.google.com with SMTP id x78so15090274ybe.11;
-        Mon, 25 Jan 2021 16:32:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=FL9eji8IEU4GjraOBf+9ed4vg2HJTGgpMF/wdNIdtuU=;
-        b=TEw3S7qjGpwdYpgjgpRdTMZF7C7r4YVMZMyZFnbBCpNfoh3WmnCrepMGKdaOJa6xVz
-         qSyDhJ8znP/2CQ/pDrihjmMQVhlzOuyQuzhw/iBjzTkazDia0w9bQYH5Q9sC5omwiUsQ
-         ciJTVYv0qPkAouh90csi/29BkTyXfF0zmEmPFsyGv/YCjvolv0QoMQR6uoni4vuX2ZfB
-         E8qkn6ZdlPOfqNYztDMgpbTzbg5VsMBJeT0uND3YGMaOsI95nU/drZWQlePr12+oDjnp
-         2tJY8wsGmW8Ss/SVtZrGaz4YQQYc32ehOGKF0kl1qo+hF9hgQz4J7KnQz+M63f9iHhDw
-         z9vA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=FL9eji8IEU4GjraOBf+9ed4vg2HJTGgpMF/wdNIdtuU=;
-        b=jsMSlBkJgXK1cVMEOVR46UbRanUJJG+OzX0NIckkWqxVZCn0V37CN+rNsngY+NHQVQ
-         p4DLIyZa8uJACyE1j4rK89rY3pRjSQEuxrQ5llIeeC7VfN5TaKbNTzM7Gyynlhzk+nfj
-         YXHRg57AK7OMGTxGh3Dk2dr1a+0yfR3QGmnWk4qfwNu58IcqgYGUZrwre8x7936dU+sb
-         8DxL5q06CBndB4K2zHMXCNRwTQOCG+6G5S/uTEMxXeA3mzGdBlYoyPRPW2dWV8dRp7oI
-         fuAE/RBOtlYB5RKGjiMfz3Gsplmxbq9RnTFiIxRMI8cFvcU+0Rp3SQ8qOmCXwrYUtz2v
-         hLbg==
-X-Gm-Message-State: AOAM530SAoy9aUvS71HWlk/fF/yhlNICbyvG4HjO7RksFUJ5Ae0cY1p0
-        7MBf3sKZha6AQFoKhq3gCwysgPxszqwXK2fvXbU=
-X-Google-Smtp-Source: ABdhPJxzxbb1IlWqyhxs9Q6vVoNuZJIX81co+Gh8/YTs8nSKoZF2AtTSunXSnwFyu/S0y9RexUnifVJe9PZsml5oP6E=
-X-Received: by 2002:a25:b195:: with SMTP id h21mr4544979ybj.347.1611621151736;
- Mon, 25 Jan 2021 16:32:31 -0800 (PST)
+        with ESMTP id S1731933AbhAZBdm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 20:33:42 -0500
+Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-he1eur04on0610.outbound.protection.outlook.com [IPv6:2a01:111:f400:fe0d::610])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60C92C0698CA
+        for <netdev@vger.kernel.org>; Mon, 25 Jan 2021 17:20:40 -0800 (PST)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=oQmktDMLRdqgNvnPnlcNkFHj8+lii0+JEJcgewduk19YDtVil5N7aQ9sSB3iBvy//YoF1/0ccSVYVYq5/TXeEMC1HaFON7CmOn1wRWQ3N9wjOGUhgKNuOMD52ud+05bNiXU98FmdIGSdy/ipMOkqq3FqaZ6G2IxBDnKiRV1XXdVxpbv4lIffzTMMsowOtvyvPDm59/5cRwTLp0oOtTOcpoktbqeSt1W1g8B+akt4QHhiyZD6lgK8hTgy04rfZvBo0HDgZ7//trPPXMTB/2D5EhToeOgVry/Pv3msg6wh+mzoabJWcFABUn4EbTylOcxr3TX8VMlPZyn8YTd+yBbu0A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=tKoWuGnyQYkgIDlOnX6Yfrphna/H9FLkvulXMNmhYw4=;
+ b=nU3afB0vBrGCVN2LhiV4IKMA8OIrtLjJikytZekUfEEaJnG6IMa/VM7GOSjxPZPuY2h4OV27wKFEpNLSffH4yDHYyyQU2N865Qg0bkK5zifL3ppAvdQoY/vQ1dmdjlAgKTEaZxJ+7VcRDZqB8FxAWSw5GkrD8t0Fpjury0Ozm/7IXrdybjpzq5TZBlyWUsKjfcc1hmvfuSj+925uIcrcQKW12W9PK07xrOj1xkFIev04/x/C9d+U+4veaEejeqfwdgAeFFE17wi+gqnhdvF2KfQ8ZT1CB69ak2y4lEpxiyXvMPeDR/MAjLyeeT0L9/QSnTi9pmzgkIO6aAJCMk8Auw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=tKoWuGnyQYkgIDlOnX6Yfrphna/H9FLkvulXMNmhYw4=;
+ b=NWOoiwsk/XsK85zZtuJsfmz8afLuCaA7xGzRjEhn3SfYzjLjfrIyMu05XixLvOXqaAXnCXmBG04N4aVdyVnEe0heRqxf+sJuhGEvRNUE4/v/ggqm+EC1sxAz2dQEHu5RirR//R1lQtFuPVwvryikV2+ZlbiHhin4Hxilu6cqwbw=
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by VI1PR0402MB3616.eurprd04.prod.outlook.com (2603:10a6:803:8::13) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3784.15; Tue, 26 Jan
+ 2021 00:32:44 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::3df3:2eba:51bb:58d7]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::3df3:2eba:51bb:58d7%6]) with mapi id 15.20.3784.012; Tue, 26 Jan 2021
+ 00:32:44 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "jhs@mojatatu.com" <jhs@mojatatu.com>,
+        "xiyou.wangcong@gmail.com" <xiyou.wangcong@gmail.com>,
+        "jiri@resnulli.us" <jiri@resnulli.us>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "Jose.Abreu@synopsys.com" <Jose.Abreu@synopsys.com>,
+        Po Liu <po.liu@nxp.com>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "anthony.l.nguyen@intel.com" <anthony.l.nguyen@intel.com>,
+        "mkubecek@suse.cz" <mkubecek@suse.cz>
+Subject: Re: [PATCH net-next v3 6/8] igc: Add support for tuning frame
+ preemption via ethtool
+Thread-Topic: [PATCH net-next v3 6/8] igc: Add support for tuning frame
+ preemption via ethtool
+Thread-Index: AQHW8RBJWWRwM35MG0uYfKaT0XnEyqo5E2SA
+Date:   Tue, 26 Jan 2021 00:32:44 +0000
+Message-ID: <20210126003243.x3c44pmxmieqsa6e@skbuf>
+References: <20210122224453.4161729-1-vinicius.gomes@intel.com>
+ <20210122224453.4161729-7-vinicius.gomes@intel.com>
+In-Reply-To: <20210122224453.4161729-7-vinicius.gomes@intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: intel.com; dkim=none (message not signed)
+ header.d=none;intel.com; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [5.12.227.87]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 0aa56d87-19f1-4343-1720-08d8c191e5f3
+x-ms-traffictypediagnostic: VI1PR0402MB3616:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1PR0402MB3616DBF8522E04827B1E4DADE0BC0@VI1PR0402MB3616.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: rfjeYcTw+a8ch2upcID0vbq8HN9XUmfVKcSNibUpK1AlTwkijrDe8jSr4Nd9DeCwbVWMQwGKp7Cxq18cE02a1JIJhqlNArvYZdMWaedn6R36nKzr+pq1wCUQDgxZSBLlCIWe5rngf7jjPoeNRUwe3jM2M+CoEcG3klp5ykA7ekJWAU+up+4D03RDq72cWpGWBNOyJE/tGzGMrt8/sHTbvqCo1bS7u3GPNK8auatPwq/ftK4qSyAWmkscM9vcriZyCHPTmJkLe8RVePv2JHF2aouPMfBJ5R3zATOPWZ0OYxUInLP/H3Pa2B/3DpSUR2OUbWgDdPCZrEsSrDECwV4f8iZ2TVaYnl7gfLK2dV1fA1IB2f51exSd9bgWvcxdbX4f5XP8sEsh8aTgEqOG+Sd1VQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(7916004)(376002)(366004)(396003)(136003)(346002)(39860400002)(4326008)(6916009)(91956017)(33716001)(6486002)(7416002)(76116006)(71200400001)(1076003)(66946007)(6512007)(8936002)(9686003)(66446008)(66476007)(86362001)(83380400001)(316002)(5660300002)(8676002)(66556008)(186003)(478600001)(54906003)(64756008)(6506007)(2906002)(44832011)(26005);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?AoQePBH3dUXe1cB8WO56hxxCCX4kpKXr8OejMylKHPJ70+l6r6Dy38Ws4CTG?=
+ =?us-ascii?Q?/VNtC/IV/AuhhKjstVrA5qEcOY2sgJPffkmCcq4cmQTer5AwoZL2aAV7wvju?=
+ =?us-ascii?Q?FWNvAijVadr490uj1cjET07chGFARZfYOMYskU/mlrppZ+WbwcVIv2D11Blc?=
+ =?us-ascii?Q?EdMnJ/nrlmdtEz4oVYjVw7mHFOy2bqzTdPHixBf9BQCVFWZX8pFcG3Or7MZi?=
+ =?us-ascii?Q?n7eTWX9cMswdqkJwTWtXy3ei60KpPUGa3sI8uO6B4OCIHIfNg5ATE497pI5r?=
+ =?us-ascii?Q?zTLFBHTl8QD8+7msEYQ6eqyNI+9vZgVJDWGcD4Rtw6G1HVJIQADKpt/p7kRn?=
+ =?us-ascii?Q?tsisCS0qHCeV7Zo7NwJZ3nQICtZ6J2ez8irVBtjCoeJ+75rlQZZqzXkUTtcM?=
+ =?us-ascii?Q?vpAllCrmfckPp6jQZQhILymVrTVuJiN4cqep2ODwmIkmOEz0Rppod5kSrkbS?=
+ =?us-ascii?Q?67XCwBofP6PzglnexzrSX3bJ7YYMjWdtlNof0d5o6/GDRmLVu+lyOXpqqj5g?=
+ =?us-ascii?Q?73H7wFSdxz5MMiVHSg6OnLEvFjNhyte7kegdVoZnMTE/5UK0TqFkdEIxz5d4?=
+ =?us-ascii?Q?IlOC7VbWTfX0cxWMGtBD9Fqm5kYsr9D4LlGhTG+tECWL4HGR4DopcHnajcdP?=
+ =?us-ascii?Q?2whbFACZnAL9bPaMQZByrOuJsgyNv4k7/qkba7imWQWJ25VBNlGSXIMBYxF2?=
+ =?us-ascii?Q?ENJnxRTHyp4+z+n8G3igtgWhl+nDdF3MTh6CAMcNCVf2fmb/K9by5YupoIz5?=
+ =?us-ascii?Q?aPUeH35ewoa4QR0WwCMADSvoxIJFI9S3olze2DbWeTLRnsnWGSSYpjeceolS?=
+ =?us-ascii?Q?9nOkHEzE9xQEml/PQMS0t7blr6MoQkjIHnJLG/DkZoCeU6QyWVZwkaxaEhlK?=
+ =?us-ascii?Q?GTIMVE5FfQuA7TTjJwfiGIGkS3N1DzwaD5pED3Z8YjfDpVRZ4q3WHtRVpy8X?=
+ =?us-ascii?Q?OgI1nn5zFNbQ1T+gZ4gbSzCXXYLzP951Jt6JCnqYTe15bZo0zGgxmYqsLkgi?=
+ =?us-ascii?Q?TaXdldlsFZX/E6NqgTe1nBiwHm2KcUaYPX+pmGAgmcq1GTW8BNr9Gw5HtdA2?=
+ =?us-ascii?Q?CWhSrd6Q?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <049A3FC0022CD94EB1606346C797E095@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <20210125154938.40504-1-quentin@isovalent.com>
-In-Reply-To: <20210125154938.40504-1-quentin@isovalent.com>
-From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
-Date:   Mon, 25 Jan 2021 16:32:21 -0800
-Message-ID: <CAEf4BzYKrmMM_9SRKyGA0LNv-DvThpr9cQsNLVtn5h0jEUYtWg@mail.gmail.com>
-Subject: Re: [PATCH] bpf: fix build for BPF preload when $(O) points to a
- relative path
-To:     Quentin Monnet <quentin@isovalent.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
-        Brendan Higgins <brendanhiggins@google.com>,
-        David Gow <davidgow@google.com>
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0aa56d87-19f1-4343-1720-08d8c191e5f3
+X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Jan 2021 00:32:44.3908
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: pA696OFStsoOtkpQp+zo3jV5udRiyl/YlLTvT4SGdfXOGieBkfu79s3ahLGa3nR8oyqLy5UezjLaiNLE7PwRKQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR0402MB3616
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 25, 2021 at 7:49 AM Quentin Monnet <quentin@isovalent.com> wrote:
->
-> Building the kernel with CONFIG_BPF_PRELOAD, and by providing a relative
-> path for the output directory, may fail with the following error:
->
->   $ make O=build bindeb-pkg
->   ...
->   /.../linux/tools/scripts/Makefile.include:5: *** O=build does not exist.  Stop.
->   make[7]: *** [/.../linux/kernel/bpf/preload/Makefile:9: kernel/bpf/preload/libbpf.a] Error 2
->   make[6]: *** [/.../linux/scripts/Makefile.build:500: kernel/bpf/preload] Error 2
->   make[5]: *** [/.../linux/scripts/Makefile.build:500: kernel/bpf] Error 2
->   make[4]: *** [/.../linux/Makefile:1799: kernel] Error 2
->   make[4]: *** Waiting for unfinished jobs....
->
-> In the case above, for the "bindeb-pkg" target, the error is produced by
-> the "dummy" check in Makefile.include, called from libbpf's Makefile.
-> This check changes directory to $(PWD) before checking for the existence
-> of $(O). But at this step we have $(PWD) pointing to "/.../linux/build",
-> and $(O) pointing to "build". So the Makefile.include tries in fact to
-> assert the existence of a directory named "/.../linux/build/build",
-> which does not exist.
->
-> By contrast, other tools called from the main Linux Makefile get the
-> variable set to $(abspath $(objtree)), where $(objtree) is ".". We can
-> update the Makefile for kernel/bpf/preload to set $(O) to the same
-> value, to permit compiling with a relative path for output. Note that
-> apart from the Makefile.include, the variable $(O) is not used in
-> libbpf's build system.
->
-> Note that the error does not occur for all make targets and
-> architectures combinations.
->
-> - On x86, "make O=build vmlinux" appears to work fine.
->   $(PWD) points to "/.../linux/tools", but $(O) points to the absolute
->   path "/.../linux/build" and the test succeeds.
-> - On UML, it has been reported to fail with a message similar to the
->   above (see [0]).
-> - On x86, "make O=build bindeb-pkg" fails, as described above.
->
-> It is unsure where the different values for $(O) and $(PWD) come from
-> (likely some recursive make with different arguments at some point), and
-> because several targets are broken, it feels safer to fix the $(O) value
-> passed to libbpf rather than to hunt down all changes to the variable.
->
-> David Gow previously posted a slightly different version of this patch
-> as a RFC [0], two months ago or so.
->
-> [0] https://lore.kernel.org/bpf/20201119085022.3606135-1-davidgow@google.com/t/#u
->
-> Cc: Andrii Nakryiko <andrii.nakryiko@gmail.com>
-> Cc: Brendan Higgins <brendanhiggins@google.com>
-> Cc: David Gow <davidgow@google.com>
-> Reported-by: David Gow <davidgow@google.com>
-> Signed-off-by: Quentin Monnet <quentin@isovalent.com>
+On Fri, Jan 22, 2021 at 02:44:51PM -0800, Vinicius Costa Gomes wrote:
+> The tc subsystem sets which queues are marked as preemptible, it's the
+> role of ethtool to control more hardware specific parameters. These
+> parameters include:
+>=20
+>  - enabling the frame preemption hardware: As enabling frame
+>  preemption may have other requirements before it can be enabled, it's
+>  exposed via the ethtool API;
+>=20
+>  - mininum fragment size multiplier: expressed in usually in the form
+>  of (1 + N)*64, this number indicates what's the size of the minimum
+>  fragment that can be preempted.
+
+And not one word has been said about the patch...
+
+>=20
+> Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
 > ---
+>  drivers/net/ethernet/intel/igc/igc.h         | 12 +++++
+>  drivers/net/ethernet/intel/igc/igc_defines.h |  4 ++
+>  drivers/net/ethernet/intel/igc/igc_ethtool.c | 53 ++++++++++++++++++++
+>  drivers/net/ethernet/intel/igc/igc_tsn.c     | 25 +++++++--
+>  4 files changed, 91 insertions(+), 3 deletions(-)
+>=20
+> diff --git a/drivers/net/ethernet/intel/igc/igc.h b/drivers/net/ethernet/=
+intel/igc/igc.h
+> index 35baae900c1f..1067c46e0bc2 100644
+> --- a/drivers/net/ethernet/intel/igc/igc.h
+> +++ b/drivers/net/ethernet/intel/igc/igc.h
+> @@ -87,6 +87,7 @@ struct igc_ring {
+>  	u8 queue_index;                 /* logical index of the ring*/
+>  	u8 reg_idx;                     /* physical index of the ring */
+>  	bool launchtime_enable;         /* true if LaunchTime is enabled */
+> +	bool preemptible;		/* true if not express */
 
-I still think it would benefit everyone to figure out where this is
-breaking (given Linux Makefile explicitly tries to handle such
-relative path situation for O=, I believe), but this is trivial
-enough, so:
+Mixing tabs and spaces?
 
-Acked-by: Andrii Nakryiko <andrii@kernel.org>
+> +static int igc_ethtool_set_preempt(struct net_device *netdev,
+> +				   struct ethtool_fp *fpcmd,
+> +				   struct netlink_ext_ack *extack)
+> +{
+> +	struct igc_adapter *adapter =3D netdev_priv(netdev);
+> +	int i;
+> +
+> +	if (fpcmd->add_frag_size < 68 || fpcmd->add_frag_size > 260) {
+> +		NL_SET_ERR_MSG_MOD(extack, "Invalid value for add-frag-size");
+> +		return -EINVAL;
+> +	}
 
-BTW, you haven't specified which tree you intended it for.
+This check should belong in ethtool, since there's nothing unusual about
+this supported range.
 
->  kernel/bpf/preload/Makefile | 5 ++++-
->  1 file changed, 4 insertions(+), 1 deletion(-)
->
-> diff --git a/kernel/bpf/preload/Makefile b/kernel/bpf/preload/Makefile
-> index 23ee310b6eb4..11b9896424c0 100644
-> --- a/kernel/bpf/preload/Makefile
-> +++ b/kernel/bpf/preload/Makefile
-> @@ -4,8 +4,11 @@ LIBBPF_SRCS = $(srctree)/tools/lib/bpf/
->  LIBBPF_A = $(obj)/libbpf.a
->  LIBBPF_OUT = $(abspath $(obj))
->
-> +# Set $(O) so that the "dummy" test in tools/scripts/Makefile.include, called
-> +# by libbpf's Makefile, succeeds when building the kernel with $(O) pointing to
-> +# a relative path, as in "make O=build bindeb-pkg".
->  $(LIBBPF_A):
-> -       $(Q)$(MAKE) -C $(LIBBPF_SRCS) OUTPUT=$(LIBBPF_OUT)/ $(LIBBPF_OUT)/libbpf.a
-> +       $(Q)$(MAKE) -C $(LIBBPF_SRCS) O=$(abspath .) OUTPUT=$(LIBBPF_OUT)/ $(LIBBPF_OUT)/libbpf.a
+Also, I believe that Jakub requested the min-frag-size to be passed as
+0, 1, 2, 3 as the standard specifies it, and not its multiplied version?
 
-why not O=$(LIBBPF_OUT), btw?
+> +
+> +	adapter->frame_preemption_active =3D fpcmd->enabled;
+> +	adapter->add_frag_size =3D fpcmd->add_frag_size;
+> +
+> +	if (!adapter->frame_preemption_active)
+> +		goto done;
+> +
+> +	/* Enabling frame preemption requires TSN mode to be enabled,
+> +	 * which requires a schedule to be active. So, if there isn't
+> +	 * a schedule already configured, configure a simple one, with
+> +	 * all queues open, with 1ms cycle time.
+> +	 */
+> +	if (adapter->base_time)
+> +		goto done;
 
->
->  userccflags += -I $(srctree)/tools/include/ -I $(srctree)/tools/include/uapi \
->         -I $(srctree)/tools/lib/ -Wno-unused-result
-> --
-> 2.25.1
->
+Unless I'm missing something, you are interpreting an adapter->base_time
+value of zero as "no Qbv schedule on port", as if it was invalid to have
+a base-time of zero, which it isn't.
+
+> @@ -115,6 +130,9 @@ static int igc_tsn_enable_offload(struct igc_adapter =
+*adapter)
+>  		if (ring->launchtime_enable)
+>  			txqctl |=3D IGC_TXQCTL_QUEUE_MODE_LAUNCHT;
+> =20
+> +		if (ring->preemptible)
+> +			txqctl |=3D IGC_TXQCTL_PREEMPTABLE;
+
+I think this is the only place in the series where you use PREEMPTABLE
+instead of PREEMPTIBLE.
+
+> +
+>  		wr32(IGC_TXQCTL(i), txqctl);
+>  	}
+
+Out of curiosity, where is the ring to traffic class mapping configured
+in the igc driver? I suppose that you have more rings than traffic classes.=
