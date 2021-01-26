@@ -2,58 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 82261303EAE
-	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 14:28:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D9193303EAC
+	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 14:28:16 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2404434AbhAZN1z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jan 2021 08:27:55 -0500
-Received: from wout2-smtp.messagingengine.com ([64.147.123.25]:56637 "EHLO
+        id S2403894AbhAZN1J (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jan 2021 08:27:09 -0500
+Received: from wout2-smtp.messagingengine.com ([64.147.123.25]:57993 "EHLO
         wout2-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2391901AbhAZNZM (ORCPT
+        by vger.kernel.org with ESMTP id S2391909AbhAZNZM (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 26 Jan 2021 08:25:12 -0500
 Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.west.internal (Postfix) with ESMTP id 6A360917;
-        Tue, 26 Jan 2021 08:24:20 -0500 (EST)
+        by mailout.west.internal (Postfix) with ESMTP id 29874952;
+        Tue, 26 Jan 2021 08:24:23 -0500 (EST)
 Received: from mailfrontend2 ([10.202.2.163])
-  by compute3.internal (MEProxy); Tue, 26 Jan 2021 08:24:21 -0500
+  by compute3.internal (MEProxy); Tue, 26 Jan 2021 08:24:23 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
         messagingengine.com; h=cc:content-transfer-encoding:date:from
         :in-reply-to:message-id:mime-version:references:subject:to
         :x-me-proxy:x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=
-        fm1; bh=jgi9n1f2qHyTYbRAwwhSsY9Zh/Wso8NWEW8FESGQ5y0=; b=pooIr12C
-        uDgnZ5p7Ai47eZFU1tpOMblDTsqWMWHK82ESJMPeHk3PA9Z9oMolYWN3okegnq9g
-        3C5NjpaWTGvFJ/rvGDWt4PAOwkTlhyNc+aUJJBXFuWWHRzuUkXxtfoRCuO87y/FZ
-        46A90m3Ui7+U+bHG9ng5rMvmMPfjcLS/tXBaXFynQRV7G/KZoAFwBhGi4Q57uRFu
-        0h1bHa66CqiJ5G29cwWNIpYgMdsGtGW7a3cjw1L2M5DZr3t0vSjoyWaAjCwxAVPv
-        yWErmH7kzIXRopC2m9tPkt23e1Msp5yVrIoL4vK5oR0LXfLSKp84lUbyNCNznmYt
-        69dbUYI9gfgLjA==
-X-ME-Sender: <xms:AxgQYHmhS3J9g6XMN11BcmfRuLvZoefGhEZ3aFYQH1bh22_fh8UAqQ>
-    <xme:AxgQYK2SyK4pw5vQG6M4G81kcDwMwsYruFgrhbKLquoRKY1RJowgmIfxdHXv5Y8A7
-    tvJKJ_xJQN4bvs>
+        fm1; bh=qRstLR66cRVCVoZccihpXfano4geLk5M4JtCAiYeI9w=; b=dIXOLvYD
+        3n4opHMspDwoB+8JOzeT2hRPkgOiv8k2URvvBB+WMt6x1Pvwmz4C+l4jdQa8AFCf
+        O/c+HwaEwpSkC/Kri6WtMeX/TZ1XudxxLMMhVZVNvDFHBt6uT242LgoR0BYKNrZA
+        obJrOYyQ1x3Imq7ij6Y+Y6WwDzIBfkf5tqYJxOByGuQBwzTLrgmzlsjP1/0TqthR
+        kz3iZCJzAoTE28sxmd2GDvL0fEGf/LLZVZrEAABmabZ3V2tyBMsnY2S6X42EwAXu
+        cprjZVsMYcql8Efl8IA0oJPST2/2KkhPNULOBzwM5+FzckrgoSE6TYGr7pnY6fCX
+        6XZlEGpAFDRguA==
+X-ME-Sender: <xms:BhgQYACVkX-D2mSs7SF9OrrKX81F62UCxm0zAmxGdYKsXRuJ3tUIyg>
+    <xme:BhgQYCiN0MC2LvmuSKcrY3qqLJpUAb4Cm4Lplnfys7M9LXSp5vBZ2XC4lxqs2Yu6Z
+    cP1T2CyobwB9ww>
 X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrvdehgdehvdcutefuodetggdotefrodftvf
     curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
     uegrihhlohhuthemuceftddtnecunecujfgurhephffvufffkffojghfggfgsedtkeertd
     ertddtnecuhfhrohhmpefkughoucfutghhihhmmhgvlhcuoehiughoshgthhesihguohhs
     tghhrdhorhhgqeenucggtffrrghtthgvrhhnpeduteeiveffffevleekleejffekhfekhe
     fgtdfftefhledvjefggfehgfevjeekhfenucfkphepkeegrddvvdelrdduheefrdeggeen
-    ucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughosh
+    ucevlhhushhtvghrufhiiigvpedvnecurfgrrhgrmhepmhgrihhlfhhrohhmpehiughosh
     gthhesihguohhstghhrdhorhhg
-X-ME-Proxy: <xmx:AxgQYNo5CtTgAmT5Et5tY8VVj6JrNHIwXV_hLCndR5s5oq_kdcsu1A>
-    <xmx:AxgQYPnpLx5hD5Wu6wLT_OWtJWNHHd1-nv9m-jvTPQ1XXJ7qgHS0Lg>
-    <xmx:AxgQYF0ZbMLEXQ6d-t6mpyv90zfE6Z6-Cff3vxUWSzpu_13ZB-pdxQ>
-    <xmx:BBgQYPpWuNLvdBuAZa6In6gex2Tawkqx82twcSY9l37cc60bIfovSA>
+X-ME-Proxy: <xmx:BhgQYDli3j_JtRjjeWUxoVus5cSkX7biEnLYyPnHRSyjSRUiHCu1Vg>
+    <xmx:BhgQYGx0Xj0bF_JqTzpux7urYKtpJaU5CfjR45X5kMA4ObdPew8gEA>
+    <xmx:BhgQYFRepDUiwF6CCeLDUBJ53bzDF1qPycsN54jInfIaW2rMVWOpeg>
+    <xmx:BhgQYEE6jrYQ2HU-2O0Y_50PX5LLgB18WT_c_OwFB-cFHKCm3yErWA>
 Received: from shredder.mellanox.com (igld-84-229-153-44.inter.net.il [84.229.153.44])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 6E828108005B;
-        Tue, 26 Jan 2021 08:24:17 -0500 (EST)
+        by mail.messagingengine.com (Postfix) with ESMTPA id 4DEF0108005C;
+        Tue, 26 Jan 2021 08:24:20 -0500 (EST)
 From:   Ido Schimmel <idosch@idosch.org>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, dsahern@gmail.com,
         amcohen@nvidia.com, roopa@nvidia.com, sharpd@nvidia.com,
         bpoirier@nvidia.com, mlxsw@nvidia.com,
         Ido Schimmel <idosch@nvidia.com>
-Subject: [PATCH net-next 03/10] net: ipv4: Pass fib_rt_info as const to fib_dump_info()
-Date:   Tue, 26 Jan 2021 15:23:04 +0200
-Message-Id: <20210126132311.3061388-4-idosch@idosch.org>
+Subject: [PATCH net-next 04/10] net: ipv4: Publish fib_nlmsg_size()
+Date:   Tue, 26 Jan 2021 15:23:05 +0200
+Message-Id: <20210126132311.3061388-5-idosch@idosch.org>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20210126132311.3061388-1-idosch@idosch.org>
 References: <20210126132311.3061388-1-idosch@idosch.org>
@@ -65,43 +65,43 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Amit Cohen <amcohen@nvidia.com>
 
-fib_dump_info() does not change 'fri', so pass it as 'const'.
-It will later allow us to invoke fib_dump_info() from
+Publish fib_nlmsg_size() to allow it to be used later on from
 fib_alias_hw_flags_set().
+
+Remove the inline keyword since it shouldn't be used inside C files.
 
 Signed-off-by: Amit Cohen <amcohen@nvidia.com>
 Signed-off-by: Ido Schimmel <idosch@nvidia.com>
 ---
- net/ipv4/fib_lookup.h    | 2 +-
+ net/ipv4/fib_lookup.h    | 1 +
  net/ipv4/fib_semantics.c | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ 2 files changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/net/ipv4/fib_lookup.h b/net/ipv4/fib_lookup.h
-index 818916b2a04d..b75db4dcbf5e 100644
+index b75db4dcbf5e..aff454ef0fa3 100644
 --- a/net/ipv4/fib_lookup.h
 +++ b/net/ipv4/fib_lookup.h
-@@ -39,7 +39,7 @@ int fib_nh_match(struct net *net, struct fib_config *cfg, struct fib_info *fi,
- 		 struct netlink_ext_ack *extack);
- bool fib_metrics_match(struct fib_config *cfg, struct fib_info *fi);
- int fib_dump_info(struct sk_buff *skb, u32 pid, u32 seq, int event,
--		  struct fib_rt_info *fri, unsigned int flags);
-+		  const struct fib_rt_info *fri, unsigned int flags);
+@@ -42,6 +42,7 @@ int fib_dump_info(struct sk_buff *skb, u32 pid, u32 seq, int event,
+ 		  const struct fib_rt_info *fri, unsigned int flags);
  void rtmsg_fib(int event, __be32 key, struct fib_alias *fa, int dst_len,
  	       u32 tb_id, const struct nl_info *info, unsigned int nlm_flags);
++size_t fib_nlmsg_size(struct fib_info *fi);
  
+ static inline void fib_result_assign(struct fib_result *res,
+ 				     struct fib_info *fi)
 diff --git a/net/ipv4/fib_semantics.c b/net/ipv4/fib_semantics.c
-index b5400cec4f69..dba56fa5e2cd 100644
+index dba56fa5e2cd..4c38facf91c0 100644
 --- a/net/ipv4/fib_semantics.c
 +++ b/net/ipv4/fib_semantics.c
-@@ -1733,7 +1733,7 @@ static int fib_add_multipath(struct sk_buff *skb, struct fib_info *fi)
- #endif
+@@ -452,7 +452,7 @@ int ip_fib_check_default(__be32 gw, struct net_device *dev)
+ 	return -1;
+ }
  
- int fib_dump_info(struct sk_buff *skb, u32 portid, u32 seq, int event,
--		  struct fib_rt_info *fri, unsigned int flags)
-+		  const struct fib_rt_info *fri, unsigned int flags)
+-static inline size_t fib_nlmsg_size(struct fib_info *fi)
++size_t fib_nlmsg_size(struct fib_info *fi)
  {
- 	unsigned int nhs = fib_info_num_path(fri->fi);
- 	struct fib_info *fi = fri->fi;
+ 	size_t payload = NLMSG_ALIGN(sizeof(struct rtmsg))
+ 			 + nla_total_size(4) /* RTA_TABLE */
 -- 
 2.29.2
 
