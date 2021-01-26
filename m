@@ -2,29 +2,30 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C93053050CB
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 05:28:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 90E7B3050D0
+	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 05:28:22 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238652AbhA0E11 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jan 2021 23:27:27 -0500
-Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:8211 "EHLO
-        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388684AbhAZXZZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jan 2021 18:25:25 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B6010a4bc0000>; Tue, 26 Jan 2021 15:24:44 -0800
+        id S238678AbhA0E1r (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jan 2021 23:27:47 -0500
+Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:2362 "EHLO
+        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388690AbhAZXZ0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jan 2021 18:25:26 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B6010a4be0000>; Tue, 26 Jan 2021 15:24:46 -0800
 Received: from sx1.mtl.com (172.20.145.6) by HQMAIL107.nvidia.com
  (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 26 Jan
- 2021 23:24:43 +0000
+ 2021 23:24:45 +0000
 From:   Saeed Mahameed <saeedm@nvidia.com>
 To:     Jakub Kicinski <kuba@kernel.org>,
         "David S. Miller" <davem@davemloft.net>
 CC:     <netdev@vger.kernel.org>, Aya Levin <ayal@nvidia.com>,
+        Moshe Shemesh <moshe@nvidia.com>,
         Tariq Toukan <tariqt@nvidia.com>,
         Saeed Mahameed <saeedm@nvidia.com>
-Subject: [net-next 06/14] net/mlx5: Notify on trap action by blocking event
-Date:   Tue, 26 Jan 2021 15:24:11 -0800
-Message-ID: <20210126232419.175836-7-saeedm@nvidia.com>
+Subject: [net-next 08/14] net/mlx5e: Add flow steering VLAN trap rule
+Date:   Tue, 26 Jan 2021 15:24:13 -0800
+Message-ID: <20210126232419.175836-9-saeedm@nvidia.com>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20210126232419.175836-1-saeedm@nvidia.com>
 References: <20210126232419.175836-1-saeedm@nvidia.com>
@@ -35,208 +36,171 @@ X-Originating-IP: [172.20.145.6]
 X-ClientProxiedBy: HQMAIL101.nvidia.com (172.20.187.10) To
  HQMAIL107.nvidia.com (172.20.187.13)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1611703484; bh=h4v3iSI0MYdiARVDyoQQnZOBy2wr3CSamLRzTTYsHe4=;
+        t=1611703486; bh=mMo+NaZT75a6wXHtqn4tWC13qZe8iJXoeYsIiXTlOOw=;
         h=From:To:CC:Subject:Date:Message-ID:X-Mailer:In-Reply-To:
          References:MIME-Version:Content-Transfer-Encoding:Content-Type:
          X-Originating-IP:X-ClientProxiedBy;
-        b=m46mq2J0dbq/lJcTwoXJYJx/OIWgcOs/P+KUT76+OpABhAaFaZ+Nwqj7zYyRfp1mO
-         KK34oWnTSkRJ9pFKRjeSaheKq5nwUZT9uP2862hnFkjBDZ+hJAqQ6mcP3gOnWmg0Gx
-         aN1YNCs7NmjrLUKZBTd1letAPkFH939mrqykICIDkfNWYmaUiva9Zb5qkYHTs2ycuB
-         fz0m/vHITFXdJTv7gtbJZ1aDqDom3a5oP2gguRl+VrkX2i5OhDmK6eLQHeAIlRrzKm
-         x5Uqp7ldZ8BOvkU7CFg40GFRGG44SX74McmZU4NNE6RBSGkhqc3P2CCIqRI12eo2ig
-         uAjvqPiZpNJdA==
+        b=UvXmQEX0jNXwftQ41ane9XLNYsx6SY7xOg19YiGLRdFCD06t2lwydrqkWqeFS2+MT
+         Aqn8EFjvcVkRq2TIZ3bdOleTYdsg8YS/foSYQvlCtdo7mPIGLCeEWI49v2zy94WYQa
+         aOiDCi+eE9+SFC5calvfigGXfp/XFpYS2iPy+DFcqAlNTwOA+nUcX18YDHV558Z6Cl
+         OOrYE8AiRg64eHJJt+OdbpP7rmAAay058JK+vwqTcB97fxnvN/g4I9S0deW/6Xm7qV
+         ZiBWhngoV9yJw32sbdt2fgNkXEtzLCNCYUWT2kWaC+haAxqfywvEWKDzOiibfbu5QF
+         Y2TJ9lD5otoSQ==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 From: Aya Levin <ayal@nvidia.com>
 
-In order to allow mlx5 core driver to trigger synchronous operations to
-its consumers, add a blocking events handler. Add wrappers to
-blocking_notifier_[call_chain/chain_register/chain_unregister]. Add trap
-callback for action set and notify about this change. Following patches
-in the set add a listener for this event.
+Add flow group to the VLAN table to hold the catch-all VLAN rule. Add
+API which adds/removes VLAN trap rule. This rule catches packets that
+were destined to be dropped due to no-match with previous VLAN rules.
+The trap rule steer these packets to the trap tir related to the
+trap-RQ.
 
 Signed-off-by: Aya Levin <ayal@nvidia.com>
+Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
 Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
 Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
 Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
 ---
- .../net/ethernet/mellanox/mlx5/core/devlink.c | 36 +++++++++++++++++++
- .../net/ethernet/mellanox/mlx5/core/events.c  | 28 +++++++++++++++
- include/linux/mlx5/device.h                   |  4 +++
- include/linux/mlx5/driver.h                   | 15 ++++++++
- 4 files changed, 83 insertions(+)
+ .../net/ethernet/mellanox/mlx5/core/en/fs.h   |  3 +
+ .../net/ethernet/mellanox/mlx5/core/en_fs.c   | 64 ++++++++++++++++++-
+ 2 files changed, 65 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c b/drivers/ne=
-t/ethernet/mellanox/mlx5/core/devlink.c
-index f081eff9be25..c47291467cb0 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/devlink.c
-@@ -218,6 +218,41 @@ static void mlx5_devlink_trap_fini(struct devlink *dev=
-link, const struct devlink
- 	kfree(dl_trap);
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en/fs.h b/drivers/net/=
+ethernet/mellanox/mlx5/core/en/fs.h
+index abe57f032b2d..688183a03e23 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en/fs.h
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en/fs.h
+@@ -58,6 +58,7 @@ struct mlx5e_vlan_table {
+ 	struct mlx5_flow_handle	*untagged_rule;
+ 	struct mlx5_flow_handle	*any_cvlan_rule;
+ 	struct mlx5_flow_handle	*any_svlan_rule;
++	struct mlx5_flow_handle	*trap_rule;
+ 	bool			cvlan_filter_disabled;
+ };
+=20
+@@ -294,6 +295,8 @@ int mlx5e_create_flow_steering(struct mlx5e_priv *priv)=
+;
+ void mlx5e_destroy_flow_steering(struct mlx5e_priv *priv);
+=20
+ u8 mlx5e_get_proto_by_tunnel_type(enum mlx5e_tunnel_types tt);
++int mlx5e_add_vlan_trap(struct mlx5e_priv *priv, int  trap_id, int tir_num=
+);
++void mlx5e_remove_vlan_trap(struct mlx5e_priv *priv);
+=20
+ #endif /* __MLX5E_FLOW_STEER_H__ */
+=20
+diff --git a/drivers/net/ethernet/mellanox/mlx5/core/en_fs.c b/drivers/net/=
+ethernet/mellanox/mlx5/core/en_fs.c
+index a2db550c982e..b7637a2ffd12 100644
+--- a/drivers/net/ethernet/mellanox/mlx5/core/en_fs.c
++++ b/drivers/net/ethernet/mellanox/mlx5/core/en_fs.c
+@@ -305,6 +305,53 @@ static int mlx5e_add_any_vid_rules(struct mlx5e_priv *=
+priv)
+ 	return mlx5e_add_vlan_rule(priv, MLX5E_VLAN_RULE_TYPE_ANY_STAG_VID, 0);
  }
 =20
-+static int mlx5_devlink_trap_action_set(struct devlink *devlink,
-+					const struct devlink_trap *trap,
-+					enum devlink_trap_action action,
-+					struct netlink_ext_ack *extack)
++static struct mlx5_flow_handle *
++mlx5e_add_trap_rule(struct mlx5_flow_table *ft, int trap_id, int tir_num)
 +{
-+	struct mlx5_core_dev *dev =3D devlink_priv(devlink);
-+	enum devlink_trap_action action_orig;
-+	struct mlx5_devlink_trap *dl_trap;
-+	int err =3D 0;
++	struct mlx5_flow_destination dest =3D {};
++	MLX5_DECLARE_FLOW_ACT(flow_act);
++	struct mlx5_flow_handle *rule;
++	struct mlx5_flow_spec *spec;
 +
-+	dl_trap =3D mlx5_find_trap_by_id(dev, trap->id);
-+	if (!dl_trap) {
-+		mlx5_core_err(dev, "Devlink trap: Set action on invalid trap id 0x%x", t=
-rap->id);
-+		err =3D -EINVAL;
-+		goto out;
-+	}
++	spec =3D kvzalloc(sizeof(*spec), GFP_KERNEL);
++	if (!spec)
++		return ERR_PTR(-ENOMEM);
++	spec->flow_context.flags |=3D FLOW_CONTEXT_HAS_TAG;
++	spec->flow_context.flow_tag =3D trap_id;
++	dest.type =3D MLX5_FLOW_DESTINATION_TYPE_TIR;
++	dest.tir_num =3D tir_num;
 +
-+	if (action !=3D DEVLINK_TRAP_ACTION_DROP && action !=3D DEVLINK_TRAP_ACTI=
-ON_TRAP) {
-+		err =3D -EOPNOTSUPP;
-+		goto out;
-+	}
-+
-+	if (action =3D=3D dl_trap->trap.action)
-+		goto out;
-+
-+	action_orig =3D dl_trap->trap.action;
-+	dl_trap->trap.action =3D action;
-+	err =3D mlx5_blocking_notifier_call_chain(dev, MLX5_DRIVER_EVENT_TYPE_TRA=
-P,
-+						&dl_trap->trap);
-+	if (err)
-+		dl_trap->trap.action =3D action_orig;
-+out:
-+	return err;
++	rule =3D mlx5_add_flow_rules(ft, spec, &flow_act, &dest, 1);
++	kvfree(spec);
++	return rule;
 +}
 +
- static const struct devlink_ops mlx5_devlink_ops =3D {
- #ifdef CONFIG_MLX5_ESWITCH
- 	.eswitch_mode_set =3D mlx5_devlink_eswitch_mode_set,
-@@ -238,6 +273,7 @@ static const struct devlink_ops mlx5_devlink_ops =3D {
- 	.reload_up =3D mlx5_devlink_reload_up,
- 	.trap_init =3D mlx5_devlink_trap_init,
- 	.trap_fini =3D mlx5_devlink_trap_fini,
-+	.trap_action_set =3D mlx5_devlink_trap_action_set,
- };
-=20
- void mlx5_devlink_trap_report(struct mlx5_core_dev *dev, int trap_id, stru=
-ct sk_buff *skb,
-diff --git a/drivers/net/ethernet/mellanox/mlx5/core/events.c b/drivers/net=
-/ethernet/mellanox/mlx5/core/events.c
-index 054c0bc36d24..670f25f5ffd1 100644
---- a/drivers/net/ethernet/mellanox/mlx5/core/events.c
-+++ b/drivers/net/ethernet/mellanox/mlx5/core/events.c
-@@ -61,6 +61,8 @@ struct mlx5_events {
- 	struct mlx5_pme_stats pme_stats;
- 	/*pcie_core*/
- 	struct work_struct pcie_core_work;
-+	/* driver notifier chain for sw events */
-+	struct blocking_notifier_head sw_nh;
- };
-=20
- static const char *eqe_type_str(u8 type)
-@@ -351,6 +353,7 @@ int mlx5_events_init(struct mlx5_core_dev *dev)
- 		return -ENOMEM;
- 	}
- 	INIT_WORK(&events->pcie_core_work, mlx5_pcie_event);
-+	BLOCKING_INIT_NOTIFIER_HEAD(&events->sw_nh);
-=20
- 	return 0;
- }
-@@ -406,3 +409,28 @@ int mlx5_notifier_call_chain(struct mlx5_events *event=
-s, unsigned int event, voi
++int mlx5e_add_vlan_trap(struct mlx5e_priv *priv, int trap_id, int tir_num)
++{
++	struct mlx5_flow_table *ft =3D priv->fs.vlan.ft.t;
++	struct mlx5_flow_handle *rule;
++	int err;
++
++	rule =3D mlx5e_add_trap_rule(ft, trap_id, tir_num);
++	if (IS_ERR(rule)) {
++		err =3D PTR_ERR(rule);
++		priv->fs.vlan.trap_rule =3D NULL;
++		netdev_err(priv->netdev, "%s: add VLAN trap rule failed, err %d\n",
++			   __func__, err);
++		return err;
++	}
++	priv->fs.vlan.trap_rule =3D rule;
++	return 0;
++}
++
++void mlx5e_remove_vlan_trap(struct mlx5e_priv *priv)
++{
++	if (priv->fs.vlan.trap_rule) {
++		mlx5_del_flow_rules(priv->fs.vlan.trap_rule);
++		priv->fs.vlan.trap_rule =3D NULL;
++	}
++}
++
+ void mlx5e_enable_cvlan_filter(struct mlx5e_priv *priv)
  {
- 	return atomic_notifier_call_chain(&events->fw_nh, event, data);
+ 	if (!priv->fs.vlan.cvlan_filter_disabled)
+@@ -418,6 +465,8 @@ static void mlx5e_del_vlan_rules(struct mlx5e_priv *pri=
+v)
+=20
+ 	WARN_ON_ONCE(!(test_bit(MLX5E_STATE_DESTROYING, &priv->state)));
+=20
++	mlx5e_remove_vlan_trap(priv);
++
+ 	/* must be called after DESTROY bit is set and
+ 	 * set_rx_mode is called and flushed
+ 	 */
+@@ -1495,15 +1544,17 @@ static int mlx5e_create_l2_table(struct mlx5e_priv =
+*priv)
+ 	return err;
  }
-+
-+/* This API is used only for processing and forwarding driver-specific
-+ * events to mlx5 consumers.
-+ */
-+int mlx5_blocking_notifier_register(struct mlx5_core_dev *dev, struct noti=
-fier_block *nb)
-+{
-+	struct mlx5_events *events =3D dev->priv.events;
-+
-+	return blocking_notifier_chain_register(&events->sw_nh, nb);
-+}
-+
-+int mlx5_blocking_notifier_unregister(struct mlx5_core_dev *dev, struct no=
-tifier_block *nb)
-+{
-+	struct mlx5_events *events =3D dev->priv.events;
-+
-+	return blocking_notifier_chain_unregister(&events->sw_nh, nb);
-+}
-+
-+int mlx5_blocking_notifier_call_chain(struct mlx5_core_dev *dev, unsigned =
-int event,
-+				      void *data)
-+{
-+	struct mlx5_events *events =3D dev->priv.events;
-+
-+	return blocking_notifier_call_chain(&events->sw_nh, event, data);
-+}
-diff --git a/include/linux/mlx5/device.h b/include/linux/mlx5/device.h
-index f1de49d64a98..77ba54d38772 100644
---- a/include/linux/mlx5/device.h
-+++ b/include/linux/mlx5/device.h
-@@ -359,6 +359,10 @@ enum mlx5_event {
- 	MLX5_EVENT_TYPE_MAX                =3D 0x100,
- };
 =20
-+enum mlx5_driver_event {
-+	MLX5_DRIVER_EVENT_TYPE_TRAP =3D 0,
-+};
-+
- enum {
- 	MLX5_TRACER_SUBTYPE_OWNERSHIP_CHANGE =3D 0x0,
- 	MLX5_TRACER_SUBTYPE_TRACES_AVAILABLE =3D 0x1,
-diff --git a/include/linux/mlx5/driver.h b/include/linux/mlx5/driver.h
-index c4615dc51b6f..45df5b465ba8 100644
---- a/include/linux/mlx5/driver.h
-+++ b/include/linux/mlx5/driver.h
-@@ -1073,11 +1073,26 @@ enum {
- 	MAX_MR_CACHE_ENTRIES
- };
+-#define MLX5E_NUM_VLAN_GROUPS	4
++#define MLX5E_NUM_VLAN_GROUPS	5
+ #define MLX5E_VLAN_GROUP0_SIZE	BIT(12)
+ #define MLX5E_VLAN_GROUP1_SIZE	BIT(12)
+ #define MLX5E_VLAN_GROUP2_SIZE	BIT(1)
+ #define MLX5E_VLAN_GROUP3_SIZE	BIT(0)
++#define MLX5E_VLAN_GROUP_TRAP_SIZE BIT(0) /* must be last */
+ #define MLX5E_VLAN_TABLE_SIZE	(MLX5E_VLAN_GROUP0_SIZE +\
+ 				 MLX5E_VLAN_GROUP1_SIZE +\
+ 				 MLX5E_VLAN_GROUP2_SIZE +\
+-				 MLX5E_VLAN_GROUP3_SIZE)
++				 MLX5E_VLAN_GROUP3_SIZE +\
++				 MLX5E_VLAN_GROUP_TRAP_SIZE)
 =20
-+/* Async-atomic event notifier used by mlx5 core to forward FW
-+ * evetns recived from event queue to mlx5 consumers.
-+ * Optimise event queue dipatching.
-+ */
- int mlx5_notifier_register(struct mlx5_core_dev *dev, struct notifier_bloc=
-k *nb);
- int mlx5_notifier_unregister(struct mlx5_core_dev *dev, struct notifier_bl=
-ock *nb);
-+
-+/* Async-atomic event notifier used for forwarding
-+ * evetns from the event queue into the to mlx5 events dispatcher,
-+ * eswitch, clock and others.
-+ */
- int mlx5_eq_notifier_register(struct mlx5_core_dev *dev, struct mlx5_nb *n=
-b);
- int mlx5_eq_notifier_unregister(struct mlx5_core_dev *dev, struct mlx5_nb =
-*nb);
+ static int __mlx5e_create_vlan_table_groups(struct mlx5e_flow_table *ft, u=
+32 *in,
+ 					    int inlen)
+@@ -1558,6 +1609,15 @@ static int __mlx5e_create_vlan_table_groups(struct m=
+lx5e_flow_table *ft, u32 *in
+ 		goto err_destroy_groups;
+ 	ft->num_groups++;
 =20
-+/* Blocking event notifier used to forward SW events, used for slow path *=
-/
-+int mlx5_blocking_notifier_register(struct mlx5_core_dev *dev, struct noti=
-fier_block *nb);
-+int mlx5_blocking_notifier_unregister(struct mlx5_core_dev *dev, struct no=
-tifier_block *nb);
-+int mlx5_blocking_notifier_call_chain(struct mlx5_core_dev *dev, unsigned =
-int event,
-+				      void *data);
++	memset(in, 0, inlen);
++	MLX5_SET_CFG(in, start_flow_index, ix);
++	ix +=3D MLX5E_VLAN_GROUP_TRAP_SIZE;
++	MLX5_SET_CFG(in, end_flow_index, ix - 1);
++	ft->g[ft->num_groups] =3D mlx5_create_flow_group(ft->t, in);
++	if (IS_ERR(ft->g[ft->num_groups]))
++		goto err_destroy_groups;
++	ft->num_groups++;
 +
- int mlx5_core_query_vendor_id(struct mlx5_core_dev *mdev, u32 *vendor_id);
+ 	return 0;
 =20
- int mlx5_cmd_create_vport_lag(struct mlx5_core_dev *dev);
+ err_destroy_groups:
 --=20
 2.29.2
 
