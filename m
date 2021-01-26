@@ -2,99 +2,65 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1755B3043AA
-	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 17:22:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E161F3043C1
+	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 17:25:25 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392872AbhAZQV1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jan 2021 11:21:27 -0500
-Received: from mx2.suse.de ([195.135.220.15]:37032 "EHLO mx2.suse.de"
+        id S2392895AbhAZQYp (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jan 2021 11:24:45 -0500
+Received: from foss.arm.com ([217.140.110.172]:46890 "EHLO foss.arm.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2390281AbhAZQUh (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 26 Jan 2021 11:20:37 -0500
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.221.27])
-        by mx2.suse.de (Postfix) with ESMTP id 7774CACF5;
-        Tue, 26 Jan 2021 16:19:55 +0000 (UTC)
-Subject: Re: [PATCH net-next 1/4] mm: page_frag: Introduce
- page_frag_alloc_align()
-To:     Kevin Hao <haokexin@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>
-Cc:     netdev@vger.kernel.org, linux-mm@kvack.org
-References: <20210123115903.31302-1-haokexin@gmail.com>
- <20210123115903.31302-2-haokexin@gmail.com>
-From:   Vlastimil Babka <vbabka@suse.cz>
-Message-ID: <42fecf9d-70c9-b686-d2f7-080b299060d9@suse.cz>
-Date:   Tue, 26 Jan 2021 17:19:54 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
+        id S2392859AbhAZQWr (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 26 Jan 2021 11:22:47 -0500
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 2E00C31B;
+        Tue, 26 Jan 2021 08:21:58 -0800 (PST)
+Received: from C02TD0UTHF1T.local (unknown [10.57.45.247])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 263843F66E;
+        Tue, 26 Jan 2021 08:21:57 -0800 (PST)
+Date:   Tue, 26 Jan 2021 16:21:54 +0000
+From:   Mark Rutland <mark.rutland@arm.com>
+To:     Matthew Wilcox <willy@infradead.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc:     linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
+        Courtney Cavin <courtney.cavin@sonymobile.com>
+Subject: Re: Preemptible idr_alloc() in QRTR code
+Message-ID: <20210126162154.GD80448@C02TD0UTHF1T.local>
+References: <20210126104734.GB80448@C02TD0UTHF1T.local>
+ <20210126145833.GM308988@casper.infradead.org>
 MIME-Version: 1.0
-In-Reply-To: <20210123115903.31302-2-haokexin@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210126145833.GM308988@casper.infradead.org>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/23/21 12:59 PM, Kevin Hao wrote:
-> In the current implementation of page_frag_alloc(), it doesn't have
-> any align guarantee for the returned buffer address. But for some
-> hardwares they do require the DMA buffer to be aligned correctly,
-> so we would have to use some workarounds like below if the buffers
-> allocated by the page_frag_alloc() are used by these hardwares for
-> DMA.
->     buf = page_frag_alloc(really_needed_size + align);
->     buf = PTR_ALIGN(buf, align);
+On Tue, Jan 26, 2021 at 02:58:33PM +0000, Matthew Wilcox wrote:
+> On Tue, Jan 26, 2021 at 10:47:34AM +0000, Mark Rutland wrote:
+> > Hi,
+> > 
+> > When fuzzing arm64 with Syzkaller, I'm seeing some splats where
+> > this_cpu_ptr() is used in the bowels of idr_alloc(), by way of
+> > radix_tree_node_alloc(), in a preemptible context:
 > 
-> These codes seems ugly and would waste a lot of memories if the buffers
-> are used in a network driver for the TX/RX. So introduce
-> page_frag_alloc_align() to make sure that an aligned buffer address is
-> returned.
+> I sent a patch to fix this last June.  The maintainer seems to be
+> under the impression that I care an awful lot more about their
+> code than I do.
 > 
-> Signed-off-by: Kevin Hao <haokexin@gmail.com>
+> https://lore.kernel.org/netdev/20200605120037.17427-1-willy@infradead.org/
 
-Acked-by: Vlastimil Babka <vbabka@suse.cz>
+Ah; I hadn't spotted the (glaringly obvious) GFP_ATOMIC abuse, thanks
+for the pointer, and sorry for the noise.
 
-Agree with Jakub about static inline.
+It looks like Eric was after a fix that trivially backported to v4.7
+(and hence couldn't rely on xarray) but instead it just got left broken
+for months. :/
 
-> --- a/mm/page_alloc.c
-> +++ b/mm/page_alloc.c
-> @@ -5135,8 +5135,8 @@ void __page_frag_cache_drain(struct page *page, unsigned int count)
->  }
->  EXPORT_SYMBOL(__page_frag_cache_drain);
->  
-> -void *page_frag_alloc(struct page_frag_cache *nc,
-> -		      unsigned int fragsz, gfp_t gfp_mask)
-> +void *page_frag_alloc_align(struct page_frag_cache *nc,
-> +		      unsigned int fragsz, gfp_t gfp_mask, int align)
->  {
->  	unsigned int size = PAGE_SIZE;
->  	struct page *page;
-> @@ -5188,10 +5188,18 @@ void *page_frag_alloc(struct page_frag_cache *nc,
->  	}
->  
->  	nc->pagecnt_bias--;
-> +	offset = align ? ALIGN_DOWN(offset, align) : offset;
+Bjorn, is this something you care about? You seem to have the most
+commits to the file, and otherwise the official maintainer is Dave
+Miller per get_maintainer.pl.
 
-We don't change offset if align == 0, so I'd go with simpler
-if (align)
-	offset = ...
+It is very tempting to make the config option depend on BROKEN...
 
->  	nc->offset = offset;
->  
->  	return nc->va + offset;
->  }
-> +EXPORT_SYMBOL(page_frag_alloc_align);
-> +
-> +void *page_frag_alloc(struct page_frag_cache *nc,
-> +		      unsigned int fragsz, gfp_t gfp_mask)
-> +{
-> +	return page_frag_alloc_align(nc, fragsz, gfp_mask, 0);
-> +}
->  EXPORT_SYMBOL(page_frag_alloc);
->  
->  /*
-> 
-
+Thanks,
+Mark.
