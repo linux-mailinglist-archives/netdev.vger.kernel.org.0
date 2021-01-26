@@ -2,153 +2,214 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3D0B83042CC
-	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 16:43:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BCE463042CE
+	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 16:43:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391739AbhAZPmQ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jan 2021 10:42:16 -0500
-Received: from mail-bn8nam11on2092.outbound.protection.outlook.com ([40.107.236.92]:6624
-        "EHLO NAM11-BN8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S2391050AbhAZPhY (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 26 Jan 2021 10:37:24 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Qil8An3OZOyDAechrupEQPhzvOlXeAeKbsmxDkjN1t8CTKh6y2BMrQDmXdST+tuDiEmDjqYtDrpYKkgGgAvJk1ZDcRy263N1261lKvzEfCoBWNm/KLl1IB0cU8WqREhmRD26WmK9mkkxkR320U8sGBQfNJ6W8kjUpWbuglkYqVJPHctmPopM9NmvSsP7UNq/ooE2IiQugbdHU9vhP88IHGpQaKqX1t5QqKMtmwh6wNtiqbOHjE1U4m/yov8QrQe6DyA5TxPlhRsUDQKeKHSQsDX00+YJR+FRirA4FJDcvV/fD9X2bZRH8pK4CwFl+XjC2IeRXMSEGn5WVDiek0ffow==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=J7+g68V1i/FMEpZIbB7Uhynmz8Ilw8zrbARISNRUP5k=;
- b=ASr+EPyAiOg/pVe5dtpzx3tMzIh7suTWBXCJUo9KOLBliNgJ45nF1dlbQAhNaTwmW8BCNIGK4MXHQe8zM1G3P+dRSfui7icZUAO2PHW/1ATC8PL3UK5V16EIUZ3oEEBIF/MSBHgB2pSVdKwkzrvWSmf2HIucPq9c2USkYMvo9d4+FJ5DqW23EZztVWQ2oHrEqQVQC/Q9je15WngxT52+3GGT4kU3+SDSx6Aqx1UZUI4ooXGAelKtKWJrnPGx+uJk7kc2TL3y0qsrXXv7kBzIz57cCzfsmyPpguF65r7Zc2dFMtdw2Q+ovczjf+y4QuKkN56Ec0QqgzZaPERZHJZ9zQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microsoft.com; dmarc=pass action=none
- header.from=microsoft.com; dkim=pass header.d=microsoft.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=J7+g68V1i/FMEpZIbB7Uhynmz8Ilw8zrbARISNRUP5k=;
- b=P4bEaPx1zeajaXtBdNPqH42FYL8tlDYclhO3wKHvOMCWBRneu9d8422Hn9//Dk3+9upBgmrQERZByCC3juIwxykHpbIue0LZsHgZxqSaPZMNQPDcQaRpK/CB1mrXs29akt1Igd0vmoXWBCOXZVOx9RIxZ4v+J+hljL8Wxgxw5Ps=
-Received: from (2603:10b6:207:30::18) by
- BL0PR2101MB1347.namprd21.prod.outlook.com (2603:10b6:208:92::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3825.6; Tue, 26 Jan
- 2021 15:36:09 +0000
-Received: from BL0PR2101MB0930.namprd21.prod.outlook.com
- ([fe80::e427:1f15:a89e:2bc5]) by BL0PR2101MB0930.namprd21.prod.outlook.com
- ([fe80::e427:1f15:a89e:2bc5%7]) with mapi id 15.20.3825.005; Tue, 26 Jan 2021
- 15:36:09 +0000
-From:   Haiyang Zhang <haiyangz@microsoft.com>
-To:     "Andrea Parri (Microsoft)" <parri.andrea@gmail.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-CC:     KY Srinivasan <kys@microsoft.com>,
-        Stephen Hemminger <sthemmin@microsoft.com>,
-        Wei Liu <wei.liu@kernel.org>,
-        Michael Kelley <mikelley@microsoft.com>,
-        "linux-hyperv@vger.kernel.org" <linux-hyperv@vger.kernel.org>,
-        Tianyu Lan <Tianyu.Lan@microsoft.com>,
-        Saruhan Karademir <skarade@microsoft.com>,
-        Juan Vazquez <juvazq@microsoft.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: RE: [PATCH v2 4/4] hv_netvsc: Restrict configurations on isolated
- guests
-Thread-Topic: [PATCH v2 4/4] hv_netvsc: Restrict configurations on isolated
- guests
-Thread-Index: AQHW89pqGbyqkgkYL0CRHzUXMQ8QQ6o6CfyQ
-Date:   Tue, 26 Jan 2021 15:36:09 +0000
-Message-ID: <BL0PR2101MB09305A4C70430BF2F1EE1358CABC9@BL0PR2101MB0930.namprd21.prod.outlook.com>
-References: <20210126115641.2527-1-parri.andrea@gmail.com>
- <20210126115641.2527-5-parri.andrea@gmail.com>
-In-Reply-To: <20210126115641.2527-5-parri.andrea@gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-msip_labels: MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ActionId=3194bee2-b24e-488e-a4be-f01525946f57;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_ContentBits=0;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Enabled=true;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Method=Standard;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_Name=Internal;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SetDate=2021-01-26T15:35:16Z;MSIP_Label_f42aa342-8706-4288-bd11-ebb85995028c_SiteId=72f988bf-86f1-41af-91ab-2d7cd011db47;
-authentication-results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=microsoft.com;
-x-originating-ip: [75.100.88.238]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 3212b898-6a55-4f4e-59eb-08d8c2101ab6
-x-ms-traffictypediagnostic: BL0PR2101MB1347:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <BL0PR2101MB13470A17B344B54CAB471166CABC9@BL0PR2101MB1347.namprd21.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:4941;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: 7Gqh0lMA2B75ZPAoo8Jck4EHaas4AXBtaenhs0AcHIJj1dkq0XLFZALwU/F8qZuyGlrxRE+NrSsuJ7XTyRsVFg9x2HYUXcXBME2YEaR7MMUnbwVD8QolEr+eOqI7TayorSDJDUgTyJgKDrPl4Qanbz1IGz88tjJ888L8CTBicNq7IqBa1hPfng3JogxgvinZgY+bSTzCzBRZ3ZTFSynwAL2hat0YPIhUKnkG4Q5CQ+Kx3rouf2NSp48eHsR/QnTdxRe/+q96rK+GFo4xdzbLwt4M/SkF+9DGAG6rd/15LwZlfpnyItF7yNj2HJsAeEB0CtzZCdCe0pTcy9LPQboZT6SqOQRBM0WocsTX5ibkn8kPdsxRV7aDlNKI4L0Olq41vP4Uz/4J2kvMQcsOGcpZQmeRqQPHg43sAHuIj9nmAN2sY47C3e26nmXFuU2PBxj+1T8wB3eItnco1Xi/efxRxZPh4BgYWztXoxwI+2w1Zu0say3sGz1rGPMW4/9+e9KcjEA4LR3PgJqTav0cUyo4OA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BL0PR2101MB0930.namprd21.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(39860400002)(376002)(366004)(396003)(136003)(54906003)(82950400001)(110136005)(71200400001)(82960400001)(55016002)(8676002)(316002)(9686003)(33656002)(2906002)(10290500003)(66446008)(64756008)(66946007)(8936002)(7696005)(186003)(4326008)(478600001)(6506007)(66476007)(8990500004)(86362001)(52536014)(26005)(53546011)(76116006)(5660300002)(66556008)(83380400001);DIR:OUT;SFP:1102;
-x-ms-exchange-antispam-messagedata: =?us-ascii?Q?B1REwOB0lz6SS750sENafFZSiF262kwS0dcA0QU56QXz4CZn1DxMFn0XXaKe?=
- =?us-ascii?Q?c9uD+9u5dVkp5vltz/bHDAb3hwCpNvAMrcUQPz0bFGIcldElfWRzEQ1dtEyq?=
- =?us-ascii?Q?HAahvtN9sbNfeJUtUb9su6Ey02IV4G+El1nfbMsCkTzZPtV5UUrcW73GD297?=
- =?us-ascii?Q?0ogIdcXl7wnMD5IBRV5q+ZMsuyjFSL7weJj8toiSNPh6r5hA3R+76Vrh0x3y?=
- =?us-ascii?Q?iRr3PB1Pjq1XolBy5vB0e11lrtBsi3dJuYqGPtZ4lnlCStrzIovTRlpSNkTz?=
- =?us-ascii?Q?tUEglrw9NOxJseYmpwUEug5VgrjDmXm5J0wUiGlmBMIrl+xx1ep6uTUKuM/G?=
- =?us-ascii?Q?dqfMkpD1IdrxrxhEtmz12+h/zt+BB5pLtTc25QiQAEsJkZOSV2saWZo4IuVO?=
- =?us-ascii?Q?mt7sVfBo77tTwJk608P95ngvoPYRRKkA8I2VjEsPwc48VGXLSCW+mYaz1mKS?=
- =?us-ascii?Q?lFqEkYgiv9beso1fMVDw99pG4gOBWq8X4pHAlDoTNgHUlvjVU65Ai72oYLmk?=
- =?us-ascii?Q?Mhsn6Glu9O1OMu02zxkxdi6IewqHFr6Tj6ocB4R5so6eufU0UH7OcpEKueQ6?=
- =?us-ascii?Q?sn30hzIndum6kdSCQvUyf+3BhjWkJ+M+bTfpEYxocaBTOCPaFs0OOgemZror?=
- =?us-ascii?Q?IpgsN6uI4vE5eCZWX2Z3FINFCzKYiIP61VObd/SFWwvUm+fmk22K+Bb5eZ0n?=
- =?us-ascii?Q?zFb8Q88feWQ12oMlwbLoixzfOiH+v8k0hNr00eL2/HmDEBGbZQemV+/FVrq2?=
- =?us-ascii?Q?sIFM6sAJ+DHBsafOV7/ptJo/HmeZ51is6m39RpkG71Eylbf/YY4wMZwLEabw?=
- =?us-ascii?Q?HZ3WjBQhztfT2ThEpV2xrSjJPxH+kwII5cAM/CvZV7x5c83TGfd0yIgEKF9S?=
- =?us-ascii?Q?S+Vk3MTJM0inS0an7OGwg+/WRVOv71+FdAKoBr0aD1YEsKbxc/jQsAVIZxv0?=
- =?us-ascii?Q?1B1h3uHMxQZllcKz7C3gTtdXaRMDTDk3VgyWPlNx+90robe+Q5gRfih0CDKm?=
- =?us-ascii?Q?WQiGBNLzSOSCut+0TgH36mS96lZ2xHYu+BHV2+giGhzw1LmXa4NjKD3Xkp1g?=
- =?us-ascii?Q?uZUIdy5k?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        id S2391884AbhAZPna (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jan 2021 10:43:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33170 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2391590AbhAZPmj (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jan 2021 10:42:39 -0500
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2377CC061D73
+        for <netdev@vger.kernel.org>; Tue, 26 Jan 2021 07:41:54 -0800 (PST)
+Received: by mail-lf1-x12d.google.com with SMTP id a12so15169875lfb.1
+        for <netdev@vger.kernel.org>; Tue, 26 Jan 2021 07:41:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=isovalent-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:from:to:cc:references:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=oVsiXGmwYKFhF927hVNGspQE67VMa+U4wm+0vmxhnyY=;
+        b=X5it9///r1vV/exadVHwNvpu7mOpHv4yZt0Uq3tirgwqAkTrS0aQgBWlWKaYlrxbgl
+         dQkQ6LYDSTp2ByP6jLROn3MlERBn9xmF/rG2YoCKd5kupBjYnBZhlM6H3MzFMtgDdIxf
+         LF6QCHNbCkZSpBZ0/oaGeO1WRVyw4CtP6IeeVrmuoZlCrgEABnBZx69FiNNE4FHgjLIB
+         4OxoXISYOc752U3HmqsIzqZTz7BNXFGvFUiVT7GHvh9WDiMfWbyMZCPjqlwzzdDms8PM
+         4n2PhiCGw5fN63XAdS093C2t9Um+MFS60ZXcCtRm02TTP8x/DZeOZBLDwaGD+1Bt8iS5
+         4wHQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=oVsiXGmwYKFhF927hVNGspQE67VMa+U4wm+0vmxhnyY=;
+        b=g9YjJTRnQ1bz+jhsqMeB9I91FLyPy5uenOwVh6TTbmpWBxVwQqF8OeJeD1iS9lkTcH
+         t/87E4xhaVa5jShWM5Ze8t7Spatb+Bb6woPPvo3yvX8zaRbBzFfb5qEa3X9GFY07WOjx
+         lpj0yiKhsmOmnyeBqvocogP08YzhRHkVE8eRs8dqq/8jzK6oJY4C/prrKjvS+hJvL7Qm
+         ZFcwbpIBzroV3/i6zGSWT0dHdM4XKgSbTZRmoVJM2ZL8CBMV7zDV6H8+mTbZ7ofs/3wb
+         vVejILZe96MfSwZ6DBr6R97tbN83yLzFFvt10jRbW3rlQkRnjBxQTPfnwG8LQWVS3iBK
+         GmEg==
+X-Gm-Message-State: AOAM532yjAcmOK65nPYc/xm7aGUWixa1T/2X+4oHVHTwVIf00raPRGVD
+        Gzb6/9KUcZycuBQJtSKNvtQ3kg0JKOTBVQ==
+X-Google-Smtp-Source: ABdhPJz0WhtDQRhOSGAoJ63f0sRZvSlAkVmnw0I8s0JatMcuQRm88W9kPwUINbplPxc6Yov5GM+caQ==
+X-Received: by 2002:ac2:551e:: with SMTP id j30mr3021271lfk.595.1611675712626;
+        Tue, 26 Jan 2021 07:41:52 -0800 (PST)
+Received: from [192.168.1.12] ([194.35.116.83])
+        by smtp.gmail.com with ESMTPSA id l17sm1521480lfe.100.2021.01.26.07.41.51
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 26 Jan 2021 07:41:51 -0800 (PST)
+Subject: Re: [PATCH] bpf: fix build for BPF preload when $(O) points to a
+ relative path
+From:   Quentin Monnet <quentin@isovalent.com>
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        Brendan Higgins <brendanhiggins@google.com>,
+        David Gow <davidgow@google.com>,
+        Masahiro Yamada <masahiroy@kernel.org>
+References: <20210125154938.40504-1-quentin@isovalent.com>
+ <CAEf4BzYKrmMM_9SRKyGA0LNv-DvThpr9cQsNLVtn5h0jEUYtWg@mail.gmail.com>
+ <6a15aa00-5649-42e5-1c97-2e2985891607@isovalent.com>
+Message-ID: <c94b7005-70d3-a5ae-fc5b-a7cf5b2ea35d@isovalent.com>
+Date:   Tue, 26 Jan 2021 15:41:50 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.1
 MIME-Version: 1.0
-X-OriginatorOrg: microsoft.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BL0PR2101MB0930.namprd21.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3212b898-6a55-4f4e-59eb-08d8c2101ab6
-X-MS-Exchange-CrossTenant-originalarrivaltime: 26 Jan 2021 15:36:09.4259
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 72f988bf-86f1-41af-91ab-2d7cd011db47
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: K6TVIHVuOqdW+o7QVkN8rJIDKT5UtlolyO/h8FB6UR3JGuiPHQJ4D8KtGldISw1MVvWYwtfmc53MaaX1kh95sQ==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL0PR2101MB1347
+In-Reply-To: <6a15aa00-5649-42e5-1c97-2e2985891607@isovalent.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+2021-01-26 11:24 UTC+0000 ~ Quentin Monnet <quentin@isovalent.com>
+> 2021-01-25 16:32 UTC-0800 ~ Andrii Nakryiko <andrii.nakryiko@gmail.com>
+>> On Mon, Jan 25, 2021 at 7:49 AM Quentin Monnet <quentin@isovalent.com> wrote:
+>>>
+>>> Building the kernel with CONFIG_BPF_PRELOAD, and by providing a relative
+>>> path for the output directory, may fail with the following error:
+>>>
+>>>   $ make O=build bindeb-pkg
+>>>   ...
+>>>   /.../linux/tools/scripts/Makefile.include:5: *** O=build does not exist.  Stop.
+>>>   make[7]: *** [/.../linux/kernel/bpf/preload/Makefile:9: kernel/bpf/preload/libbpf.a] Error 2
+>>>   make[6]: *** [/.../linux/scripts/Makefile.build:500: kernel/bpf/preload] Error 2
+>>>   make[5]: *** [/.../linux/scripts/Makefile.build:500: kernel/bpf] Error 2
+>>>   make[4]: *** [/.../linux/Makefile:1799: kernel] Error 2
+>>>   make[4]: *** Waiting for unfinished jobs....
+>>>
+>>> In the case above, for the "bindeb-pkg" target, the error is produced by
+>>> the "dummy" check in Makefile.include, called from libbpf's Makefile.
+>>> This check changes directory to $(PWD) before checking for the existence
+>>> of $(O). But at this step we have $(PWD) pointing to "/.../linux/build",
+>>> and $(O) pointing to "build". So the Makefile.include tries in fact to
+>>> assert the existence of a directory named "/.../linux/build/build",
+>>> which does not exist.
+>>>
+>>> By contrast, other tools called from the main Linux Makefile get the
+>>> variable set to $(abspath $(objtree)), where $(objtree) is ".". We can
+>>> update the Makefile for kernel/bpf/preload to set $(O) to the same
+>>> value, to permit compiling with a relative path for output. Note that
+>>> apart from the Makefile.include, the variable $(O) is not used in
+>>> libbpf's build system.
+>>>
+>>> Note that the error does not occur for all make targets and
+>>> architectures combinations.
+>>>
+>>> - On x86, "make O=build vmlinux" appears to work fine.
+>>>   $(PWD) points to "/.../linux/tools", but $(O) points to the absolute
+>>>   path "/.../linux/build" and the test succeeds.
+>>> - On UML, it has been reported to fail with a message similar to the
+>>>   above (see [0]).
+>>> - On x86, "make O=build bindeb-pkg" fails, as described above.
+>>>
+>>> It is unsure where the different values for $(O) and $(PWD) come from
+>>> (likely some recursive make with different arguments at some point), and
+>>> because several targets are broken, it feels safer to fix the $(O) value
+>>> passed to libbpf rather than to hunt down all changes to the variable.
+>>>
+>>> David Gow previously posted a slightly different version of this patch
+>>> as a RFC [0], two months ago or so.
+>>>
+>>> [0] https://lore.kernel.org/bpf/20201119085022.3606135-1-davidgow@google.com/t/#u
+>>>
+>>> Cc: Andrii Nakryiko <andrii.nakryiko@gmail.com>
+>>> Cc: Brendan Higgins <brendanhiggins@google.com>
+>>> Cc: David Gow <davidgow@google.com>
+>>> Reported-by: David Gow <davidgow@google.com>
+>>> Signed-off-by: Quentin Monnet <quentin@isovalent.com>
+>>> ---
+>>
+>> I still think it would benefit everyone to figure out where this is
+>> breaking (given Linux Makefile explicitly tries to handle such
+>> relative path situation for O=, I believe), but this is trivial
+>> enough, so:
+>>
+>> Acked-by: Andrii Nakryiko <andrii@kernel.org>
+> 
+> Agreed, I'll try to spend a bit more time on this when I can. But it
+> would be nice to have the fix in the meantime. Thanks for the review and
+> ack.
 
++Cc Masahiro Yamada
 
-> -----Original Message-----
-> From: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
-> Sent: Tuesday, January 26, 2021 6:57 AM
-> To: linux-kernel@vger.kernel.org
-> Cc: KY Srinivasan <kys@microsoft.com>; Haiyang Zhang
-> <haiyangz@microsoft.com>; Stephen Hemminger
-> <sthemmin@microsoft.com>; Wei Liu <wei.liu@kernel.org>; Michael Kelley
-> <mikelley@microsoft.com>; linux-hyperv@vger.kernel.org; Tianyu Lan
-> <Tianyu.Lan@microsoft.com>; Saruhan Karademir
-> <skarade@microsoft.com>; Juan Vazquez <juvazq@microsoft.com>; Andrea
-> Parri (Microsoft) <parri.andrea@gmail.com>; Jakub Kicinski
-> <kuba@kernel.org>; David S. Miller <davem@davemloft.net>;
-> netdev@vger.kernel.org
-> Subject: [PATCH v2 4/4] hv_netvsc: Restrict configurations on isolated gu=
-ests
->=20
-> Restrict the NVSP protocol version(s) that will be negotiated with the ho=
-st to
-> be NVSP_PROTOCOL_VERSION_61 or greater if the guest is running isolated.
-> Moreover, do not advertise the SR-IOV capability and ignore
-> NVSP_MSG_4_TYPE_SEND_VF_ASSOCIATION messages in isolated guests,
-> which are not supposed to support SR-IOV.  This reduces the footprint of =
-the
-> code that will be exercised by Confidential VMs and hence the exposure to
-> bugs and vulnerabilities.
->=20
-> Signed-off-by: Andrea Parri (Microsoft) <parri.andrea@gmail.com>
-> Acked-by: Jakub Kicinski <kuba@kernel.org>
-> Cc: "David S. Miller" <davem@davemloft.net>
-> Cc: Jakub Kicinski <kuba@kernel.org>
-> Cc: netdev@vger.kernel.org
+Looking further into this, my understanding is the following.
 
-Reviewed-by: Haiyang Zhang <haiyangz@microsoft.com>
-Thanks.
+tools/scripts/Makefile.include contains this check:
+
+	dummy := $(if $(shell cd $(PWD); test -d $(O) || \
+		echo $(O)),$(error O=$(O) does not exist),)
+	ABSOLUTE_O := $(shell cd $(PWD); cd $(O) ; pwd)
+
+Note the use of $(PWD). As I understand, it is the shell environment
+variable, as it was set when the initial "make" command was run. This
+seems to be passed down to recursive calls to make. So if I type
+
+	$ cd /linux
+	$ make O=build vmlinux
+
+Then I get $(PWD) set to "/linux" and $(O) set to "build". The Makefile
+executes a submake from the output directory:
+
+	# Invoke a second make in the output directory, passing relevant
+	# variables
+	__sub-make:
+		$(Q)$(MAKE) -C $(abs_objtree) \
+			-f $(abs_srctree)/Makefile $(MAKECMDGOALS)
+
+But the variables are preserved. So far, so good.
+
+When I try to build "bindeb-pkg" instead:
+
+	$ cd /linux
+	$ make O=build bindeb-pkg
+
+Then I initially set $(PWD) and $(O) to the same values. They are
+preserved after the call to the submake, after we have changed to the
+output directory. But if I understand correctly, the "bindeb-pkg" target
+writes a new Makefile as build/debian/rules in scripts/package/mkdebian,
+and calls it _indirectly_ through dpkg-buildpackage, which does _not_
+preserve $(PWD) (instead, it is reset to /linux/build, the current
+directory when calling the script). I end up with $(O) set to "build",
+and $(PWD) set to "/linux/build". The "dummy" check called for libbpf
+fails to find "/linux/build/build".
+
+Can we avoid using $(PWD) in the first place? I'm not sure how. It was
+added in commit be40920fbf10 ("tools: Let O= makes handle a relative
+path with -C option") to accommodate building perf with "-C", so we
+could not replace $(PWD) with $$PWD (shell value at the time the
+directive is executed) for example, the values will be different.
+
+Can we unset $(O) so that, when we call dpkg-buildpackage, it reflects
+the output directory relatively to /linux/build/? Or pass a value for
+$(PWD), so it is preserved? Maybe, I don't know. It could be done in
+scripts/package/mkdebian for example, by passing "O=''" to the make
+call. It seems that the packages build well with this change. But then
+we might need to check and update the other packages too (RPM, snap,
+perf archives), and identify if something similar might be happening for
+UML. I'm not sure this is worth the trouble at this point, if all we
+want is to fix the eBPF preloads? But I'm open to discussion if this is
+really the path we want to go.
+
+Fixing $(O) to pass the dummy check is easier. However, when reading the
+commits I noticed that my patch is incorrect. It would break on
+something like "make O=~/build bindeb-pkg", because abspath does not
+resolve special shell characters like "~". See also commit 028568d84da3
+("kbuild: revert $(realpath ...) to $(shell cd ... && /bin/pwd)"): this
+is why tools/scripts/Makefile.include still has an "ABSOLUTE_O"
+variable. So instead of setting "O=$(abspath .)", I'll send a v2 with
+Andrii's suggestion to use $(LIBBPF_OUT).
+
+Quentin
