@@ -2,93 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E6269304D40
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 00:08:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 63B0D304D45
+	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 00:08:27 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732018AbhAZXHL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jan 2021 18:07:11 -0500
-Received: from foss.arm.com ([217.140.110.172]:52234 "EHLO foss.arm.com"
+        id S1732090AbhAZXHq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jan 2021 18:07:46 -0500
+Received: from mail.kernel.org ([198.145.29.99]:50870 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727886AbhAZSgz (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 26 Jan 2021 13:36:55 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 98ABB113E;
-        Tue, 26 Jan 2021 10:36:09 -0800 (PST)
-Received: from C02TD0UTHF1T.local (unknown [10.57.45.247])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id EABA83F66B;
-        Tue, 26 Jan 2021 10:36:07 -0800 (PST)
-Date:   Tue, 26 Jan 2021 18:36:02 +0000
-From:   Mark Rutland <mark.rutland@arm.com>
-To:     Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc:     Matthew Wilcox <willy@infradead.org>, linux-kernel@vger.kernel.org,
-        netdev@vger.kernel.org,
-        Courtney Cavin <courtney.cavin@sonymobile.com>
-Subject: Re: Preemptible idr_alloc() in QRTR code
-Message-ID: <20210126183534.GA90035@C02TD0UTHF1T.local>
-References: <20210126104734.GB80448@C02TD0UTHF1T.local>
- <20210126145833.GM308988@casper.infradead.org>
- <20210126162154.GD80448@C02TD0UTHF1T.local>
- <YBBKla3I2TxMFIvZ@builder.lan>
+        id S2390982AbhAZSnJ (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 26 Jan 2021 13:43:09 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C7EF722286;
+        Tue, 26 Jan 2021 18:42:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1611686548;
+        bh=xsSQgyzTplv0SsBJ7NkFDqsTUF/LqUhSoDlzv91qAGE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=aqQRbYeKnONLeoUsAfdvhonLK3yPnIFrpW8jfK8cRiAy48sYd1eSN1wV+7voMPl4q
+         DloUid1zmJnuRwIgSblReW+WI04Bp9u3egFisht/RNFregjA1mzrz5TuTbGZbpMibe
+         P3RSVSNaT24h9/is/CbQSxW7CoTUoEG8yy4++G0mjvwU/315SOcgsfXqAQzOGTzxij
+         us9e13N1oAD8uDdJk8s0Q35HMdydwz0Kpv6bvD0E2kkMBMwautf2sKp0HlZOLoibkQ
+         cwTqdOLuVhWLxtQ2dNV+5KJ8Mm53bmFbvtTs8K5RAF8MMdDZk6Pz+n8nWi1H68tamy
+         1khU1Q1wG5fVA==
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
+        ast@kernel.org, daniel@iogearbox.net, toshiaki.makita1@gmail.com,
+        lorenzo.bianconi@redhat.com, brouer@redhat.com, toke@redhat.com
+Subject: [PATCH bpf-next 1/3] net: veth: introduce bulking for XDP_PASS
+Date:   Tue, 26 Jan 2021 19:41:59 +0100
+Message-Id: <adca75284e30320e9d692d618a6349319d9340f3.1611685778.git.lorenzo@kernel.org>
+X-Mailer: git-send-email 2.29.2
+In-Reply-To: <cover.1611685778.git.lorenzo@kernel.org>
+References: <cover.1611685778.git.lorenzo@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YBBKla3I2TxMFIvZ@builder.lan>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 26, 2021 at 11:00:05AM -0600, Bjorn Andersson wrote:
-> On Tue 26 Jan 10:21 CST 2021, Mark Rutland wrote:
-> 
-> > On Tue, Jan 26, 2021 at 02:58:33PM +0000, Matthew Wilcox wrote:
-> > > On Tue, Jan 26, 2021 at 10:47:34AM +0000, Mark Rutland wrote:
-> > > > Hi,
-> > > > 
-> > > > When fuzzing arm64 with Syzkaller, I'm seeing some splats where
-> > > > this_cpu_ptr() is used in the bowels of idr_alloc(), by way of
-> > > > radix_tree_node_alloc(), in a preemptible context:
-> > > 
-> > > I sent a patch to fix this last June.  The maintainer seems to be
-> > > under the impression that I care an awful lot more about their
-> > > code than I do.
-> > > 
-> > > https://lore.kernel.org/netdev/20200605120037.17427-1-willy@infradead.org/
-> > 
-> > Ah; I hadn't spotted the (glaringly obvious) GFP_ATOMIC abuse, thanks
-> > for the pointer, and sorry for the noise.
-> > 
-> 
-> I'm afraid this isn't as obvious to me as it is to you. Are you saying
-> that one must not use GFP_ATOMIC in non-atomic contexts?
-> 
-> That said, glancing at the code I'm puzzled to why it would use
-> GFP_ATOMIC.
+Introduce bulking support for XDP_PASS verdict forwarding skbs to
+the networking stack
 
-I'm also not entirely sure about the legitimacy of GFP_ATOMIC outside of
-atomic contexts -- I couldn't spot any documentation saying that wasn't
-legitimate, but Matthew's commit message implies so, and it sticks out
-as odd.
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+---
+ drivers/net/veth.c | 43 ++++++++++++++++++++++++++-----------------
+ 1 file changed, 26 insertions(+), 17 deletions(-)
 
-> > It looks like Eric was after a fix that trivially backported to v4.7
-> > (and hence couldn't rely on xarray) but instead it just got left broken
-> > for months. :/
-> > 
-> > Bjorn, is this something you care about? You seem to have the most
-> > commits to the file, and otherwise the official maintainer is Dave
-> > Miller per get_maintainer.pl.
-> 
-> I certainly care about qrtr working and remember glancing at Matthew's
-> patch, but seems like I never found time to properly review it.
-> 
-> > It is very tempting to make the config option depend on BROKEN...
-> 
-> I hear you and that would be bad, so I'll make sure to take a proper
-> look at this and Matthew's patch.
+diff --git a/drivers/net/veth.c b/drivers/net/veth.c
+index 6e03b619c93c..23137d9966da 100644
+--- a/drivers/net/veth.c
++++ b/drivers/net/veth.c
+@@ -35,6 +35,7 @@
+ #define VETH_XDP_HEADROOM	(XDP_PACKET_HEADROOM + NET_IP_ALIGN)
+ 
+ #define VETH_XDP_TX_BULK_SIZE	16
++#define VETH_XDP_BATCH		8
+ 
+ struct veth_stats {
+ 	u64	rx_drops;
+@@ -787,27 +788,35 @@ static int veth_xdp_rcv(struct veth_rq *rq, int budget,
+ 	int i, done = 0;
+ 
+ 	for (i = 0; i < budget; i++) {
+-		void *ptr = __ptr_ring_consume(&rq->xdp_ring);
+-		struct sk_buff *skb;
++		void *frames[VETH_XDP_BATCH];
++		void *skbs[VETH_XDP_BATCH];
++		int i, n_frame, n_skb = 0;
+ 
+-		if (!ptr)
++		n_frame = __ptr_ring_consume_batched(&rq->xdp_ring, frames,
++						     VETH_XDP_BATCH);
++		if (!n_frame)
+ 			break;
+ 
+-		if (veth_is_xdp_frame(ptr)) {
+-			struct xdp_frame *frame = veth_ptr_to_xdp(ptr);
++		for (i = 0; i < n_frame; i++) {
++			void *f = frames[i];
++			struct sk_buff *skb;
+ 
+-			stats->xdp_bytes += frame->len;
+-			skb = veth_xdp_rcv_one(rq, frame, bq, stats);
+-		} else {
+-			skb = ptr;
+-			stats->xdp_bytes += skb->len;
+-			skb = veth_xdp_rcv_skb(rq, skb, bq, stats);
+-		}
+-
+-		if (skb)
+-			napi_gro_receive(&rq->xdp_napi, skb);
++			if (veth_is_xdp_frame(f)) {
++				struct xdp_frame *frame = veth_ptr_to_xdp(f);
+ 
+-		done++;
++				stats->xdp_bytes += frame->len;
++				skb = veth_xdp_rcv_one(rq, frame, bq, stats);
++			} else {
++				skb = f;
++				stats->xdp_bytes += skb->len;
++				skb = veth_xdp_rcv_skb(rq, skb, bq, stats);
++			}
++			if (skb)
++				skbs[n_skb++] = skb;
++		}
++		for (i = 0; i < n_skb; i++)
++			napi_gro_receive(&rq->xdp_napi, skbs[i]);
++		done += n_frame;
+ 	}
+ 
+ 	u64_stats_update_begin(&rq->stats.syncp);
+@@ -818,7 +827,7 @@ static int veth_xdp_rcv(struct veth_rq *rq, int budget,
+ 	rq->stats.vs.xdp_packets += done;
+ 	u64_stats_update_end(&rq->stats.syncp);
+ 
+-	return done;
++	return i;
+ }
+ 
+ static int veth_poll(struct napi_struct *napi, int budget)
+-- 
+2.29.2
 
-Thanks! I'm happy to try/test patches if that's any help. My main
-concern here is that this can be triggered on arbitrary platforms so
-long as the driver is built in (e.g. my Syzkaller instance is hitting
-this within a VM).
-
-Thanks,
-Mark.
