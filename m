@@ -2,41 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C7B5F304D92
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 01:44:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1BF45304D94
+	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 01:45:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732584AbhAZXLa (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jan 2021 18:11:30 -0500
-Received: from mail.kernel.org ([198.145.29.99]:38928 "EHLO mail.kernel.org"
+        id S1732602AbhAZXLx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jan 2021 18:11:53 -0500
+Received: from mail.kernel.org ([198.145.29.99]:39718 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729476AbhAZUdD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 26 Jan 2021 15:33:03 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 8BE89221FC;
-        Tue, 26 Jan 2021 20:32:08 +0000 (UTC)
+        id S2388761AbhAZUgl (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 26 Jan 2021 15:36:41 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 05E9A221FC;
+        Tue, 26 Jan 2021 20:36:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611693129;
-        bh=cSdZtKZsW51uAUJiVU9AGkB2IOj2VA0ZWXMUsghugfo=;
+        s=k20201202; t=1611693361;
+        bh=3VkdR2ztfnDJiazl5+Pnuwv9d9urcEqKhxtg8qavKyY=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=BXLLSgTXwowzKcsbR3yjYHfqv6zoKfoXIl8aXpIa58a7B42F+gRQQ3qHcm1n1tVxR
-         2BwjGLA9ymelqnm6dlj0tilKMGeeCsuQMnK9UzISvyB8expRGHsqPWRgcErEiW5Ap4
-         Yv7fx8DrQv3NY+IKN07sYYUx/N4/0QPzGNI6jKRP7wVOFO8sfQhWn8I8Cx1SKWdK78
-         J0P8HEz+FMJyVXHcBz0pvvaB7fwbEvnM2Lg1r9J35w6INKjo0qBatU9mwwwe7+z8kk
-         FYK91MdF8o/j3GwFqNPEJVKtimEDcyD8g6ZJN1rXjFmsjtEJ/Prsaarcumc+D05P8F
-         /xVtAdJDNCURA==
-Date:   Tue, 26 Jan 2021 12:32:07 -0800
+        b=tjYftICQkCr6Xtnf3Y8F+VoXLIQRI1M4WZOqaLoiiLk3dPi1kYF9j5nMNvMt9U32v
+         OtUalOJPT6z8DTXPtRJ5gyqjoR7AEDA59mOM+JhecCJQaWbdVmUaMpRX1XDR/+rdyx
+         f3uFZtnWEpk/Jt744moGBwoN+SmZZwv8eKzP5qDv1YbO3Hwxh9TH5MEkjiPZy1go4N
+         ZJGdDb+H3JV+XWxHVk698JHwMGMPH0djxgk3bgOsXvyJ+BRTB1CC0TSyEH10Ndv6e9
+         jTMyHESQ6HYnkXPbV+usmCtb0HRUjJzugdpq1arUOBCVolxAI+kdq9YFVX2bhJlD1F
+         ha98L7nphE/sQ==
+Date:   Tue, 26 Jan 2021 12:36:00 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Johannes Berg <johannes@sipsolutions.net>
-Cc:     Eric Dumazet <eric.dumazet@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        netdev <netdev@vger.kernel.org>,
-        Eric Dumazet <edumazet@google.com>,
-        Ben Greear <greearb@candelatech.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        linux-wireless@vger.kernel.org
-Subject: Re: [PATCH net] iwlwifi: provide gso_type to GSO packets
-Message-ID: <20210126123207.5c79f4c0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210125150949.619309-1-eric.dumazet@gmail.com>
-References: <20210125150949.619309-1-eric.dumazet@gmail.com>
+To:     Edwin Peer <edwin.peer@broadcom.com>
+Cc:     netdev@vger.kernel.org,
+        Andrew Gospodarek <andrew.gospodarek@broadcom.com>,
+        Michael Chan <michael.chan@broadcom.com>,
+        Stephen Hemminger <stephen@networkplumber.org>,
+        Michal Kubecek <mkubecek@suse.cz>,
+        David Ahern <dsahern@gmail.com>
+Subject: Re: [PATCH net-next v2 1/1] rtnetlink: extend
+ RTEXT_FILTER_SKIP_STATS to IFLA_VF_INFO
+Message-ID: <20210126123600.3def019b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210126174024.185001-2-edwin.peer@broadcom.com>
+References: <20210126174024.185001-1-edwin.peer@broadcom.com>
+        <20210126174024.185001-2-edwin.peer@broadcom.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -44,23 +45,23 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 25 Jan 2021 07:09:49 -0800 Eric Dumazet wrote:
-> From: Eric Dumazet <edumazet@google.com>
+On Tue, 26 Jan 2021 09:40:24 -0800 Edwin Peer wrote:
+> This filter already exists for excluding IPv6 SNMP stats. Extend its
+> definition to also exclude IFLA_VF_INFO stats in RTM_GETLINK.
 > 
-> net/core/tso.c got recent support for USO, and this broke iwlfifi
-> because the driver implemented a limited form of GSO.
+> This patch constitutes a partial fix for a netlink attribute nesting
+> overflow bug in IFLA_VFINFO_LIST. By excluding the stats when the
+> requester doesn't need them, the truncation of the VF list is avoided.
 > 
-> Providing ->gso_type allows for skb_is_gso_tcp() to provide
-> a correct result.
+> While it was technically only the stats added in commit c5a9f6f0ab40
+> ("net/core: Add drop counters to VF statistics") breaking the camel's
+> back, the appreciable size of the stats data should never have been
+> included without due consideration for the maximum number of VFs
+> supported by PCI.
 > 
-> Fixes: 3d5b459ba0e3 ("net: tso: add UDP segmentation support")
-> Signed-off-by: Eric Dumazet <edumazet@google.com>
-> Reported-by: Ben Greear <greearb@candelatech.com>
-> Bisected-by: Ben Greear <greearb@candelatech.com>
-> Tested-by: Ben Greear <greearb@candelatech.com>
-> Cc: Luca Coelho <luciano.coelho@intel.com>
-> Cc: linux-wireless@vger.kernel.org
-> Cc: Johannes Berg <johannes@sipsolutions.net>
+> Fixes: 3b766cd83232 ("net/core: Add reading VF statistics through the PF netdevice")
+> Fixes: c5a9f6f0ab40 ("net/core: Add drop counters to VF statistics")
+> Signed-off-by: Edwin Peer <edwin.peer@broadcom.com>
 
-Johannes, Eric tagged this for net, are you okay with me taking it?
-No strong preference here.
+You don't seem to have addressed or as little as responded to all 
+the feedback on v1.
