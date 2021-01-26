@@ -2,177 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 36C1F3044D8
+	by mail.lfdr.de (Postfix) with ESMTP id A875E3044D9
 	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 18:18:41 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389694AbhAZRPu (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jan 2021 12:15:50 -0500
-Received: from m42-8.mailgun.net ([69.72.42.8]:56859 "EHLO m42-8.mailgun.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727141AbhAZJXD (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 26 Jan 2021 04:23:03 -0500
-DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
- s=smtp; t=1611652951; h=Date: Message-Id: Cc: To: Subject: From:
- Content-Transfer-Encoding: MIME-Version: Content-Type: Sender;
- bh=8RYhwBl8KWpB16zC3SzdrYIhigFUF/TiabB1hljhjd8=; b=qGRQnhU6PCqKVt2bVaoMn/7yU0n6jqT4GUvW91Ts2pOSlmCB5wsvW3THrVwSmK1CKc6BeumJ
- mPCdirBeAfLvAqc1kAfSbwD77vWSJtdeIzwr7ES9BYUBHzec/vKKIMSCCrynIC/8M23l9shy
- uqPHK85Gwgr3D080i/xwsUxUgC4=
-X-Mailgun-Sending-Ip: 69.72.42.8
-X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
-Received: from smtp.codeaurora.org
- (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
- smtp-out-n06.prod.us-east-1.postgun.com with SMTP id
- 600fdf3bbdcf4682875ebb35 (version=TLS1.2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Tue, 26 Jan 2021 09:22:03
- GMT
-Sender: kvalo=codeaurora.org@mg.codeaurora.org
-Received: by smtp.codeaurora.org (Postfix, from userid 1001)
-        id 6A367C433CA; Tue, 26 Jan 2021 09:22:02 +0000 (UTC)
-X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
-        aws-us-west-2-caf-mail-1.web.codeaurora.org
-X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=2.0 tests=ALL_TRUSTED,BAYES_00,
-        MISSING_DATE,MISSING_MID,SPF_FAIL autolearn=no autolearn_force=no
-        version=3.4.0
-Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: kvalo)
-        by smtp.codeaurora.org (Postfix) with ESMTPSA id 45403C433ED;
-        Tue, 26 Jan 2021 09:22:01 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 45403C433ED
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
-Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
+        id S2389736AbhAZRPy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jan 2021 12:15:54 -0500
+Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:9160 "EHLO
+        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390836AbhAZJYp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jan 2021 04:24:45 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B600fdfb10000>; Tue, 26 Jan 2021 01:24:01 -0800
+Received: from HKMAIL103.nvidia.com (10.18.16.12) by HQMAIL109.nvidia.com
+ (172.20.187.15) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 26 Jan
+ 2021 09:24:01 +0000
+Received: from HKMAIL101.nvidia.com (10.18.16.10) by HKMAIL103.nvidia.com
+ (10.18.16.12) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 26 Jan
+ 2021 09:23:48 +0000
+Received: from NAM12-BN8-obe.outbound.protection.outlook.com (104.47.55.175)
+ by HKMAIL101.nvidia.com (10.18.16.10) with Microsoft SMTP Server (TLS) id
+ 15.0.1473.3 via Frontend Transport; Tue, 26 Jan 2021 09:23:48 +0000
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=YXRkYqSHUAJuzqpVc8R8BcUJDxNTVX8XZE05eFM8lzZUZAKM+70D97e7ClHb+6QQRVgAtN00RlWyMYtATVicGNcJwyMwWYtsTxtSW/sHtHJy2X6qyw63nazb8t5F9Tv9zyVFgPikgs2nU+4vAdZy6XlVoJAZRWasSurwspIquceP4nQkJ8Oi8z/sHFOD2Sn5kNOi0pUZwlDQqpgFBXC7SOXJN5JRN3PU66WHkfp8QJH+w9WcT0sho88pBDSGi0AWQN4R+Ig1gW0aLFalEi8sNGZOoaN/Osass0iCq0mm6GcMd+ZRGqdSRJzQakqvoUYQ/RP4gZKkEJbpkE5O/Lyitg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=/jUBdUOkbwd/WN8tHGLMNUyg6S3FbagX4rD7ZwwdgPE=;
+ b=hIWyS6RFuZPkN9x2t1Csxd74cgE4VdFuVj9qU2k9CDYnXQED5GTJvh9+3QrOVecOOleEPn+9btq1ds9RqAoyh/scOtGEdyoX16Hj87igCzTord5wL9SRsanWy85fRwq9T4iOkVKMh5dINzjqUN3gKxGH31TE1inzpuwBJhk6m4ItzupCiPE+Qqvsz8ezQaRp625+hzATyqfHTPmm5WIr6SeD1PLRN1Rqlm4CT/YhvHUvhlMaB1ol20ShcDnt1qxRq4V3ymCD1EwWaRVLjESSlEmOReMAJHJLrYsN9dNhcjn7PCcCj6vGKxNc4GyZ7HZFM8K7zBVJqgN7kSGwrsUuiQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
+ dkim=pass header.d=nvidia.com; arc=none
+Authentication-Results: davemloft.net; dkim=none (message not signed)
+ header.d=none;davemloft.net; dmarc=none action=none header.from=nvidia.com;
+Received: from DM6PR12MB4403.namprd12.prod.outlook.com (2603:10b6:5:2ab::24)
+ by DM6PR12MB4107.namprd12.prod.outlook.com (2603:10b6:5:218::7) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3784.13; Tue, 26 Jan
+ 2021 09:23:46 +0000
+Received: from DM6PR12MB4403.namprd12.prod.outlook.com
+ ([fe80::edba:d7b5:bd18:5704]) by DM6PR12MB4403.namprd12.prod.outlook.com
+ ([fe80::edba:d7b5:bd18:5704%4]) with mapi id 15.20.3805.016; Tue, 26 Jan 2021
+ 09:23:46 +0000
+Subject: Re: [PATCH net-next 0/2] net: bridge: multicast: per-port EHT hosts
+ limit
+To:     Nikolay Aleksandrov <razor@blackwall.org>, <netdev@vger.kernel.org>
+CC:     <roopa@nvidia.com>, <bridge@lists.linux-foundation.org>,
+        <kuba@kernel.org>, <davem@davemloft.net>
+References: <20210126092132.407355-1-razor@blackwall.org>
+From:   Nikolay Aleksandrov <nikolay@nvidia.com>
+Message-ID: <f0f19c6c-f5bf-0d07-fb49-60167e281bd1@nvidia.com>
+Date:   Tue, 26 Jan 2021 11:23:38 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
+In-Reply-To: <20210126092132.407355-1-razor@blackwall.org>
 Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-From:   Kalle Valo <kvalo@codeaurora.org>
-Subject: pull-request: wireless-drivers-2021-01-26
-To:     netdev@vger.kernel.org
-Cc:     linux-wireless@vger.kernel.org
-Message-Id: <20210126092202.6A367C433CA@smtp.codeaurora.org>
-Date:   Tue, 26 Jan 2021 09:22:02 +0000 (UTC)
+X-Originating-IP: [213.179.129.39]
+X-ClientProxiedBy: ZR0P278CA0081.CHEP278.PROD.OUTLOOK.COM
+ (2603:10a6:910:22::14) To DM6PR12MB4403.namprd12.prod.outlook.com
+ (2603:10b6:5:2ab::24)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [10.21.240.166] (213.179.129.39) by ZR0P278CA0081.CHEP278.PROD.OUTLOOK.COM (2603:10a6:910:22::14) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3784.12 via Frontend Transport; Tue, 26 Jan 2021 09:23:44 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 338cdf6b-68b7-47d7-ad95-08d8c1dc14eb
+X-MS-TrafficTypeDiagnostic: DM6PR12MB4107:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <DM6PR12MB41078FFE77B194FACB951813DFBC9@DM6PR12MB4107.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 0bIJxILVWAf6SUD7dWeKNzfd3zsQ/12jjkIdl8sjRBgYuYyqmkqzo7k2s2CFnqZjtYgqgk+HvuWqfaEKG0imDG/y/iVrnM53VfRznisYX7Ym990NviaqAcphflm5TcWa70rOyYo4jG9DTikjoePBJ3SJDlCf5/3cFEol8OMa+eRUOetnMxR4JpKh702Dt+TgWITbP1I6hh6HET+TQpdHCST7LqxfPRk8OdPQrvNAYpTx0KdUlifwcBPJ7mVu4GmO13kxT9q+6Xyf4RnsSH9P+BjqRDdP6RWq2UBv9tNwUU+KZcQXPlMVim7VV5tdKaF9uMIVW1XJBjIEhoVKOraHO5uX9azc4Kdq/Owjs2e4lZH6i4Amq4qHyh5yS5HczWkIHeOIUxIzF3BYdE3+d1t/qDx5YBNp2lJXqIpX87ZlxkPZ3b08sY2cPl5/cUGTon0PL5TjoAzIYzN8H6knohkYBriQ/1P2My5f1CVXxYjA13Q=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR12MB4403.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(396003)(136003)(39860400002)(346002)(366004)(31686004)(6666004)(2906002)(8936002)(6486002)(83380400001)(36756003)(26005)(86362001)(66556008)(66476007)(66946007)(8676002)(31696002)(2616005)(478600001)(16576012)(5660300002)(316002)(53546011)(186003)(4326008)(956004)(16526019)(45980500001)(43740500002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: =?utf-8?B?SGZPWEl6cEk5RmZJckJLUXphTGdpdE51VnQ3OVFicE5hNEF0a2JYdXA0anZC?=
+ =?utf-8?B?cytuNXJ2dHAzZHJWQ1ZZSjVOQUxpaGRYMmx0NGRmUE1ldjF5RHh6K1czUE1Y?=
+ =?utf-8?B?WTlvNGdVNEpld0NQNG1KdDlSUmdpbnJ1dmdVd3JHWjh3OEEzZ0xyY1NqSy9S?=
+ =?utf-8?B?NUJTZlIxVy83a3ltWUtwYng5ZSt3TU41eSs2R1NyTTJ3MFdJdmdYeEZHWkxJ?=
+ =?utf-8?B?dmhoY2NJUXQxRWpNRzhnZWo2aDFWRHNpcWl6NEcyeWZkbFN0MEdTQzZ0L0py?=
+ =?utf-8?B?NEkyenhXdm9qRkNmTXE3Q1VuUG0yQ2hUZEVQN3FpMHpvbGJ1bXF6cTByNjhY?=
+ =?utf-8?B?SHl4R1hncmRBQ0tkRTg2aWgybGdrS2pLMTZEcXhkK1lEVG1jajVhRTVWWWdh?=
+ =?utf-8?B?eGFTVUJEWmZYUjYweHlIWmsraVZaeC83SlRaM1IrTm9FVDROeVZVSUtnTzYw?=
+ =?utf-8?B?UFJabG5mSFc3N3RabXE3a3ZrcnNlNnUvaVZFSC9EQXVJQk1aK2FEYzNIZTJ6?=
+ =?utf-8?B?cEswVlRBTks1MGJONG5HejJ6TnNkdkt5MVUvU2xDZ0tXTTAxczV6SGxNSTYr?=
+ =?utf-8?B?b3lBbnNTM3ZVR0FENWVmRkxmYVRVaFMxTzBiMDNqZ3RKOW5MdjAzaWFScnYy?=
+ =?utf-8?B?WjZPb2V6OHVzcW1KU2RMaGQ1cGxFMWJpR0xNdm15Q1RvOUpsUGU2SVVNU1lP?=
+ =?utf-8?B?YndJWUxFcTE4Y3J2dUdHN0JXa2FRVlZzU1ZLT01nb3lWcStkcVNKcGVML2dy?=
+ =?utf-8?B?VmNydDBWY3dYcHZmVDh5T2ZQSnFaSXhPT2pUVzV4eFEwVkRBZ240b1QrMDJi?=
+ =?utf-8?B?THg1SmY4amQrN3hmdmFKK1BzaEgyK1BzZzFibVRDcElnTjZuZ25rbmoyK2hR?=
+ =?utf-8?B?RzZKQXVXUlpOTVFIbDhDTkJHeVY0VGYvQWZjUXBtUzd4V2x0djgzaFE2N2V6?=
+ =?utf-8?B?OHF1TkNEaE9Na2lzVmplQnd0K1NkdjBFUW9lRUVBdWJoalA3bHpVYkl4MFUy?=
+ =?utf-8?B?cWNEdVhqMFZ1cFRjU25MOXN3elhHcHJyUWZ2UWUxU1dvZVJDdEw0bnYzNWh4?=
+ =?utf-8?B?SVQrZ05IdUFHVkQ0NkFIZlpOa2dGaHFnbGtSZkFaVWlOUnpJQTV3WDBNVjAz?=
+ =?utf-8?B?bFUrQnQ2MldWNkNmczJqVUhPaXowSmFHdStuYXZxQkNES3c0Q2E4UUE5Q2pF?=
+ =?utf-8?B?ZXFpTXlOMFRxTElmakJtS3g2MTlNNmhDdWt1c3hlajlsZGdPWXVSWnVvRk4v?=
+ =?utf-8?B?U3l2MWZaVklnNy9DejJHM1IwYmJFSGxnQWN6bVRMREZaNnAvSFFmQVhNOEhn?=
+ =?utf-8?B?Sk1HTkFPVldZZjJzNlB0cEdUUzh3djJ4bW1EOER1UVpRMmhaQnhPRHozRUJS?=
+ =?utf-8?B?UTdiTnBjVFVQcU03SnBvK3BFQlRqanlsK0ZuYkFjQ2d0b09DUzVPcVloUVJ3?=
+ =?utf-8?Q?lp6W41br?=
+X-MS-Exchange-CrossTenant-Network-Message-Id: 338cdf6b-68b7-47d7-ad95-08d8c1dc14eb
+X-MS-Exchange-CrossTenant-AuthSource: DM6PR12MB4403.namprd12.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Jan 2021 09:23:46.1647
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 43083d15-7273-40c1-b7db-39efd9ccc17a
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: SasAK3cyvrFBIqki8FIKtQC87EOV+iN81catX4n69XPRTC0lkTYiC/21vJGD3heuI1J3fxYIiL8DXCzsQC8fcQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR12MB4107
+X-OriginatorOrg: Nvidia.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1611653041; bh=/jUBdUOkbwd/WN8tHGLMNUyg6S3FbagX4rD7ZwwdgPE=;
+        h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:
+         Authentication-Results:Subject:To:CC:References:From:Message-ID:
+         Date:User-Agent:In-Reply-To:Content-Type:Content-Language:
+         Content-Transfer-Encoding:X-Originating-IP:X-ClientProxiedBy:
+         MIME-Version:X-MS-Exchange-MessageSentRepresentingType:
+         X-MS-PublicTrafficType:X-MS-Office365-Filtering-Correlation-Id:
+         X-MS-TrafficTypeDiagnostic:X-MS-Exchange-Transport-Forked:
+         X-Microsoft-Antispam-PRVS:X-MS-Oob-TLC-OOBClassifiers:
+         X-MS-Exchange-SenderADCheck:X-Microsoft-Antispam:
+         X-Microsoft-Antispam-Message-Info:X-Forefront-Antispam-Report:
+         X-MS-Exchange-AntiSpam-MessageData:
+         X-MS-Exchange-CrossTenant-Network-Message-Id:
+         X-MS-Exchange-CrossTenant-AuthSource:
+         X-MS-Exchange-CrossTenant-AuthAs:
+         X-MS-Exchange-CrossTenant-OriginalArrivalTime:
+         X-MS-Exchange-CrossTenant-FromEntityHeader:
+         X-MS-Exchange-CrossTenant-Id:X-MS-Exchange-CrossTenant-MailboxType:
+         X-MS-Exchange-CrossTenant-UserPrincipalName:
+         X-MS-Exchange-Transport-CrossTenantHeadersStamped:X-OriginatorOrg;
+        b=sPijnaqxpDxn3megZiIySBj7LO/ZD3a6EfaBcbhwBe6hJbtjVYzNNd72v8HqeRbcX
+         IP6XozumK5dHXLUuu5pFvr0pTyLzCXL8PIwvtJYjKti/Ujm5asLH42sudQkRxCTKc5
+         w1x/G+6TmEOvlBVZP3oY1YHCTpXqvjhQxbLXqyS5rFFR5Rt0Ef2iLsXeHmkeIa7Z65
+         AqiYUBGbTRsHBfoyTYYwX6FbUttpi9WqqZGAQc/YlAPQA51X6f4rvTEOGMxOBJe68M
+         Vjnvr9jntjFM2UTVtBKZWMXwJyZhmpGAQp2NcvqsWzpDYbI7sIFJnpdPs/4Elb6HCW
+         dynQVguU1U9fA==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On 26/01/2021 11:21, Nikolay Aleksandrov wrote:
+> From: Nikolay Aleksandrov <nikolay@nvidia.com>
+> 
+> Hi,
+> This set adds a simple configurable per-port EHT tracked hosts limit.
+> Patch 01 adds a default limit of 512 tracked hosts per-port, since the EHT
+> changes are still only in net-next that shouldn't be a problem. Then
+> patch 02 adds the ability to configure and retrieve the hosts limit
+> and to retrieve the current number of tracked hosts per port.
+> 
+> Thanks,
+>  Nik
+> 
+> Nikolay Aleksandrov (2):
+>   net: bridge: multicast: add per-port EHT hosts limit
+>   net: bridge: multicast: make tracked EHT hosts limit configurable
+> 
+>  include/uapi/linux/if_link.h      |  2 ++
+>  net/bridge/br_multicast.c         | 16 ++++++++++++++++
+>  net/bridge/br_multicast_eht.c     |  7 +++++++
+>  net/bridge/br_netlink.c           | 19 ++++++++++++++++++-
+>  net/bridge/br_private.h           |  2 ++
+>  net/bridge/br_private_mcast_eht.h | 28 ++++++++++++++++++++++++++++
+>  net/bridge/br_sysfs_if.c          | 26 ++++++++++++++++++++++++++
+>  net/core/rtnetlink.c              |  2 +-
+>  8 files changed, 100 insertions(+), 2 deletions(-)
+> 
 
-here's a pull request to net tree, more info below. Please let me know if there
-are any problems.
+Self-NAK
+Aaargh.. sent older version, sorry about the noise. I'll send the proper one as
+v2 in a bit.
 
-Kalle
 
-The following changes since commit 6279d812eab67a6df6b22fa495201db6f2305924:
-
-  Merge tag 'net-5.11-rc3-2' of git://git.kernel.org/pub/scm/linux/kernel/git/netdev/net (2021-01-08 12:12:30 -0800)
-
-are available in the git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/kvalo/wireless-drivers.git tags/wireless-drivers-2021-01-26
-
-for you to fetch changes up to 0acb20a5438c36e0cf2b8bf255f314b59fcca6ef:
-
-  mt7601u: fix kernel crash unplugging the device (2021-01-25 16:02:52 +0200)
-
-----------------------------------------------------------------
-wireless-drivers fixes for v5.11
-
-Second set of fixes for v5.11. Like in last time we again have more
-fixes than usual Actually a bit too much for my liking in this state
-of the cycle, but due to unrelated challenges I was only able to
-submit them now.
-
-We have few important crash fixes, iwlwifi modifying read-only data
-being the most reported issue, and also smaller fixes to iwlwifi.
-
-mt76
-
-* fix a clang warning about enum usage
-
-* fix rx buffer refcounting crash
-
-mt7601u
-
-* fix rx buffer refcounting crash
-
-* fix crash when unbplugging the device
-
-iwlwifi
-
-* fix a crash where we were modifying read-only firmware data
-
-* lots of smaller fixes allover the driver
-
-----------------------------------------------------------------
-Emmanuel Grumbach (3):
-      iwlwifi: fix the NMI flow for old devices
-      iwlwifi: queue: don't crash if txq->entries is NULL
-      iwlwifi: pcie: add a NULL check in iwl_pcie_txq_unmap
-
-Gregory Greenman (1):
-      iwlwifi: mvm: invalidate IDs of internal stations at mvm start
-
-Johannes Berg (10):
-      iwlwifi: mvm: take mutex for calling iwl_mvm_get_sync_time()
-      iwlwifi: pcie: avoid potential PNVM leaks
-      iwlwifi: pnvm: don't skip everything when not reloading
-      iwlwifi: pnvm: don't try to load after failures
-      iwlwifi: pcie: set LTR on more devices
-      iwlwifi: pcie: fix context info memory leak
-      iwlwifi: pcie: use jiffies for memory read spin time limit
-      iwlwifi: pcie: reschedule in long-running memory reads
-      iwlwifi: mvm: guard against device removal in reprobe
-      iwlwifi: queue: bail out on invalid freeing
-
-Lorenzo Bianconi (3):
-      mt7601u: fix rx buffer refcounting
-      mt76: mt7663s: fix rx buffer refcounting
-      mt7601u: fix kernel crash unplugging the device
-
-Luca Coelho (1):
-      iwlwifi: pcie: add rules to match Qu with Hr2
-
-Matt Chen (1):
-      iwlwifi: mvm: fix the return type for DSM functions 1 and 2
-
-Matti Gottlieb (1):
-      iwlwifi: Fix IWL_SUBDEVICE_NO_160 macro to use the correct bit.
-
-Nathan Chancellor (1):
-      mt76: Fix queue ID variable types after mcu queue split
-
-Sara Sharon (1):
-      iwlwifi: mvm: skip power command when unbinding vif during CSA
-
-Shaul Triebitz (1):
-      iwlwifi: mvm: clear IN_D3 after wowlan status cmd
-
-Takashi Iwai (1):
-      iwlwifi: dbg: Don't touch the tlv data
-
- drivers/net/wireless/intel/iwlwifi/cfg/22000.c     | 25 +++++++++
- drivers/net/wireless/intel/iwlwifi/fw/acpi.c       | 65 +++++++++++++++++-----
- drivers/net/wireless/intel/iwlwifi/fw/acpi.h       |  7 ++-
- drivers/net/wireless/intel/iwlwifi/fw/pnvm.c       | 56 ++++++++++---------
- drivers/net/wireless/intel/iwlwifi/iwl-config.h    |  7 ++-
- drivers/net/wireless/intel/iwlwifi/iwl-dbg-tlv.c   |  7 ---
- drivers/net/wireless/intel/iwlwifi/iwl-io.c        |  9 +--
- drivers/net/wireless/intel/iwlwifi/iwl-io.h        | 10 +++-
- drivers/net/wireless/intel/iwlwifi/iwl-prph.h      |  6 ++
- drivers/net/wireless/intel/iwlwifi/mvm/d3.c        |  6 +-
- .../net/wireless/intel/iwlwifi/mvm/debugfs-vif.c   |  3 +
- drivers/net/wireless/intel/iwlwifi/mvm/fw.c        | 25 +++++----
- drivers/net/wireless/intel/iwlwifi/mvm/mac80211.c  |  3 +
- drivers/net/wireless/intel/iwlwifi/mvm/ops.c       |  7 ++-
- drivers/net/wireless/intel/iwlwifi/mvm/sta.c       |  6 ++
- .../wireless/intel/iwlwifi/pcie/ctxt-info-gen3.c   | 53 +++++++++++-------
- drivers/net/wireless/intel/iwlwifi/pcie/drv.c      | 10 ++++
- drivers/net/wireless/intel/iwlwifi/pcie/trans.c    | 14 +++--
- drivers/net/wireless/intel/iwlwifi/pcie/tx.c       |  5 ++
- drivers/net/wireless/intel/iwlwifi/queue/tx.c      | 55 +++++++++---------
- drivers/net/wireless/mediatek/mt76/mt7615/mcu.c    |  2 +-
- .../net/wireless/mediatek/mt76/mt7615/sdio_txrx.c  |  9 ++-
- drivers/net/wireless/mediatek/mt76/mt7915/mcu.c    | 10 ++--
- drivers/net/wireless/mediatek/mt7601u/dma.c        |  5 +-
- 24 files changed, 264 insertions(+), 141 deletions(-)
