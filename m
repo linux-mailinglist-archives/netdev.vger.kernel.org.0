@@ -2,163 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B836C30383E
-	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 09:43:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1A4673037EC
+	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 09:31:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390378AbhAZIne (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jan 2021 03:43:34 -0500
-Received: from userp2130.oracle.com ([156.151.31.86]:51622 "EHLO
-        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2390387AbhAZImg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jan 2021 03:42:36 -0500
-Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
-        by userp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 10Q7TwEe152538;
-        Tue, 26 Jan 2021 07:30:10 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=corp-2020-01-29;
- bh=SJ15W1q+FIQewIC7/ta0Gam/PBScbc3sS8SJfQABM8k=;
- b=yfl5WGMhTpd/DXeQgDuA4Tubu7v9oSADO5smZXJqV2rnKPR5OtonhX/s3jwZVelrO5DZ
- WsKeCZymXwZ1fedKbeEkVPEiB/aF/SuH4m/zdN4rpxpyitBdzj+n+c/4YdxFTDKgDVGx
- t89pqHt3J9pNRpIu8aPscHGIzW/bOeZ8IRpNgEAaIv20mD+eADBgTytm7XdUVVnJMC+A
- VeJnfEJ7oyOfE/jJpReCnSjZ3tfykQ45BhfEhmP7v/jkfOZqk6vbN9KLArLhJKgPEw0x
- /eeqcVoGVXJMcE3a2I91jfv3bpnwddRP9YdJTmzMwq37r8s/VgTaYCvzpH9Qr3ai7qyn jQ== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by userp2130.oracle.com with ESMTP id 368b7qrt2e-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 26 Jan 2021 07:30:10 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 10Q7K5QJ013329;
-        Tue, 26 Jan 2021 07:28:08 GMT
-Received: from userv0121.oracle.com (userv0121.oracle.com [156.151.31.72])
-        by userp3030.oracle.com with ESMTP id 368wqw2rxe-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 26 Jan 2021 07:28:08 +0000
-Received: from abhmp0005.oracle.com (abhmp0005.oracle.com [141.146.116.11])
-        by userv0121.oracle.com (8.14.4/8.13.8) with ESMTP id 10Q7S3P7026709;
-        Tue, 26 Jan 2021 07:28:03 GMT
-Received: from kadam (/102.36.221.92)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Mon, 25 Jan 2021 23:28:02 -0800
-Date:   Tue, 26 Jan 2021 10:27:53 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     Claudiu Manoil <claudiu.manoil@nxp.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        "UNGLinuxDriver@microchip.com" <UNGLinuxDriver@microchip.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>
-Subject: Re: [PATCH v2 1/2 net-next] net: mscc: ocelot: fix error handling
- bugs in mscc_ocelot_init_ports()
-Message-ID: <20210126072753.GU2696@kadam>
-References: <20210125081940.GK20820@kadam>
- <YA6EW9SPE4q6x7d3@mwanda>
- <20210125161806.q5rmiqj6r3yvp3ke@skbuf>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210125161806.q5rmiqj6r3yvp3ke@skbuf>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9875 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 spamscore=0 phishscore=0
- adultscore=0 mlxlogscore=999 malwarescore=0 suspectscore=0 bulkscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2101260037
-X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=9875 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 spamscore=0 phishscore=0
- adultscore=0 impostorscore=0 malwarescore=0 lowpriorityscore=0 bulkscore=0
- priorityscore=1501 mlxscore=0 clxscore=1015 mlxlogscore=999
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2101260038
+        id S2389798AbhAZIa3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jan 2021 03:30:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51424 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389930AbhAZI1Q (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jan 2021 03:27:16 -0500
+Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DEDD2C061574;
+        Tue, 26 Jan 2021 00:26:35 -0800 (PST)
+Received: by mail-pg1-x535.google.com with SMTP id r38so5142383pgk.13;
+        Tue, 26 Jan 2021 00:26:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=eLDX3EtsebNExHOoaDQTARUSCDGmDLN0hLIYtdMe5Zo=;
+        b=oKsdV7Y0HbiUUSRJyCavI1dIcTiZFyRU8XBbGbvxZkaVZ6rAmFcfHawAu2qrycyoNb
+         NTs8gAXGG2LZ3hIZtWw5F4gVZexZpGcDW8iSK07RoIegEdOrvNFPYH+6ufhLwEMmQ7IZ
+         9+Vd0WMiNGqLYLMVFPldalJlnrwNUxq1VytOcW8aKt/01UPOc4eQw7ymtbinKB/cqHIi
+         fKq5y98APc3DPl66ug7EfRyE4274m+WNau4cR3mvtsQxIx6RdEuCB93Z93rw7DIKEgKQ
+         nBvaB7tLHWnkR28swJo4doU4XTIk5wvI5X65kNqn/3uTlGB/Kv6yW1TxVBr8FNNSOLO2
+         ySHw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=eLDX3EtsebNExHOoaDQTARUSCDGmDLN0hLIYtdMe5Zo=;
+        b=K0D1FhvI1f5NapXjOAJ6/VLcdiMiYSgL8TgekVFHqH5+Qgch+BkJ8rlvCmWrvzRKsh
+         5LZ0jsT2MQsHsQNG6kQRHJhsnJCRF0NpAmqMAZRXSVXxIL/bKE8Eo5kdRY4EtqLTZMhH
+         v17PSXwIi7lrvIegy7vaoIt75ofqeFVBLOtDTLTlh91Gqfyw0E5Ajd/9kBG1U9r2N345
+         62uEkJGxgimbfFg/LzLu1wNa6GB5F2DsqnlbG1p62V1OJsK3JVC89tPpiTMqRw7edYdg
+         l15fLlA86fy5ky+o90O2eTmaqUA3CyHszlx+AazjhMGszqCpS/pqO3WKEVs06L+nm7rU
+         HW9A==
+X-Gm-Message-State: AOAM532BLw3fGtlwURL49ltDoMVF/JdlWliUP/TUFxSLFtiGXgkrUp8Q
+        wzzN/XK+uinW1yUt+pTj0Wo=
+X-Google-Smtp-Source: ABdhPJxZdoQajeF68VODbuKRDysR+73tDTaxFHrq/Y1k/ZkKqWUX0VoCFlzMDMhoa51q4gdqytfXiw==
+X-Received: by 2002:a63:5c61:: with SMTP id n33mr4784020pgm.153.1611649594685;
+        Tue, 26 Jan 2021 00:26:34 -0800 (PST)
+Received: from android.asia-east2-a.c.savvy-summit-295307.internal (53.207.96.34.bc.googleusercontent.com. [34.96.207.53])
+        by smtp.googlemail.com with ESMTPSA id 7sm18135890pfh.142.2021.01.26.00.26.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Jan 2021 00:26:33 -0800 (PST)
+From:   Bui Quang Minh <minhquangbui99@gmail.com>
+To:     ast@kernel.org, daniel@iogearbox.net, davem@davemloft.net,
+        kuba@kernel.org, hawk@kernel.org, john.fastabend@gmail.com,
+        andrii@kernel.org, kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        kpsingh@kernel.org, jakub@cloudflare.com, lmb@cloudflare.com
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org, minhquangbui99@gmail.com
+Subject: [PATCH] bpf: Fix integer overflow in argument calculation for bpf_map_area_alloc
+Date:   Tue, 26 Jan 2021 08:26:06 +0000
+Message-Id: <20210126082606.3183-1-minhquangbui99@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 25, 2021 at 04:18:07PM +0000, Vladimir Oltean wrote:
-> Hi Dan,
-> 
-> On Mon, Jan 25, 2021 at 11:42:03AM +0300, Dan Carpenter wrote:
-> > diff --git a/drivers/net/ethernet/mscc/ocelot_net.c b/drivers/net/ethernet/mscc/ocelot_net.c
-> > index 9553eb3e441c..875ab8532d8c 100644
-> > --- a/drivers/net/ethernet/mscc/ocelot_net.c
-> > +++ b/drivers/net/ethernet/mscc/ocelot_net.c
-> > @@ -1262,7 +1262,6 @@ int ocelot_probe_port(struct ocelot *ocelot, int port, struct regmap *target,
-> >  	ocelot_port = &priv->port;
-> >  	ocelot_port->ocelot = ocelot;
-> >  	ocelot_port->target = target;
-> > -	ocelot->ports[port] = ocelot_port;
-> 
-> You cannot remove this from here just like that, because
-> ocelot_init_port right below accesses ocelot->ports[port], and it will
-> dereference through a NULL pointer otherwise.
-> 
+In 32-bit architecture, the result of sizeof() is a 32-bit integer so
+the expression becomes the multiplication between 2 32-bit integer which
+can potentially leads to integer overflow. As a result,
+bpf_map_area_alloc() allocates less memory than needed.
 
-Argh...  Thanks for spotting that.
+Fix this by casting 1 operand to u64.
 
-> >  	dev->netdev_ops = &ocelot_port_netdev_ops;
-> >  	dev->ethtool_ops = &ocelot_ethtool_ops;
-> > @@ -1282,7 +1281,19 @@ int ocelot_probe_port(struct ocelot *ocelot, int port, struct regmap *target,
-> >  	if (err) {
-> >  		dev_err(ocelot->dev, "register_netdev failed\n");
-> >  		free_netdev(dev);
-> > +		return err;
-> >  	}
-> >  
-> > -	return err;
-> > +	ocelot->ports[port] = ocelot_port;
-> > +	return 0;
-> > +}
-> > +
-> > +void ocelot_release_port(struct ocelot_port *ocelot_port)
-> > +{
-> > +	struct ocelot_port_private *priv = container_of(ocelot_port,
-> > +						struct ocelot_port_private,
-> > +						port);
-> 
-> Can this assignment please be done separately from the declaration?
-> 
-> 	struct ocelot_port_private *priv;
-> 
-> 	priv = container_of(ocelot_port, struct ocelot_port_private, port);
-> 
-> > +
-> > +	unregister_netdev(priv->dev);
-> > +	free_netdev(priv->dev);
-> >  }
-> 
-> Fun, isn't it? :D
-> Thanks for taking the time to untangle this.
-> 
-> Additionally, you have changed the meaning of "registered_ports" from
-> "this port had its net_device registered" to "this port had its
-> devlink_port registered". This is ok, but I would like the variable
-> renamed now, too. I think devlink_ports_registered would be ok.
-> 
-> In hindsight, I was foolish for using a heap-allocated boolean array for
-> registered_ports, because this switch architecture is guaranteed to not
-> have more than 32 ports, so a u32 bitmask is fine.
-> 
-> If you resend, can you please squash this diff on top of your patch?
+Signed-off-by: Bui Quang Minh <minhquangbui99@gmail.com>
+---
+ kernel/bpf/devmap.c | 4 ++--
+ net/core/sock_map.c | 2 +-
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
-Yep.  I will resend.  Thanks for basically writing v2 for me.  Your
-review comments were very clear but code is always 100% clear so that's
-really great.  I've never seen anyone do that before.  I should copy
-that for my own reviews and hopefully it's a new trend.
-
-> 
-> Then you can add:
-> 
-> Reviewed-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> Tested-by: Vladimir Oltean <vladimir.oltean@nxp.com>
-> 
-> Also, it's strange but I don't see the v2 patches in patchwork. Did you
-> send them in-reply-to v1 or something?
-
-I did send them as a reply to v1.  Patchwork doesn't like that?
-
-regards,
-dan carpenter
+diff --git a/kernel/bpf/devmap.c b/kernel/bpf/devmap.c
+index f6e9c68afdd4..e849c3e8a49f 100644
+--- a/kernel/bpf/devmap.c
++++ b/kernel/bpf/devmap.c
+@@ -92,7 +92,7 @@ static struct hlist_head *dev_map_create_hash(unsigned int entries,
+ 	int i;
+ 	struct hlist_head *hash;
+ 
+-	hash = bpf_map_area_alloc(entries * sizeof(*hash), numa_node);
++	hash = bpf_map_area_alloc((u64) entries * sizeof(*hash), numa_node);
+ 	if (hash != NULL)
+ 		for (i = 0; i < entries; i++)
+ 			INIT_HLIST_HEAD(&hash[i]);
+@@ -143,7 +143,7 @@ static int dev_map_init_map(struct bpf_dtab *dtab, union bpf_attr *attr)
+ 
+ 		spin_lock_init(&dtab->index_lock);
+ 	} else {
+-		dtab->netdev_map = bpf_map_area_alloc(dtab->map.max_entries *
++		dtab->netdev_map = bpf_map_area_alloc((u64) dtab->map.max_entries *
+ 						      sizeof(struct bpf_dtab_netdev *),
+ 						      dtab->map.numa_node);
+ 		if (!dtab->netdev_map)
+diff --git a/net/core/sock_map.c b/net/core/sock_map.c
+index 64b5ec14ff50..7a42016a981d 100644
+--- a/net/core/sock_map.c
++++ b/net/core/sock_map.c
+@@ -44,7 +44,7 @@ static struct bpf_map *sock_map_alloc(union bpf_attr *attr)
+ 	bpf_map_init_from_attr(&stab->map, attr);
+ 	raw_spin_lock_init(&stab->lock);
+ 
+-	stab->sks = bpf_map_area_alloc(stab->map.max_entries *
++	stab->sks = bpf_map_area_alloc((u64) stab->map.max_entries *
+ 				       sizeof(struct sock *),
+ 				       stab->map.numa_node);
+ 	if (!stab->sks) {
+-- 
+2.17.1
 
