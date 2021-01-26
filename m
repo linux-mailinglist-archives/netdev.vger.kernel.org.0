@@ -2,172 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4BDA2305B57
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 13:29:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1539C305B43
+	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 13:26:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S314020AbhAZWzK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jan 2021 17:55:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37792 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727131AbhAZFLr (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jan 2021 00:11:47 -0500
-Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79CCDC061756
-        for <netdev@vger.kernel.org>; Mon, 25 Jan 2021 21:11:07 -0800 (PST)
-Received: by mail-pl1-x633.google.com with SMTP id d13so3420600plg.0
-        for <netdev@vger.kernel.org>; Mon, 25 Jan 2021 21:11:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :in-reply-to:references;
-        bh=zuS3sLG5X3owhuldOzi8mp0n4Mfny2KWeYRnlbwvBqU=;
-        b=rKLhGM2OQ4Yi1n5bcOEZusAxv6/J0o/aUaJLe19GCjEEWOp5FeNVKnshWCpKH+gSfR
-         IqE1W30Iv6HkfByAaEuGYXLLLrTZ7f0aR0exM+s5OxZfAcusMbCnWHhSo9gI4Sxl69nV
-         dV0xx/Z6ZfW4nWMMBvMyYFE16HnK+H2FNdFNyjnPC8aznl9ZbZraksqVpOA3IGRq5i6H
-         m7FjCrsmEzjJm4nzxIToQtmzebgI7Eg0834RCN0PubwOkHE/xpO5A9g3sLvQZMw03xAL
-         dZVmQW/looQ2hBJWZLULJt5Aayxjye07br/rGyN+AOqXPdb6Tjwtwu05ebTizFjC12uL
-         Ye3Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:in-reply-to:references;
-        bh=zuS3sLG5X3owhuldOzi8mp0n4Mfny2KWeYRnlbwvBqU=;
-        b=qIEx3wwg9NUR35DnrlN2JILUE6Qx4kb2p248QeGT7q7sSWy5gDbGhMYV8LdsIm4ves
-         vU+vGO/EeXgCQ6eBJ9UbsdwIqvN14KAdehwR73qekaUw21OvFvD4FxLb2ecqDR1T5SMp
-         MUvNXtk8WYSwvifHGklHJfMeyUNo7JKaqO4iEy0kUyDYHx+BZehNIDrWm+ZraG221kSn
-         Sjm4UK195SfT2RPTS2UczwfTJZ6NsrwMaEHAsXFJpOE0MbypmoJ/rdPV2587aiuH0Gtd
-         vfN0KGl8nWuMClrQDGPIqlCk0y6L82fvwYmG3G8ShcAHpEu7RS4KIo/7fp8gXpXb7cVq
-         9WDA==
-X-Gm-Message-State: AOAM533JW6/AGWoM+03ryBzbrFfFvwq/jGOTC0h9q1dTgdkfnpQCJpIZ
-        cS5xfTuR1ee4rdNJMHMDH0wkk9QWyQvEpw==
-X-Google-Smtp-Source: ABdhPJynIkn1FDxzU2xMVcaVk+Rlx0Pz/vlgJChfgsO10O8DTRKBJLNCi+MHnm6bXtJ1zkTu9SJDMA==
-X-Received: by 2002:a17:90b:d8d:: with SMTP id bg13mr4165143pjb.189.1611637866786;
-        Mon, 25 Jan 2021 21:11:06 -0800 (PST)
-Received: from localhost ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id 30sm18680738pgl.77.2021.01.25.21.11.05
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 25 Jan 2021 21:11:06 -0800 (PST)
-From:   Xin Long <lucien.xin@gmail.com>
-To:     network dev <netdev@vger.kernel.org>
-Cc:     davem@davemloft.net, Jakub Kicinski <kuba@kernel.org>,
-        pabeni@redhat.com, Willem de Bruijn <willemb@google.com>,
-        Martin Varghese <martin.varghese@nokia.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        David Howells <dhowells@redhat.com>
-Subject: [PATCHv4 net-next 1/2] udp: call udp_encap_enable for v6 sockets when enabling encap
-Date:   Tue, 26 Jan 2021 13:10:48 +0800
-Message-Id: <77cd57759f66c642fb0ed52be85abde201f8bfc9.1611637639.git.lucien.xin@gmail.com>
-X-Mailer: git-send-email 2.1.0
-In-Reply-To: <cover.1611637639.git.lucien.xin@gmail.com>
-References: <cover.1611637639.git.lucien.xin@gmail.com>
-In-Reply-To: <cover.1611637639.git.lucien.xin@gmail.com>
-References: <cover.1611637639.git.lucien.xin@gmail.com>
+        id S314056AbhAZW4E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jan 2021 17:56:04 -0500
+Received: from mail.kernel.org ([198.145.29.99]:59806 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2387531AbhAZF37 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 26 Jan 2021 00:29:59 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id BED5A206F7;
+        Tue, 26 Jan 2021 05:29:17 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1611638958;
+        bh=I9uZ8hXLc/MlYco2PPW7ucH9aDZgy60wNQLA9o6/xXw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=mGuwCa+PjuoYh13mZdZn63GaEJsteSrTx54Lk2i5EczZrgeyUwBCZ12cTqObMdaAr
+         KUaCUNWuEXKee2Oxein5wLZLKzqBluKnjQJdWC+upunlkErpnS4f34kihdKHil+dtf
+         mDt4EwNRiauyTU2PbVMTU1wTLsXOQyp9NaiSNrtbhPxNkysWNnu9F3HUhI3FXCoZ/r
+         MWtS5JhTbiizynFM4OsSQ+fPfT7f5pCO463zDh1LT8hd3OYesJpN/0vMBIUNHniQqP
+         O7p29GTSb2XuefqWz/EOzk71U/vvAwqZuQV1UmoZECN9n+BV0m13UEse1YpX3o/xpp
+         MCw1cd0/e+BCw==
+Date:   Tue, 26 Jan 2021 07:29:14 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     Jacob Keller <jacob.e.keller@intel.com>
+Cc:     "Saleem, Shiraz" <shiraz.saleem@intel.com>,
+        Jason Gunthorpe <jgg@nvidia.com>,
+        "dledford@redhat.com" <dledford@redhat.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Ertman, David M" <david.m.ertman@intel.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        "Ismail, Mustafa" <mustafa.ismail@intel.com>,
+        "jiri@nvidia.com" <jiri@nvidia.com>,
+        "Samudrala, Sridhar" <sridhar.samudrala@intel.com>,
+        "Williams, Dan J" <dan.j.williams@intel.com>
+Subject: Re: [PATCH 07/22] RDMA/irdma: Register an auxiliary driver and
+ implement private channel OPs
+Message-ID: <20210126052914.GN579511@unreal>
+References: <20210122234827.1353-1-shiraz.saleem@intel.com>
+ <20210122234827.1353-8-shiraz.saleem@intel.com>
+ <20210124134551.GB5038@unreal>
+ <20210125132834.GK4147@nvidia.com>
+ <2072c76154cd4232b78392c650b2b2bf@intel.com>
+ <5b3f609d-034a-826f-1e50-0a5f8ad8406e@intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <5b3f609d-034a-826f-1e50-0a5f8ad8406e@intel.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When enabling encap for a ipv6 socket without udp_encap_needed_key
-increased, UDP GRO won't work for v4 mapped v6 address packets as
-sk will be NULL in udp4_gro_receive().
+On Mon, Jan 25, 2021 at 05:01:40PM -0800, Jacob Keller wrote:
+>
+>
+> On 1/25/2021 4:39 PM, Saleem, Shiraz wrote:
+> >> Subject: Re: [PATCH 07/22] RDMA/irdma: Register an auxiliary driver and
+> >> implement private channel OPs
+> >>
+> >> On Sun, Jan 24, 2021 at 03:45:51PM +0200, Leon Romanovsky wrote:
+> >>> On Fri, Jan 22, 2021 at 05:48:12PM -0600, Shiraz Saleem wrote:
+> >>>> From: Mustafa Ismail <mustafa.ismail@intel.com>
+> >>>>
+> >>>> Register irdma as an auxiliary driver which can attach to auxiliary
+> >>>> RDMA devices from Intel PCI netdev drivers i40e and ice. Implement
+> >>>> the private channel ops, add basic devlink support in the driver and
+> >>>> register net notifiers.
+> >>>
+> >>> Devlink part in "the RDMA client" is interesting thing.
+> >>>
+> >>> The idea behind auxiliary bus was that PCI logic will stay at one
+> >>> place and devlink considered as the tool to manage that.
+> >>
+> >> Yes, this doesn't seem right, I don't think these auxiliary bus objects should have
+> >> devlink instances, or at least someone from devlink land should approve of the
+> >> idea.
+> >>
+> >
+> > In our model, we have one auxdev (for RDMA) per PCI device function owned by netdev driver
+> > and one devlink instance per auxdev. Plus there is an Intel netdev driver for each HW generation.
+> > Moving the devlink logic to the PCI netdev driver would mean duplicating the same set of RDMA
+> > params in each Intel netdev driver. Additionally, plumbing RDMA specific params in the netdev
+> > driver sort of seems misplaced to me.
+> >
+>
+> I agree that plumbing these parameters at the PCI side in the devlink of
+> the parent device is weird. They don't seem to be parameters that the
+> parent driver cares about.
+>
+> Maybe there is another mechanism that makes more sense? To me it is a
+> bit like if we were plumbing netdev specific paramters into devlink
+> instead of trying to expose them through netdevice specific interfaces
+> like iproute2 or ethtool.
 
-This patch is to enable it by increasing udp_encap_needed_key for
-v6 sockets in udp_tunnel_encap_enable(), and correspondingly
-decrease udp_encap_needed_key in udpv6_destroy_sock().
+I'm far from being expert in devlink, but for me separation is following:
+1. devlink - operates on physical device level, when PCI device already initialized.
+2. ethtool - changes needed to be done on netdev layer.
+3. ip - upper layer of the netdev
+4. rdmatool - RDMA specific when IB device already exists.
 
-v1->v2:
-  - add udp_encap_disable() and export it.
-v2->v3:
-  - add the change for rxrpc and bareudp into one patch, as Alex
-    suggested.
-v3->v4:
-  - move rxrpc part to another patch.
+And the ENABLE_ROCE/ENABLE_RDMA thing shouldn't be in the RDMA driver at
+all, because it is physical device property which once toggled will
+prohibit creation of respective aux device.
 
-Signed-off-by: Xin Long <lucien.xin@gmail.com>
----
- drivers/net/bareudp.c    | 6 ------
- include/net/udp.h        | 1 +
- include/net/udp_tunnel.h | 3 +--
- net/ipv4/udp.c           | 6 ++++++
- net/ipv6/udp.c           | 4 +++-
- 5 files changed, 11 insertions(+), 9 deletions(-)
-
-diff --git a/drivers/net/bareudp.c b/drivers/net/bareudp.c
-index 1b8f597..7511bca 100644
---- a/drivers/net/bareudp.c
-+++ b/drivers/net/bareudp.c
-@@ -240,12 +240,6 @@ static int bareudp_socket_create(struct bareudp_dev *bareudp, __be16 port)
- 	tunnel_cfg.encap_destroy = NULL;
- 	setup_udp_tunnel_sock(bareudp->net, sock, &tunnel_cfg);
- 
--	/* As the setup_udp_tunnel_sock does not call udp_encap_enable if the
--	 * socket type is v6 an explicit call to udp_encap_enable is needed.
--	 */
--	if (sock->sk->sk_family == AF_INET6)
--		udp_encap_enable();
--
- 	rcu_assign_pointer(bareudp->sock, sock);
- 	return 0;
- }
-diff --git a/include/net/udp.h b/include/net/udp.h
-index 877832b..1e7b6cd 100644
---- a/include/net/udp.h
-+++ b/include/net/udp.h
-@@ -467,6 +467,7 @@ void udp_init(void);
- 
- DECLARE_STATIC_KEY_FALSE(udp_encap_needed_key);
- void udp_encap_enable(void);
-+void udp_encap_disable(void);
- #if IS_ENABLED(CONFIG_IPV6)
- DECLARE_STATIC_KEY_FALSE(udpv6_encap_needed_key);
- void udpv6_encap_enable(void);
-diff --git a/include/net/udp_tunnel.h b/include/net/udp_tunnel.h
-index 282d10e..afc7ce7 100644
---- a/include/net/udp_tunnel.h
-+++ b/include/net/udp_tunnel.h
-@@ -181,9 +181,8 @@ static inline void udp_tunnel_encap_enable(struct socket *sock)
- #if IS_ENABLED(CONFIG_IPV6)
- 	if (sock->sk->sk_family == PF_INET6)
- 		ipv6_stub->udpv6_encap_enable();
--	else
- #endif
--		udp_encap_enable();
-+	udp_encap_enable();
- }
- 
- #define UDP_TUNNEL_NIC_MAX_TABLES	4
-diff --git a/net/ipv4/udp.c b/net/ipv4/udp.c
-index 69ea765..48208fb 100644
---- a/net/ipv4/udp.c
-+++ b/net/ipv4/udp.c
-@@ -596,6 +596,12 @@ void udp_encap_enable(void)
- }
- EXPORT_SYMBOL(udp_encap_enable);
- 
-+void udp_encap_disable(void)
-+{
-+	static_branch_dec(&udp_encap_needed_key);
-+}
-+EXPORT_SYMBOL(udp_encap_disable);
-+
- /* Handler for tunnels with arbitrary destination ports: no socket lookup, go
-  * through error handlers in encapsulations looking for a match.
-  */
-diff --git a/net/ipv6/udp.c b/net/ipv6/udp.c
-index b9f3dfd..d754292 100644
---- a/net/ipv6/udp.c
-+++ b/net/ipv6/udp.c
-@@ -1608,8 +1608,10 @@ void udpv6_destroy_sock(struct sock *sk)
- 			if (encap_destroy)
- 				encap_destroy(sk);
- 		}
--		if (up->encap_enabled)
-+		if (up->encap_enabled) {
- 			static_branch_dec(&udpv6_encap_needed_key);
-+			udp_encap_disable();
-+		}
- 	}
- 
- 	inet6_destroy_sock(sk);
--- 
-2.1.0
-
+Thanks
