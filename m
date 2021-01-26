@@ -2,112 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6FF663048AF
-	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 20:33:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E7871304891
+	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 20:33:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728483AbhAZFm0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jan 2021 00:42:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56140 "EHLO
+        id S2388355AbhAZFmk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jan 2021 00:42:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729226AbhAZEZm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 23:25:42 -0500
-Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47742C061574
-        for <netdev@vger.kernel.org>; Mon, 25 Jan 2021 20:25:02 -0800 (PST)
-Received: by mail-io1-xd2c.google.com with SMTP id u17so31289992iow.1
-        for <netdev@vger.kernel.org>; Mon, 25 Jan 2021 20:25:02 -0800 (PST)
+        with ESMTP id S1729423AbhAZE1X (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 23:27:23 -0500
+Received: from mail-oi1-x235.google.com (mail-oi1-x235.google.com [IPv6:2607:f8b0:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 915A1C061573
+        for <netdev@vger.kernel.org>; Mon, 25 Jan 2021 20:26:43 -0800 (PST)
+Received: by mail-oi1-x235.google.com with SMTP id m13so9300707oig.8
+        for <netdev@vger.kernel.org>; Mon, 25 Jan 2021 20:26:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=OP+XA4IGRguJccVNM97sFAdH8FtpcW6xsyoNvGCEAl4=;
-        b=b60kroY3RX6kWGQDbf1L/w5aPO/vmZmNzbEyczKcKf8IPFYXtFJb5M3LIugu+Cipo8
-         xiLXt6EBywDfG8CLY/gkxcU5C5pEFLcJDlgvo57PXeUlq/kM2rBA3uoMCZWt3ww9F6Os
-         WEoIj6ZiOPVC8nrrZgCqeLEeFolP/n3lIOWDgBlb0/wEn15c1+AwQ9N9bm2zKu8uQC6i
-         LoI0xqQEK4i4X3W/HfgEWquSvR3jDaJ8w+7UPMTK5CoN8xPFt/9VD4gTsLf2r8SmVK+P
-         b/Omxkk0JYBYkSba+TnCb9wCcPp15JrxCGzUye7PDaOG4Br9JmHdaVSV1V6KVE+NX+Ln
-         EVVQ==
+        d=gmail.com; s=20161025;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=QPU9pyzVRmr3LaYZw5Jnifg5fhKjwPXnWDdbpaJD28U=;
+        b=C66W5FFZJ3kQPdr+hblOpoVGc0e3AM2kDzG2+LqgWtwLObrggAQu5NDtSK1/AR0AQr
+         R2w9mtyRUO6Z/uhqwY2DZN7Eo5hXODYmxQKYCdUJiZOWhanc+pVXGcmuJV9fxDzYJNfd
+         Zx48lc/OhwPCvIvgoy8df3iZhwf5Z6oNSMJgKCRCMy5IVG78vx7Wv4/L3QDPP6kS7dY6
+         4/qrMpNHZq5dg8ERouI4eygdGRjePNcwdyT3Ef6y4t2iLl+zwfums9rUfqCPPekhDnHX
+         0xK76iulOCIQbg+3gxaRa0ws8cVyyzxvqSKTovceXZljkQ//97pkv7e2Qz3jCc6wqda4
+         QJ8w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+        h=x-gm-message-state:subject:to:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=OP+XA4IGRguJccVNM97sFAdH8FtpcW6xsyoNvGCEAl4=;
-        b=foW+NUx3iPkgxL41kPj2A1WDBzyAHx1z6GAmGpknoyCTWWOly2cHMcnOZitEoN4zW7
-         ivvEv3X/GCKziSXALsLBzIBnUBLR37MKcnNnq6v5OmFp8UkFubIPD1eOWmI/xyI/VRLw
-         sLJJSMx45RiATs3QPGibxYapSk5C693VpH3TPAqWyALTmfanjUwgvmKFkoijCefCBo/R
-         4vemmS5+S1rESQBDCXv0uGIZ9lC+1i7cDRGqr6AlrUvTqzv0PyTFQ+8N2vYHcQIS7grS
-         kECuI91Ffm07DiyEaqMr7ipKtO0fwrfDIdjJ4YppwQAfxfUwyMiVg6ozjacu5nZXW92d
-         fhTA==
-X-Gm-Message-State: AOAM533Nkia/QZFiIuyxqYMe/Z3lwp3ATWMFbKnv3xbOfZHWeKyDkEhc
-        YiRisOeMd3kdJlG23wsoFNgBSA==
-X-Google-Smtp-Source: ABdhPJxNF/o7uG6MPrcBdKTADO1oysoEHuEbDYED76DjHEc2VmcCdIIbeFqUJFBueVw8VgyaB1xrFA==
-X-Received: by 2002:a05:6e02:12e2:: with SMTP id l2mr3139438iln.91.1611635101527;
-        Mon, 25 Jan 2021 20:25:01 -0800 (PST)
-Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.googlemail.com with ESMTPSA id r9sm12636138ill.72.2021.01.25.20.25.00
+        bh=QPU9pyzVRmr3LaYZw5Jnifg5fhKjwPXnWDdbpaJD28U=;
+        b=JRs/MzA4flKQQ/F7U33X7WvEdxbT7HY5fanRRa8JNYOhfZnKPbd+niePZw4Mpjn6hR
+         H8Jh9TU2cuISwyZHyMKOzua2AyqHrMMiXEoK3ziKUSpFGLbTjj9focNj448tRx/pUj8x
+         QkpRFt8UEbyKgxww8UTewGgWL51N4C5LYrQVugAdWmmNNUFiML7GTXfvrFuROCEMl4cG
+         yEGDcDJpghKKlW2KjgtzvpchN0vnvfJgfxlVx+xQHzquOxXxkxrI0PjtKID/mMYcAqK8
+         ix9nbwXd2sNy6RAV50tk3iT1MzlIcNbDLVgCMK0ZgvjL7OKZlGeS/Jh+uvBeLpqlvYZh
+         2+Mw==
+X-Gm-Message-State: AOAM531GmdmcSC72LCmsJuLSzVJJG5KS83sI3x5a4iq4NJZX9prVCFuq
+        PXELJBNHYRfdNgjbPQW0sbBTUA/Qrvo=
+X-Google-Smtp-Source: ABdhPJxop7069L7J+tsUMOmcdvlBN4X+Jn0SfJttuW66I7iJhgsQZ9b1CzKwhpv1sAlJUetdSEeGgg==
+X-Received: by 2002:aca:ec89:: with SMTP id k131mr2036191oih.131.1611635203011;
+        Mon, 25 Jan 2021 20:26:43 -0800 (PST)
+Received: from Davids-MacBook-Pro.local ([2601:282:800:dc80:f5f4:6dbf:d358:29ee])
+        by smtp.googlemail.com with ESMTPSA id s23sm3811138oot.0.2021.01.25.20.26.42
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 25 Jan 2021 20:25:00 -0800 (PST)
-Subject: Re: [PATCH net-next 3/6] net: ipa: drop packet if status has valid
- tag
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     davem@davemloft.net, elder@kernel.org, evgreen@chromium.org,
-        bjorn.andersson@linaro.org, cpratapa@codeaurora.org,
-        subashab@codeaurora.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20210125212947.17097-1-elder@linaro.org>
- <20210125212947.17097-4-elder@linaro.org>
- <20210125192733.38ff2ac5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Alex Elder <elder@linaro.org>
-Message-ID: <5a04e525-e5b9-773b-2e8b-27adb3a01d0b@linaro.org>
-Date:   Mon, 25 Jan 2021 22:24:59 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
+        Mon, 25 Jan 2021 20:26:42 -0800 (PST)
+Subject: Re: [PATCH net-next v3] selftests: add IPv4 unicast extensions tests
+To:     Seth David Schoen <schoen@loyalty.org>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        David Ahern <dsahern@kernel.org>, John Gilmore <gnu@toad.com>
+References: <20210126040834.GR24989@frotz.zork.net>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <eee96675-38b8-0252-a004-97c3537230be@gmail.com>
+Date:   Mon, 25 Jan 2021 21:26:41 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
+ Gecko/20100101 Thunderbird/78.6.1
 MIME-Version: 1.0
-In-Reply-To: <20210125192733.38ff2ac5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <20210126040834.GR24989@frotz.zork.net>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/25/21 9:27 PM, Jakub Kicinski wrote:
-> On Mon, 25 Jan 2021 15:29:44 -0600 Alex Elder wrote:
->> Introduce ipa_endpoint_status_tag(), which returns true if received
->> status indicates its tag field is valid.  The endpoint parameter is
->> not yet used.
->>
->> Call this from ipa_status_drop_packet(), and drop the packet if the
->> status indicates the tag was valid.  Pass the endpoint pointer to
->> ipa_status_drop_packet(), and rename it ipa_endpoint_status_drop().
->> The endpoint will be used in the next patch.
->>
->> Signed-off-by: Alex Elder <elder@linaro.org>
+On 1/25/21 9:08 PM, Seth David Schoen wrote:
+> Add selftests for kernel behavior with regard to various classes of
+> unallocated/reserved IPv4 addresses, checking whether or not these
+> addresses can be assigned as unicast addresses on links and used in
+> routing.
 > 
->> @@ -1172,11 +1175,22 @@ static bool ipa_endpoint_status_skip(struct ipa_endpoint *endpoint,
->>   	return false;	/* Don't skip this packet, process it */
->>   }
->>   
->> +static bool ipa_endpoint_status_tag(struct ipa_endpoint *endpoint,
->> +				    const struct ipa_status *status)
->> +{
->> +	return !!(status->mask & IPA_STATUS_MASK_TAG_VALID_FMASK);
+> Expect the current kernel behavior at the time of this patch. That is:
 > 
-> drivers/net/ipa/ipa_endpoint.c:1181:25: warning: restricted __le16 degrades to integer
+> * 0/8 and 240/4 may be used as unicast, with the exceptions of 0.0.0.0
+>   and 255.255.255.255;
+> * the lowest address in a subnet may only be used as a broadcast address;
+> * 127/8 may not be used as unicast (the route_localnet option, which is
+>   disabled by default, still leaves it treated slightly specially);
+> * 224/4 may not be used as unicast.
+> 
+> Signed-off-by: Seth David Schoen <schoen@loyalty.org>
+> Suggested-by: John Gilmore <gnu@toad.com>
+> Acked-by: Dave Taht <dave.taht@gmail.com>
+> ---
+>  tools/testing/selftests/net/Makefile          |   1 +
+>  .../selftests/net/unicast_extensions.sh       | 228 ++++++++++++++++++
+>  2 files changed, 229 insertions(+)
+>  create mode 100755 tools/testing/selftests/net/unicast_extensions.sh
+> 
 
-Wow, that's an important one.
-
-Sparse is spewing errors for me.  I guess I'm finally going to have
-to figure out what's wrong.
-
-I'll send an update tomorrow.  I know how to fix it but I want to
-verify it works before I send it out.
-
-Thank you.
-
-					-Alex
-
->> +}
->> +
-
+Reviewed-by: David Ahern <dsahern@kernel.org>
