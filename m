@@ -2,84 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 91C8830470E
-	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 19:53:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D6E35304717
+	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 19:53:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730595AbhAZROO (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jan 2021 12:14:14 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:40448 "EHLO
+        id S1730374AbhAZROw (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jan 2021 12:14:52 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:20143 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2390795AbhAZJIh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jan 2021 04:08:37 -0500
+        by vger.kernel.org with ESMTP id S2389994AbhAZJPH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jan 2021 04:15:07 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1611652010;
+        s=mimecast20190719; t=1611652421;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=ghtUFEOYpSSPIDpUH58mcSLQd3/VKd/stkAx2Vi5wEE=;
-        b=Uh6RDEiK+kkFgUv++YhgAZlqGsCwnYb0vrS6oROu5/cwK5ch8bAkrnxFEjVd3jIVudOmDn
-        x3wYGM2uefmx1l821ySjPp0I7EpIOjDnvCIUfT4jJKa/9UidTba1eBnn7wgT0wOLGiBUyT
-        uyHVFywXacdiE9tLgCmTWPUQ9IpqfkA=
+        bh=ZQNMLxZXL4V+OpSXDYs3PfwSfoYKXj1zeTe+gx9+fVk=;
+        b=iWljQ9OXM9/cGP5O5HDQkf2WOj6pK9gYQTeYYx1GURxnHQzmJghu2cHAzarvxdYKHyzaDO
+        1QVOnLWKduffzbm9VfJPcxU+xVfSwmk9WRwCuwnGax9BnpJwNjprXvzVpqIzRCR7/7A9ws
+        yCqAod8Cm+4kZ7WxBpLVCdAimVg33s4=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-229-mFhOR-9PO065HkMnB_sZgg-1; Tue, 26 Jan 2021 04:06:45 -0500
-X-MC-Unique: mFhOR-9PO065HkMnB_sZgg-1
-Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+ us-mta-381-Gz-I5AYiO9-Nc9EqgAIqwA-1; Tue, 26 Jan 2021 04:13:36 -0500
+X-MC-Unique: Gz-I5AYiO9-Nc9EqgAIqwA-1
+Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 1D1558066EA;
-        Tue, 26 Jan 2021 09:06:42 +0000 (UTC)
-Received: from warthog.procyon.org.uk (ovpn-115-23.rdu2.redhat.com [10.10.115.23])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 9086E5D9DC;
-        Tue, 26 Jan 2021 09:06:40 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-From:   David Howells <dhowells@redhat.com>
-In-Reply-To: <ac09d0f99a9f7ba1bdfa933eb5fc08740dd0346c.1611637639.git.lucien.xin@gmail.com>
-References: <ac09d0f99a9f7ba1bdfa933eb5fc08740dd0346c.1611637639.git.lucien.xin@gmail.com> <cover.1611637639.git.lucien.xin@gmail.com> <77cd57759f66c642fb0ed52be85abde201f8bfc9.1611637639.git.lucien.xin@gmail.com> <cover.1611637639.git.lucien.xin@gmail.com>
-To:     Xin Long <lucien.xin@gmail.com>
-Cc:     dhowells@redhat.com, network dev <netdev@vger.kernel.org>,
-        davem@davemloft.net, Jakub Kicinski <kuba@kernel.org>,
-        pabeni@redhat.com, Willem de Bruijn <willemb@google.com>,
-        Martin Varghese <martin.varghese@nokia.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>
-Subject: Re: [PATCHv4 net-next 2/2] rxrpc: call udp_tunnel_encap_enable in rxrpc_open_socket
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id AE03A10054FF;
+        Tue, 26 Jan 2021 09:13:34 +0000 (UTC)
+Received: from carbon (unknown [10.36.110.4])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 391621F0;
+        Tue, 26 Jan 2021 09:13:27 +0000 (UTC)
+Date:   Tue, 26 Jan 2021 10:13:25 +0100
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Daniel Borkmann <daniel@iogearbox.net>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        maze@google.com, lmb@cloudflare.com, shaun@tigera.io,
+        Lorenzo Bianconi <lorenzo@kernel.org>, marek@cloudflare.com,
+        John Fastabend <john.fastabend@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>, eyal.birger@gmail.com,
+        colrack@gmail.com, brouer@redhat.com
+Subject: Re: [PATCH bpf-next V12 4/7] bpf: add BPF-helper for MTU checking
+Message-ID: <20210126101325.75097ddb@carbon>
+In-Reply-To: <3c542e42-2033-aca6-ba0e-4854c24980c2@iogearbox.net>
+References: <161098881526.108067.7603213364270807261.stgit@firesoul>
+        <161098887018.108067.13643446976934084937.stgit@firesoul>
+        <6772a12b-2a60-bb3b-93df-1d6d6c7c7fd7@iogearbox.net>
+        <20210125094148.2b3bb128@carbon>
+        <3c542e42-2033-aca6-ba0e-4854c24980c2@iogearbox.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <2673305.1611651999.1@warthog.procyon.org.uk>
-Date:   Tue, 26 Jan 2021 09:06:39 +0000
-Message-ID: <2673306.1611651999@warthog.procyon.org.uk>
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.11
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Xin Long <lucien.xin@gmail.com> wrote:
+On Mon, 25 Jan 2021 23:27:22 +0100
+Daniel Borkmann <daniel@iogearbox.net> wrote:
 
-> -	udp_encap_enable();
-> -#if IS_ENABLED(CONFIG_AF_RXRPC_IPV6)
-> -	if (local->srx.transport.family == AF_INET6)
-> -		udpv6_encap_enable();
-> -#endif
-> +	udp_tunnel_encap_enable(local->socket);
+> >>> +	/* At this point, skb->len exceed MTU, but as it include length of all
+> >>> +	 * segments, it can still be below MTU.  The SKB can possibly get
+> >>> +	 * re-segmented in transmit path (see validate_xmit_skb).  Thus, user
+> >>> +	 * must choose if segs are to be MTU checked.
+> >>> +	 */
+> >>> +	if (skb_is_gso(skb)) {
+> >>> +		ret = BPF_MTU_CHK_RET_SUCCESS;
+> >>> +
+> >>> +		if (flags & BPF_MTU_CHK_SEGS &&
+> >>> +		    !skb_gso_validate_network_len(skb, mtu))
+> >>> +			ret = BPF_MTU_CHK_RET_SEGS_TOOBIG;  
+> >>
+> >> I think that looks okay overall now. One thing that will easily slip through
+> >> is that in the helper description you mentioned 'Check cannot use len_diff.'
+> >> for BPF_MTU_CHK_SEGS flag. So right now for non-zero len_diff the user
+> >> will still get BPF_MTU_CHK_RET_SUCCESS if the current length check via
+> >> skb_gso_validate_network_len(skb, mtu) passes. If it cannot be checked,
+> >> maybe enforce len_diff == 0 for gso skbs on BPF_MTU_CHK_SEGS?  
+> > 
+> > Ok. Do you want/think this can be enforced by the verifier or are you
+> > simply requesting that the helper will return -EINVAL (or another errno)?  
+> 
+> Simple -EINVAL should be fine in this case. Generally, we can detect this from
+> verifier side but I don't think the extra complexity is worth it especially given
+> this is dependent on BPF_MTU_CHK_SEGS and otherwise can be non-zero.
 
-You need this too:
+Luckily this was also my choice in V13 that I've already send out.
 
-	--- a/net/rxrpc/local_object.c
-	+++ b/net/rxrpc/local_object.c
-	@@ -16,6 +16,7 @@
-	 #include <linux/hashtable.h>
-	 #include <net/sock.h>
-	 #include <net/udp.h>
-	+#include <net/udp_tunnel.h>
-	 #include <net/af_rxrpc.h>
-	 #include "ar-internal.h"
-
-With that, it seems to work still:
-
-	Acked-and-tested-by: David Howells <dhowells@redhat.com>
-
-David
+https://lore.kernel.org/netdev/161159457239.321749.9067604476261493815.stgit@firesoul/
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
 
