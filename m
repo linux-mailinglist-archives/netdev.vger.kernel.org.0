@@ -2,143 +2,323 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C360F303523
-	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 06:36:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B7C81303503
+	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 06:35:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731134AbhAZFgY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jan 2021 00:36:24 -0500
-Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:15220 "EHLO
-        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731411AbhAZCRn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 21:17:43 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B600f6c1f0005>; Mon, 25 Jan 2021 17:10:55 -0800
-Received: from HKMAIL103.nvidia.com (10.18.16.12) by HQMAIL105.nvidia.com
- (172.20.187.12) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 26 Jan
- 2021 01:10:55 +0000
-Received: from HKMAIL103.nvidia.com (10.18.16.12) by HKMAIL103.nvidia.com
- (10.18.16.12) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 26 Jan
- 2021 01:10:48 +0000
-Received: from NAM02-BL2-obe.outbound.protection.outlook.com (104.47.38.58) by
- HKMAIL103.nvidia.com (10.18.16.12) with Microsoft SMTP Server (TLS) id
- 15.0.1473.3 via Frontend Transport; Tue, 26 Jan 2021 01:10:48 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=kMIV5UsluO3X4t3QrvgbvUNAq05r47cSSO7CPeocq0B2/e2MtLLo58ZlKt7jfQ0EIu0ohgmADW/VNLo9j4pWspNJiqswQbv+SvBvWhXWty2bAlPLZseQm5kgeEqpxU8CnoP0wgrYOdoWkRvi08kWgfIjaTODNc0IuvNCsUdNOv1ErtezwbFPqavCl2SzVNtLrpmVe+jEJS6rhfe5mpJB5zh9w7QjHDrZlPdotUDYjb7G1fyLuFCn47DaW6dXmrdPZkajrHY2Y6fCHB5bkJL9Tp2Yf2cZy6bTCYI2y2t1pq4I1F7Yiep/OmGCXpBtQRl0nFRMH5IV/PtTo/RaZaHztQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=bv1m0IqIy+JuqUa83fJ5LkpwhUejXPUQe/Okvn0g/jg=;
- b=bg+tMOhKbKsIOJvda1gEJEuvoGMk9K4cQivOzyJb5wXhjbs/lFWfBELhGEVKhn3RSAsBTCThjrfw9jZZ7xG1PeWemjtS5g0N7a5eFigHLaxkuuNPG+3k2tZvRZ5cPgVeA3o3j7BgI3y9rVn6Aryoe1MX3a+zb4XQrEZaIQFdzqKUhee6iJIR6YBxkk27UXRNm2VlDFixqxjEvVmnvOJGtmaSA4QlqCQwHYRzhWMPDtB+qslz4NtDAZ7hgxrv3F97G0AqfafBBehMNEpoexiBZtm1Bp+oKZ3j/bBGR289qwfNuWbDGFlPIy23AVY71+YBhPH3+676ZgNAzTyTcO6cLw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
- by DM6PR12MB3020.namprd12.prod.outlook.com (2603:10b6:5:11f::15) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3784.11; Tue, 26 Jan
- 2021 01:10:46 +0000
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::546d:512c:72fa:4727]) by DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::546d:512c:72fa:4727%7]) with mapi id 15.20.3784.019; Tue, 26 Jan 2021
- 01:10:45 +0000
-Date:   Mon, 25 Jan 2021 21:10:43 -0400
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     Jacob Keller <jacob.e.keller@intel.com>
-CC:     "Saleem, Shiraz" <shiraz.saleem@intel.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        "dledford@redhat.com" <dledford@redhat.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Ertman, David M" <david.m.ertman@intel.com>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        "Ismail, Mustafa" <mustafa.ismail@intel.com>,
-        "jiri@nvidia.com" <jiri@nvidia.com>,
-        "Samudrala, Sridhar" <sridhar.samudrala@intel.com>,
-        "Williams, Dan J" <dan.j.williams@intel.com>
-Subject: Re: [PATCH 07/22] RDMA/irdma: Register an auxiliary driver and
- implement private channel OPs
-Message-ID: <20210126011043.GG4147@nvidia.com>
-References: <20210122234827.1353-1-shiraz.saleem@intel.com>
- <20210122234827.1353-8-shiraz.saleem@intel.com>
- <20210124134551.GB5038@unreal> <20210125132834.GK4147@nvidia.com>
- <2072c76154cd4232b78392c650b2b2bf@intel.com>
- <5b3f609d-034a-826f-1e50-0a5f8ad8406e@intel.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <5b3f609d-034a-826f-1e50-0a5f8ad8406e@intel.com>
-X-ClientProxiedBy: BLAPR03CA0168.namprd03.prod.outlook.com
- (2603:10b6:208:32c::23) To DM6PR12MB3834.namprd12.prod.outlook.com
- (2603:10b6:5:14a::12)
-MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from mlx.ziepe.ca (142.162.115.133) by BLAPR03CA0168.namprd03.prod.outlook.com (2603:10b6:208:32c::23) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3784.11 via Frontend Transport; Tue, 26 Jan 2021 01:10:44 +0000
-Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1l4CsV-006tOB-4u; Mon, 25 Jan 2021 21:10:43 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1611623456; bh=bv1m0IqIy+JuqUa83fJ5LkpwhUejXPUQe/Okvn0g/jg=;
-        h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:Date:
-         From:To:CC:Subject:Message-ID:References:Content-Type:
-         Content-Disposition:In-Reply-To:X-ClientProxiedBy:MIME-Version:
-         X-MS-Exchange-MessageSentRepresentingType;
-        b=NXcdNM7E30KnqmiclGSzWD7TjPefBZu+AyetuApiL6O2twRBNpQkfcQtGboD3hLGa
-         JwhTQcKtonmCRGERJYqTJFOzQPlFDMnCM9P8fRlWfYiQb5GxLsf0JML8pKEWU6jeQ/
-         zjOBdcKTTkifJZ/Yn8puZh47ntsBJo6yWQlESrW4kMfRhEmwrV1kIDjQfJz2Opf8TJ
-         b2psz0tFQUMMDFpBeeHgAd3Dzdg4YIii+rZUwwlkBKBS1hNbm6aO+PNT+zx72XLc7y
-         KU3BJCJsubtjha2NcHS+PzKRxuXpW96c7qc3KpNKpbEbQAl3lhn44o9g47erY6M+Rz
-         8eGwXfNDNjcQA==
+        id S1732373AbhAZFcu (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jan 2021 00:32:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47266 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730587AbhAZBcY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 20:32:24 -0500
+Received: from mail-qt1-x849.google.com (mail-qt1-x849.google.com [IPv6:2607:f8b0:4864:20::849])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D1DCDC061A32
+        for <netdev@vger.kernel.org>; Mon, 25 Jan 2021 17:11:15 -0800 (PST)
+Received: by mail-qt1-x849.google.com with SMTP id b8so8377326qtr.18
+        for <netdev@vger.kernel.org>; Mon, 25 Jan 2021 17:11:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=sender:date:in-reply-to:message-id:mime-version:references:subject
+         :from:to:cc;
+        bh=MOobICiR3lrbiPVGXKBGqp4xvGAkQMkkuE51Yamln9Q=;
+        b=aqRukVX3USA+ufIbk27Sobkm9wIL1cdiYPc1YSEiIpLuc8O9t99Wg6HMtO6WcppHAE
+         TkH6tkRXn1kEdsH2vh2cTf3GJsBzqmDaSWIeY7FGLaKkmQQbpsc+TBK2E0ud64SClbYR
+         K1y5t6Yz46Fet3r1cUnAMilqf0dlQq9QM9X0zg0hUFpeNOG3PwmSfj8gRssWSx7BdsPJ
+         JjdyLWpWNQRfFiDcR15nn4U3E6SEi8Wk3C+ebU9zlXv4+x0N2dqLW6xuD0kAVMtPt+Py
+         3xREe5Fl05TClQtLq04DNqGkuMtTb32v1TUJNrwbTbmo1HE2OC6v7Av/maKQnEnjXwEk
+         RjRw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:sender:date:in-reply-to:message-id:mime-version
+         :references:subject:from:to:cc;
+        bh=MOobICiR3lrbiPVGXKBGqp4xvGAkQMkkuE51Yamln9Q=;
+        b=BakodpbfcpIUFvEgTOy4+8+YpTTu/LbnYpMjTQsZ4nTkIy7LqRB+2OGmek8BwxwMMM
+         5ulHMIkphcnLcnHFsMHVHbv5T2Ud5xc976/J0RJoFsqwwScaW4lXSJPkITPERGwquhO2
+         GIc0vN6BfIktLM9JZsOau0WA06yq4EUM41auTXSfbTJpL1Zb+No6CRAbR5gn6FGfbwJW
+         eHic0akhYkmT3cExemYCThSIXGLSauvN/kq22N3KgsPXXMB5U1eGzG8weNEyM0ggtxNo
+         C7cEfhQZymY93H0ly4QPXF0JFjivkPgAKaZaK2dR6h2VN149/gbkxNm2BEMj8Ie00YO5
+         7ybQ==
+X-Gm-Message-State: AOAM533HP+EGJaD06IRSG/irVdnrCQ3T4sWDJXkBQtuuhn5LYiV8sxoP
+        bST0oKQy1Cg15qKtXiF88snNV5U/czs=
+X-Google-Smtp-Source: ABdhPJwWt2nKiSwjPb4fjgnxLi6nBidkIu7YDZF0DAtWye7ReHIIjnVLsPKnwi4H0mqab4/G8+jdlsAsYBk=
+Sender: "weiwan via sendgmr" <weiwan@weiwan.svl.corp.google.com>
+X-Received: from weiwan.svl.corp.google.com ([2620:15c:2c4:201:1ea0:b8ff:fe75:cf08])
+ (user=weiwan job=sendgmr) by 2002:a0c:9e2d:: with SMTP id p45mr3519540qve.40.1611623474998;
+ Mon, 25 Jan 2021 17:11:14 -0800 (PST)
+Date:   Mon, 25 Jan 2021 17:11:08 -0800
+In-Reply-To: <20210126011109.2425966-1-weiwan@google.com>
+Message-Id: <20210126011109.2425966-3-weiwan@google.com>
+Mime-Version: 1.0
+References: <20210126011109.2425966-1-weiwan@google.com>
+X-Mailer: git-send-email 2.30.0.280.ga3ce27912f-goog
+Subject: [PATCH net-next v8 2/3] net: implement threaded-able napi poll loop support
+From:   Wei Wang <weiwan@google.com>
+To:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Hannes Frederic Sowa <hannes@stressinduktion.org>,
+        Felix Fietkau <nbd@nbd.name>,
+        Alexander Duyck <alexander.duyck@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 25, 2021 at 05:01:40PM -0800, Jacob Keller wrote:
-> 
-> 
-> On 1/25/2021 4:39 PM, Saleem, Shiraz wrote:
-> >> Subject: Re: [PATCH 07/22] RDMA/irdma: Register an auxiliary driver and
-> >> implement private channel OPs
-> >>
-> >> On Sun, Jan 24, 2021 at 03:45:51PM +0200, Leon Romanovsky wrote:
-> >>> On Fri, Jan 22, 2021 at 05:48:12PM -0600, Shiraz Saleem wrote:
-> >>>> From: Mustafa Ismail <mustafa.ismail@intel.com>
-> >>>>
-> >>>> Register irdma as an auxiliary driver which can attach to auxiliary
-> >>>> RDMA devices from Intel PCI netdev drivers i40e and ice. Implement
-> >>>> the private channel ops, add basic devlink support in the driver and
-> >>>> register net notifiers.
-> >>>
-> >>> Devlink part in "the RDMA client" is interesting thing.
-> >>>
-> >>> The idea behind auxiliary bus was that PCI logic will stay at one
-> >>> place and devlink considered as the tool to manage that.
-> >>
-> >> Yes, this doesn't seem right, I don't think these auxiliary bus objects should have
-> >> devlink instances, or at least someone from devlink land should approve of the
-> >> idea.
-> >>
-> > 
-> > In our model, we have one auxdev (for RDMA) per PCI device function owned by netdev driver
-> > and one devlink instance per auxdev. Plus there is an Intel netdev driver for each HW generation.
-> > Moving the devlink logic to the PCI netdev driver would mean duplicating the same set of RDMA
-> > params in each Intel netdev driver. Additionally, plumbing RDMA specific params in the netdev
-> > driver sort of seems misplaced to me.
-> > 
-> 
-> I agree that plumbing these parameters at the PCI side in the devlink of
-> the parent device is weird. They don't seem to be parameters that the
-> parent driver cares about.
+This patch allows running each napi poll loop inside its own
+kernel thread.
+The kthread is created during netif_napi_add() if dev->threaded
+is set. And threaded mode is enabled in napi_enable(). We will
+provide a way to set dev->threaded and enable threaded mode
+without a device up/down in the following patch.
 
-It does, the PCI driver is not supposed to spawn any aux devices for
-RDMA at all if RDMA is disabled.
+Once that threaded mode is enabled and the kthread is
+started, napi_schedule() will wake-up such thread instead
+of scheduling the softirq.
 
-For an iWarp driver I would consider ENABLE_ROCE to really be a
-general ENABLE_RDMA.
+The threaded poll loop behaves quite likely the net_rx_action,
+but it does not have to manipulate local irqs and uses
+an explicit scheduling point based on netdev_budget.
 
-Are you sure you need to implement this?
+Co-developed-by: Paolo Abeni <pabeni@redhat.com>
+Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+Co-developed-by: Hannes Frederic Sowa <hannes@stressinduktion.org>
+Signed-off-by: Hannes Frederic Sowa <hannes@stressinduktion.org>
+Co-developed-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+Signed-off-by: Wei Wang <weiwan@google.com>
+---
+ include/linux/netdevice.h |  19 ++-----
+ net/core/dev.c            | 117 ++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 122 insertions(+), 14 deletions(-)
 
-In any event, you just can't put the generic ENABLE_ROCE flag anyplace
-but the PCI device for devlink, it breaks the expected user API
-established by mlx5
+diff --git a/include/linux/netdevice.h b/include/linux/netdevice.h
+index 02dcef4d66e2..8cb8d43ea5fa 100644
+--- a/include/linux/netdevice.h
++++ b/include/linux/netdevice.h
+@@ -347,6 +347,7 @@ struct napi_struct {
+ 	struct list_head	dev_list;
+ 	struct hlist_node	napi_hash_node;
+ 	unsigned int		napi_id;
++	struct task_struct	*thread;
+ };
+ 
+ enum {
+@@ -358,6 +359,7 @@ enum {
+ 	NAPI_STATE_NO_BUSY_POLL,	/* Do not add in napi_hash, no busy polling */
+ 	NAPI_STATE_IN_BUSY_POLL,	/* sk_busy_loop() owns this NAPI */
+ 	NAPI_STATE_PREFER_BUSY_POLL,	/* prefer busy-polling over softirq processing*/
++	NAPI_STATE_THREADED,		/* The poll is performed inside its own thread*/
+ };
+ 
+ enum {
+@@ -369,6 +371,7 @@ enum {
+ 	NAPIF_STATE_NO_BUSY_POLL	= BIT(NAPI_STATE_NO_BUSY_POLL),
+ 	NAPIF_STATE_IN_BUSY_POLL	= BIT(NAPI_STATE_IN_BUSY_POLL),
+ 	NAPIF_STATE_PREFER_BUSY_POLL	= BIT(NAPI_STATE_PREFER_BUSY_POLL),
++	NAPIF_STATE_THREADED		= BIT(NAPI_STATE_THREADED),
+ };
+ 
+ enum gro_result {
+@@ -503,20 +506,7 @@ static inline bool napi_complete(struct napi_struct *n)
+  */
+ void napi_disable(struct napi_struct *n);
+ 
+-/**
+- *	napi_enable - enable NAPI scheduling
+- *	@n: NAPI context
+- *
+- * Resume NAPI from being scheduled on this context.
+- * Must be paired with napi_disable.
+- */
+-static inline void napi_enable(struct napi_struct *n)
+-{
+-	BUG_ON(!test_bit(NAPI_STATE_SCHED, &n->state));
+-	smp_mb__before_atomic();
+-	clear_bit(NAPI_STATE_SCHED, &n->state);
+-	clear_bit(NAPI_STATE_NPSVC, &n->state);
+-}
++void napi_enable(struct napi_struct *n);
+ 
+ /**
+  *	napi_synchronize - wait until NAPI is not running
+@@ -2143,6 +2133,7 @@ struct net_device {
+ 	struct lock_class_key	*qdisc_running_key;
+ 	bool			proto_down;
+ 	unsigned		wol_enabled:1;
++	unsigned		threaded:1;
+ 
+ 	struct list_head	net_notifier_list;
+ 
+diff --git a/net/core/dev.c b/net/core/dev.c
+index 7d23bff03864..743dd69fba19 100644
+--- a/net/core/dev.c
++++ b/net/core/dev.c
+@@ -91,6 +91,7 @@
+ #include <linux/etherdevice.h>
+ #include <linux/ethtool.h>
+ #include <linux/skbuff.h>
++#include <linux/kthread.h>
+ #include <linux/bpf.h>
+ #include <linux/bpf_trace.h>
+ #include <net/net_namespace.h>
+@@ -1493,6 +1494,37 @@ void netdev_notify_peers(struct net_device *dev)
+ }
+ EXPORT_SYMBOL(netdev_notify_peers);
+ 
++static int napi_threaded_poll(void *data);
++
++static int napi_kthread_create(struct napi_struct *n)
++{
++	int err = 0;
++
++	/* Create and wake up the kthread once to put it in
++	 * TASK_INTERRUPTIBLE mode to avoid the blocked task
++	 * warning and work with loadavg.
++	 */
++	n->thread = kthread_run(napi_threaded_poll, n, "napi/%s-%d",
++				n->dev->name, n->napi_id);
++	if (IS_ERR(n->thread)) {
++		err = PTR_ERR(n->thread);
++		pr_err("kthread_run failed with err %d\n", err);
++		n->thread = NULL;
++	}
++
++	return err;
++}
++
++static void napi_kthread_stop(struct napi_struct *n)
++{
++	if (!n->thread)
++		return;
++
++	kthread_stop(n->thread);
++	clear_bit(NAPI_STATE_THREADED, &n->state);
++	n->thread = NULL;
++}
++
+ static int __dev_open(struct net_device *dev, struct netlink_ext_ack *extack)
+ {
+ 	const struct net_device_ops *ops = dev->netdev_ops;
+@@ -4252,6 +4284,21 @@ int gro_normal_batch __read_mostly = 8;
+ static inline void ____napi_schedule(struct softnet_data *sd,
+ 				     struct napi_struct *napi)
+ {
++	struct task_struct *thread;
++
++	if (test_bit(NAPI_STATE_THREADED, &napi->state)) {
++		/* Paired with smp_mb__before_atomic() in
++		 * napi_enable(). Use READ_ONCE() to guarantee
++		 * a complete read on napi->thread. Only call
++		 * wake_up_process() when it's not NULL.
++		 */
++		thread = READ_ONCE(napi->thread);
++		if (thread) {
++			wake_up_process(thread);
++			return;
++		}
++	}
++
+ 	list_add_tail(&napi->poll_list, &sd->poll_list);
+ 	__raise_softirq_irqoff(NET_RX_SOFTIRQ);
+ }
+@@ -6720,6 +6767,12 @@ void netif_napi_add(struct net_device *dev, struct napi_struct *napi,
+ 	set_bit(NAPI_STATE_NPSVC, &napi->state);
+ 	list_add_rcu(&napi->dev_list, &dev->napi_list);
+ 	napi_hash_add(napi);
++	/* Create kthread for this napi if dev->threaded is set.
++	 * Clear dev->threaded if kthread creation failed so that
++	 * threaded mode will not be enabled in napi_enable().
++	 */
++	if (dev->threaded && napi_kthread_create(napi))
++		dev->threaded = 0;
+ }
+ EXPORT_SYMBOL(netif_napi_add);
+ 
+@@ -6734,12 +6787,31 @@ void napi_disable(struct napi_struct *n)
+ 		msleep(1);
+ 
+ 	hrtimer_cancel(&n->timer);
++	napi_kthread_stop(n);
+ 
+ 	clear_bit(NAPI_STATE_PREFER_BUSY_POLL, &n->state);
+ 	clear_bit(NAPI_STATE_DISABLE, &n->state);
+ }
+ EXPORT_SYMBOL(napi_disable);
+ 
++/**
++ *	napi_enable - enable NAPI scheduling
++ *	@n: NAPI context
++ *
++ * Resume NAPI from being scheduled on this context.
++ * Must be paired with napi_disable.
++ */
++void napi_enable(struct napi_struct *n)
++{
++	BUG_ON(!test_bit(NAPI_STATE_SCHED, &n->state));
++	smp_mb__before_atomic();
++	clear_bit(NAPI_STATE_SCHED, &n->state);
++	clear_bit(NAPI_STATE_NPSVC, &n->state);
++	if (n->dev->threaded && n->thread)
++		set_bit(NAPI_STATE_THREADED, &n->state);
++}
++EXPORT_SYMBOL(napi_enable);
++
+ static void flush_gro_hash(struct napi_struct *napi)
+ {
+ 	int i;
+@@ -6862,6 +6934,51 @@ static int napi_poll(struct napi_struct *n, struct list_head *repoll)
+ 	return work;
+ }
+ 
++static int napi_thread_wait(struct napi_struct *napi)
++{
++	set_current_state(TASK_INTERRUPTIBLE);
++
++	while (!kthread_should_stop() && !napi_disable_pending(napi)) {
++		if (test_bit(NAPI_STATE_SCHED, &napi->state)) {
++			WARN_ON(!list_empty(&napi->poll_list));
++			__set_current_state(TASK_RUNNING);
++			return 0;
++		}
++
++		schedule();
++		set_current_state(TASK_INTERRUPTIBLE);
++	}
++	__set_current_state(TASK_RUNNING);
++	return -1;
++}
++
++static int napi_threaded_poll(void *data)
++{
++	struct napi_struct *napi = data;
++	void *have;
++
++	while (!napi_thread_wait(napi)) {
++		for (;;) {
++			bool repoll = false;
++
++			local_bh_disable();
++
++			have = netpoll_poll_lock(napi);
++			__napi_poll(napi, &repoll);
++			netpoll_poll_unlock(have);
++
++			__kfree_skb_flush();
++			local_bh_enable();
++
++			if (!repoll)
++				break;
++
++			cond_resched();
++		}
++	}
++	return 0;
++}
++
+ static __latent_entropy void net_rx_action(struct softirq_action *h)
+ {
+ 	struct softnet_data *sd = this_cpu_ptr(&softnet_data);
+-- 
+2.30.0.280.ga3ce27912f-goog
 
-Jason
