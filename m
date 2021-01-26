@@ -2,77 +2,58 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E9F943048D7
-	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 20:41:31 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EC0863048D9
+	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 20:41:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388117AbhAZFj1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jan 2021 00:39:27 -0500
-Received: from mail.kernel.org ([198.145.29.99]:45316 "EHLO mail.kernel.org"
+        id S2388132AbhAZFj3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jan 2021 00:39:29 -0500
+Received: from mail.kernel.org ([198.145.29.99]:45730 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726851AbhAZDUv (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Mon, 25 Jan 2021 22:20:51 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id EAAE022AAC;
-        Tue, 26 Jan 2021 03:20:10 +0000 (UTC)
+        id S1732114AbhAZDYT (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Mon, 25 Jan 2021 22:24:19 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id AD7B822583;
+        Tue, 26 Jan 2021 03:23:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611631211;
-        bh=0BYXnPwP/7+FDy+ACZrXbGfA1ZDJYTwE8vtnENsCVNQ=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=F/7gZBD48vDK9w4c64ZBsQ03x7wkIpODzeFTv/nX6uTsAN0IYL3aQRIZfgACk7x0v
-         ve2Rgg9PU4PTiRZhpCJ4mLIMttr6L/4dLszZtuZWqRgQvVACFvNIeFKclCnqgj6zQS
-         qy2DqvAOtyLPaxc3kF8GqNJbqmi2UqBaEiH1PyAh6TGOyOpn1qoMmc/v1o2lRUzUUP
-         Zyrhi6fG8zv35EDMh6IQzRE0E0njiFUNZ9Ll6Q3GTwXBNN5kJXwZm02Ltv4rMDbWgB
-         brHPZ2y+DJv5IgZc9J/jTznH9osmA6lZcQaw6P0bHTmcYOxPfFI77vIFmMYo2OcBT/
-         Sbf2Lsst+JKMQ==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id DAF8461E41;
-        Tue, 26 Jan 2021 03:20:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        s=k20201202; t=1611631419;
+        bh=WxM0D+6iES5SFbyYQlBl/+BIf+WzcsCilaXdZAepgF4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=f5m+J9f8ltXFn58fzGIU1pyAwPbvN0GmMzWfA9IgJrDlnTq7VWGlRfHs4kjHnCpzv
+         HkveqGAzBXoLVhxT9i2ztTH2rrCCDmIWuu5r3pjKfCMufmNJk0P9YmBRZb8Fmyh0/6
+         lGogzBprVgI2a6luv+pgFbddKy4hhaSduOiDWLkhj1bGMxJ6+ipoSw0nwrtTQI5H+4
+         n87k8xBWwrnswUoB+VrCgADR0zKy3qOs1j0H4w15sG2WPJVz+v6/E0wFsu5UT6bmvf
+         vV2qisaimvHwKjzhMAs20BA3P1Mh3QpL3lHVw0kzy67Hzmvv7dDisS1kMTjbxcIUfz
+         yP1YfIL5kJbkQ==
+Date:   Mon, 25 Jan 2021 19:23:38 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Michael Chan <michael.chan@broadcom.com>,
+        David Miller <davem@davemloft.net>,
+        Network Development <netdev@vger.kernel.org>,
+        gospo@broadcom.com
+Subject: Re: [PATCH net-next 00/15] bnxt_en: Error recovery improvements.
+Message-ID: <20210125192338.526932e6@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <CAF=yD-KFe+QAb5JkK1xYUTzjgL32cOWUEqsX3qJrbg3ky-ZPrQ@mail.gmail.com>
+References: <1611558501-11022-1-git-send-email-michael.chan@broadcom.com>
+        <CAF=yD-KFe+QAb5JkK1xYUTzjgL32cOWUEqsX3qJrbg3ky-ZPrQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net-next v2 0/2] dsa: add MT7530 GPIO support
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161163121089.4087.613122174827769113.git-patchwork-notify@kernel.org>
-Date:   Tue, 26 Jan 2021 03:20:10 +0000
-References: <20210125044322.6280-1-dqfext@gmail.com>
-In-Reply-To: <20210125044322.6280-1-dqfext@gmail.com>
-To:     DENG Qingfang <dqfext@gmail.com>
-Cc:     andrew@lunn.ch, vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        olteanv@gmail.com, davem@davemloft.net, kuba@kernel.org,
-        robh+dt@kernel.org, matthias.bgg@gmail.com, sean.wang@mediatek.com,
-        Landen.Chao@mediatek.com, p.zabel@pengutronix.de,
-        linux@armlinux.org.uk, linus.walleij@linaro.org,
-        bgolaszewski@baylibre.com, netdev@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-gpio@vger.kernel.org, linux-mediatek@lists.infradead.org,
-        linux-kernel@vger.kernel.org, frank-w@public-files.de,
-        opensource@vdorst.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Mon, 25 Jan 2021 20:37:52 -0500 Willem de Bruijn wrote:
+> On Mon, Jan 25, 2021 at 3:36 AM Michael Chan <michael.chan@broadcom.com> wrote:
+> > This series contains a number of improvements in the area of error
+> > recovery.  Most error recovery scenarios are tightly coordinated with
+> > the firmware.  A number of patches add retry logic to establish
+> > connection with the firmware if there are indications that the
+> > firmware is still alive and will likely transition back to the
+> > normal state.  Some patches speed up the recovery process and make
+> > it more reliable.  There are some cleanup patches as well.
+>
+> Acked-by: Willem de Bruijn <willemb@google.com>
 
-This series was applied to netdev/net-next.git (refs/heads/master):
+Thanks! 
 
-On Mon, 25 Jan 2021 12:43:20 +0800 you wrote:
-> MT7530's LED controller can be used as GPIO controller. Add support for
-> it.
-> 
-> DENG Qingfang (2):
->   dt-bindings: net: dsa: add MT7530 GPIO controller binding
->   net: dsa: mt7530: MT7530 optional GPIO support
-> 
-> [...]
-
-Here is the summary with links:
-  - [net-next,v2,1/2] dt-bindings: net: dsa: add MT7530 GPIO controller binding
-    https://git.kernel.org/netdev/net-next/c/974d5ba60df7
-  - [net-next,v2,2/2] net: dsa: mt7530: MT7530 optional GPIO support
-    https://git.kernel.org/netdev/net-next/c/429a0edeefd8
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Applied.
