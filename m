@@ -2,85 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 839AE305C7C
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 14:08:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BC563305C5E
+	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 14:03:08 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343724AbhA0NHR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 08:07:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40430 "EHLO
+        id S238059AbhA0NDC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 08:03:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S313800AbhAZWq2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jan 2021 17:46:28 -0500
-Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58EE9C0613ED
-        for <netdev@vger.kernel.org>; Tue, 26 Jan 2021 14:45:41 -0800 (PST)
-Received: by mail-wm1-x32a.google.com with SMTP id u14so4079189wmq.4
-        for <netdev@vger.kernel.org>; Tue, 26 Jan 2021 14:45:41 -0800 (PST)
+        with ESMTP id S313049AbhAZWrq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jan 2021 17:47:46 -0500
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 506C7C061573
+        for <netdev@vger.kernel.org>; Tue, 26 Jan 2021 14:47:05 -0800 (PST)
+Received: by mail-ed1-x533.google.com with SMTP id bx12so971edb.8
+        for <netdev@vger.kernel.org>; Tue, 26 Jan 2021 14:47:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:from:to:cc:references:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=6uEDqbP5GBGYUP7F64oBhLErel+Fpma3Eqxu2AemvaQ=;
-        b=uaezocJcJ44aLIxEa8+99hIP0zmrMw5sTeR0a/3Bvj+5iwPv9MIfcXEEBhZt3qejAq
-         NcFgpgi99IWHcWdjURU5WlGGFDZC0+F0JLVID6lOCZG6qTLau/FTQv4A0wpg3S88Udsf
-         igv5lpckSxyjRaFp4t6R4FFvx7ExmSjYyVeXaltGuRKcM0zr6KRCskFB16MeoHW8KWQ+
-         WBfv7jGQ1SIaG+YDYjqmaVJYuw3rRu9fXRyd7fokSCNL5MNmqOAxC9Vx/y/LuSIpqM2N
-         SavwLj8j/EjMGQS1mp6QSQ9A/T7QPu8VY9WlsIpz07HUl+3S41VCYv51PcAr9keERuk2
-         ROSg==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=HgzEOzoEbZ1l+7iH/R2EQf3nAtw+FzQ+vvJeXAXwUwI=;
+        b=q9DkZ0MzDvtYo9tyI7VIiaNDnaMMAwubaG4kRQx8WLND/H2qQzoDX5UQnn9TW9nNNP
+         tECMG4Qc81bHshl/YpwBym7z2HLTXHbQ3L1cLobO2CaNtEGuXcqddsqZFqSNzznYelEj
+         eUqYy7V2+xWDB4vK/RckjnBPBP8SBtHfeDn5i0AnMXKDuRb8MSoWujT9EAMo6FC+xfCn
+         zf0oPzvzvI7TeMJkYX3qMMtGAELnpkS4Y1lHdfJTBvGButVMQsm0xrH2Lke8F4+m27zF
+         tYcauOEclSNi/k+CT5jTluzaVN1a3/RvTpj/Q0/COIfE3whBTspLIR/A++1nIHPX6CSK
+         6wAg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:cc:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=6uEDqbP5GBGYUP7F64oBhLErel+Fpma3Eqxu2AemvaQ=;
-        b=rU69h9UvSak5Ha9CQuiS6f2/pR1xXWYHyodCsAG0hknKdT7K674bwq19S/9k8lmi4k
-         zB0Td2SOHkmCWFauwPxNkafS2Gc3Z+Ujb8uqB+VAtwGcjTW2s9cLyGMooUzQwUgrTb4W
-         Pg77BXcgiIbzv0WZCnGRZzaiiT5uPWJ0O9Q170+ZkO2t2q8z4CVmhgEYip3AkznPptWk
-         l1KrLU1XQl8ZQKBZL4NFF41xK4bosYdKvOcVx778sCNChM9ckqHcQrdFjYa1A2L60/Gy
-         ZHuSP36+Eo/ZJTWOP/xooKKanrrmTRSD5jHUlybWnjk+ODEtZ0cY1u/Rkvpti5vcNE1O
-         yYUg==
-X-Gm-Message-State: AOAM531J5Z5NVrLiq3xcQ1PZgLrGsk2/HSKlAdFy1FyLWxdcp3jBQiUM
-        ofwY4BUAnKolYewZNPCLecJEM7AaoiI=
-X-Google-Smtp-Source: ABdhPJySKPkjXk1+/mR8HrDkBKMuGle1mrMwwuiZJxJWmAKxxPW2SgLf8d/Y5qqFtVrAnipI1D+zhQ==
-X-Received: by 2002:a7b:cd97:: with SMTP id y23mr1602514wmj.0.1611701139878;
-        Tue, 26 Jan 2021 14:45:39 -0800 (PST)
-Received: from ?IPv6:2003:ea:8f1f:ad00:5935:bd94:7662:5c2c? (p200300ea8f1fad005935bd9476625c2c.dip0.t-ipconnect.de. [2003:ea:8f1f:ad00:5935:bd94:7662:5c2c])
-        by smtp.googlemail.com with ESMTPSA id 17sm19208wmk.48.2021.01.26.14.45.39
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 26 Jan 2021 14:45:39 -0800 (PST)
-Subject: Re: [PATCH net] r8169: work around RTL8125 UDP hw bug
-From:   Heiner Kallweit <hkallweit1@gmail.com>
-To:     Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Realtek linux nic maintainers <nic_swsd@realtek.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-References: <c7fd197f-8ab8-2297-385e-5d2b1d5911d7@gmail.com>
-Message-ID: <e7f22b01-589b-102c-cce4-4a5851f0d107@gmail.com>
-Date:   Tue, 26 Jan 2021 23:45:34 +0100
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=HgzEOzoEbZ1l+7iH/R2EQf3nAtw+FzQ+vvJeXAXwUwI=;
+        b=mTineP4lUtkcms1HPDBz6l+FEU+QZSVgl2uFLkKf7O0hinaXjCgwCBXNESBYyvDPqW
+         EBWYmLstIPh3AnBLjK+A6G2JnrE6dKR9AA8yQtjzfnv+dZwEPQ2YeXZM3DiKSCjqEKj+
+         of3JpLCDg4K387LSmaRgyDHg29TRVMFWHwbn6Qz7Kkg6BbRzEZlSIMOfoQCuM5qZ+6ng
+         h+1zpbVuVy9Q334bK/uSUQ76UfHkN81UUx6yMRoe+c0juQl7+iDnOiECcSQgpsBKpnAI
+         FOVlKH1qzN7PPD3WNphRrSlVJiTLnFIK+n5ocGNVMeZchUGk1WMd87L+Tee0Nn/B2mOQ
+         HktQ==
+X-Gm-Message-State: AOAM532mOgQxpfzRWg1Y+9m8A+fsanImpb8bGKS/YKNNzhqwBw+t3qSk
+        oDyUkQDJak+T6DmWLmbcVWRLaUHoENIcZqP3uow=
+X-Google-Smtp-Source: ABdhPJzM97lpZHC10fQcQWUovquDvnAMai6lz5ZBxIxjFBlwONgFj2Onlt4oEC56x6cNKk24jL4z/NvcDQS1GUj9ZhA=
+X-Received: by 2002:a50:eb81:: with SMTP id y1mr6089462edr.176.1611701224122;
+ Tue, 26 Jan 2021 14:47:04 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <c7fd197f-8ab8-2297-385e-5d2b1d5911d7@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20210126115854.2530-1-qiangqing.zhang@nxp.com> <20210126115854.2530-2-qiangqing.zhang@nxp.com>
+In-Reply-To: <20210126115854.2530-2-qiangqing.zhang@nxp.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Tue, 26 Jan 2021 17:46:26 -0500
+Message-ID: <CAF=yD-J-WDY6GPP-4B-9v78wJf3yj6vrqhHnbyhg1kx6Wc1yHg@mail.gmail.com>
+Subject: Re: [PATCH V3 1/6] net: stmmac: remove redundant null check for ptp clock
+To:     Joakim Zhang <qiangqing.zhang@nxp.com>
+Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Jose Abreu <joabreu@synopsys.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        linux-imx@nxp.com, Andrew Lunn <andrew@lunn.ch>,
+        Florian Fainelli <f.fainelli@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 26.01.2021 10:02, Heiner Kallweit wrote:
-> It was reported that on RTL8125 network breaks under heavy UDP load,
-> e.g. torrent traffic ([0], from comment 27). Realtek confirmed a hw bug
-> and provided me with a test version of the r8125 driver including a
-> workaround. Tests confirmed that the workaround fixes the issue.
-> I modified the original version of the workaround to meet mainline
-> code style.
-> 
-> [0] https://bugzilla.kernel.org/show_bug.cgi?id=209839
-> 
-> Fixes: f1bce4ad2f1c ("r8169: add support for RTL8125")
-> Tested-by: xplo <xplo.bn@gmail.com>
-> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
-> ---
+On Tue, Jan 26, 2021 at 7:05 AM Joakim Zhang <qiangqing.zhang@nxp.com> wrote:
+>
+> Remove redundant null check for ptp clock.
+>
+> Fixes: 1c35cc9cf6a0 ("net: stmmac: remove redundant null check before clk_disable_unprepare()")
 
-Patch is against net-next, not net. I'll rebase and resubmit.
+This does not look like a fix to that patch, but another instance of a cleanup.
+
+The patchset also does not explicitly target net (for fixes) or
+net-next (for new improvements). I suppose this patch targets
+net-next.
+
+> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+> Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
+> ---
+>  drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
+>
+> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> index 26b971cd4da5..11e0b30b2e01 100644
+> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
+> @@ -5291,8 +5291,7 @@ int stmmac_resume(struct device *dev)
+>                 /* enable the clk previously disabled */
+>                 clk_prepare_enable(priv->plat->stmmac_clk);
+>                 clk_prepare_enable(priv->plat->pclk);
+> -               if (priv->plat->clk_ptp_ref)
+> -                       clk_prepare_enable(priv->plat->clk_ptp_ref);
+> +               clk_prepare_enable(priv->plat->clk_ptp_ref);
+>                 /* reset the phy so that it's ready */
+>                 if (priv->mii)
+>                         stmmac_mdio_reset(priv->mii);
+> --
+> 2.17.1
+>
