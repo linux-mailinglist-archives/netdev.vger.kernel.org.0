@@ -2,95 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0F0D83048B0
-	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 20:35:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6FF663048AF
+	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 20:33:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732184AbhAZFlR (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jan 2021 00:41:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53112 "EHLO
+        id S1728483AbhAZFm0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jan 2021 00:42:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726762AbhAZELX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 23:11:23 -0500
-Received: from mail-pf1-x429.google.com (mail-pf1-x429.google.com [IPv6:2607:f8b0:4864:20::429])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2A48C0613D6
-        for <netdev@vger.kernel.org>; Mon, 25 Jan 2021 20:10:42 -0800 (PST)
-Received: by mail-pf1-x429.google.com with SMTP id y205so9760241pfc.5
-        for <netdev@vger.kernel.org>; Mon, 25 Jan 2021 20:10:42 -0800 (PST)
+        with ESMTP id S1729226AbhAZEZm (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Mon, 25 Jan 2021 23:25:42 -0500
+Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47742C061574
+        for <netdev@vger.kernel.org>; Mon, 25 Jan 2021 20:25:02 -0800 (PST)
+Received: by mail-io1-xd2c.google.com with SMTP id u17so31289992iow.1
+        for <netdev@vger.kernel.org>; Mon, 25 Jan 2021 20:25:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=aKVkEDBagljuX3YCkGFMWzS+lPPdBp7IpdpqtPio3EU=;
-        b=f0NIGHVBopI0yPqJVr/PiUV/mhKQiqe9Zkr1Ss+4XSbNk5DhohIa6DolWNsmB2DccW
-         6ljXAdWx0+uM7qFc/tpWeUvJx+IQhUU4WZEQOMpM5PFfCvCcawF+21VSP+7hbhtvSVoH
-         vXg5fWv1FdiYiyrSfvy1wLtuqn39uPftTEtbPbhb8DK036ka0oTsJtcNby9QPy0ipT10
-         mKeC80M6GDWPx+xX1naF5S0AGlEWgRgwo0H8LUOecxg/mTWmpjnXwIV9vMhhUoX9Gd6M
-         OTZ5mg69q2xam+YVhbRRsQo/rEnPUalloNWn1vm2jfaGhM4rGSvf74PG2Iq4le7LHsTb
-         USiw==
+        d=linaro.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=OP+XA4IGRguJccVNM97sFAdH8FtpcW6xsyoNvGCEAl4=;
+        b=b60kroY3RX6kWGQDbf1L/w5aPO/vmZmNzbEyczKcKf8IPFYXtFJb5M3LIugu+Cipo8
+         xiLXt6EBywDfG8CLY/gkxcU5C5pEFLcJDlgvo57PXeUlq/kM2rBA3uoMCZWt3ww9F6Os
+         WEoIj6ZiOPVC8nrrZgCqeLEeFolP/n3lIOWDgBlb0/wEn15c1+AwQ9N9bm2zKu8uQC6i
+         LoI0xqQEK4i4X3W/HfgEWquSvR3jDaJ8w+7UPMTK5CoN8xPFt/9VD4gTsLf2r8SmVK+P
+         b/Omxkk0JYBYkSba+TnCb9wCcPp15JrxCGzUye7PDaOG4Br9JmHdaVSV1V6KVE+NX+Ln
+         EVVQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=aKVkEDBagljuX3YCkGFMWzS+lPPdBp7IpdpqtPio3EU=;
-        b=m9s0oa9SWe/mnlt9xg7BSN7AgrTc3Bby0LlpbwBmPT9efZXv32DgACkyqGdVIG97lp
-         zHOfifxv4UnPneBRZrxLLRPkm6dJHrmbKSFi0BYK305fWyid4/Lf0/IKFgHge71LSgxL
-         f1CbPWEa41Jfnq91bQP2U3YoYjbmYtKzeBUTEzcnqYweryte9xTWza3nfoGAgsjrlmEE
-         5U6vAQ3hVaZfdqVJ1rxmXpq2qi0NCy0jFXbXiB5H6LKNZEnRfvjS1hbQ1UqoV5/8tZK8
-         5InQS9uH2bIyPMMnrYOF/w6bubX9si9+IiguyCPJjrPH9Z+svkQIXDjfObv2K0AO7gK8
-         EVew==
-X-Gm-Message-State: AOAM530XhBSsNbnrldBA64tu2GgxXbWeO7rGTvSfWLYP9eImXny26PpO
-        gjbJf9IOPcBK/Yd3w2kRrgiSwiBigNjVBMix
-X-Google-Smtp-Source: ABdhPJwWGZ3FBurbJc4PpDAopOt9mDr/vxh0Tv2YAD6NCmW23w9MN7k+ts53mGxcIDP/evmVyAO0MA==
-X-Received: by 2002:a63:5122:: with SMTP id f34mr599446pgb.107.1611634242308;
-        Mon, 25 Jan 2021 20:10:42 -0800 (PST)
-Received: from Leo-laptop-t470s.redhat.com ([209.132.188.80])
-        by smtp.gmail.com with ESMTPSA id bk18sm783784pjb.41.2021.01.25.20.10.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Jan 2021 20:10:41 -0800 (PST)
-From:   Hangbin Liu <liuhangbin@gmail.com>
-To:     netdev@vger.kernel.org
-Cc:     Roopa Prabhu <roopa@nvidia.com>,
-        Nikolay Aleksandrov <nikolay@nvidia.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        bridge@lists.linux-foundation.org, Jarod Wilson <jarod@redhat.com>,
-        Jiri Pirko <jiri@resnulli.us>,
-        Ivan Vecera <ivecera@redhat.com>,
-        Hangbin Liu <liuhangbin@gmail.com>
-Subject: [PATCH net-next] bridge: Propagate NETDEV_NOTIFY_PEERS notifier
-Date:   Tue, 26 Jan 2021 12:09:49 +0800
-Message-Id: <20210126040949.3130937-1-liuhangbin@gmail.com>
-X-Mailer: git-send-email 2.26.2
+        bh=OP+XA4IGRguJccVNM97sFAdH8FtpcW6xsyoNvGCEAl4=;
+        b=foW+NUx3iPkgxL41kPj2A1WDBzyAHx1z6GAmGpknoyCTWWOly2cHMcnOZitEoN4zW7
+         ivvEv3X/GCKziSXALsLBzIBnUBLR37MKcnNnq6v5OmFp8UkFubIPD1eOWmI/xyI/VRLw
+         sLJJSMx45RiATs3QPGibxYapSk5C693VpH3TPAqWyALTmfanjUwgvmKFkoijCefCBo/R
+         4vemmS5+S1rESQBDCXv0uGIZ9lC+1i7cDRGqr6AlrUvTqzv0PyTFQ+8N2vYHcQIS7grS
+         kECuI91Ffm07DiyEaqMr7ipKtO0fwrfDIdjJ4YppwQAfxfUwyMiVg6ozjacu5nZXW92d
+         fhTA==
+X-Gm-Message-State: AOAM533Nkia/QZFiIuyxqYMe/Z3lwp3ATWMFbKnv3xbOfZHWeKyDkEhc
+        YiRisOeMd3kdJlG23wsoFNgBSA==
+X-Google-Smtp-Source: ABdhPJxNF/o7uG6MPrcBdKTADO1oysoEHuEbDYED76DjHEc2VmcCdIIbeFqUJFBueVw8VgyaB1xrFA==
+X-Received: by 2002:a05:6e02:12e2:: with SMTP id l2mr3139438iln.91.1611635101527;
+        Mon, 25 Jan 2021 20:25:01 -0800 (PST)
+Received: from [172.22.22.4] (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
+        by smtp.googlemail.com with ESMTPSA id r9sm12636138ill.72.2021.01.25.20.25.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 25 Jan 2021 20:25:00 -0800 (PST)
+Subject: Re: [PATCH net-next 3/6] net: ipa: drop packet if status has valid
+ tag
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     davem@davemloft.net, elder@kernel.org, evgreen@chromium.org,
+        bjorn.andersson@linaro.org, cpratapa@codeaurora.org,
+        subashab@codeaurora.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20210125212947.17097-1-elder@linaro.org>
+ <20210125212947.17097-4-elder@linaro.org>
+ <20210125192733.38ff2ac5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Alex Elder <elder@linaro.org>
+Message-ID: <5a04e525-e5b9-773b-2e8b-27adb3a01d0b@linaro.org>
+Date:   Mon, 25 Jan 2021 22:24:59 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210125192733.38ff2ac5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-After adding bridge as upper layer of bond/team, we usually clean up the
-IP address on bond/team and set it on bridge. When there is a failover,
-bond/team will not send gratuitous ARP since it has no IP address.
-Then the down layer(e.g. VM tap dev) of bridge will not able to receive
-this notification.
+On 1/25/21 9:27 PM, Jakub Kicinski wrote:
+> On Mon, 25 Jan 2021 15:29:44 -0600 Alex Elder wrote:
+>> Introduce ipa_endpoint_status_tag(), which returns true if received
+>> status indicates its tag field is valid.  The endpoint parameter is
+>> not yet used.
+>>
+>> Call this from ipa_status_drop_packet(), and drop the packet if the
+>> status indicates the tag was valid.  Pass the endpoint pointer to
+>> ipa_status_drop_packet(), and rename it ipa_endpoint_status_drop().
+>> The endpoint will be used in the next patch.
+>>
+>> Signed-off-by: Alex Elder <elder@linaro.org>
+> 
+>> @@ -1172,11 +1175,22 @@ static bool ipa_endpoint_status_skip(struct ipa_endpoint *endpoint,
+>>   	return false;	/* Don't skip this packet, process it */
+>>   }
+>>   
+>> +static bool ipa_endpoint_status_tag(struct ipa_endpoint *endpoint,
+>> +				    const struct ipa_status *status)
+>> +{
+>> +	return !!(status->mask & IPA_STATUS_MASK_TAG_VALID_FMASK);
+> 
+> drivers/net/ipa/ipa_endpoint.c:1181:25: warning: restricted __le16 degrades to integer
 
-Make bridge to be able to handle NETDEV_NOTIFY_PEERS notifier.
+Wow, that's an important one.
 
-Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
----
- net/bridge/br.c | 1 +
- 1 file changed, 1 insertion(+)
+Sparse is spewing errors for me.  I guess I'm finally going to have
+to figure out what's wrong.
 
-diff --git a/net/bridge/br.c b/net/bridge/br.c
-index ef743f94254d..b6a0921bb498 100644
---- a/net/bridge/br.c
-+++ b/net/bridge/br.c
-@@ -125,6 +125,7 @@ static int br_device_event(struct notifier_block *unused, unsigned long event, v
- 		/* Forbid underlying device to change its type. */
- 		return NOTIFY_BAD;
- 
-+	case NETDEV_NOTIFY_PEERS:
- 	case NETDEV_RESEND_IGMP:
- 		/* Propagate to master device */
- 		call_netdevice_notifiers(event, br->dev);
--- 
-2.26.2
+I'll send an update tomorrow.  I know how to fix it but I want to
+verify it works before I send it out.
+
+Thank you.
+
+					-Alex
+
+>> +}
+>> +
 
