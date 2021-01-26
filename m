@@ -2,59 +2,59 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 53A23304D85
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 01:43:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2DC55304D8B
+	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 01:44:19 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732318AbhAZXK3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jan 2021 18:10:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47052 "EHLO
+        id S1732367AbhAZXKn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jan 2021 18:10:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731757AbhAZS5t (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jan 2021 13:57:49 -0500
-Received: from mail-io1-xd29.google.com (mail-io1-xd29.google.com [IPv6:2607:f8b0:4864:20::d29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE046C0613D6
-        for <netdev@vger.kernel.org>; Tue, 26 Jan 2021 10:57:08 -0800 (PST)
-Received: by mail-io1-xd29.google.com with SMTP id h11so35678541ioh.11
-        for <netdev@vger.kernel.org>; Tue, 26 Jan 2021 10:57:08 -0800 (PST)
+        with ESMTP id S1732110AbhAZS5v (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jan 2021 13:57:51 -0500
+Received: from mail-io1-xd35.google.com (mail-io1-xd35.google.com [IPv6:2607:f8b0:4864:20::d35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AECCC06178A
+        for <netdev@vger.kernel.org>; Tue, 26 Jan 2021 10:57:11 -0800 (PST)
+Received: by mail-io1-xd35.google.com with SMTP id u17so35865315iow.1
+        for <netdev@vger.kernel.org>; Tue, 26 Jan 2021 10:57:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=f5b9KtQ7d1H/fGZmXHlccfFZMdiZGMJ/JFXTwWf9F8s=;
-        b=SQiMsUM5JIXhmTm3jtoiBCRusm96VGeuMvXqKZWmLUfK0c77z/w8h4EuYJv4GlGpR7
-         MHGoSEkcClv9bX5yiMeXboUJDbsYc5SKoh5KJgBlKM4Y/83gZHWonLlJlQ8GoMw/CjrR
-         xUdkZLtTcEdyyP128msMDrp0E6tpGBsxxasr/LcaBnU2NxmDMpOJmelMHDouCTcGoyVZ
-         p2M1RQKSzahGqJ84gzomRM7qhraN7GJpFKt+g4jsJQcaFKCrRdnRTzEzO26/vcI+dHuA
-         czmh5wAvftP+Lqj7HNALeV43fnsblLRUkx3LS61xZ+aZ5S7dXVG1ZM5K9arGXzUuLXGP
-         Emyg==
+        bh=s57J/xOFhvFT/dyDrXRhATPPv+j4to5KF2lppSb4o8g=;
+        b=ZXj3KnRJ+AZ2oQv2hFwmxefm0sC68as2h+Om3u7UOUUgj0xSGu2PBFrOC9ybY9B9mR
+         PBPaXPHGoiLFeBvex0wWol7uYTm7gIylX0nMvNuT/KD2B9ASwddajdQdXGnogeQn7H0o
+         LJhXxNVaxqlf/Oa7jbQeh+v7XbJQKhkHFKFNsYmfyfdMoxyOXfygun3EcLiJ8bN0Omk4
+         eEQQDAGwn+EiYR2WcQpTjk6kyCY1LFVcBJOkK/HQCZ+bXNwxXl7ZRpaQs/oVZrHL7AfD
+         ln5AIFhgWcqUHcvUlmHIp1iWBG5h21bpCHNsXQq8T5eh8byKtqbS32V0gY+0O/phDR8M
+         yzQA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=f5b9KtQ7d1H/fGZmXHlccfFZMdiZGMJ/JFXTwWf9F8s=;
-        b=lrfnWZuukyWKgox8NR7wC/QuzxZdwEz+h9bStIEv70D3lreqQp++GJ7D+qHjtl/saH
-         QbktaZsdHA1uUugsHCV8Q5YRMwRs9TOkQHBUo2TOPeN3ZgMxSKvTrZIR8qr4EW9+LRZJ
-         txob1G9UFGQZVOl0keddwaxStu08zDbc9Fdn1W5wUr19t+QYMbyEvwMmZhBc3pPdbiww
-         PTlPvqemSkCWgcuq933mOoaspMtdA/mdiTfhva6v6T3FM3T29q2Fdt5E92C5TdeLT3ZQ
-         j8Sfl5KISiJOFzvr9xwvnylUS7o6WWQfcz+53WodZdhKw9nvHgmuevwSJnpnL7Qmr08O
-         z8eA==
-X-Gm-Message-State: AOAM532Nu0rXGVoDkWqQjFPM5HGgy7PMYKnKa2Hz9EKvlYMTkVJ4FdTX
-        DW6Gu0Ft6+GgHKBiL4bK6c6bVQ==
-X-Google-Smtp-Source: ABdhPJxqomMueYH1MDVu+WTtNg3uo6M1NU0RcKw1VF44PVGCCb96A52T0358uKQI+XDEulYR50C5nw==
-X-Received: by 2002:a05:6e02:1202:: with SMTP id a2mr5859544ilq.21.1611687428356;
-        Tue, 26 Jan 2021 10:57:08 -0800 (PST)
+        bh=s57J/xOFhvFT/dyDrXRhATPPv+j4to5KF2lppSb4o8g=;
+        b=SPEw4h0rXx5M8eB2/lSc2qiXw/1aSM2/iCUMHnDep+J8DwkSzhvQzdXPXLe56Ak+pL
+         VnESj/gz0RLv3fLl+vDP/p/isiC4vHqqOevUxIDqO7E4Z9+7PaQwNdmwL/2v+b+oUDrr
+         Dkr4Q0/rip8Qw6OxXw+g+M/FeqMI2/VlqSdNieu7XsaF5gGB231vAsipomwYO1NLsMDw
+         8NX5AOdoqwAlc0d+qfAHgI1DbRKg3ExbvnS9oJ7gLfJ2kNivudWCFZYXGaFj82AxRqU3
+         kOGJVeZTkAIUGcSnZ5OazvilrsfhlBFlxdgBvaZqN7i/2UDPLd908canCSMp5+UldyJo
+         Cggg==
+X-Gm-Message-State: AOAM530qfsuXiOAgsHh55Hs6V1TY4aD9cz9qz0xukoyNfk9vB4eYNhcJ
+        A75ptTWBjtIcDE1omHd8HgvX4g==
+X-Google-Smtp-Source: ABdhPJwzjzL6SPuRvYcTaKjp4ZgB3S6hJkrZC+DodSVJlvG+qQYk39E1wSYOtAtJwWTx2NQbVKU39g==
+X-Received: by 2002:a05:6638:3006:: with SMTP id r6mr6228829jak.72.1611687430604;
+        Tue, 26 Jan 2021 10:57:10 -0800 (PST)
 Received: from beast.localdomain (c-73-185-129-58.hsd1.mn.comcast.net. [73.185.129.58])
-        by smtp.gmail.com with ESMTPSA id l14sm13060681ilh.58.2021.01.26.10.57.07
+        by smtp.gmail.com with ESMTPSA id l14sm13060681ilh.58.2021.01.26.10.57.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Jan 2021 10:57:07 -0800 (PST)
+        Tue, 26 Jan 2021 10:57:10 -0800 (PST)
 From:   Alex Elder <elder@linaro.org>
 To:     davem@davemloft.net, kuba@kernel.org
 Cc:     elder@kernel.org, evgreen@chromium.org, bjorn.andersson@linaro.org,
         cpratapa@codeaurora.org, subashab@codeaurora.org,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v2 1/6] net: ipa: rename "tag status" symbols
-Date:   Tue, 26 Jan 2021 12:56:58 -0600
-Message-Id: <20210126185703.29087-2-elder@linaro.org>
+Subject: [PATCH net-next v2 3/6] net: ipa: drop packet if status has valid tag
+Date:   Tue, 26 Jan 2021 12:57:00 -0600
+Message-Id: <20210126185703.29087-4-elder@linaro.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20210126185703.29087-1-elder@linaro.org>
 References: <20210126185703.29087-1-elder@linaro.org>
@@ -64,150 +64,71 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-There is a set of functions and symbols related to performing
-"tag_process" immediate commands to clear the IPA pipeline.  The
-name is related to one of the commands issued when doing this, but
-it doesn't really convey the overall purpose of taking this action.
+Introduce ipa_endpoint_status_tag(), which returns true if received
+status indicates its tag field is valid.  The endpoint parameter is
+not yet used.
 
-The purpose is to take some steps to "clear out" the hardware
-pipeline, and to wait until that process completes, to ensure the
-IPA hardware is in a well-defined state.
-
-Rename these symbols to use "pipeline_clear" in their names instead.
-Add some comments to explain a bit more about what's going on.
+Call this from ipa_status_drop_packet(), and drop the packet if the
+status indicates the tag was valid.  Pass the endpoint pointer to
+ipa_status_drop_packet(), and rename it ipa_endpoint_status_drop().
+The endpoint will be used in the next patch.
 
 Signed-off-by: Alex Elder <elder@linaro.org>
 ---
- drivers/net/ipa/ipa_cmd.c      | 26 ++++++++++++++++++--------
- drivers/net/ipa/ipa_cmd.h      | 17 +++++++----------
- drivers/net/ipa/ipa_endpoint.c |  6 +++---
- 3 files changed, 28 insertions(+), 21 deletions(-)
+v2: Use le16_get_bits() to access the status mask tag field properly.
 
-diff --git a/drivers/net/ipa/ipa_cmd.c b/drivers/net/ipa/ipa_cmd.c
-index 002e514485100..27630244512d8 100644
---- a/drivers/net/ipa/ipa_cmd.c
-+++ b/drivers/net/ipa/ipa_cmd.c
-@@ -567,33 +567,43 @@ static void ipa_cmd_transfer_add(struct gsi_trans *trans, u16 size)
- 			  direction, opcode);
- }
- 
--void ipa_cmd_tag_process_add(struct gsi_trans *trans)
-+/* Add immediate commands to a transaction to clear the hardware pipeline */
-+void ipa_cmd_pipeline_clear_add(struct gsi_trans *trans)
- {
- 	struct ipa *ipa = container_of(trans->gsi, struct ipa, gsi);
- 	struct ipa_endpoint *endpoint;
- 
--	endpoint = ipa->name_map[IPA_ENDPOINT_AP_LAN_RX];
--
-+	/* Issue a no-op register write command (mask 0 means no write) */
- 	ipa_cmd_register_write_add(trans, 0, 0, 0, true);
-+
-+	/* Send a data packet through the IPA pipeline.  The packet_init
-+	 * command says to send the next packet directly to the exception
-+	 * endpoint without any other IPA processing.  The tag_status
-+	 * command requests that status be generated on completion of
-+	 * that transfer, and that it will contain the given tag value.
-+	 * Finally, the transfer command sends a small packet of data
-+	 * (instead of a command) using the command endpoint.
-+	 */
-+	endpoint = ipa->name_map[IPA_ENDPOINT_AP_LAN_RX];
- 	ipa_cmd_ip_packet_init_add(trans, endpoint->endpoint_id);
- 	ipa_cmd_ip_tag_status_add(trans, 0xcba987654321);
- 	ipa_cmd_transfer_add(trans, 4);
- }
- 
--/* Returns the number of commands required for the tag process */
--u32 ipa_cmd_tag_process_count(void)
-+/* Returns the number of commands required to clear the pipeline */
-+u32 ipa_cmd_pipeline_clear_count(void)
- {
- 	return 4;
- }
- 
--void ipa_cmd_tag_process(struct ipa *ipa)
-+void ipa_cmd_pipeline_clear(struct ipa *ipa)
- {
--	u32 count = ipa_cmd_tag_process_count();
-+	u32 count = ipa_cmd_pipeline_clear_count();
- 	struct gsi_trans *trans;
- 
- 	trans = ipa_cmd_trans_alloc(ipa, count);
- 	if (trans) {
--		ipa_cmd_tag_process_add(trans);
-+		ipa_cmd_pipeline_clear_add(trans);
- 		gsi_trans_commit_wait(trans);
- 	} else {
- 		dev_err(&ipa->pdev->dev,
-diff --git a/drivers/net/ipa/ipa_cmd.h b/drivers/net/ipa/ipa_cmd.h
-index 4ed09c486abc1..a41a58cc2c5ac 100644
---- a/drivers/net/ipa/ipa_cmd.h
-+++ b/drivers/net/ipa/ipa_cmd.h
-@@ -157,26 +157,23 @@ void ipa_cmd_dma_shared_mem_add(struct gsi_trans *trans, u32 offset,
- 				u16 size, dma_addr_t addr, bool toward_ipa);
- 
- /**
-- * ipa_cmd_tag_process_add() - Add IPA tag process commands to a transaction
-+ * ipa_cmd_pipeline_clear_add() - Add pipeline clear commands to a transaction
-  * @trans:	GSI transaction
-  */
--void ipa_cmd_tag_process_add(struct gsi_trans *trans);
-+void ipa_cmd_pipeline_clear_add(struct gsi_trans *trans);
- 
- /**
-- * ipa_cmd_tag_process_add_count() - Number of commands in a tag process
-+ * ipa_cmd_pipeline_clear_count() - # commands required to clear pipeline
-  *
-  * Return:	The number of elements to allocate in a transaction
-- *		to hold tag process commands
-+ *		to hold commands to clear the pipeline
-  */
--u32 ipa_cmd_tag_process_count(void);
-+u32 ipa_cmd_pipeline_clear_count(void);
- 
- /**
-- * ipa_cmd_tag_process() - Perform a tag process
-- *
-- * @Return:	The number of elements to allocate in a transaction
-- *		to hold tag process commands
-+ * ipa_cmd_pipeline_clear() - Clear the hardware pipeline
-  */
--void ipa_cmd_tag_process(struct ipa *ipa);
-+void ipa_cmd_pipeline_clear(struct ipa *ipa);
- 
- /**
-  * ipa_cmd_trans_alloc() - Allocate a transaction for the command TX endpoint
+ drivers/net/ipa/ipa_endpoint.c | 18 ++++++++++++++++--
+ 1 file changed, 16 insertions(+), 2 deletions(-)
+
 diff --git a/drivers/net/ipa/ipa_endpoint.c b/drivers/net/ipa/ipa_endpoint.c
-index 688a3dd40510a..39ae0dd4e0471 100644
+index c5524215054c8..68970a3baa47a 100644
 --- a/drivers/net/ipa/ipa_endpoint.c
 +++ b/drivers/net/ipa/ipa_endpoint.c
-@@ -399,7 +399,7 @@ int ipa_endpoint_modem_exception_reset_all(struct ipa *ipa)
- 	 * That won't happen, and we could be more precise, but this is fine
- 	 * for now.  We need to end the transaction with a "tag process."
- 	 */
--	count = hweight32(initialized) + ipa_cmd_tag_process_count();
-+	count = hweight32(initialized) + ipa_cmd_pipeline_clear_count();
- 	trans = ipa_cmd_trans_alloc(ipa, count);
- 	if (!trans) {
- 		dev_err(&ipa->pdev->dev,
-@@ -428,7 +428,7 @@ int ipa_endpoint_modem_exception_reset_all(struct ipa *ipa)
- 		ipa_cmd_register_write_add(trans, offset, 0, ~0, false);
- 	}
+@@ -69,8 +69,11 @@ struct ipa_status {
+ };
  
--	ipa_cmd_tag_process_add(trans);
-+	ipa_cmd_pipeline_clear_add(trans);
+ /* Field masks for struct ipa_status structure fields */
++#define IPA_STATUS_MASK_TAG_VALID_FMASK		GENMASK(4, 4)
++#define IPA_STATUS_SRC_IDX_FMASK		GENMASK(4, 0)
+ #define IPA_STATUS_DST_IDX_FMASK		GENMASK(4, 0)
+ #define IPA_STATUS_FLAGS1_RT_RULE_ID_FMASK	GENMASK(31, 22)
++#define IPA_STATUS_FLAGS2_TAG_FMASK		GENMASK_ULL(63, 16)
  
- 	/* XXX This should have a 1 second timeout */
- 	gsi_trans_commit_wait(trans);
-@@ -1564,7 +1564,7 @@ void ipa_endpoint_suspend(struct ipa *ipa)
- 	if (ipa->modem_netdev)
- 		ipa_modem_suspend(ipa->modem_netdev);
+ #ifdef IPA_VALIDATE
  
--	ipa_cmd_tag_process(ipa);
-+	ipa_cmd_pipeline_clear(ipa);
+@@ -1172,11 +1175,22 @@ static bool ipa_endpoint_status_skip(struct ipa_endpoint *endpoint,
+ 	return false;	/* Don't skip this packet, process it */
+ }
  
- 	ipa_endpoint_suspend_one(ipa->name_map[IPA_ENDPOINT_AP_LAN_RX]);
- 	ipa_endpoint_suspend_one(ipa->name_map[IPA_ENDPOINT_AP_COMMAND_TX]);
++static bool ipa_endpoint_status_tag(struct ipa_endpoint *endpoint,
++				    const struct ipa_status *status)
++{
++	return !!le16_get_bits(status->mask, IPA_STATUS_MASK_TAG_VALID_FMASK);
++}
++
+ /* Return whether the status indicates the packet should be dropped */
+-static bool ipa_status_drop_packet(const struct ipa_status *status)
++static bool ipa_endpoint_status_drop(struct ipa_endpoint *endpoint,
++				     const struct ipa_status *status)
+ {
+ 	u32 val;
+ 
++	/* If the status indicates a tagged transfer, we'll drop the packet */
++	if (ipa_endpoint_status_tag(endpoint, status))
++		return true;
++
+ 	/* Deaggregation exceptions we drop; all other types we consume */
+ 	if (status->exception)
+ 		return status->exception == IPA_STATUS_EXCEPTION_DEAGGR;
+@@ -1225,7 +1239,7 @@ static void ipa_endpoint_status_parse(struct ipa_endpoint *endpoint,
+ 		if (endpoint->data->checksum)
+ 			len += sizeof(struct rmnet_map_dl_csum_trailer);
+ 
+-		if (!ipa_status_drop_packet(status)) {
++		if (!ipa_endpoint_status_drop(endpoint, status)) {
+ 			void *data2;
+ 			u32 extra;
+ 			u32 len2;
 -- 
 2.20.1
 
