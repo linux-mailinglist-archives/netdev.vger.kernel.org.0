@@ -2,161 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DBB443037D9
-	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 09:27:09 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E85DD3037BE
+	for <lists+netdev@lfdr.de>; Tue, 26 Jan 2021 09:20:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389994AbhAZI0v (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jan 2021 03:26:51 -0500
-Received: from mga04.intel.com ([192.55.52.120]:61804 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2389955AbhAZIZj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 26 Jan 2021 03:25:39 -0500
-IronPort-SDR: 25ip74m4BJWRWm3NesmW0obK5xAdaX87Yj1uzXvOQI27S1BzJ5iT/bQNqTKSTnGnifKVpcWpvG
- BDmZKkvaK9cg==
-X-IronPort-AV: E=McAfee;i="6000,8403,9875"; a="177298552"
-X-IronPort-AV: E=Sophos;i="5.79,375,1602572400"; 
-   d="scan'208";a="177298552"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2021 00:22:41 -0800
-IronPort-SDR: qS4IRyNGKOilW1IYHpqR8gdQ/cI1NAPkcvRrS1XCztr1fNR2/RwSx+wT7qhBxlmnbZEY1pPVAd
- 6ok8B3f05ATA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.79,375,1602572400"; 
-   d="scan'208";a="361901151"
-Received: from silpixa00399839.ir.intel.com (HELO localhost.localdomain) ([10.237.222.142])
-  by fmsmga008.fm.intel.com with ESMTP; 26 Jan 2021 00:22:26 -0800
-From:   Ciara Loftus <ciara.loftus@intel.com>
-To:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        magnus.karlsson@intel.com, bjorn@kernel.org,
-        weqaar.a.janjua@intel.com
-Cc:     Ciara Loftus <ciara.loftus@intel.com>
-Subject: [PATCH bpf-next v2 2/6] selftests/bpf: restructure setting the packet count
-Date:   Tue, 26 Jan 2021 07:52:35 +0000
-Message-Id: <20210126075239.25378-3-ciara.loftus@intel.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210126075239.25378-1-ciara.loftus@intel.com>
-References: <20210126075239.25378-1-ciara.loftus@intel.com>
+        id S2389792AbhAZIUM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jan 2021 03:20:12 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:38490 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2389773AbhAZIT0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jan 2021 03:19:26 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1611649064;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=kElVC+jkHLstLVhvoAPiIFDGEp54B3rvncUWM43dOQw=;
+        b=KBkGZZsdoIqA7PXALB8KdTBmpejg8UIKzxhfAkhmkp2woAdj+xBPkgpHXQJ6YEi2M1wRIk
+        GwwtOQfIvxzFCZROO4HDfhJn2YbFXl19eVbY9I9xmcTsLjY9u0vxlg5z4QgERAM05QRkFj
+        hDmErT6UD22W2qJr04QiMjNqZLmy01U=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-140-kXrSMgh9PS6y4-sMWhagKQ-1; Tue, 26 Jan 2021 03:17:43 -0500
+X-MC-Unique: kXrSMgh9PS6y4-sMWhagKQ-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 07CAD107ACF6;
+        Tue, 26 Jan 2021 08:17:41 +0000 (UTC)
+Received: from [10.72.12.70] (ovpn-12-70.pek2.redhat.com [10.72.12.70])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id E668E1A839;
+        Tue, 26 Jan 2021 08:17:29 +0000 (UTC)
+Subject: Re: [RFC v3 11/11] vduse: Introduce a workqueue for irq injection
+To:     Xie Yongji <xieyongji@bytedance.com>, mst@redhat.com,
+        stefanha@redhat.com, sgarzare@redhat.com, parav@nvidia.com,
+        bob.liu@oracle.com, hch@infradead.org, rdunlap@infradead.org,
+        willy@infradead.org, viro@zeniv.linux.org.uk, axboe@kernel.dk,
+        bcrl@kvack.org, corbet@lwn.net
+Cc:     virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org, linux-aio@kvack.org,
+        linux-fsdevel@vger.kernel.org
+References: <20210119045920.447-1-xieyongji@bytedance.com>
+ <20210119050756.600-1-xieyongji@bytedance.com>
+ <20210119050756.600-5-xieyongji@bytedance.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <9cacd59d-1063-7a1f-9831-8728eb1d1c15@redhat.com>
+Date:   Tue, 26 Jan 2021 16:17:28 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <20210119050756.600-5-xieyongji@bytedance.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Prior to this, the packet count was fixed at 10000
-for every test. Future tracing tests need to modify
-the count, so make it possible to set the count from
-test_xsk.h using the -C opt.
 
-Signed-off-by: Ciara Loftus <ciara.loftus@intel.com>
----
- tools/testing/selftests/bpf/test_xsk.sh    | 17 +++++++++--------
- tools/testing/selftests/bpf/xsk_prereqs.sh |  3 +--
- 2 files changed, 10 insertions(+), 10 deletions(-)
+On 2021/1/19 下午1:07, Xie Yongji wrote:
+> This patch introduces a dedicated workqueue for irq injection
+> so that we are able to do some performance tuning for it.
+>
+> Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
 
-diff --git a/tools/testing/selftests/bpf/test_xsk.sh b/tools/testing/selftests/bpf/test_xsk.sh
-index 88a7483eaae4..2b4a4f42b220 100755
---- a/tools/testing/selftests/bpf/test_xsk.sh
-+++ b/tools/testing/selftests/bpf/test_xsk.sh
-@@ -82,6 +82,7 @@ do
- done
- 
- TEST_NAME="PREREQUISITES"
-+DEFAULTPKTS=10000
- 
- URANDOM=/dev/urandom
- [ ! -e "${URANDOM}" ] && { echo "${URANDOM} not found. Skipping tests."; test_exit 1 1; }
-@@ -154,7 +155,7 @@ TEST_NAME="SKB NOPOLL"
- 
- vethXDPgeneric ${VETH0} ${VETH1} ${NS1}
- 
--params=("-S")
-+params=("-S" "-C" "${DEFAULTPKTS}")
- execxdpxceiver params
- 
- retval=$?
-@@ -166,7 +167,7 @@ TEST_NAME="SKB POLL"
- 
- vethXDPgeneric ${VETH0} ${VETH1} ${NS1}
- 
--params=("-S" "-p")
-+params=("-S" "-p" "-C" "${DEFAULTPKTS}")
- execxdpxceiver params
- 
- retval=$?
-@@ -178,7 +179,7 @@ TEST_NAME="DRV NOPOLL"
- 
- vethXDPnative ${VETH0} ${VETH1} ${NS1}
- 
--params=("-N")
-+params=("-N" "-C" "${DEFAULTPKTS}")
- execxdpxceiver params
- 
- retval=$?
-@@ -190,7 +191,7 @@ TEST_NAME="DRV POLL"
- 
- vethXDPnative ${VETH0} ${VETH1} ${NS1}
- 
--params=("-N" "-p")
-+params=("-N" "-p" "-C" "${DEFAULTPKTS}")
- execxdpxceiver params
- 
- retval=$?
-@@ -202,7 +203,7 @@ TEST_NAME="SKB SOCKET TEARDOWN"
- 
- vethXDPgeneric ${VETH0} ${VETH1} ${NS1}
- 
--params=("-S" "-T")
-+params=("-S" "-T" "-C" "${DEFAULTPKTS}")
- execxdpxceiver params
- 
- retval=$?
-@@ -214,7 +215,7 @@ TEST_NAME="DRV SOCKET TEARDOWN"
- 
- vethXDPnative ${VETH0} ${VETH1} ${NS1}
- 
--params=("-N" "-T")
-+params=("-N" "-T" "-C" "${DEFAULTPKTS}")
- execxdpxceiver params
- 
- retval=$?
-@@ -226,7 +227,7 @@ TEST_NAME="SKB BIDIRECTIONAL SOCKETS"
- 
- vethXDPgeneric ${VETH0} ${VETH1} ${NS1}
- 
--params=("-S" "-B")
-+params=("-S" "-B" "-C" "${DEFAULTPKTS}")
- execxdpxceiver params
- 
- retval=$?
-@@ -238,7 +239,7 @@ TEST_NAME="DRV BIDIRECTIONAL SOCKETS"
- 
- vethXDPnative ${VETH0} ${VETH1} ${NS1}
- 
--params=("-N" "-B")
-+params=("-N" "-B" "-C" "${DEFAULTPKTS}")
- execxdpxceiver params
- 
- retval=$?
-diff --git a/tools/testing/selftests/bpf/xsk_prereqs.sh b/tools/testing/selftests/bpf/xsk_prereqs.sh
-index 9d54c4645127..41dd713d14df 100755
---- a/tools/testing/selftests/bpf/xsk_prereqs.sh
-+++ b/tools/testing/selftests/bpf/xsk_prereqs.sh
-@@ -15,7 +15,6 @@ NC='\033[0m'
- STACK_LIM=131072
- SPECFILE=veth.spec
- XSKOBJ=xdpxceiver
--NUMPKTS=10000
- 
- validate_root_exec()
- {
-@@ -131,5 +130,5 @@ execxdpxceiver()
- 			copy[$index]=${!current}
- 		done
- 
--	./${XSKOBJ} -i ${VETH0} -i ${VETH1},${NS1} ${copy[*]} -C ${NUMPKTS}
-+	./${XSKOBJ} -i ${VETH0} -i ${VETH1},${NS1} ${copy[*]}
- }
--- 
-2.17.1
+
+If we want the split like this.
+
+It might be better to:
+
+1) implement a simple irq injection on the ioctl context in patch 8
+2) add the dedicated workqueue injection in this patch
+
+Since my understanding is that
+
+1) the function looks more isolated for readers
+2) the difference between sysctl vs workqueue should be more obvious 
+than system wq vs dedicated wq
+3) a chance to describe why workqueue is needed in the commit log in 
+this patch
+
+Thanks
+
+
+> ---
+>   drivers/vdpa/vdpa_user/eventfd.c | 10 +++++++++-
+>   1 file changed, 9 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/vdpa/vdpa_user/eventfd.c b/drivers/vdpa/vdpa_user/eventfd.c
+> index dbffddb08908..caf7d8d68ac0 100644
+> --- a/drivers/vdpa/vdpa_user/eventfd.c
+> +++ b/drivers/vdpa/vdpa_user/eventfd.c
+> @@ -18,6 +18,7 @@
+>   #include "eventfd.h"
+>   
+>   static struct workqueue_struct *vduse_irqfd_cleanup_wq;
+> +static struct workqueue_struct *vduse_irq_wq;
+>   
+>   static void vduse_virqfd_shutdown(struct work_struct *work)
+>   {
+> @@ -57,7 +58,7 @@ static int vduse_virqfd_wakeup(wait_queue_entry_t *wait, unsigned int mode,
+>   	__poll_t flags = key_to_poll(key);
+>   
+>   	if (flags & EPOLLIN)
+> -		schedule_work(&virqfd->inject);
+> +		queue_work(vduse_irq_wq, &virqfd->inject);
+>   
+>   	if (flags & EPOLLHUP) {
+>   		spin_lock(&vq->irq_lock);
+> @@ -165,11 +166,18 @@ int vduse_virqfd_init(void)
+>   	if (!vduse_irqfd_cleanup_wq)
+>   		return -ENOMEM;
+>   
+> +	vduse_irq_wq = alloc_workqueue("vduse-irq", WQ_SYSFS | WQ_UNBOUND, 0);
+> +	if (!vduse_irq_wq) {
+> +		destroy_workqueue(vduse_irqfd_cleanup_wq);
+> +		return -ENOMEM;
+> +	}
+> +
+>   	return 0;
+>   }
+>   
+>   void vduse_virqfd_exit(void)
+>   {
+> +	destroy_workqueue(vduse_irq_wq);
+>   	destroy_workqueue(vduse_irqfd_cleanup_wq);
+>   }
+>   
 
