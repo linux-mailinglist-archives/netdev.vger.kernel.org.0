@@ -2,172 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B7F2305D38
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 14:31:35 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 58770305D4C
+	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 14:35:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238428AbhA0Nay (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 08:30:54 -0500
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:40305 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S238361AbhA0N2i (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 08:28:38 -0500
-Received: from Internal Mail-Server by MTLPINE1 (envelope-from cmi@nvidia.com)
-        with SMTP; 27 Jan 2021 09:46:59 +0200
-Received: from dev-r630-03.mtbc.labs.mlnx (dev-r630-03.mtbc.labs.mlnx [10.75.205.13])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 10R7kvrl013621;
-        Wed, 27 Jan 2021 09:46:57 +0200
-From:   Chris Mi <cmi@nvidia.com>
-To:     netdev@vger.kernel.org
-Cc:     kuba@kernel.org, jiri@nvidia.com, saeedm@nvidia.com,
-        Chris Mi <cmi@nvidia.com>, kernel test robot <lkp@intel.com>
-Subject: [PATCH net-next v2] net: psample: Introduce stubs to remove NIC driver dependency
-Date:   Wed, 27 Jan 2021 15:46:51 +0800
-Message-Id: <20210127074651.510134-1-cmi@nvidia.com>
-X-Mailer: git-send-email 2.26.2
+        id S238282AbhA0NdP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 08:33:15 -0500
+Received: from smtp-fw-9102.amazon.com ([207.171.184.29]:52029 "EHLO
+        smtp-fw-9102.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238423AbhA0Nat (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 08:30:49 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
+  s=amazon201209; t=1611754249; x=1643290249;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=hMDIUrtSgDyNN38BObbiWgDkPYmz8L7X/oKmht5reJ4=;
+  b=u4piFbLZlLNLZIlUkEYOkAgmOlG4ky33YW3gUe/uvic43Y+5ABMZvDgC
+   HofDEM5ip2WEF2vfAYCOEtWJmseooHsdhZkBO5VgqXmeZ9vyUeUZYGalW
+   Sew7jvSclypabkk8ud2Tv+Zhg+FmnHVJDiFX42KJkWmYzV4I5qPnrRoZp
+   U=;
+X-IronPort-AV: E=Sophos;i="5.79,379,1602547200"; 
+   d="scan'208";a="115119220"
+Received: from sea3-co-svc-lb6-vlan2.sea.amazon.com (HELO email-inbound-relay-1d-16425a8d.us-east-1.amazon.com) ([10.47.22.34])
+  by smtp-border-fw-out-9102.sea19.amazon.com with ESMTP; 27 Jan 2021 13:30:07 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
+        by email-inbound-relay-1d-16425a8d.us-east-1.amazon.com (Postfix) with ESMTPS id 87687100F80;
+        Wed, 27 Jan 2021 13:30:05 +0000 (UTC)
+Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Wed, 27 Jan 2021 13:30:03 +0000
+Received: from 38f9d3582de7.ant.amazon.com (10.43.161.244) by
+ EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Wed, 27 Jan 2021 13:29:58 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+To:     <kuniyu@amazon.co.jp>
+CC:     <aams@amazon.de>, <borisp@mellanox.com>, <davem@davemloft.net>,
+        <edumazet@google.com>, <kuba@kernel.org>, <kuni1840@gmail.com>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <tariqt@mellanox.com>
+Subject: RE: [PATCH net] net: Remove redundant calls of sk_tx_queue_clear().
+Date:   Wed, 27 Jan 2021 22:29:54 +0900
+Message-ID: <20210127132954.13465-1-kuniyu@amazon.co.jp>
+X-Mailer: git-send-email 2.17.2 (Apple Git-113)
+In-Reply-To: <20210127125018.7059-1-kuniyu@amazon.co.jp>
+References: <20210127125018.7059-1-kuniyu@amazon.co.jp>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.43.161.244]
+X-ClientProxiedBy: EX13D05UWB003.ant.amazon.com (10.43.161.26) To
+ EX13D04ANC001.ant.amazon.com (10.43.157.89)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In order to send sampled packets to userspace, NIC driver calls
-psample api directly. But it creates a hard dependency on module
-psample. Introduce psample_ops to remove the hard dependency.
-It is initialized when psample module is loaded and set to NULL
-when the module is unloaded.
+From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+Date:   Wed, 27 Jan 2021 21:50:18 +0900
+> The commit 41b14fb8724d ("net: Do not clear the sock TX queue in
+> sk_set_socket()") removes sk_tx_queue_clear() from sk_set_socket() and adds
+> it instead in sk_alloc() and sk_clone_lock() to fix an issue introduced in
+> the commit e022f0b4a03f ("net: Introduce sk_tx_queue_mapping"). However,
+> the original commit had already put sk_tx_queue_clear() in sk_prot_alloc():
+> the callee of sk_alloc() and sk_clone_lock(). Thus sk_tx_queue_clear() is
+> called twice in each path currently.
+> 
+> This patch removes the redundant calls of sk_tx_queue_clear() in sk_alloc()
+> and sk_clone_lock().
+> 
+> Fixes: 41b14fb8724d ("net: Do not clear the sock TX queue in sk_set_socket()")
+> CC: Tariq Toukan <tariqt@mellanox.com>
+> CC: Boris Pismenny <borisp@mellanox.com>
+> Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+> Reviewed-by: Amit Shah <aams@amazon.de>
 
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Chris Mi <cmi@nvidia.com>
-Reviewed-by: Jiri Pirko <jiri@nvidia.com>
----
-v1->v2:
- - fix sparse errors
+I'm sorry, I have respun the v2 patch.
+So, please ignore v1.
 
- include/net/psample.h    | 27 +++++++++++++++++++++++++++
- net/psample/psample.c    | 13 ++++++++++++-
- net/sched/Makefile       |  2 +-
- net/sched/psample_stub.c |  7 +++++++
- 4 files changed, 47 insertions(+), 2 deletions(-)
- create mode 100644 net/sched/psample_stub.c
+v2: https://lore.kernel.org/netdev/20210127132215.10842-1-kuniyu@amazon.co.jp/
 
-diff --git a/include/net/psample.h b/include/net/psample.h
-index 68ae16bb0a4a..e6a73128de59 100644
---- a/include/net/psample.h
-+++ b/include/net/psample.h
-@@ -4,6 +4,7 @@
- 
- #include <uapi/linux/psample.h>
- #include <linux/list.h>
-+#include <linux/skbuff.h>
- 
- struct psample_group {
- 	struct list_head list;
-@@ -14,6 +15,15 @@ struct psample_group {
- 	struct rcu_head rcu;
- };
- 
-+struct psample_ops {
-+	void (*sample_packet)(struct psample_group *group, struct sk_buff *skb,
-+			      u32 trunc_size, int in_ifindex, int out_ifindex,
-+			      u32 sample_rate);
-+
-+};
-+
-+extern const struct psample_ops __rcu *psample_ops __read_mostly;
-+
- struct psample_group *psample_group_get(struct net *net, u32 group_num);
- void psample_group_take(struct psample_group *group);
- void psample_group_put(struct psample_group *group);
-@@ -35,4 +45,21 @@ static inline void psample_sample_packet(struct psample_group *group,
- 
- #endif
- 
-+static inline void
-+psample_nic_sample_packet(struct psample_group *group,
-+			  struct sk_buff *skb, u32 trunc_size,
-+			  int in_ifindex, int out_ifindex,
-+			  u32 sample_rate)
-+{
-+	const struct psample_ops *ops;
-+
-+	rcu_read_lock();
-+	ops = rcu_dereference(psample_ops);
-+	if (ops)
-+		psample_ops->sample_packet(group, skb, trunc_size,
-+					   in_ifindex, out_ifindex,
-+					   sample_rate);
-+	rcu_read_unlock();
-+}
-+
- #endif /* __NET_PSAMPLE_H */
-diff --git a/net/psample/psample.c b/net/psample/psample.c
-index 33e238c965bd..2a9fbfe09395 100644
---- a/net/psample/psample.c
-+++ b/net/psample/psample.c
-@@ -8,6 +8,7 @@
- #include <linux/kernel.h>
- #include <linux/skbuff.h>
- #include <linux/module.h>
-+#include <linux/rcupdate.h>
- #include <net/net_namespace.h>
- #include <net/sock.h>
- #include <net/netlink.h>
-@@ -35,6 +36,10 @@ static const struct genl_multicast_group psample_nl_mcgrps[] = {
- 
- static struct genl_family psample_nl_family __ro_after_init;
- 
-+static const struct psample_ops psample_sample_ops = {
-+	.sample_packet	= psample_sample_packet,
-+};
-+
- static int psample_group_nl_fill(struct sk_buff *msg,
- 				 struct psample_group *group,
- 				 enum psample_command cmd, u32 portid, u32 seq,
-@@ -456,11 +461,17 @@ EXPORT_SYMBOL_GPL(psample_sample_packet);
- 
- static int __init psample_module_init(void)
- {
--	return genl_register_family(&psample_nl_family);
-+	int ret;
-+
-+	ret = genl_register_family(&psample_nl_family);
-+	if (!ret)
-+		RCU_INIT_POINTER(psample_ops, &psample_sample_ops);
-+	return ret;
- }
- 
- static void __exit psample_module_exit(void)
- {
-+	RCU_INIT_POINTER(psample_ops, NULL);
- 	genl_unregister_family(&psample_nl_family);
- }
- 
-diff --git a/net/sched/Makefile b/net/sched/Makefile
-index dd14ef413fda..0d92bb98bb26 100644
---- a/net/sched/Makefile
-+++ b/net/sched/Makefile
-@@ -3,7 +3,7 @@
- # Makefile for the Linux Traffic Control Unit.
- #
- 
--obj-y	:= sch_generic.o sch_mq.o
-+obj-y	:= sch_generic.o sch_mq.o psample_stub.o
- 
- obj-$(CONFIG_INET)		+= sch_frag.o
- obj-$(CONFIG_NET_SCHED)		+= sch_api.o sch_blackhole.o
-diff --git a/net/sched/psample_stub.c b/net/sched/psample_stub.c
-new file mode 100644
-index 000000000000..0615a7b64000
---- /dev/null
-+++ b/net/sched/psample_stub.c
-@@ -0,0 +1,7 @@
-+// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-+/* Copyright (c) 2021 Mellanox Technologies. */
-+
-+#include <net/psample.h>
-+
-+const struct psample_ops __rcu *psample_ops __read_mostly;
-+EXPORT_SYMBOL_GPL(psample_ops);
--- 
-2.26.2
-
+Best regards,
+Kuniyuki
