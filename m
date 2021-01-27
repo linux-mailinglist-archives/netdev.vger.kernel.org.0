@@ -2,132 +2,86 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CB27630535E
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 07:45:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 112A530535A
+	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 07:42:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232343AbhA0Gor (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 01:44:47 -0500
-Received: from stargate.chelsio.com ([12.32.117.8]:38427 "EHLO
-        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231835AbhA0GgR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 01:36:17 -0500
-Received: from localhost (kumbhalgarh.blr.asicdesigners.com [10.193.185.255])
-        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 10R6YRFJ001537;
-        Tue, 26 Jan 2021 22:34:28 -0800
-Date:   Wed, 27 Jan 2021 12:04:27 +0530
-From:   Raju Rangoju <rajur@chelsio.com>
-To:     Yang Li <abaci-bugfix@linux.alibaba.com>
-Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH net-next] cxgb4: remove redundant NULL check
-Message-ID: <20210127063426.GC21071@chelsio.com>
-References: <1611629413-81373-1-git-send-email-abaci-bugfix@linux.alibaba.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1611629413-81373-1-git-send-email-abaci-bugfix@linux.alibaba.com>
-User-Agent: Mutt/1.5.21 (2010-09-15)
+        id S231890AbhA0GmC (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 01:42:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55812 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232509AbhA0Gh4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 01:37:56 -0500
+Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDB2BC061574;
+        Tue, 26 Jan 2021 22:37:15 -0800 (PST)
+Received: by mail-pg1-x52b.google.com with SMTP id o16so917578pgg.5;
+        Tue, 26 Jan 2021 22:37:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=W0uuLo/4/wCey2dN/nEYFd5YvwQZJzT08touWgY4O8w=;
+        b=TUE4PN3EDWJkxwfN/6yW4sXh09Op1ZfGs87T0vPXMo2V2CUoevdBs0ZON/iG+qZZqz
+         Nm+7tnV72tMSF8+lEMdVx9wuVGqcn6rbhUFJPh31xc6R/0sfQV6zjchM0y1DNW8J/s8Q
+         neAWRok4qYmLx9jmUG4OJma0f84V4xDYy4W+F5xN0H7kyLR0OZxgB6/D9BWNxpAbhGMK
+         Gpd+9oYmUvzguvnc2FbUsLpuJ5sio+bZwy+heoV5GnOIjqkxzajuyao/W+oxm0eNAI9Y
+         vzqguRCGWWKF4XJtfqvSTXteaBP3M8p+TxQRSlIENIb1pTvDyj0mghBgYzOZtYT/NTiF
+         QQ6w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=W0uuLo/4/wCey2dN/nEYFd5YvwQZJzT08touWgY4O8w=;
+        b=X9wxGjp/U8RgLolmO0llJFrQNaZav+PkHcJ8LV98VvfofM/ptNnMc60QtsXEsJlGhw
+         uWGdl14lur++1TVBSyIMcizHFPYj1V+1uV8sjkGU1KbHvlx3mY/Jwd9wFOpwjNI7F7KG
+         etLpDMNOvT6teGkPbTfeNTgKra6cbP/035cv4gZ9/wRCpuKUsHYh8YF5mdAMAq1MGORS
+         XDNz0UnX/gOuCFTLjedXn0u7/JaVqlNrgANmqRtgDyNfXIvUh4JcLKSxve68Sv+0tvAJ
+         ZUdaAhKdj+FMpZVrFIYUmDuglkHfxFkuktaPufrv/ycJeDZrqMk9q4T1ZZQubfsF3M4a
+         0/3Q==
+X-Gm-Message-State: AOAM5310abMjhFqpmAnWZJXn2v1lbqNXbm1LCrk5P6AG9sAm9ab7EWoW
+        5qVS1HwVyNqgRfuNjXKGY9u4suzdqlBYoh0n
+X-Google-Smtp-Source: ABdhPJzh1C84Hi+SAxJwm9/lhQAEyp9wdc9QrUhAJj915LWhtVjGpOpzm2MMrtRjVGk88F/LHp2GNg==
+X-Received: by 2002:aa7:8f1c:0:b029:1c0:60c7:f7c5 with SMTP id x28-20020aa78f1c0000b02901c060c7f7c5mr9220246pfr.59.1611729435387;
+        Tue, 26 Jan 2021 22:37:15 -0800 (PST)
+Received: from android.asia-east2-a.c.savvy-summit-295307.internal (204.60.92.34.bc.googleusercontent.com. [34.92.60.204])
+        by smtp.googlemail.com with ESMTPSA id v3sm1038824pff.217.2021.01.26.22.37.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Jan 2021 22:37:14 -0800 (PST)
+From:   Bui Quang Minh <minhquangbui99@gmail.com>
+To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
+        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
+        john.fastabend@gmail.com, kpsingh@kernel.org, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
+        linux-kernel@vger.kernel.org, minhquangbui99@gmail.com
+Subject: [PATCH] bpf: Check for integer overflow when using roundup_pow_of_two()
+Date:   Wed, 27 Jan 2021 06:36:53 +0000
+Message-Id: <20210127063653.3576-1-minhquangbui99@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tuesday, January 01/26/21, 2021 at 10:50:13 +0800, Yang Li wrote:
-> Fix below warnings reported by coccicheck:
-> ./drivers/net/ethernet/chelsio/cxgb4/clip_tbl.c:323:3-9: WARNING:
-> NULL check before some freeing functions is not needed.
-> ./drivers/net/ethernet/chelsio/cxgb4/cudbg_lib.c:3554:2-8: WARNING:
-> NULL check before some freeing functions is not needed.
-> ./drivers/net/ethernet/chelsio/cxgb4/cxgb4_cudbg.c:157:2-7: WARNING:
-> NULL check before some freeing functions is not needed.
-> ./drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_u32.c:525:3-9: WARNING:
-> NULL check before some freeing functions is not needed.
-> 
-> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> Signed-off-by: Yang Li <abaci-bugfix@linux.alibaba.com>
-> ---
->  drivers/net/ethernet/chelsio/cxgb4/clip_tbl.c     | 3 +--
->  drivers/net/ethernet/chelsio/cxgb4/cudbg_lib.c    | 3 +--
->  drivers/net/ethernet/chelsio/cxgb4/cxgb4_cudbg.c  | 3 +--
->  drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_u32.c | 6 ++----
->  4 files changed, 5 insertions(+), 10 deletions(-)
-> 
-> diff --git a/drivers/net/ethernet/chelsio/cxgb4/clip_tbl.c b/drivers/net/ethernet/chelsio/cxgb4/clip_tbl.c
-> index ce28820..12fcf84 100644
-> --- a/drivers/net/ethernet/chelsio/cxgb4/clip_tbl.c
-> +++ b/drivers/net/ethernet/chelsio/cxgb4/clip_tbl.c
-> @@ -323,8 +323,7 @@ void t4_cleanup_clip_tbl(struct adapter *adap)
->  	struct clip_tbl *ctbl = adap->clipt;
->  
->  	if (ctbl) {
-> -		if (ctbl->cl_list)
-> -			kvfree(ctbl->cl_list);
-> +		kvfree(ctbl->cl_list);
->  		kvfree(ctbl);
->  	}
->  }
-> diff --git a/drivers/net/ethernet/chelsio/cxgb4/cudbg_lib.c b/drivers/net/ethernet/chelsio/cxgb4/cudbg_lib.c
-> index 75474f8..94eb8a6 100644
-> --- a/drivers/net/ethernet/chelsio/cxgb4/cudbg_lib.c
-> +++ b/drivers/net/ethernet/chelsio/cxgb4/cudbg_lib.c
-> @@ -3554,8 +3554,7 @@ int cudbg_collect_qdesc(struct cudbg_init *pdbg_init,
->  	}
->  
->  out_free:
-> -	if (data)
-> -		kvfree(data);
-> +	kvfree(data);
->  
->  #undef QDESC_GET_FLQ
->  #undef QDESC_GET_RXQ
-> diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_cudbg.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_cudbg.c
-> index 77648e4..dd66b24 100644
-> --- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_cudbg.c
-> +++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_cudbg.c
-> @@ -157,8 +157,7 @@ static int cudbg_alloc_compress_buff(struct cudbg_init *pdbg_init)
->  
->  static void cudbg_free_compress_buff(struct cudbg_init *pdbg_init)
->  {
-> -	if (pdbg_init->compress_buff)
+On 32-bit architecture, roundup_pow_of_two() can return 0 when the argument
+has upper most bit set due to resulting 1UL << 32. Add a check for this
+case.
 
-NAK. The above check is necessary.
+Fixes: d5a3b1f ("bpf: introduce BPF_MAP_TYPE_STACK_TRACE")
+Signed-off-by: Bui Quang Minh <minhquangbui99@gmail.com>
+---
+ kernel/bpf/stackmap.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-pdbg_init->compress_buff may be NULL when Zlib is unavailable or when
-pdbg_init->compress_buff allocation fails, in which case we ignore error
-and continue without compression. Check is necessary before calling
-vfree().
+diff --git a/kernel/bpf/stackmap.c b/kernel/bpf/stackmap.c
+index aea96b638473..bfafbf115bf3 100644
+--- a/kernel/bpf/stackmap.c
++++ b/kernel/bpf/stackmap.c
+@@ -115,6 +115,8 @@ static struct bpf_map *stack_map_alloc(union bpf_attr *attr)
+ 
+ 	/* hash table size must be power of 2 */
+ 	n_buckets = roundup_pow_of_two(attr->max_entries);
++	if (!n_buckets)
++		return ERR_PTR(-E2BIG);
+ 
+ 	cost = n_buckets * sizeof(struct stack_map_bucket *) + sizeof(*smap);
+ 	cost += n_buckets * (value_size + sizeof(struct stack_map_bucket));
+-- 
+2.17.1
 
-> -		vfree(pdbg_init->compress_buff);
-> +	vfree(pdbg_init->compress_buff);
->  }
->  
->  int cxgb4_cudbg_collect(struct adapter *adap, void *buf, u32 *buf_size,
-> diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_u32.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_u32.c
-> index dede025..97a811f 100644
-> --- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_u32.c
-> +++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_u32.c
-> @@ -525,12 +525,10 @@ struct cxgb4_tc_u32_table *cxgb4_init_tc_u32(struct adapter *adap)
->  	for (i = 0; i < t->size; i++) {
->  		struct cxgb4_link *link = &t->table[i];
->  
-> -		if (link->tid_map)
-> -			kvfree(link->tid_map);
-> +		kvfree(link->tid_map);
-
-The above change is wrong. NAK.
-
-If the call to link->tid_map = kvcalloc() above fails, it still
-goes ahead and calls kvfree(link->tid_map) even for failed cases, which is
-wrong. Check is necessary before calling kvfree().
-
-
->  	}
->  
-> -	if (t)
-> -		kvfree(t);
-> +	kvfree(t);
->  
->  	return NULL;
->  }
-> -- 
-> 1.8.3.1
-> 
