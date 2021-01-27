@@ -2,175 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6F30630621E
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 18:34:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 25F12306230
+	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 18:38:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343959AbhA0Reh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 12:34:37 -0500
-Received: from smtp-fw-9103.amazon.com ([207.171.188.200]:35269 "EHLO
-        smtp-fw-9103.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343865AbhA0Rco (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 12:32:44 -0500
+        id S1344011AbhA0RhO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 12:37:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56142 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1343973AbhA0Rdv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 12:33:51 -0500
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E974C061756;
+        Wed, 27 Jan 2021 09:33:11 -0800 (PST)
+Received: by mail-wr1-x429.google.com with SMTP id m13so2752578wro.12;
+        Wed, 27 Jan 2021 09:33:11 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
-  s=amazon201209; t=1611768763; x=1643304763;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version;
-  bh=LejDryU9Rhl9Wteh9GnAKlVtksfoiHY34DHo4dH2qcw=;
-  b=EkvM1y6Z4Sm8QuXoJiKrmSRVEJeVl1fONBnOFaWMKxluQeBUPZQrcA63
-   wCnonxN63eWq4OksrllIr9WBV3WP1PU1wuBh7Lf3phTvzSmZtE0G+2MqI
-   ch9IFeYgm2QfbyDAb4821O9tMEgJ1mU+IufGo9xoDWZ+2hW5H0TQXkYdM
-   g=;
-X-IronPort-AV: E=Sophos;i="5.79,380,1602547200"; 
-   d="scan'208";a="913721931"
-Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-2a-119b4f96.us-west-2.amazon.com) ([10.47.23.38])
-  by smtp-border-fw-out-9103.sea19.amazon.com with ESMTP; 27 Jan 2021 17:31:54 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-2a-119b4f96.us-west-2.amazon.com (Postfix) with ESMTPS id 9A8C81A001E;
-        Wed, 27 Jan 2021 17:31:53 +0000 (UTC)
-Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Wed, 27 Jan 2021 17:31:52 +0000
-Received: from 38f9d3582de7.ant.amazon.com (10.43.162.38) by
- EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Wed, 27 Jan 2021 17:31:49 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-To:     <edumazet@google.com>
-CC:     <aams@amazon.de>, <borisp@mellanox.com>, <davem@davemloft.net>,
-        <kuba@kernel.org>, <kuni1840@gmail.com>, <kuniyu@amazon.co.jp>,
-        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
-        <tariqt@mellanox.com>
-Subject: Re: [PATCH net] net: Remove redundant calls of sk_tx_queue_clear().
-Date:   Thu, 28 Jan 2021 02:31:45 +0900
-Message-ID: <20210127173145.58887-1-kuniyu@amazon.co.jp>
-X-Mailer: git-send-email 2.17.2 (Apple Git-113)
-In-Reply-To: <CANn89iK2cd6rRFfNL-vp_Dy4xvtuk_5vA-xg=MbbWb-ybzHheg@mail.gmail.com>
-References: <CANn89iK2cd6rRFfNL-vp_Dy4xvtuk_5vA-xg=MbbWb-ybzHheg@mail.gmail.com>
+        d=gmail.com; s=20161025;
+        h=sender:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Fj4w5JVOvyYwozMqFrFqKmciej530dUq7pjLBYsvO6g=;
+        b=L4kV2uetbp1iN+hKJKMqjvx+UFqpmo9FHr/VWT9T30SvhUa3+/zHpp0gWc74abTjPe
+         ta8KLBjNj7NKbkRoesjhTRWY53SRDeRg7pLT7i17qjw64I/quguXRYtaF6GzzGSXXL6k
+         1SR83HvCRn6zwg/uLJ2cQv4nBDM/uz/60XMTQtzdQ+NjWxTGBWuGP50mEwGvls3AY6rH
+         oMFL74bDXCgKKKDJ+aB6hRN7ZhuEOy6g9vz4SbAhoa+6qn54JOei+JMT1nRhxsML8etb
+         zhFQDlZBUZ24iccXs9mBz6a6Xtt6TWFZELHcWqjnxC+1pw6YCziFhPOPGxhIIZocQQfa
+         Wg5g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :mime-version:content-transfer-encoding;
+        bh=Fj4w5JVOvyYwozMqFrFqKmciej530dUq7pjLBYsvO6g=;
+        b=FpaVv0uYIw3uKWksV9m0azdVZ+RnyjsCZ7THVdyDRdKUQEZdX8mbrWs0wyS87lA6ac
+         lSa74bum2MGrs2BuY6TuSaF+5Ue4KoQvd9wXjOMxMhVaCSprTUTWEuVHUl0kjkdXdV4p
+         TEazdmRT0W7yxIxyKROTXUHJp8bB17+pOY3RbdFg+crpqzF4rwSD1NkJyBTCm7xe6ZlF
+         BgnObUrnbluL8EGNonOvALD2mxCuhzJ7P3NaxVm6Lh/v0hQP9X0lSWN5KIkE0c8IiQeH
+         DwfSYkIi1oLKxwX5vY4X+jRs7EwQ0lVXoqPL0EpXGdzqjQZPzxVToJmYDZ1+VKJq2r8q
+         aPVQ==
+X-Gm-Message-State: AOAM533J69pCI5d5qby/A/mu0DODbkOBGM69MbNz9BtJoMZ4boEX38im
+        yTi4ZVX6C5l0XPmehBwHFjfe9pANlh5s6Q==
+X-Google-Smtp-Source: ABdhPJxdRMDEuUfGdFPniSDYztxhsAVv8syE4yO8MGO+CgZhnPwF8npZhiaxuTMA3V8VMBrGh8o1dw==
+X-Received: by 2002:a5d:4389:: with SMTP id i9mr12164830wrq.272.1611768789081;
+        Wed, 27 Jan 2021 09:33:09 -0800 (PST)
+Received: from stitch.. ([80.71.140.73])
+        by smtp.gmail.com with ESMTPSA id m8sm3768636wrv.37.2021.01.27.09.33.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Jan 2021 09:33:08 -0800 (PST)
+Sender: Emil Renner Berthing <emil.renner.berthing@gmail.com>
+From:   Emil Renner Berthing <kernel@esmil.dk>
+To:     netdev@vger.kernel.org
+Cc:     Emil Renner Berthing <kernel@esmil.dk>,
+        Mitchell Blank Jr <mitch@sfgoth.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org
+Subject: [PATCH 1/2] net: atm: pppoatm: use tasklet_init to initialize wakeup tasklet
+Date:   Wed, 27 Jan 2021 18:32:55 +0100
+Message-Id: <20210127173256.13954-1-kernel@esmil.dk>
+X-Mailer: git-send-email 2.30.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.43.162.38]
-X-ClientProxiedBy: EX13D28UWC004.ant.amazon.com (10.43.162.24) To
- EX13D04ANC001.ant.amazon.com (10.43.157.89)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 27 Jan 2021 18:05:24 +0100
-> On Wed, Jan 27, 2021 at 5:52 PM Kuniyuki Iwashima <kuniyu@amazon.co.jp> wrote:
-> >
-> > From:   Eric Dumazet <edumazet@google.com>
-> > Date:   Wed, 27 Jan 2021 15:54:32 +0100
-> > > On Wed, Jan 27, 2021 at 1:50 PM Kuniyuki Iwashima <kuniyu@amazon.co.jp> wrote:
-> > > >
-> > > > The commit 41b14fb8724d ("net: Do not clear the sock TX queue in
-> > > > sk_set_socket()") removes sk_tx_queue_clear() from sk_set_socket() and adds
-> > > > it instead in sk_alloc() and sk_clone_lock() to fix an issue introduced in
-> > > > the commit e022f0b4a03f ("net: Introduce sk_tx_queue_mapping"). However,
-> > > > the original commit had already put sk_tx_queue_clear() in sk_prot_alloc():
-> > > > the callee of sk_alloc() and sk_clone_lock(). Thus sk_tx_queue_clear() is
-> > > > called twice in each path currently.
-> > >
-> > > Are you sure ?
-> > >
-> > > I do not clearly see the sk_tx_queue_clear() call from the cloning part.
-> > >
-> > > Please elaborate.
-> >
-> > If sk is not NULL in sk_prot_alloc(), sk_tx_queue_clear() is called [1].
-> > Also the callers of sk_prot_alloc() are only sk_alloc() and sk_clone_lock().
-> > If they finally return not NULL pointer, sk_tx_queue_clear() is called in
-> > each function [2][3].
-> >
-> > In the cloning part, sock_copy() is called after sk_prot_alloc(), but
-> > skc_tx_queue_mapping is defined between skc_dontcopy_begin and
-> > skc_dontcopy_end in struct sock_common [4]. So, sock_copy() does not
-> > overwrite skc_tx_queue_mapping, and thus we can initialize it in
-> > sk_prot_alloc().
-> 
-> That is a lot of assumptions.
-> 
-> What guarantees do we have that skc_tx_queue_mapping will never be
-> moved out of this section ?
-> AFAIK it was there by accident, for cache locality reasons, that might
-> change in the future as we add more stuff in socket.
-> 
-> I feel this optimization is risky for future changes, for a code path
-> that is spending thousands of cycles anyway.
+Previously a temporary tasklet structure was initialized on the stack
+using DECLARE_TASKLET_OLD() and then copied over and modified. Nothing
+else in the kernel seems to use this pattern, so let's just call
+tasklet_init() like everyone else.
 
-If someone try to move skc_tx_queue_mapping out of the section, should
-they take care about where it is used ?
+Signed-off-by: Emil Renner Berthing <kernel@esmil.dk>
+---
+ net/atm/pppoatm.c | 10 +++-------
+ 1 file changed, 3 insertions(+), 7 deletions(-)
 
-But I agree that we should not write error-prone code.
+diff --git a/net/atm/pppoatm.c b/net/atm/pppoatm.c
+index 579b66da1d95..5f06af098390 100644
+--- a/net/atm/pppoatm.c
++++ b/net/atm/pppoatm.c
+@@ -389,11 +389,7 @@ static int pppoatm_assign_vcc(struct atm_vcc *atmvcc, void __user *arg)
+ 	struct atm_backend_ppp be;
+ 	struct pppoatm_vcc *pvcc;
+ 	int err;
+-	/*
+-	 * Each PPPoATM instance has its own tasklet - this is just a
+-	 * prototypical one used to initialize them
+-	 */
+-	static const DECLARE_TASKLET_OLD(tasklet_proto, pppoatm_wakeup_sender);
++
+ 	if (copy_from_user(&be, arg, sizeof be))
+ 		return -EFAULT;
+ 	if (be.encaps != PPPOATM_ENCAPS_AUTODETECT &&
+@@ -415,8 +411,8 @@ static int pppoatm_assign_vcc(struct atm_vcc *atmvcc, void __user *arg)
+ 	pvcc->chan.ops = &pppoatm_ops;
+ 	pvcc->chan.mtu = atmvcc->qos.txtp.max_sdu - PPP_HDRLEN -
+ 	    (be.encaps == e_vc ? 0 : LLC_LEN);
+-	pvcc->wakeup_tasklet = tasklet_proto;
+-	pvcc->wakeup_tasklet.data = (unsigned long) &pvcc->chan;
++	tasklet_init(&pvcc->wakeup_tasklet, pppoatm_wakeup_sender,
++		     (unsigned long)&pvcc->chan);
+ 	err = ppp_register_channel(&pvcc->chan);
+ 	if (err != 0) {
+ 		kfree(pvcc);
+-- 
+2.30.0
 
-Currently, sk_tx_queue_clear() is the only initialization code in
-sk_prot_alloc(). So, does it make sense to remove sk_tx_queue_clear() in
-sk_prot_alloc() so that it does only allocation and other fields are
-initialized in each caller ?
-
-
-> >
-> > [1] sk_prot_alloc
-> > https://github.com/torvalds/linux/blob/master/net/core/sock.c#L1693
-> >
-> > [2] sk_alloc
-> > https://github.com/torvalds/linux/blob/master/net/core/sock.c#L1762
-> >
-> > [3] sk_clone_lock
-> > https://github.com/torvalds/linux/blob/master/net/core/sock.c#L1986
-> >
-> > [4] struct sock_common
-> > https://github.com/torvalds/linux/blob/master/include/net/sock.h#L218-L240
-> >
-> >
-> > > In any case, this seems to be a candidate for net-next, this is not
-> > > fixing a bug,
-> > > this would be an optimization at most, and potentially adding a bug.
-> > >
-> > > So if you resend this patch, you can mention the old commit in the changelog,
-> > > but do not add a dubious Fixes: tag
-> >
-> > I see.
-> >
-> > I will remove the tag and resend this as a net-next candidate.
-> >
-> > Thank you,
-> > Kuniyuki
-> >
-> >
-> > > >
-> > > > This patch removes the redundant calls of sk_tx_queue_clear() in sk_alloc()
-> > > > and sk_clone_lock().
-> > > >
-> > > > Fixes: 41b14fb8724d ("net: Do not clear the sock TX queue in sk_set_socket()")
-> > > > CC: Tariq Toukan <tariqt@mellanox.com>
-> > > > CC: Boris Pismenny <borisp@mellanox.com>
-> > > > Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-> > > > Reviewed-by: Amit Shah <aams@amazon.de>
-> > > > ---
-> > > >  net/core/sock.c | 2 --
-> > > >  1 file changed, 2 deletions(-)
-> > > >
-> > > > diff --git a/net/core/sock.c b/net/core/sock.c
-> > > > index bbcd4b97eddd..5c665ee14159 100644
-> > > > --- a/net/core/sock.c
-> > > > +++ b/net/core/sock.c
-> > > > @@ -1759,7 +1759,6 @@ struct sock *sk_alloc(struct net *net, int family, gfp_t priority,
-> > > >                 cgroup_sk_alloc(&sk->sk_cgrp_data);
-> > > >                 sock_update_classid(&sk->sk_cgrp_data);
-> > > >                 sock_update_netprioidx(&sk->sk_cgrp_data);
-> > > > -               sk_tx_queue_clear(sk);
-> > > >         }
-> > > >
-> > > >         return sk;
-> > > > @@ -1983,7 +1982,6 @@ struct sock *sk_clone_lock(const struct sock *sk, const gfp_t priority)
-> > > >                  */
-> > > >                 sk_refcnt_debug_inc(newsk);
-> > > >                 sk_set_socket(newsk, NULL);
-> > > > -               sk_tx_queue_clear(newsk);
-> > > >                 RCU_INIT_POINTER(newsk->sk_wq, NULL);
-> > > >
-> > > >                 if (newsk->sk_prot->sockets_allocated)
-> > > > --
-> > > > 2.17.2 (Apple Git-113)
-> > > >
