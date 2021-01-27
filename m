@@ -2,174 +2,168 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A3B0306727
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 23:21:15 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F1C8830675D
+	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 00:00:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237137AbhA0WUY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 17:20:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60962 "EHLO
+        id S232906AbhA0W5y (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 17:57:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40590 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236441AbhA0WTo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 17:19:44 -0500
-Received: from mail-yb1-xb49.google.com (mail-yb1-xb49.google.com [IPv6:2607:f8b0:4864:20::b49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D7BDC06174A
-        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 14:19:04 -0800 (PST)
-Received: by mail-yb1-xb49.google.com with SMTP id f127so3708132ybf.12
-        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 14:19:04 -0800 (PST)
+        with ESMTP id S231872AbhA0Wz3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 17:55:29 -0500
+Received: from mail-il1-x131.google.com (mail-il1-x131.google.com [IPv6:2607:f8b0:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E116C061574;
+        Wed, 27 Jan 2021 14:24:55 -0800 (PST)
+Received: by mail-il1-x131.google.com with SMTP id g7so2329707iln.2;
+        Wed, 27 Jan 2021 14:24:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=sender:date:message-id:mime-version:subject:from:to:cc;
-        bh=n659vTkbVZagxuC1KCd65CsCxB1C/4ji4FFXQhlT6SM=;
-        b=Ee/E+KLVmMv42Eck8UyUBf3Cal3qGAoGtLEzzIia+55jGeCLo4X6MVPS1sYmXLt0m/
-         DUepJxRm1Fw+0ace8HUNMrdb5UF8p4Lvgy4D02gN3X1w8gfka2xDuJvWXKuX6Dt3i/IG
-         spyAuYNpS+kx2w18LBa0YGfT/Hb5fF4sABb6n4Lr9TtkLb5hKeNSCg4COZfaZrNDoj3x
-         BxGBGnv13HwjtPs3mudItZGszjNYMfrTi1nczPJKbyjlSXfawlUWsEtjjfm2x7RG/+Kg
-         xWGi3u2dJ5Pge2uZWvCThjKDXU3bwBR6+CWX2z90USCSrrFOj2/qN1HbhfoeRG+78GGG
-         OQdw==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:message-id:in-reply-to:references:subject
+         :mime-version:content-transfer-encoding;
+        bh=6AZ5gVqyxhNX7n24kIVcA9NdK4AhKXH76fFkmKApVaA=;
+        b=f/hhdkJRoQShMo7uvCBvZn5GZGB4wsKALxsIa9iyVY6xbydJFVZZSQaoNHBIwXknqz
+         GizvAV0u4AIKk13ia8lepC7LdI9zmD332syZVMq93GkHnBmU4ItSu+NAvNK830Qbvvi3
+         1oqYqKw+G3ccaTrTt7Pv/KbHHsBiWtYWtxUrGfyv1gmMHZU/gGnmY/hrt/YCRYCEVYxy
+         4DfuA/yBD+TyjDcQ+NzsGfP7AXUE4u++BY+8LpGE8PAkF3q/deQLz+W1EBeVlhPt3E6S
+         U6XkVnmB3qGftVmaF+zzs8PgaSxgSDm7X1s+5rVmbJprc1zcOLthyj6zBilGLp1W415f
+         ygwQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:message-id:mime-version:subject:from
-         :to:cc;
-        bh=n659vTkbVZagxuC1KCd65CsCxB1C/4ji4FFXQhlT6SM=;
-        b=VolG/Su7abj7vrWaQxVdE2ySq1USpA1Zhzw8/ljdbbNJT15ZXLQTBhFqOoe5rROYla
-         gWo6sO7Md03xErqv16edEaPWxyCecoyNNaZoU4yAeoGeGQiQNEvmxadMHO6vS0XUxqGd
-         uHd5vKFl2NzJhQkrW3882X/Aj9Mm7w3Sm6jRCYj8ykG7waZumvCFM94r/RAkKnz/cZ7L
-         nd3AwV2VJ9G4Aag9nbx5c9NMm60gxl0bwDjZ+U0KDuoOnCVPHT5mIWb74UlDaKdNLODq
-         NwH4QBjEfOcEh/1AgHEZu7F4orNTXQ2Wf1vug4Tye2vsOW2N8mcCrcCJMSp5mXoaqO6U
-         nLXw==
-X-Gm-Message-State: AOAM532W2kqaBzwRyheIYtzqz1TU0flRfJTEw30pHTdGDTcbLYE4VR1v
-        aosanphwm/FBOLVSBRiowPwzLK4WJT4y
-X-Google-Smtp-Source: ABdhPJwbc2mNRHnTGIC2C/qfPGnRVPnVIfldELiXxeQJQ0EGLrHwn0IsWcwcfUl6QC22s6NXREoWPpXh/JgB
-Sender: "yudiliu via sendgmr" <yudiliu@yudiliu.mtv.corp.google.com>
-X-Received: from yudiliu.mtv.corp.google.com ([2620:15c:202:201:8edc:d4ff:fe53:2823])
- (user=yudiliu job=sendgmr) by 2002:a25:a527:: with SMTP id
- h36mr19236482ybi.400.1611785943188; Wed, 27 Jan 2021 14:19:03 -0800 (PST)
-Date:   Wed, 27 Jan 2021 14:18:59 -0800
-Message-Id: <20210127141821.v2.1.I7d3819e3c406b20307a56fe96159e8f842f72d89@changeid>
+        h=x-gm-message-state:date:from:to:cc:message-id:in-reply-to
+         :references:subject:mime-version:content-transfer-encoding;
+        bh=6AZ5gVqyxhNX7n24kIVcA9NdK4AhKXH76fFkmKApVaA=;
+        b=j5uPoysu6G8X+BscPZ5MwM5YShtMlUrVRi5DMSqK5E/sDaWq7vYvkP0q5cQ0hN66c7
+         kvCMcsWTglTtV4l6gLnPstSwdeCeiBjuYHki2tsY64e9aZxF957koiYarChFVBwi2htf
+         jfdNH/GUqBGv6mrntViXuCpNAFn/kURsu2JtB/PNsoi3cyqaPsMyTl97Ka8v9BpPq1J9
+         Hey1zBhIZW9jftDXxZhyLHwpaArVLug4oS+MPhkwrHQHd1NggJ9ezOdoB1IbFZ3u92sb
+         MUF6f+xpaIIYE0EYM2jPvOoyqjUEuks1e2GHrnA2S1474Y7sMaJQD/QyM0NVhb5GBEe3
+         wIVA==
+X-Gm-Message-State: AOAM532yHMfRJ+Xa8mjmqHEhoy7DBFKJq0Ct60qPrKcIB7x/6W1RAwgo
+        cFxOLuj21Wdy/sviyvTg0WA=
+X-Google-Smtp-Source: ABdhPJyMbkdKC7UCs19QCIVhxLY5snSraGGgPcyRLe8fzkoo7Vu25V+9qT7c6HgBvEeRSJStpcNECA==
+X-Received: by 2002:a05:6e02:1545:: with SMTP id j5mr10511543ilu.296.1611786295045;
+        Wed, 27 Jan 2021 14:24:55 -0800 (PST)
+Received: from localhost ([172.243.146.206])
+        by smtp.gmail.com with ESMTPSA id f13sm1584980iog.18.2021.01.27.14.24.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Jan 2021 14:24:54 -0800 (PST)
+Date:   Wed, 27 Jan 2021 14:24:47 -0800
+From:   John Fastabend <john.fastabend@gmail.com>
+To:     Hangbin Liu <liuhangbin@gmail.com>, bpf@vger.kernel.org
+Cc:     netdev@vger.kernel.org,
+        =?UTF-8?B?VG9rZSBIw7hpbGFuZC1Kw7hyZ2Vuc2Vu?= <toke@redhat.com>,
+        Jiri Benc <jbenc@redhat.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        David Ahern <dsahern@gmail.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Maciej Fijalkowski <maciej.fijalkowski@intel.com>,
+        Hangbin Liu <liuhangbin@gmail.com>
+Message-ID: <6011e82feb2_a0fd920881@john-XPS-13-9370.notmuch>
+In-Reply-To: <20210125124516.3098129-6-liuhangbin@gmail.com>
+References: <20210122074652.2981711-1-liuhangbin@gmail.com>
+ <20210125124516.3098129-1-liuhangbin@gmail.com>
+ <20210125124516.3098129-6-liuhangbin@gmail.com>
+Subject: RE: [PATCHv17 bpf-next 5/6] selftests/bpf: Add verifier tests for bpf
+ arg ARG_CONST_MAP_PTR_OR_NULL
 Mime-Version: 1.0
-X-Mailer: git-send-email 2.30.0.280.ga3ce27912f-goog
-Subject: [PATCH v2] Bluetooth: Skip eSCO 2M params when not supported
-From:   Yu Liu <yudiliu@google.com>
-To:     linux-bluetooth@vger.kernel.org, marcel@holtmann.org,
-        chromeos-bluetooth-upstreaming@chromium.org
-Cc:     Yu Liu <yudiliu@google.com>,
-        Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If a peer device doesn't support eSCO 2M we should skip the params that
-use it when setting up sync connection since they will always fail.
+Hangbin Liu wrote:
+> Use helper bpf_redirect_map() and bpf_redirect_map_multi() to test bpf
+> arg ARG_CONST_MAP_PTR and ARG_CONST_MAP_PTR_OR_NULL. Make sure the
+> map arg could be verified correctly when it is NULL or valid map
+> pointer.
+> =
 
-Signed-off-by: Yu Liu <yudiliu@google.com>
-Reviewed-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
----
+> Add devmap and devmap_hash in struct bpf_test due to bpf_redirect_{map,=
 
-Changes in v2:
-- Fix title
+> map_multi} limit.
+> =
 
-Changes in v1:
-- Initial change
+> Test result:
+>  ]# ./test_verifier 713 716
+>  #713/p ARG_CONST_MAP_PTR: null pointer OK
+>  #714/p ARG_CONST_MAP_PTR: valid map pointer OK
+>  #715/p ARG_CONST_MAP_PTR_OR_NULL: null pointer for ex_map OK
+>  #716/p ARG_CONST_MAP_PTR_OR_NULL: valid map pointer for ex_map OK
+>  Summary: 4 PASSED, 0 SKIPPED, 0 FAILED
+> =
 
- include/net/bluetooth/hci_core.h |  1 +
- net/bluetooth/hci_conn.c         | 39 +++++++++++++++++++++++---------
- 2 files changed, 29 insertions(+), 11 deletions(-)
+> Acked-by: Toke H=C3=B8iland-J=C3=B8rgensen <toke@redhat.com>
+> Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
+> ---
+>  tools/testing/selftests/bpf/test_verifier.c   | 22 +++++-
+>  .../testing/selftests/bpf/verifier/map_ptr.c  | 70 +++++++++++++++++++=
 
-diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
-index 239ab72f16c6e..71468a9ea798a 100644
---- a/include/net/bluetooth/hci_core.h
-+++ b/include/net/bluetooth/hci_core.h
-@@ -1237,6 +1237,7 @@ void hci_conn_del_sysfs(struct hci_conn *conn);
- #define lmp_le_capable(dev)        ((dev)->features[0][4] & LMP_LE)
- #define lmp_sniffsubr_capable(dev) ((dev)->features[0][5] & LMP_SNIFF_SUBR)
- #define lmp_pause_enc_capable(dev) ((dev)->features[0][5] & LMP_PAUSE_ENC)
-+#define lmp_esco_2m_capable(dev)   ((dev)->features[0][5] & LMP_EDR_ESCO_2M)
- #define lmp_ext_inq_capable(dev)   ((dev)->features[0][6] & LMP_EXT_INQ)
- #define lmp_le_br_capable(dev)     (!!((dev)->features[0][6] & LMP_SIMUL_LE_BR))
- #define lmp_ssp_capable(dev)       ((dev)->features[0][6] & LMP_SIMPLE_PAIR)
-diff --git a/net/bluetooth/hci_conn.c b/net/bluetooth/hci_conn.c
-index 07c34c55fc508..18740af603963 100644
---- a/net/bluetooth/hci_conn.c
-+++ b/net/bluetooth/hci_conn.c
-@@ -39,24 +39,25 @@ struct sco_param {
- 	u16 pkt_type;
- 	u16 max_latency;
- 	u8  retrans_effort;
-+	bool cap_2m_reqd;
- };
- 
- static const struct sco_param esco_param_cvsd[] = {
--	{ EDR_ESCO_MASK & ~ESCO_2EV3, 0x000a,	0x01 }, /* S3 */
--	{ EDR_ESCO_MASK & ~ESCO_2EV3, 0x0007,	0x01 }, /* S2 */
--	{ EDR_ESCO_MASK | ESCO_EV3,   0x0007,	0x01 }, /* S1 */
--	{ EDR_ESCO_MASK | ESCO_HV3,   0xffff,	0x01 }, /* D1 */
--	{ EDR_ESCO_MASK | ESCO_HV1,   0xffff,	0x01 }, /* D0 */
-+	{ EDR_ESCO_MASK & ~ESCO_2EV3, 0x000a,	0x01,   true  }, /* S3 */
-+	{ EDR_ESCO_MASK & ~ESCO_2EV3, 0x0007,	0x01,   true  }, /* S2 */
-+	{ EDR_ESCO_MASK | ESCO_EV3,   0x0007,	0x01,   false }, /* S1 */
-+	{ EDR_ESCO_MASK | ESCO_HV3,   0xffff,	0x01,   false }, /* D1 */
-+	{ EDR_ESCO_MASK | ESCO_HV1,   0xffff,	0x01,   false }, /* D0 */
- };
- 
- static const struct sco_param sco_param_cvsd[] = {
--	{ EDR_ESCO_MASK | ESCO_HV3,   0xffff,	0xff }, /* D1 */
--	{ EDR_ESCO_MASK | ESCO_HV1,   0xffff,	0xff }, /* D0 */
-+	{ EDR_ESCO_MASK | ESCO_HV3,   0xffff,	0xff,   false }, /* D1 */
-+	{ EDR_ESCO_MASK | ESCO_HV1,   0xffff,	0xff,   false }, /* D0 */
- };
- 
- static const struct sco_param esco_param_msbc[] = {
--	{ EDR_ESCO_MASK & ~ESCO_2EV3, 0x000d,	0x02 }, /* T2 */
--	{ EDR_ESCO_MASK | ESCO_EV3,   0x0008,	0x02 }, /* T1 */
-+	{ EDR_ESCO_MASK & ~ESCO_2EV3, 0x000d,	0x02,   true  }, /* T2 */
-+	{ EDR_ESCO_MASK | ESCO_EV3,   0x0008,	0x02,   false }, /* T1 */
- };
- 
- /* This function requires the caller holds hdev->lock */
-@@ -278,6 +279,20 @@ static void hci_add_sco(struct hci_conn *conn, __u16 handle)
- 	hci_send_cmd(hdev, HCI_OP_ADD_SCO, sizeof(cp), &cp);
- }
- 
-+static bool find_next_esco_param(struct hci_conn *conn,
-+				 const struct sco_param *esco_param, int size)
-+{
-+	for (; conn->attempt <= size; conn->attempt++) {
-+		if (lmp_esco_2m_capable(conn->link) ||
-+		    !esco_param[conn->attempt - 1].cap_2m_reqd)
-+			break;
-+		BT_DBG("hcon %p skipped attempt %d, eSCO 2M not supported",
-+		       conn, conn->attempt);
-+	}
-+
-+	return conn->attempt <= size;
-+}
-+
- bool hci_setup_sync(struct hci_conn *conn, __u16 handle)
- {
- 	struct hci_dev *hdev = conn->hdev;
-@@ -299,13 +314,15 @@ bool hci_setup_sync(struct hci_conn *conn, __u16 handle)
- 
- 	switch (conn->setting & SCO_AIRMODE_MASK) {
- 	case SCO_AIRMODE_TRANSP:
--		if (conn->attempt > ARRAY_SIZE(esco_param_msbc))
-+		if (!find_next_esco_param(conn, esco_param_msbc,
-+					  ARRAY_SIZE(esco_param_msbc)))
- 			return false;
- 		param = &esco_param_msbc[conn->attempt - 1];
- 		break;
- 	case SCO_AIRMODE_CVSD:
- 		if (lmp_esco_capable(conn->link)) {
--			if (conn->attempt > ARRAY_SIZE(esco_param_cvsd))
-+			if (!find_next_esco_param(conn, esco_param_cvsd,
-+						  ARRAY_SIZE(esco_param_cvsd)))
- 				return false;
- 			param = &esco_param_cvsd[conn->attempt - 1];
- 		} else {
--- 
-2.30.0.280.ga3ce27912f-goog
+>  2 files changed, 91 insertions(+), 1 deletion(-)
+> =
+
+
+[...]
+
+> +{
+> +	"ARG_CONST_MAP_PTR_OR_NULL: null pointer for ex_map",
+> +	.insns =3D {
+> +		BPF_MOV64_IMM(BPF_REG_1, 0),
+> +		/* bpf_redirect_map_multi arg1 (in_map) */
+> +		BPF_LD_MAP_FD(BPF_REG_1, 0),
+> +		/* bpf_redirect_map_multi arg2 (ex_map) */
+> +		BPF_MOV64_IMM(BPF_REG_2, 0),
+> +		/* bpf_redirect_map_multi arg3 (flags) */
+> +		BPF_MOV64_IMM(BPF_REG_3, 0),
+> +		BPF_EMIT_CALL(BPF_FUNC_redirect_map_multi),
+> +		BPF_EXIT_INSN(),
+> +	},
+> +	.fixup_map_devmap =3D { 1 },
+> +	.result =3D ACCEPT,
+> +	.prog_type =3D BPF_PROG_TYPE_XDP,
+> +	.retval =3D 4,
+
+Do we need one more case where this is map_or_null? In above
+ex_map will be scalar tnum_const=3D0 and be exactly a null. This
+will push verifier here,
+
+  meta->map_ptr =3D register_is_null(reg) ? NULL : reg->map_ptr;
+
+In the below case it is known to be not null.
+
+Is it also interesting to have a case where register_is_null(reg)
+check fails and reg->map_ptr is set, but may be null.
+
+> +},
+> +{
+> +	"ARG_CONST_MAP_PTR_OR_NULL: valid map pointer for ex_map",
+> +	.insns =3D {
+> +		BPF_MOV64_IMM(BPF_REG_1, 0),
+> +		/* bpf_redirect_map_multi arg1 (in_map) */
+> +		BPF_LD_MAP_FD(BPF_REG_1, 0),
+> +		/* bpf_redirect_map_multi arg2 (ex_map) */
+> +		BPF_LD_MAP_FD(BPF_REG_2, 1),
+> +		/* bpf_redirect_map_multi arg3 (flags) */
+> +		BPF_MOV64_IMM(BPF_REG_3, 0),
+> +		BPF_EMIT_CALL(BPF_FUNC_redirect_map_multi),
+> +		BPF_EXIT_INSN(),
+> +	},
+> +	.fixup_map_devmap =3D { 1 },
+> +	.fixup_map_devmap_hash =3D { 3 },
+> +	.result =3D ACCEPT,
+> +	.prog_type =3D BPF_PROG_TYPE_XDP,
+> +	.retval =3D 4,
+> +},
+> -- =
+
+> 2.26.2
+> =
+
+
 
