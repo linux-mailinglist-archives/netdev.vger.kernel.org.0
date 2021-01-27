@@ -2,43 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1BDC03056E7
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 10:29:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9879C3056EE
+	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 10:29:15 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235239AbhA0J12 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 04:27:28 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35554 "EHLO
+        id S231591AbhA0J2X (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 04:28:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235232AbhA0JZW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 04:25:22 -0500
+        with ESMTP id S235233AbhA0JZX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 04:25:23 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7E77C061788
-        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 01:22:43 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41A64C06178C
+        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 01:22:45 -0800 (PST)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1l4h29-0008DH-St
-        for netdev@vger.kernel.org; Wed, 27 Jan 2021 10:22:41 +0100
+        id 1l4h2B-0008GY-KC
+        for netdev@vger.kernel.org; Wed, 27 Jan 2021 10:22:43 +0100
 Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id A34D65CF120
-        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 09:22:38 +0000 (UTC)
+        by bjornoya.blackshift.org (Postfix) with SMTP id EE4A05CF128
+        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 09:22:39 +0000 (UTC)
 Received: from hardanger.blackshift.org (unknown [172.20.34.65])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id 2C2E45CF0E6;
-        Wed, 27 Jan 2021 09:22:32 +0000 (UTC)
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id 52E5B5CF0F6;
+        Wed, 27 Jan 2021 09:22:34 +0000 (UTC)
 Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 6e1da509;
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 4e40676a;
         Wed, 27 Jan 2021 09:22:28 +0000 (UTC)
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
         kernel@pengutronix.de, Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [net-next 08/12] can: mcp251xfd: mcp251xfd_tx_obj_from_skb(): clean up padding of CAN-FD frames
-Date:   Wed, 27 Jan 2021 10:22:23 +0100
-Message-Id: <20210127092227.2775573-9-mkl@pengutronix.de>
+Subject: [net-next 11/12] can: mcp251xfd: add len8_dlc support
+Date:   Wed, 27 Jan 2021 10:22:26 +0100
+Message-Id: <20210127092227.2775573-12-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20210127092227.2775573-1-mkl@pengutronix.de>
 References: <20210127092227.2775573-1-mkl@pengutronix.de>
@@ -52,54 +52,93 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-CAN-FD frames have only specific frame length (0, 1, 2, 3, 4, 5, 6, 7, 8, 12,
-16, 20, 24, 32, 48, 64). A CAN-FD frame provided by user space might not cover
-the whole CAN-FD frame. To avoid sending garbage over the CAN bus the driver
-pads the CAN frame with 0x0 (if MCP251XFD_SANITIZE_CAN is activated).
+This patch adds support for the Classical CAN raw DLC functionality to send and
+receive DLC values from 9 ... 15 to the mcp251xfd driver.
 
-This patch cleans up the pad len calculation. Rounding to full u32 brings no
-benefit, in case of CRC transfers, the hw_tx_obj->data is not aligned to u32
-anyway.
-
-Link: https://lore.kernel.org/r/20210114153448.1506901-3-mkl@pengutronix.de
+Link: https://lore.kernel.org/r/20210114153448.1506901-6-mkl@pengutronix.de
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
- drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c | 13 +++++++------
- 1 file changed, 7 insertions(+), 6 deletions(-)
+ .../net/can/spi/mcp251xfd/mcp251xfd-core.c    | 23 ++++++++++++-------
+ 1 file changed, 15 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c b/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c
-index 1dbb87c28049..aa992e71d787 100644
+index e6d98e172a47..8f78a29db39b 100644
 --- a/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c
 +++ b/drivers/net/can/spi/mcp251xfd/mcp251xfd-core.c
-@@ -2303,7 +2303,7 @@ mcp251xfd_tx_obj_from_skb(const struct mcp251xfd_priv *priv,
- 	union mcp251xfd_tx_obj_load_buf *load_buf;
- 	u8 dlc;
- 	u32 id, flags;
--	int offset, len;
-+	int pad_len, len;
+@@ -1439,6 +1439,7 @@ mcp251xfd_hw_rx_obj_to_skb(const struct mcp251xfd_priv *priv,
+ 			   struct sk_buff *skb)
+ {
+ 	struct canfd_frame *cfd = (struct canfd_frame *)skb->data;
++	u8 dlc;
  
- 	if (cfd->can_id & CAN_EFF_FLAG) {
+ 	if (hw_rx_obj->flags & MCP251XFD_OBJ_FLAGS_IDE) {
  		u32 sid, eid;
-@@ -2351,13 +2351,14 @@ mcp251xfd_tx_obj_from_skb(const struct mcp251xfd_priv *priv,
- 	put_unaligned_le32(id, &hw_tx_obj->id);
- 	put_unaligned_le32(flags, &hw_tx_obj->flags);
+@@ -1454,9 +1455,10 @@ mcp251xfd_hw_rx_obj_to_skb(const struct mcp251xfd_priv *priv,
+ 					hw_rx_obj->id);
+ 	}
  
--	/* Clear data at end of CAN frame */
--	offset = round_down(cfd->len, sizeof(u32));
--	len = round_up(can_fd_dlc2len(dlc), sizeof(u32)) - offset;
--	if (MCP251XFD_SANITIZE_CAN && len)
--		memset(hw_tx_obj->data + offset, 0x0, len);
-+	/* Copy data */
- 	memcpy(hw_tx_obj->data, cfd->data, cfd->len);
- 
-+	/* Clear unused data at end of CAN frame */
-+	pad_len = can_fd_dlc2len(dlc) - cfd->len;
-+	if (MCP251XFD_SANITIZE_CAN && pad_len)
-+		memset(hw_tx_obj->data + cfd->len, 0x0, pad_len);
++	dlc = FIELD_GET(MCP251XFD_OBJ_FLAGS_DLC, hw_rx_obj->flags);
 +
- 	/* Number of bytes to be written into the RAM of the controller */
- 	len = sizeof(hw_tx_obj->id) + sizeof(hw_tx_obj->flags);
- 	if (MCP251XFD_SANITIZE_CAN)
+ 	/* CANFD */
+ 	if (hw_rx_obj->flags & MCP251XFD_OBJ_FLAGS_FDF) {
+-		u8 dlc;
+ 
+ 		if (hw_rx_obj->flags & MCP251XFD_OBJ_FLAGS_ESI)
+ 			cfd->flags |= CANFD_ESI;
+@@ -1464,14 +1466,13 @@ mcp251xfd_hw_rx_obj_to_skb(const struct mcp251xfd_priv *priv,
+ 		if (hw_rx_obj->flags & MCP251XFD_OBJ_FLAGS_BRS)
+ 			cfd->flags |= CANFD_BRS;
+ 
+-		dlc = FIELD_GET(MCP251XFD_OBJ_FLAGS_DLC, hw_rx_obj->flags);
+ 		cfd->len = can_fd_dlc2len(dlc);
+ 	} else {
+ 		if (hw_rx_obj->flags & MCP251XFD_OBJ_FLAGS_RTR)
+ 			cfd->can_id |= CAN_RTR_FLAG;
+ 
+-		cfd->len = can_cc_dlc2len(FIELD_GET(MCP251XFD_OBJ_FLAGS_DLC,
+-						 hw_rx_obj->flags));
++		can_frame_set_cc_len((struct can_frame *)cfd, dlc,
++				     priv->can.ctrlmode);
+ 	}
+ 
+ 	if (!(hw_rx_obj->flags & MCP251XFD_OBJ_FLAGS_RTR))
+@@ -2325,9 +2326,7 @@ mcp251xfd_tx_obj_from_skb(const struct mcp251xfd_priv *priv,
+ 	 * harm, only the lower 7 bits will be transferred into the
+ 	 * TEF object.
+ 	 */
+-	dlc = can_fd_len2dlc(cfd->len);
+-	flags |= FIELD_PREP(MCP251XFD_OBJ_FLAGS_SEQ_MCP2518FD_MASK, seq) |
+-		FIELD_PREP(MCP251XFD_OBJ_FLAGS_DLC, dlc);
++	flags |= FIELD_PREP(MCP251XFD_OBJ_FLAGS_SEQ_MCP2518FD_MASK, seq);
+ 
+ 	if (cfd->can_id & CAN_RTR_FLAG)
+ 		flags |= MCP251XFD_OBJ_FLAGS_RTR;
+@@ -2343,8 +2342,15 @@ mcp251xfd_tx_obj_from_skb(const struct mcp251xfd_priv *priv,
+ 
+ 		if (cfd->flags & CANFD_BRS)
+ 			flags |= MCP251XFD_OBJ_FLAGS_BRS;
++
++		dlc = can_fd_len2dlc(cfd->len);
++	} else {
++		dlc = can_get_cc_dlc((struct can_frame *)cfd,
++				     priv->can.ctrlmode);
+ 	}
+ 
++	flags |= FIELD_PREP(MCP251XFD_OBJ_FLAGS_DLC, dlc);
++
+ 	load_buf = &tx_obj->buf;
+ 	if (priv->devtype_data.quirks & MCP251XFD_QUIRK_CRC_TX)
+ 		hw_tx_obj = &load_buf->crc.hw_tx_obj;
+@@ -2896,7 +2902,8 @@ static int mcp251xfd_probe(struct spi_device *spi)
+ 	priv->can.data_bittiming_const = &mcp251xfd_data_bittiming_const;
+ 	priv->can.ctrlmode_supported = CAN_CTRLMODE_LOOPBACK |
+ 		CAN_CTRLMODE_LISTENONLY | CAN_CTRLMODE_BERR_REPORTING |
+-		CAN_CTRLMODE_FD | CAN_CTRLMODE_FD_NON_ISO;
++		CAN_CTRLMODE_FD | CAN_CTRLMODE_FD_NON_ISO |
++		CAN_CTRLMODE_CC_LEN8_DLC;
+ 	priv->ndev = ndev;
+ 	priv->spi = spi;
+ 	priv->rx_int = rx_int;
 -- 
 2.29.2
 
