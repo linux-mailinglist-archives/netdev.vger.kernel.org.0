@@ -2,209 +2,107 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 31345305758
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 10:51:11 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E0724305787
+	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 10:57:24 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235348AbhA0Jtc (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 04:49:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40448 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235097AbhA0JsN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 04:48:13 -0500
-Received: from mail-ot1-x32d.google.com (mail-ot1-x32d.google.com [IPv6:2607:f8b0:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BB1EC061573
-        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 01:47:31 -0800 (PST)
-Received: by mail-ot1-x32d.google.com with SMTP id e70so1072031ote.11
-        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 01:47:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ohHVzxeDXjCbScOnrlNAtwKEbpFVUAbvjjfcIZruJpo=;
-        b=fCeipkfEGHhlSQ9F5fBb/0llMYfn7CNIgtnQT+dFMT30+B7XDNljEzDFdJiC5tK6/h
-         5uY26/8fgb69uZjg2ZHv+Gkw3VNK003gAIDoBUbc8EYHOJwgeqDtR13W8VFipqZVJlbM
-         MtHuGqNIhia7hQEnqnwnMvX5NcXcDY1L0+JvAv2Iq6h4puyjkubBpugtL3Hdsf4yzqK3
-         BAythmVZZvzYOsij4oRBqQBoSAkP6YlD00S94Wly7c618JpZlq7hIHoLPQCaGJkT42ga
-         hU7AjuQwJzDDvKcI0w9INNG2jsPctPCuaVupGvKQ3dVLV/VLwpCIuURJXa7jnciSgYHr
-         A0jw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ohHVzxeDXjCbScOnrlNAtwKEbpFVUAbvjjfcIZruJpo=;
-        b=dxgColTw1/OcRVyz7ViyVbfhZ572JdQa6N8uCtFRM+28H1RqjavbdiPaYUpQ9QGY2T
-         UziSfzbxgNx+7tFZ4bYY3RTaxsEXsIqyQZEjjT+8/v34M4S1z3s3ppFYPxgfwfCGdXhL
-         RYyhlhCC1sBWNvYewWRieqP9e7ovQNiZz3k2Zn9qlV30ClU1k+hUClayhhgcFckcQ+AA
-         SqQ7FFQF0wq9w8diZ/lqi7GiGoWYcYh0Hr9PJtrkO6BQ80IpFSQI4hH/01IHeltzWFEA
-         XrXEnrQf3XgZE2cEyWzdOdTFFAPOiMXJxFIFvtY4u1CJui2MmB0epbZPjNaTxoaTguXf
-         QLZA==
-X-Gm-Message-State: AOAM5323pY42DGasfdggRxjWhAX++xW8mIBzkiZJv6B7Rs3MFO7o2AgS
-        0oBwcYA0C0TDXaJ9mt4L4EsHv5FDlTu7/2454bI=
-X-Google-Smtp-Source: ABdhPJyBz1jRvfKB6kAnYlX6dtiP6ClL8c7exYoazH0MMs4rffNzBHCgXJpa1M9T+enia5TuWFg7VGRmP97v294+YeI=
-X-Received: by 2002:a05:6830:3482:: with SMTP id c2mr7040011otu.59.1611740850901;
- Wed, 27 Jan 2021 01:47:30 -0800 (PST)
-MIME-Version: 1.0
-References: <20210127074651.510134-1-cmi@nvidia.com>
-In-Reply-To: <20210127074651.510134-1-cmi@nvidia.com>
-From:   Zhu Yanjun <zyjzyj2000@gmail.com>
-Date:   Wed, 27 Jan 2021 17:47:19 +0800
-Message-ID: <CAD=hENcqq1-m-8hyswQEVOb8jxqW4bzW2XrPdGabOO6kdJYnww@mail.gmail.com>
-Subject: Re: [PATCH net-next v2] net: psample: Introduce stubs to remove NIC
- driver dependency
-To:     Chris Mi <cmi@nvidia.com>
-Cc:     netdev <netdev@vger.kernel.org>, Jakub Kicinski <kuba@kernel.org>,
-        jiri@nvidia.com, saeedm@nvidia.com,
-        kernel test robot <lkp@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+        id S235668AbhA0J4M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 04:56:12 -0500
+Received: from out30-54.freemail.mail.aliyun.com ([115.124.30.54]:46890 "EHLO
+        out30-54.freemail.mail.aliyun.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232989AbhA0Jx6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 04:53:58 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R451e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=alimailimapcm10staff010182156082;MF=abaci-bugfix@linux.alibaba.com;NM=1;PH=DS;RN=10;SR=0;TI=SMTPD_---0UN1fMSF_1611741191;
+Received: from j63c13417.sqa.eu95.tbsite.net(mailfrom:abaci-bugfix@linux.alibaba.com fp:SMTPD_---0UN1fMSF_1611741191)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Wed, 27 Jan 2021 17:53:15 +0800
+From:   Abaci Team <abaci-bugfix@linux.alibaba.com>
+To:     pkshih@realtek.com
+Cc:     kvalo@codeaurora.org, davem@davemloft.net, kuba@kernel.org,
+        Larry.Finger@lwfinger.net, lee.jones@linaro.org,
+        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Abaci Team <abaci-bugfix@linux.alibaba.com>
+Subject: [PATCH] rtlwifi: halbtc8723b2ant: Remove redundant code
+Date:   Wed, 27 Jan 2021 17:53:09 +0800
+Message-Id: <1611741189-45892-1-git-send-email-abaci-bugfix@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 27, 2021 at 5:06 PM Chris Mi <cmi@nvidia.com> wrote:
->
-> In order to send sampled packets to userspace, NIC driver calls
-> psample api directly. But it creates a hard dependency on module
-> psample. Introduce psample_ops to remove the hard dependency.
-> It is initialized when psample module is loaded and set to NULL
-> when the module is unloaded.
->
-> Reported-by: kernel test robot <lkp@intel.com>
-> Signed-off-by: Chris Mi <cmi@nvidia.com>
-> Reviewed-by: Jiri Pirko <jiri@nvidia.com>
-> ---
-> v1->v2:
->  - fix sparse errors
->
->  include/net/psample.h    | 27 +++++++++++++++++++++++++++
->  net/psample/psample.c    | 13 ++++++++++++-
->  net/sched/Makefile       |  2 +-
->  net/sched/psample_stub.c |  7 +++++++
->  4 files changed, 47 insertions(+), 2 deletions(-)
->  create mode 100644 net/sched/psample_stub.c
->
-> diff --git a/include/net/psample.h b/include/net/psample.h
-> index 68ae16bb0a4a..e6a73128de59 100644
-> --- a/include/net/psample.h
-> +++ b/include/net/psample.h
-> @@ -4,6 +4,7 @@
->
->  #include <uapi/linux/psample.h>
->  #include <linux/list.h>
-> +#include <linux/skbuff.h>
->
->  struct psample_group {
->         struct list_head list;
-> @@ -14,6 +15,15 @@ struct psample_group {
->         struct rcu_head rcu;
->  };
->
-> +struct psample_ops {
-> +       void (*sample_packet)(struct psample_group *group, struct sk_buff *skb,
-> +                             u32 trunc_size, int in_ifindex, int out_ifindex,
-> +                             u32 sample_rate);
-> +
-> +};
-> +
-> +extern const struct psample_ops __rcu *psample_ops __read_mostly;
-> +
->  struct psample_group *psample_group_get(struct net *net, u32 group_num);
->  void psample_group_take(struct psample_group *group);
->  void psample_group_put(struct psample_group *group);
-> @@ -35,4 +45,21 @@ static inline void psample_sample_packet(struct psample_group *group,
->
->  #endif
->
-> +static inline void
+Fix the following coccicheck warnings:
 
-inline is not needed here. The compiler should judge it.
+./drivers/net/wireless/realtek/rtlwifi/btcoexist/halbtc8723b2ant.c:
+1876:11-13: WARNING: possible condition with no effect (if == else).
 
-Zhu Yanjun
+Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+Suggested-by: Jiapeng Zhong <oswb@linux.alibaba.com>
+Signed-off-by: Abaci Team <abaci-bugfix@linux.alibaba.com>
+---
+ .../realtek/rtlwifi/btcoexist/halbtc8723b2ant.c    | 22 ----------------------
+ 1 file changed, 22 deletions(-)
 
-> +psample_nic_sample_packet(struct psample_group *group,
-> +                         struct sk_buff *skb, u32 trunc_size,
-> +                         int in_ifindex, int out_ifindex,
-> +                         u32 sample_rate)
-> +{
-> +       const struct psample_ops *ops;
-> +
-> +       rcu_read_lock();
-> +       ops = rcu_dereference(psample_ops);
-> +       if (ops)
-> +               psample_ops->sample_packet(group, skb, trunc_size,
-> +                                          in_ifindex, out_ifindex,
-> +                                          sample_rate);
-> +       rcu_read_unlock();
-> +}
-> +
->  #endif /* __NET_PSAMPLE_H */
-> diff --git a/net/psample/psample.c b/net/psample/psample.c
-> index 33e238c965bd..2a9fbfe09395 100644
-> --- a/net/psample/psample.c
-> +++ b/net/psample/psample.c
-> @@ -8,6 +8,7 @@
->  #include <linux/kernel.h>
->  #include <linux/skbuff.h>
->  #include <linux/module.h>
-> +#include <linux/rcupdate.h>
->  #include <net/net_namespace.h>
->  #include <net/sock.h>
->  #include <net/netlink.h>
-> @@ -35,6 +36,10 @@ static const struct genl_multicast_group psample_nl_mcgrps[] = {
->
->  static struct genl_family psample_nl_family __ro_after_init;
->
-> +static const struct psample_ops psample_sample_ops = {
-> +       .sample_packet  = psample_sample_packet,
-> +};
-> +
->  static int psample_group_nl_fill(struct sk_buff *msg,
->                                  struct psample_group *group,
->                                  enum psample_command cmd, u32 portid, u32 seq,
-> @@ -456,11 +461,17 @@ EXPORT_SYMBOL_GPL(psample_sample_packet);
->
->  static int __init psample_module_init(void)
->  {
-> -       return genl_register_family(&psample_nl_family);
-> +       int ret;
-> +
-> +       ret = genl_register_family(&psample_nl_family);
-> +       if (!ret)
-> +               RCU_INIT_POINTER(psample_ops, &psample_sample_ops);
-> +       return ret;
->  }
->
->  static void __exit psample_module_exit(void)
->  {
-> +       RCU_INIT_POINTER(psample_ops, NULL);
->         genl_unregister_family(&psample_nl_family);
->  }
->
-> diff --git a/net/sched/Makefile b/net/sched/Makefile
-> index dd14ef413fda..0d92bb98bb26 100644
-> --- a/net/sched/Makefile
-> +++ b/net/sched/Makefile
-> @@ -3,7 +3,7 @@
->  # Makefile for the Linux Traffic Control Unit.
->  #
->
-> -obj-y  := sch_generic.o sch_mq.o
-> +obj-y  := sch_generic.o sch_mq.o psample_stub.o
->
->  obj-$(CONFIG_INET)             += sch_frag.o
->  obj-$(CONFIG_NET_SCHED)                += sch_api.o sch_blackhole.o
-> diff --git a/net/sched/psample_stub.c b/net/sched/psample_stub.c
-> new file mode 100644
-> index 000000000000..0615a7b64000
-> --- /dev/null
-> +++ b/net/sched/psample_stub.c
-> @@ -0,0 +1,7 @@
-> +// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-> +/* Copyright (c) 2021 Mellanox Technologies. */
-> +
-> +#include <net/psample.h>
-> +
-> +const struct psample_ops __rcu *psample_ops __read_mostly;
-> +EXPORT_SYMBOL_GPL(psample_ops);
-> --
-> 2.26.2
->
+diff --git a/drivers/net/wireless/realtek/rtlwifi/btcoexist/halbtc8723b2ant.c b/drivers/net/wireless/realtek/rtlwifi/btcoexist/halbtc8723b2ant.c
+index 7a71f06..ef2c3eb 100644
+--- a/drivers/net/wireless/realtek/rtlwifi/btcoexist/halbtc8723b2ant.c
++++ b/drivers/net/wireless/realtek/rtlwifi/btcoexist/halbtc8723b2ant.c
+@@ -1273,8 +1273,6 @@ static void btc8723b2ant_ps_tdma(struct btc_coexist *btcoexist, bool force_exec,
+ 	} else {
+ 		if (coex_sta->a2dp_bit_pool >= 45)
+ 			wifi_duration_adjust = -15;
+-		else if (coex_sta->a2dp_bit_pool >= 35)
+-			wifi_duration_adjust = -10;
+ 		else
+ 			wifi_duration_adjust = -10;
+ 	}
+@@ -1805,11 +1803,6 @@ static void btc8723b2ant_tdma_duration_adjust(struct btc_coexist *btcoexist,
+ 							     NORMAL_EXEC,
+ 							     true, 14);
+ 					coex_dm->ps_tdma_du_adj_type = 14;
+-				} else if (max_interval == 3) {
+-					btc8723b2ant_ps_tdma(btcoexist,
+-							     NORMAL_EXEC,
+-							     true, 15);
+-					coex_dm->ps_tdma_du_adj_type = 15;
+ 				} else {
+ 					btc8723b2ant_ps_tdma(btcoexist,
+ 							     NORMAL_EXEC,
+@@ -1827,11 +1820,6 @@ static void btc8723b2ant_tdma_duration_adjust(struct btc_coexist *btcoexist,
+ 							     NORMAL_EXEC,
+ 							     true, 10);
+ 					coex_dm->ps_tdma_du_adj_type = 10;
+-				} else if (max_interval == 3) {
+-					btc8723b2ant_ps_tdma(btcoexist,
+-							     NORMAL_EXEC,
+-						     true, 11);
+-					coex_dm->ps_tdma_du_adj_type = 11;
+ 				} else {
+ 					btc8723b2ant_ps_tdma(btcoexist,
+ 							     NORMAL_EXEC,
+@@ -1851,11 +1839,6 @@ static void btc8723b2ant_tdma_duration_adjust(struct btc_coexist *btcoexist,
+ 							     NORMAL_EXEC,
+ 							     true, 6);
+ 					coex_dm->ps_tdma_du_adj_type = 6;
+-				} else if (max_interval == 3) {
+-					btc8723b2ant_ps_tdma(btcoexist,
+-							     NORMAL_EXEC,
+-							     true, 7);
+-					coex_dm->ps_tdma_du_adj_type = 7;
+ 				} else {
+ 					btc8723b2ant_ps_tdma(btcoexist,
+ 							     NORMAL_EXEC,
+@@ -1873,11 +1856,6 @@ static void btc8723b2ant_tdma_duration_adjust(struct btc_coexist *btcoexist,
+ 							     NORMAL_EXEC,
+ 							     true, 2);
+ 					coex_dm->ps_tdma_du_adj_type = 2;
+-				} else if (max_interval == 3) {
+-					btc8723b2ant_ps_tdma(btcoexist,
+-							     NORMAL_EXEC,
+-							     true, 3);
+-					coex_dm->ps_tdma_du_adj_type = 3;
+ 				} else {
+ 					btc8723b2ant_ps_tdma(btcoexist,
+ 							     NORMAL_EXEC,
+-- 
+1.8.3.1
+
