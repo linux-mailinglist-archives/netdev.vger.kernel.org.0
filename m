@@ -2,190 +2,126 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A4040306403
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 20:30:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 61CE2306423
+	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 20:35:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231383AbhA0T36 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 14:29:58 -0500
-Received: from mail.kernel.org ([198.145.29.99]:37234 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231152AbhA0T36 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 27 Jan 2021 14:29:58 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id C034F64DC5;
-        Wed, 27 Jan 2021 19:29:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611775756;
-        bh=RE3ASHgGtSPnCbkfYCYQSz5gcwq8q+reTrMwTmnykYg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=An41wkQ8MfeqkgPPnvTlgXIoHB5gdMWA606f1A0F/mBvdXBLiLkme9ZNuSNFQ/isb
-         dChH6r8OUzwYt911tk5VpfISfh5gw+blQq1dPy3hdjhVDREWfhFDPa6G+8MWjYWea/
-         VAYiTcYn7T3RgXqGVcJqkd0kO68xDiqblFZnWaNXhxCo473lZhLvF1o34L0ZvcBtyb
-         hobdegYgp3dF/Lyx42weiswKFprFss/BUElf91WjIkBnSXBo7fgfjpMzQ26LIViZs+
-         zO4H5kXFnycy+IQ/xoM/u9TuEPES5FrxVNDIqt2kZCjm+MhEvuc8nQVM5nddcLfukt
-         sngOavUjsUmTQ==
-Received: by pali.im (Postfix)
-        id 0F9C05CD; Wed, 27 Jan 2021 20:29:13 +0100 (CET)
-Date:   Wed, 27 Jan 2021 20:29:13 +0100
-From:   Pali =?utf-8?B?Um9ow6Fy?= <pali@kernel.org>
-To:     "Alejandro Colomar (man-pages)" <alx.manpages@gmail.com>
-Cc:     linux-man@vger.kernel.org,
-        Michael Kerrisk <mtk.manpages@gmail.com>,
-        netdev@vger.kernel.org
-Subject: Re: [PATCH v3] netdevice.7: Update documentation for SIOCGIFADDR
- SIOCSIFADDR SIOCDIFADDR
-Message-ID: <20210127192913.e6ppkqwjclmgjh4a@pali>
-References: <20210102140254.16714-1-pali@kernel.org>
- <20210116223610.14230-1-pali@kernel.org>
- <fc4a94d4-2eac-1b24-cc90-162045eae107@gmail.com>
+        id S1344443AbhA0Tc4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 14:32:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53382 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344393AbhA0TcW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 14:32:22 -0500
+Received: from mail-lj1-x22f.google.com (mail-lj1-x22f.google.com [IPv6:2a00:1450:4864:20::22f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D42D2C061573
+        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 11:31:41 -0800 (PST)
+Received: by mail-lj1-x22f.google.com with SMTP id v15so492167ljk.13
+        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 11:31:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linux-foundation.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ZJB6pzhcxR6RIOhk+W4vBLAOQOY6A+IbRkTJX3GrSIA=;
+        b=Nex7m0nPT6ikFYD0UDxgXryCJyYTx+pRUl8n/I+/+QgVAzM5sX/Iufo8IZe70BES4A
+         PxumGwRUK+eKwrok3peAydYv34EWMMQMd6k8vlFvyDIPohc+dGl9OdT0wXxeuKjCUlu3
+         DoAjRpEayelexJA+o2u5g1eysr8elGHigTn34=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ZJB6pzhcxR6RIOhk+W4vBLAOQOY6A+IbRkTJX3GrSIA=;
+        b=UzVGDW44lWjUonnGsS/gvUgfRZjLANXzI+/+GFCYsEIY0Mt330M3rJQd8K6fo8zPbX
+         cImeTgepUGXx+wXw6149puknPjTYASszft0yDp4Qif6q9Srx2ANQsXVweF0U20O1pT6i
+         iDC3Y3yBl7Vuu0DoKO7gQFwl25N5KbWuyoL/qLUYm9vA5/PWb1zqIqrLsMiMElhM3+yh
+         +mix8jgo0WPzsOT7ghC2F2nl+SH9FsgDRaGu1dkF/KtykwTmsTI5MDDQxLvsBpujJjAv
+         Y2slo+rswAcAEN0W4VjTtXk8XYDKJ4jqLWsVuFpMvnzsEg7QFh/Xe7gtL5oDrLAKU6RT
+         ejNg==
+X-Gm-Message-State: AOAM532sZGSE9Dsqtgeaf1EEvcuHAqjky7ZwyDUwFA+ykvR9vgT7HA1M
+        W5t+L/tngjA82K9Htvu64x3wsIRIMIosBA==
+X-Google-Smtp-Source: ABdhPJx0H2uxokVqNIICbbCztipr5OZaDzPAyW1JbvxtSIhFEFLYFodDe4akmPWWcxxkKqiBAptpUg==
+X-Received: by 2002:a2e:7a05:: with SMTP id v5mr6226181ljc.402.1611775899997;
+        Wed, 27 Jan 2021 11:31:39 -0800 (PST)
+Received: from mail-lf1-f48.google.com (mail-lf1-f48.google.com. [209.85.167.48])
+        by smtp.gmail.com with ESMTPSA id i2sm736186lfl.152.2021.01.27.11.31.38
+        for <netdev@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 27 Jan 2021 11:31:38 -0800 (PST)
+Received: by mail-lf1-f48.google.com with SMTP id h7so4298518lfc.6
+        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 11:31:38 -0800 (PST)
+X-Received: by 2002:ac2:420a:: with SMTP id y10mr5554909lfh.377.1611775897778;
+ Wed, 27 Jan 2021 11:31:37 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <fc4a94d4-2eac-1b24-cc90-162045eae107@gmail.com>
-User-Agent: NeoMutt/20180716
+References: <000000000000672eda05b9e291ff@google.com>
+In-Reply-To: <000000000000672eda05b9e291ff@google.com>
+From:   Linus Torvalds <torvalds@linux-foundation.org>
+Date:   Wed, 27 Jan 2021 11:31:21 -0800
+X-Gmail-Original-Message-ID: <CAHk-=whCX0Ab=Z2N-zuKVv7BdBZAUGgP0jQqCg+OJjHmtaOkTA@mail.gmail.com>
+Message-ID: <CAHk-=whCX0Ab=Z2N-zuKVv7BdBZAUGgP0jQqCg+OJjHmtaOkTA@mail.gmail.com>
+Subject: Re: KASAN: invalid-free in p9_client_create (2)
+To:     syzbot <syzbot+d0bd96b4696c1ef67991@syzkaller.appspotmail.com>,
+        Pekka Enberg <penberg@kernel.org>,
+        David Rientjes <rientjes@google.com>,
+        Joonsoo Kim <iamjoonsoo.kim@lge.com>,
+        Andrew Morton <akpm@linux-foundation.org>
+Cc:     Dominique Martinet <asmadeus@codewreck.org>,
+        David Miller <davem@davemloft.net>, ericvh@gmail.com,
+        Jakub Kicinski <kuba@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        lucho@ionkov.net, Netdev <netdev@vger.kernel.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        v9fs-developer@lists.sourceforge.net, wanghai38@huawei.com,
+        Linux-MM <linux-mm@kvack.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tuesday 19 January 2021 21:18:29 Alejandro Colomar (man-pages) wrote:
-> Hi Pali,
-> 
-> I was a patch for environ.7 while I found some pattern.
-> Please see below a minor fix.
-> 
-> Thanks,
-> 
-> Alex
-> 
-> On 1/16/21 11:36 PM, Pali Rohár wrote:
-> > Unlike SIOCGIFADDR and SIOCSIFADDR which are supported by many protocol
-> > families, SIOCDIFADDR is supported by AF_INET6 and AF_APPLETALK only.
-> > 
-> > Unlike other protocols, AF_INET6 uses struct in6_ifreq.
-> > 
-> > Signed-off-by: Pali Rohár <pali@kernel.org>
-> > ---
-> >  man7/netdevice.7 | 64 +++++++++++++++++++++++++++++++++++++++++-------
-> >  1 file changed, 55 insertions(+), 9 deletions(-)
-> > 
-> > diff --git a/man7/netdevice.7 b/man7/netdevice.7
-> > index 15930807c..bdc2d1922 100644
-> > --- a/man7/netdevice.7
-> > +++ b/man7/netdevice.7
-> > @@ -56,9 +56,27 @@ struct ifreq {
-> >  .EE
-> >  .in
-> >  .PP
-> > +.B AF_INET6
-> > +is an exception.
-> > +It passes an
-> > +.I in6_ifreq
-> > +structure:
-> > +.PP
-> > +.in +4n
-> > +.EX
-> > +struct in6_ifreq {
-> > +    struct in6_addr     ifr6_addr;
-> > +    u32                 ifr6_prefixlen;
-> > +    int                 ifr6_ifindex; /* Interface index */
-> > +};
-> > +.EE
-> > +.in
-> > +.PP
-> >  Normally, the user specifies which device to affect by setting
-> >  .I ifr_name
-> > -to the name of the interface.
-> > +to the name of the interface or
-> > +.I ifr6_ifindex
-> > +to the index of the interface.
-> >  All other members of the structure may
-> >  share memory.
-> >  .SS Ioctls
-> > @@ -143,13 +161,33 @@ IFF_ISATAP:Interface is RFC4214 ISATAP interface.
-> >  .PP
-> >  Setting the extended (private) interface flags is a privileged operation.
-> >  .TP
-> > -.BR SIOCGIFADDR ", " SIOCSIFADDR
-> > -Get or set the address of the device using
-> > -.IR ifr_addr .
-> > -Setting the interface address is a privileged operation.
-> > -For compatibility, only
-> > +.BR SIOCGIFADDR ", " SIOCSIFADDR ", " SIOCDIFADDR
-> > +Get, set, or delete the address of the device using
-> > +.IR ifr_addr ,
-> > +or
-> > +.I ifr6_addr
-> > +with
-> > +.IR ifr6_prefixlen .
-> > +Setting or deleting the interface address is a privileged operation.
-> > +For compatibility,
-> > +.B SIOCGIFADDR
-> > +returns only
-> >  .B AF_INET
-> > -addresses are accepted or returned.
-> > +addresses,
-> > +.B SIOCSIFADDR
-> > +accepts
-> > +.B AF_INET
-> > +and
-> > +.B AF_INET6
-> > +addresses, and
-> > +.B SIOCDIFADDR
-> > +deletes only
-> > +.B AF_INET6
-> > +addresses.
-> > +A
-> > +.B AF_INET
-> > +address can be deleted by setting it to zero via
-> > +.BR SIOCSIFADDR .
-> >  .TP
-> >  .BR SIOCGIFDSTADDR ", " SIOCSIFDSTADDR
-> >  Get or set the destination address of a point-to-point device using
-> > @@ -351,10 +389,18 @@ The names of interfaces with no addresses or that don't have the
-> >  flag set can be found via
-> >  .IR /proc/net/dev .
-> >  .PP
-> > -Local IPv6 IP addresses can be found via
-> > -.I /proc/net
-> > +.B AF_INET6
-> > +IPv6 addresses can be read from
-> > +.I /proc/net/if_inet6
-> > +file or via
-> > +.BR rtnetlink (7).
-> > +Adding a new or deleting an existing IPv6 address can be done via
-> > +.BR SIOCSIFADDR " / " SIOCDIFADDR
-> 
-> I found a few pages with the pattern [.BR X / Y],
-> but none like [.BR X " / " Y].
-> 
-> $ grep -rn '\.BR [a-zA-Z]* / [a-zA-Z]*' man?
-> man1/getent.1:365:.BR ahosts / getaddrinfo (3)
-> man2/sigaction.2:526:.BR SIGIO / SIGPOLL
-> man2/sigaction.2:638:.BR SIGIO / SIGPOLL
-> man2/sigaction.2:814:.BR SIGIO / SIGPOLL
-> man3/sysconf.3:181:.BR PAGESIZE / _SC_PAGESIZE .
-> man7/signal.7:539:.BR SIGINFO / SIGPWR
-> man7/pipe.7:114:.BR SIGPIPE / EPIPE
-> man7/environ.7:127:.BR EDITOR / VISUAL
-> $ grep -rn '\.BR [a-zA-Z]* " / " [a-zA-Z]*' man?
-> $
-> 
-> Please fix this for the next revision.
-> However, don't send a new one only for this.
+[ Participants list changed - syzbot thought this was networking and
+p9, but it really looks entirely like a slub internal bug. I left the
+innocent people on the list just to let them know they are innocent ]
 
-Ok!
+On Wed, Jan 27, 2021 at 6:27 AM syzbot
+<syzbot+d0bd96b4696c1ef67991@syzkaller.appspotmail.com> wrote:
+>
+> The issue was bisected to:
+>
+> commit dde3c6b72a16c2db826f54b2d49bdea26c3534a2
+> Author: Wang Hai <wanghai38@huawei.com>
+> Date:   Wed Jun 3 22:56:21 2020 +0000
+>
+>     mm/slub: fix a memory leak in sysfs_slab_add()
+>
+> BUG: KASAN: double-free or invalid-free in slab_free mm/slub.c:3142 [inline]
+> BUG: KASAN: double-free or invalid-free in kmem_cache_free+0x82/0x350 mm/slub.c:3158
 
-> I'd wait to see if someone reviews it or helps in any way ;)
+The p9 part of this bug report seems to be a red herring.
 
-Seems that nobody came up with suggestions for improvements...
+The problem looks like it's simply the kmem_cache failure case, ie:
 
-> 
-> >  or via
-> >  .BR rtnetlink (7).
-> > +Retrieving or changing destination IPv6 addresses of a point-to-point
-> > +interface is possible only via
-> > +.BR rtnetlink (7).
-> >  .SH BUGS
-> >  glibc 2.1 is missing the
-> >  .I ifr_newname
-> > 
+ - mm/slab_common.c: create_cache(): if the __kmem_cache_create()
+fails, it does:
+
+        out_free_cache:
+                kmem_cache_free(kmem_cache, s);
+
+ - but __kmem_cache_create() - at least for slub() - will have done
+
+        sysfs_slab_add(s) .. fails ..
+            -> kobject_del(&s->kobj); .. which frees s ...
+
+so the networking and p9 are fine, and the only reason p9 shows up in
+the trace is that apparently it causes that failure in
+kobject_init_and_add() for whatever reason, and that then exposes the
+problem.
+
+So the added kobject_put() really looks buggy in this situation, and
+the memory leak that that commit dde3c6b72a16 ("mm/slub: fix a memory
+leak in sysfs_slab_add()") fixes is now a double free.
+
+And no, I don't think you can just remove the kmem_cache_free() in
+create_cache(), because _other_ error cases of __kmem_cache_create()
+do not free this.
+
+Wang Hai - comments? I'm inclined to revert that commit for now unless
+somebody can come up with a proper fix..
+
+              Linus
