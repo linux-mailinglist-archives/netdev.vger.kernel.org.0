@@ -2,158 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B33733051D4
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 06:18:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5EAF63051D9
+	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 06:21:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233224AbhA0FRx (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 00:17:53 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54994 "EHLO
+        id S233259AbhA0FSN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 00:18:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57374 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238648AbhA0E1T (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jan 2021 23:27:19 -0500
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D428C061222;
-        Tue, 26 Jan 2021 20:23:49 -0800 (PST)
-Received: by mail-pl1-x629.google.com with SMTP id j21so330905pls.7;
-        Tue, 26 Jan 2021 20:23:49 -0800 (PST)
+        with ESMTP id S239215AbhA0Eev (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jan 2021 23:34:51 -0500
+Received: from mail-ot1-x32c.google.com (mail-ot1-x32c.google.com [IPv6:2607:f8b0:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C48EC061756
+        for <netdev@vger.kernel.org>; Tue, 26 Jan 2021 20:33:29 -0800 (PST)
+Received: by mail-ot1-x32c.google.com with SMTP id n42so482701ota.12
+        for <netdev@vger.kernel.org>; Tue, 26 Jan 2021 20:33:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=PKMm5WhbWomId6dxJtacT4f+Nb7CE6/RbR+lQ9lmvb8=;
-        b=UW33n3jIrggYz8eQvlnv9rDrFdzrfgPgGdjalR9v2xllzOnf1kAkZFmJwHc2UdcKPO
-         kQe7jUjYGLp4dApSP0ZRnEavAo2kfz4QSb1BncBDwk0jgM4jOhe8tHNDGdobFRA53syd
-         CNL1uyWHgiEyJsighUHWku3991edDvA+BJ2IoZjZuoHVbxm6znDXQQJpHSDrcSHmqFRg
-         LTfCDVY3+hKudRCtZ2YY6TgyZABOPu3dlmHkjvVQ7bWU/O0v7lznEOyYOQWM0zdl5zSE
-         YHLNeucGEF+A0ZhoUa/2B0YtGvhoBaRPOmGM0GTO3IrJN3LNZ7yOjcSWCk1G9ubFK+dH
-         vkfw==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=ZuT0N/iLdVsluz495y3cjqfZZZFc64y9QPD92MDvPBY=;
+        b=hqWEGxDzN+jIOH0lJrRMU3W6Cq0Jk9oLo1G1XkIiJGByQeA3MOLQXJIGYur0Xe2Gz3
+         zYM/MEoYqksb3g5gZcvVKdmU25DN4GFXfFOwgxJg6niuVT6HqCSvERKHcI2zvTfw2gXX
+         eA2UWqMj/uQH05xI46O5ckvpLch5ZHgzZB7aHRSUC9HC/Vo4skcIm1uibRLCLsBEUJ5z
+         QGgVTZN4rZKw+tdbcG4qIEgdPx4UnFWaBepmfEtTk+hF2BWO8C9B8SG5lw2O15pAGqoh
+         F9Ly1KtHnmu/llg1Ipba3C2hC6QByOWD+SODOkPtA8MIEmiFBvYJpP+rCJwc11rK9HVb
+         PDsQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=PKMm5WhbWomId6dxJtacT4f+Nb7CE6/RbR+lQ9lmvb8=;
-        b=LkXkJQ7Woem6GmnIBAQyz5Sxv0wk+bstjIsgNUqwLfM4w49WvenCx/LK00yMXcKWfu
-         aYBrD5cvXJ0BXs46NrAE6TeI4z79/PyFt8ef3tB5u6GpW0n738kAVhjE2xXMKUlR5hSN
-         YqkY3rjRUQUB3QoKX045CiGuNW/opTjaB1cRsOTLylAZUKxzO8EuCa5XP5kK1fkHtA1z
-         eVS5WMvd4RG6m8U/xFM4of06ZhaJBcwUr2BbOBn/MguX1kB9Iz0ntSKedXXuejAX3nk3
-         91xxzHz1rNODL+DeoaDFjmMcXIQpmE4lXrfKRCgutthLro7u3dU0ig9kdskzUcwRF4Oz
-         ImGw==
-X-Gm-Message-State: AOAM531EH6PTn5ZhavnirS+Rk8MYmYUL3TV1F0sB59ggrFOPuLMx2g1I
-        83y++V5VBhpbeEYRbKnGjC4=
-X-Google-Smtp-Source: ABdhPJyJiZ1xdd00sOoiKgrEjoKuhoY44Kn3r4lbP0vycU+dJuEXzZdcYHq6tuAEpXZUgpmZuBalmA==
-X-Received: by 2002:a17:90a:4a4:: with SMTP id g33mr3330295pjg.221.1611721428398;
-        Tue, 26 Jan 2021 20:23:48 -0800 (PST)
-Received: from ubuntu ([1.53.255.147])
-        by smtp.gmail.com with ESMTPSA id n12sm605264pff.29.2021.01.26.20.23.43
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 26 Jan 2021 20:23:47 -0800 (PST)
-Date:   Wed, 27 Jan 2021 11:23:41 +0700
-From:   Bui Quang Minh <minhquangbui99@gmail.com>
-To:     Lorenz Bauer <lmb@cloudflare.com>
-Cc:     Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, hawk@kernel.org,
-        John Fastabend <john.fastabend@gmail.com>,
-        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        kpsingh@kernel.org, Jakub Sitnicki <jakub@cloudflare.com>,
-        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] bpf: Fix integer overflow in argument calculation for
- bpf_map_area_alloc
-Message-ID: <20210127042341.GA4948@ubuntu>
-References: <20210126082606.3183-1-minhquangbui99@gmail.com>
- <CACAyw99bEYWJCSGqfLiJ9Jp5YE1ZsZSiJxb4RFUTwbofipf0dA@mail.gmail.com>
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=ZuT0N/iLdVsluz495y3cjqfZZZFc64y9QPD92MDvPBY=;
+        b=n8ptHx7+XAKaZ/mqSVP1Ysynlz2DnROzF1F7KO8czKlXHY0w+A3J4e7AIJfbNO37C0
+         Sd5D9fSgzm70N7D+j6bnLxyky7um0ahMbmsijxXR9lLzhscOWjBXZqHDFP4gEIpLIyBu
+         XLJEyjCUF1XJ3ZTV/oRJyuk/ER1Jn6ugEQwjybU6OXI01dYTMH2l17ImYLQottzeva65
+         3Sp8Ib6D1k3E63mOYv0UuvU/ThhreqZE2B6UmQM0na7bI6m2T2j2gBDitq7M2j6bebqs
+         YZ7sASoL0M4+jJFfGyOk/ERE4uHLOEWq5BgzsQ7HGy89STszSWrkzTd6EtXbVLMyzy/Y
+         IL3A==
+X-Gm-Message-State: AOAM533iB472QqPl0AYAErkvyEjm2pvsXkvdA3ZzxIvzOzM21GIDKkMy
+        3wiTuEc3V0KSqsyMBc65Jlu1DuI0Dm0=
+X-Google-Smtp-Source: ABdhPJw5a4jHkhI016VMPz86b5LDav7jBPdYY0zcg6JG2F8c+ObRfBJ9Pt6c7MeTQbPpw8tcOu3qCQ==
+X-Received: by 2002:a05:6830:17d0:: with SMTP id p16mr6051553ota.367.1611722008941;
+        Tue, 26 Jan 2021 20:33:28 -0800 (PST)
+Received: from Davids-MacBook-Pro.local ([2601:284:8203:54f0:a08d:e5cd:cfb5:2f9])
+        by smtp.googlemail.com with ESMTPSA id k41sm225031ooi.46.2021.01.26.20.33.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 26 Jan 2021 20:33:28 -0800 (PST)
+Subject: Re: [PATCH net-next 01/10] netdevsim: fib: Convert the current
+ occupancy to an atomic variable
+To:     Ido Schimmel <idosch@idosch.org>, netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, amcohen@nvidia.com,
+        roopa@nvidia.com, sharpd@nvidia.com, bpoirier@nvidia.com,
+        mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
+References: <20210126132311.3061388-1-idosch@idosch.org>
+ <20210126132311.3061388-2-idosch@idosch.org>
+From:   David Ahern <dsahern@gmail.com>
+Message-ID: <b307a304-09ef-d8e8-7296-92ddddfc348c@gmail.com>
+Date:   Tue, 26 Jan 2021 21:33:27 -0700
+User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
+ Gecko/20100101 Thunderbird/78.6.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CACAyw99bEYWJCSGqfLiJ9Jp5YE1ZsZSiJxb4RFUTwbofipf0dA@mail.gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <20210126132311.3061388-2-idosch@idosch.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 26, 2021 at 09:36:57AM +0000, Lorenz Bauer wrote:
-> On Tue, 26 Jan 2021 at 08:26, Bui Quang Minh <minhquangbui99@gmail.com> wrote:
-> >
-> > In 32-bit architecture, the result of sizeof() is a 32-bit integer so
-> > the expression becomes the multiplication between 2 32-bit integer which
-> > can potentially leads to integer overflow. As a result,
-> > bpf_map_area_alloc() allocates less memory than needed.
-> >
-> > Fix this by casting 1 operand to u64.
+On 1/26/21 6:23 AM, Ido Schimmel wrote:
+> @@ -889,22 +882,29 @@ static void nsim_nexthop_destroy(struct nsim_nexthop *nexthop)
+>  static int nsim_nexthop_account(struct nsim_fib_data *data, u64 occ,
+>  				bool add, struct netlink_ext_ack *extack)
+>  {
+> -	int err = 0;
+> +	int i, err = 0;
+>  
+>  	if (add) {
+> -		if (data->nexthops.num + occ <= data->nexthops.max) {
+> -			data->nexthops.num += occ;
+> -		} else {
+> -			err = -ENOSPC;
+> -			NL_SET_ERR_MSG_MOD(extack, "Exceeded number of supported nexthops");
+> -		}
+> +		for (i = 0; i < occ; i++)
+> +			if (!atomic64_add_unless(&data->nexthops.num, 1,
+> +						 data->nexthops.max)) {
+
+seems like this can be
+		if (!atomic64_add_unless(&data->nexthops.num, occ,
+					 data->nexthops.max)) {
+
+and then the err_num_decrease is not needed
+
+> +				err = -ENOSPC;
+> +				NL_SET_ERR_MSG_MOD(extack, "Exceeded number of supported nexthops");
+> +				goto err_num_decrease;
+> +			}
+>  	} else {
+> -		if (WARN_ON(occ > data->nexthops.num))
+> +		if (WARN_ON(occ > atomic64_read(&data->nexthops.num)))
+>  			return -EINVAL;
+> -		data->nexthops.num -= occ;
+> +		atomic64_sub(occ, &data->nexthops.num);
+>  	}
+>  
+>  	return err;
+> +
+> +err_num_decrease:
+> +	for (i--; i >= 0; i--)
+> +		atomic64_dec(&data->nexthops.num);
+
+and if this path is really needed, why not atomic64_sub here?
+
+> +	return err;
+> +
+>  }
+>  
+>  static int nsim_nexthop_add(struct nsim_fib_data *data,
 > 
-> Some quick thoughts:
-> * Should this have a Fixes tag?
-
-Ok, I will add Fixes tag in later version patch.
-
-> * Seems like there are quite a few similar calls scattered around
-> (cpumap, etc.). Did you audit these as well?
-
-I spotted another bug after re-auditting. In hashtab, there ares 2 places using
-the same calls
-
-	static struct bpf_map *htab_map_alloc(union bpf_attr *attr)
-	{
-		/* ... snip ... */
-		if (htab->n_buckets == 0 ||
-		    htab->n_buckets > U32_MAX / sizeof(struct bucket))
-			goto free_htab;
-
-		htab->buckets = bpf_map_area_alloc(htab->n_buckets *
-						   sizeof(struct bucket),
-						   htab->map.numa_node);
-	}
-
-This is safe because of the above check.
-
-	static int prealloc_init(struct bpf_htab *htab)
-	{
-		u32 num_entries = htab->map.max_entries;
-		htab->elems = bpf_map_area_alloc(htab->elem_size * num_entries,
-						 htab->map.numa_node);
-	}
-
-This is not safe since there is no limit check in elem_size.
-
-In cpumap,
-
-	static struct bpf_map *cpu_map_alloc(union bpf_attr *attr)
-	{
-		cmap->cpu_map = bpf_map_area_alloc(cmap->map.max_entries *
-						   sizeof(struct bpf_cpu_map_entry *),
-						   cmap->map.numa_node);
-	}
-
-I think this is safe because max_entries is not permitted to be larger than NR_CPUS.
-
-In stackmap, there is a place that I'm not very sure about
-
-	static int prealloc_elems_and_freelist(struct bpf_stack_map *smap)
-	{
-		u32 elem_size = sizeof(struct stack_map_bucket) + smap->map.value_size;
-		smap->elems = bpf_map_area_alloc(elem_size * smap->map.max_entries,
-						 smap->map.numa_node);
-	}
-
-This is called after another bpf_map_area_alloc in stack_map_alloc(). In the first
-bpf_map_area_alloc() the argument is calculated in an u64 variable; so if in the second
-one, there is an integer overflow then the first one must be called with size > 4GB. I 
-think the first one will probably fail (I am not sure about the actual limit of vmalloc()),
-so the second one might not be called.
-
-Overall, I think it is error prone in this pattern, maybe we should use typecasting in all
-similar calls or make a comment why we don't use typecasting. As I see typecasting is not so
-expensive and we can typecast the sizeof() operand so this change only affect 32-bit
-architecture.
-
-> * I'd prefer a calloc style version of bpf_map_area_alloc although
-> that might conflict with Fixes tag.
-
-Yes, I think the calloc style will prevent this kind of integer overflow bug.
-
-Thank you,
-Quang Minh.
 
