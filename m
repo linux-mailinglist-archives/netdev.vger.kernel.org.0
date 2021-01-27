@@ -2,113 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 52130305D2F
+	by mail.lfdr.de (Postfix) with ESMTP id C231B305D30
 	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 14:30:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238427AbhA0N3H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 08:29:07 -0500
-Received: from correo.us.es ([193.147.175.20]:40298 "EHLO mail.us.es"
+        id S238436AbhA0N3b (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 08:29:31 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:34120 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S238384AbhA0N0G (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 27 Jan 2021 08:26:06 -0500
-Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
-        by mail.us.es (Postfix) with ESMTP id 369A72A2BB1
-        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 14:24:23 +0100 (CET)
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 2787DDA78F
-        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 14:24:23 +0100 (CET)
-Received: by antivirus1-rhel7.int (Postfix, from userid 99)
-        id 1D081DA722; Wed, 27 Jan 2021 14:24:23 +0100 (CET)
-X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
-X-Spam-Level: 
-X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
-        SMTPAUTH_US2,URIBL_BLOCKED,USER_IN_WELCOMELIST,USER_IN_WHITELIST
-        autolearn=disabled version=3.4.1
-Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
-        by antivirus1-rhel7.int (Postfix) with ESMTP id 01574DA78A;
-        Wed, 27 Jan 2021 14:24:21 +0100 (CET)
-Received: from 192.168.1.97 (192.168.1.97)
- by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
- Wed, 27 Jan 2021 14:24:21 +0100 (CET)
-X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
-Received: from localhost.localdomain (unknown [90.77.255.23])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: pneira@us.es)
-        by entrada.int (Postfix) with ESMTPSA id C9E97426CC85;
-        Wed, 27 Jan 2021 14:24:20 +0100 (CET)
-X-SMTPAUTHUS: auth mail.us.es
-From:   Pablo Neira Ayuso <pablo@netfilter.org>
-To:     netfilter-devel@vger.kernel.org
-Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
-Subject: [PATCH net 3/3] netfilter: nft_dynset: dump expressions when set definition contains no expressions
-Date:   Wed, 27 Jan 2021 14:25:12 +0100
-Message-Id: <20210127132512.5472-4-pablo@netfilter.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20210127132512.5472-1-pablo@netfilter.org>
-References: <20210127132512.5472-1-pablo@netfilter.org>
+        id S238049AbhA0N1M (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 27 Jan 2021 08:27:12 -0500
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1l4kq2-002s8G-Hy; Wed, 27 Jan 2021 14:26:26 +0100
+Date:   Wed, 27 Jan 2021 14:26:26 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Hariprasad Kelam <hkelam@marvell.com>
+Cc:     netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        davem@davemloft.net, kuba@kernel.org, sgoutham@marvell.com,
+        lcherian@marvell.com, gakula@marvell.com, jerinj@marvell.com,
+        sbhatta@marvell.com, Christina Jacob <cjacob@marvell.com>
+Subject: Re: [Patch v2 net-next 4/7] octeontx2-af: Physical link
+ configuration support
+Message-ID: <YBFqAkQRig3oTdyd@lunn.ch>
+References: <1611733552-150419-1-git-send-email-hkelam@marvell.com>
+ <1611733552-150419-5-git-send-email-hkelam@marvell.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Virus-Scanned: ClamAV using ClamSMTP
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1611733552-150419-5-git-send-email-hkelam@marvell.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If the set definition provides no stateful expressions, then include the
-stateful expression in the ruleset listing. Without this fix, the dynset
-rule listing shows the stateful expressions provided by the set
-definition.
+On Wed, Jan 27, 2021 at 01:15:49PM +0530, Hariprasad Kelam wrote:
+> From: Christina Jacob <cjacob@marvell.com>
+> 
+> CGX LMAC, the physical interface support link configuration parameters
+> like speed, auto negotiation, duplex  etc. Firmware saves these into
+> memory region shared between firmware and this driver.
+> 
+> This patch adds mailbox handler set_link_mode, fw_data_get to
+> configure and read these parameters.
+> 
+> Signed-off-by: Christina Jacob <cjacob@marvell.com>
+> Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
+> Signed-off-by: Hariprasad Kelam <hkelam@marvell.com>
+> ---
+>  drivers/net/ethernet/marvell/octeontx2/af/cgx.c    | 60 +++++++++++++++++++++-
+>  drivers/net/ethernet/marvell/octeontx2/af/cgx.h    |  2 +
+>  .../net/ethernet/marvell/octeontx2/af/cgx_fw_if.h  | 18 ++++++-
+>  drivers/net/ethernet/marvell/octeontx2/af/mbox.h   | 21 ++++++++
+>  .../net/ethernet/marvell/octeontx2/af/rvu_cgx.c    | 17 ++++++
+>  5 files changed, 115 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/marvell/octeontx2/af/cgx.c b/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
+> index b3ae84c..42ee67e 100644
+> --- a/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
+> +++ b/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
+> @@ -658,6 +658,39 @@ static inline void cgx_link_usertable_init(void)
+>  	cgx_lmactype_string[LMAC_MODE_USXGMII] = "USXGMII";
+>  }
+>  
+> +static inline int cgx_link_usertable_index_map(int speed)
+> +{
 
-Fixes: 65038428b2c6 ("netfilter: nf_tables: allow to specify stateful expression in set definition")
-Signed-off-by: Pablo Neira Ayuso <pablo@netfilter.org>
----
- net/netfilter/nft_dynset.c | 31 +++++++++++++++++--------------
- 1 file changed, 17 insertions(+), 14 deletions(-)
+Hi Christina, Hariprasad
 
-diff --git a/net/netfilter/nft_dynset.c b/net/netfilter/nft_dynset.c
-index 218c09e4fddd..d164ef9e6843 100644
---- a/net/netfilter/nft_dynset.c
-+++ b/net/netfilter/nft_dynset.c
-@@ -384,22 +384,25 @@ static int nft_dynset_dump(struct sk_buff *skb, const struct nft_expr *expr)
- 			 nf_jiffies64_to_msecs(priv->timeout),
- 			 NFTA_DYNSET_PAD))
- 		goto nla_put_failure;
--	if (priv->num_exprs == 1) {
--		if (nft_expr_dump(skb, NFTA_DYNSET_EXPR, priv->expr_array[0]))
--			goto nla_put_failure;
--	} else if (priv->num_exprs > 1) {
--		struct nlattr *nest;
--
--		nest = nla_nest_start_noflag(skb, NFTA_DYNSET_EXPRESSIONS);
--		if (!nest)
--			goto nla_put_failure;
--
--		for (i = 0; i < priv->num_exprs; i++) {
--			if (nft_expr_dump(skb, NFTA_LIST_ELEM,
--					  priv->expr_array[i]))
-+	if (priv->set->num_exprs == 0) {
-+		if (priv->num_exprs == 1) {
-+			if (nft_expr_dump(skb, NFTA_DYNSET_EXPR,
-+					  priv->expr_array[0]))
- 				goto nla_put_failure;
-+		} else if (priv->num_exprs > 1) {
-+			struct nlattr *nest;
-+
-+			nest = nla_nest_start_noflag(skb, NFTA_DYNSET_EXPRESSIONS);
-+			if (!nest)
-+				goto nla_put_failure;
-+
-+			for (i = 0; i < priv->num_exprs; i++) {
-+				if (nft_expr_dump(skb, NFTA_LIST_ELEM,
-+						  priv->expr_array[i]))
-+					goto nla_put_failure;
-+			}
-+			nla_nest_end(skb, nest);
- 		}
--		nla_nest_end(skb, nest);
- 	}
- 	if (nla_put_be32(skb, NFTA_DYNSET_FLAGS, htonl(flags)))
- 		goto nla_put_failure;
--- 
-2.20.1
+No inline functions in .c files please. Let the compiler decide.
 
+
+> +	switch (speed) {
+> +	case SPEED_10:
+> +		return CGX_LINK_10M;
+> +	case SPEED_100:
+> +		return CGX_LINK_100M;
+> +	case SPEED_1000:
+> +		return CGX_LINK_1G;
+> +	case SPEED_2500:
+> +		return CGX_LINK_2HG;
+> +	case SPEED_5000:
+> +		return CGX_LINK_5G;
+> +	case SPEED_10000:
+> +		return CGX_LINK_10G;
+> +	case SPEED_20000:
+> +		return CGX_LINK_20G;
+> +	case SPEED_25000:
+> +		return CGX_LINK_25G;
+> +	case SPEED_40000:
+> +		return CGX_LINK_40G;
+> +	case SPEED_50000:
+> +		return CGX_LINK_50G;
+> +	case 80000:
+> +		return CGX_LINK_80G;
+> +	case SPEED_100000:
+> +		return CGX_LINK_100G;
+> +	case SPEED_UNKNOWN:
+> +		return CGX_LINK_NONE;
+> +	}
+> +	return CGX_LINK_NONE;
+> +}
+> +
+>  static inline void link_status_user_format(u64 lstat,
+>  					   struct cgx_link_user_info *linfo,
+>  					   struct cgx *cgx, u8 lmac_id)
+
+So it looks like previous reviews did not catch inline functions. So
+lets say, no new inline functions.
+
+     Andrew
