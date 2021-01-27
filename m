@@ -2,136 +2,60 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 147413050EE
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 05:34:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 023F53050F0
+	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 05:34:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239078AbhA0Eal (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jan 2021 23:30:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36078 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231961AbhA0CzL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jan 2021 21:55:11 -0500
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94AD5C06178A
-        for <netdev@vger.kernel.org>; Tue, 26 Jan 2021 18:17:26 -0800 (PST)
-Received: by mail-ej1-x62e.google.com with SMTP id ox12so517562ejb.2
-        for <netdev@vger.kernel.org>; Tue, 26 Jan 2021 18:17:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=Px6CF6fv6xR+35dat/DxPNwYvbDtyDvPg05jiglxqHo=;
-        b=ppAvg/Kg7GDfglm1zsf2JjZfRpLW2NeZrQz3XXHDWqiB+dAoDJeSk4dMZAd5dbxG/0
-         3LOWRTyG0/BVIDX6hovztOkSs1s3XLQiW4zYnh7MshElVj5jY8kQCIvRyEMxuaYZR4Eh
-         e/dPT0LfQKc3rhs1ecTB5bYJ6TmrV5ieiYhVxI7JPTpTGihDyjRE4yN+sMbyXSp/n3Od
-         xDM7N6lz1kuID1ZiWfq6AbrltRJcrrDPsstz77t8Tt9m/PLz8+0+K1bHwsMAmzYO7XAL
-         VwMf5eXgKCR5QFWc5DQMP1KcVIr1dEE4CpNAhmaepYgbo+6qYZAFDwMIuxK+l0SocuqG
-         uDZw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=Px6CF6fv6xR+35dat/DxPNwYvbDtyDvPg05jiglxqHo=;
-        b=PGCxZxJBDr5/DY52+3aefO2d5L1uNp98eV1hXPYkNkJY+VUIvNBSYWS4o+6zG0l5Ye
-         VL7z5UHN+54vkcJI0F8j9UIAyudA3lrhuH88WzpfnswtOiXvCFJwLOjGStTYMx27dkn3
-         AsA13ZasaUby8E3pVA3n1PbxsbXgl2p81Gf6qVdhpL4sWLDBFzIbMPEPsOCJzDiBMeHn
-         DiUWZT78JoP9Y6JtRFUvsEV1HmvkMPAMleN2UmIWGNXLZdtM5oL3nKa6M6nX5g3ovbmW
-         BD+NylFl+IL9O/TQ0QqpT3ceMxVHjD+nTTRJ0Q+8dKVMPnfRJJx9XQoIec3lMkMBqQC4
-         tlQw==
-X-Gm-Message-State: AOAM532Laa84gW8mZLH6Wg7J4wIH/FLNJJhodlvUNZTYkPWR6Q1YWgnT
-        eyW/nJgf22DyGeT3z0kAVI+jOOfYOZ/cB+tohVbHTrJs
-X-Google-Smtp-Source: ABdhPJw2/aAif+cw1cOCoxEPWlSpAJpqfBsICX3q/4D0m/Y8pYvDWo199NfaorEeB5AXGLea5ruD4DyJe74ZkGuHv4c=
-X-Received: by 2002:a17:906:158c:: with SMTP id k12mr5319479ejd.119.1611713845382;
- Tue, 26 Jan 2021 18:17:25 -0800 (PST)
+        id S239127AbhA0EbN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jan 2021 23:31:13 -0500
+Received: from mail.kernel.org ([198.145.29.99]:57216 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231454AbhA0C7m (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 26 Jan 2021 21:59:42 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 75EC6206A4;
+        Wed, 27 Jan 2021 02:18:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1611713925;
+        bh=rMwC+sIYbUx69G3qjpCRxqAXW+BSUyEW4rv49e7Clwg=;
+        h=From:To:Cc:Subject:Date:From;
+        b=AiPzDU2EKihX4RYnCp/bpaz3e/l2uC+ZZf2v0VvYP0CBQK19c3rlGAnG1zKxQuR2c
+         q3N+OQPZMSE4gdxJZ5iWiEjs1s1DkxTVozFD/3wIQkoJD269K5jc9V2Tay2IIQ53ul
+         dTg9Kie6HQ9/FDTnG0jtJCrkpsBdMkZ+vDf4OdQCfdwq6tIMob2/DJmMUSAqJBb3nd
+         M20tXIrJ6haXR76t7ZndoMSAlM8jqC9u4W3AfXzFiNmwF5Sa/5pl2hgfBI+Oy3EOxM
+         6MuyAtNcpSqGUCrekz3wE30UcCZm52KO5u+YhwWjSCIQCKhLpcCZX9pE+IfMWedMw/
+         4jHbMx2ktLUiw==
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     davem@davemloft.net
+Cc:     netdev@vger.kernel.org, j.vosburgh@gmail.com, vfalico@gmail.com,
+        andy@greyhouse.net, Jakub Kicinski <kuba@kernel.org>
+Subject: [PATCH net] MAINTAINERS: add missing header for bonding
+Date:   Tue, 26 Jan 2021 18:18:44 -0800
+Message-Id: <20210127021844.4071706-1-kuba@kernel.org>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-References: <20210126115854.2530-1-qiangqing.zhang@nxp.com>
- <20210126115854.2530-3-qiangqing.zhang@nxp.com> <CAF=yD-JEU2oSy11y47TvgTr-XHRNq7ar=j=5w+14EUSyLj7xHA@mail.gmail.com>
- <DB8PR04MB6795C4AFFBC2CC1FB189F1FBE6BB0@DB8PR04MB6795.eurprd04.prod.outlook.com>
-In-Reply-To: <DB8PR04MB6795C4AFFBC2CC1FB189F1FBE6BB0@DB8PR04MB6795.eurprd04.prod.outlook.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Tue, 26 Jan 2021 21:16:48 -0500
-Message-ID: <CAF=yD-LFvdfE3kwt3=CNJ5iy7tGLkbk3Ytg8NAESd6v4H+Gn+w@mail.gmail.com>
-Subject: Re: [PATCH V3 2/6] net: stmmac: stop each tx channel independently
-To:     Joakim Zhang <qiangqing.zhang@nxp.com>
-Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        dl-linux-imx <linux-imx@nxp.com>, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 26, 2021 at 8:44 PM Joakim Zhang <qiangqing.zhang@nxp.com> wrot=
-e:
->
->
-> > -----Original Message-----
-> > From: Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-> > Sent: 2021=E5=B9=B41=E6=9C=8827=E6=97=A5 7:10
-> > To: Joakim Zhang <qiangqing.zhang@nxp.com>
-> > Cc: Giuseppe Cavallaro <peppe.cavallaro@st.com>; Alexandre Torgue
-> > <alexandre.torgue@st.com>; Jose Abreu <joabreu@synopsys.com>; David
-> > Miller <davem@davemloft.net>; Jakub Kicinski <kuba@kernel.org>; Network
-> > Development <netdev@vger.kernel.org>; dl-linux-imx <linux-imx@nxp.com>;
-> > Andrew Lunn <andrew@lunn.ch>; Florian Fainelli <f.fainelli@gmail.com>
-> > Subject: Re: [PATCH V3 2/6] net: stmmac: stop each tx channel independe=
-ntly
-> >
-> > On Tue, Jan 26, 2021 at 7:03 AM Joakim Zhang <qiangqing.zhang@nxp.com>
-> > wrote:
-> > >
-> > > If clear GMAC_CONFIG_TE bit, it would stop all tx channels, but users
-> > > may only want to stop secific tx channel.
-> >
-> > secific -> specific
->
-> Thanks. Will correct it.
->
-> > >
-> > > Fixes: 48863ce5940f ("stmmac: add DMA support for GMAC 4.xx")
-> > > Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
-> > > ---
-> > >  drivers/net/ethernet/stmicro/stmmac/dwmac4_lib.c | 4 ----
-> > >  1 file changed, 4 deletions(-)
-> > >
-> > > diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_lib.c
-> > > b/drivers/net/ethernet/stmicro/stmmac/dwmac4_lib.c
-> > > index 0b4ee2dbb691..71e50751ef2d 100644
-> > > --- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_lib.c
-> > > +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_lib.c
-> > > @@ -53,10 +53,6 @@ void dwmac4_dma_stop_tx(void __iomem *ioaddr,
-> > u32
-> > > chan)
-> > >
-> > >         value &=3D ~DMA_CONTROL_ST;
-> > >         writel(value, ioaddr + DMA_CHAN_TX_CONTROL(chan));
-> > > -
-> > > -       value =3D readl(ioaddr + GMAC_CONFIG);
-> > > -       value &=3D ~GMAC_CONFIG_TE;
-> > > -       writel(value, ioaddr + GMAC_CONFIG);
-> >
-> > Is it safe to partially unwind the actions of dwmac4_dma_start_tx
-> >
-> > And would the same reasoning apply to dwmac4_(dma_start|stop)_rx?
->
-> Sorry, I am not quite understand what you means.
->
-> What this patch did is to align to dwmac4_(dma_start|stop)_rx.
->
-> dwmac4_dma_start_rx: assert DMA_CONTROL_SR bit for each channel, and asse=
-rt GMAC_CONFIG_RE bit which targets all channels.
-> dwmac4_dma_stop_rx: only need clear DMA_CONTROL_SR bit for each channel.
->
-> After this patch applied:
-> dwmac4_dma_start_tx: assert DMA_CONTROL_ST bit for each channel, and asse=
-rt GMAC_CONFIG_TE bit which targets all channels.
-> dwmac4_dma_stop_tx: only need clear DMA_CONTROL_ST bit for each channel.
+include/net/bonding.h is missing from bonding entry.
 
-Oh indeed. Sorry, I should have seen that it exactly brings the tx
-logic into agreement with rx. Thanks.
+Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+---
+ MAINTAINERS | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 8f68b591be57..4deef5791101 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -3239,6 +3239,7 @@ L:	netdev@vger.kernel.org
+ S:	Supported
+ W:	http://sourceforge.net/projects/bonding/
+ F:	drivers/net/bonding/
++F:	include/net/bonding.h
+ F:	include/uapi/linux/if_bonding.h
+ 
+ BOSCH SENSORTEC BMA400 ACCELEROMETER IIO DRIVER
+-- 
+2.26.2
+
