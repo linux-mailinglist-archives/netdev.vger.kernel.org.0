@@ -2,112 +2,174 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 38AA2305816
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 11:18:45 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 03D87305859
+	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 11:26:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235761AbhA0KSE convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 27 Jan 2021 05:18:04 -0500
-Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:40593 "EHLO
-        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235732AbhA0KPx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 05:15:53 -0500
-Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
- TLS) by relay.mimecast.com with ESMTP id
- uk-mta-29-zmoLVMLnMvui0pT--GB9Ew-1; Wed, 27 Jan 2021 10:14:12 +0000
-X-MC-Unique: zmoLVMLnMvui0pT--GB9Ew-1
-Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
- AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
- Server (TLS) id 15.0.1347.2; Wed, 27 Jan 2021 10:14:10 +0000
-Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
- AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
- Wed, 27 Jan 2021 10:14:10 +0000
-From:   David Laight <David.Laight@ACULAB.COM>
-To:     'Xie He' <xie.he.0141@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "linux-x25@vger.kernel.org" <linux-x25@vger.kernel.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Martin Schiller <ms@dev.tdt.de>,
-        "Krzysztof Halasa" <khc@pm.waw.pl>
-Subject: RE: [PATCH net] net: hdlc_x25: Use qdisc to queue outgoing LAPB
- frames
-Thread-Topic: [PATCH net] net: hdlc_x25: Use qdisc to queue outgoing LAPB
- frames
-Thread-Index: AQHW9I1sli8DbRQswEiQZfQBLL+Jnqo7Omkg
-Date:   Wed, 27 Jan 2021 10:14:10 +0000
-Message-ID: <77971dffcff441c3ad3d257825dc214b@AcuMS.aculab.com>
-References: <20210127090747.364951-1-xie.he.0141@gmail.com>
-In-Reply-To: <20210127090747.364951-1-xie.he.0141@gmail.com>
-Accept-Language: en-GB, en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.202.205.107]
+        id S235858AbhA0K0G (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 05:26:06 -0500
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:52762 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S235739AbhA0KY2 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 05:24:28 -0500
+Received: from Internal Mail-Server by MTLPINE1 (envelope-from cmi@nvidia.com)
+        with SMTP; 27 Jan 2021 12:17:00 +0200
+Received: from dev-r630-03.mtbc.labs.mlnx (dev-r630-03.mtbc.labs.mlnx [10.75.205.13])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 10RAGwiM002108;
+        Wed, 27 Jan 2021 12:16:58 +0200
+From:   Chris Mi <cmi@nvidia.com>
+To:     netdev@vger.kernel.org
+Cc:     kuba@kernel.org, jiri@nvidia.com, saeedm@nvidia.com,
+        Chris Mi <cmi@nvidia.com>, kernel test robot <lkp@intel.com>
+Subject: [PATCH net-next v3] net: psample: Introduce stubs to remove NIC driver dependency
+Date:   Wed, 27 Jan 2021 18:16:48 +0800
+Message-Id: <20210127101648.513562-1-cmi@nvidia.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Authentication-Results: relay.mimecast.com;
-        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
-X-Mimecast-Spam-Score: 0
-X-Mimecast-Originator: aculab.com
-Content-Language: en-US
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Xie He
-> Sent: 27 January 2021 09:08
-> 
-> An HDLC hardware driver may call netif_stop_queue to temporarily stop
-> the TX queue when the hardware is busy sending a frame, and after the
-> hardware has finished sending the frame, call netif_wake_queue to
-> resume the TX queue.
-> 
-> However, the LAPB module doesn't know about this. Whether or not the
-> hardware driver has stopped the TX queue, the LAPB module still feeds
-> outgoing frames to the hardware driver for transmission. This can cause
-> frames to be dropped by the hardware driver.
-> 
-> It's not easy to fix this issue in the LAPB module. We can indeed let the
-> LAPB module check whether the TX queue has been stopped before feeding
-> each frame to the hardware driver, but when the hardware driver resumes
-> the TX queue, it's not easy to immediately notify the LAPB module and ask
-> it to resume transmission.
-> 
-> Instead, we can fix this issue at the hdlc_x25 layer, by using qdisc TX
-> queues to queue outgoing LAPB frames. The qdisc TX queue will then
-> automatically be controlled by netif_stop_queue and netif_wake_queue.
-> 
-> This way, when sending, we will use the qdisc queue to queue and send
-> the data twice: once as the L3 packet and then (after processed by the
-> LAPB module) as an LAPB (L2) frame. This does not make the logic of the
-> code messy, because when receiving, data are already "received" on the
-> device twice: once as an LAPB (L2) frame and then (after processed by
-> the LAPB module) as the L3 packet.
+In order to send sampled packets to userspace, NIC driver calls
+psample api directly. But it creates a hard dependency on module
+psample. Introduce psample_ops to remove the hard dependency.
+It is initialized when psample module is loaded and set to NULL
+when the module is unloaded.
 
-If I read this correctly it adds a (potentially big) queue between the
-LAPB code that adds the sequence numbers to the frames and the hardware
-that actually sends them.
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Chris Mi <cmi@nvidia.com>
+Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+---
+v1->v2:
+ - fix sparse errors
+v2->v3:
+ - remove inline
 
-IIRC [1] there is a general expectation that the NR in a transmitted frame
-will be the same as the last received NS unless acks are being delayed
-for flow control reasons.
+ include/net/psample.h    | 27 +++++++++++++++++++++++++++
+ net/psample/psample.c    | 13 ++++++++++++-
+ net/sched/Makefile       |  2 +-
+ net/sched/psample_stub.c |  7 +++++++
+ 4 files changed, 47 insertions(+), 2 deletions(-)
+ create mode 100644 net/sched/psample_stub.c
 
-You definitely want to be able to ack a received frame while transmitting
-back-to-back I-frames.
-
-This really means that you only want 2 frames in the hardware driver.
-The one being transmitted and the next one - so it gets sent with a
-shared flag.
-There is no point sending an RR unless the hardware link is actually idle.
-
-[1] I've been doing to much SS7 MTP2 recently, I can't quite remember
-all of LAPB!
-
-	David
-
--
-Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
-Registration No: 1397386 (Wales)
+diff --git a/include/net/psample.h b/include/net/psample.h
+index 68ae16bb0a4a..e6a73128de59 100644
+--- a/include/net/psample.h
++++ b/include/net/psample.h
+@@ -4,6 +4,7 @@
+ 
+ #include <uapi/linux/psample.h>
+ #include <linux/list.h>
++#include <linux/skbuff.h>
+ 
+ struct psample_group {
+ 	struct list_head list;
+@@ -14,6 +15,15 @@ struct psample_group {
+ 	struct rcu_head rcu;
+ };
+ 
++struct psample_ops {
++	void (*sample_packet)(struct psample_group *group, struct sk_buff *skb,
++			      u32 trunc_size, int in_ifindex, int out_ifindex,
++			      u32 sample_rate);
++
++};
++
++extern const struct psample_ops __rcu *psample_ops __read_mostly;
++
+ struct psample_group *psample_group_get(struct net *net, u32 group_num);
+ void psample_group_take(struct psample_group *group);
+ void psample_group_put(struct psample_group *group);
+@@ -35,4 +45,21 @@ static inline void psample_sample_packet(struct psample_group *group,
+ 
+ #endif
+ 
++static void
++psample_nic_sample_packet(struct psample_group *group,
++			  struct sk_buff *skb, u32 trunc_size,
++			  int in_ifindex, int out_ifindex,
++			  u32 sample_rate)
++{
++	const struct psample_ops *ops;
++
++	rcu_read_lock();
++	ops = rcu_dereference(psample_ops);
++	if (ops)
++		ops->sample_packet(group, skb, trunc_size,
++				   in_ifindex, out_ifindex,
++				   sample_rate);
++	rcu_read_unlock();
++}
++
+ #endif /* __NET_PSAMPLE_H */
+diff --git a/net/psample/psample.c b/net/psample/psample.c
+index 33e238c965bd..2a9fbfe09395 100644
+--- a/net/psample/psample.c
++++ b/net/psample/psample.c
+@@ -8,6 +8,7 @@
+ #include <linux/kernel.h>
+ #include <linux/skbuff.h>
+ #include <linux/module.h>
++#include <linux/rcupdate.h>
+ #include <net/net_namespace.h>
+ #include <net/sock.h>
+ #include <net/netlink.h>
+@@ -35,6 +36,10 @@ static const struct genl_multicast_group psample_nl_mcgrps[] = {
+ 
+ static struct genl_family psample_nl_family __ro_after_init;
+ 
++static const struct psample_ops psample_sample_ops = {
++	.sample_packet	= psample_sample_packet,
++};
++
+ static int psample_group_nl_fill(struct sk_buff *msg,
+ 				 struct psample_group *group,
+ 				 enum psample_command cmd, u32 portid, u32 seq,
+@@ -456,11 +461,17 @@ EXPORT_SYMBOL_GPL(psample_sample_packet);
+ 
+ static int __init psample_module_init(void)
+ {
+-	return genl_register_family(&psample_nl_family);
++	int ret;
++
++	ret = genl_register_family(&psample_nl_family);
++	if (!ret)
++		RCU_INIT_POINTER(psample_ops, &psample_sample_ops);
++	return ret;
+ }
+ 
+ static void __exit psample_module_exit(void)
+ {
++	RCU_INIT_POINTER(psample_ops, NULL);
+ 	genl_unregister_family(&psample_nl_family);
+ }
+ 
+diff --git a/net/sched/Makefile b/net/sched/Makefile
+index dd14ef413fda..0d92bb98bb26 100644
+--- a/net/sched/Makefile
++++ b/net/sched/Makefile
+@@ -3,7 +3,7 @@
+ # Makefile for the Linux Traffic Control Unit.
+ #
+ 
+-obj-y	:= sch_generic.o sch_mq.o
++obj-y	:= sch_generic.o sch_mq.o psample_stub.o
+ 
+ obj-$(CONFIG_INET)		+= sch_frag.o
+ obj-$(CONFIG_NET_SCHED)		+= sch_api.o sch_blackhole.o
+diff --git a/net/sched/psample_stub.c b/net/sched/psample_stub.c
+new file mode 100644
+index 000000000000..0615a7b64000
+--- /dev/null
++++ b/net/sched/psample_stub.c
+@@ -0,0 +1,7 @@
++// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
++/* Copyright (c) 2021 Mellanox Technologies. */
++
++#include <net/psample.h>
++
++const struct psample_ops __rcu *psample_ops __read_mostly;
++EXPORT_SYMBOL_GPL(psample_ops);
+-- 
+2.26.2
 
