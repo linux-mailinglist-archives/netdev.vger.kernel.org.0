@@ -2,176 +2,188 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F221730636E
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 19:36:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5B1E3306382
+	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 19:46:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235731AbhA0SgU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 13:36:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41372 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235034AbhA0SgS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 13:36:18 -0500
-Received: from mail-qt1-x836.google.com (mail-qt1-x836.google.com [IPv6:2607:f8b0:4864:20::836])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE285C061574
-        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 10:35:37 -0800 (PST)
-Received: by mail-qt1-x836.google.com with SMTP id z22so2158533qto.7
-        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 10:35:37 -0800 (PST)
+        id S1343980AbhA0Soy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 13:44:54 -0500
+Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:46282 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1343862AbhA0Soe (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 13:44:34 -0500
+Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
+        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 10RIa4bO012122;
+        Wed, 27 Jan 2021 10:41:35 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
+ subject : date : message-id : references : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=pfpt0220;
+ bh=F1eV2FvHGB4u1s88A+EFQX1DzSSeC/haJ572f4eNCm8=;
+ b=dgQo29jAen9mwmeC+y7pKGMG1SUEuierLnziMKsCs+5EUSxR77JYQwpGxR8Ugqx5rD60
+ lWpD6Q9abEvfNyjEBVqMM8KuswS73cOSIZ6ZYFQEYHRwDknIpemoL3aEc5/RTTz51Fym
+ 9MJx4SpM6/2NIR7XdGXDB8PBH1q1Z1X1JW6p9InwrjINh6pTgTVDzofvX4fmj8phEwN5
+ IKtadnw+ZjjEoTp6Uw5nrZobHSDLQ2Yj9asVZPzuDE8nEgLXedYM4lr7Kuw+6sRyoO3N
+ NiXx9GQgpnZgy2JjycMDFknpKesK3UdExM5TEX61zpX7h0SDMr3aYki9rsLIG8SFmMyT SQ== 
+Received: from dc5-exch02.marvell.com ([199.233.59.182])
+        by mx0b-0016f401.pphosted.com with ESMTP id 36b1xpj18h-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Wed, 27 Jan 2021 10:41:35 -0800
+Received: from SC-EXCH01.marvell.com (10.93.176.81) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 27 Jan
+ 2021 10:41:33 -0800
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by SC-EXCH01.marvell.com
+ (10.93.176.81) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 27 Jan
+ 2021 10:41:33 -0800
+Received: from NAM12-MW2-obe.outbound.protection.outlook.com (104.47.66.46) by
+ DC5-EXCH02.marvell.com (10.69.176.39) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2 via Frontend Transport; Wed, 27 Jan 2021 10:41:33 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ko8+5FnW1dyUzJBBJfi0CApJ8xAaOwKuFhkH19n48kQqekn9jfAThI5zct40gTWR1i2ROzk4NE++5+l3SiH5wcgfVCgUOIcz6/hC5Y2M1sO+RpdMGwXl0MbaWZ3EAwyq9qggoQvx2V4AUC4FvXw/jFZis/sXpFSrzx3FInUEYwKUuptHBDCl3+oajv5cFMjqLhg0pehIjXbb/gbpHoYD6lhugef9b7qHtT+6+SpoHTH5JCavN2Zzy16sEZBrkqWxHUm+vpqkjxws3TW7RkJCE/aBsebxIUyxMWi3TgTX6lAGiQdhxNTFi8XdQ5a180cM51WHLOr7zxcMp6gKuQvMig==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=F1eV2FvHGB4u1s88A+EFQX1DzSSeC/haJ572f4eNCm8=;
+ b=FtXoDrNgEoxAJW9QsBhFoIAjmRC/RU6bBkHe0MGRaTz+4Zb3BtTtuuQW18XNTOw6V86oB308eBWRLdMOKhk6aQHJkV0sEL1D2350O0txLjk46gCbVP7x3zETnQDpjazfavAsn4FcmW03gHMuicLWhrXARrPa/Cbii+XHH4p0oRthFnBN+u6UEjDEXjLLrUtKRFjKelvOb0dfwW0dOwweygl/hPDaY5ZwfrFKr+ioQlIJfXSbfYOXgT+BW1BhPeJ5wwDOZ5FtX/7FoYHz47usluA5GAscVzoNX5VVwM6w4yT2DRgKWd6mxXHiffFfEBjZw7Kb3qWV9wwGlI8Xr7CRGw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
+ dkim=pass header.d=marvell.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=44jOD3nZVoOvFATWCEVSb6OwVXBmxVqEX3xVTS4M3cs=;
-        b=XYj+X1ygiZcbLbGvnTnY1ARwHD44UNiFvk2lMHAxxIA67HguuPqfK/eD02vSMCH9xs
-         AmctZ+p+P5Qdry+s8/CuJ40CWYWfjSPlpKliOOlKImKbIk/ItQmgth6IupeQlo7PKAb+
-         n5rY+A1fWXelbYDVPdoC/0da5i7Hkh8vIUhhwvnFNwC647xQ9XLmg8Wvwhpm3r0PRCRZ
-         70n35NMzqd6SqavpEwxPU/zNsV8mE8L3ppPa9KIgF1tWlVOrg6P5x1xZN+NhBzgcXLcr
-         tQGd7Mfaruqjl2qMjuAdq4QT+ZMzQi80+TneOnpah1W1m3nxLt3KSvnanVvGAHAgIRw0
-         Xvww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=44jOD3nZVoOvFATWCEVSb6OwVXBmxVqEX3xVTS4M3cs=;
-        b=PHF1Ikm2u0qZKDDe25rWE+oS0vbdA+slnwDWjrHjTN6EuVWg1R8r7qEvyQnHbVhFIX
-         C9M/eDdYkx+rs7RxlsF3PvS0ZB9PsS4qGW6YqhDBTQkLIp/2RZSC/+cXvIXPnGWo/V2q
-         fUWIYnVUv69EzWnfLD0YnxLBsAg8vB4gMqBfgOPgkS2phIgUfHG6QqEghQnyIt0+Ha1C
-         xH1Gau0u7Zw43buB+HHAWUu6NvzQCLboCt09dh9RBE/IoCTWs/0vjJC3NtjX0AkOgIc5
-         58Qvq+NuKZ16OGUQbRvRFVkFgnFCNJLPQT/RPqQzdWVFLfL9iXdiXU/cYjajTVCJXMKs
-         VMrg==
-X-Gm-Message-State: AOAM533cgvozehSDUPXxAec9qxBicmXRzMYQTzW39iLB66J6LR3TjcSA
-        ybiOm9kwGMSLtu7kvhja+iV7ef92/R3cbsKce1HfxQ==
-X-Google-Smtp-Source: ABdhPJyyUdsHNxpiBTK5V6JVwIHLWxywC4KPQOacz+7AoBgDLvKzgLZIrFIbwC9MffmwCdTxb5aSS62z2tthMPg1GWw=
-X-Received: by 2002:a05:622a:c9:: with SMTP id p9mr10883068qtw.337.1611772536831;
- Wed, 27 Jan 2021 10:35:36 -0800 (PST)
-MIME-Version: 1.0
-References: <000000000000dfc44f05b9d2e864@google.com> <20210127054509.2187-1-hdanton@sina.com>
- <CACT4Y+aTkZZn7BCbn5HPph_9wjw6vtz5Qo6+c933Rgf-nq5BMA@mail.gmail.com> <20210127122409.8808-1-hdanton@sina.com>
-In-Reply-To: <20210127122409.8808-1-hdanton@sina.com>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Wed, 27 Jan 2021 19:35:25 +0100
-Message-ID: <CACT4Y+YKmhJ2eBe0+WmRHs_yNmuAc6r-x5FQi+QAtT=LPdS4tg@mail.gmail.com>
-Subject: Re: upstream test error: INFO: trying to register non-static key in nsim_get_stats64
-To:     Hillf Danton <hdanton@sina.com>
-Cc:     syzbot <syzbot+e74a6857f2d0efe3ad81@syzkaller.appspotmail.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        Martin KaFai Lau <kafai@fb.com>, kpsingh@kernel.org,
+ d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=F1eV2FvHGB4u1s88A+EFQX1DzSSeC/haJ572f4eNCm8=;
+ b=i0FP9SPQcZRdl2/o8L6DNwBse76vmvgRqx6EjVl4w/qiCE+8TPqMFV7xS7fjIUAPSQSyYH0GAC1m9Ujz+e9KXFfKCAgCb6t0aXtUrZXJyXch6Ng78/SC1UAJF4Ws6QKE5mELLf4KFLR2zWsjp4Amb2uXxXdmUKGGKrReZmTk0IY=
+Received: from CO6PR18MB3873.namprd18.prod.outlook.com (2603:10b6:5:350::23)
+ by MW2PR18MB2313.namprd18.prod.outlook.com (2603:10b6:907:8::24) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3784.16; Wed, 27 Jan
+ 2021 18:41:32 +0000
+Received: from CO6PR18MB3873.namprd18.prod.outlook.com
+ ([fe80::c041:1c61:e57:349a]) by CO6PR18MB3873.namprd18.prod.outlook.com
+ ([fe80::c041:1c61:e57:349a%3]) with mapi id 15.20.3805.017; Wed, 27 Jan 2021
+ 18:41:32 +0000
+From:   Stefan Chulski <stefanc@marvell.com>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+CC:     Network Development <netdev@vger.kernel.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        David Miller <davem@davemloft.net>,
+        "Nadav Haklai" <nadavh@marvell.com>,
+        Yan Markman <ymarkman@marvell.com>,
         LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+        Jakub Kicinski <kuba@kernel.org>,
+        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
+        "mw@semihalf.com" <mw@semihalf.com>, Andrew Lunn <andrew@lunn.ch>,
+        "rmk+kernel@armlinux.org.uk" <rmk+kernel@armlinux.org.uk>,
+        Antoine Tenart <atenart@kernel.org>
+Subject: RE: [EXT] Re: [PATCH v4 net-next 10/19] net: mvpp2: add FCA RXQ non
+ occupied descriptor threshold
+Thread-Topic: [EXT] Re: [PATCH v4 net-next 10/19] net: mvpp2: add FCA RXQ non
+ occupied descriptor threshold
+Thread-Index: AQHW9KHKRTr9gNuU/E+NGMKVxzHzZ6o7vLQAgAAPqcA=
+Date:   Wed, 27 Jan 2021 18:41:32 +0000
+Message-ID: <CO6PR18MB3873573FA21D4B82A32948B3B0BB9@CO6PR18MB3873.namprd18.prod.outlook.com>
+References: <1611747815-1934-1-git-send-email-stefanc@marvell.com>
+ <1611747815-1934-11-git-send-email-stefanc@marvell.com>
+ <CAF=yD-Lohx+1DRijK5=qgTj0uctBkS-Loh20zrMF7_Ditb2+pQ@mail.gmail.com>
+In-Reply-To: <CAF=yD-Lohx+1DRijK5=qgTj0uctBkS-Loh20zrMF7_Ditb2+pQ@mail.gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: gmail.com; dkim=none (message not signed)
+ header.d=none;gmail.com; dmarc=none action=none header.from=marvell.com;
+x-originating-ip: [80.230.11.87]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: d26294b7-2a38-4fa7-f80c-08d8c2f32acf
+x-ms-traffictypediagnostic: MW2PR18MB2313:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <MW2PR18MB2313F354F6EDBE7EEE2A53E3B0BB9@MW2PR18MB2313.namprd18.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: hF//4l9fHTvVT56N2WTnH4fdMLvPlflOGVHDYpbpo5PDyXWjCkL4WSQTCtho6wsA4D/z3tpdA5OzsFBhEutlmzJ21jVK/8/6hk01teYdJIxpMBDXyqgJEyQxr7joBrCIdC4TDahpi5sAdmuuWZFrg3si9NVzsuqkAztolzO9CAQUufcjgRBU09qyE5bmfr31+u5iCTpBqY45gaLlcXpMdVzbMPsmhGsVuZcG/oGmmaqeb/xCsjwY3GJ3y3ooIUUtBWAsvnqhiZyOvKhkpvxo0O03Wlk7mSXcqw7/k1AndyMnZnvHjpn98x8+KuJWgmCObLSMPU864Cc+qQzXdbE/t/Yu/uesrLA6HPMFXTiSbSqIP4K5wt5DJEzV9qNhfJIVzv5Jy/Zccvymba/jpUS2fkDQQ66u0y4yC9z1CQwmuS2RqH+D23MM0TKa/cBMeW1UGakDEjtBN30BtwMfj+ZDRRULdFMSr9E8ozuNXtC0R6ndPxGXQekq46gyYnqpHkF3maYracSaG0aIQL8E7BjT0w==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO6PR18MB3873.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(376002)(366004)(396003)(39860400002)(346002)(136003)(5660300002)(6916009)(33656002)(52536014)(8936002)(7416002)(8676002)(7696005)(54906003)(83380400001)(26005)(6506007)(316002)(66446008)(71200400001)(186003)(4326008)(76116006)(9686003)(55016002)(64756008)(66556008)(2906002)(66476007)(66946007)(478600001)(86362001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: =?utf-8?B?VWV5Qm5oVGoyY0NIUmZaa3NZTWg2cjIvcTYreDBQQTJ4SVVjbFRNYnRnQjdj?=
+ =?utf-8?B?ZTRZT3IxdTAxWEMwT1VEc1RlNk1UTkt5RUNwWHUyS24yOHN1WTZuZ0tlL1Bj?=
+ =?utf-8?B?UEM0dytmUElQbHBaQzhJL1EwNEFpdFNQTTdEK0JiVm41bDhMWE42UGU4ZWRr?=
+ =?utf-8?B?bFNFSjJnc0NtTEVTaGpyMTMrcjhhRlVMUmJ3QXhDMXkxNVNucWRLc0s2dWx3?=
+ =?utf-8?B?ZytFWWZyci92cnB3K29zaHQreHM3YzRlZTIva0dsS0g5dmgrVXFiTG1TV2Rs?=
+ =?utf-8?B?Vkg5MTdrMGtIYVIwYXQveXBRenFKZFFtSy83eUw1RnFiWHAzSlBlOVhKaG5l?=
+ =?utf-8?B?d3VPbUtZMGVwY0l1S0twS1BuK3F4WHFZbVVIOFNrS0FhTC9OeEJhN09zMWIw?=
+ =?utf-8?B?eC9HeGt1YnlPQ1R1TDh4RG9rbDhxZWJWcVM4d3YrZmY5REVQWS9mNld5dFZI?=
+ =?utf-8?B?TWJDYlc4M09zbDZuN0J1M3FwejlxSDVHLy9xOUFsWllVKzNxNHcycXpnaTMz?=
+ =?utf-8?B?eG1mZkN3WmR2a2I0L0RVUCtHaDBDMWpsV25tV3hhM0ZLcHBNd1NFeURud053?=
+ =?utf-8?B?UVBTa1FLQXRCTXRXV0hGeFZ5a1R1YXhXYlpKbG91M1NzVlRFclRaSGZwSzFU?=
+ =?utf-8?B?QmFIcUNDSEdNTnJxcW1KV2NjQ0VIQUM5YWVOcmpCeUdVSkJ4K3hEZ01tUUh3?=
+ =?utf-8?B?ellkWGxBb0FqdUhFR1lNZG5ORHlpMGFzdXh1Qk5ZQkQxeEZEUzUwTGM3V1RZ?=
+ =?utf-8?B?WTJLZ1BpVE40MWZMT3FsUXNIblZXU3Nad1NUM25oc2dKTnF1YlB0R1F6Tk9F?=
+ =?utf-8?B?YjEreEJxVG84dnFrVzd1RzRsWFRLaVArWlNubHRWSjJDMHlxMjhqdnNsS1VN?=
+ =?utf-8?B?akNhL1ovN0p2dXB4bmxWTUVDVEdwNEN1Z3ZWY01ONkowL1dqejJNM2Z3cmxB?=
+ =?utf-8?B?eUFUNmRLcHpSMlZKZHBDc0JLMmE2QUFpT0Rxa2h3dXVVSXVOdVFLNFZDTmVS?=
+ =?utf-8?B?czB1czVpeDdBWmNoL0t6dnZaUGJqRkJvSlNxZ1M4bUFtdExGaHNhK1ZPZE50?=
+ =?utf-8?B?dzcwazEvMFplcXgzcXE4Zkt2akZzQ3M1bnhaZC9VNEdNaEx2akhQU1hJdjFp?=
+ =?utf-8?B?QS84WFlycDhSdk1OZEErU2N6Q1FSelNJUGxOM0FXNHRYYzVpdit2dmkzVDEw?=
+ =?utf-8?B?VEpZemh6YUplU1pXZ2MyemU1M0pablhVeTZVMnNoNU5RUGRIbmNYZ1J6eVVZ?=
+ =?utf-8?B?T3lUMDA4b3NYbnM1RUJKUER5YStLaXd3NXYwOTlMc2hKeGcxcGF1SU1kSks1?=
+ =?utf-8?B?TlNCM0Q5cmVFdUlvSysvRnRrVkl0cTFTbkZ0eUxraHlSaWNhQW5KSSsvRzBy?=
+ =?utf-8?B?MjByZlJXdGt5SEViVk4rOXRLS3JMUUVBZ2MrMEduRGUwWmQwQmRVY0hrQ1Vs?=
+ =?utf-8?Q?v/5TQ7na?=
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: CO6PR18MB3873.namprd18.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: d26294b7-2a38-4fa7-f80c-08d8c2f32acf
+X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Jan 2021 18:41:32.3113
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: Yy3MOuC9/2dZDdCWZO5nQ8Nw6YEJi4XZ9KKSEGd1PICQ72Gq9rD2fwjS3ZtRtWMxCQFrSnoGAcEXzDsqvzEgvg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW2PR18MB2313
+X-OriginatorOrg: marvell.com
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
+ definitions=2021-01-27_06:2021-01-27,2021-01-27 signatures=0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 27, 2021 at 1:24 PM Hillf Danton <hdanton@sina.com> wrote:
->
-> On Wed, 27 Jan 2021 10:07:24 +0100 Dmitry Vyukov <dvyukov@google.com> wrote:
-> >On Wed, Jan 27, 2021 at 6:45 AM Hillf Danton <hdanton@sina.com> wrote:
-> >>
-> >> Tue, 26 Jan 2021 11:46:24 -0800
-> >> > syzbot found the following issue on:
-> >> >
-> >> > HEAD commit:    c7230a48 Merge tag 'spi-fix-v5.11-rc5' of git://git.kernel..
-> >> > git tree:       upstream
-> >> > console output: https://syzkaller.appspot.com/x/log.txt?x=17731f94d00000
-> >> > kernel config:  https://syzkaller.appspot.com/x/.config?x=9c312983a0475388
-> >> > dashboard link: https://syzkaller.appspot.com/bug?extid=e74a6857f2d0efe3ad81
-> >> > userspace arch: arm
-> >> >
-> >> > IMPORTANT: if you fix the issue, please add the following tag to the commit:
-> >> > Reported-by: syzbot+e74a6857f2d0efe3ad81@syzkaller.appspotmail.com
-> >> >
-> >> > batman_adv: batadv0: Not using interface batadv_slave_1 (retrying later): interface not active
-> >> > device hsr_slave_0 entered promiscuous mode
-> >> > device hsr_slave_1 entered promiscuous mode
-> >> >
-> >> > INFO: trying to register non-static key.
-> >> > the code is fine but needs lockdep annotation.
-> >> > turning off the locking correctness validator.
-> >> > CPU: 0 PID: 4695 Comm: syz-executor.0 Not tainted 5.11.0-rc5-syzkaller #0
-> >> > Hardware name: ARM-Versatile Express
-> >> > Backtrace:
-> >> > [<826fc5b8>] (dump_backtrace) from [<826fc82c>] (show_stack+0x18/0x1c arch/arm/kernel/traps.c:252)
-> >> > [<826fc814>] (show_stack) from [<8270d1f8>] (__dump_stack lib/dump_stack.c:79 [inline])
-> >> > [<826fc814>] (show_stack) from [<8270d1f8>] (dump_stack+0xa8/0xc8 lib/dump_stack.c:120)
-> >> > [<8270d150>] (dump_stack) from [<802bf9c0>] (assign_lock_key kernel/locking/lockdep.c:935 [inline])
-> >> > [<8270d150>] (dump_stack) from [<802bf9c0>] (register_lock_class+0xabc/0xb68 kernel/locking/lockdep.c:1247)
-> >> > [<802bef04>] (register_lock_class) from [<802baa2c>] (__lock_acquire+0x84/0x32d4 kernel/locking/lockdep.c:4711)
-> >> > [<802ba9a8>] (__lock_acquire) from [<802be840>] (lock_acquire.part.0+0xf0/0x554 kernel/locking/lockdep.c:5442)
-> >> > [<802be750>] (lock_acquire.part.0) from [<802bed10>] (lock_acquire+0x6c/0x74 kernel/locking/lockdep.c:5415)
-> >> > [<802beca4>] (lock_acquire) from [<81560548>] (seqcount_lockdep_reader_access include/linux/seqlock.h:103 [inline])
-> >> > [<802beca4>] (lock_acquire) from [<81560548>] (__u64_stats_fetch_begin include/linux/u64_stats_sync.h:164 [inline])
-> >> > [<802beca4>] (lock_acquire) from [<81560548>] (u64_stats_fetch_begin include/linux/u64_stats_sync.h:175 [inline])
-> >> > [<802beca4>] (lock_acquire) from [<81560548>] (nsim_get_stats64+0xdc/0xf0 drivers/net/netdevsim/netdev.c:70)
-> >> > [<8156046c>] (nsim_get_stats64) from [<81e2efa0>] (dev_get_stats+0x44/0xd0 net/core/dev.c:10405)
-> >> > [<81e2ef5c>] (dev_get_stats) from [<81e53204>] (rtnl_fill_stats+0x38/0x120 net/core/rtnetlink.c:1211)
-> >> > [<81e531cc>] (rtnl_fill_stats) from [<81e59d58>] (rtnl_fill_ifinfo+0x6d4/0x148c net/core/rtnetlink.c:1783)
-> >> > [<81e59684>] (rtnl_fill_ifinfo) from [<81e5ceb4>] (rtmsg_ifinfo_build_skb+0x9c/0x108 net/core/rtnetlink.c:3798)
-> >> > [<81e5ce18>] (rtmsg_ifinfo_build_skb) from [<81e5d0ac>] (rtmsg_ifinfo_event net/core/rtnetlink.c:3830 [inline])
-> >> > [<81e5ce18>] (rtmsg_ifinfo_build_skb) from [<81e5d0ac>] (rtmsg_ifinfo_event net/core/rtnetlink.c:3821 [inline])
-> >> > [<81e5ce18>] (rtmsg_ifinfo_build_skb) from [<81e5d0ac>] (rtmsg_ifinfo+0x44/0x70 net/core/rtnetlink.c:3839)
-> >> > [<81e5d068>] (rtmsg_ifinfo) from [<81e45c2c>] (register_netdevice+0x664/0x68c net/core/dev.c:10103)
-> >> > [<81e455c8>] (register_netdevice) from [<815608bc>] (nsim_create+0xf8/0x124 drivers/net/netdevsim/netdev.c:317)
-> >> > [<815607c4>] (nsim_create) from [<81561184>] (__nsim_dev_port_add+0x108/0x188 drivers/net/netdevsim/dev.c:941)
-> >> > [<8156107c>] (__nsim_dev_port_add) from [<815620d8>] (nsim_dev_port_add_all drivers/net/netdevsim/dev.c:990 [inline])
-> >> > [<8156107c>] (__nsim_dev_port_add) from [<815620d8>] (nsim_dev_probe+0x5cc/0x750 drivers/net/netdevsim/dev.c:1119)
-> >> > [<81561b0c>] (nsim_dev_probe) from [<815661dc>] (nsim_bus_probe+0x10/0x14 drivers/net/netdevsim/bus.c:287)
-> >> > [<815661cc>] (nsim_bus_probe) from [<811724c0>] (really_probe+0x100/0x50c drivers/base/dd.c:554)
-> >> > [<811723c0>] (really_probe) from [<811729c4>] (driver_probe_device+0xf8/0x1c8 drivers/base/dd.c:740)
-> >> > [<811728cc>] (driver_probe_device) from [<81172fe4>] (__device_attach_driver+0x8c/0xf0 drivers/base/dd.c:846)
-> >> > [<81172f58>] (__device_attach_driver) from [<8116fee0>] (bus_for_each_drv+0x88/0xd8 drivers/base/bus.c:431)
-> >> > [<8116fe58>] (bus_for_each_drv) from [<81172c6c>] (__device_attach+0xdc/0x1d0 drivers/base/dd.c:914)
-> >> > [<81172b90>] (__device_attach) from [<8117305c>] (device_initial_probe+0x14/0x18 drivers/base/dd.c:961)
-> >> > [<81173048>] (device_initial_probe) from [<81171358>] (bus_probe_device+0x90/0x98 drivers/base/bus.c:491)
-> >> > [<811712c8>] (bus_probe_device) from [<8116e77c>] (device_add+0x320/0x824 drivers/base/core.c:3109)
-> >> > [<8116e45c>] (device_add) from [<8116ec9c>] (device_register+0x1c/0x20 drivers/base/core.c:3182)
-> >> > [<8116ec80>] (device_register) from [<81566710>] (nsim_bus_dev_new drivers/net/netdevsim/bus.c:336 [inline])
-> >> > [<8116ec80>] (device_register) from [<81566710>] (new_device_store+0x178/0x208 drivers/net/netdevsim/bus.c:215)
-> >> > [<81566598>] (new_device_store) from [<8116fcb4>] (bus_attr_store+0x2c/0x38 drivers/base/bus.c:122)
-> >> > [<8116fc88>] (bus_attr_store) from [<805b4b8c>] (sysfs_kf_write+0x48/0x54 fs/sysfs/file.c:139)
-> >> > [<805b4b44>] (sysfs_kf_write) from [<805b3c90>] (kernfs_fop_write_iter+0x128/0x1ec fs/kernfs/file.c:296)
-> >> > [<805b3b68>] (kernfs_fop_write_iter) from [<804d22fc>] (call_write_iter include/linux/fs.h:1901 [inline])
-> >> > [<805b3b68>] (kernfs_fop_write_iter) from [<804d22fc>] (new_sync_write fs/read_write.c:518 [inline])
-> >> > [<805b3b68>] (kernfs_fop_write_iter) from [<804d22fc>] (vfs_write+0x3dc/0x57c fs/read_write.c:605)
-> >> > [<804d1f20>] (vfs_write) from [<804d2604>] (ksys_write+0x68/0xec fs/read_write.c:658)
-> >> > [<804d259c>] (ksys_write) from [<804d2698>] (__do_sys_write fs/read_write.c:670 [inline])
-> >> > [<804d259c>] (ksys_write) from [<804d2698>] (sys_write+0x10/0x14 fs/read_write.c:667)
-> >> > [<804d2688>] (sys_write) from [<80200060>] (ret_fast_syscall+0x0/0x2c arch/arm/mm/proc-v7.S:64)
-> >>
-> >> Init u64 stats for aa32.
-> >>
-> >>
-> >> --- a/drivers/net/netdevsim/netdev.c
-> >> +++ b/drivers/net/netdevsim/netdev.c
-> >> @@ -296,6 +296,7 @@ nsim_create(struct nsim_dev *nsim_dev, s
-> >>         dev_net_set(dev, nsim_dev_net(nsim_dev));
-> >>         ns = netdev_priv(dev);
-> >>         ns->netdev = dev;
-> >> +       u64_stats_init(&ns->syncp);
-> >>         ns->nsim_dev = nsim_dev;
-> >>         ns->nsim_dev_port = nsim_dev_port;
-> >>         ns->nsim_bus_dev = nsim_dev->nsim_bus_dev;
-> >
-> >Hi Hillf,
-> >
-> Hi Dmitry,
->
-> >Thanks for looking into it.
-> >This would be good to fix asap upstream because it boot-breaks 32-bit
-> >arches (arm32). Do you mind sending a proper patch?
-> >
-> I'd like to do that but the barrier is, you see,
->
-> 1/ I could not test it because I dont have (or access to) such a device,
-> 2/ if the diff makes sense, anyone can feel free to prepare a patch and
-> send it out to the maintainer because I prefer Cc much more than sob.
->
-> That is it. Simple and pure.
-
-I've run syzkaller with this patch and the warning goes away, so you may add:
-Tested-by: Dmitry Vyukov <dvyukov@google.com>
-
-Just in case, syzbot uses qemu-system-arm to test arm32 on x86_64. So
-if you have a typical x86_64 machine, you may test this. I will
-document more details soon.
+DQogPg0KPiA+IEZyb206IFN0ZWZhbiBDaHVsc2tpIDxzdGVmYW5jQG1hcnZlbGwuY29tPg0KPiA+
+DQo+ID4gUlhRIG5vbiBvY2N1cGllZCBkZXNjcmlwdG9yIHRocmVzaG9sZCB3b3VsZCBiZSB1c2Vk
+IGJ5IEZsb3cgQ29udHJvbA0KPiA+IEZpcm13YXJlIGZlYXR1cmUgdG8gbW92ZSB0byB0aGUgWE9G
+RiBtb2RlLg0KPiA+IFJYUSBub24gb2NjdXBpZWQgdGhyZXNob2xkIHdvdWxkIGNoYW5nZSBpbnRl
+cnJ1cHQgY2F1c2UgdGhhdCBwb2xsZWQgYnkNCj4gPiBDTTMgRmlybXdhcmUuDQo+ID4gQWN0dWFs
+IG5vbiBvY2N1cGllZCBpbnRlcnJ1cHQgbWFza2VkIGFuZCB3b24ndCB0cmlnZ2VyIGludGVycnVw
+dC4NCj4gDQo+IERvZXMgdGhpcyBtZWFuIHRoYXQgdGhpcyBjaGFuZ2UgZW5hYmxlcyBhIGZlYXR1
+cmUsIGJ1dCBpdCBpcyB1bnVzZWQgZHVlIHRvIGENCj4gbWFza2VkIGludGVycnVwdD8NCg0KRmly
+bXdhcmUgcG9sbCBSWFEgbm9uIG9jY3VwaWVkIGNhdXNlIHJlZ2lzdGVyIHRvIGluZGljYXRlIGlm
+IG51bWJlciBvZiByZWdpc3RlcnMgYmVsbG93IHRocmVzaG9sZC4NCldlIGRvIG5vdCB0cmlnZ2Vy
+IGFueSBpbnRlcnJ1cHQsIGp1c3QgcG9sbCB0aGlzIGJpdCBpbiBDTTMuIFNvIHRoaXMgY2F1c2Ug
+YWx3YXlzIG1hc2tlZC4NCg0KPiA+DQo+ID4gU2lnbmVkLW9mZi1ieTogU3RlZmFuIENodWxza2kg
+PHN0ZWZhbmNAbWFydmVsbC5jb20+DQo+ID4gLS0tDQo+ID4gIGRyaXZlcnMvbmV0L2V0aGVybmV0
+L21hcnZlbGwvbXZwcDIvbXZwcDIuaCAgICAgIHwgIDMgKysNCj4gPiAgZHJpdmVycy9uZXQvZXRo
+ZXJuZXQvbWFydmVsbC9tdnBwMi9tdnBwMl9tYWluLmMgfCA0Ng0KPiA+ICsrKysrKysrKysrKysr
+KysrLS0tDQo+ID4gIDIgZmlsZXMgY2hhbmdlZCwgNDIgaW5zZXJ0aW9ucygrKSwgNyBkZWxldGlv
+bnMoLSkNCj4gPg0KPiA+IGRpZmYgLS1naXQgYS9kcml2ZXJzL25ldC9ldGhlcm5ldC9tYXJ2ZWxs
+L212cHAyL212cHAyLmgNCj4gPiBiL2RyaXZlcnMvbmV0L2V0aGVybmV0L21hcnZlbGwvbXZwcDIv
+bXZwcDIuaA0KPiA+IGluZGV4IDczZjA4N2MuLjlkODk5M2YgMTAwNjQ0DQo+ID4gLS0tIGEvZHJp
+dmVycy9uZXQvZXRoZXJuZXQvbWFydmVsbC9tdnBwMi9tdnBwMi5oDQo+ID4gKysrIGIvZHJpdmVy
+cy9uZXQvZXRoZXJuZXQvbWFydmVsbC9tdnBwMi9tdnBwMi5oDQo+ID4gQEAgLTI5NSw2ICsyOTUs
+OCBAQA0KPiA+ICAjZGVmaW5lICAgICBNVlBQMl9QT05fQ0FVU0VfVFhQX09DQ1VQX0RFU0NfQUxM
+X01BU0sNCj4gMHgzZmMwMDAwMA0KPiA+ICAjZGVmaW5lICAgICBNVlBQMl9QT05fQ0FVU0VfTUlT
+Q19TVU1fTUFTSyAgICAgICAgICAgICAgQklUKDMxKQ0KPiA+ICAjZGVmaW5lIE1WUFAyX0lTUl9N
+SVNDX0NBVVNFX1JFRyAgICAgICAgICAgICAgIDB4NTViMA0KPiA+ICsjZGVmaW5lIE1WUFAyX0lT
+Ul9SWF9FUlJfQ0FVU0VfUkVHKHBvcnQpICAgICAgICgweDU1MjAgKyA0ICogKHBvcnQpKQ0KPiA+
+ICsjZGVmaW5lICAgICAgICAgICAgTVZQUDJfSVNSX1JYX0VSUl9DQVVTRV9OT05PQ0NfTUFTSyAg
+MHgwMGZmDQo+IA0KPiBUaGUgaW5kZW50YXRpb24gaW4gdGhpcyBmaWxlIGlzIGluY29uc2lzdGVu
+dC4gSGVyZSBldmVuIGJldHdlZW4gdGhlIHR3byBuZXdseQ0KPiBpbnRyb2R1Y2VkIGxpbmVzLg0K
+DQpPaywgSSB3b3VsZCBmaXggdGhpcy4NCg0KPiA+ICAgICAgICAgLyogSWYgdGhlIHRocmVhZCBp
+c24ndCB1c2VkLCBkb24ndCBkbyBhbnl0aGluZyAqLw0KPiA+IC0gICAgICAgaWYgKHNtcF9wcm9j
+ZXNzb3JfaWQoKSA+IHBvcnQtPnByaXYtPm50aHJlYWRzKQ0KPiA+ICsgICAgICAgaWYgKGNwdSA+
+PSBwb3J0LT5wcml2LT5udGhyZWFkcykNCj4gPiAgICAgICAgICAgICAgICAgcmV0dXJuOw0KPiAN
+Cj4gSGVyZSBhbmQgYmVsb3csIHRoZSBjaGFuZ2UgZnJvbSBncmVhdGVyIHRoYW4gdG8gZ3JlYXRl
+ciB0aGFuIGlzIHJlYWxseSBhDQo+IChzdGFuZGFsb25lKSBmaXg/DQoNCk9rLCBJIHdvdWxkIG1v
+dmUgdGhpcyB0byBzZXBhcmF0ZSBwYXRjaC4NCg0KPiA+ICsvKiBSb3V0aW5lIHNldCB0aGUgbnVt
+YmVyIG9mIG5vbi1vY2N1cGllZCBkZXNjcmlwdG9ycyB0aHJlc2hvbGQgdGhhdA0KPiA+ICtjaGFu
+Z2UNCj4gPiArICogaW50ZXJydXB0IGVycm9yIGNhdXNlIHBvbGxlZCBieSBGVyBGbG93IENvbnRy
+b2wgICovDQo+IA0KPiBuaXQ6IG5vIG5lZWQgZm9yICJSb3V0aW5lIi4gQWxzbywgZG9lcyAiY2hh
+bmdlIC4uIGNhdXNlIiBtZWFuICJ0aGF0IHRyaWdnZXJzDQo+IGFuIGludGVycnVwdCI/DQoNCk9r
+Lg0KDQpUaGFua3MsDQpTdGVmYW4uDQo=
