@@ -2,108 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6E17F3060F5
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 17:26:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1ABEC30615B
+	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 17:54:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237200AbhA0QZ1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 11:25:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41148 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237138AbhA0QYp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 11:24:45 -0500
-Received: from mail-oi1-x229.google.com (mail-oi1-x229.google.com [IPv6:2607:f8b0:4864:20::229])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC55AC061574
-        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 08:24:05 -0800 (PST)
-Received: by mail-oi1-x229.google.com with SMTP id n7so2702046oic.11
-        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 08:24:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=GG0TpbUNYlPSbaljbB2iMXCGWpl1mkIqLneVjeynSxI=;
-        b=npClNprtbGHfrypkEZsUQ3PuSwXQh/fi4c9lfxGBu8Qlf+BnFeh9oIQvmaP8+8tbzg
-         OrJYeUVHzkqZyImR8NflmYa+Nf/2SdI+04KTcORok44TGC8U7hWuCUOqAnULmmC+bm3g
-         BDLTVwmayP5Udz9KShPPO+COQcGKnWFs2do7trrl4gyeWwakPc/ptYhAEhfOYopdewzO
-         6jxINa3vHCn8lzo1cpnHuZB5Wj1lOQcZannAvGVnHMbnR23NBsU6qbpwkWxzSG+vc7hw
-         Ft37CYTOrgCk5VaqjPiq5S5Nnp8QFfESwq971Zd5052JPOhEmAlvgnXgrzJAqssrsJlE
-         zDcg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=GG0TpbUNYlPSbaljbB2iMXCGWpl1mkIqLneVjeynSxI=;
-        b=HcCbixl4JMVI+JundAJiJUr2iCi07BwnflXN3bOwjfkAfDkNMxoBJWy3rcMNv6yeEE
-         rrIjdZm8xE6X3L0OZqDZiTQy/clqtrtEcpuXc8xiYqzlxQM180wxzdreGqwgMqwEduv2
-         5cCTQ6tAEcOcrIFGMNHCmQeme165LJ6exIJcJbgJUVnlAyKzcp1t8IJ1M0vhFPj7Od08
-         yzBHYzdbJIjZyOYFo5UqdRv7anK9uW2cc8soZlX2Od/QSVosi2WEoY3dECOZCbNNq2nI
-         PF3H/63rQWpD2JbMN1SA89WZhI1NIqYdqetaffmqXNt0vw9tbdyyrzTszizRRFtTQz6u
-         X7Dw==
-X-Gm-Message-State: AOAM533vQ0i09ryTHyd4a05HH2IwjD1j8hMdhyjKgX7r6YaeYM16yxKP
-        zbiF3AVWt/uA0PgaU5ZkHQIWwKtJzosn5Q==
-X-Google-Smtp-Source: ABdhPJxyRZTOu8oTpmszoVzALsoM139tiy9mfNWSYd34E76lJAP8S0iZ6e/JG3ZrP968DirOqzJ0Jw==
-X-Received: by 2002:aca:4c03:: with SMTP id z3mr3710617oia.21.1611764645161;
-        Wed, 27 Jan 2021 08:24:05 -0800 (PST)
-Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id w194sm503278oiw.39.2021.01.27.08.24.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Jan 2021 08:24:04 -0800 (PST)
-Date:   Wed, 27 Jan 2021 10:24:02 -0600
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Greg KH <gregkh@linuxfoundation.org>
-Cc:     Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        linux-arm-msm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        jhugo@codeaurora.org, bbhatt@codeaurora.org,
-        loic.poulain@linaro.org, netdev@vger.kernel.org
-Subject: Re: [RESEND PATCH v18 0/3] userspace MHI client interface driver
-Message-ID: <YBGTooJ5tVgf1u/R@builder.lan>
-References: <1609958656-15064-1-git-send-email-hemantk@codeaurora.org>
- <20210113152625.GB30246@work>
- <YBGDng3VhE1Yw6zt@kroah.com>
+        id S233813AbhA0QyN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 11:54:13 -0500
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:57708 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S233624AbhA0Qxt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 11:53:49 -0500
+Received: from Internal Mail-Server by MTLPINE1 (envelope-from cmi@nvidia.com)
+        with SMTP; 27 Jan 2021 09:46:59 +0200
+Received: from dev-r630-03.mtbc.labs.mlnx (dev-r630-03.mtbc.labs.mlnx [10.75.205.13])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 10R7kvrl013621;
+        Wed, 27 Jan 2021 09:46:57 +0200
+From:   Chris Mi <cmi@nvidia.com>
+To:     netdev@vger.kernel.org
+Cc:     kuba@kernel.org, jiri@nvidia.com, saeedm@nvidia.com,
+        Chris Mi <cmi@nvidia.com>, kernel test robot <lkp@intel.com>
+Subject: [PATCH net-next v2] net: psample: Introduce stubs to remove NIC driver dependency
+Date:   Wed, 27 Jan 2021 15:46:51 +0800
+Message-Id: <20210127074651.510134-1-cmi@nvidia.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YBGDng3VhE1Yw6zt@kroah.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed 27 Jan 09:15 CST 2021, Greg KH wrote:
+In order to send sampled packets to userspace, NIC driver calls
+psample api directly. But it creates a hard dependency on module
+psample. Introduce psample_ops to remove the hard dependency.
+It is initialized when psample module is loaded and set to NULL
+when the module is unloaded.
 
-> On Wed, Jan 13, 2021 at 08:56:25PM +0530, Manivannan Sadhasivam wrote:
-> > Hi Greg,
-> > 
-> > On Wed, Jan 06, 2021 at 10:44:13AM -0800, Hemant Kumar wrote:
-> > > This patch series adds support for UCI driver. UCI driver enables userspace
-> > > clients to communicate to external MHI devices like modem. UCI driver probe
-> > > creates standard character device file nodes for userspace clients to
-> > > perform open, read, write, poll and release file operations. These file
-> > > operations call MHI core layer APIs to perform data transfer using MHI bus
-> > > to communicate with MHI device. 
-> > > 
-> > > This interface allows exposing modem control channel(s) such as QMI, MBIM,
-> > > or AT commands to userspace which can be used to configure the modem using
-> > > tools such as libqmi, ModemManager, minicom (for AT), etc over MHI. This is
-> > > required as there are no kernel APIs to access modem control path for device
-> > > configuration. Data path transporting the network payload (IP), however, is
-> > > routed to the Linux network via the mhi-net driver. Currently driver supports
-> > > QMI channel. libqmi is userspace MHI client which communicates to a QMI
-> > > service using QMI channel. Please refer to
-> > > https://www.freedesktop.org/wiki/Software/libqmi/ for additional information
-> > > on libqmi.
-> > > 
-> > > Patch is tested using arm64 and x86 based platform.
-> > > 
-> > 
-> > This series looks good to me and I'd like to merge it into mhi-next. You
-> > shared your reviews on the previous revisions, so I'd like to get your
-> > opinion first.
-> 
-> If you get the networking people to give you an ack on this, it's fine
-> with me.
-> 
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Chris Mi <cmi@nvidia.com>
+Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+---
+v1->v2:
+ - fix sparse errors
 
-Why? As concluded in previous iterations of this series this does not
-relate to networking.
+ include/net/psample.h    | 27 +++++++++++++++++++++++++++
+ net/psample/psample.c    | 13 ++++++++++++-
+ net/sched/Makefile       |  2 +-
+ net/sched/psample_stub.c |  7 +++++++
+ 4 files changed, 47 insertions(+), 2 deletions(-)
+ create mode 100644 net/sched/psample_stub.c
 
-Regards,
-Bjorn
+diff --git a/include/net/psample.h b/include/net/psample.h
+index 68ae16bb0a4a..e6a73128de59 100644
+--- a/include/net/psample.h
++++ b/include/net/psample.h
+@@ -4,6 +4,7 @@
+ 
+ #include <uapi/linux/psample.h>
+ #include <linux/list.h>
++#include <linux/skbuff.h>
+ 
+ struct psample_group {
+ 	struct list_head list;
+@@ -14,6 +15,15 @@ struct psample_group {
+ 	struct rcu_head rcu;
+ };
+ 
++struct psample_ops {
++	void (*sample_packet)(struct psample_group *group, struct sk_buff *skb,
++			      u32 trunc_size, int in_ifindex, int out_ifindex,
++			      u32 sample_rate);
++
++};
++
++extern const struct psample_ops __rcu *psample_ops __read_mostly;
++
+ struct psample_group *psample_group_get(struct net *net, u32 group_num);
+ void psample_group_take(struct psample_group *group);
+ void psample_group_put(struct psample_group *group);
+@@ -35,4 +45,21 @@ static inline void psample_sample_packet(struct psample_group *group,
+ 
+ #endif
+ 
++static inline void
++psample_nic_sample_packet(struct psample_group *group,
++			  struct sk_buff *skb, u32 trunc_size,
++			  int in_ifindex, int out_ifindex,
++			  u32 sample_rate)
++{
++	const struct psample_ops *ops;
++
++	rcu_read_lock();
++	ops = rcu_dereference(psample_ops);
++	if (ops)
++		psample_ops->sample_packet(group, skb, trunc_size,
++					   in_ifindex, out_ifindex,
++					   sample_rate);
++	rcu_read_unlock();
++}
++
+ #endif /* __NET_PSAMPLE_H */
+diff --git a/net/psample/psample.c b/net/psample/psample.c
+index 33e238c965bd..2a9fbfe09395 100644
+--- a/net/psample/psample.c
++++ b/net/psample/psample.c
+@@ -8,6 +8,7 @@
+ #include <linux/kernel.h>
+ #include <linux/skbuff.h>
+ #include <linux/module.h>
++#include <linux/rcupdate.h>
+ #include <net/net_namespace.h>
+ #include <net/sock.h>
+ #include <net/netlink.h>
+@@ -35,6 +36,10 @@ static const struct genl_multicast_group psample_nl_mcgrps[] = {
+ 
+ static struct genl_family psample_nl_family __ro_after_init;
+ 
++static const struct psample_ops psample_sample_ops = {
++	.sample_packet	= psample_sample_packet,
++};
++
+ static int psample_group_nl_fill(struct sk_buff *msg,
+ 				 struct psample_group *group,
+ 				 enum psample_command cmd, u32 portid, u32 seq,
+@@ -456,11 +461,17 @@ EXPORT_SYMBOL_GPL(psample_sample_packet);
+ 
+ static int __init psample_module_init(void)
+ {
+-	return genl_register_family(&psample_nl_family);
++	int ret;
++
++	ret = genl_register_family(&psample_nl_family);
++	if (!ret)
++		RCU_INIT_POINTER(psample_ops, &psample_sample_ops);
++	return ret;
+ }
+ 
+ static void __exit psample_module_exit(void)
+ {
++	RCU_INIT_POINTER(psample_ops, NULL);
+ 	genl_unregister_family(&psample_nl_family);
+ }
+ 
+diff --git a/net/sched/Makefile b/net/sched/Makefile
+index dd14ef413fda..0d92bb98bb26 100644
+--- a/net/sched/Makefile
++++ b/net/sched/Makefile
+@@ -3,7 +3,7 @@
+ # Makefile for the Linux Traffic Control Unit.
+ #
+ 
+-obj-y	:= sch_generic.o sch_mq.o
++obj-y	:= sch_generic.o sch_mq.o psample_stub.o
+ 
+ obj-$(CONFIG_INET)		+= sch_frag.o
+ obj-$(CONFIG_NET_SCHED)		+= sch_api.o sch_blackhole.o
+diff --git a/net/sched/psample_stub.c b/net/sched/psample_stub.c
+new file mode 100644
+index 000000000000..0615a7b64000
+--- /dev/null
++++ b/net/sched/psample_stub.c
+@@ -0,0 +1,7 @@
++// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
++/* Copyright (c) 2021 Mellanox Technologies. */
++
++#include <net/psample.h>
++
++const struct psample_ops __rcu *psample_ops __read_mostly;
++EXPORT_SYMBOL_GPL(psample_ops);
+-- 
+2.26.2
+
