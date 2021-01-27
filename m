@@ -2,99 +2,104 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1A82930566E
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 10:06:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D63BD305673
+	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 10:07:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234878AbhA0JFL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 04:05:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58730 "EHLO
+        id S234949AbhA0JG4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 04:06:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233622AbhA0JBu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 04:01:50 -0500
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36731C061574
-        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 01:01:04 -0800 (PST)
-Received: by mail-ej1-x631.google.com with SMTP id by1so1596984ejc.0
-        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 01:01:04 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=CvhPrcroD4ScESfvgvRctMUe8FBLv514keyLyHRZDbY=;
-        b=jdd6IZ5rNNH7ay5CWnkO4rDIvKDpbbSemE10InrR25X1zlvICut5ZM0P9AbImglQiu
-         xuwnsi4fd/5NATT4++iicCnxpDnXAYMZ3n4hortkfkhH8uaDRveeYhTgh0Dxh6ZXYyKp
-         fpki+IDTkloZipAXjHXNiStWUny+GS/Jyy53A1+9mZtGouG4E/C5kTsbj126oyg4uK+7
-         9E47fzC+HywTrBk0RdBZU7zBS449AZPU546g1r7tqu8UDekk3hv9ZHnHREtHYjMSasGs
-         GRs4IMz/ofdHv4Hy2BsDA1HDyTuQdpbMwqLi0aPiLazFjKvvEk7yH01Tx+WUcQJJ2nzS
-         Pwiw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=CvhPrcroD4ScESfvgvRctMUe8FBLv514keyLyHRZDbY=;
-        b=T0pGc+uiivDWtQKb6gO66Jv6KSrvR0QVu2nCO28x3BBRvc+WeT0+J5M/0XQlWsf+av
-         oGzCroABbGcUJH2xkKAdXaVPeO6tAtXWIw9ap8gp2qIOMSfmm9p1gU0NfKcSYg86wpbx
-         ltGjiT5lm8+mDRConfMotQD9iivZT7RtM1AhDrEVsbfQxGhzwNK2D5yexJGrq6eYldp5
-         AC/sS1kzvek0kGeUt4gjnD477+9JvwGP4/6Jvsd80/jzMKPsoSHkYXu66QHrRhRpmO04
-         WdKXbyKVeT1FaqMxklBqpHsxIv0wD4vwA6MygfMWo+LDDBIWQ8lv217/ZWb2dmAcsO86
-         2u3w==
-X-Gm-Message-State: AOAM532p1zG7bsIl6lFyDApGR8MWxB8Yjpsk9ehDcRjroR1g5qZREZDk
-        yorctQ4SInBhjL51V+ZJzUlM6hoKEgqlKSKlAP8y
-X-Google-Smtp-Source: ABdhPJxtxlsv/zG/t8Q8ZtEe1vLrLr5egbs6sFwRGutMTUs8mWfam54iv13Bg8Ina5lqMbBMMCqZUnnSbBmDjY8Tn1E=
-X-Received: by 2002:a17:906:128e:: with SMTP id k14mr5892133ejb.427.1611738063009;
- Wed, 27 Jan 2021 01:01:03 -0800 (PST)
+        with ESMTP id S234335AbhA0JEg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 04:04:36 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F4B9C061573
+        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 01:03:55 -0800 (PST)
+From:   Kurt Kanzenbach <kurt.kanzenbach@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1611738234;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=1u36hpoLD/DdxchMkselsxB05sjOdJH6kXFKjz0bs3E=;
+        b=qqcDxKfPxpmk6CwA+8+uw/P56kVgH3WeDo6BLFhQS3UKxBn66F5MGNnN474Z043nngzlHM
+        iBx/MItBtDE/ZfHbAJeiMcSTZj76NhxfCAicDnritDYzblTWjC5q9eOqaSrX8JWVYo3QkX
+        bEDb+OXaQsDonmoP3xCaJ8oIkWJaKqByMTDl7AawBG4e/ydCXBNO1qLifSnAKLv0BQnW0c
+        PJlJCaw1krNwtcjW4PUmnkxhssL2gB0OkW57G/BvwXLsvHRmBQd0JnSQKM3cSPmuvGYnww
+        LbSZYT+S0eorNS59JEHr7rsj14zVJj9/guKTFZyKMYvVAAlh7VCu/oxrWWVXzw==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1611738234;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=1u36hpoLD/DdxchMkselsxB05sjOdJH6kXFKjz0bs3E=;
+        b=DqGBp/w3OIwfALewbhYL6NxHJMr+tOSn3qJRuwpSA5cLi0l3IPNjDJpvJUfvCNCh70Dra9
+        sxpHaVmJr+BQ31Dg==
+To:     Vladimir Oltean <vladimir.oltean@nxp.com>,
+        Vinicius Costa Gomes <vinicius.gomes@intel.com>
+Cc:     "netdev\@vger.kernel.org" <netdev@vger.kernel.org>,
+        "jhs\@mojatatu.com" <jhs@mojatatu.com>,
+        "xiyou.wangcong\@gmail.com" <xiyou.wangcong@gmail.com>,
+        "jiri\@resnulli.us" <jiri@resnulli.us>,
+        "kuba\@kernel.org" <kuba@kernel.org>,
+        "Jose.Abreu\@synopsys.com" <Jose.Abreu@synopsys.com>,
+        Po Liu <po.liu@nxp.com>,
+        "intel-wired-lan\@lists.osuosl.org" 
+        <intel-wired-lan@lists.osuosl.org>,
+        "anthony.l.nguyen\@intel.com" <anthony.l.nguyen@intel.com>,
+        "mkubecek\@suse.cz" <mkubecek@suse.cz>
+Subject: Re: [PATCH net-next v3 5/8] igc: Avoid TX Hangs because long cycles
+In-Reply-To: <20210126000228.gpyh3rrp662wysit@skbuf>
+References: <20210122224453.4161729-1-vinicius.gomes@intel.com> <20210122224453.4161729-6-vinicius.gomes@intel.com> <20210126000228.gpyh3rrp662wysit@skbuf>
+Date:   Wed, 27 Jan 2021 10:03:53 +0100
+Message-ID: <87czxqda4m.fsf@kurt>
 MIME-Version: 1.0
-References: <20210119045920.447-1-xieyongji@bytedance.com> <20210119050756.600-1-xieyongji@bytedance.com>
- <20210119050756.600-5-xieyongji@bytedance.com> <9cacd59d-1063-7a1f-9831-8728eb1d1c15@redhat.com>
-In-Reply-To: <9cacd59d-1063-7a1f-9831-8728eb1d1c15@redhat.com>
-From:   Yongji Xie <xieyongji@bytedance.com>
-Date:   Wed, 27 Jan 2021 17:00:52 +0800
-Message-ID: <CACycT3vrN0qZp=KzFuzsbDvPvMeXYPYiHBF0ZWBf3m=e2BCvfw@mail.gmail.com>
-Subject: Re: Re: [RFC v3 11/11] vduse: Introduce a workqueue for irq injection
-To:     Jason Wang <jasowang@redhat.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>, sgarzare@redhat.com,
-        Parav Pandit <parav@nvidia.com>, Bob Liu <bob.liu@oracle.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Matthew Wilcox <willy@infradead.org>, viro@zeniv.linux.org.uk,
-        axboe@kernel.dk, bcrl@kvack.org, Jonathan Corbet <corbet@lwn.net>,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org, linux-aio@kvack.org,
-        linux-fsdevel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: multipart/signed; boundary="=-=-=";
+        micalg=pgp-sha512; protocol="application/pgp-signature"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 26, 2021 at 4:17 PM Jason Wang <jasowang@redhat.com> wrote:
->
->
-> On 2021/1/19 =E4=B8=8B=E5=8D=881:07, Xie Yongji wrote:
-> > This patch introduces a dedicated workqueue for irq injection
-> > so that we are able to do some performance tuning for it.
-> >
-> > Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
->
->
-> If we want the split like this.
->
-> It might be better to:
->
-> 1) implement a simple irq injection on the ioctl context in patch 8
-> 2) add the dedicated workqueue injection in this patch
->
-> Since my understanding is that
->
-> 1) the function looks more isolated for readers
-> 2) the difference between sysctl vs workqueue should be more obvious
-> than system wq vs dedicated wq
-> 3) a chance to describe why workqueue is needed in the commit log in
-> this patch
->
+--=-=-=
+Content-Type: text/plain
+Content-Transfer-Encoding: quoted-printable
 
-OK, I will try to do it in v4.
+On Tue Jan 26 2021, Vladimir Oltean wrote:
+> On Fri, Jan 22, 2021 at 02:44:50PM -0800, Vinicius Costa Gomes wrote:
+>> Avoid possible TX Hangs caused by using long Qbv cycles. In some
+>> cases, using long cycles (more than 1 second) can cause transmissions
+>> to be blocked for that time. As the TX Hang timeout is close to 1
+>> second, we may need to reduce the cycle time to something more
+>> reasonable: the value chosen is 1ms.
+>>=20
+>> Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
+>> ---
+>
+> Don't you want this patch to go to 'net' and be backported?
+
+I'm wondering about this patch as well. Is this fix related to frame
+preemption? If I understand the code correctly the 1sec is a dummy cycle
+and all queues are open. How should Tx hang then?
 
 Thanks,
-Yongji
+Kurt
+
+--=-=-=
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAmARLHkACgkQeSpbgcuY
+8KYw8xAApAhXYhm/AZcD2FuRDeZ/OIPPzW+J6C/nOf105TTBpGqEAWaGhBURtl1i
+ZOCt8BV9e2KTLj/+cfcmkcBVIMOonYxwo7CWYNU8M1S2s0W/FZWm6Aj4bPYqM3oh
+ZxfuKwCzfro6rjt5I8qLC15pCxM3SW0d7HCDBCBseZdt1QkWNTsCRUJojbLkFQ5P
+4V4sFrAgwo6sORLPswvrCLtYK3gIfEBtwNwdldQBLxC7o2EoScixyFvjDF4ArDc1
+Gx69tNjMHdSEw2yWuxdZEaN2GM9taoJqWJs9Q/Hra/3wDPL5aLli+V8LxPUvhtDt
+iBG01C/gldi3T+JnEmasj4eR/3v6/Nj5+Fr2sCp5dRSB7oGzqsc0eQMf3bN0FK/u
+qjBtMxrSwQ51pPgZYLyzI6Lzg+Ji6zJtP6y2UF1BS2VxggtjPwX/cCb5B+9yXrnG
+NFjkBNPET/k+5ylJXiB1W+5/mSsS5uajrCi4qreXrL0CiGlVd1w+Ee/zN0RR5Uhf
+/fv6WJdibTk2QNL2eVJwC7VP3IVSswHeW8so519Gq7phltvlMXkC9wW8ghNGgxmi
+eCg0AmeqotkGtF/MkuyAv8L657cIlnOjjRWREk1J+ASKh/rUchFYe/+p3U0Cmldp
+yTj/eQ/+oFa76dvtC4aFyzk0355gyb7Duww6UX2TjuXhOe3B+0A=
+=TJzX
+-----END PGP SIGNATURE-----
+--=-=-=--
