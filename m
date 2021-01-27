@@ -2,84 +2,108 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5DC1E30541B
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 08:12:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 62BD2305468
+	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 08:22:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233157AbhA0HMV (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 02:12:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37576 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S317508AbhA0Aov (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jan 2021 19:44:51 -0500
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2BA4C061573;
-        Tue, 26 Jan 2021 16:43:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
-        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description;
-        bh=TEW2JYzn+vqvCtp0wfRNcEJNG8YlfIBkSfIXrU7EIyI=; b=RUqjEncrRoERE8rbq+OKuNfu1R
-        kyqA6pQUBIWFphnHhodhd9ds/DPt4HvE8aKVtFV9/wPkE7zn894nykm9jQPCBXMYKEibeytNJYLeq
-        w3Nsmi9R8b+afWrgXFw6V5yMS1S/StpMOUm+wAuWkkqNA5Si9gBJAmDemonDm3halNX7nNu+CzSyu
-        aycFgfm8MwMoDQarKZAKEcrBxM3dhDt8z1BbipvnXFjDmS1xl0dtZTMVuZk/qv27DW2KRwfackNeT
-        lLN6L6arAZlIG+0WXrLlvgPqzpJINe5mSg8t1zfauFs3kXWTR38HIrn7npnmZKFgkDusFXc/8hZpc
-        JdS+1yyw==;
-Received: from willy by casper.infradead.org with local (Exim 4.94 #2 (Red Hat Linux))
-        id 1l4Ytg-006RUT-Vz; Wed, 27 Jan 2021 00:42:16 +0000
-Date:   Wed, 27 Jan 2021 00:41:24 +0000
-From:   Matthew Wilcox <willy@infradead.org>
-To:     Mark Rutland <mark.rutland@arm.com>
-Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org,
-        Courtney Cavin <courtney.cavin@sonymobile.com>
-Subject: Re: Preemptible idr_alloc() in QRTR code
-Message-ID: <20210127004124.GP308988@casper.infradead.org>
-References: <20210126104734.GB80448@C02TD0UTHF1T.local>
- <20210126145833.GM308988@casper.infradead.org>
- <20210126162154.GD80448@C02TD0UTHF1T.local>
- <YBBKla3I2TxMFIvZ@builder.lan>
- <20210126183534.GA90035@C02TD0UTHF1T.local>
+        id S233548AbhA0HWG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 02:22:06 -0500
+Received: from mga17.intel.com ([192.55.52.151]:38093 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S317496AbhA0Amj (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 26 Jan 2021 19:42:39 -0500
+IronPort-SDR: D60GTzJtdhWz6UsN4nmkM+Xsmo2uHVcJ/u3B/1vJ8fub6EubatFMZeUTvdOTPcMhNRa6AIxFK/
+ 2UBlEfuiwqZA==
+X-IronPort-AV: E=McAfee;i="6000,8403,9876"; a="159771778"
+X-IronPort-AV: E=Sophos;i="5.79,378,1602572400"; 
+   d="scan'208";a="159771778"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 Jan 2021 16:41:42 -0800
+IronPort-SDR: J0EzfGr4nrEyBRxkNDgQwlFlUu/zzTw0wF3XWkGQxuPp9xy1svW6TKDpym/q60P3qHnSeA9a6A
+ +xQOGj9rst8w==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.79,378,1602572400"; 
+   d="scan'208";a="402924079"
+Received: from fmsmsx605.amr.corp.intel.com ([10.18.126.85])
+  by fmsmga004.fm.intel.com with ESMTP; 26 Jan 2021 16:41:42 -0800
+Received: from fmsmsx610.amr.corp.intel.com (10.18.126.90) by
+ fmsmsx605.amr.corp.intel.com (10.18.126.85) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2106.2; Tue, 26 Jan 2021 16:41:42 -0800
+Received: from fmsmsx612.amr.corp.intel.com (10.18.126.92) by
+ fmsmsx610.amr.corp.intel.com (10.18.126.90) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Tue, 26 Jan 2021 16:41:41 -0800
+Received: from fmsmsx612.amr.corp.intel.com ([10.18.126.92]) by
+ fmsmsx612.amr.corp.intel.com ([10.18.126.92]) with mapi id 15.01.1713.004;
+ Tue, 26 Jan 2021 16:41:41 -0800
+From:   "Saleem, Shiraz" <shiraz.saleem@intel.com>
+To:     Jason Gunthorpe <jgg@nvidia.com>
+CC:     "dledford@redhat.com" <dledford@redhat.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Ertman, David M" <david.m.ertman@intel.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        "Ismail, Mustafa" <mustafa.ismail@intel.com>
+Subject: RE: [PATCH 07/22] RDMA/irdma: Register an auxiliary driver and
+ implement private channel OPs
+Thread-Topic: [PATCH 07/22] RDMA/irdma: Register an auxiliary driver and
+ implement private channel OPs
+Thread-Index: AQHW8RlTrNE3qjtLukSnj7NcX24DDao5N6oA//+n/DCAAMFCAIAAeSAA
+Date:   Wed, 27 Jan 2021 00:41:41 +0000
+Message-ID: <031c2675aff248bd9c78fada059b5c02@intel.com>
+References: <20210122234827.1353-1-shiraz.saleem@intel.com>
+ <20210122234827.1353-8-shiraz.saleem@intel.com>
+ <20210125184248.GS4147@nvidia.com>
+ <99895f7c10a2473c84a105f46c7ef498@intel.com>
+ <20210126005928.GF4147@nvidia.com>
+In-Reply-To: <20210126005928.GF4147@nvidia.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+dlp-product: dlpe-windows
+dlp-reaction: no-action
+dlp-version: 11.5.1.3
+x-originating-ip: [10.22.254.132]
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210126183534.GA90035@C02TD0UTHF1T.local>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 26, 2021 at 06:36:02PM +0000, Mark Rutland wrote:
-> On Tue, Jan 26, 2021 at 11:00:05AM -0600, Bjorn Andersson wrote:
-> > On Tue 26 Jan 10:21 CST 2021, Mark Rutland wrote:
-> > 
-> > > On Tue, Jan 26, 2021 at 02:58:33PM +0000, Matthew Wilcox wrote:
-> > > > On Tue, Jan 26, 2021 at 10:47:34AM +0000, Mark Rutland wrote:
-> > > > > Hi,
-> > > > > 
-> > > > > When fuzzing arm64 with Syzkaller, I'm seeing some splats where
-> > > > > this_cpu_ptr() is used in the bowels of idr_alloc(), by way of
-> > > > > radix_tree_node_alloc(), in a preemptible context:
-> > > > 
-> > > > I sent a patch to fix this last June.  The maintainer seems to be
-> > > > under the impression that I care an awful lot more about their
-> > > > code than I do.
-> > > > 
-> > > > https://lore.kernel.org/netdev/20200605120037.17427-1-willy@infradead.org/
-> > > 
-> > > Ah; I hadn't spotted the (glaringly obvious) GFP_ATOMIC abuse, thanks
-> > > for the pointer, and sorry for the noise.
-> > > 
-> > 
-> > I'm afraid this isn't as obvious to me as it is to you. Are you saying
-> > that one must not use GFP_ATOMIC in non-atomic contexts?
-> > 
-> > That said, glancing at the code I'm puzzled to why it would use
-> > GFP_ATOMIC.
-> 
-> I'm also not entirely sure about the legitimacy of GFP_ATOMIC outside of
-> atomic contexts -- I couldn't spot any documentation saying that wasn't
-> legitimate, but Matthew's commit message implies so, and it sticks out
-> as odd.
-
-It's actually an assumption in the radix tree code.  If you say you
-can't be preempted by saying GFP_ATOMIC, it takes you at your word and
-does some things which cannot be done in preemptable context.
+PiBTdWJqZWN0OiBSZTogW1BBVENIIDA3LzIyXSBSRE1BL2lyZG1hOiBSZWdpc3RlciBhbiBhdXhp
+bGlhcnkgZHJpdmVyIGFuZA0KPiBpbXBsZW1lbnQgcHJpdmF0ZSBjaGFubmVsIE9Qcw0KPiANCj4g
+T24gVHVlLCBKYW4gMjYsIDIwMjEgYXQgMTI6NDI6MTZBTSArMDAwMCwgU2FsZWVtLCBTaGlyYXog
+d3JvdGU6DQo+IA0KPiA+IEkgdGhpbmsgdGhpcyBlc3NlbnRpYWxseSBtZWFucyBkb2luZyBhd2F5
+IHdpdGggLm9wZW4vLmNsb3NlIHBpZWNlLg0KPiANCj4gWWVzLCB0aGF0IHRvbywgYW5kIHByb2Jh
+Ymx5IHRoZSBGU00gYXMgd2VsbC4NCj4gDQo+ID4gT3IgYXJlIHlvdSBzYXlpbmcgdGhhdCBpcyBv
+az8gIFllcyB3ZSBoYWQgYSBkaXNjdXNzaW9uIGluIHRoZSBwYXN0IGFuZA0KPiA+IEkgdGhvdWdo
+dCB3ZSBjb25jbHVkZWQuIEJ1dCBtYXliZSBJIG1pc3VuZGVyc3Rvb2QuDQo+ID4NCj4gPiBodHRw
+czovL2xvcmUua2VybmVsLm9yZy9saW51eC1yZG1hLzlERDYxRjMwQTgwMkM0NDI5QTAxQ0E0MjAw
+RTMwMkE3RENEDQo+ID4gNEZEMDNAZm1zbXN4MTI0LmFtci5jb3JwLmludGVsLmNvbS8NCj4gDQo+
+IFdlbGwsIGhhdmluZyBub3cgc2VlbiBob3cgYXV4IGJ1cyBlbmRlZCB1cCBhbmQgdGhlIHdheSBp
+dCBlZmZlY3RlZCB0aGUNCj4gbWx4NSBkcml2ZXIsIEkgYW0gbW9yZSBmaXJtbHkgb2YgdGhlIG9w
+aW5pb24gdGhpcyBuZWVkcyB0byBiZSBmaXhlZC4gSXQgaXMgZXh0cmVtbHkNCj4gaGFyZCB0byBn
+ZXQgZXZlcnl0aGluZyByaWdodCB3aXRoIHR3byBkaWZmZXJlbnQgcmVnaXN0cmF0aW9uIHNjaGVt
+ZXMgcnVubmluZyBhcm91bmQuDQo+IA0KPiBZb3UgbmV2ZXIgYW5zd2VyZWQgbXkgcXVlc3Rpb246
+DQoNClNvcnJ5IEkgbWlzc2VkIGl0Lg0KPiANCj4gPiBTdGlsbCwgeW91IG5lZWQgdG8gYmUgYWJs
+ZSB0byBjb3BlIHdpdGggdGhlIHVzZXIgdW5iaW5kaW5nIHlvdXINCj4gPiBkcml2ZXJzIGluIGFu
+eSBvcmRlciB2aWEgc3lzZnMuIFdoYXQgaGFwcGVucyB0byB0aGUgVkZzIHdoZW4gdGhlIFBGIGlz
+DQo+ID4gdW5ib3VuZCBhbmQgcmVsZWFzZXMgd2hhdGV2ZXIgcmVzb3VyY2VzPyBUaGlzIGlzIHdo
+ZXJlIHRoZSBicm9hZGNvbQ0KPiA+IGRyaXZlciByYW4gaW50byB0cm91Ymxlcy4uDQo+IA0KPiA/
+DQoNCmVjaG8gLW4gImljZS5pbnRlbF9yZG1hLjAiID4gL3N5cy9idXMvYXV4aWxpYXJ5L2RyaXZl
+cnMvaXJkbWEvdW5iaW5kICA/Pz8NCg0KVGhhdCBJIGJlbGlldmUgd2lsbCB0cmlnZ2VyIGEgZHJ2
+LnJlbW92ZSgpIG9uIHRoZSByZG1hIFBGIHNpZGUgd2hpY2ggcmVxdWlyZQ0KdGhlIHJkbWEgVkZz
+IHRvIGdvIGRvd24uDQoNClllcywgd2UgY3VycmVudGx5IGhhdmUgYSByZXF1aXJlbWVudCB0aGUg
+YXV4IHJkbWEgUEYgZHJpdmVyIHJlbWFpbiBpbml0ZWQgYXQgbGVhc3QgdG8gLnByb2JlKCkNCmZv
+ciBWRnMgdG8gc3Vydml2ZS4NCg0KV2UgYXJlIGRvaW5nIGludGVybmFsIHJldmlldywgYnV0IGl0
+IGFwcGVhcnMgd2UgY291bGQgcG90ZW50aWFsbHkgZ2V0IHJpZCBvZiB0aGUgLm9wZW4vLmNsb3Nl
+IGNhbGxiYWNrcy4NCkFuZCBpdHMgYXNzb2NpYXRlZCBGU00gaW4gaWNlLiANCg0KQnV0IGlmIHdl
+IHJlbW92ZSBwZWVyX3JlZ2lzdGVyL3VucmVnaXN0ZXIsIGhvdyBkbyB3ZSBzeW5jaHJvbml6ZSBi
+ZXR3ZWVuIHNheSB1bmxvYWQgb2YgdGhlIHJkbWEgZHJpdmVyIA0KYW5kIG5ldGRldiBkcml2ZXIg
+c3RvcCBhY2Nlc3NpbmcgdGhlIHByaXYgY2hhbm5lbCBpaWRjX3BlZXJfb3BzIHRoYXQgaXQgdXNl
+cyB0byBzZW5kIGV2ZW50cyB0byByZG1hPw0KDQpTaGlyYXoNCg0KDQo=
