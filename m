@@ -2,99 +2,98 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0BFDF305D0C
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 14:25:57 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E758B305D2D
+	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 14:30:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238340AbhA0NZ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 08:25:28 -0500
-Received: from smtp-fw-6002.amazon.com ([52.95.49.90]:12616 "EHLO
-        smtp-fw-6002.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238355AbhA0NXG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 08:23:06 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
-  s=amazon201209; t=1611753786; x=1643289786;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=KrUTu8hKVvdhX21kN7ECBHdjF8qc0AA/jylBcvei2f4=;
-  b=KAghYjUi0xErofb/sml+gFlw9VYwe6m0DARw8WKx4jWz+8gkSXeEgnqD
-   fBEj2yNiadB/e4wRPALpmNRuLs+t6Dw6gX2FDzMBrlANyPa9JT3zP3ieE
-   YAsuZ7up1i2GCPmOdyOn7Jvi3d+GYzKbvKQRhpwDomRjwvt+BNwfd5YxY
-   8=;
-X-IronPort-AV: E=Sophos;i="5.79,379,1602547200"; 
-   d="scan'208";a="80468539"
-Received: from iad12-co-svc-p1-lb1-vlan2.amazon.com (HELO email-inbound-relay-2b-859fe132.us-west-2.amazon.com) ([10.43.8.2])
-  by smtp-border-fw-out-6002.iad6.amazon.com with ESMTP; 27 Jan 2021 13:22:29 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-2b-859fe132.us-west-2.amazon.com (Postfix) with ESMTPS id D19EF22900F;
-        Wed, 27 Jan 2021 13:22:28 +0000 (UTC)
-Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Wed, 27 Jan 2021 13:22:28 +0000
-Received: from 38f9d3582de7.ant.amazon.com (10.43.161.247) by
- EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Wed, 27 Jan 2021 13:22:23 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>
-CC:     Amit Shah <aams@amazon.de>,
-        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Tariq Toukan <tariqt@mellanox.com>,
-        "Boris Pismenny" <borisp@mellanox.com>
-Subject: [PATCH v2 net] net: Remove redundant calls of sk_tx_queue_clear().
-Date:   Wed, 27 Jan 2021 22:22:15 +0900
-Message-ID: <20210127132215.10842-1-kuniyu@amazon.co.jp>
-X-Mailer: git-send-email 2.17.2 (Apple Git-113)
+        id S238399AbhA0N3E (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 08:29:04 -0500
+Received: from correo.us.es ([193.147.175.20]:40268 "EHLO mail.us.es"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S238376AbhA0N0F (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 27 Jan 2021 08:26:05 -0500
+Received: from antivirus1-rhel7.int (unknown [192.168.2.11])
+        by mail.us.es (Postfix) with ESMTP id D8BD22A2BB0
+        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 14:24:20 +0100 (CET)
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id C8F23DA78A
+        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 14:24:20 +0100 (CET)
+Received: by antivirus1-rhel7.int (Postfix, from userid 99)
+        id BE7ADDA794; Wed, 27 Jan 2021 14:24:20 +0100 (CET)
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on antivirus1-rhel7.int
+X-Spam-Level: 
+X-Spam-Status: No, score=-108.2 required=7.5 tests=ALL_TRUSTED,BAYES_50,
+        SMTPAUTH_US2,USER_IN_WELCOMELIST,USER_IN_WHITELIST autolearn=disabled
+        version=3.4.1
+Received: from antivirus1-rhel7.int (localhost [127.0.0.1])
+        by antivirus1-rhel7.int (Postfix) with ESMTP id 99278DA791;
+        Wed, 27 Jan 2021 14:24:18 +0100 (CET)
+Received: from 192.168.1.97 (192.168.1.97)
+ by antivirus1-rhel7.int (F-Secure/fsigk_smtp/550/antivirus1-rhel7.int);
+ Wed, 27 Jan 2021 14:24:18 +0100 (CET)
+X-Virus-Status: clean(F-Secure/fsigk_smtp/550/antivirus1-rhel7.int)
+Received: from localhost.localdomain (unknown [90.77.255.23])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: pneira@us.es)
+        by entrada.int (Postfix) with ESMTPSA id 6F711426CC85;
+        Wed, 27 Jan 2021 14:24:18 +0100 (CET)
+X-SMTPAUTHUS: auth mail.us.es
+From:   Pablo Neira Ayuso <pablo@netfilter.org>
+To:     netfilter-devel@vger.kernel.org
+Cc:     davem@davemloft.net, netdev@vger.kernel.org, kuba@kernel.org
+Subject: [PATCH net 0/3] Netfilter fixes for net
+Date:   Wed, 27 Jan 2021 14:25:09 +0100
+Message-Id: <20210127132512.5472-1-pablo@netfilter.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.43.161.247]
-X-ClientProxiedBy: EX13D23UWC004.ant.amazon.com (10.43.162.219) To
- EX13D04ANC001.ant.amazon.com (10.43.157.89)
+Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: ClamAV using ClamSMTP
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The commit 41b14fb8724d ("net: Do not clear the sock TX queue in
-sk_set_socket()") removes sk_tx_queue_clear() from sk_set_socket() and adds
-it instead in sk_alloc() and sk_clone_lock() to fix an issue introduced in
-the commit e022f0b4a03f ("net: Introduce sk_tx_queue_mapping"). However,
-the original commit had already put sk_tx_queue_clear() in sk_prot_alloc():
-the callee of sk_alloc() and sk_clone_lock(). Thus sk_tx_queue_clear() is
-called twice in each path currently.
+Hi,
 
-This patch removes the redundant calls of sk_tx_queue_clear() in sk_alloc()
-and sk_clone_lock().
+The following patchset contains Netfilter fixes for net:
 
-Fixes: 41b14fb8724d ("net: Do not clear the sock TX queue in sk_set_socket()")
-CC: Tariq Toukan <tariqt@mellanox.com>
-CC: Boris Pismenny <borisp@mellanox.com>
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
----
- net/core/sock.c | 2 --
- 1 file changed, 2 deletions(-)
+1) Honor stateful expressions defined in the set from the dynset
+   extension. The set definition provides a stateful expression
+   that must be used by the dynset expression in case it is specified.
 
-diff --git a/net/core/sock.c b/net/core/sock.c
-index bbcd4b97eddd..5c665ee14159 100644
---- a/net/core/sock.c
-+++ b/net/core/sock.c
-@@ -1759,7 +1759,6 @@ struct sock *sk_alloc(struct net *net, int family, gfp_t priority,
- 		cgroup_sk_alloc(&sk->sk_cgrp_data);
- 		sock_update_classid(&sk->sk_cgrp_data);
- 		sock_update_netprioidx(&sk->sk_cgrp_data);
--		sk_tx_queue_clear(sk);
- 	}
- 
- 	return sk;
-@@ -1983,7 +1982,6 @@ struct sock *sk_clone_lock(const struct sock *sk, const gfp_t priority)
- 		 */
- 		sk_refcnt_debug_inc(newsk);
- 		sk_set_socket(newsk, NULL);
--		sk_tx_queue_clear(newsk);
- 		RCU_INIT_POINTER(newsk->sk_wq, NULL);
- 
- 		if (newsk->sk_prot->sockets_allocated)
--- 
-2.17.2 (Apple Git-113)
+2) Missing timeout extension in the set element in the dynset
+   extension leads to inconsistent ruleset listing, not allowing
+   the user to restore timeout and expiration on ruleset reload.
 
+3) Do not dump the stateful expression from the dynset extension
+   if it coming from the set definition.
+
+Please, pull these changes from:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf.git
+
+Thanks!
+
+----------------------------------------------------------------
+
+The following changes since commit c8a8ead01736419a14c3106e1f26a79d74fc84c7:
+
+  Merge git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf (2021-01-12 20:25:29 -0800)
+
+are available in the Git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/pablo/nf.git HEAD
+
+for you to fetch changes up to ce5379963b2884e9d23bea0c5674a7251414c84b:
+
+  netfilter: nft_dynset: dump expressions when set definition contains no expressions (2021-01-16 19:54:42 +0100)
+
+----------------------------------------------------------------
+Pablo Neira Ayuso (3):
+      netfilter: nft_dynset: honor stateful expressions in set definition
+      netfilter: nft_dynset: add timeout extension to template
+      netfilter: nft_dynset: dump expressions when set definition contains no expressions
+
+ include/net/netfilter/nf_tables.h |  2 ++
+ net/netfilter/nf_tables_api.c     |  5 ++---
+ net/netfilter/nft_dynset.c        | 41 +++++++++++++++++++++++++--------------
+ 3 files changed, 30 insertions(+), 18 deletions(-)
