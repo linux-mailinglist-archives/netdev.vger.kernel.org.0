@@ -2,78 +2,92 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D30F7305173
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 05:52:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A66F9305172
+	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 05:52:26 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239118AbhA0EbI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jan 2021 23:31:08 -0500
-Received: from mail.kernel.org ([198.145.29.99]:57214 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231416AbhA0C7m (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 26 Jan 2021 21:59:42 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 19E45206B7;
-        Wed, 27 Jan 2021 02:19:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611713961;
-        bh=Dgt6Q0rBvjMRRWLM/57Hr4zqt72CAGa7/vrh66YG02Q=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=oCm2tbCF0sZf49aKB54AiY4czMFP6Ggjs1arltwmSS739Z+ok0umdzB9HRqFhpX5T
-         uD6fX4qWcHP+VOjfqU9XoOqLG7/0e2J62Eqil0jbvaGlscmNzs3C6Yls8lH38c695K
-         oAnVtRZR/C0RAPzKEbqI+CJEvh6RhwTWImMD9GpgHCuBoO2e9qYNiBrZhKBQxkV2T1
-         JBEbK++OWv+e3l/HLi73A04MJ81v4gNx/tN7odKzfKiq84zKCSO4ROJaK4t5q0gSXT
-         VSnGwylJq0jCR4z0dWR6TRQyMoV5scg3C1TxyUm3wLo+OJquH09qrfc20MRl2KNT3T
-         rJXlkhn69ca0w==
-Date:   Tue, 26 Jan 2021 18:19:20 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     liaichun <liaichun@huawei.com>
-Cc:     Stephen Hemminger <stephen@networkplumber.org>,
-        David Ahern <dsahern@gmail.com>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: [PATCH net] bonding: fix send_peer_notif data truncation
-Message-ID: <20210126181920.403dfc6a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <e27dd20165a14d99bc2b406061e60bcd@huawei.com>
-References: <e27dd20165a14d99bc2b406061e60bcd@huawei.com>
+        id S239178AbhA0Ece (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jan 2021 23:32:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37160 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232525AbhA0DEW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jan 2021 22:04:22 -0500
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59D3FC0617A7;
+        Tue, 26 Jan 2021 18:25:20 -0800 (PST)
+Received: by mail-pf1-x441.google.com with SMTP id o20so229777pfu.0;
+        Tue, 26 Jan 2021 18:25:20 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=joDhYr4WwYIa6lTFlqLJ0z3vbyBAAz6QSsz7f9MoAT0=;
+        b=IQHJWZYVacOMsK096C8npqb57WhF9GsyIaKrsd2VR5on07xkS3mYrUm7ry3hHTyGzv
+         kslNVsQNyIvsTaXnEpvcqjT3I0LOf1fvW+YbF7eQrE24Ukpd9yvwsQBSS06BGRbnpzpS
+         3hHH/+yHrTpOKYsmdHmgacKwyxYHtnZ1qgP/5A0EQ80DDUt8lYtg3h7iVya/+gZobnEg
+         hoFiXnYo4FCsSH1J8qiNDIzHPjozqgaGT2Jp5UZNNqDQbpmvGk1jA1oyIauCvvy/J9kD
+         iJ8WEGfdX12W8p9LuuOq8AVT57fWZkfATrteTyNcC4yqp0Xv0uz4Yh0KV1+sr+crVQN3
+         8guw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=joDhYr4WwYIa6lTFlqLJ0z3vbyBAAz6QSsz7f9MoAT0=;
+        b=Ch+XYVk2WE5KCkTr4sPAgeU+mZ8kAjapFiElSWOJIS1uwe9NnZPLv6SOVQqWMbP3DN
+         GWLWQ8teEYOgWQjyDBR7BxNajVli1Ymv80n3kbmz7Dw6n+ztJzBks9qVtz1yPb0R4Dkk
+         MXCalG9ggWw2Gf7wThI5t4ykRPgiEMc3XrH1Rxi3Q2gfZDGr+JueM0dAhrDDxhw/RAMm
+         uDJfbpaPOqZY7uF0uNmjlEbP7TCtO4BuY4z4sfMxezsEZcSWOP1tMZkL1G+vi25IKnzq
+         hS0n8wnHqC11I2qkxn+cgVpIfNfwv46fPH2zmduKmlhu5NG6t9FIMoRiTkiFMRCinmaF
+         ew4w==
+X-Gm-Message-State: AOAM5334AnLEdkOQjDZ0TeUEXuWmVeymW52FGqNkFReMg4JHQEAPqmmu
+        2wojYJdUTw8Sk+nDY0pYWgs=
+X-Google-Smtp-Source: ABdhPJzDMD5pkEHDo4gipRdTGkjHcADKE3lHimALyEXvIwt/WyGdyMf+YeCjyYKXgbt2YaEYCVWEuQ==
+X-Received: by 2002:aa7:9ad3:0:b029:1b7:8afc:d9bd with SMTP id x19-20020aa79ad30000b02901b78afcd9bdmr7980137pfp.45.1611714319755;
+        Tue, 26 Jan 2021 18:25:19 -0800 (PST)
+Received: from localhost ([178.236.46.205])
+        by smtp.gmail.com with ESMTPSA id b21sm390023pfb.45.2021.01.26.18.25.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Jan 2021 18:25:19 -0800 (PST)
+From:   menglong8.dong@gmail.com
+X-Google-Original-From: dong.menglong@zte.com.cn
+To:     ast@kernel.org
+Cc:     daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
+        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
+        kpsingh@kernel.org, jackmanb@google.com, netdev@vger.kernel.org,
+        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Menglong Dong <dong.menglong@zte.com.cn>
+Subject: [PATCH bpf-next] bpf: change 'BPF_ADD' to 'BPF_AND' in print_bpf_insn()
+Date:   Tue, 26 Jan 2021 18:25:07 -0800
+Message-Id: <20210127022507.23674-1-dong.menglong@zte.com.cn>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 26 Jan 2021 11:52:01 +0000 liaichun wrote:
-> send_peer_notif is u8, the value of this parameter is obtained from u8*int, the data may be truncated.
->  And in practice, more than u8(256)  characters are used.
+From: Menglong Dong <dong.menglong@zte.com.cn>
 
-New line before Fixes
+This 'BPF_ADD' is duplicated, and I belive it should be 'BPF_AND'.
 
-> Fixes: 07a4ddec3ce9 ("bonding: add an option to specify a delay between peer notifications")
-> 
+Fixes: 981f94c3e921 ("bpf: Add bitwise atomic instructions")
+Signed-off-by: Menglong Dong <dong.menglong@zte.com.cn>
+---
+ kernel/bpf/disasm.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-no new line after Fixes
+diff --git a/kernel/bpf/disasm.c b/kernel/bpf/disasm.c
+index 19ff8fed7f4b..3acc7e0b6916 100644
+--- a/kernel/bpf/disasm.c
++++ b/kernel/bpf/disasm.c
+@@ -161,7 +161,7 @@ void print_bpf_insn(const struct bpf_insn_cbs *cbs,
+ 				insn->dst_reg,
+ 				insn->off, insn->src_reg);
+ 		else if (BPF_MODE(insn->code) == BPF_ATOMIC &&
+-			 (insn->imm == BPF_ADD || insn->imm == BPF_ADD ||
++			 (insn->imm == BPF_ADD || insn->imm == BPF_AND ||
+ 			  insn->imm == BPF_OR || insn->imm == BPF_XOR)) {
+ 			verbose(cbs->private_data, "(%02x) lock *(%s *)(r%d %+d) %s r%d\n",
+ 				insn->code,
+-- 
+2.25.1
 
-> Signed-off-by: Aichun Li <liaichun@huawei.com>
-
-Please CC these folks on v2:
-
-BONDING DRIVER
-M:	Jay Vosburgh <j.vosburgh@gmail.com>
-M:	Veaceslav Falico <vfalico@gmail.com>
-M:	Andy Gospodarek <andy@greyhouse.net>
-
-> diff --git a/include/net/bonding.h b/include/net/bonding.h index 0960d9af7b8e..65394566d556 100644
-> --- a/include/net/bonding.h
-> +++ b/include/net/bonding.h
-> @@ -215,7 +215,7 @@ struct bonding {
->  	 */
->  	spinlock_t mode_lock;
->  	spinlock_t stats_lock;
-> -	u8	 send_peer_notif;
-> +	u64	 send_peer_notif;
->  	u8       igmp_retrans;
->  #ifdef CONFIG_PROC_FS
->  	struct   proc_dir_entry *proc_entry;
-
-This breaks 32bit builds, as the value is used in divisions.
-
-Please fix and resend.
