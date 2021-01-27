@@ -2,191 +2,189 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B4DDB306229
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 18:37:13 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 52B43306234
+	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 18:39:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344013AbhA0Rg0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 12:36:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56512 "EHLO
+        id S1344059AbhA0RiN (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 12:38:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344009AbhA0Rff (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 12:35:35 -0500
-Received: from mail-io1-xd2a.google.com (mail-io1-xd2a.google.com [IPv6:2607:f8b0:4864:20::d2a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 471E6C0613ED
-        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 09:34:48 -0800 (PST)
-Received: by mail-io1-xd2a.google.com with SMTP id u8so2649970ior.13
-        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 09:34:48 -0800 (PST)
+        with ESMTP id S1343981AbhA0RiF (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 12:38:05 -0500
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A5ABC0613D6;
+        Wed, 27 Jan 2021 09:37:25 -0800 (PST)
+Received: by mail-ej1-x62b.google.com with SMTP id ke15so3792920ejc.12;
+        Wed, 27 Jan 2021 09:37:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=oW5mp8XPI8J87KFQ43usYsmmtjjAtdQhi+BnJucpFYE=;
-        b=uUsfaWlv6TVs5zs6K/oE+oT9TTqRp8a5YCvVhkjEfazYsFU11U/46r4y4Hmodxicg5
-         T9WuFX9SwaWcOuJJGCSvXWwraipDzlJwp8TL84Gv5M0G+l4Y3Yt5+oy9NxXWnXN0rxXI
-         I1NxSjpnSji1P+xBMqhi+amm7WjbuGPndYHorAWpGhAyXVRws6N0EmsG45EXJLoVRs9n
-         EkDQBNf3/XF+R7g4kI813x0r3f/qDZAfWvTemxyOfyhcyGBlwPYWFxp0U1ZLyLy8pqTG
-         3MxgHvhNdiJaWVzANwE1RVWLx1uphH43/we08wn4ZC7F4vArPIw8bellaO9nEXlsyCYq
-         7cmw==
+        bh=JeKSrl5MX8Qcwc3ikgn/d9vbKfAHw5aV8D7Q/o5y8Ew=;
+        b=V9F8t7hDx1yLfMfrlUMIKwofNk8IyaE+kOjLKHLezNDRNJcn7SkljILcs7NygsfvBc
+         P/aSjN2OlgC3RlZGVMsh6g5jP1BItZ5dY2F66vDxEGkNu3kn8+krl4rs9fljeB+Dd6Mz
+         RPWvUgHaKNnXDeYUTPiS0MhfNql+aR2M/3wg9NEFjj3Vam0NTI82ILNNo9rrspuvvIZF
+         90Px5nP91uBGaWqZBVsLPY2pLR49yGR0cB0OpBGDIZKgOHWZ3wBKsd5E3JWi47dIkJsl
+         46zrr8fyS9xJcx1Dpxl2F7We8/Tsq1jGI5c50fM/umevwiRkB/lohV3fhUzWhHVF/ccJ
+         mixA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=oW5mp8XPI8J87KFQ43usYsmmtjjAtdQhi+BnJucpFYE=;
-        b=kEVfLGHBMbQerDwaPWlblklbkKlRrPZb3e3kLSlrexBfc8QZ+/6elf4LOcfUVUh12H
-         vSqOgUgZUucltZ4JJ5WlNOdVjdedvWgo4jfY3i/2QXMxSDrQBmAx/g+Q7czuFZqMVW7O
-         VDVLUx9Y0JzT5Lfx072ZAbwARio+tf1m/W14U3PG5w5UvJ8+DrzKL8Wtoyx2ginESNaT
-         64VQIqUK9Vn+KN/q/cbwxSJG/3CeqwhGy0bsgNU8CfsRiIPRNzzxca40lszwnuzqB9Iw
-         3AhrCTJZAx5WDrjjKQ/JVoyleKFdtm6CH4DWt/3hJIBiG2QygMblr00WH1DNydj/uOdb
-         FISA==
-X-Gm-Message-State: AOAM5337qOpVZFGFKzULsCeasf1hKF46qzPEiC4Hsx0Sc9itXYyzC2Mk
-        SMHNBdMfWvhkxvyyJACNv3ZxXJumfhGHLVqL/OwQxQ==
-X-Google-Smtp-Source: ABdhPJxtIonezTwyuOb3+abTlRlG2xus/TYXqhbMOoc+/bBSA0vwRyHQNz2I8V/qUMIJPn/cLo5xklKergbaeX/dl1g=
-X-Received: by 2002:a6b:1d1:: with SMTP id 200mr8413965iob.195.1611768887340;
- Wed, 27 Jan 2021 09:34:47 -0800 (PST)
+        bh=JeKSrl5MX8Qcwc3ikgn/d9vbKfAHw5aV8D7Q/o5y8Ew=;
+        b=e3ufo/Uuh7Bc1jGUrw35vYTZvkg3hb1Xnz7dnFJDzUBvWOB4foJUtCFpffAk/is668
+         OY39k7yz/7h7bdOn0UgtcB3ReCSfjkFQH4UaaxmK4T+7fpg+b1gJQ4cUsB6beiN6HhvV
+         Ty83sZKiRfMNIIcR+MnsgROkKBpIlH8gdElV7l16RcqpfxZRkCB6ZdYZUaCCnBv3mZHB
+         l5K3y8iySyU10QBQV5Q5Zwim8fC87EH6tUQeS4oOg4n9p4vm0Nc9ORrZfa7G+2wo8VYf
+         ALvvNdkNl4Com711+s/vsFREishRZwv8D1rcceFSPEiVGKCs+EkL0v82IfpZMuFFc8Jo
+         mHYg==
+X-Gm-Message-State: AOAM530+6LCUYDHzq9T4H+lROHzLFdPJPxwEcYXktSry1miWVZ9EjHQZ
+        yEPlFbZXULeA9ujcu+TutRDSnikPbzFF/hjUmZaF1eG2
+X-Google-Smtp-Source: ABdhPJz2Nnok34eJejkXVVjtUV67nbqAVdUbhKuD0JWcAt7OcGyzLqPPOTEJGPCIY7JFxbHf+YlT6DQ0naQ4op1ma44=
+X-Received: by 2002:a17:906:44a:: with SMTP id e10mr7427842eja.265.1611769043938;
+ Wed, 27 Jan 2021 09:37:23 -0800 (PST)
 MIME-Version: 1.0
-References: <CANn89iK2cd6rRFfNL-vp_Dy4xvtuk_5vA-xg=MbbWb-ybzHheg@mail.gmail.com>
- <20210127173145.58887-1-kuniyu@amazon.co.jp>
-In-Reply-To: <20210127173145.58887-1-kuniyu@amazon.co.jp>
-From:   Eric Dumazet <edumazet@google.com>
-Date:   Wed, 27 Jan 2021 18:34:35 +0100
-Message-ID: <CANn89iKE0GFK1UzQvqYxKKy8E4Qcc57=JFFWCGmtpfgWRhpOpA@mail.gmail.com>
-Subject: Re: [PATCH net] net: Remove redundant calls of sk_tx_queue_clear().
-To:     Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-Cc:     Amit Shah <aams@amazon.de>, Boris Pismenny <borisp@mellanox.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>,
-        Tariq Toukan <tariqt@mellanox.com>
+References: <1611747815-1934-1-git-send-email-stefanc@marvell.com> <1611747815-1934-11-git-send-email-stefanc@marvell.com>
+In-Reply-To: <1611747815-1934-11-git-send-email-stefanc@marvell.com>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Wed, 27 Jan 2021 12:36:46 -0500
+Message-ID: <CAF=yD-Lohx+1DRijK5=qgTj0uctBkS-Loh20zrMF7_Ditb2+pQ@mail.gmail.com>
+Subject: Re: [PATCH v4 net-next 10/19] net: mvpp2: add FCA RXQ non occupied
+ descriptor threshold
+To:     stefanc@marvell.com
+Cc:     Network Development <netdev@vger.kernel.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        David Miller <davem@davemloft.net>, nadavh@marvell.com,
+        ymarkman@marvell.com, LKML <linux-kernel@vger.kernel.org>,
+        Jakub Kicinski <kuba@kernel.org>, linux@armlinux.org.uk,
+        mw@semihalf.com, Andrew Lunn <andrew@lunn.ch>,
+        rmk+kernel@armlinux.org.uk, Antoine Tenart <atenart@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 27, 2021 at 6:32 PM Kuniyuki Iwashima <kuniyu@amazon.co.jp> wrote:
+On Wed, Jan 27, 2021 at 7:26 AM <stefanc@marvell.com> wrote:
 >
-> From:   Eric Dumazet <edumazet@google.com>
-> Date:   Wed, 27 Jan 2021 18:05:24 +0100
-> > On Wed, Jan 27, 2021 at 5:52 PM Kuniyuki Iwashima <kuniyu@amazon.co.jp> wrote:
-> > >
-> > > From:   Eric Dumazet <edumazet@google.com>
-> > > Date:   Wed, 27 Jan 2021 15:54:32 +0100
-> > > > On Wed, Jan 27, 2021 at 1:50 PM Kuniyuki Iwashima <kuniyu@amazon.co.jp> wrote:
-> > > > >
-> > > > > The commit 41b14fb8724d ("net: Do not clear the sock TX queue in
-> > > > > sk_set_socket()") removes sk_tx_queue_clear() from sk_set_socket() and adds
-> > > > > it instead in sk_alloc() and sk_clone_lock() to fix an issue introduced in
-> > > > > the commit e022f0b4a03f ("net: Introduce sk_tx_queue_mapping"). However,
-> > > > > the original commit had already put sk_tx_queue_clear() in sk_prot_alloc():
-> > > > > the callee of sk_alloc() and sk_clone_lock(). Thus sk_tx_queue_clear() is
-> > > > > called twice in each path currently.
-> > > >
-> > > > Are you sure ?
-> > > >
-> > > > I do not clearly see the sk_tx_queue_clear() call from the cloning part.
-> > > >
-> > > > Please elaborate.
-> > >
-> > > If sk is not NULL in sk_prot_alloc(), sk_tx_queue_clear() is called [1].
-> > > Also the callers of sk_prot_alloc() are only sk_alloc() and sk_clone_lock().
-> > > If they finally return not NULL pointer, sk_tx_queue_clear() is called in
-> > > each function [2][3].
-> > >
-> > > In the cloning part, sock_copy() is called after sk_prot_alloc(), but
-> > > skc_tx_queue_mapping is defined between skc_dontcopy_begin and
-> > > skc_dontcopy_end in struct sock_common [4]. So, sock_copy() does not
-> > > overwrite skc_tx_queue_mapping, and thus we can initialize it in
-> > > sk_prot_alloc().
-> >
-> > That is a lot of assumptions.
-> >
-> > What guarantees do we have that skc_tx_queue_mapping will never be
-> > moved out of this section ?
-> > AFAIK it was there by accident, for cache locality reasons, that might
-> > change in the future as we add more stuff in socket.
-> >
-> > I feel this optimization is risky for future changes, for a code path
-> > that is spending thousands of cycles anyway.
+> From: Stefan Chulski <stefanc@marvell.com>
 >
-> If someone try to move skc_tx_queue_mapping out of the section, should
-> they take care about where it is used ?
+> RXQ non occupied descriptor threshold would be used by
+> Flow Control Firmware feature to move to the XOFF mode.
+> RXQ non occupied threshold would change interrupt cause
+> that polled by CM3 Firmware.
+> Actual non occupied interrupt masked and won't trigger interrupt.
 
-Certainly not. You hide some knowledge, without a comment or some runtime check.
-
-You can not ask us (maintainers) to remember thousands of tricks.
+Does this mean that this change enables a feature, but it is unused
+due to a masked interrupt?
 
 >
-> But I agree that we should not write error-prone code.
+> Signed-off-by: Stefan Chulski <stefanc@marvell.com>
+> ---
+>  drivers/net/ethernet/marvell/mvpp2/mvpp2.h      |  3 ++
+>  drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 46 +++++++++++++++++---
+>  2 files changed, 42 insertions(+), 7 deletions(-)
 >
-> Currently, sk_tx_queue_clear() is the only initialization code in
-> sk_prot_alloc(). So, does it make sense to remove sk_tx_queue_clear() in
-> sk_prot_alloc() so that it does only allocation and other fields are
-> initialized in each caller ?
+> diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
+> index 73f087c..9d8993f 100644
+> --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
+> +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
+> @@ -295,6 +295,8 @@
+>  #define     MVPP2_PON_CAUSE_TXP_OCCUP_DESC_ALL_MASK    0x3fc00000
+>  #define     MVPP2_PON_CAUSE_MISC_SUM_MASK              BIT(31)
+>  #define MVPP2_ISR_MISC_CAUSE_REG               0x55b0
+> +#define MVPP2_ISR_RX_ERR_CAUSE_REG(port)       (0x5520 + 4 * (port))
+> +#define            MVPP2_ISR_RX_ERR_CAUSE_NONOCC_MASK  0x00ff
+
+The indentation in this file is inconsistent. Here even between the
+two newly introduced lines.
+
+>  /* Buffer Manager registers */
+>  #define MVPP2_BM_POOL_BASE_REG(pool)           (0x6000 + ((pool) * 4))
+> @@ -764,6 +766,7 @@
+>  #define MSS_SRAM_SIZE          0x800
+>  #define FC_QUANTA              0xFFFF
+>  #define FC_CLK_DIVIDER         100
+> +#define MSS_THRESHOLD_STOP     768
 >
+>  /* RX buffer constants */
+>  #define MVPP2_SKB_SHINFO_SIZE \
+> diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+> index 8f40293a..a4933c4 100644
+> --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+> +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c
+> @@ -1144,14 +1144,19 @@ static inline void mvpp2_qvec_interrupt_disable(struct mvpp2_queue_vector *qvec)
+>  static void mvpp2_interrupts_mask(void *arg)
+>  {
+>         struct mvpp2_port *port = arg;
+> +       int cpu = smp_processor_id();
+> +       u32 thread;
 >
-> > >
-> > > [1] sk_prot_alloc
-> > > https://github.com/torvalds/linux/blob/master/net/core/sock.c#L1693
-> > >
-> > > [2] sk_alloc
-> > > https://github.com/torvalds/linux/blob/master/net/core/sock.c#L1762
-> > >
-> > > [3] sk_clone_lock
-> > > https://github.com/torvalds/linux/blob/master/net/core/sock.c#L1986
-> > >
-> > > [4] struct sock_common
-> > > https://github.com/torvalds/linux/blob/master/include/net/sock.h#L218-L240
-> > >
-> > >
-> > > > In any case, this seems to be a candidate for net-next, this is not
-> > > > fixing a bug,
-> > > > this would be an optimization at most, and potentially adding a bug.
-> > > >
-> > > > So if you resend this patch, you can mention the old commit in the changelog,
-> > > > but do not add a dubious Fixes: tag
-> > >
-> > > I see.
-> > >
-> > > I will remove the tag and resend this as a net-next candidate.
-> > >
-> > > Thank you,
-> > > Kuniyuki
-> > >
-> > >
-> > > > >
-> > > > > This patch removes the redundant calls of sk_tx_queue_clear() in sk_alloc()
-> > > > > and sk_clone_lock().
-> > > > >
-> > > > > Fixes: 41b14fb8724d ("net: Do not clear the sock TX queue in sk_set_socket()")
-> > > > > CC: Tariq Toukan <tariqt@mellanox.com>
-> > > > > CC: Boris Pismenny <borisp@mellanox.com>
-> > > > > Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-> > > > > Reviewed-by: Amit Shah <aams@amazon.de>
-> > > > > ---
-> > > > >  net/core/sock.c | 2 --
-> > > > >  1 file changed, 2 deletions(-)
-> > > > >
-> > > > > diff --git a/net/core/sock.c b/net/core/sock.c
-> > > > > index bbcd4b97eddd..5c665ee14159 100644
-> > > > > --- a/net/core/sock.c
-> > > > > +++ b/net/core/sock.c
-> > > > > @@ -1759,7 +1759,6 @@ struct sock *sk_alloc(struct net *net, int family, gfp_t priority,
-> > > > >                 cgroup_sk_alloc(&sk->sk_cgrp_data);
-> > > > >                 sock_update_classid(&sk->sk_cgrp_data);
-> > > > >                 sock_update_netprioidx(&sk->sk_cgrp_data);
-> > > > > -               sk_tx_queue_clear(sk);
-> > > > >         }
-> > > > >
-> > > > >         return sk;
-> > > > > @@ -1983,7 +1982,6 @@ struct sock *sk_clone_lock(const struct sock *sk, const gfp_t priority)
-> > > > >                  */
-> > > > >                 sk_refcnt_debug_inc(newsk);
-> > > > >                 sk_set_socket(newsk, NULL);
-> > > > > -               sk_tx_queue_clear(newsk);
-> > > > >                 RCU_INIT_POINTER(newsk->sk_wq, NULL);
-> > > > >
-> > > > >                 if (newsk->sk_prot->sockets_allocated)
-> > > > > --
-> > > > > 2.17.2 (Apple Git-113)
-> > > > >
+>         /* If the thread isn't used, don't do anything */
+> -       if (smp_processor_id() > port->priv->nthreads)
+> +       if (cpu >= port->priv->nthreads)
+>                 return;
+
+Here and below, the change from greater than to greater than is really
+a (standalone) fix?
+
+> -       mvpp2_thread_write(port->priv,
+> -                          mvpp2_cpu_to_thread(port->priv, smp_processor_id()),
+> +       thread = mvpp2_cpu_to_thread(port->priv, cpu);
+> +
+> +       mvpp2_thread_write(port->priv, thread,
+>                            MVPP2_ISR_RX_TX_MASK_REG(port->id), 0);
+> +       mvpp2_thread_write(port->priv, thread,
+> +                          MVPP2_ISR_RX_ERR_CAUSE_REG(port->id), 0);
+>  }
+>
+>  /* Unmask the current thread's Rx/Tx interrupts.
+> @@ -1161,20 +1166,25 @@ static void mvpp2_interrupts_mask(void *arg)
+>  static void mvpp2_interrupts_unmask(void *arg)
+>  {
+>         struct mvpp2_port *port = arg;
+> -       u32 val;
+> +       int cpu = smp_processor_id();
+> +       u32 val, thread;
+>
+>         /* If the thread isn't used, don't do anything */
+> -       if (smp_processor_id() > port->priv->nthreads)
+> +       if (cpu >= port->priv->nthreads)
+>                 return;
+>
+> +       thread = mvpp2_cpu_to_thread(port->priv, cpu);
+> +
+>         val = MVPP2_CAUSE_MISC_SUM_MASK |
+>                 MVPP2_CAUSE_RXQ_OCCUP_DESC_ALL_MASK(port->priv->hw_version);
+>         if (port->has_tx_irqs)
+>                 val |= MVPP2_CAUSE_TXQ_OCCUP_DESC_ALL_MASK;
+>
+> -       mvpp2_thread_write(port->priv,
+> -                          mvpp2_cpu_to_thread(port->priv, smp_processor_id()),
+> +       mvpp2_thread_write(port->priv, thread,
+>                            MVPP2_ISR_RX_TX_MASK_REG(port->id), val);
+> +       mvpp2_thread_write(port->priv, thread,
+> +                          MVPP2_ISR_RX_ERR_CAUSE_REG(port->id),
+> +                          MVPP2_ISR_RX_ERR_CAUSE_NONOCC_MASK);
+>  }
+>
+>  static void
+> @@ -1199,6 +1209,9 @@ static void mvpp2_interrupts_unmask(void *arg)
+>
+>                 mvpp2_thread_write(port->priv, v->sw_thread_id,
+>                                    MVPP2_ISR_RX_TX_MASK_REG(port->id), val);
+> +               mvpp2_thread_write(port->priv, v->sw_thread_id,
+> +                                  MVPP2_ISR_RX_ERR_CAUSE_REG(port->id),
+> +                                  MVPP2_ISR_RX_ERR_CAUSE_NONOCC_MASK);
+>         }
+>  }
+>
+> @@ -2404,6 +2417,22 @@ static void mvpp2_txp_max_tx_size_set(struct mvpp2_port *port)
+>         }
+>  }
+>
+> +/* Routine set the number of non-occupied descriptors threshold that change
+> + * interrupt error cause polled by FW Flow Control
+> + */
+
+nit: no need for "Routine". Also, does "change .. cause" mean "that
+triggers an interrupt"?
