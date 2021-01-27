@@ -2,88 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1D3B3305B5A
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 13:29:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D346D305B26
+	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 13:23:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237827AbhA0M2a convert rfc822-to-8bit (ORCPT
-        <rfc822;lists+netdev@lfdr.de>); Wed, 27 Jan 2021 07:28:30 -0500
-Received: from mail.a-eberle.de ([213.95.140.213]:54296 "EHLO mail.a-eberle.de"
+        id S237833AbhA0MV5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 07:21:57 -0500
+Received: from mail.kernel.org ([198.145.29.99]:45536 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234451AbhA0MZw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 27 Jan 2021 07:25:52 -0500
-Received: from localhost (localhost [127.0.0.1])
-        by mail.a-eberle.de (Postfix) with ESMTP id AEEA93806DF
-        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 13:15:40 +0100 (CET)
-X-Virus-Scanned: Debian amavisd-new at aeberle-mx.softwerk.noris.de
-Received: from mail.a-eberle.de ([127.0.0.1])
-        by localhost (ebl-mx-02.a-eberle.de [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id E3z3ekvEowCy for <netdev@vger.kernel.org>;
-        Wed, 27 Jan 2021 13:15:39 +0100 (CET)
-Received: from gateway.a-eberle.de (unknown [178.15.155.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client CN "sg310.eberle.local", Issuer "A. Eberle GmbH & Co. KG WebAdmin CA" (not verified))
-        (Authenticated sender: postmaster@a-eberle.de)
-        by mail.a-eberle.de (Postfix) with ESMTPSA
-        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 13:15:39 +0100 (CET)
-Received: from exch-svr2013.eberle.local ([192.168.1.9]:60091 helo=webmail.a-eberle.de)
-        by gateway.a-eberle.de with esmtps (TLSv1.2:AES256-SHA:256)
-        (Exim 4.82_1-5b7a7c0-XX)
-        (envelope-from <Marco.Wenzel@a-eberle.de>)
-        id 1l4jjT-00043E-0u
-        for netdev@vger.kernel.org; Wed, 27 Jan 2021 13:15:35 +0100
-Received: from EXCH-SVR2013.eberle.local (192.168.1.9) by
- EXCH-SVR2013.eberle.local (192.168.1.9) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2; Wed, 27 Jan 2021 13:15:35 +0100
-Received: from EXCH-SVR2013.eberle.local ([::1]) by EXCH-SVR2013.eberle.local
- ([::1]) with mapi id 15.00.1497.006; Wed, 27 Jan 2021 13:15:35 +0100
-From:   "Wenzel, Marco" <Marco.Wenzel@a-eberle.de>
-To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: HSR/PRP sequence counter issue with Cisco Redbox
-Thread-Topic: HSR/PRP sequence counter issue with Cisco Redbox
-Thread-Index: Adb0oMB5N/nh+lgRSvKGIOcbXjKnGA==
-Date:   Wed, 27 Jan 2021 12:15:34 +0000
-Message-ID: <69ec2fd1a9a048e8b3305a4bc36aad01@EXCH-SVR2013.eberle.local>
-Accept-Language: de-DE, en-US
-Content-Language: de-DE
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.242.2.55]
-x-kse-serverinfo: EXCH-SVR2013.eberle.local, 9
-x-kse-antivirus-interceptor-info: scan successful
-x-kse-antivirus-info: Clean, bases: 27.01.2021 08:13:00
-x-kse-attachment-filter-triggered-rules: Clean
-x-kse-attachment-filter-triggered-filters: Clean
-x-kse-bulkmessagesfiltering-scan-result: protection disabled
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S237714AbhA0MTb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 27 Jan 2021 07:19:31 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 9DDF320786;
+        Wed, 27 Jan 2021 12:18:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1611749931;
+        bh=ELIL2d977fqXx4vmV90BaWWEiEcjry8hWCg6N1O8ZbA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=rN0y6E0gHKSCXh7cD0SrPisILsquFwXMME7pOhplLugcd5RGr3rH6JF4bXfjPVMdH
+         RKa4CdUaGqgpBcSSI/ZvRggGxpXWIjHvxbJ5++yvgwRtux9yEScLp0M0dniSTlW6NT
+         udGjLvqIePsIuhuyCc6NnXyzUya50UsEyYuUJascwQB7+eNFSdYBcCmwxLLopwSFLY
+         UIJe4t5EGkBI/eM97xzZAuQAE5xw5DCZGZQI7nLAXp6aGvHMDygQPQPQHQC0YKkiFE
+         +O1gv7WkK9OBvTwCfX7dM/ySCwirqAkirTAPazg9lBq18SdZkUd4e/KptO2g+xBeOj
+         4+SUnY6tK+UOg==
+Date:   Wed, 27 Jan 2021 14:18:47 +0200
+From:   Leon Romanovsky <leon@kernel.org>
+To:     "Saleem, Shiraz" <shiraz.saleem@intel.com>
+Cc:     Jason Gunthorpe <jgg@nvidia.com>,
+        "dledford@redhat.com" <dledford@redhat.com>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "davem@davemloft.net" <davem@davemloft.net>,
+        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "Ertman, David M" <david.m.ertman@intel.com>,
+        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
+        "Ismail, Mustafa" <mustafa.ismail@intel.com>
+Subject: Re: [PATCH 07/22] RDMA/irdma: Register an auxiliary driver and
+ implement private channel OPs
+Message-ID: <20210127121847.GK1053290@unreal>
+References: <20210122234827.1353-1-shiraz.saleem@intel.com>
+ <20210122234827.1353-8-shiraz.saleem@intel.com>
+ <20210125184248.GS4147@nvidia.com>
+ <99895f7c10a2473c84a105f46c7ef498@intel.com>
+ <20210126005928.GF4147@nvidia.com>
+ <031c2675aff248bd9c78fada059b5c02@intel.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <031c2675aff248bd9c78fada059b5c02@intel.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi,
+On Wed, Jan 27, 2021 at 12:41:41AM +0000, Saleem, Shiraz wrote:
+> > Subject: Re: [PATCH 07/22] RDMA/irdma: Register an auxiliary driver and
+> > implement private channel OPs
+> >
+> > On Tue, Jan 26, 2021 at 12:42:16AM +0000, Saleem, Shiraz wrote:
+> >
+> > > I think this essentially means doing away with .open/.close piece.
+> >
+> > Yes, that too, and probably the FSM as well.
+> >
+> > > Or are you saying that is ok?  Yes we had a discussion in the past and
+> > > I thought we concluded. But maybe I misunderstood.
+> > >
+> > > https://lore.kernel.org/linux-rdma/9DD61F30A802C4429A01CA4200E302A7DCD
+> > > 4FD03@fmsmsx124.amr.corp.intel.com/
+> >
+> > Well, having now seen how aux bus ended up and the way it effected the
+> > mlx5 driver, I am more firmly of the opinion this needs to be fixed. It is extremly
+> > hard to get everything right with two different registration schemes running around.
+> >
+> > You never answered my question:
+>
+> Sorry I missed it.
+> >
+> > > Still, you need to be able to cope with the user unbinding your
+> > > drivers in any order via sysfs. What happens to the VFs when the PF is
+> > > unbound and releases whatever resources? This is where the broadcom
+> > > driver ran into troubles..
+> >
+> > ?
+>
+> echo -n "ice.intel_rdma.0" > /sys/bus/auxiliary/drivers/irdma/unbind  ???
+>
+> That I believe will trigger a drv.remove() on the rdma PF side which require
+> the rdma VFs to go down.
+>
+> Yes, we currently have a requirement the aux rdma PF driver remain inited at least to .probe()
+> for VFs to survive.
+>
+> We are doing internal review, but it appears we could potentially get rid of the .open/.close callbacks.
+> And its associated FSM in ice.
+>
+> But if we remove peer_register/unregister, how do we synchronize between say unload of the rdma driver
+> and netdev driver stop accessing the priv channel iidc_peer_ops that it uses to send events to rdma?
 
-we have figured out an issue with the current PRP driver when trying to communicate with Cisco IE 2000 industrial Ethernet switches in Redbox mode. The Cisco always resets the HSR/PRP sequence counter to "1" at low traffic (<= 1 frame in 400 ms). It can be reproduced by a simple ICMP echo request with 1 s interval between a Linux box running with PRP and a VDAN behind the Cisco Redbox. The Linux box then always receives frames with sequence counter "1" and drops them. The behavior is not configurable at the Cisco Redbox.
+And here we are returning to square one of intended usage of aux bus.
+Your driver should be structured to have PCI core logic that will represent
+physical device and many small sub-devices with their respective drivers.
 
-I fixed it by ignoring sequence counters with value "1" at the sequence counter check in hsr_register_frame_out ():
-
-diff --git a/net/hsr/hsr_framereg.c b/net/hsr/hsr_framereg.c
-index 5c97de459905..630c238e81f0 100644
---- a/net/hsr/hsr_framereg.c
-+++ b/net/hsr/hsr_framereg.c
-@@ -411,7 +411,7 @@ void hsr_register_frame_in(struct hsr_node *node, struct hsr_port *port,
- int hsr_register_frame_out(struct hsr_port *port, struct hsr_node *node,
-                           u16 sequence_nr)
- {
--       if (seq_nr_before_or_eq(sequence_nr, node->seq_out[port->type]))
-+       if (seq_nr_before_or_eq(sequence_nr, node->seq_out[port->type]) && (sequence_nr != 1))
-                return 1;
-
-        node->seq_out[port->type] = sequence_nr;
-
-
-Do you think this could be a solution? Should this patch be officially applied in order to avoid other users running into these communication issues?
+ETH is another sub-device that shouldn't talk directly to the RDMA.
 
 Thanks
-Marco Wenzel
+
+>
+> Shiraz
+>
+>
