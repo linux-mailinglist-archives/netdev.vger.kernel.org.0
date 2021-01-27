@@ -2,100 +2,284 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id BC563305C5E
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 14:03:08 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 09E87305C76
+	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 14:07:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238059AbhA0NDC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 08:03:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40728 "EHLO
+        id S238185AbhA0NGl (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 08:06:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S313049AbhAZWrq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jan 2021 17:47:46 -0500
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 506C7C061573
-        for <netdev@vger.kernel.org>; Tue, 26 Jan 2021 14:47:05 -0800 (PST)
-Received: by mail-ed1-x533.google.com with SMTP id bx12so971edb.8
-        for <netdev@vger.kernel.org>; Tue, 26 Jan 2021 14:47:05 -0800 (PST)
+        with ESMTP id S237809AbhA0NE0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 08:04:26 -0500
+Received: from mail-il1-x133.google.com (mail-il1-x133.google.com [IPv6:2607:f8b0:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBDE6C06174A;
+        Wed, 27 Jan 2021 05:03:36 -0800 (PST)
+Received: by mail-il1-x133.google.com with SMTP id y5so1644128ilg.4;
+        Wed, 27 Jan 2021 05:03:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=HgzEOzoEbZ1l+7iH/R2EQf3nAtw+FzQ+vvJeXAXwUwI=;
-        b=q9DkZ0MzDvtYo9tyI7VIiaNDnaMMAwubaG4kRQx8WLND/H2qQzoDX5UQnn9TW9nNNP
-         tECMG4Qc81bHshl/YpwBym7z2HLTXHbQ3L1cLobO2CaNtEGuXcqddsqZFqSNzznYelEj
-         eUqYy7V2+xWDB4vK/RckjnBPBP8SBtHfeDn5i0AnMXKDuRb8MSoWujT9EAMo6FC+xfCn
-         zf0oPzvzvI7TeMJkYX3qMMtGAELnpkS4Y1lHdfJTBvGButVMQsm0xrH2Lke8F4+m27zF
-         tYcauOEclSNi/k+CT5jTluzaVN1a3/RvTpj/Q0/COIfE3whBTspLIR/A++1nIHPX6CSK
-         6wAg==
+        bh=xVu03WE8iCLZyPea99AkLIpyuQWUU66C3MJ9CSfzX6w=;
+        b=t0qdm7CrxynN1hj01CUNzWDwPjeQ5Ix58BPDqy8I4W0PkDlM6QLT6zYibzYlkHlc0f
+         qFkIqGSJFT/N9kqoCXHtCtjZ5Q3vZK5zePT+S0fA5zQSBwFHUhlG+DjxnL+R71GAVguy
+         b6YWYxxzWHMUzPY67ERrCHfwdqbPrwyrdQ13V1P42wrhaD/09f2HCCiFVbnLEqmbH5AK
+         dVDvIyZhRBQhNC+2CaEb79YA22KUx4i2D2vYbHBGauEH867SQ5466tJcpvs5GU3J7mio
+         XcbSffpDZ8VfNnckSrzQxVKNm0MW5WthFgzJFgDz0RJkw33DYQsf7OkPlGorWtJ4Y4H7
+         Cs2A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=HgzEOzoEbZ1l+7iH/R2EQf3nAtw+FzQ+vvJeXAXwUwI=;
-        b=mTineP4lUtkcms1HPDBz6l+FEU+QZSVgl2uFLkKf7O0hinaXjCgwCBXNESBYyvDPqW
-         EBWYmLstIPh3AnBLjK+A6G2JnrE6dKR9AA8yQtjzfnv+dZwEPQ2YeXZM3DiKSCjqEKj+
-         of3JpLCDg4K387LSmaRgyDHg29TRVMFWHwbn6Qz7Kkg6BbRzEZlSIMOfoQCuM5qZ+6ng
-         h+1zpbVuVy9Q334bK/uSUQ76UfHkN81UUx6yMRoe+c0juQl7+iDnOiECcSQgpsBKpnAI
-         FOVlKH1qzN7PPD3WNphRrSlVJiTLnFIK+n5ocGNVMeZchUGk1WMd87L+Tee0Nn/B2mOQ
-         HktQ==
-X-Gm-Message-State: AOAM532mOgQxpfzRWg1Y+9m8A+fsanImpb8bGKS/YKNNzhqwBw+t3qSk
-        oDyUkQDJak+T6DmWLmbcVWRLaUHoENIcZqP3uow=
-X-Google-Smtp-Source: ABdhPJzM97lpZHC10fQcQWUovquDvnAMai6lz5ZBxIxjFBlwONgFj2Onlt4oEC56x6cNKk24jL4z/NvcDQS1GUj9ZhA=
-X-Received: by 2002:a50:eb81:: with SMTP id y1mr6089462edr.176.1611701224122;
- Tue, 26 Jan 2021 14:47:04 -0800 (PST)
+        bh=xVu03WE8iCLZyPea99AkLIpyuQWUU66C3MJ9CSfzX6w=;
+        b=lMG2CZJ7A4PssevRpE/+9fp1zGy4fCAW61xAt8XyOF76hDN5dL4sjc68nlDAwIHQsQ
+         XOQ/NgM6xf5gtxHpyXk5FSZkvYkViGzRqOePLBwFX73zskb6FO4L96wKoYVLvIPkgs6/
+         KTnSMWKuAkydg8zvAlydtHvFdwEipAF/PS0T2D6CdMVROGOLnvNd1ZGzhU19Vcv4PCvd
+         xiDw/DM+pN58qnXdGpig8IWya3vpBnPKRBK0pYAClO5IgL+GI0nEmPDBfGrBC+2zKdIB
+         CHRlRTLyxSfUkKz/O1l4qFiLkbYUO/ClSm0v2VvSOfDkf/poPyd65lzXprab+eTYqVtB
+         tpWw==
+X-Gm-Message-State: AOAM533eU+6y5r81sXqD6Be8Fohfb5v2wYQcqNxLM2t6wfXSo36nHYJ+
+        phqScvkZR3CoBxDbqSGGsrs+ZKMTS+ePH1m0R6z8olhk
+X-Google-Smtp-Source: ABdhPJxjZDYjvU9+Ya60s4BF+eB8eLjolcnWD52f5r7Etkgkh9L9hXhbk28Qm//OufpChIVrS8GJPA7gYZAvnDD+k6I=
+X-Received: by 2002:a92:5e04:: with SMTP id s4mr8508203ilb.100.1611752616224;
+ Wed, 27 Jan 2021 05:03:36 -0800 (PST)
 MIME-Version: 1.0
-References: <20210126115854.2530-1-qiangqing.zhang@nxp.com> <20210126115854.2530-2-qiangqing.zhang@nxp.com>
-In-Reply-To: <20210126115854.2530-2-qiangqing.zhang@nxp.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Tue, 26 Jan 2021 17:46:26 -0500
-Message-ID: <CAF=yD-J-WDY6GPP-4B-9v78wJf3yj6vrqhHnbyhg1kx6Wc1yHg@mail.gmail.com>
-Subject: Re: [PATCH V3 1/6] net: stmmac: remove redundant null check for ptp clock
-To:     Joakim Zhang <qiangqing.zhang@nxp.com>
-Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-imx@nxp.com, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>
+References: <20210123092425.11434-1-bongsu.jeon@samsung.com>
+ <20210123092425.11434-2-bongsu.jeon@samsung.com> <20210126174238.16d9691a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210126174238.16d9691a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Bongsu Jeon <bongsu.jeon2@gmail.com>
+Date:   Wed, 27 Jan 2021 22:03:25 +0900
+Message-ID: <CACwDmQDPeEWPrbLh_k3s_tLwBKfmBSB4cvZooonG-qhGGd-50A@mail.gmail.com>
+Subject: Re: [PATCH net-next v3 1/2] nfc: Add a virtual nci device driver
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     shuah@kernel.org, Krzysztof Kozlowski <krzk@kernel.org>,
+        netdev@vger.kernel.org, linux-nfc@lists.01.org,
+        linux-kselftest@vger.kernel.org,
+        Bongsu Jeon <bongsu.jeon@samsung.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 26, 2021 at 7:05 AM Joakim Zhang <qiangqing.zhang@nxp.com> wrote:
+On Wed, Jan 27, 2021 at 10:42 AM Jakub Kicinski <kuba@kernel.org> wrote:
 >
-> Remove redundant null check for ptp clock.
+> On Sat, 23 Jan 2021 18:24:24 +0900 Bongsu Jeon wrote:
+> > From: Bongsu Jeon <bongsu.jeon@samsung.com>
+> >
+> > NCI virtual device simulates a NCI device to the user. It can be used to
+> > validate the NCI module and applications. This driver supports
+> > communication between the virtual NCI device and NCI module.
+> >
+> > Signed-off-by: Bongsu Jeon <bongsu.jeon@samsung.com>
 >
-> Fixes: 1c35cc9cf6a0 ("net: stmmac: remove redundant null check before clk_disable_unprepare()")
+> > +static bool virtual_ncidev_check_enabled(void)
+> > +{
+> > +     bool ret = true;
+> > +
+> > +     mutex_lock(&nci_mutex);
+> > +     if (state != virtual_ncidev_enabled)
+> > +             ret = false;
+> > +     mutex_unlock(&nci_mutex);
+> > +
+> > +     return ret;
+>
+>
+> This can be simplified like:
+>
+>         bool ret;
+>
+>         mutex_lock()
+>         ret = state == virtual_ncidev_enabled;
+>         mutex_unlock()
+>
+>         return ret;
+>
+>
+> > +}
+> > +
+> > +static int virtual_nci_open(struct nci_dev *ndev)
+> > +{
+> > +     return 0;
+> > +}
+> > +
+> > +static int virtual_nci_close(struct nci_dev *ndev)
+> > +{
+> > +     mutex_lock(&nci_mutex);
+> > +     if (send_buff)
+> > +             kfree_skb(send_buff);
+>
+> kfree_skb() handles NULL, no need for the if, you can always call
+> kfree_skb() here
+>
 
-This does not look like a fix to that patch, but another instance of a cleanup.
+I see, I will remove this.
 
-The patchset also does not explicitly target net (for fixes) or
-net-next (for new improvements). I suppose this patch targets
-net-next.
+> > +     send_buff = NULL;
+> > +     mutex_unlock(&nci_mutex);
+> > +
+> > +     return 0;
+> > +}
+> > +
+> > +static int virtual_nci_send(struct nci_dev *ndev, struct sk_buff *skb)
+> > +{
+> > +     if (virtual_ncidev_check_enabled() == false)
+> > +             return 0;
+>
+> Shouldn't you check this _under_ the lock below?
+>
+> Otherwise there is a small window between check and use of send_buff
+>
 
-> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
-> Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
-> ---
->  drivers/net/ethernet/stmicro/stmmac/stmmac_main.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
+In virtual_ncidev_check_enabled function, mutex is used.
+I think that virtual_ncidev_check_enabled function isn't necessary
+after refactoring.
+So I'll remove it.
+
+> > +     mutex_lock(&nci_mutex);
+> > +     if (send_buff) {
+> > +             mutex_unlock(&nci_mutex);
+> > +             return -1;
+> > +     }
+> > +     send_buff = skb_copy(skb, GFP_KERNEL);
+> > +     mutex_unlock(&nci_mutex);
+> > +
+> > +     return 0;
+> > +}
+> > +
+> > +static struct nci_ops virtual_nci_ops = {
+> > +     .open = virtual_nci_open,
+> > +     .close = virtual_nci_close,
+> > +     .send = virtual_nci_send
+> > +};
+> > +
+> > +static ssize_t virtual_ncidev_read(struct file *file, char __user *buf,
+> > +                                size_t count, loff_t *ppos)
+> > +{
+> > +     size_t actual_len;
+> > +
+> > +     mutex_lock(&nci_mutex);
+> > +     if (!send_buff) {
+> > +             mutex_unlock(&nci_mutex);
+> > +             return 0;
+> > +     }
+> > +
+> > +     actual_len = min_t(size_t, count, send_buff->len);
+> > +
+> > +     if (copy_to_user(buf, send_buff->data, actual_len)) {
+> > +             mutex_unlock(&nci_mutex);
+> > +             return -EFAULT;
+> > +     }
+> > +
+> > +     skb_pull(send_buff, actual_len);
+> > +     if (send_buff->len == 0) {
+> > +             consume_skb(send_buff);
+> > +             send_buff = NULL;
+> > +     }
+> > +     mutex_unlock(&nci_mutex);
+> > +
+> > +     return actual_len;
+> > +}
+> > +
+> > +static ssize_t virtual_ncidev_write(struct file *file,
+> > +                                 const char __user *buf,
+> > +                                 size_t count, loff_t *ppos)
+> > +{
+> > +     struct sk_buff *skb;
+> > +
+> > +     skb = alloc_skb(count, GFP_KERNEL);
+> > +     if (!skb)
+> > +             return -ENOMEM;
+> > +
+> > +     if (copy_from_user(skb_put(skb, count), buf, count)) {
+> > +             kfree_skb(skb);
+> > +             return -EFAULT;
+> > +     }
+> > +
+> > +     nci_recv_frame(ndev, skb);
+> > +     return count;
+> > +}
+> > +
+> > +static int virtual_ncidev_open(struct inode *inode, struct file *file)
+> > +{
+> > +     int ret = 0;
+> > +
+> > +     mutex_lock(&nci_mutex);
+> > +     if (state != virtual_ncidev_disabled) {
+> > +             mutex_unlock(&nci_mutex);
+> > +             return -EBUSY;
+> > +     }
+> > +
+> > +     ndev = nci_allocate_device(&virtual_nci_ops, VIRTUAL_NFC_PROTOCOLS,
+> > +                                0, 0);
+> > +     if (!ndev) {
+> > +             mutex_unlock(&nci_mutex);
+> > +             return -ENOMEM;
+> > +     }
+> > +
+> > +     ret = nci_register_device(ndev);
+> > +     if (ret < 0) {
+> > +             nci_free_device(ndev);
+> > +             mutex_unlock(&nci_mutex);
+> > +             return ret;
+> > +     }
+> > +     state = virtual_ncidev_enabled;
+> > +     mutex_unlock(&nci_mutex);
+> > +
+> > +     return 0;
+> > +}
+> > +
+> > +static int virtual_ncidev_close(struct inode *inode, struct file *file)
+> > +{
+> > +     mutex_lock(&nci_mutex);
+> > +
+> > +     if (state == virtual_ncidev_enabled) {
+> > +             state = virtual_ncidev_disabling;
+> > +             mutex_unlock(&nci_mutex);
+> > +
+> > +             nci_unregister_device(ndev);
+> > +             nci_free_device(ndev);
+> > +
+> > +             mutex_lock(&nci_mutex);
+> > +     }
+> > +
+> > +     state = virtual_ncidev_disabled;
+> > +     mutex_unlock(&nci_mutex);
+> > +
+> > +     return 0;
+> > +}
+> > +
+> > +static long virtual_ncidev_ioctl(struct file *flip, unsigned int cmd,
+> > +                              unsigned long arg)
+> > +{
+> > +     if (cmd == IOCTL_GET_NCIDEV_IDX) {
+> > +             struct nfc_dev *nfc_dev = ndev->nfc_dev;
+> > +             void __user *p = (void __user *)arg;
+> > +
+> > +             if (copy_to_user(p, &nfc_dev->idx, sizeof(nfc_dev->idx)))
+> > +                     return -EFAULT;
+> > +     } else {
+> > +             return -ENOTTY;
+> > +     }
+> > +
+> > +     return 0;
 >
-> diff --git a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> index 26b971cd4da5..11e0b30b2e01 100644
-> --- a/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> +++ b/drivers/net/ethernet/stmicro/stmmac/stmmac_main.c
-> @@ -5291,8 +5291,7 @@ int stmmac_resume(struct device *dev)
->                 /* enable the clk previously disabled */
->                 clk_prepare_enable(priv->plat->stmmac_clk);
->                 clk_prepare_enable(priv->plat->pclk);
-> -               if (priv->plat->clk_ptp_ref)
-> -                       clk_prepare_enable(priv->plat->clk_ptp_ref);
-> +               clk_prepare_enable(priv->plat->clk_ptp_ref);
->                 /* reset the phy so that it's ready */
->                 if (priv->mii)
->                         stmmac_mdio_reset(priv->mii);
-> --
-> 2.17.1
+> Please flip the condition and return early. I think I suggested this
+> already:
+
+Sorry, I didn't misunderstand it.
+I will change it.
+
 >
+> {
+>         struct nfc_dev *nfc_dev = ndev->nfc_dev;
+>         void __user *p = (void __user *)arg;
+>
+>         if (cmd != IOCTL_GET_NCIDEV_IDX)
+>                 return -ENOTTY;
+>
+>         if (copy_to_user(p, &nfc_dev->idx, sizeof(nfc_dev->idx)))
+>                 return -EFAULT;
+>
+>         return 0;
+
+Thank you for your review.
