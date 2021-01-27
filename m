@@ -2,197 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 34D173064FA
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 21:23:30 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 10155306506
+	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 21:25:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231820AbhA0UVs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 15:21:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35724 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231424AbhA0UVq (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 15:21:46 -0500
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CE37C061573;
-        Wed, 27 Jan 2021 12:21:05 -0800 (PST)
-Received: by mail-ed1-x52f.google.com with SMTP id g1so4036536edu.4;
-        Wed, 27 Jan 2021 12:21:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=nY++2Ktt5t0NpvtyG07V94lwnaMUXjXyNcAVVFj7Mo4=;
-        b=cbcRIa8k+Dzt5J8GKUv+mOlSyeZbFzLaGzqza0LrYE691x/WbMG84J1iscH20lye6/
-         MQXgAFZdDPRW55+F4f+fKA+Wj9+4IMMvAT3cRNrl1ho9GIGwMxVd0jTxCkqnVE+fZG3e
-         Ro2xBAGUcOfppr1egeNnrasS2gt/tdmkbNPshMG7TcHO3z2RYZo0ietH5CwZGgic6Cr3
-         7HavqvHal9r0RgxVv9hGztpbKfU35a7Zrjl4LOklF9mX1DQskZyGUl66cREtrEt4d1RW
-         7g4gQyuRl4E+P084PbZUeWR1gOdkdqzRxxYgKaUa1eK0x2S0nngZgoQ58s/hIQ1nzKhJ
-         oerg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=nY++2Ktt5t0NpvtyG07V94lwnaMUXjXyNcAVVFj7Mo4=;
-        b=C4uaZ8kYtRaMrOPT+phEhib7UxeREsw83FO5GiLzYBKAkzUb1ocO4BuPoeTl2TWtNT
-         w/LHEuNvlSo/UZ5Ttqtfvo9HT/tUTuxMuY16G472EY1ulQYGbEGyEGSzG2l4ERBomonY
-         iKkj/Ic+YtU4pv0t9TLF+eUPpYCfmocHse/6Vio5qQaaaPQWX1fMR3NEqDUbyt8uUGiv
-         IrtH6ZqOZMO3/y5VpY7aH/uJqR6PnSWTHBUT9DlEvtTqePuOeaO5gGUSjib2qvUw0qtc
-         1LCMJ5FmnERUIDxeyIADY3RN1EZn7Kq5/jE2a6PI4kzdLwakeXnPhgCznvvoRqbVoHL3
-         d9Cw==
-X-Gm-Message-State: AOAM530Tf8jXxFDfZmE4zTCJJynNl5di3HzekUu7HcJ1U0eFClx0/2od
-        C/AggqUUYLhc+WD7L+smNncT41+uiLbxvkSH6uQ=
-X-Google-Smtp-Source: ABdhPJxXszzip0vKMEEGs5SRGXLDD/aRB333TuOEbeYttLkQzLI9viZ40NCSJPU0sTDjjD4OKNyCWkg7DTNkRMPiDiM=
-X-Received: by 2002:aa7:c9cf:: with SMTP id i15mr10551833edt.296.1611778864325;
- Wed, 27 Jan 2021 12:21:04 -0800 (PST)
+        id S232518AbhA0UYj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 15:24:39 -0500
+Received: from mail-40136.protonmail.ch ([185.70.40.136]:34971 "EHLO
+        mail-40136.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231346AbhA0UYg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 15:24:36 -0500
+Date:   Wed, 27 Jan 2021 20:23:48 +0000
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
+        t=1611779031; bh=3sWElGNGgappUnF5Kd8jNAGLD06GNdAvPcxILY0B8/A=;
+        h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
+        b=aL522TuVAVSb+jpMVRrLVwgiG1dCW9GEbIHyzFs87eJU7GVqp4P8e4F5QHTWm4pw/
+         EBdtAWI6Oz2JqrRSppbIfGq0YFJAiZ5sPqwFTiQSona97bz3spHMzlATmxRxLSe0qM
+         e+X+aOUv8CFYm4aNs0GcX6sIxKx9rzkQ2pJZYDAuIyxDPIcpcOseQSAuPBqfaVxzYj
+         AMqImLK2tiGV1YUEezS2oSOkiofo/MfwTX3Acuc0z9J6kFkmTLpJJFBoiBENXzPo5r
+         lb3ocltvxlyGrb6vH6f9uElRMGhRYQZT2FHflaCI9QauYyEmNYBCh4kVah0mD7j9sN
+         RgutLUDfUQfrQ==
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+From:   Alexander Lobakin <alobakin@pm.me>
+Cc:     Yisen Zhuang <yisen.zhuang@huawei.com>,
+        Salil Mehta <salil.mehta@huawei.com>,
+        Jesse Brandeburg <jesse.brandeburg@intel.com>,
+        Tony Nguyen <anthony.l.nguyen@intel.com>,
+        Saeed Mahameed <saeedm@nvidia.com>,
+        Leon Romanovsky <leon@kernel.org>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Jesper Dangaard Brouer <hawk@kernel.org>,
+        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
+        Jonathan Lemon <jonathan.lemon@gmail.com>,
+        Willem de Bruijn <willemb@google.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Pablo Neira Ayuso <pablo@netfilter.org>,
+        Dexuan Cui <decui@microsoft.com>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Marco Elver <elver@google.com>,
+        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
+        linux-rdma@vger.kernel.org, linux-mm@kvack.org,
+        Alexander Lobakin <alobakin@pm.me>
+Reply-To: Alexander Lobakin <alobakin@pm.me>
+Subject: Re: [PATCH net-next 0/3] net: constify page_is_pfmemalloc() and its users
+Message-ID: <20210127202322.99523-1-alobakin@pm.me>
+In-Reply-To: <20210125164612.243838-1-alobakin@pm.me>
+References: <20210125164612.243838-1-alobakin@pm.me>
 MIME-Version: 1.0
-References: <1611733552-150419-1-git-send-email-hkelam@marvell.com> <1611733552-150419-3-git-send-email-hkelam@marvell.com>
-In-Reply-To: <1611733552-150419-3-git-send-email-hkelam@marvell.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Wed, 27 Jan 2021 15:20:27 -0500
-Message-ID: <CAF=yD-+6J1-HA6eOPFnmWGZidr_vh41907fnoX+kEC=vuH2+Aw@mail.gmail.com>
-Subject: Re: [Patch v2 net-next 2/7] octeontx2-af: Add new CGX_CMD to get PHY
- FEC statistics
-To:     Hariprasad Kelam <hkelam@marvell.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sunil Kovvuri Goutham <sgoutham@marvell.com>,
-        Linu Cherian <lcherian@marvell.com>,
-        Geethasowjanya Akula <gakula@marvell.com>,
-        Jerin Jacob <jerinj@marvell.com>, sbhatta@marvell.com,
-        Felix Manlunas <fmanlunas@marvell.com>,
-        Christina Jacob <cjacob@marvell.com>,
-        Sunil Kovvuri Goutham <Sunil.Goutham@cavium.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+X-Spam-Status: No, score=-1.2 required=10.0 tests=ALL_TRUSTED,DKIM_SIGNED,
+        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF shortcircuit=no
+        autolearn=disabled version=3.4.4
+X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on
+        mailout.protonmail.ch
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 27, 2021 at 4:04 AM Hariprasad Kelam <hkelam@marvell.com> wrote:
->
-> From: Felix Manlunas <fmanlunas@marvell.com>
->
-> This patch adds support to fetch fec stats from PHY. The stats are
-> put in the shared data struct fwdata.  A PHY driver indicates
-> that it has FEC stats by setting the flag fwdata.phy.misc.has_fec_stats
->
-> Besides CGX_CMD_GET_PHY_FEC_STATS, also add CGX_CMD_PRBS and
-> CGX_CMD_DISPLAY_EYE to enum cgx_cmd_id so that Linux's enum list is in sync
-> with firmware's enum list.
->
-> Signed-off-by: Felix Manlunas <fmanlunas@marvell.com>
-> Signed-off-by: Christina Jacob <cjacob@marvell.com>
-> Signed-off-by: Sunil Kovvuri Goutham <Sunil.Goutham@cavium.com>
-> Signed-off-by: Hariprasad Kelam <hkelam@marvell.com>
+From: Alexander Lobakin <alobakin@pm.me>
+Date: Mon, 25 Jan 2021 16:46:48 +0000
 
+> page_is_pfmemalloc() is used mostly by networking drivers. It doesn't
+> write anything to the struct page itself, so constify its argument and
+> a bunch of callers and wrappers around this function in drivers.
+> In Page Pool core code, it can be simply inlined instead.
+>=20
+> Alexander Lobakin (3):
+>   mm: constify page_is_pfmemalloc() argument
+>   net: constify page_is_pfmemalloc() argument at call sites
+>   net: page_pool: simplify page recycling condition tests
 
-> +struct phy_s {
-> +       struct {
-> +               u64 can_change_mod_type : 1;
-> +               u64 mod_type            : 1;
-> +               u64 has_fec_stats       : 1;
+Superseded with v2 [0].
 
-this style is not customary
+>  drivers/net/ethernet/hisilicon/hns3/hns3_enet.c   |  2 +-
+>  drivers/net/ethernet/intel/fm10k/fm10k_main.c     |  2 +-
+>  drivers/net/ethernet/intel/i40e/i40e_txrx.c       |  2 +-
+>  drivers/net/ethernet/intel/iavf/iavf_txrx.c       |  2 +-
+>  drivers/net/ethernet/intel/ice/ice_txrx.c         |  2 +-
+>  drivers/net/ethernet/intel/igb/igb_main.c         |  2 +-
+>  drivers/net/ethernet/intel/igc/igc_main.c         |  2 +-
+>  drivers/net/ethernet/intel/ixgbe/ixgbe_main.c     |  2 +-
+>  drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c |  2 +-
+>  drivers/net/ethernet/mellanox/mlx5/core/en_rx.c   |  2 +-
+>  include/linux/mm.h                                |  2 +-
+>  include/linux/skbuff.h                            |  4 ++--
+>  net/core/page_pool.c                              | 14 ++++----------
+>  13 files changed, 17 insertions(+), 23 deletions(-)
+>=20
+> --=20
+> 2.30.0
 
-> +       } misc;
-> +       struct fec_stats_s {
-> +               u32 rsfec_corr_cws;
-> +               u32 rsfec_uncorr_cws;
-> +               u32 brfec_corr_blks;
-> +               u32 brfec_uncorr_blks;
-> +       } fec_stats;
-> +};
-> +
-> +struct cgx_lmac_fwdata_s {
-> +       u16 rw_valid;
-> +       u64 supported_fec;
-> +       u64 supported_an;
+[0] https://lore.kernel.org/netdev/20210127201031.98544-1-alobakin@pm.me
 
-are these intended to be individual u64's?
+Thanks,
+Al
 
-> +       u64 supported_link_modes;
-> +       /* only applicable if AN is supported */
-> +       u64 advertised_fec;
-> +       u64 advertised_link_modes;
-> +       /* Only applicable if SFP/QSFP slot is present */
-> +       struct sfp_eeprom_s sfp_eeprom;
-> +       struct phy_s phy;
-> +#define LMAC_FWDATA_RESERVED_MEM 1021
-> +       u64 reserved[LMAC_FWDATA_RESERVED_MEM];
-> +};
-> +
-> +struct cgx_fw_data {
-> +       struct mbox_msghdr hdr;
-> +       struct cgx_lmac_fwdata_s fwdata;
-> +};
-> +
->  /* NPA mbox message formats */
->
->  /* NPA mailbox error codes
-> diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
-> index b1a6ecf..c824f1e 100644
-> --- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
-> +++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.h
-> @@ -350,6 +350,10 @@ struct rvu_fwdata {
->         u64 msixtr_base;
->  #define FWDATA_RESERVED_MEM 1023
->         u64 reserved[FWDATA_RESERVED_MEM];
-> +       /* Do not add new fields below this line */
-> +#define CGX_MAX         5
-> +#define CGX_LMACS_MAX   4
-> +       struct cgx_lmac_fwdata_s cgx_fw_data[CGX_MAX][CGX_LMACS_MAX];
-
-Probably want to move the comment below the field.
->  };
->
->  struct ptp;
-> diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
-> index 74f494b..7fac9ab 100644
-> --- a/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
-> +++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu_cgx.c
-> @@ -694,6 +694,19 @@ int rvu_mbox_handler_cgx_cfg_pause_frm(struct rvu *rvu,
->         return 0;
->  }
->
-> +int rvu_mbox_handler_cgx_get_phy_fec_stats(struct rvu *rvu, struct msg_req *req,
-> +                                          struct msg_rsp *rsp)
-> +{
-> +       int pf = rvu_get_pf(req->hdr.pcifunc);
-> +       u8 cgx_id, lmac_id;
-> +
-> +       if (!is_pf_cgxmapped(rvu, pf))
-> +               return -EPERM;
-> +
-> +       rvu_get_cgx_lmac_id(rvu->pf2cgxlmac_map[pf], &cgx_id, &lmac_id);
-> +       return cgx_get_phy_fec_stats(rvu_cgx_pdata(cgx_id, rvu), lmac_id);
-> +}
-> +
->  /* Finds cumulative status of NIX rx/tx counters from LF of a PF and those
->   * from its VFs as well. ie. NIX rx/tx counters at the CGX port level
->   */
-> @@ -800,3 +813,22 @@ int rvu_mbox_handler_cgx_set_fec_param(struct rvu *rvu,
->         rsp->fec = cgx_set_fec(req->fec, cgx_id, lmac_id);
->         return 0;
->  }
-> +
-> +int rvu_mbox_handler_cgx_get_aux_link_info(struct rvu *rvu, struct msg_req *req,
-> +                                          struct cgx_fw_data *rsp)
-> +{
-> +       int pf = rvu_get_pf(req->hdr.pcifunc);
-> +       u8 cgx_id, lmac_id;
-> +
-> +       if (!rvu->fwdata)
-> +               return -ENXIO;
-> +
-> +       if (!is_pf_cgxmapped(rvu, pf))
-> +               return -EPERM;
-> +
-> +       rvu_get_cgx_lmac_id(rvu->pf2cgxlmac_map[pf], &cgx_id, &lmac_id);
-> +
-> +       memcpy(&rsp->fwdata, &rvu->fwdata->cgx_fw_data[cgx_id][lmac_id],
-> +              sizeof(struct cgx_lmac_fwdata_s));
-> +       return 0;
-> +}
-> --
-> 2.7.4
->
