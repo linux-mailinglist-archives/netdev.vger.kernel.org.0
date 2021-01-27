@@ -2,126 +2,262 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id EC77B305339
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 07:31:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 3899B30533E
+	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 07:33:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231702AbhA0GbN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 01:31:13 -0500
-Received: from mail-eopbgr40109.outbound.protection.outlook.com ([40.107.4.109]:37539
-        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S232531AbhA0DIu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Tue, 26 Jan 2021 22:08:50 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=PG8ZZYgaRJ6v1RE2dsfUMdi5aBbtGPvGL85fSxw5UTAbQfwV9NlzMJHFd7MXNXxq7rSxL/OfaKlc2WGFRBqkl3jw2Laq5wqwuz+P0ZCpcXOZF56S9nbWD8zAWlwvBDSYHLViP9IMC04BM1EJIN1uyxh8PG3CYr65THw6ziw03eY+h8Iui8KSoMWtbKVjIJaIy1pRB9P5nGym9VL2e7KYX7NC9luQuMU3PjhgbG0fQJ4SYn2FdQ9E9wa3ePZ/vYkEeQlnHC29D+9vWWDD5S76NLG/3URD/RR/IznHxnyUJTSDJz7QKls74/poFGNo/MfismQq6nZWciIAkG1hi2icZw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=GvqqBpao4cixn3snPQ+ev4Oa5fjyTt9/8snlyw3mMeY=;
- b=b46Gm0Gd2sEaQiMlj/RnZJPFrsgMX+QHhNrPtdhvRVMWOc2SFha13CeiUtFxwkniKx4uZzT192sraiB4R45UjJ7cJ8lG5YL30ZXHg3vCwwcVx9xOornGH9t1B3VA9LvH8WSUquTGKwbI0sg6Vz6BfV3bizO2THAeJBnB2rl1W4A0F56RNO+725+xkFZNiyLZmbj2FvOtZ+lAToS4+/RJ0F+ToifXw/bXe1cA+P6QV7ZxJzZALym19P42+cFIIP0nyap0bflRty0pNIY2fYtdx6TUFReL339vpc9bmxHc6F0Z0hHk+8DrkZEigp+qsj4c2LjvnBWHcSxvDdPhBxvX6w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=dektech.com.au; dmarc=pass action=none
- header.from=dektech.com.au; dkim=pass header.d=dektech.com.au; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=dektech.com.au;
- s=selector2;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=GvqqBpao4cixn3snPQ+ev4Oa5fjyTt9/8snlyw3mMeY=;
- b=Rn1hLbW7keYCc923eUsgue/5vxd1duhZbVkh/Vq4d5aDsfkBYG8zudDy8HyiamywnB7rVMBkHfzZ7INi1UjZjMnMMWA42JS6qNzcsyCn3i0cB99oynixJDA67laury4Z/z9e4uGbFOcqWGOHLZSnJhyDSbzHxEK0tCQ2HT52x8g=
-Authentication-Results: vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=none action=none
- header.from=dektech.com.au;
-Received: from VI1PR05MB4605.eurprd05.prod.outlook.com (2603:10a6:802:61::21)
- by VI1PR05MB6926.eurprd05.prod.outlook.com (2603:10a6:800:182::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3784.12; Wed, 27 Jan
- 2021 02:51:37 +0000
-Received: from VI1PR05MB4605.eurprd05.prod.outlook.com
- ([fe80::9854:ed43:372d:2883]) by VI1PR05MB4605.eurprd05.prod.outlook.com
- ([fe80::9854:ed43:372d:2883%6]) with mapi id 15.20.3784.017; Wed, 27 Jan 2021
- 02:51:37 +0000
-From:   Hoang Huu Le <hoang.h.le@dektech.com.au>
-To:     netdev@vger.kernel.org, ying.xue@windriver.com
-Cc:     maloy@donjonn.com, jmaloy@redhat.com
-Subject: [net-next] tipc: remove duplicated code in tipc_msg_create
-Date:   Wed, 27 Jan 2021 09:51:23 +0700
-Message-Id: <20210127025123.6390-1-hoang.h.le@dektech.com.au>
-X-Mailer: git-send-email 2.25.1
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [14.161.14.188]
-X-ClientProxiedBy: HK2PR02CA0145.apcprd02.prod.outlook.com
- (2603:1096:202:16::29) To VI1PR05MB4605.eurprd05.prod.outlook.com
- (2603:10a6:802:61::21)
-MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from dektech.com.au (14.161.14.188) by HK2PR02CA0145.apcprd02.prod.outlook.com (2603:1096:202:16::29) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3805.16 via Frontend Transport; Wed, 27 Jan 2021 02:51:35 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 7a255b6f-822d-4988-f4c0-08d8c26e76be
-X-MS-TrafficTypeDiagnostic: VI1PR05MB6926:
-X-Microsoft-Antispam-PRVS: <VI1PR05MB692623F119B282B7A54505ABF1BB0@VI1PR05MB6926.eurprd05.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:2276;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: VatHwhOVTtByMEGGlvv20tU2rnSw7mUSxEMSHMBwmV+Csv+Ci93M7kImRH2jDZpd5oSdBlBESiA7W4K4v3Wk25M2+ZvWdz2hnoNVXqe8UvimyxMZNdilJuAPYXYwWm8pWEJ4wfKKhv9WE4env+ZHCSt3yUhVpHEJ5jq3T26uNgAtxX8TpT/VhIky+7knXYcbH3V0SZmGAslaT+j57DyXah28dFeOnCGQK5M7rGsiYKkZlJXNv6plNtlY/uj0eF9DB/8y0br4YJCJOVN7UwtNl7eBh+t3K+RZe2/absK1QbUVnujR7YAxvFCOllUpg0B4mXf2JVaucFkKNYQUPp5hvCgFw7sxs5pqq7AeZ/qy9CDB3rhdDLZbTAXHMWG3zwMmDbCNzzNYAy+d468ZsdDd9A==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR05MB4605.eurprd05.prod.outlook.com;PTR:;CAT:NONE;SFS:(376002)(346002)(366004)(396003)(136003)(39830400003)(316002)(4326008)(26005)(8936002)(83380400001)(66946007)(2906002)(52116002)(478600001)(186003)(36756003)(8676002)(103116003)(66556008)(86362001)(6666004)(4744005)(5660300002)(1076003)(16526019)(55016002)(956004)(7696005)(66476007)(2616005);DIR:OUT;SFP:1102;
-X-MS-Exchange-AntiSpam-MessageData: =?us-ascii?Q?5ZqDdyvAmnO7R1MVyqQpNUwIuBdLsg0mFAuUM+SVXef6D1b4u0p8+oY15sgP?=
- =?us-ascii?Q?l6dYgsg3yA0xXnl5AZbeJUKMm+nHC4kfVnqnQl/zlZyCU4nmdfFa5YZ0uUeS?=
- =?us-ascii?Q?DPLNYCkeZThxpLc4aq8C0wLpAitDaFPHa/uc3UTuGxmJWlYIQe4usAt4iPWh?=
- =?us-ascii?Q?I5saKjXhJXBJEjU9UnUT0uyZmdHMq0XOE+CP2QHi51Ngeg4jIK6zZJT8C9uF?=
- =?us-ascii?Q?1iClfA1GTnzjYUzp42H4/W3sfBH+agFoO8WpRZYsSncTHyX3xk8+tNfcGnfs?=
- =?us-ascii?Q?WKzdB+WvHTxFyaX6764OSsEdRN2SK+BfH7679QbtNqS2X4Zct0pgvg3hhlKr?=
- =?us-ascii?Q?L+Hjw6xoQDcBj0JG9YZAZTwb66K1mwX+UQc5kZKo8Q5Wxs/8SQ3XjYODehzV?=
- =?us-ascii?Q?Dq+3AkKr4N1XYzIa+hJ4ryvJN4q1mHnh8MCyvqKVV/g7HKntdKnDAEvCLmxh?=
- =?us-ascii?Q?g1o3XE4FU8NU7aUiOC58bMENq5riL+LY59pwzPF75vg/95h6Bl9oBwEoaZDG?=
- =?us-ascii?Q?x1YDhOd3/sOReQ9Yrk7OcfQDTEfHjapdtEDTodU2THpGmePB7Qu1QjASJBBR?=
- =?us-ascii?Q?8sjbw+nkRkISJ1XKwcL4XMbzwLirUZKiWs3siIROrivFr4sJhhedcBDMNx7y?=
- =?us-ascii?Q?3rC3eOIygyA2YGkXlgBgpKyd4AqlDniNVMj2A496Qxc6qAohQasDGOUmCXAk?=
- =?us-ascii?Q?EoZlFzpuQBb2x6XJ/VWNJ2TXuHsYnSt9nuA1qMydY4DfNzenIp5Dg2reWDCg?=
- =?us-ascii?Q?wHdXauKmHsX2V1Mb8QpeFSoNO19/LKuS/crJhPyHx0pIy0cNZPFlcEA9TTvk?=
- =?us-ascii?Q?h8A0nd6uoO+4QBAY7Athm4IHkDmQB9ST1S5ZZ1kv+dZBydsTZMdKqvdd2Cpq?=
- =?us-ascii?Q?mUGXVUuqcaPOyibMYoSaaD2NrWQbloB9zIWEyw2VBrvAIJ/ol9Gurk6j05aA?=
- =?us-ascii?Q?47030vOPxCeSy4V7VGGzp3YBQnWi86tv5WT96fcSI9BY43BL/EWExCcOKLwQ?=
- =?us-ascii?Q?+lzjBXf0WyNOMadEkccJlt8fES2HMoDY2+Oor/Y1CzbgTlZtmDidDw8CrFpD?=
- =?us-ascii?Q?7rx8RqQk?=
-X-OriginatorOrg: dektech.com.au
-X-MS-Exchange-CrossTenant-Network-Message-Id: 7a255b6f-822d-4988-f4c0-08d8c26e76be
-X-MS-Exchange-CrossTenant-AuthSource: VI1PR05MB4605.eurprd05.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 Jan 2021 02:51:37.6636
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 1957ea50-0dd8-4360-8db0-c9530df996b2
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: MZzxLR1b/4E1irxpoEDNH6zaW89LbXTuG0V10se1iXl7UFFlJ++ChnvrH3A0O7aPlzBvvRgnGTFDIOkNk+CKBQjfs0r2vYhsl4pkGMRlNdg=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR05MB6926
+        id S231918AbhA0Gcb (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 01:32:31 -0500
+Received: from out4436.biz.mail.alibaba.com ([47.88.44.36]:1645 "EHLO
+        out4436.biz.mail.alibaba.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231311AbhA0GSg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 01:18:36 -0500
+X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R111e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=abaci-bugfix@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0UN0aNvs_1611728255;
+Received: from j63c13417.sqa.eu95.tbsite.net(mailfrom:abaci-bugfix@linux.alibaba.com fp:SMTPD_---0UN0aNvs_1611728255)
+          by smtp.aliyun-inc.com(127.0.0.1);
+          Wed, 27 Jan 2021 14:17:39 +0800
+From:   Jiapeng Zhong <abaci-bugfix@linux.alibaba.com>
+To:     marcel@holtmann.org
+Cc:     johan.hedberg@gmail.com, luiz.dentz@gmail.com, davem@davemloft.net,
+        kuba@kernel.org, linux-bluetooth@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jiapeng Zhong <abaci-bugfix@linux.alibaba.com>
+Subject: [PATCH v3] net/bluetooth/hci_debugfs.c:  fix coccicheck warnings
+Date:   Wed, 27 Jan 2021 14:17:33 +0800
+Message-Id: <1611728253-130374-1-git-send-email-abaci-bugfix@linux.alibaba.com>
+X-Mailer: git-send-email 1.8.3.1
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Remove a duplicate code checking for header size in tipc_msg_create() as
-it's already being done in tipc_msg_init().
+Use DEFINE_DEBUGFS_ATTRIBUTE rather than DEFINE_SIMPLE_ATTRIBUTE
+for debugfs files.
 
-Acked-by: Jon Maloy <jmaloy@redhat.com>
-Signed-off-by: Hoang Huu Le <hoang.h.le@dektech.com.au>
+Reported-by: Abaci Robot<abaci@linux.alibaba.com>
+Signed-off-by: Jiapeng Zhong <abaci-bugfix@linux.alibaba.com>
 ---
- net/tipc/msg.c | 4 ----
- 1 file changed, 4 deletions(-)
+Changes in v2:
+  -Modifying row alignment.
 
-diff --git a/net/tipc/msg.c b/net/tipc/msg.c
-index 2aca86021df5..e9263280a2d4 100644
---- a/net/tipc/msg.c
-+++ b/net/tipc/msg.c
-@@ -117,10 +117,6 @@ struct sk_buff *tipc_msg_create(uint user, uint type,
- 	msg_set_origport(msg, oport);
- 	msg_set_destport(msg, dport);
- 	msg_set_errcode(msg, errcode);
--	if (hdr_sz > SHORT_H_SIZE) {
--		msg_set_orignode(msg, onode);
--		msg_set_destnode(msg, dnode);
--	}
- 	return buf;
+ net/bluetooth/hci_debugfs.c | 80 ++++++++++++++++++++++-----------------------
+ 1 file changed, 40 insertions(+), 40 deletions(-)
+
+diff --git a/net/bluetooth/hci_debugfs.c b/net/bluetooth/hci_debugfs.c
+index 4626e02..1a0ab58 100644
+--- a/net/bluetooth/hci_debugfs.c
++++ b/net/bluetooth/hci_debugfs.c
+@@ -237,8 +237,8 @@ static int conn_info_min_age_get(void *data, u64 *val)
+ 	return 0;
  }
  
+-DEFINE_SIMPLE_ATTRIBUTE(conn_info_min_age_fops, conn_info_min_age_get,
+-			conn_info_min_age_set, "%llu\n");
++DEFINE_DEBUGFS_ATTRIBUTE(conn_info_min_age_fops, conn_info_min_age_get,
++			  conn_info_min_age_set, "%llu\n");
+ 
+ static int conn_info_max_age_set(void *data, u64 val)
+ {
+@@ -265,8 +265,8 @@ static int conn_info_max_age_get(void *data, u64 *val)
+ 	return 0;
+ }
+ 
+-DEFINE_SIMPLE_ATTRIBUTE(conn_info_max_age_fops, conn_info_max_age_get,
+-			conn_info_max_age_set, "%llu\n");
++DEFINE_DEBUGFS_ATTRIBUTE(conn_info_max_age_fops, conn_info_max_age_get,
++			  conn_info_max_age_set, "%llu\n");
+ 
+ static ssize_t use_debug_keys_read(struct file *file, char __user *user_buf,
+ 				   size_t count, loff_t *ppos)
+@@ -419,8 +419,8 @@ static int voice_setting_get(void *data, u64 *val)
+ 	return 0;
+ }
+ 
+-DEFINE_SIMPLE_ATTRIBUTE(voice_setting_fops, voice_setting_get,
+-			NULL, "0x%4.4llx\n");
++DEFINE_DEBUGFS_ATTRIBUTE(voice_setting_fops, voice_setting_get,
++			  NULL, "0x%4.4llx\n");
+ 
+ static ssize_t ssp_debug_mode_read(struct file *file, char __user *user_buf,
+ 				   size_t count, loff_t *ppos)
+@@ -476,9 +476,9 @@ static int min_encrypt_key_size_get(void *data, u64 *val)
+ 	return 0;
+ }
+ 
+-DEFINE_SIMPLE_ATTRIBUTE(min_encrypt_key_size_fops,
+-			min_encrypt_key_size_get,
+-			min_encrypt_key_size_set, "%llu\n");
++DEFINE_DEBUGFS_ATTRIBUTE(min_encrypt_key_size_fops,
++			  min_encrypt_key_size_get,
++			  min_encrypt_key_size_set, "%llu\n");
+ 
+ static int auto_accept_delay_get(void *data, u64 *val)
+ {
+@@ -491,8 +491,8 @@ static int auto_accept_delay_get(void *data, u64 *val)
+ 	return 0;
+ }
+ 
+-DEFINE_SIMPLE_ATTRIBUTE(auto_accept_delay_fops, auto_accept_delay_get,
+-			auto_accept_delay_set, "%llu\n");
++DEFINE_DEBUGFS_ATTRIBUTE(auto_accept_delay_fops, auto_accept_delay_get,
++			  auto_accept_delay_set, "%llu\n");
+ 
+ static ssize_t force_bredr_smp_read(struct file *file,
+ 				    char __user *user_buf,
+@@ -558,8 +558,8 @@ static int idle_timeout_get(void *data, u64 *val)
+ 	return 0;
+ }
+ 
+-DEFINE_SIMPLE_ATTRIBUTE(idle_timeout_fops, idle_timeout_get,
+-			idle_timeout_set, "%llu\n");
++DEFINE_DEBUGFS_ATTRIBUTE(idle_timeout_fops, idle_timeout_get,
++			  idle_timeout_set, "%llu\n");
+ 
+ static int sniff_min_interval_set(void *data, u64 val)
+ {
+@@ -586,8 +586,8 @@ static int sniff_min_interval_get(void *data, u64 *val)
+ 	return 0;
+ }
+ 
+-DEFINE_SIMPLE_ATTRIBUTE(sniff_min_interval_fops, sniff_min_interval_get,
+-			sniff_min_interval_set, "%llu\n");
++DEFINE_DEBUGFS_ATTRIBUTE(sniff_min_interval_fops, sniff_min_interval_get,
++			  sniff_min_interval_set, "%llu\n");
+ 
+ static int sniff_max_interval_set(void *data, u64 val)
+ {
+@@ -614,8 +614,8 @@ static int sniff_max_interval_get(void *data, u64 *val)
+ 	return 0;
+ }
+ 
+-DEFINE_SIMPLE_ATTRIBUTE(sniff_max_interval_fops, sniff_max_interval_get,
+-			sniff_max_interval_set, "%llu\n");
++DEFINE_DEBUGFS_ATTRIBUTE(sniff_max_interval_fops, sniff_max_interval_get,
++			  sniff_max_interval_set, "%llu\n");
+ 
+ void hci_debugfs_create_bredr(struct hci_dev *hdev)
+ {
+@@ -706,8 +706,8 @@ static int rpa_timeout_get(void *data, u64 *val)
+ 	return 0;
+ }
+ 
+-DEFINE_SIMPLE_ATTRIBUTE(rpa_timeout_fops, rpa_timeout_get,
+-			rpa_timeout_set, "%llu\n");
++DEFINE_DEBUGFS_ATTRIBUTE(rpa_timeout_fops, rpa_timeout_get,
++			  rpa_timeout_set, "%llu\n");
+ 
+ static int random_address_show(struct seq_file *f, void *p)
+ {
+@@ -869,8 +869,8 @@ static int conn_min_interval_get(void *data, u64 *val)
+ 	return 0;
+ }
+ 
+-DEFINE_SIMPLE_ATTRIBUTE(conn_min_interval_fops, conn_min_interval_get,
+-			conn_min_interval_set, "%llu\n");
++DEFINE_DEBUGFS_ATTRIBUTE(conn_min_interval_fops, conn_min_interval_get,
++			  conn_min_interval_set, "%llu\n");
+ 
+ static int conn_max_interval_set(void *data, u64 val)
+ {
+@@ -897,8 +897,8 @@ static int conn_max_interval_get(void *data, u64 *val)
+ 	return 0;
+ }
+ 
+-DEFINE_SIMPLE_ATTRIBUTE(conn_max_interval_fops, conn_max_interval_get,
+-			conn_max_interval_set, "%llu\n");
++DEFINE_DEBUGFS_ATTRIBUTE(conn_max_interval_fops, conn_max_interval_get,
++			  conn_max_interval_set, "%llu\n");
+ 
+ static int conn_latency_set(void *data, u64 val)
+ {
+@@ -925,8 +925,8 @@ static int conn_latency_get(void *data, u64 *val)
+ 	return 0;
+ }
+ 
+-DEFINE_SIMPLE_ATTRIBUTE(conn_latency_fops, conn_latency_get,
+-			conn_latency_set, "%llu\n");
++DEFINE_DEBUGFS_ATTRIBUTE(conn_latency_fops, conn_latency_get,
++			  conn_latency_set, "%llu\n");
+ 
+ static int supervision_timeout_set(void *data, u64 val)
+ {
+@@ -953,8 +953,8 @@ static int supervision_timeout_get(void *data, u64 *val)
+ 	return 0;
+ }
+ 
+-DEFINE_SIMPLE_ATTRIBUTE(supervision_timeout_fops, supervision_timeout_get,
+-			supervision_timeout_set, "%llu\n");
++DEFINE_DEBUGFS_ATTRIBUTE(supervision_timeout_fops, supervision_timeout_get,
++			  supervision_timeout_set, "%llu\n");
+ 
+ static int adv_channel_map_set(void *data, u64 val)
+ {
+@@ -981,8 +981,8 @@ static int adv_channel_map_get(void *data, u64 *val)
+ 	return 0;
+ }
+ 
+-DEFINE_SIMPLE_ATTRIBUTE(adv_channel_map_fops, adv_channel_map_get,
+-			adv_channel_map_set, "%llu\n");
++DEFINE_DEBUGFS_ATTRIBUTE(adv_channel_map_fops, adv_channel_map_get,
++			  adv_channel_map_set, "%llu\n");
+ 
+ static int adv_min_interval_set(void *data, u64 val)
+ {
+@@ -1009,8 +1009,8 @@ static int adv_min_interval_get(void *data, u64 *val)
+ 	return 0;
+ }
+ 
+-DEFINE_SIMPLE_ATTRIBUTE(adv_min_interval_fops, adv_min_interval_get,
+-			adv_min_interval_set, "%llu\n");
++DEFINE_DEBUGFS_ATTRIBUTE(adv_min_interval_fops, adv_min_interval_get,
++			  adv_min_interval_set, "%llu\n");
+ 
+ static int adv_max_interval_set(void *data, u64 val)
+ {
+@@ -1037,8 +1037,8 @@ static int adv_max_interval_get(void *data, u64 *val)
+ 	return 0;
+ }
+ 
+-DEFINE_SIMPLE_ATTRIBUTE(adv_max_interval_fops, adv_max_interval_get,
+-			adv_max_interval_set, "%llu\n");
++DEFINE_DEBUGFS_ATTRIBUTE(adv_max_interval_fops, adv_max_interval_get,
++			  adv_max_interval_set, "%llu\n");
+ 
+ static int min_key_size_set(void *data, u64 val)
+ {
+@@ -1065,8 +1065,8 @@ static int min_key_size_get(void *data, u64 *val)
+ 	return 0;
+ }
+ 
+-DEFINE_SIMPLE_ATTRIBUTE(min_key_size_fops, min_key_size_get,
+-			min_key_size_set, "%llu\n");
++DEFINE_DEBUGFS_ATTRIBUTE(min_key_size_fops, min_key_size_get,
++			  min_key_size_set, "%llu\n");
+ 
+ static int max_key_size_set(void *data, u64 val)
+ {
+@@ -1093,8 +1093,8 @@ static int max_key_size_get(void *data, u64 *val)
+ 	return 0;
+ }
+ 
+-DEFINE_SIMPLE_ATTRIBUTE(max_key_size_fops, max_key_size_get,
+-			max_key_size_set, "%llu\n");
++DEFINE_DEBUGFS_ATTRIBUTE(max_key_size_fops, max_key_size_get,
++			  max_key_size_set, "%llu\n");
+ 
+ static int auth_payload_timeout_set(void *data, u64 val)
+ {
+@@ -1121,9 +1121,9 @@ static int auth_payload_timeout_get(void *data, u64 *val)
+ 	return 0;
+ }
+ 
+-DEFINE_SIMPLE_ATTRIBUTE(auth_payload_timeout_fops,
+-			auth_payload_timeout_get,
+-			auth_payload_timeout_set, "%llu\n");
++DEFINE_DEBUGFS_ATTRIBUTE(auth_payload_timeout_fops,
++			  auth_payload_timeout_get,
++			  auth_payload_timeout_set, "%llu\n");
+ 
+ static ssize_t force_no_mitm_read(struct file *file,
+ 				  char __user *user_buf,
 -- 
-2.25.1
+1.8.3.1
 
