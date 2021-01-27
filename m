@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A5BEA3053DA
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 08:02:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 22D223053DB
+	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 08:02:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232728AbhA0HBp (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 02:01:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41314 "EHLO
+        id S232784AbhA0HB4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 02:01:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S316920AbhA0BBZ (ORCPT
+        with ESMTP id S316521AbhA0BBZ (ORCPT
         <rfc822;netdev@vger.kernel.org>); Tue, 26 Jan 2021 20:01:25 -0500
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C30DC061574
-        for <netdev@vger.kernel.org>; Tue, 26 Jan 2021 17:00:44 -0800 (PST)
-Received: by mail-ed1-x529.google.com with SMTP id j13so359718edp.2
-        for <netdev@vger.kernel.org>; Tue, 26 Jan 2021 17:00:44 -0800 (PST)
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 875A7C06174A
+        for <netdev@vger.kernel.org>; Tue, 26 Jan 2021 17:00:45 -0800 (PST)
+Received: by mail-ej1-x62a.google.com with SMTP id ox12so327766ejb.2
+        for <netdev@vger.kernel.org>; Tue, 26 Jan 2021 17:00:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Rmce2OFbDqlp87QXq6O7QiMgUnESbP7sSv496Tlc0gQ=;
-        b=FKRw3VFxDnFOSL/phKvdo8U78UhOKgcjvLObDYoB7JigP4D1xOCcE5TUZgZ/b3pgGF
-         wu2+4SMN4RUliU9KKGPtk47ADeETDtIdp35KJIJLHTpM4G1NF7rcrgwHF3ZyfXJczFyO
-         qPKYGOU7OEOmgrNINV4emWJ8gQHDjPFi0M2h6kpyTkuABp97b5chsTha4fK9Ciap9+0q
-         B3zc3P/HlVDoR1Be3OYL9gzoYA0H9olH4r5rb9XOgXfH4C5sddWJiQKwXu0LNuAQl+ri
-         cFKe/y03pZGlgImDz+10n6TcvbPX6LkyDeYHz20or4LN/TClQn6dSt3lbT2VtE9Fhled
-         nYcw==
+        bh=iQWVmXkvm0fkYg8H3/g3PhO4iUSVaG1NDc0ObhDfgzE=;
+        b=c8aR/EcMc3dHLNuIiJuwkbxXx2LfW6+YCJUyeUdD5zVaXRnnhCMlt1WPrT06LFPS8m
+         81zpFHS/WLJgECadSyU2uxkSdVgV/tolzwseStaPo0e2nehEGrsXaDsnbMvqYa5F+m1a
+         +52GtfvBYvIJg1JSbARxRTIsYR4bSEf7Q6H3o9SKRdK/FWWef2Us7guzxVo3HnPmyNSQ
+         KD/vut9klgy1cKuE+8RdBspwv0uP3Ru1LQ1EoMNJ8PYcuCfDNHVHc0R7FrpP54tllfh5
+         h6RkUMMSUNcdGT2m5uTBx2hLUaiD3kC4Hc1Nsdeb6fVJWR3jWozcoqgVom7PIOYh6RuR
+         +p0w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Rmce2OFbDqlp87QXq6O7QiMgUnESbP7sSv496Tlc0gQ=;
-        b=bnXX3TLEymLOKepm3NRy8uOjDCFUTCngIz4/R6OoFqC1gIDyFY59bgjKysncPjFSAG
-         fz1twc15UvPRxW1H7qyrDGNXbF3xpiX4ujLwAxZDqyLluCHVZPdy2kouPJyHi9Rvq2v/
-         FheZpQEsY5ogDCGgnAmER5itAg/Nc5Nw2BbMEFgKTc7uFevVJO6oh8a3eGrlmk4Lc+Bb
-         q7Pojo7GLDmmjTdcuCqNho2UaMQ2+tWyWWR1YzS+1zGpEJ3e0Vw1I3R+o9LVWKwQhSvw
-         uZ6zMZPfxfdlB/9jiTSHvNzdfMiCf+sfy2/jAbb8i5tprQ6Ql9aDUJDmUdZnRThVH+5C
-         Neaw==
-X-Gm-Message-State: AOAM533LWFwrbwKSySX9/Qj2hkdaQyUMo6zx2XRhjbWF0s0G0/phmVL6
-        emGiJ4ZNfTiFpjc0CG1Q0gU=
-X-Google-Smtp-Source: ABdhPJyjuKBURfjmRGLxOuo2FZt2mPZsrLUzymLIqrJwwW1W4jIibl0CEjREP3TqYrIDhpPsGQpiXA==
-X-Received: by 2002:a05:6402:1819:: with SMTP id g25mr6351115edy.46.1611709243092;
-        Tue, 26 Jan 2021 17:00:43 -0800 (PST)
+        bh=iQWVmXkvm0fkYg8H3/g3PhO4iUSVaG1NDc0ObhDfgzE=;
+        b=jdUpa24Az004pJkqK8EffDQbTskShNA7+sOZYYJmf9OLv5b5JU8wZpdsmIiyorwLYO
+         M+vpR+HqhY9n03aNwR48uEhFLqnrlg+i9LsFdyQ2wYaXdEaVINFW2jwgxNxBwMcI5KCr
+         NvVLfo3e135p0+wHrSthcDHpnLOKlbwmc7nU/eao5cuEatLA+QMpNZKzJyvNRF3FQoqd
+         /qN1MIt0E5oEDCSSO8uQwTtW6W67tL6J75oVzltH4HfhXxN8ZJDXm3iBe5wFWkUpiCJ2
+         88eOyekJ+DSY85eUJuRvyolm5KshvYiRMy//gS6MvoI54olcW+xS8hg4O+rd4Il82zc/
+         +k8Q==
+X-Gm-Message-State: AOAM531VwJXVWhH87Y/RRbQu+eXZG8t2yt9UHxTi5dJ1zF9BR99x+Upe
+        GNu1MpDK4GaDlMAG3AVIXS8eEV5knUk=
+X-Google-Smtp-Source: ABdhPJzP7onk6tkTATpteRXbFAzMbP6t6zbYXwUgk4VjgPFQ5CulXngYDIQjSWVtH2T3J0sO3V4Anw==
+X-Received: by 2002:a17:906:d98:: with SMTP id m24mr4927869eji.428.1611709244316;
+        Tue, 26 Jan 2021 17:00:44 -0800 (PST)
 Received: from localhost.localdomain (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id ko23sm115897ejc.35.2021.01.26.17.00.42
+        by smtp.gmail.com with ESMTPSA id ko23sm115897ejc.35.2021.01.26.17.00.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Jan 2021 17:00:42 -0800 (PST)
+        Tue, 26 Jan 2021 17:00:43 -0800 (PST)
 From:   Vladimir Oltean <olteanv@gmail.com>
 To:     "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
@@ -54,9 +54,9 @@ Cc:     Andrew Lunn <andrew@lunn.ch>,
         Florian Fainelli <f.fainelli@gmail.com>,
         Vivien Didelot <vivien.didelot@gmail.com>,
         Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
-Subject: [PATCH net-next 1/4] net: dsa: automatically bring up DSA master when opening user port
-Date:   Wed, 27 Jan 2021 03:00:25 +0200
-Message-Id: <20210127010028.1619443-2-olteanv@gmail.com>
+Subject: [PATCH net-next 2/4] net: dsa: automatically bring user ports down when master goes down
+Date:   Wed, 27 Jan 2021 03:00:26 +0200
+Message-Id: <20210127010028.1619443-3-olteanv@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210127010028.1619443-1-olteanv@gmail.com>
 References: <20210127010028.1619443-1-olteanv@gmail.com>
@@ -68,77 +68,82 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-DSA wants the master interface to be open before the user port is due to
-historical reasons. The promiscuity of interfaces that are down used to
-have issues, as referenced Lennert Buytenhek in commit df02c6ff2e39
-("dsa: fix master interface allmulti/promisc handling").
+This is not fixing any actual bug that I know of, but having a DSA
+interface that is up even when its lower (master) interface is down is
+one of those things that just do not sound right.
 
-The bugfix mentioned there, commit b6c40d68ff64 ("net: only invoke
-dev->change_rx_flags when device is UP"), was basically a "don't do
-that" approach to working around the promiscuity while down issue.
+Yes, DSA checks if the master is up before actually bringing the
+user interface up, but nobody prevents bringing the master interface
+down immediately afterwards... Then the user ports would attempt
+dev_queue_xmit on an interface that is down, and wonder what's wrong.
 
-Further work done by Vlad Yasevich in commit d2615bf45069 ("net: core:
-Always propagate flag changes to interfaces") has resolved the
-underlying issue, and it is strictly up to the DSA and 8021q drivers
-now, it is no longer mandated by the networking core that the master
-interface must be up when changing its promiscuity.
+This patch prevents that from happening. NETDEV_GOING_DOWN is the
+notification emitted _before_ the master actually goes down, and we are
+protected by the rtnl_mutex, so all is well.
 
-From DSA's point of view, deciding to error out in dsa_slave_open
-because the master isn't up is (a) a bad user experience and (b) missing
-the forest for the trees. Even if there still was an issue with
-promiscuity while down, DSA could still do this and avoid it: open the
-DSA master manually, then do whatever. Voila, the DSA master is now up,
-no need to error out.
+$ ip link set eno2 down
+[  763.672211] mscc_felix 0000:00:00.5 swp0: Link is Down
+[  763.880137] mscc_felix 0000:00:00.5 swp1: Link is Down
+[  764.078773] mscc_felix 0000:00:00.5 swp2: Link is Down
+[  764.197106] mscc_felix 0000:00:00.5 swp3: Link is Down
+[  764.299384] fsl_enetc 0000:00:00.2 eno2: Link is Down
 
-Doing it this way has the additional benefit that user space can now
-remove DSA-specific workarounds, like systemd-networkd with BindCarrier:
-https://github.com/systemd/systemd/issues/7478
+For those of you reading this because you were doing switch testing
+such as latency measurements for autonomously forwarded traffic, and you
+needed a controlled environment with no extra packets sent by the
+network stack, this patch breaks that, because now the user ports go
+down too, which may shut down the PHY etc. But please don't do it like
+that, just do instead:
 
-And we can finally remove one of the 2 bullets in the "Common pitfalls
-using DSA setups" chapter.
+tc qdisc add dev eno2 clsact
+tc filter add dev eno2 egress flower action drop
 
 Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 ---
- Documentation/networking/dsa/dsa.rst |  4 ----
- net/dsa/slave.c                      | 10 ++++++++--
- 2 files changed, 8 insertions(+), 6 deletions(-)
+ net/dsa/slave.c | 30 ++++++++++++++++++++++++++++++
+ 1 file changed, 30 insertions(+)
 
-diff --git a/Documentation/networking/dsa/dsa.rst b/Documentation/networking/dsa/dsa.rst
-index a8d15dd2b42b..e9517af5fe02 100644
---- a/Documentation/networking/dsa/dsa.rst
-+++ b/Documentation/networking/dsa/dsa.rst
-@@ -273,10 +273,6 @@ will not make us go through the switch tagging protocol transmit function, so
- the Ethernet switch on the other end, expecting a tag will typically drop this
- frame.
- 
--Slave network devices check that the master network device is UP before allowing
--you to administratively bring UP these slave network devices. A common
--configuration mistake is forgetting to bring UP the master network device first.
--
- Interactions with other subsystems
- ==================================
- 
 diff --git a/net/dsa/slave.c b/net/dsa/slave.c
-index f2fb433f3828..393294a53834 100644
+index 393294a53834..5e5798b46f34 100644
 --- a/net/dsa/slave.c
 +++ b/net/dsa/slave.c
-@@ -68,8 +68,14 @@ static int dsa_slave_open(struct net_device *dev)
- 	struct dsa_port *dp = dsa_slave_to_port(dev);
- 	int err;
- 
--	if (!(master->flags & IFF_UP))
--		return -ENETDOWN;
-+	if (!(master->flags & IFF_UP)) {
-+		err = dev_change_flags(master, master->flags | IFF_UP, NULL);
-+		if (err < 0) {
-+			netdev_err(dev, "failed to open master %s\n",
-+				   master->name);
-+			goto out;
+@@ -2073,6 +2073,36 @@ static int dsa_slave_netdevice_event(struct notifier_block *nb,
+ 		err = dsa_port_lag_change(dp, info->lower_state_info);
+ 		return notifier_from_errno(err);
+ 	}
++	case NETDEV_GOING_DOWN: {
++		struct dsa_port *dp, *cpu_dp;
++		struct dsa_switch_tree *dst;
++		int err = 0;
++
++		if (!netdev_uses_dsa(dev))
++			return NOTIFY_DONE;
++
++		cpu_dp = dev->dsa_ptr;
++		dst = cpu_dp->ds->dst;
++
++		list_for_each_entry(dp, &dst->ports, list) {
++			if (!dsa_is_user_port(dp->ds, dp->index)) {
++				struct net_device *slave = dp->slave;
++
++				if (!(slave->flags & IFF_UP))
++					continue;
++
++				err = dev_change_flags(slave,
++						       slave->flags & ~IFF_UP,
++						       NULL);
++				if (err)
++					break;
++			}
 +		}
++
++		return notifier_from_errno(err);
 +	}
++	default:
++		break;
+ 	}
  
- 	if (!ether_addr_equal(dev->dev_addr, master->dev_addr)) {
- 		err = dev_uc_add(master, dev->dev_addr);
+ 	return NOTIFY_DONE;
 -- 
 2.25.1
 
