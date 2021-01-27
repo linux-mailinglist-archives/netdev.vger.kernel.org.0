@@ -2,40 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CC604305789
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 10:57:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AAD62305757
+	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 10:51:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235687AbhA0J5H (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 04:57:07 -0500
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:33017 "EHLO
+        id S235561AbhA0JtK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 04:49:10 -0500
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:54829 "EHLO
         metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235706AbhA0JzL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 04:55:11 -0500
+        with ESMTP id S231478AbhA0Jr1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 04:47:27 -0500
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1l4h23-00084j-9s
-        for netdev@vger.kernel.org; Wed, 27 Jan 2021 10:22:35 +0100
+        id 1l4h29-0008D6-6R
+        for netdev@vger.kernel.org; Wed, 27 Jan 2021 10:22:41 +0100
 Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id E4C295CF0EA
-        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 09:22:32 +0000 (UTC)
+        by bjornoya.blackshift.org (Postfix) with SMTP id 3B00A5CF112
+        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 09:22:37 +0000 (UTC)
 Received: from hardanger.blackshift.org (unknown [172.20.34.65])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id 9B01A5CF0CD;
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id E13745CF0D3;
         Wed, 27 Jan 2021 09:22:28 +0000 (UTC)
 Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id c32620fe;
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 752c95bc;
         Wed, 27 Jan 2021 09:22:28 +0000 (UTC)
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        kernel@pengutronix.de, Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [net-next 01/12] can: gw: fix typo
-Date:   Wed, 27 Jan 2021 10:22:16 +0100
-Message-Id: <20210127092227.2775573-2-mkl@pengutronix.de>
+        kernel@pengutronix.de, Marc Kleine-Budde <mkl@pengutronix.de>,
+        Vincent MAILHOL <mailhol.vincent@wanadoo.fr>,
+        Oliver Hartkopp <socketcan@hartkopp.net>
+Subject: [net-next 04/12] can: length: can_fd_len2dlc(): make legnth calculation readable again
+Date:   Wed, 27 Jan 2021 10:22:19 +0100
+Message-Id: <20210127092227.2775573-5-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20210127092227.2775573-1-mkl@pengutronix.de>
 References: <20210127092227.2775573-1-mkl@pengutronix.de>
@@ -49,30 +51,43 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-This patch fixes a typo found by codespell.
+In commit 652562e5ff06 ("can: length: can_fd_len2dlc(): simplify length
+calculcation") the readability of the code degraded and became more error
+prone. To counteract this, partially convert that patch and replace open coded
+values (of the original code) with proper defines.
 
-Fixes: 94c23097f991 ("can: gw: support modification of Classical CAN DLCs")
-Link: https://lore.kernel.org/r/20210127085529.2768537-3-mkl@pengutronix.de
+Fixes: 652562e5ff06 ("can: length: can_fd_len2dlc(): simplify length calculcation")
+Cc: Vincent MAILHOL <mailhol.vincent@wanadoo.fr>
+Link: https://lore.kernel.org/r/20210118201346.79422-1-socketcan@hartkopp.net
+Signed-off-by: Oliver Hartkopp <socketcan@hartkopp.net>
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
- net/can/gw.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/net/can/dev/length.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/net/can/gw.c b/net/can/gw.c
-index 8598d9da0e5f..ba4124805602 100644
---- a/net/can/gw.c
-+++ b/net/can/gw.c
-@@ -225,7 +225,7 @@ static void mod_store_ccdlc(struct canfd_frame *cf)
- 	if (ccf->len <= CAN_MAX_DLEN)
- 		return;
+diff --git a/drivers/net/can/dev/length.c b/drivers/net/can/dev/length.c
+index d35c4e82314d..b48140b1102e 100644
+--- a/drivers/net/can/dev/length.c
++++ b/drivers/net/can/dev/length.c
+@@ -27,12 +27,17 @@ static const u8 len2dlc[] = {
+ 	13, 13, 13, 13, 13, 13, 13, 13,	/* 25 - 32 */
+ 	14, 14, 14, 14, 14, 14, 14, 14,	/* 33 - 40 */
+ 	14, 14, 14, 14, 14, 14, 14, 14,	/* 41 - 48 */
++	15, 15, 15, 15, 15, 15, 15, 15,	/* 49 - 56 */
++	15, 15, 15, 15, 15, 15, 15, 15	/* 57 - 64 */
+ };
  
--	/* potentially broken values are catched in can_can_gw_rcv() */
-+	/* potentially broken values are caught in can_can_gw_rcv() */
- 	if (ccf->len > CAN_MAX_RAW_DLC)
- 		return;
+ /* map the sanitized data length to an appropriate data length code */
+ u8 can_fd_len2dlc(u8 len)
+ {
+-	if (len >= ARRAY_SIZE(len2dlc))
++	/* check for length mapping table size at build time */
++	BUILD_BUG_ON(ARRAY_SIZE(len2dlc) != CANFD_MAX_DLEN + 1);
++
++	if (unlikely(len > CANFD_MAX_DLEN))
+ 		return CANFD_MAX_DLC;
  
-
-base-commit: 6626a0266566c5aea16178c5e6cd7fc4db3f2f56
+ 	return len2dlc[len];
 -- 
 2.29.2
 
