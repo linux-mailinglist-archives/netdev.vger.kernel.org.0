@@ -2,149 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2339D305516
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 08:55:23 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E2D8330551B
+	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 08:56:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233247AbhA0HzK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 02:55:10 -0500
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:48756 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229739AbhA0Hrp (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 02:47:45 -0500
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 10R7eAhD007630;
-        Tue, 26 Jan 2021 23:46:58 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0220; bh=b7xhoi28+9w/ILTDolXNdBJFU/uuf1HPxZ/4/WVauMc=;
- b=AvkLpJ9vHso/H3Y5NgnCIpCc9lUMAfrPf6kIBvTEkDjId5hr92miNMh0eAa3ZriefbWc
- xc1Wvk1OwBlA2/ENZDlFZ1MGfY4TTZ1OnjdDBDpfzv6wL6S0ZRynGTRt7iZlh1Zk3EG8
- qdlBA8mDGhYo9+VsXd0MBpkKQfMYTFZO5m9nuGpag/Lgv3gFt+bB15bjigKilQwL9Qez
- bYiEyDh7T7srj7wafl6Uwskng0uR/Q5I0haQw8NxQ/gupc9pu7Upi3Yqx3Q9Y4inhNVP
- LJst/tsOt+Mu2kKT6UHGoE01jFrukBAJ6PO/8tlZPja+CFf19UmiAJCpU10MyOy7Z3RY Mg== 
-Received: from dc5-exch02.marvell.com ([199.233.59.182])
-        by mx0b-0016f401.pphosted.com with ESMTP id 36b1xpg9q5-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Tue, 26 Jan 2021 23:46:58 -0800
-Received: from SC-EXCH04.marvell.com (10.93.176.84) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 26 Jan
- 2021 23:46:56 -0800
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH04.marvell.com
- (10.93.176.84) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 26 Jan
- 2021 23:46:56 -0800
-Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 26 Jan 2021 23:46:56 -0800
-Received: from hyd1soter2.marvell.com (unknown [10.29.37.45])
-        by maili.marvell.com (Postfix) with ESMTP id D95673F7040;
-        Tue, 26 Jan 2021 23:46:52 -0800 (PST)
-From:   Hariprasad Kelam <hkelam@marvell.com>
-To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <davem@davemloft.net>, <kuba@kernel.org>, <sgoutham@marvell.com>,
-        <lcherian@marvell.com>, <gakula@marvell.com>, <jerinj@marvell.com>,
-        <sbhatta@marvell.com>, Christina Jacob <cjacob@marvell.com>,
-        Hariprasad Kelam <hkelam@marvell.com>
-Subject: [Patch v2 net-next 7/7] octeontx2-pf: ethtool physical link configuration
-Date:   Wed, 27 Jan 2021 13:15:52 +0530
-Message-ID: <1611733552-150419-8-git-send-email-hkelam@marvell.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1611733552-150419-1-git-send-email-hkelam@marvell.com>
-References: <1611733552-150419-1-git-send-email-hkelam@marvell.com>
+        id S234608AbhA0HzW (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 02:55:22 -0500
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:41136 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S231160AbhA0Hrt (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 02:47:49 -0500
+Received: from Internal Mail-Server by MTLPINE1 (envelope-from cmi@nvidia.com)
+        with SMTP; 27 Jan 2021 09:46:59 +0200
+Received: from dev-r630-03.mtbc.labs.mlnx (dev-r630-03.mtbc.labs.mlnx [10.75.205.13])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 10R7kvrl013621;
+        Wed, 27 Jan 2021 09:46:57 +0200
+From:   Chris Mi <cmi@nvidia.com>
+To:     netdev@vger.kernel.org
+Cc:     kuba@kernel.org, jiri@nvidia.com, saeedm@nvidia.com,
+        Chris Mi <cmi@nvidia.com>, kernel test robot <lkp@intel.com>
+Subject: [PATCH net-next v2] net: psample: Introduce stubs to remove NIC driver dependency
+Date:   Wed, 27 Jan 2021 15:46:51 +0800
+Message-Id: <20210127074651.510134-1-cmi@nvidia.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
- definitions=2021-01-27_03:2021-01-26,2021-01-27 signatures=0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Christina Jacob <cjacob@marvell.com>
+In order to send sampled packets to userspace, NIC driver calls
+psample api directly. But it creates a hard dependency on module
+psample. Introduce psample_ops to remove the hard dependency.
+It is initialized when psample module is loaded and set to NULL
+when the module is unloaded.
 
-Register set_link_ksetting callback with driver such that
-link configurations parameters like advertised mode,speed, duplex
-and autoneg can be configured.
-
-below command
-ethtool -s eth0 advertise 0x1 speed 10 duplex full autoneg on
-
-Signed-off-by: Christina Jacob <cjacob@marvell.com>
-Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
-Signed-off-by: Hariprasad Kelam <hkelam@marvell.com>
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Chris Mi <cmi@nvidia.com>
+Reviewed-by: Jiri Pirko <jiri@nvidia.com>
 ---
- .../ethernet/marvell/octeontx2/nic/otx2_ethtool.c  | 53 ++++++++++++++++++++++
- 1 file changed, 53 insertions(+)
+v1->v2:
+ - fix sparse errors
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
-index b99f4bb..395a00d 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
-@@ -1178,6 +1178,58 @@ static int otx2_get_link_ksettings(struct net_device *netdev,
- 	return 0;
- }
+ include/net/psample.h    | 27 +++++++++++++++++++++++++++
+ net/psample/psample.c    | 13 ++++++++++++-
+ net/sched/Makefile       |  2 +-
+ net/sched/psample_stub.c |  7 +++++++
+ 4 files changed, 47 insertions(+), 2 deletions(-)
+ create mode 100644 net/sched/psample_stub.c
+
+diff --git a/include/net/psample.h b/include/net/psample.h
+index 68ae16bb0a4a..e6a73128de59 100644
+--- a/include/net/psample.h
++++ b/include/net/psample.h
+@@ -4,6 +4,7 @@
  
-+static int otx2_set_link_ksettings(struct net_device *netdev,
-+				   const struct ethtool_link_ksettings *cmd)
-+{
-+	struct otx2_nic *pf = netdev_priv(netdev);
-+	struct ethtool_link_ksettings req_ks;
-+	struct ethtool_link_ksettings cur_ks;
-+	struct cgx_set_link_mode_req *req;
-+	struct mbox *mbox = &pf->mbox;
-+	int err = 0;
-+
-+	/* save requested link settings */
-+	memcpy(&req_ks, cmd, sizeof(struct ethtool_link_ksettings));
-+
-+	memset(&cur_ks, 0, sizeof(struct ethtool_link_ksettings));
-+
-+	if (!ethtool_validate_speed(cmd->base.speed) ||
-+	    !ethtool_validate_duplex(cmd->base.duplex))
-+		return -EINVAL;
-+
-+	if (cmd->base.autoneg != AUTONEG_ENABLE &&
-+	    cmd->base.autoneg != AUTONEG_DISABLE)
-+		return -EINVAL;
-+
-+	otx2_get_link_ksettings(netdev, &cur_ks);
-+
-+	/* Check requested modes against supported modes by hardware */
-+	if (!bitmap_subset(req_ks.link_modes.advertising,
-+			   cur_ks.link_modes.supported,
-+			   __ETHTOOL_LINK_MODE_MASK_NBITS))
-+		return -EINVAL;
-+
-+	mutex_lock(&mbox->lock);
-+	req = otx2_mbox_alloc_msg_cgx_set_link_mode(&pf->mbox);
-+	if (!req) {
-+		err = -ENOMEM;
-+		goto end;
-+	}
-+
-+	req->args.speed = req_ks.base.speed;
-+	/* firmware expects 1 for half duplex and 0 for full duplex
-+	 * hence inverting
-+	 */
-+	req->args.duplex = req_ks.base.duplex ^ 0x1;
-+	req->args.an =  req_ks.base.autoneg;
-+	req->args.mode   = *req_ks.link_modes.advertising;
-+
-+	err = otx2_sync_mbox_msg(&pf->mbox);
-+end:
-+	mutex_unlock(&mbox->lock);
-+	return err;
-+}
-+
- static const struct ethtool_ops otx2_ethtool_ops = {
- 	.supported_coalesce_params = ETHTOOL_COALESCE_USECS |
- 				     ETHTOOL_COALESCE_MAX_FRAMES,
-@@ -1208,6 +1260,7 @@ static const struct ethtool_ops otx2_ethtool_ops = {
- 	.get_fecparam		= otx2_get_fecparam,
- 	.set_fecparam		= otx2_set_fecparam,
- 	.get_link_ksettings     = otx2_get_link_ksettings,
-+	.set_link_ksettings     = otx2_set_link_ksettings,
+ #include <uapi/linux/psample.h>
+ #include <linux/list.h>
++#include <linux/skbuff.h>
+ 
+ struct psample_group {
+ 	struct list_head list;
+@@ -14,6 +15,15 @@ struct psample_group {
+ 	struct rcu_head rcu;
  };
  
- void otx2_set_ethtool_ops(struct net_device *netdev)
++struct psample_ops {
++	void (*sample_packet)(struct psample_group *group, struct sk_buff *skb,
++			      u32 trunc_size, int in_ifindex, int out_ifindex,
++			      u32 sample_rate);
++
++};
++
++extern const struct psample_ops __rcu *psample_ops __read_mostly;
++
+ struct psample_group *psample_group_get(struct net *net, u32 group_num);
+ void psample_group_take(struct psample_group *group);
+ void psample_group_put(struct psample_group *group);
+@@ -35,4 +45,21 @@ static inline void psample_sample_packet(struct psample_group *group,
+ 
+ #endif
+ 
++static inline void
++psample_nic_sample_packet(struct psample_group *group,
++			  struct sk_buff *skb, u32 trunc_size,
++			  int in_ifindex, int out_ifindex,
++			  u32 sample_rate)
++{
++	const struct psample_ops *ops;
++
++	rcu_read_lock();
++	ops = rcu_dereference(psample_ops);
++	if (ops)
++		psample_ops->sample_packet(group, skb, trunc_size,
++					   in_ifindex, out_ifindex,
++					   sample_rate);
++	rcu_read_unlock();
++}
++
+ #endif /* __NET_PSAMPLE_H */
+diff --git a/net/psample/psample.c b/net/psample/psample.c
+index 33e238c965bd..2a9fbfe09395 100644
+--- a/net/psample/psample.c
++++ b/net/psample/psample.c
+@@ -8,6 +8,7 @@
+ #include <linux/kernel.h>
+ #include <linux/skbuff.h>
+ #include <linux/module.h>
++#include <linux/rcupdate.h>
+ #include <net/net_namespace.h>
+ #include <net/sock.h>
+ #include <net/netlink.h>
+@@ -35,6 +36,10 @@ static const struct genl_multicast_group psample_nl_mcgrps[] = {
+ 
+ static struct genl_family psample_nl_family __ro_after_init;
+ 
++static const struct psample_ops psample_sample_ops = {
++	.sample_packet	= psample_sample_packet,
++};
++
+ static int psample_group_nl_fill(struct sk_buff *msg,
+ 				 struct psample_group *group,
+ 				 enum psample_command cmd, u32 portid, u32 seq,
+@@ -456,11 +461,17 @@ EXPORT_SYMBOL_GPL(psample_sample_packet);
+ 
+ static int __init psample_module_init(void)
+ {
+-	return genl_register_family(&psample_nl_family);
++	int ret;
++
++	ret = genl_register_family(&psample_nl_family);
++	if (!ret)
++		RCU_INIT_POINTER(psample_ops, &psample_sample_ops);
++	return ret;
+ }
+ 
+ static void __exit psample_module_exit(void)
+ {
++	RCU_INIT_POINTER(psample_ops, NULL);
+ 	genl_unregister_family(&psample_nl_family);
+ }
+ 
+diff --git a/net/sched/Makefile b/net/sched/Makefile
+index dd14ef413fda..0d92bb98bb26 100644
+--- a/net/sched/Makefile
++++ b/net/sched/Makefile
+@@ -3,7 +3,7 @@
+ # Makefile for the Linux Traffic Control Unit.
+ #
+ 
+-obj-y	:= sch_generic.o sch_mq.o
++obj-y	:= sch_generic.o sch_mq.o psample_stub.o
+ 
+ obj-$(CONFIG_INET)		+= sch_frag.o
+ obj-$(CONFIG_NET_SCHED)		+= sch_api.o sch_blackhole.o
+diff --git a/net/sched/psample_stub.c b/net/sched/psample_stub.c
+new file mode 100644
+index 000000000000..0615a7b64000
+--- /dev/null
++++ b/net/sched/psample_stub.c
+@@ -0,0 +1,7 @@
++// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
++/* Copyright (c) 2021 Mellanox Technologies. */
++
++#include <net/psample.h>
++
++const struct psample_ops __rcu *psample_ops __read_mostly;
++EXPORT_SYMBOL_GPL(psample_ops);
 -- 
-2.7.4
+2.26.2
 
