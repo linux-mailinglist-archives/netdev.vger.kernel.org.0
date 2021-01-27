@@ -2,106 +2,124 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0A701305E9D
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 15:50:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4CD2A305F07
+	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 16:05:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234612AbhA0OtU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 09:49:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48440 "EHLO
+        id S235463AbhA0PDA (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 10:03:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50344 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231732AbhA0OsZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 09:48:25 -0500
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CE97C061573;
-        Wed, 27 Jan 2021 06:47:45 -0800 (PST)
-Received: by mail-ej1-x632.google.com with SMTP id ke15so2977910ejc.12;
-        Wed, 27 Jan 2021 06:47:45 -0800 (PST)
+        with ESMTP id S235315AbhA0PAf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 10:00:35 -0500
+Received: from mail-il1-x134.google.com (mail-il1-x134.google.com [IPv6:2607:f8b0:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54668C061788
+        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 06:54:45 -0800 (PST)
+Received: by mail-il1-x134.google.com with SMTP id a1so2017773ilr.5
+        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 06:54:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=aNp3Htm/mthgfBxdo7SAS+BKT5IjCTT35idqtR5P8KU=;
-        b=j4i6ufaQC0o+2TEixYwLXlhC1Rn1Nl1H5Hz+M8z0TstK6sU62SiTsFt72Ie4SsfZAg
-         BqbUuooYRez7vUadLxSn1WDX6SqILkb3UUmz+pgEDDAAYGATDnfl7AH9xLoX8OwzoZtC
-         YlpRItDPgy900MxFpfFhUPwyscFI50PpOT/TCtIc2FRW9a2dLYLKL26hxIB9UHIjt27W
-         8ZhwaXpnRjxMRiQQZjvKR7q67Bx6+wSevHet7aMU1bNUR/oLPScl/raFz0mxb7KyYMJn
-         dM321TiRm/x2vGmyvzwuL4jBuKHOiZIRL+ytZsuLNupir01XkVzFmu4XmtEJZ+EUcc1m
-         AU5A==
+        bh=sTdyNYkze+hI+OFRZCPwqiZbewY8o758U81yg52mX4M=;
+        b=q8pB9egRttgWsLnscO5G4bYRpXSZAEr3Czk7HDYKghXyYGkiR66u90ioZFw7tahaDB
+         CRGEkXinK6SxoxNHkCZVsQBD9lx8K9iIfwCaFFI2JewouxfQOryXga8qneDuVLCvyMeh
+         arIMCS6QW8H6wS49vnLZvbTB7u3t3Mhk5LAJtuxVabZRSEafRpP5DAE2ABVKbfqAhSIw
+         Xh3Ro1U23HmvBdQsN9sAkGVktk4YcULQJndthgOAd5l6CIazx6bo6unngx1qigZFlvft
+         OABmeGgEvmJAJFBTkgBVz4lUcIweqDeHE4Hclkon06Fyfy36GeiimnRdN+9yrwYyhaSd
+         Yv0Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=aNp3Htm/mthgfBxdo7SAS+BKT5IjCTT35idqtR5P8KU=;
-        b=an24CHwJjW0c/acuv8Ve1zk8Yz6Mnm9GocDuL4ItcGrj5RydD3nWEPkcPlOrSCgnuK
-         hMd6UFAiZbZ4BJdf7lBDRb3hxgQQ+Sfbk+pxLo5ppFip1e/ByhTyS0lDGH50Li0WggfX
-         tfckHcWWaxj1z2iTB4bhYaNyoSidVTTZJW516hGVfKPBXY5WWRUzeUtrnu6l6Tcu8cQM
-         fr4MZ6p3ptRzfhqGt7OSxNcPj2tfLzW2Tp2bAffWu7OqXRv2Pc3A2hq2TZL0dvdL0SKh
-         s+eiOVITjqZMvOM9po6FBYMNT4Tpa9w4GUF+sMExvta73AHYISgc4xJF1Yi/IU6oP91q
-         3VVg==
-X-Gm-Message-State: AOAM531Fr03hsEgLeYzqGr1nE63WfHILNCSDZtHkQXm92yZqmuRc2ly0
-        vsdlcSR7iFP1M9jhyP3D4p5rkBwr4qlPHDkJ0KFBbQcc
-X-Google-Smtp-Source: ABdhPJzhIQSZtqdhi01xZM/zJm1LH9dY0dYZ3Puz5+1d8Tz5sDuaaegtGh3qb5xrOoRPwplcvOqltdnWkYOJfJZQOoY=
-X-Received: by 2002:a17:906:fc5:: with SMTP id c5mr6855124ejk.538.1611758864039;
- Wed, 27 Jan 2021 06:47:44 -0800 (PST)
+        bh=sTdyNYkze+hI+OFRZCPwqiZbewY8o758U81yg52mX4M=;
+        b=UtjGPf+aUPn+/++FyQGjRVlp9MNOssY4rT3LySHP7/eWjUXv8AOUFfys9m0eFxmBQP
+         dycP/cPJdYw9CY4xnk0xN4n6R14PvPEvGjZRM75WjCjtE+jG8CO9ZYsfxLhW8m7geJjz
+         vRFlrcYp6bDlLgCDt74ACdpmCsk0Ijq3V8XoiagtNnmz5Ar1B7Jo181BYewOFJNzPUTc
+         lJVCSSh91/TZNr+5zfIzRQrx7bsWtiCb2EmHdSVEhmZY9dbbccoLMbnUFtRHHeMr9b8v
+         77i5NSCYyfBj3r8kr6z2Z/wLnygFXS1fJtfiqNSUFp4EkcQe5u1qiycFz8PqfGLBaFyO
+         cosw==
+X-Gm-Message-State: AOAM531lcPd3aA2Cb28i4vhnRMwAd4dBN74sOOR5VUtK2m+GXjrYbQgD
+        uw9T1ofryJUHNS44BmgQgJXckSs/NPTHx6t/7L69ig==
+X-Google-Smtp-Source: ABdhPJym5YHdk7S2GBOskLrJaJULn2+Xd5bDT5AbmWnQMa5r6J68lPTVZvdEBa+glr+j4eSggYZNORX6z7pePV/Rzf4=
+X-Received: by 2002:a92:d8c2:: with SMTP id l2mr9200045ilo.216.1611759284256;
+ Wed, 27 Jan 2021 06:54:44 -0800 (PST)
 MIME-Version: 1.0
-References: <20210126171550.3066-1-kernel@esmil.dk>
-In-Reply-To: <20210126171550.3066-1-kernel@esmil.dk>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Wed, 27 Jan 2021 09:47:08 -0500
-Message-ID: <CAF=yD-LGoVkf5ARHPsGAMbsruDq7iQ=X8c3cZRp5XaZC936EMw@mail.gmail.com>
-Subject: Re: [PATCH] rtlwifi: use tasklet_setup to initialize rx_work_tasklet
-To:     Emil Renner Berthing <kernel@esmil.dk>
-Cc:     linux-wireless <linux-wireless@vger.kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Ping-Ke Shih <pkshih@realtek.com>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Allen Pais <allen.lkml@gmail.com>,
-        Romain Perier <romain.perier@gmail.com>,
-        LKML <linux-kernel@vger.kernel.org>
+References: <20210127125018.7059-1-kuniyu@amazon.co.jp>
+In-Reply-To: <20210127125018.7059-1-kuniyu@amazon.co.jp>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Wed, 27 Jan 2021 15:54:32 +0100
+Message-ID: <CANn89iJF_LOMDj9RZAe0QDkkJwCs7CgFA4KMijs5siz904DSzg@mail.gmail.com>
+Subject: Re: [PATCH net] net: Remove redundant calls of sk_tx_queue_clear().
+To:     Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, Amit Shah <aams@amazon.de>,
+        Kuniyuki Iwashima <kuni1840@gmail.com>,
+        netdev <netdev@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Tariq Toukan <tariqt@mellanox.com>,
+        Boris Pismenny <borisp@mellanox.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 27, 2021 at 5:23 AM Emil Renner Berthing <kernel@esmil.dk> wrote:
+On Wed, Jan 27, 2021 at 1:50 PM Kuniyuki Iwashima <kuniyu@amazon.co.jp> wrote:
 >
-> In commit d3ccc14dfe95 most of the tasklets in this driver was
-> updated to the new API. However for the rx_work_tasklet only the
-> type of the callback was changed from
->   void _rtl_rx_work(unsigned long data)
-> to
->   void _rtl_rx_work(struct tasklet_struct *t).
->
-> The initialization of rx_work_tasklet was still open-coded and the
-> function pointer just cast into the old type, and hence nothing sets
-> rx_work_tasklet.use_callback = true and the callback was still called as
->
->   t->func(t->data);
->
-> with uninitialized/zero t->data.
->
-> Commit 6b8c7574a5f8 changed the casting of _rtl_rx_work a bit and
-> initialized t->data to a pointer to the tasklet cast to an unsigned
-> long.
->
-> This way calling t->func(t->data) might actually work through all the
-> casting, but it still doesn't update the code to use the new tasklet
-> API.
->
-> Let's use the new tasklet_setup to initialize rx_work_tasklet properly
-> and set rx_work_tasklet.use_callback = true so that the callback is
-> called as
->
->   t->callback(t);
->
-> without all the casting.
->
-> Fixes: 6b8c7574a5f8 ("rtlwifi: fix build warning")
-> Fixes: d3ccc14dfe95 ("rtlwifi/rtw88: convert tasklets to use new tasklet_setup() API")
-> Signed-off-by: Emil Renner Berthing <kernel@esmil.dk>
+> The commit 41b14fb8724d ("net: Do not clear the sock TX queue in
+> sk_set_socket()") removes sk_tx_queue_clear() from sk_set_socket() and adds
+> it instead in sk_alloc() and sk_clone_lock() to fix an issue introduced in
+> the commit e022f0b4a03f ("net: Introduce sk_tx_queue_mapping"). However,
+> the original commit had already put sk_tx_queue_clear() in sk_prot_alloc():
+> the callee of sk_alloc() and sk_clone_lock(). Thus sk_tx_queue_clear() is
+> called twice in each path currently.
 
-Since the current code works, this could target net-next without Fixes tags.
+Are you sure ?
 
-Acked-by: Willem de Bruijn <willemb@google.com>
+I do not clearly see the sk_tx_queue_clear() call from the cloning part.
+
+Please elaborate.
+
+In any case, this seems to be a candidate for net-next, this is not
+fixing a bug,
+this would be an optimization at most, and potentially adding a bug.
+
+So if you resend this patch, you can mention the old commit in the changelog,
+but do not add a dubious Fixes: tag
+
+
+>
+> This patch removes the redundant calls of sk_tx_queue_clear() in sk_alloc()
+> and sk_clone_lock().
+>
+> Fixes: 41b14fb8724d ("net: Do not clear the sock TX queue in sk_set_socket()")
+> CC: Tariq Toukan <tariqt@mellanox.com>
+> CC: Boris Pismenny <borisp@mellanox.com>
+> Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+> Reviewed-by: Amit Shah <aams@amazon.de>
+> ---
+>  net/core/sock.c | 2 --
+>  1 file changed, 2 deletions(-)
+>
+> diff --git a/net/core/sock.c b/net/core/sock.c
+> index bbcd4b97eddd..5c665ee14159 100644
+> --- a/net/core/sock.c
+> +++ b/net/core/sock.c
+> @@ -1759,7 +1759,6 @@ struct sock *sk_alloc(struct net *net, int family, gfp_t priority,
+>                 cgroup_sk_alloc(&sk->sk_cgrp_data);
+>                 sock_update_classid(&sk->sk_cgrp_data);
+>                 sock_update_netprioidx(&sk->sk_cgrp_data);
+> -               sk_tx_queue_clear(sk);
+>         }
+>
+>         return sk;
+> @@ -1983,7 +1982,6 @@ struct sock *sk_clone_lock(const struct sock *sk, const gfp_t priority)
+>                  */
+>                 sk_refcnt_debug_inc(newsk);
+>                 sk_set_socket(newsk, NULL);
+> -               sk_tx_queue_clear(newsk);
+>                 RCU_INIT_POINTER(newsk->sk_wq, NULL);
+>
+>                 if (newsk->sk_prot->sockets_allocated)
+> --
+> 2.17.2 (Apple Git-113)
+>
