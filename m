@@ -2,172 +2,221 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6BEE43065D8
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 22:18:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DD3683065EC
+	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 22:26:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231863AbhA0VSG (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 16:18:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47736 "EHLO
+        id S234105AbhA0VWY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 16:22:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231585AbhA0VSC (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 16:18:02 -0500
-Received: from mail-pf1-x449.google.com (mail-pf1-x449.google.com [IPv6:2607:f8b0:4864:20::449])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EBE6C061574
-        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 13:17:21 -0800 (PST)
-Received: by mail-pf1-x449.google.com with SMTP id z3so2087500pfj.3
-        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 13:17:21 -0800 (PST)
+        with ESMTP id S233903AbhA0VWX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 16:22:23 -0500
+Received: from mail-yb1-xb2e.google.com (mail-yb1-xb2e.google.com [IPv6:2607:f8b0:4864:20::b2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88B38C061573;
+        Wed, 27 Jan 2021 13:21:43 -0800 (PST)
+Received: by mail-yb1-xb2e.google.com with SMTP id w24so3420292ybi.7;
+        Wed, 27 Jan 2021 13:21:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=sender:date:message-id:mime-version:subject:from:to:cc;
-        bh=0oj2Lh/zDremXrwwI5FBI0ohoN90BgSKE7ZLqFcSUF4=;
-        b=hh86dEVbIIYbMi9j4kn0FexpX7hvM55T89bIePLy0iFZpmZEirZtKdnzaOdxT7hOM6
-         FT8Wx14j9OvomngFQ7Ss1sceIxE5cu68/u/P/MFBAwk1VeSpfiWpovHRlcEQBAAUr3ot
-         HomZAl1V1uW4NIPcP2iDTwor0U5DnHIMOIcp3uvwILmqUKpNCxKs1Fffmbp1RzT5hSvR
-         rD19JRekbpHoIF/liEfaXpjPqJu3zrumgetqIAVeqeOkfPO7BAp0zk2XpjjMreQCDBUi
-         yDIUlkxNyZIRxVJ+TmuuyTb8PpBSC7cah0f5r21dms7PAUzs3fUAuws1SJDohcNjwLhh
-         dPhA==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=BRPZ4D+C/ROPLOS9wpCMTb0wBg9l/hdG9nGUxbgvdbE=;
+        b=lxwsnAUBmN7o8FlV9lUT6PX3wvKhLRcwjAhH3Ii6IEfjhlFdz9HUofyVI2OvqXBWiv
+         FDTesI+Y46bNgjfDfytQod9mlarEJnFKOjUMj12xiLuaUNSUup1UMDdLcAK5iaeVnVLc
+         B+8giBnM+zREQJYEEBvx8LdaTpo6Q03tTw/jdvO6VaO92LI9fdO22hRIhRXN+yUcVay7
+         fTTn7qIfaVker9+ujnZBizGOAMAHCPj6cztIJD1A+m243Eo8FDThEOpaQrmViuEk+G9s
+         Bn8Xb3++MEHKSoqhrt6Q9DpEjAI40UagtuSIRdnq5ylX1NZAT7cV6qtHdffcAIyLvDvZ
+         cn4w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:message-id:mime-version:subject:from
-         :to:cc;
-        bh=0oj2Lh/zDremXrwwI5FBI0ohoN90BgSKE7ZLqFcSUF4=;
-        b=ZisWXRJTvg3OZJXXJilNJ2qASecU0IgAWhGembCuvEKWucGSYpd4SOv0ir74K1unaZ
-         YXSp81rZ5sdKXZEtFylaaN4+fzckBSn4H2Id8ybYkeGtKwYDHBR/Rs3pqENlbXGl6ber
-         IeoQNK7foSC3etbZVc+Iyo8pRf1CyP4ZYSxfJsF9cSAJgyyI0/2wPSht9WwSod8m6RNU
-         tCDr/9Dl/Yn/Q2QbOAx3yHPNq7ckWYzMS+YXHl4SrlhpFtcGdkMceM1OPZ2eLqbvVX9G
-         PLhYewZwzaMD1dZf9GyjZXmawn65sAfWM8KvxeH8VV9ck7XHWSEpUpG0bTha010Ahd84
-         b0ag==
-X-Gm-Message-State: AOAM532t9of5DlFSBGH2zzpdTaGVb6I6md30yueSVIUiC1kZ2P6p1L6R
-        89MxTNdJH+TCDFKh55VyKvZtm7kLpcs9
-X-Google-Smtp-Source: ABdhPJwuEhahaAAvizFQCWj7hHDsMSSZfufeAzu/03Yah/lU3sxfWwxemZL+RRLEBPWe09D+X1oYlXf/bFcJ
-Sender: "yudiliu via sendgmr" <yudiliu@yudiliu.mtv.corp.google.com>
-X-Received: from yudiliu.mtv.corp.google.com ([2620:15c:202:201:8edc:d4ff:fe53:2823])
- (user=yudiliu job=sendgmr) by 2002:a17:902:d64e:b029:df:e5b1:b7f7 with SMTP
- id y14-20020a170902d64eb02900dfe5b1b7f7mr12876987plh.10.1611782240354; Wed,
- 27 Jan 2021 13:17:20 -0800 (PST)
-Date:   Wed, 27 Jan 2021 13:17:16 -0800
-Message-Id: <20210127131703.v1.1.I7d3819e3c406b20307a56fe96159e8f842f72d89@changeid>
-Mime-Version: 1.0
-X-Mailer: git-send-email 2.30.0.280.ga3ce27912f-goog
-Subject: [PATCH v1] Bluetooth: Skip eSCO 2M params when not supported.
-From:   Yu Liu <yudiliu@google.com>
-To:     linux-bluetooth@vger.kernel.org, marcel@holtmann.org,
-        chromeos-bluetooth-upstreaming@chromium.org
-Cc:     Yu Liu <yudiliu@google.com>,
-        Abhishek Pandit-Subedi <abhishekpandit@chromium.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Johan Hedberg <johan.hedberg@gmail.com>,
-        linux-kernel@vger.kernel.org, netdev@vger.kernel.org
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=BRPZ4D+C/ROPLOS9wpCMTb0wBg9l/hdG9nGUxbgvdbE=;
+        b=TcERaMECaP+9bSSdbfaE8DeKA4nvokEe2AfqEifRFKD9OpLXsMAaDlU/IJaEFk/rF6
+         /PIVtT+C5RbHxGvfrhCRdy7uB9PzZgIcJCDiX2ME6PNw9olbohBIQ1aAV7vSG3d9bNMJ
+         vyq2wqLn2eUAHp3sU/NF2KLnP3Rg6J42dRA0QjfN6YINkU34yBwSr7OUn3MTntkfzNgt
+         fLZgvPaKQr/wMXi1hr5MYpco/PGaIxxsaBz3/iElwwPWOb42vAHV/dzOzvqdxylUt20h
+         Hm3Kunli+VhQJrpyjaJHU4j3XL7hRZQ0jUC+JV/iGwaRsQochHxyCoPo0vZ50K5kIJMU
+         R1sQ==
+X-Gm-Message-State: AOAM531WxfSBdkWOycsB81Xp6YOEmeVgqNfViUiNig9O4scvtuXdgqE9
+        6qgo8RWLdJuLVwpQqdbuTaJpFdptjItn06hU5nQ=
+X-Google-Smtp-Source: ABdhPJwtMEg/Ci97Ou+PD/qWyfBeMJH887qqDVU1QDPvaDQxMdmdXAJ37a7H8+au/rMwfg4hAjx7Zq3BsDxEh1C+8BU=
+X-Received: by 2002:a25:9882:: with SMTP id l2mr18227840ybo.425.1611782502851;
+ Wed, 27 Jan 2021 13:21:42 -0800 (PST)
+MIME-Version: 1.0
+References: <20210126085923.469759-1-songliubraving@fb.com> <20210126085923.469759-3-songliubraving@fb.com>
+In-Reply-To: <20210126085923.469759-3-songliubraving@fb.com>
+From:   Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Date:   Wed, 27 Jan 2021 13:21:32 -0800
+Message-ID: <CAEf4BzZLJc9=JgZBmvRazHsZg+VLihaRi-3Pt8wrsT9am-eBGg@mail.gmail.com>
+Subject: Re: [PATCH v2 bpf-next 2/4] selftests/bpf: add non-BPF_LSM test for
+ task local storage
+To:     Song Liu <songliubraving@fb.com>
+Cc:     bpf <bpf@vger.kernel.org>, Networking <netdev@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Peter Ziljstra <peterz@infradead.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        john fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@chromium.org>,
+        Kernel Team <kernel-team@fb.com>, Hao Luo <haoluo@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-If a peer device doesn't support eSCO 2M we should skip the params that
-use it when setting up sync connection since they will always fail.
+On Tue, Jan 26, 2021 at 1:21 AM Song Liu <songliubraving@fb.com> wrote:
+>
+> Task local storage is enabled for tracing programs. Add two tests for
+> task local storage without CONFIG_BPF_LSM.
+>
+> The first test measures the duration of a syscall by storing sys_enter
+> time in task local storage.
+>
+> The second test checks whether the kernel allows allocating task local
+> storage in exit_creds() (which it should not).
+>
+> Signed-off-by: Song Liu <songliubraving@fb.com>
+> ---
+>  .../bpf/prog_tests/task_local_storage.c       | 85 +++++++++++++++++++
+>  .../selftests/bpf/progs/task_local_storage.c  | 56 ++++++++++++
+>  .../bpf/progs/task_local_storage_exit_creds.c | 32 +++++++
+>  3 files changed, 173 insertions(+)
+>  create mode 100644 tools/testing/selftests/bpf/prog_tests/task_local_storage.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/task_local_storage.c
+>  create mode 100644 tools/testing/selftests/bpf/progs/task_local_storage_exit_creds.c
+>
+> diff --git a/tools/testing/selftests/bpf/prog_tests/task_local_storage.c b/tools/testing/selftests/bpf/prog_tests/task_local_storage.c
+> new file mode 100644
+> index 0000000000000..a8e2d3a476145
+> --- /dev/null
+> +++ b/tools/testing/selftests/bpf/prog_tests/task_local_storage.c
+> @@ -0,0 +1,85 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/* Copyright (c) 2021 Facebook */
+> +
+> +#include <sys/types.h>
+> +#include <unistd.h>
+> +#include <test_progs.h>
+> +#include "task_local_storage.skel.h"
+> +#include "task_local_storage_exit_creds.skel.h"
+> +
+> +static unsigned int duration;
+> +
+> +static void check_usleep_duration(struct task_local_storage *skel,
+> +                                 __u64 time_us)
+> +{
+> +       __u64 syscall_duration;
+> +
+> +       usleep(time_us);
+> +
+> +       /* save syscall_duration measure in usleep() */
+> +       syscall_duration = skel->bss->syscall_duration;
+> +
+> +       /* time measured by the BPF program (in nanoseconds) should be
+> +        * within +/- 20% of time_us * 1000.
+> +        */
+> +       CHECK(syscall_duration < 800 * time_us, "syscall_duration",
+> +             "syscall_duration was too small\n");
+> +       CHECK(syscall_duration > 1200 * time_us, "syscall_duration",
+> +             "syscall_duration was too big\n");
 
-Signed-off-by: Yu Liu <yudiliu@google.com>
-Reviewed-by: Abhishek Pandit-Subedi <abhishekpandit@chromium.org>
----
+this is going to be very flaky, especially in Travis CI. Can you
+please use something more stable that doesn't rely on time?
 
-Changes in v1:
-- Initial change
+> +}
+> +
+> +static void test_syscall_duration(void)
+> +{
+> +       struct task_local_storage *skel;
+> +       int err;
+> +
+> +       skel = task_local_storage__open_and_load();
+> +       if (!ASSERT_OK_PTR(skel, "skel_open_and_load"))
+> +               return;
+> +
+> +       skel->bss->target_pid = getpid();
 
- include/net/bluetooth/hci_core.h |  1 +
- net/bluetooth/hci_conn.c         | 39 +++++++++++++++++++++++---------
- 2 files changed, 29 insertions(+), 11 deletions(-)
+you are getting process ID, but comparing it with thread ID in BPF
+code. It will stop working properly if/when tests will be run in
+separate threads, so please use gettid() instead.
 
-diff --git a/include/net/bluetooth/hci_core.h b/include/net/bluetooth/hci_core.h
-index 239ab72f16c6e..71468a9ea798a 100644
---- a/include/net/bluetooth/hci_core.h
-+++ b/include/net/bluetooth/hci_core.h
-@@ -1237,6 +1237,7 @@ void hci_conn_del_sysfs(struct hci_conn *conn);
- #define lmp_le_capable(dev)        ((dev)->features[0][4] & LMP_LE)
- #define lmp_sniffsubr_capable(dev) ((dev)->features[0][5] & LMP_SNIFF_SUBR)
- #define lmp_pause_enc_capable(dev) ((dev)->features[0][5] & LMP_PAUSE_ENC)
-+#define lmp_esco_2m_capable(dev)   ((dev)->features[0][5] & LMP_EDR_ESCO_2M)
- #define lmp_ext_inq_capable(dev)   ((dev)->features[0][6] & LMP_EXT_INQ)
- #define lmp_le_br_capable(dev)     (!!((dev)->features[0][6] & LMP_SIMUL_LE_BR))
- #define lmp_ssp_capable(dev)       ((dev)->features[0][6] & LMP_SIMPLE_PAIR)
-diff --git a/net/bluetooth/hci_conn.c b/net/bluetooth/hci_conn.c
-index 07c34c55fc508..18740af603963 100644
---- a/net/bluetooth/hci_conn.c
-+++ b/net/bluetooth/hci_conn.c
-@@ -39,24 +39,25 @@ struct sco_param {
- 	u16 pkt_type;
- 	u16 max_latency;
- 	u8  retrans_effort;
-+	bool cap_2m_reqd;
- };
- 
- static const struct sco_param esco_param_cvsd[] = {
--	{ EDR_ESCO_MASK & ~ESCO_2EV3, 0x000a,	0x01 }, /* S3 */
--	{ EDR_ESCO_MASK & ~ESCO_2EV3, 0x0007,	0x01 }, /* S2 */
--	{ EDR_ESCO_MASK | ESCO_EV3,   0x0007,	0x01 }, /* S1 */
--	{ EDR_ESCO_MASK | ESCO_HV3,   0xffff,	0x01 }, /* D1 */
--	{ EDR_ESCO_MASK | ESCO_HV1,   0xffff,	0x01 }, /* D0 */
-+	{ EDR_ESCO_MASK & ~ESCO_2EV3, 0x000a,	0x01,   true  }, /* S3 */
-+	{ EDR_ESCO_MASK & ~ESCO_2EV3, 0x0007,	0x01,   true  }, /* S2 */
-+	{ EDR_ESCO_MASK | ESCO_EV3,   0x0007,	0x01,   false }, /* S1 */
-+	{ EDR_ESCO_MASK | ESCO_HV3,   0xffff,	0x01,   false }, /* D1 */
-+	{ EDR_ESCO_MASK | ESCO_HV1,   0xffff,	0x01,   false }, /* D0 */
- };
- 
- static const struct sco_param sco_param_cvsd[] = {
--	{ EDR_ESCO_MASK | ESCO_HV3,   0xffff,	0xff }, /* D1 */
--	{ EDR_ESCO_MASK | ESCO_HV1,   0xffff,	0xff }, /* D0 */
-+	{ EDR_ESCO_MASK | ESCO_HV3,   0xffff,	0xff,   false }, /* D1 */
-+	{ EDR_ESCO_MASK | ESCO_HV1,   0xffff,	0xff,   false }, /* D0 */
- };
- 
- static const struct sco_param esco_param_msbc[] = {
--	{ EDR_ESCO_MASK & ~ESCO_2EV3, 0x000d,	0x02 }, /* T2 */
--	{ EDR_ESCO_MASK | ESCO_EV3,   0x0008,	0x02 }, /* T1 */
-+	{ EDR_ESCO_MASK & ~ESCO_2EV3, 0x000d,	0x02,   true  }, /* T2 */
-+	{ EDR_ESCO_MASK | ESCO_EV3,   0x0008,	0x02,   false }, /* T1 */
- };
- 
- /* This function requires the caller holds hdev->lock */
-@@ -278,6 +279,20 @@ static void hci_add_sco(struct hci_conn *conn, __u16 handle)
- 	hci_send_cmd(hdev, HCI_OP_ADD_SCO, sizeof(cp), &cp);
- }
- 
-+static bool find_next_esco_param(struct hci_conn *conn,
-+				 const struct sco_param *esco_param, int size)
-+{
-+	for (; conn->attempt <= size; conn->attempt++) {
-+		if (lmp_esco_2m_capable(conn->link) ||
-+		    !esco_param[conn->attempt - 1].cap_2m_reqd)
-+			break;
-+		BT_DBG("hcon %p skipped attempt %d, eSCO 2M not supported",
-+		       conn, conn->attempt);
-+	}
-+
-+	return conn->attempt <= size;
-+}
-+
- bool hci_setup_sync(struct hci_conn *conn, __u16 handle)
- {
- 	struct hci_dev *hdev = conn->hdev;
-@@ -299,13 +314,15 @@ bool hci_setup_sync(struct hci_conn *conn, __u16 handle)
- 
- 	switch (conn->setting & SCO_AIRMODE_MASK) {
- 	case SCO_AIRMODE_TRANSP:
--		if (conn->attempt > ARRAY_SIZE(esco_param_msbc))
-+		if (!find_next_esco_param(conn, esco_param_msbc,
-+					  ARRAY_SIZE(esco_param_msbc)))
- 			return false;
- 		param = &esco_param_msbc[conn->attempt - 1];
- 		break;
- 	case SCO_AIRMODE_CVSD:
- 		if (lmp_esco_capable(conn->link)) {
--			if (conn->attempt > ARRAY_SIZE(esco_param_cvsd))
-+			if (!find_next_esco_param(conn, esco_param_cvsd,
-+						  ARRAY_SIZE(esco_param_cvsd)))
- 				return false;
- 			param = &esco_param_cvsd[conn->attempt - 1];
- 		} else {
--- 
-2.30.0.280.ga3ce27912f-goog
+> +
+> +       err = task_local_storage__attach(skel);
+> +       if (!ASSERT_OK(err, "skel_attach"))
+> +               goto out;
+> +
+> +       check_usleep_duration(skel, 2000);
+> +       check_usleep_duration(skel, 3000);
+> +       check_usleep_duration(skel, 4000);
+> +
+> +out:
+> +       task_local_storage__destroy(skel);
+> +}
+> +
+> +static void test_exit_creds(void)
+> +{
+> +       struct task_local_storage_exit_creds *skel;
+> +       int err;
+> +
+> +       skel = task_local_storage_exit_creds__open_and_load();
+> +       if (!ASSERT_OK_PTR(skel, "skel_open_and_load"))
+> +               return;
+> +
+> +       err = task_local_storage_exit_creds__attach(skel);
+> +       if (!ASSERT_OK(err, "skel_attach"))
+> +               goto out;
+> +
+> +       /* trigger at least one exit_creds() */
+> +       if (CHECK_FAIL(system("ls > /dev/null")))
+> +               goto out;
+> +
+> +       /* sync rcu, so the following reads could get latest values */
+> +       kern_sync_rcu();
 
+what are we waiting for here? you don't detach anything... system() is
+definitely going to complete by now, so whatever counter was or was
+not updated will be reflected here. Seems like kern_sync_rcu() is not
+needed?
+
+> +       ASSERT_EQ(skel->bss->valid_ptr_count, 0, "valid_ptr_count");
+> +       ASSERT_NEQ(skel->bss->null_ptr_count, 0, "null_ptr_count");
+> +out:
+> +       task_local_storage_exit_creds__destroy(skel);
+> +}
+> +
+> +void test_task_local_storage(void)
+> +{
+> +       if (test__start_subtest("syscall_duration"))
+> +               test_syscall_duration();
+> +       if (test__start_subtest("exit_creds"))
+> +               test_exit_creds();
+> +}
+
+[...]
+
+> +int valid_ptr_count = 0;
+> +int null_ptr_count = 0;
+> +
+> +SEC("fentry/exit_creds")
+> +int BPF_PROG(trace_exit_creds, struct task_struct *task)
+> +{
+> +       __u64 *ptr;
+> +
+> +       ptr = bpf_task_storage_get(&task_storage, task, 0,
+> +                                  BPF_LOCAL_STORAGE_GET_F_CREATE);
+> +       if (ptr)
+> +               valid_ptr_count++;
+> +       else
+> +               null_ptr_count++;
+
+
+use atomic increments?
+
+> +       return 0;
+> +}
+> --
+> 2.24.1
+>
