@@ -2,48 +2,48 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C366A305501
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 08:51:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D0ABD3054FD
+	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 08:50:10 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231476AbhA0HuW (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 02:50:22 -0500
-Received: from mx0b-0016f401.pphosted.com ([67.231.156.173]:45014 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232103AbhA0Hre (ORCPT
+        id S234211AbhA0Htz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 02:49:55 -0500
+Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:6486 "EHLO
+        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S229624AbhA0Hre (ORCPT
         <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 02:47:34 -0500
-Received: from pps.filterd (m0045851.ppops.net [127.0.0.1])
-        by mx0b-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 10R7eDTU007641;
-        Tue, 26 Jan 2021 23:46:47 -0800
+Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
+        by mx0a-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 10R7ddZ7019092;
+        Tue, 26 Jan 2021 23:46:52 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=pfpt0220; bh=YkzRsKw6QmOVwPaZobphLflXfUFz0e4K2CeKvZHqkOk=;
- b=iODS/RZsxV0zB54DGc72q/DLPkrRXUXaZb1dShM8I+OqbGHTyeLsubDGiqeIwDTkmwHL
- gdHuhdlKBDJuT1mU6oVMFV6qmhgKtl2ZRdMwqaCf44FQVW+YRTBRfzoN8k7fyp/xy/zW
- OycGVGnFGyPV/QshSfWrOi6+4ebcXgQv8dAzhK6hfB0rNSo8CuytgesbmtYaCqxza4nR
- YfsbURDXL3trfs5l5Zh1iJAivu1GPIcTJUNAYu4ToxFvYNqteKBS0KeVGeqwE8zjeG0R
- bs5Po+ZGkM5n9d9BrmWoToRWrCB5yweKSPsJWOIJleHmiyWfOG+/0wC4F7EOMSjsv1yF 7g== 
-Received: from dc5-exch01.marvell.com ([199.233.59.181])
-        by mx0b-0016f401.pphosted.com with ESMTP id 36b1xpg9pw-1
+ content-type; s=pfpt0220; bh=PUysU0htMDnwFEM81zh2w8WgQBHOCuAH6G2iWHIF+1s=;
+ b=H3U/MItDXgIuw8UrOgOTE8roVP/FZbtPo4P7wPUn+zxYGvH8Pur/sc2EzqmaK2czNpjt
+ rSK1v2q9Vk6eyx70SW0SQZglA92lWNDmoLG66w3e8not9JxIN1yQwu5VU2Gsn7XKnz7a
+ SDv6O8Utoba4sL7eNmHwvIrg83QW26QkjrF51RSsVu4f5+xlnkE7f+EsYo6djfg7ZlRM
+ VNg1XLCZFLoh5ukSAA/6s78s//6ajzxzLF0C+sz3wbz7FqOApyWshz/Jbn0Iqgj9ar5m
+ DmKISQXvuVFRfzfP2YAqSL4N39oTdL+4FILN1HTuNrnRPPq4J3Dm55Xc3f8mulTz2Zem Zw== 
+Received: from dc5-exch02.marvell.com ([199.233.59.182])
+        by mx0a-0016f401.pphosted.com with ESMTP id 368j1uaw79-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Tue, 26 Jan 2021 23:46:47 -0800
-Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH01.marvell.com
- (10.69.176.38) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 26 Jan
- 2021 23:46:44 -0800
+        Tue, 26 Jan 2021 23:46:52 -0800
+Received: from DC5-EXCH02.marvell.com (10.69.176.39) by DC5-EXCH02.marvell.com
+ (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 26 Jan
+ 2021 23:46:49 -0800
 Received: from maili.marvell.com (10.69.176.80) by DC5-EXCH02.marvell.com
  (10.69.176.39) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Tue, 26 Jan 2021 23:46:44 -0800
+ Transport; Tue, 26 Jan 2021 23:46:49 -0800
 Received: from hyd1soter2.marvell.com (unknown [10.29.37.45])
-        by maili.marvell.com (Postfix) with ESMTP id F03233F7040;
-        Tue, 26 Jan 2021 23:46:40 -0800 (PST)
+        by maili.marvell.com (Postfix) with ESMTP id 9E4913F7043;
+        Tue, 26 Jan 2021 23:46:46 -0800 (PST)
 From:   Hariprasad Kelam <hkelam@marvell.com>
 To:     <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>
 CC:     <davem@davemloft.net>, <kuba@kernel.org>, <sgoutham@marvell.com>,
         <lcherian@marvell.com>, <gakula@marvell.com>, <jerinj@marvell.com>,
         <sbhatta@marvell.com>, Christina Jacob <cjacob@marvell.com>,
         Hariprasad Kelam <hkelam@marvell.com>
-Subject: [Patch v2 net-next 5/7] octeontx2-af: advertised link modes support on cgx
-Date:   Wed, 27 Jan 2021 13:15:50 +0530
-Message-ID: <1611733552-150419-6-git-send-email-hkelam@marvell.com>
+Subject: [Patch v2 net-next 6/7] octeontx2-pf: ethtool physical link status
+Date:   Wed, 27 Jan 2021 13:15:51 +0530
+Message-ID: <1611733552-150419-7-git-send-email-hkelam@marvell.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1611733552-150419-1-git-send-email-hkelam@marvell.com>
 References: <1611733552-150419-1-git-send-email-hkelam@marvell.com>
@@ -57,236 +57,236 @@ X-Mailing-List: netdev@vger.kernel.org
 
 From: Christina Jacob <cjacob@marvell.com>
 
-CGX supports setting advertised link modes on physical link.
-This patch adds support to derive cgx mode from ethtool
-link mode and pass it to firmware to configure the same.
+Register get_link_ksettings callback to get link status information
+from the driver. As virtual function (vf) shares same physical link
+same API is used for both the drivers and for loop back drivers
+simply returns the fixed values as its does not have physical link.
+
+ethtool eth3
+Settings for eth3:
+        Supported ports: [ ]
+        Supported link modes:   10baseT/Half 10baseT/Full
+                                100baseT/Half 100baseT/Full
+                                1000baseT/Half 1000baseT/Full
+                                10000baseKR/Full
+                                1000baseX/Full
+        Supports auto-negotiation: No
+        Supported FEC modes: BaseR RS
+        Advertised link modes:  Not reported
+        Advertised pause frame use: No
+        Advertised auto-negotiation: No
+        Advertised FEC modes: None
+
+ethtool lbk0
+Settings for lbk0:
+	Speed: 100000Mb/s
+        Duplex: Full
 
 Signed-off-by: Christina Jacob <cjacob@marvell.com>
 Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
 Signed-off-by: Hariprasad Kelam <hkelam@marvell.com>
 ---
- drivers/net/ethernet/marvell/octeontx2/af/cgx.c    | 113 ++++++++++++++++++++-
- .../net/ethernet/marvell/octeontx2/af/cgx_fw_if.h  |  32 +++++-
- drivers/net/ethernet/marvell/octeontx2/af/mbox.h   |   3 +-
- 3 files changed, 145 insertions(+), 3 deletions(-)
+ .../ethernet/marvell/octeontx2/nic/otx2_ethtool.c  | 159 +++++++++++++++++++++
+ 1 file changed, 159 insertions(+)
 
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/cgx.c b/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
-index 42ee67e..ff0e1db 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
-@@ -14,6 +14,7 @@
- #include <linux/pci.h>
- #include <linux/netdevice.h>
- #include <linux/etherdevice.h>
-+#include <linux/ethtool.h>
- #include <linux/phy.h>
- #include <linux/of.h>
- #include <linux/of_mdio.h>
-@@ -644,6 +645,7 @@ static inline void cgx_link_usertable_init(void)
- 	cgx_speed_mbps[CGX_LINK_25G] = 25000;
- 	cgx_speed_mbps[CGX_LINK_40G] = 40000;
- 	cgx_speed_mbps[CGX_LINK_50G] = 50000;
-+	cgx_speed_mbps[CGX_LINK_80G] = 80000;
- 	cgx_speed_mbps[CGX_LINK_100G] = 100000;
- 
- 	cgx_lmactype_string[LMAC_MODE_SGMII] = "SGMII";
-@@ -691,6 +693,110 @@ static inline int cgx_link_usertable_index_map(int speed)
- 	return CGX_LINK_NONE;
+diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
+index e5b1a57..b99f4bb 100644
+--- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
++++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_ethtool.c
+@@ -32,6 +32,8 @@ struct otx2_stat {
+ 	.index = offsetof(struct otx2_dev_stats, stat) / sizeof(u64), \
  }
  
-+static void set_mod_args(struct cgx_set_link_mode_args *args,
-+			 u32 speed, u8 duplex, u8 autoneg, u64 mode)
++#define OTX2_ETHTOOL_SUPPORTED_MODES 0x638CCBF //110001110001100110010111111
++#define OTX2_RESERVED_ETHTOOL_LINK_MODE	0
+ static const struct otx2_stat otx2_dev_stats[] = {
+ 	OTX2_DEV_STAT(rx_ucast_frames),
+ 	OTX2_DEV_STAT(rx_bcast_frames),
+@@ -1034,6 +1036,148 @@ static int otx2_set_fecparam(struct net_device *netdev,
+ 	return err;
+ }
+ 
++static void otx2_get_fec_info(u64 index, int mode, struct ethtool_link_ksettings
++			      *link_ksettings)
 +{
-+	/* Fill default values incase of user did not pass
-+	 * valid parameters
-+	 */
-+	if (args->duplex == DUPLEX_UNKNOWN)
-+		args->duplex = duplex;
-+	if (args->speed == SPEED_UNKNOWN)
-+		args->speed = speed;
-+	if (args->an == AUTONEG_UNKNOWN)
-+		args->an = autoneg;
-+	args->mode = mode;
-+	args->ports = 0;
-+}
++	switch (index) {
++	case OTX2_FEC_NONE:
++		if (mode)
++			ethtool_link_ksettings_add_link_mode(link_ksettings,
++							     advertising,
++							     FEC_NONE);
++		else
++			ethtool_link_ksettings_add_link_mode(link_ksettings,
++							     supported,
++							     FEC_NONE);
++		break;
++	case OTX2_FEC_BASER:
++		if (mode)
++			ethtool_link_ksettings_add_link_mode(link_ksettings,
++							     advertising,
++							     FEC_BASER);
++		else
++			ethtool_link_ksettings_add_link_mode(link_ksettings,
++							     supported,
++							     FEC_BASER);
++		break;
++	case OTX2_FEC_RS:
++		if (mode)
++			ethtool_link_ksettings_add_link_mode(link_ksettings,
++							     advertising,
++							     FEC_RS);
++		else
++			ethtool_link_ksettings_add_link_mode(link_ksettings,
++							     supported,
++							     FEC_RS);
++		break;
++	case OTX2_FEC_BASER | OTX2_FEC_RS:
++		if (mode) {
++			ethtool_link_ksettings_add_link_mode(link_ksettings,
++							     advertising,
++							     FEC_BASER);
++			ethtool_link_ksettings_add_link_mode(link_ksettings,
++							     advertising,
++							     FEC_RS);
++		} else {
++			ethtool_link_ksettings_add_link_mode(link_ksettings,
++							     supported,
++							     FEC_BASER);
++			ethtool_link_ksettings_add_link_mode(link_ksettings,
++							     supported,
++							     FEC_RS);
++		}
 +
-+static void otx2_map_ethtool_link_modes(u64 bitmask,
-+					struct cgx_set_link_mode_args *args)
-+{
-+	switch (bitmask) {
-+	case BIT_ULL(ETHTOOL_LINK_MODE_10baseT_Half_BIT):
-+		set_mod_args(args, 10, 1, 1, BIT_ULL(CGX_MODE_SGMII));
-+		break;
-+	case  BIT_ULL(ETHTOOL_LINK_MODE_10baseT_Full_BIT):
-+		set_mod_args(args, 10, 0, 1, BIT_ULL(CGX_MODE_SGMII));
-+		break;
-+	case  BIT_ULL(ETHTOOL_LINK_MODE_100baseT_Half_BIT):
-+		set_mod_args(args, 100, 1, 1, BIT_ULL(CGX_MODE_SGMII));
-+		break;
-+	case  BIT_ULL(ETHTOOL_LINK_MODE_100baseT_Full_BIT):
-+		set_mod_args(args, 100, 0, 1, BIT_ULL(CGX_MODE_SGMII));
-+		break;
-+	case  BIT_ULL(ETHTOOL_LINK_MODE_1000baseT_Half_BIT):
-+		set_mod_args(args, 1000, 1, 1, BIT_ULL(CGX_MODE_SGMII));
-+		break;
-+	case  BIT_ULL(ETHTOOL_LINK_MODE_1000baseT_Full_BIT):
-+		set_mod_args(args, 1000, 0, 1, BIT_ULL(CGX_MODE_SGMII));
-+		break;
-+	case  BIT_ULL(ETHTOOL_LINK_MODE_1000baseX_Full_BIT):
-+		set_mod_args(args, 1000, 0, 0, BIT_ULL(CGX_MODE_1000_BASEX));
-+		break;
-+	case  BIT_ULL(ETHTOOL_LINK_MODE_10000baseT_Full_BIT):
-+		set_mod_args(args, 1000, 0, 1, BIT_ULL(CGX_MODE_QSGMII));
-+		break;
-+	case  BIT_ULL(ETHTOOL_LINK_MODE_10000baseSR_Full_BIT):
-+		set_mod_args(args, 10000, 0, 0, BIT_ULL(CGX_MODE_10G_C2C));
-+		break;
-+	case  BIT_ULL(ETHTOOL_LINK_MODE_10000baseLR_Full_BIT):
-+		set_mod_args(args, 10000, 0, 0, BIT_ULL(CGX_MODE_10G_C2M));
-+		break;
-+	case  BIT_ULL(ETHTOOL_LINK_MODE_10000baseKR_Full_BIT):
-+		set_mod_args(args, 10000, 0, 1, BIT_ULL(CGX_MODE_10G_KR));
-+		break;
-+	case  BIT_ULL(ETHTOOL_LINK_MODE_25000baseSR_Full_BIT):
-+		set_mod_args(args, 25000, 0, 0, BIT_ULL(CGX_MODE_25G_C2C));
-+		break;
-+	case  BIT_ULL(ETHTOOL_LINK_MODE_25000baseCR_Full_BIT):
-+		set_mod_args(args, 25000, 0, 1, BIT_ULL(CGX_MODE_25G_CR));
-+		break;
-+	case  BIT_ULL(ETHTOOL_LINK_MODE_25000baseKR_Full_BIT):
-+		set_mod_args(args, 25000, 0, 1, BIT_ULL(CGX_MODE_25G_KR));
-+		break;
-+	case  BIT_ULL(ETHTOOL_LINK_MODE_40000baseSR4_Full_BIT):
-+		set_mod_args(args, 40000, 0, 0, BIT_ULL(CGX_MODE_40G_C2C));
-+		break;
-+	case  BIT_ULL(ETHTOOL_LINK_MODE_40000baseLR4_Full_BIT):
-+		set_mod_args(args, 40000, 0, 0, BIT_ULL(CGX_MODE_40G_C2M));
-+		break;
-+	case  BIT_ULL(ETHTOOL_LINK_MODE_40000baseCR4_Full_BIT):
-+		set_mod_args(args, 40000, 0, 1, BIT_ULL(CGX_MODE_40G_CR4));
-+		break;
-+	case  BIT_ULL(ETHTOOL_LINK_MODE_40000baseKR4_Full_BIT):
-+		set_mod_args(args, 40000, 0, 1, BIT_ULL(CGX_MODE_40G_KR4));
-+		break;
-+	case  BIT_ULL(ETHTOOL_LINK_MODE_50000baseSR_Full_BIT):
-+		set_mod_args(args, 50000, 0, 0, BIT_ULL(CGX_MODE_50G_C2C));
-+		break;
-+	case  BIT_ULL(ETHTOOL_LINK_MODE_50000baseLR_ER_FR_Full_BIT):
-+		set_mod_args(args, 50000, 0, 0, BIT_ULL(CGX_MODE_50G_C2M));
-+		break;
-+	case  BIT_ULL(ETHTOOL_LINK_MODE_50000baseCR_Full_BIT):
-+		set_mod_args(args, 50000, 0, 1, BIT_ULL(CGX_MODE_50G_CR));
-+		break;
-+	case  BIT_ULL(ETHTOOL_LINK_MODE_50000baseKR_Full_BIT):
-+		set_mod_args(args, 50000, 0, 1, BIT_ULL(CGX_MODE_50G_KR));
-+		break;
-+	case  BIT_ULL(ETHTOOL_LINK_MODE_100000baseSR4_Full_BIT):
-+		set_mod_args(args, 100000, 0, 0, BIT_ULL(CGX_MODE_100G_C2C));
-+		break;
-+	case  BIT_ULL(ETHTOOL_LINK_MODE_100000baseLR4_ER4_Full_BIT):
-+		set_mod_args(args, 100000, 0, 0, BIT_ULL(CGX_MODE_100G_C2M));
-+		break;
-+	case  BIT_ULL(ETHTOOL_LINK_MODE_100000baseCR4_Full_BIT):
-+		set_mod_args(args, 100000, 0, 1, BIT_ULL(CGX_MODE_100G_CR4));
-+		break;
-+	case  BIT_ULL(ETHTOOL_LINK_MODE_100000baseKR4_Full_BIT):
-+		set_mod_args(args, 100000, 0, 1, BIT_ULL(CGX_MODE_100G_KR4));
-+		break;
-+	default:
-+		set_mod_args(args, 0, 1, 0, BIT_ULL(CGX_MODE_MAX));
 +		break;
 +	}
 +}
 +
- static inline void link_status_user_format(u64 lstat,
- 					   struct cgx_link_user_info *linfo,
- 					   struct cgx *cgx, u8 lmac_id)
-@@ -886,13 +992,18 @@ int cgx_set_link_mode(void *cgxd, struct cgx_set_link_mode_args args,
- 	if (!cgx)
- 		return -ENODEV;
- 
-+	if (args.mode)
-+		otx2_map_ethtool_link_modes(args.mode, &args);
-+	if (!args.speed && args.duplex && !args.an)
-+		return -EINVAL;
++static void otx2_get_link_mode_info(u64 index, int mode,
++				    struct ethtool_link_ksettings
++				    *link_ksettings)
++{
++	u64 ethtool_link_mode = 0;
++	int bit_position = 0;
++	u64 link_modes = 0;
 +
- 	req = FIELD_SET(CMDREG_ID, CGX_CMD_MODE_CHANGE, req);
- 	req = FIELD_SET(CMDMODECHANGE_SPEED,
- 			cgx_link_usertable_index_map(args.speed), req);
- 	req = FIELD_SET(CMDMODECHANGE_DUPLEX, args.duplex, req);
- 	req = FIELD_SET(CMDMODECHANGE_AN, args.an, req);
- 	req = FIELD_SET(CMDMODECHANGE_PORT, args.ports, req);
--	req = FIELD_SET(CMDMODECHANGE_FLAGS, args.flags, req);
-+	req = FIELD_SET(CMDMODECHANGE_FLAGS, args.mode, req);
- 	err = cgx_fwi_cmd_generic(req, &resp, cgx, lmac_id);
- 	return err;
++	/* CGX link modes to Ethtool link mode mapping */
++	const int cgx_link_mode[29] = {0, /* SGMII  Mode */
++		ETHTOOL_LINK_MODE_1000baseX_Full_BIT,
++		ETHTOOL_LINK_MODE_10000baseT_Full_BIT,
++		ETHTOOL_LINK_MODE_10000baseSR_Full_BIT,
++		ETHTOOL_LINK_MODE_10000baseLR_Full_BIT,
++		ETHTOOL_LINK_MODE_10000baseKR_Full_BIT,
++		OTX2_RESERVED_ETHTOOL_LINK_MODE,
++		ETHTOOL_LINK_MODE_25000baseSR_Full_BIT,
++		OTX2_RESERVED_ETHTOOL_LINK_MODE,
++		OTX2_RESERVED_ETHTOOL_LINK_MODE,
++		ETHTOOL_LINK_MODE_25000baseCR_Full_BIT,
++		ETHTOOL_LINK_MODE_25000baseKR_Full_BIT,
++		ETHTOOL_LINK_MODE_40000baseSR4_Full_BIT,
++		ETHTOOL_LINK_MODE_40000baseLR4_Full_BIT,
++		ETHTOOL_LINK_MODE_40000baseCR4_Full_BIT,
++		ETHTOOL_LINK_MODE_40000baseKR4_Full_BIT,
++		OTX2_RESERVED_ETHTOOL_LINK_MODE,
++		ETHTOOL_LINK_MODE_50000baseSR_Full_BIT,
++		OTX2_RESERVED_ETHTOOL_LINK_MODE,
++		ETHTOOL_LINK_MODE_50000baseLR_ER_FR_Full_BIT,
++		ETHTOOL_LINK_MODE_50000baseCR_Full_BIT,
++		ETHTOOL_LINK_MODE_50000baseKR_Full_BIT,
++		OTX2_RESERVED_ETHTOOL_LINK_MODE,
++		ETHTOOL_LINK_MODE_100000baseSR4_Full_BIT,
++		ETHTOOL_LINK_MODE_100000baseLR4_ER4_Full_BIT,
++		ETHTOOL_LINK_MODE_100000baseCR4_Full_BIT,
++		ETHTOOL_LINK_MODE_100000baseKR4_Full_BIT
++	};
++
++	link_modes = index & OTX2_ETHTOOL_SUPPORTED_MODES;
++
++	for (bit_position = 0; link_modes; bit_position++, link_modes >>= 1) {
++		if (!(link_modes & 1))
++			continue;
++
++		if (bit_position ==  0)
++			ethtool_link_mode = 0x3F;
++
++		if (cgx_link_mode[bit_position])
++			ethtool_link_mode |= 1ULL << cgx_link_mode[bit_position];
++
++		if (mode)
++			*link_ksettings->link_modes.advertising |=
++							ethtool_link_mode;
++		else
++			*link_ksettings->link_modes.supported |=
++							ethtool_link_mode;
++	}
++}
++
++static int otx2_get_link_ksettings(struct net_device *netdev,
++				   struct ethtool_link_ksettings *cmd)
++{
++	struct otx2_nic *pfvf = netdev_priv(netdev);
++	struct cgx_fw_data *rsp = NULL;
++	u32 supported = 0;
++
++	cmd->base.duplex  = pfvf->linfo.full_duplex;
++	cmd->base.speed   = pfvf->linfo.speed;
++	cmd->base.autoneg = pfvf->linfo.an;
++
++	rsp = otx2_get_fwdata(pfvf);
++	if (IS_ERR(rsp))
++		return PTR_ERR(rsp);
++
++	if (rsp->fwdata.supported_an)
++		supported |= SUPPORTED_Autoneg;
++	ethtool_convert_legacy_u32_to_link_mode(cmd->link_modes.supported,
++						supported);
++	otx2_get_link_mode_info(rsp->fwdata.advertised_link_modes, 1, cmd);
++	otx2_get_fec_info(rsp->fwdata.advertised_fec, 1, cmd);
++
++	otx2_get_link_mode_info(rsp->fwdata.supported_link_modes, 0, cmd);
++	otx2_get_fec_info(rsp->fwdata.supported_fec, 0, cmd);
++
++	return 0;
++}
++
+ static const struct ethtool_ops otx2_ethtool_ops = {
+ 	.supported_coalesce_params = ETHTOOL_COALESCE_USECS |
+ 				     ETHTOOL_COALESCE_MAX_FRAMES,
+@@ -1063,6 +1207,7 @@ static const struct ethtool_ops otx2_ethtool_ops = {
+ 	.get_ts_info		= otx2_get_ts_info,
+ 	.get_fecparam		= otx2_get_fecparam,
+ 	.set_fecparam		= otx2_set_fecparam,
++	.get_link_ksettings     = otx2_get_link_ksettings,
+ };
+ 
+ void otx2_set_ethtool_ops(struct net_device *netdev)
+@@ -1137,6 +1282,19 @@ static int otx2vf_get_sset_count(struct net_device *netdev, int sset)
+ 	return otx2_n_dev_stats + otx2_n_drv_stats + qstats_count + 1;
  }
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/cgx_fw_if.h b/drivers/net/ethernet/marvell/octeontx2/af/cgx_fw_if.h
-index 70610e7..dde2bd0 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/cgx_fw_if.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/cgx_fw_if.h
-@@ -70,6 +70,36 @@ enum cgx_link_speed {
- 	CGX_LINK_SPEED_MAX,
+ 
++static int otx2vf_get_link_ksettings(struct net_device *netdev,
++				     struct ethtool_link_ksettings *cmd)
++{
++	struct otx2_nic *pfvf = netdev_priv(netdev);
++
++	if (is_otx2_lbkvf(pfvf->pdev)) {
++		cmd->base.duplex = DUPLEX_FULL;
++		cmd->base.speed = SPEED_100000;
++	} else {
++		return	otx2_get_link_ksettings(netdev, cmd);
++	}
++	return 0;
++}
+ static const struct ethtool_ops otx2vf_ethtool_ops = {
+ 	.supported_coalesce_params = ETHTOOL_COALESCE_USECS |
+ 				     ETHTOOL_COALESCE_MAX_FRAMES,
+@@ -1163,6 +1321,7 @@ static const struct ethtool_ops otx2vf_ethtool_ops = {
+ 	.set_msglevel		= otx2_set_msglevel,
+ 	.get_pauseparam		= otx2_get_pauseparam,
+ 	.set_pauseparam		= otx2_set_pauseparam,
++	.get_link_ksettings     = otx2vf_get_link_ksettings,
  };
  
-+enum CGX_MODE_ {
-+	CGX_MODE_SGMII,
-+	CGX_MODE_1000_BASEX,
-+	CGX_MODE_QSGMII,
-+	CGX_MODE_10G_C2C,
-+	CGX_MODE_10G_C2M,
-+	CGX_MODE_10G_KR,
-+	CGX_MODE_20G_C2C,
-+	CGX_MODE_25G_C2C,
-+	CGX_MODE_25G_C2M,
-+	CGX_MODE_25G_2_C2C,
-+	CGX_MODE_25G_CR,
-+	CGX_MODE_25G_KR,
-+	CGX_MODE_40G_C2C,
-+	CGX_MODE_40G_C2M,
-+	CGX_MODE_40G_CR4,
-+	CGX_MODE_40G_KR4,
-+	CGX_MODE_40GAUI_C2C,
-+	CGX_MODE_50G_C2C,
-+	CGX_MODE_50G_C2M,
-+	CGX_MODE_50G_4_C2C,
-+	CGX_MODE_50G_CR,
-+	CGX_MODE_50G_KR,
-+	CGX_MODE_80GAUI_C2C,
-+	CGX_MODE_100G_C2C,
-+	CGX_MODE_100G_C2M,
-+	CGX_MODE_100G_CR4,
-+	CGX_MODE_100G_KR4,
-+	CGX_MODE_MAX /* = 29 */
-+};
- /* REQUEST ID types. Input to firmware */
- enum cgx_cmd_id {
- 	CGX_CMD_NONE,
-@@ -231,6 +261,6 @@ struct cgx_lnk_sts {
- #define CMDMODECHANGE_DUPLEX		GENMASK_ULL(12, 12)
- #define CMDMODECHANGE_AN		GENMASK_ULL(13, 13)
- #define CMDMODECHANGE_PORT		GENMASK_ULL(21, 14)
--#define CMDMODECHANGE_FLAGS		GENMASK_ULL(29, 22)
-+#define CMDMODECHANGE_FLAGS		GENMASK_ULL(63, 22)
- 
- #endif /* __CGX_FW_INTF_H__ */
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-index 4a1f51c..b7bb0b9 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/mbox.h
-@@ -462,10 +462,11 @@ struct cgx_set_link_mode_args {
- 	u8 duplex;
- 	u8 an;
- 	u8 ports;
--	u8 flags;
-+	u64 mode;
- };
- 
- struct cgx_set_link_mode_req {
-+#define AUTONEG_UNKNOWN		0xff
- 	struct mbox_msghdr hdr;
- 	struct cgx_set_link_mode_args args;
- };
+ void otx2vf_set_ethtool_ops(struct net_device *netdev)
 -- 
 2.7.4
 
