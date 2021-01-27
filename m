@@ -2,159 +2,242 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 10506305C4E
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 13:59:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A5A07305B7A
+	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 13:35:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237703AbhA0M7Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 07:59:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41106 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S313168AbhAZWtb (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jan 2021 17:49:31 -0500
-Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 304D6C0613ED
-        for <netdev@vger.kernel.org>; Tue, 26 Jan 2021 14:48:44 -0800 (PST)
-Received: by mail-lf1-x134.google.com with SMTP id v24so90692lfr.7
-        for <netdev@vger.kernel.org>; Tue, 26 Jan 2021 14:48:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=broadcom.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=3jDiIuZNJYTfeiEvRaVd07vB0rVVLaMiNWU2KHHbt+E=;
-        b=G51HdS3iGTopeiwvcU8D9A8ARGwEsUDuKAoD+uGKpJsveP1wwmAIttmsN6D+PYm6OT
-         te8+pbiCmObDWKViMUyVWMQnNZtrt7Fv1ZOfeRVsd343CMIR4tA0OJIxF580Bhwfdgra
-         uEVWLXPrczo/5TfR1gAGebpbm46IVmapxVrLQ=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3jDiIuZNJYTfeiEvRaVd07vB0rVVLaMiNWU2KHHbt+E=;
-        b=k1z4AYUQEsTCveq0JjsOej4j8qlL6axLYT2KsdRxGghHTM8zaCagE8gnzvokdoeSqf
-         7zhsJKG9Jx+W4Sn9idsKiQupTCgeXMRZ2GJnljbuwpHjv4XVjiCPgOMDeNNxZIWGGvTm
-         FBvd+0KWEAPnoYXcMoqEAGIhryANYTJPHuftNX51D9jWghM7AQb8nBYsSd2cRsNi2xFD
-         r9DbDMX7PXFuTaMyADkdKxZQjdqM7eDQ1MIXFXCKVM8UTEj67i3gjRIFpI+YUHrYM9WU
-         JX8JMvBKXsPqMQ5BimkqV/2MnGIHLD7hvpQxszS8MHy1A5fgyBuBBep0gaBbFXZPHLHu
-         q/BQ==
-X-Gm-Message-State: AOAM530ssMIG88QKQWx+7m5Ww0UjQytPdR4UoxQLcQt38YTE00p8yV9S
-        YBxytLf/LvKuPtRHlk/uUgmlUa4RiKc7CBr+1IRjTtZ7syU=
-X-Google-Smtp-Source: ABdhPJxLqdYOrP2DZFE2p5IVlz76eXEcAkpEd+V81+6X4Fko058q68CkFdQar1zUtmckGluf2mX5anKs4uuXf5DoJ9I=
-X-Received: by 2002:a19:f70c:: with SMTP id z12mr3588765lfe.228.1611701322606;
- Tue, 26 Jan 2021 14:48:42 -0800 (PST)
+        id S1343543AbhA0MfX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 07:35:23 -0500
+Received: from mga05.intel.com ([192.55.52.43]:27055 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S237986AbhA0McF (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 27 Jan 2021 07:32:05 -0500
+IronPort-SDR: Zc/2MAaAeaqktXUx4mmYStUkLRZbgW46EMqyECGwwEazweUqCv8EgfXkVxAvmldJzMRbNK86rB
+ cX1g5cSelfsg==
+X-IronPort-AV: E=McAfee;i="6000,8403,9876"; a="264883750"
+X-IronPort-AV: E=Sophos;i="5.79,379,1602572400"; 
+   d="scan'208";a="264883750"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 Jan 2021 04:31:11 -0800
+IronPort-SDR: kHmWbkgukQoOE3pVIpk2T+xYgrm4/PW00drbTc6F0hsF8hDZgPm6wfr+kNnLJ9nDkVvYQbnNGk
+ juQKEABmhyTA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.79,379,1602572400"; 
+   d="scan'208";a="388288477"
+Received: from ranger.igk.intel.com ([10.102.21.164])
+  by orsmga008.jf.intel.com with ESMTP; 27 Jan 2021 04:31:08 -0800
+Date:   Wed, 27 Jan 2021 13:20:50 +0100
+From:   Maciej Fijalkowski <maciej.fijalkowski@intel.com>
+To:     Toke =?iso-8859-1?Q?H=F8iland-J=F8rgensen?= <toke@redhat.com>
+Cc:     John Fastabend <john.fastabend@gmail.com>,
+        Hangbin Liu <liuhangbin@gmail.com>, bpf@vger.kernel.org,
+        netdev@vger.kernel.org, Jiri Benc <jbenc@redhat.com>,
+        Jesper Dangaard Brouer <brouer@redhat.com>,
+        Eelco Chaudron <echaudro@redhat.com>, ast@kernel.org,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        David Ahern <dsahern@gmail.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Subject: Re: [PATCHv17 bpf-next 1/6] bpf: run devmap xdp_prog on flush
+ instead of bulk enqueue
+Message-ID: <20210127122050.GA41732@ranger.igk.intel.com>
+References: <20210122074652.2981711-1-liuhangbin@gmail.com>
+ <20210125124516.3098129-1-liuhangbin@gmail.com>
+ <20210125124516.3098129-2-liuhangbin@gmail.com>
+ <6011183d4628_86d69208ba@john-XPS-13-9370.notmuch>
+ <87lfcesomf.fsf@toke.dk>
 MIME-Version: 1.0
-References: <20210123045321.2797360-1-edwin.peer@broadcom.com>
- <20210123045321.2797360-3-edwin.peer@broadcom.com> <20210125175559.467229e5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210125175559.467229e5@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Edwin Peer <edwin.peer@broadcom.com>
-Date:   Tue, 26 Jan 2021 14:48:06 -0800
-Message-ID: <CAKOOJTxVjacAQePfcLJQj6nV=Lxr2ra4cb_3K83b6_q=NajCHA@mail.gmail.com>
-Subject: Re: [PATCH net-next 2/4] rtnetlink: extend RTEXT_FILTER_SKIP_STATS to IFLA_VF_INFO
-To:     Jakub Kicinski <kuba@kernel.org>
-Cc:     netdev <netdev@vger.kernel.org>,
-        Andrew Gospodarek <andrew.gospodarek@broadcom.com>,
-        Michael Chan <michael.chan@broadcom.com>,
-        Stephen Hemminger <stephen@networkplumber.org>,
-        Michal Kubecek <mkubecek@suse.cz>,
-        David Ahern <dsahern@gmail.com>
-Content-Type: multipart/signed; protocol="application/pkcs7-signature"; micalg=sha-256;
-        boundary="000000000000d5dfae05b9d574e6"
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <87lfcesomf.fsf@toke.dk>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---000000000000d5dfae05b9d574e6
-Content-Type: text/plain; charset="UTF-8"
+On Wed, Jan 27, 2021 at 10:41:44AM +0100, Toke Høiland-Jørgensen wrote:
+> John Fastabend <john.fastabend@gmail.com> writes:
+> 
+> > Hangbin Liu wrote:
+> >> From: Jesper Dangaard Brouer <brouer@redhat.com>
+> >> 
+> >> This changes the devmap XDP program support to run the program when the
+> >> bulk queue is flushed instead of before the frame is enqueued. This has
+> >> a couple of benefits:
+> >> 
+> >> - It "sorts" the packets by destination devmap entry, and then runs the
+> >>   same BPF program on all the packets in sequence. This ensures that we
+> >>   keep the XDP program and destination device properties hot in I-cache.
+> >> 
+> >> - It makes the multicast implementation simpler because it can just
+> >>   enqueue packets using bq_enqueue() without having to deal with the
+> >>   devmap program at all.
+> >> 
+> >> The drawback is that if the devmap program drops the packet, the enqueue
+> >> step is redundant. However, arguably this is mostly visible in a
+> >> micro-benchmark, and with more mixed traffic the I-cache benefit should
+> >> win out. The performance impact of just this patch is as follows:
+> >> 
+> >> The bq_xmit_all's logic is also refactored and error label is removed.
+> >> When bq_xmit_all() is called from bq_enqueue(), another packet will
+> >> always be enqueued immediately after, so clearing dev_rx, xdp_prog and
+> >> flush_node in bq_xmit_all() is redundant. Let's move the clear to
+> >> __dev_flush(), and only check them once in bq_enqueue() since they are
+> >> all modified together.
+> >> 
+> >> By using xdp_redirect_map in sample/bpf and send pkts via pktgen cmd:
+> >> ./pktgen_sample03_burst_single_flow.sh -i eno1 -d $dst_ip -m $dst_mac -t 10 -s 64
+> >> 
+> >> There are about +/- 0.1M deviation for native testing, the performance
+> >> improved for the base-case, but some drop back with xdp devmap prog attached.
+> >> 
+> >> Version          | Test                           | Generic | Native | Native + 2nd xdp_prog
+> >> 5.10 rc6         | xdp_redirect_map   i40e->i40e  |    2.0M |   9.1M |  8.0M
+> >> 5.10 rc6         | xdp_redirect_map   i40e->veth  |    1.7M |  11.0M |  9.7M
+> >> 5.10 rc6 + patch | xdp_redirect_map   i40e->i40e  |    2.0M |   9.5M |  7.5M
+> >> 5.10 rc6 + patch | xdp_redirect_map   i40e->veth  |    1.7M |  11.6M |  9.1M
+> >> 
+> >
+> > [...]
+> >
+> >> +static int dev_map_bpf_prog_run(struct bpf_prog *xdp_prog,
+> >> +				struct xdp_frame **frames, int n,
+> >> +				struct net_device *dev)
+> >> +{
+> >> +	struct xdp_txq_info txq = { .dev = dev };
+> >> +	struct xdp_buff xdp;
+> >> +	int i, nframes = 0;
+> >> +
+> >> +	for (i = 0; i < n; i++) {
+> >> +		struct xdp_frame *xdpf = frames[i];
+> >> +		u32 act;
+> >> +		int err;
+> >> +
+> >> +		xdp_convert_frame_to_buff(xdpf, &xdp);
+> >> +		xdp.txq = &txq;
+> >> +
+> >> +		act = bpf_prog_run_xdp(xdp_prog, &xdp);
+> >> +		switch (act) {
+> >> +		case XDP_PASS:
+> >> +			err = xdp_update_frame_from_buff(&xdp, xdpf);
+> >> +			if (unlikely(err < 0))
+> >> +				xdp_return_frame_rx_napi(xdpf);
+> >> +			else
+> >> +				frames[nframes++] = xdpf;
+> >> +			break;
+> >> +		default:
+> >> +			bpf_warn_invalid_xdp_action(act);
+> >> +			fallthrough;
+> >> +		case XDP_ABORTED:
+> >> +			trace_xdp_exception(dev, xdp_prog, act);
+> >> +			fallthrough;
+> >> +		case XDP_DROP:
+> >> +			xdp_return_frame_rx_napi(xdpf);
+> >> +			break;
+> >> +		}
+> >> +	}
+> >> +	return nframes; /* sent frames count */
+> >> +}
+> >> +
+> >>  static void bq_xmit_all(struct xdp_dev_bulk_queue *bq, u32 flags)
+> >>  {
+> >>  	struct net_device *dev = bq->dev;
+> >> -	int sent = 0, drops = 0, err = 0;
+> >> +	unsigned int cnt = bq->count;
+> >> +	int drops = 0, err = 0;
+> >> +	int to_send = cnt;
+> >> +	int sent = cnt;
+> >>  	int i;
+> >>  
+> >> -	if (unlikely(!bq->count))
+> >> +	if (unlikely(!cnt))
+> >>  		return;
+> >>  
+> >> -	for (i = 0; i < bq->count; i++) {
+> >> +	for (i = 0; i < cnt; i++) {
+> >>  		struct xdp_frame *xdpf = bq->q[i];
+> >>  
+> >>  		prefetch(xdpf);
+> >>  	}
+> >>  
+> >> -	sent = dev->netdev_ops->ndo_xdp_xmit(dev, bq->count, bq->q, flags);
+> >> +	if (bq->xdp_prog) {
+> >> +		to_send = dev_map_bpf_prog_run(bq->xdp_prog, bq->q, cnt, dev);
+> >> +		if (!to_send) {
+> >> +			sent = 0;
+> >> +			goto out;
+> >> +		}
+> >> +		drops = cnt - to_send;
+> >> +	}
+> >
+> > I might be missing something about how *bq works here. What happens when
+> > dev_map_bpf_prog_run returns to_send < cnt?
+> >
+> > So I read this as it will send [0, to_send] and [to_send, cnt] will be
+> > dropped? How do we know the bpf prog would have dropped the set,
+> > [to_send+1, cnt]?
 
-On Mon, Jan 25, 2021 at 5:56 PM Jakub Kicinski <kuba@kernel.org> wrote:
+You know that via recalculation of 'drops' value after you returned from
+dev_map_bpf_prog_run() which later on is provided onto trace_xdp_devmap_xmit.
 
-> > Fixes: 3b766cd83232 ("net/core: Add reading VF statistics through the PF netdevice")
-> > Fixes: c5a9f6f0ab40 ("net/core: Add drop counters to VF statistics")
-> > Signed-off-by: Edwin Peer <edwin.peer@broadcom.com>
->
-> Could you include in the commit message the size breakdown of a single
-> VF nest? With and without efficient unaligned 64b access?
+> 
+> Because dev_map_bpf_prog_run() compacts the array:
+> 
+> +		case XDP_PASS:
+> +			err = xdp_update_frame_from_buff(&xdp, xdpf);
+> +			if (unlikely(err < 0))
+> +				xdp_return_frame_rx_napi(xdpf);
+> +			else
+> +				frames[nframes++] = xdpf;
+> +			break;
 
-Oh, apologies. I see missed this question. I can certainly do that.
+To expand this a little, 'frames' array is reused and 'nframes' above is
+the value that is returned and we store it onto 'to_send' variable.
 
-Regards,
-Edwin Peer
+> 
+> [...]
+> 
+> >>  int dev_map_enqueue(struct bpf_dtab_netdev *dst, struct xdp_buff *xdp,
+> >> @@ -489,12 +516,7 @@ int dev_map_enqueue(struct bpf_dtab_netdev *dst, struct xdp_buff *xdp,
+> >>  {
+> >>  	struct net_device *dev = dst->dev;
+> >>  
+> >> -	if (dst->xdp_prog) {
+> >> -		xdp = dev_map_run_prog(dev, xdp, dst->xdp_prog);
+> >> -		if (!xdp)
+> >> -			return 0;
+> >
+> > So here it looks like dev_map_run_prog will not drop extra
+> > packets, but will see every single packet.
+> >
+> > Are we changing the semantics subtle here? This looks like
+> > a problem to me. We should not drop packets in the new case
+> > unless bpf program tells us to.
+> 
+> It's not a change in semantics (see above), but I'll grant you that it's
+> subtle :)
 
---000000000000d5dfae05b9d574e6
-Content-Type: application/pkcs7-signature; name="smime.p7s"
-Content-Transfer-Encoding: base64
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Description: S/MIME Cryptographic Signature
+dev map xdp prog still sees all of the frames.
 
-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
-mbo++PCnVfHaIk6rK1M0CPodEV0uUttmi6Mp/Ha7XmNgWQeQE3qkFIwAlb/kPNmJAMECAwEAAaOC
-Ac4wggHKMA4GA1UdDwEB/wQEAwIFoDCBngYIKwYBBQUHAQEEgZEwgY4wTQYIKwYBBQUHMAKGQWh0
-dHA6Ly9zZWN1cmUuZ2xvYmFsc2lnbi5jb20vY2FjZXJ0L2dzcGVyc29uYWxzaWduMnNoYTJnM29j
-c3AuY3J0MD0GCCsGAQUFBzABhjFodHRwOi8vb2NzcDIuZ2xvYmFsc2lnbi5jb20vZ3NwZXJzb25h
-bHNpZ24yc2hhMmczME0GA1UdIARGMEQwQgYKKwYBBAGgMgEoCjA0MDIGCCsGAQUFBwIBFiZodHRw
-czovL3d3dy5nbG9iYWxzaWduLmNvbS9yZXBvc2l0b3J5LzAJBgNVHRMEAjAAMEQGA1UdHwQ9MDsw
-OaA3oDWGM2h0dHA6Ly9jcmwuZ2xvYmFsc2lnbi5jb20vZ3NwZXJzb25hbHNpZ24yc2hhMmczLmNy
-bDAiBgNVHREEGzAZgRdlZHdpbi5wZWVyQGJyb2FkY29tLmNvbTATBgNVHSUEDDAKBggrBgEFBQcD
-BDAfBgNVHSMEGDAWgBRpcoJiMWeVRIV3kYDEBDZJnXsLYTAdBgNVHQ4EFgQU9IOrXBkaTFAmOmjl
-0nu9X2Lzo+0wDQYJKoZIhvcNAQELBQADggEBADL+5FenxoguXoMm8ZG+bsMvN0LibFO75wee8cJI
-3K8dcJ8y6rPc6yvMRqI7CNwjWV5kBT3aQPZCdqOlNLl/HnKJxBt3WJRWGePcE1s/ljK4Kg1rUQAo
-e3Fx6cKh9/q3gqElSPU5pBOsCEy8cbi6UGA+IVifQ2Mrm5tsvYqWSaZ1mKTGz8/z8vxG2kGJZI6W
-wL3owFiCmLmw5R8OH22wqf/7sQFMRpH5IQFLRYdU9uCUy5FlUAgiCEXegph8ytxvo8MgYyQcCOeg
-BMfFgFEHuM2IgsDQyFC6XUViX6BQny67nlrO8pqwNRJ9Bdd7ykLCzCLOuR1znBAc2wAL9OKQe0cx
-ggJvMIICawIBATBtMF0xCzAJBgNVBAYTAkJFMRkwFwYDVQQKExBHbG9iYWxTaWduIG52LXNhMTMw
-MQYDVQQDEypHbG9iYWxTaWduIFBlcnNvbmFsU2lnbiAyIENBIC0gU0hBMjU2IC0gRzMCDCXgDAeB
-YW0HGKjSdzANBglghkgBZQMEAgEFAKCB1DAvBgkqhkiG9w0BCQQxIgQgJJiTPGqANDDd31LztLW1
-NOCGwAhKTOHypptnERNJApQwGAYJKoZIhvcNAQkDMQsGCSqGSIb3DQEHATAcBgkqhkiG9w0BCQUx
-DxcNMjEwMTI2MjI0ODQyWjBpBgkqhkiG9w0BCQ8xXDBaMAsGCWCGSAFlAwQBKjALBglghkgBZQME
-ARYwCwYJYIZIAWUDBAECMAoGCCqGSIb3DQMHMAsGCSqGSIb3DQEBCjALBgkqhkiG9w0BAQcwCwYJ
-YIZIAWUDBAIBMA0GCSqGSIb3DQEBAQUABIIBAK8MelIhv3Zx79ytkcTARWnLfdP0dxDYGkg79NpC
-0GY+BIX9oZoxn519Ljth0kltg3MJpnTxKL3SnNwUxwK5QhvWxJqmFUcikniJO/HIeigjgxUGBUlX
-KIcFK1YC46En9ha3fILRkq1DXxtJXzong7HMOtGlzAqzhNMnqwbEEWiIsJe1UJciy+A3nos0d2wF
-R/hC7seYnhL64TFoSJ+mIEtXBr9k/hgXRDqqa0D0RDx7CBuHCPqTd2j8hCmyTYZZQyp65IAuOwqF
-eCYXxVWmGIGiROWS/eZz/BhGZ8LvhOVRIjcfEM0lWXP9AicbKJ0CnoTu4m0pQbvQTImKTSCDh9c=
---000000000000d5dfae05b9d574e6--
+Maybe you were referring to a fact that for XDP_PASS action you might fail
+with xdp->xdpf conversion?
+
+I'm wondering if we could actually do a further optimization and avoid
+xdpf/xdp juggling.
+
+What if xdp_dev_bulk_queue would be storing the xdp_buffs instead of
+xdp_frames ?
+
+Then you hit bq_xmit_all and if prog is present it doesn't have to do that
+dance like we have right now. After that you walk through xdp_buff array
+and do the conversion so that xdp_frame array will be passed do
+ndo_xdp_xmit.
+
+I had a bad sleep so maybe I'm talking nonsense over here, will take
+another look in the evening though :)
+
+
+> 
+> -Toke
+> 
