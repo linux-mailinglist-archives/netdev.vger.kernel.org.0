@@ -2,95 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DA9E0305604
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 09:44:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 395A8305624
+	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 09:51:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232263AbhA0Inf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 03:43:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45728 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S316830AbhAZXKw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jan 2021 18:10:52 -0500
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0243BC06174A
-        for <netdev@vger.kernel.org>; Tue, 26 Jan 2021 15:10:12 -0800 (PST)
-Received: by mail-ed1-x529.google.com with SMTP id d2so91451edz.3
-        for <netdev@vger.kernel.org>; Tue, 26 Jan 2021 15:10:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=dFESCStoVpRbVGk8ozF0XjMU/NzQ6nUXYZaDfTvzbGU=;
-        b=F/s6E2RA6bLMPWplhhA8rTRUTjXtOkRwtTJNBUePITfv7pdkIZJTR5ob3W14ffMOLy
-         xAMP1it3xUCT0I12vRHhycdME8jDblPlHqTUOCikf2C3E/g1o7comv5X8tv3gwmdFFqH
-         AyKKEfsENZe4NSuKvZkRyN2NR8wppleW+ILv4WlH6x3aRsvOZlxbuvygwLE176HwhKoO
-         a0/G/NOKHFqEnj+6Gxi1clmdAmgpzmwhL0rnyTKDpA/vAVCyPZJHAGDfsybhhQmaoGwT
-         A3tUYTXdw8ZeORyQU89vWmzrOqka3uQmLbPL/r2+uaTXDRjzYg+vu2p0ei9V5jNB9k4+
-         OZzQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=dFESCStoVpRbVGk8ozF0XjMU/NzQ6nUXYZaDfTvzbGU=;
-        b=kqxyH07TCkKPXnq9Vt6lMX2mjMosHZkDVfOa0d48edjaOFINkAA+sD+BzUq2UlJVqo
-         w4NCQhVTJEFaSFpD/KxuGZiA66pZuUuugMvI2PcOhQF3G2PKoOuBR1pXFxDWUu6wCmo7
-         0cuRoZknb8T3KtkAVQUEXx9mtaDWUbs44mudpQ6p8ymgIZEDKnN+OHVPtKJvu19AENXV
-         q9t4mYghoCanC6Exf38/PpZ4onJ6BKFa9rnI3LHtAfyNC9UPQuPH6fNgwXf+oMS7dMSZ
-         Cpbkp0NKVNy5krIZiGrKw4NNuzr2SJjVz59SQvZb004iv45rf4vWlWC7ax92/3Ue2zLW
-         TPtA==
-X-Gm-Message-State: AOAM532Kz5xT8A4gO63G6NRE5SW9Vu+eCMg3pR30gYODYS2awVjZ6t35
-        sjULbTscLAcOGs8brqlUOXJt0BfxWkW21s7VKj4=
-X-Google-Smtp-Source: ABdhPJw5zznZoxKRGmIYL2Qg5nkQSBWMDWzfCpRBe4ivbYQXTHfAufTwXZi6OmcHm4TDK/tarAufByxnOYjbbutleUc=
-X-Received: by 2002:aa7:d1d7:: with SMTP id g23mr6340874edp.6.1611702610847;
- Tue, 26 Jan 2021 15:10:10 -0800 (PST)
+        id S232846AbhA0IvP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 03:51:15 -0500
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:45325 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S232573AbhA0IsL (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 03:48:11 -0500
+Received: from Internal Mail-Server by MTLPINE1 (envelope-from cmi@nvidia.com)
+        with SMTP; 27 Jan 2021 09:46:59 +0200
+Received: from dev-r630-03.mtbc.labs.mlnx (dev-r630-03.mtbc.labs.mlnx [10.75.205.13])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 10R7kvrl013621;
+        Wed, 27 Jan 2021 09:46:57 +0200
+From:   Chris Mi <cmi@nvidia.com>
+To:     netdev@vger.kernel.org
+Cc:     kuba@kernel.org, jiri@nvidia.com, saeedm@nvidia.com,
+        Chris Mi <cmi@nvidia.com>, kernel test robot <lkp@intel.com>
+Subject: [PATCH net-next v2] net: psample: Introduce stubs to remove NIC driver dependency
+Date:   Wed, 27 Jan 2021 15:46:51 +0800
+Message-Id: <20210127074651.510134-1-cmi@nvidia.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-References: <20210126115854.2530-1-qiangqing.zhang@nxp.com> <20210126115854.2530-3-qiangqing.zhang@nxp.com>
-In-Reply-To: <20210126115854.2530-3-qiangqing.zhang@nxp.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Tue, 26 Jan 2021 18:09:33 -0500
-Message-ID: <CAF=yD-JEU2oSy11y47TvgTr-XHRNq7ar=j=5w+14EUSyLj7xHA@mail.gmail.com>
-Subject: Re: [PATCH V3 2/6] net: stmmac: stop each tx channel independently
-To:     Joakim Zhang <qiangqing.zhang@nxp.com>
-Cc:     Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Jose Abreu <joabreu@synopsys.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        linux-imx@nxp.com, Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 26, 2021 at 7:03 AM Joakim Zhang <qiangqing.zhang@nxp.com> wrote:
->
-> If clear GMAC_CONFIG_TE bit, it would stop all tx channels, but users
-> may only want to stop secific tx channel.
+In order to send sampled packets to userspace, NIC driver calls
+psample api directly. But it creates a hard dependency on module
+psample. Introduce psample_ops to remove the hard dependency.
+It is initialized when psample module is loaded and set to NULL
+when the module is unloaded.
 
-secific -> specific
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Chris Mi <cmi@nvidia.com>
+Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+---
+v1->v2:
+ - fix sparse errors
 
->
-> Fixes: 48863ce5940f ("stmmac: add DMA support for GMAC 4.xx")
-> Signed-off-by: Joakim Zhang <qiangqing.zhang@nxp.com>
-> ---
->  drivers/net/ethernet/stmicro/stmmac/dwmac4_lib.c | 4 ----
->  1 file changed, 4 deletions(-)
->
-> diff --git a/drivers/net/ethernet/stmicro/stmmac/dwmac4_lib.c b/drivers/net/ethernet/stmicro/stmmac/dwmac4_lib.c
-> index 0b4ee2dbb691..71e50751ef2d 100644
-> --- a/drivers/net/ethernet/stmicro/stmmac/dwmac4_lib.c
-> +++ b/drivers/net/ethernet/stmicro/stmmac/dwmac4_lib.c
-> @@ -53,10 +53,6 @@ void dwmac4_dma_stop_tx(void __iomem *ioaddr, u32 chan)
->
->         value &= ~DMA_CONTROL_ST;
->         writel(value, ioaddr + DMA_CHAN_TX_CONTROL(chan));
-> -
-> -       value = readl(ioaddr + GMAC_CONFIG);
-> -       value &= ~GMAC_CONFIG_TE;
-> -       writel(value, ioaddr + GMAC_CONFIG);
+ include/net/psample.h    | 27 +++++++++++++++++++++++++++
+ net/psample/psample.c    | 13 ++++++++++++-
+ net/sched/Makefile       |  2 +-
+ net/sched/psample_stub.c |  7 +++++++
+ 4 files changed, 47 insertions(+), 2 deletions(-)
+ create mode 100644 net/sched/psample_stub.c
 
-Is it safe to partially unwind the actions of dwmac4_dma_start_tx
+diff --git a/include/net/psample.h b/include/net/psample.h
+index 68ae16bb0a4a..e6a73128de59 100644
+--- a/include/net/psample.h
++++ b/include/net/psample.h
+@@ -4,6 +4,7 @@
+ 
+ #include <uapi/linux/psample.h>
+ #include <linux/list.h>
++#include <linux/skbuff.h>
+ 
+ struct psample_group {
+ 	struct list_head list;
+@@ -14,6 +15,15 @@ struct psample_group {
+ 	struct rcu_head rcu;
+ };
+ 
++struct psample_ops {
++	void (*sample_packet)(struct psample_group *group, struct sk_buff *skb,
++			      u32 trunc_size, int in_ifindex, int out_ifindex,
++			      u32 sample_rate);
++
++};
++
++extern const struct psample_ops __rcu *psample_ops __read_mostly;
++
+ struct psample_group *psample_group_get(struct net *net, u32 group_num);
+ void psample_group_take(struct psample_group *group);
+ void psample_group_put(struct psample_group *group);
+@@ -35,4 +45,21 @@ static inline void psample_sample_packet(struct psample_group *group,
+ 
+ #endif
+ 
++static inline void
++psample_nic_sample_packet(struct psample_group *group,
++			  struct sk_buff *skb, u32 trunc_size,
++			  int in_ifindex, int out_ifindex,
++			  u32 sample_rate)
++{
++	const struct psample_ops *ops;
++
++	rcu_read_lock();
++	ops = rcu_dereference(psample_ops);
++	if (ops)
++		psample_ops->sample_packet(group, skb, trunc_size,
++					   in_ifindex, out_ifindex,
++					   sample_rate);
++	rcu_read_unlock();
++}
++
+ #endif /* __NET_PSAMPLE_H */
+diff --git a/net/psample/psample.c b/net/psample/psample.c
+index 33e238c965bd..2a9fbfe09395 100644
+--- a/net/psample/psample.c
++++ b/net/psample/psample.c
+@@ -8,6 +8,7 @@
+ #include <linux/kernel.h>
+ #include <linux/skbuff.h>
+ #include <linux/module.h>
++#include <linux/rcupdate.h>
+ #include <net/net_namespace.h>
+ #include <net/sock.h>
+ #include <net/netlink.h>
+@@ -35,6 +36,10 @@ static const struct genl_multicast_group psample_nl_mcgrps[] = {
+ 
+ static struct genl_family psample_nl_family __ro_after_init;
+ 
++static const struct psample_ops psample_sample_ops = {
++	.sample_packet	= psample_sample_packet,
++};
++
+ static int psample_group_nl_fill(struct sk_buff *msg,
+ 				 struct psample_group *group,
+ 				 enum psample_command cmd, u32 portid, u32 seq,
+@@ -456,11 +461,17 @@ EXPORT_SYMBOL_GPL(psample_sample_packet);
+ 
+ static int __init psample_module_init(void)
+ {
+-	return genl_register_family(&psample_nl_family);
++	int ret;
++
++	ret = genl_register_family(&psample_nl_family);
++	if (!ret)
++		RCU_INIT_POINTER(psample_ops, &psample_sample_ops);
++	return ret;
+ }
+ 
+ static void __exit psample_module_exit(void)
+ {
++	RCU_INIT_POINTER(psample_ops, NULL);
+ 	genl_unregister_family(&psample_nl_family);
+ }
+ 
+diff --git a/net/sched/Makefile b/net/sched/Makefile
+index dd14ef413fda..0d92bb98bb26 100644
+--- a/net/sched/Makefile
++++ b/net/sched/Makefile
+@@ -3,7 +3,7 @@
+ # Makefile for the Linux Traffic Control Unit.
+ #
+ 
+-obj-y	:= sch_generic.o sch_mq.o
++obj-y	:= sch_generic.o sch_mq.o psample_stub.o
+ 
+ obj-$(CONFIG_INET)		+= sch_frag.o
+ obj-$(CONFIG_NET_SCHED)		+= sch_api.o sch_blackhole.o
+diff --git a/net/sched/psample_stub.c b/net/sched/psample_stub.c
+new file mode 100644
+index 000000000000..0615a7b64000
+--- /dev/null
++++ b/net/sched/psample_stub.c
+@@ -0,0 +1,7 @@
++// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
++/* Copyright (c) 2021 Mellanox Technologies. */
++
++#include <net/psample.h>
++
++const struct psample_ops __rcu *psample_ops __read_mostly;
++EXPORT_SYMBOL_GPL(psample_ops);
+-- 
+2.26.2
 
-And would the same reasoning apply to dwmac4_(dma_start|stop)_rx?
