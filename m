@@ -2,96 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E86303051E1
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 06:21:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5FBE33051E2
+	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 06:21:56 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234147AbhA0FTq (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 00:19:46 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36806 "EHLO
+        id S234207AbhA0FTv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 00:19:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231680AbhA0FJY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 00:09:24 -0500
-Received: from mail-ot1-x331.google.com (mail-ot1-x331.google.com [IPv6:2607:f8b0:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9755AC06178B
-        for <netdev@vger.kernel.org>; Tue, 26 Jan 2021 21:08:42 -0800 (PST)
-Received: by mail-ot1-x331.google.com with SMTP id e70so543461ote.11
-        for <netdev@vger.kernel.org>; Tue, 26 Jan 2021 21:08:42 -0800 (PST)
+        with ESMTP id S231944AbhA0FKZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 00:10:25 -0500
+Received: from mail-pl1-x62d.google.com (mail-pl1-x62d.google.com [IPv6:2607:f8b0:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8D2AC06174A;
+        Tue, 26 Jan 2021 21:09:45 -0800 (PST)
+Received: by mail-pl1-x62d.google.com with SMTP id e9so391299plh.3;
+        Tue, 26 Jan 2021 21:09:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=DXmWT/wwD5Zyj+UXEZs44c+VTqRax5B3T6jJJNdDLKA=;
-        b=kmbaeQcIBx3A7kFGGtSccqHURyDkL/DPUH9Sm+635toxoZU07fl93IVAmFVFHaGLme
-         Gg1GHPWt5IZCb4X7oBikQwyYkoB7wLDCJfPaQO55+m5H+wPuEo25wTiK9na5tLLVFWab
-         yYPcpZ4hVl5HM5H9xpCcUzt7MnzZaX3xKDr27ErM7ciJjqboGAIcWkDOFDwXu247eKkr
-         5VehVNN1i3f/temiTyTR6KBeJxQNTtHY3XUexZmQ76ltOgp136Q82Hbq58hStucvKP1G
-         IlMCZtBZmFW0D0UL7VwiZCaobuPpZ2K8fqOumqOoBNQqHCmKZ13GwHRJxsf4g1ZrMBpb
-         YMIQ==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=RmgqS7WyjiiRJi9z89KhXde85FYcLyN/Zij0A6xH6Vg=;
+        b=RnKa9K+3TRouGov1X7r8uImWnhCFlAivPGcaKhDgCwaW+BlBYVStKd9X2c+ERdkCqs
+         DiNwcROLJFNuIruXq4aredzwhJEi/BK9aj9OAhe6veI7SNgaZIZNEQ1y7X4x8cPyHy7T
+         gz7nlEbdjXWfKHoRY7QNvcRyBf3mVH98dVF0VZpmlVl02W75rF5JOgy7upQkDB7+R4qd
+         zUsrceiyKSUv/U0vWD/9JABS9rUe31D/KC/uuxiclIrBkDyv+3Hd4VK5lOzi7cllAWul
+         zC7aR11dEAU8YkrSeP7ml4XWuETVDBjyx9KQuZ8m83GGCr7BlqSEY3rOdvSA6f1tilq7
+         Tf/Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=DXmWT/wwD5Zyj+UXEZs44c+VTqRax5B3T6jJJNdDLKA=;
-        b=oc93mnfqQRchVEr3Mq2eP0XaxUB0OfzeovD3c1r6zBOh2fFMnjG3TftdH86xNI/Qh/
-         TknvIYDfQD61aB4dfWN+3jD05Vb8uw4ywapecdooHRH5gmI/9NhsNGUcJvONh4mDMSSh
-         lMRKNTdcAwlx+2XWhbRokQzn1sFzWm19xGwaFjNLXveivoAtSQQ22YolsVuLMiMLWz0I
-         X653Ggb+nSy+lhPuhgja3Z2UC9eVfN2rWC24LhNwRMyvfW0X8+vr9HhaJxVrHuobJ8sw
-         n+fbUqg3ZjnRtScd9RefrRKD7GcIHhVIB/XtVTsL5AkY5ZJIXXb6mK8gnQqhv4MjahXH
-         rTBg==
-X-Gm-Message-State: AOAM53030SjhOjt9qxNxp9bK0aOct+LPPVsZxF6BsHQCTwEBB4kU7ADy
-        TgSEchXjAe7Gj2LgPDdIOQA=
-X-Google-Smtp-Source: ABdhPJwb3VlDoR8JoP5t53eLgYzjFt/bGOgDtVoKZB5ul/oGHk36rjaf1hwpLPMpqcHxyz4733Db/g==
-X-Received: by 2002:a05:6830:154d:: with SMTP id l13mr6550855otp.72.1611724122105;
-        Tue, 26 Jan 2021 21:08:42 -0800 (PST)
-Received: from Davids-MacBook-Pro.local ([2601:284:8203:54f0:a08d:e5cd:cfb5:2f9])
-        by smtp.googlemail.com with ESMTPSA id u7sm249137oib.22.2021.01.26.21.08.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 26 Jan 2021 21:08:41 -0800 (PST)
-Subject: Re: [PATCH net-next 06/10] net: Pass 'net' struct as first argument
- to fib6_info_hw_flags_set()
-To:     Ido Schimmel <idosch@idosch.org>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, amcohen@nvidia.com,
-        roopa@nvidia.com, sharpd@nvidia.com, bpoirier@nvidia.com,
-        mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
-References: <20210126132311.3061388-1-idosch@idosch.org>
- <20210126132311.3061388-7-idosch@idosch.org>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <a079f7db-a811-de7f-077f-c1d3057735de@gmail.com>
-Date:   Tue, 26 Jan 2021 22:08:40 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
- Gecko/20100101 Thunderbird/78.6.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=RmgqS7WyjiiRJi9z89KhXde85FYcLyN/Zij0A6xH6Vg=;
+        b=oTvBDzOzRbQoNglVh+dhoB+9+Nmsut+3ArGgvDD8j62d7G/aYxZ3RbwxoPvBL9UEuT
+         Ecs3Xri1GHhANUQ4KyndczwP3RK3U3HmDsX0zQDOyT4CtCDsSdoJPCKILxNXzstT/qdl
+         v4U4J647tfpBEETXYBI2bX4Rl5HxOxDBNbg/TeXMtuqZHUaE+i8ml9ndbS7Sw6Sy4qVn
+         Sv5Sep3qAVcpeH0sLK5pqkCUCgsdIt4uty4va5lvrrs7EpUlP355JS1E3Uo3iiiaG+Qy
+         8P771bUoGX3ETwEe/Q263X5tGBiirS9i6UZu+/aXdqs2gixjvYuMpcmoQyoJ12olTUVz
+         TwrQ==
+X-Gm-Message-State: AOAM531BuWanll6E80sv+4MhO1uI2ZJJY5DQdeqbxxjOfVR6/XS+/KHJ
+        A6emeGANbIdV5dm2ko+3hio=
+X-Google-Smtp-Source: ABdhPJz04w59ZhpuFPQyD2C3hPv7JH0+LDqS9Kp6T3W3gIrrQ023rry8zfPBH2RwQVWwj2TsOAfQBw==
+X-Received: by 2002:a17:90b:4c8e:: with SMTP id my14mr3637771pjb.30.1611724185071;
+        Tue, 26 Jan 2021 21:09:45 -0800 (PST)
+Received: from ubuntu ([1.53.255.147])
+        by smtp.gmail.com with ESMTPSA id t129sm746515pfc.16.2021.01.26.21.09.40
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 26 Jan 2021 21:09:44 -0800 (PST)
+Date:   Wed, 27 Jan 2021 12:09:37 +0700
+From:   Bui Quang Minh <minhquangbui99@gmail.com>
+To:     Lorenz Bauer <lmb@cloudflare.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, hawk@kernel.org,
+        John Fastabend <john.fastabend@gmail.com>,
+        Andrii Nakryiko <andrii@kernel.org>, Martin Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        kpsingh@kernel.org, Jakub Sitnicki <jakub@cloudflare.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] bpf: Fix integer overflow in argument calculation for
+ bpf_map_area_alloc
+Message-ID: <20210127050937.GA5418@ubuntu>
+References: <20210126082606.3183-1-minhquangbui99@gmail.com>
+ <CACAyw99bEYWJCSGqfLiJ9Jp5YE1ZsZSiJxb4RFUTwbofipf0dA@mail.gmail.com>
+ <20210127042341.GA4948@ubuntu>
 MIME-Version: 1.0
-In-Reply-To: <20210126132311.3061388-7-idosch@idosch.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210127042341.GA4948@ubuntu>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/26/21 6:23 AM, Ido Schimmel wrote:
-> From: Amit Cohen <amcohen@nvidia.com>
+On Wed, Jan 27, 2021 at 11:23:41AM +0700, Bui Quang Minh wrote:
+> > * Seems like there are quite a few similar calls scattered around
+> > (cpumap, etc.). Did you audit these as well?
 > 
-> The next patch will emit notification when hardware flags are changed,
-> in case that fib_notify_on_flag_change sysctl is set to 1.
+> I spotted another bug after re-auditting. In hashtab, there ares 2 places using
+> the same calls
 > 
-> To know sysctl values, net struct is needed.
-> This change is consistent with the IPv4 version, which gets 'net' struct
-> as its first argument.
+> 	static struct bpf_map *htab_map_alloc(union bpf_attr *attr)
+> 	{
+> 		/* ... snip ... */
+> 		if (htab->n_buckets == 0 ||
+> 		    htab->n_buckets > U32_MAX / sizeof(struct bucket))
+> 			goto free_htab;
 > 
-> Currently, the only callers of this function are mlxsw and netdevsim.
-> Patch the callers to pass net.
+> 		htab->buckets = bpf_map_area_alloc(htab->n_buckets *
+> 						   sizeof(struct bucket),
+> 						   htab->map.numa_node);
+> 	}
 > 
-> Signed-off-by: Amit Cohen <amcohen@nvidia.com>
-> Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-> ---
->  .../net/ethernet/mellanox/mlxsw/spectrum_router.c  |  7 ++++---
->  drivers/net/netdevsim/fib.c                        | 14 ++++++++------
->  include/net/ip6_fib.h                              |  5 +++--
->  3 files changed, 15 insertions(+), 11 deletions(-)
+> This is safe because of the above check.
 > 
+> 	static int prealloc_init(struct bpf_htab *htab)
+> 	{
+> 		u32 num_entries = htab->map.max_entries;
+> 		htab->elems = bpf_map_area_alloc(htab->elem_size * num_entries,
+> 						 htab->map.numa_node);
+> 	}
+> 
+> This is not safe since there is no limit check in elem_size.
 
-Reviewed-by: David Ahern <dsahern@kernel.org>
+So sorry but I rechecked and saw this bug in hashtab has been fixed with commit
+e1868b9e36d0ca
 
-
+Thank you,
+Quang Minh.
