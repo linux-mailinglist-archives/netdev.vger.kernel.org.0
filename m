@@ -2,174 +2,134 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id ECF3F3058CB
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 11:50:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 316203058A0
+	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 11:40:14 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236153AbhA0Kts (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 05:49:48 -0500
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:54277 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S236098AbhA0KpE (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 05:45:04 -0500
-Received: from Internal Mail-Server by MTLPINE1 (envelope-from cmi@nvidia.com)
-        with SMTP; 27 Jan 2021 12:17:00 +0200
-Received: from dev-r630-03.mtbc.labs.mlnx (dev-r630-03.mtbc.labs.mlnx [10.75.205.13])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 10RAGwiM002108;
-        Wed, 27 Jan 2021 12:16:58 +0200
-From:   Chris Mi <cmi@nvidia.com>
-To:     netdev@vger.kernel.org
-Cc:     kuba@kernel.org, jiri@nvidia.com, saeedm@nvidia.com,
-        Chris Mi <cmi@nvidia.com>, kernel test robot <lkp@intel.com>
-Subject: [PATCH net-next v3] net: psample: Introduce stubs to remove NIC driver dependency
-Date:   Wed, 27 Jan 2021 18:16:48 +0800
-Message-Id: <20210127101648.513562-1-cmi@nvidia.com>
-X-Mailer: git-send-email 2.26.2
+        id S235874AbhA0KjZ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 05:39:25 -0500
+Received: from m42-8.mailgun.net ([69.72.42.8]:59030 "EHLO m42-8.mailgun.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234160AbhA0Kgk (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 27 Jan 2021 05:36:40 -0500
+DKIM-Signature: a=rsa-sha256; v=1; c=relaxed/relaxed; d=mg.codeaurora.org; q=dns/txt;
+ s=smtp; t=1611743781; h=Content-Type: MIME-Version: Message-ID:
+ In-Reply-To: Date: References: Subject: Cc: To: From: Sender;
+ bh=CaXXVSQ1one582ViqeYOwh6mcykQucWxm/rUc3Fag+0=; b=eN+05usRmKt/Ll17H/omXuInwJKvJ6Um9F8Xwe8jUNX+sJbfMuYPI2v2wzggAAEXLXA6aqAJ
+ 3qYAAjk+ljJJ09TsDMnKL6sK2V+7ZI+rVud9csH8A9aATcnwdkIpQqS+/8gPrZq/CHEgkqau
+ aEUehFGTceLwihgdm6cxn8Sgycs=
+X-Mailgun-Sending-Ip: 69.72.42.8
+X-Mailgun-Sid: WyJiZjI2MiIsICJuZXRkZXZAdmdlci5rZXJuZWwub3JnIiwgImJlOWU0YSJd
+Received: from smtp.codeaurora.org
+ (ec2-35-166-182-171.us-west-2.compute.amazonaws.com [35.166.182.171]) by
+ smtp-out-n06.prod.us-east-1.postgun.com with SMTP id
+ 60114200bdcf4682871cf1bf (version=TLS1.2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256); Wed, 27 Jan 2021 10:35:44
+ GMT
+Sender: kvalo=codeaurora.org@mg.codeaurora.org
+Received: by smtp.codeaurora.org (Postfix, from userid 1001)
+        id ABFF5C433C6; Wed, 27 Jan 2021 10:35:43 +0000 (UTC)
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+        aws-us-west-2-caf-mail-1.web.codeaurora.org
+X-Spam-Level: 
+X-Spam-Status: No, score=-2.9 required=2.0 tests=ALL_TRUSTED,BAYES_00,SPF_FAIL
+        autolearn=no autolearn_force=no version=3.4.0
+Received: from potku.adurom.net (88-114-240-156.elisa-laajakaista.fi [88.114.240.156])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        (Authenticated sender: kvalo)
+        by smtp.codeaurora.org (Postfix) with ESMTPSA id 053AAC433C6;
+        Wed, 27 Jan 2021 10:35:39 +0000 (UTC)
+DMARC-Filter: OpenDMARC Filter v1.3.2 smtp.codeaurora.org 053AAC433C6
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; dmarc=none (p=none dis=none) header.from=codeaurora.org
+Authentication-Results: aws-us-west-2-caf-mail-1.web.codeaurora.org; spf=fail smtp.mailfrom=kvalo@codeaurora.org
+From:   Kalle Valo <kvalo@codeaurora.org>
+To:     Arnd Bergmann <arnd@kernel.org>
+Cc:     Krzysztof Kozlowski <krzk@kernel.org>,
+        QCA ath9k Development <ath9k-devel@qca.qualcomm.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Johannes Berg <johannes@sipsolutions.net>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Flavio Suligoi <f.suligoi@asem.it>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        "linux-kernel\@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] ath9k: fix build error with LEDS_CLASS=m
+References: <20210125113654.2408057-1-arnd@kernel.org>
+        <CAJKOXPfteJ3Jia4Qd9DabjxcOtax3uDgi1fSbz4_+cHsJ1prQQ@mail.gmail.com>
+        <CAK8P3a0apBUbck9Z3UMKfwSJw8a-UbbXLTLUvSyOKEwTgPLjqg@mail.gmail.com>
+        <CAJKOXPc6LWnqiyO9WgxUZPo-vitNcQQr2oDoyD44P2YTSJ7j=g@mail.gmail.com>
+        <CAK8P3a1NEbZtXVA0Z4P3K97L9waBp7nkCWOkdYjR3+7FUF0P0Q@mail.gmail.com>
+        <CAJKOXPdWouEFtCp_iG+py1JcyrEU2Fj98jBAPTKZXQXCDQE54A@mail.gmail.com>
+        <CAK8P3a3ygYTEwjLbFuArdfNF1-yydVjtS2NZDAURKjOJGAxkAQ@mail.gmail.com>
+Date:   Wed, 27 Jan 2021 12:35:37 +0200
+In-Reply-To: <CAK8P3a3ygYTEwjLbFuArdfNF1-yydVjtS2NZDAURKjOJGAxkAQ@mail.gmail.com>
+        (Arnd Bergmann's message of "Mon, 25 Jan 2021 16:22:18 +0100")
+Message-ID: <87bldaacqu.fsf@codeaurora.org>
+User-Agent: Gnus/5.13 (Gnus v5.13) Emacs/24.5 (gnu/linux)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In order to send sampled packets to userspace, NIC driver calls
-psample api directly. But it creates a hard dependency on module
-psample. Introduce psample_ops to remove the hard dependency.
-It is initialized when psample module is loaded and set to NULL
-when the module is unloaded.
+Arnd Bergmann <arnd@kernel.org> writes:
 
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Chris Mi <cmi@nvidia.com>
-Reviewed-by: Jiri Pirko <jiri@nvidia.com>
----
-v1->v2:
- - fix sparse errors
-v2->v3:
- - remove inline
+> On Mon, Jan 25, 2021 at 4:04 PM Krzysztof Kozlowski <krzk@kernel.org> wrote:
+>> On Mon, 25 Jan 2021 at 15:38, Arnd Bergmann <arnd@kernel.org> wrote:
+>> > On Mon, Jan 25, 2021 at 2:27 PM Krzysztof Kozlowski <krzk@kernel.org> wrote:
+>>
+>> I meant that having MAC80211_LEDS selected causes the ath9k driver to
+>> toggle on/off the WiFi LED. Every second, regardless whether it's
+>> doing something or not. In my setup, I have problems with a WiFi
+>> dongle somehow crashing (WiFi disappears, nothing comes from the
+>> dongle... maybe it's Atheros FW, maybe some HW problem) and I found
+>> this LED on/off slightly increases the chances of this dongle-crash.
+>> That was the actual reason behind my commits.
+>>
+>> Second reason is that I don't want to send USB commands every second
+>> when the device is idle. It unnecessarily consumes power on my
+>> low-power device.
+>
+> Ok, I see.
+>
+>> Of course another solution is to just disable the trigger via sysfs
+>> LED API. It would also work but my patch allows entire code to be
+>> compiled-out (which was conditional in ath9k already).
+>>
+>> Therefore the patch I sent allows the ath9k LED option to be fully
+>> choosable. Someone wants every-second-LED-blink, sure, enable
+>> ATH9K_LEDS and you have it. Someone wants to reduce the kernel size,
+>> don't enable ATH9K_LEDS.
+>
+> Originally, I think this is what CONFIG_MAC80211_LEDS was meant
+> for, but it seems that this is not actually practical, since this also
+> gets selected by half of the drivers using it, while the other half have
+> a dependency on it. Out of the ones that select it, some in turn
+> select LEDS_CLASS, while some depend on it.
+>
+> I think this needs a larger-scale cleanup for consistency between
+> (at least) all the wireless drivers using LEDs.
 
- include/net/psample.h    | 27 +++++++++++++++++++++++++++
- net/psample/psample.c    | 13 ++++++++++++-
- net/sched/Makefile       |  2 +-
- net/sched/psample_stub.c |  7 +++++++
- 4 files changed, 47 insertions(+), 2 deletions(-)
- create mode 100644 net/sched/psample_stub.c
+I agree, this needs cleanup.
 
-diff --git a/include/net/psample.h b/include/net/psample.h
-index 68ae16bb0a4a..e6a73128de59 100644
---- a/include/net/psample.h
-+++ b/include/net/psample.h
-@@ -4,6 +4,7 @@
- 
- #include <uapi/linux/psample.h>
- #include <linux/list.h>
-+#include <linux/skbuff.h>
- 
- struct psample_group {
- 	struct list_head list;
-@@ -14,6 +15,15 @@ struct psample_group {
- 	struct rcu_head rcu;
- };
- 
-+struct psample_ops {
-+	void (*sample_packet)(struct psample_group *group, struct sk_buff *skb,
-+			      u32 trunc_size, int in_ifindex, int out_ifindex,
-+			      u32 sample_rate);
-+
-+};
-+
-+extern const struct psample_ops __rcu *psample_ops __read_mostly;
-+
- struct psample_group *psample_group_get(struct net *net, u32 group_num);
- void psample_group_take(struct psample_group *group);
- void psample_group_put(struct psample_group *group);
-@@ -35,4 +45,21 @@ static inline void psample_sample_packet(struct psample_group *group,
- 
- #endif
- 
-+static void
-+psample_nic_sample_packet(struct psample_group *group,
-+			  struct sk_buff *skb, u32 trunc_size,
-+			  int in_ifindex, int out_ifindex,
-+			  u32 sample_rate)
-+{
-+	const struct psample_ops *ops;
-+
-+	rcu_read_lock();
-+	ops = rcu_dereference(psample_ops);
-+	if (ops)
-+		ops->sample_packet(group, skb, trunc_size,
-+				   in_ifindex, out_ifindex,
-+				   sample_rate);
-+	rcu_read_unlock();
-+}
-+
- #endif /* __NET_PSAMPLE_H */
-diff --git a/net/psample/psample.c b/net/psample/psample.c
-index 33e238c965bd..2a9fbfe09395 100644
---- a/net/psample/psample.c
-+++ b/net/psample/psample.c
-@@ -8,6 +8,7 @@
- #include <linux/kernel.h>
- #include <linux/skbuff.h>
- #include <linux/module.h>
-+#include <linux/rcupdate.h>
- #include <net/net_namespace.h>
- #include <net/sock.h>
- #include <net/netlink.h>
-@@ -35,6 +36,10 @@ static const struct genl_multicast_group psample_nl_mcgrps[] = {
- 
- static struct genl_family psample_nl_family __ro_after_init;
- 
-+static const struct psample_ops psample_sample_ops = {
-+	.sample_packet	= psample_sample_packet,
-+};
-+
- static int psample_group_nl_fill(struct sk_buff *msg,
- 				 struct psample_group *group,
- 				 enum psample_command cmd, u32 portid, u32 seq,
-@@ -456,11 +461,17 @@ EXPORT_SYMBOL_GPL(psample_sample_packet);
- 
- static int __init psample_module_init(void)
- {
--	return genl_register_family(&psample_nl_family);
-+	int ret;
-+
-+	ret = genl_register_family(&psample_nl_family);
-+	if (!ret)
-+		RCU_INIT_POINTER(psample_ops, &psample_sample_ops);
-+	return ret;
- }
- 
- static void __exit psample_module_exit(void)
- {
-+	RCU_INIT_POINTER(psample_ops, NULL);
- 	genl_unregister_family(&psample_nl_family);
- }
- 
-diff --git a/net/sched/Makefile b/net/sched/Makefile
-index dd14ef413fda..0d92bb98bb26 100644
---- a/net/sched/Makefile
-+++ b/net/sched/Makefile
-@@ -3,7 +3,7 @@
- # Makefile for the Linux Traffic Control Unit.
- #
- 
--obj-y	:= sch_generic.o sch_mq.o
-+obj-y	:= sch_generic.o sch_mq.o psample_stub.o
- 
- obj-$(CONFIG_INET)		+= sch_frag.o
- obj-$(CONFIG_NET_SCHED)		+= sch_api.o sch_blackhole.o
-diff --git a/net/sched/psample_stub.c b/net/sched/psample_stub.c
-new file mode 100644
-index 000000000000..0615a7b64000
---- /dev/null
-+++ b/net/sched/psample_stub.c
-@@ -0,0 +1,7 @@
-+// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-+/* Copyright (c) 2021 Mellanox Technologies. */
-+
-+#include <net/psample.h>
-+
-+const struct psample_ops __rcu *psample_ops __read_mostly;
-+EXPORT_SYMBOL_GPL(psample_ops);
+> Either your patch or mine should get applied in the meantime, and I
+> don't care much which one in this case, as we still have the remaining
+> inconsistency.
+
+My problem with Krzysztof's patch[1] is that it adds a new Kconfig
+option for ath9k, is that really necessary? Like Arnd said, we should
+fix drivers to use CONFIG_MAC80211_LEDS instead of having driver
+specific options.
+
+So I would prefer take this Arnd's patch instead and queue it for v5.11.
+But as it modifies mac80211 I'll need an ack from Johannes, what do you
+think?
+
+[1] https://patchwork.kernel.org/project/linux-wireless/patch/20201227143034.1134829-1-krzk@kernel.org/
+
 -- 
-2.26.2
+https://patchwork.kernel.org/project/linux-wireless/list/
 
+https://wireless.wiki.kernel.org/en/developers/documentation/submittingpatches
