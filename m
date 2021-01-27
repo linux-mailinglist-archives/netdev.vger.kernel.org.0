@@ -2,96 +2,76 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B1AF230630E
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 19:15:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 47ABE30631B
+	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 19:20:13 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232048AbhA0SOz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 13:14:55 -0500
-Received: from mail.kernel.org ([198.145.29.99]:51254 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231364AbhA0SOy (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 27 Jan 2021 13:14:54 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id AFA3164D9A;
-        Wed, 27 Jan 2021 18:14:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611771252;
-        bh=wm3JJ5QQ1TlsnXK5Lb7xrhZUrgey1pClYUoYhxm/oUg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qnZT0KaEwdrl9kfUSTyaMDjeoohOz8kMay6powTDE4e6mwF/v7mHZSNJw4rRG1cLy
-         LaGWaijxFbAfL8ZTjH92ZNvouQ1eS9VHddLfYhX1eVRthpp3E6Ijuok7zx+Lvw7ZdC
-         ZkzM7mbWftrj8rUI65XigmEF6B1xNmQcE5uUXDFRsKGUoeemo3nCWpyUJ+MusKOkVF
-         NpHEOYV/MZYCM6BwbOF6OUU5AP1Dysb8ibHgSZWWsRmZIyt694ZV/yyMCMijDCi00w
-         ZfsUoE3YPiro/gcyciDishBrjWcQ+8kjVYIq5us99+NxXqLg6vcqxqEWYMzjFWjy7v
-         rsBkhcjOi3B9Q==
-From:   Bjorn Helgaas <helgaas@kernel.org>
-To:     Sunil Goutham <sgoutham@marvell.com>,
+        id S234551AbhA0STm (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 13:19:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37766 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233500AbhA0STg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 13:19:36 -0500
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FD2BC06174A
+        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 10:18:55 -0800 (PST)
+Received: by mail-ej1-x630.google.com with SMTP id by1so4065425ejc.0
+        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 10:18:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=dDomsmsITn1D4fc/98SnX4xb8KGIDVrSSeTKDZpqWGc=;
+        b=dxGptAy5jrxmXW61hPEpaBM6ebaNeAs6VvSCEZeeDQeX7wL9M3/mUKoOw50tUCCuke
+         sgzOSBnaY3FKgVixKFCWMxAGOrTWLxTSrhq0u4ia084MF9exS3U1ATY+v8eOPv49jSIc
+         hnVsxl0OQoK2xmbDthsBQvfkV+FAH4wUNaoKcjziZVWSrMeoxJsdPyZQCqQ0VfrmCmX3
+         Q7EkMunY51q0I7QEikaDRNg4rsRlpdpWWrJhkDXHDqBDMr45wxnJrRL8uXwBYsOMuCBf
+         +B5LzVDswDZ0vRY2fWxFBYR8ZLnG7B1SQYVSefPG/0U3nOJLqJyOpt165QR1nzmv7vdj
+         h7VQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=dDomsmsITn1D4fc/98SnX4xb8KGIDVrSSeTKDZpqWGc=;
+        b=oAqSLvXtmZB1Fj2n+uKcVYnqGemNwP5rppCeFq9NnLCrdE3ec79pSTK5IsRdsy8YnX
+         RSMbzNpFdQa4+fWhlMhdDKFDRK45uXIbsPvI+1LIqARt2HhY0WcaBB+Owtan5zPIUbEV
+         J8H6W7USjSkYD3P59QoxaJxLZt2ICQOiJtf2WPH/UC8Kjzbd2kMwwbdLEi46b1Uvd51W
+         Q12KUpjpHctqeMsCfRPfGfdMEkDgl3Ng9ov5xWH8KAEJ9/492BrVj25W50vSjpTgXI7c
+         rCzu3StdhzFFQI1LYdzRcp7RzPevWrJPqThdqLZtcMHVEpwqpAeqapuR0uZsE4vXSmvr
+         FQjw==
+X-Gm-Message-State: AOAM532jpc65I4SL0m7nnF78H5DVQZKlyfe5teCV7xcYnGUl7k0ws1fG
+        EY8j4ZYjl5w8HT6PVyEd680/9Jlzcl5Sp6DojdE=
+X-Google-Smtp-Source: ABdhPJw5tKzmJSTpSaG5eubei/uLPH/uPlV44yUZnIG7tMUfpAn8zS+ErdC7ocKP2BvsxpSoe7gTbvjuVVg4AZbD+Zw=
+X-Received: by 2002:a17:906:3f8d:: with SMTP id b13mr7600799ejj.464.1611771534462;
+ Wed, 27 Jan 2021 10:18:54 -0800 (PST)
+MIME-Version: 1.0
+References: <20210126210830.2919352-1-helgaas@kernel.org> <20210127181359.3008316-1-helgaas@kernel.org>
+In-Reply-To: <20210127181359.3008316-1-helgaas@kernel.org>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Wed, 27 Jan 2021 13:18:17 -0500
+Message-ID: <CAF=yD-KBynwNmyzSQE996P8PNjeh86sP9UQPOU85Qu2QjPBw+g@mail.gmail.com>
+Subject: Re: [PATCH v2] octeontx2-af: Fix 'physical' typos
+To:     Bjorn Helgaas <helgaas@kernel.org>
+Cc:     Sunil Goutham <sgoutham@marvell.com>,
         Linu Cherian <lcherian@marvell.com>,
         Geetha sowjanya <gakula@marvell.com>,
         Jerin Jacob <jerinj@marvell.com>,
         "David S . Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     netdev@vger.kernel.org, Bjorn Helgaas <bhelgaas@google.com>
-Subject: [PATCH v2] octeontx2-af: Fix 'physical' typos
-Date:   Wed, 27 Jan 2021 12:13:59 -0600
-Message-Id: <20210127181359.3008316-1-helgaas@kernel.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210126210830.2919352-1-helgaas@kernel.org>
-References: <20210126210830.2919352-1-helgaas@kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Network Development <netdev@vger.kernel.org>,
+        Bjorn Helgaas <bhelgaas@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Bjorn Helgaas <bhelgaas@google.com>
+On Wed, Jan 27, 2021 at 1:14 PM Bjorn Helgaas <helgaas@kernel.org> wrote:
+>
+> From: Bjorn Helgaas <bhelgaas@google.com>
+>
+> Fix misspellings of "physical".
+>
+> Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
 
-Fix misspellings of "physical".
+Acked-by: Willem de Bruijn <willemb@google.com>
 
-Signed-off-by: Bjorn Helgaas <bhelgaas@google.com>
----
-Thanks, Willem!
-
- drivers/net/ethernet/marvell/octeontx2/af/rvu.c         | 2 +-
- drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c | 2 +-
- drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c    | 2 +-
- 3 files changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/net/ethernet/marvell/octeontx2/af/rvu.c b/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
-index e8fd712860a1..565d9373bfe4 100644
---- a/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/af/rvu.c
-@@ -646,7 +646,7 @@ static int rvu_setup_msix_resources(struct rvu *rvu)
- 	}
- 
- 	/* HW interprets RVU_AF_MSIXTR_BASE address as an IOVA, hence
--	 * create a IOMMU mapping for the physcial address configured by
-+	 * create an IOMMU mapping for the physical address configured by
- 	 * firmware and reconfig RVU_AF_MSIXTR_BASE with IOVA.
- 	 */
- 	cfg = rvu_read64(rvu, BLKADDR_RVUM, RVU_PRIV_CONST);
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c
-index be8ccfce1848..b4d6a6bb3070 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_flows.c
-@@ -1,5 +1,5 @@
- // SPDX-License-Identifier: GPL-2.0
--/* Marvell OcteonTx2 RVU Physcial Function ethernet driver
-+/* Marvell OcteonTx2 RVU Physical Function ethernet driver
-  *
-  * Copyright (C) 2020 Marvell.
-  */
-diff --git a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-index 634d60655a74..07ec85aebcca 100644
---- a/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-+++ b/drivers/net/ethernet/marvell/octeontx2/nic/otx2_pf.c
-@@ -1,5 +1,5 @@
- // SPDX-License-Identifier: GPL-2.0
--/* Marvell OcteonTx2 RVU Physcial Function ethernet driver
-+/* Marvell OcteonTx2 RVU Physical Function ethernet driver
-  *
-  * Copyright (C) 2020 Marvell International Ltd.
-  *
--- 
-2.25.1
-
+Thanks Bjorn. Please remember to explicitly mark [PATCH net-next] too.
