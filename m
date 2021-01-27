@@ -2,27 +2,27 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 43DE13058F2
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 11:57:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id ECF3F3058CB
+	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 11:50:49 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236226AbhA0K5Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 05:57:25 -0500
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:55142 "EHLO
+        id S236153AbhA0Kts (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 05:49:48 -0500
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:54277 "EHLO
         mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S236046AbhA0KzK (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 05:55:10 -0500
+        with ESMTP id S236098AbhA0KpE (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 05:45:04 -0500
 Received: from Internal Mail-Server by MTLPINE1 (envelope-from cmi@nvidia.com)
-        with SMTP; 27 Jan 2021 09:46:59 +0200
+        with SMTP; 27 Jan 2021 12:17:00 +0200
 Received: from dev-r630-03.mtbc.labs.mlnx (dev-r630-03.mtbc.labs.mlnx [10.75.205.13])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 10R7kvrl013621;
-        Wed, 27 Jan 2021 09:46:57 +0200
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 10RAGwiM002108;
+        Wed, 27 Jan 2021 12:16:58 +0200
 From:   Chris Mi <cmi@nvidia.com>
 To:     netdev@vger.kernel.org
 Cc:     kuba@kernel.org, jiri@nvidia.com, saeedm@nvidia.com,
         Chris Mi <cmi@nvidia.com>, kernel test robot <lkp@intel.com>
-Subject: [PATCH net-next v2] net: psample: Introduce stubs to remove NIC driver dependency
-Date:   Wed, 27 Jan 2021 15:46:51 +0800
-Message-Id: <20210127074651.510134-1-cmi@nvidia.com>
+Subject: [PATCH net-next v3] net: psample: Introduce stubs to remove NIC driver dependency
+Date:   Wed, 27 Jan 2021 18:16:48 +0800
+Message-Id: <20210127101648.513562-1-cmi@nvidia.com>
 X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -42,6 +42,8 @@ Reviewed-by: Jiri Pirko <jiri@nvidia.com>
 ---
 v1->v2:
  - fix sparse errors
+v2->v3:
+ - remove inline
 
  include/net/psample.h    | 27 +++++++++++++++++++++++++++
  net/psample/psample.c    | 13 ++++++++++++-
@@ -82,7 +84,7 @@ index 68ae16bb0a4a..e6a73128de59 100644
  
  #endif
  
-+static inline void
++static void
 +psample_nic_sample_packet(struct psample_group *group,
 +			  struct sk_buff *skb, u32 trunc_size,
 +			  int in_ifindex, int out_ifindex,
@@ -93,9 +95,9 @@ index 68ae16bb0a4a..e6a73128de59 100644
 +	rcu_read_lock();
 +	ops = rcu_dereference(psample_ops);
 +	if (ops)
-+		psample_ops->sample_packet(group, skb, trunc_size,
-+					   in_ifindex, out_ifindex,
-+					   sample_rate);
++		ops->sample_packet(group, skb, trunc_size,
++				   in_ifindex, out_ifindex,
++				   sample_rate);
 +	rcu_read_unlock();
 +}
 +
