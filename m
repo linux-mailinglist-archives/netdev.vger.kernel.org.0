@@ -2,123 +2,165 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3A0D8306345
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 19:27:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D96C306350
+	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 19:30:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343975AbhA0S0l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 13:26:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39258 "EHLO
+        id S236561AbhA0S3M (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 13:29:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236224AbhA0S0d (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 13:26:33 -0500
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F616C061756
-        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 10:25:52 -0800 (PST)
-Received: by mail-ed1-x534.google.com with SMTP id c2so3601668edr.11
-        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 10:25:52 -0800 (PST)
+        with ESMTP id S235599AbhA0S3J (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 13:29:09 -0500
+Received: from mail-qt1-x836.google.com (mail-qt1-x836.google.com [IPv6:2607:f8b0:4864:20::836])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE804C061574
+        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 10:28:28 -0800 (PST)
+Received: by mail-qt1-x836.google.com with SMTP id c1so2155540qtc.1
+        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 10:28:28 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=zLyrvcYAcVBo96ljLF5luMNiswU83i/YP1ssz+Pdy0w=;
-        b=BD4Y1PPT3WKrLZSvdaQDB0J+DGgLfStzKkRLKSPdB37wskxvMj1eccwppocHehvf+s
-         j1EdCmZccauNP8YVIScplGu+11mNGLehYlmJAmhXtdirND7K+qwKVFAlhBYLofZ0MlOv
-         tj6EjC5qoH0i7yfMkrlHBeRhu9IUenbLeDzbsa8Xk80nlj6y5JlWTvOlqCdRGoASsN4O
-         L0YoBuwwisTY8Etu4Jgjy7QpvcgSFp8KqixG8QdcWwc7qcT5nz3jO4LzigISEtWzRwcB
-         nWEpX8u3/++xee/JyfJ3tUX3os7q7NrKvV0SDpF3sNc8s1FJBbgui8RtYCoBizm5Elos
-         iifA==
+        bh=8CByxNOen19Ah/fWze4y/yfnlj1YLYzVNQo3bQZg2XA=;
+        b=gO0ExQHkYRA9VsMxloMyZflDtmDfxt8XVdmA4zKJ4M630Raugn4OZwKqeMK1PqjZk9
+         cie05fH512rhJxXzLIAAJjggJftFLwznQnt6zU3YbYnWb6GBIqR464tUHwNoA6l1no2p
+         YrjeCGN7hw80htGjsLxdAAAbp1AiEcptAZIzigadT4xOj7dMQbOcuyA4ymE55kc5T6TY
+         T6KuMqhz5fga6Grh/1TqlPZHbvMOTMnKzoexnoKcfDIgEqgDmhbxaeoAYZimz5XbQ6Ic
+         lHYtaJ1GpPCT44lWbhER71nqaQ/Ssjj4ob6YA7UVN10mzuXnJ0x8MPlfzdTXGmkuNeO2
+         b+0g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=zLyrvcYAcVBo96ljLF5luMNiswU83i/YP1ssz+Pdy0w=;
-        b=K0yz4sfNDhe1RsayYZVUrdLu68o0iEY2Eieb89uJ8TPFzeghvIDqGKfBzgwS4e23jW
-         mqUf4ocQWX/ENIOxsYjTp7xBOBIZAeOjyiiqZuK13M7BT0H9BFzAifvPR/PbD22g2y5C
-         V3EiWOiuQQvq/B56nytyBR8ZU20hrMMPdQkVWAstLtZPIHmDHU4HtJJl/k1yeY7jIv7n
-         WD96XyHtXSlgGp9jxUI5pZS0Gff7xtiaXJYhE3GAgGr8ouRA+tE5JsJ0WZwPxQezV3uD
-         Mc3N8EHgXm99l2c10o0ERtqZgzhJGOBZznJk3SOt5lVzs+1t/syfA97nSEp9MXU0aZiD
-         KIvg==
-X-Gm-Message-State: AOAM5303h8Nyony1rCHpCyuEZdO8PW2K6ZNAv51OkDvUTd1TyDG42k/B
-        GTTZ0qxG43YXpFqsXXd0Ugr6c/pApjbfu7JItTA=
-X-Google-Smtp-Source: ABdhPJzUKVGjF/Y0j96rC7JLKWYfAQGxp8BUZm+Dl3tupqF1f1b2ImlNjzF0Kp3DvixAaE3NgoxKoem9mq4Zagtf0+Y=
-X-Received: by 2002:a05:6402:149a:: with SMTP id e26mr10586998edv.254.1611771951121;
- Wed, 27 Jan 2021 10:25:51 -0800 (PST)
+        bh=8CByxNOen19Ah/fWze4y/yfnlj1YLYzVNQo3bQZg2XA=;
+        b=fsFRzcOyw3+iq42QJa4BYNVJDkkUFJsPSjOHwf5rrdgyo/nphtnsXqK1eZa/z5rR0C
+         lxqurb/nA7FXAKuF/1nULcIOyLBYUc96Rf5xS39lExEFNcDh3i0QmdG9VoVkF+2mTy96
+         sGTkSK4eGC2G/AYOBBgoksauqvyD6/GCfax7k/j6IAruspHiPSN7B1csvcgz5qr9pSa/
+         cFG3fwtXc7+WbuE0At+DlZQjGcSXXRgiRSiRFmXDuTUN4CuJvUCSBt+CrogivRVZYURd
+         Mp6aziGOlrEc3Apf0L4V2evbJsRz/9cbBNGdVbAgLKg3btuRRmD59mFh8PnKIvmVnq2y
+         eq8Q==
+X-Gm-Message-State: AOAM533tEJgbM2CCxzPnrqX9UcgX/Yx3AyG+MxpOYPn4KWJkJIeU7DTe
+        Pgm8A0UHV6yGjhyF6ZaKTxqXKQ3EzB8kUV7epjR99g==
+X-Google-Smtp-Source: ABdhPJzAYpMqkE0EF+0+8UpXduj53G64S1GhDxo+WS3xWSjcd11qWJn4AQjRerAf4I9NguND6JImMGO6UfNsIEJLtjs=
+X-Received: by 2002:ac8:5bc2:: with SMTP id b2mr10971600qtb.98.1611772107889;
+ Wed, 27 Jan 2021 10:28:27 -0800 (PST)
 MIME-Version: 1.0
-References: <20210126221035.658124-1-anthony.l.nguyen@intel.com>
-In-Reply-To: <20210126221035.658124-1-anthony.l.nguyen@intel.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Wed, 27 Jan 2021 13:25:14 -0500
-Message-ID: <CAF=yD-LXi1PFPD5QGD+dfjD6ynDk1Q1J1xWfcQgoyAHQJqryTQ@mail.gmail.com>
-Subject: Re: [PATCH net v2 0/7][pull request] Intel Wired LAN Driver Updates 2021-01-26
-To:     Tony Nguyen <anthony.l.nguyen@intel.com>
-Cc:     David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        sassmann@redhat.com
+References: <20210126193544.1548503-1-sdf@google.com> <YBGv3eYgNQrYBuEl@rdna-mbp.dhcp.thefacebook.com>
+In-Reply-To: <YBGv3eYgNQrYBuEl@rdna-mbp.dhcp.thefacebook.com>
+From:   Stanislav Fomichev <sdf@google.com>
+Date:   Wed, 27 Jan 2021 10:28:16 -0800
+Message-ID: <CAKH8qBtaeddXMj6NENgvsDOzKcrNWH9RD-jhcqDBxSF8YB0oUQ@mail.gmail.com>
+Subject: Re: [PATCH bpf-next v4 1/2] bpf: allow rewriting to ports under ip_unprivileged_port_start
+To:     Andrey Ignatov <rdna@fb.com>
+Cc:     Netdev <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Martin KaFai Lau <kafai@fb.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 27, 2021 at 4:15 AM Tony Nguyen <anthony.l.nguyen@intel.com> wrote:
+On Wed, Jan 27, 2021 at 10:24 AM Andrey Ignatov <rdna@fb.com> wrote:
 >
-> This series contains updates to the ice, i40e, and igc driver.
+> Stanislav Fomichev <sdf@google.com> [Tue, 2021-01-26 11:36 -0800]:
+> > At the moment, BPF_CGROUP_INET{4,6}_BIND hooks can rewrite user_port
+> > to the privileged ones (< ip_unprivileged_port_start), but it will
+> > be rejected later on in the __inet_bind or __inet6_bind.
+> >
+> > Let's add another return value to indicate that CAP_NET_BIND_SERVICE
+> > check should be ignored. Use the same idea as we currently use
+> > in cgroup/egress where bit #1 indicates CN. Instead, for
+> > cgroup/bind{4,6}, bit #1 indicates that CAP_NET_BIND_SERVICE should
+> > be bypassed.
+> >
+> > v4:
+> > - Add missing IPv6 support (Martin KaFai Lau)
+> >
+> > v3:
+> > - Update description (Martin KaFai Lau)
+> > - Fix capability restore in selftest (Martin KaFai Lau)
+> >
+> > v2:
+> > - Switch to explicit return code (Martin KaFai Lau)
+> >
+> > Cc: Andrey Ignatov <rdna@fb.com>
+> > Cc: Martin KaFai Lau <kafai@fb.com>
+> > Signed-off-by: Stanislav Fomichev <sdf@google.com>
 >
-> Henry corrects setting an unspecified protocol to IPPROTO_NONE instead of
-> 0 for IPv6 flexbytes filters for ice.
+> Explicit return code looks much cleaner than both what v1 did and what I
+> proposed earlier (compare port before/after).
 >
-> Nick fixes the IPv6 extension header being processed incorrectly and
-> updates the netdev->dev_addr if it exists in hardware as it may have been
-> modified outside the ice driver.
+> Just one nit from me but otherwide looks good.
 >
-> Brett ensures a user cannot request more channels than available LAN MSI-X
-> and fixes the minimum allocation logic as it was incorrectly trying to use
-> more MSI-X than allocated for ice.
+> Acked-by: Andrey Ignatov <rdna@fb.com>
 >
-> Stefan Assmann minimizes the delay between getting and using the VSI
-> pointer to prevent a possible crash for i40e.
+> ...
+> > @@ -231,30 +232,48 @@ int bpf_percpu_cgroup_storage_update(struct bpf_map *map, void *key,
+> >
+> >  #define BPF_CGROUP_RUN_SA_PROG(sk, uaddr, type)                                     \
+> >  ({                                                                          \
+> > +     u32 __unused_flags;                                                    \
+> >       int __ret = 0;                                                         \
+> >       if (cgroup_bpf_enabled(type))                                          \
+> >               __ret = __cgroup_bpf_run_filter_sock_addr(sk, uaddr, type,     \
+> > -                                                       NULL);               \
+> > +                                                       NULL,                \
+> > +                                                       &__unused_flags);    \
+> >       __ret;                                                                 \
+> >  })
+> >
+> >  #define BPF_CGROUP_RUN_SA_PROG_LOCK(sk, uaddr, type, t_ctx)                 \
+> >  ({                                                                          \
+> > +     u32 __unused_flags;                                                    \
+> >       int __ret = 0;                                                         \
+> >       if (cgroup_bpf_enabled(type))   {                                      \
+> >               lock_sock(sk);                                                 \
+> >               __ret = __cgroup_bpf_run_filter_sock_addr(sk, uaddr, type,     \
+> > -                                                       t_ctx);              \
+> > +                                                       t_ctx,               \
+> > +                                                       &__unused_flags);    \
+> >               release_sock(sk);                                              \
+> >       }                                                                      \
+> >       __ret;                                                                 \
+> >  })
+> >
+> > -#define BPF_CGROUP_RUN_PROG_INET4_BIND_LOCK(sk, uaddr)                              \
+> > -     BPF_CGROUP_RUN_SA_PROG_LOCK(sk, uaddr, BPF_CGROUP_INET4_BIND, NULL)
+> > -
+> > -#define BPF_CGROUP_RUN_PROG_INET6_BIND_LOCK(sk, uaddr)                              \
+> > -     BPF_CGROUP_RUN_SA_PROG_LOCK(sk, uaddr, BPF_CGROUP_INET6_BIND, NULL)
+> > +/* BPF_CGROUP_INET4_BIND and BPF_CGROUP_INET6_BIND can return extra flags
+> > + * via upper bits of return code. The only flag that is supported
+> > + * (at bit position 0) is to indicate CAP_NET_BIND_SERVICE capability check
+> > + * should be bypassed.
+> > + */
+> > +#define BPF_CGROUP_RUN_PROG_INET_BIND_LOCK(sk, uaddr, type, flags)          \
+> > +({                                                                          \
+> > +     u32 __flags = 0;                                                       \
+> > +     int __ret = 0;                                                         \
+> > +     if (cgroup_bpf_enabled(type))   {                                      \
+> > +             lock_sock(sk);                                                 \
+> > +             __ret = __cgroup_bpf_run_filter_sock_addr(sk, uaddr, type,     \
+> > +                                                       NULL, &__flags);     \
+> > +             release_sock(sk);                                              \
+> > +             if (__flags & 1)                                               \
+> > +                     *flags |= BIND_NO_CAP_NET_BIND_SERVICE;                \
 >
-> Corinna Vinschen fixes link speed advertising for igc.
+> Nit: It took me some time to realize that there are two different
+> "flags": one to pass to __cgroup_bpf_run_filter_sock_addr() and another
+> to pass to __inet{,6}_bind/BPF_CGROUP_RUN_PROG_INET_BIND_LOCK that both carry
+> "BIND_NO_CAP_NET_BIND_SERVICE" flag but do it differently:
+> * hard-coded 0x1 in the former case;
+> * and BIND_NO_CAP_NET_BIND_SERVICE == (1 << 3) in the latter.
 >
-> v2: Dropped patch 4 (ice XDP). Added igc link speed advertisement patch
-> (patch 7).
+> I'm not sure how to make it more readable: maybe name `flags` and
+> `__flags` differently to highlight the difference (`bind_flags` and
+> `__flags`?) and add a #define for the "1" here?
 >
-> The following are changes since commit 07d46d93c9acdfe0614071d73c415dd5f745cc6e:
->   uapi: fix big endian definition of ipv6_rpl_sr_hdr
-> and are available in the git repository at:
->   git://git.kernel.org/pub/scm/linux/kernel/git/tnguy/net-queue 100GbE
->
-> Brett Creeley (2):
->   ice: Don't allow more channels than LAN MSI-X available
->   ice: Fix MSI-X vector fallback logic
->
-> Corinna Vinschen (1):
->   igc: fix link speed advertising
->
-> Henry Tieman (1):
->   ice: fix FDir IPv6 flexbyte
->
-> Nick Nunley (2):
->   ice: Implement flow for IPv6 next header (extension header)
->   ice: update dev_addr in ice_set_mac_address even if HW filter exists
->
-> Stefan Assmann (1):
->   i40e: acquire VSI pointer only after VF is initialized
->
->  .../ethernet/intel/i40e/i40e_virtchnl_pf.c    | 11 ++++-----
->  drivers/net/ethernet/intel/ice/ice.h          |  4 +++-
->  drivers/net/ethernet/intel/ice/ice_ethtool.c  |  8 +++----
->  .../net/ethernet/intel/ice/ice_ethtool_fdir.c |  8 ++++++-
->  drivers/net/ethernet/intel/ice/ice_lib.c      | 14 +++++++----
->  drivers/net/ethernet/intel/ice/ice_main.c     | 16 +++++++------
->  drivers/net/ethernet/intel/ice/ice_txrx.c     |  9 ++++---
->  drivers/net/ethernet/intel/igc/igc_ethtool.c  | 24 ++++++++++++++-----
->  8 files changed, 60 insertions(+), 34 deletions(-)
->
-> --
-> 2.26.2
->
-
-For netdrv
-
-Acked-by: Willem de Bruijn <willemb@google.com>
+> In anycase IMO it's not worth a respin and can be addressed by a
+> follow-up if you agree.
+Yeah, I agree, I didn't stress too much about it because we also
+have ret and _ret in BPF_PROG_CGROUP_INET_EGRESS_RUN_ARRAY
+(and now BPF_PROG_RUN_ARRAY_FLAGS), but it looks confusing.
+Let me respin with bind_flags, shouldn't be too much work and
+can help with the readability in the future. Thanks for the review!
