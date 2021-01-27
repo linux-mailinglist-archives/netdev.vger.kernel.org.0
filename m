@@ -2,201 +2,218 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4679A306305
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 19:09:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 322F9306303
+	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 19:09:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344396AbhA0SJI (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 13:09:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35520 "EHLO
+        id S1344391AbhA0SIq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 13:08:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35440 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343941AbhA0SJG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 13:09:06 -0500
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA659C06174A
-        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 10:08:25 -0800 (PST)
-Received: by mail-ej1-x632.google.com with SMTP id bl23so3978909ejb.5
-        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 10:08:25 -0800 (PST)
+        with ESMTP id S1344385AbhA0SIo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 13:08:44 -0500
+Received: from mail-il1-x12c.google.com (mail-il1-x12c.google.com [IPv6:2607:f8b0:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19885C061574
+        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 10:08:04 -0800 (PST)
+Received: by mail-il1-x12c.google.com with SMTP id a1so2715407ilr.5
+        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 10:08:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=WpoWZ0ypvkIoBC1HhwAZoA7YaplfgSmEnED098oN7RY=;
-        b=UiaMIujlQtM88DcuAPd1c9A4Xbm3/yPv/xKD5ZhQXByog/B6pxMyZJGLLcO1Sl40HU
-         MeqBFrE2+O6usteehvtfdmGCPPFf3kCG7LZ+a4oUJc1ZBk4xyUZzRyy4lm4CQCvqUZd7
-         e9N2kKcn2c0D6xVlXbG1mh6vVvwOzuNkOnn4PLgmThf6vT4hsJIFTrineZHg2oYnJhvC
-         IZLG2d/xlZsFH6X1Y4iUB6XlKszBByOme1aBYfeCVx+LxxpAxjn2+gAgZ1B/BBDBwD+s
-         ZKcpKDKqs6xjQKcYkklaf1dzzr7cBuqK1C+SF6aYLN/c73zZc0YqNqg1NHm1zMEutKPj
-         KPag==
+        bh=VJZP8MOLyoKM/GkUK5rpElN/cwuUFmfUf42GSpkbWeQ=;
+        b=G6K4nAYUowzQBptAwFLHdUeTSXDxQ54VE64+B+o9EdF/N5hAzv+6VdaAacC5LrLzb+
+         1p4I+J1M/Q237uxVzWEVqbLdTkuGkqsSIrrq2fUZmO5VF1TV0/0FwS5l8+Q6BI24YMXZ
+         IB4eQ4Y6RAE74hDHDgP6G32hhr7Z9FwsAAQ+UrGp17wZcO0mIo/1JFOx4utQz5ej7B3U
+         o6cgbOyVy5urVnvQ6jdrgqnfPMslVoUIGCskY2o1dTTWvg435vsn27i78SRQv5g7sIs+
+         P4ikxGlSxL/Abi47SRFOHxu7OtF2NzdotAjMNCStlIWnvgvFk6NpUbgXn+ecbrWDjZ6q
+         siWQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=WpoWZ0ypvkIoBC1HhwAZoA7YaplfgSmEnED098oN7RY=;
-        b=mAslwwZLGfnrVXjXV1WoIMYQSUpc/PShZ9/E8FQQVbLfVO2SKndkwOmPNTGb7A/vlj
-         r0K7jUYHamTqyUvjeXO95A87DtdqACgcWYkLrkrWfniwnbVfL+6UKyM4B7Gzj2oGmYew
-         uCsxODshwQ4Mz8H70BC1EqyXlWSaTURR6XmhTfIhQDl78leBqEgZqeX45ckM18B0drSr
-         BNNLQPhqAzeNUEBvvbRJaHUo/BrsNFhP5RudyZ3fagsa+zTFsQqRHoEJj7AwGeWXa+R8
-         +2W8qeUscmjL6PxBsSGwOi/+7QBOzU+EV1i++ObOeIV7VJTwql88WtfQHU1uzxBKJl07
-         x2Xg==
-X-Gm-Message-State: AOAM532vWTrtW6NUTUX506zNRMZWQ6AFZ1dH+TqQaSXY7424mBRif7FI
-        yyai9cRuGc+VnNub33Ng363HdMuCpo9fwLW28NA=
-X-Google-Smtp-Source: ABdhPJwQhIrZjh3Cawin4yuk/jF9xl1sWC6qpvh16YXU6N3GTOygYILfzPZgF4gqmqyOeLEWxllgTrvncnI8T//D48I=
-X-Received: by 2002:a17:906:494c:: with SMTP id f12mr7961599ejt.56.1611770904388;
- Wed, 27 Jan 2021 10:08:24 -0800 (PST)
+        bh=VJZP8MOLyoKM/GkUK5rpElN/cwuUFmfUf42GSpkbWeQ=;
+        b=E8Nmbg15o/F1KJNDY+Kk2h/Rj6wcdyDxdVhkPEn2/ERcY5AINRi7sOc0eI6YGDu9HC
+         GwkKjNZQ0SJ++CZ1Au0MwCSVfnY8sCwWKguNwry6JrAwoUtBHd8L9jisbHUOqcYrZHtH
+         oDo5/T5d3YtKwjSB+GK3A6v+InhdPCCW0j6sXqAVNHoOLfonXqWDEXsPXaErdiKRu852
+         rFEiIPztO38Kp3D5SGpaGhVhozdrgozGzGLqV9GLEumPomqQfeSGR5hzfvtbL5TXZbs5
+         YPc9j8LaJJQsu/uHyaF+4XJskAbV5ReQTYy1YtblbZBL9Vbg+0893lpWnQg8qfvmxylb
+         gShw==
+X-Gm-Message-State: AOAM530vExfkHawK73lAyIWFHaweXsJJV5KCLTYxHPijvilhbzFqJug7
+        iUyAZXFZlaQcEghn3jcLbcvBFk3E5Z8Ucn9zOp9aMQ==
+X-Google-Smtp-Source: ABdhPJzC9lYPz+Lqd8LcNrgNBl2oGP/wu1nAmMTtnYN30J2sfLPhZZjv/sVt7DtK0HyIBNL8eEWW2tmRrKj+HgQsdyQ=
+X-Received: by 2002:a05:6e02:1d0e:: with SMTP id i14mr9422982ila.69.1611770883172;
+ Wed, 27 Jan 2021 10:08:03 -0800 (PST)
 MIME-Version: 1.0
-References: <c7fd197f-8ab8-2297-385e-5d2b1d5911d7@gmail.com>
-In-Reply-To: <c7fd197f-8ab8-2297-385e-5d2b1d5911d7@gmail.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Wed, 27 Jan 2021 13:07:46 -0500
-Message-ID: <CAF=yD-Jw6MqY+hnzFH75E4+3z5jo8dnO5G+KXpTd_vetZ6Gxwg@mail.gmail.com>
-Subject: Re: [PATCH net] r8169: work around RTL8125 UDP hw bug
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
+References: <CANn89iKE0GFK1UzQvqYxKKy8E4Qcc57=JFFWCGmtpfgWRhpOpA@mail.gmail.com>
+ <20210127175611.62871-1-kuniyu@amazon.co.jp>
+In-Reply-To: <20210127175611.62871-1-kuniyu@amazon.co.jp>
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Wed, 27 Jan 2021 19:07:51 +0100
+Message-ID: <CANn89iJbtbMJ1gC2e8P7v+rB+EON=Y-i0B2mQ5kGQOqJMk=G=A@mail.gmail.com>
+Subject: Re: [PATCH net] net: Remove redundant calls of sk_tx_queue_clear().
+To:     Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+Cc:     Amit Shah <aams@amazon.de>, Boris Pismenny <borisp@mellanox.com>,
         David Miller <davem@davemloft.net>,
-        Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        xplo.bn@gmail.com
+        Jakub Kicinski <kuba@kernel.org>,
+        Kuniyuki Iwashima <kuni1840@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Tariq Toukan <tariqt@mellanox.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 26, 2021 at 2:40 PM Heiner Kallweit <hkallweit1@gmail.com> wrote:
+On Wed, Jan 27, 2021 at 6:56 PM Kuniyuki Iwashima <kuniyu@amazon.co.jp> wrote:
 >
-> It was reported that on RTL8125 network breaks under heavy UDP load,
-> e.g. torrent traffic ([0], from comment 27). Realtek confirmed a hw bug
-> and provided me with a test version of the r8125 driver including a
-> workaround. Tests confirmed that the workaround fixes the issue.
-> I modified the original version of the workaround to meet mainline
-> code style.
+> From:   Eric Dumazet <edumazet@google.com>
+> Date:   Wed, 27 Jan 2021 18:34:35 +0100
+> > On Wed, Jan 27, 2021 at 6:32 PM Kuniyuki Iwashima <kuniyu@amazon.co.jp> wrote:
+> > >
+> > > From:   Eric Dumazet <edumazet@google.com>
+> > > Date:   Wed, 27 Jan 2021 18:05:24 +0100
+> > > > On Wed, Jan 27, 2021 at 5:52 PM Kuniyuki Iwashima <kuniyu@amazon.co.jp> wrote:
+> > > > >
+> > > > > From:   Eric Dumazet <edumazet@google.com>
+> > > > > Date:   Wed, 27 Jan 2021 15:54:32 +0100
+> > > > > > On Wed, Jan 27, 2021 at 1:50 PM Kuniyuki Iwashima <kuniyu@amazon.co.jp> wrote:
+> > > > > > >
+> > > > > > > The commit 41b14fb8724d ("net: Do not clear the sock TX queue in
+> > > > > > > sk_set_socket()") removes sk_tx_queue_clear() from sk_set_socket() and adds
+> > > > > > > it instead in sk_alloc() and sk_clone_lock() to fix an issue introduced in
+> > > > > > > the commit e022f0b4a03f ("net: Introduce sk_tx_queue_mapping"). However,
+> > > > > > > the original commit had already put sk_tx_queue_clear() in sk_prot_alloc():
+> > > > > > > the callee of sk_alloc() and sk_clone_lock(). Thus sk_tx_queue_clear() is
+> > > > > > > called twice in each path currently.
+> > > > > >
+> > > > > > Are you sure ?
+> > > > > >
+> > > > > > I do not clearly see the sk_tx_queue_clear() call from the cloning part.
+> > > > > >
+> > > > > > Please elaborate.
+> > > > >
+> > > > > If sk is not NULL in sk_prot_alloc(), sk_tx_queue_clear() is called [1].
+> > > > > Also the callers of sk_prot_alloc() are only sk_alloc() and sk_clone_lock().
+> > > > > If they finally return not NULL pointer, sk_tx_queue_clear() is called in
+> > > > > each function [2][3].
+> > > > >
+> > > > > In the cloning part, sock_copy() is called after sk_prot_alloc(), but
+> > > > > skc_tx_queue_mapping is defined between skc_dontcopy_begin and
+> > > > > skc_dontcopy_end in struct sock_common [4]. So, sock_copy() does not
+> > > > > overwrite skc_tx_queue_mapping, and thus we can initialize it in
+> > > > > sk_prot_alloc().
+> > > >
+> > > > That is a lot of assumptions.
+> > > >
+> > > > What guarantees do we have that skc_tx_queue_mapping will never be
+> > > > moved out of this section ?
+> > > > AFAIK it was there by accident, for cache locality reasons, that might
+> > > > change in the future as we add more stuff in socket.
+> > > >
+> > > > I feel this optimization is risky for future changes, for a code path
+> > > > that is spending thousands of cycles anyway.
+> > >
+> > > If someone try to move skc_tx_queue_mapping out of the section, should
+> > > they take care about where it is used ?
 >
-> [0] https://bugzilla.kernel.org/show_bug.cgi?id=209839
+> I'm sorry if it might be misleading, I would like to mean someone/they is
+> the author of a patch to move skc_tx_queue_mapping.
 >
-> Fixes: f1bce4ad2f1c ("r8169: add support for RTL8125")
-> Tested-by: xplo <xplo.bn@gmail.com>
-> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
-> ---
->  drivers/net/ethernet/realtek/r8169_main.c | 64 ++++++++++++++++++++---
->  1 file changed, 58 insertions(+), 6 deletions(-)
 >
-> diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-> index fb67d8f79..90052033b 100644
-> --- a/drivers/net/ethernet/realtek/r8169_main.c
-> +++ b/drivers/net/ethernet/realtek/r8169_main.c
-> @@ -28,6 +28,7 @@
->  #include <linux/bitfield.h>
->  #include <linux/prefetch.h>
->  #include <linux/ipv6.h>
-> +#include <linux/ptp_classify.h>
->  #include <asm/unaligned.h>
->  #include <net/ip6_checksum.h>
+> > Certainly not. You hide some knowledge, without a comment or some runtime check.
 >
-> @@ -4007,17 +4008,64 @@ static int rtl8169_xmit_frags(struct rtl8169_private *tp, struct sk_buff *skb,
->         return -EIO;
->  }
->
-> -static bool rtl_test_hw_pad_bug(struct rtl8169_private *tp)
-> +static bool rtl_skb_is_udp(struct sk_buff *skb)
->  {
-> +       switch (vlan_get_protocol(skb)) {
-> +       case htons(ETH_P_IP):
-> +               return ip_hdr(skb)->protocol == IPPROTO_UDP;
-> +       case htons(ETH_P_IPV6):
-> +               return ipv6_hdr(skb)->nexthdr == IPPROTO_UDP;
+> It was my bad, I should have written about sock_copy() in the changelog.
 
-This trusts that an skb with given skb->protocol is well behaved. With
-packet sockets/tun/virtio, that may be false.
+I think you also want to add some compile time check.
 
-> +       default:
-> +               return false;
-> +       }
-> +}
-> +
-> +#define RTL_MIN_PATCH_LEN      47
-> +#define PTP_GEN_PORT           320
+BUILD_BUG_ON( skc_tx_queue_mapping is in the no copy area)
 
-Why the two PTP ports? The report is not PTP specific. Also, what does
-patch mean in this context?
+Because maintainers do not remember changelogs in their mind.
 
-> +
-> +/* see rtl8125_get_patch_pad_len() in r8125 vendor driver */
-> +static unsigned int rtl8125_quirk_udp_padto(struct rtl8169_private *tp,
-> +                                           struct sk_buff *skb)
-> +{
-> +       unsigned int padto = 0, len = skb->len;
-> +
-> +       if (rtl_is_8125(tp) && len < 175 && rtl_skb_is_udp(skb) &&
-> +           skb_transport_header_was_set(skb)) {
 
-What is 175 here?
-
-> +               unsigned int trans_data_len = skb_tail_pointer(skb) -
-> +                                             skb_transport_header(skb);
-> +
-> +               if (trans_data_len > 3 && trans_data_len < RTL_MIN_PATCH_LEN) {
-
-And 3 here, instead of sizeof(struct udphdr)
-
-> +                       u16 dest = ntohs(udp_hdr(skb)->dest);
-> +
-> +                       if (dest == PTP_EV_PORT || dest == PTP_GEN_PORT)
-> +                               padto = len + RTL_MIN_PATCH_LEN - trans_data_len;
-> +               }
-> +
-> +               if (trans_data_len < UDP_HLEN)
-> +                       padto = max(padto, len + UDP_HLEN - trans_data_len);
-> +       }
-> +
-> +       return padto;
-> +}
-> +
-> +static unsigned int rtl_quirk_packet_padto(struct rtl8169_private *tp,
-> +                                          struct sk_buff *skb)
-> +{
-> +       unsigned int padto;
-> +
-> +       padto = rtl8125_quirk_udp_padto(tp, skb);
-> +
->         switch (tp->mac_version) {
->         case RTL_GIGA_MAC_VER_34:
->         case RTL_GIGA_MAC_VER_60:
->         case RTL_GIGA_MAC_VER_61:
->         case RTL_GIGA_MAC_VER_63:
-> -               return true;
-> +               padto = max_t(unsigned int, padto, ETH_ZLEN);
->         default:
-> -               return false;
-> +               break;
->         }
-> +
-> +       return padto;
->  }
 >
->  static void rtl8169_tso_csum_v1(struct sk_buff *skb, u32 *opts)
-> @@ -4089,9 +4137,10 @@ static bool rtl8169_tso_csum_v2(struct rtl8169_private *tp,
 >
->                 opts[1] |= transport_offset << TCPHO_SHIFT;
->         } else {
-> -               if (unlikely(skb->len < ETH_ZLEN && rtl_test_hw_pad_bug(tp)))
-> -                       /* eth_skb_pad would free the skb on error */
-> -                       return !__skb_put_padto(skb, ETH_ZLEN, false);
-> +               unsigned int padto = rtl_quirk_packet_padto(tp, skb);
-> +
-> +               /* skb_padto would free the skb on error */
-> +               return !__skb_put_padto(skb, padto, false);
->         }
+> > You can not ask us (maintainers) to remember thousands of tricks.
 >
->         return true;
-> @@ -4268,6 +4317,9 @@ static netdev_features_t rtl8169_features_check(struct sk_buff *skb,
->                 if (skb->len < ETH_ZLEN)
->                         features &= ~NETIF_F_CSUM_MASK;
+> I'll keep this in mind.
 >
-> +               if (rtl_quirk_packet_padto(tp, skb))
-> +                       features &= ~NETIF_F_CSUM_MASK;
-> +
->                 if (transport_offset > TCPHO_MAX &&
->                     rtl_chip_supports_csum_v2(tp))
->                         features &= ~NETIF_F_CSUM_MASK;
-> --
-> 2.30.0
 >
+> > >
+> > > But I agree that we should not write error-prone code.
+> > >
+> > > Currently, sk_tx_queue_clear() is the only initialization code in
+> > > sk_prot_alloc(). So, does it make sense to remove sk_tx_queue_clear() in
+> > > sk_prot_alloc() so that it does only allocation and other fields are
+> > > initialized in each caller ?
+>
+> Can I ask what you think about this ?
+
+Yes, this would be fine.
+
+>
+>
+> > > > >
+> > > > > [1] sk_prot_alloc
+> > > > > https://github.com/torvalds/linux/blob/master/net/core/sock.c#L1693
+> > > > >
+> > > > > [2] sk_alloc
+> > > > > https://github.com/torvalds/linux/blob/master/net/core/sock.c#L1762
+> > > > >
+> > > > > [3] sk_clone_lock
+> > > > > https://github.com/torvalds/linux/blob/master/net/core/sock.c#L1986
+> > > > >
+> > > > > [4] struct sock_common
+> > > > > https://github.com/torvalds/linux/blob/master/include/net/sock.h#L218-L240
+> > > > >
+> > > > >
+> > > > > > In any case, this seems to be a candidate for net-next, this is not
+> > > > > > fixing a bug,
+> > > > > > this would be an optimization at most, and potentially adding a bug.
+> > > > > >
+> > > > > > So if you resend this patch, you can mention the old commit in the changelog,
+> > > > > > but do not add a dubious Fixes: tag
+> > > > >
+> > > > > I see.
+> > > > >
+> > > > > I will remove the tag and resend this as a net-next candidate.
+> > > > >
+> > > > > Thank you,
+> > > > > Kuniyuki
+> > > > >
+> > > > >
+> > > > > > >
+> > > > > > > This patch removes the redundant calls of sk_tx_queue_clear() in sk_alloc()
+> > > > > > > and sk_clone_lock().
+> > > > > > >
+> > > > > > > Fixes: 41b14fb8724d ("net: Do not clear the sock TX queue in sk_set_socket()")
+> > > > > > > CC: Tariq Toukan <tariqt@mellanox.com>
+> > > > > > > CC: Boris Pismenny <borisp@mellanox.com>
+> > > > > > > Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+> > > > > > > Reviewed-by: Amit Shah <aams@amazon.de>
+> > > > > > > ---
+> > > > > > >  net/core/sock.c | 2 --
+> > > > > > >  1 file changed, 2 deletions(-)
+> > > > > > >
+> > > > > > > diff --git a/net/core/sock.c b/net/core/sock.c
+> > > > > > > index bbcd4b97eddd..5c665ee14159 100644
+> > > > > > > --- a/net/core/sock.c
+> > > > > > > +++ b/net/core/sock.c
+> > > > > > > @@ -1759,7 +1759,6 @@ struct sock *sk_alloc(struct net *net, int family, gfp_t priority,
+> > > > > > >                 cgroup_sk_alloc(&sk->sk_cgrp_data);
+> > > > > > >                 sock_update_classid(&sk->sk_cgrp_data);
+> > > > > > >                 sock_update_netprioidx(&sk->sk_cgrp_data);
+> > > > > > > -               sk_tx_queue_clear(sk);
+> > > > > > >         }
+> > > > > > >
+> > > > > > >         return sk;
+> > > > > > > @@ -1983,7 +1982,6 @@ struct sock *sk_clone_lock(const struct sock *sk, const gfp_t priority)
+> > > > > > >                  */
+> > > > > > >                 sk_refcnt_debug_inc(newsk);
+> > > > > > >                 sk_set_socket(newsk, NULL);
+> > > > > > > -               sk_tx_queue_clear(newsk);
+> > > > > > >                 RCU_INIT_POINTER(newsk->sk_wq, NULL);
+> > > > > > >
+> > > > > > >                 if (newsk->sk_prot->sockets_allocated)
+> > > > > > > --
+> > > > > > > 2.17.2 (Apple Git-113)
+> > > > > > >
