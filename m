@@ -2,91 +2,156 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 65633305BC1
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 13:42:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 9E49C305B9F
+	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 13:38:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232021AbhA0MlY (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 07:41:24 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47728 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238016AbhA0Mdv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 07:33:51 -0500
-Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EF28C061573;
-        Wed, 27 Jan 2021 04:33:11 -0800 (PST)
-Received: by mail-pg1-x543.google.com with SMTP id t25so1501298pga.2;
-        Wed, 27 Jan 2021 04:33:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=kRzDbqZN9OlxFVagsejaEFON9zt2dveik1IQvfbxWeg=;
-        b=BjSw9thy+mArYh2NbfoQMLCR8XdISs+TSFKvwKruh3BP8WWp3ZFpB+N0Ik0vhxCbri
-         qbp9WGjsLsMLNy4/hdsJc3zkBRqhIeuzu/Q3tRCkTNl1iLBwBxAFR4ROUQYmFUOquKI8
-         IfLlwSp2Fpa5cxrKTd9YB7TghA/PeJHwYRiXIuUoQzTLWYdPn1SqTkSD1t+5qlAtuxBD
-         rzkF20LGunXJ0lY59oTvdZjJU4kCg49j/KzEwl0m5bLqxHbdQWQTSdNaXYi2ujmL0GlX
-         XkhRgOtajnF89tFlb5mLy+ACs3Zh1HDucsoFzE3af0r2X5QaonSOVV+YkFUFk288VtqS
-         ftPg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=kRzDbqZN9OlxFVagsejaEFON9zt2dveik1IQvfbxWeg=;
-        b=Tu1E/1jQ3lizxMCZkGMx08voowe8kvO+reIspwJ1Fj0Gk5R+bv8ca1uZStnR6KHKPm
-         i+jQVHCKGI0f1OLk2ERChrQak9RaL31LHrID8JycbIDzeCiyebv1SclIYAfKnC/KlpBG
-         FqDfXuqgDffsAUijorj9O5EzQMrbxYjvhcnbeoLAsz52v4nLUh0m3gFzvzPlZij8tIAI
-         ZIOkQ1dZ2b97vwcrg7ujwNsY2NnZxJvU/X+ashOLGcHfCjNNTVhP0FzqYqtT5q+gMHqb
-         WhV8ULQmHMVZnzsGrx9/YsNjnA11dNmwLmEAuL0fPJUaD1yZO9DHe1fSgJmugauz9PpY
-         L4lw==
-X-Gm-Message-State: AOAM530GcpPZmU3CTFh0kpUdTW3KtvCUBY3v6o+/fV5zbM+tHq2IejK5
-        Gb7DFrGc8onY1tVoz016lYk=
-X-Google-Smtp-Source: ABdhPJzZjzOr4CgH1ODLt91pBU+Ap5GoVT9mDW4HZxuj375aIn+Ny3qD9RfyOgnQRRjQzPWdtbV7ng==
-X-Received: by 2002:a63:fd01:: with SMTP id d1mr10710864pgh.319.1611750790908;
-        Wed, 27 Jan 2021 04:33:10 -0800 (PST)
-Received: from localhost.localdomain ([178.236.46.205])
-        by smtp.gmail.com with ESMTPSA id j19sm2486784pfn.14.2021.01.27.04.33.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Jan 2021 04:33:10 -0800 (PST)
-From:   menglong8.dong@gmail.com
-X-Google-Original-From: dong.menglong@zte.com.cn
-To:     kuba@kernel.org
-Cc:     davem@davemloft.net, willemb@google.com, dong.menglong@zte.com.cn,
-        tannerlove@google.com, john.ogness@linutronix.de,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next] net: packet: make pkt_sk() inline
-Date:   Wed, 27 Jan 2021 04:33:02 -0800
-Message-Id: <20210127123302.29842-1-dong.menglong@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        id S1343628AbhA0Mio (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 07:38:44 -0500
+Received: from fllv0016.ext.ti.com ([198.47.19.142]:48176 "EHLO
+        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1343561AbhA0MgD (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 07:36:03 -0500
+Received: from lelv0265.itg.ti.com ([10.180.67.224])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 10RCZ3JC128270;
+        Wed, 27 Jan 2021 06:35:03 -0600
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1611750903;
+        bh=qabvSZkOO7Bgd0+5fJBGInSldiOFFnkGAcK+2VB0AXg=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=KBDNLjPwRKrLZU1e9U7O8mRhfRZ7omTjyeb5ZbYE/2aHhetjihZBnFLc4MFMGqFlt
+         yneDLKSJeuFuk6/oeVOarGJOTHWFtg9HQhxpv6HtughMAERiEDgPP3aXS0udrc00tq
+         e96cy5dqPr6QjB4KMZoa1czK8tUYoO72dOZAcb4U=
+Received: from DFLE102.ent.ti.com (dfle102.ent.ti.com [10.64.6.23])
+        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 10RCZ2t1079260
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 27 Jan 2021 06:35:03 -0600
+Received: from DFLE115.ent.ti.com (10.64.6.36) by DFLE102.ent.ti.com
+ (10.64.6.23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Wed, 27
+ Jan 2021 06:35:02 -0600
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE115.ent.ti.com
+ (10.64.6.36) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Wed, 27 Jan 2021 06:35:02 -0600
+Received: from [10.250.235.36] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 10RCYwqO016143;
+        Wed, 27 Jan 2021 06:34:59 -0600
+Subject: Re: [PATCH v12 2/4] phy: Add ethernet serdes configuration option
+To:     Steen Hegelund <steen.hegelund@microchip.com>,
+        Vinod Koul <vkoul@kernel.org>
+CC:     Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Lars Povlsen <lars.povlsen@microchip.com>,
+        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
+        Microchip UNG Driver List <UNGLinuxDriver@microchip.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Andrew Lunn <andrew@lunn.ch>
+References: <20210107091924.1569575-1-steen.hegelund@microchip.com>
+ <20210107091924.1569575-3-steen.hegelund@microchip.com>
+ <92a943cc-b332-4ac6-42a8-bb3cdae13bc0@ti.com>
+ <f35e3c33f011b6aabd96d3b6de3750bf3d04b699.camel@microchip.com>
+From:   Kishon Vijay Abraham I <kishon@ti.com>
+Message-ID: <70aa5716-bd14-0a0a-26bc-d3dfa23de47e@ti.com>
+Date:   Wed, 27 Jan 2021 18:04:53 +0530
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
+In-Reply-To: <f35e3c33f011b6aabd96d3b6de3750bf3d04b699.camel@microchip.com>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Menglong Dong <dong.menglong@zte.com.cn>
+Hi Steen,
 
-It's better make 'pkt_sk()' inline here, as non-inline function
-shouldn't occur in headers. Besides, this function is simple
-enough to be inline.
+On 15/01/21 9:44 pm, Steen Hegelund wrote:
+> Hi Kishon,
+> 
+> On Fri, 2021-01-15 at 21:22 +0530, Kishon Vijay Abraham I wrote:
+>> EXTERNAL EMAIL: Do not click links or open attachments unless you
+>> know the content is safe
+>>
+>> Hi,
+>>
+>> On 07/01/21 2:49 pm, Steen Hegelund wrote:
+>>> Provide a new ethernet phy configuration structure, that
+>>> allow PHYs used for ethernet to be configured with
+>>> speed, media type and clock information.
+>>>
+>>> Signed-off-by: Lars Povlsen <lars.povlsen@microchip.com>
+>>> Signed-off-by: Steen Hegelund <steen.hegelund@microchip.com>
+>>> Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+>>> ---
+>>>  include/linux/phy/phy-ethernet-serdes.h | 30
+>>> +++++++++++++++++++++++++
+>>>  include/linux/phy/phy.h                 |  4 ++++
+>>>  2 files changed, 34 insertions(+)
+>>>  create mode 100644 include/linux/phy/phy-ethernet-serdes.h
+>>>
+>>> diff --git a/include/linux/phy/phy-ethernet-serdes.h
+>>> b/include/linux/phy/phy-ethernet-serdes.h
+>>> new file mode 100644
+>>> index 000000000000..d2462fadf179
+>>> --- /dev/null
+>>> +++ b/include/linux/phy/phy-ethernet-serdes.h
+>>> @@ -0,0 +1,30 @@
+>>> +/* SPDX-License-Identifier: (GPL-2.0 OR MIT) */
+>>> +/*
+>>> + * Microchip Sparx5 Ethernet SerDes driver
+>>> + *
+>>> + * Copyright (c) 2020 Microschip Inc
+>>> + */
+>>> +#ifndef __PHY_ETHERNET_SERDES_H_
+>>> +#define __PHY_ETHERNET_SERDES_H_
+>>> +
+>>> +#include <linux/types.h>
+>>> +
+>>> +enum ethernet_media_type {
+>>> +     ETH_MEDIA_DEFAULT,
+>>> +     ETH_MEDIA_SR,
+>>> +     ETH_MEDIA_DAC,
+>>> +};
+>>
+>> I'm not familiar with Ethernet. Are these generic media types? what
+>> does
+>> SR or DAC refer to? 
+> 
+> The SR stands for Short Reach and is a fiber type connection used by
+> SFPs.  There also other "reach" variants.
+> 
+> DAC stands for Direct Attach Copper and is a type of cable that plugs
+> into an SFP cage and provides information back to the user via its
+> EEPROM regarding supported speed and capabilities in general.  These
+> typically supports speed of 5G or more.
+> 
+> The SFP/Phylink is the "out-of-band" method that provides the type of
+> connection: speed and media type that allows the client to adapt the
+> SerDes configuration to the type of media selected by the user.
+> 
+>> Are there other media types? What is the out-of-band
+>> mechanism by which the controller gets the media type? Why was this
+>> not
+>> required for other existing Ethernet SERDES? 
+> 
+> This is probably a matter of the interface speed are now getting higher
+> and the amount of configuration needed for the SerDes have increased,
+> at the same time as this is not being a static setup, because the user
+> an plug and unplug media to the SFP cage.
+> 
+>> Are you aware of any other
+>> vendors who might require this?
+> 
+> I suspect that going forward it will become more widespread, at least
+> we have more chips in the pipeline that need this SerDes for high speed
+> connectivity.
 
-Signed-off-by: Menglong Dong <dong.menglong@zte.com.cn>
----
- net/packet/internal.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+For this case I would recommend to add new API, something like
+phy_set_media(). Configure() and Validate() is more for probing
+something that is supported by SERDES and changing the parameters. But
+in this case, I'd think the media type is determined by the cable that
+is connected and cannot be changed.
 
-diff --git a/net/packet/internal.h b/net/packet/internal.h
-index baafc3f3fa25..5f61e59ebbff 100644
---- a/net/packet/internal.h
-+++ b/net/packet/internal.h
-@@ -139,7 +139,7 @@ struct packet_sock {
- 	atomic_t		tp_drops ____cacheline_aligned_in_smp;
- };
- 
--static struct packet_sock *pkt_sk(struct sock *sk)
-+static inline struct packet_sock *pkt_sk(struct sock *sk)
- {
- 	return (struct packet_sock *)sk;
- }
--- 
-2.25.1
-
+Thanks
+Kishon
