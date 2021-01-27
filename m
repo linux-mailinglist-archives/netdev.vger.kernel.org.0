@@ -2,102 +2,155 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A2CE130568C
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 10:10:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1BDFA3056AB
+	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 10:19:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234944AbhA0JJS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 04:09:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59674 "EHLO
+        id S233813AbhA0JSK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 04:18:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60144 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229739AbhA0JGL (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 04:06:11 -0500
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B178C0613D6
-        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 01:05:27 -0800 (PST)
-Received: by mail-ej1-x635.google.com with SMTP id g3so1574246ejb.6
-        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 01:05:27 -0800 (PST)
+        with ESMTP id S235002AbhA0JIR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 04:08:17 -0500
+Received: from mail-qv1-xf29.google.com (mail-qv1-xf29.google.com [IPv6:2607:f8b0:4864:20::f29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF65DC061573
+        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 01:07:36 -0800 (PST)
+Received: by mail-qv1-xf29.google.com with SMTP id ew18so728409qvb.4
+        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 01:07:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
+        d=google.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=1cKX8iM9GfIwp3iWhIP0IMjvaZHjaGZCSMrVEhD7T88=;
-        b=1jMds5YokoSy+mP/C2h/9hc2WV5cnHoR6ZD2ppQeqWqiAK997Riz8FhDmu+DGDechp
-         gjnqmgc1cnQgZF/WUkK2FR29t7kAXmGtEYXp5+rufhwYJ8Xf2WEVhCP4LrMJY13E/Do8
-         aYHhERM77qyzqmt8n7wTLPJTaDNjHdwbt+OvfSJpyIgArSUqqcubq2OcZZHVptseesUi
-         OTDubONbN710b58DXVm+XIQp4kW/ETH5HJsitq0Uu3a9cFaitNOsgCg/FlzNBSU5ygTq
-         BJJcMG8zmI0HJdIkvuILgRALkIOXsSWQdHvU/XA5npR/zyoTKpOIG2CjQLLnRw3dpai7
-         SGcw==
+        bh=ojatvgsT6qhPsCx+84g/LqVuYvjOpYlJdnYfJVXgmNM=;
+        b=IDLyEvFpAK4edikJm1dUws0+40odYZAWQlcOTmJMSNRX2tT/CfQdFdUiZy+5feZdKO
+         4b2y0rwbNApyfPjitJxG1cMYOSobUsip/BRySqJmsUYQfrBER7ubhDc6wU/aK98oscTY
+         5udo1iYyTLoQFrUbXYoLWYOh+HCqHaXzpPVo/r3WlrzohrkZxghPzaAQPUjKSqeFHXfc
+         I1ds3OGZtq/4fzOQTUe6eg+yhMFPiDk5bKDUs1VRte3v94EIuyUM4w0vURutxIZCcslE
+         10IlMbwmxTMLkdndGtMAINQO331OFwEIYB6LPm9K//f8Sfvhg45sTws1brYDHgPz98es
+         C2Aw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=1cKX8iM9GfIwp3iWhIP0IMjvaZHjaGZCSMrVEhD7T88=;
-        b=qDUujY6XauV79pkRVi1wN2J2EKtfe7vAJAYmCgvh9obfiPtEm/3GrMomBPaWWF4172
-         roG5+1fn4ALscd3Z0vpNKIyczjYTjpHrGblTO/B1XI65Jj9brxuIfZXbCNM5nNh+8yR1
-         Z1a6E8+3v3He8aTzExZMdb7gVOswQDcTsm9EkaLn7b8wpNcc8/Xxhr10vCQ7nIS/DXRF
-         jE3aVWnulnHq/5FSdueyBwh6PFAj/nn6+xE6wehVzTf8DjbRcJLPxJRLacN0rVdphXz5
-         laYy8El/xfjSo53cRpSTDtW1kNcpO/Cpvcu3gqv1pwaO9+64MJAasj6pqbFznoO93h61
-         lYkg==
-X-Gm-Message-State: AOAM533/e2BL9I2Pno7Puy43d4E8SiIrusVRpsjMMjOYXBkgQWFEXYQx
-        KdpN78Ht8ekXwwdQIgd3istk0GfMT9QzBzXRPEVE
-X-Google-Smtp-Source: ABdhPJw/027lJPRpOGbG/CRbPbAoFxXfwKa4AyPatLdEfg8mNIIO5XeJfOtECi9zTDVojiBvT2wO7RJ8cv2A/fhON3I=
-X-Received: by 2002:a17:907:1629:: with SMTP id hb41mr5832257ejc.197.1611738326022;
- Wed, 27 Jan 2021 01:05:26 -0800 (PST)
+        bh=ojatvgsT6qhPsCx+84g/LqVuYvjOpYlJdnYfJVXgmNM=;
+        b=U0JoVnr9dBlns43J/RNaSOge7l6qXMfqcZTKtv1lf+DtiiarWNvhcuOPXtX+oP6/aH
+         g7tTCheHyOHnMFlX1YabhgU4x3zsKCMaUJASFXGtGDXbdPGpUCAVDoJ4sR1dMQQeGFp1
+         +/DYUOA9pfsVrNYW2vIE0YkyCFcsIANr4iXo/0b4w5g/awild9orh1ffZ1rtXtYJmLRc
+         IcAIH08Mq6ek6lZJrdvOF/HukFe5I5et7x4GfeAnC3dibfc3h5QRJMVRGO1aXzHJrLlj
+         nbUkuV7KlVvmBlyWiOVgz0tAbOqhSKLiQH6EAjCODyUJzV3BS/wLWuLqLj+W6HSrP1gZ
+         egrg==
+X-Gm-Message-State: AOAM533geXRitPY5ClGjk7wUz43lrEJgSwCX0Lxqb8gJTO8hlix5KmnO
+        U7iOyX34E3fbiIGtePDq8fEiP8C+u8RriyfOw7nnSQ==
+X-Google-Smtp-Source: ABdhPJz4+zBSpVcTkNT8qQF1hSDyvVRWGCQxVUDrDBShe7rfFvnKPUr/jF1N9a1t5snQ1jFBTdxRySVENsLcu0xvxy8=
+X-Received: by 2002:a0c:ab16:: with SMTP id h22mr9268036qvb.44.1611738455673;
+ Wed, 27 Jan 2021 01:07:35 -0800 (PST)
 MIME-Version: 1.0
-References: <20210119045920.447-1-xieyongji@bytedance.com> <20210119045920.447-4-xieyongji@bytedance.com>
- <20210127085924.ktgmsgn6k3zegd67@steredhat>
-In-Reply-To: <20210127085924.ktgmsgn6k3zegd67@steredhat>
-From:   Yongji Xie <xieyongji@bytedance.com>
-Date:   Wed, 27 Jan 2021 17:05:14 +0800
-Message-ID: <CACycT3vE57-ac7vSmyxO_E_BAPSnwEHGuoX=B7UWHn5uxzPJNg@mail.gmail.com>
-Subject: Re: Re: [RFC v3 03/11] vdpa: Remove the restriction that only
- supports virtio-net devices
-To:     Stefano Garzarella <sgarzare@redhat.com>
-Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        Stefan Hajnoczi <stefanha@redhat.com>,
-        Parav Pandit <parav@nvidia.com>, Bob Liu <bob.liu@oracle.com>,
-        Christoph Hellwig <hch@infradead.org>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Matthew Wilcox <willy@infradead.org>, viro@zeniv.linux.org.uk,
-        axboe@kernel.dk, bcrl@kvack.org, Jonathan Corbet <corbet@lwn.net>,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        kvm@vger.kernel.org, linux-aio@kvack.org,
-        linux-fsdevel@vger.kernel.org
+References: <000000000000dfc44f05b9d2e864@google.com> <20210127054509.2187-1-hdanton@sina.com>
+In-Reply-To: <20210127054509.2187-1-hdanton@sina.com>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Wed, 27 Jan 2021 10:07:24 +0100
+Message-ID: <CACT4Y+aTkZZn7BCbn5HPph_9wjw6vtz5Qo6+c933Rgf-nq5BMA@mail.gmail.com>
+Subject: Re: upstream test error: INFO: trying to register non-static key in nsim_get_stats64
+To:     Hillf Danton <hdanton@sina.com>
+Cc:     syzbot <syzbot+e74a6857f2d0efe3ad81@syzkaller.appspotmail.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>, kpsingh@kernel.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 27, 2021 at 4:59 PM Stefano Garzarella <sgarzare@redhat.com> wrote:
+On Wed, Jan 27, 2021 at 6:45 AM Hillf Danton <hdanton@sina.com> wrote:
 >
-> On Tue, Jan 19, 2021 at 12:59:12PM +0800, Xie Yongji wrote:
-> >With VDUSE, we should be able to support all kinds of virtio devices.
+> Tue, 26 Jan 2021 11:46:24 -0800
+> > syzbot found the following issue on:
 > >
-> >Signed-off-by: Xie Yongji <xieyongji@bytedance.com>
-> >---
-> > drivers/vhost/vdpa.c | 29 +++--------------------------
-> > 1 file changed, 3 insertions(+), 26 deletions(-)
+> > HEAD commit:    c7230a48 Merge tag 'spi-fix-v5.11-rc5' of git://git.kernel..
+> > git tree:       upstream
+> > console output: https://syzkaller.appspot.com/x/log.txt?x=17731f94d00000
+> > kernel config:  https://syzkaller.appspot.com/x/.config?x=9c312983a0475388
+> > dashboard link: https://syzkaller.appspot.com/bug?extid=e74a6857f2d0efe3ad81
+> > userspace arch: arm
 > >
-> >diff --git a/drivers/vhost/vdpa.c b/drivers/vhost/vdpa.c
-> >index 29ed4173f04e..448be7875b6d 100644
-> >--- a/drivers/vhost/vdpa.c
-> >+++ b/drivers/vhost/vdpa.c
-> >@@ -22,6 +22,7 @@
-> > #include <linux/nospec.h>
-> > #include <linux/vhost.h>
-> > #include <linux/virtio_net.h>
-> >+#include <linux/virtio_blk.h>
+> > IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> > Reported-by: syzbot+e74a6857f2d0efe3ad81@syzkaller.appspotmail.com
+> >
+> > batman_adv: batadv0: Not using interface batadv_slave_1 (retrying later): interface not active
+> > device hsr_slave_0 entered promiscuous mode
+> > device hsr_slave_1 entered promiscuous mode
+> >
+> > INFO: trying to register non-static key.
+> > the code is fine but needs lockdep annotation.
+> > turning off the locking correctness validator.
+> > CPU: 0 PID: 4695 Comm: syz-executor.0 Not tainted 5.11.0-rc5-syzkaller #0
+> > Hardware name: ARM-Versatile Express
+> > Backtrace:
+> > [<826fc5b8>] (dump_backtrace) from [<826fc82c>] (show_stack+0x18/0x1c arch/arm/kernel/traps.c:252)
+> > [<826fc814>] (show_stack) from [<8270d1f8>] (__dump_stack lib/dump_stack.c:79 [inline])
+> > [<826fc814>] (show_stack) from [<8270d1f8>] (dump_stack+0xa8/0xc8 lib/dump_stack.c:120)
+> > [<8270d150>] (dump_stack) from [<802bf9c0>] (assign_lock_key kernel/locking/lockdep.c:935 [inline])
+> > [<8270d150>] (dump_stack) from [<802bf9c0>] (register_lock_class+0xabc/0xb68 kernel/locking/lockdep.c:1247)
+> > [<802bef04>] (register_lock_class) from [<802baa2c>] (__lock_acquire+0x84/0x32d4 kernel/locking/lockdep.c:4711)
+> > [<802ba9a8>] (__lock_acquire) from [<802be840>] (lock_acquire.part.0+0xf0/0x554 kernel/locking/lockdep.c:5442)
+> > [<802be750>] (lock_acquire.part.0) from [<802bed10>] (lock_acquire+0x6c/0x74 kernel/locking/lockdep.c:5415)
+> > [<802beca4>] (lock_acquire) from [<81560548>] (seqcount_lockdep_reader_access include/linux/seqlock.h:103 [inline])
+> > [<802beca4>] (lock_acquire) from [<81560548>] (__u64_stats_fetch_begin include/linux/u64_stats_sync.h:164 [inline])
+> > [<802beca4>] (lock_acquire) from [<81560548>] (u64_stats_fetch_begin include/linux/u64_stats_sync.h:175 [inline])
+> > [<802beca4>] (lock_acquire) from [<81560548>] (nsim_get_stats64+0xdc/0xf0 drivers/net/netdevsim/netdev.c:70)
+> > [<8156046c>] (nsim_get_stats64) from [<81e2efa0>] (dev_get_stats+0x44/0xd0 net/core/dev.c:10405)
+> > [<81e2ef5c>] (dev_get_stats) from [<81e53204>] (rtnl_fill_stats+0x38/0x120 net/core/rtnetlink.c:1211)
+> > [<81e531cc>] (rtnl_fill_stats) from [<81e59d58>] (rtnl_fill_ifinfo+0x6d4/0x148c net/core/rtnetlink.c:1783)
+> > [<81e59684>] (rtnl_fill_ifinfo) from [<81e5ceb4>] (rtmsg_ifinfo_build_skb+0x9c/0x108 net/core/rtnetlink.c:3798)
+> > [<81e5ce18>] (rtmsg_ifinfo_build_skb) from [<81e5d0ac>] (rtmsg_ifinfo_event net/core/rtnetlink.c:3830 [inline])
+> > [<81e5ce18>] (rtmsg_ifinfo_build_skb) from [<81e5d0ac>] (rtmsg_ifinfo_event net/core/rtnetlink.c:3821 [inline])
+> > [<81e5ce18>] (rtmsg_ifinfo_build_skb) from [<81e5d0ac>] (rtmsg_ifinfo+0x44/0x70 net/core/rtnetlink.c:3839)
+> > [<81e5d068>] (rtmsg_ifinfo) from [<81e45c2c>] (register_netdevice+0x664/0x68c net/core/dev.c:10103)
+> > [<81e455c8>] (register_netdevice) from [<815608bc>] (nsim_create+0xf8/0x124 drivers/net/netdevsim/netdev.c:317)
+> > [<815607c4>] (nsim_create) from [<81561184>] (__nsim_dev_port_add+0x108/0x188 drivers/net/netdevsim/dev.c:941)
+> > [<8156107c>] (__nsim_dev_port_add) from [<815620d8>] (nsim_dev_port_add_all drivers/net/netdevsim/dev.c:990 [inline])
+> > [<8156107c>] (__nsim_dev_port_add) from [<815620d8>] (nsim_dev_probe+0x5cc/0x750 drivers/net/netdevsim/dev.c:1119)
+> > [<81561b0c>] (nsim_dev_probe) from [<815661dc>] (nsim_bus_probe+0x10/0x14 drivers/net/netdevsim/bus.c:287)
+> > [<815661cc>] (nsim_bus_probe) from [<811724c0>] (really_probe+0x100/0x50c drivers/base/dd.c:554)
+> > [<811723c0>] (really_probe) from [<811729c4>] (driver_probe_device+0xf8/0x1c8 drivers/base/dd.c:740)
+> > [<811728cc>] (driver_probe_device) from [<81172fe4>] (__device_attach_driver+0x8c/0xf0 drivers/base/dd.c:846)
+> > [<81172f58>] (__device_attach_driver) from [<8116fee0>] (bus_for_each_drv+0x88/0xd8 drivers/base/bus.c:431)
+> > [<8116fe58>] (bus_for_each_drv) from [<81172c6c>] (__device_attach+0xdc/0x1d0 drivers/base/dd.c:914)
+> > [<81172b90>] (__device_attach) from [<8117305c>] (device_initial_probe+0x14/0x18 drivers/base/dd.c:961)
+> > [<81173048>] (device_initial_probe) from [<81171358>] (bus_probe_device+0x90/0x98 drivers/base/bus.c:491)
+> > [<811712c8>] (bus_probe_device) from [<8116e77c>] (device_add+0x320/0x824 drivers/base/core.c:3109)
+> > [<8116e45c>] (device_add) from [<8116ec9c>] (device_register+0x1c/0x20 drivers/base/core.c:3182)
+> > [<8116ec80>] (device_register) from [<81566710>] (nsim_bus_dev_new drivers/net/netdevsim/bus.c:336 [inline])
+> > [<8116ec80>] (device_register) from [<81566710>] (new_device_store+0x178/0x208 drivers/net/netdevsim/bus.c:215)
+> > [<81566598>] (new_device_store) from [<8116fcb4>] (bus_attr_store+0x2c/0x38 drivers/base/bus.c:122)
+> > [<8116fc88>] (bus_attr_store) from [<805b4b8c>] (sysfs_kf_write+0x48/0x54 fs/sysfs/file.c:139)
+> > [<805b4b44>] (sysfs_kf_write) from [<805b3c90>] (kernfs_fop_write_iter+0x128/0x1ec fs/kernfs/file.c:296)
+> > [<805b3b68>] (kernfs_fop_write_iter) from [<804d22fc>] (call_write_iter include/linux/fs.h:1901 [inline])
+> > [<805b3b68>] (kernfs_fop_write_iter) from [<804d22fc>] (new_sync_write fs/read_write.c:518 [inline])
+> > [<805b3b68>] (kernfs_fop_write_iter) from [<804d22fc>] (vfs_write+0x3dc/0x57c fs/read_write.c:605)
+> > [<804d1f20>] (vfs_write) from [<804d2604>] (ksys_write+0x68/0xec fs/read_write.c:658)
+> > [<804d259c>] (ksys_write) from [<804d2698>] (__do_sys_write fs/read_write.c:670 [inline])
+> > [<804d259c>] (ksys_write) from [<804d2698>] (sys_write+0x10/0x14 fs/read_write.c:667)
+> > [<804d2688>] (sys_write) from [<80200060>] (ret_fast_syscall+0x0/0x2c arch/arm/mm/proc-v7.S:64)
 >
-> Is this inclusion necessary?
+> Init u64 stats for aa32.
 >
-
-My mistake...
-
-> Maybe we can remove virtio_net.h as well.
 >
+> --- a/drivers/net/netdevsim/netdev.c
+> +++ b/drivers/net/netdevsim/netdev.c
+> @@ -296,6 +296,7 @@ nsim_create(struct nsim_dev *nsim_dev, s
+>         dev_net_set(dev, nsim_dev_net(nsim_dev));
+>         ns = netdev_priv(dev);
+>         ns->netdev = dev;
+> +       u64_stats_init(&ns->syncp);
+>         ns->nsim_dev = nsim_dev;
+>         ns->nsim_dev_port = nsim_dev_port;
+>         ns->nsim_bus_dev = nsim_dev->nsim_bus_dev;
 
-Agree.
+Hi Hillf,
 
-Thanks,
-Yongji
+Thanks for looking into it.
+This would be good to fix asap upstream because it boot-breaks 32-bit
+arches (arm32). Do you mind sending a proper patch?
