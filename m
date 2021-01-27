@@ -2,146 +2,229 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6CDA1306168
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 17:59:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 119C930615D
+	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 17:56:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234279AbhA0Q7J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 11:59:09 -0500
-Received: from mail-il1-f197.google.com ([209.85.166.197]:38265 "EHLO
-        mail-il1-f197.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234263AbhA0Q5E (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 11:57:04 -0500
-Received: by mail-il1-f197.google.com with SMTP id p14so2189648ilb.5
-        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 08:56:48 -0800 (PST)
+        id S234324AbhA0Qyv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 11:54:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47540 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233925AbhA0QyT (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 11:54:19 -0500
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 93D57C061573
+        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 08:53:38 -0800 (PST)
+Received: by mail-wr1-x433.google.com with SMTP id p15so2625146wrq.8
+        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 08:53:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id;
+        bh=Bfd8ZrqYLleMnZ9WSg0Zx5WTuCO4cMXNGVPsnFmssQw=;
+        b=HXICIs76q4gkZ7vHbuwRlFDK7GVp8XMiqzJaGBebJ7wQLQKFWEp7MmoVkOL//Wv1KL
+         W/qsHQn/vEvI2jwC36O5pU8jLDdebab+21Ge3buKALH2IDO50ZKEpmss8sDONG0EDveY
+         KdEPGIhWhuD3QJVuN3NGv2Yuv3P6dyR3LlcJWr4bvlV+O48mxi/QG5UrDr3I100QHLuC
+         g7j7CpZu4jLNQbEo84rvDHMEB0Jfkr05f4sSJYR5weA80+CUxPtFeRFPjzH+zg0+GcFJ
+         G0AvZOHnNjjbIbt/798Zrs84ECtty6of7tAwp5EtXioe9OncygaP126Nbh9Y1P7NajHg
+         Ac/A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:date:message-id:subject:from:to;
-        bh=l/aVeDKTBQ9QZ6G/vbWHBu+UX2b0yRaS/S8fyUsx9vQ=;
-        b=DRHxoP9Ga3sTWh/FMGTOQ5P0lLiCO8eXpoDSydtYZwLAUyLd0vUDs0i0mOcSV9wDnl
-         t8fsNohmptRAAH9cEFmjTE2AFguMIRR+nRtSIESJJ0r+PP8Z1mXPK+c3RMZVwDQFA+s3
-         10nWRMFbKc43/UUQIB34e4v/igdrm+uFWBl0f2K2zBChJ6uUrI6HOFq7tC9uztp3SI4v
-         2QSzSSqUJo4U/8boyoZHPP5UQxDkwwlYaXkJmLPGN6kTPHgAH/IX1OyPlLy7Kn//R5bb
-         /2u5Yx/DO2NssLG8ceiOKsKwfdo8C2LO/l8zfCDxOog+wwJoJBT6SPAHl6xBe4aVjJRG
-         AF/A==
-X-Gm-Message-State: AOAM5317DDQMx8Xp6Yz/aiAI5axzBrzymNsKzY2ADio3ahH1k48ej9RD
-        qWehJ6wjjjdSRWhfTa6D++QsG559LYKalAVMPQJvvlf1RB03
-X-Google-Smtp-Source: ABdhPJzXirQ+/bLhDe/iqJka1KLsT+EEumuwLl4oWMu8CmR9BtN8xc2YofHeXhmPjArq1x/Tpq/EYF5ooUgGfMZAfELGsc+SH2IK
-MIME-Version: 1.0
-X-Received: by 2002:a02:3441:: with SMTP id z1mr9774976jaz.63.1611766582715;
- Wed, 27 Jan 2021 08:56:22 -0800 (PST)
-Date:   Wed, 27 Jan 2021 08:56:22 -0800
-X-Google-Appengine-App-Id: s~syzkaller
-X-Google-Appengine-App-Id-Alias: syzkaller
-Message-ID: <0000000000009fae0b05b9e4a6dd@google.com>
-Subject: linux-next test error: possible deadlock in cfg80211_netdev_notifier_call
-From:   syzbot <syzbot+3d2d5e6cc3fb15c6a0fd@syzkaller.appspotmail.com>
-To:     davem@davemloft.net, johannes@sipsolutions.net, kuba@kernel.org,
-        linux-kernel@vger.kernel.org, linux-next@vger.kernel.org,
-        linux-wireless@vger.kernel.org, netdev@vger.kernel.org,
-        sfr@canb.auug.org.au, syzkaller-bugs@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=Bfd8ZrqYLleMnZ9WSg0Zx5WTuCO4cMXNGVPsnFmssQw=;
+        b=WD30Y68/s20o7o54oEvOmUUhRxjtyBFnES/sp+QfPYjQxpLtIXRx+SSRSvDdvhYoC5
+         sJwkdlP1Q0J3NoVwQeV9H/oTfmAdyun3+7rPrM6wiSpkiOKi0tBIyQYzsvfVqTa7gw+E
+         6bPk81FrCBsox61ulg0HZbLtAx2EOIAi76dD0ZYg7hs6fzMbF4kwg3fPsCad504CKajj
+         od8hkeGH94JIPqxNcHy+UexUes56cg48LtQNvK6XCCGrfA5xzoT97DtT4ELd5BNhXrLm
+         Sywb0mn2N/CjVQNvoY1uX0rZImmckjVXJpBbiD5CVJkfpUTI+dqG2N0Xq5/umrrXqeGg
+         Sb3Q==
+X-Gm-Message-State: AOAM532qz/baN/TkVLjVzFKDgtizJ0DKm8/ARoj2kzMb8y3pi6HeQTCN
+        ILFeKW5zcU031ovaYqqTxC98gw==
+X-Google-Smtp-Source: ABdhPJyBUQfRIC5GgYmK9mKXS3zzuwbUEFbD0VDIFVMKElugPiwQAuBSJ2r7DHJmpU1HWxc8N1HQpg==
+X-Received: by 2002:a5d:5384:: with SMTP id d4mr11586388wrv.177.1611766416903;
+        Wed, 27 Jan 2021 08:53:36 -0800 (PST)
+Received: from localhost.localdomain ([88.122.66.28])
+        by smtp.gmail.com with ESMTPSA id m82sm3077042wmf.29.2021.01.27.08.53.36
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 27 Jan 2021 08:53:36 -0800 (PST)
+From:   Loic Poulain <loic.poulain@linaro.org>
+To:     kuba@kernel.org, davem@davemloft.net
+Cc:     netdev@vger.kernel.org, carl.yin@quectel.com,
+        Loic Poulain <loic.poulain@linaro.org>
+Subject: [PATCH net-next 1/3] net: mhi: Add RX/TX fixup callbacks
+Date:   Wed, 27 Jan 2021 18:01:15 +0100
+Message-Id: <1611766877-16787-1-git-send-email-loic.poulain@linaro.org>
+X-Mailer: git-send-email 2.7.4
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello,
+MHI can transport different protocols, some are handled at upper level,
+like IP and QMAP(rmnet/netlink), but others will need to be inside MHI
+net driver, like mbim. This change adds support for protocol rx/tx
+fixup callbacks registration, that can be used to encode/decode the
+targeted protocol.
 
-syzbot found the following issue on:
-
-HEAD commit:    b28241d8 Add linux-next specific files for 20210127
-git tree:       linux-next
-console output: https://syzkaller.appspot.com/x/log.txt?x=13316b44d00000
-kernel config:  https://syzkaller.appspot.com/x/.config?x=37c8f99c7210a867
-dashboard link: https://syzkaller.appspot.com/bug?extid=3d2d5e6cc3fb15c6a0fd
-compiler:       gcc (GCC) 10.1.0-syz 20200507
-
-IMPORTANT: if you fix the issue, please add the following tag to the commit:
-Reported-by: syzbot+3d2d5e6cc3fb15c6a0fd@syzkaller.appspotmail.com
-
-batman_adv: batadv0: Not using interface batadv_slave_1 (retrying later): interface not active
-device hsr_slave_0 entered promiscuous mode
-device hsr_slave_1 entered promiscuous mode
-============================================
-WARNING: possible recursive locking detected
-5.11.0-rc5-next-20210127-syzkaller #0 Not tainted
---------------------------------------------
-syz-executor.0/8425 is trying to acquire lock:
-ffff8881446785e8 (&rdev->wiphy.mtx){+.+.}-{3:3}, at: wiphy_lock include/net/cfg80211.h:5267 [inline]
-ffff8881446785e8 (&rdev->wiphy.mtx){+.+.}-{3:3}, at: cfg80211_netdev_notifier_call+0x615/0x1180 net/wireless/core.c:1393
-
-but task is already holding lock:
-ffff8881446785e8 (&rdev->wiphy.mtx){+.+.}-{3:3}, at: wiphy_lock include/net/cfg80211.h:5267 [inline]
-ffff8881446785e8 (&rdev->wiphy.mtx){+.+.}-{3:3}, at: virt_wifi_newlink+0x4cb/0x940 drivers/net/wireless/virt_wifi.c:540
-
-other info that might help us debug this:
- Possible unsafe locking scenario:
-
-       CPU0
-       ----
-  lock(&rdev->wiphy.mtx);
-  lock(&rdev->wiphy.mtx);
-
- *** DEADLOCK ***
-
- May be due to missing lock nesting notation
-
-2 locks held by syz-executor.0/8425:
- #0: ffffffff8cc71b08 (rtnl_mutex){+.+.}-{3:3}, at: rtnl_lock net/core/rtnetlink.c:72 [inline]
- #0: ffffffff8cc71b08 (rtnl_mutex){+.+.}-{3:3}, at: rtnetlink_rcv_msg+0x3f9/0xad0 net/core/rtnetlink.c:5550
- #1: ffff8881446785e8 (&rdev->wiphy.mtx){+.+.}-{3:3}, at: wiphy_lock include/net/cfg80211.h:5267 [inline]
- #1: ffff8881446785e8 (&rdev->wiphy.mtx){+.+.}-{3:3}, at: virt_wifi_newlink+0x4cb/0x940 drivers/net/wireless/virt_wifi.c:540
-
-stack backtrace:
-CPU: 1 PID: 8425 Comm: syz-executor.0 Not tainted 5.11.0-rc5-next-20210127-syzkaller #0
-Hardware name: Google Google Compute Engine/Google Compute Engine, BIOS Google 01/01/2011
-Call Trace:
- __dump_stack lib/dump_stack.c:79 [inline]
- dump_stack+0x107/0x163 lib/dump_stack.c:120
- print_deadlock_bug kernel/locking/lockdep.c:2829 [inline]
- check_deadlock kernel/locking/lockdep.c:2872 [inline]
- validate_chain kernel/locking/lockdep.c:3661 [inline]
- __lock_acquire.cold+0x14c/0x3b4 kernel/locking/lockdep.c:4899
- lock_acquire kernel/locking/lockdep.c:5509 [inline]
- lock_acquire+0x1a8/0x720 kernel/locking/lockdep.c:5474
- __mutex_lock_common kernel/locking/mutex.c:956 [inline]
- __mutex_lock+0x134/0x1110 kernel/locking/mutex.c:1103
- wiphy_lock include/net/cfg80211.h:5267 [inline]
- cfg80211_netdev_notifier_call+0x615/0x1180 net/wireless/core.c:1393
- notifier_call_chain+0xb5/0x200 kernel/notifier.c:83
- call_netdevice_notifiers_info+0xb5/0x130 net/core/dev.c:2040
- call_netdevice_notifiers_extack net/core/dev.c:2052 [inline]
- call_netdevice_notifiers net/core/dev.c:2066 [inline]
- register_netdevice+0x1034/0x14a0 net/core/dev.c:10008
- virt_wifi_newlink+0x4d3/0x940 drivers/net/wireless/virt_wifi.c:541
- __rtnl_newlink+0x108b/0x16e0 net/core/rtnetlink.c:3443
- rtnl_newlink+0x64/0xa0 net/core/rtnetlink.c:3491
- rtnetlink_rcv_msg+0x44e/0xad0 net/core/rtnetlink.c:5553
- netlink_rcv_skb+0x153/0x420 net/netlink/af_netlink.c:2494
- netlink_unicast_kernel net/netlink/af_netlink.c:1304 [inline]
- netlink_unicast+0x533/0x7d0 net/netlink/af_netlink.c:1330
- netlink_sendmsg+0x856/0xd90 net/netlink/af_netlink.c:1919
- sock_sendmsg_nosec net/socket.c:654 [inline]
- sock_sendmsg+0xcf/0x120 net/socket.c:674
- __sys_sendto+0x21c/0x320 net/socket.c:1977
- __do_sys_sendto net/socket.c:1989 [inline]
- __se_sys_sendto net/socket.c:1985 [inline]
- __x64_sys_sendto+0xdd/0x1b0 net/socket.c:1985
- do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
- entry_SYSCALL_64_after_hwframe+0x44/0xa9
-RIP: 0033:0x417c97
-Code: 2c 00 00 00 0f 05 48 3d 01 f0 ff ff 0f 83 81 19 00 00 c3 48 83 ec 08 e8 e7 fa ff ff 48 89 04 24 49 89 ca b8 2c 00 00 00 0f 05 <48> 8b 3c 24 48 89 c2 e8 2d fb ff ff 48 89 d0 48 83 c4 08 48 3d 01
-RSP: 002b:00007ffd43a145b0 EFLAGS: 00000293 ORIG_RAX: 000000000000002c
-RAX: ffffffffffffffda RBX: 00000000016b4300 RCX: 0000000000417c97
-RDX: 000000000000004c RSI: 00000000016b4350 RDI: 0000000000000003
-RBP: 0000000000000000 R08: 00007ffd43a145c0 R09: 000000000000000c
-R10: 0000000000000000 R11: 0000000000000293 R12: 0000000000000000
-R13: 0000000000000000 R14: 00000000016b4350 R15: 0000000000000003
-
-
+Signed-off-by: Loic Poulain <loic.poulain@linaro.org>
 ---
-This report is generated by a bot. It may contain errors.
-See https://goo.gl/tpsmEJ for more information about syzbot.
-syzbot engineers can be reached at syzkaller@googlegroups.com.
+ drivers/net/mhi_net.c | 70 ++++++++++++++++++++++++++++++++++++++++++---------
+ 1 file changed, 58 insertions(+), 12 deletions(-)
 
-syzbot will keep track of this issue. See:
-https://goo.gl/tpsmEJ#status for how to communicate with syzbot.
+diff --git a/drivers/net/mhi_net.c b/drivers/net/mhi_net.c
+index a5a214d..aa3a5e0 100644
+--- a/drivers/net/mhi_net.c
++++ b/drivers/net/mhi_net.c
+@@ -33,11 +33,24 @@ struct mhi_net_stats {
+ struct mhi_net_dev {
+ 	struct mhi_device *mdev;
+ 	struct net_device *ndev;
++	const struct mhi_net_proto *proto;
++	void *proto_data;
+ 	struct delayed_work rx_refill;
+ 	struct mhi_net_stats stats;
+ 	u32 rx_queue_sz;
+ };
+ 
++struct mhi_net_proto {
++	int (*init)(struct mhi_net_dev *dev);
++	struct sk_buff * (*tx_fixup)(struct net_device *ndev, struct sk_buff *skb);
++	int (*rx_fixup)(struct net_device *ndev, struct sk_buff *skb);
++};
++
++struct mhi_device_info {
++	const char *netname;
++	const struct mhi_net_proto *proto;
++};
++
+ static int mhi_ndo_open(struct net_device *ndev)
+ {
+ 	struct mhi_net_dev *mhi_netdev = netdev_priv(ndev);
+@@ -67,26 +80,35 @@ static int mhi_ndo_stop(struct net_device *ndev)
+ static int mhi_ndo_xmit(struct sk_buff *skb, struct net_device *ndev)
+ {
+ 	struct mhi_net_dev *mhi_netdev = netdev_priv(ndev);
++	const struct mhi_net_proto *proto = mhi_netdev->proto;
+ 	struct mhi_device *mdev = mhi_netdev->mdev;
+ 	int err;
+ 
++	if (proto && proto->tx_fixup) {
++		skb = proto->tx_fixup(mhi_netdev->ndev, skb);
++		if (unlikely(!skb))
++			goto exit_drop;
++	}
++
+ 	err = mhi_queue_skb(mdev, DMA_TO_DEVICE, skb, skb->len, MHI_EOT);
+ 	if (unlikely(err)) {
+ 		net_err_ratelimited("%s: Failed to queue TX buf (%d)\n",
+ 				    ndev->name, err);
+-
+-		u64_stats_update_begin(&mhi_netdev->stats.tx_syncp);
+-		u64_stats_inc(&mhi_netdev->stats.tx_dropped);
+-		u64_stats_update_end(&mhi_netdev->stats.tx_syncp);
+-
+-		/* drop the packet */
+ 		dev_kfree_skb_any(skb);
++		goto exit_drop;
+ 	}
+ 
+ 	if (mhi_queue_is_full(mdev, DMA_TO_DEVICE))
+ 		netif_stop_queue(ndev);
+ 
+ 	return NETDEV_TX_OK;
++
++exit_drop:
++	u64_stats_update_begin(&mhi_netdev->stats.tx_syncp);
++	u64_stats_inc(&mhi_netdev->stats.tx_dropped);
++	u64_stats_update_end(&mhi_netdev->stats.tx_syncp);
++
++	return NETDEV_TX_OK;
+ }
+ 
+ static void mhi_ndo_get_stats64(struct net_device *ndev,
+@@ -137,6 +159,7 @@ static void mhi_net_dl_callback(struct mhi_device *mhi_dev,
+ 				struct mhi_result *mhi_res)
+ {
+ 	struct mhi_net_dev *mhi_netdev = dev_get_drvdata(&mhi_dev->dev);
++	const struct mhi_net_proto *proto = mhi_netdev->proto;
+ 	struct sk_buff *skb = mhi_res->buf_addr;
+ 	int remaining;
+ 
+@@ -171,7 +194,11 @@ static void mhi_net_dl_callback(struct mhi_device *mhi_dev,
+ 		}
+ 
+ 		skb_put(skb, mhi_res->bytes_xferd);
+-		netif_rx(skb);
++
++		if (proto && proto->rx_fixup)
++			proto->rx_fixup(mhi_netdev->ndev, skb);
++		else
++			netif_rx(skb);
+ 	}
+ 
+ 	/* Refill if RX buffers queue becomes low */
+@@ -255,14 +282,14 @@ static struct device_type wwan_type = {
+ static int mhi_net_probe(struct mhi_device *mhi_dev,
+ 			 const struct mhi_device_id *id)
+ {
+-	const char *netname = (char *)id->driver_data;
++	const struct mhi_device_info *info = (struct mhi_device_info *)id->driver_data;
+ 	struct device *dev = &mhi_dev->dev;
+ 	struct mhi_net_dev *mhi_netdev;
+ 	struct net_device *ndev;
+ 	int err;
+ 
+-	ndev = alloc_netdev(sizeof(*mhi_netdev), netname, NET_NAME_PREDICTABLE,
+-			    mhi_net_setup);
++	ndev = alloc_netdev(sizeof(*mhi_netdev), info->netname,
++			    NET_NAME_PREDICTABLE, mhi_net_setup);
+ 	if (!ndev)
+ 		return -ENOMEM;
+ 
+@@ -270,6 +297,7 @@ static int mhi_net_probe(struct mhi_device *mhi_dev,
+ 	dev_set_drvdata(dev, mhi_netdev);
+ 	mhi_netdev->ndev = ndev;
+ 	mhi_netdev->mdev = mhi_dev;
++	mhi_netdev->proto = info->proto;
+ 	SET_NETDEV_DEV(ndev, &mhi_dev->dev);
+ 	SET_NETDEV_DEVTYPE(ndev, &wwan_type);
+ 
+@@ -289,8 +317,16 @@ static int mhi_net_probe(struct mhi_device *mhi_dev,
+ 	if (err)
+ 		goto out_err;
+ 
++	if (mhi_netdev->proto) {
++		err = mhi_netdev->proto->init(mhi_netdev);
++		if (err)
++			goto out_err_proto;
++	}
++
+ 	return 0;
+ 
++out_err_proto:
++	unregister_netdev(ndev);
+ out_err:
+ 	free_netdev(ndev);
+ 	return err;
+@@ -307,9 +343,19 @@ static void mhi_net_remove(struct mhi_device *mhi_dev)
+ 	free_netdev(mhi_netdev->ndev);
+ }
+ 
++static const struct mhi_device_info mhi_hwip0 = {
++	.netname = "mhi_hwip%d",
++};
++
++static const struct mhi_device_info mhi_swip0 = {
++	.netname = "mhi_swip%d",
++};
++
+ static const struct mhi_device_id mhi_net_id_table[] = {
+-	{ .chan = "IP_HW0", .driver_data = (kernel_ulong_t)"mhi_hwip%d" },
+-	{ .chan = "IP_SW0", .driver_data = (kernel_ulong_t)"mhi_swip%d" },
++	/* Hardware accelerated data PATH (to modem IPA), protocol agnostic */
++	{ .chan = "IP_HW0", .driver_data = (kernel_ulong_t)&mhi_hwip0 },
++	/* Software data PATH (to modem CPU) */
++	{ .chan = "IP_SW0", .driver_data = (kernel_ulong_t)&mhi_swip0 },
+ 	{}
+ };
+ MODULE_DEVICE_TABLE(mhi, mhi_net_id_table);
+-- 
+2.7.4
+
