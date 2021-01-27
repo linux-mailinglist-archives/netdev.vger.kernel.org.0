@@ -2,100 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 2AD0D3067B8
-	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 00:23:29 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A0B1D3067ED
+	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 00:32:39 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235386AbhA0XUU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 18:20:20 -0500
-Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:5636 "EHLO
-        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234254AbhA0XR2 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 18:17:28 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B6011f45d0000>; Wed, 27 Jan 2021 15:16:45 -0800
-Received: from HQMAIL111.nvidia.com (172.20.187.18) by HQMAIL105.nvidia.com
- (172.20.187.12) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Wed, 27 Jan
- 2021 23:16:44 +0000
-Received: from NAM02-SN1-obe.outbound.protection.outlook.com (104.47.36.53) by
- HQMAIL111.nvidia.com (172.20.187.18) with Microsoft SMTP Server (TLS) id
- 15.0.1473.3 via Frontend Transport; Wed, 27 Jan 2021 23:16:44 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Tp/wZ5KQdwRVvZ/dYJdejNfwXhUroWD6Qu8nopp+aCfIT13ZL4UOm/2fZGd22cVeN9NTzD52nVskNtO8P2TJ20Un86nZl5e2mLH8B4F4OwIhM7D4K2roME8LJV/1Nt7b27p33+o+FOIXkzcQhi8siMaxm9BipDlYtHSRE78deGCGaZ12nU4bde1Cdlr7yosiy/SshOfbQy90mSM9E9+oeVsLTishAXE8abk34QzJl7cIcDr0/E1hXCfpOiPh3Z19mSG3JVON9LLaHQ8TCDmCE/J1iaxvkU0g4Vr7koZJkHzasYbkttucUnztqMF6/QodEYm1PZxl9eSReWPQ0RB1rA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=qhT9AuE+3d3BiQZPxdM6+fgbIjMT5lgYfPlP7dTCPnc=;
- b=GsnzV7wlx4gRPqfy3wLeTo9+IisWs1ra8wSbp5ET6KfD+jNYv9YjTvOE+w6h3myzDJpb2yJ3OFhM4UGCjbd/V9R8//NO78Tq1hA0yNTca93ALPS75A7Gi3VMc3R9qbj9no4E47I+5W/T8wJ+7M+53xoXplK39yFDq7cMbQ2GFLxHXYiMyXiyMmJo0rLk1RWqdvO3oBTjs3+E257bN6XBjj+cMhaUuQb7hXzvoRYDH+r0ZcRkemobZTkmi8NWHDhp8coKW36ELHjyJt7oX7tNYmCuwrxqeOHMQJdvy0eaQvmXsSl+38mWIZNmmAlCY6pYmYoFkL/aFxRRZgOPkH16UQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=nvidia.com; dmarc=pass action=none header.from=nvidia.com;
- dkim=pass header.d=nvidia.com; arc=none
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com (2603:10b6:5:14a::12)
- by DM5PR1201MB0105.namprd12.prod.outlook.com (2603:10b6:4:54::23) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3784.16; Wed, 27 Jan
- 2021 23:16:43 +0000
-Received: from DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::546d:512c:72fa:4727]) by DM6PR12MB3834.namprd12.prod.outlook.com
- ([fe80::546d:512c:72fa:4727%7]) with mapi id 15.20.3784.019; Wed, 27 Jan 2021
- 23:16:43 +0000
-Date:   Wed, 27 Jan 2021 19:16:41 -0400
-From:   Jason Gunthorpe <jgg@nvidia.com>
-To:     "Saleem, Shiraz" <shiraz.saleem@intel.com>
-CC:     Leon Romanovsky <leon@kernel.org>,
-        "dledford@redhat.com" <dledford@redhat.com>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "linux-rdma@vger.kernel.org" <linux-rdma@vger.kernel.org>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "Ertman, David M" <david.m.ertman@intel.com>,
-        "Nguyen, Anthony L" <anthony.l.nguyen@intel.com>,
-        "Ismail, Mustafa" <mustafa.ismail@intel.com>
-Subject: Re: [PATCH 07/22] RDMA/irdma: Register an auxiliary driver and
- implement private channel OPs
-Message-ID: <20210127231641.GS4147@nvidia.com>
-References: <20210122234827.1353-1-shiraz.saleem@intel.com>
- <20210122234827.1353-8-shiraz.saleem@intel.com>
- <20210125184248.GS4147@nvidia.com>
- <99895f7c10a2473c84a105f46c7ef498@intel.com>
- <20210126005928.GF4147@nvidia.com>
- <031c2675aff248bd9c78fada059b5c02@intel.com>
- <20210127121847.GK1053290@unreal>
- <ea62658f01664a6ea9438631c9ddcb6e@intel.com>
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <ea62658f01664a6ea9438631c9ddcb6e@intel.com>
-X-ClientProxiedBy: BL0PR02CA0006.namprd02.prod.outlook.com
- (2603:10b6:207:3c::19) To DM6PR12MB3834.namprd12.prod.outlook.com
- (2603:10b6:5:14a::12)
-MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from mlx.ziepe.ca (142.162.115.133) by BL0PR02CA0006.namprd02.prod.outlook.com (2603:10b6:207:3c::19) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3805.16 via Frontend Transport; Wed, 27 Jan 2021 23:16:42 +0000
-Received: from jgg by mlx with local (Exim 4.94)        (envelope-from <jgg@nvidia.com>)        id 1l4u3F-007qeL-Sg; Wed, 27 Jan 2021 19:16:41 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1611789405; bh=qhT9AuE+3d3BiQZPxdM6+fgbIjMT5lgYfPlP7dTCPnc=;
-        h=ARC-Seal:ARC-Message-Signature:ARC-Authentication-Results:Date:
-         From:To:CC:Subject:Message-ID:References:Content-Type:
-         Content-Disposition:In-Reply-To:X-ClientProxiedBy:MIME-Version:
-         X-MS-Exchange-MessageSentRepresentingType;
-        b=mJ/LXBnngIhhxVogNXBVre+e16yp38FdkAnnASK6LZN4im4vYz+7XtAU4X/jXcGGp
-         JKF1vk8VBJk2Bq4yD2E5zgQDDCLtRDEoQBtfclK4A42+cHnnBB1LICsaC7m6EAha3R
-         M3Yga6HGdA38q4IfUUSWZk2PkKyccqOxJ99hVTWikJsW1bF691GEYh8vaVmRJxXPWq
-         CMBu1QkINOB6opPDH6t+pcltYJh1I9w0Y5BcM0smK272IlPt8CQ88lri+MEkE+jcPF
-         JSvjDEeYZk3RXLDhXzfsjibm1jBPzN2apXJ5qVP5SZ8tyfz7BRsgHkWxFzIgroU1hb
-         bcAj7YWvmvRAQ==
+        id S231897AbhA0Xay (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 18:30:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47870 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231296AbhA0X3g (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 18:29:36 -0500
+Received: from mail-qt1-x849.google.com (mail-qt1-x849.google.com [IPv6:2607:f8b0:4864:20::849])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDDA0C0613ED
+        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 15:28:55 -0800 (PST)
+Received: by mail-qt1-x849.google.com with SMTP id 22so2254383qty.14
+        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 15:28:55 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=sender:date:message-id:mime-version:subject:from:to:cc;
+        bh=aV8qow/FlZNu0c81xilee4C+KbHK/rtvK4HJqpkcS4A=;
+        b=VCZP39zYXsZwenkBzMAEwnx+ULlIDbDyV9VqrO2RXlCODqfqoM8m+f2LuS8tbf7V6o
+         XPmuce1SrV+D3Wuk3eV00rY3bi4ISIRmkUmjfButeyBCR1l+GToQDJyaUr/cpR2D04C4
+         L5g5rv7IkxLVU5ZYR765RhqG6v7UPkX5aSZVOctk3vbfmFglMURMkeRyGdw2IgSHQN+r
+         jEIAojqQd7q79xL/M65GyGVJePQSGJTo39wiviUkAm48pPI7PUjuxcFVqHCt8xnGSC3h
+         t3guGwx4K0tnxlMREJAPaYgzpB3hitQxgrhCDkKtHbSuHYt5lhi/IQhgcXZUbzFZtSwl
+         0KRQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:sender:date:message-id:mime-version:subject:from
+         :to:cc;
+        bh=aV8qow/FlZNu0c81xilee4C+KbHK/rtvK4HJqpkcS4A=;
+        b=K+9MxL1XOZzzdFgWJVrK5c/9L+B8FSEWAPt2c+XGbGAygfKX5yD+3YIZUh8rHaPHq6
+         xADbrCADEj/fanPP6UxCyORX1xmoZhri8fvEGbknRRvC1atZu4qA2AzvtBnW+00yAj+E
+         T/dbPbpvW9WDMn6ULo3p7rZZ5jLdmFCMwPJPe37Y0VHwLybhem02yhhkpEZaCc4S3HJc
+         tT8EpbAvlquSi4YG5yuQVC0KVl38OhOqS2amT4G1Rovb8JXK5eTUYTJv5z5QvflP4FOp
+         L+vyNfUv8Gd021KJZGnyWy6prgtdaQxvQSITWUjMhyYsuqsu9x1yKGsala4m08KIgFAV
+         pQ+A==
+X-Gm-Message-State: AOAM530ggpVlxoMkap/RoOdkJ+Y97AH91obKRfMFaNSKFNtz9jghabxP
+        9bkIC18F5ttba1npHyougIXsuLki5b451RddTEAcnlg72Q7EUfpfhc0II9C0IFQGommm5lpocHE
+        WwPmtHVD/C4esttYFodgvaaMs9Ffwh/mRw7XBa1XpvCl3BiZysgH85A==
+X-Google-Smtp-Source: ABdhPJz6V+ya64pFDx3wSNHefGAy0VN+OCOjr0JVgJ7jbCXMNtCj/yuI+U4WnwEEisUsYWxjq1gQmBU=
+Sender: "sdf via sendgmr" <sdf@sdf2.svl.corp.google.com>
+X-Received: from sdf2.svl.corp.google.com ([2620:15c:2c4:1:7220:84ff:fe09:7732])
+ (user=sdf job=sendgmr) by 2002:ad4:53ab:: with SMTP id j11mr6120275qvv.1.1611790134978;
+ Wed, 27 Jan 2021 15:28:54 -0800 (PST)
+Date:   Wed, 27 Jan 2021 15:28:49 -0800
+Message-Id: <20210127232853.3753823-1-sdf@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.30.0.280.ga3ce27912f-goog
+Subject: [PATCH bpf-next v2 0/4] bpf: expose bpf_{g,s}etsockopt to more
+ bpf_sock_addr hooks
+From:   Stanislav Fomichev <sdf@google.com>
+To:     netdev@vger.kernel.org, bpf@vger.kernel.org
+Cc:     ast@kernel.org, daniel@iogearbox.net,
+        Stanislav Fomichev <sdf@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 27, 2021 at 10:17:56PM +0000, Saleem, Shiraz wrote:
+We'd like to use the SENDMSG ones, Daniel suggested to
+expose to more hooks while are here.
 
-> Even with another core PCI driver, there still needs to be private
-> communication channel between the aux rdma driver and this PCI
-> driver to pass things like QoS updates.
+Stanislav Fomichev (4):
+  bpf: enable bpf_{g,s}etsockopt in BPF_CGROUP_UDP{4,6}_SENDMSG
+  bpf: enable bpf_{g,s}etsockopt in
+    BPF_CGROUP_INET{4,6}_GET{PEER,SOCK}NAME
+  selftests/bpf: rewrite readmsg{4,6} asm progs to c in test_sock_addr
+  bpf: enable bpf_{g,s}etsockopt in BPF_CGROUP_UDP{4,6}_RECVMSG
 
-Data pushed from the core driver to its aux drivers should either be
-done through new callbacks in a struct device_driver or by having a
-notifier chain scheme from the core driver.
+ net/core/filter.c                             | 16 ++++
+ .../selftests/bpf/bpf_sockopt_helpers.h       | 21 +++++
+ .../selftests/bpf/progs/connect_force_port4.c |  8 ++
+ .../selftests/bpf/progs/connect_force_port6.c |  8 ++
+ .../selftests/bpf/progs/recvmsg4_prog.c       | 42 +++++++++
+ .../selftests/bpf/progs/recvmsg6_prog.c       | 48 +++++++++++
+ .../selftests/bpf/progs/sendmsg4_prog.c       |  7 ++
+ .../selftests/bpf/progs/sendmsg6_prog.c       |  5 ++
+ tools/testing/selftests/bpf/test_sock_addr.c  | 86 +++----------------
+ 9 files changed, 167 insertions(+), 74 deletions(-)
+ create mode 100644 tools/testing/selftests/bpf/bpf_sockopt_helpers.h
+ create mode 100644 tools/testing/selftests/bpf/progs/recvmsg4_prog.c
+ create mode 100644 tools/testing/selftests/bpf/progs/recvmsg6_prog.c
 
-Jason
+-- 
+2.30.0.280.ga3ce27912f-goog
+
