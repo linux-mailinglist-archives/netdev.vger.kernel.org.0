@@ -2,262 +2,132 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3899B30533E
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 07:33:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CB27630535E
+	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 07:45:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231918AbhA0Gcb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 01:32:31 -0500
-Received: from out4436.biz.mail.alibaba.com ([47.88.44.36]:1645 "EHLO
-        out4436.biz.mail.alibaba.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231311AbhA0GSg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 01:18:36 -0500
-X-Alimail-AntiSpam: AC=PASS;BC=-1|-1;BR=01201311R111e4;CH=green;DM=||false|;DS=||;FP=0|-1|-1|-1|0|-1|-1|-1;HT=e01e01424;MF=abaci-bugfix@linux.alibaba.com;NM=1;PH=DS;RN=9;SR=0;TI=SMTPD_---0UN0aNvs_1611728255;
-Received: from j63c13417.sqa.eu95.tbsite.net(mailfrom:abaci-bugfix@linux.alibaba.com fp:SMTPD_---0UN0aNvs_1611728255)
-          by smtp.aliyun-inc.com(127.0.0.1);
-          Wed, 27 Jan 2021 14:17:39 +0800
-From:   Jiapeng Zhong <abaci-bugfix@linux.alibaba.com>
-To:     marcel@holtmann.org
-Cc:     johan.hedberg@gmail.com, luiz.dentz@gmail.com, davem@davemloft.net,
-        kuba@kernel.org, linux-bluetooth@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jiapeng Zhong <abaci-bugfix@linux.alibaba.com>
-Subject: [PATCH v3] net/bluetooth/hci_debugfs.c:  fix coccicheck warnings
-Date:   Wed, 27 Jan 2021 14:17:33 +0800
-Message-Id: <1611728253-130374-1-git-send-email-abaci-bugfix@linux.alibaba.com>
-X-Mailer: git-send-email 1.8.3.1
+        id S232343AbhA0Gor (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 01:44:47 -0500
+Received: from stargate.chelsio.com ([12.32.117.8]:38427 "EHLO
+        stargate.chelsio.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231835AbhA0GgR (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 01:36:17 -0500
+Received: from localhost (kumbhalgarh.blr.asicdesigners.com [10.193.185.255])
+        by stargate.chelsio.com (8.13.8/8.13.8) with ESMTP id 10R6YRFJ001537;
+        Tue, 26 Jan 2021 22:34:28 -0800
+Date:   Wed, 27 Jan 2021 12:04:27 +0530
+From:   Raju Rangoju <rajur@chelsio.com>
+To:     Yang Li <abaci-bugfix@linux.alibaba.com>
+Cc:     kuba@kernel.org, davem@davemloft.net, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH net-next] cxgb4: remove redundant NULL check
+Message-ID: <20210127063426.GC21071@chelsio.com>
+References: <1611629413-81373-1-git-send-email-abaci-bugfix@linux.alibaba.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1611629413-81373-1-git-send-email-abaci-bugfix@linux.alibaba.com>
+User-Agent: Mutt/1.5.21 (2010-09-15)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Use DEFINE_DEBUGFS_ATTRIBUTE rather than DEFINE_SIMPLE_ATTRIBUTE
-for debugfs files.
+On Tuesday, January 01/26/21, 2021 at 10:50:13 +0800, Yang Li wrote:
+> Fix below warnings reported by coccicheck:
+> ./drivers/net/ethernet/chelsio/cxgb4/clip_tbl.c:323:3-9: WARNING:
+> NULL check before some freeing functions is not needed.
+> ./drivers/net/ethernet/chelsio/cxgb4/cudbg_lib.c:3554:2-8: WARNING:
+> NULL check before some freeing functions is not needed.
+> ./drivers/net/ethernet/chelsio/cxgb4/cxgb4_cudbg.c:157:2-7: WARNING:
+> NULL check before some freeing functions is not needed.
+> ./drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_u32.c:525:3-9: WARNING:
+> NULL check before some freeing functions is not needed.
+> 
+> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+> Signed-off-by: Yang Li <abaci-bugfix@linux.alibaba.com>
+> ---
+>  drivers/net/ethernet/chelsio/cxgb4/clip_tbl.c     | 3 +--
+>  drivers/net/ethernet/chelsio/cxgb4/cudbg_lib.c    | 3 +--
+>  drivers/net/ethernet/chelsio/cxgb4/cxgb4_cudbg.c  | 3 +--
+>  drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_u32.c | 6 ++----
+>  4 files changed, 5 insertions(+), 10 deletions(-)
+> 
+> diff --git a/drivers/net/ethernet/chelsio/cxgb4/clip_tbl.c b/drivers/net/ethernet/chelsio/cxgb4/clip_tbl.c
+> index ce28820..12fcf84 100644
+> --- a/drivers/net/ethernet/chelsio/cxgb4/clip_tbl.c
+> +++ b/drivers/net/ethernet/chelsio/cxgb4/clip_tbl.c
+> @@ -323,8 +323,7 @@ void t4_cleanup_clip_tbl(struct adapter *adap)
+>  	struct clip_tbl *ctbl = adap->clipt;
+>  
+>  	if (ctbl) {
+> -		if (ctbl->cl_list)
+> -			kvfree(ctbl->cl_list);
+> +		kvfree(ctbl->cl_list);
+>  		kvfree(ctbl);
+>  	}
+>  }
+> diff --git a/drivers/net/ethernet/chelsio/cxgb4/cudbg_lib.c b/drivers/net/ethernet/chelsio/cxgb4/cudbg_lib.c
+> index 75474f8..94eb8a6 100644
+> --- a/drivers/net/ethernet/chelsio/cxgb4/cudbg_lib.c
+> +++ b/drivers/net/ethernet/chelsio/cxgb4/cudbg_lib.c
+> @@ -3554,8 +3554,7 @@ int cudbg_collect_qdesc(struct cudbg_init *pdbg_init,
+>  	}
+>  
+>  out_free:
+> -	if (data)
+> -		kvfree(data);
+> +	kvfree(data);
+>  
+>  #undef QDESC_GET_FLQ
+>  #undef QDESC_GET_RXQ
+> diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_cudbg.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_cudbg.c
+> index 77648e4..dd66b24 100644
+> --- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_cudbg.c
+> +++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_cudbg.c
+> @@ -157,8 +157,7 @@ static int cudbg_alloc_compress_buff(struct cudbg_init *pdbg_init)
+>  
+>  static void cudbg_free_compress_buff(struct cudbg_init *pdbg_init)
+>  {
+> -	if (pdbg_init->compress_buff)
 
-Reported-by: Abaci Robot<abaci@linux.alibaba.com>
-Signed-off-by: Jiapeng Zhong <abaci-bugfix@linux.alibaba.com>
----
-Changes in v2:
-  -Modifying row alignment.
+NAK. The above check is necessary.
 
- net/bluetooth/hci_debugfs.c | 80 ++++++++++++++++++++++-----------------------
- 1 file changed, 40 insertions(+), 40 deletions(-)
+pdbg_init->compress_buff may be NULL when Zlib is unavailable or when
+pdbg_init->compress_buff allocation fails, in which case we ignore error
+and continue without compression. Check is necessary before calling
+vfree().
 
-diff --git a/net/bluetooth/hci_debugfs.c b/net/bluetooth/hci_debugfs.c
-index 4626e02..1a0ab58 100644
---- a/net/bluetooth/hci_debugfs.c
-+++ b/net/bluetooth/hci_debugfs.c
-@@ -237,8 +237,8 @@ static int conn_info_min_age_get(void *data, u64 *val)
- 	return 0;
- }
- 
--DEFINE_SIMPLE_ATTRIBUTE(conn_info_min_age_fops, conn_info_min_age_get,
--			conn_info_min_age_set, "%llu\n");
-+DEFINE_DEBUGFS_ATTRIBUTE(conn_info_min_age_fops, conn_info_min_age_get,
-+			  conn_info_min_age_set, "%llu\n");
- 
- static int conn_info_max_age_set(void *data, u64 val)
- {
-@@ -265,8 +265,8 @@ static int conn_info_max_age_get(void *data, u64 *val)
- 	return 0;
- }
- 
--DEFINE_SIMPLE_ATTRIBUTE(conn_info_max_age_fops, conn_info_max_age_get,
--			conn_info_max_age_set, "%llu\n");
-+DEFINE_DEBUGFS_ATTRIBUTE(conn_info_max_age_fops, conn_info_max_age_get,
-+			  conn_info_max_age_set, "%llu\n");
- 
- static ssize_t use_debug_keys_read(struct file *file, char __user *user_buf,
- 				   size_t count, loff_t *ppos)
-@@ -419,8 +419,8 @@ static int voice_setting_get(void *data, u64 *val)
- 	return 0;
- }
- 
--DEFINE_SIMPLE_ATTRIBUTE(voice_setting_fops, voice_setting_get,
--			NULL, "0x%4.4llx\n");
-+DEFINE_DEBUGFS_ATTRIBUTE(voice_setting_fops, voice_setting_get,
-+			  NULL, "0x%4.4llx\n");
- 
- static ssize_t ssp_debug_mode_read(struct file *file, char __user *user_buf,
- 				   size_t count, loff_t *ppos)
-@@ -476,9 +476,9 @@ static int min_encrypt_key_size_get(void *data, u64 *val)
- 	return 0;
- }
- 
--DEFINE_SIMPLE_ATTRIBUTE(min_encrypt_key_size_fops,
--			min_encrypt_key_size_get,
--			min_encrypt_key_size_set, "%llu\n");
-+DEFINE_DEBUGFS_ATTRIBUTE(min_encrypt_key_size_fops,
-+			  min_encrypt_key_size_get,
-+			  min_encrypt_key_size_set, "%llu\n");
- 
- static int auto_accept_delay_get(void *data, u64 *val)
- {
-@@ -491,8 +491,8 @@ static int auto_accept_delay_get(void *data, u64 *val)
- 	return 0;
- }
- 
--DEFINE_SIMPLE_ATTRIBUTE(auto_accept_delay_fops, auto_accept_delay_get,
--			auto_accept_delay_set, "%llu\n");
-+DEFINE_DEBUGFS_ATTRIBUTE(auto_accept_delay_fops, auto_accept_delay_get,
-+			  auto_accept_delay_set, "%llu\n");
- 
- static ssize_t force_bredr_smp_read(struct file *file,
- 				    char __user *user_buf,
-@@ -558,8 +558,8 @@ static int idle_timeout_get(void *data, u64 *val)
- 	return 0;
- }
- 
--DEFINE_SIMPLE_ATTRIBUTE(idle_timeout_fops, idle_timeout_get,
--			idle_timeout_set, "%llu\n");
-+DEFINE_DEBUGFS_ATTRIBUTE(idle_timeout_fops, idle_timeout_get,
-+			  idle_timeout_set, "%llu\n");
- 
- static int sniff_min_interval_set(void *data, u64 val)
- {
-@@ -586,8 +586,8 @@ static int sniff_min_interval_get(void *data, u64 *val)
- 	return 0;
- }
- 
--DEFINE_SIMPLE_ATTRIBUTE(sniff_min_interval_fops, sniff_min_interval_get,
--			sniff_min_interval_set, "%llu\n");
-+DEFINE_DEBUGFS_ATTRIBUTE(sniff_min_interval_fops, sniff_min_interval_get,
-+			  sniff_min_interval_set, "%llu\n");
- 
- static int sniff_max_interval_set(void *data, u64 val)
- {
-@@ -614,8 +614,8 @@ static int sniff_max_interval_get(void *data, u64 *val)
- 	return 0;
- }
- 
--DEFINE_SIMPLE_ATTRIBUTE(sniff_max_interval_fops, sniff_max_interval_get,
--			sniff_max_interval_set, "%llu\n");
-+DEFINE_DEBUGFS_ATTRIBUTE(sniff_max_interval_fops, sniff_max_interval_get,
-+			  sniff_max_interval_set, "%llu\n");
- 
- void hci_debugfs_create_bredr(struct hci_dev *hdev)
- {
-@@ -706,8 +706,8 @@ static int rpa_timeout_get(void *data, u64 *val)
- 	return 0;
- }
- 
--DEFINE_SIMPLE_ATTRIBUTE(rpa_timeout_fops, rpa_timeout_get,
--			rpa_timeout_set, "%llu\n");
-+DEFINE_DEBUGFS_ATTRIBUTE(rpa_timeout_fops, rpa_timeout_get,
-+			  rpa_timeout_set, "%llu\n");
- 
- static int random_address_show(struct seq_file *f, void *p)
- {
-@@ -869,8 +869,8 @@ static int conn_min_interval_get(void *data, u64 *val)
- 	return 0;
- }
- 
--DEFINE_SIMPLE_ATTRIBUTE(conn_min_interval_fops, conn_min_interval_get,
--			conn_min_interval_set, "%llu\n");
-+DEFINE_DEBUGFS_ATTRIBUTE(conn_min_interval_fops, conn_min_interval_get,
-+			  conn_min_interval_set, "%llu\n");
- 
- static int conn_max_interval_set(void *data, u64 val)
- {
-@@ -897,8 +897,8 @@ static int conn_max_interval_get(void *data, u64 *val)
- 	return 0;
- }
- 
--DEFINE_SIMPLE_ATTRIBUTE(conn_max_interval_fops, conn_max_interval_get,
--			conn_max_interval_set, "%llu\n");
-+DEFINE_DEBUGFS_ATTRIBUTE(conn_max_interval_fops, conn_max_interval_get,
-+			  conn_max_interval_set, "%llu\n");
- 
- static int conn_latency_set(void *data, u64 val)
- {
-@@ -925,8 +925,8 @@ static int conn_latency_get(void *data, u64 *val)
- 	return 0;
- }
- 
--DEFINE_SIMPLE_ATTRIBUTE(conn_latency_fops, conn_latency_get,
--			conn_latency_set, "%llu\n");
-+DEFINE_DEBUGFS_ATTRIBUTE(conn_latency_fops, conn_latency_get,
-+			  conn_latency_set, "%llu\n");
- 
- static int supervision_timeout_set(void *data, u64 val)
- {
-@@ -953,8 +953,8 @@ static int supervision_timeout_get(void *data, u64 *val)
- 	return 0;
- }
- 
--DEFINE_SIMPLE_ATTRIBUTE(supervision_timeout_fops, supervision_timeout_get,
--			supervision_timeout_set, "%llu\n");
-+DEFINE_DEBUGFS_ATTRIBUTE(supervision_timeout_fops, supervision_timeout_get,
-+			  supervision_timeout_set, "%llu\n");
- 
- static int adv_channel_map_set(void *data, u64 val)
- {
-@@ -981,8 +981,8 @@ static int adv_channel_map_get(void *data, u64 *val)
- 	return 0;
- }
- 
--DEFINE_SIMPLE_ATTRIBUTE(adv_channel_map_fops, adv_channel_map_get,
--			adv_channel_map_set, "%llu\n");
-+DEFINE_DEBUGFS_ATTRIBUTE(adv_channel_map_fops, adv_channel_map_get,
-+			  adv_channel_map_set, "%llu\n");
- 
- static int adv_min_interval_set(void *data, u64 val)
- {
-@@ -1009,8 +1009,8 @@ static int adv_min_interval_get(void *data, u64 *val)
- 	return 0;
- }
- 
--DEFINE_SIMPLE_ATTRIBUTE(adv_min_interval_fops, adv_min_interval_get,
--			adv_min_interval_set, "%llu\n");
-+DEFINE_DEBUGFS_ATTRIBUTE(adv_min_interval_fops, adv_min_interval_get,
-+			  adv_min_interval_set, "%llu\n");
- 
- static int adv_max_interval_set(void *data, u64 val)
- {
-@@ -1037,8 +1037,8 @@ static int adv_max_interval_get(void *data, u64 *val)
- 	return 0;
- }
- 
--DEFINE_SIMPLE_ATTRIBUTE(adv_max_interval_fops, adv_max_interval_get,
--			adv_max_interval_set, "%llu\n");
-+DEFINE_DEBUGFS_ATTRIBUTE(adv_max_interval_fops, adv_max_interval_get,
-+			  adv_max_interval_set, "%llu\n");
- 
- static int min_key_size_set(void *data, u64 val)
- {
-@@ -1065,8 +1065,8 @@ static int min_key_size_get(void *data, u64 *val)
- 	return 0;
- }
- 
--DEFINE_SIMPLE_ATTRIBUTE(min_key_size_fops, min_key_size_get,
--			min_key_size_set, "%llu\n");
-+DEFINE_DEBUGFS_ATTRIBUTE(min_key_size_fops, min_key_size_get,
-+			  min_key_size_set, "%llu\n");
- 
- static int max_key_size_set(void *data, u64 val)
- {
-@@ -1093,8 +1093,8 @@ static int max_key_size_get(void *data, u64 *val)
- 	return 0;
- }
- 
--DEFINE_SIMPLE_ATTRIBUTE(max_key_size_fops, max_key_size_get,
--			max_key_size_set, "%llu\n");
-+DEFINE_DEBUGFS_ATTRIBUTE(max_key_size_fops, max_key_size_get,
-+			  max_key_size_set, "%llu\n");
- 
- static int auth_payload_timeout_set(void *data, u64 val)
- {
-@@ -1121,9 +1121,9 @@ static int auth_payload_timeout_get(void *data, u64 *val)
- 	return 0;
- }
- 
--DEFINE_SIMPLE_ATTRIBUTE(auth_payload_timeout_fops,
--			auth_payload_timeout_get,
--			auth_payload_timeout_set, "%llu\n");
-+DEFINE_DEBUGFS_ATTRIBUTE(auth_payload_timeout_fops,
-+			  auth_payload_timeout_get,
-+			  auth_payload_timeout_set, "%llu\n");
- 
- static ssize_t force_no_mitm_read(struct file *file,
- 				  char __user *user_buf,
--- 
-1.8.3.1
+> -		vfree(pdbg_init->compress_buff);
+> +	vfree(pdbg_init->compress_buff);
+>  }
+>  
+>  int cxgb4_cudbg_collect(struct adapter *adap, void *buf, u32 *buf_size,
+> diff --git a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_u32.c b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_u32.c
+> index dede025..97a811f 100644
+> --- a/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_u32.c
+> +++ b/drivers/net/ethernet/chelsio/cxgb4/cxgb4_tc_u32.c
+> @@ -525,12 +525,10 @@ struct cxgb4_tc_u32_table *cxgb4_init_tc_u32(struct adapter *adap)
+>  	for (i = 0; i < t->size; i++) {
+>  		struct cxgb4_link *link = &t->table[i];
+>  
+> -		if (link->tid_map)
+> -			kvfree(link->tid_map);
+> +		kvfree(link->tid_map);
 
+The above change is wrong. NAK.
+
+If the call to link->tid_map = kvcalloc() above fails, it still
+goes ahead and calls kvfree(link->tid_map) even for failed cases, which is
+wrong. Check is necessary before calling kvfree().
+
+
+>  	}
+>  
+> -	if (t)
+> -		kvfree(t);
+> +	kvfree(t);
+>  
+>  	return NULL;
+>  }
+> -- 
+> 1.8.3.1
+> 
