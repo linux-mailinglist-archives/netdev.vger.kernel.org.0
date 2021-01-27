@@ -2,105 +2,172 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 11D68305D47
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 14:33:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1B7F2305D38
+	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 14:31:35 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238383AbhA0Ncm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 08:32:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36858 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S313265AbhAZWeN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jan 2021 17:34:13 -0500
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34609C0611BC;
-        Tue, 26 Jan 2021 14:28:11 -0800 (PST)
-Received: by mail-ed1-x530.google.com with SMTP id s11so21712719edd.5;
-        Tue, 26 Jan 2021 14:28:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=+dgO/DpRRBNVWm71phA7caMBgapa2l8prdi0ax2h0pM=;
-        b=ruYCPXViPVKyA5CE7kkL5Uv04gOplxca4oXLlqqFqB9jj9s9KtR0m1ElgBORUAXTZr
-         HUzKMdVq/By/ihHLfWHWX6W9rFToBFDb1dYT+htoYcLv0R9kWzdhS9miy0YaIX1K6Ka4
-         MaKDZ1FbhkW6cUe4bWHszfI48QaxWWnUm1+QHMTbGlX0C4CpYfkHnRtLr9ncPP0bHrmg
-         4iz39U3295cl2qc6l5DyBwrgmiNjad+AdHovMFIEr9uWHf8RRsMn5NTJZnJ7mOYgj1bx
-         v4mxmbedlnr1orDLo9NAkiW35UflM3SfJDIMq2nRM5JN5LGNnpk7K2RZFzdE7yrcTjou
-         GH9g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=+dgO/DpRRBNVWm71phA7caMBgapa2l8prdi0ax2h0pM=;
-        b=gy7xmM/IWOGRF/YiA4a+Hknpk80KtigT0IMYHuibJgnxrQebDMUQ7WW/b1S/v7zDBY
-         Pfhk1dagD2TUfQs6PmZxz/quP7WDwuN/1cVgeEALZ6cO0ODZEQRBEp0SYIfMBEuXi7So
-         wm13mMfhDcCVYoNQhmTMCgV7mlbdWFTn2/8hzBymJpkMmB/owyzo/tv4WTcAit1eZVJU
-         OvuCqDhLVf0yKnGP/MGbYnDsiqIspm/l/nDPnioaUZsYzC8dvcT3d4FdTy1ubxqJV4BQ
-         V6thGg1uropHBhMPwt5+cErlBjNWF3lbEvVrZ9xKGIFcdMifNW4ILGSyMoFzXr1MuY+r
-         QBVw==
-X-Gm-Message-State: AOAM5323PxHB2CyZHq0lJ72LRFsMpcJO3E9QLZk3Gf6tPb7/nwTEkvBU
-        0BMnrlFExCQJ5bB3aDCO4jN6N4s5Ygk=
-X-Google-Smtp-Source: ABdhPJwcMyPl+oJH03Jpe/LND6TZJcEXfjjMW50IFcHIotUdeXFjhduzPBSt9qktgfj90ohzeGk/rw==
-X-Received: by 2002:a05:6402:4242:: with SMTP id g2mr6319717edb.103.1611700089883;
-        Tue, 26 Jan 2021 14:28:09 -0800 (PST)
-Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id d5sm82563edu.12.2021.01.26.14.28.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Jan 2021 14:28:06 -0800 (PST)
-Date:   Wed, 27 Jan 2021 00:28:05 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Lorenzo Carletti <lorenzo.carletti98@gmail.com>
-Cc:     Linus Walleij <linus.walleij@linaro.org>, andrew@lunn.ch,
-        vivien.didelot@gmail.com, f.fainelli@gmail.com,
-        davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/1] net: dsa: rtl8366rb: standardize init jam tables
-Message-ID: <20210126222805.fd7pzt7zenl72mmo@skbuf>
-References: <20210125045631.2345-1-lorenzo.carletti98@gmail.com>
- <20210125045631.2345-2-lorenzo.carletti98@gmail.com>
- <20210126210837.7mfzkjqsc3aui3fn@skbuf>
- <20210126213852.zjpejk7ryw7kq4dv@skbuf>
- <CABRCJOSzm6s3hv17KFXMZigJjuBEidLLAM8+dqrGk9xTE=FkcQ@mail.gmail.com>
+        id S238428AbhA0Nay (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 08:30:54 -0500
+Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:40305 "EHLO
+        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S238361AbhA0N2i (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 08:28:38 -0500
+Received: from Internal Mail-Server by MTLPINE1 (envelope-from cmi@nvidia.com)
+        with SMTP; 27 Jan 2021 09:46:59 +0200
+Received: from dev-r630-03.mtbc.labs.mlnx (dev-r630-03.mtbc.labs.mlnx [10.75.205.13])
+        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 10R7kvrl013621;
+        Wed, 27 Jan 2021 09:46:57 +0200
+From:   Chris Mi <cmi@nvidia.com>
+To:     netdev@vger.kernel.org
+Cc:     kuba@kernel.org, jiri@nvidia.com, saeedm@nvidia.com,
+        Chris Mi <cmi@nvidia.com>, kernel test robot <lkp@intel.com>
+Subject: [PATCH net-next v2] net: psample: Introduce stubs to remove NIC driver dependency
+Date:   Wed, 27 Jan 2021 15:46:51 +0800
+Message-Id: <20210127074651.510134-1-cmi@nvidia.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CABRCJOSzm6s3hv17KFXMZigJjuBEidLLAM8+dqrGk9xTE=FkcQ@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 26, 2021 at 11:15:33PM +0100, Lorenzo Carletti wrote:
-> > And did you manage to find out what these tables actually do?
->
-> I was unable to do so. I was looking for Intel 8051 instructions in them:
-> I created a small piece of code that generates an hypotetical
-> registers space in which the tables are then jammed, but I didn't
-> find anything.
-> It's clear that some of the values of the tables are configuration
-> parameters for stuff like the bandwidth, but that's the extent of what
-> I was able to understand... So not that much.
->
-> > Why? What difference does it make?
->
-> So, allow me to explain. The kernel jams every "i + 1" value in the array
-> tables into the registers at " i", and then increments "i" by 2.
-> These can be seen as [n][2] matrixes, just like the ethernet one.
-> Having the arrays converted to matrixes can help visualize which
-> value is jammed where, or at least that's how I feel like it is.
-> I know it's not a big change...
+In order to send sampled packets to userspace, NIC driver calls
+psample api directly. But it creates a hard dependency on module
+psample. Introduce psample_ops to remove the hard dependency.
+It is initialized when psample module is loaded and set to NULL
+when the module is unloaded.
 
-Got it, thanks. It is better, in fact, once you get over that whole
-0xBE00 thing...
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Chris Mi <cmi@nvidia.com>
+Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+---
+v1->v2:
+ - fix sparse errors
 
-> > On which RTL8366RB chip revisions did you test for regressions?
->
-> I don't have any of the chips to test this. What I agreed on with
-> Linus Walleji was to send the patch after making sure everything
-> compiled properly and checkpatch was happy with what I produced.
-> Once the patch was sent, he said he'd test it.
-> I ran some simulations, but that's pretty much it. I know those
-> are not enough, so I'm waiting as well.
+ include/net/psample.h    | 27 +++++++++++++++++++++++++++
+ net/psample/psample.c    | 13 ++++++++++++-
+ net/sched/Makefile       |  2 +-
+ net/sched/psample_stub.c |  7 +++++++
+ 4 files changed, 47 insertions(+), 2 deletions(-)
+ create mode 100644 net/sched/psample_stub.c
 
-It is probably a safe change as it is, if you ran some simulations and
-the same values at the same register addresses are jammed before and
-after, it should be fine. The code looks okay.
+diff --git a/include/net/psample.h b/include/net/psample.h
+index 68ae16bb0a4a..e6a73128de59 100644
+--- a/include/net/psample.h
++++ b/include/net/psample.h
+@@ -4,6 +4,7 @@
+ 
+ #include <uapi/linux/psample.h>
+ #include <linux/list.h>
++#include <linux/skbuff.h>
+ 
+ struct psample_group {
+ 	struct list_head list;
+@@ -14,6 +15,15 @@ struct psample_group {
+ 	struct rcu_head rcu;
+ };
+ 
++struct psample_ops {
++	void (*sample_packet)(struct psample_group *group, struct sk_buff *skb,
++			      u32 trunc_size, int in_ifindex, int out_ifindex,
++			      u32 sample_rate);
++
++};
++
++extern const struct psample_ops __rcu *psample_ops __read_mostly;
++
+ struct psample_group *psample_group_get(struct net *net, u32 group_num);
+ void psample_group_take(struct psample_group *group);
+ void psample_group_put(struct psample_group *group);
+@@ -35,4 +45,21 @@ static inline void psample_sample_packet(struct psample_group *group,
+ 
+ #endif
+ 
++static inline void
++psample_nic_sample_packet(struct psample_group *group,
++			  struct sk_buff *skb, u32 trunc_size,
++			  int in_ifindex, int out_ifindex,
++			  u32 sample_rate)
++{
++	const struct psample_ops *ops;
++
++	rcu_read_lock();
++	ops = rcu_dereference(psample_ops);
++	if (ops)
++		psample_ops->sample_packet(group, skb, trunc_size,
++					   in_ifindex, out_ifindex,
++					   sample_rate);
++	rcu_read_unlock();
++}
++
+ #endif /* __NET_PSAMPLE_H */
+diff --git a/net/psample/psample.c b/net/psample/psample.c
+index 33e238c965bd..2a9fbfe09395 100644
+--- a/net/psample/psample.c
++++ b/net/psample/psample.c
+@@ -8,6 +8,7 @@
+ #include <linux/kernel.h>
+ #include <linux/skbuff.h>
+ #include <linux/module.h>
++#include <linux/rcupdate.h>
+ #include <net/net_namespace.h>
+ #include <net/sock.h>
+ #include <net/netlink.h>
+@@ -35,6 +36,10 @@ static const struct genl_multicast_group psample_nl_mcgrps[] = {
+ 
+ static struct genl_family psample_nl_family __ro_after_init;
+ 
++static const struct psample_ops psample_sample_ops = {
++	.sample_packet	= psample_sample_packet,
++};
++
+ static int psample_group_nl_fill(struct sk_buff *msg,
+ 				 struct psample_group *group,
+ 				 enum psample_command cmd, u32 portid, u32 seq,
+@@ -456,11 +461,17 @@ EXPORT_SYMBOL_GPL(psample_sample_packet);
+ 
+ static int __init psample_module_init(void)
+ {
+-	return genl_register_family(&psample_nl_family);
++	int ret;
++
++	ret = genl_register_family(&psample_nl_family);
++	if (!ret)
++		RCU_INIT_POINTER(psample_ops, &psample_sample_ops);
++	return ret;
+ }
+ 
+ static void __exit psample_module_exit(void)
+ {
++	RCU_INIT_POINTER(psample_ops, NULL);
+ 	genl_unregister_family(&psample_nl_family);
+ }
+ 
+diff --git a/net/sched/Makefile b/net/sched/Makefile
+index dd14ef413fda..0d92bb98bb26 100644
+--- a/net/sched/Makefile
++++ b/net/sched/Makefile
+@@ -3,7 +3,7 @@
+ # Makefile for the Linux Traffic Control Unit.
+ #
+ 
+-obj-y	:= sch_generic.o sch_mq.o
++obj-y	:= sch_generic.o sch_mq.o psample_stub.o
+ 
+ obj-$(CONFIG_INET)		+= sch_frag.o
+ obj-$(CONFIG_NET_SCHED)		+= sch_api.o sch_blackhole.o
+diff --git a/net/sched/psample_stub.c b/net/sched/psample_stub.c
+new file mode 100644
+index 000000000000..0615a7b64000
+--- /dev/null
++++ b/net/sched/psample_stub.c
+@@ -0,0 +1,7 @@
++// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
++/* Copyright (c) 2021 Mellanox Technologies. */
++
++#include <net/psample.h>
++
++const struct psample_ops __rcu *psample_ops __read_mostly;
++EXPORT_SYMBOL_GPL(psample_ops);
+-- 
+2.26.2
+
