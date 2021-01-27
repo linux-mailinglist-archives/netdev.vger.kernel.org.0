@@ -2,160 +2,176 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C63F6306354
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 19:31:19 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F221730636E
+	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 19:36:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236638AbhA0SaL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 13:30:11 -0500
-Received: from mx0a-0016f401.pphosted.com ([67.231.148.174]:30908 "EHLO
-        mx0b-0016f401.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S234727AbhA0SaG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 13:30:06 -0500
-Received: from pps.filterd (m0045849.ppops.net [127.0.0.1])
-        by mx0a-0016f401.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 10RIGNYL021131;
-        Wed, 27 Jan 2021 10:27:13 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=marvell.com; h=from : to : cc :
- subject : date : message-id : references : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=pfpt0220;
- bh=cG/FpoNvzBhVxn1zh7yAjd6xx/lwyL/CwsL4fWTxdnM=;
- b=bKxW3TCn5PwUP6sMFNn0TuoeBgUIDJxneTAaTQ3+a43Peteow/VbxjSNvBlTWpORqoog
- WXykLMhp3BmV76P+ndvKt2nJa3ilvir6ufoqRGDlZYbiDCf4vJH/zYFNUdUuXbMgiZI4
- 6kTNCXXKIFRfznbufgZ+4S+QMcmdipNSGGE4iclTqF1XJFKRC9hLv//Ot50KsqbaOoix
- ZxddP/tiEqGfjC9Y+IxMq3h953P+zBEQtq1/N5uGgwLSp/YI23Tyu9xlWoZVXaKCX38+
- XCUe0typ7YPcfdVDJAMWqxWulrvj6frbEUEyV4qCDKba/0pDAviqbvzNn5zlW+cu6RUR Xw== 
-Received: from dc5-exch02.marvell.com ([199.233.59.182])
-        by mx0a-0016f401.pphosted.com with ESMTP id 368j1uckj2-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Wed, 27 Jan 2021 10:27:12 -0800
-Received: from SC-EXCH01.marvell.com (10.93.176.81) by DC5-EXCH02.marvell.com
- (10.69.176.39) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 27 Jan
- 2021 10:27:11 -0800
-Received: from DC5-EXCH01.marvell.com (10.69.176.38) by SC-EXCH01.marvell.com
- (10.93.176.81) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Wed, 27 Jan
- 2021 10:27:11 -0800
-Received: from NAM11-BN8-obe.outbound.protection.outlook.com (104.47.58.173)
- by DC5-EXCH01.marvell.com (10.69.176.38) with Microsoft SMTP Server (TLS) id
- 15.0.1497.2 via Frontend Transport; Wed, 27 Jan 2021 10:27:10 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hyvj1tVN0r4G44KQBfeAEoH+qIapKYSvtq31mjxsUpy47TIGrytlkR9kgcQaK9lK8T+wyHmSrSUs4nrSQmgIXYD9mt5z1RSffIUDqWDmvuJd1lhXPdphmyii28EFmKsZ3pmp8BSEIBsBrKb1sq+pcFBFr6QAIObrJzesx9lb5FNeGV3jiq4dTVPc63qPa//8ay7+0x2pko2mxIu0Rq3ksXVRqMA0+A2NV1fvVBVo2S7hWCa/PrQD3nP8V4PmhfZXAhkpU841DiwAt1ObwSwJxfrJ426JcIbojRAT6DUbKMAdt4xMPTxjuIKGNxIX55psk+JteUbmGDe9tfNTdRLQoA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=cG/FpoNvzBhVxn1zh7yAjd6xx/lwyL/CwsL4fWTxdnM=;
- b=KcFPKF41hh9cugP4r4/Bnhmp5ZoZh+nsCDhBd1+/zYxD6SK514oKC3PYph/ex/FzrFNzsRILtEQSTmB17++Vy3eHdTXregZV1sgbu8TBbatTCnxptVuWs8V3q2XHN5T6A6ejdttMrvp53zcRPCN25FlvJ2jAc734MNlmRvgDj5tSfJo956HcqNb+VV/pFJD1Xx5eUYpisTtUXRuus5wjXzmZ0HvY4LsbDORwJPguZec2YBc9VuvqbSWm44Vy9RSPTtE4hG5stsJU9DFu4uF32m71Xbd52FJSw2mzQoFtdSYQFiZyMShNJHKCXwRX72IRWqQ9QLh3KhXfPizrhi+7mA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=marvell.com; dmarc=pass action=none header.from=marvell.com;
- dkim=pass header.d=marvell.com; arc=none
+        id S235731AbhA0SgU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 13:36:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41372 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235034AbhA0SgS (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 13:36:18 -0500
+Received: from mail-qt1-x836.google.com (mail-qt1-x836.google.com [IPv6:2607:f8b0:4864:20::836])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DE285C061574
+        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 10:35:37 -0800 (PST)
+Received: by mail-qt1-x836.google.com with SMTP id z22so2158533qto.7
+        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 10:35:37 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=marvell.onmicrosoft.com; s=selector1-marvell-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=cG/FpoNvzBhVxn1zh7yAjd6xx/lwyL/CwsL4fWTxdnM=;
- b=UgoJrGUB2wtBBuNhnrjobjlfm+8I1Uj8BM9U8RuvFxh2R6eNnTbX63ikRNVADyI1HPkL4oByEbrv2sJ9ZslpcoP7yqGokeRXV2laFMVi6DCIC5JnxX6lnkEOKvS0NMXKi2otGjerFAND7Vl5qJa5TI1B+wu1gMIZEv2NFCuolWU=
-Received: from CO6PR18MB3873.namprd18.prod.outlook.com (2603:10b6:5:350::23)
- by MW2PR18MB2313.namprd18.prod.outlook.com (2603:10b6:907:8::24) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3784.16; Wed, 27 Jan
- 2021 18:27:08 +0000
-Received: from CO6PR18MB3873.namprd18.prod.outlook.com
- ([fe80::c041:1c61:e57:349a]) by CO6PR18MB3873.namprd18.prod.outlook.com
- ([fe80::c041:1c61:e57:349a%3]) with mapi id 15.20.3805.017; Wed, 27 Jan 2021
- 18:27:08 +0000
-From:   Stefan Chulski <stefanc@marvell.com>
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-CC:     Network Development <netdev@vger.kernel.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        David Miller <davem@davemloft.net>,
-        "Nadav Haklai" <nadavh@marvell.com>,
-        Yan Markman <ymarkman@marvell.com>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        "linux@armlinux.org.uk" <linux@armlinux.org.uk>,
-        "mw@semihalf.com" <mw@semihalf.com>, Andrew Lunn <andrew@lunn.ch>,
-        "rmk+kernel@armlinux.org.uk" <rmk+kernel@armlinux.org.uk>,
-        Antoine Tenart <atenart@kernel.org>
-Subject: RE: [EXT] Re: [PATCH v4 net-next 11/19] net: mvpp2: add spinlock for
- FW FCA configuration path
-Thread-Topic: [EXT] Re: [PATCH v4 net-next 11/19] net: mvpp2: add spinlock for
- FW FCA configuration path
-Thread-Index: AQHW9KHK87rYitArp0eTTCYw2GfS5qo7vX4AgAAMt7A=
-Date:   Wed, 27 Jan 2021 18:27:07 +0000
-Message-ID: <CO6PR18MB38734006ECF7D37CC53BBC31B0BB9@CO6PR18MB3873.namprd18.prod.outlook.com>
-References: <1611747815-1934-1-git-send-email-stefanc@marvell.com>
- <1611747815-1934-12-git-send-email-stefanc@marvell.com>
- <CAF=yD-JDGg2pxi_EQvuK5iRdVpTovswF6rZ8dvAAmV0xbeimkA@mail.gmail.com>
-In-Reply-To: <CAF=yD-JDGg2pxi_EQvuK5iRdVpTovswF6rZ8dvAAmV0xbeimkA@mail.gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: gmail.com; dkim=none (message not signed)
- header.d=none;gmail.com; dmarc=none action=none header.from=marvell.com;
-x-originating-ip: [80.230.11.87]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 67bfc11f-b7e6-4365-6aa8-08d8c2f12796
-x-ms-traffictypediagnostic: MW2PR18MB2313:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <MW2PR18MB23133A80BF36344CB62C3E11B0BB9@MW2PR18MB2313.namprd18.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8882;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: D+3QTBjle1WXT/eLu+bxdpA5rSfdWmP7V0bRGnE/11Te9QhT6a3bxAF2tijUGVR0lglh+MhWABGrAtMn5XG0IUHZWBqqkcu9S2YWz0GkpPnBIMX4CAo5xyQe425PzdtvwyPT+ajVskYXODaol//zXwmfVfnXnnwupRrbvC22Dk4McmzcoztJ3kHNFpczVTX63B7UI6zwj6KxQjNix4Q1Jf1paNJA2KYQ4VUG2bRoYZfIMD8x4H8f5rqP3K0mo8Jl2bPGzCDrAEjhGjpirTNg9WQkykx0TuWwiLMqKFK+SdfIXe5gH5RLF6EfrFXTI9WU9r3EvamzWktlbQNGgvhsl++AqSCPsD0gLGxfRgF4qBArONh2mGP7cJ0WZmzQNVR9OCbC11uRPDygah7jMl4zYGuZeZagK6XZ79twwxaogM6W2ujOq1mcCfDo4Bah28wBukOhTAuac3oxC/Fem5rC/StrybcagxHMdd7XEvPjj6jgaW2nLFyJJgYl4pI/fPZVmuS8kNYTGD2p5WSCChFBZA==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:CO6PR18MB3873.namprd18.prod.outlook.com;PTR:;CAT:NONE;SFS:(4636009)(346002)(39860400002)(396003)(136003)(366004)(376002)(4744005)(76116006)(4326008)(186003)(66446008)(71200400001)(66946007)(66476007)(64756008)(66556008)(2906002)(478600001)(86362001)(9686003)(55016002)(6916009)(8936002)(33656002)(52536014)(5660300002)(54906003)(6506007)(316002)(83380400001)(26005)(7416002)(8676002)(7696005);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: =?utf-8?B?T2JBVjNRY09oNExaS2NrSHMvREh3aWQycTJOMVdZb1VhSEI2cllVYS80Z3Av?=
- =?utf-8?B?bUpLY3A1SGZsK1NwaGMxeWdqMG9aZm13T3B5NzYvYlMvaXEwMjdxSk8xaFJw?=
- =?utf-8?B?NFVlK0R0YVQ3Q0JkMTYySnBPakJON1JiQWczQ01BbHpCNGJ6OUc0U0FxaGIr?=
- =?utf-8?B?UmlwMmc2U0xsNUNnWHhacFRwZ3p6ZDdsYkhwUHRXNlpvUkJ2WHZES3RPU1pl?=
- =?utf-8?B?NDBFWG1yRDdobUIrNzd3eUJ0Y2dxRTJPY1RHeG5LMXZQclpTKzRpdWFTNUc4?=
- =?utf-8?B?bWtMeUpsWHVmKzNqZmMzWXJPKzBEMHloYzZtSXR4VEVIL1dKa3Y3WGgzTzBl?=
- =?utf-8?B?dGRqV3F6M3Y1YkFyZjNBT2s5RDZsOXdtVTZqYXJiNGNZdFZ6d1Irb0IxbWJW?=
- =?utf-8?B?c3gzWllRZmdqeUJ1TllPc1NzSC8weDhVZmdYVWlLazRCbisrM1pQSWJHTDRF?=
- =?utf-8?B?dW5BR3c0elgrUVh5VkxEazU5aklpZXpkS1kxOC9uZGUyM2FmL2tNOFd2TUtx?=
- =?utf-8?B?SitQemx0eHdZWlRMUUtiVk5vaXdqOElNczZuOXIya0JaakVXZzljQ05UUWJl?=
- =?utf-8?B?WUM2cUxQaGpZd1JtZTJzS25JVzhoMkk5S25LSU9udXBQK2UrYVA1VmVYUGFM?=
- =?utf-8?B?QWxBZmMrMXdCRkhic3BPdmVzNEduMVl6cWlsUE56SWJpcmZiWTFhOXBSQ25x?=
- =?utf-8?B?TyttZWVwdkg1bmNVQTFFcHJqeENxbW9wTWlRd3RjbnU2MmVZbjNGUWtSRjZO?=
- =?utf-8?B?NXhkenZaT2FyV1ZLWG1wd3hkbDQzb3BHSG9tNS96NENjMjRxcERubExFako2?=
- =?utf-8?B?aU1yTHhCdno5RytRa0VzSFBiMG5xTVRkeE5BWUFPYzY2SlRsek85Q0ozN25G?=
- =?utf-8?B?MnpremhyYW1TYzhXWHlJZlFnTTFnTHlrNHAzTFJmVE1EeHN6N3BDeFZVcGNU?=
- =?utf-8?B?Z1JZREFlN0lvVUU5aFRQbkt0azU1ZStkTFI2SEdTRGJVYWo4anVPSTZaMjVn?=
- =?utf-8?B?WHF3MmhJL0ZMZWZjQ2pHN2h3MkltT3YvSHJ2YmtXY2E1VFd0M09RNWliYlNt?=
- =?utf-8?B?WDRlWFVkNHk3U0pDd1VKVEFWQlk5Y1dzdGwzNGlDeTNxY1J6R3VJSnk5eEpq?=
- =?utf-8?B?NGRTQ0VYSDFoVlkrNFhuc0IzcUdISUxoaVk5VThkQVFuUDNkVEkyR2gzNnQw?=
- =?utf-8?B?S2grUXRzeTNZSjhjSkdsYnJLMXlDM2NBelJYd0Z1WEJ4L3o5VEJpanBjTG5V?=
- =?utf-8?B?Y3dpbXFmT09DbnVSYnVjVTlVZzlxUzF1SGtHVFA4dVRqS3Z0R2hxTWtIbGp4?=
- =?utf-8?B?RlRZUnhDR0NXMHViUXBibWx2QlVlOVIyZzB3Z3JWTVppNU9ZUGY1SSsxOU5Z?=
- =?utf-8?B?MmRBaHZqMGQranU4Ym4vdERQUW5lVS9ydnE1YVUyTVlwU3NJVEdVN1YyN0Rn?=
- =?utf-8?Q?r7aPpYSD?=
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=44jOD3nZVoOvFATWCEVSb6OwVXBmxVqEX3xVTS4M3cs=;
+        b=XYj+X1ygiZcbLbGvnTnY1ARwHD44UNiFvk2lMHAxxIA67HguuPqfK/eD02vSMCH9xs
+         AmctZ+p+P5Qdry+s8/CuJ40CWYWfjSPlpKliOOlKImKbIk/ItQmgth6IupeQlo7PKAb+
+         n5rY+A1fWXelbYDVPdoC/0da5i7Hkh8vIUhhwvnFNwC647xQ9XLmg8Wvwhpm3r0PRCRZ
+         70n35NMzqd6SqavpEwxPU/zNsV8mE8L3ppPa9KIgF1tWlVOrg6P5x1xZN+NhBzgcXLcr
+         tQGd7Mfaruqjl2qMjuAdq4QT+ZMzQi80+TneOnpah1W1m3nxLt3KSvnanVvGAHAgIRw0
+         Xvww==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=44jOD3nZVoOvFATWCEVSb6OwVXBmxVqEX3xVTS4M3cs=;
+        b=PHF1Ikm2u0qZKDDe25rWE+oS0vbdA+slnwDWjrHjTN6EuVWg1R8r7qEvyQnHbVhFIX
+         C9M/eDdYkx+rs7RxlsF3PvS0ZB9PsS4qGW6YqhDBTQkLIp/2RZSC/+cXvIXPnGWo/V2q
+         fUWIYnVUv69EzWnfLD0YnxLBsAg8vB4gMqBfgOPgkS2phIgUfHG6QqEghQnyIt0+Ha1C
+         xH1Gau0u7Zw43buB+HHAWUu6NvzQCLboCt09dh9RBE/IoCTWs/0vjJC3NtjX0AkOgIc5
+         58Qvq+NuKZ16OGUQbRvRFVkFgnFCNJLPQT/RPqQzdWVFLfL9iXdiXU/cYjajTVCJXMKs
+         VMrg==
+X-Gm-Message-State: AOAM533cgvozehSDUPXxAec9qxBicmXRzMYQTzW39iLB66J6LR3TjcSA
+        ybiOm9kwGMSLtu7kvhja+iV7ef92/R3cbsKce1HfxQ==
+X-Google-Smtp-Source: ABdhPJyyUdsHNxpiBTK5V6JVwIHLWxywC4KPQOacz+7AoBgDLvKzgLZIrFIbwC9MffmwCdTxb5aSS62z2tthMPg1GWw=
+X-Received: by 2002:a05:622a:c9:: with SMTP id p9mr10883068qtw.337.1611772536831;
+ Wed, 27 Jan 2021 10:35:36 -0800 (PST)
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: CO6PR18MB3873.namprd18.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 67bfc11f-b7e6-4365-6aa8-08d8c2f12796
-X-MS-Exchange-CrossTenant-originalarrivaltime: 27 Jan 2021 18:27:07.8368
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 70e1fb47-1155-421d-87fc-2e58f638b6e0
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: vGzUjnJHSaPT5mCiK4dyYg+5S+YvoBFvOTM1Bu6h6LSWfpaG/oLeuotP/cQVZFno6CTIzE9T8QZmp4vzPxVWwg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MW2PR18MB2313
-X-OriginatorOrg: marvell.com
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
- definitions=2021-01-27_06:2021-01-27,2021-01-27 signatures=0
+References: <000000000000dfc44f05b9d2e864@google.com> <20210127054509.2187-1-hdanton@sina.com>
+ <CACT4Y+aTkZZn7BCbn5HPph_9wjw6vtz5Qo6+c933Rgf-nq5BMA@mail.gmail.com> <20210127122409.8808-1-hdanton@sina.com>
+In-Reply-To: <20210127122409.8808-1-hdanton@sina.com>
+From:   Dmitry Vyukov <dvyukov@google.com>
+Date:   Wed, 27 Jan 2021 19:35:25 +0100
+Message-ID: <CACT4Y+YKmhJ2eBe0+WmRHs_yNmuAc6r-x5FQi+QAtT=LPdS4tg@mail.gmail.com>
+Subject: Re: upstream test error: INFO: trying to register non-static key in nsim_get_stats64
+To:     Hillf Danton <hdanton@sina.com>
+Cc:     syzbot <syzbot+e74a6857f2d0efe3ad81@syzkaller.appspotmail.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>, kpsingh@kernel.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-PiA+IGluZGV4IDlkODk5M2YuLmYzNGUyNjAgMTAwNjQ0DQo+ID4gLS0tIGEvZHJpdmVycy9uZXQv
-ZXRoZXJuZXQvbWFydmVsbC9tdnBwMi9tdnBwMi5oDQo+ID4gKysrIGIvZHJpdmVycy9uZXQvZXRo
-ZXJuZXQvbWFydmVsbC9tdnBwMi9tdnBwMi5oDQo+ID4gQEAgLTEwMjEsNiArMTAyMSwxMSBAQCBz
-dHJ1Y3QgbXZwcDIgew0KPiA+DQo+ID4gICAgICAgICAvKiBDTTMgU1JBTSBwb29sICovDQo+ID4g
-ICAgICAgICBzdHJ1Y3QgZ2VuX3Bvb2wgKnNyYW1fcG9vbDsNCj4gPiArDQo+ID4gKyAgICAgICBi
-b29sIGN1c3RvbV9kbWFfbWFzazsNCj4gPiArDQo+ID4gKyAgICAgICAvKiBTcGlubG9ja3MgZm9y
-IENNMyBzaGFyZWQgbWVtb3J5IGNvbmZpZ3VyYXRpb24gKi8NCj4gPiArICAgICAgIHNwaW5sb2Nr
-X3QgbXNzX3NwaW5sb2NrOw0KPiANCj4gRG9lcyB0aGlzIG5lZWQgdG8gYmUgYSBzdGFuZC1hbG9u
-ZSBwYXRjaD8gVGhpcyBpbnRyb2R1Y2VzIGEgc3BpbmxvY2ssIGJ1dA0KPiBkb2VzIG5vdCB1c2Ug
-aXQuDQo+IA0KPiBBbHNvLCBpcyB0aGUgaW50cm9kdWN0aW9uIG9mIGN1c3RvbV9kbWFfbWFzayBp
-biB0aGlzIGNvbW1pdCBvbiBwdXJwb3NlPw0KDQpJIHdvdWxkIGFkZCB0aGlzIGNoYW5nZSB0byBh
-bm90aGVyIHBhdGNoLiBjdXN0b21fZG1hX21hc2sgc2hvdWxkIGJlIHJlbW92ZWQuDQoNClRoYW5r
-cywNClN0ZWZhbi4NCg==
+On Wed, Jan 27, 2021 at 1:24 PM Hillf Danton <hdanton@sina.com> wrote:
+>
+> On Wed, 27 Jan 2021 10:07:24 +0100 Dmitry Vyukov <dvyukov@google.com> wrote:
+> >On Wed, Jan 27, 2021 at 6:45 AM Hillf Danton <hdanton@sina.com> wrote:
+> >>
+> >> Tue, 26 Jan 2021 11:46:24 -0800
+> >> > syzbot found the following issue on:
+> >> >
+> >> > HEAD commit:    c7230a48 Merge tag 'spi-fix-v5.11-rc5' of git://git.kernel..
+> >> > git tree:       upstream
+> >> > console output: https://syzkaller.appspot.com/x/log.txt?x=17731f94d00000
+> >> > kernel config:  https://syzkaller.appspot.com/x/.config?x=9c312983a0475388
+> >> > dashboard link: https://syzkaller.appspot.com/bug?extid=e74a6857f2d0efe3ad81
+> >> > userspace arch: arm
+> >> >
+> >> > IMPORTANT: if you fix the issue, please add the following tag to the commit:
+> >> > Reported-by: syzbot+e74a6857f2d0efe3ad81@syzkaller.appspotmail.com
+> >> >
+> >> > batman_adv: batadv0: Not using interface batadv_slave_1 (retrying later): interface not active
+> >> > device hsr_slave_0 entered promiscuous mode
+> >> > device hsr_slave_1 entered promiscuous mode
+> >> >
+> >> > INFO: trying to register non-static key.
+> >> > the code is fine but needs lockdep annotation.
+> >> > turning off the locking correctness validator.
+> >> > CPU: 0 PID: 4695 Comm: syz-executor.0 Not tainted 5.11.0-rc5-syzkaller #0
+> >> > Hardware name: ARM-Versatile Express
+> >> > Backtrace:
+> >> > [<826fc5b8>] (dump_backtrace) from [<826fc82c>] (show_stack+0x18/0x1c arch/arm/kernel/traps.c:252)
+> >> > [<826fc814>] (show_stack) from [<8270d1f8>] (__dump_stack lib/dump_stack.c:79 [inline])
+> >> > [<826fc814>] (show_stack) from [<8270d1f8>] (dump_stack+0xa8/0xc8 lib/dump_stack.c:120)
+> >> > [<8270d150>] (dump_stack) from [<802bf9c0>] (assign_lock_key kernel/locking/lockdep.c:935 [inline])
+> >> > [<8270d150>] (dump_stack) from [<802bf9c0>] (register_lock_class+0xabc/0xb68 kernel/locking/lockdep.c:1247)
+> >> > [<802bef04>] (register_lock_class) from [<802baa2c>] (__lock_acquire+0x84/0x32d4 kernel/locking/lockdep.c:4711)
+> >> > [<802ba9a8>] (__lock_acquire) from [<802be840>] (lock_acquire.part.0+0xf0/0x554 kernel/locking/lockdep.c:5442)
+> >> > [<802be750>] (lock_acquire.part.0) from [<802bed10>] (lock_acquire+0x6c/0x74 kernel/locking/lockdep.c:5415)
+> >> > [<802beca4>] (lock_acquire) from [<81560548>] (seqcount_lockdep_reader_access include/linux/seqlock.h:103 [inline])
+> >> > [<802beca4>] (lock_acquire) from [<81560548>] (__u64_stats_fetch_begin include/linux/u64_stats_sync.h:164 [inline])
+> >> > [<802beca4>] (lock_acquire) from [<81560548>] (u64_stats_fetch_begin include/linux/u64_stats_sync.h:175 [inline])
+> >> > [<802beca4>] (lock_acquire) from [<81560548>] (nsim_get_stats64+0xdc/0xf0 drivers/net/netdevsim/netdev.c:70)
+> >> > [<8156046c>] (nsim_get_stats64) from [<81e2efa0>] (dev_get_stats+0x44/0xd0 net/core/dev.c:10405)
+> >> > [<81e2ef5c>] (dev_get_stats) from [<81e53204>] (rtnl_fill_stats+0x38/0x120 net/core/rtnetlink.c:1211)
+> >> > [<81e531cc>] (rtnl_fill_stats) from [<81e59d58>] (rtnl_fill_ifinfo+0x6d4/0x148c net/core/rtnetlink.c:1783)
+> >> > [<81e59684>] (rtnl_fill_ifinfo) from [<81e5ceb4>] (rtmsg_ifinfo_build_skb+0x9c/0x108 net/core/rtnetlink.c:3798)
+> >> > [<81e5ce18>] (rtmsg_ifinfo_build_skb) from [<81e5d0ac>] (rtmsg_ifinfo_event net/core/rtnetlink.c:3830 [inline])
+> >> > [<81e5ce18>] (rtmsg_ifinfo_build_skb) from [<81e5d0ac>] (rtmsg_ifinfo_event net/core/rtnetlink.c:3821 [inline])
+> >> > [<81e5ce18>] (rtmsg_ifinfo_build_skb) from [<81e5d0ac>] (rtmsg_ifinfo+0x44/0x70 net/core/rtnetlink.c:3839)
+> >> > [<81e5d068>] (rtmsg_ifinfo) from [<81e45c2c>] (register_netdevice+0x664/0x68c net/core/dev.c:10103)
+> >> > [<81e455c8>] (register_netdevice) from [<815608bc>] (nsim_create+0xf8/0x124 drivers/net/netdevsim/netdev.c:317)
+> >> > [<815607c4>] (nsim_create) from [<81561184>] (__nsim_dev_port_add+0x108/0x188 drivers/net/netdevsim/dev.c:941)
+> >> > [<8156107c>] (__nsim_dev_port_add) from [<815620d8>] (nsim_dev_port_add_all drivers/net/netdevsim/dev.c:990 [inline])
+> >> > [<8156107c>] (__nsim_dev_port_add) from [<815620d8>] (nsim_dev_probe+0x5cc/0x750 drivers/net/netdevsim/dev.c:1119)
+> >> > [<81561b0c>] (nsim_dev_probe) from [<815661dc>] (nsim_bus_probe+0x10/0x14 drivers/net/netdevsim/bus.c:287)
+> >> > [<815661cc>] (nsim_bus_probe) from [<811724c0>] (really_probe+0x100/0x50c drivers/base/dd.c:554)
+> >> > [<811723c0>] (really_probe) from [<811729c4>] (driver_probe_device+0xf8/0x1c8 drivers/base/dd.c:740)
+> >> > [<811728cc>] (driver_probe_device) from [<81172fe4>] (__device_attach_driver+0x8c/0xf0 drivers/base/dd.c:846)
+> >> > [<81172f58>] (__device_attach_driver) from [<8116fee0>] (bus_for_each_drv+0x88/0xd8 drivers/base/bus.c:431)
+> >> > [<8116fe58>] (bus_for_each_drv) from [<81172c6c>] (__device_attach+0xdc/0x1d0 drivers/base/dd.c:914)
+> >> > [<81172b90>] (__device_attach) from [<8117305c>] (device_initial_probe+0x14/0x18 drivers/base/dd.c:961)
+> >> > [<81173048>] (device_initial_probe) from [<81171358>] (bus_probe_device+0x90/0x98 drivers/base/bus.c:491)
+> >> > [<811712c8>] (bus_probe_device) from [<8116e77c>] (device_add+0x320/0x824 drivers/base/core.c:3109)
+> >> > [<8116e45c>] (device_add) from [<8116ec9c>] (device_register+0x1c/0x20 drivers/base/core.c:3182)
+> >> > [<8116ec80>] (device_register) from [<81566710>] (nsim_bus_dev_new drivers/net/netdevsim/bus.c:336 [inline])
+> >> > [<8116ec80>] (device_register) from [<81566710>] (new_device_store+0x178/0x208 drivers/net/netdevsim/bus.c:215)
+> >> > [<81566598>] (new_device_store) from [<8116fcb4>] (bus_attr_store+0x2c/0x38 drivers/base/bus.c:122)
+> >> > [<8116fc88>] (bus_attr_store) from [<805b4b8c>] (sysfs_kf_write+0x48/0x54 fs/sysfs/file.c:139)
+> >> > [<805b4b44>] (sysfs_kf_write) from [<805b3c90>] (kernfs_fop_write_iter+0x128/0x1ec fs/kernfs/file.c:296)
+> >> > [<805b3b68>] (kernfs_fop_write_iter) from [<804d22fc>] (call_write_iter include/linux/fs.h:1901 [inline])
+> >> > [<805b3b68>] (kernfs_fop_write_iter) from [<804d22fc>] (new_sync_write fs/read_write.c:518 [inline])
+> >> > [<805b3b68>] (kernfs_fop_write_iter) from [<804d22fc>] (vfs_write+0x3dc/0x57c fs/read_write.c:605)
+> >> > [<804d1f20>] (vfs_write) from [<804d2604>] (ksys_write+0x68/0xec fs/read_write.c:658)
+> >> > [<804d259c>] (ksys_write) from [<804d2698>] (__do_sys_write fs/read_write.c:670 [inline])
+> >> > [<804d259c>] (ksys_write) from [<804d2698>] (sys_write+0x10/0x14 fs/read_write.c:667)
+> >> > [<804d2688>] (sys_write) from [<80200060>] (ret_fast_syscall+0x0/0x2c arch/arm/mm/proc-v7.S:64)
+> >>
+> >> Init u64 stats for aa32.
+> >>
+> >>
+> >> --- a/drivers/net/netdevsim/netdev.c
+> >> +++ b/drivers/net/netdevsim/netdev.c
+> >> @@ -296,6 +296,7 @@ nsim_create(struct nsim_dev *nsim_dev, s
+> >>         dev_net_set(dev, nsim_dev_net(nsim_dev));
+> >>         ns = netdev_priv(dev);
+> >>         ns->netdev = dev;
+> >> +       u64_stats_init(&ns->syncp);
+> >>         ns->nsim_dev = nsim_dev;
+> >>         ns->nsim_dev_port = nsim_dev_port;
+> >>         ns->nsim_bus_dev = nsim_dev->nsim_bus_dev;
+> >
+> >Hi Hillf,
+> >
+> Hi Dmitry,
+>
+> >Thanks for looking into it.
+> >This would be good to fix asap upstream because it boot-breaks 32-bit
+> >arches (arm32). Do you mind sending a proper patch?
+> >
+> I'd like to do that but the barrier is, you see,
+>
+> 1/ I could not test it because I dont have (or access to) such a device,
+> 2/ if the diff makes sense, anyone can feel free to prepare a patch and
+> send it out to the maintainer because I prefer Cc much more than sob.
+>
+> That is it. Simple and pure.
+
+I've run syzkaller with this patch and the warning goes away, so you may add:
+Tested-by: Dmitry Vyukov <dvyukov@google.com>
+
+Just in case, syzbot uses qemu-system-arm to test arm32 on x86_64. So
+if you have a typical x86_64 machine, you may test this. I will
+document more details soon.
