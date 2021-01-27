@@ -2,149 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6829D30675B
-	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 00:00:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E02FE30675F
+	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 00:00:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232768AbhA0W5f (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 17:57:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40764 "EHLO
+        id S233048AbhA0W6U (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 17:58:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40676 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232161AbhA0W4P (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 17:56:15 -0500
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4209CC0617AB
-        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 14:48:52 -0800 (PST)
-Received: by mail-ej1-x630.google.com with SMTP id w1so4939023ejf.11
-        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 14:48:52 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=sOWrYdcHQqhmHTK9fs2GTQ+WR1UpvPfBFNucPJ79CrI=;
-        b=Dlr+BvsIVObLTX2AjZgzVB8PoK1L4OYbkfH8+VD3C5mITvytTOH7tNZJSh0ZZvP9xP
-         cnjTqW6n7YtAWQAGkMCBPLXhR/Km83gOmoCzeEaAijosQF0PgDgtCHQf5sqUxgg0TQ6T
-         zRadX2mtvTFx204G5qhR1yVmJStv5PjLTBEA8CemhsD8JL3H3sMg3bjVBWPXW/alQG2g
-         RDAHtvLr5suOfiLa7HAuvKTgnBZnWLesIce/LDOnUnzkoUpfx32muZTqtYUXNFmjFImn
-         biCJzcJPZbcgYHB5DmPnnmkkIkqCKt9n6STssVprwuXqAFWbvLQNUrJIZvKufIKQngtL
-         anZQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=sOWrYdcHQqhmHTK9fs2GTQ+WR1UpvPfBFNucPJ79CrI=;
-        b=n22YupSzTrBtuReZAsw6nRJf28mT1gS06Nnw5ctFKVE63cai8CSx3WvYcIXBMdqklM
-         slhGyyRarIfKQCZmO67Xpo+SaGRASZi3lzs5OhJ9aT11XP5INKHzJmdfBrWHm/6j6vJK
-         KBEfvOBEunP8aWZWBtDTbzrv9Xi0f9KTPoHl8jtcRZs4zTALzbSaN5oU8AmuhwcQ7ykN
-         IMr8gp1aH/1tlDSGa5yApA2TA+7xTpMAN4wJR9wvvMfQ98sJ9muZGKu5O3zCDasqqDpq
-         aEsbvD189RViSP3B6aBSxK1YYi9lMdbgtVfwzecPCeVck7JE1Nx88vujo6p+EPDizGU8
-         kVUw==
-X-Gm-Message-State: AOAM533dRvfsn9cai7+68e0hUZekCrhz4W3PveMOUG8zp6IulOedOs5m
-        JHs5fJeWX4IhXuDkM4UTcTxTK1VxPnmWRbaTMx4=
-X-Google-Smtp-Source: ABdhPJyNyerWYIGO5sY9o4bEF+l4mplvB9gTvjzQFZKNQhgQNX6SWn3w1Z/pfPZp+/kj5UQgTprJS5G5dZDYKqC2daQ=
-X-Received: by 2002:a17:906:494c:: with SMTP id f12mr8682325ejt.56.1611787730878;
- Wed, 27 Jan 2021 14:48:50 -0800 (PST)
+        with ESMTP id S231540AbhA0Wzx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 17:55:53 -0500
+Received: from www62.your-server.de (www62.your-server.de [IPv6:2a01:4f8:d0a:276a::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D273C0617AA;
+        Wed, 27 Jan 2021 14:49:33 -0800 (PST)
+Received: from sslproxy01.your-server.de ([78.46.139.224])
+        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1l4tcF-000CrN-Ho; Wed, 27 Jan 2021 23:48:47 +0100
+Received: from [85.7.101.30] (helo=pc-9.home)
+        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <daniel@iogearbox.net>)
+        id 1l4tcF-000MlJ-9A; Wed, 27 Jan 2021 23:48:47 +0100
+Subject: Re: [Patch bpf-next v5 1/3] bpf: introduce timeout hash map
+To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>
+Cc:     Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        bpf <bpf@vger.kernel.org>, Jamal Hadi Salim <jhs@mojatatu.com>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Cong Wang <cong.wang@bytedance.com>,
+        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
+        Dongdong Wang <wangdongdong.6@bytedance.com>, yhs@fb.com
+References: <20210122205415.113822-1-xiyou.wangcong@gmail.com>
+ <20210122205415.113822-2-xiyou.wangcong@gmail.com>
+ <d69d44ca-206c-d818-1177-c8f14d8be8d1@iogearbox.net>
+ <CAM_iQpW8aeh190G=KVA9UEZ_6+UfenQxgPXuw784oxCaMfXjng@mail.gmail.com>
+ <CAADnVQKmNiHj8qy1yqbOrf-OMyhnn8fKm87w6YMfkiDHkBpJVg@mail.gmail.com>
+From:   Daniel Borkmann <daniel@iogearbox.net>
+Message-ID: <b646c7b5-be91-79c6-4538-e41a10d4b9ae@iogearbox.net>
+Date:   Wed, 27 Jan 2021 23:48:46 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
 MIME-Version: 1.0
-References: <c7fd197f-8ab8-2297-385e-5d2b1d5911d7@gmail.com>
- <CAF=yD-Jw6MqY+hnzFH75E4+3z5jo8dnO5G+KXpTd_vetZ6Gxwg@mail.gmail.com>
- <3afea922-776b-baf3-634c-9a1e84e8c4c2@gmail.com> <CAF=yD-LBAVbVuaJZgpgyU16Wd1ppKquRjvfX=HbDTJABBzeo9A@mail.gmail.com>
- <5229d00c-1b12-38fb-3f2b-e21f005281ec@gmail.com> <CAF=yD-J-XVLpntG=pGxuNUjs898+669v72Mh0PkJ9u34T6paQA@mail.gmail.com>
- <32d17a7c-f0be-5691-8e3f-715f7aab4992@gmail.com>
-In-Reply-To: <32d17a7c-f0be-5691-8e3f-715f7aab4992@gmail.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Wed, 27 Jan 2021 17:48:14 -0500
-Message-ID: <CAF=yD-KJbhF7ZtCcaAQQCpnXxKUPrzbO+8+7g=CEh-2n45s3Yw@mail.gmail.com>
-Subject: Re: [PATCH net] r8169: work around RTL8125 UDP hw bug
-To:     Heiner Kallweit <hkallweit1@gmail.com>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Realtek linux nic maintainers <nic_swsd@realtek.com>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <CAADnVQKmNiHj8qy1yqbOrf-OMyhnn8fKm87w6YMfkiDHkBpJVg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Authenticated-Sender: daniel@iogearbox.net
+X-Virus-Scanned: Clear (ClamAV 0.102.4/26062/Wed Jan 27 13:26:15 2021)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 27, 2021 at 4:34 PM Heiner Kallweit <hkallweit1@gmail.com> wrote:
->
-> On 27.01.2021 21:35, Willem de Bruijn wrote:
-> > On Wed, Jan 27, 2021 at 3:32 PM Heiner Kallweit <hkallweit1@gmail.com> wrote:
-> >>
-> >> On 27.01.2021 20:54, Willem de Bruijn wrote:
-> >>> On Wed, Jan 27, 2021 at 2:40 PM Heiner Kallweit <hkallweit1@gmail.com> wrote:
-> >>>>
-> >>>> On 27.01.2021 19:07, Willem de Bruijn wrote:
-> >>>>> On Tue, Jan 26, 2021 at 2:40 PM Heiner Kallweit <hkallweit1@gmail.com> wrote:
-> >>>>>>
-> >>>>>> It was reported that on RTL8125 network breaks under heavy UDP load,
-> >>>>>> e.g. torrent traffic ([0], from comment 27). Realtek confirmed a hw bug
-> >>>>>> and provided me with a test version of the r8125 driver including a
-> >>>>>> workaround. Tests confirmed that the workaround fixes the issue.
-> >>>>>> I modified the original version of the workaround to meet mainline
-> >>>>>> code style.
-> >>>>>>
-> >>>>>> [0] https://bugzilla.kernel.org/show_bug.cgi?id=209839
-> >>>>>>
-> >>>>>> Fixes: f1bce4ad2f1c ("r8169: add support for RTL8125")
-> >>>>>> Tested-by: xplo <xplo.bn@gmail.com>
-> >>>>>> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
-> >>>>>> ---
-> >>>>>>  drivers/net/ethernet/realtek/r8169_main.c | 64 ++++++++++++++++++++---
-> >>>>>>  1 file changed, 58 insertions(+), 6 deletions(-)
-> >>>>>>
-> >>>>>> diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
-> >>>>>> index fb67d8f79..90052033b 100644
-> >>>>>> --- a/drivers/net/ethernet/realtek/r8169_main.c
-> >>>>>> +++ b/drivers/net/ethernet/realtek/r8169_main.c
-> >>>>>> @@ -28,6 +28,7 @@
-> >>>>>>  #include <linux/bitfield.h>
-> >>>>>>  #include <linux/prefetch.h>
-> >>>>>>  #include <linux/ipv6.h>
-> >>>>>> +#include <linux/ptp_classify.h>
-> >>>>>>  #include <asm/unaligned.h>
-> >>>>>>  #include <net/ip6_checksum.h>
-> >>>>>>
-> >>>>>> @@ -4007,17 +4008,64 @@ static int rtl8169_xmit_frags(struct rtl8169_private *tp, struct sk_buff *skb,
-> >>>>>>         return -EIO;
-> >>>>>>  }
-> >>>>>>
-> >>>>>> -static bool rtl_test_hw_pad_bug(struct rtl8169_private *tp)
-> >>>>>> +static bool rtl_skb_is_udp(struct sk_buff *skb)
-> >>>>>>  {
-> >>>>>> +       switch (vlan_get_protocol(skb)) {
-> >>>>>> +       case htons(ETH_P_IP):
-> >>>>>> +               return ip_hdr(skb)->protocol == IPPROTO_UDP;
-> >>>>>> +       case htons(ETH_P_IPV6):
-> >>>>>> +               return ipv6_hdr(skb)->nexthdr == IPPROTO_UDP;
-> >>>>
-> >>>> The workaround was provided by Realtek, I just modified it to match
-> >>>> mainline code style. For your reference I add the original version below.
-> >>>> I don't know where the magic numbers come from, Realtek releases
-> >>>> neither data sheets nor errata information.
-> >>>
-> >>> Okay. I don't know what is customary for this process.
-> >>>
-> >>> But I would address the possible out of bounds read by trusting ip
-> >>> header integrity in rtl_skb_is_udp.
-> >>>
-> >> I don't know tun/virtio et al good enough to judge which header elements
-> >> may be trustworthy and which may be not. What should be checked where?
-> >
-> > It requires treating the transmit path similar to the receive path:
-> > assume malicious or otherwise faulty packets. So do not trust that a
-> > protocol of ETH_P_IPV6 implies a packet with 40B of space to hold a
-> > full ipv6 header. That is the extent of it, really.
-> >
-> OK, so what can I do? Check for
-> skb_tail_pointer(skb) - skb_network_header(skb) >= sizeof(struct ipv6hdr) ?
+On 1/27/21 7:00 PM, Alexei Starovoitov wrote:
+> On Tue, Jan 26, 2021 at 11:00 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
+>>>>                ret = PTR_ERR(l_new);
+>>>> +             if (ret == -EAGAIN) {
+>>>> +                     htab_unlock_bucket(htab, b, hash, flags);
+>>>> +                     htab_gc_elem(htab, l_old);
+>>>> +                     mod_delayed_work(system_unbound_wq, &htab->gc_work, 0);
+>>>> +                     goto again;
+>>>
+>>> Also this one looks rather worrying, so the BPF prog is stalled here, loop-waiting
+>>> in (e.g. XDP) hot path for system_unbound_wq to kick in to make forward progress?
+>>
+>> In this case, the old one is scheduled for removal in GC, we just wait for GC
+>> to finally remove it. It won't stall unless GC itself or the worker scheduler is
+>> wrong, both of which should be kernel bugs.
+>>
+>> If we don't do this, users would get a -E2BIG when it is not too big. I don't
+>> know a better way to handle this sad situation, maybe returning -EBUSY
+>> to users and let them call again?
+> 
+> I think using wq for timers is a non-starter.
+> Tying a hash/lru map with a timer is not a good idea either.
 
-It is quite rare for device drivers to access protocol header fields
-(and a grep points to lots of receive side operations), so I don't
-have a good driver example.
+Thinking some more, given we have jiffies64 helper and atomic ops for BPF by now,
+we would technically only need the ability to delete entries via bpf iter progs
+(d6c4503cc296 ("bpf: Implement bpf iterator for hash maps")) which could then be
+kicked off from user space at e.g. dynamic intervals which would be the equivalent
+for the wq in here. That patch could then be implemented this way. I presume
+the ability to delete map entries from bpf iter progs would be generic and useful
+enough anyway.
 
-But qdisc_pkt_len_init in net/core/dev.c shows a good approach for
-this robust access in the transmit path: using skb_header_pointer.
+> I think timers have to be done as independent objects similar to
+> how the kernel uses them.
+> Then there will be no question whether lru or hash map needs it.
+> The bpf prog author will be able to use timers with either.
+> The prog will be able to use timers without hash maps too.
+> 
+> I'm proposing a timer map where each object will go through
+> bpf_timer_setup(timer, callback, flags);
+> where "callback" is a bpf subprogram.
+> Corresponding bpf_del_timer and bpf_mod_timer would work the same way
+> they are in the kernel.
+> The tricky part is kernel style of using from_timer() to access the
+> object with additional info.
 
-> On a side note: Why is IP6_HLEN defined in ptp_classify.h and not in any
-> IPv6 header file? Does no IPv6 code need such a constant?
+Would this mean N timer objs for N map elems? I presume not given this could be
+racy and would have huge extra mem overhead. Either way, timer obj could work, but
+then at the same time you could probably also solve it with the above; it's not
+like you need the timer to kick in at some /exact/ time, but rather at some point
+to clean up stale entries before the map gets full and worst case refuses updates
+for new entries. (In the ideal case though we wouldn't need the extra effort to
+search deeply for elements w/o penalizing the fast-path lookup costs too much when
+walking the bucket.)
 
-It is customary to use sizeof(struct ipv6hdr)
+> I think bpf timer map can model it the same way.
+> At map creation time the value_size will specify the amount of extra
+> bytes necessary.
+> Another alternative is to pass an extra data argument to a callback.
