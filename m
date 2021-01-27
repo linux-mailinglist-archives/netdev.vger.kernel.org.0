@@ -2,86 +2,192 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 112A530535A
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 07:42:24 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 687F4305377
+	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 07:50:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231890AbhA0GmC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 01:42:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55812 "EHLO
+        id S231511AbhA0Gu0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 01:50:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232509AbhA0Gh4 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 01:37:56 -0500
-Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EDB2BC061574;
-        Tue, 26 Jan 2021 22:37:15 -0800 (PST)
-Received: by mail-pg1-x52b.google.com with SMTP id o16so917578pgg.5;
-        Tue, 26 Jan 2021 22:37:15 -0800 (PST)
+        with ESMTP id S232171AbhA0GrG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 01:47:06 -0500
+Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B205C061573
+        for <netdev@vger.kernel.org>; Tue, 26 Jan 2021 22:46:24 -0800 (PST)
+Received: by mail-wm1-x32c.google.com with SMTP id i9so646962wmq.1
+        for <netdev@vger.kernel.org>; Tue, 26 Jan 2021 22:46:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=W0uuLo/4/wCey2dN/nEYFd5YvwQZJzT08touWgY4O8w=;
-        b=TUE4PN3EDWJkxwfN/6yW4sXh09Op1ZfGs87T0vPXMo2V2CUoevdBs0ZON/iG+qZZqz
-         Nm+7tnV72tMSF8+lEMdVx9wuVGqcn6rbhUFJPh31xc6R/0sfQV6zjchM0y1DNW8J/s8Q
-         neAWRok4qYmLx9jmUG4OJma0f84V4xDYy4W+F5xN0H7kyLR0OZxgB6/D9BWNxpAbhGMK
-         Gpd+9oYmUvzguvnc2FbUsLpuJ5sio+bZwy+heoV5GnOIjqkxzajuyao/W+oxm0eNAI9Y
-         vzqguRCGWWKF4XJtfqvSTXteaBP3M8p+TxQRSlIENIb1pTvDyj0mghBgYzOZtYT/NTiF
-         QQ6w==
+        h=from:subject:to:cc:message-id:date:user-agent:mime-version
+         :content-language:content-transfer-encoding;
+        bh=A/7d7YSuSp8J0hMlcyCOBp4xKTPYSVpfVld8DVd8XwA=;
+        b=UgEQQQdalfvX65QzJIQpFYGEE2zbk5BTePXRGLCQgD3Q4uHEoBVS8Jpz4d+TBtYDYm
+         AJyy/1PAxE5CQZ5szqfZSD4/Ww5qWXv/vpR0GRd+rDRvug64dRccE3ATKOqJ9+9ILTtr
+         uyeIq/0Jg4jd2mKTJHEDXGj70UfaJsRa7akYhcEdhM7RA6F8D+hMtyW0MOa+GSZym5Sm
+         CbLuSMhf5zd6GUDwh+zi85jMYVn8NrnBfUVTIVfFwjm0tbXMirrijhfk8PZaCH0Tru0o
+         3KZItBocyBPYqG0BHP24IFhwHCJa8+jAvKqov4giX0riELI9bVpf7AZwQKG7+3Z/fP9N
+         qJUg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=W0uuLo/4/wCey2dN/nEYFd5YvwQZJzT08touWgY4O8w=;
-        b=X9wxGjp/U8RgLolmO0llJFrQNaZav+PkHcJ8LV98VvfofM/ptNnMc60QtsXEsJlGhw
-         uWGdl14lur++1TVBSyIMcizHFPYj1V+1uV8sjkGU1KbHvlx3mY/Jwd9wFOpwjNI7F7KG
-         etLpDMNOvT6teGkPbTfeNTgKra6cbP/035cv4gZ9/wRCpuKUsHYh8YF5mdAMAq1MGORS
-         XDNz0UnX/gOuCFTLjedXn0u7/JaVqlNrgANmqRtgDyNfXIvUh4JcLKSxve68Sv+0tvAJ
-         ZUdaAhKdj+FMpZVrFIYUmDuglkHfxFkuktaPufrv/ycJeDZrqMk9q4T1ZZQubfsF3M4a
-         0/3Q==
-X-Gm-Message-State: AOAM5310abMjhFqpmAnWZJXn2v1lbqNXbm1LCrk5P6AG9sAm9ab7EWoW
-        5qVS1HwVyNqgRfuNjXKGY9u4suzdqlBYoh0n
-X-Google-Smtp-Source: ABdhPJzh1C84Hi+SAxJwm9/lhQAEyp9wdc9QrUhAJj915LWhtVjGpOpzm2MMrtRjVGk88F/LHp2GNg==
-X-Received: by 2002:aa7:8f1c:0:b029:1c0:60c7:f7c5 with SMTP id x28-20020aa78f1c0000b02901c060c7f7c5mr9220246pfr.59.1611729435387;
-        Tue, 26 Jan 2021 22:37:15 -0800 (PST)
-Received: from android.asia-east2-a.c.savvy-summit-295307.internal (204.60.92.34.bc.googleusercontent.com. [34.92.60.204])
-        by smtp.googlemail.com with ESMTPSA id v3sm1038824pff.217.2021.01.26.22.37.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Jan 2021 22:37:14 -0800 (PST)
-From:   Bui Quang Minh <minhquangbui99@gmail.com>
-To:     ast@kernel.org, daniel@iogearbox.net, andrii@kernel.org,
-        kafai@fb.com, songliubraving@fb.com, yhs@fb.com,
-        john.fastabend@gmail.com, kpsingh@kernel.org, davem@davemloft.net
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org,
-        linux-kernel@vger.kernel.org, minhquangbui99@gmail.com
-Subject: [PATCH] bpf: Check for integer overflow when using roundup_pow_of_two()
-Date:   Wed, 27 Jan 2021 06:36:53 +0000
-Message-Id: <20210127063653.3576-1-minhquangbui99@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        h=x-gm-message-state:from:subject:to:cc:message-id:date:user-agent
+         :mime-version:content-language:content-transfer-encoding;
+        bh=A/7d7YSuSp8J0hMlcyCOBp4xKTPYSVpfVld8DVd8XwA=;
+        b=mV1OupkO8tWZwVuYaFkdwFXKBT0Db7ous74fCXK0vULk1TSoISz9RWyXZ+GwFQKELo
+         SLj5mDhAoXjaEyPbNK/dPSbidePn9Iev/i3UfbMZsojWT8zWTGLpD2/1NqZW9HA/cH0Q
+         h4+JYUPKHDx0V/6PUMr8P7B8Q6jOxN0zgVQslQH3RfnG2adkyu+2cBkbr4Cz3euWvUmc
+         ZzTQeeY5ULbub12nt4wiMS3DbOAL+5kEtoBDmsiz7ZOrZcVSuak2pVsJeHxsANkixE0t
+         9xpgK9AI7vwqRsNllkUPy+vOyYKu5s7n35ChAV/zcKGpRzpmXSkebqgethcRux8h6yLq
+         FsHQ==
+X-Gm-Message-State: AOAM532gHI3/nKaufGl+TGczqwzX+VbXsxqMMH1LSeQT42uQiklrtdaT
+        GpmYeB8i9dP7EEp+I2wicgZLoWpdN9E=
+X-Google-Smtp-Source: ABdhPJwXHhO4Cb+YOImkHglb1YC6P3pmZ08/FKtpFT4C8lNH8DXEcl63vD+O9z+7iWF0OFKdB4CVBw==
+X-Received: by 2002:a1c:96d7:: with SMTP id y206mr2833420wmd.9.1611729983036;
+        Tue, 26 Jan 2021 22:46:23 -0800 (PST)
+Received: from ?IPv6:2003:ea:8f1f:ad00:b9df:6985:25af:fab5? (p200300ea8f1fad00b9df698525affab5.dip0.t-ipconnect.de. [2003:ea:8f1f:ad00:b9df:6985:25af:fab5])
+        by smtp.googlemail.com with ESMTPSA id 192sm1485627wme.27.2021.01.26.22.46.20
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 26 Jan 2021 22:46:22 -0800 (PST)
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: [PATCH v2 net] r8169: work around RTL8125 UDP hw bug
+To:     Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Realtek linux nic maintainers <nic_swsd@realtek.com>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Message-ID: <f41cd049-4341-70bc-e1bb-453f9e44a892@gmail.com>
+Date:   Wed, 27 Jan 2021 07:46:09 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.1
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 32-bit architecture, roundup_pow_of_two() can return 0 when the argument
-has upper most bit set due to resulting 1UL << 32. Add a check for this
-case.
+It was reported that on RTL8125 network breaks under heavy UDP load,
+e.g. torrent traffic ([0], from comment 27). Realtek confirmed a hw bug
+and provided me with a test version of the r8125 driver including a
+workaround. Tests confirmed that the workaround fixes the issue.
+I modified the original version of the workaround to meet mainline
+code style.
 
-Fixes: d5a3b1f ("bpf: introduce BPF_MAP_TYPE_STACK_TRACE")
-Signed-off-by: Bui Quang Minh <minhquangbui99@gmail.com>
+[0] https://bugzilla.kernel.org/show_bug.cgi?id=209839
+
+Fixes: f1bce4ad2f1c ("r8169: add support for RTL8125")
+Tested-by: xplo <xplo.bn@gmail.com>
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
 ---
- kernel/bpf/stackmap.c | 2 ++
- 1 file changed, 2 insertions(+)
+v2:
+- rebased to net
+---
+ drivers/net/ethernet/realtek/r8169_main.c | 64 ++++++++++++++++++++---
+ 1 file changed, 58 insertions(+), 6 deletions(-)
 
-diff --git a/kernel/bpf/stackmap.c b/kernel/bpf/stackmap.c
-index aea96b638473..bfafbf115bf3 100644
---- a/kernel/bpf/stackmap.c
-+++ b/kernel/bpf/stackmap.c
-@@ -115,6 +115,8 @@ static struct bpf_map *stack_map_alloc(union bpf_attr *attr)
+diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+index a569abe7f..886406349 100644
+--- a/drivers/net/ethernet/realtek/r8169_main.c
++++ b/drivers/net/ethernet/realtek/r8169_main.c
+@@ -28,6 +28,7 @@
+ #include <linux/bitfield.h>
+ #include <linux/prefetch.h>
+ #include <linux/ipv6.h>
++#include <linux/ptp_classify.h>
+ #include <net/ip6_checksum.h>
  
- 	/* hash table size must be power of 2 */
- 	n_buckets = roundup_pow_of_two(attr->max_entries);
-+	if (!n_buckets)
-+		return ERR_PTR(-E2BIG);
+ #include "r8169.h"
+@@ -4046,17 +4047,64 @@ static int rtl8169_xmit_frags(struct rtl8169_private *tp, struct sk_buff *skb,
+ 	return -EIO;
+ }
  
- 	cost = n_buckets * sizeof(struct stack_map_bucket *) + sizeof(*smap);
- 	cost += n_buckets * (value_size + sizeof(struct stack_map_bucket));
+-static bool rtl_test_hw_pad_bug(struct rtl8169_private *tp)
++static bool rtl_skb_is_udp(struct sk_buff *skb)
+ {
++	switch (vlan_get_protocol(skb)) {
++	case htons(ETH_P_IP):
++		return ip_hdr(skb)->protocol == IPPROTO_UDP;
++	case htons(ETH_P_IPV6):
++		return ipv6_hdr(skb)->nexthdr == IPPROTO_UDP;
++	default:
++		return false;
++	}
++}
++
++#define RTL_MIN_PATCH_LEN	47
++#define PTP_GEN_PORT		320
++
++/* see rtl8125_get_patch_pad_len() in r8125 vendor driver */
++static unsigned int rtl8125_quirk_udp_padto(struct rtl8169_private *tp,
++					    struct sk_buff *skb)
++{
++	unsigned int padto = 0, len = skb->len;
++
++	if (rtl_is_8125(tp) && len < 175 && rtl_skb_is_udp(skb) &&
++	    skb_transport_header_was_set(skb)) {
++		unsigned int trans_data_len = skb_tail_pointer(skb) -
++					      skb_transport_header(skb);
++
++		if (trans_data_len > 3 && trans_data_len < RTL_MIN_PATCH_LEN) {
++			u16 dest = ntohs(udp_hdr(skb)->dest);
++
++			if (dest == PTP_EV_PORT || dest == PTP_GEN_PORT)
++				padto = len + RTL_MIN_PATCH_LEN - trans_data_len;
++		}
++
++		if (trans_data_len < UDP_HLEN)
++			padto = max(padto, len + UDP_HLEN - trans_data_len);
++	}
++
++	return padto;
++}
++
++static unsigned int rtl_quirk_packet_padto(struct rtl8169_private *tp,
++					   struct sk_buff *skb)
++{
++	unsigned int padto;
++
++	padto = rtl8125_quirk_udp_padto(tp, skb);
++
+ 	switch (tp->mac_version) {
+ 	case RTL_GIGA_MAC_VER_34:
+ 	case RTL_GIGA_MAC_VER_60:
+ 	case RTL_GIGA_MAC_VER_61:
+ 	case RTL_GIGA_MAC_VER_63:
+-		return true;
++		padto = max_t(unsigned int, padto, ETH_ZLEN);
+ 	default:
+-		return false;
++		break;
+ 	}
++
++	return padto;
+ }
+ 
+ static void rtl8169_tso_csum_v1(struct sk_buff *skb, u32 *opts)
+@@ -4128,9 +4176,10 @@ static bool rtl8169_tso_csum_v2(struct rtl8169_private *tp,
+ 
+ 		opts[1] |= transport_offset << TCPHO_SHIFT;
+ 	} else {
+-		if (unlikely(skb->len < ETH_ZLEN && rtl_test_hw_pad_bug(tp)))
+-			/* eth_skb_pad would free the skb on error */
+-			return !__skb_put_padto(skb, ETH_ZLEN, false);
++		unsigned int padto = rtl_quirk_packet_padto(tp, skb);
++
++		/* skb_padto would free the skb on error */
++		return !__skb_put_padto(skb, padto, false);
+ 	}
+ 
+ 	return true;
+@@ -4307,6 +4356,9 @@ static netdev_features_t rtl8169_features_check(struct sk_buff *skb,
+ 		if (skb->len < ETH_ZLEN)
+ 			features &= ~NETIF_F_CSUM_MASK;
+ 
++		if (rtl_quirk_packet_padto(tp, skb))
++			features &= ~NETIF_F_CSUM_MASK;
++
+ 		if (transport_offset > TCPHO_MAX &&
+ 		    rtl_chip_supports_csum_v2(tp))
+ 			features &= ~NETIF_F_CSUM_MASK;
 -- 
-2.17.1
+2.30.0
 
