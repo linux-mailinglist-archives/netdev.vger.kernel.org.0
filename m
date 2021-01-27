@@ -2,172 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1ABEC30615B
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 17:54:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8FF1D306159
+	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 17:54:46 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233813AbhA0QyN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 11:54:13 -0500
-Received: from mail-il-dmz.mellanox.com ([193.47.165.129]:57708 "EHLO
-        mellanox.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S233624AbhA0Qxt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 11:53:49 -0500
-Received: from Internal Mail-Server by MTLPINE1 (envelope-from cmi@nvidia.com)
-        with SMTP; 27 Jan 2021 09:46:59 +0200
-Received: from dev-r630-03.mtbc.labs.mlnx (dev-r630-03.mtbc.labs.mlnx [10.75.205.13])
-        by labmailer.mlnx (8.13.8/8.13.8) with ESMTP id 10R7kvrl013621;
-        Wed, 27 Jan 2021 09:46:57 +0200
-From:   Chris Mi <cmi@nvidia.com>
-To:     netdev@vger.kernel.org
-Cc:     kuba@kernel.org, jiri@nvidia.com, saeedm@nvidia.com,
-        Chris Mi <cmi@nvidia.com>, kernel test robot <lkp@intel.com>
-Subject: [PATCH net-next v2] net: psample: Introduce stubs to remove NIC driver dependency
-Date:   Wed, 27 Jan 2021 15:46:51 +0800
-Message-Id: <20210127074651.510134-1-cmi@nvidia.com>
-X-Mailer: git-send-email 2.26.2
+        id S233729AbhA0Qxy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 11:53:54 -0500
+Received: from smtp-fw-33001.amazon.com ([207.171.190.10]:17255 "EHLO
+        smtp-fw-33001.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233602AbhA0Qxh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 11:53:37 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
+  s=amazon201209; t=1611766417; x=1643302417;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=JoH0jFZd81PDLRjlMWxkm941juATXYHol9htuqWErwQ=;
+  b=YKQtHwFQvfuejP5pJGD9jw3PhpZTmDA3wTHRL2ezh7Q11RIyz/9ugQV2
+   EWYff8pQZfVMMA162XVs88N2zxuMHZXlhj/L5Yj1kq5Q8XKYnaK0Xt4IO
+   ntROyNfvoGXxheROrVSX9bt8rJkEONoKNDFHpIJvBlSMwf0XqxzMcHliJ
+   g=;
+X-IronPort-AV: E=Sophos;i="5.79,380,1602547200"; 
+   d="scan'208";a="113899254"
+Received: from sea32-co-svc-lb4-vlan3.sea.corp.amazon.com (HELO email-inbound-relay-2b-55156cd4.us-west-2.amazon.com) ([10.47.23.38])
+  by smtp-border-fw-out-33001.sea14.amazon.com with ESMTP; 27 Jan 2021 16:52:56 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
+        by email-inbound-relay-2b-55156cd4.us-west-2.amazon.com (Postfix) with ESMTPS id 7074EA1DD2;
+        Wed, 27 Jan 2021 16:52:55 +0000 (UTC)
+Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Wed, 27 Jan 2021 16:52:54 +0000
+Received: from 38f9d3582de7.ant.amazon.com (10.43.162.94) by
+ EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Wed, 27 Jan 2021 16:52:50 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+To:     <edumazet@google.com>
+CC:     <aams@amazon.de>, <borisp@mellanox.com>, <davem@davemloft.net>,
+        <kuba@kernel.org>, <kuni1840@gmail.com>, <kuniyu@amazon.co.jp>,
+        <linux-kernel@vger.kernel.org>, <netdev@vger.kernel.org>,
+        <tariqt@mellanox.com>
+Subject: Re: [PATCH net] net: Remove redundant calls of sk_tx_queue_clear().
+Date:   Thu, 28 Jan 2021 01:52:46 +0900
+Message-ID: <20210127165246.53673-1-kuniyu@amazon.co.jp>
+X-Mailer: git-send-email 2.17.2 (Apple Git-113)
+In-Reply-To: <CANn89iJF_LOMDj9RZAe0QDkkJwCs7CgFA4KMijs5siz904DSzg@mail.gmail.com>
+References: <CANn89iJF_LOMDj9RZAe0QDkkJwCs7CgFA4KMijs5siz904DSzg@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.43.162.94]
+X-ClientProxiedBy: EX13D38UWB001.ant.amazon.com (10.43.161.10) To
+ EX13D04ANC001.ant.amazon.com (10.43.157.89)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-In order to send sampled packets to userspace, NIC driver calls
-psample api directly. But it creates a hard dependency on module
-psample. Introduce psample_ops to remove the hard dependency.
-It is initialized when psample module is loaded and set to NULL
-when the module is unloaded.
+From:   Eric Dumazet <edumazet@google.com>
+Date:   Wed, 27 Jan 2021 15:54:32 +0100
+> On Wed, Jan 27, 2021 at 1:50 PM Kuniyuki Iwashima <kuniyu@amazon.co.jp> wrote:
+> >
+> > The commit 41b14fb8724d ("net: Do not clear the sock TX queue in
+> > sk_set_socket()") removes sk_tx_queue_clear() from sk_set_socket() and adds
+> > it instead in sk_alloc() and sk_clone_lock() to fix an issue introduced in
+> > the commit e022f0b4a03f ("net: Introduce sk_tx_queue_mapping"). However,
+> > the original commit had already put sk_tx_queue_clear() in sk_prot_alloc():
+> > the callee of sk_alloc() and sk_clone_lock(). Thus sk_tx_queue_clear() is
+> > called twice in each path currently.
+> 
+> Are you sure ?
+> 
+> I do not clearly see the sk_tx_queue_clear() call from the cloning part.
+> 
+> Please elaborate.
 
-Reported-by: kernel test robot <lkp@intel.com>
-Signed-off-by: Chris Mi <cmi@nvidia.com>
-Reviewed-by: Jiri Pirko <jiri@nvidia.com>
----
-v1->v2:
- - fix sparse errors
+If sk is not NULL in sk_prot_alloc(), sk_tx_queue_clear() is called [1].
+Also the callers of sk_prot_alloc() are only sk_alloc() and sk_clone_lock().
+If they finally return not NULL pointer, sk_tx_queue_clear() is called in
+each function [2][3].
 
- include/net/psample.h    | 27 +++++++++++++++++++++++++++
- net/psample/psample.c    | 13 ++++++++++++-
- net/sched/Makefile       |  2 +-
- net/sched/psample_stub.c |  7 +++++++
- 4 files changed, 47 insertions(+), 2 deletions(-)
- create mode 100644 net/sched/psample_stub.c
+In the cloning part, sock_copy() is called after sk_prot_alloc(), but
+skc_tx_queue_mapping is defined between skc_dontcopy_begin and
+skc_dontcopy_end in struct sock_common [4]. So, sock_copy() does not
+overwrite skc_tx_queue_mapping, and thus we can initialize it in
+sk_prot_alloc().
 
-diff --git a/include/net/psample.h b/include/net/psample.h
-index 68ae16bb0a4a..e6a73128de59 100644
---- a/include/net/psample.h
-+++ b/include/net/psample.h
-@@ -4,6 +4,7 @@
- 
- #include <uapi/linux/psample.h>
- #include <linux/list.h>
-+#include <linux/skbuff.h>
- 
- struct psample_group {
- 	struct list_head list;
-@@ -14,6 +15,15 @@ struct psample_group {
- 	struct rcu_head rcu;
- };
- 
-+struct psample_ops {
-+	void (*sample_packet)(struct psample_group *group, struct sk_buff *skb,
-+			      u32 trunc_size, int in_ifindex, int out_ifindex,
-+			      u32 sample_rate);
-+
-+};
-+
-+extern const struct psample_ops __rcu *psample_ops __read_mostly;
-+
- struct psample_group *psample_group_get(struct net *net, u32 group_num);
- void psample_group_take(struct psample_group *group);
- void psample_group_put(struct psample_group *group);
-@@ -35,4 +45,21 @@ static inline void psample_sample_packet(struct psample_group *group,
- 
- #endif
- 
-+static inline void
-+psample_nic_sample_packet(struct psample_group *group,
-+			  struct sk_buff *skb, u32 trunc_size,
-+			  int in_ifindex, int out_ifindex,
-+			  u32 sample_rate)
-+{
-+	const struct psample_ops *ops;
-+
-+	rcu_read_lock();
-+	ops = rcu_dereference(psample_ops);
-+	if (ops)
-+		psample_ops->sample_packet(group, skb, trunc_size,
-+					   in_ifindex, out_ifindex,
-+					   sample_rate);
-+	rcu_read_unlock();
-+}
-+
- #endif /* __NET_PSAMPLE_H */
-diff --git a/net/psample/psample.c b/net/psample/psample.c
-index 33e238c965bd..2a9fbfe09395 100644
---- a/net/psample/psample.c
-+++ b/net/psample/psample.c
-@@ -8,6 +8,7 @@
- #include <linux/kernel.h>
- #include <linux/skbuff.h>
- #include <linux/module.h>
-+#include <linux/rcupdate.h>
- #include <net/net_namespace.h>
- #include <net/sock.h>
- #include <net/netlink.h>
-@@ -35,6 +36,10 @@ static const struct genl_multicast_group psample_nl_mcgrps[] = {
- 
- static struct genl_family psample_nl_family __ro_after_init;
- 
-+static const struct psample_ops psample_sample_ops = {
-+	.sample_packet	= psample_sample_packet,
-+};
-+
- static int psample_group_nl_fill(struct sk_buff *msg,
- 				 struct psample_group *group,
- 				 enum psample_command cmd, u32 portid, u32 seq,
-@@ -456,11 +461,17 @@ EXPORT_SYMBOL_GPL(psample_sample_packet);
- 
- static int __init psample_module_init(void)
- {
--	return genl_register_family(&psample_nl_family);
-+	int ret;
-+
-+	ret = genl_register_family(&psample_nl_family);
-+	if (!ret)
-+		RCU_INIT_POINTER(psample_ops, &psample_sample_ops);
-+	return ret;
- }
- 
- static void __exit psample_module_exit(void)
- {
-+	RCU_INIT_POINTER(psample_ops, NULL);
- 	genl_unregister_family(&psample_nl_family);
- }
- 
-diff --git a/net/sched/Makefile b/net/sched/Makefile
-index dd14ef413fda..0d92bb98bb26 100644
---- a/net/sched/Makefile
-+++ b/net/sched/Makefile
-@@ -3,7 +3,7 @@
- # Makefile for the Linux Traffic Control Unit.
- #
- 
--obj-y	:= sch_generic.o sch_mq.o
-+obj-y	:= sch_generic.o sch_mq.o psample_stub.o
- 
- obj-$(CONFIG_INET)		+= sch_frag.o
- obj-$(CONFIG_NET_SCHED)		+= sch_api.o sch_blackhole.o
-diff --git a/net/sched/psample_stub.c b/net/sched/psample_stub.c
-new file mode 100644
-index 000000000000..0615a7b64000
---- /dev/null
-+++ b/net/sched/psample_stub.c
-@@ -0,0 +1,7 @@
-+// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-+/* Copyright (c) 2021 Mellanox Technologies. */
-+
-+#include <net/psample.h>
-+
-+const struct psample_ops __rcu *psample_ops __read_mostly;
-+EXPORT_SYMBOL_GPL(psample_ops);
--- 
-2.26.2
+[1] sk_prot_alloc
+https://github.com/torvalds/linux/blob/master/net/core/sock.c#L1693
 
+[2] sk_alloc
+https://github.com/torvalds/linux/blob/master/net/core/sock.c#L1762
+
+[3] sk_clone_lock
+https://github.com/torvalds/linux/blob/master/net/core/sock.c#L1986
+
+[4] struct sock_common
+https://github.com/torvalds/linux/blob/master/include/net/sock.h#L218-L240
+
+
+> In any case, this seems to be a candidate for net-next, this is not
+> fixing a bug,
+> this would be an optimization at most, and potentially adding a bug.
+> 
+> So if you resend this patch, you can mention the old commit in the changelog,
+> but do not add a dubious Fixes: tag
+
+I see.
+
+I will remove the tag and resend this as a net-next candidate.
+
+Thank you,
+Kuniyuki
+
+
+> >
+> > This patch removes the redundant calls of sk_tx_queue_clear() in sk_alloc()
+> > and sk_clone_lock().
+> >
+> > Fixes: 41b14fb8724d ("net: Do not clear the sock TX queue in sk_set_socket()")
+> > CC: Tariq Toukan <tariqt@mellanox.com>
+> > CC: Boris Pismenny <borisp@mellanox.com>
+> > Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+> > Reviewed-by: Amit Shah <aams@amazon.de>
+> > ---
+> >  net/core/sock.c | 2 --
+> >  1 file changed, 2 deletions(-)
+> >
+> > diff --git a/net/core/sock.c b/net/core/sock.c
+> > index bbcd4b97eddd..5c665ee14159 100644
+> > --- a/net/core/sock.c
+> > +++ b/net/core/sock.c
+> > @@ -1759,7 +1759,6 @@ struct sock *sk_alloc(struct net *net, int family, gfp_t priority,
+> >                 cgroup_sk_alloc(&sk->sk_cgrp_data);
+> >                 sock_update_classid(&sk->sk_cgrp_data);
+> >                 sock_update_netprioidx(&sk->sk_cgrp_data);
+> > -               sk_tx_queue_clear(sk);
+> >         }
+> >
+> >         return sk;
+> > @@ -1983,7 +1982,6 @@ struct sock *sk_clone_lock(const struct sock *sk, const gfp_t priority)
+> >                  */
+> >                 sk_refcnt_debug_inc(newsk);
+> >                 sk_set_socket(newsk, NULL);
+> > -               sk_tx_queue_clear(newsk);
+> >                 RCU_INIT_POINTER(newsk->sk_wq, NULL);
+> >
+> >                 if (newsk->sk_prot->sockets_allocated)
+> > --
+> > 2.17.2 (Apple Git-113)
+> >
