@@ -2,95 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4312930624B
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 18:41:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CC0F830627C
+	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 18:47:54 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344017AbhA0RlH (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 12:41:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57664 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344050AbhA0Rky (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 12:40:54 -0500
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8030DC061573;
-        Wed, 27 Jan 2021 09:40:14 -0800 (PST)
-Received: by mail-ej1-x633.google.com with SMTP id rv9so3798711ejb.13;
-        Wed, 27 Jan 2021 09:40:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=c0zqNzdWhocaSRrPUT/nMPELWMWvRw1OqyGa9bc+g8w=;
-        b=hZre1addgUyhMpi/q+57I8hO+oJ9dZzDH35DyXufB3J206XkoqJIsXKEhPFK8UjXrp
-         Qk3rG4k6s/l19nSdfZPE+W18BZTu63xbOnbrNM2nI0FIoHejuXV89nic5QE8i5Y8U/kC
-         /Llk0D/qA8UpBQs3AOVPYpj/T7MTq/ErwjzmywOehdwcSKKF64kiiNgSCVzFTKlAISJw
-         WIAjTggZl/cMV9oM18qH0xxcPMkI8Ny1Xh6qtvD2EeVBRypyxCu+p5Od/dcDdLdXWKOZ
-         E0n726mKRbrSon3L9mlxOT4ne6nv2OtaO1rnG98xL0kFAl18A+7sm1ARGEzjSzBOj7+e
-         T8iA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=c0zqNzdWhocaSRrPUT/nMPELWMWvRw1OqyGa9bc+g8w=;
-        b=DXPEXRIGcfvXWINxOU8Eef9VQJCf3o2fgGPntrM34nyB1xzqqg6C4mOaqZqlnfci/M
-         uZEIE64uzGCmbS6NIlGWW8g8QHwgHruzAcDhgAd/k5/XXNH9OZiC1VlOc9Nx+zVr8M4F
-         hR1swO/614mit4seMg3FNksyVtYLy7J4STP51XLOaqnELRrjf2ED4E+jh6Pgc265Dr0k
-         nQpaQkVhIr+fDwQMcQMFx/YYeCaa59Dj3/EsbYhsR3iJoPxd8GdysrZy5G15otAKuh5X
-         ZCS28GruDSt8OocvPr/HDU69dUZOIoN31kUGJk0JDox62ERAd8hpLioVnvx6Hmxxzqfv
-         JnFA==
-X-Gm-Message-State: AOAM5333WCCpP6YKa1HaBdpL0YMsrrM/7NERgsrdyxxejafiB+c0Leqz
-        7E1+OujnHxmyjxyaTOFDUP490L/TKb8+t1UfJWU=
-X-Google-Smtp-Source: ABdhPJzB2Ho+oH8D36li7b3P9a9jXNWFVS0+37hGngKW75AFYoPtkvx/LhZpzL+ekjYf0YB0fZd8YYSPzct5pMte9yw=
-X-Received: by 2002:a17:906:44a:: with SMTP id e10mr7435445eja.265.1611769213327;
- Wed, 27 Jan 2021 09:40:13 -0800 (PST)
-MIME-Version: 1.0
-References: <1611747815-1934-1-git-send-email-stefanc@marvell.com> <1611747815-1934-12-git-send-email-stefanc@marvell.com>
-In-Reply-To: <1611747815-1934-12-git-send-email-stefanc@marvell.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Wed, 27 Jan 2021 12:39:36 -0500
-Message-ID: <CAF=yD-JDGg2pxi_EQvuK5iRdVpTovswF6rZ8dvAAmV0xbeimkA@mail.gmail.com>
-Subject: Re: [PATCH v4 net-next 11/19] net: mvpp2: add spinlock for FW FCA
- configuration path
-To:     stefanc@marvell.com
-Cc:     Network Development <netdev@vger.kernel.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        David Miller <davem@davemloft.net>, nadavh@marvell.com,
-        ymarkman@marvell.com, LKML <linux-kernel@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>, linux@armlinux.org.uk,
-        mw@semihalf.com, Andrew Lunn <andrew@lunn.ch>,
-        rmk+kernel@armlinux.org.uk, Antoine Tenart <atenart@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        id S1344175AbhA0Rra (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 12:47:30 -0500
+Received: from sym2.noone.org ([178.63.92.236]:50532 "EHLO sym2.noone.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S236250AbhA0RrL (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 27 Jan 2021 12:47:11 -0500
+Received: by sym2.noone.org (Postfix, from userid 1002)
+        id 4DQrcl2jklzvjfn; Wed, 27 Jan 2021 18:46:15 +0100 (CET)
+From:   Tobias Klauser <tklauser@distanz.ch>
+To:     bpf@vger.kernel.org, netdev@vger.kernel.org,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Alexei Starovoitov <ast@kernel.org>,
+        Andrii Nakryiko <andrii@kernel.org>
+Cc:     John Fastabend <john.fastabend@gmail.com>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Stanislav Fomichev <sdf@google.com>
+Subject: [PATCH bpf-next] bpf: simplify cases in bpf_base_func_proto
+Date:   Wed, 27 Jan 2021 18:46:15 +0100
+Message-Id: <20210127174615.3038-1-tklauser@distanz.ch>
+X-Mailer: git-send-email 2.11.0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 27, 2021 at 7:19 AM <stefanc@marvell.com> wrote:
->
-> From: Stefan Chulski <stefanc@marvell.com>
->
-> Spinlock added to MSS shared memory configuration space.
->
-> Signed-off-by: Stefan Chulski <stefanc@marvell.com>
-> ---
->  drivers/net/ethernet/marvell/mvpp2/mvpp2.h      | 5 +++++
->  drivers/net/ethernet/marvell/mvpp2/mvpp2_main.c | 3 +++
->  2 files changed, 8 insertions(+)
->
-> diff --git a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
-> index 9d8993f..f34e260 100644
-> --- a/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
-> +++ b/drivers/net/ethernet/marvell/mvpp2/mvpp2.h
-> @@ -1021,6 +1021,11 @@ struct mvpp2 {
->
->         /* CM3 SRAM pool */
->         struct gen_pool *sram_pool;
-> +
-> +       bool custom_dma_mask;
-> +
-> +       /* Spinlocks for CM3 shared memory configuration */
-> +       spinlock_t mss_spinlock;
+!perfmon_capable() is checked before the last switch(func_id) in
+bpf_base_func_proto. Thus, the cases BPF_FUNC_trace_printk and
+BPF_FUNC_snprintf_btf can be moved to that last switch(func_id) to omit
+the inline !perfmon_capable() checks.
 
-Does this need to be a stand-alone patch? This introduces a spinlock,
-but does not use it.
+Signed-off-by: Tobias Klauser <tklauser@distanz.ch>
+---
+ kernel/bpf/helpers.c | 12 ++++--------
+ 1 file changed, 4 insertions(+), 8 deletions(-)
 
-Also, is the introduction of custom_dma_mask in this commit on purpose?
+diff --git a/kernel/bpf/helpers.c b/kernel/bpf/helpers.c
+index 41ca280b1dc1..308427fe03a3 100644
+--- a/kernel/bpf/helpers.c
++++ b/kernel/bpf/helpers.c
+@@ -720,14 +720,6 @@ bpf_base_func_proto(enum bpf_func_id func_id)
+ 		return &bpf_spin_lock_proto;
+ 	case BPF_FUNC_spin_unlock:
+ 		return &bpf_spin_unlock_proto;
+-	case BPF_FUNC_trace_printk:
+-		if (!perfmon_capable())
+-			return NULL;
+-		return bpf_get_trace_printk_proto();
+-	case BPF_FUNC_snprintf_btf:
+-		if (!perfmon_capable())
+-			return NULL;
+-		return &bpf_snprintf_btf_proto;
+ 	case BPF_FUNC_jiffies64:
+ 		return &bpf_jiffies64_proto;
+ 	case BPF_FUNC_per_cpu_ptr:
+@@ -742,6 +734,8 @@ bpf_base_func_proto(enum bpf_func_id func_id)
+ 		return NULL;
+ 
+ 	switch (func_id) {
++	case BPF_FUNC_trace_printk:
++		return bpf_get_trace_printk_proto();
+ 	case BPF_FUNC_get_current_task:
+ 		return &bpf_get_current_task_proto;
+ 	case BPF_FUNC_probe_read_user:
+@@ -752,6 +746,8 @@ bpf_base_func_proto(enum bpf_func_id func_id)
+ 		return &bpf_probe_read_user_str_proto;
+ 	case BPF_FUNC_probe_read_kernel_str:
+ 		return &bpf_probe_read_kernel_str_proto;
++	case BPF_FUNC_snprintf_btf:
++		return &bpf_snprintf_btf_proto;
+ 	default:
+ 		return NULL;
+ 	}
+-- 
+2.30.0
+
