@@ -2,75 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A6B93305AE0
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 13:09:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 1D3B3305B5A
+	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 13:29:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237608AbhA0MIK (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 07:08:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41480 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343502AbhA0MEj (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 07:04:39 -0500
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF1B3C06174A
-        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 04:03:51 -0800 (PST)
-Received: by mail-ej1-x62d.google.com with SMTP id g3so2273695ejb.6
-        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 04:03:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=1iAsCyt9ugR6fCLo4HoG6lzbnQBawmadP/yf/JYt8WU=;
-        b=QRNTwbP2rYVLSA1m85t+Yo05GeacMwwH4AEKQthUoB+soDOmw06dvekLbK0SgNLzyo
-         d5H53NggfRVxaxmQRB0NRK0aDFHnK5MLt39pgnJI7AgQCFAEHO6hxxL70XJYkVJDEqZb
-         K9LWr4IszVNouYo6urtULqmBRpC9vn6wB7gzwn1dyRBPcVc5gG+q2197va9jp54JX4Yq
-         MTP0ZYSCPCYETauZHH5mpOUfO9Kz/XrurfsqAb6yOtwyEWYBvxWZwwE8CdC4cdV7szov
-         Fsfz59Qx8ey/i64TTK5a3gcorpml7CZk0Rd+SZcOTEQwsZKbY2SDPwrzE8ghSDxo/MMI
-         vCSw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=1iAsCyt9ugR6fCLo4HoG6lzbnQBawmadP/yf/JYt8WU=;
-        b=JIudHEN74hoMS6/GDPLpkz4Q8qvBdWBnbPlYV/4kiNlTDe+uTgaTuXJXuI7RqTP08v
-         zHdzKJ7fS5Qs8bvpv1jT7abq74fUUghG84xLpVlBO1A5ruegH89W+yLBg0O/V0R8/pyL
-         mUYeVdJM3xTpgMZfqDTdyZzOtaGV3WGfYAjRDLBxKpNFu7VQWbIm41k64lWO4SCcw/BK
-         vJgoYHZ1rZNOFmYVkKT6wcKOBTLfGNWjWP12WSR8TToecKAtJkef2P36UxNekIuWtdZR
-         FU4cDMp1QlKSiMK+roHNmJeAY26RoyvrVlNgfaoki2dmH24GJ2AYlIsyvzEV3KJ2rHW4
-         rGnw==
-X-Gm-Message-State: AOAM532UvttoRY50eHBlqFmTFUfFqRCrKrjvif8+g8HTunK5dNrhhrfV
-        gebeZTEVRV9+Um2oy0sdEwDuUeGThK4=
-X-Google-Smtp-Source: ABdhPJxVfxjXeoBpLyNHvFi9nwm4iCloFSmJs9gVVltrrdKVfSQMn7qrpn5aYu/PZkX4hzMnvHv8QQ==
-X-Received: by 2002:a17:906:b2d5:: with SMTP id cf21mr6629399ejb.387.1611749030178;
-        Wed, 27 Jan 2021 04:03:50 -0800 (PST)
-Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id pg19sm752089ejb.0.2021.01.27.04.03.48
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Jan 2021 04:03:49 -0800 (PST)
-Date:   Wed, 27 Jan 2021 14:03:47 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
-Subject: Re: [PATCH net-next 0/4] Automatically manage DSA master interface
- state
-Message-ID: <20210127120347.ekuzelx2vik3eoa7@skbuf>
-References: <20210127010028.1619443-1-olteanv@gmail.com>
- <20210127012546.bdad5fmu7vg2ki7t@skbuf>
+        id S237827AbhA0M2a convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 27 Jan 2021 07:28:30 -0500
+Received: from mail.a-eberle.de ([213.95.140.213]:54296 "EHLO mail.a-eberle.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234451AbhA0MZw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 27 Jan 2021 07:25:52 -0500
+Received: from localhost (localhost [127.0.0.1])
+        by mail.a-eberle.de (Postfix) with ESMTP id AEEA93806DF
+        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 13:15:40 +0100 (CET)
+X-Virus-Scanned: Debian amavisd-new at aeberle-mx.softwerk.noris.de
+Received: from mail.a-eberle.de ([127.0.0.1])
+        by localhost (ebl-mx-02.a-eberle.de [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id E3z3ekvEowCy for <netdev@vger.kernel.org>;
+        Wed, 27 Jan 2021 13:15:39 +0100 (CET)
+Received: from gateway.a-eberle.de (unknown [178.15.155.2])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (Client CN "sg310.eberle.local", Issuer "A. Eberle GmbH & Co. KG WebAdmin CA" (not verified))
+        (Authenticated sender: postmaster@a-eberle.de)
+        by mail.a-eberle.de (Postfix) with ESMTPSA
+        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 13:15:39 +0100 (CET)
+Received: from exch-svr2013.eberle.local ([192.168.1.9]:60091 helo=webmail.a-eberle.de)
+        by gateway.a-eberle.de with esmtps (TLSv1.2:AES256-SHA:256)
+        (Exim 4.82_1-5b7a7c0-XX)
+        (envelope-from <Marco.Wenzel@a-eberle.de>)
+        id 1l4jjT-00043E-0u
+        for netdev@vger.kernel.org; Wed, 27 Jan 2021 13:15:35 +0100
+Received: from EXCH-SVR2013.eberle.local (192.168.1.9) by
+ EXCH-SVR2013.eberle.local (192.168.1.9) with Microsoft SMTP Server (TLS) id
+ 15.0.1497.2; Wed, 27 Jan 2021 13:15:35 +0100
+Received: from EXCH-SVR2013.eberle.local ([::1]) by EXCH-SVR2013.eberle.local
+ ([::1]) with mapi id 15.00.1497.006; Wed, 27 Jan 2021 13:15:35 +0100
+From:   "Wenzel, Marco" <Marco.Wenzel@a-eberle.de>
+To:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Subject: HSR/PRP sequence counter issue with Cisco Redbox
+Thread-Topic: HSR/PRP sequence counter issue with Cisco Redbox
+Thread-Index: Adb0oMB5N/nh+lgRSvKGIOcbXjKnGA==
+Date:   Wed, 27 Jan 2021 12:15:34 +0000
+Message-ID: <69ec2fd1a9a048e8b3305a4bc36aad01@EXCH-SVR2013.eberle.local>
+Accept-Language: de-DE, en-US
+Content-Language: de-DE
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.242.2.55]
+x-kse-serverinfo: EXCH-SVR2013.eberle.local, 9
+x-kse-antivirus-interceptor-info: scan successful
+x-kse-antivirus-info: Clean, bases: 27.01.2021 08:13:00
+x-kse-attachment-filter-triggered-rules: Clean
+x-kse-attachment-filter-triggered-filters: Clean
+x-kse-bulkmessagesfiltering-scan-result: protection disabled
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210127012546.bdad5fmu7vg2ki7t@skbuf>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 27, 2021 at 03:25:46AM +0200, Vladimir Oltean wrote:
-> Please treat this as RFC. There's still some debugging I need to do with
-> nfsroot.
+Hi,
 
-Sorry, please treat this as non-RFC again. The problem I had with
-nfsroot was completely unrelated.
+we have figured out an issue with the current PRP driver when trying to communicate with Cisco IE 2000 industrial Ethernet switches in Redbox mode. The Cisco always resets the HSR/PRP sequence counter to "1" at low traffic (<= 1 frame in 400 ms). It can be reproduced by a simple ICMP echo request with 1 s interval between a Linux box running with PRP and a VDAN behind the Cisco Redbox. The Linux box then always receives frames with sequence counter "1" and drops them. The behavior is not configurable at the Cisco Redbox.
+
+I fixed it by ignoring sequence counters with value "1" at the sequence counter check in hsr_register_frame_out ():
+
+diff --git a/net/hsr/hsr_framereg.c b/net/hsr/hsr_framereg.c
+index 5c97de459905..630c238e81f0 100644
+--- a/net/hsr/hsr_framereg.c
++++ b/net/hsr/hsr_framereg.c
+@@ -411,7 +411,7 @@ void hsr_register_frame_in(struct hsr_node *node, struct hsr_port *port,
+ int hsr_register_frame_out(struct hsr_port *port, struct hsr_node *node,
+                           u16 sequence_nr)
+ {
+-       if (seq_nr_before_or_eq(sequence_nr, node->seq_out[port->type]))
++       if (seq_nr_before_or_eq(sequence_nr, node->seq_out[port->type]) && (sequence_nr != 1))
+                return 1;
+
+        node->seq_out[port->type] = sequence_nr;
+
+
+Do you think this could be a solution? Should this patch be officially applied in order to avoid other users running into these communication issues?
+
+Thanks
+Marco Wenzel
