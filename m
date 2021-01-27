@@ -2,168 +2,88 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 693FC3064EB
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 21:18:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5A5AD3064EE
+	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 21:19:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231346AbhA0UQ7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 15:16:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34654 "EHLO
+        id S231756AbhA0US1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 15:18:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231206AbhA0UQo (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 15:16:44 -0500
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECCA1C061574;
-        Wed, 27 Jan 2021 12:16:03 -0800 (PST)
-Received: by mail-ed1-x52f.google.com with SMTP id d22so4036367edy.1;
-        Wed, 27 Jan 2021 12:16:03 -0800 (PST)
+        with ESMTP id S231264AbhA0USV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 15:18:21 -0500
+Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88D97C061574;
+        Wed, 27 Jan 2021 12:17:41 -0800 (PST)
+Received: by mail-pg1-x536.google.com with SMTP id z21so2349231pgj.4;
+        Wed, 27 Jan 2021 12:17:41 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=3PbeJCQPhfYg0rsJTVCfMp2iHlLM/leRKCXlhwOTOjc=;
-        b=S/YRGrtIIqeR6eh2EB+MFIWSjBF12Ud+IcDvTUDdilwx1TONdKRY7oYRKWIpU1qPnW
-         hOXwjBxb8HQLoG4mc4sqqIenpFU2pfKASYUy4U+NLuWSKt73zHFEKnNAMG3RCHWtcuvt
-         qNgvMs9VepXlTdG/v59Zp/W9NVtKMfLRwvaGAzEAN7oWSpaoYYA50WSxDOUOVmT638u3
-         e1kQtFrFHUibWp7nKcPtSSBW8bojGUKtDK4Gw0pbOzAJh4MgW4fNFgVglO2/pT2BmGtA
-         Lr4pujF1AnKE0UG7HNxh5nKtVRj7nm0PVrztFtAj8TjjtVw1BczEurFitAhPavERqD/a
-         e2xg==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=M5prJnjp+IBjbrnVpwvStmTS1JWaLCOZpjntuh4TtrQ=;
+        b=FS9e+VNRM8U8d6RzRe5VpTEqUMb0x79Qmx0A824lxZD+vcKi7fxFdvysuZaNPcuVUO
+         elnCtb2NlumaCNjyMOqaeq8DV0q8i7HreBu/jOxSLl/zjErCBDUx5ytKQZO4PNK5ftSy
+         eu81OcdYqIjaQTvv9VAoKWyj8OVy9rub5IhKC1JWl3J7D0p0gyEaO6sYL3x043hpoFQs
+         8Fe77TXKczm9dIvsWdgDn+uIcvAMwcww6cvajSNgaeESw1bzMe1NYSoIGl1GV7/Q1/C7
+         pk+JXun8ZFI7jKnM218k//NW6eEF0XzAw/qu+EU7cP6FHjJKEbjir2Vljdc4qUFdzk5W
+         CfWg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=3PbeJCQPhfYg0rsJTVCfMp2iHlLM/leRKCXlhwOTOjc=;
-        b=h8rI9wLfbZraxvgbY5itK0uKhIpF99X+2+YHvn0VsuKDIpWhPHIxsKPMn+rx+IVR3H
-         MZZNWhtp8MEn0HkOmxIi13TQ1KI5dzHE0Wq1LSAJt6Qxl/K79ASq2ZGJs7Fs+Fx01Uhb
-         PRrZyHdmjAUp1aQmOyBF59O91ea6kFJ4sOGF5u0ARzXizepMAm78L5gJZUNWe9IRLd3I
-         bzysdqYxY65xAyl/FgKrFjzr4JpLNE81/rW+ZR7sLskW9rWjbxZ9eWk/NZAB2NTdlJ9u
-         3q2QavHBopjpBa8klGmFML8tcBY/q5wEkepGjEi7cqHTxRQi6vux8mW+kFg8DZ9X13ye
-         /HHw==
-X-Gm-Message-State: AOAM530CcAo8Gwaoex+pp6QC8KlXYljhJKsLo5EeEdCjQFbcV/FpbmsD
-        UDr7lWTViTyciM3Kpnnyioe4efFJNEu0W23NLgc=
-X-Google-Smtp-Source: ABdhPJx3TwPn2n+melTk7i7DkuNDsFT96Rubag7hZ3zq0+/gfV3fyqQQTKOTuVzLurLYVeKTwVdARDhQOMQSZFKwZ5A=
-X-Received: by 2002:a05:6402:31bb:: with SMTP id dj27mr10682449edb.285.1611778562521;
- Wed, 27 Jan 2021 12:16:02 -0800 (PST)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=M5prJnjp+IBjbrnVpwvStmTS1JWaLCOZpjntuh4TtrQ=;
+        b=Wj+jS/yWq/GH/rRNNZqZeH6Fj1OgNRhMenSF+r9c/SOmwpv2754MVfPvjigi5YVYgD
+         x8IefOnXVioen96tyQxISCZmloHmbQERe9oHA+NTIXhoCXtpA8nm8yZiNI0TbfPWDNpF
+         EYu8+Ce1kHeEYt2/KOUyRqvr1aovvQIdga/QkIzZ5Ulrr3SNsXeTuOQkp2b8QFoaOEpO
+         Bp3l04RhMaHONdM7S3r3cOYKBLwTNoqPNdQTA3Guz9rq7vlFwsKYr8LOcOwhkQbQuZ7x
+         KyiCu7PmKOwBITzUAXysOqxoJ7797LoSOrwiGLvECSdZwJ2ufIL12x4+io7Y600GklT/
+         qkrQ==
+X-Gm-Message-State: AOAM530ca25RHtBcHkJ8khlHebnlW+imxsCBBc4fzkwXWq2DKnA/++44
+        704/3bCoKJ8McLpM04PdoQ9uS70BWYY=
+X-Google-Smtp-Source: ABdhPJwor/F/ypzr1Hwh0gLclmeA13uoJ9YmLIDKqzUBaDCy0RSa0PyZ1JCEHWil5uYIaKIMMTpPAg==
+X-Received: by 2002:a63:da17:: with SMTP id c23mr12916767pgh.348.1611778660619;
+        Wed, 27 Jan 2021 12:17:40 -0800 (PST)
+Received: from [10.230.29.30] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id 21sm3164059pfu.136.2021.01.27.12.17.38
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 27 Jan 2021 12:17:39 -0800 (PST)
+Subject: Re: [PATCH V2 1/1] net: dsa: rtl8366rb: standardize init jam tables
+To:     Lorenzo Carletti <lorenzo.carletti98@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>
+Cc:     Linus Walleij <linus.walleij@linaro.org>, andrew@lunn.ch,
+        vivien.didelot@gmail.com, davem@davemloft.net, kuba@kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20210127010632.23790-1-lorenzo.carletti98@gmail.com>
+ <20210127010632.23790-2-lorenzo.carletti98@gmail.com>
+ <20210127190159.s6irvdej3fs4cdai@skbuf>
+ <CABRCJOQDLrms1B4TsQonDEUAyXDV22-ufq4eGYZ8wq9KgHVKkA@mail.gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <21a30b7b-56ba-29e1-de0e-4d3969360a54@gmail.com>
+Date:   Wed, 27 Jan 2021 12:17:37 -0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.7.0
 MIME-Version: 1.0
-References: <1611733552-150419-1-git-send-email-hkelam@marvell.com> <1611733552-150419-2-git-send-email-hkelam@marvell.com>
-In-Reply-To: <1611733552-150419-2-git-send-email-hkelam@marvell.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Wed, 27 Jan 2021 15:15:26 -0500
-Message-ID: <CAF=yD-LJ9O2Vsqj2+wPu3Hnf2wRwPDUX=ty=sX49=nD1iF2Nhw@mail.gmail.com>
-Subject: Re: [Patch v2 net-next 1/7] octeontx2-af: forward error correction configuration
-To:     Hariprasad Kelam <hkelam@marvell.com>
-Cc:     Network Development <netdev@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sunil Kovvuri Goutham <sgoutham@marvell.com>,
-        Linu Cherian <lcherian@marvell.com>,
-        Geethasowjanya Akula <gakula@marvell.com>,
-        Jerin Jacob <jerinj@marvell.com>, sbhatta@marvell.com,
-        Christina Jacob <cjacob@marvell.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <CABRCJOQDLrms1B4TsQonDEUAyXDV22-ufq4eGYZ8wq9KgHVKkA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 27, 2021 at 4:05 AM Hariprasad Kelam <hkelam@marvell.com> wrote:
->
-> From: Christina Jacob <cjacob@marvell.com>
->
-> CGX block supports forward error correction modes baseR
-> and RS. This patch adds support to set encoding mode
-> and to read corrected/uncorrected block counters
->
-> Adds new mailbox handlers set_fec to configure encoding modes
-> and fec_stats to read counters and also increase mbox timeout
-> to accomdate firmware command response timeout.
->
-> Along with new CGX_CMD_SET_FEC command add other commands to
-> sync with kernel enum list with firmware.
->
-> Signed-off-by: Christina Jacob <cjacob@marvell.com>
-> Signed-off-by: Sunil Goutham <sgoutham@marvell.com>
-> Signed-off-by: Hariprasad Kelam <hkelam@marvell.com>
-> ---
->  drivers/net/ethernet/marvell/octeontx2/af/cgx.c    | 74 ++++++++++++++++++++++
->  drivers/net/ethernet/marvell/octeontx2/af/cgx.h    |  7 ++
->  .../net/ethernet/marvell/octeontx2/af/cgx_fw_if.h  | 17 ++++-
->  drivers/net/ethernet/marvell/octeontx2/af/mbox.h   | 22 ++++++-
->  .../net/ethernet/marvell/octeontx2/af/rvu_cgx.c    | 33 ++++++++++
->  5 files changed, 151 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/net/ethernet/marvell/octeontx2/af/cgx.c b/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
-> index 84a9123..5489dab 100644
-> --- a/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
-> +++ b/drivers/net/ethernet/marvell/octeontx2/af/cgx.c
-> @@ -340,6 +340,58 @@ int cgx_get_tx_stats(void *cgxd, int lmac_id, int idx, u64 *tx_stat)
->         return 0;
->  }
->
-> +static int cgx_set_fec_stats_count(struct cgx_link_user_info *linfo)
-> +{
-> +       if (linfo->fec) {
-> +               switch (linfo->lmac_type_id) {
-> +               case LMAC_MODE_SGMII:
-> +               case LMAC_MODE_XAUI:
-> +               case LMAC_MODE_RXAUI:
-> +               case LMAC_MODE_QSGMII:
-> +                       return 0;
-> +               case LMAC_MODE_10G_R:
-> +               case LMAC_MODE_25G_R:
-> +               case LMAC_MODE_100G_R:
-> +               case LMAC_MODE_USXGMII:
-> +                       return 1;
-> +               case LMAC_MODE_40G_R:
-> +                       return 4;
-> +               case LMAC_MODE_50G_R:
-> +                       if (linfo->fec == OTX2_FEC_BASER)
-> +                               return 2;
-> +                       else
-> +                               return 1;
-> +               }
-> +       }
-> +       return 0;
 
-may consider inverting the condition, to remove one level of indentation.
 
-> +int cgx_set_fec(u64 fec, int cgx_id, int lmac_id)
-> +{
-> +       u64 req = 0, resp;
-> +       struct cgx *cgx;
-> +       int err = 0;
-> +
-> +       cgx = cgx_get_pdata(cgx_id);
-> +       if (!cgx)
-> +               return -ENXIO;
-> +
-> +       req = FIELD_SET(CMDREG_ID, CGX_CMD_SET_FEC, req);
-> +       req = FIELD_SET(CMDSETFEC, fec, req);
-> +       err = cgx_fwi_cmd_generic(req, &resp, cgx, lmac_id);
-> +       if (!err) {
-> +               cgx->lmac_idmap[lmac_id]->link_info.fec =
-> +                       FIELD_GET(RESP_LINKSTAT_FEC, resp);
-> +               return cgx->lmac_idmap[lmac_id]->link_info.fec;
-> +       }
-> +       return err;
+On 1/27/2021 12:06 PM, Lorenzo Carletti wrote:
+> Many thanks for telling me that and for showing me how this works.
+> I find both very useful.
+> I'll be sure to follow the guidelines more carefully next time.
 
-Prefer keeping the success path linear and return early if (err) in
-explicit branch. This also aids branch prediction.
+One of those guidelines is no top-posting and make sure you use a
+plaintext format for your emails otherwise the mailing-lists may be
+dropping your response (we may still get those responses because we are
+copied).
 
-> +int rvu_mbox_handler_cgx_fec_stats(struct rvu *rvu,
-> +                                  struct msg_req *req,
-> +                                  struct cgx_fec_stats_rsp *rsp)
-> +{
-> +       int pf = rvu_get_pf(req->hdr.pcifunc);
-> +       u8 cgx_idx, lmac;
-> +       int err = 0;
-> +       void *cgxd;
-> +
-> +       if (!is_cgx_config_permitted(rvu, req->hdr.pcifunc))
-> +               return -EPERM;
-> +       rvu_get_cgx_lmac_id(rvu->pf2cgxlmac_map[pf], &cgx_idx, &lmac);
-> +
-> +       cgxd = rvu_cgx_pdata(cgx_idx, rvu);
-> +       err = cgx_get_fec_stats(cgxd, lmac, rsp);
-> +       return err;
-
-no need for variable err
+Thanks!
+-- 
+Florian
