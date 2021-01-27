@@ -2,45 +2,44 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C16703056DE
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 10:27:12 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 952813056EB
+	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 10:29:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235215AbhA0J0t (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 04:26:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35116 "EHLO
+        id S235352AbhA0J2I (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 04:28:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35558 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235221AbhA0JXR (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 04:23:17 -0500
+        with ESMTP id S235228AbhA0JZW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 04:25:22 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CFDFC0613D6
-        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 01:22:37 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C4E7C06178B
+        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 01:22:45 -0800 (PST)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1l4h24-00089t-5D
-        for netdev@vger.kernel.org; Wed, 27 Jan 2021 10:22:36 +0100
+        id 1l4h2B-0008GU-Kb
+        for netdev@vger.kernel.org; Wed, 27 Jan 2021 10:22:43 +0100
 Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id EA08B5CF0F4
-        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 09:22:33 +0000 (UTC)
+        by bjornoya.blackshift.org (Postfix) with SMTP id 9B51C5CF124
+        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 09:22:38 +0000 (UTC)
 Received: from hardanger.blackshift.org (unknown [172.20.34.65])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id C9F5B5CF0D1;
-        Wed, 27 Jan 2021 09:22:28 +0000 (UTC)
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id 381FA5CF0D7;
+        Wed, 27 Jan 2021 09:22:30 +0000 (UTC)
 Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id ec185e80;
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 842192eb;
         Wed, 27 Jan 2021 09:22:28 +0000 (UTC)
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     netdev@vger.kernel.org
 Cc:     davem@davemloft.net, kuba@kernel.org, linux-can@vger.kernel.org,
-        kernel@pengutronix.de,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        kernel@pengutronix.de, Tom Rix <trix@redhat.com>,
         Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [net-next 03/12] can: dev: export can_get_state_str() function
-Date:   Wed, 27 Jan 2021 10:22:18 +0100
-Message-Id: <20210127092227.2775573-4-mkl@pengutronix.de>
+Subject: [net-next 05/12] can: mcba_usb: remove h from printk format specifier
+Date:   Wed, 27 Jan 2021 10:22:20 +0100
+Message-Id: <20210127092227.2775573-6-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20210127092227.2775573-1-mkl@pengutronix.de>
 References: <20210127092227.2775573-1-mkl@pengutronix.de>
@@ -54,52 +53,53 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+From: Tom Rix <trix@redhat.com>
 
-The can_get_state_str() function is also relevant to the drivers. Export the
-symbol and make it visible in the can/dev.h header.
+This change fixes the checkpatch warning described in this commit commit
+cbacb5ab0aa0 ("docs: printk-formats: Stop encouraging use of unnecessary
+%h[xudi] and %hh[xudi]")
 
-Link: https://lore.kernel.org/r/20210119170355.12040-1-mailhol.vincent@wanadoo.fr
-Signed-off-by: Vincent Mailhol <mailhol.vincent@wanadoo.fr>
+Standard integer promotion is already done and %hx and %hhx is useless so do
+not encourage the use of %hh[xudi] or %h[xudi].
+
+Link: https://lore.kernel.org/r/20210124150916.1920434-1-trix@redhat.com
+Signed-off-by: Tom Rix <trix@redhat.com>
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
- drivers/net/can/dev/dev.c | 3 ++-
- include/linux/can/dev.h   | 1 +
- 2 files changed, 3 insertions(+), 1 deletion(-)
+ drivers/net/can/usb/mcba_usb.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/net/can/dev/dev.c b/drivers/net/can/dev/dev.c
-index 01e4a194f187..d9281ae853f8 100644
---- a/drivers/net/can/dev/dev.c
-+++ b/drivers/net/can/dev/dev.c
-@@ -74,7 +74,7 @@ static int can_rx_state_to_frame(struct net_device *dev, enum can_state state)
- 	}
- }
- 
--static const char *can_get_state_str(const enum can_state state)
-+const char *can_get_state_str(const enum can_state state)
+diff --git a/drivers/net/can/usb/mcba_usb.c b/drivers/net/can/usb/mcba_usb.c
+index 4232a7126c1b..1f649d178010 100644
+--- a/drivers/net/can/usb/mcba_usb.c
++++ b/drivers/net/can/usb/mcba_usb.c
+@@ -466,7 +466,7 @@ static void mcba_usb_process_ka_usb(struct mcba_priv *priv,
+ 				    struct mcba_usb_msg_ka_usb *msg)
  {
- 	switch (state) {
- 	case CAN_STATE_ERROR_ACTIVE:
-@@ -95,6 +95,7 @@ static const char *can_get_state_str(const enum can_state state)
+ 	if (unlikely(priv->usb_ka_first_pass)) {
+-		netdev_info(priv->netdev, "PIC USB version %hhu.%hhu\n",
++		netdev_info(priv->netdev, "PIC USB version %u.%u\n",
+ 			    msg->soft_ver_major, msg->soft_ver_minor);
  
- 	return "<unknown>";
- }
-+EXPORT_SYMBOL_GPL(can_get_state_str);
+ 		priv->usb_ka_first_pass = false;
+@@ -492,7 +492,7 @@ static void mcba_usb_process_ka_can(struct mcba_priv *priv,
+ 				    struct mcba_usb_msg_ka_can *msg)
+ {
+ 	if (unlikely(priv->can_ka_first_pass)) {
+-		netdev_info(priv->netdev, "PIC CAN version %hhu.%hhu\n",
++		netdev_info(priv->netdev, "PIC CAN version %u.%u\n",
+ 			    msg->soft_ver_major, msg->soft_ver_minor);
  
- void can_change_state(struct net_device *dev, struct can_frame *cf,
- 		      enum can_state tx_state, enum can_state rx_state)
-diff --git a/include/linux/can/dev.h b/include/linux/can/dev.h
-index 7faf6a37d5b2..ac4d83a1ab81 100644
---- a/include/linux/can/dev.h
-+++ b/include/linux/can/dev.h
-@@ -123,6 +123,7 @@ void unregister_candev(struct net_device *dev);
- int can_restart_now(struct net_device *dev);
- void can_bus_off(struct net_device *dev);
+ 		priv->can_ka_first_pass = false;
+@@ -554,7 +554,7 @@ static void mcba_usb_process_rx(struct mcba_priv *priv,
+ 		break;
  
-+const char *can_get_state_str(const enum can_state state);
- void can_change_state(struct net_device *dev, struct can_frame *cf,
- 		      enum can_state tx_state, enum can_state rx_state);
- 
+ 	default:
+-		netdev_warn(priv->netdev, "Unsupported msg (0x%hhX)",
++		netdev_warn(priv->netdev, "Unsupported msg (0x%X)",
+ 			    msg->cmd_id);
+ 		break;
+ 	}
 -- 
 2.29.2
 
