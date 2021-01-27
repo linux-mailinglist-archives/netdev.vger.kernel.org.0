@@ -2,247 +2,277 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id F0F48306436
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 20:37:43 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8BA44306455
+	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 20:46:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344528AbhA0Tff (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 14:35:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53448 "EHLO
+        id S1344574AbhA0TmP (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 14:42:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344432AbhA0Tci (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 14:32:38 -0500
-Received: from mail-yb1-xb4a.google.com (mail-yb1-xb4a.google.com [IPv6:2607:f8b0:4864:20::b4a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EB81C061794
-        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 11:31:45 -0800 (PST)
-Received: by mail-yb1-xb4a.google.com with SMTP id c12so3319772ybf.1
-        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 11:31:45 -0800 (PST)
+        with ESMTP id S1344564AbhA0Tlg (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 14:41:36 -0500
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C640C06174A
+        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 11:40:54 -0800 (PST)
+Received: by mail-wr1-x433.google.com with SMTP id q7so3110315wre.13
+        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 11:40:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=sender:date:in-reply-to:message-id:mime-version:references:subject
-         :from:to:cc;
-        bh=vkhj91r1P+m963xtgGo0Ujx+DIYZAI5Z6ahaJ7HW7Nk=;
-        b=qwkOa3Rs7RduAXP+M9aOuB8IK/2yfrlaWr2KJbpwV40WBSoKeR4ZbZvmBBvsdvr6CR
-         QOYDSCeQo9PTrBhH0ikBkEe/3HsAd3Q4pe8Vn4tgrhWZcsqTwe9OwGzou9g+UVkMi6+4
-         Ikmp6ddFNHwAAjZ1zObuWFyjw4Xq7vvu80n2JJzFmp1VO4J5fziNlcJgCFIMrm+JMIoF
-         jIqdlygJBrM1UonjuCS7j+X5kBTdqdDGPBeotlr7OlfjFh1VHgdXyFtJ46Dd8KmfHDV3
-         7NtAE/dCOXu7mXm6t8aLrnYPUq1FO9olyfNbmuLoVyevvcKKPlngnUfwP3NwOaeMlkB/
-         xmTQ==
+        d=gmail.com; s=20161025;
+        h=to:cc:references:from:subject:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=OuiVZcjzv/rz3J3JZMw0xfSfWChzbTuQtFFpRmZ9D/w=;
+        b=iZ6an816k3p9tTFr2tWFj/wcexChEGOWlj6ytV3rVI7lneTHr0WyKg2iHWxGXrSnZU
+         VReZUw+plbCdiD3jdwkuMx/ObniEiG8/8YMkYmg2dOdfrDRkqPtjyLXIEhXXH81jKgkr
+         JyuH41NH/YbKC42rVq8NW8Wb5RUJDZ1AJ3Jhl9DjXOmyvWY2wUrPFD63yYX+cJbyZqss
+         LaaR+7tQFzhwT1wyFHyAOqxERCh5j8Zi/w5Rg4srb5XQrHyFbYkIgSv8vgyaitWaI29T
+         U6ATWCcqmP6atLbyiuJEP7LWMAZ5+WV80q5htljGJR423jlsmgjs/IiOA6+I54P/zKsd
+         1bNA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:date:in-reply-to:message-id:mime-version
-         :references:subject:from:to:cc;
-        bh=vkhj91r1P+m963xtgGo0Ujx+DIYZAI5Z6ahaJ7HW7Nk=;
-        b=uPVCOBmEcLQj9h40JU8dWZPBvjT2tWyKmyNp3ELACTm9oBnqA0gPEPReRrbMQn3BAA
-         2dzfQSwJqLh57s1Ncr+27SzZL3EVJqD+i12aPHO6Kle9stgP5WUSX3cgwcKFvx3TsrVE
-         XOif/0tWO+6lZik5M2FYeRxVO/n6Mjm12kysJlSbkKTv2ejIDp8c0aS+lIBgRTKpdp4H
-         RIc8cbSMD6zX1q6DxSlulIX5NxCZUr1R6b29kYMnOlHBCbvZGpRqJeST5Bzzz3jZgTM7
-         pfOYqYJbGzGZyFU3jdUtNVdXsO1mryD2WZBBOuPA+4e6cPB5F6F/eeuHhIHZM+JIBAGL
-         dHsw==
-X-Gm-Message-State: AOAM531WcJlA+yQqlMAMPtJj/KaenNl4gbSv52+3KgwKBAMZWD6zLuna
-        NGf777Ebq+SuckxA5kyjeCfad0xu/JXNMiAVtgVDUKhD8j7/zXxERttHzKi2YtyiYWSjRUbOL62
-        prrMWPFSlxCulq8x94t3izwJeWLrGOmEjbuls99vquxl8b3JAlE/YHQ==
-X-Google-Smtp-Source: ABdhPJw1RyoDdW6m6KPuK7/1e2JCOi/a7P0P1a6Q8h+apGN9WCFBVJaZMa+4P2QTSFPlqwQ/5cStv5o=
-Sender: "sdf via sendgmr" <sdf@sdf2.svl.corp.google.com>
-X-Received: from sdf2.svl.corp.google.com ([2620:15c:2c4:1:7220:84ff:fe09:7732])
- (user=sdf job=sendgmr) by 2002:a25:29c1:: with SMTP id p184mr18405912ybp.34.1611775904207;
- Wed, 27 Jan 2021 11:31:44 -0800 (PST)
-Date:   Wed, 27 Jan 2021 11:31:40 -0800
-In-Reply-To: <20210127193140.3170382-1-sdf@google.com>
-Message-Id: <20210127193140.3170382-2-sdf@google.com>
-Mime-Version: 1.0
-References: <20210127193140.3170382-1-sdf@google.com>
-X-Mailer: git-send-email 2.30.0.280.ga3ce27912f-goog
-Subject: [PATCH bpf-next v5 2/2] selftests/bpf: verify that rebinding to port
- < 1024 from BPF works
-From:   Stanislav Fomichev <sdf@google.com>
-To:     netdev@vger.kernel.org, bpf@vger.kernel.org
-Cc:     ast@kernel.org, daniel@iogearbox.net,
-        Stanislav Fomichev <sdf@google.com>,
-        Andrey Ignatov <rdna@fb.com>, Martin KaFai Lau <kafai@fb.com>
-Content-Type: text/plain; charset="UTF-8"
+        h=x-gm-message-state:to:cc:references:from:subject:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=OuiVZcjzv/rz3J3JZMw0xfSfWChzbTuQtFFpRmZ9D/w=;
+        b=SJd+iTdQm6d/uW/f473UIpHMREVcEalyrdWjdRtvnTRJOrGm7qmGl2OVWa794GJlUP
+         LSy1kZ9eYewRbVJw/E8S+gkMV6s1YP5JYPN/oUDzVXX2v/SxlUf0qCugr7KGLE0eUpgR
+         gcyTKn55DxH8+3kh9OFDTJKuM69lM2YqfgO+RCGnVyHhFKjOy50dEUfVnmnhfHTXEy2C
+         oBGXWtYgGtk0tXdl4WNRTe/w4YHMEEHj93J3xe6pH9t17kVE3N37DTpylXZdNuoil2OD
+         aCxLXCzvLG8QTVLz/FkraJfQ2h9AXW+0EVIcOLpm1sKQc7Binb9YeJoS48Q14m3SlmFQ
+         KmwA==
+X-Gm-Message-State: AOAM532z8FRMg4Q/djVJw3tV1p+Gb6AgtvpHRZnYjtx75QeFQiLmAWkP
+        SUFlCBvQ/onhiuS4qrgdej0=
+X-Google-Smtp-Source: ABdhPJwt6ihsN7XDpyeGiPOgB9j4tA/bQ0duLiq+QR/MPPcLzrzDak8Uaa94p5fptLAjNa9s1iqq/Q==
+X-Received: by 2002:adf:fb05:: with SMTP id c5mr12594813wrr.69.1611776452917;
+        Wed, 27 Jan 2021 11:40:52 -0800 (PST)
+Received: from ?IPv6:2003:ea:8f1f:ad00:acff:e553:5e:a443? (p200300ea8f1fad00acffe553005ea443.dip0.t-ipconnect.de. [2003:ea:8f1f:ad00:acff:e553:5e:a443])
+        by smtp.googlemail.com with ESMTPSA id b2sm3790500wmd.41.2021.01.27.11.40.49
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 27 Jan 2021 11:40:51 -0800 (PST)
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        David Miller <davem@davemloft.net>,
+        Realtek linux nic maintainers <nic_swsd@realtek.com>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        xplo.bn@gmail.com
+References: <c7fd197f-8ab8-2297-385e-5d2b1d5911d7@gmail.com>
+ <CAF=yD-Jw6MqY+hnzFH75E4+3z5jo8dnO5G+KXpTd_vetZ6Gxwg@mail.gmail.com>
+From:   Heiner Kallweit <hkallweit1@gmail.com>
+Subject: Re: [PATCH net] r8169: work around RTL8125 UDP hw bug
+Message-ID: <3afea922-776b-baf3-634c-9a1e84e8c4c2@gmail.com>
+Date:   Wed, 27 Jan 2021 20:40:43 +0100
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.0
+MIME-Version: 1.0
+In-Reply-To: <CAF=yD-Jw6MqY+hnzFH75E4+3z5jo8dnO5G+KXpTd_vetZ6Gxwg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Return 3 to indicate that permission check for port 111
-should be skipped.
+On 27.01.2021 19:07, Willem de Bruijn wrote:
+> On Tue, Jan 26, 2021 at 2:40 PM Heiner Kallweit <hkallweit1@gmail.com> wrote:
+>>
+>> It was reported that on RTL8125 network breaks under heavy UDP load,
+>> e.g. torrent traffic ([0], from comment 27). Realtek confirmed a hw bug
+>> and provided me with a test version of the r8125 driver including a
+>> workaround. Tests confirmed that the workaround fixes the issue.
+>> I modified the original version of the workaround to meet mainline
+>> code style.
+>>
+>> [0] https://bugzilla.kernel.org/show_bug.cgi?id=209839
+>>
+>> Fixes: f1bce4ad2f1c ("r8169: add support for RTL8125")
+>> Tested-by: xplo <xplo.bn@gmail.com>
+>> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+>> ---
+>>  drivers/net/ethernet/realtek/r8169_main.c | 64 ++++++++++++++++++++---
+>>  1 file changed, 58 insertions(+), 6 deletions(-)
+>>
+>> diff --git a/drivers/net/ethernet/realtek/r8169_main.c b/drivers/net/ethernet/realtek/r8169_main.c
+>> index fb67d8f79..90052033b 100644
+>> --- a/drivers/net/ethernet/realtek/r8169_main.c
+>> +++ b/drivers/net/ethernet/realtek/r8169_main.c
+>> @@ -28,6 +28,7 @@
+>>  #include <linux/bitfield.h>
+>>  #include <linux/prefetch.h>
+>>  #include <linux/ipv6.h>
+>> +#include <linux/ptp_classify.h>
+>>  #include <asm/unaligned.h>
+>>  #include <net/ip6_checksum.h>
+>>
+>> @@ -4007,17 +4008,64 @@ static int rtl8169_xmit_frags(struct rtl8169_private *tp, struct sk_buff *skb,
+>>         return -EIO;
+>>  }
+>>
+>> -static bool rtl_test_hw_pad_bug(struct rtl8169_private *tp)
+>> +static bool rtl_skb_is_udp(struct sk_buff *skb)
+>>  {
+>> +       switch (vlan_get_protocol(skb)) {
+>> +       case htons(ETH_P_IP):
+>> +               return ip_hdr(skb)->protocol == IPPROTO_UDP;
+>> +       case htons(ETH_P_IPV6):
+>> +               return ipv6_hdr(skb)->nexthdr == IPPROTO_UDP;
+> 
+> This trusts that an skb with given skb->protocol is well behaved. With
+> packet sockets/tun/virtio, that may be false.
+> 
+>> +       default:
+>> +               return false;
+>> +       }
+>> +}
+>> +
+>> +#define RTL_MIN_PATCH_LEN      47
+>> +#define PTP_GEN_PORT           320
+> 
+> Why the two PTP ports? The report is not PTP specific. Also, what does
+> patch mean in this context?
+> 
+>> +
+>> +/* see rtl8125_get_patch_pad_len() in r8125 vendor driver */
+>> +static unsigned int rtl8125_quirk_udp_padto(struct rtl8169_private *tp,
+>> +                                           struct sk_buff *skb)
+>> +{
+>> +       unsigned int padto = 0, len = skb->len;
+>> +
+>> +       if (rtl_is_8125(tp) && len < 175 && rtl_skb_is_udp(skb) &&
+>> +           skb_transport_header_was_set(skb)) {
+> 
+> What is 175 here?
+> 
+>> +               unsigned int trans_data_len = skb_tail_pointer(skb) -
+>> +                                             skb_transport_header(skb);
+>> +
+>> +               if (trans_data_len > 3 && trans_data_len < RTL_MIN_PATCH_LEN) {
+> 
+> And 3 here, instead of sizeof(struct udphdr)
+> 
+>> +                       u16 dest = ntohs(udp_hdr(skb)->dest);
+>> +
+>> +                       if (dest == PTP_EV_PORT || dest == PTP_GEN_PORT)
+>> +                               padto = len + RTL_MIN_PATCH_LEN - trans_data_len;
+>> +               }
+>> +
+>> +               if (trans_data_len < UDP_HLEN)
+>> +                       padto = max(padto, len + UDP_HLEN - trans_data_len);
+>> +       }
+>> +
+>> +       return padto;
+>> +}
+>> +
+>> +static unsigned int rtl_quirk_packet_padto(struct rtl8169_private *tp,
+>> +                                          struct sk_buff *skb)
+>> +{
+>> +       unsigned int padto;
+>> +
+>> +       padto = rtl8125_quirk_udp_padto(tp, skb);
+>> +
+>>         switch (tp->mac_version) {
+>>         case RTL_GIGA_MAC_VER_34:
+>>         case RTL_GIGA_MAC_VER_60:
+>>         case RTL_GIGA_MAC_VER_61:
+>>         case RTL_GIGA_MAC_VER_63:
+>> -               return true;
+>> +               padto = max_t(unsigned int, padto, ETH_ZLEN);
+>>         default:
+>> -               return false;
+>> +               break;
+>>         }
+>> +
+>> +       return padto;
+>>  }
+>>
+>>  static void rtl8169_tso_csum_v1(struct sk_buff *skb, u32 *opts)
+>> @@ -4089,9 +4137,10 @@ static bool rtl8169_tso_csum_v2(struct rtl8169_private *tp,
+>>
+>>                 opts[1] |= transport_offset << TCPHO_SHIFT;
+>>         } else {
+>> -               if (unlikely(skb->len < ETH_ZLEN && rtl_test_hw_pad_bug(tp)))
+>> -                       /* eth_skb_pad would free the skb on error */
+>> -                       return !__skb_put_padto(skb, ETH_ZLEN, false);
+>> +               unsigned int padto = rtl_quirk_packet_padto(tp, skb);
+>> +
+>> +               /* skb_padto would free the skb on error */
+>> +               return !__skb_put_padto(skb, padto, false);
+>>         }
+>>
+>>         return true;
+>> @@ -4268,6 +4317,9 @@ static netdev_features_t rtl8169_features_check(struct sk_buff *skb,
+>>                 if (skb->len < ETH_ZLEN)
+>>                         features &= ~NETIF_F_CSUM_MASK;
+>>
+>> +               if (rtl_quirk_packet_padto(tp, skb))
+>> +                       features &= ~NETIF_F_CSUM_MASK;
+>> +
+>>                 if (transport_offset > TCPHO_MAX &&
+>>                     rtl_chip_supports_csum_v2(tp))
+>>                         features &= ~NETIF_F_CSUM_MASK;
+>> --
+>> 2.30.0
+>>
 
-Cc: Andrey Ignatov <rdna@fb.com>
-Acked-by: Martin KaFai Lau <kafai@fb.com>
-Signed-off-by: Stanislav Fomichev <sdf@google.com>
----
- .../selftests/bpf/prog_tests/bind_perm.c      | 109 ++++++++++++++++++
- tools/testing/selftests/bpf/progs/bind_perm.c |  45 ++++++++
- 2 files changed, 154 insertions(+)
- create mode 100644 tools/testing/selftests/bpf/prog_tests/bind_perm.c
- create mode 100644 tools/testing/selftests/bpf/progs/bind_perm.c
+The workaround was provided by Realtek, I just modified it to match
+mainline code style. For your reference I add the original version below.
+I don't know where the magic numbers come from, Realtek releases
+neither data sheets nor errata information.
 
-diff --git a/tools/testing/selftests/bpf/prog_tests/bind_perm.c b/tools/testing/selftests/bpf/prog_tests/bind_perm.c
-new file mode 100644
-index 000000000000..d0f06e40c16d
---- /dev/null
-+++ b/tools/testing/selftests/bpf/prog_tests/bind_perm.c
-@@ -0,0 +1,109 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#include <test_progs.h>
-+#include "bind_perm.skel.h"
-+
-+#include <sys/types.h>
-+#include <sys/socket.h>
-+#include <sys/capability.h>
-+
-+static int duration;
-+
-+void try_bind(int family, int port, int expected_errno)
-+{
-+	struct sockaddr_storage addr = {};
-+	struct sockaddr_in6 *sin6;
-+	struct sockaddr_in *sin;
-+	int fd = -1;
-+
-+	fd = socket(family, SOCK_STREAM, 0);
-+	if (CHECK(fd < 0, "fd", "errno %d", errno))
-+		goto close_socket;
-+
-+	if (family == AF_INET) {
-+		sin = (struct sockaddr_in *)&addr;
-+		sin->sin_family = family;
-+		sin->sin_port = htons(port);
-+	} else {
-+		sin6 = (struct sockaddr_in6 *)&addr;
-+		sin6->sin6_family = family;
-+		sin6->sin6_port = htons(port);
-+	}
-+
-+	errno = 0;
-+	bind(fd, (struct sockaddr *)&addr, sizeof(addr));
-+	ASSERT_EQ(errno, expected_errno, "bind");
-+
-+close_socket:
-+	if (fd >= 0)
-+		close(fd);
-+}
-+
-+bool cap_net_bind_service(cap_flag_value_t flag)
-+{
-+	const cap_value_t cap_net_bind_service = CAP_NET_BIND_SERVICE;
-+	cap_flag_value_t original_value;
-+	bool was_effective = false;
-+	cap_t caps;
-+
-+	caps = cap_get_proc();
-+	if (CHECK(!caps, "cap_get_proc", "errno %d", errno))
-+		goto free_caps;
-+
-+	if (CHECK(cap_get_flag(caps, CAP_NET_BIND_SERVICE, CAP_EFFECTIVE,
-+			       &original_value),
-+		  "cap_get_flag", "errno %d", errno))
-+		goto free_caps;
-+
-+	was_effective = (original_value == CAP_SET);
-+
-+	if (CHECK(cap_set_flag(caps, CAP_EFFECTIVE, 1, &cap_net_bind_service,
-+			       flag),
-+		  "cap_set_flag", "errno %d", errno))
-+		goto free_caps;
-+
-+	if (CHECK(cap_set_proc(caps), "cap_set_proc", "errno %d", errno))
-+		goto free_caps;
-+
-+free_caps:
-+	CHECK(cap_free(caps), "cap_free", "errno %d", errno);
-+	return was_effective;
-+}
-+
-+void test_bind_perm(void)
-+{
-+	bool cap_was_effective;
-+	struct bind_perm *skel;
-+	int cgroup_fd;
-+
-+	cgroup_fd = test__join_cgroup("/bind_perm");
-+	if (CHECK(cgroup_fd < 0, "cg-join", "errno %d", errno))
-+		return;
-+
-+	skel = bind_perm__open_and_load();
-+	if (!ASSERT_OK_PTR(skel, "skel"))
-+		goto close_cgroup_fd;
-+
-+	skel->links.bind_v4_prog = bpf_program__attach_cgroup(skel->progs.bind_v4_prog, cgroup_fd);
-+	if (!ASSERT_OK_PTR(skel, "bind_v4_prog"))
-+		goto close_skeleton;
-+
-+	skel->links.bind_v6_prog = bpf_program__attach_cgroup(skel->progs.bind_v6_prog, cgroup_fd);
-+	if (!ASSERT_OK_PTR(skel, "bind_v6_prog"))
-+		goto close_skeleton;
-+
-+	cap_was_effective = cap_net_bind_service(CAP_CLEAR);
-+
-+	try_bind(AF_INET, 110, EACCES);
-+	try_bind(AF_INET6, 110, EACCES);
-+
-+	try_bind(AF_INET, 111, 0);
-+	try_bind(AF_INET6, 111, 0);
-+
-+	if (cap_was_effective)
-+		cap_net_bind_service(CAP_SET);
-+
-+close_skeleton:
-+	bind_perm__destroy(skel);
-+close_cgroup_fd:
-+	close(cgroup_fd);
-+}
-diff --git a/tools/testing/selftests/bpf/progs/bind_perm.c b/tools/testing/selftests/bpf/progs/bind_perm.c
-new file mode 100644
-index 000000000000..7bd2a027025d
---- /dev/null
-+++ b/tools/testing/selftests/bpf/progs/bind_perm.c
-@@ -0,0 +1,45 @@
-+// SPDX-License-Identifier: GPL-2.0
-+
-+#include <linux/stddef.h>
-+#include <linux/bpf.h>
-+#include <sys/types.h>
-+#include <sys/socket.h>
-+#include <bpf/bpf_helpers.h>
-+#include <bpf/bpf_endian.h>
-+
-+static __always_inline int bind_prog(struct bpf_sock_addr *ctx, int family)
-+{
-+	struct bpf_sock *sk;
-+
-+	sk = ctx->sk;
-+	if (!sk)
-+		return 0;
-+
-+	if (sk->family != family)
-+		return 0;
-+
-+	if (ctx->type != SOCK_STREAM)
-+		return 0;
-+
-+	/* Return 1 OR'ed with the first bit set to indicate
-+	 * that CAP_NET_BIND_SERVICE should be bypassed.
-+	 */
-+	if (ctx->user_port == bpf_htons(111))
-+		return (1 | 2);
-+
-+	return 1;
-+}
-+
-+SEC("cgroup/bind4")
-+int bind_v4_prog(struct bpf_sock_addr *ctx)
-+{
-+	return bind_prog(ctx, AF_INET);
-+}
-+
-+SEC("cgroup/bind6")
-+int bind_v6_prog(struct bpf_sock_addr *ctx)
-+{
-+	return bind_prog(ctx, AF_INET6);
-+}
-+
-+char _license[] SEC("license") = "GPL";
--- 
-2.30.0.280.ga3ce27912f-goog
+
+#define MIN_PATCH_LEN (47)
+static u32
+rtl8125_get_patch_pad_len(struct sk_buff *skb)
+{
+        u32 pad_len = 0;
+        int trans_data_len;
+        u32 hdr_len;
+        u32 pkt_len = skb->len;
+        u8 ip_protocol;
+        bool has_trans = skb_transport_header_was_set(skb);
+
+        if (!(has_trans && (pkt_len < 175))) //128 + MIN_PATCH_LEN
+                goto no_padding;
+
+        ip_protocol = rtl8125_get_l4_protocol(skb);
+        if (!(ip_protocol == IPPROTO_TCP || ip_protocol == IPPROTO_UDP))
+                goto no_padding;
+
+        trans_data_len = pkt_len -
+                         (skb->transport_header -
+                          skb_headroom(skb));
+        if (ip_protocol == IPPROTO_UDP) {
+                if (trans_data_len > 3 && trans_data_len < MIN_PATCH_LEN) {
+                        u16 dest_port = 0;
+
+                        skb_copy_bits(skb, skb->transport_header - skb_headroom(skb) + 2, &dest_port, 2);
+                        dest_port = ntohs(dest_port);
+
+                        if (dest_port == 0x13f ||
+                            dest_port == 0x140) {
+                                pad_len = MIN_PATCH_LEN - trans_data_len;
+                                goto out;
+                        }
+                }
+        }
+
+        hdr_len = 0;
+        if (ip_protocol == IPPROTO_TCP)
+                hdr_len = 20;
+        else if (ip_protocol == IPPROTO_UDP)
+                hdr_len = 8;
+        if (trans_data_len < hdr_len)
+                pad_len = hdr_len - trans_data_len;
+
+out:
+        if ((pkt_len + pad_len) < ETH_ZLEN)
+                pad_len = ETH_ZLEN - pkt_len;
+
+        return pad_len;
+
+no_padding:
+
+        return 0;
+}
+
+
+
 
