@@ -2,92 +2,62 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A66F9305172
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 05:52:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 221AC3050F4
+	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 05:34:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239178AbhA0Ece (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Tue, 26 Jan 2021 23:32:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37160 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232525AbhA0DEW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jan 2021 22:04:22 -0500
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59D3FC0617A7;
-        Tue, 26 Jan 2021 18:25:20 -0800 (PST)
-Received: by mail-pf1-x441.google.com with SMTP id o20so229777pfu.0;
-        Tue, 26 Jan 2021 18:25:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=joDhYr4WwYIa6lTFlqLJ0z3vbyBAAz6QSsz7f9MoAT0=;
-        b=IQHJWZYVacOMsK096C8npqb57WhF9GsyIaKrsd2VR5on07xkS3mYrUm7ry3hHTyGzv
-         kslNVsQNyIvsTaXnEpvcqjT3I0LOf1fvW+YbF7eQrE24Ukpd9yvwsQBSS06BGRbnpzpS
-         3hHH/+yHrTpOKYsmdHmgacKwyxYHtnZ1qgP/5A0EQ80DDUt8lYtg3h7iVya/+gZobnEg
-         hoFiXnYo4FCsSH1J8qiNDIzHPjozqgaGT2Jp5UZNNqDQbpmvGk1jA1oyIauCvvy/J9kD
-         iJ8WEGfdX12W8p9LuuOq8AVT57fWZkfATrteTyNcC4yqp0Xv0uz4Yh0KV1+sr+crVQN3
-         8guw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=joDhYr4WwYIa6lTFlqLJ0z3vbyBAAz6QSsz7f9MoAT0=;
-        b=Ch+XYVk2WE5KCkTr4sPAgeU+mZ8kAjapFiElSWOJIS1uwe9NnZPLv6SOVQqWMbP3DN
-         GWLWQ8teEYOgWQjyDBR7BxNajVli1Ymv80n3kbmz7Dw6n+ztJzBks9qVtz1yPb0R4Dkk
-         MXCalG9ggWw2Gf7wThI5t4ykRPgiEMc3XrH1Rxi3Q2gfZDGr+JueM0dAhrDDxhw/RAMm
-         uDJfbpaPOqZY7uF0uNmjlEbP7TCtO4BuY4z4sfMxezsEZcSWOP1tMZkL1G+vi25IKnzq
-         hS0n8wnHqC11I2qkxn+cgVpIfNfwv46fPH2zmduKmlhu5NG6t9FIMoRiTkiFMRCinmaF
-         ew4w==
-X-Gm-Message-State: AOAM5334AnLEdkOQjDZ0TeUEXuWmVeymW52FGqNkFReMg4JHQEAPqmmu
-        2wojYJdUTw8Sk+nDY0pYWgs=
-X-Google-Smtp-Source: ABdhPJzDMD5pkEHDo4gipRdTGkjHcADKE3lHimALyEXvIwt/WyGdyMf+YeCjyYKXgbt2YaEYCVWEuQ==
-X-Received: by 2002:aa7:9ad3:0:b029:1b7:8afc:d9bd with SMTP id x19-20020aa79ad30000b02901b78afcd9bdmr7980137pfp.45.1611714319755;
-        Tue, 26 Jan 2021 18:25:19 -0800 (PST)
-Received: from localhost ([178.236.46.205])
-        by smtp.gmail.com with ESMTPSA id b21sm390023pfb.45.2021.01.26.18.25.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Jan 2021 18:25:19 -0800 (PST)
-From:   menglong8.dong@gmail.com
-X-Google-Original-From: dong.menglong@zte.com.cn
-To:     ast@kernel.org
-Cc:     daniel@iogearbox.net, andrii@kernel.org, kafai@fb.com,
-        songliubraving@fb.com, yhs@fb.com, john.fastabend@gmail.com,
-        kpsingh@kernel.org, jackmanb@google.com, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Menglong Dong <dong.menglong@zte.com.cn>
-Subject: [PATCH bpf-next] bpf: change 'BPF_ADD' to 'BPF_AND' in print_bpf_insn()
-Date:   Tue, 26 Jan 2021 18:25:07 -0800
-Message-Id: <20210127022507.23674-1-dong.menglong@zte.com.cn>
-X-Mailer: git-send-email 2.25.1
+        id S239165AbhA0Ec3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Tue, 26 Jan 2021 23:32:29 -0500
+Received: from mail.kernel.org ([198.145.29.99]:58332 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232438AbhA0DDo (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Tue, 26 Jan 2021 22:03:44 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 04B8820639;
+        Wed, 27 Jan 2021 02:25:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1611714334;
+        bh=l+UtnEk9NZADkqnwaQDcJHM4nZ3DDaQzpJK3tX454F4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=inQK+CUDy79hyiiawvC6uK526DQrUuRtlGFSr14AEEhpbR5j3UEUG6WzI1FSlsLM+
+         PW78Ui1zOFdSscXDjFdgLsscDWKkMcFDLIV6Ywf6SRQXDCV/BCjNJZ9XmQvEOkzg0Q
+         /AAlsBwJoMXz2PJ8Qzo9WW0ax6gsOMe2vvDN8IG9GfqGfz+hHHOUabit9i6dxGiVuG
+         vEq/oIUiOf8JC+YDRLrZDoDFEFYfYtf4gOMsx9wH/eLkhkmxkXmGsLuKaDh9WylERm
+         eIteytm6tG53nG4ALSL2iC0Paq8d3IGNnxH7IN1JTq8aiOYtwmEB0y7CUJ1nLUCvTk
+         Ca8QmGmN7pHYw==
+Date:   Tue, 26 Jan 2021 18:25:33 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Laurent Badel <laurentbadel@eaton.com>
+Cc:     Fugang Duan <fugang.duan@nxp.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>, <netdev@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 net 1/1] net: fec: Fix temporary RMII clock reset on
+ link up
+Message-ID: <20210126182533.17ab52a9@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210125100745.5090-2-laurentbadel@eaton.com>
+References: <20210125100745.5090-1-laurentbadel@eaton.com>
+        <20210125100745.5090-2-laurentbadel@eaton.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Menglong Dong <dong.menglong@zte.com.cn>
+On Mon, 25 Jan 2021 11:07:45 +0100 Laurent Badel wrote:
+> =EF=BB=BFfec_restart() does a hard reset of the MAC module when the link =
+status
+> changes to up. This temporarily resets the R_CNTRL register which controls
+> the MII mode of the ENET_OUT clock. In the case of RMII, the clock
+> frequency momentarily drops from 50MHz to 25MHz until the register is
+> reconfigured. Some link partners do not tolerate this glitch and
+> invalidate the link causing failure to establish a stable link when using
+> PHY polling mode. Since as per IEEE802.11 the criteria for link validity
 
-This 'BPF_ADD' is duplicated, and I belive it should be 'BPF_AND'.
+I think you meant 802.3, fixed that up and applied, thanks!
 
-Fixes: 981f94c3e921 ("bpf: Add bitwise atomic instructions")
-Signed-off-by: Menglong Dong <dong.menglong@zte.com.cn>
----
- kernel/bpf/disasm.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/kernel/bpf/disasm.c b/kernel/bpf/disasm.c
-index 19ff8fed7f4b..3acc7e0b6916 100644
---- a/kernel/bpf/disasm.c
-+++ b/kernel/bpf/disasm.c
-@@ -161,7 +161,7 @@ void print_bpf_insn(const struct bpf_insn_cbs *cbs,
- 				insn->dst_reg,
- 				insn->off, insn->src_reg);
- 		else if (BPF_MODE(insn->code) == BPF_ATOMIC &&
--			 (insn->imm == BPF_ADD || insn->imm == BPF_ADD ||
-+			 (insn->imm == BPF_ADD || insn->imm == BPF_AND ||
- 			  insn->imm == BPF_OR || insn->imm == BPF_XOR)) {
- 			verbose(cbs->private_data, "(%02x) lock *(%s *)(r%d %+d) %s r%d\n",
- 				insn->code,
--- 
-2.25.1
+> are PHY-specific, what the partner should tolerate cannot be assumed, so
+> avoid resetting the MII clock by using software reset instead of hardware
+> reset when the link is up. This is generally relevant only if the SoC
+> provides the clock to an external PHY and the PHY is configured for RMII.
 
