@@ -2,87 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 819503057CC
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 11:06:51 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 38AA2305816
+	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 11:18:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235599AbhA0KF4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 05:05:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45414 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S316712AbhAZXJY (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jan 2021 18:09:24 -0500
-Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A84F3C061573
-        for <netdev@vger.kernel.org>; Tue, 26 Jan 2021 15:08:36 -0800 (PST)
-Received: by mail-ej1-x62c.google.com with SMTP id g3so32800ejb.6
-        for <netdev@vger.kernel.org>; Tue, 26 Jan 2021 15:08:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=UuWKb7JkRecIO+hyjBuSiB6Qy8dgwEVmPtBF4GparO8=;
-        b=D3oUBmmB3OZqm3TlrduboP9AZX/PHA+3HlUGCi7cNPP0v/LpI3eG+llGcsNgKGug/x
-         Lkag5eto15Y3uOZp+8BI55MHJXjlvzRNtM4Y1QAvMQnXIdHcdbAcmmHGK1DGD/Pu9TY/
-         Vz1yiTh7ar21gsC1y+zD8O3XBdJLhVsSpejh7j3dR6MPyyZ/7A2kk7Il2ITXrUI0qpjZ
-         JJdgB3QnyZDh1LyeMYjX/BUyoinGE8zpiJZBhkZVBsZ5+7etl40I61I9k4cDm7PLNSd7
-         44azsD+cFuSs0h6GWEWo+vp5T7Xzpunx1TVHNmdCpZLRvLlEGpOj//YnqrdHDCTLbrUb
-         uxDQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=UuWKb7JkRecIO+hyjBuSiB6Qy8dgwEVmPtBF4GparO8=;
-        b=Dv40vpnHTPLI42LD4TF5QTrhXm8oKumeqCvVyHKNr1a0hz6IjDyR4aJO/g+kkotZ5a
-         RxS3PzR4/HHuVnufmF7ytKg9z9azvvcV6rURBK3p/ThH5cYBbhsHtWU0cirmqxO8eQiv
-         q397XlgQsz5DVPfOlSqmPl3xcrlbjELZYq65f+eXkuFmU0sSw+ZNQ+oohJF9Db3rl6to
-         INeXgUqZiNMZwgJw10ixpQgnTQaZnU6s71oCqfR1P61IbtUGouBETuluvK1L02VGwNvf
-         LhLKi7IWDPACd68VGjVJSnsBkyi44nVRP9ZJXlwiBrtsdwOsBKPWO5XewzPE4OQFl1II
-         rAcQ==
-X-Gm-Message-State: AOAM532acjrHr76BXCCD7/xzLZ1Y8HW42csGJrwwcSSFpGtHpm0f9n7t
-        v62lQ/dicAG2yMydK6lTQdGiyoimit/Wxtanz5I=
-X-Google-Smtp-Source: ABdhPJzV6hCVEqkSgA9MgGxa38S/AdcqQA1fBPEUEAB4fooQzSCe8eVNCRdN4h3OpueRetJVnjI0d6spWAjXKmD+5lc=
-X-Received: by 2002:a17:906:e28a:: with SMTP id gg10mr4798651ejb.11.1611702515165;
- Tue, 26 Jan 2021 15:08:35 -0800 (PST)
-MIME-Version: 1.0
-References: <cover.1611637639.git.lucien.xin@gmail.com> <77cd57759f66c642fb0ed52be85abde201f8bfc9.1611637639.git.lucien.xin@gmail.com>
-In-Reply-To: <77cd57759f66c642fb0ed52be85abde201f8bfc9.1611637639.git.lucien.xin@gmail.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Tue, 26 Jan 2021 18:07:58 -0500
-Message-ID: <CAF=yD-JjXopPwAR=N3+BgfYoA2B53zmcykz9Buk3qfB=8Cc4nw@mail.gmail.com>
-Subject: Re: [PATCHv4 net-next 1/2] udp: call udp_encap_enable for v6 sockets
- when enabling encap
-To:     Xin Long <lucien.xin@gmail.com>
-Cc:     network dev <netdev@vger.kernel.org>,
-        David Miller <davem@davemloft.net>,
+        id S235761AbhA0KSE convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Wed, 27 Jan 2021 05:18:04 -0500
+Received: from eu-smtp-delivery-151.mimecast.com ([185.58.86.151]:40593 "EHLO
+        eu-smtp-delivery-151.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S235732AbhA0KPx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 05:15:53 -0500
+Received: from AcuMS.aculab.com (156.67.243.126 [156.67.243.126]) (Using
+ TLS) by relay.mimecast.com with ESMTP id
+ uk-mta-29-zmoLVMLnMvui0pT--GB9Ew-1; Wed, 27 Jan 2021 10:14:12 +0000
+X-MC-Unique: zmoLVMLnMvui0pT--GB9Ew-1
+Received: from AcuMS.Aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) by
+ AcuMS.aculab.com (fd9f:af1c:a25b:0:43c:695e:880f:8750) with Microsoft SMTP
+ Server (TLS) id 15.0.1347.2; Wed, 27 Jan 2021 10:14:10 +0000
+Received: from AcuMS.Aculab.com ([fe80::43c:695e:880f:8750]) by
+ AcuMS.aculab.com ([fe80::43c:695e:880f:8750%12]) with mapi id 15.00.1347.000;
+ Wed, 27 Jan 2021 10:14:10 +0000
+From:   David Laight <David.Laight@ACULAB.COM>
+To:     'Xie He' <xie.he.0141@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Paolo Abeni <pabeni@redhat.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Martin Varghese <martin.varghese@nokia.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>,
-        David Howells <dhowells@redhat.com>
-Content-Type: text/plain; charset="UTF-8"
+        "linux-x25@vger.kernel.org" <linux-x25@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Martin Schiller <ms@dev.tdt.de>,
+        "Krzysztof Halasa" <khc@pm.waw.pl>
+Subject: RE: [PATCH net] net: hdlc_x25: Use qdisc to queue outgoing LAPB
+ frames
+Thread-Topic: [PATCH net] net: hdlc_x25: Use qdisc to queue outgoing LAPB
+ frames
+Thread-Index: AQHW9I1sli8DbRQswEiQZfQBLL+Jnqo7Omkg
+Date:   Wed, 27 Jan 2021 10:14:10 +0000
+Message-ID: <77971dffcff441c3ad3d257825dc214b@AcuMS.aculab.com>
+References: <20210127090747.364951-1-xie.he.0141@gmail.com>
+In-Reply-To: <20210127090747.364951-1-xie.he.0141@gmail.com>
+Accept-Language: en-GB, en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.202.205.107]
+MIME-Version: 1.0
+Authentication-Results: relay.mimecast.com;
+        auth=pass smtp.auth=C51A453 smtp.mailfrom=david.laight@aculab.com
+X-Mimecast-Spam-Score: 0
+X-Mimecast-Originator: aculab.com
+Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 26, 2021 at 5:59 PM Xin Long <lucien.xin@gmail.com> wrote:
->
-> When enabling encap for a ipv6 socket without udp_encap_needed_key
-> increased, UDP GRO won't work for v4 mapped v6 address packets as
-> sk will be NULL in udp4_gro_receive().
->
-> This patch is to enable it by increasing udp_encap_needed_key for
-> v6 sockets in udp_tunnel_encap_enable(), and correspondingly
-> decrease udp_encap_needed_key in udpv6_destroy_sock().
->
-> v1->v2:
->   - add udp_encap_disable() and export it.
-> v2->v3:
->   - add the change for rxrpc and bareudp into one patch, as Alex
->     suggested.
-> v3->v4:
->   - move rxrpc part to another patch.
->
-> Signed-off-by: Xin Long <lucien.xin@gmail.com>
+From: Xie He
+> Sent: 27 January 2021 09:08
+> 
+> An HDLC hardware driver may call netif_stop_queue to temporarily stop
+> the TX queue when the hardware is busy sending a frame, and after the
+> hardware has finished sending the frame, call netif_wake_queue to
+> resume the TX queue.
+> 
+> However, the LAPB module doesn't know about this. Whether or not the
+> hardware driver has stopped the TX queue, the LAPB module still feeds
+> outgoing frames to the hardware driver for transmission. This can cause
+> frames to be dropped by the hardware driver.
+> 
+> It's not easy to fix this issue in the LAPB module. We can indeed let the
+> LAPB module check whether the TX queue has been stopped before feeding
+> each frame to the hardware driver, but when the hardware driver resumes
+> the TX queue, it's not easy to immediately notify the LAPB module and ask
+> it to resume transmission.
+> 
+> Instead, we can fix this issue at the hdlc_x25 layer, by using qdisc TX
+> queues to queue outgoing LAPB frames. The qdisc TX queue will then
+> automatically be controlled by netif_stop_queue and netif_wake_queue.
+> 
+> This way, when sending, we will use the qdisc queue to queue and send
+> the data twice: once as the L3 packet and then (after processed by the
+> LAPB module) as an LAPB (L2) frame. This does not make the logic of the
+> code messy, because when receiving, data are already "received" on the
+> device twice: once as an LAPB (L2) frame and then (after processed by
+> the LAPB module) as the L3 packet.
 
-Acked-by: Willem de Bruijn <willemb@google.com>
+If I read this correctly it adds a (potentially big) queue between the
+LAPB code that adds the sequence numbers to the frames and the hardware
+that actually sends them.
+
+IIRC [1] there is a general expectation that the NR in a transmitted frame
+will be the same as the last received NS unless acks are being delayed
+for flow control reasons.
+
+You definitely want to be able to ack a received frame while transmitting
+back-to-back I-frames.
+
+This really means that you only want 2 frames in the hardware driver.
+The one being transmitted and the next one - so it gets sent with a
+shared flag.
+There is no point sending an RR unless the hardware link is actually idle.
+
+[1] I've been doing to much SS7 MTP2 recently, I can't quite remember
+all of LAPB!
+
+	David
+
+-
+Registered Address Lakeside, Bramley Road, Mount Farm, Milton Keynes, MK1 1PT, UK
+Registration No: 1397386 (Wales)
+
