@@ -2,131 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D4761305BC8
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 13:43:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AB762305C1F
+	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 13:53:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343687AbhA0Mmm (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 07:42:42 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:41037 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1343696AbhA0Mki (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 07:40:38 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1611751151;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=FNuG7JoCfAH9Jm56wLn/gL9lO+Td4zBW5kowrH1kfJM=;
-        b=SZGUaUmHL5I3hLNmXv20ZUUHxDSnU0kLcHdW7csFNbcrC+IWfzpOx1qWi1zq/NYSxz4FoW
-        GY+XnhOmbcmbUQKN4oFfayQOzHcvG4TJi8yXwUCxaSrCcBrTHOaxU6Hs4CMO+0YO3XLJM7
-        N3KQKInucgNeuW5F8HLVEC62NYgZGRM=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-482-hInXWJ-1P1GHGlv-IPrlGg-1; Wed, 27 Jan 2021 07:39:07 -0500
-X-MC-Unique: hInXWJ-1P1GHGlv-IPrlGg-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A1A5510054FF;
-        Wed, 27 Jan 2021 12:39:05 +0000 (UTC)
-Received: from [10.10.112.133] (ovpn-112-133.rdu2.redhat.com [10.10.112.133])
-        by smtp.corp.redhat.com (Postfix) with ESMTPS id 4814C27C23;
-        Wed, 27 Jan 2021 12:38:57 +0000 (UTC)
-Subject: Re: [PATCHv4 0/2] libbpf: Add support to use optional extended
- section index table
-To:     Jiri Olsa <jolsa@kernel.org>,
-        Arnaldo Carvalho de Melo <acme@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andriin@fb.com>
-Cc:     dwarves@vger.kernel.org, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, Yonghong Song <yhs@fb.com>,
-        Hao Luo <haoluo@google.com>, Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@chromium.org>, Mark Wielaard <mjw@redhat.com>
-References: <20210124221519.219750-1-jolsa@kernel.org>
-From:   Joe Lawrence <joe.lawrence@redhat.com>
-Message-ID: <b1469725-d462-9a6d-3329-f77c9eb6b43f@redhat.com>
-Date:   Wed, 27 Jan 2021 07:38:56 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.5.0
+        id S238099AbhA0MxH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 07:53:07 -0500
+Received: from smtp-fw-2101.amazon.com ([72.21.196.25]:49742 "EHLO
+        smtp-fw-2101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237969AbhA0Mv3 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 07:51:29 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
+  s=amazon201209; t=1611751888; x=1643287888;
+  h=from:to:cc:subject:date:message-id:mime-version;
+  bh=8A4azyf4kdWrTdp0Vr0w/gcfsSttk4jeq7jMqaaBCJo=;
+  b=oTj/C3MtkPdp8QfdgL1cm5/dpgWIHK1CpC9VxRjVBwDp5mLGmnX7Zf7K
+   G488SXgApx+54RkmyG8MouAd3KToKlA9+K4MAXTVEfd+IJHdDVgX78pLM
+   EEFm9SwrZnXMo97x5dWZadCmBxQH2KrPOck6TfD2WiYd0Ur69KcRUhkBQ
+   Q=;
+X-IronPort-AV: E=Sophos;i="5.79,379,1602547200"; 
+   d="scan'208";a="77733746"
+Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-1e-57e1d233.us-east-1.amazon.com) ([10.43.8.6])
+  by smtp-border-fw-out-2101.iad2.amazon.com with ESMTP; 27 Jan 2021 12:50:47 +0000
+Received: from EX13MTAUWB001.ant.amazon.com (iad12-ws-svc-p26-lb9-vlan3.iad.amazon.com [10.40.163.38])
+        by email-inbound-relay-1e-57e1d233.us-east-1.amazon.com (Postfix) with ESMTPS id 687871414D5;
+        Wed, 27 Jan 2021 12:50:45 +0000 (UTC)
+Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
+ EX13MTAUWB001.ant.amazon.com (10.43.161.249) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Wed, 27 Jan 2021 12:50:44 +0000
+Received: from 38f9d3582de7.ant.amazon.com (10.43.162.94) by
+ EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Wed, 27 Jan 2021 12:50:40 +0000
+From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>
+CC:     Amit Shah <aams@amazon.de>,
+        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
+        Kuniyuki Iwashima <kuni1840@gmail.com>,
+        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Tariq Toukan <tariqt@mellanox.com>,
+        "Boris Pismenny" <borisp@mellanox.com>
+Subject: [PATCH net] net: Remove redundant calls of sk_tx_queue_clear().
+Date:   Wed, 27 Jan 2021 21:50:18 +0900
+Message-ID: <20210127125018.7059-1-kuniyu@amazon.co.jp>
+X-Mailer: git-send-email 2.17.2 (Apple Git-113)
 MIME-Version: 1.0
-In-Reply-To: <20210124221519.219750-1-jolsa@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+Content-Type: text/plain
+X-Originating-IP: [10.43.162.94]
+X-ClientProxiedBy: EX13D44UWB004.ant.amazon.com (10.43.161.205) To
+ EX13D04ANC001.ant.amazon.com (10.43.157.89)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/24/21 5:15 PM, Jiri Olsa wrote:
-> hi,
-> kpatch guys hit an issue with pahole over their vmlinux, which
-> contains many (over 100000) sections, pahole crashes.
-> 
-> With so many sections, ELF is using extended section index table,
-> which is used to hold values for some of the indexes and extra
-> code is needed to retrieve them.
-> 
-> This patchset adds the support for pahole to properly read string
-> table index and symbol's section index, which are used in btf_encoder.
-> 
-> This patchset also adds support for libbpf to properly parse .BTF
-> section on such object.
-> 
-> This patchset is based on previously posted fix [1].
-> 
-> v4 changes:
->    - use size_t instead of Elf32_Word [Andrii]
->    - move elf_symtab__for_each_symbol_index and elf_sym__get
->      elf_symtab.h [Andrii]
->    - added ack for patch 1 [Andrii]
->    - changed elf_sym__get to be simpler [Andrii]
->    - changed elf_symtab__for_each_symbol_index to skip bad symbols
->    - use zalloc for struct elf_symtab allocation to get zero
->      initialized members
-> 
-> v3 changes:
->    - directly bail out for !str in elf_section_by_name [Andrii]
->    - use symbol index in collect_function [Andrii]
->    - use symbol index in collect_percpu_var
->    - change elf_symtab__for_each_symbol_index, move elf_sym__get
->      to for's condition part
->    - libbpf patch got merged
-> 
-> v2 changes:
->    - many variables renames [Andrii]
->    - use elf_getshdrstrndx() unconditionally [Andrii]
->    - add elf_symtab__for_each_symbol_index macro [Andrii]
->    - add more comments [Andrii]
->    - verify that extended symtab section type is SHT_SYMTAB_SHNDX [Andrii]
->    - fix Joe's crash in dwarves build, wrong sym.st_shndx assignment
-> 
-> thanks,
-> jirka
-> 
-> 
-> [1] https://lore.kernel.org/bpf/20210113102509.1338601-1-jolsa@kernel.org/
-> ---
-> Jiri Olsa (2):
->        elf_symtab: Add support for SHN_XINDEX index to elf_section_by_name
->        bpf_encoder: Translate SHN_XINDEX in symbol's st_shndx values
-> 
->   btf_encoder.c | 33 +++++++++++++++++----------------
->   dutil.c       |  8 +++++++-
->   elf_symtab.c  | 41 +++++++++++++++++++++++++++++++++++++++--
->   elf_symtab.h  | 29 +++++++++++++++++++++++++++++
->   4 files changed, 92 insertions(+), 19 deletions(-)
-> 
+The commit 41b14fb8724d ("net: Do not clear the sock TX queue in
+sk_set_socket()") removes sk_tx_queue_clear() from sk_set_socket() and adds
+it instead in sk_alloc() and sk_clone_lock() to fix an issue introduced in
+the commit e022f0b4a03f ("net: Introduce sk_tx_queue_mapping"). However,
+the original commit had already put sk_tx_queue_clear() in sk_prot_alloc():
+the callee of sk_alloc() and sk_clone_lock(). Thus sk_tx_queue_clear() is
+called twice in each path currently.
 
-For v4 patchset:
+This patch removes the redundant calls of sk_tx_queue_clear() in sk_alloc()
+and sk_clone_lock().
 
-Tested-by: Joe Lawrence <joe.lawrence@redhat.com>
+Fixes: 41b14fb8724d ("net: Do not clear the sock TX queue in sk_set_socket()")
+CC: Tariq Toukan <tariqt@mellanox.com>
+CC: Boris Pismenny <borisp@mellanox.com>
+Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+Reviewed-by: Amit Shah <aams@amazon.de>
+---
+ net/core/sock.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-Thanks Jiri!
-
--- Joe
+diff --git a/net/core/sock.c b/net/core/sock.c
+index bbcd4b97eddd..5c665ee14159 100644
+--- a/net/core/sock.c
++++ b/net/core/sock.c
+@@ -1759,7 +1759,6 @@ struct sock *sk_alloc(struct net *net, int family, gfp_t priority,
+ 		cgroup_sk_alloc(&sk->sk_cgrp_data);
+ 		sock_update_classid(&sk->sk_cgrp_data);
+ 		sock_update_netprioidx(&sk->sk_cgrp_data);
+-		sk_tx_queue_clear(sk);
+ 	}
+ 
+ 	return sk;
+@@ -1983,7 +1982,6 @@ struct sock *sk_clone_lock(const struct sock *sk, const gfp_t priority)
+ 		 */
+ 		sk_refcnt_debug_inc(newsk);
+ 		sk_set_socket(newsk, NULL);
+-		sk_tx_queue_clear(newsk);
+ 		RCU_INIT_POINTER(newsk->sk_wq, NULL);
+ 
+ 		if (newsk->sk_prot->sockets_allocated)
+-- 
+2.17.2 (Apple Git-113)
 
