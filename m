@@ -2,156 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5EF2A3052B4
+	by mail.lfdr.de (Postfix) with ESMTP id CFD383052B5
 	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 07:02:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229950AbhA0GBs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 01:01:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43018 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231258AbhA0D1U (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jan 2021 22:27:20 -0500
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AF5EC06174A
-        for <netdev@vger.kernel.org>; Tue, 26 Jan 2021 19:26:32 -0800 (PST)
-Received: by mail-ej1-x62a.google.com with SMTP id a10so630375ejg.10
-        for <netdev@vger.kernel.org>; Tue, 26 Jan 2021 19:26:32 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=jpTabSnbDfIH21NXdTJ9CwWWubIRMZHJIs69Lnefm+E=;
-        b=N1DVa5fjiqOmQpU0uMDx5bhUrWMHolW3fUPPdB9nyx2y/YzYmBVrlEs4MTu7VuvIcO
-         V96Q3QKr0Ox1gtVeFRzVktNdDE7u/PPuD/VN/u1G5dRZasuMc6fjhRSA+v4CEhIbRhL6
-         h5uiuxxeNT37bSSQdr0neJWoIT5uCk6dcCwn768fMYVZSoyLBvLwByVVtNq8Kyo+5EPP
-         GA6SDEuYGOR5jpyLpk9U8zovI0Cc9rxkkS7nh/5Uk0AElqG092dLPx7W861zNiWFe5c0
-         yov8iyye6pzhuYnP44bSRjGz0aOW/7TgYTVo/Noy9c19nU2yhEbXmNr362r5E4++I4nd
-         XPsg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=jpTabSnbDfIH21NXdTJ9CwWWubIRMZHJIs69Lnefm+E=;
-        b=D2rl7eBvSz1F11QD7ufmO9brQ+WQENhUGFkYlgF1hdI4930fxzxaoIaB80isJtViqr
-         DFkH6K88OxSq/uoDHqgIEPdyP5oe7eJO9568gz7twnSIlNRRNMCwl5h+nGPJcq3QaT4p
-         lf+/cxMcE96gpgkSddEzFyen6aBxsf2jPjYfcVcDsUdxpmrFbEA+H0noRwN5GvT0miHV
-         J+CuDuZ9QOqw2WnQ+/00FRDRgNmgSdiXhFr31eETq2ErilLR1tMbMCrlFGHEMYbRwlYw
-         gEyrj4tXodbG6pgq1F7wDdI67FIUjvf7aPtoGtASzUqvzZmWEd0co8mgKQHKG4PciPDM
-         nEwQ==
-X-Gm-Message-State: AOAM532JOVEBSZZm+BhLKyBe9jgjOHUMtjxlClYRy7jy4WHS4eSjdIZe
-        23QS2Snx6kDRcx25fzV04ktz/RfO7l3vJarjmfg=
-X-Google-Smtp-Source: ABdhPJzJhq3+4DVgK8JB8aF6zCgAQmOVRSvw8h3k6xkgRrIgHPeaEmx6OHehyIIvyHqWheAGEnJFAZHaBUxuj5uTw2g=
-X-Received: by 2002:a17:906:494c:: with SMTP id f12mr5501566ejt.56.1611717990905;
- Tue, 26 Jan 2021 19:26:30 -0800 (PST)
+        id S234306AbhA0GCB (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 01:02:01 -0500
+Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:18074 "EHLO
+        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236830AbhA0Dm6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jan 2021 22:42:58 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B6010e1190000>; Tue, 26 Jan 2021 19:42:17 -0800
+Received: from [172.27.8.81] (172.20.145.6) by HQMAIL107.nvidia.com
+ (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Wed, 27 Jan
+ 2021 03:42:16 +0000
+Subject: Re: [PATCH net-next] net: psample: Introduce stubs to remove NIC
+ driver dependency
+To:     Jakub Kicinski <kuba@kernel.org>
+CC:     <netdev@vger.kernel.org>, <jiri@nvidia.com>, <saeedm@nvidia.com>
+References: <20210126145929.7404-1-cmi@nvidia.com>
+ <20210126184955.5f61784a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Chris Mi <cmi@nvidia.com>
+Message-ID: <0837f7ce-cdb9-fe3e-ac10-acfc3e35ee30@nvidia.com>
+Date:   Wed, 27 Jan 2021 11:42:13 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.1
 MIME-Version: 1.0
-References: <20210126141248.GA27281@optiplex> <CA+FuTSez-w-Y6LfXxEcqbB5QucPRfCEFmCd5a4LtOGcyOjGOug@mail.gmail.com>
- <CA+FuTSd_=nL7sycEYKSUbGVoC56V3Wyc=zLMo+mQ9mjC4i8_gw@mail.gmail.com>
-In-Reply-To: <CA+FuTSd_=nL7sycEYKSUbGVoC56V3Wyc=zLMo+mQ9mjC4i8_gw@mail.gmail.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Tue, 26 Jan 2021 22:25:53 -0500
-Message-ID: <CAF=yD-Ja=kzq4KaraUd_dV7Z2joR009VLjhkpu8DK2DSUX-n9Q@mail.gmail.com>
-Subject: Re: UDP implementation and the MSG_MORE flag
-To:     oliver.graute@gmail.com
-Cc:     Network Development <netdev@vger.kernel.org>,
-        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Paolo Abeni <pabeni@redhat.com>, sagi@lightbitslabs.com,
-        Christoph Hellwig <hch@lst.de>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20210126184955.5f61784a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Originating-IP: [172.20.145.6]
+X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
+ HQMAIL107.nvidia.com (172.20.187.13)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1611718937; bh=t/FJwhwz9UbCSKdWW9Yey0a0hNYMPKvTHdbjVh8tJ14=;
+        h=Subject:To:CC:References:From:Message-ID:Date:User-Agent:
+         MIME-Version:In-Reply-To:Content-Type:Content-Transfer-Encoding:
+         Content-Language:X-Originating-IP:X-ClientProxiedBy;
+        b=FYx2N/K4fgaKgwyvlI2GYZJ64GyZCwv70dzdoT6wx4xigojQfhBU03Ka+GghfsPef
+         szDoatbzNUo4bzTIDCjiRgFatthXk3b3XBtsVFUrN/rvJRADWjKCo/Nd60WKuQ45d0
+         cC3YPxU1wK1XREt0QsGDoeoVD3/T73sBOgHa4/h13YAOg9uo99XDkll4XKvdSKD1RB
+         NsgSBOLxHTgI8tSnvbeaKGBIznaCIxEDa/CPZAecquwUaUy+ipV2rgRX3CmelafsHF
+         zps7qDlMeGqJNNrc1xtwu5+R5/p7cE8h4x6naZA1Cc+KpBBW6ThOBZ3Mwgnwy0XrbL
+         sRUzFxB9eCN5Q==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 26, 2021 at 5:00 PM Willem de Bruijn
-<willemdebruijn.kernel@gmail.com> wrote:
->
-> On Tue, Jan 26, 2021 at 4:54 PM Willem de Bruijn
-> <willemdebruijn.kernel@gmail.com> wrote:
-> >
-> > On Tue, Jan 26, 2021 at 9:58 AM Oliver Graute <oliver.graute@gmail.com> wrote:
-> > >
-> > > Hello,
-> > >
-> > > we observe some unexpected behavior in the UDP implementation of the
-> > > linux kernel.
-> > >
-> > > Some UDP packets send via the loopback interface are dropped in the
-> > > kernel on the receive side when using sendto with the MSG_MORE flag.
-> > > Every drop increases the InCsumErrors in /proc/self/net/snmp. Some
-> > > example code to reproduce it is appended below.
-> > >
-> > > In the code we tracked it down to this code section. ( Even a little
-> > > further but its unclear to me wy the csum() is wrong in the bad case)
-> > >
-> > > udpv6_recvmsg()
-> > > ...
-> > > if (checksum_valid || udp_skb_csum_unnecessary(skb)) {
-> > >                 if (udp_skb_is_linear(skb))
-> > >                         err = copy_linear_skb(skb, copied, off, &msg->msg_iter);
-> > >                 else
-> > >                         err = skb_copy_datagram_msg(skb, off, msg, copied);
-> > >         } else {
-> > >                 err = skb_copy_and_csum_datagram_msg(skb, off, msg);
-> > >                 if (err == -EINVAL) {
-> > >                         goto csum_copy_err;
-> > >                 }
-> > >         }
-> > > ...
-> > >
-> >
-> > Thanks for the report with a full reproducer.
-> >
-> > I don't have a full answer yet, but can reproduce this easily.
-> >
-> > The third program, without MSG_MORE, builds an skb with
-> > CHECKSUM_PARTIAL in __ip_append_data. When looped to the receive path
-> > that ip_summed means no additional validation is needed. As encoded in
-> > skb_csum_unnecessary.
-> >
-> > The first and second programs are essentially the same, bar for a
-> > slight difference in length. In both cases packet length is very short
-> > compared to the loopback device MTU. Because of MSG_MORE, these
-> > packets have CHECKSUM_NONE.
-> >
-> > On receive in
-> >
-> >   __udp4_lib_rcv()
-> >     udp4_csum_init()
-> >       err = skb_checksum_init_zero_check()
-> >
-> > The second program validates and sets ip_summed = CHECKSUM_COMPLETE
-> > and csum_valid = 1.
-> > The first does not, though err == 0.
-> >
-> > This appears to succeed consistently for packets <= 68B of payload,
-> > fail consistently otherwise. It is not clear to me yet what causes
-> > this distinction.
->
-> This is from
->
-> "
-> /* For small packets <= CHECKSUM_BREAK perform checksum complete directly
->  * in checksum_init.
->  */
-> #define CHECKSUM_BREAK 76
-> "
->
-> So the small packet gets checksummed immediately in
-> __skb_checksum_validate_complete, but the larger one does not.
->
-> Question is why the copy_and_checksum you pointed to seems to fail checksum.
+Hi Jakub,
 
-Manually calling __skb_checksum_complete(skb) in
-skb_copy_and_csum_datagram_msg succeeds, so it is the
-skb_copy_and_csum_datagram that returns an incorrect csum.
+On 1/27/2021 10:49 AM, Jakub Kicinski wrote:
+> On Tue, 26 Jan 2021 22:59:29 +0800 Chris Mi wrote:
+>> In order to send sampled packets to userspace, NIC driver calls
+>> psample api directly. But it creates a hard dependency on module
+>> psample. Introduce psample_ops to remove the hard dependency.
+>> It is initialized when psample module is loaded and set to NULL
+>> when the module is unloaded.
+>>
+>> Signed-off-by: Chris Mi <cmi@nvidia.com>
+>> Reviewed-by: Jiri Pirko <jiri@nvidia.com>
+> This adds a bunch of sparse warnings.
+>
+> MelVidia has some patch checking infra, right? Any reason this was not
+> run through it?
+Could you please tell me what's sparse warnings you hit?
+Just now I ran ./scripts/checkpatch.pl again without "--ignore 
+FILE_PATH_CHANGES",
+I got the following warning:
 
-Bisection shows that this is a regression in 5.0, between
+WARNING:FILE_PATH_CHANGES: added, moved or deleted file(s), does 
+MAINTAINERS need updating?
+#128:
+new file mode 100644
 
-65d69e2505bb datagram: introduce skb_copy_and_hash_datagram_iter helper (fail)
-d05f443554b3 iov_iter: introduce hash_and_copy_to_iter helper
-950fcaecd5cc datagram: consolidate datagram copy to iter helpers
-cb002d074dab iov_iter: pass void csum pointer to csum_and_copy_to_iter (pass)
+I'll change it. But I'm not sure if this is the only thing I need to change.
+So could you please elaborate? I'll pay attention to it in the future.
 
-That's a significant amount of code change. I'll take a closer look,
-but checkpointing state for now..
+Thanks,
+Chris
