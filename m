@@ -2,125 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7673B305E98
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 15:48:00 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0A701305E9D
+	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 15:50:00 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234542AbhA0Ori (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 09:47:38 -0500
-Received: from esa.microchip.iphmx.com ([68.232.153.233]:41909 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234240AbhA0Ora (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 09:47:30 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1611758849; x=1643294849;
-  h=message-id:subject:from:to:cc:date:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=QkcXxzNQo+CiSnWQy/sM6qbG/bFI75MPmn6Y5uD/e/U=;
-  b=2nndfOLDruO1REt1OcAyYiaKsJuDmJWglVmFnJVQHFmBCagi1eLZXRhM
-   2KrGbh0lVjyJB62UePfKQsO8yaaTJs5riI2R9Amr9ZRukQkDNZayMYzU/
-   8SF8LQMp2n5ItszouIlsNBY9bMmw37cke536DjC0F/srqrx9+aeX99JKC
-   aJApRPhammmAUaVV5GdTD/Tz1aiBPPkqqL5DovE+3MCV+WTgdWm7viPTo
-   6wdptYoGeHwDOwXDW4AbVb/YQJWshSebxKQLvOUx4zEkZpyOAxIvUMJXD
-   jfnEg//Sx/IFzgMOegEFT3XR65wGULGYmtys3gcw+HsvH+TmiU30hif0i
-   Q==;
-IronPort-SDR: BcHjX8y/GyigjTmuyfrgx7h2mSYwhbnbjyAFiq2Cjw1F3b6eOvdgio45CkffKkSfE6pXkIc7TK
- xnUaPiPICzjCCNCs90aYUg2/TDVxK07db/QPZzAhqj38kgIh0RJz1B54HJ4yNduvlXrdkVS57t
- kADhIFfF9lcPHipdiC1y4RPlTQjV4/+o25+MOv91zqj4oXVYFnEiIo/FyfabCDnGBc4bS0S2/L
- kHumMp3TltCOVXGKIFLK87KcOz+J+iwVS6FpPi4DaiA/MSkS6xEx+MSaS/kKVqVVWya2nkZUZZ
- Dpo=
-X-IronPort-AV: E=Sophos;i="5.79,379,1602572400"; 
-   d="scan'208";a="112700639"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa1.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 27 Jan 2021 07:45:48 -0700
-Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Wed, 27 Jan 2021 07:45:48 -0700
-Received: from [10.205.21.32] (10.10.115.15) by chn-vm-ex01.mchp-main.com
- (10.10.85.143) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
- Transport; Wed, 27 Jan 2021 07:45:46 -0700
-Message-ID: <6221107eae5e749bc7fd75e057209c92c9edd7df.camel@microchip.com>
-Subject: Re: [PATCH v12 2/4] phy: Add ethernet serdes configuration option
-From:   Steen Hegelund <steen.hegelund@microchip.com>
-To:     Kishon Vijay Abraham I <kishon@ti.com>,
-        Vinod Koul <vkoul@kernel.org>
-CC:     Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Bjarni Jonasson <bjarni.jonasson@microchip.com>,
-        Microchip UNG Driver List <UNGLinuxDriver@microchip.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Andrew Lunn <andrew@lunn.ch>
-Date:   Wed, 27 Jan 2021 15:45:45 +0100
-In-Reply-To: <70aa5716-bd14-0a0a-26bc-d3dfa23de47e@ti.com>
-References: <20210107091924.1569575-1-steen.hegelund@microchip.com>
-         <20210107091924.1569575-3-steen.hegelund@microchip.com>
-         <92a943cc-b332-4ac6-42a8-bb3cdae13bc0@ti.com>
-         <f35e3c33f011b6aabd96d3b6de3750bf3d04b699.camel@microchip.com>
-         <70aa5716-bd14-0a0a-26bc-d3dfa23de47e@ti.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.38.3 
+        id S234612AbhA0OtU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 09:49:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48440 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231732AbhA0OsZ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 09:48:25 -0500
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CE97C061573;
+        Wed, 27 Jan 2021 06:47:45 -0800 (PST)
+Received: by mail-ej1-x632.google.com with SMTP id ke15so2977910ejc.12;
+        Wed, 27 Jan 2021 06:47:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=aNp3Htm/mthgfBxdo7SAS+BKT5IjCTT35idqtR5P8KU=;
+        b=j4i6ufaQC0o+2TEixYwLXlhC1Rn1Nl1H5Hz+M8z0TstK6sU62SiTsFt72Ie4SsfZAg
+         BqbUuooYRez7vUadLxSn1WDX6SqILkb3UUmz+pgEDDAAYGATDnfl7AH9xLoX8OwzoZtC
+         YlpRItDPgy900MxFpfFhUPwyscFI50PpOT/TCtIc2FRW9a2dLYLKL26hxIB9UHIjt27W
+         8ZhwaXpnRjxMRiQQZjvKR7q67Bx6+wSevHet7aMU1bNUR/oLPScl/raFz0mxb7KyYMJn
+         dM321TiRm/x2vGmyvzwuL4jBuKHOiZIRL+ytZsuLNupir01XkVzFmu4XmtEJZ+EUcc1m
+         AU5A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=aNp3Htm/mthgfBxdo7SAS+BKT5IjCTT35idqtR5P8KU=;
+        b=an24CHwJjW0c/acuv8Ve1zk8Yz6Mnm9GocDuL4ItcGrj5RydD3nWEPkcPlOrSCgnuK
+         hMd6UFAiZbZ4BJdf7lBDRb3hxgQQ+Sfbk+pxLo5ppFip1e/ByhTyS0lDGH50Li0WggfX
+         tfckHcWWaxj1z2iTB4bhYaNyoSidVTTZJW516hGVfKPBXY5WWRUzeUtrnu6l6Tcu8cQM
+         fr4MZ6p3ptRzfhqGt7OSxNcPj2tfLzW2Tp2bAffWu7OqXRv2Pc3A2hq2TZL0dvdL0SKh
+         s+eiOVITjqZMvOM9po6FBYMNT4Tpa9w4GUF+sMExvta73AHYISgc4xJF1Yi/IU6oP91q
+         3VVg==
+X-Gm-Message-State: AOAM531Fr03hsEgLeYzqGr1nE63WfHILNCSDZtHkQXm92yZqmuRc2ly0
+        vsdlcSR7iFP1M9jhyP3D4p5rkBwr4qlPHDkJ0KFBbQcc
+X-Google-Smtp-Source: ABdhPJzhIQSZtqdhi01xZM/zJm1LH9dY0dYZ3Puz5+1d8Tz5sDuaaegtGh3qb5xrOoRPwplcvOqltdnWkYOJfJZQOoY=
+X-Received: by 2002:a17:906:fc5:: with SMTP id c5mr6855124ejk.538.1611758864039;
+ Wed, 27 Jan 2021 06:47:44 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210126171550.3066-1-kernel@esmil.dk>
+In-Reply-To: <20210126171550.3066-1-kernel@esmil.dk>
+From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Date:   Wed, 27 Jan 2021 09:47:08 -0500
+Message-ID: <CAF=yD-LGoVkf5ARHPsGAMbsruDq7iQ=X8c3cZRp5XaZC936EMw@mail.gmail.com>
+Subject: Re: [PATCH] rtlwifi: use tasklet_setup to initialize rx_work_tasklet
+To:     Emil Renner Berthing <kernel@esmil.dk>
+Cc:     linux-wireless <linux-wireless@vger.kernel.org>,
+        Network Development <netdev@vger.kernel.org>,
+        Ping-Ke Shih <pkshih@realtek.com>,
+        Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Allen Pais <allen.lkml@gmail.com>,
+        Romain Perier <romain.perier@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi Kishon,
+On Wed, Jan 27, 2021 at 5:23 AM Emil Renner Berthing <kernel@esmil.dk> wrote:
+>
+> In commit d3ccc14dfe95 most of the tasklets in this driver was
+> updated to the new API. However for the rx_work_tasklet only the
+> type of the callback was changed from
+>   void _rtl_rx_work(unsigned long data)
+> to
+>   void _rtl_rx_work(struct tasklet_struct *t).
+>
+> The initialization of rx_work_tasklet was still open-coded and the
+> function pointer just cast into the old type, and hence nothing sets
+> rx_work_tasklet.use_callback = true and the callback was still called as
+>
+>   t->func(t->data);
+>
+> with uninitialized/zero t->data.
+>
+> Commit 6b8c7574a5f8 changed the casting of _rtl_rx_work a bit and
+> initialized t->data to a pointer to the tasklet cast to an unsigned
+> long.
+>
+> This way calling t->func(t->data) might actually work through all the
+> casting, but it still doesn't update the code to use the new tasklet
+> API.
+>
+> Let's use the new tasklet_setup to initialize rx_work_tasklet properly
+> and set rx_work_tasklet.use_callback = true so that the callback is
+> called as
+>
+>   t->callback(t);
+>
+> without all the casting.
+>
+> Fixes: 6b8c7574a5f8 ("rtlwifi: fix build warning")
+> Fixes: d3ccc14dfe95 ("rtlwifi/rtw88: convert tasklets to use new tasklet_setup() API")
+> Signed-off-by: Emil Renner Berthing <kernel@esmil.dk>
 
-On Wed, 2021-01-27 at 18:04 +0530, Kishon Vijay Abraham I wrote:
-> EXTERNAL EMAIL: Do not click links or open attachments unless you know the content is safe
-> 
+Since the current code works, this could target net-next without Fixes tags.
 
-...
-
-> > > 
-> > > I'm not familiar with Ethernet. Are these generic media types? what
-> > > does
-> > > SR or DAC refer to?
-> > 
-> > The SR stands for Short Reach and is a fiber type connection used by
-> > SFPs.  There also other "reach" variants.
-> > 
-> > DAC stands for Direct Attach Copper and is a type of cable that plugs
-> > into an SFP cage and provides information back to the user via its
-> > EEPROM regarding supported speed and capabilities in general.  These
-> > typically supports speed of 5G or more.
-> > 
-> > The SFP/Phylink is the "out-of-band" method that provides the type of
-> > connection: speed and media type that allows the client to adapt the
-> > SerDes configuration to the type of media selected by the user.
-> > 
-> > > Are there other media types? What is the out-of-band
-> > > mechanism by which the controller gets the media type? Why was this
-> > > not
-> > > required for other existing Ethernet SERDES?
-> > 
-> > This is probably a matter of the interface speed are now getting higher
-> > and the amount of configuration needed for the SerDes have increased,
-> > at the same time as this is not being a static setup, because the user
-> > an plug and unplug media to the SFP cage.
-> > 
-> > > Are you aware of any other
-> > > vendors who might require this?
-> > 
-> > I suspect that going forward it will become more widespread, at least
-> > we have more chips in the pipeline that need this SerDes for high speed
-> > connectivity.
-> 
-> For this case I would recommend to add new API, something like
-> phy_set_media(). Configure() and Validate() is more for probing
-> something that is supported by SERDES and changing the parameters. But
-> in this case, I'd think the media type is determined by the cable that
-> is connected and cannot be changed.
-> 
-> Thanks
-> Kishon
-
-I assume that you would like a separate interface for the speed information as well?
-
-Thanks for your comments.
-
-BR
-Steen
-
+Acked-by: Willem de Bruijn <willemb@google.com>
