@@ -2,112 +2,112 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 495DC3059AE
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 12:29:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E97A1305977
+	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 12:21:21 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236676AbhA0L2S (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 06:28:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42632 "EHLO
+        id S236305AbhA0LUq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 06:20:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51138 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S314098AbhAZW42 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Tue, 26 Jan 2021 17:56:28 -0500
-Received: from www62.your-server.de (www62.your-server.de [IPv6:2a01:4f8:d0a:276a::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAA5CC06174A
-        for <netdev@vger.kernel.org>; Tue, 26 Jan 2021 14:55:47 -0800 (PST)
-Received: from sslproxy06.your-server.de ([78.46.172.3])
-        by www62.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1l4XBi-000CBK-Nm; Tue, 26 Jan 2021 23:51:54 +0100
-Received: from [85.7.101.30] (helo=pc-9.home)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <daniel@iogearbox.net>)
-        id 1l4XBi-0006vH-GY; Tue, 26 Jan 2021 23:51:54 +0100
-Subject: Re: [PATCH bpf-next v2 1/6] xsk: add tracepoints for packet drops
-To:     Ciara Loftus <ciara.loftus@intel.com>, netdev@vger.kernel.org,
-        bpf@vger.kernel.org, magnus.karlsson@intel.com, bjorn@kernel.org,
-        weqaar.a.janjua@intel.com
-References: <20210126075239.25378-1-ciara.loftus@intel.com>
- <20210126075239.25378-2-ciara.loftus@intel.com>
-From:   Daniel Borkmann <daniel@iogearbox.net>
-Message-ID: <7100d6c0-8556-4f7e-93e7-5ba6fa549104@iogearbox.net>
-Date:   Tue, 26 Jan 2021 23:51:53 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.7.2
+        with ESMTP id S235978AbhA0Khu (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 05:37:50 -0500
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2ACC2C061573;
+        Wed, 27 Jan 2021 02:37:10 -0800 (PST)
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.94)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1l4iBx-00CMrJ-Pj; Wed, 27 Jan 2021 11:36:54 +0100
+Message-ID: <64336aa2e21936095eb7e52ee32289b30b855863.camel@sipsolutions.net>
+Subject: Re: [PATCH] ath9k: fix build error with LEDS_CLASS=m
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Kalle Valo <kvalo@codeaurora.org>, Arnd Bergmann <arnd@kernel.org>
+Cc:     Krzysztof Kozlowski <krzk@kernel.org>,
+        QCA ath9k Development <ath9k-devel@qca.qualcomm.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        Flavio Suligoi <f.suligoi@asem.it>,
+        linux-wireless <linux-wireless@vger.kernel.org>,
+        Networking <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Date:   Wed, 27 Jan 2021 11:36:34 +0100
+In-Reply-To: <87bldaacqu.fsf@codeaurora.org>
+References: <20210125113654.2408057-1-arnd@kernel.org>
+         <CAJKOXPfteJ3Jia4Qd9DabjxcOtax3uDgi1fSbz4_+cHsJ1prQQ@mail.gmail.com>
+         <CAK8P3a0apBUbck9Z3UMKfwSJw8a-UbbXLTLUvSyOKEwTgPLjqg@mail.gmail.com>
+         <CAJKOXPc6LWnqiyO9WgxUZPo-vitNcQQr2oDoyD44P2YTSJ7j=g@mail.gmail.com>
+         <CAK8P3a1NEbZtXVA0Z4P3K97L9waBp7nkCWOkdYjR3+7FUF0P0Q@mail.gmail.com>
+         <CAJKOXPdWouEFtCp_iG+py1JcyrEU2Fj98jBAPTKZXQXCDQE54A@mail.gmail.com>
+         <CAK8P3a3ygYTEwjLbFuArdfNF1-yydVjtS2NZDAURKjOJGAxkAQ@mail.gmail.com>
+         <87bldaacqu.fsf@codeaurora.org>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.36.5 (3.36.5-2.fc32) 
 MIME-Version: 1.0
-In-Reply-To: <20210126075239.25378-2-ciara.loftus@intel.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: daniel@iogearbox.net
-X-Virus-Scanned: Clear (ClamAV 0.102.4/26061/Tue Jan 26 13:29:51 2021)
+X-malware-bazaar: not-scanned
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/26/21 8:52 AM, Ciara Loftus wrote:
-> This commit introduces static perf tracepoints for AF_XDP which
-> report information about packet drops, such as the netdev, qid and
-> high level reason for the drop. The tracepoint can be
-> enabled/disabled by toggling
-> /sys/kernel/debug/tracing/events/xsk/xsk_packet_drop/enable
+On Wed, 2021-01-27 at 12:35 +0200, Kalle Valo wrote:
+> Arnd Bergmann <arnd@kernel.org> writes:
+> 
+> > On Mon, Jan 25, 2021 at 4:04 PM Krzysztof Kozlowski <krzk@kernel.org> wrote:
+> > > On Mon, 25 Jan 2021 at 15:38, Arnd Bergmann <arnd@kernel.org> wrote:
+> > > > On Mon, Jan 25, 2021 at 2:27 PM Krzysztof Kozlowski <krzk@kernel.org> wrote:
+> > > 
+> > > I meant that having MAC80211_LEDS selected causes the ath9k driver to
+> > > toggle on/off the WiFi LED. Every second, regardless whether it's
+> > > doing something or not. In my setup, I have problems with a WiFi
+> > > dongle somehow crashing (WiFi disappears, nothing comes from the
+> > > dongle... maybe it's Atheros FW, maybe some HW problem) and I found
+> > > this LED on/off slightly increases the chances of this dongle-crash.
+> > > That was the actual reason behind my commits.
+> > > 
+> > > Second reason is that I don't want to send USB commands every second
+> > > when the device is idle. It unnecessarily consumes power on my
+> > > low-power device.
+> > 
+> > Ok, I see.
+> > 
+> > > Of course another solution is to just disable the trigger via sysfs
+> > > LED API. It would also work but my patch allows entire code to be
+> > > compiled-out (which was conditional in ath9k already).
+> > > 
+> > > Therefore the patch I sent allows the ath9k LED option to be fully
+> > > choosable. Someone wants every-second-LED-blink, sure, enable
+> > > ATH9K_LEDS and you have it. Someone wants to reduce the kernel size,
+> > > don't enable ATH9K_LEDS.
+> > 
+> > Originally, I think this is what CONFIG_MAC80211_LEDS was meant
+> > for, but it seems that this is not actually practical, since this also
+> > gets selected by half of the drivers using it, while the other half have
+> > a dependency on it. Out of the ones that select it, some in turn
+> > select LEDS_CLASS, while some depend on it.
+> > 
+> > I think this needs a larger-scale cleanup for consistency between
+> > (at least) all the wireless drivers using LEDs.
+> 
+> I agree, this needs cleanup.
+> 
+> > Either your patch or mine should get applied in the meantime, and I
+> > don't care much which one in this case, as we still have the remaining
+> > inconsistency.
+> 
+> My problem with Krzysztof's patch[1] is that it adds a new Kconfig
+> option for ath9k, is that really necessary? Like Arnd said, we should
+> fix drivers to use CONFIG_MAC80211_LEDS instead of having driver
+> specific options.
+> 
+> So I would prefer take this Arnd's patch instead and queue it for v5.11.
+> But as it modifies mac80211 I'll need an ack from Johannes, what do you
+> think?
 
-Could you add a rationale to the commit log on why xsk diag stats dump
-is insufficient here given you add tracepoints to most locations where
-we also bump the counters already? And given diag infra also exposes the
-ifindex, queue id, etc, why troubleshooting the xsk socket via ss tool
-is not sufficient?
+Sure, that seems fine.
 
-[...]
-> diff --git a/net/xdp/xsk.c b/net/xdp/xsk.c
-> index 4faabd1ecfd1..9b850716630b 100644
-> --- a/net/xdp/xsk.c
-> +++ b/net/xdp/xsk.c
-> @@ -11,6 +11,7 @@
->   
->   #define pr_fmt(fmt) "AF_XDP: %s: " fmt, __func__
->   
-> +#include <linux/bpf_trace.h>
->   #include <linux/if_xdp.h>
->   #include <linux/init.h>
->   #include <linux/sched/mm.h>
-> @@ -158,6 +159,7 @@ static int __xsk_rcv_zc(struct xdp_sock *xs, struct xdp_buff *xdp, u32 len)
->   	addr = xp_get_handle(xskb);
->   	err = xskq_prod_reserve_desc(xs->rx, addr, len);
->   	if (err) {
-> +		trace_xsk_packet_drop(xs->dev->name, xs->queue_id, XSK_TRACE_DROP_RXQ_FULL);
->   		xs->rx_queue_full++;
->   		return err;
+Acked-by: Johannes Berg <johannes@sipsolutions.net>
 
-I presume if this will be triggered under stress you'll likely also spam
-your trace event log w/ potentially mio of msgs per sec?
+johannes
 
->   	}
-> @@ -192,6 +194,7 @@ static int __xsk_rcv(struct xdp_sock *xs, struct xdp_buff *xdp)
->   
->   	len = xdp->data_end - xdp->data;
->   	if (len > xsk_pool_get_rx_frame_size(xs->pool)) {
-> +		trace_xsk_packet_drop(xs->dev->name, xs->queue_id, XSK_TRACE_DROP_PKT_TOO_BIG);
->   		xs->rx_dropped++;
->   		return -ENOSPC;
->   	}
-> @@ -516,6 +519,8 @@ static int xsk_generic_xmit(struct sock *sk)
->   		if (err == NET_XMIT_DROP) {
->   			/* SKB completed but not sent */
->   			err = -EBUSY;
-> +			trace_xsk_packet_drop(xs->dev->name, xs->queue_id,
-> +					      XSK_TRACE_DROP_DRV_ERR_TX);
-
-Is there a reason to not bump error counter here?
-
->   			goto out;
->   		}
->   
-> diff --git a/net/xdp/xsk_buff_pool.c b/net/xdp/xsk_buff_pool.c
-> index 8de01aaac4a0..d3c1ca83c75d 100644
-> --- a/net/xdp/xsk_buff_pool.c
-> +++ b/net/xdp/xsk_buff_pool.c
-> @@ -1,5 +1,6 @@
->   // SPDX-License-Identifier: GPL-2.0
->   
