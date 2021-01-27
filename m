@@ -2,20 +2,20 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 687F4305377
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 07:50:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 62DBC30537F
+	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 07:52:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231511AbhA0Gu0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 01:50:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57778 "EHLO
+        id S231737AbhA0Guj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 01:50:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232171AbhA0GrG (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 01:47:06 -0500
-Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B205C061573
-        for <netdev@vger.kernel.org>; Tue, 26 Jan 2021 22:46:24 -0800 (PST)
-Received: by mail-wm1-x32c.google.com with SMTP id i9so646962wmq.1
-        for <netdev@vger.kernel.org>; Tue, 26 Jan 2021 22:46:24 -0800 (PST)
+        with ESMTP id S231281AbhA0GrK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 01:47:10 -0500
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60C00C0613ED
+        for <netdev@vger.kernel.org>; Tue, 26 Jan 2021 22:46:30 -0800 (PST)
+Received: by mail-wr1-x42a.google.com with SMTP id v15so738779wrx.4
+        for <netdev@vger.kernel.org>; Tue, 26 Jan 2021 22:46:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:subject:to:cc:message-id:date:user-agent:mime-version
@@ -32,21 +32,21 @@ X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         h=x-gm-message-state:from:subject:to:cc:message-id:date:user-agent
          :mime-version:content-language:content-transfer-encoding;
         bh=A/7d7YSuSp8J0hMlcyCOBp4xKTPYSVpfVld8DVd8XwA=;
-        b=mV1OupkO8tWZwVuYaFkdwFXKBT0Db7ous74fCXK0vULk1TSoISz9RWyXZ+GwFQKELo
-         SLj5mDhAoXjaEyPbNK/dPSbidePn9Iev/i3UfbMZsojWT8zWTGLpD2/1NqZW9HA/cH0Q
-         h4+JYUPKHDx0V/6PUMr8P7B8Q6jOxN0zgVQslQH3RfnG2adkyu+2cBkbr4Cz3euWvUmc
-         ZzTQeeY5ULbub12nt4wiMS3DbOAL+5kEtoBDmsiz7ZOrZcVSuak2pVsJeHxsANkixE0t
-         9xpgK9AI7vwqRsNllkUPy+vOyYKu5s7n35ChAV/zcKGpRzpmXSkebqgethcRux8h6yLq
-         FsHQ==
-X-Gm-Message-State: AOAM532gHI3/nKaufGl+TGczqwzX+VbXsxqMMH1LSeQT42uQiklrtdaT
-        GpmYeB8i9dP7EEp+I2wicgZLoWpdN9E=
-X-Google-Smtp-Source: ABdhPJwXHhO4Cb+YOImkHglb1YC6P3pmZ08/FKtpFT4C8lNH8DXEcl63vD+O9z+7iWF0OFKdB4CVBw==
-X-Received: by 2002:a1c:96d7:: with SMTP id y206mr2833420wmd.9.1611729983036;
-        Tue, 26 Jan 2021 22:46:23 -0800 (PST)
+        b=pRqZbNSAS3Vf02l8bHCIQBzdoH55z/e4ATRBqRNzloW5F+kZitaQIQU+cZrPey1VYA
+         cOY4wnqaJGpXuwubn89l+F6B7/VoF6ZJChZc47kIqitInRwcaTaxusSbxlDJ6HQXeL+4
+         c8ivqLkJ+lJQKF22lcb2V/B4O45a3pcBiCTXy3yFZg5BDs5HHu9S5yPYrGLo90YgQMXL
+         Aq7Cr3VIQQI16pzpfKPuNcPjjFqjreLjLBjFZguMl4Bc3D6+Dj7tMSYoWoGGUSSVbRlc
+         b7qB6QmoD3+Da89fVStZhEn1aJRPepffaQ30KcjjQrHcnv0LOmNbrVsT6te1ynRIU86z
+         j4hQ==
+X-Gm-Message-State: AOAM532CWBmf2VLWYI8kKS7oxXoWpzvOJixKkqKVz0qAqqDa3LFOQoe8
+        Tdntr/B3FNZ6IZPqerV3CF+2AaSo2GQ=
+X-Google-Smtp-Source: ABdhPJzYoO639mSPpHoOv8b3zpXPyeTgivIKiqz19CgC2ttVwmZ3kww9lZDP4QO2JB7FUWJc1G03PA==
+X-Received: by 2002:adf:ffce:: with SMTP id x14mr9869150wrs.390.1611729988948;
+        Tue, 26 Jan 2021 22:46:28 -0800 (PST)
 Received: from ?IPv6:2003:ea:8f1f:ad00:b9df:6985:25af:fab5? (p200300ea8f1fad00b9df698525affab5.dip0.t-ipconnect.de. [2003:ea:8f1f:ad00:b9df:6985:25af:fab5])
-        by smtp.googlemail.com with ESMTPSA id 192sm1485627wme.27.2021.01.26.22.46.20
+        by smtp.googlemail.com with ESMTPSA id n16sm1539900wrj.26.2021.01.26.22.46.26
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 26 Jan 2021 22:46:22 -0800 (PST)
+        Tue, 26 Jan 2021 22:46:28 -0800 (PST)
 From:   Heiner Kallweit <hkallweit1@gmail.com>
 Subject: [PATCH v2 net] r8169: work around RTL8125 UDP hw bug
 To:     Jakub Kicinski <kuba@kernel.org>,
