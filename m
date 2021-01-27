@@ -2,100 +2,99 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 10155306506
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 21:25:52 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 974FC306535
+	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 21:31:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232518AbhA0UYj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 15:24:39 -0500
-Received: from mail-40136.protonmail.ch ([185.70.40.136]:34971 "EHLO
-        mail-40136.protonmail.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231346AbhA0UYg (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 15:24:36 -0500
-Date:   Wed, 27 Jan 2021 20:23:48 +0000
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pm.me; s=protonmail;
-        t=1611779031; bh=3sWElGNGgappUnF5Kd8jNAGLD06GNdAvPcxILY0B8/A=;
-        h=Date:To:From:Cc:Reply-To:Subject:In-Reply-To:References:From;
-        b=aL522TuVAVSb+jpMVRrLVwgiG1dCW9GEbIHyzFs87eJU7GVqp4P8e4F5QHTWm4pw/
-         EBdtAWI6Oz2JqrRSppbIfGq0YFJAiZ5sPqwFTiQSona97bz3spHMzlATmxRxLSe0qM
-         e+X+aOUv8CFYm4aNs0GcX6sIxKx9rzkQ2pJZYDAuIyxDPIcpcOseQSAuPBqfaVxzYj
-         AMqImLK2tiGV1YUEezS2oSOkiofo/MfwTX3Acuc0z9J6kFkmTLpJJFBoiBENXzPo5r
-         lb3ocltvxlyGrb6vH6f9uElRMGhRYQZT2FHflaCI9QauYyEmNYBCh4kVah0mD7j9sN
-         RgutLUDfUQfrQ==
-To:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>
-From:   Alexander Lobakin <alobakin@pm.me>
-Cc:     Yisen Zhuang <yisen.zhuang@huawei.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jesper Dangaard Brouer <hawk@kernel.org>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Dexuan Cui <decui@microsoft.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Marco Elver <elver@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
-        linux-rdma@vger.kernel.org, linux-mm@kvack.org,
-        Alexander Lobakin <alobakin@pm.me>
-Reply-To: Alexander Lobakin <alobakin@pm.me>
-Subject: Re: [PATCH net-next 0/3] net: constify page_is_pfmemalloc() and its users
-Message-ID: <20210127202322.99523-1-alobakin@pm.me>
-In-Reply-To: <20210125164612.243838-1-alobakin@pm.me>
-References: <20210125164612.243838-1-alobakin@pm.me>
+        id S233218AbhA0Ubo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 15:31:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37566 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233238AbhA0UaX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 15:30:23 -0500
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63D41C06174A;
+        Wed, 27 Jan 2021 12:29:43 -0800 (PST)
+Received: by mail-pl1-x62a.google.com with SMTP id e9so1690754plh.3;
+        Wed, 27 Jan 2021 12:29:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=35nce9wUdGps1xFNE+LJWAtds0eN6VprBugB5bMnyd4=;
+        b=lc9qa04WTv0m3c/3XhNlf7uDFlWXVko6oHEt3W5ZOc7fHSaDKbtZ68UbdT4Tc/5/Oc
+         yyk+MkwlyYN8ZFDLTWHgZcIQHop2n8EmepZG23sNKQrG+JYzWUm8728P25A1iZ/zcy+t
+         vD4hxI/jiBWYfvMgGIXVJ9RPVrbaqUxOx16nXJqWyANmiJeyvvQZPGhkO4vkKQz6wMRV
+         heAbzQs9/EnqBMQ6vC1aBk2gjPS0tTyKWPMmF30xznDpB7PnrtydWfmjINUnTUXT9W3x
+         9L5VO6zli5WtQIeLuAtl3pkGTlE1pik/uKVxFFcij2Qpyeagse7GDi5OgHuHR6L6Ey51
+         bfBg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=35nce9wUdGps1xFNE+LJWAtds0eN6VprBugB5bMnyd4=;
+        b=oXVpQwyNVXjx4tcagCS8Jq542489+Ic2z8O7SKp2QAAFQyNMtZNu5cS2AS0/rf1088
+         h+Ml0vPO6uyDTTHVY72OkVFJM/F8fmt9elTYVgAx/P3qPp5dx+61Zc4NJyf/hpuj5qpm
+         DVEIO5ZggbyiO0rDxC5hskGULry5rlzkE5wWBcZ8jyYre8/9fUxlSNA5VHk0LjBDJAHp
+         WNnsOBSf9/C6x+r8/rTMsILb5psAf6ICqtc6/JnVnkw2bGkgeESKJD+0kgYHr5Ya5+Zb
+         4cOQZLTgOW3yCma4dAEZyNUhyhO+G8haNSwPtRuEvKq9KAQiguiMLpEmC4y9wjSlfydc
+         i9tw==
+X-Gm-Message-State: AOAM531gcrAahfJQUZYRNlt5Q8wgCdCeXxWRcoRsPx0Wpjnr0Auc5uEc
+        sK3yEoAhlcSCCdySKHDH/JPX2oARBCCenFMKXxw=
+X-Google-Smtp-Source: ABdhPJxEi3uD5rET0PDQTKx6E4iOY3SwYwOFQfmoAC68fdLXTbDKCkktMTASlHWeX+NrtO+A9y2MnK9ScP7jXhgTnjk=
+X-Received: by 2002:a17:90a:5403:: with SMTP id z3mr7616166pjh.198.1611779383014;
+ Wed, 27 Jan 2021 12:29:43 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-X-Spam-Status: No, score=-1.2 required=10.0 tests=ALL_TRUSTED,DKIM_SIGNED,
-        DKIM_VALID,DKIM_VALID_AU,DKIM_VALID_EF shortcircuit=no
-        autolearn=disabled version=3.4.4
-X-Spam-Checker-Version: SpamAssassin 3.4.4 (2020-01-24) on
-        mailout.protonmail.ch
+References: <20210127090747.364951-1-xie.he.0141@gmail.com> <77971dffcff441c3ad3d257825dc214b@AcuMS.aculab.com>
+In-Reply-To: <77971dffcff441c3ad3d257825dc214b@AcuMS.aculab.com>
+From:   Xie He <xie.he.0141@gmail.com>
+Date:   Wed, 27 Jan 2021 12:29:32 -0800
+Message-ID: <CAJht_ENmxCBk=h68CN55qySMAiYhcgS0AtVzo6RvS5xf_6EkRw@mail.gmail.com>
+Subject: Re: [PATCH net] net: hdlc_x25: Use qdisc to queue outgoing LAPB frames
+To:     David Laight <David.Laight@aculab.com>
+Cc:     "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        "linux-x25@vger.kernel.org" <linux-x25@vger.kernel.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Martin Schiller <ms@dev.tdt.de>,
+        Krzysztof Halasa <khc@pm.waw.pl>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Alexander Lobakin <alobakin@pm.me>
-Date: Mon, 25 Jan 2021 16:46:48 +0000
+On Wed, Jan 27, 2021 at 2:14 AM David Laight <David.Laight@aculab.com> wrote:
+>
+> If I read this correctly it adds a (potentially big) queue between the
+> LAPB code that adds the sequence numbers to the frames and the hardware
+> that actually sends them.
 
-> page_is_pfmemalloc() is used mostly by networking drivers. It doesn't
-> write anything to the struct page itself, so constify its argument and
-> a bunch of callers and wrappers around this function in drivers.
-> In Page Pool core code, it can be simply inlined instead.
->=20
-> Alexander Lobakin (3):
->   mm: constify page_is_pfmemalloc() argument
->   net: constify page_is_pfmemalloc() argument at call sites
->   net: page_pool: simplify page recycling condition tests
+Yes. The actual number of outgoing LAPB frames being queued depends on
+how long the hardware driver stays in the TX busy state, and is
+limited by the LAPB sending window.
 
-Superseded with v2 [0].
+> IIRC [1] there is a general expectation that the NR in a transmitted frame
+> will be the same as the last received NS unless acks are being delayed
+> for flow control reasons.
+>
+> You definitely want to be able to ack a received frame while transmitting
+> back-to-back I-frames.
+>
+> This really means that you only want 2 frames in the hardware driver.
+> The one being transmitted and the next one - so it gets sent with a
+> shared flag.
+> There is no point sending an RR unless the hardware link is actually idle.
 
->  drivers/net/ethernet/hisilicon/hns3/hns3_enet.c   |  2 +-
->  drivers/net/ethernet/intel/fm10k/fm10k_main.c     |  2 +-
->  drivers/net/ethernet/intel/i40e/i40e_txrx.c       |  2 +-
->  drivers/net/ethernet/intel/iavf/iavf_txrx.c       |  2 +-
->  drivers/net/ethernet/intel/ice/ice_txrx.c         |  2 +-
->  drivers/net/ethernet/intel/igb/igb_main.c         |  2 +-
->  drivers/net/ethernet/intel/igc/igc_main.c         |  2 +-
->  drivers/net/ethernet/intel/ixgbe/ixgbe_main.c     |  2 +-
->  drivers/net/ethernet/intel/ixgbevf/ixgbevf_main.c |  2 +-
->  drivers/net/ethernet/mellanox/mlx5/core/en_rx.c   |  2 +-
->  include/linux/mm.h                                |  2 +-
->  include/linux/skbuff.h                            |  4 ++--
->  net/core/page_pool.c                              | 14 ++++----------
->  13 files changed, 17 insertions(+), 23 deletions(-)
->=20
-> --=20
-> 2.30.0
+If I understand correctly, what you mean is that the frames sent on
+the wire should reflect the most up-to-date status of what is received
+from the wire, so queueing outgoing LAPB frames is not appropriate.
 
-[0] https://lore.kernel.org/netdev/20210127201031.98544-1-alobakin@pm.me
+But this would require us to deal with the "TX busy" issue in the LAPB
+module. This is (as I said) not easy to do. I currently can't think of
+a good way of doing this.
 
-Thanks,
-Al
+Instead, we can think of the TX queue as part of the "wire". We can
+think of the wire as long and having a little higher latency. I
+believe the LAPB protocol has no problem in handling long wires.
 
+What do you think?
