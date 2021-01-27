@@ -2,50 +2,50 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7019A305FCC
-	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 16:39:39 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DF634305FCB
+	for <lists+netdev@lfdr.de>; Wed, 27 Jan 2021 16:39:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236361AbhA0PiJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 10:38:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58700 "EHLO
+        id S233642AbhA0Phn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 10:37:43 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236322AbhA0Pff (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 10:35:35 -0500
-Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB309C0613ED;
-        Wed, 27 Jan 2021 07:34:54 -0800 (PST)
-Received: by mail-wm1-x32f.google.com with SMTP id s24so3533487wmj.0;
-        Wed, 27 Jan 2021 07:34:54 -0800 (PST)
+        with ESMTP id S235800AbhA0Pfi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 10:35:38 -0500
+Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3BD7C061793;
+        Wed, 27 Jan 2021 07:34:57 -0800 (PST)
+Received: by mail-wr1-x42c.google.com with SMTP id a1so2370219wrq.6;
+        Wed, 27 Jan 2021 07:34:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=O0+FsHVqi4ap1j75IGE/n9TgljAosRz8g3ZX1HMj7o0=;
-        b=Z1aOqet4hZJ7dMjXqka0XO32eTNUpfLUIBDyzIBIEZtJ2bXtwb50xhfFEujkXpTTy4
-         u4I5M89r/eX+5htdvP+2pv0j0B0OWlJeOS+ddYnp64WAwQUytkWtFNLHfwiWQ/zNaRQD
-         kKtk6Dii0dGezYRs/AD6ieC1ZbmzkpSVpKwixClhnTz1nggub2byUAdGq/DPP8ENrIKm
-         e1xTPSWLL0mh7bl/a9HACdN2H4YCeNgXVGYd1gMogevlnnHkbKanHJ4BEkgfgDhjw60W
-         C5EC3hes0ZYgRD50vJ7WLbLo2xvWMSk4e1uNbrFweTgobW2NHMuPcYQ3MTNxc72KR+UI
-         O5Cg==
+        bh=/tGkcqmhsn9CH2w55SDFq0iWv5ul//RuUKfZo0AIfJg=;
+        b=nI6hC+eFt6rqAEWWJ3zfLpZVJeDPKJtH7reAeQP1NtQAuwe0PewFh1GHSG/1QTs/Wd
+         /T3S38h03kJTD88uKq71v2ru512DVHbApPqiToF2O4KwQ3bwd02hrLNFGB+wM+3DI2W9
+         5QgdXKtlddkkvCbGiq4tKh0JhLkMjRgWQJbEtRWVeL/tyssy78O0u9vCHB59m7qy6reC
+         /42tOSAJK92ZfC+p9O7fJToEWAFauBsqCDIBhRD8/4wis47GA9dpaspaj37/0+2yhNnO
+         zaeko0BR4PpvzjFaP+f3fhjKiu7Trm4oBZiSxQXRyfJkEmdDotqlscfCfgwZR3aAjrVJ
+         E1gg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=O0+FsHVqi4ap1j75IGE/n9TgljAosRz8g3ZX1HMj7o0=;
-        b=UFMYg6+6Dm991QrDI2SxMzUAJEa5su/94x3KINvfwONSd5QRHUmGjQYFE7o/d8Ah4K
-         FPbocnsIfP37bl8zV+dX00VqqLS86EwAuLC96irRxWhu3Ob1guIeoczSqOXmGlkiYjgN
-         bivvXR6XEUKf0eCErrP/44T2hYkOuWu99cSuJX0iZL5aMBne+NaqeS2faZDe3uCnD2oa
-         tqXdAHIoE0+TXSr1zi95RCvFZF458qUP81VcwvImXfQDf69tYYe2xRN2uAxHu6aQShmT
-         ZK//R2mtBoZHdWpU6G6qKK1Du3uRv1Ui27FUSKB09A6z/WagDAjDr02R+HnZwRjd7oMx
-         tYlg==
-X-Gm-Message-State: AOAM532OnoOW/jgoFtkFccdM9dJmKKP0ljh6/7b4sXdBjEX7W/SC7hVR
-        Nr6kFQ7mAsPwMR1ANJTyhfA=
-X-Google-Smtp-Source: ABdhPJyRtXK+jyd1VmvD9IDzq2c97wPZq4xvkjCvrNxi7iNTgLJUL0jHM6IP3WDa04aPuuBrUQ9WMg==
-X-Received: by 2002:a7b:cde1:: with SMTP id p1mr4577118wmj.111.1611761693426;
-        Wed, 27 Jan 2021 07:34:53 -0800 (PST)
+        bh=/tGkcqmhsn9CH2w55SDFq0iWv5ul//RuUKfZo0AIfJg=;
+        b=n7IYOxDPtkv8tFcSbwDslBe4WakNRSwvOw2gI8Ng9KfOk++GTyUbN+T/3BjeS2Fh+/
+         DO4X7jTEbGWoOmmtmlayLAwkcTFqIeSgjDWkFF7WhynwPl+1kVepTqrMT7Fyigxo32gx
+         E2DWN8IYuoOOdzUayQmQ0Ed4dp1z9dvGumfmHi28xmB4FzPjXRpA2Sb+ZGwn6+x07HvS
+         EEtFtXrsKJX1LQDtlXQ3lrumxx+4hCYsZKmzG18dO9PBTP+lgVkLiwxgzK+RNlI+5Et8
+         UvDOYtPNLMDouyYIoI31FQwJ9xXmJ7CGO1qTnU8C6YMwRzds4HrzPgWRSIfsUJmRXb/C
+         IFXg==
+X-Gm-Message-State: AOAM532d4tH6jJ62xJF0qxuI06egTIWvkKlKJAxc8XorICsue0AzHMFE
+        3Eofqn2p9FoR37b0Xwij63Y=
+X-Google-Smtp-Source: ABdhPJznInE3W+I8qFX2CdMmfN/npZnB/gkKoeKohjHxuaA+KnWF+CJXZg6/EDX2vJaq3HmdYzYfvg==
+X-Received: by 2002:adf:eacc:: with SMTP id o12mr11615147wrn.202.1611761696772;
+        Wed, 27 Jan 2021 07:34:56 -0800 (PST)
 Received: from LABNL-ITC-SW01.tmt.telital.com (static-82-85-31-68.clienti.tiscali.it. [82.85.31.68])
-        by smtp.gmail.com with ESMTPSA id m8sm3386132wrv.37.2021.01.27.07.34.52
+        by smtp.gmail.com with ESMTPSA id m8sm3386132wrv.37.2021.01.27.07.34.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Jan 2021 07:34:52 -0800 (PST)
+        Wed, 27 Jan 2021 07:34:56 -0800 (PST)
 From:   Daniele Palmas <dnlplm@gmail.com>
 To:     =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>,
         "David S . Miller" <davem@davemloft.net>,
@@ -53,9 +53,9 @@ To:     =?UTF-8?q?Bj=C3=B8rn=20Mork?= <bjorn@mork.no>,
 Cc:     netdev@vger.kernel.org, linux-usb@vger.kernel.org,
         Aleksander Morgado <aleksander@aleksander.es>,
         Daniele Palmas <dnlplm@gmail.com>
-Subject: [PATCH net-next v2 1/2] net: usb: qmi_wwan: add qmap id sysfs file for qmimux interfaces
-Date:   Wed, 27 Jan 2021 16:34:32 +0100
-Message-Id: <20210127153433.12237-2-dnlplm@gmail.com>
+Subject: [PATCH net-next v2 2/2] net: qmi_wwan: document qmap/mux_id sysfs file
+Date:   Wed, 27 Jan 2021 16:34:33 +0100
+Message-Id: <20210127153433.12237-3-dnlplm@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20210127153433.12237-1-dnlplm@gmail.com>
 References: <20210127153433.12237-1-dnlplm@gmail.com>
@@ -63,57 +63,31 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Add qmimux interface sysfs file qmap/mux_id to show qmap id set
-during the interface creation, in order to provide a method for
-userspace to associate QMI control channels to network interfaces.
+Document qmap/mux_id sysfs file showing qmimux interface id
 
 Signed-off-by: Daniele Palmas <dnlplm@gmail.com>
 ---
- drivers/net/usb/qmi_wwan.c | 24 ++++++++++++++++++++++++
- 1 file changed, 24 insertions(+)
+ Documentation/ABI/testing/sysfs-class-net-qmi | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/drivers/net/usb/qmi_wwan.c b/drivers/net/usb/qmi_wwan.c
-index 7ea113f51074..bcfb1e2788fd 100644
---- a/drivers/net/usb/qmi_wwan.c
-+++ b/drivers/net/usb/qmi_wwan.c
-@@ -218,6 +218,28 @@ static int qmimux_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
- 	return 1;
- }
+diff --git a/Documentation/ABI/testing/sysfs-class-net-qmi b/Documentation/ABI/testing/sysfs-class-net-qmi
+index c310db4ccbc2..ed79f5893421 100644
+--- a/Documentation/ABI/testing/sysfs-class-net-qmi
++++ b/Documentation/ABI/testing/sysfs-class-net-qmi
+@@ -48,3 +48,13 @@ Description:
  
-+static ssize_t mux_id_show(struct device *d, struct device_attribute *attr, char *buf)
-+{
-+	struct net_device *dev = to_net_dev(d);
-+	struct qmimux_priv *priv;
+ 		Write a number ranging from 1 to 254 to delete a previously
+ 		created qmap mux based network device.
 +
-+	priv = netdev_priv(dev);
++What:		/sys/class/net/<qmimux iface>/qmap/mux_id
++Date:		January 2021
++KernelVersion:	5.12
++Contact:	Daniele Palmas <dnlplm@gmail.com>
++Description:
++		Unsigned integer
 +
-+	return sysfs_emit(buf, "0x%02x\n", priv->mux_id);
-+}
-+
-+static DEVICE_ATTR_RO(mux_id);
-+
-+static struct attribute *qmi_wwan_sysfs_qmimux_attrs[] = {
-+	&dev_attr_mux_id.attr,
-+	NULL,
-+};
-+
-+static struct attribute_group qmi_wwan_sysfs_qmimux_attr_group = {
-+	.name = "qmap",
-+	.attrs = qmi_wwan_sysfs_qmimux_attrs,
-+};
-+
- static int qmimux_register_device(struct net_device *real_dev, u8 mux_id)
- {
- 	struct net_device *new_dev;
-@@ -240,6 +262,8 @@ static int qmimux_register_device(struct net_device *real_dev, u8 mux_id)
- 		goto out_free_newdev;
- 	}
- 
-+	new_dev->sysfs_groups[0] = &qmi_wwan_sysfs_qmimux_attr_group;
-+
- 	err = register_netdevice(new_dev);
- 	if (err < 0)
- 		goto out_free_newdev;
++		Indicates the mux id associated to the qmimux network interface
++		during its creation.
 -- 
 2.17.1
 
