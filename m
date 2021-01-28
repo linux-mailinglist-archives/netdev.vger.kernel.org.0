@@ -2,77 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 05240306A11
-	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 02:14:06 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id E382A306A28
+	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 02:17:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231640AbhA1BNk (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 20:13:40 -0500
-Received: from mail.kernel.org ([198.145.29.99]:36234 "EHLO mail.kernel.org"
+        id S231716AbhA1BQd (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 20:16:33 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:35440 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231992AbhA1BLB (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 27 Jan 2021 20:11:01 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id DC5AD64DDB;
-        Thu, 28 Jan 2021 01:10:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611796211;
-        bh=/3xaSwGpm1FAL76TxLu6be7YbqcUAh3ACgI4LcTBWus=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=R0YKMkZ6MvYr8K77xkAfWL+bCD09tv5E/ZxS4nzEr8ycwnRyZXICkeT7CfBbacBGM
-         Fyo+OzkfVqEMQur9VyAhpJhgZHvfZWx7EnGUNfH8BulzZBOaSoIl/DqYX2hsf0Rnbg
-         L7SJWBJCg91Ktlaf2FRP/9M3xzS0F8qurbbR5I97zHT2SrR2w+0Huu38bIBIqfYKIF
-         8/KpEw1ihUhzMaGNUEiqBKTsu+bpQUh2mSFHT8NsaXzdlytu14NaxL4mCi7sa+FDEy
-         BYSL9pUxMXxoh7uZ+BDO9drmwHZzCTp9Xx4a83nKtdarh24XBsGZriZBH+V0Iey46Y
-         GCBhrpFvpLT3Q==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id C4A08613AE;
-        Thu, 28 Jan 2021 01:10:11 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S231132AbhA1BNh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 27 Jan 2021 20:13:37 -0500
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1l4vrb-002xF8-6S; Thu, 28 Jan 2021 02:12:47 +0100
+Date:   Thu, 28 Jan 2021 02:12:47 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Russell King - ARM Linux admin <linux@armlinux.org.uk>
+Cc:     Mike Looijmans <mike.looijmans@topic.nl>, netdev@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Jakub Kicinski <kuba@kernel.org>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] net: mdiobus: Prevent spike on MDIO bus reset signal
+Message-ID: <YBIPj+3QhWLr9zjT@lunn.ch>
+References: <20210126073337.20393-1-mike.looijmans@topic.nl>
+ <YBAVwFlLsfVEHd+E@lunn.ch>
+ <20210126134937.GI1551@shell.armlinux.org.uk>
+ <YBH+uUUatjfwqFWq@lunn.ch>
+ <20210128002555.GQ1551@shell.armlinux.org.uk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH 1/4] net: move CONFIG_NET guard to top Makefile
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161179621179.21299.723410725498445981.git-patchwork-notify@kernel.org>
-Date:   Thu, 28 Jan 2021 01:10:11 +0000
-References: <20210125231659.106201-1-masahiroy@kernel.org>
-In-Reply-To: <20210125231659.106201-1-masahiroy@kernel.org>
-To:     Masahiro Yamada <masahiroy@kernel.org>
-Cc:     netdev@vger.kernel.org, ast@kernel.org, andrii@kernel.org,
-        daniel@iogearbox.net, davem@davemloft.net, kuba@kernel.org,
-        john.fastabend@gmail.com, kpsingh@kernel.org, kafai@fb.com,
-        michal.lkml@markovi.net, songliubraving@fb.com, yhs@fb.com,
-        bpf@vger.kernel.org, linux-kbuild@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210128002555.GQ1551@shell.armlinux.org.uk>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
-
-This series was applied to netdev/net-next.git (refs/heads/master):
-
-On Tue, 26 Jan 2021 08:16:55 +0900 you wrote:
-> When CONFIG_NET is disabled, nothing under the net/ directory is
-> compiled. Move the CONFIG_NET guard to the top Makefile so the net/
-> directory is entirely skipped.
+On Thu, Jan 28, 2021 at 12:25:55AM +0000, Russell King - ARM Linux admin wrote:
+> On Thu, Jan 28, 2021 at 01:00:57AM +0100, Andrew Lunn wrote:
+> > On Tue, Jan 26, 2021 at 01:49:38PM +0000, Russell King - ARM Linux admin wrote:
+> > > On Tue, Jan 26, 2021 at 02:14:40PM +0100, Andrew Lunn wrote:
+> > > > On Tue, Jan 26, 2021 at 08:33:37AM +0100, Mike Looijmans wrote:
+> > > > > The mdio_bus reset code first de-asserted the reset by allocating with
+> > > > > GPIOD_OUT_LOW, then asserted and de-asserted again. In other words, if
+> > > > > the reset signal defaulted to asserted, there'd be a short "spike"
+> > > > > before the reset.
+> > > > > 
+> > > > > Instead, directly assert the reset signal using GPIOD_OUT_HIGH, this
+> > > > > removes the spike and also removes a line of code since the signal
+> > > > > is already high.
+> > > > 
+> > > > Hi Mike
+> > > > 
+> > > > This however appears to remove the reset pulse, if the reset line was
+> > > > already low to start with. Notice you left
+> > > > 
+> > > > fsleep(bus->reset_delay_us);
+> > > > 
+> > > > without any action before it? What are we now waiting for?  Most data
+> > > > sheets talk of a reset pulse. Take the reset line high, wait for some
+> > > > time, take the reset low, wait for some time, and then start talking
+> > > > to the PHY. I think with this patch, we have lost the guarantee of a
+> > > > low to high transition.
+> > > > 
+> > > > Is this spike, followed by a pulse actually causing you problems? If
+> > > > so, i would actually suggest adding another delay, to stretch the
+> > > > spike. We have no control over the initial state of the reset line, it
+> > > > is how the bootloader left it, we have to handle both states.
+> > > 
+> > > Andrew, I don't get what you're saying.
+> > > 
+> > > Here is what happens depending on the pre-existing state of the
+> > > reset signal:
+> > > 
+> > > Reset (previously asserted):   ~~~|_|~~~~|_______
+> > > Reset (previously deasserted): _____|~~~~|_______
+> > >                                   ^ ^    ^
+> > >                                   A B    C
+> > > 
+> > > At point A, the low going transition is because the reset line is
+> > > requested using GPIOD_OUT_LOW. If the line is successfully requested,
+> > > the first thing we do is set it high _without_ any delay. This is
+> > > point B. So, a glitch occurs between A and B.
+> > > 
+> > > We then fsleep() and finally set the GPIO low at point C.
+> > > 
+> > > Requesting the line using GPIOD_OUT_HIGH eliminates the A and B
+> > > transitions. Instead we get:
+> > > 
+> > > Reset (previously asserted)  : ~~~~~~~~~~|______
+> > > Reset (previously deasserted): ____|~~~~~|______
+> > >                                    ^     ^
+> > >                                    A     C
+> > > 
+> > > Where A and C are the points described above in the code. Point B
+> > > has been eliminated.
+> > > 
+> > > Therefore, to me the patch looks entirely reasonable and correct.
+> > 
+> > I wonder if there are any PHYs which actually need a pulse? Would it
+> > be better to have:
+> > 
+> >  Reset (previously asserted):   ~~~|____|~~~~|_______
+> >  Reset (previously deasserted): ________|~~~~|_______
+> >                                    ^    ^    ^    ^
+> >                                    A    B    C    D
+> > 
+> > Point D is where we actually start talking to the PHY. C-D is
+> > reset-post-delay-us, and defaults to 0, but can be set via DT.  B-C is
+> > reset-delay-us, and defaults to 10us, but can be set via DT.
+> > Currently A-B is '0', so we get the glitch. But should we make A-B the
+> > same as B-C, so we get a real pulse?
 > 
-> When Kbuild visits net/Makefile, CONFIG_NET is obvioulsy 'y' because
-> CONFIG_NET is a bool option. Clean up net/Makefile.
-> 
-> [...]
+> I do not see any need for A-B - what is the reason for it?
 
-Here is the summary with links:
-  - [1/4] net: move CONFIG_NET guard to top Makefile
-    https://git.kernel.org/netdev/net-next/c/8b5f4eb3ab70
-  - [2/4] net: dcb: use obj-$(CONFIG_DCB) form in net/Makefile
-    https://git.kernel.org/netdev/net-next/c/1e328ed55920
-  - [3/4] net: switchdev: use obj-$(CONFIG_NET_SWITCHDEV) form in net/Makefile
-    https://git.kernel.org/netdev/net-next/c/0cfd99b487f1
-  - [4/4] net: l3mdev: use obj-$(CONFIG_NET_L3_MASTER_DEV) form in net/Makefile
-    https://git.kernel.org/netdev/net-next/c/d32f834cd687
+If level is all that matters, then it is not needed. If a PHY needs an
+actual pulse, both a raising and a falling edge, we potentially don't
+get the rising edge now.
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+But the datasheets you have looked at all seem to talk about level,
+not pulse. So lets go with this.
 
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
 
+    Andrew
