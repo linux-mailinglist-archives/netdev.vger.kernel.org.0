@@ -2,95 +2,142 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 409CB307B1D
-	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 17:40:17 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 26CC3307B23
+	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 17:40:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232641AbhA1QhT (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jan 2021 11:37:19 -0500
-Received: from Galois.linutronix.de ([193.142.43.55]:36060 "EHLO
-        galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232626AbhA1Qgm (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jan 2021 11:36:42 -0500
-From:   Kurt Kanzenbach <kurt@linutronix.de>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020; t=1611851760;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=cCkXezytlMBpgbEI/se8mQWEbQF6yu/Obce7Uy+IZAc=;
-        b=IMt3H/Jq6RFwi01nYxx4boCTTNirgavcUSfVedqyftHhJSfSMo3BjCWFMf8tzetvZQg6ED
-        WP8rK+x4V+OviULJmsAFSmLQVBkie5qBYKATVjZ4eZaognvvTMFoy6DR5uqlvHASCVc+Tn
-        /ASSuOSD8dJ/sKtgCkI3kM1/LFn1ro6FKS3L0FlHxBz7+gqjSRZ5e+XaZGykeSl8vzDIN/
-        yfrPZwj/a/oU/+IdxPYRMsif97rPIXs6kYOf1pxVATTgRicNpm/yFx6a1B+8EGvncnzopf
-        QYinDVljrqHkOGNZ6QdOTw/c5qozLTymJihCgRi3MMpzBIMt+GWBczSkyFvkUQ==
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
-        s=2020e; t=1611851760;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=cCkXezytlMBpgbEI/se8mQWEbQF6yu/Obce7Uy+IZAc=;
-        b=3FxwvRCGTRbt9kfmoYHMTHhtWsMA/r/di4Cw4Tqz1vDbXL83JHAeiojdTkELPut4Umq9bg
-        GasMrRvf6DkoPNDg==
-To:     Randy Dunlap <rdunlap@infradead.org>,
-        Stephen Rothwell <sfr@canb.auug.org.au>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "netdev\@vger.kernel.org" <netdev@vger.kernel.org>
-Subject: Re: linux-next: Tree for Jan 28 [drivers/net/dsa/hirschmann/hellcreek_sw]
-In-Reply-To: <677e11e9-573e-6459-8323-65fc32f213e7@infradead.org>
-References: <20210128201131.608c16ee@canb.auug.org.au> <677e11e9-573e-6459-8323-65fc32f213e7@infradead.org>
-Date:   Thu, 28 Jan 2021 17:35:58 +0100
-Message-ID: <87o8h9qas1.fsf@kurt>
+        id S232626AbhA1Qiy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jan 2021 11:38:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42352 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231461AbhA1QiJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jan 2021 11:38:09 -0500
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4089BC061574
+        for <netdev@vger.kernel.org>; Thu, 28 Jan 2021 08:37:29 -0800 (PST)
+Received: by mail-ej1-x635.google.com with SMTP id r12so8706544ejb.9
+        for <netdev@vger.kernel.org>; Thu, 28 Jan 2021 08:37:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=FxpXC795C1PwI4TBIT6W0rcGCi09uioONR7GXp5aguQ=;
+        b=JX125lGfXAXoLnlGntGl+N26KoubKtFeqq85fjMFJ/QB+sgM6qcoxzOzk+Rh2yKnOd
+         ZrWZzL5sUKDgecVbO1QJ/zmAJ0mLwjvqMU6hVuGyumlmu8JMNcMS5yUTJCTBJItYZTAR
+         TYd+9SuBcyXAGxoO2YygNRZRz+jUPhA5vg6ZAnkGhshjQNz58Fvy+3uBSrjNPYH3RJvP
+         IAqrFKLK6xgHuYYCiW+GVNVAuvwYHWK+xQ1lku5Mcb/tKBILvrIv+B1/6s1pZyo/KVbn
+         xPfqPMRLvGlpUrfBowKoEVgrUTuuqL86tal071kH/DAC8Lh885cxJgdgmn7mtmuPwcTj
+         zM1Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=FxpXC795C1PwI4TBIT6W0rcGCi09uioONR7GXp5aguQ=;
+        b=gCqB0Ghx/6/TLWlV+IBX3/4KnuO5Po/6zZjJpo4Zat0etkXsE+Nrvv7pjDPmPSv+Ob
+         RU7fIJvwqkMJblydcmTvbHa4tlNNBDNLCH71PpTsjXvA1v4G+Atl2S9oyYnTQ2IUWTX5
+         kA2CLgcQYnq+AQd/+z8tJLj6gEd024ZhjG3+kezw7Xs/+jDQ4xlDH3tbDdE5fa0HwM2z
+         h/q8BoRwhAlPdWe0XiP9JDhQXWRzdWIY8g6DJnXxEE0K5kfEReeYJZsNELK79k9rSTkx
+         jWebQANPBtii+iwDD+HMdLsYzl/AmvEsvO1xhelgqH3gdqNdxpelp6fXqb4pegO2yau8
+         15UQ==
+X-Gm-Message-State: AOAM5307PgfWC2sd/UR1q1qg4gvPut2+ddYezZPoOqbsUbMUugsvOo30
+        Iv9E7jt967tjJqvJYo/XWe0=
+X-Google-Smtp-Source: ABdhPJziiKI/qupOXzXtKxZHr739eapbf7e6DBlnSC5V08HGdnVnYGBaiuuMJHRGiqBhOPhVPy5epw==
+X-Received: by 2002:a17:906:a384:: with SMTP id k4mr240414ejz.194.1611851846836;
+        Thu, 28 Jan 2021 08:37:26 -0800 (PST)
+Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
+        by smtp.gmail.com with ESMTPSA id u9sm3266313edv.32.2021.01.28.08.37.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 28 Jan 2021 08:37:26 -0800 (PST)
+Date:   Thu, 28 Jan 2021 18:37:24 +0200
+From:   Vladimir Oltean <olteanv@gmail.com>
+To:     Kurt Kanzenbach <kurt@linutronix.de>
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Arnd Bergmann <arnd@arndb.de>
+Subject: Re: [PATCH net-next] net: dsa: hellcreek: Add missing TAPRIO
+ dependency
+Message-ID: <20210128163724.q7d2j57phwbmbh7w@skbuf>
+References: <20210128163338.22665-1-kurt@linutronix.de>
 MIME-Version: 1.0
-Content-Type: multipart/signed; boundary="=-=-=";
-        micalg=pgp-sha512; protocol="application/pgp-signature"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210128163338.22665-1-kurt@linutronix.de>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
---=-=-=
-Content-Type: text/plain
-Content-Transfer-Encoding: quoted-printable
-
-On Thu Jan 28 2021, Randy Dunlap wrote:
-> On 1/28/21 1:11 AM, Stephen Rothwell wrote:
->> Hi all,
->>=20
->> Changes since 20210127:
->>=20
+On Thu, Jan 28, 2021 at 05:33:38PM +0100, Kurt Kanzenbach wrote:
+> Add missing dependency to TAPRIO to avoid build failures such as:
 >
+> |ERROR: modpost: "taprio_offload_get" [drivers/net/dsa/hirschmann/hellcreek_sw.ko] undefined!
+> |ERROR: modpost: "taprio_offload_free" [drivers/net/dsa/hirschmann/hellcreek_sw.ko] undefined!
 >
-> on i386:
+> Fixes: 24dfc6eb39b2 ("net: dsa: hellcreek: Add TAPRIO offloading support")
+> Reported-by: Randy Dunlap <rdunlap@infradead.org>
+> Signed-off-by: Kurt Kanzenbach <kurt@linutronix.de>
+> ---
+>  drivers/net/dsa/hirschmann/Kconfig | 1 +
+>  1 file changed, 1 insertion(+)
 >
-> ERROR: modpost: "taprio_offload_get" [drivers/net/dsa/hirschmann/hellcree=
-k_sw.ko] undefined!
-> ERROR: modpost: "taprio_offload_free" [drivers/net/dsa/hirschmann/hellcre=
-ek_sw.ko] undefined!
+> Note: It's not against net, because the fixed commit is not in net tree, yet.
 >
-> Full randconfig file is attached.
+> diff --git a/drivers/net/dsa/hirschmann/Kconfig b/drivers/net/dsa/hirschmann/Kconfig
+> index e01191107a4b..9ea2c643f8f8 100644
+> --- a/drivers/net/dsa/hirschmann/Kconfig
+> +++ b/drivers/net/dsa/hirschmann/Kconfig
+> @@ -5,6 +5,7 @@ config NET_DSA_HIRSCHMANN_HELLCREEK
+>  	depends on NET_DSA
+>  	depends on PTP_1588_CLOCK
+>  	depends on LEDS_CLASS
+> +	depends on NET_SCH_TAPRIO
+>  	select NET_DSA_TAG_HELLCREEK
+>  	help
+>  	  This driver adds support for Hirschmann Hellcreek TSN switches.
+> --
+> 2.20.1
+>
 
-Thanks for the config file. I've submitted a patch to fix it.
+Note that for sja1105, Arnd solved it this way. I am still not sure why.
 
-Thanks,
-Kurt
+commit 5d294fc483405de9c0913ab744a31e6fa7cb0f40
+Author: Arnd Bergmann <arnd@arndb.de>
+Date:   Fri Oct 25 09:26:35 2019 +0200
 
---=-=-=
-Content-Type: application/pgp-signature; name="signature.asc"
+    net: dsa: sja1105: improve NET_DSA_SJA1105_TAS dependency
 
------BEGIN PGP SIGNATURE-----
+    An earlier bugfix introduced a dependency on CONFIG_NET_SCH_TAPRIO,
+    but this missed the case of NET_SCH_TAPRIO=m and NET_DSA_SJA1105=y,
+    which still causes a link error:
 
-iQIzBAEBCgAdFiEEooWgvezyxHPhdEojeSpbgcuY8KYFAmAS5+4ACgkQeSpbgcuY
-8KZ5ShAAxcb9zdGrDElfmjSPsfBTQ9+yU96nez/uz1t8rkGGwhKvecs50j2hMEf5
-X76jf+4gjXlZ2LXWlNsbTSGq1ay9X7U8ey4dauGF6O4utTnID5A93bAQgKcPBUN9
-tijhXxCFWjmrn2SbOEDcS+OjjViapQSaOeojkSfxyN5O+jXLUPNbP6BDvOP+PoIc
-Jniej8B03GBf3T9DcE2g9UwtIXfrR/DkMg/+57IjVIQT0vAxVs5nVH4Hs31MRLkS
-DepRihC74QosuR3bw/w5SRduL3+K8bkC+BFdfudsDwVQxuXTlhVDuFa3LdPAQXg0
-tw6ix5kljEgf8rBE3zEIHRIju/FMqogf01R24tyvbdL7GQQUoeHwZP4S1QlKKGh/
-vKaE/ZQy4XJ9MvB5XrQdztUciElQ0swvi0SViGodcm4VuwWESWz2oo2ULQ0l7GX/
-9AowpLsR1Lv0XIkc7+dLuF/+Ym4kk/4GlYiF+r8kb9F5c4ldtzyMP2Lo1hlYxlWw
-x5vTn6vWnw9AKliZ7BKRhJa2SzO/hncKhgE5bhqe+SLgkc1jnvuq5OyIFXGX8eNY
-RCNlV+pLE3hxd7lwHrN42l4VSrPplgASdHUYuq8a5nRYr1RApkkOG27deQ9k56s6
-Ay1/1CKlQvPPNGvon/3uWPnY70PDQGswscWXbr8VaCDTsDk0MgI=
-=brOp
------END PGP SIGNATURE-----
---=-=-=--
+    drivers/net/dsa/sja1105/sja1105_tas.o: In function `sja1105_setup_tc_taprio':
+    sja1105_tas.c:(.text+0x5c): undefined reference to `taprio_offload_free'
+    sja1105_tas.c:(.text+0x3b4): undefined reference to `taprio_offload_get'
+    drivers/net/dsa/sja1105/sja1105_tas.o: In function `sja1105_tas_teardown':
+    sja1105_tas.c:(.text+0x6ec): undefined reference to `taprio_offload_free'
+
+    Change the dependency to only allow selecting the TAS code when it
+    can link against the taprio code.
+
+    Fixes: a8d570de0cc6 ("net: dsa: sja1105: Add dependency for NET_DSA_SJA1105_TAS")
+    Fixes: 317ab5b86c8e ("net: dsa: sja1105: Configure the Time-Aware Scheduler via tc-taprio offload")
+    Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+    Signed-off-by: David S. Miller <davem@davemloft.net>
+
+diff --git a/drivers/net/dsa/sja1105/Kconfig b/drivers/net/dsa/sja1105/Kconfig
+index f40b248f0b23..ffac0ea4e8d5 100644
+--- a/drivers/net/dsa/sja1105/Kconfig
++++ b/drivers/net/dsa/sja1105/Kconfig
+@@ -26,8 +26,8 @@ config NET_DSA_SJA1105_PTP
+
+ config NET_DSA_SJA1105_TAS
+        bool "Support for the Time-Aware Scheduler on NXP SJA1105"
+-       depends on NET_DSA_SJA1105
+-       depends on NET_SCH_TAPRIO
++       depends on NET_DSA_SJA1105 && NET_SCH_TAPRIO
++       depends on NET_SCH_TAPRIO=y || NET_DSA_SJA1105=m
+        help
+          This enables support for the TTEthernet-based egress scheduling
+          engine in the SJA1105 DSA driver, which is controlled using a
