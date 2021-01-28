@@ -2,131 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 03DBA3077AD
+	by mail.lfdr.de (Postfix) with ESMTP id 757C23077AE
 	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 15:09:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231339AbhA1OIC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jan 2021 09:08:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38252 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229791AbhA1OH6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jan 2021 09:07:58 -0500
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAD20C061573
-        for <netdev@vger.kernel.org>; Thu, 28 Jan 2021 06:07:17 -0800 (PST)
-Received: by mail-ed1-x52e.google.com with SMTP id g1so6753161edu.4
-        for <netdev@vger.kernel.org>; Thu, 28 Jan 2021 06:07:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=WMPYygI8qWFUJ/h7SU6E70xYVW6aDWlFuFuWteQUrzw=;
-        b=WEWfpJgCBEEgc+463IJAjx1FcTPgSpmX0lSpLkqqdeuerqxXOKirSCkE+b/vWMK9dG
-         /PV7ub1tfA1NUvHf2k0s7cq7UsG1Qjuo0emWBYeJ0YjrWjcex8IThZNiLkgaQYTpWRc0
-         mcKaSOQ7X69MYBkgDkbUu7nonP3xSGtz437E6hVp6q3e1YAE190jFe1sydb8uDLle8S0
-         w9/S4IdKv+beYlCnwK/sIgA+PQAYLmd6gwdk0GL9QrUVUvqNQxogpKYohAbYaGPENlgy
-         py4nc1s/G5L9OFGsd1fCbIjKqg4ZSXrX388VwSPOEXM/7ElfpVaI6+9M6OlolCQ1TWgi
-         V7YQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=WMPYygI8qWFUJ/h7SU6E70xYVW6aDWlFuFuWteQUrzw=;
-        b=JS73kEaHyQ5ShQ2CmXhtJ/mrkJXVSYMitH3yGC/hUdPsgZijMFbLODaz4tAEnpaLBX
-         wJt3dRTEWdzzjtF3SlGxlF5RuxYL0UMQ8IwaEsUNACw9ULpJLRAjrVB4PXIqDqeCao/h
-         OHBW+M0PB8cUMJyV9gFgT4UeBOXSDam903XKNyOEpsCl60yMQw3xAVWGgMbPrC1BZHLW
-         ZTobW15rI6P7MCq5SQWpvw+zacJsVWCVsDZDafmxKfWUgKV+/9wsQeCgW6EK2g0MX+sc
-         NnGlhKf/LDrDpQlrZeIOHqPgUkYMcvn3AIpAhRHwwRlmOGjnJXTrdHLGn6ey50rpCYjA
-         11/A==
-X-Gm-Message-State: AOAM532W+qsXKqMs9PHN+2mp669+JQe3LzHoDhikCjZ/9a2awpQg8kwd
-        lSiONVEJrmAnkcqkvN1PNn5tLlbBfe+pm2/b9Yc=
-X-Google-Smtp-Source: ABdhPJxT7MIyvRUMQtvsxSHpprrn6otrJh1ZaUP259J/GkwRAXFE9+TbypXftrufPhHSQFfIJt23PIdB/fqEClDk3v0=
-X-Received: by 2002:aa7:d1d7:: with SMTP id g23mr14233804edp.6.1611842836492;
- Thu, 28 Jan 2021 06:07:16 -0800 (PST)
+        id S231327AbhA1OIg (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jan 2021 09:08:36 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:50847 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229791AbhA1OIf (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jan 2021 09:08:35 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1611842829;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=7eI6M/q6WEZM0vfD6xJ0DHSlAZxg7rWvQfBqNR6INvs=;
+        b=LW+epOyoq7RFmpv4nkJKz9+cpX+cOKAdLKlQdQcdypacHe+h5/Z6TMuCgn/ZJmASm5J6AX
+        Xfge0RgNnH6Jks9Y+XyeGu/FADAD8etvYJgD9ZMXKo9uAs9x2CvDTB0FIux1ejNBWYGOpa
+        pgiyEcm9yHvPOowiEIHgg3q/ikdLVy4=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-504-CjidSeiqOIq0mNmk1zjo5Q-1; Thu, 28 Jan 2021 09:07:06 -0500
+X-MC-Unique: CjidSeiqOIq0mNmk1zjo5Q-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 53935192781B;
+        Thu, 28 Jan 2021 14:07:05 +0000 (UTC)
+Received: from carbon (unknown [10.36.110.4])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id CFC535D9F8;
+        Thu, 28 Jan 2021 14:06:45 +0000 (UTC)
+Date:   Thu, 28 Jan 2021 15:06:44 +0100
+From:   Jesper Dangaard Brouer <brouer@redhat.com>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     bpf@vger.kernel.org, netdev@vger.kernel.org, davem@davemloft.net,
+        kuba@kernel.org, ast@kernel.org, daniel@iogearbox.net,
+        toshiaki.makita1@gmail.com, lorenzo.bianconi@redhat.com,
+        toke@redhat.com, brouer@redhat.com
+Subject: Re: [PATCH bpf-next 1/3] net: veth: introduce bulking for XDP_PASS
+Message-ID: <20210128150644.78b981cb@carbon>
+In-Reply-To: <adca75284e30320e9d692d618a6349319d9340f3.1611685778.git.lorenzo@kernel.org>
+References: <cover.1611685778.git.lorenzo@kernel.org>
+        <adca75284e30320e9d692d618a6349319d9340f3.1611685778.git.lorenzo@kernel.org>
 MIME-Version: 1.0
-References: <cover.1611825446.git.lucien.xin@gmail.com> <02bef0921778d2053ab63140c31704712bb5a864.1611825446.git.lucien.xin@gmail.com>
-In-Reply-To: <02bef0921778d2053ab63140c31704712bb5a864.1611825446.git.lucien.xin@gmail.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Thu, 28 Jan 2021 09:06:40 -0500
-Message-ID: <CAF=yD-JXJwn4HX1kbeJpVoN1GgvpddxU55gan_hiLEx4xrSsgg@mail.gmail.com>
-Subject: Re: [PATCHv3 net-next 1/2] net: support ip generic csum processing in skb_csum_hwoffload_help
-To:     Xin Long <lucien.xin@gmail.com>
-Cc:     network dev <netdev@vger.kernel.org>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Davide Caratti <dcaratti@redhat.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        Alexander Duyck <alexander.duyck@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 28, 2021 at 4:29 AM Xin Long <lucien.xin@gmail.com> wrote:
->
-> NETIF_F_IP|IPV6_CSUM feature flag indicates UDP and TCP csum offload
-> while NETIF_F_HW_CSUM feature flag indicates ip generic csum offload
-> for HW, which includes not only for TCP/UDP csum, but also for other
-> protocols' csum like GRE's.
->
-> However, in skb_csum_hwoffload_help() it only checks features against
-> NETIF_F_CSUM_MASK(NETIF_F_HW|IP|IPV6_CSUM). So if it's a non TCP/UDP
-> packet and the features doesn't support NETIF_F_HW_CSUM, but supports
-> NETIF_F_IP|IPV6_CSUM only, it would still return 0 and leave the HW
-> to do csum.
->
-> This patch is to support ip generic csum processing by checking
-> NETIF_F_HW_CSUM for all protocols, and check (NETIF_F_IP_CSUM |
-> NETIF_F_IPV6_CSUM) only for TCP and UDP.
->
-> Note that we're using skb->csum_offset to check if it's a TCP/UDP
-> proctol, this might be fragile. However, as Alex said, for now we
-> only have a few L4 protocols that are requesting Tx csum offload,
-> we'd better fix this until a new protocol comes with a same csum
-> offset.
->
-> v1->v2:
->   - not extend skb->csum_not_inet, but use skb->csum_offset to tell
->     if it's an UDP/TCP csum packet.
-> v2->v3:
->   - add a note in the changelog, as Willem suggested.
->
-> Suggested-by: Alexander Duyck <alexander.duyck@gmail.com>
-> Signed-off-by: Xin Long <lucien.xin@gmail.com>
+On Tue, 26 Jan 2021 19:41:59 +0100
+Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+
+> Introduce bulking support for XDP_PASS verdict forwarding skbs to
+> the networking stack
+> 
+> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 > ---
->  net/core/dev.c | 13 ++++++++++++-
->  1 file changed, 12 insertions(+), 1 deletion(-)
+>  drivers/net/veth.c | 43 ++++++++++++++++++++++++++-----------------
+>  1 file changed, 26 insertions(+), 17 deletions(-)
+> 
+> diff --git a/drivers/net/veth.c b/drivers/net/veth.c
+> index 6e03b619c93c..23137d9966da 100644
+> --- a/drivers/net/veth.c
+> +++ b/drivers/net/veth.c
+> @@ -35,6 +35,7 @@
+>  #define VETH_XDP_HEADROOM	(XDP_PACKET_HEADROOM + NET_IP_ALIGN)
+>  
+>  #define VETH_XDP_TX_BULK_SIZE	16
+> +#define VETH_XDP_BATCH		8
 >
-> diff --git a/net/core/dev.c b/net/core/dev.c
-> index 6df3f1b..aae116d 100644
-> --- a/net/core/dev.c
-> +++ b/net/core/dev.c
-> @@ -3621,7 +3621,18 @@ int skb_csum_hwoffload_help(struct sk_buff *skb,
->                 return !!(features & NETIF_F_SCTP_CRC) ? 0 :
->                         skb_crc32c_csum_help(skb);
->
-> -       return !!(features & NETIF_F_CSUM_MASK) ? 0 : skb_checksum_help(skb);
-> +       if (features & NETIF_F_HW_CSUM)
-> +               return 0;
-> +
-> +       if (features & (NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM)) {
 
-Should this check the specific feature flag against skb->protocol? I
-don't know if there are actually instances that only support one of
-the two flags.
+I suspect that VETH_XDP_BATCH = 8 is not the optimal value.
 
-> +               switch (skb->csum_offset) {
-> +               case offsetof(struct tcphdr, check):
-> +               case offsetof(struct udphdr, check):
-> +                       return 0;
-> +               }
-> +       }
-> +
-> +       return skb_checksum_help(skb);
->  }
->  EXPORT_SYMBOL(skb_csum_hwoffload_help);
->
-> --
-> 2.1.0
->
+You have taken this value from CPUMAP code, which cannot be generalized
+to this case.  The optimal value for CPUMAP is actually to bulk dequeue
+16 frames from ptr_ring, but there is a prefetch in one of the loops,
+which should not be larger than 10, due to the Intel Line-Fill-Buffer
+cannot have more than 10 out-standing prefetch instructions in flight.
+(Yes, I measured this[1] with perf stat, when coding that)
+
+Could you please test with 16, to see if results are better?
+
+In this veth case, we will likely be started on the same CPU that
+received the xdp_frames.  Thus, things are likely hot in cache, and we
+don't have to care so much about moving cachelines across CPUs.  So, I
+don't expect it will make much difference.
+
+
+[1] https://github.com/xdp-project/xdp-project/blob/master/areas/cpumap/cpumap02-optimizations.org
+-- 
+Best regards,
+  Jesper Dangaard Brouer
+  MSc.CS, Principal Kernel Engineer at Red Hat
+  LinkedIn: http://www.linkedin.com/in/brouer
+
