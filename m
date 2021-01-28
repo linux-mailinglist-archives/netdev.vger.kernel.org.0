@@ -2,134 +2,191 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 3B3AB307756
-	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 14:42:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 404973077A3
+	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 15:06:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232298AbhA1Nmb (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jan 2021 08:42:31 -0500
-Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:3770 "EHLO
-        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232234AbhA1NmX (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jan 2021 08:42:23 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B6012bf160000>; Thu, 28 Jan 2021 05:41:42 -0800
-Received: from HQMAIL107.nvidia.com (172.20.187.13) by HQMAIL105.nvidia.com
- (172.20.187.12) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 28 Jan
- 2021 13:41:42 +0000
-Received: from vdi.nvidia.com (172.20.145.6) by mail.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server id 15.0.1473.3 via Frontend
- Transport; Thu, 28 Jan 2021 13:41:40 +0000
-From:   Eli Cohen <elic@nvidia.com>
-To:     <mst@redhat.com>, <jasowang@redhat.com>
-CC:     <virtualization@lists.linux-foundation.org>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <lulu@redhat.com>, <elic@nvidia.com>
-Subject: [PATCH 2/2] vdpa/mlx5: Restore the hardware used index after change map
-Date:   Thu, 28 Jan 2021 15:41:30 +0200
-Message-ID: <20210128134130.3051-3-elic@nvidia.com>
-X-Mailer: git-send-email 2.28.0
-In-Reply-To: <20210128134130.3051-1-elic@nvidia.com>
-References: <20210128134130.3051-1-elic@nvidia.com>
+        id S231235AbhA1OFE (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jan 2021 09:05:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37586 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229840AbhA1OEx (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jan 2021 09:04:53 -0500
+Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE762C061574;
+        Thu, 28 Jan 2021 06:04:12 -0800 (PST)
+Received: by mail-wm1-x334.google.com with SMTP id j18so4404264wmi.3;
+        Thu, 28 Jan 2021 06:04:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=Gh/i/8MlizRX5IQWlRcyYy2kUD58gzAYUv+/PTyTmjI=;
+        b=lAz2tk81dNW/ss1goqU5xOiyODxZfADKM3/AZynRT23v1fINlzFtN8iXYRI8HdC1LU
+         VdOeelwGOjQcKVaJfQFT453fK1WDp6MlsYi6AFPOPXoFf7BUzPC48ar0xQ8Dk2RqHgwn
+         0AEUdNheyBbUnrEYKGuSCTf3FuAVHdBkOnWj4BqmZjgXpQcQtFZHPItNGoBjceWS3HIu
+         DWfZNcTyGiaBJ68w0tw7M/BoRie10jQESaUbtw6XHVZ3c3DRKvNgcctKv7xOkOpaouhD
+         nzZPy6CINR3Ec0AGus0ME/oo5POKi8qNdP0S5uT3QV66CxzfnQ8lvND+zf5hI5K4aRJN
+         OSWA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=Gh/i/8MlizRX5IQWlRcyYy2kUD58gzAYUv+/PTyTmjI=;
+        b=SpVLeJHUXX2xgArLZ4HAUZRFTLSqxn9cbZ2SSlxHn7QQ91ywKT5ECsMYxfxxmQiKeo
+         OvAz8M678FnISA2cdi3Aio6f/Xb8YZ2qK7WvmDQaGdO0k7GwxdE/23oU4N4K8dBKRAII
+         si09a46TO4nOH67gI6eKNczoyFBQwLzD9EcGXP2KeD2b9gKntZAbKnoHCbONEGUfloDV
+         u7I+SC8GREk4f2TcpT5rhlAmffocWzkupe76OoEwSOxngan6Bh86XhJV87VIGbDHGz3e
+         ErDA99G5COzOKAE+HHDOGqtq8mJ5JyG6oBtgdzFDfhmJDPbGpgpP5BQDgirg7/hXjfO5
+         raFg==
+X-Gm-Message-State: AOAM530vDeIoWV5sQRLbyBX0kKJRowEQuRdxIN03zlnRKkx7xzHSAPPr
+        1X470O/vIjjGuHRGtzXm7Kbyzlu08L8=
+X-Google-Smtp-Source: ABdhPJx7z87B+OoID+mnImCQAb1fk7ztSQYODL/5uWsYeS0YLLhAxMg9N/t/dTCg8qNxJ+COLM1kcA==
+X-Received: by 2002:a1c:ba83:: with SMTP id k125mr8949464wmf.5.1611842651433;
+        Thu, 28 Jan 2021 06:04:11 -0800 (PST)
+Received: from [192.168.0.160] ([170.253.49.0])
+        by smtp.gmail.com with ESMTPSA id p17sm6158804wmg.46.2021.01.28.06.04.09
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 28 Jan 2021 06:04:10 -0800 (PST)
+Subject: Re: [PATCH v3] netdevice.7: Update documentation for SIOCGIFADDR
+ SIOCSIFADDR SIOCDIFADDR
+To:     =?UTF-8?Q?Pali_Roh=c3=a1r?= <pali@kernel.org>,
+        linux-man@vger.kernel.org,
+        Michael Kerrisk <mtk.manpages@gmail.com>,
+        netdev@vger.kernel.org
+References: <20210102140254.16714-1-pali@kernel.org>
+ <20210116223610.14230-1-pali@kernel.org>
+From:   "Alejandro Colomar (man-pages)" <alx.manpages@gmail.com>
+Message-ID: <0eb0fa42-9417-6a7e-a849-28fc7746212d@gmail.com>
+Date:   Thu, 28 Jan 2021 15:04:09 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1611841302; bh=IFlMDEIxvzjHdYWrKcoi8vXYhv/8Yu71KrZqCZIncug=;
-        h=From:To:CC:Subject:Date:Message-ID:X-Mailer:In-Reply-To:
-         References:MIME-Version:Content-Transfer-Encoding:Content-Type;
-        b=BvxHkqofYHLBx3nnZ/Il4gN/fHXyqJqrCB7fd0ksfLgQAp5P2lqsyCtngdXnRlxNM
-         E5KXQ+W8AoA5DifxVlYN3Bp6aa+HBduqvJc2F7oLVQBzJvS6b+xwyuVLoP6ctHolrf
-         nbzVGTjLRw6i9GQKh7uHCxK/XWKUteYu+bReucImwwp/G2mBLg9SW8M0RLhxRv16Dq
-         tQjhu0Zswd4YkyPhgLdmsUMtTPs3GD8/LF76qpgI+TrBtJPJISriJKwJr1iLOpJUHT
-         PcCQzBMCuF4UhHQwm5oCOmrhXKELhvBOEEvPKd5p4CVTM1mAtKniRbrD7trJbgiryv
-         EyL5rVxFgSIxw==
+In-Reply-To: <20210116223610.14230-1-pali@kernel.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When a change of memory map occurs, the hardware resources are destroyed
-and then re-created again with the new memory map. In such case, we need
-to restore the hardware available and used indices. The driver failed to
-restore the used index which is added here.
+Hi Pali,
 
-Fixes 1a86b377aa21 ("vdpa/mlx5: Add VDPA driver for supported mlx5 devices"=
-)
-Signed-off-by: Eli Cohen <elic@nvidia.com>
----
- drivers/vdpa/mlx5/net/mlx5_vnet.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+On 1/16/21 11:36 PM, Pali Rohár wrote:
+> Unlike SIOCGIFADDR and SIOCSIFADDR which are supported by many protocol
+> families, SIOCDIFADDR is supported by AF_INET6 and AF_APPLETALK only.
+> 
+> Unlike other protocols, AF_INET6 uses struct in6_ifreq.
+> 
+> Signed-off-by: Pali Rohár <pali@kernel.org>
 
-diff --git a/drivers/vdpa/mlx5/net/mlx5_vnet.c b/drivers/vdpa/mlx5/net/mlx5=
-_vnet.c
-index 549ded074ff3..3fc8588cecae 100644
---- a/drivers/vdpa/mlx5/net/mlx5_vnet.c
-+++ b/drivers/vdpa/mlx5/net/mlx5_vnet.c
-@@ -87,6 +87,7 @@ struct mlx5_vq_restore_info {
- 	u64 device_addr;
- 	u64 driver_addr;
- 	u16 avail_index;
-+	u16 used_index;
- 	bool ready;
- 	struct vdpa_callback cb;
- 	bool restore;
-@@ -121,6 +122,7 @@ struct mlx5_vdpa_virtqueue {
- 	u32 virtq_id;
- 	struct mlx5_vdpa_net *ndev;
- 	u16 avail_idx;
-+	u16 used_idx;
- 	int fw_state;
-=20
- 	/* keep last in the struct */
-@@ -804,6 +806,7 @@ static int create_virtqueue(struct mlx5_vdpa_net *ndev,=
- struct mlx5_vdpa_virtque
-=20
- 	obj_context =3D MLX5_ADDR_OF(create_virtio_net_q_in, in, obj_context);
- 	MLX5_SET(virtio_net_q_object, obj_context, hw_available_index, mvq->avail=
-_idx);
-+	MLX5_SET(virtio_net_q_object, obj_context, hw_used_index, mvq->used_idx);
- 	MLX5_SET(virtio_net_q_object, obj_context, queue_feature_bit_mask_12_3,
- 		 get_features_12_3(ndev->mvdev.actual_features));
- 	vq_ctx =3D MLX5_ADDR_OF(virtio_net_q_object, obj_context, virtio_q_contex=
-t);
-@@ -1022,6 +1025,7 @@ static int connect_qps(struct mlx5_vdpa_net *ndev, st=
-ruct mlx5_vdpa_virtqueue *m
- struct mlx5_virtq_attr {
- 	u8 state;
- 	u16 available_index;
-+	u16 used_index;
- };
-=20
- static int query_virtqueue(struct mlx5_vdpa_net *ndev, struct mlx5_vdpa_vi=
-rtqueue *mvq,
-@@ -1052,6 +1056,7 @@ static int query_virtqueue(struct mlx5_vdpa_net *ndev=
-, struct mlx5_vdpa_virtqueu
- 	memset(attr, 0, sizeof(*attr));
- 	attr->state =3D MLX5_GET(virtio_net_q_object, obj_context, state);
- 	attr->available_index =3D MLX5_GET(virtio_net_q_object, obj_context, hw_a=
-vailable_index);
-+	attr->used_index =3D MLX5_GET(virtio_net_q_object, obj_context, hw_used_i=
-ndex);
- 	kfree(out);
- 	return 0;
-=20
-@@ -1602,6 +1607,7 @@ static int save_channel_info(struct mlx5_vdpa_net *nd=
-ev, struct mlx5_vdpa_virtqu
- 		return err;
-=20
- 	ri->avail_index =3D attr.available_index;
-+	ri->used_index =3D attr.used_index;
- 	ri->ready =3D mvq->ready;
- 	ri->num_ent =3D mvq->num_ent;
- 	ri->desc_addr =3D mvq->desc_addr;
-@@ -1646,6 +1652,7 @@ static void restore_channels_info(struct mlx5_vdpa_ne=
-t *ndev)
- 			continue;
-=20
- 		mvq->avail_idx =3D ri->avail_index;
-+		mvq->used_idx =3D ri->used_index;
- 		mvq->ready =3D ri->ready;
- 		mvq->num_ent =3D ri->num_ent;
- 		mvq->desc_addr =3D ri->desc_addr;
---=20
-2.29.2
+Patch applied!
 
+Thanks,
+
+Alex
+
+> ---
+>  man7/netdevice.7 | 64 +++++++++++++++++++++++++++++++++++++++++-------
+>  1 file changed, 55 insertions(+), 9 deletions(-)
+> 
+> diff --git a/man7/netdevice.7 b/man7/netdevice.7
+> index 15930807c..bdc2d1922 100644
+> --- a/man7/netdevice.7
+> +++ b/man7/netdevice.7
+> @@ -56,9 +56,27 @@ struct ifreq {
+>  .EE
+>  .in
+>  .PP
+> +.B AF_INET6
+> +is an exception.
+> +It passes an
+> +.I in6_ifreq
+> +structure:
+> +.PP
+> +.in +4n
+> +.EX
+> +struct in6_ifreq {
+> +    struct in6_addr     ifr6_addr;
+> +    u32                 ifr6_prefixlen;
+> +    int                 ifr6_ifindex; /* Interface index */
+> +};
+> +.EE
+> +.in
+> +.PP
+>  Normally, the user specifies which device to affect by setting
+>  .I ifr_name
+> -to the name of the interface.
+> +to the name of the interface or
+> +.I ifr6_ifindex
+> +to the index of the interface.
+>  All other members of the structure may
+>  share memory.
+>  .SS Ioctls
+> @@ -143,13 +161,33 @@ IFF_ISATAP:Interface is RFC4214 ISATAP interface.
+>  .PP
+>  Setting the extended (private) interface flags is a privileged operation.
+>  .TP
+> -.BR SIOCGIFADDR ", " SIOCSIFADDR
+> -Get or set the address of the device using
+> -.IR ifr_addr .
+> -Setting the interface address is a privileged operation.
+> -For compatibility, only
+> +.BR SIOCGIFADDR ", " SIOCSIFADDR ", " SIOCDIFADDR
+> +Get, set, or delete the address of the device using
+> +.IR ifr_addr ,
+> +or
+> +.I ifr6_addr
+> +with
+> +.IR ifr6_prefixlen .
+> +Setting or deleting the interface address is a privileged operation.
+> +For compatibility,
+> +.B SIOCGIFADDR
+> +returns only
+>  .B AF_INET
+> -addresses are accepted or returned.
+> +addresses,
+> +.B SIOCSIFADDR
+> +accepts
+> +.B AF_INET
+> +and
+> +.B AF_INET6
+> +addresses, and
+> +.B SIOCDIFADDR
+> +deletes only
+> +.B AF_INET6
+> +addresses.
+> +A
+> +.B AF_INET
+> +address can be deleted by setting it to zero via
+> +.BR SIOCSIFADDR .
+>  .TP
+>  .BR SIOCGIFDSTADDR ", " SIOCSIFDSTADDR
+>  Get or set the destination address of a point-to-point device using
+> @@ -351,10 +389,18 @@ The names of interfaces with no addresses or that don't have the
+>  flag set can be found via
+>  .IR /proc/net/dev .
+>  .PP
+> -Local IPv6 IP addresses can be found via
+> -.I /proc/net
+> +.B AF_INET6
+> +IPv6 addresses can be read from
+> +.I /proc/net/if_inet6
+> +file or via
+> +.BR rtnetlink (7).
+> +Adding a new or deleting an existing IPv6 address can be done via
+> +.BR SIOCSIFADDR " / " SIOCDIFADDR
+>  or via
+>  .BR rtnetlink (7).
+> +Retrieving or changing destination IPv6 addresses of a point-to-point
+> +interface is possible only via
+> +.BR rtnetlink (7).
+>  .SH BUGS
+>  glibc 2.1 is missing the
+>  .I ifr_newname
+> 
+
+-- 
+Alejandro Colomar
+Linux man-pages comaintainer; https://www.kernel.org/doc/man-pages/
+http://www.alejandro-colomar.es/
