@@ -2,116 +2,149 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 57C6C30741C
-	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 11:51:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D46A630746D
+	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 12:10:04 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231468AbhA1KuU (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jan 2021 05:50:20 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:34660 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231136AbhA1KuN (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jan 2021 05:50:13 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1611830922;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=G4xP0TbwxS9wJ8k/dclQcOGAebS4EKugZ0baeO2h2DA=;
-        b=F/XNMmOLkldWnb76qQM5b845hcq2duoNADLgBFQEhGSrxrsIri2EyB5U/oEHixyO98fJJm
-        ywMuK1egZMlmczkkoXp7kDVqrYlcIQjSMVNxVKdC6fuex4E0W1N5oSB5M2ZzBpHdL6tJtV
-        OkHZpXlLTIscbwwae78HLZ+ZUQg7zG0=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-183-JbzL2-39NKWyF2aNsQz8zw-1; Thu, 28 Jan 2021 05:48:40 -0500
-X-MC-Unique: JbzL2-39NKWyF2aNsQz8zw-1
-Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 09808107ACE6;
-        Thu, 28 Jan 2021 10:48:39 +0000 (UTC)
-Received: from warthog.procyon.org.uk (ovpn-115-23.rdu2.redhat.com [10.10.115.23])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id D33A060C13;
-        Thu, 28 Jan 2021 10:48:37 +0000 (UTC)
-Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
-        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
-        Kingdom.
-        Registered in England and Wales under Company Registration No. 3798903
-Subject: [PATCH net] rxrpc: Fix memory leak in rxrpc_lookup_local
-From:   David Howells <dhowells@redhat.com>
-To:     netdev@vger.kernel.org
-Cc:     Takeshi Misawa <jeliantsurux@gmail.com>,
-        syzbot+305326672fed51b205f7@syzkaller.appspotmail.com,
-        dhowells@redhat.com, linux-afs@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Date:   Thu, 28 Jan 2021 10:48:36 +0000
-Message-ID: <161183091692.3506637.3206605651502458810.stgit@warthog.procyon.org.uk>
-User-Agent: StGit/0.23
+        id S229830AbhA1LIM (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jan 2021 06:08:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56244 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229530AbhA1LIK (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jan 2021 06:08:10 -0500
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B284C061573;
+        Thu, 28 Jan 2021 03:07:30 -0800 (PST)
+Received: by mail-ed1-x52e.google.com with SMTP id b21so6105210edy.6;
+        Thu, 28 Jan 2021 03:07:30 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=ShvLSg8TcUv7NMdoxeoIAAQL8A+KbCkuTPD4+VWr/xw=;
+        b=r20bWnHJcpDYrun7/+dblaBlkZmvrlfcUzFlVhAM/99ifcympYDgkFJyRa5qglBNVP
+         lUgsevJEU/ojexhJyVjLCUuwaApmjfBSEBvK9aSkcLozLKy0Khac4ULZBqkqVui8/gnF
+         KgMlIyc6wAoVSH/2z/Wwb8+lDP7m2v8wyFixfmUNRPNBDaXf/nHYjnT55FfYVQ2djsLj
+         v7sWQ5NXFLPHIit4r7eXQXCouRZr69eKN7T8KUc1dR/IJuj4re4jHhKBYTa/AzZz7Mbh
+         hikuSfhdiVyfxEArZrbdLnzBXy5MCbmaX97+0UIykVpxI0uwyAJduv1hS7xbXeXRKkjq
+         z4eg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=ShvLSg8TcUv7NMdoxeoIAAQL8A+KbCkuTPD4+VWr/xw=;
+        b=g0hf9rOfPiQWBXgefTf/e/cDv0StQTUDr3xFRqQSgEpDmxtPX9Bb93yIntTfSrZ7zQ
+         ctFUHru4YJOnA99CN33QiMKBVJQAB6coXW1m4OmkejRfNJ+iYUwyOZtA+gkUl6m1yX9M
+         jT1ibMWDMu1gv1jPG7RxNwoGDFf7RoEr0ANjzm/IQc2NKkiK434zFqHn9cdpH74+mSBo
+         ijnPDSk4tFx2g9ZKvKK4scrv4mMRWXu56Jcto+mMmkbgYwBmyfuE+07QEfhHgf2GYYXY
+         I6KH7wUdSMSJhJQFWgC2vLRDhbnToIByxSXr0bfFpuXpv9khCzyhrId8CijeQxpGLpcl
+         6YJw==
+X-Gm-Message-State: AOAM532+Prrwgngkh+Gv6AmQZLrCFEOWYUFJEe1F0nrJZjXLHFHuzemR
+        ELoQKZUQSzlW0m6gURvBCB0=
+X-Google-Smtp-Source: ABdhPJwhYhYq0R/c5h8bydiP9Pk+wXe395h/cBdTuhpEq8mWvbd2dvjWgMBDjbMC7ld61pjcVKSJWA==
+X-Received: by 2002:aa7:ce87:: with SMTP id y7mr13556149edv.211.1611832048909;
+        Thu, 28 Jan 2021 03:07:28 -0800 (PST)
+Received: from [192.168.0.101] ([77.124.61.116])
+        by smtp.gmail.com with ESMTPSA id a22sm2793249edv.67.2021.01.28.03.07.27
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 28 Jan 2021 03:07:28 -0800 (PST)
+Subject: Re: [PATCH v3 net-next] net: Remove redundant calls of
+ sk_tx_queue_clear().
+To:     Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Eric Dumazet <edumazet@google.com>
+Cc:     Amit Shah <aams@amazon.de>, Kuniyuki Iwashima <kuni1840@gmail.com>,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Tariq Toukan <tariqt@mellanox.com>,
+        Boris Pismenny <borisp@mellanox.com>
+References: <20210128021905.57471-1-kuniyu@amazon.co.jp>
+From:   Tariq Toukan <ttoukan.linux@gmail.com>
+Message-ID: <6f77d50f-b658-b751-5ac4-caaf9876f287@gmail.com>
+Date:   Thu, 28 Jan 2021 13:07:26 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <20210128021905.57471-1-kuniyu@amazon.co.jp>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Takeshi Misawa <jeliantsurux@gmail.com>
-
-Commit 9ebeddef58c4 ("rxrpc: rxrpc_peer needs to hold a ref on the rxrpc_local record")
-Then release ref in __rxrpc_put_peer and rxrpc_put_peer_locked.
-
-	struct rxrpc_peer *rxrpc_alloc_peer(struct rxrpc_local *local, gfp_t gfp)
-	-               peer->local = local;
-	+               peer->local = rxrpc_get_local(local);
-
-rxrpc_discard_prealloc also need ref release in discarding.
-
-syzbot report:
-BUG: memory leak
-unreferenced object 0xffff8881080ddc00 (size 256):
-  comm "syz-executor339", pid 8462, jiffies 4294942238 (age 12.350s)
-  hex dump (first 32 bytes):
-    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
-    00 00 00 00 0a 00 00 00 00 c0 00 08 81 88 ff ff  ................
-  backtrace:
-    [<000000002b6e495f>] kmalloc include/linux/slab.h:552 [inline]
-    [<000000002b6e495f>] kzalloc include/linux/slab.h:682 [inline]
-    [<000000002b6e495f>] rxrpc_alloc_local net/rxrpc/local_object.c:79 [inline]
-    [<000000002b6e495f>] rxrpc_lookup_local+0x1c1/0x760 net/rxrpc/local_object.c:244
-    [<000000006b43a77b>] rxrpc_bind+0x174/0x240 net/rxrpc/af_rxrpc.c:149
-    [<00000000fd447a55>] afs_open_socket+0xdb/0x200 fs/afs/rxrpc.c:64
-    [<000000007fd8867c>] afs_net_init+0x2b4/0x340 fs/afs/main.c:126
-    [<0000000063d80ec1>] ops_init+0x4e/0x190 net/core/net_namespace.c:152
-    [<00000000073c5efa>] setup_net+0xde/0x2d0 net/core/net_namespace.c:342
-    [<00000000a6744d5b>] copy_net_ns+0x19f/0x3e0 net/core/net_namespace.c:483
-    [<0000000017d3aec3>] create_new_namespaces+0x199/0x4f0 kernel/nsproxy.c:110
-    [<00000000186271ef>] unshare_nsproxy_namespaces+0x9b/0x120 kernel/nsproxy.c:226
-    [<000000002de7bac4>] ksys_unshare+0x2fe/0x5c0 kernel/fork.c:2957
-    [<00000000349b12ba>] __do_sys_unshare kernel/fork.c:3025 [inline]
-    [<00000000349b12ba>] __se_sys_unshare kernel/fork.c:3023 [inline]
-    [<00000000349b12ba>] __x64_sys_unshare+0x12/0x20 kernel/fork.c:3023
-    [<000000006d178ef7>] do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
-    [<00000000637076d4>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
-
-Fixes: 9ebeddef58c4 ("rxrpc: rxrpc_peer needs to hold a ref on the rxrpc_local record")
-Signed-off-by: Takeshi Misawa <jeliantsurux@gmail.com>
-Reported-and-tested-by: syzbot+305326672fed51b205f7@syzkaller.appspotmail.com
-Signed-off-by: David Howells <dhowells@redhat.com>
----
-
- net/rxrpc/call_accept.c |    1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/net/rxrpc/call_accept.c b/net/rxrpc/call_accept.c
-index 382add72c66f..1ae90fb97936 100644
---- a/net/rxrpc/call_accept.c
-+++ b/net/rxrpc/call_accept.c
-@@ -197,6 +197,7 @@ void rxrpc_discard_prealloc(struct rxrpc_sock *rx)
- 	tail = b->peer_backlog_tail;
- 	while (CIRC_CNT(head, tail, size) > 0) {
- 		struct rxrpc_peer *peer = b->peer_backlog[tail];
-+		rxrpc_put_local(peer->local);
- 		kfree(peer);
- 		tail = (tail + 1) & (size - 1);
- 	}
 
 
+On 1/28/2021 4:19 AM, Kuniyuki Iwashima wrote:
+> The commit 41b14fb8724d ("net: Do not clear the sock TX queue in
+> sk_set_socket()") removes sk_tx_queue_clear() from sk_set_socket() and adds
+> it instead in sk_alloc() and sk_clone_lock() to fix an issue introduced in
+> the commit e022f0b4a03f ("net: Introduce sk_tx_queue_mapping"). On the
+> other hand, the original commit had already put sk_tx_queue_clear() in
+> sk_prot_alloc(): the callee of sk_alloc() and sk_clone_lock(). Thus
+> sk_tx_queue_clear() is called twice in each path.
+> 
+> If we remove sk_tx_queue_clear() in sk_alloc() and sk_clone_lock(), it
+> currently works well because (i) sk_tx_queue_mapping is defined between
+> sk_dontcopy_begin and sk_dontcopy_end, and (ii) sock_copy() called after
+> sk_prot_alloc() in sk_clone_lock() does not overwrite sk_tx_queue_mapping.
+> However, if we move sk_tx_queue_mapping out of the no copy area, it
+> introduces a bug unintentionally.
+> 
+> Therefore, this patch adds a runtime 
+
+compile-time
+
+> check to take care of the order of
+> sock_copy() and sk_tx_queue_clear() and removes sk_tx_queue_clear() from
+> sk_prot_alloc() so that it does the only allocation and its callers
+> initialize fields.
+> 
+> v3:
+> * Remove Fixes: tag
+> * Add BUILD_BUG_ON
+> * Remove sk_tx_queue_clear() from sk_prot_alloc()
+>    instead of sk_alloc() and sk_clone_lock()
+> 
+> v2: https://lore.kernel.org/netdev/20210127132215.10842-1-kuniyu@amazon.co.jp/
+> * Remove Reviewed-by: tag
+> 
+> v1: https://lore.kernel.org/netdev/20210127125018.7059-1-kuniyu@amazon.co.jp/
+> 
+> CC: Tariq Toukan <tariqt@mellanox.com>
+> CC: Boris Pismenny <borisp@mellanox.com>
+> Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
+> ---
+>   net/core/sock.c | 11 ++++++++++-
+>   1 file changed, 10 insertions(+), 1 deletion(-)
+> 
+> diff --git a/net/core/sock.c b/net/core/sock.c
+> index bbcd4b97eddd..cfbd62a5e079 100644
+> --- a/net/core/sock.c
+> +++ b/net/core/sock.c
+> @@ -1657,6 +1657,16 @@ static void sock_copy(struct sock *nsk, const struct sock *osk)
+>   #ifdef CONFIG_SECURITY_NETWORK
+>   	void *sptr = nsk->sk_security;
+>   #endif
+> +
+> +	/* If we move sk_tx_queue_mapping out of the private section,
+> +	 * we must check if sk_tx_queue_clear() is called after
+> +	 * sock_copy() in sk_clone_lock().
+> +	 */
+> +	BUILD_BUG_ON(offsetof(struct sock, sk_tx_queue_mapping) <
+> +		     offsetof(struct sock, sk_dontcopy_begin) ||
+> +		     offsetof(struct sock, sk_tx_queue_mapping) >=
+> +		     offsetof(struct sock, sk_dontcopy_end));
+> +
+>   	memcpy(nsk, osk, offsetof(struct sock, sk_dontcopy_begin));
+>   
+>   	memcpy(&nsk->sk_dontcopy_end, &osk->sk_dontcopy_end,
+> @@ -1690,7 +1700,6 @@ static struct sock *sk_prot_alloc(struct proto *prot, gfp_t priority,
+>   
+>   		if (!try_module_get(prot->owner))
+>   			goto out_free_sec;
+> -		sk_tx_queue_clear(sk);
+>   	}
+>   
+>   	return sk;
+> 
