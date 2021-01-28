@@ -2,39 +2,42 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 65D8330686B
-	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 01:13:56 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D7D8230686E
+	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 01:13:57 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231757AbhA1AMX (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 19:12:23 -0500
-Received: from mail.kernel.org ([198.145.29.99]:51090 "EHLO mail.kernel.org"
+        id S231616AbhA1ANt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 19:13:49 -0500
+Received: from mail.kernel.org ([198.145.29.99]:51388 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231616AbhA1ALj (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 27 Jan 2021 19:11:39 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id D41A764DD6;
-        Thu, 28 Jan 2021 00:10:18 +0000 (UTC)
+        id S231405AbhA1ANU (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 27 Jan 2021 19:13:20 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 5F40A64DCE;
+        Thu, 28 Jan 2021 00:12:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611792619;
-        bh=pg8FEOGF1w41Q4s3Rc66aRDXuknOxLXlsy0Wg43bVCo=;
+        s=k20201202; t=1611792759;
+        bh=Ch04IrTsXiJfcg5gOJZ6sVCk2XLo2pICGT/oH/mUx5Y=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=mRDiUgt8SVu2OzraAsr3tDOCqB5fA0jF0vgUNNleXGRODZNj5swAWrnpm0jXfiBs8
-         mwTJtNrss9Pdo4va6BvKfm2Aofm2j8lj//lJ+/FgPwhMhynnZaTJyAQTgCPCzvy8pG
-         cspnoufnJLW1CFVPXDl/iYHgtHTImTyPtLmmk07G5i84k3tohMN+aBRMrlgyHqYB78
-         a4Q3PmKFeKRrDleEzd7v8oqhuS0Fh3XBFzl6fgIVVnv+zWh0Lny/5sGVHpW79DjWyx
-         H3MHk7T8dWfZqJZbhpgVJPhHCm+k4+U6gy1SqtnG7ZTZ0y22JLewXrZObo6PAYav/8
-         BCRaRkPf4E86A==
-Date:   Wed, 27 Jan 2021 16:10:17 -0800
+        b=eU6IeJ1rLR0LuJD/E99PQObEG05yjMOlXoGVdrc7dtxq+rINAMfnR84dV7w4IyKQY
+         xihSSxA/5p0eVKrMjJjm00+3gmY9+aqPd/WfC7zr/bH8bda/aB6M50lc+O9rcIMUVg
+         NRnYnb6CGkcsx+HvkFUuEieODaC7S3j4lUfofZhaB3iaeqKpUmyM77d6pKu+7sbey1
+         kGsWodLaBiT5nlMXLt1bGkMHOAWOGO0zGbWhGygWFquweQsVYdHLhiyQVf5x+BMVtU
+         DQBJrtztGf+yqYlmfAjCh0ynl/rln+rvvW7DYHhGnGLApn3KaVHtXopHVdiFjImSdk
+         jui+Sx9bculpQ==
+Date:   Wed, 27 Jan 2021 16:12:38 -0800
 From:   Jakub Kicinski <kuba@kernel.org>
-To:     Ronak Doshi <doshir@vmware.com>
-Cc:     <netdev@vger.kernel.org>, Petr Vandrovec <petr@vmware.com>,
-        "maintainer:VMWARE VMXNET3 ETHERNET DRIVER" <pv-drivers@vmware.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v4 net-next] vmxnet3: Remove buf_info from device
- accessible structures
-Message-ID: <20210127161017.2d9adf4a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210126190640.26942-1-doshir@vmware.com>
-References: <20210126190640.26942-1-doshir@vmware.com>
+To:     Wei Wang <weiwan@google.com>
+Cc:     David Miller <davem@davemloft.net>, netdev@vger.kernel.org,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Hannes Frederic Sowa <hannes@stressinduktion.org>,
+        Felix Fietkau <nbd@nbd.name>,
+        Alexander Duyck <alexander.duyck@gmail.com>
+Subject: Re: [PATCH net-next v8 2/3] net: implement threaded-able napi poll
+ loop support
+Message-ID: <20210127161238.123840ec@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210126011109.2425966-3-weiwan@google.com>
+References: <20210126011109.2425966-1-weiwan@google.com>
+        <20210126011109.2425966-3-weiwan@google.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -42,35 +45,33 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, 26 Jan 2021 11:06:40 -0800 Ronak Doshi wrote:
-> buf_info structures in RX & TX queues are private driver data that
-> do not need to be visible to the device.  Although there is physical
-> address and length in the queue descriptor that points to these
-> structures, their layout is not standardized, and device never looks
-> at them.
+On Mon, 25 Jan 2021 17:11:08 -0800 Wei Wang wrote:
+> This patch allows running each napi poll loop inside its own
+> kernel thread.
+> The kthread is created during netif_napi_add() if dev->threaded
+> is set. And threaded mode is enabled in napi_enable(). We will
+> provide a way to set dev->threaded and enable threaded mode
+> without a device up/down in the following patch.
 > 
-> So lets allocate these structures in non-DMA-able memory, and fill
-> physical address as all-ones and length as zero in the queue
-> descriptor.
+> Once that threaded mode is enabled and the kthread is
+> started, napi_schedule() will wake-up such thread instead
+> of scheduling the softirq.
 > 
-> That should alleviate worries brought by Martin Radev in
-> https://lists.osuosl.org/pipermail/intel-wired-lan/Week-of-Mon-20210104/022829.html
-> that malicious vmxnet3 device could subvert SVM/TDX guarantees.
+> The threaded poll loop behaves quite likely the net_rx_action,
+> but it does not have to manipulate local irqs and uses
+> an explicit scheduling point based on netdev_budget.
 > 
-> Signed-off-by: Petr Vandrovec <petr@vmware.com>
-> Signed-off-by: Ronak Doshi <doshir@vmware.com>
+> Co-developed-by: Paolo Abeni <pabeni@redhat.com>
+> Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+> Co-developed-by: Hannes Frederic Sowa <hannes@stressinduktion.org>
+> Signed-off-by: Hannes Frederic Sowa <hannes@stressinduktion.org>
+> Co-developed-by: Jakub Kicinski <kuba@kernel.org>
+> Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> Signed-off-by: Wei Wang <weiwan@google.com>
 
-Checkpatch says:
-
-WARNING: kfree(NULL) is safe and this check is probably not required
-#39: FILE: drivers/net/vmxnet3/vmxnet3_drv.c:455:
- 	if (tq->buf_info) {
-+		kfree(tq->buf_info);
-
-WARNING: kfree(NULL) is safe and this check is probably not required
-#73: FILE: drivers/net/vmxnet3/vmxnet3_drv.c:1737:
- 	if (rq->buf_info[0]) {
-+		kfree(rq->buf_info[0]);
+include/linux/netdevice.h:2150: warning: Function parameter or member 'threaded' not described in 'net_device'
 
 
-You can remove those ifs as well.
+scripts/kernel-doc -none $files
+
+is your friend - W=1 does not check headers.
