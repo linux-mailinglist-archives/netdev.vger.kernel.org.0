@@ -2,329 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 12189307A67
-	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 17:13:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4EDDF307A92
+	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 17:21:58 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232148AbhA1QMr (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jan 2021 11:12:47 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:21360 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232401AbhA1QMH (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jan 2021 11:12:07 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1611850237;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=q3+GaWOJcVoS280BO4ZTgt8MtsvmJpeZvLy5xokg2jk=;
-        b=QJTPhyV1S5iQa5g7hOkXF/Fn6ZuDq+5txppfBjVBydJzkAxdDt81jbxK2pN9+B14vvEnbP
-        ajn0aOjoTBG0fj2oe8S66tq7Bf8gWhZLDmFcuOzBR7T/9R4cE5S/P8sL4lHtA6Sqh1Mfrt
-        Gv5wCV4eLLzRKKDm4HPnNe7HG/veMVw=
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com
- [209.85.221.70]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-326-75J1hoYnNUqiw1Vv0ypaFA-1; Thu, 28 Jan 2021 11:10:34 -0500
-X-MC-Unique: 75J1hoYnNUqiw1Vv0ypaFA-1
-Received: by mail-wr1-f70.google.com with SMTP id l13so3343004wrq.7
-        for <netdev@vger.kernel.org>; Thu, 28 Jan 2021 08:10:34 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=q3+GaWOJcVoS280BO4ZTgt8MtsvmJpeZvLy5xokg2jk=;
-        b=FS//MSl0SCjkyP5ouJx1K/JUD6qKQZQUn2xVjfbVxGs/jY3pYTigsiVq5QM+g+evjU
-         k9rzhDTGBeYQsawWfdUBO1H2OUNmvw9K7qsgutVVfjcI0HnL9HYlLVvQCMPwtAkyoWdy
-         HeQUHK77ZIWJmtTF5oq36tKi6W/yYTd7ykN7ShON9JL1FiRpCPf3RsYTD0uLb29kp2Ty
-         /kXqz6h8xBTaaAvYlqIPcW7cuXu0tEn3Z2uoBi0MH0S4pEmHVwF+jBmflipfbyDqaOAb
-         QTGmxxg9CAnY4PBGnOU4W/EJfxcarhyUPigedErjohgQGipbhZrLeAJf/1ypNOax4XmR
-         K7pA==
-X-Gm-Message-State: AOAM533IkukaVB1/GJzNBLqovU/RftY6F/v9whC/joETIlWKU4X/iGgu
-        BizrrUFra77TknF/GoWMsHFkTQJqnFw559D4cEQqrd/dmVVFp2KB6JgcUWS8hfDbt9RwFcATGbN
-        qfC1ILf6ii07HrEIU
-X-Received: by 2002:a5d:5910:: with SMTP id v16mr17858693wrd.29.1611850233400;
-        Thu, 28 Jan 2021 08:10:33 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwCJxet7P/Zrk9KZEMXq8X1p9C2h5zi7JFYpLswRvkfkQWra6ZTD64HKpdUGYoJqTRtuXS7kQ==
-X-Received: by 2002:a5d:5910:: with SMTP id v16mr17858644wrd.29.1611850233122;
-        Thu, 28 Jan 2021 08:10:33 -0800 (PST)
-Received: from steredhat (host-79-34-249-199.business.telecomitalia.it. [79.34.249.199])
-        by smtp.gmail.com with ESMTPSA id l10sm7495512wro.4.2021.01.28.08.10.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Jan 2021 08:10:32 -0800 (PST)
-Date:   Thu, 28 Jan 2021 17:10:29 +0100
-From:   Stefano Garzarella <sgarzare@redhat.com>
-To:     Arseny Krasnov <arseny.krasnov@kaspersky.com>
-Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
-        "Michael S. Tsirkin" <mst@redhat.com>,
-        Jason Wang <jasowang@redhat.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Andra Paraschiv <andraprs@amazon.com>,
-        Colin Ian King <colin.king@canonical.com>,
-        Jeff Vander Stoep <jeffv@google.com>, kvm@vger.kernel.org,
-        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, stsp2@yandex.ru, oxffffaa@gmail.com
-Subject: Re: [RFC PATCH v3 01/13] af_vsock: prepare for SOCK_SEQPACKET support
-Message-ID: <20210128161029.a53la6e3dv5bzazn@steredhat>
-References: <20210125110903.597155-1-arseny.krasnov@kaspersky.com>
- <20210125111131.597930-1-arseny.krasnov@kaspersky.com>
+        id S232240AbhA1QUj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jan 2021 11:20:39 -0500
+Received: from out5-smtp.messagingengine.com ([66.111.4.29]:45589 "EHLO
+        out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S232076AbhA1QU1 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jan 2021 11:20:27 -0500
+Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
+        by mailout.nyi.internal (Postfix) with ESMTP id 15A7A5C0163;
+        Thu, 28 Jan 2021 11:19:38 -0500 (EST)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute3.internal (MEProxy); Thu, 28 Jan 2021 11:19:38 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:content-type:date:from:in-reply-to
+        :message-id:mime-version:references:subject:to:x-me-proxy
+        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=CP5tVB
+        WS/3PkdmQ8ymXnw023w1qBpaOI3AYq/NFx6G4=; b=fZbN/BJXEzhqShYdAGzsD/
+        r8TBeVzAZgXIyQmkaDw95jmohYgAzLIecCH8SPZV2XfweLH7Se9xOwwx7QQ4uvTh
+        dX7+1Urj8Mb22wcfL0XQylWlvm/3qO/+ONyMT6fI8E+BSScno74Vf+UEPYu+iyPv
+        uBb3y40pe6kj9opSSOabVr2NHjgSDRnH8QOFf6goZhcS4DIyWIcfpx/XMUo+u7NI
+        LW8qz5jgwGz5x+YjNuOImh1oAU6Bj4aTWHZ5CDQDA22NGhtZu5PE4FseSL6YsQLa
+        IoL9luB7wH2WNuAzXJI11A9lBQ9OqoN+dCH3Osp09A0AqLjHBBk4wHCwNuhBluRg
+        ==
+X-ME-Sender: <xms:GeQSYM7r3-BN7WGyFVMs7FNzk5np5Ks6axoCopd3f_hNioLZNy5wag>
+    <xme:GeQSYN6WEDvfvk4WPB80dlvQos2YnpZWT_c1TRYBFMFk9Q3FaHfhS-8hWgDMy6jFX
+    DUAY-4CJTruscc>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrfedtgdekhecutefuodetggdotefrodftvf
+    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
+    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
+    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcuufgt
+    hhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrthhtvg
+    hrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudehleet
+    necukfhppeekgedrvddvledrudehfedrgeegnecuvehluhhsthgvrhfuihiivgeptdenuc
+    frrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
+X-ME-Proxy: <xmx:GeQSYLcIpJ22awSWBnXdCSArwuX5a03qkJknXmdnPnRXwIrPNAm5rQ>
+    <xmx:GeQSYBKMQ36lpL1I7JCWBxDizg4-lkUsL5fFL6uSHPOe6sXPlPSCJA>
+    <xmx:GeQSYAKUdmveXIFoKAFQAmmzcElMK31CmzlPkPPNIt3ePL5x3459fg>
+    <xmx:GuQSYFHKhDtT8N8KaXI0Ioe5weQemQARWy6QP4jNTF_ETf1-IshV-Q>
+Received: from localhost (igld-84-229-153-44.inter.net.il [84.229.153.44])
+        by mail.messagingengine.com (Postfix) with ESMTPA id F0D7C24005A;
+        Thu, 28 Jan 2021 11:19:36 -0500 (EST)
+Date:   Thu, 28 Jan 2021 18:19:33 +0200
+From:   Ido Schimmel <idosch@idosch.org>
+To:     Simon Horman <simon.horman@netronome.com>
+Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Jiri Pirko <jiri@mellanox.com>, netdev@vger.kernel.org,
+        oss-drivers@netronome.com,
+        Baowen Zheng <baowen.zheng@corigine.com>,
+        Louis Peens <louis.peens@netronome.com>
+Subject: Re: [PATCH RFC net-next] net/sched: act_police: add support for
+ packet-per-second policing
+Message-ID: <20210128161933.GA3285394@shredder.lan>
+References: <20210125151819.8313-1-simon.horman@netronome.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20210125111131.597930-1-arseny.krasnov@kaspersky.com>
+In-Reply-To: <20210125151819.8313-1-simon.horman@netronome.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-I think the patch title should be more explicit, so something like
+On Mon, Jan 25, 2021 at 04:18:19PM +0100, Simon Horman wrote:
+> From: Baowen Zheng <baowen.zheng@corigine.com>
+> 
+> Allow a policer action to enforce a rate-limit based on packets-per-second,
+> configurable using a packet-per-second rate and burst parameters. This may
+> be used in conjunction with existing byte-per-second rate limiting in the
+> same policer action.
 
-vsock: generalize function to manage connectible sockets
+Hi Simon,
 
-On Mon, Jan 25, 2021 at 02:11:28PM +0300, Arseny Krasnov wrote:
->This prepares af_vsock.c for SEQPACKET support:
->1) As both stream and seqpacket sockets are connection oriented, add
->   check for SOCK_SEQPACKET to conditions where SOCK_STREAM is checked.
->2) Some functions such as setsockopt(), getsockopt(), connect(),
->   recvmsg(), sendmsg() are shared between both types of sockets, so
->   rename them in general manner and create entry points for each type
->   of socket to call these functions(for stream in this patch, for
->   seqpacket in further patches).
->
->Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
->---
-> net/vmw_vsock/af_vsock.c | 91 +++++++++++++++++++++++++++++-----------
-> 1 file changed, 67 insertions(+), 24 deletions(-)
->
->diff --git a/net/vmw_vsock/af_vsock.c b/net/vmw_vsock/af_vsock.c
->index b12d3a322242..c9ce57db9554 100644
->--- a/net/vmw_vsock/af_vsock.c
->+++ b/net/vmw_vsock/af_vsock.c
->@@ -604,8 +604,8 @@ static void vsock_pending_work(struct work_struct *work)
->
-> /**** SOCKET OPERATIONS ****/
->
->-static int __vsock_bind_stream(struct vsock_sock *vsk,
->-			       struct sockaddr_vm *addr)
->+static int __vsock_bind_connectible(struct vsock_sock *vsk,
->+				    struct sockaddr_vm *addr)
-> {
-> 	static u32 port;
-> 	struct sockaddr_vm new_addr;
->@@ -685,7 +685,7 @@ static int __vsock_bind(struct sock *sk, struct sockaddr_vm *addr)
-> 	switch (sk->sk_socket->type) {
-> 	case SOCK_STREAM:
-> 		spin_lock_bh(&vsock_table_lock);
->-		retval = __vsock_bind_stream(vsk, addr);
->+		retval = __vsock_bind_connectible(vsk, addr);
-> 		spin_unlock_bh(&vsock_table_lock);
-> 		break;
->
->@@ -767,6 +767,11 @@ static struct sock *__vsock_create(struct net *net,
-> 	return sk;
-> }
->
->+static bool sock_type_connectible(u16 type)
->+{
->+	return (type == SOCK_STREAM || type == SOCK_SEQPACKET);
->+}
->+
+Any reason to allow metering based on both packets and bytes at the same
+action versus adding a mode (packets / bytes) parameter? You can then
+chain two policers if you need to rate limit based on both. Something
+like:
 
-I think it's okay to add this function in this patch, but until 
-SOCK_SEQPACKET is not supported, I would check only SOCK_STREAM and add 
-SOCK_SEQPACKET only when you add 'vsock_seqpacket_ops' later.
+# tc filter add dev tap1 ingress pref 1 matchall \
+	action police rate 1000Mbit burst 128k conform-exceed drop/pipe \
+	action police pkts_rate 3000 pkts_burst 1000
 
-> static void __vsock_release(struct sock *sk, int level)
-> {
-> 	if (sk) {
->@@ -785,7 +790,7 @@ static void __vsock_release(struct sock *sk, int level)
->
-> 		if (vsk->transport)
-> 			vsk->transport->release(vsk);
->-		else if (sk->sk_type == SOCK_STREAM)
->+		else if (sock_type_connectible(sk->sk_type))
-> 			vsock_remove_sock(vsk);
->
-> 		sock_orphan(sk);
->@@ -945,7 +950,7 @@ static int vsock_shutdown(struct socket *sock, int mode)
-> 	sk = sock->sk;
-> 	if (sock->state == SS_UNCONNECTED) {
-> 		err = -ENOTCONN;
->-		if (sk->sk_type == SOCK_STREAM)
->+		if (sock_type_connectible(sk->sk_type))
-> 			return err;
-> 	} else {
-> 		sock->state = SS_DISCONNECTING;
->@@ -960,7 +965,7 @@ static int vsock_shutdown(struct socket *sock, int mode)
-> 		sk->sk_state_change(sk);
-> 		release_sock(sk);
->
->-		if (sk->sk_type == SOCK_STREAM) {
->+		if (sock_type_connectible(sk->sk_type)) {
-> 			sock_reset_flag(sk, SOCK_DONE);
-> 			vsock_send_shutdown(sk, mode);
-> 		}
->@@ -1013,7 +1018,7 @@ static __poll_t vsock_poll(struct file *file, struct socket *sock,
-> 		if (!(sk->sk_shutdown & SEND_SHUTDOWN))
-> 			mask |= EPOLLOUT | EPOLLWRNORM | EPOLLWRBAND;
->
->-	} else if (sock->type == SOCK_STREAM) {
->+	} else if (sock_type_connectible(sk->sk_type)) {
-> 		const struct vsock_transport *transport = vsk->transport;
-> 		lock_sock(sk);
->
->@@ -1259,8 +1264,8 @@ static void vsock_connect_timeout(struct work_struct *work)
-> 	sock_put(sk);
-> }
->
->-static int vsock_stream_connect(struct socket *sock, struct sockaddr *addr,
->-				int addr_len, int flags)
->+static int vsock_connect(struct socket *sock, struct sockaddr *addr,
->+			 int addr_len, int flags)
-> {
-> 	int err;
-> 	struct sock *sk;
->@@ -1395,6 +1400,12 @@ static int vsock_stream_connect(struct socket *sock, struct sockaddr *addr,
-> 	return err;
-> }
->
->+static int vsock_stream_connect(struct socket *sock, struct sockaddr *addr,
->+				int addr_len, int flags)
->+{
->+	return vsock_connect(sock, addr, addr_len, flags);
->+}
->+
+I'm asking because the policers in the Spectrum ASIC are built that way
+and I also don't remember seeing such a mixed mode online.
 
-I think you can directly use vsock_connect in 'vsock_stream_ops'.
+> 
+> e.g.
+> tc filter add dev tap1 parent ffff: u32 match \
+>               u32 0 0 police pkts_rate 3000 pkts_burst 1000
+> 
+> Testing was unable to uncover a performance impact of this change on
+> existing features.
+> 
+> Signed-off-by: Baowen Zheng <baowen.zheng@corigine.com>
+> Signed-off-by: Simon Horman <simon.horman@netronome.com>
+> Signed-off-by: Louis Peens <louis.peens@netronome.com>
+> ---
+>  include/net/sch_generic.h      | 15 ++++++++++++++
+>  include/net/tc_act/tc_police.h |  4 ++++
+>  include/uapi/linux/pkt_cls.h   |  2 ++
+>  net/sched/act_police.c         | 37 +++++++++++++++++++++++++++++++---
+>  net/sched/sch_generic.c        | 32 +++++++++++++++++++++++++++++
+>  5 files changed, 87 insertions(+), 3 deletions(-)
 
-> static int vsock_accept(struct socket *sock, struct socket *newsock, int flags,
-> 			bool kern)
-> {
->@@ -1410,7 +1421,7 @@ static int vsock_accept(struct socket *sock, struct socket *newsock, int flags,
->
-> 	lock_sock(listener);
->
->-	if (sock->type != SOCK_STREAM) {
->+	if (!sock_type_connectible(sock->type)) {
-> 		err = -EOPNOTSUPP;
-> 		goto out;
-> 	}
->@@ -1487,7 +1498,7 @@ static int vsock_listen(struct socket *sock, int 
->backlog)
->
-> 	lock_sock(sk);
->
->-	if (sock->type != SOCK_STREAM) {
->+	if (!sock_type_connectible(sk->sk_type)) {
-> 		err = -EOPNOTSUPP;
-> 		goto out;
-> 	}
->@@ -1531,11 +1542,11 @@ static void vsock_update_buffer_size(struct vsock_sock *vsk,
-> 	vsk->buffer_size = val;
-> }
->
->-static int vsock_stream_setsockopt(struct socket *sock,
->-				   int level,
->-				   int optname,
->-				   sockptr_t optval,
->-				   unsigned int optlen)
->+static int vsock_connectible_setsockopt(struct socket *sock,
->+					int level,
->+					int optname,
->+					sockptr_t optval,
->+					unsigned int optlen)
-> {
-> 	int err;
-> 	struct sock *sk;
->@@ -1612,10 +1623,20 @@ static int vsock_stream_setsockopt(struct socket *sock,
-> 	return err;
-> }
->
->-static int vsock_stream_getsockopt(struct socket *sock,
->-				   int level, int optname,
->-				   char __user *optval,
->-				   int __user *optlen)
->+static int vsock_stream_setsockopt(struct socket *sock,
->+				   int level,
->+				   int optname,
->+				   sockptr_t optval,
->+				   unsigned int optlen)
->+{
->+	return vsock_connectible_setsockopt(sock, level, optname, optval,
->+					    optlen);
->+}
-
-As before, I think you can directly use vsock_connectible_setsockopt in 
-'vsock_stream_ops'.
-
->+
->+static int vsock_connectible_getsockopt(struct socket *sock,
->+					int level, int optname,
->+					char __user *optval,
->+					int __user *optlen)
-> {
-> 	int err;
-> 	int len;
->@@ -1683,8 +1704,17 @@ static int vsock_stream_getsockopt(struct socket *sock,
-> 	return 0;
-> }
->
->-static int vsock_stream_sendmsg(struct socket *sock, struct msghdr *msg,
->-				size_t len)
->+static int vsock_stream_getsockopt(struct socket *sock,
->+				   int level, int optname,
->+				   char __user *optval,
->+				   int __user *optlen)
->+{
->+	return vsock_connectible_getsockopt(sock, level, optname, optval,
->+					    optlen);
->+}
->+
-
-Ditto.
-
->+static int vsock_connectible_sendmsg(struct socket *sock, struct msghdr *msg,
->+				     size_t len)
-> {
-> 	struct sock *sk;
-> 	struct vsock_sock *vsk;
->@@ -1822,10 +1852,16 @@ static int vsock_stream_sendmsg(struct socket *sock, struct msghdr *msg,
-> 	return err;
-> }
->
->+static int vsock_stream_sendmsg(struct socket *sock, struct msghdr *msg,
->+				size_t len)
->+{
->+	return vsock_connectible_sendmsg(sock, msg, len);
->+}
->+
-
-Ditto.
-
->
-> static int
->-vsock_stream_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
->-		     int flags)
->+vsock_connectible_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
->+			  int flags)
-> {
-> 	struct sock *sk;
-> 	struct vsock_sock *vsk;
->@@ -1995,6 +2031,13 @@ vsock_stream_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
-> 	return err;
-> }
->
->+static int
->+vsock_stream_recvmsg(struct socket *sock, struct msghdr *msg, size_t len,
->+		     int flags)
->+{
->+	return vsock_connectible_recvmsg(sock, msg, len, flags);
->+}
->+
-
-Ditto.
-
-> static const struct proto_ops vsock_stream_ops = {
-> 	.family = PF_VSOCK,
-> 	.owner = THIS_MODULE,
->-- 
->2.25.1
->
-
+The intermediate representation in include/net/flow_offload.h needs to
+carry the new configuration so that drivers will be able to veto
+unsupported configuration.
