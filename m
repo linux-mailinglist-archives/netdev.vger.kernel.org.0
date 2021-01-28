@@ -2,73 +2,96 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C7F19306B1C
-	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 03:31:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 8D3FE306B1F
+	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 03:35:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229563AbhA1Ca4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 21:30:56 -0500
-Received: from mail.kernel.org ([198.145.29.99]:45500 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229458AbhA1Cav (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 27 Jan 2021 21:30:51 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 266A264DCC;
-        Thu, 28 Jan 2021 02:30:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611801011;
-        bh=XdC0SwTH8F4VbZEujw8fnkZe7hmFy1gya8+FucKl9HI=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=bv9lhrGrSAdE5YIzsVzAr/VVmhgZMK5+ho+45IpcZ8p4BFQ+h6PtJCL85JnYSQEZU
-         4Bn6Upg3sqth2Nug8G1OkujTqOo0fQJzB0Yvuy33UUoUQLyrnrOb4PHNa38+7+Mtf2
-         W4mSgFcwDuAjfuReH4kLCcFhPFEhAw7x0tVMnMvLyq/Ps9/yQRYdBcExOQNUiS95ns
-         AO00eb0WrIgETyKVhTnJPikI2OxCPAkjQMSjemwzP2NhzEmV2x/nvrEdJwPcPRVR4W
-         Esn68hGTzENR9kUtFmGXNdphkAbXcnrYnxu3WR0QbsIqBftcOlu54DO1j7qF/ZGf++
-         srOnxscSiRbKQ==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 12AF665307;
-        Thu, 28 Jan 2021 02:30:11 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S229591AbhA1CfJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 21:35:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59304 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229458AbhA1CfI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 21:35:08 -0500
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 20240C061573
+        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 18:34:28 -0800 (PST)
+Received: by mail-pl1-x635.google.com with SMTP id d13so2507046plg.0
+        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 18:34:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=f8rmeitNeQ0cbGXYm/6i5FyhFM9eJPg4FgfDcYHHhgI=;
+        b=vMpx1MHFs7Nt0jPQlXkaymOEiaqNTKjdbcxGCw7es2AYysJJc/l95IxsottlqZOGug
+         WgaBz/gJDKJvLFzXE6FsZqwqhklzQOTs+xpiaJXgOUeX/07wjx+Yag5AlR60UzWhCRN1
+         Hx9aR6hBC9qxwVwWQ9sCffu/aIO3YiKkUZvx3LcdBiUItSqyWPc6PP0N5XJBYwGtaXWB
+         d6fzB1w5YsITGVvYNlfgLpZT9tVmtxugNeIWikdRmuCqArhnBzh0jwl9CPA41dDLX2Aj
+         Fk8qipHVges6DtJndzCP3s/c99HXbV3lXCYhRnl1uKrWN1bfI1IL6+4TJfldz3CY+dZD
+         6D0g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=f8rmeitNeQ0cbGXYm/6i5FyhFM9eJPg4FgfDcYHHhgI=;
+        b=p0NPsmuKEN1fvpFLNVl7vEmp2HUrfXqZMu5EqHO39udIyK3sjxBrEGdYgxx3bjPKXx
+         NCZnE9P+9l7WecqEG51AFzUKO8/qFcI9clzBtu7bM0ZHs79XSvSRjiMExHO1xDckIPIj
+         U/HVJCHuUxN/14+y+TKIobZzPymN/RuhUL0s9emKIBLbPxyIL491LtdEgfAy7BOrdHgP
+         4MwDyPNWQeMw6cJBDQYP1ivaOASlueckcSXFdkOe7yxdlBUjQv0h/TExtfobnTjUddOv
+         rTAv3QzlMrlxUFgbShctaefTOSPj/ccbgxVhU6zZkElHB0rhtjl7bYcjdUTAYwLa0XOW
+         mV1A==
+X-Gm-Message-State: AOAM531bmSp5k6Nk14za9dretLeCR3EK1kxs9S+n2MtG/NWdqi6SAvPn
+        oCW2XznhES4y1OlVIs1ymN17M6DOPhEzGoex7C+Y2lFL1j3v2A==
+X-Google-Smtp-Source: ABdhPJzudMCJjMc/psJUfz4tx1NVKKWIOheUXH5KnfqK9SosWJqvB58j+542qeVaf3bfFw/Vif/99scy4digpDHx+ww=
+X-Received: by 2002:a17:902:d64e:b029:df:e5b1:b7f7 with SMTP id
+ y14-20020a170902d64eb02900dfe5b1b7f7mr13900794plh.10.1611801267513; Wed, 27
+ Jan 2021 18:34:27 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH bpf-next v5 1/2] bpf: allow rewriting to ports under
- ip_unprivileged_port_start
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161180101107.20337.1864637949509200235.git-patchwork-notify@kernel.org>
-Date:   Thu, 28 Jan 2021 02:30:11 +0000
-References: <20210127193140.3170382-1-sdf@google.com>
-In-Reply-To: <20210127193140.3170382-1-sdf@google.com>
-To:     Stanislav Fomichev <sdf@google.com>
-Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, ast@kernel.org,
-        daniel@iogearbox.net, rdna@fb.com, kafai@fb.com
+References: <20210127165453.GA20514@chinagar-linux.qualcomm.com>
+In-Reply-To: <20210127165453.GA20514@chinagar-linux.qualcomm.com>
+From:   Cong Wang <xiyou.wangcong@gmail.com>
+Date:   Wed, 27 Jan 2021 18:34:16 -0800
+Message-ID: <CAM_iQpVvuHXiwdNn9NqU1M6UWGKTkQWqDQpPp7zuEA7zcGk-qw@mail.gmail.com>
+Subject: Re: [PATCH] neighbour: Prevent a dead entry from updating gc_list
+To:     Chinmay Agarwal <chinagar@codeaurora.org>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        David Miller <davem@davemloft.net>, sharathv@codeaurora.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
+On Wed, Jan 27, 2021 at 8:55 AM Chinmay Agarwal <chinagar@codeaurora.org> wrote:
+>
+> Following race condition was detected:
+> <CPU A, t0> - neigh_flush_dev() is under execution and calls
+> neigh_mark_dead(n) marking the neighbour entry 'n' as dead.
+>
+> <CPU B, t1> - Executing: __netif_receive_skb() ->
+> __netif_receive_skb_core() -> arp_rcv() -> arp_process().arp_process()
+> calls __neigh_lookup() which takes a reference on neighbour entry 'n'.
+>
+> <CPU A, t2> - Moves further along neigh_flush_dev() and calls
+> neigh_cleanup_and_release(n), but since reference count increased in t2,
+> 'n' couldn't be destroyed.
+>
+> <CPU B, t3> - Moves further along, arp_process() and calls
+> neigh_update()-> __neigh_update() -> neigh_update_gc_list(), which adds
+> the neighbour entry back in gc_list(neigh_mark_dead(), removed it
+> earlier in t0 from gc_list)
+>
+> <CPU B, t4> - arp_process() finally calls neigh_release(n), destroying
+> the neighbour entry.
+>
+> This leads to 'n' still being part of gc_list, but the actual
+> neighbour structure has been freed.
+>
+> The situation can be prevented from happening if we disallow a dead
+> entry to have any possibility of updating gc_list. This is what the
+> patch intends to achieve.
+>
+> Fixes: 9c29a2f55ec0 ("neighbor: Fix locking order for gc_list changes")
+> Signed-off-by: Chinmay Agarwal <chinagar@codeaurora.org>
 
-This series was applied to bpf/bpf-next.git (refs/heads/master):
+Reviewed-by: Cong Wang <xiyou.wangcong@gmail.com>
 
-On Wed, 27 Jan 2021 11:31:39 -0800 you wrote:
-> At the moment, BPF_CGROUP_INET{4,6}_BIND hooks can rewrite user_port
-> to the privileged ones (< ip_unprivileged_port_start), but it will
-> be rejected later on in the __inet_bind or __inet6_bind.
-> 
-> Let's add another return value to indicate that CAP_NET_BIND_SERVICE
-> check should be ignored. Use the same idea as we currently use
-> in cgroup/egress where bit #1 indicates CN. Instead, for
-> cgroup/bind{4,6}, bit #1 indicates that CAP_NET_BIND_SERVICE should
-> be bypassed.
-> 
-> [...]
-
-Here is the summary with links:
-  - [bpf-next,v5,1/2] bpf: allow rewriting to ports under ip_unprivileged_port_start
-    https://git.kernel.org/bpf/bpf-next/c/772412176fb9
-  - [bpf-next,v5,2/2] selftests/bpf: verify that rebinding to port < 1024 from BPF works
-    https://git.kernel.org/bpf/bpf-next/c/8259fdeb3032
-
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
-
-
+Thanks.
