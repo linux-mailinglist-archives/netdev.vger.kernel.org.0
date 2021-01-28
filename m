@@ -2,94 +2,110 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 28C5E308189
-	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 23:54:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 197093081B8
+	for <lists+netdev@lfdr.de>; Fri, 29 Jan 2021 00:13:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231748AbhA1Wyo (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jan 2021 17:54:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37632 "EHLO
+        id S231297AbhA1XMq (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jan 2021 18:12:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42310 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231751AbhA1WwW (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jan 2021 17:52:22 -0500
-Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28522C06121E
-        for <netdev@vger.kernel.org>; Thu, 28 Jan 2021 14:49:30 -0800 (PST)
-Received: by mail-pl1-x62a.google.com with SMTP id q2so4192751plk.4
-        for <netdev@vger.kernel.org>; Thu, 28 Jan 2021 14:49:30 -0800 (PST)
+        with ESMTP id S229757AbhA1XMo (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jan 2021 18:12:44 -0500
+Received: from mail-ot1-x335.google.com (mail-ot1-x335.google.com [IPv6:2607:f8b0:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6868C061573
+        for <netdev@vger.kernel.org>; Thu, 28 Jan 2021 15:12:03 -0800 (PST)
+Received: by mail-ot1-x335.google.com with SMTP id v1so6894756ott.10
+        for <netdev@vger.kernel.org>; Thu, 28 Jan 2021 15:12:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=date:from:to:cc:subject:in-reply-to:message-id:references
-         :mime-version;
-        bh=G+ih4TCLjMlDhHUsK2A+TR2HHdkm5AqUa1C6G/BSwSU=;
-        b=MtFfpkPTsZTn0gFaHxFhSWOMva66E/lvz+hUXR3FrCHa9T0vjY+xbhdIBytnfT4hde
-         0Ys5AJYDByRiNPKT0aWC33/ZwpGaEnDVdDZLHxgNhDamHGH+rUdr/YNIrHzbogxyK2ot
-         0DoGbhkKgR6CODspeFMH0JINuzKgti7159D7tR9XKwR9K09g/4AR5nAIex+fNblniZwf
-         nuLbHpvajXVngPXWUmYWJr62ll4sVI6GL9+9DOw2ps6euNFMlJMMKUqLwUBvfOr4+JOI
-         dE/ui+K9GxRvn1sNUBZjR8TFkXXLIPq75nHYRfA916R0qHMnMt7BOLu7EI21THYWQnjm
-         aX5Q==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=wP6FOwfJyWUSkDOtLb0ajq/mHu53yI0ES8hPkZI6jvc=;
+        b=LK4hCWOL9IlxB8afVHJWANQglgPH/QIo8xZPBiseagaWUPf5mq90RBlVQJzVhPmPJQ
+         5VNgJ1OXZf8UsttH/ooJn/YuWPkeQ0WrIROaZ99Alo8JyoUWQW8kyBXpSnuJNHF+dswh
+         NTlUf2aDNBAS82L6RoVXaJA45Mw3zJjdf9mOQc0AUUxO984vBmuYMjrn4kJ3rRAJxdQF
+         qfAva0rk+BHzJ1gaZ+3qkYv9ciyvpQ3tjutVf/rpBdRFyv5O78O4HcakLdiqg8+Qr292
+         RxB2KtCWWkz8zBHwWPCku7gR5NBzcornCqkmykFLJMn6Utkox+Hx/eJt56dXVluTlMt+
+         E1ag==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:in-reply-to:message-id
-         :references:mime-version;
-        bh=G+ih4TCLjMlDhHUsK2A+TR2HHdkm5AqUa1C6G/BSwSU=;
-        b=pvIX+jUHeUCv4FCv52v4t4YUJq41EbS4KIu2SH7Zapg2PJzjxJbcSV72YpyyoFwABK
-         49yf+0z/R1nyOlRPwyPEx7LSJiIUdR1VEJI4iRaroyDuo2e2K3F44W6rV6gXFhL2P52o
-         4/nc65yF+3678+YI29DTKrsMNiGNIOS7JGpT1IZ8hstZaVu6DgENYBlPPLUSUtoGeeLA
-         UQEjnwjeao/tZrouMQIcSuVQDQBr0QSN+CQkwuKEaDIAk78OXIgbjVqp3U70DFw45fRA
-         jcXUdPjKhXSm4CKrxHtRTFkDK/P2C+z0urzVaI/4IFWwh4wv1TCE702EG453j4x/RScD
-         QAdA==
-X-Gm-Message-State: AOAM533Mg7KkcqSvLk2W0ERTkvF6NWskg2EYxwc/etuMPeQZVZ4cl+6F
-        8kbbGEJbi0eKv7w2mVgPQESXRQ==
-X-Google-Smtp-Source: ABdhPJyfRuzHyqHVdqBK8f0+yDGR+PAfYB5Dc8yFBfd7wqG+BeYIWPtIjMNVkXFepyiH+P/AGil0yA==
-X-Received: by 2002:a17:90a:470f:: with SMTP id h15mr1601393pjg.179.1611874169526;
-        Thu, 28 Jan 2021 14:49:29 -0800 (PST)
-Received: from [2620:15c:17:3:4a0f:cfff:fe51:6667] ([2620:15c:17:3:4a0f:cfff:fe51:6667])
-        by smtp.gmail.com with ESMTPSA id u126sm6508563pfu.113.2021.01.28.14.49.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Jan 2021 14:49:28 -0800 (PST)
-Date:   Thu, 28 Jan 2021 14:49:27 -0800 (PST)
-From:   David Rientjes <rientjes@google.com>
-To:     Alexander Lobakin <alobakin@pm.me>
-cc:     "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Yisen Zhuang <yisen.zhuang@huawei.com>,
-        Salil Mehta <salil.mehta@huawei.com>,
-        Jesse Brandeburg <jesse.brandeburg@intel.com>,
-        Tony Nguyen <anthony.l.nguyen@intel.com>,
-        Saeed Mahameed <saeedm@nvidia.com>,
-        Leon Romanovsky <leon@kernel.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Jesper Dangaard Brouer <brouer@redhat.com>,
-        Ilias Apalodimas <ilias.apalodimas@linaro.org>,
-        Jonathan Lemon <jonathan.lemon@gmail.com>,
-        Willem de Bruijn <willemb@google.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Pablo Neira Ayuso <pablo@netfilter.org>,
-        Dexuan Cui <decui@microsoft.com>,
-        Jakub Sitnicki <jakub@cloudflare.com>,
-        Marco Elver <elver@google.com>,
-        Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
-        linux-rdma@vger.kernel.org, linux-mm@kvack.org
-Subject: Re: [PATCH v2 net-next 4/4] net: page_pool: simplify page recycling
- condition tests
-In-Reply-To: <20210127201031.98544-5-alobakin@pm.me>
-Message-ID: <7ac4064-b63-b26f-10db-68b83e6d4c6@google.com>
-References: <20210127201031.98544-1-alobakin@pm.me> <20210127201031.98544-5-alobakin@pm.me>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=wP6FOwfJyWUSkDOtLb0ajq/mHu53yI0ES8hPkZI6jvc=;
+        b=ZFK7TGAD2Oy7RS4zZduAayR0lYLFj7l0J7gjLJh4KB56wbZf24Q+wrARTzInqQBDw1
+         puCaEbSsG/g52qaeuQU6pK/FcdLq6JK8q3ywbXKsqiq+I0lntQVWO/FwAhlk6oP3X601
+         crXC4XhPziNeOPhZMJGeM3cF+LHpeQREjvg79/08dgz6RbeFmVfUNLy2xZ9OC3/XTs7/
+         oLBMkpUbRIEBuQBsKFR1l2iZxTm/wc50iB8led8lW22met6bPhIranwHJ3hv/GJ7rFOb
+         lFNuQDaL3CyQYid7hn/d6XgT+cDRkN/Ykay6E7f9gQ0l2+tJG4I3My4AVMDRDxKXXOdE
+         WuPQ==
+X-Gm-Message-State: AOAM530qrcoQ3mGBQRBkm7L0NyL/jpUJLBqKij7C89FN9U11XE6PokzY
+        BI4kDjbjBl0jQUS0FMbBpoDkjW3kiin5s3qKa8XUyfdcQ1xZ
+X-Google-Smtp-Source: ABdhPJwKNqSmzs8WGHJOIB+0b42byQoTQz/crmVw4X8ekefy2B0/y4Bl+QbsEZPLgkNInzATrtLr4U/GmNOR58ql4YE=
+X-Received: by 2002:a05:6830:1e51:: with SMTP id e17mr1190734otj.340.1611875523371;
+ Thu, 28 Jan 2021 15:12:03 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+References: <69ec2fd1a9a048e8b3305a4bc36aad01@EXCH-SVR2013.eberle.local>
+In-Reply-To: <69ec2fd1a9a048e8b3305a4bc36aad01@EXCH-SVR2013.eberle.local>
+From:   George McCollister <george.mccollister@gmail.com>
+Date:   Thu, 28 Jan 2021 17:11:38 -0600
+Message-ID: <CAFSKS=MTUD_h0RFQ7R80ef-jT=0Zp1w5Ptt6r8+GkaboX3L_TA@mail.gmail.com>
+Subject: Re: HSR/PRP sequence counter issue with Cisco Redbox
+To:     "Wenzel, Marco" <Marco.Wenzel@a-eberle.de>
+Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 27 Jan 2021, Alexander Lobakin wrote:
+On Wed, Jan 27, 2021 at 6:32 AM Wenzel, Marco <Marco.Wenzel@a-eberle.de> wr=
+ote:
+>
+> Hi,
+>
+> we have figured out an issue with the current PRP driver when trying to c=
+ommunicate with Cisco IE 2000 industrial Ethernet switches in Redbox mode. =
+The Cisco always resets the HSR/PRP sequence counter to "1" at low traffic =
+(<=3D 1 frame in 400 ms). It can be reproduced by a simple ICMP echo reques=
+t with 1 s interval between a Linux box running with PRP and a VDAN behind =
+the Cisco Redbox. The Linux box then always receives frames with sequence c=
+ounter "1" and drops them. The behavior is not configurable at the Cisco Re=
+dbox.
+>
+> I fixed it by ignoring sequence counters with value "1" at the sequence c=
+ounter check in hsr_register_frame_out ():
+>
+> diff --git a/net/hsr/hsr_framereg.c b/net/hsr/hsr_framereg.c
+> index 5c97de459905..630c238e81f0 100644
+> --- a/net/hsr/hsr_framereg.c
+> +++ b/net/hsr/hsr_framereg.c
+> @@ -411,7 +411,7 @@ void hsr_register_frame_in(struct hsr_node *node, str=
+uct hsr_port *port,
+>  int hsr_register_frame_out(struct hsr_port *port, struct hsr_node *node,
+>                            u16 sequence_nr)
+>  {
+> -       if (seq_nr_before_or_eq(sequence_nr, node->seq_out[port->type]))
+> +       if (seq_nr_before_or_eq(sequence_nr, node->seq_out[port->type]) &=
+& (sequence_nr !=3D 1))
+>                 return 1;
+>
+>         node->seq_out[port->type] =3D sequence_nr;
+>
+>
+> Do you think this could be a solution? Should this patch be officially ap=
+plied in order to avoid other users running into these communication issues=
+?
 
-> pool_page_reusable() is a leftover from pre-NUMA-aware times. For now,
-> this function is just a redundant wrapper over page_is_pfmemalloc(),
-> so Inline it into its sole call site.
-> 
-> Signed-off-by: Alexander Lobakin <alobakin@pm.me>
-> Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
-> Reviewed-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
+This isn't the correct way to solve the problem. IEC 62439-3 defines
+EntryForgetTime as "Time after which an entry is removed from the
+duplicate table" with a value of 400ms and states devices should
+usually be configured to keep entries in the table for a much shorter
+time. hsr_framereg.c needs to be reworked to handle this according to
+the specification.
 
-Acked-by: David Rientjes <rientjes@google.com>
+>
+> Thanks
+> Marco Wenzel
+
+Regards,
+George McCollister
