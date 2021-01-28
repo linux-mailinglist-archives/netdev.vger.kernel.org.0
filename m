@@ -2,77 +2,160 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8A6C4306A61
-	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 02:31:22 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 69B14306A69
+	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 02:34:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231268AbhA1BbP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 20:31:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45648 "EHLO
+        id S231365AbhA1Bbi (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 20:31:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231171AbhA1BbM (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 20:31:12 -0500
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D477C061573
-        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 17:30:31 -0800 (PST)
-Received: by mail-ej1-x62d.google.com with SMTP id hs11so5439166ejc.1
-        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 17:30:31 -0800 (PST)
+        with ESMTP id S229757AbhA1BbX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 20:31:23 -0500
+Received: from mail-il1-x130.google.com (mail-il1-x130.google.com [IPv6:2607:f8b0:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4993C061574;
+        Wed, 27 Jan 2021 17:30:42 -0800 (PST)
+Received: by mail-il1-x130.google.com with SMTP id d6so3767519ilo.6;
+        Wed, 27 Jan 2021 17:30:42 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=O93nDuwi0sHDq1zfGslQOfVW2mgps/9mxxTp8mPOWRQ=;
-        b=OGZZgcnPSxpgRFMMzQAnTSFYEZtYDu8DIQIx8kPGBdeNCZ2rYF4qe0HKKbLIfNseGU
-         qLoOYCJ1EuKBQVpMi9QBaPZ1Jc8c/Dl4F2LaZ+FhF+95VcxN/Iu7lxg2TJT8Mlnvhpr9
-         YwV38WribWcSt7PIXbuH77KdZ4k3lTiTw+Or3a53Q8KXGYhNnHVN27Y7B6zByoykBCUz
-         ezghT6RtiUVIN+o9tH3EYU+PVTj5DcepL4Lt/eBy+KJDdVcYbNYEVnnZiqK8zsZ+Fa0Z
-         4Syjl7c9hWch4zW2UaTpLhowhlMKpxn8gyyF5TRLM129WX54FXGSl3dGFHwE7S67Y9xA
-         c66A==
+        h=mime-version:references:in-reply-to:reply-to:from:date:message-id
+         :subject:to:cc;
+        bh=fPG3ZtOj2gQfse8nMNhqlz0mkZ3a1oBf9GMrWLJa6Uw=;
+        b=VEpiSbCfBHRjrYMXVDVzhvZaq3Fya3QXYX3Mnv16nS6eiz4QeRUhmYabQSu1s55uWW
+         mv2qIFBTcWnahAyw57iv7H36EjT6r+DQcm3zu+JOxjmXwby1bJXDfci1OC3f32C0jgeA
+         4CuxyElvATsJN6/Nl0w08jLW/q3anrx6MWnFeFGuurqMN+YSYqjsN1mZDU3mdj10Yjge
+         xBjTJm3Li37rT025VYsZR2gVSmQbkQWEWTed6oxSNZOiyYsSIluTEzATbO13BmTrTHY+
+         edUD+LSQMr3jzDy9mtKzSiLHo21O8dNFQqzoCv6Rnand7LKpygt8pbf3zSXFY8ZaurK5
+         DItg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=O93nDuwi0sHDq1zfGslQOfVW2mgps/9mxxTp8mPOWRQ=;
-        b=f24Dh8NAPl03QuYrIN5A7VTeU/pouojaQ59k6l/Mya3Du585VwyqjBLwjZi2jQGMJ7
-         VbXdSJpvnPg/QP/eRr1nMiQZGKNEfvx5+h41fYczZ0eCVjwEI4YPmA9MZtZQnt2HLgDo
-         oaGtHRmWG8yTfGkerwnIOx5eqnCFo8UMkE7tATNo6DInF28276CFW9kN8rPNkO8LtWLY
-         nqYIiYvTbPdOid2Y+cD0R03KIqxdPYhZFFo96ugXH9Q3t4No766hehx9XbC+Dtzhb/e0
-         tPmM3/0IRv8OYLfKKa8wty9+hSJP3VYx8u7HF66qek0Mytlgq4SefRhk11r3Ix1gXWp6
-         yFkg==
-X-Gm-Message-State: AOAM5335ApFQnZUdclpbYlXFCnJ0fwgZRum7I+4paI+sM1CMWKNv58EB
-        ac1lIE/rj9G8Uf9ET5QQ+xM=
-X-Google-Smtp-Source: ABdhPJwC3ze1e4Ho4oFleK2uQZbfIlsBcq2qGXtQroYDUEOYEU1QbuM0YIJsuwDxHViAb5/8z6GFEQ==
-X-Received: by 2002:a17:906:a851:: with SMTP id dx17mr8453955ejb.537.1611797430035;
-        Wed, 27 Jan 2021 17:30:30 -0800 (PST)
-Received: from skbuf (5-12-227-87.residential.rdsnet.ro. [5.12.227.87])
-        by smtp.gmail.com with ESMTPSA id m20sm2386251edj.43.2021.01.27.17.30.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Jan 2021 17:30:29 -0800 (PST)
-Date:   Thu, 28 Jan 2021 03:30:28 +0200
-From:   Vladimir Oltean <olteanv@gmail.com>
-To:     Florian Fainelli <f.fainelli@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
-Subject: Re: [PATCH net-next 0/4] Automatically manage DSA master interface
- state
-Message-ID: <20210128013028.kr6jx4xjcm3irllo@skbuf>
-References: <20210127010028.1619443-1-olteanv@gmail.com>
- <99d4c608-d821-7f87-48c1-aa1898441194@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:reply-to
+         :from:date:message-id:subject:to:cc;
+        bh=fPG3ZtOj2gQfse8nMNhqlz0mkZ3a1oBf9GMrWLJa6Uw=;
+        b=MtvTT1Su8cc7roCZQumCvFTYxN/ifHeLcWfbvI1Y4XmWmVZkznOTpBIMzjpWjJGCUF
+         OMWbQXoi8bWFXmVcuzJi1BotrS5adyAMKXB9AQpaw+T5BsNEc+JgrusjfN6tsaQNcBsC
+         0lqp/NMJDmauOpy4IgJhef2UyxoAD8F/DrpfFCV5IJi9KiGKVV1Gs+jKPoAeFbOXUb5D
+         d2xO4IBgc7cjgxyiJxdZzHn6azdbXON8AEQiIrdCaLwTPiCdFAGwxhhZ6YJyMgnEDrBE
+         zAjsGsZQmdcTsPhDSPYsaXakiSZgFHZNSO0RBm5n5wcfD/8Bifc4/yEFqOrFuqGJTwnq
+         bCjg==
+X-Gm-Message-State: AOAM5339Vu8JVXaYvf61eRiZPcnK9VjOcYg5RaMVl8CIArNN9wynBSYk
+        jajoteQQlE2O8tG+l+CSyrKHp1MfQ9VkAxJSJRA=
+X-Google-Smtp-Source: ABdhPJwdEphmKobHvxoyBdy2MHBTBf5d+UdRGpsBvjwEuXoe21Yxd0ll1mCPdgOEe32y68Yt6XtqRP/zrcAAPcgYw9U=
+X-Received: by 2002:a92:c80b:: with SMTP id v11mr10864577iln.215.1611797441911;
+ Wed, 27 Jan 2021 17:30:41 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <99d4c608-d821-7f87-48c1-aa1898441194@gmail.com>
+References: <20210122003235.77246-1-sedat.dilek@gmail.com> <CAEf4Bzb+fXZy1+337zRFA9v8x+Mt7E3YOZRhG8xnXeRN4_oCRA@mail.gmail.com>
+In-Reply-To: <CAEf4Bzb+fXZy1+337zRFA9v8x+Mt7E3YOZRhG8xnXeRN4_oCRA@mail.gmail.com>
+Reply-To: sedat.dilek@gmail.com
+From:   Sedat Dilek <sedat.dilek@gmail.com>
+Date:   Thu, 28 Jan 2021 02:30:29 +0100
+Message-ID: <CA+icZUWVGHqM00qd7-+Hrb9=rkL6AvEQ7Aj8zBK=VPpEi+LTmg@mail.gmail.com>
+Subject: Re: [PATCH RFC v2] tools: Factor Clang, LLC and LLVM utils definitions
+To:     Andrii Nakryiko <andrii.nakryiko@gmail.com>
+Cc:     Alexei Starovoitov <ast@kernel.org>,
+        Daniel Borkmann <daniel@iogearbox.net>,
+        Andrii Nakryiko <andrii@kernel.org>,
+        Martin KaFai Lau <kafai@fb.com>,
+        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
+        John Fastabend <john.fastabend@gmail.com>,
+        KP Singh <kpsingh@kernel.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Ingo Molnar <mingo@redhat.com>,
+        Arnaldo Carvalho de Melo <acme@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Jiri Olsa <jolsa@redhat.com>,
+        Namhyung Kim <namhyung@kernel.org>,
+        Shuah Khan <shuah@kernel.org>,
+        Nathan Chancellor <natechancellor@gmail.com>,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Quentin Monnet <quentin@isovalent.com>,
+        Jean-Philippe Brucker <jean-philippe@linaro.org>,
+        Tobias Klauser <tklauser@distanz.ch>,
+        Ilya Leoshkevich <iii@linux.ibm.com>,
+        Andrey Ignatov <rdna@fb.com>,
+        Stephane Eranian <eranian@google.com>,
+        "Frank Ch. Eigler" <fche@redhat.com>,
+        Thomas Hebb <tommyhebb@gmail.com>,
+        Masami Hiramatsu <mhiramat@kernel.org>,
+        Briana Oursler <briana.oursler@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Davide Caratti <dcaratti@redhat.com>,
+        Networking <netdev@vger.kernel.org>, bpf <bpf@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        clang-built-linux <clang-built-linux@googlegroups.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 27, 2021 at 05:03:23PM -0800, Florian Fainelli wrote:
-> I really like all patches but number #2, though I don't believe there
-> are existing use cases besides you one you described where it makes
-> sense to keep a switch in an unmanaged mode being "headless" with its
-> CPU port down, while the user-facing ports are up.
+On Thu, Jan 28, 2021 at 2:27 AM Andrii Nakryiko
+<andrii.nakryiko@gmail.com> wrote:
+>
+> On Thu, Jan 21, 2021 at 4:32 PM Sedat Dilek <sedat.dilek@gmail.com> wrote:
+> >
+> > When dealing with BPF/BTF/pahole and DWARF v5 I wanted to build bpftool.
+> >
+> > While looking into the source code I found duplicate assignments
+> > in misc tools for the LLVM eco system, e.g. clang and llvm-objcopy.
+> >
+> > Move the Clang, LLC and/or LLVM utils definitions to
+> > tools/scripts/Makefile.include file and add missing
+> > includes where needed.
+> > Honestly, I was inspired by commit c8a950d0d3b9
+> > ("tools: Factor HOSTCC, HOSTLD, HOSTAR definitions").
+> >
+> > I tested with bpftool and perf on Debian/testing AMD64 and
+> > LLVM/Clang v11.1.0-rc1.
+> >
+> > Build instructions:
+> >
+> > [ make and make-options ]
+> > MAKE="make V=1"
+> > MAKE_OPTS="HOSTCC=clang HOSTCXX=clang++ HOSTLD=ld.lld CC=clang LD=ld.lld LLVM=1 LLVM_IAS=1"
+> > MAKE_OPTS="$MAKE_OPTS PAHOLE=/opt/pahole/bin/pahole"
+> >
+> > [ clean-up ]
+> > $MAKE $MAKE_OPTS -C tools/ clean
+> >
+> > [ bpftool ]
+> > $MAKE $MAKE_OPTS -C tools/bpf/bpftool/
+> >
+> > [ perf ]
+> > PYTHON=python3 $MAKE $MAKE_OPTS -C tools/perf/
+> >
+> > I was careful with respecting the user's wish to override custom compiler,
+> > linker, GNU/binutils and/or LLVM utils settings.
+> >
+> > Some personal notes:
+> > 1. I have NOT tested with cross-toolchain for other archs (cross compiler/linker etc.).
+> > 2. This patch is on top of Linux v5.11-rc4.
+> >
+> > I hope to get some feedback from especially Linux-bpf folks.
+> >
+> > Acked-by: Jiri Olsa <jolsa@redhat.com> # tools/build and tools/perf
+> > Signed-off-by: Sedat Dilek <sedat.dilek@gmail.com>
+> > ---
+>
+> Hi Sedat,
+>
+> If no one objects, we'll take this through bpf-next tree. Can you
+> please re-send this as a non-RFC patch against the bpf-next tree? Feel
+> free to add my ack. Thanks.
+>
 
-So what should I do with #2? Every other stacked interface goes down
-when its lowers go down, if that brings any consolation.
+I am OK with that and will add your ACK.
+Is [1] bpf-next Git?
+
+- Sedat -
+
+[1] https://git.kernel.org/pub/scm/linux/kernel/git/bpf/bpf-next.git/
+
+> > Changelog RFC v1->v2:
+> > - Add Jiri's ACK
+> > - Adapt to fit Linux v5.11-rc4
+> >
+>
+> [...]
