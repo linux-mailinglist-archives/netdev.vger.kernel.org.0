@@ -2,130 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 618C2307F15
-	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 21:05:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A83CE307F25
+	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 21:09:18 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231354AbhA1UC5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jan 2021 15:02:57 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57536 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231211AbhA1UAk (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jan 2021 15:00:40 -0500
-Received: from mail-il1-x130.google.com (mail-il1-x130.google.com [IPv6:2607:f8b0:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14315C061573
-        for <netdev@vger.kernel.org>; Thu, 28 Jan 2021 11:46:39 -0800 (PST)
-Received: by mail-il1-x130.google.com with SMTP id p8so6366506ilg.3
-        for <netdev@vger.kernel.org>; Thu, 28 Jan 2021 11:46:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=gd93U31QoUer1QHIVAwXnhoBfqcFLxJyDDk3L4rHCgo=;
-        b=fim+Xw9QvBTK1IRc5cC9uaHGplOG/HGt6Rrggq/dVYuCatknxjEF5W0HWGoauJxUv7
-         urJGFn+2kbYBPwT6U0QCiW3VQsXuhMIcMw6mvaV0SI09vR9kldf++BKCNWPiXh5UvjWH
-         y86GTg0/1a2g7nJvi6/jAt20D2x8Vwy1FyVQWRvL3GSIeQ0DHaJxD8VlZrTeagzTt+MW
-         aHPCn188e8DNUqF1Bc863pDbWQT8O8Fc1NJ7+QmS3OvtkLwfD4Bbcy4WX7Vf0J03a7bE
-         IRtUd1avgHxTOLc7z35GwrZHltmA//QWqAKCmb/ZxRrsuffhr6K1Yg1ApszCkakFVH3G
-         dmoA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=gd93U31QoUer1QHIVAwXnhoBfqcFLxJyDDk3L4rHCgo=;
-        b=eED4vRCfOE1lZXyHBvMgKbrSnWBt9TZpXNcKtuVwyNOruu7KOLyiHtCbSp+bcYacOb
-         aPmaeZC/6rsFpKatXYlBKQbHnsCswlXaT/X8ADU/UXuuXPDyMW9YnIPZ7YEPRuhnqrEL
-         djBOCsNorLqR3yCTye+cG0Mhac3l5JGA5VCSaqeQvLw1KluD2uX43/PRrUdlbbtYCRAv
-         1EFV30Raas5bR3w6/+wxHwt3q0A0NoeBdf7IAxaHZxSo8R5NpttGMRt4r+9FRHv+gfmZ
-         wqGkmFj5ssypDtaTf4h0CfT/YPt1Tz06B1xxl9J+ZxrmHlCWlHLgMVshKF5q2zaD/ax7
-         1FZQ==
-X-Gm-Message-State: AOAM531UM7Fz18/MIxlLJnBaD3+BmCGCSEo0Ch+6Ndx/OxOtcr7KBiP1
-        iuPHvuuvvvYOI0MKnXa1m0A11fg9LCmujAxxuo4=
-X-Google-Smtp-Source: ABdhPJzJoCJO4HmmpjEQKTeDb8mnApGFZDIpb+pPI2C9xP2oVlKF2s8S4wSTBHAb8K77KfAX9xnmNz9Odex69cJZMSM=
-X-Received: by 2002:a05:6e02:c8e:: with SMTP id b14mr542206ile.97.1611863198344;
- Thu, 28 Jan 2021 11:46:38 -0800 (PST)
+        id S231398AbhA1UGy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jan 2021 15:06:54 -0500
+Received: from mail.kernel.org ([198.145.29.99]:55192 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231470AbhA1UEC (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 28 Jan 2021 15:04:02 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id ECCFF64E36;
+        Thu, 28 Jan 2021 19:47:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1611863221;
+        bh=H6v8ZXXV2Uym43MsLOBYTQXBG2B+5yMYkUpZPMWn644=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=AWdLNwASDJjkawvi33IHgk2Zd43mbPji3juUCNIX4wOLf/YIWLq/ohWIu74Bdp56c
+         k8WDDTuMUgrR9CQc7KWw5qZaVGtMi+F1V+H/Y4eBiitIXngFAvga3kq0T+jAKErfqM
+         t2JjcA1OmZ11Je5t/wXUm4DaWXCgdRYsZhJ9xXHA4pFWKg2kdGkjkXl8V7igYVckCQ
+         /OT0MGwzNLGKOPSnagKaBtaN3KLRHHeOyT88a4VJru6albHvmMZCFnSv7SPHF5h0YK
+         whBdhho3ffywPJY1RAy/bjgn/GSiOzU8GRlNJ6QOsNHO1FKpULm8PFPbjz+HhVYK6V
+         yQCAhFD8f9EtA==
+Date:   Thu, 28 Jan 2021 11:46:59 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Xie He <xie.he.0141@gmail.com>
+Cc:     "David S. Miller" <davem@davemloft.net>, linux-x25@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Martin Schiller <ms@dev.tdt.de>,
+        Krzysztof Halasa <khc@pm.waw.pl>
+Subject: Re: [PATCH net] net: hdlc_x25: Use qdisc to queue outgoing LAPB
+ frames
+Message-ID: <20210128114659.2d81a85f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210127090747.364951-1-xie.he.0141@gmail.com>
+References: <20210127090747.364951-1-xie.he.0141@gmail.com>
 MIME-Version: 1.0
-References: <cover.1611825446.git.lucien.xin@gmail.com> <02bef0921778d2053ab63140c31704712bb5a864.1611825446.git.lucien.xin@gmail.com>
- <CAF=yD-JXJwn4HX1kbeJpVoN1GgvpddxU55gan_hiLEx4xrSsgg@mail.gmail.com>
-In-Reply-To: <CAF=yD-JXJwn4HX1kbeJpVoN1GgvpddxU55gan_hiLEx4xrSsgg@mail.gmail.com>
-From:   Alexander Duyck <alexander.duyck@gmail.com>
-Date:   Thu, 28 Jan 2021 11:46:27 -0800
-Message-ID: <CAKgT0Uchuef=e2w5grNitLM1NzsV--6QGnwvKuffMPisVAR0UA@mail.gmail.com>
-Subject: Re: [PATCHv3 net-next 1/2] net: support ip generic csum processing in skb_csum_hwoffload_help
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     Xin Long <lucien.xin@gmail.com>,
-        network dev <netdev@vger.kernel.org>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        Davide Caratti <dcaratti@redhat.com>,
-        David Miller <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Willem de Bruijn <willemb@google.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 28, 2021 at 6:07 AM Willem de Bruijn
-<willemdebruijn.kernel@gmail.com> wrote:
->
-> On Thu, Jan 28, 2021 at 4:29 AM Xin Long <lucien.xin@gmail.com> wrote:
-> >
-> > NETIF_F_IP|IPV6_CSUM feature flag indicates UDP and TCP csum offload
-> > while NETIF_F_HW_CSUM feature flag indicates ip generic csum offload
-> > for HW, which includes not only for TCP/UDP csum, but also for other
-> > protocols' csum like GRE's.
-> >
-> > However, in skb_csum_hwoffload_help() it only checks features against
-> > NETIF_F_CSUM_MASK(NETIF_F_HW|IP|IPV6_CSUM). So if it's a non TCP/UDP
-> > packet and the features doesn't support NETIF_F_HW_CSUM, but supports
-> > NETIF_F_IP|IPV6_CSUM only, it would still return 0 and leave the HW
-> > to do csum.
-> >
-> > This patch is to support ip generic csum processing by checking
-> > NETIF_F_HW_CSUM for all protocols, and check (NETIF_F_IP_CSUM |
-> > NETIF_F_IPV6_CSUM) only for TCP and UDP.
-> >
-> > Note that we're using skb->csum_offset to check if it's a TCP/UDP
-> > proctol, this might be fragile. However, as Alex said, for now we
-> > only have a few L4 protocols that are requesting Tx csum offload,
-> > we'd better fix this until a new protocol comes with a same csum
-> > offset.
-> >
-> > v1->v2:
-> >   - not extend skb->csum_not_inet, but use skb->csum_offset to tell
-> >     if it's an UDP/TCP csum packet.
-> > v2->v3:
-> >   - add a note in the changelog, as Willem suggested.
-> >
-> > Suggested-by: Alexander Duyck <alexander.duyck@gmail.com>
-> > Signed-off-by: Xin Long <lucien.xin@gmail.com>
-> > ---
-> >  net/core/dev.c | 13 ++++++++++++-
-> >  1 file changed, 12 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/net/core/dev.c b/net/core/dev.c
-> > index 6df3f1b..aae116d 100644
-> > --- a/net/core/dev.c
-> > +++ b/net/core/dev.c
-> > @@ -3621,7 +3621,18 @@ int skb_csum_hwoffload_help(struct sk_buff *skb,
-> >                 return !!(features & NETIF_F_SCTP_CRC) ? 0 :
-> >                         skb_crc32c_csum_help(skb);
-> >
-> > -       return !!(features & NETIF_F_CSUM_MASK) ? 0 : skb_checksum_help(skb);
-> > +       if (features & NETIF_F_HW_CSUM)
-> > +               return 0;
-> > +
-> > +       if (features & (NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM)) {
->
-> Should this check the specific feature flag against skb->protocol? I
-> don't know if there are actually instances that only support one of
-> the two flags.
+On Wed, 27 Jan 2021 01:07:47 -0800 Xie He wrote:
+> An HDLC hardware driver may call netif_stop_queue to temporarily stop
+> the TX queue when the hardware is busy sending a frame, and after the
+> hardware has finished sending the frame, call netif_wake_queue to
+> resume the TX queue.
+> 
+> However, the LAPB module doesn't know about this. Whether or not the
+> hardware driver has stopped the TX queue, the LAPB module still feeds
+> outgoing frames to the hardware driver for transmission. This can cause
+> frames to be dropped by the hardware driver.
+> 
+> It's not easy to fix this issue in the LAPB module. We can indeed let the
+> LAPB module check whether the TX queue has been stopped before feeding
+> each frame to the hardware driver, but when the hardware driver resumes
+> the TX queue, it's not easy to immediately notify the LAPB module and ask
+> it to resume transmission.
+> 
+> Instead, we can fix this issue at the hdlc_x25 layer, by using qdisc TX
+> queues to queue outgoing LAPB frames. The qdisc TX queue will then
+> automatically be controlled by netif_stop_queue and netif_wake_queue.
 
-The issue is at a certain point we start excluding devices that were
-previously working.
+Noob question - could you point at or provide a quick guide to layering
+here? I take there is only one netdev, and something maintains an
+internal queue which is not stopped when HW driver stops the qdisc?
 
-All this patch is really doing is using the checksum offset to
-identify the cases that were previously UDP or TCP offloads and
-letting those through with the legacy path, while any offsets that are
-not those two, such as the GRE checksum will now have to be explicitly
-caught by the NETIF_F_HW_CSUM case and not accepted by the other
-cases.
+> This way, when sending, we will use the qdisc queue to queue and send
+> the data twice: once as the L3 packet and then (after processed by the
+> LAPB module) as an LAPB (L2) frame. This does not make the logic of the
+> code messy, because when receiving, data are already "received" on the
+> device twice: once as an LAPB (L2) frame and then (after processed by
+> the LAPB module) as the L3 packet.
+> 
+> Some more details about the code change:
+> 
+> 1. dev_queue_xmit_nit is removed because we already have it when we send
+> the skb through the qdisc TX queue (in xmit_one).
+> 
+> 2. hdlc_type_trans is replaced by assigning skb->dev and skb->protocol
+> directly. skb_reset_mac_header in hdlc_type_trans is no longer necessary
+> because it will be called in __dev_queue_xmit.
+
+Sounds like we're optimizing to prevent drops, and this was not
+reported from production, rather thru code inspection. Ergo I think
+net-next will be more appropriate here, unless Martin disagrees.
+
+> diff --git a/drivers/net/wan/hdlc_x25.c b/drivers/net/wan/hdlc_x25.c
+> index bb164805804e..b7f2823bf100 100644
+> --- a/drivers/net/wan/hdlc_x25.c
+> +++ b/drivers/net/wan/hdlc_x25.c
+> @@ -89,15 +89,10 @@ static int x25_data_indication(struct net_device *dev, struct sk_buff *skb)
+>  
+>  static void x25_data_transmit(struct net_device *dev, struct sk_buff *skb)
+>  {
+> -	hdlc_device *hdlc = dev_to_hdlc(dev);
+> -
+> +	skb->dev = dev;
+> +	skb->protocol = htons(ETH_P_HDLC);
+>  	skb_reset_network_header(skb);
+> -	skb->protocol = hdlc_type_trans(skb, dev);
+> -
+> -	if (dev_nit_active(dev))
+> -		dev_queue_xmit_nit(skb, dev);
+> -
+> -	hdlc->xmit(skb, dev); /* Ignore return value :-( */
+> +	dev_queue_xmit(skb);
+>  }
+>  
+>  
+> @@ -106,6 +101,12 @@ static netdev_tx_t x25_xmit(struct sk_buff *skb, struct net_device *dev)
+>  {
+>  	int result;
+>  
+> +	if (skb->protocol == htons(ETH_P_HDLC)) {
+> +		hdlc_device *hdlc = dev_to_hdlc(dev);
+> +
+> +		return hdlc->xmit(skb, dev);
+> +	}
+> +
+>  	/* There should be a pseudo header of 1 byte added by upper layers.
+>  	 * Check to make sure it is there before reading it.
+>  	 */
+
