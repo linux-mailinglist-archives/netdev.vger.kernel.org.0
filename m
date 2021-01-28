@@ -2,131 +2,153 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4FE213080A4
-	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 22:41:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 86C5B3080AB
+	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 22:44:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231543AbhA1Vjj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jan 2021 16:39:39 -0500
-Received: from mga12.intel.com ([192.55.52.136]:19348 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231531AbhA1Vj1 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 28 Jan 2021 16:39:27 -0500
-IronPort-SDR: 3w4A+YIVuC9mG/QbvQLm/zQqSTarY74WQwxiHiTqmsDqQoleU0ljGXhTMifylMk7kJh6hP43KX
- NScgGVJ0bvJA==
-X-IronPort-AV: E=McAfee;i="6000,8403,9878"; a="159491179"
-X-IronPort-AV: E=Sophos;i="5.79,383,1602572400"; 
-   d="scan'208";a="159491179"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 28 Jan 2021 13:38:21 -0800
-IronPort-SDR: SJr3AYAEnVqd4j/suAaS+uOv7LH9bj/EQTqugE4ni/IFyyyWkJh53gdfDbUpbgcFA72TTxMIp8
- rIaICtuUGRlQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.79,383,1602572400"; 
-   d="scan'208";a="474241016"
-Received: from anguy11-desk2.jf.intel.com ([10.166.244.147])
-  by fmsmga001.fm.intel.com with ESMTP; 28 Jan 2021 13:38:20 -0800
-From:   Tony Nguyen <anthony.l.nguyen@intel.com>
-To:     davem@davemloft.net, kuba@kernel.org
-Cc:     Aleksandr Loktionov <aleksandr.loktionov@intel.com>,
-        netdev@vger.kernel.org, sassmann@redhat.com,
-        anthony.l.nguyen@intel.com,
-        Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>,
-        Konrad Jankowski <konrad0.jankowski@intel.com>
-Subject: [PATCH net 4/4] i40e: Revert "i40e: don't report link up for a VF who hasn't enabled queues"
-Date:   Thu, 28 Jan 2021 13:38:51 -0800
-Message-Id: <20210128213851.2499012-5-anthony.l.nguyen@intel.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20210128213851.2499012-1-anthony.l.nguyen@intel.com>
-References: <20210128213851.2499012-1-anthony.l.nguyen@intel.com>
+        id S229769AbhA1Vn1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jan 2021 16:43:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51382 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231538AbhA1Vm6 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jan 2021 16:42:58 -0500
+Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01F7FC061573
+        for <netdev@vger.kernel.org>; Thu, 28 Jan 2021 13:42:18 -0800 (PST)
+Received: by mail-io1-xd36.google.com with SMTP id 16so7197647ioz.5
+        for <netdev@vger.kernel.org>; Thu, 28 Jan 2021 13:42:17 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=vGCQ3khyuxhb1Yeuk4SaOcx+oIrqYYgkWcEDxOFw1JQ=;
+        b=Bb+U+vI9mDdkO7tv7PKvECpfTQP3b8rG40q0MYpuH4qNDkfKmo7hpyqfYsquyHNtu7
+         u82E95Ay8tRQveiblRMbMzt7EXoFMYzdijRKHat0XXSpamepe3lg8pNqHIJLcl7v6haS
+         qdkZd9EnR0iF1eEfAWXEERNPlI+fpeqm5QexUeeS88KHUc9bDSIq0osoNRdieGTIOoiW
+         EcxWN5Ny1LV6glU47RSB8MQo0Ma2jOCxZk9py/WklRTMzMWk5TwvxQ3LkVFF9WEI8NFX
+         9/knkQ+V3gKrJZjli2aeYARBNtfJCM2r2xMqD9p+seBYFmIvkhXbXzDZVmi7Ef0BP6aQ
+         ecoA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=vGCQ3khyuxhb1Yeuk4SaOcx+oIrqYYgkWcEDxOFw1JQ=;
+        b=MgSC0f0lNQT8Tf3QxboxGbs1X44ljeW4hSIGj3jJGYwLZiU8Fkg+tUW29zC4Y/Fp/n
+         9etMGSjLo0cg5kLbcmmxIpxNSZvqw7Q41cJU7XeL9OpJ3z/i2P0j0DHbpqBHg287A+gL
+         oPD++peOaJVKz1IzY3nURmzJCBGWyU+ZR5sAh1dAa5Y/7Jqt09vgw8zYGrx0M2lhNQBT
+         RxJNjxnANXzDk7mjnflSBSf726jLuz0aH5DBmYXo3OEiwky1EzLcREsKVAFV5cWMLkPv
+         SGrtEKp/QBOT+mP8Ie7ZmKBIER3/AzYI4nDh0J96tyej9sSjViLAXUpDBdh+Ma7MFMmt
+         CREg==
+X-Gm-Message-State: AOAM531IrOeMPBpHnknf7/J74jBMaCX3gRQLppAMmm4uTz4rDgHATVN5
+        sDrb4cU25dPjQ7U5gOqKjkQsr8hs91mln6EeHeY=
+X-Google-Smtp-Source: ABdhPJwk/vAuPOctyDT2HOneVroJ3OJUa9kXVLb7nXy4XU8ez5f3RIC8O5lAUDl1KcoIpLWLP3DAAt8FnHQA0Ggu4Go=
+X-Received: by 2002:a6b:e716:: with SMTP id b22mr1655638ioh.138.1611870137261;
+ Thu, 28 Jan 2021 13:42:17 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <cover.1611825446.git.lucien.xin@gmail.com> <02bef0921778d2053ab63140c31704712bb5a864.1611825446.git.lucien.xin@gmail.com>
+ <CAF=yD-JXJwn4HX1kbeJpVoN1GgvpddxU55gan_hiLEx4xrSsgg@mail.gmail.com>
+ <CAKgT0Uchuef=e2w5grNitLM1NzsV--6QGnwvKuffMPisVAR0UA@mail.gmail.com> <CAF=yD-LdPESYBjWW0tTccduB1NA_2wSPjXRTUHCRqsVyAxYyRQ@mail.gmail.com>
+In-Reply-To: <CAF=yD-LdPESYBjWW0tTccduB1NA_2wSPjXRTUHCRqsVyAxYyRQ@mail.gmail.com>
+From:   Alexander Duyck <alexander.duyck@gmail.com>
+Date:   Thu, 28 Jan 2021 13:42:06 -0800
+Message-ID: <CAKgT0Uf_-kCDNefVJ4ODpemD=BqyKGXEqdUBt7jS_iMZun80Ug@mail.gmail.com>
+Subject: Re: [PATCHv3 net-next 1/2] net: support ip generic csum processing in skb_csum_hwoffload_help
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Xin Long <lucien.xin@gmail.com>,
+        network dev <netdev@vger.kernel.org>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Davide Caratti <dcaratti@redhat.com>,
+        David Miller <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Willem de Bruijn <willemb@google.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Aleksandr Loktionov <aleksandr.loktionov@intel.com>
+On Thu, Jan 28, 2021 at 12:00 PM Willem de Bruijn
+<willemdebruijn.kernel@gmail.com> wrote:
+>
+> On Thu, Jan 28, 2021 at 2:46 PM Alexander Duyck
+> <alexander.duyck@gmail.com> wrote:
+> >
+> > On Thu, Jan 28, 2021 at 6:07 AM Willem de Bruijn
+> > <willemdebruijn.kernel@gmail.com> wrote:
+> > >
+> > > On Thu, Jan 28, 2021 at 4:29 AM Xin Long <lucien.xin@gmail.com> wrote:
+> > > >
+> > > > NETIF_F_IP|IPV6_CSUM feature flag indicates UDP and TCP csum offload
+> > > > while NETIF_F_HW_CSUM feature flag indicates ip generic csum offload
+> > > > for HW, which includes not only for TCP/UDP csum, but also for other
+> > > > protocols' csum like GRE's.
+> > > >
+> > > > However, in skb_csum_hwoffload_help() it only checks features against
+> > > > NETIF_F_CSUM_MASK(NETIF_F_HW|IP|IPV6_CSUM). So if it's a non TCP/UDP
+> > > > packet and the features doesn't support NETIF_F_HW_CSUM, but supports
+> > > > NETIF_F_IP|IPV6_CSUM only, it would still return 0 and leave the HW
+> > > > to do csum.
+> > > >
+> > > > This patch is to support ip generic csum processing by checking
+> > > > NETIF_F_HW_CSUM for all protocols, and check (NETIF_F_IP_CSUM |
+> > > > NETIF_F_IPV6_CSUM) only for TCP and UDP.
+> > > >
+> > > > Note that we're using skb->csum_offset to check if it's a TCP/UDP
+> > > > proctol, this might be fragile. However, as Alex said, for now we
+> > > > only have a few L4 protocols that are requesting Tx csum offload,
+> > > > we'd better fix this until a new protocol comes with a same csum
+> > > > offset.
+> > > >
+> > > > v1->v2:
+> > > >   - not extend skb->csum_not_inet, but use skb->csum_offset to tell
+> > > >     if it's an UDP/TCP csum packet.
+> > > > v2->v3:
+> > > >   - add a note in the changelog, as Willem suggested.
+> > > >
+> > > > Suggested-by: Alexander Duyck <alexander.duyck@gmail.com>
+> > > > Signed-off-by: Xin Long <lucien.xin@gmail.com>
+> > > > ---
+> > > >  net/core/dev.c | 13 ++++++++++++-
+> > > >  1 file changed, 12 insertions(+), 1 deletion(-)
+> > > >
+> > > > diff --git a/net/core/dev.c b/net/core/dev.c
+> > > > index 6df3f1b..aae116d 100644
+> > > > --- a/net/core/dev.c
+> > > > +++ b/net/core/dev.c
+> > > > @@ -3621,7 +3621,18 @@ int skb_csum_hwoffload_help(struct sk_buff *skb,
+> > > >                 return !!(features & NETIF_F_SCTP_CRC) ? 0 :
+> > > >                         skb_crc32c_csum_help(skb);
+> > > >
+> > > > -       return !!(features & NETIF_F_CSUM_MASK) ? 0 : skb_checksum_help(skb);
+> > > > +       if (features & NETIF_F_HW_CSUM)
+> > > > +               return 0;
+> > > > +
+> > > > +       if (features & (NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM)) {
+> > >
+> > > Should this check the specific feature flag against skb->protocol? I
+> > > don't know if there are actually instances that only support one of
+> > > the two flags.
+> >
+> > The issue is at a certain point we start excluding devices that were
+> > previously working.
+> >
+> > All this patch is really doing is using the checksum offset to
+> > identify the cases that were previously UDP or TCP offloads and
+> > letting those through with the legacy path, while any offsets that are
+> > not those two, such as the GRE checksum will now have to be explicitly
+> > caught by the NETIF_F_HW_CSUM case and not accepted by the other
+> > cases.
+>
+> I understand. But letting through an IPv6 packet to a nic that
+> advertises NETIF_F_IP_CSUM, but not NETIF_F_IPV6_CSUM, is still
+> incorrect, right?
 
-This reverts commit 2ad1274fa35ace5c6360762ba48d33b63da2396c
+That all depends. The problem is if we are going to look at protocol
+we essentially have to work our way through a number of fields and
+sort out if there are tunnels or not and if so what the protocol for
+the inner headers are and if that is supported. It might make more
+sense in that case to look at incorporating a v4/v6 specific check
+into netif_skb_features so we could mask off the bit there.
 
-VF queues were not brought up when PF was brought up after being
-downed if the VF driver disabled VFs queues during PF down.
-This could happen in some older or external VF driver implementations.
-The problem was that PF driver used vf->queues_enabled as a condition
-to decide what link-state it would send out which caused the issue.
-
-Remove the check for vf->queues_enabled in the VF link notify.
-Now VF will always be notified of the current link status.
-Also remove the queues_enabled member from i40e_vf structure as it is
-not used anymore. Otherwise VNF implementation was broken and caused
-a link flap.
-
-Fixes: 2ad1274fa35a ("i40e: don't report link up for a VF who hasn't enabled")
-Signed-off-by: Aleksandr Loktionov <aleksandr.loktionov@intel.com>
-Signed-off-by: Arkadiusz Kubalewski <arkadiusz.kubalewski@intel.com>
-Tested-by: Konrad Jankowski <konrad0.jankowski@intel.com>
-Signed-off-by: Tony Nguyen <anthony.l.nguyen@intel.com>
----
- drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c | 13 +------------
- drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.h |  1 -
- 2 files changed, 1 insertion(+), 13 deletions(-)
-
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c b/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
-index 7efc61aacb0a..1b6ec9be155a 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
-+++ b/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.c
-@@ -55,12 +55,7 @@ static void i40e_vc_notify_vf_link_state(struct i40e_vf *vf)
- 
- 	pfe.event = VIRTCHNL_EVENT_LINK_CHANGE;
- 	pfe.severity = PF_EVENT_SEVERITY_INFO;
--
--	/* Always report link is down if the VF queues aren't enabled */
--	if (!vf->queues_enabled) {
--		pfe.event_data.link_event.link_status = false;
--		pfe.event_data.link_event.link_speed = 0;
--	} else if (vf->link_forced) {
-+	if (vf->link_forced) {
- 		pfe.event_data.link_event.link_status = vf->link_up;
- 		pfe.event_data.link_event.link_speed =
- 			(vf->link_up ? i40e_virtchnl_link_speed(ls->link_speed) : 0);
-@@ -70,7 +65,6 @@ static void i40e_vc_notify_vf_link_state(struct i40e_vf *vf)
- 		pfe.event_data.link_event.link_speed =
- 			i40e_virtchnl_link_speed(ls->link_speed);
- 	}
--
- 	i40e_aq_send_msg_to_vf(hw, abs_vf_id, VIRTCHNL_OP_EVENT,
- 			       0, (u8 *)&pfe, sizeof(pfe), NULL);
- }
-@@ -2443,8 +2437,6 @@ static int i40e_vc_enable_queues_msg(struct i40e_vf *vf, u8 *msg)
- 		}
- 	}
- 
--	vf->queues_enabled = true;
--
- error_param:
- 	/* send the response to the VF */
- 	return i40e_vc_send_resp_to_vf(vf, VIRTCHNL_OP_ENABLE_QUEUES,
-@@ -2466,9 +2458,6 @@ static int i40e_vc_disable_queues_msg(struct i40e_vf *vf, u8 *msg)
- 	struct i40e_pf *pf = vf->pf;
- 	i40e_status aq_ret = 0;
- 
--	/* Immediately mark queues as disabled */
--	vf->queues_enabled = false;
--
- 	if (!test_bit(I40E_VF_STATE_ACTIVE, &vf->vf_states)) {
- 		aq_ret = I40E_ERR_PARAM;
- 		goto error_param;
-diff --git a/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.h b/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.h
-index 5491215d81de..091e32c1bb46 100644
---- a/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.h
-+++ b/drivers/net/ethernet/intel/i40e/i40e_virtchnl_pf.h
-@@ -98,7 +98,6 @@ struct i40e_vf {
- 	unsigned int tx_rate;	/* Tx bandwidth limit in Mbps */
- 	bool link_forced;
- 	bool link_up;		/* only valid if VF link is forced */
--	bool queues_enabled;	/* true if the VF queues are enabled */
- 	bool spoofchk;
- 	u16 num_vlan;
- 
--- 
-2.26.2
-
+The question i would have is how has this code been working up until
+now without that check? If we are broken outright and need to add it
+then maybe this should be deemed more of a fix and pushed for net with
+the added protocol bit masking added.
