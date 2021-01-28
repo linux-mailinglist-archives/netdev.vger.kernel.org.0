@@ -2,260 +2,187 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DDB37306DD8
-	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 07:49:04 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AFB30306DBF
+	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 07:44:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231451AbhA1Gq3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jan 2021 01:46:29 -0500
-Received: from esa.microchip.iphmx.com ([68.232.154.123]:10607 "EHLO
-        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231347AbhA1GqI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jan 2021 01:46:08 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1611816368; x=1643352368;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=k/LpW9ZLWg6XuYfZ2wxuCNVHoLBJD/igf9dgOMJ1fHM=;
-  b=AQfJl7poN8HWJK13AgkzzZmAD34zTQRkUwkoi1AVWDXO5V1AZBPodlCR
-   TMWcZQ3JSwx7+iWASK2SzPwXbch9UhI0JC6ayd2Uq6mC5JF115bNl8ubn
-   TKj+wuiZiUj99trlv29d/KKzeHd3hcC8LCJI0Aj1kmDt/OyF/ERY26OfK
-   8dcjvXWuGd5jzOoAcKC5xxCbmmIOuGZ8dzkBKEDYmjX7AhIlInS6HDBUV
-   RPuNPRllAEzLD8GTKOt9BYGSRnuCny8tsD9ubeBdIDAFrEjrYX91NLIiG
-   4j+lBM0cdxk8N74YNKtuEY+NEl38sKhGgb9FPeq2IZGlcX8d8V2x7mD12
-   A==;
-IronPort-SDR: fdaOdcRNa4P0dD+3hQEaBqJLSlvtMZG2atrmqu3nFduFI/X4/lZHvdFDccslbAACoqk8LTdbfr
- w9teYlCaqDvhdjfCBxdHn6FnDvDSVsDTT4qooKvgdSYhEQ6Xzg0DVIE14ciaee0C61IhYpf1tA
- Bvpxk0HWeRq8zwhHoN/vM0sx1ESc3i0MAsJjQsV1wjZBOG2DTLb6abmyYClHum5qRVY4pbVCyE
- bBLws9EMg4aYgJTppGPEy4rIbgJQhLOY6sB7VAAnKmFdhItVWjcm4XNQRzRBKguZAqLzIQ+ypU
- PmQ=
-X-IronPort-AV: E=Sophos;i="5.79,381,1602572400"; 
-   d="scan'208";a="42047643"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 27 Jan 2021 23:44:52 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
- chn-vm-ex03.mchp-main.com (10.10.85.151) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Wed, 27 Jan 2021 23:44:51 -0700
-Received: from CHE-LT-I21427U.microchip.com (10.10.115.15) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.1979.3 via Frontend Transport; Wed, 27 Jan 2021 23:44:47 -0700
-From:   Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
-To:     <andrew@lunn.ch>, <olteanv@gmail.com>, <netdev@vger.kernel.org>,
-        <robh+dt@kernel.org>
-CC:     <kuba@kernel.org>, <vivien.didelot@gmail.com>,
-        <f.fainelli@gmail.com>, <davem@davemloft.net>,
-        <UNGLinuxDriver@microchip.com>, <Woojung.Huh@microchip.com>,
-        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>
-Subject: [PATCH net-next 8/8] net: dsa: microchip: add support for vlan operations
-Date:   Thu, 28 Jan 2021 12:11:12 +0530
-Message-ID: <20210128064112.372883-9-prasanna.vengateshan@microchip.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210128064112.372883-1-prasanna.vengateshan@microchip.com>
-References: <20210128064112.372883-1-prasanna.vengateshan@microchip.com>
+        id S229854AbhA1GoK (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jan 2021 01:44:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56112 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229695AbhA1GoJ (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jan 2021 01:44:09 -0500
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50D74C061574
+        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 22:43:29 -0800 (PST)
+Received: by mail-ej1-x633.google.com with SMTP id hs11so6175293ejc.1
+        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 22:43:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=o7+Pby8e2R99rOdoZOYeLtvRv3cjQ5UmuprwF9knKn8=;
+        b=FFkqqprW75VlMmYs0znavBz5Q8Im1qY/XXrSman/lI4JZjc70ahX5oJMarnuCUbvIc
+         yZ1PO0awLHDxRVQsekuHK0W0fjN1P3xj/vnWSCuxh+FGguxGJqHeBTamRPSsOpcLPJlz
+         RElSMf4RCt6SztKZV13T4N1a/B1NIGDCa9g7OYhoP3wXWITTGmjMgPTPpXf++r+QF+mQ
+         g3clKrEH/ZX0cs6Y/gtQnZk2vd3PrZnR745SG2n/AtNyKppbBvjX1cZrjRGs/4V0pYNr
+         sNGo1V52kAFsMCZj5YJvLWhY6e8rkmwdDIiMFqLcaImeViBDxAD0gQNJoh5JkEEYtLLB
+         6t7Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=o7+Pby8e2R99rOdoZOYeLtvRv3cjQ5UmuprwF9knKn8=;
+        b=ASeSMDOhGCpZe3AcneCcMN2jweWOqadV0WmCAxz9VeiYUeYqosmA8paJxJUdoZD5gx
+         CHHQPenNKQzgDduwlAZ61UsgJJvNhyZb6fJP4Ivl2IG0yJt5OgRKeb78oiKcJmtfcLU8
+         mO7ViWkky4Wf1BBuHrOrnDV+F/maEDhs8Hn4JTc1IA+TQtTCPWysW0IsEc8YpbpmMYnc
+         myalRYcacUFz2OXyymPR2+xf9Bq177fxVUMMjxufFREFo4n+Cv8oxVYGIJo+s2Mre3SM
+         V+20xnUKUhMrnbTvklBh8f39++HhS51PFGh2w6gIbyk8ohyaZrfTTIpjdbxg033QCU4v
+         o7Sg==
+X-Gm-Message-State: AOAM5315kyUTb54iXOGAs71rP4pojV3bosYSt0oEPSEAY0Ehg1gmxOfw
+        p6AFzaG0Y9FB3dQFM0UWMwfxdrz47Ip4ZRD5MDtb
+X-Google-Smtp-Source: ABdhPJwJNvRpomqMRznRTxiFyPthpJuctZnqW2JgzR705CTKACKbSdDjP/NBg+4Y0UDASwp10FKgqn5Bn/zS0xEdqFY=
+X-Received: by 2002:a17:906:128e:: with SMTP id k14mr9414841ejb.427.1611816208026;
+ Wed, 27 Jan 2021 22:43:28 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
+References: <20210119045920.447-1-xieyongji@bytedance.com> <20210119050756.600-1-xieyongji@bytedance.com>
+ <20210119050756.600-2-xieyongji@bytedance.com> <1bb3af07-0ec2-109c-d6d1-83d4d1f410c3@redhat.com>
+ <CACycT3uJtKqEp7CHBKhvmSL41gTrCcMrt_-tacGCbX1nabuG6w@mail.gmail.com>
+ <ea170064-6fcf-133b-f3bd-d1f1862d4143@redhat.com> <CACycT3upvTrkm5Cd6KzphSk=FYDjAVCbFJ0CLmha5sP_h=5KGg@mail.gmail.com>
+ <bdb57829-d4a4-eaca-d43b-70d39df96bf6@redhat.com>
+In-Reply-To: <bdb57829-d4a4-eaca-d43b-70d39df96bf6@redhat.com>
+From:   Yongji Xie <xieyongji@bytedance.com>
+Date:   Thu, 28 Jan 2021 14:43:17 +0800
+Message-ID: <CACycT3sfd8LOS+3w1LGZe1CaUD3B-3ga2OqKBxA_vhaOL0kg2g@mail.gmail.com>
+Subject: Re: Re: [RFC v3 08/11] vduse: Introduce VDUSE - vDPA Device in Userspace
+To:     Jason Wang <jasowang@redhat.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Parav Pandit <parav@nvidia.com>, Bob Liu <bob.liu@oracle.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Matthew Wilcox <willy@infradead.org>, viro@zeniv.linux.org.uk,
+        Jens Axboe <axboe@kernel.dk>, bcrl@kvack.org,
+        Jonathan Corbet <corbet@lwn.net>,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org, linux-aio@kvack.org,
+        linux-fsdevel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Support for VLAN add, del, prepare and filtering operations.
+On Thu, Jan 28, 2021 at 2:14 PM Jason Wang <jasowang@redhat.com> wrote:
+>
+>
+> On 2021/1/28 =E4=B8=8B=E5=8D=882:03, Yongji Xie wrote:
+> >>>>> +
+> >>>>> +static const struct file_operations vduse_domain_fops =3D {
+> >>>>> +     .mmap =3D vduse_domain_mmap,
+> >>>>> +     .release =3D vduse_domain_release,
+> >>>>> +};
+> >>>> It's better to explain the reason for introducing a dedicated file f=
+or
+> >>>> mmap() here.
+> >>>>
+> >>> To make the implementation of iova_domain independent with vduse_dev.
+> >> My understanding is that, the only usage for this is to:
+> >>
+> >> 1) support different type of iova mappings
+> >> 2) or switch between iova domain mappings
+> >>
+> >> But I can't think of a need for this.
+> >>
+> > For example, share one iova_domain between several vduse devices.
+>
+>
+> Interesting.
+>
+>
+> >
+> > And it will be helpful if we want to split this patch into iova domain
+> > part and vduse device part. Because the page fault handler should be
+> > paired with dma_map/dma_unmap.
+>
+>
+> Ok.
+>
+> [...]
+>
+>
+> >
+> >>>> This looks not safe, let's use idr here.
+> >>>>
+> >>> Could you give more details? Looks like idr should not used in this
+> >>> case which can not tolerate failure. And using a list to store the ms=
+g
+> >>> is better than using idr when the msg needs to be re-inserted in some
+> >>> cases.
+> >> My understanding is the "unique" (probably need a better name) is a
+> >> token that is used to uniquely identify a message. The reply from
+> >> userspace is required to write with exact the same token(unique). IDR
+> >> seems better but consider we can hardly hit 64bit overflow, atomic mig=
+ht
+> >> be OK as well.
+> >>
+> >> Btw, under what case do we need to do "re-inserted"?
+> >>
+> > When userspace daemon receive the message but doesn't reply it before c=
+rash.
+>
+>
+> Do we have code to do this?
+>
 
-It aligns with latest update of removing switchdev
-transactional logic from VLAN objects
+Yes, in patch 9.
 
-Signed-off-by: Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
----
- drivers/net/dsa/microchip/lan937x_main.c | 161 +++++++++++++++++++++++
- 1 file changed, 161 insertions(+)
+>
+> >
+> >>>> So we had multiple types of requests/responses, is this better to
+> >>>> introduce a queue based admin interface other than ioctl?
+> >>>>
+> >>> Sorry, I didn't get your point. What do you mean by queue-based admin
+> >>> interface? Virtqueue-based?
+> >> Yes, a queue(virtqueue). The commands could be passed through the queu=
+e.
+> >> (Just an idea, not sure it's worth)
+> >>
+> > I considered it before. But I found it still needs some extra works
+> > (setup eventfd, set vring base and so on) to setup the admin virtqueue
+> > before using it for communication. So I turn to use this simple way.
+>
+>
+> Yes. We might consider it in the future.
+>
 
-diff --git a/drivers/net/dsa/microchip/lan937x_main.c b/drivers/net/dsa/microchip/lan937x_main.c
-index cd902addce3f..b4c68baf9281 100644
---- a/drivers/net/dsa/microchip/lan937x_main.c
-+++ b/drivers/net/dsa/microchip/lan937x_main.c
-@@ -14,6 +14,73 @@
- #include "ksz_common.h"
- #include "lan937x_dev.h"
- 
-+static int lan937x_wait_vlan_ctrl_ready(struct ksz_device *dev)
-+{
-+	unsigned int val;
-+
-+	return regmap_read_poll_timeout(dev->regmap[0], REG_SW_VLAN_CTRL,
-+					val, !(val & VLAN_START), 10, 1000);
-+}
-+
-+static int lan937x_get_vlan_table(struct ksz_device *dev, u16 vid,
-+				  u32 *vlan_table)
-+{
-+	int ret;
-+
-+	mutex_lock(&dev->vlan_mutex);
-+
-+	ksz_write16(dev, REG_SW_VLAN_ENTRY_INDEX__2, vid & VLAN_INDEX_M);
-+	ksz_write8(dev, REG_SW_VLAN_CTRL, VLAN_READ | VLAN_START);
-+
-+	/* wait to be cleared */
-+	ret = lan937x_wait_vlan_ctrl_ready(dev);
-+	if (ret)
-+		goto exit;
-+
-+	ksz_read32(dev, REG_SW_VLAN_ENTRY__4, &vlan_table[0]);
-+	ksz_read32(dev, REG_SW_VLAN_ENTRY_UNTAG__4, &vlan_table[1]);
-+	ksz_read32(dev, REG_SW_VLAN_ENTRY_PORTS__4, &vlan_table[2]);
-+
-+	ksz_write8(dev, REG_SW_VLAN_CTRL, 0);
-+
-+exit:
-+	mutex_unlock(&dev->vlan_mutex);
-+
-+	return ret;
-+}
-+
-+static int lan937x_set_vlan_table(struct ksz_device *dev, u16 vid,
-+				  u32 *vlan_table)
-+{
-+	int ret;
-+
-+	mutex_lock(&dev->vlan_mutex);
-+
-+	ksz_write32(dev, REG_SW_VLAN_ENTRY__4, vlan_table[0]);
-+	ksz_write32(dev, REG_SW_VLAN_ENTRY_UNTAG__4, vlan_table[1]);
-+	ksz_write32(dev, REG_SW_VLAN_ENTRY_PORTS__4, vlan_table[2]);
-+
-+	ksz_write16(dev, REG_SW_VLAN_ENTRY_INDEX__2, vid & VLAN_INDEX_M);
-+	ksz_write8(dev, REG_SW_VLAN_CTRL, VLAN_START | VLAN_WRITE);
-+
-+	/* wait to be cleared */
-+	ret = lan937x_wait_vlan_ctrl_ready(dev);
-+	if (ret)
-+		goto exit;
-+
-+	ksz_write8(dev, REG_SW_VLAN_CTRL, 0);
-+
-+	/* update vlan cache table */
-+	dev->vlan_cache[vid].table[0] = vlan_table[0];
-+	dev->vlan_cache[vid].table[1] = vlan_table[1];
-+	dev->vlan_cache[vid].table[2] = vlan_table[2];
-+
-+exit:
-+	mutex_unlock(&dev->vlan_mutex);
-+
-+	return ret;
-+}
-+
- static void lan937x_read_table(struct ksz_device *dev, u32 *table)
- {
- 	/* read alu table */
-@@ -198,6 +265,97 @@ static void lan937x_port_stp_state_set(struct dsa_switch *ds, int port,
- 	mutex_unlock(&dev->dev_mutex);
- }
- 
-+static int lan937x_port_vlan_filtering(struct dsa_switch *ds, int port,
-+				       bool flag)
-+{
-+	struct ksz_device *dev = ds->priv;
-+
-+	if (flag) {
-+		lan937x_port_cfg(dev, port, REG_PORT_LUE_CTRL,
-+				 PORT_VLAN_LOOKUP_VID_0, true);
-+		lan937x_cfg(dev, REG_SW_LUE_CTRL_0, SW_VLAN_ENABLE, true);
-+	} else {
-+		lan937x_cfg(dev, REG_SW_LUE_CTRL_0, SW_VLAN_ENABLE, false);
-+		lan937x_port_cfg(dev, port, REG_PORT_LUE_CTRL,
-+				 PORT_VLAN_LOOKUP_VID_0, false);
-+	}
-+
-+	return 0;
-+}
-+
-+static int lan937x_port_vlan_add(struct dsa_switch *ds, int port,
-+				 const struct switchdev_obj_port_vlan *vlan)
-+{
-+	bool untagged = vlan->flags & BRIDGE_VLAN_INFO_UNTAGGED;
-+	struct ksz_device *dev = ds->priv;
-+	u32 vlan_table[3];
-+	int err;
-+
-+	err = lan937x_get_vlan_table(dev, vlan->vid, vlan_table);
-+	if (err) {
-+		dev_err(dev->dev, "Failed to get vlan table\n");
-+		return err;
-+	}
-+
-+	vlan_table[0] = VLAN_VALID | (vlan->vid & VLAN_FID_M);
-+
-+	/* set/clear switch port when updating vlan table registers */
-+	if (untagged)
-+		vlan_table[1] |= BIT(port);
-+	else
-+		vlan_table[1] &= ~BIT(port);
-+	vlan_table[1] &= ~(BIT(dev->cpu_port));
-+
-+	vlan_table[2] |= BIT(port) |
-+					BIT(dev->cpu_port);
-+
-+	err = lan937x_set_vlan_table(dev, vlan->vid, vlan_table);
-+	if (err) {
-+		dev_err(dev->dev, "Failed to set vlan table\n");
-+		return err;
-+	}
-+
-+	/* change PVID */
-+	if (vlan->flags & BRIDGE_VLAN_INFO_PVID)
-+		lan937x_pwrite16(dev, port, REG_PORT_DEFAULT_VID, vlan->vid);
-+
-+	return 0;
-+}
-+
-+static int lan937x_port_vlan_del(struct dsa_switch *ds, int port,
-+				 const struct switchdev_obj_port_vlan *vlan)
-+{
-+	bool untagged = vlan->flags & BRIDGE_VLAN_INFO_UNTAGGED;
-+	struct ksz_device *dev = ds->priv;
-+	u32 vlan_table[3];
-+	u16 pvid;
-+
-+	lan937x_pread16(dev, port, REG_PORT_DEFAULT_VID, &pvid);
-+	pvid = pvid & 0xFFF;
-+
-+	if (lan937x_get_vlan_table(dev, vlan->vid, vlan_table)) {
-+		dev_err(dev->dev, "Failed to get vlan table\n");
-+		return -ETIMEDOUT;
-+	}
-+	/* clear switch port number */
-+	vlan_table[2] &= ~BIT(port);
-+
-+	if (pvid == vlan->vid)
-+		pvid = 1;
-+
-+	if (untagged)
-+		vlan_table[1] &= ~BIT(port);
-+
-+	if (lan937x_set_vlan_table(dev, vlan->vid, vlan_table)) {
-+		dev_err(dev->dev, "Failed to set vlan table\n");
-+		return -ETIMEDOUT;
-+	}
-+
-+	lan937x_pwrite16(dev, port, REG_PORT_DEFAULT_VID, pvid);
-+
-+	return 0;
-+}
-+
- static u8 lan937x_get_fid(u16 vid)
- {
- 	if (vid > ALU_FID_SIZE)
-@@ -852,6 +1010,9 @@ const struct dsa_switch_ops lan937x_switch_ops = {
- 	.port_bridge_leave	= ksz_port_bridge_leave,
- 	.port_stp_state_set	= lan937x_port_stp_state_set,
- 	.port_fast_age		= ksz_port_fast_age,
-+	.port_vlan_filtering	= lan937x_port_vlan_filtering,
-+	.port_vlan_add		= lan937x_port_vlan_add,
-+	.port_vlan_del		= lan937x_port_vlan_del,
- 	.port_fdb_dump		= lan937x_port_fdb_dump,
- 	.port_fdb_add		= lan937x_port_fdb_add,
- 	.port_fdb_del		= lan937x_port_fdb_del,
--- 
-2.25.1
+Agree.
 
+>
+>
+> >
+> >>>> Any reason for such IOTLB invalidation here?
+> >>>>
+> >>> As I mentioned before, this is used to notify userspace to update the
+> >>> IOTLB. Mainly for virtio-vdpa case.
+> >> So the question is, usually, there could be several times of status
+> >> setting during driver initialization. Do we really need to update IOTL=
+B
+> >> every time?
+> >>
+> > I think we can check whether there are some changes after the last
+> > IOTLB updating here.
+>
+>
+> So the question still, except reset (write 0), any other status that can
+> affect IOTLB?
+>
+
+OK, I get your point. The status would not affect IOTLB. The reason
+why we do IOTLB updating here is we can't do it in dma_map_ops which
+might work in an atomic context. So I want to notify userspace to
+update IOTLB before I/O is processed. Of course, it's not a must
+because userspace can manually query it.
+
+Thanks,
+Yongji
