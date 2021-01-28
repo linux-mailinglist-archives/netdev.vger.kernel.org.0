@@ -2,160 +2,328 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id C733D306C61
-	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 05:44:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 2AD79306C7C
+	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 05:53:17 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231199AbhA1En5 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 23:43:57 -0500
-Received: from szxga05-in.huawei.com ([45.249.212.191]:11524 "EHLO
-        szxga05-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229606AbhA1Enz (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 23:43:55 -0500
-Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.58])
-        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4DR79M56QtzjDwd;
-        Thu, 28 Jan 2021 12:41:59 +0800 (CST)
-Received: from huawei.com (10.137.17.51) by DGGEMS403-HUB.china.huawei.com
- (10.3.19.203) with Microsoft SMTP Server id 14.3.498.0; Thu, 28 Jan 2021
- 12:43:02 +0800
-From:   Aichun Li <liaichun@huawei.com>
-To:     <davem@davemloft.net>, <kuba@kernel.org>, <j.vosburgh@gmail.com>,
-        <vfalico@gmail.com>, <andy@greyhouse.net>
-CC:     <netdev@vger.kernel.org>, <rose.chen@huawei.com>,
-        <liaichun@huawei.com>
-Subject: [PATCH net 1/1] [PATCH net]bonding: check port and aggregator when select
-Date:   Thu, 28 Jan 2021 12:41:36 +0800
-Message-ID: <20210128044136.28307-1-liaichun@huawei.com>
-X-Mailer: git-send-email 2.19.1
+        id S231205AbhA1Eux (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 23:50:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60126 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231133AbhA1Eus (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 23:50:48 -0500
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 825DFC061574
+        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 20:50:03 -0800 (PST)
+Received: by mail-lf1-x12a.google.com with SMTP id a8so5897153lfi.8
+        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 20:50:03 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=f0cI/ckw7DLIekGbQqV/HZ0owi+imz+Pvn1Fxdq4h50=;
+        b=CItajB14+USJK0F7eg9fMRc0wTpL3KmiV0oIiYRr6QakWl/zRKCaT3yHIp1wpqNVNG
+         gZFbbrmsLIIMHIxW4b6aazWcq7ZaVqdyB+RK0IgTjw8L79hG5pkd40tiQNjs/a7zfdFc
+         vP+t/5CzlXiyktfobDLBC29tFni3PKVRMiexfnitdI9eePGGKqFwJMeJo/qdWrVGbAiR
+         ajblBgf58BV2qP1ApDM5QDjVpQQQPnkC6lV2OS1ZvrO6ISHm/NR7vT3TuyHcQY6Tci/p
+         I2I5LYixg279KDwwGNwiu9QmFC1LbaG+w6MIx5PUAcfaExeALdxiBDa4fokbZ/yoOESC
+         ludw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=f0cI/ckw7DLIekGbQqV/HZ0owi+imz+Pvn1Fxdq4h50=;
+        b=bXTQlgxPuvaB0Z9FN6UL6G+/tXf+WZT3qO/cxdTvQBmciuJ+czQg2+x708Dy6HcwBC
+         VekaMZfkpp16rZfZ4tE6q+DCPCeM7xJpmmNrVEczKCQyFAdSl9H/wnbnqAAtiEjPGFGq
+         0yRO6dUyvNA9gUMD1WYCPnJgS5NhPy+bTGybVXDtAH/s7OFJEurm23vXh1Dg4kWJjVKz
+         FUtwkq4qPJE63Bm/QM2Ni4lO25D3gtDnRRHNcod+X2pHfBkU+psTRsh1H5XsAWZN38gz
+         ExpS9yXVkUB7RQ/wRojK0lva9CVlXFZpH9hUDSJ3uuwJfj8fxIpSP48xbSUfZTy7BFWl
+         hMqA==
+X-Gm-Message-State: AOAM531C9xs1QKBWW85BAwk+MCPJpRpHRbb8JLg2775XfjvR7gGBrSKo
+        RepTAPw8MIHB6SCw7mJ+uEE=
+X-Google-Smtp-Source: ABdhPJwzbnAAMS8kGI+eBEbkZChI0DpU1W+Pk9YXx27eZw2XcFZY0LE2AUr5uILX9MlJx2liqEej2g==
+X-Received: by 2002:ac2:52af:: with SMTP id r15mr544632lfm.333.1611809402018;
+        Wed, 27 Jan 2021 20:50:02 -0800 (PST)
+Received: from denisov-pc.mrn.ru ([46.146.202.208])
+        by smtp.gmail.com with ESMTPSA id n7sm1199156lfu.123.2021.01.27.20.50.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 27 Jan 2021 20:50:01 -0800 (PST)
+From:   Alexey Denisov <rtgbnm@gmail.com>
+Cc:     bryan.whitehead@microchip.com, UNGLinuxDriver@microchip.com,
+        netdev@vger.kernel.org, kuba@kernel.org,
+        Alexey Denisov <rtgbnm@gmail.com>
+Subject: [PATCH v2] lan743x: fix endianness when accessing descriptors
+Date:   Thu, 28 Jan 2021 09:48:59 +0500
+Message-Id: <20210128044859.280219-1-rtgbnm@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20210126183117.22514d0d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20210126183117.22514d0d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.137.17.51]
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-When the network service is repeatedly restarted in 802.3ad, there is a low
- probability that oops occurs.
-Test commands:systemctl restart network
+TX/RX descriptor ring fields are always little-endian, but conversion
+wasn't performed for big-endian CPUs, so the driver failed to work.
 
-1.crash: __enable_port():port->slave is NULL
-crash> bt
-PID: 2508692  TASK: ffff803e72a7ec80  CPU: 29  COMMAND: "kworker/u192:0"
- #0 [ffff0000b13cb5c0] machine_kexec at ffff0000800a3964
- #1 [ffff0000b13cb620] __crash_kexec at ffff0000801bf054
- #2 [ffff0000b13cb7b0] panic at ffff0000800f350c
- #3 [ffff0000b13cb890] die at ffff00008008f940
- #4 [ffff0000b13cb8e0] die_kernel_fault at ffff0000800abbc0
- #5 [ffff0000b13cb910] __do_kernel_fault at ffff0000800ab8c4
- #6 [ffff0000b13cb940] do_page_fault at ffff000080a3eb44
- #7 [ffff0000b13cba40] do_translation_fault at ffff000080a3f064
- #8 [ffff0000b13cba70] do_mem_abort at ffff0000800812cc
- #9 [ffff0000b13cbc70] el1_ia at ffff00008008320c
-     PC: ffff000000e2fcd0  [ad_agg_selection_logic+328]
-     LR: ffff000000e2fcb0  [ad_agg_selection_logic+296]
-     SP: ffff0000b13cbc80  PSTATE: 40c00009
-    X29: ffff0000b13cbc90  X28: ffff803e71c31438  X27: ffff000000e41eb8
-    X26: ffff0000b13cbd97  X25: ffff000000e4c0b8  X24: ffff803e71c31400
-    X23: ffff000081229000  X22: 0000000000000000  X21: ffff803e71c31400
-    X20: ffff0000b13cbcf0  X19: ffff803f4c772ac0  X18: ffffffffffffffff
-    X17: 0000000000000000  X16: ffff0000808acc70  X15: ffff000081229708
-    X14: 7361772074756220  X13: 353335353620726f  X12: 7461676572676761
-    X11: 206f742064657461  X10: 0000000000000000   X9: ffff00008122baf0
-     X8: 00000000000e97a8   X7: ffff000081408080   X6: ffff805f7fa27448
-     X5: ffff805f7fa27448   X4: 0000000000000000   X3: 0000000000000006
-     X2: 0000000000000004   X1: 0000000000000000   X0: ffff803e739bea38
-crash> struct port ffff803e739bea38
-struct port {
-  actor_port_number = 2,
-  actor_port_priority = 255,
-  actor_system = {
-    mac_addr_value = "\254\215\064\037\016y"
-  },
-  actor_system_priority = 65535,
-  actor_port_aggregator_identifier = 2094,
-  ntt = false,
-  actor_admin_port_key = 0,
-  actor_oper_port_key = 0,
-  actor_admin_port_state = 5 '\005',
-  actor_oper_port_state = 3 '\003',
-  partner_admin = {
-    system = {
-      mac_addr_value = "\000\000\000\000\000"
-    },
-    system_priority = 65535,
-    key = 1,
-    port_number = 1,
-    port_priority = 255,
-    port_state = 1
-  },
-  partner_oper = {
-    system = {
-      mac_addr_value = "\254\263\265\367b!"
-    },
-    system_priority = 32768,
-    key = 1089,
-    port_number = 8,
-    port_priority = 32768,
-    port_state = 61
-  },
-  is_enabled = false,
-  sm_vars = 304,
-  sm_rx_state = AD_RX_PORT_DISABLED,
-  sm_rx_timer_counter = 26,
-  sm_periodic_state = AD_NO_PERIODIC,
-  sm_periodic_timer_counter = 0,
-  sm_mux_state = AD_MUX_COLLECTING_DISTRIBUTING,
-  sm_mux_timer_counter = 0,
-  sm_tx_state = AD_TX_DUMMY,
-  sm_tx_timer_counter = 1,
-  sm_churn_actor_timer_counter = 0,
-  sm_churn_partner_timer_counter = 0,
-  churn_actor_count = 0,
-  churn_partner_count = 0,
-  lacpdu_send_success_count = 10,
-  lacpdu_send_failure_count = 0,
-  lacpdu_recv_count = 150,
-  marker_info_recv_count = 0,
-  marker_resp_recv_count = 0,
-  marker_unkown_recv_count = 0,
-  sm_churn_actor_state = AD_NO_CHURN,
-  sm_churn_partner_state = AD_NO_CHURN,
-  slave = 0x0,
-  aggregator = 0xffff803e739bea00,
-  next_port_in_aggregator = 0x0,
-  transaction_id = 0,
- -- MORE --
+This patch makes the driver work on big-endian CPUs. It was tested and
+confirmed to work on NXP P1010 processor (PowerPC).
 
-2.I also have another call stack, same as in another person's post:
-https://lore.kernel.org/netdev/52630cba-cc60-a024-8dd0-8319e5245044@huawei.com/
-
-Signed-off-by: Aichun Li <liaichun@huawei.com>
+Signed-off-by: Alexey Denisov <rtgbnm@gmail.com>
 ---
- drivers/net/bonding/bond_3ad.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ v2: Added __le32 sparse annotations for tx/rx descriptor fields as
+     pointed out.
 
-diff --git a/drivers/net/bonding/bond_3ad.c b/drivers/net/bonding/bond_3ad.c
-index aa001b16765a..9c8894631bdd 100644
---- a/drivers/net/bonding/bond_3ad.c
-+++ b/drivers/net/bonding/bond_3ad.c
-@@ -183,7 +183,7 @@ static inline void __enable_port(struct port *port)
- {
- 	struct slave *slave = port->slave;
+ drivers/net/ethernet/microchip/lan743x_main.c | 66 +++++++++----------
+ drivers/net/ethernet/microchip/lan743x_main.h | 20 +++---
+ 2 files changed, 43 insertions(+), 43 deletions(-)
+
+diff --git a/drivers/net/ethernet/microchip/lan743x_main.c b/drivers/net/ethernet/microchip/lan743x_main.c
+index 3804310c853a..51359ce650bd 100644
+--- a/drivers/net/ethernet/microchip/lan743x_main.c
++++ b/drivers/net/ethernet/microchip/lan743x_main.c
+@@ -1253,7 +1253,7 @@ static void lan743x_tx_release_desc(struct lan743x_tx *tx,
+ 	if (!(buffer_info->flags & TX_BUFFER_INFO_FLAG_ACTIVE))
+ 		goto done;
  
--	if ((slave->link == BOND_LINK_UP) && bond_slave_is_up(slave))
-+	if (slave && (slave->link == BOND_LINK_UP) && bond_slave_is_up(slave))
- 		bond_set_slave_active_flags(slave, BOND_SLAVE_NOTIFY_LATER);
+-	descriptor_type = (descriptor->data0) &
++	descriptor_type = le32_to_cpu(descriptor->data0) &
+ 			  TX_DESC_DATA0_DTYPE_MASK_;
+ 	if (descriptor_type == TX_DESC_DATA0_DTYPE_DATA_)
+ 		goto clean_up_data_descriptor;
+@@ -1313,7 +1313,7 @@ static int lan743x_tx_next_index(struct lan743x_tx *tx, int index)
+ 
+ static void lan743x_tx_release_completed_descriptors(struct lan743x_tx *tx)
+ {
+-	while ((*tx->head_cpu_ptr) != (tx->last_head)) {
++	while (le32_to_cpu(*tx->head_cpu_ptr) != (tx->last_head)) {
+ 		lan743x_tx_release_desc(tx, tx->last_head, false);
+ 		tx->last_head = lan743x_tx_next_index(tx, tx->last_head);
+ 	}
+@@ -1399,10 +1399,10 @@ static int lan743x_tx_frame_start(struct lan743x_tx *tx,
+ 	if (dma_mapping_error(dev, dma_ptr))
+ 		return -ENOMEM;
+ 
+-	tx_descriptor->data1 = DMA_ADDR_LOW32(dma_ptr);
+-	tx_descriptor->data2 = DMA_ADDR_HIGH32(dma_ptr);
+-	tx_descriptor->data3 = (frame_length << 16) &
+-		TX_DESC_DATA3_FRAME_LENGTH_MSS_MASK_;
++	tx_descriptor->data1 = cpu_to_le32(DMA_ADDR_LOW32(dma_ptr));
++	tx_descriptor->data2 = cpu_to_le32(DMA_ADDR_HIGH32(dma_ptr));
++	tx_descriptor->data3 = cpu_to_le32((frame_length << 16) &
++		TX_DESC_DATA3_FRAME_LENGTH_MSS_MASK_);
+ 
+ 	buffer_info->skb = NULL;
+ 	buffer_info->dma_ptr = dma_ptr;
+@@ -1443,7 +1443,7 @@ static void lan743x_tx_frame_add_lso(struct lan743x_tx *tx,
+ 		tx->frame_data0 |= TX_DESC_DATA0_IOC_;
+ 	}
+ 	tx_descriptor = &tx->ring_cpu_ptr[tx->frame_tail];
+-	tx_descriptor->data0 = tx->frame_data0;
++	tx_descriptor->data0 = cpu_to_le32(tx->frame_data0);
+ 
+ 	/* move to next descriptor */
+ 	tx->frame_tail = lan743x_tx_next_index(tx, tx->frame_tail);
+@@ -1487,7 +1487,7 @@ static int lan743x_tx_frame_add_fragment(struct lan743x_tx *tx,
+ 
+ 	/* wrap up previous descriptor */
+ 	tx_descriptor = &tx->ring_cpu_ptr[tx->frame_tail];
+-	tx_descriptor->data0 = tx->frame_data0;
++	tx_descriptor->data0 = cpu_to_le32(tx->frame_data0);
+ 
+ 	/* move to next descriptor */
+ 	tx->frame_tail = lan743x_tx_next_index(tx, tx->frame_tail);
+@@ -1513,10 +1513,10 @@ static int lan743x_tx_frame_add_fragment(struct lan743x_tx *tx,
+ 		return -ENOMEM;
+ 	}
+ 
+-	tx_descriptor->data1 = DMA_ADDR_LOW32(dma_ptr);
+-	tx_descriptor->data2 = DMA_ADDR_HIGH32(dma_ptr);
+-	tx_descriptor->data3 = (frame_length << 16) &
+-			       TX_DESC_DATA3_FRAME_LENGTH_MSS_MASK_;
++	tx_descriptor->data1 = cpu_to_le32(DMA_ADDR_LOW32(dma_ptr));
++	tx_descriptor->data2 = cpu_to_le32(DMA_ADDR_HIGH32(dma_ptr));
++	tx_descriptor->data3 = cpu_to_le32((frame_length << 16) &
++			       TX_DESC_DATA3_FRAME_LENGTH_MSS_MASK_);
+ 
+ 	buffer_info->skb = NULL;
+ 	buffer_info->dma_ptr = dma_ptr;
+@@ -1560,7 +1560,7 @@ static void lan743x_tx_frame_end(struct lan743x_tx *tx,
+ 	if (ignore_sync)
+ 		buffer_info->flags |= TX_BUFFER_INFO_FLAG_IGNORE_SYNC;
+ 
+-	tx_descriptor->data0 = tx->frame_data0;
++	tx_descriptor->data0 = cpu_to_le32(tx->frame_data0);
+ 	tx->frame_tail = lan743x_tx_next_index(tx, tx->frame_tail);
+ 	tx->last_tail = tx->frame_tail;
+ 
+@@ -1967,11 +1967,11 @@ static int lan743x_rx_init_ring_element(struct lan743x_rx *rx, int index,
+ 	}
+ 
+ 	buffer_info->buffer_length = length;
+-	descriptor->data1 = DMA_ADDR_LOW32(buffer_info->dma_ptr);
+-	descriptor->data2 = DMA_ADDR_HIGH32(buffer_info->dma_ptr);
++	descriptor->data1 = cpu_to_le32(DMA_ADDR_LOW32(buffer_info->dma_ptr));
++	descriptor->data2 = cpu_to_le32(DMA_ADDR_HIGH32(buffer_info->dma_ptr));
+ 	descriptor->data3 = 0;
+-	descriptor->data0 = (RX_DESC_DATA0_OWN_ |
+-			    (length & RX_DESC_DATA0_BUF_LENGTH_MASK_));
++	descriptor->data0 = cpu_to_le32((RX_DESC_DATA0_OWN_ |
++			    (length & RX_DESC_DATA0_BUF_LENGTH_MASK_)));
+ 	skb_reserve(buffer_info->skb, RX_HEAD_PADDING);
+ 	lan743x_rx_update_tail(rx, index);
+ 
+@@ -1986,12 +1986,12 @@ static void lan743x_rx_reuse_ring_element(struct lan743x_rx *rx, int index)
+ 	descriptor = &rx->ring_cpu_ptr[index];
+ 	buffer_info = &rx->buffer_info[index];
+ 
+-	descriptor->data1 = DMA_ADDR_LOW32(buffer_info->dma_ptr);
+-	descriptor->data2 = DMA_ADDR_HIGH32(buffer_info->dma_ptr);
++	descriptor->data1 = cpu_to_le32(DMA_ADDR_LOW32(buffer_info->dma_ptr));
++	descriptor->data2 = cpu_to_le32(DMA_ADDR_HIGH32(buffer_info->dma_ptr));
+ 	descriptor->data3 = 0;
+-	descriptor->data0 = (RX_DESC_DATA0_OWN_ |
++	descriptor->data0 = cpu_to_le32((RX_DESC_DATA0_OWN_ |
+ 			    ((buffer_info->buffer_length) &
+-			    RX_DESC_DATA0_BUF_LENGTH_MASK_));
++			    RX_DESC_DATA0_BUF_LENGTH_MASK_)));
+ 	lan743x_rx_update_tail(rx, index);
  }
  
-@@ -1516,6 +1516,7 @@ static void ad_port_selection_logic(struct port *port, bool *update_slave_arr)
- 				  port->actor_port_number,
- 				  port->aggregator->aggregator_identifier);
+@@ -2025,7 +2025,7 @@ static int lan743x_rx_process_packet(struct lan743x_rx *rx)
+ {
+ 	struct skb_shared_hwtstamps *hwtstamps = NULL;
+ 	int result = RX_PROCESS_RESULT_NOTHING_TO_DO;
+-	int current_head_index = *rx->head_cpu_ptr;
++	int current_head_index = le32_to_cpu(*rx->head_cpu_ptr);
+ 	struct lan743x_rx_buffer_info *buffer_info;
+ 	struct lan743x_rx_descriptor *descriptor;
+ 	int extension_index = -1;
+@@ -2040,14 +2040,14 @@ static int lan743x_rx_process_packet(struct lan743x_rx *rx)
+ 
+ 	if (rx->last_head != current_head_index) {
+ 		descriptor = &rx->ring_cpu_ptr[rx->last_head];
+-		if (descriptor->data0 & RX_DESC_DATA0_OWN_)
++		if (le32_to_cpu(descriptor->data0) & RX_DESC_DATA0_OWN_)
+ 			goto done;
+ 
+-		if (!(descriptor->data0 & RX_DESC_DATA0_FS_))
++		if (!(le32_to_cpu(descriptor->data0) & RX_DESC_DATA0_FS_))
+ 			goto done;
+ 
+ 		first_index = rx->last_head;
+-		if (descriptor->data0 & RX_DESC_DATA0_LS_) {
++		if (le32_to_cpu(descriptor->data0) & RX_DESC_DATA0_LS_) {
+ 			last_index = rx->last_head;
  		} else {
-+			port->aggregator = &(SLAVE_AD_INFO(slave)->aggregator);
- 			slave_err(bond->dev, port->slave->dev,
- 				  "Port %d did not find a suitable aggregator\n",
- 				  port->actor_port_number);
+ 			int index;
+@@ -2055,10 +2055,10 @@ static int lan743x_rx_process_packet(struct lan743x_rx *rx)
+ 			index = lan743x_rx_next_index(rx, first_index);
+ 			while (index != current_head_index) {
+ 				descriptor = &rx->ring_cpu_ptr[index];
+-				if (descriptor->data0 & RX_DESC_DATA0_OWN_)
++				if (le32_to_cpu(descriptor->data0) & RX_DESC_DATA0_OWN_)
+ 					goto done;
+ 
+-				if (descriptor->data0 & RX_DESC_DATA0_LS_) {
++				if (le32_to_cpu(descriptor->data0) & RX_DESC_DATA0_LS_) {
+ 					last_index = index;
+ 					break;
+ 				}
+@@ -2067,17 +2067,17 @@ static int lan743x_rx_process_packet(struct lan743x_rx *rx)
+ 		}
+ 		if (last_index >= 0) {
+ 			descriptor = &rx->ring_cpu_ptr[last_index];
+-			if (descriptor->data0 & RX_DESC_DATA0_EXT_) {
++			if (le32_to_cpu(descriptor->data0) & RX_DESC_DATA0_EXT_) {
+ 				/* extension is expected to follow */
+ 				int index = lan743x_rx_next_index(rx,
+ 								  last_index);
+ 				if (index != current_head_index) {
+ 					descriptor = &rx->ring_cpu_ptr[index];
+-					if (descriptor->data0 &
++					if (le32_to_cpu(descriptor->data0) &
+ 					    RX_DESC_DATA0_OWN_) {
+ 						goto done;
+ 					}
+-					if (descriptor->data0 &
++					if (le32_to_cpu(descriptor->data0) &
+ 					    RX_DESC_DATA0_EXT_) {
+ 						extension_index = index;
+ 					} else {
+@@ -2129,7 +2129,7 @@ static int lan743x_rx_process_packet(struct lan743x_rx *rx)
+ 			}
+ 			buffer_info->skb = NULL;
+ 			packet_length =	RX_DESC_DATA0_FRAME_LENGTH_GET_
+-					(descriptor->data0);
++					(le32_to_cpu(descriptor->data0));
+ 			skb_put(skb, packet_length - 4);
+ 			skb->protocol = eth_type_trans(skb,
+ 						       rx->adapter->netdev);
+@@ -2167,8 +2167,8 @@ static int lan743x_rx_process_packet(struct lan743x_rx *rx)
+ 			descriptor = &rx->ring_cpu_ptr[extension_index];
+ 			buffer_info = &rx->buffer_info[extension_index];
+ 
+-			ts_sec = descriptor->data1;
+-			ts_nsec = (descriptor->data2 &
++			ts_sec = le32_to_cpu(descriptor->data1);
++			ts_nsec = (le32_to_cpu(descriptor->data2) &
+ 				  RX_DESC_DATA2_TS_NS_MASK_);
+ 			lan743x_rx_reuse_ring_element(rx, extension_index);
+ 			real_last_index = extension_index;
+diff --git a/drivers/net/ethernet/microchip/lan743x_main.h b/drivers/net/ethernet/microchip/lan743x_main.h
+index 404af3f4635e..f3f778910fcc 100644
+--- a/drivers/net/ethernet/microchip/lan743x_main.h
++++ b/drivers/net/ethernet/microchip/lan743x_main.h
+@@ -661,7 +661,7 @@ struct lan743x_tx {
+ 
+ 	struct lan743x_tx_buffer_info *buffer_info;
+ 
+-	u32		*head_cpu_ptr;
++	__le32		*head_cpu_ptr;
+ 	dma_addr_t	head_dma_ptr;
+ 	int		last_head;
+ 	int		last_tail;
+@@ -691,7 +691,7 @@ struct lan743x_rx {
+ 
+ 	struct lan743x_rx_buffer_info *buffer_info;
+ 
+-	u32		*head_cpu_ptr;
++	__le32		*head_cpu_ptr;
+ 	dma_addr_t	head_dma_ptr;
+ 	u32		last_head;
+ 	u32		last_tail;
+@@ -775,10 +775,10 @@ struct lan743x_adapter {
+ #define TX_DESC_DATA3_FRAME_LENGTH_MSS_MASK_	(0x3FFF0000)
+ 
+ struct lan743x_tx_descriptor {
+-	u32     data0;
+-	u32     data1;
+-	u32     data2;
+-	u32     data3;
++	__le32     data0;
++	__le32     data1;
++	__le32     data2;
++	__le32     data3;
+ } __aligned(DEFAULT_DMA_DESCRIPTOR_SPACING);
+ 
+ #define TX_BUFFER_INFO_FLAG_ACTIVE		BIT(0)
+@@ -813,10 +813,10 @@ struct lan743x_tx_buffer_info {
+ #define RX_HEAD_PADDING		NET_IP_ALIGN
+ 
+ struct lan743x_rx_descriptor {
+-	u32     data0;
+-	u32     data1;
+-	u32     data2;
+-	u32     data3;
++	__le32     data0;
++	__le32     data1;
++	__le32     data2;
++	__le32     data3;
+ } __aligned(DEFAULT_DMA_DESCRIPTOR_SPACING);
+ 
+ #define RX_BUFFER_INFO_FLAG_ACTIVE      BIT(0)
 -- 
-2.19.1
+2.25.1
 
