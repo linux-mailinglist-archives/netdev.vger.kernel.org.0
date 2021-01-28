@@ -2,20 +2,20 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4D155307668
-	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 13:52:02 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C110A30766B
+	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 13:52:03 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231618AbhA1MvN (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jan 2021 07:51:13 -0500
-Received: from hqnvemgate25.nvidia.com ([216.228.121.64]:4074 "EHLO
-        hqnvemgate25.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231590AbhA1Mu6 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jan 2021 07:50:58 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate25.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B6012b3080000>; Thu, 28 Jan 2021 04:50:16 -0800
+        id S231819AbhA1Mvs (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jan 2021 07:51:48 -0500
+Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:15853 "EHLO
+        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231631AbhA1Mu7 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jan 2021 07:50:59 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B6012b30a0002>; Thu, 28 Jan 2021 04:50:18 -0800
 Received: from localhost.localdomain (172.20.145.6) by HQMAIL111.nvidia.com
  (172.20.187.18) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 28 Jan
- 2021 12:50:13 +0000
+ 2021 12:50:16 +0000
 From:   Petr Machata <petrm@nvidia.com>
 To:     <netdev@vger.kernel.org>
 CC:     David Ahern <dsahern@kernel.org>,
@@ -23,9 +23,9 @@ CC:     David Ahern <dsahern@kernel.org>,
         Jakub Kicinski <kuba@kernel.org>,
         Ido Schimmel <idosch@nvidia.com>,
         "Petr Machata" <petrm@nvidia.com>
-Subject: [PATCH net-next 01/12] nexthop: Rename nexthop_free_mpath
-Date:   Thu, 28 Jan 2021 13:49:13 +0100
-Message-ID: <9471a24d9c43c2ace3e68c88165c5212ae6944fa.1611836479.git.petrm@nvidia.com>
+Subject: [PATCH net-next 02/12] nexthop: Dispatch nexthop_select_path() by group type
+Date:   Thu, 28 Jan 2021 13:49:14 +0100
+Message-ID: <5c7bfb40a5aa8beacedefd9144d4e179db516569.1611836479.git.petrm@nvidia.com>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <cover.1611836479.git.petrm@nvidia.com>
 References: <cover.1611836479.git.petrm@nvidia.com>
@@ -36,54 +36,75 @@ X-Originating-IP: [172.20.145.6]
 X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
  HQMAIL111.nvidia.com (172.20.187.18)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1611838216; bh=yHDiFG6FZbgDt6riDeoxHrSYA0kNiJhtydX23xMEwr0=;
+        t=1611838218; bh=QXfnuoDy4CKFQzAZ0Uu7LuUQoeOJWSSqW9f1PGYRoRA=;
         h=From:To:CC:Subject:Date:Message-ID:X-Mailer:In-Reply-To:
          References:MIME-Version:Content-Transfer-Encoding:Content-Type:
          X-Originating-IP:X-ClientProxiedBy;
-        b=Z+ivNenSigiJvu/1ohUMrZRxBpWTsNY0t/1jPFo3YZAnINmvPRLTPPrceKjyW7k7K
-         uP7ihqDHfU2JKvuPpuYLlaUU8+bpUA7ZUKbbUdOGBpdwsOVLaDaCxc5fC7NpJVhNuC
-         x+B8JRaFurRwpkmsSTpfpvZmmdwKX/UVq54NqdVS2aL/0qW5xadv1Z89JDAnSdqTCw
-         A120iSCJl8+U2cBP04hEiOHamVfmCR31AvCVR6hJbOEnahcuBrHVmasJVFCcVq/Mbm
-         /BoJdhmIu9JlmBeGY8uB3SYmAMXTXSyqM2ceJ+47mNMLu+B5m7RzlpPy27Hef7FWQZ
-         kNjsSk1pOVjEQ==
+        b=lc+h3/WqwfnzcRreLlkBlN/zqPfFLonX3P6Pxe79KI6uJdtNwqpMJqdnUo5gwUYvw
+         f49Lz1RGo+OEUrUPU+euVcSylalGwQ+WYWqu7syWU6csPNK4goOCOBnNok84bRL2T/
+         wRYIjHvlDCuRMj4p1OpDGEGn9wabQeZRF7smc8rYJhMXJr4WHJrGItPE6ZZCF9/l5q
+         hIz686yvBc79OGUySBhrCnfptolFEbxXEK7YaGVZLsDBaYLEwWEvxFOWFOetG/mWl/
+         hfwXQ+YlArPcjZSs359/+r5BsbpZnW5Z9Z8plbiJrsKT5xhAulGCBCdGz/Gu1xuUcW
+         D4mHkInBUOesg==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: David Ahern <dsahern@kernel.org>
+The logic for selecting path depends on the next-hop group type. Adapt the
+nexthop_select_path() to dispatch according to the group type.
 
-nexthop_free_mpath really should be nexthop_free_group. Rename it.
-
-Signed-off-by: David Ahern <dsahern@kernel.org>
-Reviewed-by: Ido Schimmel <idosch@nvidia.com>
 Signed-off-by: Petr Machata <petrm@nvidia.com>
+Reviewed-by: Ido Schimmel <idosch@nvidia.com>
 ---
- net/ipv4/nexthop.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ net/ipv4/nexthop.c | 22 ++++++++++++++++------
+ 1 file changed, 16 insertions(+), 6 deletions(-)
 
 diff --git a/net/ipv4/nexthop.c b/net/ipv4/nexthop.c
-index e6dfca426242..1deb9e4df1de 100644
+index 1deb9e4df1de..43bb5f451343 100644
 --- a/net/ipv4/nexthop.c
 +++ b/net/ipv4/nexthop.c
-@@ -209,7 +209,7 @@ static void nexthop_devhash_add(struct net *net, struct=
- nh_info *nhi)
- 	hlist_add_head(&nhi->dev_hash, head);
+@@ -680,16 +680,11 @@ static bool ipv4_good_nh(const struct fib_nh *nh)
+ 	return !!(state & NUD_VALID);
  }
 =20
--static void nexthop_free_mpath(struct nexthop *nh)
-+static void nexthop_free_group(struct nexthop *nh)
+-struct nexthop *nexthop_select_path(struct nexthop *nh, int hash)
++static struct nexthop *nexthop_select_path_mp(struct nh_group *nhg, int ha=
+sh)
  {
- 	struct nh_group *nhg;
+ 	struct nexthop *rc =3D NULL;
+-	struct nh_group *nhg;
  	int i;
-@@ -249,7 +249,7 @@ void nexthop_free_rcu(struct rcu_head *head)
- 	struct nexthop *nh =3D container_of(head, struct nexthop, rcu);
 =20
- 	if (nh->is_group)
--		nexthop_free_mpath(nh);
-+		nexthop_free_group(nh);
- 	else
- 		nexthop_free_single(nh);
+-	if (!nh->is_group)
+-		return nh;
+-
+-	nhg =3D rcu_dereference(nh->nh_grp);
+ 	for (i =3D 0; i < nhg->num_nh; ++i) {
+ 		struct nh_grp_entry *nhge =3D &nhg->nh_entries[i];
+ 		struct nh_info *nhi;
+@@ -721,6 +716,21 @@ struct nexthop *nexthop_select_path(struct nexthop *nh=
+, int hash)
 =20
+ 	return rc;
+ }
++
++struct nexthop *nexthop_select_path(struct nexthop *nh, int hash)
++{
++	struct nh_group *nhg;
++
++	if (!nh->is_group)
++		return nh;
++
++	nhg =3D rcu_dereference(nh->nh_grp);
++	if (nhg->mpath)
++		return nexthop_select_path_mp(nhg, hash);
++
++	/* Unreachable. */
++	return NULL;
++}
+ EXPORT_SYMBOL_GPL(nexthop_select_path);
+=20
+ int nexthop_for_each_fib6_nh(struct nexthop *nh,
 --=20
 2.26.2
 
