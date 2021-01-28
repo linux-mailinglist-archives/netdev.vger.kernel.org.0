@@ -2,67 +2,111 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B82EE306B54
-	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 04:02:03 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0E7BC306B5D
+	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 04:06:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231173AbhA1DAw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 22:00:52 -0500
-Received: from mail.kernel.org ([198.145.29.99]:48888 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229739AbhA1DAu (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 27 Jan 2021 22:00:50 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 2C4FE64DD8;
-        Thu, 28 Jan 2021 03:00:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611802810;
-        bh=6SDGcEbjBGqG6VYMkbpy2waAgECmWAJPfOj1EftlvqI=;
-        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=gjwwosIgTnBCjTmyORvl1dxS/5Eoy2TaMwQ627j6lNXeQh1TOiJoRtDlSx+LkX6lU
-         PPI2/qU35NhCgP4Q0eEl4f7u0K6zZpH2mLuOz0AyUA4qun3uVMIyNZkOT2Ej7J+gtD
-         43tpqyPvwDu43uzYfUPds/X/qKT0RqeLloQbUd2xTcDq0xXOYV9b2pX3UH5mYqZPOg
-         sulvRXw8FLNw/4LtN/b/vIQZg56pBRoHdXwjWh9xCnTKu7xisO6x6VoMWc2Iu9bFym
-         P7ugV/KCW4BtQa/yWajR2EsSJVVcJU9PVPadYVWx/rYkqUemAsABhmkZTRxAoM3zcd
-         HFbUzz1rf9e6w==
-Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 1C83F61E3D;
-        Thu, 28 Jan 2021 03:00:10 +0000 (UTC)
-Content-Type: text/plain; charset="utf-8"
+        id S231138AbhA1DG2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 22:06:28 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:42256 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229683AbhA1DG0 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 22:06:26 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1611803100;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=ZtvGjwvPJQPTd5iszx1z5cgMmarf/C6MBn65XN9DRzU=;
+        b=U/Fp2NoCkI6yeq6CNly09sbU/OX/oWM6yNobWO3+lgVPeldnCVkWXnMMe2gtYuKc86HtP+
+        p0IIfzXFaBrx4nm/F4dct0nO1ZYAwSYSAHAaCNuIMHfqTP1+BUv0lTgnuNE5QXLHpWgr5E
+        nBvITbN7i73V6pxYRkqs1gMfzpCWmHg=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-445-jvgTJUraNSKs0lUfxy9d5A-1; Wed, 27 Jan 2021 22:04:58 -0500
+X-MC-Unique: jvgTJUraNSKs0lUfxy9d5A-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id CDBA1107ACE3;
+        Thu, 28 Jan 2021 03:04:55 +0000 (UTC)
+Received: from [10.72.12.167] (ovpn-12-167.pek2.redhat.com [10.72.12.167])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D36235D9E3;
+        Thu, 28 Jan 2021 03:04:43 +0000 (UTC)
+Subject: Re: [RFC v3 01/11] eventfd: track eventfd_signal() recursion depth
+ separately in different cases
+To:     Yongji Xie <xieyongji@bytedance.com>
+Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
+        Stefan Hajnoczi <stefanha@redhat.com>,
+        Stefano Garzarella <sgarzare@redhat.com>,
+        Parav Pandit <parav@nvidia.com>, Bob Liu <bob.liu@oracle.com>,
+        Christoph Hellwig <hch@infradead.org>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Matthew Wilcox <willy@infradead.org>, viro@zeniv.linux.org.uk,
+        axboe@kernel.dk, bcrl@kvack.org, Jonathan Corbet <corbet@lwn.net>,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        kvm@vger.kernel.org, linux-aio@kvack.org,
+        linux-fsdevel@vger.kernel.org
+References: <20210119045920.447-1-xieyongji@bytedance.com>
+ <20210119045920.447-2-xieyongji@bytedance.com>
+ <e8a2cc15-80f5-01e0-75ec-ea6281fda0eb@redhat.com>
+ <CACycT3sN0+dg-NubAK+N-DWf3UDXwWh=RyRX-qC9fwdg3QaLWA@mail.gmail.com>
+ <6a5f0186-c2e3-4603-9826-50d5c68a3fda@redhat.com>
+ <CACycT3sqDgccOfNcY_FNcHDqJ2DeMbigdFuHYm9DxWWMjkL7CQ@mail.gmail.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <b5c9f2d4-5b95-4552-3886-f5cbcb7de232@redhat.com>
+Date:   Thu, 28 Jan 2021 11:04:42 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
+In-Reply-To: <CACycT3sqDgccOfNcY_FNcHDqJ2DeMbigdFuHYm9DxWWMjkL7CQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
-Subject: Re: [net-next] tipc: remove duplicated code in tipc_msg_create
-From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161180281011.31409.6677091900188521723.git-patchwork-notify@kernel.org>
-Date:   Thu, 28 Jan 2021 03:00:10 +0000
-References: <20210127025123.6390-1-hoang.h.le@dektech.com.au>
-In-Reply-To: <20210127025123.6390-1-hoang.h.le@dektech.com.au>
-To:     Hoang Huu Le <hoang.h.le@dektech.com.au>
-Cc:     netdev@vger.kernel.org, ying.xue@windriver.com, maloy@donjonn.com,
-        jmaloy@redhat.com
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hello:
 
-This patch was applied to netdev/net-next.git (refs/heads/master):
+On 2021/1/27 下午5:11, Yongji Xie wrote:
+> On Wed, Jan 27, 2021 at 11:38 AM Jason Wang <jasowang@redhat.com> wrote:
+>>
+>> On 2021/1/20 下午2:52, Yongji Xie wrote:
+>>> On Wed, Jan 20, 2021 at 12:24 PM Jason Wang <jasowang@redhat.com> wrote:
+>>>> On 2021/1/19 下午12:59, Xie Yongji wrote:
+>>>>> Now we have a global percpu counter to limit the recursion depth
+>>>>> of eventfd_signal(). This can avoid deadlock or stack overflow.
+>>>>> But in stack overflow case, it should be OK to increase the
+>>>>> recursion depth if needed. So we add a percpu counter in eventfd_ctx
+>>>>> to limit the recursion depth for deadlock case. Then it could be
+>>>>> fine to increase the global percpu counter later.
+>>>> I wonder whether or not it's worth to introduce percpu for each eventfd.
+>>>>
+>>>> How about simply check if eventfd_signal_count() is greater than 2?
+>>>>
+>>> It can't avoid deadlock in this way.
+>>
+>> I may miss something but the count is to avoid recursive eventfd call.
+>> So for VDUSE what we suffers is e.g the interrupt injection path:
+>>
+>> userspace write IRQFD -> vq->cb() -> another IRQFD.
+>>
+>> It looks like increasing EVENTFD_WAKEUP_DEPTH should be sufficient?
+>>
+> Actually I mean the deadlock described in commit f0b493e ("io_uring:
+> prevent potential eventfd recursion on poll"). It can break this bug
+> fix if we just increase EVENTFD_WAKEUP_DEPTH.
 
-On Wed, 27 Jan 2021 09:51:23 +0700 you wrote:
-> Remove a duplicate code checking for header size in tipc_msg_create() as
-> it's already being done in tipc_msg_init().
-> 
-> Acked-by: Jon Maloy <jmaloy@redhat.com>
-> Signed-off-by: Hoang Huu Le <hoang.h.le@dektech.com.au>
-> ---
->  net/tipc/msg.c | 4 ----
->  1 file changed, 4 deletions(-)
 
-Here is the summary with links:
-  - [net-next] tipc: remove duplicated code in tipc_msg_create
-    https://git.kernel.org/netdev/net-next/c/2a9063b7ffac
+Ok, so can wait do something similar in that commit? (using async stuffs 
+like wq).
 
-You are awesome, thank you!
---
-Deet-doot-dot, I am a bot.
-https://korg.docs.kernel.org/patchwork/pwbot.html
+Thanks
 
+
+>
+> Thanks,
+> Yongji
+>
 
