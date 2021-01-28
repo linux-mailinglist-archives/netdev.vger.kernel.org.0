@@ -2,106 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 6BDE630692A
-	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 02:00:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0FC47306969
+	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 02:08:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231124AbhA1A7n (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 19:59:43 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:35354 "EHLO vps0.lunn.ch"
+        id S231550AbhA1BFy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 20:05:54 -0500
+Received: from mail.kernel.org ([198.145.29.99]:34734 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231356AbhA1A5Y (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 27 Jan 2021 19:57:24 -0500
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1l4vbt-002x2k-UC; Thu, 28 Jan 2021 01:56:33 +0100
-Date:   Thu, 28 Jan 2021 01:56:33 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Vladimir Oltean <olteanv@gmail.com>
-Cc:     "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
-Subject: Re: [PATCH net-next 4/4] Revert "net: ipv4: handle DSA enabled
- master network devices"
-Message-ID: <YBILwcnTFw7SlsCb@lunn.ch>
-References: <20210127010028.1619443-1-olteanv@gmail.com>
- <20210127010028.1619443-5-olteanv@gmail.com>
+        id S231529AbhA1BAx (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 27 Jan 2021 20:00:53 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id B18E164DD7;
+        Thu, 28 Jan 2021 01:00:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1611795611;
+        bh=m8JVpZPVaJfXv56uYEizRBaRMKf2mVcWnwdS3R7Pz+w=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=i5ym+bRVFUYo3wzzqKU7sl1kBht36W2WaGj6Otrbw047SESj8arC/RXxb3C4Jb7XE
+         bg9RxJNu33fpUHgwL4aOJ0YWRr9ZDxR5FSV7pIm5T8SN6eTUeuw5WKi49ATJHab5vI
+         QQ01CnvUiKvIoCHIl60nOFZdQBKG3sKFQCnjb2368Tzc4V5eS1uyUH6D+Eai+eV6op
+         e0wjTyvpfSQztsTgUwdFGvdjTXTkvT26rmONa1/0dHsd5oguGMFwBVnpqSWfuXqd/9
+         sKOJBJobD3C5VppPHUHZp17uhJWQreZ4xtTxaJIha8Lxh/wTLQoNSFGsKXC8awQI2H
+         WPAH479hqfXqg==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 9FC3E6531F;
+        Thu, 28 Jan 2021 01:00:11 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210127010028.1619443-5-olteanv@gmail.com>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net-next] r8169: remove not needed call to rtl_wol_enable_rx
+ from rtl_shutdown
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161179561164.17796.16312897164694910279.git-patchwork-notify@kernel.org>
+Date:   Thu, 28 Jan 2021 01:00:11 +0000
+References: <34ce78e2-596c-e2ac-16aa-c550fa624c22@gmail.com>
+In-Reply-To: <34ce78e2-596c-e2ac-16aa-c550fa624c22@gmail.com>
+To:     Heiner Kallweit <hkallweit1@gmail.com>
+Cc:     kuba@kernel.org, davem@davemloft.net, nic_swsd@realtek.com,
+        netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 27, 2021 at 03:00:28AM +0200, Vladimir Oltean wrote:
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
-> 
-> This reverts commit 728c02089a0e3eefb02e9927bfae50490f40e72e.
-> 
-> Since 2015 DSA has gained more integration with the network stack, we
-> can now have the same functionality without explicitly open-coding for
-> it:
-> - It now opens the DSA master netdevice automatically whenever a user
->   netdevice is opened.
-> - The master and switch interfaces are coupled in an upper/lower
->   hierarchy using the netdev adjacency lists.
-> 
-> In the nfsroot example below, the interface chosen by autoconfig was
-> swp3, and every interface except that and the DSA master, eth1, was
-> brought down afterwards:
-> 
-> [    8.714215] mscc_felix 0000:00:00.5 swp0 (uninitialized): PHY [0000:00:00.3:10] driver [Microsemi GE VSC8514 SyncE] (irq=POLL)
-> [    8.978041] mscc_felix 0000:00:00.5 swp1 (uninitialized): PHY [0000:00:00.3:11] driver [Microsemi GE VSC8514 SyncE] (irq=POLL)
-> [    9.246134] mscc_felix 0000:00:00.5 swp2 (uninitialized): PHY [0000:00:00.3:12] driver [Microsemi GE VSC8514 SyncE] (irq=POLL)
-> [    9.486203] mscc_felix 0000:00:00.5 swp3 (uninitialized): PHY [0000:00:00.3:13] driver [Microsemi GE VSC8514 SyncE] (irq=POLL)
-> [    9.512827] mscc_felix 0000:00:00.5: configuring for fixed/internal link mode
-> [    9.521047] mscc_felix 0000:00:00.5: Link is Up - 2.5Gbps/Full - flow control off
-> [    9.530382] device eth1 entered promiscuous mode
-> [    9.535452] DSA: tree 0 setup
-> [    9.539777] printk: console [netcon0] enabled
-> [    9.544504] netconsole: network logging started
-> [    9.555047] fsl_enetc 0000:00:00.2 eth1: configuring for fixed/internal link mode
-> [    9.562790] fsl_enetc 0000:00:00.2 eth1: Link is Up - 1Gbps/Full - flow control off
-> [    9.564661] 8021q: adding VLAN 0 to HW filter on device bond0
-> [    9.637681] fsl_enetc 0000:00:00.0 eth0: PHY [0000:00:00.0:02] driver [Qualcomm Atheros AR8031/AR8033] (irq=POLL)
-> [    9.655679] fsl_enetc 0000:00:00.0 eth0: configuring for inband/sgmii link mode
-> [    9.666611] mscc_felix 0000:00:00.5 swp0: configuring for inband/qsgmii link mode
-> [    9.676216] 8021q: adding VLAN 0 to HW filter on device swp0
-> [    9.682086] mscc_felix 0000:00:00.5 swp1: configuring for inband/qsgmii link mode
-> [    9.690700] 8021q: adding VLAN 0 to HW filter on device swp1
-> [    9.696538] mscc_felix 0000:00:00.5 swp2: configuring for inband/qsgmii link mode
-> [    9.705131] 8021q: adding VLAN 0 to HW filter on device swp2
-> [    9.710964] mscc_felix 0000:00:00.5 swp3: configuring for inband/qsgmii link mode
-> [    9.719548] 8021q: adding VLAN 0 to HW filter on device swp3
-> [    9.747811] Sending DHCP requests ..
-> [   12.742899] mscc_felix 0000:00:00.5 swp1: Link is Up - 1Gbps/Full - flow control rx/tx
-> [   12.743828] mscc_felix 0000:00:00.5 swp0: Link is Up - 1Gbps/Full - flow control off
-> [   12.747062] IPv6: ADDRCONF(NETDEV_CHANGE): swp1: link becomes ready
-> [   12.755216] fsl_enetc 0000:00:00.0 eth0: Link is Up - 1Gbps/Full - flow control rx/tx
-> [   12.766603] IPv6: ADDRCONF(NETDEV_CHANGE): swp0: link becomes ready
-> [   12.783188] mscc_felix 0000:00:00.5 swp2: Link is Up - 1Gbps/Full - flow control rx/tx
-> [   12.785354] IPv6: ADDRCONF(NETDEV_CHANGE): eth0: link becomes ready
-> [   12.799535] IPv6: ADDRCONF(NETDEV_CHANGE): swp2: link becomes ready
-> [   13.803141] mscc_felix 0000:00:00.5 swp3: Link is Up - 1Gbps/Full - flow control rx/tx
-> [   13.811646] IPv6: ADDRCONF(NETDEV_CHANGE): swp3: link becomes ready
-> [   15.452018] ., OK
-> [   15.470336] IP-Config: Got DHCP answer from 10.0.0.1, my address is 10.0.0.39
-> [   15.477887] IP-Config: Complete:
-> [   15.481330]      device=swp3, hwaddr=00:04:9f:05:de:0a, ipaddr=10.0.0.39, mask=255.255.255.0, gw=10.0.0.1
-> [   15.491846]      host=10.0.0.39, domain=(none), nis-domain=(none)
-> [   15.498429]      bootserver=10.0.0.1, rootserver=10.0.0.1, rootpath=
-> [   15.498481]      nameserver0=8.8.8.8
-> [   15.627542] fsl_enetc 0000:00:00.0 eth0: Link is Down
-> [   15.690903] mscc_felix 0000:00:00.5 swp0: Link is Down
-> [   15.745216] mscc_felix 0000:00:00.5 swp1: Link is Down
-> [   15.800498] mscc_felix 0000:00:00.5 swp2: Link is Down
-> [   15.858143] ALSA device list:
-> [   15.861420]   No soundcards found.
-> 
-> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+Hello:
 
-Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+This patch was applied to netdev/net-next.git (refs/heads/master):
 
-    Andrew
+On Mon, 25 Jan 2021 17:55:12 +0100 you wrote:
+> rtl_wol_enable_rx() is called via the following call chain if WoL
+> is enabled:
+> rtl8169_down()
+> -> rtl_prepare_power_down()
+>    -> rtl_wol_enable_rx()
+> Therefore we don't have to call this function here.
+> 
+> [...]
+
+Here is the summary with links:
+  - [net-next] r8169: remove not needed call to rtl_wol_enable_rx from rtl_shutdown
+    https://git.kernel.org/netdev/net-next/c/17ce76c4985f
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
