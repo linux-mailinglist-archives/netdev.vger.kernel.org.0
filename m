@@ -2,91 +2,137 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 08AA2307F0F
-	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 21:05:25 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 38878307F1C
+	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 21:05:32 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230527AbhA1T7Z (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jan 2021 14:59:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57218 "EHLO
+        id S231268AbhA1UFO (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jan 2021 15:05:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58124 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229771AbhA1T7D (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jan 2021 14:59:03 -0500
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A696C061793;
-        Thu, 28 Jan 2021 11:58:23 -0800 (PST)
-Received: by mail-ed1-x533.google.com with SMTP id z22so8050670edb.9;
-        Thu, 28 Jan 2021 11:58:23 -0800 (PST)
+        with ESMTP id S231375AbhA1UDH (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jan 2021 15:03:07 -0500
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 48D86C0612F2
+        for <netdev@vger.kernel.org>; Thu, 28 Jan 2021 12:00:49 -0800 (PST)
+Received: by mail-ej1-x635.google.com with SMTP id rv9so9568962ejb.13
+        for <netdev@vger.kernel.org>; Thu, 28 Jan 2021 12:00:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=mGjxqmV0DkXFcXzzSJ8LFqABMT7fBMXHiBKy/LXov0A=;
-        b=E57LN2ZuPFivoFrwH6HgbngyfCdLVYSMSo9142Nh8etq33WDLlO2fTK2WgEJvP7tkW
-         tkEZ/9LbEAucc/i6XIT7cr1rALIZQyOgkJuEbj/n3mQyHZI6ZqggQSvhGcnynRaJkhOs
-         wM9GxHtTe8Ec3zB87Oo1RJwSH5Opc6jmZm19DZxgDfX0FcAhZUVWaYPlf4EkKfTtmf67
-         op5pYlY6xL2yi7f7cCpyiaVCzhcjPvxeHhvPP4nS/TW9Os1UulY1i0o8f8HLuGYQHex3
-         K1roBDPpZBPPvWahwoQ40c3cfYhl348NM4BwLm2KZUoh6gk+5jsvFFGU08gBmmjJTBLV
-         qeGA==
+        bh=NVYxkIXR5C7fneWNkrQE3GL7vPjbECyzuI9fgtyiYCU=;
+        b=itINokjPFMBgQUziE99U7xI39GqFaQemDQYU9jQ+DO4dTfdnvgEhPLLacGMdwbjAXz
+         LGXkZNU+2BLq/y+JxpWfp72z+gvPpMbqIYzfT1Zz8PvFp1leubYk6SWXppZOHXWWiCju
+         ZCsQjk9k3SXq5pEyWnDxvAOHprx12/nBW7UAyAl9ZkJxBSDmsQ+gUavFjRQGHQifNnVH
+         //H3SsnC8GcUYF6m0xz4SEtOlv3TmgBi5SUCMFczOeyyXQwpKE/oigYMecPTWPIvWZvM
+         OMSB7C5CLwsXDqVKeCAvFyUh1XCgdCHwa+Hd9hH9HtoMCJegJvXA8dMwaKYxVB6V42x8
+         vFvw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=mGjxqmV0DkXFcXzzSJ8LFqABMT7fBMXHiBKy/LXov0A=;
-        b=rPOle4ikViM/G/3perXzDjrKa7XvLfFv5pqwM2b0UxQsVB14/ewQwpqJFFuS0WqE8N
-         pAncMZemd4ji9AXv06FfAXLYvFd2IgO7I75mAzUlU/3Sl9wGmWL5to9wO3l0Kr09a3hd
-         bRmgVogxO7V7MUYISv9BL9cbbq42eeNv5z7YS18SUNM9dlgD1Bt0JOf9xG4Lf7MwimOy
-         UpiDY4LwZmgKn8oDdh5+n4tTbHA9Bvp7g4OyXG2IT3xu/IWyRJO4qsplvIqRQkNGNksk
-         YLiwG3+TtRGdqG5ISbQU8PFftPyS/shKCOX5pGfJDWmGQby95iYY+VGlePWDf/WqlbMB
-         uENA==
-X-Gm-Message-State: AOAM531BCpoKoJNmRZ5p8qauaWfoAYHrbUJw21WrAzxi63jFBuDZH8QZ
-        QUCE5pyyu3VQM7sLJUUpQS3eMippn970gkeIq/AgFKTE
-X-Google-Smtp-Source: ABdhPJzD4DQwgIVEMh9cxkmrbLGriTVrlag0uORp4Pb8xhEzjO9LOfUf+KqY1yTSu/1FAGwRsOjWjGllf4meUYZZBXo=
-X-Received: by 2002:a05:6402:ce:: with SMTP id i14mr1474445edu.42.1611863901788;
- Thu, 28 Jan 2021 11:58:21 -0800 (PST)
+        bh=NVYxkIXR5C7fneWNkrQE3GL7vPjbECyzuI9fgtyiYCU=;
+        b=e7GtnCe49s1JiDn0QcVbPly7mL+8X9N1+Z2quQmyLUftVkG+J09jWsqYQfS6Z7h4Ba
+         3EaDW2eL9oct2PFuqXlMIVTqZWnvC86jRB2jmiOgR4DpzOQgFx0nCujbKpu4gSX5K6kO
+         /FkFoNgytKvEDwAz0d9lmCavVGyH2eivvwN2L5DmLPKHz0pyyoGTX8czmwrp0Tr/n9Mw
+         AKykUAt0zo6NLtxXT17XoYdm28ZqCxqjboE1UbJYuwl2HCMCwxKcVtm+sdRqUxGWgN6l
+         ovXhsOq0QgGxBMVO6wKLIF+HJhEM7tjMzVWo5H9c6EVl+EoK1eQx2iXoteUgj7c9x8eV
+         mWpw==
+X-Gm-Message-State: AOAM5338TP8O/24uxOZRtIIj+aVNs+8G1a8n+jD4ytDRPe22BC9WbhtQ
+        EQYRUpT67xHfIfJ6uXqCc/ZqEZHYPWTqhcBi9qE=
+X-Google-Smtp-Source: ABdhPJwXN/V1k3dFYVygNF4dGCWU2em9JKlflzeDqwkTXLLUl2WsMntUveOY/HtczP0MkCOC6QQyPoTB5QK+tZoFuSA=
+X-Received: by 2002:a17:906:158c:: with SMTP id k12mr1103474ejd.119.1611864048005;
+ Thu, 28 Jan 2021 12:00:48 -0800 (PST)
 MIME-Version: 1.0
-References: <20210128112551.18780-1-jwi@linux.ibm.com>
-In-Reply-To: <20210128112551.18780-1-jwi@linux.ibm.com>
+References: <cover.1611825446.git.lucien.xin@gmail.com> <02bef0921778d2053ab63140c31704712bb5a864.1611825446.git.lucien.xin@gmail.com>
+ <CAF=yD-JXJwn4HX1kbeJpVoN1GgvpddxU55gan_hiLEx4xrSsgg@mail.gmail.com> <CAKgT0Uchuef=e2w5grNitLM1NzsV--6QGnwvKuffMPisVAR0UA@mail.gmail.com>
+In-Reply-To: <CAKgT0Uchuef=e2w5grNitLM1NzsV--6QGnwvKuffMPisVAR0UA@mail.gmail.com>
 From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Thu, 28 Jan 2021 14:57:46 -0500
-Message-ID: <CAF=yD-JNMTaUgfAAp5+qfOBnL171j9FFj2jvb4Na955jBqj4AA@mail.gmail.com>
-Subject: Re: [PATCH net-next 0/5] s390/qeth: updates 2021-01-28
-To:     Julian Wiedmann <jwi@linux.ibm.com>
-Cc:     David Miller <davem@davemloft.net>,
+Date:   Thu, 28 Jan 2021 15:00:12 -0500
+Message-ID: <CAF=yD-LdPESYBjWW0tTccduB1NA_2wSPjXRTUHCRqsVyAxYyRQ@mail.gmail.com>
+Subject: Re: [PATCHv3 net-next 1/2] net: support ip generic csum processing in skb_csum_hwoffload_help
+To:     Alexander Duyck <alexander.duyck@gmail.com>
+Cc:     Xin Long <lucien.xin@gmail.com>,
+        network dev <netdev@vger.kernel.org>,
+        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Davide Caratti <dcaratti@redhat.com>,
+        David Miller <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        linux-netdev <netdev@vger.kernel.org>,
-        linux-s390 <linux-s390@vger.kernel.org>,
-        Heiko Carstens <hca@linux.ibm.com>,
-        Karsten Graul <kgraul@linux.ibm.com>
+        Willem de Bruijn <willemb@google.com>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 28, 2021 at 6:34 AM Julian Wiedmann <jwi@linux.ibm.com> wrote:
+On Thu, Jan 28, 2021 at 2:46 PM Alexander Duyck
+<alexander.duyck@gmail.com> wrote:
 >
-> Hi Dave & Jakub,
+> On Thu, Jan 28, 2021 at 6:07 AM Willem de Bruijn
+> <willemdebruijn.kernel@gmail.com> wrote:
+> >
+> > On Thu, Jan 28, 2021 at 4:29 AM Xin Long <lucien.xin@gmail.com> wrote:
+> > >
+> > > NETIF_F_IP|IPV6_CSUM feature flag indicates UDP and TCP csum offload
+> > > while NETIF_F_HW_CSUM feature flag indicates ip generic csum offload
+> > > for HW, which includes not only for TCP/UDP csum, but also for other
+> > > protocols' csum like GRE's.
+> > >
+> > > However, in skb_csum_hwoffload_help() it only checks features against
+> > > NETIF_F_CSUM_MASK(NETIF_F_HW|IP|IPV6_CSUM). So if it's a non TCP/UDP
+> > > packet and the features doesn't support NETIF_F_HW_CSUM, but supports
+> > > NETIF_F_IP|IPV6_CSUM only, it would still return 0 and leave the HW
+> > > to do csum.
+> > >
+> > > This patch is to support ip generic csum processing by checking
+> > > NETIF_F_HW_CSUM for all protocols, and check (NETIF_F_IP_CSUM |
+> > > NETIF_F_IPV6_CSUM) only for TCP and UDP.
+> > >
+> > > Note that we're using skb->csum_offset to check if it's a TCP/UDP
+> > > proctol, this might be fragile. However, as Alex said, for now we
+> > > only have a few L4 protocols that are requesting Tx csum offload,
+> > > we'd better fix this until a new protocol comes with a same csum
+> > > offset.
+> > >
+> > > v1->v2:
+> > >   - not extend skb->csum_not_inet, but use skb->csum_offset to tell
+> > >     if it's an UDP/TCP csum packet.
+> > > v2->v3:
+> > >   - add a note in the changelog, as Willem suggested.
+> > >
+> > > Suggested-by: Alexander Duyck <alexander.duyck@gmail.com>
+> > > Signed-off-by: Xin Long <lucien.xin@gmail.com>
+> > > ---
+> > >  net/core/dev.c | 13 ++++++++++++-
+> > >  1 file changed, 12 insertions(+), 1 deletion(-)
+> > >
+> > > diff --git a/net/core/dev.c b/net/core/dev.c
+> > > index 6df3f1b..aae116d 100644
+> > > --- a/net/core/dev.c
+> > > +++ b/net/core/dev.c
+> > > @@ -3621,7 +3621,18 @@ int skb_csum_hwoffload_help(struct sk_buff *skb,
+> > >                 return !!(features & NETIF_F_SCTP_CRC) ? 0 :
+> > >                         skb_crc32c_csum_help(skb);
+> > >
+> > > -       return !!(features & NETIF_F_CSUM_MASK) ? 0 : skb_checksum_help(skb);
+> > > +       if (features & NETIF_F_HW_CSUM)
+> > > +               return 0;
+> > > +
+> > > +       if (features & (NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM)) {
+> >
+> > Should this check the specific feature flag against skb->protocol? I
+> > don't know if there are actually instances that only support one of
+> > the two flags.
 >
-> please apply the following patch series for qeth to netdev's net-next tree.
+> The issue is at a certain point we start excluding devices that were
+> previously working.
 >
-> Nothing special, mostly fine-tuning and follow-on cleanups for earlier fixes.
->
-> Thanks,
-> Julian
->
-> Julian Wiedmann (5):
->   s390/qeth: clean up load/remove code for disciplines
->   s390/qeth: remove qeth_get_ip_version()
->   s390/qeth: pass proto to qeth_l3_get_cast_type()
->   s390/qeth: make cast type selection for af_iucv skbs robust
->   s390/qeth: don't fake a TX completion interrupt after TX error
->
->  drivers/s390/net/qeth_core.h      | 44 +++++---------
->  drivers/s390/net/qeth_core_main.c | 97 +++++++++++++++++--------------
->  drivers/s390/net/qeth_core_sys.c  | 10 +---
->  drivers/s390/net/qeth_l2_main.c   |  6 +-
->  drivers/s390/net/qeth_l3_main.c   | 90 ++++++++++++++++------------
->  5 files changed, 125 insertions(+), 122 deletions(-)
+> All this patch is really doing is using the checksum offset to
+> identify the cases that were previously UDP or TCP offloads and
+> letting those through with the legacy path, while any offsets that are
+> not those two, such as the GRE checksum will now have to be explicitly
+> caught by the NETIF_F_HW_CSUM case and not accepted by the other
+> cases.
 
-for netdrv
-
-Acked-by: Willem de Bruijn <willemb@google.com>
+I understand. But letting through an IPv6 packet to a nic that
+advertises NETIF_F_IP_CSUM, but not NETIF_F_IPV6_CSUM, is still
+incorrect, right?
