@@ -2,134 +2,105 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 8468E307108
-	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 09:17:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id EEA86307154
+	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 09:23:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231158AbhA1IP1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jan 2021 03:15:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47438 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231759AbhA1IPS (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jan 2021 03:15:18 -0500
-Received: from mail-wm1-x32a.google.com (mail-wm1-x32a.google.com [IPv6:2a00:1450:4864:20::32a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC630C06174A
-        for <netdev@vger.kernel.org>; Thu, 28 Jan 2021 00:14:37 -0800 (PST)
-Received: by mail-wm1-x32a.google.com with SMTP id m1so554502wml.2
-        for <netdev@vger.kernel.org>; Thu, 28 Jan 2021 00:14:37 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=resnulli-us.20150623.gappssmtp.com; s=20150623;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=ac93zZlUCHX7Z4vtPpMw3ZX3VPi+K7AAkY8pNfBVGLY=;
-        b=nzjx/aevRf9XSVzj/KVBNRf5CVrd0iHOfdQSxu3uaaDy4J2vSzvRCICkJo2b3ozOhr
-         3Llf7LEQM7p5WOrUKJTaZUu3XwZ7z5KEnb14LwXI6r89swMcKf9BZ4f/Uaar3vbM9Aye
-         t/PwxYbPS0w9L0vw+IxX72ddYxE88c+FCmUqgfSfgG83DPPSJY1JXKOi6IAkiRYJG2bt
-         HbofuU+vqO3A6e5r6YkVUlH/KPwGYExX9spckc87B3HRV3DQg7nqZdChrNqIk9wJlfhk
-         sfo+Eam6sHNerkvomyhMHMOMI+2jWR2oDxf6rVXcjtVDJoNNkSOjRdHGgUX+3BXRCiGn
-         dVoQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ac93zZlUCHX7Z4vtPpMw3ZX3VPi+K7AAkY8pNfBVGLY=;
-        b=mVhhXMekIScrQZKWJh79XPvzOIWaKha+ximuZc3FZHAaSGnP8N80gqFjgKN9/Fs/wC
-         N7/giiHoiixsCUbEP60YNI5UxezY85U6ceEWRjB3/gDrMtjP/lVee6Nb5zwDZTTkfv78
-         2Opz9HvtedFUGAUViSBE56/kZT9pmzVyg4nKP0+r/wSqorhS4RGlA1FYaRdRWdiIzyiW
-         2a3HPN8N+/j0Fj10gTeexDbKUtX1vPeoODlx/zrnzd1ZEvSbQKof12pvn52MfTpiTZtg
-         q6B6pCBazRVRts0Yw13sWDhjF6zrx7G0TUItipKk/2gT2x+bTjGZcCGtu87Dmcr3wwBU
-         E87A==
-X-Gm-Message-State: AOAM530wqr8+248uMfEgD/R7UQDRETGe7tM6dOb/TFZY0AMgKzDavpmP
-        NeiVRMTDGcfJ5EitbNn0kU0aqx1zkNEXeR6ey/U=
-X-Google-Smtp-Source: ABdhPJwaxrHjjv+M+VyimXxROXnQwqe+VMoZLefetA1p9WWHq8GsE8nm49a6ttsNTq3kgkYkEicfPg==
-X-Received: by 2002:a7b:c7c8:: with SMTP id z8mr7467264wmk.72.1611821676536;
-        Thu, 28 Jan 2021 00:14:36 -0800 (PST)
-Received: from localhost ([86.61.181.4])
-        by smtp.gmail.com with ESMTPSA id l84sm5215188wmf.17.2021.01.28.00.14.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Jan 2021 00:14:35 -0800 (PST)
-Date:   Thu, 28 Jan 2021 09:14:34 +0100
-From:   Jiri Pirko <jiri@resnulli.us>
-To:     Andrew Lunn <andrew@lunn.ch>
-Cc:     David Ahern <dsahern@gmail.com>, Jakub Kicinski <kuba@kernel.org>,
-        netdev@vger.kernel.org, davem@davemloft.net,
-        jacob.e.keller@intel.com, roopa@nvidia.com, mlxsw@nvidia.com,
-        vadimp@nvidia.com
-Subject: Re: [patch net-next RFC 00/10] introduce line card support for
- modular switch
-Message-ID: <20210128081434.GV3565223@nanopsycho.orion>
-References: <YAg2ngUQIty8U36l@lunn.ch>
- <20210120154158.206b8752@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
- <20210121153224.GE3565223@nanopsycho.orion>
- <971e9eff-0b71-8ff9-d72c-aebe73cab599@gmail.com>
- <20210122072814.GG3565223@nanopsycho.orion>
- <YArdeNwXb9v55o/Z@lunn.ch>
- <20210126113326.GO3565223@nanopsycho.orion>
- <YBAfeESYudCENZ2e@lunn.ch>
- <20210127075753.GP3565223@nanopsycho.orion>
- <YBF1SmecdzLOgSIl@lunn.ch>
+        id S231768AbhA1IUy (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jan 2021 03:20:54 -0500
+Received: from mail.kernel.org ([198.145.29.99]:43400 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231699AbhA1IUb (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 28 Jan 2021 03:20:31 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 3859D6146D;
+        Thu, 28 Jan 2021 08:19:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1611821989;
+        bh=OWt9aSJrEhxFZwv/GTOowsCUwTQkW2yI0qqntEPqt+A=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=ujvX1DuY2bt0MDImdi8UEYiDWm4T3EGMqlNEHu3x1myJ58uT6idEuPSGQxr1bX/Rf
+         v+QU/ipIqGeJWblfreSmcGLRlgQlzX8yw+zQRQoxYajntNOs14IwZdqsg14eYw52zE
+         0YsZpm7EAzdew3QhU261j8vZFPKnwzh1/8Q17kS0vgjjcYYzFogcDRnMvRSxVggPXA
+         iCzNWSxeP/+V7p20YfLUgnO+Z5k28HB5W8qbpdsAmWGYd9958VLtr44/NvwGTQ8ehM
+         NKi5TgBATPGD1ywd0kARj9itgskWOR3FOgdkbRC2OrkIO6sHCHXHnfJMRXN5QBOHrB
+         W3kZBlANKzdcg==
+Message-ID: <00a20e1146cf7c0e2a5a114781d1b1b6d369cdde.camel@kernel.org>
+Subject: Re: [net-next 01/14] devlink: Add DMAC filter generic packet trap
+From:   Saeed Mahameed <saeed@kernel.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     "David S. Miller" <davem@davemloft.net>, netdev@vger.kernel.org,
+        Aya Levin <ayal@nvidia.com>, Ido Schimmel <idosch@nvidia.com>,
+        Moshe Shemesh <moshe@nvidia.com>,
+        Tariq Toukan <tariqt@nvidia.com>
+Date:   Thu, 28 Jan 2021 00:19:48 -0800
+In-Reply-To: <20210127195408.3c3a5788@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+References: <20210126232419.175836-1-saeedm@nvidia.com>
+         <20210126232419.175836-2-saeedm@nvidia.com>
+         <20210127195408.3c3a5788@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.3 (3.38.3-1.fc33) 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <YBF1SmecdzLOgSIl@lunn.ch>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Wed, Jan 27, 2021 at 03:14:34PM CET, andrew@lunn.ch wrote:
->> >There are Linux standard APIs for controlling the power to devices,
->> >the regulator API. So i assume mlxreg-pm will make use of that. There
->> >are also standard APIs for thermal management, which again, mlxreg-pm
->> >should be using. The regulator API allows you to find regulators by
->> >name. So just define a sensible naming convention, and the switch
->> >driver can lookup the regulator, and turn it on/off as needed.
->> 
->> 
->> I don't think it would apply. The thing is, i2c driver has a channel to
->> the linecard eeprom, from where it can read info about the linecard. The
->> i2c driver also knows when the linecard is plugged in, unlike mlxsw.
->> It acts as a standalone driver. Mlxsw has no way to directly find if the
->> card was plugged in (unpowered) and which type it is.
->> 
->> Not sure how to "embed" it. I don't think any existing API could help.
->> Basicall mlxsw would have to register a callback to the i2c driver
->> called every time card is inserted to do auto-provision.
->> Now consider a case when there are multiple instances of the ASIC on the
->> system. How to assemble a relationship between mlxsw instance and i2c
->> driver instance?
->
->You have that knowledge already, otherwise you cannot solve this
+On Wed, 2021-01-27 at 19:54 -0800, Jakub Kicinski wrote:
+> On Tue, 26 Jan 2021 15:24:06 -0800 Saeed Mahameed wrote:
+> > From: Aya Levin <ayal@nvidia.com>
+> > 
+> > Add packet trap that can report packets that were dropped due to
+> > destination MAC filtering.
+> > 
+> > Signed-off-by: Aya Levin <ayal@nvidia.com>
+> > Reviewed-by: Ido Schimmel <idosch@nvidia.com>
+> > Reviewed-by: Moshe Shemesh <moshe@nvidia.com>
+> > Reviewed-by: Tariq Toukan <tariqt@nvidia.com>
+> > Signed-off-by: Tariq Toukan <tariqt@nvidia.com>
+> > Signed-off-by: Saeed Mahameed <saeedm@nvidia.com>
+> > ---
+> >  Documentation/networking/devlink/devlink-trap.rst | 5 +++++
+> >  include/net/devlink.h                             | 3 +++
+> >  net/core/devlink.c                                | 1 +
+> >  3 files changed, 9 insertions(+)
+> > 
+> > diff --git a/Documentation/networking/devlink/devlink-trap.rst
+> > b/Documentation/networking/devlink/devlink-trap.rst
+> > index d875f3e1e9cf..1dd86976ecf8 100644
+> > --- a/Documentation/networking/devlink/devlink-trap.rst
+> > +++ b/Documentation/networking/devlink/devlink-trap.rst
+> > @@ -480,6 +480,11 @@ be added to the following table:
+> >       - ``drop``
+> >       - Traps packets that the device decided to drop in case they
+> > hit a
+> >         blackhole nexthop
+> > +   * - ``dmac_filter``
+> > +     - ``drop``
+> > +     - Traps incoming packets that the device decided to drop in
+> > case
+> 
+> s/in case/because/
+> 
+> > +       the destination MAC is not configured in the MAC table
+> 
+> ... and the interface is not in promiscuous mode
+> 
 
-No I don't have it. I'm not sure why do you say so. The mlxsw and i2c
-driver act independently.
+Makes sense ! 
+
+> > +
+> 
+> Double new line
+> 
+> >  Driver-specific Packet Traps
+> >  ============================
+> 
+> Fix that up and applied from the list.
+
+Thanks,
+I can stop sending pull requests and siwtch to normal patchsets 
+if this will be more convenient to you/
+
+to me is just converting the cover letter :).. 
 
 
->problem at all. The switch is an PCIe device right? So when the bus is
->enumerated, the driver loads. How do you bind the i2c driver to the
->i2c bus? You cannot enumerate i2c, so you must have some hard coded
->knowledge somewhere? You just need to get that knowledge into the
->mlxsw driver so it can bind its internal i2c client driver to the i2c
 
-There is no internal i2c client driver for this.
-
-
->bus. That way you avoid user space, i guess maybe udev rules, or some
->daemon monitoring propriety /sys files?
->
->> But again, auto-provision is only one usecase. Manual provisioning is
->> needed anyway. And that is exactly what my patchset is aiming to
->> introduce. Auto-provision can be added when/if needed later on.
->
->I still don't actually get this use case. Why would i want to manually
->provision?
-
-Because user might want to see the system with all netdevices, configure
-them, change the linecard if they got broken and all config, like
-bridge, tc, etc will stay on the netdevices. Again, this is the same we
-do for split port. This is important requirement, user don't want to see
-netdevices come and go when he is plugging/unplugging cables. Linecards
-are the same in this matter. Basically is is a "splitter module",
-replacing the "splitter cable"
-
-
->
->	Andrew
