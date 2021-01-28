@@ -2,67 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 7CB9B306BE1
-	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 05:09:27 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5C8B4306BED
+	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 05:09:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231344AbhA1EGh (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 23:06:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50402 "EHLO
+        id S231407AbhA1EH7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 23:07:59 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50650 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231297AbhA1EFc (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 23:05:32 -0500
-Received: from mail-oi1-x234.google.com (mail-oi1-x234.google.com [IPv6:2607:f8b0:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFA19C061573
-        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 19:41:08 -0800 (PST)
-Received: by mail-oi1-x234.google.com with SMTP id h6so4636752oie.5
-        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 19:41:08 -0800 (PST)
+        with ESMTP id S231345AbhA1EGi (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 23:06:38 -0500
+Received: from mail-oi1-x22c.google.com (mail-oi1-x22c.google.com [IPv6:2607:f8b0:4864:20::22c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5411FC0613D6
+        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 19:42:22 -0800 (PST)
+Received: by mail-oi1-x22c.google.com with SMTP id w124so4642209oia.6
+        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 19:42:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=subject:to:cc:references:from:message-id:date:user-agent
          :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=RGmZt0itmBSdQmhxjYxT3I4pwbYM2Z33f0kt0A1ALQw=;
-        b=lA8GYwS7SbdhDxp+yUfb+5e/ahpNgxmui1P7RVXpKoZ0f1CF+DYsM4dNdedbwQM7U5
-         KnwpALTT3LTToNWsddhyRhZN7/SnVVesSIV4u6I0xLbsyH3WVMJ1JlpQcdD2bRgo4r4B
-         MslrFyrQXbw32FT20r+aO+HTH4fGL7gid/dWOmAqtJ0g/i7T8Op7r98ZZv8fSxg9lN6c
-         qnqKMJ4/bDpkyuL7EFl8hm9tqC16E5dTH9xgpBbfWT/FpbqaEueUocu+tzryp1FCUAdT
-         ar3cQngqJV7PnZ7/Z9NFF4ezwy4gSf731TwnhcUUhtOde1CyxsWgWfyRRmPCLuxjyH++
-         L7lw==
+        bh=9Z8K2QrRLWsxdRZgac3musrjVZkH+bPVjUKn0DE2CGo=;
+        b=mSgMb4n9vTKXnZnkrDAs8DEo3GVrEkepLkuYZ14HhAEZvIYgswNNNKtFzRGdtAgcrZ
+         cW5r3VsulummxXLi3JjG+N74xyjxgzJOhyzL4Sf8p88NGMUrc/08xun4xskE1XHI1CQ6
+         I+GRlIi1sIfvVWOXfcyieLwrL17Vo17Fpa//ddafPxznQ+5VG+pGJIotY0NTW0StX3OK
+         NCtRUXSxmWriaqUaFK5QfS0H35V1KaIg7HdVkGBMF8HgLEel5eb9fo4nHfKL7RR4coLT
+         7ziLsamgcUtQNGWPW1zHv9CJEHu2eeNh/Ia0jYcJdmHI/AJG7xcKeNUH3ZO4OMoNazM/
+         FQhg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=RGmZt0itmBSdQmhxjYxT3I4pwbYM2Z33f0kt0A1ALQw=;
-        b=jdcvsNE3geJ84J/pwIIcSHzHQQQR23WwosZngr/dk5i7Q4kvGff1dUWhCEpVkYzqaW
-         GWl6fmWJVoGJdVc8asvbtcUHX0fS8X7rELtqEOjLElOniuYoWbHmnZrRUQ91LkZtnsnm
-         oTSzVQy0KeBeYsZ+FKKvg3FyryyvaSa7zasjWJXtgwNaQBeSvXCrb/XauqCGBT5fR0XI
-         H/RcGCDC62VdAO2kYSdAddGucYdD1F4WHvfM0MBD91GDpSLX+KLfsUXWTfiWRXesqU2S
-         Vt1Asa1ljVY0O4n5kUB6z0xsm2q1smSlc17iUYaMNrhpoF5VW7zWxR9jfEPDI0BE1h0W
-         IIuQ==
-X-Gm-Message-State: AOAM53287ggwqZzyAsutVhwW6A8tMAfsy7gUDXDoaMqa8Z+vroYX5Yfc
-        XL4BvCA9TEmZmqcUjK3gfBM=
-X-Google-Smtp-Source: ABdhPJzbtZlQIhd/grcg5PepQG1Eu7NHbOn9ofwliLMELKC2LhNqfX7n4xURXN8HXakdLOOaWEFY+A==
-X-Received: by 2002:aca:1807:: with SMTP id h7mr5356373oih.47.1611805268296;
-        Wed, 27 Jan 2021 19:41:08 -0800 (PST)
+        bh=9Z8K2QrRLWsxdRZgac3musrjVZkH+bPVjUKn0DE2CGo=;
+        b=fD7TNtx0R+XF6pJDA4pvEUjwzkj/pkbuCrB8WIB65SFlZ2yfxi1OxI28rCjjge5VZ3
+         lAR7ILe2QGzMVgdqa6Jsv+/tNGctH/eJrYmIERW9yf3cyfm8StZOTTCS0W1N0cXDgwt5
+         qe5iVki3F8lwLCPqGAiohwOlHv8fOS/+x/9yHGnCGRiQUfMRfRCOMWMTTmcgWv+iojbu
+         E3rQoRJT/i2erMeahDYE8hBUSOFupfvUM0cw3Xb2PrvtquVKmdgyP+pO2C8yrfd6ix8R
+         WPhI2kUE3aHNkNbC0lwB8JED0JDHxmovShNtisgGFBu1nS94uEbCXVAAunVae4fzgPWL
+         K4pg==
+X-Gm-Message-State: AOAM530Ad9bKlkfKVAPkvukCETs7hnUT26xys9ALVPN3YoZLnrBLcUEE
+        1ecVExj+9IGbPTUjhwzCLm6JMfGwjDk=
+X-Google-Smtp-Source: ABdhPJwKUflWH04UKoM+wcN/SkyK7P2qCf8amAqoLfKju/Z2CwgIX9AcHZJhYDeQ8tgpQ7D0JFSf1g==
+X-Received: by 2002:a05:6808:8ec:: with SMTP id d12mr5152512oic.34.1611805341857;
+        Wed, 27 Jan 2021 19:42:21 -0800 (PST)
 Received: from Davids-MacBook-Pro.local ([8.48.134.50])
-        by smtp.googlemail.com with ESMTPSA id s10sm863658ool.35.2021.01.27.19.41.07
+        by smtp.googlemail.com with ESMTPSA id d10sm851221ooh.32.2021.01.27.19.42.20
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 27 Jan 2021 19:41:07 -0800 (PST)
-Subject: Re: [PATCH net-next 10/10] selftests: netdevsim: Add
- fib_notifications test
-To:     Ido Schimmel <idosch@idosch.org>, netdev@vger.kernel.org
-Cc:     davem@davemloft.net, kuba@kernel.org, amcohen@nvidia.com,
-        roopa@nvidia.com, sharpd@nvidia.com, bpoirier@nvidia.com,
-        mlxsw@nvidia.com, Ido Schimmel <idosch@nvidia.com>
+        Wed, 27 Jan 2021 19:42:21 -0800 (PST)
+Subject: Re: [PATCH net-next 01/10] netdevsim: fib: Convert the current
+ occupancy to an atomic variable
+To:     Amit Cohen <amcohen@nvidia.com>, Ido Schimmel <idosch@idosch.org>,
+        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
+Cc:     "davem@davemloft.net" <davem@davemloft.net>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        Roopa Prabhu <roopa@nvidia.com>,
+        Donald Sharp <sharpd@nvidia.com>,
+        Benjamin Poirier <bpoirier@nvidia.com>,
+        mlxsw <mlxsw@nvidia.com>, Ido Schimmel <idosch@nvidia.com>
 References: <20210126132311.3061388-1-idosch@idosch.org>
- <20210126132311.3061388-11-idosch@idosch.org>
+ <20210126132311.3061388-2-idosch@idosch.org>
+ <b307a304-09ef-d8e8-7296-92ddddfc348c@gmail.com>
+ <DM6PR12MB30665BEF4DBA4B1BA697E23ACBBB9@DM6PR12MB3066.namprd12.prod.outlook.com>
 From:   David Ahern <dsahern@gmail.com>
-Message-ID: <d36d0e07-afbc-2cf5-1fde-0f1e381e5103@gmail.com>
-Date:   Wed, 27 Jan 2021 20:41:02 -0700
+Message-ID: <6b48c2cc-b8f5-3d28-5297-cdd306a4bb89@gmail.com>
+Date:   Wed, 27 Jan 2021 20:42:17 -0700
 User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
  Gecko/20100101 Thunderbird/78.6.1
 MIME-Version: 1.0
-In-Reply-To: <20210126132311.3061388-11-idosch@idosch.org>
+In-Reply-To: <DM6PR12MB30665BEF4DBA4B1BA697E23ACBBB9@DM6PR12MB3066.namprd12.prod.outlook.com>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 7bit
@@ -70,37 +76,45 @@ Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/26/21 6:23 AM, Ido Schimmel wrote:
-> From: Amit Cohen <amcohen@nvidia.com>
+On 1/27/21 3:51 AM, Amit Cohen wrote:
 > 
-> Add test to check fib notifications behavior.
 > 
-> The test checks route addition, route deletion and route replacement for
-> both IPv4 and IPv6.
+>> -----Original Message-----
+>> From: David Ahern <dsahern@gmail.com>
+>> Sent: Wednesday, January 27, 2021 6:33
+>> To: Ido Schimmel <idosch@idosch.org>; netdev@vger.kernel.org
+>> Cc: davem@davemloft.net; kuba@kernel.org; Amit Cohen <amcohen@nvidia.com>; Roopa Prabhu <roopa@nvidia.com>; Donald
+>> Sharp <sharpd@nvidia.com>; Benjamin Poirier <bpoirier@nvidia.com>; mlxsw <mlxsw@nvidia.com>; Ido Schimmel
+>> <idosch@nvidia.com>
+>> Subject: Re: [PATCH net-next 01/10] netdevsim: fib: Convert the current occupancy to an atomic variable
+>>
+>> On 1/26/21 6:23 AM, Ido Schimmel wrote:
+>>> @@ -889,22 +882,29 @@ static void nsim_nexthop_destroy(struct
+>>> nsim_nexthop *nexthop)  static int nsim_nexthop_account(struct nsim_fib_data *data, u64 occ,
+>>>  				bool add, struct netlink_ext_ack *extack)  {
+>>> -	int err = 0;
+>>> +	int i, err = 0;
+>>>
+>>>  	if (add) {
+>>> -		if (data->nexthops.num + occ <= data->nexthops.max) {
+>>> -			data->nexthops.num += occ;
+>>> -		} else {
+>>> -			err = -ENOSPC;
+>>> -			NL_SET_ERR_MSG_MOD(extack, "Exceeded number of supported nexthops");
+>>> -		}
+>>> +		for (i = 0; i < occ; i++)
+>>> +			if (!atomic64_add_unless(&data->nexthops.num, 1,
+>>> +						 data->nexthops.max)) {
+>>
+>> seems like this can be
+>> 		if (!atomic64_add_unless(&data->nexthops.num, occ,
+>> 					 data->nexthops.max)) {
 > 
-> When fib_notify_on_flag_change=0, expect single notification for route
-> addition/deletion/replacement.
-> 
-> When fib_notify_on_flag_change=1, expect:
-> - two notification for route addition/replacement, first without RTM_F_TRAP
->   and second with RTM_F_TRAP.
-> - single notification for route deletion.
-> 
-> $ ./fib_notifications.sh
-> TEST: IPv4 route addition                                           [ OK ]
-> TEST: IPv4 route deletion                                           [ OK ]
-> TEST: IPv4 route replacement                                        [ OK ]
-> TEST: IPv6 route addition                                           [ OK ]
-> TEST: IPv6 route deletion                                           [ OK ]
-> TEST: IPv6 route replacement                                        [ OK ]
-> 
-> Signed-off-by: Amit Cohen <amcohen@nvidia.com>
-> Signed-off-by: Ido Schimmel <idosch@nvidia.com>
-> ---
->  .../net/netdevsim/fib_notifications.sh        | 300 ++++++++++++++++++
->  1 file changed, 300 insertions(+)
->  create mode 100755 tools/testing/selftests/drivers/net/netdevsim/fib_notifications.sh
+> atomic64_add_unless(x, y, z) adds y to x if x was not already z.
+> Which means that when for example num=2, occ=2, max=3:
+> atomic64_add_unless(&data->nexthops.num, occ, data->nexthops.max) won't fail when it should.
 > 
 
+ok, missed that in the description. I thought it was if the total would
+equal or be greater than z.
 
-Reviewed-by: David Ahern <dsahern@kernel.org>
