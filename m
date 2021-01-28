@@ -2,139 +2,115 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1B9E6306D9C
-	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 07:29:53 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 12FD9306DBA
+	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 07:42:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229578AbhA1G3J (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jan 2021 01:29:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52896 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229504AbhA1G3I (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jan 2021 01:29:08 -0500
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E6A1C061573;
-        Wed, 27 Jan 2021 22:28:27 -0800 (PST)
-Received: by mail-pj1-x102c.google.com with SMTP id lw17so4252502pjb.0;
-        Wed, 27 Jan 2021 22:28:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=DAbNeqn4HrFrwHesm9EjNkW+m3p+6Gw00s2+sHZm0lg=;
-        b=GwVoXgW8/huQGLo9yRdTRNCp+UlxLS5bainwfcCUT0dMAg6pp6hEKZvdxHYZBK1h4P
-         5gRJ6c7QEExmrHQlgT0fMfOWij6wS1EcFt0k0l7F7sLa4aT2Yf/SdyhFoLzw2goqhh+P
-         sYkWkHX/8Fzf/rYc23XArIE3UAcOf9665sqyC6Qw0HWoiU/fh6lqhrX486TQ0hhzt4kA
-         Qey3M3/BtblX9QOGUFGcRoDgXDPq9blgooQeKPaT5rnM5MXlYsuyc5y2dz1j3w4/PYpH
-         0uECw3yrVT1DhXL/OHlTWjGLNYQc4qtkz9UKaDdksAvn5VerdFdAO/ylfvzuSQdOGjCa
-         PLzQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=DAbNeqn4HrFrwHesm9EjNkW+m3p+6Gw00s2+sHZm0lg=;
-        b=IKd04m9oiM6BTYUgWgzp+JswoCt5ES9NPr724FeSQbluqGURa7wp/vLG3Sb1ikXCsL
-         ptLyT0Tc+rXIVUxQp1gFTSqRysQazcYC/GlrEV1c5fEtjOQOb8lvxVWb6XKUVzXSO6Cy
-         NRhmFkuNOONH8J5BAyzVpBC74QqwioLmeq2eyDzxhxlGRBULYQSeeOMwwGvil3cT3Ew6
-         IWypHTeFvfF4cV74FiEU3EHt2Gg3p7xHhz0WFsmbnyBfzDeEJa+cneVl6Aekushwg8pZ
-         e+SBeLPFsKLKogKmnUTmyvHBAgosbKJEI6lN6maGrJffS2LJmB5/gYyk+R1wXvhFYQ2b
-         1wMg==
-X-Gm-Message-State: AOAM5338t1OfELcFKVvG0/MePFnh+NsF866eXqUYHjQkIKeNR5Ez/BLj
-        cmvUtrIlBpwPBfHapLwOnLiEmMK2dKIW3WYCBuU=
-X-Google-Smtp-Source: ABdhPJzFVvjKbtEKY7g/qQjhsm6z2fa/ElvnLyetxE5toYVafRRG6gYuQflfNb9g3mdeeoRBrcXU6cXgxj3kXZtkRog=
-X-Received: by 2002:a17:902:9d8d:b029:df:e5a6:1ef7 with SMTP id
- c13-20020a1709029d8db02900dfe5a61ef7mr15010646plq.77.1611815306375; Wed, 27
- Jan 2021 22:28:26 -0800 (PST)
+        id S231287AbhA1Gli (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jan 2021 01:41:38 -0500
+Received: from mxout70.expurgate.net ([194.37.255.70]:54363 "EHLO
+        mxout70.expurgate.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229578AbhA1Glh (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jan 2021 01:41:37 -0500
+Received: from [127.0.0.1] (helo=localhost)
+        by relay.expurgate.net with smtp (Exim 4.90)
+        (envelope-from <ms@dev.tdt.de>)
+        id 1l50xy-00009M-56; Thu, 28 Jan 2021 07:39:42 +0100
+Received: from [195.243.126.94] (helo=securemail.tdt.de)
+        by relay.expurgate.net with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.90)
+        (envelope-from <ms@dev.tdt.de>)
+        id 1l50xx-000094-1D; Thu, 28 Jan 2021 07:39:41 +0100
+Received: from securemail.tdt.de (localhost [127.0.0.1])
+        by securemail.tdt.de (Postfix) with ESMTP id E9BF6240041;
+        Thu, 28 Jan 2021 07:39:39 +0100 (CET)
+Received: from mail.dev.tdt.de (unknown [10.2.4.42])
+        by securemail.tdt.de (Postfix) with ESMTP id 5D5D2240040;
+        Thu, 28 Jan 2021 07:39:39 +0100 (CET)
+Received: from mail.dev.tdt.de (localhost [IPv6:::1])
+        by mail.dev.tdt.de (Postfix) with ESMTP id CAB7121C58;
+        Thu, 28 Jan 2021 07:39:38 +0100 (CET)
 MIME-Version: 1.0
-References: <20210122205415.113822-1-xiyou.wangcong@gmail.com>
- <20210122205415.113822-2-xiyou.wangcong@gmail.com> <d69d44ca-206c-d818-1177-c8f14d8be8d1@iogearbox.net>
- <CAM_iQpW8aeh190G=KVA9UEZ_6+UfenQxgPXuw784oxCaMfXjng@mail.gmail.com> <CAADnVQKmNiHj8qy1yqbOrf-OMyhnn8fKm87w6YMfkiDHkBpJVg@mail.gmail.com>
-In-Reply-To: <CAADnVQKmNiHj8qy1yqbOrf-OMyhnn8fKm87w6YMfkiDHkBpJVg@mail.gmail.com>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Wed, 27 Jan 2021 22:28:15 -0800
-Message-ID: <CAM_iQpXAQ7AMz34=o5E=81RFGFsQB5jCDTCCaVdHokU6kaJQsQ@mail.gmail.com>
-Subject: Re: [Patch bpf-next v5 1/3] bpf: introduce timeout hash map
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Daniel Borkmann <daniel@iogearbox.net>,
-        Linux Kernel Network Developers <netdev@vger.kernel.org>,
-        bpf <bpf@vger.kernel.org>, Jamal Hadi Salim <jhs@mojatatu.com>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Andrii Nakryiko <andrii.nakryiko@gmail.com>,
-        Dongdong Wang <wangdongdong.6@bytedance.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Thu, 28 Jan 2021 07:39:38 +0100
+From:   Martin Schiller <ms@dev.tdt.de>
+To:     Xie He <xie.he.0141@gmail.com>
+Cc:     David Laight <David.Laight@aculab.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, linux-x25@vger.kernel.org,
+        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Krzysztof Halasa <khc@pm.waw.pl>
+Subject: Re: [PATCH net] net: hdlc_x25: Use qdisc to queue outgoing LAPB
+ frames
+Organization: TDT AG
+In-Reply-To: <CAJht_ENmxCBk=h68CN55qySMAiYhcgS0AtVzo6RvS5xf_6EkRw@mail.gmail.com>
+References: <20210127090747.364951-1-xie.he.0141@gmail.com>
+ <77971dffcff441c3ad3d257825dc214b@AcuMS.aculab.com>
+ <CAJht_ENmxCBk=h68CN55qySMAiYhcgS0AtVzo6RvS5xf_6EkRw@mail.gmail.com>
+Message-ID: <2b14439178ff54e991c45a9a1574243e@dev.tdt.de>
+X-Sender: ms@dev.tdt.de
+User-Agent: Roundcube Webmail/1.3.16
+X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED autolearn=ham
+        autolearn_force=no version=3.4.2
+X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dev.tdt.de
+X-purgate-ID: 151534::1611815981-00004C0A-619C0A3A/0/0
+X-purgate: clean
+X-purgate-type: clean
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 27, 2021 at 10:00 AM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Tue, Jan 26, 2021 at 11:00 PM Cong Wang <xiyou.wangcong@gmail.com> wrote:
-> > > >               ret = PTR_ERR(l_new);
-> > > > +             if (ret == -EAGAIN) {
-> > > > +                     htab_unlock_bucket(htab, b, hash, flags);
-> > > > +                     htab_gc_elem(htab, l_old);
-> > > > +                     mod_delayed_work(system_unbound_wq, &htab->gc_work, 0);
-> > > > +                     goto again;
-> > >
-> > > Also this one looks rather worrying, so the BPF prog is stalled here, loop-waiting
-> > > in (e.g. XDP) hot path for system_unbound_wq to kick in to make forward progress?
-> >
-> > In this case, the old one is scheduled for removal in GC, we just wait for GC
-> > to finally remove it. It won't stall unless GC itself or the worker scheduler is
-> > wrong, both of which should be kernel bugs.
-> >
-> > If we don't do this, users would get a -E2BIG when it is not too big. I don't
-> > know a better way to handle this sad situation, maybe returning -EBUSY
-> > to users and let them call again?
->
-> I think using wq for timers is a non-starter.
-> Tying a hash/lru map with a timer is not a good idea either.
+On 2021-01-27 21:29, Xie He wrote:
+> On Wed, Jan 27, 2021 at 2:14 AM David Laight <David.Laight@aculab.com> 
+> wrote:
+>> 
+>> If I read this correctly it adds a (potentially big) queue between the
+>> LAPB code that adds the sequence numbers to the frames and the 
+>> hardware
+>> that actually sends them.
+> 
+> Yes. The actual number of outgoing LAPB frames being queued depends on
+> how long the hardware driver stays in the TX busy state, and is
+> limited by the LAPB sending window.
+> 
+>> IIRC [1] there is a general expectation that the NR in a transmitted 
+>> frame
+>> will be the same as the last received NS unless acks are being delayed
+>> for flow control reasons.
+>> 
+>> You definitely want to be able to ack a received frame while 
+>> transmitting
+>> back-to-back I-frames.
+>> 
+>> This really means that you only want 2 frames in the hardware driver.
+>> The one being transmitted and the next one - so it gets sent with a
+>> shared flag.
+>> There is no point sending an RR unless the hardware link is actually 
+>> idle.
+> 
+> If I understand correctly, what you mean is that the frames sent on
+> the wire should reflect the most up-to-date status of what is received
+> from the wire, so queueing outgoing LAPB frames is not appropriate.
+> 
+> But this would require us to deal with the "TX busy" issue in the LAPB
+> module. This is (as I said) not easy to do. I currently can't think of
+> a good way of doing this.
+> 
+> Instead, we can think of the TX queue as part of the "wire". We can
+> think of the wire as long and having a little higher latency. I
+> believe the LAPB protocol has no problem in handling long wires.
+> 
+> What do you think?
 
-Both xt_hashlimit and nf_conntrack_core use delayed/deferrable
-works, probably since their beginnings. They seem to have started
-well. ;)
+David: Can you please elaborate on your concerns a little bit more?
 
->
-> I think timers have to be done as independent objects similar to
-> how the kernel uses them.
-> Then there will be no question whether lru or hash map needs it.
+I think Xie's approach is not bad at all. LAPB (L2) has no idea about L1
+(apart from the link state) and sends as many packets as possible, which
+of course we should not discard. The remaining window determines how
+many packets are put into this queue.
+Since we can't send anything over the line due to the TX Busy state, the
+remote station (due to lack of ACKs) will also stop sending anything
+at some point.
 
-Yeah, this probably could make the code easier, but when we have
-millions of entries in a map, millions of timers would certainly bring
-a lot of CPU overhead (timer interrupt storm?).
-
-
-> The bpf prog author will be able to use timers with either.
-> The prog will be able to use timers without hash maps too.
->
-> I'm proposing a timer map where each object will go through
-> bpf_timer_setup(timer, callback, flags);
-> where "callback" is a bpf subprogram.
-> Corresponding bpf_del_timer and bpf_mod_timer would work the same way
-> they are in the kernel.
-> The tricky part is kernel style of using from_timer() to access the
-> object with additional info.
-> I think bpf timer map can model it the same way.
-> At map creation time the value_size will specify the amount of extra
-> bytes necessary.
-> Another alternative is to pass an extra data argument to a callback.
-
-Hmm, this idea is very interesting. I still think arming a timer,
-whether a kernel timer or a bpf timer, for each entry is overkill,
-but we can arm one for each map, something like:
-
-bpf_timer_run(interval, bpf_prog, &any_map);
-
-so we run 'bpf_prog' on any map every 'interval', but the 'bpf_prog'
-would have to iterate the whole map during each interval to delete
-the expired ones. This is probably doable: the timestamps can be
-stored either as a part of key or value, and bpf_jiffies64() is already
-available, users would have to discard expired ones after lookup
-when they are faster than the timer GC.
-
-Let me take a deeper look tomorrow.
-
-Thanks.
+When the link goes down, all buffers/queues must be cleared.
