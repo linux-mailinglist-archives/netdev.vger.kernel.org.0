@@ -2,184 +2,125 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E5AEB307A3A
-	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 17:02:48 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BA734307A4F
+	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 17:10:34 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232072AbhA1QC3 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jan 2021 11:02:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34690 "EHLO
+        id S231663AbhA1QIt (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jan 2021 11:08:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36038 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231204AbhA1QC0 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jan 2021 11:02:26 -0500
-Received: from mail-wr1-x42b.google.com (mail-wr1-x42b.google.com [IPv6:2a00:1450:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5D22DC061573;
-        Thu, 28 Jan 2021 08:01:45 -0800 (PST)
-Received: by mail-wr1-x42b.google.com with SMTP id 7so5951053wrz.0;
-        Thu, 28 Jan 2021 08:01:45 -0800 (PST)
+        with ESMTP id S231148AbhA1QIp (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jan 2021 11:08:45 -0500
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7A60C061574;
+        Thu, 28 Jan 2021 08:08:04 -0800 (PST)
+Received: by mail-pf1-x432.google.com with SMTP id 11so4279511pfu.4;
+        Thu, 28 Jan 2021 08:08:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=d9IlkAMk8Th9ISjpUc1brh9UDt65jJ31UqzcU91W4Ac=;
-        b=lwqyAIUayqSNsqRmra08DYvroRPZqx+2h17NEMo2XjUxwjzTqnGT1dJJoEKlpWhDb3
-         L/JajqZ/CqUrEyueO65pheGoEuvZPEzWj7XT4VRprutZdKvyTShjcsemmlsyeOWXYL8C
-         WRyEs3GI+2vyxbhRa0cVQ+zE/MjKJC8yhcU+mLC64p0lgnBwzANN085QT4XpPJh5BSVu
-         GTS2Xh43d25RO4BTYW4ZGkxDHbLHxba+A11a0hSwoA8kkFULnN839pbu+z9ZzQ4nKVYI
-         JOBsQrHYia+HfQKjrBO0p+r59LbYjCYTtoCcNqTaroLER0hiX7UYilN1MnaDigyIOq68
-         0UiA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=mmsAaGz0qy+EULWgb8BRy1dw0rnx2dvW966eExwXI1o=;
+        b=DCAER6gJjO9gqAdc8WzCm6L4EPQVEBWxMx0IBDeA5D75EELcCujiiXnpRZ2+Ug+e7y
+         71Qx4zU5kXM9iu30oYodtmFpt2Zvlb+0AoDNGh64hXZqeQD2b2Nmex4DKtywFSQL7W0G
+         8zZr8SkA/P/Qc9Dz1+r/ScGTRJOqq/JAuDfqXnvwWIVh4M7WmOnAgl2WrUteIGuihRwh
+         B62Lq5B7ge6OPDFLf0NjC0hg23MdglrbwoNpmNpIbogg8bJYHzPfPGhSJ7I03MPKDxo8
+         zUoun/+xt3KMx6LzSJbKcpdQeAV8VYucA0hWL1iQ1TE1zZeb6aB8DN3tFcxmPspBKo4k
+         JecA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=d9IlkAMk8Th9ISjpUc1brh9UDt65jJ31UqzcU91W4Ac=;
-        b=mRu/uQd/NNARAf523j63l2pQn8hCZY+/7hGDxiN3rlsFBF++8FCc9p/zi99Mwtvowd
-         i63vvzmSNE4LWJhJeZo1JB5KuhOAhS0vm2m9I8WfpelfLhktNyTng3u5QJwSem3KvRdx
-         6SruUcubi71XGo47Z5JPeoYdMrbYBrMssERQP5YCqumOV9Hs/jB7Rg7GrtAZx1hRm/xK
-         GRc5BAp/nsl0kU2GB3IQTRh1+ky4dRL3pC7YGe2YU1YjaU3W0ilp9DlmMo8M1RvVD61V
-         RI+JTgDt6JkLTsxQeYs8dtXhJL7pT3x+1pn6hCdBUx0zZct9hySw1IPI8B+4sS2GPArH
-         NlcA==
-X-Gm-Message-State: AOAM531Oss1AGgNhnx2bqtu4uWAsDFK65gDolRuDQ7AENLwdBbSN+uuC
-        EZOOPxOxs72WS6+oNIlbRPJyT8VoPIw=
-X-Google-Smtp-Source: ABdhPJxFsAR7smS2WSSjDYw/TSctnMXqDlL4WnZAqiSabG3s8RhV0kO3gkKfXHW+M8rkDvM2xvMYNw==
-X-Received: by 2002:a5d:55c3:: with SMTP id i3mr16740986wrw.190.1611849704031;
-        Thu, 28 Jan 2021 08:01:44 -0800 (PST)
-Received: from [192.168.1.37] (lfbn-ann-1-346-224.w86-200.abo.wanadoo.fr. [86.200.64.224])
-        by smtp.gmail.com with ESMTPSA id i8sm7811065wry.90.2021.01.28.08.01.40
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 28 Jan 2021 08:01:42 -0800 (PST)
-Subject: Re: [PATCH] netdevsim: init u64 stats for 32bit hardware
-To:     Dmitry Vyukov <dvyukov@google.com>, Hillf Danton <hdanton@sina.com>
-Cc:     netdev <netdev@vger.kernel.org>, Jakub Kicinski <kuba@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        syzbot <syzbot+e74a6857f2d0efe3ad81@syzkaller.appspotmail.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Simon Horman <simon.horman@netronome.com>,
-        Quentin Monnet <quentin.monnet@netronome.com>,
-        Daniel Borkmann <daniel@iogearbox.net>
-References: <20210128024316.1425-1-hdanton@sina.com>
- <CACT4Y+Z8NwmvuqynuFO8XFk4sdeTLi9Bn5RWt3xWU_Vb+z+hAA@mail.gmail.com>
-From:   Eric Dumazet <eric.dumazet@gmail.com>
-Message-ID: <2cfd53f0-2a38-4550-a354-a8967736298a@gmail.com>
-Date:   Thu, 28 Jan 2021 17:01:40 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=mmsAaGz0qy+EULWgb8BRy1dw0rnx2dvW966eExwXI1o=;
+        b=NNDbn85gZfrX+t+QTdS3d1+FeFPT8XHHu/1uSf/ic0GlGsqjp1K908qYMhri2ZY3C6
+         lxMrpPGWi6Xh0MrxNzZs13u3AwgksOSkX0xsqyUQr244fhpjctgoNNH8v/dIxfDuilzL
+         Dic6rB3cclCIRt7pYbyqjoqCw8LnJqqBZtlmAEDNd9Y+EMarfyAKtGZmhDELVjVBENX7
+         21U97paAEB52UhofiUa6FShWrEDDD+s/NKSelCq1MNiB/qdOgr26UGwjqne4KkC1Lz8t
+         Pbrl/BoZ8FCThf+htKdil28X7wTlriDPZQSwAX8Blet0/hjnHPN8VBdmyotUR1stZiEh
+         4hBw==
+X-Gm-Message-State: AOAM531gzjDj3RaK07L8Iq/TE6t2JknTx/7PWGaogS2SI/I/P4BM67Eq
+        NzarnUucYA6UM+iHNQbHsWN1mjqbdmn2s2FoKcE=
+X-Google-Smtp-Source: ABdhPJzRg/hDOPh3YsW4O5+7SS6TK5brH1QhTYjZQs++Hl2tqKUFekfTNAdnj0oLtJtrnH7lJLdd/q23ajkmuJgfqUY=
+X-Received: by 2002:a63:e50:: with SMTP id 16mr285707pgo.74.1611850084193;
+ Thu, 28 Jan 2021 08:08:04 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <CACT4Y+Z8NwmvuqynuFO8XFk4sdeTLi9Bn5RWt3xWU_Vb+z+hAA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20210125045631.2345-1-lorenzo.carletti98@gmail.com> <20210125045631.2345-2-lorenzo.carletti98@gmail.com>
+In-Reply-To: <20210125045631.2345-2-lorenzo.carletti98@gmail.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Thu, 28 Jan 2021 18:07:47 +0200
+Message-ID: <CAHp75VeyKpeDa7XSjQ7zAEQ0BnseZCAJhh+nakNYN2nP+6PJAQ@mail.gmail.com>
+Subject: Re: [PATCH 1/1] net: dsa: rtl8366rb: standardize init jam tables
+To:     Lorenzo Carletti <lorenzo.carletti98@gmail.com>
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Andrew Lunn <andrew@lunn.ch>, vivien.didelot@gmail.com,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        netdev <netdev@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+On Mon, Jan 25, 2021 at 7:00 AM Lorenzo Carletti
+<lorenzo.carletti98@gmail.com> wrote:
+>
+> In the rtl8366rb driver there are some jam tables which contain
+> undocumented values.
+> While trying to understand what these tables actually do,
+> I noticed a discrepancy in how one of those was treated.
+> Most of them were plain u16 arrays, while the ethernet one was
+> an u16 matrix.
+> By looking at the vendor's droplets of source code these tables came from,
+> I found out that they were all originally u16 matrixes.
+>
+> This commit standardizes the jam tables, turning them all into
+> u16 matrixes.
+> This change makes it easier to understand how the jam tables are used
+> and also makes it possible for a single function to handle all of them,
+> removing some duplicated code.
 
+...
 
-On 1/28/21 8:23 AM, Dmitry Vyukov wrote:
-> On Thu, Jan 28, 2021 at 3:43 AM Hillf Danton <hdanton@sina.com> wrote:
->>
->> Init the u64 stats in order to avoid the lockdep prints on the 32bit
->> hardware like
-> 
-> FTR this is not just to avoid lockdep prints, but also to prevent very
-> real stalls in production.
+Since further replies removed code, I reply here for everybody with an
+example of my thoughts against this cryptic data.
 
-Are you sure ?
+If you look into the below, for example, you may notice a few things.
+ - it pokes different address regions (sounds like data section, text
+section, etc.)
+ - it has different meaning for some addresses (0xBE prefix)
 
-> u64_stats_init initializes seqlock, if the uninitialized
-> selock->sequence would be odd, the kernel will stall.
++static const u16 rtl8366rb_init_jam_f5d8235[][2] = {
++       {0x0242, 0x02BF}, {0x0245, 0x02BF}, {0x0248, 0x02BF}, {0x024B, 0x02BF},
++       {0x024E, 0x02BF}, {0x0251, 0x02BF}, {0x0254, 0x0A3F}, {0x0256, 0x0A3F},
++       {0x0258, 0x0A3F}, {0x025A, 0x0A3F}, {0x025C, 0x0A3F}, {0x025E, 0x0A3F},
 
-Normally the whole netdev structure is zeroed when allocated,
-this is done in alloc_netdev_mqs()
+Sounds like we program some buffer lengths / limits (0x2c0, 0xa40 if
+it rings any bell to anybody).
 
-p = kvzalloc(alloc_size, GFP_KERNEL | __GFP_RETRY_MAYFAIL);
++       {0x0263, 0x007C}, {0x0100, 0x0004}, {0xBE5B, 0x3500}, {0x800E, 0x200F},
 
-So unless kvzalloc() has been changed recently to inject random data
-instead of 0, this bug is really about lockdep only.
+BE5B seems like "execute the routine at 0x3500 address".
+Thus I think shuffling those pairs before 0xbe shouldn't give any
+difference (but I have no hw to try).
 
-> 
-> Maintainers, please send this upstream on your earliest convenience,
-> this breaks all 32-bit arches for testing purposes.
-> 
-> Thanks
-> 
->>  INFO: trying to register non-static key.
->>  the code is fine but needs lockdep annotation.
->>  turning off the locking correctness validator.
->>  CPU: 0 PID: 4695 Comm: syz-executor.0 Not tainted 5.11.0-rc5-syzkaller #0
->>  Hardware name: ARM-Versatile Express
->>  Backtrace:
->>  [<826fc5b8>] (dump_backtrace) from [<826fc82c>] (show_stack+0x18/0x1c arch/arm/kernel/traps.c:252)
->>  [<826fc814>] (show_stack) from [<8270d1f8>] (__dump_stack lib/dump_stack.c:79 [inline])
->>  [<826fc814>] (show_stack) from [<8270d1f8>] (dump_stack+0xa8/0xc8 lib/dump_stack.c:120)
->>  [<8270d150>] (dump_stack) from [<802bf9c0>] (assign_lock_key kernel/locking/lockdep.c:935 [inline])
->>  [<8270d150>] (dump_stack) from [<802bf9c0>] (register_lock_class+0xabc/0xb68 kernel/locking/lockdep.c:1247)
->>  [<802bef04>] (register_lock_class) from [<802baa2c>] (__lock_acquire+0x84/0x32d4 kernel/locking/lockdep.c:4711)
->>  [<802ba9a8>] (__lock_acquire) from [<802be840>] (lock_acquire.part.0+0xf0/0x554 kernel/locking/lockdep.c:5442)
->>  [<802be750>] (lock_acquire.part.0) from [<802bed10>] (lock_acquire+0x6c/0x74 kernel/locking/lockdep.c:5415)
->>  [<802beca4>] (lock_acquire) from [<81560548>] (seqcount_lockdep_reader_access include/linux/seqlock.h:103 [inline])
->>  [<802beca4>] (lock_acquire) from [<81560548>] (__u64_stats_fetch_begin include/linux/u64_stats_sync.h:164 [inline])
->>  [<802beca4>] (lock_acquire) from [<81560548>] (u64_stats_fetch_begin include/linux/u64_stats_sync.h:175 [inline])
->>  [<802beca4>] (lock_acquire) from [<81560548>] (nsim_get_stats64+0xdc/0xf0 drivers/net/netdevsim/netdev.c:70)
->>  [<8156046c>] (nsim_get_stats64) from [<81e2efa0>] (dev_get_stats+0x44/0xd0 net/core/dev.c:10405)
->>  [<81e2ef5c>] (dev_get_stats) from [<81e53204>] (rtnl_fill_stats+0x38/0x120 net/core/rtnetlink.c:1211)
->>  [<81e531cc>] (rtnl_fill_stats) from [<81e59d58>] (rtnl_fill_ifinfo+0x6d4/0x148c net/core/rtnetlink.c:1783)
->>  [<81e59684>] (rtnl_fill_ifinfo) from [<81e5ceb4>] (rtmsg_ifinfo_build_skb+0x9c/0x108 net/core/rtnetlink.c:3798)
->>  [<81e5ce18>] (rtmsg_ifinfo_build_skb) from [<81e5d0ac>] (rtmsg_ifinfo_event net/core/rtnetlink.c:3830 [inline])
->>  [<81e5ce18>] (rtmsg_ifinfo_build_skb) from [<81e5d0ac>] (rtmsg_ifinfo_event net/core/rtnetlink.c:3821 [inline])
->>  [<81e5ce18>] (rtmsg_ifinfo_build_skb) from [<81e5d0ac>] (rtmsg_ifinfo+0x44/0x70 net/core/rtnetlink.c:3839)
->>  [<81e5d068>] (rtmsg_ifinfo) from [<81e45c2c>] (register_netdevice+0x664/0x68c net/core/dev.c:10103)
->>  [<81e455c8>] (register_netdevice) from [<815608bc>] (nsim_create+0xf8/0x124 drivers/net/netdevsim/netdev.c:317)
->>  [<815607c4>] (nsim_create) from [<81561184>] (__nsim_dev_port_add+0x108/0x188 drivers/net/netdevsim/dev.c:941)
->>  [<8156107c>] (__nsim_dev_port_add) from [<815620d8>] (nsim_dev_port_add_all drivers/net/netdevsim/dev.c:990 [inline])
->>  [<8156107c>] (__nsim_dev_port_add) from [<815620d8>] (nsim_dev_probe+0x5cc/0x750 drivers/net/netdevsim/dev.c:1119)
->>  [<81561b0c>] (nsim_dev_probe) from [<815661dc>] (nsim_bus_probe+0x10/0x14 drivers/net/netdevsim/bus.c:287)
->>  [<815661cc>] (nsim_bus_probe) from [<811724c0>] (really_probe+0x100/0x50c drivers/base/dd.c:554)
->>  [<811723c0>] (really_probe) from [<811729c4>] (driver_probe_device+0xf8/0x1c8 drivers/base/dd.c:740)
->>  [<811728cc>] (driver_probe_device) from [<81172fe4>] (__device_attach_driver+0x8c/0xf0 drivers/base/dd.c:846)
->>  [<81172f58>] (__device_attach_driver) from [<8116fee0>] (bus_for_each_drv+0x88/0xd8 drivers/base/bus.c:431)
->>  [<8116fe58>] (bus_for_each_drv) from [<81172c6c>] (__device_attach+0xdc/0x1d0 drivers/base/dd.c:914)
->>  [<81172b90>] (__device_attach) from [<8117305c>] (device_initial_probe+0x14/0x18 drivers/base/dd.c:961)
->>  [<81173048>] (device_initial_probe) from [<81171358>] (bus_probe_device+0x90/0x98 drivers/base/bus.c:491)
->>  [<811712c8>] (bus_probe_device) from [<8116e77c>] (device_add+0x320/0x824 drivers/base/core.c:3109)
->>  [<8116e45c>] (device_add) from [<8116ec9c>] (device_register+0x1c/0x20 drivers/base/core.c:3182)
->>  [<8116ec80>] (device_register) from [<81566710>] (nsim_bus_dev_new drivers/net/netdevsim/bus.c:336 [inline])
->>  [<8116ec80>] (device_register) from [<81566710>] (new_device_store+0x178/0x208 drivers/net/netdevsim/bus.c:215)
->>  [<81566598>] (new_device_store) from [<8116fcb4>] (bus_attr_store+0x2c/0x38 drivers/base/bus.c:122)
->>  [<8116fc88>] (bus_attr_store) from [<805b4b8c>] (sysfs_kf_write+0x48/0x54 fs/sysfs/file.c:139)
->>  [<805b4b44>] (sysfs_kf_write) from [<805b3c90>] (kernfs_fop_write_iter+0x128/0x1ec fs/kernfs/file.c:296)
->>  [<805b3b68>] (kernfs_fop_write_iter) from [<804d22fc>] (call_write_iter include/linux/fs.h:1901 [inline])
->>  [<805b3b68>] (kernfs_fop_write_iter) from [<804d22fc>] (new_sync_write fs/read_write.c:518 [inline])
->>  [<805b3b68>] (kernfs_fop_write_iter) from [<804d22fc>] (vfs_write+0x3dc/0x57c fs/read_write.c:605)
->>  [<804d1f20>] (vfs_write) from [<804d2604>] (ksys_write+0x68/0xec fs/read_write.c:658)
->>  [<804d259c>] (ksys_write) from [<804d2698>] (__do_sys_write fs/read_write.c:670 [inline])
->>  [<804d259c>] (ksys_write) from [<804d2698>] (sys_write+0x10/0x14 fs/read_write.c:667)
->>  [<804d2688>] (sys_write) from [<80200060>] (ret_fast_syscall+0x0/0x2c arch/arm/mm/proc-v7.S:64)
->>
->> Fixes: 83c9e13aa39a ("netdevsim: add software driver for testing offloads")
->> Reported-by: syzbot+e74a6857f2d0efe3ad81@syzkaller.appspotmail.com
->> Tested-by: Dmitry Vyukov <dvyukov@google.com>
->> Cc: Jakub Kicinski <jakub.kicinski@netronome.com>
->> Cc: Simon Horman <simon.horman@netronome.com>
->> Cc: Quentin Monnet <quentin.monnet@netronome.com>
->> Cc: Daniel Borkmann <daniel@iogearbox.net>
->> Signed-off-by: Hillf Danton <hdanton@sina.com>
->> ---
->>
->> --- a/drivers/net/netdevsim/netdev.c
->> +++ b/drivers/net/netdevsim/netdev.c
->> @@ -296,6 +296,7 @@ nsim_create(struct nsim_dev *nsim_dev, s
->>         dev_net_set(dev, nsim_dev_net(nsim_dev));
->>         ns = netdev_priv(dev);
->>         ns->netdev = dev;
->> +       u64_stats_init(&ns->syncp);
->>         ns->nsim_dev = nsim_dev;
->>         ns->nsim_dev_port = nsim_dev_port;
->>         ns->nsim_bus_dev = nsim_dev->nsim_bus_dev;
->> --
->>
->> --
->> You received this message because you are subscribed to the Google Groups "syzkaller-bugs" group.
->> To unsubscribe from this group and stop receiving emails from it, send an email to syzkaller-bugs+unsubscribe@googlegroups.com.
->> To view this discussion on the web visit https://groups.google.com/d/msgid/syzkaller-bugs/20210128024316.1425-1-hdanton%40sina.com.
++       {0xBE1D, 0x0F00}, {0x8001, 0x5011}, {0x800A, 0xA2F4}, {0x800B, 0x17A3},
++       {0xBE4B, 0x17A3}, {0xBE41, 0x5011}, {0xBE17, 0x2100}, {0x8000, 0x8304},
++       {0xBE40, 0x8304}, {0xBE4A, 0xA2F4}, {0x800C, 0xA8D5}, {0x8014, 0x5500},
++       {0x8015, 0x0004}, {0xBE4C, 0xA8D5}, {0xBE59, 0x0008}, {0xBE09, 0x0E00},
++       {0xBE36, 0x1036}, {0xBE37, 0x1036}, {0x800D, 0x00FF}, {0xBE4D, 0x00FF},
+
+0x80 addresses are some kind of magic, like interrupt vector returns
+or so. You may notice some 0xBE commands against the addresses that
+are put into the 0x8000 address region.
+
+ };
+
+Overall it seems you have to discover a full firmware image to make
+any assumptions about CPU ISA used there and address mapping.
+
+-- 
+With Best Regards,
+Andy Shevchenko
