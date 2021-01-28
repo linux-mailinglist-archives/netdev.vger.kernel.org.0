@@ -2,60 +2,39 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 36338306D72
-	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 07:10:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 7FD06306D83
+	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 07:17:40 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229900AbhA1GJw (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jan 2021 01:09:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48776 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229847AbhA1GJu (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jan 2021 01:09:50 -0500
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43C70C061756
-        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 22:09:10 -0800 (PST)
-Received: by mail-ej1-x635.google.com with SMTP id ox12so6084471ejb.2
-        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 22:09:10 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bytedance-com.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=NXx/P5FvUFVwAVEpEYoOu8rkcAlVKobDmGNLoF5KiOU=;
-        b=jIBTPPGalLdY3HXcOP+rfjSY5WznmUO79VKsxCm0y1wmSWpTvm6KvOYqgqefWMxF8X
-         AcWL0X5iYkozog2GDDKRyiWhGyK5eSVbCNzsK6o0M7W10Gjhw+8vZcl4Vn8Q4myta4of
-         TDg+ijaxGWaASsOuNjJV9AlF8EO6ixnaYbKUo9ZiQ0yAmWe1vFViJWwRkV16488g/4YW
-         lPoRUWRuYpc8QiZTyUiXCttDixCM3+s7KAIkArNW5ZFOS1f5n7wf/Rh7Llw4GiCYBejV
-         J1LTqSXZ9MqLHNqudhDU7PPK9l0uAzMO/BR2bBOQjs1GvZYgo7oOFUgqB+JNrgMI3K7J
-         fO1Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=NXx/P5FvUFVwAVEpEYoOu8rkcAlVKobDmGNLoF5KiOU=;
-        b=EvxhMi0dmilYEPmhaKMGnN1TB3X8d2eCkSuy1EkrliX92UQCozankd9ENMqX+ELUG0
-         TKXj1dZrQQlIKfN0y6igJNJ3kstlljP062lH+cak799Dq5cC42Ba+lwGX56w6Cg47faX
-         qaQ2182Y3gMitNqVpcz4Pnw0zVGbhLDAQakXcuZXzNfyZko0dYCSAoubaE2vTcM/Ao8R
-         UrCQEQ5cvPD361d+6Q8R/lLl0pY6DRyfrF1O1YZMWCY6x+17qjTP/v+1teUS4gS5E66n
-         0cRVs5LRfdKgjhPIpQMmH6GyZVUa+BbCRq1c2/fzB66qdYbGTwqbUwQ0z3fuQmCzE6J/
-         +s9w==
-X-Gm-Message-State: AOAM5331rEc/PULc+w6kR0/D+2Fo10lFa2Ygjg0KfAkRhFdURDjPSi+N
-        ewTCglgkl1a1JZXXVkk8fDA+lBMdbB/xAVxDeE9M
-X-Google-Smtp-Source: ABdhPJwRLxibLx2jLqCot26i8quCjBcjfUCZIgtFqFpvohK4E372M12RGU/B+JzdoSjdhG8E5eqP5h50me1mUxqp9A4=
-X-Received: by 2002:a17:906:5795:: with SMTP id k21mr2096988ejq.174.1611814149063;
- Wed, 27 Jan 2021 22:09:09 -0800 (PST)
-MIME-Version: 1.0
-References: <20210119045920.447-1-xieyongji@bytedance.com> <20210119045920.447-2-xieyongji@bytedance.com>
- <e8a2cc15-80f5-01e0-75ec-ea6281fda0eb@redhat.com> <CACycT3sN0+dg-NubAK+N-DWf3UDXwWh=RyRX-qC9fwdg3QaLWA@mail.gmail.com>
- <6a5f0186-c2e3-4603-9826-50d5c68a3fda@redhat.com> <CACycT3sqDgccOfNcY_FNcHDqJ2DeMbigdFuHYm9DxWWMjkL7CQ@mail.gmail.com>
- <b5c9f2d4-5b95-4552-3886-f5cbcb7de232@redhat.com> <CACycT3u6Ayf_X8Mv4EvF+B=B4OzFSK8ygvJMRnO6CDgYF13Qnw@mail.gmail.com>
- <9226c594-e045-544d-4e46-c4c3c9c573a9@redhat.com>
-In-Reply-To: <9226c594-e045-544d-4e46-c4c3c9c573a9@redhat.com>
-From:   Yongji Xie <xieyongji@bytedance.com>
-Date:   Thu, 28 Jan 2021 14:08:58 +0800
-Message-ID: <CACycT3ukfPjnD+o0_xkq9Y9cwDxQUj1dmuuwuVdQvKywjQhRjA@mail.gmail.com>
-Subject: Re: Re: [RFC v3 01/11] eventfd: track eventfd_signal() recursion
- depth separately in different cases
-To:     Jason Wang <jasowang@redhat.com>
+        id S231148AbhA1GQY (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jan 2021 01:16:24 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:47068 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229900AbhA1GQV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jan 2021 01:16:21 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1611814494;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=fgRtHFrCUHDBzGNeWEeT3eYxAFV/0uXWAeAeQDDdkrU=;
+        b=TMJkk4RiAOgi7rXn+OsFopGlAzCqL++0r9P3655jC/9YokGinNftr4phdaS6Ed9x8HmTks
+        1IB4uUl1wmqMDTwJqVzZtMdnsipz4CCR6q7T/nCSjkpXgsOXnGWcZ4h6tzSNeYVyagVMYt
+        eLkVgYm7sRj6L/lNjXuRKKzIk7RtjP8=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-533-jJnOhnlyMCSfZeCJe8mhcw-1; Thu, 28 Jan 2021 01:14:52 -0500
+X-MC-Unique: jJnOhnlyMCSfZeCJe8mhcw-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id BDA6C9CC00;
+        Thu, 28 Jan 2021 06:14:49 +0000 (UTC)
+Received: from [10.72.12.167] (ovpn-12-167.pek2.redhat.com [10.72.12.167])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 6CB0560C13;
+        Thu, 28 Jan 2021 06:14:34 +0000 (UTC)
+Subject: Re: [RFC v3 08/11] vduse: Introduce VDUSE - vDPA Device in Userspace
+To:     Yongji Xie <xieyongji@bytedance.com>
 Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
         Stefan Hajnoczi <stefanha@redhat.com>,
         Stefano Garzarella <sgarzare@redhat.com>,
@@ -68,71 +47,152 @@ Cc:     "Michael S. Tsirkin" <mst@redhat.com>,
         virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
         kvm@vger.kernel.org, linux-aio@kvack.org,
         linux-fsdevel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+References: <20210119045920.447-1-xieyongji@bytedance.com>
+ <20210119050756.600-1-xieyongji@bytedance.com>
+ <20210119050756.600-2-xieyongji@bytedance.com>
+ <1bb3af07-0ec2-109c-d6d1-83d4d1f410c3@redhat.com>
+ <CACycT3uJtKqEp7CHBKhvmSL41gTrCcMrt_-tacGCbX1nabuG6w@mail.gmail.com>
+ <ea170064-6fcf-133b-f3bd-d1f1862d4143@redhat.com>
+ <CACycT3upvTrkm5Cd6KzphSk=FYDjAVCbFJ0CLmha5sP_h=5KGg@mail.gmail.com>
+From:   Jason Wang <jasowang@redhat.com>
+Message-ID: <bdb57829-d4a4-eaca-d43b-70d39df96bf6@redhat.com>
+Date:   Thu, 28 Jan 2021 14:14:33 +0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
+MIME-Version: 1.0
+In-Reply-To: <CACycT3upvTrkm5Cd6KzphSk=FYDjAVCbFJ0CLmha5sP_h=5KGg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 28, 2021 at 12:31 PM Jason Wang <jasowang@redhat.com> wrote:
->
->
-> On 2021/1/28 =E4=B8=8A=E5=8D=8811:52, Yongji Xie wrote:
-> > On Thu, Jan 28, 2021 at 11:05 AM Jason Wang <jasowang@redhat.com> wrote=
-:
-> >>
-> >> On 2021/1/27 =E4=B8=8B=E5=8D=885:11, Yongji Xie wrote:
-> >>> On Wed, Jan 27, 2021 at 11:38 AM Jason Wang <jasowang@redhat.com> wro=
-te:
-> >>>> On 2021/1/20 =E4=B8=8B=E5=8D=882:52, Yongji Xie wrote:
-> >>>>> On Wed, Jan 20, 2021 at 12:24 PM Jason Wang <jasowang@redhat.com> w=
-rote:
-> >>>>>> On 2021/1/19 =E4=B8=8B=E5=8D=8812:59, Xie Yongji wrote:
-> >>>>>>> Now we have a global percpu counter to limit the recursion depth
-> >>>>>>> of eventfd_signal(). This can avoid deadlock or stack overflow.
-> >>>>>>> But in stack overflow case, it should be OK to increase the
-> >>>>>>> recursion depth if needed. So we add a percpu counter in eventfd_=
-ctx
-> >>>>>>> to limit the recursion depth for deadlock case. Then it could be
-> >>>>>>> fine to increase the global percpu counter later.
-> >>>>>> I wonder whether or not it's worth to introduce percpu for each ev=
-entfd.
-> >>>>>>
-> >>>>>> How about simply check if eventfd_signal_count() is greater than 2=
-?
-> >>>>>>
-> >>>>> It can't avoid deadlock in this way.
-> >>>> I may miss something but the count is to avoid recursive eventfd cal=
-l.
-> >>>> So for VDUSE what we suffers is e.g the interrupt injection path:
-> >>>>
-> >>>> userspace write IRQFD -> vq->cb() -> another IRQFD.
-> >>>>
-> >>>> It looks like increasing EVENTFD_WAKEUP_DEPTH should be sufficient?
-> >>>>
-> >>> Actually I mean the deadlock described in commit f0b493e ("io_uring:
-> >>> prevent potential eventfd recursion on poll"). It can break this bug
-> >>> fix if we just increase EVENTFD_WAKEUP_DEPTH.
-> >>
-> >> Ok, so can wait do something similar in that commit? (using async stuf=
-fs
-> >> like wq).
-> >>
-> > We can do that. But it will reduce the performance. Because the
-> > eventfd recursion will be triggered every time kvm kick eventfd in
-> > vhost-vdpa cases:
-> >
-> > KVM write KICKFD -> ops->kick_vq -> VDUSE write KICKFD
-> >
-> > Thanks,
-> > Yongji
->
->
-> Right, I think in the future we need to find a way to let KVM to wakeup
-> VDUSE directly.
->
 
-Yes, this would be better.
+On 2021/1/28 下午2:03, Yongji Xie wrote:
+>>>>> +
+>>>>> +static const struct file_operations vduse_domain_fops = {
+>>>>> +     .mmap = vduse_domain_mmap,
+>>>>> +     .release = vduse_domain_release,
+>>>>> +};
+>>>> It's better to explain the reason for introducing a dedicated file for
+>>>> mmap() here.
+>>>>
+>>> To make the implementation of iova_domain independent with vduse_dev.
+>> My understanding is that, the only usage for this is to:
+>>
+>> 1) support different type of iova mappings
+>> 2) or switch between iova domain mappings
+>>
+>> But I can't think of a need for this.
+>>
+> For example, share one iova_domain between several vduse devices.
 
-Thanks,
-Yongji
+
+Interesting.
+
+
+>
+> And it will be helpful if we want to split this patch into iova domain
+> part and vduse device part. Because the page fault handler should be
+> paired with dma_map/dma_unmap.
+
+
+Ok.
+
+[...]
+
+
+>
+>>>> This looks not safe, let's use idr here.
+>>>>
+>>> Could you give more details? Looks like idr should not used in this
+>>> case which can not tolerate failure. And using a list to store the msg
+>>> is better than using idr when the msg needs to be re-inserted in some
+>>> cases.
+>> My understanding is the "unique" (probably need a better name) is a
+>> token that is used to uniquely identify a message. The reply from
+>> userspace is required to write with exact the same token(unique). IDR
+>> seems better but consider we can hardly hit 64bit overflow, atomic might
+>> be OK as well.
+>>
+>> Btw, under what case do we need to do "re-inserted"?
+>>
+> When userspace daemon receive the message but doesn't reply it before crash.
+
+
+Do we have code to do this?
+
+[...]
+
+
+>
+>>>> So we had multiple types of requests/responses, is this better to
+>>>> introduce a queue based admin interface other than ioctl?
+>>>>
+>>> Sorry, I didn't get your point. What do you mean by queue-based admin
+>>> interface? Virtqueue-based?
+>> Yes, a queue(virtqueue). The commands could be passed through the queue.
+>> (Just an idea, not sure it's worth)
+>>
+> I considered it before. But I found it still needs some extra works
+> (setup eventfd, set vring base and so on) to setup the admin virtqueue
+> before using it for communication. So I turn to use this simple way.
+
+
+Yes. We might consider it in the future.
+
+[...]
+
+
+>
+>>>> Any reason for such IOTLB invalidation here?
+>>>>
+>>> As I mentioned before, this is used to notify userspace to update the
+>>> IOTLB. Mainly for virtio-vdpa case.
+>> So the question is, usually, there could be several times of status
+>> setting during driver initialization. Do we really need to update IOTLB
+>> every time?
+>>
+> I think we can check whether there are some changes after the last
+> IOTLB updating here.
+
+
+So the question still, except reset (write 0), any other status that can 
+affect IOTLB?
+
+[...]
+
+>
+>> Something like swiotlb default value (64M)?
+>>
+> Do we need a module parameter to change it?
+
+
+We can.
+
+[...]
+
+>
+>>>>> +     union {
+>>>>> +             struct vduse_vq_num vq_num; /* virtqueue num */
+>>>>> +             struct vduse_vq_addr vq_addr; /* virtqueue address */
+>>>>> +             struct vduse_vq_ready vq_ready; /* virtqueue ready status */
+>>>>> +             struct vduse_vq_state vq_state; /* virtqueue state */
+>>>>> +             struct vduse_dev_config_data config; /* virtio device config space */
+>>>>> +             struct vduse_iova_range iova; /* iova range for updating */
+>>>>> +             __u64 features; /* virtio features */
+>>>>> +             __u8 status; /* device status */
+>>>> Let's add some padding for future extensions.
+>>>>
+>>> Is sizeof(vduse_dev_config_data) ok? Or char[1024]?
+>> 1024 seems too large, 128 or 256 looks better.
+>>
+> If so, sizeof(vduse_dev_config_data) is enough.
+
+
+Ok if we don't need a message more than that in the future.
+
+Thanks
+
