@@ -2,157 +2,226 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 02820307976
-	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 16:21:42 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 96F603079A7
+	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 16:27:43 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231159AbhA1PS1 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jan 2021 10:18:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53436 "EHLO
+        id S232274AbhA1P0D (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jan 2021 10:26:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54426 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231390AbhA1PSO (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jan 2021 10:18:14 -0500
-Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F55BC0613D6;
-        Thu, 28 Jan 2021 07:17:34 -0800 (PST)
-Received: by mail-pj1-x102c.google.com with SMTP id a20so4031276pjs.1;
-        Thu, 28 Jan 2021 07:17:34 -0800 (PST)
+        with ESMTP id S232531AbhA1PYU (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jan 2021 10:24:20 -0500
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2944C0613ED
+        for <netdev@vger.kernel.org>; Thu, 28 Jan 2021 07:24:04 -0800 (PST)
+Received: by mail-ej1-x634.google.com with SMTP id g3so8339533ejb.6
+        for <netdev@vger.kernel.org>; Thu, 28 Jan 2021 07:24:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=2Nye8p/WF2NWdxjWCcs2X/vHGUhlnVaM/5kQ/1QbWn4=;
-        b=bCsqzeuAGuApSZxxJAxr75qJ6gUgKRhrPGQz7yXrp/xRnXsoWxybscn4vh5QrsNaCz
-         WGvjTsbc0j/TCCqYassW1O3Aj4UA9+6wUte1CheKYLbln16eYunXmiS6njtyf53J4z8x
-         fy2Bs1YR/wQNpMc6SRoarSzGbsxL/o4EyiDDfDpCOPtibpm1yyQiay56ZI0+6Z534X9F
-         tER6yltuLGG/ThN9I/waSYyu+DAkZzvdPtTINvjH8pzC8Xzh2J4hVT3phFO2gIXZ74gk
-         Nmfq4df1X31bmJVBshpd66Y31NOpDpHa5GylyKb3a+fDroT9tkcmoE2PZ9Yb40Xa24St
-         2oaw==
+        h=date:from:to:cc:subject:message-id:mail-followup-to:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=oYXRH4S0AQzyJBnluPai1Eq4DS4B78I1/IalB9BGk2U=;
+        b=QoTjYd0Por8LnPvply++Tbwx72+Px+As/SufKUX/6wbDnB5/gRPLBEW3w05aD6WD+D
+         u6UxmpJBKHZv9rcla2bbgVrp4Ugt/7yT6A4/6DLGSNOg7UhBY338TTuBslMf848xCouS
+         g+Vyx2hS9Dnv6VR5PFsZoLF8WKv/chtywTcwPr5qXtJNDJSvl8jfTgmm3gjTTMYeDQsT
+         BI71vU1zjhTOg2r/gMlFPFM1NqIxCDg5wPl9EVhorYp0PdIN3ht3IfsDz7QlMQcTxiiL
+         H3EC1ol2IhrAlRF6txDEvHz3GtQ/xqA7VcBkdGgDdKdFcdrjFXcwNISK+AWfHE3T0kXL
+         S6Og==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=2Nye8p/WF2NWdxjWCcs2X/vHGUhlnVaM/5kQ/1QbWn4=;
-        b=JhlQwU9jHcsI7s0phu/+hM/xmM5MoIH/mrA4q5RqSgh88imLRMtaxEQd0900ApM579
-         nA6LzoB1nl/Wsw24zOeqHWxXV61TXPKQuxwH8ojmc6+ik+XllMsgjyrxUGgP7ZIG83gn
-         AxRjqna1nYNLmU5UsGHHuICrSjWO7Y/wKrCU/zVUyVH4QN4bzg0nYi6vsITqJ0HNW+Du
-         VxZawFBpq2poDnKUILGo5PXz9vGFnTwjRGS5+vfBZ3DWmwv25mjC1q2zeb0C4aYRTNg9
-         MJIzskUv+5DHWy+VvZyPv8bPhlnU/rN3lIMKIeXnbm7bHwWJgEzJew4GONjVR6b7Q6rz
-         2cXg==
-X-Gm-Message-State: AOAM532+qMRbtz34zUw7XWsdLRzEkrzKrxbMvGfTvHSbeMr1O/zS+s5Z
-        GMHMKoKMKTCrcjF32L/UStw=
-X-Google-Smtp-Source: ABdhPJwsZmg60NuhdyVTl0ndOhEzxWR2wvZ9Xe6KyHOOKqOBHUgMZIrAS9dWYtala5iaIw2DUWdPgg==
-X-Received: by 2002:a17:902:b213:b029:db:3a3e:d8ad with SMTP id t19-20020a170902b213b02900db3a3ed8admr47121plr.73.1611847053795;
-        Thu, 28 Jan 2021 07:17:33 -0800 (PST)
-Received: from [192.168.1.18] (i121-115-229-245.s42.a013.ap.plala.or.jp. [121.115.229.245])
-        by smtp.googlemail.com with ESMTPSA id ne6sm5330632pjb.44.2021.01.28.07.17.30
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 28 Jan 2021 07:17:33 -0800 (PST)
-Subject: Re: [PATCH bpf-next 1/3] net: veth: introduce bulking for XDP_PASS
-To:     Lorenzo Bianconi <lorenzo@kernel.org>, bpf@vger.kernel.org
-Cc:     netdev@vger.kernel.org, davem@davemloft.net, kuba@kernel.org,
-        ast@kernel.org, daniel@iogearbox.net, lorenzo.bianconi@redhat.com,
-        brouer@redhat.com, toke@redhat.com
-References: <cover.1611685778.git.lorenzo@kernel.org>
- <adca75284e30320e9d692d618a6349319d9340f3.1611685778.git.lorenzo@kernel.org>
-From:   Toshiaki Makita <toshiaki.makita1@gmail.com>
-Message-ID: <de16aab2-58a5-dd0b-1577-4fa04a6806ce@gmail.com>
-Date:   Fri, 29 Jan 2021 00:17:27 +0900
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id
+         :mail-followup-to:references:mime-version:content-disposition
+         :content-transfer-encoding:in-reply-to:user-agent;
+        bh=oYXRH4S0AQzyJBnluPai1Eq4DS4B78I1/IalB9BGk2U=;
+        b=IMRBaFD77j8NSkNGUfXZkKbNxQRFvOPfKd+qGZwToyXFyH23umyF0PLnTPN+51zxtj
+         wfpvq6/y3qlxfiB0BORA2gzJ3Mntrollh5jAs750YSJL5e9bX8lVRXIntknrHumas5mI
+         51iML1KK1C1MehtWaX+IHWthpWuwQNfzd5qIrhnyPloOduoAWcKrxdqM8bZeVgHnsgjs
+         Ce4uh8ui22vQOJFXxls7f8CviHak0EigtaXtIFJKIJZC3K3KPmWt3FtiYCjkAcijxK6b
+         T0fdrAqy80jMXCzf3ZJtQgfSV94PAoqIxAvIUsZgene2wBZUruCoMhsDs7xIEVSBn+4z
+         aLSg==
+X-Gm-Message-State: AOAM533H1pCHUAtL/DPkw8fzo4k8WplX9DmuZx3zeN23EP51HjwcKstn
+        t0YIDDY3RuEv7CkN36LfcNs=
+X-Google-Smtp-Source: ABdhPJwygG38pu7c3GUaQdWNT/xwF7fHyU50T3kZjz78lTUMDJVr8LrKZ4bjTVE8LbVZe2dVs20LzQ==
+X-Received: by 2002:a17:906:3885:: with SMTP id q5mr11807898ejd.105.1611847443577;
+        Thu, 28 Jan 2021 07:24:03 -0800 (PST)
+Received: from localhost (dslb-002-207-138-002.002.207.pools.vodafone-ip.de. [2.207.138.2])
+        by smtp.gmail.com with ESMTPSA id he38sm2315263ejc.96.2021.01.28.07.24.01
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Thu, 28 Jan 2021 07:24:02 -0800 (PST)
+Date:   Thu, 28 Jan 2021 16:23:53 +0100
+From:   Oliver Graute <oliver.graute@gmail.com>
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Network Development <netdev@vger.kernel.org>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Paolo Abeni <pabeni@redhat.com>, sagi@lightbitslabs.com,
+        Christoph Hellwig <hch@lst.de>, sagi@grimberg.me,
+        Al Viro <viro@zeniv.linux.org.uk>
+Subject: Re: UDP implementation and the MSG_MORE flag
+Message-ID: <20210128152353.GB27281@optiplex>
+Mail-Followup-To: Willem de Bruijn <willemdebruijn.kernel@gmail.com>,
+        Network Development <netdev@vger.kernel.org>,
+        Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
+        Jakub Sitnicki <jakub@cloudflare.com>,
+        Paolo Abeni <pabeni@redhat.com>, sagi@lightbitslabs.com,
+        Christoph Hellwig <hch@lst.de>, sagi@grimberg.me,
+        Al Viro <viro@zeniv.linux.org.uk>
+References: <20210126141248.GA27281@optiplex>
+ <CA+FuTSez-w-Y6LfXxEcqbB5QucPRfCEFmCd5a4LtOGcyOjGOug@mail.gmail.com>
+ <CA+FuTSd_=nL7sycEYKSUbGVoC56V3Wyc=zLMo+mQ9mjC4i8_gw@mail.gmail.com>
+ <CAF=yD-Ja=kzq4KaraUd_dV7Z2joR009VLjhkpu8DK2DSUX-n9Q@mail.gmail.com>
+ <CAF=yD-+qFQHqLaYjq4x=rGjNZf_K9FSQiV-7Toqi3np+Cbq_vA@mail.gmail.com>
+ <CAF=yD-JuHy8yf88RR_=K+r_3SwhwzqRtHrK08-WF4BkwMNk-LQ@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <adca75284e30320e9d692d618a6349319d9340f3.1611685778.git.lorenzo@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <CAF=yD-JuHy8yf88RR_=K+r_3SwhwzqRtHrK08-WF4BkwMNk-LQ@mail.gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021/01/27 3:41, Lorenzo Bianconi wrote:
-> Introduce bulking support for XDP_PASS verdict forwarding skbs to
-> the networking stack
-> 
-> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> ---
->   drivers/net/veth.c | 43 ++++++++++++++++++++++++++-----------------
->   1 file changed, 26 insertions(+), 17 deletions(-)
-> 
-> diff --git a/drivers/net/veth.c b/drivers/net/veth.c
-> index 6e03b619c93c..23137d9966da 100644
-> --- a/drivers/net/veth.c
-> +++ b/drivers/net/veth.c
-> @@ -35,6 +35,7 @@
->   #define VETH_XDP_HEADROOM	(XDP_PACKET_HEADROOM + NET_IP_ALIGN)
->   
->   #define VETH_XDP_TX_BULK_SIZE	16
-> +#define VETH_XDP_BATCH		8
->   
->   struct veth_stats {
->   	u64	rx_drops;
-> @@ -787,27 +788,35 @@ static int veth_xdp_rcv(struct veth_rq *rq, int budget,
->   	int i, done = 0;
->   
->   	for (i = 0; i < budget; i++) {
-> -		void *ptr = __ptr_ring_consume(&rq->xdp_ring);
-> -		struct sk_buff *skb;
-> +		void *frames[VETH_XDP_BATCH];
-> +		void *skbs[VETH_XDP_BATCH];
-> +		int i, n_frame, n_skb = 0;
+On 27/01/21, Willem de Bruijn wrote:
+> On Wed, Jan 27, 2021 at 9:53 PM Willem de Bruijn
+> <willemdebruijn.kernel@gmail.com> wrote:
+> >
+> > On Tue, Jan 26, 2021 at 10:25 PM Willem de Bruijn
+> > <willemdebruijn.kernel@gmail.com> wrote:
+> > >
+> > > On Tue, Jan 26, 2021 at 5:00 PM Willem de Bruijn
+> > > <willemdebruijn.kernel@gmail.com> wrote:
+> > > >
+> > > > On Tue, Jan 26, 2021 at 4:54 PM Willem de Bruijn
+> > > > <willemdebruijn.kernel@gmail.com> wrote:
+> > > > >
+> > > > > On Tue, Jan 26, 2021 at 9:58 AM Oliver Graute <oliver.graute@gmai=
+l.com> wrote:
+> > > > > >
+> > > > > > Hello,
+> > > > > >
+> > > > > > we observe some unexpected behavior in the UDP implementation o=
+f the
+> > > > > > linux kernel.
+> > > > > >
+> > > > > > Some UDP packets send via the loopback interface are dropped in=
+ the
+> > > > > > kernel on the receive side when using sendto with the MSG_MORE =
+flag.
+> > > > > > Every drop increases the InCsumErrors in /proc/self/net/snmp. S=
+ome
+> > > > > > example code to reproduce it is appended below.
+> > > > > >
+> > > > > > In the code we tracked it down to this code section. ( Even a l=
+ittle
+> > > > > > further but its unclear to me wy the csum() is wrong in the bad=
+ case)
+> > > > > >
+> > > > > > udpv6_recvmsg()
+> > > > > > ...
+> > > > > > if (checksum_valid || udp_skb_csum_unnecessary(skb)) {
+> > > > > >                 if (udp_skb_is_linear(skb))
+> > > > > >                         err =3D copy_linear_skb(skb, copied, of=
+f, &msg->msg_iter);
+> > > > > >                 else
+> > > > > >                         err =3D skb_copy_datagram_msg(skb, off,=
+ msg, copied);
+> > > > > >         } else {
+> > > > > >                 err =3D skb_copy_and_csum_datagram_msg(skb, off=
+, msg);
+> > > > > >                 if (err =3D=3D -EINVAL) {
+> > > > > >                         goto csum_copy_err;
+> > > > > >                 }
+> > > > > >         }
+> > > > > > ...
+> > > > > >
+> > > > >
+> > > > > Thanks for the report with a full reproducer.
+> > > > >
+> > > > > I don't have a full answer yet, but can reproduce this easily.
+> > > > >
+> > > > > The third program, without MSG_MORE, builds an skb with
+> > > > > CHECKSUM_PARTIAL in __ip_append_data. When looped to the receive =
+path
+> > > > > that ip_summed means no additional validation is needed. As encod=
+ed in
+> > > > > skb_csum_unnecessary.
+> > > > >
+> > > > > The first and second programs are essentially the same, bar for a
+> > > > > slight difference in length. In both cases packet length is very =
+short
+> > > > > compared to the loopback device MTU. Because of MSG_MORE, these
+> > > > > packets have CHECKSUM_NONE.
+> > > > >
+> > > > > On receive in
+> > > > >
+> > > > >   __udp4_lib_rcv()
+> > > > >     udp4_csum_init()
+> > > > >       err =3D skb_checksum_init_zero_check()
+> > > > >
+> > > > > The second program validates and sets ip_summed =3D CHECKSUM_COMP=
+LETE
+> > > > > and csum_valid =3D 1.
+> > > > > The first does not, though err =3D=3D 0.
+> > > > >
+> > > > > This appears to succeed consistently for packets <=3D 68B of payl=
+oad,
+> > > > > fail consistently otherwise. It is not clear to me yet what causes
+> > > > > this distinction.
+> > > >
+> > > > This is from
+> > > >
+> > > > "
+> > > > /* For small packets <=3D CHECKSUM_BREAK perform checksum complete =
+directly
+> > > >  * in checksum_init.
+> > > >  */
+> > > > #define CHECKSUM_BREAK 76
+> > > > "
+> > > >
+> > > > So the small packet gets checksummed immediately in
+> > > > __skb_checksum_validate_complete, but the larger one does not.
+> > > >
+> > > > Question is why the copy_and_checksum you pointed to seems to fail =
+checksum.
+> > >
+> > > Manually calling __skb_checksum_complete(skb) in
+> > > skb_copy_and_csum_datagram_msg succeeds, so it is the
+> > > skb_copy_and_csum_datagram that returns an incorrect csum.
+> > >
+> > > Bisection shows that this is a regression in 5.0, between
+> > >
+> > > 65d69e2505bb datagram: introduce skb_copy_and_hash_datagram_iter help=
+er (fail)
+> > > d05f443554b3 iov_iter: introduce hash_and_copy_to_iter helper
+> > > 950fcaecd5cc datagram: consolidate datagram copy to iter helpers
+> > > cb002d074dab iov_iter: pass void csum pointer to csum_and_copy_to_ite=
+r (pass)
+> > >
+> > > That's a significant amount of code change. I'll take a closer look,
+> > > but checkpointing state for now..
+> >
+> > Key difference is the csum_block_add when handling frags, and the
+> > removal of temporary csum2.
+> >
+> > In the reproducer, there is one 13B csum_and_copy_to_iter from
+> > skb->data + offset, followed by a 73B csum_and_copy_to_iter from the
+> > first frag. So the second one passes pos 13 to csum_block_add.
+> >
+> > The original implementation of skb_copy_and_csum_datagram similarly
+> > fails the test, if we fail to account for the position
+> >
+> > -                       *csump =3D csum_block_add(*csump, csum2, pos);
+> > +                       *csump =3D csum_block_add(*csump, csum2, 0);
+>=20
+> One possible approach:
 
-'i' is a shadowed variable. I think this may be confusing.
+very thx for your analysis and your patch proposal. After a first quick
+test this patch proposal solves the problem.
 
->   
-> -		if (!ptr)
-> +		n_frame = __ptr_ring_consume_batched(&rq->xdp_ring, frames,
-> +						     VETH_XDP_BATCH);
+Best regards,
 
-This apparently exceeds the budget.
-This will process budget*VETH_XDP_BATCH packets at most.
-(You are probably aware of this because you return 'i' instead of 'done'?)
-
-Also I'm not sure if we need to introduce __ptr_ring_consume_batched() here.
-The function just does __ptr_ring_consume() n times.
-
-IIUC Your final code looks like this:
-
-for (budget) {
-	n_frame = __ptr_ring_consume_batched(VETH_XDP_BATCH);
-	for (n_frame) {
-		if (frame is XDP)
-			xdpf[n_xdpf++] = to_xdp(frame);
-		else
-			skbs[n_skb++] = frame;
-	}
-
-	if (n_xdpf)
-		veth_xdp_rcv_batch(xdpf);
-
-	for (n_skb) {
-		skb = veth_xdp_rcv_skb(skbs[i]);
-		napi_gro_receive(skb);
-	}
-}
-
-Your code processes VETH_XDP_BATCH packets at a time no matter whether each of them 
-is xdp_frame or skb, but I think you actually want to process VETH_XDP_BATCH 
-xdp_frames at a time?
-Then, why not doing like this?
-
-for (budget) {
-	ptr = __ptr_ring_consume();
-	if (ptr is XDP) {
-		if (n_xdpf >= VETH_XDP_BATCH) {
-			veth_xdp_rcv_batch(xdpf);
-			n_xdpf = 0;
-		}
-		xdpf[n_xdpf++] = to_xdp(ptr);
-	} else {
-		skb = veth_xdp_rcv_skb(ptr);
-		napi_gro_receive(skb);
-	}
-}
-if (n_xdpf)
-	veth_xdp_rcv_batch(xdpf);
-
-Toshiaki Makita
+Oliver
