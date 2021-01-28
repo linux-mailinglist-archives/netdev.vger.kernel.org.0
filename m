@@ -2,111 +2,152 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 4EDDF307A92
-	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 17:21:58 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4BE85307A9C
+	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 17:25:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232240AbhA1QUj (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jan 2021 11:20:39 -0500
-Received: from out5-smtp.messagingengine.com ([66.111.4.29]:45589 "EHLO
-        out5-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232076AbhA1QU1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jan 2021 11:20:27 -0500
-Received: from compute3.internal (compute3.nyi.internal [10.202.2.43])
-        by mailout.nyi.internal (Postfix) with ESMTP id 15A7A5C0163;
-        Thu, 28 Jan 2021 11:19:38 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute3.internal (MEProxy); Thu, 28 Jan 2021 11:19:38 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=CP5tVB
-        WS/3PkdmQ8ymXnw023w1qBpaOI3AYq/NFx6G4=; b=fZbN/BJXEzhqShYdAGzsD/
-        r8TBeVzAZgXIyQmkaDw95jmohYgAzLIecCH8SPZV2XfweLH7Se9xOwwx7QQ4uvTh
-        dX7+1Urj8Mb22wcfL0XQylWlvm/3qO/+ONyMT6fI8E+BSScno74Vf+UEPYu+iyPv
-        uBb3y40pe6kj9opSSOabVr2NHjgSDRnH8QOFf6goZhcS4DIyWIcfpx/XMUo+u7NI
-        LW8qz5jgwGz5x+YjNuOImh1oAU6Bj4aTWHZ5CDQDA22NGhtZu5PE4FseSL6YsQLa
-        IoL9luB7wH2WNuAzXJI11A9lBQ9OqoN+dCH3Osp09A0AqLjHBBk4wHCwNuhBluRg
-        ==
-X-ME-Sender: <xms:GeQSYM7r3-BN7WGyFVMs7FNzk5np5Ks6axoCopd3f_hNioLZNy5wag>
-    <xme:GeQSYN6WEDvfvk4WPB80dlvQos2YnpZWT_c1TRYBFMFk9Q3FaHfhS-8hWgDMy6jFX
-    DUAY-4CJTruscc>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrfedtgdekhecutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvuffkfhggtggujgesthdtredttddtvdenucfhrhhomhepkfguohcuufgt
-    hhhimhhmvghluceoihguohhstghhsehiughoshgthhdrohhrgheqnecuggftrfgrthhtvg
-    hrnheptdffkeekfeduffevgeeujeffjefhtefgueeugfevtdeiheduueeukefhudehleet
-    necukfhppeekgedrvddvledrudehfedrgeegnecuvehluhhsthgvrhfuihiivgeptdenuc
-    frrghrrghmpehmrghilhhfrhhomhepihguohhstghhsehiughoshgthhdrohhrgh
-X-ME-Proxy: <xmx:GeQSYLcIpJ22awSWBnXdCSArwuX5a03qkJknXmdnPnRXwIrPNAm5rQ>
-    <xmx:GeQSYBKMQ36lpL1I7JCWBxDizg4-lkUsL5fFL6uSHPOe6sXPlPSCJA>
-    <xmx:GeQSYAKUdmveXIFoKAFQAmmzcElMK31CmzlPkPPNIt3ePL5x3459fg>
-    <xmx:GuQSYFHKhDtT8N8KaXI0Ioe5weQemQARWy6QP4jNTF_ETf1-IshV-Q>
-Received: from localhost (igld-84-229-153-44.inter.net.il [84.229.153.44])
-        by mail.messagingengine.com (Postfix) with ESMTPA id F0D7C24005A;
-        Thu, 28 Jan 2021 11:19:36 -0500 (EST)
-Date:   Thu, 28 Jan 2021 18:19:33 +0200
-From:   Ido Schimmel <idosch@idosch.org>
-To:     Simon Horman <simon.horman@netronome.com>
-Cc:     Jamal Hadi Salim <jhs@mojatatu.com>,
-        Cong Wang <xiyou.wangcong@gmail.com>,
-        Jiri Pirko <jiri@mellanox.com>, netdev@vger.kernel.org,
-        oss-drivers@netronome.com,
-        Baowen Zheng <baowen.zheng@corigine.com>,
-        Louis Peens <louis.peens@netronome.com>
-Subject: Re: [PATCH RFC net-next] net/sched: act_police: add support for
- packet-per-second policing
-Message-ID: <20210128161933.GA3285394@shredder.lan>
-References: <20210125151819.8313-1-simon.horman@netronome.com>
+        id S232190AbhA1QWj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jan 2021 11:22:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39006 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231148AbhA1QWd (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jan 2021 11:22:33 -0500
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBDB9C061573
+        for <netdev@vger.kernel.org>; Thu, 28 Jan 2021 08:21:52 -0800 (PST)
+Received: by mail-pj1-x102d.google.com with SMTP id u4so4600070pjn.4
+        for <netdev@vger.kernel.org>; Thu, 28 Jan 2021 08:21:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=+nxsSzios4I+oPIFkvhWEajlhJmnuXBsPeg2HazMxs4=;
+        b=skL3+ZcL+7RJollywvy3MLLsejkCnp+uI8lFJx8I3WVjG+0D1sVHhZNo2axZgqbp6A
+         8R39XIytXTlM4tAZOqsgb/8TtphV+azxTLbpfI3X2BZ5DW/+U2k2KrA1Gmr7WjK1zBDk
+         8Vf3QrJF7mC9/Ldw2lVw1t0nDGV7w0OZJWfywKJhHFriC86O5A43WjN9nTu4qJFuUbYG
+         GmIIA1Y3U06lW0jo5QSMJcgfF+oDMgau/RVYL+Yr47ry4Nc92Uc+3I3SI9gum+WBtRlo
+         30JPuLCdn7fg487QQ8f2JFsbh0FYVVUqAHXhlc1u2rzbTC+sMOOhQ2IIdvAh4whZocLx
+         +aRQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=+nxsSzios4I+oPIFkvhWEajlhJmnuXBsPeg2HazMxs4=;
+        b=IbBiXa0V/a9fwDXl24rd5Ups2P6hRy6Xa7USlynFB/Xdph3HAyz2iduPNYj4OndWmn
+         wNDoZt6KP5yjAiGhB3SldHnDIX8HrPfE+FAD+/LWE15Vae2eEFi7qVltjd9ElZV3RqH/
+         iMU2lPMw4Qca+uzNu3jXc7pPpOk9PFcky2lbMdyN/cxrAcoea0xUQcVTM3TEZ8lD8swR
+         VGtRD+TUc0Ho22GEGY2p17+dohZr645sfTlq3FliSaG5eLcODf9XeQXJ9wEIwel44Sti
+         w57uywBZ6plPgAT+INqMVvHu2S6yGZhYTu1PdwgZK3EVWQh/f9TxlhaLKdf1J7Nr8PRE
+         8rAg==
+X-Gm-Message-State: AOAM531sUu4rYG5dvfF07ZbCmY814hhaUVs8BVnvYxrAuVkSvENCIdTS
+        v3WwYAry2pkT5gwuzyNPIiM=
+X-Google-Smtp-Source: ABdhPJz12aGRze9krC0TDlo5os1LjbajeByTiZIJ64G6EmMR/7AboO++wqsvXkDQ6JPUgJTfqF1CqQ==
+X-Received: by 2002:a17:90a:5911:: with SMTP id k17mr155094pji.152.1611850912493;
+        Thu, 28 Jan 2021 08:21:52 -0800 (PST)
+Received: from edumazet1.svl.corp.google.com ([2620:15c:2c4:201:b957:52cf:4cb2:3a3e])
+        by smtp.gmail.com with ESMTPSA id x81sm6481609pfc.46.2021.01.28.08.21.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 28 Jan 2021 08:21:51 -0800 (PST)
+From:   Eric Dumazet <eric.dumazet@gmail.com>
+To:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>
+Cc:     netdev <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Eric Dumazet <eric.dumazet@gmail.com>
+Subject: [PATCH net-next] net: proc: speedup /proc/net/netstat
+Date:   Thu, 28 Jan 2021 08:21:45 -0800
+Message-Id: <20210128162145.1703601-1-eric.dumazet@gmail.com>
+X-Mailer: git-send-email 2.30.0.280.ga3ce27912f-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210125151819.8313-1-simon.horman@netronome.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 25, 2021 at 04:18:19PM +0100, Simon Horman wrote:
-> From: Baowen Zheng <baowen.zheng@corigine.com>
-> 
-> Allow a policer action to enforce a rate-limit based on packets-per-second,
-> configurable using a packet-per-second rate and burst parameters. This may
-> be used in conjunction with existing byte-per-second rate limiting in the
-> same policer action.
+From: Eric Dumazet <edumazet@google.com>
 
-Hi Simon,
+Use cache friendly helpers to better use cpu caches
+while reading /proc/net/netstat
 
-Any reason to allow metering based on both packets and bytes at the same
-action versus adding a mode (packets / bytes) parameter? You can then
-chain two policers if you need to rate limit based on both. Something
-like:
+Tested on a platform with 256 threads (AMD Rome)
 
-# tc filter add dev tap1 ingress pref 1 matchall \
-	action police rate 1000Mbit burst 128k conform-exceed drop/pipe \
-	action police pkts_rate 3000 pkts_burst 1000
+Before: 305 usec spent in netstat_seq_show()
+After: 130 usec spent in netstat_seq_show()
 
-I'm asking because the policers in the Spectrum ASIC are built that way
-and I also don't remember seeing such a mixed mode online.
+Signed-off-by: Eric Dumazet <edumazet@google.com>
+---
+ net/ipv4/proc.c | 48 +++++++++++++++++++++++++++++++++++-------------
+ 1 file changed, 35 insertions(+), 13 deletions(-)
 
-> 
-> e.g.
-> tc filter add dev tap1 parent ffff: u32 match \
->               u32 0 0 police pkts_rate 3000 pkts_burst 1000
-> 
-> Testing was unable to uncover a performance impact of this change on
-> existing features.
-> 
-> Signed-off-by: Baowen Zheng <baowen.zheng@corigine.com>
-> Signed-off-by: Simon Horman <simon.horman@netronome.com>
-> Signed-off-by: Louis Peens <louis.peens@netronome.com>
-> ---
->  include/net/sch_generic.h      | 15 ++++++++++++++
->  include/net/tc_act/tc_police.h |  4 ++++
->  include/uapi/linux/pkt_cls.h   |  2 ++
->  net/sched/act_police.c         | 37 +++++++++++++++++++++++++++++++---
->  net/sched/sch_generic.c        | 32 +++++++++++++++++++++++++++++
->  5 files changed, 87 insertions(+), 3 deletions(-)
+diff --git a/net/ipv4/proc.c b/net/ipv4/proc.c
+index 63cd370ea29dbd21bc8d82f726af3e3f76c7f807..6d46297a99f8d94abc27c737a02dea4d64b6c1d6 100644
+--- a/net/ipv4/proc.c
++++ b/net/ipv4/proc.c
+@@ -464,30 +464,52 @@ static int snmp_seq_show(struct seq_file *seq, void *v)
+  */
+ static int netstat_seq_show(struct seq_file *seq, void *v)
+ {
+-	int i;
++	const int ip_cnt = ARRAY_SIZE(snmp4_ipextstats_list) - 1;
++	const int tcp_cnt = ARRAY_SIZE(snmp4_net_list) - 1;
+ 	struct net *net = seq->private;
++	unsigned long *buff;
++	int i;
+ 
+ 	seq_puts(seq, "TcpExt:");
+-	for (i = 0; snmp4_net_list[i].name; i++)
++	for (i = 0; i < tcp_cnt; i++)
+ 		seq_printf(seq, " %s", snmp4_net_list[i].name);
+ 
+ 	seq_puts(seq, "\nTcpExt:");
+-	for (i = 0; snmp4_net_list[i].name; i++)
+-		seq_printf(seq, " %lu",
+-			   snmp_fold_field(net->mib.net_statistics,
+-					   snmp4_net_list[i].entry));
+-
++	buff = kzalloc(max(tcp_cnt * sizeof(long), ip_cnt * sizeof(u64)),
++		       GFP_KERNEL);
++	if (buff) {
++		snmp_get_cpu_field_batch(buff, snmp4_net_list,
++					 net->mib.net_statistics);
++		for (i = 0; i < tcp_cnt; i++)
++			seq_printf(seq, " %lu", buff[i]);
++	} else {
++		for (i = 0; i < tcp_cnt; i++)
++			seq_printf(seq, " %lu",
++				   snmp_fold_field(net->mib.net_statistics,
++						   snmp4_net_list[i].entry));
++	}
+ 	seq_puts(seq, "\nIpExt:");
+-	for (i = 0; snmp4_ipextstats_list[i].name; i++)
++	for (i = 0; i < ip_cnt; i++)
+ 		seq_printf(seq, " %s", snmp4_ipextstats_list[i].name);
+ 
+ 	seq_puts(seq, "\nIpExt:");
+-	for (i = 0; snmp4_ipextstats_list[i].name; i++)
+-		seq_printf(seq, " %llu",
+-			   snmp_fold_field64(net->mib.ip_statistics,
+-					     snmp4_ipextstats_list[i].entry,
+-					     offsetof(struct ipstats_mib, syncp)));
++	if (buff) {
++		u64 *buff64 = (u64 *)buff;
+ 
++		memset(buff64, 0, ip_cnt * sizeof(u64));
++		snmp_get_cpu_field64_batch(buff64, snmp4_ipextstats_list,
++					   net->mib.ip_statistics,
++					   offsetof(struct ipstats_mib, syncp));
++		for (i = 0; i < ip_cnt; i++)
++			seq_printf(seq, " %llu", buff64[i]);
++	} else {
++		for (i = 0; i < ip_cnt; i++)
++			seq_printf(seq, " %llu",
++				   snmp_fold_field64(net->mib.ip_statistics,
++						     snmp4_ipextstats_list[i].entry,
++						     offsetof(struct ipstats_mib, syncp)));
++	}
++	kfree(buff);
+ 	seq_putc(seq, '\n');
+ 	mptcp_seq_show(seq);
+ 	return 0;
+-- 
+2.30.0.280.ga3ce27912f-goog
 
-The intermediate representation in include/net/flow_offload.h needs to
-carry the new configuration so that drivers will be able to veto
-unsupported configuration.
