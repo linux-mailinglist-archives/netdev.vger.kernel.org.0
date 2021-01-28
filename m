@@ -2,78 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DD46306AA8
-	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 02:47:49 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 5EAA0306AB8
+	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 02:53:20 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231193AbhA1Bq6 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 20:46:58 -0500
-Received: from hqnvemgate26.nvidia.com ([216.228.121.65]:18851 "EHLO
-        hqnvemgate26.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231137AbhA1Bqv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 20:46:51 -0500
-Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate26.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
-        id <B6012175f0003>; Wed, 27 Jan 2021 17:46:07 -0800
-Received: from [172.27.8.81] (172.20.145.6) by HQMAIL107.nvidia.com
- (172.20.187.13) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 28 Jan
- 2021 01:46:02 +0000
-Subject: Re: [PATCH net-next v3] net: psample: Introduce stubs to remove NIC
- driver dependency
-To:     Jakub Kicinski <kuba@kernel.org>
-CC:     <netdev@vger.kernel.org>, <jiri@nvidia.com>, <saeedm@nvidia.com>,
-        "kernel test robot" <lkp@intel.com>
-References: <20210127101648.513562-1-cmi@nvidia.com>
- <20210127154934.2afbadda@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-From:   Chris Mi <cmi@nvidia.com>
-Message-ID: <39607ec0-feab-2f0f-c13f-f106676e9a7a@nvidia.com>
-Date:   Thu, 28 Jan 2021 09:45:59 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
+        id S229458AbhA1Bvk (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 20:51:40 -0500
+Received: from mail.kernel.org ([198.145.29.99]:40454 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229494AbhA1Buw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 27 Jan 2021 20:50:52 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id 3E15B64DD7;
+        Thu, 28 Jan 2021 01:50:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1611798611;
+        bh=32MjUn6mHt5fzMvDIJFX/mCv58gQXHNqzUZMAQiTwjI=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=FrOW4NICBeTjE7AYlxpeSoRIOoIaI6yohX552f3RJIhkZMUP78LEV4JrYJiQNZQUi
+         j+3bHWGsdseDWbOU85CVAguvPqcytJOWnDGaVQnw6ucXf4d+nhKy7HyyaVbyVMl4sD
+         jHUrQEnR6F8GQrofGDqP0WyRcm1lpzZw3EEw8rTYXUykhz2Cvgz9ZsG9Vddr55Yzrb
+         YAA+zQAGbfohuYodeyOQO1L6FuZAvacT88X/Q6jgkl175U9O0nzEpSH206QHz6HYVK
+         m/7VzdKkJd75f6BQ33auWu90tgKUn1O4roA9iZHWAdh9W/6ltEGFkOu2FNXfwps+eh
+         fR/7pSF7WD6LA==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 2AC776531E;
+        Thu, 28 Jan 2021 01:50:11 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-In-Reply-To: <20210127154934.2afbadda@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Originating-IP: [172.20.145.6]
-X-ClientProxiedBy: HQMAIL105.nvidia.com (172.20.187.12) To
- HQMAIL107.nvidia.com (172.20.187.13)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
-        t=1611798367; bh=EnusXecb0daihlBa67YAnsOA/2k8og1cuODWcZ6SkWQ=;
-        h=Subject:To:CC:References:From:Message-ID:Date:User-Agent:
-         MIME-Version:In-Reply-To:Content-Type:Content-Transfer-Encoding:
-         Content-Language:X-Originating-IP:X-ClientProxiedBy;
-        b=WaioSAt68lAatys1ZQeRwLrmJWVzs0Rac8Oi+oXaYwbJVU65sMcRhDQr+C/7CPYXc
-         VXfDJrq4EBZY4YAxBYkvb8o7lYI3cn/Fd+54uUWeD2bfoSspJJvkmsu5O0OvQNq5f6
-         +O4D5tVyJBVL5c/mh07K0anzhRi+N1mXUohAcwOtn07PT233Op6s9g2QJAnCXYQ4ik
-         VcKdu4xuOReU8afpDyHXIuA7eDP5ilRm+Yi7409FKDmKHghif0UW0DJvmY1fLSt1gB
-         vbA7rTsGbV/hv3Sme22/ztGRk5TCkRmOJm8Jkq7BEywdZz0y9JPPQ/H9tVnsvQsvkw
-         pnucrSmiidCng==
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH net v2 0/7][pull request] Intel Wired LAN Driver Updates
+ 2021-01-26
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161179861116.5251.137213857175167454.git-patchwork-notify@kernel.org>
+Date:   Thu, 28 Jan 2021 01:50:11 +0000
+References: <20210126221035.658124-1-anthony.l.nguyen@intel.com>
+In-Reply-To: <20210126221035.658124-1-anthony.l.nguyen@intel.com>
+To:     Nguyen@ci.codeaurora.org, Anthony L <anthony.l.nguyen@intel.com>
+Cc:     davem@davemloft.net, kuba@kernel.org, netdev@vger.kernel.org,
+        sassmann@redhat.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/28/2021 7:49 AM, Jakub Kicinski wrote:
-> On Wed, 27 Jan 2021 18:16:48 +0800 Chris Mi wrote:
->> @@ -35,4 +45,21 @@ static inline void psample_sample_packet(struct psample_group *group,
->>   
->>   #endif
->>   
->> +static void
-> static inline
-Done.
->
->> +psample_nic_sample_packet(struct psample_group *group,
->> +			  struct sk_buff *skb, u32 trunc_size,
->> +			  int in_ifindex, int out_ifindex,
->> +			  u32 sample_rate)
->> +{
->> +	const struct psample_ops *ops;
->> +
->> +	rcu_read_lock();
->> +	ops = rcu_dereference(psample_ops);
->> +	if (ops)
->> +		ops->sample_packet(group, skb, trunc_size,
->> +				   in_ifindex, out_ifindex,
->> +				   sample_rate);
->> +	rcu_read_unlock();
->> +}
+Hello:
+
+This series was applied to netdev/net.git (refs/heads/master):
+
+On Tue, 26 Jan 2021 14:10:28 -0800 you wrote:
+> This series contains updates to the ice, i40e, and igc driver.
+> 
+> Henry corrects setting an unspecified protocol to IPPROTO_NONE instead of
+> 0 for IPv6 flexbytes filters for ice.
+> 
+> Nick fixes the IPv6 extension header being processed incorrectly and
+> updates the netdev->dev_addr if it exists in hardware as it may have been
+> modified outside the ice driver.
+> 
+> [...]
+
+Here is the summary with links:
+  - [net,v2,1/7] ice: fix FDir IPv6 flexbyte
+    https://git.kernel.org/netdev/net/c/29e2d9eb8264
+  - [net,v2,2/7] ice: Implement flow for IPv6 next header (extension header)
+    https://git.kernel.org/netdev/net/c/1b0b0b581b94
+  - [net,v2,3/7] ice: update dev_addr in ice_set_mac_address even if HW filter exists
+    https://git.kernel.org/netdev/net/c/13ed5e8a9b9c
+  - [net,v2,4/7] ice: Don't allow more channels than LAN MSI-X available
+    https://git.kernel.org/netdev/net/c/943b881e3582
+  - [net,v2,5/7] ice: Fix MSI-X vector fallback logic
+    https://git.kernel.org/netdev/net/c/f3fe97f64384
+  - [net,v2,6/7] i40e: acquire VSI pointer only after VF is initialized
+    https://git.kernel.org/netdev/net/c/67a3c6b3cc40
+  - [net,v2,7/7] igc: fix link speed advertising
+    https://git.kernel.org/netdev/net/c/329a3678ec69
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
 
