@@ -2,68 +2,106 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 78D2830692C
-	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 02:00:38 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6BDE630692A
+	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 02:00:37 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231472AbhA1A7x (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 19:59:53 -0500
-Received: from mail.kernel.org ([198.145.29.99]:33678 "EHLO mail.kernel.org"
+        id S231124AbhA1A7n (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 19:59:43 -0500
+Received: from vps0.lunn.ch ([185.16.172.187]:35354 "EHLO vps0.lunn.ch"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231191AbhA1A5F (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 27 Jan 2021 19:57:05 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 861D164DD1;
-        Thu, 28 Jan 2021 00:56:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611795363;
-        bh=GNeySK//oA5sSbdd0ASJJufb+YqjhGpqsI7+o18dH+Q=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=KV8nM1tkterFMMGncJ0Ouxe4+T5HViuwIQ2K5oG4Utk4wUb7ltOcwvTlnTlOh8KF0
-         yObQHQQsddU9FAY3V5CbzZLhccNdraiSNaeJd6IRgZGrEccSRAJJ04di/C3cUhJ99I
-         wi60vC3HxxKklMlCA7F8f4IUbsjyvJj4ILtJpbdt8LaVdT3Vw5wqZ2YkoKn9nykEb1
-         6g8XNqhCWvwklTEBQNBVX/ga5B32J94KF+Ed6dTyc7f1L/m1Ev9G2TEE8yLgb8sJuc
-         TEQnUtvS3ANKrUNHnTTtMducM1cK9E+wgQwU7iljWtURwv399DKsbH94hEV3XZroNZ
-         GGx7RTTy7E8Sw==
-Date:   Wed, 27 Jan 2021 16:56:02 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     xiyou.wangcong@gmail.com
-Cc:     Slava Bacherikov <mail@slava.cc>, willemb@google.com,
-        open list <linux-kernel@vger.kernel.org>,
-        netdev@vger.kernel.org
-Subject: Re: BUG: Incorrect MTU on GRE device if remote is unspecified
-Message-ID: <20210127165602.610b10c0@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <e2dde066-44b2-6bb3-a359-6c99b0a812ea@slava.cc>
-References: <e2dde066-44b2-6bb3-a359-6c99b0a812ea@slava.cc>
+        id S231356AbhA1A5Y (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 27 Jan 2021 19:57:24 -0500
+Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
+        (envelope-from <andrew@lunn.ch>)
+        id 1l4vbt-002x2k-UC; Thu, 28 Jan 2021 01:56:33 +0100
+Date:   Thu, 28 Jan 2021 01:56:33 +0100
+From:   Andrew Lunn <andrew@lunn.ch>
+To:     Vladimir Oltean <olteanv@gmail.com>
+Cc:     "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
+Subject: Re: [PATCH net-next 4/4] Revert "net: ipv4: handle DSA enabled
+ master network devices"
+Message-ID: <YBILwcnTFw7SlsCb@lunn.ch>
+References: <20210127010028.1619443-1-olteanv@gmail.com>
+ <20210127010028.1619443-5-olteanv@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210127010028.1619443-5-olteanv@gmail.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 25 Jan 2021 22:10:10 +0200 Slava Bacherikov wrote:
-> Hi, I'd like to report a regression. Currently, if you create GRE
-> interface on the latest stable or LTS kernel (5.4 branch) with
-> unspecified remote destination it's MTU will be adjusted for header size
-> twice. For example:
+On Wed, Jan 27, 2021 at 03:00:28AM +0200, Vladimir Oltean wrote:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
 > 
-> $ ip link add name test type gre local 127.0.0.32
-> $ ip link show test | grep mtu
-> 27: test@NONE: <NOARP> mtu 1452 qdisc noop state DOWN mode DEFAULT group
-> default qlen 1000
+> This reverts commit 728c02089a0e3eefb02e9927bfae50490f40e72e.
 > 
-> or with FOU
+> Since 2015 DSA has gained more integration with the network stack, we
+> can now have the same functionality without explicitly open-coding for
+> it:
+> - It now opens the DSA master netdevice automatically whenever a user
+>   netdevice is opened.
+> - The master and switch interfaces are coupled in an upper/lower
+>   hierarchy using the netdev adjacency lists.
 > 
-> $ ip link add name test2   type gre local 127.0.0.32 encap fou
-> encap-sport auto encap-dport 6666
-> $ ip link show test2 | grep mtu
-> 28: test2@NONE: <NOARP> mtu 1436 qdisc noop state DOWN mode DEFAULT
-> group default qlen 1000
+> In the nfsroot example below, the interface chosen by autoconfig was
+> swp3, and every interface except that and the DSA master, eth1, was
+> brought down afterwards:
 > 
-> The same happens with GUE too (MTU is 1428 instead of 1464).
-> As you can see that MTU in first case is 1452 (1500 - 24 - 24) and with
-> FOU it's 1436 (1500 - 32 - 32), GUE 1428 (1500 - 36 - 36). If remote
-> address is specified MTU is correct.
+> [    8.714215] mscc_felix 0000:00:00.5 swp0 (uninitialized): PHY [0000:00:00.3:10] driver [Microsemi GE VSC8514 SyncE] (irq=POLL)
+> [    8.978041] mscc_felix 0000:00:00.5 swp1 (uninitialized): PHY [0000:00:00.3:11] driver [Microsemi GE VSC8514 SyncE] (irq=POLL)
+> [    9.246134] mscc_felix 0000:00:00.5 swp2 (uninitialized): PHY [0000:00:00.3:12] driver [Microsemi GE VSC8514 SyncE] (irq=POLL)
+> [    9.486203] mscc_felix 0000:00:00.5 swp3 (uninitialized): PHY [0000:00:00.3:13] driver [Microsemi GE VSC8514 SyncE] (irq=POLL)
+> [    9.512827] mscc_felix 0000:00:00.5: configuring for fixed/internal link mode
+> [    9.521047] mscc_felix 0000:00:00.5: Link is Up - 2.5Gbps/Full - flow control off
+> [    9.530382] device eth1 entered promiscuous mode
+> [    9.535452] DSA: tree 0 setup
+> [    9.539777] printk: console [netcon0] enabled
+> [    9.544504] netconsole: network logging started
+> [    9.555047] fsl_enetc 0000:00:00.2 eth1: configuring for fixed/internal link mode
+> [    9.562790] fsl_enetc 0000:00:00.2 eth1: Link is Up - 1Gbps/Full - flow control off
+> [    9.564661] 8021q: adding VLAN 0 to HW filter on device bond0
+> [    9.637681] fsl_enetc 0000:00:00.0 eth0: PHY [0000:00:00.0:02] driver [Qualcomm Atheros AR8031/AR8033] (irq=POLL)
+> [    9.655679] fsl_enetc 0000:00:00.0 eth0: configuring for inband/sgmii link mode
+> [    9.666611] mscc_felix 0000:00:00.5 swp0: configuring for inband/qsgmii link mode
+> [    9.676216] 8021q: adding VLAN 0 to HW filter on device swp0
+> [    9.682086] mscc_felix 0000:00:00.5 swp1: configuring for inband/qsgmii link mode
+> [    9.690700] 8021q: adding VLAN 0 to HW filter on device swp1
+> [    9.696538] mscc_felix 0000:00:00.5 swp2: configuring for inband/qsgmii link mode
+> [    9.705131] 8021q: adding VLAN 0 to HW filter on device swp2
+> [    9.710964] mscc_felix 0000:00:00.5 swp3: configuring for inband/qsgmii link mode
+> [    9.719548] 8021q: adding VLAN 0 to HW filter on device swp3
+> [    9.747811] Sending DHCP requests ..
+> [   12.742899] mscc_felix 0000:00:00.5 swp1: Link is Up - 1Gbps/Full - flow control rx/tx
+> [   12.743828] mscc_felix 0000:00:00.5 swp0: Link is Up - 1Gbps/Full - flow control off
+> [   12.747062] IPv6: ADDRCONF(NETDEV_CHANGE): swp1: link becomes ready
+> [   12.755216] fsl_enetc 0000:00:00.0 eth0: Link is Up - 1Gbps/Full - flow control rx/tx
+> [   12.766603] IPv6: ADDRCONF(NETDEV_CHANGE): swp0: link becomes ready
+> [   12.783188] mscc_felix 0000:00:00.5 swp2: Link is Up - 1Gbps/Full - flow control rx/tx
+> [   12.785354] IPv6: ADDRCONF(NETDEV_CHANGE): eth0: link becomes ready
+> [   12.799535] IPv6: ADDRCONF(NETDEV_CHANGE): swp2: link becomes ready
+> [   13.803141] mscc_felix 0000:00:00.5 swp3: Link is Up - 1Gbps/Full - flow control rx/tx
+> [   13.811646] IPv6: ADDRCONF(NETDEV_CHANGE): swp3: link becomes ready
+> [   15.452018] ., OK
+> [   15.470336] IP-Config: Got DHCP answer from 10.0.0.1, my address is 10.0.0.39
+> [   15.477887] IP-Config: Complete:
+> [   15.481330]      device=swp3, hwaddr=00:04:9f:05:de:0a, ipaddr=10.0.0.39, mask=255.255.255.0, gw=10.0.0.1
+> [   15.491846]      host=10.0.0.39, domain=(none), nis-domain=(none)
+> [   15.498429]      bootserver=10.0.0.1, rootserver=10.0.0.1, rootpath=
+> [   15.498481]      nameserver0=8.8.8.8
+> [   15.627542] fsl_enetc 0000:00:00.0 eth0: Link is Down
+> [   15.690903] mscc_felix 0000:00:00.5 swp0: Link is Down
+> [   15.745216] mscc_felix 0000:00:00.5 swp1: Link is Down
+> [   15.800498] mscc_felix 0000:00:00.5 swp2: Link is Down
+> [   15.858143] ALSA device list:
+> [   15.861420]   No soundcards found.
 > 
-> This regression caused by fdafed459998e2be0e877e6189b24cb7a0183224 commit.
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
 
-Cong is this one on your radar?
+Reviewed-by: Andrew Lunn <andrew@lunn.ch>
+
+    Andrew
