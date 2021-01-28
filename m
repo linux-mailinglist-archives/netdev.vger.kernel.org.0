@@ -2,81 +2,95 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id DE82B306955
-	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 02:05:14 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 88A49306979
+	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 02:08:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231549AbhA1BEE (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 20:04:04 -0500
-Received: from mail.kernel.org ([198.145.29.99]:34924 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231195AbhA1BBr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 27 Jan 2021 20:01:47 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id D98A261492;
-        Thu, 28 Jan 2021 01:01:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611795667;
-        bh=pt/Pn7kT9yfvr3cFL5ULzyqJnP5IMgGvj2ng4j6FLRY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=WJrnyw5hla/iFK73V2ZIP37NUDVr45OdY+K9mNjvVDrPFFeosSR9p6unK++j2iWTA
-         FSh0GFIwYahRXxnjmUmwmX2kOOTPyclxOtI5O8Xldgn9qVxopuNezKpq1El8yrn3kx
-         l4Emlku6XyZcudSMRPI83RmT9ICv0zCoUxcdFkQbnYJAJcKEPYohpRsDs/NpYcbB/r
-         7MT80q1eA4HNetMmDDD0u+ynsAq0l+OedRD57asJocjaBb94c1LxQtF3oYP9UxuDCM
-         HMjyxEysWbKNlovMyRaSnT071L0e73yA1YO4/w9wRbWf3BJzd5P6LoYAvEyo/SurdD
-         hmScMrNw26RGA==
-Date:   Wed, 27 Jan 2021 17:01:05 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Lijun Pan <ljp@linux.ibm.com>
-Cc:     netdev@vger.kernel.org
-Subject: Re: [PATCH net v2] ibmvnic: Ensure that CRQ entry read are
- correctly ordered
-Message-ID: <20210127170105.011ebb9b@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210125232023.78649-1-ljp@linux.ibm.com>
-References: <20210125232023.78649-1-ljp@linux.ibm.com>
+        id S231669AbhA1BHf (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 20:07:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39866 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231384AbhA1BEv (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 20:04:51 -0500
+Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA447C06174A
+        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 17:03:27 -0800 (PST)
+Received: by mail-pl1-x630.google.com with SMTP id q2so2364777plk.4
+        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 17:03:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=eVdiqguGjzF23UdG16xDPKaVQbaWflnNiWUyO8WNtc8=;
+        b=GXAFD8EjM7E6LSIHeUjI5ykzhSqB6sfpzMi2pnywhqILVDWKWCzMQfvK14hCWZlXsJ
+         VqVVE7aWnZWIDmsKM8brosdMVnUTLsQfjXUSgIwSOWIjHZHkuheoZkcBsS1ONfk0me0t
+         RdQkAZFhVYInTQQN+T33wnyp3GmJkfg1Dyyn2ZHWCKB3WjxZ7kbObobvFKorFdceRAMe
+         +2Mv5EPiGnGV6K+zadx/kSaN6D9VLh3pBMJEjkoA2a4kunbPdhThSFi0aIcz7sFzIT0H
+         BWRpyNKvhSn4qxor2A1dTJ2Adt+qgjDjuZNfcPs10TenOkMEYiDq9WvvAbdkNMw/ZhJV
+         ipxg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=eVdiqguGjzF23UdG16xDPKaVQbaWflnNiWUyO8WNtc8=;
+        b=RHue3cJ2v2/4uBqcVzccy9q9NU+OzShqsqkp/334707vvKh3vHskzhxgCPy4T3fXx2
+         tjWRgTe7MqXPXCq6DHTZAToCtfQCrMFdHRNV+SUTLvlSg/sqdkxWeFpFn3Woy9OJ6PWi
+         5N6WXfnqbzA7eGHKpzztzLxm+yXbHQolY2jKEGVdJGE3p8nA2QPqoVBNamAXgLyFyFwX
+         LboywxLmI6Am5C2Fj5v4wJKAudAl91BSARkHRs8iNdSmCiLwDXc7E9sSIBmt73DZMFhj
+         YduTuSigjtzyxzEPzD0jyZUZ0R163ARevHJWW/GnbK+mdCPh7C0H3DjlOb224vh9d6i1
+         +11A==
+X-Gm-Message-State: AOAM530mZArYXM+HzmsgeDzkaZNrD5I87kLqA9dt+6ZLkpXuoEvsfd19
+        4FFBIMa5tKmql0a1kgrgWYs=
+X-Google-Smtp-Source: ABdhPJy4Gfh7yCdRrQ6c5gCvOKthpAUlRcVKwuAZRUc97/CHu/EQY22gLjazZyR28vp+mg1OV4e8yA==
+X-Received: by 2002:a17:902:f686:b029:de:18c7:41f8 with SMTP id l6-20020a170902f686b02900de18c741f8mr13847842plg.65.1611795806292;
+        Wed, 27 Jan 2021 17:03:26 -0800 (PST)
+Received: from [10.230.29.30] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id x184sm3885530pfb.199.2021.01.27.17.03.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 27 Jan 2021 17:03:25 -0800 (PST)
+Subject: Re: [PATCH net-next 0/4] Automatically manage DSA master interface
+ state
+To:     Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
+References: <20210127010028.1619443-1-olteanv@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <99d4c608-d821-7f87-48c1-aa1898441194@gmail.com>
+Date:   Wed, 27 Jan 2021 17:03:23 -0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.7.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20210127010028.1619443-1-olteanv@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, 25 Jan 2021 17:20:23 -0600 Lijun Pan wrote:
-> Ensure that received Command-Response Queue (CRQ) entries are
-> properly read in order by the driver. dma_rmb barrier has
-> been added before accessing the CRQ descriptor to ensure
-> the entire descriptor is read before processing.
+
+
+On 1/26/2021 5:00 PM, Vladimir Oltean wrote:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
 > 
-> Fixes: 032c5e82847a ("Driver for IBM System i/p VNIC protocol")
-> Signed-off-by: Lijun Pan <ljp@linux.ibm.com>
-> ---
-> v2: drop dma_wmb according to Jakub's opinion
+> This patch series adds code that makes DSA open the master interface
+> automatically whenever one user interface gets opened, either by the
+> user, or by various networking subsystems: netconsole, nfsroot.
+> With that in place, we can remove some of the places in the network
+> stack where DSA-specific code was sprinkled.
 > 
->  drivers/net/ethernet/ibm/ibmvnic.c | 8 ++++++++
->  1 file changed, 8 insertions(+)
-> 
-> diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-> index 9778c83150f1..d84369bd5fc9 100644
-> --- a/drivers/net/ethernet/ibm/ibmvnic.c
-> +++ b/drivers/net/ethernet/ibm/ibmvnic.c
-> @@ -5084,6 +5084,14 @@ static void ibmvnic_tasklet(struct tasklet_struct *t)
->  	while (!done) {
->  		/* Pull all the valid messages off the CRQ */
->  		while ((crq = ibmvnic_next_crq(adapter)) != NULL) {
-> +			/* Ensure that the entire CRQ descriptor queue->msgs
-> +			 * has been loaded before reading its contents.
+> Vladimir Oltean (4):
+>   net: dsa: automatically bring up DSA master when opening user port
+>   net: dsa: automatically bring user ports down when master goes down
+>   Revert "net: Have netpoll bring-up DSA management interface"
+>   Revert "net: ipv4: handle DSA enabled master network devices"
 
-I still find this sentence confusing, maybe you mean to say stored
-instead of loaded?
-
-> +			 * This barrier makes sure ibmvnic_next_crq()'s
-> +			 * crq->generic.first & IBMVNIC_CRQ_CMD_RSP is loaded
-> +			 * before ibmvnic_handle_crq()'s
-> +			 * switch(gen_crq->first) and switch(gen_crq->cmd).
-
-Yup, that makes perfect sense. It's about ordering of the loads. 
-
-> +			 */
-> +			dma_rmb();
->  			ibmvnic_handle_crq(crq, adapter);
->  			crq->generic.first = 0;
->  		}
-
+I really like all patches but number #2, though I don't believe there
+are existing use cases besides you one you described where it makes
+sense to keep a switch in an unmanaged mode being "headless" with its
+CPU port down, while the user-facing ports are up.
+-- 
+Florian
