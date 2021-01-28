@@ -2,95 +2,69 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 88A49306979
-	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 02:08:55 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 6C1B0306A23
+	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 02:17:02 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231669AbhA1BHf (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 20:07:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39866 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231384AbhA1BEv (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 20:04:51 -0500
-Received: from mail-pl1-x630.google.com (mail-pl1-x630.google.com [IPv6:2607:f8b0:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA447C06174A
-        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 17:03:27 -0800 (PST)
-Received: by mail-pl1-x630.google.com with SMTP id q2so2364777plk.4
-        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 17:03:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=eVdiqguGjzF23UdG16xDPKaVQbaWflnNiWUyO8WNtc8=;
-        b=GXAFD8EjM7E6LSIHeUjI5ykzhSqB6sfpzMi2pnywhqILVDWKWCzMQfvK14hCWZlXsJ
-         VqVVE7aWnZWIDmsKM8brosdMVnUTLsQfjXUSgIwSOWIjHZHkuheoZkcBsS1ONfk0me0t
-         RdQkAZFhVYInTQQN+T33wnyp3GmJkfg1Dyyn2ZHWCKB3WjxZ7kbObobvFKorFdceRAMe
-         +2Mv5EPiGnGV6K+zadx/kSaN6D9VLh3pBMJEjkoA2a4kunbPdhThSFi0aIcz7sFzIT0H
-         BWRpyNKvhSn4qxor2A1dTJ2Adt+qgjDjuZNfcPs10TenOkMEYiDq9WvvAbdkNMw/ZhJV
-         ipxg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=eVdiqguGjzF23UdG16xDPKaVQbaWflnNiWUyO8WNtc8=;
-        b=RHue3cJ2v2/4uBqcVzccy9q9NU+OzShqsqkp/334707vvKh3vHskzhxgCPy4T3fXx2
-         tjWRgTe7MqXPXCq6DHTZAToCtfQCrMFdHRNV+SUTLvlSg/sqdkxWeFpFn3Woy9OJ6PWi
-         5N6WXfnqbzA7eGHKpzztzLxm+yXbHQolY2jKEGVdJGE3p8nA2QPqoVBNamAXgLyFyFwX
-         LboywxLmI6Am5C2Fj5v4wJKAudAl91BSARkHRs8iNdSmCiLwDXc7E9sSIBmt73DZMFhj
-         YduTuSigjtzyxzEPzD0jyZUZ0R163ARevHJWW/GnbK+mdCPh7C0H3DjlOb224vh9d6i1
-         +11A==
-X-Gm-Message-State: AOAM530mZArYXM+HzmsgeDzkaZNrD5I87kLqA9dt+6ZLkpXuoEvsfd19
-        4FFBIMa5tKmql0a1kgrgWYs=
-X-Google-Smtp-Source: ABdhPJy4Gfh7yCdRrQ6c5gCvOKthpAUlRcVKwuAZRUc97/CHu/EQY22gLjazZyR28vp+mg1OV4e8yA==
-X-Received: by 2002:a17:902:f686:b029:de:18c7:41f8 with SMTP id l6-20020a170902f686b02900de18c741f8mr13847842plg.65.1611795806292;
-        Wed, 27 Jan 2021 17:03:26 -0800 (PST)
-Received: from [10.230.29.30] ([192.19.223.252])
-        by smtp.gmail.com with ESMTPSA id x184sm3885530pfb.199.2021.01.27.17.03.24
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 27 Jan 2021 17:03:25 -0800 (PST)
-Subject: Re: [PATCH net-next 0/4] Automatically manage DSA master interface
- state
-To:     Vladimir Oltean <olteanv@gmail.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
-Cc:     Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
-References: <20210127010028.1619443-1-olteanv@gmail.com>
-From:   Florian Fainelli <f.fainelli@gmail.com>
-Message-ID: <99d4c608-d821-7f87-48c1-aa1898441194@gmail.com>
-Date:   Wed, 27 Jan 2021 17:03:23 -0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
- Firefox/78.0 Thunderbird/78.7.0
+        id S231810AbhA1BOn (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 20:14:43 -0500
+Received: from mail.kernel.org ([198.145.29.99]:36260 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231996AbhA1BLB (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 27 Jan 2021 20:11:01 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id EDEB464DDC;
+        Thu, 28 Jan 2021 01:10:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1611796212;
+        bh=WsEQ0oVLURRcrMvca7K1auGRwZUAfXwGQd5GyqLCco0=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=X4kJ60XEvFhhICJFdbCq6cCtel8eYZKKjClnSSDgz1C+zxS+J9lJMM4WHSYK8Adzm
+         Y9S/DozZCChINrTmwh3oH8eTRRCG4BjZcX8JBAMCfx923c0zRuieTS+XubWyUB1wek
+         tXYi1+OIOx/JD3rJNKl6r26nGKK1IjXi03m2ybGq+WIEFJDXWoS4VpJ9iTiR7b75FX
+         V0jrfLzthPUhca7iZv5rBT2ahrjZAMeyzEQxAwnMmuYmgOR/RlqpafyM+hVj6TtQNg
+         +XJkb3+t1s4rSHIYZJ4+/2NjNFwH/Nlv8ihdvsN00Pkf+zT3lflSOTyHOmazFuWBfL
+         GB/gpbvhoAJuA==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id D9DE56531E;
+        Thu, 28 Jan 2021 01:10:11 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-In-Reply-To: <20210127010028.1619443-1-olteanv@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] net: sysctl: remove redundant #ifdef CONFIG_NET
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161179621188.21299.6314892122372378958.git-patchwork-notify@kernel.org>
+Date:   Thu, 28 Jan 2021 01:10:11 +0000
+References: <20210125231421.105936-1-masahiroy@kernel.org>
+In-Reply-To: <20210125231421.105936-1-masahiroy@kernel.org>
+To:     Masahiro Yamada <masahiroy@kernel.org>
+Cc:     netdev@vger.kernel.org, viro@zeniv.linux.org.uk, rdna@fb.com,
+        davem@davemloft.net, kuba@kernel.org, keescook@chromium.org,
+        maheshb@google.com, nicolas.dichtel@6wind.com,
+        linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hello:
 
+This patch was applied to netdev/net-next.git (refs/heads/master):
 
-On 1/26/2021 5:00 PM, Vladimir Oltean wrote:
-> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+On Tue, 26 Jan 2021 08:14:21 +0900 you wrote:
+> CONFIG_NET is a bool option, and this file is compiled only when
+> CONFIG_NET=y.
 > 
-> This patch series adds code that makes DSA open the master interface
-> automatically whenever one user interface gets opened, either by the
-> user, or by various networking subsystems: netconsole, nfsroot.
-> With that in place, we can remove some of the places in the network
-> stack where DSA-specific code was sprinkled.
+> Remove #ifdef CONFIG_NET, which we know it is always met.
 > 
-> Vladimir Oltean (4):
->   net: dsa: automatically bring up DSA master when opening user port
->   net: dsa: automatically bring user ports down when master goes down
->   Revert "net: Have netpoll bring-up DSA management interface"
->   Revert "net: ipv4: handle DSA enabled master network devices"
+> Signed-off-by: Masahiro Yamada <masahiroy@kernel.org>
+> 
+> [...]
 
-I really like all patches but number #2, though I don't believe there
-are existing use cases besides you one you described where it makes
-sense to keep a switch in an unmanaged mode being "headless" with its
-CPU port down, while the user-facing ports are up.
--- 
-Florian
+Here is the summary with links:
+  - net: sysctl: remove redundant #ifdef CONFIG_NET
+    https://git.kernel.org/netdev/net-next/c/69783429cd13
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
