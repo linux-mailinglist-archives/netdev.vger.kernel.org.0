@@ -2,58 +2,73 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 33BBA306B0F
-	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 03:24:34 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id C7F19306B1C
+	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 03:31:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231279AbhA1CW7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 21:22:59 -0500
-Received: from vps0.lunn.ch ([185.16.172.187]:35612 "EHLO vps0.lunn.ch"
+        id S229563AbhA1Ca4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 21:30:56 -0500
+Received: from mail.kernel.org ([198.145.29.99]:45500 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231244AbhA1CVl (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Wed, 27 Jan 2021 21:21:41 -0500
-Received: from andrew by vps0.lunn.ch with local (Exim 4.94)
-        (envelope-from <andrew@lunn.ch>)
-        id 1l4wvU-002xuj-5K; Thu, 28 Jan 2021 03:20:52 +0100
-Date:   Thu, 28 Jan 2021 03:20:52 +0100
-From:   Andrew Lunn <andrew@lunn.ch>
-To:     Ronak Doshi <doshir@vmware.com>
-Cc:     netdev@vger.kernel.org, Petr Vandrovec <petr@vmware.com>,
-        "maintainer:VMWARE VMXNET3 ETHERNET DRIVER" <pv-drivers@vmware.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v5 net-next] From: Petr Vandrovec <petr@vmware.com>
-Message-ID: <YBIfhK1Kayf6kS62@lunn.ch>
-References: <20210128020816.31318-1-doshir@vmware.com>
+        id S229458AbhA1Cav (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 27 Jan 2021 21:30:51 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id 266A264DCC;
+        Thu, 28 Jan 2021 02:30:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1611801011;
+        bh=XdC0SwTH8F4VbZEujw8fnkZe7hmFy1gya8+FucKl9HI=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=bv9lhrGrSAdE5YIzsVzAr/VVmhgZMK5+ho+45IpcZ8p4BFQ+h6PtJCL85JnYSQEZU
+         4Bn6Upg3sqth2Nug8G1OkujTqOo0fQJzB0Yvuy33UUoUQLyrnrOb4PHNa38+7+Mtf2
+         W4mSgFcwDuAjfuReH4kLCcFhPFEhAw7x0tVMnMvLyq/Ps9/yQRYdBcExOQNUiS95ns
+         AO00eb0WrIgETyKVhTnJPikI2OxCPAkjQMSjemwzP2NhzEmV2x/nvrEdJwPcPRVR4W
+         Esn68hGTzENR9kUtFmGXNdphkAbXcnrYnxu3WR0QbsIqBftcOlu54DO1j7qF/ZGf++
+         srOnxscSiRbKQ==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 12AF665307;
+        Thu, 28 Jan 2021 02:30:11 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210128020816.31318-1-doshir@vmware.com>
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH bpf-next v5 1/2] bpf: allow rewriting to ports under
+ ip_unprivileged_port_start
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161180101107.20337.1864637949509200235.git-patchwork-notify@kernel.org>
+Date:   Thu, 28 Jan 2021 02:30:11 +0000
+References: <20210127193140.3170382-1-sdf@google.com>
+In-Reply-To: <20210127193140.3170382-1-sdf@google.com>
+To:     Stanislav Fomichev <sdf@google.com>
+Cc:     netdev@vger.kernel.org, bpf@vger.kernel.org, ast@kernel.org,
+        daniel@iogearbox.net, rdna@fb.com, kafai@fb.com
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 27, 2021 at 06:08:16PM -0800, Ronak Doshi wrote:
-> buf_info structures in RX & TX queues are private driver data that
-> do not need to be visible to the device.  Although there is physical
-> address and length in the queue descriptor that points to these
-> structures, their layout is not standardized, and device never looks
-> at them.
-> 
-> So lets allocate these structures in non-DMA-able memory, and fill
-> physical address as all-ones and length as zero in the queue
-> descriptor.
-> 
-> That should alleviate worries brought by Martin Radev in
-> https://lists.osuosl.org/pipermail/intel-wired-lan/Week-of-Mon-20210104/022829.html
-> that malicious vmxnet3 device could subvert SVM/TDX guarantees.
-> 
-> Signed-off-by: Petr Vandrovec <petr@vmware.com>
-> Signed-off-by: Ronak Doshi <doshir@vmware.com>
+Hello:
 
-Hi Ronak
+This series was applied to bpf/bpf-next.git (refs/heads/master):
 
-The Subject line is still messed up, it contains Petr name rather than
-a subject.
+On Wed, 27 Jan 2021 11:31:39 -0800 you wrote:
+> At the moment, BPF_CGROUP_INET{4,6}_BIND hooks can rewrite user_port
+> to the privileged ones (< ip_unprivileged_port_start), but it will
+> be rejected later on in the __inet_bind or __inet6_bind.
+> 
+> Let's add another return value to indicate that CAP_NET_BIND_SERVICE
+> check should be ignored. Use the same idea as we currently use
+> in cgroup/egress where bit #1 indicates CN. Instead, for
+> cgroup/bind{4,6}, bit #1 indicates that CAP_NET_BIND_SERVICE should
+> be bypassed.
+> 
+> [...]
 
-	Andrew
+Here is the summary with links:
+  - [bpf-next,v5,1/2] bpf: allow rewriting to ports under ip_unprivileged_port_start
+    https://git.kernel.org/bpf/bpf-next/c/772412176fb9
+  - [bpf-next,v5,2/2] selftests/bpf: verify that rebinding to port < 1024 from BPF works
+    https://git.kernel.org/bpf/bpf-next/c/8259fdeb3032
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
+
+
