@@ -2,102 +2,100 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 0AF8B306A78
-	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 02:36:26 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 86CA5306A87
+	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 02:40:12 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231262AbhA1Bfy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 20:35:54 -0500
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:41006 "EHLO
-        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229828AbhA1Bf1 (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 20:35:27 -0500
-Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 10S1VwPw183360
-        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 20:34:45 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-transfer-encoding; s=pp1;
- bh=OtaVf1OqrpogDlg8/5+RRhcYJIszx3RTNBqUeyGzA0I=;
- b=BAsk+xYboET4qnmP/6vk9mU+8t+NVjnbFEYg1mcogEwCuKNLh0gFDa5wCQv/npavPfMO
- 8wjH0xbwKRB9BpvL37yPv2AKgyHwlnlrSc6tPLw+KShzu0qd7t+DJna+zpd/OpNoKmV1
- VtVG4GoGq/cP0uVldkFgq8sElE3FuNhm1EL8p8b378l1Yrh2ZqaVYtENkN3MxS1B9fFj
- llBsnt/GK4vr6ZtqhLi2gb724Pd/jfVlNwBwl4QMs+ee7esAsnfujRdJQohxl1AASzP3
- 8V/17rSYDsB3Ig6l6OmETHAS+2lObp5I0yEHwqqNzkemuTx7fmvLH2tiGWD9MbVJeRF5 aQ== 
-Received: from ppma02wdc.us.ibm.com (aa.5b.37a9.ip4.static.sl-reverse.com [169.55.91.170])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 36bdh8h7as-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 20:34:45 -0500
-Received: from pps.filterd (ppma02wdc.us.ibm.com [127.0.0.1])
-        by ppma02wdc.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 10S1WIcw029282
-        for <netdev@vger.kernel.org>; Thu, 28 Jan 2021 01:34:45 GMT
-Received: from b03cxnp07028.gho.boulder.ibm.com (b03cxnp07028.gho.boulder.ibm.com [9.17.130.15])
-        by ppma02wdc.us.ibm.com with ESMTP id 36acj9e2d3-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT)
-        for <netdev@vger.kernel.org>; Thu, 28 Jan 2021 01:34:45 +0000
-Received: from b03ledav001.gho.boulder.ibm.com (b03ledav001.gho.boulder.ibm.com [9.17.130.232])
-        by b03cxnp07028.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 10S1Yhnn26345848
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 28 Jan 2021 01:34:44 GMT
-Received: from b03ledav001.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id DE5B86E04E;
-        Thu, 28 Jan 2021 01:34:43 +0000 (GMT)
-Received: from b03ledav001.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 56AA86E052;
-        Thu, 28 Jan 2021 01:34:43 +0000 (GMT)
-Received: from pompom.ibm.com (unknown [9.85.194.72])
-        by b03ledav001.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Thu, 28 Jan 2021 01:34:43 +0000 (GMT)
-From:   Lijun Pan <ljp@linux.ibm.com>
-To:     netdev@vger.kernel.org
-Cc:     Lijun Pan <ljp@linux.ibm.com>
-Subject: [PATCH net v3] ibmvnic: Ensure that CRQ entry read are correctly ordered
-Date:   Wed, 27 Jan 2021 19:34:42 -0600
-Message-Id: <20210128013442.88319-1-ljp@linux.ibm.com>
-X-Mailer: git-send-email 2.22.0
+        id S231299AbhA1Biv (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 20:38:51 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47026 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231455AbhA1Bhl (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 20:37:41 -0500
+Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05412C061573
+        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 17:36:59 -0800 (PST)
+Received: by mail-yb1-xb32.google.com with SMTP id e206so3909937ybh.13
+        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 17:36:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=/bYkXfmXb8C2rGF7Qsf6Wobm0/Ll/oj6BlMfe82xb6E=;
+        b=pZcoPrqQxlmqJ5usLuLOAN0s6P1+f2all9GbH0hJPJbN0rf9uRjjvCLh781dsmHcxm
+         U19IQAEyl/FNaUggIHpLPm0942NiwmdUSoDxjgdHvCq5MoYCbSL4A3hdrP0jfi8v4FDo
+         e9yvEPn07/mUYytWQQ793Zt5XV/GfkD4+6M+MunZO/QG1Wn5XRz/Vin7Uqg2leL9Bqnz
+         CY25tvs/Y75y0A0Q1AVmMabyoM0/7Kto3mMhjmOCeW+T3t70uqt01+F7jj+q+Z7bTgqu
+         A53Gno3FQUBex6V1/gi0FEQTP+FA4W+yDMe87Y59FILlKGS2YoKz62no6rNHZnLGrbii
+         hM5w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/bYkXfmXb8C2rGF7Qsf6Wobm0/Ll/oj6BlMfe82xb6E=;
+        b=QGPouCYxy1SbxjC69tQ1PodCNR9lhu2t7bJNGPIBn5Fr1iVRq8v/LlgU9kkffBmDfT
+         JazQ+67kfICIpIMh0Y43xLTiKtQ8izLYv1VRU4PNaAIUBsz9qfKOnv0YOw/z2VAinHZQ
+         ymKJkh2g8b3HmUZ6F3ZP1RtsG/ZeK/ikTuS6/THyWkgxWDnDUAUJ0/S2eHN2oXlM6Z3T
+         sR7veq7Ud8/1ZFiRV7FQHmgzZmySef7Z74RhYtZYr/MNCBk0qNQ2KZumFOo1l8H2hdIa
+         xesyticYvSq0dC7ROR634Ti6DnHGKdV1piMSydHwBs7UiOGzDSjOO0VyyRVSBR3KZ743
+         vKbA==
+X-Gm-Message-State: AOAM532G7PbMAhtYd6lqixXQk8LMvLv2vT2jk74WRR8lzK3qAihg/0Xb
+        5ikPVcS4VLPxZ8GQgpruZFBakdOsVDUfp6cwFyDszC7aKFE=
+X-Google-Smtp-Source: ABdhPJz9v04i+UD4IrDkXOZU7bUCEnOsibHNcj7xiSWCA80V79o8cvenXn4tLhyCpsCQ/pANk/0X6tXggqBck06DNHI=
+X-Received: by 2002:a25:1d86:: with SMTP id d128mr2724899ybd.278.1611797818146;
+ Wed, 27 Jan 2021 17:36:58 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
- definitions=2021-01-27_10:2021-01-27,2021-01-27 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 impostorscore=0
- suspectscore=0 malwarescore=0 mlxlogscore=839 adultscore=0
- priorityscore=1501 mlxscore=0 lowpriorityscore=0 spamscore=0 bulkscore=0
- clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2101280003
+References: <20210126011109.2425966-1-weiwan@google.com> <20210126011109.2425966-3-weiwan@google.com>
+ <20210127161238.123840ec@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210127161238.123840ec@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+From:   Wei Wang <weiwan@google.com>
+Date:   Wed, 27 Jan 2021 17:36:45 -0800
+Message-ID: <CAEA6p_Ao7nhrk-jFf43O99zv6j4UkZW3d_wKiN8cmF2GgJRf2g@mail.gmail.com>
+Subject: Re: [PATCH net-next v8 2/3] net: implement threaded-able napi poll
+ loop support
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     David Miller <davem@davemloft.net>,
+        Linux Kernel Network Developers <netdev@vger.kernel.org>,
+        Eric Dumazet <edumazet@google.com>,
+        Paolo Abeni <pabeni@redhat.com>,
+        Hannes Frederic Sowa <hannes@stressinduktion.org>,
+        Felix Fietkau <nbd@nbd.name>,
+        Alexander Duyck <alexander.duyck@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Ensure that received Command-Response Queue (CRQ) entries are
-properly read in order by the driver. dma_rmb barrier has
-been added before accessing the CRQ descriptor to ensure
-the entire descriptor is read before processing.
+On Wed, Jan 27, 2021 at 4:12 PM Jakub Kicinski <kuba@kernel.org> wrote:
+>
+> On Mon, 25 Jan 2021 17:11:08 -0800 Wei Wang wrote:
+> > This patch allows running each napi poll loop inside its own
+> > kernel thread.
+> > The kthread is created during netif_napi_add() if dev->threaded
+> > is set. And threaded mode is enabled in napi_enable(). We will
+> > provide a way to set dev->threaded and enable threaded mode
+> > without a device up/down in the following patch.
+> >
+> > Once that threaded mode is enabled and the kthread is
+> > started, napi_schedule() will wake-up such thread instead
+> > of scheduling the softirq.
+> >
+> > The threaded poll loop behaves quite likely the net_rx_action,
+> > but it does not have to manipulate local irqs and uses
+> > an explicit scheduling point based on netdev_budget.
+> >
+> > Co-developed-by: Paolo Abeni <pabeni@redhat.com>
+> > Signed-off-by: Paolo Abeni <pabeni@redhat.com>
+> > Co-developed-by: Hannes Frederic Sowa <hannes@stressinduktion.org>
+> > Signed-off-by: Hannes Frederic Sowa <hannes@stressinduktion.org>
+> > Co-developed-by: Jakub Kicinski <kuba@kernel.org>
+> > Signed-off-by: Jakub Kicinski <kuba@kernel.org>
+> > Signed-off-by: Wei Wang <weiwan@google.com>
+>
+> include/linux/netdevice.h:2150: warning: Function parameter or member 'threaded' not described in 'net_device'
+>
+>
+> scripts/kernel-doc -none $files
+>
+> is your friend - W=1 does not check headers.
 
-Fixes: 032c5e82847a ("Driver for IBM System i/p VNIC protocol")
-Signed-off-by: Lijun Pan <ljp@linux.ibm.com>
----
-v3: reword the comments in the code to make it less confusing.
-v2: drop dma_wmb according to Jakub's opinion
-
- drivers/net/ethernet/ibm/ibmvnic.c | 6 ++++++
- 1 file changed, 6 insertions(+)
-
-diff --git a/drivers/net/ethernet/ibm/ibmvnic.c b/drivers/net/ethernet/ibm/ibmvnic.c
-index 9778c83150f1..8820c98ea891 100644
---- a/drivers/net/ethernet/ibm/ibmvnic.c
-+++ b/drivers/net/ethernet/ibm/ibmvnic.c
-@@ -5084,6 +5084,12 @@ static void ibmvnic_tasklet(struct tasklet_struct *t)
- 	while (!done) {
- 		/* Pull all the valid messages off the CRQ */
- 		while ((crq = ibmvnic_next_crq(adapter)) != NULL) {
-+			/* This barrier makes sure ibmvnic_next_crq()'s
-+			 * crq->generic.first & IBMVNIC_CRQ_CMD_RSP is loaded
-+			 * before ibmvnic_handle_crq()'s
-+			 * switch(gen_crq->first) and switch(gen_crq->cmd).
-+			 */
-+			dma_rmb();
- 			ibmvnic_handle_crq(crq, adapter);
- 			crq->generic.first = 0;
- 		}
--- 
-2.23.0
-
+Thanks! Will add description for this new field.
