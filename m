@@ -2,47 +2,43 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 51926308069
-	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 22:23:10 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id D45BE308067
+	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 22:21:11 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231487AbhA1VVL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jan 2021 16:21:11 -0500
-Received: from mail.kernel.org ([198.145.29.99]:60202 "EHLO mail.kernel.org"
+        id S231470AbhA1VVD (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jan 2021 16:21:03 -0500
+Received: from mail.kernel.org ([198.145.29.99]:60222 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231429AbhA1VUw (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 28 Jan 2021 16:20:52 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 5A2EF64DD9;
+        id S231430AbhA1VUv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 28 Jan 2021 16:20:51 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id 86DEA64DF5;
         Thu, 28 Jan 2021 21:20:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
         s=k20201202; t=1611868811;
-        bh=+lQnTdhWGp80s2unTYUTOQdgnBLAFT40+bcJo8X88KA=;
+        bh=+gtzFtUMOT3g6M28E0GpBrJGHbNiV/x+iVkX3IbvTx0=;
         h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
-        b=cCOb1CJ04sw2TtkVvMPJPfG2U/+UasKA/c/O6PV3EmtTFygiMsXZCpfRmi4lKLqdB
-         fHLN6njA5FAIdWt7cPEXuI5c9l31eIwpCmm7KUoxNzDQSCfnxpNJloe+Va3wiecjzO
-         EtEwkWClSrgf/P4EYAIEeDu33Mr0g2JHfkVyA+QWxCZbN3peXb2BsbbgSy0nSQGxpm
-         Jso5ZBJIkIsfcq2HBQ+NPyzkpIZDWTq9ByuomEFf5Dr39sOFXTAIRQOeKyftgwOh1U
-         WKeUb7hBlaPy1+tKJjIKw4ooh4KuUsrpIrAUVPWWA1QJ/sq7hsyVFD6LRivcrmkMYY
-         0LnhqSaJ/XmPg==
+        b=YFOL+ipNozUU237xdLhnx+Iny1iZ2c98FFjFW2rfiUFJ2GIfEY9bGB2xkW9Q7lsW0
+         wHJGAyxA3UYi0UunNtq2AxZxyUIDxhUekjwBn2ISvBOaF/GzYHv2eCiOkFaz4eU7EU
+         0fkM2KXvaHBdMSesLmX7We3yi5XVKjVmf7HW5LeYUMR5Y9ipoVYdbK30UNdVsFk3xX
+         u/G9yWropQWoqMGdsGksUz9v6C/kzjVixQaTiORysE82aNK0RqJTtHuy1MKaccVaoE
+         KJZyJigMhBFADAoX3+3CT4QrY8LV2nvxtxbkbu4gasZx4zrPMmZVxypYgcaM5b+AL5
+         u23V3CsD4KuJw==
 Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
-        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 4CFC160077;
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id 8316260077;
         Thu, 28 Jan 2021 21:20:11 +0000 (UTC)
 Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Subject: Re: [PATCH net] stmmac: intel: Configure EHL PSE0 GbE and PSE1 GbE to 32
- bits DMA addressing
+Subject: Re: [PATCH net] rxrpc: Fix memory leak in rxrpc_lookup_local
 From:   patchwork-bot+netdevbpf@kernel.org
-Message-Id: <161186881130.25673.3724673380406985947.git-patchwork-notify@kernel.org>
+Message-Id: <161186881153.25673.15830898023753339404.git-patchwork-notify@kernel.org>
 Date:   Thu, 28 Jan 2021 21:20:11 +0000
-References: <20210126100844.30326-1-mohammad.athari.ismail@intel.com>
-In-Reply-To: <20210126100844.30326-1-mohammad.athari.ismail@intel.com>
-To:     None <mohammad.athari.ismail@intel.com>
-Cc:     peppe.cavallaro@st.com, alexandre.torgue@st.com,
-        joabreu@synopsys.com, davem@davemloft.net, kuba@kernel.org,
-        mcoquelin.stm32@gmail.com, boon.leong.ong@intel.com,
-        weifeng.voon@intel.com, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+References: <161183091692.3506637.3206605651502458810.stgit@warthog.procyon.org.uk>
+In-Reply-To: <161183091692.3506637.3206605651502458810.stgit@warthog.procyon.org.uk>
+To:     David Howells <dhowells@redhat.com>
+Cc:     netdev@vger.kernel.org, jeliantsurux@gmail.com,
+        syzbot+305326672fed51b205f7@syzkaller.appspotmail.com,
+        linux-afs@lists.infradead.org, linux-kernel@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
@@ -51,66 +47,21 @@ Hello:
 
 This patch was applied to netdev/net.git (refs/heads/master):
 
-On Tue, 26 Jan 2021 18:08:44 +0800 you wrote:
-> From: Voon Weifeng <weifeng.voon@intel.com>
+On Thu, 28 Jan 2021 10:48:36 +0000 you wrote:
+> From: Takeshi Misawa <jeliantsurux@gmail.com>
 > 
-> Fix an issue where dump stack is printed and Reset Adapter occurs when
-> PSE0 GbE or/and PSE1 GbE is/are enabled. EHL PSE0 GbE and PSE1 GbE use
-> 32 bits DMA addressing whereas EHL PCH GbE uses 64 bits DMA addressing.
+> Commit 9ebeddef58c4 ("rxrpc: rxrpc_peer needs to hold a ref on the rxrpc_local record")
+> Then release ref in __rxrpc_put_peer and rxrpc_put_peer_locked.
 > 
-> [   25.535095] ------------[ cut here ]------------
-> [   25.540276] NETDEV WATCHDOG: enp0s29f2 (intel-eth-pci): transmit queue 2 timed out
-> [   25.548749] WARNING: CPU: 2 PID: 0 at net/sched/sch_generic.c:443 dev_watchdog+0x259/0x260
-> [   25.558004] Modules linked in: 8021q bnep bluetooth ecryptfs snd_hda_codec_hdmi intel_gpy marvell intel_ishtp_loader intel_ishtp_hid iTCO_wdt mei_hdcp iTCO_vendor_support x86_pkg_temp_thermal kvm_intel dwmac_intel stmmac kvm igb pcs_xpcs irqbypass phylink snd_hda_intel intel_rapl_msr pcspkr dca snd_hda_codec i915 i2c_i801 i2c_smbus libphy intel_ish_ipc snd_hda_core mei_me intel_ishtp mei spi_dw_pci 8250_lpss spi_dw thermal dw_dmac_core parport_pc tpm_crb tpm_tis parport tpm_tis_core tpm intel_pmc_core sch_fq_codel uhid fuse configfs snd_sof_pci snd_sof_intel_byt snd_sof_intel_ipc snd_sof_intel_hda_common snd_sof_xtensa_dsp snd_sof snd_soc_acpi_intel_match snd_soc_acpi snd_intel_dspcfg ledtrig_audio snd_soc_core snd_compress ac97_bus snd_pcm snd_timer snd soundcore
-> [   25.633795] CPU: 2 PID: 0 Comm: swapper/2 Tainted: G     U            5.11.0-rc4-intel-lts-MISMAIL5+ #5
-> [   25.644306] Hardware name: Intel Corporation Elkhart Lake Embedded Platform/ElkhartLake LPDDR4x T4 RVP1, BIOS EHLSFWI1.R00.2434.A00.2010231402 10/23/2020
-> [   25.659674] RIP: 0010:dev_watchdog+0x259/0x260
-> [   25.664650] Code: e8 3b 6b 60 ff eb 98 4c 89 ef c6 05 ec e7 bf 00 01 e8 fb e5 fa ff 89 d9 4c 89 ee 48 c7 c7 78 31 d2 9e 48 89 c2 e8 79 1b 18 00 <0f> 0b e9 77 ff ff ff 0f 1f 44 00 00 48 c7 47 08 00 00 00 00 48 c7
-> [   25.685647] RSP: 0018:ffffb7ca80160eb8 EFLAGS: 00010286
-> [   25.691498] RAX: 0000000000000000 RBX: 0000000000000002 RCX: 0000000000000103
-> [   25.699483] RDX: 0000000080000103 RSI: 00000000000000f6 RDI: 00000000ffffffff
-> [   25.707465] RBP: ffff985709ce0440 R08: 0000000000000000 R09: c0000000ffffefff
-> [   25.715455] R10: ffffb7ca80160cf0 R11: ffffb7ca80160ce8 R12: ffff985709ce039c
-> [   25.723438] R13: ffff985709ce0000 R14: 0000000000000008 R15: ffff9857068af940
-> [   25.731425] FS:  0000000000000000(0000) GS:ffff985864300000(0000) knlGS:0000000000000000
-> [   25.740481] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
-> [   25.746913] CR2: 00005567f8bb76b8 CR3: 00000001f8e0a000 CR4: 0000000000350ee0
-> [   25.754900] Call Trace:
-> [   25.757631]  <IRQ>
-> [   25.759891]  ? qdisc_put_unlocked+0x30/0x30
-> [   25.764565]  ? qdisc_put_unlocked+0x30/0x30
-> [   25.769245]  call_timer_fn+0x2e/0x140
-> [   25.773346]  run_timer_softirq+0x1f3/0x430
-> [   25.777932]  ? __hrtimer_run_queues+0x12c/0x2c0
-> [   25.783005]  ? ktime_get+0x3e/0xa0
-> [   25.786812]  __do_softirq+0xa6/0x2ef
-> [   25.790816]  asm_call_irq_on_stack+0xf/0x20
-> [   25.795501]  </IRQ>
-> [   25.797852]  do_softirq_own_stack+0x5d/0x80
-> [   25.802538]  irq_exit_rcu+0x94/0xb0
-> [   25.806475]  sysvec_apic_timer_interrupt+0x42/0xc0
-> [   25.811836]  asm_sysvec_apic_timer_interrupt+0x12/0x20
-> [   25.817586] RIP: 0010:cpuidle_enter_state+0xd9/0x370
-> [   25.823142] Code: 85 c0 0f 8f 0a 02 00 00 31 ff e8 22 d5 7e ff 45 84 ff 74 12 9c 58 f6 c4 02 0f 85 47 02 00 00 31 ff e8 7b a0 84 ff fb 45 85 f6 <0f> 88 ab 00 00 00 49 63 ce 48 2b 2c 24 48 89 c8 48 6b d1 68 48 c1
-> [   25.844140] RSP: 0018:ffffb7ca800f7e80 EFLAGS: 00000206
-> [   25.849996] RAX: ffff985864300000 RBX: 0000000000000003 RCX: 000000000000001f
-> [   25.857975] RDX: 00000005f2028ea8 RSI: ffffffff9ec5907f RDI: ffffffff9ec62a5d
-> [   25.865961] RBP: 00000005f2028ea8 R08: 0000000000000000 R09: 0000000000029d00
-> [   25.873947] R10: 000000137b0e0508 R11: ffff9858643294e4 R12: ffff9858643336d0
-> [   25.881935] R13: ffffffff9ef74b00 R14: 0000000000000003 R15: 0000000000000000
-> [   25.889918]  cpuidle_enter+0x29/0x40
-> [   25.893922]  do_idle+0x24a/0x290
-> [   25.897536]  cpu_startup_entry+0x19/0x20
-> [   25.901930]  start_secondary+0x128/0x160
-> [   25.906326]  secondary_startup_64_no_verify+0xb0/0xbb
-> [   25.911983] ---[ end trace b4c0c8195d0ba61f ]---
-> [   25.917193] intel-eth-pci 0000:00:1d.2 enp0s29f2: Reset adapter.
+> 	struct rxrpc_peer *rxrpc_alloc_peer(struct rxrpc_local *local, gfp_t gfp)
+> 	-               peer->local = local;
+> 	+               peer->local = rxrpc_get_local(local);
 > 
 > [...]
 
 Here is the summary with links:
-  - [net] stmmac: intel: Configure EHL PSE0 GbE and PSE1 GbE to 32 bits DMA addressing
-    https://git.kernel.org/netdev/net/c/7cfc4486e7ea
+  - [net] rxrpc: Fix memory leak in rxrpc_lookup_local
+    https://git.kernel.org/netdev/net/c/b8323f7288ab
 
 You are awesome, thank you!
 --
