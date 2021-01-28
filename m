@@ -2,175 +2,205 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B16DA307C1E
-	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 18:22:05 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id AB5F0307C38
+	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 18:25:30 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232992AbhA1RUC (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jan 2021 12:20:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50900 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229785AbhA1RRt (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jan 2021 12:17:49 -0500
-Received: from mail-qk1-x736.google.com (mail-qk1-x736.google.com [IPv6:2607:f8b0:4864:20::736])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFC24C061574
-        for <netdev@vger.kernel.org>; Thu, 28 Jan 2021 09:17:08 -0800 (PST)
-Received: by mail-qk1-x736.google.com with SMTP id a12so5940909qkh.10
-        for <netdev@vger.kernel.org>; Thu, 28 Jan 2021 09:17:08 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=QcxWapiPSO2xibmizYTYMcU/jNeQgQwDKDZ2S3JeesY=;
-        b=gaWXFMPRVqVeDtaReNuY+HIPrNq18rT3QXGDm9R0y2tUU105e1eXClTzhg0DQLTl/d
-         kAHB9AEA0qHXWDPn56AShhvL0j1uFg9qaT9eZZELq9AWpwYrysC74sYg/Zxe+GMgnE66
-         PiomzFZopNn3XxWuRwIbR38lJeICuBlBJ6plAnYnbThrunblmnYqs+aeZV9BclqcnkjU
-         YwZXMz/F/JYMFnVw7KBsumJAXAIDUVhAJIE75dPgXBSJVMHTg+9C/xcCNWBd/2/uHX3e
-         gg2f14Dd93dRYHdUpOEZVhtGrZAm+URNtsETmDh/mhUxs55ZpKYv1ualmbhiGfKxG027
-         c3Tw==
+        id S233020AbhA1RWX (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jan 2021 12:22:23 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:53211 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233082AbhA1RU4 (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jan 2021 12:20:56 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1611854369;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         in-reply-to:in-reply-to:references:references;
+        bh=C3eK8ADi3ZeyPV4PVYDApesK2wmgAogV+vFpEBdBI34=;
+        b=CAtd+js9CWodlUPuJWsWLEuPaL8j6f8WnxHTYmAPvV+YsmYl1tSbThMwsE8+ArO0+Sn0Q3
+        n9MQa+LBrsfKa8TFOyst2u108bIxqDL8hI30YC+3FyIeVXUukG/ejqILeURJmhv93eEeO4
+        V76ZYmFcZTrlPVsJ0b0i1OpdxiLQ51s=
+Received: from mail-wm1-f69.google.com (mail-wm1-f69.google.com
+ [209.85.128.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-311-7ajlSI19NsyVAZpedeeHvQ-1; Thu, 28 Jan 2021 12:19:27 -0500
+X-MC-Unique: 7ajlSI19NsyVAZpedeeHvQ-1
+Received: by mail-wm1-f69.google.com with SMTP id f65so2472170wmf.2
+        for <netdev@vger.kernel.org>; Thu, 28 Jan 2021 09:19:27 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=QcxWapiPSO2xibmizYTYMcU/jNeQgQwDKDZ2S3JeesY=;
-        b=ASdbytFswWdq2W2Xln7nnvNajGnLWTyPBozNhvGY3qt8BVCBFOk59otLJ9Kh7702VE
-         KjTDGDFu18v9yQAGGeA9JSuenYJuqko/FG++irIyQvB9m2jetN/QYKC+gaGjrMSxKezH
-         XdCN9CiWK0VjXIWHNwvugVKm/rxQSQl4AqV4BtSbTu78H4DojDVxm1sAvxBd3p0CQP7i
-         vCvJgI9ScNjo6qXNZN9T2P02R63ZBXGRgkDWL1NAA74TLmyOUoUuPQTdLcrHThPWq7bP
-         jXPHoLdOpsYU5PVy1sRfOJqJ1YVqNkxpsJBPxWDv9MMeeNlYXhLCUVkRjW/gh1/pcpKT
-         kYRQ==
-X-Gm-Message-State: AOAM531HXkuG/R15q/XD+5NSbVy6dhrUpNzg8hVVWQU8oTWYNrCU2FeN
-        L/pUaJoJPoi+0LA1GZ6CVZvquk965z8ou8qv/nGrvg==
-X-Google-Smtp-Source: ABdhPJzvwexGUyi1U4sEDOXhS8/21q2NjCfFTi7Xpvmf2IfjbrrwKIgvttehLclwYemJpMticsLcGx6ENgYm4tYeyIw=
-X-Received: by 2002:a37:2716:: with SMTP id n22mr160075qkn.265.1611854227676;
- Thu, 28 Jan 2021 09:17:07 -0800 (PST)
-MIME-Version: 1.0
-References: <20210128024316.1425-1-hdanton@sina.com> <CACT4Y+Z8NwmvuqynuFO8XFk4sdeTLi9Bn5RWt3xWU_Vb+z+hAA@mail.gmail.com>
- <2cfd53f0-2a38-4550-a354-a8967736298a@gmail.com>
-In-Reply-To: <2cfd53f0-2a38-4550-a354-a8967736298a@gmail.com>
-From:   Dmitry Vyukov <dvyukov@google.com>
-Date:   Thu, 28 Jan 2021 18:16:55 +0100
-Message-ID: <CACT4Y+bGPmMi0uFXz618GVwf4CHyF6TArYDpNGNFkR4p_xYPKg@mail.gmail.com>
-Subject: Re: [PATCH] netdevsim: init u64 stats for 32bit hardware
-To:     Eric Dumazet <eric.dumazet@gmail.com>
-Cc:     Hillf Danton <hdanton@sina.com>, netdev <netdev@vger.kernel.org>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=C3eK8ADi3ZeyPV4PVYDApesK2wmgAogV+vFpEBdBI34=;
+        b=L82iKMFpXRxfxciOSbJg5a0HbGDHJqKfPX9dpOyAdJR7hOfyNfprDitNRO+gctbrBY
+         UzCIlUMHD2UGhbR4kvu1tPV9T9ZIrcFeMEeC9lbOHtOpB+Q8ZAeKrE/iDiKEVsFcoWVG
+         NiCpf8/xXfZ/41Q/8WLvxWztOct4MdJoLW8yJozqclDhMKeI/2QgOEiCOQKnIMjSedLJ
+         aeCxIMAGZ6CRzdp4QhxTn9GLKxMX4efJSKTFg8OEB5yfBc7lOY4/PxICwLud3rc8C3P5
+         4lGG3qI0R4xOibAkHjiMoae6zlRl52Vj6NscUn6f3U2HM/VrHC1VFjuUPi8x3J1BcBpd
+         p9qQ==
+X-Gm-Message-State: AOAM531hj6BLtcOreFNGwT3JmeOvcg/WjMbzMHQWKxE6k637nYt8Rj+9
+        4yXykmCSSvBoGr8vzAECoInTRzLLzmfQ3cvS/zHIReDBoWHuc7BqL1JEgfpKy42GQ1yMAqgbwfH
+        cPmhvkcy/TF9qGWg+
+X-Received: by 2002:adf:ee43:: with SMTP id w3mr132408wro.200.1611854366590;
+        Thu, 28 Jan 2021 09:19:26 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJy/v8ANcRwlI8G7EsFYD8nauxfmP7TArGJygNoYeVZtqgy5WGQaFyFb7Is20oZGBeCQYNOxTA==
+X-Received: by 2002:adf:ee43:: with SMTP id w3mr132383wro.200.1611854366394;
+        Thu, 28 Jan 2021 09:19:26 -0800 (PST)
+Received: from steredhat (host-79-34-249-199.business.telecomitalia.it. [79.34.249.199])
+        by smtp.gmail.com with ESMTPSA id y18sm7666251wrt.19.2021.01.28.09.19.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 28 Jan 2021 09:19:25 -0800 (PST)
+Date:   Thu, 28 Jan 2021 18:19:23 +0100
+From:   Stefano Garzarella <sgarzare@redhat.com>
+To:     Arseny Krasnov <arseny.krasnov@kaspersky.com>
+Cc:     Stefan Hajnoczi <stefanha@redhat.com>,
+        "Michael S. Tsirkin" <mst@redhat.com>,
+        Jason Wang <jasowang@redhat.com>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        syzkaller-bugs <syzkaller-bugs@googlegroups.com>,
-        syzbot <syzbot+e74a6857f2d0efe3ad81@syzkaller.appspotmail.com>,
-        Jakub Kicinski <jakub.kicinski@netronome.com>,
-        Simon Horman <simon.horman@netronome.com>,
-        Quentin Monnet <quentin.monnet@netronome.com>,
-        Daniel Borkmann <daniel@iogearbox.net>
-Content-Type: text/plain; charset="UTF-8"
+        Colin Ian King <colin.king@canonical.com>,
+        Andra Paraschiv <andraprs@amazon.com>,
+        Jeff Vander Stoep <jeffv@google.com>, kvm@vger.kernel.org,
+        virtualization@lists.linux-foundation.org, netdev@vger.kernel.org,
+        linux-kernel@vger.kernel.org, stsp2@yandex.ru, oxffffaa@gmail.com
+Subject: Re: [RFC PATCH v3 00/13] virtio/vsock: introduce SOCK_SEQPACKET
+ support
+Message-ID: <20210128171923.esyna5ccv5s27jyu@steredhat>
+References: <20210125110903.597155-1-arseny.krasnov@kaspersky.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii; format=flowed
+Content-Disposition: inline
+In-Reply-To: <20210125110903.597155-1-arseny.krasnov@kaspersky.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 28, 2021 at 5:01 PM Eric Dumazet <eric.dumazet@gmail.com> wrote:
->
->
->
-> On 1/28/21 8:23 AM, Dmitry Vyukov wrote:
-> > On Thu, Jan 28, 2021 at 3:43 AM Hillf Danton <hdanton@sina.com> wrote:
-> >>
-> >> Init the u64 stats in order to avoid the lockdep prints on the 32bit
-> >> hardware like
-> >
-> > FTR this is not just to avoid lockdep prints, but also to prevent very
-> > real stalls in production.
->
-> Are you sure ?
->
-> > u64_stats_init initializes seqlock, if the uninitialized
-> > selock->sequence would be odd, the kernel will stall.
->
-> Normally the whole netdev structure is zeroed when allocated,
-> this is done in alloc_netdev_mqs()
->
-> p = kvzalloc(alloc_size, GFP_KERNEL | __GFP_RETRY_MAYFAIL);
->
-> So unless kvzalloc() has been changed recently to inject random data
-> instead of 0, this bug is really about lockdep only.
+Hi Arseny,
+I reviewed a part, tomorrow I hope to finish the other patches.
 
-You are right, I missed that the object is zero-initialized. Then it's
-only a latent bug (if e.g. seqcount_init initializes count to an odd
-value).
+Just a couple of comments in the TODOs below.
 
-> > Maintainers, please send this upstream on your earliest convenience,
-> > this breaks all 32-bit arches for testing purposes.
-> >
-> > Thanks
-> >
-> >>  INFO: trying to register non-static key.
-> >>  the code is fine but needs lockdep annotation.
-> >>  turning off the locking correctness validator.
-> >>  CPU: 0 PID: 4695 Comm: syz-executor.0 Not tainted 5.11.0-rc5-syzkaller #0
-> >>  Hardware name: ARM-Versatile Express
-> >>  Backtrace:
-> >>  [<826fc5b8>] (dump_backtrace) from [<826fc82c>] (show_stack+0x18/0x1c arch/arm/kernel/traps.c:252)
-> >>  [<826fc814>] (show_stack) from [<8270d1f8>] (__dump_stack lib/dump_stack.c:79 [inline])
-> >>  [<826fc814>] (show_stack) from [<8270d1f8>] (dump_stack+0xa8/0xc8 lib/dump_stack.c:120)
-> >>  [<8270d150>] (dump_stack) from [<802bf9c0>] (assign_lock_key kernel/locking/lockdep.c:935 [inline])
-> >>  [<8270d150>] (dump_stack) from [<802bf9c0>] (register_lock_class+0xabc/0xb68 kernel/locking/lockdep.c:1247)
-> >>  [<802bef04>] (register_lock_class) from [<802baa2c>] (__lock_acquire+0x84/0x32d4 kernel/locking/lockdep.c:4711)
-> >>  [<802ba9a8>] (__lock_acquire) from [<802be840>] (lock_acquire.part.0+0xf0/0x554 kernel/locking/lockdep.c:5442)
-> >>  [<802be750>] (lock_acquire.part.0) from [<802bed10>] (lock_acquire+0x6c/0x74 kernel/locking/lockdep.c:5415)
-> >>  [<802beca4>] (lock_acquire) from [<81560548>] (seqcount_lockdep_reader_access include/linux/seqlock.h:103 [inline])
-> >>  [<802beca4>] (lock_acquire) from [<81560548>] (__u64_stats_fetch_begin include/linux/u64_stats_sync.h:164 [inline])
-> >>  [<802beca4>] (lock_acquire) from [<81560548>] (u64_stats_fetch_begin include/linux/u64_stats_sync.h:175 [inline])
-> >>  [<802beca4>] (lock_acquire) from [<81560548>] (nsim_get_stats64+0xdc/0xf0 drivers/net/netdevsim/netdev.c:70)
-> >>  [<8156046c>] (nsim_get_stats64) from [<81e2efa0>] (dev_get_stats+0x44/0xd0 net/core/dev.c:10405)
-> >>  [<81e2ef5c>] (dev_get_stats) from [<81e53204>] (rtnl_fill_stats+0x38/0x120 net/core/rtnetlink.c:1211)
-> >>  [<81e531cc>] (rtnl_fill_stats) from [<81e59d58>] (rtnl_fill_ifinfo+0x6d4/0x148c net/core/rtnetlink.c:1783)
-> >>  [<81e59684>] (rtnl_fill_ifinfo) from [<81e5ceb4>] (rtmsg_ifinfo_build_skb+0x9c/0x108 net/core/rtnetlink.c:3798)
-> >>  [<81e5ce18>] (rtmsg_ifinfo_build_skb) from [<81e5d0ac>] (rtmsg_ifinfo_event net/core/rtnetlink.c:3830 [inline])
-> >>  [<81e5ce18>] (rtmsg_ifinfo_build_skb) from [<81e5d0ac>] (rtmsg_ifinfo_event net/core/rtnetlink.c:3821 [inline])
-> >>  [<81e5ce18>] (rtmsg_ifinfo_build_skb) from [<81e5d0ac>] (rtmsg_ifinfo+0x44/0x70 net/core/rtnetlink.c:3839)
-> >>  [<81e5d068>] (rtmsg_ifinfo) from [<81e45c2c>] (register_netdevice+0x664/0x68c net/core/dev.c:10103)
-> >>  [<81e455c8>] (register_netdevice) from [<815608bc>] (nsim_create+0xf8/0x124 drivers/net/netdevsim/netdev.c:317)
-> >>  [<815607c4>] (nsim_create) from [<81561184>] (__nsim_dev_port_add+0x108/0x188 drivers/net/netdevsim/dev.c:941)
-> >>  [<8156107c>] (__nsim_dev_port_add) from [<815620d8>] (nsim_dev_port_add_all drivers/net/netdevsim/dev.c:990 [inline])
-> >>  [<8156107c>] (__nsim_dev_port_add) from [<815620d8>] (nsim_dev_probe+0x5cc/0x750 drivers/net/netdevsim/dev.c:1119)
-> >>  [<81561b0c>] (nsim_dev_probe) from [<815661dc>] (nsim_bus_probe+0x10/0x14 drivers/net/netdevsim/bus.c:287)
-> >>  [<815661cc>] (nsim_bus_probe) from [<811724c0>] (really_probe+0x100/0x50c drivers/base/dd.c:554)
-> >>  [<811723c0>] (really_probe) from [<811729c4>] (driver_probe_device+0xf8/0x1c8 drivers/base/dd.c:740)
-> >>  [<811728cc>] (driver_probe_device) from [<81172fe4>] (__device_attach_driver+0x8c/0xf0 drivers/base/dd.c:846)
-> >>  [<81172f58>] (__device_attach_driver) from [<8116fee0>] (bus_for_each_drv+0x88/0xd8 drivers/base/bus.c:431)
-> >>  [<8116fe58>] (bus_for_each_drv) from [<81172c6c>] (__device_attach+0xdc/0x1d0 drivers/base/dd.c:914)
-> >>  [<81172b90>] (__device_attach) from [<8117305c>] (device_initial_probe+0x14/0x18 drivers/base/dd.c:961)
-> >>  [<81173048>] (device_initial_probe) from [<81171358>] (bus_probe_device+0x90/0x98 drivers/base/bus.c:491)
-> >>  [<811712c8>] (bus_probe_device) from [<8116e77c>] (device_add+0x320/0x824 drivers/base/core.c:3109)
-> >>  [<8116e45c>] (device_add) from [<8116ec9c>] (device_register+0x1c/0x20 drivers/base/core.c:3182)
-> >>  [<8116ec80>] (device_register) from [<81566710>] (nsim_bus_dev_new drivers/net/netdevsim/bus.c:336 [inline])
-> >>  [<8116ec80>] (device_register) from [<81566710>] (new_device_store+0x178/0x208 drivers/net/netdevsim/bus.c:215)
-> >>  [<81566598>] (new_device_store) from [<8116fcb4>] (bus_attr_store+0x2c/0x38 drivers/base/bus.c:122)
-> >>  [<8116fc88>] (bus_attr_store) from [<805b4b8c>] (sysfs_kf_write+0x48/0x54 fs/sysfs/file.c:139)
-> >>  [<805b4b44>] (sysfs_kf_write) from [<805b3c90>] (kernfs_fop_write_iter+0x128/0x1ec fs/kernfs/file.c:296)
-> >>  [<805b3b68>] (kernfs_fop_write_iter) from [<804d22fc>] (call_write_iter include/linux/fs.h:1901 [inline])
-> >>  [<805b3b68>] (kernfs_fop_write_iter) from [<804d22fc>] (new_sync_write fs/read_write.c:518 [inline])
-> >>  [<805b3b68>] (kernfs_fop_write_iter) from [<804d22fc>] (vfs_write+0x3dc/0x57c fs/read_write.c:605)
-> >>  [<804d1f20>] (vfs_write) from [<804d2604>] (ksys_write+0x68/0xec fs/read_write.c:658)
-> >>  [<804d259c>] (ksys_write) from [<804d2698>] (__do_sys_write fs/read_write.c:670 [inline])
-> >>  [<804d259c>] (ksys_write) from [<804d2698>] (sys_write+0x10/0x14 fs/read_write.c:667)
-> >>  [<804d2688>] (sys_write) from [<80200060>] (ret_fast_syscall+0x0/0x2c arch/arm/mm/proc-v7.S:64)
-> >>
-> >> Fixes: 83c9e13aa39a ("netdevsim: add software driver for testing offloads")
-> >> Reported-by: syzbot+e74a6857f2d0efe3ad81@syzkaller.appspotmail.com
-> >> Tested-by: Dmitry Vyukov <dvyukov@google.com>
-> >> Cc: Jakub Kicinski <jakub.kicinski@netronome.com>
-> >> Cc: Simon Horman <simon.horman@netronome.com>
-> >> Cc: Quentin Monnet <quentin.monnet@netronome.com>
-> >> Cc: Daniel Borkmann <daniel@iogearbox.net>
-> >> Signed-off-by: Hillf Danton <hdanton@sina.com>
-> >> ---
-> >>
-> >> --- a/drivers/net/netdevsim/netdev.c
-> >> +++ b/drivers/net/netdevsim/netdev.c
-> >> @@ -296,6 +296,7 @@ nsim_create(struct nsim_dev *nsim_dev, s
-> >>         dev_net_set(dev, nsim_dev_net(nsim_dev));
-> >>         ns = netdev_priv(dev);
-> >>         ns->netdev = dev;
-> >> +       u64_stats_init(&ns->syncp);
-> >>         ns->nsim_dev = nsim_dev;
-> >>         ns->nsim_dev_port = nsim_dev_port;
-> >>         ns->nsim_bus_dev = nsim_dev->nsim_bus_dev;
+On Mon, Jan 25, 2021 at 02:09:00PM +0300, Arseny Krasnov wrote:
+>	This patchset impelements support of SOCK_SEQPACKET for virtio
+>transport.
+>	As SOCK_SEQPACKET guarantees to save record boundaries, so to
+>do it, new packet operation was added: it marks start of record (with
+>record length in header), such packet doesn't carry any data.  To send
+>record, packet with start marker is sent first, then all data is sent
+>as usual 'RW' packets. On receiver's side, length of record is known
+>from packet with start record marker. Now as  packets of one socket
+>are not reordered neither on vsock nor on vhost transport layers, such
+>marker allows to restore original record on receiver's side. If user's
+>buffer is smaller that record length, when all out of size data is
+>dropped.
+>	Maximum length of datagram is not limited as in stream socket,
+>because same credit logic is used. Difference with stream socket is
+>that user is not woken up until whole record is received or error
+>occurred. Implementation also supports 'MSG_EOR' and 'MSG_TRUNC' flags.
+>	Tests also implemented.
+>
+> Arseny Krasnov (13):
+>  af_vsock: prepare for SOCK_SEQPACKET support
+>  af_vsock: prepare 'vsock_connectible_recvmsg()'
+>  af_vsock: implement SEQPACKET rx loop
+>  af_vsock: implement send logic for SOCK_SEQPACKET
+>  af_vsock: rest of SEQPACKET support
+>  af_vsock: update comments for stream sockets
+>  virtio/vsock: dequeue callback for SOCK_SEQPACKET
+>  virtio/vsock: fetch length for SEQPACKET record
+>  virtio/vsock: add SEQPACKET receive logic
+>  virtio/vsock: rest of SOCK_SEQPACKET support
+>  virtio/vsock: setup SEQPACKET ops for transport
+>  vhost/vsock: setup SEQPACKET ops for transport
+>  vsock_test: add SOCK_SEQPACKET tests
+>
+> drivers/vhost/vsock.c                   |   7 +-
+> include/linux/virtio_vsock.h            |  12 +
+> include/net/af_vsock.h                  |   6 +
+> include/uapi/linux/virtio_vsock.h       |   9 +
+> net/vmw_vsock/af_vsock.c                | 543 ++++++++++++++++------
+> net/vmw_vsock/virtio_transport.c        |   4 +
+> net/vmw_vsock/virtio_transport_common.c | 295 ++++++++++--
+> tools/testing/vsock/util.c              |  32 +-
+> tools/testing/vsock/util.h              |   3 +
+> tools/testing/vsock/vsock_test.c        | 126 +++++
+> 10 files changed, 862 insertions(+), 175 deletions(-)
+>
+> TODO:
+> - Support for record integrity control. As transport could drop some
+>   packets, something like "record-id" and record end marker need to
+>   be implemented. Idea is that SEQ_BEGIN packet carries both record
+>   length and record id, end marker(let it be SEQ_END) carries only
+>   record id. To be sure that no one packet was lost, receiver checks
+>   length of data between SEQ_BEGIN and SEQ_END(it must be same with
+>   value in SEQ_BEGIN) and record ids of SEQ_BEGIN and SEQ_END(this
+>   means that both markers were not dropped. I think that easiest way
+>   to implement record id for SEQ_BEGIN is to reuse another field of
+>   packet header(SEQ_BEGIN already uses 'flags' as record length).For
+>   SEQ_END record id could be stored in 'flags'.
+
+I don't really like the idea of reusing the 'flags' field for this 
+purpose.
+
+>     Another way to implement it, is to move metadata of both SEQ_END
+>   and SEQ_BEGIN to payload. But this approach has problem, because
+>   if we move something to payload, such payload is accounted by
+>   credit logic, which fragments payload, while payload with record
+>   length and id couldn't be fragmented. One way to overcome it is to
+>   ignore credit update for SEQ_BEGIN/SEQ_END packet.Another solution
+>   is to update 'stream_has_space()' function: current implementation
+>   return non-zero when at least 1 byte is allowed to use,but updated
+>   version will have extra argument, which is needed length. For 'RW'
+>   packet this argument is 1, for SEQ_BEGIN it is sizeof(record len +
+>   record id) and for SEQ_END it is sizeof(record id).
+
+Is the payload accounted by credit logic also if hdr.op is not 
+VIRTIO_VSOCK_OP_RW?
+
+I think that we can define a specific header to put after the 
+virtio_vsock_hdr when hdr.op is SEQ_BEGIN or SEQ_END, and in this header 
+we can store the id and the length of the message.
+
+>
+> - What to do, when server doesn't support SOCK_SEQPACKET. In current
+>   implementation RST is replied in the same way when listening port
+>   is not found. I think that current RST is enough,because case when
+>   server doesn't support SEQ_PACKET is same when listener missed(e.g.
+>   no listener in both cases).
+
+I think so, but I'll check better if we can have some issues.
+
+Thanks,
+Stefano
+
+>
+> v2 -> v3:
+> - patches reorganized: split for prepare and implementation patches
+> - local variables are declared in "Reverse Christmas tree" manner
+> - virtio_transport_common.c: valid leXX_to_cpu() for vsock header
+>   fields access
+> - af_vsock.c: 'vsock_connectible_*sockopt()' added as shared code
+>   between stream and seqpacket sockets.
+> - af_vsock.c: loops in '__vsock_*_recvmsg()' refactored.
+> - af_vsock.c: 'vsock_wait_data()' refactored.
+>
+> v1 -> v2:
+> - patches reordered: af_vsock.c related changes now before virtio vsock
+> - patches reorganized: more small patches, where +/- are not mixed
+> - tests for SOCK_SEQPACKET added
+> - all commit messages updated
+> - af_vsock.c: 'vsock_pre_recv_check()' inlined to
+>   'vsock_connectible_recvmsg()'
+> - af_vsock.c: 'vsock_assign_transport()' returns ENODEV if transport
+>   was not found
+> - virtio_transport_common.c: transport callback for seqpacket dequeue
+> - virtio_transport_common.c: simplified
+>   'virtio_transport_recv_connected()'
+> - virtio_transport_common.c: send reset on socket and packet type
+>			      mismatch.
+>
+>Signed-off-by: Arseny Krasnov <arseny.krasnov@kaspersky.com>
+>
+>-- 
+>2.25.1
+>
+
