@@ -2,120 +2,183 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id CB47E3073A6
-	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 11:23:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 11FAE3073C6
+	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 11:32:07 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231657AbhA1KXM (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jan 2021 05:23:12 -0500
-Received: from new3-smtp.messagingengine.com ([66.111.4.229]:50889 "EHLO
-        new3-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232342AbhA1KWe (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jan 2021 05:22:34 -0500
-Received: from compute6.internal (compute6.nyi.internal [10.202.2.46])
-        by mailnew.nyi.internal (Postfix) with ESMTP id A1D3B580649;
-        Thu, 28 Jan 2021 05:21:27 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute6.internal (MEProxy); Thu, 28 Jan 2021 05:21:27 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=cerno.tech; h=
-        date:from:to:cc:subject:message-id:references:mime-version
-        :content-type:in-reply-to; s=fm1; bh=WKrBbHzc805XUW+IWILdpePB9+M
-        x4qNr5ByeHkDKEMM=; b=sOFjsjcZbdtXKklJVChBAIKxlnLsMcLo1fYPU3ICSGP
-        FhRHU06NIezmMnZhpMaYg+fDidJZ6znPrcba7Mpf7HyYVtTHhbkBSFEifM0pJjaP
-        sTNKb1Iiy0RXWiVuENDR9eI09pb3Z4oNozZQnIDBFYXfYs1wrM77iI5oQXhZdvZ8
-        r7O7uFrDDwqPXnk+fRIZIw4oXJmWXetBvHO4apPtVDzPP5Fi5d9g6TpnAFXxqInO
-        hXF9VREI1fuxv+VxKzhNdHqhjTWg+rLUm2U3Gn2hBA6mEr2EfN9Vg49T44DPddcc
-        M+UpR9e62ifqvhIzEp6M5gI6Bh2JQaGQwu6UeQ2NQKA==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:content-type:date:from:in-reply-to
-        :message-id:mime-version:references:subject:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=WKrBbH
-        zc805XUW+IWILdpePB9+Mx4qNr5ByeHkDKEMM=; b=kqXv8zx0rEbo6gcDS+36eR
-        H69TSoc6zIc59J9mehMBhZbXQtqEJHAiq9BpC8jm73MAsJQW2/ijGR7jzx+g9lcH
-        kTGy+MuZEAOkeLhYuxYMTYs8HVKunU5q1vUnVvipAHGYMrw8lPsVxbGBOHFPUWEZ
-        V9GVMjQXeB7TgGPRLeoGpDezDK9QkRmcYjuOzLYB/gg0wRD4IbLrrFIQUK0cpRuJ
-        gW27i/43JCf6n7iyjY8j+dPTDNgyC0ZTu8lXYMrPcAElwjXJrZ5vVP7BCCGn4cbC
-        1l4R1rPsvLrhQVb4tjIPl7eubrG4Ge/GLxXlt8v5mGGGvsnSWdU7uGmc+n/2pJOQ
-        ==
-X-ME-Sender: <xms:JZASYMn7Hu4HhiRXqKC4prc-QTrilhT3dBZ4rkB9ejbJ1HPUqhvFHg>
-    <xme:JZASYL3mqeyyfDAY176hjN_bnH0MwCrNtlsUZmNODRGkKd_UgcFl_BbpY81nv0N8f
-    DabHxGLQy1cNipN8I4>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgeduledrfedtgdduvdcutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpeffhffvuffkfhggtggujgesghdtreertddtvdenucfhrhhomhepofgrgihimhgv
-    ucftihhprghrugcuoehmrgigihhmvgestggvrhhnohdrthgvtghhqeenucggtffrrghtth
-    gvrhhnpeelkeeghefhuddtleejgfeljeffheffgfeijefhgfeufefhtdevteegheeiheeg
-    udenucfkphepledtrdekledrieekrdejieenucevlhhushhtvghrufhiiigvpedtnecurf
-    grrhgrmhepmhgrihhlfhhrohhmpehmrgigihhmvgestggvrhhnohdrthgvtghh
-X-ME-Proxy: <xmx:JZASYKpkQf2s4o3230LBIMEuERLNQBTmdSiBVIVJVskHuiWgmYuH4w>
-    <xmx:JZASYIkE5BL3oCXVoNZvYWRzy6p0ag1lncJQfHRlWDkuaZcmjZzpXQ>
-    <xmx:JZASYK3IuB_t-7SrTrEU9mxkhqGtjpKF-YGALNq41tKeJff2nB1nPg>
-    <xmx:J5ASYF1UtgU9keS1tgaUVsSodzhCpWJ_lxzvQx5dsCLe2HYEAWaIFA>
-Received: from localhost (lfbn-tou-1-1502-76.w90-89.abo.wanadoo.fr [90.89.68.76])
-        by mail.messagingengine.com (Postfix) with ESMTPA id 8F16524005D;
-        Thu, 28 Jan 2021 05:21:25 -0500 (EST)
-Date:   Thu, 28 Jan 2021 11:21:24 +0100
-From:   Maxime Ripard <maxime@cerno.tech>
-To:     Andre Przywara <andre.przywara@arm.com>
-Cc:     Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@siol.net>,
-        Samuel Holland <samuel@sholland.org>,
-        Icenowy Zheng <icenowy@aosc.io>, Rob Herring <robh@kernel.org>,
-        =?utf-8?B?Q2zDqW1lbnQgUMOpcm9u?= <peron.clem@gmail.com>,
-        Shuosheng Huang <huangshuosheng@allwinnertech.com>,
-        Yangtao Li <tiny.windzz@gmail.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-sunxi@googlegroups.com,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Giuseppe Cavallaro <peppe.cavallaro@st.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Jose Abreu <joabreu@synopsys.com>, netdev@vger.kernel.org
-Subject: Re: [PATCH v5 16/20] net: stmmac: dwmac-sun8i: Prepare for second
- EMAC clock register
-Message-ID: <20210128102124.5r7ztgehw2iqbbl6@gilmour>
-References: <20210127172500.13356-1-andre.przywara@arm.com>
- <20210127172500.13356-17-andre.przywara@arm.com>
+        id S232254AbhA1KaL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jan 2021 05:30:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48060 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229774AbhA1KaI (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jan 2021 05:30:08 -0500
+Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 597E3C061573;
+        Thu, 28 Jan 2021 02:29:27 -0800 (PST)
+Received: by mail-lj1-x235.google.com with SMTP id s18so5675012ljg.7;
+        Thu, 28 Jan 2021 02:29:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=yMLTIPyc/LiQ2bi7uEqiU4NDimPedT3k+buADRHwdTU=;
+        b=QFePxmMTPUq6l/K2kvKuT5EUpnlXD+oMUphHFUWQphUh154VEiEKNgki2GaMRiCFPh
+         2u1v1nC9swFExYJhcS/GzSu+SaQ38wE8qPaQKanwn6GfSKrX9bd2MeC+F0GnXxHipsOM
+         Ldvv3CnWjpXEA0XLRAWLaDCYyK+zdYztlgb9fZOEEE6W9RisUGHLpd10PBfdlBNEjoLV
+         y9fLucwUqTi9/kniAJHWUyd3Ak1dJ99kaWkPknEHlxiav4ya8ZAfMSau8rN4eETsEC4Y
+         vWvWPpN1PwDkteAGMB5YRZ4f9YKLEgAThZPP+13eR+cNnJP/Vba/7lOcqpBTBvDBjCEZ
+         JdkA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=yMLTIPyc/LiQ2bi7uEqiU4NDimPedT3k+buADRHwdTU=;
+        b=RE7xD47nKA5UyYh3CXVBYeS+j9Mc2TJQ6HuCjnU/dTdpxzL8Ti0Lzgv5ksPnMQ78+I
+         V32b5uQG9vsyM/7sh0pHWDpyfKa8ksK82hZHvXn9VAZv1o7AZ11/Xx6DijcfZ9uHaDT1
+         /cTrGuKvO6CIfmVm/LrxxHk9dv2FtJkxMKHGyn6I2Jdz7/u5N2Je2pqT0jDHHsWhz7wK
+         VXiq7Ywrh53XR7141RUguWma04B4FYq2Ix587PeatDpvkvP892nCCtevds/F9LXn+ANv
+         R4G5V3WWaQ30oDBknK6Fxp+ezI7prR+dw8tAGsNHfBJNXFSeJtjmHVXNFL/mH4xMpNhX
+         hheQ==
+X-Gm-Message-State: AOAM531kpGIJm5/SYmlBTVk/4qIQmUTtuBjg6QhR45mWiWQfL10BoAhF
+        WOarxVhS7wx7YH5u7f5SsG40s3dGyBJAGIK81yvfdJwSoLw=
+X-Google-Smtp-Source: ABdhPJz1AmHnLn2KLgRF4r4Hmx5P13kWS8+cqvl6PWUGuwWzFvBAPV3paGe7pBeKMz9IdzvJVas6y7g+gElcNSvmvcY=
+X-Received: by 2002:a2e:9b57:: with SMTP id o23mr8388781ljj.314.1611829765892;
+ Thu, 28 Jan 2021 02:29:25 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="xhjmi5l7rzawjt23"
-Content-Disposition: inline
-In-Reply-To: <20210127172500.13356-17-andre.przywara@arm.com>
+References: <1611823636-18377-1-git-send-email-abaci-bugfix@linux.alibaba.com>
+In-Reply-To: <1611823636-18377-1-git-send-email-abaci-bugfix@linux.alibaba.com>
+From:   Julian Calaby <julian.calaby@gmail.com>
+Date:   Thu, 28 Jan 2021 21:29:14 +1100
+Message-ID: <CAGRGNgWM=dQx4suXZJX+u6m0i4=Qx3hZFZWdWJ8VO+FG_edH2w@mail.gmail.com>
+Subject: Re: [PATCH] b43: Remove redundant code
+To:     Abaci Team <abaci-bugfix@linux.alibaba.com>
+Cc:     Kalle Valo <kvalo@codeaurora.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        linux-wireless@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
+        b43-dev <b43-dev@lists.infradead.org>, netdev@vger.kernel.org,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
+Hi ..... <insert name here>,
 
---xhjmi5l7rzawjt23
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+(No proper name in the from field or signed-off-by, as you're already aware)
 
-On Wed, Jan 27, 2021 at 05:24:56PM +0000, Andre Przywara wrote:
-> The Allwinner H616 SoC has two EMAC controllers, with the second one
-> being tied to the internal PHY, but also using a separate EMAC clock
-> register.
->=20
-> To tell the driver about which clock register to use, we add a parameter
-> to our syscon phandle. The driver will use this value as an index into
-> the regmap, so that we can address more than the first register, if
-> needed.
->=20
-> Signed-off-by: Andre Przywara <andre.przywara@arm.com>
+On Thu, Jan 28, 2021 at 7:53 PM Abaci Team
+<abaci-bugfix@linux.alibaba.com> wrote:
+>
+> Fix the following coccicheck warnings:
+>
+> ./drivers/net/wireless/broadcom/b43/phy_n.c:4640:2-4: WARNING: possible
+> condition with no effect (if == else).
+>
+> ./drivers/net/wireless/broadcom/b43/phy_n.c:4606:2-4: WARNING: possible
+> condition with no effect (if == else).
+>
+> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+> Suggested-by: Jiapeng Zhong <oswb@linux.alibaba.com>
+> Signed-off-by: Abaci Team <abaci-bugfix@linux.alibaba.com>
+> ---
+>  drivers/net/wireless/broadcom/b43/phy_n.c | 16 ----------------
+>  1 file changed, 16 deletions(-)
+>
+> diff --git a/drivers/net/wireless/broadcom/b43/phy_n.c b/drivers/net/wireless/broadcom/b43/phy_n.c
+> index b669dff..39a335f 100644
+> --- a/drivers/net/wireless/broadcom/b43/phy_n.c
+> +++ b/drivers/net/wireless/broadcom/b43/phy_n.c
+> @@ -4601,16 +4601,6 @@ static void b43_nphy_spur_workaround(struct b43_wldev *dev)
+>         if (nphy->hang_avoid)
+>                 b43_nphy_stay_in_carrier_search(dev, 1);
+>
+> -       if (nphy->gband_spurwar_en) {
+> -               /* TODO: N PHY Adjust Analog Pfbw (7) */
+> -               if (channel == 11 && b43_is_40mhz(dev)) {
+> -                       ; /* TODO: N PHY Adjust Min Noise Var(2, tone, noise)*/
+> -               } else {
+> -                       ; /* TODO: N PHY Adjust Min Noise Var(0, NULL, NULL)*/
+> -               }
+> -               /* TODO: N PHY Adjust CRS Min Power (0x1E) */
+> -       }
 
-Acked-by: Maxime Ripard <mripard@kernel.org>
+I'm not sure how useful this patch is, even though it is technically correct.
 
-Maxime
+The b43 driver was almost entirely reverse engineered from various
+sources so there's still a lot of places, like this, where placeholder
+comments were written until the actual code that would have been here
+was ready / reverse engineered.
 
---xhjmi5l7rzawjt23
-Content-Type: application/pgp-signature; name="signature.asc"
+That said, I believe the driver works well enough for all it's users
+and has not seen any significant changes in a long time.
 
------BEGIN PGP SIGNATURE-----
+Thanks,
 
-iHUEABYIAB0WIQRcEzekXsqa64kGDp7j7w1vZxhRxQUCYBKQJAAKCRDj7w1vZxhR
-xagXAP9sBF7h64P0H+8rQpl6V5lGj5Y3y/W70a+vh9IM8bXJNAD/eCKBDZ89fJ9m
-IZRiUsDCg90R+6SY81zqg3DWFA9F7gM=
-=nLfI
------END PGP SIGNATURE-----
+-- 
+Julian Calaby
 
---xhjmi5l7rzawjt23--
+Email: julian.calaby@gmail.com
+Profile: http://www.google.com/profiles/julian.calaby/
+
+On Thu, Jan 28, 2021 at 7:53 PM Abaci Team
+<abaci-bugfix@linux.alibaba.com> wrote:
+>
+> Fix the following coccicheck warnings:
+>
+> ./drivers/net/wireless/broadcom/b43/phy_n.c:4640:2-4: WARNING: possible
+> condition with no effect (if == else).
+>
+> ./drivers/net/wireless/broadcom/b43/phy_n.c:4606:2-4: WARNING: possible
+> condition with no effect (if == else).
+>
+> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
+> Suggested-by: Jiapeng Zhong <oswb@linux.alibaba.com>
+> Signed-off-by: Abaci Team <abaci-bugfix@linux.alibaba.com>
+> ---
+>  drivers/net/wireless/broadcom/b43/phy_n.c | 16 ----------------
+>  1 file changed, 16 deletions(-)
+>
+> diff --git a/drivers/net/wireless/broadcom/b43/phy_n.c b/drivers/net/wireless/broadcom/b43/phy_n.c
+> index b669dff..39a335f 100644
+> --- a/drivers/net/wireless/broadcom/b43/phy_n.c
+> +++ b/drivers/net/wireless/broadcom/b43/phy_n.c
+> @@ -4601,16 +4601,6 @@ static void b43_nphy_spur_workaround(struct b43_wldev *dev)
+>         if (nphy->hang_avoid)
+>                 b43_nphy_stay_in_carrier_search(dev, 1);
+>
+> -       if (nphy->gband_spurwar_en) {
+> -               /* TODO: N PHY Adjust Analog Pfbw (7) */
+> -               if (channel == 11 && b43_is_40mhz(dev)) {
+> -                       ; /* TODO: N PHY Adjust Min Noise Var(2, tone, noise)*/
+> -               } else {
+> -                       ; /* TODO: N PHY Adjust Min Noise Var(0, NULL, NULL)*/
+> -               }
+> -               /* TODO: N PHY Adjust CRS Min Power (0x1E) */
+> -       }
+> -
+>         if (nphy->aband_spurwar_en) {
+>                 if (channel == 54) {
+>                         tone[0] = 0x20;
+> @@ -4636,12 +4626,6 @@ static void b43_nphy_spur_workaround(struct b43_wldev *dev)
+>                         tone[0] = 0;
+>                         noise[0] = 0;
+>                 }
+> -
+> -               if (!tone[0] && !noise[0]) {
+> -                       ; /* TODO: N PHY Adjust Min Noise Var(1, tone, noise)*/
+> -               } else {
+> -                       ; /* TODO: N PHY Adjust Min Noise Var(0, NULL, NULL)*/
+> -               }
+>         }
+>
+>         if (nphy->hang_avoid)
+> --
+> 1.8.3.1
+>
+
+
+-- 
+Julian Calaby
+
+Email: julian.calaby@gmail.com
+Profile: http://www.google.com/profiles/julian.calaby/
