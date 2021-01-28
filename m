@@ -2,125 +2,358 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id A83CE307F25
-	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 21:09:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BB01E307F00
+	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 21:02:09 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231398AbhA1UGy (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jan 2021 15:06:54 -0500
-Received: from mail.kernel.org ([198.145.29.99]:55192 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231470AbhA1UEC (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Thu, 28 Jan 2021 15:04:02 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id ECCFF64E36;
-        Thu, 28 Jan 2021 19:47:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611863221;
-        bh=H6v8ZXXV2Uym43MsLOBYTQXBG2B+5yMYkUpZPMWn644=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=AWdLNwASDJjkawvi33IHgk2Zd43mbPji3juUCNIX4wOLf/YIWLq/ohWIu74Bdp56c
-         k8WDDTuMUgrR9CQc7KWw5qZaVGtMi+F1V+H/Y4eBiitIXngFAvga3kq0T+jAKErfqM
-         t2JjcA1OmZ11Je5t/wXUm4DaWXCgdRYsZhJ9xXHA4pFWKg2kdGkjkXl8V7igYVckCQ
-         /OT0MGwzNLGKOPSnagKaBtaN3KLRHHeOyT88a4VJru6albHvmMZCFnSv7SPHF5h0YK
-         whBdhho3ffywPJY1RAy/bjgn/GSiOzU8GRlNJ6QOsNHO1FKpULm8PFPbjz+HhVYK6V
-         yQCAhFD8f9EtA==
-Date:   Thu, 28 Jan 2021 11:46:59 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Xie He <xie.he.0141@gmail.com>
-Cc:     "David S. Miller" <davem@davemloft.net>, linux-x25@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Martin Schiller <ms@dev.tdt.de>,
-        Krzysztof Halasa <khc@pm.waw.pl>
-Subject: Re: [PATCH net] net: hdlc_x25: Use qdisc to queue outgoing LAPB
- frames
-Message-ID: <20210128114659.2d81a85f@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <20210127090747.364951-1-xie.he.0141@gmail.com>
-References: <20210127090747.364951-1-xie.he.0141@gmail.com>
+        id S231184AbhA1UAL (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jan 2021 15:00:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57396 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231169AbhA1T7v (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jan 2021 14:59:51 -0500
+Received: from galois.linutronix.de (Galois.linutronix.de [IPv6:2a0a:51c0:0:12e:550::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B346C061574
+        for <netdev@vger.kernel.org>; Thu, 28 Jan 2021 11:48:06 -0800 (PST)
+From:   "Ahmed S. Darwish" <a.darwish@linutronix.de>
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020; t=1611863282;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=oMSCY+v9OkkGw6C8c1vK9vdTwdnRjMX9KuFe+d/652o=;
+        b=UFoDsLNkVP55F5H7jHVkjHzei9arbnFoY4byqdyt9g8Pf1Z+CaeeCeB2781IDZ6S5CrCW1
+        0PZszHkA4dBDuE1XTOS2luSoiByvcOyDqPS44DGGSYqZVEVXkwuxSwfxjZeuvb/4LlBHv0
+        FHhKIjhoyaqmQHVLcuBF0/zJvzcCItq7QM47Wr+d8WSpixUaBofzgvmLx1cwIka9rFkGCS
+        T9rUZnMhpki0c/wGM0aMVdnnIQva2owMmNMQcDO/PGW5mJiknf1a2I6O/5zxTOYcmpSvJi
+        gN4TNSvZINBuobfpA2uRcnQacgjIAke5j+CaZu6FCrHIWaqrB3DPRpIjMES+dQ==
+DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=linutronix.de;
+        s=2020e; t=1611863282;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=oMSCY+v9OkkGw6C8c1vK9vdTwdnRjMX9KuFe+d/652o=;
+        b=ehrL8/sTuTtWMSYrUuKMbSWV0rCQr9wuw9jO7rHm/qFCBHZSLqzwoGFr7E07EiScD0L3kl
+        J94qI0ok0ywjOgBg==
+To:     netdev@vger.kernel.org
+Cc:     davem@davemloft.net, kuba@kernel.org, m.grzeschik@pengutronix.de,
+        a.darwish@linutronix.de, bigeasy@linutronix.de, tglx@linutronix.de
+Subject: [PATCH v2] net: arcnet: Fix RESET flag handling
+Date:   Thu, 28 Jan 2021 20:48:02 +0100
+Message-Id: <20210128194802.727770-1-a.darwish@linutronix.de>
+In-Reply-To: <20210128133936.430842-1-bigeasy@linutronix.de>
+References: <20210128133936.430842-1-bigeasy@linutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, 27 Jan 2021 01:07:47 -0800 Xie He wrote:
-> An HDLC hardware driver may call netif_stop_queue to temporarily stop
-> the TX queue when the hardware is busy sending a frame, and after the
-> hardware has finished sending the frame, call netif_wake_queue to
-> resume the TX queue.
-> 
-> However, the LAPB module doesn't know about this. Whether or not the
-> hardware driver has stopped the TX queue, the LAPB module still feeds
-> outgoing frames to the hardware driver for transmission. This can cause
-> frames to be dropped by the hardware driver.
-> 
-> It's not easy to fix this issue in the LAPB module. We can indeed let the
-> LAPB module check whether the TX queue has been stopped before feeding
-> each frame to the hardware driver, but when the hardware driver resumes
-> the TX queue, it's not easy to immediately notify the LAPB module and ask
-> it to resume transmission.
-> 
-> Instead, we can fix this issue at the hdlc_x25 layer, by using qdisc TX
-> queues to queue outgoing LAPB frames. The qdisc TX queue will then
-> automatically be controlled by netif_stop_queue and netif_wake_queue.
+The main arcnet interrupt handler calls arcnet_close() then
+arcnet_open(), if the RESET status flag is encountered.
 
-Noob question - could you point at or provide a quick guide to layering
-here? I take there is only one netdev, and something maintains an
-internal queue which is not stopped when HW driver stops the qdisc?
+This is invalid:
 
-> This way, when sending, we will use the qdisc queue to queue and send
-> the data twice: once as the L3 packet and then (after processed by the
-> LAPB module) as an LAPB (L2) frame. This does not make the logic of the
-> code messy, because when receiving, data are already "received" on the
-> device twice: once as an LAPB (L2) frame and then (after processed by
-> the LAPB module) as the L3 packet.
-> 
-> Some more details about the code change:
-> 
-> 1. dev_queue_xmit_nit is removed because we already have it when we send
-> the skb through the qdisc TX queue (in xmit_one).
-> 
-> 2. hdlc_type_trans is replaced by assigning skb->dev and skb->protocol
-> directly. skb_reset_mac_header in hdlc_type_trans is no longer necessary
-> because it will be called in __dev_queue_xmit.
+  1) In general, interrupt handlers should never call ->ndo_stop() and
+     ->ndo_open() functions. They are usually full of blocking calls and
+     other methods that are expected to be called only from drivers
+     init and exit code paths.
 
-Sounds like we're optimizing to prevent drops, and this was not
-reported from production, rather thru code inspection. Ergo I think
-net-next will be more appropriate here, unless Martin disagrees.
+  2) arcnet_close() contains a del_timer_sync(). If the irq handler
+     interrupts the to-be-deleted timer, del_timer_sync() will just loop
+     forever.
 
-> diff --git a/drivers/net/wan/hdlc_x25.c b/drivers/net/wan/hdlc_x25.c
-> index bb164805804e..b7f2823bf100 100644
-> --- a/drivers/net/wan/hdlc_x25.c
-> +++ b/drivers/net/wan/hdlc_x25.c
-> @@ -89,15 +89,10 @@ static int x25_data_indication(struct net_device *dev, struct sk_buff *skb)
->  
->  static void x25_data_transmit(struct net_device *dev, struct sk_buff *skb)
->  {
-> -	hdlc_device *hdlc = dev_to_hdlc(dev);
-> -
-> +	skb->dev = dev;
-> +	skb->protocol = htons(ETH_P_HDLC);
->  	skb_reset_network_header(skb);
-> -	skb->protocol = hdlc_type_trans(skb, dev);
-> -
-> -	if (dev_nit_active(dev))
-> -		dev_queue_xmit_nit(skb, dev);
-> -
-> -	hdlc->xmit(skb, dev); /* Ignore return value :-( */
-> +	dev_queue_xmit(skb);
->  }
->  
->  
-> @@ -106,6 +101,12 @@ static netdev_tx_t x25_xmit(struct sk_buff *skb, struct net_device *dev)
->  {
->  	int result;
->  
-> +	if (skb->protocol == htons(ETH_P_HDLC)) {
-> +		hdlc_device *hdlc = dev_to_hdlc(dev);
-> +
-> +		return hdlc->xmit(skb, dev);
-> +	}
-> +
->  	/* There should be a pseudo header of 1 byte added by upper layers.
->  	 * Check to make sure it is there before reading it.
->  	 */
+  3) arcnet_close() also calls tasklet_kill(), which has a warning if
+     called from irq context.
+
+  4) For device reset, the sequence "arcnet_close(); arcnet_open();" is
+     not complete.  Some children arcnet drivers have special init/exit
+     code sequences, which then embed a call to arcnet_open() and
+     arcnet_close() accordingly. Check drivers/net/arcnet/com20020.c.
+
+Run the device RESET sequence from a scheduled workqueue instead.
+
+Signed-off-by: Ahmed S. Darwish <a.darwish@linutronix.de>
+Signed-off-by: Sebastian Andrzej Siewior <bigeasy@linutronix.de>
+---
+Changelog-v2:
+  - Fix com20020-isa.c compilation error: s/free_ardev()/free_arcdev()/
+  - Compile-test with an ARCH=i386 allyesconfig, to make sure everything
+    else is also sane.
+
+ drivers/net/arcnet/arc-rimi.c     |  4 +-
+ drivers/net/arcnet/arcdevice.h    |  6 +++
+ drivers/net/arcnet/arcnet.c       | 66 +++++++++++++++++++++++++++++--
+ drivers/net/arcnet/com20020-isa.c |  4 +-
+ drivers/net/arcnet/com20020-pci.c |  2 +-
+ drivers/net/arcnet/com20020_cs.c  |  2 +-
+ drivers/net/arcnet/com90io.c      |  4 +-
+ drivers/net/arcnet/com90xx.c      |  4 +-
+ 8 files changed, 78 insertions(+), 14 deletions(-)
+
+diff --git a/drivers/net/arcnet/arc-rimi.c b/drivers/net/arcnet/arc-rimi.c
+index 98df38fe553c..12d085405bd0 100644
+--- a/drivers/net/arcnet/arc-rimi.c
++++ b/drivers/net/arcnet/arc-rimi.c
+@@ -332,7 +332,7 @@ static int __init arc_rimi_init(void)
+ 		dev->irq = 9;
+ 
+ 	if (arcrimi_probe(dev)) {
+-		free_netdev(dev);
++		free_arcdev(dev);
+ 		return -EIO;
+ 	}
+ 
+@@ -349,7 +349,7 @@ static void __exit arc_rimi_exit(void)
+ 	iounmap(lp->mem_start);
+ 	release_mem_region(dev->mem_start, dev->mem_end - dev->mem_start + 1);
+ 	free_irq(dev->irq, dev);
+-	free_netdev(dev);
++	free_arcdev(dev);
+ }
+ 
+ #ifndef MODULE
+diff --git a/drivers/net/arcnet/arcdevice.h b/drivers/net/arcnet/arcdevice.h
+index 22a49c6d7ae6..5d4a4c7efbbf 100644
+--- a/drivers/net/arcnet/arcdevice.h
++++ b/drivers/net/arcnet/arcdevice.h
+@@ -298,6 +298,10 @@ struct arcnet_local {
+ 
+ 	int excnak_pending;    /* We just got an excesive nak interrupt */
+ 
++	/* RESET flag handling */
++	int reset_in_progress;
++	struct work_struct reset_work;
++
+ 	struct {
+ 		uint16_t sequence;	/* sequence number (incs with each packet) */
+ 		__be16 aborted_seq;
+@@ -350,7 +354,9 @@ void arcnet_dump_skb(struct net_device *dev, struct sk_buff *skb, char *desc)
+ 
+ void arcnet_unregister_proto(struct ArcProto *proto);
+ irqreturn_t arcnet_interrupt(int irq, void *dev_id);
++
+ struct net_device *alloc_arcdev(const char *name);
++void free_arcdev(struct net_device *dev);
+ 
+ int arcnet_open(struct net_device *dev);
+ int arcnet_close(struct net_device *dev);
+diff --git a/drivers/net/arcnet/arcnet.c b/drivers/net/arcnet/arcnet.c
+index e04efc0a5c97..d76dd7d14299 100644
+--- a/drivers/net/arcnet/arcnet.c
++++ b/drivers/net/arcnet/arcnet.c
+@@ -387,10 +387,44 @@ static void arcnet_timer(struct timer_list *t)
+ 	struct arcnet_local *lp = from_timer(lp, t, timer);
+ 	struct net_device *dev = lp->dev;
+ 
+-	if (!netif_carrier_ok(dev)) {
++	spin_lock_irq(&lp->lock);
++
++	if (!lp->reset_in_progress && !netif_carrier_ok(dev)) {
+ 		netif_carrier_on(dev);
+ 		netdev_info(dev, "link up\n");
+ 	}
++
++	spin_unlock_irq(&lp->lock);
++}
++
++static void reset_device_work(struct work_struct *work)
++{
++	struct arcnet_local *lp;
++	struct net_device *dev;
++
++	lp = container_of(work, struct arcnet_local, reset_work);
++	dev = lp->dev;
++
++	/* Do not bring the network interface back up if an ifdown
++	 * was already done.
++	 */
++	if (!netif_running(dev) || !lp->reset_in_progress)
++		return;
++
++	rtnl_lock();
++
++	/* Do another check, in case of an ifdown that was triggered in
++	 * the small race window between the exit condition above and
++	 * acquiring RTNL.
++	 */
++	if (!netif_running(dev) || !lp->reset_in_progress)
++		goto out;
++
++	dev_close(dev);
++	dev_open(dev, NULL);
++
++out:
++	rtnl_unlock();
+ }
+ 
+ static void arcnet_reply_tasklet(unsigned long data)
+@@ -452,12 +486,25 @@ struct net_device *alloc_arcdev(const char *name)
+ 		lp->dev = dev;
+ 		spin_lock_init(&lp->lock);
+ 		timer_setup(&lp->timer, arcnet_timer, 0);
++		INIT_WORK(&lp->reset_work, reset_device_work);
+ 	}
+ 
+ 	return dev;
+ }
+ EXPORT_SYMBOL(alloc_arcdev);
+ 
++void free_arcdev(struct net_device *dev)
++{
++	struct arcnet_local *lp = netdev_priv(dev);
++
++	/* Do not cancel this at ->ndo_close(), as the workqueue itself
++	 * indirectly calls the ifdown path through dev_close().
++	 */
++	cancel_work_sync(&lp->reset_work);
++	free_netdev(dev);
++}
++EXPORT_SYMBOL(free_arcdev);
++
+ /* Open/initialize the board.  This is called sometime after booting when
+  * the 'ifconfig' program is run.
+  *
+@@ -587,6 +634,10 @@ int arcnet_close(struct net_device *dev)
+ 
+ 	/* shut down the card */
+ 	lp->hw.close(dev);
++
++	/* reset counters */
++	lp->reset_in_progress = 0;
++
+ 	module_put(lp->hw.owner);
+ 	return 0;
+ }
+@@ -820,6 +871,9 @@ irqreturn_t arcnet_interrupt(int irq, void *dev_id)
+ 
+ 	spin_lock_irqsave(&lp->lock, flags);
+ 
++	if (lp->reset_in_progress)
++		goto out;
++
+ 	/* RESET flag was enabled - if device is not running, we must
+ 	 * clear it right away (but nothing else).
+ 	 */
+@@ -852,11 +906,14 @@ irqreturn_t arcnet_interrupt(int irq, void *dev_id)
+ 		if (status & RESETflag) {
+ 			arc_printk(D_NORMAL, dev, "spurious reset (status=%Xh)\n",
+ 				   status);
+-			arcnet_close(dev);
+-			arcnet_open(dev);
++
++			lp->reset_in_progress = 1;
++			netif_stop_queue(dev);
++			netif_carrier_off(dev);
++			schedule_work(&lp->reset_work);
+ 
+ 			/* get out of the interrupt handler! */
+-			break;
++			goto out;
+ 		}
+ 		/* RX is inhibited - we must have received something.
+ 		 * Prepare to receive into the next buffer.
+@@ -1052,6 +1109,7 @@ irqreturn_t arcnet_interrupt(int irq, void *dev_id)
+ 	udelay(1);
+ 	lp->hw.intmask(dev, lp->intmask);
+ 
++out:
+ 	spin_unlock_irqrestore(&lp->lock, flags);
+ 	return retval;
+ }
+diff --git a/drivers/net/arcnet/com20020-isa.c b/drivers/net/arcnet/com20020-isa.c
+index f983c4ce6b07..be618e4b9ed5 100644
+--- a/drivers/net/arcnet/com20020-isa.c
++++ b/drivers/net/arcnet/com20020-isa.c
+@@ -169,7 +169,7 @@ static int __init com20020_init(void)
+ 		dev->irq = 9;
+ 
+ 	if (com20020isa_probe(dev)) {
+-		free_netdev(dev);
++		free_arcdev(dev);
+ 		return -EIO;
+ 	}
+ 
+@@ -182,7 +182,7 @@ static void __exit com20020_exit(void)
+ 	unregister_netdev(my_dev);
+ 	free_irq(my_dev->irq, my_dev);
+ 	release_region(my_dev->base_addr, ARCNET_TOTAL_SIZE);
+-	free_netdev(my_dev);
++	free_arcdev(my_dev);
+ }
+ 
+ #ifndef MODULE
+diff --git a/drivers/net/arcnet/com20020-pci.c b/drivers/net/arcnet/com20020-pci.c
+index eb7f76753c9c..8bdc44b7e09a 100644
+--- a/drivers/net/arcnet/com20020-pci.c
++++ b/drivers/net/arcnet/com20020-pci.c
+@@ -291,7 +291,7 @@ static void com20020pci_remove(struct pci_dev *pdev)
+ 
+ 		unregister_netdev(dev);
+ 		free_irq(dev->irq, dev);
+-		free_netdev(dev);
++		free_arcdev(dev);
+ 	}
+ }
+ 
+diff --git a/drivers/net/arcnet/com20020_cs.c b/drivers/net/arcnet/com20020_cs.c
+index cf607ffcf358..9cc5eb6a8e90 100644
+--- a/drivers/net/arcnet/com20020_cs.c
++++ b/drivers/net/arcnet/com20020_cs.c
+@@ -177,7 +177,7 @@ static void com20020_detach(struct pcmcia_device *link)
+ 		dev = info->dev;
+ 		if (dev) {
+ 			dev_dbg(&link->dev, "kfree...\n");
+-			free_netdev(dev);
++			free_arcdev(dev);
+ 		}
+ 		dev_dbg(&link->dev, "kfree2...\n");
+ 		kfree(info);
+diff --git a/drivers/net/arcnet/com90io.c b/drivers/net/arcnet/com90io.c
+index cf214b730671..3856b447d38e 100644
+--- a/drivers/net/arcnet/com90io.c
++++ b/drivers/net/arcnet/com90io.c
+@@ -396,7 +396,7 @@ static int __init com90io_init(void)
+ 	err = com90io_probe(dev);
+ 
+ 	if (err) {
+-		free_netdev(dev);
++		free_arcdev(dev);
+ 		return err;
+ 	}
+ 
+@@ -419,7 +419,7 @@ static void __exit com90io_exit(void)
+ 
+ 	free_irq(dev->irq, dev);
+ 	release_region(dev->base_addr, ARCNET_TOTAL_SIZE);
+-	free_netdev(dev);
++	free_arcdev(dev);
+ }
+ 
+ module_init(com90io_init)
+diff --git a/drivers/net/arcnet/com90xx.c b/drivers/net/arcnet/com90xx.c
+index 3dc3d533cb19..d8dfb9ea0de8 100644
+--- a/drivers/net/arcnet/com90xx.c
++++ b/drivers/net/arcnet/com90xx.c
+@@ -554,7 +554,7 @@ static int __init com90xx_found(int ioaddr, int airq, u_long shmem,
+ err_release_mem:
+ 	release_mem_region(dev->mem_start, dev->mem_end - dev->mem_start + 1);
+ err_free_dev:
+-	free_netdev(dev);
++	free_arcdev(dev);
+ 	return -EIO;
+ }
+ 
+@@ -672,7 +672,7 @@ static void __exit com90xx_exit(void)
+ 		release_region(dev->base_addr, ARCNET_TOTAL_SIZE);
+ 		release_mem_region(dev->mem_start,
+ 				   dev->mem_end - dev->mem_start + 1);
+-		free_netdev(dev);
++		free_arcdev(dev);
+ 	}
+ }
+ 
+-- 
+2.30.0
 
