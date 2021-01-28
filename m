@@ -2,115 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 12FD9306DBA
-	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 07:42:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 4F5F7306DCD
+	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 07:48:52 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231287AbhA1Gli (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jan 2021 01:41:38 -0500
-Received: from mxout70.expurgate.net ([194.37.255.70]:54363 "EHLO
-        mxout70.expurgate.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229578AbhA1Glh (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jan 2021 01:41:37 -0500
-Received: from [127.0.0.1] (helo=localhost)
-        by relay.expurgate.net with smtp (Exim 4.90)
-        (envelope-from <ms@dev.tdt.de>)
-        id 1l50xy-00009M-56; Thu, 28 Jan 2021 07:39:42 +0100
-Received: from [195.243.126.94] (helo=securemail.tdt.de)
-        by relay.expurgate.net with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.90)
-        (envelope-from <ms@dev.tdt.de>)
-        id 1l50xx-000094-1D; Thu, 28 Jan 2021 07:39:41 +0100
-Received: from securemail.tdt.de (localhost [127.0.0.1])
-        by securemail.tdt.de (Postfix) with ESMTP id E9BF6240041;
-        Thu, 28 Jan 2021 07:39:39 +0100 (CET)
-Received: from mail.dev.tdt.de (unknown [10.2.4.42])
-        by securemail.tdt.de (Postfix) with ESMTP id 5D5D2240040;
-        Thu, 28 Jan 2021 07:39:39 +0100 (CET)
-Received: from mail.dev.tdt.de (localhost [IPv6:::1])
-        by mail.dev.tdt.de (Postfix) with ESMTP id CAB7121C58;
-        Thu, 28 Jan 2021 07:39:38 +0100 (CET)
+        id S231330AbhA1Gp0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jan 2021 01:45:26 -0500
+Received: from esa.microchip.iphmx.com ([68.232.154.123]:29386 "EHLO
+        esa.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231163AbhA1GpX (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jan 2021 01:45:23 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
+  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
+  t=1611816323; x=1643352323;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=wbquCW1Jq03k67nXuZYtUVGGl7OP8Xn59g/GHZwYmIo=;
+  b=mT21FZ5/nRR2HbiuoZAFhWF1T0MCLD+j3w38fjQjLGdRvQouBjKYyWbq
+   g94lScJG9Tssuq4nrywHYQnJpEv6OVLnCasFRqIVF1B02V1PgGpwKWq3S
+   O7alcJ/BGpTGSd5MVSc5K4cUym0QozkMFMubUDis115NO2QObGm10F7l9
+   by7X0iYrsaywrgVkx6KEUYwWxszm2KX6SEV1hzhWfTQJNoLE9uMiGhr1q
+   KgRoKwRBf//5lLX2a7x2HoUzo3Mu5I7dZqA6NGYk1HL1Xs5kTq1kFLvS6
+   FEumXK1sg2zOviPGk1++jtRNMxuEA2dqphJFoSMd66BjA6hnqidr1MdnY
+   w==;
+IronPort-SDR: 0oUQu2ZK4/CNGl4u1Wd0ix9ZpibLAAeTYfWy1DplIhAk4Z3MafWlYLLzpNiGTtdvdYzT1RDBKG
+ xvJTeMxPIMgoPbcd+QJb51YIpx4njhNxYtY97Bu13jLsCgqkDz/X0PRfCDLdtdHmMzu4WyTMXC
+ LFab82ZhDmooemeSlFWYqJKrYJ1+6pWnFDbHbyE8/dNdUMnHdEG0JHxoPurCHif+nzDumIwBf4
+ nfdfHDv+U5swzRw86lcWJKJHcW/kpePB193PHPzke9CoMp1I1ZPAlHxtQaW1lOSt1JdCvyN+Yx
+ 0eo=
+X-IronPort-AV: E=Sophos;i="5.79,381,1602572400"; 
+   d="scan'208";a="104520472"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa2.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 27 Jan 2021 23:44:07 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
+ chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1979.3; Wed, 27 Jan 2021 23:44:06 -0700
+Received: from CHE-LT-I21427U.microchip.com (10.10.115.15) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
+ 15.1.1979.3 via Frontend Transport; Wed, 27 Jan 2021 23:44:01 -0700
+From:   Prasanna Vengateshan <prasanna.vengateshan@microchip.com>
+To:     <andrew@lunn.ch>, <olteanv@gmail.com>, <netdev@vger.kernel.org>,
+        <robh+dt@kernel.org>
+CC:     <kuba@kernel.org>, <vivien.didelot@gmail.com>,
+        <f.fainelli@gmail.com>, <davem@davemloft.net>,
+        <UNGLinuxDriver@microchip.com>, <Woojung.Huh@microchip.com>,
+        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>
+Subject: [PATCH net-next 0/8] net: dsa: microchip: DSA driver support for LAN937x switch
+Date:   Thu, 28 Jan 2021 12:11:04 +0530
+Message-ID: <20210128064112.372883-1-prasanna.vengateshan@microchip.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Thu, 28 Jan 2021 07:39:38 +0100
-From:   Martin Schiller <ms@dev.tdt.de>
-To:     Xie He <xie.he.0141@gmail.com>
-Cc:     David Laight <David.Laight@aculab.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>, linux-x25@vger.kernel.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Krzysztof Halasa <khc@pm.waw.pl>
-Subject: Re: [PATCH net] net: hdlc_x25: Use qdisc to queue outgoing LAPB
- frames
-Organization: TDT AG
-In-Reply-To: <CAJht_ENmxCBk=h68CN55qySMAiYhcgS0AtVzo6RvS5xf_6EkRw@mail.gmail.com>
-References: <20210127090747.364951-1-xie.he.0141@gmail.com>
- <77971dffcff441c3ad3d257825dc214b@AcuMS.aculab.com>
- <CAJht_ENmxCBk=h68CN55qySMAiYhcgS0AtVzo6RvS5xf_6EkRw@mail.gmail.com>
-Message-ID: <2b14439178ff54e991c45a9a1574243e@dev.tdt.de>
-X-Sender: ms@dev.tdt.de
-User-Agent: Roundcube Webmail/1.3.16
-X-Spam-Status: No, score=-1.0 required=5.0 tests=ALL_TRUSTED autolearn=ham
-        autolearn_force=no version=3.4.2
-X-Spam-Checker-Version: SpamAssassin 3.4.2 (2018-09-13) on mail.dev.tdt.de
-X-purgate-ID: 151534::1611815981-00004C0A-619C0A3A/0/0
-X-purgate: clean
-X-purgate-type: clean
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 2021-01-27 21:29, Xie He wrote:
-> On Wed, Jan 27, 2021 at 2:14 AM David Laight <David.Laight@aculab.com> 
-> wrote:
->> 
->> If I read this correctly it adds a (potentially big) queue between the
->> LAPB code that adds the sequence numbers to the frames and the 
->> hardware
->> that actually sends them.
-> 
-> Yes. The actual number of outgoing LAPB frames being queued depends on
-> how long the hardware driver stays in the TX busy state, and is
-> limited by the LAPB sending window.
-> 
->> IIRC [1] there is a general expectation that the NR in a transmitted 
->> frame
->> will be the same as the last received NS unless acks are being delayed
->> for flow control reasons.
->> 
->> You definitely want to be able to ack a received frame while 
->> transmitting
->> back-to-back I-frames.
->> 
->> This really means that you only want 2 frames in the hardware driver.
->> The one being transmitted and the next one - so it gets sent with a
->> shared flag.
->> There is no point sending an RR unless the hardware link is actually 
->> idle.
-> 
-> If I understand correctly, what you mean is that the frames sent on
-> the wire should reflect the most up-to-date status of what is received
-> from the wire, so queueing outgoing LAPB frames is not appropriate.
-> 
-> But this would require us to deal with the "TX busy" issue in the LAPB
-> module. This is (as I said) not easy to do. I currently can't think of
-> a good way of doing this.
-> 
-> Instead, we can think of the TX queue as part of the "wire". We can
-> think of the wire as long and having a little higher latency. I
-> believe the LAPB protocol has no problem in handling long wires.
-> 
-> What do you think?
+LAN937x is a Multi-Port 100BASE-T1 Ethernet Physical Layer switch 
+compliant with the IEEE 802.3bw-2015 specification. The device 
+provides 100 Mbit/s transmit and receive capability over a single
+Unshielded Twisted Pair (UTP) cable. LAN937x is successive revision
+of KSZ series switch. This series of patches provide the DSA driver 
+support for Microchip LAN937X switch and it configures through 
+SPI interface.
 
-David: Can you please elaborate on your concerns a little bit more?
+This driver shares some of the functions from KSZ common
+layer.
 
-I think Xie's approach is not bad at all. LAPB (L2) has no idea about L1
-(apart from the link state) and sends as many packets as possible, which
-of course we should not discard. The remaining window determines how
-many packets are put into this queue.
-Since we can't send anything over the line due to the TX Busy state, the
-remote station (due to lack of ACKs) will also stop sending anything
-at some point.
+The LAN937x switch series family consists of following SKUs:
+LAN9370:
+  - 4 T1 Phys
+  - 1 RGMII port
+LAN9371:
+  - 3 T1 Phys & 1 TX Phy
+  - 2 RGMII ports
+LAN9372:
+  - 5 T1 Phys & 1 TX Phy
+  - 2 RGMII ports
+LAN9373:
+  - 5 T1 Phys
+  - 2 RGMII & 1 SGMII port
+LAN9374:
+  - 6 T1 Phys
+  - 2 RGMII ports
 
-When the link goes down, all buffers/queues must be cleared.
+More support will be added at a later stage.
+
+Prasanna Vengateshan (8):
+  dt-bindings: net: dsa: dt bindings for microchip lan937x
+  net: dsa: microchip: add tag handling for Microchip LAN937x
+  net: dsa: microchip: add DSA support for microchip lan937x
+  net: dsa: microchip: add support for phylink management
+  net: dsa: microchip: add support for ethtool port counters
+  net: dsa: microchip: add support for port mirror operations
+  net: dsa: microchip: add support for fdb and mdb management
+  net: dsa: microchip: add support for vlan operations
+
+ .../bindings/net/dsa/microchip,lan937x.yaml   |  115 ++
+ MAINTAINERS                                   |    1 +
+ drivers/net/dsa/microchip/Kconfig             |   12 +
+ drivers/net/dsa/microchip/Makefile            |    5 +
+ drivers/net/dsa/microchip/ksz_common.h        |    1 +
+ drivers/net/dsa/microchip/lan937x_dev.c       |  895 ++++++++++++++
+ drivers/net/dsa/microchip/lan937x_dev.h       |   79 ++
+ drivers/net/dsa/microchip/lan937x_main.c      | 1037 +++++++++++++++++
+ drivers/net/dsa/microchip/lan937x_reg.h       |  955 +++++++++++++++
+ drivers/net/dsa/microchip/lan937x_spi.c       |  104 ++
+ include/net/dsa.h                             |    2 +
+ net/dsa/Kconfig                               |    4 +-
+ net/dsa/tag_ksz.c                             |   74 ++
+ 13 files changed, 3282 insertions(+), 2 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/net/dsa/microchip,lan937x.yaml
+ create mode 100644 drivers/net/dsa/microchip/lan937x_dev.c
+ create mode 100644 drivers/net/dsa/microchip/lan937x_dev.h
+ create mode 100644 drivers/net/dsa/microchip/lan937x_main.c
+ create mode 100644 drivers/net/dsa/microchip/lan937x_reg.h
+ create mode 100644 drivers/net/dsa/microchip/lan937x_spi.c
+
+-- 
+2.25.1
+
