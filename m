@@ -2,52 +2,52 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id D54A1308195
-	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 23:57:18 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 28C5E308189
+	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 23:54:59 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231795AbhA1Wz4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jan 2021 17:55:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38034 "EHLO
+        id S231748AbhA1Wyo (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jan 2021 17:54:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37632 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231767AbhA1Wwi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jan 2021 17:52:38 -0500
-Received: from mail-pf1-x435.google.com (mail-pf1-x435.google.com [IPv6:2607:f8b0:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DB6AC0612F2
-        for <netdev@vger.kernel.org>; Thu, 28 Jan 2021 14:48:46 -0800 (PST)
-Received: by mail-pf1-x435.google.com with SMTP id u67so4987806pfb.3
-        for <netdev@vger.kernel.org>; Thu, 28 Jan 2021 14:48:46 -0800 (PST)
+        with ESMTP id S231751AbhA1WwW (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jan 2021 17:52:22 -0500
+Received: from mail-pl1-x62a.google.com (mail-pl1-x62a.google.com [IPv6:2607:f8b0:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28522C06121E
+        for <netdev@vger.kernel.org>; Thu, 28 Jan 2021 14:49:30 -0800 (PST)
+Received: by mail-pl1-x62a.google.com with SMTP id q2so4192751plk.4
+        for <netdev@vger.kernel.org>; Thu, 28 Jan 2021 14:49:30 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=google.com; s=20161025;
         h=date:from:to:cc:subject:in-reply-to:message-id:references
          :mime-version;
-        bh=jRc+9koAFnFriBYMbCECl8bNtNHOFnGAZDdGQS3iVDU=;
-        b=VX8To19226WV8RDTkFQ5ObLuNZF9XVTO28Kn6srr7oOvy3bJROldWKCMUzp1PQKXf9
-         DxW/pzBX8qvpyf9JYyEV0tsfWnIQwh8StSLFabjSv9bq/h+LrM8BcShVwk+8h5JEIVAC
-         m7rR/FINIdZ5nzLJ4PtqwDLyuNTB4ApMNbGX1tO8SauTFQvq0jZUXb6tQjVnZTTurC4o
-         JnT9bk1zHAxQ/KJOZ2l5CO8dDG2tvWtV2Yqs/XVrEpJuA4GCbDFdVRNie/dpc5yVuHhc
-         6tpUXWl/fB3cIiNkDeifZnbig6ARvwbuNY0PAKYEKLOUWsV+N9z5P3YBgnwxTr3v/Wvb
-         uKpQ==
+        bh=G+ih4TCLjMlDhHUsK2A+TR2HHdkm5AqUa1C6G/BSwSU=;
+        b=MtFfpkPTsZTn0gFaHxFhSWOMva66E/lvz+hUXR3FrCHa9T0vjY+xbhdIBytnfT4hde
+         0Ys5AJYDByRiNPKT0aWC33/ZwpGaEnDVdDZLHxgNhDamHGH+rUdr/YNIrHzbogxyK2ot
+         0DoGbhkKgR6CODspeFMH0JINuzKgti7159D7tR9XKwR9K09g/4AR5nAIex+fNblniZwf
+         nuLbHpvajXVngPXWUmYWJr62ll4sVI6GL9+9DOw2ps6euNFMlJMMKUqLwUBvfOr4+JOI
+         dE/ui+K9GxRvn1sNUBZjR8TFkXXLIPq75nHYRfA916R0qHMnMt7BOLu7EI21THYWQnjm
+         aX5Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:in-reply-to:message-id
          :references:mime-version;
-        bh=jRc+9koAFnFriBYMbCECl8bNtNHOFnGAZDdGQS3iVDU=;
-        b=sZXibGQxX27MDojFAspVwHIdbyWVjGsMYTrll5TDYZIcwWApKwnZV0bR/T7CZV+OeQ
-         BP0rkjWMlbB6+HAEpivWvwMO+ebsfjA9lt97ZaLKhaY6WLDa4E9LUfAIXclgpaoIOQo/
-         2oNOEkf8Andw0YVU/IXxlqnthkAwixkPdp1WspNKTTtHPKi/3UQ0sMcmUmUIjcye6KOc
-         aTAG5ZnB2BTGZDWpqzjkUTLyReciH8NgjRzUsyLV2j8//vgUfDAR9skOBeDbnkoZdFjh
-         JaQLCYPySIjMVT+SzC0K4o1rOFL03g3CzVT1W/dx1x9NyauS4vNjf2YHzoRyHzJDZBT9
-         XFIQ==
-X-Gm-Message-State: AOAM5331t19SK3LXKpVFg7xIN0i+1T2aBIOpWTt59kqThscx8wqOuzc7
-        Bh4pEmo93rgL10FMr+Dt8kpPTg==
-X-Google-Smtp-Source: ABdhPJwBVbXS8W3fPe5c+jU1CL/MRyTOw1r5xPcMxMQku9sVK6cWDkTe2rvBDuGwi5tcagKuWF06SA==
-X-Received: by 2002:a62:f943:0:b029:1a5:43f9:9023 with SMTP id g3-20020a62f9430000b02901a543f99023mr1512252pfm.75.1611874125638;
-        Thu, 28 Jan 2021 14:48:45 -0800 (PST)
+        bh=G+ih4TCLjMlDhHUsK2A+TR2HHdkm5AqUa1C6G/BSwSU=;
+        b=pvIX+jUHeUCv4FCv52v4t4YUJq41EbS4KIu2SH7Zapg2PJzjxJbcSV72YpyyoFwABK
+         49yf+0z/R1nyOlRPwyPEx7LSJiIUdR1VEJI4iRaroyDuo2e2K3F44W6rV6gXFhL2P52o
+         4/nc65yF+3678+YI29DTKrsMNiGNIOS7JGpT1IZ8hstZaVu6DgENYBlPPLUSUtoGeeLA
+         UQEjnwjeao/tZrouMQIcSuVQDQBr0QSN+CQkwuKEaDIAk78OXIgbjVqp3U70DFw45fRA
+         jcXUdPjKhXSm4CKrxHtRTFkDK/P2C+z0urzVaI/4IFWwh4wv1TCE702EG453j4x/RScD
+         QAdA==
+X-Gm-Message-State: AOAM533Mg7KkcqSvLk2W0ERTkvF6NWskg2EYxwc/etuMPeQZVZ4cl+6F
+        8kbbGEJbi0eKv7w2mVgPQESXRQ==
+X-Google-Smtp-Source: ABdhPJyfRuzHyqHVdqBK8f0+yDGR+PAfYB5Dc8yFBfd7wqG+BeYIWPtIjMNVkXFepyiH+P/AGil0yA==
+X-Received: by 2002:a17:90a:470f:: with SMTP id h15mr1601393pjg.179.1611874169526;
+        Thu, 28 Jan 2021 14:49:29 -0800 (PST)
 Received: from [2620:15c:17:3:4a0f:cfff:fe51:6667] ([2620:15c:17:3:4a0f:cfff:fe51:6667])
-        by smtp.gmail.com with ESMTPSA id v1sm7110414pga.63.2021.01.28.14.48.44
+        by smtp.gmail.com with ESMTPSA id u126sm6508563pfu.113.2021.01.28.14.49.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Jan 2021 14:48:44 -0800 (PST)
-Date:   Thu, 28 Jan 2021 14:48:43 -0800 (PST)
+        Thu, 28 Jan 2021 14:49:28 -0800 (PST)
+Date:   Thu, 28 Jan 2021 14:49:27 -0800 (PST)
 From:   David Rientjes <rientjes@google.com>
 To:     Alexander Lobakin <alobakin@pm.me>
 cc:     "David S. Miller" <davem@davemloft.net>,
@@ -71,11 +71,11 @@ cc:     "David S. Miller" <davem@davemloft.net>,
         Paolo Abeni <pabeni@redhat.com>, netdev@vger.kernel.org,
         linux-kernel@vger.kernel.org, intel-wired-lan@lists.osuosl.org,
         linux-rdma@vger.kernel.org, linux-mm@kvack.org
-Subject: Re: [PATCH v2 net-next 3/4] net: introduce common
- dev_page_is_reserved()
-In-Reply-To: <20210127201031.98544-4-alobakin@pm.me>
-Message-ID: <d8e86f1a-d2a6-d8af-142c-f735fd3be9f2@google.com>
-References: <20210127201031.98544-1-alobakin@pm.me> <20210127201031.98544-4-alobakin@pm.me>
+Subject: Re: [PATCH v2 net-next 4/4] net: page_pool: simplify page recycling
+ condition tests
+In-Reply-To: <20210127201031.98544-5-alobakin@pm.me>
+Message-ID: <7ac4064-b63-b26f-10db-68b83e6d4c6@google.com>
+References: <20210127201031.98544-1-alobakin@pm.me> <20210127201031.98544-5-alobakin@pm.me>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
@@ -84,23 +84,12 @@ X-Mailing-List: netdev@vger.kernel.org
 
 On Wed, 27 Jan 2021, Alexander Lobakin wrote:
 
-> A bunch of drivers test the page before reusing/recycling for two
-> common conditions:
->  - if a page was allocated under memory pressure (pfmemalloc page);
->  - if a page was allocated at a distant memory node (to exclude
->    slowdowns).
+> pool_page_reusable() is a leftover from pre-NUMA-aware times. For now,
+> this function is just a redundant wrapper over page_is_pfmemalloc(),
+> so Inline it into its sole call site.
 > 
-> Introduce and use a new common function for doing this and eliminate
-> all functions-duplicates from drivers.
-> 
-> Suggested-by: David Rientjes <rientjes@google.com>
 > Signed-off-by: Alexander Lobakin <alobakin@pm.me>
-
-Looks even better than I thought!
-
-(Since all of the changes are in drivers/net/ethernet/, I assume 
-everything directly or indirectly includes skbuff.h already.)
+> Acked-by: Jesper Dangaard Brouer <brouer@redhat.com>
+> Reviewed-by: Ilias Apalodimas <ilias.apalodimas@linaro.org>
 
 Acked-by: David Rientjes <rientjes@google.com>
-
-Thanks for doing this.
