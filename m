@@ -2,127 +2,82 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 94F7A307276
-	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 10:21:28 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id F31C5307279
+	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 10:21:29 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232086AbhA1JUP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jan 2021 04:20:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60170 "EHLO
+        id S232406AbhA1JUr (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jan 2021 04:20:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232037AbhA1JOx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jan 2021 04:14:53 -0500
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8660EC06174A
-        for <netdev@vger.kernel.org>; Thu, 28 Jan 2021 01:14:12 -0800 (PST)
-Received: by mail-wr1-x435.google.com with SMTP id c4so1894978wru.9
-        for <netdev@vger.kernel.org>; Thu, 28 Jan 2021 01:14:12 -0800 (PST)
+        with ESMTP id S232508AbhA1JTV (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jan 2021 04:19:21 -0500
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1BD1C061573
+        for <netdev@vger.kernel.org>; Thu, 28 Jan 2021 01:18:40 -0800 (PST)
+Received: by mail-pl1-x635.google.com with SMTP id 31so2978537plb.10
+        for <netdev@vger.kernel.org>; Thu, 28 Jan 2021 01:18:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=9UwxCVn6UwVvqFqT2NKsjuOUrFcePHVypp4wF/XeAR4=;
-        b=fUlidcYN2z4PZsKofgxqKClK+1ECmVGARiCKrSuoqoldDvrSglkyQcIG5xjtlniD10
-         5luceoz0DtMSrK3I0CWugMBVHfzLkVPgYHzVEQmjX+kDJUyAA4aOQ/aZV+HGs16li+dN
-         JauWhjxlxUwyITme7R98ugIMuEV4f4IQbcKpLyZVN9cESHKWFAH3RLD2BHDKvmmE77fW
-         8dufvc8o2jOLiJlVwZsl6FlBb9pRuJjB3GGeI6Rkxz1WEn+8PGEqo+8Iyp0oRMRYa3QU
-         T1XOsz6CSDEvOQuPta44fc+gVkRgK2GWu5yvICNMlCYhEjVDZlz9MjbKgMqYgOWJwRu5
-         gp+A==
+        h=from:to:cc:subject:date:message-id;
+        bh=pQ9auhZL+31qnampaqF9x3FYPHxkuR4zlbWSrWlOPps=;
+        b=FnCjg0RgDMJqKLPGKPIewVs+sP9HqGYZ7mkfC2BAMwjtSsILzno4zsnOWbw0wyFIO+
+         yb4C4BlxXoMmEclAwNHhV/hXUgk4X1ZQtFCD0+bvPJtZFuwEewHJZChuRmV7GZsAS/fH
+         oK2/L8hS1v6GLm8sFMdH5Dxa7TfVjpVKhEO/+hJGXsRNUnWlZM0CyyE8o77VDb9kIEpX
+         ZKsjRkmGtj0A6j2PHdmuAZXAPTpngFpsZHGPQe9/m8jZTAStpPmL94T2CzE7ahR6BCL2
+         qGUFdMuY5HBxrUrnzKarIcgakhvayrqUv+RMf+HNEoFfMt6h0Qi3O3hjqFBt64koBGMP
+         hP8Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9UwxCVn6UwVvqFqT2NKsjuOUrFcePHVypp4wF/XeAR4=;
-        b=VAf8AK/WWGcng0gPOxolT8e80EjtzrQHTE2QsIQ1/SxqbfB+P0xs97fcB+dxnr1TLL
-         zsiXgmfU2Nzpheag7MCzzTmpbSpj4Sx43JNoOFrL2w8HwL3e/Lp41z8lB6+Zzat6xp1o
-         uxUQEL9cZptpCmZJ0tnlOR6Sw9lxvBLKl9kMZO8pTSK/vpSdVLuOWrN2wtgq7DbnW/fI
-         3RxcqCslPyPBQujOAOhL3uh9Yx+akQUEu/3G7c6IbY1J6cbKTg5OySEIfm/ZSRsxi7nc
-         HA/TR1BaxQ3rISsbLV0z1Jc+iV21mQ/YBKyGAIahdpTQ3j0A163Xd3yECCOXHSHCKY96
-         wGPg==
-X-Gm-Message-State: AOAM531NdymEG1t+nGczx0CQ5NUemJFp1/4GLvTHZ/em8+tn07hlyL30
-        hpsmmdLR3hnFT3syk8X+abV9WTzrtgUG3I62/uc=
-X-Google-Smtp-Source: ABdhPJxWQ14YaOUQNOslSp0y9k2BeVJWn29kDx1wFOXhdbf1worpw5ov828F6TvoribqwD9RaElwG2qjKAB1Ev+9kvI=
-X-Received: by 2002:adf:9d82:: with SMTP id p2mr15201323wre.330.1611825251339;
- Thu, 28 Jan 2021 01:14:11 -0800 (PST)
-MIME-Version: 1.0
-References: <cover.1611477858.git.lucien.xin@gmail.com> <100e0b32b0322e70127f415ea5b26afd26ac0fed.1611477858.git.lucien.xin@gmail.com>
- <CAF=yD-LPcS47BRbUXwyxipvbtGKB2bNmqZrQWGjYzjA4jptJKQ@mail.gmail.com>
-In-Reply-To: <CAF=yD-LPcS47BRbUXwyxipvbtGKB2bNmqZrQWGjYzjA4jptJKQ@mail.gmail.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=pQ9auhZL+31qnampaqF9x3FYPHxkuR4zlbWSrWlOPps=;
+        b=HLsCLJCRrODfRMNjVXPfJTob+dkt+5K/vXQJ5DayvY/iCl+xQIfNWUS66kODqFfbqy
+         FiEfwIzp9mtXP6+wa2zntHnK43M9dWy+AZG40tR/t6ZG+2+s2Fq9djv0XeBb47LMt7oP
+         tZe1oZPSUwxgK3BQELfDUEoR2ECk70lD9OHOb347k7o7DXUHlncXoiAh/UvjvKfnGAyk
+         yxl+asjLlYkrYp8JlNV4hMo5ckjPvCqD/zntZGB9gTRjf8YgV8k4AB3AmpMt+yYaPAMF
+         71YDjT7tw+U7FLhsq1IYfEAHmVBE0JqUp9cSf6URge1VYpI9+2cJ+/8+ZlS0raq2kfz5
+         /oDA==
+X-Gm-Message-State: AOAM5331a9jADjUfYmLw2jTc7cHzP6BzdyZgWa+ZCq54o6TwDQ0V2+A8
+        XkABGS0RqoUW3wAivgEEg+8KAsFq6D2yHw==
+X-Google-Smtp-Source: ABdhPJwBZHgIgXP+qvmn0lAcayKbC3zsUz/eiGS9AQoIVdOV98dTLgOxtFX1SscsAzGxKrUADqkb8w==
+X-Received: by 2002:a17:90a:757:: with SMTP id s23mr10220458pje.39.1611825520242;
+        Thu, 28 Jan 2021 01:18:40 -0800 (PST)
+Received: from localhost ([209.132.188.80])
+        by smtp.gmail.com with ESMTPSA id r1sm4995709pfh.2.2021.01.28.01.18.39
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 28 Jan 2021 01:18:39 -0800 (PST)
 From:   Xin Long <lucien.xin@gmail.com>
-Date:   Thu, 28 Jan 2021 17:13:59 +0800
-Message-ID: <CADvbK_dF4fwS9QyvrBdQCWc2qWcumZTv9vM-MXg+ALFhTB9Bpg@mail.gmail.com>
-Subject: Re: [PATCH net-next 1/2] net: support ip generic csum processing in skb_csum_hwoffload_help
-To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Cc:     network dev <netdev@vger.kernel.org>,
-        Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
-        David Miller <davem@davemloft.net>,
+To:     network dev <netdev@vger.kernel.org>
+Cc:     Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>,
+        Davide Caratti <dcaratti@redhat.com>, davem@davemloft.net,
         Jakub Kicinski <kuba@kernel.org>,
-        Davide Caratti <dcaratti@redhat.com>,
+        Willem de Bruijn <willemb@google.com>,
         Alexander Duyck <alexander.duyck@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Subject: [PATCHv3 net-next 0/2] net: add support for ip generic checksum offload for gre
+Date:   Thu, 28 Jan 2021 17:18:30 +0800
+Message-Id: <cover.1611825446.git.lucien.xin@gmail.com>
+X-Mailer: git-send-email 2.1.0
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Tue, Jan 26, 2021 at 9:59 AM Willem de Bruijn
-<willemdebruijn.kernel@gmail.com> wrote:
->
-> On Sun, Jan 24, 2021 at 3:47 AM Xin Long <lucien.xin@gmail.com> wrote:
-> >
-> > NETIF_F_IP|IPV6_CSUM feature flag indicates UDP and TCP csum offload
-> > while NETIF_F_HW_CSUM feature flag indicates ip generic csum offload
-> > for HW, which includes not only for TCP/UDP csum, but also for other
-> > protocols' csum like GRE's.
-> >
-> > However, in skb_csum_hwoffload_help() it only checks features against
-> > NETIF_F_CSUM_MASK(NETIF_F_HW|IP|IPV6_CSUM). So if it's a non TCP/UDP
-> > packet and the features doesn't support NETIF_F_HW_CSUM, but supports
-> > NETIF_F_IP|IPV6_CSUM only, it would still return 0 and leave the HW
-> > to do csum.
-> >
-> > This patch is to support ip generic csum processing by checking
-> > NETIF_F_HW_CSUM for all protocols, and check (NETIF_F_IP_CSUM |
-> > NETIF_F_IPV6_CSUM) only for TCP and UDP.
-> >
-> > v1->v2:
-> >   - not extend skb->csum_not_inet, but use skb->csum_offset to tell
-> >     if it's an UDP/TCP csum packet.
-> >
-> > Suggested-by: Alexander Duyck <alexander.duyck@gmail.com>
-> > Signed-off-by: Xin Long <lucien.xin@gmail.com>
-> > ---
-> >  net/core/dev.c | 13 ++++++++++++-
-> >  1 file changed, 12 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/net/core/dev.c b/net/core/dev.c
-> > index 6df3f1b..aae116d 100644
-> > --- a/net/core/dev.c
-> > +++ b/net/core/dev.c
-> > @@ -3621,7 +3621,18 @@ int skb_csum_hwoffload_help(struct sk_buff *skb,
-> >                 return !!(features & NETIF_F_SCTP_CRC) ? 0 :
-> >                         skb_crc32c_csum_help(skb);
-> >
-> > -       return !!(features & NETIF_F_CSUM_MASK) ? 0 : skb_checksum_help(skb);
-> > +       if (features & NETIF_F_HW_CSUM)
-> > +               return 0;
-> > +
-> > +       if (features & (NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM)) {
-> > +               switch (skb->csum_offset) {
-> > +               case offsetof(struct tcphdr, check):
-> > +               case offsetof(struct udphdr, check):
->
-> This relies on no other protocols requesting CHECKSUM_PARTIAL
-> with these csum_offset values.
->
-> That is a fragile assumption. It may well be correct, and Alex argues
-> that point in v1 of the patch. I think that argumentation at the least
-> should be captured as a comment or in the commit message.
-will add a note in changelog and repost, thanks!
+This patchset it to add ip generic csum processing first in
+skb_csum_hwoffload_help() in Patch 1/2 and then add csum
+offload support for GRE header in Patch 2/2.
 
->
-> Or perhaps limit this optimization over s/w checksumming to
->
->   skb->sk &&
->   (skb->sk->sk_family == AF_INET  || .. ) &&
->   (skb->sk->sk_type == SOCK_STREAM || ..)
->
-> ?
+v1->v2:
+  - See each patch's changelog.
+v2->v3:
+  - See the 1st patch.
+
+Xin Long (2):
+  net: support ip generic csum processing in skb_csum_hwoffload_help
+  ip_gre: add csum offload support for gre header
+
+ include/net/gre.h      | 19 +++++++------------
+ net/core/dev.c         | 13 ++++++++++++-
+ net/ipv4/gre_offload.c | 15 +++++++++++++--
+ 3 files changed, 32 insertions(+), 15 deletions(-)
+
+-- 
+2.1.0
+
