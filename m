@@ -2,183 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 11FAE3073C6
-	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 11:32:07 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 57C6C30741C
+	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 11:51:05 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232254AbhA1KaL (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jan 2021 05:30:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48060 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229774AbhA1KaI (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jan 2021 05:30:08 -0500
-Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 597E3C061573;
-        Thu, 28 Jan 2021 02:29:27 -0800 (PST)
-Received: by mail-lj1-x235.google.com with SMTP id s18so5675012ljg.7;
-        Thu, 28 Jan 2021 02:29:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=yMLTIPyc/LiQ2bi7uEqiU4NDimPedT3k+buADRHwdTU=;
-        b=QFePxmMTPUq6l/K2kvKuT5EUpnlXD+oMUphHFUWQphUh154VEiEKNgki2GaMRiCFPh
-         2u1v1nC9swFExYJhcS/GzSu+SaQ38wE8qPaQKanwn6GfSKrX9bd2MeC+F0GnXxHipsOM
-         Ldvv3CnWjpXEA0XLRAWLaDCYyK+zdYztlgb9fZOEEE6W9RisUGHLpd10PBfdlBNEjoLV
-         y9fLucwUqTi9/kniAJHWUyd3Ak1dJ99kaWkPknEHlxiav4ya8ZAfMSau8rN4eETsEC4Y
-         vWvWPpN1PwDkteAGMB5YRZ4f9YKLEgAThZPP+13eR+cNnJP/Vba/7lOcqpBTBvDBjCEZ
-         JdkA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=yMLTIPyc/LiQ2bi7uEqiU4NDimPedT3k+buADRHwdTU=;
-        b=RE7xD47nKA5UyYh3CXVBYeS+j9Mc2TJQ6HuCjnU/dTdpxzL8Ti0Lzgv5ksPnMQ78+I
-         V32b5uQG9vsyM/7sh0pHWDpyfKa8ksK82hZHvXn9VAZv1o7AZ11/Xx6DijcfZ9uHaDT1
-         /cTrGuKvO6CIfmVm/LrxxHk9dv2FtJkxMKHGyn6I2Jdz7/u5N2Je2pqT0jDHHsWhz7wK
-         VXiq7Ywrh53XR7141RUguWma04B4FYq2Ix587PeatDpvkvP892nCCtevds/F9LXn+ANv
-         R4G5V3WWaQ30oDBknK6Fxp+ezI7prR+dw8tAGsNHfBJNXFSeJtjmHVXNFL/mH4xMpNhX
-         hheQ==
-X-Gm-Message-State: AOAM531kpGIJm5/SYmlBTVk/4qIQmUTtuBjg6QhR45mWiWQfL10BoAhF
-        WOarxVhS7wx7YH5u7f5SsG40s3dGyBJAGIK81yvfdJwSoLw=
-X-Google-Smtp-Source: ABdhPJz1AmHnLn2KLgRF4r4Hmx5P13kWS8+cqvl6PWUGuwWzFvBAPV3paGe7pBeKMz9IdzvJVas6y7g+gElcNSvmvcY=
-X-Received: by 2002:a2e:9b57:: with SMTP id o23mr8388781ljj.314.1611829765892;
- Thu, 28 Jan 2021 02:29:25 -0800 (PST)
+        id S231468AbhA1KuU (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jan 2021 05:50:20 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:34660 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231136AbhA1KuN (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jan 2021 05:50:13 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1611830922;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=G4xP0TbwxS9wJ8k/dclQcOGAebS4EKugZ0baeO2h2DA=;
+        b=F/XNMmOLkldWnb76qQM5b845hcq2duoNADLgBFQEhGSrxrsIri2EyB5U/oEHixyO98fJJm
+        ywMuK1egZMlmczkkoXp7kDVqrYlcIQjSMVNxVKdC6fuex4E0W1N5oSB5M2ZzBpHdL6tJtV
+        OkHZpXlLTIscbwwae78HLZ+ZUQg7zG0=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-183-JbzL2-39NKWyF2aNsQz8zw-1; Thu, 28 Jan 2021 05:48:40 -0500
+X-MC-Unique: JbzL2-39NKWyF2aNsQz8zw-1
+Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 09808107ACE6;
+        Thu, 28 Jan 2021 10:48:39 +0000 (UTC)
+Received: from warthog.procyon.org.uk (ovpn-115-23.rdu2.redhat.com [10.10.115.23])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id D33A060C13;
+        Thu, 28 Jan 2021 10:48:37 +0000 (UTC)
+Organization: Red Hat UK Ltd. Registered Address: Red Hat UK Ltd, Amberley
+        Place, 107-111 Peascod Street, Windsor, Berkshire, SI4 1TE, United
+        Kingdom.
+        Registered in England and Wales under Company Registration No. 3798903
+Subject: [PATCH net] rxrpc: Fix memory leak in rxrpc_lookup_local
+From:   David Howells <dhowells@redhat.com>
+To:     netdev@vger.kernel.org
+Cc:     Takeshi Misawa <jeliantsurux@gmail.com>,
+        syzbot+305326672fed51b205f7@syzkaller.appspotmail.com,
+        dhowells@redhat.com, linux-afs@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Date:   Thu, 28 Jan 2021 10:48:36 +0000
+Message-ID: <161183091692.3506637.3206605651502458810.stgit@warthog.procyon.org.uk>
+User-Agent: StGit/0.23
 MIME-Version: 1.0
-References: <1611823636-18377-1-git-send-email-abaci-bugfix@linux.alibaba.com>
-In-Reply-To: <1611823636-18377-1-git-send-email-abaci-bugfix@linux.alibaba.com>
-From:   Julian Calaby <julian.calaby@gmail.com>
-Date:   Thu, 28 Jan 2021 21:29:14 +1100
-Message-ID: <CAGRGNgWM=dQx4suXZJX+u6m0i4=Qx3hZFZWdWJ8VO+FG_edH2w@mail.gmail.com>
-Subject: Re: [PATCH] b43: Remove redundant code
-To:     Abaci Team <abaci-bugfix@linux.alibaba.com>
-Cc:     Kalle Valo <kvalo@codeaurora.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        linux-wireless@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
-        b43-dev <b43-dev@lists.infradead.org>, netdev@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Hi ..... <insert name here>,
+From: Takeshi Misawa <jeliantsurux@gmail.com>
 
-(No proper name in the from field or signed-off-by, as you're already aware)
+Commit 9ebeddef58c4 ("rxrpc: rxrpc_peer needs to hold a ref on the rxrpc_local record")
+Then release ref in __rxrpc_put_peer and rxrpc_put_peer_locked.
 
-On Thu, Jan 28, 2021 at 7:53 PM Abaci Team
-<abaci-bugfix@linux.alibaba.com> wrote:
->
-> Fix the following coccicheck warnings:
->
-> ./drivers/net/wireless/broadcom/b43/phy_n.c:4640:2-4: WARNING: possible
-> condition with no effect (if == else).
->
-> ./drivers/net/wireless/broadcom/b43/phy_n.c:4606:2-4: WARNING: possible
-> condition with no effect (if == else).
->
-> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> Suggested-by: Jiapeng Zhong <oswb@linux.alibaba.com>
-> Signed-off-by: Abaci Team <abaci-bugfix@linux.alibaba.com>
-> ---
->  drivers/net/wireless/broadcom/b43/phy_n.c | 16 ----------------
->  1 file changed, 16 deletions(-)
->
-> diff --git a/drivers/net/wireless/broadcom/b43/phy_n.c b/drivers/net/wireless/broadcom/b43/phy_n.c
-> index b669dff..39a335f 100644
-> --- a/drivers/net/wireless/broadcom/b43/phy_n.c
-> +++ b/drivers/net/wireless/broadcom/b43/phy_n.c
-> @@ -4601,16 +4601,6 @@ static void b43_nphy_spur_workaround(struct b43_wldev *dev)
->         if (nphy->hang_avoid)
->                 b43_nphy_stay_in_carrier_search(dev, 1);
->
-> -       if (nphy->gband_spurwar_en) {
-> -               /* TODO: N PHY Adjust Analog Pfbw (7) */
-> -               if (channel == 11 && b43_is_40mhz(dev)) {
-> -                       ; /* TODO: N PHY Adjust Min Noise Var(2, tone, noise)*/
-> -               } else {
-> -                       ; /* TODO: N PHY Adjust Min Noise Var(0, NULL, NULL)*/
-> -               }
-> -               /* TODO: N PHY Adjust CRS Min Power (0x1E) */
-> -       }
+	struct rxrpc_peer *rxrpc_alloc_peer(struct rxrpc_local *local, gfp_t gfp)
+	-               peer->local = local;
+	+               peer->local = rxrpc_get_local(local);
 
-I'm not sure how useful this patch is, even though it is technically correct.
+rxrpc_discard_prealloc also need ref release in discarding.
 
-The b43 driver was almost entirely reverse engineered from various
-sources so there's still a lot of places, like this, where placeholder
-comments were written until the actual code that would have been here
-was ready / reverse engineered.
+syzbot report:
+BUG: memory leak
+unreferenced object 0xffff8881080ddc00 (size 256):
+  comm "syz-executor339", pid 8462, jiffies 4294942238 (age 12.350s)
+  hex dump (first 32 bytes):
+    00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+    00 00 00 00 0a 00 00 00 00 c0 00 08 81 88 ff ff  ................
+  backtrace:
+    [<000000002b6e495f>] kmalloc include/linux/slab.h:552 [inline]
+    [<000000002b6e495f>] kzalloc include/linux/slab.h:682 [inline]
+    [<000000002b6e495f>] rxrpc_alloc_local net/rxrpc/local_object.c:79 [inline]
+    [<000000002b6e495f>] rxrpc_lookup_local+0x1c1/0x760 net/rxrpc/local_object.c:244
+    [<000000006b43a77b>] rxrpc_bind+0x174/0x240 net/rxrpc/af_rxrpc.c:149
+    [<00000000fd447a55>] afs_open_socket+0xdb/0x200 fs/afs/rxrpc.c:64
+    [<000000007fd8867c>] afs_net_init+0x2b4/0x340 fs/afs/main.c:126
+    [<0000000063d80ec1>] ops_init+0x4e/0x190 net/core/net_namespace.c:152
+    [<00000000073c5efa>] setup_net+0xde/0x2d0 net/core/net_namespace.c:342
+    [<00000000a6744d5b>] copy_net_ns+0x19f/0x3e0 net/core/net_namespace.c:483
+    [<0000000017d3aec3>] create_new_namespaces+0x199/0x4f0 kernel/nsproxy.c:110
+    [<00000000186271ef>] unshare_nsproxy_namespaces+0x9b/0x120 kernel/nsproxy.c:226
+    [<000000002de7bac4>] ksys_unshare+0x2fe/0x5c0 kernel/fork.c:2957
+    [<00000000349b12ba>] __do_sys_unshare kernel/fork.c:3025 [inline]
+    [<00000000349b12ba>] __se_sys_unshare kernel/fork.c:3023 [inline]
+    [<00000000349b12ba>] __x64_sys_unshare+0x12/0x20 kernel/fork.c:3023
+    [<000000006d178ef7>] do_syscall_64+0x2d/0x70 arch/x86/entry/common.c:46
+    [<00000000637076d4>] entry_SYSCALL_64_after_hwframe+0x44/0xa9
 
-That said, I believe the driver works well enough for all it's users
-and has not seen any significant changes in a long time.
+Fixes: 9ebeddef58c4 ("rxrpc: rxrpc_peer needs to hold a ref on the rxrpc_local record")
+Signed-off-by: Takeshi Misawa <jeliantsurux@gmail.com>
+Reported-and-tested-by: syzbot+305326672fed51b205f7@syzkaller.appspotmail.com
+Signed-off-by: David Howells <dhowells@redhat.com>
+---
 
-Thanks,
+ net/rxrpc/call_accept.c |    1 +
+ 1 file changed, 1 insertion(+)
 
--- 
-Julian Calaby
-
-Email: julian.calaby@gmail.com
-Profile: http://www.google.com/profiles/julian.calaby/
-
-On Thu, Jan 28, 2021 at 7:53 PM Abaci Team
-<abaci-bugfix@linux.alibaba.com> wrote:
->
-> Fix the following coccicheck warnings:
->
-> ./drivers/net/wireless/broadcom/b43/phy_n.c:4640:2-4: WARNING: possible
-> condition with no effect (if == else).
->
-> ./drivers/net/wireless/broadcom/b43/phy_n.c:4606:2-4: WARNING: possible
-> condition with no effect (if == else).
->
-> Reported-by: Abaci Robot <abaci@linux.alibaba.com>
-> Suggested-by: Jiapeng Zhong <oswb@linux.alibaba.com>
-> Signed-off-by: Abaci Team <abaci-bugfix@linux.alibaba.com>
-> ---
->  drivers/net/wireless/broadcom/b43/phy_n.c | 16 ----------------
->  1 file changed, 16 deletions(-)
->
-> diff --git a/drivers/net/wireless/broadcom/b43/phy_n.c b/drivers/net/wireless/broadcom/b43/phy_n.c
-> index b669dff..39a335f 100644
-> --- a/drivers/net/wireless/broadcom/b43/phy_n.c
-> +++ b/drivers/net/wireless/broadcom/b43/phy_n.c
-> @@ -4601,16 +4601,6 @@ static void b43_nphy_spur_workaround(struct b43_wldev *dev)
->         if (nphy->hang_avoid)
->                 b43_nphy_stay_in_carrier_search(dev, 1);
->
-> -       if (nphy->gband_spurwar_en) {
-> -               /* TODO: N PHY Adjust Analog Pfbw (7) */
-> -               if (channel == 11 && b43_is_40mhz(dev)) {
-> -                       ; /* TODO: N PHY Adjust Min Noise Var(2, tone, noise)*/
-> -               } else {
-> -                       ; /* TODO: N PHY Adjust Min Noise Var(0, NULL, NULL)*/
-> -               }
-> -               /* TODO: N PHY Adjust CRS Min Power (0x1E) */
-> -       }
-> -
->         if (nphy->aband_spurwar_en) {
->                 if (channel == 54) {
->                         tone[0] = 0x20;
-> @@ -4636,12 +4626,6 @@ static void b43_nphy_spur_workaround(struct b43_wldev *dev)
->                         tone[0] = 0;
->                         noise[0] = 0;
->                 }
-> -
-> -               if (!tone[0] && !noise[0]) {
-> -                       ; /* TODO: N PHY Adjust Min Noise Var(1, tone, noise)*/
-> -               } else {
-> -                       ; /* TODO: N PHY Adjust Min Noise Var(0, NULL, NULL)*/
-> -               }
->         }
->
->         if (nphy->hang_avoid)
-> --
-> 1.8.3.1
->
+diff --git a/net/rxrpc/call_accept.c b/net/rxrpc/call_accept.c
+index 382add72c66f..1ae90fb97936 100644
+--- a/net/rxrpc/call_accept.c
++++ b/net/rxrpc/call_accept.c
+@@ -197,6 +197,7 @@ void rxrpc_discard_prealloc(struct rxrpc_sock *rx)
+ 	tail = b->peer_backlog_tail;
+ 	while (CIRC_CNT(head, tail, size) > 0) {
+ 		struct rxrpc_peer *peer = b->peer_backlog[tail];
++		rxrpc_put_local(peer->local);
+ 		kfree(peer);
+ 		tail = (tail + 1) & (size - 1);
+ 	}
 
 
--- 
-Julian Calaby
-
-Email: julian.calaby@gmail.com
-Profile: http://www.google.com/profiles/julian.calaby/
