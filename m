@@ -2,73 +2,89 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 862AF306A9C
-	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 02:44:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 11C2A306A9D
+	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 02:44:45 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231211AbhA1BoS (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 20:44:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48310 "EHLO
+        id S231259AbhA1Bog (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 20:44:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231204AbhA1Bnl (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 20:43:41 -0500
-Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4381BC061574
-        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 17:42:54 -0800 (PST)
-Received: by mail-pg1-x530.google.com with SMTP id c132so3235116pga.3
-        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 17:42:54 -0800 (PST)
+        with ESMTP id S231203AbhA1Bnq (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 20:43:46 -0500
+Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3779C061573
+        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 17:43:05 -0800 (PST)
+Received: by mail-pg1-x52d.google.com with SMTP id j2so1570921pgl.0
+        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 17:43:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=iMXOaJFdBcSLDjr7rOQY4WcvdRci/lvulv/TTIPH1Ng=;
-        b=F8DkdO9lc28r6qKbpOeriW3J82ZBgr02Y+FfZg7WGTVzZ2PuMjIMz8qI9chUHzI62s
-         uZNC6GIRMgUqLQ7rmM5ZHOEpSdmKkhFJ+UNAg5X8iSFm6I2qgkqJCWlDa3BObwd8JEo5
-         B/VSYuPSDHVA3lguLcInFovh5KucEvk3jMWvLKlx7B5itD0ncGce2r31YnIE5Ml320rN
-         bnSRKKqQfFJirdi1sT9ZepTlsICh+jqOWsL6ZCKb8hxxgSU4GyqM52GNt9eNjcsFP/Bb
-         +Pvy/pTbFmuRj7m5JIFIwTRcbQQlTBBs/xEHj/KndDGMTBYNde0/wgdpuUEcG6mabSLJ
-         EYvg==
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=O9N93R8+zs26eOCHrsRLuYZnNp22ouaGoRUXdBnEkGQ=;
+        b=GKhdDQCibJIwx5mHiKrBF91tWk6akGU8+YR2XvEVC7vaZ7/yKRDj91H5DYCsx3A7PC
+         wfbLXpg31E20IEbWBKw8IwvyQmhs3hCWNNzUI8GF9Fum6AB5PWCNXAsrJGlgHPlzzCSJ
+         darqGVKygEA7ao1S5B3xFA07WQrp741LJuvIAvXPCzr4mefosfPZqKRQ0CwXf4hMLb3m
+         oGhirAcC9iRjICci/l2THJGYy7LC7YvasYtsg3NqQuGTYf9xDYq2Ia+ToMsCVV1IhVsl
+         vhtp/lsnaZ28TPelaq8/P03ktM9QUXUkV4+FUSdLXzEuVXNej8p+91H7LFvPRJsT2EwM
+         m7sg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=iMXOaJFdBcSLDjr7rOQY4WcvdRci/lvulv/TTIPH1Ng=;
-        b=GPHZxE5GYpNbh0iHrDvkizhkSLR6XGsMUJtNLhMpFaXnGknehxY8BRHmr5Jl2RHCYR
-         lAfqagMhSdb4zXCVwdK0mCGWlgKXRM5DCrXFtgjxW0mEulWLxBrxY2q98I++uKcinws6
-         1OlAo0rffvqlmpHW1mCprdPiBHmW/bSlwpftwwlhIyb23nxsuU+gHKQaEBSdneiLc5HF
-         whZIj/oQzsNrZM5WoyfNK/nWNmJeGDjnnI7UEMuI8mxvrO3xyPyb0tAajTI0cI3KEPwm
-         DQOrFWpIAMOMSNmi1sHCwI33RGw77gARMggkCxv+kjmuyx/ChK68xDkHPBTBOiklbJFY
-         Vgpg==
-X-Gm-Message-State: AOAM531rIhWvyP0G9FWrYSOjiOyx/5K0u4SZxfjuRwrf2RY3tDV7Chj2
-        fRFE08GCgaJw03S6kI33kkmr5gr7m3mbHotpNQQ=
-X-Google-Smtp-Source: ABdhPJz9w3EdXcG1jIIW+zmaMeRGv7ygATTxP/w1QGW1QT4G52O9/c+rX3jO9IDOGIFSOcjPoOSvOVUm3qvjKGwMBkU=
-X-Received: by 2002:a62:ac18:0:b029:1c0:4398:33b5 with SMTP id
- v24-20020a62ac180000b02901c0439833b5mr13969592pfe.10.1611798173487; Wed, 27
- Jan 2021 17:42:53 -0800 (PST)
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=O9N93R8+zs26eOCHrsRLuYZnNp22ouaGoRUXdBnEkGQ=;
+        b=anB+AW5EcH/OhmoVObwMhDxK+OwKQRyItUzTdgws+Azeb08idpbuwo8YPeRCeuSv1/
+         eWoE/nBGIN9kH4rM/RWyikbC3RYNsRgJb8Ffp/tDaKcqXjMoke0Rvg7BD2q0KgWNxrKr
+         WvypL+tszruubyOG/o+qbMWcJj7qjQqgZ9q+5qEPrZn4W2BNkDKVFk26rwO0lm6iY7vl
+         FBmaND0Nt8ZRfaSbzif613M4aW43MuFkr3blDsNZe/jq7McHeCRf9MqNGEr1Pc+P1K/b
+         sWG3aNQK6vXKY4x8F7J1MHTyMuyxYP7Qt9+jjbNEIBo6QeBIMJ6vfOPh0eky6Z4SH3iF
+         aUXA==
+X-Gm-Message-State: AOAM530+RZHigycfAm+atqFZ3TK9stQuL31ha0zvDKugiN8Rhsz1T3qp
+        epEtyGezfbuTrFu0mUWPFhfVHOYdfx8=
+X-Google-Smtp-Source: ABdhPJwrFql8fhh0pQOUaZ+eBTmAwx7s3ejl+nT3iqdzxo7sHtXtgxcRosnGDF/eJc5VCV61Kmam1w==
+X-Received: by 2002:a63:d506:: with SMTP id c6mr14043679pgg.77.1611798185462;
+        Wed, 27 Jan 2021 17:43:05 -0800 (PST)
+Received: from [10.230.29.30] ([192.19.223.252])
+        by smtp.gmail.com with ESMTPSA id v8sm3552602pfn.114.2021.01.27.17.43.03
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 27 Jan 2021 17:43:04 -0800 (PST)
+Subject: Re: [PATCH net-next 3/4] Revert "net: Have netpoll bring-up DSA
+ management interface"
+To:     Vladimir Oltean <olteanv@gmail.com>,
+        "David S . Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>, netdev@vger.kernel.org
+Cc:     Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>
+References: <20210127010028.1619443-1-olteanv@gmail.com>
+ <20210127010028.1619443-4-olteanv@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <6d5163d8-dc49-d126-ed84-b7b093e1a680@gmail.com>
+Date:   Wed, 27 Jan 2021 17:43:02 -0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Firefox/78.0 Thunderbird/78.7.0
 MIME-Version: 1.0
-References: <20210124013049.132571-1-xiyou.wangcong@gmail.com> <261CE3E8-20D1-47E8-98B9-AC685A32C3E1@purdue.edu>
-In-Reply-To: <261CE3E8-20D1-47E8-98B9-AC685A32C3E1@purdue.edu>
-From:   Cong Wang <xiyou.wangcong@gmail.com>
-Date:   Wed, 27 Jan 2021 17:42:42 -0800
-Message-ID: <CAM_iQpUGG2co65Yp379_X=DbyAnUn68nqfKZ4AX4Qb9gWXqU4g@mail.gmail.com>
-Subject: Re: [Patch net] net: fix dev_ifsioc_locked() race condition
-To:     "Gong, Sishuai" <sishuai@purdue.edu>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        Cong Wang <cong.wang@bytedance.com>,
-        Eric Dumazet <eric.dumazet@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20210127010028.1619443-4-olteanv@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Mon, Jan 25, 2021 at 11:43 AM Gong, Sishuai <sishuai@purdue.edu> wrote:
->
-> Hi,
->
-> We also found another pair of writer and reader that may suffer the same problem.
->
-> A data race may also happen on the variable netdev->dev_addr when functions e1000_set_mac() and packet_getname() run in parallel, eventually it could return a partially updated MAC address to the user, as shown below:
 
-Yeah, this one requires a separate patch, because at least
-it uses an index instead of a name to lookup the devices.
 
-Thanks.
+On 1/26/2021 5:00 PM, Vladimir Oltean wrote:
+> From: Vladimir Oltean <vladimir.oltean@nxp.com>
+> 
+> This reverts commit 1532b9778478577152201adbafa7738b1e844868.
+> 
+> The above commit is good and it works, however it was meant as a bugfix
+> for stable kernels and now we have more self-contained ways in DSA to
+> handle the situation where the DSA master must be brought up.
+> 
+> Signed-off-by: Vladimir Oltean <vladimir.oltean@nxp.com>
+
+Reviewed-by: Florian Fainelli <f.fainelli@gmail.com>
+-- 
+Florian
