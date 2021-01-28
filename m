@@ -2,390 +2,470 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 445E830803F
-	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 22:09:54 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 45E6730804A
+	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 22:13:38 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231295AbhA1VJ2 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jan 2021 16:09:28 -0500
-Received: from smtp13.smtpout.orange.fr ([80.12.242.135]:53429 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S229677AbhA1VJZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jan 2021 16:09:25 -0500
-Received: from localhost.localdomain ([92.131.99.25])
-        by mwinf5d73 with ME
-        id NM7e240070Ys01Y03M7ear; Thu, 28 Jan 2021 22:07:41 +0100
-X-ME-Helo: localhost.localdomain
-X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Thu, 28 Jan 2021 22:07:41 +0100
-X-ME-IP: 92.131.99.25
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     jesse.brandeburg@intel.com, anthony.l.nguyen@intel.com,
-        davem@davemloft.net, kuba@kernel.org, aaron.f.brown@intel.com
-Cc:     intel-wired-lan@lists.osuosl.org, netdev@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: [PATCH resend] e100: switch from 'pci_' to 'dma_' API
-Date:   Thu, 28 Jan 2021 22:07:36 +0100
-Message-Id: <20210128210736.749724-1-christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.27.0
+        id S231394AbhA1VKz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jan 2021 16:10:55 -0500
+Received: from mail.kernel.org ([198.145.29.99]:58972 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229595AbhA1VKw (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 28 Jan 2021 16:10:52 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id 04E7D64D9E;
+        Thu, 28 Jan 2021 21:10:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1611868210;
+        bh=ooiSAea0QPOd1AfSxSbsAPnrr7JSugPcfNr5usJZyVs=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=R2GWINlarbUp4rMq2iwRGr7Xd8se8WQvtbwS7nEsNUtEF0vmzOAQj42RQ8n80dAcR
+         b+ETjCeHgU/y6XSOsDCTsMaaMjG8laBExlVkxxP1/MyIciLo/D9ll00YXk+uFaFewB
+         +lSdLk++SzUvm+WInU4ddAU6GTM3geMuLr8rDcKpd9Hpqb2AwnFl6Ej16dOf95UtbV
+         mWuVQRJ8dXDrF6rBWdyE1bGRDIZkHOnr2VW/JIXAE7sN3O8vzNnXHu+4GmWCOfL91x
+         CVCioiupKdxg5ibWsLzOT0STENNtkzkOQt37EHvGyMrphbdILGgmJgCA86YgW4YvjB
+         qFa6qRxOrW8tQ==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id E684B6530E;
+        Thu, 28 Jan 2021 21:10:09 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH] net: usb: cdc_ether: added support for Thales Cinterion PLSx3
+ modem family.
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161186820993.20635.15989337693774271219.git-patchwork-notify@kernel.org>
+Date:   Thu, 28 Jan 2021 21:10:09 +0000
+References: <20210126044245.8455-1-gciofono@gmail.com>
+In-Reply-To: <20210126044245.8455-1-gciofono@gmail.com>
+To:     Giacinto Cifelli <gciofono@gmail.com>
+Cc:     oliver@neukum.org, davem@davemloft.net, kuba@kernel.org,
+        linux-usb@vger.kernel.org, netdev@vger.kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The wrappers in include/linux/pci-dma-compat.h should go away.
+Hello:
 
-The patch has been generated with the coccinelle script below and has been
-hand modified to replace GFP_ with a correct flag.
-It has been compile tested.
+This patch was applied to netdev/net.git (refs/heads/master):
 
-When memory is allocated in 'e100_alloc()', GFP_KERNEL can be used because
-it is only called from the probe function and no lock is acquired.
+On Tue, 26 Jan 2021 05:42:45 +0100 you wrote:
+> lsusb -v for this device:
+> 
+> Bus 003 Device 007: ID 1e2d:0069
+> Device Descriptor:
+>   bLength                18
+>   bDescriptorType         1
+>   bcdUSB               2.00
+>   bDeviceClass          239 Miscellaneous Device
+>   bDeviceSubClass         2 ?
+>   bDeviceProtocol         1 Interface Association
+>   bMaxPacketSize0        64
+>   idVendor           0x1e2d
+>   idProduct          0x0069
+>   bcdDevice            0.00
+>   iManufacturer           4 Cinterion Wireless Modules
+>   iProduct                3 PLSx3
+>   iSerial                 5 fa3c1419
+>   bNumConfigurations      1
+>   Configuration Descriptor:
+>     bLength                 9
+>     bDescriptorType         2
+>     wTotalLength          352
+>     bNumInterfaces         10
+>     bConfigurationValue     1
+>     iConfiguration          2 Cinterion Configuration
+>     bmAttributes         0xe0
+>       Self Powered
+>       Remote Wakeup
+>     MaxPower              500mA
+>     Interface Association:
+>       bLength                 8
+>       bDescriptorType        11
+>       bFirstInterface         0
+>       bInterfaceCount         2
+>       bFunctionClass          2 Communications
+>       bFunctionSubClass       2 Abstract (modem)
+>       bFunctionProtocol       1 AT-commands (v.25ter)
+>       iFunction               0
+>     Interface Descriptor:
+>       bLength                 9
+>       bDescriptorType         4
+>       bInterfaceNumber        0
+>       bAlternateSetting       0
+>       bNumEndpoints           1
+>       bInterfaceClass         2 Communications
+>       bInterfaceSubClass      2 Abstract (modem)
+>       bInterfaceProtocol      1 AT-commands (v.25ter)
+>       iInterface              0
+>       CDC Header:
+>         bcdCDC               1.10
+>       CDC ACM:
+>         bmCapabilities       0x02
+>           line coding and serial state
+>       CDC Call Management:
+>         bmCapabilities       0x03
+>           call management
+>           use DataInterface
+>         bDataInterface          1
+>       CDC Union:
+>         bMasterInterface        0
+>         bSlaveInterface         1
+>       Endpoint Descriptor:
+>         bLength                 7
+>         bDescriptorType         5
+>         bEndpointAddress     0x81  EP 1 IN
+>         bmAttributes            3
+>           Transfer Type            Interrupt
+>           Synch Type               None
+>           Usage Type               Data
+>         wMaxPacketSize     0x0040  1x 64 bytes
+>         bInterval               5
+>     Interface Descriptor:
+>       bLength                 9
+>       bDescriptorType         4
+>       bInterfaceNumber        1
+>       bAlternateSetting       0
+>       bNumEndpoints           2
+>       bInterfaceClass        10 CDC Data
+>       bInterfaceSubClass      0 Unused
+>       bInterfaceProtocol      0
+>       iInterface              0
+>       Endpoint Descriptor:
+>         bLength                 7
+>         bDescriptorType         5
+>         bEndpointAddress     0x82  EP 2 IN
+>         bmAttributes            2
+>           Transfer Type            Bulk
+>           Synch Type               None
+>           Usage Type               Data
+>         wMaxPacketSize     0x0200  1x 512 bytes
+>         bInterval               0
+>       Endpoint Descriptor:
+>         bLength                 7
+>         bDescriptorType         5
+>         bEndpointAddress     0x01  EP 1 OUT
+>         bmAttributes            2
+>           Transfer Type            Bulk
+>           Synch Type               None
+>           Usage Type               Data
+>         wMaxPacketSize     0x0200  1x 512 bytes
+>         bInterval               0
+>     Interface Association:
+>       bLength                 8
+>       bDescriptorType        11
+>       bFirstInterface         2
+>       bInterfaceCount         2
+>       bFunctionClass          2 Communications
+>       bFunctionSubClass       2 Abstract (modem)
+>       bFunctionProtocol       1 AT-commands (v.25ter)
+>       iFunction               0
+>     Interface Descriptor:
+>       bLength                 9
+>       bDescriptorType         4
+>       bInterfaceNumber        2
+>       bAlternateSetting       0
+>       bNumEndpoints           1
+>       bInterfaceClass         2 Communications
+>       bInterfaceSubClass      2 Abstract (modem)
+>       bInterfaceProtocol      1 AT-commands (v.25ter)
+>       iInterface              0
+>       CDC Header:
+>         bcdCDC               1.10
+>       CDC ACM:
+>         bmCapabilities       0x02
+>           line coding and serial state
+>       CDC Call Management:
+>         bmCapabilities       0x03
+>           call management
+>           use DataInterface
+>         bDataInterface          3
+>       CDC Union:
+>         bMasterInterface        2
+>         bSlaveInterface         3
+>       Endpoint Descriptor:
+>         bLength                 7
+>         bDescriptorType         5
+>         bEndpointAddress     0x83  EP 3 IN
+>         bmAttributes            3
+>           Transfer Type            Interrupt
+>           Synch Type               None
+>           Usage Type               Data
+>         wMaxPacketSize     0x0040  1x 64 bytes
+>         bInterval               5
+>     Interface Descriptor:
+>       bLength                 9
+>       bDescriptorType         4
+>       bInterfaceNumber        3
+>       bAlternateSetting       0
+>       bNumEndpoints           2
+>       bInterfaceClass        10 CDC Data
+>       bInterfaceSubClass      0 Unused
+>       bInterfaceProtocol      0
+>       iInterface              0
+>       Endpoint Descriptor:
+>         bLength                 7
+>         bDescriptorType         5
+>         bEndpointAddress     0x84  EP 4 IN
+>         bmAttributes            2
+>           Transfer Type            Bulk
+>           Synch Type               None
+>           Usage Type               Data
+>         wMaxPacketSize     0x0200  1x 512 bytes
+>         bInterval               0
+>       Endpoint Descriptor:
+>         bLength                 7
+>         bDescriptorType         5
+>         bEndpointAddress     0x02  EP 2 OUT
+>         bmAttributes            2
+>           Transfer Type            Bulk
+>           Synch Type               None
+>           Usage Type               Data
+>         wMaxPacketSize     0x0200  1x 512 bytes
+>         bInterval               0
+>     Interface Association:
+>       bLength                 8
+>       bDescriptorType        11
+>       bFirstInterface         4
+>       bInterfaceCount         2
+>       bFunctionClass          2 Communications
+>       bFunctionSubClass       2 Abstract (modem)
+>       bFunctionProtocol       1 AT-commands (v.25ter)
+>       iFunction               0
+>     Interface Descriptor:
+>       bLength                 9
+>       bDescriptorType         4
+>       bInterfaceNumber        4
+>       bAlternateSetting       0
+>       bNumEndpoints           1
+>       bInterfaceClass         2 Communications
+>       bInterfaceSubClass      2 Abstract (modem)
+>       bInterfaceProtocol      1 AT-commands (v.25ter)
+>       iInterface              0
+>       CDC Header:
+>         bcdCDC               1.10
+>       CDC ACM:
+>         bmCapabilities       0x02
+>           line coding and serial state
+>       CDC Call Management:
+>         bmCapabilities       0x03
+>           call management
+>           use DataInterface
+>         bDataInterface          5
+>       CDC Union:
+>         bMasterInterface        4
+>         bSlaveInterface         5
+>       Endpoint Descriptor:
+>         bLength                 7
+>         bDescriptorType         5
+>         bEndpointAddress     0x85  EP 5 IN
+>         bmAttributes            3
+>           Transfer Type            Interrupt
+>           Synch Type               None
+>           Usage Type               Data
+>         wMaxPacketSize     0x0040  1x 64 bytes
+>         bInterval               5
+>     Interface Descriptor:
+>       bLength                 9
+>       bDescriptorType         4
+>       bInterfaceNumber        5
+>       bAlternateSetting       0
+>       bNumEndpoints           2
+>       bInterfaceClass        10 CDC Data
+>       bInterfaceSubClass      0 Unused
+>       bInterfaceProtocol      0
+>       iInterface              0
+>       Endpoint Descriptor:
+>         bLength                 7
+>         bDescriptorType         5
+>         bEndpointAddress     0x86  EP 6 IN
+>         bmAttributes            2
+>           Transfer Type            Bulk
+>           Synch Type               None
+>           Usage Type               Data
+>         wMaxPacketSize     0x0200  1x 512 bytes
+>         bInterval               0
+>       Endpoint Descriptor:
+>         bLength                 7
+>         bDescriptorType         5
+>         bEndpointAddress     0x03  EP 3 OUT
+>         bmAttributes            2
+>           Transfer Type            Bulk
+>           Synch Type               None
+>           Usage Type               Data
+>         wMaxPacketSize     0x0200  1x 512 bytes
+>         bInterval               0
+>     Interface Association:
+>       bLength                 8
+>       bDescriptorType        11
+>       bFirstInterface         6
+>       bInterfaceCount         2
+>       bFunctionClass          2 Communications
+>       bFunctionSubClass       2 Abstract (modem)
+>       bFunctionProtocol       1 AT-commands (v.25ter)
+>       iFunction               0
+>     Interface Descriptor:
+>       bLength                 9
+>       bDescriptorType         4
+>       bInterfaceNumber        6
+>       bAlternateSetting       0
+>       bNumEndpoints           1
+>       bInterfaceClass         2 Communications
+>       bInterfaceSubClass      2 Abstract (modem)
+>       bInterfaceProtocol      1 AT-commands (v.25ter)
+>       iInterface              0
+>       CDC Header:
+>         bcdCDC               1.10
+>       CDC ACM:
+>         bmCapabilities       0x02
+>           line coding and serial state
+>       CDC Call Management:
+>         bmCapabilities       0x03
+>           call management
+>           use DataInterface
+>         bDataInterface          7
+>       CDC Union:
+>         bMasterInterface        6
+>         bSlaveInterface         7
+>       Endpoint Descriptor:
+>         bLength                 7
+>         bDescriptorType         5
+>         bEndpointAddress     0x87  EP 7 IN
+>         bmAttributes            3
+>           Transfer Type            Interrupt
+>           Synch Type               None
+>           Usage Type               Data
+>         wMaxPacketSize     0x0040  1x 64 bytes
+>         bInterval               5
+>     Interface Descriptor:
+>       bLength                 9
+>       bDescriptorType         4
+>       bInterfaceNumber        7
+>       bAlternateSetting       0
+>       bNumEndpoints           2
+>       bInterfaceClass        10 CDC Data
+>       bInterfaceSubClass      0 Unused
+>       bInterfaceProtocol      0
+>       iInterface              0
+>       Endpoint Descriptor:
+>         bLength                 7
+>         bDescriptorType         5
+>         bEndpointAddress     0x88  EP 8 IN
+>         bmAttributes            2
+>           Transfer Type            Bulk
+>           Synch Type               None
+>           Usage Type               Data
+>         wMaxPacketSize     0x0200  1x 512 bytes
+>         bInterval               0
+>       Endpoint Descriptor:
+>         bLength                 7
+>         bDescriptorType         5
+>         bEndpointAddress     0x04  EP 4 OUT
+>         bmAttributes            2
+>           Transfer Type            Bulk
+>           Synch Type               None
+>           Usage Type               Data
+>         wMaxPacketSize     0x0200  1x 512 bytes
+>         bInterval               0
+>     Interface Association:
+>       bLength                 8
+>       bDescriptorType        11
+>       bFirstInterface         8
+>       bInterfaceCount         2
+>       bFunctionClass          2 Communications
+>       bFunctionSubClass       0
+>       bFunctionProtocol       0
+>       iFunction               0
+>     Interface Descriptor:
+>       bLength                 9
+>       bDescriptorType         4
+>       bInterfaceNumber        8
+>       bAlternateSetting       0
+>       bNumEndpoints           1
+>       bInterfaceClass         2 Communications
+>       bInterfaceSubClass      6 Ethernet Networking
+>       bInterfaceProtocol      0
+>       iInterface              0
+>       CDC Header:
+>         bcdCDC               1.10
+>       CDC Ethernet:
+>         iMacAddress                      1 00A0C6C14190
+>         bmEthernetStatistics    0x00000000
+>         wMaxSegmentSize              16384
+>         wNumberMCFilters            0x0001
+>         bNumberPowerFilters              0
+>       CDC Union:
+>         bMasterInterface        8
+>         bSlaveInterface         9
+>       Endpoint Descriptor:
+>         bLength                 7
+>         bDescriptorType         5
+>         bEndpointAddress     0x89  EP 9 IN
+>         bmAttributes            3
+>           Transfer Type            Interrupt
+>           Synch Type               None
+>           Usage Type               Data
+>         wMaxPacketSize     0x0040  1x 64 bytes
+>         bInterval               5
+>     Interface Descriptor:
+>       bLength                 9
+>       bDescriptorType         4
+>       bInterfaceNumber        9
+>       bAlternateSetting       0
+>       bNumEndpoints           0
+>       bInterfaceClass        10 CDC Data
+>       bInterfaceSubClass      0 Unused
+>       bInterfaceProtocol      0
+>       iInterface              0
+>     Interface Descriptor:
+>       bLength                 9
+>       bDescriptorType         4
+>       bInterfaceNumber        9
+>       bAlternateSetting       1
+>       bNumEndpoints           2
+>       bInterfaceClass        10 CDC Data
+>       bInterfaceSubClass      0 Unused
+>       bInterfaceProtocol      0
+>       iInterface              0
+>       Endpoint Descriptor:
+>         bLength                 7
+>         bDescriptorType         5
+>         bEndpointAddress     0x8a  EP 10 IN
+>         bmAttributes            2
+>           Transfer Type            Bulk
+>           Synch Type               None
+>           Usage Type               Data
+>         wMaxPacketSize     0x0200  1x 512 bytes
+>         bInterval               0
+>       Endpoint Descriptor:
+>         bLength                 7
+>         bDescriptorType         5
+>         bEndpointAddress     0x05  EP 5 OUT
+>         bmAttributes            2
+>           Transfer Type            Bulk
+>           Synch Type               None
+>           Usage Type               Data
+>         wMaxPacketSize     0x0200  1x 512 bytes
+>         bInterval               0
+> Device Qualifier (for other device speed):
+>   bLength                10
+>   bDescriptorType         6
+>   bcdUSB               2.00
+>   bDeviceClass          239 Miscellaneous Device
+>   bDeviceSubClass         2 ?
+>   bDeviceProtocol         1 Interface Association
+>   bMaxPacketSize0        64
+>   bNumConfigurations      1
+> Device Status:     0x0000
+>   (Bus Powered)
+> 
+> [...]
 
+Here is the summary with links:
+  - net: usb: cdc_ether: added support for Thales Cinterion PLSx3 modem family.
+    https://git.kernel.org/netdev/net/c/dad3a72f5eec
 
-@@
-@@
--    PCI_DMA_BIDIRECTIONAL
-+    DMA_BIDIRECTIONAL
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
-@@
-@@
--    PCI_DMA_TODEVICE
-+    DMA_TO_DEVICE
-
-@@
-@@
--    PCI_DMA_FROMDEVICE
-+    DMA_FROM_DEVICE
-
-@@
-@@
--    PCI_DMA_NONE
-+    DMA_NONE
-
-@@
-expression e1, e2, e3;
-@@
--    pci_alloc_consistent(e1, e2, e3)
-+    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
-
-@@
-expression e1, e2, e3;
-@@
--    pci_zalloc_consistent(e1, e2, e3)
-+    dma_alloc_coherent(&e1->dev, e2, e3, GFP_)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_free_consistent(e1, e2, e3, e4)
-+    dma_free_coherent(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_map_single(e1, e2, e3, e4)
-+    dma_map_single(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_unmap_single(e1, e2, e3, e4)
-+    dma_unmap_single(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4, e5;
-@@
--    pci_map_page(e1, e2, e3, e4, e5)
-+    dma_map_page(&e1->dev, e2, e3, e4, e5)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_unmap_page(e1, e2, e3, e4)
-+    dma_unmap_page(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_map_sg(e1, e2, e3, e4)
-+    dma_map_sg(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_unmap_sg(e1, e2, e3, e4)
-+    dma_unmap_sg(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_single_for_cpu(e1, e2, e3, e4)
-+    dma_sync_single_for_cpu(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_single_for_device(e1, e2, e3, e4)
-+    dma_sync_single_for_device(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_sg_for_cpu(e1, e2, e3, e4)
-+    dma_sync_sg_for_cpu(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2, e3, e4;
-@@
--    pci_dma_sync_sg_for_device(e1, e2, e3, e4)
-+    dma_sync_sg_for_device(&e1->dev, e2, e3, e4)
-
-@@
-expression e1, e2;
-@@
--    pci_dma_mapping_error(e1, e2)
-+    dma_mapping_error(&e1->dev, e2)
-
-@@
-expression e1, e2;
-@@
--    pci_set_dma_mask(e1, e2)
-+    dma_set_mask(&e1->dev, e2)
-
-@@
-expression e1, e2;
-@@
--    pci_set_consistent_dma_mask(e1, e2)
-+    dma_set_coherent_mask(&e1->dev, e2)
-
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Tested-by: Aaron Brown <aaron.f.brown@intel.com>
----
-If needed, see post from Christoph Hellwig on the kernel-janitors ML:
-   https://marc.info/?l=kernel-janitors&m=158745678307186&w=4
-
-First sent on 18 Jul. 2020, see:
-    https://lore.kernel.org/lkml/20200718115546.358240-1-christophe.jaillet@wanadoo.fr/
-It still applies cleanly with latest linux-next
-
-Tested tag, see:
-   https://lore.kernel.org/lkml/DM6PR11MB289001E5538E536F0CB60A1FBC070@DM6PR11MB2890.namprd11.prod.outlook.com/
-
----
- drivers/net/ethernet/intel/e100.c | 92 ++++++++++++++++---------------
- 1 file changed, 49 insertions(+), 43 deletions(-)
-
-diff --git a/drivers/net/ethernet/intel/e100.c b/drivers/net/ethernet/intel/e100.c
-index 91c64f91a835..ec6b1024cd8a 100644
---- a/drivers/net/ethernet/intel/e100.c
-+++ b/drivers/net/ethernet/intel/e100.c
-@@ -1739,10 +1739,10 @@ static int e100_xmit_prepare(struct nic *nic, struct cb *cb,
- 	dma_addr_t dma_addr;
- 	cb->command = nic->tx_command;
- 
--	dma_addr = pci_map_single(nic->pdev,
--				  skb->data, skb->len, PCI_DMA_TODEVICE);
-+	dma_addr = dma_map_single(&nic->pdev->dev, skb->data, skb->len,
-+				  DMA_TO_DEVICE);
- 	/* If we can't map the skb, have the upper layer try later */
--	if (pci_dma_mapping_error(nic->pdev, dma_addr)) {
-+	if (dma_mapping_error(&nic->pdev->dev, dma_addr)) {
- 		dev_kfree_skb_any(skb);
- 		skb = NULL;
- 		return -ENOMEM;
-@@ -1828,10 +1828,10 @@ static int e100_tx_clean(struct nic *nic)
- 			dev->stats.tx_packets++;
- 			dev->stats.tx_bytes += cb->skb->len;
- 
--			pci_unmap_single(nic->pdev,
--				le32_to_cpu(cb->u.tcb.tbd.buf_addr),
--				le16_to_cpu(cb->u.tcb.tbd.size),
--				PCI_DMA_TODEVICE);
-+			dma_unmap_single(&nic->pdev->dev,
-+					 le32_to_cpu(cb->u.tcb.tbd.buf_addr),
-+					 le16_to_cpu(cb->u.tcb.tbd.size),
-+					 DMA_TO_DEVICE);
- 			dev_kfree_skb_any(cb->skb);
- 			cb->skb = NULL;
- 			tx_cleaned = 1;
-@@ -1855,10 +1855,10 @@ static void e100_clean_cbs(struct nic *nic)
- 		while (nic->cbs_avail != nic->params.cbs.count) {
- 			struct cb *cb = nic->cb_to_clean;
- 			if (cb->skb) {
--				pci_unmap_single(nic->pdev,
--					le32_to_cpu(cb->u.tcb.tbd.buf_addr),
--					le16_to_cpu(cb->u.tcb.tbd.size),
--					PCI_DMA_TODEVICE);
-+				dma_unmap_single(&nic->pdev->dev,
-+						 le32_to_cpu(cb->u.tcb.tbd.buf_addr),
-+						 le16_to_cpu(cb->u.tcb.tbd.size),
-+						 DMA_TO_DEVICE);
- 				dev_kfree_skb(cb->skb);
- 			}
- 			nic->cb_to_clean = nic->cb_to_clean->next;
-@@ -1925,10 +1925,10 @@ static int e100_rx_alloc_skb(struct nic *nic, struct rx *rx)
- 
- 	/* Init, and map the RFD. */
- 	skb_copy_to_linear_data(rx->skb, &nic->blank_rfd, sizeof(struct rfd));
--	rx->dma_addr = pci_map_single(nic->pdev, rx->skb->data,
--		RFD_BUF_LEN, PCI_DMA_BIDIRECTIONAL);
-+	rx->dma_addr = dma_map_single(&nic->pdev->dev, rx->skb->data,
-+				      RFD_BUF_LEN, DMA_BIDIRECTIONAL);
- 
--	if (pci_dma_mapping_error(nic->pdev, rx->dma_addr)) {
-+	if (dma_mapping_error(&nic->pdev->dev, rx->dma_addr)) {
- 		dev_kfree_skb_any(rx->skb);
- 		rx->skb = NULL;
- 		rx->dma_addr = 0;
-@@ -1941,8 +1941,10 @@ static int e100_rx_alloc_skb(struct nic *nic, struct rx *rx)
- 	if (rx->prev->skb) {
- 		struct rfd *prev_rfd = (struct rfd *)rx->prev->skb->data;
- 		put_unaligned_le32(rx->dma_addr, &prev_rfd->link);
--		pci_dma_sync_single_for_device(nic->pdev, rx->prev->dma_addr,
--			sizeof(struct rfd), PCI_DMA_BIDIRECTIONAL);
-+		dma_sync_single_for_device(&nic->pdev->dev,
-+					   rx->prev->dma_addr,
-+					   sizeof(struct rfd),
-+					   DMA_BIDIRECTIONAL);
- 	}
- 
- 	return 0;
-@@ -1961,8 +1963,8 @@ static int e100_rx_indicate(struct nic *nic, struct rx *rx,
- 		return -EAGAIN;
- 
- 	/* Need to sync before taking a peek at cb_complete bit */
--	pci_dma_sync_single_for_cpu(nic->pdev, rx->dma_addr,
--		sizeof(struct rfd), PCI_DMA_BIDIRECTIONAL);
-+	dma_sync_single_for_cpu(&nic->pdev->dev, rx->dma_addr,
-+				sizeof(struct rfd), DMA_BIDIRECTIONAL);
- 	rfd_status = le16_to_cpu(rfd->status);
- 
- 	netif_printk(nic, rx_status, KERN_DEBUG, nic->netdev,
-@@ -1981,9 +1983,9 @@ static int e100_rx_indicate(struct nic *nic, struct rx *rx,
- 
- 			if (ioread8(&nic->csr->scb.status) & rus_no_res)
- 				nic->ru_running = RU_SUSPENDED;
--		pci_dma_sync_single_for_device(nic->pdev, rx->dma_addr,
--					       sizeof(struct rfd),
--					       PCI_DMA_FROMDEVICE);
-+		dma_sync_single_for_device(&nic->pdev->dev, rx->dma_addr,
-+					   sizeof(struct rfd),
-+					   DMA_FROM_DEVICE);
- 		return -ENODATA;
- 	}
- 
-@@ -1995,8 +1997,8 @@ static int e100_rx_indicate(struct nic *nic, struct rx *rx,
- 		actual_size = RFD_BUF_LEN - sizeof(struct rfd);
- 
- 	/* Get data */
--	pci_unmap_single(nic->pdev, rx->dma_addr,
--		RFD_BUF_LEN, PCI_DMA_BIDIRECTIONAL);
-+	dma_unmap_single(&nic->pdev->dev, rx->dma_addr, RFD_BUF_LEN,
-+			 DMA_BIDIRECTIONAL);
- 
- 	/* If this buffer has the el bit, but we think the receiver
- 	 * is still running, check to see if it really stopped while
-@@ -2097,22 +2099,25 @@ static void e100_rx_clean(struct nic *nic, unsigned int *work_done,
- 			(struct rfd *)new_before_last_rx->skb->data;
- 		new_before_last_rfd->size = 0;
- 		new_before_last_rfd->command |= cpu_to_le16(cb_el);
--		pci_dma_sync_single_for_device(nic->pdev,
--			new_before_last_rx->dma_addr, sizeof(struct rfd),
--			PCI_DMA_BIDIRECTIONAL);
-+		dma_sync_single_for_device(&nic->pdev->dev,
-+					   new_before_last_rx->dma_addr,
-+					   sizeof(struct rfd),
-+					   DMA_BIDIRECTIONAL);
- 
- 		/* Now that we have a new stopping point, we can clear the old
- 		 * stopping point.  We must sync twice to get the proper
- 		 * ordering on the hardware side of things. */
- 		old_before_last_rfd->command &= ~cpu_to_le16(cb_el);
--		pci_dma_sync_single_for_device(nic->pdev,
--			old_before_last_rx->dma_addr, sizeof(struct rfd),
--			PCI_DMA_BIDIRECTIONAL);
-+		dma_sync_single_for_device(&nic->pdev->dev,
-+					   old_before_last_rx->dma_addr,
-+					   sizeof(struct rfd),
-+					   DMA_BIDIRECTIONAL);
- 		old_before_last_rfd->size = cpu_to_le16(VLAN_ETH_FRAME_LEN
- 							+ ETH_FCS_LEN);
--		pci_dma_sync_single_for_device(nic->pdev,
--			old_before_last_rx->dma_addr, sizeof(struct rfd),
--			PCI_DMA_BIDIRECTIONAL);
-+		dma_sync_single_for_device(&nic->pdev->dev,
-+					   old_before_last_rx->dma_addr,
-+					   sizeof(struct rfd),
-+					   DMA_BIDIRECTIONAL);
- 	}
- 
- 	if (restart_required) {
-@@ -2134,8 +2139,9 @@ static void e100_rx_clean_list(struct nic *nic)
- 	if (nic->rxs) {
- 		for (rx = nic->rxs, i = 0; i < count; rx++, i++) {
- 			if (rx->skb) {
--				pci_unmap_single(nic->pdev, rx->dma_addr,
--					RFD_BUF_LEN, PCI_DMA_BIDIRECTIONAL);
-+				dma_unmap_single(&nic->pdev->dev,
-+						 rx->dma_addr, RFD_BUF_LEN,
-+						 DMA_BIDIRECTIONAL);
- 				dev_kfree_skb(rx->skb);
- 			}
- 		}
-@@ -2177,8 +2183,8 @@ static int e100_rx_alloc_list(struct nic *nic)
- 	before_last = (struct rfd *)rx->skb->data;
- 	before_last->command |= cpu_to_le16(cb_el);
- 	before_last->size = 0;
--	pci_dma_sync_single_for_device(nic->pdev, rx->dma_addr,
--		sizeof(struct rfd), PCI_DMA_BIDIRECTIONAL);
-+	dma_sync_single_for_device(&nic->pdev->dev, rx->dma_addr,
-+				   sizeof(struct rfd), DMA_BIDIRECTIONAL);
- 
- 	nic->rx_to_use = nic->rx_to_clean = nic->rxs;
- 	nic->ru_running = RU_SUSPENDED;
-@@ -2377,8 +2383,8 @@ static int e100_loopback_test(struct nic *nic, enum loopback loopback_mode)
- 
- 	msleep(10);
- 
--	pci_dma_sync_single_for_cpu(nic->pdev, nic->rx_to_clean->dma_addr,
--			RFD_BUF_LEN, PCI_DMA_BIDIRECTIONAL);
-+	dma_sync_single_for_cpu(&nic->pdev->dev, nic->rx_to_clean->dma_addr,
-+				RFD_BUF_LEN, DMA_BIDIRECTIONAL);
- 
- 	if (memcmp(nic->rx_to_clean->skb->data + sizeof(struct rfd),
- 	   skb->data, ETH_DATA_LEN))
-@@ -2751,16 +2757,16 @@ static int e100_do_ioctl(struct net_device *netdev, struct ifreq *ifr, int cmd)
- 
- static int e100_alloc(struct nic *nic)
- {
--	nic->mem = pci_alloc_consistent(nic->pdev, sizeof(struct mem),
--		&nic->dma_addr);
-+	nic->mem = dma_alloc_coherent(&nic->pdev->dev, sizeof(struct mem),
-+				      &nic->dma_addr, GFP_KERNEL);
- 	return nic->mem ? 0 : -ENOMEM;
- }
- 
- static void e100_free(struct nic *nic)
- {
- 	if (nic->mem) {
--		pci_free_consistent(nic->pdev, sizeof(struct mem),
--			nic->mem, nic->dma_addr);
-+		dma_free_coherent(&nic->pdev->dev, sizeof(struct mem),
-+				  nic->mem, nic->dma_addr);
- 		nic->mem = NULL;
- 	}
- }
-@@ -2853,7 +2859,7 @@ static int e100_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
- 		goto err_out_disable_pdev;
- 	}
- 
--	if ((err = pci_set_dma_mask(pdev, DMA_BIT_MASK(32)))) {
-+	if ((err = dma_set_mask(&pdev->dev, DMA_BIT_MASK(32)))) {
- 		netif_err(nic, probe, nic->netdev, "No usable DMA configuration, aborting\n");
- 		goto err_out_free_res;
- 	}
--- 
-2.25.1
 
