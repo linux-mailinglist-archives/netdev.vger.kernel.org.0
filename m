@@ -2,130 +2,171 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AF97A307649
-	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 13:46:59 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id CFEE3307667
+	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 13:52:01 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231462AbhA1Mn0 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jan 2021 07:43:26 -0500
-Received: from smtp-fw-2101.amazon.com ([72.21.196.25]:6406 "EHLO
-        smtp-fw-2101.amazon.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229651AbhA1MnZ (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jan 2021 07:43:25 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=amazon.co.jp; i=@amazon.co.jp; q=dns/txt;
-  s=amazon201209; t=1611837804; x=1643373804;
-  h=from:to:cc:subject:date:message-id:mime-version;
-  bh=MihEBDTLfnvbuC3+H6o2DfOu7iO4hUziMz4d2oMBnQM=;
-  b=UinAzwACJHixH8G2rYW7IVNXNo/V+8lQ2tvOxy3PwtJHLkN68L6H846N
-   y8rOuq3QaBrSEA9VGkv4dT1/yNi52rjA5ksw3yk8FLmNNqOmoRMN91ryA
-   dKy+BVRru73HZDZAkjLdHQLQNddNILjLW+OWhCI24W5WtWBlHTxA08L0W
-   Q=;
-X-IronPort-AV: E=Sophos;i="5.79,382,1602547200"; 
-   d="scan'208";a="77994506"
-Received: from iad12-co-svc-p1-lb1-vlan3.amazon.com (HELO email-inbound-relay-2a-119b4f96.us-west-2.amazon.com) ([10.43.8.6])
-  by smtp-border-fw-out-2101.iad2.amazon.com with ESMTP; 28 Jan 2021 12:42:42 +0000
-Received: from EX13MTAUWB001.ant.amazon.com (pdx1-ws-svc-p6-lb9-vlan2.pdx.amazon.com [10.236.137.194])
-        by email-inbound-relay-2a-119b4f96.us-west-2.amazon.com (Postfix) with ESMTPS id 53BFA1A0589;
-        Thu, 28 Jan 2021 12:42:41 +0000 (UTC)
-Received: from EX13D04ANC001.ant.amazon.com (10.43.157.89) by
- EX13MTAUWB001.ant.amazon.com (10.43.161.207) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Thu, 28 Jan 2021 12:42:40 +0000
-Received: from 38f9d3582de7.ant.amazon.com (10.43.160.67) by
- EX13D04ANC001.ant.amazon.com (10.43.157.89) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Thu, 28 Jan 2021 12:42:36 +0000
-From:   Kuniyuki Iwashima <kuniyu@amazon.co.jp>
-To:     "David S . Miller" <davem@davemloft.net>,
+        id S231702AbhA1MvG (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jan 2021 07:51:06 -0500
+Received: from hqnvemgate24.nvidia.com ([216.228.121.143]:15846 "EHLO
+        hqnvemgate24.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231563AbhA1Mux (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jan 2021 07:50:53 -0500
+Received: from hqmail.nvidia.com (Not Verified[216.228.121.13]) by hqnvemgate24.nvidia.com (using TLS: TLSv1.2, AES256-SHA)
+        id <B6012b3050000>; Thu, 28 Jan 2021 04:50:13 -0800
+Received: from localhost.localdomain (172.20.145.6) by HQMAIL111.nvidia.com
+ (172.20.187.18) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 28 Jan
+ 2021 12:50:10 +0000
+From:   Petr Machata <petrm@nvidia.com>
+To:     <netdev@vger.kernel.org>
+CC:     David Ahern <dsahern@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
         Jakub Kicinski <kuba@kernel.org>,
-        Eric Dumazet <edumazet@google.com>
-CC:     Amit Shah <aams@amazon.de>,
-        Kuniyuki Iwashima <kuniyu@amazon.co.jp>,
-        Kuniyuki Iwashima <kuni1840@gmail.com>,
-        <netdev@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Tariq Toukan <tariqt@mellanox.com>,
-        "Boris Pismenny" <borisp@mellanox.com>
-Subject: [PATCH v4 net-next] net: Remove redundant calls of sk_tx_queue_clear().
-Date:   Thu, 28 Jan 2021 21:42:29 +0900
-Message-ID: <20210128124229.78315-1-kuniyu@amazon.co.jp>
-X-Mailer: git-send-email 2.17.2 (Apple Git-113)
+        Ido Schimmel <idosch@nvidia.com>,
+        "Petr Machata" <petrm@nvidia.com>
+Subject: [PATCH net-next 00/12] nexthop: Preparations for resilient next-hop groups
+Date:   Thu, 28 Jan 2021 13:49:12 +0100
+Message-ID: <cover.1611836479.git.petrm@nvidia.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
 Content-Type: text/plain
-X-Originating-IP: [10.43.160.67]
-X-ClientProxiedBy: EX13D40UWC001.ant.amazon.com (10.43.162.149) To
- EX13D04ANC001.ant.amazon.com (10.43.157.89)
+X-Originating-IP: [172.20.145.6]
+X-ClientProxiedBy: HQMAIL111.nvidia.com (172.20.187.18) To
+ HQMAIL111.nvidia.com (172.20.187.18)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nvidia.com; s=n1;
+        t=1611838213; bh=iy35xPey3C8Pb0Pzlrrw/0tb5LL5vDhoP5dUN78M4qg=;
+        h=From:To:CC:Subject:Date:Message-ID:X-Mailer:MIME-Version:
+         Content-Transfer-Encoding:Content-Type:X-Originating-IP:
+         X-ClientProxiedBy;
+        b=XnYpPlHrcD0btmpKHvrE1EqYpMHb0cLh8F1HFMmrwpJMUaB820zg3U+axVZ5R2PJw
+         X3fNnTb77ezKEowwIw8vSdOrMo2jqaWA4O/edH9lkKITpjaL3so37bPB36IkS0MNYb
+         7Ge71aMMPuuAcg5L2GnmFiy/a3HnuYHs6vsoGlfEnMjcklaq7Xs57y7H1u/Kcz+bwB
+         g8TEJaVsYeXpRrAL/j6ZBbSEZ3o7BCZlUTZh2XQ/4AGeoXuW1Cv+GiCnsgVjuVAFsa
+         SZ1cXRm2iQ0VCDTj7vKieKw4gAYlk2KIIzF+5C7oLcPQqQIRV1BjE61Uy7CH6MeX7O
+         /UV/xTh6TdwhQ==
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-The commit 41b14fb8724d ("net: Do not clear the sock TX queue in
-sk_set_socket()") removes sk_tx_queue_clear() from sk_set_socket() and adds
-it instead in sk_alloc() and sk_clone_lock() to fix an issue introduced in
-the commit e022f0b4a03f ("net: Introduce sk_tx_queue_mapping"). On the
-other hand, the original commit had already put sk_tx_queue_clear() in
-sk_prot_alloc(): the callee of sk_alloc() and sk_clone_lock(). Thus
-sk_tx_queue_clear() is called twice in each path.
+At this moment, there is only one type of next-hop group: an mpath group.
+Mpath groups implement the hash-threshold algorithm, described in RFC
+2992[1].
 
-If we remove sk_tx_queue_clear() in sk_alloc() and sk_clone_lock(), it
-currently works well because (i) sk_tx_queue_mapping is defined between
-sk_dontcopy_begin and sk_dontcopy_end, and (ii) sock_copy() called after
-sk_prot_alloc() in sk_clone_lock() does not overwrite sk_tx_queue_mapping.
-However, if we move sk_tx_queue_mapping out of the no copy area, it
-introduces a bug unintentionally.
+To select a next hop, hash-threshold algorithm first assigns a range of
+hashes to each next hop in the group, and then selects the next hop by
+comparing the SKB hash with the individual ranges. When a next hop is
+removed from the group, the ranges are recomputed, which leads to
+reassignment of parts of hash space from one next hop to another. RFC 2992
+illustrates it thus:
 
-Therefore, this patch adds a compile-time check to take care of the order
-of sock_copy() and sk_tx_queue_clear() and removes sk_tx_queue_clear() from
-sk_prot_alloc() so that it does the only allocation and its callers
-initialize fields.
+             +-------+-------+-------+-------+-------+
+             |   1   |   2   |   3   |   4   |   5   |
+             +-------+-+-----+---+---+-----+-+-------+
+             |    1    |    2    |    4    |    5    |
+             +---------+---------+---------+---------+
 
-v4:
-* Fix typo in the changelog (runtime -> compile-time)
+              Before and after deletion of next hop 3
+	      under the hash-threshold algorithm.
 
-v3: https://lore.kernel.org/netdev/20210128021905.57471-1-kuniyu@amazon.co.jp/
-* Remove Fixes: tag
-* Add BUILD_BUG_ON
-* Remove sk_tx_queue_clear() from sk_prot_alloc()
-  instead of sk_alloc() and sk_clone_lock()
+Note how next hop 2 gave up part of the hash space in favor of next hop 1,
+and 4 in favor of 5. While there will usually be some overlap between the
+previous and the new distribution, some traffic flows change the next hop
+that they resolve to.
 
-v2: https://lore.kernel.org/netdev/20210127132215.10842-1-kuniyu@amazon.co.jp/
-* Remove Reviewed-by: tag
+If a multipath group is used for load-balancing between multiple servers,
+this hash space reassignment causes an issue that packets from a single
+flow suddenly end up arriving at a server that does not expect them, which
+may lead to TCP reset.
 
-v1: https://lore.kernel.org/netdev/20210127125018.7059-1-kuniyu@amazon.co.jp/
+If a multipath group is used for load-balancing among available paths to
+the same server, the issue is that different latencies and reordering along
+the way causes the packets to arrive in wrong order.
 
-CC: Tariq Toukan <tariqt@mellanox.com>
-CC: Boris Pismenny <borisp@mellanox.com>
-Signed-off-by: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
----
- net/core/sock.c | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+Resilient hashing is a technique to address the above problem. Resilient
+next-hop group has another layer of indirection between the group itself
+and its constituent next hops: a hash table. The selection algorithm uses a
+straightforward modulo operation to choose a hash bucket, and then reads
+the next hop that this bucket contains, and forwards traffic there.
 
-diff --git a/net/core/sock.c b/net/core/sock.c
-index bbcd4b97eddd..cfbd62a5e079 100644
---- a/net/core/sock.c
-+++ b/net/core/sock.c
-@@ -1657,6 +1657,16 @@ static void sock_copy(struct sock *nsk, const struct sock *osk)
- #ifdef CONFIG_SECURITY_NETWORK
- 	void *sptr = nsk->sk_security;
- #endif
-+
-+	/* If we move sk_tx_queue_mapping out of the private section,
-+	 * we must check if sk_tx_queue_clear() is called after
-+	 * sock_copy() in sk_clone_lock().
-+	 */
-+	BUILD_BUG_ON(offsetof(struct sock, sk_tx_queue_mapping) <
-+		     offsetof(struct sock, sk_dontcopy_begin) ||
-+		     offsetof(struct sock, sk_tx_queue_mapping) >=
-+		     offsetof(struct sock, sk_dontcopy_end));
-+
- 	memcpy(nsk, osk, offsetof(struct sock, sk_dontcopy_begin));
- 
- 	memcpy(&nsk->sk_dontcopy_end, &osk->sk_dontcopy_end,
-@@ -1690,7 +1700,6 @@ static struct sock *sk_prot_alloc(struct proto *prot, gfp_t priority,
- 
- 		if (!try_module_get(prot->owner))
- 			goto out_free_sec;
--		sk_tx_queue_clear(sk);
- 	}
- 
- 	return sk;
--- 
-2.17.2 (Apple Git-113)
+This indirection brings an important feature. In the hash-threshold
+algorithm, the range of hashes associated with a next hop must be
+continuous. With a hash table, mapping between the hash table buckets and
+the individual next hops is arbitrary. Therefore when a next hop is deleted
+the buckets that held it are simply reassigned to other next hops:
+
+             +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+             |1|1|1|1|2|2|2|2|3|3|3|3|4|4|4|4|5|5|5|5|
+             +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+	                      v v v v
+             +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+             |1|1|1|1|2|2|2|2|1|2|4|5|4|4|4|4|5|5|5|5|
+             +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+              Before and after deletion of next hop 3
+	      under the resilient hashing algorithm.
+
+When weights of next hops in a group are altered, it may be possible to
+choose a subset of buckets that are currently not used for forwarding
+traffic, and use those to satisfy the new next-hop distribution demands,
+keeping the "busy" buckets intact. This way, established flows are ideally
+kept being forwarded to the same endpoints through the same paths as before
+the next-hop group change.
+
+This patchset prepares the next-hop code for eventual introduction of
+resilient hashing groups.
+
+- Patches #1-#4 carry otherwise disjoint changes that just remove certain
+  assumptions in the next-hop code.
+
+- Patches #5-#6 extend the in-kernel next-hop notifiers to support more
+  next-hop group types.
+
+- Patches #7-#12 refactor RTNL message handlers. Resilient next-hop groups
+  will introduce a new logical object, a hash table bucket. It turns out
+  that handling bucket-related messages is similar to how next-hop messages
+  are handled. These patches extract the commonalities into reusable
+  components.
+
+The plan is to contribute approximately the following patchsets:
+
+1) Nexthop policy refactoring (already pushed)
+2) Preparations for resilient next hop groups (this patchset)
+3) Implementation of resilient next hop group
+4) Netdevsim offload plus a suite of selftests
+5) Preparations for mlxsw offload of resilient next-hop groups
+6) mlxsw offload including selftests
+
+Interested parties can look at the current state of the code at [2] and
+[3].
+
+[1] https://tools.ietf.org/html/rfc2992
+[2] https://github.com/idosch/linux/commits/submit/res_integ_v1
+[3] https://github.com/idosch/iproute2/commits/submit/res_v1
+
+David Ahern (1):
+  nexthop: Rename nexthop_free_mpath
+
+Ido Schimmel (1):
+  nexthop: Use enum to encode notification type
+
+Petr Machata (10):
+  nexthop: Dispatch nexthop_select_path() by group type
+  nexthop: Introduce to struct nh_grp_entry a per-type union
+  nexthop: Assert the invariant that a NH group is of only one type
+  nexthop: Dispatch notifier init()/fini() by group type
+  nexthop: Extract dump filtering parameters into a single structure
+  nexthop: Extract a common helper for parsing dump attributes
+  nexthop: Strongly-type context of rtm_dump_nexthop()
+  nexthop: Extract a helper for walking the next-hop tree
+  nexthop: Add a callback parameter to rtm_dump_walk_nexthops()
+  nexthop: Extract a helper for validation of get/del RTNL requests
+
+ .../ethernet/mellanox/mlxsw/spectrum_router.c |  54 +++-
+ drivers/net/netdevsim/fib.c                   |  23 +-
+ include/net/nexthop.h                         |  14 +-
+ net/ipv4/nexthop.c                            | 270 ++++++++++++------
+ 4 files changed, 245 insertions(+), 116 deletions(-)
+
+--=20
+2.26.2
 
