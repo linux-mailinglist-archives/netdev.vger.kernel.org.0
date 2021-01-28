@@ -2,119 +2,114 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 5C8B4306BED
-	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 05:09:37 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id DC008306BFB
+	for <lists+netdev@lfdr.de>; Thu, 28 Jan 2021 05:14:31 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231407AbhA1EH7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Wed, 27 Jan 2021 23:07:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50650 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231345AbhA1EGi (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Wed, 27 Jan 2021 23:06:38 -0500
-Received: from mail-oi1-x22c.google.com (mail-oi1-x22c.google.com [IPv6:2607:f8b0:4864:20::22c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5411FC0613D6
-        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 19:42:22 -0800 (PST)
-Received: by mail-oi1-x22c.google.com with SMTP id w124so4642209oia.6
-        for <netdev@vger.kernel.org>; Wed, 27 Jan 2021 19:42:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=9Z8K2QrRLWsxdRZgac3musrjVZkH+bPVjUKn0DE2CGo=;
-        b=mSgMb4n9vTKXnZnkrDAs8DEo3GVrEkepLkuYZ14HhAEZvIYgswNNNKtFzRGdtAgcrZ
-         cW5r3VsulummxXLi3JjG+N74xyjxgzJOhyzL4Sf8p88NGMUrc/08xun4xskE1XHI1CQ6
-         I+GRlIi1sIfvVWOXfcyieLwrL17Vo17Fpa//ddafPxznQ+5VG+pGJIotY0NTW0StX3OK
-         NCtRUXSxmWriaqUaFK5QfS0H35V1KaIg7HdVkGBMF8HgLEel5eb9fo4nHfKL7RR4coLT
-         7ziLsamgcUtQNGWPW1zHv9CJEHu2eeNh/Ia0jYcJdmHI/AJG7xcKeNUH3ZO4OMoNazM/
-         FQhg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=9Z8K2QrRLWsxdRZgac3musrjVZkH+bPVjUKn0DE2CGo=;
-        b=fD7TNtx0R+XF6pJDA4pvEUjwzkj/pkbuCrB8WIB65SFlZ2yfxi1OxI28rCjjge5VZ3
-         lAR7ILe2QGzMVgdqa6Jsv+/tNGctH/eJrYmIERW9yf3cyfm8StZOTTCS0W1N0cXDgwt5
-         qe5iVki3F8lwLCPqGAiohwOlHv8fOS/+x/9yHGnCGRiQUfMRfRCOMWMTTmcgWv+iojbu
-         E3rQoRJT/i2erMeahDYE8hBUSOFupfvUM0cw3Xb2PrvtquVKmdgyP+pO2C8yrfd6ix8R
-         WPhI2kUE3aHNkNbC0lwB8JED0JDHxmovShNtisgGFBu1nS94uEbCXVAAunVae4fzgPWL
-         K4pg==
-X-Gm-Message-State: AOAM530Ad9bKlkfKVAPkvukCETs7hnUT26xys9ALVPN3YoZLnrBLcUEE
-        1ecVExj+9IGbPTUjhwzCLm6JMfGwjDk=
-X-Google-Smtp-Source: ABdhPJwKUflWH04UKoM+wcN/SkyK7P2qCf8amAqoLfKju/Z2CwgIX9AcHZJhYDeQ8tgpQ7D0JFSf1g==
-X-Received: by 2002:a05:6808:8ec:: with SMTP id d12mr5152512oic.34.1611805341857;
-        Wed, 27 Jan 2021 19:42:21 -0800 (PST)
-Received: from Davids-MacBook-Pro.local ([8.48.134.50])
-        by smtp.googlemail.com with ESMTPSA id d10sm851221ooh.32.2021.01.27.19.42.20
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 27 Jan 2021 19:42:21 -0800 (PST)
-Subject: Re: [PATCH net-next 01/10] netdevsim: fib: Convert the current
- occupancy to an atomic variable
-To:     Amit Cohen <amcohen@nvidia.com>, Ido Schimmel <idosch@idosch.org>,
-        "netdev@vger.kernel.org" <netdev@vger.kernel.org>
-Cc:     "davem@davemloft.net" <davem@davemloft.net>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        Roopa Prabhu <roopa@nvidia.com>,
-        Donald Sharp <sharpd@nvidia.com>,
-        Benjamin Poirier <bpoirier@nvidia.com>,
-        mlxsw <mlxsw@nvidia.com>, Ido Schimmel <idosch@nvidia.com>
-References: <20210126132311.3061388-1-idosch@idosch.org>
- <20210126132311.3061388-2-idosch@idosch.org>
- <b307a304-09ef-d8e8-7296-92ddddfc348c@gmail.com>
- <DM6PR12MB30665BEF4DBA4B1BA697E23ACBBB9@DM6PR12MB3066.namprd12.prod.outlook.com>
-From:   David Ahern <dsahern@gmail.com>
-Message-ID: <6b48c2cc-b8f5-3d28-5297-cdd306a4bb89@gmail.com>
-Date:   Wed, 27 Jan 2021 20:42:17 -0700
-User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.16; rv:78.0)
- Gecko/20100101 Thunderbird/78.6.1
-MIME-Version: 1.0
-In-Reply-To: <DM6PR12MB30665BEF4DBA4B1BA697E23ACBBB9@DM6PR12MB3066.namprd12.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+        id S231357AbhA1EMI (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Wed, 27 Jan 2021 23:12:08 -0500
+Received: from novek.ru ([213.148.174.62]:46642 "EHLO novek.ru"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231337AbhA1EMG (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Wed, 27 Jan 2021 23:12:06 -0500
+Received: from nat1.ooonet.ru (gw.zelenaya.net [91.207.137.40])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by novek.ru (Postfix) with ESMTPSA id C635E503330;
+        Thu, 28 Jan 2021 06:50:19 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru C635E503330
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=novek.ru; s=mail;
+        t=1611805821; bh=gpzk8KAGA14EFU9k0z0IDLjGlGuJM+jStR0X1rT7P1E=;
+        h=From:To:Cc:Subject:Date:From;
+        b=GAg7wYkr4UfPNgZH/8Zp3nrFEPmfEBssSxWon319gnXArvoWTcFD85LTrhy5UqG3o
+         NPwf2WKhOCxKoVAXKnm0H06Fy0XR5kNMN3kOU4e/HmIgJPNKhj/1iVsAdlr9vjSvtZ
+         t6MAZ0v1C9ItP36Bp7NTVTqY+9dLSw5dKgvwV3zY=
+From:   Vadim Fedorenko <vfedorenko@novek.ru>
+To:     Jakub Kicinski <kuba@kernel.org>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Slava Bacherikov <mail@slava.cc>
+Cc:     Vadim Fedorenko <vfedorenko@novek.ru>, netdev@vger.kernel.org
+Subject: [net] net: ip_tunnel: fix mtu calculation
+Date:   Thu, 28 Jan 2021 06:48:53 +0300
+Message-Id: <1611805733-25072-1-git-send-email-vfedorenko@novek.ru>
+X-Mailer: git-send-email 1.8.3.1
+X-Spam-Status: No, score=0.0 required=5.0 tests=UNPARSEABLE_RELAY
+        autolearn=ham autolearn_force=no version=3.4.1
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on gate.novek.ru
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On 1/27/21 3:51 AM, Amit Cohen wrote:
-> 
-> 
->> -----Original Message-----
->> From: David Ahern <dsahern@gmail.com>
->> Sent: Wednesday, January 27, 2021 6:33
->> To: Ido Schimmel <idosch@idosch.org>; netdev@vger.kernel.org
->> Cc: davem@davemloft.net; kuba@kernel.org; Amit Cohen <amcohen@nvidia.com>; Roopa Prabhu <roopa@nvidia.com>; Donald
->> Sharp <sharpd@nvidia.com>; Benjamin Poirier <bpoirier@nvidia.com>; mlxsw <mlxsw@nvidia.com>; Ido Schimmel
->> <idosch@nvidia.com>
->> Subject: Re: [PATCH net-next 01/10] netdevsim: fib: Convert the current occupancy to an atomic variable
->>
->> On 1/26/21 6:23 AM, Ido Schimmel wrote:
->>> @@ -889,22 +882,29 @@ static void nsim_nexthop_destroy(struct
->>> nsim_nexthop *nexthop)  static int nsim_nexthop_account(struct nsim_fib_data *data, u64 occ,
->>>  				bool add, struct netlink_ext_ack *extack)  {
->>> -	int err = 0;
->>> +	int i, err = 0;
->>>
->>>  	if (add) {
->>> -		if (data->nexthops.num + occ <= data->nexthops.max) {
->>> -			data->nexthops.num += occ;
->>> -		} else {
->>> -			err = -ENOSPC;
->>> -			NL_SET_ERR_MSG_MOD(extack, "Exceeded number of supported nexthops");
->>> -		}
->>> +		for (i = 0; i < occ; i++)
->>> +			if (!atomic64_add_unless(&data->nexthops.num, 1,
->>> +						 data->nexthops.max)) {
->>
->> seems like this can be
->> 		if (!atomic64_add_unless(&data->nexthops.num, occ,
->> 					 data->nexthops.max)) {
-> 
-> atomic64_add_unless(x, y, z) adds y to x if x was not already z.
-> Which means that when for example num=2, occ=2, max=3:
-> atomic64_add_unless(&data->nexthops.num, occ, data->nexthops.max) won't fail when it should.
-> 
+dev->hard_header_len for tunnel interface is set only when header_ops
+are set too and already contains full overhead of any tunnel encapsulation.
+That's why there is not need to use this overhead twice in mtu calc.
 
-ok, missed that in the description. I thought it was if the total would
-equal or be greater than z.
+Fixes: fdafed459998 ("ip_gre: set dev->hard_header_len and dev->needed_headroom properly")
+Reported-by: Slava Bacherikov <mail@slava.cc>
+Signed-off-by: Vadim Fedorenko <vfedorenko@novek.ru>
+---
+ net/ipv4/ip_tunnel.c | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
+
+diff --git a/net/ipv4/ip_tunnel.c b/net/ipv4/ip_tunnel.c
+index 64594aa..ad78825 100644
+--- a/net/ipv4/ip_tunnel.c
++++ b/net/ipv4/ip_tunnel.c
+@@ -317,7 +317,7 @@ static int ip_tunnel_bind_dev(struct net_device *dev)
+ 	}
+ 
+ 	dev->needed_headroom = t_hlen + hlen;
+-	mtu -= (dev->hard_header_len + t_hlen);
++	mtu -= dev->hard_header_len ? : t_hlen;
+ 
+ 	if (mtu < IPV4_MIN_MTU)
+ 		mtu = IPV4_MIN_MTU;
+@@ -347,7 +347,7 @@ static struct ip_tunnel *ip_tunnel_create(struct net *net,
+ 	nt = netdev_priv(dev);
+ 	t_hlen = nt->hlen + sizeof(struct iphdr);
+ 	dev->min_mtu = ETH_MIN_MTU;
+-	dev->max_mtu = IP_MAX_MTU - dev->hard_header_len - t_hlen;
++	dev->max_mtu = IP_MAX_MTU - dev->hard_header_len ? : t_hlen;
+ 	ip_tunnel_add(itn, nt);
+ 	return nt;
+ 
+@@ -488,11 +488,11 @@ static int tnl_update_pmtu(struct net_device *dev, struct sk_buff *skb,
+ 	int mtu;
+ 
+ 	tunnel_hlen = md ? tunnel_hlen : tunnel->hlen;
+-	pkt_size = skb->len - tunnel_hlen - dev->hard_header_len;
++	pkt_size = skb->len - dev->hard_header_len ? : tunnel_hlen;
+ 
+ 	if (df)
+-		mtu = dst_mtu(&rt->dst) - dev->hard_header_len
+-					- sizeof(struct iphdr) - tunnel_hlen;
++		mtu = dst_mtu(&rt->dst) - dev->hard_header_len ? :
++					 (sizeof(struct iphdr) + tunnel_hlen);
+ 	else
+ 		mtu = skb_valid_dst(skb) ? dst_mtu(skb_dst(skb)) : dev->mtu;
+ 
+@@ -972,7 +972,7 @@ int __ip_tunnel_change_mtu(struct net_device *dev, int new_mtu, bool strict)
+ {
+ 	struct ip_tunnel *tunnel = netdev_priv(dev);
+ 	int t_hlen = tunnel->hlen + sizeof(struct iphdr);
+-	int max_mtu = IP_MAX_MTU - dev->hard_header_len - t_hlen;
++	int max_mtu = IP_MAX_MTU - dev->hard_header_len ? : t_hlen;
+ 
+ 	if (new_mtu < ETH_MIN_MTU)
+ 		return -EINVAL;
+@@ -1149,10 +1149,10 @@ int ip_tunnel_newlink(struct net_device *dev, struct nlattr *tb[],
+ 
+ 	mtu = ip_tunnel_bind_dev(dev);
+ 	if (tb[IFLA_MTU]) {
+-		unsigned int max = IP_MAX_MTU - dev->hard_header_len - nt->hlen;
++		unsigned int max = IP_MAX_MTU - dev->hard_header_len ? :
++						 (nt->hlen + sizeof(struct iphdr));
+ 
+-		mtu = clamp(dev->mtu, (unsigned int)ETH_MIN_MTU,
+-			    (unsigned int)(max - sizeof(struct iphdr)));
++		mtu = clamp(dev->mtu, (unsigned int)ETH_MIN_MTU, max);
+ 	}
+ 
+ 	err = dev_set_mtu(dev, mtu);
+-- 
+1.8.3.1
 
