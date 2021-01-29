@@ -2,88 +2,68 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id E5F413083E2
-	for <lists+netdev@lfdr.de>; Fri, 29 Jan 2021 03:40:32 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 391083083E8
+	for <lists+netdev@lfdr.de>; Fri, 29 Jan 2021 03:51:51 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231138AbhA2CkP (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jan 2021 21:40:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58644 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229950AbhA2Cjw (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jan 2021 21:39:52 -0500
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AB00C061574
-        for <netdev@vger.kernel.org>; Thu, 28 Jan 2021 18:39:12 -0800 (PST)
-Received: by mail-ej1-x629.google.com with SMTP id l9so10830814ejx.3
-        for <netdev@vger.kernel.org>; Thu, 28 Jan 2021 18:39:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=BID6SO1xOhKk07Zjt0/WPF4F34uCsYcMcFNqdy8GKns=;
-        b=c6G9l6vAtnVDn1ekbrY/Edafy0LS7kNV0MP7da8MIrERgNr6L5HRgvWV2F59jYRNG2
-         1/wOeK35zQ9Y474hdRMRkI1zz9tZEklZwTksVQcK58eZzKerVrc4N9PkdezI7je2ZGIz
-         LTrBgO1sybF5gPqBhazWRt3yUZX1gbrl9imEWKil7Dlzxzq4kusTzib4Az4PEfWpL5Jj
-         E4VEG9SkqWicm49legynNRPLkdjQtPcGQ7CHdIW9FrB/uV+zNvn4EKKvoygERwwGII4f
-         qZGS1n+JEEUWvezLzfN+ZpjSWw4FkZU35PHkEdHc+fxmxycflRA8eWKZCHjWsFyY2jmT
-         JCnQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=BID6SO1xOhKk07Zjt0/WPF4F34uCsYcMcFNqdy8GKns=;
-        b=stoVJFOBdGc7Zukc2E04VNI/tAHEwmRf8nNUHEc7z3tp9S4m3UPcnBg2qJZNpG3HoL
-         c1F1hpKbTx6eApktMk3+CNTipZt57Mj6TGSHd7MPaiEKVmbLW27BwgHlvjMZOF8dG/xF
-         Ln3zmyngPTj5LQVh2JOumWQkDCAhTzqp36qZEYa4PKqc8GPgwWCbNJpQELatpFY6scvi
-         e92FvknRYVjwLQCNvU+Rqzbf0b6vC6PHoJ0M8vuC6OXdEuDpk7G+l9x+ySaYUi/0a0GU
-         xSy1eIgK/dYyCyRKLjg2AWUsN4b6y1SjAYhw+AceBgVI5TkpoPTNAypsLnJQ6IA7OuZh
-         QtxA==
-X-Gm-Message-State: AOAM531/RVUvZGWOkvEUmGZc65vTK4s6HWl82EsgAeBkjzqSFET9und/
-        yuqn+bVV3aVpl3BkKfiCnqsiqoPymBa7Xsds2OwDXWTS
-X-Google-Smtp-Source: ABdhPJzx6HJCsme2H+2C0fzJCxUTmKOne0os7F9ADxHczUb7w2i/0UrPy1j6bxr6n/4to/y4OhA+s1bE+dXvWwqEObk=
-X-Received: by 2002:a17:906:fc5:: with SMTP id c5mr2372541ejk.538.1611887950954;
- Thu, 28 Jan 2021 18:39:10 -0800 (PST)
+        id S231316AbhA2Cux (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jan 2021 21:50:53 -0500
+Received: from mail.kernel.org ([198.145.29.99]:59836 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229757AbhA2Cuv (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 28 Jan 2021 21:50:51 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id 00D2D64DFF;
+        Fri, 29 Jan 2021 02:50:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1611888611;
+        bh=GSBIUy6ft31GoV66BlL6xFa2Mr7SbEYA4cOaci+6NG4=;
+        h=Subject:From:Date:References:In-Reply-To:To:Cc:From;
+        b=saPP+8UyEgnPEFS0e8WeHD2keF+KMNgrERL97mT5UuNYpIqEfnhyp/l3j7PUhg86+
+         KzdqvOywINVptI29/LF29GgoNTPJouFja7OyiYDAQoKGdhlc+K7KvOyEzBL68wIZVL
+         Z+YG0oJE0yCXQgI/1RsRUMHadhV+NVNE580gb/QdkX6ruVHH6g+rNufF7vVhb2LR2R
+         xB+UkEkhn2jWUic8dob0OtrZbKyMXwbdB2Jco1pCADU/nWId1V20qpfQTE/8C+sphZ
+         oJ6v63J6KD5o8+meCQ8s2vihWOznx2JLyWgjbtQcDchUL/5fXmSlm0JGFl5+g5v2Cb
+         ox/2EkopQbn8g==
+Received: from pdx-korg-docbuild-2.ci.codeaurora.org (localhost.localdomain [127.0.0.1])
+        by pdx-korg-docbuild-2.ci.codeaurora.org (Postfix) with ESMTP id E6F276530E;
+        Fri, 29 Jan 2021 02:50:10 +0000 (UTC)
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-References: <1611882159-17421-1-git-send-email-vfedorenko@novek.ru> <CAF=yD-Lmk+nuUWKK+HcoALyPY_xr9rMU_+AsfgAAB0+vCOijRw@mail.gmail.com>
-In-Reply-To: <CAF=yD-Lmk+nuUWKK+HcoALyPY_xr9rMU_+AsfgAAB0+vCOijRw@mail.gmail.com>
-From:   Willem de Bruijn <willemdebruijn.kernel@gmail.com>
-Date:   Thu, 28 Jan 2021 21:38:34 -0500
-Message-ID: <CAF=yD-K2sjoMVWo0rV-3O8oPbQ-TF6bsCMVSOAx1tYjPJzi=rQ@mail.gmail.com>
-Subject: Re: [net v2] net: ip_tunnel: fix mtu calculation
-To:     Vadim Fedorenko <vfedorenko@novek.ru>
-Cc:     Jakub Kicinski <kuba@kernel.org>,
-        "Willem de Bruijn <willemdebruijn.kernel@gmail.com>--to=Slava Bacherikov" 
-        <mail@slava.cc>, Network Development <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Subject: Re: [PATCH v2] lan743x: fix endianness when accessing descriptors
+From:   patchwork-bot+netdevbpf@kernel.org
+Message-Id: <161188861094.22252.8608162483413934450.git-patchwork-notify@kernel.org>
+Date:   Fri, 29 Jan 2021 02:50:10 +0000
+References: <20210128044859.280219-1-rtgbnm@gmail.com>
+In-Reply-To: <20210128044859.280219-1-rtgbnm@gmail.com>
+To:     Alexey Denisov <rtgbnm@gmail.com>
+Cc:     bryan.whitehead@microchip.com, UNGLinuxDriver@microchip.com,
+        netdev@vger.kernel.org, kuba@kernel.org
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Thu, Jan 28, 2021 at 9:21 PM Willem de Bruijn
-<willemdebruijn.kernel@gmail.com> wrote:
->
-> On Thu, Jan 28, 2021 at 8:02 PM Vadim Fedorenko <vfedorenko@novek.ru> wrote:
-> >
-> > dev->hard_header_len for tunnel interface is set only when header_ops
-> > are set too and already contains full overhead of any tunnel encapsulation.
-> > That's why there is not need to use this overhead twice in mtu calc.
-> >
-> > Fixes: fdafed459998 ("ip_gre: set dev->hard_header_len and dev->needed_headroom properly")
-> > Reported-by: Slava Bacherikov <mail@slava.cc>
-> > Signed-off-by: Vadim Fedorenko <vfedorenko@novek.ru>
->
-> Acked-by: Willem de Bruijn <willemb@google.com>
->
-> It is easy to verify that if hard_header_len is zero the calculation
-> does not change. And as discussed, ip_gre is the only ip_tunnel
-> user that sometimes has it non-zero (for legacy reasons that
-> we cannot revert now). In that case it is equivalent to tun->hlen +
-> sizeof(struct iphdr). LGTM. Thanks!
+Hello:
 
-Actually, following that reasoning, we can just remove
-dev->hard_header_len from these calculations, no need for branching.
+This patch was applied to netdev/net-next.git (refs/heads/master):
+
+On Thu, 28 Jan 2021 09:48:59 +0500 you wrote:
+> TX/RX descriptor ring fields are always little-endian, but conversion
+> wasn't performed for big-endian CPUs, so the driver failed to work.
+> 
+> This patch makes the driver work on big-endian CPUs. It was tested and
+> confirmed to work on NXP P1010 processor (PowerPC).
+> 
+> Signed-off-by: Alexey Denisov <rtgbnm@gmail.com>
+> 
+> [...]
+
+Here is the summary with links:
+  - [v2] lan743x: fix endianness when accessing descriptors
+    https://git.kernel.org/netdev/net-next/c/462512824f90
+
+You are awesome, thank you!
+--
+Deet-doot-dot, I am a bot.
+https://korg.docs.kernel.org/patchwork/pwbot.html
 
 
->
-> Btw, ip6_gre might need the same after commit 832ba596494b
-> ("net: ip6_gre: set dev->hard_header_len when using header_ops")
