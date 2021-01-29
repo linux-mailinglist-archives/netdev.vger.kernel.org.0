@@ -2,172 +2,123 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id B5B87308F70
-	for <lists+netdev@lfdr.de>; Fri, 29 Jan 2021 22:31:41 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id B1D0E308F7E
+	for <lists+netdev@lfdr.de>; Fri, 29 Jan 2021 22:38:06 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233473AbhA2V23 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Jan 2021 16:28:29 -0500
-Received: from mga11.intel.com ([192.55.52.93]:29829 "EHLO mga11.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233318AbhA2V21 (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 29 Jan 2021 16:28:27 -0500
-IronPort-SDR: SERjRbNDL7PsRq16uTt7lURHC1VTB82ElItYKx2vYV/zrWk1R12Pox0PX4ilubHplw0Rfwu5tt
- yyjR2lJOnXmw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9879"; a="176978839"
-X-IronPort-AV: E=Sophos;i="5.79,386,1602572400"; 
-   d="scan'208";a="176978839"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jan 2021 13:27:42 -0800
-IronPort-SDR: EHnBB3E3HR89MCE+UOB9IAuwByLYhXtbemwdwONUzHdzEF3ILqAK3EKDGAxPJNNiUHx4X82G2L
- WFA9YXmOFa+g==
-X-IronPort-AV: E=Sophos;i="5.79,386,1602572400"; 
-   d="scan'208";a="431174255"
-Received: from ndatiri-mobl.amr.corp.intel.com (HELO vcostago-mobl2.amr.corp.intel.com) ([10.212.145.249])
-  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Jan 2021 13:27:41 -0800
-From:   Vinicius Costa Gomes <vinicius.gomes@intel.com>
-To:     Vladimir Oltean <vladimir.oltean@nxp.com>
-Cc:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
-        "jhs@mojatatu.com" <jhs@mojatatu.com>,
-        "xiyou.wangcong@gmail.com" <xiyou.wangcong@gmail.com>,
-        "jiri@resnulli.us" <jiri@resnulli.us>,
-        "kuba@kernel.org" <kuba@kernel.org>,
-        "Jose.Abreu@synopsys.com" <Jose.Abreu@synopsys.com>,
-        Po Liu <po.liu@nxp.com>,
-        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
-        "anthony.l.nguyen@intel.com" <anthony.l.nguyen@intel.com>,
-        "mkubecek@suse.cz" <mkubecek@suse.cz>
-Subject: Re: [PATCH net-next v3 6/8] igc: Add support for tuning frame
- preemption via ethtool
-In-Reply-To: <20210126003243.x3c44pmxmieqsa6e@skbuf>
-References: <20210122224453.4161729-1-vinicius.gomes@intel.com>
- <20210122224453.4161729-7-vinicius.gomes@intel.com>
- <20210126003243.x3c44pmxmieqsa6e@skbuf>
-Date:   Fri, 29 Jan 2021 13:27:28 -0800
-Message-ID: <87pn1nsabj.fsf@vcostago-mobl2.amr.corp.intel.com>
+        id S233477AbhA2VdH (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Jan 2021 16:33:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47090 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232727AbhA2VdG (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jan 2021 16:33:06 -0500
+Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90A75C061573;
+        Fri, 29 Jan 2021 13:32:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=casper.20170209; h=In-Reply-To:Content-Type:MIME-Version:
+        References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        Content-Transfer-Encoding:Content-ID:Content-Description;
+        bh=K3MnR5Heh//yU4kSv2PTGpHsEI35EZwif/E8uQMQaZQ=; b=L4h9RGksrAdq8tWhBPl70ELcS3
+        JVNO4Dp1ZxZ81ljkDQVgl+shIWM4IwnzUMd50Eq8+59QbfPXzQaR27qzFrezt2hFJseaBipDfgWi6
+        7/YREy2gWQ/9GD4Czf4bOOn0qeSDqrEMDmTJDrDo50gdDudUA4bGh9oPwR9HAAbDwREgYTHRrcwsr
+        949a5pAIuOrO2IDV+Chdd58/tXAgT0rgRT4BjI8LrGdTPxXJ/cmgs+JCLbWAr9f8csjJgVnLVTAiz
+        pSZLD9UbS78EcIZ0mO87x6jRFvEx/MZyS8lW2EKZMpCEGGrQTnNeo0UW5w6xqS7jlbTqR8UHdNU/k
+        b4uQ7sFQ==;
+Received: from willy by casper.infradead.org with local (Exim 4.94 #2 (Red Hat Linux))
+        id 1l5bNJ-00AMNp-9h; Fri, 29 Jan 2021 21:32:17 +0000
+Date:   Fri, 29 Jan 2021 21:32:17 +0000
+From:   Matthew Wilcox <willy@infradead.org>
+To:     Jakub Kicinski <kuba@kernel.org>
+Cc:     Shoaib Rao <rao.shoaib@oracle.com>, linux-kernel@vger.kernel.org,
+        linux-api@vger.kernel.org, netdev@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>, andy.rudoff@intel.com
+Subject: Re: [PATCH] af_unix: Allow Unix sockets to raise SIGURG
+Message-ID: <20210129213217.GD308988@casper.infradead.org>
+References: <20210122150638.210444-1-willy@infradead.org>
+ <20210125153650.18c84b1a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <23fc3de2-7541-04c9-a56f-4006a7dc773f@oracle.com>
+ <20210129110605.54df8409@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <a21dc26a-87dc-18c8-b8bd-24f9797afbad@oracle.com>
+ <20210129120250.269c366d@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <cef52fb0-43cb-9038-7e48-906b58b356b6@oracle.com>
+ <20210129121837.467280fb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+ <e1047be3-2d53-49d3-67b4-a2a99e0c0f0f@oracle.com>
+ <20210129131820.4b97fdeb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210129131820.4b97fdeb@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-Vladimir Oltean <vladimir.oltean@nxp.com> writes:
+On Fri, Jan 29, 2021 at 01:18:20PM -0800, Jakub Kicinski wrote:
+> On Fri, 29 Jan 2021 12:44:44 -0800 Shoaib Rao wrote:
+> > On 1/29/21 12:18 PM, Jakub Kicinski wrote:
+> > > On Fri, 29 Jan 2021 12:10:21 -0800 Shoaib Rao wrote:  
+> > >> The code does not care about the size of data -- All it does is that if
+> > >> MSG_OOB is set it will deliver the signal to the peer process
+> > >> irrespective of the length of the data (which can be zero length). Let's
+> > >> look at the code of unix_stream_sendmsg() It does the following (sent is
+> > >> initialized to zero)  
+> > > Okay. Let me try again. AFAICS your code makes it so that data sent
+> > > with MSG_OOB is treated like any other data. It just sends a signal.  
+> > Correct.
+> > > So you're hijacking the MSG_OOB to send a signal, because OOB also
+> > > sends a signal.  
+> > Correct.
+> > >   But there is nothing OOB about the data itself.  
+> > Correct.
+> > >   So
+> > > I'm asking you to make sure that there is no data in the message.  
+> > Yes I can do that.
+> > > That way when someone wants _actual_ OOB data on UNIX sockets they
+> > > can implement it without breaking backwards compatibility of the
+> > > kernel uAPI.  
+> > 
+> > I see what you are trying to achieve. However it may not work.
+> > 
+> > Let's assume that __actual__ OOB data has been implemented. An 
+> > application sends a zero length message with MSG_OOB, after that it 
+> > sends some data (not suppose to be OOB data). How is the receiver going 
+> > to differentiate if the data an OOB or not.
+> 
+> THB I've never written any application which would use OOB, so in
+> practice IDK. But from kernel code and looking at man pages when
+> OOBINLINE is not set for OOB data to be received MSG_OOB has to be 
+> set in the recv syscall.
 
-> On Fri, Jan 22, 2021 at 02:44:51PM -0800, Vinicius Costa Gomes wrote:
->> The tc subsystem sets which queues are marked as preemptible, it's the
->> role of ethtool to control more hardware specific parameters. These
->> parameters include:
->> 
->>  - enabling the frame preemption hardware: As enabling frame
->>  preemption may have other requirements before it can be enabled, it's
->>  exposed via the ethtool API;
->> 
->>  - mininum fragment size multiplier: expressed in usually in the form
->>  of (1 + N)*64, this number indicates what's the size of the minimum
->>  fragment that can be preempted.
->
-> And not one word has been said about the patch...
+I'd encourage anyone thinking about "using OOB" to read
+https://tools.ietf.org/html/rfc6093 first.  Basically, TCP does not
+actually provide an OOB mechanism, and frankly Unix sockets shouldn't
+try either.
 
-If I am undertanding this right. Will fix the commit message.
+As an aside, we should probably remove the net.ipv4.tcp_stdurg sysctl
+since it's broken.
 
->
->> 
->> Signed-off-by: Vinicius Costa Gomes <vinicius.gomes@intel.com>
->> ---
->>  drivers/net/ethernet/intel/igc/igc.h         | 12 +++++
->>  drivers/net/ethernet/intel/igc/igc_defines.h |  4 ++
->>  drivers/net/ethernet/intel/igc/igc_ethtool.c | 53 ++++++++++++++++++++
->>  drivers/net/ethernet/intel/igc/igc_tsn.c     | 25 +++++++--
->>  4 files changed, 91 insertions(+), 3 deletions(-)
->> 
->> diff --git a/drivers/net/ethernet/intel/igc/igc.h b/drivers/net/ethernet/intel/igc/igc.h
->> index 35baae900c1f..1067c46e0bc2 100644
->> --- a/drivers/net/ethernet/intel/igc/igc.h
->> +++ b/drivers/net/ethernet/intel/igc/igc.h
->> @@ -87,6 +87,7 @@ struct igc_ring {
->>  	u8 queue_index;                 /* logical index of the ring*/
->>  	u8 reg_idx;                     /* physical index of the ring */
->>  	bool launchtime_enable;         /* true if LaunchTime is enabled */
->> +	bool preemptible;		/* true if not express */
->
-> Mixing tabs and spaces?
+   Some operating systems provide a system-wide toggle to override this
+   behavior and interpret the semantics of the Urgent Pointer as
+   clarified in RFC 1122.  However, this system-wide toggle has been
+   found to be inconsistent.  For example, Linux provides the sysctl
+   "tcp_stdurg" (i.e., net.ipv4.tcp_stdurg) that, when set, supposedly
+   changes the system behavior to interpret the semantics of the TCP
+   Urgent Pointer as specified in RFC 1122. However, this sysctl changes
+   the semantics of the Urgent Pointer only for incoming segments (i.e.,
+   not for outgoing segments).  This means that if this sysctl is set,
+   an application might be unable to interoperate with itself if both
+   the TCP sender and the TCP receiver are running on the same host.
 
-Ugh. Will fix. Thanks.
+> > We could use a different flag (MSG_SIGURG) or implement the _actual_ OOB 
+> > data semantics (If anyone is interested in it). MSG_SIGURG could be a 
+> > generic flag that just sends SIGURG irrespective of the length of the data.
+> 
+> No idea on the SIGURG parts :)
 
->
->> +static int igc_ethtool_set_preempt(struct net_device *netdev,
->> +				   struct ethtool_fp *fpcmd,
->> +				   struct netlink_ext_ack *extack)
->> +{
->> +	struct igc_adapter *adapter = netdev_priv(netdev);
->> +	int i;
->> +
->> +	if (fpcmd->add_frag_size < 68 || fpcmd->add_frag_size > 260) {
->> +		NL_SET_ERR_MSG_MOD(extack, "Invalid value for add-frag-size");
->> +		return -EINVAL;
->> +	}
->
-> This check should belong in ethtool, since there's nothing unusual about
-> this supported range.
->
-> Also, I believe that Jakub requested the min-frag-size to be passed as
-> 0, 1, 2, 3 as the standard specifies it, and not its multiplied
-> version?
+If we were going to do something different from TCP sockets to generate
+a remote SIGURG, then it would ideally be an entirely different mechanism
+(eg a fcntl()) that could also be implemented by pipes.
 
-Later, Michal Kubechek suggested using the multiplied value, to be
-future proof and less dependent on some specific standard version.
-
->
->> +
->> +	adapter->frame_preemption_active = fpcmd->enabled;
->> +	adapter->add_frag_size = fpcmd->add_frag_size;
->> +
->> +	if (!adapter->frame_preemption_active)
->> +		goto done;
->> +
->> +	/* Enabling frame preemption requires TSN mode to be enabled,
->> +	 * which requires a schedule to be active. So, if there isn't
->> +	 * a schedule already configured, configure a simple one, with
->> +	 * all queues open, with 1ms cycle time.
->> +	 */
->> +	if (adapter->base_time)
->> +		goto done;
->
-> Unless I'm missing something, you are interpreting an adapter->base_time
-> value of zero as "no Qbv schedule on port", as if it was invalid to have
-> a base-time of zero, which it isn't.
-
-This HW has specific limitations, it doesn't allow a base_time in the
-past. So a base_time of zero can be used to signify "No Qbv".
-
->
->> @@ -115,6 +130,9 @@ static int igc_tsn_enable_offload(struct igc_adapter *adapter)
->>  		if (ring->launchtime_enable)
->>  			txqctl |= IGC_TXQCTL_QUEUE_MODE_LAUNCHT;
->>  
->> +		if (ring->preemptible)
->> +			txqctl |= IGC_TXQCTL_PREEMPTABLE;
->
-> I think this is the only place in the series where you use PREEMPTABLE
-> instead of PREEMPTIBLE.
-
-Yeah, on the datasheet it's written PREEMPTABLE, I chose to use this
-spelling to make it easier to search for this bit in the datasheet.
-
->
->> +
->>  		wr32(IGC_TXQCTL(i), txqctl);
->>  	}
->
-> Out of curiosity, where is the ring to traffic class mapping configured
-> in the igc driver? I suppose that you have more rings than traffic classes.
-
-The driver follows the default behaviour, that netdev->queue[0] maps to
-ring[0], queue[1] to ring[1], and so on. And by default ring[0] has
-higher priority than ring[1], ring[1] higher than ring[2], and so on.
-
-The HW only has 4 rings/queues.
-
-
-Cheers,
--- 
-Vinicius
+But I think it's worth just saying "MSG_OOB on Unix sockets generates a
+signal on the remote end, just like it does on TCP sockets.  Unix sockets
+do not actually support OOB data and behave like TCP sockets with
+SO_OOBINLINE set as recommended in RFC 6093".
