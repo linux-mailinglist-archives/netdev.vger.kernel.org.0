@@ -2,297 +2,236 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id AA27F309096
-	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 00:28:20 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id A27CA309086
+	for <lists+netdev@lfdr.de>; Sat, 30 Jan 2021 00:22:33 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231716AbhA2X1l (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Jan 2021 18:27:41 -0500
-Received: from mailout1.samsung.com ([203.254.224.24]:30640 "EHLO
-        mailout1.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231158AbhA2X1V (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jan 2021 18:27:21 -0500
-Received: from epcas2p2.samsung.com (unknown [182.195.41.54])
-        by mailout1.samsung.com (KnoxPortal) with ESMTP id 20210129232634epoutp012e5999eee48f9c3a2ede7dc3ed9f6da1~e158TmHU13269132691epoutp01H
-        for <netdev@vger.kernel.org>; Fri, 29 Jan 2021 23:26:34 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout1.samsung.com 20210129232634epoutp012e5999eee48f9c3a2ede7dc3ed9f6da1~e158TmHU13269132691epoutp01H
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1611962794;
-        bh=GpaxTK1PcNel8mKDpotmZm41VFmcjlDIa3AGnoWHghA=;
-        h=From:To:Cc:Subject:Date:References:From;
-        b=hQS5TZmVNwFK6e8An+0AO5fBm+7QQgYpdSN60eKjTq/A/SvO0pa4paiYbRT1oPXcY
-         KdNAfGsXjNx9nuFcP2IBh/AIp1M5v0Og3jEiNt6s2Zu9yirX9bVzQiI4wT5/DF354A
-         M8TOzBL1afrZhVvNLLqapcyr+nlc1GgIvvYpAG+I=
-Received: from epsnrtp2.localdomain (unknown [182.195.42.163]) by
-        epcas2p4.samsung.com (KnoxPortal) with ESMTP id
-        20210129232634epcas2p4b347ab52a2588725c88a80b401c90d4a~e157i17-t2268122681epcas2p48;
-        Fri, 29 Jan 2021 23:26:34 +0000 (GMT)
-Received: from epsmges2p4.samsung.com (unknown [182.195.40.185]) by
-        epsnrtp2.localdomain (Postfix) with ESMTP id 4DSD4R6b9mz4x9Pv; Fri, 29 Jan
-        2021 23:26:31 +0000 (GMT)
-Received: from epcas2p1.samsung.com ( [182.195.41.53]) by
-        epsmges2p4.samsung.com (Symantec Messaging Gateway) with SMTP id
-        55.2A.52511.7A994106; Sat, 30 Jan 2021 08:26:31 +0900 (KST)
-Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
-        epcas2p1.samsung.com (KnoxPortal) with ESMTPA id
-        20210129232630epcas2p1071e141ef8059c4d5c0e4b28c181a171~e1537gzDt0785907859epcas2p1r;
-        Fri, 29 Jan 2021 23:26:30 +0000 (GMT)
-Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
-        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
-        20210129232630epsmtrp24acc8d1cef1646c2202b26e46ef1bd04~e15334-872829828298epsmtrp2l;
-        Fri, 29 Jan 2021 23:26:30 +0000 (GMT)
-X-AuditID: b6c32a48-50fff7000000cd1f-91-601499a74854
-Received: from epsmtip1.samsung.com ( [182.195.34.30]) by
-        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        61.61.13470.5A994106; Sat, 30 Jan 2021 08:26:29 +0900 (KST)
-Received: from ubuntu.dsn.sec.samsung.com (unknown [12.36.155.120]) by
-        epsmtip1.samsung.com (KnoxPortal) with ESMTPA id
-        20210129232629epsmtip1f215075157cb7462359e1308aeb1dd20~e153o-whJ3062930629epsmtip1M;
-        Fri, 29 Jan 2021 23:26:29 +0000 (GMT)
-From:   Dongseok Yi <dseok.yi@samsung.com>
-To:     "David S. Miller" <davem@davemloft.net>,
-        Steffen Klassert <steffen.klassert@secunet.com>,
-        Alexander Lobakin <alobakin@pm.me>
-Cc:     namkyu78.kim@samsung.com, Dongseok Yi <dseok.yi@samsung.com>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Hideaki YOSHIFUJI <yoshfuji@linux-ipv6.org>,
-        David Ahern <dsahern@kernel.org>,
-        Alexei Starovoitov <ast@kernel.org>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Andrii Nakryiko <andrii@kernel.org>,
-        Martin KaFai Lau <kafai@fb.com>,
-        Song Liu <songliubraving@fb.com>, Yonghong Song <yhs@fb.com>,
-        John Fastabend <john.fastabend@gmail.com>,
-        KP Singh <kpsingh@kernel.org>,
-        Willem de Bruijn <willemb@google.com>,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        bpf@vger.kernel.org
-Subject: [RESEND PATCH net v4] udp: ipv4: manipulate network header of NATed
- UDP GRO fraglist
-Date:   Sat, 30 Jan 2021 08:13:27 +0900
-Message-Id: <1611962007-80092-1-git-send-email-dseok.yi@samsung.com>
-X-Mailer: git-send-email 2.7.4
-X-Brightmail-Tracker: H4sIAAAAAAAAA02Sf0xTVxTHc997vBZI3UtheEci4tt0YlJswZYroWwZBN/m/sA5Nuc0pYG3
-        0qy0TV9rJpGtq4CA/NSFCVbFUUWIjKwwRBSIpYhulS2uUWAsYxlqQ6CjgD+Ic67lYbb/vuee
-        z/fcc889QlzcQcYKtXoza9KrdTQZQfQMJcglrY3RudKef2So/c9LBHr89CSOlpZ/FaBF9wiJ
-        Ws4+wpH9pxICfdtXiiFvw98A2XovYMg3Pw3Qg4FqDP3cUxOGfumzk8g6eZhE15tj0PKQB0dX
-        Kp4IkL/bLUA+xwmAHvZXEm9GM91t4xhTf9gvYC43/SZgmp0WpnLsNs442ytIpuxOO8YMXx0l
-        mZrudsA4Sx1hzKIzLjtyry6tgFXns6Z4Vp9nyNfqNUp6525VhkqukMoksu0ohY7XqwtZJZ35
-        brYkS6sLvpGOP6DWWYJH2WqOo7emp5kMFjMbX2DgzEqaNebrjDKZMZFTF3IWvSYxz1CYKpNK
-        k+RBMldXMNFdRxrtks9ujZ8hrcC6sRKECyG1DX7vdJOVIEIopnoBrL5xAueDBQDPev/CQ5SY
-        egRgo339C8c5T+2qox/AkR+eAj54AuDMvXFBiCKpzXDQ7wsLJaIpG4ANi24iFOCUh4C3jweI
-        EBVFqeDw3QAIaYLaCFs7HCtuEZUJ7VeGBPx9cXB8tGKlKUhdFcLfBzwYn8iE94+eAbyOgjMj
-        3auGWLjo7w82KAzqL2Dp0X28twpA78A0wTPJsOn+ERBicCoBdvZt5fFXoXtihcCpNbB86JmA
-        PxbB8jIxL2lYv6Tia0Dou3l8tR4Dv/qmH/DD2g+bvzsP6sC6pv/KNwPQDmJYI1eoYbkk47b/
-        f5ITrOztFqYXnJybT3QBTAhcAApxOlo0ZxfnikX56oNFrMmgMll0LOcC8uC06vHYl/MMwcXX
-        m1UyeZJCId0uR3JFEqLXikzSKZWY0qjN7Kcsa2RNL3yYMDzWipX/WHN+s3+2KSJKsrih5Jjo
-        WfgGe6RvGmvLudhj7rE1du0re2D9oFig1Ca/jcGcVselMXIKjzsUKFvQXiueG/NoUgO24uQK
-        X+mX2inuRsbz9LpzyymGHWsvJu58rej6S1WjuS1Z698jHk6ltN7q0nduSrft2lVnlQ87b46K
-        vB9OLrweduHgK47nosh32ua9nhZLxDA38NEn9Uy1uSCnqCFFE8gYG5zS3anSn6Y7rTEf1wb0
-        j+/63/8jpnbCdUjbNrijRJXVpfy8I+HItfnct2rm1uCZl2P33LNJ1n0NZw8osk+lsm90uHaf
-        HliYmaUEe/a2dQ66J/ZrKpaIhvqZydk0muAK1LItuIlT/wtzeOQaQAQAAA==
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFrrDLMWRmVeSWpSXmKPExsWy7bCSnO6ymSIJBqsULFY93s5i8f33bGaL
-        Lz9vs1t8PnKczWLxwm/MFnPOt7BYrNvVymRxZdofRoumHSuYLF58eMJo8XxfL5PFhW19rBaX
-        d81hs2i408xmcWyBmMXPw2eYLXZ3/mC3eLflCLvFiyUzGC2+7u1icRDx2LLyJpPHxOZ37B47
-        Z91l91iwqdSj68YlZo9NqzrZPNqurWLyOLrnHJtH35ZVjB6bWpewenzeJBfAHcVlk5Kak1mW
-        WqRvl8CVcWvLBLaCOboVZ2/OZ2tgbFDtYuTkkBAwkVh6pp+ti5GLQ0hgN6PE1sY/zF2MHEAJ
-        CYldm10haoQl7rccYYWo+cYocXraG1aQBJuAhsT+dy/AEiICLUDNRw8ygzjMAvdYJM7s6mQB
-        qRIWiJU4//YumM0ioCqxfO0SdhCbV8BFYs7uw+wQK+Qkbp7rZJ7AyLOAkWEVo2RqQXFuem6x
-        YYFhXmq5XnFibnFpXrpecn7uJkZwBGhp7mDcvuqD3iFGJg7GQ4wSHMxKIrxv5wglCPGmJFZW
-        pRblxxeV5qQWH2KU5mBREue90HUyXkggPbEkNTs1tSC1CCbLxMEp1cAUKzP7/6z91kIJazqs
-        2nljw85MFzPfX+q+t6z2QrII666vQlvEVNxfLFuaHbXuz0knWRu1zqNptjYu9cdv7fBfLVF0
-        /vXSFx+PTP74NfrylOjnU9vj7xf/8L/Q7P3UyaG+M5n1uEdp7+Nv5eYK+ooHPrDoHeub1jHX
-        8LhJ8+zAUJ2uDI2u8oedPEe4ZMvVvl2reex5pfXFzWUqMyMfGSVeFoiS26+4mkk0nmn949MP
-        v/Wdnu++69I7j3tnj37pelMjf2j61KR/P9WMkj6+u6Cm9u5ZtsRcUcPw/ff/vn+0X2BdeVKc
-        qlfq5IualmyeYuefcUw4w7yk4Mrv7hnMIfN2fi/qf/Bn0c3Z6ezKb/SMlFiKMxINtZiLihMB
-        heGvu+8CAAA=
-X-CMS-MailID: 20210129232630epcas2p1071e141ef8059c4d5c0e4b28c181a171
-X-Msg-Generator: CA
-Content-Type: text/plain; charset="utf-8"
-X-Sendblock-Type: AUTO_CONFIDENTIAL
-CMS-TYPE: 102P
-DLP-Filter: Pass
-X-CFilter-Loop: Reflected
-X-CMS-RootMailID: 20210129232630epcas2p1071e141ef8059c4d5c0e4b28c181a171
-References: <CGME20210129232630epcas2p1071e141ef8059c4d5c0e4b28c181a171@epcas2p1.samsung.com>
+        id S231296AbhA2XQ7 (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Jan 2021 18:16:59 -0500
+Received: from mail-eopbgr40069.outbound.protection.outlook.com ([40.107.4.69]:12816
+        "EHLO EUR03-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S231174AbhA2XQ4 (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 29 Jan 2021 18:16:56 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=cTzDCdz0q1oaIyU+ZG5fbeNDUdUwYka4UZ6WJaMP+BCq1D4yRQ4UFtG9samjEksyO9hS7ChZpuPRG4p9YBMB3VhYc+ujxyQ/bNMt2Kb2pf81a/nNLvcg1RXAJzUgfK+jtsJGlDU3dwIHEsYdSKJVEsiBCdPxXGu0NyUew1jCYkf4T7xoF2kWuIYl2F8WrjaK17u1qSWt5XbGjguqAdLbaSs12tR2CkKvE7dwkecoGk5FpqQDcrbTITVxW6dmcC+czTu89ODSkTsLANDKcyJDZzxnGnnjTqkm97Z//Jls8cIG5CASczF0da9cbaz2dBdLaqV/r6rUA/2RYjzGIqdgBQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=e/dwi8Tt6C9PvToYTwI+YFHmyiGK50JpOqV4t+vFJ/E=;
+ b=ED4gcWJUt4JSrqObLKHJZj+F12diWwiTBqJlIhPvHAOaVr35PpP+LoQuOSlAPoBPSgj5y3ggszSd24SPnq4SuDvt7BQbidQ0MFd4AO1XDwIodK+Cw9++DIFFUaAmbZwHZOdo60u1klbjhZHvUPisMN+NH6k/9FtBFFGRpXyJSdV6uVfwmBrQQPyQ6mKyMR8+8taWzkLlGI64lvdI573mK1/+ukdBlacgiIIRvSc0hAv1UbkgvNwB5tHBRCmDIUtzPZqRcrfpKfBP1PO9MdVx3y+Tp/6p/mVMBLGGj3kYxJ6xJgBLiPFepedeF1OgfR3AFmcQ9q/KSc+R4KmTxnPviA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=nxp.com; dmarc=pass action=none header.from=nxp.com; dkim=pass
+ header.d=nxp.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=e/dwi8Tt6C9PvToYTwI+YFHmyiGK50JpOqV4t+vFJ/E=;
+ b=UugP+IewaUK9blu7t94mxSI94sPGImTcjM2oIXL9R+SdkpLoj+w+jP/gVj67Z0OBo0nSTbwRk4eC6pHrRznYU8yUvdmWOIlpUCrnk/4nch3JIUZmK0NTEgZeM8kLpAkdyYtBBBRFObyf2RFZ37imIlYb0tmq7MCH7P0E8DWudI8=
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com (2603:10a6:803:55::19)
+ by VI1PR04MB3199.eurprd04.prod.outlook.com (2603:10a6:802:3::31) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3805.17; Fri, 29 Jan
+ 2021 23:16:06 +0000
+Received: from VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::3df3:2eba:51bb:58d7]) by VI1PR04MB5136.eurprd04.prod.outlook.com
+ ([fe80::3df3:2eba:51bb:58d7%6]) with mapi id 15.20.3805.017; Fri, 29 Jan 2021
+ 23:16:05 +0000
+From:   Vladimir Oltean <vladimir.oltean@nxp.com>
+To:     Vinicius Costa Gomes <vinicius.gomes@intel.com>
+CC:     "netdev@vger.kernel.org" <netdev@vger.kernel.org>,
+        "jhs@mojatatu.com" <jhs@mojatatu.com>,
+        "xiyou.wangcong@gmail.com" <xiyou.wangcong@gmail.com>,
+        "jiri@resnulli.us" <jiri@resnulli.us>,
+        "kuba@kernel.org" <kuba@kernel.org>,
+        "Jose.Abreu@synopsys.com" <Jose.Abreu@synopsys.com>,
+        Po Liu <po.liu@nxp.com>,
+        "intel-wired-lan@lists.osuosl.org" <intel-wired-lan@lists.osuosl.org>,
+        "anthony.l.nguyen@intel.com" <anthony.l.nguyen@intel.com>,
+        "mkubecek@suse.cz" <mkubecek@suse.cz>
+Subject: Re: [PATCH net-next v3 6/8] igc: Add support for tuning frame
+ preemption via ethtool
+Thread-Topic: [PATCH net-next v3 6/8] igc: Add support for tuning frame
+ preemption via ethtool
+Thread-Index: AQHW8RBJWWRwM35MG0uYfKaT0XnEyqo5E2SAgAYVkQCAAB5YAA==
+Date:   Fri, 29 Jan 2021 23:16:05 +0000
+Message-ID: <20210129231604.vzndqnf3tkcgo4ya@skbuf>
+References: <20210122224453.4161729-1-vinicius.gomes@intel.com>
+ <20210122224453.4161729-7-vinicius.gomes@intel.com>
+ <20210126003243.x3c44pmxmieqsa6e@skbuf>
+ <87pn1nsabj.fsf@vcostago-mobl2.amr.corp.intel.com>
+In-Reply-To: <87pn1nsabj.fsf@vcostago-mobl2.amr.corp.intel.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: intel.com; dkim=none (message not signed)
+ header.d=none;intel.com; dmarc=none action=none header.from=nxp.com;
+x-originating-ip: [5.12.227.87]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: e8bf8440-fc44-40e7-58b3-08d8c4abdaa3
+x-ms-traffictypediagnostic: VI1PR04MB3199:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <VI1PR04MB3199076BEC1390F0C2B7FCDDE0B99@VI1PR04MB3199.eurprd04.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6430;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: cyBhF2sa7s0i5bV8lSx6baUVWTkJVz97cLqQuMT2/XNwP+ICaQ1JRQqU3F+tiZ3FPY18eq0C/Y99ZWdXmHVMPVT+8bF4SZYnnt/Sypi7dNo5lfegsHwi4i/jfrbelxWcs5oZnNAh2F6NR5jh+/QuPdiNmC8Bi7ecoyqSY+YJuH9R38GBQP2B1kZedGNYC/U8nVqfomh+SUMCwqe2sxXvXqvxojfF2Uj405ezkDmggvhND9/qwKpQ0Tx0g2kiKiLoWK3/IpmIqUPuhNqoIAE/aoCdvowGLigP971Mfy/1s8nGHZ8imlDcUKu7TpxSDcC7gc3wUpRCd0mTfvkqpFnbmM4EX4OTwR7xgffxoEvFVyBr6+V3k02VzBqCnWVlxD/a0yI2RneR7jj6O1HuRRxrEyUN5geYuwR+LKwmUyYzMD5rWpPfGGvlint4C/U8cb+HwGSwkv+DxrqHsXFdFzONQOEmTa91Af6oEya2tZK4oISfbta/q9g6Z7pftoum8LVzqxFNjRDdKefjAJ87r53zkQ==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:VI1PR04MB5136.eurprd04.prod.outlook.com;PTR:;CAT:NONE;SFS:(7916004)(4636009)(136003)(346002)(366004)(39860400002)(376002)(396003)(86362001)(6916009)(8936002)(7416002)(2906002)(54906003)(9686003)(6512007)(33716001)(44832011)(8676002)(26005)(478600001)(6486002)(4326008)(66946007)(66476007)(76116006)(316002)(66446008)(64756008)(6506007)(186003)(71200400001)(1076003)(66556008)(83380400001)(5660300002);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: =?us-ascii?Q?9tOJCYHR2SbF7b5pZWjppn4mKkiklyCx2OMucYQkIE50c0GTJgui7LyaHP1y?=
+ =?us-ascii?Q?wKYr6pB4x4EQtihs2XI6OZdj4UrcfA7q4eJYRUYuXNgTfshmNvoHfXBsZ/3m?=
+ =?us-ascii?Q?jNy7Ye5TLALVe+RmyhrxrJGCT4tH4UDmV6WEiuQlheBIitnT8pxw4vqECuKP?=
+ =?us-ascii?Q?8ljpMjNjxUcQzRcY5YZDMBKuLD0l7J9uCsN0OQqNVnyPTYTMUQK/B2Gxb566?=
+ =?us-ascii?Q?XPrBx3/xG/gAD1epFzKyHS5ZXMwPQAgCp6ex2t95KhrcrOClDdjkdPVg3p3T?=
+ =?us-ascii?Q?L0GC8m1+KKBkt7bCmpsMLo6m7439IhWCkF9bq1cesLH+AYWgZKdd/UOQ7q2n?=
+ =?us-ascii?Q?I1AuzkdLOzXk/bgbmkom76kXVlHpsbyAWqhYLbq2T+jrvbUPRXSGKTszuCVF?=
+ =?us-ascii?Q?x+vNdXrKIPt4IIKObxXDpFMjMubyAkkjq5U2fGsYKYqYN+jkX3AN+kv/ocvF?=
+ =?us-ascii?Q?P8gvmNsx4vmg5/GU1987aChnEWNQlrvsZyB4GyP+5rwB71YuXN6YBhBy5VDH?=
+ =?us-ascii?Q?OLLpe0kP9cG8ox0Wl/6L7NK2PYvKHjZ7waFGgZyjWmwXbT0YAKvwBlkB3p3X?=
+ =?us-ascii?Q?m4FEMsK+J1uYTh2Up/JZ2sZMyxMFb7YAG5F0HnkCpy4/Ob9JU+l5413kFWnB?=
+ =?us-ascii?Q?htxlK0VOdsjRxpC/qYKwhU7zQT4+J87AZwRs4v+RFaeCZhsbxy7WJeKilRQL?=
+ =?us-ascii?Q?Zd6OWpWk/QEKJ4y3UaVw5Qq29OXvbNkSRKU+Ek/ZbIL8ufga3BkmodUvCteR?=
+ =?us-ascii?Q?WPqONhqeO9jNfY/8n1MZaTJDJ/zcDCamJk38LiA8LeRGpTLYuNmYjrrzUgEa?=
+ =?us-ascii?Q?m6RRetuFQJX7pav2Thao2JVMWPIgVwx3DT7qlrFPN3iN5FeCqYREKSe0vF90?=
+ =?us-ascii?Q?d1YGebTQtJOYVfYTjjJZYTRzDWEafLe/3PZWI5Vfz5N3fNffv6ACvstMPb6V?=
+ =?us-ascii?Q?UaRyx1w400Z6O+xtLZ5pSB0VmdxViqEtScJDb6pGpr3WtB4hl7l9uGSg+vHW?=
+ =?us-ascii?Q?8slg9Jy266+FlcRPUy72VTnEEg2K+P9ihMsw+BmmTAcmdb+N1wBIIJI+8zwF?=
+ =?us-ascii?Q?wzK7qZbT?=
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <A3A5D4D14383F4468A064388D81119CE@eurprd04.prod.outlook.com>
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: VI1PR04MB5136.eurprd04.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e8bf8440-fc44-40e7-58b3-08d8c4abdaa3
+X-MS-Exchange-CrossTenant-originalarrivaltime: 29 Jan 2021 23:16:05.8515
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: 5R4cNQ0saOBpDMVsrQEO6v4+h94Sst883zEYwrqGINY1WInyKgGfjGWU3vwSew8uu7eGyq1tgti4kxOEq7OkCA==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: VI1PR04MB3199
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-UDP/IP header of UDP GROed frag_skbs are not updated even after NAT
-forwarding. Only the header of head_skb from ip_finish_output_gso ->
-skb_gso_segment is updated but following frag_skbs are not updated.
+On Fri, Jan 29, 2021 at 01:27:28PM -0800, Vinicius Costa Gomes wrote:
+> >> +static int igc_ethtool_set_preempt(struct net_device *netdev,
+> >> +				   struct ethtool_fp *fpcmd,
+> >> +				   struct netlink_ext_ack *extack)
+> >> +{
+> >> +	struct igc_adapter *adapter =3D netdev_priv(netdev);
+> >> +	int i;
+> >> +
+> >> +	if (fpcmd->add_frag_size < 68 || fpcmd->add_frag_size > 260) {
+> >> +		NL_SET_ERR_MSG_MOD(extack, "Invalid value for add-frag-size");
+> >> +		return -EINVAL;
+> >> +	}
+> >
+> > This check should belong in ethtool, since there's nothing unusual abou=
+t
+> > this supported range.
+> >
+> > Also, I believe that Jakub requested the min-frag-size to be passed as
+> > 0, 1, 2, 3 as the standard specifies it, and not its multiplied
+> > version?
+>=20
+> Later, Michal Kubechek suggested using the multiplied value, to be
+> future proof and less dependent on some specific standard version.
 
-A call path skb_mac_gso_segment -> inet_gso_segment ->
-udp4_ufo_fragment -> __udp_gso_segment -> __udp_gso_segment_list
-does not try to update UDP/IP header of the segment list but copy
-only the MAC header.
+Imagine you're adding frame preemption to some LLDP agent and you want
+to pass that data to the kernel. Case (a) you read the value as {0, 1,
+2, 3} and you pass it to the kernel as {0, 1, 2, 3}. Case (b) you read
+the value as {0, 1, 2, 3}, you prove to the kernel that you're a smart
+boy and you know the times 64 multiplication table minus 4, and if you
+pass the exam, the kernel calls ethtool_frag_size_to_mult again, to
+retrieve the {0, 1, 2, 3} form which it'll use to program the hardware
+with (oh and btw, ethtool_frag_size_to_mult allows any value to be
+passed in, so it tricks users into thinking that any other value except
+60, 124, 188, 252 might have a different effect, cause them to wonder
+what is 123 even rounded to, etc).
+And halfway through writing the user space code for case (b), you're
+thinking "good thing I'm making this LLDP TLV more future-proof by
+multiplying it with 64..."
 
-Update port, addr and check of each skb of the segment list in
-__udp_gso_segment_list. It covers both SNAT and DNAT.
+Also, so shady this specific standard called IEEE 802.3-2018.....
+Frame preemption is past draft status, it's safe to say it won't change
+in backwards-incompatible ways, this isn't Python. If anything, we'll
+give them another reason not to.
 
-Fixes: 9fd1ff5d2ac7 (udp: Support UDP fraglist GRO/GSO.)
-Signed-off-by: Dongseok Yi <dseok.yi@samsung.com>
-Acked-by: Steffen Klassert <steffen.klassert@secunet.com>
----
-v1:
-Steffen Klassert said, there could be 2 options.
-https://lore.kernel.org/patchwork/patch/1362257/
-I was trying to write a quick fix, but it was not easy to forward
-segmented list. Currently, assuming DNAT only.
+> >> +	adapter->frame_preemption_active =3D fpcmd->enabled;
+> >> +	adapter->add_frag_size =3D fpcmd->add_frag_size;
+> >> +
+> >> +	if (!adapter->frame_preemption_active)
+> >> +		goto done;
+> >> +
+> >> +	/* Enabling frame preemption requires TSN mode to be enabled,
+> >> +	 * which requires a schedule to be active. So, if there isn't
+> >> +	 * a schedule already configured, configure a simple one, with
+> >> +	 * all queues open, with 1ms cycle time.
+> >> +	 */
+> >> +	if (adapter->base_time)
+> >> +		goto done;
+> >
+> > Unless I'm missing something, you are interpreting an adapter->base_tim=
+e
+> > value of zero as "no Qbv schedule on port", as if it was invalid to hav=
+e
+> > a base-time of zero, which it isn't.
+>=20
+> This HW has specific limitations, it doesn't allow a base_time in the
+> past. So a base_time of zero can be used to signify "No Qbv".
 
-v2:
-Per Steffen Klassert request, moved the procedure from
-udp4_ufo_fragment to __udp_gso_segment_list and support SNAT.
+Oh and by past you mean future?
 
-v3:
-Per Steffen Klassert request, applied fast return by comparing seg
-and seg->next at the beginning of __udpv4_gso_segment_list_csum.
+	/* If we program the controller's BASET registers with a time
+	 * in the future, it will hold all the packets until that
+	 * time, causing a lot of TX Hangs, so to avoid that, we
+	 * reject schedules that would start in the future.
+	 */
+	if (!is_base_time_past(qopt->base_time, &now))
+		return false;
 
-Fixed uh->dest = *newport and iph->daddr = *newip to
-*oldport = *newport and *oldip = *newip.
+Buggy hardware notwithstanding, but you wrote in "man 8 tc-taprio" that
 
-v4:
-Clear "Changes Requested" mark in
-https://patchwork.kernel.org/project/netdevbpf
+       base-time
+              Specifies the instant in nanoseconds, using the reference
+              of clockid, defining the time when the schedule starts. If
+              'base-time' is a time in the past, the schedule will start
+              at
 
-Simplified the return statement in __udp_gso_segment_list.
+              base-time + (N * cycle-time)
 
- include/net/udp.h      |  2 +-
- net/ipv4/udp_offload.c | 69 ++++++++++++++++++++++++++++++++++++++++++++++----
- net/ipv6/udp_offload.c |  2 +-
- 3 files changed, 66 insertions(+), 7 deletions(-)
+              where N is the smallest integer so the resulting time is
+              greater than "now", and "cycle-time" is the sum of all the
+              intervals of the entries in the schedule
 
-diff --git a/include/net/udp.h b/include/net/udp.h
-index 877832b..01351ba 100644
---- a/include/net/udp.h
-+++ b/include/net/udp.h
-@@ -178,7 +178,7 @@ struct sk_buff *udp_gro_receive(struct list_head *head, struct sk_buff *skb,
- int udp_gro_complete(struct sk_buff *skb, int nhoff, udp_lookup_t lookup);
- 
- struct sk_buff *__udp_gso_segment(struct sk_buff *gso_skb,
--				  netdev_features_t features);
-+				  netdev_features_t features, bool is_ipv6);
- 
- static inline struct udphdr *udp_gro_udphdr(struct sk_buff *skb)
- {
-diff --git a/net/ipv4/udp_offload.c b/net/ipv4/udp_offload.c
-index ff39e94..cfc8726 100644
---- a/net/ipv4/udp_offload.c
-+++ b/net/ipv4/udp_offload.c
-@@ -187,8 +187,67 @@ struct sk_buff *skb_udp_tunnel_segment(struct sk_buff *skb,
- }
- EXPORT_SYMBOL(skb_udp_tunnel_segment);
- 
-+static void __udpv4_gso_segment_csum(struct sk_buff *seg,
-+				     __be32 *oldip, __be32 *newip,
-+				     __be16 *oldport, __be16 *newport)
-+{
-+	struct udphdr *uh;
-+	struct iphdr *iph;
-+
-+	if (*oldip == *newip && *oldport == *newport)
-+		return;
-+
-+	uh = udp_hdr(seg);
-+	iph = ip_hdr(seg);
-+
-+	if (uh->check) {
-+		inet_proto_csum_replace4(&uh->check, seg, *oldip, *newip,
-+					 true);
-+		inet_proto_csum_replace2(&uh->check, seg, *oldport, *newport,
-+					 false);
-+		if (!uh->check)
-+			uh->check = CSUM_MANGLED_0;
-+	}
-+	*oldport = *newport;
-+
-+	csum_replace4(&iph->check, *oldip, *newip);
-+	*oldip = *newip;
-+}
-+
-+static struct sk_buff *__udpv4_gso_segment_list_csum(struct sk_buff *segs)
-+{
-+	struct sk_buff *seg;
-+	struct udphdr *uh, *uh2;
-+	struct iphdr *iph, *iph2;
-+
-+	seg = segs;
-+	uh = udp_hdr(seg);
-+	iph = ip_hdr(seg);
-+
-+	if ((udp_hdr(seg)->dest == udp_hdr(seg->next)->dest) &&
-+	    (udp_hdr(seg)->source == udp_hdr(seg->next)->source) &&
-+	    (ip_hdr(seg)->daddr == ip_hdr(seg->next)->daddr) &&
-+	    (ip_hdr(seg)->saddr == ip_hdr(seg->next)->saddr))
-+		return segs;
-+
-+	while ((seg = seg->next)) {
-+		uh2 = udp_hdr(seg);
-+		iph2 = ip_hdr(seg);
-+
-+		__udpv4_gso_segment_csum(seg,
-+					 &iph2->saddr, &iph->saddr,
-+					 &uh2->source, &uh->source);
-+		__udpv4_gso_segment_csum(seg,
-+					 &iph2->daddr, &iph->daddr,
-+					 &uh2->dest, &uh->dest);
-+	}
-+
-+	return segs;
-+}
-+
- static struct sk_buff *__udp_gso_segment_list(struct sk_buff *skb,
--					      netdev_features_t features)
-+					      netdev_features_t features,
-+					      bool is_ipv6)
- {
- 	unsigned int mss = skb_shinfo(skb)->gso_size;
- 
-@@ -198,11 +257,11 @@ static struct sk_buff *__udp_gso_segment_list(struct sk_buff *skb,
- 
- 	udp_hdr(skb)->len = htons(sizeof(struct udphdr) + mss);
- 
--	return skb;
-+	return is_ipv6 ? skb : __udpv4_gso_segment_list_csum(skb);
- }
- 
- struct sk_buff *__udp_gso_segment(struct sk_buff *gso_skb,
--				  netdev_features_t features)
-+				  netdev_features_t features, bool is_ipv6)
- {
- 	struct sock *sk = gso_skb->sk;
- 	unsigned int sum_truesize = 0;
-@@ -214,7 +273,7 @@ struct sk_buff *__udp_gso_segment(struct sk_buff *gso_skb,
- 	__be16 newlen;
- 
- 	if (skb_shinfo(gso_skb)->gso_type & SKB_GSO_FRAGLIST)
--		return __udp_gso_segment_list(gso_skb, features);
-+		return __udp_gso_segment_list(gso_skb, features, is_ipv6);
- 
- 	mss = skb_shinfo(gso_skb)->gso_size;
- 	if (gso_skb->len <= sizeof(*uh) + mss)
-@@ -328,7 +387,7 @@ static struct sk_buff *udp4_ufo_fragment(struct sk_buff *skb,
- 		goto out;
- 
- 	if (skb_shinfo(skb)->gso_type & SKB_GSO_UDP_L4)
--		return __udp_gso_segment(skb, features);
-+		return __udp_gso_segment(skb, features, false);
- 
- 	mss = skb_shinfo(skb)->gso_size;
- 	if (unlikely(skb->len <= mss))
-diff --git a/net/ipv6/udp_offload.c b/net/ipv6/udp_offload.c
-index c7bd7b1..faa823c 100644
---- a/net/ipv6/udp_offload.c
-+++ b/net/ipv6/udp_offload.c
-@@ -42,7 +42,7 @@ static struct sk_buff *udp6_ufo_fragment(struct sk_buff *skb,
- 			goto out;
- 
- 		if (skb_shinfo(skb)->gso_type & SKB_GSO_UDP_L4)
--			return __udp_gso_segment(skb, features);
-+			return __udp_gso_segment(skb, features, true);
- 
- 		mss = skb_shinfo(skb)->gso_size;
- 		if (unlikely(skb->len <= mss))
--- 
-2.7.4
+Does that not apply to schedules offloaded on Intel hardware?
+You're okay with any base-time in the past (your hardware basically
+requires them) but the base-time of zero is somehow special and not
+valid because?
 
+> > Out of curiosity, where is the ring to traffic class mapping configured
+> > in the igc driver? I suppose that you have more rings than traffic clas=
+ses.
+>=20
+> The driver follows the default behaviour, that netdev->queue[0] maps to
+> ring[0], queue[1] to ring[1], and so on. And by default ring[0] has
+> higher priority than ring[1], ring[1] higher than ring[2], and so on.
+>=20
+> The HW only has 4 rings/queues.
+
+I meant to ask: is the priority of rings 0, 1, 2, 3 configurable? If so,
+where is it configured by the driver? I want to understand better the
+world that you're coming from, with this whole "preemptable rings"
+instead of "preemptable traffic classes" thing.
+IEEE 802.1Q-2018 clause 12.30.1.1.1 framePreemptionAdminStatus talks
+about reporting preemption status per priority/traffic class, not per
+queue/ring. Granted, I may be trapped in my own strange world here, but
+say a driver has 16 rings mapped to 8 priorities like enetc does, I
+think it's super odd that taprio calls tc_map_to_queue_mask before
+passing the gate_mask to ndo_setup_tc. It's the kind of thing that makes
+you wonder if you should put some sort of paranoid conflict resolution
+checks in the code, what if queues 0 and 1, which have the same
+priority, have different values in the gate_mask, what do I program into
+my hardware which operates per priority as the standard actually says?=
