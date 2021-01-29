@@ -2,115 +2,103 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1C7583082BD
-	for <lists+netdev@lfdr.de>; Fri, 29 Jan 2021 01:55:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 0EEA53082C4
+	for <lists+netdev@lfdr.de>; Fri, 29 Jan 2021 01:57:28 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231519AbhA2Ay4 (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Thu, 28 Jan 2021 19:54:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36196 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229757AbhA2Ayx (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Thu, 28 Jan 2021 19:54:53 -0500
-Received: from mail-qt1-x831.google.com (mail-qt1-x831.google.com [IPv6:2607:f8b0:4864:20::831])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5DAFC061573
-        for <netdev@vger.kernel.org>; Thu, 28 Jan 2021 16:54:12 -0800 (PST)
-Received: by mail-qt1-x831.google.com with SMTP id c1so5623213qtc.1
-        for <netdev@vger.kernel.org>; Thu, 28 Jan 2021 16:54:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=netflix.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=KO9cyGUN/VAmiWfEXbjNMDmR2Ez9fjBoN5WHJiTrZq8=;
-        b=r7IODK/W50P7Rv+5vZG1BLCtM8ucZTfKrDz37euGQDCL6iI8+911Nx+79p3f1B7e2a
-         /r/dEm5H5v7eZQ7RDAzf93NL4JuNhRCs/NZgznyL3DfmSttU0rToelhnSoqp0vJeytk8
-         zBDtu7s4JQKX3j2o90WZ5ZKQq2x85xQo++9mo=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=KO9cyGUN/VAmiWfEXbjNMDmR2Ez9fjBoN5WHJiTrZq8=;
-        b=JqDQT56hurY0qK2T4ZzSGAXMwFu6Thpa2q/9RnFBAJD4Jq5qZd4WeLUj+nw6Sq1RPi
-         XjHqrz9oOqMcuUf7/P8oj9Y/5Vb4XMoNGjo+Ny2cyNpS7FnfhmLUZIQoECT0vDvtmQ5V
-         TO6rpyJY+oUUMM2H4tYjjNmiPUBwaf0lMr+Gv7hv1EjaRaQE9fMUbZEuQMXy/bCRKUgn
-         QQROHZvWx59oUmJhU2dUkdnHJmfu4GTHoiGrL14GxyH0VCZaDnrvGhmzBXSj+7Qrac2L
-         EcB3EF8mxabMJxFDadm8XQr2v65QK58d7f0eH2I4S9d1bkGYPI+ByfQRpzhhl1y5fAyj
-         Qytw==
-X-Gm-Message-State: AOAM533BJcYSST9UuzF7gi6BM6Vof7oRKUC0EZqftSyg0N7WhCaNaSDr
-        +8DkQiCildZtk+jMuDxXz56pofZk0i3LldoyPpfyHA==
-X-Google-Smtp-Source: ABdhPJz1Moyzxs/7IQ/XxGZkkAJGYxlMiaxkNq2McF6z39UNOP1+BlbM0mOT0zdfph8RRvUFBnfZhSCkNyQbGGlfF9U=
-X-Received: by 2002:ac8:5156:: with SMTP id h22mr2304274qtn.176.1611881651861;
- Thu, 28 Jan 2021 16:54:11 -0800 (PST)
+        id S231423AbhA2A5O (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Thu, 28 Jan 2021 19:57:14 -0500
+Received: from novek.ru ([213.148.174.62]:35662 "EHLO novek.ru"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231184AbhA2A5L (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Thu, 28 Jan 2021 19:57:11 -0500
+Received: from [172.23.108.4] (unknown [88.151.187.251])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by novek.ru (Postfix) with ESMTPSA id 2D490500192;
+        Fri, 29 Jan 2021 03:57:46 +0300 (MSK)
+DKIM-Filter: OpenDKIM Filter v2.11.0 novek.ru 2D490500192
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=novek.ru; s=mail;
+        t=1611881867; bh=9N0QnSar07E5KeSibtSwIh4NAYwkGpaVMenLg0MpxO4=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=omDBIortq0VCP32yLiGVq3F1T/5f+FRNQzY+Rjyx9b3UenCqDFwoaqcecq5y2h65O
+         X8pb6yIhPAeZij+0gT5XIa6iyOBsx6IVqQCskNJCwAvXj+pmkiSw8MeV0BMtImTVDy
+         zxkBR4rm7JMPmo1Zv77WkCJNjxpxCOhQpvWxgSio=
+Subject: Re: [net] net: ip_tunnel: fix mtu calculation
+To:     Willem de Bruijn <willemdebruijn.kernel@gmail.com>
+Cc:     Jakub Kicinski <kuba@kernel.org>,
+        Cong Wang <xiyou.wangcong@gmail.com>,
+        Slava Bacherikov <mail@slava.cc>,
+        Network Development <netdev@vger.kernel.org>
+References: <1611805733-25072-1-git-send-email-vfedorenko@novek.ru>
+ <CAF=yD-JA7OPLWTxnhkEbvFwuY_SJm7SociVSTi+GG2_Qr72+KQ@mail.gmail.com>
+From:   Vadim Fedorenko <vfedorenko@novek.ru>
+Message-ID: <c7d2f150-cdbc-7423-8bd3-5875c2a54e04@novek.ru>
+Date:   Fri, 29 Jan 2021 00:56:25 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-References: <20210129001210.344438-1-hari@netflix.com> <CAADnVQJE+nVoCsCxQDdy9SgdMRhrWePzRF__vrZSN2-wBFc+0g@mail.gmail.com>
-In-Reply-To: <CAADnVQJE+nVoCsCxQDdy9SgdMRhrWePzRF__vrZSN2-wBFc+0g@mail.gmail.com>
-From:   Brendan Gregg <bgregg@netflix.com>
-Date:   Fri, 29 Jan 2021 11:53:45 +1100
-Message-ID: <CAJN39oiqwj-mFim_L=TrxRKjJqMezHpH5u+_fQAyaXq6D1AZcg@mail.gmail.com>
-Subject: Re: [PATCH] net: tracepoint: exposing sk_family in all tcp:tracepoints
-To:     Alexei Starovoitov <alexei.starovoitov@gmail.com>
-Cc:     Hariharan Ananthakrishnan <hari@netflix.com>,
-        Eric Dumazet <edumazet@google.com>,
-        "David S . Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Network Development <netdev@vger.kernel.org>,
-        Song Liu <songliubraving@fb.com>,
-        Daniel Borkmann <daniel@iogearbox.net>,
-        Alexei Starovoitov <ast@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <CAF=yD-JA7OPLWTxnhkEbvFwuY_SJm7SociVSTi+GG2_Qr72+KQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Spam-Status: No, score=-1.2 required=5.0 tests=ALL_TRUSTED,NICE_REPLY_A
+        autolearn=ham autolearn_force=no version=3.4.1
+X-Spam-Checker-Version: SpamAssassin 3.4.1 (2015-04-28) on gate.novek.ru
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, Jan 29, 2021 at 11:16 AM Alexei Starovoitov
-<alexei.starovoitov@gmail.com> wrote:
->
-> On Thu, Jan 28, 2021 at 4:12 PM Hariharan Ananthakrishnan
-> <hari@netflix.com> wrote:
-> >
-> > Similar to sock:inet_sock_set_state tracepoint, expose sk_family to
-> > distinguish AF_INET and AF_INET6 families.
-> >
-> > The following tcp tracepoints are updated:
-> > tcp:tcp_destroy_sock
-> > tcp:tcp_rcv_space_adjust
-> > tcp:tcp_retransmit_skb
-> > tcp:tcp_send_reset
-> > tcp:tcp_receive_reset
-> > tcp:tcp_retransmit_synack
-> > tcp:tcp_probe
-> >
-> > Signed-off-by: Hariharan Ananthakrishnan <hari@netflix.com>
-> > Signed-off-by: Brendan Gregg <bgregg@netflix.com>
-> > ---
-> >  include/trace/events/tcp.h | 20 ++++++++++++++++----
-> >  1 file changed, 16 insertions(+), 4 deletions(-)
-> >
-> > diff --git a/include/trace/events/tcp.h b/include/trace/events/tcp.h
-> > index cf97f6339acb..a319d2f86cd9 100644
-> > --- a/include/trace/events/tcp.h
-> > +++ b/include/trace/events/tcp.h
-> > @@ -59,6 +59,7 @@ DECLARE_EVENT_CLASS(tcp_event_sk_skb,
-> >                 __field(int, state)
-> >                 __field(__u16, sport)
-> >                 __field(__u16, dport)
-> > +               __field(__u16, family)
-> >                 __array(__u8, saddr, 4)
-> >                 __array(__u8, daddr, 4)
-> >                 __array(__u8, saddr_v6, 16)
->
-> raw tracepoint can access all sk and skb fields already.
-> Why do you need this?
+On 28.01.2021 21:48, Willem de Bruijn wrote:
+> On Wed, Jan 27, 2021 at 11:14 PM Vadim Fedorenko <vfedorenko@novek.ru> wrote:
+>>
+>> dev->hard_header_len for tunnel interface is set only when header_ops
+>> are set too and already contains full overhead of any tunnel encapsulation.
+>> That's why there is not need to use this overhead twice in mtu calc.
+>>
+>> Fixes: fdafed459998 ("ip_gre: set dev->hard_header_len and dev->needed_headroom properly")
+>> Reported-by: Slava Bacherikov <mail@slava.cc>
+>> Signed-off-by: Vadim Fedorenko <vfedorenko@novek.ru>
+>> ---
+>>   net/ipv4/ip_tunnel.c | 18 +++++++++---------
+>>   1 file changed, 9 insertions(+), 9 deletions(-)
+>>
+>> diff --git a/net/ipv4/ip_tunnel.c b/net/ipv4/ip_tunnel.c
+>> index 64594aa..ad78825 100644
+>> --- a/net/ipv4/ip_tunnel.c
+>> +++ b/net/ipv4/ip_tunnel.c
+>> @@ -317,7 +317,7 @@ static int ip_tunnel_bind_dev(struct net_device *dev)
+>>          }
+>>
+>>          dev->needed_headroom = t_hlen + hlen;
+>> -       mtu -= (dev->hard_header_len + t_hlen);
+>> +       mtu -= dev->hard_header_len ? : t_hlen;
+> 
+> Safety of this change also depends on whether any other ip tunnels
+> might have non-zero hard_header_len.
 
+Yes, sure.
 
-We (Netflix) can dig it out using raw tracepoints and BTF (once it's
-rolled out) but this was about fixing the existing tracepoints so they
-were more useful.
+> I haven't fully checked yet, but at first scan I only see one other
+> instance of header_ops, and that ip_tunnel_header_ops does not have a
+> create implementation.
 
-I think tracepoints and their arguments suit a class of
-non-kernel-hacker users: SREs, operators, sysadmins, etc. People who
-run and tweak bpftrace one-liners.
+Yes. The calls to ip_tunnel_setup are in ip_gre.c, ip_tunnel.c, ip_vti.c
+and ipip.c. All of them except of ip_gre use ip_tunnel_header_ops which
+doesn't have create implementation and have hard_header_len set to 0.
 
-Brendan
+> 
+>>
+>>          if (mtu < IPV4_MIN_MTU)
+>>                  mtu = IPV4_MIN_MTU;
+>> @@ -347,7 +347,7 @@ static struct ip_tunnel *ip_tunnel_create(struct net *net,
+>>          nt = netdev_priv(dev);
+>>          t_hlen = nt->hlen + sizeof(struct iphdr);
+>>          dev->min_mtu = ETH_MIN_MTU;
+>> -       dev->max_mtu = IP_MAX_MTU - dev->hard_header_len - t_hlen;
+>> +       dev->max_mtu = IP_MAX_MTU - dev->hard_header_len ? : t_hlen;
+> 
+> here and elsewhere: subtraction takes precedence over ternary
+> conditional, so (IP_MAX_MTU - ..) always true.
 
--- 
-Brendan Gregg, Senior Performance Architect, Netflix
+Oh, sure, my bad. Will fix it in v2, thanks!
+
