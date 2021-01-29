@@ -2,116 +2,181 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 851C6308D27
-	for <lists+netdev@lfdr.de>; Fri, 29 Jan 2021 20:16:47 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id BEFD4308D2E
+	for <lists+netdev@lfdr.de>; Fri, 29 Jan 2021 20:16:50 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233035AbhA2TKz (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Jan 2021 14:10:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44544 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232942AbhA2TJn (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jan 2021 14:09:43 -0500
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D76A9C06174A;
-        Fri, 29 Jan 2021 11:08:59 -0800 (PST)
-Received: by mail-wr1-x42f.google.com with SMTP id c12so9910723wrc.7;
-        Fri, 29 Jan 2021 11:08:59 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=O23rlZtfo1FZK0qx/WutTi+hkYR2QPOf0nbtZy10Zxw=;
-        b=DdVDH9ZXqAC6pKsXfQftK93OjTPC27Nw5D2M6I8L/f2uvZev0A9JsuKm0emyUXWDAF
-         SM7M/J5PhQl9LL8FbOW4nNny9Or4Gkqp9wlfYzTawOjIgh2P71w8aSqwWH9J6OkZmR/z
-         GpY8TDRxBO79rLhpmj6+29vwqm6hJmzjOy6ym74Rq3Qd5KbAWfoHO4pMnjuFrxqw5gbE
-         9uGCmsJhWd+lFYGDpi2mUqyJdWdAgaeMHNofQjputA9/s65xjOmhqiCTbD+tW5nU+Ex1
-         RJTAI7mK3KBmLP/le5Q01NDo6Ed8KhScv3SWrGEHMCjKt6GT6Tf5HZfXLQ5/5hIB8Y1Z
-         5qpg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=O23rlZtfo1FZK0qx/WutTi+hkYR2QPOf0nbtZy10Zxw=;
-        b=uISZpXuAqlEj+FCY9gquqskiRK8lGUWuXy3dUzsUrYMN3yU5Ak5FwCSUNfDhJCqYCe
-         QH2Cxbc2YjpM67Td5zhiCFc+NG+AHk4NkErrNwKzK9m3kdTihxgP9prte9su/2Za/xEI
-         WAjYg2Z40NdMyIkChFOoPFo5hvqk4jwGdri/NdGxkphReeJbTsVcdpG7FYMA8bb36vlQ
-         rm7OawgDams0AC+7IpZqhMsb4Xba4y30X9tUnkLs7VLZAb43WrA7ilrOxuGrykyasjg+
-         9nBDktPdKamw9lIO9URTfH4yxmVULD3Y9FntYwqTZRBD62gRDTS+zAAcNpOY773EEuqE
-         8eHQ==
-X-Gm-Message-State: AOAM530zu47yrmWVzv3ouVqpFhVtBnZFAIIFPH2LmZ62kQz4WbVDZqzo
-        U3YPo4ReOneTJ0JOCu6rbI65QE/WLcKcLLR3ySE=
-X-Google-Smtp-Source: ABdhPJzAbgdkkapiGmzGouxTGwveq5m7LmJNveRCk+Kv9qY2evOh0QQsbBh6o6uIYkABxwRfFnIBxorHq8dmbcxo0OQ=
-X-Received: by 2002:a5d:49cf:: with SMTP id t15mr6034971wrs.217.1611947338629;
- Fri, 29 Jan 2021 11:08:58 -0800 (PST)
-MIME-Version: 1.0
-References: <20210127215010.99954-1-uwe@kleine-koenig.org>
-In-Reply-To: <20210127215010.99954-1-uwe@kleine-koenig.org>
-From:   Lijun Pan <lijunp213@gmail.com>
-Date:   Fri, 29 Jan 2021 13:08:45 -0600
-Message-ID: <CAOhMmr4ZMXS+R3AcdKm3qcePfuaZeC-0dNWvsSzowbv5hXo2-Q@mail.gmail.com>
-Subject: Re: [PATCH] vio: make remove callback return void
-To:     =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <uwe@kleine-koenig.org>
-Cc:     Michael Ellerman <mpe@ellerman.id.au>,
-        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
-        Paul Mackerras <paulus@samba.org>,
+        id S232916AbhA2TMa convert rfc822-to-8bit (ORCPT
+        <rfc822;lists+netdev@lfdr.de>); Fri, 29 Jan 2021 14:12:30 -0500
+Received: from youngberry.canonical.com ([91.189.89.112]:55410 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232829AbhA2TMY (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jan 2021 14:12:24 -0500
+Received: from 1.general.jvosburgh.us.vpn ([10.172.68.206] helo=famine.localdomain)
+        by youngberry.canonical.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
+        (Exim 4.86_2)
+        (envelope-from <jay.vosburgh@canonical.com>)
+        id 1l5ZAp-00078K-GB; Fri, 29 Jan 2021 19:11:15 +0000
+Received: by famine.localdomain (Postfix, from userid 1000)
+        id AE07661DDA; Fri, 29 Jan 2021 11:11:13 -0800 (PST)
+Received: from famine (localhost [127.0.0.1])
+        by famine.localdomain (Postfix) with ESMTP id A59F0A0411;
+        Fri, 29 Jan 2021 11:11:13 -0800 (PST)
+From:   Jay Vosburgh <jay.vosburgh@canonical.com>
+To:     moyufeng <moyufeng@huawei.com>
+cc:     Jiri Pirko <jiri@resnulli.us>, "lipeng (Y)" <lipeng321@huawei.com>,
+        linux-kernel@vger.kernel.org, Veaceslav Falico <vfalico@gmail.com>,
+        Andy Gospodarek <andy@greyhouse.net>,
         "David S. Miller" <davem@davemloft.net>,
-        Jens Axboe <axboe@kernel.dk>, Matt Mackall <mpm@selenic.com>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Peter Huewe <peterhuewe@gmx.de>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Haren Myneni <haren@us.ibm.com>,
-        =?UTF-8?Q?Breno_Leit=C3=A3o?= <leitao@debian.org>,
-        Nayna Jain <nayna@linux.ibm.com>,
-        Paulo Flabiano Smorigo <pfsmorigo@gmail.com>,
-        Steven Royer <seroyer@linux.ibm.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Cristobal Forno <cforno12@linux.ibm.com>,
         Jakub Kicinski <kuba@kernel.org>,
-        Dany Madden <drt@linux.ibm.com>, Lijun Pan <ljp@linux.ibm.com>,
-        Sukadev Bhattiprolu <sukadev@linux.ibm.com>,
-        Tyrel Datwyler <tyreld@linux.ibm.com>,
-        "James E.J. Bottomley" <jejb@linux.ibm.com>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        Michael Cyr <mikecyr@linux.ibm.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        sparclinux@vger.kernel.org, linux-block@vger.kernel.org,
-        linux-crypto@vger.kernel.org, linux-integrity@vger.kernel.org,
-        netdev@vger.kernel.org, linux-scsi@vger.kernel.org,
-        target-devel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        Thomas Davis <tadavis@lbl.gov>, netdev@vger.kernel.org,
+        linuxarm@openeuler.org, Salil Mehta <salil.mehta@huawei.com>
+Subject: Re: question about bonding mode 4
+In-reply-to: <52630cba-cc60-a024-8dd0-8319e5245044@huawei.com>
+References: <20201218193033.6138-1-jarod@redhat.com> <20201228101145.GC3565223@nanopsycho.orion> <20210107235813.GB29828@redhat.com> <20210108131256.GG3565223@nanopsycho.orion> <ef692814-fdea-ea59-6b52-93630b5b5570@huawei.com> <52630cba-cc60-a024-8dd0-8319e5245044@huawei.com>
+Comments: In-reply-to moyufeng <moyufeng@huawei.com>
+   message dated "Sat, 23 Jan 2021 14:10:21 +0800."
+X-Mailer: MH-E 8.6+git; nmh 1.6; GNU Emacs 27.0.50
+MIME-Version: 1.0
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <10373.1611947473.1@famine>
+Content-Transfer-Encoding: 8BIT
+Date:   Fri, 29 Jan 2021 11:11:13 -0800
+Message-ID: <10374.1611947473@famine>
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Wed, Jan 27, 2021 at 6:41 PM Uwe Kleine-K=C3=B6nig <uwe@kleine-koenig.or=
-g> wrote:
->
-> The driver core ignores the return value of struct bus_type::remove()
-> because there is only little that can be done. To simplify the quest to
-> make this function return void, let struct vio_driver::remove() return
-> void, too. All users already unconditionally return 0, this commit makes
-> it obvious that returning an error code is a bad idea and makes it
-> obvious for future driver authors that returning an error code isn't
-> intended.
->
-> Note there are two nominally different implementations for a vio bus:
-> one in arch/sparc/kernel/vio.c and the other in
-> arch/powerpc/platforms/pseries/vio.c. I didn't care to check which
-> driver is using which of these busses (or if even some of them can be
-> used with both) and simply adapt all drivers and the two bus codes in
-> one go.
->
-> Note that for the powerpc implementation there is a semantical change:
-> Before this patch for a device that was bound to a driver without a
-> remove callback vio_cmo_bus_remove(viodev) wasn't called. As the device
-> core still considers the device unbound after vio_bus_remove() returns
-> calling this unconditionally is the consistent behaviour which is
-> implemented here.
->
-> Signed-off-by: Uwe Kleine-K=C3=B6nig <uwe@kleine-koenig.org>
+moyufeng <moyufeng@huawei.com> wrote:
 
-Acked-by: Lijun Pan <ljp@linux.ibm.com>
+>Ping...
+>Any comments? Thanks!
+>
+>On 2021/1/15 10:02, moyufeng wrote:
+>> Hi Team,
+>> 
+>> I have a question about bonding. During testing bonding mode 4
+>> scenarios, I find that there is a very low probability that
+>> the pointer is null. The following information is displayed:
+>> 
+>> [99359.795934] bond0: (slave eth13.2001): Port 2 did not find a suitable aggregator
+>> [99359.796960] Unable to handle kernel NULL pointer dereference at virtual address 0000000000000020
+>> [99359.798127] Mem abort info:
+>> [99359.798526]   ESR = 0x96000004
+>> [99359.798938]   EC = 0x25: DABT (current EL), IL = 32 bits
+>> [99359.799673]   SET = 0, FnV = 0
+>> [99359.800106]   EA = 0, S1PTW = 0
+>> [99359.800554] Data abort info:
+>> [99359.800952]   ISV = 0, ISS = 0x00000004
+>> [99359.801522]   CM = 0, WnR = 0
+>> [99359.801970] user pgtable: 4k pages, 48-bit VAs, pgdp=00000000c64e6000
+>> [99359.802876] [0000000000000020] pgd=0000000000000000
+>> [99359.803555] Internal error: Oops: 96000004 [#1] PREEMPT SMP
+>> [99359.804369] Modules linked in: bonding hns3(-) hclgevf hnae3 [last unloaded: bonding]
+>> [99359.805494] CPU: 1 PID: 951 Comm: kworker/u10:2 Not tainted 5.7.0-rc4+ #1
+>> [99359.806455] Hardware name: linux,dummy-virt (DT)
+>> [99359.807107] Workqueue: bond0 bond_3ad_state_machine_handler [bonding]
+>> [99359.808056] pstate: 60c00005 (nZCv daif +PAN +UAO)
+>> [99359.808722] pc : bond_3ad_state_machine_handler+0x7fc/0xdb8 [bonding]
+>> [99359.809652] lr : bond_3ad_state_machine_handler+0x7f4/0xdb8 [bonding]
+>> [99359.810535] sp : ffff80001882bd20
+>> [99359.811012] x29: ffff80001882bd20 x28: ffff000085939a38
+>> [99359.811791] x27: ffff00008649bb68 x26: 00000000aaaaaaab
+>> [99359.812871] x25: ffff800009401000 x24: ffff800009408de4
+>> [99359.814049] x23: ffff80001882bd98 x22: ffff00008649b880
+>> [99359.815210] x21: 0000000000000000 x20: ffff000085939a00
+>> [99359.816401] x19: ffff00008649b880 x18: ffff800012572988
+>> [99359.817637] x17: 0000000000000000 x16: 0000000000000000
+>> [99359.818870] x15: ffff80009882b987 x14: 726f746167657267
+>> [99359.820090] x13: 676120656c626174 x12: 697573206120646e
+>> [99359.821374] x11: 696620746f6e2064 x10: 696420322074726f
+>> [99359.822659] x9 : 50203a2931303032 x8 : 0000000000081391
+>> [99359.823891] x7 : ffff8000108e3ad0 x6 : ffff8000128858bb
+>> [99359.825109] x5 : 0000000000000000 x4 : 0000000000000000
+>> [99359.826262] x3 : 00000000ffffffff x2 : 906b329bb5362a00
+>> [99359.827394] x1 : 906b329bb5362a00 x0 : 0000000000000000
+>> [99359.828540] Call trace:
+>> [99359.829071]  bond_3ad_state_machine_handler+0x7fc/0xdb8 [bonding]
+>> [99359.830367]  process_one_work+0x15c/0x4a0
+>> [99359.831216]  worker_thread+0x50/0x478
+>> [99359.832022]  kthread+0x130/0x160
+>> [99359.832716]  ret_from_fork+0x10/0x18
+>> [99359.833487] Code: 910c0021 95f704bb f9403f80 b5ffe300 (f9401000)
+>> [99359.834742] ---[ end trace c7a8e02914afc4e0 ]---
+>> [99359.835817] Kernel panic - not syncing: Fatal exception in interrupt
+>> [99359.837334] SMP: stopping secondary CPUs
+>> [99359.838277] Kernel Offset: disabled
+>> [99359.839086] CPU features: 0x080002,22208218
+>> [99359.840053] Memory Limit: none
+>> [99359.840783] ---[ end Kernel panic - not syncing: Fatal exception in interrupt ]---
+>> 
+>> The test procedure is as follows:
+>> 1. Configure bonding and set it to mode 4.
+>>     echo "4" > /sys/class/net/bond0/bonding/mode
+>>     ifconfig bond0 up
+>> 
+>> 2. Configure two VLANs and add them to the bonding in step 1.
+>>     vconfig add eth0 2001
+>>     vconfig add eth1 2001
+>>     ifenslave bond0 eth0.2001 eth1.2001
+>> 
+>> 3. Unload the network device driver and bonding driver.
+>>     rmmod hns3
+>>     rmmod hclge
+>>     rmmod hnae3
+>>     rmmod bonding.ko
+
+	Are you running the above in a script, and can you share the
+entire thing?
+
+	Does the issue occur with the current net-next?
+
+>> 4. Repeat the preceding steps for a long time.
+
+	When you run this test, what are the network interfaces eth0 and
+eth1 connected to, and are those ports configured for VLAN 2001 and
+LACP?
+
+>> By checking the logic in ad_port_selection_logic(), I find that
+>> if enter the branch "Port %d did not find a suitable aggregator",
+>> the value of port->aggregator will be NULL, causing the problem.
+>> 
+>> So I'd like to ask what circumstances will be involved in this
+>> branch, and what should be done in this case?
+
+	Well, in principle, this shouldn't ever happen.  Every port
+structure contains an aggregator structure, so there should always be
+one available somewhere.  I'm going to speculate that there's a race
+condition somewhere in the teardown processing vs the LACP state machine
+that invalidates this presumption.
+
+>> The detailed code analysis is as follows:
+
+[...]
+
+>> 	/* if all aggregator's ports are READY_N == TRUE, set ready=TRUE
+>> 	 * in all aggregator's ports, else set ready=FALSE in all
+>> 	 * aggregator's ports
+>> 	 */
+>> 	__set_agg_ports_ready(port->aggregator,
+>> 			      __agg_ports_are_ready(port->aggregator));
+>> 
+>> ----analysis: port->aggregator is still NULL, which causes problem.
+>> 
+>> 	aggregator = __get_first_agg(port);
+>> 	ad_agg_selection_logic(aggregator, update_slave_arr);
+>> 
+>> 	if (!port->aggregator->is_active)
+>> 		port->actor_oper_port_state &= ~LACP_STATE_SYNCHRONIZATION;
+
+	Correct, if the "did not find a suitable aggregator" path is
+taken, port->aggregator is NULL and bad things happen in the above
+block.
+
+	This is something that needs to be fixed, but I'm also concerned
+that there are other issues lurking, so I'd like to be able to reproduce
+this.
+
+	-J
+
+---
+	-Jay Vosburgh, jay.vosburgh@canonical.com
