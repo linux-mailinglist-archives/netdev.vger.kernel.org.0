@@ -2,109 +2,116 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 1DFC6308D17
-	for <lists+netdev@lfdr.de>; Fri, 29 Jan 2021 20:16:40 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 851C6308D27
+	for <lists+netdev@lfdr.de>; Fri, 29 Jan 2021 20:16:47 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233005AbhA2THs (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Jan 2021 14:07:48 -0500
-Received: from mail.kernel.org ([198.145.29.99]:51012 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232973AbhA2TGr (ORCPT <rfc822;netdev@vger.kernel.org>);
-        Fri, 29 Jan 2021 14:06:47 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 1726664DFB;
-        Fri, 29 Jan 2021 19:06:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1611947166;
-        bh=jTqi+jdOU05OqAmzEdlj9q9kyuMeRaWQDDxAGUJIAYA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=jFysm8KKZ3948cZWZJ2i269CZyeMyaH4hfh3gaYawmwKT4CxjTTtoXwtyiBU7fKe3
-         +oxDjfs5+kTQUjG06w7Y1Fp7LUmgZVVma8wIoyOk7pZHqcVfVv2Dyr6CchmmHVheIT
-         O45ZWNWJw5/8J/aPRmB8mpCNyRhzWRKEssaAWrJCawj4QcfC9YX7z+8/McvpepULnf
-         oJcGC1RHKTkaQ2VDMQgwdOOkCGcjQ+bST+L3Crd2p5RIrjUYbiDGZ+egmSMHlezaEk
-         bmsVWx4gGiuiqIRB3m2kARJx4c1Nuibhr1UZHBpY5QhFZ9QMyJmw4KcsEybKHMlvki
-         7gpBBn5JwuocA==
-Date:   Fri, 29 Jan 2021 11:06:05 -0800
-From:   Jakub Kicinski <kuba@kernel.org>
-To:     Shoaib Rao <rao.shoaib@oracle.com>
-Cc:     "Matthew Wilcox (Oracle)" <willy@infradead.org>,
-        linux-kernel@vger.kernel.org, linux-api@vger.kernel.org,
-        netdev@vger.kernel.org, "David S. Miller" <davem@davemloft.net>,
-        andy.rudoff@intel.com
-Subject: Re: [PATCH] af_unix: Allow Unix sockets to raise SIGURG
-Message-ID: <20210129110605.54df8409@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-In-Reply-To: <23fc3de2-7541-04c9-a56f-4006a7dc773f@oracle.com>
-References: <20210122150638.210444-1-willy@infradead.org>
-        <20210125153650.18c84b1a@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
-        <23fc3de2-7541-04c9-a56f-4006a7dc773f@oracle.com>
+        id S233035AbhA2TKz (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Jan 2021 14:10:55 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44544 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232942AbhA2TJn (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jan 2021 14:09:43 -0500
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D76A9C06174A;
+        Fri, 29 Jan 2021 11:08:59 -0800 (PST)
+Received: by mail-wr1-x42f.google.com with SMTP id c12so9910723wrc.7;
+        Fri, 29 Jan 2021 11:08:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=O23rlZtfo1FZK0qx/WutTi+hkYR2QPOf0nbtZy10Zxw=;
+        b=DdVDH9ZXqAC6pKsXfQftK93OjTPC27Nw5D2M6I8L/f2uvZev0A9JsuKm0emyUXWDAF
+         SM7M/J5PhQl9LL8FbOW4nNny9Or4Gkqp9wlfYzTawOjIgh2P71w8aSqwWH9J6OkZmR/z
+         GpY8TDRxBO79rLhpmj6+29vwqm6hJmzjOy6ym74Rq3Qd5KbAWfoHO4pMnjuFrxqw5gbE
+         9uGCmsJhWd+lFYGDpi2mUqyJdWdAgaeMHNofQjputA9/s65xjOmhqiCTbD+tW5nU+Ex1
+         RJTAI7mK3KBmLP/le5Q01NDo6Ed8KhScv3SWrGEHMCjKt6GT6Tf5HZfXLQ5/5hIB8Y1Z
+         5qpg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=O23rlZtfo1FZK0qx/WutTi+hkYR2QPOf0nbtZy10Zxw=;
+        b=uISZpXuAqlEj+FCY9gquqskiRK8lGUWuXy3dUzsUrYMN3yU5Ak5FwCSUNfDhJCqYCe
+         QH2Cxbc2YjpM67Td5zhiCFc+NG+AHk4NkErrNwKzK9m3kdTihxgP9prte9su/2Za/xEI
+         WAjYg2Z40NdMyIkChFOoPFo5hvqk4jwGdri/NdGxkphReeJbTsVcdpG7FYMA8bb36vlQ
+         rm7OawgDams0AC+7IpZqhMsb4Xba4y30X9tUnkLs7VLZAb43WrA7ilrOxuGrykyasjg+
+         9nBDktPdKamw9lIO9URTfH4yxmVULD3Y9FntYwqTZRBD62gRDTS+zAAcNpOY773EEuqE
+         8eHQ==
+X-Gm-Message-State: AOAM530zu47yrmWVzv3ouVqpFhVtBnZFAIIFPH2LmZ62kQz4WbVDZqzo
+        U3YPo4ReOneTJ0JOCu6rbI65QE/WLcKcLLR3ySE=
+X-Google-Smtp-Source: ABdhPJzAbgdkkapiGmzGouxTGwveq5m7LmJNveRCk+Kv9qY2evOh0QQsbBh6o6uIYkABxwRfFnIBxorHq8dmbcxo0OQ=
+X-Received: by 2002:a5d:49cf:: with SMTP id t15mr6034971wrs.217.1611947338629;
+ Fri, 29 Jan 2021 11:08:58 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20210127215010.99954-1-uwe@kleine-koenig.org>
+In-Reply-To: <20210127215010.99954-1-uwe@kleine-koenig.org>
+From:   Lijun Pan <lijunp213@gmail.com>
+Date:   Fri, 29 Jan 2021 13:08:45 -0600
+Message-ID: <CAOhMmr4ZMXS+R3AcdKm3qcePfuaZeC-0dNWvsSzowbv5hXo2-Q@mail.gmail.com>
+Subject: Re: [PATCH] vio: make remove callback return void
+To:     =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= <uwe@kleine-koenig.org>
+Cc:     Michael Ellerman <mpe@ellerman.id.au>,
+        Benjamin Herrenschmidt <benh@kernel.crashing.org>,
+        Paul Mackerras <paulus@samba.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jens Axboe <axboe@kernel.dk>, Matt Mackall <mpm@selenic.com>,
+        Herbert Xu <herbert@gondor.apana.org.au>,
+        Peter Huewe <peterhuewe@gmx.de>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Haren Myneni <haren@us.ibm.com>,
+        =?UTF-8?Q?Breno_Leit=C3=A3o?= <leitao@debian.org>,
+        Nayna Jain <nayna@linux.ibm.com>,
+        Paulo Flabiano Smorigo <pfsmorigo@gmail.com>,
+        Steven Royer <seroyer@linux.ibm.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Cristobal Forno <cforno12@linux.ibm.com>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Dany Madden <drt@linux.ibm.com>, Lijun Pan <ljp@linux.ibm.com>,
+        Sukadev Bhattiprolu <sukadev@linux.ibm.com>,
+        Tyrel Datwyler <tyreld@linux.ibm.com>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Michael Cyr <mikecyr@linux.ibm.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        linuxppc-dev@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+        sparclinux@vger.kernel.org, linux-block@vger.kernel.org,
+        linux-crypto@vger.kernel.org, linux-integrity@vger.kernel.org,
+        netdev@vger.kernel.org, linux-scsi@vger.kernel.org,
+        target-devel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-On Fri, 29 Jan 2021 09:56:48 -0800 Shoaib Rao wrote:
-> On 1/25/21 3:36 PM, Jakub Kicinski wrote:
-> > On Fri, 22 Jan 2021 15:06:37 +0000 Matthew Wilcox (Oracle) wrote:  
-> >> From: Rao Shoaib <rao.shoaib@oracle.com>
-> >>
-> >> TCP sockets allow SIGURG to be sent to the process holding the other
-> >> end of the socket.  Extend Unix sockets to have the same ability.
-> >>
-> >> The API is the same in that the sender uses sendmsg() with MSG_OOB to
-> >> raise SIGURG.  Unix sockets behave in the same way as TCP sockets with
-> >> SO_OOBINLINE set.  
-> > Noob question, if we only want to support the inline mode, why don't we
-> > require SO_OOBINLINE to have been called on @other? Wouldn't that
-> > provide more consistent behavior across address families?
-> >
-> > With the current implementation the receiver will also not see MSG_OOB
-> > set in msg->msg_flags, right?  
-> 
-> SO_OOBINLINE does not control the delivery of signal, It controls how
-> OOB Byte is delivered. It may not be obvious but this change does not
-> deliver any Byte, just a signal. So, as long as sendmsg flag contains
-> MSG_OOB, signal will be delivered just like it happens for TCP.
+On Wed, Jan 27, 2021 at 6:41 PM Uwe Kleine-K=C3=B6nig <uwe@kleine-koenig.or=
+g> wrote:
+>
+> The driver core ignores the return value of struct bus_type::remove()
+> because there is only little that can be done. To simplify the quest to
+> make this function return void, let struct vio_driver::remove() return
+> void, too. All users already unconditionally return 0, this commit makes
+> it obvious that returning an error code is a bad idea and makes it
+> obvious for future driver authors that returning an error code isn't
+> intended.
+>
+> Note there are two nominally different implementations for a vio bus:
+> one in arch/sparc/kernel/vio.c and the other in
+> arch/powerpc/platforms/pseries/vio.c. I didn't care to check which
+> driver is using which of these busses (or if even some of them can be
+> used with both) and simply adapt all drivers and the two bus codes in
+> one go.
+>
+> Note that for the powerpc implementation there is a semantical change:
+> Before this patch for a device that was bound to a driver without a
+> remove callback vio_cmo_bus_remove(viodev) wasn't called. As the device
+> core still considers the device unbound after vio_bus_remove() returns
+> calling this unconditionally is the consistent behaviour which is
+> implemented here.
+>
+> Signed-off-by: Uwe Kleine-K=C3=B6nig <uwe@kleine-koenig.org>
 
-Not as far as I can read this code. If MSG_OOB is set the data from the
-message used to be discarded, and EOPNOTSUPP returned. Now the data gets
-queued to the socket, and will be read inline.
-
-Sure, you also add firing of the signal, which is fine. The removal of
-the error check is the code I'm pointing at, so to speak.
-
-> >> SIGURG is ignored by default, so applications which do not know about this
-> >> feature will be unaffected.  In addition to installing a SIGURG handler,
-> >> the receiving application must call F_SETOWN or F_SETOWN_EX to indicate
-> >> which process or thread should receive the signal.
-> >>
-> >> Signed-off-by: Rao Shoaib <rao.shoaib@oracle.com>
-> >> Signed-off-by: Matthew Wilcox (Oracle) <willy@infradead.org>
-> >> ---
-> >>   net/unix/af_unix.c | 5 +++--
-> >>   1 file changed, 3 insertions(+), 2 deletions(-)
-> >>
-> >> diff --git a/net/unix/af_unix.c b/net/unix/af_unix.c
-> >> index 41c3303c3357..849dff688c2c 100644
-> >> --- a/net/unix/af_unix.c
-> >> +++ b/net/unix/af_unix.c
-> >> @@ -1837,8 +1837,6 @@ static int unix_stream_sendmsg(struct socket *sock, struct msghdr *msg,
-> >>   		return err;
-> >>   
-> >>   	err = -EOPNOTSUPP;
-> >> -	if (msg->msg_flags&MSG_OOB)
-> >> -		goto out_err;
-> >>   
-> >>   	if (msg->msg_namelen) {
-> >>   		err = sk->sk_state == TCP_ESTABLISHED ? -EISCONN : -EOPNOTSUPP;
-> >> @@ -1903,6 +1901,9 @@ static int unix_stream_sendmsg(struct socket *sock, struct msghdr *msg,
-> >>   		sent += size;
-> >>   	}
-> >>   
-> >> +	if (msg->msg_flags & MSG_OOB)
-> >> +		sk_send_sigurg(other);
-> >> +
-> >>   	scm_destroy(&scm);
-> >>   
-> >>   	return sent;  
-
+Acked-by: Lijun Pan <ljp@linux.ibm.com>
