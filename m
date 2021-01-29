@@ -2,166 +2,74 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 91EE1308D83
-	for <lists+netdev@lfdr.de>; Fri, 29 Jan 2021 20:41:44 +0100 (CET)
+	by mail.lfdr.de (Postfix) with ESMTP id 99F36308D7D
+	for <lists+netdev@lfdr.de>; Fri, 29 Jan 2021 20:36:55 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233022AbhA2Tic (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Jan 2021 14:38:32 -0500
-Received: from bgl-iport-4.cisco.com ([72.163.197.28]:7414 "EHLO
-        bgl-iport-4.cisco.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232752AbhA2Tia (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jan 2021 14:38:30 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=cisco.com; i=@cisco.com; l=3911; q=dns/txt; s=iport;
-  t=1611949108; x=1613158708;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=8T6xhh/+97MYL69HOZHijmar/RuLTo27yNHNS+EKjJA=;
-  b=WiGPGAOZKyws+5k6txWJ9KIAlQVxbdK9h/Ci35OBlUxAfwK7Kb9qsd1q
-   vp006ykzO+fwZr22yiUoRXzL+McRMnCq7E2yqYu6Cy5z9WNbwN5IKF/Q5
-   wSxLXHIhav77V7rVwWGmRaEQojlutGjXALthNIGPGvaUXgj6bRdVIItYv
-   4=;
-X-IronPort-AV: E=Sophos;i="5.79,386,1602547200"; 
-   d="scan'208";a="175655162"
-Received: from vla196-nat.cisco.com (HELO bgl-core-4.cisco.com) ([72.163.197.24])
-  by bgl-iport-4.cisco.com with ESMTP/TLS/DHE-RSA-SEED-SHA; 29 Jan 2021 19:28:13 +0000
-Received: from bgl-ads-1848.cisco.com (bgl-ads-1848.cisco.com [173.39.51.250])
-        by bgl-core-4.cisco.com (8.15.2/8.15.2) with ESMTPS id 10TJSCZL010736
-        (version=TLSv1.2 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO);
-        Fri, 29 Jan 2021 19:28:12 GMT
-Received: by bgl-ads-1848.cisco.com (Postfix, from userid 838444)
-        id 6A207CC1251; Sat, 30 Jan 2021 00:58:12 +0530 (IST)
-From:   Aviraj CJ <acj@cisco.com>
-To:     davem@davemloft.net, kuznet@ms2.inr.ac.ru, yoshfuji@linux-ipv6.org,
-        netdev@vger.kernel.org, linux-kernel@vger.kernel.org,
-        gregkh@linuxfoundation.org, xe-linux-external@cisco.com,
-        acj@cisco.com
-Cc:     Hangbin Liu <liuhangbin@gmail.com>,
-        Jakub Kicinski <kuba@kernel.org>
-Subject: [Internal review][PATCH stable v5.4 2/2] IPv6: reply ICMP error if the first fragment don't include all headers
-Date:   Sat, 30 Jan 2021 00:57:41 +0530
-Message-Id: <20210129192741.117693-2-acj@cisco.com>
-X-Mailer: git-send-email 2.26.2.Cisco
-In-Reply-To: <20210129192741.117693-1-acj@cisco.com>
-References: <20210129192741.117693-1-acj@cisco.com>
+        id S232855AbhA2Tgj (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Jan 2021 14:36:39 -0500
+Received: from mail.kernel.org ([198.145.29.99]:54852 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231533AbhA2Tgh (ORCPT <rfc822;netdev@vger.kernel.org>);
+        Fri, 29 Jan 2021 14:36:37 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 0A93A64E09;
+        Fri, 29 Jan 2021 19:35:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1611948957;
+        bh=Dpr9iklhJ+z/tdBn4X+vmqT1Tt6tEexfQCIfXM+sChk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=tgDyDAQjBSqZKXk6ADYOfVRAeeU16Wio4mmPSlogM7dms+vY8/xjlEXJIL2MrlNlh
+         Wz3A/Z2755x25urlzsNCpL9XfuiI2UR96eZhrTLdfxdF3u/1RGmqfT+rsyoLqBGOH8
+         4E7OmxsErYxiCGUuc3bQprZmbgM2OIiMaSmmIomWRyOkevcMARJt1wC89n0j4zmH0e
+         8I+PUEK0cPxBN2f952k1CS9A9UFSb3IVHiEssL6//zenmdIVBawN8/AnLHpNwwcyPY
+         JLRw9JziEniVy0FOUcnbjNRxwMSX/LonH+XxTcmt5fBOYeFuiWSLvlfOpDh9lWY4sK
+         wW3LlLJW/fRlA==
+Date:   Fri, 29 Jan 2021 11:35:55 -0800
+From:   Jakub Kicinski <kuba@kernel.org>
+To:     Jesper Dangaard Brouer <brouer@redhat.com>
+Cc:     David Ahern <dsahern@gmail.com>, netdev@vger.kernel.org,
+        "David S. Miller" <davem@davemloft.net>, bpf@vger.kernel.org,
+        Eric Dumazet <eric.dumazet@gmail.com>,
+        Daniel Borkmann <borkmann@iogearbox.net>,
+        Alexei Starovoitov <alexei.starovoitov@gmail.com>
+Subject: Re: [PATCH net-next V1] net: adjust net_device layout for cacheline
+ usage
+Message-ID: <20210129113555.6d361580@kicinski-fedora-pc1c0hjn.dhcp.thefacebook.com>
+In-Reply-To: <20210129114642.139cb7dc@carbon>
+References: <161168277983.410784.12401225493601624417.stgit@firesoul>
+        <2836dccc-faa9-3bb6-c4d5-dd60c75b275a@gmail.com>
+        <20210129085808.4e023d3f@carbon>
+        <20210129114642.139cb7dc@carbon>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Auto-Response-Suppress: DR, OOF, AutoReply
-X-Outbound-SMTP-Client: 173.39.51.250, bgl-ads-1848.cisco.com
-X-Outbound-Node: bgl-core-4.cisco.com
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
-From: Hangbin Liu <liuhangbin@gmail.com>
+On Fri, 29 Jan 2021 11:46:42 +0100 Jesper Dangaard Brouer wrote:
+> > On Thu, 28 Jan 2021 20:51:23 -0700
+> > David Ahern <dsahern@gmail.com> wrote:
+> > > A long over due look at the organization of this struct.  
+> 
+> Yes, I was surprised that the cache-lines used in fast-path was this
+> spread out.
 
-commit 2efdaaaf883a143061296467913c01aa1ff4b3ce upstream.
+I tried measuring the cache misses on struct netdevice running
+relatively network-heavy production workload once but they were 
+really deep in the noise. Things become much easier to optimize
+with a XDP micro-benchmark, but obviously should benefit all.
 
-Based on RFC 8200, Section 4.5 Fragment Header:
+> There is a comment /* Cache lines mostly used on receive path */
+> but that comment no-longer start on a cacheline, so I suspect that this
+> have slowly diverted over time (Eric's commit 9356b8fc07 dates back to 2005).
+> 
+> Patch is already applied. I expected people to would say that I also
+> needed to adjust the doc-type comments.  The comments describing the
+> members, seems to be ordered the same way as defined.  Should we/I keep
+> that order intact?  (when moving members)
 
-  -  If the first fragment does not include all headers through an
-     Upper-Layer header, then that fragment should be discarded and
-     an ICMP Parameter Problem, Code 3, message should be sent to
-     the source of the fragment, with the Pointer field set to zero.
+kdoc didn't complain, and as you say it's already a mess, plus it's
+two screen-fulls of scrolling away... 
 
-Checking each packet header in IPv6 fast path will have performance impact,
-so I put the checking in ipv6_frag_rcv().
-
-As the packet may be any kind of L4 protocol, I only checked some common
-protocols' header length and handle others by (offset + 1) > skb->len.
-Also use !(frag_off & htons(IP6_OFFSET)) to catch atomic fragments
-(fragmented packet with only one fragment).
-
-When send ICMP error message, if the 1st truncated fragment is ICMP message,
-icmp6_send() will break as is_ineligible() return true. So I added a check
-in is_ineligible() to let fragment packet with nexthdr ICMP but no ICMP header
-return false.
-
-Signed-off-by: Hangbin Liu <liuhangbin@gmail.com>
-Signed-off-by: Jakub Kicinski <kuba@kernel.org>
-Signed-off-by: Aviraj CJ <acj@cisco.com>
----
- net/ipv6/icmp.c       |  8 +++++++-
- net/ipv6/reassembly.c | 33 ++++++++++++++++++++++++++++++++-
- 2 files changed, 39 insertions(+), 2 deletions(-)
-
-diff --git a/net/ipv6/icmp.c b/net/ipv6/icmp.c
-index 7d3a3894f785..e9bb89131e02 100644
---- a/net/ipv6/icmp.c
-+++ b/net/ipv6/icmp.c
-@@ -158,7 +158,13 @@ static bool is_ineligible(const struct sk_buff *skb)
- 		tp = skb_header_pointer(skb,
- 			ptr+offsetof(struct icmp6hdr, icmp6_type),
- 			sizeof(_type), &_type);
--		if (!tp || !(*tp & ICMPV6_INFOMSG_MASK))
-+
-+		/* Based on RFC 8200, Section 4.5 Fragment Header, return
-+		 * false if this is a fragment packet with no icmp header info.
-+		 */
-+		if (!tp && frag_off != 0)
-+			return false;
-+		else if (!tp || !(*tp & ICMPV6_INFOMSG_MASK))
- 			return true;
- 	}
- 	return false;
-diff --git a/net/ipv6/reassembly.c b/net/ipv6/reassembly.c
-index 1f5d4d196dcc..c8cf1bbad74a 100644
---- a/net/ipv6/reassembly.c
-+++ b/net/ipv6/reassembly.c
-@@ -42,6 +42,8 @@
- #include <linux/skbuff.h>
- #include <linux/slab.h>
- #include <linux/export.h>
-+#include <linux/tcp.h>
-+#include <linux/udp.h>
- 
- #include <net/sock.h>
- #include <net/snmp.h>
-@@ -322,7 +324,9 @@ static int ipv6_frag_rcv(struct sk_buff *skb)
- 	struct frag_queue *fq;
- 	const struct ipv6hdr *hdr = ipv6_hdr(skb);
- 	struct net *net = dev_net(skb_dst(skb)->dev);
--	int iif;
-+	__be16 frag_off;
-+	int iif, offset;
-+	u8 nexthdr;
- 
- 	if (IP6CB(skb)->flags & IP6SKB_FRAGMENTED)
- 		goto fail_hdr;
-@@ -351,6 +355,33 @@ static int ipv6_frag_rcv(struct sk_buff *skb)
- 		return 1;
- 	}
- 
-+	/* RFC 8200, Section 4.5 Fragment Header:
-+	 * If the first fragment does not include all headers through an
-+	 * Upper-Layer header, then that fragment should be discarded and
-+	 * an ICMP Parameter Problem, Code 3, message should be sent to
-+	 * the source of the fragment, with the Pointer field set to zero.
-+	 */
-+	nexthdr = hdr->nexthdr;
-+	offset = ipv6_skip_exthdr(skb, skb_transport_offset(skb), &nexthdr, &frag_off);
-+	if (offset >= 0) {
-+		/* Check some common protocols' header */
-+		if (nexthdr == IPPROTO_TCP)
-+			offset += sizeof(struct tcphdr);
-+		else if (nexthdr == IPPROTO_UDP)
-+			offset += sizeof(struct udphdr);
-+		else if (nexthdr == IPPROTO_ICMPV6)
-+			offset += sizeof(struct icmp6hdr);
-+		else
-+			offset += 1;
-+
-+		if (!(frag_off & htons(IP6_OFFSET)) && offset > skb->len) {
-+			__IP6_INC_STATS(net, __in6_dev_get_safely(skb->dev),
-+					IPSTATS_MIB_INHDRERRORS);
-+			icmpv6_param_prob(skb, ICMPV6_HDR_INCOMP, 0);
-+			return -1;
-+		}
-+	}
-+
- 	iif = skb->dev ? skb->dev->ifindex : 0;
- 	fq = fq_find(net, fhdr->identification, hdr, iif);
- 	if (fq) {
--- 
-2.26.2.Cisco
-
+I think converting to inline kdoc of members would be an improvement,
+if you want to sign up for that? Otherwise -EDIDNTCARE on my side :)
