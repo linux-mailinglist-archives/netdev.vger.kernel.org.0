@@ -2,51 +2,51 @@ Return-Path: <netdev-owner@vger.kernel.org>
 X-Original-To: lists+netdev@lfdr.de
 Delivered-To: lists+netdev@lfdr.de
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.lfdr.de (Postfix) with ESMTP id 85891308E15
+	by mail.lfdr.de (Postfix) with ESMTP id 14686308E14
 	for <lists+netdev@lfdr.de>; Fri, 29 Jan 2021 21:08:44 +0100 (CET)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233214AbhA2UIJ (ORCPT <rfc822;lists+netdev@lfdr.de>);
-        Fri, 29 Jan 2021 15:08:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53956 "EHLO
+        id S233181AbhA2UHx (ORCPT <rfc822;lists+netdev@lfdr.de>);
+        Fri, 29 Jan 2021 15:07:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233125AbhA2Txa (ORCPT
-        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jan 2021 14:53:30 -0500
-Received: from mail-qt1-x835.google.com (mail-qt1-x835.google.com [IPv6:2607:f8b0:4864:20::835])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F1B92C061756;
-        Fri, 29 Jan 2021 11:52:49 -0800 (PST)
-Received: by mail-qt1-x835.google.com with SMTP id c12so7586211qtv.5;
-        Fri, 29 Jan 2021 11:52:49 -0800 (PST)
+        with ESMTP id S233033AbhA2Txb (ORCPT
+        <rfc822;netdev@vger.kernel.org>); Fri, 29 Jan 2021 14:53:31 -0500
+Received: from mail-qt1-x82b.google.com (mail-qt1-x82b.google.com [IPv6:2607:f8b0:4864:20::82b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4301BC0613D6;
+        Fri, 29 Jan 2021 11:52:51 -0800 (PST)
+Received: by mail-qt1-x82b.google.com with SMTP id d15so7551210qtw.12;
+        Fri, 29 Jan 2021 11:52:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Ut9QqJ8Bb2FrztE7bn3aXbtZ5BLxMG2sx0NSSH/xwUI=;
-        b=aBMO+pWmEC7z/EWnOcanV6rSfEWJC7TZQLc/1Nqaz73cldyCBvuHpJ3S/fCGuSyBAH
-         jR2SiKDWY8jF2Etdz8O/Q1ePhaTxIxewlyVF/3y/1taDyC0O031wNSbfDet9IUJfDxaW
-         3/BoyyJoLLxBhNkbmdrkDQeGwM4rRyzS7Jffg3AVV986EZpesGzmto9WEoxivkn2x4ZS
-         w7DBEon6sXZlRWXI+Q12Ownrjjat15+ebKFKKH3avwvuOx6cOcFuagTAajMCssmpcXW8
-         ww1rdtSnMJyTt6b/n+2YDMiZbknJ/X+1rQgbQQkTgrQQq8aP/WaXGiX4uhOiTMf9pJol
-         FVsw==
+        bh=7fVbGNql8fbM24WicwqR5l8k2H47U7DaRICOGVwNnLU=;
+        b=hdhcZw3olGLsEdGhZ3gow6JOKe3PKQFMZyJGfWdUVOxSPj58arRfqyjqbCztYJfZTn
+         9Sn/JGUlxamGsQzhELEOxYxVBuuVsoZtjSnX7t9NXO/GxxhoIoJCkbmkh4ZVbID4Ho4m
+         f2L0/UYmZBXMofxR+SeCco/Jl+VeoFNQ4T0AoCyofM0IuBYhFbweGQEP1CjhHmtV0D++
+         06fNhbWbcp7AkVi36LnhSGjdUV8E3YPqX+0BNx6g3R8rWiME0wjRhBulxU6WQw4SlZKd
+         IED3LMHsOW+BBGylFp7C6jYYTeZG8xCq8zTCr/EyAOv3eFv52JNjWtoqu/iaTOZnpxmi
+         Psbw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Ut9QqJ8Bb2FrztE7bn3aXbtZ5BLxMG2sx0NSSH/xwUI=;
-        b=gp6xPOLI+/Mh41S+B7vBmF9MQRUTgeY7Wn7ZvE3xOsQ3UWjxi3t8wECoT311Lr1qHj
-         VNXx5RK6tjP0o1kdhur6n+4VGqF6t3EXjtbUp5jz55V/jZYjlqT+nr4FvfYikzKGbOF7
-         iQ34OiMrISRm5XX3uSJuZBW9vis54Xw/2htxP3TZHSFHpAJ1d1qjC90ddCw/hrIHL7e1
-         LoGGwKwnSEOrsa/PnI7e1g/YYlolnImGElUKuCWVrYQ4lJj/g+LB33SZvWKfiC6KYyjJ
-         42UKt4eA45MVo33jeD2Fj2upR87a0QSW8inr0UXPgtRk9otoSZBokBmJi/N7jMQC9fQI
-         /yHQ==
-X-Gm-Message-State: AOAM532BQiL2EYWjFquvbk75IUhg1VNhOKH+7XRjWf6LVsKhRMor97K5
-        QpSxC5E+hF0W54WipIFMVdA=
-X-Google-Smtp-Source: ABdhPJyCh48VoqMVC68j0pVhLy16N2ITDMDSP87kz509b1sCqaiQTT9AwAOCG9KU/bGMG/hMp7i9hg==
-X-Received: by 2002:ac8:7119:: with SMTP id z25mr5628642qto.16.1611949969079;
-        Fri, 29 Jan 2021 11:52:49 -0800 (PST)
+        bh=7fVbGNql8fbM24WicwqR5l8k2H47U7DaRICOGVwNnLU=;
+        b=FV89ywzXTDkTvSxmqRyhzSMnWDAekub6H8LYJPkBDQDUP/JKCSNnbIS4PdyoZ4m2NA
+         BinrUZVfMXpCsCFFPFJAYil5J+CtvWb1/fWGEqsyj+xB4X79yCZYKoPDj2+z2V45yIzM
+         6XlQ9w7P/9a0F32hIUE8aPP5WwB6TFHEuD48Fi1YuP1ZMDEVGBlAO9oBnpTnntfIuYug
+         gl8fWQrc5fzsMgMSMImWmT70FlIJ4PyXHGEVRW788bf4xohxQchOUhl3V4/2F7XkFisK
+         lJwqKRrRjaq2eOEkbPsmwKN32MGvNfC9ClbMuxu/GQsz/k1QRLNr6nC3MKZBMK7B9CAM
+         3AoA==
+X-Gm-Message-State: AOAM532LaoE8SmvmHu8Kf7nHxbk2wa2I+E0m97ODXBlDKqOcbkpnuefz
+        9jIZBIrAgqmMpKWlQF5RFZw=
+X-Google-Smtp-Source: ABdhPJxMTIt4opqGB3q1wi+2z3hDi555Ieo1PrBfa6K0Eb7wXb61S0UGk7brTaTRUeRUXzCeatXOiQ==
+X-Received: by 2002:ac8:ecc:: with SMTP id w12mr5698078qti.371.1611949970337;
+        Fri, 29 Jan 2021 11:52:50 -0800 (PST)
 Received: from localhost.localdomain ([198.52.185.246])
-        by smtp.gmail.com with ESMTPSA id s136sm6558994qka.106.2021.01.29.11.52.47
+        by smtp.gmail.com with ESMTPSA id s136sm6558994qka.106.2021.01.29.11.52.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 Jan 2021 11:52:48 -0800 (PST)
+        Fri, 29 Jan 2021 11:52:50 -0800 (PST)
 From:   Sven Van Asbroeck <thesven73@gmail.com>
 X-Google-Original-From: Sven Van Asbroeck <TheSven73@gmail.com>
 To:     Bryan Whitehead <bryan.whitehead@microchip.com>,
@@ -59,9 +59,9 @@ Cc:     Sven Van Asbroeck <thesven73@gmail.com>,
         Tim Harvey <tharvey@gateworks.com>,
         =?UTF-8?q?Anders=20R=C3=B8nningen?= <anders@ronningen.priv.no>,
         netdev@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH net-next v1 3/6] lan743x: allow mtu change while network interface is up
-Date:   Fri, 29 Jan 2021 14:52:37 -0500
-Message-Id: <20210129195240.31871-4-TheSven73@gmail.com>
+Subject: [PATCH net-next v1 4/6] TEST ONLY: lan743x: limit rx ring buffer size to 500 bytes
+Date:   Fri, 29 Jan 2021 14:52:38 -0500
+Message-Id: <20210129195240.31871-5-TheSven73@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20210129195240.31871-1-TheSven73@gmail.com>
 References: <20210129195240.31871-1-TheSven73@gmail.com>
@@ -73,41 +73,6 @@ List-ID: <netdev.vger.kernel.org>
 X-Mailing-List: netdev@vger.kernel.org
 
 From: Sven Van Asbroeck <thesven73@gmail.com>
-
-Now that we can use rx ring buffers smaller than the mtu,
-we allow users to change the mtu on the fly.
-
-Tested as follows:
-
-Tests with debug logging enabled (add #define DEBUG).
-
-1. Set the chip mtu to 1500, generate lots of network traffic.
-   Stop all network traffic.
-   Set the chip and remote mtus to 8000.
-   Ping remote -> chip: $ ping <chip ip> -s 7000
-   Verify that the first few received packets are multi-buffer.
-   Verify no pings are dropped.
-
-Tests with DEBUG_KMEMLEAK on:
- $ mount -t debugfs nodev /sys/kernel/debug/
- $ echo scan > /sys/kernel/debug/kmemleak
-
-2. Start with chip mtu at 1500, host mtu at 8000.
-Run concurrently:
- - iperf3 -s on chip
- - ping -> chip
-
-Cycle the chip mtu between 1500 and 8000 every 10 seconds.
-
-Scan kmemleak periodically to watch for memory leaks.
-Verify that the mtu changeover happens smoothly, i.e.
-the iperf3 test does not report periods where speed
-drops and recovers suddenly.
-
-Note: iperf3 occasionally reports dropped packets on
-changeover. This behaviour also occurs on the original
-driver, it's not a regression. Possibly related to the
-chip's mac rx being disabled when the mtu is changed.
 
 Signed-off-by: Sven Van Asbroeck <thesven73@gmail.com>
 ---
@@ -126,23 +91,22 @@ Cc: Anders Rønningen <anders@ronningen.priv.no>
 Cc: netdev@vger.kernel.org
 Cc: linux-kernel@vger.kernel.org (open list)
 
- drivers/net/ethernet/microchip/lan743x_main.c | 3 ---
- 1 file changed, 3 deletions(-)
+ drivers/net/ethernet/microchip/lan743x_main.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/net/ethernet/microchip/lan743x_main.c b/drivers/net/ethernet/microchip/lan743x_main.c
-index b784e9feadac..618f0714a2cf 100644
+index 618f0714a2cf..ed4959ad9237 100644
 --- a/drivers/net/ethernet/microchip/lan743x_main.c
 +++ b/drivers/net/ethernet/microchip/lan743x_main.c
-@@ -2597,9 +2597,6 @@ static int lan743x_netdev_change_mtu(struct net_device *netdev, int new_mtu)
- 	struct lan743x_adapter *adapter = netdev_priv(netdev);
- 	int ret = 0;
+@@ -1973,7 +1973,7 @@ static int lan743x_rx_init_ring_element(struct lan743x_rx *rx, int index)
+ 	dma_addr_t dma_ptr;
+ 	int length;
  
--	if (netif_running(netdev))
--		return -EBUSY;
--
- 	ret = lan743x_mac_set_mtu(adapter, new_mtu);
- 	if (!ret)
- 		netdev->mtu = new_mtu;
+-	length = netdev->mtu + ETH_HLEN + 4 + RX_HEAD_PADDING;
++	length = 500 + ETH_HLEN + 4 + RX_HEAD_PADDING;
+ 
+ 	descriptor = &rx->ring_cpu_ptr[index];
+ 	buffer_info = &rx->buffer_info[index];
 -- 
 2.17.1
 
